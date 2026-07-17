@@ -1,0 +1,37 @@
+/* more30 portal — minimal global polish (hover/focus/responsive).
+   Design tokens live in @more30/ui; this file only adds interaction states that
+   inline styles can't express. */
+
+:root {
+  color-scheme: light;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #ffffff;
+}
+
+.m30-card {
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.m30-card:hover {
+  border-color: #1d4ed8;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.08);
+  transform: translateY(-2px);
+}
+
+.m30-card:focus-visible {
+  outline: 2px solid #1d4ed8;
+  outline-offset: 2px;
+}
+
+@media (max-width: 640px) {
+  main {
+    padding: 16px !important;
+  }
+}
