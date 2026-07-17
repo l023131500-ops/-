@@ -7,12 +7,18 @@ import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const PROJECT = "uhnrgujbdxhhmoxcjria";
+// Verified/inferred Supabase project per system number. Systems are NOT all on
+// one project. Anything not listed here is null (not yet verified).
+const KNOWN_PROJECT = {
+  "01": "uhnrgujbdxhhmoxcjria", // inferred (shared hub DB)
+  "15": "uhnrgujbdxhhmoxcjria", // inferred (shared hub DB)
+  "02": "bieebmnmkffwbqlsfozh", // VERIFIED (igud-transcribe's own project)
+};
 
 // number, slug, repo, name, category, stage, live, schema, deploy, protected, note
 const R = [
   ["01","torah-platform","torah-platform","Torah Platform (HUB, +egod)","hub","live",true,"public","lovable",false,"Main hub; billing via Nedarim."],
-  ["02","igud-transcribe","igud-transcribe","Igud Transcribe","transcription","wip",false,null,"unknown",false,"MISSING transcription API token."],
+  ["02","igud-transcribe","igud-transcribe","Igud Transcribe","transcription","beta",true,"public","vercel",false,"VERIFIED: Next.js 14 + OpenAI Whisper-1/GPT-4 on own project. MISSING token = OPENAI_API_KEY."],
   ["03","igud-ads","igud-ads","Igud Ads","advertising","live",true,null,"unknown",false,"Revenue system."],
   ["04","imud-torani","imud-torani","Imud Torani","torah","beta",true,null,"railway",false,"Known bug: X-Visitor-Id header."],
   ["05","financial-marketing-site","03-financial-marketing-site","Financial Marketing Site","finance","wip",false,null,"unknown",false,null],
@@ -51,7 +57,7 @@ for (const [number, slug, repo, name, category, stage, live, schema, deploy, pro
     number, slug, name, category, stage, live,
     repo: `l023131500-ops/${repo}`,
     basePath: `/${number}`,
-    supabase: { project: PROJECT, schema },
+    supabase: { project: KNOWN_PROJECT[number] ?? null, schema },
     deployTarget: deploy,
     protected: prot,
     source: "not-vendored", // see CONNECTIONS.md — private source not copied into public repo yet

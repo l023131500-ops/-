@@ -8,7 +8,7 @@
   "repo": "l023131500-ops/zchuyotpro-crm",
   "basePath": "/30",
   "supabase": {
-    "project": "uhnrgujbdxhhmoxcjria",
+    "project": null,
     "schema": null
   },
   "deployTarget": "unknown",

@@ -3,16 +3,16 @@
   "slug": "igud-transcribe",
   "name": "Igud Transcribe",
   "category": "transcription",
-  "stage": "wip",
-  "live": false,
+  "stage": "beta",
+  "live": true,
   "repo": "l023131500-ops/igud-transcribe",
   "basePath": "/02",
   "supabase": {
-    "project": "uhnrgujbdxhhmoxcjria",
-    "schema": null
+    "project": "bieebmnmkffwbqlsfozh",
+    "schema": "public"
   },
-  "deployTarget": "unknown",
+  "deployTarget": "vercel",
   "protected": false,
   "source": "not-vendored",
-  "note": "MISSING transcription API token."
+  "note": "VERIFIED: Next.js 14 + OpenAI Whisper-1/GPT-4 on own project. MISSING token = OPENAI_API_KEY."
 }

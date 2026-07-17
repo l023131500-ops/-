@@ -3,10 +3,19 @@
 > **Principle:** connect what exists; never break a live connection; never create
 > new databases/keys that orphan data; **no secret values in git** (names only).
 
-## Single Supabase API (verified)
+## Supabase projects (verified — NOT a single project)
 
-There is exactly **one** Supabase project for the whole account. Every system
-connects to it; they are separated by **schema**, not by project.
+> ⚠️ Correction from initial assumption: systems are **not** all on one project.
+> - **`uhnrgujbdxhhmoxcjria`** — the shared **hub** project (org "איגוד שיעורים קלואד"),
+>   reachable via the connected Supabase API. This is where `core` now lives.
+> - **`bieebmnmkffwbqlsfozh`** — **igud-transcribe's own** project (verified by
+>   reading the repo). It is in a different account and is **not** reachable via
+>   the connected Supabase API here.
+>
+> The `core` registry (below) records a `supabase_project` per system so this is
+> explicit. Only the hub project is manageable from this session.
+
+The hub project (`uhnrgujbdxhhmoxcjria`) details:
 
 | Field | Value |
 |---|---|
@@ -25,9 +34,12 @@ do not disrupt: `tenants`, `synagogues`, `teachers`, `lessons`, `tenant_ads`,
 `platform_subscription_payments`, `startup_intake_submissions`. All have RLS
 enabled.
 
-The new **`core`** schema (project registry) does **not** exist yet — it is
-delivered as a migration in `supabase/migrations/0001_core_schema.sql` and is
-**not auto-applied** (applying touches the live DB → needs your go-ahead).
+The new **`core`** schema (project registry) has been **APPLIED to the live hub
+project** (`uhnrgujbdxhhmoxcjria`): schema `core` + tables `projects`,
+`project_bugs`, `project_tasks`, view `project_overview`, RLS, and grants. It is
+additive and did not touch `public`/`zr_*`. To read `core` over the Data API, add
+`core` to the project's **Exposed Schemas** (Dashboard → API settings).
+Source: `supabase/migrations/0001_core_schema.sql` + `supabase/seed/`.
 
 ## Required env var NAMES (names only — values live in the secret store)
 
@@ -50,7 +62,7 @@ project `uhnrgujbdxhhmoxcjria`.
 | # | System | Repo | Category | Stage | Live | Schema | Deploy | Notes |
 |---|---|---|---|---|---|---|---|---|
 | 01 | Torah Platform (HUB) | torah-platform | hub | live | ✅ | public ✓ | Lovable | + egod; billing via Nedarim |
-| 02 | Igud Transcribe | igud-transcribe | transcription | wip | — | ? | ? | **missing transcription token** |
+| 02 | Igud Transcribe | igud-transcribe | transcription | beta | ✅ | **own** `bieebmnmkffwbqlsfozh` ✓ | Vercel ✓ | Next.js14 + Whisper/GPT-4; **missing `OPENAI_API_KEY`** |
 | 03 | Igud Ads | igud-ads | advertising | live | ✅ | ? | ? | revenue |
 | 04 | Imud Torani | imud-torani | torah | beta | ✅ | ? | Railway | bug: X-Visitor-Id header |
 | 05 | Financial Marketing Site | 03-financial-marketing-site | finance | wip | — | ? | ? | |
@@ -100,22 +112,25 @@ project `uhnrgujbdxhhmoxcjria`.
 
 ## ❗ Missing / unverified
 
-### Missing token — `igud-transcribe` (#02)
-The owner reports one connection token is missing here. **I could not confirm
-which token** because this session's GitHub scope is limited to
-`l023131500-ops/-` only, so `igud-transcribe`'s `.env.example` / code could not
-be read. Most likely candidates for a transcription app (to check in its repo):
-a speech-to-text provider key — e.g. `OPENAI_API_KEY` (Whisper),
-`IVRIT_AI_API_KEY`, `RUNPOD_API_KEY`, `DEEPGRAM_API_KEY`, `ASSEMBLYAI_API_KEY`,
-or a Google STT service-account. **Action needed:** grant repo read access (add
-`igud-transcribe` to the session) or paste its `.env.example` so I can name the
-exact missing variable. Same check applies to `chizukim-transcribe` (#17).
+### Missing token — `igud-transcribe` (#02) — ✅ IDENTIFIED
+The missing connection token is **`OPENAI_API_KEY`** (verified by reading the
+repo). `lib/openai.ts` throws `"OPENAI_API_KEY חסר ב-ENV"`; transcription runs on
+OpenAI **Whisper-1** (verbose_json + timestamps) with GPT-4 literary editing.
+
+**Action:** set `OPENAI_API_KEY` in the deployment secret store (Vercel env), not
+in git. The app's full env var names (from its `.env.example`):
+`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`,
+`SUPABASE_SERVICE_ROLE_KEY`, `OPENAI_API_KEY`, `ADMIN_EMAIL`,
+`NEXT_PUBLIC_SITE_URL`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`.
+Its Supabase is `bieebmnmkffwbqlsfozh` (its own project). The same OpenAI check
+likely applies to `chizukim-transcribe` (#17) — not yet read.
 
 ### Unverified (per-app schema, exact env var names, deploy target)
-All rows marked `?` above. Reason: only `l023131500-ops/-` is in this session's
-GitHub scope; the other repos returned "Access denied". To complete the map, add
-the repos to the session (or run in a session scoped to them) and re-run the
-per-repo extraction. Nothing here was guessed — `?` means "not yet read".
+All rows marked `?` above. `igud-transcribe` (#02) is now fully verified (added to
+the session and read). The remaining repos still need to be added one at a time to
+read their real `.env.example`/config. Nothing here was guessed — `?` means "not
+yet read", and `01`/`15` projects are marked "inferred" (from the live hub schema
++ owner statement), not file-verified.
 
 ## Migration note — public repo vs private source ⚠️
 

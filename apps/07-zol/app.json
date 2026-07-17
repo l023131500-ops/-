@@ -8,7 +8,7 @@
   "repo": "l023131500-ops/zol",
   "basePath": "/07",
   "supabase": {
-    "project": "uhnrgujbdxhhmoxcjria",
+    "project": null,
     "schema": null
   },
   "deployTarget": "unknown",

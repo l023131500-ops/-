@@ -8,7 +8,7 @@
   "repo": "l023131500-ops/imud-torani",
   "basePath": "/04",
   "supabase": {
-    "project": "uhnrgujbdxhhmoxcjria",
+    "project": null,
     "schema": null
   },
   "deployTarget": "railway",

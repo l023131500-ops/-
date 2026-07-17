@@ -42,8 +42,13 @@ export interface ProjectEntry {
   /** Is the system currently live/serving users? */
   live: boolean;
   /**
-   * Supabase schema this system reads/writes. All systems share ONE project
-   * (see @more30/db). null = not yet verified against the repo.
+   * Supabase project ref this system uses. Systems are NOT all on one project —
+   * verified: igud-transcribe is on its own project. undefined = not yet verified.
+   */
+  supabaseProject?: string | null;
+  /**
+   * Supabase schema this system reads/writes. null = not yet verified against
+   * the repo.
    */
   supabaseSchema: string | null;
   deployTarget: DeployTarget;

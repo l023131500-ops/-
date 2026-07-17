@@ -8,7 +8,7 @@
   "repo": "l023131500-ops/property-identity",
   "basePath": "/13",
   "supabase": {
-    "project": "uhnrgujbdxhhmoxcjria",
+    "project": null,
     "schema": null
   },
   "deployTarget": "unknown",
