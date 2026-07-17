@@ -8,11 +8,11 @@
   "repo": "l023131500-ops/torah-platform",
   "basePath": "/01",
   "supabase": {
-    "project": "uhnrgujbdxhhmoxcjria",
+    "project": "bieebmnmkffwbqlsfozh",
     "schema": "public"
   },
-  "deployTarget": "lovable",
+  "deployTarget": "vercel",
   "protected": false,
   "source": "not-vendored",
-  "note": "Main hub; billing via Nedarim."
+  "note": "VERIFIED: Vite on Vercel; Supabase bieebmnmkffwbqlsfozh (bkalut-production); Nedarim via Edge Functions. DISCREPANCY vs hub uhnrgujbdxhhmoxcjria."
 }

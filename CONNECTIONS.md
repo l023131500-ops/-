@@ -53,6 +53,28 @@ Source: `supabase/migrations/0001_core_schema.sql` + `supabase/seed/`.
 > only writes to `core`. **Next step:** run the seed, then confirm
 > `select count(*) from core.projects` = 31.
 
+## ⚠️ Open discrepancy — torah-platform (#01) project
+
+`torah-platform`'s committed `.env.example` points to Supabase
+**`bieebmnmkffwbqlsfozh`** (labeled *"bkalut-production"*) — the same project as
+#02/#03 — and wires Nedarim Plus through **Supabase Edge Functions**
+(`.../functions/v1/nedarim-webhook`), with the frontend on **Vercel**
+(`vercel.json`). **But** the connected hub project `uhnrgujbdxhhmoxcjria` is where
+the matching live tables actually exist (`tenants`, `teachers`, `lessons`,
+`nedarim_donations`, verified via the API). So one of these is true and needs
+your confirmation:
+
+1. Production overrides the env at deploy time to `uhnrgujbdxhhmoxcjria` (then
+   `.env.example` is just a stale template), **or**
+2. Production really runs on `bieebmnmkffwbqlsfozh` and `uhnrgujbdxhhmoxcjria`
+   is a second/older copy.
+
+This matters because **`core` was applied to `uhnrgujbdxhhmoxcjria`**. If prod is
+actually on `bieebmnmkffwbqlsfozh`, the admin/portal live overlay should point
+there instead. The registry records the file-verified value; resolve which
+project is authoritative before relying on cross-system joins. `egod` (#15) is
+still marked "inferred" on `uhnrgujbdxhhmoxcjria` and needs the same re-check.
+
 ## Required env var NAMES (names only — values live in the secret store)
 
 | Purpose | Public (browser) | Server-only (never expose/commit) |
@@ -73,7 +95,7 @@ project `uhnrgujbdxhhmoxcjria`.
 
 | # | System | Repo | Category | Stage | Live | Schema | Deploy | Notes |
 |---|---|---|---|---|---|---|---|---|
-| 01 | Torah Platform (HUB) | torah-platform | hub | live | ✅ | public ✓ | Lovable | + egod; billing via Nedarim |
+| 01 | Torah Platform (HUB) | torah-platform | hub | live | ✅ | `bieebmnmkffwbqlsfozh` ✓ (⚠️ see note) | Vercel ✓ | Nedarim via Edge Functions; **project discrepancy** below |
 | 02 | Igud Transcribe | igud-transcribe | transcription | beta | ✅ | **own** `bieebmnmkffwbqlsfozh` ✓ | Vercel ✓ | Next.js14 + Whisper/GPT-4; **missing `OPENAI_API_KEY`** |
 | 03 | Igud Ads | igud-ads | advertising | live | ✅ | shares `bieebmnmkffwbqlsfozh` ✓ | Vercel ✓ | Next.js; `ads.igud-shiurim.org`; shares #02's Supabase; uses `OPENAI_API_KEY` |
 | 04 | Imud Torani | imud-torani | torah | beta | ✅ | **local SQLite** ✓ (no Supabase) | Railway | Vite+Express; no keys/AI; bug: X-Visitor-Id header |

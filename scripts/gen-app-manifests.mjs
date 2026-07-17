@@ -10,8 +10,8 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 // Verified/inferred Supabase project per system number. Systems are NOT all on
 // one project. Anything not listed here is null (not yet verified).
 const KNOWN_PROJECT = {
-  "01": "uhnrgujbdxhhmoxcjria", // inferred (shared hub DB)
-  "15": "uhnrgujbdxhhmoxcjria", // inferred (shared hub DB)
+  "01": "bieebmnmkffwbqlsfozh", // VERIFIED via .env.example (bkalut-production); see DISCREPANCY note
+  "15": "uhnrgujbdxhhmoxcjria", // inferred (shared hub DB) — re-verify like #01
   "02": "bieebmnmkffwbqlsfozh", // VERIFIED (igud-transcribe's own project)
   "17": "csjekrvukbdznetsrodj", // VERIFIED (chizukim-transcribe's own project)
   "03": "bieebmnmkffwbqlsfozh", // VERIFIED (igud-ads shares #02's project)
@@ -19,7 +19,7 @@ const KNOWN_PROJECT = {
 
 // number, slug, repo, name, category, stage, live, schema, deploy, protected, note
 const R = [
-  ["01","torah-platform","torah-platform","Torah Platform (HUB, +egod)","hub","live",true,"public","lovable",false,"Main hub; billing via Nedarim."],
+  ["01","torah-platform","torah-platform","Torah Platform (HUB, +egod)","hub","live",true,"public","vercel",false,"VERIFIED: Vite on Vercel; Supabase bieebmnmkffwbqlsfozh (bkalut-production); Nedarim via Edge Functions. DISCREPANCY vs hub uhnrgujbdxhhmoxcjria."],
   ["02","igud-transcribe","igud-transcribe","Igud Transcribe","transcription","beta",true,"public","vercel",false,"VERIFIED: Next.js 14 + OpenAI Whisper-1/GPT-4 on own project. MISSING token = OPENAI_API_KEY."],
   ["03","igud-ads","igud-ads","Igud Ads","advertising","live",true,"public","vercel",false,"VERIFIED: Next.js on Vercel (ads.igud-shiurim.org). Shares Supabase project with #02. Uses OPENAI_API_KEY."],
   ["04","imud-torani","imud-torani","Imud Torani","torah","beta",true,null,"railway",false,"VERIFIED: Vite+Express; local SQLite (data.db), no Supabase, no keys, no AI. Known bug: X-Visitor-Id header."],
