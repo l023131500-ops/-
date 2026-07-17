@@ -8,11 +8,11 @@
   "repo": "l023131500-ops/igud-ads",
   "basePath": "/03",
   "supabase": {
-    "project": null,
-    "schema": null
+    "project": "bieebmnmkffwbqlsfozh",
+    "schema": "public"
   },
-  "deployTarget": "unknown",
+  "deployTarget": "vercel",
   "protected": false,
   "source": "not-vendored",
-  "note": "Revenue system."
+  "note": "VERIFIED: Next.js on Vercel (ads.igud-shiurim.org). Shares Supabase project with #02. Uses OPENAI_API_KEY."
 }

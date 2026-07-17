@@ -8,9 +8,11 @@
 > ⚠️ Correction from initial assumption: systems are **not** all on one project.
 > - **`uhnrgujbdxhhmoxcjria`** — the shared **hub** project (org "איגוד שיעורים קלואד"),
 >   reachable via the connected Supabase API. This is where `core` now lives.
-> - **`bieebmnmkffwbqlsfozh`** — **igud-transcribe's own** project (verified by
->   reading the repo). It is in a different account and is **not** reachable via
->   the connected Supabase API here.
+> - **`bieebmnmkffwbqlsfozh`** — the **igud** project, shared by **#02
+>   igud-transcribe and #03 igud-ads** (both verified by reading the repos). Not
+>   reachable via the connected Supabase API here.
+> - **`csjekrvukbdznetsrodj`** — **#17 chizukim-transcribe's own** project
+>   (verified). Not reachable via the connected Supabase API here.
 >
 > The `core` registry (below) records a `supabase_project` per system so this is
 > explicit. Only the hub project is manageable from this session.
@@ -73,7 +75,7 @@ project `uhnrgujbdxhhmoxcjria`.
 |---|---|---|---|---|---|---|---|---|
 | 01 | Torah Platform (HUB) | torah-platform | hub | live | ✅ | public ✓ | Lovable | + egod; billing via Nedarim |
 | 02 | Igud Transcribe | igud-transcribe | transcription | beta | ✅ | **own** `bieebmnmkffwbqlsfozh` ✓ | Vercel ✓ | Next.js14 + Whisper/GPT-4; **missing `OPENAI_API_KEY`** |
-| 03 | Igud Ads | igud-ads | advertising | live | ✅ | ? | ? | revenue |
+| 03 | Igud Ads | igud-ads | advertising | live | ✅ | shares `bieebmnmkffwbqlsfozh` ✓ | Vercel ✓ | Next.js; `ads.igud-shiurim.org`; shares #02's Supabase; uses `OPENAI_API_KEY` |
 | 04 | Imud Torani | imud-torani | torah | beta | ✅ | ? | Railway | bug: X-Visitor-Id header |
 | 05 | Financial Marketing Site | 03-financial-marketing-site | finance | wip | — | ? | ? | |
 | 06 | Kupot Holim | kupot-holim | health | wip | — | ? | ? | |

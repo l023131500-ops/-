@@ -9,7 +9,7 @@
 insert into core.projects (number, slug, repo, name, category, stage, live, supabase_project, supabase_schema, deploy_target, is_protected, note) values
   ('01','torah-platform','torah-platform','Torah Platform (HUB, +egod)','hub','live',true,'uhnrgujbdxhhmoxcjria','public','lovable',false,'Hub DB (inferred). Billing via Nedarim.'),
   ('02','igud-transcribe','igud-transcribe','Igud Transcribe','transcription','beta',true,'bieebmnmkffwbqlsfozh','public','vercel',false,'Next.js 14 + OpenAI Whisper-1/GPT-4. MISSING token = OPENAI_API_KEY.'),
-  ('03','igud-ads','igud-ads','Igud Ads','advertising','live',true,null,null,'unknown',false,'Revenue system.'),
+  ('03','igud-ads','igud-ads','Igud Ads','advertising','live',true,'bieebmnmkffwbqlsfozh','public','vercel',false,'VERIFIED: Next.js on Vercel (ads.igud-shiurim.org). Shares Supabase project with #02. Uses OPENAI_API_KEY. Revenue system.'),
   ('04','imud-torani','imud-torani','Imud Torani','torah','beta',true,null,null,'railway',false,'Known bug: X-Visitor-Id header.'),
   ('05','financial-marketing-site','03-financial-marketing-site','Financial Marketing Site','finance','wip',false,null,null,'unknown',false,null),
   ('06','kupot-holim','kupot-holim','Kupot Holim','health','wip',false,null,null,'unknown',false,null),
