@@ -14,5 +14,5 @@
   "deployTarget": "railway",
   "protected": false,
   "source": "not-vendored",
-  "note": "Known bug: X-Visitor-Id header."
+  "note": "VERIFIED: Vite+Express; local SQLite (data.db), no Supabase, no keys, no AI. Known bug: X-Visitor-Id header."
 }

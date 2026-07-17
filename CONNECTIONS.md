@@ -76,7 +76,7 @@ project `uhnrgujbdxhhmoxcjria`.
 | 01 | Torah Platform (HUB) | torah-platform | hub | live | ✅ | public ✓ | Lovable | + egod; billing via Nedarim |
 | 02 | Igud Transcribe | igud-transcribe | transcription | beta | ✅ | **own** `bieebmnmkffwbqlsfozh` ✓ | Vercel ✓ | Next.js14 + Whisper/GPT-4; **missing `OPENAI_API_KEY`** |
 | 03 | Igud Ads | igud-ads | advertising | live | ✅ | shares `bieebmnmkffwbqlsfozh` ✓ | Vercel ✓ | Next.js; `ads.igud-shiurim.org`; shares #02's Supabase; uses `OPENAI_API_KEY` |
-| 04 | Imud Torani | imud-torani | torah | beta | ✅ | ? | Railway | bug: X-Visitor-Id header |
+| 04 | Imud Torani | imud-torani | torah | beta | ✅ | **local SQLite** ✓ (no Supabase) | Railway | Vite+Express; no keys/AI; bug: X-Visitor-Id header |
 | 05 | Financial Marketing Site | 03-financial-marketing-site | finance | wip | — | ? | ? | |
 | 06 | Kupot Holim | kupot-holim | health | wip | — | ? | ? | |
 | 07 | Zol | zol | commerce | wip | — | ? | ? | |

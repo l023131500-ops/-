@@ -22,7 +22,7 @@ const R = [
   ["01","torah-platform","torah-platform","Torah Platform (HUB, +egod)","hub","live",true,"public","lovable",false,"Main hub; billing via Nedarim."],
   ["02","igud-transcribe","igud-transcribe","Igud Transcribe","transcription","beta",true,"public","vercel",false,"VERIFIED: Next.js 14 + OpenAI Whisper-1/GPT-4 on own project. MISSING token = OPENAI_API_KEY."],
   ["03","igud-ads","igud-ads","Igud Ads","advertising","live",true,"public","vercel",false,"VERIFIED: Next.js on Vercel (ads.igud-shiurim.org). Shares Supabase project with #02. Uses OPENAI_API_KEY."],
-  ["04","imud-torani","imud-torani","Imud Torani","torah","beta",true,null,"railway",false,"Known bug: X-Visitor-Id header."],
+  ["04","imud-torani","imud-torani","Imud Torani","torah","beta",true,null,"railway",false,"VERIFIED: Vite+Express; local SQLite (data.db), no Supabase, no keys, no AI. Known bug: X-Visitor-Id header."],
   ["05","financial-marketing-site","03-financial-marketing-site","Financial Marketing Site","finance","wip",false,null,"unknown",false,null],
   ["06","kupot-holim","kupot-holim","Kupot Holim","health","wip",false,null,"unknown",false,null],
   ["07","zol","zol","Zol","commerce","wip",false,null,"unknown",false,null],
