@@ -1,0 +1,17 @@
+{
+  "number": "12",
+  "slug": "smel-ndln",
+  "name": "Smel Ndln",
+  "category": "other",
+  "stage": "wip",
+  "live": false,
+  "repo": "l023131500-ops/smel-ndln",
+  "basePath": "/12",
+  "supabase": {
+    "project": "uhnrgujbdxhhmoxcjria",
+    "schema": null
+  },
+  "deployTarget": "unknown",
+  "protected": false,
+  "source": "not-vendored"
+}

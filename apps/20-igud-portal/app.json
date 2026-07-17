@@ -1,0 +1,17 @@
+{
+  "number": "20",
+  "slug": "igud-portal",
+  "name": "Igud Portal",
+  "category": "torah",
+  "stage": "wip",
+  "live": false,
+  "repo": "l023131500-ops/igud-portal",
+  "basePath": "/20",
+  "supabase": {
+    "project": "uhnrgujbdxhhmoxcjria",
+    "schema": null
+  },
+  "deployTarget": "unknown",
+  "protected": false,
+  "source": "not-vendored"
+}

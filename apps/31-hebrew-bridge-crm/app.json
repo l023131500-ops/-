@@ -1,0 +1,17 @@
+{
+  "number": "31",
+  "slug": "hebrew-bridge-crm",
+  "name": "Hebrew Bridge CRM",
+  "category": "crm",
+  "stage": "wip",
+  "live": false,
+  "repo": "l023131500-ops/hebrew-bridge-crm",
+  "basePath": "/31",
+  "supabase": {
+    "project": "uhnrgujbdxhhmoxcjria",
+    "schema": null
+  },
+  "deployTarget": "unknown",
+  "protected": false,
+  "source": "not-vendored"
+}

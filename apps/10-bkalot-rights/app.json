@@ -1,0 +1,17 @@
+{
+  "number": "10",
+  "slug": "bkalot-rights",
+  "name": "Bkalot Rights",
+  "category": "rights",
+  "stage": "wip",
+  "live": false,
+  "repo": "l023131500-ops/bkalot-rights",
+  "basePath": "/10",
+  "supabase": {
+    "project": "uhnrgujbdxhhmoxcjria",
+    "schema": null
+  },
+  "deployTarget": "unknown",
+  "protected": false,
+  "source": "not-vendored"
+}

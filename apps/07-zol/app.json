@@ -1,0 +1,17 @@
+{
+  "number": "07",
+  "slug": "zol",
+  "name": "Zol",
+  "category": "commerce",
+  "stage": "wip",
+  "live": false,
+  "repo": "l023131500-ops/zol",
+  "basePath": "/07",
+  "supabase": {
+    "project": "uhnrgujbdxhhmoxcjria",
+    "schema": null
+  },
+  "deployTarget": "unknown",
+  "protected": false,
+  "source": "not-vendored"
+}

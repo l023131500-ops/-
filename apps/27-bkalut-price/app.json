@@ -1,0 +1,17 @@
+{
+  "number": "27",
+  "slug": "bkalut-price",
+  "name": "Bkalut Price",
+  "category": "commerce",
+  "stage": "wip",
+  "live": false,
+  "repo": "l023131500-ops/bkalut-price",
+  "basePath": "/27",
+  "supabase": {
+    "project": "uhnrgujbdxhhmoxcjria",
+    "schema": null
+  },
+  "deployTarget": "unknown",
+  "protected": false,
+  "source": "not-vendored"
+}

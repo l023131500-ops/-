@@ -1,0 +1,17 @@
+{
+  "number": "26",
+  "slug": "modaot-studio",
+  "name": "Modaot Studio",
+  "category": "advertising",
+  "stage": "wip",
+  "live": false,
+  "repo": "l023131500-ops/modaot-studio",
+  "basePath": "/26",
+  "supabase": {
+    "project": "uhnrgujbdxhhmoxcjria",
+    "schema": null
+  },
+  "deployTarget": "unknown",
+  "protected": false,
+  "source": "not-vendored"
+}

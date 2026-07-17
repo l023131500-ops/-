@@ -1,0 +1,17 @@
+{
+  "number": "05",
+  "slug": "financial-marketing-site",
+  "name": "Financial Marketing Site",
+  "category": "finance",
+  "stage": "wip",
+  "live": false,
+  "repo": "l023131500-ops/03-financial-marketing-site",
+  "basePath": "/05",
+  "supabase": {
+    "project": "uhnrgujbdxhhmoxcjria",
+    "schema": null
+  },
+  "deployTarget": "unknown",
+  "protected": false,
+  "source": "not-vendored"
+}

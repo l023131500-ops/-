@@ -1,0 +1,18 @@
+{
+  "number": "17",
+  "slug": "chizukim-transcribe",
+  "name": "Chizukim Transcribe",
+  "category": "transcription",
+  "stage": "wip",
+  "live": false,
+  "repo": "l023131500-ops/chizukim-transcribe",
+  "basePath": "/17",
+  "supabase": {
+    "project": "uhnrgujbdxhhmoxcjria",
+    "schema": null
+  },
+  "deployTarget": "unknown",
+  "protected": false,
+  "source": "not-vendored",
+  "note": "Verify transcription token."
+}

@@ -1,0 +1,17 @@
+{
+  "number": "24",
+  "slug": "galilee-connect-hub",
+  "name": "Galilee Connect Hub",
+  "category": "other",
+  "stage": "wip",
+  "live": false,
+  "repo": "l023131500-ops/galilee-connect-hub",
+  "basePath": "/24",
+  "supabase": {
+    "project": "uhnrgujbdxhhmoxcjria",
+    "schema": null
+  },
+  "deployTarget": "unknown",
+  "protected": false,
+  "source": "not-vendored"
+}

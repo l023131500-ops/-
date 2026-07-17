@@ -1,0 +1,17 @@
+{
+  "number": "25",
+  "slug": "mor1-main-site",
+  "name": "Mor1 Main Site",
+  "category": "marketing",
+  "stage": "wip",
+  "live": false,
+  "repo": "l023131500-ops/mor1-main-site",
+  "basePath": "/25",
+  "supabase": {
+    "project": "uhnrgujbdxhhmoxcjria",
+    "schema": null
+  },
+  "deployTarget": "unknown",
+  "protected": false,
+  "source": "not-vendored"
+}

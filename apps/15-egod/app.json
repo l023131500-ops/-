@@ -1,0 +1,18 @@
+{
+  "number": "15",
+  "slug": "egod",
+  "name": "egod (HUB pair with 01)",
+  "category": "hub",
+  "stage": "live",
+  "live": true,
+  "repo": "l023131500-ops/egod",
+  "basePath": "/15",
+  "supabase": {
+    "project": "uhnrgujbdxhhmoxcjria",
+    "schema": "public"
+  },
+  "deployTarget": "lovable",
+  "protected": false,
+  "source": "not-vendored",
+  "note": "Born in Lovable; shares Supabase with torah-platform."
+}

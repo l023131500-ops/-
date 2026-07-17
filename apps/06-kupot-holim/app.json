@@ -1,0 +1,17 @@
+{
+  "number": "06",
+  "slug": "kupot-holim",
+  "name": "Kupot Holim",
+  "category": "health",
+  "stage": "wip",
+  "live": false,
+  "repo": "l023131500-ops/kupot-holim",
+  "basePath": "/06",
+  "supabase": {
+    "project": "uhnrgujbdxhhmoxcjria",
+    "schema": null
+  },
+  "deployTarget": "unknown",
+  "protected": false,
+  "source": "not-vendored"
+}

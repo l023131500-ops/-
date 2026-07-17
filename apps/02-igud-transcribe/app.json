@@ -1,0 +1,18 @@
+{
+  "number": "02",
+  "slug": "igud-transcribe",
+  "name": "Igud Transcribe",
+  "category": "transcription",
+  "stage": "wip",
+  "live": false,
+  "repo": "l023131500-ops/igud-transcribe",
+  "basePath": "/02",
+  "supabase": {
+    "project": "uhnrgujbdxhhmoxcjria",
+    "schema": null
+  },
+  "deployTarget": "unknown",
+  "protected": false,
+  "source": "not-vendored",
+  "note": "MISSING transcription API token."
+}

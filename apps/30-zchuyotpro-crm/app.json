@@ -1,0 +1,17 @@
+{
+  "number": "30",
+  "slug": "zchuyotpro-crm",
+  "name": "ZchuyotPro CRM",
+  "category": "crm",
+  "stage": "wip",
+  "live": false,
+  "repo": "l023131500-ops/zchuyotpro-crm",
+  "basePath": "/30",
+  "supabase": {
+    "project": "uhnrgujbdxhhmoxcjria",
+    "schema": null
+  },
+  "deployTarget": "unknown",
+  "protected": false,
+  "source": "not-vendored"
+}

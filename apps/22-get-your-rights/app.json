@@ -1,0 +1,17 @@
+{
+  "number": "22",
+  "slug": "get-your-rights",
+  "name": "Get Your Rights",
+  "category": "rights",
+  "stage": "wip",
+  "live": false,
+  "repo": "l023131500-ops/get-your-rights",
+  "basePath": "/22",
+  "supabase": {
+    "project": "uhnrgujbdxhhmoxcjria",
+    "schema": null
+  },
+  "deployTarget": "unknown",
+  "protected": false,
+  "source": "not-vendored"
+}

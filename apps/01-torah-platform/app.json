@@ -1,0 +1,18 @@
+{
+  "number": "01",
+  "slug": "torah-platform",
+  "name": "Torah Platform (HUB, +egod)",
+  "category": "hub",
+  "stage": "live",
+  "live": true,
+  "repo": "l023131500-ops/torah-platform",
+  "basePath": "/01",
+  "supabase": {
+    "project": "uhnrgujbdxhhmoxcjria",
+    "schema": "public"
+  },
+  "deployTarget": "lovable",
+  "protected": false,
+  "source": "not-vendored",
+  "note": "Main hub; billing via Nedarim."
+}

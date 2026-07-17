@@ -1,0 +1,18 @@
+{
+  "number": "04",
+  "slug": "imud-torani",
+  "name": "Imud Torani",
+  "category": "torah",
+  "stage": "beta",
+  "live": true,
+  "repo": "l023131500-ops/imud-torani",
+  "basePath": "/04",
+  "supabase": {
+    "project": "uhnrgujbdxhhmoxcjria",
+    "schema": null
+  },
+  "deployTarget": "railway",
+  "protected": false,
+  "source": "not-vendored",
+  "note": "Known bug: X-Visitor-Id header."
+}

@@ -1,0 +1,17 @@
+{
+  "number": "28",
+  "slug": "kupot-health-funds",
+  "name": "Kupot Health Funds",
+  "category": "health",
+  "stage": "wip",
+  "live": false,
+  "repo": "l023131500-ops/kupot-health-funds",
+  "basePath": "/28",
+  "supabase": {
+    "project": "uhnrgujbdxhhmoxcjria",
+    "schema": null
+  },
+  "deployTarget": "unknown",
+  "protected": false,
+  "source": "not-vendored"
+}

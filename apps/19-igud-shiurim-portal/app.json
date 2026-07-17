@@ -1,0 +1,17 @@
+{
+  "number": "19",
+  "slug": "igud-shiurim-portal",
+  "name": "Igud Shiurim Portal",
+  "category": "torah",
+  "stage": "wip",
+  "live": false,
+  "repo": "l023131500-ops/igud-shiurim-portal",
+  "basePath": "/19",
+  "supabase": {
+    "project": "uhnrgujbdxhhmoxcjria",
+    "schema": null
+  },
+  "deployTarget": "unknown",
+  "protected": false,
+  "source": "not-vendored"
+}

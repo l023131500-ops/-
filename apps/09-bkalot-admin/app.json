@@ -1,0 +1,18 @@
+{
+  "number": "09",
+  "slug": "bkalot-admin",
+  "name": "Bkalot Admin",
+  "category": "commerce",
+  "stage": "protected",
+  "live": true,
+  "repo": "l023131500-ops/bkalot-admin",
+  "basePath": "/09",
+  "supabase": {
+    "project": "uhnrgujbdxhhmoxcjria",
+    "schema": null
+  },
+  "deployTarget": "unknown",
+  "protected": true,
+  "source": "not-vendored",
+  "note": "PROTECTED — do not touch."
+}

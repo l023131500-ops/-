@@ -1,0 +1,20 @@
+{
+  "name": "more30",
+  "version": "0.1.0",
+  "private": true,
+  "description": "more30 — unified monorepo consolidating the l023131500-ops systems onto one Supabase API with a central admin and portal.",
+  "packageManager": "pnpm@9.0.0",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "pnpm -r --filter \"./packages/*\" build",
+    "lint": "pnpm -r lint",
+    "typecheck": "pnpm -r typecheck",
+    "portal:dev": "pnpm --filter @more30/portal dev",
+    "admin:dev": "pnpm --filter @more30/admin dev"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.4"
+  }
+}

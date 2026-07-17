@@ -1,0 +1,17 @@
+{
+  "number": "29",
+  "slug": "bkalot-design",
+  "name": "Bkalot Design",
+  "category": "marketing",
+  "stage": "wip",
+  "live": false,
+  "repo": "l023131500-ops/bkalot-design",
+  "basePath": "/29",
+  "supabase": {
+    "project": "uhnrgujbdxhhmoxcjria",
+    "schema": null
+  },
+  "deployTarget": "unknown",
+  "protected": false,
+  "source": "not-vendored"
+}

@@ -1,0 +1,17 @@
+{
+  "number": "11",
+  "slug": "bkalut-marketing2",
+  "name": "Bkalut Marketing 2",
+  "category": "marketing",
+  "stage": "wip",
+  "live": false,
+  "repo": "l023131500-ops/bkalut-marketing2",
+  "basePath": "/11",
+  "supabase": {
+    "project": "uhnrgujbdxhhmoxcjria",
+    "schema": null
+  },
+  "deployTarget": "unknown",
+  "protected": false,
+  "source": "not-vendored"
+}

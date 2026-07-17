@@ -1,0 +1,17 @@
+{
+  "number": "23",
+  "slug": "haorech-torani",
+  "name": "Haorech Torani",
+  "category": "torah",
+  "stage": "wip",
+  "live": false,
+  "repo": "l023131500-ops/haorech-torani",
+  "basePath": "/23",
+  "supabase": {
+    "project": "uhnrgujbdxhhmoxcjria",
+    "schema": null
+  },
+  "deployTarget": "unknown",
+  "protected": false,
+  "source": "not-vendored"
+}

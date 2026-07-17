@@ -1,0 +1,18 @@
+{
+  "number": "08",
+  "slug": "bkalut-app",
+  "name": "Bkalut App",
+  "category": "commerce",
+  "stage": "protected",
+  "live": true,
+  "repo": "l023131500-ops/bkalut-app",
+  "basePath": "/08",
+  "supabase": {
+    "project": "uhnrgujbdxhhmoxcjria",
+    "schema": null
+  },
+  "deployTarget": "unknown",
+  "protected": true,
+  "source": "not-vendored",
+  "note": "PROTECTED — do not touch."
+}

@@ -1,0 +1,10 @@
+{
+  "name": "@more30/new-site",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "bin": { "more30-new-site": "./index.mjs" },
+  "scripts": {
+    "start": "node index.mjs"
+  }
+}

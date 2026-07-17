@@ -1,0 +1,23 @@
+# dependencies
+node_modules/
+.pnpm-store/
+
+# build output
+dist/
+build/
+.next/
+.turbo/
+*.tsbuildinfo
+
+# secrets — NEVER commit real values (see CONNECTIONS.md)
+.env
+.env.local
+.env.*.local
+*.key
+*.pem
+service-account*.json
+
+# logs / os
+*.log
+.DS_Store
+coverage/

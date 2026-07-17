@@ -1,0 +1,31 @@
+/* @more30/ui — CSS custom properties mirroring src/tokens.ts. RTL-first. */
+:root {
+  --m30-bg: #ffffff;
+  --m30-fg: #0f172a;
+  --m30-muted: #64748b;
+  --m30-primary: #1d4ed8;
+  --m30-primary-fg: #ffffff;
+  --m30-accent: #0ea5e9;
+  --m30-border: #e2e8f0;
+  --m30-success: #16a34a;
+  --m30-warning: #d97706;
+  --m30-danger: #dc2626;
+
+  --m30-radius-sm: 6px;
+  --m30-radius-md: 10px;
+  --m30-radius-lg: 16px;
+
+  --m30-space-xs: 4px;
+  --m30-space-sm: 8px;
+  --m30-space-md: 16px;
+  --m30-space-lg: 24px;
+  --m30-space-xl: 40px;
+
+  --m30-font-sans: "Assistant", "Rubik", system-ui, sans-serif;
+}
+
+html[dir="rtl"],
+body[dir="rtl"] {
+  direction: rtl;
+  text-align: right;
+}

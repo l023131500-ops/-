@@ -1,0 +1,18 @@
+{
+  "number": "03",
+  "slug": "igud-ads",
+  "name": "Igud Ads",
+  "category": "advertising",
+  "stage": "live",
+  "live": true,
+  "repo": "l023131500-ops/igud-ads",
+  "basePath": "/03",
+  "supabase": {
+    "project": "uhnrgujbdxhhmoxcjria",
+    "schema": null
+  },
+  "deployTarget": "unknown",
+  "protected": false,
+  "source": "not-vendored",
+  "note": "Revenue system."
+}
