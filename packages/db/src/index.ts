@@ -59,3 +59,5 @@ export function createCoreClient(): SupabaseClient {
 }
 
 export type { SupabaseClient };
+
+export * from "./core.js";
