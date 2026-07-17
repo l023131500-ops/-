@@ -41,6 +41,16 @@ additive and did not touch `public`/`zr_*`. To read `core` over the Data API, ad
 `core` to the project's **Exposed Schemas** (Dashboard → API settings).
 Source: `supabase/migrations/0001_core_schema.sql` + `supabase/seed/`.
 
+> **⏳ Seed still pending (as of this milestone).** The `core` *schema* (DDL) is
+> live, but the *registry rows* are **not seeded yet** — `core.projects` currently
+> has **0 rows** (verified via the API). Until
+> `supabase/seed/core_projects_seed.sql` is applied, the admin/portal **live
+> overlay** shows no rows and both surfaces fall back to the build-time
+> `@more30/config` REGISTRY (which always renders). Applying the seed is a
+> live-DB write and needs an explicit go-ahead; it is additive/idempotent and
+> only writes to `core`. **Next step:** run the seed, then confirm
+> `select count(*) from core.projects` = 31.
+
 ## Required env var NAMES (names only — values live in the secret store)
 
 | Purpose | Public (browser) | Server-only (never expose/commit) |
