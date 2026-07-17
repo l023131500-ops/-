@@ -25,7 +25,8 @@ more30/
 │  ├─ auth        # single sign-in helpers
 │  ├─ ui          # design tokens (visual polish finished later in Lovable)
 │  └─ billing     # Nedarim Plus (Mosad 7016674)
-├─ admin/         # central admin — reads the core.projects registry
+├─ admin/         # central management console — maps bugs, manages tasks,
+│                 #   produces fixes over core.projects (super-admin gated)
 ├─ portal/        # more30 portal — lists all systems by category from core
 ├─ supabase/      # core schema migration + registry seed (NOT auto-applied to live DB)
 └─ tooling/
@@ -41,8 +42,15 @@ the admin and portal read from. See `CONNECTIONS.md` for the full mapping.
 
 ## Status
 
-This is the **skeleton** milestone. See `CONNECTIONS.md` for what is connected,
-what is unverified, and what is missing (notably a transcription token in
-`igud-transcribe`). Vendoring each system's source into `apps/` is deliberately
-**not** done yet — this repo is public and the source systems are private; see
-"Migration note" in `CONNECTIONS.md`.
+The skeleton is complete and **builds green** (all packages + portal + admin
+typecheck and build). The **central management console** (`admin/`) is live in
+the codebase: it maps bugs, manages tasks, and produces fixes across every
+system over the shared `core` schema — no new connections. See `CONNECTIONS.md`
+for what is connected, what is unverified, and what is missing (the core seed is
+applied via schema DDL but the 31 registry rows still need seeding; a
+transcription token `OPENAI_API_KEY` is missing in `igud-transcribe`).
+
+Vendoring each system's source into `apps/` is deliberately **not** done yet —
+this repo is public and the source systems are private; see "Migration note" in
+`CONNECTIONS.md`. That decision is what unlocks running every system together as
+its own separable site.
