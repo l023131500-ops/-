@@ -15,6 +15,7 @@
     "admin:dev": "pnpm --filter @more30/admin dev"
   },
   "devDependencies": {
+    "@types/node": "^20.14.0",
     "typescript": "^5.5.4"
   }
 }

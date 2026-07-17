@@ -32,7 +32,7 @@ export function createBrowserClient(schema = "public"): SupabaseClient {
       "Missing VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY. Set them in the deployment secret store — never in git.",
     );
   }
-  return createClient(url, anonKey, { db: { schema } });
+  return createClient<any, any, any>(url, anonKey, { db: { schema } });
 }
 
 /**
@@ -47,7 +47,7 @@ export function createServiceClient(schema = "public"): SupabaseClient {
       "Missing SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY. Server-only; set in the deployment secret store.",
     );
   }
-  return createClient(url, serviceRoleKey, {
+  return createClient<any, any, any>(url, serviceRoleKey, {
     db: { schema },
     auth: { persistSession: false, autoRefreshToken: false },
   });
