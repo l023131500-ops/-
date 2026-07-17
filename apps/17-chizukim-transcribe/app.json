@@ -3,16 +3,16 @@
   "slug": "chizukim-transcribe",
   "name": "Chizukim Transcribe",
   "category": "transcription",
-  "stage": "wip",
-  "live": false,
+  "stage": "beta",
+  "live": true,
   "repo": "l023131500-ops/chizukim-transcribe",
   "basePath": "/17",
   "supabase": {
-    "project": null,
-    "schema": null
+    "project": "csjekrvukbdznetsrodj",
+    "schema": "public"
   },
-  "deployTarget": "unknown",
+  "deployTarget": "vercel",
   "protected": false,
   "source": "not-vendored",
-  "note": "Verify transcription token."
+  "note": "VERIFIED: Vite+Express on Vercel; own Supabase. Transcription via RunPod/ivrit.ai, NOT OpenAI. Token: CUSTOM_CRED_API_RUNPOD_AI_TOKEN."
 }

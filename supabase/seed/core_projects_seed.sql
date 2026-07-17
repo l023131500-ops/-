@@ -23,7 +23,7 @@ insert into core.projects (number, slug, repo, name, category, stage, live, supa
   ('14','bsmachot-plus','bsmachot-plus','Bsmachot Plus','events','wip',false,null,null,'unknown',false,null),
   ('15','egod','egod','egod (HUB pair with 01)','hub','live',true,'uhnrgujbdxhhmoxcjria','public','lovable',false,'Born in Lovable; shares Supabase with torah-platform (inferred).'),
   ('16','chatzor-connect','chatzor-connect','Chatzor Connect','other','wip',false,null,null,'unknown',false,null),
-  ('17','chizukim-transcribe','chizukim-transcribe','Chizukim Transcribe','transcription','wip',false,null,null,'unknown',false,'Verify transcription token (likely OPENAI_API_KEY).'),
+  ('17','chizukim-transcribe','chizukim-transcribe','Chizukim Transcribe','transcription','beta',true,'csjekrvukbdznetsrodj','public','vercel',false,'VERIFIED: Vite+Express on Vercel; own Supabase project. Transcription via RunPod/ivrit.ai, NOT OpenAI. Token: CUSTOM_CRED_API_RUNPOD_AI_TOKEN.'),
   ('18','torah-editor-mvp','torah-editor-mvp','Torah Editor MVP','torah','wip',false,null,null,'unknown',false,null),
   ('19','igud-shiurim-portal','igud-shiurim-portal','Igud Shiurim Portal','torah','wip',false,null,null,'unknown',false,null),
   ('20','igud-portal','igud-portal','Igud Portal','torah','wip',false,null,null,'unknown',false,null),

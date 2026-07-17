@@ -87,7 +87,7 @@ project `uhnrgujbdxhhmoxcjria`.
 | 14 | Bsmachot Plus | bsmachot-plus | events | wip | — | ? | ? | |
 | 15 | egod (HUB pair) | egod | hub | live | ✅ | public ✓ | Lovable | shares Supabase with 01 |
 | 16 | Chatzor Connect | chatzor-connect | other | wip | — | ? | ? | |
-| 17 | Chizukim Transcribe | chizukim-transcribe | transcription | wip | — | ? | ? | verify transcription token |
+| 17 | Chizukim Transcribe | chizukim-transcribe | transcription | beta | ✅ | **own** `csjekrvukbdznetsrodj` ✓ | Vercel ✓ | Vite+Express; **RunPod/ivrit.ai** (not OpenAI); token `CUSTOM_CRED_API_RUNPOD_AI_TOKEN` |
 | 18 | Torah Editor MVP | torah-editor-mvp | torah | wip | — | ? | ? | |
 | 19 | Igud Shiurim Portal | igud-shiurim-portal | torah | wip | — | ? | ? | |
 | 20 | Igud Portal | igud-portal | torah | wip | — | ? | ? | |
@@ -132,8 +132,21 @@ in git. The app's full env var names (from its `.env.example`):
 `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`,
 `SUPABASE_SERVICE_ROLE_KEY`, `OPENAI_API_KEY`, `ADMIN_EMAIL`,
 `NEXT_PUBLIC_SITE_URL`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`.
-Its Supabase is `bieebmnmkffwbqlsfozh` (its own project). The same OpenAI check
-likely applies to `chizukim-transcribe` (#17) — not yet read.
+Its Supabase is `bieebmnmkffwbqlsfozh` (its own project).
+
+### Transcription token — `chizukim-transcribe` (#17) — ✅ VERIFIED (different engine)
+Correction of the earlier guess: #17 does **not** use OpenAI. It is a Vite +
+Express app on **Vercel** with its **own** Supabase project `csjekrvukbdznetsrodj`
+(storage bucket `recordings-audio`, table `recordings`), and it transcribes via
+**RunPod / ivrit.ai** — model `ivrit-ai/whisper-large-v3-turbo-ct2`
+(`server/routes.ts`). Server-side editing is plain text-processing (no LLM).
+
+**Required env names** (values live in Vercel, never in git):
+`CUSTOM_CRED_API_RUNPOD_AI_TOKEN` (RunPod `x-api-key`) and optionally
+`CUSTOM_CRED_API_RUNPOD_AI_URL` (endpoint base; has a hard-coded fallback). The
+Supabase URL + **publishable** key are currently hard-coded in the repo source —
+recorded here as project ref + names only; the key value is **not** copied into
+this public monorepo.
 
 ### Unverified (per-app schema, exact env var names, deploy target)
 All rows marked `?` above. `igud-transcribe` (#02) is now fully verified (added to

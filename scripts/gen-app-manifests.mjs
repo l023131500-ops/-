@@ -13,6 +13,7 @@ const KNOWN_PROJECT = {
   "01": "uhnrgujbdxhhmoxcjria", // inferred (shared hub DB)
   "15": "uhnrgujbdxhhmoxcjria", // inferred (shared hub DB)
   "02": "bieebmnmkffwbqlsfozh", // VERIFIED (igud-transcribe's own project)
+  "17": "csjekrvukbdznetsrodj", // VERIFIED (chizukim-transcribe's own project)
 };
 
 // number, slug, repo, name, category, stage, live, schema, deploy, protected, note
@@ -33,7 +34,7 @@ const R = [
   ["14","bsmachot-plus","bsmachot-plus","Bsmachot Plus","events","wip",false,null,"unknown",false,null],
   ["15","egod","egod","egod (HUB pair with 01)","hub","live",true,"public","lovable",false,"Born in Lovable; shares Supabase with torah-platform."],
   ["16","chatzor-connect","chatzor-connect","Chatzor Connect","other","wip",false,null,"unknown",false,null],
-  ["17","chizukim-transcribe","chizukim-transcribe","Chizukim Transcribe","transcription","wip",false,null,"unknown",false,"Verify transcription token."],
+  ["17","chizukim-transcribe","chizukim-transcribe","Chizukim Transcribe","transcription","beta",true,"public","vercel",false,"VERIFIED: Vite+Express on Vercel; own Supabase. Transcription via RunPod/ivrit.ai, NOT OpenAI. Token: CUSTOM_CRED_API_RUNPOD_AI_TOKEN."],
   ["18","torah-editor-mvp","torah-editor-mvp","Torah Editor MVP","torah","wip",false,null,"unknown",false,null],
   ["19","igud-shiurim-portal","igud-shiurim-portal","Igud Shiurim Portal","torah","wip",false,null,"unknown",false,null],
   ["20","igud-portal","igud-portal","Igud Portal","torah","wip",false,null,"unknown",false,null],
