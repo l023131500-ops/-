@@ -13,9 +13,27 @@ build/
 .env
 .env.local
 .env.*.local
+**/.env
+**/.env.*
+!**/.env.example
 *.key
 *.pem
 service-account*.json
+
+# ── Vendored private source (Phase 1 import) ────────────────────────────────
+# This monorepo repo is PUBLIC; the source systems are PRIVATE and hold secrets.
+# The full code was imported LOCALLY for mapping/continuity, but must NOT be
+# committed here. Only manifests (app.json) + STATUS are tracked. Vendoring the
+# actual code awaits the hosting decision (make repo private / git submodules).
+# See CONNECTIONS.md → "Hosting decision".
+/apps/**
+!/apps/
+!/apps/README.md
+!/apps/*/
+!/apps/*/app.json
+!/apps/*/STATUS.md
+# belt-and-suspenders: never leak any vendored env file (incl. .env.example)
+/apps/**/.env*
 
 # logs / os
 *.log

@@ -3,17 +3,27 @@
 > **Principle:** connect what exists; never break a live connection; never create
 > new databases/keys that orphan data; **no secret values in git** (names only).
 
-## Supabase projects (verified — NOT a single project)
+## Supabase projects (verified — ~10 DISTINCT projects, NOT one)
 
-> ⚠️ Correction from initial assumption: systems are **not** all on one project.
-> - **`uhnrgujbdxhhmoxcjria`** — the shared **hub** project (org "איגוד שיעורים קלואד"),
->   reachable via the connected Supabase API. This is where `core` now lives.
-> - **`bieebmnmkffwbqlsfozh`** — **igud-transcribe's own** project (verified by
->   reading the repo). It is in a different account and is **not** reachable via
->   the connected Supabase API here.
->
-> The `core` registry (below) records a `supabase_project` per system so this is
-> explicit. Only the hub project is manageable from this session.
+> ⚠️ Verified in Phase 1 by reading **every** repo's client/.env. The earlier
+> "one shared project" assumption is **false**. `core` lives on the ops project
+> (`uhnrgujb`) and only **catalogs** the others — it does not connect to them.
+
+| project ref | serves systems | reachable via MCP here? |
+|---|---|---|
+| `uhnrgujbdxhhmoxcjria` | 32 נדל"ן (schema `nadlan`) + `public` hub + `core` registry | ✅ yes |
+| `bieebmnmkffwbqlsfozh` | 01 torah-platform, 02 igud-transcribe, 03 igud-ads, 10 bkalot-rights, 18 torah-editor-mvp | ❌ other account |
+| `csjekrvukbdznetsrodj` | 06 kupot-holim, 12 smel-ndln, 17 chizukim-transcribe, 27 bkalut-price | ❌ |
+| `mwljkonwdeuaahsigjdp` | 16 chatzor-connect, 24 galilee-connect-hub | ❌ |
+| `pwcswdfgorvlpdflzylm` | 08 bkalut-app 🔒 | ❌ |
+| `trerolyveytzgksawrme` | 22 get-your-rights | ❌ |
+| `jhbeelzvjvhnkxldqvxx` | 30 zchuyotpro-crm | ❌ |
+| `hkkkynyoigzlttpynoeo` | 15 egod | ❌ |
+| `aypsqqvfohekxxuqsmrw` | 21 mthbram | ❌ |
+| `ygaqqnuyfnumezxxmtbh` | 31 hebrew-bridge-crm | ❌ |
+
+> The `core` registry records `supabase_project` + `supabase_schema` per system so
+> this is explicit. Only the ops project is manageable from this session.
 
 The hub project (`uhnrgujbdxhhmoxcjria`) details:
 
@@ -34,12 +44,17 @@ do not disrupt: `tenants`, `synagogues`, `teachers`, `lessons`, `tenant_ads`,
 `platform_subscription_payments`, `startup_intake_submissions`. All have RLS
 enabled.
 
-The new **`core`** schema (project registry) has been **APPLIED to the live hub
-project** (`uhnrgujbdxhhmoxcjria`): schema `core` + tables `projects`,
-`project_bugs`, `project_tasks`, view `project_overview`, RLS, and grants. It is
-additive and did not touch `public`/`zr_*`. To read `core` over the Data API, add
-`core` to the project's **Exposed Schemas** (Dashboard → API settings).
-Source: `supabase/migrations/0001_core_schema.sql` + `supabase/seed/`.
+The **`core`** registry is **APPLIED live** on `uhnrgujbdxhhmoxcjria` (additive;
+did not touch `public`/`zr_*`/`nadlan`):
+- `0001` — `core.projects`, `project_bugs`, `project_tasks`, view `project_overview`.
+- `0002` (Phase 1) — new columns (`department`, `is_deployed`, `live_url`,
+  `admin_url`, `to_delete`), task `author`, tables `core.missing_tokens` +
+  `core.automations`, and **`public.more30_*` views + RPCs** so the admin reads
+  live with the **anon key** — **no need to expose the `core` schema**. Writes go
+  through `more30_add_task` / `set_task_status` / `set_delete`, gated to a
+  signed-in super admin.
+- Seeded: **32 projects, 19 missing-token rows, 3 automations, 6 tasks.**
+Source: `supabase/migrations/0001…0002` + `supabase/seed/core_projects_seed.sql`.
 
 ## Required env var NAMES (names only — values live in the secret store)
 
@@ -56,42 +71,16 @@ Source: `supabase/migrations/0001_core_schema.sql` + `supabase/seed/`.
 
 ## Status matrix
 
-Legend — **Schema/Deploy/Env** `✓`=verified, `?`=needs repo read. All map to
-project `uhnrgujbdxhhmoxcjria`.
+The full, verified 32-row matrix (department · stage · live · deployed · Supabase
+ref · deploy target) now lives in **`apps/README.md`** and, live, in
+**`core.project_overview`** (via the `admin/` dashboard). It is no longer
+duplicated here to avoid drift. Every `?` from the old table has been resolved by
+reading the repos — see the 10-project table above.
 
-| # | System | Repo | Category | Stage | Live | Schema | Deploy | Notes |
-|---|---|---|---|---|---|---|---|---|
-| 01 | Torah Platform (HUB) | torah-platform | hub | live | ✅ | public ✓ | Lovable | + egod; billing via Nedarim |
-| 02 | Igud Transcribe | igud-transcribe | transcription | beta | ✅ | **own** `bieebmnmkffwbqlsfozh` ✓ | Vercel ✓ | Next.js14 + Whisper/GPT-4; **missing `OPENAI_API_KEY`** |
-| 03 | Igud Ads | igud-ads | advertising | live | ✅ | ? | ? | revenue |
-| 04 | Imud Torani | imud-torani | torah | beta | ✅ | ? | Railway | bug: X-Visitor-Id header |
-| 05 | Financial Marketing Site | 03-financial-marketing-site | finance | wip | — | ? | ? | |
-| 06 | Kupot Holim | kupot-holim | health | wip | — | ? | ? | |
-| 07 | Zol | zol | commerce | wip | — | ? | ? | |
-| 08 | Bkalut App | bkalut-app | commerce | 🔒 | ✅ | — | — | **PROTECTED — do not touch** |
-| 09 | Bkalot Admin | bkalot-admin | commerce | 🔒 | ✅ | — | — | **PROTECTED — do not touch** |
-| 10 | Bkalot Rights | bkalot-rights | rights | wip | — | ? | ? | |
-| 11 | Bkalut Marketing 2 | bkalut-marketing2 | marketing | wip | — | ? | ? | |
-| 12 | Smel Ndln | smel-ndln | other | wip | — | ? | ? | |
-| 13 | Property Identity | property-identity | realestate | wip | — | ? | ? | |
-| 14 | Bsmachot Plus | bsmachot-plus | events | wip | — | ? | ? | |
-| 15 | egod (HUB pair) | egod | hub | live | ✅ | public ✓ | Lovable | shares Supabase with 01 |
-| 16 | Chatzor Connect | chatzor-connect | other | wip | — | ? | ? | |
-| 17 | Chizukim Transcribe | chizukim-transcribe | transcription | wip | — | ? | ? | verify transcription token |
-| 18 | Torah Editor MVP | torah-editor-mvp | torah | wip | — | ? | ? | |
-| 19 | Igud Shiurim Portal | igud-shiurim-portal | torah | wip | — | ? | ? | |
-| 20 | Igud Portal | igud-portal | torah | wip | — | ? | ? | |
-| 21 | Mthbram | mthbram | other | wip | — | ? | ? | |
-| 22 | Get Your Rights | get-your-rights | rights | wip | — | ? | ? | |
-| 23 | Haorech Torani | haorech-torani | torah | wip | — | ? | ? | |
-| 24 | Galilee Connect Hub | galilee-connect-hub | other | wip | — | ? | ? | |
-| 25 | Mor1 Main Site | mor1-main-site | marketing | wip | — | ? | ? | |
-| 26 | Modaot Studio | modaot-studio | advertising | wip | — | ? | ? | |
-| 27 | Bkalut Price | bkalut-price | commerce | wip | — | ? | ? | |
-| 28 | Kupot Health Funds | kupot-health-funds | health | wip | — | ? | ? | |
-| 29 | Bkalot Design | bkalot-design | marketing | wip | — | ? | ? | |
-| 30 | ZchuyotPro CRM | zchuyotpro-crm | crm | wip | — | ? | ? | |
-| 31 | Hebrew Bridge CRM | hebrew-bridge-crm | crm | wip | — | ? | ? | |
+Highlights: 32 = **נדל"ן ברגע** (added Phase 1, live on Vercel, `uhnrgujb/nadlan`).
+01/03 = live on `bieebmnm` (**not** `uhnrgujb` as previously inferred). 15 egod has
+its **own** project `hkkky…` (not shared with 01). Departments: עורך תורני, פיננסי,
+נדל"ן, בריאות, זכויות, קהילה, בקלות 🔒, שונות.
 
 ### Archive / clean only (do not treat as active, do not delete)
 `luxe-balance-hub-81` (+ `-2495305b`, `-18cf8aef`, `-906f08da`, `-8c019fba`),

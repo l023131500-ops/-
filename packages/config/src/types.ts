@@ -28,6 +28,17 @@ export type Stage = "live" | "beta" | "wip" | "archived" | "protected";
 /** Where the system is deployed. */
 export type DeployTarget = "railway" | "vercel" | "netlify" | "lovable" | "unknown";
 
+/** Business department (Phase 1 grouping). Distinct from the finer `category`. */
+export type Department =
+  | "torah"       // עורך תורני (תמלול, מודעות, עימוד, הגהה, HUB)
+  | "finance"     // פיננסי
+  | "realestate"  // נדל"ן
+  | "health"      // בריאות וקופות
+  | "rights"      // זכויות
+  | "community"   // קהילה ואזורי
+  | "bkalut"      // מותג בקלות (מוגן)
+  | "misc";       // שונות / מסחר
+
 export interface ProjectEntry {
   /** Two-digit registry number, e.g. "01". Drives the URL basePath. */
   number: string;
@@ -37,10 +48,18 @@ export interface ProjectEntry {
   repo: string;
   /** Human-facing name. */
   name: string;
+  /** Business department (Phase 1 grouping). */
+  department: Department;
   category: Category;
   stage: Stage;
   /** Is the system currently live/serving users? */
   live: boolean;
+  /** Is the system deployed anywhere (vercel/railway/...)? */
+  isDeployed?: boolean;
+  /** Public URL if live/deployed. */
+  liveUrl?: string | null;
+  /** Admin-login URL for the system, if known. */
+  adminUrl?: string | null;
   /**
    * Supabase project ref this system uses. Systems are NOT all on one project —
    * verified: igud-transcribe is on its own project. undefined = not yet verified.

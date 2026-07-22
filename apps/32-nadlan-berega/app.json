@@ -1,0 +1,21 @@
+{
+  "number": "32",
+  "slug": "nadlan-berega",
+  "name": "נדל\"ן ברגע",
+  "department": "realestate",
+  "category": "realestate",
+  "stage": "live",
+  "live": true,
+  "isDeployed": true,
+  "repo": "l023131500-ops/nadlan-berega",
+  "basePath": "/32",
+  "supabase": {
+    "project": "uhnrgujbdxhhmoxcjria",
+    "schema": "nadlan"
+  },
+  "deployTarget": "vercel",
+  "liveUrl": "https://nadlan-berega.vercel.app",
+  "protected": false,
+  "source": "vendored",
+  "note": "המערכת הראשונה שהושקה. 7 שכבות נתוני אמת. schema nadlan על פרויקט ה-ops (uhnrgujb). חסר SUPABASE_SERVICE_KEY להפעלת קאשינג."
+}
