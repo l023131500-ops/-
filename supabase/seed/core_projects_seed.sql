@@ -49,3 +49,12 @@ on conflict (number) do update set
   supabase_project=excluded.supabase_project, supabase_schema=excluded.supabase_schema,
   deploy_target=excluded.deploy_target, live_url=excluded.live_url, admin_url=excluded.admin_url,
   is_protected=excluded.is_protected, note=excluded.note, updated_at=now();
+
+-- Deploy URLs (Vercel) + admin login paths — discovered from imported code + Vercel API.
+-- admin_url starting with '/' is a RELATIVE path (combine with live_url in the UI).
+update core.projects set live_url='https://torah-platform-git-main-l023131500-ops-projects.vercel.app', admin_url='https://torah-platform-git-main-l023131500-ops-projects.vercel.app/admin' where number='01';
+update core.projects set live_url='https://igud-ads.vercel.app' where number='03';
+update core.projects set live_url='https://chizukim-transcribe-git-master-l023131500-ops-projects.vercel.app' where number='17';
+update core.projects set live_url='https://kupot-health-funds-l023131500-ops-l023131500-ops-projects.vercel.app' where number='28';
+update core.projects set admin_url='/admin' where number in ('15','21','27','31');
+update core.projects set admin_url='/admin/login' where number='22';

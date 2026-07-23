@@ -187,10 +187,16 @@ export function App() {
                   </div>
                   {r.note && <div style={{ fontSize: 12, color: "#64748b", marginTop: 4 }}>{r.note}</div>}
 
-                  <div style={{ display: "flex", gap: 6, marginTop: 8 }}>
+                  <div style={{ display: "flex", gap: 6, marginTop: 8, flexWrap: "wrap" }}>
                     {r.live_url && <a href={r.live_url} target="_blank" rel="noreferrer" style={linkBtn}>אתר חי ↗</a>}
-                    {r.admin_url ? <a href={r.admin_url} target="_blank" rel="noreferrer" style={linkBtn}>כניסת אדמין ↗</a>
-                      : <span style={{ ...linkBtn, opacity: 0.5 }}>אין admin_url</span>}
+                    {(() => {
+                      if (!r.admin_url) return <span style={{ ...linkBtn, opacity: 0.5 }}>אין admin_url</span>;
+                      const abs = r.admin_url.startsWith("http");
+                      const href = abs ? r.admin_url : (r.live_url ? r.live_url.replace(/\/$/, "") + r.admin_url : null);
+                      return href
+                        ? <a href={href} target="_blank" rel="noreferrer" style={linkBtn}>כניסת אדמין ↗</a>
+                        : <span style={{ ...linkBtn, opacity: 0.7 }} title="נתיב יחסי — צריך live_url">אדמין: {r.admin_url}</span>;
+                    })()}
                   </div>
 
                   {myTokens.length > 0 && (
