@@ -19,8 +19,10 @@ export interface DbEnv {
 
 function readEnv(name: string): string | undefined {
   // Works in both Vite (import.meta.env) and Node (process.env) contexts.
+  // Read `process` off globalThis so this stays browser-safe without @types/node.
   const viteEnv = (import.meta as unknown as { env?: Record<string, string> }).env;
-  return viteEnv?.[name] ?? (typeof process !== "undefined" ? process.env[name] : undefined);
+  const proc = (globalThis as { process?: { env?: Record<string, string | undefined> } }).process;
+  return viteEnv?.[name] ?? proc?.env?.[name];
 }
 
 /** Browser-safe client. Reads VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY. */
@@ -32,7 +34,9 @@ export function createBrowserClient(schema = "public"): SupabaseClient {
       "Missing VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY. Set them in the deployment secret store — never in git.",
     );
   }
-  return createClient(url, anonKey, { db: { schema } });
+  // Cast back to the default-schema client type: `schema` is a runtime string,
+  // which widens the inferred SchemaName generic; the factory contract is opaque.
+  return createClient(url, anonKey, { db: { schema } }) as SupabaseClient;
 }
 
 /**
@@ -50,7 +54,7 @@ export function createServiceClient(schema = "public"): SupabaseClient {
   return createClient(url, serviceRoleKey, {
     db: { schema },
     auth: { persistSession: false, autoRefreshToken: false },
-  });
+  }) as SupabaseClient;
 }
 
 /** Convenience: a client bound to the shared `core` registry schema. */

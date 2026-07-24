@@ -3,7 +3,7 @@ import { DEPARTMENTS, activeProjects, type ProjectEntry } from "@more30/config";
 import { createBrowserClient } from "@more30/db";
 
 /**
- * more30 — public portal (MOR1 brand style: clean, light, RTL, emoji iconography).
+ * more30 — public portal (MOR1 brand: clean, light, RTL, emoji iconography).
  * System cards come from the build-time registry (mirrors core.projects).
  * The startup-idea form submits via the anon RPC `submit_startup_idea`.
  */
@@ -12,6 +12,12 @@ const DEPT_EMOJI: Record<string, string> = {
   torah: "📚", finance: "💰", realestate: "🏠", health: "🏥",
   rights: "⚖️", community: "🤝", bkalut: "🎫", misc: "✨",
 };
+// Per-department accent color — gives each section a distinct, coherent identity.
+const DEPT_ACCENT: Record<string, string> = {
+  torah: "#7c3aed", finance: "#0ea5e9", realestate: "#0d9488", health: "#e11d48",
+  rights: "#d97706", community: "#4f46e5", bkalut: "#64748b", misc: "#db2777",
+};
+
 const SERVICES = [
   { icon: "💻", title: "מערכות מוכנות", text: "עשרות מערכות SaaS פעילות — כולן במקום אחד." },
   { icon: "🧭", title: "ליווי מקצה לקצה", text: "מרעיון ועד מוצר חי, עם צוות שמבין סטארטאפים." },
@@ -32,77 +38,125 @@ function statusPill(p: ProjectEntry) {
 export function App() {
   const projects = activeProjects();
   const depts = Object.keys(DEPARTMENTS).filter((d) => d !== "bkalut" && projects.some((p) => p.department === d));
+  const liveCount = projects.filter((p) => p.live).length;
+  const stats = [
+    { n: projects.length, label: "מערכות" },
+    { n: liveCount, label: "חיות עכשיו" },
+    { n: depts.length, label: "תחומים" },
+    { n: "1", label: "קורת גג" },
+  ];
 
   return (
-    <div style={{ fontFamily: "Assistant, 'Segoe UI', system-ui, sans-serif", direction: "rtl", color: "#0f172a", background: "#f8fafc" }}>
+    <div style={{ fontFamily: "Assistant, 'Segoe UI', system-ui, sans-serif", direction: "rtl", color: "#0f172a", background: "#f6f7fb" }}>
+      {/* Sticky nav */}
+      <nav style={{ position: "sticky", top: 0, zIndex: 50, background: "rgba(255,255,255,0.85)", backdropFilter: "blur(10px)", borderBottom: "1px solid #eef0f6" }}>
+        <div style={{ ...wrap, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 20px" }}>
+          <div style={{ fontFamily: "Rubik, sans-serif", fontWeight: 900, fontSize: 22, letterSpacing: 0.5 }}>
+            MOR<span style={{ color: "#7c3aed" }}>1</span>
+            <span style={{ color: "#94a3b8", fontWeight: 500, fontSize: 15, marginInlineStart: 8 }}>· more30</span>
+          </div>
+          <div style={{ display: "flex", gap: 22, alignItems: "center", fontSize: 15, fontWeight: 600 }}>
+            <a href="#systems" style={navLink}>המערכות</a>
+            <a href="#services" style={navLink}>מה אנחנו נותנים</a>
+            <a href="#intake" style={{ ...btn, background: "#4f46e5", color: "#fff", padding: "9px 18px", fontSize: 14 }}>ספרו לנו רעיון</a>
+          </div>
+        </div>
+      </nav>
+
       {/* Hero */}
-      <header style={{ background: "linear-gradient(135deg,#4f46e5 0%,#7c3aed 100%)", color: "#fff", padding: "64px 20px 72px" }}>
-        <div style={wrap}>
-          <div style={{ fontWeight: 800, fontSize: 30, letterSpacing: 1 }}>MOR<span style={{ color: "#c7d2fe" }}>1</span> · more30</div>
-          <h1 style={{ fontSize: 44, margin: "20px 0 10px", lineHeight: 1.15 }}>עולם החלומות של הסטארטאפים, בקליק</h1>
-          <p style={{ fontSize: 18, opacity: 0.9, maxWidth: 620 }}>
+      <header style={{ position: "relative", overflow: "hidden", background: "linear-gradient(135deg,#4f46e5 0%,#7c3aed 55%,#9333ea 100%)", color: "#fff", padding: "72px 20px 0" }}>
+        <div style={{ position: "absolute", inset: 0, background: "radial-gradient(circle at 80% -10%, rgba(255,255,255,0.18), transparent 45%)", pointerEvents: "none" }} />
+        <div style={{ ...wrap, position: "relative" }}>
+          <span style={heroTag}>🚀 מור מערכות תוכנה · אקוסיסטם אחד</span>
+          <h1 style={{ fontFamily: "Rubik, sans-serif", fontSize: "clamp(32px, 5vw, 50px)", margin: "18px 0 12px", lineHeight: 1.12, fontWeight: 900 }}>
+            עולם החלומות של<br />הסטארטאפים, בקליק
+          </h1>
+          <p style={{ fontSize: 19, opacity: 0.92, maxWidth: 600, lineHeight: 1.6 }}>
             עשרות מערכות פעילות, ליווי מלא מרעיון למוצר, והכול תחת קורת גג אחת — more30.com.
           </p>
-          <div style={{ display: "flex", gap: 12, marginTop: 26, flexWrap: "wrap" }}>
-            <a href="#intake" style={{ ...btn, background: "#fff", color: "#4f46e5" }}>מגשימים את החלום ←</a>
-            <a href="#systems" style={{ ...btn, background: "rgba(255,255,255,0.15)", color: "#fff", border: "1px solid rgba(255,255,255,0.4)" }}>צפו במערכות</a>
+          <div style={{ display: "flex", gap: 12, marginTop: 28, flexWrap: "wrap" }}>
+            <a href="#intake" style={{ ...btn, background: "#fff", color: "#4f46e5", boxShadow: "0 8px 24px rgba(0,0,0,0.18)" }}>מגשימים את החלום ←</a>
+            <a href="#systems" style={{ ...btn, background: "rgba(255,255,255,0.12)", color: "#fff", border: "1px solid rgba(255,255,255,0.45)" }}>צפו במערכות</a>
+          </div>
+          {/* Stat band */}
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(120px,1fr))", gap: 14, margin: "48px 0 -36px", background: "#fff", borderRadius: 18, padding: "22px 16px", boxShadow: "0 20px 50px rgba(30,27,75,0.28)" }}>
+            {stats.map((s) => (
+              <div key={s.label} style={{ textAlign: "center" }}>
+                <div style={{ fontFamily: "Rubik, sans-serif", fontSize: 34, fontWeight: 900, color: "#4f46e5", lineHeight: 1 }}>{s.n}</div>
+                <div style={{ color: "#64748b", fontSize: 14, marginTop: 6, fontWeight: 600 }}>{s.label}</div>
+              </div>
+            ))}
           </div>
         </div>
       </header>
 
       {/* Services */}
-      <section style={{ ...wrap, padding: "48px 20px" }}>
+      <section id="services" style={{ ...wrap, padding: "72px 20px 8px" }}>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(220px,1fr))", gap: 16 }}>
           {SERVICES.map((s) => (
-            <div key={s.title} style={cardBox}>
+            <div key={s.title} style={{ ...cardBox, transition: "transform .18s, box-shadow .18s" }}>
               <div style={{ fontSize: 34 }}>{s.icon}</div>
-              <div style={{ fontWeight: 700, margin: "8px 0 4px" }}>{s.title}</div>
-              <div style={{ color: "#64748b", fontSize: 14 }}>{s.text}</div>
+              <div style={{ fontWeight: 700, margin: "10px 0 4px", fontSize: 17 }}>{s.title}</div>
+              <div style={{ color: "#64748b", fontSize: 14, lineHeight: 1.55 }}>{s.text}</div>
             </div>
           ))}
         </div>
       </section>
 
       {/* Systems */}
-      <section id="systems" style={{ ...wrap, padding: "8px 20px 48px" }}>
-        <h2 style={{ fontSize: 28, textAlign: "center", marginBottom: 6 }}>המערכות שלנו</h2>
-        <p style={{ textAlign: "center", color: "#64748b", marginTop: 0 }}>{projects.length} מערכות פעילות ובפיתוח</p>
-        {depts.map((dep) => (
-          <div key={dep} style={{ marginTop: 28 }}>
-            <h3 style={{ fontSize: 18, color: "#334155" }}>{DEPT_EMOJI[dep]} {DEPARTMENTS[dep]}</h3>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(240px,1fr))", gap: 14 }}>
-              {projects.filter((p) => p.department === dep).map((p) => {
-                const href = p.liveUrl ?? undefined;
-                const Inner = (
-                  <>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                      <span style={{ fontWeight: 700 }}>{p.name}</span>{statusPill(p)}
-                    </div>
-                    <div style={{ color: "#64748b", fontSize: 13, marginTop: 8 }}>
-                      {href ? "כניסה למערכת ↗" : "בקרוב תחת more30.com"}
-                    </div>
-                  </>
-                );
-                return href
-                  ? <a key={p.number} href={href} target="_blank" rel="noreferrer" style={{ ...cardBox, textDecoration: "none", color: "#0f172a" }}>{Inner}</a>
-                  : <div key={p.number} style={{ ...cardBox, opacity: 0.85 }}>{Inner}</div>;
-              })}
+      <section id="systems" style={{ ...wrap, padding: "48px 20px" }}>
+        <h2 style={{ fontFamily: "Rubik, sans-serif", fontSize: 30, textAlign: "center", marginBottom: 6, fontWeight: 900 }}>המערכות שלנו</h2>
+        <p style={{ textAlign: "center", color: "#64748b", marginTop: 0, fontSize: 16 }}>{projects.length} מערכות · {liveCount} כבר חיות · והרשימה גדלה</p>
+        {depts.map((dep) => {
+          const list = projects.filter((p) => p.department === dep);
+          const accent = DEPT_ACCENT[dep];
+          return (
+            <div key={dep} style={{ marginTop: 34 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+                <span style={{ fontSize: 22 }}>{DEPT_EMOJI[dep]}</span>
+                <h3 style={{ fontSize: 20, color: "#1e293b", margin: 0, fontWeight: 700 }}>{DEPARTMENTS[dep]}</h3>
+                <span style={{ ...pill, background: "#eef2ff", color: accent }}>{list.length}</span>
+                <span style={{ flex: 1, height: 1, background: "#e9ecf4" }} />
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(250px,1fr))", gap: 14 }}>
+                {list.map((p) => {
+                  const href = p.liveUrl ?? undefined;
+                  const desc = p.note?.split(/[.·]/)[0]?.trim();
+                  const Inner = (
+                    <>
+                      <span style={{ position: "absolute", insetInlineStart: 0, top: 14, bottom: 14, width: 4, borderRadius: 4, background: accent }} />
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 8 }}>
+                        <span style={{ fontWeight: 700, fontSize: 16 }}>{p.name}</span>{statusPill(p)}
+                      </div>
+                      {desc && <div style={{ color: "#94a3b8", fontSize: 13, marginTop: 8, lineHeight: 1.5, minHeight: 34 }}>{desc}</div>}
+                      <div style={{ color: href ? accent : "#94a3b8", fontSize: 13, marginTop: 10, fontWeight: 600 }}>
+                        {href ? "כניסה למערכת ↗" : "בקרוב תחת more30.com"}
+                      </div>
+                    </>
+                  );
+                  const boxStyle: React.CSSProperties = { ...cardBox, position: "relative", paddingInlineStart: 22, textDecoration: "none", color: "#0f172a" };
+                  return href
+                    ? <a key={p.number} href={href} target="_blank" rel="noreferrer" style={boxStyle}>{Inner}</a>
+                    : <div key={p.number} style={{ ...boxStyle, opacity: 0.9 }}>{Inner}</div>;
+                })}
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </section>
 
       {/* Intake */}
-      <section id="intake" style={{ background: "#fff", borderTop: "1px solid #e2e8f0", padding: "48px 20px" }}>
+      <section id="intake" style={{ background: "linear-gradient(180deg,#fff 0%,#f3f0ff 100%)", borderTop: "1px solid #e2e8f0", padding: "64px 20px" }}>
         <div style={{ ...wrap, maxWidth: 760 }}>
-          <h2 style={{ fontSize: 28, textAlign: "center" }}>יש לכם רעיון? ספרו לנו 💡</h2>
-          <p style={{ textAlign: "center", color: "#64748b" }}>מלאו את השאלון ונחזור אליכם. כל השדות מלבד השם — רשות.</p>
+          <h2 style={{ fontFamily: "Rubik, sans-serif", fontSize: 30, textAlign: "center", fontWeight: 900, margin: 0 }}>יש לכם רעיון? ספרו לנו 💡</h2>
+          <p style={{ textAlign: "center", color: "#64748b", fontSize: 16 }}>מלאו את השאלון ונחזור אליכם. כל השדות מלבד השם — רשות.</p>
           <IntakeForm />
         </div>
       </section>
 
-      <footer style={{ textAlign: "center", padding: 24, color: "#94a3b8", fontSize: 13 }}>
-        © MOR1 · more30.com — עולם הסטארטאפים
+      <footer style={{ textAlign: "center", padding: "32px 20px", color: "#94a3b8", fontSize: 13, background: "#0f172a" }}>
+        <div style={{ fontFamily: "Rubik, sans-serif", fontWeight: 900, fontSize: 18, color: "#e2e8f0", marginBottom: 6 }}>MOR<span style={{ color: "#a78bfa" }}>1</span> · more30.com</div>
+        © {2026} מור מערכות תוכנה — עולם הסטארטאפים. כל המערכות תחת קורת גג אחת.
       </footer>
     </div>
   );
@@ -126,10 +180,10 @@ function IntakeForm() {
     setState("done");
   }
 
-  if (state === "done") return <div style={{ ...cardBox, textAlign: "center", borderColor: "#86efac" }}>✅ קיבלנו! תודה — נחזור אליכם בהקדם.</div>;
+  if (state === "done") return <div style={{ ...cardBox, textAlign: "center", borderColor: "#86efac", marginTop: 24 }}>✅ קיבלנו! תודה — נחזור אליכם בהקדם.</div>;
 
   return (
-    <div style={{ display: "grid", gap: 12, marginTop: 20 }}>
+    <div style={{ display: "grid", gap: 12, marginTop: 24, background: "#fff", padding: 24, borderRadius: 18, boxShadow: "0 10px 40px rgba(79,70,229,0.10)", border: "1px solid #ece9fb" }}>
       <div style={row2}>
         <Field label="שם מלא *" onChange={up("full_name")} />
         <Field label="טלפון" onChange={up("phone")} />
@@ -189,9 +243,11 @@ const Select = ({ label, opts, onChange }: { label: string; opts: string[]; onCh
 );
 
 const wrap: React.CSSProperties = { maxWidth: 1080, margin: "0 auto" };
-const btn: React.CSSProperties = { padding: "12px 22px", borderRadius: 10, fontWeight: 700, textDecoration: "none", border: "none", cursor: "pointer", fontSize: 15 };
-const cardBox: React.CSSProperties = { background: "#fff", border: "1px solid #e2e8f0", borderRadius: 14, padding: 18, boxShadow: "0 1px 3px rgba(0,0,0,0.04)" };
-const pill: React.CSSProperties = { fontSize: 12, padding: "3px 10px", borderRadius: 999, fontWeight: 600 };
+const btn: React.CSSProperties = { padding: "12px 22px", borderRadius: 12, fontWeight: 700, textDecoration: "none", border: "none", cursor: "pointer", fontSize: 15, display: "inline-block" };
+const navLink: React.CSSProperties = { color: "#475569", textDecoration: "none" };
+const heroTag: React.CSSProperties = { display: "inline-block", background: "rgba(255,255,255,0.15)", border: "1px solid rgba(255,255,255,0.3)", borderRadius: 999, padding: "6px 14px", fontSize: 14, fontWeight: 600 };
+const cardBox: React.CSSProperties = { background: "#fff", border: "1px solid #eaecf3", borderRadius: 16, padding: 18, boxShadow: "0 1px 3px rgba(16,24,40,0.05)" };
+const pill: React.CSSProperties = { fontSize: 12, padding: "3px 10px", borderRadius: 999, fontWeight: 700, whiteSpace: "nowrap" };
 const row2: React.CSSProperties = { display: "flex", gap: 12, flexWrap: "wrap" };
 const lbl: React.CSSProperties = { fontSize: 13, color: "#475569", fontWeight: 600 };
-const inp: React.CSSProperties = { width: "100%", boxSizing: "border-box", border: "1px solid #cbd5e1", borderRadius: 8, padding: "8px 10px", fontSize: 14, marginTop: 4 };
+const inp: React.CSSProperties = { width: "100%", boxSizing: "border-box", border: "1px solid #cbd5e1", borderRadius: 8, padding: "9px 11px", fontSize: 14, marginTop: 4, fontFamily: "inherit" };
