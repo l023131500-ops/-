@@ -43,11 +43,36 @@
 ## לוג התקדמות (append-only)
 - 24/07 00:00 — התחלה מחדש אחרי שגיאת API. בדקתי core.projects, מונו-רפו, git, סביבה.
   יצרתי קובץ מעקב זה. אין אובדן — כל Phase 1 שמור ודחוף.
+- 24/07 00:40 — ✅ **רגל 4 (עיצוב פורטל) הושלמה ונדחפה** (commit 4570bd6):
+  redesign מלא ל-portal (hero + stat band + dept accents + sticky nav + fonts),
+  ותיקון build ב-`packages/db` (process→globalThis, cast schema) ← שחרר את build
+  הפורטל+admin. portal build ✓ (108KB gz), admin build ✓. 
+- 24/07 00:45 — מתחיל רגל 2 (build-fix). מריץ subagents במקביל על עותקים מקומיים.
+
+## סטטוס build-fix לפי מערכת (מתעדכן תוך כדי)
+| # | מערכת | install | build | fixed | deploy-ready |
+|---|---|---|---|---|---|
+| portal | more30 portal | ✓ | ✓ | db process/schema | ✓ (vercel) |
+| admin | more30 admin | ✓ | ✓ | (נהנה מתיקון db) | ✓ (vercel) |
+| 31 | hebrew-bridge-crm | ✓ | ✓ | ללא תיקון קוד (TanStack Start) | ✓ |
+| 21,22,24,30 | batch1 | ⏳ | ⏳ | subagents רצים | ⏳ |
+| 26,27,14,06 | batch2 | ⏳ | ⏳ | subagents רצים | ⏳ |
+| 04,10,12,13,18 | batch3 | — | — | ממתין | — |
+
+## מצב Vercel (מאומת 24/07, team l023131500-ops-projects)
+פרויקטים קיימים: **more30-portal** (more30-portal.vercel.app), **more30-admin**
+(more30-admin.vercel.app), nadlan-berega, torah-platform, igud-ads(+v2/jcx6),
+chizukim-transcribe, kupot-health-funds, bkalot. אף אחד לא מחובר ל-more30.com
+(live:false) → פריסה מקבילה קיימת, חיבור DNS = פעולת משתמש. ראה docs/DEPLOYMENT.md.
+
+## core.projects — דו"ח לכל מערכת
+מולאו 19/32 fixed_notes+changed_notes: מוגנים(08,09), stubs(05,07,11,19,20,23,25,29),
+חיים(01,02,03,15,16,17,28,32), ו-31. נותרו 13 build-fix (ממתין ל-subagents).
 
 ## הבא בתור (התחל מכאן אחרי /clear)
-1. עיצוב הפורטל (portal/src/App.tsx) + אימות build.
-2. build-fix לקבוצת ה-wip המהותיות (batch, subagents), תיעוד fixed_notes.
-3. מילוי fixed_notes/changed_notes לכל 32 ב-core.projects.
+1. ✅ עיצוב הפורטל — הושלם.
+2. ⏳ build-fix לקבוצת ה-wip המהותיות (subagents רצים) — לאסוף תוצאות ולתעד.
+3. מילוי fixed_notes/changed_notes לכל 32 ב-core.projects (מהתוצאות).
 4. מיפוי תת-דומיינים more30.com + הכנת vercel config לפריסה מקבילה.
 5. commit ל-git; לאסוף שאלות פתוחות למשתמש לסוף.
 
