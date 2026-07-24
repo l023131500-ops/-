@@ -76,7 +76,21 @@ chizukim-transcribe, kupot-health-funds, bkalot. אף אחד לא מחובר ל-
 4. מיפוי תת-דומיינים more30.com + הכנת vercel config לפריסה מקבילה.
 5. commit ל-git; לאסוף שאלות פתוחות למשתמש לסוף.
 
-## שאלות פתוחות למשתמש (איסוף לסוף — אל תעצור בגללן)
-- (ימולא תוך כדי עבודה)
+## שאלות/דגלים פתוחים למשתמש (איסוף לסוף — אל תעצור בגללן)
+- ⚠️ **אבטחה (06 kupot-holim):** `apps/06-kupot-holim/.env.local` מכיל
+  `ANTHROPIC_API_KEY` בערך אמיתי חשוף בהקשר צד-לקוח, וגם מפתחות Supabase של csjekrvu.
+  הקובץ gitignored (לא דלף לגיט) אך יש לסובב את המפתח ולהעביר קריאות AI לצד שרת.
+- **החלטת אירוח (מ-CONNECTIONS):** להפוך את הריפו לפרטי ולוונדר קוד, או submodules?
+  עד שתוכרע — apps/ נשאר manifests בלבד בגיט (הקוד מקומי/gitignored).
+- **מיזוג נדל"ן:** 12-smel-ndln + 13-property-identity הם variants של נדל"ן —
+  לשקול מיזוג ל-32 nadlan-berega במקום פריסה נפרדת.
+- **חיבור DNS more30.com:** דורש הוספת CNAME ב-Cloudflare לכל תת-דומיין (פעולת משתמש,
+  לא בוצע — נוגע בזון החי). ראה docs/DEPLOYMENT.md.
+- **טוקנים חסרים** להפעלה מלאה: ראה docs/MISSING_TOKENS.md (OPENAI/ANTHROPIC/GOOGLE/וכו').
+
+## עדכון תיעוד build (append)
+- 24/07 01:20 — נבנו בהצלחה (batch1+2): 31 bridge-crm, 22 get-your-rights,
+  21 mthbram (Vite/React), 14 bsmachot + 06 kupot-holim (static, no build).
+  batch3 (04,10,12,13,18) + 24,26,27,30 עדיין רצים. core.projects: 23/32 מולא.
 </content>
 </invoke>
