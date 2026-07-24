@@ -69,17 +69,28 @@ chizukim-transcribe, kupot-health-funds, bkalot. אף אחד לא מחובר ל-
 מולאו 19/32 fixed_notes+changed_notes: מוגנים(08,09), stubs(05,07,11,19,20,23,25,29),
 חיים(01,02,03,15,16,17,28,32), ו-31. נותרו 13 build-fix (ממתין ל-subagents).
 
-## הבא בתור (התחל מכאן אחרי /clear)
-1. ✅ עיצוב הפורטל — הושלם.
-2. ⏳ build-fix לקבוצת ה-wip המהותיות (subagents רצים) — לאסוף תוצאות ולתעד.
-3. מילוי fixed_notes/changed_notes לכל 32 ב-core.projects (מהתוצאות).
-4. מיפוי תת-דומיינים more30.com + הכנת vercel config לפריסה מקבילה.
-5. commit ל-git; לאסוף שאלות פתוחות למשתמש לסוף.
+## סטטוס סופי (24/07 ~02:40) — כל 5 הרגליים סגורות
+1. ✅ **ייבוא ומיפוי** — הושלם (מקור + manifests + תיאורים).
+2. ✅ **build-fix** — 13/13 wip נבדקו: 11 נבנים (2 static, אחת אין פרויקט בר-בנייה).
+   תיקונים אמיתיים: 18 (SWC), 26 (approve-scripts), packages/db (portal/admin).
+3. ✅ **דו"ח לכל מערכת** — **32/32** fixed_notes+changed_notes ב-core.projects.
+4. ✅ **פריסה** — מפת תת-דומיינים + runbook (docs/DEPLOYMENT.md). הפורטל נפרס מחדש
+   לפרודקשן (READY). חיבור DNS ל-more30.com = פעולת משתמש (לא הרסני, לא בוצע).
+5. ✅ **עיצוב הפורטל** — redesign מלא, חי.
+
+### מה שנשאר למשתמש (לא בוצע כי דורש החלטה/סוד/פעולה ידנית)
+- חיבור CNAME ב-Cloudflare לכל תת-דומיין (ראה docs/DEPLOYMENT.md).
+- הזנת env אמיתי בפלטפורמות למערכות env-blocked: 04, 26, 27, 30 (+טוקנים חסרים).
+- החלטת אירוח (ריפו פרטי / submodules) לפני וונדור קוד לגיט.
+- סיבוב מפתחות חשופים ב-.env.local של 06 ו-18.
+- החלטה על מיזוג 12+13 ל-32 (נדל"ן).
 
 ## שאלות/דגלים פתוחים למשתמש (איסוף לסוף — אל תעצור בגללן)
-- ⚠️ **אבטחה (06 kupot-holim):** `apps/06-kupot-holim/.env.local` מכיל
-  `ANTHROPIC_API_KEY` בערך אמיתי חשוף בהקשר צד-לקוח, וגם מפתחות Supabase של csjekrvu.
-  הקובץ gitignored (לא דלף לגיט) אך יש לסובב את המפתח ולהעביר קריאות AI לצד שרת.
+- ⚠️ **אבטחה — מפתחות אמיתיים בקבצי .env.local מקומיים (gitignored, לא דלפו לגיט,
+  אך מומלץ לסובב):**
+  · `apps/06-kupot-holim/.env.local` — `ANTHROPIC_API_KEY` חשוף בהקשר צד-לקוח.
+  · `apps/18-torah-editor-mvp/.env.local` — `service_role` + OpenAI/Anthropic/Gemini/Recraft.
+  להעביר קריאות AI לצד שרת; לעולם לא לחשוף service_role בבנדל לקוח.
 - **החלטת אירוח (מ-CONNECTIONS):** להפוך את הריפו לפרטי ולוונדר קוד, או submodules?
   עד שתוכרע — apps/ נשאר manifests בלבד בגיט (הקוד מקומי/gitignored).
 - **מיזוג נדל"ן:** 12-smel-ndln + 13-property-identity הם variants של נדל"ן —
@@ -109,11 +120,11 @@ chizukim-transcribe, kupot-health-funds, bkalot. אף אחד לא מחובר ל-
 | 12 | smel-ndln | ✓ | ✓ | Vite+Express; למזג ל-32 |
 | 13 | property-identity | ✗ | ✗ | אין package.json (Deno edge בלבד); למזג ל-32 |
 | 14 | bsmachot-plus | ✓ (static) | ✓ | פריסה מקורית rsync/SSH |
-| 18 | torah-editor-mvp | ⏳ | ⏳ | רץ |
+| 18 | torah-editor-mvp | ✓ | ✓ | Next.js14; תוקן בינארי SWC פגום |
 | 21 | mthbram | ✓ | ✓ | Vite+shadcn |
 | 22 | get-your-rights | ✓ | ✓ | Vite; edge rights-agent צריך OPENAI |
 | 24 | galilee-connect-hub | ✓ | ✓ | Vite+shadcn |
-| 26 | modaot-studio | ⏳ | ⏳ | רץ |
+| 26 | modaot-studio | ✓ | env-blocked | Vite+Express; תוקן approve-scripts (npm11) |
 | 27 | bkalut-price | ✓ | env-blocked | Express+Vite; צריך env מלא |
 | 30 | zchuyotpro-crm | ✓ | env-blocked | TanStack; SERVICE_ROLE בזמן ריצה |
 | 31 | hebrew-bridge-crm | ✓ | ✓ | TanStack Start |
