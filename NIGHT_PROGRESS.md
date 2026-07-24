@@ -91,6 +91,31 @@ chizukim-transcribe, kupot-health-funds, bkalot. אף אחד לא מחובר ל-
 ## עדכון תיעוד build (append)
 - 24/07 01:20 — נבנו בהצלחה (batch1+2): 31 bridge-crm, 22 get-your-rights,
   21 mthbram (Vite/React), 14 bsmachot + 06 kupot-holim (static, no build).
-  batch3 (04,10,12,13,18) + 24,26,27,30 עדיין רצים. core.projects: 23/32 מולא.
+- 24/07 02:10 — ✅ **הפורטל נפרס מחדש לפרודקשן** (deploy READY, dpl_98AJ...):
+  more30-portal.vercel.app מציג עכשיו את העיצוב החדש, נבנה עם anon key ציבורי
+  (uhnrgujb) מוטמע → טופס ה-intake פעיל. פריסה סטטית prebuilt דרך Vercel CLI
+  (vercel.json outputDirectory=. לעקוף Output-Dir=dist). לא נגע ב-more30.com.
+- 24/07 02:20 — build תוצאות נוספות: 24 galilee, 30 zchuyot-crm (TanStack, צריך
+  SERVICE_ROLE), 10 bkalot-rights (static), 12 smel-ndln + 04 imud (Vite+Express),
+  27 bkalut-price (צריך env מלא), 13 property-identity (אין פרויקט בר-בנייה).
+  core.projects: **30/32 מולא**. נותרו 18, 26 (רצים).
+
+## תוצאות build — סיכום (13 מערכות wip)
+| # | slug | build | deploy-ready | הערה |
+|---|---|---|---|---|
+| 04 | imud-torani | ✓ | env-blocked | Vite+Express; SUPABASE_URL/ANON בזמן ריצה |
+| 06 | kupot-holim | ✓ (static) | ✓ | ⚠️ .env.local חושף ANTHROPIC key |
+| 10 | bkalot-rights | ✓ (static) | ✓ | data.json 2.8MB |
+| 12 | smel-ndln | ✓ | ✓ | Vite+Express; למזג ל-32 |
+| 13 | property-identity | ✗ | ✗ | אין package.json (Deno edge בלבד); למזג ל-32 |
+| 14 | bsmachot-plus | ✓ (static) | ✓ | פריסה מקורית rsync/SSH |
+| 18 | torah-editor-mvp | ⏳ | ⏳ | רץ |
+| 21 | mthbram | ✓ | ✓ | Vite+shadcn |
+| 22 | get-your-rights | ✓ | ✓ | Vite; edge rights-agent צריך OPENAI |
+| 24 | galilee-connect-hub | ✓ | ✓ | Vite+shadcn |
+| 26 | modaot-studio | ⏳ | ⏳ | רץ |
+| 27 | bkalut-price | ✓ | env-blocked | Express+Vite; צריך env מלא |
+| 30 | zchuyotpro-crm | ✓ | env-blocked | TanStack; SERVICE_ROLE בזמן ריצה |
+| 31 | hebrew-bridge-crm | ✓ | ✓ | TanStack Start |
 </content>
 </invoke>
