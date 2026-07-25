@@ -1,253 +1,401 @@
-import { useState } from "react";
-import { DEPARTMENTS, activeProjects, type ProjectEntry } from "@more30/config";
+import { useEffect, useRef, useState } from "react";
+import { DEPARTMENTS, REGISTRY, TOPIC_ROUTES } from "@more30/config";
 import { createBrowserClient } from "@more30/db";
 
 /**
- * more30 — public portal (MOR1 brand: clean, light, RTL, emoji iconography).
- * System cards come from the build-time registry (mirrors core.projects).
- * The startup-idea form submits via the anon RPC `submit_startup_idea`.
+ * more30 — public portal ("מור מערכות תוכנה" / MOR1).
+ * Every system is reachable at more30.com/<topic>. NetFree blocks *.vercel.app,
+ * so the portal proxies the topic path to each deployment and never exposes the
+ * underlying URL. Data is read live from `more30_project_overview` (anon), with a
+ * build-time fallback to the config registry so the page always renders.
  */
 
+type Row = {
+  number: string; path: string | null; name: string; name_he: string | null;
+  what_it_does: string | null; functions: string | null; department: string;
+  stage: string; live: boolean; is_deployed: boolean; live_url: string | null;
+  is_protected: boolean; to_delete: boolean;
+};
+
 const DEPT_EMOJI: Record<string, string> = {
-  torah: "📚", finance: "💰", realestate: "🏠", health: "🏥",
+  torah: "📚", finance: "💰", realestate: "🏙️", health: "🏥",
   rights: "⚖️", community: "🤝", bkalut: "🎫", misc: "✨",
 };
-// Per-department accent color — gives each section a distinct, coherent identity.
 const DEPT_ACCENT: Record<string, string> = {
   torah: "#7c3aed", finance: "#0ea5e9", realestate: "#0d9488", health: "#e11d48",
   rights: "#d97706", community: "#4f46e5", bkalut: "#64748b", misc: "#db2777",
 };
+const SYS_GLYPH: Record<string, string> = {
+  torah: "📖", tamlul: "🎙️", modaot: "📣", imud: "📐", financial: "📈",
+  briut: "🩺", zol: "🏷️", bkalot: "🤲", smel: "🏠", smachot: "🎉",
+  egod: "🕎", chatzor: "🏘️", chizukim: "🎧", orech: "✍️", shiurim: "🎬",
+  igud: "🚪", mthbram: "🗂️", zchuyot: "🧭", galil: "⛰️", studio: "🎨",
+  mechiron: "🧮", kupot: "🏥", crm: "📇", gesher: "🌉", nadlan: "🏙️",
+};
+
+const supa = (() => { try { return createBrowserClient("public"); } catch { return null; } })();
+
+/** Rows from the config registry, used as an offline fallback. */
+function fallbackRows(): Row[] {
+  return REGISTRY.filter((p) => !p.protected && TOPIC_ROUTES[p.number]).map((p) => ({
+    number: p.number, path: TOPIC_ROUTES[p.number]!, name: p.name, name_he: p.name,
+    what_it_does: p.note ?? null, functions: null, department: p.department,
+    stage: p.stage, live: p.live, is_deployed: !!p.isDeployed, live_url: null,
+    is_protected: false, to_delete: false,
+  }));
+}
+
+function useReveal() {
+  useEffect(() => {
+    const els = Array.from(document.querySelectorAll<HTMLElement>(".reveal"));
+    const io = new IntersectionObserver((es) => es.forEach((e) => {
+      if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); }
+    }), { threshold: 0.12 });
+    els.forEach((el) => io.observe(el));
+    return () => io.disconnect();
+  });
+}
+
+const enterable = (r: Row) => !!r.live_url && r.live_url.includes("more30.com");
+
+export function App() {
+  const [rows, setRows] = useState<Row[]>(fallbackRows());
+
+  useEffect(() => {
+    if (!supa) return;
+    supa.from("more30_project_overview")
+      .select("number,path,name,name_he,what_it_does,functions,department,stage,live,is_deployed,live_url,is_protected,to_delete")
+      .then(({ data }) => {
+        if (data && data.length) {
+          setRows((data as Row[]).filter((r) => r.path && !r.is_protected && !r.to_delete));
+        }
+      });
+  }, []);
+
+  // Single-topic coming-soon view: someone hit more30.com/<topic> that isn't proxied yet.
+  const seg = typeof window !== "undefined" ? window.location.pathname.replace(/^\/+/, "").split("/")[0] : "";
+  const topicRow = seg && rows.find((r) => r.path === seg);
+  if (topicRow && !enterable(topicRow)) return <ComingSoon row={topicRow} />;
+
+  return <Portal rows={rows} />;
+}
+
+function ComingSoon({ row }: { row: Row }) {
+  const glyph = (row.path && SYS_GLYPH[row.path]) || "🚀";
+  return (
+    <div className="soon-page">
+      <div>
+        <div className="glyph">{glyph}</div>
+        <h1>{row.name_he || row.name}</h1>
+        <p>{row.what_it_does || "המערכת בהקמה ותעלה לאוויר בקרוב תחת more30.com."}</p>
+        <p style={{ opacity: 0.7, fontSize: 15 }}>בקרוב תחת <b>more30.com/{row.path}</b></p>
+        <a className="btn btn-light" href="/">חזרה לעולם המערכות ←</a>
+      </div>
+    </div>
+  );
+}
 
 const SERVICES = [
-  { icon: "💻", title: "מערכות מוכנות", text: "עשרות מערכות SaaS פעילות — כולן במקום אחד." },
-  { icon: "🧭", title: "ליווי מקצה לקצה", text: "מרעיון ועד מוצר חי, עם צוות שמבין סטארטאפים." },
-  { icon: "🤝", title: "שותפויות", text: "חיבור ליזמים, שותפים ומשקיעים באקוסיסטם." },
-  { icon: "📊", title: "נתונים ושליטה", text: "לוח בקרה מרכזי לכל המערכות והנתונים." },
+  { ic: "💡", h: "מרעיון למוצר חי", p: "לוקחים רעיון גולמי ומוציאים ממנו מערכת עובדת — אפיון, פיתוח והשקה, בלי דילוגים." },
+  { ic: "🛠️", h: "מערכות מוכנות לעבודה", p: "עשרות מערכות שכבר רצות בשטח — נדל\"ן, תמלול, זכויות, קהילה ועוד — במקום אחד." },
+  { ic: "🔗", h: "הכול מחובר", p: "משתמש אחד, נתונים משותפים, לוח בקרה מרכזי. המערכות מדברות זו עם זו." },
+  { ic: "🤝", h: "ליווי אמיתי", p: "לא נעלמים אחרי ההשקה — ממשיכים איתכם לתחזוקה, שיפור וגדילה." },
 ];
 const SERVICE_OPTIONS = ["בניית מערכת", "עיצוב ומיתוג", "שיווק ופרסום", "ליווי עסקי", "גיוס השקעה", "אוטומציות", "תמיכה טכנית"];
 
-let sb: ReturnType<typeof createBrowserClient> | null = null;
-try { sb = createBrowserClient("public"); } catch { sb = null; }
-
-function statusPill(p: ProjectEntry) {
-  if (p.live) return <span style={{ ...pill, background: "#dcfce7", color: "#15803d" }}>● חי</span>;
-  if (p.stage === "beta") return <span style={{ ...pill, background: "#fef3c7", color: "#b45309" }}>● בטא</span>;
-  return <span style={{ ...pill, background: "#e0e7ff", color: "#4338ca" }}>● בקרוב</span>;
-}
-
-export function App() {
-  const projects = activeProjects();
-  const depts = Object.keys(DEPARTMENTS).filter((d) => d !== "bkalut" && projects.some((p) => p.department === d));
-  const liveCount = projects.filter((p) => p.live).length;
+function Portal({ rows }: { rows: Row[] }) {
+  useReveal();
+  const depts = Object.keys(DEPARTMENTS).filter((d) => d !== "bkalut" && rows.some((r) => r.department === d));
+  const liveCount = rows.filter((r) => r.live).length;
   const stats = [
-    { n: projects.length, label: "מערכות" },
-    { n: liveCount, label: "חיות עכשיו" },
-    { n: depts.length, label: "תחומים" },
-    { n: "1", label: "קורת גג" },
+    { n: rows.length, l: "מערכות באקוסיסטם" },
+    { n: liveCount, l: "כבר חיות בשטח" },
+    { n: depts.length, l: "תחומים" },
+    { n: "1", l: "קורת גג אחת" },
   ];
 
   return (
-    <div style={{ fontFamily: "Assistant, 'Segoe UI', system-ui, sans-serif", direction: "rtl", color: "#0f172a", background: "#f6f7fb" }}>
-      {/* Sticky nav */}
-      <nav style={{ position: "sticky", top: 0, zIndex: 50, background: "rgba(255,255,255,0.85)", backdropFilter: "blur(10px)", borderBottom: "1px solid #eef0f6" }}>
-        <div style={{ ...wrap, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 20px" }}>
-          <div style={{ fontFamily: "Rubik, sans-serif", fontWeight: 900, fontSize: 22, letterSpacing: 0.5 }}>
-            MOR<span style={{ color: "#7c3aed" }}>1</span>
-            <span style={{ color: "#94a3b8", fontWeight: 500, fontSize: 15, marginInlineStart: 8 }}>· more30</span>
-          </div>
-          <div style={{ display: "flex", gap: 22, alignItems: "center", fontSize: 15, fontWeight: 600 }}>
-            <a href="#systems" style={navLink}>המערכות</a>
-            <a href="#services" style={navLink}>מה אנחנו נותנים</a>
-            <a href="#intake" style={{ ...btn, background: "#4f46e5", color: "#fff", padding: "9px 18px", fontSize: 14 }}>ספרו לנו רעיון</a>
+    <div dir="rtl">
+      <nav className="nav">
+        <div className="nav-in">
+          <div className="brand">MOR<span className="dot">1</span><small>· מור מערכות תוכנה</small></div>
+          <div className="nav-links">
+            <a className="link" href="#systems">המערכות</a>
+            <a className="link" href="#about">מה אנחנו עושים</a>
+            <a className="btn btn-primary" href="#intake" style={{ padding: "9px 18px", fontSize: 14 }}>ספרו לנו רעיון</a>
           </div>
         </div>
       </nav>
 
       {/* Hero */}
-      <header style={{ position: "relative", overflow: "hidden", background: "linear-gradient(135deg,#4f46e5 0%,#7c3aed 55%,#9333ea 100%)", color: "#fff", padding: "72px 20px 0" }}>
-        <div style={{ position: "absolute", inset: 0, background: "radial-gradient(circle at 80% -10%, rgba(255,255,255,0.18), transparent 45%)", pointerEvents: "none" }} />
-        <div style={{ ...wrap, position: "relative" }}>
-          <span style={heroTag}>🚀 מור מערכות תוכנה · אקוסיסטם אחד</span>
-          <h1 style={{ fontFamily: "Rubik, sans-serif", fontSize: "clamp(32px, 5vw, 50px)", margin: "18px 0 12px", lineHeight: 1.12, fontWeight: 900 }}>
-            עולם החלומות של<br />הסטארטאפים, בקליק
-          </h1>
-          <p style={{ fontSize: 19, opacity: 0.92, maxWidth: 600, lineHeight: 1.6 }}>
-            עשרות מערכות פעילות, ליווי מלא מרעיון למוצר, והכול תחת קורת גג אחת — more30.com.
+      <header className="hero">
+        <div className="hero-grid" />
+        <div className="hero-in">
+          <span className="tag">🚀 עולם הסטארטאפים של מור מערכות תוכנה</span>
+          <h1>כל המערכות שלנו,<br /><span className="grad">תחת קורת גג אחת</span></h1>
+          <p className="lead">
+            אנחנו בונים מערכות שעובדות באמת — ומחברים את כולן למקום אחד: more30.com.
+            נדל"ן, תמלול, זכויות, בריאות וקהילה. הכול נגיש בכתובת אחת פשוטה.
           </p>
-          <div style={{ display: "flex", gap: 12, marginTop: 28, flexWrap: "wrap" }}>
-            <a href="#intake" style={{ ...btn, background: "#fff", color: "#4f46e5", boxShadow: "0 8px 24px rgba(0,0,0,0.18)" }}>מגשימים את החלום ←</a>
-            <a href="#systems" style={{ ...btn, background: "rgba(255,255,255,0.12)", color: "#fff", border: "1px solid rgba(255,255,255,0.45)" }}>צפו במערכות</a>
+          <div className="hero-cta">
+            <a className="btn btn-light" href="#intake">יש לי רעיון — בואו נדבר ←</a>
+            <a className="btn btn-ghost" href="#systems">לכל המערכות</a>
           </div>
-          {/* Stat band */}
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(120px,1fr))", gap: 14, margin: "48px 0 -36px", background: "#fff", borderRadius: 18, padding: "22px 16px", boxShadow: "0 20px 50px rgba(30,27,75,0.28)" }}>
+          <div className="statband reveal">
             {stats.map((s) => (
-              <div key={s.label} style={{ textAlign: "center" }}>
-                <div style={{ fontFamily: "Rubik, sans-serif", fontSize: 34, fontWeight: 900, color: "#4f46e5", lineHeight: 1 }}>{s.n}</div>
-                <div style={{ color: "#64748b", fontSize: 14, marginTop: 6, fontWeight: 600 }}>{s.label}</div>
-              </div>
+              <div className="stat" key={s.l}><div className="n">{s.n}</div><div className="l">{s.l}</div></div>
             ))}
           </div>
         </div>
       </header>
 
-      {/* Services */}
-      <section id="services" style={{ ...wrap, padding: "72px 20px 8px" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(220px,1fr))", gap: 16 }}>
-          {SERVICES.map((s) => (
-            <div key={s.title} style={{ ...cardBox, transition: "transform .18s, box-shadow .18s" }}>
-              <div style={{ fontSize: 34 }}>{s.icon}</div>
-              <div style={{ fontWeight: 700, margin: "10px 0 4px", fontSize: 17 }}>{s.title}</div>
-              <div style={{ color: "#64748b", fontSize: 14, lineHeight: 1.55 }}>{s.text}</div>
-            </div>
-          ))}
+      {/* About / services */}
+      <section id="about" className="section">
+        <div className="wrap">
+          <div className="eyebrow reveal">מה אנחנו נותנים</div>
+          <h2 className="h2 reveal">בית אחד לכל השלבים</h2>
+          <p className="sub reveal">מהרעיון הראשון ועד מערכת חיה עם משתמשים — אנחנו איתכם בכל צעד.</p>
+          <div className="svc-grid">
+            {SERVICES.map((s) => (
+              <div className="svc reveal" key={s.h}>
+                <div className="ic">{s.ic}</div>
+                <h3>{s.h}</h3><p>{s.p}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
       {/* Systems */}
-      <section id="systems" style={{ ...wrap, padding: "48px 20px" }}>
-        <h2 style={{ fontFamily: "Rubik, sans-serif", fontSize: 30, textAlign: "center", marginBottom: 6, fontWeight: 900 }}>המערכות שלנו</h2>
-        <p style={{ textAlign: "center", color: "#64748b", marginTop: 0, fontSize: 16 }}>{projects.length} מערכות · {liveCount} כבר חיות · והרשימה גדלה</p>
-        {depts.map((dep) => {
-          const list = projects.filter((p) => p.department === dep);
-          const accent = DEPT_ACCENT[dep];
-          return (
-            <div key={dep} style={{ marginTop: 34 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
-                <span style={{ fontSize: 22 }}>{DEPT_EMOJI[dep]}</span>
-                <h3 style={{ fontSize: 20, color: "#1e293b", margin: 0, fontWeight: 700 }}>{DEPARTMENTS[dep]}</h3>
-                <span style={{ ...pill, background: "#eef2ff", color: accent }}>{list.length}</span>
-                <span style={{ flex: 1, height: 1, background: "#e9ecf4" }} />
+      <section id="systems" className="section">
+        <div className="wrap">
+          <div className="eyebrow reveal">האקוסיסטם</div>
+          <h2 className="h2 reveal">המערכות שלנו</h2>
+          <p className="sub reveal">{rows.length} מערכות · {liveCount} כבר חיות · והרשימה ממשיכה לגדול</p>
+          {depts.map((dep) => {
+            const list = rows.filter((r) => r.department === dep).sort((a, b) => a.number.localeCompare(b.number));
+            const accent = DEPT_ACCENT[dep];
+            return (
+              <div className="dept" key={dep}>
+                <div className="dept-head reveal">
+                  <span className="dept-emoji" style={{ background: accent }}>{DEPT_EMOJI[dep]}</span>
+                  <h3>{DEPARTMENTS[dep]}</h3>
+                  <span className="dept-count" style={{ color: accent }}>{list.length}</span>
+                  <span className="dept-rule" />
+                </div>
+                <div className="cards">
+                  {list.map((r) => <SystemCard key={r.number} r={r} accent={accent} />)}
+                </div>
               </div>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(250px,1fr))", gap: 14 }}>
-                {list.map((p) => {
-                  const href = p.liveUrl ?? undefined;
-                  const desc = p.note?.split(/[.·]/)[0]?.trim();
-                  const Inner = (
-                    <>
-                      <span style={{ position: "absolute", insetInlineStart: 0, top: 14, bottom: 14, width: 4, borderRadius: 4, background: accent }} />
-                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 8 }}>
-                        <span style={{ fontWeight: 700, fontSize: 16 }}>{p.name}</span>{statusPill(p)}
-                      </div>
-                      {desc && <div style={{ color: "#94a3b8", fontSize: 13, marginTop: 8, lineHeight: 1.5, minHeight: 34 }}>{desc}</div>}
-                      <div style={{ color: href ? accent : "#94a3b8", fontSize: 13, marginTop: 10, fontWeight: 600 }}>
-                        {href ? "כניסה למערכת ↗" : "בקרוב תחת more30.com"}
-                      </div>
-                    </>
-                  );
-                  const boxStyle: React.CSSProperties = { ...cardBox, position: "relative", paddingInlineStart: 22, textDecoration: "none", color: "#0f172a" };
-                  return href
-                    ? <a key={p.number} href={href} target="_blank" rel="noreferrer" style={boxStyle}>{Inner}</a>
-                    : <div key={p.number} style={{ ...boxStyle, opacity: 0.9 }}>{Inner}</div>;
-                })}
-              </div>
-            </div>
-          );
-        })}
-      </section>
-
-      {/* Intake */}
-      <section id="intake" style={{ background: "linear-gradient(180deg,#fff 0%,#f3f0ff 100%)", borderTop: "1px solid #e2e8f0", padding: "64px 20px" }}>
-        <div style={{ ...wrap, maxWidth: 760 }}>
-          <h2 style={{ fontFamily: "Rubik, sans-serif", fontSize: 30, textAlign: "center", fontWeight: 900, margin: 0 }}>יש לכם רעיון? ספרו לנו 💡</h2>
-          <p style={{ textAlign: "center", color: "#64748b", fontSize: 16 }}>מלאו את השאלון ונחזור אליכם. כל השדות מלבד השם — רשות.</p>
-          <IntakeForm />
+            );
+          })}
         </div>
       </section>
 
-      <footer style={{ textAlign: "center", padding: "32px 20px", color: "#94a3b8", fontSize: 13, background: "#0f172a" }}>
-        <div style={{ fontFamily: "Rubik, sans-serif", fontWeight: 900, fontSize: 18, color: "#e2e8f0", marginBottom: 6 }}>MOR<span style={{ color: "#a78bfa" }}>1</span> · more30.com</div>
-        © {2026} מור מערכות תוכנה — עולם הסטארטאפים. כל המערכות תחת קורת גג אחת.
+      {/* Intake wizard */}
+      <section id="intake" className="intake">
+        <div className="wrap">
+          <div className="eyebrow reveal">בואו נבנה משהו</div>
+          <h2 className="h2 reveal">יש לכם רעיון? ספרו לנו 💡</h2>
+          <p className="sub reveal">כמה שאלות קצרות ונחזור אליכם. רק השם חובה — כל השאר לפי מה שבא לכם.</p>
+          <Wizard />
+        </div>
+      </section>
+
+      <footer className="footer">
+        <div className="fb">MOR<span style={{ color: "#a78bfa" }}>1</span> · more30.com</div>
+        <div className="muted">© 2026 מור מערכות תוכנה — עולם הסטארטאפים. כל המערכות תחת קורת גג אחת.</div>
       </footer>
     </div>
   );
 }
 
-function IntakeForm() {
+function SystemCard({ r, accent }: { r: Row; accent: string }) {
+  const on = enterable(r);
+  const glyph = (r.path && SYS_GLYPH[r.path]) || "🚀";
+  const desc = (r.what_it_does || "").split(/(?<=[.!?])\s/)[0] || r.what_it_does || "";
+  const chips = (r.functions || "").split("·").map((s) => s.trim()).filter(Boolean).slice(0, 3);
+  const href = `/${r.path}`;
+  const pill = r.live
+    ? <span className="pill live">● חי</span>
+    : r.stage === "beta" ? <span className="pill beta">● בטא</span> : <span className="pill soon">● בקרוב</span>;
+
+  const inner = (
+    <>
+      <div className="preview">
+        <div className="chrome">
+          <i style={{ background: "#ff5f57" }} /><i style={{ background: "#febc2e" }} /><i style={{ background: "#28c840" }} />
+          <span className="u">more30.com/{r.path}</span>
+        </div>
+        <div className="preview-canvas" style={{ background: `radial-gradient(120% 120% at 30% 0%, ${accent}, ${accent}22 70%, #0b1020)` }}>
+          <span className="glyph">{glyph}</span>
+          <span className="wm">{r.name_he || r.name}</span>
+        </div>
+      </div>
+      <div className="card-body">
+        <div className="card-title"><h4>{r.name_he || r.name}</h4>{pill}</div>
+        {desc && <p className="card-desc">{desc}</p>}
+        {chips.length > 0 && <div className="chips">{chips.map((c, i) => <span className="chip" key={i}>{c}</span>)}</div>}
+        {on
+          ? <span className="card-cta on" style={{ color: accent }}>כניסה למערכת ←</span>
+          : <span className="card-cta off">בקרוב · more30.com/{r.path}</span>}
+      </div>
+    </>
+  );
+
+  return on
+    ? <a className="card on reveal" href={href}>{inner}</a>
+    : <div className="card reveal">{inner}</div>;
+}
+
+/* ---------------- Multi-step wizard ---------------- */
+
+const STEPS = [
+  { key: "you", title: "נעים להכיר", sub: "איך נחזור אליכם?" },
+  { key: "idea", title: "הרעיון שלכם", sub: "ספרו לנו על מה מדובר" },
+  { key: "market", title: "השוק", sub: "מי הלקוח ואיך מרוויחים" },
+  { key: "needs", title: "מה תצטרכו מאיתנו", sub: "וכמה רחוק אתם רוצים להגיע" },
+];
+
+function Wizard() {
+  const [step, setStep] = useState(0);
   const [f, setF] = useState<Record<string, string>>({});
   const [svc, setSvc] = useState<string[]>([]);
   const [state, setState] = useState<"idle" | "sending" | "done" | "error">("idle");
   const [err, setErr] = useState("");
-  const up = (k: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => setF({ ...f, [k]: e.target.value });
+  const [stars, setStars] = useState<number[]>([]);
+  const set = (k: string) => (e: React.ChangeEvent<any>) => setF({ ...f, [k]: e.target.value });
+
+  const pct = state === "done" ? 100 : Math.round(((step + 1) / STEPS.length) * 100);
+
+  function next() {
+    if (step === 0 && !f.full_name?.trim()) { setErr("רק נדע איך קוראים לכם 🙂"); return; }
+    setErr(""); setStep((s) => Math.min(s + 1, STEPS.length - 1));
+  }
+  function back() { setErr(""); setStep((s) => Math.max(s - 1, 0)); }
 
   async function submit() {
-    if (!f.full_name || !f.full_name.trim()) { setErr("שם מלא הוא שדה חובה."); return; }
-    if (!sb) { setErr("החיבור לשרת אינו זמין כרגע."); return; }
+    if (!f.full_name?.trim()) { setErr("שם מלא הוא שדה חובה."); setStep(0); return; }
+    if (!supa) { setErr("החיבור לשרת אינו זמין כרגע."); return; }
     setState("sending"); setErr("");
-    const payload = { ...f, services_wanted: svc,
-      needs_partners: f.needs_partners === "כן", seeking_investment: f.seeking_investment === "כן", has_existing_product: f.has_existing_product === "כן" };
-    const { error } = await sb.rpc("submit_startup_idea", { payload });
+    const payload = {
+      ...f, services_wanted: svc,
+      seeking_investment: f.seeking_investment === "כן",
+      has_existing_product: f.stage === "מוצר חי" || f.stage === "צומח",
+    };
+    const { error } = await supa.rpc("submit_startup_idea", { payload });
     if (error) { setState("error"); setErr(error.message); return; }
+    setStars(Array.from({ length: 22 }, (_, i) => i));
     setState("done");
+    setTimeout(() => setStars([]), 1800);
   }
 
-  if (state === "done") return <div style={{ ...cardBox, textAlign: "center", borderColor: "#86efac", marginTop: 24 }}>✅ קיבלנו! תודה — נחזור אליכם בהקדם.</div>;
-
-  return (
-    <div style={{ display: "grid", gap: 12, marginTop: 24, background: "#fff", padding: 24, borderRadius: 18, boxShadow: "0 10px 40px rgba(79,70,229,0.10)", border: "1px solid #ece9fb" }}>
-      <div style={row2}>
-        <Field label="שם מלא *" onChange={up("full_name")} />
-        <Field label="טלפון" onChange={up("phone")} />
-      </div>
-      <div style={row2}>
-        <Field label="אימייל" onChange={up("email")} />
-        <Field label="עיר" onChange={up("city")} />
-      </div>
-      <Field label="שם הפרויקט/הרעיון" onChange={up("project_name")} />
-      <Field label="תיאור קצר במשפט" onChange={up("short_description")} />
-      <Area label="איזו בעיה אתם פותרים?" onChange={up("problem")} />
-      <Area label="מה הפתרון שלכם?" onChange={up("solution")} />
-      <div style={row2}>
-        <Field label="קהל היעד" onChange={up("target_customer")} />
-        <Field label="מודל הכנסה" onChange={up("revenue_model")} />
-      </div>
-      <div style={row2}>
-        <Field label="מתחרים" onChange={up("competitors")} />
-        <Field label="הבידול שלכם" onChange={up("differentiation")} />
-      </div>
-      <div style={row2}>
-        <Select label="בשלב איזה?" opts={["רעיון", "אבטיפוס", "מוצר חי", "צומח"]} onChange={up("stage")} />
-        <Select label="מחפשים השקעה?" opts={["לא", "כן"]} onChange={up("seeking_investment")} />
-      </div>
-      <div style={row2}>
-        <Field label="כמה גיוס דרוש?" onChange={up("funding_needed")} />
-        <Field label="לו״ז להשקה" onChange={up("launch_timeline")} />
-      </div>
-      <div>
-        <label style={lbl}>אילו שירותים תרצו מ-more30?</label>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 6 }}>
-          {SERVICE_OPTIONS.map((o) => (
-            <label key={o} style={{ ...pill, background: svc.includes(o) ? "#4f46e5" : "#f1f5f9", color: svc.includes(o) ? "#fff" : "#334155", cursor: "pointer" }}>
-              <input type="checkbox" style={{ display: "none" }} checked={svc.includes(o)}
-                onChange={() => setSvc(svc.includes(o) ? svc.filter((x) => x !== o) : [...svc, o])} />{o}
-            </label>
+  if (state === "done") return (
+    <div className="wiz">
+      {stars.length > 0 && (
+        <div className="starfield">
+          {stars.map((i) => (
+            <span className="star" key={i} style={{ left: `${(i * 4.5 + 6) % 100}%`, bottom: "40%", animationDelay: `${(i % 6) * 0.08}s` }}>
+              {["⭐", "✨", "🌟", "💫"][i % 4]}
+            </span>
           ))}
         </div>
+      )}
+      <div className="thanks">
+        <div className="checkmark">✓</div>
+        <div className="big">קיבלנו, {f.full_name?.split(" ")[0] || "תודה"}! 🎉</div>
+        <p>הרעיון שלכם נחת אצלנו. נעבור עליו ונחזור אליכם בהקדם.<br />בינתיים — מוזמנים לטייל בין המערכות שכבר חיות.</p>
+        <a className="btn btn-primary" href="#systems" style={{ marginTop: 14 }}>לגלות את המערכות ←</a>
       </div>
-      <Area label="ספרו לנו על החלום שלכם (חופשי)" onChange={up("dream_free_text")} />
-      {err && <div style={{ color: "#dc2626", fontSize: 13 }}>{err}</div>}
-      <button onClick={submit} disabled={state === "sending"} style={{ ...btn, background: "#4f46e5", color: "#fff", justifySelf: "start" }}>
-        {state === "sending" ? "שולח…" : "שליחת הרעיון ←"}
-      </button>
+    </div>
+  );
+
+  return (
+    <div className="wiz reveal">
+      <div className="wiz-prog"><span style={{ width: `${pct}%` }} /></div>
+      <div className="wiz-steps">
+        {STEPS.map((s, i) => (
+          <div className={`s ${i === step ? "active" : ""} ${i < step ? "done" : ""}`} key={s.key}>
+            <div className="num">{i < step ? "✓" : i + 1}</div>{s.title}
+          </div>
+        ))}
+      </div>
+
+      <div className="wiz-step-title">{STEPS[step].title}</div>
+      <div className="wiz-step-sub">{STEPS[step].sub}</div>
+
+      <div className="wiz-fields" key={step}>
+        {step === 0 && (<>
+          <div className="row2">
+            <F label="שם מלא *" v={f.full_name} on={set("full_name")} />
+            <F label="טלפון" v={f.phone} on={set("phone")} />
+          </div>
+          <div className="row2">
+            <F label="אימייל" v={f.email} on={set("email")} />
+            <F label="עיר" v={f.city} on={set("city")} />
+          </div>
+        </>)}
+
+        {step === 1 && (<>
+          <F label="שם הרעיון / הפרויקט" v={f.project_name} on={set("project_name")} />
+          <F label="במשפט אחד — מה זה?" v={f.short_description} on={set("short_description")} />
+          <A label="איזו בעיה אתם פותרים?" v={f.problem} on={set("problem")} />
+          <A label="מה הפתרון שלכם?" v={f.solution} on={set("solution")} />
+        </>)}
+
+        {step === 2 && (<>
+          <div className="row2">
+            <F label="מי הלקוח שלכם?" v={f.target_customer} on={set("target_customer")} />
+            <F label="איך מרוויחים? (מודל הכנסה)" v={f.revenue_model} on={set("revenue_model")} />
+          </div>
+          <div className="row2">
+            <F label="מי המתחרים?" v={f.competitors} on={set("competitors")} />
+            <F label="במה אתם שונים?" v={f.differentiation} on={set("differentiation")} />
+          </div>
+        </>)}
+
+        {step === 3 && (<>
+          <div className="row2">
+            <S label="באיזה שלב אתם?" v={f.stage} on={set("stage")} opts={["רעיון", "אבטיפוס", "מוצר חי", "צומח"]} />
+            <S label="מחפשים השקעה?" v={f.seeking_investment} on={set("seeking_investment")} opts={["לא", "כן"]} />
+          </div>
+          <div>
+            <span className="lbl">אילו שירותים תרצו מאיתנו?</span>
+            <div className="tags">
+              {SERVICE_OPTIONS.map((o) => (
+                <span key={o} className={`tagsel ${svc.includes(o) ? "on" : ""}`}
+                  onClick={() => setSvc(svc.includes(o) ? svc.filter((x) => x !== o) : [...svc, o])}>{o}</span>
+              ))}
+            </div>
+          </div>
+          <A label="ספרו לנו על החלום שלכם (חופשי)" v={f.dream_free_text} on={set("dream_free_text")} />
+        </>)}
+      </div>
+
+      {err && <div className="err" style={{ marginTop: 14 }}>{err}</div>}
+
+      <div className="wiz-nav">
+        {step > 0
+          ? <button className="btn btn-light" onClick={back}>→ חזרה</button>
+          : <span />}
+        {step < STEPS.length - 1
+          ? <button className="btn btn-primary" onClick={next}>המשך ←</button>
+          : <button className="btn btn-primary" onClick={submit} disabled={state === "sending"}>
+              {state === "sending" ? "שולח…" : "שליחת הרעיון 🚀"}
+            </button>}
+      </div>
     </div>
   );
 }
 
-const Field = ({ label, onChange }: { label: string; onChange: React.ChangeEventHandler<HTMLInputElement> }) => (
-  <div style={{ flex: 1 }}><label style={lbl}>{label}</label><input style={inp} onChange={onChange} /></div>
+const F = ({ label, v, on }: { label: string; v?: string; on: React.ChangeEventHandler<HTMLInputElement> }) => (
+  <div className="field"><label>{label}</label><input className="inp" value={v ?? ""} onChange={on} /></div>
 );
-const Area = ({ label, onChange }: { label: string; onChange: React.ChangeEventHandler<HTMLTextAreaElement> }) => (
-  <div><label style={lbl}>{label}</label><textarea rows={2} style={{ ...inp, resize: "vertical" }} onChange={onChange} /></div>
+const A = ({ label, v, on }: { label: string; v?: string; on: React.ChangeEventHandler<HTMLTextAreaElement> }) => (
+  <div className="field"><label>{label}</label><textarea className="inp" rows={2} value={v ?? ""} onChange={on} /></div>
 );
-const Select = ({ label, opts, onChange }: { label: string; opts: string[]; onChange: React.ChangeEventHandler<HTMLSelectElement> }) => (
-  <div style={{ flex: 1 }}><label style={lbl}>{label}</label><select style={inp} onChange={onChange}><option value=""></option>{opts.map((o) => <option key={o}>{o}</option>)}</select></div>
+const S = ({ label, v, on, opts }: { label: string; v?: string; on: React.ChangeEventHandler<HTMLSelectElement>; opts: string[] }) => (
+  <div className="field"><label>{label}</label>
+    <select className="inp" value={v ?? ""} onChange={on}><option value=""></option>{opts.map((o) => <option key={o}>{o}</option>)}</select>
+  </div>
 );
-
-const wrap: React.CSSProperties = { maxWidth: 1080, margin: "0 auto" };
-const btn: React.CSSProperties = { padding: "12px 22px", borderRadius: 12, fontWeight: 700, textDecoration: "none", border: "none", cursor: "pointer", fontSize: 15, display: "inline-block" };
-const navLink: React.CSSProperties = { color: "#475569", textDecoration: "none" };
-const heroTag: React.CSSProperties = { display: "inline-block", background: "rgba(255,255,255,0.15)", border: "1px solid rgba(255,255,255,0.3)", borderRadius: 999, padding: "6px 14px", fontSize: 14, fontWeight: 600 };
-const cardBox: React.CSSProperties = { background: "#fff", border: "1px solid #eaecf3", borderRadius: 16, padding: 18, boxShadow: "0 1px 3px rgba(16,24,40,0.05)" };
-const pill: React.CSSProperties = { fontSize: 12, padding: "3px 10px", borderRadius: 999, fontWeight: 700, whiteSpace: "nowrap" };
-const row2: React.CSSProperties = { display: "flex", gap: 12, flexWrap: "wrap" };
-const lbl: React.CSSProperties = { fontSize: 13, color: "#475569", fontWeight: 600 };
-const inp: React.CSSProperties = { width: "100%", boxSizing: "border-box", border: "1px solid #cbd5e1", borderRadius: 8, padding: "9px 11px", fontSize: 14, marginTop: 4, fontFamily: "inherit" };

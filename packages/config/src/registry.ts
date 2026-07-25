@@ -65,6 +65,59 @@ export const ARCHIVE_REPOS: string[] = [
   "pixel-perfect",
 ];
 
+/**
+ * Topic routes under more30.com/<topic> — the PUBLIC entry for every system.
+ * One clear word per domain. NetFree blocks *.vercel.app, so the portal proxies
+ * more30.com/<topic>/* → the system's deployment (Vercel rewrites); the vercel.app
+ * URL is never exposed. Keys are registry numbers; values are the url-safe topic.
+ * Protected (08,09) and near-empty stubs get no route (undefined).
+ */
+export const TOPIC_ROUTES: Record<string, string> = {
+  "01": "torah",      // Torah Platform — HUB לאיגוד התורני
+  "02": "tamlul",     // תמלול שיעורים (Whisper/GPT)
+  "03": "modaot",     // מערכת מודעות/הכנסות לאיגוד
+  "04": "imud",       // עימוד ספרים תורני
+  "05": "financial",  // אתר שיווקי פיננסי
+  "06": "briut",      // קופות חולים — השוואת שירותי בריאות
+  "07": "zol",        // השוואת מחירים
+  "10": "bkalot",     // זכויות בקלות
+  "12": "smel",       // נדל"ן — סמל (variant)
+  "14": "smachot",    // ניהול אירועים ושמחות
+  "15": "egod",       // egod — HUB (Lovable)
+  "16": "chatzor",    // קהילת חצור
+  "17": "chizukim",   // תמלול חיזוקים
+  "18": "orech",      // עורך OCR תורני
+  "19": "shiurim",    // פורטל שיעורים
+  "20": "igud",       // פורטל האיגוד
+  "21": "mthbram",    // מ.ת.ברם
+  "22": "zchuyot",    // מיצוי זכויות
+  "24": "galil",      // חיבור הגליל
+  "26": "studio",     // סטודיו מודעות AI
+  "27": "mechiron",   // מחירון בקלות
+  "28": "kupot",      // קופות חולים — קרנות בריאות
+  "30": "crm",        // CRM זכויות (ZchuyotPro)
+  "31": "gesher",     // גשר — CRM קהילתי (Hebrew Bridge)
+  "32": "nadlan",     // נדל"ן ברגע — המערכת החיה הראשונה
+};
+
+/** The public more30.com path for a system number, e.g. "32" → "/nadlan". */
+export function topicPath(number: string): string | undefined {
+  const t = TOPIC_ROUTES[number];
+  return t ? `/${t}` : undefined;
+}
+
+/** The full public more30.com URL for a system, e.g. "32" → "https://more30.com/nadlan". */
+export function publicUrl(number: string): string | undefined {
+  const t = TOPIC_ROUTES[number];
+  return t ? `https://more30.com/${t}` : undefined;
+}
+
+/** Resolve the registry entry that owns a given topic path (reverse lookup). */
+export function bySlugTopic(topic: string): ProjectEntry | undefined {
+  const num = Object.keys(TOPIC_ROUTES).find((n) => TOPIC_ROUTES[n] === topic);
+  return num ? getByNumber(num) : undefined;
+}
+
 /** Department display names (Hebrew) for the portal/admin. */
 export const DEPARTMENTS: Record<string, string> = {
   torah: "עורך תורני",

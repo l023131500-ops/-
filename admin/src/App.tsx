@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { REGISTRY, DEPARTMENTS, type ProjectEntry } from "@more30/config";
+import { REGISTRY, DEPARTMENTS, TOPIC_ROUTES, type ProjectEntry } from "@more30/config";
 import { createBrowserClient, type SupabaseClient } from "@more30/db";
 
 /**
@@ -8,12 +8,16 @@ import { createBrowserClient, type SupabaseClient } from "@more30/db";
  * READ ideas (PII): RPC more30_intake_list (admin only). WRITE: gated RPCs.
  */
 interface Overview {
-  number: string; name: string; department: string; category: string; stage: string;
+  number: string; name: string; name_he?: string | null; path?: string | null;
+  what_it_does?: string | null; functions?: string | null;
+  fixed_notes?: string | null; changed_notes?: string | null;
+  department: string; category: string; stage: string;
   live: boolean; is_deployed: boolean; deploy_target: string | null; live_url: string | null;
   admin_url: string | null; is_protected: boolean; to_delete: boolean;
   supabase_project: string | null; supabase_schema: string | null; note: string | null;
   open_bugs: number; open_tasks: number; missing_tokens: number;
 }
+const routedOnDomain = (r: Overview) => !!r.live_url && r.live_url.includes("more30.com");
 interface Task { id: string; project_num: string; title: string; status: string; author: string; }
 interface Token { id: string; project_num: string; env_var: string; purpose: string | null; obtain_url: string | null; paste_location: string | null; status: string; }
 interface Bug { id: string; project_num: string; title: string; severity: string; status: string; }
@@ -89,7 +93,7 @@ export function App() {
 
   const isAuthed = !!session;
   const merged: Overview[] = useMemo(() => rows.length ? rows : REGISTRY.map((p: ProjectEntry) => ({
-    number: p.number, name: p.name, department: p.department, category: p.category, stage: p.stage, live: p.live,
+    number: p.number, name: p.name, name_he: p.name, path: TOPIC_ROUTES[p.number] ?? null, department: p.department, category: p.category, stage: p.stage, live: p.live,
     is_deployed: !!p.isDeployed, deploy_target: p.deployTarget, live_url: p.liveUrl ?? null, admin_url: p.adminUrl ?? null,
     is_protected: p.protected, to_delete: false, supabase_project: p.supabaseProject ?? null, supabase_schema: p.supabaseSchema,
     note: p.note ?? null, open_bugs: 0, open_tasks: 0, missing_tokens: 0,
@@ -134,8 +138,13 @@ export function App() {
                   return (
                     <div key={r.number} style={{ ...card, opacity: r.is_protected ? 0.7 : 1, borderColor: r.to_delete ? "#fca5a5" : "#e2e8f0" }}>
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
-                        <b>{r.number} · {r.name}{r.is_protected ? " 🔒" : ""}</b><span style={{ fontSize: 11, color: "#94a3b8" }}>{r.category}</span>
+                        <b>{r.number} · {r.name_he || r.name}{r.is_protected ? " 🔒" : ""}</b><span style={{ fontSize: 11, color: "#94a3b8" }}>{r.category}</span>
                       </div>
+                      {r.path && <div style={{ fontSize: 12, marginTop: 2, direction: "ltr", textAlign: "right" }}>
+                        {routedOnDomain(r)
+                          ? <a href={`https://more30.com/${r.path}`} target="_blank" rel="noreferrer" style={{ color: "#16a34a", fontWeight: 700 }}>● more30.com/{r.path} ↗</a>
+                          : <span style={{ color: "#94a3b8" }}>◦ more30.com/{r.path} · בהכנה</span>}
+                      </div>}
                       <div style={{ display: "flex", gap: 6, flexWrap: "wrap", margin: "6px 0" }}>
                         <Badge on={r.live} label={r.live ? "חי" : "לא חי"} color={r.live ? "#16a34a" : "#94a3b8"} />
                         <Badge on label={r.stage} color="#6366f1" />
@@ -146,6 +155,15 @@ export function App() {
                       </div>
                       <div style={{ fontSize: 12, color: "#475569" }}>DB: {r.supabase_project ? `${r.supabase_project.slice(0, 8)}… / ${r.supabase_schema ?? "?"}` : "—"}</div>
                       {r.note && <div style={{ fontSize: 12, color: "#64748b", marginTop: 4 }}>{r.note}</div>}
+                      <details style={{ marginTop: 8 }}>
+                        <summary style={{ fontSize: 12, cursor: "pointer", fontWeight: 700, color: "#4f46e5" }}>דו״ח מערכת 📋</summary>
+                        <div style={{ fontSize: 12, color: "#334155", display: "grid", gap: 5, marginTop: 6, lineHeight: 1.5 }}>
+                          {r.what_it_does && <div><b>מה עושה:</b> {r.what_it_does}</div>}
+                          {r.functions && <div><b>פונקציות:</b> {r.functions}</div>}
+                          {r.fixed_notes && <div style={{ background: "#f0fdf4", padding: "5px 8px", borderRadius: 6 }}><b>🔧 מה תוקן:</b> {r.fixed_notes}</div>}
+                          {r.changed_notes && <div style={{ background: "#eff6ff", padding: "5px 8px", borderRadius: 6 }}><b>🔄 מה השתנה:</b> {r.changed_notes}</div>}
+                        </div>
+                      </details>
                       <div style={{ display: "flex", gap: 6, marginTop: 8, flexWrap: "wrap" }}>
                         {r.live_url && <a href={r.live_url} target="_blank" rel="noreferrer" style={linkBtn}>אתר חי ↗</a>}
                         {(() => { if (!r.admin_url) return null; const abs = r.admin_url.startsWith("http"); const href = abs ? r.admin_url : (r.live_url ? r.live_url.replace(/\/$/, "") + r.admin_url : null);
