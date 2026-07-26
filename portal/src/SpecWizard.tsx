@@ -41,11 +41,11 @@ interface Step {
 type Ans = Record<string, string | string[]>;
 
 const TRACKS = [
-  { key: "new", icon: "💡", title: "רעיון חדש", sub: "יש לי רעיון ואני רוצה שיהפוך למערכת עובדת" },
-  { key: "upgrade", icon: "🔧", title: "מערכת קיימת", sub: "יש לי מערכת או אתר, ואני רוצה לשדרג / להרחיב" },
-  { key: "automation", icon: "⚙️", title: "אוטומציה ותהליכים", sub: "יש לי עבודה ידנית חוזרת שצריך לחסוך" },
-  { key: "brand", icon: "🎨", title: "אתר ומיתוג", sub: "צריך נוכחות דיגיטלית, עיצוב ומיתוג" },
-  { key: "unsure", icon: "🧭", title: "עוד לא בטוח", sub: "יש לי כיוון, בואו נחשוב יחד" },
+  { key: "new", title: "רעיון חדש", sub: "יש לי רעיון ואני רוצה שיהפוך למערכת עובדת" },
+  { key: "upgrade", title: "מערכת קיימת", sub: "יש לי מערכת או אתר, ואני רוצה לשדרג / להרחיב" },
+  { key: "automation", title: "אוטומציה ותהליכים", sub: "יש לי עבודה ידנית חוזרת שצריך לחסוך" },
+  { key: "brand", title: "אתר ומיתוג", sub: "צריך נוכחות דיגיטלית, עיצוב ומיתוג" },
+  { key: "unsure", title: "עוד לא בטוח", sub: "יש לי כיוון, בואו נחשוב יחד" },
 ];
 
 const SERVICE_OPTIONS = [
@@ -214,7 +214,7 @@ export function SpecWizard() {
 
   function next() {
     if (cur?.key === "you" && !s(a, "full_name").trim()) {
-      setErr("רק נדע איך קוראים לכם 🙂");
+      setErr("רק נדע איך קוראים לכם.");
       return;
     }
     setErr("");
@@ -284,21 +284,21 @@ export function SpecWizard() {
                 key={i}
                 style={{ left: `${(i * 4.5 + 6) % 100}%`, bottom: "40%", animationDelay: `${(i % 6) * 0.08}s` }}
               >
-                {["⭐", "✨", "🌟", "💫"][i % 4]}
+                {["✦", "✧", "✶", "·"][i % 4]}
               </span>
             ))}
           </div>
         )}
         <div className="thanks">
           <div className="checkmark">✓</div>
-          <div className="big">קיבלנו, {s(a, "full_name").split(" ")[0] || "תודה"}! 🎉</div>
+          <div className="big">קיבלנו, {s(a, "full_name").split(" ")[0] || "תודה"}.</div>
           <p>
             האפיון שלכם נחת אצלנו — {answeredCount} תשובות. נעבור עליו, נריץ עליו ניתוח, ונחזור אליכם.
             <br />
             בינתיים — מוזמנים לטייל בין המערכות שכבר חיות.
           </p>
-          <a className="btn btn-primary" href="#systems" style={{ marginTop: 14 }}>
-            לגלות את המערכות ←
+          <a className="btn btn-primary" href="#systems" style={{ marginTop: 22 }}>
+            לגלות את המערכות
           </a>
         </div>
       </div>
@@ -320,7 +320,6 @@ export function SpecWizard() {
                 setStep(0);
               }}
             >
-              <span className="track-ic">{t.icon}</span>
               <span className="track-t">{t.title}</span>
               <span className="track-s">{t.sub}</span>
             </button>
@@ -413,7 +412,7 @@ export function SpecWizard() {
           </button>
         ) : (
           <button className="btn btn-primary" onClick={submit} disabled={state === "sending"}>
-            {state === "sending" ? "שולח…" : "שליחת האפיון 🚀"}
+            {state === "sending" ? "שולח…" : "שליחת האפיון"}
           </button>
         )}
       </div>

@@ -4,11 +4,14 @@ import { createBrowserClient } from "@more30/db";
 import { SpecWizard } from "./SpecWizard";
 
 /**
- * more30 — public portal ("מור מערכות תוכנה" / MOR1).
- * Every system is reachable at more30.com/<topic>. NetFree blocks *.vercel.app,
- * so the portal proxies the topic path to each deployment and never exposes the
- * underlying URL. Data is read live from `more30_project_overview` (anon), with a
- * build-time fallback to the config registry so the page always renders.
+ * more30 — אתר התדמית של מור מערכות תוכנה (מערכת 33).
+ *
+ * כל מערכת נגישה תחת more30.com/<נושא>; נטפרי חוסמת ‎*.vercel.app‎, ולכן הפורטל
+ * מנתב את הנתיב לפריסה שמאחוריו ואף פעם לא חושף את הכתובת האמיתית.
+ *
+ * השמות והתיאורים נקראים חיים מ-`more30_project_overview` (anon) — הם מנוסחים
+ * ב-core.projects ולא כאן, כדי שלא ייווצרו שתי גרסאות של אותו טקסט. יש נפילה
+ * למרשם שב-config כדי שהעמוד ייטען גם אם המסד לא זמין.
  */
 
 type Row = {
@@ -16,22 +19,6 @@ type Row = {
   what_it_does: string | null; functions: string | null; department: string;
   stage: string; live: boolean; is_deployed: boolean; live_url: string | null;
   is_protected: boolean; to_delete: boolean;
-};
-
-const DEPT_EMOJI: Record<string, string> = {
-  torah: "📚", finance: "💰", realestate: "🏙️", health: "🏥",
-  rights: "⚖️", community: "🤝", bkalut: "🎫", misc: "✨",
-};
-const DEPT_ACCENT: Record<string, string> = {
-  torah: "#7c3aed", finance: "#0ea5e9", realestate: "#0d9488", health: "#e11d48",
-  rights: "#d97706", community: "#4f46e5", bkalut: "#64748b", misc: "#db2777",
-};
-const SYS_GLYPH: Record<string, string> = {
-  torah: "📖", tamlul: "🎙️", modaot: "📣", imud: "📐", financial: "📈",
-  briut: "🩺", zol: "🏷️", bkalot: "🤲", smel: "🏠", smachot: "🎉",
-  egod: "🕎", chatzor: "🏘️", chizukim: "🎧", orech: "✍️", shiurim: "🎬",
-  igud: "🚪", mthbram: "🗂️", zchuyot: "🧭", galil: "⛰️", studio: "🎨",
-  mechiron: "🧮", kupot: "🏥", crm: "📇", gesher: "🌉", nadlan: "🏙️",
 };
 
 const supa = (() => { try { return createBrowserClient("public"); } catch { return null; } })();
@@ -46,18 +33,25 @@ function fallbackRows(): Row[] {
   }));
 }
 
-function useReveal() {
+function useReveal(dep?: unknown) {
   useEffect(() => {
-    const els = Array.from(document.querySelectorAll<HTMLElement>(".reveal"));
+    const els = Array.from(document.querySelectorAll<HTMLElement>(".reveal:not(.in)"));
     const io = new IntersectionObserver((es) => es.forEach((e) => {
       if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); }
-    }), { threshold: 0.12 });
+    }), { threshold: 0.08, rootMargin: "0px 0px -40px 0px" });
     els.forEach((el) => io.observe(el));
     return () => io.disconnect();
-  });
+  }, [dep]);
 }
 
 const enterable = (r: Row) => !!r.live_url && r.live_url.includes("more30.com");
+
+/** התיאור מ-core הוא לרוב משפט אחד; אם יש יותר — לוקחים את הראשון לכרטיס. */
+const blurb = (r: Row) => {
+  const t = (r.what_it_does || "").trim();
+  if (!t) return "";
+  return (t.split(/(?<=[.!?])\s/)[0] || t).trim();
+};
 
 export function App() {
   const [rows, setRows] = useState<Row[]>(fallbackRows());
@@ -73,7 +67,7 @@ export function App() {
       });
   }, []);
 
-  // Single-topic coming-soon view: someone hit more30.com/<topic> that isn't proxied yet.
+  // מישהו הגיע ל-more30.com/<נושא> שעדיין לא מנותב — עמוד ממותג במקום 404.
   const seg = typeof window !== "undefined" ? window.location.pathname.replace(/^\/+/, "").split("/")[0] : "";
   const topicRow = seg && rows.find((r) => r.path === seg);
   if (topicRow && !enterable(topicRow)) return <ComingSoon row={topicRow} />;
@@ -82,109 +76,105 @@ export function App() {
 }
 
 function ComingSoon({ row }: { row: Row }) {
-  const glyph = (row.path && SYS_GLYPH[row.path]) || "🚀";
   return (
-    <div className="soon-page">
-      <div>
-        <div className="glyph">{glyph}</div>
-        <h1>{row.name_he || row.name}</h1>
-        <p>{row.what_it_does || "המערכת בהקמה ותעלה לאוויר בקרוב תחת more30.com."}</p>
-        <p style={{ opacity: 0.7, fontSize: 15 }}>בקרוב תחת <b>more30.com/{row.path}</b></p>
-        <a className="btn btn-light" href="/">חזרה לעולם המערכות ←</a>
+    <div className="soon" dir="rtl">
+      <div className="soon-in">
+        <div className="eyebrow">מור מערכות תוכנה</div>
+        <h1 className="display soon-title">{row.name_he || row.name}</h1>
+        <p className="serif soon-desc">{row.what_it_does || "המערכת בהקמה ותעלה לאוויר תחת more30.com."}</p>
+        <div className="rule" />
+        <p className="soon-note">בקרוב · more30.com/{row.path}</p>
+        <a className="btn" href="/">חזרה לעולם הסטארטאפים</a>
       </div>
     </div>
   );
 }
 
-const SERVICES = [
-  { ic: "💡", h: "מרעיון למוצר חי", p: "לוקחים רעיון גולמי ומוציאים ממנו מערכת עובדת — אפיון, פיתוח והשקה, בלי דילוגים." },
-  { ic: "🛠️", h: "מערכות מוכנות לעבודה", p: "עשרות מערכות שכבר רצות בשטח — נדל\"ן, תמלול, זכויות, קהילה ועוד — במקום אחד." },
-  { ic: "🔗", h: "הכול מחובר", p: "משתמש אחד, נתונים משותפים, לוח בקרה מרכזי. המערכות מדברות זו עם זו." },
-  { ic: "🤝", h: "ליווי אמיתי", p: "לא נעלמים אחרי ההשקה — ממשיכים איתכם לתחזוקה, שיפור וגדילה." },
+const PILLARS = [
+  { h: "מרעיון למוצר חי", p: "אפיון, פיתוח והשקה — עד שהמערכת עומדת בשטח ומשרתת משתמשים אמיתיים." },
+  { h: "מערכות שכבר עובדות", p: "נדל\"ן, תמלול, זכויות, בריאות וקהילה — כולן פעילות היום, לא מצגת." },
+  { h: "כתובת אחת", p: "כל המערכות חיות תחת more30.com. משתמש אחד, נתונים משותפים, מקום אחד לחזור אליו." },
+  { h: "ליווי שנשאר", p: "אחרי ההשקה מתחילה העבודה האמיתית — תחזוקה, שיפור והתאמה למה שהשטח מחזיר." },
 ];
 
 function Portal({ rows }: { rows: Row[] }) {
-  useReveal();
-  const depts = Object.keys(DEPARTMENTS).filter((d) => d !== "bkalut" && rows.some((r) => r.department === d));
+  useReveal(rows.length);
+  const depts = Object.keys(DEPARTMENTS).filter((d) => rows.some((r) => r.department === d));
   const liveCount = rows.filter((r) => r.live).length;
-  const stats = [
-    { n: rows.length, l: "מערכות באקוסיסטם" },
-    { n: liveCount, l: "כבר חיות בשטח" },
-    { n: depts.length, l: "תחומים" },
-    { n: "1", l: "קורת גג אחת" },
-  ];
 
   return (
     <div dir="rtl">
       <nav className="nav">
         <div className="nav-in">
-          <div className="brand">MOR<span className="dot">1</span><small>· מור מערכות תוכנה</small></div>
+          <a className="wordmark" href="#top">מור מערכות תוכנה</a>
           <div className="nav-links">
-            <a className="link" href="#systems">המערכות</a>
-            <a className="link" href="#about">מה אנחנו עושים</a>
-            <a className="btn btn-primary" href="#intake" style={{ padding: "9px 18px", fontSize: 14 }}>ספרו לנו רעיון</a>
+            <a href="#systems">המערכות</a>
+            <a href="#about">מה אנחנו עושים</a>
+            <a className="nav-cta" href="#intake">ספרו לנו רעיון</a>
           </div>
         </div>
       </nav>
 
-      {/* Hero */}
-      <header className="hero">
-        <div className="hero-grid" />
+      {/* פתיחה — השם הראשי, הרבה אוויר, שום דבר מעבר */}
+      <header className="hero" id="top">
         <div className="hero-in">
-          <span className="tag">🚀 עולם הסטארטאפים של מור מערכות תוכנה</span>
-          <h1>כל המערכות שלנו,<br /><span className="grad">תחת קורת גג אחת</span></h1>
-          <p className="lead">
-            אנחנו בונים מערכות שעובדות באמת — ומחברים את כולן למקום אחד: more30.com.
-            נדל"ן, תמלול, זכויות, בריאות וקהילה. הכול נגיש בכתובת אחת פשוטה.
+          <div className="eyebrow">מור מערכות תוכנה</div>
+          <h1 className="display hero-title">עולם הסטארטאפים</h1>
+          <p className="serif hero-lead">
+            עשרות מערכות שנבנו כאן, עובדות היום בשטח, וחיות כולן תחת כתובת אחת.
           </p>
-          <div className="hero-cta">
-            <a className="btn btn-light" href="#intake">יש לי רעיון — בואו נדבר ←</a>
-            <a className="btn btn-ghost" href="#systems">לכל המערכות</a>
+          <div className="hero-actions">
+            <a className="btn" href="#systems">לכל המערכות</a>
+            <a className="btn btn-quiet" href="#intake">יש לי רעיון</a>
           </div>
-          <div className="statband reveal">
-            {stats.map((s) => (
-              <div className="stat" key={s.l}><div className="n">{s.n}</div><div className="l">{s.l}</div></div>
-            ))}
-          </div>
+        </div>
+        <div className="hero-meta">
+          <div><b>{rows.length}</b><span>מערכות</span></div>
+          <div><b>{liveCount}</b><span>חיות בשטח</span></div>
+          <div><b>{depts.length}</b><span>תחומים</span></div>
+          <div><b>more30.com</b><span>כתובת אחת</span></div>
         </div>
       </header>
 
-      {/* About / services */}
+      {/* מה אנחנו עושים */}
       <section id="about" className="section">
         <div className="wrap">
-          <div className="eyebrow reveal">מה אנחנו נותנים</div>
-          <h2 className="h2 reveal">בית אחד לכל השלבים</h2>
-          <p className="sub reveal">מהרעיון הראשון ועד מערכת חיה עם משתמשים — אנחנו איתכם בכל צעד.</p>
-          <div className="svc-grid">
-            {SERVICES.map((s) => (
-              <div className="svc reveal" key={s.h}>
-                <div className="ic">{s.ic}</div>
-                <h3>{s.h}</h3><p>{s.p}</p>
+          <div className="sec-head reveal">
+            <div className="eyebrow">מה אנחנו עושים</div>
+            <h2 className="display sec-title">בית אחד לכל השלבים</h2>
+          </div>
+          <div className="pillars">
+            {PILLARS.map((s) => (
+              <div className="pillar reveal" key={s.h}>
+                <h3>{s.h}</h3>
+                <p className="serif">{s.p}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Systems */}
-      <section id="systems" className="section">
+      {/* המערכות */}
+      <section id="systems" className="section section-systems">
         <div className="wrap">
-          <div className="eyebrow reveal">האקוסיסטם</div>
-          <h2 className="h2 reveal">המערכות שלנו</h2>
-          <p className="sub reveal">{rows.length} מערכות · {liveCount} כבר חיות · והרשימה ממשיכה לגדול</p>
+          <div className="sec-head reveal">
+            <div className="eyebrow">האקוסיסטם</div>
+            <h2 className="display sec-title">המערכות שלנו</h2>
+            <p className="serif sec-sub">{rows.length} מערכות · {liveCount} כבר חיות · והרשימה ממשיכה לגדול</p>
+          </div>
+
           {depts.map((dep) => {
-            const list = rows.filter((r) => r.department === dep).sort((a, b) => a.number.localeCompare(b.number));
-            const accent = DEPT_ACCENT[dep] ?? DEPT_ACCENT.misc!;
+            const list = rows.filter((r) => r.department === dep)
+              .sort((a, b) => a.number.localeCompare(b.number));
             return (
               <div className="dept" key={dep}>
                 <div className="dept-head reveal">
-                  <span className="dept-emoji" style={{ background: accent }}>{DEPT_EMOJI[dep]}</span>
                   <h3>{DEPARTMENTS[dep]}</h3>
-                  <span className="dept-count" style={{ color: accent }}>{list.length}</span>
                   <span className="dept-rule" />
+                  <span className="dept-count">{list.length}</span>
                 </div>
                 <div className="cards">
-                  {list.map((r) => <SystemCard key={r.number} r={r} accent={accent} />)}
+                  {list.map((r) => <SystemCard key={r.number} r={r} />)}
                 </div>
               </div>
             );
@@ -192,61 +182,50 @@ function Portal({ rows }: { rows: Row[] }) {
         </div>
       </section>
 
-      {/* Intake wizard */}
-      <section id="intake" className="intake">
+      {/* השאלון */}
+      <section id="intake" className="section section-intake">
         <div className="wrap">
-          <div className="eyebrow reveal">בואו נבנה משהו</div>
-          <h2 className="h2 reveal">שאלון האפיון החכם 💡</h2>
-          <p className="sub reveal">
-            בוחרים מסלול, ומשם השאלון נבנה לפי מה שאתם עונים — בלי שדות שלא נוגעים לכם.
-            רק השם חובה.
-          </p>
+          <div className="sec-head reveal">
+            <div className="eyebrow">בואו נבנה משהו</div>
+            <h2 className="display sec-title">שאלון האפיון</h2>
+            <p className="serif sec-sub">
+              בוחרים מסלול, ומשם השאלון נבנה לפי מה שאתם עונים — בלי שדות שלא נוגעים לכם. רק השם חובה.
+            </p>
+          </div>
           <SpecWizard />
         </div>
       </section>
 
       <footer className="footer">
-        <div className="fb">MOR<span style={{ color: "#a78bfa" }}>1</span> · more30.com</div>
-        <div className="muted">© 2026 מור מערכות תוכנה — עולם הסטארטאפים. כל המערכות תחת קורת גג אחת.</div>
+        <div className="wrap footer-in">
+          <div className="display footer-mark">עולם הסטארטאפים</div>
+          <div className="footer-note">מור מערכות תוכנה · more30.com</div>
+          <div className="footer-note muted">© 2026 כל המערכות תחת קורת גג אחת.</div>
+        </div>
       </footer>
     </div>
   );
 }
 
-function SystemCard({ r, accent }: { r: Row; accent: string }) {
+/**
+ * כרטיס מערכת: תיאור קצר בסריף מעל, השם העברי בגדול, וכפתור כניסה.
+ * מערכת שעדיין לא מנותבת תחת more30.com מקבלת אותו כרטיס במצב שקט — כך אין
+ * דליפה של כתובת vercel.app ואין כפתור שמוביל לשום מקום.
+ */
+function SystemCard({ r }: { r: Row }) {
   const on = enterable(r);
-  const glyph = (r.path && SYS_GLYPH[r.path]) || "🚀";
-  const desc = (r.what_it_does || "").split(/(?<=[.!?])\s/)[0] || r.what_it_does || "";
-  const chips = (r.functions || "").split("·").map((s) => s.trim()).filter(Boolean).slice(0, 3);
-  const href = `/${r.path}`;
-  const pill = r.live
-    ? <span className="pill live">● חי</span>
-    : r.stage === "beta" ? <span className="pill beta">● בטא</span> : <span className="pill soon">● בקרוב</span>;
+  const desc = blurb(r);
+  const title = r.name_he || r.name;
 
-  const inner = (
-    <>
-      <div className="preview">
-        <div className="chrome">
-          <i style={{ background: "#ff5f57" }} /><i style={{ background: "#febc2e" }} /><i style={{ background: "#28c840" }} />
-          <span className="u">more30.com/{r.path}</span>
-        </div>
-        <div className="preview-canvas" style={{ background: `radial-gradient(120% 120% at 30% 0%, ${accent}, ${accent}22 70%, #0b1020)` }}>
-          <span className="glyph">{glyph}</span>
-          <span className="wm">{r.name_he || r.name}</span>
-        </div>
-      </div>
-      <div className="card-body">
-        <div className="card-title"><h4>{r.name_he || r.name}</h4>{pill}</div>
-        {desc && <p className="card-desc">{desc}</p>}
-        {chips.length > 0 && <div className="chips">{chips.map((c, i) => <span className="chip" key={i}>{c}</span>)}</div>}
+  return (
+    <div className={`card reveal ${on ? "" : "card-soon"}`}>
+      {desc && <p className="serif card-desc">{desc}</p>}
+      <h4 className="card-name">{title}</h4>
+      <div className="card-foot">
         {on
-          ? <span className="card-cta on" style={{ color: accent }}>כניסה למערכת ←</span>
-          : <span className="card-cta off">בקרוב · more30.com/{r.path}</span>}
+          ? <a className="btn btn-card" href={`/${r.path}`}>כניסה למערכת</a>
+          : <span className="card-soon-tag">בהכנה</span>}
       </div>
-    </>
+    </div>
   );
-
-  return on
-    ? <a className="card on reveal" href={href}>{inner}</a>
-    : <div className="card reveal">{inner}</div>;
 }

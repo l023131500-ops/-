@@ -115,23 +115,45 @@ export function App() {
    */
   async function analyzeSpec(id: string) {
     if (!sb || aiBusy[id]) return;
-    const { data: sess } = await sb.auth.getSession();
-    const jwt = sess.session?.access_token;
-    if (!jwt) { setMsg("צריך התחברות אדמין כדי להריץ ניתוח."); return; }
+
+    // getSession מחזיר את הטוקן השמור גם כשפג תוקפו, וטוקן פג = 401 מהפונקציה.
+    // refreshSession מבטיח שנשלח טוקן חי; אם הרענון נכשל — אין ממש התחברות.
+    let jwt = (await sb.auth.getSession()).data.session?.access_token ?? "";
+    const { data: fresh } = await sb.auth.refreshSession();
+    if (fresh.session?.access_token) jwt = fresh.session.access_token;
+    if (!jwt) { setMsg("צריך התחברות אדמין כדי להריץ ניתוח — התחברו שוב."); return; }
 
     setAiBusy((b) => ({ ...b, [id]: true }));
     setMsg("שולח לניתוח AI… (בדרך כלל כדקה)");
 
+    let rejected = false;
+
+    // התוצאה נקראת מהמסד בתשאול, אבל דחייה מיידית (401/403/503) לא מגיעה לשם
+    // כי ai_status בכלל לא נקבע ל-running — בלי לקרוא את התשובה המסך היה נתקע.
     fetch(`${API_BASE}/api/spec-analyze`, {
       method: "POST",
       headers: { "content-type": "application/json", Authorization: `Bearer ${jwt}` },
       body: JSON.stringify({ id }),
-    }).catch(() => { /* התוצאה נקראת מהמסד בתשאול, לא מכאן */ });
+    })
+      .then(async (r) => {
+        if (r.ok) return;
+        const detail = await r.text().catch(() => "");
+        let note = detail.slice(0, 200);
+        try { note = JSON.parse(detail).error ?? note; } catch { /* גוף שאינו JSON */ }
+        if (r.status === 401) note = "ההתחברות פגה. התחברו שוב ונסו מחדש.";
+        if (r.status === 403) note = "אין הרשאת אדמין למשתמש הזה, או שניתוח כבר רץ. " + note;
+        rejected = true;
+        setAiBusy((b) => ({ ...b, [id]: false }));
+        setMsg("הניתוח לא יצא לדרך: " + note);
+      })
+      .catch(() => { /* נפילת רשת — התשאול עדיין יראה את התוצאה אם הניתוח כן רץ */ });
 
     // תשאול עד שהניתוח יוצא ממצב running (או עד 3 דקות, כבלם).
     const started = Date.now();
     const poll = window.setInterval(async () => {
       if (!sb) return;
+      // הבקשה נדחתה מיד — אין מה לתשאל, וההודעה כבר על המסך.
+      if (rejected) { window.clearInterval(poll); return; }
       const { data } = await sb.rpc("more30_spec_list");
       const list = (data ?? []) as Spec[];
       setSpecs(list);
@@ -155,7 +177,20 @@ export function App() {
   useEffect(() => { if (view === "ideas" && session) loadIdeas(); }, [view, session]);
   useEffect(() => { if (view === "specs" && session) loadSpecs(); }, [view, session]);
 
-  async function signIn() { if (!sb || !email) return; const { error } = await sb.auth.signInWithOtp({ email }); setMsg(error ? "שגיאה: " + error.message : "נשלח קישור התחברות למייל."); }
+  /**
+   * הניהול מוגש מ-more30.com/nihul. בלי emailRedirectTo קישור ההתחברות חוזר
+   * ל-Site URL של פרויקט Supabase (‎*.vercel.app‎ — שנטפרי חוסמת), ואז הסשן
+   * נוצר בכתובת אחרת ולא כאן; מכאן ה-401 בלחיצה על "שלח לניתוח AI".
+   * החזרה לכתובת הנוכחית מייצרת את הסשן במקום שבו הוא באמת נדרש.
+   */
+  async function signIn() {
+    if (!sb || !email) return;
+    const back = typeof window !== "undefined"
+      ? window.location.origin + window.location.pathname
+      : undefined;
+    const { error } = await sb.auth.signInWithOtp({ email, options: { emailRedirectTo: back } });
+    setMsg(error ? "שגיאה: " + error.message : `נשלח קישור התחברות ל-${email}. פתחו אותו באותו דפדפן.`);
+  }
   async function signOut() { if (sb) { await sb.auth.signOut(); setSession(null); } }
   async function addTask(num: string) { const t = (draft[num] ?? "").trim(); if (!sb || !t) return;
     const { error } = await sb.rpc("more30_add_task", { p_num: num, p_title: t, p_author: "user" });
