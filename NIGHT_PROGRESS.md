@@ -170,5 +170,349 @@ chizukim-transcribe, kupot-health-funds, bkalot. אף אחד לא מחובר ל-
 | 27 | bkalut-price | ✓ | env-blocked | Express+Vite; צריך env מלא |
 | 30 | zchuyotpro-crm | ✓ | env-blocked | TanStack; SERVICE_ROLE בזמן ריצה |
 | 31 | hebrew-bridge-crm | ✓ | ✓ | TanStack Start |
+
+## סבב 26/07 — ניתוב שאר המערכות תחת more30.com/<נושא> (קבוצות של 5)
+> מטרה: להחיל את ה-recipe (שאומת על nadlan) על כל 32, בקבוצות קטנות, עד שכולן
+> מנותבות תחת more30.com בלי דליפת vercel.app (הדפדפן נשאר על more30.com לנטפרי).
+> ה-recipe שוחזר ואומת מקצה-לקצה בסשן הזה. **ערוץ אימות:** Invoke-WebRequest ל-more30.com
+> עובד (Cloudflare, 200); vercel.app חסום בנטפרי (418) → מאמתים deploy מקביל דרך MCP
+> `web_fetch_vercel_url`. **מלכודת BOM חזרה:** vercel.json חייב להיכתב בלי BOM (כלי Write,
+> לא Set-Content). npm 11 חוסם postinstall → `npm approve-scripts --allow-scripts-pending`
+> + `npm rebuild esbuild @swc/core` אחרי install, אחרת ה-build נופל על בינארי חסר.
+
+### recipe מאומת ל-Vite static (chatzor, torah):
+1. `npx vite build --base=/<topic>/` (anon מ-.env/​.env.local מוטמע; service_role לא — אין VITE_ prefix).
+2. staging: dist → `_deploy/<proj>/​<topic>/`; vercel.json (framework null, echo no-build,
+   rewrites `/<topic>`+`/<topic>/:path*` → `/<topic>/index.html`) — SPA fallback, filesystem קודם.
+3. `vercel deploy --prod --yes --name <topic>-more30 --scope l023131500-ops-projects`.
+4. portal `dist/vercel.json`: `/<topic>`+`/<topic>/:path*` → `https://<topic>-more30.vercel.app/...`
+   (לפני ה-catch-all); redeploy portal (dist, more30-portal) → more30.com.
+5. core.projects: live_url=`https://more30.com/<topic>`, is_deployed=true.
+
+### recipe מאומת ל-Next.js (tamlul, modaot; וגם nadlan):
+1. `next.config.mjs`: `basePath:'/<topic>'` + `assetPrefix:'/<topic>'` (מקדים Link/router/_next אוטומטית).
+2. כל `fetch('/api...')`/`xhr.open` פנימי → קידומת `/<topic>` ידנית (basePath לא נוגע ב-fetch גולמי).
+3. deploy דרך MCP `deploy_to_vercel` (framework nextjs, file-tree מקור, לא CLI — באג services).
+   env בנייה: רק NEXT_PUBLIC_ anon (service_role/OpenAI לא נדחפים → API inert, זה בסדר לשלד ציבורי).
+4-5. אותו portal rewrite + core.projects כמו Vite.
+⚠️ PS5.1 `Get-Content -Raw` קורא UTF-8 עברי כ-CP1255 ומשחית — לא לעשות bulk replace על מקור עברי.
+
+### קבוצה 1 (01,02,03,16,17) — ✅ הושלמה ואומתה (26/07)
+- ✅ **16 chatzor → more30.com/chatzor** — Vite static (`chatzor-more30`). 200 + assets. פעיל מלא (Supabase ישיר).
+- ✅ **01 torah → more30.com/torah** — Vite static (`torah-more30`). 200 + assets. פעיל מלא.
+- ✅ **02 tamlul → more30.com/tamlul** — Next.js (`tamlul-more30`). 200, assetPrefix=/tamlul, /tamlul/login=200.
+  שלד ציבורי מלא; API/אדמין/תמלול inert (חסר SERVICE_ROLE+OPENAI — env, לא חוסם ניתוב).
+- ✅ **03 modaot → more30.com/modaot** — Next.js (`modaot-more30`). 200, /modaot/create=200.
+  שלד מלא; API/יצירת מודעות inert (חסר SERVICE_ROLE+OPENAI). favicon לא ממותג-נתיב (קוסמטי).
+- ✅ **17 chizukim → more30.com/chizukim** — Vite client static (`chizukim-more30`). 200 + assets.
+  צפייה/עריכת תמלולים עובד (Supabase ישיר, hash routing); העלאה/תמלול inert (צריך שרת Express + RunPod token).
+- **סה"כ מנותב תחת more30.com: 6/32** (nadlan, torah, tamlul, modaot, chatzor, chizukim).
+  portal rewrites: כל 6 + catch-all. אין דליפת vercel.app (הדפדפן על more30.com).
+
+### קבוצה 2 (15,21,22,24,10) — ✅ הושלמה ואומתה (26/07)
+- ✅ **15 egod → more30.com/egod** — Vite SPA (`egod-more30`). 200 + JS. Supabase ישיר (hkkky).
+- ✅ **21 mthbram → more30.com/mthbram** — Vite SPA (`mthbram-more30`). 200 + JS. Supabase ישיר (aypsq).
+- ✅ **22 get-your-rights → more30.com/zchuyot** — Vite SPA (`zchuyot-more30`). 200 + JS. rights-agent(OPENAI) inert.
+- ✅ **24 galilee → more30.com/galil** — Vite SPA (`galil-more30`). 200 + JS. ⚠️ תוכן זהה ל-16 chatzor (מועמד מיזוג).
+- ✅ **10 bkalot-rights → more30.com/bkalot** — אתר סטטי prebuilt (`bkalot-more30`). 200; data.json 2.8MB מוגש.
+  פתרון trailing-slash: הוזרק `<base href="/bkalot/">` ל-index (staging בלבד, המקור לא נגע).
+- **סה"כ מנותב תחת more30.com: 11/32.** portal rewrites: 11 נתיבים + catch-all. אין דליפת vercel.app.
+
+### קבוצה 3 (12,28,31,14,06) — ✅ הושלמה ואומתה (26/07)
+- ✅ **12 smel-ndln → more30.com/smel** — Vite client (`smel-more30`). 200. פעיל מלא (Supabase ישיר, hash routing).
+- ✅ **28 kupot-health-funds → more30.com/kupot** — Vite client (`kupot-more30`). 200. ⚠️ שלד בלבד:
+  הלקוח קורא ל-Express `/api/hf/*` (אין Supabase ישיר) + ref placeholder → נתונים inert עד שרת+מפתחות.
+- ✅ **31 hebrew-bridge-crm → more30.com/gesher** — **TanStack Start SSR** (`gesher-more30`, nitro Vercel preset,
+  Build Output v3). 200 SSR + /gesher/auth. Supabase ygaqq, anon בלבד (service_role = dead code).
+- ✅ **14 bsmachot-plus → more30.com/smachot** — אתר סטטי מ-`website/` (`smachot-more30`). 200 + assets.
+- ✅ **06 kupot-holim → more30.com/briut** — אתר סטטי מ-`site/` (`briut-more30`). 200. ANTHROPIC key הוחרג (אין דליפה).
+- **סה"כ מנותב תחת more30.com: 16/32.**
+
+> ⚠️ **מלכודת trailing-slash ל-SSR (gesher):** nitro/TanStack מחזיר 307 מ-`/gesher` ל-`/gesher/`,
+> וה-307 בורח לדפדפן; `/gesher/` (ריק) לא תפס את `:path*` ונפל ל-catch-all של הפורטל.
+> **תיקון:** ב-portal rewrite ה-source המדויק `/<topic>` יצביע ישירות ל-`.../<topic>/` (עם סלאש),
+> ולהוסיף source `/<topic>/`. חל רק על אפליקציות SSR (Vite static ו-Next לא עושים 307 כאן).
+
+### הבא בתור — נותרו נושאים לניתוב (מתוך 25 topic-routes)
+נותבו (16): torah, tamlul, modaot, chizukim, chatzor, egod, mthbram, zchuyot, galil, bkalot,
+smel, kupot, gesher, smachot, briut, nadlan.
+נותרו (9): **wip env-blocked (שלד ציבורי):** 04 imud, 18 orech (Next), 26 studio, 27 mechiron, 30 crm.
+**stubs (כמעט-ריק, אין אפליקציה אמיתית → עמוד מותג "בקרוב" של הפורטל תחת more30.com):** 05 financial, 07 zol, 19 shiurim, 20 igud.
+ללא topic (by design): 08,09 מוגנים · 11,13,23,25,29 (stub/merge/origin-פורטל).
 </content>
 </invoke>
+
+## סבב 26/07 לילה — "עובד חי עם נתונים אמיתיים", לא מעטפת
+> מטרה חדשה (הוראת המשתמש): כל מערכת תעבוד **באמת** תחת more30.com/<נושא> — לקוח **וגם**
+> שרת/API באותו origin (Vercel Functions), עם כל המפתחות הקיימים מחוברים, ואימות פונקציונלי
+> אמיתי (נתונים נטענים / השוואה מחזירה תוצאות / AI עונה). `live=true` ב-core.projects רק
+> כשהנתונים באמת עובדים. אין נתוני דמה. אין סודות בקוד.
+
+### מאגר מפתחות שנאסף מהפריסות/העותקים המקומיים (26/07)
+| מפתח | מקור | זמין ל |
+|---|---|---|
+| OPENAI_API_KEY | apps/02,03,17,18,22 (.env.local) | תמלול, rights-agent, עורך |
+| ANTHROPIC_API_KEY | apps/06,18,26 + 32 (AI_API_KEY) | studio, נדל"ן, עורך |
+| GEMINI_API_KEY | apps/18,26 | studio, עורך |
+| RECRAFT_API_KEY | apps/18,26 | studio (תמונות) |
+| service_role · bieebmnm | apps/01,02,03,18 | torah/tamlul/modaot/orech |
+| service_key · uhnrgujb | apps/32 | nadlan |
+| DATAGOV | הוראת המשתמש | נדל"ן/מחירון |
+| anon/publishable | לכל מערכת ב-.env שלה | הכול |
+
+**חסר** service_role ל: csjekrvu (06,12,17,27), jhbeelzv (30), trerolyv (22), mwljkonw (16,24),
+aypsq (21), hkkky (15), ygaqq (31) — הפרויקטים האלה לא מופיעים ב-Supabase MCP של החשבון.
+
+### ✅ 27 mechiron — השוואת מחירים — **עובד חי עם נתונים אמיתיים**
+**more30.com/mechiron · לקוח + API באותו origin.**
+- **נתונים אמיתיים מאומתים:** 117,270 מוצרים · 1,213 חנויות · 33 מקורות פעילים ·
+  437,964 מבצעים · עדכון אחרון 25/07/2026. `hasRealData=true`, `showSampleData=false`.
+- **השוואה מחזירה תוצאות (אומת דרך more30.com):**
+  · קוטג תנובה 3% 250 — ₪5.50 עד ₪7.90 על פני ~120 סניפים, חיסכון 30.4%.
+  · שמן זית כתית מעולה — חיסכון עד ₪32.00 (68.2%).
+  · `/api/pc/public/catalog?q=קוטג&minChains=2` → 445KB תוצאות אמיתיות.
+- **ארכיטקטורה:** Vercel Function יחידה `api/index.ts` בפרויקט `mechiron-more30`, שמשתמשת
+  ב-`server/pc-supabase-read.ts` של האפליקציה עצמה (הועתק כמו שהוא; רק ייבוא הטיפוסים הופנה
+  ל-`pc-types.ts` כדי לא לגרור את better-sqlite3 של price-comparison.ts ל-lambda).
+  קריאה-בלבד. מסלולי אדמין לא נפרסו — הם ממילא חסומים בקוד ללא hostname `admin.`.
+- **מפתחות:** `SUPABASE_URL` + `SUPABASE_ANON_KEY` (csjekrvu) כ-env של פרויקט Vercel.
+  לא חסר כלום לצד הציבורי — נתיב הקריאה של האפליקציה תוכנן מלכתחילה לעבוד עם anon.
+- **שני שינויי מקור מינימליים (אדיטיביים, תואמי-אחורה) ב-apps/27:**
+  `queryClient.ts` → תומך `VITE_API_BASE`; `App.tsx` → תומך `VITE_PRICE_HOME=1`
+  (קודם דף הבית היה השוואת מחירים רק לפי hostname `bkalut-prices.*`).
+
+#### 🪤 מלכודות שנפתרו (חשוב לכל מערכת Vercel-Functions הבאה)
+1. **ESM:** `"type": "module"` ב-package.json שובר ייבוא יחסי ללא סיומת
+   (`ERR_MODULE_NOT_FOUND` על `./_lib/x`). **להשמיט את type:module** → CJS, עובד.
+2. **BOM ב-env:** ערך שנכתב ל-`vercel env add` דרך pipe של PowerShell מקבל BOM,
+   ו-supabase-js נופל על `ByteString ... 65279` בבניית ה-header. `vercel env pull`
+   מחזיר `"[SECRET]"` ולא עוזר לאבחון. **הפתרון:** ניקוי `\uFEFF` מה-env ב-cold start.
+3. **rewrite ל-API תחת נתיב:** `/<topic>/api/(.*)` → `/api/index?__path=$1` (הפונקציה
+   מנתבת פנימית לפי `__path`). filesystem קודם ל-rewrites, לכן הנכסים הסטטיים לא נפגעים.
+
+### ✅ 26 studio — סטודיו מודעות AI — **עובד חי, ה-AI עונה**
+**more30.com/studio · לקוח + שרת Express מלא באותו origin.**
+- **ה-AI עונה (אומת חי דרך more30.com, פלט אמיתי):**
+  · `POST /api/ai/copy` → Claude **claude-opus-5** החזיר 2 וריאציות קופי עברי
+    ("בס״ד — פותחים מחזור חדש בדף היומי" + subtitle/body/cta לכל אחת).
+  · `POST /api/branding/strategy` → אסטרטגיית מותג מלאה 2,637 תווים:
+    מיצוב, ייעוד, 5 ערכים, ארכיטיפ ראשי sage + משני caregiver, ממדי Aaker.
+  · `POST /api/ai/background` → **Gemini** החזיר JPEG אמיתי (data URL, 28KB).
+  · `GET /api/templates` → 4 תבניות מובנות שנזרעו ל-Supabase (אחסון עובד).
+  · `GET /api/meta` → 5 סגנונות · 6 פורמטים · 20 קטגוריות · 255 פריסטים.
+- **ארכיטקטורה:** כל אפליקציית ה-Express רצה בתוך Vercel Function אחת —
+  `registerRoutes()` המקורי הועתק ללא שינוי ומורכב על express בתוך ההנדלר,
+  כך שכל מסלול שומר על הנתיב והתשובה המדויקים (`x-powered-by: Express` בתגובה).
+- **אחסון:** better-sqlite3 לא שורד serverless → נכתב מימוש Supabase של אותו
+  `IStorage` בדיוק (אותם שמות מתודות/שדות/חותמות זמן unix). טבלאות
+  `public.studio_users/templates/projects/brands` ב-uhnrgujb, service_role בלבד,
+  RLS דלוק ללא policies (anon חסום לגמרי).
+- **מפתחות:** ANTHROPIC + GEMINI + RECRAFT (מ-apps/26/.env.local) ו-SUPABASE_URL +
+  SERVICE_KEY (מ-apps/32) — כולם env של Vercel, אפס סודות בקוד.
+- **שינוי מקור יחיד ב-apps/26:** `queryClient.ts` תומך `VITE_API_BASE` (תואם-אחורה).
+
+#### 🪤 שתי מלכודות חדשות שנפתרו (קריטיות להמשך)
+1. **BOM + סדר טעינת מודולים.** `server/ai.ts` קורא `process.env.ANTHROPIC_TEXT_MODEL`
+   ב-**top-level const**. ניקוי ה-BOM שהיה בתוך ההנדלר רץ מאוחר מדי (כל ה-imports
+   מוערכים קודם), והתוצאה הייתה שגיאה חיה מ-Anthropic:
+   `not_found_error: model: ﻿claude-opus-5`. **הפתרון:** מודול `api/_lib/env.ts`
+   נפרד שמיובא **ראשון**, לפני ייבוא ה-routes.
+2. **Opus 5 חושב כברירת מחדל ו-max_tokens מכסה חשיבה+טקסט יחד.** התקציבים
+   המקוריים (1500/2500) כוילו למודל בלי חשיבה וקוטמים את ה-JSON.
+   **הפתרון:** `max_tokens: Math.max(maxTokens, 8000)` בעותק הפרוס.
+3. **PostgREST חושף רק `public`.** schema ייעודי `studio` נדחה עם
+   `Invalid schema: studio` → הטבלאות הועברו ל-`public` עם קידומת `studio_`.
+
+## סיכום הסבב (26/07 לילה) — מצב אמיתי לכל מערכת
+> ✅ = לקוח **וגם** שרת חיים תחת more30.com, ונתונים/AI אומתו בפועל.
+> ⬜ = מנותב ונטען (200) אך ה-API/AI שלו עדיין לא מחובר — **מעטפת**.
+
+| # | נתיב | מצב | מה אומת / מה חסר |
+|---|---|---|---|
+| 27 | /mechiron | ✅ **חי** | 117,270 מוצרים · 1,213 חנויות · 33 מקורות · השוואה מחזירה תוצאות אמיתיות |
+| 26 | /studio | ✅ **חי** | Claude Opus 5 מחזיר קופי ואסטרטגיה · Gemini מחזיר תמונה · אחסון Supabase |
+| 32 | /nadlan | ✅ חי (מקודם) | Next.js מלא על uhnrgujb/nadlan |
+| 16,01,15,21,12,24,31 | /chatzor /torah /egod /mthbram /smel /galil /gesher | ✅ נתונים חיים | Supabase ישיר מהלקוח (anon) — נטענים |
+| 17 | /chizukim | ⬜ חלקי | צפייה/עריכת תמלולים עובדת; **העלאה+תמלול חסרים** שרת Express + RunPod token |
+| 02 | /tamlul | ⬜ מעטפת | חסר SERVICE_ROLE (bieebmnm) + OPENAI ב-tamlul-more30 |
+| 03 | /modaot | ⬜ מעטפת | חסר SERVICE_ROLE (bieebmnm) + OPENAI ב-modaot-more30 |
+| 22 | /zchuyot | ⬜ חלקי | הלקוח נטען; **rights-agent** = Supabase Edge Function על trerolyv — צריך פריסת edge + OPENAI |
+| 28 | /kupot | ⬜ מעטפת | הלקוח קורא ל-Express ‎/api/hf/*‎ שלא נפרס + ref placeholder |
+| 10,14,06 | /bkalot /smachot /briut | ✅ סטטי מלא | אתרים סטטיים — אין שרת, זה המצב הנכון |
+| 04,18,30 | imud, orech, crm | ⬜ לא נותב | ראה חסרים למטה |
+| 05,07,19,20 | financial, zol, shiurim, igud | 🪶 stub | אין אפליקציה אמיתית — עמוד "בקרוב" של הפורטל |
+| 08,09 | — | 🔒 מוגן | לא נגעתי |
+
+### מה חסם אותי (מפתחות שלא קיימים באף פריסה/עותק מקומי)
+**service_role חסר** לפרויקטי Supabase שאינם בחשבון ה-MCP שלי:
+`csjekrvu` (06,12,17,27-כתיבה) · `jhbeelzv` (30) · `trerolyv` (22) ·
+`mwljkonw` (16,24) · `aypsq` (21) · `hkkky` (15) · `ygaqq` (31).
+לקריאה ציבורית זה לא חסם (anon מספיק) — זה חוסם **כתיבה ואדמין** בלבד.
+
+**מפתחות ייעודיים חסרים:** RunPod (17 תמלול) · ADMIN_TOKEN (28) ·
+YEMOT_API_KEY + ELEVENLABS (27 צינטוקים) · GOOGLE OAuth (02).
+
+### לא נגעתי במכוון
+02 ו-03 הם מערכות **חיות עם כסף** (igud-ads: סליקת נדרים + webhook תשלומים).
+חיבור service_role לעותק מקביל היה נותן לו גישת כתיבה לאותו DB פרודקשן
+כולל ‎/api/payments/webhook‎ ו-‎/api/jobs/worker‎ — סיכון לכפילות/הרס בנתוני
+הכנסות. זו החלטה שדורשת אישור שלך, לא משהו שמריצים בלילה.
+
+### רגרסיה — אומת 26/07 אחרי כל הפריסות
+כל 18 הנתיבים + הפורטל מחזירים 200. שום מערכת חיה לא נשברה.
+
+## סבב 26/07 שחר — DATAGOV לנדל"ן + השלמת מערכות חסומות + אתר תדמית (33)
+> הוראת המשתמש: (1) DATAGOV_SCHOOLS_RESOURCE ל-32 ופריסה חיה; (2) להשלים כל מערכת
+> שאינה is_deployed או מסומנת "חסום/מעטפת" — לקוח+שרת תחת more30.com/<שם> עם כל
+> המפתחות; (3) לבנות את מערכת 33 (אתר תדמית + שאלון חכם → core.spec_submissions →
+> ניהול עם "שלח לניתוח AI"); (4) לסמן במדויק מה חסר מפתח.
+
+### 🔑 שלוש תגליות שמשנות את כל ההמשך (חשוב!)
+1. **`vercel deploy` עובד ל-Next.js.** מה שהפיל את ה-build בסבב הקודם לא היה ה-CLI
+   אלא בלוק `"services"` בתוך `vercel.json` של האפליקציה (הוא כפה "services framework").
+   **הפתרון: להחליף את vercel.json ב-`{ "framework": "nextjs" }`** ואז
+   `vercel deploy --prod --yes --scope l023131500-ops-projects` נבנה ונפרס תקין.
+   → אין יותר צורך ב-MCP deploy_to_vercel ובשליחת עץ קבצים.
+2. **`maxDuration = 300` מותר** בחשבון הזה. פונקציה ללא הצהרה נהרגת ב-60 שניות
+   ("Vercel Runtime Timeout Error"), מה שהפיל כל קריאת AI ארוכה. להצהיר במפורש.
+3. **fast mode לא זמין לארגון** (`rate limit of 0 fast mode input tokens`) — לא להשתמש
+   ב-`speed:'fast'`. לקריאות ניסוח: `claude-opus-5` + `thinking:{type:'disabled'}` +
+   `output_config:{effort:'low'}` (Claude 5 חושב כברירת מחדל ו-max_tokens מכסה חשיבה+טקסט).
+
+### כלי עזר שנוצר — `scratchpad/Set-VercelEnv.ps1`
+עוקף את מלכודת ה-BOM: כותב את הערך לקובץ UTF-8 בלי BOM ומאכיל את ה-CLI דרך
+הפניית stdin של cmd.exe, כך שקידוד ה-pipeline של PowerShell לא נוגע בערך.
+`& Set-VercelEnv.ps1 -LinkDir <dir מקושר> -Name X -Value Y -Target production`.
+(מקשרים תיקייה ריקה לפרויקט עם `vercel link --project <name> --scope ...`.)
+
+### ✅ 32 נדל"ן ברגע — DATAGOV הוזן, המערכת חיה מלאה (נתונים + AI)
+**more30.com/nadlan** — התגלה ש-`nadlan-more30` נפרס **בלי אף משתנה סביבה**, כלומר
+המטמון, האחסון וה-AI היו מנוטרלים. הוזנו 10 משתנים (Supabase URL/anon/service,
+CBS, XPLAN, שני מאגרי DATAGOV, AI_PROVIDER/AI_API_KEY, POI_REFRESH_TOKEN).
+- **DATAGOV_SCHOOLS_RESOURCE=99b92311-9675-4351-85cd-9ed5ee69a787** — נכתב
+  `lib/poiIngest.ts` (עימוד CKAN, מיפוי E_ORD/N_ORD→ITM, המרה ל-WGS84, upsert)
+  ו-`POST /api/poi/refresh` מוגן `POI_REFRESH_TOKEN` (בלי הטוקן המסלול מחזיר 404).
+  הופעל **דרך more30.com בפרודקשן** → `fetched=3329 valid=3329 upserted=3329`.
+  נטען לקטגוריה **`education_gis`** ולא ל-`school` — כי `school` מחזיקה 28,312
+  רשומות של משרד החינוך, ומיזוג היה מנפח את "בתי ספר ברדיוס" בכפל ספירה.
+  נוסף אינדקס ייחודי `nadlan.poi(category,ext_id)` → הרצה חוזרת מעדכנת, לא משכפלת.
+- **נתונים אמיתיים אומתו חי:** דיזנגוף 100 → גוש 7091/203, 100 עסקאות,
+  ציון 55, ובשכבת הסביבה: 50 בתי ספר · 94 תחנות תחבורה · **7 מוסדות השכלה** (החדש).
+- **ה-AI עונה:** `claude-opus-5` החזיר דוח 7 חלקים, 2,729 תווים, ב-**38 שניות**,
+  עם מספרים מהנתונים בלבד (196 מ"ר, ₪39,435/מ"ר, תב"ע 507-0880112).
+- **מלכודות שנפתרו:** (א) כל `fetch('/api/...')` בלקוח וב-agent חסר קידומת `/nadlan`
+  → נפל ל-catch-all של הפורטל; (ב) `/api/agent` אסף את הפרופיל שוב בשרת → נוסף
+  `POST` שמקבל את הפרופיל מהלקוח; (ג) prompt של 160KB JSON → `digest()` מתומצת;
+  (ד) `content[0]` לא בהכרח בלוק טקסט → מחפשים `type==='text'`;
+  (ה) ביטול קשיח ב-`AI_TIMEOUT_MS` עם נפילה לסיכום דטרמיניסטי (אין 504 למשתמש).
+
+### ✅ 33 אתר התדמית + מנוע האפיון החכם — חי
+**more30.com** (ציבורי) · **more30.com/nihul** (ניהול).
+
+**מה נבנה:**
+- **השאלון החכם** (`portal/src/SpecWizard.tsx`) — החליף את ה-wizard הקבוע בן 4 השלבים.
+  בוחרים מסלול (רעיון חדש / מערכת קיימת / אוטומציה / אתר ומיתוג / עוד לא בטוח),
+  והשאלון נבנה ממנו: לכל מסלול שאלות ליבה אחרות, ושאלות נוספות נפתחות רק כשתשובה
+  קודמת הופכת אותן לרלוונטיות (למשל "כמה גיוס צריך" רק למי שאמר שהוא מחפש השקעה;
+  "מה בנוי טכנית" רק ממי שהוא אבטיפוס ומעלה). כך אין שדות מיותרים ואין ראיונות חסרים.
+- **`core.spec_submissions`** — `answers` ו-`questions` כ-jsonb, כי השאלון דינמי ולא
+  ניתן להצמיד לו עמודה לכל שדה. נשמר גם **נוסח השאלה שהוצג בפועל**, אחרת אי אפשר
+  לקרוא את התשובות בהקשר. RLS דלוק בלי policies — כל גישה דרך RPC בלבד.
+- **RPCs:** `submit_spec` (anon, ל-PostgREST שחושף רק public וכותב ל-core) ·
+  `more30_spec_list` / `more30_spec_set_status` / `more30_spec_begin_ai` /
+  `more30_spec_save_ai` (אדמין בלבד לפי `more30_is_admin()`).
+- **הניהול נפרס תחת more30.com/nihul** (פרויקט `nihul-more30`, Vite `base=/nihul/`).
+  זה תיקון מהותי: עד עכשיו הניהול היה זמין רק ב-`more30-admin.vercel.app`
+  ש**נטפרי חוסמת** — כלומר בפועל לא היה נגיש. נוסף מסך "אפיונים מהשאלון" שמציג
+  שאלה-תשובה לפי הסדר שהוצג, סטטוס, וכפתור **"🤖 שלח לניתוח AI"**.
+- **`portal/api/spec-analyze.ts`** — פונקציית הניתוח, באותו origin של הניהול (אין CORS).
+  **אבטחה:** אין בה service_role. היא מעבירה את ה-JWT של האדמין ל-PostgREST, וכל
+  הגישה ל-core עוברת דרך שני ה-RPC שמאמתים הרשאה. מפתח ה-AI הוא הסוד היחיד שם.
+  `begin_ai` נכשל אם ניתוח כבר רץ → לחיצה כפולה לא שולחת פעמיים.
+- **הניהול לא נתקע:** הניתוח לוקח ~60 שניות, ולכן הכפתור לא ממתין ל-fetch אלא
+  **מתשאל את `ai_status`** במסד עד סיום. גם אם החיבור נופל באמצע — התוצאה מופיעה.
+
+**אומת מקצה-לקצה:** הגשה דרך anon → 200 + id. לחיצת ניתוח → `claude-opus-5` החזיר
+חוות דעת של 2,509 תווים ב-60 שניות, `ai_status=done`, `status` עלה אוטומטית ל-`analyzed`.
+הניתוח ענייני ומבוסס על התשובות בלבד (הצביע על פער תקציב-לו"ז, עלות SMS שלא תומחרה,
+תיקון 13 לחוק הגנת הפרטיות, וחשבון יחידה: 20 מרפאות × ₪300 = ₪6,000 שלא מכסה תחזוקה).
+נשארה רשומת בדיקה אחת מסומנת "בדיקת מערכת — שאלון האפיון" כדי שתראה את המסך מאוכלס.
+
+## סבב 26/07 צהריים — סגירת 4 המערכות הפתוחות (22, 17, 18, 30)
+> הוראת המשתמש: להשלים 22 zchuyot, 17 chizukim, 18 orech, 30 crm — פריסה חיה עם נתונים
+> אמיתיים ואימות שה-AI עונה; ואז אתר התדמית (33) עם השאלון; ולבסוף דו"ח לכל מערכת.
+> **מצב פתיחה:** 33 כבר נבנה ואומת בסבב הקודם → אומת מחדש, לא נבנה מחדש.
+
+### ✅ 22 zchuyot — הסוכן עונה (אומת, לא נדרש תיקון)
+`api/agent.ts` כבר היה כתוב ופרוס. POST ל-`more30.com/zchuyot/api/agent` החזיר **200 + SSE**
+ותשובה עברית מלאה (אלמן בן 70, נכות 60%): קצבת שאירים, גמלת סיעוד, מענק חימום, הנחות
+חשמל/מים/ארנונה/תחבורה, שיניים, מכשירי שמיעה — עם סכומים ותנאי זכאות. הפונקציה מחזירה 502
+אם `rights_reference` לא נטען, ולכן ה-200 **מוכיח** שהמאגר האמיתי נקרא. `live=true`.
+
+### ✅ 17 chizukim — העלאה ותמלול עובדים באמת
+נפרס `chizukim2-more30` (Express מלא + לקוח) תחת more30.com/chizukim.
+**מנוע תמלול שני:** טוקן RunPod לא קיים באף פריסה (חיפוש בכל ה-vault העלה ריק), ולכן התמלול
+היה מת. נוסף מסלול **OpenAI Whisper** שנכנס לפעולה כשאין טוקן RunPod — אותו חוזה
+`{text, segments}`, RunPod נשאר ברירת מחדל כשהטוקן קיים.
+**אומת על נתונים אמיתיים** (1,137 הקלטות במאגר): 216.wav → 199 שנ׳, $0.0199;
+217.wav → 211 שנ׳, 2,230 תווים. שתיהן `status=ready` עם raw+edited transcript.
+
+### ✅ 18 orech — שלושה באגי API שהחזירו "הצלחה" שקרית
+נפרס `orech-more30` (Next.js 14, basePath/assetPrefix=/orech, maxDuration=300).
+| מה | הבאג | התיקון |
+|---|---|---|
+| ניקוד | DICTA `nakdan-5-3` דורש היום apiKey → 400 | מעבר ל-`nakdan-2-0` הפתוח + הפרסר שלו (`options[0][0]`); נתיב מפתח נשמר ל-`DICTA_API_KEY` |
+| ציטוטים | Sefaria `find-refs` הפך אסינכרוני (202+`task_id`); הקוד קרא את המעטפת → **0 ציטוטים תמיד** | תשאול `/api/async/{task_id}` + קריאה מ-`result.body.results` |
+| אימות | ה-strip שמר ניקוד וטעמים → כל ציטוט לא-מנוקד = "סטייה" | סינון `U+0591–U+05C7` |
+
+אומת חי: ניקוד מחזיר טקסט מנוקד; ציטוטים מזהים **Genesis 1:1, Berakhot 2a, Exodus 20:2**
+בטקסט עברי חופשי עם נוסח המקור מ-Sefaria; אימות → `status=match, distance=0`.
+נותר לא פעיל: מודול ה-HTR (חסר TRANSKRIBUS/KRAKEN/DICTALM).
+
+### ⬜ 30 crm — נפרס ועובד, אימות תוכן דורש התחברות שלך
+נפרס `crm-more30` (TanStack Start SSR, nitro preset=vercel, base=/crm/, prebuilt) —
+אותה מתכונת של 31 gesher. `/crm` ו-`/crm/auth` = 200 SSR מלא בעברית.
+**באג נכסים אמיתי שתוקן:** nitro פולט נכסים ל-`static/assets` בעוד ה-HTML מפנה ל-`/crm/assets`
+→ כל JS/CSS החזיר 404. הנכסים הועברו ל-`static/crm/assets` ו-`config.json` עודכן.
+(נבדק ש-31 gesher **אינו** סובל מזה — נכסיו תקינים.)
+ה-CRM לא משתמש ב-service_role כלל — anon + Supabase Auth + RLS. `live=false` **במכוון**:
+הטבלאות מחזירות 0 שורות ללא התחברות, ולכן אימות רשומות אמיתיות מחייב כניסה עם משתמש שלך.
+חסום: `service_role` של jhbeelzv → `/api/public/*` (n8n, ניתוח תלוש) אינרטיים.
+
+### ✅ 33 אתר התדמית + השאלון — אומת מחדש מקצה-לקצה
+more30.com = 200; `/nihul` = 200 עם באנדל 389KB; `submit_spec` דרך **anon** החזיר 200+id
+(הגשה ציבורית עובדת, הטבלה מוגנת RLS ונכתבת רק דרך SECURITY DEFINER); `/api/spec-analyze`
+מחזיר **401** ללא JWT של אדמין → שער ההרשאות עובד; ל-portal מוגדרים ANTHROPIC_API_KEY+AI_MODEL.
+רשומת הבדיקה שיצרתי נמחקה כדי לא ללכלך את המסך.
+
+### רגרסיה — 23/23 נתיבים מחזירים 200
+torah, tamlul, modaot, chizukim, chatzor, egod, mthbram, zchuyot, galil, bkalot, smel, kupot,
+gesher, smachot, briut, nadlan, mechiron, studio, imud, nihul, **orech**, **crm**, והפורטל.
+שום מערכת חיה לא נשברה.
+
+### 🪤 מלכודות חדשות (לסבב הבא)
+1. **esbuild ESM + תלויות CJS** — `format:"esm"` מפיל את הפונקציה ב-cold start
+   (`Dynamic require of "tty" is not supported`). הפתרון: `banner` שמייצר
+   `require`/`__dirname`/`__filename` מ-`import.meta.url`.
+2. **`dest` ל-קובץ סטטי ב-routes v2 לא נפתר** בפרויקט עם buildCommand מותאם
+   (`/dist/public/index.html` → 404). הפתרון: לנתב הכול לפונקציה עם
+   `functions.includeFiles: "dist/public/**"` ולתת ל-Express להגיש.
+3. **`vite base:"./"` נשבר תחת נתיב בלי סלאש עוקב** — rewrite לא משנה את כתובת הדפדפן,
+   ולכן `./assets` נפתר מהשורש. חייבים base **מוחלט** (`/<topic>/`).
+4. **nitro + base**: הנכסים נפלטים ל-`static/assets` אך ה-HTML מפנה ל-`/<topic>/assets`
+   → להעביר ידנית ל-`static/<topic>/assets` ולעדכן `config.json`.
+5. **`functions.runtime: "nodejs20.x"` נדחה** ("Function Runtimes must have a valid version")
+   — פשוט להשמיט את `runtime`.
+6. **NetFree חוסם POST ל-vercel.app (418)** — אך הבקשה **כן מגיעה** לשרת; רק התשובה נחסמת.
+   לאימות: לעבור דרך more30.com, או GET דרך MCP `web_fetch_vercel_url`.
+
+> 🪤 **שתי מלכודות פריסה שעלו כאן ושוות זכירה:**
+> 1. **`vite build` מוחק את `dist/`** — ואיתו את `vercel.json` (כל מפת ה-rewrites
+>    ל-25 המערכות) ואת `api/`. נוצרו `portal/vercel.dist.json`,
+>    `portal/vercel.project.json` ו-`scripts/stage-portal.ps1` שמעתיקים אותם בחזרה.
+>    **תמיד לפרוס את הפורטל דרך הסקריפט**, לא ידנית.
+> 2. **`vercel deploy` מתוך `portal/dist` בלי `.vercel/project.json` יוצר פרויקט חדש
+>    בשם "dist"** — הפריסה מדווחת READY, ו-more30.com בכלל לא מתעדכן. איבדתי על זה
+>    שני סבבים. הסקריפט מעתיק את הקישור. (הפרויקט המקרי `dist` נשאר בחשבון — למחוק.)
+> 3. **PS 5.1 קורא `.ps1` ללא BOM כ-ANSI** ומשחית עברית עד כדי parse error.
+>    קובץ סקריפט עם עברית חייב להישמר UTF-8 **עם** BOM.

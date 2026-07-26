@@ -1,6 +1,7 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { DEPARTMENTS, REGISTRY, TOPIC_ROUTES } from "@more30/config";
 import { createBrowserClient } from "@more30/db";
+import { SpecWizard } from "./SpecWizard";
 
 /**
  * more30 — public portal ("מור מערכות תוכנה" / MOR1).
@@ -101,7 +102,6 @@ const SERVICES = [
   { ic: "🔗", h: "הכול מחובר", p: "משתמש אחד, נתונים משותפים, לוח בקרה מרכזי. המערכות מדברות זו עם זו." },
   { ic: "🤝", h: "ליווי אמיתי", p: "לא נעלמים אחרי ההשקה — ממשיכים איתכם לתחזוקה, שיפור וגדילה." },
 ];
-const SERVICE_OPTIONS = ["בניית מערכת", "עיצוב ומיתוג", "שיווק ופרסום", "ליווי עסקי", "גיוס השקעה", "אוטומציות", "תמיכה טכנית"];
 
 function Portal({ rows }: { rows: Row[] }) {
   useReveal();
@@ -174,7 +174,7 @@ function Portal({ rows }: { rows: Row[] }) {
           <p className="sub reveal">{rows.length} מערכות · {liveCount} כבר חיות · והרשימה ממשיכה לגדול</p>
           {depts.map((dep) => {
             const list = rows.filter((r) => r.department === dep).sort((a, b) => a.number.localeCompare(b.number));
-            const accent = DEPT_ACCENT[dep];
+            const accent = DEPT_ACCENT[dep] ?? DEPT_ACCENT.misc!;
             return (
               <div className="dept" key={dep}>
                 <div className="dept-head reveal">
@@ -196,9 +196,12 @@ function Portal({ rows }: { rows: Row[] }) {
       <section id="intake" className="intake">
         <div className="wrap">
           <div className="eyebrow reveal">בואו נבנה משהו</div>
-          <h2 className="h2 reveal">יש לכם רעיון? ספרו לנו 💡</h2>
-          <p className="sub reveal">כמה שאלות קצרות ונחזור אליכם. רק השם חובה — כל השאר לפי מה שבא לכם.</p>
-          <Wizard />
+          <h2 className="h2 reveal">שאלון האפיון החכם 💡</h2>
+          <p className="sub reveal">
+            בוחרים מסלול, ומשם השאלון נבנה לפי מה שאתם עונים — בלי שדות שלא נוגעים לכם.
+            רק השם חובה.
+          </p>
+          <SpecWizard />
         </div>
       </section>
 
@@ -247,155 +250,3 @@ function SystemCard({ r, accent }: { r: Row; accent: string }) {
     ? <a className="card on reveal" href={href}>{inner}</a>
     : <div className="card reveal">{inner}</div>;
 }
-
-/* ---------------- Multi-step wizard ---------------- */
-
-const STEPS = [
-  { key: "you", title: "נעים להכיר", sub: "איך נחזור אליכם?" },
-  { key: "idea", title: "הרעיון שלכם", sub: "ספרו לנו על מה מדובר" },
-  { key: "market", title: "השוק", sub: "מי הלקוח ואיך מרוויחים" },
-  { key: "needs", title: "מה תצטרכו מאיתנו", sub: "וכמה רחוק אתם רוצים להגיע" },
-];
-
-function Wizard() {
-  const [step, setStep] = useState(0);
-  const [f, setF] = useState<Record<string, string>>({});
-  const [svc, setSvc] = useState<string[]>([]);
-  const [state, setState] = useState<"idle" | "sending" | "done" | "error">("idle");
-  const [err, setErr] = useState("");
-  const [stars, setStars] = useState<number[]>([]);
-  const set = (k: string) => (e: React.ChangeEvent<any>) => setF({ ...f, [k]: e.target.value });
-
-  const pct = state === "done" ? 100 : Math.round(((step + 1) / STEPS.length) * 100);
-
-  function next() {
-    if (step === 0 && !f.full_name?.trim()) { setErr("רק נדע איך קוראים לכם 🙂"); return; }
-    setErr(""); setStep((s) => Math.min(s + 1, STEPS.length - 1));
-  }
-  function back() { setErr(""); setStep((s) => Math.max(s - 1, 0)); }
-
-  async function submit() {
-    if (!f.full_name?.trim()) { setErr("שם מלא הוא שדה חובה."); setStep(0); return; }
-    if (!supa) { setErr("החיבור לשרת אינו זמין כרגע."); return; }
-    setState("sending"); setErr("");
-    const payload = {
-      ...f, services_wanted: svc,
-      seeking_investment: f.seeking_investment === "כן",
-      has_existing_product: f.stage === "מוצר חי" || f.stage === "צומח",
-    };
-    const { error } = await supa.rpc("submit_startup_idea", { payload });
-    if (error) { setState("error"); setErr(error.message); return; }
-    setStars(Array.from({ length: 22 }, (_, i) => i));
-    setState("done");
-    setTimeout(() => setStars([]), 1800);
-  }
-
-  if (state === "done") return (
-    <div className="wiz">
-      {stars.length > 0 && (
-        <div className="starfield">
-          {stars.map((i) => (
-            <span className="star" key={i} style={{ left: `${(i * 4.5 + 6) % 100}%`, bottom: "40%", animationDelay: `${(i % 6) * 0.08}s` }}>
-              {["⭐", "✨", "🌟", "💫"][i % 4]}
-            </span>
-          ))}
-        </div>
-      )}
-      <div className="thanks">
-        <div className="checkmark">✓</div>
-        <div className="big">קיבלנו, {f.full_name?.split(" ")[0] || "תודה"}! 🎉</div>
-        <p>הרעיון שלכם נחת אצלנו. נעבור עליו ונחזור אליכם בהקדם.<br />בינתיים — מוזמנים לטייל בין המערכות שכבר חיות.</p>
-        <a className="btn btn-primary" href="#systems" style={{ marginTop: 14 }}>לגלות את המערכות ←</a>
-      </div>
-    </div>
-  );
-
-  return (
-    <div className="wiz reveal">
-      <div className="wiz-prog"><span style={{ width: `${pct}%` }} /></div>
-      <div className="wiz-steps">
-        {STEPS.map((s, i) => (
-          <div className={`s ${i === step ? "active" : ""} ${i < step ? "done" : ""}`} key={s.key}>
-            <div className="num">{i < step ? "✓" : i + 1}</div>{s.title}
-          </div>
-        ))}
-      </div>
-
-      <div className="wiz-step-title">{STEPS[step].title}</div>
-      <div className="wiz-step-sub">{STEPS[step].sub}</div>
-
-      <div className="wiz-fields" key={step}>
-        {step === 0 && (<>
-          <div className="row2">
-            <F label="שם מלא *" v={f.full_name} on={set("full_name")} />
-            <F label="טלפון" v={f.phone} on={set("phone")} />
-          </div>
-          <div className="row2">
-            <F label="אימייל" v={f.email} on={set("email")} />
-            <F label="עיר" v={f.city} on={set("city")} />
-          </div>
-        </>)}
-
-        {step === 1 && (<>
-          <F label="שם הרעיון / הפרויקט" v={f.project_name} on={set("project_name")} />
-          <F label="במשפט אחד — מה זה?" v={f.short_description} on={set("short_description")} />
-          <A label="איזו בעיה אתם פותרים?" v={f.problem} on={set("problem")} />
-          <A label="מה הפתרון שלכם?" v={f.solution} on={set("solution")} />
-        </>)}
-
-        {step === 2 && (<>
-          <div className="row2">
-            <F label="מי הלקוח שלכם?" v={f.target_customer} on={set("target_customer")} />
-            <F label="איך מרוויחים? (מודל הכנסה)" v={f.revenue_model} on={set("revenue_model")} />
-          </div>
-          <div className="row2">
-            <F label="מי המתחרים?" v={f.competitors} on={set("competitors")} />
-            <F label="במה אתם שונים?" v={f.differentiation} on={set("differentiation")} />
-          </div>
-        </>)}
-
-        {step === 3 && (<>
-          <div className="row2">
-            <S label="באיזה שלב אתם?" v={f.stage} on={set("stage")} opts={["רעיון", "אבטיפוס", "מוצר חי", "צומח"]} />
-            <S label="מחפשים השקעה?" v={f.seeking_investment} on={set("seeking_investment")} opts={["לא", "כן"]} />
-          </div>
-          <div>
-            <span className="lbl">אילו שירותים תרצו מאיתנו?</span>
-            <div className="tags">
-              {SERVICE_OPTIONS.map((o) => (
-                <span key={o} className={`tagsel ${svc.includes(o) ? "on" : ""}`}
-                  onClick={() => setSvc(svc.includes(o) ? svc.filter((x) => x !== o) : [...svc, o])}>{o}</span>
-              ))}
-            </div>
-          </div>
-          <A label="ספרו לנו על החלום שלכם (חופשי)" v={f.dream_free_text} on={set("dream_free_text")} />
-        </>)}
-      </div>
-
-      {err && <div className="err" style={{ marginTop: 14 }}>{err}</div>}
-
-      <div className="wiz-nav">
-        {step > 0
-          ? <button className="btn btn-light" onClick={back}>→ חזרה</button>
-          : <span />}
-        {step < STEPS.length - 1
-          ? <button className="btn btn-primary" onClick={next}>המשך ←</button>
-          : <button className="btn btn-primary" onClick={submit} disabled={state === "sending"}>
-              {state === "sending" ? "שולח…" : "שליחת הרעיון 🚀"}
-            </button>}
-      </div>
-    </div>
-  );
-}
-
-const F = ({ label, v, on }: { label: string; v?: string; on: React.ChangeEventHandler<HTMLInputElement> }) => (
-  <div className="field"><label>{label}</label><input className="inp" value={v ?? ""} onChange={on} /></div>
-);
-const A = ({ label, v, on }: { label: string; v?: string; on: React.ChangeEventHandler<HTMLTextAreaElement> }) => (
-  <div className="field"><label>{label}</label><textarea className="inp" rows={2} value={v ?? ""} onChange={on} /></div>
-);
-const S = ({ label, v, on, opts }: { label: string; v?: string; on: React.ChangeEventHandler<HTMLSelectElement>; opts: string[] }) => (
-  <div className="field"><label>{label}</label>
-    <select className="inp" value={v ?? ""} onChange={on}><option value=""></option>{opts.map((o) => <option key={o}>{o}</option>)}</select>
-  </div>
-);

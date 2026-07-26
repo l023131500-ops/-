@@ -35,6 +35,13 @@ service-account*.json
 # belt-and-suspenders: never leak any vendored env file (incl. .env.example)
 /apps/**/.env*
 
+# ── Deploy staging ──────────────────────────────────────────────────────────
+# _deploy/<project>/ holds per-system build output prepared for Vercel: compiled
+# bundles, copied client dists, and .vercel/project.json link files. All of it is
+# reproducible from the sources in apps/, and some of it embeds build-time env —
+# so it stays local, exactly like apps/.
+/_deploy/**
+
 # logs / os
 *.log
 .DS_Store

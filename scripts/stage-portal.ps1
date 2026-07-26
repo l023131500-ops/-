@@ -1,0 +1,39 @@
+﻿# stage-portal.ps1 — מכין את portal/dist לפריסה ל-Vercel.
+#
+# vite מוחק את dist/ בכל build, ולכן שני הדברים שלא מגיעים מה-build עצמו —
+# vercel.json (מפת ה-rewrites לכל המערכות) ותיקיית api/ (פונקציית ניתוח ה-AI) —
+# נשמרים במקור ומועתקים כאן. בלי זה, build אחד מוחק את כל הניתוב.
+#
+# שימוש:  pwsh scripts/stage-portal.ps1   ואז:
+#         cd portal/dist; vercel deploy --prod --yes --scope l023131500-ops-projects
+
+$ErrorActionPreference = 'Stop'
+$root   = Split-Path -Parent $PSScriptRoot
+$portal = Join-Path $root 'portal'
+$dist   = Join-Path $portal 'dist'
+
+if (-not (Test-Path (Join-Path $dist 'index.html'))) {
+  throw "dist/index.html חסר — הרץ קודם: npx pnpm --filter @more30/portal build"
+}
+
+Copy-Item (Join-Path $portal 'vercel.dist.json') (Join-Path $dist 'vercel.json') -Force
+
+# בלי .vercel/project.json בתוך dist, `vercel deploy` מסיק את שם הפרויקט משם
+# התיקייה ויוצר פרויקט חדש בשם "dist" — הפריסה מצליחה אבל more30.com לא מתעדכן.
+# הקישור נשמר במקור ומועתק לכאן בכל staging.
+$linkSrc = Join-Path $portal 'vercel.project.json'
+if (Test-Path $linkSrc) {
+  New-Item -ItemType Directory -Force -Path (Join-Path $dist '.vercel') | Out-Null
+  Copy-Item $linkSrc (Join-Path $dist '.vercel\project.json') -Force
+} else {
+  Write-Warning "portal/vercel.project.json חסר — הפריסה עלולה ליצור פרויקט חדש במקום לעדכן את more30-portal"
+}
+
+$apiSrc = Join-Path $portal 'api'
+if (Test-Path $apiSrc) {
+  $apiDst = Join-Path $dist 'api'
+  New-Item -ItemType Directory -Force -Path $apiDst | Out-Null
+  Copy-Item (Join-Path $apiSrc '*') $apiDst -Recurse -Force
+}
+
+Get-ChildItem $dist -Recurse -File | ForEach-Object { $_.FullName.Substring($dist.Length + 1) }

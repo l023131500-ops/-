@@ -28,19 +28,43 @@ interface Idea { id: string; full_name: string; phone: string | null; email: str
   services_wanted: string[] | null; dream_free_text: string | null; status: string; created_at: string;
   converted_project_num: string | null; }
 
+/** אפיון מהשאלון החכם (מערכת 33). התשובות דינמיות ולכן נשמרות כ-jsonb. */
+interface Spec {
+  id: string; created_at: string;
+  full_name: string; phone: string | null; email: string | null; city: string | null;
+  project_name: string | null; track: string | null;
+  answers: Record<string, string | string[]>;
+  questions: { key: string; label: string; step: string }[];
+  services_wanted: string[] | null;
+  status: string;
+  ai_status: string; ai_model: string | null; ai_analysis: string | null; ai_error: string | null;
+  ai_completed_at: string | null;
+}
+
 let sb: SupabaseClient | null = null;
 try { sb = createBrowserClient("public"); } catch { sb = null; }
 const DEPT_KEYS = Object.keys(DEPARTMENTS);
 const IDEA_STATUS = ["new", "reviewing", "approved", "rejected"];
 const IDEA_STATUS_HE: Record<string, string> = { new: "חדש", reviewing: "בבדיקה", approved: "אושר", rejected: "נדחה" };
+const SPEC_STATUS = ["new", "reviewing", "analyzed", "converted", "rejected"];
+const SPEC_STATUS_HE: Record<string, string> = { new: "חדש", reviewing: "בבדיקה", analyzed: "נותח", converted: "הפך לפרויקט", rejected: "נדחה" };
+
+/**
+ * הניהול מוגש תחת more30.com/nihul, והפונקציה שמריצה את ניתוח ה-AI יושבת
+ * באותו origin (הפורטל) ב-/api/spec-analyze. בפיתוח מקומי אין פונקציה —
+ * ואז אפשר להצביע לפרודקשן דרך VITE_API_BASE.
+ */
+const API_BASE = (import.meta as any).env?.VITE_API_BASE ?? "";
 
 export function App() {
-  const [view, setView] = useState<"systems" | "ideas">("systems");
+  const [view, setView] = useState<"systems" | "ideas" | "specs">("systems");
   const [rows, setRows] = useState<Overview[]>([]);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [tokens, setTokens] = useState<Token[]>([]);
   const [bugs, setBugs] = useState<Bug[]>([]);
   const [ideas, setIdeas] = useState<Idea[]>([]);
+  const [specs, setSpecs] = useState<Spec[]>([]);
+  const [aiBusy, setAiBusy] = useState<Record<string, boolean>>({});
   const [email, setEmail] = useState("");
   const [session, setSession] = useState<unknown>(null);
   const [msg, setMsg] = useState<string | null>(sb ? null : "מצב לא-מקוון: אין חיבור Supabase.");
@@ -67,12 +91,69 @@ export function App() {
     setIdeas((data ?? []) as Idea[]);
   }
 
+  async function loadSpecs() {
+    if (!sb) return;
+    const { data, error } = await sb.rpc("more30_spec_list");
+    if (error) { setMsg("אפיונים דורשים התחברות אדמין. " + error.message); setSpecs([]); return; }
+    setSpecs((data ?? []) as Spec[]);
+  }
+  async function setSpecStatus(id: string, s: string) {
+    if (!sb) return;
+    const { error } = await sb.rpc("more30_spec_set_status", { p_id: id, p_status: s });
+    if (error) { setMsg(error.message); return; }
+    loadSpecs();
+  }
+
+  /**
+   * "שלח לניתוח AI": הפונקציה בשרת היא זו שמחזיקה את מפתח ה-AI. אנחנו רק
+   * מעבירים לה את ה-JWT של האדמין המחובר — היא מאמתת דרכו הרשאה, מריצה את
+   * הניתוח וכותבת אותו למסד.
+   *
+   * הניתוח לוקח כדקה, ולכן לא מחכים לתשובת ה-fetch כדי לדעת מה קרה: הפונקציה
+   * כותבת `ai_status` למסד, ואנחנו עוקבים אחריו בתשאול. כך גם אם החיבור של
+   * הדפדפן נופל באמצע — התוצאה עדיין תופיע, ואין כפתור שנתקע ב"מנתח…".
+   */
+  async function analyzeSpec(id: string) {
+    if (!sb || aiBusy[id]) return;
+    const { data: sess } = await sb.auth.getSession();
+    const jwt = sess.session?.access_token;
+    if (!jwt) { setMsg("צריך התחברות אדמין כדי להריץ ניתוח."); return; }
+
+    setAiBusy((b) => ({ ...b, [id]: true }));
+    setMsg("שולח לניתוח AI… (בדרך כלל כדקה)");
+
+    fetch(`${API_BASE}/api/spec-analyze`, {
+      method: "POST",
+      headers: { "content-type": "application/json", Authorization: `Bearer ${jwt}` },
+      body: JSON.stringify({ id }),
+    }).catch(() => { /* התוצאה נקראת מהמסד בתשאול, לא מכאן */ });
+
+    // תשאול עד שהניתוח יוצא ממצב running (או עד 3 דקות, כבלם).
+    const started = Date.now();
+    const poll = window.setInterval(async () => {
+      if (!sb) return;
+      const { data } = await sb.rpc("more30_spec_list");
+      const list = (data ?? []) as Spec[];
+      setSpecs(list);
+      const row = list.find((x) => x.id === id);
+      const timedOut = Date.now() - started > 180_000;
+      if (!row || row.ai_status !== "running" || timedOut) {
+        window.clearInterval(poll);
+        setAiBusy((b) => ({ ...b, [id]: false }));
+        if (row?.ai_status === "done") setMsg("הניתוח הושלם ✅");
+        else if (row?.ai_status === "error") setMsg("הניתוח נכשל: " + (row.ai_error ?? "לא ידוע"));
+        else if (timedOut) setMsg("הניתוח מתמשך — רעננו את הדף כדי לבדוק שוב.");
+      }
+    }, 4000);
+  }
+
   useEffect(() => { if (!sb) return; loadSystems();
     sb.auth.getSession().then(({ data }) => setSession(data.session));
-    const { data: sub } = sb.auth.onAuthStateChange((_e, s) => { setSession(s); if (s) loadIdeas(); });
+    const { data: sub } = sb.auth.onAuthStateChange((_e, s) => { setSession(s); if (s) { loadIdeas(); loadSpecs(); } });
     return () => sub.subscription.unsubscribe();
   }, []);
   useEffect(() => { if (view === "ideas" && session) loadIdeas(); }, [view, session]);
+  useEffect(() => { if (view === "specs" && session) loadSpecs(); }, [view, session]);
 
   async function signIn() { if (!sb || !email) return; const { error } = await sb.auth.signInWithOtp({ email }); setMsg(error ? "שגיאה: " + error.message : "נשלח קישור התחברות למייל."); }
   async function signOut() { if (sb) { await sb.auth.signOut(); setSession(null); } }
@@ -110,6 +191,7 @@ export function App() {
           <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
             <button onClick={() => setView("systems")} style={{ ...tab, ...(view === "systems" ? tabOn : {}) }}>מערכות ({merged.length})</button>
             <button onClick={() => setView("ideas")} style={{ ...tab, ...(view === "ideas" ? tabOn : {}) }}>רעיונות נכנסים{ideas.length ? ` (${ideas.length})` : ""}</button>
+            <button onClick={() => setView("specs")} style={{ ...tab, ...(view === "specs" ? tabOn : {}) }}>אפיונים מהשאלון{specs.length ? ` (${specs.length})` : ""}</button>
           </div>
         </div>
         <div style={{ fontSize: 13 }}>
@@ -127,11 +209,11 @@ export function App() {
             <label style={{ fontSize: 13, alignSelf: "center" }}><input type="checkbox" checked={fLive} onChange={(e) => setFLive(e.target.checked)} /> חי בלבד</label>
             <input placeholder="חיפוש…" value={q} onChange={(e) => setQ(e.target.value)} style={{ ...inp, flex: 1, minWidth: 160 }} />
           </div>
-          {DEPT_KEYS.filter((d) => byDept[d]?.length).map((dep) => (
+          {DEPT_KEYS.map((dep) => ({ dep, list: byDept[dep] ?? [] })).filter((g) => g.list.length).map(({ dep, list }) => (
             <section key={dep} style={{ marginBottom: 22 }}>
-              <h2 style={{ fontSize: 18, borderBottom: "2px solid #e2e8f0", paddingBottom: 6 }}>{DEPARTMENTS[dep]} <span style={{ color: "#94a3b8", fontSize: 14 }}>({byDept[dep].length})</span></h2>
+              <h2 style={{ fontSize: 18, borderBottom: "2px solid #e2e8f0", paddingBottom: 6 }}>{DEPARTMENTS[dep]} <span style={{ color: "#94a3b8", fontSize: 14 }}>({list.length})</span></h2>
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: 12 }}>
-                {byDept[dep].sort((a, b) => a.number.localeCompare(b.number)).map((r) => {
+                {list.sort((a, b) => a.number.localeCompare(b.number)).map((r) => {
                   const myTasks = tasks.filter((t) => t.project_num === r.number);
                   const myTokens = tokens.filter((t) => t.project_num === r.number);
                   const myBugs = bugs.filter((b) => b.project_num === r.number && b.status !== "closed");
@@ -193,7 +275,7 @@ export function App() {
             </section>
           ))}
         </>
-      ) : (
+      ) : view === "ideas" ? (
         <section>
           {!isAuthed && <div style={{ ...card, textAlign: "center" }}>🔒 רעיונות נכנסים מכילים מידע אישי — יש להתחבר כאדמין כדי לצפות.</div>}
           {ideas.map((i) => {
@@ -230,6 +312,65 @@ export function App() {
             );
           })}
           {isAuthed && ideas.length === 0 && <div style={{ ...card, textAlign: "center", color: "#64748b" }}>אין רעיונות נכנסים עדיין.</div>}
+        </section>
+      ) : (
+        <section>
+          {!isAuthed && <div style={{ ...card, textAlign: "center" }}>🔒 אפיונים מכילים מידע אישי — יש להתחבר כאדמין כדי לצפות.</div>}
+          {specs.map((sp) => {
+            const busy = !!aiBusy[sp.id] || sp.ai_status === "running";
+            return (
+              <div key={sp.id} style={{ ...card, marginBottom: 12 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 8 }}>
+                  <b>{sp.project_name || "(ללא שם פרויקט)"} — {sp.full_name}</b>
+                  <span style={{ display: "flex", gap: 6, alignItems: "center" }}>
+                    {SPEC_STATUS.map((s) => <button key={s} onClick={() => setSpecStatus(sp.id, s)}
+                      style={{ ...pillBtn, background: sp.status === s ? "#4f46e5" : "#f1f5f9", color: sp.status === s ? "#fff" : "#334155" }}>{SPEC_STATUS_HE[s]}</button>)}
+                  </span>
+                </div>
+                <div style={{ fontSize: 12, color: "#64748b", marginTop: 4 }}>
+                  {new Date(sp.created_at).toLocaleString("he-IL")}
+                  {sp.track ? ` · מסלול: ${sp.track}` : ""}
+                  {sp.phone ? ` · ${sp.phone}` : ""}{sp.email ? ` · ${sp.email}` : ""}{sp.city ? ` · ${sp.city}` : ""}
+                </div>
+                {sp.services_wanted?.length ? <div style={{ fontSize: 13, marginTop: 6 }}><b>שירותים:</b> {sp.services_wanted.join(", ")}</div> : null}
+
+                {/* התשובות מוצגות עם נוסח השאלה שהוצג בפועל — השאלון דינמי. */}
+                <details style={{ marginTop: 8 }} open>
+                  <summary style={{ fontSize: 12, cursor: "pointer", fontWeight: 700, color: "#4f46e5" }}>
+                    התשובות ({sp.questions?.length ?? 0})
+                  </summary>
+                  <div style={{ fontSize: 13, marginTop: 6, display: "grid", gap: 4 }}>
+                    {(sp.questions ?? []).map((q) => {
+                      const v = sp.answers?.[q.key];
+                      if (v === undefined || v === null || (Array.isArray(v) ? !v.length : !String(v).trim())) return null;
+                      return <div key={q.key}><b>{q.label}:</b> {Array.isArray(v) ? v.join(", ") : String(v)}</div>;
+                    })}
+                  </div>
+                </details>
+
+                <div style={{ display: "flex", gap: 8, marginTop: 10, alignItems: "center", flexWrap: "wrap" }}>
+                  <button onClick={() => analyzeSpec(sp.id)} disabled={busy || !isAuthed}
+                    style={{ ...btn, background: busy ? "#c7d2fe" : "#4f46e5", color: "#fff", border: "none", cursor: busy ? "wait" : "pointer", fontWeight: 700 }}>
+                    {busy ? "מנתח…" : sp.ai_analysis ? "🤖 נתח מחדש" : "🤖 שלח לניתוח AI"}
+                  </button>
+                  <span style={{ fontSize: 12, color: sp.ai_status === "error" ? "#dc2626" : "#64748b" }}>
+                    {sp.ai_status === "done" && sp.ai_completed_at ? `נותח ${new Date(sp.ai_completed_at).toLocaleString("he-IL")}${sp.ai_model ? ` · ${sp.ai_model}` : ""}` : null}
+                    {sp.ai_status === "pending" ? "עוד לא נותח" : null}
+                    {sp.ai_status === "running" ? "ניתוח בעיבוד…" : null}
+                    {sp.ai_status === "error" ? `שגיאה: ${sp.ai_error ?? "לא ידוע"}` : null}
+                  </span>
+                </div>
+
+                {sp.ai_analysis && (
+                  <div style={{ marginTop: 10, background: "#f5f3ff", border: "1px solid #ddd6fe", borderRadius: 10, padding: "10px 12px" }}>
+                    <div style={{ fontSize: 12, fontWeight: 700, color: "#5b21b6", marginBottom: 6 }}>🤖 ניתוח AI</div>
+                    <div style={{ fontSize: 13, whiteSpace: "pre-wrap", lineHeight: 1.6, color: "#1e1b4b" }}>{sp.ai_analysis}</div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+          {isAuthed && specs.length === 0 && <div style={{ ...card, textAlign: "center", color: "#64748b" }}>אין אפיונים עדיין. השאלון חי ב-more30.com (מקטע "שאלון האפיון החכם").</div>}
         </section>
       )}
     </main>
