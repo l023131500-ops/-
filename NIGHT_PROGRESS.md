@@ -597,3 +597,45 @@ gesher, smachot, briut, nadlan, mechiron, studio, imud, nihul, **orech**, **crm*
 - **ריק לגמרי:** `tamlul-more30`, `modaot-more30`, `crm-more30`.
 - **הסטטוס של 32 `DATAGOV_SCHOOLS_RESOURCE` תוקן ל-provided** — הוא הוזן ואומת
   בסבב הקודם אבל נשאר תקוע על missing.
+
+## סבב 27/07 — השלמת מפתחות ללא PAT
+> **אין PAT.** נבדק ביסודיות: אין `SUPABASE_ACCESS_TOKEN`, ה-Supabase CLI לא מותקן,
+> אין תיקיית הגדרות שלו, ואין מחרוזת `sbp_` בשום מקום. חיבור ה-Supabase שלי הוא MCP
+> דרך החשבון, ו-`list_projects` מחזיר **פרויקט אחד**: `uhnrgujb`. bieebmnm, trerolyv,
+> jhbeelzv ו-csjekrvu אינם בו. גם `vercel env pull` מהפרויקטים החיים לא עוזר —
+> הערכים חוזרים כ-`[REDACTED]` (Sensitive/write-only).
+>
+> **הדרך שכן עבדה:** קבצי `.env.local` של העותקים המקומיים ב-`apps/`.
+
+### 🔑 מלכודת מדידה שכמעט הובילה לדיווח שגוי
+בדיקת תקפות מפתח מול `/rest/v1/` (השורש) מחזירה **401 גם למפתח תקף לגמרי**. בסריקה
+ראשונה זה גרם לכל 12 המערכות להיראות כאילו המפתח שלהן מת — כולל מסקנה שגויה
+ש-01 torah שבור. **הבדיקה הנכונה:** לשאול טבלה שבוודאות לא קיימת —
+`404 / PGRST205` = המפתח התקבל, `401` = המפתח פסול.
+
+**התוצאה האמיתית: כל 12 המערכות עם מפתח מוטמע — תקפות. אין אף רגרסיה.**
+(torah, egod, mthbram, chatzor, galil, smel, gesher, chizukim, zchuyot, bkalot,
+briut, crm.)
+
+### ✅ 02 tamlul — הוזן, נפרס, ונשאר מפתח אחד בדיוק
+הוזנו ל-`tamlul-more30`: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+(anon של bieebmnm — **נבדק ותקף**), `OPENAI_API_KEY` (**אומת חי**: 200, 123 מודלים).
+נוסף `.vercelignore` שמונע העלאת `.env` לפריסה. נפרס מחדש (READY); `/tamlul` ו-
+`/tamlul/login` = 200.
+**נותר בדיוק אחד:** `/tamlul/api/jobs` עדיין 500, והלוג נותן את הסיבה המדויקת —
+`Error: supabaseKey is required` → `SUPABASE_SERVICE_ROLE_KEY`.
+
+### ⚠️ service_role של bieebmnm — העותק המקומי מבוטל
+אותו זוג מפתחות מופיע ב-`apps/01,02,03,18`. ה-**anon** תקף; ה-**service_role**
+(`sb_secret_Srmojy…`) מחזיר 401 = **סובב/בוטל**. לכן זה לא "חסר מהפריסה" אלא
+"צריך מפתח חדש מהדשבורד".
+
+### ⏸️ 03 modaot — הוזן אבל **לא נפרס מחדש** במכוון
+אותם שלושה משתנים הוזנו. לא פרסתי כי ל-03 יש `vercel.json` עם **שני crons**
+(`jobs/worker` כל דקה, `jobs/cleanup` יומי) והיא מערכת עם סליקה: פריסה מחדש תפתור
+את ה-404 של ה-API, אבל תפעיל את ה-crons בעותק המקביל — ועם service_role, שני עותקים
+יעבדו במקביל על אותן עסקאות. זה בדיוק "אל תשבור מערכת חיה".
+
+### ❌ 22 trerolyv · 30 jhbeelzv
+אין להם service_role באף עותק מקומי (`apps/22/.env.local` = OPENAI בלבד;
+`apps/30/.env` = anon/publishable בלבד). חסומים עד שתביא את המפתחות.
