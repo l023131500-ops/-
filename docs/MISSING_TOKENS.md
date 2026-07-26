@@ -9,45 +9,70 @@
 
 ---
 
-## 🔴 שלוש פריסות שאין להן **אף** משתנה סביבה
+## ✅ מה הושלם ב-27/07 בלי PAT
 
-אלה היחידות שחסימה אמיתית מונעת מהן לעבוד. הפריסה עצמה קיימת, בנויה ומחזירה 200 —
-רק ה-env ריק.
+המפתחות נשלפו מקבצי `.env.local` של העותקים המקומיים ב-`apps/` — לא מ-Management API
+(אין PAT; ראה למטה). כל מפתח **נבדק לפני ההזנה**.
 
-### 02 · tamlul → `tamlul-more30`
-מסלולי ה-API נפרסו וקיימים (GET מחזיר 405, כלומר המסלול שם), אבל `/api/jobs`
-מחזיר **500** כי אין לו כלום.
+| מערכת | הוזן ל | משתנים |
+|---|---|---|
+| 02 tamlul | `tamlul-more30` | `NEXT_PUBLIC_SUPABASE_URL` · `NEXT_PUBLIC_SUPABASE_ANON_KEY` · `OPENAI_API_KEY` |
+| 03 modaot | `modaot-more30` | אותם שלושה |
+
+`tamlul-more30` גם **נפרס מחדש** בהצלחה. `modaot-more30` לא — ראה למטה.
+
+> **איך בודקים תקפות של מפתח Supabase (חשוב):** לא מול `/rest/v1/` — השורש מחזיר
+> 401 גם למפתח תקף. לשאול טבלה שבוודאות לא קיימת:
+> `404`/`PGRST205` = המפתח **תקף**, `401` = המפתח **פסול**.
+> בבדיקה הזו כל 12 המערכות עם מפתח מוטמע נמצאו **תקפות** — אין רגרסיה בשום מערכת חיה.
+
+---
+
+## 🔴 מה שנשאר חסום
+
+### 02 · tamlul → `tamlul-more30` — **מפתח אחד בדיוק**
+הכול מוזן ופרוס; `/tamlul` ו-`/tamlul/login` = 200. נשאר רק:
 
 | משתנה | למה | להשיג |
 |---|---|---|
-| `NEXT_PUBLIC_SUPABASE_URL` | כתובת bieebmnm ללקוח | Supabase bieebmnm → Settings → API |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | anon ללקוח (ציבורי) | אותו מקום |
-| `SUPABASE_SERVICE_ROLE_KEY` | פעולות שרת · **סוד** | אותו מקום → `service_role` |
-| `OPENAI_API_KEY` | מנוע התמלול | קיים אצלך במערכת החיה igud-transcribe |
+| `SUPABASE_SERVICE_ROLE_KEY` | `/tamlul/api/jobs` נופל עם `Error: supabaseKey is required` (מלוג הריצה) | Supabase **bieebmnm** → Settings → API → `service_role` |
+
+⚠️ **העותק המקומי של המפתח הזה בוטל.** ה-`sb_secret_Srmojy…` שמופיע ב-
+`apps/01,02,03,18/.env.local` מחזיר 401, בעוד ה-anon של אותו פרויקט תקף — כלומר הוא
+סובב. צריך להנפיק/להעתיק מפתח **חדש** מהדשבורד.
+
 | `GOOGLE_CLIENT_ID` / `_SECRET` | התחברות Google (לא חוסם) | https://console.cloud.google.com/apis/credentials |
+|---|---|---|
 
-**להדביק:** Vercel → `tamlul-more30` → Settings → Environment Variables (Production).
-אחרי ההזנה צריך **redeploy** — `NEXT_PUBLIC_*` נצרבים בזמן build.
+### 03 · modaot → `modaot-more30` — **צריך החלטה שלך, לא רק מפתח**
+המשתנים הוזנו, אבל **לא פרסתי מחדש במכוון.** בפריסה הנוכחית כל מסלולי ה-API
+מחזירים 404 (4 lambdas מתוך 40 מסלולים) — פריסה מחדש תתקן את זה, אבל:
 
-### 03 · modaot → `modaot-more30`
-⚠️ **כאן חסר יותר ממפתח.** בפריסה המקבילה **כל** מסלולי ה-API מחזירים 404
-(`/api/templates`, `/api/projects`, `/api/notifications/unread-count`) למרות ש-40
-מסלולים קיימים במקור — הפריסה מכילה 4 lambdas בלבד, כלומר עץ הקבצים שנשלח היה חלקי.
-**קודם צריך פריסה מחדש, ורק אחריה המפתחות יעזרו.** ראה ההצעה המפורטת ב-
-`core.projects` (03 → `fixed_notes`) — היא נוגעת בסליקה ולכן לא בוצעה.
+`vercel.json` של 03 מגדיר **שני crons** — `jobs/worker` **כל דקה** ו-`jobs/cleanup`
+יומי. פריסה מחדש מפעילה אותם גם בעותק המקביל, ואם יוזן גם `service_role` — שני
+עותקים יעבדו במקביל על אותן עסקאות סליקה.
 
-| משתנה | למה |
-|---|---|
-| `NEXT_PUBLIC_SUPABASE_URL` / `_ANON_KEY` | הלקוח |
-| `SUPABASE_SERVICE_ROLE_KEY` | פעולות שרת · **סוד** · ⚠️ ראה אזהרת הסליקה |
-| `OPENAI_API_KEY` | יצירת תוכן מודעות |
+**ההמלצה שלי:** לפרוס מחדש עם ה-crons מנוטרלים ובלי `service_role`. אז המסכים
+הציבוריים והקריאה יעבדו, והכתיבה/סליקה נשארות רק במערכת החיה.
 
 ### 30 · crm → `crm-more30`
-המסכים עולים (SSR מלא בעברית), אבל `/api/public/*` (n8n, ניתוח תלוש) אינרטיים.
+| משתנה | הערה |
+|---|---|
+| `SUPABASE_SERVICE_ROLE_KEY` של `jhbeelzv` | לא קיים באף עותק מקומי (`apps/30/.env` = anon בלבד) ולא בחשבון שלי |
 
-| משתנה | למה | הערה |
-|---|---|---|
-| `SUPABASE_SERVICE_ROLE_KEY` | של פרויקט `jhbeelzv` | **לא הצלחתי לשלוף** — הפרויקט אינו בחשבון ה-Supabase שלי |
+### 22 · zchuyot
+| משתנה | הערה |
+|---|---|
+| `SUPABASE_SERVICE_ROLE_KEY` של `trerolyv` | לא קיים באף עותק (`apps/22/.env.local` = OPENAI בלבד). הסוכן עצמו עובד — זה חוסם רק כתיבה/אדמין |
+
+---
+
+## למה לא דרך Management API
+אין PAT בסביבה הזו: אין `SUPABASE_ACCESS_TOKEN`, ה-Supabase CLI לא מותקן, אין
+תיקיית הגדרות שלו, ואין מחרוזת `sbp_` בשום קובץ. חיבור ה-Supabase שלי הוא MCP דרך
+החשבון, והוא חושף **פרויקט אחד** — `uhnrgujb`. `bieebmnm`, `trerolyv`, `jhbeelzv`
+ו-`csjekrvu` שייכים לחשבון/ארגון אחר. גם `vercel env pull` מהפרויקטים החיים לא עוזר:
+הערכים מוגדרים Sensitive וחוזרים כ-`[REDACTED]`.
 
 ---
 
