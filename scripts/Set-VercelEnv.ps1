@@ -24,16 +24,20 @@ param(
   [string]$Vercel = "$env:APPDATA\npm\vercel.ps1"
 )
 
-$ErrorActionPreference = 'Stop'
+# NOT 'Stop': the Vercel CLI writes banners and a plugin hint to stderr, and in
+# PowerShell 5.1 any stderr from a native exe becomes a NativeCommandError that
+# would abort the script even on a fully successful command. Every CLI call below
+# therefore goes through cmd.exe, which passes stderr straight through untouched.
+$ErrorActionPreference = 'Continue'
 
 $work = Join-Path ([System.IO.Path]::GetTempPath()) ("venv-" + [guid]::NewGuid().ToString('N'))
 New-Item -ItemType Directory -Force -Path $work | Out-Null
 Push-Location $work
 try {
-  & $Vercel link --project $Project --scope $Scope --yes | Out-Null
+  cmd /c "`"powershell`" -NoProfile -File `"$Vercel`" link --project $Project --scope $Scope --yes" | Out-Null
 
   # Remove first so re-running updates instead of erroring on a duplicate.
-  & $Vercel env rm $Name $Target --yes --scope $Scope 2>$null | Out-Null
+  cmd /c "`"powershell`" -NoProfile -File `"$Vercel`" env rm $Name $Target --yes --scope $Scope" | Out-Null
 
   $valueFile = Join-Path $work 'value.txt'
   [System.IO.File]::WriteAllText($valueFile, $Value, (New-Object System.Text.UTF8Encoding($false)))
