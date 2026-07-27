@@ -16,9 +16,9 @@ import { SpecWizard } from "./SpecWizard";
 
 type Row = {
   number: string; path: string | null; name: string; name_he: string | null;
-  what_it_does: string | null; functions: string | null; department: string;
-  stage: string; live: boolean; is_deployed: boolean; live_url: string | null;
-  is_protected: boolean; to_delete: boolean;
+  tagline: string | null; what_it_does: string | null; functions: string | null;
+  department: string; stage: string; live: boolean; is_deployed: boolean;
+  live_url: string | null; is_protected: boolean; to_delete: boolean;
 };
 
 const supa = (() => { try { return createBrowserClient("public"); } catch { return null; } })();
@@ -27,8 +27,9 @@ const supa = (() => { try { return createBrowserClient("public"); } catch { retu
 function fallbackRows(): Row[] {
   return REGISTRY.filter((p) => !p.protected && TOPIC_ROUTES[p.number]).map((p) => ({
     number: p.number, path: TOPIC_ROUTES[p.number]!, name: p.name, name_he: p.name,
-    what_it_does: p.note ?? null, functions: null, department: p.department,
-    stage: p.stage, live: p.live, is_deployed: !!p.isDeployed, live_url: null,
+    tagline: null, what_it_does: p.note ?? null, functions: null,
+    department: p.department, stage: p.stage, live: p.live,
+    is_deployed: !!p.isDeployed, live_url: null,
     is_protected: false, to_delete: false,
   }));
 }
@@ -46,11 +47,15 @@ function useReveal(dep?: unknown) {
 
 const enterable = (r: Row) => !!r.live_url && r.live_url.includes("more30.com");
 
-/** התיאור מ-core הוא לרוב משפט אחד; אם יש יותר — לוקחים את הראשון לכרטיס. */
+/**
+ * משפט ההטבה שמעל השם. המקור הוא `tagline` שנוסח ב-core.projects; אם מערכת
+ * עדיין בלי ניסוח, נופלים לתיאור העובדתי (`what_it_does`) במקום להמציא משפט.
+ */
 const blurb = (r: Row) => {
-  const t = (r.what_it_does || "").trim();
-  if (!t) return "";
-  return (t.split(/(?<=[.!?])\s/)[0] || t).trim();
+  const t = (r.tagline || "").trim();
+  if (t) return t;
+  const w = (r.what_it_does || "").trim();
+  return w ? (w.split(/(?<=[.!?])\s/)[0] || w).trim() : "";
 };
 
 export function App() {
@@ -59,7 +64,7 @@ export function App() {
   useEffect(() => {
     if (!supa) return;
     supa.from("more30_project_overview")
-      .select("number,path,name,name_he,what_it_does,functions,department,stage,live,is_deployed,live_url,is_protected,to_delete")
+      .select("number,path,name,name_he,tagline,what_it_does,functions,department,stage,live,is_deployed,live_url,is_protected,to_delete")
       .then(({ data }) => {
         if (data && data.length) {
           setRows((data as Row[]).filter((r) => r.path && !r.is_protected && !r.to_delete));
@@ -91,10 +96,10 @@ function ComingSoon({ row }: { row: Row }) {
 }
 
 const PILLARS = [
-  { h: "מרעיון למוצר חי", p: "אפיון, פיתוח והשקה — עד שהמערכת עומדת בשטח ומשרתת משתמשים אמיתיים." },
-  { h: "מערכות שכבר עובדות", p: "נדל\"ן, תמלול, זכויות, בריאות וקהילה — כולן פעילות היום, לא מצגת." },
-  { h: "כתובת אחת", p: "כל המערכות חיות תחת more30.com. משתמש אחד, נתונים משותפים, מקום אחד לחזור אליו." },
-  { h: "ליווי שנשאר", p: "אחרי ההשקה מתחילה העבודה האמיתית — תחזוקה, שיפור והתאמה למה שהשטח מחזיר." },
+  { h: "מרעיון למוצר חי", p: "אפיון, פיתוח והשקה — עד שהמערכת עומדת בשטח ומשרתת אנשים אמיתיים." },
+  { h: "מערכות שכבר עובדות", p: "נדל\"ן, תמלול, זכויות, בריאות וקהילה. לא מצגת — מערכות שרצות היום." },
+  { h: "כתובת אחת", p: "הכול חי תחת more30.com. מקום אחד לזכור, מקום אחד לחזור אליו." },
+  { h: "ליווי שנשאר", p: "ההשקה היא ההתחלה. משם ממשיכים לתחזק, לשפר ולהתאים למה שהשטח מחזיר." },
 ];
 
 function Portal({ rows }: { rows: Row[] }) {
@@ -121,7 +126,7 @@ function Portal({ rows }: { rows: Row[] }) {
           <div className="eyebrow">מור מערכות תוכנה</div>
           <h1 className="display hero-title">עולם הסטארטאפים</h1>
           <p className="serif hero-lead">
-            עשרות מערכות שנבנו כאן, עובדות היום בשטח, וחיות כולן תחת כתובת אחת.
+            עשרות מערכות נבנו כאן, עובדות היום בשטח, וחיות כולן תחת כתובת אחת.
           </p>
           <div className="hero-actions">
             <a className="btn" href="#systems">לכל המערכות</a>
@@ -225,6 +230,7 @@ function SystemCard({ r }: { r: Row }) {
         {on
           ? <a className="btn btn-card" href={`/${r.path}`}>כניסה למערכת</a>
           : <span className="card-soon-tag">בהכנה</span>}
+        {on && r.live && <span className="card-live">● פעילה</span>}
       </div>
     </div>
   );
