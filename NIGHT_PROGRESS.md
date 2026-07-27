@@ -792,3 +792,36 @@ service_role (legacy) + SUPABASE_URL הוזנו ל-`tamlul-more30`, נפרס מ�
 אחת. כלומר אפשר לקרוא טוקן סשן אדמין פעיל עם המפתח הציבורי. **לא נגעתי** — הידוק
 ינתק התחברות של מערכת חיה, וזה מחוץ להוראה (שנגעה לטבלת הלידים).
 (`fin_*` נבדקו ותקינים — `bkalut_deny_anon` עם `using=false`.)
+
+## סבב 28/07 (המשך) — המפתחות החיצוניים האחרונים
+### ✅ 02 Google OAuth — הוגדר במקום הנכון, ונשארה פעולה אחת בגוגל
+**תגלית:** המפתחות **לא** שייכים ל-Vercel. `app/login/page.tsx` קורא
+`supabase.auth.signInWithOAuth({provider:'google'})` — כלומר ההגדרה שייכת לספק
+Google **ב-Supabase Auth** של bieebmnm. הוזנו שם דרך ה-Management API.
+
+**אומת בשני שלבים:**
+1. `/auth/v1/authorize?provider=google` מחזיר **302 ל-accounts.google.com** עם
+   ה-client_id הנכון → הספק חי.
+2. מעקב אחרי ההפניה עד גוגל → **`redirect_uri_mismatch`**.
+
+⚠️ **ההתחברות עדיין תיכשל** עד שתוסיף בגוגל את כתובת ה-callback:
+`https://bieebmnmkffwbqlsfozh.supabase.co/auth/v1/callback`
+(זו כתובת של Supabase ולא של האתר — זה נכון: Supabase מקבל את הקוד מגוגל ורק
+אז מחזיר למערכת.)
+
+### ✅ 27 — שני המפתחות אומתו חיים, אבל הפיצ׳ר לא פרוס
+| מפתח | אימות מול הספק |
+|---|---|
+| `YEMOT_API_KEY` | `responseStatus=OK` · חשבון "אירוע ברגע" (023130600) · **9,999.8 יחידות** |
+| `ELEVENLABS_API_KEY` | tier=**creator** · **24 קולות** · 5,504/241,455 תווים |
+
+**אבל הצינטוקים לא יעבדו עדיין** — ולא בגלל המפתחות: `mechiron-more30` מכיל רק
+את `api/index.ts` (קטלוג לקריאה), בעוד שהקוד שמשתמש בהם יושב ב-`server/yemot.ts`,
+`server/hf-podcast.ts` ו-`server/routes.ts` — שרת ה-Express המלא, שלא נפרס.
+אומת: `/mechiron/api/health` ו-`/mechiron/api/yemot/send` → **404**.
+להפעלה צריך לפרוס את שרת ה-Express של 27 (כמו שנעשה ב-26 studio).
+
+### ✅ 18 orech — נפרס מחדש עם המפתח התקף
+`/orech/api/citations` מחזיר 200. נוסף `.vercelignore` שמונע העלאת `.env`.
+
+**רגרסיה: 23/23 נתיבים 200.**
