@@ -741,3 +741,54 @@ stacking context, ערך שלילי הציב אותה **מאחורי הרקע ש
 שתי מחרוזות חיבור מ-Settings → Database של כל פרויקט.
 ⚠️ **מה ש-`pg_dump` לא לוקח:** buckets של Storage ו-Edge Functions. אלה צריכים
 העברה נפרדת לפני שמפנים פריסה ליעד.
+
+## סבב 28/07 — ה-PAT הגיע · איחוד ותיקוני אבטחה
+### 🔑 התגלית: שניים מהארבעה כבר בחשבון שלך
+`GET /v1/projects` עם ה-PAT מחזיר **10 פרויקטים**, וביניהם:
+
+| ref | שם | סטטוס | משמש |
+|---|---|---|---|
+| `bieebmnmkffwbqlsfozh` | bkalut-production | **ACTIVE** | 01, 02, 03, 18 |
+| `csjekrvukbdznetsrodj` | bkalut-production-user-owned | **ACTIVE** | 06, 12, 17, 27 |
+| `uhnrgujbdxhhmoxcjria` | l023131500-ops's Project | ACTIVE | HUB |
+
+שניהם ב-org `cuofzfzlqniuqevgrwwk` (לא `rbwengwuxwujbgsynwcs`, אבל **אותו חשבון**).
+כלומר **לא נדרשה שום העברה** לשני אלה — רק שליפת מפתחות. `trerolyv` (22) ו-
+`jhbeelzv` (30) **אינם ברשימה** → הם באמת בחשבון אחר.
+
+### 🔑 למה ה-service_role המקומי היה מת
+לשני הפרויקטים יש **שני דורות של מפתחות**: legacy (JWT) ו-new (`sb_secret_`).
+בבדיקה: **ה-legacy תקפים, וה-`sb_secret_` מבוטלים**. העותק המקומי היה מהפורמט
+החדש — ומכאן ה-401. הפתרון: להשתמש ב-legacy.
+
+### ✅ 02 tamlul — נסגר במלואו
+service_role (legacy) + SUPABASE_URL הוזנו ל-`tamlul-more30`, נפרס מחדש.
+**`/tamlul/api/jobs` עבר מ-500 ל-200 עם JSON אמיתי** (`ok:true, processed:0`).
+
+### ✅ 06 briut — חשיפת הלידים נסגרה (חמור יותר ממה שדווח)
+ל-`anon` היו **SELECT + UPDATE + DELETE ללא תנאי** על `public.kupot_leads` — לא רק
+קריאה אלא גם שינוי ומחיקה, עם מפתח שגלוי בקוד העמוד. שלוש המדיניות הוסרו,
+ההרשאות נשללו, ונשארו `INSERT` ל-anon ו-`SELECT` ל-authenticated.
+**אומת חי:** קריאה עם anon → 401; הגשה מהטופס → 400 ולידציה בלבד (עובד).
+הטבלה הייתה ריקה — לא אבד שום ליד.
+⚠️ **תוצאה מכוונת:** `/briut/admin.html` יפסיק לעבוד עד מעבר ל-Supabase Auth.
+
+### ✅ תיקון ה-401 הושלם סופית
+`Site URL = https://more30.com` ו-`uri_allow_list = https://more30.com/**`
+הוגדרו ב-`uhnrgujb` דרך ה-PAT. זה החלק האחרון שהיה חסר.
+
+### ✅ 18 orech — מפתח מבוטל הוחלף
+ל-`orech-more30` היה מוגדר ה-service_role **המבוטל**. הוחלף בתקף.
+
+### ⏸️ 03 modaot — מפתחות הוזנו, פריסה **לא** בוצעה
+`vercel.json` של 03 מגדיר cron ל-`/api/jobs/worker` **כל דקה**, והמערכת מחזיקה
+`/api/payments/webhook`. פריסה עם service_role הייתה יוצרת משטח סליקה שני עם
+כתיבה לאותו DB, וחושפת webhook תשלומים בכתובת ציבורית נוספת. החוק "אל תשבור
+מערכת חיה" + ההגנה על NEDARIM3873 גוברים על הוראת הפריסה.
+
+### 🔴 ממצא אבטחה חדש — `admin_sessions` (27), לא תוקן
+ב-csjekrvu קיימת `public.admin_sessions` (`token`, `identity`, `role`,
+`expires_at`) שבה **anon מחזיק SELECT + UPDATE + DELETE ללא תנאי**, ובה שורה חיה
+אחת. כלומר אפשר לקרוא טוקן סשן אדמין פעיל עם המפתח הציבורי. **לא נגעתי** — הידוק
+ינתק התחברות של מערכת חיה, וזה מחוץ להוראה (שנגעה לטבלת הלידים).
+(`fin_*` נבדקו ותקינים — `bkalut_deny_anon` עם `using=false`.)
