@@ -10,6 +10,13 @@ import { Contact } from "@/pages/Contact";
 import { Gemachim } from "@/pages/Gemachim";
 import { ContentPage } from "@/pages/ContentPage";
 import { Placeholder } from "@/pages/Placeholder";
+import { AdminLogin } from "@/pages/admin/AdminLogin";
+import { AdminLayout } from "@/pages/admin/AdminLayout";
+import { AdminOverview } from "@/pages/admin/AdminOverview";
+import { AdminSynagogues } from "@/pages/admin/AdminSynagogues";
+import { AdminLessons } from "@/pages/admin/AdminLessons";
+import { AdminServices } from "@/pages/admin/AdminServices";
+import { AdminInbox } from "@/pages/admin/AdminInbox";
 
 export function App() {
   return (
@@ -18,6 +25,16 @@ export function App() {
       <Routes>
         {/* Standalone branded synagogue mini-site (its own chrome) */}
         <Route path="/k/:slug" element={<SynagogueSite />} />
+
+        {/* Council admin portal (guarded, own chrome) */}
+        <Route path="/admin/login" element={<AdminLogin target="/admin" title="כניסת מנהל המועצה" />} />
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route index element={<AdminOverview />} />
+          <Route path="synagogues" element={<AdminSynagogues />} />
+          <Route path="lessons" element={<AdminLessons />} />
+          <Route path="services" element={<AdminServices />} />
+          <Route path="inbox" element={<AdminInbox />} />
+        </Route>
 
         {/* Platform routes share the global header/footer */}
         <Route element={<RootLayout />}>
@@ -88,13 +105,6 @@ export function App() {
             element={
               <Placeholder phase="שלב 5" title="פורטל גבאים"
                 description="אזור ניהול לגבאים לעדכון זמני תפילה, שיעורים, מודעות ופעילויות של בית הכנסת שלהם." />
-            }
-          />
-          <Route
-            path="/admin"
-            element={
-              <Placeholder phase="שלב 4" title="ניהול מועצה דתית"
-                description="אזור מנהל-על ליצירת בתי כנסת וחשבונות גבאים, וניהול כל התוכן הכללי." />
             }
           />
           <Route

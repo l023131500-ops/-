@@ -71,3 +71,68 @@ export interface RabbiQuestionInput {
   contact?: string;
   question: string;
 }
+
+// ---- admin / gabai CRUD inputs --------------------------------------------
+export interface SynagogueInput {
+  name: string;
+  slug: string;
+  nusach?: string | null;
+  address?: string | null;
+  description?: string | null;
+  brandGradient?: string;
+  logoUrl?: string | null;
+  donationLink?: string | null;
+  isPublished: boolean;
+}
+
+export interface LessonInput {
+  synagogueId: string | null;
+  title: string;
+  teacher?: string | null;
+  day?: string;
+  time?: string;
+  location?: string | null;
+  audience?: string | null;
+}
+
+export interface ServiceInput {
+  name: string;
+  category: string;
+  description?: string | null;
+  contact?: string | null;
+}
+
+export interface AnnouncementInput {
+  synagogueId: string | null;
+  title: string;
+  body?: string | null;
+}
+
+export interface PrayerTimeInput {
+  synagogueId: string;
+  type: PrayerType;
+  label: string;
+  time: string;
+  note?: string | null;
+}
+
+export interface Inquiry {
+  id: string;
+  name: string;
+  phone: string | null;
+  email: string | null;
+  subject: string | null;
+  body: string;
+  synagogueId: string | null;
+  isRead: boolean;
+  createdAt: string;
+}
+
+export interface RabbiQuestion {
+  id: string;
+  name: string | null;
+  contact: string | null;
+  question: string;
+  answer: string | null;
+  createdAt: string;
+}
