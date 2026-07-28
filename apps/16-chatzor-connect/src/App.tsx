@@ -1,52 +1,109 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BookOpen, Droplets, Flower2, Newspaper, UtensilsCrossed } from "lucide-react";
 import { RootLayout } from "@/components/layout/RootLayout";
+import { ScrollToHash } from "@/components/layout/ScrollToHash";
 import { Home } from "@/pages/Home";
+import { SynagoguesDirectory } from "@/pages/SynagoguesDirectory";
+import { AskRav } from "@/pages/AskRav";
+import { Contact } from "@/pages/Contact";
+import { Gemachim } from "@/pages/Gemachim";
+import { ContentPage } from "@/pages/ContentPage";
 import { Placeholder } from "@/pages/Placeholder";
 
 export function App() {
   return (
     <BrowserRouter>
+      <ScrollToHash />
       <RootLayout>
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/batei-knesset" element={<SynagoguesDirectory />} />
+          <Route path="/ask-rav" element={<AskRav />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/gemachim" element={<Gemachim />} />
+
+          <Route
+            path="/halacha"
+            element={
+              <ContentPage
+                eyebrow="הלכה יומית" title="הלכה יומית" icon={BookOpen}
+                subtitle="הלכה יומית קצרה מטעם רבני המועצה הדתית."
+                emptyTitle="ההלכה היומית תעודכן בקרוב"
+                emptyDescription="התוכן מנוהל על ידי המועצה הדתית ויעלה לאוויר עם השקת אזור הניהול."
+              />
+            }
+          />
+          <Route
+            path="/kashrut"
+            element={
+              <ContentPage
+                eyebrow="כשרות" title="כשרות בחצור הגלילית" icon={UtensilsCrossed}
+                subtitle="רשימת בתי העסק והמוסדות בהשגחת המועצה הדתית."
+                emptyTitle="רשימת הכשרות תעודכן בקרוב"
+                emptyDescription="נתוני הכשרות מנוהלים על ידי המועצה הדתית."
+              />
+            }
+          />
+          <Route
+            path="/mikvaot"
+            element={
+              <ContentPage
+                eyebrow="מקוואות" title="מקוואות" icon={Droplets}
+                subtitle="מיקומים, שעות פעילות ופרטי מקוואות היישוב."
+                emptyTitle="פרטי המקוואות יעודכנו בקרוב"
+                emptyDescription="הנתונים מנוהלים על ידי המועצה הדתית."
+              />
+            }
+          />
+          <Route
+            path="/avelut"
+            element={
+              <ContentPage
+                eyebrow="מדריך אבלות" title="מדריך אבלות וניחום" icon={Flower2}
+                subtitle="מידע וליווי בעת אבל, ופרטי חברה קדישא."
+                emptyTitle="מדריך האבלות יעודכן בקרוב"
+                emptyDescription="התוכן מנוהל על ידי המועצה הדתית."
+              />
+            }
+          />
+          <Route
+            path="/newsletter"
+            element={
+              <ContentPage
+                eyebrow="עלון קהילתי" title="העלון הקהילתי" icon={Newspaper}
+                subtitle="עלון הקהילה השבועי של חצור הגלילית."
+                emptyTitle="העלון יעלה בקרוב"
+                emptyDescription="גיליונות העלון מנוהלים על ידי המועצה הדתית."
+              />
+            }
+          />
+
           <Route
             path="/k/:slug"
             element={
-              <Placeholder
-                phase="שלב 3"
-                title="אתר בית הכנסת"
-                description="כאן ייבנה הדף החי של כל בית כנסת — עם הלוגו והעיצוב שלו, זמני התפילות, השיעורים, המודעות והפעילויות. זהו הקישור שהגבאי מפיץ למתפללים."
-              />
+              <Placeholder phase="שלב 3" title="אתר בית הכנסת"
+                description="כאן ייבנה הדף החי של כל בית כנסת — עם הלוגו והעיצוב שלו, זמני התפילות, השיעורים, המודעות והפעילויות." />
             }
           />
           <Route
             path="/gabai"
             element={
-              <Placeholder
-                phase="שלב 5"
-                title="פורטל גבאים"
-                description="אזור ניהול לגבאים לעדכון זמני תפילה, שיעורים, מודעות ופעילויות של בית הכנסת שלהם. יתווסף עם אימות Supabase אמיתי."
-              />
+              <Placeholder phase="שלב 5" title="פורטל גבאים"
+                description="אזור ניהול לגבאים לעדכון זמני תפילה, שיעורים, מודעות ופעילויות של בית הכנסת שלהם." />
             }
           />
           <Route
             path="/admin"
             element={
-              <Placeholder
-                phase="שלב 4"
-                title="ניהול מועצה דתית"
-                description="אזור מנהל-על ליצירת בתי כנסת וחשבונות גבאים, וניהול כל התוכן הכללי של המועצה הדתית."
-              />
+              <Placeholder phase="שלב 4" title="ניהול מועצה דתית"
+                description="אזור מנהל-על ליצירת בתי כנסת וחשבונות גבאים, וניהול כל התוכן הכללי." />
             }
           />
           <Route
             path="*"
             element={
-              <Placeholder
-                phase="404"
-                title="הדף לא נמצא"
-                description="הכתובת שחיפשת אינה קיימת. נשמח לכוון אותך חזרה לעמוד הראשי."
-              />
+              <Placeholder phase="404" title="הדף לא נמצא"
+                description="הכתובת שחיפשת אינה קיימת. נשמח לכוון אותך חזרה לעמוד הראשי." />
             }
           />
         </Routes>

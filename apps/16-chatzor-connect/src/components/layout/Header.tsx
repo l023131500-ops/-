@@ -4,26 +4,23 @@ import { Menu, Moon, Sun, X } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { SITE } from "@/config/site";
 import { useTheme } from "@/hooks/useTheme";
-import { Button } from "@/components/ui/Button";
 
 const NAV = [
-  { label: "בתי כנסת", href: "/#synagogues" },
-  { label: "זמני היום", href: "/#zmanim" },
-  { label: "שיעורי תורה", href: "/#lessons" },
-  { label: "שירותי קהילה", href: "/#services" },
-  { label: "צור קשר", href: "/#contact" },
+  { label: "בתי כנסת", to: "/batei-knesset" },
+  { label: "זמני היום", to: "/#zmanim" },
+  { label: "שיעורי תורה", to: "/#lessons" },
+  { label: "גמ״חים", to: "/gemachim" },
+  { label: "שאל את הרב", to: "/ask-rav" },
+  { label: "צור קשר", to: "/contact" },
 ];
 
 function Logo() {
   return (
     <Link to="/" className="flex items-center gap-3">
-      <span
-        className="grid h-11 w-11 place-items-center rounded-xl bg-primary text-primary-foreground shadow-soft"
-        aria-hidden
-      >
-        <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M6 20V8c0-.9 1-1.4 1.7-.9L12 10l4.3-2.9C17 6.6 18 7.1 18 8v12" className="text-gold" stroke="hsl(var(--gold))" />
-          <circle cx="12" cy="17" r="1.4" fill="hsl(var(--accent))" stroke="none" />
+      <span className="grid h-11 w-11 place-items-center rounded-xl bg-primary text-primary-foreground shadow-soft" aria-hidden>
+        <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M6 20V8c0-.9 1-1.4 1.7-.9L12 10l4.3-2.9C17 6.6 18 7.1 18 8v12" stroke="hsl(var(--gold))" />
+          <circle cx="12" cy="17" r="1.4" fill="hsl(var(--accent))" />
         </svg>
       </span>
       <span className="leading-tight">
@@ -45,13 +42,13 @@ export function Header() {
 
         <nav className="hidden items-center gap-1 lg:flex">
           {NAV.map((item) => (
-            <a
-              key={item.href}
-              href={item.href}
+            <Link
+              key={item.to}
+              to={item.to}
               className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
             >
               {item.label}
-            </a>
+            </Link>
           ))}
         </nav>
 
@@ -63,9 +60,12 @@ export function Header() {
           >
             {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
           </button>
-          <Button size="sm" className="hidden sm:inline-flex" onClick={() => (window.location.href = "/#synagogues")}>
+          <Link
+            to="/batei-knesset"
+            className="hidden h-9 items-center justify-center rounded-md bg-primary px-3 text-sm font-semibold text-primary-foreground shadow-soft transition-[filter] hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background sm:inline-flex"
+          >
             מצא בית כנסת
-          </Button>
+          </Link>
           <button
             onClick={() => setOpen((v) => !v)}
             className="grid h-10 w-10 place-items-center rounded-md text-foreground lg:hidden"
@@ -86,14 +86,14 @@ export function Header() {
         <nav className="min-h-0">
           <ul className="container-page flex flex-col py-2">
             {NAV.map((item) => (
-              <li key={item.href}>
-                <a
-                  href={item.href}
+              <li key={item.to}>
+                <Link
+                  to={item.to}
                   onClick={() => setOpen(false)}
                   className="block rounded-md px-3 py-3 text-sm font-medium text-foreground hover:bg-secondary"
                 >
                   {item.label}
-                </a>
+                </Link>
               </li>
             ))}
           </ul>

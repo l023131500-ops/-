@@ -46,3 +46,28 @@ export interface CommunityService {
   contact: string | null;
   isSample?: boolean;
 }
+
+export interface Announcement {
+  id: string;
+  synagogueId: string | null;
+  title: string;
+  body: string | null;
+  startsAt: string | null;
+  endsAt: string | null;
+  isSample?: boolean;
+}
+
+export interface InquiryInput {
+  name: string;
+  phone?: string;
+  email?: string;
+  subject?: string;
+  body: string;
+  synagogueId?: string | null;
+}
+
+export interface RabbiQuestionInput {
+  name?: string;
+  contact?: string;
+  question: string;
+}

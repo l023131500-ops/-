@@ -15,10 +15,10 @@ export function Footer() {
         <nav aria-label="ניווט תחתון">
           <h3 className="text-sm font-semibold text-foreground">ניווט</h3>
           <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
-            <li><a className="hover:text-foreground" href="/#synagogues">בתי כנסת</a></li>
-            <li><a className="hover:text-foreground" href="/#zmanim">זמני היום</a></li>
-            <li><a className="hover:text-foreground" href="/#lessons">שיעורי תורה</a></li>
-            <li><a className="hover:text-foreground" href="/#services">שירותי קהילה</a></li>
+            <li><Link className="hover:text-foreground" to="/batei-knesset">בתי כנסת</Link></li>
+            <li><Link className="hover:text-foreground" to="/#zmanim">זמני היום</Link></li>
+            <li><Link className="hover:text-foreground" to="/ask-rav">שאל את הרב</Link></li>
+            <li><Link className="hover:text-foreground" to="/gemachim">שירותי קהילה</Link></li>
           </ul>
         </nav>
 

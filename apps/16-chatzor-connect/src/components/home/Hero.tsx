@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import { motion, useReducedMotion } from "framer-motion";
 import { CalendarDays, ChevronDown, Clock } from "lucide-react";
 import { SITE } from "@/config/site";
@@ -6,6 +7,7 @@ import { useNow } from "@/hooks/useNow";
 import { Button } from "@/components/ui/Button";
 
 export function Hero() {
+  const navigate = useNavigate();
   const now = useNow(30_000);
   const reduce = useReducedMotion();
   const daily = computeDailyZmanim(now);
@@ -55,14 +57,14 @@ export function Hero() {
         </motion.p>
 
         <motion.div variants={item} className="mt-8 flex flex-wrap items-center justify-center gap-3">
-          <Button variant="gold" size="lg" onClick={() => (window.location.href = "#synagogues")}>
+          <Button variant="gold" size="lg" onClick={() => navigate("/batei-knesset")}>
             מצא בית כנסת
           </Button>
           <Button
             variant="outline"
             size="lg"
             className="border-white/25 text-white hover:bg-white/10"
-            onClick={() => (window.location.href = "#zmanim")}
+            onClick={() => document.getElementById("zmanim")?.scrollIntoView({ behavior: "smooth" })}
           >
             זמני היום
           </Button>
