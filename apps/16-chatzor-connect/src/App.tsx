@@ -17,6 +17,12 @@ import { AdminSynagogues } from "@/pages/admin/AdminSynagogues";
 import { AdminLessons } from "@/pages/admin/AdminLessons";
 import { AdminServices } from "@/pages/admin/AdminServices";
 import { AdminInbox } from "@/pages/admin/AdminInbox";
+import { GabaiLayout } from "@/pages/gabai/GabaiLayout";
+import { GabaiDetails } from "@/pages/gabai/GabaiDetails";
+import { GabaiPrayers } from "@/pages/gabai/GabaiPrayers";
+import { GabaiLessons } from "@/pages/gabai/GabaiLessons";
+import { GabaiAnnouncements } from "@/pages/gabai/GabaiAnnouncements";
+import { GabaiInbox } from "@/pages/gabai/GabaiInbox";
 
 export function App() {
   return (
@@ -34,6 +40,16 @@ export function App() {
           <Route path="lessons" element={<AdminLessons />} />
           <Route path="services" element={<AdminServices />} />
           <Route path="inbox" element={<AdminInbox />} />
+        </Route>
+
+        {/* Gabai portal (guarded, own chrome) */}
+        <Route path="/gabai/login" element={<AdminLogin target="/gabai" title="כניסת גבאי" />} />
+        <Route path="/gabai" element={<GabaiLayout />}>
+          <Route index element={<GabaiDetails />} />
+          <Route path="prayers" element={<GabaiPrayers />} />
+          <Route path="lessons" element={<GabaiLessons />} />
+          <Route path="announcements" element={<GabaiAnnouncements />} />
+          <Route path="inbox" element={<GabaiInbox />} />
         </Route>
 
         {/* Platform routes share the global header/footer */}
@@ -100,13 +116,6 @@ export function App() {
             }
           />
 
-          <Route
-            path="/gabai"
-            element={
-              <Placeholder phase="שלב 5" title="פורטל גבאים"
-                description="אזור ניהול לגבאים לעדכון זמני תפילה, שיעורים, מודעות ופעילויות של בית הכנסת שלהם." />
-            }
-          />
           <Route
             path="*"
             element={

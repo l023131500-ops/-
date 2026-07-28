@@ -70,6 +70,17 @@ export async function listAllSynagogues(): Promise<Synagogue[]> {
   return data.map(toSynagogue);
 }
 
+/** Synagogues the signed-in gabai/admin may manage (demo: all). */
+export async function listManagedSynagogues(): Promise<Synagogue[]> {
+  if (!supabase) return db.synagogues;
+  const { data: memberships } = await supabase.from("synagogue_admins").select("synagogue_id");
+  const ids = (memberships ?? []).map((m: { synagogue_id: string }) => m.synagogue_id);
+  if (ids.length === 0) return listAllSynagogues(); // org admins manage all
+  const { data, error } = await supabase.from("synagogues").select("*").in("id", ids).order("name");
+  if (error || !data) return [];
+  return data.map(toSynagogue);
+}
+
 export async function getSynagogueBySlug(slug: string): Promise<Synagogue | null> {
   if (!supabase) return db.synagogues.find((s) => s.slug === slug) ?? null;
   const { data } = await supabase.from("synagogues").select("*").eq("slug", slug).maybeSingle();

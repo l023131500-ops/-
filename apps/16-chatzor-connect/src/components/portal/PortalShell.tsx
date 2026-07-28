@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { Link, Navigate, NavLink, Outlet } from "react-router-dom";
 import { LogOut, Menu, Moon, Sun, X, type LucideIcon } from "lucide-react";
 import { cn } from "@/lib/cn";
@@ -13,11 +13,12 @@ export interface NavItem {
 }
 
 /** Shared guarded portal chrome (sidebar + topbar). Redirects to `loginPath` if signed out. */
-export function PortalShell({ title, subtitle, nav, loginPath }: {
+export function PortalShell({ title, subtitle, nav, loginPath, sidebarExtra }: {
   title: string;
   subtitle: string;
   nav: NavItem[];
   loginPath: string;
+  sidebarExtra?: ReactNode;
 }) {
   const { user, loading, signOut, isDemo } = useAuth();
   const { theme, toggle } = useTheme();
@@ -54,10 +55,11 @@ export function PortalShell({ title, subtitle, nav, loginPath }: {
     <div className="min-h-screen bg-background lg:grid lg:grid-cols-[260px_1fr]">
       {/* sidebar (desktop) */}
       <aside className="sticky top-0 hidden h-screen flex-col border-l border-border bg-card p-4 lg:flex">
-        <div className="mb-6 px-2">
+        <div className="mb-4 px-2">
           <div className="font-display text-lg font-bold text-foreground">{title}</div>
           <div className="text-xs text-muted-foreground">{subtitle}</div>
         </div>
+        {sidebarExtra && <div className="mb-4">{sidebarExtra}</div>}
         {navLinks}
         <div className="mt-auto space-y-2 pt-4">
           {isDemo && <div className="rounded-lg bg-gold/10 px-3 py-2 text-center text-xs text-gold">מצב הדגמה</div>}
