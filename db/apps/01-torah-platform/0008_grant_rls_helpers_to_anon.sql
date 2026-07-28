@@ -1,0 +1,45 @@
+-- 01 torah-platform (Supabase bieebmnmkffwbqlsfozh)
+-- ---------------------------------------------------------------------------
+-- Restores anonymous read access to every public content table.
+--
+-- Symptom: more30.com/torah loaded, but 25 of 34 content tables answered
+--   401 {"code":"42501","message":"permission denied for function has_tenant_role"}
+-- to the anon key the deployed bundle carries. lessons, synagogues, prayer_times,
+-- materials, announcements, azkarot, halacha_daily, community_services, products,
+-- donation_campaigns, gallery_images, rabbi_questions … all of it. A visitor saw
+-- an empty site, not a broken one, so nothing surfaced as an error.
+--
+-- Cause: the multi-tenant migration (20260519000001_core_tenants) created the two
+-- RLS helper functions as SECURITY DEFINER and granted EXECUTE to `authenticated`
+-- and `service_role` — but not to `anon`. Both helpers are named in the policies
+-- that guard those tables:
+--
+--   *_tenant_read   SELECT  USING (tenant_id IS NULL OR user_in_tenant(tenant_id) OR <tenant active>)
+--   *_tenant_write  ALL     USING (is_super_admin(...) OR has_tenant_role(...) OR ...)
+--
+-- The read policy calls user_in_tenant directly. And because the write policy was
+-- declared FOR ALL, Postgres evaluates its USING clause on SELECT as well — so an
+-- anonymous SELECT reaches has_tenant_role too. Both calls abort with 42501 before
+-- the public-read branch of the read policy can ever return true.
+--
+-- Fix: grant anon the same EXECUTE the migration already gave `authenticated`.
+--
+-- Why this is not a widening of access:
+--   * Both functions return only a boolean about the caller's membership.
+--   * For anon, auth.uid() is NULL, so both return false — the write policy still
+--     denies every anonymous INSERT/UPDATE/DELETE exactly as before. Only the
+--     public-read branch of the read policy becomes reachable, which is what it
+--     was written for.
+--   * is_super_admin(uuid) is already anon-executable; this puts the other two
+--     helpers on the same footing rather than inventing new exposure.
+--
+-- Residual worth knowing: has_tenant_role takes an explicit uid, so an anonymous
+-- caller who already knows a user UUID and a tenant UUID can ask "is this user an
+-- admin of that tenant" and get back a boolean. Any signed-up user could already
+-- ask that. Closing it properly means splitting the FOR ALL policies into
+-- INSERT/UPDATE/DELETE on 31 tables — several of which have no separate SELECT
+-- policy and would silently lose admin reads. That is a bigger, riskier change
+-- than the bug being fixed here, and is deliberately left as its own step.
+
+grant execute on function public.user_in_tenant(uuid)                          to anon;
+grant execute on function public.has_tenant_role(uuid, uuid, public.app_role)  to anon;

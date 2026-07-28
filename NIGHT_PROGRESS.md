@@ -897,3 +897,82 @@ REST — אומת), ו-Restore הוא שינוי מצב בחשבון שלך עם
 **פער ידוע שנשאר:** המנוע לא מסנן לפי מגדר — השאלון לא שואל מגדר — ולכן פריטי
 לידה/היריון יכולים להופיע גם לגבר בן 45. ניתן לגדר לפי `newborn_or_pregnant`
 שכן קיים בשאלון; דורש שינוי ב-`engine.js` ופריסה.
+
+## סבב 28/07 ערב — 01 איגוד השיעורים: האתר היה **מת**, לא ריק
+
+> ההוראה: לבנות מחדש באיכות הכי גבוהה, אחד אחרי השני, עם קומיט ודו"ח בין כל אחד —
+> (1) איגוד השיעורים 01/15, (2) תמלול חיזוקים 17, (3) המרת כתב יד 18.
+
+### 🔬 שיטת אימות חדשה — דפדפן אמיתי, לא קוד סטטוס
+הותקן `playwright-core` + Chrome headless (`scratchpad/render.mjs`, `crawl.mjs`).
+**זה מה שחשף את הבאג:** כל הסבבים הקודמים סימנו את `/torah` כ"פעיל מלא" על סמך
+HTTP 200 — והדף החזיר 200 עם `<div id="root">` **ריק לגמרי**. מעכשיו: טוענים את
+הדף, קוראים את הטקסט שהמבקר רואה, ומקשיבים לכל קריאת `/rest/v1` שנכשלת.
+
+### 🔴 שלושה כשלים עצמאיים, כל אחד לבדו הספיק כדי להרוג את האתר
+**1. RLS — `permission denied for function has_tenant_role` (401 על 25 מ-34 טבלאות).**
+מיגרציית הרב-דיירות יצרה את `has_tenant_role` ו-`user_in_tenant` כ-SECURITY DEFINER
+ונתנה EXECUTE ל-`authenticated` ול-`service_role` — **ולא ל-`anon`**. שתיהן מופיעות
+במדיניות של טבלאות התוכן, ומכיוון שמדיניות ה-write הוגדרה `FOR ALL`, ה-USING שלה
+נבדק **גם ב-SELECT** — כלומר כל קריאה אנונימית נפלה לפני שהענף הציבורי הספיק להחזיר
+true. תוקן במיגרציה `db/apps/01-torah-platform/0008_grant_rls_helpers_to_anon.sql`.
+**אחרי:** 36/36 טבלאות נקראות; INSERT אנונימי עדיין נדחה (אומת בפועל).
+
+**2. Router — דף לבן בלי שום שגיאה.** `BrowserRouter` היה בלי `basename`, ותחת
+`/torah` שום ראוט לא נתפס. התיקון הראשון (`basename={BASE_URL}`) **לא הספיק**:
+`BASE_URL` הוא `/torah/` **עם סלאש**, הכתובת היא `/torah` בלי, ו-react-router
+מחזיר `null` בשקט כשה-pathname לא מתחיל בבייסניים המלא — בלי console error בבילד
+פרודקשן. `BASE_URL.replace(/\/+$/,"")`.
+
+**3. זיהוי טננט — `more30.com` נחשב "דומיין מותאם".** `resolveTenantFromUrl` לא
+הכיר את more30.com, החזיר `__custom_domain__`, החיפוש נכשל, `tenant` נשאר null,
+וכל עמוד ציבורי מציג "לא נמצא ארגון" (כל שאילתה מותנית ב-`enabled: !!tenant?.id`).
+נוסף more30.com ל-MAIN_HOSTS, ה-path מנוקה מה-base, ו-`loadTenant` נופל בחזרה
+לטננט `igud` במקום להחזיר null.
+
+### 🔴 סחיפת סכימה — 151 אי-התאמות ב-49 קבצים
+נכתב `scratchpad/audit-queries.mjs`: סורק כל `supabase.from(...)` במקור, אוסף את
+שמות העמודות שהשרשרת מזכירה, ומצליב מול `information_schema`. שתי משפחות:
+- **קוד legacy** שמדבר עם טבלאות שהמיגרציה מחקה (`rabbi_portals`, `org_portals`,
+  `study_day_events`, `teacher_leads`, `contact_messages`, `portal_photos`,
+  `teacher_features`, `teacher_invites`…) — אלה טבלאות מהסכימה של **15 egod**.
+- **עמודות שהשתנו** בעמודים החיים. תוקנו בסבב הזה:
+  | עמוד | היה | בפועל |
+  |---|---|---|
+  | LessonsDirectory | `is_public`, `teacher_name`, `location`, `time`, `days_of_week[]` | `is_approved`, `rabbi_name`, `city/neighborhood/address`, `time_hhmm`, `day_of_week` (int) |
+  | Home / HalachaDaily | `halacha_daily.publish_date` | `date` |
+  | Home | `tips.tenant_id` (לא קיים) | טבלה משותפת, בלי סינון דייר |
+  | FindLesson | `leads.type` + `leads.details` | `kind` + `raw_data` — **כל הגשת טופס נדחתה בשקט** |
+  | Kashrut | `is_active` | `status='active'` |
+  | Mikvaot | `order("name")` | `title` |
+  | ShopCatalog | `display_order`, `image_url`, `stock_quantity` | `sort_order`, `images[0]`, `stock` |
+  | FindLesson/LessonsDirectory | `lesson_topics.display_order`, `name_he` | `sort_order`, `name` |
+
+### ✅ אומת חי דרך more30.com (דפדפן אמיתי)
+17 נתיבים ציבוריים נטענים, **אפס קריאות `/rest/v1` שנכשלות**. `/torah/lessons`
+מציג את 5 השיעורים האמיתיים עם מגיד, עיר, שכונה, שעה ויום.
+
+### 🔗 דליפת vercel.app נסגרה
+שני כרטיסי "מערכות נוספות" בדף הבית הצביעו ל-`igud-ads-rho.vercel.app`
+(נטפרי חוסמת → קישור מת לקהל היעד) → `more30.com/tamlul` ו-`more30.com/modaot`.
+`PUBLIC_SITE_URL` עבר מ-`torah-platform-xi.vercel.app` ל-`more30.com/torah`.
+
+### ❗ מה שעדיין פתוח ב-01/15 — דורש החלטה שלך
+**אין נתוני אמת להציג.** המסד של 01 כמעט ריק: 3 דיירים אמיתיים (איגוד השיעורים,
+מועצה דתית גליל, מחוברים) + 2 מסומנים `meta.seed=true`, 5 שיעורים, 22 נושאים,
+2 פרופילים. **15 egod** (Lovable, `hkkky…`, חשבון אחר) מחזיק 10 שיעורים —
+אבל בבדיקה הם **דמו**: `rabbi.cohen@igud-shiurim.org`, `example.com/files/…`,
+סיסמאות `Cohen2026!`. הרשומה האמיתית היחידה שם: הרב יהודה בנישטי / מחוברים חצור.
+
+ב-PAT נראים **שלושה פרויקטים מושהים** ששמם תואם בדיוק את מה שחסר:
+`zxckwefnuectxqhtpfib` **"חיבור לשיעורים"** · `eygjmfftosigbmzpndib` **"מחוברים"** ·
+`tltfpznyqxpuydgefmnp` **chatzor-connect**. פרויקט מושהה = offline לגמרי.
+**לא שיחזרתי** — Restore הוא שינוי מצב בחשבון עם השלכת עלות/מכסה. צריך אישור.
+
+### 🔑 מפתחות שהתקבלו 28/07 — נשמרו, **שניהם לא עובדים עדיין**
+נשמרו כמשתני סביבה (User scope) וב-`.env.local` בשורש (gitignored):
+- `GOOGLE_MAPS_API_KEY` — המפתח **תקף**, אבל **אף API לא מופעל בפרויקט**:
+  Geocoding / Places / Directions / Distance Matrix / Timezone → `REQUEST_DENIED`,
+  StaticMap → 403. פעולה שלך ב-Google Cloud Console: להפעיל את ה-APIs.
+- `APIFY_TOKEN` — `GET /v2/users/me` → **401**. הערך שהתקבל הוא 35 תווים אחרי
+  `apify_api_` (הצפוי 36) וההודעה נחתכה ללא `>` סוגר → **ככל הנראה חסר תו אחרון**.
