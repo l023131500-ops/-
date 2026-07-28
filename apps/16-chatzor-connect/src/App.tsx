@@ -4,6 +4,7 @@ import { RootLayout } from "@/components/layout/RootLayout";
 import { ScrollToHash } from "@/components/layout/ScrollToHash";
 import { Home } from "@/pages/Home";
 import { SynagoguesDirectory } from "@/pages/SynagoguesDirectory";
+import { SynagogueSite } from "@/pages/SynagogueSite";
 import { AskRav } from "@/pages/AskRav";
 import { Contact } from "@/pages/Contact";
 import { Gemachim } from "@/pages/Gemachim";
@@ -14,8 +15,12 @@ export function App() {
   return (
     <BrowserRouter>
       <ScrollToHash />
-      <RootLayout>
-        <Routes>
+      <Routes>
+        {/* Standalone branded synagogue mini-site (its own chrome) */}
+        <Route path="/k/:slug" element={<SynagogueSite />} />
+
+        {/* Platform routes share the global header/footer */}
+        <Route element={<RootLayout />}>
           <Route path="/" element={<Home />} />
           <Route path="/batei-knesset" element={<SynagoguesDirectory />} />
           <Route path="/ask-rav" element={<AskRav />} />
@@ -79,13 +84,6 @@ export function App() {
           />
 
           <Route
-            path="/k/:slug"
-            element={
-              <Placeholder phase="שלב 3" title="אתר בית הכנסת"
-                description="כאן ייבנה הדף החי של כל בית כנסת — עם הלוגו והעיצוב שלו, זמני התפילות, השיעורים, המודעות והפעילויות." />
-            }
-          />
-          <Route
             path="/gabai"
             element={
               <Placeholder phase="שלב 5" title="פורטל גבאים"
@@ -106,8 +104,8 @@ export function App() {
                 description="הכתובת שחיפשת אינה קיימת. נשמח לכוון אותך חזרה לעמוד הראשי." />
             }
           />
-        </Routes>
-      </RootLayout>
+        </Route>
+      </Routes>
     </BrowserRouter>
   );
 }
