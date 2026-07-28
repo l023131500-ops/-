@@ -14,4 +14,17 @@ export default defineConfig({
       "@": path.resolve(import.meta.dirname, "src"),
     },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        // Split heavy vendors into cacheable chunks.
+        manualChunks: {
+          react: ["react", "react-dom", "react-router-dom"],
+          hebcal: ["@hebcal/core"],
+          motion: ["framer-motion"],
+          query: ["@tanstack/react-query"],
+        },
+      },
+    },
+  },
 });
