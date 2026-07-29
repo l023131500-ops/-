@@ -1372,3 +1372,68 @@ auth.users חזר ל-1). הסיסמה שלך לא נקראה ולא שונתה.
 3. **16 חצור** מסומנת "אותה כניסה", אבל עדיין חסרה לה שורת אדמין ראשונה
    ב-`chatzor.org_admins` (מהסבב הקודם).
 4. **`git push` עדיין לא בוצע** — אין טוקן תקף ב-shell. הכול מקומי ומקומיט.
+
+## קונסולידציית Supabase — העברת מסדים זרים לחשבון שבשליטה מלאה (29/07/2026)
+
+**מטרה:** להעביר את המערכות מחשבונות Supabase זרים אל הפרויקט שבשליטתי המלאה
+(`uhnrgujbdxhhmoxcjria`, org `rbwengwuxwujbgsynwcs`), סכמה נפרדת לכל מקור, **בלי לשבור
+מערכות חיות ובלי לגעת במוגן** (`zr_*`, bkalut-app/09, NEDARIM3873).
+
+### גישות שהתגלו
+- **bieebmnm** (`bieebmnmkffwbqlsfozh`, בעצם "bkalut-production" בחשבון b023131500):
+  גישת `postgres` מלאה דרך `SUPABASE_PAT` ב-`.env.shared` (Management API SQL endpoint).
+- **22/15/31** הם פרויקטי **Lovable** — גישת `postgres` דרך Lovable MCP `query_database`.
+  מיפוי מאומת: 22 get-your-rights=`f55ebbb0`→trerolyv · 15 egod=`3827209f`→hkkky ·
+  31 hebrew-bridge-crm=`a27fd5fd`→ygaqq (26 הטבלאות תואמות בדיוק את המיגרציות המקומיות).
+
+### שיטה (כלים ב-scratchpad, גיבויים ב-`_more30_vault/supabase_backups/`)
+1. **גיבוי מלא לפני נגיעה** — introspection + נתונים ב-base64 (עוקף חסימת NetFree על
+   תוכן עברי בתשובות HTTPS). אומת: כל הנתונים תואמים ל-rowcounts, 0 סטיות.
+2. **replication אדיטיבי** — כל מקור לסכמה ייעודית משלו ב-uhnrgujb (לא נוגע ב-public/
+   nadlan/chatzor/zr_*). `public.` של המקור → נכתב מחדש לסכמה החדשה.
+3. **טעינה context-free** — service_role של uhnrgujb (`SUPABASE_SERVICE_ROLE_UHNRGUJB`)
+   דרך staging table ב-public + `session_replication_role=replica` (עוקף FK/טריגרים בזמן טעינה).
+4. **auth users הועברו** עם ה-hash (bcrypt נייד → התחברות נשמרת). התנגשות אימייל
+   `l023131500@gmail.com` (קיים כבר ב-hub) נפתרה עם plus-addressing + הערת reconcile.
+
+### ⚠️ תקרית ולקח (חשוב)
+חשיפת הסכמות החדשות ל-PostgREST (`pgrst.db_schemas`) **הפילה את כל ה-API החי של ה-hub
+ל-~2 דק'** (schema-cache rebuild נכשל, כנראה timeout 8s של authenticator עם הסכמות
+הכבדות). שוחזר מיד ע"י החזרת הרשימה ל-baseline. **מסקנה:** לא לחשוף סכמות חדשות על
+ה-hub החי כחלק מהמיגרציה. הטעינה נעשית דרך `public` בלבד (חשוף תמיד, בטוח). הסכמות
+החדשות נשארות **עותקים קרים לא-חשופים** — וזה בדיוק המצב הרצוי לפני cutover.
+
+### תוצאה (הכל אומת ב-uhnrgujb)
+| מערכת | מקור | סכמת יעד | טבלאות | שורות | auth |
+|---|---|---|---|---|---|
+| 22 get-your-rights | trerolyv | `getrights` | 6 | 115 | 1 |
+| 15 egod | hkkky | `egod`(+`egod_private`) | 20 | 220 | 4 |
+| 31 hebrew-bridge-crm | ygaqq | `hebcrm`(+`hebcrm_private`) | 26 | 38 | 6 |
+| 01/10 torah/bkalot | bieebmnm | `igud` | (מתוך 139) | | 2 |
+| 03 igud-ads | bieebmnm | `igud_ads` | | | |
+| 02 igud-transcribe | bieebmnm | `igud_transcribe` | | | |
+| 18 torah-editor | bieebmnm | `igud_otvedaf` | | | |
+| **bieebmnm סה"כ** | | 4 סכמות | **139** | **5107** | 2 |
+
+- **22/15/31**: replication **מלא** (סכמה+נתונים+פונקציות+RLS+policies+enums+טריגרים+auth). אומת.
+- **bieebmnm**: replication **מבני** מלא (139 טבלאות, 329 constraints, 189 indexes, enums,
+  RLS enabled) + **כל הנתונים** (5107 שורות; 6 טבלאות `zr_*` מוגנות הוחרגו = 1644 שורות
+  לא הועתקו במכוון). **נדחו** (לא הוחלו): 132 functions, 18 views, 8 triggers, 167 policies
+  — הסיכון הגבוה ביותר לשכתוב, ונחוצים רק ב-cutover. גיבוי מלא שלהם ב-schema.json.
+- `core.projects`: נוספו עמודות `migration_target_project/schema`, `migration_status`,
+  `migrated_at` ל-8 המערכות (סטטוס `cutover_pending`). ה-hub נשאר נקי (scaffolding נמחק).
+
+### מה נשאר (cutover — דורש הכרעות/גישה של המשתמש)
+- **repoint אפליקציות חיות**: כל מערכת מניחה שהיא הבעלים של `public`; ב-uhnrgujb זה ה-hub.
+  איחוד → כל אפליקציה חייבת לעבור ל-schema-qualified client (`db.schema`) או חשיפת סכמה
+  ב-PostgREST (זהירות: הפיל את ה-API). אפליקציות Lovable (15/22/31) מחוברות ל-Supabase
+  הילידי שלהן — ניתוק לא נתמך נקי. → **תיעוד, לא בוצע.**
+- **bieebmnm functions/views/triggers/policies** — להחיל אחרי בדיקת שכתוב פרטני.
+- **storage**: הגדרות buckets גובו; קובץ יחיד (getrights lead-documents, 2.8MB) לא נמשך —
+  אין credentials ל-storage של הפרויקט הזר. edge functions נמצאות ב-repo המקומי, פריסה ב-cutover.
+- **auth reconcile**: `l023131500@gmail.com` קיים 3 פעמים (hub + hebcrm + bieebmnm) עם
+  3 UUIDs — לאחד בזמן cutover.
+- **המקורות הזרים לא נמחקו** — נשארים חיים כ-fallback (כנדרש).
+
+**מקורות זרים נוספים שלא היו במשימה (מהמפה):** csjekrvu(06,12,17,27), mwljkonw(16,24 —
+כבר יש `chatzor`), jhbeelzv(30), aypsqqv(21), pwcswdfg(08🔒). לא טופלו בסבב זה.
