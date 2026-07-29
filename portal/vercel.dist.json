@@ -2,7 +2,13 @@
   "buildCommand": "echo no-build",
   "outputDirectory": ".",
   "framework": null,
+  "redirects": [
+    { "source": "/nihul", "destination": "/admin", "permanent": false },
+    { "source": "/nihul/:path*", "destination": "/admin/:path*", "permanent": false }
+  ],
   "rewrites": [
+    { "source": "/admin", "destination": "https://nihul-more30.vercel.app/admin" },
+    { "source": "/admin/:path*", "destination": "https://nihul-more30.vercel.app/admin/:path*" },
     { "source": "/torah", "destination": "https://torah-more30.vercel.app/torah" },
     { "source": "/torah/:path*", "destination": "https://torah-more30.vercel.app/torah/:path*" },
     { "source": "/tamlul", "destination": "https://tamlul-more30.vercel.app/tamlul" },
@@ -42,8 +48,6 @@
     { "source": "/studio/:path*", "destination": "https://studio-more30.vercel.app/studio/:path*" },
     { "source": "/imud", "destination": "https://imud-more30.vercel.app/imud" },
     { "source": "/imud/:path*", "destination": "https://imud-more30.vercel.app/imud/:path*" },
-    { "source": "/nihul", "destination": "https://nihul-more30.vercel.app/nihul" },
-    { "source": "/nihul/:path*", "destination": "https://nihul-more30.vercel.app/nihul/:path*" },
     { "source": "/orech", "destination": "https://orech-more30.vercel.app/orech" },
     { "source": "/orech/:path*", "destination": "https://orech-more30.vercel.app/orech/:path*" },
     { "source": "/crm", "destination": "https://crm-more30.vercel.app/crm/" },

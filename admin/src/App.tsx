@@ -1,11 +1,15 @@
-import { useEffect, useMemo, useState } from "react";
-import { REGISTRY, DEPARTMENTS, TOPIC_ROUTES, type ProjectEntry } from "@more30/config";
+import { useEffect, useState } from "react";
+import { DEPARTMENTS } from "@more30/config";
 import { createBrowserClient, type SupabaseClient } from "@more30/db";
 
 /**
- * more30 · לוח שליטה מרכזי — שני מסכים: מערכות + רעיונות נכנסים.
- * READ systems: public.more30_project_overview / _tasks / _tokens / _bugs (anon-safe).
- * READ ideas (PII): RPC more30_intake_list (admin only). WRITE: gated RPCs.
+ * more30 · הניהול המאוחד — more30.com/admin. כניסה אחת (Supabase Auth) לכל מה
+ * שיש: מצב כל מערכת, לוח הביקורת, הכניסות לאדמין של כל מערכת, המפתחות
+ * והקרדיטים אצל הספקים, והרעיונות והאפיונים שנכנסו מהאתר.
+ *
+ * כל קריאה כאן עוברת דרך RPC שמאמת `more30_is_admin()`:
+ *   more30_admin_snapshot (מערכות/משימות/מפתחות/באגים) · more30_intake_list ·
+ *   more30_spec_list. אין קריאה אחת שרצה עם anon — ראה db/core/0008.
  */
 interface Overview {
   number: string; name: string; name_he?: string | null; path?: string | null;
@@ -13,7 +17,7 @@ interface Overview {
   fixed_notes?: string | null; changed_notes?: string | null;
   department: string; category: string; stage: string;
   live: boolean; is_deployed: boolean; deploy_target: string | null; live_url: string | null;
-  admin_url: string | null; is_protected: boolean; to_delete: boolean;
+  admin_url: string | null; admin_auth?: string | null; is_protected: boolean; to_delete: boolean;
   supabase_project: string | null; supabase_schema: string | null; note: string | null;
   open_bugs: number; open_tasks: number; missing_tokens: number;
   // ביקורת 29/07 — הסטטוס האמיתי של כל מערכת. הניהול מציג את כולן; האתר
@@ -56,6 +60,8 @@ interface Spec {
 let sb: SupabaseClient | null = null;
 try { sb = createBrowserClient("public"); } catch { sb = null; }
 const DEPT_KEYS = Object.keys(DEPARTMENTS);
+/** תחום שנוסף במסד ואין לו תרגום מוצג כמו שהוא, במקום להיעלם מהמסך. */
+const deptLabel = (d: string) => DEPARTMENTS[d] ?? d;
 const IDEA_STATUS = ["new", "reviewing", "approved", "rejected"];
 const IDEA_STATUS_HE: Record<string, string> = { new: "חדש", reviewing: "בבדיקה", approved: "אושר", rejected: "נדחה" };
 const SPEC_STATUS = ["new", "reviewing", "analyzed", "converted", "rejected"];
@@ -68,8 +74,71 @@ const SPEC_STATUS_HE: Record<string, string> = { new: "חדש", reviewing: "בב
  */
 const API_BASE = (import.meta as any).env?.VITE_API_BASE ?? "";
 
+/** ספק חיצוני, כפי ש-/api/credits מחזיר אותו. אין כאן מפתחות — רק מספרים. */
+interface ProviderCredit {
+  key: string; label: string; usedBy: string;
+  state: "ok" | "missing" | "invalid" | "unknown";
+  usage?: { usedUsd: number; limitUsd: number; percent: number; cycleEnds: string | null };
+  detail: string;
+}
+const CREDIT_STATE_HE: Record<string, string> = {
+  ok: "תקף", missing: "לא מוגדר", invalid: "נדחה", unknown: "לא נמדד",
+};
+const CREDIT_STATE_COLOR: Record<string, string> = {
+  ok: "#16a34a", missing: "#94a3b8", invalid: "#dc2626", unknown: "#d97706",
+};
+
+/**
+ * פרויקט ה-Supabase שהכניסה הזו נמצאת בו. מערכת שיושבת על אותו פרויקט
+ * משתמשת באותו מאגר משתמשים — כלומר הכניסה הזו באמת פותחת אותה. מערכת על
+ * פרויקט אחר מחזיקה מאגר משתמשים נפרד, ואי אפשר לאחד אותם מכאן.
+ */
+const HUB_PROJECT = (() => {
+  const url: string = (import.meta as any).env?.VITE_SUPABASE_URL ?? "";
+  return url.replace(/^https?:\/\//, "").split(".")[0] ?? "";
+})();
+
+/**
+ * מה באמת שומר על מסך האדמין של כל מערכת — `core.projects.admin_auth`, שנמדד
+ * בדפדפן אמיתי ולא נגזר מ-HTTP 200. זו התשובה הכנה ל"אותם פרטי כניסה לכל
+ * המערכות": היא נכונה למי שיושב על ה-hub, ולא נכונה לשאר, ובמקום להבטיח SSO
+ * שאינו קיים המסך אומר בדיוק מי בפנים, מי בחוץ, ומה שבור.
+ */
+type AccessKind = "hub" | "own" | "token" | "open" | "broken" | "none";
+const ACCESS_HE: Record<AccessKind, string> = {
+  hub: "אותה כניסה ✓",
+  own: "משתמשים נפרדים",
+  token: "טוקן, לא משתמש",
+  open: "⚠️ פתוח בלי סיסמה",
+  broken: "הכניסה שבורה",
+  none: "אין מסך אדמין",
+};
+const ACCESS_COLOR: Record<AccessKind, string> = {
+  hub: "#16a34a", own: "#d97706", token: "#6366f1",
+  open: "#dc2626", broken: "#dc2626", none: "#94a3b8",
+};
+const ACCESS_WHY: Record<AccessKind, string> = {
+  hub: "יושבת על אותו פרויקט Supabase — המייל והסיסמה כאן נכנסים גם לשם.",
+  own: "מאגר משתמשים משלה על פרויקט Supabase אחר. איחוד דורש את מפתח ה-service של אותו פרויקט, ואין כזה בחשבון הזה.",
+  token: "לא עובדת עם משתמשים אלא עם סוד בכתובת או בכותרת — אין למה לחבר כניסה.",
+  open: "המסך נפתח לכל אחד בלי שום אימות. זה ממצא, לא הגדרה.",
+  broken: "יש מסך אדמין, אבל הכניסה אליו מפילה את הדפדפן אל מחוץ למערכת.",
+  none: "לא נפרס מסך אדמין — הנתיב נופל לאפליקציה עצמה.",
+};
+
+const accessOf = (r: Overview): AccessKind =>
+  (r.admin_auth && r.admin_auth in ACCESS_HE ? r.admin_auth : "none") as AccessKind;
+
+/** הכתובת המלאה של מסך האדמין, כשיש כזה ואפשר להגיע אליו בלחיצה. */
+function adminHref(r: Overview): string | null {
+  if (!r.admin_url) return null;
+  if (r.admin_url.startsWith("http")) return r.admin_url;
+  if (!r.admin_url.startsWith("/")) return null; // תיאור, לא נתיב
+  return r.live_url ? r.live_url.replace(/\/$/, "") + r.admin_url : null;
+}
+
 export function App() {
-  const [view, setView] = useState<"systems" | "ideas" | "specs">("systems");
+  const [view, setView] = useState<"systems" | "access" | "keys" | "ideas" | "specs">("systems");
   const [rows, setRows] = useState<Overview[]>([]);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [tokens, setTokens] = useState<Token[]>([]);
@@ -78,24 +147,44 @@ export function App() {
   const [specs, setSpecs] = useState<Spec[]>([]);
   const [aiBusy, setAiBusy] = useState<Record<string, boolean>>({});
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
   const [session, setSession] = useState<unknown>(null);
+  /**
+   * "טרם ידוע" עד שנשמעת התשובה הראשונה של Supabase על הסשן. בלי המצב הזה
+   * מסך ההתחברות מהבהב לרגע גם למי שכבר מחובר, וגרוע מזה — הטעינה מתחילה
+   * לפני שיש טוקן ונכשלת.
+   */
+  const [authReady, setAuthReady] = useState(false);
+  const [credits, setCredits] = useState<ProviderCredit[] | null>(null);
+  const [creditsMsg, setCreditsMsg] = useState<string | null>(null);
   const [msg, setMsg] = useState<string | null>(sb ? null : "מצב לא-מקוון: אין חיבור Supabase.");
   const [fDept, setFDept] = useState(""); const [fStage, setFStage] = useState(""); const [fLive, setFLive] = useState(false); const [q, setQ] = useState("");
   const [fClass, setFClass] = useState("");
   const [draft, setDraft] = useState<Record<string, string>>({});
   const [conv, setConv] = useState<Record<string, { slug: string; dept: string; cat: string }>>({});
 
+  /**
+   * קריאה אחת מוגנת במקום ארבע קריאות טבלה. עד 0008 ארבע ה-views היו פתוחות
+   * ל-anon, כלומר כל מבקר יכול היה לקרוא את כתובות האדמין ואת רשימת המפתחות
+   * החסרים. עכשיו הן סגורות, וה-RPC מאמת `more30_is_admin()` לפני שהוא עונה.
+   */
   async function loadSystems() {
     if (!sb) return;
-    const [ov, tk, tok, bg] = await Promise.all([
-      sb.from("more30_project_overview").select("*"),
-      sb.from("more30_tasks").select("*"),
-      sb.from("more30_tokens").select("*"),
-      sb.from("more30_bugs").select("*"),
-    ]);
-    if (ov.error) { setMsg("שגיאת קריאה: " + ov.error.message); return; }
-    setRows((ov.data ?? []) as Overview[]); setTasks((tk.data ?? []) as Task[]);
-    setTokens((tok.data ?? []) as Token[]); setBugs((bg.data ?? []) as Bug[]);
+    const { data, error } = await sb.rpc("more30_admin_snapshot");
+    if (error) {
+      setMsg(
+        error.message.includes("admin only")
+          ? "החשבון הזה מחובר, אבל אינו מוגדר כאדמין של more30."
+          : "שגיאת קריאה: " + error.message,
+      );
+      return;
+    }
+    const snap = (data ?? {}) as { projects?: Overview[]; tasks?: Task[]; tokens?: Token[]; bugs?: Bug[] };
+    setRows(snap.projects ?? []);
+    setTasks(snap.tasks ?? []);
+    setTokens(snap.tokens ?? []);
+    setBugs(snap.bugs ?? []);
   }
   async function loadIdeas() {
     if (!sb) return;
@@ -182,13 +271,46 @@ export function App() {
     }, 4000);
   }
 
-  useEffect(() => { if (!sb) return; loadSystems();
-    sb.auth.getSession().then(({ data }) => setSession(data.session));
-    const { data: sub } = sb.auth.onAuthStateChange((_e, s) => { setSession(s); if (s) { loadIdeas(); loadSpecs(); } });
+  /**
+   * מצב הקרדיטים נמדד בשרת, כי המפתחות של הספקים לא יכולים להגיע לדפדפן.
+   * הפונקציה מקבלת את ה-JWT ומאמתת אותו מול `more30_is_admin()`.
+   */
+  async function loadCredits() {
+    if (!sb) return;
+    setCreditsMsg(null);
+    await sb.auth.refreshSession().catch(() => null);
+    const jwt = (await sb.auth.getSession()).data.session?.access_token ?? "";
+    if (!jwt) { setCreditsMsg("צריך התחברות אדמין."); return; }
+    try {
+      const res = await fetch(`${API_BASE}/api/credits`, { headers: { Authorization: `Bearer ${jwt}` } });
+      const body = await res.json().catch(() => null);
+      if (!res.ok) { setCreditsMsg(body?.error ?? `שגיאה ${res.status}`); return; }
+      setCredits(body.providers as ProviderCredit[]);
+    } catch (e: any) {
+      setCreditsMsg("לא הצלחנו לבדוק את הספקים: " + (e?.message ?? e));
+    }
+  }
+
+  /**
+   * ⚠️ שום טעינה לא רצה לפני שיש סשן. עד לשינוי הזה הניהול קרא את
+   * `more30_project_overview` עם ה-anon — כלומר כל מי שהגיע לכתובת ראה את
+   * `fixed_notes`, את `admin_url` של כל מערכת, ואת מספר המפתחות החסרים בכל
+   * אחת. זה לא היה "לוח פתוח", זו הייתה דליפה.
+   */
+  useEffect(() => {
+    if (!sb) { setAuthReady(true); return; }
+    sb.auth.getSession().then(({ data }) => { setSession(data.session); setAuthReady(true); });
+    const { data: sub } = sb.auth.onAuthStateChange((_e, s) => { setSession(s); setAuthReady(true); });
     return () => sub.subscription.unsubscribe();
   }, []);
+
+  useEffect(() => {
+    if (!session) { setRows([]); setTasks([]); setTokens([]); setBugs([]); setIdeas([]); setSpecs([]); setCredits(null); return; }
+    loadSystems(); loadIdeas(); loadSpecs();
+  }, [session]);
   useEffect(() => { if (view === "ideas" && session) loadIdeas(); }, [view, session]);
   useEffect(() => { if (view === "specs" && session) loadSpecs(); }, [view, session]);
+  useEffect(() => { if (view === "keys" && session && !credits) loadCredits(); }, [view, session]);
 
   /**
    * הניהול מוגש מ-more30.com/nihul. בלי emailRedirectTo קישור ההתחברות חוזר
@@ -196,7 +318,7 @@ export function App() {
    * נוצר בכתובת אחרת ולא כאן; מכאן ה-401 בלחיצה על "שלח לניתוח AI".
    * החזרה לכתובת הנוכחית מייצרת את הסשן במקום שבו הוא באמת נדרש.
    */
-  async function signIn() {
+  async function signInWithLink() {
     if (!sb || !email) return;
     const back = typeof window !== "undefined"
       ? window.location.origin + window.location.pathname
@@ -204,6 +326,34 @@ export function App() {
     const { error } = await sb.auth.signInWithOtp({ email, options: { emailRedirectTo: back } });
     setMsg(error ? "שגיאה: " + error.message : `נשלח קישור התחברות ל-${email}. פתחו אותו באותו דפדפן.`);
   }
+
+  /** כניסה עם סיסמה — זו הכניסה הרגילה. הקישור במייל נשאר כגיבוי. */
+  async function signInWithPassword() {
+    if (!sb || !email || !password) return;
+    const { error } = await sb.auth.signInWithPassword({ email, password });
+    if (error) {
+      setMsg(
+        error.message.toLowerCase().includes("invalid")
+          ? "המייל או הסיסמה אינם נכונים. אם עוד לא הוגדרה סיסמה — היכנסו בקישור למייל, ומשם אפשר לקבוע אחת."
+          : "שגיאה: " + error.message,
+      );
+      return;
+    }
+    setPassword("");
+    setMsg(null);
+  }
+
+  /**
+   * קביעת סיסמה למשתמש המחובר. כך נוצרת "כניסה אחת עם סיסמה" בלי שאף אחד
+   * — כולל מי שבנה את המסך — יידע מה היא. הסיסמה לעולם לא נשמרת בקוד ולא במסד.
+   */
+  async function setOwnPassword() {
+    if (!sb || newPassword.length < 8) { setMsg("סיסמה חייבת להיות באורך 8 תווים לפחות."); return; }
+    const { error } = await sb.auth.updateUser({ password: newPassword });
+    setMsg(error ? "שגיאה: " + error.message : "הסיסמה נקבעה. מכאן אפשר להיכנס עם מייל וסיסמה.");
+    setNewPassword("");
+  }
+
   async function signOut() { if (sb) { await sb.auth.signOut(); setSession(null); } }
   async function addTask(num: string) { const t = (draft[num] ?? "").trim(); if (!sb || !t) return;
     const { error } = await sb.rpc("more30_add_task", { p_num: num, p_title: t, p_author: "user" });
@@ -225,33 +375,85 @@ export function App() {
     setMsg("נוצר פרויקט חדש #" + data); loadIdeas(); loadSystems(); }
 
   const isAuthed = !!session;
-  const merged: Overview[] = useMemo(() => rows.length ? rows : REGISTRY.map((p: ProjectEntry) => ({
-    number: p.number, name: p.name, name_he: p.name, path: TOPIC_ROUTES[p.number] ?? null, department: p.department, category: p.category, stage: p.stage, live: p.live,
-    is_deployed: !!p.isDeployed, deploy_target: p.deployTarget, live_url: p.liveUrl ?? null, admin_url: p.adminUrl ?? null,
-    is_protected: p.protected, to_delete: false, supabase_project: p.supabaseProject ?? null, supabase_schema: p.supabaseSchema,
-    note: p.note ?? null, open_bugs: 0, open_tasks: 0, missing_tokens: 0,
-  })), [rows]);
+  /**
+   * בכוונה בלי נפילה למרשם שב-config: הניהול הוא המקום שבו חייבים לראות את
+   * המצב האמיתי. רשימה מקובעת שנשלפת כשהקריאה נכשלת נראית בדיוק כמו אמת,
+   * ומסתירה בדיוק את התקלה שבגללה נכנסו לכאן.
+   */
+  const merged: Overview[] = rows;
   const filtered = merged.filter((r) => (!fDept || r.department === fDept) && (!fStage || r.stage === fStage) && (!fLive || r.live) &&
     (!fClass || (r.audit_class ?? "") === fClass) &&
     (!q || (r.name + r.number + (r.note ?? "")).toLowerCase().includes(q.toLowerCase())));
   const classCount = (c: string) => merged.filter((r) => r.audit_class === c).length;
   const shownCount = merged.filter((r) => r.public_visible !== false).length;
   const byDept: Record<string, Overview[]> = {}; for (const r of filtered) (byDept[r.department] ??= []).push(r);
+  // סדר התחומים נגזר מהשורות עצמן, כדי שתחום חדש במסד יופיע בלי שינוי קוד.
+  const deptOrder = [...new Set(merged.map((r) => r.department))];
+  const withAdmin = merged.filter((r) => accessOf(r) !== "none" && !r.is_protected);
+  const sameLogin = withAdmin.filter((r) => accessOf(r) === "hub").length;
+  const alarming = withAdmin.filter((r) => ["open", "broken"].includes(accessOf(r)));
+
+  if (!authReady) {
+    return (
+      <main style={{ ...shell, display: "grid", placeItems: "center" }}>
+        <div style={{ color: "#64748b", fontSize: 14 }}>בודקים התחברות…</div>
+      </main>
+    );
+  }
+
+  if (!isAuthed) {
+    return (
+      <main style={{ ...shell, display: "grid", placeItems: "center" }}>
+        <div style={{ ...card, width: "min(420px, 92vw)" }}>
+          <h1 style={{ margin: 0, fontSize: 22 }}>more30 · ניהול</h1>
+          <p style={{ fontSize: 13, color: "#64748b", lineHeight: 1.6, marginTop: 8 }}>
+            כניסה אחת לניהול כל המערכות: המצב האמיתי של כל אחת, לוח הביקורת,
+            המפתחות החסרים, הקרדיטים אצל הספקים, והרעיונות והאפיונים שנכנסו.
+          </p>
+          <div style={{ display: "grid", gap: 8, marginTop: 14 }}>
+            <input placeholder="מייל" value={email} onChange={(e) => setEmail(e.target.value)}
+              autoComplete="username" style={{ ...inp, padding: "8px 12px" }} />
+            <input placeholder="סיסמה" type="password" value={password}
+              onChange={(e) => setPassword(e.target.value)} autoComplete="current-password"
+              onKeyDown={(e) => { if (e.key === "Enter") signInWithPassword(); }}
+              style={{ ...inp, padding: "8px 12px" }} />
+            <button onClick={signInWithPassword} style={{ ...btn, background: "#4f46e5", color: "#fff", borderColor: "#4f46e5", padding: "8px 12px", fontWeight: 700 }}>
+              כניסה
+            </button>
+            <button onClick={signInWithLink} style={{ ...btn, padding: "8px 12px" }}>
+              אין לי סיסמה — שלחו קישור למייל
+            </button>
+          </div>
+          {msg && <div style={{ background: "#fef9c3", border: "1px solid #fde68a", padding: "8px 12px", borderRadius: 8, marginTop: 12, fontSize: 13, lineHeight: 1.6 }}>{msg}</div>}
+        </div>
+      </main>
+    );
+  }
 
   return (
-    <main style={{ fontFamily: "Assistant, system-ui, sans-serif", padding: 20, direction: "rtl", background: "#f8fafc", minHeight: "100vh" }}>
+    <main style={{ ...shell, padding: 20 }}>
       <header style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12 }}>
         <div>
           <h1 style={{ margin: 0, fontSize: 24 }}>more30 · לוח שליטה</h1>
-          <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
+          <div style={{ display: "flex", gap: 8, marginTop: 8, flexWrap: "wrap" }}>
             <button onClick={() => setView("systems")} style={{ ...tab, ...(view === "systems" ? tabOn : {}) }}>מערכות ({merged.length})</button>
+            <button onClick={() => setView("access")} style={{ ...tab, ...(view === "access" ? tabOn : {}) }}>כניסות לאדמין{withAdmin.length ? ` (${withAdmin.length})` : ""}</button>
+            <button onClick={() => setView("keys")} style={{ ...tab, ...(view === "keys" ? tabOn : {}) }}>מפתחות וקרדיטים{tokens.length ? ` (${tokens.length})` : ""}</button>
             <button onClick={() => setView("ideas")} style={{ ...tab, ...(view === "ideas" ? tabOn : {}) }}>רעיונות נכנסים{ideas.length ? ` (${ideas.length})` : ""}</button>
             <button onClick={() => setView("specs")} style={{ ...tab, ...(view === "specs" ? tabOn : {}) }}>אפיונים מהשאלון{specs.length ? ` (${specs.length})` : ""}</button>
           </div>
         </div>
-        <div style={{ fontSize: 13 }}>
-          {isAuthed ? <span>מחובר · <button onClick={signOut} style={btn}>התנתק</button></span>
-            : <span><input placeholder="מייל אדמין" value={email} onChange={(e) => setEmail(e.target.value)} style={inp} /><button onClick={signIn} style={btn}>שלח קישור</button></span>}
+        <div style={{ fontSize: 13, display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+          <span>מחובר</span>
+          <details>
+            <summary style={{ cursor: "pointer", color: "#4f46e5" }}>שינוי סיסמה</summary>
+            <div style={{ display: "flex", gap: 6, marginTop: 6 }}>
+              <input type="password" placeholder="סיסמה חדשה (8+)" value={newPassword} autoComplete="new-password"
+                onChange={(e) => setNewPassword(e.target.value)} style={inp} />
+              <button onClick={setOwnPassword} style={btn}>קבע</button>
+            </div>
+          </details>
+          <button onClick={signOut} style={btn}>התנתק</button>
         </div>
       </header>
       {msg && <div style={{ background: "#fef9c3", border: "1px solid #fde68a", padding: "8px 12px", borderRadius: 8, margin: "10px 0", fontSize: 13 }}>{msg}</div>}
@@ -270,14 +472,14 @@ export function App() {
             <span style={{ fontSize: 12, color: "#64748b" }}>מוצגות באתר: {shownCount} מתוך {merged.length}</span>
           </div>
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap", margin: "10px 0 16px" }}>
-            <select value={fDept} onChange={(e) => setFDept(e.target.value)} style={inp}><option value="">כל המחלקות</option>{DEPT_KEYS.map((d) => <option key={d} value={d}>{DEPARTMENTS[d]}</option>)}</select>
+            <select value={fDept} onChange={(e) => setFDept(e.target.value)} style={inp}><option value="">כל המחלקות</option>{deptOrder.map((d) => <option key={d} value={d}>{deptLabel(d)}</option>)}</select>
             <select value={fStage} onChange={(e) => setFStage(e.target.value)} style={inp}><option value="">כל השלבים</option>{["live", "beta", "wip", "idea", "protected"].map((s) => <option key={s} value={s}>{s}</option>)}</select>
             <label style={{ fontSize: 13, alignSelf: "center" }}><input type="checkbox" checked={fLive} onChange={(e) => setFLive(e.target.checked)} /> חי בלבד</label>
             <input placeholder="חיפוש…" value={q} onChange={(e) => setQ(e.target.value)} style={{ ...inp, flex: 1, minWidth: 160 }} />
           </div>
-          {DEPT_KEYS.map((dep) => ({ dep, list: byDept[dep] ?? [] })).filter((g) => g.list.length).map(({ dep, list }) => (
+          {deptOrder.map((dep) => ({ dep, list: byDept[dep] ?? [] })).filter((g) => g.list.length).map(({ dep, list }) => (
             <section key={dep} style={{ marginBottom: 22 }}>
-              <h2 style={{ fontSize: 18, borderBottom: "2px solid #e2e8f0", paddingBottom: 6 }}>{DEPARTMENTS[dep]} <span style={{ color: "#94a3b8", fontSize: 14 }}>({list.length})</span></h2>
+              <h2 style={{ fontSize: 18, borderBottom: "2px solid #e2e8f0", paddingBottom: 6 }}>{deptLabel(dep)} <span style={{ color: "#94a3b8", fontSize: 14 }}>({list.length})</span></h2>
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: 12 }}>
                 {list.sort((a, b) => a.number.localeCompare(b.number)).map((r) => {
                   const myTasks = tasks.filter((t) => t.project_num === r.number);
@@ -324,8 +526,15 @@ export function App() {
                       </details>
                       <div style={{ display: "flex", gap: 6, marginTop: 8, flexWrap: "wrap" }}>
                         {r.live_url && <a href={r.live_url} target="_blank" rel="noreferrer" style={linkBtn}>אתר חי ↗</a>}
-                        {(() => { if (!r.admin_url) return null; const abs = r.admin_url.startsWith("http"); const href = abs ? r.admin_url : (r.live_url ? r.live_url.replace(/\/$/, "") + r.admin_url : null);
-                          return href ? <a href={href} target="_blank" rel="noreferrer" style={linkBtn}>כניסת אדמין ↗</a> : <span style={{ ...linkBtn, opacity: 0.7 }}>אדמין: {r.admin_url}</span>; })()}
+                        {(() => {
+                          const kind = accessOf(r);
+                          if (kind === "none") return null;
+                          const href = adminHref(r);
+                          return href
+                            ? <a href={href} target="_blank" rel="noreferrer" style={linkBtn}>כניסת אדמין ↗</a>
+                            : <span style={{ ...linkBtn, opacity: 0.7 }}>אדמין: {r.admin_url}</span>;
+                        })()}
+                        {accessOf(r) !== "none" && <Badge on label={ACCESS_HE[accessOf(r)]} color={ACCESS_COLOR[accessOf(r)]} />}
                       </div>
                       {myBugs.length > 0 && <details style={{ marginTop: 8 }}><summary style={{ fontSize: 12, color: "#ea580c", cursor: "pointer" }}>באגים ({myBugs.length})</summary>
                         <ul style={{ fontSize: 12, margin: "4px 0", paddingInlineStart: 18 }}>{myBugs.map((b) => <li key={b.id}>{b.title} <em style={{ color: "#94a3b8" }}>({b.severity})</em></li>)}</ul></details>}
@@ -353,6 +562,129 @@ export function App() {
             </section>
           ))}
         </>
+      ) : view === "access" ? (
+        <section>
+          {/* "אותם פרטי כניסה לכל המערכות" נכון בדיוק למערכות שיושבות על ה-hub.
+              המסך אומר את זה במספר, ולא מבטיח SSO רוחבי שלא קיים. */}
+          <div style={{ ...card, marginTop: 12, lineHeight: 1.7, fontSize: 13 }}>
+            <b style={{ fontSize: 15 }}>
+              הכניסה הזו פותחת {sameLogin} מתוך {withAdmin.length} מסכי האדמין שקיימים.
+            </b>
+            <div style={{ color: "#475569", marginTop: 6 }}>
+              אותו מייל ואותה סיסמה נכנסים לכל מערכת שיושבת על פרויקט ה-Supabase
+              של הניהול (<code style={code}>{HUB_PROJECT || "—"}</code>). מערכת על
+              פרויקט אחר מחזיקה מאגר משתמשים נפרד, ואיחוד שלה דורש את מפתח
+              ה-service של אותו פרויקט — מפתחות שאינם בחשבון הזה. כל שורה כאן
+              נמדדה בדפדפן אמיתי, לא לפי קוד תגובה.
+            </div>
+          </div>
+
+          {alarming.length > 0 && (
+            <div style={{ ...card, marginTop: 10, borderColor: "#fecaca", background: "#fef2f2", fontSize: 13, lineHeight: 1.7 }}>
+              <b style={{ color: "#b91c1c" }}>דורש את תשומת ליבך ({alarming.length}):</b>
+              <ul style={{ margin: "6px 0 0", paddingInlineStart: 20 }}>
+                {alarming.map((r) => (
+                  <li key={r.number}>
+                    <b>{r.number} · {r.name_he || r.name}</b> — {ACCESS_WHY[accessOf(r)]}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          <div style={{ display: "grid", gap: 8, marginTop: 12 }}>
+            {merged.filter((r) => !r.is_protected && accessOf(r) !== "none")
+              .sort((a, b) => a.number.localeCompare(b.number)).map((r) => {
+              const kind = accessOf(r);
+              const href = adminHref(r);
+              return (
+                <div key={r.number} style={{ ...card, padding: "10px 14px" }}>
+                  <div style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
+                    <b style={{ minWidth: 190 }}>{r.number} · {r.name_he || r.name}</b>
+                    <Badge on label={ACCESS_HE[kind]} color={ACCESS_COLOR[kind]} />
+                    <span style={{ fontSize: 12, color: "#64748b", direction: "ltr" }}>
+                      {r.supabase_project ? r.supabase_project.slice(0, 10) + "…" : "— ללא מסד"}
+                    </span>
+                    <span style={{ flex: 1 }} />
+                    {routedOnDomain(r) && <a href={`https://more30.com/${r.path}`} target="_blank" rel="noreferrer" style={linkBtn}>המערכת ↗</a>}
+                    {href
+                      ? <a href={href} target="_blank" rel="noreferrer" style={{ ...linkBtn, borderColor: "#4f46e5", color: "#4f46e5", fontWeight: 700 }}>אדמין ↗</a>
+                      : <span style={{ ...linkBtn, opacity: 0.75 }}>{r.admin_url}</span>}
+                  </div>
+                  <div style={{ fontSize: 12, color: "#64748b", marginTop: 5 }}>{ACCESS_WHY[kind]}</div>
+                </div>
+              );
+            })}
+          </div>
+
+          <div style={{ fontSize: 12, color: "#94a3b8", marginTop: 12 }}>
+            {merged.filter((r) => accessOf(r) === "none").length} מערכות נוספות אינן מציגות מסך
+            אדמין כלל — הנתיב שלהן נופל לאפליקציה עצמה.
+          </div>
+        </section>
+      ) : view === "keys" ? (
+        <section>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 12, flexWrap: "wrap" }}>
+            <h2 style={{ fontSize: 18, margin: 0 }}>קרדיטים אצל הספקים</h2>
+            <button onClick={loadCredits} style={btn}>בדוק עכשיו</button>
+            <span style={{ fontSize: 12, color: "#64748b" }}>
+              נמדד בשרת מול הספק עצמו. אף מפתח אינו מגיע לדפדפן.
+            </span>
+          </div>
+          {creditsMsg && <div style={{ background: "#fee2e2", border: "1px solid #fecaca", padding: "8px 12px", borderRadius: 8, margin: "10px 0", fontSize: 13 }}>{creditsMsg}</div>}
+          {!credits && !creditsMsg && <div style={{ ...card, marginTop: 10, color: "#64748b", fontSize: 13 }}>בודקים מול הספקים…</div>}
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 12, marginTop: 10 }}>
+            {(credits ?? []).map((p) => (
+              <div key={p.key} style={card}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
+                  <b>{p.label}</b>
+                  <Badge on label={CREDIT_STATE_HE[p.state] ?? p.state} color={CREDIT_STATE_COLOR[p.state] ?? "#334155"} />
+                </div>
+                <div style={{ fontSize: 12, color: "#64748b", marginTop: 4 }}>{p.usedBy}</div>
+                {p.usage && (
+                  <div style={{ marginTop: 8 }}>
+                    <div style={{ height: 8, background: "#e2e8f0", borderRadius: 999, overflow: "hidden" }}>
+                      <div style={{ width: `${Math.min(100, p.usage.percent)}%`, height: "100%", background: p.usage.percent >= 80 ? "#dc2626" : "#16a34a" }} />
+                    </div>
+                    <div style={{ fontSize: 12, color: "#334155", marginTop: 4, direction: "ltr", textAlign: "right" }}>
+                      ${p.usage.usedUsd} / ${p.usage.limitUsd} · {p.usage.percent}%
+                    </div>
+                    {p.usage.cycleEnds && <div style={{ fontSize: 11, color: "#94a3b8" }}>מתאפס ב-{new Date(p.usage.cycleEnds).toLocaleDateString("he-IL")}</div>}
+                  </div>
+                )}
+                <div style={{ fontSize: 12, color: "#475569", marginTop: 8, lineHeight: 1.5 }}>{p.detail}</div>
+              </div>
+            ))}
+          </div>
+
+          <h2 style={{ fontSize: 18, margin: "24px 0 4px" }}>מפתחות חסרים למערכות ({tokens.filter((t) => t.status === "missing").length})</h2>
+          <div style={{ fontSize: 12, color: "#64748b", marginBottom: 10 }}>
+            אלה שמות המשתנים בלבד — הערכים לעולם לא נשמרים כאן.
+          </div>
+          {(() => {
+            const missing = tokens.filter((t) => t.status === "missing");
+            const nums = [...new Set(missing.map((t) => t.project_num))].sort();
+            if (!nums.length) return <div style={{ ...card, color: "#64748b", fontSize: 13 }}>אין מפתחות מסומנים כחסרים.</div>;
+            return nums.map((num) => {
+              const sys = merged.find((r) => r.number === num);
+              return (
+                <div key={num} style={{ ...card, marginBottom: 10 }}>
+                  <b>{num} · {sys?.name_he || sys?.name || "—"}</b>
+                  <ul style={{ fontSize: 13, margin: "6px 0 0", paddingInlineStart: 18, display: "grid", gap: 4 }}>
+                    {missing.filter((t) => t.project_num === num).map((t) => (
+                      <li key={t.id}>
+                        <code style={code}>{t.env_var}</code>
+                        {t.purpose ? <span style={{ color: "#475569" }}> — {t.purpose}</span> : null}
+                        {t.paste_location ? <span style={{ color: "#94a3b8" }}> · להזין ב-{t.paste_location}</span> : null}
+                        {t.obtain_url ? <> · <a href={t.obtain_url} target="_blank" rel="noreferrer">להשגה ↗</a></> : null}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              );
+            });
+          })()}
+        </section>
       ) : view === "ideas" ? (
         <section>
           {!isAuthed && <div style={{ ...card, textAlign: "center" }}>🔒 רעיונות נכנסים מכילים מידע אישי — יש להתחבר כאדמין כדי לצפות.</div>}
@@ -458,7 +790,13 @@ export function App() {
 function Badge({ on, label, color }: { on: boolean; label: string; color: string }) {
   return <span style={{ ...badge, background: on ? color + "22" : "#f1f5f9", color: on ? color : "#94a3b8" }}>{label}</span>;
 }
+/** המסגרת של כל המסך — גם מסך ההתחברות וגם הלוח, כדי ששניהם ייראו אותו דבר. */
+const shell: React.CSSProperties = {
+  fontFamily: "Assistant, system-ui, sans-serif", direction: "rtl",
+  background: "#f8fafc", minHeight: "100vh", padding: 20,
+};
 const card: React.CSSProperties = { background: "#fff", border: "1px solid #e2e8f0", borderRadius: 12, padding: 14, boxShadow: "0 1px 2px rgba(0,0,0,0.04)" };
+const code: React.CSSProperties = { background: "#f1f5f9", padding: "1px 6px", borderRadius: 5, direction: "ltr", display: "inline-block", fontSize: 12 };
 const badge: React.CSSProperties = { fontSize: 11, padding: "2px 8px", borderRadius: 999, fontWeight: 600 };
 const btn: React.CSSProperties = { border: "1px solid #cbd5e1", background: "#fff", borderRadius: 8, padding: "4px 10px", cursor: "pointer", fontSize: 13 };
 const pillBtn: React.CSSProperties = { border: "none", borderRadius: 999, padding: "3px 10px", cursor: "pointer", fontSize: 12 };
