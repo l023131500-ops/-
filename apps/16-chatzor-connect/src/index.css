@@ -1,0 +1,111 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * Design system — "מחוברים".
+ * Calm, dignified palette for a religious community: deep night-blue, warm gold,
+ * and a quiet teal accent. All colors are HSL variables so a synagogue mini-site
+ * can override --primary / --gold at runtime for its own branding.
+ */
+@layer base {
+  :root {
+    --background: 210 40% 99%;
+    --foreground: 213 45% 14%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 213 45% 14%;
+
+    --primary: 209 63% 16%; /* deep night-blue */
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 205 45% 96%;
+    --secondary-foreground: 209 63% 20%;
+
+    --muted: 210 30% 95%;
+    --muted-foreground: 213 16% 46%;
+
+    --accent: 189 52% 44%; /* teal */
+    --accent-foreground: 0 0% 100%;
+
+    --gold: 40 55% 52%; /* warm gold */
+    --gold-foreground: 213 45% 14%;
+
+    --border: 213 24% 90%;
+    --input: 213 24% 88%;
+    --ring: 189 52% 44%;
+
+    --radius: 0.85rem;
+  }
+
+  .dark {
+    --background: 213 42% 9%;
+    --foreground: 210 32% 92%;
+
+    --card: 213 38% 12%;
+    --card-foreground: 210 32% 92%;
+
+    --primary: 205 60% 62%;
+    --primary-foreground: 213 45% 10%;
+
+    --secondary: 213 30% 16%;
+    --secondary-foreground: 210 32% 92%;
+
+    --muted: 213 28% 17%;
+    --muted-foreground: 213 16% 64%;
+
+    --accent: 189 48% 52%;
+    --accent-foreground: 213 45% 10%;
+
+    --gold: 40 58% 58%;
+    --gold-foreground: 213 45% 10%;
+
+    --border: 213 26% 22%;
+    --input: 213 26% 24%;
+    --ring: 189 48% 52%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-feature-settings: "kern", "liga";
+    text-rendering: optimizeLegibility;
+  }
+
+  h1, h2, h3 {
+    @apply font-display;
+    letter-spacing: -0.01em;
+  }
+
+  /* Respect users who prefer reduced motion — quality means comfort, too. */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer components {
+  .container-page {
+    @apply container mx-auto px-5;
+  }
+
+  /* Subtle, dignified gold underline used for section eyebrows. */
+  .eyebrow {
+    @apply inline-flex items-center gap-2 text-sm font-semibold tracking-wide text-accent;
+  }
+
+  .card-soft {
+    @apply rounded-lg border border-border bg-card text-card-foreground shadow-soft;
+  }
+}

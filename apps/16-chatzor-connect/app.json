@@ -1,17 +1,19 @@
 {
   "number": "16",
   "slug": "chatzor-connect",
-  "name": "Chatzor Connect",
-  "category": "other",
+  "name": "Chatzor Connect — מחוברים",
+  "description": "פלטפורמת מועצה דתית וקהילות לחצור הגלילית. מאחדת את more30 (רב-דיירי) ואת galilee-connect-hub למערכת אחת. ראה README.md.",
+  "category": "community",
   "stage": "wip",
   "live": false,
-  "repo": "l023131500-ops/chatzor-connect",
+  "repo": "l023131500-ops/-",
   "basePath": "/16",
+  "unifies": ["24-galilee-connect-hub"],
   "supabase": {
-    "project": null,
-    "schema": null
+    "project": "uhnrgujbdxhhmoxcjria",
+    "schema": "chatzor"
   },
   "deployTarget": "unknown",
   "protected": false,
-  "source": "not-vendored"
+  "source": "in-progress"
 }
