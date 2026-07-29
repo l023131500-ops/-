@@ -19,18 +19,25 @@ type Row = {
   tagline: string | null; what_it_does: string | null; functions: string | null;
   department: string; stage: string; live: boolean; is_deployed: boolean;
   live_url: string | null; is_protected: boolean; to_delete: boolean;
+  public_visible: boolean;
 };
+
+/**
+ * המערכות שעברו את ביקורת 29/07 והוצגו לציבור (audit_class = 'A'). הרשימה כאן
+ * היא רק גיבוי לרגע שבו המסד לא נענה; המקור הקובע הוא `public_visible`.
+ */
+const VISIBLE_FALLBACK = new Set(["01", "02", "03", "04", "10", "17", "18", "22", "26", "28", "32"]);
 
 const supa = (() => { try { return createBrowserClient("public"); } catch { return null; } })();
 
 /** Rows from the config registry, used as an offline fallback. */
 function fallbackRows(): Row[] {
-  return REGISTRY.filter((p) => !p.protected && TOPIC_ROUTES[p.number]).map((p) => ({
+  return REGISTRY.filter((p) => !p.protected && TOPIC_ROUTES[p.number] && VISIBLE_FALLBACK.has(p.number)).map((p) => ({
     number: p.number, path: TOPIC_ROUTES[p.number]!, name: p.name, name_he: p.name,
     tagline: null, what_it_does: p.note ?? null, functions: null,
     department: p.department, stage: p.stage, live: p.live,
     is_deployed: !!p.isDeployed, live_url: null,
-    is_protected: false, to_delete: false,
+    is_protected: false, to_delete: false, public_visible: true,
   }));
 }
 
@@ -64,10 +71,15 @@ export function App() {
   useEffect(() => {
     if (!supa) return;
     supa.from("more30_project_overview")
-      .select("number,path,name,name_he,tagline,what_it_does,functions,department,stage,live,is_deployed,live_url,is_protected,to_delete")
+      .select("number,path,name,name_he,tagline,what_it_does,functions,department,stage,live,is_deployed,live_url,is_protected,to_delete,public_visible")
       .then(({ data }) => {
         if (data && data.length) {
-          setRows((data as Row[]).filter((r) => r.path && !r.is_protected && !r.to_delete));
+          // `public_visible` הוא ההחלטה מביקורת 29/07: מוצגות רק מערכות שנבדקו,
+          // חיות ומחוברות לנתוני אמת. מערכת שהוסתרה נשארת בניהול עם הסטטוס
+          // האמיתי שלה, וההחזרה לאתר היא היפוך דגל אחד במסד.
+          setRows((data as Row[]).filter(
+            (r) => r.path && !r.is_protected && !r.to_delete && r.public_visible !== false,
+          ));
         }
       });
   }, []);

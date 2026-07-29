@@ -16,7 +16,19 @@ interface Overview {
   admin_url: string | null; is_protected: boolean; to_delete: boolean;
   supabase_project: string | null; supabase_schema: string | null; note: string | null;
   open_bugs: number; open_tasks: number; missing_tokens: number;
+  // ביקורת 29/07 — הסטטוס האמיתי של כל מערכת. הניהול מציג את כולן; האתר
+  // הציבורי מציג רק את מי ש-public_visible אצלה true.
+  public_visible?: boolean; audit_class?: string | null; audit_status?: string | null;
+  audit_real_data?: boolean | null; audit_deploy_ok?: boolean | null; audit_live_ok?: boolean | null;
+  audit_evidence?: string | null; replaced_by?: string | null;
+  audit_gaps?: string | null; audit_revenue?: string | null; audited_at?: string | null;
 }
+const CLASS_HE: Record<string, string> = {
+  A: "איכותית · מוצגת באתר",
+  B: "לא מוכנה · מוסתרת",
+  C: "הוחלפה בגרסה חזקה יותר",
+};
+const CLASS_COLOR: Record<string, string> = { A: "#16a34a", B: "#dc2626", C: "#d97706" };
 const routedOnDomain = (r: Overview) => !!r.live_url && r.live_url.includes("more30.com");
 interface Task { id: string; project_num: string; title: string; status: string; author: string; }
 interface Token { id: string; project_num: string; env_var: string; purpose: string | null; obtain_url: string | null; paste_location: string | null; status: string; }
@@ -69,6 +81,7 @@ export function App() {
   const [session, setSession] = useState<unknown>(null);
   const [msg, setMsg] = useState<string | null>(sb ? null : "מצב לא-מקוון: אין חיבור Supabase.");
   const [fDept, setFDept] = useState(""); const [fStage, setFStage] = useState(""); const [fLive, setFLive] = useState(false); const [q, setQ] = useState("");
+  const [fClass, setFClass] = useState("");
   const [draft, setDraft] = useState<Record<string, string>>({});
   const [conv, setConv] = useState<Record<string, { slug: string; dept: string; cat: string }>>({});
 
@@ -199,6 +212,10 @@ export function App() {
     const { error } = await sb.rpc("more30_set_task_status", { p_id: t.id, p_status: next }); if (error) { setMsg("צריך התחברות אדמין. " + error.message); return; } loadSystems(); }
   async function toggleDelete(num: string, flag: boolean) { if (!sb) return;
     const { error } = await sb.rpc("more30_set_delete", { p_num: num, p_flag: flag }); if (error) { setMsg("צריך התחברות אדמין. " + error.message); return; } loadSystems(); }
+  /** הצגה/הסתרה באתר הציבורי. שינוי הפיך לחלוטין — רק דגל, שום מחיקה. */
+  async function toggleVisible(num: string, flag: boolean) { if (!sb) return;
+    const { error } = await sb.rpc("more30_set_public_visible", { p_num: num, p_flag: flag });
+    if (error) { setMsg("צריך התחברות אדמין. " + error.message); return; } loadSystems(); }
   async function setIdeaStatus(id: string, s: string) { if (!sb) return;
     const { error } = await sb.rpc("more30_intake_set_status", { p_id: id, p_status: s }); if (error) { setMsg(error.message); return; } loadIdeas(); }
   async function convertIdea(id: string) { if (!sb) return; const c = conv[id] ?? { slug: "", dept: "misc", cat: "other" };
@@ -215,7 +232,10 @@ export function App() {
     note: p.note ?? null, open_bugs: 0, open_tasks: 0, missing_tokens: 0,
   })), [rows]);
   const filtered = merged.filter((r) => (!fDept || r.department === fDept) && (!fStage || r.stage === fStage) && (!fLive || r.live) &&
+    (!fClass || (r.audit_class ?? "") === fClass) &&
     (!q || (r.name + r.number + (r.note ?? "")).toLowerCase().includes(q.toLowerCase())));
+  const classCount = (c: string) => merged.filter((r) => r.audit_class === c).length;
+  const shownCount = merged.filter((r) => r.public_visible !== false).length;
   const byDept: Record<string, Overview[]> = {}; for (const r of filtered) (byDept[r.department] ??= []).push(r);
 
   return (
@@ -238,6 +258,17 @@ export function App() {
 
       {view === "systems" ? (
         <>
+          {/* ביקורת 29/07 — התמונה בשורה אחת. הניהול תמיד מציג את כל המערכות. */}
+          <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center", background: "#fff", border: "1px solid #e2e8f0", borderRadius: 12, padding: "10px 14px", marginTop: 12 }}>
+            <b style={{ fontSize: 13 }}>ביקורת 29/07:</b>
+            {(["A", "B", "C"] as const).map((c) => (
+              <button key={c} onClick={() => setFClass(fClass === c ? "" : c)}
+                style={{ ...pillBtn, background: fClass === c ? CLASS_COLOR[c] : CLASS_COLOR[c] + "1a", color: fClass === c ? "#fff" : CLASS_COLOR[c], fontWeight: 700 }}>
+                {c} · {CLASS_HE[c]} ({classCount(c)})
+              </button>
+            ))}
+            <span style={{ fontSize: 12, color: "#64748b" }}>מוצגות באתר: {shownCount} מתוך {merged.length}</span>
+          </div>
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap", margin: "10px 0 16px" }}>
             <select value={fDept} onChange={(e) => setFDept(e.target.value)} style={inp}><option value="">כל המחלקות</option>{DEPT_KEYS.map((d) => <option key={d} value={d}>{DEPARTMENTS[d]}</option>)}</select>
             <select value={fStage} onChange={(e) => setFStage(e.target.value)} style={inp}><option value="">כל השלבים</option>{["live", "beta", "wip", "idea", "protected"].map((s) => <option key={s} value={s}>{s}</option>)}</select>
@@ -263,6 +294,10 @@ export function App() {
                           : <span style={{ color: "#94a3b8" }}>◦ more30.com/{r.path} · בהכנה</span>}
                       </div>}
                       <div style={{ display: "flex", gap: 6, flexWrap: "wrap", margin: "6px 0" }}>
+                        {r.audit_class && <Badge on label={`${r.audit_class} · ${CLASS_HE[r.audit_class]}`} color={CLASS_COLOR[r.audit_class]} />}
+                        {r.audit_class && <Badge on label={r.public_visible === false ? "מוסתרת מהאתר" : "מוצגת באתר"} color={r.public_visible === false ? "#64748b" : "#0ea5e9"} />}
+                        {r.replaced_by && <Badge on label={`הוחלפה ע״י ${r.replaced_by}`} color="#d97706" />}
+                        {r.audit_class && <Badge on={!!r.audit_real_data} label={r.audit_real_data ? "נתוני אמת ✓" : "בלי נתוני אמת"} color={r.audit_real_data ? "#16a34a" : "#dc2626"} />}
                         <Badge on={r.live} label={r.live ? "חי" : "לא חי"} color={r.live ? "#16a34a" : "#94a3b8"} />
                         <Badge on label={r.stage} color="#6366f1" />
                         <Badge on={r.is_deployed} label={r.is_deployed ? "פרוס" : "לא פרוס"} color={r.is_deployed ? "#0891b2" : "#94a3b8"} />
@@ -272,9 +307,15 @@ export function App() {
                       </div>
                       <div style={{ fontSize: 12, color: "#475569" }}>DB: {r.supabase_project ? `${r.supabase_project.slice(0, 8)}… / ${r.supabase_schema ?? "?"}` : "—"}</div>
                       {r.note && <div style={{ fontSize: 12, color: "#64748b", marginTop: 4 }}>{r.note}</div>}
+                      {r.audit_status && <div style={{ fontSize: 12, color: "#0f172a", marginTop: 6, background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: 8, padding: "6px 8px" }}>
+                        <b>מצב אמת:</b> {r.audit_status}
+                      </div>}
                       <details style={{ marginTop: 8 }}>
                         <summary style={{ fontSize: 12, cursor: "pointer", fontWeight: 700, color: "#4f46e5" }}>דו״ח מערכת 📋</summary>
                         <div style={{ fontSize: 12, color: "#334155", display: "grid", gap: 5, marginTop: 6, lineHeight: 1.5 }}>
+                          {r.audit_evidence && <div style={{ background: "#f1f5f9", padding: "5px 8px", borderRadius: 6 }}><b>🔎 מה נמדד:</b> {r.audit_evidence}</div>}
+                          {r.audit_gaps && <div style={{ background: "#fff7ed", padding: "5px 8px", borderRadius: 6 }}><b>💳 חסר למנוי בתשלום:</b> {r.audit_gaps}</div>}
+                          {r.audit_revenue && <div style={{ background: "#ecfdf5", padding: "5px 8px", borderRadius: 6 }}><b>💰 הכי קרוב לכסף:</b> {r.audit_revenue}</div>}
                           {r.what_it_does && <div><b>מה עושה:</b> {r.what_it_does}</div>}
                           {r.functions && <div><b>פונקציות:</b> {r.functions}</div>}
                           {r.fixed_notes && <div style={{ background: "#f0fdf4", padding: "5px 8px", borderRadius: 6 }}><b>🔧 מה תוקן:</b> {r.fixed_notes}</div>}
@@ -301,7 +342,9 @@ export function App() {
                           <input placeholder="משימה חדשה…" value={draft[r.number] ?? ""} onChange={(e) => setDraft({ ...draft, [r.number]: e.target.value })} style={{ ...inp, flex: 1, fontSize: 12 }} />
                           <button onClick={() => addTask(r.number)} style={btn}>＋</button></div>}
                       </details>
-                      {!r.is_protected && <label style={{ fontSize: 12, color: "#dc2626", display: "block", marginTop: 8 }}>
+                      {!r.is_protected && <label style={{ fontSize: 12, color: "#0369a1", display: "block", marginTop: 8 }}>
+                        <input type="checkbox" checked={r.public_visible !== false} onChange={(e) => toggleVisible(r.number, e.target.checked)} /> מוצגת באתר הציבורי</label>}
+                      {!r.is_protected && <label style={{ fontSize: 12, color: "#dc2626", display: "block", marginTop: 4 }}>
                         <input type="checkbox" checked={r.to_delete} onChange={(e) => toggleDelete(r.number, e.target.checked)} /> סמן למחיקה</label>}
                     </div>
                   );
