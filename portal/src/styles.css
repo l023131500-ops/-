@@ -214,6 +214,16 @@
 .card-soon-tag { font-size: 13px; color: var(--muted); letter-spacing: 0.14em; }
 .card-live { font-size: 12px; color: var(--emerald); letter-spacing: 0.08em; white-space: nowrap; }
 
+/* שלד טעינה — מחזיק את גובה הרשימה כדי שהעמוד לא יקפוץ כשהמערכות מגיעות */
+.card-skel { background: transparent; border-style: dashed; opacity: 0.32; animation: skel 1.6s var(--ease) infinite; }
+.card-skel:hover { transform: none; box-shadow: none; border-color: var(--line-2); background: transparent; }
+@keyframes skel { 0%, 100% { opacity: 0.18; } 50% { opacity: 0.36; } }
+@media (prefers-reduced-motion: reduce) { .card-skel { animation: none; } }
+
+/* הרשימה לא נטענה — נאמר את זה, במקום להציג רשימה מקובעת שאולי כבר לא נכונה */
+.notice { text-align: center; padding: 40px 0; }
+.notice p { font-size: 18px; color: var(--ink-2); margin: 0 0 22px; }
+
 /* ---------- coming soon ---------- */
 .soon { min-height: 100vh; display: grid; place-items: center; padding: 40px 32px; text-align: center; }
 .soon-in { max-width: 620px; }

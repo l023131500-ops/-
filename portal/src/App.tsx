@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { DEPARTMENTS, REGISTRY, TOPIC_ROUTES } from "@more30/config";
+import { useCallback, useEffect, useState } from "react";
+import { DEPARTMENTS } from "@more30/config";
 import { createBrowserClient } from "@more30/db";
 import { SpecWizard } from "./SpecWizard";
 
@@ -9,37 +9,30 @@ import { SpecWizard } from "./SpecWizard";
  * כל מערכת נגישה תחת more30.com/<נושא>; נטפרי חוסמת ‎*.vercel.app‎, ולכן הפורטל
  * מנתב את הנתיב לפריסה שמאחוריו ואף פעם לא חושף את הכתובת האמיתית.
  *
- * השמות והתיאורים נקראים חיים מ-`more30_project_overview` (anon) — הם מנוסחים
- * ב-core.projects ולא כאן, כדי שלא ייווצרו שתי גרסאות של אותו טקסט. יש נפילה
- * למרשם שב-config כדי שהעמוד ייטען גם אם המסד לא זמין.
+ * ⚠️ אין כאן רשימת מערכות. הרשימה נקראת חיה מ-`more30_public_systems`, והתצוגה
+ * הזו כבר מחזיקה את כללי החשיפה (public_visible, יש נתיב, לא מוגן, לא למחיקה).
+ * המשמעות: שינוי סטטוס במסד — או ב-/admin — מופיע כאן בטעינה הבאה, בלי build
+ * ובלי פריסה. רשימה מקובעת בקוד הייתה גרסה שנייה של האמת, שמתפצלת עם הזמן.
  */
 
-type Row = {
-  number: string; path: string | null; name: string; name_he: string | null;
-  tagline: string | null; what_it_does: string | null; functions: string | null;
-  department: string; stage: string; live: boolean; is_deployed: boolean;
-  live_url: string | null; is_protected: boolean; to_delete: boolean;
-  public_visible: boolean;
+type System = {
+  number: string;
+  path: string;
+  title: string;
+  tagline: string | null;
+  what_it_does: string | null;
+  department: string;
+  live: boolean;
+  is_deployed: boolean;
+  live_url: string | null;
 };
-
-/**
- * המערכות שעברו את ביקורת 29/07 והוצגו לציבור (audit_class = 'A'). הרשימה כאן
- * היא רק גיבוי לרגע שבו המסד לא נענה; המקור הקובע הוא `public_visible`.
- */
-const VISIBLE_FALLBACK = new Set(["01", "02", "03", "04", "10", "17", "18", "22", "26", "28", "32"]);
 
 const supa = (() => { try { return createBrowserClient("public"); } catch { return null; } })();
 
-/** Rows from the config registry, used as an offline fallback. */
-function fallbackRows(): Row[] {
-  return REGISTRY.filter((p) => !p.protected && TOPIC_ROUTES[p.number] && VISIBLE_FALLBACK.has(p.number)).map((p) => ({
-    number: p.number, path: TOPIC_ROUTES[p.number]!, name: p.name, name_he: p.name,
-    tagline: null, what_it_does: p.note ?? null, functions: null,
-    department: p.department, stage: p.stage, live: p.live,
-    is_deployed: !!p.isDeployed, live_url: null,
-    is_protected: false, to_delete: false, public_visible: true,
-  }));
-}
+type Load =
+  | { state: "loading" }
+  | { state: "ready"; rows: System[] }
+  | { state: "failed" };
 
 function useReveal(dep?: unknown) {
   useEffect(() => {
@@ -52,52 +45,59 @@ function useReveal(dep?: unknown) {
   }, [dep]);
 }
 
-const enterable = (r: Row) => !!r.live_url && r.live_url.includes("more30.com");
+/** מוכנה לכניסה = נפרסה, וכתובתה החיה היא באמת תחת more30.com. */
+const enterable = (r: System) =>
+  r.is_deployed && !!r.live_url && r.live_url.includes("more30.com");
 
 /**
  * משפט ההטבה שמעל השם. המקור הוא `tagline` שנוסח ב-core.projects; אם מערכת
  * עדיין בלי ניסוח, נופלים לתיאור העובדתי (`what_it_does`) במקום להמציא משפט.
  */
-const blurb = (r: Row) => {
+const blurb = (r: System) => {
   const t = (r.tagline || "").trim();
   if (t) return t;
   const w = (r.what_it_does || "").trim();
   return w ? (w.split(/(?<=[.!?])\s/)[0] || w).trim() : "";
 };
 
-export function App() {
-  const [rows, setRows] = useState<Row[]>(fallbackRows());
+/** שם התחום לתצוגה. מפתח שאין לו תרגום מוצג כמו שהוא ולא נעלם מהעמוד. */
+const deptLabel = (key: string) => (DEPARTMENTS as Record<string, string>)[key] ?? key;
 
-  useEffect(() => {
-    if (!supa) return;
-    supa.from("more30_project_overview")
-      .select("number,path,name,name_he,tagline,what_it_does,functions,department,stage,live,is_deployed,live_url,is_protected,to_delete,public_visible")
-      .then(({ data }) => {
-        if (data && data.length) {
-          // `public_visible` הוא ההחלטה מביקורת 29/07: מוצגות רק מערכות שנבדקו,
-          // חיות ומחוברות לנתוני אמת. מערכת שהוסתרה נשארת בניהול עם הסטטוס
-          // האמיתי שלה, וההחזרה לאתר היא היפוך דגל אחד במסד.
-          setRows((data as Row[]).filter(
-            (r) => r.path && !r.is_protected && !r.to_delete && r.public_visible !== false,
-          ));
-        }
+export function App() {
+  const [load, setLoad] = useState<Load>({ state: "loading" });
+
+  const fetchSystems = useCallback(() => {
+    if (!supa) { setLoad({ state: "failed" }); return; }
+    setLoad({ state: "loading" });
+    supa.from("more30_public_systems")
+      .select("number,path,title,tagline,what_it_does,department,live,is_deployed,live_url")
+      .order("number")
+      .then(({ data, error }) => {
+        if (error || !data) { setLoad({ state: "failed" }); return; }
+        setLoad({ state: "ready", rows: data as System[] });
       });
   }, []);
 
+  useEffect(fetchSystems, [fetchSystems]);
+
+  const rows = load.state === "ready" ? load.rows : [];
+
   // מישהו הגיע ל-more30.com/<נושא> שעדיין לא מנותב — עמוד ממותג במקום 404.
-  const seg = typeof window !== "undefined" ? window.location.pathname.replace(/^\/+/, "").split("/")[0] : "";
-  const topicRow = seg && rows.find((r) => r.path === seg);
+  const seg = typeof window !== "undefined"
+    ? window.location.pathname.replace(/^\/+/, "").split("/")[0]
+    : "";
+  const topicRow = seg ? rows.find((r) => r.path === seg) : undefined;
   if (topicRow && !enterable(topicRow)) return <ComingSoon row={topicRow} />;
 
-  return <Portal rows={rows} />;
+  return <Portal load={load} retry={fetchSystems} />;
 }
 
-function ComingSoon({ row }: { row: Row }) {
+function ComingSoon({ row }: { row: System }) {
   return (
     <div className="soon" dir="rtl">
       <div className="soon-in">
         <div className="eyebrow">מור מערכות תוכנה</div>
-        <h1 className="display soon-title">{row.name_he || row.name}</h1>
+        <h1 className="display soon-title">{row.title}</h1>
         <p className="serif soon-desc">{row.what_it_does || "המערכת בהקמה ותעלה לאוויר תחת more30.com."}</p>
         <div className="rule" />
         <p className="soon-note">בקרוב · more30.com/{row.path}</p>
@@ -114,9 +114,14 @@ const PILLARS = [
   { h: "ליווי שנשאר", p: "ההשקה היא ההתחלה. משם ממשיכים לתחזק, לשפר ולהתאים למה שהשטח מחזיר." },
 ];
 
-function Portal({ rows }: { rows: Row[] }) {
-  useReveal(rows.length);
-  const depts = Object.keys(DEPARTMENTS).filter((d) => rows.some((r) => r.department === d));
+function Portal({ load, retry }: { load: Load; retry: () => void }) {
+  const rows = load.state === "ready" ? load.rows : [];
+  useReveal(load.state === "ready" ? rows.length : load.state);
+
+  // התחומים נגזרים מהשורות עצמן, לפי סדר ההופעה — תחום חדש במסד מופיע כאן
+  // מעצמו, ותחום שהתרוקן נעלם מעצמו.
+  const depts: string[] = [];
+  for (const r of rows) if (r.department && !depts.includes(r.department)) depts.push(r.department);
   const liveCount = rows.filter((r) => r.live).length;
 
   return (
@@ -146,9 +151,9 @@ function Portal({ rows }: { rows: Row[] }) {
           </div>
         </div>
         <div className="hero-meta">
-          <div><b>{rows.length}</b><span>מערכות</span></div>
-          <div><b>{liveCount}</b><span>חיות בשטח</span></div>
-          <div><b>{depts.length}</b><span>תחומים</span></div>
+          <div><b>{load.state === "ready" ? rows.length : "—"}</b><span>מערכות</span></div>
+          <div><b>{load.state === "ready" ? liveCount : "—"}</b><span>חיות בשטח</span></div>
+          <div><b>{load.state === "ready" ? depts.length : "—"}</b><span>תחומים</span></div>
           <div><b>more30.com</b><span>כתובת אחת</span></div>
         </div>
       </header>
@@ -177,16 +182,22 @@ function Portal({ rows }: { rows: Row[] }) {
           <div className="sec-head reveal">
             <div className="eyebrow">האקוסיסטם</div>
             <h2 className="display sec-title">המערכות שלנו</h2>
-            <p className="serif sec-sub">{rows.length} מערכות · {liveCount} כבר חיות · והרשימה ממשיכה לגדול</p>
+            {load.state === "ready" && (
+              <p className="serif sec-sub">
+                {rows.length} מערכות · {liveCount} כבר חיות · והרשימה ממשיכה לגדול
+              </p>
+            )}
           </div>
 
-          {depts.map((dep) => {
-            const list = rows.filter((r) => r.department === dep)
-              .sort((a, b) => a.number.localeCompare(b.number));
+          {load.state === "loading" && <SystemsSkeleton />}
+          {load.state === "failed" && <SystemsUnavailable onRetry={retry} />}
+
+          {load.state === "ready" && depts.map((dep) => {
+            const list = rows.filter((r) => r.department === dep);
             return (
               <div className="dept" key={dep}>
                 <div className="dept-head reveal">
-                  <h3>{DEPARTMENTS[dep]}</h3>
+                  <h3>{deptLabel(dep)}</h3>
                   <span className="dept-rule" />
                   <span className="dept-count">{list.length}</span>
                 </div>
@@ -224,20 +235,42 @@ function Portal({ rows }: { rows: Row[] }) {
   );
 }
 
+/** שלד טעינה — מחזיק את מקום הרשימה כדי שהעמוד לא יקפוץ כשהיא מגיעה. */
+function SystemsSkeleton() {
+  return (
+    <div className="cards" aria-hidden>
+      {[0, 1, 2, 3, 4, 5].map((i) => <div className="card card-skel" key={i} />)}
+    </div>
+  );
+}
+
+/**
+ * ⚠️ בכוונה אין כאן רשימת גיבוי. רשימה מקובעת שנשלפת כשהמסד לא נענה תציג
+ * מערכות שאולי כבר הוסתרו, ותיראה בדיוק כמו האמת. עדיף לומר שהרשימה לא
+ * נטענה ולתת לנסות שוב.
+ */
+function SystemsUnavailable({ onRetry }: { onRetry: () => void }) {
+  return (
+    <div className="notice">
+      <p className="serif">לא הצלחנו לטעון כרגע את רשימת המערכות.</p>
+      <button className="btn" onClick={onRetry}>נסו שוב</button>
+    </div>
+  );
+}
+
 /**
  * כרטיס מערכת: תיאור קצר בסריף מעל, השם העברי בגדול, וכפתור כניסה.
- * מערכת שעדיין לא מנותבת תחת more30.com מקבלת אותו כרטיס במצב שקט — כך אין
- * דליפה של כתובת vercel.app ואין כפתור שמוביל לשום מקום.
+ * הקישור נבנה מהנתיב — כלומר more30.com/<נתיב> — ולעולם לא מכתובת הפריסה,
+ * כדי שלא תדלוף כתובת vercel.app שנטפרי חוסמת.
  */
-function SystemCard({ r }: { r: Row }) {
+function SystemCard({ r }: { r: System }) {
   const on = enterable(r);
   const desc = blurb(r);
-  const title = r.name_he || r.name;
 
   return (
     <div className={`card reveal ${on ? "" : "card-soon"}`}>
       {desc && <p className="serif card-desc">{desc}</p>}
-      <h4 className="card-name">{title}</h4>
+      <h4 className="card-name">{r.title}</h4>
       <div className="card-foot">
         {on
           ? <a className="btn btn-card" href={`/${r.path}`}>כניסה למערכת</a>

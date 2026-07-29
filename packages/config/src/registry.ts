@@ -120,7 +120,9 @@ export function bySlugTopic(topic: string): ProjectEntry | undefined {
 
 /** Department display names (Hebrew) for the portal/admin. */
 export const DEPARTMENTS: Record<string, string> = {
-  torah: "עורך תורני",
+  // "עורך תורני" הוא שמה של מערכת אחת (18), ולא של התחום שמכיל גם שיעורים,
+  // תמלול, מודעות ועימוד — הכותרת בדף הבית הבטיחה משהו צר מדי.
+  torah: "עולם התורה",
   finance: "פיננסי",
   realestate: "נדל\"ן",
   health: "בריאות וקופות",
