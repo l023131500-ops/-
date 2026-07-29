@@ -294,7 +294,7 @@ export function App() {
                           : <span style={{ color: "#94a3b8" }}>◦ more30.com/{r.path} · בהכנה</span>}
                       </div>}
                       <div style={{ display: "flex", gap: 6, flexWrap: "wrap", margin: "6px 0" }}>
-                        {r.audit_class && <Badge on label={`${r.audit_class} · ${CLASS_HE[r.audit_class]}`} color={CLASS_COLOR[r.audit_class]} />}
+                        {r.audit_class && <Badge on label={`${r.audit_class} · ${CLASS_HE[r.audit_class] ?? ""}`} color={CLASS_COLOR[r.audit_class] ?? "#334155"} />}
                         {r.audit_class && <Badge on label={r.public_visible === false ? "מוסתרת מהאתר" : "מוצגת באתר"} color={r.public_visible === false ? "#64748b" : "#0ea5e9"} />}
                         {r.replaced_by && <Badge on label={`הוחלפה ע״י ${r.replaced_by}`} color="#d97706" />}
                         {r.audit_class && <Badge on={!!r.audit_real_data} label={r.audit_real_data ? "נתוני אמת ✓" : "בלי נתוני אמת"} color={r.audit_real_data ? "#16a34a" : "#dc2626"} />}
