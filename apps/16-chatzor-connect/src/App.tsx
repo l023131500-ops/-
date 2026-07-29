@@ -32,9 +32,15 @@ function RouteFallback() {
   return <div className="grid min-h-[50vh] place-items-center text-muted-foreground">טוען…</div>;
 }
 
+/**
+ * Served from more30.com/chatzor, so the router has to know its prefix. Vite
+ * fills BASE_URL from the build-time base ("/" in dev, "/chatzor/" in
+ * production) — without it every in-app link would drop the prefix and land on
+ * the portal instead.
+ */
 export function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={import.meta.env.BASE_URL}>
       <ScrollToHash />
       <Suspense fallback={<RouteFallback />}>
         <Routes>
