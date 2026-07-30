@@ -68,10 +68,52 @@
 | 6 | **02** tamlul | Google OAuth `CLIENT_ID` + `CLIENT_SECRET` | console.cloud.google.com → APIs → Credentials → OAuth client | Vercel `tamlul-more30` |
 | 7 | **18** orech | `TRANSKRIBUS_USER/PASS` או `KRAKEN_*` | readcoop.eu (Transkribus) / kraken — מודול ה-HTR | Vercel `orech-more30` + `apps/18-.../.env.local` |
 | 8 | **32** nadlan | שדרוג תוכנית **Apify** | apify.com → Billing (המכסה מוצתה: **$5.28 מתוך $5**, מתאפסת **27/08/2026**) | אין שינוי קוד — `APIFY_TOKEN` כבר מוגדר |
-| 9 | **הכול** | GitHub **Personal Access Token** | github.com → Settings → Developer settings → PAT (scope `repo`) | ה-shell — `git push` חסום, **9 קומיטים יושבים מקומית** |
+| 9 | **הכול** | תיקון הרשאות ב-PAT שסיפקת | ראה סעיף 3.1 למטה — **הטוקן נשמר ועובד, ההרשאה חסרה** | — |
 | 10 | **16** chatzor *(רשות)* | `GOOGLE_MAPS_API_KEY` | console.cloud.google.com → Distance Matrix API | Vercel `chatzor-more30`. **לא חוסם** — בניתי מרחק אווירי מהדפדפן בלי מפתח; המפתח ישדרג למרחק/זמן **הליכה** |
 
 ---
+
+### 3.1 🔑 הדחיפה האוטומטית — מוגדרת, מאומתת, וחסרות לה שתי הרשאות
+
+**מה כבר נעשה (31/07):** `credential.helper = wincred` הוגדר גלובלית והטוקן
+נשמר ב-Windows Credential Manager (מוצפן, לא בקובץ טקסט ולא ב-`.git/config`,
+ולכן גם לא ידלוף לריפו). **האימות עובד** — `git ls-remote` נגד המונוריפו
+מצליח. מה שנכשל הוא ההרשאה, וזה דבר אחר.
+
+**נמדד מול ה-API של GitHub:**
+
+| בדיקה | תוצאה |
+|---|---|
+| `GET /user` | 200 · `l023131500-ops` · טוקן fine-grained |
+| `GET /repos/l023131500-ops/-/contents/README.md` | **200** → `contents=read` **יש** |
+| `POST /repos/l023131500-ops/-/git/blobs` | **403** `needs: contents=write` → **אין** |
+| `GET /repos/l023131500-ops/nadlan-berega` | **404** `needs: metadata=read` → הריפו **לא ברשימת הריפואים של הטוקן** |
+| ריפואים שהטוקן רואה | `-` · `more.30.com` · `zol` (שלושה בלבד) |
+
+**שני תיקונים ב-github.com → Settings → Developer settings → Personal access
+tokens → Fine-grained tokens → הטוקן הזה → Edit:**
+
+1. **Permissions → Repository permissions → `Contents`: מ-`Read-only` ל-`Read and write`.**
+   זה מה שחוסם את הדחיפה למונוריפו.
+2. **Repository access → להוסיף את `nadlan-berega`** (או לבחור *All repositories*).
+   כרגע הריפו הזה בכלל לא בהרשאה, ולכן גם קריאה ממנו נכשלת.
+
+*(שינוי הרשאות לא מחליף את הטוקן — מה ששמור אצלי ימשיך לעבוד. אם בכל זאת
+תיצור טוקן חדש, אמור ואעדכן. וכדאי להתייחס לטוקן הזה כחשוף, כי נשלח כטקסט.)*
+
+**מה ממתין לדחיפה ברגע שזה יתוקן:**
+
+| ריפו | מצב | ממתין |
+|---|---|---|
+| `l023131500-ops/-` (מונוריפו) | קריאה ✓ · כתיבה ✗ | **7 קומיטים** (`66d6715`…`c862c94`) |
+| `l023131500-ops/nadlan-berega` | לא בהרשאה כלל | **3 קומיטים** (`3fb1935`, `f10e000`, `677f4e0`) |
+| `apps/17-chizukim-transcribe` | ריפו מקומי, **אין origin** | 2 קומיטים — צריך להחליט אם ליצור ריפו ב-GitHub |
+| `apps/16-chatzor-connect` | ריפו מקומי, **אין origin** | 1 קומיט — אותה שאלה |
+
+> **החלטה קטנה שדרושה:** ל-16 ול-17 אין ריפו מרוחק. `app.json` של 17 מפנה
+> ל-`l023131500-ops/chizukim-transcribe` (לא קיים), ושל 16 מפנה ל-`-` שהוא
+> המונוריפו. תגיד אם ליצור להם ריפואים (ואז הטוקן צריך גם
+> `Administration: write`), או להשאיר אותם מקומיים.
 
 ## 🟡 4. שלושה נתיבים בלי כפתור הכניסה המשותף (20/23 קיימים)
 
