@@ -83,6 +83,7 @@
 | `l023131500-ops/nadlan-berega` | 3 קומיטים → `main` |
 | `l023131500-ops/chizukim-transcribe` | ענף חדש `more30/night-work` |
 | `l023131500-ops/chatzor-connect` | ענף חדש `more30/night-work` |
+| `l023131500-ops/get-your-rights` | ענף חדש `more30/night-work` (22 — לא היה ריפו מקומי כלל) |
 
 **החלטה שקיבלתי בלי לשאול, ואפשר לבטל:** ל-16 ול-17 כבר היו ריפואים פרטיים
 בחשבון, עם היסטוריה **אחרת** לגמרי ב-`master`. לא דרסתי כלום — דחפתי לענף נפרד
