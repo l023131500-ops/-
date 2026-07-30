@@ -1423,6 +1423,43 @@ auth.users חזר ל-1). הסיסמה שלך לא נקראה ולא שונתה.
 - `core.projects`: נוספו עמודות `migration_target_project/schema`, `migration_status`,
   `migrated_at` ל-8 המערכות (סטטוס `cutover_pending`). ה-hub נשאר נקי (scaffolding נמחק).
 
+### ✅ 30/07 — החצי הדחוי הושלם: functions/views/triggers/policies ל-igud_*
+
+הפער שנשאר מ-29/07 (סעיף 2 ב"מה נשאר") נסגר. הכול ב-`supabase/consolidation/bieebmnm-logic/`
+(4 קבצי SQL + `generate.mjs` דטרמיניסטי + `skipped.txt` + README מלא).
+
+| אובייקט | הוחל ואומת ב-uhnrgujb |
+|---|---|
+| טבלאות (מהסבב המבני) | 139 |
+| views | **18** |
+| functions | **18** |
+| triggers | **8** |
+| policies | **155** |
+
+**ה-hub החי לא נגע:** `public` נשאר בדיוק 27 טבלאות ו-2 policies · `core`/`nadlan`
+ללא שינוי · **הסכמות עדיין אינן חשופות ל-PostgREST** (`pgrst.db_schemas` בברירת מחדל)
+— בדיוק מה שהפיל את ה-API ב-29/07, ועותק קר לא צריך את זה.
+
+**ארבעה שכתובים שלא היו אופציונליים** (כל אחד היה שובר את ההעתק בשקט):
+1. **`SET search_path TO 'public'` בגוף פונקציות** — ב-hub זו הסכמה **החיה**.
+   פונקציית SECURITY DEFINER הייתה מחפשת `admin_sessions`/`tenants`/`lessons` שם.
+2. **טריגרים בלי שם סכמה** — `pg_get_triggerdef` משמיט את הסכמה שהייתה ב-search_path,
+   ולכן הוגדר `ON nedarim_configs ... EXECUTE FUNCTION set_updated_at()`.
+3. **קריאות לא-מוסמכות ב-policies** — 78 policies קוראות `is_super_admin(...)` וכו';
+   ההיפתרות עוברת ב-search_path שמתחיל ב-`public` של ה-hub → הפוליסי היה נכשל בהרצה.
+4. **שם סכמה שהוא גם שם טבלה** — במקור יש טבלה `ads` בסכמה `ads`, ו-policies מפנות
+   לעצמן בשם: `ads.tenant_id` הוא **עמודה**. שכתוב עיוור הפך אותה ל-`igud_ads.tenant_id`.
+   התיקון: מחליפים `<סכמה>.<שם>` רק כששם האובייקט קיים באמת בסכמה ההיא.
+
+**שערים בגנרטור:** אף statement לא מכוון ל-`public.` (0 הפרות בהרצה האחרונה) ·
+6 טבלאות `zr_*` מוחרגות (ואיתן 12 policies) · **114 מתוך 132 ה"פונקציות" הוחרגו** —
+הן של pgvector שהותקן ב-`public` של המקור (`cosine_distance`, `binary_quantize`…),
+וב-hub התוסף יושב ב-`extensions`. נשארו 18 פונקציות אפליקציה אמיתיות.
+
+**שארית מתועדת:** ב-`igud` יש 4 סדרות ריקות בשם `zr_*_id_seq` שנוצרו בסבב המבני.
+הטבלאות עצמן לא הועתקו — אין נתון מוגן. **הושארו במכוון:** מחיקת משהו בשם `zr_*`
+היא בדיוק מה שהכלל אוסר, גם כשזה אובייקט ריק שאנחנו יצרנו.
+
 ### מה נשאר (cutover — דורש הכרעות/גישה של המשתמש)
 - **repoint אפליקציות חיות**: כל מערכת מניחה שהיא הבעלים של `public`; ב-uhnrgujb זה ה-hub.
   איחוד → כל אפליקציה חייבת לעבור ל-schema-qualified client (`db.schema`) או חשיפת סכמה
