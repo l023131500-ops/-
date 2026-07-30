@@ -199,6 +199,13 @@
   font-family: 'Secular One', sans-serif; font-weight: 400;
   font-size: 27px; line-height: 1.25; margin: 0 0 auto; color: var(--ink);
 }
+/* משפט השלב — מופיע רק בכרטיס שאינו נפתח, ומסביר למה. */
+.card-stage {
+  font-size: 13.5px; line-height: 1.7; color: var(--muted);
+  margin: 12px 0 0; padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
 .card-foot {
   margin-top: 26px; padding-top: 20px; border-top: 1px solid var(--line-2);
   display: flex; align-items: center; justify-content: space-between; gap: 12px;

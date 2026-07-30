@@ -17,7 +17,7 @@ import { SpecWizard } from "./SpecWizard";
 
 type System = {
   number: string;
-  path: string;
+  path: string | null;
   title: string;
   tagline: string | null;
   what_it_does: string | null;
@@ -25,6 +25,9 @@ type System = {
   live: boolean;
   is_deployed: boolean;
   live_url: string | null;
+  stage: string | null;
+  is_protected: boolean;
+  public_visible: boolean;
 };
 
 const supa = (() => { try { return createBrowserClient("public"); } catch { return null; } })();
@@ -50,6 +53,35 @@ const enterable = (r: System) =>
   r.is_deployed && !!r.live_url && r.live_url.includes("more30.com");
 
 /**
+ * למה המערכת עדיין לא נפתחת — משפט אחד, נגזר מהמרשם ולא מנוסח מראש.
+ *
+ * ⚠️ העמוד מציג **את כל** המערכות, גם את אלה שאינן מוכנות. מערכת שנעלמת
+ * מהתצוגה נראית כאילו אינה קיימת, וזה הרושם ההפוך מהנכון: היא קיימת, היא
+ * פשוט בשלב מוקדם. לכן במקום להסתיר — אומרים באיזה שלב היא נמצאת עכשיו.
+ */
+function stageNote(r: System): string {
+  if (r.is_protected) return "מערכת פנימית — פועלת, ואינה נפתחת לציבור.";
+  if (!r.is_deployed) return "בפיתוח — טרם נפרסה לאוויר.";
+  if (!r.path) return "נפרסה, וטרם שויכה לכתובת תחת more30.com.";
+  if (!enterable(r)) return "נפרסה, והכתובת הציבורית שלה עדיין בהקמה.";
+  if (!r.live) return "נפרסה ובבדיקות — נפתחת עם סיום הבדיקה.";
+  if (!r.public_visible) return "פעילה, וממתינה לאישור איכות לפני פתיחה לציבור.";
+  return "פעילה.";
+}
+
+/**
+ * הכתובת שאליה הכפתור מוביל.
+ * ⚠️ לא כל מערכת יושבת תחת נתיב: מערכת 33 היא האתר הזה עצמו, וה-`path` שלה
+ * ריק. בלי הבדיקה הזו נוצר קישור ל-`/null`.
+ */
+const entryHref = (r: System): string | null =>
+  r.path ? `/${r.path}` : r.live_url || null;
+
+/** מוצגת עם כפתור כניסה = פעילה, איכותית, ובאמת נגישה תחת more30.com. */
+const openToPublic = (r: System) =>
+  enterable(r) && r.live && r.public_visible && !r.is_protected && !!entryHref(r);
+
+/**
  * משפט ההטבה שמעל השם. המקור הוא `tagline` שנוסח ב-core.projects; אם מערכת
  * עדיין בלי ניסוח, נופלים לתיאור העובדתי (`what_it_does`) במקום להמציא משפט.
  */
@@ -70,7 +102,9 @@ export function App() {
     if (!supa) { setLoad({ state: "failed" }); return; }
     setLoad({ state: "loading" });
     supa.from("more30_public_systems")
-      .select("number,path,title,tagline,what_it_does,department,live,is_deployed,live_url")
+      // ⚠️ מחרוזת אחת ולא שרשור: supabase-js גוזר את הטיפוס מהליטרל עצמו,
+      // ושרשור הופך אותו ל-string רגיל ומפיל את ההסקה.
+      .select("number,path,title,tagline,what_it_does,department,live,is_deployed,live_url,stage,is_protected,public_visible")
       .order("number")
       .then(({ data, error }) => {
         if (error || !data) { setLoad({ state: "failed" }); return; }
@@ -120,9 +154,14 @@ function Portal({ load, retry }: { load: Load; retry: () => void }) {
 
   // התחומים נגזרים מהשורות עצמן, לפי סדר ההופעה — תחום חדש במסד מופיע כאן
   // מעצמו, ותחום שהתרוקן נעלם מעצמו.
+  // ⚠️ מערכת בלי תחום מקבלת תחום "אחר" ולא נופלת מהרשימה. העמוד מציג את כל
+  // המצבת, ולכן קיבוץ שמשמיט שורה הוא באג ולא סידור.
   const depts: string[] = [];
-  for (const r of rows) if (r.department && !depts.includes(r.department)) depts.push(r.department);
-  const liveCount = rows.filter((r) => r.live).length;
+  for (const r of rows) {
+    const d = r.department || "other";
+    if (!depts.includes(d)) depts.push(d);
+  }
+  const liveCount = rows.filter((r) => openToPublic(r)).length;
 
   return (
     <div dir="rtl">
@@ -184,7 +223,7 @@ function Portal({ load, retry }: { load: Load; retry: () => void }) {
             <h2 className="display sec-title">המערכות שלנו</h2>
             {load.state === "ready" && (
               <p className="serif sec-sub">
-                {rows.length} מערכות · {liveCount} כבר חיות · והרשימה ממשיכה לגדול
+                {rows.length} מערכות · {liveCount} פתוחות לכניסה · השאר בדרך, וכתוב באיזה שלב
               </p>
             )}
           </div>
@@ -193,7 +232,7 @@ function Portal({ load, retry }: { load: Load; retry: () => void }) {
           {load.state === "failed" && <SystemsUnavailable onRetry={retry} />}
 
           {load.state === "ready" && depts.map((dep) => {
-            const list = rows.filter((r) => r.department === dep);
+            const list = rows.filter((r) => (r.department || "other") === dep);
             return (
               <div className="dept" key={dep}>
                 <div className="dept-head reveal">
@@ -264,18 +303,20 @@ function SystemsUnavailable({ onRetry }: { onRetry: () => void }) {
  * כדי שלא תדלוף כתובת vercel.app שנטפרי חוסמת.
  */
 function SystemCard({ r }: { r: System }) {
-  const on = enterable(r);
+  const open = openToPublic(r);
   const desc = blurb(r);
 
   return (
-    <div className={`card reveal ${on ? "" : "card-soon"}`}>
+    <div className={`card reveal ${open ? "" : "card-soon"}`}>
       {desc && <p className="serif card-desc">{desc}</p>}
       <h4 className="card-name">{r.title}</h4>
+      {/* מערכת שאינה נפתחת אומרת באיזה שלב היא — ולא נעלמת מהעמוד. */}
+      {!open && <p className="card-stage">{stageNote(r)}</p>}
       <div className="card-foot">
-        {on
-          ? <a className="btn btn-card" href={`/${r.path}`}>כניסה למערכת</a>
-          : <span className="card-soon-tag">בהכנה</span>}
-        {on && r.live && <span className="card-live">● פעילה</span>}
+        {open
+          ? <a className="btn btn-card" href={entryHref(r) ?? "/"}>כניסה למערכת</a>
+          : <span className="card-soon-tag">{r.is_protected ? "פנימית" : "בקרוב"}</span>}
+        {open && <span className="card-live">● פעילה</span>}
       </div>
     </div>
   );
