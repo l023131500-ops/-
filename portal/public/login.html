@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>כניסה · מור מערכות תוכנה</title>
+    <meta name="robots" content="noindex" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Secular+One&family=Heebo:wght@300;400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *, *::before, *::after { box-sizing: border-box; }
+      body {
+        margin: 0; min-height: 100vh; display: grid; place-items: center;
+        font-family: 'Heebo', system-ui, sans-serif; color: #ECE9F5;
+        background: radial-gradient(1200px 600px at 70% -10%, #1b1f52 0%, #0B0D2E 60%);
+        padding: 24px;
+      }
+      .card {
+        width: 100%; max-width: 420px; background: #fff; color: #0B0D2E;
+        border-radius: 18px; padding: 28px; box-shadow: 0 30px 70px rgba(0,0,0,.4);
+      }
+      .brand { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; }
+      .dot { width: 12px; height: 12px; border-radius: 50%; background: #C9A227;
+             box-shadow: 0 0 0 4px rgba(201,162,39,.25); }
+      h1 { font-family: 'Secular One', sans-serif; font-size: 22px; margin: 0; }
+      p.lead { margin: 6px 0 20px; font-size: 14px; color: #5c6178; line-height: 1.7; }
+      label { display: block; font-size: 12px; font-weight: 700; margin: 14px 0 6px; }
+      input {
+        width: 100%; padding: 11px 13px; border: 1px solid #d9dbe8; border-radius: 10px;
+        font-size: 15px; font-family: inherit; direction: ltr; text-align: start;
+      }
+      input:focus { outline: 2px solid #C9A227; outline-offset: 1px; border-color: transparent; }
+      button {
+        width: 100%; margin-top: 20px; padding: 12px; border: 0; border-radius: 10px;
+        background: #0B0D2E; color: #fff; font-family: inherit; font-size: 15px;
+        font-weight: 700; cursor: pointer;
+      }
+      button:disabled { opacity: .6; cursor: progress; }
+      .msg { margin-top: 14px; font-size: 13px; line-height: 1.7; border-radius: 10px; padding: 11px 13px; }
+      .msg.err { background: #fdeaea; color: #8c1f1f; }
+      .msg.ok  { background: #e9f7ef; color: #15603a; }
+      .foot { margin-top: 18px; font-size: 12px; color: #6b7086; line-height: 1.8; }
+      .foot a { color: #0B0D2E; font-weight: 600; }
+      .who { display: none; }
+    </style>
+  </head>
+  <body>
+    <main class="card">
+      <div class="brand"><span class="dot"></span><h1>כניסה למערכות</h1></div>
+      <p class="lead">
+        חשבון אחד לכל מערכות מור מערכות תוכנה. הכניסה היא לאזור האישי ולמערכות
+        שהורשו לך.
+      </p>
+
+      <form id="form" novalidate>
+        <label for="email">כתובת אימייל</label>
+        <input id="email" name="email" type="email" autocomplete="email" required />
+
+        <label for="password">סיסמה</label>
+        <input id="password" name="password" type="password" autocomplete="current-password" required />
+
+        <button id="submit" type="submit">כניסה</button>
+      </form>
+
+      <div id="msg" class="msg" hidden></div>
+
+      <div id="who" class="who">
+        <p class="lead" id="whoText"></p>
+        <button id="signout" type="button">יציאה</button>
+      </div>
+
+      <p class="foot">
+        אין לך חשבון, או שכחת סיסמה? פנה למנהל המערכת.<br />
+        <a href="/">חזרה לעולם הסטארטאפים</a>
+      </p>
+    </main>
+
+    <script type="module">
+      // אימות אמיתי מול Supabase Auth המשותף של הפלטפורמה — אותו מאגר משתמשים
+      // שכל המערכות עובדות מולו (ראה packages/auth). אין כאן שכבת דמה: כניסה
+      // שנכשלת מדווחת כפי שהיא, וכניסה שמצליחה מחזירה session אמיתי.
+      import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+      // מפתח anon/publishable — ציבורי במכוון, כמו בשאר מערכות הפלטפורמה.
+      const SUPABASE_URL = 'https://uhnrgujbdxhhmoxcjria.supabase.co';
+      const SUPABASE_ANON =
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVobnJndWpiZHhoaG1veGNqcmlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMzNjE3MjgsImV4cCI6MjA5ODkzNzcyOH0.nHuOhw-WQEU17lNa7XOlORnBhVAYbJBHudKafWkSHBw';
+
+      const sb = createClient(SUPABASE_URL, SUPABASE_ANON, {
+        auth: { persistSession: true, storageKey: 'more30-auth' },
+      });
+
+      const form = document.getElementById('form');
+      const msg = document.getElementById('msg');
+      const who = document.getElementById('who');
+      const whoText = document.getElementById('whoText');
+      const submit = document.getElementById('submit');
+
+      const params = new URLSearchParams(location.search);
+      const back = params.get('from');
+
+      function show(text, kind) {
+        msg.textContent = text;
+        msg.className = 'msg ' + kind;
+        msg.hidden = false;
+      }
+
+      async function refresh() {
+        const { data } = await sb.auth.getUser();
+        if (!data?.user) return;
+        form.style.display = 'none';
+        who.style.display = 'block';
+        whoText.textContent = `מחובר כ־${data.user.email}.` + (back ? ' מחזירים אותך למערכת…' : '');
+        if (back) setTimeout(() => { location.href = back; }, 1200);
+      }
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        msg.hidden = true;
+        submit.disabled = true;
+        submit.textContent = 'נכנס…';
+        const { error } = await sb.auth.signInWithPassword({
+          email: document.getElementById('email').value.trim(),
+          password: document.getElementById('password').value,
+        });
+        submit.disabled = false;
+        submit.textContent = 'כניסה';
+        if (error) {
+          show(
+            error.message === 'Invalid login credentials'
+              ? 'האימייל או הסיסמה אינם נכונים.'
+              : `הכניסה נכשלה: ${error.message}`,
+            'err',
+          );
+          return;
+        }
+        show('נכנסת בהצלחה.', 'ok');
+        refresh();
+      });
+
+      document.getElementById('signout').addEventListener('click', async () => {
+        await sb.auth.signOut();
+        location.reload();
+      });
+
+      refresh();
+    </script>
+  </body>
+</html>
