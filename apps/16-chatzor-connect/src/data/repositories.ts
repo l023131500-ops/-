@@ -36,6 +36,8 @@ const toSynagogue = (r: any): Synagogue => ({
   description: r.description ?? null,
   donationLink: r.donation_link ?? null,
   isPublished: r.is_published ?? true,
+  latitude: typeof r.latitude === "number" ? r.latitude : null,
+  longitude: typeof r.longitude === "number" ? r.longitude : null,
 });
 const toPrayerTime = (r: any): PrayerTime => ({
   id: r.id, synagogueId: r.synagogue_id, type: r.prayer_type, label: r.label, time: r.time, note: r.note ?? null,
@@ -180,6 +182,9 @@ export async function createSynagogue(input: SynagogueInput): Promise<Synagogue>
       brandGradient: input.brandGradient ?? "linear-gradient(135deg, hsl(200 50% 18%), hsl(210 45% 25%))",
       logoUrl: input.logoUrl ?? null, description: input.description ?? null, donationLink: input.donationLink ?? null,
       isPublished: input.isPublished,
+      // מיקום נרשם רק כשהוא נמדד. בית כנסת שנוצר בטופס אינו מקבל קואורדינטות
+      // מנוחשות — ואז פשוט לא מוצג לו מרחק.
+      latitude: null, longitude: null,
     };
     db.synagogues.push(s);
     return s;

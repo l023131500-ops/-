@@ -31,6 +31,8 @@ export const SAMPLE_SYNAGOGUES: Synagogue[] = [
     donationLink: null,
     isPublished: true,
     isSample: true,
+    latitude: null,
+    longitude: null,
   },
   {
     id: "sample-2",
@@ -44,6 +46,8 @@ export const SAMPLE_SYNAGOGUES: Synagogue[] = [
     donationLink: null,
     isPublished: true,
     isSample: true,
+    latitude: null,
+    longitude: null,
   },
   {
     id: "sample-3",
@@ -57,6 +61,8 @@ export const SAMPLE_SYNAGOGUES: Synagogue[] = [
     donationLink: null,
     isPublished: true,
     isSample: true,
+    latitude: null,
+    longitude: null,
   },
 ];
 

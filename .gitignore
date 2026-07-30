@@ -46,3 +46,11 @@ service-account*.json
 *.log
 .DS_Store
 coverage/
+
+# ── Tool scratch output ─────────────────────────────────────────────────────
+# Playwright MCP writes a page snapshot per verification run, and the nadlan
+# work leaves API response dumps and print captures behind. They are evidence
+# for one session, not part of the tree.
+.playwright-mcp/
+sv4-body.json
+deck-print-full.png

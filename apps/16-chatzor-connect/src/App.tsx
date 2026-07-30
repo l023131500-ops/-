@@ -37,10 +37,17 @@ function RouteFallback() {
  * fills BASE_URL from the build-time base ("/" in dev, "/chatzor/" in
  * production) — without it every in-app link would drop the prefix and land on
  * the portal instead.
+ *
+ * ⚠️ הסלאש הסופי יורד מה-basename. `BASE_URL` הוא "/chatzor/", אבל הכתובת
+ * שהפורטל מנתב אליה היא "/chatzor" בלי סלאש — ו-react-router לא מתאים אף
+ * מסלול כשה-basename ארוך מהנתיב. התוצאה הייתה עמוד שנטען ונשאר **ריק**,
+ * בלי שגיאה בקונסולה. בלי סלאש שתי הצורות עובדות.
  */
+const BASENAME = import.meta.env.BASE_URL.replace(/\/+$/, "") || "/";
+
 export function App() {
   return (
-    <BrowserRouter basename={import.meta.env.BASE_URL}>
+    <BrowserRouter basename={BASENAME}>
       <ScrollToHash />
       <Suspense fallback={<RouteFallback />}>
         <Routes>

@@ -11,6 +11,9 @@ export interface Synagogue {
   description: string | null;
   donationLink: string | null;
   isPublished: boolean;
+  /** מיקום מדוד. null = לא נרשם מיקום, ואז לא מוצג מרחק — ולא מומצא אחד. */
+  latitude: number | null;
+  longitude: number | null;
   /** true = built-in sample content, replaced by real DB rows. Never shown as authoritative. */
   isSample?: boolean;
 }

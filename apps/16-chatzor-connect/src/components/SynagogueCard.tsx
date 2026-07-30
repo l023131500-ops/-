@@ -1,10 +1,21 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowLeft, MapPin } from "lucide-react";
+import { ArrowLeft, MapPin, Navigation } from "lucide-react";
 import type { Synagogue } from "@/lib/types";
+import { formatDistance, navigationUrl } from "@/hooks/useNearby";
 
 /** Shared synagogue card — used on the homepage preview and the directory page. */
-export function SynagogueCard({ s, index = 0 }: { s: Synagogue; index?: number }) {
+export function SynagogueCard({
+  s,
+  index = 0,
+  meters = null,
+}: {
+  s: Synagogue;
+  index?: number;
+  /** מרחק אווירי מהמבקר, כשהוא אישר מיקום. null = לא נמדד. */
+  meters?: number | null;
+}) {
+  const navUrl = navigationUrl(s);
   const initial = s.name.replace(/^בית (ה)?כנסת |^בית המדרש /, "").charAt(0);
   return (
     <motion.article
@@ -41,18 +52,38 @@ export function SynagogueCard({ s, index = 0 }: { s: Synagogue; index?: number }
           </span>
         )}
         {s.description && <p className="mt-3 text-sm text-muted-foreground">{s.description}</p>}
-        {s.address && (
-          <p className="mt-3 inline-flex items-center gap-1.5 text-xs text-muted-foreground">
-            <MapPin className="h-3.5 w-3.5" aria-hidden /> {s.address}
+        <p className="mt-3 inline-flex items-center gap-1.5 text-xs text-muted-foreground">
+          <MapPin className="h-3.5 w-3.5" aria-hidden />
+          {s.address ?? "כתובת לא זמינה"}
+        </p>
+
+        {meters != null && (
+          <p className="mt-2 text-xs font-semibold text-accent" data-testid="synagogue-distance">
+            {formatDistance(meters)} ממך · מרחק אווירי
           </p>
         )}
-        <Link
-          to={`/k/${s.slug}`}
-          className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-accent transition-colors hover:text-accent/80"
-        >
-          לאתר בית הכנסת
-          <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" aria-hidden />
-        </Link>
+
+        <div className="mt-4 flex flex-wrap items-center gap-4">
+          <Link
+            to={`/k/${s.slug}`}
+            className="inline-flex items-center gap-1.5 text-sm font-semibold text-accent transition-colors hover:text-accent/80"
+          >
+            לאתר בית הכנסת
+            <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" aria-hidden />
+          </Link>
+          {navUrl && (
+            <a
+              href={navUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+              data-testid="synagogue-navigate"
+            >
+              <Navigation className="h-3.5 w-3.5" aria-hidden />
+              ניווט
+            </a>
+          )}
+        </div>
       </div>
     </motion.article>
   );

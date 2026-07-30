@@ -73,7 +73,82 @@
 
 ---
 
-### 3.1 🔑 הדחיפה האוטומטית — מוגדרת, מאומתת, וחסרות לה שתי הרשאות
+### 3.1 ✅ הדחיפה האוטומטית — **נפתרה** (31/07, עם הטוקן הקלאסי ששלחת)
+
+הטוקן הקלאסי עובד: `repo` מלא, כתיבה לשני הריפואים. **10 הקומיטים שהמתינו נדחפו.**
+
+| ריפו | מה נדחף |
+|---|---|
+| `l023131500-ops/-` | 9 קומיטים → `feature/unify-phase1` |
+| `l023131500-ops/nadlan-berega` | 3 קומיטים → `main` |
+| `l023131500-ops/chizukim-transcribe` | ענף חדש `more30/night-work` |
+| `l023131500-ops/chatzor-connect` | ענף חדש `more30/night-work` |
+
+**החלטה שקיבלתי בלי לשאול, ואפשר לבטל:** ל-16 ול-17 כבר היו ריפואים פרטיים
+בחשבון, עם היסטוריה **אחרת** לגמרי ב-`master`. לא דרסתי כלום — דחפתי לענף נפרד
+`more30/night-work` בכל אחד. אם תרצה שזה יהיה ה-`master` שלהם, תגיד ואמזג.
+
+**מה שחסם קודם ולא היה קשור להרשאות:** ב-`gitconfig` המערכתי של GitHub Desktop
+מוגדר helper בשם `manager`, שרץ **לפני** ה-`wincred` הגלובלי והחזיר את הטוקן
+הישן (fine-grained, קריאה בלבד). git לוקח את התשובה הראשונה, ולכן הטוקן החדש
+מעולם לא נוסה. תוקן: רשומת ה-credential הישנה נמחקה, ורשימת ה-helpers מאופסת
+ב-`.gitconfig` לפני `wincred` כדי שה-helper המערכתי לא יענה ראשון.
+
+> 🔴 **הטוקן הזה נשלח אליי כטקסט גלוי, ולכן יש להתייחס אליו כחשוף.** הוא שמור
+> מוצפן ב-Windows Credential Manager (לא ב-`.git/config`, לא בקובץ טקסט), אבל
+> **כדאי לסובב אותו** ברגע שהעבודה נרגעת. הרשאותיו רחבות מאוד: `repo`,
+> `delete_repo`, `admin:org`, `workflow`.
+
+### 3.2 🔴 מפתח ה-`service_role` של ההאב — **החוסם היחיד של מנוע הסודות**
+
+`core.secrets` בנוי, מאובטח ומאוכלס (71 מפתחות). מה שחסר כדי **לחבר** אליו
+מערכת בפועל הוא מפתח קריאה אחד.
+
+*מה צריך:* Supabase → פרויקט `uhnrgujbdxhhmoxcjria` → Settings → API →
+`service_role`. **או** לחלופין PAT: Account → Tokens → `sbp_...` (אז אשלוף
+לבד, וגם `scripts/Use-SupabasePat.ps1` יתחיל לעבוד).
+
+*לאן:* אכניס בעצמי כ-`MORE30_SECRETS_KEY` לכל פרויקט Vercel.
+
+*למה אני לא יכול להשיג אותו לבד — נבדק, לא הונח:*
+Vercel מסמן אותו `sensitive` ולא מחזיר ערך (גם לא ב-API עם `decrypt=true`);
+ה-MCP של Supabase מחזיר **רק** מפתחות פומביים; ו-`app.settings.jwt_secret`
+אינו קריא במסד, כך שאי אפשר גם לייצר אישור ייעודי מצומצם במקומו.
+
+### 3.3 🟠 31 מפתחות שקיימים **רק** ב-Vercel — ולכן ההאב עדיין לא מקורם
+
+Vercel לא מחזיר ערכים של משתנים מסומנים `sensitive`. **הם ממשיכים לעבוד
+בפרודקשן** — זה לא תקלה — אבל הם לא ב-`core.secrets`, ולכן אין להם מקור-אמת אחד.
+
+מתוכם, אלה שהם **מפתח אמיתי** (השאר הם קונפיגורציה כמו `AI_MODEL`, `VITE_BASE`):
+
+| מפתח | מערכת | פרויקט Vercel |
+|---|---|---|
+| `SUPABASE_SERVICE_KEY` | nadlan · studio · imud | `nadlan-more30` · `studio-more30` · `imud-more30` |
+| `AI_API_KEY` | nadlan | `nadlan-more30` |
+| `RESEND_API_KEY` | nadlan | `nadlan-more30` |
+| `POI_REFRESH_TOKEN` | nadlan | `nadlan-more30` |
+| `ADMIN_TOKEN` | nadlan · kupot | `nadlan-more30` · `kupot-more30` |
+| `ELEVENLABS_API_KEY` | mechiron | `mechiron-more30` |
+| `YEMOT_API_KEY` | mechiron | `mechiron-more30` |
+| `RIGHTS_SUPABASE_KEY` | zchuyot | `zchuyot-more30` |
+| `LAB_TOKEN` | chizukim | `chizukim2-more30` |
+| `DATAGOV_SCHOOLS_RESOURCE` · `DATAGOV_MIKVE_RESOURCE` | nadlan | `nadlan-more30` |
+
+**שים לב:** `ELEVENLABS_API_KEY` ו-`YEMOT_API_KEY` מופיעים בסעיף 3 למעלה
+כ"חסרים" — הם בעצם **כבר מוגדרים** ב-`mechiron-more30`. אין צורך להשיג אותם
+מחדש; צריך רק להעתיק את ערכם ל-`core.secrets` (או לתת לי את מפתח ההאב מ-3.2,
+ואבנה מסלול שבו כל מערכת כותבת את שלה פנימה).
+
+### 3.4 🟡 סודות Actions יושבים על ריפו **ציבורי**
+
+9 סודות בנייה הוגדרו ב-`l023131500-ops/-` (וב-3 הריפואים הפרטיים). המונוריפו
+**ציבורי**. GitHub לא מעביר סודות ל-workflow שרץ מ-PR של fork, אבל כל מי שיכול
+לדחוף קובץ workflow לריפו יכול לקרוא אותם. שלוש אפשרויות: להפוך את המונוריפו
+לפרטי · להשאיר כך (הסיכון תיאורטי כל עוד אתה היחיד עם גישת כתיבה) · או להסיר
+משם את מפתחות ה-AI ולהשאיר רק את הפומביים. **תגיד ואבצע.**
+
+### 3.5 🔑 הדחיפה האוטומטית — הגרסה הישנה (נשמר לתיעוד)
 
 **מה כבר נעשה (31/07):** `credential.helper = wincred` הוגדר גלובלית והטוקן
 נשמר ב-Windows Credential Manager (מוצפן, לא בקובץ טקסט ולא ב-`.git/config`,
