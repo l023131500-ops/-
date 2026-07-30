@@ -84,6 +84,12 @@
 .wordmark { font-size: 14px; font-weight: 500; letter-spacing: 0.14em; color: var(--ink); }
 .nav-links { display: flex; align-items: center; gap: 30px; font-size: 14px; color: var(--ink-2); }
 .nav-links a { transition: color 0.2s var(--ease); }
+
+/* WCAG 2.5.8 asks for a 24x24 target. These are plain text links, so their
+   height is whatever the line box gives — measured at 19-22px, which is a hard
+   thing to hit on a phone. The bar is a centred flex row 70px tall, so growing
+   the hit area changes nothing visually: the text stays exactly where it was. */
+.nav-in a { display: inline-flex; align-items: center; min-height: 24px; }
 .nav-links a:hover { color: var(--gold-soft); }
 .nav-cta { border-bottom: 1px solid var(--gold); padding-bottom: 2px; color: var(--gold-soft); }
 
