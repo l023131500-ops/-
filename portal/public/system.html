@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>מור מערכות תוכנה</title>
+    <meta name="description" content="עמוד השירות — מה המערכת עושה, איך היא עובדת, והמסלולים." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Secular+One&family=Frank+Ruhl+Libre:wght@300;500&family=Heebo:wght@300;400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* אותו קו עיצוב של אתר הבית: נייר בהיר על דיו כהה, קווי שיער בלבד,
+         אפס גרדיאנטים ואפס צללים. ההיררכיה מגודל, ממשקל וממרווח. */
+      :root {
+        color-scheme: light dark;
+        --paper: #fdfdfc; --ink: #141619; --muted: #5f6470; --line: #e3e2de;
+        --gold: #c9a227; --card: #ffffff;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root { --paper: #0e0f12; --ink: #eceae4; --muted: #9aa0ad; --line: #26282e; --card: #15171b; }
+      }
+      *, *::before, *::after { box-sizing: border-box; }
+      body {
+        margin: 0; background: var(--paper); color: var(--ink);
+        font-family: 'Heebo', system-ui, sans-serif; line-height: 1.7;
+      }
+      .wrap { max-width: 920px; margin: 0 auto; padding: 0 20px; }
+      header.bar {
+        border-block-end: 1px solid var(--line); position: sticky; top: 0;
+        background: var(--paper); z-index: 10;
+      }
+      header.bar .wrap { display: flex; align-items: center; gap: 14px; height: 62px; }
+      .home { font-size: 13px; color: var(--muted); text-decoration: none;
+              display: inline-flex; align-items: center; min-height: 24px; }
+      .home:hover { color: var(--ink); }
+      .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--gold); flex: none; }
+
+      h1 { font-family: 'Secular One', sans-serif; font-weight: 400;
+           font-size: clamp(38px, 8vw, 74px); line-height: 1.05; margin: 0; letter-spacing: -0.01em; }
+      .lede { font-family: 'Frank Ruhl Libre', serif; font-weight: 300;
+              font-size: clamp(18px, 2.6vw, 24px); color: var(--muted); margin: 18px 0 0; max-width: 46ch; }
+      section { padding: 54px 0; border-block-start: 1px solid var(--line); }
+      section:first-of-type { border: 0; padding-block-start: 64px; }
+      h2 { font-family: 'Secular One', sans-serif; font-weight: 400; font-size: 26px; margin: 0 0 18px; }
+      p { margin: 0 0 14px; max-width: 62ch; }
+      .muted { color: var(--muted); }
+
+      .cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
+      .btn {
+        display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+        min-height: 48px; padding: 12px 26px; border-radius: 2px; border: 1px solid var(--ink);
+        background: var(--ink); color: var(--paper); text-decoration: none;
+        font-family: inherit; font-size: 16px; font-weight: 700; cursor: pointer;
+      }
+      .btn.ghost { background: transparent; color: var(--ink); }
+      .btn:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
+
+      ul.list { list-style: none; padding: 0; margin: 0; display: grid; gap: 1px;
+                background: var(--line); border: 1px solid var(--line); }
+      ul.list li { background: var(--paper); padding: 14px 18px; font-size: 16px; }
+
+      .plans { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+      .plan { border: 1px solid var(--line); background: var(--card); padding: 22px; display: flex; flex-direction: column; }
+      .plan h3 { font-family: 'Secular One', sans-serif; font-weight: 400; font-size: 22px; margin: 0 0 4px; }
+      .plan .tag { font-size: 13px; color: var(--muted); margin: 0 0 14px; min-height: 40px; }
+      .price { font-size: 15px; font-weight: 700; margin: 0 0 14px; }
+      .price small { font-weight: 400; color: var(--muted); }
+      .plan ul { list-style: none; padding: 0; margin: 0 0 18px; font-size: 14px; color: var(--muted); }
+      .plan ul li { padding-inline-start: 18px; position: relative; margin-bottom: 8px; }
+      .plan ul li::before { content: '·'; position: absolute; inset-inline-start: 4px; color: var(--gold); font-weight: 700; }
+      .plan .btn { margin-top: auto; width: 100%; font-size: 15px; }
+
+      footer { border-block-start: 1px solid var(--line); padding: 34px 0 60px; font-size: 13px; color: var(--muted); }
+      footer a { color: var(--ink); }
+      .note { font-size: 13px; color: var(--muted); margin-top: 16px; }
+      [hidden] { display: none !important; }
+      .skeleton { color: var(--muted); padding: 80px 0; }
+    </style>
+  </head>
+  <body>
+    <header class="bar">
+      <div class="wrap">
+        <span class="dot" aria-hidden="true"></span>
+        <a class="home" href="/">מור מערכות תוכנה</a>
+        <span class="muted" style="font-size:13px">·</span>
+        <span class="muted" style="font-size:13px" id="crumb">שירות</span>
+      </div>
+    </header>
+
+    <main class="wrap">
+      <p class="skeleton" id="loading">טוען…</p>
+
+      <div id="content" hidden>
+        <section>
+          <h1 id="title">—</h1>
+          <p class="lede" id="tagline"></p>
+          <div class="cta">
+            <a class="btn" id="enter" href="#">כניסה למערכת</a>
+            <a class="btn ghost" href="#plans" id="toPlans">מסלולים</a>
+          </div>
+          <p class="note" id="stageNote" hidden></p>
+        </section>
+
+        <section id="aboutSec" hidden>
+          <h2>מה השירות עושה</h2>
+          <p id="about"></p>
+        </section>
+
+        <section id="howSec" hidden>
+          <h2>מה יש במערכת</h2>
+          <ul class="list" id="how"></ul>
+        </section>
+
+        <section id="plans">
+          <h2>מסלולים</h2>
+          <p class="muted" id="plansLede">בוחרים מסלול אחרי ההתחברות. אפשר להתחיל בחינם.</p>
+          <div class="plans" id="planList"></div>
+          <p class="note">
+            הסליקה עדיין לא נפתחה, ולכן בחירת מסלול בתשלום <b>רושמת בקשה ואינה מחייבת</b>.
+          </p>
+        </section>
+
+        <section>
+          <h2>מתחילים</h2>
+          <p class="muted">
+            חשבון אחד פותח את כל מערכות מור מערכות תוכנה — כניסה עם Google או עם
+            מייל וסיסמה, ואותו אזור אישי בכל מערכת.
+          </p>
+          <div class="cta">
+            <a class="btn" id="enter2" href="#">כניסה למערכת</a>
+            <a class="btn ghost" href="/">כל המערכות</a>
+          </div>
+        </section>
+      </div>
+
+      <div id="missing" hidden>
+        <section>
+          <h1>השירות הזה עדיין בהכנה</h1>
+          <p class="lede">הוא רשום במרשם המערכות, אבל עוד אין לו עמוד פעיל.</p>
+          <div class="cta"><a class="btn" href="/">לכל המערכות</a></div>
+        </section>
+      </div>
+    </main>
+
+    <footer>
+      <div class="wrap">
+        <a href="/">מור מערכות תוכנה</a> · כל מערכת בכתובת אחת, וחשבון אחד לכולן.
+      </div>
+    </footer>
+
+    <script src="/auth-button.js" defer></script>
+    <script type="module">
+      // עמוד תדמית אחד שמשרת את כל המערכות. התוכן נקרא **חי** מהמרשם
+      // (core.projects דרך more30_system_page), ולכן אין כאן טקסט שיווקי
+      // מומצא ואין עותק שמתיישן: תיקון במרשם משנה את העמוד מיד.
+      const SUPABASE_URL = 'https://uhnrgujbdxhhmoxcjria.supabase.co';
+      const SUPABASE_ANON =
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVobnJndWpiZHhoaG1veGNqcmlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMzNjE3MjgsImV4cCI6MjA5ODkzNzcyOH0.nHuOhw-WQEU17lNa7XOlORnBhVAYbJBHudKafWkSHBw';
+
+      const $ = (id) => document.getElementById(id);
+
+      // מזהה המערכת נגזר מהכתובת עצמה (more30.com/<שם>), כדי שאותו קובץ
+      // ישרת כל מערכת בלי פרמטר ובלי עותק לכל אחת.
+      const params = new URLSearchParams(location.search);
+      const appKey =
+        params.get('app') ||
+        location.pathname.replace(/^\/+/, '').split('/')[0] ||
+        'more30';
+
+      function esc(s) {
+        return String(s ?? '').replace(/[&<>"']/g, (c) =>
+          ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c],
+        );
+      }
+
+      async function rpc(name, body) {
+        const r = await fetch(`${SUPABASE_URL}/rest/v1/rpc/${name}`, {
+          method: 'POST',
+          headers: { apikey: SUPABASE_ANON, 'content-type': 'application/json' },
+          body: JSON.stringify(body ?? {}),
+        });
+        if (!r.ok) throw new Error(`${name}: ${r.status}`);
+        return r.json();
+      }
+
+      function priceText(plan) {
+        // אין מחיר שנקבע לאף מסלול, ומספר שהומצא כאן היה נראה ללקוח כמחיר
+        // אמיתי. אומרים את זה במפורש במקום להשאיר שדה ריק.
+        if (plan.price_ils == null) {
+          return plan.is_default
+            ? '<span>ללא עלות</span>'
+            : '<span>המחיר טרם נקבע <small>· נעדכן לפני שנפתחת הסליקה</small></span>';
+        }
+        const per = { month: 'לחודש', year: 'לשנה', once: 'חד־פעמי' }[plan.period] ?? '';
+        return `<span>₪${plan.price_ils} <small>${per}</small></span>`;
+      }
+
+      (async function () {
+        let data;
+        try {
+          data = await rpc('more30_system_page', { p_app: appKey });
+        } catch (e) {
+          $('loading').textContent = 'לא הצלחנו לטעון את פרטי השירות. נסו לרענן.';
+          return;
+        }
+
+        $('loading').hidden = true;
+
+        if (!data?.found) {
+          $('missing').hidden = false;
+          return;
+        }
+
+        $('content').hidden = false;
+
+        const name = data.name_he || appKey;
+        document.title = `${name} · מור מערכות תוכנה`;
+        $('crumb').textContent = name;
+        $('title').textContent = name;
+
+        if (data.tagline) $('tagline').textContent = data.tagline;
+        else $('tagline').hidden = true;
+
+        const enter = data.enter_url || `/${appKey}/`;
+        $('enter').href = enter;
+        $('enter2').href = enter;
+
+        // מערכת שעדיין לא פרוסה — לא שולחים אליה, ואומרים למה.
+        if (!data.is_deployed) {
+          $('enter').textContent = 'בהכנה';
+          $('enter').removeAttribute('href');
+          $('enter2').textContent = 'בהכנה';
+          $('enter2').removeAttribute('href');
+          $('stageNote').textContent = 'השירות עדיין בבנייה ואינו פתוח לכניסה.';
+          $('stageNote').hidden = false;
+        }
+
+        if (data.what_it_does) {
+          $('about').textContent = data.what_it_does;
+          $('aboutSec').hidden = false;
+        }
+
+        // "functions" נשמר במרשם כרשימה מופרדת ב-· — אותה הפרדה שמוצגת בדף הבית.
+        const items = (data.functions || '')
+          .split('·')
+          .map((s) => s.trim())
+          .filter(Boolean);
+        if (items.length) {
+          $('how').innerHTML = items.map((i) => `<li>${esc(i)}</li>`).join('');
+          $('howSec').hidden = false;
+        }
+
+        const plans = data.plans?.plans ?? [];
+        $('planList').innerHTML = plans
+          .map((p) => {
+            const feats = (p.features ?? []).map((f) => `<li>${esc(f)}</li>`).join('');
+            const href = `/subscribe?app=${encodeURIComponent(data.app_key)}&plan=${encodeURIComponent(p.code)}`;
+            const label = p.is_default ? 'התחלה בחינם' : 'בחירת המסלול';
+            return `
+              <article class="plan">
+                <h3>${esc(p.name_he)}</h3>
+                <p class="tag">${esc(p.tagline ?? '')}</p>
+                <p class="price">${priceText(p)}</p>
+                <ul>${feats}</ul>
+                <a class="btn ${p.is_default ? 'ghost' : ''}" href="${href}">${label}</a>
+              </article>`;
+          })
+          .join('');
+
+        if (data.plans?.plans_from === 'more30' && data.app_key !== 'more30') {
+          $('plansLede').textContent =
+            'מסלולי הפלטפורמה חלים גם על השירות הזה. אפשר להתחיל בחינם.';
+        }
+      })();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>בחירת מסלול · מור מערכות תוכנה</title>
+    <meta name="description" content="בחירת מסלול לשירותי מור מערכות תוכנה." />
+    <meta name="robots" content="noindex" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Secular+One&family=Frank+Ruhl+Libre:wght@300&family=Heebo:wght@300;400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        color-scheme: light dark;
+        --paper: #fdfdfc; --ink: #141619; --muted: #5f6470; --line: #e3e2de;
+        --gold: #c9a227; --card: #ffffff;
+        --ok-bg: #e9f7ef; --ok-ink: #15603a; --err-bg: #fdeaea; --err-ink: #8c1f1f;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root { --paper: #0e0f12; --ink: #eceae4; --muted: #9aa0ad; --line: #26282e; --card: #15171b;
+                --ok-bg: #10301f; --ok-ink: #86e0ae; --err-bg: #3a1414; --err-ink: #ffb4b4; }
+      }
+      *, *::before, *::after { box-sizing: border-box; }
+      body { margin: 0; background: var(--paper); color: var(--ink);
+             font-family: 'Heebo', system-ui, sans-serif; line-height: 1.7; }
+      .wrap { max-width: 920px; margin: 0 auto; padding: 0 20px; }
+      header.bar { border-block-end: 1px solid var(--line); }
+      header.bar .wrap { display: flex; align-items: center; gap: 12px; height: 62px; }
+      .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--gold); flex: none; }
+      .home { font-size: 13px; color: var(--muted); text-decoration: none;
+              display: inline-flex; align-items: center; min-height: 24px; }
+      main { padding: 46px 0 70px; }
+      h1 { font-family: 'Secular One', sans-serif; font-weight: 400;
+           font-size: clamp(30px, 6vw, 46px); margin: 0 0 10px; }
+      .lede { font-family: 'Frank Ruhl Libre', serif; font-weight: 300; font-size: 19px;
+              color: var(--muted); margin: 0 0 30px; max-width: 52ch; }
+      .plans { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
+      .plan { border: 1px solid var(--line); background: var(--card); padding: 22px;
+              display: flex; flex-direction: column; }
+      .plan[data-current='1'] { border-color: var(--gold); border-width: 2px; }
+      .plan h2 { font-family: 'Secular One', sans-serif; font-weight: 400; font-size: 22px; margin: 0 0 4px; }
+      .plan .tag { font-size: 13px; color: var(--muted); margin: 0 0 14px; min-height: 40px; }
+      .price { font-size: 15px; font-weight: 700; margin: 0 0 14px; }
+      .price small { font-weight: 400; color: var(--muted); }
+      .plan ul { list-style: none; padding: 0; margin: 0 0 18px; font-size: 14px; color: var(--muted); }
+      .plan ul li { padding-inline-start: 18px; position: relative; margin-bottom: 8px; }
+      .plan ul li::before { content: '·'; position: absolute; inset-inline-start: 4px; color: var(--gold); font-weight: 700; }
+      .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+             min-height: 48px; padding: 12px 24px; border-radius: 2px; border: 1px solid var(--ink);
+             background: var(--ink); color: var(--paper); text-decoration: none; width: 100%;
+             font-family: inherit; font-size: 15px; font-weight: 700; cursor: pointer; margin-top: auto; }
+      .btn.ghost { background: transparent; color: var(--ink); }
+      .btn:disabled { opacity: .55; cursor: progress; }
+      .btn:focus-visible, a:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
+      .badge { display: inline-block; font-size: 12px; font-weight: 700; color: var(--gold);
+               border: 1px solid var(--gold); padding: 1px 8px; margin-bottom: 10px; }
+      .msg { margin: 24px 0 0; padding: 14px 16px; border-radius: 2px; font-size: 14px; line-height: 1.8; }
+      .msg.ok { background: var(--ok-bg); color: var(--ok-ink); }
+      .msg.err { background: var(--err-bg); color: var(--err-ink); }
+      .note { font-size: 13px; color: var(--muted); margin-top: 22px; }
+      .back { margin-top: 30px; display: flex; gap: 12px; flex-wrap: wrap; }
+      .back a { font-size: 14px; color: var(--ink); display: inline-flex; align-items: center; min-height: 24px; }
+      [hidden] { display: none !important; }
+    </style>
+  </head>
+  <body>
+    <header class="bar">
+      <div class="wrap">
+        <span class="dot" aria-hidden="true"></span>
+        <a class="home" href="/">מור מערכות תוכנה</a>
+      </div>
+    </header>
+
+    <main class="wrap">
+      <h1 id="title">בחירת מסלול</h1>
+      <p class="lede" id="lede">טוען את המסלולים…</p>
+
+      <div class="plans" id="planList"></div>
+
+      <div id="msg" class="msg" hidden role="status" aria-live="polite"></div>
+
+      <p class="note">
+        <b>אין כאן חיוב.</b> הסליקה (נדרים פלוס) עדיין לא נפתחה, ולכן בחירת מסלול
+        בתשלום רושמת בקשה בלבד — לא נמסרים פרטי אשראי ולא נגבה תשלום.
+      </p>
+
+      <div class="back">
+        <a id="toApp" href="/">חזרה לשירות</a>
+        <a href="/me">האזור האישי</a>
+        <a href="/">כל המערכות</a>
+      </div>
+    </main>
+
+    <script src="/auth-button.js" defer></script>
+    <script type="module">
+      // מסך המנוי — זרימה מלאה בלי סליקה.
+      //
+      // הכלל שמנחה את המסך: אסור שייראה כמו תשלום. הבחירה רושמת בקשה,
+      // התשובה מהשרת נושאת `charged:false`, והמסך אומר את זה בפירוש.
+      import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+      const SUPABASE_URL = 'https://uhnrgujbdxhhmoxcjria.supabase.co';
+      const SUPABASE_ANON =
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVobnJndWpiZHhoaG1veGNqcmlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMzNjE3MjgsImV4cCI6MjA5ODkzNzcyOH0.nHuOhw-WQEU17lNa7XOlORnBhVAYbJBHudKafWkSHBw';
+
+      const sb = createClient(SUPABASE_URL, SUPABASE_ANON, {
+        auth: { persistSession: true, storageKey: 'more30-auth', detectSessionInUrl: true },
+      });
+
+      const $ = (id) => document.getElementById(id);
+      const params = new URLSearchParams(location.search);
+      const appKey = params.get('app') || 'more30';
+      const preselect = params.get('plan');
+
+      function esc(s) {
+        return String(s ?? '').replace(/[&<>"']/g, (c) =>
+          ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c],
+        );
+      }
+      function show(text, kind) {
+        $('msg').textContent = text;
+        $('msg').className = 'msg ' + kind;
+        $('msg').hidden = false;
+      }
+      function priceText(p) {
+        if (p.price_ils == null) {
+          return p.is_default
+            ? 'ללא עלות'
+            : 'המחיר טרם נקבע <small>· נעדכן לפני שנפתחת הסליקה</small>';
+        }
+        const per = { month: 'לחודש', year: 'לשנה', once: 'חד־פעמי' }[p.period] ?? '';
+        return `₪${p.price_ils} <small>${per}</small>`;
+      }
+
+      let current = 'free';
+
+      function render(data) {
+        const plans = data.plans?.plans ?? data.plans ?? [];
+        $('planList').innerHTML = plans
+          .map((p) => {
+            const feats = (p.features ?? []).map((f) => `<li>${esc(f)}</li>`).join('');
+            const isCurrent = p.code === current;
+            return `
+              <article class="plan" data-current="${isCurrent ? 1 : 0}">
+                ${isCurrent ? '<span class="badge">המסלול שלך</span>' : ''}
+                <h2>${esc(p.name_he)}</h2>
+                <p class="tag">${esc(p.tagline ?? '')}</p>
+                <p class="price">${priceText(p)}</p>
+                <ul>${feats}</ul>
+                <button class="btn ${p.is_default ? 'ghost' : ''}" data-plan="${esc(p.code)}"
+                        ${isCurrent ? 'disabled' : ''}>
+                  ${isCurrent ? 'זה המסלול הנוכחי' : p.is_default ? 'מעבר לחינמי' : 'בחירת המסלול'}
+                </button>
+              </article>`;
+          })
+          .join('');
+
+        $('planList').querySelectorAll('button[data-plan]').forEach((b) => {
+          b.addEventListener('click', () => choose(b, b.dataset.plan));
+        });
+      }
+
+      async function choose(btn, code) {
+        $('msg').hidden = true;
+
+        const { data: s } = await sb.auth.getSession();
+        if (!s?.session) {
+          // לא מחובר — שולחים לכניסה, וחוזרים בדיוק לכאן עם אותה בחירה.
+          const back = `${location.origin}${location.pathname}?app=${encodeURIComponent(appKey)}&plan=${encodeURIComponent(code)}`;
+          location.href = `/login?from=${encodeURIComponent(back)}`;
+          return;
+        }
+
+        btn.disabled = true;
+        const label = btn.textContent;
+        btn.textContent = 'רושמים…';
+        const { data, error } = await sb.rpc('more30_subscribe', { p_app: appKey, p_plan: code });
+        btn.disabled = false;
+        btn.textContent = label;
+
+        if (error) return show('הבחירה לא נרשמה: ' + error.message, 'err');
+
+        current = data?.plan ?? code;
+        show(data?.message ?? 'הבחירה נרשמה.', 'ok');
+        await load();
+      }
+
+      async function load() {
+        const { data, error } = await sb.rpc('more30_system_page', { p_app: appKey });
+        if (error) {
+          $('lede').textContent = 'לא הצלחנו לטעון את המסלולים. נסו לרענן.';
+          return;
+        }
+
+        const name = data?.name_he || 'מור מערכות תוכנה';
+        $('title').textContent = `מסלולים · ${name}`;
+        document.title = `מסלולים · ${name}`;
+        if (data?.enter_url) $('toApp').href = data.enter_url;
+
+        const { data: s } = await sb.auth.getSession();
+        if (s?.session) {
+          const { data: mine } = await sb.rpc('more30_my_subscription', { p_app: appKey });
+          current = mine?.plan ?? 'free';
+          const planName =
+            (data?.plans?.plans ?? []).find((p) => p.code === current)?.name_he ?? current;
+          // מסלול הפלטפורמה חל על כל המערכות, ולכן אומרים את זה — אחרת נראה
+          // כאילו נרשם מנוי נפרד לכל שירות.
+          const scopeNote = mine?.platform_wide ? ' המסלול הזה חל על כל המערכות.' : '';
+          $('lede').textContent =
+            current === 'free'
+              ? 'החשבון שלך במסלול החינמי. אפשר לשדרג בכל רגע.'
+              : `רשומה אצלך בקשה למסלול ${planName}.${scopeNote} אפשר לשנות בחירה כאן.`;
+        } else {
+          $('lede').textContent = 'בוחרים מסלול, ואז מתחברים כדי לשמור אותו.';
+        }
+
+        render(data);
+
+        // הגעת לכאן עם מסלול מסומן מעמוד השירות — פותחים עליו ישירות.
+        if (preselect) {
+          const btn = $('planList').querySelector(`button[data-plan="${CSS.escape(preselect)}"]`);
+          if (btn && !btn.disabled) btn.focus();
+        }
+      }
+
+      load();
+    </script>
+  </body>
+</html>
