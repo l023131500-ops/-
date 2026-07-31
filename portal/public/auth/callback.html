@@ -120,10 +120,40 @@
         $('msg').hidden = false;
       }
 
-      // לאן ממשיכים: מנהל → מרכז השליטה, כל השאר → האזור האישי.
+      // הכתובת שממנה נכנסו. נשמרה ב-/login לפני הקפיצה לספק, ולכן היא שורדת
+      // את כל הלולאה. מוגבלת ל-more30.com כדי שפרמטר `from` לא יהפוך את הדף
+      // למפנה פתוח לאתר זר.
+      function returnTo() {
+        try {
+          const v = sessionStorage.getItem('more30-return-to');
+          return v && v.startsWith('https://more30.com/') ? v : null;
+        } catch (e) {
+          return null;
+        }
+      }
+
+      // לאן ממשיכים: קודם כול חזרה למערכת שממנה באת — זו הסיבה שנכנסת.
+      // אין כזו? מנהל → מרכז השליטה, כל השאר → האזור האישי.
       // ההרשאה נקבעת בשרת (more30_is_admin), לא לפי מה שהדפדפן חושב.
       function destination(profile) {
+        const back = returnTo();
+        if (back) {
+          try { sessionStorage.removeItem('more30-return-to'); } catch (e) {}
+          return back;
+        }
         return profile?.is_admin ? '/admin' : '/me';
+      }
+
+      // רישום החברות באתר שממנו הגיע המשתמש. זה מה שהופך "נרשמתי" ל"אני
+      // משתמש של המערכת הזו": כניסה דרך /chizukim נותנת חברות ל-chizukim
+      // בלבד, ולא גישה לשאר האתרים.
+      async function joinApp() {
+        const app = returnTo() || document.referrer || 'more30';
+        try {
+          await sb.rpc('more30_join_app', { p_app: app });
+        } catch (e) {
+          /* חברות היא רישום, לא תנאי כניסה — כישלון כאן לא יעצור את המשתמש. */
+        }
       }
 
       function go(url) {
@@ -158,6 +188,8 @@
           );
         }
 
+        await joinApp();
+
         let profile;
         try {
           profile = await loadProfile();
@@ -169,6 +201,17 @@
         // ולכן ממלאים אותו מראש ומבקשים לאשר, במקום לשאול על ריק.
         // `?edit=1` פותח את אותו טופס גם למי שכבר יש לו שם (מהאזור האישי).
         const editing = params.get('edit') === '1';
+        const known = (session.user.user_metadata || {}).full_name;
+
+        // מי שכבר הקליד שם מלא בטופס ההרשמה לא יישאל עליו שוב שנייה אחרי —
+        // הוא נשמר לפרופיל ברקע והמשתמש ממשיך ישר ליעד.
+        if (!profile.full_name && !editing && known && known.trim().length >= 2) {
+          const { data: saved, error } = await sb.rpc('more30_profile_set_name', {
+            p_full_name: known.trim(),
+          });
+          if (!error) return go(destination(saved));
+        }
+
         if (!profile.full_name || editing) {
           const meta = session.user.user_metadata || {};
           $('title').textContent = editing ? 'עדכון שם מלא' : 'ברוך הבא';

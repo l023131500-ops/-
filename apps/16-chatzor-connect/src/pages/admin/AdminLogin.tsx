@@ -58,6 +58,15 @@ export function AdminLogin({ target = "/admin", title = "כניסת מנהל" }:
               {submitting ? "מתחבר…" : "כניסה"}
             </Button>
           </form>
+
+          {/* הכניסה המשותפת של הפלטפורמה — אותו חשבון בכל 33 המערכות, כולל
+              Google. מי שכבר נכנס שם מגיע לכאן מחובר ולא רואה את הטופס בכלל. */}
+          <a
+            href={`https://more30.com/login?from=${encodeURIComponent(location.origin + location.pathname)}`}
+            className="mt-4 block rounded-lg border border-white/15 px-3 py-2 text-center text-sm text-white/80 hover:bg-white/5"
+          >
+            כניסה עם חשבון more30 (כולל Google)
+          </a>
         </div>
       </div>
     </div>

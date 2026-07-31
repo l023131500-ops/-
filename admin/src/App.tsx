@@ -126,6 +126,26 @@ const ACCESS_WHY: Record<AccessKind, string> = {
   none: "לא נפרס מסך אדמין — הנתיב נופל לאפליקציה עצמה.",
 };
 
+/**
+ * משתמש של הפלטפורמה, עם האתרים שהוא חבר בהם. החברות (core.app_memberships)
+ * היא מה שקובע לאיזה אתר משתמש שייך — הסשן משותף לכל 33 המערכות כי כולן על
+ * אותו origin, אבל זה לא אומר שמי שנרשם באתר אחד הוא משתמש של כולם.
+ */
+interface PlatformUser {
+  user_id: string;
+  email: string;
+  full_name: string | null;
+  plan: string;
+  created_at: string;
+  last_sign_in_at: string | null;
+  provider: string | null;
+  confirmed: boolean;
+  is_super_admin: boolean;
+  apps: { app_key: string; role: string }[];
+}
+
+const ROLE_HE: Record<string, string> = { member: "משתמש", manager: "מנהל תוכן", admin: "מנהל" };
+
 const accessOf = (r: Overview): AccessKind =>
   (r.admin_auth && r.admin_auth in ACCESS_HE ? r.admin_auth : "none") as AccessKind;
 
@@ -138,7 +158,15 @@ function adminHref(r: Overview): string | null {
 }
 
 export function App() {
-  const [view, setView] = useState<"systems" | "access" | "keys" | "ideas" | "specs">("systems");
+  const [view, setView] = useState<"systems" | "access" | "users" | "keys" | "ideas" | "specs">("systems");
+  const [users, setUsers] = useState<PlatformUser[]>([]);
+  const [userApp, setUserApp] = useState("");
+  /**
+   * ההרשאה נשאלת מהשרת (`more30_is_admin`), לא נגזרת מקיום סשן. מחובר ≠ מנהל:
+   * בלי זה כל משתמש רשום היה מקבל את שלד לוח השליטה ורק אחר כך שורת שגיאה
+   * מכל קריאה — מסך שנראה כאילו הוא בפנים.
+   */
+  const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
   const [rows, setRows] = useState<Overview[]>([]);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [tokens, setTokens] = useState<Token[]>([]);
@@ -186,6 +214,34 @@ export function App() {
     setTokens(snap.tokens ?? []);
     setBugs(snap.bugs ?? []);
   }
+  /**
+   * משתמשי הפלטפורמה. ה-RPC מאמת סופר-אדמין בעצמו ומחזיר גם את החברויות,
+   * כדי שלא נצטרך קריאה לכל מערכת בנפרד — 33 קריאות רק כדי לצייר טבלה.
+   */
+  async function loadUsers() {
+    if (!sb) return;
+    const { data, error } = await sb.rpc("more30_admin_users");
+    if (error) {
+      setMsg(
+        error.message.includes("super admin")
+          ? "רשימת המשתמשים פתוחה לסופר-אדמין של הפלטפורמה בלבד."
+          : "טעינת המשתמשים נכשלה: " + error.message,
+      );
+      setUsers([]);
+      return;
+    }
+    setUsers((data ?? []) as PlatformUser[]);
+  }
+
+  async function setUserRole(userId: string, appKey: string, role: string) {
+    if (!sb) return;
+    const { error } = await sb.rpc("more30_app_set_role", {
+      p_user: userId, p_app: appKey, p_role: role,
+    });
+    if (error) { setMsg("שינוי התפקיד נכשל: " + error.message); return; }
+    loadUsers();
+  }
+
   async function loadIdeas() {
     if (!sb) return;
     const { data, error } = await sb.rpc("more30_intake_list");
@@ -306,8 +362,17 @@ export function App() {
 
   useEffect(() => {
     if (!session) { setRows([]); setTasks([]); setTokens([]); setBugs([]); setIdeas([]); setSpecs([]); setCredits(null); return; }
+    // רק אחרי שההרשאה אושרה. בלי זה משתמש רגיל שנוחת כאן שולח ארבע קריאות
+    // מוגנות שכולן נדחות — שורת 400 באדום בקונסולה על מסך שכל כולו "אין הרשאה".
+    if (isAdmin !== true) return;
     loadSystems(); loadIdeas(); loadSpecs();
+  }, [session, isAdmin]);
+  useEffect(() => {
+    if (!sb) return;
+    if (!session) { setIsAdmin(null); return; }
+    sb.rpc("more30_is_admin").then(({ data }) => setIsAdmin(data === true));
   }, [session]);
+  useEffect(() => { if (view === "users" && session) loadUsers(); }, [view, session]);
   useEffect(() => { if (view === "ideas" && session) loadIdeas(); }, [view, session]);
   useEffect(() => { if (view === "specs" && session) loadSpecs(); }, [view, session]);
   useEffect(() => { if (view === "keys" && session && !credits) loadCredits(); }, [view, session]);
@@ -375,6 +440,7 @@ export function App() {
     setMsg("נוצר פרויקט חדש #" + data); loadIdeas(); loadSystems(); }
 
   const isAuthed = !!session;
+  const deniedEmail = (session as { user?: { email?: string } } | null)?.user?.email ?? "";
   /**
    * בכוונה בלי נפילה למרשם שב-config: הניהול הוא המקום שבו חייבים לראות את
    * המצב האמיתי. רשימה מקובעת שנשלפת כשהקריאה נכשלת נראית בדיוק כמו אמת,
@@ -423,8 +489,35 @@ export function App() {
             <button onClick={signInWithLink} style={{ ...btn, padding: "8px 12px" }}>
               אין לי סיסמה — שלחו קישור למייל
             </button>
+            {/* הכניסה המשותפת של הפלטפורמה — אותה אחת של כל 33 המערכות,
+                כולל Google. מי שנכנס שם כבר נכנס גם לכאן. */}
+            <a href="https://more30.com/login?from=https%3A%2F%2Fmore30.com%2Fadmin"
+               style={{ ...btn, padding: "8px 12px", textAlign: "center", textDecoration: "none", color: "#0f172a" }}>
+              כניסה דרך החשבון של more30 (כולל Google)
+            </a>
           </div>
           {msg && <div style={{ background: "#fef9c3", border: "1px solid #fde68a", padding: "8px 12px", borderRadius: 8, marginTop: 12, fontSize: 13, lineHeight: 1.6 }}>{msg}</div>}
+        </div>
+      </main>
+    );
+  }
+
+  // מחובר, אבל לא מנהל. אומרים את זה במפורש עם החשבון שבו הוא מחובר —
+  // אחרת המסך נראה כאילו נכשל, והמשתמש מנסה להתחבר שוב עם אותו חשבון.
+  if (isAdmin === false) {
+    return (
+      <main style={{ ...shell, display: "grid", placeItems: "center" }}>
+        <div style={{ ...card, width: "min(460px, 92vw)" }}>
+          <h1 style={{ margin: 0, fontSize: 22 }}>אין הרשאת ניהול</h1>
+          <p style={{ fontSize: 14, color: "#475569", lineHeight: 1.7, marginTop: 10 }}>
+            אתה מחובר כ־<b style={{ direction: "ltr", display: "inline-block" }}>{deniedEmail}</b>,
+            וזה חשבון משתמש רגיל. מרכז השליטה פתוח לסופר-אדמין של הפלטפורמה בלבד.
+          </p>
+          <div style={{ display: "flex", gap: 8, marginTop: 16, flexWrap: "wrap" }}>
+            <a href="https://more30.com/me" style={{ ...linkBtn, padding: "8px 14px" }}>האזור האישי שלי</a>
+            <a href="https://more30.com/" style={{ ...linkBtn, padding: "8px 14px" }}>כל המערכות</a>
+            <button onClick={signOut} style={{ ...btn, padding: "8px 14px" }}>יציאה והתחברות בחשבון אחר</button>
+          </div>
         </div>
       </main>
     );
@@ -438,6 +531,7 @@ export function App() {
           <div style={{ display: "flex", gap: 8, marginTop: 8, flexWrap: "wrap" }}>
             <button onClick={() => setView("systems")} style={{ ...tab, ...(view === "systems" ? tabOn : {}) }}>מערכות ({merged.length})</button>
             <button onClick={() => setView("access")} style={{ ...tab, ...(view === "access" ? tabOn : {}) }}>כניסות לאדמין{withAdmin.length ? ` (${withAdmin.length})` : ""}</button>
+            <button onClick={() => setView("users")} style={{ ...tab, ...(view === "users" ? tabOn : {}) }}>משתמשים{users.length ? ` (${users.length})` : ""}</button>
             <button onClick={() => setView("keys")} style={{ ...tab, ...(view === "keys" ? tabOn : {}) }}>מפתחות וקרדיטים{tokens.length ? ` (${tokens.length})` : ""}</button>
             <button onClick={() => setView("ideas")} style={{ ...tab, ...(view === "ideas" ? tabOn : {}) }}>רעיונות נכנסים{ideas.length ? ` (${ideas.length})` : ""}</button>
             <button onClick={() => setView("specs")} style={{ ...tab, ...(view === "specs" ? tabOn : {}) }}>אפיונים מהשאלון{specs.length ? ` (${specs.length})` : ""}</button>
@@ -593,8 +687,11 @@ export function App() {
           )}
 
           <div style={{ display: "grid", gap: 8, marginTop: 12 }}>
-            {merged.filter((r) => !r.is_protected && accessOf(r) !== "none")
-              .sort((a, b) => a.number.localeCompare(b.number)).map((r) => {
+            {/* כל המערכות, לא רק אלה שיש להן מסך אדמין משלהן. מערכת בלי מסך
+                כזו מנוהלת מכאן — וזו תשובה, לא חור ברשימה. */}
+            {merged.filter((r) => !r.is_protected)
+              .sort((a, b) => (accessOf(a) === "none" ? 1 : 0) - (accessOf(b) === "none" ? 1 : 0)
+                              || a.number.localeCompare(b.number)).map((r) => {
               const kind = accessOf(r);
               const href = adminHref(r);
               return (
@@ -608,8 +705,10 @@ export function App() {
                     <span style={{ flex: 1 }} />
                     {routedOnDomain(r) && <a href={`https://more30.com/${r.path}`} target="_blank" rel="noreferrer" style={linkBtn}>המערכת ↗</a>}
                     {href
-                      ? <a href={href} target="_blank" rel="noreferrer" style={{ ...linkBtn, borderColor: "#4f46e5", color: "#4f46e5", fontWeight: 700 }}>אדמין ↗</a>
-                      : <span style={{ ...linkBtn, opacity: 0.75 }}>{r.admin_url}</span>}
+                      ? <a href={href} target="_blank" rel="noreferrer" style={{ ...linkBtn, borderColor: "#4f46e5", color: "#4f46e5", fontWeight: 700 }}>ניהול ↗</a>
+                      : r.admin_url
+                        ? <span style={{ ...linkBtn, opacity: 0.75 }}>{r.admin_url}</span>
+                        : <span style={{ ...linkBtn, opacity: 0.75 }}>מנוהלת מכאן</span>}
                   </div>
                   <div style={{ fontSize: 12, color: "#64748b", marginTop: 5 }}>{ACCESS_WHY[kind]}</div>
                 </div>
@@ -618,8 +717,80 @@ export function App() {
           </div>
 
           <div style={{ fontSize: 12, color: "#94a3b8", marginTop: 12 }}>
-            {merged.filter((r) => accessOf(r) === "none").length} מערכות נוספות אינן מציגות מסך
-            אדמין כלל — הנתיב שלהן נופל לאפליקציה עצמה.
+            מתוכן {merged.filter((r) => accessOf(r) === "none" && !r.is_protected).length} אינן
+            מציגות מסך אדמין משלהן — הנתיב שלהן נופל לאפליקציה עצמה, והניהול שלהן
+            נעשה מהמסך הזה. {merged.filter((r) => r.is_protected).length} מערכות מוגנות
+            אינן מוצגות כאן במכוון.
+          </div>
+        </section>
+      ) : view === "users" ? (
+        <section>
+          <div style={{ ...card, marginTop: 12, lineHeight: 1.7, fontSize: 13 }}>
+            <b style={{ fontSize: 15 }}>
+              {users.length} משתמשים במאגר המשותף · {users.filter((u) => u.apps.length > 0).length} מחוברים לאתר אחד לפחות
+            </b>
+            <div style={{ color: "#475569", marginTop: 6 }}>
+              הכניסה משותפת לכל המערכות (origin אחד), אבל <b>החברות היא לאתר</b>:
+              מי שנרשם ב-<code style={code}>/chizukim</code> מופיע כמשתמש של chizukim
+              בלבד. סינון לפי אתר מראה בדיוק את רשימת המשתמשים של אותה מערכת.
+            </div>
+          </div>
+
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap", margin: "10px 0 14px", alignItems: "center" }}>
+            <select value={userApp} onChange={(e) => setUserApp(e.target.value)} style={inp}>
+              <option value="">כל האתרים</option>
+              {[...new Set(users.flatMap((u) => u.apps.map((a) => a.app_key)))].sort().map((k) => (
+                <option key={k} value={k}>{merged.find((r) => r.path === k)?.name_he ?? k}</option>
+              ))}
+            </select>
+            <button onClick={loadUsers} style={btn}>רענון</button>
+            <span style={{ fontSize: 12, color: "#64748b" }}>
+              נקרא חי מ-<code style={code}>auth.users</code> + <code style={code}>core.app_memberships</code>.
+            </span>
+          </div>
+
+          <div style={{ display: "grid", gap: 8 }}>
+            {users
+              .filter((u) => !userApp || u.apps.some((a) => a.app_key === userApp))
+              .map((u) => (
+                <div key={u.user_id} style={{ ...card, padding: "10px 14px" }}>
+                  <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
+                    <b style={{ minWidth: 190 }}>{u.full_name || "— ללא שם מלא"}</b>
+                    <span style={{ ...code, fontSize: 12 }}>{u.email}</span>
+                    {u.is_super_admin && <Badge on label="סופר-אדמין" color="#16a34a" />}
+                    {u.plan === "premium" && <Badge on label="פרימיום" color="#c9a227" />}
+                    {!u.confirmed && <Badge on label="אימייל לא אושר" color="#dc2626" />}
+                    <span style={{ flex: 1 }} />
+                    <span style={{ fontSize: 12, color: "#64748b" }}>
+                      {u.last_sign_in_at
+                        ? "כניסה אחרונה " + new Date(u.last_sign_in_at).toLocaleDateString("he-IL")
+                        : "טרם נכנס"}
+                      {u.provider ? ` · ${u.provider}` : ""}
+                    </span>
+                  </div>
+                  <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 7, alignItems: "center" }}>
+                    {u.apps.length === 0 ? (
+                      <span style={{ fontSize: 12, color: "#94a3b8" }}>לא מחובר לאף אתר</span>
+                    ) : (
+                      u.apps.map((a) => (
+                        <span key={a.app_key} style={{ ...linkBtn, display: "inline-flex", gap: 6, alignItems: "center" }}>
+                          {merged.find((r) => r.path === a.app_key)?.name_he ?? a.app_key}
+                          <select
+                            value={a.role}
+                            onChange={(e) => setUserRole(u.user_id, a.app_key, e.target.value)}
+                            style={{ border: "1px solid #e2e8f0", borderRadius: 6, fontSize: 11, padding: "1px 4px" }}
+                          >
+                            {Object.keys(ROLE_HE).map((r) => <option key={r} value={r}>{ROLE_HE[r]}</option>)}
+                          </select>
+                        </span>
+                      ))
+                    )}
+                  </div>
+                </div>
+              ))}
+            {users.length === 0 && (
+              <div style={{ ...card, fontSize: 13, color: "#64748b" }}>אין משתמשים להצגה.</div>
+            )}
           </div>
         </section>
       ) : view === "keys" ? (

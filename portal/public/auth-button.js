@@ -2,15 +2,21 @@
  * more30 — כפתור הכניסה המשותף לכל מערכות הפלטפורמה.
  *
  * למה קובץ אחד ולא רכיב React: 33 המערכות בנויות בטכנולוגיות שונות (Next,
- * Vite+React, סטטי), נפרסות כפרויקטים נפרדים ואין להן node_modules משותף.
- * קובץ יחיד שכולן טוענות מ-more30.com הוא הדרך היחידה שבה זה באמת **אותו**
- * רכיב: תיקון אחד כאן משנה את הכפתור בכולן, בלי לבנות 33 אפליקציות מחדש.
+ * Vite+React, TanStack, סטטי), נפרסות כפרויקטים נפרדים ואין להן node_modules
+ * משותף. קובץ יחיד שכולן טוענות מ-more30.com הוא הדרך היחידה שבה זה באמת
+ * **אותו** רכיב: תיקון אחד כאן משנה את הכפתור בכולן, בלי לבנות 33 אפליקציות.
  *
  * שילוב במערכת: שורה אחת ב-HTML.
  *   <script src="https://more30.com/auth-button.js" defer></script>
  *
  * העיצוב יושב ב-Shadow DOM, ולכן ה-CSS של המערכת המארחת אינו נוגע בו ואינו
  * מושפע ממנו. זה מה שמבטיח מראה זהה בכל המערכות ולא רק כוונה לזהות.
+ *
+ * מה הכפתור עושה מעבר לתצוגה:
+ *  · רושם את המשתמש כחבר באתר שבו הוא נמצא (core.app_memberships) — כניסה
+ *    לאתר X נותנת חברות ל-X בלבד.
+ *  · שואל את השרת אם הוא מנהל **של האתר הזה**, ורק אז מציג "ניהול".
+ *    ההרשאה לא נקבעת לפי מה שהדפדפן חושב.
  */
 (function () {
   'use strict';
@@ -41,13 +47,34 @@
       var s = JSON.parse(raw);
       if (!s || !s.user) return null;
       if (s.expires_at && s.expires_at * 1000 <= Date.now()) return null;
+      var meta = s.user.user_metadata || {};
       return {
         token: s.access_token,
-        label: (s.user.user_metadata && s.user.user_metadata.username) || s.user.email,
+        label: meta.full_name || meta.username || shortEmail(s.user.email),
       };
     } catch (e) {
       return null;
     }
+  }
+
+  // כתובת פנימית (eueu1234@more30.com) היא בפועל שם משתמש — מציגים אותו ככזה.
+  function shortEmail(email) {
+    var e = String(email || '');
+    return e.indexOf('@more30.com') > -1 ? e.split('@')[0] : e;
+  }
+
+  function rpc(name, body, token) {
+    return fetch(SUPABASE_URL + '/rest/v1/rpc/' + name, {
+      method: 'POST',
+      headers: {
+        apikey: SUPABASE_ANON,
+        Authorization: 'Bearer ' + token,
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify(body || {}),
+    }).then(function (r) {
+      return r.ok ? r.json() : null;
+    });
   }
 
   function signOut(token) {
@@ -67,11 +94,14 @@
   var CSS = [
     ':host{all:initial;direction:rtl}',
     '*,*::before,*::after{box-sizing:border-box}',
-    '.wrap{position:fixed;inset-inline-start:16px;inset-block-end:16px;z-index:2147483000;',
+    // הכפתור יושב בראש העמוד, באותו מקום בכל 33 המערכות — זה מה שהופך אותו
+    // ל"נווט עליון אחיד" ולא לפריט שכל מערכת ממקמת אחרת. inset-inline-end
+    // כי בעברית פעולות החשבון יושבות בקצה השמאלי של הסרגל.
+    '.wrap{position:fixed;inset-inline-end:16px;inset-block-start:12px;z-index:2147483000;',
     "font-family:'Heebo',system-ui,-apple-system,'Segoe UI',sans-serif}",
     '.pill{display:inline-flex;align-items:center;gap:8px;border:0;cursor:pointer;',
-    'padding:10px 16px;border-radius:999px;background:#0B0D2E;color:#ECE9F5;',
-    'font-size:14px;font-weight:700;line-height:1;',
+    'padding:9px 15px;border-radius:999px;background:#0B0D2E;color:#ECE9F5;',
+    'font-size:14px;font-weight:700;line-height:1;min-height:36px;',
     'box-shadow:0 6px 20px rgba(11,13,46,.28);transition:transform .12s ease,box-shadow .12s ease}',
     '.pill:hover{transform:translateY(-1px);box-shadow:0 10px 26px rgba(11,13,46,.34)}',
     // שם משתמש יכול להיות כתובת אימייל ארוכה; בלי גבול הכפתור גולש מהמסך במובייל.
@@ -80,8 +110,9 @@
     '.pill:focus-visible{outline:3px solid #C9A227;outline-offset:2px}',
     '.dot{width:9px;height:9px;border-radius:50%;background:#C9A227;flex:none;',
     'box-shadow:0 0 0 3px rgba(201,162,39,.25)}',
-    '.menu{position:absolute;inset-block-end:calc(100% + 10px);inset-inline-start:0;',
-    'min-width:232px;background:#fff;border-radius:14px;padding:8px;',
+    // התפריט נפתח כלפי מטה, כי הכפתור בראש העמוד.
+    '.menu{position:absolute;inset-block-start:calc(100% + 10px);inset-inline-end:0;',
+    'min-width:248px;background:#fff;border-radius:14px;padding:8px;',
     'box-shadow:0 18px 44px rgba(11,13,46,.22);border:1px solid #e7e8f0}',
     '.menu[hidden]{display:none}',
     '.head{padding:8px 10px 6px;font-size:11px;font-weight:700;color:#6b7086;letter-spacing:.02em}',
@@ -94,8 +125,10 @@
     '.ico{width:26px;height:26px;flex:none;border-radius:8px;display:grid;place-items:center;',
     'background:#eef0fa;color:#0B0D2E}',
     '.ico svg{width:15px;height:15px;display:block}',
+    '.gold .ico{background:#fbf3d8;color:#8a6d10}',
     '.sep{height:1px;background:#eceef6;margin:6px 8px}',
     '@media print{.wrap{display:none}}',
+    '@media (max-width:480px){.wrap{inset-inline-end:10px;inset-block-start:8px}}',
   ].join('');
 
   var USER_ICON =
@@ -104,7 +137,13 @@
   var ADMIN_ICON =
     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
     '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>';
-
+  var STAR_ICON =
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+    '<polygon points="12 2 15.1 8.6 22 9.6 17 14.5 18.2 21.4 12 18.1 5.8 21.4 7 14.5 2 9.6 8.9 8.6 12 2"/></svg>';
+  var ADD_ICON =
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+    '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>' +
+    '<line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>';
   var EXIT_ICON =
     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
     '<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/>' +
@@ -123,6 +162,15 @@
     return t.content.firstElementChild;
   }
 
+  function item(href, icon, title, sub, cls) {
+    return (
+      '<a class="item ' + (cls || '') + '" role="menuitem" href="' + href + '">' +
+        '<span class="ico">' + icon + '</span>' +
+        '<span>' + title + '<span class="sub">' + sub + '</span></span>' +
+      '</a>'
+    );
+  }
+
   class More30AuthElement extends HTMLElement {
     connectedCallback() {
       if (this.shadowRoot) return;
@@ -134,44 +182,13 @@
       var back = encodeURIComponent(location.href);
       var session = readSession();
 
-      var adminItem =
-        '<a class="item" role="menuitem" href="' + ADMIN_URL + '">' +
-          '<span class="ico">' + ADMIN_ICON + '</span>' +
-          '<span>כניסת ניהול<span class="sub">מרכז השליטה של הפלטפורמה</span></span>' +
-        '</a>';
-
-      var meItem =
-        '<a class="item" role="menuitem" href="' + ME_URL + '">' +
-          '<span class="ico">' + USER_ICON + '</span>' +
-          '<span>האזור האישי<span class="sub">החשבון, התוכנית וההיסטוריה שלך</span></span>' +
-        '</a>';
-
-      var menuInner = session
-        ? '<div class="head">מחובר כ־' + escapeText(session.label) + '</div>' +
-          meItem +
-          adminItem +
-          '<div class="sep"></div>' +
-          '<button class="item" role="menuitem" type="button" data-act="signout">' +
-            '<span class="ico">' + EXIT_ICON + '</span>' +
-            '<span>יציאה<span class="sub">מכל מערכות more30</span></span>' +
-          '</button>'
-        : '<div class="head">כניסה למערכות more30</div>' +
-          '<a class="item" role="menuitem" href="' + LOGIN_URL + '?from=' + back + '">' +
-            '<span class="ico">' + USER_ICON + '</span>' +
-            '<span>כניסת משתמש<span class="sub">לאזור האישי ולמערכות שלך</span></span>' +
-          '</a>' +
-          '<div class="sep"></div>' +
-          adminItem;
-
       var wrap = el(
         '<div class="wrap">' +
-          '<div class="menu" hidden role="menu" aria-label="כניסה למערכות more30">' +
-            menuInner +
-          '</div>' +
           '<button class="pill" type="button" aria-haspopup="true" aria-expanded="false">' +
             '<span class="dot"></span>' +
             '<span>' + (session ? escapeText(session.label) : 'כניסה') + '</span>' +
           '</button>' +
+          '<div class="menu" hidden role="menu" aria-label="חשבון more30"></div>' +
         '</div>',
       );
 
@@ -181,18 +198,80 @@
       var btn = root.querySelector('.pill');
       var menu = root.querySelector('.menu');
 
+      // התפריט נבנה מחדש בכל שינוי הקשר (למשל כשהשרת עונה מי מנהל), כדי
+      // שלא יהיו שתי גרסאות של אותו תפריט שמתפצלות בתיקון הראשון.
+      function render(ctx) {
+        if (!session) {
+          menu.innerHTML =
+            '<div class="head">כניסה למערכות more30</div>' +
+            item(LOGIN_URL + '?from=' + back, USER_ICON, 'כניסה',
+                 'חשבון אחד לכל המערכות') +
+            item(LOGIN_URL + '?mode=signup&from=' + back, ADD_ICON, 'הרשמה',
+                 'פתיחת חשבון חדש — לוקח פחות מדקה');
+          return;
+        }
+
+        var label = (ctx && ctx.full_name) || session.label;
+        // בסרגל מוצג השם הפרטי בלבד — "מור מערכות תוכנה" נחתך באמצע מילה
+        // ונראה כמו תקלה. השם המלא מופיע בכותרת התפריט.
+        btn.querySelector('span:last-child').textContent = String(label).split(/\s+/)[0];
+
+        var html =
+          '<div class="head">מחובר כ־' + escapeText(label) + '</div>' +
+          item(ME_URL, USER_ICON, 'האזור האישי', 'החשבון, התוכנית והאתרים שלך');
+
+        // "ניהול" מוצג רק למי שהשרת אישר שהוא מנהל של האתר הזה — סופר-אדמין
+        // גלובלי או אדמין מקומי. עד שהתשובה מגיעה, אין פריט.
+        if (ctx && ctx.is_admin) {
+          html += item(
+            ctx.admin_href || ADMIN_URL, ADMIN_ICON, 'ניהול',
+            ctx.is_super_admin && ctx.app_name
+              ? 'ניהול ' + escapeText(ctx.app_name)
+              : 'ניהול המערכת',
+          );
+        }
+        if (ctx && ctx.is_super_admin) {
+          html += item(ADMIN_URL, ADMIN_ICON, 'מרכז השליטה', 'כל המערכות במקום אחד');
+        }
+
+        // שדרוג מוצג למשתמש רגיל בתוכנית החינמית. למנהל אין מה לשדרג.
+        if (ctx && ctx.plan === 'free' && !ctx.is_super_admin) {
+          html += item(ME_URL + '?upgrade=1', STAR_ICON, 'שדרוג לפרימיום',
+                       'פתיחת כל היכולות בכל המערכות', 'gold');
+        }
+
+        html +=
+          '<div class="sep"></div>' +
+          '<button class="item" role="menuitem" type="button" data-act="signout">' +
+            '<span class="ico">' + EXIT_ICON + '</span>' +
+            '<span>יציאה<span class="sub">מכל מערכות more30</span></span>' +
+          '</button>';
+
+        menu.innerHTML = html;
+
+        var out = menu.querySelector('[data-act="signout"]');
+        if (out) {
+          out.addEventListener('click', function () {
+            out.disabled = true;
+            signOut(session.token);
+          });
+        }
+      }
+
+      render(null);
+
+      // רישום החברות באתר הנוכחי + שאלת ההרשאה, בקריאה אחת. נכשלת בשקט:
+      // תקלת רשת לא אמורה להשאיר את המשתמש בלי כפתור.
+      if (session && session.token) {
+        rpc('more30_join_app', { p_app: location.href }, session.token)
+          .then(function (ctx) { if (ctx && ctx.ok) render(ctx); })
+          .catch(function () {});
+      }
+
       var setOpen = function (open) {
         menu.hidden = !open;
         btn.setAttribute('aria-expanded', open ? 'true' : 'false');
       };
-
-      var out = root.querySelector('[data-act="signout"]');
-      if (out) {
-        out.addEventListener('click', function () {
-          out.disabled = true;
-          signOut(session && session.token);
-        });
-      }
 
       btn.addEventListener('click', function (e) {
         e.stopPropagation();

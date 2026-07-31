@@ -20,7 +20,7 @@ export function PortalShell({ title, subtitle, nav, loginPath, sidebarExtra }: {
   loginPath: string;
   sidebarExtra?: ReactNode;
 }) {
-  const { user, loading, signOut, isDemo } = useAuth();
+  const { user, loading, signOut, isDemo, isAdmin } = useAuth();
   const { theme, toggle } = useTheme();
   const [open, setOpen] = useState(false);
 
@@ -28,6 +28,29 @@ export function PortalShell({ title, subtitle, nav, loginPath, sidebarExtra }: {
     return <div className="grid min-h-screen place-items-center bg-background text-muted-foreground">טוען…</div>;
   }
   if (!user) return <Navigate to={loginPath} replace />;
+  if (isAdmin === null) {
+    return <div className="grid min-h-screen place-items-center bg-background text-muted-foreground">בודקים הרשאה…</div>;
+  }
+  // מחובר אך לא מנהל. מסך מפורש עדיף על שלד ניהול עם טבלאות ריקות, שנראה
+  // כמו תקלה במקום כמו תשובה.
+  if (!isAdmin) {
+    return (
+      <div className="grid min-h-screen place-items-center bg-background p-6 text-center">
+        <div className="max-w-md space-y-4">
+          <h1 className="font-display text-2xl font-bold text-foreground">אין הרשאת ניהול</h1>
+          <p className="text-sm leading-relaxed text-muted-foreground">
+            אתה מחובר כ־<span dir="ltr" className="font-medium">{user.email}</span>, וזה חשבון
+            משתמש רגיל. אזור הניהול פתוח למנהלי המועצה ולסופר-אדמין של הפלטפורמה.
+          </p>
+          <div className="flex flex-wrap justify-center gap-2">
+            <Link to="/" className="rounded-lg bg-secondary px-4 py-2 text-sm font-medium">חזרה לאתר</Link>
+            <a href="https://more30.com/me" className="rounded-lg bg-secondary px-4 py-2 text-sm font-medium">האזור האישי</a>
+            <button onClick={signOut} className="rounded-lg bg-secondary px-4 py-2 text-sm font-medium">יציאה</button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const navLinks = (
     <nav className="flex flex-col gap-1">

@@ -100,6 +100,20 @@
           </div>
         </section>
 
+        <!-- האתרים שהמשתמש חבר בהם. חברות נרשמת באתר שממנו נכנסת, ולכן
+             הרשימה הזו היא בדיוק "לאן יש לי גישה" — ולא כל המערכות. -->
+        <section class="card">
+          <h2>האתרים שלי</h2>
+          <p style="margin:0 0 12px;font-size:14px;color:var(--muted)">
+            כל אתר שנכנסת אליו נרשם כאן. הכניסה משותפת, אבל החברות היא לאתר
+            שנכנסת אליו בלבד.
+          </p>
+          <dl class="rows" id="apps"></dl>
+          <p class="loading" id="appsEmpty" hidden>
+            עדיין לא נכנסת לאף מערכת. <a href="/">בחר מערכת מהרשימה</a>.
+          </p>
+        </section>
+
         <!-- שדרוג לפרימיום. הסליקה עדיין לא קיימת, ולכן הכפתור רושם בקשה
              אמיתית ואומר את האמת על מה שקורה אחריה. -->
         <section class="card" id="planCard">
@@ -195,6 +209,33 @@
         $('vPlan').className = 'tag ' + (premium ? 'premium' : 'free');
         $('freeBlock').hidden = premium;
         $('premiumBlock').hidden = !premium;
+
+        // האתרים שאני חבר בהם — נקרא מהשרת, לא נגזר מהדפדפן.
+        const { data: apps } = await sb.rpc('more30_my_apps');
+        const list = Array.isArray(apps) ? apps : [];
+        if (!list.length) {
+          $('appsEmpty').hidden = false;
+        } else {
+          const ROLE_HE = { member: 'משתמש', manager: 'מנהל תוכן', admin: 'מנהל' };
+          $('apps').innerHTML = list
+            .map((a) => {
+              const name = String(a.name_he || a.app_key).replace(/[&<>"]/g, (c) =>
+                ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c],
+              );
+              const role = ROLE_HE[a.role] || a.role;
+              const link = a.url
+                ? `<a href="${a.url}">${name}</a>`
+                : name;
+              return `<div class="row"><dt>${link}</dt><dd><span class="tag free">${role}</span></dd></div>`;
+            })
+            .join('');
+        }
+
+        // הגעת לכאן מכפתור "שדרוג לפרימיום" שבתפריט — פותחים ישר עליו.
+        if (new URLSearchParams(location.search).get('upgrade') === '1' && !premium) {
+          $('planCard').scrollIntoView({ behavior: 'smooth', block: 'center' });
+          $('upgrade').focus({ preventScroll: true });
+        }
 
         // אם הגעת לכאן מתוך מערכת — כפתור חזרה אליה.
         try {

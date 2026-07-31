@@ -36,7 +36,15 @@ export function createBrowserClient(schema = "public"): SupabaseClient {
   }
   // Cast back to the default-schema client type: `schema` is a runtime string,
   // which widens the inferred SchemaName generic; the factory contract is opaque.
-  return createClient(url, anonKey, { db: { schema } }) as SupabaseClient;
+  return createClient(url, anonKey, {
+    db: { schema },
+    // אחד ויחיד לכל הפלטפורמה. supabase-js שומר את הסשן תחת מפתח שנגזר
+    // מ-project ref, ולכן כל אפליקציה שמשתמשת בברירת המחדל מחזיקה סשן משלה —
+    // וזה בדיוק מה שגרם ל-/admin לבקש התחברות ממי שכבר נכנס ב-/login.
+    // כל 33 המערכות מוגשות מ-more30.com (origin אחד), ולכן מפתח משותף
+    // אחד הופך את הכניסה לאחידה בלי שום תשתית נוספת.
+    auth: { persistSession: true, storageKey: "more30-auth", detectSessionInUrl: true },
+  }) as SupabaseClient;
 }
 
 /**
