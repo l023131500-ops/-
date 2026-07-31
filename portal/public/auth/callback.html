@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>מתחברים… · מור מערכות תוכנה</title>
+    <meta name="description" content="השלמת ההתחברות למערכות מור מערכות תוכנה." />
+    <meta name="robots" content="noindex" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Secular+One&family=Heebo:wght@300;400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        color-scheme: light dark;
+        --bg-1:#1b1f52; --bg-2:#0b0d2e; --card:#fff; --ink:#0b0d2e; --muted:#5c6178;
+        --line:#d9dbe8; --field:#fff; --gold:#c9a227;
+        --err-bg:#fdeaea; --err-ink:#8c1f1f;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg-1:#131634; --bg-2:#06070f; --card:#14172f; --ink:#ece9f5; --muted:#9aa0bd;
+          --line:#2c3054; --field:#0e1128; --err-bg:#3a1414; --err-ink:#ffb4b4;
+        }
+      }
+      *,*::before,*::after{box-sizing:border-box}
+      body{margin:0;min-height:100vh;display:grid;place-items:center;padding:24px;
+        font-family:'Heebo',system-ui,sans-serif;color:var(--ink);
+        background:radial-gradient(1200px 600px at 70% -10%,var(--bg-1) 0%,var(--bg-2) 60%)}
+      .card{width:100%;max-width:430px;background:var(--card);border:1px solid var(--line);
+        border-radius:18px;padding:28px;box-shadow:0 30px 70px rgba(0,0,0,.4)}
+      .brand{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+      .dot{width:12px;height:12px;border-radius:50%;background:var(--gold);flex:none;
+        box-shadow:0 0 0 4px rgba(201,162,39,.25)}
+      h1{font-family:'Secular One',sans-serif;font-size:22px;margin:0}
+      p.lead{margin:6px 0 18px;font-size:14px;color:var(--muted);line-height:1.7}
+      label{display:block;font-size:12px;font-weight:700;margin:14px 0 6px}
+      input{width:100%;padding:11px 13px;border:1px solid var(--line);border-radius:10px;
+        font-size:15px;font-family:inherit;background:var(--field);color:var(--ink);min-height:44px}
+      input:focus{outline:2px solid var(--gold);outline-offset:1px;border-color:transparent}
+      button{width:100%;margin-top:18px;padding:12px;border:0;border-radius:10px;
+        background:var(--ink);color:var(--card);font-family:inherit;font-size:15px;
+        font-weight:700;cursor:pointer;min-height:44px}
+      button:disabled{opacity:.6;cursor:progress}
+      button:focus-visible,a:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+      .msg{margin-top:14px;font-size:13px;line-height:1.7;border-radius:10px;padding:11px 13px;
+        background:var(--err-bg);color:var(--err-ink)}
+      .spinner{width:26px;height:26px;border-radius:50%;border:3px solid var(--line);
+        border-top-color:var(--gold);animation:spin .8s linear infinite;margin:6px 0 2px}
+      @keyframes spin{to{transform:rotate(360deg)}}
+      @media (prefers-reduced-motion:reduce){.spinner{animation:none}}
+      .foot{margin-top:18px;font-size:12px;color:var(--muted);line-height:2}
+      .foot a{color:var(--ink);font-weight:600;display:inline-flex;align-items:center;min-height:24px}
+      [hidden]{display:none !important}
+    </style>
+  </head>
+  <body>
+    <main class="card">
+      <div class="brand"><span class="dot"></span><h1 id="title">מתחברים…</h1></div>
+
+      <section id="waiting">
+        <div class="spinner" role="status" aria-label="מתחברים"></div>
+        <p class="lead">משלימים את ההתחברות ומעבירים אותך לאזור שלך.</p>
+      </section>
+
+      <!-- אונבורדינג: נשאל רק כשאין שם מלא בפרופיל. -->
+      <section id="onboard" hidden>
+        <p class="lead">
+          עוד פרט אחד ונסיים. השם מוצג באזור האישי ובמערכות שאתה עובד בהן.
+        </p>
+        <form id="nameForm" novalidate>
+          <label for="fullName">שם מלא</label>
+          <input id="fullName" name="fullName" type="text" autocomplete="name"
+                 required minlength="2" />
+          <button id="saveName" type="submit">שמירה והמשך</button>
+        </form>
+      </section>
+
+      <section id="failed" hidden>
+        <p class="lead" id="failText"></p>
+        <p class="foot"><a href="/login">חזרה לדף הכניסה</a></p>
+      </section>
+
+      <div id="msg" class="msg" hidden role="status" aria-live="polite"></div>
+    </main>
+
+    <script type="module">
+      // עמוד היעד היחיד שאנחנו נותנים ל-Supabase אחרי OAuth.
+      //
+      // למה זה קיים בכלל: קודם ה-redirect חזר אל **המערכת שממנה נכנסת**, ושם
+      // ה-router של אותה מערכת קיבל כתובת עם פרמטרי אימות שהוא לא מכיר —
+      // ובאפליקציות עם hash-router זה נפל ישר ל-"404 Page Not Found".
+      // עכשיו כל הזרימות נוחתות כאן, במקום אחד שיודע לטפל בהן.
+      import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+      const SUPABASE_URL = 'https://uhnrgujbdxhhmoxcjria.supabase.co';
+      const SUPABASE_ANON =
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVobnJndWpiZHhoaG1veGNqcmlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMzNjE3MjgsImV4cCI6MjA5ODkzNzcyOH0.nHuOhw-WQEU17lNa7XOlORnBhVAYbJBHudKafWkSHBw';
+
+      const sb = createClient(SUPABASE_URL, SUPABASE_ANON, {
+        auth: { persistSession: true, storageKey: 'more30-auth', detectSessionInUrl: true },
+      });
+
+      const $ = (id) => document.getElementById(id);
+      const params = new URLSearchParams(location.search);
+      const hashParams = new URLSearchParams(location.hash.replace(/^#/, ''));
+
+      function fail(text) {
+        $('title').textContent = 'ההתחברות לא הושלמה';
+        $('waiting').hidden = true;
+        $('onboard').hidden = true;
+        $('failed').hidden = false;
+        $('failText').textContent = text;
+      }
+
+      function show(text) {
+        $('msg').textContent = text;
+        $('msg').hidden = false;
+      }
+
+      // לאן ממשיכים: מנהל → מרכז השליטה, כל השאר → האזור האישי.
+      // ההרשאה נקבעת בשרת (more30_is_admin), לא לפי מה שהדפדפן חושב.
+      function destination(profile) {
+        return profile?.is_admin ? '/admin' : '/me';
+      }
+
+      function go(url) {
+        location.replace(url);
+      }
+
+      async function loadProfile() {
+        const { data, error } = await sb.rpc('more30_profile_get');
+        if (error) throw new Error(error.message);
+        return data;
+      }
+
+      async function run() {
+        // שגיאה שחזרה מהספק — להציג אותה, לא מסך תקוע.
+        const err = params.get('error') || hashParams.get('error');
+        if (err) {
+          const d = params.get('error_description') || hashParams.get('error_description') || err;
+          return fail(decodeURIComponent(d.replace(/\+/g, ' ')));
+        }
+
+        // detectSessionInUrl מטפל גם ב-?code= (PKCE) וגם בטוקנים ב-hash.
+        // נותנים לו רגע להשלים לפני שמכריזים על כישלון.
+        let session = null;
+        for (let i = 0; i < 25 && !session; i++) {
+          const { data } = await sb.auth.getSession();
+          session = data?.session ?? null;
+          if (!session) await new Promise((r) => setTimeout(r, 200));
+        }
+        if (!session) {
+          return fail(
+            'לא הצלחנו לאמת את הכניסה. ייתכן שהקישור פג או שנפתח בדפדפן אחר. נסה שוב מדף הכניסה.',
+          );
+        }
+
+        let profile;
+        try {
+          profile = await loadProfile();
+        } catch (e) {
+          return fail('הכניסה הצליחה, אבל טעינת הפרופיל נכשלה: ' + e.message);
+        }
+
+        // כניסה ראשונה — אין שם מלא בפרופיל. Google בדרך כלל מספק שם,
+        // ולכן ממלאים אותו מראש ומבקשים לאשר, במקום לשאול על ריק.
+        // `?edit=1` פותח את אותו טופס גם למי שכבר יש לו שם (מהאזור האישי).
+        const editing = params.get('edit') === '1';
+        if (!profile.full_name || editing) {
+          const meta = session.user.user_metadata || {};
+          $('title').textContent = editing ? 'עדכון שם מלא' : 'ברוך הבא';
+          if (editing) {
+            document.querySelector('#onboard .lead').textContent =
+              'השם מוצג באזור האישי ובמערכות שאתה עובד בהן.';
+          }
+          $('waiting').hidden = true;
+          $('onboard').hidden = false;
+          $('fullName').value = profile.full_name || meta.full_name || meta.name || '';
+          $('fullName').focus();
+
+          $('nameForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            $('msg').hidden = true;
+            const value = $('fullName').value.trim();
+            if (value.length < 2) return show('שם מלא חייב להכיל לפחות שני תווים.');
+            $('saveName').disabled = true;
+            $('saveName').textContent = 'שומרים…';
+            const { data, error } = await sb.rpc('more30_profile_set_name', { p_full_name: value });
+            $('saveName').disabled = false;
+            $('saveName').textContent = 'שמירה והמשך';
+            if (error) return show('שמירת השם נכשלה: ' + error.message);
+            go(destination(data));
+          });
+          return;
+        }
+
+        go(destination(profile));
+      }
+
+      run().catch((e) => fail('אירעה שגיאה בלתי צפויה: ' + e.message));
+    </script>
+  </body>
+</html>

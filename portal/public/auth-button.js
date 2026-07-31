@@ -22,6 +22,7 @@
   var HOME = 'https://more30.com';
   var ADMIN_URL = HOME + '/admin';
   var LOGIN_URL = HOME + '/login';
+  var ME_URL = HOME + '/me';
 
   // כל המערכות מוגשות תחת more30.com (ניתוב בנתיבים, לא בתת-דומיינים), ולכן
   // הן חולקות origin אחד — והסשן שנוצר ב-/login נגיש מכל מערכת כמו שהוא.
@@ -139,8 +140,15 @@
           '<span>כניסת ניהול<span class="sub">מרכז השליטה של הפלטפורמה</span></span>' +
         '</a>';
 
+      var meItem =
+        '<a class="item" role="menuitem" href="' + ME_URL + '">' +
+          '<span class="ico">' + USER_ICON + '</span>' +
+          '<span>האזור האישי<span class="sub">החשבון, התוכנית וההיסטוריה שלך</span></span>' +
+        '</a>';
+
       var menuInner = session
         ? '<div class="head">מחובר כ־' + escapeText(session.label) + '</div>' +
+          meItem +
           adminItem +
           '<div class="sep"></div>' +
           '<button class="item" role="menuitem" type="button" data-act="signout">' +

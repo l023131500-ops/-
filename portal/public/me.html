@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>האזור האישי · מור מערכות תוכנה</title>
+    <meta name="description" content="האזור האישי שלך במור מערכות תוכנה — הפרטים שלך, סוג החשבון, והמערכות הפתוחות לכניסה." />
+    <meta name="robots" content="noindex" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Secular+One&family=Frank+Ruhl+Libre:wght@300;400&family=Heebo:wght@300;400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        color-scheme: light dark;
+        --paper:#fdfdfc; --ink:#141619; --muted:#5c6178; --line:#e4e4e0;
+        --card:#fff; --gold:#c9a227; --accent:#0b0d2e;
+        --ok-bg:#e9f7ef; --ok-ink:#15603a; --err-bg:#fdeaea; --err-ink:#8c1f1f;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --paper:#0c0d10; --ink:#ece9f5; --muted:#9aa0bd; --line:#25283c;
+          --card:#14172f; --accent:#ece9f5;
+          --ok-bg:#10301f; --ok-ink:#86e0ae; --err-bg:#3a1414; --err-ink:#ffb4b4;
+        }
+      }
+      *,*::before,*::after{box-sizing:border-box}
+      body{margin:0;min-height:100vh;background:var(--paper);color:var(--ink);
+        font-family:'Heebo',system-ui,sans-serif;line-height:1.6}
+      .wrap{max-width:820px;margin:0 auto;padding:32px 20px 64px}
+      header{display:flex;align-items:center;justify-content:space-between;gap:16px;
+        padding-bottom:20px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+      .brand{display:flex;align-items:center;gap:10px}
+      .dot{width:11px;height:11px;border-radius:50%;background:var(--gold);flex:none;
+        box-shadow:0 0 0 4px rgba(201,162,39,.22)}
+      .brand span{font-size:13px;color:var(--muted)}
+      h1{font-family:'Secular One',sans-serif;font-size:clamp(30px,6vw,46px);margin:26px 0 4px;line-height:1.15}
+      .sub{font-family:'Frank Ruhl Libre',serif;font-weight:300;font-size:17px;color:var(--muted);margin:0 0 28px}
+      .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px;margin-bottom:18px}
+      .card h2{font-family:'Secular One',sans-serif;font-size:19px;margin:0 0 14px}
+      .rows{display:grid;gap:12px}
+      .row{display:flex;justify-content:space-between;gap:16px;align-items:baseline;
+        padding-bottom:10px;border-bottom:1px solid var(--line)}
+      .row:last-child{border-bottom:0;padding-bottom:0}
+      .row dt{font-size:13px;color:var(--muted);margin:0}
+      .row dd{margin:0;font-weight:600;text-align:end;word-break:break-word}
+      .tag{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:4px 12px;
+        font-size:12px;font-weight:700;border:1px solid var(--line)}
+      .tag.admin{background:var(--accent);color:var(--card);border-color:transparent}
+      .tag.free{background:transparent;color:var(--muted)}
+      .tag.premium{background:var(--gold);color:#141619;border-color:transparent}
+      ul.feat{margin:0;padding-inline-start:20px;color:var(--muted);font-size:14px}
+      ul.feat li{margin-bottom:6px}
+      .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;
+        border:0;border-radius:10px;padding:12px 20px;min-height:44px;cursor:pointer;
+        font-family:inherit;font-size:15px;font-weight:700;text-decoration:none;
+        background:var(--accent);color:var(--card)}
+      .btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+      .btn:disabled{opacity:.6;cursor:progress}
+      .btn:focus-visible,a:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+      .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+      .note{margin-top:14px;font-size:13px;border-radius:10px;padding:11px 13px;line-height:1.7}
+      .note.ok{background:var(--ok-bg);color:var(--ok-ink)}
+      .note.err{background:var(--err-bg);color:var(--err-ink)}
+      .loading{color:var(--muted);font-size:14px}
+      [hidden]{display:none !important}
+      footer{margin-top:28px;font-size:13px;color:var(--muted)}
+      footer a{color:var(--ink);font-weight:600;display:inline-flex;align-items:center;min-height:24px}
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header>
+        <div class="brand"><span class="dot"></span><span>מור מערכות תוכנה</span></div>
+        <div class="actions" style="margin:0">
+          <a class="btn ghost" href="/">כל המערכות</a>
+          <button class="btn ghost" id="signout" type="button">יציאה</button>
+        </div>
+      </header>
+
+      <p class="loading" id="loading">טוען את האזור האישי…</p>
+
+      <main id="content" hidden>
+        <h1 id="hello">האזור האישי</h1>
+        <p class="sub" id="tagline">הפרטים שלך, סוג החשבון, והמערכות שפתוחות לך.</p>
+
+        <section class="card">
+          <h2>החשבון שלי</h2>
+          <dl class="rows">
+            <div class="row"><dt>שם מלא</dt><dd id="vName">—</dd></div>
+            <div class="row"><dt>כתובת אימייל</dt><dd id="vEmail">—</dd></div>
+            <div class="row"><dt>סוג חשבון</dt><dd id="vRole">—</dd></div>
+          </dl>
+          <div class="actions">
+            <a class="btn ghost" href="/auth/callback?edit=1" id="editName">עדכון שם מלא</a>
+            <a class="btn" href="/admin" id="toAdmin" hidden>מרכז השליטה</a>
+            <a class="btn ghost" id="backTo" hidden>חזרה למערכת</a>
+          </div>
+        </section>
+
+        <!-- שדרוג לפרימיום. הסליקה עדיין לא קיימת, ולכן הכפתור רושם בקשה
+             אמיתית ואומר את האמת על מה שקורה אחריה. -->
+        <section class="card" id="planCard">
+          <h2>התוכנית שלי</h2>
+          <p style="margin:0 0 14px"><span class="tag" id="vPlan">—</span></p>
+
+          <div id="freeBlock">
+            <p style="margin:0 0 10px;font-size:14px;color:var(--muted)">
+              החשבון החינמי פותח את כל המערכות הציבוריות, בלי הגבלת זמן.
+              פרימיום מיועד למי שעובד עם המערכות באופן קבוע:
+            </p>
+            <ul class="feat">
+              <li>נפח עבודה מוגדל — תמלול, הפקת דוחות ועיבוד קבצים</li>
+              <li>שמירת היסטוריה מלאה ואזור אישי חוצה-מערכות</li>
+              <li>ייצוא והורדות בלי הגבלה</li>
+              <li>עדיפות בתור העיבוד ותמיכה ישירה</li>
+            </ul>
+            <div class="actions">
+              <button class="btn" id="upgrade" type="button">שדרוג לפרימיום</button>
+            </div>
+            <p class="note" id="upgradeNote" hidden></p>
+          </div>
+
+          <div id="premiumBlock" hidden>
+            <p style="margin:0;font-size:14px;color:var(--muted)">
+              החשבון שלך פרימיום. כל המערכות פתוחות בנפח המלא.
+            </p>
+          </div>
+        </section>
+
+        <footer>
+          יש שאלה או תקלה? <a href="/">חזרה לעולם הסטארטאפים</a>
+        </footer>
+      </main>
+
+      <main id="anon" hidden>
+        <h1>האזור האישי</h1>
+        <p class="sub">צריך להתחבר כדי לראות את האזור האישי שלך.</p>
+        <a class="btn" href="/login?from=https%3A%2F%2Fmore30.com%2Fme">כניסה</a>
+      </main>
+    </div>
+
+    <script type="module">
+      import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+      const SUPABASE_URL = 'https://uhnrgujbdxhhmoxcjria.supabase.co';
+      const SUPABASE_ANON =
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVobnJndWpiZHhoaG1veGNqcmlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMzNjE3MjgsImV4cCI6MjA5ODkzNzcyOH0.nHuOhw-WQEU17lNa7XOlORnBhVAYbJBHudKafWkSHBw';
+
+      const sb = createClient(SUPABASE_URL, SUPABASE_ANON, {
+        auth: { persistSession: true, storageKey: 'more30-auth' },
+      });
+
+      const $ = (id) => document.getElementById(id);
+
+      function note(el, text, kind) {
+        el.textContent = text;
+        el.className = 'note ' + kind;
+        el.hidden = false;
+      }
+
+      (async function () {
+        const { data: s } = await sb.auth.getSession();
+        if (!s?.session) {
+          $('loading').hidden = true;
+          $('anon').hidden = false;
+          return;
+        }
+
+        const { data: profile, error } = await sb.rpc('more30_profile_get');
+        $('loading').hidden = true;
+        if (error) {
+          $('anon').hidden = false;
+          return;
+        }
+        $('content').hidden = false;
+
+        const name = profile.full_name || '';
+        $('hello').textContent = name ? `שלום, ${name}` : 'האזור האישי';
+        $('vName').textContent = name || 'לא הוזן';
+        $('vEmail').textContent = profile.email || 'לא זמין';
+
+        if (profile.is_admin) {
+          $('vRole').innerHTML = '<span class="tag admin">ניהול</span>';
+          $('toAdmin').hidden = false;
+          $('tagline').textContent = 'חשבון ניהול — גישה מלאה למרכז השליטה של הפלטפורמה.';
+        } else {
+          $('vRole').innerHTML = '<span class="tag free">משתמש</span>';
+        }
+
+        const premium = profile.plan === 'premium';
+        $('vPlan').textContent = premium ? 'פרימיום' : 'חינמי';
+        $('vPlan').className = 'tag ' + (premium ? 'premium' : 'free');
+        $('freeBlock').hidden = premium;
+        $('premiumBlock').hidden = !premium;
+
+        // אם הגעת לכאן מתוך מערכת — כפתור חזרה אליה.
+        try {
+          const back = sessionStorage.getItem('more30-return-to');
+          if (back && back.startsWith('https://more30.com/')) {
+            $('backTo').href = back;
+            $('backTo').hidden = false;
+          }
+        } catch {}
+
+        $('upgrade').addEventListener('click', async () => {
+          $('upgrade').disabled = true;
+          $('upgrade').textContent = 'רושמים…';
+          const { data, error } = await sb.rpc('more30_request_upgrade', {
+            p_from_path: location.pathname,
+          });
+          $('upgrade').disabled = false;
+          $('upgrade').textContent = 'שדרוג לפרימיום';
+          if (error) {
+            note($('upgradeNote'), 'רישום הבקשה נכשל: ' + error.message, 'err');
+            return;
+          }
+          note(
+            $('upgradeNote'),
+            data?.already
+              ? 'בקשת השדרוג שלך כבר רשומה. הסליקה (נדרים פלוס) עדיין לא נפתחה — ניצור קשר ברגע שהיא תיפתח.'
+              : 'הבקשה נרשמה. הסליקה (נדרים פלוס) עדיין לא נפתחה, ולכן לא בוצע חיוב — ניצור קשר ברגע שהיא תיפתח.',
+            'ok',
+          );
+        });
+
+        $('signout').addEventListener('click', async () => {
+          await sb.auth.signOut();
+          location.href = '/';
+        });
+      })();
+    </script>
+  </body>
+</html>

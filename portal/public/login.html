@@ -178,6 +178,20 @@
       const params = new URLSearchParams(location.search);
       const back = params.get('from');
 
+      // כל זרימות הכניסה — סיסמה וגם Google — נוחתות באותו עמוד אחד.
+      // קודם ה-redirect של Google חזר אל המערכת שממנה נכנסת, וה-router שלה
+      // לא הכיר את פרמטרי האימות; באפליקציות עם hash-router זה נפל ישר
+      // ל-"404 Page Not Found". עכשיו יש יעד אחד שיודע לטפל בזה ולנתב הלאה.
+      const CALLBACK = '/auth/callback';
+
+      // לאן המשתמש רצה לחזור — נשמר כאן ונקרא אחרי הכניסה (שורד את
+      // המעבר ל-Google וחזרה, כי זו אותה לשונית ואותו origin).
+      try {
+        if (back && back.startsWith('https://more30.com/')) {
+          sessionStorage.setItem('more30-return-to', back);
+        }
+      } catch {}
+
       function show(text, kind) {
         msg.textContent = text;
         msg.className = 'msg ' + kind;
@@ -212,22 +226,17 @@
         msg.hidden = true;
         const { error } = await sb.auth.signInWithOAuth({
           provider: 'google',
-          options: { redirectTo: back || location.origin + '/login' },
+          options: { redirectTo: location.origin + CALLBACK },
         });
         if (error) show('הכניסה עם Google נכשלה: ' + error.message, 'err');
       });
 
+      // כבר מחובר — אין טעם להציג טופס כניסה. שולחים לניתוב, שיחליט
+      // לפי ההרשאה לאן ללכת (ניהול / אזור אישי / השלמת שם).
       async function refresh() {
         const { data } = await sb.auth.getUser();
         if (!data?.user) return;
-        const u = data.user;
-        const label = u.user_metadata?.username || u.email;
-        form.style.display = 'none';
-        googleBtn.style.display = 'none';
-        or.style.display = 'none';
-        who.style.display = 'block';
-        whoText.textContent = `מחובר כ־${label}.` + (back ? ' מחזירים אותך למערכת…' : '');
-        if (back) setTimeout(() => { location.href = back; }, 1200);
+        location.replace(CALLBACK);
       }
 
       form.addEventListener('submit', async (e) => {
@@ -253,7 +262,7 @@
           return;
         }
         show('נכנסת בהצלחה.', 'ok');
-        refresh();
+        location.replace(CALLBACK);
       });
 
       document.getElementById('signout').addEventListener('click', async () => {
