@@ -2516,3 +2516,49 @@ UX/QA (4), עיצוב/מצב-כהה (5). לכן הציון המקסימלי הי
 
 **ראיות:** `QA/auth.md` + 4 צילומי מסך ב-`QA/auth/`. זו תיקיית ה-QA הראשונה
 בפרויקט — סעיף 4 של §2 היה עד היום ריק לחלוטין.
+
+## ✅ 31/07 — Google SSO הופעל בהאב · הזהות המרכזית הוכרעה במדידה
+
+### ההכרעה: איפה יושב auth.users המרכזי
+שני מועמדים. שלוש מדידות הכריעו לטובת **ההאב `uhnrgujbdxhhmoxcjria`**:
+- מזהה ה-OAuth שהתקבל **מקבל** את ה-callback של ההאב, ומחזיר
+  **`redirect_uri_mismatch`** ל-`bieebmnm`.
+- ההאב מחזיק 14 משתמשים מאומתים, את `eueu1234`, את `l023131500@gmail.com`,
+  את `core.*`, את `core.secrets`, את `/login`, את `/admin` ואת הכפתור המשותף.
+- `bieebmnm` הוא **מסד הסליקה החיה** של igud-ads, ואין לנו אליו מפתח כתיבה תקף.
+
+### 🔴 שתי טעויות בפרטים שהתקבלו — נתפסו לפני שנגעתי במשהו
+1. **`bieebmnnkffwbqlsfozh` אינו קיים** — ה-DNS לא נפתר. הפרויקט האמיתי הוא
+   **`bieebmnm`kffwbqlsfozh** (`m` ולא `n` בתו השמיני). ה-redirect שרשום
+   ב-Google Cloud לפרויקט הישן מצביע לשום מקום.
+2. **ה-`service_role` של `bieebmnm` שנשמר ב-4 קבצי `.env` — פג.** נמדד
+   `Invalid API key` מול admin API; ה-anon של אותו פרויקט כן עובד. כל תיעוד
+   קודם שהניח שיש לנו כתיבה ל-`bieebmnm` (כולל טבלת המפתחות בסבב 26/07)
+   **אינו נכון יותר**.
+
+### מה בוצע — Management API (PAT נשמר ב-core.secrets)
+`external_google_enabled=true` · `client_id` · `secret` ·
+`site_url=https://more30.com` · `uri_allow_list=https://more30.com/**,https://more30.com`.
+(שני האחרונים כבר היו נכונים — אומתו ולא שונו.) הפרויקט היה ACTIVE_HEALTHY,
+לא נדרש resume. שלושת הסודות שהתקבלו נשמרו ב-`core.secrets` scope=global.
+
+### ✅ אימות — Playwright, פרודקשן
+| בדיקה | תוצאה |
+|---|---|
+| `/auth/v1/settings` | `providers ON: google, email` |
+| הכפתור בדף הכניסה | **הופיע מעצמו — בלי בנייה ובלי פריסה מחדש** |
+| לחיצה | מסך הכניסה **האמיתי** של Google |
+| `client_id` · `redirect_uri` | שלנו · callback של ההאב |
+| `redirect_uri_mismatch` | **אין** |
+| נתיב חזרה | `redirect_to=https://more30.com/nadlan` נשמר |
+| `/auth/v1/callback` | **303 → `https://more30.com`** — הלולאה לא נופלת על supabase.co שנטפרי חוסמת |
+
+### ⚠️ מה לא אומת
+**כניסת Google לא הושלמה עד הסוף** — השלב הבא הוא הקלדת סיסמת ה-Gmail,
+שאין לי ולא צריכה להיות לי. אומתה כל הלולאה חוץ מזה. `NEEDS_USER` §0.
+החשבון לא ייכפל: `security_manual_linking_enabled=false` → Google יקושר
+ל-`l023131500@gmail.com` הקיים וישמור על הרשאת הניהול.
+
+### נפתח מהמדידה: שני מאגרי משתמשים
+01/02/03/18 עדיין מאמתים מול `bieebmnm`. איחוד להאב = עבודה אמיתית בתוך
+מערכות עם סליקה חיה, ולכן לא התחלתי. `NEEDS_USER` §0.
