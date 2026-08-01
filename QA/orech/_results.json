@@ -1,0 +1,17 @@
+{
+  "homeCards": [
+    "המסמכים שלי",
+    "המרת כתב יד (HTR)",
+    "אימות מקורות וציטוטים"
+  ],
+  "uploadZoneBeforeLogin": 1,
+  "loginPrompt": 1,
+  "afterLoginUrl": "https://more30.com/me",
+  "signedInAs": null,
+  "filters": [],
+  "afterUploadUrl": "https://more30.com/orech/documents",
+  "editorHasText": "",
+  "docTitle": null,
+  "error": "locator.click: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('.editor-input')\u001b[22m\n",
+  "consoleErrors": []
+}
