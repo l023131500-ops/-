@@ -47,6 +47,7 @@
     { "source": "/briut", "destination": "https://briut-more30.vercel.app/briut" },
     { "source": "/briut/:path*", "destination": "https://briut-more30.vercel.app/briut/:path*" },
     { "source": "/nadlan", "destination": "https://nadlan-more30.vercel.app/nadlan" },
+    { "source": "/nadlan/", "destination": "https://nadlan-more30.vercel.app/nadlan/" },
     { "source": "/nadlan/:path*", "destination": "https://nadlan-more30.vercel.app/nadlan/:path*" },
     { "source": "/api/image", "destination": "https://nadlan-more30.vercel.app/nadlan/api/image" },
     { "source": "/mechiron", "destination": "https://mechiron-more30.vercel.app/mechiron" },
