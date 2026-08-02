@@ -1,0 +1,1295 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>נדל״ן פרו — מערכת ניהול למתווכים · מור מערכות תוכנה</title>
+<meta name="description" content="לידים, נכסים, עסקאות, עמלות וחוזים — במקום אחד." />
+<meta name="robots" content="noindex, nofollow" />
+<meta name="theme-color" content="#0B0D2E" />
+<link rel="manifest" href="/tivuch/manifest.webmanifest" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Suez+One&family=Secular+One&family=Heebo:wght@300;400;500;700&display=swap"
+      rel="stylesheet" media="print" onload="this.media='all'" />
+<noscript><link href="https://fonts.googleapis.com/css2?family=Suez+One&family=Secular+One&family=Heebo:wght@300;400;500;700&display=swap" rel="stylesheet" /></noscript>
+<script src="https://more30.com/auth-button.js" defer></script>
+<style>
+:root{
+  color-scheme: dark;
+  --royal:#0B0D2E; --royal-2:#12153F; --violet:#241B54;
+  --gold:#C9A227; --gold-soft:#E3C765; --emerald:#14B88A; --rose:#E0574E; --amber:#E0A32E;
+  --ink:#ECE9F5; --ink-2:#B9B6D6; --muted:#8E8BB2;
+  --line:rgba(201,162,39,.20); --line-2:rgba(236,233,245,.10);
+  --wrap:1400px; --ease:cubic-bezier(.22,.61,.36,1);
+}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--royal);color:var(--ink);
+  font-family:'Heebo',system-ui,-apple-system,'Segoe UI',sans-serif;font-weight:300;line-height:1.65;
+  -webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+.display{font-family:'Suez One','Heebo',sans-serif;font-weight:400}
+.name{font-family:'Secular One','Heebo',sans-serif;font-weight:400}
+.wrap{max-width:var(--wrap);margin:0 auto;padding:0 28px}
+.skip{position:absolute;inset-inline-start:-9999px;top:0;background:var(--gold);color:var(--royal);padding:12px 20px;z-index:100}
+.skip:focus{inset-inline-start:0}
+[hidden]{display:none !important}
+
+/* Nav. The shared login pill is fixed top-inline-end; the bar reserves that
+   room via --more30-auth-inset instead of letting the pill cover a control. */
+.nav{position:sticky;top:0;z-index:50;background:rgba(11,13,46,.92);
+  backdrop-filter:blur(10px);border-bottom:1px solid var(--line-2)}
+.nav-in{max-width:var(--wrap);margin:0 auto;padding:12px 28px;display:flex;align-items:center;
+  gap:22px;padding-inline-end:calc(28px + var(--more30-auth-inset, 112px))}
+.wordmark{font-family:'Secular One',sans-serif;font-size:16px;white-space:nowrap}
+.wordmark span{color:var(--gold)}
+.tabs{display:flex;gap:4px;flex-wrap:wrap;flex:1}
+.tab{font-family:'Heebo',sans-serif;font-size:14px;padding:7px 14px;border-radius:999px;
+  border:1px solid transparent;background:transparent;color:var(--ink-2);cursor:pointer}
+.tab:hover{color:var(--gold-soft);border-color:var(--line-2)}
+.tab[aria-current="page"]{background:var(--gold);color:var(--royal);font-weight:500}
+.tab:focus-visible{outline:2px solid var(--gold-soft);outline-offset:2px}
+.office-pick{font-size:13px;padding:7px 10px;background:rgba(236,233,245,.06);
+  color:var(--ink);border:1px solid var(--line-2);border-radius:4px;max-width:200px}
+
+/* Controls */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;
+  font-family:'Heebo',sans-serif;font-size:14px;font-weight:400;padding:9px 18px;
+  border:1px solid var(--gold);border-radius:3px;background:var(--gold);color:var(--royal);
+  cursor:pointer;transition:background .2s var(--ease),color .2s var(--ease)}
+.btn:hover{background:transparent;color:var(--gold-soft);box-shadow:0 0 0 1px var(--gold) inset}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn:focus-visible{outline:3px solid var(--gold-soft);outline-offset:2px}
+.btn-quiet{background:transparent;color:var(--ink);border-color:var(--line-2)}
+.btn-quiet:hover{color:var(--gold-soft);border-color:var(--gold);box-shadow:none}
+.btn-sm{padding:6px 12px;font-size:13px}
+.btn-danger{border-color:rgba(224,87,78,.6);background:transparent;color:#F0A9A3}
+.btn-danger:hover{background:rgba(224,87,78,.12);color:#F0A9A3;box-shadow:none}
+
+label.f{display:flex;flex-direction:column;gap:5px;font-size:12px;color:var(--muted);
+  letter-spacing:.06em;font-weight:500}
+input,select,textarea{font-family:'Heebo',sans-serif;font-size:14px;font-weight:300;
+  padding:9px 12px;background:rgba(236,233,245,.05);color:var(--ink);
+  border:1px solid var(--line-2);border-radius:3px;width:100%}
+textarea{min-height:80px;resize:vertical;line-height:1.6}
+input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
+select option{background:var(--royal-2);color:var(--ink)}
+.form-grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.form-grid .span2{grid-column:1/-1}
+.controls{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;margin-bottom:20px}
+.controls .f{min-width:170px}
+.spacer{flex:1}
+
+/* Page */
+.panel{padding:28px 0 80px}
+h1.page{font-size:clamp(24px,3.4vw,34px);margin:0 0 6px}
+.sub{color:var(--ink-2);font-size:15px;margin:0 0 24px;max-width:70ch}
+h2.sec{font-family:'Secular One',sans-serif;font-weight:400;font-size:18px;margin:30px 0 12px}
+
+/* KPI tiles */
+.kpis{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(165px,1fr))}
+.kpi{background:rgba(236,233,245,.035);border:1px solid var(--line-2);border-radius:4px;padding:16px 18px}
+.kpi .k{font-size:11px;letter-spacing:.14em;color:var(--muted);margin:0 0 6px}
+.kpi .v{font-family:'Suez One',serif;font-size:26px;margin:0;line-height:1.1;font-variant-numeric:tabular-nums}
+.kpi .v.warn{color:var(--amber)}
+.kpi .v.good{color:var(--emerald)}
+.kpi .n{font-size:12px;color:var(--muted);margin:4px 0 0}
+
+/* Pipeline board */
+.board{display:grid;gap:12px;grid-template-columns:repeat(7,minmax(190px,1fr));
+  overflow-x:auto;padding-bottom:14px;align-items:start}
+.col{background:rgba(236,233,245,.03);border:1px solid var(--line-2);border-radius:5px;
+  padding:10px;min-height:130px}
+.col.drop{border-color:var(--gold);background:rgba(201,162,39,.09)}
+.col h3{font-family:'Secular One',sans-serif;font-weight:400;font-size:14px;margin:0 0 4px;
+  display:flex;justify-content:space-between;align-items:baseline;gap:6px}
+.col h3 .c{font-size:12px;color:var(--muted);font-family:'Heebo',sans-serif}
+.col .sum{font-size:11px;color:var(--gold);margin:0 0 10px;font-variant-numeric:tabular-nums}
+.card{background:var(--royal-2);border:1px solid var(--line-2);border-radius:4px;
+  padding:11px 12px;margin-bottom:8px;cursor:grab;font-size:13px}
+.card:hover{border-color:var(--gold)}
+.card:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
+.card.dragging{opacity:.4}
+.card .t{font-weight:500;color:var(--ink);margin:0 0 4px;font-size:13px}
+.card .m{margin:0;color:var(--muted);font-size:12px}
+.card .p{margin:5px 0 0;color:var(--gold-soft);font-variant-numeric:tabular-nums;font-size:12px}
+
+/* Tables */
+.table-scroll{overflow-x:auto;border:1px solid var(--line-2);border-radius:4px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:start;padding:11px 14px;border-bottom:1px solid var(--line-2);vertical-align:top}
+th{font-family:'Secular One',sans-serif;font-weight:400;font-size:12px;color:var(--gold);
+  letter-spacing:.05em;white-space:nowrap;background:rgba(236,233,245,.03)}
+tbody tr:last-child td{border-bottom:0}
+tbody tr.row{cursor:pointer}
+tbody tr.row:hover{background:rgba(236,233,245,.03)}
+td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+
+.pill{display:inline-block;font-size:11px;padding:2px 9px;border-radius:999px;
+  border:1px solid var(--line-2);color:var(--ink-2);white-space:nowrap}
+.pill.on{border-color:rgba(20,184,138,.5);color:var(--emerald)}
+.pill.off{color:var(--muted)}
+.pill.hot{border-color:rgba(224,163,46,.55);color:var(--amber)}
+
+/* Drawer */
+.scrim{position:fixed;inset:0;background:rgba(4,5,20,.66);z-index:200;
+  display:flex;justify-content:flex-start}
+.drawer{background:var(--royal-2);width:min(680px,100%);height:100%;overflow-y:auto;
+  border-inline-end:1px solid var(--line);padding:24px 26px 60px;
+  box-shadow:8px 0 40px rgba(0,0,0,.4)}
+.drawer h2{font-family:'Suez One',serif;font-weight:400;font-size:23px;margin:0 0 4px}
+.drawer .dsub{color:var(--muted);font-size:14px;margin:0 0 20px}
+.drawer-head{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;margin-bottom:6px}
+.x{background:transparent;border:1px solid var(--line-2);color:var(--ink-2);width:32px;height:32px;
+  border-radius:50%;cursor:pointer;font-size:17px;line-height:1;flex:none}
+.x:hover{border-color:var(--gold);color:var(--gold-soft)}
+.x:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+
+.facts{display:flex;flex-wrap:wrap;gap:20px;padding:14px 16px;margin:0 0 20px;
+  border:1px solid var(--line);border-radius:4px;background:rgba(201,162,39,.04)}
+.facts .k{font-size:11px;letter-spacing:.12em;color:var(--muted);margin:0}
+.facts .v{font-family:'Secular One',sans-serif;font-size:16px;margin:2px 0 0}
+
+.check{list-style:none;padding:0;margin:0}
+.check li{display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:1px solid var(--line-2)}
+.check li:last-child{border-bottom:0}
+.check input[type=checkbox]{width:17px;height:17px;margin-top:2px;flex:none;accent-color:var(--gold)}
+.check .lb{font-size:14px}
+.check .done .lb{color:var(--muted);text-decoration:line-through}
+.check .when{font-size:11px;color:var(--muted);display:block}
+
+.timeline{list-style:none;padding:0;margin:0}
+.timeline li{padding:10px 0;border-bottom:1px solid var(--line-2);font-size:14px}
+.timeline li:last-child{border-bottom:0}
+.timeline .w{font-size:12px;color:var(--muted)}
+
+/* States */
+.empty{border:1px dashed var(--line);border-radius:4px;padding:30px;text-align:center;
+  color:var(--ink-2);background:rgba(236,233,245,.02)}
+.empty b{display:block;color:var(--ink);font-family:'Secular One',sans-serif;
+  font-weight:400;margin-bottom:6px;font-size:16px}
+.empty .why{font-size:13px;color:var(--muted);margin-top:8px}
+.err{border:1px solid rgba(224,87,78,.5);background:rgba(224,87,78,.08);border-radius:4px;
+  padding:14px 18px;color:var(--ink-2);font-size:14px;margin-bottom:16px}
+.note{border:1px solid var(--line);background:rgba(201,162,39,.06);border-radius:4px;
+  padding:14px 18px;color:var(--ink-2);font-size:14px;margin-bottom:16px}
+.na{color:var(--muted)}
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid var(--line-2);
+  border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite;
+  vertical-align:-2px;margin-inline-end:7px}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.spinner{animation-duration:2s}}
+.loading{color:var(--muted);font-size:14px}
+
+.toast{position:fixed;inset-block-end:22px;inset-inline-start:22px;z-index:400;
+  background:var(--royal-2);border:1px solid var(--gold);border-radius:4px;
+  padding:12px 18px;font-size:14px;box-shadow:0 10px 30px rgba(0,0,0,.4);max-width:min(420px,90vw)}
+.toast.bad{border-color:var(--rose)}
+
+@media(max-width:900px){
+  .board{grid-template-columns:repeat(7,minmax(170px,1fr))}
+  .nav-in{flex-wrap:wrap}
+}
+@media(max-width:600px){
+  .wrap{padding:0 14px}
+  .nav-in{padding:10px 14px;padding-inline-end:calc(14px + var(--more30-auth-inset,104px))}
+  .drawer{padding:18px 16px 60px}
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">דילוג לתוכן הראשי</a>
+
+<nav class="nav">
+  <div class="nav-in">
+    <a class="wordmark" href="/tivuch">נדל״ן<span> פרו</span></a>
+    <div class="tabs" id="tabs" hidden>
+      <button class="tab" data-view="dash"      aria-current="page">לוח מחוונים</button>
+      <button class="tab" data-view="board">צינור עסקאות</button>
+      <button class="tab" data-view="contacts">אנשי קשר</button>
+      <button class="tab" data-view="properties">נכסים</button>
+      <button class="tab" data-view="tasks">משימות</button>
+    </div>
+    <select class="office-pick" id="officePick" hidden aria-label="בחירת משרד"></select>
+  </div>
+</nav>
+
+<main id="main">
+  <section class="panel" id="booting">
+    <div class="wrap"><p class="loading"><span class="spinner"></span>בודק הרשאה…</p></div>
+  </section>
+
+  <!-- No office yet: the one screen that must exist before anything else. -->
+  <section class="panel" id="viewSetup" hidden>
+    <div class="wrap" style="max-width:640px">
+      <h1 class="page display">פתיחת משרד</h1>
+      <p class="sub">
+        המערכת מאורגנת סביב משרד. מי שפותח אותו הוא הבעלים, ויכול לצרף אליו
+        מתווכים בהמשך. אפשר לשנות את כל הפרטים אחר כך.
+      </p>
+      <div id="setupErr"></div>
+      <div class="form-grid">
+        <label class="f span2">שם המשרד<input id="oName" placeholder="למשל: תיווך הגליל" /></label>
+        <label class="f">מספר רישיון תיווך
+          <input id="oLicense" placeholder="לא חובה עכשיו" /></label>
+        <label class="f">עיר<input id="oCity" /></label>
+        <label class="f">טלפון<input id="oPhone" /></label>
+        <label class="f">דוא״ל<input id="oEmail" type="email" /></label>
+      </div>
+      <p class="sub" style="margin:16px 0 0;font-size:13px">
+        מספר הרישיון מופיע בכל הצעה וחוזה שהמערכת מפיקה, לפי כללי האתיקה 2024.
+        אפשר להשלים אותו בהגדרות לפני הפקת המסמך הראשון.
+      </p>
+      <p style="margin-top:18px"><button class="btn" id="oCreate">פתח משרד</button></p>
+    </div>
+  </section>
+
+  <section class="panel" id="viewDash" hidden>
+    <div class="wrap">
+      <h1 class="page display">לוח מחוונים</h1>
+      <p class="sub" id="dashSub"></p>
+      <div id="dashBody"></div>
+    </div>
+  </section>
+
+  <section class="panel" id="viewBoard" hidden>
+    <div class="wrap">
+      <h1 class="page display">צינור עסקאות</h1>
+      <p class="sub">גרור כרטיס בין עמודות כדי לקדם עסקה. כל מעבר נשמר עם השעה שבה קרה.</p>
+      <div class="controls">
+        <button class="btn" id="newDeal">+ עסקה חדשה</button>
+      </div>
+      <div id="boardBody"></div>
+    </div>
+  </section>
+
+  <section class="panel" id="viewContacts" hidden>
+    <div class="wrap">
+      <h1 class="page display">אנשי קשר</h1>
+      <p class="sub">קונים, מוכרים, שוכרים ומשכירים — עם היסטוריה מלאה וקריטריוני חיפוש.</p>
+      <div class="controls">
+        <label class="f">חיפוש<input type="search" id="cQ" placeholder="שם, טלפון או דוא״ל" /></label>
+        <label class="f">סוג
+          <select id="cKind">
+            <option value="">הכל</option><option value="buyer">קונה</option>
+            <option value="seller">מוכר</option><option value="renter">שוכר</option>
+            <option value="landlord">משכיר</option><option value="other">אחר</option>
+          </select></label>
+        <label class="f">מקור ליד
+          <select id="cSource">
+            <option value="">הכל</option><option value="website_form">טופס באתר</option>
+            <option value="consumer_report">דוח נכס</option><option value="manual">ידני</option>
+            <option value="import">ייבוא</option><option value="referral">הפניה</option>
+            <option value="portal">פורטל</option><option value="other">אחר</option>
+          </select></label>
+        <span class="spacer"></span>
+        <button class="btn" id="newContact">+ איש קשר</button>
+      </div>
+      <div id="contactsBody"></div>
+    </div>
+  </section>
+
+  <section class="panel" id="viewProperties" hidden>
+    <div class="wrap">
+      <h1 class="page display">נכסים</h1>
+      <p class="sub">מלאי המשרד. כרטיס נכס מחובר לדוח האמת של מערכת "נדל״ן ברגע".</p>
+      <div class="controls">
+        <label class="f">חיפוש<input type="search" id="pQ" placeholder="כתובת, עיר או גוש" /></label>
+        <label class="f">סטטוס
+          <select id="pStatus">
+            <option value="">הכל</option><option value="active">פעיל</option>
+            <option value="under_offer">בהצעה</option><option value="sold">נמכר</option>
+            <option value="frozen">הוקפא</option>
+          </select></label>
+        <span class="spacer"></span>
+        <button class="btn" id="newProperty">+ נכס</button>
+      </div>
+      <div id="propertiesBody"></div>
+    </div>
+  </section>
+
+  <section class="panel" id="viewTasks" hidden>
+    <div class="wrap">
+      <h1 class="page display">משימות ומעקב</h1>
+      <p class="sub">תזכורות, שיחות והצגות. משימה שעבר זמנה מסומנת באדום.</p>
+      <div class="controls">
+        <label class="f">הצג
+          <select id="tFilter">
+            <option value="open">פתוחות בלבד</option>
+            <option value="all">הכל</option>
+          </select></label>
+        <span class="spacer"></span>
+        <button class="btn" id="newTask">+ משימה</button>
+      </div>
+      <div id="tasksBody"></div>
+    </div>
+  </section>
+
+  <section class="panel" id="viewError" hidden>
+    <div class="wrap"><div class="err" id="errText"></div></div>
+  </section>
+</main>
+
+<div id="drawerHost"></div>
+<div id="toastHost"></div>
+
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+const SUPABASE_URL = 'https://uhnrgujbdxhhmoxcjria.supabase.co';
+const SUPABASE_ANON =
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVobnJndWpiZHhoaG1veGNqcmlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMzNjE3MjgsImV4cCI6MjA5ODkzNzcyOH0.nHuOhw-WQEU17lNa7XOlORnBhVAYbJBHudKafWkSHBw';
+
+// Same storageKey as every other more30 system, so a session opened at /login
+// is already here and nobody signs in twice.
+const sb = createClient(SUPABASE_URL, SUPABASE_ANON, {
+  auth: { persistSession: true, storageKey: 'more30-auth', detectSessionInUrl: true },
+});
+
+const LOGIN = 'https://more30.com/login?from=' + encodeURIComponent('https://more30.com/tivuch/app');
+const $ = (id) => document.getElementById(id);
+
+const nf  = new Intl.NumberFormat('he-IL');
+const cur = new Intl.NumberFormat('he-IL', { style: 'currency', currency: 'ILS', maximumFractionDigits: 0 });
+
+const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) =>
+  ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+// A value that is genuinely absent is written as absent. One helper, no
+// exceptions — an empty cell reads as a bug, and a zero reads as a fact.
+const NA = '<span class="na">לא זמין</span>';
+const v  = (x) => (x === null || x === undefined || x === '' ? NA : esc(x));
+const money = (x) => (x === null || x === undefined || x === '' ? NA : cur.format(x));
+const dt = (x) => (x ? new Date(x).toLocaleDateString('he-IL') : NA);
+const dtm = (x) => (x ? new Date(x).toLocaleString('he-IL', { dateStyle: 'short', timeStyle: 'short' }) : NA);
+
+const STAGES = [
+  { key: 'lead',      label: 'ליד' },
+  { key: 'contacted', label: 'יצירת קשר' },
+  { key: 'meeting',   label: 'פגישה' },
+  { key: 'offer',     label: 'הצעה' },
+  { key: 'contract',  label: 'חוזה' },
+  { key: 'closed',    label: 'סגירה' },
+  { key: 'lost',      label: 'לא יצא לפועל' },
+];
+const KIND_HE = { buyer: 'קונה', seller: 'מוכר', renter: 'שוכר', landlord: 'משכיר', other: 'אחר' };
+const SOURCE_HE = {
+  website_form: 'טופס באתר', consumer_report: 'דוח נכס', manual: 'ידני',
+  import: 'ייבוא', referral: 'הפניה', portal: 'פורטל', other: 'אחר',
+};
+const PSTATUS_HE = { active: 'פעיל', under_offer: 'בהצעה', sold: 'נמכר', frozen: 'הוקפא' };
+const ASSET_HE = {
+  apartment: 'דירה', house: 'בית', penthouse: 'פנטהאוז', garden_apartment: 'דירת גן',
+  duplex: 'דופלקס', land: 'קרקע', commercial: 'מסחרי', office: 'משרד', other: 'אחר',
+};
+const AKIND_HE = {
+  note: 'הערה', call: 'שיחה', meeting: 'פגישה', showing: 'הצגה',
+  email: 'דוא״ל', task: 'משימה', system: 'מערכת',
+};
+
+let ME = null;        // np_me()
+let OFFICE = null;    // the selected office row
+let VIEW = 'dash';
+
+/* ── plumbing ────────────────────────────────────────────────────────────── */
+async function rpc(fn, args) {
+  const { data, error } = await sb.rpc(fn, args || {});
+  if (error) throw new Error(error.message);
+  return data;
+}
+
+function toast(msg, bad) {
+  const el = document.createElement('div');
+  el.className = 'toast' + (bad ? ' bad' : '');
+  el.setAttribute('role', bad ? 'alert' : 'status');
+  el.textContent = msg;
+  $('toastHost').appendChild(el);
+  setTimeout(() => el.remove(), bad ? 6000 : 3000);
+}
+
+function fail(msg) {
+  $('errText').textContent = msg;
+  show('viewError');
+}
+
+function show(id) {
+  for (const s of ['booting', 'viewSetup', 'viewDash', 'viewBoard', 'viewContacts',
+                   'viewProperties', 'viewTasks', 'viewError']) {
+    $(s).hidden = s !== id;
+  }
+}
+
+function setView(name) {
+  VIEW = name;
+  for (const b of $('tabs').children) {
+    if (b.dataset.view === name) b.setAttribute('aria-current', 'page');
+    else b.removeAttribute('aria-current');
+  }
+  history.replaceState(null, '', '?v=' + name);
+  const map = { dash: renderDash, board: renderBoard, contacts: renderContacts,
+                properties: renderProperties, tasks: renderTasks };
+  show('view' + name[0].toUpperCase() + name.slice(1));
+  map[name]();
+}
+
+/* ── drawer ──────────────────────────────────────────────────────────────── */
+let lastFocus = null;
+
+function drawer(title, subtitle, bodyHtml, onMount) {
+  lastFocus = document.activeElement;
+  const host = $('drawerHost');
+  host.innerHTML =
+    '<div class="scrim" id="scrim"><div class="drawer" role="dialog" aria-modal="true" aria-label="' +
+    esc(title) + '">' +
+      '<div class="drawer-head"><div><h2>' + esc(title) + '</h2>' +
+      '<p class="dsub">' + (subtitle || '') + '</p></div>' +
+      '<button class="x" id="drawerX" aria-label="סגירה">✕</button></div>' +
+      bodyHtml +
+    '</div></div>';
+
+  const close = () => {
+    host.innerHTML = '';
+    document.removeEventListener('keydown', onKey);
+    if (lastFocus) lastFocus.focus();
+  };
+  const onKey = (e) => { if (e.key === 'Escape') close(); };
+  document.addEventListener('keydown', onKey);
+  $('drawerX').addEventListener('click', close);
+  $('scrim').addEventListener('click', (e) => { if (e.target.id === 'scrim') close(); });
+  $('drawerX').focus();
+  if (onMount) onMount(close);
+  return close;
+}
+
+/* ── dashboard ───────────────────────────────────────────────────────────── */
+async function renderDash() {
+  const body = $('dashBody');
+  $('dashSub').textContent = OFFICE
+    ? OFFICE.name + ' · ' + ({ owner: 'בעלים', manager: 'מנהל', agent: 'מתווך' }[OFFICE.role] || OFFICE.role)
+    : '';
+  body.innerHTML = '<p class="loading"><span class="spinner"></span>טוען…</p>';
+
+  let d;
+  try { d = await rpc('np_dashboard', { p_office: OFFICE.id }); }
+  catch (e) { body.innerHTML = '<div class="err">' + esc(e.message) + '</div>'; return; }
+
+  const tile = (k, val, note, cls) =>
+    '<div class="kpi"><p class="k">' + k + '</p><p class="v ' + (cls || '') + '">' + val + '</p>' +
+    (note ? '<p class="n">' + note + '</p>' : '') + '</div>';
+
+  let html = '<div class="kpis">' +
+    tile('לידים חדשים · 30 יום', nf.format(d.new_leads_30d)) +
+    tile('אנשי קשר', nf.format(d.contacts)) +
+    tile('נכסים פעילים', nf.format(d.properties_active), 'מתוך ' + nf.format(d.properties_total)) +
+    tile('עסקאות פתוחות', nf.format(d.deals_open)) +
+    tile('שווי צינור', money(d.pipeline_value)) +
+    tile('עסקאות שנסגרו', nf.format(d.deals_closed), null, d.deals_closed > 0 ? 'good' : '') +
+    tile('עמלה שנגבתה', money(d.commission_collected), null, 'good') +
+    tile('עמלה בהמתנה', money(d.commission_pending)) +
+    tile('משימות פתוחות', nf.format(d.tasks_open),
+         d.tasks_overdue > 0 ? nf.format(d.tasks_overdue) + ' באיחור' : null,
+         d.tasks_overdue > 0 ? 'warn' : '') +
+    '</div>';
+
+  html += '<h2 class="sec">מקורות ליד — מה באמת סוגר עסקאות</h2>';
+  const src = d.by_source || [];
+  if (!src.length) {
+    html += '<div class="empty"><b>עדיין אין לידים</b>' +
+            'ברגע שייכנס איש קשר ראשון, כאן יופיע מאיפה הגיע ומה יצא מזה.</div>';
+  } else {
+    html += '<div class="table-scroll"><table><thead><tr>' +
+      '<th>מקור</th><th>לידים</th><th>נסגרו</th><th>שיעור המרה</th></tr></thead><tbody>' +
+      src.map((s) => {
+        // A conversion rate on a handful of leads is noise dressed as a metric.
+        // Below five it is withheld and the reason is given.
+        const rate = s.leads >= 5
+          ? Math.round((s.closed / s.leads) * 100) + '%'
+          : '<span class="na" title="פחות מ-5 לידים — המדגם קטן מדי">—</span>';
+        return '<tr><td>' + esc(SOURCE_HE[s.source] || s.source) + '</td>' +
+               '<td class="num">' + nf.format(s.leads) + '</td>' +
+               '<td class="num">' + nf.format(s.closed) + '</td>' +
+               '<td class="num">' + rate + '</td></tr>';
+      }).join('') + '</tbody></table></div>' +
+      '<p class="sub" style="font-size:12px;margin-top:8px">' +
+      'שיעור המרה מוצג רק ממקור עם 5 לידים ומעלה.</p>';
+  }
+  body.innerHTML = html;
+}
+
+/* ── pipeline board ──────────────────────────────────────────────────────── */
+async function renderBoard() {
+  const body = $('boardBody');
+  body.innerHTML = '<p class="loading"><span class="spinner"></span>טוען…</p>';
+
+  let b;
+  try { b = await rpc('np_board', { p_office: OFFICE.id }); }
+  catch (e) { body.innerHTML = '<div class="err">' + esc(e.message) + '</div>'; return; }
+
+  const total = STAGES.reduce((n, s) => n + (b[s.key] || []).length, 0);
+  if (total === 0) {
+    body.innerHTML = '<div class="empty"><b>אין עדיין עסקאות</b>' +
+      'צור עסקה ראשונה, או פתח אותה מתוך כרטיס איש קשר.' +
+      '<p class="why">כל עסקה נפתחת עם צ׳קליסט סגירה של תשעה שלבים.</p></div>';
+    return;
+  }
+
+  body.innerHTML = '<div class="board">' + STAGES.map((s) => {
+    const cards = b[s.key] || [];
+    const sum = cards.reduce((n, c) => n + Number(c.price || 0), 0);
+    return '<div class="col" data-stage="' + s.key + '">' +
+      '<h3>' + s.label + '<span class="c">' + cards.length + '</span></h3>' +
+      (sum > 0 ? '<p class="sum">' + cur.format(sum) + '</p>' : '<p class="sum">&nbsp;</p>') +
+      cards.map((c) =>
+        '<article class="card" draggable="true" tabindex="0" data-id="' + c.id + '">' +
+          '<p class="t">' + esc(c.title || c.property_address || 'עסקה ללא שם') + '</p>' +
+          '<p class="m">' + (c.buyer ? esc(c.buyer) : '<span class="na">אין קונה</span>') +
+          (c.property_city ? ' · ' + esc(c.property_city) : '') + '</p>' +
+          (c.price ? '<p class="p">' + cur.format(c.price) + '</p>' : '') +
+        '</article>').join('') +
+    '</div>';
+  }).join('') + '</div>';
+
+  wireBoard();
+}
+
+function wireBoard() {
+  let dragId = null;
+
+  for (const card of document.querySelectorAll('.card[data-id]')) {
+    card.addEventListener('dragstart', (e) => {
+      dragId = card.dataset.id;
+      card.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+      // Firefox will not start a drag without data on the transfer.
+      e.dataTransfer.setData('text/plain', dragId);
+    });
+    card.addEventListener('dragend', () => { card.classList.remove('dragging'); dragId = null; });
+    card.addEventListener('click', () => openDeal(card.dataset.id));
+    // Dragging is not reachable by keyboard, so Enter opens the deal, where the
+    // stage is a select. Without this the board would be mouse-only.
+    card.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openDeal(card.dataset.id); }
+    });
+  }
+
+  for (const col of document.querySelectorAll('.col[data-stage]')) {
+    col.addEventListener('dragover', (e) => { e.preventDefault(); col.classList.add('drop'); });
+    col.addEventListener('dragleave', () => col.classList.remove('drop'));
+    col.addEventListener('drop', async (e) => {
+      e.preventDefault();
+      col.classList.remove('drop');
+      const id = dragId || e.dataTransfer.getData('text/plain');
+      if (!id) return;
+      try {
+        await rpc('np_deal_stage', { p_id: id, p_stage: col.dataset.stage });
+        toast('העסקה הועברה ל״' + (STAGES.find((s) => s.key === col.dataset.stage) || {}).label + '״');
+        renderBoard();
+      } catch (err) {
+        toast('העברה נכשלה: ' + err.message, true);
+        renderBoard();
+      }
+    });
+  }
+}
+
+/* ── contacts ────────────────────────────────────────────────────────────── */
+let cTimer = null;
+
+async function renderContacts() {
+  const body = $('contactsBody');
+  body.innerHTML = '<p class="loading"><span class="spinner"></span>טוען…</p>';
+
+  let rows;
+  try {
+    rows = await rpc('np_contacts', {
+      p_office: OFFICE.id,
+      p_q: $('cQ').value.trim() || null,
+      p_kind: $('cKind').value || null,
+      p_source: $('cSource').value || null,
+      p_limit: 300,
+    });
+  } catch (e) { body.innerHTML = '<div class="err">' + esc(e.message) + '</div>'; return; }
+
+  rows = rows || [];
+  if (!rows.length) {
+    body.innerHTML = '<div class="empty"><b>אין אנשי קשר להצגה</b>' +
+      ($('cQ').value || $('cKind').value || $('cSource').value
+        ? 'נסה לנקות את המסננים.'
+        : 'הוסף איש קשר ראשון כדי להתחיל.') + '</div>';
+    return;
+  }
+
+  body.innerHTML = '<div class="table-scroll"><table><thead><tr>' +
+    '<th>שם</th><th>סוג</th><th>טלפון</th><th>עיר</th><th>מקור</th>' +
+    '<th>עסקאות פתוחות</th><th>פעילות אחרונה</th></tr></thead><tbody>' +
+    rows.map((c) =>
+      '<tr class="row" data-id="' + c.id + '">' +
+        '<td>' + esc(c.full_name) + '</td>' +
+        '<td><span class="pill">' + esc(KIND_HE[c.kind] || c.kind) + '</span></td>' +
+        '<td>' + v(c.phone) + '</td><td>' + v(c.city) + '</td>' +
+        '<td>' + esc(SOURCE_HE[c.source] || c.source) + '</td>' +
+        '<td class="num">' + (Number(c.open_deals) || 0) + '</td>' +
+        '<td>' + (c.last_activity ? dt(c.last_activity) : NA) + '</td>' +
+      '</tr>').join('') +
+    '</tbody></table></div>' +
+    '<p class="sub" style="font-size:12px;margin-top:10px">' + nf.format(rows.length) + ' אנשי קשר.</p>';
+
+  for (const tr of body.querySelectorAll('tr.row')) {
+    tr.addEventListener('click', () => openContact(tr.dataset.id));
+  }
+}
+
+async function openContact(id) {
+  let d;
+  try { d = await rpc('np_contact_get', { p_id: id }); }
+  catch (e) { return toast('טעינה נכשלה: ' + e.message, true); }
+  if (!d || !d.contact) return toast('איש הקשר לא נמצא', true);
+
+  const c = d.contact;
+  const wants = [
+    c.want_city ? 'עיר: ' + esc(c.want_city) : null,
+    c.want_min_rooms ? 'מ-' + c.want_min_rooms + ' חדרים' : null,
+    c.want_max_price ? 'עד ' + cur.format(c.want_max_price) : null,
+    c.want_min_area ? 'מ-' + c.want_min_area + ' מ״ר' : null,
+    c.want_asset_type ? ASSET_HE[c.want_asset_type] : null,
+  ].filter(Boolean);
+
+  let html =
+    '<div class="facts">' +
+      '<div><p class="k">סוג</p><p class="v">' + esc(KIND_HE[c.kind] || c.kind) + '</p></div>' +
+      '<div><p class="k">טלפון</p><p class="v">' + v(c.phone) + '</p></div>' +
+      '<div><p class="k">דוא״ל</p><p class="v">' + v(c.email) + '</p></div>' +
+      '<div><p class="k">עיר</p><p class="v">' + v(c.city) + '</p></div>' +
+      '<div><p class="k">מקור</p><p class="v">' + esc(SOURCE_HE[c.source] || c.source) + '</p></div>' +
+    '</div>' +
+    '<p style="margin:0 0 18px"><button class="btn btn-quiet btn-sm" id="cEdit">עריכה</button> ' +
+    '<button class="btn btn-quiet btn-sm" id="cTask">+ משימה</button> ' +
+    '<button class="btn btn-sm" id="cDeal">+ עסקה</button></p>';
+
+  html += '<h2 class="sec" style="margin-top:6px">קריטריוני חיפוש</h2>' +
+    (wants.length
+      ? '<p>' + wants.join(' · ') + '</p>'
+      : '<p class="na">לא הוזנו קריטריונים — לכן אין התאמות אוטומטיות.</p>');
+
+  html += '<h2 class="sec">נכסים מתאימים במלאי</h2>';
+  const m = d.matches || [];
+  if (!wants.length) {
+    html += '<div class="empty"><b>אין קריטריונים</b>הוסף עיר, תקציב או מספר חדרים כדי לקבל התאמות.</div>';
+  } else if (!m.length) {
+    html += '<div class="empty"><b>אין נכס פעיל שעונה על הקריטריונים</b>' +
+      '<p class="why">הקריטריונים שהוזנו הם סינון קשיח, לא ניקוד — נכס מעל התקציב לא יוצג כהתאמה חלשה.</p></div>';
+  } else {
+    html += '<div class="table-scroll"><table><thead><tr><th>נכס</th><th>עיר</th>' +
+      '<th>חדרים</th><th>מ״ר</th><th>מחיר</th></tr></thead><tbody>' +
+      m.map((p) => '<tr><td>' + v(p.title || p.address) + '</td><td>' + v(p.city) + '</td>' +
+        '<td class="num">' + v(p.rooms) + '</td><td class="num">' + v(p.area_sqm) + '</td>' +
+        '<td class="num">' + money(p.price) + '</td></tr>').join('') +
+      '</tbody></table></div>';
+  }
+
+  html += '<h2 class="sec">עסקאות</h2>';
+  const deals = d.deals || [];
+  html += deals.length
+    ? '<ul class="timeline">' + deals.map((x) =>
+        '<li><b>' + esc(x.title || x.property_address || 'עסקה') + '</b> · ' +
+        esc((STAGES.find((s) => s.key === x.stage) || {}).label || x.stage) +
+        (x.price ? ' · ' + cur.format(x.price) : '') + '</li>').join('') + '</ul>'
+    : '<p class="na">אין עסקאות משויכות.</p>';
+
+  html += '<h2 class="sec">היסטוריה</h2>';
+  const acts = d.activities || [];
+  html += acts.length
+    ? '<ul class="timeline">' + acts.map((a) =>
+        '<li><b>' + esc(AKIND_HE[a.kind] || a.kind) + '</b> — ' + esc(a.title) +
+        (a.body ? '<br/>' + esc(a.body) : '') +
+        '<span class="w"> · ' + dtm(a.created_at) + '</span></li>').join('') + '</ul>'
+    : '<p class="na">אין עדיין תיעוד.</p>';
+
+  drawer(c.full_name, esc(KIND_HE[c.kind] || c.kind) + ' · נוצר ' + dt(c.created_at), html, (close) => {
+    $('cEdit').addEventListener('click', () => { close(); contactForm(c); });
+    $('cTask').addEventListener('click', () => { close(); taskForm({ contact_id: c.id }); });
+    $('cDeal').addEventListener('click', () => {
+      close();
+      dealForm({ buyer_contact_id: c.kind === 'buyer' ? c.id : null,
+                 seller_contact_id: c.kind === 'seller' ? c.id : null });
+    });
+  });
+}
+
+function contactForm(existing) {
+  const c = existing || {};
+  const opt = (map, sel) => Object.entries(map)
+    .map(([k, l]) => '<option value="' + k + '"' + (sel === k ? ' selected' : '') + '>' + l + '</option>')
+    .join('');
+
+  const html =
+    '<div id="cfErr"></div><div class="form-grid">' +
+      '<label class="f span2">שם מלא *<input id="f_full_name" value="' + esc(c.full_name || '') + '" /></label>' +
+      '<label class="f">סוג<select id="f_kind">' + opt(KIND_HE, c.kind || 'buyer') + '</select></label>' +
+      '<label class="f">מקור ליד<select id="f_source">' + opt(SOURCE_HE, c.source || 'manual') + '</select></label>' +
+      '<label class="f">טלפון<input id="f_phone" value="' + esc(c.phone || '') + '" /></label>' +
+      '<label class="f">דוא״ל<input id="f_email" type="email" value="' + esc(c.email || '') + '" /></label>' +
+      '<label class="f">עיר<input id="f_city" value="' + esc(c.city || '') + '" /></label>' +
+      '<label class="f">פירוט מקור<input id="f_source_detail" value="' + esc(c.source_detail || '') + '" /></label>' +
+      '<label class="f span2">הערות<textarea id="f_notes">' + esc(c.notes || '') + '</textarea></label>' +
+    '</div>' +
+    '<h2 class="sec">קריטריוני חיפוש (לקונה)</h2>' +
+    '<p class="sub" style="font-size:13px">שדה שנשאר ריק פירושו "אין העדפה" ולא יסנן כלום.</p>' +
+    '<div class="form-grid">' +
+      '<label class="f">עיר מבוקשת<input id="f_want_city" value="' + esc(c.want_city || '') + '" /></label>' +
+      '<label class="f">מינימום חדרים<input id="f_want_min_rooms" type="number" step="0.5" value="' + esc(c.want_min_rooms || '') + '" /></label>' +
+      '<label class="f">תקציב מקסימלי<input id="f_want_max_price" type="number" value="' + esc(c.want_max_price || '') + '" /></label>' +
+      '<label class="f">מינימום מ״ר<input id="f_want_min_area" type="number" value="' + esc(c.want_min_area || '') + '" /></label>' +
+      '<label class="f">סוג נכס<select id="f_want_asset_type"><option value="">כל סוג</option>' +
+        opt(ASSET_HE, c.want_asset_type || '') + '</select></label>' +
+    '</div>' +
+    '<p style="margin-top:20px"><button class="btn" id="cfSave">שמירה</button></p>';
+
+  drawer(c.id ? 'עריכת איש קשר' : 'איש קשר חדש', '', html, (close) => {
+    $('cfSave').addEventListener('click', async () => {
+      const p = { office_id: OFFICE.id };
+      if (c.id) p.id = c.id;
+      for (const k of ['full_name', 'kind', 'source', 'phone', 'email', 'city', 'source_detail',
+                       'notes', 'want_city', 'want_min_rooms', 'want_max_price',
+                       'want_min_area', 'want_asset_type']) {
+        p[k] = $('f_' + k).value.trim();
+      }
+      if (!p.full_name) {
+        $('cfErr').innerHTML = '<div class="err">שם מלא הוא שדה חובה.</div>';
+        return;
+      }
+      $('cfSave').disabled = true;
+      try {
+        await rpc('np_contact_save', { p });
+        close();
+        toast('נשמר');
+        if (VIEW === 'contacts') renderContacts();
+      } catch (e) {
+        $('cfErr').innerHTML = '<div class="err">' + esc(e.message) + '</div>';
+        $('cfSave').disabled = false;
+      }
+    });
+  });
+}
+
+/* ── properties ──────────────────────────────────────────────────────────── */
+async function renderProperties() {
+  const body = $('propertiesBody');
+  body.innerHTML = '<p class="loading"><span class="spinner"></span>טוען…</p>';
+
+  let rows;
+  try {
+    rows = await rpc('np_properties', {
+      p_office: OFFICE.id,
+      p_q: $('pQ').value.trim() || null,
+      p_status: $('pStatus').value || null,
+      p_limit: 300,
+    });
+  } catch (e) { body.innerHTML = '<div class="err">' + esc(e.message) + '</div>'; return; }
+
+  rows = rows || [];
+  if (!rows.length) {
+    body.innerHTML = '<div class="empty"><b>אין נכסים להצגה</b>' +
+      ($('pQ').value || $('pStatus').value ? 'נסה לנקות את המסננים.' : 'הוסף נכס ראשון למלאי.') + '</div>';
+    return;
+  }
+
+  const today = new Date().toISOString().slice(0, 10);
+  body.innerHTML = '<div class="table-scroll"><table><thead><tr>' +
+    '<th>נכס</th><th>עיר</th><th>חדרים</th><th>מ״ר</th><th>מחיר</th>' +
+    '<th>סטטוס</th><th>בלעדיות</th><th>דוח אמת</th></tr></thead><tbody>' +
+    rows.map((p) => {
+      // An exclusivity that has run out is not an exclusivity. Showing the flag
+      // without checking the date is how an expired listing looks current.
+      let excl = '<span class="na">—</span>';
+      if (p.is_exclusive) {
+        const expired = p.exclusivity_until && p.exclusivity_until < today;
+        excl = expired
+          ? '<span class="pill off">פגה ' + dt(p.exclusivity_until) + '</span>'
+          : '<span class="pill on">עד ' + (p.exclusivity_until ? dt(p.exclusivity_until) : 'ללא תאריך') + '</span>';
+      }
+      return '<tr class="row" data-id="' + p.id + '">' +
+        '<td>' + v(p.title || p.address) + '</td><td>' + v(p.city) + '</td>' +
+        '<td class="num">' + v(p.rooms) + '</td><td class="num">' + v(p.area_sqm) + '</td>' +
+        '<td class="num">' + money(p.price) + '</td>' +
+        '<td><span class="pill">' + esc(PSTATUS_HE[p.status] || p.status) + '</span></td>' +
+        '<td>' + excl + '</td>' +
+        '<td>' + (p.has_truth_report ? '<span class="pill on">נטען</span>' : '<span class="pill off">טרם</span>') + '</td>' +
+      '</tr>';
+    }).join('') + '</tbody></table></div>' +
+    '<p class="sub" style="font-size:12px;margin-top:10px">' + nf.format(rows.length) + ' נכסים.</p>';
+
+  for (const tr of body.querySelectorAll('tr.row')) {
+    tr.addEventListener('click', () => openProperty(tr.dataset.id));
+  }
+}
+
+async function openProperty(id) {
+  let d;
+  try { d = await rpc('np_property_get', { p_id: id }); }
+  catch (e) { return toast('טעינה נכשלה: ' + e.message, true); }
+  if (!d || !d.property) return toast('הנכס לא נמצא', true);
+
+  const p = d.property;
+  let html =
+    '<div class="facts">' +
+      '<div><p class="k">סוג</p><p class="v">' + esc(ASSET_HE[p.asset_type] || p.asset_type) + '</p></div>' +
+      '<div><p class="k">חדרים</p><p class="v">' + v(p.rooms) + '</p></div>' +
+      '<div><p class="k">שטח</p><p class="v">' + (p.area_sqm ? p.area_sqm + ' מ״ר' : NA) + '</p></div>' +
+      '<div><p class="k">קומה</p><p class="v">' + v(p.floor) + '</p></div>' +
+      '<div><p class="k">מחיר</p><p class="v">' + money(p.price) + '</p></div>' +
+      '<div><p class="k">גוש/חלקה</p><p class="v">' +
+        (p.gush && p.helka ? esc(p.gush) + '/' + esc(p.helka) : NA) + '</p></div>' +
+    '</div>' +
+    '<p style="margin:0 0 18px"><button class="btn btn-quiet btn-sm" id="pEdit">עריכה</button> ' +
+    '<button class="btn btn-sm" id="pTruth">משוך דוח אמת</button></p>' +
+    (p.description ? '<p>' + esc(p.description) + '</p>' : '');
+
+  html += '<h2 class="sec">דוח האמת — נדל״ן ברגע</h2><div id="truthBox">' + truthHtml(p) + '</div>';
+
+  html += '<h2 class="sec">עסקאות על הנכס</h2>';
+  html += (d.deals || []).length
+    ? '<ul class="timeline">' + d.deals.map((x) =>
+        '<li><b>' + esc(x.title || 'עסקה') + '</b> · ' +
+        esc((STAGES.find((s) => s.key === x.stage) || {}).label || x.stage) + '</li>').join('') + '</ul>'
+    : '<p class="na">אין עסקאות משויכות.</p>';
+
+  drawer(p.title || p.address || 'נכס',
+         esc(p.address || '') + (p.city ? ' · ' + esc(p.city) : ''), html, (close) => {
+    $('pEdit').addEventListener('click', () => { close(); propertyForm(p); });
+    $('pTruth').addEventListener('click', () => fetchTruth(p, $('pTruth')));
+  });
+}
+
+// The truth engine is system 32 and stays system 32. This never recomputes a
+// valuation — it calls /nadlan/api/report (same origin under more30.com, so no
+// proxy and no key) and stores the answer with the time it was given.
+function truthHtml(p) {
+  if (p.truth_report_error) {
+    return '<div class="note"><b>הדוח לא נטען.</b> ' + esc(p.truth_report_error) +
+      '<br/>נוסה לאחרונה: ' + dtm(p.truth_report_at) + '</div>';
+  }
+  if (!p.truth_report) {
+    return '<div class="empty"><b>טרם נמשך דוח</b>' +
+      'לחיצה על "משוך דוח אמת" תשאל את מערכת "נדל״ן ברגע" לפי הכתובת או גוש/חלקה.' +
+      '<p class="why">המערכת הזו לא מחשבת שווי בעצמה — היא שואלת את מנוע האמת ושומרת את התשובה עם השעה.</p></div>';
+  }
+  const r = p.truth_report;
+  const rows = [
+    ['כתובת מזוהה', r.title && r.title.address],
+    ['גוש/חלקה', r.key && r.key.gush ? r.key.gush + '/' + (r.key.helka || '') : null],
+    ['עסקאות בחלקה', r.parcelTransactions && r.parcelTransactions.length],
+    ['טווח מחירים', r.priceBand && r.priceBand.label],
+    ['ציון הזדמנות', r.opportunityScore],
+  ];
+  return '<div class="table-scroll"><table><tbody>' +
+    rows.map(([k, val]) => '<tr><th>' + k + '</th><td>' + v(val) + '</td></tr>').join('') +
+    '</tbody></table></div>' +
+    '<p class="sub" style="font-size:12px;margin-top:8px">נמשך: ' + dtm(p.truth_report_at) +
+    ' · מקור: מערכת 32, "נדל״ן ברגע".</p>';
+}
+
+async function fetchTruth(p, btn) {
+  const q = [p.address, p.city].filter(Boolean).join(' ') ||
+            (p.gush && p.helka ? p.gush + '/' + p.helka : '');
+  if (!q) return toast('אין כתובת או גוש/חלקה לשאול עליהם', true);
+
+  btn.disabled = true;
+  btn.textContent = 'מושך…';
+  const box = $('truthBox');
+  box.innerHTML = '<p class="loading"><span class="spinner"></span>שואל את מנוע האמת…</p>';
+
+  try {
+    // Same origin, so this is a plain fetch with no key and no server hop.
+    const res = await fetch('/nadlan/api/report?q=' + encodeURIComponent(q), {
+      headers: { accept: 'application/json' },
+    });
+    if (!res.ok) throw new Error('מנוע האמת החזיר ' + res.status);
+    const report = await res.json();
+    await rpc('np_property_truth_set', { p_id: p.id, p_report: report, p_error: null });
+    box.innerHTML = truthHtml({ ...p, truth_report: report, truth_report_at: new Date().toISOString() });
+    toast('הדוח נשמר על הנכס');
+  } catch (e) {
+    // The failure is recorded, not swallowed: the card must be able to say why
+    // it has nothing rather than looking like it was never asked.
+    const msg = e.message || String(e);
+    try { await rpc('np_property_truth_set', { p_id: p.id, p_report: null, p_error: msg }); } catch (_) {}
+    box.innerHTML = truthHtml({ ...p, truth_report: null, truth_report_error: msg,
+                                truth_report_at: new Date().toISOString() });
+    toast('משיכת הדוח נכשלה: ' + msg, true);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'משוך דוח אמת';
+  }
+}
+
+function propertyForm(existing) {
+  const p = existing || {};
+  const opt = (map, sel) => Object.entries(map)
+    .map(([k, l]) => '<option value="' + k + '"' + (sel === k ? ' selected' : '') + '>' + l + '</option>').join('');
+
+  const html =
+    '<div id="pfErr"></div><div class="form-grid">' +
+      '<label class="f span2">כותרת<input id="g_title" value="' + esc(p.title || '') + '" placeholder="למשל: דירת 4 חדרים משופצת" /></label>' +
+      '<label class="f">כתובת<input id="g_address" value="' + esc(p.address || '') + '" /></label>' +
+      '<label class="f">עיר<input id="g_city" value="' + esc(p.city || '') + '" /></label>' +
+      '<label class="f">גוש<input id="g_gush" value="' + esc(p.gush || '') + '" /></label>' +
+      '<label class="f">חלקה<input id="g_helka" value="' + esc(p.helka || '') + '" /></label>' +
+      '<label class="f">תת-חלקה<input id="g_tat_helka" value="' + esc(p.tat_helka || '') + '" /></label>' +
+      '<label class="f">סוג נכס<select id="g_asset_type">' + opt(ASSET_HE, p.asset_type || 'apartment') + '</select></label>' +
+      '<label class="f">חדרים<input id="g_rooms" type="number" step="0.5" value="' + esc(p.rooms || '') + '" /></label>' +
+      '<label class="f">שטח (מ״ר)<input id="g_area_sqm" type="number" value="' + esc(p.area_sqm || '') + '" /></label>' +
+      '<label class="f">קומה<input id="g_floor" type="number" value="' + esc(p.floor || '') + '" /></label>' +
+      '<label class="f">סה״כ קומות<input id="g_total_floors" type="number" value="' + esc(p.total_floors || '') + '" /></label>' +
+      '<label class="f">מחיר<input id="g_price" type="number" value="' + esc(p.price || '') + '" /></label>' +
+      '<label class="f">סטטוס<select id="g_status">' + opt(PSTATUS_HE, p.status || 'active') + '</select></label>' +
+      '<label class="f">בלעדיות עד<input id="g_exclusivity_until" type="date" value="' + esc(p.exclusivity_until || '') + '" /></label>' +
+      '<label class="f span2" style="flex-direction:row;align-items:center;gap:9px">' +
+        '<input type="checkbox" id="g_is_exclusive" style="width:17px;height:17px;accent-color:var(--gold)"' +
+        (p.is_exclusive ? ' checked' : '') + ' /> נכס בבלעדיות</label>' +
+      '<label class="f span2">תיאור<textarea id="g_description">' + esc(p.description || '') + '</textarea></label>' +
+    '</div>' +
+    '<p style="margin-top:20px"><button class="btn" id="pfSave">שמירה</button></p>';
+
+  drawer(p.id ? 'עריכת נכס' : 'נכס חדש', '', html, (close) => {
+    $('pfSave').addEventListener('click', async () => {
+      const body = { office_id: OFFICE.id };
+      if (p.id) body.id = p.id;
+      for (const k of ['title', 'address', 'city', 'gush', 'helka', 'tat_helka', 'asset_type',
+                       'rooms', 'area_sqm', 'floor', 'total_floors', 'price', 'status',
+                       'exclusivity_until', 'description']) {
+        body[k] = $('g_' + k).value.trim();
+      }
+      body.is_exclusive = $('g_is_exclusive').checked ? 'true' : 'false';
+      if (!body.address && !body.title) {
+        $('pfErr').innerHTML = '<div class="err">צריך לפחות כתובת או כותרת.</div>';
+        return;
+      }
+      $('pfSave').disabled = true;
+      try {
+        await rpc('np_property_save', { p: body });
+        close(); toast('נשמר');
+        if (VIEW === 'properties') renderProperties();
+      } catch (e) {
+        $('pfErr').innerHTML = '<div class="err">' + esc(e.message) + '</div>';
+        $('pfSave').disabled = false;
+      }
+    });
+  });
+}
+
+/* ── deals ───────────────────────────────────────────────────────────────── */
+async function openDeal(id) {
+  let d;
+  try { d = await rpc('np_deal_get', { p_id: id }); }
+  catch (e) { return toast('טעינה נכשלה: ' + e.message, true); }
+  if (!d || !d.deal) return toast('העסקה לא נמצאה', true);
+
+  const dl = d.deal;
+  const stageOpts = STAGES.map((s) =>
+    '<option value="' + s.key + '"' + (dl.stage === s.key ? ' selected' : '') + '>' + s.label + '</option>').join('');
+
+  const done = (d.checklist || []).filter((k) => k.is_done).length;
+  const totalSteps = (d.checklist || []).length;
+
+  let html =
+    '<div class="facts">' +
+      '<div><p class="k">מחיר</p><p class="v">' + money(dl.price) + '</p></div>' +
+      '<div><p class="k">עמלה</p><p class="v">' + money(dl.commission_amount) +
+        (dl.commission_pct ? ' <span style="font-size:12px;color:var(--muted)">(' + dl.commission_pct + '%)</span>' : '') + '</p></div>' +
+      '<div><p class="k">סגירה צפויה</p><p class="v">' + dt(dl.expected_close) + '</p></div>' +
+      '<div><p class="k">נסגרה</p><p class="v">' + dt(dl.closed_at) + '</p></div>' +
+    '</div>' +
+    '<div class="controls" style="margin-bottom:22px">' +
+      '<label class="f">שלב<select id="dStage">' + stageOpts + '</select></label>' +
+      '<button class="btn btn-quiet btn-sm" id="dEdit" style="margin-bottom:1px">עריכת פרטים</button>' +
+      '<button class="btn btn-quiet btn-sm" id="dTask" style="margin-bottom:1px">+ משימה</button>' +
+    '</div>';
+
+  html += '<h2 class="sec">צ׳קליסט סגירה <span style="font-size:13px;color:var(--muted)">(' +
+    done + '/' + totalSteps + ')</span></h2>' +
+    '<ul class="check">' + (d.checklist || []).map((k) =>
+      '<li class="' + (k.is_done ? 'done' : '') + '">' +
+        '<input type="checkbox" id="k_' + k.step_key + '" data-step="' + k.step_key + '"' +
+        (k.is_done ? ' checked' : '') + ' />' +
+        '<label class="lb" for="k_' + k.step_key + '">' + esc(k.label) +
+        (k.done_at ? '<span class="when">הושלם ' + dtm(k.done_at) + '</span>' : '') +
+        '</label></li>').join('') + '</ul>';
+
+  html += '<h2 class="sec">צדדים</h2><div class="table-scroll"><table><tbody>' +
+    '<tr><th>נכס</th><td>' + (d.property ? esc(d.property.address || d.property.title || '—') : NA) + '</td></tr>' +
+    '<tr><th>קונה</th><td>' + (d.buyer ? esc(d.buyer.full_name) : NA) + '</td></tr>' +
+    '<tr><th>מוכר</th><td>' + (d.seller ? esc(d.seller.full_name) : NA) + '</td></tr>' +
+    '</tbody></table></div>';
+
+  html += '<h2 class="sec">מסלול השלבים</h2>' +
+    '<ul class="timeline">' + (d.stage_history || []).map((e) =>
+      '<li>' + (e.from ? esc((STAGES.find((s) => s.key === e.from) || {}).label || e.from) + ' → ' : 'נפתחה כ־') +
+      '<b>' + esc((STAGES.find((s) => s.key === e.to) || {}).label || e.to) + '</b>' +
+      '<span class="w"> · ' + dtm(e.at) + '</span></li>').join('') + '</ul>';
+
+  html += '<h2 class="sec">תיעוד</h2>';
+  html += (d.activities || []).length
+    ? '<ul class="timeline">' + d.activities.map((a) =>
+        '<li><b>' + esc(AKIND_HE[a.kind] || a.kind) + '</b> — ' + esc(a.title) +
+        '<span class="w"> · ' + dtm(a.created_at) + '</span></li>').join('') + '</ul>'
+    : '<p class="na">אין עדיין תיעוד.</p>';
+
+  drawer(dl.title || 'עסקה',
+         (d.property ? esc(d.property.address || '') : '') + ' · נפתחה ' + dt(dl.created_at),
+         html, (close) => {
+    $('dStage').addEventListener('change', async (e) => {
+      try {
+        await rpc('np_deal_stage', { p_id: dl.id, p_stage: e.target.value });
+        toast('השלב עודכן');
+        if (VIEW === 'board') renderBoard();
+      } catch (err) { toast('עדכון נכשל: ' + err.message, true); }
+    });
+    for (const cb of document.querySelectorAll('.check input[data-step]')) {
+      cb.addEventListener('change', async () => {
+        try {
+          await rpc('np_checklist_toggle', {
+            p_deal: dl.id, p_step: cb.dataset.step, p_done: cb.checked,
+          });
+          cb.closest('li').classList.toggle('done', cb.checked);
+        } catch (err) {
+          cb.checked = !cb.checked;
+          toast('עדכון נכשל: ' + err.message, true);
+        }
+      });
+    }
+    $('dEdit').addEventListener('click', () => { close(); dealForm(dl); });
+    $('dTask').addEventListener('click', () => { close(); taskForm({ deal_id: dl.id }); });
+  });
+}
+
+async function dealForm(existing) {
+  const dl = existing || {};
+  // The pickers need real rows, so both lists are fetched before the form opens.
+  let contacts = [], props = [];
+  try {
+    [contacts, props] = await Promise.all([
+      rpc('np_contacts', { p_office: OFFICE.id, p_limit: 400 }),
+      rpc('np_properties', { p_office: OFFICE.id, p_limit: 400 }),
+    ]);
+  } catch (e) { return toast('טעינת הרשימות נכשלה: ' + e.message, true); }
+
+  const cOpts = (sel, kind) => '<option value="">—</option>' +
+    (contacts || []).filter((c) => !kind || c.kind === kind || true)
+      .map((c) => '<option value="' + c.id + '"' + (sel === c.id ? ' selected' : '') + '>' +
+        esc(c.full_name) + ' (' + esc(KIND_HE[c.kind] || c.kind) + ')</option>').join('');
+  const pOpts = '<option value="">—</option>' +
+    (props || []).map((p) => '<option value="' + p.id + '"' + (dl.property_id === p.id ? ' selected' : '') + '>' +
+      esc(p.title || p.address || 'נכס') + '</option>').join('');
+  const sOpts = STAGES.map((s) =>
+    '<option value="' + s.key + '"' + ((dl.stage || 'lead') === s.key ? ' selected' : '') + '>' + s.label + '</option>').join('');
+
+  const html =
+    '<div id="dfErr"></div><div class="form-grid">' +
+      '<label class="f span2">כותרת<input id="d_title" value="' + esc(dl.title || '') + '" placeholder="למשל: הרצל 42 — ישראלי" /></label>' +
+      '<label class="f">נכס<select id="d_property_id">' + pOpts + '</select></label>' +
+      '<label class="f">שלב<select id="d_stage">' + sOpts + '</select></label>' +
+      '<label class="f">קונה<select id="d_buyer_contact_id">' + cOpts(dl.buyer_contact_id) + '</select></label>' +
+      '<label class="f">מוכר<select id="d_seller_contact_id">' + cOpts(dl.seller_contact_id) + '</select></label>' +
+      '<label class="f">מחיר<input id="d_price" type="number" value="' + esc(dl.price || '') + '" /></label>' +
+      '<label class="f">אחוז עמלה<input id="d_commission_pct" type="number" step="0.1" value="' + esc(dl.commission_pct || '') + '" /></label>' +
+      '<label class="f">סכום עמלה<input id="d_commission_amount" type="number" value="' + esc(dl.commission_amount || '') + '" /></label>' +
+      '<label class="f">סגירה צפויה<input id="d_expected_close" type="date" value="' + esc(dl.expected_close || '') + '" /></label>' +
+      '<label class="f span2">הערות<textarea id="d_notes">' + esc(dl.notes || '') + '</textarea></label>' +
+    '</div>' +
+    '<p class="sub" style="font-size:13px;margin-top:14px">' +
+    'הזנת מחיר ואחוז תמלא את סכום העמלה אם הוא ריק. הסכום נשמר בנפרד מהאחוז, ' +
+    'כדי שתיקון מחיר לא ישכתב עמלה שכבר סוכמה.</p>' +
+    '<p style="margin-top:16px"><button class="btn" id="dfSave">שמירה</button></p>';
+
+  drawer(dl.id ? 'עריכת עסקה' : 'עסקה חדשה', '', html, (close) => {
+    const price = $('d_price'), pct = $('d_commission_pct'), amt = $('d_commission_amount');
+    const suggest = () => {
+      if (amt.value) return;                       // never overwrite a agreed figure
+      const p = parseFloat(price.value), q = parseFloat(pct.value);
+      if (p > 0 && q > 0) amt.value = Math.round((p * q) / 100);
+    };
+    price.addEventListener('blur', suggest);
+    pct.addEventListener('blur', suggest);
+
+    $('dfSave').addEventListener('click', async () => {
+      const p = { office_id: OFFICE.id };
+      if (dl.id) p.id = dl.id;
+      for (const k of ['title', 'property_id', 'stage', 'buyer_contact_id', 'seller_contact_id',
+                       'price', 'commission_pct', 'commission_amount', 'expected_close', 'notes']) {
+        p[k] = $('d_' + k).value.trim();
+      }
+      if (!p.title && !p.property_id) {
+        $('dfErr').innerHTML = '<div class="err">צריך כותרת או נכס משויך.</div>';
+        return;
+      }
+      $('dfSave').disabled = true;
+      try {
+        await rpc('np_deal_save', { p });
+        close(); toast('נשמר');
+        if (VIEW === 'board') renderBoard();
+      } catch (e) {
+        $('dfErr').innerHTML = '<div class="err">' + esc(e.message) + '</div>';
+        $('dfSave').disabled = false;
+      }
+    });
+  });
+}
+
+/* ── tasks ───────────────────────────────────────────────────────────────── */
+async function renderTasks() {
+  const body = $('tasksBody');
+  body.innerHTML = '<p class="loading"><span class="spinner"></span>טוען…</p>';
+
+  let rows;
+  try {
+    rows = await rpc('np_activities', {
+      p_office: OFFICE.id,
+      p_only_open: $('tFilter').value === 'open',
+      p_limit: 300,
+    });
+  } catch (e) { body.innerHTML = '<div class="err">' + esc(e.message) + '</div>'; return; }
+
+  rows = rows || [];
+  if (!rows.length) {
+    body.innerHTML = '<div class="empty"><b>אין משימות</b>' +
+      ($('tFilter').value === 'open' ? 'אין משימות פתוחות כרגע.' : 'עדיין לא נרשמה פעילות.') + '</div>';
+    return;
+  }
+
+  const now = Date.now();
+  body.innerHTML = '<div class="table-scroll"><table><thead><tr>' +
+    '<th></th><th>סוג</th><th>נושא</th><th>איש קשר</th><th>יעד</th></tr></thead><tbody>' +
+    rows.map((a) => {
+      const overdue = !a.is_done && a.due_at && new Date(a.due_at).getTime() < now;
+      return '<tr><td><input type="checkbox" data-act="' + a.id + '"' + (a.is_done ? ' checked' : '') +
+        ' style="width:17px;height:17px;accent-color:var(--gold)" aria-label="סמן כבוצע" /></td>' +
+        '<td><span class="pill">' + esc(AKIND_HE[a.kind] || a.kind) + '</span></td>' +
+        '<td>' + esc(a.title) + (a.body ? '<br/><span class="na" style="font-size:12px">' + esc(a.body) + '</span>' : '') + '</td>' +
+        '<td>' + v(a.contact_name) + '</td>' +
+        '<td>' + (a.due_at
+          ? (overdue ? '<span class="pill hot">' + dtm(a.due_at) + '</span>' : dtm(a.due_at))
+          : NA) + '</td></tr>';
+    }).join('') + '</tbody></table></div>';
+
+  for (const cb of body.querySelectorAll('input[data-act]')) {
+    cb.addEventListener('change', async () => {
+      try {
+        await rpc('np_activity_save', { p: { id: cb.dataset.act, is_done: cb.checked ? 'true' : 'false' } });
+        toast(cb.checked ? 'סומן כבוצע' : 'הוחזר לפתוח');
+        renderTasks();
+      } catch (e) { cb.checked = !cb.checked; toast('עדכון נכשל: ' + e.message, true); }
+    });
+  }
+}
+
+function taskForm(ctx) {
+  const c = ctx || {};
+  const opts = Object.entries(AKIND_HE).filter(([k]) => k !== 'system')
+    .map(([k, l]) => '<option value="' + k + '"' + (k === 'task' ? ' selected' : '') + '>' + l + '</option>').join('');
+  const html =
+    '<div id="tfErr"></div><div class="form-grid">' +
+      '<label class="f">סוג<select id="t_kind">' + opts + '</select></label>' +
+      '<label class="f">תאריך יעד<input id="t_due_at" type="datetime-local" /></label>' +
+      '<label class="f span2">נושא *<input id="t_title" /></label>' +
+      '<label class="f span2">פירוט<textarea id="t_body"></textarea></label>' +
+    '</div><p style="margin-top:18px"><button class="btn" id="tfSave">שמירה</button></p>';
+
+  drawer('משימה חדשה', '', html, (close) => {
+    $('tfSave').addEventListener('click', async () => {
+      const p = {
+        office_id: OFFICE.id,
+        contact_id: c.contact_id || '', deal_id: c.deal_id || '', property_id: c.property_id || '',
+        kind: $('t_kind').value, title: $('t_title').value.trim(),
+        body: $('t_body').value.trim(), due_at: $('t_due_at').value || '',
+      };
+      if (!p.title) { $('tfErr').innerHTML = '<div class="err">נושא הוא שדה חובה.</div>'; return; }
+      $('tfSave').disabled = true;
+      try {
+        await rpc('np_activity_save', { p });
+        close(); toast('נשמר');
+        if (VIEW === 'tasks') renderTasks();
+      } catch (e) {
+        $('tfErr').innerHTML = '<div class="err">' + esc(e.message) + '</div>';
+        $('tfSave').disabled = false;
+      }
+    });
+  });
+}
+
+/* ── boot ────────────────────────────────────────────────────────────────── */
+async function requireSession() {
+  const { data } = await sb.auth.getSession();
+  if (data?.session) return data.session;
+  for (let i = 0; i < 10; i++) {
+    await new Promise((r) => setTimeout(r, 150));
+    const { data: d } = await sb.auth.getSession();
+    if (d?.session) return d.session;
+  }
+  location.replace(LOGIN);
+  return null;
+}
+
+function pickOffice(id) {
+  OFFICE = ME.offices.find((o) => o.id === id) || ME.offices[0];
+  try { localStorage.setItem('np-office', OFFICE.id); } catch (e) {}
+  $('officePick').value = OFFICE.id;
+}
+
+async function boot() {
+  if (!(await requireSession())) return;
+
+  try { ME = await rpc('np_me'); }
+  catch (e) { return fail('טעינת החשבון נכשלה: ' + e.message); }
+
+  if (!ME.offices || !ME.offices.length) { show('viewSetup'); return; }
+
+  const sel = $('officePick');
+  sel.innerHTML = ME.offices.map((o) =>
+    '<option value="' + o.id + '">' + esc(o.name) + '</option>').join('');
+  sel.hidden = ME.offices.length < 2;
+  $('tabs').hidden = false;
+
+  let saved = null;
+  try { saved = localStorage.getItem('np-office'); } catch (e) {}
+  pickOffice(saved && ME.offices.some((o) => o.id === saved) ? saved : ME.offices[0].id);
+
+  const want = new URLSearchParams(location.search).get('v');
+  setView(['dash', 'board', 'contacts', 'properties', 'tasks'].includes(want) ? want : 'dash');
+}
+
+$('officePick').addEventListener('change', (e) => { pickOffice(e.target.value); setView(VIEW); });
+for (const b of $('tabs').children) b.addEventListener('click', () => setView(b.dataset.view));
+
+$('oCreate').addEventListener('click', async () => {
+  const name = $('oName').value.trim();
+  if (!name) { $('setupErr').innerHTML = '<div class="err">שם המשרד הוא שדה חובה.</div>'; return; }
+  $('oCreate').disabled = true;
+  try {
+    await rpc('np_office_create', {
+      p_name: name, p_license: $('oLicense').value.trim() || null,
+      p_city: $('oCity').value.trim() || null, p_phone: $('oPhone').value.trim() || null,
+      p_email: $('oEmail').value.trim() || null,
+    });
+    ME = await rpc('np_me');
+    location.reload();
+  } catch (e) {
+    $('setupErr').innerHTML = '<div class="err">' + esc(e.message) + '</div>';
+    $('oCreate').disabled = false;
+  }
+});
+
+$('newContact').addEventListener('click', () => contactForm(null));
+$('newProperty').addEventListener('click', () => propertyForm(null));
+$('newDeal').addEventListener('click', () => dealForm(null));
+$('newTask').addEventListener('click', () => taskForm(null));
+$('cQ').addEventListener('input', () => { clearTimeout(cTimer); cTimer = setTimeout(renderContacts, 250); });
+for (const id of ['cKind', 'cSource']) $(id).addEventListener('change', renderContacts);
+$('pQ').addEventListener('input', () => { clearTimeout(cTimer); cTimer = setTimeout(renderProperties, 250); });
+$('pStatus').addEventListener('change', renderProperties);
+$('tFilter').addEventListener('change', renderTasks);
+
+boot();
+</script>
+</body>
+</html>
