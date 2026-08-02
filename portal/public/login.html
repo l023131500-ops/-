@@ -8,10 +8,11 @@
     <meta name="robots" content="noindex" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Secular+One&family=Heebo:wght@300;400;500;700&display=swap"
-      rel="stylesheet"
-    />
+    <!-- הגיליון יורד מנתיב הציור הראשון (Lighthouse: render-blocking) ומוחזר
+         כשהוא מגיע. גופן החלופה מוגדר ב-body לפי DESIGN_STANDARD §1, ולכן
+         העמוד קריא מיד גם כשנטפרי חוסמת את fonts.googleapis.com. -->
+    <link href="https://fonts.googleapis.com/css2?family=Secular+One&family=Heebo:wght@300;400;500;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Secular+One&family=Heebo:wght@300;400;500;700&display=swap" rel="stylesheet" /></noscript>
     <style>
       /* מצב בהיר וכהה — DESIGN_STANDARD §עיצוב. הצבעים מוגדרים פעם אחת
          כמשתנים, כדי שהמצב הכהה לא יהיה סט שני של כללים שיתפצל בתיקון הראשון. */

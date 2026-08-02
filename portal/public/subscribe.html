@@ -8,10 +8,11 @@
     <meta name="robots" content="noindex" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Secular+One&family=Frank+Ruhl+Libre:wght@300&family=Heebo:wght@300;400;500;700&display=swap"
-      rel="stylesheet"
-    />
+    <!-- הגיליון יורד מנתיב הציור הראשון (Lighthouse: render-blocking) ומוחזר
+         כשהוא מגיע. גופן החלופה מוגדר ב-body לפי DESIGN_STANDARD §1, ולכן
+         העמוד קריא מיד גם כשנטפרי חוסמת את fonts.googleapis.com. -->
+    <link href="https://fonts.googleapis.com/css2?family=Secular+One&family=Frank+Ruhl+Libre:wght@300&family=Heebo:wght@300;400;500;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Secular+One&family=Frank+Ruhl+Libre:wght@300&family=Heebo:wght@300;400;500;700&display=swap" rel="stylesheet" /></noscript>
     <style>
       :root {
         color-scheme: light dark;
@@ -55,7 +56,11 @@
       .btn.ghost { background: transparent; color: var(--ink); }
       .btn:disabled { opacity: .55; cursor: progress; }
       .btn:focus-visible, a:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
-      .badge { display: inline-block; font-size: 12px; font-weight: 700; color: var(--gold);
+      /* זהב על לבן נותן 2.42:1 — הרחק מתחת ל-4.5:1 שתקן 5568 דורש לטקסט
+         בגודל הזה. אותו זהב כרקע עם דיו כהה נותן 7.4:1, נשאר בדיוק אותו צבע
+         מותג, ועובד גם בערכה הבהירה וגם בכהה בלי תלות ב-‎--paper‎. */
+      .badge { display: inline-block; font-size: 12px; font-weight: 700;
+               background: var(--gold); color: #141619;
                border: 1px solid var(--gold); padding: 1px 8px; margin-bottom: 10px; }
       .msg { margin: 24px 0 0; padding: 14px 16px; border-radius: 2px; font-size: 14px; line-height: 1.8; }
       .msg.ok { background: var(--ok-bg); color: var(--ok-ink); }

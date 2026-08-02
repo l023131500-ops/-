@@ -8,10 +8,11 @@
     <meta name="robots" content="noindex" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Secular+One&family=Frank+Ruhl+Libre:wght@300;400&family=Heebo:wght@300;400;500;700&display=swap"
-      rel="stylesheet"
-    />
+    <!-- הגיליון יורד מנתיב הציור הראשון (Lighthouse: render-blocking) ומוחזר
+         כשהוא מגיע. גופן החלופה מוגדר ב-body לפי DESIGN_STANDARD §1, ולכן
+         העמוד קריא מיד גם כשנטפרי חוסמת את fonts.googleapis.com. -->
+    <link href="https://fonts.googleapis.com/css2?family=Secular+One&family=Frank+Ruhl+Libre:wght@300;400&family=Heebo:wght@300;400;500;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Secular+One&family=Frank+Ruhl+Libre:wght@300;400&family=Heebo:wght@300;400;500;700&display=swap" rel="stylesheet" /></noscript>
     <style>
       :root {
         color-scheme: light dark;
@@ -82,10 +83,14 @@
 
       <p class="loading" id="loading">טוען את האזור האישי…</p>
 
-      <main id="content" hidden>
+      <!-- כותרת ראשית אחת בדיוק לעמוד, גם כשיש בו שני מצבים (מחובר / לא
+           מחובר). קודם היו כאן שני ‎<main>‎ ושני ‎<h1>‎, האחד ‎hidden‎ —
+           והמדידה ספרה שניים, בצדק: ‎hidden‎ מסתיר מהעין, לא מהמסמך. -->
+      <main>
         <h1 id="hello">האזור האישי</h1>
         <p class="sub" id="tagline">הפרטים שלך, סוג החשבון, והמערכות שפתוחות לך.</p>
 
+        <div id="content" hidden>
         <section class="card">
           <h2>החשבון שלי</h2>
           <dl class="rows">
@@ -147,12 +152,11 @@
         <footer>
           יש שאלה או תקלה? <a href="/">חזרה לעולם הסטארטאפים</a>
         </footer>
-      </main>
+        </div>
 
-      <main id="anon" hidden>
-        <h1>האזור האישי</h1>
-        <p class="sub">צריך להתחבר כדי לראות את האזור האישי שלך.</p>
-        <a class="btn" href="/login?from=https%3A%2F%2Fmore30.com%2Fme">כניסה</a>
+        <div id="anon" hidden>
+          <a class="btn" href="/login?from=https%3A%2F%2Fmore30.com%2Fme">כניסה</a>
+        </div>
       </main>
     </div>
 
@@ -175,18 +179,25 @@
         el.hidden = false;
       }
 
+      // מצב "לא מחובר". הכותרת הראשית משותפת לשני המצבים, ולכן מה שמשתנה הוא
+      // משפט המשנה שמתחתיה — ולא כותרת שנייה שמסתתרת בעמוד.
+      function showAnon() {
+        $('loading').hidden = true;
+        $('tagline').textContent = 'צריך להתחבר כדי לראות את האזור האישי שלך.';
+        $('anon').hidden = false;
+      }
+
       (async function () {
         const { data: s } = await sb.auth.getSession();
         if (!s?.session) {
-          $('loading').hidden = true;
-          $('anon').hidden = false;
+          showAnon();
           return;
         }
 
         const { data: profile, error } = await sb.rpc('more30_profile_get');
         $('loading').hidden = true;
         if (error) {
-          $('anon').hidden = false;
+          showAnon();
           return;
         }
         $('content').hidden = false;

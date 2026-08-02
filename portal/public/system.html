@@ -5,12 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>מור מערכות תוכנה</title>
     <meta name="description" content="עמוד השירות — מה המערכת עושה, איך היא עובדת, והמסלולים." />
+    <!-- אותו קובץ משרת כל מערכת, ולכן הכתובת הקנונית נכתבת בזמן ריצה מהנתיב
+         עצמו (‎/chatzor‎, ‎/chizukim‎ …). ברירת המחדל כאן היא השורש, כדי
+         שהתג לא יהיה ריק אם הסקריפט לא רץ. -->
+    <link rel="canonical" id="canonical" href="https://more30.com/" />
+    <meta property="og:url" id="ogUrl" content="https://more30.com/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="he_IL" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Secular+One&family=Frank+Ruhl+Libre:wght@300;500&family=Heebo:wght@300;400;500;700&display=swap"
-      rel="stylesheet"
-    />
+    <!-- הגיליון יורד מנתיב הציור הראשון (Lighthouse: render-blocking) ומוחזר
+         כשהוא מגיע. גופן החלופה מוגדר ב-body לפי DESIGN_STANDARD §1, ולכן
+         העמוד קריא מיד גם כשנטפרי חוסמת את fonts.googleapis.com. -->
+    <link href="https://fonts.googleapis.com/css2?family=Secular+One&family=Frank+Ruhl+Libre:wght@300;500&family=Heebo:wght@300;400;500;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Secular+One&family=Frank+Ruhl+Libre:wght@300;500&family=Heebo:wght@300;400;500;700&display=swap" rel="stylesheet" /></noscript>
     <style>
       /* אותו קו עיצוב של אתר הבית: נייר בהיר על דיו כהה, קווי שיער בלבד,
          אפס גרדיאנטים ואפס צללים. ההיררכיה מגודל, ממשקל וממרווח. */
@@ -74,7 +82,10 @@
       .plan .btn { margin-top: auto; width: 100%; font-size: 15px; }
 
       footer { border-block-start: 1px solid var(--line); padding: 34px 0 60px; font-size: 13px; color: var(--muted); }
-      footer a { color: var(--ink); }
+      /* קישור טקסט ב-13px מקבל תיבת שורה של 19px — מתחת ל-24px שתקן 5568
+         דורש מיעד מגע. ‎inline-flex‎ עם ‎min-height‎ מגדיל את שטח הלחיצה
+         בלי להזיז את הטקסט ולו בפיקסל. */
+      footer a { color: var(--ink); display: inline-flex; align-items: center; min-height: 24px; }
       .note { font-size: 13px; color: var(--muted); margin-top: 16px; }
       [hidden] { display: none !important; }
       .skeleton { color: var(--muted); padding: 80px 0; }
@@ -136,13 +147,18 @@
         </section>
       </div>
 
-      <div id="missing" hidden>
+      <!-- מצב "לא נמצא במרשם". ‎<template>‎ ולא ‎hidden‎: ‎hidden‎ מסתיר
+           מהעין אבל האלמנט נשאר במסמך, ולכן שתי הכותרות נספרו — ובצדק —
+           כשתי ‎<h1>‎ בעמוד אחד. תוכן ‎<template>‎ אינו חלק מהמסמך עד
+           שמכניסים אותו, ולכן בכל מצב יש כאן כותרת ראשית אחת בדיוק. -->
+      <template id="missingTpl">
         <section>
           <h1>השירות הזה עדיין בהכנה</h1>
           <p class="lede">הוא רשום במרשם המערכות, אבל עוד אין לו עמוד פעיל.</p>
           <div class="cta"><a class="btn" href="/">לכל המערכות</a></div>
         </section>
-      </div>
+      </template>
+      <div id="missing" hidden></div>
     </main>
 
     <footer>
@@ -169,6 +185,15 @@
         params.get('app') ||
         location.pathname.replace(/^\/+/, '').split('/')[0] ||
         'more30';
+
+      // הכתובת הקנונית היא more30.com/<שם> — לעולם לא כתובת הפריסה, ולעולם
+      // לא עם ‎?app=‎, כדי ששני נתיבים שמציגים את אותו שירות לא ייספרו כשני
+      // עמודים.
+      {
+        const canon = 'https://more30.com/' + (appKey === 'more30' ? '' : appKey);
+        document.getElementById('canonical').href = canon;
+        document.getElementById('ogUrl').content = canon;
+      }
 
       function esc(s) {
         return String(s ?? '').replace(/[&<>"']/g, (c) =>
@@ -210,7 +235,9 @@
         $('loading').hidden = true;
 
         if (!data?.found) {
+          $('missing').appendChild($('missingTpl').content.cloneNode(true));
           $('missing').hidden = false;
+          document.title = 'בהכנה · מור מערכות תוכנה';
           return;
         }
 

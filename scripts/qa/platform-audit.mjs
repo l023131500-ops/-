@@ -118,12 +118,42 @@ const PROBE = () => {
   const bodyBg = getComputedStyle(document.body).backgroundColor;
   const bodyFg = getComputedStyle(document.body).color;
 
+  // ⚠️ ‎backgroundColor‎ של ‎body‎ לבדו הוא מדד שקרי, ופסל כאן דף שיש לו מצב
+  // כהה אמיתי: ‎/login‎ צובע את הרקע ב-‎radial-gradient‎, ולכן ה-color שלו
+  // שקוף בשני המצבים והשוואה ביניהם תמיד יוצאת "זהה". מה שהעין רואה הוא
+  // הצבע האטום הראשון בשרשרת ‎body → html‎, ביחד עם תמונת הרקע.
+  const parseRgb = (s) => {
+    const m = String(s).match(/-?[\d.]+/g);
+    if (!m) return null;
+    const [r, g, b, a] = m.map(Number);
+    return { r, g, b, a: a === undefined ? 1 : a };
+  };
+  let effBg = 'transparent';
+  for (const el of [document.body, de]) {
+    const c = parseRgb(getComputedStyle(el).backgroundColor);
+    if (c && c.a > 0) { effBg = getComputedStyle(el).backgroundColor; break; }
+  }
+  const bgImages = [document.body, de]
+    .map((el) => getComputedStyle(el).backgroundImage)
+    .filter((v) => v && v !== 'none')
+    .join(' | ');
+  // בהירות נתפסת (sRGB relative luminance). דף שכבר כהה מלכתחילה עומד
+  // בדרישה של §3 גם אם אינו משתנה בין המצבים — זו בדיוק הכוונה שם.
+  const lum = (() => {
+    const c = parseRgb(effBg);
+    if (!c) return null;
+    const f = (v) => { v /= 255; return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4; };
+    return +(0.2126 * f(c.r) + 0.7152 * f(c.g) + 0.0722 * f(c.b)).toFixed(4);
+  })();
+  const colorScheme = getComputedStyle(de).colorScheme || '';
+
   return {
     title: document.title,
     lang: de.getAttribute('lang') || '',
     dir: de.getAttribute('dir') || getComputedStyle(de).direction || '',
     metaDescription: (document.querySelector('meta[name="description"]')?.content || '').trim(),
     metaViewport: (document.querySelector('meta[name="viewport"]')?.content || '').trim(),
+    metaRobots: (document.querySelector('meta[name="robots"]')?.content || '').trim(),
     canonical: (document.querySelector('link[rel="canonical"]')?.href || ''),
     ogUrl: (document.querySelector('meta[property="og:url"]')?.content || ''),
     h1Count: document.querySelectorAll('h1').length,
@@ -139,6 +169,10 @@ const PROBE = () => {
     authBtnText: text(document.querySelector('#more30-auth-btn, [data-more30-auth]') || document.createElement('i')).slice(0, 40),
     bodyBg,
     bodyFg,
+    effBg,
+    bgImages,
+    bgLuminance: lum,
+    colorScheme,
     // vercel.app must never leak into the browser's view of the page
     vercelLeak: [...document.querySelectorAll('a[href]')].map((a) => a.href).filter((h) => h.includes('vercel.app')).slice(0, 5),
     scrollW: de.scrollWidth,
@@ -148,8 +182,20 @@ const PROBE = () => {
 
 // ---------------------------------------------------------------- runner
 const browser = await chromium.launch({ executablePath: EXE, headless: true });
-const results = { startedAt: new Date().toISOString(), origin: ORIGIN, routes: {} };
+
+// ⚠️ ריצה חלקית **מתמזגת** לתוך התוצאות הקיימות ואינה מוחקת אותן. הגרסה
+// הראשונה פתחה אובייקט ריק בכל ריצה, ולכן בדיקה חוזרת של ארבעה נתיבים אחרי
+// תיקון מחקה את המדידה של עשרים ושלושה האחרים — בלי אזהרה, ובקובץ שכל דוחות
+// ה-QA נכתבים ממנו. אין סיבה שריצה ממוקדת תעלה בכל מה שכבר נמדד.
+const OUTFILE = path.join(OUT, '_results.json');
+const prior = fs.existsSync(OUTFILE) ? JSON.parse(fs.readFileSync(OUTFILE, 'utf8')) : null;
+const results = {
+  startedAt: prior?.startedAt || new Date().toISOString(),
+  origin: ORIGIN,
+  routes: prior?.routes || {},
+};
 const targets = ONLY.length ? ROUTES.filter((r) => ONLY.includes(r.key)) : ROUTES;
+if (ONLY.length && prior) console.log(`merging ${targets.length} route(s) into ${Object.keys(results.routes).length} already measured`);
 
 for (const route of targets) {
   const url = ORIGIN + route.path;
@@ -207,10 +253,22 @@ for (const route of targets) {
     await ctx.close();
   }
 
-  // A page that renders identically under prefers-color-scheme:dark has no dark
-  // mode. Comparing the computed body background is the cheapest honest test.
-  if (rec.desktop?.bodyBg && rec.dark?.bodyBg) {
-    rec.darkModeImplemented = rec.desktop.bodyBg !== rec.dark.bodyBg;
+  // DESIGN_STANDARD §3 asks one question: can a reader who arrives from the
+  // dark portal at 2am get a white page in the face? Two ways to answer no —
+  //   (a) the page repaints under prefers-color-scheme: dark, or
+  //   (b) it was already dark to begin with, and says so via color-scheme.
+  // Only (a) was checked before, which failed pages that are dark by design
+  // and pages that paint their background with a gradient instead of a colour.
+  if (rec.desktop?.effBg && rec.dark?.effBg) {
+    const l = rec.desktop;
+    const d = rec.dark;
+    const responds =
+      l.effBg !== d.effBg || l.bodyFg !== d.bodyFg || l.bgImages !== d.bgImages;
+    const alreadyDark =
+      l.bgLuminance !== null && l.bgLuminance < 0.06 &&
+      /dark/.test(l.colorScheme || '');
+    rec.darkModeImplemented = responds || alreadyDark;
+    rec.darkModeBasis = responds ? 'responds' : alreadyDark ? 'dark-by-design' : 'none';
   }
   if (rec.mobile) {
     rec.horizontalOverflow = (rec.mobile.scrollW || 0) > (rec.mobile.clientW || 0) + 1;

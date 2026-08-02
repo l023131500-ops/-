@@ -1,0 +1,21 @@
+# more30.com
+#
+# עד עכשיו לא היה כאן קובץ, וה-rewrite הכולל של הפורטל
+# ({ "source": "/(.*)", "destination": "/index.html" }) החזיר לזוחלים את דף
+# הבית כ-HTML במקום robots.txt. גוגל קרא אותו כקובץ שבור — Lighthouse ספר
+# 43 שגיאות תחביר, בכל אחד מ-27 הנתיבים. קובץ סטטי אמיתי נבדק לפני
+# ה-rewrites, ולכן עצם קיומו פותר את זה.
+
+User-agent: *
+Allow: /
+
+# עמודי חשבון. הם נושאים ‎<meta name="robots" content="noindex">‎ בלבד — ולא
+# ‎Disallow‎ — כדי שגוגל יוכל לקרוא אותם, לראות את ה-noindex ולהסירם מהאינדקס.
+# ‎Disallow‎ היה מונע ממנו לקרוא, וכתובות שכבר נאספו היו נשארות שם לנצח.
+
+# מסלולי שירות שאין להם תוכן לזוחל
+Disallow: /auth/
+Disallow: /admin
+Disallow: /api/
+
+Sitemap: https://more30.com/sitemap.xml

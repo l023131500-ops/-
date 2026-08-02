@@ -8,13 +8,31 @@
     <meta property="og:title" content="עולם הסטארטאפים" />
     <meta property="og:description" content="עשרות מערכות פעילות, ליווי מלא מרעיון למוצר, תחת קורת גג אחת." />
     <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://more30.com/" />
+    <meta property="og:locale" content="he_IL" />
+    <link rel="canonical" href="https://more30.com/" />
     <meta name="theme-color" content="#0B0D2E" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- גיליון הפונטים נטען בלי לחסום את הציור הראשון. שתי סיבות, ושתיהן
+         נמדדו: Lighthouse זקף 530ms ל-render-blocking ו-290ms ל-font-display,
+         ונטפרי חוסמת כאן את fonts.googleapis.com מדי פעם — ואז הבקשה החוסמת
+         מעכבת את כל העמוד עד שהיא נכשלת. ‎media="print"‎ מוריד את הגיליון
+         מנתיב הציור, ו-‎onload‎ מחזיר אותו ברגע שהגיע. גופן החלופה
+         (‎system-ui‎) מוגדר ממילא לפי DESIGN_STANDARD §1, ולכן העמוד קריא
+         מהרגע הראשון גם אם הפונטים לא יגיעו כלל. -->
     <link
       href="https://fonts.googleapis.com/css2?family=Suez+One&family=Secular+One&family=Frank+Ruhl+Libre:wght@300;400;500&family=Heebo:wght@300;400;500;700&display=swap"
       rel="stylesheet"
+      media="print"
+      onload="this.media='all'"
     />
+    <noscript>
+      <link
+        href="https://fonts.googleapis.com/css2?family=Suez+One&family=Secular+One&family=Frank+Ruhl+Libre:wght@300;400;500&family=Heebo:wght@300;400;500;700&display=swap"
+        rel="stylesheet"
+      />
+    </noscript>
     <style>
       *, *::before, *::after { box-sizing: border-box; }
       html { scroll-behavior: smooth; }

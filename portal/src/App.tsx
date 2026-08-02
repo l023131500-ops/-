@@ -128,7 +128,7 @@ export function App() {
 
 function ComingSoon({ row }: { row: System }) {
   return (
-    <div className="soon" dir="rtl">
+    <main className="soon" dir="rtl">
       <div className="soon-in">
         <div className="eyebrow">מור מערכות תוכנה</div>
         <h1 className="display soon-title">{row.title}</h1>
@@ -137,7 +137,7 @@ function ComingSoon({ row }: { row: System }) {
         <p className="soon-note">בקרוב · more30.com/{row.path}</p>
         <a className="btn" href="/">חזרה לעולם הסטארטאפים</a>
       </div>
-    </div>
+    </main>
   );
 }
 
@@ -176,6 +176,10 @@ function Portal({ load, retry }: { load: Load; retry: () => void }) {
         </div>
       </nav>
 
+      {/* ‎<main>‎ אינו קישוט: קורא מסך מציע "דלג לתוכן הראשי" רק כשיש ציון-דרך
+          כזה, ובלי זה המשתמש חוצה את כל הנווט בכל טעינה. Lighthouse סימן את
+          חסרונו כאן ("Document does not have a main landmark"). */}
+      <main>
       {/* פתיחה — השם הראשי, הרבה אוויר, שום דבר מעבר */}
       <header className="hero" id="top">
         <div className="hero-in">
@@ -262,6 +266,7 @@ function Portal({ load, retry }: { load: Load; retry: () => void }) {
           <SpecWizard />
         </div>
       </section>
+      </main>
 
       <footer className="footer">
         <div className="wrap footer-in">
