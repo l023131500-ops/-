@@ -1,0 +1,77 @@
+[
+  {
+    "name": "login through the console UI",
+    "pass": true,
+    "detail": ""
+  },
+  {
+    "name": "device enrolled with a 6-char code",
+    "pass": true,
+    "detail": "code W84DS2"
+  },
+  {
+    "name": "device home host is pinned in the list",
+    "pass": true,
+    "detail": "venue.example.com"
+  },
+  {
+    "name": "pinned host cannot be removed",
+    "pass": true,
+    "detail": ""
+  },
+  {
+    "name": "invalid domain is rejected with a message",
+    "pass": true,
+    "detail": ""
+  },
+  {
+    "name": "pasted URL normalised to its host",
+    "pass": true,
+    "detail": "venue.example.com, pay.example.com, secure.cardcom.co.il"
+  },
+  {
+    "name": "port stripped",
+    "pass": true,
+    "detail": ""
+  },
+  {
+    "name": "duplicate domain not added twice",
+    "pass": true,
+    "detail": ""
+  },
+  {
+    "name": "saved list persisted to the server",
+    "pass": true,
+    "detail": "venue.example.com,pay.example.com,secure.cardcom.co.il"
+  },
+  {
+    "name": "URL outside the allow-list is refused by the server",
+    "pass": true,
+    "detail": "HTTP 400"
+  },
+  {
+    "name": "URL inside the allow-list is accepted",
+    "pass": true,
+    "detail": "HTTP 200"
+  },
+  {
+    "name": "lookalike domain refused",
+    "pass": true,
+    "detail": "HTTP 400"
+  },
+  {
+    "name": "console usable at 390px",
+    "pass": true,
+    "detail": ""
+  },
+  {
+    "name": "QA device removed",
+    "pass": true,
+    "detail": ""
+  },
+  {
+    "name": "no unexpected console errors",
+    "pass": true,
+    "detail": ""
+  }
+]
