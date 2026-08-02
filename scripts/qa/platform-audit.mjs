@@ -52,6 +52,9 @@ const ROUTES = [
   { key: 'crm',       sys: '30', path: '/crm',       name: 'CRM זכויות' },
   { key: 'gesher',    sys: '31', path: '/gesher',    name: 'גשר עברית CRM' },
   { key: 'nadlan',    sys: '32', path: '/nadlan',    name: 'נדל"ן ברגע' },
+  { key: 'kesef',     sys: '34', path: '/kesef',     name: 'כסף — שקיפות תקציבית' },
+  { key: 'kiosk',     sys: '35', path: '/kiosk/',    name: 'KioskFleet' },
+  { key: 'tivuch',    sys: '36', path: '/tivuch',    name: 'נדל"ן פרו — ניהול למתווכים' },
 ];
 
 fs.mkdirSync(OUT, { recursive: true });
