@@ -37,13 +37,38 @@ import { readFile, writeFile, stat } from 'node:fs/promises';
 import { join, extname, normalize } from 'node:path';
 import { chromium } from 'playwright';
 
-const [, , rootDirArg, routeArg] = process.argv;
+const args = process.argv.slice(2);
+const flags = new Map();
+const positional = [];
+for (const a of args) {
+  const m = /^--([^=]+)=(.*)$/.exec(a);
+  if (m) flags.set(m[1], m[2]);
+  else positional.push(a);
+}
+const [rootDirArg, routeArg] = positional;
 if (!rootDirArg || !routeArg) {
-  console.error('usage: node scripts/prerender-spa.mjs <rootDir> <route>');
+  console.error('usage: node scripts/prerender-spa.mjs <rootDir> <route> [--seed-url=URL --seed-global=NAME]');
   process.exit(2);
 }
 const ROOT = normalize(rootDirArg);
 const ROUTE = routeArg.endsWith('/') ? routeArg : routeArg + '/';
+
+/**
+ * Optional: fetch one JSON document and hand it to the page as a global before
+ * any of its scripts run, then write the same value into the built HTML.
+ *
+ * This is the difference between a prerender that only helps FCP and one that
+ * also moves LCP. Without it the capture either bakes live data the client's
+ * first render cannot reproduce (hydration mismatch, React discards everything)
+ * or bakes a data-free shell showing fallback text that then visibly changes.
+ * Seeding one small object makes both sides render the same real content on the
+ * first pass, so React can adopt the DOM that already painted.
+ *
+ * Deliberately one document, not a whole query cache: everything else on the
+ * page keeps loading normally and is free to differ.
+ */
+const SEED_URL = flags.get('seed-url') || null;
+const SEED_GLOBAL = flags.get('seed-global') || '__SEED__';
 
 const MIME = {
   '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8',
@@ -80,6 +105,23 @@ async function serve() {
   return { server, port: server.address().port };
 }
 
+let seedValue = null;
+if (SEED_URL) {
+  const res = await fetch(SEED_URL, { headers: { accept: 'application/json' } });
+  if (!res.ok) {
+    console.error(`seed fetch failed: ${res.status} ${SEED_URL}`);
+    process.exit(1);
+  }
+  const body = await res.json();
+  // PostgREST answers a filtered select with an array; a seed is one document.
+  seedValue = Array.isArray(body) ? body[0] ?? null : body;
+  if (!seedValue) {
+    console.error('seed fetch returned nothing; refusing to bake a page with no content');
+    process.exit(1);
+  }
+  console.log(`seeded ${SEED_GLOBAL} from ${SEED_URL.split('?')[0]}`);
+}
+
 const { server, port } = await serve();
 const url = `http://127.0.0.1:${port}${ROUTE}`;
 console.log('prerendering ' + url);
@@ -107,23 +149,45 @@ try {
    * painted early is kept. The static shell — heading, hero copy, nav — is
    * exactly what LCP measures, and it is unaffected by this.
    */
+  if (seedValue !== null) {
+    await page.addInitScript(
+      ([name, json]) => {
+        // eslint-disable-next-line no-new-func
+        window[name] = JSON.parse(json);
+      },
+      [SEED_GLOBAL, JSON.stringify(seedValue)],
+    );
+  }
+
   /**
-   * The capture runs with the network intact, and that is a compromise worth
-   * stating rather than hiding.
+   * `--block-data=1` aborts per-page queries during capture. Off by default,
+   * and the reason is measured.
    *
-   * Ideally the data layer would be blocked so the baked markup matched the
-   * client's first (empty) render and `hydrateRoot` could adopt the DOM instead
-   * of rebuilding it — that is what would move LCP, not just FCP. It was tried
-   * and measured: with /rest/v1 aborted, torah's #root ends up with two children
-   * and zero characters of text. The app gates its whole render on data, so
-   * there is no static shell to capture. Blocking /auth/v1 as well is worse
-   * still — the page never renders at all and the capture times out.
+   * The idea was to make the bake hydratable: with queries unresolved both the
+   * capture and the client's first render would show the same reserved
+   * placeholders, React could adopt the painted DOM, and LCP would land with the
+   * first paint instead of when React rebuilds. It does not hold up. An aborted
+   * request does not leave react-query *pending* — it settles to *error*, so the
+   * capture renders the empty branch while the client renders the pending one.
+   * Different trees, React #418 then #423, root discarded. Measured on torah:
+   * performance 66 -> 58 and TBT 360ms -> 700ms, because the page now pays for a
+   * failed hydration on top of the render it was going to do anyway.
    *
-   * So what is baked is the fully populated page. It gives a genuine first
-   * paint (FCP 3.2s -> 2.1s, measured) but React will replace it, so LCP does
-   * not move. Closing that needs SSR with a serialised query cache. See
-   * QA/torah.md; it is an architectural call, not a tuning one.
+   * Making hydration work here needs every query on the route serialised, not
+   * just the tenant — real SSR. The flag is kept because it is the right tool
+   * for a route whose above-the-fold content is genuinely static, and wrong for
+   * this one.
+   *
+   * Auth is never blocked either way: it resolves to "no session", which is the
+   * state a first-time visitor is in, and blocking it leaves apps that gate on
+   * the session permanently blank.
    */
+  if (flags.get('block-data') === '1') {
+    await page.route('**/*', (route) => {
+      const u = route.request().url();
+      return /\/rest\/v1\/|\/functions\/v1\//.test(u) ? route.abort() : route.continue();
+    });
+  }
 
   await page.goto(url, { waitUntil: 'networkidle', timeout: 60000 });
 
@@ -172,6 +236,20 @@ else if (EMPTY.test(html)) replaced = html.replace(EMPTY, baked);
 else {
   console.error('could not find an empty or previously baked <div id="root"> in ' + indexPath);
   process.exit(1);
+}
+
+if (seedValue !== null) {
+  // The same value the capture ran against, so the client's first render
+  // reproduces the baked markup exactly. `</script` is escaped because the JSON
+  // is being embedded in a script element and a site name containing that
+  // sequence would otherwise close the tag early.
+  const json = JSON.stringify(seedValue).replace(/<\/script/gi, '<\\/script');
+  const tag = `<script id="prerender-seed">window.${SEED_GLOBAL}=${json}</script>`;
+  const SEED_TAG = /<script id="prerender-seed">[\s\S]*?<\/script>/;
+  replaced = SEED_TAG.test(replaced)
+    ? replaced.replace(SEED_TAG, tag)
+    // Before the bundle, or the app would read the global after it needed it.
+    : replaced.replace(/(<script type="module")/, `${tag}\n    $1`);
 }
 
 await writeFile(indexPath, replaced, 'utf8');
