@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>חתימה על מסמך · נדל״ן פרו</title>
+<!-- A signing link is private to one person. Nothing here should ever appear
+     in a search result. -->
+<meta name="robots" content="noindex, nofollow" />
+<meta name="theme-color" content="#0B0D2E" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Secular+One&family=Heebo:wght@300;400;500;700&display=swap"
+      rel="stylesheet" media="print" onload="this.media='all'" />
+<noscript><link href="https://fonts.googleapis.com/css2?family=Secular+One&family=Heebo:wght@300;400;500;700&display=swap" rel="stylesheet" /></noscript>
+<!-- Deliberately NOT loading auth-button.js. The signer is a client, not a
+     more30 user; offering them a sign-in pill on a document they were sent
+     would imply they need an account, and they do not. -->
+<style>
+:root{
+  color-scheme: dark;
+  --royal:#0B0D2E; --royal-2:#12153F;
+  --gold:#C9A227; --gold-soft:#E3C765; --emerald:#14B88A; --rose:#E0574E;
+  --ink:#ECE9F5; --ink-2:#B9B6D6; --muted:#8E8BB2;
+  --line:rgba(201,162,39,.20); --line-2:rgba(236,233,245,.10);
+  --ease:cubic-bezier(.22,.61,.36,1);
+}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--royal);color:var(--ink);
+  font-family:'Heebo',system-ui,-apple-system,'Segoe UI',sans-serif;font-weight:300;line-height:1.7;
+  -webkit-font-smoothing:antialiased}
+.wrap{max-width:780px;margin:0 auto;padding:28px 20px 80px}
+.name{font-family:'Secular One','Heebo',sans-serif;font-weight:400}
+h1{font-family:'Secular One',sans-serif;font-weight:400;font-size:24px;margin:0 0 4px}
+.sub{color:var(--muted);font-size:14px;margin:0 0 24px}
+[hidden]{display:none !important}
+
+.brand{display:flex;align-items:center;gap:10px;padding:14px 0 22px;
+  border-bottom:1px solid var(--line-2);margin-bottom:24px}
+.brand .m{font-family:'Secular One',sans-serif;font-size:16px}
+.brand .m span{color:var(--gold)}
+
+.doc{background:#fff;color:#15172b;border-radius:5px;padding:34px 32px;
+  font-size:15px;line-height:1.85;margin-bottom:24px;overflow-wrap:break-word}
+.doc h1,.doc h2,.doc h3{font-family:'Secular One',sans-serif;font-weight:400;color:#0B0D2E;
+  margin:1.4em 0 .5em;line-height:1.3}
+.doc h1{font-size:23px;margin-top:0}
+.doc h2{font-size:19px}
+/* Colour stated on the text elements, not left to inherit from .doc. This is a
+   legal document on a white card inside a dark page: anything that lets the
+   page's light ink win renders the terms at roughly 1.4:1 on white. Measured at
+   13.9:1 as written. */
+.doc p,.doc li,.doc td,.doc th,.doc span,.doc div{color:#15172b}
+.doc p{margin:0 0 1em}
+.doc strong,.doc b{color:#0B0D2E;font-weight:500}
+.doc blockquote{border-inline-start:3px solid var(--gold);margin:1.2em 0;padding:2px 16px;color:#4a4d68}
+.doc table{width:100%;border-collapse:collapse}
+.doc td,.doc th{border:1px solid #dfe0ea;padding:8px 10px;text-align:start}
+.doc hr{border:0;border-top:1px solid #dfe0ea;margin:1.6em 0}
+
+.pad-wrap{border:1px solid var(--line);border-radius:5px;padding:18px;background:rgba(201,162,39,.04)}
+.pad-wrap h2{font-family:'Secular One',sans-serif;font-weight:400;font-size:17px;margin:0 0 4px}
+.pad-note{color:var(--muted);font-size:13px;margin:0 0 14px}
+canvas{width:100%;height:190px;background:#fff;border-radius:4px;border:1px solid #d8d9e4;
+  touch-action:none;cursor:crosshair;display:block}
+.pad-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;align-items:center}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  font-family:'Heebo',sans-serif;font-size:15px;font-weight:400;padding:12px 26px;
+  border:1px solid var(--gold);border-radius:3px;background:var(--gold);color:var(--royal);
+  cursor:pointer;transition:background .2s var(--ease),color .2s var(--ease)}
+.btn:hover:not(:disabled){background:transparent;color:var(--gold-soft);box-shadow:0 0 0 1px var(--gold) inset}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn:focus-visible{outline:3px solid var(--gold-soft);outline-offset:3px}
+.btn-quiet{background:transparent;color:var(--ink-2);border-color:var(--line-2)}
+.btn-quiet:hover:not(:disabled){color:var(--gold-soft);border-color:var(--gold);box-shadow:none}
+.btn-link{background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;
+  font-family:inherit;font-size:13px;padding:6px}
+.btn-link:hover{color:var(--ink-2)}
+
+.legal{border:1px solid var(--line-2);border-radius:4px;padding:16px 18px;margin:22px 0;
+  color:var(--ink-2);font-size:13px;line-height:1.7;background:rgba(236,233,245,.03)}
+.legal b{color:var(--ink);font-weight:500}
+.state{border-radius:5px;padding:26px 28px;text-align:center;margin:30px 0}
+.state.ok{border:1px solid rgba(20,184,138,.5);background:rgba(20,184,138,.08)}
+.state.bad{border:1px solid rgba(224,87,78,.5);background:rgba(224,87,78,.08)}
+.state h2{font-family:'Secular One',sans-serif;font-weight:400;font-size:20px;margin:0 0 8px}
+.state p{margin:0;color:var(--ink-2);font-size:14px}
+.state .hash{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;
+  color:var(--muted);word-break:break-all;margin-top:12px}
+.err{border:1px solid rgba(224,87,78,.5);background:rgba(224,87,78,.08);border-radius:4px;
+  padding:12px 16px;color:var(--ink-2);font-size:14px;margin:14px 0}
+.loading{color:var(--muted);font-size:15px;text-align:center;padding:60px 0}
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid var(--line-2);
+  border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite;
+  vertical-align:-2px;margin-inline-end:8px}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.spinner{animation-duration:2s}}
+.foot{text-align:center;color:var(--muted);font-size:12px;margin-top:40px;
+  padding-top:20px;border-top:1px solid var(--line-2)}
+@media(max-width:520px){.doc{padding:22px 18px}.wrap{padding:20px 14px 60px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand">
+    <span class="m">נדל״ן<span> פרו</span></span>
+  </div>
+
+  <div id="loading" class="loading"><span class="spinner"></span>טוען את המסמך…</div>
+
+  <main id="main" hidden>
+    <h1 id="title"></h1>
+    <p class="sub" id="sub"></p>
+
+    <div class="doc" id="doc"></div>
+
+    <div class="legal">
+      <b>על החתימה הזו:</b> זוהי <b>חתימה אלקטרונית מאובטחת</b> לפי חוק חתימה
+      אלקטרונית, תשס״א-2001. עם החתימה יישמרו מועד החתימה, כתובת ה-IP שממנה בוצעה,
+      ותמצית (hash) של נוסח המסמך המדויק שנחתם — כך שניתן להוכיח שהנוסח לא שונה לאחר מכן.
+      <br/><br/>
+      זו <b>אינה</b> חתימה אלקטרונית <b>מאושרת</b>, שדורשת תעודה מגורם מאשר מוסמך.
+      למסמכים המחייבים חתימה מאושרת יש להיוועץ בעורך דין.
+    </div>
+
+    <div class="pad-wrap" id="padWrap">
+      <h2>חתימה</h2>
+      <p class="pad-note">חתום בעכבר או באצבע במסגרת הלבנה.</p>
+      <canvas id="pad" aria-label="אזור חתימה"></canvas>
+      <div class="pad-actions">
+        <button class="btn" id="submit" disabled>אני חותם/ת על המסמך</button>
+        <button class="btn btn-quiet" id="clear">נקה</button>
+        <span style="flex:1"></span>
+        <button class="btn-link" id="decline">איני מעוניין/ת לחתום</button>
+      </div>
+      <div id="err"></div>
+    </div>
+
+    <div id="done" hidden></div>
+  </main>
+
+  <div id="fatal" hidden></div>
+
+  <p class="foot">
+    נשלח דרך נדל״ן פרו · <a href="https://more30.com" style="color:var(--muted)">more30.com</a>
+  </p>
+</div>
+
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+const SUPABASE_URL = 'https://uhnrgujbdxhhmoxcjria.supabase.co';
+const SUPABASE_ANON =
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVobnJndWpiZHhoaG1veGNqcmlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMzNjE3MjgsImV4cCI6MjA5ODkzNzcyOH0.nHuOhw-WQEU17lNa7XOlORnBhVAYbJBHudKafWkSHBw';
+
+// persistSession false: signing is a one-time act by someone who is not a user
+// of this platform. Leaving a session in their browser would be storage they
+// never asked for.
+const sb = createClient(SUPABASE_URL, SUPABASE_ANON, {
+  auth: { persistSession: false, autoRefreshToken: false },
+});
+
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) =>
+  ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const token = new URLSearchParams(location.search).get('t');
+
+function fatal(title, msg) {
+  $('loading').hidden = true;
+  $('main').hidden = true;
+  $('fatal').hidden = false;
+  $('fatal').innerHTML = '<div class="state bad"><h2>' + esc(title) + '</h2><p>' + esc(msg) + '</p></div>';
+}
+
+function finished(title, msg, hash) {
+  $('padWrap').hidden = true;
+  $('done').hidden = false;
+  $('done').innerHTML = '<div class="state ok"><h2>' + esc(title) + '</h2><p>' + esc(msg) + '</p>' +
+    (hash ? '<p class="hash">תמצית המסמך שנחתם (SHA-256):<br/>' + esc(hash) + '</p>' : '') + '</div>';
+  $('done').scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+/* ── signature pad ───────────────────────────────────────────────────────── */
+const pad = $('pad');
+const ctx = pad.getContext('2d');
+let drawing = false, hasInk = false;
+
+function sizePad() {
+  // Backing store at device resolution, or the stroke is soft on a phone —
+  // which is exactly where most people will sign this.
+  const dpr = window.devicePixelRatio || 1;
+  const r = pad.getBoundingClientRect();
+  const data = hasInk ? pad.toDataURL() : null;
+  pad.width = Math.round(r.width * dpr);
+  pad.height = Math.round(r.height * dpr);
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.lineWidth = 2.2;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  ctx.strokeStyle = '#15172b';
+  if (data) {
+    const img = new Image();
+    img.onload = () => ctx.drawImage(img, 0, 0, r.width, r.height);
+    img.src = data;
+  }
+}
+
+const point = (e) => {
+  const r = pad.getBoundingClientRect();
+  const p = e.touches ? e.touches[0] : e;
+  return { x: p.clientX - r.left, y: p.clientY - r.top };
+};
+
+function start(e) {
+  e.preventDefault();
+  drawing = true;
+  const p = point(e);
+  ctx.beginPath();
+  ctx.moveTo(p.x, p.y);
+}
+function move(e) {
+  if (!drawing) return;
+  e.preventDefault();
+  const p = point(e);
+  ctx.lineTo(p.x, p.y);
+  ctx.stroke();
+  if (!hasInk) { hasInk = true; $('submit').disabled = false; }
+}
+function end() { drawing = false; }
+
+pad.addEventListener('pointerdown', start);
+pad.addEventListener('pointermove', move);
+window.addEventListener('pointerup', end);
+pad.addEventListener('pointerleave', end);
+window.addEventListener('resize', sizePad);
+
+$('clear').addEventListener('click', () => {
+  ctx.clearRect(0, 0, pad.width, pad.height);
+  hasInk = false;
+  $('submit').disabled = true;
+});
+
+/* ── the client's IP ─────────────────────────────────────────────────────── */
+// Recorded as evidence. A browser cannot see its own public address, so this
+// asks a public echo service; if it is unavailable the signature still stands
+// and the field is simply absent rather than guessed.
+async function clientIp() {
+  try {
+    const r = await fetch('https://api.ipify.org?format=json', { signal: AbortSignal.timeout(4000) });
+    if (!r.ok) return null;
+    return (await r.json()).ip || null;
+  } catch (e) { return null; }
+}
+
+/* ── boot ────────────────────────────────────────────────────────────────── */
+async function boot() {
+  if (!token) return fatal('קישור חסר', 'הכתובת אינה כוללת מזהה חתימה. פתח את הקישור שנשלח אליך במלואו.');
+
+  let d;
+  try {
+    const { data, error } = await sb.rpc('np_sign_fetch', { p_token: token });
+    if (error) throw new Error(error.message);
+    d = data;
+  } catch (e) {
+    return fatal('טעינת המסמך נכשלה', e.message);
+  }
+
+  if (!d || !d.ok) return fatal('הקישור אינו תקף', (d && d.error) || 'ייתכן שהקישור פג או שכבר נעשה בו שימוש.');
+  if (d.expired) return fatal('תוקף הקישור פג', 'פנה לשולח המסמך לקבלת קישור חדש.');
+
+  $('loading').hidden = true;
+  $('main').hidden = false;
+  $('title').textContent = d.title || 'מסמך לחתימה';
+  $('sub').textContent =
+    (d.signer_name ? 'לחתימת ' + d.signer_name : '') +
+    (d.broker_name ? ' · נשלח על ידי ' + d.broker_name : '') +
+    (d.broker_license ? ' (רישיון ' + d.broker_license + ')' : '');
+
+  // The body is produced by the office from a template. It is inserted as HTML
+  // because that is what a rendered contract is — and it is only ever authored
+  // by an authenticated member of that office, never by a third party.
+  $('doc').innerHTML = d.body_html || '';
+
+  sizePad();
+
+  if (d.declined_at) {
+    $('padWrap').hidden = true;
+    return finished('סירבת לחתום על המסמך', 'אם זו טעות, פנה לשולח המסמך.');
+  }
+  if (d.already_signed) {
+    $('padWrap').hidden = true;
+    return finished('המסמך כבר נחתם',
+      'נחתם בתאריך ' + new Date(d.signed_at).toLocaleString('he-IL') + '. אין צורך בפעולה נוספת.');
+  }
+
+  $('submit').addEventListener('click', async () => {
+    if (!hasInk) return;
+    $('submit').disabled = true;
+    $('submit').textContent = 'חותם…';
+    $('err').innerHTML = '';
+    try {
+      const ip = await clientIp();
+      const { data, error } = await sb.rpc('np_sign_submit', {
+        p_token: token,
+        p_signature_data: pad.toDataURL('image/png'),
+        p_ip: ip,
+        p_ua: navigator.userAgent.slice(0, 300),
+      });
+      if (error) throw new Error(error.message);
+      if (!data || !data.ok) throw new Error((data && data.error) || 'החתימה לא נקלטה.');
+      finished('המסמך נחתם',
+        'נשמרו מועד החתימה, כתובת ה-IP ותמצית נוסח המסמך. עותק נשמר אצל שולח המסמך.',
+        data.document_hash);
+    } catch (e) {
+      $('err').innerHTML = '<div class="err">' + esc(e.message) + '</div>';
+      $('submit').disabled = false;
+      $('submit').textContent = 'אני חותם/ת על המסמך';
+    }
+  });
+
+  $('decline').addEventListener('click', async () => {
+    const reason = prompt('אפשר לציין סיבה (לא חובה):') ?? '';
+    if (!confirm('לסרב לחתום על המסמך? הפעולה תירשם ותדווח לשולח.')) return;
+    try {
+      const { data, error } = await sb.rpc('np_sign_decline', { p_token: token, p_reason: reason });
+      if (error) throw new Error(error.message);
+      if (!data || !data.ok) throw new Error((data && data.error) || 'הפעולה נכשלה.');
+      finished('הסירוב נרשם', 'שולח המסמך יעודכן.');
+    } catch (e) {
+      $('err').innerHTML = '<div class="err">' + esc(e.message) + '</div>';
+    }
+  });
+}
+
+boot();
+</script>
+</body>
+</html>

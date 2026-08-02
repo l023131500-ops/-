@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /tivuch
+# The system itself is behind a login. Indexing it would only produce a search
+# result that dead-ends on the sign-in page.
+Disallow: /tivuch/app
+
+Sitemap: https://more30.com/sitemap.xml

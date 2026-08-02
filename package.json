@@ -17,6 +17,7 @@
   "devDependencies": {
     "chrome-launcher": "^1.2.1",
     "lighthouse": "^13.4.1",
+    "playwright": "1.49.1",
     "typescript": "^5.5.4"
   }
 }

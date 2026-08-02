@@ -1,0 +1,15 @@
+{
+  "name": "נדל\"ן פרו — ניהול למתווכים",
+  "short_name": "נדל\"ן פרו",
+  "description": "לידים, נכסים, עסקאות, עמלות וחוזים — במקום אחד.",
+  "lang": "he",
+  "dir": "rtl",
+  "start_url": "/tivuch/app",
+  "scope": "/tivuch/",
+  "display": "standalone",
+  "background_color": "#0B0D2E",
+  "theme_color": "#0B0D2E",
+  "icons": [
+    { "src": "/tivuch/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
