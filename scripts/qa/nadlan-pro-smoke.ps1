@@ -307,6 +307,46 @@ Ok 'the evidence log records sent, opened and signed' `
 $declined = Rpc $ANON 'np_sign_decline' @{ p_token = $token; p_reason = 'בדיקה' }
 Ok 'a document already signed cannot then be declined' ($declined.ok -eq $false) 'decline accepted after signing'
 
+Write-Host "`n=== 11b · emailing the signing link ===" -ForegroundColor Cyan
+# Goes through the np-send-signature Edge Function, never straight to Resend:
+# the key lives in core.secrets and must not reach a browser. The function
+# re-checks access by reading the contract AS THE CALLER, so the two negative
+# cases below are the ones that matter.
+function SendMail($token, $contract, $signature) {
+  $b = (@{ contract_id = $contract; signature_id = $signature } | ConvertTo-Json -Compress)
+  try {
+    $r = Invoke-WebRequest -Uri "$SUPABASE/functions/v1/np-send-signature" -Method POST `
+      -Headers @{ apikey = $ANON; Authorization = "Bearer $token"; 'Content-Type' = 'application/json' } `
+      -Body $b -UseBasicParsing -TimeoutSec 90
+    return @{ code = $r.StatusCode; body = ($r.Content | ConvertFrom-Json) }
+  } catch {
+    return @{ code = $_.Exception.Response.StatusCode.value__; body = $null }
+  }
+}
+
+# resend.dev's delivered@ address is Resend's own sandbox target: it exercises
+# the real API and real credentials without mailing a person.
+$mailContract = Rpc $tokA 'np_contract_create' @{ p = @{
+  office_id = $officeA; title = 'בדיקת שליחה'; body_html = '<h1>מסמך בדיקה</h1>'
+  broker_name = 'תיווך בדיקה QA'; broker_license = '12345'
+  signers = @(@{ name = 'ישראל ישראלי'; email = 'delivered@resend.dev'; role = 'לקוח' })
+} }
+Rpc $tokA 'np_contract_send' @{ p_id = $mailContract.contract_id } | Out-Null
+$mailSig = @($mailContract.signers)[0].id
+
+$sent = SendMail $tokA $mailContract.contract_id $mailSig
+Ok 'the office member can email the signing link' ($sent.code -eq 200 -and $sent.body.ok -eq $true) ("code=" + $sent.code)
+Ok 'and it went to the signer address' ($sent.body.to -eq 'delivered@resend.dev') ("to=" + $sent.body.to)
+
+$outsiderMail = SendMail $tokB $mailContract.contract_id $mailSig
+Ok 'an outsider cannot email another office contract' ($outsiderMail.code -eq 403) ("code=" + $outsiderMail.code)
+$anonMail = SendMail $ANON $mailContract.contract_id $mailSig
+Ok 'anon cannot email it either' ($anonMail.code -eq 403 -or $anonMail.code -eq 401) ("code=" + $anonMail.code)
+
+$mg = Rpc $tokA 'np_contract_get' @{ p_id = $mailContract.contract_id }
+$mev = @(@($mg.signers)[0].events | ForEach-Object { $_.event })
+Ok 'the send is recorded in the evidence log' ($mev -contains 'emailed') ("events: " + ($mev -join ','))
+
 Write-Host "`n=== 12 · contracts respect office isolation ===" -ForegroundColor Cyan
 $bC = Rpc $tokB 'np_contracts' @{ p_office = $officeA }
 Ok 'outsider sees no contracts' (@($bC).Count -eq 0) ("leaked " + @($bC).Count)

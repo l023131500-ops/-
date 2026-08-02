@@ -1250,7 +1250,8 @@ async function openContract(id) {
   html += (d.signers || []).map((s) => {
     const link = 'https://more30.com/tivuch/sign?t=' + s.token;
     const evs = (s.events || []).map((e) =>
-      '<li>' + esc({ sent: 'נשלח', opened: 'נפתח', signed: 'נחתם', declined: 'סורב', reminded: 'תזכורת' }[e.event] || e.event) +
+      '<li>' + esc({ sent: 'סומן כנשלח', emailed: 'נשלח במייל', opened: 'נפתח',
+                     signed: 'נחתם', declined: 'סורב', reminded: 'תזכורת' }[e.event] || e.event) +
       '<span class="w"> · ' + dtm(e.at) + (e.ip ? ' · ' + esc(e.ip) : '') + '</span></li>').join('');
     return '<div style="border:1px solid var(--line-2);border-radius:4px;padding:16px;margin-bottom:14px">' +
       '<p style="margin:0 0 4px"><b>' + esc(s.name) + '</b>' +
@@ -1270,7 +1271,10 @@ async function openContract(id) {
           : '<p style="margin:0 0 8px"><span class="pill off">ממתין לחתימה</span></p>' +
             '<label class="f" style="margin-bottom:8px">קישור אישי לחתימה' +
             '<input readonly value="' + esc(link) + '" data-copy="' + esc(link) + '" /></label>' +
-            '<button class="btn btn-quiet btn-sm" data-copybtn="' + esc(link) + '">העתק קישור</button>') +
+            '<button class="btn btn-quiet btn-sm" data-copybtn="' + esc(link) + '">העתק קישור</button> ' +
+            (s.email
+              ? '<button class="btn btn-sm" data-mail="' + esc(s.id) + '">שלח במייל</button>'
+              : '<span class="na" style="font-size:12px">אין דוא״ל לחותם — אפשר רק להעתיק קישור</span>')) +
       (evs ? '<h3 style="font-size:13px;color:var(--gold);margin:14px 0 6px;font-family:\'Secular One\',sans-serif;font-weight:400">יומן ראיות</h3><ul class="timeline" style="font-size:13px">' + evs + '</ul>' : '') +
     '</div>';
   }).join('');
@@ -1296,6 +1300,38 @@ async function openContract(id) {
           close(); toast('המסמך סומן כנשלח — העתק את הקישור האישי ושלח לחותם');
           renderDocuments();
         } catch (e) { toast('שליחה נכשלה: ' + e.message, true); send.disabled = false; }
+      });
+    }
+    // Sending goes through the np-send-signature Edge Function, never straight
+    // to Resend: the API key lives in core.secrets and must not reach a browser.
+    // The function re-checks access by reading the contract as this user, so a
+    // forged contract id here buys nothing.
+    for (const b of document.querySelectorAll('[data-mail]')) {
+      b.addEventListener('click', async () => {
+        b.disabled = true;
+        const was = b.textContent;
+        b.textContent = 'שולח…';
+        try {
+          const { data: sess } = await sb.auth.getSession();
+          const res = await fetch(SUPABASE_URL + '/functions/v1/np-send-signature', {
+            method: 'POST',
+            headers: {
+              apikey: SUPABASE_ANON,
+              Authorization: 'Bearer ' + sess.session.access_token,
+              'content-type': 'application/json',
+            },
+            body: JSON.stringify({ contract_id: c.id, signature_id: b.dataset.mail }),
+          });
+          const out = await res.json();
+          if (!res.ok || !out.ok) throw new Error(out.error || ('שגיאה ' + res.status));
+          toast('נשלח ל־' + out.to);
+          close();
+          openContract(c.id);
+        } catch (e) {
+          toast('שליחה נכשלה: ' + e.message, true);
+          b.disabled = false;
+          b.textContent = was;
+        }
       });
     }
     for (const b of document.querySelectorAll('[data-copybtn]')) {
