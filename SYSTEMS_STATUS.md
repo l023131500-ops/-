@@ -44,14 +44,14 @@
 | 34 | כסף | [/kesef](https://more30.com/kesef) | ✅ עובדת | 2,381 | ✅ | **תוקן: כניסה מגיעה למערכת** |
 | 35 | KioskFleet | [/kiosk/](https://more30.com/kiosk/) | ✅ עובדת | 2,534 | ✅ | |
 | 36 | נדל"ן פרו | [/tivuch](https://more30.com/tivuch) | ✅ עובדת | 2,781 | ✅ | **חדשה. Lighthouse 98/100/100** |
+| 21 | Mthbram | [/mthbram](https://more30.com/mthbram) | ✅ עובדת | 873 | ✅ | **תוקן: 39 → 873** |
+| 24 | גליל קונקט | [/galil](https://more30.com/galil) | ✅ עובדת | 1,624 | ✅ | **תוקן: 121 → 1,624** |
 | 27 | השוואת מחירים | [/mechiron](https://more30.com/mechiron) | ⚠️ חלקית | 915 | ❌ 1 | הצ'אטבוט לא נטען |
-| 30 | CRM זכויות | [/crm/dashboard](https://more30.com/crm/dashboard) | ⚠️ חלקית | 135 | ✅ | **תוקן מ"ריק לגמרי"** |
-| 31 | גשר עברית CRM | [/gesher](https://more30.com/gesher) | ⚠️ חלקית | 0 | ✅ | **תוקן מ"ריק לגמרי"** |
-| 21 | Mthbram | [/mthbram](https://more30.com/mthbram) | ❌ שבורה | 39 | ✅ | ה-router לא מכיר את הנתיב |
-| 24 | גליל קונקט | [/galil](https://more30.com/galil) | ❌ שבורה | 121 | ✅ | ה-router לא מכיר את הנתיב |
+| 30 | CRM זכויות | [/crm/dashboard](https://more30.com/crm/dashboard) | ⚠️ חלקית | 135 | ✅ | **תוקן מ"ריק לגמרי"** · index ריק |
+| 31 | גשר עברית CRM | [/gesher](https://more30.com/gesher) | ⚠️ חלקית | 0 | ✅ | **תוקן מ"ריק לגמרי"** · index ריק |
 | — | אזור אישי | [/me](https://more30.com/me) | ℹ️ תקין | 93 | ✅ | דורש התחברות — צפוי |
 
-**21 עובדות במלואן · 3 חלקיות · 2 שבורות · 1 מוגן-כניסה (תקין).**
+**23 עובדות במלואן · 3 חלקיות · 0 שבורות · 1 מוגן-כניסה (תקין).**
 
 ---
 
@@ -108,8 +108,8 @@ FCP 3.2s → 2.0s.
 
 | מערכת | מה | הערכת מאמץ |
 |---|---|---|
-| **21 Mthbram** | ה-SPA router מחזיר "non-existent route: /mthbram" — אין `base` ב-vite.config ואין `basename` ל-router. אותה משפחת באג של 30/31. | קטן |
-| **24 גליל קונקט** | זהה ל-21. | קטן |
+| ~~**21 Mthbram**~~ | ✅ **תוקן** — `<BrowserRouter basename="/mthbram">`. | — |
+| ~~**24 גליל קונקט**~~ | ✅ **תוקן** — basename + הוסר וידאו מת מ-`cdn.coverr.co` שהחזיר 404 בכל טעינה. | — |
 | **27 מחירון** | `/mechiron/api/public/chatbot/config` → 404. העמוד עצמו עובד (915 תווים, 32 קישורים); הצ'אטבוט לא נטען. | קטן |
 | **30 CRM זכויות** | מסלול index ריק + React #418 (hydration mismatch) ב-dashboard. | בינוני |
 | **31 גשר עברית** | מסלול index ריק. | בינוני |

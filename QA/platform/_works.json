@@ -183,13 +183,13 @@
     "sys": "21",
     "path": "/mthbram",
     "status": 200,
-    "text": 39,
-    "buttons": 4,
+    "text": 873,
+    "buttons": 15,
     "failedAssets": [],
     "failedCount": 0,
     "errors": [],
     "overflow": 0,
-    "works": false
+    "works": true
   },
   "zchuyot": {
     "sys": "22",
@@ -207,13 +207,13 @@
     "sys": "24",
     "path": "/galil",
     "status": 200,
-    "text": 121,
-    "buttons": 15,
+    "text": 1624,
+    "buttons": 34,
     "failedAssets": [],
     "failedCount": 0,
     "errors": [],
     "overflow": 0,
-    "works": false
+    "works": true
   },
   "studio": {
     "sys": "26",
@@ -231,8 +231,8 @@
     "sys": "27",
     "path": "/mechiron",
     "status": 200,
-    "text": 915,
-    "buttons": 32,
+    "text": 15371,
+    "buttons": 192,
     "failedAssets": [
       "404 /mechiron/api/public/chatbot/config"
     ],
