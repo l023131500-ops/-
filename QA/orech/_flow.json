@@ -1,0 +1,122 @@
+{
+  "home-light": {
+    "url": "https://more30.com/orech",
+    "status": 200,
+    "bg": "rgb(250, 247, 240)",
+    "h1": "העורך התורני",
+    "textLen": 479,
+    "fileInputs": 0,
+    "uploadZone": false,
+    "textareas": 0,
+    "buttons": [],
+    "errors": []
+  },
+  "documents-light": {
+    "url": "https://more30.com/orech/documents",
+    "status": 200,
+    "bg": "rgb(250, 247, 240)",
+    "h1": "המסמכים שלי",
+    "textLen": 341,
+    "fileInputs": 1,
+    "uploadZone": true,
+    "textareas": 0,
+    "buttons": [
+      "בחירת קובץ",
+      "מסמך ריק חדש"
+    ],
+    "errors": []
+  },
+  "editor-light": {
+    "url": "https://more30.com/orech/editor",
+    "status": 200,
+    "bg": "rgb(250, 247, 240)",
+    "h1": "העורך התורני",
+    "textLen": 255,
+    "fileInputs": 0,
+    "uploadZone": false,
+    "textareas": 1,
+    "buttons": [
+      "זהה ציטוטים",
+      "הוסף ניקוד רבני"
+    ],
+    "errors": []
+  },
+  "htr-light": {
+    "url": "https://more30.com/orech/htr",
+    "status": 200,
+    "bg": "rgb(250, 247, 240)",
+    "h1": "המרת כתב יד — HTR",
+    "textLen": 701,
+    "fileInputs": 1,
+    "uploadZone": false,
+    "textareas": 0,
+    "buttons": [
+      "העלה והרץ זיהוי",
+      "רענן",
+      "ללא תיאורטקסט גולמי מוכןכתב יד עכשווי (הערות/טיוטות) · ביטחון ~20%",
+      "כתב יד ניסיון הרב שמריהותוקן — ממתין לאישורכתב יד עכשווי (הערות/טיוטות) · ביטחון ~20%",
+      "בדיקת מערכת — כתב יד ספרדי חצי-קולמוס (Wellcome A34, נחלת הכלל)טקסט גולמי מוכןכתב יד רבני (מאות 18–19) · ביטחון ~63%"
+    ],
+    "errors": []
+  },
+  "home-dark": {
+    "url": "https://more30.com/orech",
+    "status": 200,
+    "bg": "rgb(20, 17, 12)",
+    "h1": "העורך התורני",
+    "textLen": 479,
+    "fileInputs": 0,
+    "uploadZone": false,
+    "textareas": 0,
+    "buttons": [],
+    "errors": []
+  },
+  "documents-dark": {
+    "url": "https://more30.com/orech/documents",
+    "status": 200,
+    "bg": "rgb(20, 17, 12)",
+    "h1": "המסמכים שלי",
+    "textLen": 341,
+    "fileInputs": 1,
+    "uploadZone": true,
+    "textareas": 0,
+    "buttons": [
+      "בחירת קובץ",
+      "מסמך ריק חדש"
+    ],
+    "errors": []
+  },
+  "editor-dark": {
+    "url": "https://more30.com/orech/editor",
+    "status": 200,
+    "bg": "rgb(20, 17, 12)",
+    "h1": "העורך התורני",
+    "textLen": 255,
+    "fileInputs": 0,
+    "uploadZone": false,
+    "textareas": 1,
+    "buttons": [
+      "זהה ציטוטים",
+      "הוסף ניקוד רבני"
+    ],
+    "errors": []
+  },
+  "htr-dark": {
+    "url": "https://more30.com/orech/htr",
+    "status": 200,
+    "bg": "rgb(20, 17, 12)",
+    "h1": "המרת כתב יד — HTR",
+    "textLen": 701,
+    "fileInputs": 1,
+    "uploadZone": false,
+    "textareas": 0,
+    "buttons": [
+      "העלה והרץ זיהוי",
+      "רענן",
+      "ללא תיאורטקסט גולמי מוכןכתב יד עכשווי (הערות/טיוטות) · ביטחון ~20%",
+      "כתב יד ניסיון הרב שמריהותוקן — ממתין לאישורכתב יד עכשווי (הערות/טיוטות) · ביטחון ~20%",
+      "בדיקת מערכת — כתב יד ספרדי חצי-קולמוס (Wellcome A34, נחלת הכלל)טקסט גולמי מוכןכתב יד רבני (מאות 18–19) · ביטחון ~63%"
+    ],
+    "errors": []
+  }
+}

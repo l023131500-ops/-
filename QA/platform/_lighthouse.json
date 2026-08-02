@@ -2011,23 +2011,23 @@
   },
   "orech": {
     "url": "https://more30.com/orech",
-    "measuredAt": "2026-08-02T00:32:04.969Z",
-    "performance": 96,
+    "measuredAt": "2026-08-02T02:36:07.975Z",
+    "performance": 97,
     "accessibility": 100,
     "bestPractices": 77,
-    "seo": 91,
+    "seo": 100,
     "metrics": {
       "fcp": "1.1 s",
-      "lcp": "2.0 s",
+      "lcp": "1.1 s",
       "tbt": "190 ms",
       "cls": "0",
-      "si": "1.2 s"
+      "si": "1.9 s"
     },
     "failedAudits": [
       {
         "id": "max-potential-fid",
         "title": "Max Potential First Input Delay",
-        "score": 0.63,
+        "score": 0.62,
         "display": "210 ms"
       },
       {
@@ -2055,22 +2055,22 @@
         "display": ""
       },
       {
-        "id": "robots-txt",
-        "title": "robots.txt is not valid",
-        "score": 0,
-        "display": "43 errors found"
-      },
-      {
         "id": "cache-insight",
         "title": "Use efficient cache lifetimes",
         "score": 0.5,
-        "display": "Est savings of 1,075 KiB"
+        "display": "Est savings of 1,226 KiB"
       },
       {
         "id": "document-latency-insight",
         "title": "Document request latency",
         "score": 0.5,
-        "display": "Est savings of 5 KiB"
+        "display": "Est savings of 6 KiB"
+      },
+      {
+        "id": "font-display-insight",
+        "title": "Font display",
+        "score": 0,
+        "display": "Est savings of 340 ms"
       },
       {
         "id": "legacy-javascript-insight",
@@ -2082,7 +2082,7 @@
         "id": "modern-http-insight",
         "title": "Modern HTTP",
         "score": 0,
-        "display": "Est savings of 10 ms"
+        "display": "Est savings of 140 ms"
       },
       {
         "id": "network-dependency-tree-insight",
@@ -2094,7 +2094,7 @@
         "id": "render-blocking-insight",
         "title": "Render-blocking requests",
         "score": 0,
-        "display": "Est savings of 150 ms"
+        "display": "Est savings of 140 ms"
       }
     ]
   },

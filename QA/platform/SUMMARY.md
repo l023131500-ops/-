@@ -1,6 +1,6 @@
 # QA/platform — מדידה רוחבית של כל המערכות החיות
 
-> נמדד 2026-08-02 00:16 → 2026-08-02 02:21 מול הפרודקשן ב-`more30.com`.
+> נמדד 2026-08-02 00:16 → 2026-08-02 02:35 מול הפרודקשן ב-`more30.com`.
 > נוצר על ידי `scripts/qa/platform-audit.mjs` + `scripts/qa/lighthouse-run.mjs` → `scripts/qa/report.mjs`.
 > כל שורה כאן היא מדידה בדפדפן אמיתי, לא הערכה. הסטנדרט: `DESIGN_STANDARD.md`.
 >
@@ -29,7 +29,7 @@
 | `/chatzor/` | 16 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | 57/100/77/100 |  |
 | `/chizukim` | 17 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | 89/100/77/100 |  |
 | `/chizukim/` | 17 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | 82/100/77/100 |  |
-| `/orech` | 18 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | 96/100/77/91 |  |
+| `/orech` | 18 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | 97/100/77/100 |  |
 | `/mthbram` | 21 | ✅ | ✅ | ✅ | ✅ | ❌ 2 | ✅ | ✅ | ❌ 1 | ❌ | ✅ | 69/98/73/91 |  |
 | `/zchuyot` | 22 | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ 3 | ✅ | ✅ | ❌ | ✅ | 38/90/77/92 |  |
 | `/galil` | 24 | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ 1 | ✅ | ❌ 1 | ❌ | ✅ | 78/84/73/92 |  |
@@ -235,12 +235,10 @@
 
 ### `/orech` — עורך תורני (מערכת 18)
 
-כותרת: **העורך התורני** · h1: "העורך התורני" · טקסט מרונדר: 479 תווים · 3 אלמנטים אינטראקטיביים · טעינה 4581ms
+כותרת: **העורך התורני** · h1: "העורך התורני" · טקסט מרונדר: 479 תווים · 3 אלמנטים אינטראקטיביים · טעינה 5540ms
 
-- חסר: `canonical` · `og:url`
-- אין מצב כהה — הרקע האפקטיבי נשאר `rgb(250, 247, 240)` גם ב-`prefers-color-scheme: dark`
-- Lighthouse מתחת ל-90: perf 96 · a11y 100 · bp 77 · seo 91
-  - נכשלו: max-potential-fid (210 ms) · third-party-cookies (2 cookies found) · unminified-javascript (Est savings of 2 KiB) · unused-javascript (Est savings of 69 KiB) · inspector-issues · robots-txt (43 errors found) · cache-insight (Est savings of 1,075 KiB) · document-latency-insight (Est savings of 5 KiB)
+- Lighthouse מתחת ל-90: perf 97 · a11y 100 · bp 77 · seo 100
+  - נכשלו: max-potential-fid (210 ms) · third-party-cookies (2 cookies found) · unminified-javascript (Est savings of 2 KiB) · unused-javascript (Est savings of 69 KiB) · inspector-issues · cache-insight (Est savings of 1,226 KiB) · document-latency-insight (Est savings of 6 KiB) · font-display-insight (Est savings of 340 ms)
 
 צילומים: `orech-desktop.png` · `orech-mobile.png` · `orech-dark.png`
 
