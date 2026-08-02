@@ -1,0 +1,21 @@
+{
+  "number": "34",
+  "slug": "kesef",
+  "name": "כסף — שקיפות תקציבית",
+  "department": "community",
+  "category": "finance",
+  "stage": "wip",
+  "live": false,
+  "isDeployed": false,
+  "repo": "UNKNOWN",
+  "basePath": "/kesef",
+  "supabase": {
+    "project": "uhnrgujbdxhhmoxcjria",
+    "schema": "kesef"
+  },
+  "deployTarget": "vercel",
+  "liveUrl": null,
+  "protected": false,
+  "source": "not-vendored",
+  "note": "הסכימה kesef חיה על ה-hub — 36 טבלאות, RLS על כולן, שבע מיגרציות שהוחלו 02/08/2026. קוד המקור לא אותר בשום ריפו נגיש (ראה NEEDS_USER §א). חסם נוסף: kesef אינה ב-Exposed schemas ולכן ה-Data API מחזיר 406."
+}

@@ -27,6 +27,7 @@ const ROUTES = [
   ['mthbram', '/mthbram'], ['zchuyot', '/zchuyot'], ['galil', '/galil'],
   ['studio', '/studio'], ['mechiron', '/mechiron'], ['kupot', '/kupot'],
   ['crm', '/crm'], ['gesher', '/gesher'], ['nadlan', '/nadlan'],
+  ['kesef', '/kesef'], ['kiosk', '/kiosk/'],
 ];
 
 fs.mkdirSync(OUT, { recursive: true });

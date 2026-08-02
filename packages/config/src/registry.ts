@@ -1,4 +1,4 @@
-import type { ProjectEntry } from "./types.js";
+﻿import type { ProjectEntry } from "./types.js";
 
 /**
  * The more30 project registry — build-time source of truth for routing.
@@ -50,6 +50,8 @@ export const REGISTRY: ProjectEntry[] = [
   { number: "30", slug: "zchuyotpro-crm", repo: "zchuyotpro-crm", name: "ZchuyotPro CRM", department: "rights", category: "crm", stage: "wip", live: false, isDeployed: false, supabaseProject: "jhbeelzvjvhnkxldqvxx", supabaseSchema: "public", deployTarget: "unknown", protected: false, note: "CRM זכויות. Supabase משלו (jhbeelzv)." },
   { number: "31", slug: "hebrew-bridge-crm", repo: "hebrew-bridge-crm", name: "Hebrew Bridge CRM", department: "community", category: "crm", stage: "wip", live: false, isDeployed: false, supabaseProject: "ygaqqnuyfnumezxxmtbh", supabaseSchema: "public", deployTarget: "unknown", protected: false, note: "Supabase משלו (ygaqq). 155 קבצים." },
   { number: "32", slug: "nadlan-berega", repo: "nadlan-berega", name: "נדל\"ן ברגע", department: "realestate", category: "realestate", stage: "live", live: true, isDeployed: true, supabaseProject: "uhnrgujbdxhhmoxcjria", supabaseSchema: "nadlan", deployTarget: "vercel", liveUrl: "https://nadlan-berega.vercel.app", protected: false, note: "המערכת הראשונה שהושקה. 7 שכבות אמת. schema nadlan על ה-ops." },
+  { number: "34", slug: "kesef", repo: "UNKNOWN", name: "כסף — שקיפות תקציבית", department: "community", category: "finance", stage: "wip", live: false, isDeployed: false, supabaseProject: "uhnrgujbdxhhmoxcjria", supabaseSchema: "kesef", deployTarget: "vercel", protected: false, note: "הסכימה kesef חיה על ה-hub (36 טבלאות, RLS על כולן, הוחלה 02/08). קוד המקור עדיין לא אותר — ראה NEEDS_USER. הסכימה אינה ב-Exposed schemas, ולכן אין עדיין גישה דרך ה-Data API." },
+  { number: "35", slug: "kioskfleet", repo: "zol", name: "KioskFleet — נעילת מכשיר", department: "misc", category: "commerce", stage: "beta", live: true, isDeployed: true, supabaseProject: null, supabaseSchema: null, deployTarget: "railway", liveUrl: "https://more30.com/kiosk", protected: false, note: "שרת stateful (Express + SQLite + WebSocket) — נשאר על Railway, לא עובר ל-Vercel. הקוד יושב בריפו zol, ענף claude/what-do-you-see-gxo5tc, שורש kiosk/server. הפורטל מנתב more30.com/kiosk לשירות." },
 ];
 
 /** Repos to archive/clean only — never treated as active apps. Imported frozen to apps/_archive/. */
@@ -98,6 +100,8 @@ export const TOPIC_ROUTES: Record<string, string> = {
   "30": "crm",        // CRM זכויות (ZchuyotPro)
   "31": "gesher",     // גשר — CRM קהילתי (Hebrew Bridge)
   "32": "nadlan",     // נדל"ן ברגע — המערכת החיה הראשונה
+  "34": "kesef",      // שקיפות תקציבית ברשויות מקומיות
+  "35": "kiosk",      // KioskFleet — ניהול צי מכשירי קיוסק (Railway, מנותב מכאן)
 };
 
 /** The public more30.com path for a system number, e.g. "32" → "/nadlan". */

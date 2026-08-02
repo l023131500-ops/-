@@ -62,6 +62,11 @@
     { "source": "/crm", "destination": "https://crm-more30.vercel.app/crm/" },
     { "source": "/crm/", "destination": "https://crm-more30.vercel.app/crm/" },
     { "source": "/crm/:path*", "destination": "https://crm-more30.vercel.app/crm/:path*" },
+    { "source": "/kesef", "destination": "https://kesef-more30.vercel.app/kesef" },
+    { "source": "/kesef/:path*", "destination": "https://kesef-more30.vercel.app/kesef/:path*" },
+    { "source": "/kiosk", "destination": "https://kioskfleet-production.up.railway.app/kiosk/" },
+    { "source": "/kiosk/", "destination": "https://kioskfleet-production.up.railway.app/kiosk/" },
+    { "source": "/kiosk/:path*", "destination": "https://kioskfleet-production.up.railway.app/kiosk/:path*" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }

@@ -1,0 +1,23 @@
+﻿{
+  "number": "35",
+  "slug": "kioskfleet",
+  "name": "KioskFleet — נעילת מכשיר",
+  "department": "misc",
+  "category": "commerce",
+  "stage": "beta",
+  "live": true,
+  "isDeployed": true,
+  "repo": "l023131500-ops/zol",
+  "repoBranch": "claude/what-do-you-see-gxo5tc",
+  "repoRoot": "kiosk/server",
+  "basePath": "/kiosk",
+  "supabase": {
+    "project": null,
+    "schema": null
+  },
+  "deployTarget": "railway",
+  "liveUrl": "https://more30.com/kiosk",
+  "protected": false,
+  "source": "not-vendored",
+  "note": "שרת stateful: Express + SQLite + WebSocket. לא מתאים ל-serverless ולכן נשאר על Railway (project kioskfleet, service kioskfleet) ומנותב מהפורטל. SQLite על Railway Volume בן 1GB ב-/app/data. אין Supabase — משתמשי הקונסולה יושבים ב-SQLite המקומי."
+}

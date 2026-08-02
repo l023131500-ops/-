@@ -1,36 +1,36 @@
 {
   "home": {
     "url": "https://more30.com/",
-    "measuredAt": "2026-08-02T01:50:00.904Z",
-    "performance": 84,
+    "measuredAt": "2026-08-02T06:30:58.821Z",
+    "performance": 86,
     "accessibility": 100,
     "bestPractices": 77,
     "seo": 100,
     "metrics": {
       "fcp": "2.3 s",
-      "lcp": "4.1 s",
-      "tbt": "40 ms",
+      "lcp": "3.6 s",
+      "tbt": "120 ms",
       "cls": "0.006",
-      "si": "2.3 s"
+      "si": "2.5 s"
     },
     "failedAudits": [
       {
         "id": "first-contentful-paint",
         "title": "First Contentful Paint",
-        "score": 0.75,
+        "score": 0.74,
         "display": "2.3 s"
       },
       {
         "id": "largest-contentful-paint",
         "title": "Largest Contentful Paint",
-        "score": 0.46,
-        "display": "4.1 s"
+        "score": 0.59,
+        "display": "3.6 s"
       },
       {
         "id": "interactive",
         "title": "Time to Interactive",
-        "score": 0.72,
-        "display": "5.4 s"
+        "score": 0.73,
+        "display": "5.3 s"
       },
       {
         "id": "third-party-cookies",
@@ -42,7 +42,7 @@
         "id": "mainthread-work-breakdown",
         "title": "Minimize main-thread work",
         "score": 0,
-        "display": "2.6 s"
+        "display": "3.6 s"
       },
       {
         "id": "unminified-javascript",
@@ -65,7 +65,7 @@
       {
         "id": "cache-insight",
         "title": "Use efficient cache lifetimes",
-        "score": 0.5,
+        "score": 0,
         "display": "Est savings of 1,226 KiB"
       },
       {
@@ -78,13 +78,19 @@
         "id": "font-display-insight",
         "title": "Font display",
         "score": 0,
-        "display": "Est savings of 460 ms"
+        "display": "Est savings of 280 ms"
+      },
+      {
+        "id": "forced-reflow-insight",
+        "title": "Forced reflow",
+        "score": 0,
+        "display": ""
       },
       {
         "id": "modern-http-insight",
         "title": "Modern HTTP",
         "score": 0,
-        "display": "Est savings of 430 ms"
+        "display": "Est savings of 320 ms"
       },
       {
         "id": "network-dependency-tree-insight",
@@ -96,22 +102,22 @@
         "id": "render-blocking-insight",
         "title": "Render-blocking requests",
         "score": 0,
-        "display": "Est savings of 390 ms"
+        "display": "Est savings of 360 ms"
       }
     ]
   },
   "nadlan": {
     "url": "https://more30.com/nadlan",
-    "measuredAt": "2026-08-02T00:34:32.241Z",
-    "performance": 75,
+    "measuredAt": "2026-08-02T06:37:51.976Z",
+    "performance": 74,
     "accessibility": 95,
     "bestPractices": 77,
-    "seo": 91,
+    "seo": 100,
     "metrics": {
       "fcp": "2.3 s",
-      "lcp": "2.9 s",
-      "tbt": "650 ms",
-      "cls": "0.076",
+      "lcp": "2.6 s",
+      "tbt": "840 ms",
+      "cls": "0",
       "si": "2.3 s"
     },
     "failedAudits": [
@@ -124,26 +130,26 @@
       {
         "id": "largest-contentful-paint",
         "title": "Largest Contentful Paint",
-        "score": 0.81,
-        "display": "2.9 s"
+        "score": 0.87,
+        "display": "2.6 s"
       },
       {
         "id": "total-blocking-time",
         "title": "Total Blocking Time",
-        "score": 0.45,
-        "display": "650 ms"
+        "score": 0.34,
+        "display": "840 ms"
       },
       {
         "id": "max-potential-fid",
         "title": "Max Potential First Input Delay",
-        "score": 0.06,
-        "display": "540 ms"
+        "score": 0.2,
+        "display": "380 ms"
       },
       {
         "id": "interactive",
         "title": "Time to Interactive",
-        "score": 0.89,
-        "display": "3.9 s"
+        "score": 0.88,
+        "display": "4.0 s"
       },
       {
         "id": "third-party-cookies",
@@ -155,7 +161,13 @@
         "id": "mainthread-work-breakdown",
         "title": "Minimize main-thread work",
         "score": 0,
-        "display": "4.1 s"
+        "display": "9.6 s"
+      },
+      {
+        "id": "bootup-time",
+        "title": "Reduce JavaScript execution time",
+        "score": 0,
+        "display": "4.5 s"
       },
       {
         "id": "color-contrast",
@@ -182,15 +194,9 @@
         "display": ""
       },
       {
-        "id": "robots-txt",
-        "title": "robots.txt is not valid",
-        "score": 0,
-        "display": "43 errors found"
-      },
-      {
         "id": "cache-insight",
         "title": "Use efficient cache lifetimes",
-        "score": 0.5,
+        "score": 0,
         "display": "Est savings of 43 KiB"
       },
       {
@@ -198,6 +204,12 @@
         "title": "Document request latency",
         "score": 0.5,
         "display": "Est savings of 48 KiB"
+      },
+      {
+        "id": "forced-reflow-insight",
+        "title": "Forced reflow",
+        "score": 0,
+        "display": ""
       },
       {
         "id": "legacy-javascript-insight",
@@ -209,7 +221,7 @@
         "id": "modern-http-insight",
         "title": "Modern HTTP",
         "score": 0,
-        "display": "Est savings of 370 ms"
+        "display": "Est savings of 270 ms"
       },
       {
         "id": "network-dependency-tree-insight",
@@ -221,36 +233,36 @@
         "id": "render-blocking-insight",
         "title": "Render-blocking requests",
         "score": 0,
-        "display": "Est savings of 620 ms"
+        "display": "Est savings of 570 ms"
       }
     ]
   },
   "login": {
     "url": "https://more30.com/login",
-    "measuredAt": "2026-08-02T01:43:57.391Z",
-    "performance": 98,
+    "measuredAt": "2026-08-02T06:31:13.009Z",
+    "performance": 99,
     "accessibility": 100,
     "bestPractices": 77,
     "seo": 63,
     "metrics": {
       "fcp": "1.2 s",
       "lcp": "1.9 s",
-      "tbt": "20 ms",
-      "cls": "0.071",
-      "si": "1.4 s"
+      "tbt": "50 ms",
+      "cls": "0.06",
+      "si": "1.5 s"
     },
     "failedAudits": [
       {
         "id": "max-potential-fid",
         "title": "Max Potential First Input Delay",
-        "score": 0.86,
-        "display": "140 ms"
+        "score": 0.79,
+        "display": "160 ms"
       },
       {
         "id": "interactive",
         "title": "Time to Interactive",
-        "score": 0.87,
-        "display": "4.1 s"
+        "score": 0.85,
+        "display": "4.2 s"
       },
       {
         "id": "third-party-cookies",
@@ -286,7 +298,7 @@
         "id": "cache-insight",
         "title": "Use efficient cache lifetimes",
         "score": 0.5,
-        "display": "Est savings of 1,079 KiB"
+        "display": "Est savings of 1,086 KiB"
       },
       {
         "id": "document-latency-insight",
@@ -310,17 +322,17 @@
   },
   "me": {
     "url": "https://more30.com/me",
-    "measuredAt": "2026-08-02T01:44:09.823Z",
-    "performance": 100,
+    "measuredAt": "2026-08-02T06:31:25.772Z",
+    "performance": 99,
     "accessibility": 100,
     "bestPractices": 77,
     "seo": 63,
     "metrics": {
-      "fcp": "1.1 s",
-      "lcp": "1.1 s",
-      "tbt": "70 ms",
+      "fcp": "1.5 s",
+      "lcp": "1.9 s",
+      "tbt": "60 ms",
       "cls": "0",
-      "si": "1.4 s"
+      "si": "1.5 s"
     },
     "failedAudits": [
       {
@@ -369,7 +381,7 @@
         "id": "cache-insight",
         "title": "Use efficient cache lifetimes",
         "score": 0.5,
-        "display": "Est savings of 1,086 KiB"
+        "display": "Est savings of 53 KiB"
       },
       {
         "id": "document-latency-insight",
@@ -393,30 +405,42 @@
   },
   "subscribe": {
     "url": "https://more30.com/subscribe",
-    "measuredAt": "2026-08-02T01:50:12.388Z",
-    "performance": 98,
+    "measuredAt": "2026-08-02T06:31:40.495Z",
+    "performance": 96,
     "accessibility": 100,
     "bestPractices": 77,
     "seo": 63,
     "metrics": {
       "fcp": "1.1 s",
       "lcp": "1.1 s",
-      "tbt": "40 ms",
+      "tbt": "150 ms",
       "cls": "0.094",
-      "si": "1.9 s"
+      "si": "1.7 s"
     },
     "failedAudits": [
       {
-        "id": "interactive",
-        "title": "Time to Interactive",
-        "score": 0.87,
-        "display": "4.1 s"
+        "id": "max-potential-fid",
+        "title": "Max Potential First Input Delay",
+        "score": 0.69,
+        "display": "190 ms"
       },
       {
         "id": "third-party-cookies",
         "title": "Uses third-party cookies",
         "score": 0,
         "display": "2 cookies found"
+      },
+      {
+        "id": "mainthread-work-breakdown",
+        "title": "Minimize main-thread work",
+        "score": 0,
+        "display": "6.3 s"
+      },
+      {
+        "id": "bootup-time",
+        "title": "Reduce JavaScript execution time",
+        "score": 0,
+        "display": "4.0 s"
       },
       {
         "id": "unminified-javascript",
@@ -470,60 +494,54 @@
   },
   "torah": {
     "url": "https://more30.com/torah",
-    "measuredAt": "2026-08-02T03:18:07.031Z",
-    "performance": 34,
-    "accessibility": 93,
+    "measuredAt": "2026-08-02T16:05:13.692Z",
+    "performance": 52,
+    "accessibility": 100,
     "bestPractices": 77,
     "seo": 100,
     "metrics": {
-      "fcp": "5.4 s",
-      "lcp": "12.5 s",
-      "tbt": "810 ms",
-      "cls": "0.131",
-      "si": "7.4 s"
+      "fcp": "3.0 s",
+      "lcp": "10.3 s",
+      "tbt": "470 ms",
+      "cls": "0.001",
+      "si": "6.3 s"
     },
     "failedAudits": [
       {
         "id": "first-contentful-paint",
         "title": "First Contentful Paint",
-        "score": 0.06,
-        "display": "5.4 s"
+        "score": 0.5,
+        "display": "3.0 s"
       },
       {
         "id": "largest-contentful-paint",
         "title": "Largest Contentful Paint",
         "score": 0,
-        "display": "12.5 s"
+        "display": "10.3 s"
       },
       {
         "id": "speed-index",
         "title": "Speed Index",
-        "score": 0.28,
-        "display": "7.4 s"
+        "score": 0.41,
+        "display": "6.3 s"
       },
       {
         "id": "total-blocking-time",
         "title": "Total Blocking Time",
-        "score": 0.36,
-        "display": "810 ms"
+        "score": 0.61,
+        "display": "470 ms"
       },
       {
         "id": "max-potential-fid",
         "title": "Max Potential First Input Delay",
-        "score": 0.29,
-        "display": "330 ms"
-      },
-      {
-        "id": "cumulative-layout-shift",
-        "title": "Cumulative Layout Shift",
-        "score": 0.81,
-        "display": "0.131"
+        "score": 0.46,
+        "display": "260 ms"
       },
       {
         "id": "interactive",
         "title": "Time to Interactive",
-        "score": 0.14,
-        "display": "12.5 s"
+        "score": 0.24,
+        "display": "10.3 s"
       },
       {
         "id": "third-party-cookies",
@@ -535,29 +553,11 @@
         "id": "mainthread-work-breakdown",
         "title": "Minimize main-thread work",
         "score": 0,
-        "display": "3.5 s"
-      },
-      {
-        "id": "layout-shifts",
-        "title": "Avoid large layout shifts",
-        "score": 0,
-        "display": "2 layout shifts found"
+        "display": "3.2 s"
       },
       {
         "id": "valid-source-maps",
         "title": "Missing source maps for large first-party JavaScript",
-        "score": 0,
-        "display": ""
-      },
-      {
-        "id": "color-contrast",
-        "title": "Background and foreground colors do not have a sufficient contrast ratio.",
-        "score": 0,
-        "display": ""
-      },
-      {
-        "id": "heading-order",
-        "title": "Heading elements are not in a sequentially-descending order",
         "score": 0,
         "display": ""
       },
@@ -577,7 +577,7 @@
         "id": "unused-javascript",
         "title": "Reduce unused JavaScript",
         "score": 0,
-        "display": "Est savings of 471 KiB"
+        "display": "Est savings of 106 KiB"
       },
       {
         "id": "inspector-issues",
@@ -589,25 +589,19 @@
         "id": "cache-insight",
         "title": "Use efficient cache lifetimes",
         "score": 0,
-        "display": "Est savings of 1,226 KiB"
-      },
-      {
-        "id": "cls-culprits-insight",
-        "title": "Layout shift culprits",
-        "score": 0,
-        "display": ""
+        "display": "Est savings of 1,227 KiB"
       },
       {
         "id": "document-latency-insight",
         "title": "Document request latency",
         "score": 0.5,
-        "display": "Est savings of 2 KiB"
+        "display": "Est savings of 3 KiB"
       },
       {
         "id": "font-display-insight",
         "title": "Font display",
         "score": 0,
-        "display": "Est savings of 170 ms"
+        "display": "Est savings of 560 ms"
       },
       {
         "id": "forced-reflow-insight",
@@ -631,54 +625,42 @@
         "id": "render-blocking-insight",
         "title": "Render-blocking requests",
         "score": 0,
-        "display": "Est savings of 360 ms"
+        "display": "Est savings of 350 ms"
       }
     ]
   },
   "tamlul": {
     "url": "https://more30.com/tamlul",
-    "measuredAt": "2026-08-02T00:29:02.177Z",
-    "performance": 88,
+    "measuredAt": "2026-08-02T06:32:13.150Z",
+    "performance": 97,
     "accessibility": 98,
     "bestPractices": 77,
-    "seo": 91,
+    "seo": 100,
     "metrics": {
       "fcp": "1.9 s",
-      "lcp": "2.8 s",
-      "tbt": "310 ms",
-      "cls": "0.017",
+      "lcp": "2.0 s",
+      "tbt": "130 ms",
+      "cls": "0",
       "si": "1.9 s"
     },
     "failedAudits": [
       {
         "id": "first-contentful-paint",
         "title": "First Contentful Paint",
-        "score": 0.88,
+        "score": 0.87,
         "display": "1.9 s"
-      },
-      {
-        "id": "largest-contentful-paint",
-        "title": "Largest Contentful Paint",
-        "score": 0.82,
-        "display": "2.8 s"
-      },
-      {
-        "id": "total-blocking-time",
-        "title": "Total Blocking Time",
-        "score": 0.78,
-        "display": "310 ms"
       },
       {
         "id": "max-potential-fid",
         "title": "Max Potential First Input Delay",
-        "score": 0.36,
-        "display": "300 ms"
+        "score": 0.72,
+        "display": "180 ms"
       },
       {
         "id": "interactive",
         "title": "Time to Interactive",
-        "score": 0.79,
-        "display": "4.8 s"
+        "score": 0.83,
+        "display": "4.4 s"
       },
       {
         "id": "third-party-cookies",
@@ -690,7 +672,13 @@
         "id": "mainthread-work-breakdown",
         "title": "Minimize main-thread work",
         "score": 0,
-        "display": "3.0 s"
+        "display": "7.1 s"
+      },
+      {
+        "id": "bootup-time",
+        "title": "Reduce JavaScript execution time",
+        "score": 0,
+        "display": "4.5 s"
       },
       {
         "id": "heading-order",
@@ -717,15 +705,9 @@
         "display": ""
       },
       {
-        "id": "robots-txt",
-        "title": "robots.txt is not valid",
-        "score": 0,
-        "display": "43 errors found"
-      },
-      {
         "id": "cache-insight",
         "title": "Use efficient cache lifetimes",
-        "score": 0.5,
+        "score": 0,
         "display": "Est savings of 43 KiB"
       },
       {
@@ -733,12 +715,6 @@
         "title": "Document request latency",
         "score": 0.5,
         "display": "Est savings of 16 KiB"
-      },
-      {
-        "id": "forced-reflow-insight",
-        "title": "Forced reflow",
-        "score": 0,
-        "display": ""
       },
       {
         "id": "legacy-javascript-insight",
@@ -749,8 +725,8 @@
       {
         "id": "modern-http-insight",
         "title": "Modern HTTP",
-        "score": 0,
-        "display": "Est savings of 260 ms"
+        "score": 0.5,
+        "display": ""
       },
       {
         "id": "network-dependency-tree-insight",
@@ -762,54 +738,42 @@
         "id": "render-blocking-insight",
         "title": "Render-blocking requests",
         "score": 0,
-        "display": "Est savings of 370 ms"
+        "display": "Est savings of 540 ms"
       }
     ]
   },
   "modaot": {
     "url": "https://more30.com/modaot",
-    "measuredAt": "2026-08-02T00:29:19.481Z",
-    "performance": 89,
+    "measuredAt": "2026-08-02T06:32:24.993Z",
+    "performance": 95,
     "accessibility": 100,
     "bestPractices": 77,
-    "seo": 91,
+    "seo": 100,
     "metrics": {
       "fcp": "1.9 s",
-      "lcp": "2.7 s",
-      "tbt": "300 ms",
-      "cls": "0.007",
+      "lcp": "2.2 s",
+      "tbt": "180 ms",
+      "cls": "0",
       "si": "1.9 s"
     },
     "failedAudits": [
       {
         "id": "first-contentful-paint",
         "title": "First Contentful Paint",
-        "score": 0.88,
+        "score": 0.87,
         "display": "1.9 s"
-      },
-      {
-        "id": "largest-contentful-paint",
-        "title": "Largest Contentful Paint",
-        "score": 0.85,
-        "display": "2.7 s"
-      },
-      {
-        "id": "total-blocking-time",
-        "title": "Total Blocking Time",
-        "score": 0.79,
-        "display": "300 ms"
       },
       {
         "id": "max-potential-fid",
         "title": "Max Potential First Input Delay",
-        "score": 0.46,
-        "display": "260 ms"
+        "score": 0.64,
+        "display": "210 ms"
       },
       {
         "id": "interactive",
         "title": "Time to Interactive",
-        "score": 0.78,
-        "display": "4.9 s"
+        "score": 0.81,
+        "display": "4.6 s"
       },
       {
         "id": "third-party-cookies",
@@ -821,7 +785,13 @@
         "id": "mainthread-work-breakdown",
         "title": "Minimize main-thread work",
         "score": 0,
-        "display": "2.7 s"
+        "display": "7.2 s"
+      },
+      {
+        "id": "bootup-time",
+        "title": "Reduce JavaScript execution time",
+        "score": 0,
+        "display": "4.6 s"
       },
       {
         "id": "unused-javascript",
@@ -836,16 +806,10 @@
         "display": ""
       },
       {
-        "id": "robots-txt",
-        "title": "robots.txt is not valid",
-        "score": 0,
-        "display": "43 errors found"
-      },
-      {
         "id": "cache-insight",
         "title": "Use efficient cache lifetimes",
         "score": 0.5,
-        "display": "Est savings of 43 KiB"
+        "display": "Est savings of 1,076 KiB"
       },
       {
         "id": "document-latency-insight",
@@ -856,14 +820,14 @@
       {
         "id": "legacy-javascript-insight",
         "title": "Legacy JavaScript",
-        "score": 0.5,
+        "score": 0,
         "display": "Est savings of 12 KiB"
       },
       {
         "id": "modern-http-insight",
         "title": "Modern HTTP",
         "score": 0,
-        "display": "Est savings of 370 ms"
+        "display": "Est savings of 160 ms"
       },
       {
         "id": "network-dependency-tree-insight",
@@ -875,54 +839,60 @@
         "id": "render-blocking-insight",
         "title": "Render-blocking requests",
         "score": 0,
-        "display": "Est savings of 470 ms"
+        "display": "Est savings of 540 ms"
       }
     ]
   },
   "imud": {
     "url": "https://more30.com/imud",
-    "measuredAt": "2026-08-02T03:18:24.327Z",
-    "performance": 77,
+    "measuredAt": "2026-08-02T06:32:37.018Z",
+    "performance": 67,
     "accessibility": 96,
     "bestPractices": 77,
     "seo": 100,
     "metrics": {
-      "fcp": "3.6 s",
-      "lcp": "4.1 s",
-      "tbt": "150 ms",
-      "cls": "0.001",
-      "si": "3.6 s"
+      "fcp": "4.0 s",
+      "lcp": "4.7 s",
+      "tbt": "310 ms",
+      "cls": "0.003",
+      "si": "4.0 s"
     },
     "failedAudits": [
       {
         "id": "first-contentful-paint",
         "title": "First Contentful Paint",
-        "score": 0.33,
-        "display": "3.6 s"
+        "score": 0.23,
+        "display": "4.0 s"
       },
       {
         "id": "largest-contentful-paint",
         "title": "Largest Contentful Paint",
-        "score": 0.46,
-        "display": "4.1 s"
+        "score": 0.32,
+        "display": "4.7 s"
       },
       {
         "id": "speed-index",
         "title": "Speed Index",
-        "score": 0.87,
-        "display": "3.6 s"
+        "score": 0.8,
+        "display": "4.0 s"
+      },
+      {
+        "id": "total-blocking-time",
+        "title": "Total Blocking Time",
+        "score": 0.78,
+        "display": "310 ms"
       },
       {
         "id": "max-potential-fid",
         "title": "Max Potential First Input Delay",
-        "score": 0.68,
-        "display": "200 ms"
+        "score": 0.61,
+        "display": "220 ms"
       },
       {
         "id": "interactive",
         "title": "Time to Interactive",
-        "score": 0.71,
-        "display": "5.5 s"
+        "score": 0.68,
+        "display": "5.7 s"
       },
       {
         "id": "third-party-cookies",
@@ -934,7 +904,7 @@
         "id": "mainthread-work-breakdown",
         "title": "Minimize main-thread work",
         "score": 0,
-        "display": "6.6 s"
+        "display": "6.9 s"
       },
       {
         "id": "bootup-time",
@@ -987,7 +957,7 @@
       {
         "id": "cache-insight",
         "title": "Use efficient cache lifetimes",
-        "score": 0.5,
+        "score": 0,
         "display": "Est savings of 43 KiB"
       },
       {
@@ -1012,19 +982,31 @@
   },
   "briut": {
     "url": "https://more30.com/briut",
-    "measuredAt": "2026-08-02T00:30:00.683Z",
-    "performance": 97,
+    "measuredAt": "2026-08-02T06:32:51.508Z",
+    "performance": 98,
     "accessibility": 91,
     "bestPractices": 77,
-    "seo": 91,
+    "seo": 100,
     "metrics": {
-      "fcp": "1.7 s",
+      "fcp": "1.8 s",
       "lcp": "1.9 s",
-      "tbt": "140 ms",
-      "cls": "0.02",
-      "si": "1.7 s"
+      "tbt": "100 ms",
+      "cls": "0",
+      "si": "1.9 s"
     },
     "failedAudits": [
+      {
+        "id": "first-contentful-paint",
+        "title": "First Contentful Paint",
+        "score": 0.89,
+        "display": "1.8 s"
+      },
+      {
+        "id": "max-potential-fid",
+        "title": "Max Potential First Input Delay",
+        "score": 0.78,
+        "display": "170 ms"
+      },
       {
         "id": "third-party-cookies",
         "title": "Uses third-party cookies",
@@ -1035,7 +1017,13 @@
         "id": "mainthread-work-breakdown",
         "title": "Minimize main-thread work",
         "score": 0,
-        "display": "2.7 s"
+        "display": "6.9 s"
+      },
+      {
+        "id": "bootup-time",
+        "title": "Reduce JavaScript execution time",
+        "score": 0,
+        "display": "4.0 s"
       },
       {
         "id": "aria-required-children",
@@ -1068,12 +1056,6 @@
         "display": ""
       },
       {
-        "id": "robots-txt",
-        "title": "robots.txt is not valid",
-        "score": 0,
-        "display": "43 errors found"
-      },
-      {
         "id": "cache-insight",
         "title": "Use efficient cache lifetimes",
         "score": 0,
@@ -1095,48 +1077,48 @@
         "id": "render-blocking-insight",
         "title": "Render-blocking requests",
         "score": 0,
-        "display": "Est savings of 450 ms"
+        "display": "Est savings of 500 ms"
       }
     ]
   },
   "bkalot": {
     "url": "https://more30.com/bkalot",
-    "measuredAt": "2026-08-02T00:30:27.378Z",
-    "performance": 80,
+    "measuredAt": "2026-08-02T06:33:12.744Z",
+    "performance": 85,
     "accessibility": 93,
     "bestPractices": 77,
-    "seo": 82,
+    "seo": 91,
     "metrics": {
-      "fcp": "2.0 s",
-      "lcp": "2.0 s",
-      "tbt": "680 ms",
+      "fcp": "2.1 s",
+      "lcp": "2.1 s",
+      "tbt": "480 ms",
       "cls": "0",
-      "si": "2.6 s"
+      "si": "2.5 s"
     },
     "failedAudits": [
       {
         "id": "first-contentful-paint",
         "title": "First Contentful Paint",
-        "score": 0.83,
-        "display": "2.0 s"
+        "score": 0.81,
+        "display": "2.1 s"
       },
       {
         "id": "total-blocking-time",
         "title": "Total Blocking Time",
-        "score": 0.44,
-        "display": "680 ms"
+        "score": 0.6,
+        "display": "480 ms"
       },
       {
         "id": "max-potential-fid",
         "title": "Max Potential First Input Delay",
-        "score": 0.2,
-        "display": "380 ms"
+        "score": 0.26,
+        "display": "340 ms"
       },
       {
         "id": "interactive",
         "title": "Time to Interactive",
         "score": 0.76,
-        "display": "5.1 s"
+        "display": "5.0 s"
       },
       {
         "id": "third-party-cookies",
@@ -1148,7 +1130,7 @@
         "id": "mainthread-work-breakdown",
         "title": "Minimize main-thread work",
         "score": 0,
-        "display": "11.1 s"
+        "display": "10.2 s"
       },
       {
         "id": "bootup-time",
@@ -1181,22 +1163,22 @@
         "display": ""
       },
       {
-        "id": "robots-txt",
-        "title": "robots.txt is not valid",
-        "score": 0,
-        "display": "43 errors found"
-      },
-      {
         "id": "cache-insight",
         "title": "Use efficient cache lifetimes",
         "score": 0.5,
-        "display": "Est savings of 1,076 KiB"
+        "display": "Est savings of 1,226 KiB"
       },
       {
         "id": "document-latency-insight",
         "title": "Document request latency",
         "score": 0.5,
         "display": "Est savings of 13 KiB"
+      },
+      {
+        "id": "font-display-insight",
+        "title": "Font display",
+        "score": 0,
+        "display": "Est savings of 460 ms"
       },
       {
         "id": "forced-reflow-insight",
@@ -1220,48 +1202,66 @@
         "id": "render-blocking-insight",
         "title": "Render-blocking requests",
         "score": 0,
-        "display": "Est savings of 340 ms"
+        "display": "Est savings of 560 ms"
       }
     ]
   },
   "smel": {
     "url": "https://more30.com/smel",
-    "measuredAt": "2026-08-02T03:18:35.646Z",
-    "performance": 88,
+    "measuredAt": "2026-08-02T06:33:25.062Z",
+    "performance": 84,
     "accessibility": 92,
     "bestPractices": 77,
     "seo": 100,
     "metrics": {
-      "fcp": "2.6 s",
-      "lcp": "3.1 s",
-      "tbt": "140 ms",
+      "fcp": "2.8 s",
+      "lcp": "3.4 s",
+      "tbt": "180 ms",
       "cls": "0.061",
-      "si": "2.6 s"
+      "si": "2.8 s"
     },
     "failedAudits": [
       {
         "id": "first-contentful-paint",
         "title": "First Contentful Paint",
-        "score": 0.65,
-        "display": "2.6 s"
+        "score": 0.58,
+        "display": "2.8 s"
       },
       {
         "id": "largest-contentful-paint",
         "title": "Largest Contentful Paint",
-        "score": 0.76,
-        "display": "3.1 s"
+        "score": 0.68,
+        "display": "3.4 s"
       },
       {
         "id": "max-potential-fid",
         "title": "Max Potential First Input Delay",
-        "score": 0.72,
-        "display": "190 ms"
+        "score": 0.75,
+        "display": "180 ms"
+      },
+      {
+        "id": "interactive",
+        "title": "Time to Interactive",
+        "score": 0.89,
+        "display": "3.8 s"
       },
       {
         "id": "third-party-cookies",
         "title": "Uses third-party cookies",
         "score": 0,
         "display": "2 cookies found"
+      },
+      {
+        "id": "mainthread-work-breakdown",
+        "title": "Minimize main-thread work",
+        "score": 0,
+        "display": "6.4 s"
+      },
+      {
+        "id": "bootup-time",
+        "title": "Reduce JavaScript execution time",
+        "score": 0,
+        "display": "4.1 s"
       },
       {
         "id": "color-contrast",
@@ -1302,14 +1302,8 @@
       {
         "id": "cache-insight",
         "title": "Use efficient cache lifetimes",
-        "score": 0.5,
-        "display": "Est savings of 43 KiB"
-      },
-      {
-        "id": "forced-reflow-insight",
-        "title": "Forced reflow",
         "score": 0,
-        "display": ""
+        "display": "Est savings of 43 KiB"
       },
       {
         "id": "network-dependency-tree-insight",
@@ -1327,36 +1321,54 @@
   },
   "smachot": {
     "url": "https://more30.com/smachot",
-    "measuredAt": "2026-08-02T00:30:50.700Z",
-    "performance": 86,
+    "measuredAt": "2026-08-02T06:33:37.124Z",
+    "performance": 83,
     "accessibility": 100,
     "bestPractices": 77,
-    "seo": 91,
+    "seo": 100,
     "metrics": {
-      "fcp": "1.7 s",
-      "lcp": "3.7 s",
-      "tbt": "160 ms",
+      "fcp": "1.8 s",
+      "lcp": "3.8 s",
+      "tbt": "260 ms",
       "cls": "0",
-      "si": "1.7 s"
+      "si": "1.8 s"
     },
     "failedAudits": [
       {
         "id": "largest-contentful-paint",
         "title": "Largest Contentful Paint",
-        "score": 0.57,
-        "display": "3.7 s"
+        "score": 0.56,
+        "display": "3.8 s"
+      },
+      {
+        "id": "total-blocking-time",
+        "title": "Total Blocking Time",
+        "score": 0.83,
+        "display": "260 ms"
       },
       {
         "id": "max-potential-fid",
         "title": "Max Potential First Input Delay",
-        "score": 0.62,
-        "display": "210 ms"
+        "score": 0.26,
+        "display": "350 ms"
       },
       {
         "id": "third-party-cookies",
         "title": "Uses third-party cookies",
         "score": 0,
         "display": "2 cookies found"
+      },
+      {
+        "id": "mainthread-work-breakdown",
+        "title": "Minimize main-thread work",
+        "score": 0,
+        "display": "6.9 s"
+      },
+      {
+        "id": "bootup-time",
+        "title": "Reduce JavaScript execution time",
+        "score": 0.5,
+        "display": "4.0 s"
       },
       {
         "id": "unminified-javascript",
@@ -1371,28 +1383,16 @@
         "display": ""
       },
       {
-        "id": "robots-txt",
-        "title": "robots.txt is not valid",
-        "score": 0,
-        "display": "43 errors found"
-      },
-      {
         "id": "cache-insight",
         "title": "Use efficient cache lifetimes",
         "score": 0,
-        "display": "Est savings of 1,226 KiB"
+        "display": "Est savings of 43 KiB"
       },
       {
         "id": "document-latency-insight",
         "title": "Document request latency",
         "score": 0.5,
         "display": "Est savings of 3 KiB"
-      },
-      {
-        "id": "font-display-insight",
-        "title": "Font display",
-        "score": 0,
-        "display": "Est savings of 310 ms"
       },
       {
         "id": "forced-reflow-insight",
@@ -1410,60 +1410,60 @@
         "id": "render-blocking-insight",
         "title": "Render-blocking requests",
         "score": 0,
-        "display": "Est savings of 640 ms"
+        "display": "Est savings of 660 ms"
       }
     ]
   },
   "egod": {
     "url": "https://more30.com/egod",
-    "measuredAt": "2026-08-02T00:31:04.310Z",
-    "performance": 56,
+    "measuredAt": "2026-08-02T06:33:53.126Z",
+    "performance": 50,
     "accessibility": 83,
     "bestPractices": 77,
-    "seo": 91,
+    "seo": 100,
     "metrics": {
-      "fcp": "3.5 s",
-      "lcp": "5.1 s",
-      "tbt": "720 ms",
-      "cls": "0.02",
-      "si": "3.5 s"
+      "fcp": "3.9 s",
+      "lcp": "5.4 s",
+      "tbt": "930 ms",
+      "cls": "0.016",
+      "si": "4.1 s"
     },
     "failedAudits": [
       {
         "id": "first-contentful-paint",
         "title": "First Contentful Paint",
-        "score": 0.35,
-        "display": "3.5 s"
+        "score": 0.25,
+        "display": "3.9 s"
       },
       {
         "id": "largest-contentful-paint",
         "title": "Largest Contentful Paint",
-        "score": 0.26,
-        "display": "5.1 s"
+        "score": 0.2,
+        "display": "5.4 s"
       },
       {
         "id": "speed-index",
         "title": "Speed Index",
-        "score": 0.88,
-        "display": "3.5 s"
+        "score": 0.8,
+        "display": "4.1 s"
       },
       {
         "id": "total-blocking-time",
         "title": "Total Blocking Time",
-        "score": 0.41,
-        "display": "720 ms"
+        "score": 0.3,
+        "display": "930 ms"
       },
       {
         "id": "max-potential-fid",
         "title": "Max Potential First Input Delay",
-        "score": 0.3,
-        "display": "320 ms"
+        "score": 0.16,
+        "display": "410 ms"
       },
       {
         "id": "interactive",
         "title": "Time to Interactive",
-        "score": 0.61,
-        "display": "6.3 s"
+        "score": 0.46,
+        "display": "7.6 s"
       },
       {
         "id": "third-party-cookies",
@@ -1475,7 +1475,13 @@
         "id": "mainthread-work-breakdown",
         "title": "Minimize main-thread work",
         "score": 0,
-        "display": "3.8 s"
+        "display": "8.3 s"
+      },
+      {
+        "id": "bootup-time",
+        "title": "Reduce JavaScript execution time",
+        "score": 0,
+        "display": "4.8 s"
       },
       {
         "id": "valid-source-maps",
@@ -1532,22 +1538,22 @@
         "display": ""
       },
       {
-        "id": "robots-txt",
-        "title": "robots.txt is not valid",
-        "score": 0,
-        "display": "43 errors found"
-      },
-      {
         "id": "cache-insight",
         "title": "Use efficient cache lifetimes",
         "score": 0,
-        "display": "Est savings of 1,069 KiB"
+        "display": "Est savings of 1,226 KiB"
       },
       {
         "id": "document-latency-insight",
         "title": "Document request latency",
         "score": 0.5,
         "display": "Est savings of 2 KiB"
+      },
+      {
+        "id": "font-display-insight",
+        "title": "Font display",
+        "score": 0,
+        "display": "Est savings of 400 ms"
       },
       {
         "id": "forced-reflow-insight",
@@ -1571,220 +1577,36 @@
   },
   "chatzor": {
     "url": "https://more30.com/chatzor",
-    "measuredAt": "2026-08-02T02:21:53.835Z",
+    "measuredAt": "2026-08-02T06:34:04.034Z",
     "performance": 87,
     "accessibility": 100,
     "bestPractices": 77,
     "seo": 100,
     "metrics": {
-      "fcp": "1.2 s",
-      "lcp": "3.3 s",
-      "tbt": "50 ms",
+      "fcp": "1.1 s",
+      "lcp": "3.2 s",
+      "tbt": "70 ms",
       "cls": "0.146",
-      "si": "2.0 s"
+      "si": "1.7 s"
     },
     "failedAudits": [
       {
         "id": "largest-contentful-paint",
         "title": "Largest Contentful Paint",
-        "score": 0.7,
-        "display": "3.3 s"
+        "score": 0.73,
+        "display": "3.2 s"
       },
       {
         "id": "cumulative-layout-shift",
         "title": "Cumulative Layout Shift",
         "score": 0.77,
         "display": "0.146"
-      },
-      {
-        "id": "third-party-cookies",
-        "title": "Uses third-party cookies",
-        "score": 0,
-        "display": "1 cookie found"
-      },
-      {
-        "id": "layout-shifts",
-        "title": "Avoid large layout shifts",
-        "score": 0,
-        "display": "3 layout shifts found"
-      },
-      {
-        "id": "unminified-javascript",
-        "title": "Minify JavaScript",
-        "score": 0.5,
-        "display": "Est savings of 2 KiB"
-      },
-      {
-        "id": "inspector-issues",
-        "title": "Issues were logged in the `Issues` panel in Chrome Devtools",
-        "score": 0,
-        "display": ""
-      },
-      {
-        "id": "cache-insight",
-        "title": "Use efficient cache lifetimes",
-        "score": 0.5,
-        "display": "Est savings of 43 KiB"
-      },
-      {
-        "id": "cls-culprits-insight",
-        "title": "Layout shift culprits",
-        "score": 0,
-        "display": ""
-      },
-      {
-        "id": "document-latency-insight",
-        "title": "Document request latency",
-        "score": 0.5,
-        "display": "Est savings of 10 KiB"
-      },
-      {
-        "id": "modern-http-insight",
-        "title": "Modern HTTP",
-        "score": 0.5,
-        "display": ""
-      },
-      {
-        "id": "network-dependency-tree-insight",
-        "title": "Network dependency tree",
-        "score": 0,
-        "display": ""
-      }
-    ]
-  },
-  "chatzor-app": {
-    "url": "https://more30.com/chatzor/",
-    "measuredAt": "2026-08-02T02:22:08.701Z",
-    "performance": 57,
-    "accessibility": 100,
-    "bestPractices": 77,
-    "seo": 100,
-    "metrics": {
-      "fcp": "3.8 s",
-      "lcp": "5.0 s",
-      "tbt": "640 ms",
-      "cls": "0",
-      "si": "3.8 s"
-    },
-    "failedAudits": [
-      {
-        "id": "first-contentful-paint",
-        "title": "First Contentful Paint",
-        "score": 0.27,
-        "display": "3.8 s"
-      },
-      {
-        "id": "largest-contentful-paint",
-        "title": "Largest Contentful Paint",
-        "score": 0.27,
-        "display": "5.0 s"
-      },
-      {
-        "id": "speed-index",
-        "title": "Speed Index",
-        "score": 0.84,
-        "display": "3.8 s"
-      },
-      {
-        "id": "total-blocking-time",
-        "title": "Total Blocking Time",
-        "score": 0.47,
-        "display": "640 ms"
-      },
-      {
-        "id": "max-potential-fid",
-        "title": "Max Potential First Input Delay",
-        "score": 0.27,
-        "display": "340 ms"
       },
       {
         "id": "interactive",
         "title": "Time to Interactive",
-        "score": 0.69,
-        "display": "5.6 s"
-      },
-      {
-        "id": "third-party-cookies",
-        "title": "Uses third-party cookies",
-        "score": 0,
-        "display": "2 cookies found"
-      },
-      {
-        "id": "mainthread-work-breakdown",
-        "title": "Minimize main-thread work",
-        "score": 0,
-        "display": "4.5 s"
-      },
-      {
-        "id": "unused-javascript",
-        "title": "Reduce unused JavaScript",
-        "score": 0,
-        "display": "Est savings of 88 KiB"
-      },
-      {
-        "id": "inspector-issues",
-        "title": "Issues were logged in the `Issues` panel in Chrome Devtools",
-        "score": 0,
-        "display": ""
-      },
-      {
-        "id": "cache-insight",
-        "title": "Use efficient cache lifetimes",
-        "score": 0,
-        "display": "Est savings of 43 KiB"
-      },
-      {
-        "id": "document-latency-insight",
-        "title": "Document request latency",
-        "score": 0.5,
-        "display": "Est savings of 2 KiB"
-      },
-      {
-        "id": "modern-http-insight",
-        "title": "Modern HTTP",
-        "score": 0,
-        "display": "Est savings of 150 ms"
-      },
-      {
-        "id": "network-dependency-tree-insight",
-        "title": "Network dependency tree",
-        "score": 0,
-        "display": ""
-      },
-      {
-        "id": "render-blocking-insight",
-        "title": "Render-blocking requests",
-        "score": 0,
-        "display": "Est savings of 190 ms"
-      }
-    ]
-  },
-  "chizukim": {
-    "url": "https://more30.com/chizukim",
-    "measuredAt": "2026-08-02T01:44:50.052Z",
-    "performance": 89,
-    "accessibility": 100,
-    "bestPractices": 77,
-    "seo": 100,
-    "metrics": {
-      "fcp": "1.1 s",
-      "lcp": "2.9 s",
-      "tbt": "40 ms",
-      "cls": "0.146",
-      "si": "1.5 s"
-    },
-    "failedAudits": [
-      {
-        "id": "largest-contentful-paint",
-        "title": "Largest Contentful Paint",
-        "score": 0.79,
-        "display": "2.9 s"
-      },
-      {
-        "id": "cumulative-layout-shift",
-        "title": "Cumulative Layout Shift",
-        "score": 0.77,
-        "display": "0.146"
+        "score": 0.89,
+        "display": "3.8 s"
       },
       {
         "id": "third-party-cookies",
@@ -1825,7 +1647,7 @@
       {
         "id": "cache-insight",
         "title": "Use efficient cache lifetimes",
-        "score": 0.5,
+        "score": 0,
         "display": "Est savings of 43 KiB"
       },
       {
@@ -1843,6 +1665,208 @@
       {
         "id": "modern-http-insight",
         "title": "Modern HTTP",
+        "score": 0,
+        "display": "Est savings of 150 ms"
+      },
+      {
+        "id": "network-dependency-tree-insight",
+        "title": "Network dependency tree",
+        "score": 0,
+        "display": ""
+      }
+    ]
+  },
+  "chatzor-app": {
+    "url": "https://more30.com/chatzor/",
+    "measuredAt": "2026-08-02T16:05:30.492Z",
+    "performance": 54,
+    "accessibility": 100,
+    "bestPractices": 77,
+    "seo": 100,
+    "metrics": {
+      "fcp": "3.5 s",
+      "lcp": "4.7 s",
+      "tbt": "1,000 ms",
+      "cls": "0",
+      "si": "3.6 s"
+    },
+    "failedAudits": [
+      {
+        "id": "first-contentful-paint",
+        "title": "First Contentful Paint",
+        "score": 0.35,
+        "display": "3.5 s"
+      },
+      {
+        "id": "largest-contentful-paint",
+        "title": "Largest Contentful Paint",
+        "score": 0.33,
+        "display": "4.7 s"
+      },
+      {
+        "id": "speed-index",
+        "title": "Speed Index",
+        "score": 0.87,
+        "display": "3.6 s"
+      },
+      {
+        "id": "total-blocking-time",
+        "title": "Total Blocking Time",
+        "score": 0.27,
+        "display": "1,000 ms"
+      },
+      {
+        "id": "max-potential-fid",
+        "title": "Max Potential First Input Delay",
+        "score": 0.29,
+        "display": "330 ms"
+      },
+      {
+        "id": "interactive",
+        "title": "Time to Interactive",
+        "score": 0.68,
+        "display": "5.7 s"
+      },
+      {
+        "id": "third-party-cookies",
+        "title": "Uses third-party cookies",
+        "score": 0,
+        "display": "2 cookies found"
+      },
+      {
+        "id": "mainthread-work-breakdown",
+        "title": "Minimize main-thread work",
+        "score": 0,
+        "display": "5.3 s"
+      },
+      {
+        "id": "unminified-javascript",
+        "title": "Minify JavaScript",
+        "score": 0.5,
+        "display": "Est savings of 2 KiB"
+      },
+      {
+        "id": "unused-javascript",
+        "title": "Reduce unused JavaScript",
+        "score": 0,
+        "display": "Est savings of 88 KiB"
+      },
+      {
+        "id": "inspector-issues",
+        "title": "Issues were logged in the `Issues` panel in Chrome Devtools",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "cache-insight",
+        "title": "Use efficient cache lifetimes",
+        "score": 0,
+        "display": "Est savings of 1,069 KiB"
+      },
+      {
+        "id": "document-latency-insight",
+        "title": "Document request latency",
+        "score": 0.5,
+        "display": "Est savings of 2 KiB"
+      },
+      {
+        "id": "forced-reflow-insight",
+        "title": "Forced reflow",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "modern-http-insight",
+        "title": "Modern HTTP",
+        "score": 0,
+        "display": "Est savings of 10 ms"
+      },
+      {
+        "id": "network-dependency-tree-insight",
+        "title": "Network dependency tree",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "render-blocking-insight",
+        "title": "Render-blocking requests",
+        "score": 0,
+        "display": "Est savings of 150 ms"
+      }
+    ]
+  },
+  "chizukim": {
+    "url": "https://more30.com/chizukim",
+    "measuredAt": "2026-08-02T06:34:29.873Z",
+    "performance": 95,
+    "accessibility": 100,
+    "bestPractices": 77,
+    "seo": 100,
+    "metrics": {
+      "fcp": "1.1 s",
+      "lcp": "3.0 s",
+      "tbt": "60 ms",
+      "cls": "0.001",
+      "si": "1.5 s"
+    },
+    "failedAudits": [
+      {
+        "id": "largest-contentful-paint",
+        "title": "Largest Contentful Paint",
+        "score": 0.78,
+        "display": "3.0 s"
+      },
+      {
+        "id": "third-party-cookies",
+        "title": "Uses third-party cookies",
+        "score": 0,
+        "display": "2 cookies found"
+      },
+      {
+        "id": "mainthread-work-breakdown",
+        "title": "Minimize main-thread work",
+        "score": 0,
+        "display": "5.8 s"
+      },
+      {
+        "id": "bootup-time",
+        "title": "Reduce JavaScript execution time",
+        "score": 0.5,
+        "display": "3.9 s"
+      },
+      {
+        "id": "unminified-javascript",
+        "title": "Minify JavaScript",
+        "score": 0.5,
+        "display": "Est savings of 2 KiB"
+      },
+      {
+        "id": "inspector-issues",
+        "title": "Issues were logged in the `Issues` panel in Chrome Devtools",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "cache-insight",
+        "title": "Use efficient cache lifetimes",
+        "score": 0.5,
+        "display": "Est savings of 1,075 KiB"
+      },
+      {
+        "id": "document-latency-insight",
+        "title": "Document request latency",
+        "score": 0.5,
+        "display": "Est savings of 10 KiB"
+      },
+      {
+        "id": "forced-reflow-insight",
+        "title": "Forced reflow",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "modern-http-insight",
+        "title": "Modern HTTP",
         "score": 0.5,
         "display": ""
       },
@@ -1856,48 +1880,54 @@
   },
   "chizukim-app": {
     "url": "https://more30.com/chizukim/",
-    "measuredAt": "2026-08-02T02:08:25.641Z",
+    "measuredAt": "2026-08-02T06:34:50.541Z",
     "performance": 82,
     "accessibility": 100,
     "bestPractices": 77,
     "seo": 100,
     "metrics": {
-      "fcp": "3.0 s",
-      "lcp": "3.2 s",
-      "tbt": "270 ms",
-      "cls": "0.004",
-      "si": "3.3 s"
+      "fcp": "2.8 s",
+      "lcp": "3.0 s",
+      "tbt": "320 ms",
+      "cls": "0.003",
+      "si": "3.4 s"
     },
     "failedAudits": [
       {
         "id": "first-contentful-paint",
         "title": "First Contentful Paint",
-        "score": 0.49,
-        "display": "3.0 s"
+        "score": 0.55,
+        "display": "2.8 s"
       },
       {
         "id": "largest-contentful-paint",
         "title": "Largest Contentful Paint",
-        "score": 0.72,
-        "display": "3.2 s"
+        "score": 0.78,
+        "display": "3.0 s"
       },
       {
         "id": "total-blocking-time",
         "title": "Total Blocking Time",
-        "score": 0.82,
-        "display": "270 ms"
+        "score": 0.76,
+        "display": "320 ms"
       },
       {
         "id": "max-potential-fid",
         "title": "Max Potential First Input Delay",
-        "score": 0.68,
-        "display": "200 ms"
+        "score": 0.34,
+        "display": "310 ms"
+      },
+      {
+        "id": "server-response-time",
+        "title": "Reduce initial server response time",
+        "score": 0,
+        "display": "Root document took 880 ms"
       },
       {
         "id": "interactive",
         "title": "Time to Interactive",
-        "score": 0.69,
-        "display": "5.6 s"
+        "score": 0.75,
+        "display": "5.1 s"
       },
       {
         "id": "third-party-cookies",
@@ -1909,7 +1939,13 @@
         "id": "mainthread-work-breakdown",
         "title": "Minimize main-thread work",
         "score": 0,
-        "display": "2.4 s"
+        "display": "6.8 s"
+      },
+      {
+        "id": "bootup-time",
+        "title": "Reduce JavaScript execution time",
+        "score": 0,
+        "display": "4.4 s"
       },
       {
         "id": "unminified-javascript",
@@ -1939,19 +1975,19 @@
         "id": "cache-insight",
         "title": "Use efficient cache lifetimes",
         "score": 0,
-        "display": "Est savings of 1,226 KiB"
+        "display": "Est savings of 1,076 KiB"
       },
       {
         "id": "document-latency-insight",
         "title": "Document request latency",
-        "score": 0.5,
+        "score": 0,
         "display": "Est savings of 3 KiB"
       },
       {
-        "id": "font-display-insight",
-        "title": "Font display",
+        "id": "forced-reflow-insight",
+        "title": "Forced reflow",
         "score": 0,
-        "display": "Est savings of 170 ms"
+        "display": ""
       },
       {
         "id": "network-dependency-tree-insight",
@@ -1963,36 +1999,48 @@
         "id": "render-blocking-insight",
         "title": "Render-blocking requests",
         "score": 0,
-        "display": "Est savings of 190 ms"
+        "display": "Est savings of 150 ms"
       }
     ]
   },
   "orech": {
     "url": "https://more30.com/orech",
-    "measuredAt": "2026-08-02T02:36:07.975Z",
-    "performance": 97,
+    "measuredAt": "2026-08-02T06:35:02.572Z",
+    "performance": 98,
     "accessibility": 100,
     "bestPractices": 77,
     "seo": 100,
     "metrics": {
-      "fcp": "1.1 s",
-      "lcp": "1.1 s",
-      "tbt": "190 ms",
+      "fcp": "1.2 s",
+      "lcp": "2.0 s",
+      "tbt": "130 ms",
       "cls": "0",
-      "si": "1.9 s"
+      "si": "1.5 s"
     },
     "failedAudits": [
       {
         "id": "max-potential-fid",
         "title": "Max Potential First Input Delay",
-        "score": 0.62,
-        "display": "210 ms"
+        "score": 0.78,
+        "display": "170 ms"
       },
       {
         "id": "third-party-cookies",
         "title": "Uses third-party cookies",
         "score": 0,
         "display": "2 cookies found"
+      },
+      {
+        "id": "mainthread-work-breakdown",
+        "title": "Minimize main-thread work",
+        "score": 0,
+        "display": "6.3 s"
+      },
+      {
+        "id": "bootup-time",
+        "title": "Reduce JavaScript execution time",
+        "score": 0,
+        "display": "4.4 s"
       },
       {
         "id": "unminified-javascript",
@@ -2016,19 +2064,13 @@
         "id": "cache-insight",
         "title": "Use efficient cache lifetimes",
         "score": 0.5,
-        "display": "Est savings of 1,226 KiB"
+        "display": "Est savings of 43 KiB"
       },
       {
         "id": "document-latency-insight",
         "title": "Document request latency",
         "score": 0.5,
         "display": "Est savings of 6 KiB"
-      },
-      {
-        "id": "font-display-insight",
-        "title": "Font display",
-        "score": 0,
-        "display": "Est savings of 340 ms"
       },
       {
         "id": "legacy-javascript-insight",
@@ -2040,7 +2082,7 @@
         "id": "modern-http-insight",
         "title": "Modern HTTP",
         "score": 0,
-        "display": "Est savings of 140 ms"
+        "display": "Est savings of 10 ms"
       },
       {
         "id": "network-dependency-tree-insight",
@@ -2052,42 +2094,54 @@
         "id": "render-blocking-insight",
         "title": "Render-blocking requests",
         "score": 0,
-        "display": "Est savings of 140 ms"
+        "display": "Est savings of 170 ms"
       }
     ]
   },
   "mthbram": {
     "url": "https://more30.com/mthbram",
-    "measuredAt": "2026-08-02T00:32:16.173Z",
-    "performance": 69,
+    "measuredAt": "2026-08-02T06:35:14.906Z",
+    "performance": 66,
     "accessibility": 98,
     "bestPractices": 73,
-    "seo": 91,
+    "seo": 100,
     "metrics": {
-      "fcp": "4.8 s",
-      "lcp": "4.9 s",
-      "tbt": "100 ms",
+      "fcp": "4.7 s",
+      "lcp": "5.0 s",
+      "tbt": "240 ms",
       "cls": "0.001",
-      "si": "4.8 s"
+      "si": "4.7 s"
     },
     "failedAudits": [
       {
         "id": "first-contentful-paint",
         "title": "First Contentful Paint",
-        "score": 0.12,
-        "display": "4.8 s"
+        "score": 0.13,
+        "display": "4.7 s"
       },
       {
         "id": "largest-contentful-paint",
         "title": "Largest Contentful Paint",
-        "score": 0.28,
-        "display": "4.9 s"
+        "score": 0.26,
+        "display": "5.0 s"
       },
       {
         "id": "speed-index",
         "title": "Speed Index",
-        "score": 0.67,
-        "display": "4.8 s"
+        "score": 0.69,
+        "display": "4.7 s"
+      },
+      {
+        "id": "total-blocking-time",
+        "title": "Total Blocking Time",
+        "score": 0.86,
+        "display": "240 ms"
+      },
+      {
+        "id": "max-potential-fid",
+        "title": "Max Potential First Input Delay",
+        "score": 0.82,
+        "display": "160 ms"
       },
       {
         "id": "errors-in-console",
@@ -2108,6 +2162,18 @@
         "display": "2 cookies found"
       },
       {
+        "id": "mainthread-work-breakdown",
+        "title": "Minimize main-thread work",
+        "score": 0,
+        "display": "6.2 s"
+      },
+      {
+        "id": "bootup-time",
+        "title": "Reduce JavaScript execution time",
+        "score": 0,
+        "display": "4.2 s"
+      },
+      {
         "id": "valid-source-maps",
         "title": "Missing source maps for large first-party JavaScript",
         "score": 0,
@@ -2122,13 +2188,13 @@
       {
         "id": "unminified-javascript",
         "title": "Minify JavaScript",
-        "score": 0,
+        "score": 0.5,
         "display": "Est savings of 2 KiB"
       },
       {
         "id": "unused-css-rules",
         "title": "Reduce unused CSS",
-        "score": 0,
+        "score": 0.5,
         "display": "Est savings of 18 KiB"
       },
       {
@@ -2144,12 +2210,6 @@
         "display": ""
       },
       {
-        "id": "robots-txt",
-        "title": "robots.txt is not valid",
-        "score": 0,
-        "display": "43 errors found"
-      },
-      {
         "id": "cache-insight",
         "title": "Use efficient cache lifetimes",
         "score": 0,
@@ -2171,126 +2231,102 @@
         "id": "render-blocking-insight",
         "title": "Render-blocking requests",
         "score": 0,
-        "display": "Est savings of 300 ms"
+        "display": "Est savings of 450 ms"
       }
     ]
   },
   "zchuyot": {
     "url": "https://more30.com/zchuyot",
-    "measuredAt": "2026-08-02T00:32:36.454Z",
-    "performance": 38,
-    "accessibility": 90,
+    "measuredAt": "2026-08-02T09:52:10.200Z",
+    "performance": 46,
+    "accessibility": 100,
     "bestPractices": 77,
-    "seo": 92,
+    "seo": 100,
     "metrics": {
-      "fcp": "5.0 s",
-      "lcp": "6.9 s",
-      "tbt": "1,550 ms",
+      "fcp": "3.8 s",
+      "lcp": "5.8 s",
+      "tbt": "1,100 ms",
       "cls": "0",
-      "si": "5.0 s"
+      "si": "4.0 s"
     },
     "failedAudits": [
       {
         "id": "first-contentful-paint",
         "title": "First Contentful Paint",
-        "score": 0.1,
-        "display": "5.0 s"
+        "score": 0.27,
+        "display": "3.8 s"
       },
       {
         "id": "largest-contentful-paint",
         "title": "Largest Contentful Paint",
-        "score": 0.06,
-        "display": "6.9 s"
+        "score": 0.15,
+        "display": "5.8 s"
       },
       {
         "id": "speed-index",
         "title": "Speed Index",
-        "score": 0.64,
-        "display": "5.0 s"
+        "score": 0.8,
+        "display": "4.0 s"
       },
       {
         "id": "total-blocking-time",
         "title": "Total Blocking Time",
-        "score": 0.13,
-        "display": "1,550 ms"
+        "score": 0.23,
+        "display": "1,100 ms"
       },
       {
         "id": "max-potential-fid",
         "title": "Max Potential First Input Delay",
-        "score": 0.06,
-        "display": "540 ms"
+        "score": 0.08,
+        "display": "500 ms"
       },
       {
         "id": "interactive",
         "title": "Time to Interactive",
-        "score": 0.42,
-        "display": "8.1 s"
+        "score": 0.67,
+        "display": "5.8 s"
       },
       {
         "id": "third-party-cookies",
         "title": "Uses third-party cookies",
         "score": 0,
-        "display": "2 cookies found"
+        "display": "1 cookie found"
       },
       {
         "id": "mainthread-work-breakdown",
         "title": "Minimize main-thread work",
         "score": 0,
-        "display": "8.1 s"
+        "display": "7.2 s"
       },
       {
         "id": "bootup-time",
         "title": "Reduce JavaScript execution time",
         "score": 0,
-        "display": "2.1 s"
-      },
-      {
-        "id": "valid-source-maps",
-        "title": "Missing source maps for large first-party JavaScript",
-        "score": 0,
-        "display": ""
-      },
-      {
-        "id": "button-name",
-        "title": "Buttons do not have an accessible name",
-        "score": 0,
-        "display": ""
-      },
-      {
-        "id": "color-contrast",
-        "title": "Background and foreground colors do not have a sufficient contrast ratio.",
-        "score": 0,
-        "display": ""
+        "display": "1.3 s"
       },
       {
         "id": "unminified-javascript",
         "title": "Minify JavaScript",
         "score": 0.5,
-        "display": "Est savings of 2 KiB"
+        "display": "Est savings of 5 KiB"
       },
       {
         "id": "unused-css-rules",
         "title": "Reduce unused CSS",
         "score": 0.5,
-        "display": "Est savings of 10 KiB"
+        "display": "Est savings of 11 KiB"
       },
       {
         "id": "unused-javascript",
         "title": "Reduce unused JavaScript",
         "score": 0,
-        "display": "Est savings of 381 KiB"
+        "display": "Est savings of 119 KiB"
       },
       {
         "id": "inspector-issues",
         "title": "Issues were logged in the `Issues` panel in Chrome Devtools",
         "score": 0,
         "display": ""
-      },
-      {
-        "id": "robots-txt",
-        "title": "robots.txt is not valid",
-        "score": 0,
-        "display": "43 errors found"
       },
       {
         "id": "cache-insight",
@@ -2302,7 +2338,7 @@
         "id": "document-latency-insight",
         "title": "Document request latency",
         "score": 0.5,
-        "display": "Est savings of 2 KiB"
+        "display": "Est savings of 4 KiB"
       },
       {
         "id": "forced-reflow-insight",
@@ -2313,14 +2349,20 @@
       {
         "id": "image-delivery-insight",
         "title": "Improve image delivery",
-        "score": 0.5,
-        "display": "Est savings of 54 KiB"
+        "score": 0,
+        "display": "Est savings of 59 KiB"
       },
       {
         "id": "lcp-breakdown-insight",
         "title": "LCP breakdown",
         "score": 0,
         "display": ""
+      },
+      {
+        "id": "modern-http-insight",
+        "title": "Modern HTTP",
+        "score": 0,
+        "display": "Est savings of -40 ms"
       },
       {
         "id": "network-dependency-tree-insight",
@@ -2331,49 +2373,55 @@
       {
         "id": "render-blocking-insight",
         "title": "Render-blocking requests",
-        "score": 0,
-        "display": "Est savings of 300 ms"
+        "score": 0.5,
+        "display": ""
       }
     ]
   },
   "galil": {
     "url": "https://more30.com/galil",
-    "measuredAt": "2026-08-02T00:32:50.252Z",
-    "performance": 78,
+    "measuredAt": "2026-08-02T06:35:46.355Z",
+    "performance": 71,
     "accessibility": 84,
     "bestPractices": 73,
-    "seo": 92,
+    "seo": 100,
     "metrics": {
-      "fcp": "3.2 s",
-      "lcp": "3.3 s",
-      "tbt": "350 ms",
+      "fcp": "3.4 s",
+      "lcp": "3.5 s",
+      "tbt": "490 ms",
       "cls": "0",
-      "si": "3.2 s"
+      "si": "3.8 s"
     },
     "failedAudits": [
       {
         "id": "first-contentful-paint",
         "title": "First Contentful Paint",
-        "score": 0.42,
-        "display": "3.2 s"
+        "score": 0.37,
+        "display": "3.4 s"
       },
       {
         "id": "largest-contentful-paint",
         "title": "Largest Contentful Paint",
-        "score": 0.7,
-        "display": "3.3 s"
+        "score": 0.64,
+        "display": "3.5 s"
+      },
+      {
+        "id": "speed-index",
+        "title": "Speed Index",
+        "score": 0.84,
+        "display": "3.8 s"
       },
       {
         "id": "total-blocking-time",
         "title": "Total Blocking Time",
-        "score": 0.73,
-        "display": "350 ms"
+        "score": 0.59,
+        "display": "490 ms"
       },
       {
         "id": "max-potential-fid",
         "title": "Max Potential First Input Delay",
-        "score": 0.5,
-        "display": "250 ms"
+        "score": 0.22,
+        "display": "370 ms"
       },
       {
         "id": "errors-in-console",
@@ -2384,8 +2432,8 @@
       {
         "id": "interactive",
         "title": "Time to Interactive",
-        "score": 0.75,
-        "display": "5.1 s"
+        "score": 0.65,
+        "display": "6.0 s"
       },
       {
         "id": "third-party-cookies",
@@ -2397,7 +2445,13 @@
         "id": "mainthread-work-breakdown",
         "title": "Minimize main-thread work",
         "score": 0,
-        "display": "2.1 s"
+        "display": "7.0 s"
+      },
+      {
+        "id": "bootup-time",
+        "title": "Reduce JavaScript execution time",
+        "score": 0,
+        "display": "4.5 s"
       },
       {
         "id": "unsized-images",
@@ -2444,7 +2498,7 @@
       {
         "id": "unused-css-rules",
         "title": "Reduce unused CSS",
-        "score": 0,
+        "score": 0.5,
         "display": "Est savings of 14 KiB"
       },
       {
@@ -2460,16 +2514,10 @@
         "display": ""
       },
       {
-        "id": "robots-txt",
-        "title": "robots.txt is not valid",
-        "score": 0,
-        "display": "43 errors found"
-      },
-      {
         "id": "cache-insight",
         "title": "Use efficient cache lifetimes",
-        "score": 0.5,
-        "display": "Est savings of 43 KiB"
+        "score": 0,
+        "display": "Est savings of 1,069 KiB"
       },
       {
         "id": "document-latency-insight",
@@ -2499,21 +2547,21 @@
         "id": "render-blocking-insight",
         "title": "Render-blocking requests",
         "score": 0,
-        "display": "Est savings of 750 ms"
+        "display": "Est savings of 450 ms"
       }
     ]
   },
   "studio": {
     "url": "https://more30.com/studio",
-    "measuredAt": "2026-08-02T03:18:47.189Z",
-    "performance": 65,
-    "accessibility": 90,
+    "measuredAt": "2026-08-02T12:42:40.942Z",
+    "performance": 80,
+    "accessibility": 100,
     "bestPractices": 77,
     "seo": 100,
     "metrics": {
-      "fcp": "3.8 s",
-      "lcp": "5.3 s",
-      "tbt": "300 ms",
+      "fcp": "3.1 s",
+      "lcp": "3.8 s",
+      "tbt": "150 ms",
       "cls": "0",
       "si": "3.8 s"
     },
@@ -2521,38 +2569,32 @@
       {
         "id": "first-contentful-paint",
         "title": "First Contentful Paint",
-        "score": 0.26,
-        "display": "3.8 s"
+        "score": 0.48,
+        "display": "3.1 s"
       },
       {
         "id": "largest-contentful-paint",
         "title": "Largest Contentful Paint",
-        "score": 0.22,
-        "display": "5.3 s"
+        "score": 0.55,
+        "display": "3.8 s"
       },
       {
         "id": "speed-index",
         "title": "Speed Index",
-        "score": 0.83,
+        "score": 0.84,
         "display": "3.8 s"
-      },
-      {
-        "id": "total-blocking-time",
-        "title": "Total Blocking Time",
-        "score": 0.79,
-        "display": "300 ms"
       },
       {
         "id": "max-potential-fid",
         "title": "Max Potential First Input Delay",
-        "score": 0.62,
-        "display": "210 ms"
+        "score": 0.43,
+        "display": "270 ms"
       },
       {
         "id": "interactive",
         "title": "Time to Interactive",
-        "score": 0.73,
-        "display": "5.3 s"
+        "score": 0.75,
+        "display": "5.1 s"
       },
       {
         "id": "third-party-cookies",
@@ -2561,20 +2603,14 @@
         "display": "2 cookies found"
       },
       {
+        "id": "mainthread-work-breakdown",
+        "title": "Minimize main-thread work",
+        "score": 0,
+        "display": "2.6 s"
+      },
+      {
         "id": "valid-source-maps",
         "title": "Missing source maps for large first-party JavaScript",
-        "score": 0,
-        "display": ""
-      },
-      {
-        "id": "aria-valid-attr-value",
-        "title": "`[aria-*]` attributes do not have valid values",
-        "score": 0,
-        "display": ""
-      },
-      {
-        "id": "color-contrast",
-        "title": "Background and foreground colors do not have a sufficient contrast ratio.",
         "score": 0,
         "display": ""
       },
@@ -2587,14 +2623,14 @@
       {
         "id": "unused-css-rules",
         "title": "Reduce unused CSS",
-        "score": 0.5,
-        "display": "Est savings of 12 KiB"
+        "score": 0,
+        "display": "Est savings of 11 KiB"
       },
       {
         "id": "unused-javascript",
         "title": "Reduce unused JavaScript",
         "score": 0,
-        "display": "Est savings of 267 KiB"
+        "display": "Est savings of 114 KiB"
       },
       {
         "id": "inspector-issues",
@@ -2606,19 +2642,19 @@
         "id": "cache-insight",
         "title": "Use efficient cache lifetimes",
         "score": 0,
-        "display": "Est savings of 43 KiB"
+        "display": "Est savings of 1,227 KiB"
       },
       {
         "id": "document-latency-insight",
         "title": "Document request latency",
         "score": 0.5,
-        "display": "Est savings of 4 KiB"
+        "display": "Est savings of 6 KiB"
       },
       {
         "id": "font-display-insight",
         "title": "Font display",
         "score": 0,
-        "display": "Est savings of 210 ms"
+        "display": "Est savings of 250 ms"
       },
       {
         "id": "network-dependency-tree-insight",
@@ -2636,54 +2672,54 @@
   },
   "mechiron": {
     "url": "https://more30.com/mechiron",
-    "measuredAt": "2026-08-02T00:33:29.992Z",
+    "measuredAt": "2026-08-02T06:36:34.541Z",
     "performance": 44,
     "accessibility": 96,
     "bestPractices": 73,
-    "seo": 91,
+    "seo": 100,
     "metrics": {
-      "fcp": "4.5 s",
-      "lcp": "4.9 s",
-      "tbt": "700 ms",
-      "cls": "0.201",
-      "si": "4.5 s"
+      "fcp": "5.2 s",
+      "lcp": "5.3 s",
+      "tbt": "680 ms",
+      "cls": "0.16",
+      "si": "5.2 s"
     },
     "failedAudits": [
       {
         "id": "first-contentful-paint",
         "title": "First Contentful Paint",
-        "score": 0.15,
-        "display": "4.5 s"
+        "score": 0.08,
+        "display": "5.2 s"
       },
       {
         "id": "largest-contentful-paint",
         "title": "Largest Contentful Paint",
-        "score": 0.28,
-        "display": "4.9 s"
+        "score": 0.21,
+        "display": "5.3 s"
       },
       {
         "id": "speed-index",
         "title": "Speed Index",
-        "score": 0.73,
-        "display": "4.5 s"
+        "score": 0.6,
+        "display": "5.2 s"
       },
       {
         "id": "total-blocking-time",
         "title": "Total Blocking Time",
-        "score": 0.42,
-        "display": "700 ms"
+        "score": 0.44,
+        "display": "680 ms"
       },
       {
         "id": "max-potential-fid",
         "title": "Max Potential First Input Delay",
-        "score": 0.1,
-        "display": "470 ms"
+        "score": 0.07,
+        "display": "530 ms"
       },
       {
         "id": "cumulative-layout-shift",
         "title": "Cumulative Layout Shift",
-        "score": 0.62,
-        "display": "0.201"
+        "score": 0.73,
+        "display": "0.16"
       },
       {
         "id": "errors-in-console",
@@ -2694,8 +2730,8 @@
       {
         "id": "interactive",
         "title": "Time to Interactive",
-        "score": 0.41,
-        "display": "8.2 s"
+        "score": 0.34,
+        "display": "8.9 s"
       },
       {
         "id": "third-party-cookies",
@@ -2707,7 +2743,7 @@
         "id": "mainthread-work-breakdown",
         "title": "Minimize main-thread work",
         "score": 0,
-        "display": "11.2 s"
+        "display": "10.3 s"
       },
       {
         "id": "bootup-time",
@@ -2742,7 +2778,7 @@
       {
         "id": "unused-css-rules",
         "title": "Reduce unused CSS",
-        "score": 0,
+        "score": 0.5,
         "display": "Est savings of 16 KiB"
       },
       {
@@ -2756,12 +2792,6 @@
         "title": "Issues were logged in the `Issues` panel in Chrome Devtools",
         "score": 0,
         "display": ""
-      },
-      {
-        "id": "robots-txt",
-        "title": "robots.txt is not valid",
-        "score": 0,
-        "display": "43 errors found"
       },
       {
         "id": "cache-insight",
@@ -2779,13 +2809,7 @@
         "id": "font-display-insight",
         "title": "Font display",
         "score": 0,
-        "display": "Est savings of 400 ms"
-      },
-      {
-        "id": "forced-reflow-insight",
-        "title": "Forced reflow",
-        "score": 0,
-        "display": ""
+        "display": "Est savings of 460 ms"
       },
       {
         "id": "network-dependency-tree-insight",
@@ -2803,54 +2827,54 @@
   },
   "kupot": {
     "url": "https://more30.com/kupot",
-    "measuredAt": "2026-08-02T03:19:15.422Z",
-    "performance": 41,
-    "accessibility": 90,
+    "measuredAt": "2026-08-02T11:52:29.929Z",
+    "performance": 72,
+    "accessibility": 100,
     "bestPractices": 77,
     "seo": 100,
     "metrics": {
-      "fcp": "2.9 s",
-      "lcp": "3.2 s",
-      "tbt": "4,350 ms",
-      "cls": "0.332",
-      "si": "2.9 s"
+      "fcp": "3.3 s",
+      "lcp": "3.4 s",
+      "tbt": "480 ms",
+      "cls": "0.036",
+      "si": "3.8 s"
     },
     "failedAudits": [
       {
         "id": "first-contentful-paint",
         "title": "First Contentful Paint",
-        "score": 0.52,
-        "display": "2.9 s"
+        "score": 0.4,
+        "display": "3.3 s"
       },
       {
         "id": "largest-contentful-paint",
         "title": "Largest Contentful Paint",
-        "score": 0.72,
-        "display": "3.2 s"
+        "score": 0.67,
+        "display": "3.4 s"
+      },
+      {
+        "id": "speed-index",
+        "title": "Speed Index",
+        "score": 0.84,
+        "display": "3.8 s"
       },
       {
         "id": "total-blocking-time",
         "title": "Total Blocking Time",
-        "score": 0.01,
-        "display": "4,350 ms"
+        "score": 0.6,
+        "display": "480 ms"
       },
       {
         "id": "max-potential-fid",
         "title": "Max Potential First Input Delay",
-        "score": 0,
-        "display": "2,300 ms"
-      },
-      {
-        "id": "cumulative-layout-shift",
-        "title": "Cumulative Layout Shift",
-        "score": 0.34,
-        "display": "0.332"
+        "score": 0.2,
+        "display": "380 ms"
       },
       {
         "id": "interactive",
         "title": "Time to Interactive",
-        "score": 0.28,
-        "display": "9.8 s"
+        "score": 0.67,
+        "display": "5.8 s"
       },
       {
         "id": "third-party-cookies",
@@ -2862,35 +2886,11 @@
         "id": "mainthread-work-breakdown",
         "title": "Minimize main-thread work",
         "score": 0,
-        "display": "10.1 s"
-      },
-      {
-        "id": "bootup-time",
-        "title": "Reduce JavaScript execution time",
-        "score": 0,
         "display": "2.9 s"
-      },
-      {
-        "id": "layout-shifts",
-        "title": "Avoid large layout shifts",
-        "score": 0,
-        "display": "3 layout shifts found"
       },
       {
         "id": "valid-source-maps",
         "title": "Missing source maps for large first-party JavaScript",
-        "score": 0,
-        "display": ""
-      },
-      {
-        "id": "button-name",
-        "title": "Buttons do not have an accessible name",
-        "score": 0,
-        "display": ""
-      },
-      {
-        "id": "color-contrast",
-        "title": "Background and foreground colors do not have a sufficient contrast ratio.",
         "score": 0,
         "display": ""
       },
@@ -2910,7 +2910,7 @@
         "id": "unused-javascript",
         "title": "Reduce unused JavaScript",
         "score": 0,
-        "display": "Est savings of 95 KiB"
+        "display": "Est savings of 106 KiB"
       },
       {
         "id": "inspector-issues",
@@ -2921,115 +2921,14 @@
       {
         "id": "cache-insight",
         "title": "Use efficient cache lifetimes",
-        "score": 0,
-        "display": "Est savings of 1,226 KiB"
-      },
-      {
-        "id": "cls-culprits-insight",
-        "title": "Layout shift culprits",
-        "score": 0,
-        "display": ""
-      },
-      {
-        "id": "document-latency-insight",
-        "title": "Document request latency",
         "score": 0.5,
-        "display": "Est savings of 2 KiB"
-      },
-      {
-        "id": "font-display-insight",
-        "title": "Font display",
-        "score": 0,
-        "display": "Est savings of 520 ms"
-      },
-      {
-        "id": "forced-reflow-insight",
-        "title": "Forced reflow",
-        "score": 0,
-        "display": ""
-      },
-      {
-        "id": "network-dependency-tree-insight",
-        "title": "Network dependency tree",
-        "score": 0,
-        "display": ""
-      },
-      {
-        "id": "render-blocking-insight",
-        "title": "Render-blocking requests",
-        "score": 0,
-        "display": "Est savings of 150 ms"
-      }
-    ]
-  },
-  "crm": {
-    "url": "https://more30.com/crm",
-    "measuredAt": "2026-08-02T00:34:08.232Z",
-    "performance": 97,
-    "accessibility": 97,
-    "bestPractices": 73,
-    "seo": 91,
-    "metrics": {
-      "fcp": "1.8 s",
-      "lcp": "2.4 s",
-      "tbt": "10 ms",
-      "cls": "0",
-      "si": "1.9 s"
-    },
-    "failedAudits": [
-      {
-        "id": "first-contentful-paint",
-        "title": "First Contentful Paint",
-        "score": 0.89,
-        "display": "1.8 s"
-      },
-      {
-        "id": "errors-in-console",
-        "title": "Browser errors were logged to the console",
-        "score": 0,
-        "display": ""
-      },
-      {
-        "id": "third-party-cookies",
-        "title": "Uses third-party cookies",
-        "score": 0,
-        "display": "2 cookies found"
-      },
-      {
-        "id": "landmark-one-main",
-        "title": "Document does not have a main landmark.",
-        "score": 0,
-        "display": ""
-      },
-      {
-        "id": "unminified-javascript",
-        "title": "Minify JavaScript",
-        "score": 0.5,
-        "display": "Est savings of 2 KiB"
-      },
-      {
-        "id": "inspector-issues",
-        "title": "Issues were logged in the `Issues` panel in Chrome Devtools",
-        "score": 0,
-        "display": ""
-      },
-      {
-        "id": "robots-txt",
-        "title": "robots.txt is not valid",
-        "score": 0,
-        "display": "43 errors found"
-      },
-      {
-        "id": "cache-insight",
-        "title": "Use efficient cache lifetimes",
-        "score": 0,
         "display": "Est savings of 43 KiB"
       },
       {
         "id": "document-latency-insight",
         "title": "Document request latency",
         "score": 0.5,
-        "display": "Est savings of 2 KiB"
+        "display": "Est savings of 3 KiB"
       },
       {
         "id": "network-dependency-tree-insight",
@@ -3040,24 +2939,24 @@
       {
         "id": "render-blocking-insight",
         "title": "Render-blocking requests",
-        "score": 0.5,
-        "display": ""
+        "score": 0,
+        "display": "Est savings of 300 ms"
       }
     ]
   },
-  "gesher": {
-    "url": "https://more30.com/gesher",
-    "measuredAt": "2026-08-02T00:34:18.395Z",
-    "performance": 94,
+  "crm": {
+    "url": "https://more30.com/crm",
+    "measuredAt": "2026-08-02T06:37:19.099Z",
+    "performance": 93,
     "accessibility": 97,
     "bestPractices": 73,
-    "seo": 91,
+    "seo": 100,
     "metrics": {
       "fcp": "1.8 s",
       "lcp": "2.9 s",
       "tbt": "0 ms",
       "cls": "0",
-      "si": "1.8 s"
+      "si": "2.9 s"
     },
     "failedAudits": [
       {
@@ -3079,6 +2978,12 @@
         "display": ""
       },
       {
+        "id": "server-response-time",
+        "title": "Reduce initial server response time",
+        "score": 0,
+        "display": "Root document took 950 ms"
+      },
+      {
         "id": "third-party-cookies",
         "title": "Uses third-party cookies",
         "score": 0,
@@ -3103,10 +3008,170 @@
         "display": ""
       },
       {
-        "id": "robots-txt",
-        "title": "robots.txt is not valid",
+        "id": "cache-insight",
+        "title": "Use efficient cache lifetimes",
+        "score": 0.5,
+        "display": "Est savings of 43 KiB"
+      },
+      {
+        "id": "document-latency-insight",
+        "title": "Document request latency",
         "score": 0,
-        "display": "43 errors found"
+        "display": "Est savings of 2 KiB"
+      },
+      {
+        "id": "network-dependency-tree-insight",
+        "title": "Network dependency tree",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "render-blocking-insight",
+        "title": "Render-blocking requests",
+        "score": 0.5,
+        "display": ""
+      }
+    ]
+  },
+  "gesher": {
+    "url": "https://more30.com/gesher",
+    "measuredAt": "2026-08-02T06:37:36.163Z",
+    "performance": 96,
+    "accessibility": 97,
+    "bestPractices": 73,
+    "seo": 100,
+    "metrics": {
+      "fcp": "1.9 s",
+      "lcp": "2.4 s",
+      "tbt": "10 ms",
+      "cls": "0",
+      "si": "3.1 s"
+    },
+    "failedAudits": [
+      {
+        "id": "first-contentful-paint",
+        "title": "First Contentful Paint",
+        "score": 0.87,
+        "display": "1.9 s"
+      },
+      {
+        "id": "errors-in-console",
+        "title": "Browser errors were logged to the console",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "server-response-time",
+        "title": "Reduce initial server response time",
+        "score": 0,
+        "display": "Root document took 1,090 ms"
+      },
+      {
+        "id": "third-party-cookies",
+        "title": "Uses third-party cookies",
+        "score": 0,
+        "display": "2 cookies found"
+      },
+      {
+        "id": "mainthread-work-breakdown",
+        "title": "Minimize main-thread work",
+        "score": 0.5,
+        "display": "5.2 s"
+      },
+      {
+        "id": "bootup-time",
+        "title": "Reduce JavaScript execution time",
+        "score": 0.5,
+        "display": "3.9 s"
+      },
+      {
+        "id": "landmark-one-main",
+        "title": "Document does not have a main landmark.",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "unminified-javascript",
+        "title": "Minify JavaScript",
+        "score": 0.5,
+        "display": "Est savings of 2 KiB"
+      },
+      {
+        "id": "inspector-issues",
+        "title": "Issues were logged in the `Issues` panel in Chrome Devtools",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "cache-insight",
+        "title": "Use efficient cache lifetimes",
+        "score": 0,
+        "display": "Est savings of 43 KiB"
+      },
+      {
+        "id": "document-latency-insight",
+        "title": "Document request latency",
+        "score": 0,
+        "display": "Est savings of 2 KiB"
+      },
+      {
+        "id": "network-dependency-tree-insight",
+        "title": "Network dependency tree",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "render-blocking-insight",
+        "title": "Render-blocking requests",
+        "score": 0,
+        "display": "Est savings of 300 ms"
+      }
+    ]
+  },
+  "kesef": {
+    "url": "https://more30.com/kesef",
+    "measuredAt": "2026-08-02T15:52:51.265Z",
+    "performance": 98,
+    "accessibility": 100,
+    "bestPractices": 77,
+    "seo": 100,
+    "metrics": {
+      "fcp": "1.4 s",
+      "lcp": "1.6 s",
+      "tbt": "150 ms",
+      "cls": "0.004",
+      "si": "2.2 s"
+    },
+    "failedAudits": [
+      {
+        "id": "max-potential-fid",
+        "title": "Max Potential First Input Delay",
+        "score": 0.44,
+        "display": "270 ms"
+      },
+      {
+        "id": "third-party-cookies",
+        "title": "Uses third-party cookies",
+        "score": 0,
+        "display": "1 cookie found"
+      },
+      {
+        "id": "mainthread-work-breakdown",
+        "title": "Minimize main-thread work",
+        "score": 0,
+        "display": "2.1 s"
+      },
+      {
+        "id": "unminified-javascript",
+        "title": "Minify JavaScript",
+        "score": 0.5,
+        "display": "Est savings of 2 KiB"
+      },
+      {
+        "id": "inspector-issues",
+        "title": "Issues were logged in the `Issues` panel in Chrome Devtools",
+        "score": 0,
+        "display": ""
       },
       {
         "id": "cache-insight",
@@ -3118,7 +3183,72 @@
         "id": "document-latency-insight",
         "title": "Document request latency",
         "score": 0.5,
+        "display": "Est savings of 11 KiB"
+      },
+      {
+        "id": "modern-http-insight",
+        "title": "Modern HTTP",
+        "score": 0.5,
+        "display": ""
+      }
+    ]
+  },
+  "kiosk": {
+    "url": "https://more30.com/kiosk/",
+    "measuredAt": "2026-08-02T15:53:04.407Z",
+    "performance": 95,
+    "accessibility": 100,
+    "bestPractices": 77,
+    "seo": 100,
+    "metrics": {
+      "fcp": "2.3 s",
+      "lcp": "2.4 s",
+      "tbt": "0 ms",
+      "cls": "0",
+      "si": "2.3 s"
+    },
+    "failedAudits": [
+      {
+        "id": "first-contentful-paint",
+        "title": "First Contentful Paint",
+        "score": 0.75,
+        "display": "2.3 s"
+      },
+      {
+        "id": "third-party-cookies",
+        "title": "Uses third-party cookies",
+        "score": 0,
+        "display": "2 cookies found"
+      },
+      {
+        "id": "unminified-javascript",
+        "title": "Minify JavaScript",
+        "score": 0.5,
         "display": "Est savings of 2 KiB"
+      },
+      {
+        "id": "inspector-issues",
+        "title": "Issues were logged in the `Issues` panel in Chrome Devtools",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "cache-insight",
+        "title": "Use efficient cache lifetimes",
+        "score": 0,
+        "display": "Est savings of 43 KiB"
+      },
+      {
+        "id": "document-latency-insight",
+        "title": "Document request latency",
+        "score": 0.5,
+        "display": "Est savings of 7 KiB"
+      },
+      {
+        "id": "forced-reflow-insight",
+        "title": "Forced reflow",
+        "score": 0,
+        "display": ""
       },
       {
         "id": "network-dependency-tree-insight",

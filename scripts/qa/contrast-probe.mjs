@@ -83,8 +83,42 @@ const bad = await page.evaluate(() => {
     if (!r.width || !r.height) continue;
     const s = getComputedStyle(el);
     if (s.visibility === 'hidden' || s.display === 'none' || s.opacity === '0') continue;
-    const fg = rgb(s.color);
-    if (!fg || fg.a < 1) continue;
+    // WCAG 1.4.3 מחריג במפורש "טקסט שהוא חלק מפקד ממשק **שאינו פעיל**"
+    // (Incidental), ו-axe מיישם את זה. בלי ההחרגה הזו הבודק דורש מכפתור
+    // מושבת להיראות פעיל — כלומר דורש לשבור את הסימן היחיד שאומר שאי אפשר
+    // ללחוץ עליו. נתפס ב-26 סטודיו, שם שלושה כפתורי "(בקרוב)" נספרו ככשל
+    // בעוד ש-Lighthouse נתן 100.
+    if (el.closest('[disabled], [aria-disabled="true"], fieldset[disabled]')) continue;
+    let fg = rgb(s.color);
+    if (!fg) continue;
+    // ⚠️ ‎opacity‎ ברמת האלמנט אינה מופיעה ב-‎color‎ המחושב: הוא נשאר
+    // ‎rgb(255,255,255)‎ גם כשהאלמנט מצויר ב-80%. כך עבר בשקט מונה שנמדד
+    // ב-axe כ-3.68:1. הוא נספר עכשיו כשקיפות לכל דבר, מצטבר על ההורים.
+    //
+    // 🪤 ומיד נדרשה כאן הסתייגות: עמוד עם ‎whileInView‎ מחזיק מקטעים שלמים
+    // ב-‎opacity: 0‎ עד שגוללים אליהם, ובלי הסף למטה כל 22 ‎/zchuyot‎ חזרה
+    // פתאום כ-"1:1" — כלומר הבודק דיווח על טקסט שכלל אינו מצויר כרגע.
+    // אלמנט שאינו נראה אינו נמדד; אלמנט דהוי-אך-נראה כן.
+    let opacity = 1;
+    for (let n = el; n && n !== document.documentElement; n = n.parentElement) {
+      const o = parseFloat(getComputedStyle(n).opacity);
+      if (!Number.isNaN(o) && o < 1) opacity *= o;
+    }
+    if (opacity < 0.05) continue;
+    if (opacity < 1) fg = { ...fg, a: fg.a * opacity };
+    // ⚠️ טקסט שקוף-חלקית **נדלג** כאן קודם, ולכן הבדיקה עברה בשקט על שש
+    // כיתוביות ב-‎text-background/40‎ בכותרת התחתונה של 22 — 3.47:1, ו-axe
+    // שמאחורי Lighthouse כן תפס אותן. שקיפות בטקסט אינה סיבה לא למדוד: היא
+    // בדיוק מה שמוריד את הניגודיות. הצבע ממוזג אל הרקע שכבר חושב.
+    if (fg.a < 1) {
+      const b = backdrop(el);
+      fg = {
+        r: Math.round(fg.r * fg.a + b.r * (1 - fg.a)),
+        g: Math.round(fg.g * fg.a + b.g * (1 - fg.a)),
+        b: Math.round(fg.b * fg.a + b.b * (1 - fg.a)),
+        a: 1,
+      };
+    }
     const size = parseFloat(s.fontSize);
     const weight = Number(s.fontWeight) || 400;
     const large = size >= 24 || (size >= 18.66 && weight >= 700);

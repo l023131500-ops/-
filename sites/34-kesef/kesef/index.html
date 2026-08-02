@@ -1,0 +1,315 @@
+﻿<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>כסף — שקיפות תקציבית לרשויות מקומיות · מור מערכות תוכנה</title>
+<meta name="description" content="כמה כסף ציבורי מגיע לרשות המקומית שלך, כמה הגיע בפועל, ומה נתקע בדרך. כל מספר מקושר למסמך מקור ציבורי." />
+<meta property="og:title" content="כסף — שקיפות תקציבית" />
+<meta property="og:description" content="כמה כסף ציבורי מגיע לרשות שלך, כמה הגיע בפועל, ומה נתקע בדרך." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://more30.com/kesef" />
+<meta property="og:locale" content="he_IL" />
+<link rel="canonical" href="https://more30.com/kesef" />
+<meta name="theme-color" content="#0B0D2E" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<!-- Loaded off the paint path: NetFree intermittently blocks fonts.googleapis.com,
+     and a blocking request that then fails holds the whole page. Same trick the
+     portal uses. The fallback stack is declared, so the page is readable from the
+     first frame even if the fonts never arrive. -->
+<link href="https://fonts.googleapis.com/css2?family=Suez+One&family=Secular+One&family=Frank+Ruhl+Libre:wght@300;400&family=Heebo:wght@300;400;500;700&display=swap"
+      rel="stylesheet" media="print" onload="this.media='all'" />
+<noscript><link href="https://fonts.googleapis.com/css2?family=Suez+One&family=Secular+One&family=Frank+Ruhl+Libre:wght@300;400&family=Heebo:wght@300;400;500;700&display=swap" rel="stylesheet" /></noscript>
+<!-- The platform-wide login pill. One file, loaded by every more30 system. -->
+<script src="https://more30.com/auth-button.js" defer></script>
+<style>
+/* Design tokens lifted from portal/src/styles.css so this system reads as part
+   of the same platform rather than as a lookalike. Contrast values are the
+   corrected ones (--muted at 4.77:1 on --violet), per Israeli standard 5568. */
+:root{
+  color-scheme: dark;
+  --royal:#0B0D2E; --royal-2:#12153F; --violet:#241B54;
+  --gold:#C9A227; --gold-soft:#E3C765; --emerald:#14B88A;
+  --ink:#ECE9F5; --ink-2:#B9B6D6; --muted:#8E8BB2;
+  --line:rgba(201,162,39,.20); --line-2:rgba(236,233,245,.10);
+  --wrap:1180px; --ease:cubic-bezier(.22,.61,.36,1);
+}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--royal);color:var(--ink);
+  font-family:'Heebo',system-ui,-apple-system,'Segoe UI',sans-serif;font-weight:300;
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;line-height:1.7}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+a{color:inherit;text-decoration:none}
+::selection{background:var(--gold);color:var(--royal)}
+.display{font-family:'Suez One','Heebo',system-ui,sans-serif;font-weight:400;letter-spacing:-.005em}
+.name{font-family:'Secular One','Heebo',sans-serif;font-weight:400}
+.serif{font-family:'Frank Ruhl Libre',Georgia,serif;font-weight:300}
+.wrap{max-width:var(--wrap);margin:0 auto;padding:0 32px}
+.eyebrow{font-size:12px;font-weight:500;letter-spacing:.24em;color:var(--gold)}
+.rule{height:1px;background:var(--line);margin:34px auto;max-width:120px}
+
+/* Skip link — a screen reader should not have to cross the nav on every load. */
+.skip{position:absolute;inset-inline-start:-9999px;top:0;background:var(--gold);color:var(--royal);
+  padding:12px 20px;z-index:100}
+.skip:focus{inset-inline-start:0}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  font-family:'Heebo',sans-serif;font-size:15px;font-weight:400;padding:13px 30px;
+  border:1px solid var(--gold);border-radius:2px;background:var(--gold);color:var(--royal);
+  cursor:pointer;transition:background .25s var(--ease),color .25s var(--ease),box-shadow .25s var(--ease)}
+.btn:hover{background:transparent;color:var(--gold-soft);box-shadow:0 0 0 1px var(--gold) inset}
+.btn:focus-visible{outline:3px solid var(--gold-soft);outline-offset:3px}
+.btn-quiet{background:transparent;color:var(--ink);border-color:var(--line-2)}
+.btn-quiet:hover{color:var(--gold-soft);border-color:var(--gold);box-shadow:none}
+
+/* Nav. The shared login pill is fixed to the top-inline-end corner, so the nav
+   reserves that much room via --more30-auth-inset (falling back to a measured
+   112px) instead of letting the pill sit on top of a real control. */
+.nav{position:sticky;top:0;z-index:50;background:rgba(11,13,46,.86);
+  backdrop-filter:blur(10px);border-bottom:1px solid var(--line-2)}
+.nav-in{max-width:var(--wrap);margin:0 auto;padding:16px 32px;display:flex;align-items:center;
+  justify-content:space-between;gap:24px;
+  padding-inline-end:calc(32px + var(--more30-auth-inset, 112px))}
+.wordmark{font-family:'Secular One',sans-serif;font-size:17px;letter-spacing:.01em}
+.wordmark span{color:var(--gold)}
+.nav-links{display:flex;gap:26px;align-items:center;font-size:14px}
+.nav-links a:hover{color:var(--gold-soft)}
+@media(max-width:760px){.nav-links a:not(.nav-cta){display:none}}
+
+.hero{padding:100px 0 76px;background:
+  radial-gradient(1100px 480px at 80% -12%,rgba(36,27,84,.85),transparent 62%),var(--royal)}
+.hero h1{font-size:clamp(38px,6.4vw,72px);line-height:1.08;margin:18px 0 22px}
+.hero .lead{font-size:clamp(17px,2.1vw,21px);color:var(--ink-2);max-width:60ch;margin:0 0 34px}
+.actions{display:flex;gap:14px;flex-wrap:wrap}
+
+.section{padding:84px 0;border-top:1px solid var(--line-2)}
+.section-alt{background:var(--violet)}
+.sec-head{margin-bottom:46px;max-width:70ch}
+.sec-title{font-size:clamp(26px,3.6vw,40px);margin:14px 0 12px}
+.sec-sub{color:var(--ink-2);font-size:17px;margin:0}
+
+.cards{display:grid;gap:22px;grid-template-columns:repeat(auto-fit,minmax(290px,1fr))}
+.card{background:rgba(236,233,245,.035);border:1px solid var(--line-2);border-radius:3px;padding:30px}
+.card h3{font-family:'Secular One',sans-serif;font-weight:400;font-size:20px;margin:14px 0 10px}
+.card p{color:var(--ink-2);margin:0;font-size:15px}
+.card .num{font-family:'Suez One',serif;font-size:15px;color:var(--gold);letter-spacing:.18em}
+
+.steps{display:grid;gap:0;max-width:860px}
+.step{display:flex;gap:22px;padding:26px 0;border-bottom:1px solid var(--line-2)}
+.step:last-child{border-bottom:0}
+.step .n{font-family:'Suez One',serif;color:var(--gold);font-size:19px;flex:none;width:38px}
+/* h3, not h4: the section above is an h2, and skipping a level is what
+   Lighthouse flagged as heading-order. Screen-reader users navigate by
+   heading level, so a gap reads as a missing section. */
+.step h3{font-family:'Secular One',sans-serif;font-weight:400;font-size:18px;margin:0 0 6px}
+.step p{margin:0;color:var(--ink-2);font-size:15px}
+
+.sources{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+.src{border:1px solid var(--line);border-radius:2px;padding:8px 15px;font-size:14px;color:var(--ink-2)}
+
+/* The honesty panel. This is the product's first promise, so it is stated on
+   the page and not only in the code that enforces it. */
+.pledge{border:1px solid var(--line);border-radius:3px;padding:34px;background:rgba(201,162,39,.05)}
+.pledge ul{margin:18px 0 0;padding:0;list-style:none;display:grid;gap:14px}
+.pledge li{display:flex;gap:12px;color:var(--ink-2);font-size:15px}
+.pledge li b{color:var(--ink);font-weight:500}
+.check{color:var(--emerald);flex:none;font-size:17px;line-height:1.5}
+
+.status{display:flex;gap:16px;align-items:flex-start;border:1px solid var(--line);
+  border-radius:3px;padding:26px 28px;background:rgba(20,184,138,.06);max-width:820px}
+.status .dot{width:10px;height:10px;border-radius:50%;background:var(--emerald);flex:none;margin-top:9px;
+  box-shadow:0 0 0 4px rgba(20,184,138,.18)}
+.status h3{font-family:'Secular One',sans-serif;font-weight:400;font-size:19px;margin:0 0 8px}
+.status p{margin:0 0 10px;color:var(--ink-2);font-size:15px}
+.status p:last-child{margin-bottom:0}
+
+.footer{padding:56px 0;border-top:1px solid var(--line-2);text-align:center;color:var(--muted);font-size:14px}
+.footer .mark{font-family:'Suez One',serif;font-size:22px;color:var(--ink);margin-bottom:10px}
+.footer a{text-decoration:underline}
+.footer a:hover{color:var(--gold-soft)}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">דילוג לתוכן הראשי</a>
+
+<nav class="nav">
+  <div class="nav-in">
+    <a class="wordmark" href="#top">כסף<span> · שקיפות תקציבית</span></a>
+    <div class="nav-links">
+      <a href="#what">מה זה נותן</a>
+      <a href="#how">איך זה עובד</a>
+      <a href="#sources">מקורות</a>
+      <a href="#pledge">הכללים שלנו</a>
+      <a class="nav-cta btn btn-quiet" style="padding:9px 20px" href="https://more30.com/login?from=https%3A%2F%2Fmore30.com%2Fkesef">כניסה</a>
+    </div>
+  </div>
+</nav>
+
+<main id="main">
+<header class="hero" id="top">
+  <div class="wrap">
+    <div class="eyebrow">מור מערכות תוכנה</div>
+    <h1 class="display">הכסף הציבורי<br/>שמגיע לרשות שלך</h1>
+    <p class="lead serif">
+      כמה תקציב אושר ליישוב שלך, כמה ממנו הגיע בפועל, ומה נתקע באמצע הדרך.
+      בלי פרשנות ובלי הערכות — כל מספר מקושר למסמך המקור שממנו נלקח.
+    </p>
+    <div class="actions">
+      <a class="btn" href="https://more30.com/login?from=https%3A%2F%2Fmore30.com%2Fkesef">כניסה למערכת</a>
+      <a class="btn btn-quiet" href="#what">מה המערכת עושה</a>
+    </div>
+  </div>
+</header>
+
+<section class="section" id="what">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">מה זה נותן</div>
+      <h2 class="display sec-title">שלושה דברים שקשה לעשות היום</h2>
+      <p class="sec-sub">
+        המידע התקציבי של רשויות מקומיות פתוח — אבל פזור בין מאגרים, בפורמטים
+        שונים, ובלי שום דרך פשוטה לשאול "ומה אצלי?".
+      </p>
+    </div>
+    <div class="cards">
+      <div class="card">
+        <div class="num">01</div>
+        <h3>השוואה לקבוצת שווים</h3>
+        <p>
+          מדדים תקציביים של הרשות שלך מול רשויות דומות בגודל, במדד חברתי-כלכלי
+          ובאשכול. לא "הרבה" או "מעט" — מול מי בדיוק, ובכמה.
+        </p>
+      </div>
+      <div class="card">
+        <div class="num">02</div>
+        <h3>התראות על קולות קוראים</h3>
+        <p>
+          קול קורא שרלוונטי לרשות שלך נסגר בעוד שבועיים — וצריך לדעת על זה
+          בזמן. המערכת מתריעה, ומכינה טיוטת פנייה מוכנה לשליחה.
+        </p>
+      </div>
+      <div class="card">
+        <div class="num">03</div>
+        <h3>תיק לפגישה עם ראש הרשות</h3>
+        <p>
+          מסמך אחד שמרכז את התמונה: מה אושר, מה התקבל, מה הפער, ומה הצעד הבא —
+          עם הפניה למקור של כל נתון. מוכן להדפסה.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section section-alt" id="how">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">איך זה עובד</div>
+      <h2 class="display sec-title">מהמאגר הפתוח עד השאלה שלך</h2>
+    </div>
+    <div class="steps">
+      <div class="step"><div class="n">01</div><div>
+        <h3>איסוף מהמקורות הרשמיים</h3>
+        <p>נתונים נמשכים מהמאגרים הציבוריים — לא מוקלדים ידנית ולא מוערכים.</p>
+      </div></div>
+      <div class="step"><div class="n">02</div><div>
+        <h3>נרמול לשפה אחת</h3>
+        <p>סעיפי תקציב, שמות רשויות וסמלי יישוב מיושרים לצורה אחידה, כדי שאפשר יהיה להשוות בכלל.</p>
+      </div></div>
+      <div class="step"><div class="n">03</div><div>
+        <h3>הצמדת מסמך מקור לכל ערך</h3>
+        <p>כל מספר במערכת נושא הפניה למסמך שממנו נלקח. ערך בלי מקור פשוט לא נכנס.</p>
+      </div></div>
+      <div class="step"><div class="n">04</div><div>
+        <h3>מדדים, התראות ותיק פגישה</h3>
+        <p>מכאן נגזרים ההשוואה לקבוצת השווים, ההתראות על קולות קוראים והתיק המרוכז.</p>
+      </div></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="sources">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">מקורות</div>
+      <h2 class="display sec-title">מאיפה מגיעים הנתונים</h2>
+      <p class="sec-sub">מקורות ציבוריים בלבד. אין מאגר פרטי, ואין מידע אישי.</p>
+    </div>
+    <div class="sources">
+      <span class="src">data.gov.il</span>
+      <span class="src">מפתח התקציב</span>
+      <span class="src">הלשכה המרכזית לסטטיסטיקה</span>
+      <span class="src">המוסד לביטוח לאומי</span>
+      <span class="src">משרד הפנים — דוחות רשויות</span>
+    </div>
+  </div>
+</section>
+
+<section class="section section-alt" id="pledge">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">הכללים שלנו</div>
+      <h2 class="display sec-title">ארבעה כללים שאנחנו לא עוקפים</h2>
+      <p class="sec-sub">
+        מערכת שמדברת על כסף ציבורי נמדדת קודם כל באמינות. הכללים האלה אכופים
+        בקוד ובמסד — לא רק מוצהרים כאן.
+      </p>
+    </div>
+    <div class="pledge">
+      <ul>
+        <li><span class="check" aria-hidden="true">✓</span><span>
+          <b>אין נתונים מומצאים.</b> אם נתון חסר, כתוב שהוא חסר. לא מוצג אומדן שנראה כמו עובדה.
+        </span></li>
+        <li><span class="check" aria-hidden="true">✓</span><span>
+          <b>לכל מספר יש מסמך מקור.</b> זו מגבלה במסד הנתונים עצמו: רשומה בלי הפניה למקור אינה נשמרת.
+        </span></li>
+        <li><span class="check" aria-hidden="true">✓</span><span>
+          <b>ניסוח עובדתי בלבד.</b> המערכת מתארת פערים ולא מייחסת אשמה, ויש בדיקה אוטומטית שאוכפת את זה.
+        </span></li>
+        <li><span class="check" aria-hidden="true">✓</span><span>
+          <b>אין מידע אישי.</b> פרטי בעלי תפקידים מופיעים רק אם פורסמו רשמית, ועם הפניה לפרסום.
+        </span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <!-- The honest state of the system, in the same place a visitor looks for
+         "can I use this now". Saying "coming soon" and nothing else invites
+         people to assume the worst; saying exactly where it stands does not. -->
+    <div class="status">
+      <span class="dot" aria-hidden="true"></span>
+      <div>
+        <h3>איפה זה עומד עכשיו</h3>
+        <p>
+          <b>המערכת בהקמה.</b> מבנה הנתונים בנוי ופעיל — כולל אכיפת מסמך המקור
+          לכל ערך — והפיילוט הראשון הוא <b>חצור הגלילית</b>. טעינת הנתונים
+          הראשונית טרם הושלמה, ולכן המסכים עדיין אינם פתוחים לציבור.
+        </p>
+        <p>
+          אפשר להיכנס כבר עכשיו עם חשבון more30 — אותו חשבון שמשמש את כל
+          המערכות בפלטפורמה — ולקבל עדכון ברגע שהיישוב שלך נטען.
+        </p>
+        <p style="margin-top:16px">
+          <a class="btn" href="https://more30.com/login?from=https%3A%2F%2Fmore30.com%2Fkesef">כניסה עם חשבון more30</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <div class="mark display">כסף</div>
+    <p style="margin:0 0 6px">שקיפות תקציבית לרשויות מקומיות · מור מערכות תוכנה</p>
+    <p style="margin:0">
+      חלק מ־<a href="https://more30.com">more30.com</a> · © 2026
+    </p>
+  </div>
+</footer>
+</body>
+</html>
