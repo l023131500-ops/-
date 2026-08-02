@@ -142,7 +142,12 @@ a{color:inherit;text-decoration:none}
       <a href="#how">איך זה עובד</a>
       <a href="#sources">מקורות</a>
       <a href="#pledge">הכללים שלנו</a>
-      <a class="nav-cta btn btn-quiet" style="padding:9px 20px" href="https://more30.com/login?from=https%3A%2F%2Fmore30.com%2Fkesef">כניסה</a>
+      <!-- Every entry point here targets /kesef/app, not /kesef. Pointing them at
+           this page meant the auth callback returned the user to the brochure
+           they had just left, which reads as a login that did nothing. app.html
+           sends anyone without a session back to /login itself, so the link is
+           safe to follow while signed out. -->
+      <a class="nav-cta btn btn-quiet" style="padding:9px 20px" href="/kesef/app">כניסה למערכת</a>
     </div>
   </div>
 </nav>
@@ -157,7 +162,7 @@ a{color:inherit;text-decoration:none}
       בלי פרשנות ובלי הערכות — כל מספר מקושר למסמך המקור שממנו נלקח.
     </p>
     <div class="actions">
-      <a class="btn" href="https://more30.com/login?from=https%3A%2F%2Fmore30.com%2Fkesef">כניסה למערכת</a>
+      <a class="btn" href="/kesef/app">כניסה למערכת</a>
       <a class="btn btn-quiet" href="#what">מה המערכת עושה</a>
     </div>
   </div>
@@ -285,16 +290,17 @@ a{color:inherit;text-decoration:none}
       <div>
         <h3>איפה זה עומד עכשיו</h3>
         <p>
-          <b>המערכת בהקמה.</b> מבנה הנתונים בנוי ופעיל — כולל אכיפת מסמך המקור
-          לכל ערך — והפיילוט הראשון הוא <b>חצור הגלילית</b>. טעינת הנתונים
-          הראשונית טרם הושלמה, ולכן המסכים עדיין אינם פתוחים לציבור.
+          <b>המערכת פתוחה לכל מי שמחובר.</b> כל 259 הרשויות המוניציפאליות
+          רשומות לפי המרשם הרשמי של משרד הפנים, ומרשם המקורות פעיל — אפשר
+          לבחור רשות ולראות מה נטען עליה מכל אחד ממקורות המידע.
         </p>
         <p>
-          אפשר להיכנס כבר עכשיו עם חשבון more30 — אותו חשבון שמשמש את כל
-          המערכות בפלטפורמה — ולקבל עדכון ברגע שהיישוב שלך נטען.
+          <b>טעינת הנתונים עצמם עדיין בעיצומה.</b> ברשות שטרם נטענה המערכת
+          תאמר זאת במפורש במקום להציג טבלה ריקה. הפיילוט הראשון הוא
+          <b>חצור הגלילית</b>.
         </p>
         <p style="margin-top:16px">
-          <a class="btn" href="https://more30.com/login?from=https%3A%2F%2Fmore30.com%2Fkesef">כניסה עם חשבון more30</a>
+          <a class="btn" href="/kesef/app">כניסה למערכת</a>
         </p>
       </div>
     </div>
