@@ -75,11 +75,77 @@ db: /app/data/kioskfleet.db — NEW FILE (no data carried over — is a volume m
 **החסם:** ה-Volume נוצר (`bfc104b5-…`, 1GB) אבל חיבורו לשירות לא הוחל. קריאה
 סמכותית ל-service config מחזירה בלי `volumeMounts` כלל. ראה `INTEGRATION.md` §7.
 
+## 4א. סבב שני — whitelist, מיצוב וזמן אמת
+
+### רשימת הכתובות המותרות — 6/6 בדיקות יחידה + אימות מול ה-API החי
+
+הקלט המלוכלך שנשלח בפועל ל-`POST /kiosk/api/links`:
+
+```
+https://pay.example.com/checkout?x=1, PAY.example.com , nonsense, secure.cardcom.co.il:443
+```
+
+| | תוצאה |
+|---|---|
+| **לפני התיקון** | נשמר כלשונו: `https://pay.example.com/checkout?x=1,pay.example.com,nonsense,secure.cardcom.co.il:443,venue.example.com` |
+| **אחרי** | `pay.example.com,secure.cardcom.co.il,venue.example.com` ✅ |
+
+> הבאג נתפס **מול ה-API החי ולא מהבדיקות**: הנרמול נוסף למסלול המכשיר, אבל
+> ספריית הקישורים היא מסלול כתיבה נוסף. תוקן במשפך המשותף (`hostsForUrl`).
+
+הבדיקות מנסחות את תכונת האבטחה כהתנהגות, לא כניסוח:
+- מחרוזת מודבקת גולמית **לא** תואמת שום host — ועם רשימה ריקה זה אומר להתיר הכל.
+- `notexample.com` **אינו** עובר רשימה שמכילה `example.com`.
+- `example.com.evil.net` אינו עובר.
+- תת-דומיין עמוק (`deep.pay.example.com`) כן עובר.
+
+### WebSocket דרך הפרוקסי — נמדד ונדחה
+
+handshake אמיתי מול `wss://more30.com/kiosk/ws/console`:
+
+```
+via more30.com path proxy    -> no upgrade — HTTP 404
+bad token (control)          -> no upgrade — HTTP 404
+```
+
+שני המקרים 404 — כלומר הבקשה לא מגיעה לשרת בכלל, זה לא דחיית טוקן.
+**מסקנה: rewrite של Vercel אינו מעביר upgrade.** לכן הסוקט הועבר ל-hostname
+ייעודי, ו-`GET /kiosk/api/config` מחזיר בפרודקשן:
+`{"wsHost":"kiosk.more30.com","basePath":"/kiosk"}` ✅
+
+עד שה-DNS ייפתר הקונסולה ב-polling — נבדק שהמסלולים ש-polling משתמש בהם
+מחזירים 200.
+
+### בדיקות היחידה — 13/13 (היו 4)
+
+```
+✔ a pasted URL becomes the host it contains
+✔ input that cannot be a host is rejected, not stored as junk
+✔ the list de-duplicates and keeps order
+✔ normalising actually changes whether a host is allowed
+✔ subdomains are covered, lookalikes are not
+✔ the device home URL is always part of its own allow-list
+✔ every write path normalises, not just the device one
+✔ served under /kiosk
+✔ the service hostname lands on the app instead of 404
+✔ the console is told where to open its socket
+✔ served at the root (direct Railway URL, local dev)
+✔ websocket upgrade paths resolve with and without the prefix
+✔ BASE_PATH is normalised to a leading-slash, no-trailing-slash form
+```
+
+### האתר החי אחרי הכתיבה מחדש
+`GET https://more30.com/kiosk/` → 200, 9,891 בייט, מכיל "מכשיר שפותח רק מה
+שאישרתם". `js/app.js` מכיל `hostListEditor`, ו-`css/style.css` מכיל `.hl-row`.
+
+---
+
 ## 5. מה לא נבדק ולמה
 
-- **WebSocket חי** — `rewrite` של Vercel אינו מעביר upgrade, ולכן לא ניתן לבדוק
-  אותו דרך `more30.com/kiosk`. הקונסולה נופלת ל-polling כל 15 שניות (מתוכנן,
-  ראה הקוד). בדיקה אמיתית תתאפשר כשיהיה `kioskfleet.more30.com`.
+- **WebSocket חי מקצה-לקצה** — הצד שלי מוכן ונבדק (`/api/config` מחזיר את
+  ה-host, ה-hub מקבל את שתי צורות הנתיב, יש בדיקות יחידה). מה שלא ניתן לבדוק
+  עדיין הוא handshake מוצלח בפועל, כי `kiosk.more30.com` **טרם נפתר ב-DNS** —
+  רשומה אחת שממתינה למשתמש (`NEEDS_USER.md` §3).
 - **סוכן אנדרואיד אמיתי** — אין מכשיר בהישג יד. הצד השרתי של הרישום נבדק
   (קוד נוצר); צד המכשיר לא.
 - **הרצה מקומית של השרת** — `better-sqlite3` דורש שרשרת בנייה נייטיבית שאין
