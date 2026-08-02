@@ -1,0 +1,17 @@
+{
+  "number": "32",
+  "slug": "kiosk-fleet",
+  "name": "KioskFleet",
+  "category": "tools",
+  "stage": "mvp",
+  "live": false,
+  "repo": "l023131500-ops/zol",
+  "basePath": "/32",
+  "supabase": {
+    "project": null,
+    "schema": null
+  },
+  "deployTarget": "node",
+  "protected": false,
+  "source": "vendored"
+}
