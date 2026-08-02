@@ -1,0 +1,3281 @@
+{
+  "home": {
+    "url": "https://more30.com/",
+    "measuredAt": "2026-08-02T00:27:41.621Z",
+    "performance": 81,
+    "accessibility": 98,
+    "bestPractices": 77,
+    "seo": 91,
+    "metrics": {
+      "fcp": "2.5 s",
+      "lcp": "4.3 s",
+      "tbt": "50 ms",
+      "cls": "0",
+      "si": "2.5 s"
+    },
+    "failedAudits": [
+      {
+        "id": "first-contentful-paint",
+        "title": "First Contentful Paint",
+        "score": 0.65,
+        "display": "2.5 s"
+      },
+      {
+        "id": "largest-contentful-paint",
+        "title": "Largest Contentful Paint",
+        "score": 0.41,
+        "display": "4.3 s"
+      },
+      {
+        "id": "interactive",
+        "title": "Time to Interactive",
+        "score": 0.74,
+        "display": "5.2 s"
+      },
+      {
+        "id": "third-party-cookies",
+        "title": "Uses third-party cookies",
+        "score": 0,
+        "display": "2 cookies found"
+      },
+      {
+        "id": "mainthread-work-breakdown",
+        "title": "Minimize main-thread work",
+        "score": 0,
+        "display": "2.7 s"
+      },
+      {
+        "id": "landmark-one-main",
+        "title": "Document does not have a main landmark.",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "unminified-javascript",
+        "title": "Minify JavaScript",
+        "score": 0.5,
+        "display": "Est savings of 2 KiB"
+      },
+      {
+        "id": "unused-javascript",
+        "title": "Reduce unused JavaScript",
+        "score": 0,
+        "display": "Est savings of 69 KiB"
+      },
+      {
+        "id": "inspector-issues",
+        "title": "Issues were logged in the `Issues` panel in Chrome Devtools",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "robots-txt",
+        "title": "robots.txt is not valid",
+        "score": 0,
+        "display": "43 errors found"
+      },
+      {
+        "id": "cache-insight",
+        "title": "Use efficient cache lifetimes",
+        "score": 0.5,
+        "display": "Est savings of 1,226 KiB"
+      },
+      {
+        "id": "document-latency-insight",
+        "title": "Document request latency",
+        "score": 0.5,
+        "display": "Est savings of 1 KiB"
+      },
+      {
+        "id": "font-display-insight",
+        "title": "Font display",
+        "score": 0,
+        "display": "Est savings of 180 ms"
+      },
+      {
+        "id": "forced-reflow-insight",
+        "title": "Forced reflow",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "modern-http-insight",
+        "title": "Modern HTTP",
+        "score": 0,
+        "display": "Est savings of 570 ms"
+      },
+      {
+        "id": "network-dependency-tree-insight",
+        "title": "Network dependency tree",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "render-blocking-insight",
+        "title": "Render-blocking requests",
+        "score": 0,
+        "display": "Est savings of 580 ms"
+      }
+    ]
+  },
+  "nadlan": {
+    "url": "https://more30.com/nadlan",
+    "measuredAt": "2026-08-02T00:34:32.241Z",
+    "performance": 75,
+    "accessibility": 95,
+    "bestPractices": 77,
+    "seo": 91,
+    "metrics": {
+      "fcp": "2.3 s",
+      "lcp": "2.9 s",
+      "tbt": "650 ms",
+      "cls": "0.076",
+      "si": "2.3 s"
+    },
+    "failedAudits": [
+      {
+        "id": "first-contentful-paint",
+        "title": "First Contentful Paint",
+        "score": 0.74,
+        "display": "2.3 s"
+      },
+      {
+        "id": "largest-contentful-paint",
+        "title": "Largest Contentful Paint",
+        "score": 0.81,
+        "display": "2.9 s"
+      },
+      {
+        "id": "total-blocking-time",
+        "title": "Total Blocking Time",
+        "score": 0.45,
+        "display": "650 ms"
+      },
+      {
+        "id": "max-potential-fid",
+        "title": "Max Potential First Input Delay",
+        "score": 0.06,
+        "display": "540 ms"
+      },
+      {
+        "id": "interactive",
+        "title": "Time to Interactive",
+        "score": 0.89,
+        "display": "3.9 s"
+      },
+      {
+        "id": "third-party-cookies",
+        "title": "Uses third-party cookies",
+        "score": 0,
+        "display": "2 cookies found"
+      },
+      {
+        "id": "mainthread-work-breakdown",
+        "title": "Minimize main-thread work",
+        "score": 0,
+        "display": "4.1 s"
+      },
+      {
+        "id": "color-contrast",
+        "title": "Background and foreground colors do not have a sufficient contrast ratio.",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "heading-order",
+        "title": "Heading elements are not in a sequentially-descending order",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "unminified-javascript",
+        "title": "Minify JavaScript",
+        "score": 0.5,
+        "display": "Est savings of 2 KiB"
+      },
+      {
+        "id": "inspector-issues",
+        "title": "Issues were logged in the `Issues` panel in Chrome Devtools",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "robots-txt",
+        "title": "robots.txt is not valid",
+        "score": 0,
+        "display": "43 errors found"
+      },
+      {
+        "id": "cache-insight",
+        "title": "Use efficient cache lifetimes",
+        "score": 0.5,
+        "display": "Est savings of 43 KiB"
+      },
+      {
+        "id": "document-latency-insight",
+        "title": "Document request latency",
+        "score": 0.5,
+        "display": "Est savings of 48 KiB"
+      },
+      {
+        "id": "legacy-javascript-insight",
+        "title": "Legacy JavaScript",
+        "score": 0.5,
+        "display": "Est savings of 12 KiB"
+      },
+      {
+        "id": "modern-http-insight",
+        "title": "Modern HTTP",
+        "score": 0,
+        "display": "Est savings of 370 ms"
+      },
+      {
+        "id": "network-dependency-tree-insight",
+        "title": "Network dependency tree",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "render-blocking-insight",
+        "title": "Render-blocking requests",
+        "score": 0,
+        "display": "Est savings of 620 ms"
+      }
+    ]
+  },
+  "login": {
+    "url": "https://more30.com/login",
+    "measuredAt": "2026-08-02T00:27:55.335Z",
+    "performance": 97,
+    "accessibility": 100,
+    "bestPractices": 77,
+    "seo": 54,
+    "metrics": {
+      "fcp": "1.9 s",
+      "lcp": "2.0 s",
+      "tbt": "10 ms",
+      "cls": "0.06",
+      "si": "1.9 s"
+    },
+    "failedAudits": [
+      {
+        "id": "first-contentful-paint",
+        "title": "First Contentful Paint",
+        "score": 0.86,
+        "display": "1.9 s"
+      },
+      {
+        "id": "interactive",
+        "title": "Time to Interactive",
+        "score": 0.87,
+        "display": "4.1 s"
+      },
+      {
+        "id": "third-party-cookies",
+        "title": "Uses third-party cookies",
+        "score": 0,
+        "display": "2 cookies found"
+      },
+      {
+        "id": "unminified-javascript",
+        "title": "Minify JavaScript",
+        "score": 0.5,
+        "display": "Est savings of 3 KiB"
+      },
+      {
+        "id": "unused-javascript",
+        "title": "Reduce unused JavaScript",
+        "score": 0.5,
+        "display": "Est savings of 26 KiB"
+      },
+      {
+        "id": "inspector-issues",
+        "title": "Issues were logged in the `Issues` panel in Chrome Devtools",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "is-crawlable",
+        "title": "Page is blocked from indexing",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "robots-txt",
+        "title": "robots.txt is not valid",
+        "score": 0,
+        "display": "43 errors found"
+      },
+      {
+        "id": "cache-insight",
+        "title": "Use efficient cache lifetimes",
+        "score": 0,
+        "display": "Est savings of 53 KiB"
+      },
+      {
+        "id": "document-latency-insight",
+        "title": "Document request latency",
+        "score": 0.5,
+        "display": "Est savings of 12 KiB"
+      },
+      {
+        "id": "modern-http-insight",
+        "title": "Modern HTTP",
+        "score": 0.5,
+        "display": ""
+      },
+      {
+        "id": "network-dependency-tree-insight",
+        "title": "Network dependency tree",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "render-blocking-insight",
+        "title": "Render-blocking requests",
+        "score": 0.5,
+        "display": "Est savings of 10 ms"
+      }
+    ]
+  },
+  "me": {
+    "url": "https://more30.com/me",
+    "measuredAt": "2026-08-02T00:28:07.522Z",
+    "performance": 89,
+    "accessibility": 100,
+    "bestPractices": 77,
+    "seo": 54,
+    "metrics": {
+      "fcp": "2.2 s",
+      "lcp": "3.5 s",
+      "tbt": "40 ms",
+      "cls": "0.001",
+      "si": "2.2 s"
+    },
+    "failedAudits": [
+      {
+        "id": "first-contentful-paint",
+        "title": "First Contentful Paint",
+        "score": 0.78,
+        "display": "2.2 s"
+      },
+      {
+        "id": "largest-contentful-paint",
+        "title": "Largest Contentful Paint",
+        "score": 0.65,
+        "display": "3.5 s"
+      },
+      {
+        "id": "third-party-cookies",
+        "title": "Uses third-party cookies",
+        "score": 0,
+        "display": "2 cookies found"
+      },
+      {
+        "id": "unused-javascript",
+        "title": "Reduce unused JavaScript",
+        "score": 0,
+        "display": "Est savings of 27 KiB"
+      },
+      {
+        "id": "inspector-issues",
+        "title": "Issues were logged in the `Issues` panel in Chrome Devtools",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "is-crawlable",
+        "title": "Page is blocked from indexing",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "robots-txt",
+        "title": "robots.txt is not valid",
+        "score": 0,
+        "display": "43 errors found"
+      },
+      {
+        "id": "cache-insight",
+        "title": "Use efficient cache lifetimes",
+        "score": 0.5,
+        "display": "Est savings of 53 KiB"
+      },
+      {
+        "id": "document-latency-insight",
+        "title": "Document request latency",
+        "score": 0.5,
+        "display": "Est savings of 9 KiB"
+      },
+      {
+        "id": "modern-http-insight",
+        "title": "Modern HTTP",
+        "score": 0,
+        "display": "Est savings of 290 ms"
+      },
+      {
+        "id": "network-dependency-tree-insight",
+        "title": "Network dependency tree",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "render-blocking-insight",
+        "title": "Render-blocking requests",
+        "score": 0,
+        "display": "Est savings of 750 ms"
+      }
+    ]
+  },
+  "subscribe": {
+    "url": "https://more30.com/subscribe",
+    "measuredAt": "2026-08-02T00:28:23.666Z",
+    "performance": 91,
+    "accessibility": 95,
+    "bestPractices": 77,
+    "seo": 54,
+    "metrics": {
+      "fcp": "2.2 s",
+      "lcp": "2.7 s",
+      "tbt": "80 ms",
+      "cls": "0.094",
+      "si": "2.3 s"
+    },
+    "failedAudits": [
+      {
+        "id": "first-contentful-paint",
+        "title": "First Contentful Paint",
+        "score": 0.77,
+        "display": "2.2 s"
+      },
+      {
+        "id": "largest-contentful-paint",
+        "title": "Largest Contentful Paint",
+        "score": 0.84,
+        "display": "2.7 s"
+      },
+      {
+        "id": "third-party-cookies",
+        "title": "Uses third-party cookies",
+        "score": 0,
+        "display": "2 cookies found"
+      },
+      {
+        "id": "color-contrast",
+        "title": "Background and foreground colors do not have a sufficient contrast ratio.",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "unminified-javascript",
+        "title": "Minify JavaScript",
+        "score": 0.5,
+        "display": "Est savings of 2 KiB"
+      },
+      {
+        "id": "unused-javascript",
+        "title": "Reduce unused JavaScript",
+        "score": 0,
+        "display": "Est savings of 27 KiB"
+      },
+      {
+        "id": "inspector-issues",
+        "title": "Issues were logged in the `Issues` panel in Chrome Devtools",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "is-crawlable",
+        "title": "Page is blocked from indexing",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "robots-txt",
+        "title": "robots.txt is not valid",
+        "score": 0,
+        "display": "43 errors found"
+      },
+      {
+        "id": "bf-cache",
+        "title": "Page prevented back/forward cache restoration",
+        "score": 0,
+        "display": "1 failure reason"
+      },
+      {
+        "id": "cache-insight",
+        "title": "Use efficient cache lifetimes",
+        "score": 0,
+        "display": "Est savings of 53 KiB"
+      },
+      {
+        "id": "document-latency-insight",
+        "title": "Document request latency",
+        "score": 0.5,
+        "display": "Est savings of 8 KiB"
+      },
+      {
+        "id": "modern-http-insight",
+        "title": "Modern HTTP",
+        "score": 0,
+        "display": "Est savings of 490 ms"
+      },
+      {
+        "id": "network-dependency-tree-insight",
+        "title": "Network dependency tree",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "render-blocking-insight",
+        "title": "Render-blocking requests",
+        "score": 0.5,
+        "display": ""
+      }
+    ]
+  },
+  "torah": {
+    "url": "https://more30.com/torah",
+    "measuredAt": "2026-08-02T00:28:44.868Z",
+    "performance": 29,
+    "accessibility": 81,
+    "bestPractices": 77,
+    "seo": 91,
+    "metrics": {
+      "fcp": "5.1 s",
+      "lcp": "7.1 s",
+      "tbt": "1,410 ms",
+      "cls": "0.131",
+      "si": "7.5 s"
+    },
+    "failedAudits": [
+      {
+        "id": "first-contentful-paint",
+        "title": "First Contentful Paint",
+        "score": 0.08,
+        "display": "5.1 s"
+      },
+      {
+        "id": "largest-contentful-paint",
+        "title": "Largest Contentful Paint",
+        "score": 0.05,
+        "display": "7.1 s"
+      },
+      {
+        "id": "speed-index",
+        "title": "Speed Index",
+        "score": 0.26,
+        "display": "7.5 s"
+      },
+      {
+        "id": "total-blocking-time",
+        "title": "Total Blocking Time",
+        "score": 0.15,
+        "display": "1,410 ms"
+      },
+      {
+        "id": "max-potential-fid",
+        "title": "Max Potential First Input Delay",
+        "score": 0.14,
+        "display": "430 ms"
+      },
+      {
+        "id": "cumulative-layout-shift",
+        "title": "Cumulative Layout Shift",
+        "score": 0.81,
+        "display": "0.131"
+      },
+      {
+        "id": "interactive",
+        "title": "Time to Interactive",
+        "score": 0.35,
+        "display": "8.8 s"
+      },
+      {
+        "id": "third-party-cookies",
+        "title": "Uses third-party cookies",
+        "score": 0,
+        "display": "2 cookies found"
+      },
+      {
+        "id": "mainthread-work-breakdown",
+        "title": "Minimize main-thread work",
+        "score": 0,
+        "display": "4.7 s"
+      },
+      {
+        "id": "bootup-time",
+        "title": "Reduce JavaScript execution time",
+        "score": 0,
+        "display": "1.3 s"
+      },
+      {
+        "id": "layout-shifts",
+        "title": "Avoid large layout shifts",
+        "score": 0,
+        "display": "2 layout shifts found"
+      },
+      {
+        "id": "valid-source-maps",
+        "title": "Missing source maps for large first-party JavaScript",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "button-name",
+        "title": "Buttons do not have an accessible name",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "color-contrast",
+        "title": "Background and foreground colors do not have a sufficient contrast ratio.",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "heading-order",
+        "title": "Heading elements are not in a sequentially-descending order",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "link-name",
+        "title": "Links do not have a discernible name",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "unminified-javascript",
+        "title": "Minify JavaScript",
+        "score": 0.5,
+        "display": "Est savings of 2 KiB"
+      },
+      {
+        "id": "unused-css-rules",
+        "title": "Reduce unused CSS",
+        "score": 0.5,
+        "display": "Est savings of 14 KiB"
+      },
+      {
+        "id": "unused-javascript",
+        "title": "Reduce unused JavaScript",
+        "score": 0,
+        "display": "Est savings of 471 KiB"
+      },
+      {
+        "id": "inspector-issues",
+        "title": "Issues were logged in the `Issues` panel in Chrome Devtools",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "robots-txt",
+        "title": "robots.txt is not valid",
+        "score": 0,
+        "display": "43 errors found"
+      },
+      {
+        "id": "cache-insight",
+        "title": "Use efficient cache lifetimes",
+        "score": 0,
+        "display": "Est savings of 43 KiB"
+      },
+      {
+        "id": "cls-culprits-insight",
+        "title": "Layout shift culprits",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "forced-reflow-insight",
+        "title": "Forced reflow",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "lcp-breakdown-insight",
+        "title": "LCP breakdown",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "network-dependency-tree-insight",
+        "title": "Network dependency tree",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "render-blocking-insight",
+        "title": "Render-blocking requests",
+        "score": 0,
+        "display": "Est savings of 150 ms"
+      }
+    ]
+  },
+  "tamlul": {
+    "url": "https://more30.com/tamlul",
+    "measuredAt": "2026-08-02T00:29:02.177Z",
+    "performance": 88,
+    "accessibility": 98,
+    "bestPractices": 77,
+    "seo": 91,
+    "metrics": {
+      "fcp": "1.9 s",
+      "lcp": "2.8 s",
+      "tbt": "310 ms",
+      "cls": "0.017",
+      "si": "1.9 s"
+    },
+    "failedAudits": [
+      {
+        "id": "first-contentful-paint",
+        "title": "First Contentful Paint",
+        "score": 0.88,
+        "display": "1.9 s"
+      },
+      {
+        "id": "largest-contentful-paint",
+        "title": "Largest Contentful Paint",
+        "score": 0.82,
+        "display": "2.8 s"
+      },
+      {
+        "id": "total-blocking-time",
+        "title": "Total Blocking Time",
+        "score": 0.78,
+        "display": "310 ms"
+      },
+      {
+        "id": "max-potential-fid",
+        "title": "Max Potential First Input Delay",
+        "score": 0.36,
+        "display": "300 ms"
+      },
+      {
+        "id": "interactive",
+        "title": "Time to Interactive",
+        "score": 0.79,
+        "display": "4.8 s"
+      },
+      {
+        "id": "third-party-cookies",
+        "title": "Uses third-party cookies",
+        "score": 0,
+        "display": "2 cookies found"
+      },
+      {
+        "id": "mainthread-work-breakdown",
+        "title": "Minimize main-thread work",
+        "score": 0,
+        "display": "3.0 s"
+      },
+      {
+        "id": "heading-order",
+        "title": "Heading elements are not in a sequentially-descending order",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "unminified-javascript",
+        "title": "Minify JavaScript",
+        "score": 0.5,
+        "display": "Est savings of 2 KiB"
+      },
+      {
+        "id": "unused-javascript",
+        "title": "Reduce unused JavaScript",
+        "score": 0.5,
+        "display": "Est savings of 49 KiB"
+      },
+      {
+        "id": "inspector-issues",
+        "title": "Issues were logged in the `Issues` panel in Chrome Devtools",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "robots-txt",
+        "title": "robots.txt is not valid",
+        "score": 0,
+        "display": "43 errors found"
+      },
+      {
+        "id": "cache-insight",
+        "title": "Use efficient cache lifetimes",
+        "score": 0.5,
+        "display": "Est savings of 43 KiB"
+      },
+      {
+        "id": "document-latency-insight",
+        "title": "Document request latency",
+        "score": 0.5,
+        "display": "Est savings of 16 KiB"
+      },
+      {
+        "id": "forced-reflow-insight",
+        "title": "Forced reflow",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "legacy-javascript-insight",
+        "title": "Legacy JavaScript",
+        "score": 0.5,
+        "display": "Est savings of 12 KiB"
+      },
+      {
+        "id": "modern-http-insight",
+        "title": "Modern HTTP",
+        "score": 0,
+        "display": "Est savings of 260 ms"
+      },
+      {
+        "id": "network-dependency-tree-insight",
+        "title": "Network dependency tree",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "render-blocking-insight",
+        "title": "Render-blocking requests",
+        "score": 0,
+        "display": "Est savings of 370 ms"
+      }
+    ]
+  },
+  "modaot": {
+    "url": "https://more30.com/modaot",
+    "measuredAt": "2026-08-02T00:29:19.481Z",
+    "performance": 89,
+    "accessibility": 100,
+    "bestPractices": 77,
+    "seo": 91,
+    "metrics": {
+      "fcp": "1.9 s",
+      "lcp": "2.7 s",
+      "tbt": "300 ms",
+      "cls": "0.007",
+      "si": "1.9 s"
+    },
+    "failedAudits": [
+      {
+        "id": "first-contentful-paint",
+        "title": "First Contentful Paint",
+        "score": 0.88,
+        "display": "1.9 s"
+      },
+      {
+        "id": "largest-contentful-paint",
+        "title": "Largest Contentful Paint",
+        "score": 0.85,
+        "display": "2.7 s"
+      },
+      {
+        "id": "total-blocking-time",
+        "title": "Total Blocking Time",
+        "score": 0.79,
+        "display": "300 ms"
+      },
+      {
+        "id": "max-potential-fid",
+        "title": "Max Potential First Input Delay",
+        "score": 0.46,
+        "display": "260 ms"
+      },
+      {
+        "id": "interactive",
+        "title": "Time to Interactive",
+        "score": 0.78,
+        "display": "4.9 s"
+      },
+      {
+        "id": "third-party-cookies",
+        "title": "Uses third-party cookies",
+        "score": 0,
+        "display": "2 cookies found"
+      },
+      {
+        "id": "mainthread-work-breakdown",
+        "title": "Minimize main-thread work",
+        "score": 0,
+        "display": "2.7 s"
+      },
+      {
+        "id": "unused-javascript",
+        "title": "Reduce unused JavaScript",
+        "score": 0.5,
+        "display": "Est savings of 49 KiB"
+      },
+      {
+        "id": "inspector-issues",
+        "title": "Issues were logged in the `Issues` panel in Chrome Devtools",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "robots-txt",
+        "title": "robots.txt is not valid",
+        "score": 0,
+        "display": "43 errors found"
+      },
+      {
+        "id": "cache-insight",
+        "title": "Use efficient cache lifetimes",
+        "score": 0.5,
+        "display": "Est savings of 43 KiB"
+      },
+      {
+        "id": "document-latency-insight",
+        "title": "Document request latency",
+        "score": 0.5,
+        "display": "Est savings of 11 KiB"
+      },
+      {
+        "id": "legacy-javascript-insight",
+        "title": "Legacy JavaScript",
+        "score": 0.5,
+        "display": "Est savings of 12 KiB"
+      },
+      {
+        "id": "modern-http-insight",
+        "title": "Modern HTTP",
+        "score": 0,
+        "display": "Est savings of 370 ms"
+      },
+      {
+        "id": "network-dependency-tree-insight",
+        "title": "Network dependency tree",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "render-blocking-insight",
+        "title": "Render-blocking requests",
+        "score": 0,
+        "display": "Est savings of 470 ms"
+      }
+    ]
+  },
+  "imud": {
+    "url": "https://more30.com/imud",
+    "measuredAt": "2026-08-02T00:29:45.091Z",
+    "performance": 73,
+    "accessibility": 83,
+    "bestPractices": 77,
+    "seo": 91,
+    "metrics": {
+      "fcp": "3.8 s",
+      "lcp": "3.9 s",
+      "tbt": "300 ms",
+      "cls": "0.004",
+      "si": "3.8 s"
+    },
+    "failedAudits": [
+      {
+        "id": "first-contentful-paint",
+        "title": "First Contentful Paint",
+        "score": 0.27,
+        "display": "3.8 s"
+      },
+      {
+        "id": "largest-contentful-paint",
+        "title": "Largest Contentful Paint",
+        "score": 0.53,
+        "display": "3.9 s"
+      },
+      {
+        "id": "speed-index",
+        "title": "Speed Index",
+        "score": 0.84,
+        "display": "3.8 s"
+      },
+      {
+        "id": "total-blocking-time",
+        "title": "Total Blocking Time",
+        "score": 0.78,
+        "display": "300 ms"
+      },
+      {
+        "id": "max-potential-fid",
+        "title": "Max Potential First Input Delay",
+        "score": 0.25,
+        "display": "350 ms"
+      },
+      {
+        "id": "interactive",
+        "title": "Time to Interactive",
+        "score": 0.48,
+        "display": "7.4 s"
+      },
+      {
+        "id": "third-party-cookies",
+        "title": "Uses third-party cookies",
+        "score": 0,
+        "display": "2 cookies found"
+      },
+      {
+        "id": "mainthread-work-breakdown",
+        "title": "Minimize main-thread work",
+        "score": 0,
+        "display": "7.7 s"
+      },
+      {
+        "id": "bootup-time",
+        "title": "Reduce JavaScript execution time",
+        "score": 0,
+        "display": "4.8 s"
+      },
+      {
+        "id": "valid-source-maps",
+        "title": "Missing source maps for large first-party JavaScript",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "button-name",
+        "title": "Buttons do not have an accessible name",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "heading-order",
+        "title": "Heading elements are not in a sequentially-descending order",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "landmark-one-main",
+        "title": "Document does not have a main landmark.",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "meta-viewport",
+        "title": "`[user-scalable=\"no\"]` is used in the `<meta name=\"viewport\">` element or the `[maximum-scale]` attribute is less than 5.",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "unminified-javascript",
+        "title": "Minify JavaScript",
+        "score": 0.5,
+        "display": "Est savings of 2 KiB"
+      },
+      {
+        "id": "unused-css-rules",
+        "title": "Reduce unused CSS",
+        "score": 0.5,
+        "display": "Est savings of 11 KiB"
+      },
+      {
+        "id": "unused-javascript",
+        "title": "Reduce unused JavaScript",
+        "score": 0,
+        "display": "Est savings of 248 KiB"
+      },
+      {
+        "id": "inspector-issues",
+        "title": "Issues were logged in the `Issues` panel in Chrome Devtools",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "robots-txt",
+        "title": "robots.txt is not valid",
+        "score": 0,
+        "display": "43 errors found"
+      },
+      {
+        "id": "cache-insight",
+        "title": "Use efficient cache lifetimes",
+        "score": 0,
+        "display": "Est savings of 1,069 KiB"
+      },
+      {
+        "id": "network-dependency-tree-insight",
+        "title": "Network dependency tree",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "render-blocking-insight",
+        "title": "Render-blocking requests",
+        "score": 0,
+        "display": "Est savings of 300 ms"
+      }
+    ]
+  },
+  "briut": {
+    "url": "https://more30.com/briut",
+    "measuredAt": "2026-08-02T00:30:00.683Z",
+    "performance": 97,
+    "accessibility": 91,
+    "bestPractices": 77,
+    "seo": 91,
+    "metrics": {
+      "fcp": "1.7 s",
+      "lcp": "1.9 s",
+      "tbt": "140 ms",
+      "cls": "0.02",
+      "si": "1.7 s"
+    },
+    "failedAudits": [
+      {
+        "id": "third-party-cookies",
+        "title": "Uses third-party cookies",
+        "score": 0,
+        "display": "2 cookies found"
+      },
+      {
+        "id": "mainthread-work-breakdown",
+        "title": "Minimize main-thread work",
+        "score": 0,
+        "display": "2.7 s"
+      },
+      {
+        "id": "aria-required-children",
+        "title": "Elements with an ARIA `[role]` that require children to contain a specific `[role]` are missing some or all of those required children.",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "color-contrast",
+        "title": "Background and foreground colors do not have a sufficient contrast ratio.",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "label-content-name-mismatch",
+        "title": "Elements with visible text labels do not have matching accessible names.",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "unminified-javascript",
+        "title": "Minify JavaScript",
+        "score": 0.5,
+        "display": "Est savings of 2 KiB"
+      },
+      {
+        "id": "inspector-issues",
+        "title": "Issues were logged in the `Issues` panel in Chrome Devtools",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "robots-txt",
+        "title": "robots.txt is not valid",
+        "score": 0,
+        "display": "43 errors found"
+      },
+      {
+        "id": "cache-insight",
+        "title": "Use efficient cache lifetimes",
+        "score": 0,
+        "display": "Est savings of 43 KiB"
+      },
+      {
+        "id": "document-latency-insight",
+        "title": "Document request latency",
+        "score": 0.5,
+        "display": "Est savings of 9 KiB"
+      },
+      {
+        "id": "network-dependency-tree-insight",
+        "title": "Network dependency tree",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "render-blocking-insight",
+        "title": "Render-blocking requests",
+        "score": 0,
+        "display": "Est savings of 450 ms"
+      }
+    ]
+  },
+  "bkalot": {
+    "url": "https://more30.com/bkalot",
+    "measuredAt": "2026-08-02T00:30:27.378Z",
+    "performance": 80,
+    "accessibility": 93,
+    "bestPractices": 77,
+    "seo": 82,
+    "metrics": {
+      "fcp": "2.0 s",
+      "lcp": "2.0 s",
+      "tbt": "680 ms",
+      "cls": "0",
+      "si": "2.6 s"
+    },
+    "failedAudits": [
+      {
+        "id": "first-contentful-paint",
+        "title": "First Contentful Paint",
+        "score": 0.83,
+        "display": "2.0 s"
+      },
+      {
+        "id": "total-blocking-time",
+        "title": "Total Blocking Time",
+        "score": 0.44,
+        "display": "680 ms"
+      },
+      {
+        "id": "max-potential-fid",
+        "title": "Max Potential First Input Delay",
+        "score": 0.2,
+        "display": "380 ms"
+      },
+      {
+        "id": "interactive",
+        "title": "Time to Interactive",
+        "score": 0.76,
+        "display": "5.1 s"
+      },
+      {
+        "id": "third-party-cookies",
+        "title": "Uses third-party cookies",
+        "score": 0,
+        "display": "2 cookies found"
+      },
+      {
+        "id": "mainthread-work-breakdown",
+        "title": "Minimize main-thread work",
+        "score": 0,
+        "display": "11.1 s"
+      },
+      {
+        "id": "bootup-time",
+        "title": "Reduce JavaScript execution time",
+        "score": 0,
+        "display": "4.4 s"
+      },
+      {
+        "id": "select-name",
+        "title": "Select elements do not have associated label elements.",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "unminified-javascript",
+        "title": "Minify JavaScript",
+        "score": 0.5,
+        "display": "Est savings of 2 KiB"
+      },
+      {
+        "id": "inspector-issues",
+        "title": "Issues were logged in the `Issues` panel in Chrome Devtools",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "meta-description",
+        "title": "Document does not have a meta description",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "robots-txt",
+        "title": "robots.txt is not valid",
+        "score": 0,
+        "display": "43 errors found"
+      },
+      {
+        "id": "cache-insight",
+        "title": "Use efficient cache lifetimes",
+        "score": 0.5,
+        "display": "Est savings of 1,076 KiB"
+      },
+      {
+        "id": "document-latency-insight",
+        "title": "Document request latency",
+        "score": 0.5,
+        "display": "Est savings of 13 KiB"
+      },
+      {
+        "id": "forced-reflow-insight",
+        "title": "Forced reflow",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "modern-http-insight",
+        "title": "Modern HTTP",
+        "score": 0.5,
+        "display": ""
+      },
+      {
+        "id": "network-dependency-tree-insight",
+        "title": "Network dependency tree",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "render-blocking-insight",
+        "title": "Render-blocking requests",
+        "score": 0,
+        "display": "Est savings of 340 ms"
+      }
+    ]
+  },
+  "smel": {
+    "url": "https://more30.com/smel",
+    "measuredAt": "2026-08-02T00:30:39.589Z",
+    "performance": 87,
+    "accessibility": 86,
+    "bestPractices": 77,
+    "seo": 91,
+    "metrics": {
+      "fcp": "2.5 s",
+      "lcp": "3.0 s",
+      "tbt": "220 ms",
+      "cls": "0.057",
+      "si": "2.5 s"
+    },
+    "failedAudits": [
+      {
+        "id": "first-contentful-paint",
+        "title": "First Contentful Paint",
+        "score": 0.68,
+        "display": "2.5 s"
+      },
+      {
+        "id": "largest-contentful-paint",
+        "title": "Largest Contentful Paint",
+        "score": 0.78,
+        "display": "3.0 s"
+      },
+      {
+        "id": "total-blocking-time",
+        "title": "Total Blocking Time",
+        "score": 0.88,
+        "display": "220 ms"
+      },
+      {
+        "id": "max-potential-fid",
+        "title": "Max Potential First Input Delay",
+        "score": 0.44,
+        "display": "270 ms"
+      },
+      {
+        "id": "third-party-cookies",
+        "title": "Uses third-party cookies",
+        "score": 0,
+        "display": "2 cookies found"
+      },
+      {
+        "id": "color-contrast",
+        "title": "Background and foreground colors do not have a sufficient contrast ratio.",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "link-name",
+        "title": "Links do not have a discernible name",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "meta-viewport",
+        "title": "`[user-scalable=\"no\"]` is used in the `<meta name=\"viewport\">` element or the `[maximum-scale]` attribute is less than 5.",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "unminified-javascript",
+        "title": "Minify JavaScript",
+        "score": 0.5,
+        "display": "Est savings of 2 KiB"
+      },
+      {
+        "id": "unused-css-rules",
+        "title": "Reduce unused CSS",
+        "score": 0.5,
+        "display": "Est savings of 10 KiB"
+      },
+      {
+        "id": "unused-javascript",
+        "title": "Reduce unused JavaScript",
+        "score": 0,
+        "display": "Est savings of 87 KiB"
+      },
+      {
+        "id": "inspector-issues",
+        "title": "Issues were logged in the `Issues` panel in Chrome Devtools",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "robots-txt",
+        "title": "robots.txt is not valid",
+        "score": 0,
+        "display": "43 errors found"
+      },
+      {
+        "id": "cache-insight",
+        "title": "Use efficient cache lifetimes",
+        "score": 0.5,
+        "display": "Est savings of 43 KiB"
+      },
+      {
+        "id": "network-dependency-tree-insight",
+        "title": "Network dependency tree",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "render-blocking-insight",
+        "title": "Render-blocking requests",
+        "score": 0,
+        "display": "Est savings of 300 ms"
+      }
+    ]
+  },
+  "smachot": {
+    "url": "https://more30.com/smachot",
+    "measuredAt": "2026-08-02T00:30:50.700Z",
+    "performance": 86,
+    "accessibility": 100,
+    "bestPractices": 77,
+    "seo": 91,
+    "metrics": {
+      "fcp": "1.7 s",
+      "lcp": "3.7 s",
+      "tbt": "160 ms",
+      "cls": "0",
+      "si": "1.7 s"
+    },
+    "failedAudits": [
+      {
+        "id": "largest-contentful-paint",
+        "title": "Largest Contentful Paint",
+        "score": 0.57,
+        "display": "3.7 s"
+      },
+      {
+        "id": "max-potential-fid",
+        "title": "Max Potential First Input Delay",
+        "score": 0.62,
+        "display": "210 ms"
+      },
+      {
+        "id": "third-party-cookies",
+        "title": "Uses third-party cookies",
+        "score": 0,
+        "display": "2 cookies found"
+      },
+      {
+        "id": "unminified-javascript",
+        "title": "Minify JavaScript",
+        "score": 0.5,
+        "display": "Est savings of 2 KiB"
+      },
+      {
+        "id": "inspector-issues",
+        "title": "Issues were logged in the `Issues` panel in Chrome Devtools",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "robots-txt",
+        "title": "robots.txt is not valid",
+        "score": 0,
+        "display": "43 errors found"
+      },
+      {
+        "id": "cache-insight",
+        "title": "Use efficient cache lifetimes",
+        "score": 0,
+        "display": "Est savings of 1,226 KiB"
+      },
+      {
+        "id": "document-latency-insight",
+        "title": "Document request latency",
+        "score": 0.5,
+        "display": "Est savings of 3 KiB"
+      },
+      {
+        "id": "font-display-insight",
+        "title": "Font display",
+        "score": 0,
+        "display": "Est savings of 310 ms"
+      },
+      {
+        "id": "forced-reflow-insight",
+        "title": "Forced reflow",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "network-dependency-tree-insight",
+        "title": "Network dependency tree",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "render-blocking-insight",
+        "title": "Render-blocking requests",
+        "score": 0,
+        "display": "Est savings of 640 ms"
+      }
+    ]
+  },
+  "egod": {
+    "url": "https://more30.com/egod",
+    "measuredAt": "2026-08-02T00:31:04.310Z",
+    "performance": 56,
+    "accessibility": 83,
+    "bestPractices": 77,
+    "seo": 91,
+    "metrics": {
+      "fcp": "3.5 s",
+      "lcp": "5.1 s",
+      "tbt": "720 ms",
+      "cls": "0.02",
+      "si": "3.5 s"
+    },
+    "failedAudits": [
+      {
+        "id": "first-contentful-paint",
+        "title": "First Contentful Paint",
+        "score": 0.35,
+        "display": "3.5 s"
+      },
+      {
+        "id": "largest-contentful-paint",
+        "title": "Largest Contentful Paint",
+        "score": 0.26,
+        "display": "5.1 s"
+      },
+      {
+        "id": "speed-index",
+        "title": "Speed Index",
+        "score": 0.88,
+        "display": "3.5 s"
+      },
+      {
+        "id": "total-blocking-time",
+        "title": "Total Blocking Time",
+        "score": 0.41,
+        "display": "720 ms"
+      },
+      {
+        "id": "max-potential-fid",
+        "title": "Max Potential First Input Delay",
+        "score": 0.3,
+        "display": "320 ms"
+      },
+      {
+        "id": "interactive",
+        "title": "Time to Interactive",
+        "score": 0.61,
+        "display": "6.3 s"
+      },
+      {
+        "id": "third-party-cookies",
+        "title": "Uses third-party cookies",
+        "score": 0,
+        "display": "2 cookies found"
+      },
+      {
+        "id": "mainthread-work-breakdown",
+        "title": "Minimize main-thread work",
+        "score": 0,
+        "display": "3.8 s"
+      },
+      {
+        "id": "valid-source-maps",
+        "title": "Missing source maps for large first-party JavaScript",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "button-name",
+        "title": "Buttons do not have an accessible name",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "color-contrast",
+        "title": "Background and foreground colors do not have a sufficient contrast ratio.",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "heading-order",
+        "title": "Heading elements are not in a sequentially-descending order",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "target-size",
+        "title": "Touch targets do not have sufficient size or spacing.",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "unminified-javascript",
+        "title": "Minify JavaScript",
+        "score": 0.5,
+        "display": "Est savings of 2 KiB"
+      },
+      {
+        "id": "unused-css-rules",
+        "title": "Reduce unused CSS",
+        "score": 0,
+        "display": "Est savings of 11 KiB"
+      },
+      {
+        "id": "unused-javascript",
+        "title": "Reduce unused JavaScript",
+        "score": 0,
+        "display": "Est savings of 178 KiB"
+      },
+      {
+        "id": "inspector-issues",
+        "title": "Issues were logged in the `Issues` panel in Chrome Devtools",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "robots-txt",
+        "title": "robots.txt is not valid",
+        "score": 0,
+        "display": "43 errors found"
+      },
+      {
+        "id": "cache-insight",
+        "title": "Use efficient cache lifetimes",
+        "score": 0,
+        "display": "Est savings of 1,069 KiB"
+      },
+      {
+        "id": "document-latency-insight",
+        "title": "Document request latency",
+        "score": 0.5,
+        "display": "Est savings of 2 KiB"
+      },
+      {
+        "id": "forced-reflow-insight",
+        "title": "Forced reflow",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "network-dependency-tree-insight",
+        "title": "Network dependency tree",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "render-blocking-insight",
+        "title": "Render-blocking requests",
+        "score": 0,
+        "display": "Est savings of 300 ms"
+      }
+    ]
+  },
+  "chatzor": {
+    "url": "https://more30.com/chatzor",
+    "measuredAt": "2026-08-02T00:31:15.380Z",
+    "performance": 86,
+    "accessibility": 100,
+    "bestPractices": 77,
+    "seo": 91,
+    "metrics": {
+      "fcp": "1.7 s",
+      "lcp": "3.3 s",
+      "tbt": "0 ms",
+      "cls": "0.144",
+      "si": "2.1 s"
+    },
+    "failedAudits": [
+      {
+        "id": "largest-contentful-paint",
+        "title": "Largest Contentful Paint",
+        "score": 0.7,
+        "display": "3.3 s"
+      },
+      {
+        "id": "cumulative-layout-shift",
+        "title": "Cumulative Layout Shift",
+        "score": 0.78,
+        "display": "0.144"
+      },
+      {
+        "id": "third-party-cookies",
+        "title": "Uses third-party cookies",
+        "score": 0,
+        "display": "2 cookies found"
+      },
+      {
+        "id": "layout-shifts",
+        "title": "Avoid large layout shifts",
+        "score": 0,
+        "display": "3 layout shifts found"
+      },
+      {
+        "id": "unminified-javascript",
+        "title": "Minify JavaScript",
+        "score": 0.5,
+        "display": "Est savings of 2 KiB"
+      },
+      {
+        "id": "inspector-issues",
+        "title": "Issues were logged in the `Issues` panel in Chrome Devtools",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "robots-txt",
+        "title": "robots.txt is not valid",
+        "score": 0,
+        "display": "43 errors found"
+      },
+      {
+        "id": "cache-insight",
+        "title": "Use efficient cache lifetimes",
+        "score": 0,
+        "display": "Est savings of 43 KiB"
+      },
+      {
+        "id": "cls-culprits-insight",
+        "title": "Layout shift culprits",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "document-latency-insight",
+        "title": "Document request latency",
+        "score": 0.5,
+        "display": "Est savings of 9 KiB"
+      },
+      {
+        "id": "modern-http-insight",
+        "title": "Modern HTTP",
+        "score": 0,
+        "display": "Est savings of 150 ms"
+      },
+      {
+        "id": "network-dependency-tree-insight",
+        "title": "Network dependency tree",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "render-blocking-insight",
+        "title": "Render-blocking requests",
+        "score": 0,
+        "display": "Est savings of 790 ms"
+      }
+    ]
+  },
+  "chatzor-app": {
+    "url": "https://more30.com/chatzor/",
+    "measuredAt": "2026-08-02T00:31:29.404Z",
+    "performance": 61,
+    "accessibility": 95,
+    "bestPractices": 77,
+    "seo": 91,
+    "metrics": {
+      "fcp": "3.1 s",
+      "lcp": "4.6 s",
+      "tbt": "670 ms",
+      "cls": "0",
+      "si": "3.1 s"
+    },
+    "failedAudits": [
+      {
+        "id": "first-contentful-paint",
+        "title": "First Contentful Paint",
+        "score": 0.47,
+        "display": "3.1 s"
+      },
+      {
+        "id": "largest-contentful-paint",
+        "title": "Largest Contentful Paint",
+        "score": 0.35,
+        "display": "4.6 s"
+      },
+      {
+        "id": "total-blocking-time",
+        "title": "Total Blocking Time",
+        "score": 0.44,
+        "display": "670 ms"
+      },
+      {
+        "id": "max-potential-fid",
+        "title": "Max Potential First Input Delay",
+        "score": 0.25,
+        "display": "350 ms"
+      },
+      {
+        "id": "interactive",
+        "title": "Time to Interactive",
+        "score": 0.74,
+        "display": "5.2 s"
+      },
+      {
+        "id": "third-party-cookies",
+        "title": "Uses third-party cookies",
+        "score": 0,
+        "display": "2 cookies found"
+      },
+      {
+        "id": "mainthread-work-breakdown",
+        "title": "Minimize main-thread work",
+        "score": 0,
+        "display": "4.3 s"
+      },
+      {
+        "id": "color-contrast",
+        "title": "Background and foreground colors do not have a sufficient contrast ratio.",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "unminified-javascript",
+        "title": "Minify JavaScript",
+        "score": 0.5,
+        "display": "Est savings of 2 KiB"
+      },
+      {
+        "id": "unused-javascript",
+        "title": "Reduce unused JavaScript",
+        "score": 0,
+        "display": "Est savings of 88 KiB"
+      },
+      {
+        "id": "inspector-issues",
+        "title": "Issues were logged in the `Issues` panel in Chrome Devtools",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "robots-txt",
+        "title": "robots.txt is not valid",
+        "score": 0,
+        "display": "43 errors found"
+      },
+      {
+        "id": "cache-insight",
+        "title": "Use efficient cache lifetimes",
+        "score": 0,
+        "display": "Est savings of 43 KiB"
+      },
+      {
+        "id": "forced-reflow-insight",
+        "title": "Forced reflow",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "modern-http-insight",
+        "title": "Modern HTTP",
+        "score": 0,
+        "display": "Est savings of -10 ms"
+      },
+      {
+        "id": "network-dependency-tree-insight",
+        "title": "Network dependency tree",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "render-blocking-insight",
+        "title": "Render-blocking requests",
+        "score": 0,
+        "display": "Est savings of 300 ms"
+      }
+    ]
+  },
+  "chizukim": {
+    "url": "https://more30.com/chizukim",
+    "measuredAt": "2026-08-02T00:31:40.008Z",
+    "performance": 92,
+    "accessibility": 100,
+    "bestPractices": 77,
+    "seo": 91,
+    "metrics": {
+      "fcp": "1.8 s",
+      "lcp": "3.2 s",
+      "tbt": "10 ms",
+      "cls": "0.001",
+      "si": "2.1 s"
+    },
+    "failedAudits": [
+      {
+        "id": "first-contentful-paint",
+        "title": "First Contentful Paint",
+        "score": 0.89,
+        "display": "1.8 s"
+      },
+      {
+        "id": "largest-contentful-paint",
+        "title": "Largest Contentful Paint",
+        "score": 0.72,
+        "display": "3.2 s"
+      },
+      {
+        "id": "third-party-cookies",
+        "title": "Uses third-party cookies",
+        "score": 0,
+        "display": "2 cookies found"
+      },
+      {
+        "id": "unminified-javascript",
+        "title": "Minify JavaScript",
+        "score": 0.5,
+        "display": "Est savings of 2 KiB"
+      },
+      {
+        "id": "inspector-issues",
+        "title": "Issues were logged in the `Issues` panel in Chrome Devtools",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "robots-txt",
+        "title": "robots.txt is not valid",
+        "score": 0,
+        "display": "43 errors found"
+      },
+      {
+        "id": "cache-insight",
+        "title": "Use efficient cache lifetimes",
+        "score": 0.5,
+        "display": "Est savings of 43 KiB"
+      },
+      {
+        "id": "document-latency-insight",
+        "title": "Document request latency",
+        "score": 0.5,
+        "display": "Est savings of 9 KiB"
+      },
+      {
+        "id": "modern-http-insight",
+        "title": "Modern HTTP",
+        "score": 0.5,
+        "display": ""
+      },
+      {
+        "id": "network-dependency-tree-insight",
+        "title": "Network dependency tree",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "render-blocking-insight",
+        "title": "Render-blocking requests",
+        "score": 0,
+        "display": "Est savings of 780 ms"
+      }
+    ]
+  },
+  "chizukim-app": {
+    "url": "https://more30.com/chizukim/",
+    "measuredAt": "2026-08-02T00:31:53.273Z",
+    "performance": 84,
+    "accessibility": 96,
+    "bestPractices": 77,
+    "seo": 91,
+    "metrics": {
+      "fcp": "2.6 s",
+      "lcp": "2.8 s",
+      "tbt": "350 ms",
+      "cls": "0.003",
+      "si": "2.6 s"
+    },
+    "failedAudits": [
+      {
+        "id": "first-contentful-paint",
+        "title": "First Contentful Paint",
+        "score": 0.62,
+        "display": "2.6 s"
+      },
+      {
+        "id": "largest-contentful-paint",
+        "title": "Largest Contentful Paint",
+        "score": 0.83,
+        "display": "2.8 s"
+      },
+      {
+        "id": "total-blocking-time",
+        "title": "Total Blocking Time",
+        "score": 0.73,
+        "display": "350 ms"
+      },
+      {
+        "id": "max-potential-fid",
+        "title": "Max Potential First Input Delay",
+        "score": 0.41,
+        "display": "280 ms"
+      },
+      {
+        "id": "interactive",
+        "title": "Time to Interactive",
+        "score": 0.81,
+        "display": "4.7 s"
+      },
+      {
+        "id": "third-party-cookies",
+        "title": "Uses third-party cookies",
+        "score": 0,
+        "display": "2 cookies found"
+      },
+      {
+        "id": "mainthread-work-breakdown",
+        "title": "Minimize main-thread work",
+        "score": 0,
+        "display": "2.1 s"
+      },
+      {
+        "id": "color-contrast",
+        "title": "Background and foreground colors do not have a sufficient contrast ratio.",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "unminified-javascript",
+        "title": "Minify JavaScript",
+        "score": 0.5,
+        "display": "Est savings of 2 KiB"
+      },
+      {
+        "id": "unused-css-rules",
+        "title": "Reduce unused CSS",
+        "score": 0.5,
+        "display": "Est savings of 10 KiB"
+      },
+      {
+        "id": "unused-javascript",
+        "title": "Reduce unused JavaScript",
+        "score": 0,
+        "display": "Est savings of 60 KiB"
+      },
+      {
+        "id": "inspector-issues",
+        "title": "Issues were logged in the `Issues` panel in Chrome Devtools",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "robots-txt",
+        "title": "robots.txt is not valid",
+        "score": 0,
+        "display": "43 errors found"
+      },
+      {
+        "id": "cache-insight",
+        "title": "Use efficient cache lifetimes",
+        "score": 0.5,
+        "display": "Est savings of 43 KiB"
+      },
+      {
+        "id": "network-dependency-tree-insight",
+        "title": "Network dependency tree",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "render-blocking-insight",
+        "title": "Render-blocking requests",
+        "score": 0,
+        "display": "Est savings of 150 ms"
+      }
+    ]
+  },
+  "orech": {
+    "url": "https://more30.com/orech",
+    "measuredAt": "2026-08-02T00:32:04.969Z",
+    "performance": 96,
+    "accessibility": 100,
+    "bestPractices": 77,
+    "seo": 91,
+    "metrics": {
+      "fcp": "1.1 s",
+      "lcp": "2.0 s",
+      "tbt": "190 ms",
+      "cls": "0",
+      "si": "1.2 s"
+    },
+    "failedAudits": [
+      {
+        "id": "max-potential-fid",
+        "title": "Max Potential First Input Delay",
+        "score": 0.63,
+        "display": "210 ms"
+      },
+      {
+        "id": "third-party-cookies",
+        "title": "Uses third-party cookies",
+        "score": 0,
+        "display": "2 cookies found"
+      },
+      {
+        "id": "unminified-javascript",
+        "title": "Minify JavaScript",
+        "score": 0.5,
+        "display": "Est savings of 2 KiB"
+      },
+      {
+        "id": "unused-javascript",
+        "title": "Reduce unused JavaScript",
+        "score": 0.5,
+        "display": "Est savings of 69 KiB"
+      },
+      {
+        "id": "inspector-issues",
+        "title": "Issues were logged in the `Issues` panel in Chrome Devtools",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "robots-txt",
+        "title": "robots.txt is not valid",
+        "score": 0,
+        "display": "43 errors found"
+      },
+      {
+        "id": "cache-insight",
+        "title": "Use efficient cache lifetimes",
+        "score": 0.5,
+        "display": "Est savings of 1,075 KiB"
+      },
+      {
+        "id": "document-latency-insight",
+        "title": "Document request latency",
+        "score": 0.5,
+        "display": "Est savings of 5 KiB"
+      },
+      {
+        "id": "legacy-javascript-insight",
+        "title": "Legacy JavaScript",
+        "score": 0.5,
+        "display": "Est savings of 12 KiB"
+      },
+      {
+        "id": "modern-http-insight",
+        "title": "Modern HTTP",
+        "score": 0,
+        "display": "Est savings of 10 ms"
+      },
+      {
+        "id": "network-dependency-tree-insight",
+        "title": "Network dependency tree",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "render-blocking-insight",
+        "title": "Render-blocking requests",
+        "score": 0,
+        "display": "Est savings of 150 ms"
+      }
+    ]
+  },
+  "mthbram": {
+    "url": "https://more30.com/mthbram",
+    "measuredAt": "2026-08-02T00:32:16.173Z",
+    "performance": 69,
+    "accessibility": 98,
+    "bestPractices": 73,
+    "seo": 91,
+    "metrics": {
+      "fcp": "4.8 s",
+      "lcp": "4.9 s",
+      "tbt": "100 ms",
+      "cls": "0.001",
+      "si": "4.8 s"
+    },
+    "failedAudits": [
+      {
+        "id": "first-contentful-paint",
+        "title": "First Contentful Paint",
+        "score": 0.12,
+        "display": "4.8 s"
+      },
+      {
+        "id": "largest-contentful-paint",
+        "title": "Largest Contentful Paint",
+        "score": 0.28,
+        "display": "4.9 s"
+      },
+      {
+        "id": "speed-index",
+        "title": "Speed Index",
+        "score": 0.67,
+        "display": "4.8 s"
+      },
+      {
+        "id": "errors-in-console",
+        "title": "Browser errors were logged to the console",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "interactive",
+        "title": "Time to Interactive",
+        "score": 0.64,
+        "display": "6.0 s"
+      },
+      {
+        "id": "third-party-cookies",
+        "title": "Uses third-party cookies",
+        "score": 0,
+        "display": "2 cookies found"
+      },
+      {
+        "id": "valid-source-maps",
+        "title": "Missing source maps for large first-party JavaScript",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "landmark-one-main",
+        "title": "Document does not have a main landmark.",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "unminified-javascript",
+        "title": "Minify JavaScript",
+        "score": 0,
+        "display": "Est savings of 2 KiB"
+      },
+      {
+        "id": "unused-css-rules",
+        "title": "Reduce unused CSS",
+        "score": 0,
+        "display": "Est savings of 18 KiB"
+      },
+      {
+        "id": "unused-javascript",
+        "title": "Reduce unused JavaScript",
+        "score": 0,
+        "display": "Est savings of 362 KiB"
+      },
+      {
+        "id": "inspector-issues",
+        "title": "Issues were logged in the `Issues` panel in Chrome Devtools",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "robots-txt",
+        "title": "robots.txt is not valid",
+        "score": 0,
+        "display": "43 errors found"
+      },
+      {
+        "id": "cache-insight",
+        "title": "Use efficient cache lifetimes",
+        "score": 0,
+        "display": "Est savings of 43 KiB"
+      },
+      {
+        "id": "document-latency-insight",
+        "title": "Document request latency",
+        "score": 0.5,
+        "display": "Est savings of 2 KiB"
+      },
+      {
+        "id": "network-dependency-tree-insight",
+        "title": "Network dependency tree",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "render-blocking-insight",
+        "title": "Render-blocking requests",
+        "score": 0,
+        "display": "Est savings of 300 ms"
+      }
+    ]
+  },
+  "zchuyot": {
+    "url": "https://more30.com/zchuyot",
+    "measuredAt": "2026-08-02T00:32:36.454Z",
+    "performance": 38,
+    "accessibility": 90,
+    "bestPractices": 77,
+    "seo": 92,
+    "metrics": {
+      "fcp": "5.0 s",
+      "lcp": "6.9 s",
+      "tbt": "1,550 ms",
+      "cls": "0",
+      "si": "5.0 s"
+    },
+    "failedAudits": [
+      {
+        "id": "first-contentful-paint",
+        "title": "First Contentful Paint",
+        "score": 0.1,
+        "display": "5.0 s"
+      },
+      {
+        "id": "largest-contentful-paint",
+        "title": "Largest Contentful Paint",
+        "score": 0.06,
+        "display": "6.9 s"
+      },
+      {
+        "id": "speed-index",
+        "title": "Speed Index",
+        "score": 0.64,
+        "display": "5.0 s"
+      },
+      {
+        "id": "total-blocking-time",
+        "title": "Total Blocking Time",
+        "score": 0.13,
+        "display": "1,550 ms"
+      },
+      {
+        "id": "max-potential-fid",
+        "title": "Max Potential First Input Delay",
+        "score": 0.06,
+        "display": "540 ms"
+      },
+      {
+        "id": "interactive",
+        "title": "Time to Interactive",
+        "score": 0.42,
+        "display": "8.1 s"
+      },
+      {
+        "id": "third-party-cookies",
+        "title": "Uses third-party cookies",
+        "score": 0,
+        "display": "2 cookies found"
+      },
+      {
+        "id": "mainthread-work-breakdown",
+        "title": "Minimize main-thread work",
+        "score": 0,
+        "display": "8.1 s"
+      },
+      {
+        "id": "bootup-time",
+        "title": "Reduce JavaScript execution time",
+        "score": 0,
+        "display": "2.1 s"
+      },
+      {
+        "id": "valid-source-maps",
+        "title": "Missing source maps for large first-party JavaScript",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "button-name",
+        "title": "Buttons do not have an accessible name",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "color-contrast",
+        "title": "Background and foreground colors do not have a sufficient contrast ratio.",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "unminified-javascript",
+        "title": "Minify JavaScript",
+        "score": 0.5,
+        "display": "Est savings of 2 KiB"
+      },
+      {
+        "id": "unused-css-rules",
+        "title": "Reduce unused CSS",
+        "score": 0.5,
+        "display": "Est savings of 10 KiB"
+      },
+      {
+        "id": "unused-javascript",
+        "title": "Reduce unused JavaScript",
+        "score": 0,
+        "display": "Est savings of 381 KiB"
+      },
+      {
+        "id": "inspector-issues",
+        "title": "Issues were logged in the `Issues` panel in Chrome Devtools",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "robots-txt",
+        "title": "robots.txt is not valid",
+        "score": 0,
+        "display": "43 errors found"
+      },
+      {
+        "id": "cache-insight",
+        "title": "Use efficient cache lifetimes",
+        "score": 0,
+        "display": "Est savings of 43 KiB"
+      },
+      {
+        "id": "document-latency-insight",
+        "title": "Document request latency",
+        "score": 0.5,
+        "display": "Est savings of 2 KiB"
+      },
+      {
+        "id": "forced-reflow-insight",
+        "title": "Forced reflow",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "image-delivery-insight",
+        "title": "Improve image delivery",
+        "score": 0.5,
+        "display": "Est savings of 54 KiB"
+      },
+      {
+        "id": "lcp-breakdown-insight",
+        "title": "LCP breakdown",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "network-dependency-tree-insight",
+        "title": "Network dependency tree",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "render-blocking-insight",
+        "title": "Render-blocking requests",
+        "score": 0,
+        "display": "Est savings of 300 ms"
+      }
+    ]
+  },
+  "galil": {
+    "url": "https://more30.com/galil",
+    "measuredAt": "2026-08-02T00:32:50.252Z",
+    "performance": 78,
+    "accessibility": 84,
+    "bestPractices": 73,
+    "seo": 92,
+    "metrics": {
+      "fcp": "3.2 s",
+      "lcp": "3.3 s",
+      "tbt": "350 ms",
+      "cls": "0",
+      "si": "3.2 s"
+    },
+    "failedAudits": [
+      {
+        "id": "first-contentful-paint",
+        "title": "First Contentful Paint",
+        "score": 0.42,
+        "display": "3.2 s"
+      },
+      {
+        "id": "largest-contentful-paint",
+        "title": "Largest Contentful Paint",
+        "score": 0.7,
+        "display": "3.3 s"
+      },
+      {
+        "id": "total-blocking-time",
+        "title": "Total Blocking Time",
+        "score": 0.73,
+        "display": "350 ms"
+      },
+      {
+        "id": "max-potential-fid",
+        "title": "Max Potential First Input Delay",
+        "score": 0.5,
+        "display": "250 ms"
+      },
+      {
+        "id": "errors-in-console",
+        "title": "Browser errors were logged to the console",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "interactive",
+        "title": "Time to Interactive",
+        "score": 0.75,
+        "display": "5.1 s"
+      },
+      {
+        "id": "third-party-cookies",
+        "title": "Uses third-party cookies",
+        "score": 0,
+        "display": "2 cookies found"
+      },
+      {
+        "id": "mainthread-work-breakdown",
+        "title": "Minimize main-thread work",
+        "score": 0,
+        "display": "2.1 s"
+      },
+      {
+        "id": "unsized-images",
+        "title": "Image elements do not have explicit `width` and `height`",
+        "score": 0.5,
+        "display": ""
+      },
+      {
+        "id": "valid-source-maps",
+        "title": "Missing source maps for large first-party JavaScript",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "button-name",
+        "title": "Buttons do not have an accessible name",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "color-contrast",
+        "title": "Background and foreground colors do not have a sufficient contrast ratio.",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "landmark-one-main",
+        "title": "Document does not have a main landmark.",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "target-size",
+        "title": "Touch targets do not have sufficient size or spacing.",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "unminified-javascript",
+        "title": "Minify JavaScript",
+        "score": 0.5,
+        "display": "Est savings of 2 KiB"
+      },
+      {
+        "id": "unused-css-rules",
+        "title": "Reduce unused CSS",
+        "score": 0,
+        "display": "Est savings of 14 KiB"
+      },
+      {
+        "id": "unused-javascript",
+        "title": "Reduce unused JavaScript",
+        "score": 0,
+        "display": "Est savings of 161 KiB"
+      },
+      {
+        "id": "inspector-issues",
+        "title": "Issues were logged in the `Issues` panel in Chrome Devtools",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "robots-txt",
+        "title": "robots.txt is not valid",
+        "score": 0,
+        "display": "43 errors found"
+      },
+      {
+        "id": "cache-insight",
+        "title": "Use efficient cache lifetimes",
+        "score": 0.5,
+        "display": "Est savings of 43 KiB"
+      },
+      {
+        "id": "document-latency-insight",
+        "title": "Document request latency",
+        "score": 0.5,
+        "display": "Est savings of 2 KiB"
+      },
+      {
+        "id": "forced-reflow-insight",
+        "title": "Forced reflow",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "image-delivery-insight",
+        "title": "Improve image delivery",
+        "score": 0.5,
+        "display": "Est savings of 141 KiB"
+      },
+      {
+        "id": "network-dependency-tree-insight",
+        "title": "Network dependency tree",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "render-blocking-insight",
+        "title": "Render-blocking requests",
+        "score": 0,
+        "display": "Est savings of 750 ms"
+      }
+    ]
+  },
+  "studio": {
+    "url": "https://more30.com/studio",
+    "measuredAt": "2026-08-02T00:33:06.346Z",
+    "performance": 43,
+    "accessibility": 84,
+    "bestPractices": 77,
+    "seo": 91,
+    "metrics": {
+      "fcp": "4.0 s",
+      "lcp": "4.9 s",
+      "tbt": "3,870 ms",
+      "cls": "0",
+      "si": "4.0 s"
+    },
+    "failedAudits": [
+      {
+        "id": "first-contentful-paint",
+        "title": "First Contentful Paint",
+        "score": 0.23,
+        "display": "4.0 s"
+      },
+      {
+        "id": "largest-contentful-paint",
+        "title": "Largest Contentful Paint",
+        "score": 0.28,
+        "display": "4.9 s"
+      },
+      {
+        "id": "speed-index",
+        "title": "Speed Index",
+        "score": 0.81,
+        "display": "4.0 s"
+      },
+      {
+        "id": "total-blocking-time",
+        "title": "Total Blocking Time",
+        "score": 0.01,
+        "display": "3,870 ms"
+      },
+      {
+        "id": "max-potential-fid",
+        "title": "Max Potential First Input Delay",
+        "score": 0,
+        "display": "3,150 ms"
+      },
+      {
+        "id": "interactive",
+        "title": "Time to Interactive",
+        "score": 0.25,
+        "display": "10.2 s"
+      },
+      {
+        "id": "third-party-cookies",
+        "title": "Uses third-party cookies",
+        "score": 0,
+        "display": "2 cookies found"
+      },
+      {
+        "id": "mainthread-work-breakdown",
+        "title": "Minimize main-thread work",
+        "score": 0,
+        "display": "6.2 s"
+      },
+      {
+        "id": "bootup-time",
+        "title": "Reduce JavaScript execution time",
+        "score": 0,
+        "display": "3.9 s"
+      },
+      {
+        "id": "valid-source-maps",
+        "title": "Missing source maps for large first-party JavaScript",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "aria-valid-attr-value",
+        "title": "`[aria-*]` attributes do not have valid values",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "color-contrast",
+        "title": "Background and foreground colors do not have a sufficient contrast ratio.",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "meta-viewport",
+        "title": "`[user-scalable=\"no\"]` is used in the `<meta name=\"viewport\">` element or the `[maximum-scale]` attribute is less than 5.",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "unminified-javascript",
+        "title": "Minify JavaScript",
+        "score": 0.5,
+        "display": "Est savings of 2 KiB"
+      },
+      {
+        "id": "unused-css-rules",
+        "title": "Reduce unused CSS",
+        "score": 0.5,
+        "display": "Est savings of 12 KiB"
+      },
+      {
+        "id": "unused-javascript",
+        "title": "Reduce unused JavaScript",
+        "score": 0,
+        "display": "Est savings of 236 KiB"
+      },
+      {
+        "id": "inspector-issues",
+        "title": "Issues were logged in the `Issues` panel in Chrome Devtools",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "robots-txt",
+        "title": "robots.txt is not valid",
+        "score": 0,
+        "display": "43 errors found"
+      },
+      {
+        "id": "cache-insight",
+        "title": "Use efficient cache lifetimes",
+        "score": 0,
+        "display": "Est savings of 43 KiB"
+      },
+      {
+        "id": "document-latency-insight",
+        "title": "Document request latency",
+        "score": 0.5,
+        "display": "Est savings of 2 KiB"
+      },
+      {
+        "id": "font-display-insight",
+        "title": "Font display",
+        "score": 0,
+        "display": "Est savings of 190 ms"
+      },
+      {
+        "id": "network-dependency-tree-insight",
+        "title": "Network dependency tree",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "render-blocking-insight",
+        "title": "Render-blocking requests",
+        "score": 0,
+        "display": "Est savings of 300 ms"
+      }
+    ]
+  },
+  "mechiron": {
+    "url": "https://more30.com/mechiron",
+    "measuredAt": "2026-08-02T00:33:29.992Z",
+    "performance": 44,
+    "accessibility": 96,
+    "bestPractices": 73,
+    "seo": 91,
+    "metrics": {
+      "fcp": "4.5 s",
+      "lcp": "4.9 s",
+      "tbt": "700 ms",
+      "cls": "0.201",
+      "si": "4.5 s"
+    },
+    "failedAudits": [
+      {
+        "id": "first-contentful-paint",
+        "title": "First Contentful Paint",
+        "score": 0.15,
+        "display": "4.5 s"
+      },
+      {
+        "id": "largest-contentful-paint",
+        "title": "Largest Contentful Paint",
+        "score": 0.28,
+        "display": "4.9 s"
+      },
+      {
+        "id": "speed-index",
+        "title": "Speed Index",
+        "score": 0.73,
+        "display": "4.5 s"
+      },
+      {
+        "id": "total-blocking-time",
+        "title": "Total Blocking Time",
+        "score": 0.42,
+        "display": "700 ms"
+      },
+      {
+        "id": "max-potential-fid",
+        "title": "Max Potential First Input Delay",
+        "score": 0.1,
+        "display": "470 ms"
+      },
+      {
+        "id": "cumulative-layout-shift",
+        "title": "Cumulative Layout Shift",
+        "score": 0.62,
+        "display": "0.201"
+      },
+      {
+        "id": "errors-in-console",
+        "title": "Browser errors were logged to the console",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "interactive",
+        "title": "Time to Interactive",
+        "score": 0.41,
+        "display": "8.2 s"
+      },
+      {
+        "id": "third-party-cookies",
+        "title": "Uses third-party cookies",
+        "score": 0,
+        "display": "2 cookies found"
+      },
+      {
+        "id": "mainthread-work-breakdown",
+        "title": "Minimize main-thread work",
+        "score": 0,
+        "display": "11.2 s"
+      },
+      {
+        "id": "bootup-time",
+        "title": "Reduce JavaScript execution time",
+        "score": 0,
+        "display": "4.9 s"
+      },
+      {
+        "id": "layout-shifts",
+        "title": "Avoid large layout shifts",
+        "score": 0,
+        "display": "3 layout shifts found"
+      },
+      {
+        "id": "valid-source-maps",
+        "title": "Missing source maps for large first-party JavaScript",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "color-contrast",
+        "title": "Background and foreground colors do not have a sufficient contrast ratio.",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "unminified-javascript",
+        "title": "Minify JavaScript",
+        "score": 0.5,
+        "display": "Est savings of 2 KiB"
+      },
+      {
+        "id": "unused-css-rules",
+        "title": "Reduce unused CSS",
+        "score": 0,
+        "display": "Est savings of 16 KiB"
+      },
+      {
+        "id": "unused-javascript",
+        "title": "Reduce unused JavaScript",
+        "score": 0,
+        "display": "Est savings of 272 KiB"
+      },
+      {
+        "id": "inspector-issues",
+        "title": "Issues were logged in the `Issues` panel in Chrome Devtools",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "robots-txt",
+        "title": "robots.txt is not valid",
+        "score": 0,
+        "display": "43 errors found"
+      },
+      {
+        "id": "cache-insight",
+        "title": "Use efficient cache lifetimes",
+        "score": 0,
+        "display": "Est savings of 1,226 KiB"
+      },
+      {
+        "id": "cls-culprits-insight",
+        "title": "Layout shift culprits",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "font-display-insight",
+        "title": "Font display",
+        "score": 0,
+        "display": "Est savings of 400 ms"
+      },
+      {
+        "id": "forced-reflow-insight",
+        "title": "Forced reflow",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "network-dependency-tree-insight",
+        "title": "Network dependency tree",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "render-blocking-insight",
+        "title": "Render-blocking requests",
+        "score": 0,
+        "display": "Est savings of 450 ms"
+      }
+    ]
+  },
+  "kupot": {
+    "url": "https://more30.com/kupot",
+    "measuredAt": "2026-08-02T00:33:57.823Z",
+    "performance": 38,
+    "accessibility": 84,
+    "bestPractices": 77,
+    "seo": 91,
+    "metrics": {
+      "fcp": "2.7 s",
+      "lcp": "3.8 s",
+      "tbt": "4,250 ms",
+      "cls": "0.333",
+      "si": "3.0 s"
+    },
+    "failedAudits": [
+      {
+        "id": "first-contentful-paint",
+        "title": "First Contentful Paint",
+        "score": 0.6,
+        "display": "2.7 s"
+      },
+      {
+        "id": "largest-contentful-paint",
+        "title": "Largest Contentful Paint",
+        "score": 0.56,
+        "display": "3.8 s"
+      },
+      {
+        "id": "total-blocking-time",
+        "title": "Total Blocking Time",
+        "score": 0.01,
+        "display": "4,250 ms"
+      },
+      {
+        "id": "max-potential-fid",
+        "title": "Max Potential First Input Delay",
+        "score": 0,
+        "display": "2,140 ms"
+      },
+      {
+        "id": "cumulative-layout-shift",
+        "title": "Cumulative Layout Shift",
+        "score": 0.34,
+        "display": "0.333"
+      },
+      {
+        "id": "interactive",
+        "title": "Time to Interactive",
+        "score": 0.28,
+        "display": "9.7 s"
+      },
+      {
+        "id": "third-party-cookies",
+        "title": "Uses third-party cookies",
+        "score": 0,
+        "display": "2 cookies found"
+      },
+      {
+        "id": "mainthread-work-breakdown",
+        "title": "Minimize main-thread work",
+        "score": 0,
+        "display": "10.1 s"
+      },
+      {
+        "id": "bootup-time",
+        "title": "Reduce JavaScript execution time",
+        "score": 0,
+        "display": "2.9 s"
+      },
+      {
+        "id": "layout-shifts",
+        "title": "Avoid large layout shifts",
+        "score": 0,
+        "display": "4 layout shifts found"
+      },
+      {
+        "id": "valid-source-maps",
+        "title": "Missing source maps for large first-party JavaScript",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "button-name",
+        "title": "Buttons do not have an accessible name",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "color-contrast",
+        "title": "Background and foreground colors do not have a sufficient contrast ratio.",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "meta-viewport",
+        "title": "`[user-scalable=\"no\"]` is used in the `<meta name=\"viewport\">` element or the `[maximum-scale]` attribute is less than 5.",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "unminified-javascript",
+        "title": "Minify JavaScript",
+        "score": 0.5,
+        "display": "Est savings of 2 KiB"
+      },
+      {
+        "id": "unused-css-rules",
+        "title": "Reduce unused CSS",
+        "score": 0.5,
+        "display": "Est savings of 10 KiB"
+      },
+      {
+        "id": "unused-javascript",
+        "title": "Reduce unused JavaScript",
+        "score": 0,
+        "display": "Est savings of 95 KiB"
+      },
+      {
+        "id": "inspector-issues",
+        "title": "Issues were logged in the `Issues` panel in Chrome Devtools",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "robots-txt",
+        "title": "robots.txt is not valid",
+        "score": 0,
+        "display": "43 errors found"
+      },
+      {
+        "id": "cache-insight",
+        "title": "Use efficient cache lifetimes",
+        "score": 0,
+        "display": "Est savings of 1,069 KiB"
+      },
+      {
+        "id": "cls-culprits-insight",
+        "title": "Layout shift culprits",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "forced-reflow-insight",
+        "title": "Forced reflow",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "network-dependency-tree-insight",
+        "title": "Network dependency tree",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "render-blocking-insight",
+        "title": "Render-blocking requests",
+        "score": 0,
+        "display": "Est savings of 300 ms"
+      }
+    ]
+  },
+  "crm": {
+    "url": "https://more30.com/crm",
+    "measuredAt": "2026-08-02T00:34:08.232Z",
+    "performance": 97,
+    "accessibility": 97,
+    "bestPractices": 73,
+    "seo": 91,
+    "metrics": {
+      "fcp": "1.8 s",
+      "lcp": "2.4 s",
+      "tbt": "10 ms",
+      "cls": "0",
+      "si": "1.9 s"
+    },
+    "failedAudits": [
+      {
+        "id": "first-contentful-paint",
+        "title": "First Contentful Paint",
+        "score": 0.89,
+        "display": "1.8 s"
+      },
+      {
+        "id": "errors-in-console",
+        "title": "Browser errors were logged to the console",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "third-party-cookies",
+        "title": "Uses third-party cookies",
+        "score": 0,
+        "display": "2 cookies found"
+      },
+      {
+        "id": "landmark-one-main",
+        "title": "Document does not have a main landmark.",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "unminified-javascript",
+        "title": "Minify JavaScript",
+        "score": 0.5,
+        "display": "Est savings of 2 KiB"
+      },
+      {
+        "id": "inspector-issues",
+        "title": "Issues were logged in the `Issues` panel in Chrome Devtools",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "robots-txt",
+        "title": "robots.txt is not valid",
+        "score": 0,
+        "display": "43 errors found"
+      },
+      {
+        "id": "cache-insight",
+        "title": "Use efficient cache lifetimes",
+        "score": 0,
+        "display": "Est savings of 43 KiB"
+      },
+      {
+        "id": "document-latency-insight",
+        "title": "Document request latency",
+        "score": 0.5,
+        "display": "Est savings of 2 KiB"
+      },
+      {
+        "id": "network-dependency-tree-insight",
+        "title": "Network dependency tree",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "render-blocking-insight",
+        "title": "Render-blocking requests",
+        "score": 0.5,
+        "display": ""
+      }
+    ]
+  },
+  "gesher": {
+    "url": "https://more30.com/gesher",
+    "measuredAt": "2026-08-02T00:34:18.395Z",
+    "performance": 94,
+    "accessibility": 97,
+    "bestPractices": 73,
+    "seo": 91,
+    "metrics": {
+      "fcp": "1.8 s",
+      "lcp": "2.9 s",
+      "tbt": "0 ms",
+      "cls": "0",
+      "si": "1.8 s"
+    },
+    "failedAudits": [
+      {
+        "id": "first-contentful-paint",
+        "title": "First Contentful Paint",
+        "score": 0.88,
+        "display": "1.8 s"
+      },
+      {
+        "id": "largest-contentful-paint",
+        "title": "Largest Contentful Paint",
+        "score": 0.8,
+        "display": "2.9 s"
+      },
+      {
+        "id": "errors-in-console",
+        "title": "Browser errors were logged to the console",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "third-party-cookies",
+        "title": "Uses third-party cookies",
+        "score": 0,
+        "display": "2 cookies found"
+      },
+      {
+        "id": "landmark-one-main",
+        "title": "Document does not have a main landmark.",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "unminified-javascript",
+        "title": "Minify JavaScript",
+        "score": 0.5,
+        "display": "Est savings of 2 KiB"
+      },
+      {
+        "id": "inspector-issues",
+        "title": "Issues were logged in the `Issues` panel in Chrome Devtools",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "robots-txt",
+        "title": "robots.txt is not valid",
+        "score": 0,
+        "display": "43 errors found"
+      },
+      {
+        "id": "cache-insight",
+        "title": "Use efficient cache lifetimes",
+        "score": 0.5,
+        "display": "Est savings of 43 KiB"
+      },
+      {
+        "id": "document-latency-insight",
+        "title": "Document request latency",
+        "score": 0.5,
+        "display": "Est savings of 2 KiB"
+      },
+      {
+        "id": "network-dependency-tree-insight",
+        "title": "Network dependency tree",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "render-blocking-insight",
+        "title": "Render-blocking requests",
+        "score": 0.5,
+        "display": ""
+      }
+    ]
+  }
+}

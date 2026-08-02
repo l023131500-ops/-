@@ -1,0 +1,4469 @@
+{
+  "startedAt": "2026-08-02T00:16:55.206Z",
+  "origin": "https://more30.com",
+  "routes": {
+    "home": {
+      "key": "home",
+      "sys": "33",
+      "path": "/",
+      "name": "אתר התדמית",
+      "url": "https://more30.com/",
+      "desktop": {
+        "status": 200,
+        "loadMs": 4793,
+        "consoleErrors": [],
+        "failedRequests": [],
+        "screenshot": "home-desktop.png",
+        "title": "עולם הסטארטאפים · מור מערכות תוכנה",
+        "lang": "he",
+        "dir": "rtl",
+        "metaDescription": "עולם הסטארטאפים של מור מערכות תוכנה — עשרות מערכות פעילות, כולן תחת כתובת אחת: more30.com",
+        "metaViewport": "width=device-width, initial-scale=1.0",
+        "canonical": "",
+        "ogUrl": "",
+        "h1Count": 1,
+        "h1": "עולם הסטארטאפים",
+        "headings": [
+          "H1: עולם הסטארטאפים",
+          "H2: בית אחד לכל השלבים",
+          "H3: מרעיון למוצר חי",
+          "H3: מערכות שכבר עובדות",
+          "H3: כתובת אחת",
+          "H3: ליווי שנשאר",
+          "H2: המערכות שלנו",
+          "H3: עולם התורה",
+          "H3: פיננסי",
+          "H3: בריאות וקופות",
+          "H3: שונות / מסחר",
+          "H3: מותג בקלות 🔒"
+        ],
+        "textLen": 4267,
+        "interactiveCount": 24,
+        "smallTargets": [],
+        "unnamedControls": [],
+        "imgsNoAlt": [],
+        "hasAuthScript": true,
+        "authBtnText": "",
+        "bodyBg": "rgb(11, 13, 46)",
+        "bodyFg": "rgb(236, 233, 245)",
+        "vercelLeak": [],
+        "scrollW": 1546,
+        "clientW": 1440
+      },
+      "mobile": {
+        "status": 200,
+        "loadMs": 4398,
+        "consoleErrors": [],
+        "failedRequests": [],
+        "screenshot": "home-mobile.png",
+        "title": "עולם הסטארטאפים · מור מערכות תוכנה",
+        "lang": "he",
+        "dir": "rtl",
+        "metaDescription": "עולם הסטארטאפים של מור מערכות תוכנה — עשרות מערכות פעילות, כולן תחת כתובת אחת: more30.com",
+        "metaViewport": "width=device-width, initial-scale=1.0",
+        "canonical": "",
+        "ogUrl": "",
+        "h1Count": 1,
+        "h1": "עולם הסטארטאפים",
+        "headings": [
+          "H1: עולם הסטארטאפים",
+          "H2: בית אחד לכל השלבים",
+          "H3: מרעיון למוצר חי",
+          "H3: מערכות שכבר עובדות",
+          "H3: כתובת אחת",
+          "H3: ליווי שנשאר",
+          "H2: המערכות שלנו",
+          "H3: עולם התורה",
+          "H3: פיננסי",
+          "H3: בריאות וקופות",
+          "H3: שונות / מסחר",
+          "H3: מותג בקלות 🔒"
+        ],
+        "textLen": 4252,
+        "interactiveCount": 23,
+        "smallTargets": [],
+        "unnamedControls": [],
+        "imgsNoAlt": [],
+        "hasAuthScript": true,
+        "authBtnText": "",
+        "bodyBg": "rgb(11, 13, 46)",
+        "bodyFg": "rgb(236, 233, 245)",
+        "vercelLeak": [],
+        "scrollW": 469,
+        "clientW": 390
+      },
+      "dark": {
+        "status": 200,
+        "loadMs": 4268,
+        "consoleErrors": [],
+        "failedRequests": [],
+        "screenshot": "home-dark.png",
+        "title": "עולם הסטארטאפים · מור מערכות תוכנה",
+        "lang": "he",
+        "dir": "rtl",
+        "metaDescription": "עולם הסטארטאפים של מור מערכות תוכנה — עשרות מערכות פעילות, כולן תחת כתובת אחת: more30.com",
+        "metaViewport": "width=device-width, initial-scale=1.0",
+        "canonical": "",
+        "ogUrl": "",
+        "h1Count": 1,
+        "h1": "עולם הסטארטאפים",
+        "headings": [
+          "H1: עולם הסטארטאפים",
+          "H2: בית אחד לכל השלבים",
+          "H3: מרעיון למוצר חי",
+          "H3: מערכות שכבר עובדות",
+          "H3: כתובת אחת",
+          "H3: ליווי שנשאר",
+          "H2: המערכות שלנו",
+          "H3: עולם התורה",
+          "H3: פיננסי",
+          "H3: בריאות וקופות",
+          "H3: שונות / מסחר",
+          "H3: מותג בקלות 🔒"
+        ],
+        "textLen": 4267,
+        "interactiveCount": 24,
+        "smallTargets": [],
+        "unnamedControls": [],
+        "imgsNoAlt": [],
+        "hasAuthScript": true,
+        "authBtnText": "",
+        "bodyBg": "rgb(11, 13, 46)",
+        "bodyFg": "rgb(236, 233, 245)",
+        "vercelLeak": [],
+        "scrollW": 1546,
+        "clientW": 1440
+      },
+      "darkModeImplemented": false,
+      "horizontalOverflow": true
+    },
+    "login": {
+      "key": "login",
+      "sys": "--",
+      "path": "/login",
+      "name": "כניסה אחידה",
+      "url": "https://more30.com/login",
+      "desktop": {
+        "status": 200,
+        "loadMs": 5152,
+        "consoleErrors": [],
+        "failedRequests": [],
+        "screenshot": "login-desktop.png",
+        "title": "כניסה · מור מערכות תוכנה",
+        "lang": "he",
+        "dir": "rtl",
+        "metaDescription": "כניסה אחת לכל מערכות מור מערכות תוכנה — חשבון Google, שם משתמש וסיסמה, או פתיחת חשבון חדש.",
+        "metaViewport": "width=device-width, initial-scale=1.0",
+        "canonical": "",
+        "ogUrl": "",
+        "h1Count": 1,
+        "h1": "כניסה למערכות",
+        "headings": [
+          "H1: כניסה למערכות"
+        ],
+        "textLen": 332,
+        "interactiveCount": 8,
+        "smallTargets": [],
+        "unnamedControls": [],
+        "imgsNoAlt": [],
+        "hasAuthScript": false,
+        "authBtnText": "",
+        "bodyBg": "rgba(0, 0, 0, 0)",
+        "bodyFg": "rgb(11, 13, 46)",
+        "vercelLeak": [],
+        "scrollW": 1440,
+        "clientW": 1440
+      },
+      "mobile": {
+        "status": 200,
+        "loadMs": 5450,
+        "consoleErrors": [
+          "Failed to load resource: net::ERR_QUIC_PROTOCOL_ERROR.QUIC_PACKET_WRITE_ERROR",
+          "Failed to load resource: net::ERR_QUIC_PROTOCOL_ERROR.QUIC_PACKET_WRITE_ERROR",
+          "Failed to load resource: net::ERR_QUIC_PROTOCOL_ERROR.QUIC_PACKET_WRITE_ERROR"
+        ],
+        "failedRequests": [
+          "GET https://netfree.link/api/user/payment/payment-status?userKey=10.5.1.232@rl-internet&r=0.84 — net::ERR_QUIC_PROTOCOL_ERROR.QUIC_PACKET_WRITE_ERROR",
+          "GET https://netfree.link/api/card/data.js — net::ERR_QUIC_PROTOCOL_ERROR.QUIC_PACKET_WRITE_ERROR",
+          "GET https://netfree.link/card/card.js — net::ERR_QUIC_PROTOCOL_ERROR.QUIC_PACKET_WRITE_ERROR"
+        ],
+        "screenshot": "login-mobile.png",
+        "title": "כניסה · מור מערכות תוכנה",
+        "lang": "he",
+        "dir": "rtl",
+        "metaDescription": "כניסה אחת לכל מערכות מור מערכות תוכנה — חשבון Google, שם משתמש וסיסמה, או פתיחת חשבון חדש.",
+        "metaViewport": "width=device-width, initial-scale=1.0",
+        "canonical": "",
+        "ogUrl": "",
+        "h1Count": 1,
+        "h1": "כניסה למערכות",
+        "headings": [
+          "H1: כניסה למערכות"
+        ],
+        "textLen": 332,
+        "interactiveCount": 8,
+        "smallTargets": [],
+        "unnamedControls": [],
+        "imgsNoAlt": [],
+        "hasAuthScript": false,
+        "authBtnText": "",
+        "bodyBg": "rgba(0, 0, 0, 0)",
+        "bodyFg": "rgb(11, 13, 46)",
+        "vercelLeak": [],
+        "scrollW": 390,
+        "clientW": 390
+      },
+      "dark": {
+        "status": 200,
+        "loadMs": 6973,
+        "consoleErrors": [],
+        "failedRequests": [],
+        "screenshot": "login-dark.png",
+        "title": "כניסה · מור מערכות תוכנה",
+        "lang": "he",
+        "dir": "rtl",
+        "metaDescription": "כניסה אחת לכל מערכות מור מערכות תוכנה — חשבון Google, שם משתמש וסיסמה, או פתיחת חשבון חדש.",
+        "metaViewport": "width=device-width, initial-scale=1.0",
+        "canonical": "",
+        "ogUrl": "",
+        "h1Count": 1,
+        "h1": "כניסה למערכות",
+        "headings": [
+          "H1: כניסה למערכות"
+        ],
+        "textLen": 332,
+        "interactiveCount": 8,
+        "smallTargets": [],
+        "unnamedControls": [],
+        "imgsNoAlt": [],
+        "hasAuthScript": false,
+        "authBtnText": "",
+        "bodyBg": "rgba(0, 0, 0, 0)",
+        "bodyFg": "rgb(236, 233, 245)",
+        "vercelLeak": [],
+        "scrollW": 1440,
+        "clientW": 1440
+      },
+      "darkModeImplemented": false,
+      "horizontalOverflow": false
+    },
+    "me": {
+      "key": "me",
+      "sys": "--",
+      "path": "/me",
+      "name": "אזור אישי",
+      "url": "https://more30.com/me",
+      "desktop": {
+        "status": 200,
+        "loadMs": 4479,
+        "consoleErrors": [],
+        "failedRequests": [],
+        "screenshot": "me-desktop.png",
+        "title": "האזור האישי · מור מערכות תוכנה",
+        "lang": "he",
+        "dir": "rtl",
+        "metaDescription": "האזור האישי שלך במור מערכות תוכנה — הפרטים שלך, סוג החשבון, והמערכות הפתוחות לכניסה.",
+        "metaViewport": "width=device-width, initial-scale=1.0",
+        "canonical": "",
+        "ogUrl": "",
+        "h1Count": 2,
+        "h1": "האזור האישי",
+        "headings": [
+          "H1: האזור האישי"
+        ],
+        "textLen": 95,
+        "interactiveCount": 3,
+        "smallTargets": [],
+        "unnamedControls": [],
+        "imgsNoAlt": [],
+        "hasAuthScript": false,
+        "authBtnText": "",
+        "bodyBg": "rgb(253, 253, 252)",
+        "bodyFg": "rgb(20, 22, 25)",
+        "vercelLeak": [],
+        "scrollW": 1440,
+        "clientW": 1440
+      },
+      "mobile": {
+        "status": 200,
+        "loadMs": 4465,
+        "consoleErrors": [],
+        "failedRequests": [],
+        "screenshot": "me-mobile.png",
+        "title": "האזור האישי · מור מערכות תוכנה",
+        "lang": "he",
+        "dir": "rtl",
+        "metaDescription": "האזור האישי שלך במור מערכות תוכנה — הפרטים שלך, סוג החשבון, והמערכות הפתוחות לכניסה.",
+        "metaViewport": "width=device-width, initial-scale=1.0",
+        "canonical": "",
+        "ogUrl": "",
+        "h1Count": 2,
+        "h1": "האזור האישי",
+        "headings": [
+          "H1: האזור האישי"
+        ],
+        "textLen": 95,
+        "interactiveCount": 3,
+        "smallTargets": [],
+        "unnamedControls": [],
+        "imgsNoAlt": [],
+        "hasAuthScript": false,
+        "authBtnText": "",
+        "bodyBg": "rgb(253, 253, 252)",
+        "bodyFg": "rgb(20, 22, 25)",
+        "vercelLeak": [],
+        "scrollW": 390,
+        "clientW": 390
+      },
+      "dark": {
+        "status": 200,
+        "loadMs": 4435,
+        "consoleErrors": [],
+        "failedRequests": [],
+        "screenshot": "me-dark.png",
+        "title": "האזור האישי · מור מערכות תוכנה",
+        "lang": "he",
+        "dir": "rtl",
+        "metaDescription": "האזור האישי שלך במור מערכות תוכנה — הפרטים שלך, סוג החשבון, והמערכות הפתוחות לכניסה.",
+        "metaViewport": "width=device-width, initial-scale=1.0",
+        "canonical": "",
+        "ogUrl": "",
+        "h1Count": 2,
+        "h1": "האזור האישי",
+        "headings": [
+          "H1: האזור האישי"
+        ],
+        "textLen": 95,
+        "interactiveCount": 3,
+        "smallTargets": [],
+        "unnamedControls": [],
+        "imgsNoAlt": [],
+        "hasAuthScript": false,
+        "authBtnText": "",
+        "bodyBg": "rgb(12, 13, 16)",
+        "bodyFg": "rgb(236, 233, 245)",
+        "vercelLeak": [],
+        "scrollW": 1440,
+        "clientW": 1440
+      },
+      "darkModeImplemented": true,
+      "horizontalOverflow": false
+    },
+    "subscribe": {
+      "key": "subscribe",
+      "sys": "--",
+      "path": "/subscribe",
+      "name": "מסלולים",
+      "url": "https://more30.com/subscribe",
+      "desktop": {
+        "status": 200,
+        "loadMs": 6653,
+        "consoleErrors": [],
+        "failedRequests": [],
+        "screenshot": "subscribe-desktop.png",
+        "title": "מסלולים · מור מערכות תוכנה",
+        "lang": "he",
+        "dir": "rtl",
+        "metaDescription": "בחירת מסלול לשירותי מור מערכות תוכנה.",
+        "metaViewport": "width=device-width, initial-scale=1.0",
+        "canonical": "",
+        "ogUrl": "",
+        "h1Count": 1,
+        "h1": "מסלולים · מור מערכות תוכנה",
+        "headings": [
+          "H1: מסלולים · מור מערכות תוכנה",
+          "H2: חינמי",
+          "H2: פרימיום"
+        ],
+        "textLen": 650,
+        "interactiveCount": 6,
+        "smallTargets": [],
+        "unnamedControls": [],
+        "imgsNoAlt": [],
+        "hasAuthScript": true,
+        "authBtnText": "",
+        "bodyBg": "rgb(253, 253, 252)",
+        "bodyFg": "rgb(20, 22, 25)",
+        "vercelLeak": [],
+        "scrollW": 1440,
+        "clientW": 1440
+      },
+      "mobile": {
+        "status": 200,
+        "loadMs": 4949,
+        "consoleErrors": [],
+        "failedRequests": [],
+        "screenshot": "subscribe-mobile.png",
+        "title": "מסלולים · מור מערכות תוכנה",
+        "lang": "he",
+        "dir": "rtl",
+        "metaDescription": "בחירת מסלול לשירותי מור מערכות תוכנה.",
+        "metaViewport": "width=device-width, initial-scale=1.0",
+        "canonical": "",
+        "ogUrl": "",
+        "h1Count": 1,
+        "h1": "מסלולים · מור מערכות תוכנה",
+        "headings": [
+          "H1: מסלולים · מור מערכות תוכנה",
+          "H2: חינמי",
+          "H2: פרימיום"
+        ],
+        "textLen": 650,
+        "interactiveCount": 6,
+        "smallTargets": [],
+        "unnamedControls": [],
+        "imgsNoAlt": [],
+        "hasAuthScript": true,
+        "authBtnText": "",
+        "bodyBg": "rgb(253, 253, 252)",
+        "bodyFg": "rgb(20, 22, 25)",
+        "vercelLeak": [],
+        "scrollW": 390,
+        "clientW": 390
+      },
+      "dark": {
+        "status": 200,
+        "loadMs": 4707,
+        "consoleErrors": [],
+        "failedRequests": [],
+        "screenshot": "subscribe-dark.png",
+        "title": "מסלולים · מור מערכות תוכנה",
+        "lang": "he",
+        "dir": "rtl",
+        "metaDescription": "בחירת מסלול לשירותי מור מערכות תוכנה.",
+        "metaViewport": "width=device-width, initial-scale=1.0",
+        "canonical": "",
+        "ogUrl": "",
+        "h1Count": 1,
+        "h1": "מסלולים · מור מערכות תוכנה",
+        "headings": [
+          "H1: מסלולים · מור מערכות תוכנה",
+          "H2: חינמי",
+          "H2: פרימיום"
+        ],
+        "textLen": 650,
+        "interactiveCount": 6,
+        "smallTargets": [],
+        "unnamedControls": [],
+        "imgsNoAlt": [],
+        "hasAuthScript": true,
+        "authBtnText": "",
+        "bodyBg": "rgb(14, 15, 18)",
+        "bodyFg": "rgb(236, 234, 228)",
+        "vercelLeak": [],
+        "scrollW": 1440,
+        "clientW": 1440
+      },
+      "darkModeImplemented": true,
+      "horizontalOverflow": false
+    },
+    "torah": {
+      "key": "torah",
+      "sys": "01",
+      "path": "/torah",
+      "name": "פלטפורמת איגוד השיעורים",
+      "url": "https://more30.com/torah",
+      "desktop": {
+        "status": 200,
+        "loadMs": 5104,
+        "consoleErrors": [],
+        "failedRequests": [],
+        "screenshot": "torah-desktop.png",
+        "title": "איגוד מגידי השיעורים",
+        "lang": "he",
+        "dir": "rtl",
+        "metaDescription": "המערכת המאוחדת לאיגוד השיעורים, מועצות דתיות, ארגונים, בתי כנסת ומגידי שיעור.",
+        "metaViewport": "width=device-width, initial-scale=1.0, maximum-scale=5.0",
+        "canonical": "",
+        "ogUrl": "",
+        "h1Count": 1,
+        "h1": "איגוד מגידי השיעורים",
+        "headings": [
+          "H1: איגוד מגידי השיעורים",
+          "H3: טיפ היומי",
+          "H2: השירותים שלנו",
+          "H3: מאגר שיעורים",
+          "H3: חיפוש שיעור",
+          "H3: הצטרף כמגיד שיעור",
+          "H3: תשמישי קדושה",
+          "H3: תרומה",
+          "H3: התאמת AI",
+          "H2: מערכות נוספות מבית איגוד השיעורים",
+          "H3: תמלול שיעורי תורה",
+          "H3: יוצר מודעות AI"
+        ],
+        "textLen": 1237,
+        "interactiveCount": 30,
+        "smallTargets": [
+          {
+            "tag": "a",
+            "w": 29,
+            "h": 17,
+            "name": "ראשי"
+          },
+          {
+            "tag": "a",
+            "w": 78,
+            "h": 17,
+            "name": "מאגר שיעורים"
+          },
+          {
+            "tag": "a",
+            "w": 87,
+            "h": 17,
+            "name": "תשמישי קדושה"
+          },
+          {
+            "tag": "a",
+            "w": 38,
+            "h": 17,
+            "name": "תרומה"
+          },
+          {
+            "tag": "a",
+            "w": 32,
+            "h": 17,
+            "name": "אודות"
+          },
+          {
+            "tag": "a",
+            "w": 48,
+            "h": 17,
+            "name": "צור קשר"
+          },
+          {
+            "tag": "a",
+            "w": 85,
+            "h": 17,
+            "name": "מדיניות פרטיות"
+          },
+          {
+            "tag": "a",
+            "w": 83,
+            "h": 17,
+            "name": "הצהרת נגישות"
+          }
+        ],
+        "unnamedControls": [
+          {
+            "tag": "a",
+            "type": "",
+            "cls": "inline-flex items-center justify-center "
+          }
+        ],
+        "imgsNoAlt": [],
+        "hasAuthScript": true,
+        "authBtnText": "",
+        "bodyBg": "rgb(255, 255, 255)",
+        "bodyFg": "rgb(18, 27, 43)",
+        "vercelLeak": [],
+        "scrollW": 1440,
+        "clientW": 1440
+      },
+      "mobile": {
+        "status": 200,
+        "loadMs": 5580,
+        "consoleErrors": [],
+        "failedRequests": [],
+        "screenshot": "torah-mobile.png",
+        "title": "איגוד מגידי השיעורים",
+        "lang": "he",
+        "dir": "rtl",
+        "metaDescription": "המערכת המאוחדת לאיגוד השיעורים, מועצות דתיות, ארגונים, בתי כנסת ומגידי שיעור.",
+        "metaViewport": "width=device-width, initial-scale=1.0, maximum-scale=5.0",
+        "canonical": "",
+        "ogUrl": "",
+        "h1Count": 1,
+        "h1": "איגוד מגידי השיעורים",
+        "headings": [
+          "H1: איגוד מגידי השיעורים",
+          "H3: טיפ היומי",
+          "H2: השירותים שלנו",
+          "H3: מאגר שיעורים",
+          "H3: חיפוש שיעור",
+          "H3: הצטרף כמגיד שיעור",
+          "H3: תשמישי קדושה",
+          "H3: תרומה",
+          "H3: התאמת AI",
+          "H2: מערכות נוספות מבית איגוד השיעורים",
+          "H3: תמלול שיעורי תורה",
+          "H3: יוצר מודעות AI"
+        ],
+        "textLen": 1109,
+        "interactiveCount": 24,
+        "smallTargets": [
+          {
+            "tag": "a",
+            "w": 29,
+            "h": 17,
+            "name": "ראשי"
+          },
+          {
+            "tag": "a",
+            "w": 78,
+            "h": 17,
+            "name": "מאגר שיעורים"
+          },
+          {
+            "tag": "a",
+            "w": 87,
+            "h": 17,
+            "name": "תשמישי קדושה"
+          },
+          {
+            "tag": "a",
+            "w": 38,
+            "h": 17,
+            "name": "תרומה"
+          },
+          {
+            "tag": "a",
+            "w": 32,
+            "h": 17,
+            "name": "אודות"
+          },
+          {
+            "tag": "a",
+            "w": 48,
+            "h": 17,
+            "name": "צור קשר"
+          },
+          {
+            "tag": "a",
+            "w": 85,
+            "h": 17,
+            "name": "מדיניות פרטיות"
+          },
+          {
+            "tag": "a",
+            "w": 83,
+            "h": 17,
+            "name": "הצהרת נגישות"
+          }
+        ],
+        "unnamedControls": [
+          {
+            "tag": "a",
+            "type": "",
+            "cls": "inline-flex items-center justify-center "
+          },
+          {
+            "tag": "button",
+            "type": "",
+            "cls": "inline-flex items-center justify-center "
+          }
+        ],
+        "imgsNoAlt": [],
+        "hasAuthScript": true,
+        "authBtnText": "",
+        "bodyBg": "rgb(255, 255, 255)",
+        "bodyFg": "rgb(18, 27, 43)",
+        "vercelLeak": [],
+        "scrollW": 390,
+        "clientW": 390
+      },
+      "dark": {
+        "status": 200,
+        "loadMs": 9610,
+        "consoleErrors": [],
+        "failedRequests": [
+          "GET https://netfree.link/card/index.html — net::ERR_ABORTED"
+        ],
+        "screenshot": "torah-dark.png",
+        "title": "איגוד מגידי השיעורים",
+        "lang": "he",
+        "dir": "rtl",
+        "metaDescription": "המערכת המאוחדת לאיגוד השיעורים, מועצות דתיות, ארגונים, בתי כנסת ומגידי שיעור.",
+        "metaViewport": "width=device-width, initial-scale=1.0, maximum-scale=5.0",
+        "canonical": "",
+        "ogUrl": "",
+        "h1Count": 1,
+        "h1": "איגוד מגידי השיעורים",
+        "headings": [
+          "H1: איגוד מגידי השיעורים",
+          "H3: טיפ היומי",
+          "H2: השירותים שלנו",
+          "H3: מאגר שיעורים",
+          "H3: חיפוש שיעור",
+          "H3: הצטרף כמגיד שיעור",
+          "H3: תשמישי קדושה",
+          "H3: תרומה",
+          "H3: התאמת AI",
+          "H2: מערכות נוספות מבית איגוד השיעורים",
+          "H3: תמלול שיעורי תורה",
+          "H3: יוצר מודעות AI"
+        ],
+        "textLen": 1237,
+        "interactiveCount": 30,
+        "smallTargets": [
+          {
+            "tag": "a",
+            "w": 29,
+            "h": 17,
+            "name": "ראשי"
+          },
+          {
+            "tag": "a",
+            "w": 78,
+            "h": 17,
+            "name": "מאגר שיעורים"
+          },
+          {
+            "tag": "a",
+            "w": 87,
+            "h": 17,
+            "name": "תשמישי קדושה"
+          },
+          {
+            "tag": "a",
+            "w": 38,
+            "h": 17,
+            "name": "תרומה"
+          },
+          {
+            "tag": "a",
+            "w": 32,
+            "h": 17,
+            "name": "אודות"
+          },
+          {
+            "tag": "a",
+            "w": 48,
+            "h": 17,
+            "name": "צור קשר"
+          },
+          {
+            "tag": "a",
+            "w": 85,
+            "h": 17,
+            "name": "מדיניות פרטיות"
+          },
+          {
+            "tag": "a",
+            "w": 83,
+            "h": 17,
+            "name": "הצהרת נגישות"
+          }
+        ],
+        "unnamedControls": [
+          {
+            "tag": "a",
+            "type": "",
+            "cls": "inline-flex items-center justify-center "
+          }
+        ],
+        "imgsNoAlt": [],
+        "hasAuthScript": true,
+        "authBtnText": "",
+        "bodyBg": "rgb(255, 255, 255)",
+        "bodyFg": "rgb(18, 27, 43)",
+        "vercelLeak": [],
+        "scrollW": 1440,
+        "clientW": 1440
+      },
+      "darkModeImplemented": false,
+      "horizontalOverflow": false
+    },
+    "tamlul": {
+      "key": "tamlul",
+      "sys": "02",
+      "path": "/tamlul",
+      "name": "תמלול איגוד",
+      "url": "https://more30.com/tamlul",
+      "desktop": {
+        "status": 200,
+        "loadMs": 4807,
+        "consoleErrors": [],
+        "failedRequests": [
+          "GET https://netfree.link/card/index.html — net::ERR_ABORTED"
+        ],
+        "screenshot": "tamlul-desktop.png",
+        "title": "תמלול מבית איגוד השיעורים",
+        "lang": "he",
+        "dir": "rtl",
+        "metaDescription": "מערכת תמלול מקצועית בעברית לשיעורי תורה — תמלול אוטומטי, עריכה לפי מסלולי סגנון, יצוא Word.",
+        "metaViewport": "width=device-width, initial-scale=1",
+        "canonical": "",
+        "ogUrl": "",
+        "h1Count": 1,
+        "h1": "תמלול שיעורי תורהבמקצועיות אמיתית",
+        "headings": [
+          "H1: תמלול שיעורי תורהבמקצועיות אמיתית",
+          "H3: מה תקבל בסוף?",
+          "H2: איך זה עובד?",
+          "H3: מקלידים קוד קופון",
+          "H3: מעלים את ההקלטה",
+          "H3: מקבלים 3 קבצי Word",
+          "H2: שלושה מסלולי סגנון",
+          "H2: מערכות נוספות מבית איגוד השיעורים"
+        ],
+        "textLen": 1347,
+        "interactiveCount": 8,
+        "smallTargets": [
+          {
+            "tag": "a",
+            "w": 158,
+            "h": 17,
+            "name": "a023131600@gmail.com"
+          }
+        ],
+        "unnamedControls": [],
+        "imgsNoAlt": [],
+        "hasAuthScript": true,
+        "authBtnText": "",
+        "bodyBg": "rgb(251, 250, 246)",
+        "bodyFg": "rgb(26, 26, 26)",
+        "vercelLeak": [],
+        "scrollW": 1440,
+        "clientW": 1440
+      },
+      "mobile": {
+        "status": 200,
+        "loadMs": 4639,
+        "consoleErrors": [],
+        "failedRequests": [],
+        "screenshot": "tamlul-mobile.png",
+        "title": "תמלול מבית איגוד השיעורים",
+        "lang": "he",
+        "dir": "rtl",
+        "metaDescription": "מערכת תמלול מקצועית בעברית לשיעורי תורה — תמלול אוטומטי, עריכה לפי מסלולי סגנון, יצוא Word.",
+        "metaViewport": "width=device-width, initial-scale=1",
+        "canonical": "",
+        "ogUrl": "",
+        "h1Count": 1,
+        "h1": "תמלול שיעורי תורהבמקצועיות אמיתית",
+        "headings": [
+          "H1: תמלול שיעורי תורהבמקצועיות אמיתית",
+          "H3: מה תקבל בסוף?",
+          "H2: איך זה עובד?",
+          "H3: מקלידים קוד קופון",
+          "H3: מעלים את ההקלטה",
+          "H3: מקבלים 3 קבצי Word",
+          "H2: שלושה מסלולי סגנון",
+          "H2: מערכות נוספות מבית איגוד השיעורים"
+        ],
+        "textLen": 1347,
+        "interactiveCount": 8,
+        "smallTargets": [
+          {
+            "tag": "a",
+            "w": 158,
+            "h": 17,
+            "name": "a023131600@gmail.com"
+          }
+        ],
+        "unnamedControls": [],
+        "imgsNoAlt": [],
+        "hasAuthScript": true,
+        "authBtnText": "",
+        "bodyBg": "rgb(251, 250, 246)",
+        "bodyFg": "rgb(26, 26, 26)",
+        "vercelLeak": [],
+        "scrollW": 390,
+        "clientW": 390
+      },
+      "dark": {
+        "status": 200,
+        "loadMs": 4579,
+        "consoleErrors": [],
+        "failedRequests": [],
+        "screenshot": "tamlul-dark.png",
+        "title": "תמלול מבית איגוד השיעורים",
+        "lang": "he",
+        "dir": "rtl",
+        "metaDescription": "מערכת תמלול מקצועית בעברית לשיעורי תורה — תמלול אוטומטי, עריכה לפי מסלולי סגנון, יצוא Word.",
+        "metaViewport": "width=device-width, initial-scale=1",
+        "canonical": "",
+        "ogUrl": "",
+        "h1Count": 1,
+        "h1": "תמלול שיעורי תורהבמקצועיות אמיתית",
+        "headings": [
+          "H1: תמלול שיעורי תורהבמקצועיות אמיתית",
+          "H3: מה תקבל בסוף?",
+          "H2: איך זה עובד?",
+          "H3: מקלידים קוד קופון",
+          "H3: מעלים את ההקלטה",
+          "H3: מקבלים 3 קבצי Word",
+          "H2: שלושה מסלולי סגנון",
+          "H2: מערכות נוספות מבית איגוד השיעורים"
+        ],
+        "textLen": 1347,
+        "interactiveCount": 8,
+        "smallTargets": [
+          {
+            "tag": "a",
+            "w": 158,
+            "h": 17,
+            "name": "a023131600@gmail.com"
+          }
+        ],
+        "unnamedControls": [],
+        "imgsNoAlt": [],
+        "hasAuthScript": true,
+        "authBtnText": "",
+        "bodyBg": "rgb(251, 250, 246)",
+        "bodyFg": "rgb(26, 26, 26)",
+        "vercelLeak": [],
+        "scrollW": 1440,
+        "clientW": 1440
+      },
+      "darkModeImplemented": false,
+      "horizontalOverflow": false
+    },
+    "modaot": {
+      "key": "modaot",
+      "sys": "03",
+      "path": "/modaot",
+      "name": "מודעות איגוד",
+      "url": "https://more30.com/modaot",
+      "desktop": {
+        "status": 200,
+        "loadMs": 4875,
+        "consoleErrors": [],
+        "failedRequests": [],
+        "screenshot": "modaot-desktop.png",
+        "title": "יוצר מודעות לשיעורי תורה — מבית איגוד השיעורים",
+        "lang": "he",
+        "dir": "rtl",
+        "metaDescription": "פלטפורמת AI ליצירת מודעות מקצועיות לשיעורי תורה, גמ\"ח, בית כנסת ואירועים — בעברית מלאה.",
+        "metaViewport": "width=device-width, initial-scale=1",
+        "canonical": "",
+        "ogUrl": "",
+        "h1Count": 1,
+        "h1": "מודעות מקצועיות לשיעורי תורהביצירת בינה מלאכותית",
+        "headings": [
+          "H1: מודעות מקצועיות לשיעורי תורהביצירת בינה מלאכותית",
+          "H2: איך זה עובד",
+          "H3: מזינים פרטים",
+          "H3: AI מייצר 3 ווריאציות",
+          "H3: מורידים PNG / PDF / WhatsApp",
+          "H2: מערכות נוספות מבית איגוד השיעורים"
+        ],
+        "textLen": 671,
+        "interactiveCount": 7,
+        "smallTargets": [
+          {
+            "tag": "a",
+            "w": 59,
+            "h": 20,
+            "name": "צור מודעה"
+          },
+          {
+            "tag": "a",
+            "w": 72,
+            "h": 20,
+            "name": "תמלול שיעור"
+          },
+          {
+            "tag": "a",
+            "w": 54,
+            "h": 20,
+            "name": "התחברות"
+          }
+        ],
+        "unnamedControls": [],
+        "imgsNoAlt": [],
+        "hasAuthScript": false,
+        "authBtnText": "",
+        "bodyBg": "rgb(248, 245, 236)",
+        "bodyFg": "rgb(26, 26, 26)",
+        "vercelLeak": [],
+        "scrollW": 1440,
+        "clientW": 1440
+      },
+      "mobile": {
+        "status": 200,
+        "loadMs": 4511,
+        "consoleErrors": [],
+        "failedRequests": [],
+        "screenshot": "modaot-mobile.png",
+        "title": "יוצר מודעות לשיעורי תורה — מבית איגוד השיעורים",
+        "lang": "he",
+        "dir": "rtl",
+        "metaDescription": "פלטפורמת AI ליצירת מודעות מקצועיות לשיעורי תורה, גמ\"ח, בית כנסת ואירועים — בעברית מלאה.",
+        "metaViewport": "width=device-width, initial-scale=1",
+        "canonical": "",
+        "ogUrl": "",
+        "h1Count": 1,
+        "h1": "מודעות מקצועיות לשיעורי תורהביצירת בינה מלאכותית",
+        "headings": [
+          "H1: מודעות מקצועיות לשיעורי תורהביצירת בינה מלאכותית",
+          "H2: איך זה עובד",
+          "H3: מזינים פרטים",
+          "H3: AI מייצר 3 ווריאציות",
+          "H3: מורידים PNG / PDF / WhatsApp",
+          "H2: מערכות נוספות מבית איגוד השיעורים"
+        ],
+        "textLen": 671,
+        "interactiveCount": 7,
+        "smallTargets": [
+          {
+            "tag": "a",
+            "w": 54,
+            "h": 20,
+            "name": "התחברות"
+          }
+        ],
+        "unnamedControls": [],
+        "imgsNoAlt": [],
+        "hasAuthScript": false,
+        "authBtnText": "",
+        "bodyBg": "rgb(248, 245, 236)",
+        "bodyFg": "rgb(26, 26, 26)",
+        "vercelLeak": [],
+        "scrollW": 390,
+        "clientW": 390
+      },
+      "dark": {
+        "status": 200,
+        "loadMs": 4393,
+        "consoleErrors": [],
+        "failedRequests": [],
+        "screenshot": "modaot-dark.png",
+        "title": "יוצר מודעות לשיעורי תורה — מבית איגוד השיעורים",
+        "lang": "he",
+        "dir": "rtl",
+        "metaDescription": "פלטפורמת AI ליצירת מודעות מקצועיות לשיעורי תורה, גמ\"ח, בית כנסת ואירועים — בעברית מלאה.",
+        "metaViewport": "width=device-width, initial-scale=1",
+        "canonical": "",
+        "ogUrl": "",
+        "h1Count": 1,
+        "h1": "מודעות מקצועיות לשיעורי תורהביצירת בינה מלאכותית",
+        "headings": [
+          "H1: מודעות מקצועיות לשיעורי תורהביצירת בינה מלאכותית",
+          "H2: איך זה עובד",
+          "H3: מזינים פרטים",
+          "H3: AI מייצר 3 ווריאציות",
+          "H3: מורידים PNG / PDF / WhatsApp",
+          "H2: מערכות נוספות מבית איגוד השיעורים"
+        ],
+        "textLen": 671,
+        "interactiveCount": 7,
+        "smallTargets": [
+          {
+            "tag": "a",
+            "w": 59,
+            "h": 20,
+            "name": "צור מודעה"
+          },
+          {
+            "tag": "a",
+            "w": 72,
+            "h": 20,
+            "name": "תמלול שיעור"
+          },
+          {
+            "tag": "a",
+            "w": 54,
+            "h": 20,
+            "name": "התחברות"
+          }
+        ],
+        "unnamedControls": [],
+        "imgsNoAlt": [],
+        "hasAuthScript": false,
+        "authBtnText": "",
+        "bodyBg": "rgb(248, 245, 236)",
+        "bodyFg": "rgb(26, 26, 26)",
+        "vercelLeak": [],
+        "scrollW": 1440,
+        "clientW": 1440
+      },
+      "darkModeImplemented": false,
+      "horizontalOverflow": false
+    },
+    "imud": {
+      "key": "imud",
+      "sys": "04",
+      "path": "/imud",
+      "name": "עימוד תורני",
+      "url": "https://more30.com/imud",
+      "desktop": {
+        "status": 200,
+        "loadMs": 4725,
+        "consoleErrors": [],
+        "failedRequests": [],
+        "screenshot": "imud-desktop.png",
+        "title": "אות ודף — מנוע עימוד תורני",
+        "lang": "he",
+        "dir": "rtl",
+        "metaDescription": "מערכת עימוד תורני מקצועית ללא ידע גרפי: בחר תבנית, הזן תוכן, ייצא PDF מהודר לספרי קודש.",
+        "metaViewport": "width=device-width, initial-scale=1.0, maximum-scale=1",
+        "canonical": "",
+        "ogUrl": "",
+        "h1Count": 1,
+        "h1": "עימוד תורני מקצועי — בלי גרפיקאי, בלי InDesign",
+        "headings": [
+          "H1: עימוד תורני מקצועי — בלי גרפיקאי, בלי InDesign",
+          "H3: בחר תבנית",
+          "H3: הזן תוכן",
+          "H3: תצוגה חיה",
+          "H3: ייצא PDF",
+          "H2: הספרים שלי",
+          "H3: ניסיון",
+          "H3: ספר חדש"
+        ],
+        "textLen": 598,
+        "interactiveCount": 13,
+        "smallTargets": [],
+        "unnamedControls": [
+          {
+            "tag": "button",
+            "type": "",
+            "cls": "inline-flex items-center justify-center "
+          },
+          {
+            "tag": "button",
+            "type": "",
+            "cls": "inline-flex items-center justify-center "
+          }
+        ],
+        "imgsNoAlt": [],
+        "hasAuthScript": true,
+        "authBtnText": "",
+        "bodyBg": "rgb(250, 248, 245)",
+        "bodyFg": "rgb(46, 34, 25)",
+        "vercelLeak": [],
+        "scrollW": 1440,
+        "clientW": 1440
+      },
+      "mobile": {
+        "status": 200,
+        "loadMs": 4578,
+        "consoleErrors": [],
+        "failedRequests": [],
+        "screenshot": "imud-mobile.png",
+        "title": "אות ודף — מנוע עימוד תורני",
+        "lang": "he",
+        "dir": "rtl",
+        "metaDescription": "מערכת עימוד תורני מקצועית ללא ידע גרפי: בחר תבנית, הזן תוכן, ייצא PDF מהודר לספרי קודש.",
+        "metaViewport": "width=device-width, initial-scale=1.0, maximum-scale=1",
+        "canonical": "",
+        "ogUrl": "",
+        "h1Count": 1,
+        "h1": "עימוד תורני מקצועי — בלי גרפיקאי, בלי InDesign",
+        "headings": [
+          "H1: עימוד תורני מקצועי — בלי גרפיקאי, בלי InDesign",
+          "H3: בחר תבנית",
+          "H3: הזן תוכן",
+          "H3: תצוגה חיה",
+          "H3: ייצא PDF",
+          "H2: הספרים שלי",
+          "H3: ניסיון",
+          "H3: ספר חדש"
+        ],
+        "textLen": 598,
+        "interactiveCount": 13,
+        "smallTargets": [],
+        "unnamedControls": [
+          {
+            "tag": "button",
+            "type": "",
+            "cls": "inline-flex items-center justify-center "
+          },
+          {
+            "tag": "button",
+            "type": "",
+            "cls": "inline-flex items-center justify-center "
+          }
+        ],
+        "imgsNoAlt": [],
+        "hasAuthScript": true,
+        "authBtnText": "",
+        "bodyBg": "rgb(250, 248, 245)",
+        "bodyFg": "rgb(46, 34, 25)",
+        "vercelLeak": [],
+        "scrollW": 390,
+        "clientW": 390
+      },
+      "dark": {
+        "status": 200,
+        "loadMs": 4728,
+        "consoleErrors": [],
+        "failedRequests": [],
+        "screenshot": "imud-dark.png",
+        "title": "אות ודף — מנוע עימוד תורני",
+        "lang": "he",
+        "dir": "rtl",
+        "metaDescription": "מערכת עימוד תורני מקצועית ללא ידע גרפי: בחר תבנית, הזן תוכן, ייצא PDF מהודר לספרי קודש.",
+        "metaViewport": "width=device-width, initial-scale=1.0, maximum-scale=1",
+        "canonical": "",
+        "ogUrl": "",
+        "h1Count": 1,
+        "h1": "עימוד תורני מקצועי — בלי גרפיקאי, בלי InDesign",
+        "headings": [
+          "H1: עימוד תורני מקצועי — בלי גרפיקאי, בלי InDesign",
+          "H3: בחר תבנית",
+          "H3: הזן תוכן",
+          "H3: תצוגה חיה",
+          "H3: ייצא PDF",
+          "H2: הספרים שלי",
+          "H3: ניסיון",
+          "H3: ספר חדש"
+        ],
+        "textLen": 598,
+        "interactiveCount": 13,
+        "smallTargets": [],
+        "unnamedControls": [
+          {
+            "tag": "button",
+            "type": "",
+            "cls": "inline-flex items-center justify-center "
+          },
+          {
+            "tag": "button",
+            "type": "",
+            "cls": "inline-flex items-center justify-center "
+          }
+        ],
+        "imgsNoAlt": [],
+        "hasAuthScript": true,
+        "authBtnText": "",
+        "bodyBg": "rgb(250, 248, 245)",
+        "bodyFg": "rgb(46, 34, 25)",
+        "vercelLeak": [],
+        "scrollW": 1440,
+        "clientW": 1440
+      },
+      "darkModeImplemented": false,
+      "horizontalOverflow": false
+    },
+    "briut": {
+      "key": "briut",
+      "sys": "06",
+      "path": "/briut",
+      "name": "לידים קופות חולים",
+      "url": "https://more30.com/briut",
+      "desktop": {
+        "status": 200,
+        "loadMs": 4855,
+        "consoleErrors": [],
+        "failedRequests": [],
+        "screenshot": "briut-desktop.png",
+        "title": "בקלות — השוואת קופות חולים והמלצות מעבר",
+        "lang": "he",
+        "dir": "rtl",
+        "metaDescription": "השוואה מלאה בין קופות החולים בישראל — כללית, מכבי, מאוחדת ולאומית. המלצה לאיזו קופה כדאי לעבור לפי מצב המשפחה, הבריאות והילדים, על בסיס נתוני בקלות.",
+        "metaViewport": "width=device-width, initial-scale=1.0",
+        "canonical": "",
+        "ogUrl": "",
+        "h1Count": 1,
+        "h1": "לאיזו קופת חולים כדאי לעבור?",
+        "headings": [
+          "H1: לאיזו קופת חולים כדאי לעבור?",
+          "H2: המלצה לפי מצב חיים",
+          "H3: הריון, לידה ופריון",
+          "H3: משפחה עם ילדים",
+          "H3: גיל שלישי וקשישים",
+          "H3: מחלות כרוניות ותרופות",
+          "H3: אונקולוגיה (סרטן)",
+          "H3: רפואת שיניים",
+          "H3: ראייה ואופטיקה",
+          "H3: רפואה משלימה ואורח חיים",
+          "H3: ניתוחים וטיפולים בחו\"ל",
+          "H2: טבלת השוואה מלאה"
+        ],
+        "textLen": 4873,
+        "interactiveCount": 61,
+        "smallTargets": [],
+        "unnamedControls": [],
+        "imgsNoAlt": [],
+        "hasAuthScript": true,
+        "authBtnText": "",
+        "bodyBg": "rgb(246, 248, 249)",
+        "bodyFg": "rgb(22, 35, 43)",
+        "vercelLeak": [],
+        "scrollW": 1440,
+        "clientW": 1440
+      },
+      "mobile": {
+        "status": 200,
+        "loadMs": 4415,
+        "consoleErrors": [],
+        "failedRequests": [],
+        "screenshot": "briut-mobile.png",
+        "title": "בקלות — השוואת קופות חולים והמלצות מעבר",
+        "lang": "he",
+        "dir": "rtl",
+        "metaDescription": "השוואה מלאה בין קופות החולים בישראל — כללית, מכבי, מאוחדת ולאומית. המלצה לאיזו קופה כדאי לעבור לפי מצב המשפחה, הבריאות והילדים, על בסיס נתוני בקלות.",
+        "metaViewport": "width=device-width, initial-scale=1.0",
+        "canonical": "",
+        "ogUrl": "",
+        "h1Count": 1,
+        "h1": "לאיזו קופת חולים כדאי לעבור?",
+        "headings": [
+          "H1: לאיזו קופת חולים כדאי לעבור?",
+          "H2: המלצה לפי מצב חיים",
+          "H3: הריון, לידה ופריון",
+          "H3: משפחה עם ילדים",
+          "H3: גיל שלישי וקשישים",
+          "H3: מחלות כרוניות ותרופות",
+          "H3: אונקולוגיה (סרטן)",
+          "H3: רפואת שיניים",
+          "H3: ראייה ואופטיקה",
+          "H3: רפואה משלימה ואורח חיים",
+          "H3: ניתוחים וטיפולים בחו\"ל",
+          "H2: טבלת השוואה מלאה"
+        ],
+        "textLen": 4841,
+        "interactiveCount": 58,
+        "smallTargets": [],
+        "unnamedControls": [],
+        "imgsNoAlt": [],
+        "hasAuthScript": true,
+        "authBtnText": "",
+        "bodyBg": "rgb(246, 248, 249)",
+        "bodyFg": "rgb(22, 35, 43)",
+        "vercelLeak": [],
+        "scrollW": 390,
+        "clientW": 390
+      },
+      "dark": {
+        "status": 200,
+        "loadMs": 4447,
+        "consoleErrors": [],
+        "failedRequests": [],
+        "screenshot": "briut-dark.png",
+        "title": "בקלות — השוואת קופות חולים והמלצות מעבר",
+        "lang": "he",
+        "dir": "rtl",
+        "metaDescription": "השוואה מלאה בין קופות החולים בישראל — כללית, מכבי, מאוחדת ולאומית. המלצה לאיזו קופה כדאי לעבור לפי מצב המשפחה, הבריאות והילדים, על בסיס נתוני בקלות.",
+        "metaViewport": "width=device-width, initial-scale=1.0",
+        "canonical": "",
+        "ogUrl": "",
+        "h1Count": 1,
+        "h1": "לאיזו קופת חולים כדאי לעבור?",
+        "headings": [
+          "H1: לאיזו קופת חולים כדאי לעבור?",
+          "H2: המלצה לפי מצב חיים",
+          "H3: הריון, לידה ופריון",
+          "H3: משפחה עם ילדים",
+          "H3: גיל שלישי וקשישים",
+          "H3: מחלות כרוניות ותרופות",
+          "H3: אונקולוגיה (סרטן)",
+          "H3: רפואת שיניים",
+          "H3: ראייה ואופטיקה",
+          "H3: רפואה משלימה ואורח חיים",
+          "H3: ניתוחים וטיפולים בחו\"ל",
+          "H2: טבלת השוואה מלאה"
+        ],
+        "textLen": 4873,
+        "interactiveCount": 61,
+        "smallTargets": [],
+        "unnamedControls": [],
+        "imgsNoAlt": [],
+        "hasAuthScript": true,
+        "authBtnText": "",
+        "bodyBg": "rgb(246, 248, 249)",
+        "bodyFg": "rgb(22, 35, 43)",
+        "vercelLeak": [],
+        "scrollW": 1440,
+        "clientW": 1440
+      },
+      "darkModeImplemented": false,
+      "horizontalOverflow": false
+    },
+    "bkalot": {
+      "key": "bkalot",
+      "sys": "10",
+      "path": "/bkalot",
+      "name": "מימוש זכויות בקלות",
+      "url": "https://more30.com/bkalot",
+      "desktop": {
+        "status": 200,
+        "loadMs": 5084,
+        "consoleErrors": [],
+        "failedRequests": [],
+        "screenshot": "bkalot-desktop.png",
+        "title": "בדיקה מקיפה על כל הזכויות וההטבות שניתן לקבל",
+        "lang": "he",
+        "dir": "rtl",
+        "metaDescription": "",
+        "metaViewport": "width=device-width, initial-scale=1.0",
+        "canonical": "",
+        "ogUrl": "",
+        "h1Count": 1,
+        "h1": "בדיקה מקיפה על כל הזכויותוההטבות שניתן לקבל",
+        "headings": [
+          "H1: בדיקה מקיפה על כל הזכויותוההטבות שניתן לקבל",
+          "H2: איך זה עובד",
+          "H3: ממלאים שאלון",
+          "H3: המערכת מנתחת",
+          "H3: מקבלים רשימה מדורגת",
+          "H2: השאלון",
+          "H2: חומרים להורדה",
+          "H3: מדריך זכויות והטבות לפי מצב חיים",
+          "H3: שאלון אבחון זכויות והטבות",
+          "H3: מצגות לפי מצב חיים (25 מצגות)",
+          "H3: מצבי חיים כלליים (14)",
+          "H3: מצבים מיוחדים (10)"
+        ],
+        "textLen": 3065,
+        "interactiveCount": 45,
+        "smallTargets": [],
+        "unnamedControls": [
+          {
+            "tag": "select",
+            "type": "",
+            "cls": "fund-select"
+          }
+        ],
+        "imgsNoAlt": [],
+        "hasAuthScript": true,
+        "authBtnText": "",
+        "bodyBg": "rgb(247, 246, 242)",
+        "bodyFg": "rgb(35, 33, 28)",
+        "vercelLeak": [],
+        "scrollW": 1440,
+        "clientW": 1440
+      },
+      "mobile": {
+        "status": 200,
+        "loadMs": 4509,
+        "consoleErrors": [],
+        "failedRequests": [],
+        "screenshot": "bkalot-mobile.png",
+        "title": "בדיקה מקיפה על כל הזכויות וההטבות שניתן לקבל",
+        "lang": "he",
+        "dir": "rtl",
+        "metaDescription": "",
+        "metaViewport": "width=device-width, initial-scale=1.0",
+        "canonical": "",
+        "ogUrl": "",
+        "h1Count": 1,
+        "h1": "בדיקה מקיפה על כל הזכויותוההטבות שניתן לקבל",
+        "headings": [
+          "H1: בדיקה מקיפה על כל הזכויותוההטבות שניתן לקבל",
+          "H2: איך זה עובד",
+          "H3: ממלאים שאלון",
+          "H3: המערכת מנתחת",
+          "H3: מקבלים רשימה מדורגת",
+          "H2: השאלון",
+          "H2: חומרים להורדה",
+          "H3: מדריך זכויות והטבות לפי מצב חיים",
+          "H3: שאלון אבחון זכויות והטבות",
+          "H3: מצגות לפי מצב חיים (25 מצגות)",
+          "H3: מצבי חיים כלליים (14)",
+          "H3: מצבים מיוחדים (10)"
+        ],
+        "textLen": 2996,
+        "interactiveCount": 38,
+        "smallTargets": [],
+        "unnamedControls": [
+          {
+            "tag": "select",
+            "type": "",
+            "cls": "fund-select"
+          }
+        ],
+        "imgsNoAlt": [],
+        "hasAuthScript": true,
+        "authBtnText": "",
+        "bodyBg": "rgb(247, 246, 242)",
+        "bodyFg": "rgb(35, 33, 28)",
+        "vercelLeak": [],
+        "scrollW": 390,
+        "clientW": 390
+      },
+      "dark": {
+        "status": 200,
+        "loadMs": 4594,
+        "consoleErrors": [],
+        "failedRequests": [],
+        "screenshot": "bkalot-dark.png",
+        "title": "בדיקה מקיפה על כל הזכויות וההטבות שניתן לקבל",
+        "lang": "he",
+        "dir": "rtl",
+        "metaDescription": "",
+        "metaViewport": "width=device-width, initial-scale=1.0",
+        "canonical": "",
+        "ogUrl": "",
+        "h1Count": 1,
+        "h1": "בדיקה מקיפה על כל הזכויותוההטבות שניתן לקבל",
+        "headings": [
+          "H1: בדיקה מקיפה על כל הזכויותוההטבות שניתן לקבל",
+          "H2: איך זה עובד",
+          "H3: ממלאים שאלון",
+          "H3: המערכת מנתחת",
+          "H3: מקבלים רשימה מדורגת",
+          "H2: השאלון",
+          "H2: חומרים להורדה",
+          "H3: מדריך זכויות והטבות לפי מצב חיים",
+          "H3: שאלון אבחון זכויות והטבות",
+          "H3: מצגות לפי מצב חיים (25 מצגות)",
+          "H3: מצבי חיים כלליים (14)",
+          "H3: מצבים מיוחדים (10)"
+        ],
+        "textLen": 3065,
+        "interactiveCount": 45,
+        "smallTargets": [],
+        "unnamedControls": [
+          {
+            "tag": "select",
+            "type": "",
+            "cls": "fund-select"
+          }
+        ],
+        "imgsNoAlt": [],
+        "hasAuthScript": true,
+        "authBtnText": "",
+        "bodyBg": "rgb(247, 246, 242)",
+        "bodyFg": "rgb(35, 33, 28)",
+        "vercelLeak": [],
+        "scrollW": 1440,
+        "clientW": 1440
+      },
+      "darkModeImplemented": false,
+      "horizontalOverflow": false
+    },
+    "smel": {
+      "key": "smel",
+      "sys": "12",
+      "path": "/smel",
+      "name": "נדל\"ן Smel",
+      "url": "https://more30.com/smel",
+      "desktop": {
+        "status": 200,
+        "loadMs": 4587,
+        "consoleErrors": [],
+        "failedRequests": [],
+        "screenshot": "smel-desktop.png",
+        "title": "SMEL NDLN — מחקר נדל\"ן חכם",
+        "lang": "he",
+        "dir": "rtl",
+        "metaDescription": "SMEL NDLN — מערכת מחקר נדלן חכם המבוססת על נתוני ממשלה רשמיים. הזינו כתובת וקבלו הערכת שווי, ציון כדאיות ותובנות על השכונה.",
+        "metaViewport": "width=device-width, initial-scale=1.0, maximum-scale=1",
+        "canonical": "",
+        "ogUrl": "",
+        "h1Count": 1,
+        "h1": "כל מה שצריך לדעת על הנכס לפני שקונים",
+        "headings": [
+          "H1: כל מה שצריך לדעת על הנכס לפני שקונים",
+          "H2: איך זה עובד",
+          "H3: הזינו כתובת",
+          "H3: מנוע המחקר עובד",
+          "H3: מקבלים דוח חכם",
+          "H2: בחרו את רמת המחקר"
+        ],
+        "textLen": 1166,
+        "interactiveCount": 9,
+        "smallTargets": [],
+        "unnamedControls": [],
+        "imgsNoAlt": [],
+        "hasAuthScript": true,
+        "authBtnText": "",
+        "bodyBg": "rgb(251, 250, 248)",
+        "bodyFg": "rgb(21, 34, 55)",
+        "vercelLeak": [],
+        "scrollW": 1440,
+        "clientW": 1440
+      },
+      "mobile": {
+        "status": 200,
+        "loadMs": 4559,
+        "consoleErrors": [],
+        "failedRequests": [],
+        "screenshot": "smel-mobile.png",
+        "title": "SMEL NDLN — מחקר נדל\"ן חכם",
+        "lang": "he",
+        "dir": "rtl",
+        "metaDescription": "SMEL NDLN — מערכת מחקר נדלן חכם המבוססת על נתוני ממשלה רשמיים. הזינו כתובת וקבלו הערכת שווי, ציון כדאיות ותובנות על השכונה.",
+        "metaViewport": "width=device-width, initial-scale=1.0, maximum-scale=1",
+        "canonical": "",
+        "ogUrl": "",
+        "h1Count": 1,
+        "h1": "כל מה שצריך לדעת על הנכס לפני שקונים",
+        "headings": [
+          "H1: כל מה שצריך לדעת על הנכס לפני שקונים",
+          "H2: איך זה עובד",
+          "H3: הזינו כתובת",
+          "H3: מנוע המחקר עובד",
+          "H3: מקבלים דוח חכם",
+          "H2: בחרו את רמת המחקר"
+        ],
+        "textLen": 1158,
+        "interactiveCount": 7,
+        "smallTargets": [],
+        "unnamedControls": [],
+        "imgsNoAlt": [],
+        "hasAuthScript": true,
+        "authBtnText": "",
+        "bodyBg": "rgb(251, 250, 248)",
+        "bodyFg": "rgb(21, 34, 55)",
+        "vercelLeak": [],
+        "scrollW": 390,
+        "clientW": 390
+      },
+      "dark": {
+        "status": 200,
+        "loadMs": 4329,
+        "consoleErrors": [],
+        "failedRequests": [],
+        "screenshot": "smel-dark.png",
+        "title": "SMEL NDLN — מחקר נדל\"ן חכם",
+        "lang": "he",
+        "dir": "rtl",
+        "metaDescription": "SMEL NDLN — מערכת מחקר נדלן חכם המבוססת על נתוני ממשלה רשמיים. הזינו כתובת וקבלו הערכת שווי, ציון כדאיות ותובנות על השכונה.",
+        "metaViewport": "width=device-width, initial-scale=1.0, maximum-scale=1",
+        "canonical": "",
+        "ogUrl": "",
+        "h1Count": 1,
+        "h1": "כל מה שצריך לדעת על הנכס לפני שקונים",
+        "headings": [
+          "H1: כל מה שצריך לדעת על הנכס לפני שקונים",
+          "H2: איך זה עובד",
+          "H3: הזינו כתובת",
+          "H3: מנוע המחקר עובד",
+          "H3: מקבלים דוח חכם",
+          "H2: בחרו את רמת המחקר"
+        ],
+        "textLen": 1166,
+        "interactiveCount": 9,
+        "smallTargets": [],
+        "unnamedControls": [],
+        "imgsNoAlt": [],
+        "hasAuthScript": true,
+        "authBtnText": "",
+        "bodyBg": "rgb(13, 20, 33)",
+        "bodyFg": "rgb(244, 241, 235)",
+        "vercelLeak": [],
+        "scrollW": 1440,
+        "clientW": 1440
+      },
+      "darkModeImplemented": true,
+      "horizontalOverflow": false
+    },
+    "smachot": {
+      "key": "smachot",
+      "sys": "14",
+      "path": "/smachot",
+      "name": "שמחות פלוס",
+      "url": "https://more30.com/smachot",
+      "desktop": {
+        "status": 200,
+        "loadMs": 4513,
+        "consoleErrors": [],
+        "failedRequests": [],
+        "screenshot": "smachot-desktop.png",
+        "title": "שמחות פלוס — תוכנית עסקית",
+        "lang": "he",
+        "dir": "rtl",
+        "metaDescription": "תוכנית עסקית מורחבת, ניתוח שוק, מיפוי אולמות ומצגת — שמחות פלוס",
+        "metaViewport": "width=device-width, initial-scale=1.0",
+        "canonical": "",
+        "ogUrl": "",
+        "h1Count": 1,
+        "h1": "מבוא",
+        "headings": [
+          "H1: מבוא",
+          "H2: מבוא",
+          "H2: הופק: 18/06/2026 | גרסה 1.0",
+          "H2: תוכן עניינים"
+        ],
+        "textLen": 1448,
+        "interactiveCount": 19,
+        "smallTargets": [
+          {
+            "tag": "a",
+            "w": 232,
+            "h": 20,
+            "name": "מאגר GitHub"
+          }
+        ],
+        "unnamedControls": [],
+        "imgsNoAlt": [],
+        "hasAuthScript": true,
+        "authBtnText": "",
+        "bodyBg": "rgb(244, 246, 246)",
+        "bodyFg": "rgb(20, 40, 43)",
+        "vercelLeak": [],
+        "scrollW": 1440,
+        "clientW": 1440
+      },
+      "mobile": {
+        "status": 200,
+        "loadMs": 4574,
+        "consoleErrors": [],
+        "failedRequests": [],
+        "screenshot": "smachot-mobile.png",
+        "title": "שמחות פלוס — תוכנית עסקית",
+        "lang": "he",
+        "dir": "rtl",
+        "metaDescription": "תוכנית עסקית מורחבת, ניתוח שוק, מיפוי אולמות ומצגת — שמחות פלוס",
+        "metaViewport": "width=device-width, initial-scale=1.0",
+        "canonical": "",
+        "ogUrl": "",
+        "h1Count": 1,
+        "h1": "מבוא",
+        "headings": [
+          "H1: מבוא",
+          "H2: מבוא",
+          "H2: הופק: 18/06/2026 | גרסה 1.0",
+          "H2: תוכן עניינים"
+        ],
+        "textLen": 1448,
+        "interactiveCount": 20,
+        "smallTargets": [
+          {
+            "tag": "a",
+            "w": 232,
+            "h": 20,
+            "name": "מאגר GitHub"
+          }
+        ],
+        "unnamedControls": [],
+        "imgsNoAlt": [],
+        "hasAuthScript": true,
+        "authBtnText": "",
+        "bodyBg": "rgb(244, 246, 246)",
+        "bodyFg": "rgb(20, 40, 43)",
+        "vercelLeak": [],
+        "scrollW": 390,
+        "clientW": 390
+      },
+      "dark": {
+        "status": 200,
+        "loadMs": 4466,
+        "consoleErrors": [],
+        "failedRequests": [],
+        "screenshot": "smachot-dark.png",
+        "title": "שמחות פלוס — תוכנית עסקית",
+        "lang": "he",
+        "dir": "rtl",
+        "metaDescription": "תוכנית עסקית מורחבת, ניתוח שוק, מיפוי אולמות ומצגת — שמחות פלוס",
+        "metaViewport": "width=device-width, initial-scale=1.0",
+        "canonical": "",
+        "ogUrl": "",
+        "h1Count": 1,
+        "h1": "מבוא",
+        "headings": [
+          "H1: מבוא",
+          "H2: מבוא",
+          "H2: הופק: 18/06/2026 | גרסה 1.0",
+          "H2: תוכן עניינים"
+        ],
+        "textLen": 1448,
+        "interactiveCount": 19,
+        "smallTargets": [
+          {
+            "tag": "a",
+            "w": 232,
+            "h": 20,
+            "name": "מאגר GitHub"
+          }
+        ],
+        "unnamedControls": [],
+        "imgsNoAlt": [],
+        "hasAuthScript": true,
+        "authBtnText": "",
+        "bodyBg": "rgb(10, 33, 37)",
+        "bodyFg": "rgb(238, 245, 245)",
+        "vercelLeak": [],
+        "scrollW": 1440,
+        "clientW": 1440
+      },
+      "darkModeImplemented": true,
+      "horizontalOverflow": false
+    },
+    "egod": {
+      "key": "egod",
+      "sys": "15",
+      "path": "/egod",
+      "name": "איגוד",
+      "url": "https://more30.com/egod",
+      "desktop": {
+        "status": 200,
+        "loadMs": 4913,
+        "consoleErrors": [],
+        "failedRequests": [],
+        "screenshot": "egod-desktop.png",
+        "title": "איגוד השיעורים – פורטל מגידי השיעורים",
+        "lang": "he",
+        "dir": "rtl",
+        "metaDescription": "פלטפורמה דיגיטלית מקיפה לכל מגיד שיעור – כלים, מעטפת וקהילה תחת קורת גג אחת.",
+        "metaViewport": "width=device-width, initial-scale=1.0",
+        "canonical": "",
+        "ogUrl": "",
+        "h1Count": 1,
+        "h1": "כל הכלים למגיד השיעורתחת קורת גג אחת",
+        "headings": [
+          "H1: כל הכלים למגיד השיעורתחת קורת גג אחת",
+          "H2: למה להצטרף לאיגוד השיעורים?",
+          "H3: דף ציבורי אישי",
+          "H3: ניהול שיעורים מלא",
+          "H3: בתי כנסת וזמני תפילות",
+          "H3: לוח הספק לימודי חכם",
+          "H3: ניהול משתתפים ונוכחות",
+          "H3: פורומים מקצועיים",
+          "H3: חומרי עזר מעוצבים",
+          "H3: כלים לשיווק השיעור",
+          "H3: מחלקת גרפיקה",
+          "H3: חיבור לוואטסאפ ומייל"
+        ],
+        "textLen": 2459,
+        "interactiveCount": 32,
+        "smallTargets": [
+          {
+            "tag": "button",
+            "w": 24,
+            "h": 6,
+            "name": ""
+          },
+          {
+            "tag": "button",
+            "w": 6,
+            "h": 6,
+            "name": ""
+          },
+          {
+            "tag": "button",
+            "w": 6,
+            "h": 6,
+            "name": ""
+          },
+          {
+            "tag": "button",
+            "w": 6,
+            "h": 6,
+            "name": ""
+          },
+          {
+            "tag": "button",
+            "w": 6,
+            "h": 6,
+            "name": ""
+          },
+          {
+            "tag": "button",
+            "w": 6,
+            "h": 6,
+            "name": ""
+          },
+          {
+            "tag": "button",
+            "w": 6,
+            "h": 6,
+            "name": ""
+          },
+          {
+            "tag": "button",
+            "w": 6,
+            "h": 6,
+            "name": ""
+          },
+          {
+            "tag": "a",
+            "w": 318,
+            "h": 20,
+            "name": "דף הבית"
+          },
+          {
+            "tag": "a",
+            "w": 318,
+            "h": 20,
+            "name": "מצא שיעור"
+          },
+          {
+            "tag": "a",
+            "w": 318,
+            "h": 20,
+            "name": "הקם שיעור"
+          },
+          {
+            "tag": "a",
+            "w": 318,
+            "h": 20,
+            "name": "אודות"
+          },
+          {
+            "tag": "a",
+            "w": 318,
+            "h": 20,
+            "name": "הצטרף לאיגוד"
+          },
+          {
+            "tag": "a",
+            "w": 318,
+            "h": 20,
+            "name": "הפעלת פורטל חדש"
+          },
+          {
+            "tag": "a",
+            "w": 318,
+            "h": 20,
+            "name": "כניסה לפורטל"
+          },
+          {
+            "tag": "a",
+            "w": 318,
+            "h": 20,
+            "name": "02-3131600"
+          },
+          {
+            "tag": "a",
+            "w": 318,
+            "h": 20,
+            "name": "WhatsApp 02-3131600"
+          },
+          {
+            "tag": "a",
+            "w": 318,
+            "h": 20,
+            "name": "a023131600@gmail.com"
+          }
+        ],
+        "unnamedControls": [
+          {
+            "tag": "button",
+            "type": "",
+            "cls": "w-10 h-10 rounded-full bg-card border bo"
+          },
+          {
+            "tag": "button",
+            "type": "",
+            "cls": "h-1.5 rounded-full transition-all w-6 bg"
+          },
+          {
+            "tag": "button",
+            "type": "",
+            "cls": "h-1.5 rounded-full transition-all w-1.5 "
+          },
+          {
+            "tag": "button",
+            "type": "",
+            "cls": "h-1.5 rounded-full transition-all w-1.5 "
+          },
+          {
+            "tag": "button",
+            "type": "",
+            "cls": "h-1.5 rounded-full transition-all w-1.5 "
+          },
+          {
+            "tag": "button",
+            "type": "",
+            "cls": "h-1.5 rounded-full transition-all w-1.5 "
+          },
+          {
+            "tag": "button",
+            "type": "",
+            "cls": "h-1.5 rounded-full transition-all w-1.5 "
+          },
+          {
+            "tag": "button",
+            "type": "",
+            "cls": "h-1.5 rounded-full transition-all w-1.5 "
+          },
+          {
+            "tag": "button",
+            "type": "",
+            "cls": "h-1.5 rounded-full transition-all w-1.5 "
+          },
+          {
+            "tag": "button",
+            "type": "",
+            "cls": "w-10 h-10 rounded-full bg-card border bo"
+          }
+        ],
+        "imgsNoAlt": [],
+        "hasAuthScript": true,
+        "authBtnText": "",
+        "bodyBg": "rgb(245, 246, 250)",
+        "bodyFg": "rgb(27, 44, 90)",
+        "vercelLeak": [],
+        "scrollW": 1440,
+        "clientW": 1440
+      },
+      "mobile": {
+        "status": 200,
+        "loadMs": 5280,
+        "consoleErrors": [],
+        "failedRequests": [],
+        "screenshot": "egod-mobile.png",
+        "title": "איגוד השיעורים – פורטל מגידי השיעורים",
+        "lang": "he",
+        "dir": "rtl",
+        "metaDescription": "פלטפורמה דיגיטלית מקיפה לכל מגיד שיעור – כלים, מעטפת וקהילה תחת קורת גג אחת.",
+        "metaViewport": "width=device-width, initial-scale=1.0",
+        "canonical": "",
+        "ogUrl": "",
+        "h1Count": 1,
+        "h1": "כל הכלים למגיד השיעורתחת קורת גג אחת",
+        "headings": [
+          "H1: כל הכלים למגיד השיעורתחת קורת גג אחת",
+          "H2: למה להצטרף לאיגוד השיעורים?",
+          "H3: דף ציבורי אישי",
+          "H3: ניהול שיעורים מלא",
+          "H3: בתי כנסת וזמני תפילות",
+          "H3: לוח הספק לימודי חכם",
+          "H3: ניהול משתתפים ונוכחות",
+          "H3: פורומים מקצועיים",
+          "H3: חומרי עזר מעוצבים",
+          "H3: כלים לשיווק השיעור",
+          "H3: מחלקת גרפיקה",
+          "H3: חיבור לוואטסאפ ומייל"
+        ],
+        "textLen": 2376,
+        "interactiveCount": 25,
+        "smallTargets": [
+          {
+            "tag": "button",
+            "w": 24,
+            "h": 6,
+            "name": ""
+          },
+          {
+            "tag": "button",
+            "w": 6,
+            "h": 6,
+            "name": ""
+          },
+          {
+            "tag": "button",
+            "w": 6,
+            "h": 6,
+            "name": ""
+          },
+          {
+            "tag": "button",
+            "w": 6,
+            "h": 6,
+            "name": ""
+          },
+          {
+            "tag": "button",
+            "w": 6,
+            "h": 6,
+            "name": ""
+          },
+          {
+            "tag": "button",
+            "w": 6,
+            "h": 6,
+            "name": ""
+          },
+          {
+            "tag": "button",
+            "w": 6,
+            "h": 6,
+            "name": ""
+          },
+          {
+            "tag": "button",
+            "w": 6,
+            "h": 6,
+            "name": ""
+          },
+          {
+            "tag": "a",
+            "w": 358,
+            "h": 20,
+            "name": "דף הבית"
+          },
+          {
+            "tag": "a",
+            "w": 358,
+            "h": 20,
+            "name": "מצא שיעור"
+          },
+          {
+            "tag": "a",
+            "w": 358,
+            "h": 20,
+            "name": "הקם שיעור"
+          },
+          {
+            "tag": "a",
+            "w": 358,
+            "h": 20,
+            "name": "אודות"
+          },
+          {
+            "tag": "a",
+            "w": 358,
+            "h": 20,
+            "name": "הצטרף לאיגוד"
+          },
+          {
+            "tag": "a",
+            "w": 358,
+            "h": 20,
+            "name": "הפעלת פורטל חדש"
+          },
+          {
+            "tag": "a",
+            "w": 358,
+            "h": 20,
+            "name": "כניסה לפורטל"
+          },
+          {
+            "tag": "a",
+            "w": 358,
+            "h": 20,
+            "name": "02-3131600"
+          },
+          {
+            "tag": "a",
+            "w": 358,
+            "h": 20,
+            "name": "WhatsApp 02-3131600"
+          },
+          {
+            "tag": "a",
+            "w": 358,
+            "h": 20,
+            "name": "a023131600@gmail.com"
+          }
+        ],
+        "unnamedControls": [
+          {
+            "tag": "button",
+            "type": "",
+            "cls": "md:hidden text-primary-foreground p-2"
+          },
+          {
+            "tag": "button",
+            "type": "",
+            "cls": "w-10 h-10 rounded-full bg-card border bo"
+          },
+          {
+            "tag": "button",
+            "type": "",
+            "cls": "h-1.5 rounded-full transition-all w-6 bg"
+          },
+          {
+            "tag": "button",
+            "type": "",
+            "cls": "h-1.5 rounded-full transition-all w-1.5 "
+          },
+          {
+            "tag": "button",
+            "type": "",
+            "cls": "h-1.5 rounded-full transition-all w-1.5 "
+          },
+          {
+            "tag": "button",
+            "type": "",
+            "cls": "h-1.5 rounded-full transition-all w-1.5 "
+          },
+          {
+            "tag": "button",
+            "type": "",
+            "cls": "h-1.5 rounded-full transition-all w-1.5 "
+          },
+          {
+            "tag": "button",
+            "type": "",
+            "cls": "h-1.5 rounded-full transition-all w-1.5 "
+          },
+          {
+            "tag": "button",
+            "type": "",
+            "cls": "h-1.5 rounded-full transition-all w-1.5 "
+          },
+          {
+            "tag": "button",
+            "type": "",
+            "cls": "h-1.5 rounded-full transition-all w-1.5 "
+          },
+          {
+            "tag": "button",
+            "type": "",
+            "cls": "w-10 h-10 rounded-full bg-card border bo"
+          }
+        ],
+        "imgsNoAlt": [],
+        "hasAuthScript": true,
+        "authBtnText": "",
+        "bodyBg": "rgb(245, 246, 250)",
+        "bodyFg": "rgb(27, 44, 90)",
+        "vercelLeak": [],
+        "scrollW": 390,
+        "clientW": 390
+      },
+      "dark": {
+        "status": 200,
+        "loadMs": 4801,
+        "consoleErrors": [],
+        "failedRequests": [],
+        "screenshot": "egod-dark.png",
+        "title": "איגוד השיעורים – פורטל מגידי השיעורים",
+        "lang": "he",
+        "dir": "rtl",
+        "metaDescription": "פלטפורמה דיגיטלית מקיפה לכל מגיד שיעור – כלים, מעטפת וקהילה תחת קורת גג אחת.",
+        "metaViewport": "width=device-width, initial-scale=1.0",
+        "canonical": "",
+        "ogUrl": "",
+        "h1Count": 1,
+        "h1": "כל הכלים למגיד השיעורתחת קורת גג אחת",
+        "headings": [
+          "H1: כל הכלים למגיד השיעורתחת קורת גג אחת",
+          "H2: למה להצטרף לאיגוד השיעורים?",
+          "H3: דף ציבורי אישי",
+          "H3: ניהול שיעורים מלא",
+          "H3: בתי כנסת וזמני תפילות",
+          "H3: לוח הספק לימודי חכם",
+          "H3: ניהול משתתפים ונוכחות",
+          "H3: פורומים מקצועיים",
+          "H3: חומרי עזר מעוצבים",
+          "H3: כלים לשיווק השיעור",
+          "H3: מחלקת גרפיקה",
+          "H3: חיבור לוואטסאפ ומייל"
+        ],
+        "textLen": 2459,
+        "interactiveCount": 32,
+        "smallTargets": [
+          {
+            "tag": "button",
+            "w": 24,
+            "h": 6,
+            "name": ""
+          },
+          {
+            "tag": "button",
+            "w": 6,
+            "h": 6,
+            "name": ""
+          },
+          {
+            "tag": "button",
+            "w": 6,
+            "h": 6,
+            "name": ""
+          },
+          {
+            "tag": "button",
+            "w": 6,
+            "h": 6,
+            "name": ""
+          },
+          {
+            "tag": "button",
+            "w": 6,
+            "h": 6,
+            "name": ""
+          },
+          {
+            "tag": "button",
+            "w": 6,
+            "h": 6,
+            "name": ""
+          },
+          {
+            "tag": "button",
+            "w": 6,
+            "h": 6,
+            "name": ""
+          },
+          {
+            "tag": "button",
+            "w": 6,
+            "h": 6,
+            "name": ""
+          },
+          {
+            "tag": "a",
+            "w": 318,
+            "h": 20,
+            "name": "דף הבית"
+          },
+          {
+            "tag": "a",
+            "w": 318,
+            "h": 20,
+            "name": "מצא שיעור"
+          },
+          {
+            "tag": "a",
+            "w": 318,
+            "h": 20,
+            "name": "הקם שיעור"
+          },
+          {
+            "tag": "a",
+            "w": 318,
+            "h": 20,
+            "name": "אודות"
+          },
+          {
+            "tag": "a",
+            "w": 318,
+            "h": 20,
+            "name": "הצטרף לאיגוד"
+          },
+          {
+            "tag": "a",
+            "w": 318,
+            "h": 20,
+            "name": "הפעלת פורטל חדש"
+          },
+          {
+            "tag": "a",
+            "w": 318,
+            "h": 20,
+            "name": "כניסה לפורטל"
+          },
+          {
+            "tag": "a",
+            "w": 318,
+            "h": 20,
+            "name": "02-3131600"
+          },
+          {
+            "tag": "a",
+            "w": 318,
+            "h": 20,
+            "name": "WhatsApp 02-3131600"
+          },
+          {
+            "tag": "a",
+            "w": 318,
+            "h": 20,
+            "name": "a023131600@gmail.com"
+          }
+        ],
+        "unnamedControls": [
+          {
+            "tag": "button",
+            "type": "",
+            "cls": "w-10 h-10 rounded-full bg-card border bo"
+          },
+          {
+            "tag": "button",
+            "type": "",
+            "cls": "h-1.5 rounded-full transition-all w-6 bg"
+          },
+          {
+            "tag": "button",
+            "type": "",
+            "cls": "h-1.5 rounded-full transition-all w-1.5 "
+          },
+          {
+            "tag": "button",
+            "type": "",
+            "cls": "h-1.5 rounded-full transition-all w-1.5 "
+          },
+          {
+            "tag": "button",
+            "type": "",
+            "cls": "h-1.5 rounded-full transition-all w-1.5 "
+          },
+          {
+            "tag": "button",
+            "type": "",
+            "cls": "h-1.5 rounded-full transition-all w-1.5 "
+          },
+          {
+            "tag": "button",
+            "type": "",
+            "cls": "h-1.5 rounded-full transition-all w-1.5 "
+          },
+          {
+            "tag": "button",
+            "type": "",
+            "cls": "h-1.5 rounded-full transition-all w-1.5 "
+          },
+          {
+            "tag": "button",
+            "type": "",
+            "cls": "h-1.5 rounded-full transition-all w-1.5 "
+          },
+          {
+            "tag": "button",
+            "type": "",
+            "cls": "w-10 h-10 rounded-full bg-card border bo"
+          }
+        ],
+        "imgsNoAlt": [],
+        "hasAuthScript": true,
+        "authBtnText": "",
+        "bodyBg": "rgb(245, 246, 250)",
+        "bodyFg": "rgb(27, 44, 90)",
+        "vercelLeak": [],
+        "scrollW": 1440,
+        "clientW": 1440
+      },
+      "darkModeImplemented": false,
+      "horizontalOverflow": false
+    },
+    "chatzor": {
+      "key": "chatzor",
+      "sys": "16",
+      "path": "/chatzor",
+      "name": "חצור קונקט — תדמית",
+      "url": "https://more30.com/chatzor",
+      "desktop": {
+        "status": 200,
+        "loadMs": 4216,
+        "consoleErrors": [],
+        "failedRequests": [],
+        "screenshot": "chatzor-desktop.png",
+        "title": "חצור קונקט · מור מערכות תוכנה",
+        "lang": "he",
+        "dir": "rtl",
+        "metaDescription": "עמוד השירות — מה המערכת עושה, איך היא עובדת, והמסלולים.",
+        "metaViewport": "width=device-width, initial-scale=1.0",
+        "canonical": "",
+        "ogUrl": "",
+        "h1Count": 2,
+        "h1": "חצור קונקט",
+        "headings": [
+          "H1: חצור קונקט",
+          "H2: מה השירות עושה",
+          "H2: מה יש במערכת",
+          "H2: מסלולים",
+          "H3: חינמי",
+          "H3: פרימיום",
+          "H2: מתחילים"
+        ],
+        "textLen": 927,
+        "interactiveCount": 8,
+        "smallTargets": [
+          {
+            "tag": "a",
+            "w": 97,
+            "h": 19,
+            "name": "מור מערכות תוכנה"
+          }
+        ],
+        "unnamedControls": [],
+        "imgsNoAlt": [],
+        "hasAuthScript": true,
+        "authBtnText": "",
+        "bodyBg": "rgb(253, 253, 252)",
+        "bodyFg": "rgb(20, 22, 25)",
+        "vercelLeak": [],
+        "scrollW": 1440,
+        "clientW": 1440
+      },
+      "mobile": {
+        "status": 200,
+        "loadMs": 4257,
+        "consoleErrors": [],
+        "failedRequests": [],
+        "screenshot": "chatzor-mobile.png",
+        "title": "חצור קונקט · מור מערכות תוכנה",
+        "lang": "he",
+        "dir": "rtl",
+        "metaDescription": "עמוד השירות — מה המערכת עושה, איך היא עובדת, והמסלולים.",
+        "metaViewport": "width=device-width, initial-scale=1.0",
+        "canonical": "",
+        "ogUrl": "",
+        "h1Count": 2,
+        "h1": "חצור קונקט",
+        "headings": [
+          "H1: חצור קונקט",
+          "H2: מה השירות עושה",
+          "H2: מה יש במערכת",
+          "H2: מסלולים",
+          "H3: חינמי",
+          "H3: פרימיום",
+          "H2: מתחילים"
+        ],
+        "textLen": 927,
+        "interactiveCount": 8,
+        "smallTargets": [
+          {
+            "tag": "a",
+            "w": 97,
+            "h": 19,
+            "name": "מור מערכות תוכנה"
+          }
+        ],
+        "unnamedControls": [],
+        "imgsNoAlt": [],
+        "hasAuthScript": true,
+        "authBtnText": "",
+        "bodyBg": "rgb(253, 253, 252)",
+        "bodyFg": "rgb(20, 22, 25)",
+        "vercelLeak": [],
+        "scrollW": 390,
+        "clientW": 390
+      },
+      "dark": {
+        "status": 200,
+        "loadMs": 4264,
+        "consoleErrors": [],
+        "failedRequests": [],
+        "screenshot": "chatzor-dark.png",
+        "title": "חצור קונקט · מור מערכות תוכנה",
+        "lang": "he",
+        "dir": "rtl",
+        "metaDescription": "עמוד השירות — מה המערכת עושה, איך היא עובדת, והמסלולים.",
+        "metaViewport": "width=device-width, initial-scale=1.0",
+        "canonical": "",
+        "ogUrl": "",
+        "h1Count": 2,
+        "h1": "חצור קונקט",
+        "headings": [
+          "H1: חצור קונקט",
+          "H2: מה השירות עושה",
+          "H2: מה יש במערכת",
+          "H2: מסלולים",
+          "H3: חינמי",
+          "H3: פרימיום",
+          "H2: מתחילים"
+        ],
+        "textLen": 927,
+        "interactiveCount": 8,
+        "smallTargets": [
+          {
+            "tag": "a",
+            "w": 97,
+            "h": 19,
+            "name": "מור מערכות תוכנה"
+          }
+        ],
+        "unnamedControls": [],
+        "imgsNoAlt": [],
+        "hasAuthScript": true,
+        "authBtnText": "",
+        "bodyBg": "rgb(14, 15, 18)",
+        "bodyFg": "rgb(236, 234, 228)",
+        "vercelLeak": [],
+        "scrollW": 1440,
+        "clientW": 1440
+      },
+      "darkModeImplemented": true,
+      "horizontalOverflow": false
+    },
+    "chatzor-app": {
+      "key": "chatzor-app",
+      "sys": "16",
+      "path": "/chatzor/",
+      "name": "חצור קונקט — המערכת",
+      "url": "https://more30.com/chatzor/",
+      "desktop": {
+        "status": 200,
+        "loadMs": 5364,
+        "consoleErrors": [],
+        "failedRequests": [],
+        "screenshot": "chatzor-app-desktop.png",
+        "title": "מחוברים · חצור הגלילית",
+        "lang": "he",
+        "dir": "rtl",
+        "metaDescription": "מחוברים — פלטפורמת המועצה הדתית וקהילות חצור הגלילית: זמני תפילה, שיעורי תורה, בתי כנסת, גמ״חים ומידע דת במקום אחד.",
+        "metaViewport": "width=device-width, initial-scale=1.0",
+        "canonical": "",
+        "ogUrl": "",
+        "h1Count": 1,
+        "h1": "מחוברים — כל התורה והקהילה של חצור הגלילית במקום אחד",
+        "headings": [
+          "H1: מחוברים — כל התורה והקהילה של חצור הגלילית במקום אחד",
+          "H2: זמני היום בחצור הגלילית",
+          "H2: בתי הכנסת בחצור הגלילית",
+          "H3: בית אל",
+          "H3: חוני המעגל",
+          "H3: מרכז הרב",
+          "H3: שערי שלום",
+          "H2: שיעורי תורה בקהילה",
+          "H3: עדיין לא נוספו שיעורים",
+          "H2: גמ\"חים ושירותי דת",
+          "H3: מקווה תל חי",
+          "H3: ניווט"
+        ],
+        "textLen": 2077,
+        "interactiveCount": 29,
+        "smallTargets": [
+          {
+            "tag": "a",
+            "w": 1,
+            "h": 1,
+            "name": "דלג לתוכן"
+          },
+          {
+            "tag": "a",
+            "w": 114,
+            "h": 20,
+            "name": "לאתר בית הכנסת"
+          },
+          {
+            "tag": "a",
+            "w": 43,
+            "h": 20,
+            "name": "ניווט"
+          },
+          {
+            "tag": "a",
+            "w": 114,
+            "h": 20,
+            "name": "לאתר בית הכנסת"
+          },
+          {
+            "tag": "a",
+            "w": 43,
+            "h": 20,
+            "name": "ניווט"
+          },
+          {
+            "tag": "a",
+            "w": 114,
+            "h": 20,
+            "name": "לאתר בית הכנסת"
+          },
+          {
+            "tag": "a",
+            "w": 43,
+            "h": 20,
+            "name": "ניווט"
+          },
+          {
+            "tag": "a",
+            "w": 114,
+            "h": 20,
+            "name": "לאתר בית הכנסת"
+          },
+          {
+            "tag": "a",
+            "w": 43,
+            "h": 20,
+            "name": "ניווט"
+          },
+          {
+            "tag": "a",
+            "w": 103,
+            "h": 20,
+            "name": "לכל בתי הכנסת"
+          },
+          {
+            "tag": "a",
+            "w": 149,
+            "h": 20,
+            "name": "לכל הגמ״חים והשירותים"
+          },
+          {
+            "tag": "a",
+            "w": 49,
+            "h": 18,
+            "name": "בתי כנסת"
+          },
+          {
+            "tag": "a",
+            "w": 47,
+            "h": 18,
+            "name": "זמני היום"
+          },
+          {
+            "tag": "a",
+            "w": 66,
+            "h": 18,
+            "name": "שאל את הרב"
+          },
+          {
+            "tag": "a",
+            "w": 69,
+            "h": 18,
+            "name": "שירותי קהילה"
+          },
+          {
+            "tag": "a",
+            "w": 66,
+            "h": 18,
+            "name": "כניסת גבאים"
+          },
+          {
+            "tag": "a",
+            "w": 62,
+            "h": 18,
+            "name": "ניהול מועצה"
+          }
+        ],
+        "unnamedControls": [],
+        "imgsNoAlt": [],
+        "hasAuthScript": true,
+        "authBtnText": "",
+        "bodyBg": "rgb(251, 252, 253)",
+        "bodyFg": "rgb(20, 34, 52)",
+        "vercelLeak": [],
+        "scrollW": 1440,
+        "clientW": 1440
+      },
+      "mobile": {
+        "status": 200,
+        "loadMs": 4424,
+        "consoleErrors": [],
+        "failedRequests": [],
+        "screenshot": "chatzor-app-mobile.png",
+        "title": "מחוברים · חצור הגלילית",
+        "lang": "he",
+        "dir": "rtl",
+        "metaDescription": "מחוברים — פלטפורמת המועצה הדתית וקהילות חצור הגלילית: זמני תפילה, שיעורי תורה, בתי כנסת, גמ״חים ומידע דת במקום אחד.",
+        "metaViewport": "width=device-width, initial-scale=1.0",
+        "canonical": "",
+        "ogUrl": "",
+        "h1Count": 1,
+        "h1": "מחוברים — כל התורה והקהילה של חצור הגלילית במקום אחד",
+        "headings": [
+          "H1: מחוברים — כל התורה והקהילה של חצור הגלילית במקום אחד",
+          "H2: זמני היום בחצור הגלילית",
+          "H2: בתי הכנסת בחצור הגלילית",
+          "H3: בית אל",
+          "H3: חוני המעגל",
+          "H3: מרכז הרב",
+          "H3: שערי שלום",
+          "H2: שיעורי תורה בקהילה",
+          "H3: עדיין לא נוספו שיעורים",
+          "H2: גמ\"חים ושירותי דת",
+          "H3: מקווה תל חי",
+          "H3: ניווט"
+        ],
+        "textLen": 2064,
+        "interactiveCount": 29,
+        "smallTargets": [
+          {
+            "tag": "a",
+            "w": 1,
+            "h": 1,
+            "name": "דלג לתוכן"
+          },
+          {
+            "tag": "a",
+            "w": 114,
+            "h": 20,
+            "name": "לאתר בית הכנסת"
+          },
+          {
+            "tag": "a",
+            "w": 43,
+            "h": 20,
+            "name": "ניווט"
+          },
+          {
+            "tag": "a",
+            "w": 114,
+            "h": 20,
+            "name": "לאתר בית הכנסת"
+          },
+          {
+            "tag": "a",
+            "w": 43,
+            "h": 20,
+            "name": "ניווט"
+          },
+          {
+            "tag": "a",
+            "w": 114,
+            "h": 20,
+            "name": "לאתר בית הכנסת"
+          },
+          {
+            "tag": "a",
+            "w": 43,
+            "h": 20,
+            "name": "ניווט"
+          },
+          {
+            "tag": "a",
+            "w": 114,
+            "h": 20,
+            "name": "לאתר בית הכנסת"
+          },
+          {
+            "tag": "a",
+            "w": 43,
+            "h": 20,
+            "name": "ניווט"
+          },
+          {
+            "tag": "a",
+            "w": 103,
+            "h": 20,
+            "name": "לכל בתי הכנסת"
+          },
+          {
+            "tag": "a",
+            "w": 149,
+            "h": 20,
+            "name": "לכל הגמ״חים והשירותים"
+          },
+          {
+            "tag": "a",
+            "w": 49,
+            "h": 18,
+            "name": "בתי כנסת"
+          },
+          {
+            "tag": "a",
+            "w": 47,
+            "h": 18,
+            "name": "זמני היום"
+          },
+          {
+            "tag": "a",
+            "w": 66,
+            "h": 18,
+            "name": "שאל את הרב"
+          },
+          {
+            "tag": "a",
+            "w": 69,
+            "h": 18,
+            "name": "שירותי קהילה"
+          },
+          {
+            "tag": "a",
+            "w": 66,
+            "h": 18,
+            "name": "כניסת גבאים"
+          },
+          {
+            "tag": "a",
+            "w": 62,
+            "h": 18,
+            "name": "ניהול מועצה"
+          }
+        ],
+        "unnamedControls": [],
+        "imgsNoAlt": [],
+        "hasAuthScript": true,
+        "authBtnText": "",
+        "bodyBg": "rgb(251, 252, 253)",
+        "bodyFg": "rgb(20, 34, 52)",
+        "vercelLeak": [],
+        "scrollW": 390,
+        "clientW": 390
+      },
+      "dark": {
+        "status": 200,
+        "loadMs": 4495,
+        "consoleErrors": [],
+        "failedRequests": [],
+        "screenshot": "chatzor-app-dark.png",
+        "title": "מחוברים · חצור הגלילית",
+        "lang": "he",
+        "dir": "rtl",
+        "metaDescription": "מחוברים — פלטפורמת המועצה הדתית וקהילות חצור הגלילית: זמני תפילה, שיעורי תורה, בתי כנסת, גמ״חים ומידע דת במקום אחד.",
+        "metaViewport": "width=device-width, initial-scale=1.0",
+        "canonical": "",
+        "ogUrl": "",
+        "h1Count": 1,
+        "h1": "מחוברים — כל התורה והקהילה של חצור הגלילית במקום אחד",
+        "headings": [
+          "H1: מחוברים — כל התורה והקהילה של חצור הגלילית במקום אחד",
+          "H2: זמני היום בחצור הגלילית",
+          "H2: בתי הכנסת בחצור הגלילית",
+          "H3: בית אל",
+          "H3: חוני המעגל",
+          "H3: מרכז הרב",
+          "H3: שערי שלום",
+          "H2: שיעורי תורה בקהילה",
+          "H3: עדיין לא נוספו שיעורים",
+          "H2: גמ\"חים ושירותי דת",
+          "H3: מקווה תל חי",
+          "H3: ניווט"
+        ],
+        "textLen": 2077,
+        "interactiveCount": 29,
+        "smallTargets": [
+          {
+            "tag": "a",
+            "w": 1,
+            "h": 1,
+            "name": "דלג לתוכן"
+          },
+          {
+            "tag": "a",
+            "w": 114,
+            "h": 20,
+            "name": "לאתר בית הכנסת"
+          },
+          {
+            "tag": "a",
+            "w": 43,
+            "h": 20,
+            "name": "ניווט"
+          },
+          {
+            "tag": "a",
+            "w": 114,
+            "h": 20,
+            "name": "לאתר בית הכנסת"
+          },
+          {
+            "tag": "a",
+            "w": 43,
+            "h": 20,
+            "name": "ניווט"
+          },
+          {
+            "tag": "a",
+            "w": 114,
+            "h": 20,
+            "name": "לאתר בית הכנסת"
+          },
+          {
+            "tag": "a",
+            "w": 43,
+            "h": 20,
+            "name": "ניווט"
+          },
+          {
+            "tag": "a",
+            "w": 114,
+            "h": 20,
+            "name": "לאתר בית הכנסת"
+          },
+          {
+            "tag": "a",
+            "w": 43,
+            "h": 20,
+            "name": "ניווט"
+          },
+          {
+            "tag": "a",
+            "w": 103,
+            "h": 20,
+            "name": "לכל בתי הכנסת"
+          },
+          {
+            "tag": "a",
+            "w": 149,
+            "h": 20,
+            "name": "לכל הגמ״חים והשירותים"
+          },
+          {
+            "tag": "a",
+            "w": 49,
+            "h": 18,
+            "name": "בתי כנסת"
+          },
+          {
+            "tag": "a",
+            "w": 47,
+            "h": 18,
+            "name": "זמני היום"
+          },
+          {
+            "tag": "a",
+            "w": 66,
+            "h": 18,
+            "name": "שאל את הרב"
+          },
+          {
+            "tag": "a",
+            "w": 69,
+            "h": 18,
+            "name": "שירותי קהילה"
+          },
+          {
+            "tag": "a",
+            "w": 66,
+            "h": 18,
+            "name": "כניסת גבאים"
+          },
+          {
+            "tag": "a",
+            "w": 62,
+            "h": 18,
+            "name": "ניהול מועצה"
+          }
+        ],
+        "unnamedControls": [],
+        "imgsNoAlt": [],
+        "hasAuthScript": true,
+        "authBtnText": "",
+        "bodyBg": "rgb(13, 22, 33)",
+        "bodyFg": "rgb(228, 235, 241)",
+        "vercelLeak": [],
+        "scrollW": 1440,
+        "clientW": 1440
+      },
+      "darkModeImplemented": true,
+      "horizontalOverflow": false
+    },
+    "chizukim": {
+      "key": "chizukim",
+      "sys": "17",
+      "path": "/chizukim",
+      "name": "תמלול חיזוקים — תדמית",
+      "url": "https://more30.com/chizukim",
+      "desktop": {
+        "status": 200,
+        "loadMs": 4261,
+        "consoleErrors": [],
+        "failedRequests": [],
+        "screenshot": "chizukim-desktop.png",
+        "title": "תמלול חיזוקים · מור מערכות תוכנה",
+        "lang": "he",
+        "dir": "rtl",
+        "metaDescription": "עמוד השירות — מה המערכת עושה, איך היא עובדת, והמסלולים.",
+        "metaViewport": "width=device-width, initial-scale=1.0",
+        "canonical": "",
+        "ogUrl": "",
+        "h1Count": 2,
+        "h1": "תמלול חיזוקים",
+        "headings": [
+          "H1: תמלול חיזוקים",
+          "H2: מה השירות עושה",
+          "H2: מה יש במערכת",
+          "H2: מסלולים",
+          "H3: חינמי",
+          "H3: פרימיום",
+          "H2: מתחילים"
+        ],
+        "textLen": 920,
+        "interactiveCount": 8,
+        "smallTargets": [
+          {
+            "tag": "a",
+            "w": 97,
+            "h": 19,
+            "name": "מור מערכות תוכנה"
+          }
+        ],
+        "unnamedControls": [],
+        "imgsNoAlt": [],
+        "hasAuthScript": true,
+        "authBtnText": "",
+        "bodyBg": "rgb(253, 253, 252)",
+        "bodyFg": "rgb(20, 22, 25)",
+        "vercelLeak": [],
+        "scrollW": 1440,
+        "clientW": 1440
+      },
+      "mobile": {
+        "status": 200,
+        "loadMs": 4267,
+        "consoleErrors": [],
+        "failedRequests": [],
+        "screenshot": "chizukim-mobile.png",
+        "title": "תמלול חיזוקים · מור מערכות תוכנה",
+        "lang": "he",
+        "dir": "rtl",
+        "metaDescription": "עמוד השירות — מה המערכת עושה, איך היא עובדת, והמסלולים.",
+        "metaViewport": "width=device-width, initial-scale=1.0",
+        "canonical": "",
+        "ogUrl": "",
+        "h1Count": 2,
+        "h1": "תמלול חיזוקים",
+        "headings": [
+          "H1: תמלול חיזוקים",
+          "H2: מה השירות עושה",
+          "H2: מה יש במערכת",
+          "H2: מסלולים",
+          "H3: חינמי",
+          "H3: פרימיום",
+          "H2: מתחילים"
+        ],
+        "textLen": 920,
+        "interactiveCount": 8,
+        "smallTargets": [
+          {
+            "tag": "a",
+            "w": 97,
+            "h": 19,
+            "name": "מור מערכות תוכנה"
+          }
+        ],
+        "unnamedControls": [],
+        "imgsNoAlt": [],
+        "hasAuthScript": true,
+        "authBtnText": "",
+        "bodyBg": "rgb(253, 253, 252)",
+        "bodyFg": "rgb(20, 22, 25)",
+        "vercelLeak": [],
+        "scrollW": 390,
+        "clientW": 390
+      },
+      "dark": {
+        "status": 200,
+        "loadMs": 4250,
+        "consoleErrors": [],
+        "failedRequests": [],
+        "screenshot": "chizukim-dark.png",
+        "title": "תמלול חיזוקים · מור מערכות תוכנה",
+        "lang": "he",
+        "dir": "rtl",
+        "metaDescription": "עמוד השירות — מה המערכת עושה, איך היא עובדת, והמסלולים.",
+        "metaViewport": "width=device-width, initial-scale=1.0",
+        "canonical": "",
+        "ogUrl": "",
+        "h1Count": 2,
+        "h1": "תמלול חיזוקים",
+        "headings": [
+          "H1: תמלול חיזוקים",
+          "H2: מה השירות עושה",
+          "H2: מה יש במערכת",
+          "H2: מסלולים",
+          "H3: חינמי",
+          "H3: פרימיום",
+          "H2: מתחילים"
+        ],
+        "textLen": 920,
+        "interactiveCount": 8,
+        "smallTargets": [
+          {
+            "tag": "a",
+            "w": 97,
+            "h": 19,
+            "name": "מור מערכות תוכנה"
+          }
+        ],
+        "unnamedControls": [],
+        "imgsNoAlt": [],
+        "hasAuthScript": true,
+        "authBtnText": "",
+        "bodyBg": "rgb(14, 15, 18)",
+        "bodyFg": "rgb(236, 234, 228)",
+        "vercelLeak": [],
+        "scrollW": 1440,
+        "clientW": 1440
+      },
+      "darkModeImplemented": true,
+      "horizontalOverflow": false
+    },
+    "chizukim-app": {
+      "key": "chizukim-app",
+      "sys": "17",
+      "path": "/chizukim/",
+      "name": "תמלול חיזוקים — המערכת",
+      "url": "https://more30.com/chizukim/",
+      "desktop": {
+        "status": 200,
+        "loadMs": 5387,
+        "consoleErrors": [],
+        "failedRequests": [],
+        "screenshot": "chizukim-app-desktop.png",
+        "title": "מערכת תמלול — חיזוקים קצרים",
+        "lang": "he",
+        "dir": "rtl",
+        "metaDescription": "ארכיון החיזוקים הקצרים — 1,138 הקלטות מתומללות, ניתנות לחיפוש בכל מילה שנאמרה בהן.",
+        "metaViewport": "width=device-width, initial-scale=1.0",
+        "canonical": "",
+        "ogUrl": "",
+        "h1Count": 1,
+        "h1": "חיזוקים קצרים",
+        "headings": [
+          "H1: חיזוקים קצרים",
+          "H2: דאגה בלב איש — לדבר עם עצמך ולהתחזק באמונה",
+          "H2: מתי לדבר ומתי לשתוק — אמת ופרגון בחיי הזוגיות",
+          "H2: שלוש דרגות בנתינת צדקה ובהערכת המצוות",
+          "H2: כל אחד נולד עם ייעוד — חן המקום ותפקידו בעולם",
+          "H2: כוח לימוד התורה — מעשה עם אסיר בכלא באר שבע",
+          "H2: הכרת הטוב — להודות על מה שיש",
+          "H2: מעלת השתיקה — צדיק יסוד עולם הוא הנעלב ושותק",
+          "H2: תפוח על ההר — להשפיע ממבט שווה ולא מלמעלה",
+          "H2: הרב יצחק חלימי",
+          "H2: אם כבנים אם כעבדים - ההבדל בין בן לעבד בעבודת השם",
+          "H2: השופט את עצמו: מידה כנגד מידה בהסתכלות על הזולת"
+        ],
+        "textLen": 1926,
+        "interactiveCount": 35,
+        "smallTargets": [],
+        "unnamedControls": [],
+        "imgsNoAlt": [],
+        "hasAuthScript": true,
+        "authBtnText": "",
+        "bodyBg": "rgb(248, 246, 242)",
+        "bodyFg": "rgb(45, 38, 31)",
+        "vercelLeak": [],
+        "scrollW": 1440,
+        "clientW": 1440
+      },
+      "mobile": {
+        "status": 200,
+        "loadMs": 4649,
+        "consoleErrors": [],
+        "failedRequests": [],
+        "screenshot": "chizukim-app-mobile.png",
+        "title": "מערכת תמלול — חיזוקים קצרים",
+        "lang": "he",
+        "dir": "rtl",
+        "metaDescription": "ארכיון החיזוקים הקצרים — 1,138 הקלטות מתומללות, ניתנות לחיפוש בכל מילה שנאמרה בהן.",
+        "metaViewport": "width=device-width, initial-scale=1.0",
+        "canonical": "",
+        "ogUrl": "",
+        "h1Count": 1,
+        "h1": "חיזוקים קצרים",
+        "headings": [
+          "H1: חיזוקים קצרים",
+          "H2: דאגה בלב איש — לדבר עם עצמך ולהתחזק באמונה",
+          "H2: מתי לדבר ומתי לשתוק — אמת ופרגון בחיי הזוגיות",
+          "H2: שלוש דרגות בנתינת צדקה ובהערכת המצוות",
+          "H2: כל אחד נולד עם ייעוד — חן המקום ותפקידו בעולם",
+          "H2: כוח לימוד התורה — מעשה עם אסיר בכלא באר שבע",
+          "H2: הכרת הטוב — להודות על מה שיש",
+          "H2: מעלת השתיקה — צדיק יסוד עולם הוא הנעלב ושותק",
+          "H2: תפוח על ההר — להשפיע ממבט שווה ולא מלמעלה",
+          "H2: הרב יצחק חלימי",
+          "H2: אם כבנים אם כעבדים - ההבדל בין בן לעבד בעבודת השם",
+          "H2: השופט את עצמו: מידה כנגד מידה בהסתכלות על הזולת"
+        ],
+        "textLen": 1926,
+        "interactiveCount": 35,
+        "smallTargets": [],
+        "unnamedControls": [],
+        "imgsNoAlt": [],
+        "hasAuthScript": true,
+        "authBtnText": "",
+        "bodyBg": "rgb(248, 246, 242)",
+        "bodyFg": "rgb(45, 38, 31)",
+        "vercelLeak": [],
+        "scrollW": 390,
+        "clientW": 390
+      },
+      "dark": {
+        "status": 200,
+        "loadMs": 4994,
+        "consoleErrors": [],
+        "failedRequests": [],
+        "screenshot": "chizukim-app-dark.png",
+        "title": "מערכת תמלול — חיזוקים קצרים",
+        "lang": "he",
+        "dir": "rtl",
+        "metaDescription": "ארכיון החיזוקים הקצרים — 1,138 הקלטות מתומללות, ניתנות לחיפוש בכל מילה שנאמרה בהן.",
+        "metaViewport": "width=device-width, initial-scale=1.0",
+        "canonical": "",
+        "ogUrl": "",
+        "h1Count": 1,
+        "h1": "חיזוקים קצרים",
+        "headings": [
+          "H1: חיזוקים קצרים",
+          "H2: דאגה בלב איש — לדבר עם עצמך ולהתחזק באמונה",
+          "H2: מתי לדבר ומתי לשתוק — אמת ופרגון בחיי הזוגיות",
+          "H2: שלוש דרגות בנתינת צדקה ובהערכת המצוות",
+          "H2: כל אחד נולד עם ייעוד — חן המקום ותפקידו בעולם",
+          "H2: כוח לימוד התורה — מעשה עם אסיר בכלא באר שבע",
+          "H2: הכרת הטוב — להודות על מה שיש",
+          "H2: מעלת השתיקה — צדיק יסוד עולם הוא הנעלב ושותק",
+          "H2: תפוח על ההר — להשפיע ממבט שווה ולא מלמעלה",
+          "H2: הרב יצחק חלימי",
+          "H2: אם כבנים אם כעבדים - ההבדל בין בן לעבד בעבודת השם",
+          "H2: השופט את עצמו: מידה כנגד מידה בהסתכלות על הזולת"
+        ],
+        "textLen": 1926,
+        "interactiveCount": 35,
+        "smallTargets": [],
+        "unnamedControls": [],
+        "imgsNoAlt": [],
+        "hasAuthScript": true,
+        "authBtnText": "",
+        "bodyBg": "rgb(248, 246, 242)",
+        "bodyFg": "rgb(45, 38, 31)",
+        "vercelLeak": [],
+        "scrollW": 1440,
+        "clientW": 1440
+      },
+      "darkModeImplemented": false,
+      "horizontalOverflow": false
+    },
+    "orech": {
+      "key": "orech",
+      "sys": "18",
+      "path": "/orech",
+      "name": "עורך תורני",
+      "url": "https://more30.com/orech",
+      "desktop": {
+        "status": 200,
+        "loadMs": 4581,
+        "consoleErrors": [],
+        "failedRequests": [],
+        "screenshot": "orech-desktop.png",
+        "title": "העורך התורני",
+        "lang": "he",
+        "dir": "rtl",
+        "metaDescription": "עוזר AI לעריכה, הגהה, ניקוד ואימות מקורות בספרים תורניים",
+        "metaViewport": "width=device-width, initial-scale=1",
+        "canonical": "",
+        "ogUrl": "",
+        "h1Count": 1,
+        "h1": "העורך התורני",
+        "headings": [
+          "H1: העורך התורני",
+          "H2: המסמכים שלי",
+          "H2: המרת כתב יד (HTR)",
+          "H2: אימות מקורות וציטוטים"
+        ],
+        "textLen": 479,
+        "interactiveCount": 3,
+        "smallTargets": [],
+        "unnamedControls": [],
+        "imgsNoAlt": [],
+        "hasAuthScript": true,
+        "authBtnText": "",
+        "bodyBg": "rgb(250, 247, 240)",
+        "bodyFg": "rgb(31, 26, 18)",
+        "vercelLeak": [],
+        "scrollW": 1440,
+        "clientW": 1440
+      },
+      "mobile": {
+        "status": 200,
+        "loadMs": 4267,
+        "consoleErrors": [],
+        "failedRequests": [],
+        "screenshot": "orech-mobile.png",
+        "title": "העורך התורני",
+        "lang": "he",
+        "dir": "rtl",
+        "metaDescription": "עוזר AI לעריכה, הגהה, ניקוד ואימות מקורות בספרים תורניים",
+        "metaViewport": "width=device-width, initial-scale=1",
+        "canonical": "",
+        "ogUrl": "",
+        "h1Count": 1,
+        "h1": "העורך התורני",
+        "headings": [
+          "H1: העורך התורני",
+          "H2: המסמכים שלי",
+          "H2: המרת כתב יד (HTR)",
+          "H2: אימות מקורות וציטוטים"
+        ],
+        "textLen": 479,
+        "interactiveCount": 3,
+        "smallTargets": [],
+        "unnamedControls": [],
+        "imgsNoAlt": [],
+        "hasAuthScript": true,
+        "authBtnText": "",
+        "bodyBg": "rgb(250, 247, 240)",
+        "bodyFg": "rgb(31, 26, 18)",
+        "vercelLeak": [],
+        "scrollW": 390,
+        "clientW": 390
+      },
+      "dark": {
+        "status": 200,
+        "loadMs": 4319,
+        "consoleErrors": [],
+        "failedRequests": [],
+        "screenshot": "orech-dark.png",
+        "title": "העורך התורני",
+        "lang": "he",
+        "dir": "rtl",
+        "metaDescription": "עוזר AI לעריכה, הגהה, ניקוד ואימות מקורות בספרים תורניים",
+        "metaViewport": "width=device-width, initial-scale=1",
+        "canonical": "",
+        "ogUrl": "",
+        "h1Count": 1,
+        "h1": "העורך התורני",
+        "headings": [
+          "H1: העורך התורני",
+          "H2: המסמכים שלי",
+          "H2: המרת כתב יד (HTR)",
+          "H2: אימות מקורות וציטוטים"
+        ],
+        "textLen": 479,
+        "interactiveCount": 3,
+        "smallTargets": [],
+        "unnamedControls": [],
+        "imgsNoAlt": [],
+        "hasAuthScript": true,
+        "authBtnText": "",
+        "bodyBg": "rgb(250, 247, 240)",
+        "bodyFg": "rgb(31, 26, 18)",
+        "vercelLeak": [],
+        "scrollW": 1440,
+        "clientW": 1440
+      },
+      "darkModeImplemented": false,
+      "horizontalOverflow": false
+    },
+    "mthbram": {
+      "key": "mthbram",
+      "sys": "21",
+      "path": "/mthbram",
+      "name": "Mthbram",
+      "url": "https://more30.com/mthbram",
+      "desktop": {
+        "status": 200,
+        "loadMs": 5297,
+        "consoleErrors": [
+          "404 Error: User attempted to access non-existent route: /mthbram"
+        ],
+        "failedRequests": [],
+        "screenshot": "mthbram-desktop.png",
+        "title": "איגוד השיעורים - שיעורי תורה, חברותות והרצאות",
+        "lang": "he",
+        "dir": "rtl",
+        "metaDescription": "הפלטפורמה המובילה לחיבור בין מגידי שיעור ולומדים. מצאו שיעורי תורה, חברותות והרצאות בכל נושא.",
+        "metaViewport": "width=device-width, initial-scale=1.0",
+        "canonical": "",
+        "ogUrl": "",
+        "h1Count": 1,
+        "h1": "404",
+        "headings": [
+          "H1: 404"
+        ],
+        "textLen": 41,
+        "interactiveCount": 1,
+        "smallTargets": [
+          {
+            "tag": "a",
+            "w": 105,
+            "h": 21,
+            "name": "Return to Home"
+          }
+        ],
+        "unnamedControls": [],
+        "imgsNoAlt": [],
+        "hasAuthScript": true,
+        "authBtnText": "",
+        "bodyBg": "rgb(9, 26, 32)",
+        "bodyFg": "rgb(241, 234, 218)",
+        "vercelLeak": [],
+        "scrollW": 1440,
+        "clientW": 1440
+      },
+      "mobile": {
+        "status": 200,
+        "loadMs": 4897,
+        "consoleErrors": [
+          "404 Error: User attempted to access non-existent route: /mthbram"
+        ],
+        "failedRequests": [],
+        "screenshot": "mthbram-mobile.png",
+        "title": "איגוד השיעורים - שיעורי תורה, חברותות והרצאות",
+        "lang": "he",
+        "dir": "rtl",
+        "metaDescription": "הפלטפורמה המובילה לחיבור בין מגידי שיעור ולומדים. מצאו שיעורי תורה, חברותות והרצאות בכל נושא.",
+        "metaViewport": "width=device-width, initial-scale=1.0",
+        "canonical": "",
+        "ogUrl": "",
+        "h1Count": 1,
+        "h1": "404",
+        "headings": [
+          "H1: 404"
+        ],
+        "textLen": 41,
+        "interactiveCount": 1,
+        "smallTargets": [
+          {
+            "tag": "a",
+            "w": 92,
+            "h": 18,
+            "name": "Return to Home"
+          }
+        ],
+        "unnamedControls": [],
+        "imgsNoAlt": [],
+        "hasAuthScript": true,
+        "authBtnText": "",
+        "bodyBg": "rgb(9, 26, 32)",
+        "bodyFg": "rgb(241, 234, 218)",
+        "vercelLeak": [],
+        "scrollW": 390,
+        "clientW": 390
+      },
+      "dark": {
+        "status": 200,
+        "loadMs": 4770,
+        "consoleErrors": [
+          "404 Error: User attempted to access non-existent route: /mthbram"
+        ],
+        "failedRequests": [],
+        "screenshot": "mthbram-dark.png",
+        "title": "איגוד השיעורים - שיעורי תורה, חברותות והרצאות",
+        "lang": "he",
+        "dir": "rtl",
+        "metaDescription": "הפלטפורמה המובילה לחיבור בין מגידי שיעור ולומדים. מצאו שיעורי תורה, חברותות והרצאות בכל נושא.",
+        "metaViewport": "width=device-width, initial-scale=1.0",
+        "canonical": "",
+        "ogUrl": "",
+        "h1Count": 1,
+        "h1": "404",
+        "headings": [
+          "H1: 404"
+        ],
+        "textLen": 41,
+        "interactiveCount": 1,
+        "smallTargets": [
+          {
+            "tag": "a",
+            "w": 105,
+            "h": 21,
+            "name": "Return to Home"
+          }
+        ],
+        "unnamedControls": [],
+        "imgsNoAlt": [],
+        "hasAuthScript": true,
+        "authBtnText": "",
+        "bodyBg": "rgb(9, 26, 32)",
+        "bodyFg": "rgb(241, 234, 218)",
+        "vercelLeak": [],
+        "scrollW": 1440,
+        "clientW": 1440
+      },
+      "darkModeImplemented": false,
+      "horizontalOverflow": false
+    },
+    "zchuyot": {
+      "key": "zchuyot",
+      "sys": "22",
+      "path": "/zchuyot",
+      "name": "מימוש זכויות",
+      "url": "https://more30.com/zchuyot",
+      "desktop": {
+        "status": 200,
+        "loadMs": 5281,
+        "consoleErrors": [],
+        "failedRequests": [],
+        "screenshot": "zchuyot-desktop.png",
+        "title": "בקלות — מיצוי זכויות, מענקים והטבות | הזכות שלך, האחריות שלנו",
+        "lang": "he",
+        "dir": "rtl",
+        "metaDescription": "מיצוי זכויות מכל הגופים הממשלתיים — ביטוח לאומי, דיור, מיסים, רווחה ועוד. בדקו אילו זכויות מגיעות לכם בחינם.",
+        "metaViewport": "width=device-width, initial-scale=1.0",
+        "canonical": "https://more30.com/zchuyot",
+        "ogUrl": "https://more30.com/zchuyot",
+        "h1Count": 1,
+        "h1": "בקלות",
+        "headings": [
+          "H1: בקלות",
+          "H2: 💰 גלו את הזכויות שמגיעות לכם",
+          "H3: ביטוח לאומי",
+          "H3: רשות המסים",
+          "H3: דיור ושיכון",
+          "H3: תחבורה וניידות",
+          "H3: בריאות",
+          "H3: עבודה ורווחה",
+          "H3: בנקאות ופיננסים",
+          "H3: פנסיה וחיסכון",
+          "H2: 🛡️ מסתבכים? בואו נסדר את זה",
+          "H2: 🤝 נותנים יד לקהילה"
+        ],
+        "textLen": 2502,
+        "interactiveCount": 31,
+        "smallTargets": [],
+        "unnamedControls": [
+          {
+            "tag": "button",
+            "type": "",
+            "cls": "fixed bottom-6 left-6 z-50 w-16 h-16 rou"
+          }
+        ],
+        "imgsNoAlt": [],
+        "hasAuthScript": true,
+        "authBtnText": "",
+        "bodyBg": "rgb(249, 251, 249)",
+        "bodyFg": "rgb(23, 28, 38)",
+        "vercelLeak": [],
+        "scrollW": 1440,
+        "clientW": 1440
+      },
+      "mobile": {
+        "status": 200,
+        "loadMs": 4885,
+        "consoleErrors": [],
+        "failedRequests": [],
+        "screenshot": "zchuyot-mobile.png",
+        "title": "בקלות — מיצוי זכויות, מענקים והטבות | הזכות שלך, האחריות שלנו",
+        "lang": "he",
+        "dir": "rtl",
+        "metaDescription": "מיצוי זכויות מכל הגופים הממשלתיים — ביטוח לאומי, דיור, מיסים, רווחה ועוד. בדקו אילו זכויות מגיעות לכם בחינם.",
+        "metaViewport": "width=device-width, initial-scale=1.0",
+        "canonical": "https://more30.com/zchuyot",
+        "ogUrl": "https://more30.com/zchuyot",
+        "h1Count": 1,
+        "h1": "בקלות",
+        "headings": [
+          "H1: בקלות",
+          "H2: 💰 גלו את הזכויות שמגיעות לכם",
+          "H3: ביטוח לאומי",
+          "H3: רשות המסים",
+          "H3: דיור ושיכון",
+          "H3: תחבורה וניידות",
+          "H3: בריאות",
+          "H3: עבודה ורווחה",
+          "H3: בנקאות ופיננסים",
+          "H3: פנסיה וחיסכון",
+          "H2: 🛡️ מסתבכים? בואו נסדר את זה",
+          "H2: 🤝 נותנים יד לקהילה"
+        ],
+        "textLen": 2450,
+        "interactiveCount": 27,
+        "smallTargets": [],
+        "unnamedControls": [
+          {
+            "tag": "button",
+            "type": "",
+            "cls": "md:hidden text-primary-foreground"
+          },
+          {
+            "tag": "button",
+            "type": "",
+            "cls": "fixed bottom-6 left-6 z-50 w-16 h-16 rou"
+          }
+        ],
+        "imgsNoAlt": [],
+        "hasAuthScript": true,
+        "authBtnText": "",
+        "bodyBg": "rgb(249, 251, 249)",
+        "bodyFg": "rgb(23, 28, 38)",
+        "vercelLeak": [],
+        "scrollW": 390,
+        "clientW": 390
+      },
+      "dark": {
+        "status": 200,
+        "loadMs": 4953,
+        "consoleErrors": [],
+        "failedRequests": [],
+        "screenshot": "zchuyot-dark.png",
+        "title": "בקלות — מיצוי זכויות, מענקים והטבות | הזכות שלך, האחריות שלנו",
+        "lang": "he",
+        "dir": "rtl",
+        "metaDescription": "מיצוי זכויות מכל הגופים הממשלתיים — ביטוח לאומי, דיור, מיסים, רווחה ועוד. בדקו אילו זכויות מגיעות לכם בחינם.",
+        "metaViewport": "width=device-width, initial-scale=1.0",
+        "canonical": "https://more30.com/zchuyot",
+        "ogUrl": "https://more30.com/zchuyot",
+        "h1Count": 1,
+        "h1": "בקלות",
+        "headings": [
+          "H1: בקלות",
+          "H2: 💰 גלו את הזכויות שמגיעות לכם",
+          "H3: ביטוח לאומי",
+          "H3: רשות המסים",
+          "H3: דיור ושיכון",
+          "H3: תחבורה וניידות",
+          "H3: בריאות",
+          "H3: עבודה ורווחה",
+          "H3: בנקאות ופיננסים",
+          "H3: פנסיה וחיסכון",
+          "H2: 🛡️ מסתבכים? בואו נסדר את זה",
+          "H2: 🤝 נותנים יד לקהילה"
+        ],
+        "textLen": 2502,
+        "interactiveCount": 31,
+        "smallTargets": [],
+        "unnamedControls": [
+          {
+            "tag": "button",
+            "type": "",
+            "cls": "fixed bottom-6 left-6 z-50 w-16 h-16 rou"
+          }
+        ],
+        "imgsNoAlt": [],
+        "hasAuthScript": true,
+        "authBtnText": "",
+        "bodyBg": "rgb(249, 251, 249)",
+        "bodyFg": "rgb(23, 28, 38)",
+        "vercelLeak": [],
+        "scrollW": 1440,
+        "clientW": 1440
+      },
+      "darkModeImplemented": false,
+      "horizontalOverflow": false
+    },
+    "galil": {
+      "key": "galil",
+      "sys": "24",
+      "path": "/galil",
+      "name": "גליל קונקט",
+      "url": "https://more30.com/galil",
+      "desktop": {
+        "status": 200,
+        "loadMs": 5246,
+        "consoleErrors": [
+          "404 Error: User attempted to access non-existent route: /galil"
+        ],
+        "failedRequests": [],
+        "screenshot": "galil-desktop.png",
+        "title": "מחוברים — בתי כנסת חצור הגלילית",
+        "lang": "he",
+        "dir": "rtl",
+        "metaDescription": "מחוברים - איגוד בתי הכנסת בחצור הגלילית. זמני תפילות, שיעורים ופעילויות קהילתיות",
+        "metaViewport": "width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes",
+        "canonical": "",
+        "ogUrl": "",
+        "h1Count": 1,
+        "h1": "404",
+        "headings": [
+          "H1: 404"
+        ],
+        "textLen": 123,
+        "interactiveCount": 11,
+        "smallTargets": [],
+        "unnamedControls": [],
+        "imgsNoAlt": [],
+        "hasAuthScript": true,
+        "authBtnText": "",
+        "bodyBg": "rgba(0, 0, 0, 0)",
+        "bodyFg": "rgb(21, 29, 40)",
+        "vercelLeak": [],
+        "scrollW": 1440,
+        "clientW": 1440
+      },
+      "mobile": {
+        "status": 200,
+        "loadMs": 5644,
+        "consoleErrors": [
+          "404 Error: User attempted to access non-existent route: /galil"
+        ],
+        "failedRequests": [],
+        "screenshot": "galil-mobile.png",
+        "title": "מחוברים — בתי כנסת חצור הגלילית",
+        "lang": "he",
+        "dir": "rtl",
+        "metaDescription": "מחוברים - איגוד בתי הכנסת בחצור הגלילית. זמני תפילות, שיעורים ופעילויות קהילתיות",
+        "metaViewport": "width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes",
+        "canonical": "",
+        "ogUrl": "",
+        "h1Count": 1,
+        "h1": "404",
+        "headings": [
+          "H1: 404"
+        ],
+        "textLen": 52,
+        "interactiveCount": 5,
+        "smallTargets": [],
+        "unnamedControls": [
+          {
+            "tag": "button",
+            "type": "",
+            "cls": "md:hidden w-9 h-9 rounded-xl flex items-"
+          }
+        ],
+        "imgsNoAlt": [],
+        "hasAuthScript": true,
+        "authBtnText": "",
+        "bodyBg": "rgba(0, 0, 0, 0)",
+        "bodyFg": "rgb(21, 29, 40)",
+        "vercelLeak": [],
+        "scrollW": 390,
+        "clientW": 390
+      },
+      "dark": {
+        "status": 200,
+        "loadMs": 5594,
+        "consoleErrors": [
+          "404 Error: User attempted to access non-existent route: /galil"
+        ],
+        "failedRequests": [],
+        "screenshot": "galil-dark.png",
+        "title": "מחוברים — בתי כנסת חצור הגלילית",
+        "lang": "he",
+        "dir": "rtl",
+        "metaDescription": "מחוברים - איגוד בתי הכנסת בחצור הגלילית. זמני תפילות, שיעורים ופעילויות קהילתיות",
+        "metaViewport": "width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes",
+        "canonical": "",
+        "ogUrl": "",
+        "h1Count": 1,
+        "h1": "404",
+        "headings": [
+          "H1: 404"
+        ],
+        "textLen": 123,
+        "interactiveCount": 11,
+        "smallTargets": [],
+        "unnamedControls": [],
+        "imgsNoAlt": [],
+        "hasAuthScript": true,
+        "authBtnText": "",
+        "bodyBg": "rgba(0, 0, 0, 0)",
+        "bodyFg": "rgb(21, 29, 40)",
+        "vercelLeak": [],
+        "scrollW": 1440,
+        "clientW": 1440
+      },
+      "darkModeImplemented": false,
+      "horizontalOverflow": false
+    },
+    "studio": {
+      "key": "studio",
+      "sys": "26",
+      "path": "/studio",
+      "name": "סטודיו מודעות",
+      "url": "https://more30.com/studio",
+      "desktop": {
+        "status": 200,
+        "loadMs": 4640,
+        "consoleErrors": [],
+        "failedRequests": [],
+        "screenshot": "studio-desktop.png",
+        "title": "מודעות AI — יצירת מודעות מעוצבות לקהילה",
+        "lang": "he",
+        "dir": "rtl",
+        "metaDescription": "מערכת ליצירת מודעות אבל, שמחה וארגון בעיצוב גרפי מקצועי עם בינה מלאכותית — טקסט עברי מדויק ורקעים מרהיבים.",
+        "metaViewport": "width=device-width, initial-scale=1.0, maximum-scale=1",
+        "canonical": "",
+        "ogUrl": "",
+        "h1Count": 1,
+        "h1": "מודעות · מנוע העיצוב החרדי",
+        "headings": [
+          "H1: מודעות · מנוע העיצוב החרדי",
+          "H2: כותרות ענקיות, מסגרות זהב ועיטורי יודאיקה — כל מודעה נבנית מ",
+          "H3: בריף חכם",
+          "H3: מחלקת הפרסום",
+          "H3: התחל מתבנית",
+          "H3: גלריית תבניות"
+        ],
+        "textLen": 902,
+        "interactiveCount": 8,
+        "smallTargets": [],
+        "unnamedControls": [],
+        "imgsNoAlt": [],
+        "hasAuthScript": true,
+        "authBtnText": "",
+        "bodyBg": "rgb(250, 248, 245)",
+        "bodyFg": "rgb(20, 30, 52)",
+        "vercelLeak": [],
+        "scrollW": 1440,
+        "clientW": 1440
+      },
+      "mobile": {
+        "status": 200,
+        "loadMs": 4543,
+        "consoleErrors": [],
+        "failedRequests": [],
+        "screenshot": "studio-mobile.png",
+        "title": "מודעות AI — יצירת מודעות מעוצבות לקהילה",
+        "lang": "he",
+        "dir": "rtl",
+        "metaDescription": "מערכת ליצירת מודעות אבל, שמחה וארגון בעיצוב גרפי מקצועי עם בינה מלאכותית — טקסט עברי מדויק ורקעים מרהיבים.",
+        "metaViewport": "width=device-width, initial-scale=1.0, maximum-scale=1",
+        "canonical": "",
+        "ogUrl": "",
+        "h1Count": 1,
+        "h1": "מודעות · מנוע העיצוב החרדי",
+        "headings": [
+          "H1: מודעות · מנוע העיצוב החרדי",
+          "H2: כותרות ענקיות, מסגרות זהב ועיטורי יודאיקה — כל מודעה נבנית מ",
+          "H3: בריף חכם",
+          "H3: מחלקת הפרסום",
+          "H3: התחל מתבנית",
+          "H3: גלריית תבניות"
+        ],
+        "textLen": 902,
+        "interactiveCount": 8,
+        "smallTargets": [],
+        "unnamedControls": [],
+        "imgsNoAlt": [],
+        "hasAuthScript": true,
+        "authBtnText": "",
+        "bodyBg": "rgb(250, 248, 245)",
+        "bodyFg": "rgb(20, 30, 52)",
+        "vercelLeak": [],
+        "scrollW": 507,
+        "clientW": 390
+      },
+      "dark": {
+        "status": 200,
+        "loadMs": 4565,
+        "consoleErrors": [],
+        "failedRequests": [],
+        "screenshot": "studio-dark.png",
+        "title": "מודעות AI — יצירת מודעות מעוצבות לקהילה",
+        "lang": "he",
+        "dir": "rtl",
+        "metaDescription": "מערכת ליצירת מודעות אבל, שמחה וארגון בעיצוב גרפי מקצועי עם בינה מלאכותית — טקסט עברי מדויק ורקעים מרהיבים.",
+        "metaViewport": "width=device-width, initial-scale=1.0, maximum-scale=1",
+        "canonical": "",
+        "ogUrl": "",
+        "h1Count": 1,
+        "h1": "מודעות · מנוע העיצוב החרדי",
+        "headings": [
+          "H1: מודעות · מנוע העיצוב החרדי",
+          "H2: כותרות ענקיות, מסגרות זהב ועיטורי יודאיקה — כל מודעה נבנית מ",
+          "H3: בריף חכם",
+          "H3: מחלקת הפרסום",
+          "H3: התחל מתבנית",
+          "H3: גלריית תבניות"
+        ],
+        "textLen": 902,
+        "interactiveCount": 8,
+        "smallTargets": [],
+        "unnamedControls": [],
+        "imgsNoAlt": [],
+        "hasAuthScript": true,
+        "authBtnText": "",
+        "bodyBg": "rgb(250, 248, 245)",
+        "bodyFg": "rgb(20, 30, 52)",
+        "vercelLeak": [],
+        "scrollW": 1440,
+        "clientW": 1440
+      },
+      "darkModeImplemented": false,
+      "horizontalOverflow": true
+    },
+    "mechiron": {
+      "key": "mechiron",
+      "sys": "27",
+      "path": "/mechiron",
+      "name": "השוואת מחירים",
+      "url": "https://more30.com/mechiron",
+      "desktop": {
+        "status": 200,
+        "loadMs": 5055,
+        "consoleErrors": [
+          "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        ],
+        "failedRequests": [],
+        "screenshot": "mechiron-desktop.png",
+        "title": "מאגר בקלות — כלי פנימי לצוות",
+        "lang": "he",
+        "dir": "rtl",
+        "metaDescription": "מאגר פנימי לחיפוש זכויות, הטבות וארגוני סיוע — בקלות",
+        "metaViewport": "width=device-width, initial-scale=1.0",
+        "canonical": "",
+        "ogUrl": "",
+        "h1Count": 1,
+        "h1": "השוואת מחירים — חוסכים בקלות",
+        "headings": [
+          "H1: השוואת מחירים — חוסכים בקלות"
+        ],
+        "textLen": 305,
+        "interactiveCount": 9,
+        "smallTargets": [],
+        "unnamedControls": [],
+        "imgsNoAlt": [],
+        "hasAuthScript": true,
+        "authBtnText": "",
+        "bodyBg": "rgb(248, 246, 242)",
+        "bodyFg": "rgb(23, 33, 38)",
+        "vercelLeak": [],
+        "scrollW": 1440,
+        "clientW": 1440
+      },
+      "mobile": {
+        "status": 200,
+        "loadMs": 5554,
+        "consoleErrors": [
+          "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        ],
+        "failedRequests": [],
+        "screenshot": "mechiron-mobile.png",
+        "title": "מאגר בקלות — כלי פנימי לצוות",
+        "lang": "he",
+        "dir": "rtl",
+        "metaDescription": "מאגר פנימי לחיפוש זכויות, הטבות וארגוני סיוע — בקלות",
+        "metaViewport": "width=device-width, initial-scale=1.0",
+        "canonical": "",
+        "ogUrl": "",
+        "h1Count": 1,
+        "h1": "השוואת מחירים — חוסכים בקלות",
+        "headings": [
+          "H1: השוואת מחירים — חוסכים בקלות"
+        ],
+        "textLen": 387,
+        "interactiveCount": 9,
+        "smallTargets": [],
+        "unnamedControls": [],
+        "imgsNoAlt": [],
+        "hasAuthScript": true,
+        "authBtnText": "",
+        "bodyBg": "rgb(248, 246, 242)",
+        "bodyFg": "rgb(23, 33, 38)",
+        "vercelLeak": [],
+        "scrollW": 390,
+        "clientW": 390
+      },
+      "dark": {
+        "status": 200,
+        "loadMs": 4518,
+        "consoleErrors": [
+          "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        ],
+        "failedRequests": [],
+        "screenshot": "mechiron-dark.png",
+        "title": "מאגר בקלות — כלי פנימי לצוות",
+        "lang": "he",
+        "dir": "rtl",
+        "metaDescription": "מאגר פנימי לחיפוש זכויות, הטבות וארגוני סיוע — בקלות",
+        "metaViewport": "width=device-width, initial-scale=1.0",
+        "canonical": "",
+        "ogUrl": "",
+        "h1Count": 1,
+        "h1": "השוואת מחירים — חוסכים בקלות",
+        "headings": [
+          "H1: השוואת מחירים — חוסכים בקלות",
+          "H2: מבצעים"
+        ],
+        "textLen": 15370,
+        "interactiveCount": 190,
+        "smallTargets": [],
+        "unnamedControls": [],
+        "imgsNoAlt": [],
+        "hasAuthScript": true,
+        "authBtnText": "",
+        "bodyBg": "rgb(248, 246, 242)",
+        "bodyFg": "rgb(23, 33, 38)",
+        "vercelLeak": [],
+        "scrollW": 1440,
+        "clientW": 1440
+      },
+      "darkModeImplemented": false,
+      "horizontalOverflow": false
+    },
+    "kupot": {
+      "key": "kupot",
+      "sys": "28",
+      "path": "/kupot",
+      "name": "השוואת קופות חולים",
+      "url": "https://more30.com/kupot",
+      "desktop": {
+        "status": 200,
+        "loadMs": 4443,
+        "consoleErrors": [],
+        "failedRequests": [],
+        "screenshot": "kupot-desktop.png",
+        "title": "השוואת קופות חולים | מבית בקלות",
+        "lang": "he",
+        "dir": "rtl",
+        "metaDescription": "השוואת זכויות והטבות קופות חולים בישראל — מידע בסיסי, סינון לפי נושא, קטגוריה וקופה, ויועץ חכם להתאמת קופה. מבית בקלות.",
+        "metaViewport": "width=device-width, initial-scale=1.0, maximum-scale=1",
+        "canonical": "",
+        "ogUrl": "",
+        "h1Count": 1,
+        "h1": "השוואת קופות חולים",
+        "headings": [
+          "H1: השוואת קופות חולים",
+          "H2: באילו נושאים כל קופה בולטת"
+        ],
+        "textLen": 34655,
+        "interactiveCount": 460,
+        "smallTargets": [],
+        "unnamedControls": [],
+        "imgsNoAlt": [],
+        "hasAuthScript": true,
+        "authBtnText": "",
+        "bodyBg": "rgb(249, 251, 251)",
+        "bodyFg": "rgb(21, 37, 40)",
+        "vercelLeak": [],
+        "scrollW": 1440,
+        "clientW": 1440
+      },
+      "mobile": {
+        "status": 200,
+        "loadMs": 4492,
+        "consoleErrors": [],
+        "failedRequests": [],
+        "screenshot": "kupot-mobile.png",
+        "title": "השוואת קופות חולים | מבית בקלות",
+        "lang": "he",
+        "dir": "rtl",
+        "metaDescription": "השוואת זכויות והטבות קופות חולים בישראל — מידע בסיסי, סינון לפי נושא, קטגוריה וקופה, ויועץ חכם להתאמת קופה. מבית בקלות.",
+        "metaViewport": "width=device-width, initial-scale=1.0, maximum-scale=1",
+        "canonical": "",
+        "ogUrl": "",
+        "h1Count": 1,
+        "h1": "השוואת קופות חולים",
+        "headings": [
+          "H1: השוואת קופות חולים",
+          "H2: באילו נושאים כל קופה בולטת"
+        ],
+        "textLen": 34655,
+        "interactiveCount": 460,
+        "smallTargets": [],
+        "unnamedControls": [],
+        "imgsNoAlt": [],
+        "hasAuthScript": true,
+        "authBtnText": "",
+        "bodyBg": "rgb(249, 251, 251)",
+        "bodyFg": "rgb(21, 37, 40)",
+        "vercelLeak": [],
+        "scrollW": 390,
+        "clientW": 390
+      },
+      "dark": {
+        "status": 200,
+        "loadMs": 4462,
+        "consoleErrors": [],
+        "failedRequests": [],
+        "screenshot": "kupot-dark.png",
+        "title": "השוואת קופות חולים | מבית בקלות",
+        "lang": "he",
+        "dir": "rtl",
+        "metaDescription": "השוואת זכויות והטבות קופות חולים בישראל — מידע בסיסי, סינון לפי נושא, קטגוריה וקופה, ויועץ חכם להתאמת קופה. מבית בקלות.",
+        "metaViewport": "width=device-width, initial-scale=1.0, maximum-scale=1",
+        "canonical": "",
+        "ogUrl": "",
+        "h1Count": 1,
+        "h1": "השוואת קופות חולים",
+        "headings": [
+          "H1: השוואת קופות חולים",
+          "H2: באילו נושאים כל קופה בולטת"
+        ],
+        "textLen": 34655,
+        "interactiveCount": 460,
+        "smallTargets": [],
+        "unnamedControls": [],
+        "imgsNoAlt": [],
+        "hasAuthScript": true,
+        "authBtnText": "",
+        "bodyBg": "rgb(13, 20, 23)",
+        "bodyFg": "rgb(238, 242, 242)",
+        "vercelLeak": [],
+        "scrollW": 1440,
+        "clientW": 1440
+      },
+      "darkModeImplemented": true,
+      "horizontalOverflow": false
+    },
+    "crm": {
+      "key": "crm",
+      "sys": "30",
+      "path": "/crm",
+      "name": "CRM זכויות",
+      "url": "https://more30.com/crm",
+      "desktop": {
+        "status": 200,
+        "loadMs": 5344,
+        "consoleErrors": [
+          "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        ],
+        "failedRequests": [
+          "GET https://more30.com/crm/assets/index-DFeabrFV.js — net::ERR_ABORTED",
+          "GET https://more30.com/crm/assets/index-DtqBFgK5.js — net::ERR_ABORTED",
+          "GET https://more30.com/crm/assets/styles-DhgQ7Tvt.css — net::ERR_ABORTED"
+        ],
+        "screenshot": "crm-desktop.png",
+        "title": "זכויות פרו | ZchuyotPro",
+        "lang": "he",
+        "dir": "rtl",
+        "metaDescription": "מערכת CRM רב-ארגונית לניהול לקוחות, זכאויות ושותפים.",
+        "metaViewport": "width=device-width, initial-scale=1",
+        "canonical": "",
+        "ogUrl": "",
+        "h1Count": 0,
+        "h1": "",
+        "headings": [],
+        "textLen": 0,
+        "interactiveCount": 0,
+        "smallTargets": [],
+        "unnamedControls": [],
+        "imgsNoAlt": [],
+        "hasAuthScript": true,
+        "authBtnText": "",
+        "bodyBg": "rgba(0, 0, 0, 0)",
+        "bodyFg": "rgb(0, 0, 0)",
+        "vercelLeak": [],
+        "scrollW": 1440,
+        "clientW": 1440
+      },
+      "mobile": {
+        "status": 200,
+        "loadMs": 4397,
+        "consoleErrors": [
+          "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        ],
+        "failedRequests": [
+          "GET https://more30.com/crm/assets/styles-DhgQ7Tvt.css — net::ERR_ABORTED",
+          "GET https://more30.com/crm/assets/index-DFeabrFV.js — net::ERR_ABORTED",
+          "GET https://more30.com/crm/assets/index-DtqBFgK5.js — net::ERR_ABORTED"
+        ],
+        "screenshot": "crm-mobile.png",
+        "title": "זכויות פרו | ZchuyotPro",
+        "lang": "he",
+        "dir": "rtl",
+        "metaDescription": "מערכת CRM רב-ארגונית לניהול לקוחות, זכאויות ושותפים.",
+        "metaViewport": "width=device-width, initial-scale=1",
+        "canonical": "",
+        "ogUrl": "",
+        "h1Count": 0,
+        "h1": "",
+        "headings": [],
+        "textLen": 0,
+        "interactiveCount": 0,
+        "smallTargets": [],
+        "unnamedControls": [],
+        "imgsNoAlt": [],
+        "hasAuthScript": true,
+        "authBtnText": "",
+        "bodyBg": "rgba(0, 0, 0, 0)",
+        "bodyFg": "rgb(0, 0, 0)",
+        "vercelLeak": [],
+        "scrollW": 390,
+        "clientW": 390
+      },
+      "dark": {
+        "status": 200,
+        "loadMs": 4363,
+        "consoleErrors": [
+          "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        ],
+        "failedRequests": [
+          "GET https://more30.com/crm/assets/styles-DhgQ7Tvt.css — net::ERR_ABORTED",
+          "GET https://more30.com/crm/assets/index-DFeabrFV.js — net::ERR_ABORTED",
+          "GET https://more30.com/crm/assets/index-DtqBFgK5.js — net::ERR_ABORTED"
+        ],
+        "screenshot": "crm-dark.png",
+        "title": "זכויות פרו | ZchuyotPro",
+        "lang": "he",
+        "dir": "rtl",
+        "metaDescription": "מערכת CRM רב-ארגונית לניהול לקוחות, זכאויות ושותפים.",
+        "metaViewport": "width=device-width, initial-scale=1",
+        "canonical": "",
+        "ogUrl": "",
+        "h1Count": 0,
+        "h1": "",
+        "headings": [],
+        "textLen": 0,
+        "interactiveCount": 0,
+        "smallTargets": [],
+        "unnamedControls": [],
+        "imgsNoAlt": [],
+        "hasAuthScript": true,
+        "authBtnText": "",
+        "bodyBg": "rgba(0, 0, 0, 0)",
+        "bodyFg": "rgb(0, 0, 0)",
+        "vercelLeak": [],
+        "scrollW": 1440,
+        "clientW": 1440
+      },
+      "darkModeImplemented": false,
+      "horizontalOverflow": false
+    },
+    "gesher": {
+      "key": "gesher",
+      "sys": "31",
+      "path": "/gesher",
+      "name": "גשר עברית CRM",
+      "url": "https://more30.com/gesher",
+      "desktop": {
+        "status": 200,
+        "loadMs": 5058,
+        "consoleErrors": [
+          "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        ],
+        "failedRequests": [
+          "GET https://more30.com/gesher/assets/styles-3PMaaxrj.css — net::ERR_ABORTED",
+          "GET https://more30.com/gesher/assets/index-DtqBFgK5.js — net::ERR_ABORTED",
+          "GET https://more30.com/gesher/assets/index-hUOKmU3p.js — net::ERR_ABORTED"
+        ],
+        "screenshot": "gesher-desktop.png",
+        "title": "מערכת CRM שותפים",
+        "lang": "he",
+        "dir": "rtl",
+        "metaDescription": "פלטפורמת ניהול לקוחות ושותפים עסקיים",
+        "metaViewport": "width=device-width, initial-scale=1",
+        "canonical": "",
+        "ogUrl": "",
+        "h1Count": 0,
+        "h1": "",
+        "headings": [],
+        "textLen": 0,
+        "interactiveCount": 0,
+        "smallTargets": [],
+        "unnamedControls": [],
+        "imgsNoAlt": [],
+        "hasAuthScript": true,
+        "authBtnText": "",
+        "bodyBg": "rgba(0, 0, 0, 0)",
+        "bodyFg": "rgb(0, 0, 0)",
+        "vercelLeak": [],
+        "scrollW": 1440,
+        "clientW": 1440
+      },
+      "mobile": {
+        "status": 200,
+        "loadMs": 4456,
+        "consoleErrors": [
+          "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        ],
+        "failedRequests": [
+          "GET https://more30.com/gesher/assets/styles-3PMaaxrj.css — net::ERR_ABORTED",
+          "GET https://more30.com/gesher/assets/index-hUOKmU3p.js — net::ERR_ABORTED",
+          "GET https://more30.com/gesher/assets/index-DtqBFgK5.js — net::ERR_ABORTED"
+        ],
+        "screenshot": "gesher-mobile.png",
+        "title": "מערכת CRM שותפים",
+        "lang": "he",
+        "dir": "rtl",
+        "metaDescription": "פלטפורמת ניהול לקוחות ושותפים עסקיים",
+        "metaViewport": "width=device-width, initial-scale=1",
+        "canonical": "",
+        "ogUrl": "",
+        "h1Count": 0,
+        "h1": "",
+        "headings": [],
+        "textLen": 0,
+        "interactiveCount": 0,
+        "smallTargets": [],
+        "unnamedControls": [],
+        "imgsNoAlt": [],
+        "hasAuthScript": true,
+        "authBtnText": "",
+        "bodyBg": "rgba(0, 0, 0, 0)",
+        "bodyFg": "rgb(0, 0, 0)",
+        "vercelLeak": [],
+        "scrollW": 390,
+        "clientW": 390
+      },
+      "dark": {
+        "status": 200,
+        "loadMs": 4368,
+        "consoleErrors": [
+          "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        ],
+        "failedRequests": [
+          "GET https://more30.com/gesher/assets/styles-3PMaaxrj.css — net::ERR_ABORTED",
+          "GET https://more30.com/gesher/assets/index-hUOKmU3p.js — net::ERR_ABORTED",
+          "GET https://more30.com/gesher/assets/index-DtqBFgK5.js — net::ERR_ABORTED"
+        ],
+        "screenshot": "gesher-dark.png",
+        "title": "מערכת CRM שותפים",
+        "lang": "he",
+        "dir": "rtl",
+        "metaDescription": "פלטפורמת ניהול לקוחות ושותפים עסקיים",
+        "metaViewport": "width=device-width, initial-scale=1",
+        "canonical": "",
+        "ogUrl": "",
+        "h1Count": 0,
+        "h1": "",
+        "headings": [],
+        "textLen": 0,
+        "interactiveCount": 0,
+        "smallTargets": [],
+        "unnamedControls": [],
+        "imgsNoAlt": [],
+        "hasAuthScript": true,
+        "authBtnText": "",
+        "bodyBg": "rgba(0, 0, 0, 0)",
+        "bodyFg": "rgb(0, 0, 0)",
+        "vercelLeak": [],
+        "scrollW": 1440,
+        "clientW": 1440
+      },
+      "darkModeImplemented": false,
+      "horizontalOverflow": false
+    },
+    "nadlan": {
+      "key": "nadlan",
+      "sys": "32",
+      "path": "/nadlan",
+      "name": "נדל\"ן ברגע",
+      "url": "https://more30.com/nadlan",
+      "desktop": {
+        "status": 200,
+        "loadMs": 4870,
+        "consoleErrors": [],
+        "failedRequests": [],
+        "screenshot": "nadlan-desktop.png",
+        "title": "נדל\"ן ברגע — תעודת זהות דיגיטלית לכל נכס",
+        "lang": "he",
+        "dir": "rtl",
+        "metaDescription": "מנוע אגרגציה שמאחד מקורות מידע ממשלתיים ומסחריים לכדי תעודת זהות דיגיטלית לכל נכס בישראל. מבית מור מערכות תוכנה.",
+        "metaViewport": "width=device-width, initial-scale=1",
+        "canonical": "",
+        "ogUrl": "",
+        "h1Count": 1,
+        "h1": "כל מה שצריך לדעת על נכס — ברגע",
+        "headings": [
+          "H1: כל מה שצריך לדעת על נכס — ברגע",
+          "H3: מה בודקים",
+          "H3: איזה דוח",
+          "H3: אילו נתונים לכלול",
+          "H3: פרטי הנכס",
+          "H3: או חיפוש חופשי",
+          "H2: ארבעה תחומים, אותו עומק",
+          "H2: הדוח המלא נשלח למייל",
+          "H2: שלוש רמות של דוח",
+          "H2: מה יש בדוח",
+          "H3: לרחוב אחד יש לפעמים שני שמות",
+          "H3: איך אנחנו מציגים נתונים"
+        ],
+        "textLen": 6441,
+        "interactiveCount": 42,
+        "smallTargets": [],
+        "unnamedControls": [],
+        "imgsNoAlt": [],
+        "hasAuthScript": true,
+        "authBtnText": "",
+        "bodyBg": "rgb(246, 248, 252)",
+        "bodyFg": "rgb(26, 34, 51)",
+        "vercelLeak": [],
+        "scrollW": 1440,
+        "clientW": 1440
+      },
+      "mobile": {
+        "status": 200,
+        "loadMs": 4802,
+        "consoleErrors": [],
+        "failedRequests": [],
+        "screenshot": "nadlan-mobile.png",
+        "title": "נדל\"ן ברגע — תעודת זהות דיגיטלית לכל נכס",
+        "lang": "he",
+        "dir": "rtl",
+        "metaDescription": "מנוע אגרגציה שמאחד מקורות מידע ממשלתיים ומסחריים לכדי תעודת זהות דיגיטלית לכל נכס בישראל. מבית מור מערכות תוכנה.",
+        "metaViewport": "width=device-width, initial-scale=1",
+        "canonical": "",
+        "ogUrl": "",
+        "h1Count": 1,
+        "h1": "כל מה שצריך לדעת על נכס — ברגע",
+        "headings": [
+          "H1: כל מה שצריך לדעת על נכס — ברגע",
+          "H3: מה בודקים",
+          "H3: איזה דוח",
+          "H3: אילו נתונים לכלול",
+          "H3: פרטי הנכס",
+          "H3: או חיפוש חופשי",
+          "H2: ארבעה תחומים, אותו עומק",
+          "H2: הדוח המלא נשלח למייל",
+          "H2: שלוש רמות של דוח",
+          "H2: מה יש בדוח",
+          "H3: לרחוב אחד יש לפעמים שני שמות",
+          "H3: איך אנחנו מציגים נתונים"
+        ],
+        "textLen": 6441,
+        "interactiveCount": 42,
+        "smallTargets": [],
+        "unnamedControls": [],
+        "imgsNoAlt": [],
+        "hasAuthScript": true,
+        "authBtnText": "",
+        "bodyBg": "rgb(246, 248, 252)",
+        "bodyFg": "rgb(26, 34, 51)",
+        "vercelLeak": [],
+        "scrollW": 390,
+        "clientW": 390
+      },
+      "dark": {
+        "status": 200,
+        "loadMs": 4917,
+        "consoleErrors": [],
+        "failedRequests": [],
+        "screenshot": "nadlan-dark.png",
+        "title": "נדל\"ן ברגע — תעודת זהות דיגיטלית לכל נכס",
+        "lang": "he",
+        "dir": "rtl",
+        "metaDescription": "מנוע אגרגציה שמאחד מקורות מידע ממשלתיים ומסחריים לכדי תעודת זהות דיגיטלית לכל נכס בישראל. מבית מור מערכות תוכנה.",
+        "metaViewport": "width=device-width, initial-scale=1",
+        "canonical": "",
+        "ogUrl": "",
+        "h1Count": 1,
+        "h1": "כל מה שצריך לדעת על נכס — ברגע",
+        "headings": [
+          "H1: כל מה שצריך לדעת על נכס — ברגע",
+          "H3: מה בודקים",
+          "H3: איזה דוח",
+          "H3: אילו נתונים לכלול",
+          "H3: פרטי הנכס",
+          "H3: או חיפוש חופשי",
+          "H2: ארבעה תחומים, אותו עומק",
+          "H2: הדוח המלא נשלח למייל",
+          "H2: שלוש רמות של דוח",
+          "H2: מה יש בדוח",
+          "H3: לרחוב אחד יש לפעמים שני שמות",
+          "H3: איך אנחנו מציגים נתונים"
+        ],
+        "textLen": 6441,
+        "interactiveCount": 42,
+        "smallTargets": [],
+        "unnamedControls": [],
+        "imgsNoAlt": [],
+        "hasAuthScript": true,
+        "authBtnText": "",
+        "bodyBg": "rgb(246, 248, 252)",
+        "bodyFg": "rgb(26, 34, 51)",
+        "vercelLeak": [],
+        "scrollW": 1440,
+        "clientW": 1440
+      },
+      "darkModeImplemented": false,
+      "horizontalOverflow": false
+    }
+  },
+  "finishedAt": "2026-08-02T00:25:13.253Z"
+}
