@@ -39,6 +39,7 @@
     { "source": "/smel/:path*", "destination": "https://smel-more30.vercel.app/smel/:path*" },
     { "source": "/kupot", "destination": "https://kupot-more30.vercel.app/kupot" },
     { "source": "/kupot/:path*", "destination": "https://kupot-more30.vercel.app/kupot/:path*" },
+    { "source": "/api/hf/:path*", "destination": "https://kupot-more30.vercel.app/api/hf/:path*" },
     { "source": "/gesher", "destination": "https://gesher-more30.vercel.app/gesher/" },
     { "source": "/gesher/", "destination": "https://gesher-more30.vercel.app/gesher/" },
     { "source": "/gesher/:path*", "destination": "https://gesher-more30.vercel.app/gesher/:path*" },

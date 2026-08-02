@@ -10,7 +10,7 @@
       "url": "https://more30.com/",
       "desktop": {
         "status": 200,
-        "loadMs": 4423,
+        "loadMs": 4706,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "home-desktop.png",
@@ -41,6 +41,7 @@
         "textLen": 4267,
         "interactiveCount": 24,
         "smallTargets": [],
+        "srOnlyTargets": [],
         "unnamedControls": [],
         "imgsNoAlt": [],
         "hasAuthScript": true,
@@ -57,7 +58,7 @@
       },
       "mobile": {
         "status": 200,
-        "loadMs": 4396,
+        "loadMs": 5274,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "home-mobile.png",
@@ -88,6 +89,7 @@
         "textLen": 4252,
         "interactiveCount": 23,
         "smallTargets": [],
+        "srOnlyTargets": [],
         "unnamedControls": [],
         "imgsNoAlt": [],
         "hasAuthScript": true,
@@ -104,7 +106,7 @@
       },
       "dark": {
         "status": 200,
-        "loadMs": 4254,
+        "loadMs": 4588,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "home-dark.png",
@@ -135,6 +137,7 @@
         "textLen": 4267,
         "interactiveCount": 24,
         "smallTargets": [],
+        "srOnlyTargets": [],
         "unnamedControls": [],
         "imgsNoAlt": [],
         "hasAuthScript": true,
@@ -161,7 +164,7 @@
       "url": "https://more30.com/login",
       "desktop": {
         "status": 200,
-        "loadMs": 4832,
+        "loadMs": 5357,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "login-desktop.png",
@@ -181,6 +184,7 @@
         "textLen": 332,
         "interactiveCount": 8,
         "smallTargets": [],
+        "srOnlyTargets": [],
         "unnamedControls": [],
         "imgsNoAlt": [],
         "hasAuthScript": false,
@@ -197,7 +201,7 @@
       },
       "mobile": {
         "status": 200,
-        "loadMs": 4528,
+        "loadMs": 4375,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "login-mobile.png",
@@ -217,6 +221,7 @@
         "textLen": 332,
         "interactiveCount": 8,
         "smallTargets": [],
+        "srOnlyTargets": [],
         "unnamedControls": [],
         "imgsNoAlt": [],
         "hasAuthScript": false,
@@ -233,7 +238,7 @@
       },
       "dark": {
         "status": 200,
-        "loadMs": 4447,
+        "loadMs": 4703,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "login-dark.png",
@@ -253,6 +258,7 @@
         "textLen": 332,
         "interactiveCount": 8,
         "smallTargets": [],
+        "srOnlyTargets": [],
         "unnamedControls": [],
         "imgsNoAlt": [],
         "hasAuthScript": false,
@@ -279,7 +285,7 @@
       "url": "https://more30.com/me",
       "desktop": {
         "status": 200,
-        "loadMs": 4510,
+        "loadMs": 4524,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "me-desktop.png",
@@ -299,6 +305,7 @@
         "textLen": 95,
         "interactiveCount": 3,
         "smallTargets": [],
+        "srOnlyTargets": [],
         "unnamedControls": [],
         "imgsNoAlt": [],
         "hasAuthScript": false,
@@ -315,7 +322,7 @@
       },
       "mobile": {
         "status": 200,
-        "loadMs": 4616,
+        "loadMs": 4443,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "me-mobile.png",
@@ -335,6 +342,7 @@
         "textLen": 95,
         "interactiveCount": 3,
         "smallTargets": [],
+        "srOnlyTargets": [],
         "unnamedControls": [],
         "imgsNoAlt": [],
         "hasAuthScript": false,
@@ -351,7 +359,7 @@
       },
       "dark": {
         "status": 200,
-        "loadMs": 4542,
+        "loadMs": 4543,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "me-dark.png",
@@ -371,6 +379,7 @@
         "textLen": 95,
         "interactiveCount": 3,
         "smallTargets": [],
+        "srOnlyTargets": [],
         "unnamedControls": [],
         "imgsNoAlt": [],
         "hasAuthScript": false,
@@ -397,7 +406,7 @@
       "url": "https://more30.com/subscribe",
       "desktop": {
         "status": 200,
-        "loadMs": 4403,
+        "loadMs": 5427,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "subscribe-desktop.png",
@@ -419,6 +428,7 @@
         "textLen": 650,
         "interactiveCount": 6,
         "smallTargets": [],
+        "srOnlyTargets": [],
         "unnamedControls": [],
         "imgsNoAlt": [],
         "hasAuthScript": true,
@@ -435,7 +445,7 @@
       },
       "mobile": {
         "status": 200,
-        "loadMs": 4422,
+        "loadMs": 4453,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "subscribe-mobile.png",
@@ -457,6 +467,7 @@
         "textLen": 650,
         "interactiveCount": 6,
         "smallTargets": [],
+        "srOnlyTargets": [],
         "unnamedControls": [],
         "imgsNoAlt": [],
         "hasAuthScript": true,
@@ -473,7 +484,7 @@
       },
       "dark": {
         "status": 200,
-        "loadMs": 4429,
+        "loadMs": 4498,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "subscribe-dark.png",
@@ -495,6 +506,7 @@
         "textLen": 650,
         "interactiveCount": 6,
         "smallTargets": [],
+        "srOnlyTargets": [],
         "unnamedControls": [],
         "imgsNoAlt": [],
         "hasAuthScript": true,
@@ -521,7 +533,7 @@
       "url": "https://more30.com/torah",
       "desktop": {
         "status": 200,
-        "loadMs": 5104,
+        "loadMs": 5373,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "torah-desktop.png",
@@ -529,7 +541,8 @@
         "lang": "he",
         "dir": "rtl",
         "metaDescription": "המערכת המאוחדת לאיגוד השיעורים, מועצות דתיות, ארגונים, בתי כנסת ומגידי שיעור.",
-        "metaViewport": "width=device-width, initial-scale=1.0, maximum-scale=5.0",
+        "metaViewport": "width=device-width, initial-scale=1.0",
+        "metaRobots": "",
         "canonical": "",
         "ogUrl": "",
         "h1Count": 1,
@@ -550,75 +563,25 @@
         ],
         "textLen": 1237,
         "interactiveCount": 30,
-        "smallTargets": [
-          {
-            "tag": "a",
-            "w": 29,
-            "h": 17,
-            "name": "ראשי"
-          },
-          {
-            "tag": "a",
-            "w": 78,
-            "h": 17,
-            "name": "מאגר שיעורים"
-          },
-          {
-            "tag": "a",
-            "w": 87,
-            "h": 17,
-            "name": "תשמישי קדושה"
-          },
-          {
-            "tag": "a",
-            "w": 38,
-            "h": 17,
-            "name": "תרומה"
-          },
-          {
-            "tag": "a",
-            "w": 32,
-            "h": 17,
-            "name": "אודות"
-          },
-          {
-            "tag": "a",
-            "w": 48,
-            "h": 17,
-            "name": "צור קשר"
-          },
-          {
-            "tag": "a",
-            "w": 85,
-            "h": 17,
-            "name": "מדיניות פרטיות"
-          },
-          {
-            "tag": "a",
-            "w": 83,
-            "h": 17,
-            "name": "הצהרת נגישות"
-          }
-        ],
-        "unnamedControls": [
-          {
-            "tag": "a",
-            "type": "",
-            "cls": "inline-flex items-center justify-center "
-          }
-        ],
+        "smallTargets": [],
+        "srOnlyTargets": [],
+        "unnamedControls": [],
         "imgsNoAlt": [],
         "hasAuthScript": true,
         "authBtnText": "",
         "bodyBg": "rgb(255, 255, 255)",
         "bodyFg": "rgb(18, 27, 43)",
+        "effBg": "rgb(255, 255, 255)",
+        "bgImages": "",
+        "bgLuminance": 1,
+        "colorScheme": "normal",
         "vercelLeak": [],
         "scrollW": 1440,
         "clientW": 1440
       },
       "mobile": {
         "status": 200,
-        "loadMs": 5580,
+        "loadMs": 4799,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "torah-mobile.png",
@@ -626,7 +589,8 @@
         "lang": "he",
         "dir": "rtl",
         "metaDescription": "המערכת המאוחדת לאיגוד השיעורים, מועצות דתיות, ארגונים, בתי כנסת ומגידי שיעור.",
-        "metaViewport": "width=device-width, initial-scale=1.0, maximum-scale=5.0",
+        "metaViewport": "width=device-width, initial-scale=1.0",
+        "metaRobots": "",
         "canonical": "",
         "ogUrl": "",
         "h1Count": 1,
@@ -647,90 +611,34 @@
         ],
         "textLen": 1109,
         "interactiveCount": 24,
-        "smallTargets": [
-          {
-            "tag": "a",
-            "w": 29,
-            "h": 17,
-            "name": "ראשי"
-          },
-          {
-            "tag": "a",
-            "w": 78,
-            "h": 17,
-            "name": "מאגר שיעורים"
-          },
-          {
-            "tag": "a",
-            "w": 87,
-            "h": 17,
-            "name": "תשמישי קדושה"
-          },
-          {
-            "tag": "a",
-            "w": 38,
-            "h": 17,
-            "name": "תרומה"
-          },
-          {
-            "tag": "a",
-            "w": 32,
-            "h": 17,
-            "name": "אודות"
-          },
-          {
-            "tag": "a",
-            "w": 48,
-            "h": 17,
-            "name": "צור קשר"
-          },
-          {
-            "tag": "a",
-            "w": 85,
-            "h": 17,
-            "name": "מדיניות פרטיות"
-          },
-          {
-            "tag": "a",
-            "w": 83,
-            "h": 17,
-            "name": "הצהרת נגישות"
-          }
-        ],
-        "unnamedControls": [
-          {
-            "tag": "a",
-            "type": "",
-            "cls": "inline-flex items-center justify-center "
-          },
-          {
-            "tag": "button",
-            "type": "",
-            "cls": "inline-flex items-center justify-center "
-          }
-        ],
+        "smallTargets": [],
+        "srOnlyTargets": [],
+        "unnamedControls": [],
         "imgsNoAlt": [],
         "hasAuthScript": true,
         "authBtnText": "",
         "bodyBg": "rgb(255, 255, 255)",
         "bodyFg": "rgb(18, 27, 43)",
+        "effBg": "rgb(255, 255, 255)",
+        "bgImages": "",
+        "bgLuminance": 1,
+        "colorScheme": "normal",
         "vercelLeak": [],
         "scrollW": 390,
         "clientW": 390
       },
       "dark": {
         "status": 200,
-        "loadMs": 9610,
+        "loadMs": 4907,
         "consoleErrors": [],
-        "failedRequests": [
-          "GET https://netfree.link/card/index.html — net::ERR_ABORTED"
-        ],
+        "failedRequests": [],
         "screenshot": "torah-dark.png",
         "title": "איגוד מגידי השיעורים",
         "lang": "he",
         "dir": "rtl",
         "metaDescription": "המערכת המאוחדת לאיגוד השיעורים, מועצות דתיות, ארגונים, בתי כנסת ומגידי שיעור.",
-        "metaViewport": "width=device-width, initial-scale=1.0, maximum-scale=5.0",
+        "metaViewport": "width=device-width, initial-scale=1.0",
+        "metaRobots": "",
         "canonical": "",
         "ogUrl": "",
         "h1Count": 1,
@@ -751,73 +659,24 @@
         ],
         "textLen": 1237,
         "interactiveCount": 30,
-        "smallTargets": [
-          {
-            "tag": "a",
-            "w": 29,
-            "h": 17,
-            "name": "ראשי"
-          },
-          {
-            "tag": "a",
-            "w": 78,
-            "h": 17,
-            "name": "מאגר שיעורים"
-          },
-          {
-            "tag": "a",
-            "w": 87,
-            "h": 17,
-            "name": "תשמישי קדושה"
-          },
-          {
-            "tag": "a",
-            "w": 38,
-            "h": 17,
-            "name": "תרומה"
-          },
-          {
-            "tag": "a",
-            "w": 32,
-            "h": 17,
-            "name": "אודות"
-          },
-          {
-            "tag": "a",
-            "w": 48,
-            "h": 17,
-            "name": "צור קשר"
-          },
-          {
-            "tag": "a",
-            "w": 85,
-            "h": 17,
-            "name": "מדיניות פרטיות"
-          },
-          {
-            "tag": "a",
-            "w": 83,
-            "h": 17,
-            "name": "הצהרת נגישות"
-          }
-        ],
-        "unnamedControls": [
-          {
-            "tag": "a",
-            "type": "",
-            "cls": "inline-flex items-center justify-center "
-          }
-        ],
+        "smallTargets": [],
+        "srOnlyTargets": [],
+        "unnamedControls": [],
         "imgsNoAlt": [],
         "hasAuthScript": true,
         "authBtnText": "",
         "bodyBg": "rgb(255, 255, 255)",
         "bodyFg": "rgb(18, 27, 43)",
+        "effBg": "rgb(255, 255, 255)",
+        "bgImages": "",
+        "bgLuminance": 1,
+        "colorScheme": "normal",
         "vercelLeak": [],
         "scrollW": 1440,
         "clientW": 1440
       },
       "darkModeImplemented": false,
+      "darkModeBasis": "none",
       "horizontalOverflow": false
     },
     "tamlul": {
@@ -828,17 +687,16 @@
       "url": "https://more30.com/tamlul",
       "desktop": {
         "status": 200,
-        "loadMs": 4807,
+        "loadMs": 4449,
         "consoleErrors": [],
-        "failedRequests": [
-          "GET https://netfree.link/card/index.html — net::ERR_ABORTED"
-        ],
+        "failedRequests": [],
         "screenshot": "tamlul-desktop.png",
         "title": "תמלול מבית איגוד השיעורים",
         "lang": "he",
         "dir": "rtl",
         "metaDescription": "מערכת תמלול מקצועית בעברית לשיעורי תורה — תמלול אוטומטי, עריכה לפי מסלולי סגנון, יצוא Word.",
         "metaViewport": "width=device-width, initial-scale=1",
+        "metaRobots": "",
         "canonical": "",
         "ogUrl": "",
         "h1Count": 1,
@@ -863,19 +721,24 @@
             "name": "a023131600@gmail.com"
           }
         ],
+        "srOnlyTargets": [],
         "unnamedControls": [],
         "imgsNoAlt": [],
         "hasAuthScript": true,
         "authBtnText": "",
         "bodyBg": "rgb(251, 250, 246)",
         "bodyFg": "rgb(26, 26, 26)",
+        "effBg": "rgb(251, 250, 246)",
+        "bgImages": "",
+        "bgLuminance": 0.9553,
+        "colorScheme": "light",
         "vercelLeak": [],
         "scrollW": 1440,
         "clientW": 1440
       },
       "mobile": {
         "status": 200,
-        "loadMs": 4639,
+        "loadMs": 4491,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "tamlul-mobile.png",
@@ -884,6 +747,7 @@
         "dir": "rtl",
         "metaDescription": "מערכת תמלול מקצועית בעברית לשיעורי תורה — תמלול אוטומטי, עריכה לפי מסלולי סגנון, יצוא Word.",
         "metaViewport": "width=device-width, initial-scale=1",
+        "metaRobots": "",
         "canonical": "",
         "ogUrl": "",
         "h1Count": 1,
@@ -908,19 +772,24 @@
             "name": "a023131600@gmail.com"
           }
         ],
+        "srOnlyTargets": [],
         "unnamedControls": [],
         "imgsNoAlt": [],
         "hasAuthScript": true,
         "authBtnText": "",
         "bodyBg": "rgb(251, 250, 246)",
         "bodyFg": "rgb(26, 26, 26)",
+        "effBg": "rgb(251, 250, 246)",
+        "bgImages": "",
+        "bgLuminance": 0.9553,
+        "colorScheme": "light",
         "vercelLeak": [],
         "scrollW": 390,
         "clientW": 390
       },
       "dark": {
         "status": 200,
-        "loadMs": 4579,
+        "loadMs": 4501,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "tamlul-dark.png",
@@ -929,6 +798,7 @@
         "dir": "rtl",
         "metaDescription": "מערכת תמלול מקצועית בעברית לשיעורי תורה — תמלול אוטומטי, עריכה לפי מסלולי סגנון, יצוא Word.",
         "metaViewport": "width=device-width, initial-scale=1",
+        "metaRobots": "",
         "canonical": "",
         "ogUrl": "",
         "h1Count": 1,
@@ -953,17 +823,23 @@
             "name": "a023131600@gmail.com"
           }
         ],
+        "srOnlyTargets": [],
         "unnamedControls": [],
         "imgsNoAlt": [],
         "hasAuthScript": true,
         "authBtnText": "",
         "bodyBg": "rgb(251, 250, 246)",
         "bodyFg": "rgb(26, 26, 26)",
+        "effBg": "rgb(251, 250, 246)",
+        "bgImages": "",
+        "bgLuminance": 0.9553,
+        "colorScheme": "light",
         "vercelLeak": [],
         "scrollW": 1440,
         "clientW": 1440
       },
       "darkModeImplemented": false,
+      "darkModeBasis": "none",
       "horizontalOverflow": false
     },
     "modaot": {
@@ -974,7 +850,7 @@
       "url": "https://more30.com/modaot",
       "desktop": {
         "status": 200,
-        "loadMs": 4875,
+        "loadMs": 4492,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "modaot-desktop.png",
@@ -983,6 +859,7 @@
         "dir": "rtl",
         "metaDescription": "פלטפורמת AI ליצירת מודעות מקצועיות לשיעורי תורה, גמ\"ח, בית כנסת ואירועים — בעברית מלאה.",
         "metaViewport": "width=device-width, initial-scale=1",
+        "metaRobots": "",
         "canonical": "",
         "ogUrl": "",
         "h1Count": 1,
@@ -1017,19 +894,24 @@
             "name": "התחברות"
           }
         ],
+        "srOnlyTargets": [],
         "unnamedControls": [],
         "imgsNoAlt": [],
         "hasAuthScript": false,
         "authBtnText": "",
         "bodyBg": "rgb(248, 245, 236)",
         "bodyFg": "rgb(26, 26, 26)",
+        "effBg": "rgb(248, 245, 236)",
+        "bgImages": "",
+        "bgLuminance": 0.9132,
+        "colorScheme": "normal",
         "vercelLeak": [],
         "scrollW": 1440,
         "clientW": 1440
       },
       "mobile": {
         "status": 200,
-        "loadMs": 4511,
+        "loadMs": 4393,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "modaot-mobile.png",
@@ -1038,6 +920,7 @@
         "dir": "rtl",
         "metaDescription": "פלטפורמת AI ליצירת מודעות מקצועיות לשיעורי תורה, גמ\"ח, בית כנסת ואירועים — בעברית מלאה.",
         "metaViewport": "width=device-width, initial-scale=1",
+        "metaRobots": "",
         "canonical": "",
         "ogUrl": "",
         "h1Count": 1,
@@ -1060,19 +943,24 @@
             "name": "התחברות"
           }
         ],
+        "srOnlyTargets": [],
         "unnamedControls": [],
         "imgsNoAlt": [],
         "hasAuthScript": false,
         "authBtnText": "",
         "bodyBg": "rgb(248, 245, 236)",
         "bodyFg": "rgb(26, 26, 26)",
+        "effBg": "rgb(248, 245, 236)",
+        "bgImages": "",
+        "bgLuminance": 0.9132,
+        "colorScheme": "normal",
         "vercelLeak": [],
         "scrollW": 390,
         "clientW": 390
       },
       "dark": {
         "status": 200,
-        "loadMs": 4393,
+        "loadMs": 4445,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "modaot-dark.png",
@@ -1081,6 +969,7 @@
         "dir": "rtl",
         "metaDescription": "פלטפורמת AI ליצירת מודעות מקצועיות לשיעורי תורה, גמ\"ח, בית כנסת ואירועים — בעברית מלאה.",
         "metaViewport": "width=device-width, initial-scale=1",
+        "metaRobots": "",
         "canonical": "",
         "ogUrl": "",
         "h1Count": 1,
@@ -1115,17 +1004,23 @@
             "name": "התחברות"
           }
         ],
+        "srOnlyTargets": [],
         "unnamedControls": [],
         "imgsNoAlt": [],
         "hasAuthScript": false,
         "authBtnText": "",
         "bodyBg": "rgb(248, 245, 236)",
         "bodyFg": "rgb(26, 26, 26)",
+        "effBg": "rgb(248, 245, 236)",
+        "bgImages": "",
+        "bgLuminance": 0.9132,
+        "colorScheme": "normal",
         "vercelLeak": [],
         "scrollW": 1440,
         "clientW": 1440
       },
       "darkModeImplemented": false,
+      "darkModeBasis": "none",
       "horizontalOverflow": false
     },
     "imud": {
@@ -1136,7 +1031,7 @@
       "url": "https://more30.com/imud",
       "desktop": {
         "status": 200,
-        "loadMs": 4725,
+        "loadMs": 4521,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "imud-desktop.png",
@@ -1144,7 +1039,8 @@
         "lang": "he",
         "dir": "rtl",
         "metaDescription": "מערכת עימוד תורני מקצועית ללא ידע גרפי: בחר תבנית, הזן תוכן, ייצא PDF מהודר לספרי קודש.",
-        "metaViewport": "width=device-width, initial-scale=1.0, maximum-scale=1",
+        "metaViewport": "width=device-width, initial-scale=1.0",
+        "metaRobots": "",
         "canonical": "",
         "ogUrl": "",
         "h1Count": 1,
@@ -1155,37 +1051,29 @@
           "H3: הזן תוכן",
           "H3: תצוגה חיה",
           "H3: ייצא PDF",
-          "H2: הספרים שלי",
-          "H3: ניסיון",
-          "H3: ספר חדש"
+          "H2: הספרים שלי"
         ],
-        "textLen": 598,
-        "interactiveCount": 13,
+        "textLen": 587,
+        "interactiveCount": 8,
         "smallTargets": [],
-        "unnamedControls": [
-          {
-            "tag": "button",
-            "type": "",
-            "cls": "inline-flex items-center justify-center "
-          },
-          {
-            "tag": "button",
-            "type": "",
-            "cls": "inline-flex items-center justify-center "
-          }
-        ],
+        "srOnlyTargets": [],
+        "unnamedControls": [],
         "imgsNoAlt": [],
         "hasAuthScript": true,
         "authBtnText": "",
         "bodyBg": "rgb(250, 248, 245)",
         "bodyFg": "rgb(46, 34, 25)",
+        "effBg": "rgb(250, 248, 245)",
+        "bgImages": "",
+        "bgLuminance": 0.9405,
+        "colorScheme": "normal",
         "vercelLeak": [],
         "scrollW": 1440,
         "clientW": 1440
       },
       "mobile": {
         "status": 200,
-        "loadMs": 4578,
+        "loadMs": 4478,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "imud-mobile.png",
@@ -1193,7 +1081,8 @@
         "lang": "he",
         "dir": "rtl",
         "metaDescription": "מערכת עימוד תורני מקצועית ללא ידע גרפי: בחר תבנית, הזן תוכן, ייצא PDF מהודר לספרי קודש.",
-        "metaViewport": "width=device-width, initial-scale=1.0, maximum-scale=1",
+        "metaViewport": "width=device-width, initial-scale=1.0",
+        "metaRobots": "",
         "canonical": "",
         "ogUrl": "",
         "h1Count": 1,
@@ -1204,37 +1093,29 @@
           "H3: הזן תוכן",
           "H3: תצוגה חיה",
           "H3: ייצא PDF",
-          "H2: הספרים שלי",
-          "H3: ניסיון",
-          "H3: ספר חדש"
+          "H2: הספרים שלי"
         ],
-        "textLen": 598,
-        "interactiveCount": 13,
+        "textLen": 587,
+        "interactiveCount": 8,
         "smallTargets": [],
-        "unnamedControls": [
-          {
-            "tag": "button",
-            "type": "",
-            "cls": "inline-flex items-center justify-center "
-          },
-          {
-            "tag": "button",
-            "type": "",
-            "cls": "inline-flex items-center justify-center "
-          }
-        ],
+        "srOnlyTargets": [],
+        "unnamedControls": [],
         "imgsNoAlt": [],
         "hasAuthScript": true,
         "authBtnText": "",
         "bodyBg": "rgb(250, 248, 245)",
         "bodyFg": "rgb(46, 34, 25)",
+        "effBg": "rgb(250, 248, 245)",
+        "bgImages": "",
+        "bgLuminance": 0.9405,
+        "colorScheme": "normal",
         "vercelLeak": [],
         "scrollW": 390,
         "clientW": 390
       },
       "dark": {
         "status": 200,
-        "loadMs": 4728,
+        "loadMs": 4441,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "imud-dark.png",
@@ -1242,7 +1123,8 @@
         "lang": "he",
         "dir": "rtl",
         "metaDescription": "מערכת עימוד תורני מקצועית ללא ידע גרפי: בחר תבנית, הזן תוכן, ייצא PDF מהודר לספרי קודש.",
-        "metaViewport": "width=device-width, initial-scale=1.0, maximum-scale=1",
+        "metaViewport": "width=device-width, initial-scale=1.0",
+        "metaRobots": "",
         "canonical": "",
         "ogUrl": "",
         "h1Count": 1,
@@ -1253,35 +1135,28 @@
           "H3: הזן תוכן",
           "H3: תצוגה חיה",
           "H3: ייצא PDF",
-          "H2: הספרים שלי",
-          "H3: ניסיון",
-          "H3: ספר חדש"
+          "H2: הספרים שלי"
         ],
-        "textLen": 598,
-        "interactiveCount": 13,
+        "textLen": 587,
+        "interactiveCount": 8,
         "smallTargets": [],
-        "unnamedControls": [
-          {
-            "tag": "button",
-            "type": "",
-            "cls": "inline-flex items-center justify-center "
-          },
-          {
-            "tag": "button",
-            "type": "",
-            "cls": "inline-flex items-center justify-center "
-          }
-        ],
+        "srOnlyTargets": [],
+        "unnamedControls": [],
         "imgsNoAlt": [],
         "hasAuthScript": true,
         "authBtnText": "",
         "bodyBg": "rgb(250, 248, 245)",
         "bodyFg": "rgb(46, 34, 25)",
+        "effBg": "rgb(250, 248, 245)",
+        "bgImages": "",
+        "bgLuminance": 0.9405,
+        "colorScheme": "normal",
         "vercelLeak": [],
         "scrollW": 1440,
         "clientW": 1440
       },
       "darkModeImplemented": false,
+      "darkModeBasis": "none",
       "horizontalOverflow": false
     },
     "briut": {
@@ -1292,7 +1167,7 @@
       "url": "https://more30.com/briut",
       "desktop": {
         "status": 200,
-        "loadMs": 4855,
+        "loadMs": 4466,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "briut-desktop.png",
@@ -1301,6 +1176,7 @@
         "dir": "rtl",
         "metaDescription": "השוואה מלאה בין קופות החולים בישראל — כללית, מכבי, מאוחדת ולאומית. המלצה לאיזו קופה כדאי לעבור לפי מצב המשפחה, הבריאות והילדים, על בסיס נתוני בקלות.",
         "metaViewport": "width=device-width, initial-scale=1.0",
+        "metaRobots": "",
         "canonical": "",
         "ogUrl": "",
         "h1Count": 1,
@@ -1322,19 +1198,24 @@
         "textLen": 4873,
         "interactiveCount": 61,
         "smallTargets": [],
+        "srOnlyTargets": [],
         "unnamedControls": [],
         "imgsNoAlt": [],
         "hasAuthScript": true,
         "authBtnText": "",
         "bodyBg": "rgb(246, 248, 249)",
         "bodyFg": "rgb(22, 35, 43)",
+        "effBg": "rgb(246, 248, 249)",
+        "bgImages": "",
+        "bgLuminance": 0.9357,
+        "colorScheme": "normal",
         "vercelLeak": [],
         "scrollW": 1440,
         "clientW": 1440
       },
       "mobile": {
         "status": 200,
-        "loadMs": 4415,
+        "loadMs": 4512,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "briut-mobile.png",
@@ -1343,6 +1224,7 @@
         "dir": "rtl",
         "metaDescription": "השוואה מלאה בין קופות החולים בישראל — כללית, מכבי, מאוחדת ולאומית. המלצה לאיזו קופה כדאי לעבור לפי מצב המשפחה, הבריאות והילדים, על בסיס נתוני בקלות.",
         "metaViewport": "width=device-width, initial-scale=1.0",
+        "metaRobots": "",
         "canonical": "",
         "ogUrl": "",
         "h1Count": 1,
@@ -1364,19 +1246,24 @@
         "textLen": 4841,
         "interactiveCount": 58,
         "smallTargets": [],
+        "srOnlyTargets": [],
         "unnamedControls": [],
         "imgsNoAlt": [],
         "hasAuthScript": true,
         "authBtnText": "",
         "bodyBg": "rgb(246, 248, 249)",
         "bodyFg": "rgb(22, 35, 43)",
+        "effBg": "rgb(246, 248, 249)",
+        "bgImages": "",
+        "bgLuminance": 0.9357,
+        "colorScheme": "normal",
         "vercelLeak": [],
         "scrollW": 390,
         "clientW": 390
       },
       "dark": {
         "status": 200,
-        "loadMs": 4447,
+        "loadMs": 4373,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "briut-dark.png",
@@ -1385,6 +1272,7 @@
         "dir": "rtl",
         "metaDescription": "השוואה מלאה בין קופות החולים בישראל — כללית, מכבי, מאוחדת ולאומית. המלצה לאיזו קופה כדאי לעבור לפי מצב המשפחה, הבריאות והילדים, על בסיס נתוני בקלות.",
         "metaViewport": "width=device-width, initial-scale=1.0",
+        "metaRobots": "",
         "canonical": "",
         "ogUrl": "",
         "h1Count": 1,
@@ -1406,17 +1294,23 @@
         "textLen": 4873,
         "interactiveCount": 61,
         "smallTargets": [],
+        "srOnlyTargets": [],
         "unnamedControls": [],
         "imgsNoAlt": [],
         "hasAuthScript": true,
         "authBtnText": "",
         "bodyBg": "rgb(246, 248, 249)",
         "bodyFg": "rgb(22, 35, 43)",
+        "effBg": "rgb(246, 248, 249)",
+        "bgImages": "",
+        "bgLuminance": 0.9357,
+        "colorScheme": "normal",
         "vercelLeak": [],
         "scrollW": 1440,
         "clientW": 1440
       },
       "darkModeImplemented": false,
+      "darkModeBasis": "none",
       "horizontalOverflow": false
     },
     "bkalot": {
@@ -1427,7 +1321,7 @@
       "url": "https://more30.com/bkalot",
       "desktop": {
         "status": 200,
-        "loadMs": 5084,
+        "loadMs": 4507,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "bkalot-desktop.png",
@@ -1436,6 +1330,7 @@
         "dir": "rtl",
         "metaDescription": "",
         "metaViewport": "width=device-width, initial-scale=1.0",
+        "metaRobots": "",
         "canonical": "",
         "ogUrl": "",
         "h1Count": 1,
@@ -1457,6 +1352,7 @@
         "textLen": 3065,
         "interactiveCount": 45,
         "smallTargets": [],
+        "srOnlyTargets": [],
         "unnamedControls": [
           {
             "tag": "select",
@@ -1469,13 +1365,17 @@
         "authBtnText": "",
         "bodyBg": "rgb(247, 246, 242)",
         "bodyFg": "rgb(35, 33, 28)",
+        "effBg": "rgb(247, 246, 242)",
+        "bgImages": "",
+        "bgLuminance": 0.921,
+        "colorScheme": "normal",
         "vercelLeak": [],
         "scrollW": 1440,
         "clientW": 1440
       },
       "mobile": {
         "status": 200,
-        "loadMs": 4509,
+        "loadMs": 4458,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "bkalot-mobile.png",
@@ -1484,6 +1384,7 @@
         "dir": "rtl",
         "metaDescription": "",
         "metaViewport": "width=device-width, initial-scale=1.0",
+        "metaRobots": "",
         "canonical": "",
         "ogUrl": "",
         "h1Count": 1,
@@ -1505,6 +1406,7 @@
         "textLen": 2996,
         "interactiveCount": 38,
         "smallTargets": [],
+        "srOnlyTargets": [],
         "unnamedControls": [
           {
             "tag": "select",
@@ -1517,13 +1419,17 @@
         "authBtnText": "",
         "bodyBg": "rgb(247, 246, 242)",
         "bodyFg": "rgb(35, 33, 28)",
+        "effBg": "rgb(247, 246, 242)",
+        "bgImages": "",
+        "bgLuminance": 0.921,
+        "colorScheme": "normal",
         "vercelLeak": [],
         "scrollW": 390,
         "clientW": 390
       },
       "dark": {
         "status": 200,
-        "loadMs": 4594,
+        "loadMs": 4477,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "bkalot-dark.png",
@@ -1532,6 +1438,7 @@
         "dir": "rtl",
         "metaDescription": "",
         "metaViewport": "width=device-width, initial-scale=1.0",
+        "metaRobots": "",
         "canonical": "",
         "ogUrl": "",
         "h1Count": 1,
@@ -1553,6 +1460,7 @@
         "textLen": 3065,
         "interactiveCount": 45,
         "smallTargets": [],
+        "srOnlyTargets": [],
         "unnamedControls": [
           {
             "tag": "select",
@@ -1565,11 +1473,16 @@
         "authBtnText": "",
         "bodyBg": "rgb(247, 246, 242)",
         "bodyFg": "rgb(35, 33, 28)",
+        "effBg": "rgb(247, 246, 242)",
+        "bgImages": "",
+        "bgLuminance": 0.921,
+        "colorScheme": "normal",
         "vercelLeak": [],
         "scrollW": 1440,
         "clientW": 1440
       },
       "darkModeImplemented": false,
+      "darkModeBasis": "none",
       "horizontalOverflow": false
     },
     "smel": {
@@ -1580,7 +1493,7 @@
       "url": "https://more30.com/smel",
       "desktop": {
         "status": 200,
-        "loadMs": 4587,
+        "loadMs": 4314,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "smel-desktop.png",
@@ -1588,7 +1501,8 @@
         "lang": "he",
         "dir": "rtl",
         "metaDescription": "SMEL NDLN — מערכת מחקר נדלן חכם המבוססת על נתוני ממשלה רשמיים. הזינו כתובת וקבלו הערכת שווי, ציון כדאיות ותובנות על השכונה.",
-        "metaViewport": "width=device-width, initial-scale=1.0, maximum-scale=1",
+        "metaViewport": "width=device-width, initial-scale=1.0",
+        "metaRobots": "",
         "canonical": "",
         "ogUrl": "",
         "h1Count": 1,
@@ -1604,19 +1518,24 @@
         "textLen": 1166,
         "interactiveCount": 9,
         "smallTargets": [],
+        "srOnlyTargets": [],
         "unnamedControls": [],
         "imgsNoAlt": [],
         "hasAuthScript": true,
         "authBtnText": "",
         "bodyBg": "rgb(251, 250, 248)",
         "bodyFg": "rgb(21, 34, 55)",
+        "effBg": "rgb(251, 250, 248)",
+        "bgImages": "",
+        "bgLuminance": 0.9566,
+        "colorScheme": "normal",
         "vercelLeak": [],
         "scrollW": 1440,
         "clientW": 1440
       },
       "mobile": {
         "status": 200,
-        "loadMs": 4559,
+        "loadMs": 4628,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "smel-mobile.png",
@@ -1624,7 +1543,8 @@
         "lang": "he",
         "dir": "rtl",
         "metaDescription": "SMEL NDLN — מערכת מחקר נדלן חכם המבוססת על נתוני ממשלה רשמיים. הזינו כתובת וקבלו הערכת שווי, ציון כדאיות ותובנות על השכונה.",
-        "metaViewport": "width=device-width, initial-scale=1.0, maximum-scale=1",
+        "metaViewport": "width=device-width, initial-scale=1.0",
+        "metaRobots": "",
         "canonical": "",
         "ogUrl": "",
         "h1Count": 1,
@@ -1640,19 +1560,24 @@
         "textLen": 1158,
         "interactiveCount": 7,
         "smallTargets": [],
+        "srOnlyTargets": [],
         "unnamedControls": [],
         "imgsNoAlt": [],
         "hasAuthScript": true,
         "authBtnText": "",
         "bodyBg": "rgb(251, 250, 248)",
         "bodyFg": "rgb(21, 34, 55)",
+        "effBg": "rgb(251, 250, 248)",
+        "bgImages": "",
+        "bgLuminance": 0.9566,
+        "colorScheme": "normal",
         "vercelLeak": [],
         "scrollW": 390,
         "clientW": 390
       },
       "dark": {
         "status": 200,
-        "loadMs": 4329,
+        "loadMs": 4316,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "smel-dark.png",
@@ -1660,7 +1585,8 @@
         "lang": "he",
         "dir": "rtl",
         "metaDescription": "SMEL NDLN — מערכת מחקר נדלן חכם המבוססת על נתוני ממשלה רשמיים. הזינו כתובת וקבלו הערכת שווי, ציון כדאיות ותובנות על השכונה.",
-        "metaViewport": "width=device-width, initial-scale=1.0, maximum-scale=1",
+        "metaViewport": "width=device-width, initial-scale=1.0",
+        "metaRobots": "",
         "canonical": "",
         "ogUrl": "",
         "h1Count": 1,
@@ -1676,17 +1602,23 @@
         "textLen": 1166,
         "interactiveCount": 9,
         "smallTargets": [],
+        "srOnlyTargets": [],
         "unnamedControls": [],
         "imgsNoAlt": [],
         "hasAuthScript": true,
         "authBtnText": "",
         "bodyBg": "rgb(13, 20, 33)",
         "bodyFg": "rgb(244, 241, 235)",
+        "effBg": "rgb(13, 20, 33)",
+        "bgImages": "",
+        "bgLuminance": 0.007,
+        "colorScheme": "normal",
         "vercelLeak": [],
         "scrollW": 1440,
         "clientW": 1440
       },
       "darkModeImplemented": true,
+      "darkModeBasis": "responds",
       "horizontalOverflow": false
     },
     "smachot": {
@@ -1697,7 +1629,7 @@
       "url": "https://more30.com/smachot",
       "desktop": {
         "status": 200,
-        "loadMs": 4513,
+        "loadMs": 4490,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "smachot-desktop.png",
@@ -1706,6 +1638,7 @@
         "dir": "rtl",
         "metaDescription": "תוכנית עסקית מורחבת, ניתוח שוק, מיפוי אולמות ומצגת — שמחות פלוס",
         "metaViewport": "width=device-width, initial-scale=1.0",
+        "metaRobots": "",
         "canonical": "",
         "ogUrl": "",
         "h1Count": 1,
@@ -1726,19 +1659,24 @@
             "name": "מאגר GitHub"
           }
         ],
+        "srOnlyTargets": [],
         "unnamedControls": [],
         "imgsNoAlt": [],
         "hasAuthScript": true,
         "authBtnText": "",
         "bodyBg": "rgb(244, 246, 246)",
         "bodyFg": "rgb(20, 40, 43)",
+        "effBg": "rgb(244, 246, 246)",
+        "bgImages": "",
+        "bgLuminance": 0.918,
+        "colorScheme": "normal",
         "vercelLeak": [],
         "scrollW": 1440,
         "clientW": 1440
       },
       "mobile": {
         "status": 200,
-        "loadMs": 4574,
+        "loadMs": 4329,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "smachot-mobile.png",
@@ -1747,6 +1685,7 @@
         "dir": "rtl",
         "metaDescription": "תוכנית עסקית מורחבת, ניתוח שוק, מיפוי אולמות ומצגת — שמחות פלוס",
         "metaViewport": "width=device-width, initial-scale=1.0",
+        "metaRobots": "",
         "canonical": "",
         "ogUrl": "",
         "h1Count": 1,
@@ -1767,19 +1706,24 @@
             "name": "מאגר GitHub"
           }
         ],
+        "srOnlyTargets": [],
         "unnamedControls": [],
         "imgsNoAlt": [],
         "hasAuthScript": true,
         "authBtnText": "",
         "bodyBg": "rgb(244, 246, 246)",
         "bodyFg": "rgb(20, 40, 43)",
+        "effBg": "rgb(244, 246, 246)",
+        "bgImages": "",
+        "bgLuminance": 0.918,
+        "colorScheme": "normal",
         "vercelLeak": [],
         "scrollW": 390,
         "clientW": 390
       },
       "dark": {
         "status": 200,
-        "loadMs": 4466,
+        "loadMs": 4340,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "smachot-dark.png",
@@ -1788,6 +1732,7 @@
         "dir": "rtl",
         "metaDescription": "תוכנית עסקית מורחבת, ניתוח שוק, מיפוי אולמות ומצגת — שמחות פלוס",
         "metaViewport": "width=device-width, initial-scale=1.0",
+        "metaRobots": "",
         "canonical": "",
         "ogUrl": "",
         "h1Count": 1,
@@ -1808,17 +1753,23 @@
             "name": "מאגר GitHub"
           }
         ],
+        "srOnlyTargets": [],
         "unnamedControls": [],
         "imgsNoAlt": [],
         "hasAuthScript": true,
         "authBtnText": "",
         "bodyBg": "rgb(10, 33, 37)",
         "bodyFg": "rgb(238, 245, 245)",
+        "effBg": "rgb(10, 33, 37)",
+        "bgImages": "",
+        "bgLuminance": 0.0129,
+        "colorScheme": "normal",
         "vercelLeak": [],
         "scrollW": 1440,
         "clientW": 1440
       },
       "darkModeImplemented": true,
+      "darkModeBasis": "responds",
       "horizontalOverflow": false
     },
     "egod": {
@@ -1829,7 +1780,7 @@
       "url": "https://more30.com/egod",
       "desktop": {
         "status": 200,
-        "loadMs": 4913,
+        "loadMs": 4707,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "egod-desktop.png",
@@ -1838,6 +1789,7 @@
         "dir": "rtl",
         "metaDescription": "פלטפורמה דיגיטלית מקיפה לכל מגיד שיעור – כלים, מעטפת וקהילה תחת קורת גג אחת.",
         "metaViewport": "width=device-width, initial-scale=1.0",
+        "metaRobots": "",
         "canonical": "",
         "ogUrl": "",
         "h1Count": 1,
@@ -1968,6 +1920,7 @@
             "name": "a023131600@gmail.com"
           }
         ],
+        "srOnlyTargets": [],
         "unnamedControls": [
           {
             "tag": "button",
@@ -2025,13 +1978,17 @@
         "authBtnText": "",
         "bodyBg": "rgb(245, 246, 250)",
         "bodyFg": "rgb(27, 44, 90)",
+        "effBg": "rgb(245, 246, 250)",
+        "bgImages": "",
+        "bgLuminance": 0.9223,
+        "colorScheme": "normal",
         "vercelLeak": [],
         "scrollW": 1440,
         "clientW": 1440
       },
       "mobile": {
         "status": 200,
-        "loadMs": 5280,
+        "loadMs": 4729,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "egod-mobile.png",
@@ -2040,6 +1997,7 @@
         "dir": "rtl",
         "metaDescription": "פלטפורמה דיגיטלית מקיפה לכל מגיד שיעור – כלים, מעטפת וקהילה תחת קורת גג אחת.",
         "metaViewport": "width=device-width, initial-scale=1.0",
+        "metaRobots": "",
         "canonical": "",
         "ogUrl": "",
         "h1Count": 1,
@@ -2170,6 +2128,7 @@
             "name": "a023131600@gmail.com"
           }
         ],
+        "srOnlyTargets": [],
         "unnamedControls": [
           {
             "tag": "button",
@@ -2232,13 +2191,17 @@
         "authBtnText": "",
         "bodyBg": "rgb(245, 246, 250)",
         "bodyFg": "rgb(27, 44, 90)",
+        "effBg": "rgb(245, 246, 250)",
+        "bgImages": "",
+        "bgLuminance": 0.9223,
+        "colorScheme": "normal",
         "vercelLeak": [],
         "scrollW": 390,
         "clientW": 390
       },
       "dark": {
         "status": 200,
-        "loadMs": 4801,
+        "loadMs": 4730,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "egod-dark.png",
@@ -2247,6 +2210,7 @@
         "dir": "rtl",
         "metaDescription": "פלטפורמה דיגיטלית מקיפה לכל מגיד שיעור – כלים, מעטפת וקהילה תחת קורת גג אחת.",
         "metaViewport": "width=device-width, initial-scale=1.0",
+        "metaRobots": "",
         "canonical": "",
         "ogUrl": "",
         "h1Count": 1,
@@ -2377,6 +2341,7 @@
             "name": "a023131600@gmail.com"
           }
         ],
+        "srOnlyTargets": [],
         "unnamedControls": [
           {
             "tag": "button",
@@ -2434,11 +2399,16 @@
         "authBtnText": "",
         "bodyBg": "rgb(245, 246, 250)",
         "bodyFg": "rgb(27, 44, 90)",
+        "effBg": "rgb(245, 246, 250)",
+        "bgImages": "",
+        "bgLuminance": 0.9223,
+        "colorScheme": "normal",
         "vercelLeak": [],
         "scrollW": 1440,
         "clientW": 1440
       },
       "darkModeImplemented": false,
+      "darkModeBasis": "none",
       "horizontalOverflow": false
     },
     "chatzor": {
@@ -2449,7 +2419,7 @@
       "url": "https://more30.com/chatzor",
       "desktop": {
         "status": 200,
-        "loadMs": 4707,
+        "loadMs": 4238,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "chatzor-desktop.png",
@@ -2492,7 +2462,7 @@
       },
       "mobile": {
         "status": 200,
-        "loadMs": 4008,
+        "loadMs": 4022,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "chatzor-mobile.png",
@@ -2535,7 +2505,7 @@
       },
       "dark": {
         "status": 200,
-        "loadMs": 3988,
+        "loadMs": 4278,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "chatzor-dark.png",
@@ -2588,7 +2558,7 @@
       "url": "https://more30.com/chatzor/",
       "desktop": {
         "status": 200,
-        "loadMs": 4431,
+        "loadMs": 4495,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "chatzor-app-desktop.png",
@@ -2616,7 +2586,7 @@
           "H3: מקווה תל חי",
           "H3: ניווט"
         ],
-        "textLen": 2076,
+        "textLen": 2086,
         "interactiveCount": 29,
         "smallTargets": [],
         "srOnlyTargets": [
@@ -2644,7 +2614,7 @@
       },
       "mobile": {
         "status": 200,
-        "loadMs": 4413,
+        "loadMs": 4471,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "chatzor-app-mobile.png",
@@ -2672,7 +2642,7 @@
           "H3: מקווה תל חי",
           "H3: ניווט"
         ],
-        "textLen": 2063,
+        "textLen": 2073,
         "interactiveCount": 29,
         "smallTargets": [],
         "srOnlyTargets": [
@@ -2700,7 +2670,7 @@
       },
       "dark": {
         "status": 200,
-        "loadMs": 4584,
+        "loadMs": 4429,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "chatzor-app-dark.png",
@@ -2728,7 +2698,7 @@
           "H3: מקווה תל חי",
           "H3: ניווט"
         ],
-        "textLen": 2076,
+        "textLen": 2086,
         "interactiveCount": 29,
         "smallTargets": [],
         "srOnlyTargets": [
@@ -2766,7 +2736,7 @@
       "url": "https://more30.com/chizukim",
       "desktop": {
         "status": 200,
-        "loadMs": 4015,
+        "loadMs": 3967,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "chizukim-desktop.png",
@@ -2792,6 +2762,7 @@
         "textLen": 920,
         "interactiveCount": 8,
         "smallTargets": [],
+        "srOnlyTargets": [],
         "unnamedControls": [],
         "imgsNoAlt": [],
         "hasAuthScript": true,
@@ -2808,7 +2779,7 @@
       },
       "mobile": {
         "status": 200,
-        "loadMs": 4029,
+        "loadMs": 3993,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "chizukim-mobile.png",
@@ -2834,6 +2805,7 @@
         "textLen": 920,
         "interactiveCount": 8,
         "smallTargets": [],
+        "srOnlyTargets": [],
         "unnamedControls": [],
         "imgsNoAlt": [],
         "hasAuthScript": true,
@@ -2850,7 +2822,7 @@
       },
       "dark": {
         "status": 200,
-        "loadMs": 4011,
+        "loadMs": 4050,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "chizukim-dark.png",
@@ -2876,6 +2848,7 @@
         "textLen": 920,
         "interactiveCount": 8,
         "smallTargets": [],
+        "srOnlyTargets": [],
         "unnamedControls": [],
         "imgsNoAlt": [],
         "hasAuthScript": true,
@@ -2902,7 +2875,7 @@
       "url": "https://more30.com/chizukim/",
       "desktop": {
         "status": 200,
-        "loadMs": 4696,
+        "loadMs": 5365,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "chizukim-app-desktop.png",
@@ -2933,6 +2906,7 @@
         "textLen": 1926,
         "interactiveCount": 35,
         "smallTargets": [],
+        "srOnlyTargets": [],
         "unnamedControls": [],
         "imgsNoAlt": [],
         "hasAuthScript": true,
@@ -2949,7 +2923,7 @@
       },
       "mobile": {
         "status": 200,
-        "loadMs": 4581,
+        "loadMs": 4506,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "chizukim-app-mobile.png",
@@ -2980,6 +2954,7 @@
         "textLen": 1926,
         "interactiveCount": 35,
         "smallTargets": [],
+        "srOnlyTargets": [],
         "unnamedControls": [],
         "imgsNoAlt": [],
         "hasAuthScript": true,
@@ -2996,7 +2971,7 @@
       },
       "dark": {
         "status": 200,
-        "loadMs": 5008,
+        "loadMs": 4836,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "chizukim-app-dark.png",
@@ -3027,6 +3002,7 @@
         "textLen": 1926,
         "interactiveCount": 35,
         "smallTargets": [],
+        "srOnlyTargets": [],
         "unnamedControls": [],
         "imgsNoAlt": [],
         "hasAuthScript": true,
@@ -3053,7 +3029,7 @@
       "url": "https://more30.com/orech",
       "desktop": {
         "status": 200,
-        "loadMs": 5540,
+        "loadMs": 4309,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "orech-desktop.png",
@@ -3093,7 +3069,7 @@
       },
       "mobile": {
         "status": 200,
-        "loadMs": 4461,
+        "loadMs": 4267,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "orech-mobile.png",
@@ -3133,7 +3109,7 @@
       },
       "dark": {
         "status": 200,
-        "loadMs": 4277,
+        "loadMs": 4291,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "orech-dark.png",
@@ -3183,7 +3159,7 @@
       "url": "https://more30.com/mthbram",
       "desktop": {
         "status": 200,
-        "loadMs": 5297,
+        "loadMs": 4781,
         "consoleErrors": [
           "404 Error: User attempted to access non-existent route: /mthbram"
         ],
@@ -3194,6 +3170,7 @@
         "dir": "rtl",
         "metaDescription": "הפלטפורמה המובילה לחיבור בין מגידי שיעור ולומדים. מצאו שיעורי תורה, חברותות והרצאות בכל נושא.",
         "metaViewport": "width=device-width, initial-scale=1.0",
+        "metaRobots": "",
         "canonical": "",
         "ogUrl": "",
         "h1Count": 1,
@@ -3211,19 +3188,24 @@
             "name": "Return to Home"
           }
         ],
+        "srOnlyTargets": [],
         "unnamedControls": [],
         "imgsNoAlt": [],
         "hasAuthScript": true,
         "authBtnText": "",
         "bodyBg": "rgb(9, 26, 32)",
         "bodyFg": "rgb(241, 234, 218)",
+        "effBg": "rgb(9, 26, 32)",
+        "bgImages": "radial-gradient(circle at 20% 10%, rgba(13, 55, 63, 0.6) 0%, rgba(0, 0, 0, 0) 45%), radial-gradient(circle at 85% 90%, rgba(119, 88, 34, 0.15) 0%, rgba(0, 0, 0, 0) 50%)",
+        "bgLuminance": 0.009,
+        "colorScheme": "normal",
         "vercelLeak": [],
         "scrollW": 1440,
         "clientW": 1440
       },
       "mobile": {
         "status": 200,
-        "loadMs": 4897,
+        "loadMs": 4790,
         "consoleErrors": [
           "404 Error: User attempted to access non-existent route: /mthbram"
         ],
@@ -3234,6 +3216,7 @@
         "dir": "rtl",
         "metaDescription": "הפלטפורמה המובילה לחיבור בין מגידי שיעור ולומדים. מצאו שיעורי תורה, חברותות והרצאות בכל נושא.",
         "metaViewport": "width=device-width, initial-scale=1.0",
+        "metaRobots": "",
         "canonical": "",
         "ogUrl": "",
         "h1Count": 1,
@@ -3251,19 +3234,24 @@
             "name": "Return to Home"
           }
         ],
+        "srOnlyTargets": [],
         "unnamedControls": [],
         "imgsNoAlt": [],
         "hasAuthScript": true,
         "authBtnText": "",
         "bodyBg": "rgb(9, 26, 32)",
         "bodyFg": "rgb(241, 234, 218)",
+        "effBg": "rgb(9, 26, 32)",
+        "bgImages": "radial-gradient(circle at 20% 10%, rgba(13, 55, 63, 0.6) 0%, rgba(0, 0, 0, 0) 45%), radial-gradient(circle at 85% 90%, rgba(119, 88, 34, 0.15) 0%, rgba(0, 0, 0, 0) 50%)",
+        "bgLuminance": 0.009,
+        "colorScheme": "normal",
         "vercelLeak": [],
         "scrollW": 390,
         "clientW": 390
       },
       "dark": {
         "status": 200,
-        "loadMs": 4770,
+        "loadMs": 4772,
         "consoleErrors": [
           "404 Error: User attempted to access non-existent route: /mthbram"
         ],
@@ -3274,6 +3262,7 @@
         "dir": "rtl",
         "metaDescription": "הפלטפורמה המובילה לחיבור בין מגידי שיעור ולומדים. מצאו שיעורי תורה, חברותות והרצאות בכל נושא.",
         "metaViewport": "width=device-width, initial-scale=1.0",
+        "metaRobots": "",
         "canonical": "",
         "ogUrl": "",
         "h1Count": 1,
@@ -3291,17 +3280,23 @@
             "name": "Return to Home"
           }
         ],
+        "srOnlyTargets": [],
         "unnamedControls": [],
         "imgsNoAlt": [],
         "hasAuthScript": true,
         "authBtnText": "",
         "bodyBg": "rgb(9, 26, 32)",
         "bodyFg": "rgb(241, 234, 218)",
+        "effBg": "rgb(9, 26, 32)",
+        "bgImages": "radial-gradient(circle at 20% 10%, rgba(13, 55, 63, 0.6) 0%, rgba(0, 0, 0, 0) 45%), radial-gradient(circle at 85% 90%, rgba(119, 88, 34, 0.15) 0%, rgba(0, 0, 0, 0) 50%)",
+        "bgLuminance": 0.009,
+        "colorScheme": "normal",
         "vercelLeak": [],
         "scrollW": 1440,
         "clientW": 1440
       },
       "darkModeImplemented": false,
+      "darkModeBasis": "none",
       "horizontalOverflow": false
     },
     "zchuyot": {
@@ -3312,7 +3307,7 @@
       "url": "https://more30.com/zchuyot",
       "desktop": {
         "status": 200,
-        "loadMs": 5281,
+        "loadMs": 4791,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "zchuyot-desktop.png",
@@ -3321,6 +3316,7 @@
         "dir": "rtl",
         "metaDescription": "מיצוי זכויות מכל הגופים הממשלתיים — ביטוח לאומי, דיור, מיסים, רווחה ועוד. בדקו אילו זכויות מגיעות לכם בחינם.",
         "metaViewport": "width=device-width, initial-scale=1.0",
+        "metaRobots": "",
         "canonical": "https://more30.com/zchuyot",
         "ogUrl": "https://more30.com/zchuyot",
         "h1Count": 1,
@@ -3342,6 +3338,7 @@
         "textLen": 2502,
         "interactiveCount": 31,
         "smallTargets": [],
+        "srOnlyTargets": [],
         "unnamedControls": [
           {
             "tag": "button",
@@ -3354,13 +3351,17 @@
         "authBtnText": "",
         "bodyBg": "rgb(249, 251, 249)",
         "bodyFg": "rgb(23, 28, 38)",
+        "effBg": "rgb(249, 251, 249)",
+        "bgImages": "",
+        "bgLuminance": 0.9597,
+        "colorScheme": "normal",
         "vercelLeak": [],
         "scrollW": 1440,
         "clientW": 1440
       },
       "mobile": {
         "status": 200,
-        "loadMs": 4885,
+        "loadMs": 4731,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "zchuyot-mobile.png",
@@ -3369,6 +3370,7 @@
         "dir": "rtl",
         "metaDescription": "מיצוי זכויות מכל הגופים הממשלתיים — ביטוח לאומי, דיור, מיסים, רווחה ועוד. בדקו אילו זכויות מגיעות לכם בחינם.",
         "metaViewport": "width=device-width, initial-scale=1.0",
+        "metaRobots": "",
         "canonical": "https://more30.com/zchuyot",
         "ogUrl": "https://more30.com/zchuyot",
         "h1Count": 1,
@@ -3390,6 +3392,7 @@
         "textLen": 2450,
         "interactiveCount": 27,
         "smallTargets": [],
+        "srOnlyTargets": [],
         "unnamedControls": [
           {
             "tag": "button",
@@ -3407,13 +3410,17 @@
         "authBtnText": "",
         "bodyBg": "rgb(249, 251, 249)",
         "bodyFg": "rgb(23, 28, 38)",
+        "effBg": "rgb(249, 251, 249)",
+        "bgImages": "",
+        "bgLuminance": 0.9597,
+        "colorScheme": "normal",
         "vercelLeak": [],
         "scrollW": 390,
         "clientW": 390
       },
       "dark": {
         "status": 200,
-        "loadMs": 4953,
+        "loadMs": 4748,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "zchuyot-dark.png",
@@ -3422,6 +3429,7 @@
         "dir": "rtl",
         "metaDescription": "מיצוי זכויות מכל הגופים הממשלתיים — ביטוח לאומי, דיור, מיסים, רווחה ועוד. בדקו אילו זכויות מגיעות לכם בחינם.",
         "metaViewport": "width=device-width, initial-scale=1.0",
+        "metaRobots": "",
         "canonical": "https://more30.com/zchuyot",
         "ogUrl": "https://more30.com/zchuyot",
         "h1Count": 1,
@@ -3443,6 +3451,7 @@
         "textLen": 2502,
         "interactiveCount": 31,
         "smallTargets": [],
+        "srOnlyTargets": [],
         "unnamedControls": [
           {
             "tag": "button",
@@ -3455,11 +3464,16 @@
         "authBtnText": "",
         "bodyBg": "rgb(249, 251, 249)",
         "bodyFg": "rgb(23, 28, 38)",
+        "effBg": "rgb(249, 251, 249)",
+        "bgImages": "",
+        "bgLuminance": 0.9597,
+        "colorScheme": "normal",
         "vercelLeak": [],
         "scrollW": 1440,
         "clientW": 1440
       },
       "darkModeImplemented": false,
+      "darkModeBasis": "none",
       "horizontalOverflow": false
     },
     "galil": {
@@ -3470,7 +3484,7 @@
       "url": "https://more30.com/galil",
       "desktop": {
         "status": 200,
-        "loadMs": 5246,
+        "loadMs": 4706,
         "consoleErrors": [
           "404 Error: User attempted to access non-existent route: /galil"
         ],
@@ -3480,7 +3494,8 @@
         "lang": "he",
         "dir": "rtl",
         "metaDescription": "מחוברים - איגוד בתי הכנסת בחצור הגלילית. זמני תפילות, שיעורים ופעילויות קהילתיות",
-        "metaViewport": "width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes",
+        "metaViewport": "width=device-width, initial-scale=1.0",
+        "metaRobots": "",
         "canonical": "",
         "ogUrl": "",
         "h1Count": 1,
@@ -3491,19 +3506,24 @@
         "textLen": 123,
         "interactiveCount": 11,
         "smallTargets": [],
+        "srOnlyTargets": [],
         "unnamedControls": [],
         "imgsNoAlt": [],
         "hasAuthScript": true,
         "authBtnText": "",
         "bodyBg": "rgba(0, 0, 0, 0)",
         "bodyFg": "rgb(21, 29, 40)",
+        "effBg": "transparent",
+        "bgImages": "linear-gradient(160deg, rgb(245, 247, 249) 0%, rgb(243, 245, 247) 30%, rgb(240, 243, 245) 60%, rgb(245, 247, 249) 100%)",
+        "bgLuminance": null,
+        "colorScheme": "normal",
         "vercelLeak": [],
         "scrollW": 1440,
         "clientW": 1440
       },
       "mobile": {
         "status": 200,
-        "loadMs": 5644,
+        "loadMs": 4734,
         "consoleErrors": [
           "404 Error: User attempted to access non-existent route: /galil"
         ],
@@ -3513,7 +3533,8 @@
         "lang": "he",
         "dir": "rtl",
         "metaDescription": "מחוברים - איגוד בתי הכנסת בחצור הגלילית. זמני תפילות, שיעורים ופעילויות קהילתיות",
-        "metaViewport": "width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes",
+        "metaViewport": "width=device-width, initial-scale=1.0",
+        "metaRobots": "",
         "canonical": "",
         "ogUrl": "",
         "h1Count": 1,
@@ -3524,6 +3545,7 @@
         "textLen": 52,
         "interactiveCount": 5,
         "smallTargets": [],
+        "srOnlyTargets": [],
         "unnamedControls": [
           {
             "tag": "button",
@@ -3536,13 +3558,17 @@
         "authBtnText": "",
         "bodyBg": "rgba(0, 0, 0, 0)",
         "bodyFg": "rgb(21, 29, 40)",
+        "effBg": "transparent",
+        "bgImages": "linear-gradient(160deg, rgb(245, 247, 249) 0%, rgb(243, 245, 247) 30%, rgb(240, 243, 245) 60%, rgb(245, 247, 249) 100%)",
+        "bgLuminance": null,
+        "colorScheme": "normal",
         "vercelLeak": [],
         "scrollW": 390,
         "clientW": 390
       },
       "dark": {
         "status": 200,
-        "loadMs": 5594,
+        "loadMs": 4709,
         "consoleErrors": [
           "404 Error: User attempted to access non-existent route: /galil"
         ],
@@ -3552,7 +3578,8 @@
         "lang": "he",
         "dir": "rtl",
         "metaDescription": "מחוברים - איגוד בתי הכנסת בחצור הגלילית. זמני תפילות, שיעורים ופעילויות קהילתיות",
-        "metaViewport": "width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes",
+        "metaViewport": "width=device-width, initial-scale=1.0",
+        "metaRobots": "",
         "canonical": "",
         "ogUrl": "",
         "h1Count": 1,
@@ -3563,17 +3590,23 @@
         "textLen": 123,
         "interactiveCount": 11,
         "smallTargets": [],
+        "srOnlyTargets": [],
         "unnamedControls": [],
         "imgsNoAlt": [],
         "hasAuthScript": true,
         "authBtnText": "",
         "bodyBg": "rgba(0, 0, 0, 0)",
         "bodyFg": "rgb(21, 29, 40)",
+        "effBg": "transparent",
+        "bgImages": "linear-gradient(160deg, rgb(245, 247, 249) 0%, rgb(243, 245, 247) 30%, rgb(240, 243, 245) 60%, rgb(245, 247, 249) 100%)",
+        "bgLuminance": null,
+        "colorScheme": "normal",
         "vercelLeak": [],
         "scrollW": 1440,
         "clientW": 1440
       },
       "darkModeImplemented": false,
+      "darkModeBasis": "none",
       "horizontalOverflow": false
     },
     "studio": {
@@ -3584,7 +3617,7 @@
       "url": "https://more30.com/studio",
       "desktop": {
         "status": 200,
-        "loadMs": 4640,
+        "loadMs": 4517,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "studio-desktop.png",
@@ -3592,7 +3625,8 @@
         "lang": "he",
         "dir": "rtl",
         "metaDescription": "מערכת ליצירת מודעות אבל, שמחה וארגון בעיצוב גרפי מקצועי עם בינה מלאכותית — טקסט עברי מדויק ורקעים מרהיבים.",
-        "metaViewport": "width=device-width, initial-scale=1.0, maximum-scale=1",
+        "metaViewport": "width=device-width, initial-scale=1.0",
+        "metaRobots": "",
         "canonical": "",
         "ogUrl": "",
         "h1Count": 1,
@@ -3605,22 +3639,27 @@
           "H3: התחל מתבנית",
           "H3: גלריית תבניות"
         ],
-        "textLen": 902,
+        "textLen": 762,
         "interactiveCount": 8,
         "smallTargets": [],
+        "srOnlyTargets": [],
         "unnamedControls": [],
         "imgsNoAlt": [],
         "hasAuthScript": true,
         "authBtnText": "",
         "bodyBg": "rgb(250, 248, 245)",
         "bodyFg": "rgb(20, 30, 52)",
+        "effBg": "rgb(250, 248, 245)",
+        "bgImages": "",
+        "bgLuminance": 0.9405,
+        "colorScheme": "normal",
         "vercelLeak": [],
         "scrollW": 1440,
         "clientW": 1440
       },
       "mobile": {
         "status": 200,
-        "loadMs": 4543,
+        "loadMs": 4420,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "studio-mobile.png",
@@ -3628,7 +3667,8 @@
         "lang": "he",
         "dir": "rtl",
         "metaDescription": "מערכת ליצירת מודעות אבל, שמחה וארגון בעיצוב גרפי מקצועי עם בינה מלאכותית — טקסט עברי מדויק ורקעים מרהיבים.",
-        "metaViewport": "width=device-width, initial-scale=1.0, maximum-scale=1",
+        "metaViewport": "width=device-width, initial-scale=1.0",
+        "metaRobots": "",
         "canonical": "",
         "ogUrl": "",
         "h1Count": 1,
@@ -3641,22 +3681,27 @@
           "H3: התחל מתבנית",
           "H3: גלריית תבניות"
         ],
-        "textLen": 902,
+        "textLen": 762,
         "interactiveCount": 8,
         "smallTargets": [],
+        "srOnlyTargets": [],
         "unnamedControls": [],
         "imgsNoAlt": [],
         "hasAuthScript": true,
         "authBtnText": "",
         "bodyBg": "rgb(250, 248, 245)",
         "bodyFg": "rgb(20, 30, 52)",
+        "effBg": "rgb(250, 248, 245)",
+        "bgImages": "",
+        "bgLuminance": 0.9405,
+        "colorScheme": "normal",
         "vercelLeak": [],
-        "scrollW": 507,
+        "scrollW": 390,
         "clientW": 390
       },
       "dark": {
         "status": 200,
-        "loadMs": 4565,
+        "loadMs": 4494,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "studio-dark.png",
@@ -3664,7 +3709,8 @@
         "lang": "he",
         "dir": "rtl",
         "metaDescription": "מערכת ליצירת מודעות אבל, שמחה וארגון בעיצוב גרפי מקצועי עם בינה מלאכותית — טקסט עברי מדויק ורקעים מרהיבים.",
-        "metaViewport": "width=device-width, initial-scale=1.0, maximum-scale=1",
+        "metaViewport": "width=device-width, initial-scale=1.0",
+        "metaRobots": "",
         "canonical": "",
         "ogUrl": "",
         "h1Count": 1,
@@ -3677,21 +3723,27 @@
           "H3: התחל מתבנית",
           "H3: גלריית תבניות"
         ],
-        "textLen": 902,
+        "textLen": 762,
         "interactiveCount": 8,
         "smallTargets": [],
+        "srOnlyTargets": [],
         "unnamedControls": [],
         "imgsNoAlt": [],
         "hasAuthScript": true,
         "authBtnText": "",
         "bodyBg": "rgb(250, 248, 245)",
         "bodyFg": "rgb(20, 30, 52)",
+        "effBg": "rgb(250, 248, 245)",
+        "bgImages": "",
+        "bgLuminance": 0.9405,
+        "colorScheme": "normal",
         "vercelLeak": [],
         "scrollW": 1440,
         "clientW": 1440
       },
       "darkModeImplemented": false,
-      "horizontalOverflow": true
+      "darkModeBasis": "none",
+      "horizontalOverflow": false
     },
     "mechiron": {
       "key": "mechiron",
@@ -3701,7 +3753,7 @@
       "url": "https://more30.com/mechiron",
       "desktop": {
         "status": 200,
-        "loadMs": 5055,
+        "loadMs": 4561,
         "consoleErrors": [
           "Failed to load resource: the server responded with a status of 404 (Not Found)"
         ],
@@ -3712,6 +3764,7 @@
         "dir": "rtl",
         "metaDescription": "מאגר פנימי לחיפוש זכויות, הטבות וארגוני סיוע — בקלות",
         "metaViewport": "width=device-width, initial-scale=1.0",
+        "metaRobots": "",
         "canonical": "",
         "ogUrl": "",
         "h1Count": 1,
@@ -3722,19 +3775,24 @@
         "textLen": 305,
         "interactiveCount": 9,
         "smallTargets": [],
+        "srOnlyTargets": [],
         "unnamedControls": [],
         "imgsNoAlt": [],
         "hasAuthScript": true,
         "authBtnText": "",
         "bodyBg": "rgb(248, 246, 242)",
         "bodyFg": "rgb(23, 33, 38)",
+        "effBg": "rgb(248, 246, 242)",
+        "bgImages": "",
+        "bgLuminance": 0.9228,
+        "colorScheme": "normal",
         "vercelLeak": [],
         "scrollW": 1440,
         "clientW": 1440
       },
       "mobile": {
         "status": 200,
-        "loadMs": 5554,
+        "loadMs": 4498,
         "consoleErrors": [
           "Failed to load resource: the server responded with a status of 404 (Not Found)"
         ],
@@ -3745,6 +3803,7 @@
         "dir": "rtl",
         "metaDescription": "מאגר פנימי לחיפוש זכויות, הטבות וארגוני סיוע — בקלות",
         "metaViewport": "width=device-width, initial-scale=1.0",
+        "metaRobots": "",
         "canonical": "",
         "ogUrl": "",
         "h1Count": 1,
@@ -3755,19 +3814,24 @@
         "textLen": 387,
         "interactiveCount": 9,
         "smallTargets": [],
+        "srOnlyTargets": [],
         "unnamedControls": [],
         "imgsNoAlt": [],
         "hasAuthScript": true,
         "authBtnText": "",
         "bodyBg": "rgb(248, 246, 242)",
         "bodyFg": "rgb(23, 33, 38)",
+        "effBg": "rgb(248, 246, 242)",
+        "bgImages": "",
+        "bgLuminance": 0.9228,
+        "colorScheme": "normal",
         "vercelLeak": [],
         "scrollW": 390,
         "clientW": 390
       },
       "dark": {
         "status": 200,
-        "loadMs": 4518,
+        "loadMs": 4520,
         "consoleErrors": [
           "Failed to load resource: the server responded with a status of 404 (Not Found)"
         ],
@@ -3778,6 +3842,7 @@
         "dir": "rtl",
         "metaDescription": "מאגר פנימי לחיפוש זכויות, הטבות וארגוני סיוע — בקלות",
         "metaViewport": "width=device-width, initial-scale=1.0",
+        "metaRobots": "",
         "canonical": "",
         "ogUrl": "",
         "h1Count": 1,
@@ -3789,17 +3854,23 @@
         "textLen": 15370,
         "interactiveCount": 190,
         "smallTargets": [],
+        "srOnlyTargets": [],
         "unnamedControls": [],
         "imgsNoAlt": [],
         "hasAuthScript": true,
         "authBtnText": "",
         "bodyBg": "rgb(248, 246, 242)",
         "bodyFg": "rgb(23, 33, 38)",
+        "effBg": "rgb(248, 246, 242)",
+        "bgImages": "",
+        "bgLuminance": 0.9228,
+        "colorScheme": "normal",
         "vercelLeak": [],
         "scrollW": 1440,
         "clientW": 1440
       },
       "darkModeImplemented": false,
+      "darkModeBasis": "none",
       "horizontalOverflow": false
     },
     "kupot": {
@@ -3810,7 +3881,7 @@
       "url": "https://more30.com/kupot",
       "desktop": {
         "status": 200,
-        "loadMs": 4443,
+        "loadMs": 4291,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "kupot-desktop.png",
@@ -3818,7 +3889,8 @@
         "lang": "he",
         "dir": "rtl",
         "metaDescription": "השוואת זכויות והטבות קופות חולים בישראל — מידע בסיסי, סינון לפי נושא, קטגוריה וקופה, ויועץ חכם להתאמת קופה. מבית בקלות.",
-        "metaViewport": "width=device-width, initial-scale=1.0, maximum-scale=1",
+        "metaViewport": "width=device-width, initial-scale=1.0",
+        "metaRobots": "",
         "canonical": "",
         "ogUrl": "",
         "h1Count": 1,
@@ -3830,19 +3902,24 @@
         "textLen": 34655,
         "interactiveCount": 460,
         "smallTargets": [],
+        "srOnlyTargets": [],
         "unnamedControls": [],
         "imgsNoAlt": [],
         "hasAuthScript": true,
         "authBtnText": "",
         "bodyBg": "rgb(249, 251, 251)",
         "bodyFg": "rgb(21, 37, 40)",
+        "effBg": "rgb(249, 251, 251)",
+        "bgImages": "",
+        "bgLuminance": 0.961,
+        "colorScheme": "normal",
         "vercelLeak": [],
         "scrollW": 1440,
         "clientW": 1440
       },
       "mobile": {
         "status": 200,
-        "loadMs": 4492,
+        "loadMs": 4499,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "kupot-mobile.png",
@@ -3850,7 +3927,8 @@
         "lang": "he",
         "dir": "rtl",
         "metaDescription": "השוואת זכויות והטבות קופות חולים בישראל — מידע בסיסי, סינון לפי נושא, קטגוריה וקופה, ויועץ חכם להתאמת קופה. מבית בקלות.",
-        "metaViewport": "width=device-width, initial-scale=1.0, maximum-scale=1",
+        "metaViewport": "width=device-width, initial-scale=1.0",
+        "metaRobots": "",
         "canonical": "",
         "ogUrl": "",
         "h1Count": 1,
@@ -3862,19 +3940,24 @@
         "textLen": 34655,
         "interactiveCount": 460,
         "smallTargets": [],
+        "srOnlyTargets": [],
         "unnamedControls": [],
         "imgsNoAlt": [],
         "hasAuthScript": true,
         "authBtnText": "",
         "bodyBg": "rgb(249, 251, 251)",
         "bodyFg": "rgb(21, 37, 40)",
+        "effBg": "rgb(249, 251, 251)",
+        "bgImages": "",
+        "bgLuminance": 0.961,
+        "colorScheme": "normal",
         "vercelLeak": [],
         "scrollW": 390,
         "clientW": 390
       },
       "dark": {
         "status": 200,
-        "loadMs": 4462,
+        "loadMs": 4418,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "kupot-dark.png",
@@ -3882,7 +3965,8 @@
         "lang": "he",
         "dir": "rtl",
         "metaDescription": "השוואת זכויות והטבות קופות חולים בישראל — מידע בסיסי, סינון לפי נושא, קטגוריה וקופה, ויועץ חכם להתאמת קופה. מבית בקלות.",
-        "metaViewport": "width=device-width, initial-scale=1.0, maximum-scale=1",
+        "metaViewport": "width=device-width, initial-scale=1.0",
+        "metaRobots": "",
         "canonical": "",
         "ogUrl": "",
         "h1Count": 1,
@@ -3894,17 +3978,23 @@
         "textLen": 34655,
         "interactiveCount": 460,
         "smallTargets": [],
+        "srOnlyTargets": [],
         "unnamedControls": [],
         "imgsNoAlt": [],
         "hasAuthScript": true,
         "authBtnText": "",
         "bodyBg": "rgb(13, 20, 23)",
         "bodyFg": "rgb(238, 242, 242)",
+        "effBg": "rgb(13, 20, 23)",
+        "bgImages": "",
+        "bgLuminance": 0.0065,
+        "colorScheme": "normal",
         "vercelLeak": [],
         "scrollW": 1440,
         "clientW": 1440
       },
       "darkModeImplemented": true,
+      "darkModeBasis": "responds",
       "horizontalOverflow": false
     },
     "crm": {
@@ -3915,16 +4005,16 @@
       "url": "https://more30.com/crm",
       "desktop": {
         "status": 200,
-        "loadMs": 5344,
+        "loadMs": 5419,
         "consoleErrors": [
           "Failed to load resource: the server responded with a status of 404 (Not Found)",
           "Failed to load resource: the server responded with a status of 404 (Not Found)",
           "Failed to load resource: the server responded with a status of 404 (Not Found)"
         ],
         "failedRequests": [
+          "GET https://more30.com/crm/assets/styles-DhgQ7Tvt.css — net::ERR_ABORTED",
           "GET https://more30.com/crm/assets/index-DFeabrFV.js — net::ERR_ABORTED",
-          "GET https://more30.com/crm/assets/index-DtqBFgK5.js — net::ERR_ABORTED",
-          "GET https://more30.com/crm/assets/styles-DhgQ7Tvt.css — net::ERR_ABORTED"
+          "GET https://more30.com/crm/assets/index-DtqBFgK5.js — net::ERR_ABORTED"
         ],
         "screenshot": "crm-desktop.png",
         "title": "זכויות פרו | ZchuyotPro",
@@ -3932,6 +4022,7 @@
         "dir": "rtl",
         "metaDescription": "מערכת CRM רב-ארגונית לניהול לקוחות, זכאויות ושותפים.",
         "metaViewport": "width=device-width, initial-scale=1",
+        "metaRobots": "",
         "canonical": "",
         "ogUrl": "",
         "h1Count": 0,
@@ -3940,19 +4031,24 @@
         "textLen": 0,
         "interactiveCount": 0,
         "smallTargets": [],
+        "srOnlyTargets": [],
         "unnamedControls": [],
         "imgsNoAlt": [],
         "hasAuthScript": true,
         "authBtnText": "",
         "bodyBg": "rgba(0, 0, 0, 0)",
         "bodyFg": "rgb(0, 0, 0)",
+        "effBg": "transparent",
+        "bgImages": "",
+        "bgLuminance": null,
+        "colorScheme": "normal",
         "vercelLeak": [],
         "scrollW": 1440,
         "clientW": 1440
       },
       "mobile": {
         "status": 200,
-        "loadMs": 4397,
+        "loadMs": 4409,
         "consoleErrors": [
           "Failed to load resource: the server responded with a status of 404 (Not Found)",
           "Failed to load resource: the server responded with a status of 404 (Not Found)",
@@ -3969,6 +4065,7 @@
         "dir": "rtl",
         "metaDescription": "מערכת CRM רב-ארגונית לניהול לקוחות, זכאויות ושותפים.",
         "metaViewport": "width=device-width, initial-scale=1",
+        "metaRobots": "",
         "canonical": "",
         "ogUrl": "",
         "h1Count": 0,
@@ -3977,19 +4074,24 @@
         "textLen": 0,
         "interactiveCount": 0,
         "smallTargets": [],
+        "srOnlyTargets": [],
         "unnamedControls": [],
         "imgsNoAlt": [],
         "hasAuthScript": true,
         "authBtnText": "",
         "bodyBg": "rgba(0, 0, 0, 0)",
         "bodyFg": "rgb(0, 0, 0)",
+        "effBg": "transparent",
+        "bgImages": "",
+        "bgLuminance": null,
+        "colorScheme": "normal",
         "vercelLeak": [],
         "scrollW": 390,
         "clientW": 390
       },
       "dark": {
         "status": 200,
-        "loadMs": 4363,
+        "loadMs": 4370,
         "consoleErrors": [
           "Failed to load resource: the server responded with a status of 404 (Not Found)",
           "Failed to load resource: the server responded with a status of 404 (Not Found)",
@@ -4006,6 +4108,7 @@
         "dir": "rtl",
         "metaDescription": "מערכת CRM רב-ארגונית לניהול לקוחות, זכאויות ושותפים.",
         "metaViewport": "width=device-width, initial-scale=1",
+        "metaRobots": "",
         "canonical": "",
         "ogUrl": "",
         "h1Count": 0,
@@ -4014,17 +4117,23 @@
         "textLen": 0,
         "interactiveCount": 0,
         "smallTargets": [],
+        "srOnlyTargets": [],
         "unnamedControls": [],
         "imgsNoAlt": [],
         "hasAuthScript": true,
         "authBtnText": "",
         "bodyBg": "rgba(0, 0, 0, 0)",
         "bodyFg": "rgb(0, 0, 0)",
+        "effBg": "transparent",
+        "bgImages": "",
+        "bgLuminance": null,
+        "colorScheme": "normal",
         "vercelLeak": [],
         "scrollW": 1440,
         "clientW": 1440
       },
       "darkModeImplemented": false,
+      "darkModeBasis": "none",
       "horizontalOverflow": false
     },
     "gesher": {
@@ -4035,7 +4144,7 @@
       "url": "https://more30.com/gesher",
       "desktop": {
         "status": 200,
-        "loadMs": 5058,
+        "loadMs": 5209,
         "consoleErrors": [
           "Failed to load resource: the server responded with a status of 404 (Not Found)",
           "Failed to load resource: the server responded with a status of 404 (Not Found)",
@@ -4043,8 +4152,8 @@
         ],
         "failedRequests": [
           "GET https://more30.com/gesher/assets/styles-3PMaaxrj.css — net::ERR_ABORTED",
-          "GET https://more30.com/gesher/assets/index-DtqBFgK5.js — net::ERR_ABORTED",
-          "GET https://more30.com/gesher/assets/index-hUOKmU3p.js — net::ERR_ABORTED"
+          "GET https://more30.com/gesher/assets/index-hUOKmU3p.js — net::ERR_ABORTED",
+          "GET https://more30.com/gesher/assets/index-DtqBFgK5.js — net::ERR_ABORTED"
         ],
         "screenshot": "gesher-desktop.png",
         "title": "מערכת CRM שותפים",
@@ -4052,6 +4161,7 @@
         "dir": "rtl",
         "metaDescription": "פלטפורמת ניהול לקוחות ושותפים עסקיים",
         "metaViewport": "width=device-width, initial-scale=1",
+        "metaRobots": "",
         "canonical": "",
         "ogUrl": "",
         "h1Count": 0,
@@ -4060,19 +4170,24 @@
         "textLen": 0,
         "interactiveCount": 0,
         "smallTargets": [],
+        "srOnlyTargets": [],
         "unnamedControls": [],
         "imgsNoAlt": [],
         "hasAuthScript": true,
         "authBtnText": "",
         "bodyBg": "rgba(0, 0, 0, 0)",
         "bodyFg": "rgb(0, 0, 0)",
+        "effBg": "transparent",
+        "bgImages": "",
+        "bgLuminance": null,
+        "colorScheme": "normal",
         "vercelLeak": [],
         "scrollW": 1440,
         "clientW": 1440
       },
       "mobile": {
         "status": 200,
-        "loadMs": 4456,
+        "loadMs": 4379,
         "consoleErrors": [
           "Failed to load resource: the server responded with a status of 404 (Not Found)",
           "Failed to load resource: the server responded with a status of 404 (Not Found)",
@@ -4089,6 +4204,7 @@
         "dir": "rtl",
         "metaDescription": "פלטפורמת ניהול לקוחות ושותפים עסקיים",
         "metaViewport": "width=device-width, initial-scale=1",
+        "metaRobots": "",
         "canonical": "",
         "ogUrl": "",
         "h1Count": 0,
@@ -4097,19 +4213,24 @@
         "textLen": 0,
         "interactiveCount": 0,
         "smallTargets": [],
+        "srOnlyTargets": [],
         "unnamedControls": [],
         "imgsNoAlt": [],
         "hasAuthScript": true,
         "authBtnText": "",
         "bodyBg": "rgba(0, 0, 0, 0)",
         "bodyFg": "rgb(0, 0, 0)",
+        "effBg": "transparent",
+        "bgImages": "",
+        "bgLuminance": null,
+        "colorScheme": "normal",
         "vercelLeak": [],
         "scrollW": 390,
         "clientW": 390
       },
       "dark": {
         "status": 200,
-        "loadMs": 4368,
+        "loadMs": 4406,
         "consoleErrors": [
           "Failed to load resource: the server responded with a status of 404 (Not Found)",
           "Failed to load resource: the server responded with a status of 404 (Not Found)",
@@ -4126,6 +4247,7 @@
         "dir": "rtl",
         "metaDescription": "פלטפורמת ניהול לקוחות ושותפים עסקיים",
         "metaViewport": "width=device-width, initial-scale=1",
+        "metaRobots": "",
         "canonical": "",
         "ogUrl": "",
         "h1Count": 0,
@@ -4134,17 +4256,23 @@
         "textLen": 0,
         "interactiveCount": 0,
         "smallTargets": [],
+        "srOnlyTargets": [],
         "unnamedControls": [],
         "imgsNoAlt": [],
         "hasAuthScript": true,
         "authBtnText": "",
         "bodyBg": "rgba(0, 0, 0, 0)",
         "bodyFg": "rgb(0, 0, 0)",
+        "effBg": "transparent",
+        "bgImages": "",
+        "bgLuminance": null,
+        "colorScheme": "normal",
         "vercelLeak": [],
         "scrollW": 1440,
         "clientW": 1440
       },
       "darkModeImplemented": false,
+      "darkModeBasis": "none",
       "horizontalOverflow": false
     },
     "nadlan": {
@@ -4155,7 +4283,7 @@
       "url": "https://more30.com/nadlan",
       "desktop": {
         "status": 200,
-        "loadMs": 4870,
+        "loadMs": 4737,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "nadlan-desktop.png",
@@ -4164,6 +4292,7 @@
         "dir": "rtl",
         "metaDescription": "מנוע אגרגציה שמאחד מקורות מידע ממשלתיים ומסחריים לכדי תעודת זהות דיגיטלית לכל נכס בישראל. מבית מור מערכות תוכנה.",
         "metaViewport": "width=device-width, initial-scale=1",
+        "metaRobots": "",
         "canonical": "",
         "ogUrl": "",
         "h1Count": 1,
@@ -4185,19 +4314,24 @@
         "textLen": 6441,
         "interactiveCount": 42,
         "smallTargets": [],
+        "srOnlyTargets": [],
         "unnamedControls": [],
         "imgsNoAlt": [],
         "hasAuthScript": true,
         "authBtnText": "",
         "bodyBg": "rgb(246, 248, 252)",
         "bodyFg": "rgb(26, 34, 51)",
+        "effBg": "rgb(246, 248, 252)",
+        "bgImages": "",
+        "bgLuminance": 0.9376,
+        "colorScheme": "light",
         "vercelLeak": [],
         "scrollW": 1440,
         "clientW": 1440
       },
       "mobile": {
         "status": 200,
-        "loadMs": 4802,
+        "loadMs": 4706,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "nadlan-mobile.png",
@@ -4206,6 +4340,7 @@
         "dir": "rtl",
         "metaDescription": "מנוע אגרגציה שמאחד מקורות מידע ממשלתיים ומסחריים לכדי תעודת זהות דיגיטלית לכל נכס בישראל. מבית מור מערכות תוכנה.",
         "metaViewport": "width=device-width, initial-scale=1",
+        "metaRobots": "",
         "canonical": "",
         "ogUrl": "",
         "h1Count": 1,
@@ -4227,19 +4362,24 @@
         "textLen": 6441,
         "interactiveCount": 42,
         "smallTargets": [],
+        "srOnlyTargets": [],
         "unnamedControls": [],
         "imgsNoAlt": [],
         "hasAuthScript": true,
         "authBtnText": "",
         "bodyBg": "rgb(246, 248, 252)",
         "bodyFg": "rgb(26, 34, 51)",
+        "effBg": "rgb(246, 248, 252)",
+        "bgImages": "",
+        "bgLuminance": 0.9376,
+        "colorScheme": "light",
         "vercelLeak": [],
         "scrollW": 390,
         "clientW": 390
       },
       "dark": {
         "status": 200,
-        "loadMs": 4917,
+        "loadMs": 4691,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "nadlan-dark.png",
@@ -4248,6 +4388,7 @@
         "dir": "rtl",
         "metaDescription": "מנוע אגרגציה שמאחד מקורות מידע ממשלתיים ומסחריים לכדי תעודת זהות דיגיטלית לכל נכס בישראל. מבית מור מערכות תוכנה.",
         "metaViewport": "width=device-width, initial-scale=1",
+        "metaRobots": "",
         "canonical": "",
         "ogUrl": "",
         "h1Count": 1,
@@ -4269,19 +4410,25 @@
         "textLen": 6441,
         "interactiveCount": 42,
         "smallTargets": [],
+        "srOnlyTargets": [],
         "unnamedControls": [],
         "imgsNoAlt": [],
         "hasAuthScript": true,
         "authBtnText": "",
         "bodyBg": "rgb(246, 248, 252)",
         "bodyFg": "rgb(26, 34, 51)",
+        "effBg": "rgb(246, 248, 252)",
+        "bgImages": "",
+        "bgLuminance": 0.9376,
+        "colorScheme": "light",
         "vercelLeak": [],
         "scrollW": 1440,
         "clientW": 1440
       },
       "darkModeImplemented": false,
+      "darkModeBasis": "none",
       "horizontalOverflow": false
     }
   },
-  "finishedAt": "2026-08-02T02:35:01.913Z"
+  "finishedAt": "2026-08-02T03:17:27.323Z"
 }
