@@ -6,6 +6,34 @@
 
 ---
 
+## 🔴 0א. **תיקוני מקור שאינם בגיט — סכנת אובדן בבנייה הבאה**
+
+> מסבב 03/08. **דורש החלטה שלך, ומהר.**
+
+`.gitignore` של המונו-רפו הזה מתעלם מ-`/apps/**` (למעט `app.json` ו-`STATUS.md`)
+ומ-`/_deploy/**`. זה **בכוונה** — לכל מערכת יש ריפו משלה. אבל התוצאה:
+
+**התיקונים הבאים חיים בפרודקשן, קיימים על הדיסק שלך, ואינם בשום ריפו:**
+
+| קובץ | מה תוקן |
+|---|---|
+| `apps/01-torah-platform/src/hooks/useTenant.tsx` | קריאת ה-seed מה-HTML |
+| `apps/01-torah-platform/src/lib/tenant.ts` | ייצוא `normalizeTenant` |
+| `apps/01-torah-platform/src/components/layout/PublicLayout.tsx` | הסרת שער הספינר |
+| `apps/01-torah-platform/src/main.tsx` | תיעוד מדוד (התנהגות זהה) |
+| `apps/32-nadlan-berega/tailwind.config.ts` | `teal` → 4.95:1 (היה 3.03:1) |
+| `apps/32-nadlan-berega/components/ReportRequestForm.tsx` | h3 → h2 |
+
+**בנייה הבאה מהריפו של אחת המערכות תמחק אותם.**
+
+**מה צריך ממך:** להחליט אחד משניים —
+1. לדחוף את השינויים לריפו של כל מערכת (`l023131500-ops/nadlan-berega` וכו'), או
+2. להסיר את `/apps/**` מה-`.gitignore` ולנהל את הקוד כאן.
+
+עד אז — **אל תבנה מחדש את torah או nadlan מריפו נפרד.**
+
+---
+
 ## 🆕 0. מערכת המתווכים (36) — **שני מפתחות, וזה כל מה שחוסם**
 
 > מסבב הלילה 02/08→03/08. המערכת חיה ב-`more30.com/tivuch`.
