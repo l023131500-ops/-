@@ -3921,3 +3921,28 @@ TBT 1,000ms בחצור · 106KB/88KB JS לא בשימוש · font-display 560ms 
 2. הכרעת SSR — חוסמת torah/zchuyot/kupot/mechiron/egod.
 3. chatzor (16) — טרם נגעתי.
 4. שני המפתחות ב-§0 (ספק חשבוניות, Resend).
+
+---
+
+# סבב לילה 03/08/2026 (רביעי) — Resend נסגר, שלב 4 שלם
+
+## nadlan-pro (36) — שליחת מסמכים לחתימה **עובדת**
+`RESEND_API_KEY` נמצא ב-`core.secrets`. נבנתה **Edge Function `np-send-signature`**:
+- שולפת את המפתח בצד השרת. **המפתח לעולם לא מגיע לדפדפן.**
+- ההרשאה **מואצלת ולא ממומשת מחדש** — קוראת את המסמך בשם הקורא, RLS מכריעה.
+- נמדד בפרודקשן: בעל משרד **200** · משרד אחר **403** · anon **403**.
+- `np_sign_log` (service_role בלבד) רושם `emailed` ביומן הראיות.
+- המייל: RTL פשוט, בלי תמונות ובלי פיקסל מעקב, אומר את רמת החתימה בכנות.
+- **סמוק-טסט 76/76.**
+
+## `INVOICE_PROVIDER` — **אינו מפתח**
+הערך הוא `greeninvoice` (12 תווים) = **בחירת ספק בלבד**. התיאור של הרשומה עצמה:
+*"API key to be added by user when connecting a real account."*
+לכן הפריט **נשאר** ב-NEEDS_USER, מצומצם למה שבאמת חסר:
+`GREENINVOICE_API_KEY` + `GREENINVOICE_API_SECRET`.
+
+## הבא בתור
+1. `.gitignore` (§0א) — **סיכון אובדן, הכי דחוף.**
+2. אישורי Green Invoice → מתאם הספק + הפקה אמיתית.
+3. הכרעת SSR — torah/zchuyot/kupot/mechiron/egod.
+4. chatzor (16) — טרם נגעתי.
