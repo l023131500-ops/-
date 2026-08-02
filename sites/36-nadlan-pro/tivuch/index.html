@@ -105,7 +105,10 @@ a{color:inherit;text-decoration:none}
 .tier.mid{border-color:var(--gold);background:rgba(201,162,39,.06)}
 .tier h3{font-family:'Secular One',sans-serif;font-weight:400;font-size:21px;margin:0 0 4px}
 .tier .price{font-family:'Suez One',serif;font-size:31px;margin:10px 0 4px}
-.tier .per{font-size:13px;color:var(--muted);margin:0 0 18px}
+/* --ink-2, not --muted. The tier cards sit on --violet rather than on --royal,
+   and --muted measured 4.39:1 there — under AA by a hair, and only on this one
+   background. The token is fine elsewhere; it is the pairing that failed. */
+.tier .per{font-size:13px;color:var(--ink-2);margin:0 0 18px}
 .tier ul{margin:0;padding:0;list-style:none;display:grid;gap:9px;font-size:14px;color:var(--ink-2)}
 .tier li::before{content:"·";color:var(--gold);margin-inline-end:8px}
 
