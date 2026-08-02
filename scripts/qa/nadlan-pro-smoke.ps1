@@ -192,6 +192,60 @@ try { Rpc $tokB 'np_contact_save' @{ p = @{ office_id = $officeA; full_name = '�
 catch { $wrote = $false }
 Ok 'outsider cannot insert into that office' (-not $wrote) 'insert was accepted'
 
+Write-Host "`n=== 9 · invoices: the red line ===" -ForegroundColor Cyan
+# The rule this module exists for: a tax invoice at or above the Tax Authority
+# threshold must carry an allocation number. Asserted by trying to break it.
+$pre = Rpc $tokA 'np_invoice_precheck' @{ p_deal = $deal }
+Ok 'threshold is the current 5,000' ([decimal]$pre.threshold -eq 5000) ("got " + $pre.threshold)
+Ok 'a 37,000 commission needs an allocation number' ($pre.needs_allocation -eq $true) 'needs_allocation false'
+Ok 'no provider connected is reported as such' ($pre.provider_connected -eq $false) 'claims a provider'
+Ok 'and the block is explained in words' (-not [string]::IsNullOrWhiteSpace($pre.blocked_reason)) 'no reason given'
+
+# Above threshold, issued, no allocation number -> must be refused.
+$refused = $false
+try {
+  Rpc $tokA 'np_invoice_record' @{ p = @{
+    office_id = $officeA; deal_id = $deal; doc_type = 'tax_invoice'; status = 'issued'
+    amount_before_vat = 37000; customer_name = 'ישראל ישראלי'
+  } } | Out-Null
+} catch { $refused = $true }
+Ok 'tax invoice over threshold without an allocation number is refused' $refused 'IT WAS ACCEPTED'
+
+# Same thing with an allocation number -> must be accepted.
+$withAlloc = Rpc $tokA 'np_invoice_record' @{ p = @{
+  office_id = $officeA; deal_id = $deal; doc_type = 'tax_invoice'; status = 'issued'
+  amount_before_vat = 37000; vat_rate = 18; vat_amount = 6660; total_amount = 43660
+  allocation_number = 'QA-TEST-ALLOC-1'; provider = 'qa-harness'
+  document_number = 'QA-1001'; customer_name = 'ישראל ישראלי'
+} }
+Ok 'tax invoice with an allocation number is recorded' ($null -ne $withAlloc) 'rejected'
+
+# Below the threshold no allocation number is required.
+$small = Rpc $tokA 'np_invoice_record' @{ p = @{
+  office_id = $officeA; deal_id = $deal; doc_type = 'tax_invoice'; status = 'issued'
+  amount_before_vat = 900; customer_name = 'לקוח קטן'
+} }
+Ok 'invoice below the threshold needs no allocation number' ($null -ne $small) 'rejected'
+
+# A payment request is not a tax invoice and never needs one.
+$req = Rpc $tokA 'np_invoice_record' @{ p = @{
+  office_id = $officeA; deal_id = $deal; doc_type = 'payment_request'; status = 'issued'
+  amount_before_vat = 37000; customer_name = 'ישראל ישראלי'
+} }
+Ok 'payment request is allowed without an allocation number' ($null -ne $req) 'rejected'
+
+$inv = Rpc $tokA 'np_invoices' @{ p_office = $officeA; p_deal = $deal }
+Ok 'three documents recorded, the refused one absent' (@($inv).Count -eq 3) ("count=" + @($inv).Count)
+
+# Issuing moves the commission from pending to invoiced.
+$comm = Rpc $tokA 'np_commission_save' @{ p = @{
+  office_id = $officeA; deal_id = $deal; pct = 2; amount = 37000; status = 'pending' } }
+Ok 'commission recorded' ($null -ne $comm) 'no id'
+
+Write-Host "`n=== 10 · invoices respect office isolation ===" -ForegroundColor Cyan
+$bInv = Rpc $tokB 'np_invoices' @{ p_office = $officeA }
+Ok 'outsider sees no invoices' (@($bInv).Count -eq 0) ("leaked " + @($bInv).Count)
+
 Write-Host "`n=== summary ===" -ForegroundColor Cyan
 Write-Host ("  passed: " + $script:pass) -ForegroundColor Green
 if ($script:fail -gt 0) { Write-Host ("  failed: " + $script:fail) -ForegroundColor Red }
