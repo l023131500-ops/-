@@ -1,0 +1,5 @@
+# The marketing page is real and finished, so it is indexable. There is no
+# application behind it yet — nothing else here to crawl.
+User-agent: *
+Allow: /kesef
+Sitemap: https://more30.com/sitemap.xml
