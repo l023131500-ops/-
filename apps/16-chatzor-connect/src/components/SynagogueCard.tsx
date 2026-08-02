@@ -66,7 +66,7 @@ export function SynagogueCard({
         <div className="mt-4 flex flex-wrap items-center gap-4">
           <Link
             to={`/k/${s.slug}`}
-            className="inline-flex items-center gap-1.5 text-sm font-semibold text-accent transition-colors hover:text-accent/80"
+            className="link-hit gap-1.5 text-sm font-semibold text-accent transition-colors hover:text-accent/80"
           >
             לאתר בית הכנסת
             <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" aria-hidden />
@@ -76,7 +76,7 @@ export function SynagogueCard({
               href={navUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+              className="link-hit gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
               data-testid="synagogue-navigate"
             >
               <Navigation className="h-3.5 w-3.5" aria-hidden />

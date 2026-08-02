@@ -42,7 +42,7 @@ export function Gemachim() {
                 <h3 className="mt-2 font-display text-lg font-bold text-foreground">{s.name}</h3>
                 {s.description && <p className="mt-2 text-sm text-muted-foreground">{s.description}</p>}
                 {s.contact && (
-                  <a href={`tel:${s.contact}`} className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-accent hover:text-accent/80">
+                  <a href={`tel:${s.contact}`} className="mt-4 link-hit gap-1.5 text-sm font-semibold text-accent hover:text-accent/80">
                     <Phone className="h-4 w-4" aria-hidden /> {s.contact}
                   </a>
                 )}

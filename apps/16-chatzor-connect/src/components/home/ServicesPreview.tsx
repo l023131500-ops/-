@@ -48,7 +48,7 @@ export function ServicesPreview() {
       )}
 
       <div className="mt-10 text-center">
-        <Link to="/gemachim" className="inline-flex items-center gap-1.5 text-sm font-semibold text-accent hover:text-accent/80">
+        <Link to="/gemachim" className="link-hit gap-1.5 text-sm font-semibold text-accent hover:text-accent/80">
           לכל הגמ״חים והשירותים
           <ArrowLeft className="h-4 w-4" aria-hidden />
         </Link>

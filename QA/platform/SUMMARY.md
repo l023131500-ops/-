@@ -1,6 +1,6 @@
 # QA/platform — מדידה רוחבית של כל המערכות החיות
 
-> נמדד 2026-08-02 00:16 → 2026-08-02 01:49 מול הפרודקשן ב-`more30.com`.
+> נמדד 2026-08-02 00:16 → 2026-08-02 02:21 מול הפרודקשן ב-`more30.com`.
 > נוצר על ידי `scripts/qa/platform-audit.mjs` + `scripts/qa/lighthouse-run.mjs` → `scripts/qa/report.mjs`.
 > כל שורה כאן היא מדידה בדפדפן אמיתי, לא הערכה. הסטנדרט: `DESIGN_STANDARD.md`.
 >
@@ -25,10 +25,10 @@
 | `/smel` | 12 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | 87/86/77/91 |  |
 | `/smachot` | 14 | ✅ | ✅ | ✅ | ✅ | ❌ 2 | ✅ | ✅ | ✅ | ✅ | ✅ | 86/100/77/91 |  |
 | `/egod` | 15 | ✅ | ✅ | ✅ | ✅ | ❌ 36 | ❌ 21 | ✅ | ✅ | ❌ | ✅ | 56/83/77/91 |  |
-| `/chatzor` | 16 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | 95/100/77/100 |  |
-| `/chatzor/` | 16 | ✅ | ✅ | ✅ | ✅ | ❌ 34 | ✅ | ✅ | ✅ | ✅ | ✅ | 61/95/77/91 |  |
+| `/chatzor` | 16 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | 87/100/77/100 |  |
+| `/chatzor/` | 16 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | 57/100/77/100 |  |
 | `/chizukim` | 17 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | 89/100/77/100 |  |
-| `/chizukim/` | 17 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | 84/96/77/91 |  |
+| `/chizukim/` | 17 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | 82/100/77/100 |  |
 | `/orech` | 18 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | 96/100/77/91 |  |
 | `/mthbram` | 21 | ✅ | ✅ | ✅ | ✅ | ❌ 2 | ✅ | ✅ | ❌ 1 | ❌ | ✅ | 69/98/73/91 |  |
 | `/zchuyot` | 22 | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ 3 | ✅ | ✅ | ❌ | ✅ | 38/90/77/92 |  |
@@ -199,21 +199,19 @@
 
 ### `/chatzor` — חצור קונקט — תדמית (מערכת 16)
 
-כותרת: **חצור קונקט · מור מערכות תוכנה** · h1: "חצור קונקט" · טקסט מרונדר: 927 תווים · 8 אלמנטים אינטראקטיביים · טעינה 4166ms
+כותרת: **חצור קונקט · מור מערכות תוכנה** · h1: "חצור קונקט" · טקסט מרונדר: 927 תווים · 8 אלמנטים אינטראקטיביים · טעינה 4707ms
 
-- Lighthouse מתחת ל-90: perf 95 · a11y 100 · bp 77 · seo 100
-  - נכשלו: largest-contentful-paint (3.0 s) · third-party-cookies (2 cookies found) · mainthread-work-breakdown (5.9 s) · bootup-time (3.9 s) · unminified-javascript (Est savings of 2 KiB) · inspector-issues · cache-insight (Est savings of 43 KiB) · document-latency-insight (Est savings of 10 KiB)
+- Lighthouse מתחת ל-90: perf 87 · a11y 100 · bp 77 · seo 100
+  - נכשלו: largest-contentful-paint (3.3 s) · cumulative-layout-shift (0.146) · third-party-cookies (1 cookie found) · layout-shifts (3 layout shifts found) · unminified-javascript (Est savings of 2 KiB) · inspector-issues · cache-insight (Est savings of 43 KiB) · cls-culprits-insight
 
 צילומים: `chatzor-desktop.png` · `chatzor-mobile.png` · `chatzor-dark.png`
 
 ### `/chatzor/` — חצור קונקט — המערכת (מערכת 16)
 
-כותרת: **מחוברים · חצור הגלילית** · h1: "מחוברים — כל התורה והקהילה של חצור הגלילית במקום אחד" · טקסט מרונדר: 2077 תווים · 29 אלמנטים אינטראקטיביים · טעינה 5364ms
+כותרת: **מחוברים · חצור הגלילית** · h1: "מחוברים — כל התורה והקהילה של חצור הגלילית במקום אחד" · טקסט מרונדר: 2076 תווים · 29 אלמנטים אינטראקטיביים · טעינה 4431ms
 
-- חסר: `canonical` · `og:url`
-- 34 יעדי מגע מתחת ל-24px: a 1×1 "דלג לתוכן" · a 114×20 "לאתר בית הכנסת" · a 43×20 "ניווט" · a 103×20 "לכל בתי הכנסת" · a 149×20 "לכל הגמ״חים והשירותים" · a 49×18 "בתי כנסת" · a 47×18 "זמני היום" · a 66×18 "שאל את הרב"
-- Lighthouse מתחת ל-90: perf 61 · a11y 95 · bp 77 · seo 91
-  - נכשלו: first-contentful-paint (3.1 s) · largest-contentful-paint (4.6 s) · total-blocking-time (670 ms) · max-potential-fid (350 ms) · interactive (5.2 s) · third-party-cookies (2 cookies found) · mainthread-work-breakdown (4.3 s) · color-contrast
+- Lighthouse מתחת ל-90: perf 57 · a11y 100 · bp 77 · seo 100
+  - נכשלו: first-contentful-paint (3.8 s) · largest-contentful-paint (5.0 s) · speed-index (3.8 s) · total-blocking-time (640 ms) · max-potential-fid (340 ms) · interactive (5.6 s) · third-party-cookies (2 cookies found) · mainthread-work-breakdown (4.5 s)
 
 צילומים: `chatzor-app-desktop.png` · `chatzor-app-mobile.png` · `chatzor-app-dark.png`
 
@@ -228,12 +226,10 @@
 
 ### `/chizukim/` — תמלול חיזוקים — המערכת (מערכת 17)
 
-כותרת: **מערכת תמלול — חיזוקים קצרים** · h1: "חיזוקים קצרים" · טקסט מרונדר: 1926 תווים · 35 אלמנטים אינטראקטיביים · טעינה 5387ms
+כותרת: **מערכת תמלול — חיזוקים קצרים** · h1: "חיזוקים קצרים" · טקסט מרונדר: 1926 תווים · 35 אלמנטים אינטראקטיביים · טעינה 4696ms
 
-- חסר: `canonical` · `og:url`
-- אין מצב כהה — הרקע האפקטיבי נשאר `rgb(248, 246, 242)` גם ב-`prefers-color-scheme: dark`
-- Lighthouse מתחת ל-90: perf 84 · a11y 96 · bp 77 · seo 91
-  - נכשלו: first-contentful-paint (2.6 s) · largest-contentful-paint (2.8 s) · total-blocking-time (350 ms) · max-potential-fid (280 ms) · interactive (4.7 s) · third-party-cookies (2 cookies found) · mainthread-work-breakdown (2.1 s) · color-contrast
+- Lighthouse מתחת ל-90: perf 82 · a11y 100 · bp 77 · seo 100
+  - נכשלו: first-contentful-paint (3.0 s) · largest-contentful-paint (3.2 s) · total-blocking-time (270 ms) · max-potential-fid (200 ms) · interactive (5.6 s) · third-party-cookies (2 cookies found) · mainthread-work-breakdown (2.4 s) · unminified-javascript (Est savings of 2 KiB)
 
 צילומים: `chizukim-app-desktop.png` · `chizukim-app-mobile.png` · `chizukim-app-dark.png`
 

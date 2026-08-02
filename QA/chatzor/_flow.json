@@ -1,0 +1,56 @@
+{
+  "light": {
+    "mode": "light",
+    "errors": [],
+    "bodyBg": "rgb(251, 252, 253)",
+    "zmanim": {
+      "count": 14,
+      "sample": [
+        "05:48",
+        "05:48",
+        "19:39",
+        "04:29"
+      ]
+    },
+    "hasSunrise": true,
+    "synagogues": 4,
+    "siteUrl": "https://more30.com/chatzor/k/beit-el",
+    "siteTextLen": 539
+  },
+  "dark": {
+    "mode": "dark",
+    "errors": [],
+    "bodyBg": "rgb(13, 22, 33)",
+    "zmanim": {
+      "count": 14,
+      "sample": [
+        "05:48",
+        "05:48",
+        "19:39",
+        "04:29"
+      ]
+    },
+    "hasSunrise": true,
+    "synagogues": 4,
+    "siteUrl": "https://more30.com/chatzor/k/beit-el",
+    "siteTextLen": 539
+  },
+  "mobile": {
+    "mode": "mobile",
+    "errors": [],
+    "bodyBg": "rgb(251, 252, 253)",
+    "zmanim": {
+      "count": 14,
+      "sample": [
+        "05:48",
+        "05:48",
+        "19:39",
+        "04:29"
+      ]
+    },
+    "hasSunrise": true,
+    "synagogues": 4,
+    "siteUrl": "https://more30.com/chatzor/k/beit-el",
+    "siteTextLen": 539
+  }
+}

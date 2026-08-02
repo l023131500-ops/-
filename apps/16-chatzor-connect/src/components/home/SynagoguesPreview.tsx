@@ -30,7 +30,7 @@ export function SynagoguesPreview() {
       <div className="mt-10 text-center">
         <Link
           to="/batei-knesset"
-          className="inline-flex items-center gap-1.5 text-sm font-semibold text-accent hover:text-accent/80"
+          className="link-hit gap-1.5 text-sm font-semibold text-accent hover:text-accent/80"
         >
           לכל בתי הכנסת
           <ArrowLeft className="h-4 w-4" aria-hidden />

@@ -93,15 +93,34 @@ const PROBE = () => {
   const interactive = [...document.querySelectorAll('a[href], button, input, select, textarea, [role="button"], [role="link"], [role="tab"], summary')].filter(vis);
 
   const small = [];
+  const srOnly = [];
+  const active = document.activeElement;
   for (const el of interactive) {
     const r = el.getBoundingClientRect();
     // an inline link inside a paragraph is measured by its line box, which is
     // what a finger actually gets; height below 24px is the failure mode.
     const h = Math.round(r.height), w = Math.round(r.width);
-    if (h < 24 || w < 24) {
-      small.push({ tag: el.tagName.toLowerCase(), w, h, name: accName(el).slice(0, 60) });
+    if (h >= 24 && w >= 24) continue;
+
+    // ⚠️ A "skip to content" link is 1x1 on purpose — `sr-only` with
+    // `focus:not-sr-only`, invisible to the eye and reachable by keyboard.
+    // Counting it as an undersized touch target was a false positive: it is
+    // not a touch target at all. But it must still be usable once focused, so
+    // rather than skip it silently, focus it and measure again.
+    if (w <= 1 && h <= 1) {
+      let fw = w, fh = h;
+      try {
+        el.focus({ preventScroll: true });
+        const fr = el.getBoundingClientRect();
+        fw = Math.round(fr.width); fh = Math.round(fr.height);
+      } catch { /* not focusable; falls through as a real failure below */ }
+      srOnly.push({ tag: el.tagName.toLowerCase(), name: accName(el).slice(0, 60), focusW: fw, focusH: fh, ok: fw >= 24 && fh >= 24 });
+      if (fw >= 24 && fh >= 24) continue; // reveals itself properly — not a defect
     }
+
+    small.push({ tag: el.tagName.toLowerCase(), w, h, name: accName(el).slice(0, 60) });
   }
+  try { if (active && active.focus) active.focus({ preventScroll: true }); } catch {}
 
   const unnamed = [];
   for (const el of interactive) {
@@ -162,6 +181,7 @@ const PROBE = () => {
     textLen: (document.body.innerText || '').length,
     interactiveCount: interactive.length,
     smallTargets: small,
+    srOnlyTargets: srOnly,
     unnamedControls: unnamed,
     imgsNoAlt,
     // the shared login button injects this script and renders #more30-auth-btn

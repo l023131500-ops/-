@@ -15,18 +15,18 @@ export function Footer() {
         <nav aria-label="ניווט תחתון">
           <h3 className="text-sm font-semibold text-foreground">ניווט</h3>
           <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
-            <li><Link className="hover:text-foreground" to="/batei-knesset">בתי כנסת</Link></li>
-            <li><Link className="hover:text-foreground" to="/#zmanim">זמני היום</Link></li>
-            <li><Link className="hover:text-foreground" to="/ask-rav">שאל את הרב</Link></li>
-            <li><Link className="hover:text-foreground" to="/gemachim">שירותי קהילה</Link></li>
+            <li><Link className="link-hit hover:text-foreground" to="/batei-knesset">בתי כנסת</Link></li>
+            <li><Link className="link-hit hover:text-foreground" to="/#zmanim">זמני היום</Link></li>
+            <li><Link className="link-hit hover:text-foreground" to="/ask-rav">שאל את הרב</Link></li>
+            <li><Link className="link-hit hover:text-foreground" to="/gemachim">שירותי קהילה</Link></li>
           </ul>
         </nav>
 
         <div>
           <h3 className="text-sm font-semibold text-foreground">אזור מנהלים</h3>
           <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
-            <li><Link className="hover:text-foreground" to="/gabai">כניסת גבאים</Link></li>
-            <li><Link className="hover:text-foreground" to="/admin">ניהול מועצה</Link></li>
+            <li><Link className="link-hit hover:text-foreground" to="/gabai">כניסת גבאים</Link></li>
+            <li><Link className="link-hit hover:text-foreground" to="/admin">ניהול מועצה</Link></li>
           </ul>
         </div>
       </div>

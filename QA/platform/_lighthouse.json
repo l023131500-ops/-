@@ -1613,42 +1613,42 @@
   },
   "chatzor": {
     "url": "https://more30.com/chatzor",
-    "measuredAt": "2026-08-02T01:44:38.696Z",
-    "performance": 95,
+    "measuredAt": "2026-08-02T02:21:53.835Z",
+    "performance": 87,
     "accessibility": 100,
     "bestPractices": 77,
     "seo": 100,
     "metrics": {
-      "fcp": "1.1 s",
-      "lcp": "3.0 s",
+      "fcp": "1.2 s",
+      "lcp": "3.3 s",
       "tbt": "50 ms",
-      "cls": "0.001",
-      "si": "1.5 s"
+      "cls": "0.146",
+      "si": "2.0 s"
     },
     "failedAudits": [
       {
         "id": "largest-contentful-paint",
         "title": "Largest Contentful Paint",
-        "score": 0.79,
-        "display": "3.0 s"
+        "score": 0.7,
+        "display": "3.3 s"
+      },
+      {
+        "id": "cumulative-layout-shift",
+        "title": "Cumulative Layout Shift",
+        "score": 0.77,
+        "display": "0.146"
       },
       {
         "id": "third-party-cookies",
         "title": "Uses third-party cookies",
         "score": 0,
-        "display": "2 cookies found"
+        "display": "1 cookie found"
       },
       {
-        "id": "mainthread-work-breakdown",
-        "title": "Minimize main-thread work",
+        "id": "layout-shifts",
+        "title": "Avoid large layout shifts",
         "score": 0,
-        "display": "5.9 s"
-      },
-      {
-        "id": "bootup-time",
-        "title": "Reduce JavaScript execution time",
-        "score": 0.5,
-        "display": "3.9 s"
+        "display": "3 layout shifts found"
       },
       {
         "id": "unminified-javascript",
@@ -1669,16 +1669,16 @@
         "display": "Est savings of 43 KiB"
       },
       {
+        "id": "cls-culprits-insight",
+        "title": "Layout shift culprits",
+        "score": 0,
+        "display": ""
+      },
+      {
         "id": "document-latency-insight",
         "title": "Document request latency",
         "score": 0.5,
         "display": "Est savings of 10 KiB"
-      },
-      {
-        "id": "forced-reflow-insight",
-        "title": "Forced reflow",
-        "score": 0,
-        "display": ""
       },
       {
         "id": "modern-http-insight",
@@ -1696,48 +1696,54 @@
   },
   "chatzor-app": {
     "url": "https://more30.com/chatzor/",
-    "measuredAt": "2026-08-02T00:31:29.404Z",
-    "performance": 61,
-    "accessibility": 95,
+    "measuredAt": "2026-08-02T02:22:08.701Z",
+    "performance": 57,
+    "accessibility": 100,
     "bestPractices": 77,
-    "seo": 91,
+    "seo": 100,
     "metrics": {
-      "fcp": "3.1 s",
-      "lcp": "4.6 s",
-      "tbt": "670 ms",
+      "fcp": "3.8 s",
+      "lcp": "5.0 s",
+      "tbt": "640 ms",
       "cls": "0",
-      "si": "3.1 s"
+      "si": "3.8 s"
     },
     "failedAudits": [
       {
         "id": "first-contentful-paint",
         "title": "First Contentful Paint",
-        "score": 0.47,
-        "display": "3.1 s"
+        "score": 0.27,
+        "display": "3.8 s"
       },
       {
         "id": "largest-contentful-paint",
         "title": "Largest Contentful Paint",
-        "score": 0.35,
-        "display": "4.6 s"
+        "score": 0.27,
+        "display": "5.0 s"
+      },
+      {
+        "id": "speed-index",
+        "title": "Speed Index",
+        "score": 0.84,
+        "display": "3.8 s"
       },
       {
         "id": "total-blocking-time",
         "title": "Total Blocking Time",
-        "score": 0.44,
-        "display": "670 ms"
+        "score": 0.47,
+        "display": "640 ms"
       },
       {
         "id": "max-potential-fid",
         "title": "Max Potential First Input Delay",
-        "score": 0.25,
-        "display": "350 ms"
+        "score": 0.27,
+        "display": "340 ms"
       },
       {
         "id": "interactive",
         "title": "Time to Interactive",
-        "score": 0.74,
-        "display": "5.2 s"
+        "score": 0.69,
+        "display": "5.6 s"
       },
       {
         "id": "third-party-cookies",
@@ -1749,19 +1755,7 @@
         "id": "mainthread-work-breakdown",
         "title": "Minimize main-thread work",
         "score": 0,
-        "display": "4.3 s"
-      },
-      {
-        "id": "color-contrast",
-        "title": "Background and foreground colors do not have a sufficient contrast ratio.",
-        "score": 0,
-        "display": ""
-      },
-      {
-        "id": "unminified-javascript",
-        "title": "Minify JavaScript",
-        "score": 0.5,
-        "display": "Est savings of 2 KiB"
+        "display": "4.5 s"
       },
       {
         "id": "unused-javascript",
@@ -1776,28 +1770,22 @@
         "display": ""
       },
       {
-        "id": "robots-txt",
-        "title": "robots.txt is not valid",
-        "score": 0,
-        "display": "43 errors found"
-      },
-      {
         "id": "cache-insight",
         "title": "Use efficient cache lifetimes",
         "score": 0,
         "display": "Est savings of 43 KiB"
       },
       {
-        "id": "forced-reflow-insight",
-        "title": "Forced reflow",
-        "score": 0,
-        "display": ""
+        "id": "document-latency-insight",
+        "title": "Document request latency",
+        "score": 0.5,
+        "display": "Est savings of 2 KiB"
       },
       {
         "id": "modern-http-insight",
         "title": "Modern HTTP",
         "score": 0,
-        "display": "Est savings of -10 ms"
+        "display": "Est savings of 150 ms"
       },
       {
         "id": "network-dependency-tree-insight",
@@ -1809,7 +1797,7 @@
         "id": "render-blocking-insight",
         "title": "Render-blocking requests",
         "score": 0,
-        "display": "Est savings of 300 ms"
+        "display": "Est savings of 190 ms"
       }
     ]
   },

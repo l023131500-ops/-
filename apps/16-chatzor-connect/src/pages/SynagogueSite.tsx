@@ -46,7 +46,7 @@ export function SynagogueSite() {
       <div className="container-page py-24 text-center">
         <h1 className="font-display text-3xl font-bold">בית הכנסת לא נמצא</h1>
         <p className="mt-3 text-muted-foreground">ייתכן שהכתובת שגויה או שהדף טרם פורסם.</p>
-        <Link to="/batei-knesset" className="mt-6 inline-flex items-center gap-1.5 font-semibold text-accent">
+        <Link to="/batei-knesset" className="mt-6 link-hit gap-1.5 font-semibold text-accent">
           <ArrowLeft className="h-4 w-4" /> לכל בתי הכנסת
         </Link>
       </div>
@@ -219,7 +219,7 @@ export function SynagogueSite() {
       <footer className="border-t border-border bg-secondary/40">
         <div className="container-page flex flex-col items-center justify-between gap-2 py-6 text-sm text-muted-foreground sm:flex-row">
           <span>{synagogue.name}</span>
-          <Link to="/" className="inline-flex items-center gap-1.5 hover:text-foreground">
+          <Link to="/" className="link-hit gap-1.5 hover:text-foreground">
             חלק ממערכת מחוברים · המועצה הדתית חצור הגלילית <ArrowLeft className="h-4 w-4" />
           </Link>
         </div>

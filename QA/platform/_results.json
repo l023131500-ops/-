@@ -2449,7 +2449,7 @@
       "url": "https://more30.com/chatzor",
       "desktop": {
         "status": 200,
-        "loadMs": 4166,
+        "loadMs": 4707,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "chatzor-desktop.png",
@@ -2475,6 +2475,7 @@
         "textLen": 927,
         "interactiveCount": 8,
         "smallTargets": [],
+        "srOnlyTargets": [],
         "unnamedControls": [],
         "imgsNoAlt": [],
         "hasAuthScript": true,
@@ -2491,7 +2492,7 @@
       },
       "mobile": {
         "status": 200,
-        "loadMs": 4022,
+        "loadMs": 4008,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "chatzor-mobile.png",
@@ -2517,6 +2518,7 @@
         "textLen": 927,
         "interactiveCount": 8,
         "smallTargets": [],
+        "srOnlyTargets": [],
         "unnamedControls": [],
         "imgsNoAlt": [],
         "hasAuthScript": true,
@@ -2533,7 +2535,7 @@
       },
       "dark": {
         "status": 200,
-        "loadMs": 4017,
+        "loadMs": 3988,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "chatzor-dark.png",
@@ -2559,6 +2561,7 @@
         "textLen": 927,
         "interactiveCount": 8,
         "smallTargets": [],
+        "srOnlyTargets": [],
         "unnamedControls": [],
         "imgsNoAlt": [],
         "hasAuthScript": true,
@@ -2585,7 +2588,7 @@
       "url": "https://more30.com/chatzor/",
       "desktop": {
         "status": 200,
-        "loadMs": 5364,
+        "loadMs": 4431,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "chatzor-app-desktop.png",
@@ -2594,8 +2597,9 @@
         "dir": "rtl",
         "metaDescription": "מחוברים — פלטפורמת המועצה הדתית וקהילות חצור הגלילית: זמני תפילה, שיעורי תורה, בתי כנסת, גמ״חים ומידע דת במקום אחד.",
         "metaViewport": "width=device-width, initial-scale=1.0",
-        "canonical": "",
-        "ogUrl": "",
+        "metaRobots": "",
+        "canonical": "https://more30.com/chatzor/",
+        "ogUrl": "https://more30.com/chatzor/",
         "h1Count": 1,
         "h1": "מחוברים — כל התורה והקהילה של חצור הגלילית במקום אחד",
         "headings": [
@@ -2612,110 +2616,16 @@
           "H3: מקווה תל חי",
           "H3: ניווט"
         ],
-        "textLen": 2077,
+        "textLen": 2076,
         "interactiveCount": 29,
-        "smallTargets": [
+        "smallTargets": [],
+        "srOnlyTargets": [
           {
             "tag": "a",
-            "w": 1,
-            "h": 1,
-            "name": "דלג לתוכן"
-          },
-          {
-            "tag": "a",
-            "w": 114,
-            "h": 20,
-            "name": "לאתר בית הכנסת"
-          },
-          {
-            "tag": "a",
-            "w": 43,
-            "h": 20,
-            "name": "ניווט"
-          },
-          {
-            "tag": "a",
-            "w": 114,
-            "h": 20,
-            "name": "לאתר בית הכנסת"
-          },
-          {
-            "tag": "a",
-            "w": 43,
-            "h": 20,
-            "name": "ניווט"
-          },
-          {
-            "tag": "a",
-            "w": 114,
-            "h": 20,
-            "name": "לאתר בית הכנסת"
-          },
-          {
-            "tag": "a",
-            "w": 43,
-            "h": 20,
-            "name": "ניווט"
-          },
-          {
-            "tag": "a",
-            "w": 114,
-            "h": 20,
-            "name": "לאתר בית הכנסת"
-          },
-          {
-            "tag": "a",
-            "w": 43,
-            "h": 20,
-            "name": "ניווט"
-          },
-          {
-            "tag": "a",
-            "w": 103,
-            "h": 20,
-            "name": "לכל בתי הכנסת"
-          },
-          {
-            "tag": "a",
-            "w": 149,
-            "h": 20,
-            "name": "לכל הגמ״חים והשירותים"
-          },
-          {
-            "tag": "a",
-            "w": 49,
-            "h": 18,
-            "name": "בתי כנסת"
-          },
-          {
-            "tag": "a",
-            "w": 47,
-            "h": 18,
-            "name": "זמני היום"
-          },
-          {
-            "tag": "a",
-            "w": 66,
-            "h": 18,
-            "name": "שאל את הרב"
-          },
-          {
-            "tag": "a",
-            "w": 69,
-            "h": 18,
-            "name": "שירותי קהילה"
-          },
-          {
-            "tag": "a",
-            "w": 66,
-            "h": 18,
-            "name": "כניסת גבאים"
-          },
-          {
-            "tag": "a",
-            "w": 62,
-            "h": 18,
-            "name": "ניהול מועצה"
+            "name": "דלג לתוכן",
+            "focusW": 89,
+            "focusH": 40,
+            "ok": true
           }
         ],
         "unnamedControls": [],
@@ -2724,13 +2634,17 @@
         "authBtnText": "",
         "bodyBg": "rgb(251, 252, 253)",
         "bodyFg": "rgb(20, 34, 52)",
+        "effBg": "rgb(251, 252, 253)",
+        "bgImages": "",
+        "bgLuminance": 0.9722,
+        "colorScheme": "normal",
         "vercelLeak": [],
         "scrollW": 1440,
         "clientW": 1440
       },
       "mobile": {
         "status": 200,
-        "loadMs": 4424,
+        "loadMs": 4413,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "chatzor-app-mobile.png",
@@ -2739,8 +2653,9 @@
         "dir": "rtl",
         "metaDescription": "מחוברים — פלטפורמת המועצה הדתית וקהילות חצור הגלילית: זמני תפילה, שיעורי תורה, בתי כנסת, גמ״חים ומידע דת במקום אחד.",
         "metaViewport": "width=device-width, initial-scale=1.0",
-        "canonical": "",
-        "ogUrl": "",
+        "metaRobots": "",
+        "canonical": "https://more30.com/chatzor/",
+        "ogUrl": "https://more30.com/chatzor/",
         "h1Count": 1,
         "h1": "מחוברים — כל התורה והקהילה של חצור הגלילית במקום אחד",
         "headings": [
@@ -2757,110 +2672,16 @@
           "H3: מקווה תל חי",
           "H3: ניווט"
         ],
-        "textLen": 2064,
+        "textLen": 2063,
         "interactiveCount": 29,
-        "smallTargets": [
+        "smallTargets": [],
+        "srOnlyTargets": [
           {
             "tag": "a",
-            "w": 1,
-            "h": 1,
-            "name": "דלג לתוכן"
-          },
-          {
-            "tag": "a",
-            "w": 114,
-            "h": 20,
-            "name": "לאתר בית הכנסת"
-          },
-          {
-            "tag": "a",
-            "w": 43,
-            "h": 20,
-            "name": "ניווט"
-          },
-          {
-            "tag": "a",
-            "w": 114,
-            "h": 20,
-            "name": "לאתר בית הכנסת"
-          },
-          {
-            "tag": "a",
-            "w": 43,
-            "h": 20,
-            "name": "ניווט"
-          },
-          {
-            "tag": "a",
-            "w": 114,
-            "h": 20,
-            "name": "לאתר בית הכנסת"
-          },
-          {
-            "tag": "a",
-            "w": 43,
-            "h": 20,
-            "name": "ניווט"
-          },
-          {
-            "tag": "a",
-            "w": 114,
-            "h": 20,
-            "name": "לאתר בית הכנסת"
-          },
-          {
-            "tag": "a",
-            "w": 43,
-            "h": 20,
-            "name": "ניווט"
-          },
-          {
-            "tag": "a",
-            "w": 103,
-            "h": 20,
-            "name": "לכל בתי הכנסת"
-          },
-          {
-            "tag": "a",
-            "w": 149,
-            "h": 20,
-            "name": "לכל הגמ״חים והשירותים"
-          },
-          {
-            "tag": "a",
-            "w": 49,
-            "h": 18,
-            "name": "בתי כנסת"
-          },
-          {
-            "tag": "a",
-            "w": 47,
-            "h": 18,
-            "name": "זמני היום"
-          },
-          {
-            "tag": "a",
-            "w": 66,
-            "h": 18,
-            "name": "שאל את הרב"
-          },
-          {
-            "tag": "a",
-            "w": 69,
-            "h": 18,
-            "name": "שירותי קהילה"
-          },
-          {
-            "tag": "a",
-            "w": 66,
-            "h": 18,
-            "name": "כניסת גבאים"
-          },
-          {
-            "tag": "a",
-            "w": 62,
-            "h": 18,
-            "name": "ניהול מועצה"
+            "name": "דלג לתוכן",
+            "focusW": 89,
+            "focusH": 40,
+            "ok": true
           }
         ],
         "unnamedControls": [],
@@ -2869,13 +2690,17 @@
         "authBtnText": "",
         "bodyBg": "rgb(251, 252, 253)",
         "bodyFg": "rgb(20, 34, 52)",
+        "effBg": "rgb(251, 252, 253)",
+        "bgImages": "",
+        "bgLuminance": 0.9722,
+        "colorScheme": "normal",
         "vercelLeak": [],
         "scrollW": 390,
         "clientW": 390
       },
       "dark": {
         "status": 200,
-        "loadMs": 4495,
+        "loadMs": 4584,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "chatzor-app-dark.png",
@@ -2884,8 +2709,9 @@
         "dir": "rtl",
         "metaDescription": "מחוברים — פלטפורמת המועצה הדתית וקהילות חצור הגלילית: זמני תפילה, שיעורי תורה, בתי כנסת, גמ״חים ומידע דת במקום אחד.",
         "metaViewport": "width=device-width, initial-scale=1.0",
-        "canonical": "",
-        "ogUrl": "",
+        "metaRobots": "",
+        "canonical": "https://more30.com/chatzor/",
+        "ogUrl": "https://more30.com/chatzor/",
         "h1Count": 1,
         "h1": "מחוברים — כל התורה והקהילה של חצור הגלילית במקום אחד",
         "headings": [
@@ -2902,110 +2728,16 @@
           "H3: מקווה תל חי",
           "H3: ניווט"
         ],
-        "textLen": 2077,
+        "textLen": 2076,
         "interactiveCount": 29,
-        "smallTargets": [
+        "smallTargets": [],
+        "srOnlyTargets": [
           {
             "tag": "a",
-            "w": 1,
-            "h": 1,
-            "name": "דלג לתוכן"
-          },
-          {
-            "tag": "a",
-            "w": 114,
-            "h": 20,
-            "name": "לאתר בית הכנסת"
-          },
-          {
-            "tag": "a",
-            "w": 43,
-            "h": 20,
-            "name": "ניווט"
-          },
-          {
-            "tag": "a",
-            "w": 114,
-            "h": 20,
-            "name": "לאתר בית הכנסת"
-          },
-          {
-            "tag": "a",
-            "w": 43,
-            "h": 20,
-            "name": "ניווט"
-          },
-          {
-            "tag": "a",
-            "w": 114,
-            "h": 20,
-            "name": "לאתר בית הכנסת"
-          },
-          {
-            "tag": "a",
-            "w": 43,
-            "h": 20,
-            "name": "ניווט"
-          },
-          {
-            "tag": "a",
-            "w": 114,
-            "h": 20,
-            "name": "לאתר בית הכנסת"
-          },
-          {
-            "tag": "a",
-            "w": 43,
-            "h": 20,
-            "name": "ניווט"
-          },
-          {
-            "tag": "a",
-            "w": 103,
-            "h": 20,
-            "name": "לכל בתי הכנסת"
-          },
-          {
-            "tag": "a",
-            "w": 149,
-            "h": 20,
-            "name": "לכל הגמ״חים והשירותים"
-          },
-          {
-            "tag": "a",
-            "w": 49,
-            "h": 18,
-            "name": "בתי כנסת"
-          },
-          {
-            "tag": "a",
-            "w": 47,
-            "h": 18,
-            "name": "זמני היום"
-          },
-          {
-            "tag": "a",
-            "w": 66,
-            "h": 18,
-            "name": "שאל את הרב"
-          },
-          {
-            "tag": "a",
-            "w": 69,
-            "h": 18,
-            "name": "שירותי קהילה"
-          },
-          {
-            "tag": "a",
-            "w": 66,
-            "h": 18,
-            "name": "כניסת גבאים"
-          },
-          {
-            "tag": "a",
-            "w": 62,
-            "h": 18,
-            "name": "ניהול מועצה"
+            "name": "דלג לתוכן",
+            "focusW": 89,
+            "focusH": 40,
+            "ok": true
           }
         ],
         "unnamedControls": [],
@@ -3014,11 +2746,16 @@
         "authBtnText": "",
         "bodyBg": "rgb(13, 22, 33)",
         "bodyFg": "rgb(228, 235, 241)",
+        "effBg": "rgb(13, 22, 33)",
+        "bgImages": "",
+        "bgLuminance": 0.0077,
+        "colorScheme": "normal",
         "vercelLeak": [],
         "scrollW": 1440,
         "clientW": 1440
       },
       "darkModeImplemented": true,
+      "darkModeBasis": "responds",
       "horizontalOverflow": false
     },
     "chizukim": {
@@ -4527,5 +4264,5 @@
       "horizontalOverflow": false
     }
   },
-  "finishedAt": "2026-08-02T02:09:53.095Z"
+  "finishedAt": "2026-08-02T02:21:34.988Z"
 }

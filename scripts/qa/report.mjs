@@ -91,6 +91,13 @@ for (const [key, r] of Object.entries(res.routes)) {
     bad.push(`${unnamed.length} פקדים בלי שם נגיש: ` + uniq.map((u) => `${u.tag}${u.type ? `[${u.type}]` : ''} .${u.cls}`).join(' · '));
   }
   if (noAlt.length) bad.push(`${noAlt.length} תמונות בלי \`alt\``);
+  // קישור "דלג לתוכן" שאינו נפתח בפוקוס אינו נגיש למקלדת — ולכן הוא נספר,
+  // בעוד שאחד שכן נפתח נרשם כתקין ואינו נחשב יעד מגע קטן.
+  const srBad = [...(d.srOnlyTargets || []), ...(m.srOnlyTargets || [])].filter((s) => !s.ok);
+  if (srBad.length) {
+    bad.push(`${srBad.length} קישורים מוסתרים שאינם נחשפים בפוקוס: ` +
+      srBad.map((s) => `"${s.name}" (${s.focusW}×${s.focusH})`).join(' · '));
+  }
   if (r.horizontalOverflow) bad.push(`גלישה אופקית במובייל: ${m.scrollW}px בתוך ${m.clientW}px`);
   if (errs.length) bad.push(`${errs.length} שגיאות קונסולה: ${errs.slice(0, 3).join(' | ')}`);
   if (!r.darkModeImplemented) {
