@@ -1,0 +1,32 @@
+{
+  "light": {
+    "mode": "light",
+    "errors": [],
+    "bodyBg": "rgb(248, 246, 242)",
+    "headline": "1,138 הקלטות",
+    "searchTotal": "249 הקלטות",
+    "detailUrl": "https://more30.com/chizukim/?q=%D7%AA%D7%A9%D7%95%D7%91%D7%94#/recording/4b33e874-0408-4b4b-8a24-0110e18a5346",
+    "detailTextLen": 3189,
+    "hasTranscript": true
+  },
+  "dark": {
+    "mode": "dark",
+    "errors": [],
+    "bodyBg": "rgb(26, 23, 20)",
+    "headline": "1,138 הקלטות",
+    "searchTotal": "249 הקלטות",
+    "detailUrl": "https://more30.com/chizukim/?q=%D7%AA%D7%A9%D7%95%D7%91%D7%94#/recording/4b33e874-0408-4b4b-8a24-0110e18a5346",
+    "detailTextLen": 3189,
+    "hasTranscript": true
+  },
+  "mobile": {
+    "mode": "mobile",
+    "errors": [],
+    "bodyBg": "rgb(248, 246, 242)",
+    "headline": "1,138 הקלטות",
+    "searchTotal": "249 הקלטות",
+    "detailUrl": "https://more30.com/chizukim/?q=%D7%AA%D7%A9%D7%95%D7%91%D7%94#/recording/4b33e874-0408-4b4b-8a24-0110e18a5346",
+    "detailTextLen": 3189,
+    "hasTranscript": true
+  }
+}

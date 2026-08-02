@@ -3165,7 +3165,7 @@
       "url": "https://more30.com/chizukim/",
       "desktop": {
         "status": 200,
-        "loadMs": 5387,
+        "loadMs": 4696,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "chizukim-app-desktop.png",
@@ -3174,8 +3174,9 @@
         "dir": "rtl",
         "metaDescription": "ארכיון החיזוקים הקצרים — 1,138 הקלטות מתומללות, ניתנות לחיפוש בכל מילה שנאמרה בהן.",
         "metaViewport": "width=device-width, initial-scale=1.0",
-        "canonical": "",
-        "ogUrl": "",
+        "metaRobots": "",
+        "canonical": "https://more30.com/chizukim/",
+        "ogUrl": "https://more30.com/chizukim/",
         "h1Count": 1,
         "h1": "חיזוקים קצרים",
         "headings": [
@@ -3201,13 +3202,17 @@
         "authBtnText": "",
         "bodyBg": "rgb(248, 246, 242)",
         "bodyFg": "rgb(45, 38, 31)",
+        "effBg": "rgb(248, 246, 242)",
+        "bgImages": "",
+        "bgLuminance": 0.9228,
+        "colorScheme": "light",
         "vercelLeak": [],
         "scrollW": 1440,
         "clientW": 1440
       },
       "mobile": {
         "status": 200,
-        "loadMs": 4649,
+        "loadMs": 4581,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "chizukim-app-mobile.png",
@@ -3216,8 +3221,9 @@
         "dir": "rtl",
         "metaDescription": "ארכיון החיזוקים הקצרים — 1,138 הקלטות מתומללות, ניתנות לחיפוש בכל מילה שנאמרה בהן.",
         "metaViewport": "width=device-width, initial-scale=1.0",
-        "canonical": "",
-        "ogUrl": "",
+        "metaRobots": "",
+        "canonical": "https://more30.com/chizukim/",
+        "ogUrl": "https://more30.com/chizukim/",
         "h1Count": 1,
         "h1": "חיזוקים קצרים",
         "headings": [
@@ -3243,13 +3249,17 @@
         "authBtnText": "",
         "bodyBg": "rgb(248, 246, 242)",
         "bodyFg": "rgb(45, 38, 31)",
+        "effBg": "rgb(248, 246, 242)",
+        "bgImages": "",
+        "bgLuminance": 0.9228,
+        "colorScheme": "light",
         "vercelLeak": [],
         "scrollW": 390,
         "clientW": 390
       },
       "dark": {
         "status": 200,
-        "loadMs": 4994,
+        "loadMs": 5008,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "chizukim-app-dark.png",
@@ -3258,8 +3268,9 @@
         "dir": "rtl",
         "metaDescription": "ארכיון החיזוקים הקצרים — 1,138 הקלטות מתומללות, ניתנות לחיפוש בכל מילה שנאמרה בהן.",
         "metaViewport": "width=device-width, initial-scale=1.0",
-        "canonical": "",
-        "ogUrl": "",
+        "metaRobots": "",
+        "canonical": "https://more30.com/chizukim/",
+        "ogUrl": "https://more30.com/chizukim/",
         "h1Count": 1,
         "h1": "חיזוקים קצרים",
         "headings": [
@@ -3283,13 +3294,18 @@
         "imgsNoAlt": [],
         "hasAuthScript": true,
         "authBtnText": "",
-        "bodyBg": "rgb(248, 246, 242)",
-        "bodyFg": "rgb(45, 38, 31)",
+        "bodyBg": "rgb(26, 23, 20)",
+        "bodyFg": "rgb(235, 231, 224)",
+        "effBg": "rgb(26, 23, 20)",
+        "bgImages": "",
+        "bgLuminance": 0.0088,
+        "colorScheme": "dark",
         "vercelLeak": [],
         "scrollW": 1440,
         "clientW": 1440
       },
-      "darkModeImplemented": false,
+      "darkModeImplemented": true,
+      "darkModeBasis": "responds",
       "horizontalOverflow": false
     },
     "orech": {
@@ -4511,5 +4527,5 @@
       "horizontalOverflow": false
     }
   },
-  "finishedAt": "2026-08-02T01:49:34.494Z"
+  "finishedAt": "2026-08-02T02:09:53.095Z"
 }

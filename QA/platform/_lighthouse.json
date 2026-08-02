@@ -1910,48 +1910,48 @@
   },
   "chizukim-app": {
     "url": "https://more30.com/chizukim/",
-    "measuredAt": "2026-08-02T00:31:53.273Z",
-    "performance": 84,
-    "accessibility": 96,
+    "measuredAt": "2026-08-02T02:08:25.641Z",
+    "performance": 82,
+    "accessibility": 100,
     "bestPractices": 77,
-    "seo": 91,
+    "seo": 100,
     "metrics": {
-      "fcp": "2.6 s",
-      "lcp": "2.8 s",
-      "tbt": "350 ms",
-      "cls": "0.003",
-      "si": "2.6 s"
+      "fcp": "3.0 s",
+      "lcp": "3.2 s",
+      "tbt": "270 ms",
+      "cls": "0.004",
+      "si": "3.3 s"
     },
     "failedAudits": [
       {
         "id": "first-contentful-paint",
         "title": "First Contentful Paint",
-        "score": 0.62,
-        "display": "2.6 s"
+        "score": 0.49,
+        "display": "3.0 s"
       },
       {
         "id": "largest-contentful-paint",
         "title": "Largest Contentful Paint",
-        "score": 0.83,
-        "display": "2.8 s"
+        "score": 0.72,
+        "display": "3.2 s"
       },
       {
         "id": "total-blocking-time",
         "title": "Total Blocking Time",
-        "score": 0.73,
-        "display": "350 ms"
+        "score": 0.82,
+        "display": "270 ms"
       },
       {
         "id": "max-potential-fid",
         "title": "Max Potential First Input Delay",
-        "score": 0.41,
-        "display": "280 ms"
+        "score": 0.68,
+        "display": "200 ms"
       },
       {
         "id": "interactive",
         "title": "Time to Interactive",
-        "score": 0.81,
-        "display": "4.7 s"
+        "score": 0.69,
+        "display": "5.6 s"
       },
       {
         "id": "third-party-cookies",
@@ -1963,13 +1963,7 @@
         "id": "mainthread-work-breakdown",
         "title": "Minimize main-thread work",
         "score": 0,
-        "display": "2.1 s"
-      },
-      {
-        "id": "color-contrast",
-        "title": "Background and foreground colors do not have a sufficient contrast ratio.",
-        "score": 0,
-        "display": ""
+        "display": "2.4 s"
       },
       {
         "id": "unminified-javascript",
@@ -1996,16 +1990,22 @@
         "display": ""
       },
       {
-        "id": "robots-txt",
-        "title": "robots.txt is not valid",
-        "score": 0,
-        "display": "43 errors found"
-      },
-      {
         "id": "cache-insight",
         "title": "Use efficient cache lifetimes",
+        "score": 0,
+        "display": "Est savings of 1,226 KiB"
+      },
+      {
+        "id": "document-latency-insight",
+        "title": "Document request latency",
         "score": 0.5,
-        "display": "Est savings of 43 KiB"
+        "display": "Est savings of 3 KiB"
+      },
+      {
+        "id": "font-display-insight",
+        "title": "Font display",
+        "score": 0,
+        "display": "Est savings of 170 ms"
       },
       {
         "id": "network-dependency-tree-insight",
@@ -2017,7 +2017,7 @@
         "id": "render-blocking-insight",
         "title": "Render-blocking requests",
         "score": 0,
-        "display": "Est savings of 150 ms"
+        "display": "Est savings of 190 ms"
       }
     ]
   },
