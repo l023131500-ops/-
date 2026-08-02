@@ -1,0 +1,128 @@
+{
+  "light": {
+    "mode": "light",
+    "errors": [],
+    "previewsRendered": 18,
+    "effBg": "rgb(12, 17, 29)",
+    "colorScheme": "dark",
+    "overflow": false,
+    "filter": {
+      "groups": 1,
+      "pressed": [
+        {
+          "label": "שיעורי תורה",
+          "pressed": "true",
+          "disabled": false
+        },
+        {
+          "label": "מעגל החיים(בקרוב)",
+          "pressed": "false",
+          "disabled": true
+        },
+        {
+          "label": "מעגל השנה(בקרוב)",
+          "pressed": "false",
+          "disabled": true
+        },
+        {
+          "label": "אירועים וארגונים(בקרוב",
+          "pressed": "false",
+          "disabled": true
+        }
+      ],
+      "danglingAriaControls": 0
+    },
+    "templates": 4,
+    "editor": {
+      "textLen": 892,
+      "stuckOnFallback": false,
+      "hasCanvas": true,
+      "controls": 8,
+      "sample": "מודעות · מנוע העיצוב החרדי מחלקת מיתוג גרסת POC עיצוב מודעות ברמת מעצב — לשיעורי תורה, שמחות ואירועי הקהילה כותרות ענקיות, מסגרות זהב ועיטור"
+    }
+  },
+  "dark": {
+    "mode": "dark",
+    "errors": [],
+    "previewsRendered": 18,
+    "effBg": "rgb(12, 17, 29)",
+    "colorScheme": "dark",
+    "overflow": false,
+    "filter": {
+      "groups": 1,
+      "pressed": [
+        {
+          "label": "שיעורי תורה",
+          "pressed": "true",
+          "disabled": false
+        },
+        {
+          "label": "מעגל החיים(בקרוב)",
+          "pressed": "false",
+          "disabled": true
+        },
+        {
+          "label": "מעגל השנה(בקרוב)",
+          "pressed": "false",
+          "disabled": true
+        },
+        {
+          "label": "אירועים וארגונים(בקרוב",
+          "pressed": "false",
+          "disabled": true
+        }
+      ],
+      "danglingAriaControls": 0
+    },
+    "templates": 4,
+    "editor": {
+      "textLen": 892,
+      "stuckOnFallback": false,
+      "hasCanvas": true,
+      "controls": 8,
+      "sample": "מודעות · מנוע העיצוב החרדי מחלקת מיתוג גרסת POC עיצוב מודעות ברמת מעצב — לשיעורי תורה, שמחות ואירועי הקהילה כותרות ענקיות, מסגרות זהב ועיטור"
+    }
+  },
+  "mobile": {
+    "mode": "mobile",
+    "errors": [],
+    "previewsRendered": 18,
+    "effBg": "rgb(12, 17, 29)",
+    "colorScheme": "dark",
+    "overflow": false,
+    "filter": {
+      "groups": 1,
+      "pressed": [
+        {
+          "label": "שיעורי תורה",
+          "pressed": "true",
+          "disabled": false
+        },
+        {
+          "label": "מעגל החיים(בקרוב)",
+          "pressed": "false",
+          "disabled": true
+        },
+        {
+          "label": "מעגל השנה(בקרוב)",
+          "pressed": "false",
+          "disabled": true
+        },
+        {
+          "label": "אירועים וארגונים(בקרוב",
+          "pressed": "false",
+          "disabled": true
+        }
+      ],
+      "danglingAriaControls": 0
+    },
+    "templates": 4,
+    "editor": {
+      "textLen": 968,
+      "stuckOnFallback": false,
+      "hasCanvas": false,
+      "controls": 8,
+      "sample": "מודעות · מנוע העיצוב החרדי מחלקת מיתוג גרסת POC עיצוב מודעות ברמת מעצב — לשיעורי תורה, שמחות ואירועי הקהילה כותרות ענקיות, מסגרות זהב ועיטור"
+    }
+  }
+}
