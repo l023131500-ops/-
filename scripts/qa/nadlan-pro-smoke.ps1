@@ -246,6 +246,73 @@ Write-Host "`n=== 10 · invoices respect office isolation ===" -ForegroundColor 
 $bInv = Rpc $tokB 'np_invoices' @{ p_office = $officeA }
 Ok 'outsider sees no invoices' (@($bInv).Count -eq 0) ("leaked " + @($bInv).Count)
 
+Write-Host "`n=== 11 · contracts and the signature evidence trail ===" -ForegroundColor Cyan
+$tpls = Rpc $tokA 'np_templates' @{ p_office = $officeA }
+Ok 'three system templates available' (@($tpls).Count -ge 3) ("count=" + @($tpls).Count)
+$ba = @($tpls | Where-Object { $_.key -eq 'broker_agreement' })
+Ok 'the brokerage agreement template exists' ($ba.Count -eq 1) 'missing'
+Ok 'and carries the licence disclosure required by the 2024 ethics rules' `
+   ($ba[0].body_md -like '*{{broker_license}}*') 'no licence placeholder'
+
+$ctx = Rpc $tokA 'np_contract_context' @{ p_deal = $deal }
+Ok 'contract context pulls the real buyer from the deal' ($ctx.buyer_name -eq 'ישראל ישראלי') ("got " + $ctx.buyer_name)
+Ok 'and the real property address' ($ctx.property_address -eq 'הרצל 42') ("got " + $ctx.property_address)
+
+$made = Rpc $tokA 'np_contract_create' @{ p = @{
+  office_id = $officeA; deal_id = $deal; title = 'הסכם תיווך — ישראלי'
+  body_html = '<h1>הסכם תיווך</h1><p>רישיון 12345</p>'
+  broker_name = 'תיווך בדיקה QA'; broker_license = '12345'
+  signers = @(@{ name = 'ישראל ישראלי'; email = 'buyer@example.com'; role = 'לקוח' })
+} }
+$contract = $made.contract_id
+$token = @($made.signers)[0].token
+Ok 'contract created with a signer' ($null -ne $contract -and $null -ne $token) 'missing id or token'
+Ok 'the signing token is long and random' ($token.Length -ge 40) ("len=" + $token.Length)
+
+Rpc $tokA 'np_contract_send' @{ p_id = $contract } | Out-Null
+
+# The signer is a client, not a more30 user. This is the only path in the system
+# that anon may call, so it is exercised as anon.
+$fetch = Rpc $ANON 'np_sign_fetch' @{ p_token = $token }
+Ok 'an unauthenticated signer can open the link' ($fetch.ok -eq $true) ("error: " + $fetch.error)
+Ok 'and sees the document text' ($fetch.body_html -like '*הסכם תיווך*') 'no body'
+Ok 'not yet signed' ($fetch.already_signed -eq $false) 'already signed'
+
+# A bad token must reveal nothing.
+$bad = Rpc $ANON 'np_sign_fetch' @{ p_token = 'not-a-real-token-000000' }
+Ok 'a wrong token is refused' ($bad.ok -eq $false) 'accepted'
+Ok 'and leaks no document' ($null -eq $bad.body_html) 'body leaked'
+
+$signed = Rpc $ANON 'np_sign_submit' @{
+  p_token = $token; p_signature_data = 'data:image/png;base64,iVBORw0KGgo='
+  p_ip = '203.0.113.9'; p_ua = 'QA harness'
+}
+Ok 'the signature is accepted' ($signed.ok -eq $true) ("error: " + $signed.error)
+Ok 'the level is reported honestly as secure, never certified' ($signed.level -eq 'secure') ("got " + $signed.level)
+Ok 'the signed document is hashed' ($signed.document_hash.Length -eq 64) ("len=" + $signed.document_hash.Length)
+
+# Signing twice must not be possible.
+$again = Rpc $ANON 'np_sign_submit' @{ p_token = $token; p_signature_data = 'data:image/png;base64,AAAA' }
+Ok 'the same link cannot be signed twice' ($again.ok -eq $false) 'double-signed'
+
+$cg = Rpc $tokA 'np_contract_get' @{ p_id = $contract }
+Ok 'the contract is now marked signed' ($cg.contract.status -eq 'signed') ("status=" + $cg.contract.status)
+$s0 = @($cg.signers)[0]
+Ok 'the signing IP was captured' ($s0.signed_ip -eq '203.0.113.9') ("got " + $s0.signed_ip)
+$events = @($s0.events | ForEach-Object { $_.event })
+Ok 'the evidence log records sent, opened and signed' `
+   (($events -contains 'sent') -and ($events -contains 'opened') -and ($events -contains 'signed')) `
+   ("events: " + ($events -join ','))
+
+$declined = Rpc $ANON 'np_sign_decline' @{ p_token = $token; p_reason = 'בדיקה' }
+Ok 'a document already signed cannot then be declined' ($declined.ok -eq $false) 'decline accepted after signing'
+
+Write-Host "`n=== 12 · contracts respect office isolation ===" -ForegroundColor Cyan
+$bC = Rpc $tokB 'np_contracts' @{ p_office = $officeA }
+Ok 'outsider sees no contracts' (@($bC).Count -eq 0) ("leaked " + @($bC).Count)
+$bCg = Rpc $tokB 'np_contract_get' @{ p_id = $contract }
+Ok 'outsider cannot read the contract' ($null -eq $bCg -or $null -eq $bCg.contract) 'contract leaked'
+
 Write-Host "`n=== summary ===" -ForegroundColor Cyan
 Write-Host ("  passed: " + $script:pass) -ForegroundColor Green
 if ($script:fail -gt 0) { Write-Host ("  failed: " + $script:fail) -ForegroundColor Red }
