@@ -1774,7 +1774,7 @@
       "url": "https://more30.com/egod",
       "desktop": {
         "status": 200,
-        "loadMs": 4660,
+        "loadMs": 5720,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "egod-desktop.png",
@@ -1804,169 +1804,9 @@
         ],
         "textLen": 2459,
         "interactiveCount": 32,
-        "smallTargets": [
-          {
-            "tag": "button",
-            "w": 24,
-            "h": 6,
-            "name": ""
-          },
-          {
-            "tag": "button",
-            "w": 6,
-            "h": 6,
-            "name": ""
-          },
-          {
-            "tag": "button",
-            "w": 6,
-            "h": 6,
-            "name": ""
-          },
-          {
-            "tag": "button",
-            "w": 6,
-            "h": 6,
-            "name": ""
-          },
-          {
-            "tag": "button",
-            "w": 6,
-            "h": 6,
-            "name": ""
-          },
-          {
-            "tag": "button",
-            "w": 6,
-            "h": 6,
-            "name": ""
-          },
-          {
-            "tag": "button",
-            "w": 6,
-            "h": 6,
-            "name": ""
-          },
-          {
-            "tag": "button",
-            "w": 6,
-            "h": 6,
-            "name": ""
-          },
-          {
-            "tag": "a",
-            "w": 318,
-            "h": 20,
-            "name": "דף הבית"
-          },
-          {
-            "tag": "a",
-            "w": 318,
-            "h": 20,
-            "name": "מצא שיעור"
-          },
-          {
-            "tag": "a",
-            "w": 318,
-            "h": 20,
-            "name": "הקם שיעור"
-          },
-          {
-            "tag": "a",
-            "w": 318,
-            "h": 20,
-            "name": "אודות"
-          },
-          {
-            "tag": "a",
-            "w": 318,
-            "h": 20,
-            "name": "הצטרף לאיגוד"
-          },
-          {
-            "tag": "a",
-            "w": 318,
-            "h": 20,
-            "name": "הפעלת פורטל חדש"
-          },
-          {
-            "tag": "a",
-            "w": 318,
-            "h": 20,
-            "name": "כניסה לפורטל"
-          },
-          {
-            "tag": "a",
-            "w": 318,
-            "h": 20,
-            "name": "02-3131600"
-          },
-          {
-            "tag": "a",
-            "w": 318,
-            "h": 20,
-            "name": "WhatsApp 02-3131600"
-          },
-          {
-            "tag": "a",
-            "w": 318,
-            "h": 20,
-            "name": "a023131600@gmail.com"
-          }
-        ],
+        "smallTargets": [],
         "srOnlyTargets": [],
-        "unnamedControls": [
-          {
-            "tag": "button",
-            "type": "",
-            "cls": "w-10 h-10 rounded-full bg-card border bo"
-          },
-          {
-            "tag": "button",
-            "type": "",
-            "cls": "h-1.5 rounded-full transition-all w-6 bg"
-          },
-          {
-            "tag": "button",
-            "type": "",
-            "cls": "h-1.5 rounded-full transition-all w-1.5 "
-          },
-          {
-            "tag": "button",
-            "type": "",
-            "cls": "h-1.5 rounded-full transition-all w-1.5 "
-          },
-          {
-            "tag": "button",
-            "type": "",
-            "cls": "h-1.5 rounded-full transition-all w-1.5 "
-          },
-          {
-            "tag": "button",
-            "type": "",
-            "cls": "h-1.5 rounded-full transition-all w-1.5 "
-          },
-          {
-            "tag": "button",
-            "type": "",
-            "cls": "h-1.5 rounded-full transition-all w-1.5 "
-          },
-          {
-            "tag": "button",
-            "type": "",
-            "cls": "h-1.5 rounded-full transition-all w-1.5 "
-          },
-          {
-            "tag": "button",
-            "type": "",
-            "cls": "h-1.5 rounded-full transition-all w-1.5 "
-          },
-          {
-            "tag": "button",
-            "type": "",
-            "cls": "w-10 h-10 rounded-full bg-card border bo"
-          }
-        ],
+        "unnamedControls": [],
         "imgsNoAlt": [],
         "hasAuthScript": true,
         "authBtnText": "",
@@ -1982,7 +1822,7 @@
       },
       "mobile": {
         "status": 200,
-        "loadMs": 5053,
+        "loadMs": 4842,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "egod-mobile.png",
@@ -2012,172 +1852,13 @@
         ],
         "textLen": 2376,
         "interactiveCount": 25,
-        "smallTargets": [
-          {
-            "tag": "button",
-            "w": 24,
-            "h": 6,
-            "name": ""
-          },
-          {
-            "tag": "button",
-            "w": 6,
-            "h": 6,
-            "name": ""
-          },
-          {
-            "tag": "button",
-            "w": 6,
-            "h": 6,
-            "name": ""
-          },
-          {
-            "tag": "button",
-            "w": 6,
-            "h": 6,
-            "name": ""
-          },
-          {
-            "tag": "button",
-            "w": 6,
-            "h": 6,
-            "name": ""
-          },
-          {
-            "tag": "button",
-            "w": 6,
-            "h": 6,
-            "name": ""
-          },
-          {
-            "tag": "button",
-            "w": 6,
-            "h": 6,
-            "name": ""
-          },
-          {
-            "tag": "button",
-            "w": 6,
-            "h": 6,
-            "name": ""
-          },
-          {
-            "tag": "a",
-            "w": 358,
-            "h": 20,
-            "name": "דף הבית"
-          },
-          {
-            "tag": "a",
-            "w": 358,
-            "h": 20,
-            "name": "מצא שיעור"
-          },
-          {
-            "tag": "a",
-            "w": 358,
-            "h": 20,
-            "name": "הקם שיעור"
-          },
-          {
-            "tag": "a",
-            "w": 358,
-            "h": 20,
-            "name": "אודות"
-          },
-          {
-            "tag": "a",
-            "w": 358,
-            "h": 20,
-            "name": "הצטרף לאיגוד"
-          },
-          {
-            "tag": "a",
-            "w": 358,
-            "h": 20,
-            "name": "הפעלת פורטל חדש"
-          },
-          {
-            "tag": "a",
-            "w": 358,
-            "h": 20,
-            "name": "כניסה לפורטל"
-          },
-          {
-            "tag": "a",
-            "w": 358,
-            "h": 20,
-            "name": "02-3131600"
-          },
-          {
-            "tag": "a",
-            "w": 358,
-            "h": 20,
-            "name": "WhatsApp 02-3131600"
-          },
-          {
-            "tag": "a",
-            "w": 358,
-            "h": 20,
-            "name": "a023131600@gmail.com"
-          }
-        ],
+        "smallTargets": [],
         "srOnlyTargets": [],
         "unnamedControls": [
           {
             "tag": "button",
             "type": "",
             "cls": "md:hidden text-primary-foreground p-2"
-          },
-          {
-            "tag": "button",
-            "type": "",
-            "cls": "w-10 h-10 rounded-full bg-card border bo"
-          },
-          {
-            "tag": "button",
-            "type": "",
-            "cls": "h-1.5 rounded-full transition-all w-6 bg"
-          },
-          {
-            "tag": "button",
-            "type": "",
-            "cls": "h-1.5 rounded-full transition-all w-1.5 "
-          },
-          {
-            "tag": "button",
-            "type": "",
-            "cls": "h-1.5 rounded-full transition-all w-1.5 "
-          },
-          {
-            "tag": "button",
-            "type": "",
-            "cls": "h-1.5 rounded-full transition-all w-1.5 "
-          },
-          {
-            "tag": "button",
-            "type": "",
-            "cls": "h-1.5 rounded-full transition-all w-1.5 "
-          },
-          {
-            "tag": "button",
-            "type": "",
-            "cls": "h-1.5 rounded-full transition-all w-1.5 "
-          },
-          {
-            "tag": "button",
-            "type": "",
-            "cls": "h-1.5 rounded-full transition-all w-1.5 "
-          },
-          {
-            "tag": "button",
-            "type": "",
-            "cls": "h-1.5 rounded-full transition-all w-1.5 "
-          },
-          {
-            "tag": "button",
-            "type": "",
-            "cls": "w-10 h-10 rounded-full bg-card border bo"
           }
         ],
         "imgsNoAlt": [],
@@ -2195,7 +1876,7 @@
       },
       "dark": {
         "status": 200,
-        "loadMs": 4663,
+        "loadMs": 4837,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "egod-dark.png",
@@ -2225,169 +1906,9 @@
         ],
         "textLen": 2459,
         "interactiveCount": 32,
-        "smallTargets": [
-          {
-            "tag": "button",
-            "w": 24,
-            "h": 6,
-            "name": ""
-          },
-          {
-            "tag": "button",
-            "w": 6,
-            "h": 6,
-            "name": ""
-          },
-          {
-            "tag": "button",
-            "w": 6,
-            "h": 6,
-            "name": ""
-          },
-          {
-            "tag": "button",
-            "w": 6,
-            "h": 6,
-            "name": ""
-          },
-          {
-            "tag": "button",
-            "w": 6,
-            "h": 6,
-            "name": ""
-          },
-          {
-            "tag": "button",
-            "w": 6,
-            "h": 6,
-            "name": ""
-          },
-          {
-            "tag": "button",
-            "w": 6,
-            "h": 6,
-            "name": ""
-          },
-          {
-            "tag": "button",
-            "w": 6,
-            "h": 6,
-            "name": ""
-          },
-          {
-            "tag": "a",
-            "w": 318,
-            "h": 20,
-            "name": "דף הבית"
-          },
-          {
-            "tag": "a",
-            "w": 318,
-            "h": 20,
-            "name": "מצא שיעור"
-          },
-          {
-            "tag": "a",
-            "w": 318,
-            "h": 20,
-            "name": "הקם שיעור"
-          },
-          {
-            "tag": "a",
-            "w": 318,
-            "h": 20,
-            "name": "אודות"
-          },
-          {
-            "tag": "a",
-            "w": 318,
-            "h": 20,
-            "name": "הצטרף לאיגוד"
-          },
-          {
-            "tag": "a",
-            "w": 318,
-            "h": 20,
-            "name": "הפעלת פורטל חדש"
-          },
-          {
-            "tag": "a",
-            "w": 318,
-            "h": 20,
-            "name": "כניסה לפורטל"
-          },
-          {
-            "tag": "a",
-            "w": 318,
-            "h": 20,
-            "name": "02-3131600"
-          },
-          {
-            "tag": "a",
-            "w": 318,
-            "h": 20,
-            "name": "WhatsApp 02-3131600"
-          },
-          {
-            "tag": "a",
-            "w": 318,
-            "h": 20,
-            "name": "a023131600@gmail.com"
-          }
-        ],
+        "smallTargets": [],
         "srOnlyTargets": [],
-        "unnamedControls": [
-          {
-            "tag": "button",
-            "type": "",
-            "cls": "w-10 h-10 rounded-full bg-card border bo"
-          },
-          {
-            "tag": "button",
-            "type": "",
-            "cls": "h-1.5 rounded-full transition-all w-6 bg"
-          },
-          {
-            "tag": "button",
-            "type": "",
-            "cls": "h-1.5 rounded-full transition-all w-1.5 "
-          },
-          {
-            "tag": "button",
-            "type": "",
-            "cls": "h-1.5 rounded-full transition-all w-1.5 "
-          },
-          {
-            "tag": "button",
-            "type": "",
-            "cls": "h-1.5 rounded-full transition-all w-1.5 "
-          },
-          {
-            "tag": "button",
-            "type": "",
-            "cls": "h-1.5 rounded-full transition-all w-1.5 "
-          },
-          {
-            "tag": "button",
-            "type": "",
-            "cls": "h-1.5 rounded-full transition-all w-1.5 "
-          },
-          {
-            "tag": "button",
-            "type": "",
-            "cls": "h-1.5 rounded-full transition-all w-1.5 "
-          },
-          {
-            "tag": "button",
-            "type": "",
-            "cls": "h-1.5 rounded-full transition-all w-1.5 "
-          },
-          {
-            "tag": "button",
-            "type": "",
-            "cls": "w-10 h-10 rounded-full bg-card border bo"
-          }
-        ],
+        "unnamedControls": [],
         "imgsNoAlt": [],
         "hasAuthScript": true,
         "authBtnText": "",
@@ -4878,5 +4399,5 @@
       "horizontalOverflow": false
     }
   },
-  "finishedAt": "2026-08-02T22:54:46.730Z"
+  "finishedAt": "2026-08-02T23:32:32.482Z"
 }
