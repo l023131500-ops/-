@@ -37,7 +37,18 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/70 bg-background/80 backdrop-blur-md">
-      <div className="container-page flex h-16 items-center justify-between gap-4">
+      {/* כפתור הכניסה המשותף של more30 יושב `fixed` בפינה השמאלית העליונה
+          (הקצה האינליין-סופי ב-RTL), ושם בדיוק יושבים מתג המצב הכהה וכפתור
+          התפריט. נמדד ב-390px ששניהם מכוסים והלחיצה מגיעה לכדור — כלומר
+          במובייל אי אפשר היה לפתוח את התפריט או לעבור למצב כהה בכלל.
+          `--more30-auth-inset` מפורסם על ידי הכדור לפי רוחבו בפועל. */}
+      <div
+        className="container-page flex h-16 items-center justify-between gap-4"
+        style={{
+          paddingInlineEnd:
+            'max(1rem, calc(var(--more30-auth-inset, 124px) - max(0px, (100vw - 1200px) / 2)))',
+        }}
+      >
         <Logo />
 
         <nav className="hidden items-center gap-1 lg:flex">

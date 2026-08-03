@@ -45,7 +45,17 @@ const Navbar = () => {
             : 'bg-teal-dark/80 backdrop-blur-md'
         }`}
       >
-        <div className="container flex items-center justify-between h-14">
+        {/* כפתור הכניסה המשותף של more30 יושב `fixed` בפינה השמאלית העליונה
+            (הקצה האינליין-סופי ב-RTL) — בדיוק על כפתור התפריט במובייל ועל
+            "ניהול ⚡" בדסקטופ. נמדד ששניהם מכוסים והלחיצה מגיעה לכדור.
+            `--more30-auth-inset` הוא הרוחב שהכדור מפרסם בפועל. */}
+        <div
+          className="container flex items-center justify-between h-14"
+          style={{
+            paddingInlineEnd:
+              'max(1rem, calc(var(--more30-auth-inset, 124px) - max(0px, (100vw - 1400px) / 2)))',
+          }}
+        >
           <Link to="/" className="flex items-center gap-2.5">
             <img src={logoMechubarim} alt="מחוברים" className="h-9 rounded-lg" />
             <span className={`font-display font-black text-sm hidden sm:block transition-colors ${

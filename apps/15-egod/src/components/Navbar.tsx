@@ -19,7 +19,18 @@ const Navbar = () => {
 
   return (
     <nav className="sticky top-0 z-50 bg-primary/95 backdrop-blur-md border-b border-sidebar-border">
-      <div className="container mx-auto px-4 flex items-center justify-between h-16">
+      {/* כפתור הכניסה המשותף של more30 יושב `fixed` בקצה האינליין-סופי —
+          בעברית, הפינה השמאלית העליונה. שם יושבים "הצטרף כמגיד שיעור"
+          בדסקטופ וכפתור התפריט במובייל, ונמדד ששניהם מכוסים והלחיצה
+          מגיעה לכדור. `--more30-auth-inset` הוא הרוחב שהכדור באמת תופס;
+          החיסור מקזז את השוליים שה-container כבר נותן במסך רחב. */}
+      <div
+        className="container mx-auto px-4 flex items-center justify-between h-16"
+        style={{
+          paddingInlineEnd:
+            'max(1rem, calc(var(--more30-auth-inset, 124px) - max(0px, (100vw - 1400px) / 2)))',
+        }}
+      >
         <Link to="/" className="flex items-center gap-2 text-primary-foreground">
           <div className="w-10 h-10 rounded-xl bg-secondary flex items-center justify-center">
             <BookOpen className="w-6 h-6 text-secondary-foreground" />

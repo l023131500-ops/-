@@ -13,7 +13,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="he" dir="rtl">
       <body className="font-heebo">
         <header className="sticky top-0 z-40 border-b border-line bg-white/90 backdrop-blur print:hidden">
-          <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-3">
+          {/* כפתור הכניסה המשותף (למטה בקובץ) יושב `fixed` בפינה השמאלית
+              העליונה — הקצה האינליין-סופי ב-RTL — ושם בדיוק נגמר הנווט.
+              נמדד ב-390px ש"מקורות ותמחור" מכוסה והלחיצה מגיעה לכדור.
+              `--more30-auth-inset` הוא הרוחב שהכדור מפרסם בפועל; החיסור
+              מקזז את השוליים שה-container כבר נותן במסך רחב. */}
+          <div
+            className="mx-auto flex max-w-6xl items-center justify-between px-5 py-3"
+            style={{
+              paddingInlineEnd:
+                'max(1.25rem, calc(var(--more30-auth-inset, 124px) - max(0px, (100vw - 1152px) / 2)))',
+            }}
+          >
             <Link href="/" className="flex items-center gap-2">
               <span className="inline-block h-3.5 w-3.5 rounded-full bg-gold shadow-[0_0_0_4px_rgba(200,162,74,0.25)]" />
               <span className="text-lg font-black text-navy">נדל"ן ברגע</span>

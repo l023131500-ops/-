@@ -149,6 +149,33 @@
     '<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/>' +
     '<line x1="21" y1="12" x2="9" y2="12"/></svg>';
 
+  // ── המשתנה --more30-auth-inset ─────────────────────────────────────────
+  // הכדור הוא `position: fixed` בקצה האינליין-סופי, ובעברית זו הפינה
+  // השמאלית העליונה — בדיוק המקום שבו נווט עם `justify-between` מניח את
+  // הפקד האחרון שלו. נמדד על 24 הנתיבים החיים: ב-11 מהם הלחיצה הגיעה
+  // **לכדור** ולא לפקד, כלומר הפקד לא היה ניתן ללחיצה כלל.
+  //
+  // הפתרון אינו מספר קשיח בכל מערכת — הרוחב של הכדור משתנה לפי שם
+  // המשתמש ("כניסה" לעומת "אברהם"), לפי הפונט שנטען ולפי רוחב המסך. לכן
+  // הרכיב מפרסם את המקום שהוא **באמת** תופס, וכל נווט מפנה לו מקום דרך
+  // `padding-inline-end: var(--more30-auth-inset)`.
+  //
+  // ערך התחלתי נכתב מיד, לפני המדידה, כדי שהנווט לא יקפוץ בין שני מצבים.
+  var GAP = 12;
+  function edgeInset() {
+    return window.innerWidth <= 480 ? 10 : 16;
+  }
+  function setVars(pillWidth, pillHeight) {
+    var d = document.documentElement;
+    d.style.setProperty('--more30-auth-inset', Math.round(edgeInset() + pillWidth + GAP) + 'px');
+    d.style.setProperty('--more30-auth-height', Math.round(pillHeight) + 'px');
+    d.style.setProperty(
+      '--more30-auth-block',
+      Math.round((window.innerWidth <= 480 ? 8 : 12) + pillHeight + GAP) + 'px',
+    );
+  }
+  setVars(96, 36);
+
   // שם המשתמש מגיע ממאגר המשתמשים ונשתל ב-HTML, ולכן הוא עובר בריחה.
   function escapeText(s) {
     return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
@@ -258,13 +285,28 @@
         }
       }
 
+      // המדידה נעשית על הכדור עצמו ולא על מספר משוער, כי רוחבו נקבע משם
+      // המשתמש ומהפונט שנטען — שניהם לא ידועים בזמן כתיבת הקוד.
+      function measure() {
+        var r = btn.getBoundingClientRect();
+        if (r.width) setVars(r.width, r.height);
+      }
+
       render(null);
+      measure();
+
+      // שני הרגעים שבהם הרוחב משתנה אחרי הציור הראשון: הפונט מסיים לרדת,
+      // והשרת עונה מי המשתמש ("כניסה" → שם פרטי).
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(measure).catch(function () {});
+      }
+      addEventListener('resize', measure);
 
       // רישום החברות באתר הנוכחי + שאלת ההרשאה, בקריאה אחת. נכשלת בשקט:
       // תקלת רשת לא אמורה להשאיר את המשתמש בלי כפתור.
       if (session && session.token) {
         rpc('more30_join_app', { p_app: location.href }, session.token)
-          .then(function (ctx) { if (ctx && ctx.ok) render(ctx); })
+          .then(function (ctx) { if (ctx && ctx.ok) { render(ctx); measure(); } })
           .catch(function () {});
       }
 

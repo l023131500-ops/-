@@ -8,7 +8,17 @@ export function Header() {
   const { theme, toggle } = useTheme();
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background/90 backdrop-blur-md">
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
+      {/* כפתור הכניסה המשותף של more30 יושב `fixed` בפינה השמאלית העליונה
+          (הקצה האינליין-סופי ב-RTL) — בדיוק על מתג המצב הכהה. נמדד ב-390px
+          שהלחיצה מגיעה לכדור, כלומר המתג לא היה ניתן ללחיצה במובייל.
+          `--more30-auth-inset` מפורסם על ידי הכדור לפי רוחבו בפועל. */}
+      <div
+        className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6"
+        style={{
+          paddingInlineEnd:
+            'max(1rem, calc(var(--more30-auth-inset, 124px) - max(0px, (100vw - 1152px) / 2)))',
+        }}
+      >
         <Link href="/" data-testid="link-home">
           <a className="cursor-pointer">
             <Logo />

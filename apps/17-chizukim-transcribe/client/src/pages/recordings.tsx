@@ -140,7 +140,17 @@ export default function RecordingsPage() {
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b bg-card/60 backdrop-blur sticky top-0 z-10">
-        <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between gap-4">
+        {/* כפתור הכניסה המשותף של more30 יושב `fixed` בפינה השמאלית העליונה
+            (הקצה האינליין-סופי ב-RTL) — בדיוק על "העלאת הקלטה". נמדד
+            ב-`scripts/qa/authbutton-overlap.mjs` שהלחיצה מגיעה לכדור.
+            `--more30-auth-inset` מפורסם על ידי הכדור עצמו לפי רוחבו בפועל. */}
+        <div
+          className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between gap-4"
+          style={{
+            paddingInlineEnd:
+              'max(1rem, calc(var(--more30-auth-inset, 124px) - max(0px, (100vw - 1152px) / 2)))',
+          }}
+        >
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-lg bg-primary text-primary-foreground grid place-items-center font-serif text-xl font-bold">
               ח

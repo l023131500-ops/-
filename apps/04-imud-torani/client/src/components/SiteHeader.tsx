@@ -34,7 +34,17 @@ export function Logo({ size = 34 }: { size?: number }) {
 export function SiteHeader() {
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background/85 backdrop-blur">
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5">
+      {/* כפתור הכניסה המשותף של more30 יושב `fixed` בפינה השמאלית העליונה
+          (הקצה האינליין-סופי ב-RTL) — בדיוק על "שאלון חכם", הפעולה הראשית
+          של הסרגל. נמדד ב-390px שהלחיצה מגיעה לכדור ולא לקישור.
+          `--more30-auth-inset` מפורסם על ידי הכדור לפי רוחבו בפועל. */}
+      <div
+        className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5"
+        style={{
+          paddingInlineEnd:
+            'max(1.25rem, calc(var(--more30-auth-inset, 124px) - max(0px, (100vw - 1152px) / 2)))',
+        }}
+      >
         <Link href="/" className="flex items-center gap-2.5 text-primary" data-testid="link-home">
           <Logo />
           <div className="leading-tight">

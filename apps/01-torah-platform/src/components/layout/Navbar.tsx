@@ -39,7 +39,21 @@ export function Navbar() {
 
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
-      <div className="container mx-auto flex h-16 items-center justify-between px-4">
+      {/* כפתור הכניסה המשותף של more30 יושב `fixed` בקצה האינליין-סופי של
+          החלון — בעברית, הפינה השמאלית העליונה. כאן יושבים "התחבר" וכפתור
+          התפריט, ונמדד (`scripts/qa/authbutton-overlap.mjs`) שהלחיצה מגיעה
+          לכדור ולא אליהם, בשני הרוחבים. `auth-button.js` מפרסם ב-
+          `--more30-auth-inset` את הרוחב שהוא באמת תופס, כולל השוליים.
+
+          החיסור מחזיר את מה שהמרווח הטבעי של ה-container כבר נותן, כדי
+          שבמסך רחב הסרגל לא ייראה מוזח פנימה בלי סיבה. */}
+      <div
+        className="container mx-auto flex h-16 items-center justify-between px-4"
+        style={{
+          paddingInlineEnd:
+            'max(1rem, calc(var(--more30-auth-inset, 124px) - max(0px, (100vw - 1400px) / 2)))',
+        }}
+      >
         <Link to="/" className="flex items-center gap-3">
           {tenant?.branding?.logo_url ? (
             <img src={tenant.branding.logo_url} alt={tenant.branding.site_name || ""} className="h-10 w-auto" />
