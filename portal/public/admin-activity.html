@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light dark" />
+    <title>משתמשים פעילים · מרכז השליטה — more30</title>
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* אותה שכבת טוקנים כמו שאר עמודי הפורטל: הזהב והנייבי הם המותג
+         ואינם מתהפכים; מה שמתהפך הוא הדיו והמשטחים. */
+      :root {
+        color-scheme: light dark;
+        --royal: #0b0d2e;
+        --gold: #c9a227;
+        --bg: #f6f7fb;
+        --surface: #ffffff;
+        --ink: #0b0d2e;
+        --ink-2: #5b6076;
+        --line: #e4e6f0;
+        --ok: #157f4b;
+        --warn: #8a6d10;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #0b0d18;
+          --surface: #151827;
+          --ink: #e9ebf5;
+          --ink-2: #a2a8c0;
+          --line: #262b40;
+          --ok: #5fd39b;
+          --warn: #e0bd5a;
+        }
+      }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body {
+        font-family: 'Heebo', system-ui, sans-serif;
+        background: var(--bg);
+        color: var(--ink);
+        line-height: 1.6;
+        padding: 28px 20px 80px;
+      }
+      .wrap { max-width: 1080px; margin: 0 auto; }
+      a { color: inherit; }
+      header.top { margin-bottom: 26px; }
+      .back {
+        display: inline-flex; align-items: center; min-height: 24px;
+        font-size: 14px; color: var(--ink-2); text-decoration: none;
+      }
+      .back:hover { color: var(--ink); }
+      h1 { font-size: clamp(24px, 4vw, 34px); font-weight: 800; margin-top: 10px; }
+      .sub { color: var(--ink-2); font-size: 15px; margin-top: 6px; max-width: 62ch; }
+
+      .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 14px; margin: 26px 0; }
+      .card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px; }
+      .card .n { font-size: 30px; font-weight: 800; line-height: 1.1; }
+      .card .l { font-size: 13px; color: var(--ink-2); margin-top: 4px; }
+
+      h2 { font-size: 19px; font-weight: 700; margin: 30px 0 10px; }
+      .hint { font-size: 13px; color: var(--ink-2); margin-bottom: 12px; max-width: 70ch; }
+
+      .tablewrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); }
+      table { border-collapse: collapse; width: 100%; min-width: 620px; font-size: 14px; }
+      th, td { padding: 10px 14px; text-align: start; border-bottom: 1px solid var(--line); white-space: nowrap; }
+      th { font-size: 12px; font-weight: 700; color: var(--ink-2); background: color-mix(in srgb, var(--surface) 88%, var(--line)); }
+      tbody tr:last-child td { border-bottom: 0; }
+      td.num { font-variant-numeric: tabular-nums; }
+      .zero { color: var(--ink-2); }
+      .name a { text-decoration: none; border-bottom: 1px solid transparent; }
+      .name a:hover { border-bottom-color: var(--gold); }
+      .tag { display: inline-block; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; }
+      .tag.live { background: color-mix(in srgb, var(--ok) 16%, transparent); color: var(--ok); }
+      .tag.off { background: color-mix(in srgb, var(--ink-2) 16%, transparent); color: var(--ink-2); }
+
+      .note { border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; font-size: 14px; background: var(--surface); }
+      .note.warn { border-color: color-mix(in srgb, var(--warn) 45%, var(--line)); }
+      .foot { margin-top: 30px; font-size: 12.5px; color: var(--ink-2); }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header class="top">
+        <a class="back" href="/admin">← חזרה למרכז השליטה</a>
+        <h1>משתמשים פעילים בכל המערכות</h1>
+        <p class="sub" id="tagline">טוען…</p>
+      </header>
+
+      <div id="content" hidden>
+        <div class="cards" id="platform"></div>
+
+        <h2>לפי מערכת</h2>
+        <p class="hint" id="activeMeans"></p>
+        <div class="tablewrap">
+          <table>
+            <thead>
+              <tr>
+                <th>מערכת</th><th>משתמשים</th><th>24 שעות</th><th>7 ימים</th><th>30 יום</th><th>פעילות אחרונה</th>
+              </tr>
+            </thead>
+            <tbody id="systems"></tbody>
+          </table>
+        </div>
+
+        <h2>מערכות שאינן נספרות</h2>
+        <p class="hint" id="notCountedHint"></p>
+        <div class="tablewrap">
+          <table>
+            <thead><tr><th>מערכת</th><th>הסיבה</th><th>המשתמשים יושבים ב־</th></tr></thead>
+            <tbody id="notCounted"></tbody>
+          </table>
+        </div>
+
+        <p class="foot" id="stamp"></p>
+      </div>
+
+      <div id="denied" class="note warn" hidden></div>
+    </div>
+
+    <script type="module">
+      import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+      const SUPABASE_URL = 'https://uhnrgujbdxhhmoxcjria.supabase.co';
+      const SUPABASE_ANON =
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVobnJndWpiZHhoaG1veGNqcmlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMzNjE3MjgsImV4cCI6MjA5ODkzNzcyOH0.nHuOhw-WQEU17lNa7XOlORnBhVAYbJBHudKafWkSHBw';
+
+      // אותו storageKey כמו שאר עמודי הפורטל — הסשן משותף לכל המערכות.
+      const sb = createClient(SUPABASE_URL, SUPABASE_ANON, {
+        auth: { persistSession: true, storageKey: 'more30-auth' },
+      });
+
+      const $ = (id) => document.getElementById(id);
+      const esc = (s) =>
+        String(s ?? '').replace(/[&<>"']/g, (c) =>
+          ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]),
+        );
+      const num = (n) =>
+        `<td class="num${Number(n) ? '' : ' zero'}">${Number(n) || 0}</td>`;
+
+      function when(ts) {
+        if (!ts) return '<span class="zero">—</span>';
+        const d = new Date(ts);
+        const mins = Math.round((Date.now() - d.getTime()) / 60000);
+        if (mins < 60) return `לפני ${mins} דק׳`;
+        if (mins < 60 * 24) return `לפני ${Math.round(mins / 60)} שע׳`;
+        return d.toLocaleDateString('he-IL');
+      }
+
+      function deny(msg) {
+        $('tagline').textContent = 'הדף הזה פתוח לסופר-אדמין בלבד.';
+        $('denied').innerHTML = msg;
+        $('denied').hidden = false;
+      }
+
+      (async function () {
+        const { data: s } = await sb.auth.getSession();
+        if (!s?.session) {
+          deny(
+            'צריך להתחבר כדי לראות את הלוח. ' +
+              `<a href="/login?from=${encodeURIComponent(location.href)}">מעבר לכניסה</a>`,
+          );
+          return;
+        }
+
+        // ההרשאה נבדקת בשרת, לא כאן: הפונקציה עצמה זורקת 42501 למי שאינו
+        // סופר-אדמין. הדף רק מציג את התשובה.
+        const { data, error } = await sb.rpc('more30_admin_activity');
+        if (error) {
+          deny(
+            'החשבון הזה אינו סופר-אדמין, ולכן אין לו גישה לנתוני המשתמשים של כל המערכות.' +
+              `<br><span style="color:var(--ink-2);font-size:13px">${esc(error.message)}</span>`,
+          );
+          return;
+        }
+
+        const p = data.platform || {};
+        $('tagline').textContent =
+          'נספר מההאב בלבד — auth.users ו-core.app_memberships. אין כאן הערכות.';
+        $('platform').innerHTML = [
+          [p.users_total, 'משתמשים רשומים'],
+          [p.active_24h, 'נכנסו ב-24 שעות'],
+          [p.active_7d, 'נכנסו ב-7 ימים'],
+          [p.active_30d, 'נכנסו ב-30 יום'],
+          [p.never_signed_in, 'מעולם לא נכנסו'],
+        ]
+          .map(([n, l]) => `<div class="card"><div class="n">${Number(n) || 0}</div><div class="l">${l}</div></div>`)
+          .join('');
+
+        $('activeMeans').textContent = data.active_means || '';
+
+        const rows = [...(data.systems || [])];
+        if (data.portal) {
+          rows.unshift({
+            number: '—',
+            name: 'הפורטל (more30.com)',
+            app_key: 'more30',
+            live: true,
+            ...data.portal,
+          });
+        }
+        $('systems').innerHTML =
+          rows
+            .map(
+              (r) => `<tr>
+                <td class="name">${
+                  r.live_url
+                    ? `<a href="${esc(r.live_url)}">${esc(r.name || r.app_key)}</a>`
+                    : esc(r.name || r.app_key)
+                } <span class="tag ${r.live ? 'live' : 'off'}">${r.live ? 'חי' : 'לא חי'}</span></td>
+                ${num(r.members)}${num(r.active_24h)}${num(r.active_7d)}${num(r.active_30d)}
+                <td>${when(r.last_activity)}</td>
+              </tr>`,
+            )
+            .join('') || '<tr><td colspan="6">אין עדיין נתונים.</td></tr>';
+
+        const nc = data.not_counted || [];
+        $('notCountedHint').textContent =
+          `${nc.length} מערכות מחזיקות את מאגר המשתמשים שלהן מחוץ להאב, ולכן הן אינן ` +
+          'נספרות בטבלה שלמעלה. זה לא פער בלוח — זו העובדה שהמספרים מתארים.';
+        $('notCounted').innerHTML = nc
+          .map(
+            (r) => `<tr>
+              <td class="name">${esc(r.name || r.app_key)} <span class="tag ${r.live ? 'live' : 'off'}">${
+                r.live ? 'חי' : 'לא חי'
+              }</span></td>
+              <td>${esc(r.reason)}</td>
+              <td class="zero">${esc(r.users_live_in || 'אין')}</td>
+            </tr>`,
+          )
+          .join('');
+
+        $('stamp').textContent = 'נמדד ' + new Date(data.generated_at).toLocaleString('he-IL');
+        $('content').hidden = false;
+      })();
+    </script>
+
+    <script src="https://more30.com/auth-button.js" defer></script>
+  </body>
+</html>

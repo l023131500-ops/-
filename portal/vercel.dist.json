@@ -11,6 +11,7 @@
     { "source": "/auth/callback", "destination": "/auth/callback.html" },
     { "source": "/me", "destination": "/me.html" },
     { "source": "/subscribe", "destination": "/subscribe.html" },
+    { "source": "/admin/activity", "destination": "/admin-activity.html" },
     { "source": "/admin", "destination": "https://nihul-more30.vercel.app/admin" },
     { "source": "/admin/:path*", "destination": "https://nihul-more30.vercel.app/admin/:path*" },
     { "source": "/torah", "destination": "https://torah-more30.vercel.app/torah" },
