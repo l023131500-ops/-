@@ -25,7 +25,12 @@
 > | `apps/02-igud-transcribe` | פינוי לכפתור הכניסה מעל "כניסת ניהול" |
 > | `apps/17-chizukim-transcribe` | פינוי מעל "העלאת הקלטה" |
 > | `apps/32-nadlan-berega` | מצב כהה מלא + פינוי מעל "מקורות ותמחור" |
-> | `apps/30-zchuyotpro-crm` · `apps/31-hebrew-bridge-crm` | הדלקת מצב כהה |
+> | `apps/30-zchuyotpro-crm` · `apps/31-hebrew-bridge-crm` | הדלקת מצב כהה + יעד מגע "שכחתי סיסמה" |
+> | `_deploy/bkalot-more30` | תווית ל-`<select>` שלא היה לו שם נגיש |
+> | `_deploy/galil-more30` | שני יעדי מגע בפוטר + שם נגיש לכפתור התפריט |
+>
+> *(`briut` **אינו** ברשימה בכוונה: התיקון שם היה במקור בלבד — העותק החי
+> כבר נכון, והמקור היה זה שפיגר. פריסה משם הייתה מיותרת ומסוכנת.)*
 >
 > **אחרי הפריסה, שלוש בדיקות אימות:**
 > `node scripts/qa/authbutton-overlap.mjs` (יעד: אפס OVERLAP) ·

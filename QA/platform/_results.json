@@ -10,7 +10,7 @@
       "url": "https://more30.com/",
       "desktop": {
         "status": 200,
-        "loadMs": 7070,
+        "loadMs": 5751,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "home-desktop.png",
@@ -58,7 +58,7 @@
       },
       "mobile": {
         "status": 200,
-        "loadMs": 4858,
+        "loadMs": 4460,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "home-mobile.png",
@@ -106,7 +106,7 @@
       },
       "dark": {
         "status": 200,
-        "loadMs": 4406,
+        "loadMs": 4332,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "home-dark.png",
@@ -164,7 +164,7 @@
       "url": "https://more30.com/login",
       "desktop": {
         "status": 200,
-        "loadMs": 5177,
+        "loadMs": 5118,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "login-desktop.png",
@@ -201,7 +201,7 @@
       },
       "mobile": {
         "status": 200,
-        "loadMs": 5483,
+        "loadMs": 4444,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "login-mobile.png",
@@ -238,7 +238,7 @@
       },
       "dark": {
         "status": 200,
-        "loadMs": 4787,
+        "loadMs": 4522,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "login-dark.png",
@@ -285,7 +285,7 @@
       "url": "https://more30.com/me",
       "desktop": {
         "status": 200,
-        "loadMs": 4688,
+        "loadMs": 4973,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "me-desktop.png",
@@ -322,7 +322,7 @@
       },
       "mobile": {
         "status": 200,
-        "loadMs": 4600,
+        "loadMs": 4320,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "me-mobile.png",
@@ -359,7 +359,7 @@
       },
       "dark": {
         "status": 200,
-        "loadMs": 4627,
+        "loadMs": 4496,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "me-dark.png",
@@ -406,7 +406,7 @@
       "url": "https://more30.com/subscribe",
       "desktop": {
         "status": 200,
-        "loadMs": 4822,
+        "loadMs": 4590,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "subscribe-desktop.png",
@@ -445,7 +445,7 @@
       },
       "mobile": {
         "status": 200,
-        "loadMs": 4846,
+        "loadMs": 4508,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "subscribe-mobile.png",
@@ -484,7 +484,7 @@
       },
       "dark": {
         "status": 200,
-        "loadMs": 4778,
+        "loadMs": 4671,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "subscribe-dark.png",
@@ -533,7 +533,7 @@
       "url": "https://more30.com/torah",
       "desktop": {
         "status": 200,
-        "loadMs": 6258,
+        "loadMs": 5025,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "torah-desktop.png",
@@ -581,7 +581,7 @@
       },
       "mobile": {
         "status": 200,
-        "loadMs": 4590,
+        "loadMs": 4734,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "torah-mobile.png",
@@ -629,7 +629,7 @@
       },
       "dark": {
         "status": 200,
-        "loadMs": 5696,
+        "loadMs": 4809,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "torah-dark.png",
@@ -687,7 +687,7 @@
       "url": "https://more30.com/tamlul",
       "desktop": {
         "status": 200,
-        "loadMs": 5123,
+        "loadMs": 4417,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "tamlul-desktop.png",
@@ -731,7 +731,7 @@
       },
       "mobile": {
         "status": 200,
-        "loadMs": 4794,
+        "loadMs": 4669,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "tamlul-mobile.png",
@@ -775,7 +775,7 @@
       },
       "dark": {
         "status": 200,
-        "loadMs": 4688,
+        "loadMs": 4449,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "tamlul-dark.png",
@@ -829,7 +829,7 @@
       "url": "https://more30.com/modaot",
       "desktop": {
         "status": 200,
-        "loadMs": 4879,
+        "loadMs": 4552,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "modaot-desktop.png",
@@ -871,7 +871,7 @@
       },
       "mobile": {
         "status": 200,
-        "loadMs": 4442,
+        "loadMs": 4538,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "modaot-mobile.png",
@@ -913,7 +913,7 @@
       },
       "dark": {
         "status": 200,
-        "loadMs": 4576,
+        "loadMs": 4454,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "modaot-dark.png",
@@ -965,7 +965,7 @@
       "url": "https://more30.com/imud",
       "desktop": {
         "status": 200,
-        "loadMs": 5696,
+        "loadMs": 4699,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "imud-desktop.png",
@@ -1007,7 +1007,7 @@
       },
       "mobile": {
         "status": 200,
-        "loadMs": 6153,
+        "loadMs": 4575,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "imud-mobile.png",
@@ -1049,7 +1049,7 @@
       },
       "dark": {
         "status": 200,
-        "loadMs": 4987,
+        "loadMs": 4568,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "imud-dark.png",
@@ -1101,7 +1101,7 @@
       "url": "https://more30.com/briut",
       "desktop": {
         "status": 200,
-        "loadMs": 4396,
+        "loadMs": 4738,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "briut-desktop.png",
@@ -1149,7 +1149,7 @@
       },
       "mobile": {
         "status": 200,
-        "loadMs": 4419,
+        "loadMs": 4415,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "briut-mobile.png",
@@ -1197,7 +1197,7 @@
       },
       "dark": {
         "status": 200,
-        "loadMs": 4436,
+        "loadMs": 4503,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "briut-dark.png",
@@ -1255,7 +1255,7 @@
       "url": "https://more30.com/bkalot",
       "desktop": {
         "status": 200,
-        "loadMs": 4588,
+        "loadMs": 5393,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "bkalot-desktop.png",
@@ -1309,7 +1309,7 @@
       },
       "mobile": {
         "status": 200,
-        "loadMs": 4516,
+        "loadMs": 4680,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "bkalot-mobile.png",
@@ -1337,11 +1337,17 @@
           "H3: מצבי חיים כלליים (14)",
           "H3: מצבים מיוחדים (10)"
         ],
-        "textLen": 6648,
-        "interactiveCount": 52,
+        "textLen": 2996,
+        "interactiveCount": 38,
         "smallTargets": [],
         "srOnlyTargets": [],
-        "unnamedControls": [],
+        "unnamedControls": [
+          {
+            "tag": "select",
+            "type": "",
+            "cls": "fund-select"
+          }
+        ],
         "imgsNoAlt": [],
         "hasAuthScript": true,
         "authBtnText": "",
@@ -1357,7 +1363,7 @@
       },
       "dark": {
         "status": 200,
-        "loadMs": 4863,
+        "loadMs": 4602,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "bkalot-dark.png",
@@ -1421,7 +1427,7 @@
       "url": "https://more30.com/smel",
       "desktop": {
         "status": 200,
-        "loadMs": 4373,
+        "loadMs": 4606,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "smel-desktop.png",
@@ -1463,7 +1469,7 @@
       },
       "mobile": {
         "status": 200,
-        "loadMs": 4349,
+        "loadMs": 4578,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "smel-mobile.png",
@@ -1505,7 +1511,7 @@
       },
       "dark": {
         "status": 200,
-        "loadMs": 4381,
+        "loadMs": 4573,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "smel-dark.png",
@@ -1557,7 +1563,7 @@
       "url": "https://more30.com/smachot",
       "desktop": {
         "status": 200,
-        "loadMs": 4509,
+        "loadMs": 4485,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "smachot-desktop.png",
@@ -1604,7 +1610,7 @@
       },
       "mobile": {
         "status": 200,
-        "loadMs": 4317,
+        "loadMs": 4377,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "smachot-mobile.png",
@@ -1651,7 +1657,7 @@
       },
       "dark": {
         "status": 200,
-        "loadMs": 4297,
+        "loadMs": 4676,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "smachot-dark.png",
@@ -1708,7 +1714,7 @@
       "url": "https://more30.com/egod",
       "desktop": {
         "status": 200,
-        "loadMs": 5720,
+        "loadMs": 5418,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "egod-desktop.png",
@@ -1756,7 +1762,7 @@
       },
       "mobile": {
         "status": 200,
-        "loadMs": 4842,
+        "loadMs": 5318,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "egod-mobile.png",
@@ -1788,13 +1794,7 @@
         "interactiveCount": 25,
         "smallTargets": [],
         "srOnlyTargets": [],
-        "unnamedControls": [
-          {
-            "tag": "button",
-            "type": "",
-            "cls": "md:hidden text-primary-foreground p-2"
-          }
-        ],
+        "unnamedControls": [],
         "imgsNoAlt": [],
         "hasAuthScript": true,
         "authBtnText": "",
@@ -1810,7 +1810,7 @@
       },
       "dark": {
         "status": 200,
-        "loadMs": 4837,
+        "loadMs": 4801,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "egod-dark.png",
@@ -1868,7 +1868,7 @@
       "url": "https://more30.com/chatzor",
       "desktop": {
         "status": 200,
-        "loadMs": 4164,
+        "loadMs": 3989,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "chatzor-desktop.png",
@@ -1911,7 +1911,7 @@
       },
       "mobile": {
         "status": 200,
-        "loadMs": 4046,
+        "loadMs": 4079,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "chatzor-mobile.png",
@@ -1954,7 +1954,7 @@
       },
       "dark": {
         "status": 200,
-        "loadMs": 4056,
+        "loadMs": 4066,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "chatzor-dark.png",
@@ -2007,7 +2007,7 @@
       "url": "https://more30.com/chatzor/",
       "desktop": {
         "status": 200,
-        "loadMs": 4656,
+        "loadMs": 4919,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "chatzor-app-desktop.png",
@@ -2063,7 +2063,7 @@
       },
       "mobile": {
         "status": 200,
-        "loadMs": 4479,
+        "loadMs": 4572,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "chatzor-app-mobile.png",
@@ -2119,7 +2119,7 @@
       },
       "dark": {
         "status": 200,
-        "loadMs": 4648,
+        "loadMs": 4672,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "chatzor-app-dark.png",
@@ -2185,7 +2185,7 @@
       "url": "https://more30.com/chizukim",
       "desktop": {
         "status": 200,
-        "loadMs": 4063,
+        "loadMs": 4059,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "chizukim-desktop.png",
@@ -2228,7 +2228,7 @@
       },
       "mobile": {
         "status": 200,
-        "loadMs": 4034,
+        "loadMs": 4230,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "chizukim-mobile.png",
@@ -2271,7 +2271,7 @@
       },
       "dark": {
         "status": 200,
-        "loadMs": 4042,
+        "loadMs": 4033,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "chizukim-dark.png",
@@ -2324,7 +2324,7 @@
       "url": "https://more30.com/chizukim/",
       "desktop": {
         "status": 200,
-        "loadMs": 6544,
+        "loadMs": 5521,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "chizukim-app-desktop.png",
@@ -2372,7 +2372,7 @@
       },
       "mobile": {
         "status": 200,
-        "loadMs": 4670,
+        "loadMs": 5121,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "chizukim-app-mobile.png",
@@ -2420,7 +2420,7 @@
       },
       "dark": {
         "status": 200,
-        "loadMs": 4674,
+        "loadMs": 4878,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "chizukim-app-dark.png",
@@ -2478,7 +2478,7 @@
       "url": "https://more30.com/orech",
       "desktop": {
         "status": 200,
-        "loadMs": 4556,
+        "loadMs": 4340,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "orech-desktop.png",
@@ -2518,7 +2518,7 @@
       },
       "mobile": {
         "status": 200,
-        "loadMs": 4440,
+        "loadMs": 4399,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "orech-mobile.png",
@@ -2558,7 +2558,7 @@
       },
       "dark": {
         "status": 200,
-        "loadMs": 4353,
+        "loadMs": 4350,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "orech-dark.png",
@@ -2608,7 +2608,7 @@
       "url": "https://more30.com/mthbram",
       "desktop": {
         "status": 200,
-        "loadMs": 5709,
+        "loadMs": 4986,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "mthbram-desktop.png",
@@ -2649,7 +2649,7 @@
       },
       "mobile": {
         "status": 200,
-        "loadMs": 5688,
+        "loadMs": 5040,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "mthbram-mobile.png",
@@ -2696,7 +2696,7 @@
       },
       "dark": {
         "status": 200,
-        "loadMs": 5039,
+        "loadMs": 4742,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "mthbram-dark.png",
@@ -2747,8 +2747,18 @@
       "url": "https://more30.com/zchuyot",
       "desktop": {
         "status": 200,
-        "loadMs": 5176,
-        "consoleErrors": [],
+        "loadMs": 4936,
+        "consoleErrors": [
+          "Error: Minified React error #418; visit https://reactjs.org/docs/error-decoder.html?invariant=418 for the full message or use the non-minified dev environment for full errors and additional helpful wa",
+          "Error: Minified React error #418; visit https://reactjs.org/docs/error-decoder.html?invariant=418 for the full message or use the non-minified dev environment for full errors and additional helpful wa",
+          "Error: Minified React error #418; visit https://reactjs.org/docs/error-decoder.html?invariant=418 for the full message or use the non-minified dev environment for full errors and additional helpful wa",
+          "Error: Minified React error #418; visit https://reactjs.org/docs/error-decoder.html?invariant=418 for the full message or use the non-minified dev environment for full errors and additional helpful wa",
+          "Error: Minified React error #418; visit https://reactjs.org/docs/error-decoder.html?invariant=418 for the full message or use the non-minified dev environment for full errors and additional helpful wa",
+          "Error: Minified React error #418; visit https://reactjs.org/docs/error-decoder.html?invariant=418 for the full message or use the non-minified dev environment for full errors and additional helpful wa",
+          "Error: Minified React error #418; visit https://reactjs.org/docs/error-decoder.html?invariant=418 for the full message or use the non-minified dev environment for full errors and additional helpful wa",
+          "Error: Minified React error #418; visit https://reactjs.org/docs/error-decoder.html?invariant=418 for the full message or use the non-minified dev environment for full errors and additional helpful wa",
+          "Error: Minified React error #423; visit https://reactjs.org/docs/error-decoder.html?invariant=423 for the full message or use the non-minified dev environment for full errors and additional helpful wa"
+        ],
         "failedRequests": [],
         "screenshot": "zchuyot-desktop.png",
         "title": "בקלות — מיצוי זכויות, מענקים והטבות | הזכות שלך, האחריות שלנו",
@@ -2795,8 +2805,18 @@
       },
       "mobile": {
         "status": 200,
-        "loadMs": 4633,
-        "consoleErrors": [],
+        "loadMs": 4741,
+        "consoleErrors": [
+          "Error: Minified React error #418; visit https://reactjs.org/docs/error-decoder.html?invariant=418 for the full message or use the non-minified dev environment for full errors and additional helpful wa",
+          "Error: Minified React error #418; visit https://reactjs.org/docs/error-decoder.html?invariant=418 for the full message or use the non-minified dev environment for full errors and additional helpful wa",
+          "Error: Minified React error #418; visit https://reactjs.org/docs/error-decoder.html?invariant=418 for the full message or use the non-minified dev environment for full errors and additional helpful wa",
+          "Error: Minified React error #418; visit https://reactjs.org/docs/error-decoder.html?invariant=418 for the full message or use the non-minified dev environment for full errors and additional helpful wa",
+          "Error: Minified React error #418; visit https://reactjs.org/docs/error-decoder.html?invariant=418 for the full message or use the non-minified dev environment for full errors and additional helpful wa",
+          "Error: Minified React error #418; visit https://reactjs.org/docs/error-decoder.html?invariant=418 for the full message or use the non-minified dev environment for full errors and additional helpful wa",
+          "Error: Minified React error #418; visit https://reactjs.org/docs/error-decoder.html?invariant=418 for the full message or use the non-minified dev environment for full errors and additional helpful wa",
+          "Error: Minified React error #418; visit https://reactjs.org/docs/error-decoder.html?invariant=418 for the full message or use the non-minified dev environment for full errors and additional helpful wa",
+          "Error: Minified React error #423; visit https://reactjs.org/docs/error-decoder.html?invariant=423 for the full message or use the non-minified dev environment for full errors and additional helpful wa"
+        ],
         "failedRequests": [],
         "screenshot": "zchuyot-mobile.png",
         "title": "בקלות — מיצוי זכויות, מענקים והטבות | הזכות שלך, האחריות שלנו",
@@ -2843,8 +2863,18 @@
       },
       "dark": {
         "status": 200,
-        "loadMs": 4832,
-        "consoleErrors": [],
+        "loadMs": 4793,
+        "consoleErrors": [
+          "Error: Minified React error #418; visit https://reactjs.org/docs/error-decoder.html?invariant=418 for the full message or use the non-minified dev environment for full errors and additional helpful wa",
+          "Error: Minified React error #418; visit https://reactjs.org/docs/error-decoder.html?invariant=418 for the full message or use the non-minified dev environment for full errors and additional helpful wa",
+          "Error: Minified React error #418; visit https://reactjs.org/docs/error-decoder.html?invariant=418 for the full message or use the non-minified dev environment for full errors and additional helpful wa",
+          "Error: Minified React error #418; visit https://reactjs.org/docs/error-decoder.html?invariant=418 for the full message or use the non-minified dev environment for full errors and additional helpful wa",
+          "Error: Minified React error #418; visit https://reactjs.org/docs/error-decoder.html?invariant=418 for the full message or use the non-minified dev environment for full errors and additional helpful wa",
+          "Error: Minified React error #418; visit https://reactjs.org/docs/error-decoder.html?invariant=418 for the full message or use the non-minified dev environment for full errors and additional helpful wa",
+          "Error: Minified React error #418; visit https://reactjs.org/docs/error-decoder.html?invariant=418 for the full message or use the non-minified dev environment for full errors and additional helpful wa",
+          "Error: Minified React error #418; visit https://reactjs.org/docs/error-decoder.html?invariant=418 for the full message or use the non-minified dev environment for full errors and additional helpful wa",
+          "Error: Minified React error #423; visit https://reactjs.org/docs/error-decoder.html?invariant=423 for the full message or use the non-minified dev environment for full errors and additional helpful wa"
+        ],
         "failedRequests": [],
         "screenshot": "zchuyot-dark.png",
         "title": "בקלות — מיצוי זכויות, מענקים והטבות | הזכות שלך, האחריות שלנו",
@@ -2901,10 +2931,8 @@
       "url": "https://more30.com/galil",
       "desktop": {
         "status": 200,
-        "loadMs": 4727,
-        "consoleErrors": [
-          "404 Error: User attempted to access non-existent route: /galil"
-        ],
+        "loadMs": 4802,
+        "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "galil-desktop.png",
         "title": "מחוברים — בתי כנסת חצור הגלילית",
@@ -2916,13 +2944,37 @@
         "canonical": "",
         "ogUrl": "",
         "h1Count": 1,
-        "h1": "404",
+        "h1": "מחוברים — יהדות וקהילה",
         "headings": [
-          "H1: 404"
+          "H1: מחוברים — יהדות וקהילה",
+          "H2: בתי הכנסת בחצור הגלילית",
+          "H3: זמני היום",
+          "H3: תפילות קרובות",
+          "H2: שירותי הקהילה",
+          "H3: כשרות בחצור",
+          "H3: מקוואות",
+          "H3: מידע דת וקהילה",
+          "H3: הלכה יומית",
+          "H3: אבלות ואזכרות",
+          "H3: עלון מחוברים",
+          "H3: שירותי דת"
         ],
-        "textLen": 123,
-        "interactiveCount": 11,
-        "smallTargets": [],
+        "textLen": 1654,
+        "interactiveCount": 30,
+        "smallTargets": [
+          {
+            "tag": "a",
+            "w": 79,
+            "h": 14,
+            "name": "054-203-0901"
+          },
+          {
+            "tag": "a",
+            "w": 157,
+            "h": 18,
+            "name": "M0542060903@GMAIL.COM"
+          }
+        ],
         "srOnlyTargets": [],
         "unnamedControls": [],
         "imgsNoAlt": [],
@@ -2940,10 +2992,8 @@
       },
       "mobile": {
         "status": 200,
-        "loadMs": 4679,
-        "consoleErrors": [
-          "404 Error: User attempted to access non-existent route: /galil"
-        ],
+        "loadMs": 5218,
+        "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "galil-mobile.png",
         "title": "מחוברים — בתי כנסת חצור הגלילית",
@@ -2955,13 +3005,37 @@
         "canonical": "",
         "ogUrl": "",
         "h1Count": 1,
-        "h1": "404",
+        "h1": "מחוברים — יהדות וקהילה",
         "headings": [
-          "H1: 404"
+          "H1: מחוברים — יהדות וקהילה",
+          "H2: בתי הכנסת בחצור הגלילית",
+          "H3: זמני היום",
+          "H3: תפילות קרובות",
+          "H2: שירותי הקהילה",
+          "H3: כשרות בחצור",
+          "H3: מקוואות",
+          "H3: מידע דת וקהילה",
+          "H3: הלכה יומית",
+          "H3: אבלות ואזכרות",
+          "H3: עלון מחוברים",
+          "H3: שירותי דת"
         ],
-        "textLen": 52,
-        "interactiveCount": 5,
-        "smallTargets": [],
+        "textLen": 1583,
+        "interactiveCount": 24,
+        "smallTargets": [
+          {
+            "tag": "a",
+            "w": 79,
+            "h": 14,
+            "name": "054-203-0901"
+          },
+          {
+            "tag": "a",
+            "w": 157,
+            "h": 18,
+            "name": "M0542060903@GMAIL.COM"
+          }
+        ],
         "srOnlyTargets": [],
         "unnamedControls": [
           {
@@ -2985,10 +3059,8 @@
       },
       "dark": {
         "status": 200,
-        "loadMs": 4704,
-        "consoleErrors": [
-          "404 Error: User attempted to access non-existent route: /galil"
-        ],
+        "loadMs": 4786,
+        "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "galil-dark.png",
         "title": "מחוברים — בתי כנסת חצור הגלילית",
@@ -3000,13 +3072,37 @@
         "canonical": "",
         "ogUrl": "",
         "h1Count": 1,
-        "h1": "404",
+        "h1": "מחוברים — יהדות וקהילה",
         "headings": [
-          "H1: 404"
+          "H1: מחוברים — יהדות וקהילה",
+          "H2: בתי הכנסת בחצור הגלילית",
+          "H3: זמני היום",
+          "H3: תפילות קרובות",
+          "H2: שירותי הקהילה",
+          "H3: כשרות בחצור",
+          "H3: מקוואות",
+          "H3: מידע דת וקהילה",
+          "H3: הלכה יומית",
+          "H3: אבלות ואזכרות",
+          "H3: עלון מחוברים",
+          "H3: שירותי דת"
         ],
-        "textLen": 123,
-        "interactiveCount": 11,
-        "smallTargets": [],
+        "textLen": 1654,
+        "interactiveCount": 30,
+        "smallTargets": [
+          {
+            "tag": "a",
+            "w": 79,
+            "h": 14,
+            "name": "054-203-0901"
+          },
+          {
+            "tag": "a",
+            "w": 157,
+            "h": 18,
+            "name": "M0542060903@GMAIL.COM"
+          }
+        ],
         "srOnlyTargets": [],
         "unnamedControls": [],
         "imgsNoAlt": [],
@@ -3034,7 +3130,7 @@
       "url": "https://more30.com/studio",
       "desktop": {
         "status": 200,
-        "loadMs": 4545,
+        "loadMs": 4600,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "studio-desktop.png",
@@ -3076,7 +3172,7 @@
       },
       "mobile": {
         "status": 200,
-        "loadMs": 4491,
+        "loadMs": 4608,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "studio-mobile.png",
@@ -3118,7 +3214,7 @@
       },
       "dark": {
         "status": 200,
-        "loadMs": 4625,
+        "loadMs": 4450,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "studio-dark.png",
@@ -3170,7 +3266,7 @@
       "url": "https://more30.com/mechiron",
       "desktop": {
         "status": 200,
-        "loadMs": 4989,
+        "loadMs": 4670,
         "consoleErrors": [
           "Failed to load resource: the server responded with a status of 404 (Not Found)"
         ],
@@ -3187,10 +3283,11 @@
         "h1Count": 1,
         "h1": "השוואת מחירים — חוסכים בקלות",
         "headings": [
-          "H1: השוואת מחירים — חוסכים בקלות"
+          "H1: השוואת מחירים — חוסכים בקלות",
+          "H2: מבצעים"
         ],
-        "textLen": 305,
-        "interactiveCount": 9,
+        "textLen": 937,
+        "interactiveCount": 30,
         "smallTargets": [],
         "srOnlyTargets": [],
         "unnamedControls": [],
@@ -3209,7 +3306,7 @@
       },
       "mobile": {
         "status": 200,
-        "loadMs": 5053,
+        "loadMs": 4631,
         "consoleErrors": [
           "Failed to load resource: the server responded with a status of 404 (Not Found)"
         ],
@@ -3226,10 +3323,11 @@
         "h1Count": 1,
         "h1": "השוואת מחירים — חוסכים בקלות",
         "headings": [
-          "H1: השוואת מחירים — חוסכים בקלות"
+          "H1: השוואת מחירים — חוסכים בקלות",
+          "H2: מבצעים"
         ],
-        "textLen": 387,
-        "interactiveCount": 9,
+        "textLen": 15478,
+        "interactiveCount": 190,
         "smallTargets": [],
         "srOnlyTargets": [],
         "unnamedControls": [],
@@ -3248,7 +3346,7 @@
       },
       "dark": {
         "status": 200,
-        "loadMs": 4603,
+        "loadMs": 4575,
         "consoleErrors": [
           "Failed to load resource: the server responded with a status of 404 (Not Found)"
         ],
@@ -3268,7 +3366,7 @@
           "H1: השוואת מחירים — חוסכים בקלות",
           "H2: מבצעים"
         ],
-        "textLen": 15375,
+        "textLen": 15478,
         "interactiveCount": 190,
         "smallTargets": [],
         "srOnlyTargets": [],
@@ -3298,7 +3396,7 @@
       "url": "https://more30.com/kupot",
       "desktop": {
         "status": 200,
-        "loadMs": 4473,
+        "loadMs": 4584,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "kupot-desktop.png",
@@ -3336,7 +3434,7 @@
       },
       "mobile": {
         "status": 200,
-        "loadMs": 4824,
+        "loadMs": 4357,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "kupot-mobile.png",
@@ -3374,7 +3472,7 @@
       },
       "dark": {
         "status": 200,
-        "loadMs": 4598,
+        "loadMs": 4991,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "kupot-dark.png",
@@ -3422,24 +3520,33 @@
       "url": "https://more30.com/crm",
       "desktop": {
         "status": 200,
-        "loadMs": 4608,
+        "loadMs": 5888,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "crm-desktop.png",
-        "title": "זכויות פרו | ZchuyotPro",
+        "title": "כניסה למערכת | זכויות פרו",
         "lang": "he",
         "dir": "rtl",
-        "metaDescription": "מערכת CRM רב-ארגונית לניהול לקוחות, זכאויות ושותפים.",
+        "metaDescription": "התחברות והרשמה למערכת זכויות פרו.",
         "metaViewport": "width=device-width, initial-scale=1",
         "metaRobots": "",
         "canonical": "",
         "ogUrl": "",
-        "h1Count": 0,
-        "h1": "",
-        "headings": [],
-        "textLen": 0,
-        "interactiveCount": 0,
-        "smallTargets": [],
+        "h1Count": 1,
+        "h1": "זכויות פרו",
+        "headings": [
+          "H1: זכויות פרו"
+        ],
+        "textLen": 137,
+        "interactiveCount": 6,
+        "smallTargets": [
+          {
+            "tag": "button",
+            "w": 75,
+            "h": 16,
+            "name": "שכחתי סיסמה"
+          }
+        ],
         "srOnlyTargets": [],
         "unnamedControls": [],
         "imgsNoAlt": [],
@@ -3457,24 +3564,33 @@
       },
       "mobile": {
         "status": 200,
-        "loadMs": 4502,
+        "loadMs": 5010,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "crm-mobile.png",
-        "title": "זכויות פרו | ZchuyotPro",
+        "title": "כניסה למערכת | זכויות פרו",
         "lang": "he",
         "dir": "rtl",
-        "metaDescription": "מערכת CRM רב-ארגונית לניהול לקוחות, זכאויות ושותפים.",
+        "metaDescription": "התחברות והרשמה למערכת זכויות פרו.",
         "metaViewport": "width=device-width, initial-scale=1",
         "metaRobots": "",
         "canonical": "",
         "ogUrl": "",
-        "h1Count": 0,
-        "h1": "",
-        "headings": [],
-        "textLen": 0,
-        "interactiveCount": 0,
-        "smallTargets": [],
+        "h1Count": 1,
+        "h1": "זכויות פרו",
+        "headings": [
+          "H1: זכויות פרו"
+        ],
+        "textLen": 137,
+        "interactiveCount": 6,
+        "smallTargets": [
+          {
+            "tag": "button",
+            "w": 75,
+            "h": 16,
+            "name": "שכחתי סיסמה"
+          }
+        ],
         "srOnlyTargets": [],
         "unnamedControls": [],
         "imgsNoAlt": [],
@@ -3492,24 +3608,33 @@
       },
       "dark": {
         "status": 200,
-        "loadMs": 4392,
+        "loadMs": 5010,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "crm-dark.png",
-        "title": "זכויות פרו | ZchuyotPro",
+        "title": "כניסה למערכת | זכויות פרו",
         "lang": "he",
         "dir": "rtl",
-        "metaDescription": "מערכת CRM רב-ארגונית לניהול לקוחות, זכאויות ושותפים.",
+        "metaDescription": "התחברות והרשמה למערכת זכויות פרו.",
         "metaViewport": "width=device-width, initial-scale=1",
         "metaRobots": "",
         "canonical": "",
         "ogUrl": "",
-        "h1Count": 0,
-        "h1": "",
-        "headings": [],
-        "textLen": 0,
-        "interactiveCount": 0,
-        "smallTargets": [],
+        "h1Count": 1,
+        "h1": "זכויות פרו",
+        "headings": [
+          "H1: זכויות פרו"
+        ],
+        "textLen": 137,
+        "interactiveCount": 6,
+        "smallTargets": [
+          {
+            "tag": "button",
+            "w": 75,
+            "h": 16,
+            "name": "שכחתי סיסמה"
+          }
+        ],
         "srOnlyTargets": [],
         "unnamedControls": [],
         "imgsNoAlt": [],
@@ -3537,23 +3662,25 @@
       "url": "https://more30.com/gesher",
       "desktop": {
         "status": 200,
-        "loadMs": 4545,
+        "loadMs": 5916,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "gesher-desktop.png",
-        "title": "מערכת CRM שותפים",
+        "title": "התחברות — מערכת CRM שותפים",
         "lang": "he",
         "dir": "rtl",
-        "metaDescription": "פלטפורמת ניהול לקוחות ושותפים עסקיים",
+        "metaDescription": "התחברות והרשמה למערכת ניהול לקוחות ושותפים",
         "metaViewport": "width=device-width, initial-scale=1",
         "metaRobots": "",
         "canonical": "",
         "ogUrl": "",
-        "h1Count": 0,
-        "h1": "",
-        "headings": [],
-        "textLen": 0,
-        "interactiveCount": 0,
+        "h1Count": 1,
+        "h1": "מערכת CRM שותפים",
+        "headings": [
+          "H1: מערכת CRM שותפים"
+        ],
+        "textLen": 107,
+        "interactiveCount": 6,
         "smallTargets": [],
         "srOnlyTargets": [],
         "unnamedControls": [],
@@ -3572,23 +3699,25 @@
       },
       "mobile": {
         "status": 200,
-        "loadMs": 4343,
+        "loadMs": 4982,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "gesher-mobile.png",
-        "title": "מערכת CRM שותפים",
+        "title": "התחברות — מערכת CRM שותפים",
         "lang": "he",
         "dir": "rtl",
-        "metaDescription": "פלטפורמת ניהול לקוחות ושותפים עסקיים",
+        "metaDescription": "התחברות והרשמה למערכת ניהול לקוחות ושותפים",
         "metaViewport": "width=device-width, initial-scale=1",
         "metaRobots": "",
         "canonical": "",
         "ogUrl": "",
-        "h1Count": 0,
-        "h1": "",
-        "headings": [],
-        "textLen": 0,
-        "interactiveCount": 0,
+        "h1Count": 1,
+        "h1": "מערכת CRM שותפים",
+        "headings": [
+          "H1: מערכת CRM שותפים"
+        ],
+        "textLen": 107,
+        "interactiveCount": 6,
         "smallTargets": [],
         "srOnlyTargets": [],
         "unnamedControls": [],
@@ -3607,23 +3736,25 @@
       },
       "dark": {
         "status": 200,
-        "loadMs": 4370,
+        "loadMs": 4921,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "gesher-dark.png",
-        "title": "מערכת CRM שותפים",
+        "title": "התחברות — מערכת CRM שותפים",
         "lang": "he",
         "dir": "rtl",
-        "metaDescription": "פלטפורמת ניהול לקוחות ושותפים עסקיים",
+        "metaDescription": "התחברות והרשמה למערכת ניהול לקוחות ושותפים",
         "metaViewport": "width=device-width, initial-scale=1",
         "metaRobots": "",
         "canonical": "",
         "ogUrl": "",
-        "h1Count": 0,
-        "h1": "",
-        "headings": [],
-        "textLen": 0,
-        "interactiveCount": 0,
+        "h1Count": 1,
+        "h1": "מערכת CRM שותפים",
+        "headings": [
+          "H1: מערכת CRM שותפים"
+        ],
+        "textLen": 107,
+        "interactiveCount": 6,
         "smallTargets": [],
         "srOnlyTargets": [],
         "unnamedControls": [],
@@ -3652,7 +3783,7 @@
       "url": "https://more30.com/nadlan",
       "desktop": {
         "status": 200,
-        "loadMs": 4761,
+        "loadMs": 4819,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "nadlan-desktop.png",
@@ -3700,7 +3831,7 @@
       },
       "mobile": {
         "status": 200,
-        "loadMs": 4864,
+        "loadMs": 4928,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "nadlan-mobile.png",
@@ -3748,7 +3879,7 @@
       },
       "dark": {
         "status": 200,
-        "loadMs": 4633,
+        "loadMs": 4824,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "nadlan-dark.png",
@@ -3806,7 +3937,7 @@
       "url": "https://more30.com/kesef",
       "desktop": {
         "status": 200,
-        "loadMs": 4413,
+        "loadMs": 4393,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "kesef-desktop.png",
@@ -3854,7 +3985,7 @@
       },
       "mobile": {
         "status": 200,
-        "loadMs": 4255,
+        "loadMs": 4273,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "kesef-mobile.png",
@@ -3902,7 +4033,7 @@
       },
       "dark": {
         "status": 200,
-        "loadMs": 4275,
+        "loadMs": 4382,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "kesef-dark.png",
@@ -3960,7 +4091,7 @@
       "url": "https://more30.com/kiosk/",
       "desktop": {
         "status": 200,
-        "loadMs": 5835,
+        "loadMs": 4897,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "kiosk-desktop.png",
@@ -4015,7 +4146,7 @@
       },
       "mobile": {
         "status": 200,
-        "loadMs": 4629,
+        "loadMs": 4654,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "kiosk-mobile.png",
@@ -4070,7 +4201,7 @@
       },
       "dark": {
         "status": 200,
-        "loadMs": 4542,
+        "loadMs": 4688,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "kiosk-dark.png",
@@ -4135,7 +4266,7 @@
       "url": "https://more30.com/tivuch",
       "desktop": {
         "status": 200,
-        "loadMs": 4336,
+        "loadMs": 4335,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "tivuch-desktop.png",
@@ -4183,7 +4314,7 @@
       },
       "mobile": {
         "status": 200,
-        "loadMs": 4225,
+        "loadMs": 4087,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "tivuch-mobile.png",
@@ -4231,7 +4362,7 @@
       },
       "dark": {
         "status": 200,
-        "loadMs": 4563,
+        "loadMs": 4344,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "tivuch-dark.png",
@@ -4282,5 +4413,5 @@
       "horizontalOverflow": false
     }
   },
-  "finishedAt": "2026-08-03T02:13:10.276Z"
+  "finishedAt": "2026-08-03T08:00:32.721Z"
 }
