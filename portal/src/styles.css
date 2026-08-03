@@ -99,7 +99,7 @@
      הפינוי מחושב ולא קבוע: כשהחלון רחב מ-`--wrap` יש ממילא שוליים בגודל
      `(100vw - wrap)/2`, ורק מה שחסר מעבר להם נוסף. לכן בדסקטופ הסרגל
      נשאר סימטרי בדיוק כפי שהיה, ובמובייל הקישור מתפנה מתחת לכדור. */
-  padding-inline-end: max(32px, calc(var(--more30-auth-inset, 124px) - (100vw - var(--wrap)) / 2));
+  padding-inline-end: max(32px, calc(var(--more30-auth-inset, 124px) - max(0px, (100vw - var(--wrap)) / 2)));
 }
 .wordmark { font-size: 14px; font-weight: 500; letter-spacing: 0.14em; color: var(--ink); }
 .nav-links { display: flex; align-items: center; gap: 30px; font-size: 14px; color: var(--ink-2); }
@@ -369,6 +369,10 @@ select.inp option { background: var(--royal-2); color: var(--ink); }
 }
 @media (max-width: 720px) {
   .wrap, .nav-in, .hero { padding-inline: 20px; }
+  /* `padding-inline` למעלה כותב את שני הצדדים ולכן מבטל את הפינוי לכפתור
+     הכניסה — נמדד: ב-390px "ספרו לנו רעיון" נשאר מכוסה גם אחרי התיקון.
+     כאן בדיוק המקום שבו הפינוי הכי נחוץ, כי אין שוליים לקזז מהם. */
+  .nav-in { padding-inline-end: max(20px, var(--more30-auth-inset, 124px)); }
   .nav-links { gap: 18px; font-size: 13px; }
   .nav-links a:nth-child(2) { display: none; }
   .cards { grid-template-columns: 1fr; }
