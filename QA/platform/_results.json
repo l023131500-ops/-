@@ -2608,7 +2608,7 @@
       "url": "https://more30.com/mthbram",
       "desktop": {
         "status": 200,
-        "loadMs": 4876,
+        "loadMs": 5709,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "mthbram-desktop.png",
@@ -2631,20 +2631,7 @@
         ],
         "textLen": 888,
         "interactiveCount": 18,
-        "smallTargets": [
-          {
-            "tag": "input",
-            "w": 841,
-            "h": 20,
-            "name": "חיפוש חכם — רב, נושא, עיר, בית כנסת..."
-          },
-          {
-            "tag": "a",
-            "w": 66,
-            "h": 16,
-            "name": "023-133-0600"
-          }
-        ],
+        "smallTargets": [],
         "srOnlyTargets": [],
         "unnamedControls": [],
         "imgsNoAlt": [],
@@ -2662,7 +2649,7 @@
       },
       "mobile": {
         "status": 200,
-        "loadMs": 4834,
+        "loadMs": 5688,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "mthbram-mobile.png",
@@ -2685,20 +2672,7 @@
         ],
         "textLen": 841,
         "interactiveCount": 15,
-        "smallTargets": [
-          {
-            "tag": "input",
-            "w": 246,
-            "h": 20,
-            "name": "חיפוש חכם — רב, נושא, עיר, בית כנסת..."
-          },
-          {
-            "tag": "a",
-            "w": 66,
-            "h": 16,
-            "name": "023-133-0600"
-          }
-        ],
+        "smallTargets": [],
         "srOnlyTargets": [],
         "unnamedControls": [
           {
@@ -2722,7 +2696,7 @@
       },
       "dark": {
         "status": 200,
-        "loadMs": 4864,
+        "loadMs": 5039,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "mthbram-dark.png",
@@ -2745,20 +2719,7 @@
         ],
         "textLen": 888,
         "interactiveCount": 18,
-        "smallTargets": [
-          {
-            "tag": "input",
-            "w": 841,
-            "h": 20,
-            "name": "חיפוש חכם — רב, נושא, עיר, בית כנסת..."
-          },
-          {
-            "tag": "a",
-            "w": 66,
-            "h": 16,
-            "name": "023-133-0600"
-          }
-        ],
+        "smallTargets": [],
         "srOnlyTargets": [],
         "unnamedControls": [],
         "imgsNoAlt": [],
@@ -4321,5 +4282,5 @@
       "horizontalOverflow": false
     }
   },
-  "finishedAt": "2026-08-03T01:38:58.116Z"
+  "finishedAt": "2026-08-03T01:56:48.336Z"
 }
