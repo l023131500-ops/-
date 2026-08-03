@@ -9,7 +9,7 @@ export default function HomePage() {
           והלחיצה מגיעה לכדור. `--more30-auth-inset` הוא הרוחב שהכדור
           מפרסם בפועל; החיסור מקזז את השוליים שה-container כבר נותן. */}
       <header
-        className="container mx-auto px-6 py-6 flex items-center justify-between"
+        className="container mx-auto px-6 py-6 flex flex-wrap items-center justify-between gap-y-2"
         style={{
           paddingInlineEnd:
             'max(1.5rem, calc(var(--more30-auth-inset, 124px) - max(0px, (100vw - 1400px) / 2)))',
@@ -24,7 +24,11 @@ export default function HomePage() {
             <div className="text-xs text-brand-gold/90">יוצר מודעות AI</div>
           </div>
         </div>
-        <nav className="flex items-center gap-4 text-sm">
+        {/* שלושת הקישורים + הלוגו לא נכנסים ל-390px, ולכן הריפוד לבדו הותיר
+            3px של חפיפה עם כפתור הכניסה (נמדד). ‎w-full‎ במובייל מוריד את
+            הנווט לשורה משלו מתחת לכדור; ‎min-w-0‎ מאפשר לו להתכווץ בכלל
+            (ברירת המחדל של פריט flex היא ‎min-width:auto‎). */}
+        <nav className="flex w-full min-w-0 items-center gap-4 overflow-x-auto text-sm sm:w-auto">
           <Link href="/create" className="inline-block py-1 hover:text-brand-gold transition">צור מודעה</Link>
           <Link href="/transcribe/upload" className="inline-block py-1 hover:text-brand-gold transition">תמלול שיעור</Link>
           <Link href="/login" className="inline-block py-1 hover:text-brand-gold transition">התחברות</Link>

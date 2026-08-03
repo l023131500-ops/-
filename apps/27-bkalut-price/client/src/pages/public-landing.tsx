@@ -88,8 +88,13 @@ export default function PublicLanding() {
 
             ⚠️ שינוי תצוגה בלבד, ונפרס רק ל-`mechiron-more30` ב-Vercel —
             אינו נוגע בשרת `bkalut-app` המוגן. */}
+        {/* חמישה קישורים + לוגו אינם נכנסים ל-390px, ולכן שום ריפוד לא יפנה
+            כאן מקום: כיווץ הנווט רק דחס אותו והוא נשאר מתחת לכדור (נמדד
+            פעמיים — 14×36 ואז 43×36). במקום להילחם על הרוחב, הנווט יורד
+            לשורה משלו במובייל ומתחיל מתחת לכדור לגמרי. ‎min-h-14‎ ולא
+            ‎h-14‎ כדי שהסרגל יגדל במקום שהשורה השנייה תגלוש ממנו. */}
         <div
-          className="max-w-[1200px] mx-auto px-4 sm:px-6 h-14 flex items-center justify-between gap-4"
+          className="max-w-[1200px] mx-auto px-4 sm:px-6 min-h-14 flex flex-wrap items-center justify-between gap-x-4 gap-y-1 py-1 sm:flex-nowrap sm:py-0"
           style={{
             paddingInlineEnd:
               'max(1rem, calc(var(--more30-auth-inset, 124px) - max(0px, (100vw - 1200px) / 2)))',
@@ -99,7 +104,18 @@ export default function PublicLanding() {
             <Logo size={28} showWordmark={false} />
             <span className="font-bold text-base mr-2">בקלות</span>
           </Link>
-          <nav className="flex items-center gap-3 text-[13px]">
+          {/* ‎min-w-0‎ אינו קישוט. פריט flex מקבל ‎min-width:auto‎ כברירת מחדל,
+              ולכן הוא **מסרב להתכווץ מתחת לרוחב התוכן שלו** — וחמשת הקישורים
+              כאן רחבים מ-390px. נמדד: השורה יצאה ‎x14..404‎ בחלון של 390,
+              כלומר הריפוד שהפניתי לכפתור הכניסה דחף את השורה החוצה במקום
+              לכווץ את הנווט, ושני הקישורים האחרונים נחתו מתחת לכדור.
+              ‎min-w-0‎ מאפשר את הכיווץ, ו-‎overflow-x-auto‎ נותן לגלול אליהם
+              במקום לחתוך אותם. */}
+          {/* ‎w-full‎ במובייל = שורה משלו, מתחת לכדור. ‎min-w-0‎ מאפשר לפריט
+              flex להתכווץ מתחת לרוחב התוכן שלו (ברירת המחדל היא
+              ‎min-width:auto‎, שמונעת בדיוק את זה), ו-‎overflow-x-auto‎ נותן
+              לגלול אל הקישורים האחרונים במקום לחתוך אותם. */}
+          <nav className="flex w-full min-w-0 items-center gap-3 overflow-x-auto pb-1 text-[13px] sm:w-auto sm:pb-0">
             <button
               type="button"
               onClick={() => scrollToSection("about")}

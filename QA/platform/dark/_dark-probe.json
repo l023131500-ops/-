@@ -1,214 +1,57 @@
 {
-  "/galil": {
+  "/kiosk/": {
     "hasDarkRules": true,
     "darkRuleSample": [
       {
-        "sel": ".dark",
-        "decl": "--background: 205 40% 9%; --foreground: 210 25% 94%; --card: 205 35% 13%; --card-foreground: 210 25% 94%; --popover: 205 35% 13%; --popover-foreground: 210 25% "
+        "sel": ":root.dark",
+        "decl": "--ink: #e6ebf4; --muted: #9aa8bf; --line: #23304a; --bg: #0b1220; --card: #131c2e; --shadow: 0 10px 30px rgba(0, 0, 0, 0.5);"
       },
       {
-        "sel": ".dark\\:border-destructive:is(.dark *)",
-        "decl": "border-color: hsl(var(--destructive));"
-      }
-    ],
-    "sheetsUnreadable": 0,
-    "before": {
-      "effectiveBg": "rgba(0, 0, 0, 0)",
-      "bodyImage": "linear-gradient(160deg, rgb(245, 247, 249) 0%, rgb(243, 245, 247) 30%, rgb(240, 243, 245) 60%, rgb(245, 247, 249) 100%)",
-      "bodyBg": "rgba(0, 0, 0, 0)",
-      "htmlBg": "rgba(0, 0, 0, 0)",
-      "fg": "rgb(21, 29, 40)",
-      "surfaces": [
-        "rgba(0, 0, 0, 0)",
-        "rgba(23, 54, 69, 0.8)",
-        "rgba(0, 0, 0, 0)",
-        "rgba(0, 0, 0, 0)",
-        "rgb(252, 252, 253)",
-        "rgba(0, 0, 0, 0)",
-        "rgba(0, 0, 0, 0)",
-        "rgb(252, 252, 253)"
-      ]
-    },
-    "after": {
-      "effectiveBg": "rgba(0, 0, 0, 0)",
-      "bodyImage": "linear-gradient(160deg, rgb(14, 24, 32) 0%, rgb(18, 30, 38) 30%, rgb(20, 34, 41) 60%, rgb(14, 24, 32) 100%)",
-      "bodyBg": "rgba(0, 0, 0, 0)",
-      "htmlBg": "rgba(0, 0, 0, 0)",
-      "fg": "rgb(236, 240, 244)",
-      "surfaces": [
-        "rgba(0, 0, 0, 0)",
-        "rgba(20, 41, 52, 0.8)",
-        "rgba(0, 0, 0, 0)",
-        "rgba(0, 0, 0, 0)",
-        "rgb(22, 35, 45)",
-        "rgba(0, 0, 0, 0)",
-        "rgba(0, 0, 0, 0)",
-        "rgb(22, 35, 45)"
-      ]
-    },
-    "changed": true
-  },
-  "/mthbram": {
-    "hasDarkRules": true,
-    "darkRuleSample": [
+        "sel": ":root.dark .auth-card, :root.dark .modal",
+        "decl": "background: var(--card);"
+      },
       {
-        "sel": ".dark\\:border-destructive:is(.dark *)",
-        "decl": "border-color: hsl(var(--destructive));"
+        "sel": ":root.dark .field input:focus, :root.dark .field select:focus",
+        "decl": "background: var(--card);"
+      },
+      {
+        "sel": ":root.dark .hl-empty",
+        "decl": "background: rgb(46, 37, 16); border-color: rgb(92, 74, 21);"
       }
     ],
-    "sheetsUnreadable": 0,
-    "before": {
-      "effectiveBg": "rgb(9, 26, 32)",
-      "bodyImage": "radial-gradient(circle at 20% 10%, rgba(13, 55, 63, 0.6) 0%, rgba(0, 0, 0, 0) 45%), radial-gradient(circle at 85% 90%, rgba(119, 88, 34, 0.15) 0%, rgba(0, 0, 0,",
-      "bodyBg": "rgb(9, 26, 32)",
-      "htmlBg": "rgba(0, 0, 0, 0)",
-      "fg": "rgb(241, 234, 218)",
-      "surfaces": [
-        "rgba(0, 0, 0, 0)",
-        "rgba(9, 26, 32, 0.7)",
-        "rgba(0, 0, 0, 0)",
-        "rgba(18, 42, 48, 0.5)",
-        "rgba(18, 42, 48, 0.5)",
-        "rgba(18, 42, 48, 0.5)",
-        "rgba(18, 42, 48, 0.5)",
-        "rgba(0, 0, 0, 0)"
-      ]
-    },
-    "after": {
-      "effectiveBg": "rgb(9, 26, 32)",
-      "bodyImage": "radial-gradient(circle at 20% 10%, rgba(13, 55, 63, 0.6) 0%, rgba(0, 0, 0, 0) 45%), radial-gradient(circle at 85% 90%, rgba(119, 88, 34, 0.15) 0%, rgba(0, 0, 0,",
-      "bodyBg": "rgb(9, 26, 32)",
-      "htmlBg": "rgba(0, 0, 0, 0)",
-      "fg": "rgb(241, 234, 218)",
-      "surfaces": [
-        "rgba(0, 0, 0, 0)",
-        "rgba(9, 26, 32, 0.7)",
-        "rgba(0, 0, 0, 0)",
-        "rgba(18, 42, 48, 0.5)",
-        "rgba(18, 42, 48, 0.5)",
-        "rgba(18, 42, 48, 0.5)",
-        "rgba(18, 42, 48, 0.5)",
-        "rgba(0, 0, 0, 0)"
-      ]
-    },
-    "changed": false
-  },
-  "/modaot": {
-    "hasDarkRules": false,
-    "darkRuleSample": [],
     "sheetsUnreadable": 1,
     "before": {
-      "effectiveBg": "rgb(248, 245, 236)",
+      "effectiveBg": "rgb(245, 247, 251)",
       "bodyImage": "",
-      "bodyBg": "rgb(248, 245, 236)",
+      "bodyBg": "rgb(245, 247, 251)",
       "htmlBg": "rgba(0, 0, 0, 0)",
-      "fg": "rgb(26, 26, 26)",
+      "fg": "rgb(11, 18, 32)",
       "surfaces": [
+        "rgba(7, 26, 51, 0.85)",
         "rgba(0, 0, 0, 0)",
         "rgba(0, 0, 0, 0)",
+        "rgb(7, 26, 51)",
         "rgba(0, 0, 0, 0)",
-        "rgba(0, 0, 0, 0)",
-        "rgb(248, 245, 236)",
         "rgb(255, 255, 255)",
-        "rgb(255, 255, 255)",
+        "rgba(0, 0, 0, 0)",
         "rgb(255, 255, 255)"
       ]
     },
     "after": {
-      "effectiveBg": "rgb(248, 245, 236)",
+      "effectiveBg": "rgb(11, 18, 32)",
       "bodyImage": "",
-      "bodyBg": "rgb(248, 245, 236)",
+      "bodyBg": "rgb(11, 18, 32)",
       "htmlBg": "rgba(0, 0, 0, 0)",
-      "fg": "rgb(26, 26, 26)",
+      "fg": "rgb(230, 235, 244)",
       "surfaces": [
+        "rgba(7, 26, 51, 0.85)",
         "rgba(0, 0, 0, 0)",
         "rgba(0, 0, 0, 0)",
+        "rgb(7, 26, 51)",
         "rgba(0, 0, 0, 0)",
-        "rgba(0, 0, 0, 0)",
-        "rgb(248, 245, 236)",
         "rgb(255, 255, 255)",
-        "rgb(255, 255, 255)",
+        "rgba(0, 0, 0, 0)",
         "rgb(255, 255, 255)"
-      ]
-    },
-    "changed": false
-  },
-  "/briut": {
-    "hasDarkRules": false,
-    "darkRuleSample": [],
-    "sheetsUnreadable": 1,
-    "before": {
-      "effectiveBg": "rgb(246, 248, 249)",
-      "bodyImage": "",
-      "bodyBg": "rgb(246, 248, 249)",
-      "htmlBg": "rgba(0, 0, 0, 0)",
-      "fg": "rgb(22, 35, 43)",
-      "surfaces": [
-        "rgba(255, 255, 255, 0.9)",
-        "rgba(0, 0, 0, 0)",
-        "rgba(0, 0, 0, 0)",
-        "rgba(0, 0, 0, 0)",
-        "rgba(0, 0, 0, 0)",
-        "rgb(255, 255, 255)",
-        "rgb(255, 255, 255)",
-        "rgb(255, 255, 255)"
-      ]
-    },
-    "after": {
-      "effectiveBg": "rgb(246, 248, 249)",
-      "bodyImage": "",
-      "bodyBg": "rgb(246, 248, 249)",
-      "htmlBg": "rgba(0, 0, 0, 0)",
-      "fg": "rgb(22, 35, 43)",
-      "surfaces": [
-        "rgba(255, 255, 255, 0.9)",
-        "rgba(0, 0, 0, 0)",
-        "rgba(0, 0, 0, 0)",
-        "rgba(0, 0, 0, 0)",
-        "rgba(0, 0, 0, 0)",
-        "rgb(255, 255, 255)",
-        "rgb(255, 255, 255)",
-        "rgb(255, 255, 255)"
-      ]
-    },
-    "changed": false
-  },
-  "/bkalot": {
-    "hasDarkRules": false,
-    "darkRuleSample": [],
-    "sheetsUnreadable": 2,
-    "before": {
-      "effectiveBg": "rgb(247, 246, 242)",
-      "bodyImage": "",
-      "bodyBg": "rgb(247, 246, 242)",
-      "htmlBg": "rgba(0, 0, 0, 0)",
-      "fg": "rgb(35, 33, 28)",
-      "surfaces": [
-        "rgba(0, 0, 0, 0)",
-        "rgba(0, 0, 0, 0)",
-        "rgba(0, 0, 0, 0)",
-        "rgba(0, 0, 0, 0)",
-        "rgba(0, 0, 0, 0)",
-        "rgba(0, 0, 0, 0)",
-        "rgba(0, 0, 0, 0)",
-        "rgba(0, 0, 0, 0)"
-      ]
-    },
-    "after": {
-      "effectiveBg": "rgb(20, 19, 15)",
-      "bodyImage": "",
-      "bodyBg": "rgb(20, 19, 15)",
-      "htmlBg": "rgba(0, 0, 0, 0)",
-      "fg": "rgb(232, 230, 223)",
-      "surfaces": [
-        "rgba(0, 0, 0, 0)",
-        "rgba(0, 0, 0, 0)",
-        "rgba(0, 0, 0, 0)",
-        "rgba(0, 0, 0, 0)",
-        "rgba(0, 0, 0, 0)",
-        "rgba(0, 0, 0, 0)",
-        "rgba(0, 0, 0, 0)",
-        "rgba(0, 0, 0, 0)"
       ]
     },
     "changed": true

@@ -337,6 +337,21 @@ rewrite של Vercel מעביר HTTP ולא upgrade.
 
 ---
 
+### ✅ 2. ~~חיבור ה-Volume בקיוסק~~ — **נסגר ואומת 04/08**
+
+ה-Volume מחובר. אומת בשתי דרכים בלתי-תלויות:
+`get-service-config` מחזיר `volumeMounts → /app/data`, **ולוג העלייה של
+הפריסה האחרונה אומר בדיוק את המשפט שחיפשנו:**
+
+```
+db: /app/data/kioskfleet.db — existing file (data persisted)
+```
+
+כלומר הנתונים שרדו דיפלוי בפועל, לא רק שההגדרה נראית נכונה.
+**מכאן אפשר להחליף את סיסמת האדמין (§4) בלי שהיא תתאפס.**
+
+<details><summary>הניסוח הקודם</summary>
+
 ### 🔴 2. חיבור ה-Volume בקיוסק — בלעדיו כל דיפלוי מוחק את הנתונים
 
 **Railway → project `kioskfleet` → service `kioskfleet` → env `production`
@@ -349,6 +364,8 @@ rewrite של Vercel מעביר HTTP ולא upgrade.
 `db: /app/data/kioskfleet.db — existing file (data persisted)`
 במקום `NEW FILE`.
 *חלופה:* הרץ `railway login` בטרמינל ואחבר בעצמי.
+
+</details>
 
 ---
 
