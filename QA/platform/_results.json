@@ -687,7 +687,7 @@
       "url": "https://more30.com/tamlul",
       "desktop": {
         "status": 200,
-        "loadMs": 4841,
+        "loadMs": 5123,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "tamlul-desktop.png",
@@ -713,14 +713,7 @@
         ],
         "textLen": 1347,
         "interactiveCount": 8,
-        "smallTargets": [
-          {
-            "tag": "a",
-            "w": 158,
-            "h": 17,
-            "name": "a023131600@gmail.com"
-          }
-        ],
+        "smallTargets": [],
         "srOnlyTargets": [],
         "unnamedControls": [],
         "imgsNoAlt": [],
@@ -738,7 +731,7 @@
       },
       "mobile": {
         "status": 200,
-        "loadMs": 4474,
+        "loadMs": 4794,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "tamlul-mobile.png",
@@ -764,14 +757,7 @@
         ],
         "textLen": 1347,
         "interactiveCount": 8,
-        "smallTargets": [
-          {
-            "tag": "a",
-            "w": 158,
-            "h": 17,
-            "name": "a023131600@gmail.com"
-          }
-        ],
+        "smallTargets": [],
         "srOnlyTargets": [],
         "unnamedControls": [],
         "imgsNoAlt": [],
@@ -789,7 +775,7 @@
       },
       "dark": {
         "status": 200,
-        "loadMs": 4632,
+        "loadMs": 4688,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "tamlul-dark.png",
@@ -815,14 +801,7 @@
         ],
         "textLen": 1347,
         "interactiveCount": 8,
-        "smallTargets": [
-          {
-            "tag": "a",
-            "w": 158,
-            "h": 17,
-            "name": "a023131600@gmail.com"
-          }
-        ],
+        "smallTargets": [],
         "srOnlyTargets": [],
         "unnamedControls": [],
         "imgsNoAlt": [],
@@ -850,7 +829,7 @@
       "url": "https://more30.com/modaot",
       "desktop": {
         "status": 200,
-        "loadMs": 4648,
+        "loadMs": 4879,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "modaot-desktop.png",
@@ -874,26 +853,7 @@
         ],
         "textLen": 671,
         "interactiveCount": 7,
-        "smallTargets": [
-          {
-            "tag": "a",
-            "w": 59,
-            "h": 20,
-            "name": "צור מודעה"
-          },
-          {
-            "tag": "a",
-            "w": 72,
-            "h": 20,
-            "name": "תמלול שיעור"
-          },
-          {
-            "tag": "a",
-            "w": 54,
-            "h": 20,
-            "name": "התחברות"
-          }
-        ],
+        "smallTargets": [],
         "srOnlyTargets": [],
         "unnamedControls": [],
         "imgsNoAlt": [],
@@ -911,7 +871,7 @@
       },
       "mobile": {
         "status": 200,
-        "loadMs": 4488,
+        "loadMs": 4442,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "modaot-mobile.png",
@@ -935,14 +895,7 @@
         ],
         "textLen": 671,
         "interactiveCount": 7,
-        "smallTargets": [
-          {
-            "tag": "a",
-            "w": 54,
-            "h": 20,
-            "name": "התחברות"
-          }
-        ],
+        "smallTargets": [],
         "srOnlyTargets": [],
         "unnamedControls": [],
         "imgsNoAlt": [],
@@ -960,7 +913,7 @@
       },
       "dark": {
         "status": 200,
-        "loadMs": 4381,
+        "loadMs": 4576,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "modaot-dark.png",
@@ -984,26 +937,7 @@
         ],
         "textLen": 671,
         "interactiveCount": 7,
-        "smallTargets": [
-          {
-            "tag": "a",
-            "w": 59,
-            "h": 20,
-            "name": "צור מודעה"
-          },
-          {
-            "tag": "a",
-            "w": 72,
-            "h": 20,
-            "name": "תמלול שיעור"
-          },
-          {
-            "tag": "a",
-            "w": 54,
-            "h": 20,
-            "name": "התחברות"
-          }
-        ],
+        "smallTargets": [],
         "srOnlyTargets": [],
         "unnamedControls": [],
         "imgsNoAlt": [],
@@ -2674,10 +2608,8 @@
       "url": "https://more30.com/mthbram",
       "desktop": {
         "status": 200,
-        "loadMs": 4830,
-        "consoleErrors": [
-          "404 Error: User attempted to access non-existent route: /mthbram"
-        ],
+        "loadMs": 4876,
+        "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "mthbram-desktop.png",
         "title": "איגוד השיעורים - שיעורי תורה, חברותות והרצאות",
@@ -2688,25 +2620,35 @@
         "metaRobots": "",
         "canonical": "",
         "ogUrl": "",
-        "h1Count": 1,
-        "h1": "404",
+        "h1Count": 0,
+        "h1": "",
         "headings": [
-          "H1: 404"
+          "H2: 0 שיעורים",
+          "H2: מעוניינים להצטרף למערכת מגידי השיעורים?",
+          "H3: יש לי שיעור קיים",
+          "H3: מעוניין להקים שיעור",
+          "H3: מעוניינים להיות שותפים בהפצת התורה?"
         ],
-        "textLen": 41,
-        "interactiveCount": 1,
+        "textLen": 888,
+        "interactiveCount": 18,
         "smallTargets": [
           {
+            "tag": "input",
+            "w": 841,
+            "h": 20,
+            "name": "חיפוש חכם — רב, נושא, עיר, בית כנסת..."
+          },
+          {
             "tag": "a",
-            "w": 105,
-            "h": 21,
-            "name": "Return to Home"
+            "w": 66,
+            "h": 16,
+            "name": "023-133-0600"
           }
         ],
         "srOnlyTargets": [],
         "unnamedControls": [],
         "imgsNoAlt": [],
-        "hasAuthScript": true,
+        "hasAuthScript": false,
         "authBtnText": "",
         "bodyBg": "rgb(9, 26, 32)",
         "bodyFg": "rgb(241, 234, 218)",
@@ -2720,10 +2662,8 @@
       },
       "mobile": {
         "status": 200,
-        "loadMs": 6772,
-        "consoleErrors": [
-          "404 Error: User attempted to access non-existent route: /mthbram"
-        ],
+        "loadMs": 4834,
+        "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "mthbram-mobile.png",
         "title": "איגוד השיעורים - שיעורי תורה, חברותות והרצאות",
@@ -2734,25 +2674,41 @@
         "metaRobots": "",
         "canonical": "",
         "ogUrl": "",
-        "h1Count": 1,
-        "h1": "404",
+        "h1Count": 0,
+        "h1": "",
         "headings": [
-          "H1: 404"
+          "H2: 0 שיעורים",
+          "H2: מעוניינים להצטרף למערכת מגידי השיעורים?",
+          "H3: יש לי שיעור קיים",
+          "H3: מעוניין להקים שיעור",
+          "H3: מעוניינים להיות שותפים בהפצת התורה?"
         ],
-        "textLen": 41,
-        "interactiveCount": 1,
+        "textLen": 841,
+        "interactiveCount": 15,
         "smallTargets": [
           {
+            "tag": "input",
+            "w": 246,
+            "h": 20,
+            "name": "חיפוש חכם — רב, נושא, עיר, בית כנסת..."
+          },
+          {
             "tag": "a",
-            "w": 92,
-            "h": 18,
-            "name": "Return to Home"
+            "w": 66,
+            "h": 16,
+            "name": "023-133-0600"
           }
         ],
         "srOnlyTargets": [],
-        "unnamedControls": [],
+        "unnamedControls": [
+          {
+            "tag": "button",
+            "type": "",
+            "cls": "md:hidden text-foreground p-2"
+          }
+        ],
         "imgsNoAlt": [],
-        "hasAuthScript": true,
+        "hasAuthScript": false,
         "authBtnText": "",
         "bodyBg": "rgb(9, 26, 32)",
         "bodyFg": "rgb(241, 234, 218)",
@@ -2766,10 +2722,8 @@
       },
       "dark": {
         "status": 200,
-        "loadMs": 5846,
-        "consoleErrors": [
-          "404 Error: User attempted to access non-existent route: /mthbram"
-        ],
+        "loadMs": 4864,
+        "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "mthbram-dark.png",
         "title": "איגוד השיעורים - שיעורי תורה, חברותות והרצאות",
@@ -2780,25 +2734,35 @@
         "metaRobots": "",
         "canonical": "",
         "ogUrl": "",
-        "h1Count": 1,
-        "h1": "404",
+        "h1Count": 0,
+        "h1": "",
         "headings": [
-          "H1: 404"
+          "H2: 0 שיעורים",
+          "H2: מעוניינים להצטרף למערכת מגידי השיעורים?",
+          "H3: יש לי שיעור קיים",
+          "H3: מעוניין להקים שיעור",
+          "H3: מעוניינים להיות שותפים בהפצת התורה?"
         ],
-        "textLen": 41,
-        "interactiveCount": 1,
+        "textLen": 888,
+        "interactiveCount": 18,
         "smallTargets": [
           {
+            "tag": "input",
+            "w": 841,
+            "h": 20,
+            "name": "חיפוש חכם — רב, נושא, עיר, בית כנסת..."
+          },
+          {
             "tag": "a",
-            "w": 105,
-            "h": 21,
-            "name": "Return to Home"
+            "w": 66,
+            "h": 16,
+            "name": "023-133-0600"
           }
         ],
         "srOnlyTargets": [],
         "unnamedControls": [],
         "imgsNoAlt": [],
-        "hasAuthScript": true,
+        "hasAuthScript": false,
         "authBtnText": "",
         "bodyBg": "rgb(9, 26, 32)",
         "bodyFg": "rgb(241, 234, 218)",
@@ -3881,7 +3845,7 @@
       "url": "https://more30.com/kesef",
       "desktop": {
         "status": 200,
-        "loadMs": 4094,
+        "loadMs": 4413,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "kesef-desktop.png",
@@ -3909,16 +3873,9 @@
           "H2: מאיפה מגיעים הנתונים",
           "H2: ארבעה כללים שאנחנו לא עוקפים"
         ],
-        "textLen": 2409,
+        "textLen": 2403,
         "interactiveCount": 11,
-        "smallTargets": [
-          {
-            "tag": "a",
-            "w": 79,
-            "h": 21,
-            "name": "more30.com"
-          }
-        ],
+        "smallTargets": [],
         "srOnlyTargets": [],
         "unnamedControls": [],
         "imgsNoAlt": [],
@@ -3936,7 +3893,7 @@
       },
       "mobile": {
         "status": 200,
-        "loadMs": 4092,
+        "loadMs": 4255,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "kesef-mobile.png",
@@ -3964,16 +3921,9 @@
           "H2: מאיפה מגיעים הנתונים",
           "H2: ארבעה כללים שאנחנו לא עוקפים"
         ],
-        "textLen": 2367,
+        "textLen": 2361,
         "interactiveCount": 7,
-        "smallTargets": [
-          {
-            "tag": "a",
-            "w": 79,
-            "h": 21,
-            "name": "more30.com"
-          }
-        ],
+        "smallTargets": [],
         "srOnlyTargets": [],
         "unnamedControls": [],
         "imgsNoAlt": [],
@@ -3991,7 +3941,7 @@
       },
       "dark": {
         "status": 200,
-        "loadMs": 4137,
+        "loadMs": 4275,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "kesef-dark.png",
@@ -4019,16 +3969,9 @@
           "H2: מאיפה מגיעים הנתונים",
           "H2: ארבעה כללים שאנחנו לא עוקפים"
         ],
-        "textLen": 2409,
+        "textLen": 2403,
         "interactiveCount": 11,
-        "smallTargets": [
-          {
-            "tag": "a",
-            "w": 79,
-            "h": 21,
-            "name": "more30.com"
-          }
-        ],
+        "smallTargets": [],
         "srOnlyTargets": [],
         "unnamedControls": [],
         "imgsNoAlt": [],
@@ -4231,7 +4174,7 @@
       "url": "https://more30.com/tivuch",
       "desktop": {
         "status": 200,
-        "loadMs": 4690,
+        "loadMs": 4336,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "tivuch-desktop.png",
@@ -4261,14 +4204,7 @@
         ],
         "textLen": 2812,
         "interactiveCount": 11,
-        "smallTargets": [
-          {
-            "tag": "a",
-            "w": 79,
-            "h": 21,
-            "name": "more30.com"
-          }
-        ],
+        "smallTargets": [],
         "srOnlyTargets": [],
         "unnamedControls": [],
         "imgsNoAlt": [],
@@ -4286,7 +4222,7 @@
       },
       "mobile": {
         "status": 200,
-        "loadMs": 4704,
+        "loadMs": 4225,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "tivuch-mobile.png",
@@ -4316,14 +4252,7 @@
         ],
         "textLen": 2771,
         "interactiveCount": 7,
-        "smallTargets": [
-          {
-            "tag": "a",
-            "w": 79,
-            "h": 21,
-            "name": "more30.com"
-          }
-        ],
+        "smallTargets": [],
         "srOnlyTargets": [],
         "unnamedControls": [],
         "imgsNoAlt": [],
@@ -4341,7 +4270,7 @@
       },
       "dark": {
         "status": 200,
-        "loadMs": 4420,
+        "loadMs": 4563,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "tivuch-dark.png",
@@ -4371,14 +4300,7 @@
         ],
         "textLen": 2812,
         "interactiveCount": 11,
-        "smallTargets": [
-          {
-            "tag": "a",
-            "w": 79,
-            "h": 21,
-            "name": "more30.com"
-          }
-        ],
+        "smallTargets": [],
         "srOnlyTargets": [],
         "unnamedControls": [],
         "imgsNoAlt": [],
@@ -4399,5 +4321,5 @@
       "horizontalOverflow": false
     }
   },
-  "finishedAt": "2026-08-02T23:32:32.482Z"
+  "finishedAt": "2026-08-03T01:38:58.116Z"
 }
