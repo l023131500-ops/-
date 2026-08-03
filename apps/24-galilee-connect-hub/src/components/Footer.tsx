@@ -67,7 +67,11 @@ const Footer = () => {
             <Phone className="w-5 h-5 text-primary shrink-0" />
             <div>
               <div className="text-foreground text-sm font-bold">טלפון</div>
-              <a href={`tel:${contact.phone.replace(/-/g, '')}`} className="text-primary text-xs font-mono font-bold hover:underline" dir="ltr">{contact.phone}</a>
+              {/* ‎inline-flex‎ + ‎min-h-6‎ אינם קישוט: יעד המגע נמדד 79×14
+                  ב-`platform-audit.mjs`, מתחת ל-24px שתקן 5568 דורש. הטקסט
+                  לא זז — רק אזור הפגיעה גדל סביבו, וזה בדיוק מספר טלפון
+                  שמקישים עליו מהנייד. */}
+              <a href={`tel:${contact.phone.replace(/-/g, '')}`} className="inline-flex items-center min-h-6 text-primary text-xs font-mono font-bold hover:underline" dir="ltr">{contact.phone}</a>
             </div>
           </div>
 
@@ -75,7 +79,7 @@ const Footer = () => {
             <Mail className="w-5 h-5 text-primary shrink-0" />
             <div>
               <div className="text-foreground text-sm font-bold">אימייל</div>
-              <a href={`mailto:${contact.email}`} className="text-primary text-xs font-bold hover:underline" dir="ltr">{contact.email}</a>
+              <a href={`mailto:${contact.email}`} className="inline-flex items-center min-h-6 text-primary text-xs font-bold hover:underline" dir="ltr">{contact.email}</a>
             </div>
           </div>
 

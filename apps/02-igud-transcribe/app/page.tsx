@@ -30,7 +30,7 @@ export default function HomePage() {
               </p>
             </div>
 
-            <div className="rounded-2xl bg-gradient-to-br from-brand to-brand-dark p-8 text-white shadow-card">
+            <div className="rounded-2xl bg-gradient-to-br from-brandsurface to-brandsurface-dark p-8 text-white shadow-card">
               <h3 className="font-display text-2xl">מה תקבל בסוף?</h3>
               <ul className="mt-5 space-y-3 text-sm leading-relaxed">
                 <li className="flex gap-3"><Dot /> <span><b>original.docx</b> — תמלול נאמן למקור 100%, ללא שום עריכה</span></li>
@@ -42,7 +42,7 @@ export default function HomePage() {
         </section>
 
         {/* How it works */}
-        <section id="how" className="border-t border-stone-200 bg-white py-16">
+        <section id="how" className="border-t border-stone-200 bg-surface py-16">
           <div className="container-rtl">
             <h2 className="font-display text-3xl font-bold text-brand">איך זה עובד?</h2>
             <div className="mt-8 grid gap-6 md:grid-cols-3">
@@ -76,7 +76,7 @@ export default function HomePage() {
         </section>
 
         {/* Footer */}
-        <footer className="border-t border-stone-200 bg-brand py-10 text-white">
+        <footer className="border-t border-stone-200 bg-brandsurface py-10 text-white">
           <div className="container-rtl flex flex-wrap items-center justify-between gap-4">
             <div>
               <div className="font-display text-lg font-bold">תמלול מבית איגוד השיעורים</div>
@@ -91,7 +91,7 @@ export default function HomePage() {
       </main>
 
       {/* מערכות נוספות */}
-      <section className="bg-white border-t border-gray-200 py-12">
+      <section className="bg-surface border-t border-gray-200 py-12">
         <div className="mx-auto max-w-5xl px-4 text-center">
           <h2 className="font-display text-2xl md:text-3xl font-bold text-primary mb-6">מערכות נוספות מבית איגוד השיעורים</h2>
           <div className="grid md:grid-cols-2 gap-4 max-w-3xl mx-auto">

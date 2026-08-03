@@ -385,7 +385,7 @@ function TabuPanel({ token, request }: { token: string; request: ReportRequestRo
           <button
             type="submit"
             disabled={busy}
-            className="rounded-xl bg-navysurface px-4 py-2 text-[13px] font-bold text-white hover:bg-navy/90 disabled:opacity-50"
+            className="rounded-xl bg-navysurface px-4 py-2 text-[13px] font-bold text-white hover:bg-navysurface/90 disabled:opacity-50"
           >
             {busy ? 'מעלה…' : 'העלאת נסח טאבו'}
           </button>

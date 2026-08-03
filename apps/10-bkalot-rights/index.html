@@ -270,6 +270,11 @@
     <div class="wrap">
       <h2>השוואת קופות חולים</h2>
       <p class="section-sub">בחרו נושא כדי לראות מה מציעה כל קופה ובאיזו רמת ביטוח משלים.</p>
+      <!-- ה-‎<select>‎ היה בלי שם נגיש: הכותרת שמעליו היא ‎<h2>‎ של הסעיף
+           כולו, ולכן קורא מסך הכריז "תיבה משולבת" בלי לומר מה בוחרים בה.
+           נמדד ב-`platform-audit.mjs`. ‎<label>‎ ולא ‎aria-label‎ כי כאן יש
+           טקסט אמיתי שראוי שגם רואים אותו יראו. -->
+      <label for="fundTopic" class="fund-select-label">נושא להשוואה</label>
       <select id="fundTopic" class="fund-select"></select>
       <div id="fundCompare" class="fund-compare"></div>
     </div>
@@ -316,5 +321,11 @@
 <script src="engine.js"></script>
 <script src="repo.js"></script>
 <script src="app.js"></script>
+<!-- כפתור הכניסה המשותף של more30 (DESIGN_STANDARD §9).
+     🚨 הוא היה **בעותק הפרוס בלבד** ולא כאן. נמדד: העמוד החי מכיל
+     ‎auth-button.js‎ והמקור על הדיסק לא. כלומר כל העתקה מהמקור לתיקיית
+     הפריסה הייתה מוחקת את הכניסה מ-‎/bkalot‎ בשקט — בדיוק סוג הרגרסיה
+     שכבר קרה כאן פעמיים במערכות אחרות. -->
+<script src="https://more30.com/auth-button.js" defer></script>
 </body>
 </html>

@@ -27,7 +27,7 @@ export default function SuccessPage({
           </p>
 
           {searchParams.id && (
-            <div className="bg-white border border-slate-200 rounded-lg p-4 mb-6 text-sm">
+            <div className="bg-surface border border-slate-200 rounded-lg p-4 mb-6 text-sm">
               <div className="text-slate-500">מספר עיבוד</div>
               <div className="font-mono text-brand-blue font-bold tracking-wider">
                 {searchParams.id}

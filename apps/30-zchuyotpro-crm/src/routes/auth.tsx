@@ -141,10 +141,14 @@ function SignInForm() {
       <div className="space-y-2">
         <div className="flex items-center justify-between">
           <Label htmlFor="signin-password">סיסמה</Label>
+          {/* ‎inline-flex‎ + ‎min-h-6‎: יעד המגע נמדד 75×16 ב-
+              `platform-audit.mjs`, מתחת ל-24px שתקן 5568 דורש. השורה כבר
+              מיושרת למרכז מול התווית, ולכן הטקסט אינו זז — רק אזור הפגיעה
+              גדל סביבו. */}
           <button
             type="button"
             onClick={() => { setResetEmail(email); setResetOpen(true); }}
-            className="text-xs text-primary hover:underline"
+            className="inline-flex items-center min-h-6 text-xs text-primary hover:underline"
           >
             שכחתי סיסמה
           </button>

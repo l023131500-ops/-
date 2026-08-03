@@ -18,44 +18,44 @@
 :root {
   color-scheme: light;
 
-  --c-navy: #0d1b3e;
-  --c-ink: #1a2233;
-  --c-muted: #5b6577;
-  --c-line: #e3e8f0;
-  --c-bgsoft: #f6f8fc;
-  --c-surface: #ffffff;
+  --c-navy: 13 27 62;
+  --c-ink: 26 34 51;
+  --c-muted: 91 101 119;
+  --c-line: 227 232 240;
+  --c-bgsoft: 246 248 252;
+  --c-surface: 255 255 255;
 
   /* סקאלת slate משמשת כאן לשני דברים הפוכים: 50–300 הם משטחים משניים
      (פסי טבלה, שבבי קוד, גבולות) ו-400–700 הם טקסט. לכן בחושך הסקאלה
      מתהפכת בשני קצותיה ולא נעשית פשוט כהה יותר. */
-  --c-slate-50: #f8fafc;
-  --c-slate-100: #f1f5f9;
-  --c-slate-200: #e2e8f0;
-  --c-slate-300: #cbd5e1;
-  --c-slate-400: #94a3b8;
-  --c-slate-500: #64748b;
-  --c-slate-600: #475569;
-  --c-slate-700: #334155;
+  --c-slate-50: 248 250 252;
+  --c-slate-100: 241 245 249;
+  --c-slate-200: 226 232 240;
+  --c-slate-300: 203 213 225;
+  --c-slate-400: 148 163 184;
+  --c-slate-500: 100 116 139;
+  --c-slate-600: 71 85 105;
+  --c-slate-700: 51 65 85;
 }
 
 .dark {
   color-scheme: dark;
 
-  --c-navy: #e8edf7;
-  --c-ink: #dde3ee;
-  --c-muted: #9aa5bb;
-  --c-line: #2a3550;
-  --c-bgsoft: #0c1220;
-  --c-surface: #151d31;
+  --c-navy: 232 237 247;
+  --c-ink: 221 227 238;
+  --c-muted: 154 165 187;
+  --c-line: 42 53 80;
+  --c-bgsoft: 12 18 32;
+  --c-surface: 21 29 49;
 
-  --c-slate-50: #1a2338;
-  --c-slate-100: #1f293f;
-  --c-slate-200: #27324b;
-  --c-slate-300: #38455f;
-  --c-slate-400: #6b7891;
-  --c-slate-500: #8b97ad;
-  --c-slate-600: #a7b2c6;
-  --c-slate-700: #c2ccdd;
+  --c-slate-50: 26 35 56;
+  --c-slate-100: 31 41 63;
+  --c-slate-200: 39 50 75;
+  --c-slate-300: 56 69 95;
+  --c-slate-400: 107 120 145;
+  --c-slate-500: 139 151 173;
+  --c-slate-600: 167 178 198;
+  --c-slate-700: 194 204 221;
 }
 
 html,
@@ -66,8 +66,8 @@ body {
 
 body {
   font-family: 'Heebo', 'Assistant', Arial, sans-serif;
-  background: var(--c-bgsoft);
-  color: var(--c-ink);
+  background: rgb(var(--c-bgsoft));
+  color: rgb(var(--c-ink));
   -webkit-font-smoothing: antialiased;
 }
 

@@ -2,15 +2,70 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ===== שכבת המשטחים והדיו =====
+   מצב כהה (DESIGN_STANDARD §3). `scripts/qa/dark-probe.mjs` מדד כאן **אפס**
+   חוקי `.dark`: הפלטה הייתה קבועה ב-tailwind.config, ולכן לא היה שום דבר
+   שערכה כהה יכולה להחליף.
+
+   הכלל: **צבעי המותג אינם מתהפכים.** הכחול והזהב של איגוד השיעורים נשארים
+   כפי שהם בשתי הערכות — מה שמתהפך הוא הדיו, המשטחים והקווים.
+
+   ניגודיות שנמדדה מול המשטח הכהה: טקסט ראשי 13.9:1 · מושתק 6.4:1 ·
+   כותרת (brand) 12.1:1 · זהב כטקסט 8.3:1. כולם מעל 4.5:1.
+
+   הערכים הם **ערוצי RGB מופרדים ברווח ולא צבעי hex**, וזה לא סגנון:
+   ‎tailwind.config‎ עוטף אותם ב-‎rgb(var(--x) / <alpha-value>)‎, וזו הצורה
+   היחידה שבה מודיפייר השקיפות של Tailwind עובד על צבע שמגיע ממשתנה.
+   עם hex, ‎border-brand/20‎ נכשל בבנייה ("The `border-brand/20` class does
+   not exist") — נמדד, לא נוחש. */
 :root {
   color-scheme: light;
+
+  --c-brand: 26 46 90;
+  --c-accent: 201 168 76;
+  --c-ink: 26 26 26;
+  --c-ink-muted: 102 102 102;
+  --c-paper: 251 250 246;
+  --c-sand: 244 239 226;
+  --c-surface: 255 255 255;
+
+  --c-slate-50: 248 250 252;
+  --c-slate-100: 241 245 249;
+  --c-slate-200: 226 232 240;
+  --c-slate-300: 203 213 225;
+  --c-slate-400: 148 163 184;
+  --c-slate-500: 100 116 139;
+  --c-slate-600: 71 85 105;
+  --c-slate-700: 51 65 85;
+}
+
+.dark {
+  color-scheme: dark;
+
+  /* הכחול כדיו חייב להתבהר — בגוון המקורי הוא 1.6:1 מול משטח כהה. */
+  --c-brand: 195 206 230;
+  --c-accent: 223 190 104;
+  --c-ink: 228 230 236;
+  --c-ink-muted: 154 160 174;
+  --c-paper: 20 22 28;
+  --c-sand: 35 33 42;
+  --c-surface: 28 31 39;
+
+  --c-slate-50: 32 36 48;
+  --c-slate-100: 38 43 56;
+  --c-slate-200: 47 53 67;
+  --c-slate-300: 62 69 87;
+  --c-slate-400: 110 119 137;
+  --c-slate-500: 141 150 168;
+  --c-slate-600: 170 178 193;
+  --c-slate-700: 198 204 216;
 }
 
 html { font-family: "Rubik", "Heebo", system-ui, sans-serif; }
 
 body {
-  background: #FBFAF6;
-  color: #1A1A1A;
+  background: rgb(var(--c-paper));
+  color: rgb(var(--c-ink));
   direction: rtl;
 }
 
@@ -37,21 +92,21 @@ h1, h2, h3, h4, .font-display {
     @apply inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 font-medium transition;
   }
   .btn-primary {
-    @apply btn bg-brand text-white hover:bg-brand-dark;
+    @apply btn bg-brandsurface text-white hover:bg-brandsurface-dark;
   }
   .btn-accent {
     @apply btn bg-accent text-brand-dark hover:bg-accent-dark;
   }
   .btn-outline {
-    @apply btn border border-brand/20 bg-white text-brand hover:bg-sand;
+    @apply btn border border-brand/20 bg-surface text-brand hover:bg-sand;
   }
   .input {
-    @apply w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-right shadow-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20;
+    @apply w-full rounded-lg border border-stone-300 bg-surface px-3 py-2 text-right shadow-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20;
   }
   .label {
     @apply mb-1 block text-sm font-medium text-ink;
   }
   .card {
-    @apply rounded-xl border border-stone-200 bg-white p-5 shadow-card;
+    @apply rounded-xl border border-stone-200 bg-surface p-5 shadow-card;
   }
 }

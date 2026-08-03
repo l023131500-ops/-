@@ -97,7 +97,7 @@ export default function LoginPage() {
               <div className="w-full border-t border-slate-200" />
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="bg-white px-3 text-slate-500">או</span>
+              <span className="bg-surface px-3 text-slate-500">או</span>
             </div>
           </div>
 

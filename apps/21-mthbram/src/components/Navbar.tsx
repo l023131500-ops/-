@@ -48,8 +48,16 @@ const Navbar = () => {
 
         <div className="hidden md:flex items-center gap-2" />
 
-        {/* Mobile hamburger */}
-        <button className="md:hidden text-foreground p-2" onClick={() => setIsOpen(!isOpen)}>
+        {/* Mobile hamburger.
+            כל תוכנו אייקון, ולכן קורא מסך הכריז עליו "לחצן" בלי לומר מה
+            הוא עושה — נמדד כפקד ללא שם נגיש ב-`platform-audit.mjs`.
+            `aria-expanded` מאותה סיבה: בלעדיו אין דרך לדעת אם התפריט פתוח. */}
+        <button
+          className="md:hidden text-foreground p-2"
+          aria-label={isOpen ? 'סגירת התפריט' : 'פתיחת התפריט'}
+          aria-expanded={isOpen}
+          onClick={() => setIsOpen(!isOpen)}
+        >
           <AnimatePresence mode="wait">
             {isOpen ? (
               <motion.div key="close" initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: 90, opacity: 0 }}>

@@ -348,7 +348,7 @@ export default function ReportView({
               <button
                 type="button"
                 onClick={() => setLayers([...ALL_LAYERS])}
-                className="shrink-0 rounded-lg bg-navysurface px-4 py-2 text-[13px] font-bold text-white hover:bg-navy/90"
+                className="shrink-0 rounded-lg bg-navysurface px-4 py-2 text-[13px] font-bold text-white hover:bg-navysurface/90"
               >
                 הצג את כל השכבות
               </button>
@@ -665,7 +665,7 @@ function PermalinkBox({ url }: { url: string }) {
               () => {},
             );
           }}
-          className="shrink-0 rounded-lg bg-navysurface px-4 py-2 text-[13px] font-bold text-white hover:bg-navy/90"
+          className="shrink-0 rounded-lg bg-navysurface px-4 py-2 text-[13px] font-bold text-white hover:bg-navysurface/90"
         >
           {copied ? 'הועתק ✓' : 'העתק קישור'}
         </button>

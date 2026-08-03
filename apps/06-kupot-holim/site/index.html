@@ -2,6 +2,12 @@
 <html lang="he" dir="rtl">
 <head>
   <meta charset="UTF-8" />
+  <!-- 🚨 השורה הזו הייתה **בעותק הפרוס בלבד** ולא במקור. האתר מוגש תחת
+       ‎more30.com/briut/‎ וכל הנכסים כאן יחסיים, ולכן בלעדיה כל קובץ CSS,
+       JS ו-JSON נפתר מהשורש ומחזיר 404 — כלומר העתקה מהמקור לתיקיית
+       הפריסה הייתה מגישה עמוד ריק מאחורי 200, בדיוק התקלה שכבר קרתה כאן
+       ב-30 וב-31. נמדד בהשוואת שורות בין המקור לעותק החי. -->
+  <base href="/briut/" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>בקלות — השוואת קופות חולים והמלצות מעבר</title>
   <meta name="description" content="השוואה מלאה בין קופות החולים בישראל — כללית, מכבי, מאוחדת ולאומית. המלצה לאיזו קופה כדאי לעבור לפי מצב המשפחה, הבריאות והילדים, על בסיס נתוני בקלות." />
@@ -222,5 +228,8 @@
   <script src="supabase-config.js"></script>
   <script src="leads-store.js"></script>
   <script src="app.js"></script>
+  <!-- כפתור הכניסה המשותף של more30 (DESIGN_STANDARD §9). גם הוא היה
+       בעותק הפרוס בלבד — ראה ההערה על ‎<base>‎ למעלה. -->
+  <script src="https://more30.com/auth-button.js" defer></script>
 </body>
 </html>

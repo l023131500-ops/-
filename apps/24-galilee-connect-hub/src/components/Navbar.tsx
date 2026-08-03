@@ -101,8 +101,14 @@ const Navbar = () => {
           </div>
 
           {/* Mobile hamburger */}
+          {/* קורא מסך הכריז על הפקד הזה כ"לחצן" בלי לומר מה הוא עושה —
+              כל תוכנו אייקון. נמדד ב-`platform-audit.mjs` כפקד ללא שם נגיש
+              במובייל. `aria-expanded` נוסף מאותה סיבה: בלעדיו אין דרך לדעת
+              אם התפריט פתוח או סגור. */}
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
+            aria-label={mobileOpen ? 'סגירת התפריט' : 'פתיחת התפריט'}
+            aria-expanded={mobileOpen}
             className={`md:hidden w-9 h-9 rounded-xl flex items-center justify-center transition-colors ${
               scrolled ? 'text-foreground hover:bg-primary/10' : 'text-primary-foreground hover:bg-primary-foreground/10'
             }`}
