@@ -203,6 +203,31 @@ try {
   );
   await page.waitForTimeout(1200);
 
+  /**
+   * Refuse to bake an empty-state page. Measured on kupot: the capture browser
+   * has no API, so the route rendered "0 נושאי קופות חולים · 0 זכויות ממשלה ·
+   * לא נמצאו תוצאות" and that is what would have shipped as the first paint —
+   * and as what a crawler indexes. A blank frame is better than a page that
+   * confidently says there is nothing here.
+   *
+   * The >200-character gate above does not catch this on its own: a zero state
+   * is still plenty of characters. This looks for the shape of one.
+   */
+  const emptyState = await page.evaluate(() => {
+    const t = document.getElementById('root').innerText;
+    const zeros = (t.match(/(^|\s)0\s/g) || []).length;
+    const phrases = /לא נמצאו|אין תוצאות|אין נתונים|no results|not found/i.test(t);
+    return { zeros, phrases, sample: t.replace(/\s+/g, ' ').slice(0, 160) };
+  });
+  if (emptyState.zeros >= 3 || emptyState.phrases) {
+    console.error(
+      'refusing to bake: the capture rendered an empty state, which would ship as the first paint.\n' +
+        `  zero-counts: ${emptyState.zeros}  empty-phrase: ${emptyState.phrases}\n` +
+        `  ${emptyState.sample}`,
+    );
+    process.exit(1);
+  }
+
   if (errors.length) {
     console.error('page errors during prerender, refusing to bake:', errors.slice(0, 3));
     process.exitCode = 1;
