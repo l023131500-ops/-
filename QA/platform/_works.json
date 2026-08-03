@@ -64,7 +64,7 @@
     "path": "/modaot",
     "status": 200,
     "text": 661,
-    "buttons": 7,
+    "buttons": 10,
     "failedAssets": [],
     "failedCount": 0,
     "errors": [],
@@ -99,11 +99,15 @@
     "sys": "10",
     "path": "/bkalot",
     "status": 200,
-    "text": 3041,
+    "text": 3054,
     "buttons": 46,
     "failedAssets": [],
     "failedCount": 0,
-    "errors": [],
+    "errors": [
+      "Unexpected token '<'",
+      "Unexpected token '<'",
+      "Unexpected token '<'"
+    ],
     "overflow": 0,
     "works": true
   },
@@ -184,7 +188,7 @@
     "path": "/mthbram",
     "status": 200,
     "text": 873,
-    "buttons": 15,
+    "buttons": 18,
     "failedAssets": [],
     "failedCount": 0,
     "errors": [],
@@ -199,11 +203,7 @@
     "buttons": 30,
     "failedAssets": [],
     "failedCount": 0,
-    "errors": [
-      "Minified React error #418; visit https://reactjs.org/docs/error-decoder.html?invariant=418 for the full message or use t",
-      "Minified React error #418; visit https://reactjs.org/docs/error-decoder.html?invariant=418 for the full message or use t",
-      "Minified React error #418; visit https://reactjs.org/docs/error-decoder.html?invariant=418 for the full message or use t"
-    ],
+    "errors": [],
     "overflow": 0,
     "works": true
   },
@@ -235,15 +235,13 @@
     "sys": "27",
     "path": "/mechiron",
     "status": 200,
-    "text": 933,
-    "buttons": 32,
-    "failedAssets": [
-      "404 /mechiron/api/public/chatbot/config"
-    ],
-    "failedCount": 1,
+    "text": 2974,
+    "buttons": 23,
+    "failedAssets": [],
+    "failedCount": 0,
     "errors": [],
     "overflow": 0,
-    "works": false
+    "works": true
   },
   "kupot": {
     "sys": "28",
