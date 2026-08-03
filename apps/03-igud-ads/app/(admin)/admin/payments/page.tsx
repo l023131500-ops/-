@@ -70,15 +70,15 @@ export default function PaymentsAdmin() {
       {/* Stats */}
       {stats && (
         <div className="grid grid-cols-3 gap-4 mb-6">
-          <div className="bg-white rounded-xl border p-4">
+          <div className="bg-surface rounded-xl border p-4">
             <div className="text-xs text-gray-500 mb-1">הכנסות החודש</div>
             <div className="text-2xl font-bold text-brand-dark">₪{stats.monthly_revenue.toLocaleString("he-IL")}</div>
           </div>
-          <div className="bg-white rounded-xl border p-4">
+          <div className="bg-surface rounded-xl border p-4">
             <div className="text-xs text-gray-500 mb-1">מספר עסקאות החודש</div>
             <div className="text-2xl font-bold text-brand-dark">{stats.monthly_count}</div>
           </div>
-          <div className="bg-white rounded-xl border p-4">
+          <div className="bg-surface rounded-xl border p-4">
             <div className="text-xs text-gray-500 mb-1">ממוצע לעסקה</div>
             <div className="text-2xl font-bold text-brand-dark">₪{stats.monthly_avg.toFixed(0)}</div>
           </div>
@@ -86,7 +86,7 @@ export default function PaymentsAdmin() {
       )}
 
       {/* Filters */}
-      <div className="bg-white rounded-xl border p-4 mb-4 flex flex-wrap gap-3 items-center">
+      <div className="bg-surface rounded-xl border p-4 mb-4 flex flex-wrap gap-3 items-center">
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
@@ -107,13 +107,13 @@ export default function PaymentsAdmin() {
           <input type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)}
             className="border rounded px-2 py-1 text-sm" />
         </div>
-        <button onClick={load} className="bg-brand-blue text-white px-4 py-1.5 rounded text-sm hover:bg-brand-dark">
+        <button onClick={load} className="bg-brand-bluesurface text-white px-4 py-1.5 rounded text-sm hover:bg-brand-darksurface">
           רענן
         </button>
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-xl border overflow-x-auto">
+      <div className="bg-surface rounded-xl border overflow-x-auto">
         {loading ? (
           <div className="p-8 text-center text-gray-400">טוען...</div>
         ) : (

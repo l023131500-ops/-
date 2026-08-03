@@ -46,7 +46,7 @@ export default function CouponsPage() {
   return (
     <div>
       <h1 className="font-serif text-2xl font-bold text-brand-dark mb-4">קופונים</h1>
-      <div className="bg-white rounded-xl border p-5 mb-6">
+      <div className="bg-surface rounded-xl border p-5 mb-6">
         <h2 className="font-serif font-bold mb-3">יצירת קופון חדש</h2>
         <div className="grid md:grid-cols-4 gap-3">
           <div><label className="label">קוד (ריק = אוטומטי)</label><input className="input" value={code} onChange={(e) => setCode(e.target.value)} /></div>
@@ -57,7 +57,7 @@ export default function CouponsPage() {
         <button className="btn-primary mt-3" disabled={busy} onClick={generate}>{busy ? "..." : "צור קופון"}</button>
       </div>
 
-      <div className="bg-white rounded-xl border overflow-x-auto">
+      <div className="bg-surface rounded-xl border overflow-x-auto">
         <table className="min-w-full text-sm">
           <thead className="bg-gray-50 text-right">
             <tr>

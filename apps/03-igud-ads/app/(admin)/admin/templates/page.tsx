@@ -146,7 +146,7 @@ export default function TemplatesPage() {
         <button className="btn-primary" onClick={openNew}>+ תבנית חדשה</button>
       </div>
 
-      <div className="bg-white rounded-xl border overflow-x-auto">
+      <div className="bg-surface rounded-xl border overflow-x-auto">
         <table className="min-w-full text-sm">
           <thead className="bg-gray-50 text-right">
             <tr>
@@ -210,7 +210,7 @@ export default function TemplatesPage() {
       {/* Dialog */}
       {showDialog && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6" dir="rtl">
+          <div className="bg-surface rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6" dir="rtl">
             <div className="flex items-center justify-between mb-5">
               <h2 className="font-serif text-xl font-bold">
                 {form.id ? "עריכת תבנית" : "תבנית חדשה"}

@@ -29,7 +29,7 @@ export default function AdminNav() {
     path === href || (href !== "/admin" && path.startsWith(href));
 
   return (
-    <aside className="bg-brand-blue text-white w-60 min-h-screen p-4">
+    <aside className="bg-brand-bluesurface text-white w-60 min-h-screen p-4">
       <div className="flex items-center gap-2 mb-8">
         <div className="w-8 h-8 rounded bg-brand-gold/30 flex items-center justify-center text-brand-gold font-serif font-bold">א</div>
         <div>

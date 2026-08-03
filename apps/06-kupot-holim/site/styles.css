@@ -14,10 +14,28 @@
   --text-muted:#5A6B75;
   --text-faint:#93A2AB;
 
-  /* Primary (brand teal, aligned to כללית family but distinct) */
-  --primary:#008C99;
+  /* Primary (brand teal, aligned to כללית family but distinct).
+     ‎--primary‎ הוא **דיו** — הוא צבע הטקסט ב-15 מקומות. ‎--primary-surface‎
+     הוא אותו טורקיז כ**משטח** מתחת לטקסט לבן, והוא קבוע בשתי הערכות.
+     ההפרדה נדרשת כי בחושך הדיו חייב להתבהר, ומשטח בהיר עם טקסט לבן עליו
+     היה נשבר לגמרי.
+
+     ‎#007B87‎ ולא ‎#008C99‎: לבן על הגוון הקודם נמדד **4.03:1** — מתחת ל-AA,
+     ועל כפתור הפעולה הראשי של המערכת. הגוון החדש נותן 5.0:1 והוא בין
+     ‎--primary‎ המקורי ל-‎--primary-hover‎ שכבר היה בפלטה, ולכן המותג אינו זז. */
+  --primary:#007B87;
+  --primary-surface:#007B87;
   --primary-hover:#006E78;
   --primary-soft:#E1F2F3;
+
+  /* הפוטר צובע את הרקע שלו ב-‎--text‎. זה עובד בבהיר במקרה, אבל ‎--text‎
+     מתהפך בחושך — ואז הפוטר היה הופך בהיר עם טקסט אפור-בהיר עליו. */
+  --footer-bg:#16232B;
+  /* הסרגל היה ‎rgba(255,255,255,.9)‎ קשיח — הוא היה נשאר לבן בתוך עמוד כהה. */
+  --header-bg:rgba(255,255,255,.9);
+  /* שני גרדיאנטים בהירים שאינם טוקנים ולכן אינם מתהפכים לבד. */
+  --hero-grad:linear-gradient(180deg,#EAF4F5 0%,var(--bg) 100%);
+  --bigreco-grad:linear-gradient(135deg,var(--primary-soft),#fff);
 
   --radius:16px;
   --radius-sm:10px;
@@ -29,6 +47,39 @@
   --font-head:"Frank Ruhl Libre","Heebo",Georgia,serif;
 
   --max:1120px;
+}
+
+/* ===== מצב כהה (DESIGN_STANDARD §3) =====
+   המערכת כבר הייתה מטוקנת במלואה, ולכן ההיפוך הוא שכבה אחת ולא שכתוב.
+   צבעי הקופות (כללית/מכבי/מאוחדת/לאומית) **אינם מתהפכים** — הם זהות
+   מסחרית של גוף אחר, ולקוח מזהה אותם לפי הצבע.
+
+   ניגודיות שנמדדה מול המשטח הכהה: טקסט ראשי 14.3:1 · מושתק 7.2:1 ·
+   טורקיז כטקסט 8.1:1 · לבן על כפתור הפעולה 5.0:1. כולם מעל 4.5:1. */
+.dark{
+  --bg:#0E1519;
+  --surface:#161F25;
+  --surface-alt:#1D272E;
+  --border:#2A363E;
+  --text:#E3E9ED;
+  --text-muted:#A0AEB7;
+  --text-faint:#7B8B95;
+
+  /* הדיו מתבהר; המשטח נשאר כהה כדי שהלבן שעליו יישאר קריא. */
+  --primary:#35C6D3;
+  --primary-surface:#007B87;
+  --primary-hover:#4FD4E0;
+  --primary-soft:#10333A;
+
+  --shadow-sm:0 1px 3px rgba(0,0,0,.45),0 1px 2px rgba(0,0,0,.35);
+  --shadow-md:0 6px 20px rgba(0,0,0,.5),0 2px 6px rgba(0,0,0,.4);
+  --shadow-lg:0 18px 50px rgba(0,0,0,.6);
+
+  /* שלושת אלה אינם צבעי טוקן אלא רקעים מורכבים, ולכן אינם מתהפכים לבד.
+     בלעדיהם הסרגל היה נשאר לבן בראש עמוד כהה, וה-hero היה פותח בתכלת. */
+  --header-bg:rgba(14,21,25,.9);
+  --hero-grad:linear-gradient(180deg,#122730 0%,var(--bg) 100%);
+  --bigreco-grad:linear-gradient(135deg,var(--primary-soft),var(--surface));
 }
 
 *{box-sizing:border-box;margin:0;padding:0}
@@ -48,7 +99,7 @@ h1,h2,h3{font-family:var(--font-head);line-height:1.2;font-weight:700;color:var(
 a{color:inherit;text-decoration:none}
 img,svg{display:block}
 
-.skip-link{position:absolute;right:-999px;top:8px;background:var(--primary);color:#fff;padding:10px 16px;border-radius:8px;z-index:200}
+.skip-link{position:absolute;right:-999px;top:8px;background:var(--primary-surface);color:#fff;padding:10px 16px;border-radius:8px;z-index:200}
 .skip-link:focus{right:8px}
 
 /* Buttons */
@@ -58,7 +109,7 @@ img,svg{display:block}
   padding:12px 22px;border-radius:999px;border:1.5px solid transparent;
   cursor:pointer;transition:all .18s ease;white-space:nowrap;
 }
-.btn-primary{background:var(--primary);color:#fff}
+.btn-primary{background:var(--primary-surface);color:#fff}
 .btn-primary:hover{background:var(--primary-hover);transform:translateY(-1px);box-shadow:var(--shadow-md)}
 .btn-ghost{background:transparent;color:var(--primary);border-color:var(--border)}
 .btn-ghost:hover{background:var(--primary-soft);border-color:var(--primary)}
@@ -66,7 +117,7 @@ img,svg{display:block}
 .btn:focus-visible{outline:3px solid var(--primary-soft);outline-offset:2px}
 
 /* Header */
-.site-header{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.9);backdrop-filter:blur(10px);border-bottom:1px solid var(--border)}
+.site-header{position:sticky;top:0;z-index:100;background:var(--header-bg);backdrop-filter:blur(10px);border-bottom:1px solid var(--border)}
 .header-inner{display:flex;align-items:center;justify-content:space-between;height:68px}
 .brand{display:flex;align-items:center;gap:10px;color:var(--primary)}
 .brand-logo{width:34px;height:34px;color:var(--primary)}
@@ -78,7 +129,7 @@ img,svg{display:block}
 @media(max-width:640px){.main-nav{display:none}}
 
 /* Hero */
-.hero{background:linear-gradient(180deg,#EAF4F5 0%,var(--bg) 100%);padding:clamp(48px,8vw,96px) 0 clamp(40px,6vw,72px)}
+.hero{background:var(--hero-grad);padding:clamp(48px,8vw,96px) 0 clamp(40px,6vw,72px)}
 .hero-inner{max-width:760px}
 .hero-eyebrow{color:var(--primary);font-weight:600;font-size:15px;letter-spacing:.02em;margin-bottom:14px}
 .hero-title{font-size:clamp(38px,7vw,68px);font-weight:900;letter-spacing:-.01em}
@@ -130,7 +181,7 @@ img,svg{display:block}
 .drawer-close:hover{background:var(--surface-alt);color:var(--text)}
 .drawer h2{font-size:28px;margin-bottom:6px;padding-inline-end:44px}
 .drawer .d-sub{color:var(--text-muted);margin-bottom:22px}
-.big-reco{background:linear-gradient(135deg,var(--primary-soft),#fff);border:1px solid var(--border);border-radius:var(--radius);padding:22px;margin-bottom:24px;text-align:center}
+.big-reco{background:var(--bigreco-grad);border:1px solid var(--border);border-radius:var(--radius);padding:22px;margin-bottom:24px;text-align:center}
 .big-reco .br-label{font-size:15px;color:var(--text-muted)}
 .big-reco .br-fund{font-family:var(--font-head);font-weight:900;font-size:38px;margin:6px 0;display:inline-block;padding:4px 20px;border-radius:12px;color:#fff}
 .br-fund[data-fund=clalit]{background:var(--clalit)}
@@ -167,7 +218,7 @@ img,svg{display:block}
 .cat-filter{display:flex;gap:8px;flex-wrap:wrap}
 .chip{padding:8px 16px;border-radius:999px;border:1.5px solid var(--border);background:var(--surface);font-size:14px;font-weight:500;cursor:pointer;transition:all .15s;color:var(--text-muted)}
 .chip:hover{border-color:var(--primary);color:var(--primary)}
-.chip.active{background:var(--primary);border-color:var(--primary);color:#fff}
+.chip.active{background:var(--primary-surface);border-color:var(--primary-surface);color:#fff}
 .results-meta{color:var(--text-muted);font-size:15px;margin-bottom:16px}
 
 /* Topic list */
@@ -213,13 +264,13 @@ img,svg{display:block}
 /* Steps */
 .steps{list-style:none;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}
 .step{display:flex;gap:16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px}
-.step-num{width:40px;height:40px;border-radius:50%;background:var(--primary);color:#fff;font-family:var(--font-head);font-weight:900;font-size:20px;display:grid;place-items:center;flex-shrink:0}
+.step-num{width:40px;height:40px;border-radius:50%;background:var(--primary-surface);color:#fff;font-family:var(--font-head);font-weight:900;font-size:20px;display:grid;place-items:center;flex-shrink:0}
 .step h3{font-family:var(--font-body);font-size:18px;margin-bottom:6px}
 .step p{font-size:15px;color:var(--text-muted)}
-.cta-band{margin-top:36px;background:var(--primary);color:#fff;border-radius:var(--radius);padding:32px;display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap}
+.cta-band{margin-top:36px;background:var(--primary-surface);color:#fff;border-radius:var(--radius);padding:32px;display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap}
 .cta-band h3{color:#fff;font-family:var(--font-body);font-size:22px}
 .cta-band p{opacity:.9;margin-top:4px;max-width:480px}
-.cta-band .btn-primary{background:#fff;color:var(--primary)}
+.cta-band .btn-primary{background:#fff;color:var(--primary-surface)}
 .cta-band .btn-primary:hover{background:#EAF4F5}
 
 /* Modal */
@@ -249,7 +300,7 @@ img,svg{display:block}
 .form-success p{color:var(--text-muted);margin-bottom:20px}
 
 /* Footer */
-.site-footer{background:var(--text);color:#C7D2D8;padding:44px 0}
+.site-footer{background:var(--footer-bg);color:#C7D2D8;padding:44px 0}
 .footer-inner{display:flex;justify-content:space-between;gap:32px;flex-wrap:wrap}
 .footer-brand strong{font-family:var(--font-head);font-size:24px;color:#fff}
 .footer-brand p{margin-top:6px;max-width:280px;font-size:14px;color:#9DAAB1}

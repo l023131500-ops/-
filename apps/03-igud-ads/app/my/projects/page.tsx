@@ -33,14 +33,14 @@ export default function MyProjectsPage() {
       ) : projects.length === 0 ? (
         <div className="text-center py-12">
           <p className="text-gray-500 mb-4">עוד לא יצרת מודעות</p>
-          <Link href="/create" className="bg-brand-blue text-white rounded px-6 py-2 inline-block">
+          <Link href="/create" className="bg-brand-bluesurface text-white rounded px-6 py-2 inline-block">
             צור מודעה ראשונה
           </Link>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {projects.map((p) => (
-            <Link key={p.id} href={`/result/${p.id}`} className="bg-white border rounded-lg overflow-hidden hover:shadow-lg transition">
+            <Link key={p.id} href={`/result/${p.id}`} className="bg-surface border rounded-lg overflow-hidden hover:shadow-lg transition">
               {p.generated_image_url ? (
                 <img src={p.generated_image_url} alt="" className="w-full aspect-square object-cover" />
               ) : (

@@ -24,7 +24,7 @@ function StatCard({
   color?: string;
 }) {
   return (
-    <div className="bg-white rounded-xl border p-5">
+    <div className="bg-surface rounded-xl border p-5">
       <div className="text-xs text-gray-500 mb-1">{label}</div>
       <div className={`text-3xl font-bold ${color || "text-brand-dark"}`}>{value}</div>
       {sub && <div className="text-xs text-gray-400 mt-1">{sub}</div>}
@@ -61,7 +61,7 @@ export default function StatsAdmin() {
     <div dir="rtl">
       <div className="flex items-center justify-between mb-6">
         <h1 className="font-serif text-2xl font-bold text-brand-dark">סטטיסטיקות</h1>
-        <button onClick={load} className="bg-brand-blue text-white px-4 py-1.5 rounded text-sm">
+        <button onClick={load} className="bg-brand-bluesurface text-white px-4 py-1.5 rounded text-sm">
           רענן
         </button>
       </div>
@@ -92,7 +92,7 @@ export default function StatsAdmin() {
 
       {/* Project status breakdown */}
       <div className="grid md:grid-cols-2 gap-6 mb-8">
-        <div className="bg-white rounded-xl border p-5">
+        <div className="bg-surface rounded-xl border p-5">
           <h2 className="font-semibold mb-4">סטטוס פרויקטים</h2>
           <div className="space-y-3">
             {projectsData.map((d) => (
@@ -115,7 +115,7 @@ export default function StatsAdmin() {
           </div>
         </div>
 
-        <div className="bg-white rounded-xl border p-5">
+        <div className="bg-surface rounded-xl border p-5">
           <h2 className="font-semibold mb-4">נתונים נוספים</h2>
           <div className="space-y-3">
             <div className="flex justify-between items-center py-2 border-b">

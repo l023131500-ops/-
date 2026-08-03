@@ -104,26 +104,26 @@ export default function ProjectsAdmin() {
 
       {/* Stats */}
       <div className="grid grid-cols-4 gap-4 mb-6">
-        <div className="bg-white rounded-xl border p-4">
+        <div className="bg-surface rounded-xl border p-4">
           <div className="text-xs text-gray-500">סה"כ פרויקטים</div>
           <div className="text-2xl font-bold text-brand-dark">{stats.total}</div>
         </div>
-        <div className="bg-white rounded-xl border p-4">
+        <div className="bg-surface rounded-xl border p-4">
           <div className="text-xs text-gray-500">מוכנים</div>
           <div className="text-2xl font-bold text-green-700">{stats.ready}</div>
         </div>
-        <div className="bg-white rounded-xl border p-4">
+        <div className="bg-surface rounded-xl border p-4">
           <div className="text-xs text-gray-500">בעיבוד</div>
           <div className="text-2xl font-bold text-yellow-700">{stats.generating}</div>
         </div>
-        <div className="bg-white rounded-xl border p-4">
+        <div className="bg-surface rounded-xl border p-4">
           <div className="text-xs text-gray-500">שגיאות</div>
           <div className="text-2xl font-bold text-red-700">{stats.error}</div>
         </div>
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-xl border overflow-x-auto">
+      <div className="bg-surface rounded-xl border overflow-x-auto">
         {loading ? (
           <div className="p-8 text-center text-gray-400">טוען...</div>
         ) : (
@@ -193,7 +193,7 @@ export default function ProjectsAdmin() {
           onClick={() => setDetail(null)}
         >
           <div
-            className="bg-white rounded-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto p-6"
+            className="bg-surface rounded-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto p-6"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex justify-between items-start mb-4">

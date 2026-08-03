@@ -32,12 +32,12 @@ export default function MyTranscriptsPage() {
       ) : uploads.length === 0 ? (
         <div className="text-center py-12">
           <p className="text-gray-500 mb-4">עוד לא העלית קבצים לתמלול</p>
-          <Link href="/transcribe/upload" className="bg-brand-blue text-white rounded px-6 py-2 inline-block">
+          <Link href="/transcribe/upload" className="bg-brand-bluesurface text-white rounded px-6 py-2 inline-block">
             העלאת קובץ ראשון
           </Link>
         </div>
       ) : (
-        <div className="bg-white border rounded-lg divide-y">
+        <div className="bg-surface border rounded-lg divide-y">
           {uploads.map((u) => (
             <div key={u.id} className="p-4 flex justify-between items-center hover:bg-gray-50">
               <div>

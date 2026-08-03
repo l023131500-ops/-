@@ -66,7 +66,7 @@ export default function GlossaryPage() {
       <div className="flex gap-2">
         <button
           onClick={() => setFilter("")}
-          className={`px-3 py-1.5 rounded text-sm ${!filter ? "bg-brand-blue text-white" : "bg-white border border-slate-200"}`}
+          className={`px-3 py-1.5 rounded text-sm ${!filter ? "bg-brand-bluesurface text-white" : "bg-surface border border-slate-200"}`}
         >
           הכל
         </button>
@@ -74,7 +74,7 @@ export default function GlossaryPage() {
           <button
             key={s.value}
             onClick={() => setFilter(s.value)}
-            className={`px-3 py-1.5 rounded text-sm ${filter === s.value ? "bg-brand-blue text-white" : "bg-white border border-slate-200"}`}
+            className={`px-3 py-1.5 rounded text-sm ${filter === s.value ? "bg-brand-bluesurface text-white" : "bg-surface border border-slate-200"}`}
           >
             {s.label}
           </button>

@@ -74,7 +74,7 @@ export default function AdminNotificationsPage() {
       </div>
 
       {tab === "send" ? (
-        <div className="bg-white border rounded-lg p-6 max-w-2xl space-y-4">
+        <div className="bg-surface border rounded-lg p-6 max-w-2xl space-y-4">
           <div className="flex gap-4">
             <label className="flex items-center gap-2">
               <input type="radio" checked={mode === "one"} onChange={() => setMode("one")} />
@@ -138,7 +138,7 @@ export default function AdminNotificationsPage() {
           </label>
 
           <button onClick={send} disabled={sending || !title}
-            className="bg-brand-blue text-white rounded px-6 py-2 disabled:opacity-50">
+            className="bg-brand-bluesurface text-white rounded px-6 py-2 disabled:opacity-50">
             {sending ? "שולח..." : "שלח"}
           </button>
 
@@ -147,7 +147,7 @@ export default function AdminNotificationsPage() {
       ) : loading ? (
         <div>טוען...</div>
       ) : (
-        <div className="bg-white border rounded-lg overflow-x-auto">
+        <div className="bg-surface border rounded-lg overflow-x-auto">
           <table className="w-full text-sm">
             <thead className="bg-gray-50 border-b">
               <tr>

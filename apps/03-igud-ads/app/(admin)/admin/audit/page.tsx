@@ -41,7 +41,7 @@ export default function AuditAdmin() {
     <div dir="rtl">
       <h1 className="font-serif text-2xl font-bold text-brand-dark mb-6">יומן פעולות</h1>
 
-      <div className="bg-white rounded-xl border p-4 mb-4 flex gap-3 items-center">
+      <div className="bg-surface rounded-xl border p-4 mb-4 flex gap-3 items-center">
         <select
           value={actionFilter}
           onChange={(e) => setActionFilter(e.target.value)}
@@ -52,12 +52,12 @@ export default function AuditAdmin() {
             <option key={a} value={a}>{a}</option>
           ))}
         </select>
-        <button onClick={load} className="bg-brand-blue text-white px-4 py-1.5 rounded text-sm">
+        <button onClick={load} className="bg-brand-bluesurface text-white px-4 py-1.5 rounded text-sm">
           רענן
         </button>
       </div>
 
-      <div className="bg-white rounded-xl border overflow-x-auto">
+      <div className="bg-surface rounded-xl border overflow-x-auto">
         {loading ? (
           <div className="p-8 text-center text-gray-400">טוען...</div>
         ) : (

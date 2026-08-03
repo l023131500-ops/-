@@ -8,10 +8,22 @@ export const metadata: Metadata = {
   icons: { icon: "/favicon.svg" },
 };
 
+/**
+ * מצב כהה (DESIGN_STANDARD §3) — שכבת המשטחים ב-`app/globals.css`.
+ *
+ * חייב לרוץ בתוך ה-`<head>` ולפני הציור הראשון. Next מגיש כאן HTML מוכן
+ * מהשרת, ולכן החלה מתוך `useEffect` הייתה מגיעה רק אחרי שהדפדפן כבר צייר
+ * את העמוד לבן. הוא כותב מחלקה על `<html>` בלבד, שאינו חלק מהעץ ש-React
+ * מנהל, ולכן אינו יוצר אי-התאמת הידרציה.
+ */
+const THEME_BOOT = `(function(){var m=window.matchMedia("(prefers-color-scheme: dark)");var a=function(d){document.documentElement.classList.toggle("dark",d)};a(m.matches);m.addEventListener?m.addEventListener("change",function(e){a(e.matches)}):m.addListener(function(e){a(e.matches)})})()`;
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="he" dir="rtl">
       <head>
+        <meta name="color-scheme" content="light dark" />
+        <script dangerouslySetInnerHTML={{ __html: THEME_BOOT }} />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link

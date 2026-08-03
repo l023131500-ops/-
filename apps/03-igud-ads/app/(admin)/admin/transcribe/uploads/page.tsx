@@ -125,10 +125,10 @@ export default function UploadsPage() {
           onClick={() => setSelected(null)}
         >
           <div
-            className="bg-white rounded-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto"
+            className="bg-surface rounded-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="p-6 border-b border-slate-200 flex items-center justify-between sticky top-0 bg-white">
+            <div className="p-6 border-b border-slate-200 flex items-center justify-between sticky top-0 bg-surface">
               <h2 className="text-xl font-serif font-bold text-brand-blue">
                 {selected.original_filename || selected.id}
               </h2>

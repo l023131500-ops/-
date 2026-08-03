@@ -51,7 +51,7 @@ export default function MyNotificationsPage() {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-serif font-bold text-brand-blue">ההודעות שלי</h1>
         {unread > 0 && (
-          <button onClick={markAll} className="text-sm bg-brand-blue text-white rounded px-3 py-1.5">
+          <button onClick={markAll} className="text-sm bg-brand-bluesurface text-white rounded px-3 py-1.5">
             סמן הכל כנקרא ({unread})
           </button>
         )}
@@ -64,7 +64,7 @@ export default function MyNotificationsPage() {
       ) : (
         <div className="space-y-3">
           {notifs.map((n) => (
-            <div key={n.id} className={`border rounded-lg p-4 ${n.is_read ? "bg-white" : "bg-blue-50 border-blue-200"}`}>
+            <div key={n.id} className={`border rounded-lg p-4 ${n.is_read ? "bg-surface" : "bg-blue-50 border-blue-200"}`}>
               <div className="flex justify-between items-start gap-3">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">

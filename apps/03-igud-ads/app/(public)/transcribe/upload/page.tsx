@@ -189,7 +189,7 @@ export default function UploadPage() {
                   </div>
                   <div className="w-full bg-slate-200 rounded-full h-2">
                     <div
-                      className="bg-brand-gold h-2 rounded-full transition-all"
+                      className="bg-brand-goldsurface h-2 rounded-full transition-all"
                       style={{ width: `${progress}%` }}
                     />
                   </div>

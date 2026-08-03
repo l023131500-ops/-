@@ -87,7 +87,7 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
 
       <div className="grid md:grid-cols-3 gap-4 mb-6">
         {/* Project info */}
-        <div className="md:col-span-2 bg-white rounded-xl border p-5">
+        <div className="md:col-span-2 bg-surface rounded-xl border p-5">
           <h2 className="font-semibold mb-3">פרטי פרויקט</h2>
           <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
             <div className="text-gray-500">מזהה</div>
@@ -102,7 +102,7 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
         </div>
 
         {/* Customer data */}
-        <div className="bg-white rounded-xl border p-5">
+        <div className="bg-surface rounded-xl border p-5">
           <h2 className="font-semibold mb-3">פרטי לקוח</h2>
           <div className="text-sm space-y-1 text-gray-700">
             {Object.entries(customerData).map(([k, v]) => (
@@ -118,7 +118,7 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
 
       {/* Payments */}
       {payments.length > 0 && (
-        <div className="bg-white rounded-xl border p-5 mb-6">
+        <div className="bg-surface rounded-xl border p-5 mb-6">
           <h2 className="font-semibold mb-3">תשלומים</h2>
           <div className="space-y-2">
             {payments.map((pay: Record<string, unknown>) => (
@@ -136,7 +136,7 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
       )}
 
       {/* Generated images */}
-      <div className="bg-white rounded-xl border p-5 mb-6">
+      <div className="bg-surface rounded-xl border p-5 mb-6">
         <h2 className="font-semibold mb-3">תמונות שנוצרו</h2>
         {generations.length === 0 ? (
           <div className="text-gray-400 text-sm">אין תמונות עדיין.</div>
@@ -171,7 +171,7 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
       </div>
 
       {/* Parameters JSON */}
-      <div className="bg-white rounded-xl border p-5">
+      <div className="bg-surface rounded-xl border p-5">
         <h2 className="font-semibold mb-3">פרמטרים</h2>
         <pre className="text-xs bg-gray-50 rounded p-3 overflow-x-auto text-right">
           {JSON.stringify(parameters, null, 2)}

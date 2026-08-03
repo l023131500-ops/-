@@ -123,7 +123,7 @@ export default function SettingsAdmin() {
       <h1 className="font-serif text-2xl font-bold text-brand-dark mb-6">הגדרות מערכת</h1>
 
       {Object.entries(byCategory).map(([cat, items]) => (
-        <div key={cat} className="bg-white rounded-xl border mb-6">
+        <div key={cat} className="bg-surface rounded-xl border mb-6">
           <div className="bg-gray-50 px-5 py-3 border-b rounded-t-xl">
             <h2 className="font-semibold text-brand-dark">{CATEGORY_LABELS[cat] || cat}</h2>
           </div>
@@ -147,7 +147,7 @@ export default function SettingsAdmin() {
                     className={`px-4 py-1.5 rounded text-sm font-medium ${
                       saved[s.key]
                         ? "bg-green-100 text-green-700"
-                        : "bg-brand-blue text-white hover:bg-brand-dark"
+                        : "bg-brand-bluesurface text-white hover:bg-brand-darksurface"
                     }`}
                   >
                     {saved[s.key] ? "נשמר ✓" : saving[s.key] ? "שומר..." : "שמור"}
@@ -160,7 +160,7 @@ export default function SettingsAdmin() {
       ))}
 
       {settings.length === 0 && (
-        <div className="bg-white rounded-xl border p-8 text-center text-gray-400">
+        <div className="bg-surface rounded-xl border p-8 text-center text-gray-400">
           אין הגדרות. יש להוסיף שורות לטבלת ad_app_settings.
         </div>
       )}

@@ -80,7 +80,7 @@ export default function TranscriptsAdmin() {
     <div dir="rtl">
       <h1 className="font-serif text-2xl font-bold text-brand-dark mb-6">ניהול תמלולים</h1>
 
-      <div className="bg-white rounded-xl border overflow-x-auto">
+      <div className="bg-surface rounded-xl border overflow-x-auto">
         {loading ? (
           <div className="p-8 text-center text-gray-400">טוען...</div>
         ) : (
@@ -128,7 +128,7 @@ export default function TranscriptsAdmin() {
       {/* Modal */}
       {modal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50" onClick={() => setModal(null)}>
-          <div className="bg-white rounded-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto p-6" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-surface rounded-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto p-6" onClick={(e) => e.stopPropagation()}>
             <div className="flex justify-between items-start mb-4">
               <h2 className="font-serif text-xl font-bold">{modal.original_filename || modal.id}</h2>
               <button onClick={() => setModal(null)} className="text-gray-400 hover:text-gray-700 text-xl">✕</button>
@@ -148,7 +148,7 @@ export default function TranscriptsAdmin() {
                       href={modal.transcript.docx_original_url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="bg-brand-blue text-white px-4 py-2 rounded text-sm hover:bg-brand-dark"
+                      className="bg-brand-bluesurface text-white px-4 py-2 rounded text-sm hover:bg-brand-darksurface"
                     >
                       הורד DOCX מקורי
                     </a>
@@ -158,7 +158,7 @@ export default function TranscriptsAdmin() {
                       href={modal.transcript.docx_edited_url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="bg-brand-gold text-white px-4 py-2 rounded text-sm"
+                      className="bg-brand-goldsurface text-white px-4 py-2 rounded text-sm"
                     >
                       הורד DOCX ערוך
                     </a>
