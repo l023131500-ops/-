@@ -8,29 +8,40 @@
 
 ## 🔴 0ג. מכסת הפריסות של Vercel נגמרה — **חוסם כל אימות נוסף**
 
-> **עודכן 03/08 ערב.** המכסה התאפסה, נוצלו 7 פריסות שאומתו חיות, ואז
-> נגמרה שוב. **התור שממתין לאיפוס הבא — הכול כתוב, נבנה ומוכן בתיקיות
-> ה-staging; חסר רק `vercel deploy --prod --yes --scope l023131500-ops-projects`
-> מכל תיקייה:**
+> ## עודכן 03/08 אחה"צ — **11 פריסות עברו ואומתו חיות. 5 ממתינות.**
+>
+> המכסה התאפסה, נוצלו 11 פריסות שכולן אומתו במדידה חיה, ואז נגמרה שוב.
+>
+> **מה כבר חי ואומת:**
+> `portal` · `torah` · `egod` · `chatzor` · `galil` · `imud` · `smel` ·
+> `zchuyot` · `tamlul` · `nadlan` · `crm` · `gesher`
+>
+> | אימות | תוצאה |
+> |---|---|
+> | `console-probe /zchuyot` | **9 שגיאות → 0** |
+> | `console-probe /mechiron` | **404 של הצ'אטבוט → 0** |
+> | `authbutton-overlap` | **20 מתוך 26 נתיבים נקיים** (הבוקר: 16 נכשלו) |
+> | `dark-probe` | ✅ imud · egod · galil · mechiron · nadlan · crm · gesher · tamlul · zchuyot |
+>
+> **מה ממתין לאיפוס הבא** — הכול בנוי ומוכן; חסר רק
+> `vercel deploy --prod --yes --scope l023131500-ops-projects` מכל תיקייה:
 >
 > | תיקייה | מה נכנס איתה |
 > |---|---|
-> | `portal/dist` | תיקון שני לפינוי כפתור הכניסה בדף הבית (ה-media query ב-720px ביטל את הראשון) |
-> | `_deploy/zchuyot-more30` | הסרת ההידרציה שנכשלה — 9 שגיאות קונסולה → 0 |
-> | `_deploy/egod-more30` | מצב כהה |
-> | `_deploy/galil-more30` | מצב כהה |
-> | `_deploy/imud-more30` | מצב כהה |
-> | `_deploy/mthbram-more30` | `color-scheme: dark` + **כפתור הכניסה שהיה חסר לגמרי** |
-> | `_deploy/mechiron-more30` | מצב כהה + מסלול `chatbot/config` שסוגר את ה-404 |
-> | `apps/02-igud-transcribe` | פינוי לכפתור הכניסה מעל "כניסת ניהול" |
+> | `_deploy/mthbram-more30` | פינוי לכפתור הכניסה (הנמדד היחיד שנשאר שם) |
+> | `_deploy/bkalot-more30` | הדלקת מצב כהה · תווית ל-`<select>` · פינוי בנווט |
+> | `_deploy/briut-more30` | מצב כהה מלא + תיקון ניגודיות של כפתור הפעולה |
+> | `_deploy/mechiron-more30` | **רינדור מראש** (2,976 תווים) + כפתור כניסה שהיה חסר |
 > | `apps/17-chizukim-transcribe` | פינוי מעל "העלאת הקלטה" |
-> | `apps/32-nadlan-berega` | מצב כהה מלא + פינוי מעל "מקורות ותמחור" |
-> | `apps/30-zchuyotpro-crm` · `apps/31-hebrew-bridge-crm` | הדלקת מצב כהה + יעד מגע "שכחתי סיסמה" |
-> | `_deploy/bkalot-more30` | תווית ל-`<select>` שלא היה לו שם נגיש |
-> | `_deploy/galil-more30` | שני יעדי מגע בפוטר + שם נגיש לכפתור התפריט |
 >
-> *(`briut` **אינו** ברשימה בכוונה: התיקון שם היה במקור בלבד — העותק החי
-> כבר נכון, והמקור היה זה שפיגר. פריסה משם הייתה מיותרת ומסוכנת.)*
+> **`apps/03-igud-ads` (modaot) — בנוי ומוכן, ובכוונה לא נפרס.** ראה §4:
+> זו מערכת עם סליקה חיה, ויש שם בקשת אישור פתוחה ממך מזה כמה סבבים.
+> מצב כהה מלא נכתב ו-`next build` עובר. **תגיד "כן" ואפרוס בדקה.**
+>
+> **אחרי הפריסה, שלוש בדיקות אימות:**
+> `node scripts/qa/authbutton-overlap.mjs` (יעד: אפס OVERLAP) ·
+> `node scripts/qa/dark-probe.mjs` (יעד: `CHANGED` בכל אחת) ·
+> `node scripts/qa/probe-all.mjs`.
 >
 > **אחרי הפריסה, שלוש בדיקות אימות:**
 > `node scripts/qa/authbutton-overlap.mjs` (יעד: אפס OVERLAP) ·
