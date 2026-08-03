@@ -1557,7 +1557,7 @@
       "url": "https://more30.com/smachot",
       "desktop": {
         "status": 200,
-        "loadMs": 4350,
+        "loadMs": 4509,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "smachot-desktop.png",
@@ -1604,7 +1604,7 @@
       },
       "mobile": {
         "status": 200,
-        "loadMs": 4560,
+        "loadMs": 4317,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "smachot-mobile.png",
@@ -1651,7 +1651,7 @@
       },
       "dark": {
         "status": 200,
-        "loadMs": 4399,
+        "loadMs": 4297,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "smachot-dark.png",
@@ -4282,5 +4282,5 @@
       "horizontalOverflow": false
     }
   },
-  "finishedAt": "2026-08-03T01:56:48.336Z"
+  "finishedAt": "2026-08-03T02:13:10.276Z"
 }
