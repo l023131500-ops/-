@@ -3,25 +3,37 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- TODO: Set the document title to the name of your application -->
-    <title>איגוד השיעורים – פורטל מגידי השיעורים</title>
-    <meta name="description" content="פלטפורמה דיגיטלית מקיפה לכל מגיד שיעור – כלים, מעטפת וקהילה תחת קורת גג אחת.">
+    <meta name="color-scheme" content="light dark" />
+    <!-- מצב כהה (DESIGN_STANDARD §3). טוקני ‎.dark‎ נוספו ב-‎src/index.css‎;
+         השורות האלה הן מי שמדליק אותם. הן יושבות בתוך ה-‎<head>‎ ורצות לפני
+         הציור הראשון, ולכן אין הבזק לבן — בניגוד להחלה מתוך React, שרצה רק
+         אחרי שהעמוד כבר צויר בהיר. -->
+    <script>
+      (function () {
+        var mq = window.matchMedia("(prefers-color-scheme: dark)");
+        var apply = function (dark) {
+          document.documentElement.classList.toggle("dark", dark);
+        };
+        apply(mq.matches);
+        mq.addEventListener
+          ? mq.addEventListener("change", function (e) { apply(e.matches); })
+          : mq.addListener(function (e) { apply(e.matches); });
+      })();
+    </script>
+    <title>איגוד השיעורים — פורטל מגידי השיעורים</title>
+    <meta name="description" content="פלטפורמה דיגיטלית מקיפה לכל מגיד שיעור — כלים, מעטפת וקהילה תחת קורת גג אחת.">
     <meta name="author" content="איגוד השיעורים" />
 
-    <!-- TODO: Update og:title to match your application name -->
-    
-    
     <meta property="og:type" content="website" />
     <meta property="og:image" content="https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/565316d9-64fd-4397-acd0-9303ce9f5cb4/id-preview-a6acbecc--3827209f-42d3-4cf8-8db0-98bb4f8410be.lovable.app-1777595828138.png">
 
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@Lovable" />
     <meta name="twitter:image" content="https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/565316d9-64fd-4397-acd0-9303ce9f5cb4/id-preview-a6acbecc--3827209f-42d3-4cf8-8db0-98bb4f8410be.lovable.app-1777595828138.png">
-    <meta property="og:title" content="איגוד השיעורים – פורטל מגידי השיעורים">
-  <meta name="twitter:title" content="איגוד השיעורים – פורטל מגידי השיעורים">
-  <meta property="og:description" content="פלטפורמה דיגיטלית מקיפה לכל מגיד שיעור – כלים, מעטפת וקהילה תחת קורת גג אחת.">
-  <meta name="twitter:description" content="פלטפורמה דיגיטלית מקיפה לכל מגיד שיעור – כלים, מעטפת וקהילה תחת קורת גג אחת.">
-  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <meta property="og:title" content="איגוד השיעורים — פורטל מגידי השיעורים">
+    <meta name="twitter:title" content="איגוד השיעורים — פורטל מגידי השיעורים">
+    <meta property="og:description" content="פלטפורמה דיגיטלית מקיפה לכל מגיד שיעור — כלים, מעטפת וקהילה תחת קורת גג אחת.">
+    <meta name="twitter:description" content="פלטפורמה דיגיטלית מקיפה לכל מגיד שיעור — כלים, מעטפת וקהילה תחת קורת גג אחת.">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
 </head>
 
   <body>

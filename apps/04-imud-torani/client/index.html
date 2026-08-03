@@ -6,6 +6,25 @@
          להגדיל את העמוד, וזה כשל נגישות לפי DESIGN_STANDARD §5 (תקן 5568).
          בעמוד עברי צפוף זו בדיוק היכולת שמי שמתקשה לקרוא זקוק לה. -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light dark" />
+    <!-- מצב כהה (DESIGN_STANDARD §3). הערכה הכהה כבר קיימת ב-‎index.css‎
+         כטוקני ‎.dark‎ — נמדד ב-‎scripts/qa/dark-probe.mjs‎ שהוספת המחלקה
+         מעבירה את הרקע מ-‎rgb(250,248,245)‎ ל-‎rgb(27,22,19)‎. מה שחסר היה
+         מי שיוסיף אותה. השורות האלה יושבות בתוך ה-‎<head>‎ ורצות לפני הציור
+         הראשון, ולכן אין הבזק לבן — בניגוד להחלה מתוך React, שרצה רק אחרי
+         שהעמוד כבר צויר בהיר. -->
+    <script>
+      (function () {
+        var mq = window.matchMedia("(prefers-color-scheme: dark)");
+        var apply = function (dark) {
+          document.documentElement.classList.toggle("dark", dark);
+        };
+        apply(mq.matches);
+        mq.addEventListener
+          ? mq.addEventListener("change", function (e) { apply(e.matches); })
+          : mq.addListener(function (e) { apply(e.matches); });
+      })();
+    </script>
     <title>אות ודף — מנוע עימוד תורני</title>
     <meta name="description" content="מערכת עימוד תורני מקצועית ללא ידע גרפי: בחר תבנית, הזן תוכן, ייצא PDF מהודר לספרי קודש." />
     <link rel="icon" type="image/png" href="/favicon.png" />

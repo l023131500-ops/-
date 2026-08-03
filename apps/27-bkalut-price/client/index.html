@@ -3,6 +3,27 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light dark" />
+    <!-- מצב כהה (DESIGN_STANDARD §3). הערכה הכהה כבר כתובה בגיליונות של
+         המערכת — ‎scripts/qa/dark-probe.mjs‎ מצא כאן 12 חוקי ‎.dark‎ פעילים,
+         והוספת המחלקה מעבירה את הרקע מ-‎rgb(248,246,242)‎ ל-‎rgb(18,25,28)‎.
+         חסר היה רק מי שידליק אותה. רץ בתוך ה-‎<head>‎ לפני הציור הראשון,
+         ולכן אין הבזק לבן.
+
+         ⚠️ שינוי תצוגה בלבד, ואינו נוגע בשרת ‎bkalut-app‎ המוגן: הוא נפרס
+         רק לפרויקט ‎mechiron-more30‎ ב-Vercel. -->
+    <script>
+      (function () {
+        var mq = window.matchMedia("(prefers-color-scheme: dark)");
+        var apply = function (dark) {
+          document.documentElement.classList.toggle("dark", dark);
+        };
+        apply(mq.matches);
+        mq.addEventListener
+          ? mq.addEventListener("change", function (e) { apply(e.matches); })
+          : mq.addListener(function (e) { apply(e.matches); });
+      })();
+    </script>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>מאגר בקלות — כלי פנימי לצוות</title>
     <meta name="description" content="מאגר פנימי לחיפוש זכויות, הטבות וארגוני סיוע — בקלות" />

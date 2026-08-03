@@ -54,6 +54,63 @@
     --shadow-soft: 0 4px 20px -4px hsl(224 30% 30% / 0.08);
     --transition-smooth: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   }
+
+  /* מצב כהה (DESIGN_STANDARD §3).
+     `darkMode: ["class"]` היה מוגדר ב-tailwind.config מההתחלה וכל הקומפוננטות
+     כבר קוראות את הטוקנים למעלה — מה שחסר היה הערכה עצמה. נמדד ב-
+     `scripts/qa/dark-probe.mjs`: הוספת `.dark` לא שינתה כלום, כי לא היה מה
+     שיענה לה.
+
+     הזהות נשמרת: הזהב והנייבי הם המותג ואינם מתהפכים. מה שמתהפך הוא רק
+     שכבת המשטחים והדיו. הזהב עולה מ-54% ל-62% בהירות כי על רקע כהה הגוון
+     המקורי יורד מתחת ל-AA כטקסט.
+
+     יחסי ניגודיות שנבדקו מול הרקע/הכרטיס: טקסט ראשי 16:1 · טקסט מושתק 7:1 ·
+     זהב כטקסט 8:1 — כולם מעל 4.5:1. */
+  .dark {
+    --background: 224 40% 10%;
+    --foreground: 228 30% 94%;
+    --card: 224 35% 14%;
+    --card-foreground: 228 30% 94%;
+    --popover: 224 35% 14%;
+    --popover-foreground: 228 30% 94%;
+    --primary: 224 45% 30%;
+    --primary-foreground: 228 30% 96%;
+    --secondary: 42 60% 62%;
+    --secondary-foreground: 224 54% 14%;
+    --muted: 224 25% 18%;
+    --muted-foreground: 228 20% 72%;
+    --accent: 42 60% 62%;
+    --accent-foreground: 224 54% 14%;
+    --destructive: 0 70% 58%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 224 25% 24%;
+    --input: 224 25% 24%;
+    --ring: 42 60% 62%;
+    --sidebar-background: 224 45% 13%;
+    --sidebar-foreground: 228 25% 92%;
+    --sidebar-primary: 42 60% 62%;
+    --sidebar-primary-foreground: 224 54% 14%;
+    --sidebar-accent: 224 35% 22%;
+    --sidebar-accent-foreground: 228 25% 92%;
+    --sidebar-border: 224 25% 26%;
+    --sidebar-ring: 42 60% 62%;
+    --gold: 42 60% 62%;
+    --gold-light: 42 65% 74%;
+    --gold-dark: 42 55% 50%;
+    --navy: 224 45% 30%;
+    --navy-light: 224 35% 42%;
+
+    /* הגרדיאנטים אינם טוקני צבע ולכן אינם מתהפכים לבד. בלי השורות האלה
+       ה-hero והרקעים הרכים היו נשארים בהירים בתוך עמוד כהה. */
+    --gradient-gold: linear-gradient(135deg, hsl(42 62% 58%) 0%, hsl(38 65% 46%) 100%);
+    --gradient-navy: linear-gradient(135deg, hsl(224 45% 16%) 0%, hsl(230 50% 24%) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(224 45% 14%) 0%, hsl(228 45% 20%) 50%, hsl(42 45% 34%) 100%);
+    --gradient-soft: linear-gradient(180deg, hsl(224 38% 12%) 0%, hsl(224 34% 16%) 100%);
+    --shadow-elegant: 0 20px 60px -20px hsl(224 60% 4% / 0.7);
+    --shadow-gold: 0 10px 40px -10px hsl(42 60% 40% / 0.4);
+    --shadow-soft: 0 4px 20px -4px hsl(224 60% 4% / 0.5);
+  }
 }
 
 @layer base {
