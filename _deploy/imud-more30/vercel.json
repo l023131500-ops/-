@@ -1,0 +1,3 @@
+{ "buildCommand":"echo no-build","outputDirectory":".","framework":null,"rewrites":[
+ {"source":"/imud","destination":"/imud/index.html"},
+ {"source":"/imud/:path*","destination":"/imud/index.html"}]}

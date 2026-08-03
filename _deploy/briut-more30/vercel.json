@@ -1,0 +1,9 @@
+{
+  "buildCommand": "echo no-build",
+  "outputDirectory": ".",
+  "framework": null,
+  "rewrites": [
+    { "source": "/briut", "destination": "/briut/index.html" },
+    { "source": "/briut/:path*", "destination": "/briut/index.html" }
+  ]
+}

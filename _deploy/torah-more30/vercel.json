@@ -1,0 +1,17 @@
+{
+  "buildCommand": "echo no-build",
+  "outputDirectory": ".",
+  "framework": null,
+  "rewrites": [
+    { "source": "/torah", "destination": "/torah/index.html" },
+    { "source": "/torah/:path*", "destination": "/torah/index.html" }
+  ],
+  "headers": [
+    {
+      "source": "/torah/assets/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+      ]
+    }
+  ]
+}

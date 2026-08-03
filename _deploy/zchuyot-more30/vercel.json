@@ -1,0 +1,3 @@
+{ "buildCommand":"echo no-build","outputDirectory":".","framework":null,"rewrites":[
+ {"source":"/zchuyot","destination":"/zchuyot/index.html"},
+ {"source":"/zchuyot/:path*","destination":"/zchuyot/index.html"}]}

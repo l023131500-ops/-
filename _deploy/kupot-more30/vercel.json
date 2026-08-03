@@ -1,0 +1,9 @@
+{
+  "buildCommand": "echo no-build",
+  "outputDirectory": ".",
+  "framework": null,
+  "rewrites": [
+    { "source": "/kupot", "destination": "/kupot/index.html" },
+    { "source": "/kupot/:path*", "destination": "/kupot/index.html" }
+  ]
+}

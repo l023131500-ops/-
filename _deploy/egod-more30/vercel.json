@@ -1,0 +1,9 @@
+{
+  "buildCommand": "echo no-build",
+  "outputDirectory": ".",
+  "framework": null,
+  "rewrites": [
+    { "source": "/egod", "destination": "/egod/index.html" },
+    { "source": "/egod/:path*", "destination": "/egod/index.html" }
+  ]
+}
