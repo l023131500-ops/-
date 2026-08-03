@@ -18,7 +18,7 @@ export default function PriceTrend({ points }: { points: { period: string; value
   const changePct = first ? Math.round(((last - first) / first) * 1000) / 10 : null;
 
   return (
-    <div className="mt-6 rounded-2xl border border-line bg-white p-5 shadow-card">
+    <div className="mt-6 rounded-2xl border border-line bg-surface p-5 shadow-card">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         <h3 className="text-lg font-black text-navy">מגמת מחירי הדירות בישראל</h3>
         {changePct != null && (

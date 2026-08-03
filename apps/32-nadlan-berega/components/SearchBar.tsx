@@ -63,7 +63,7 @@ export default function SearchBar({
                   className={`rounded-xl border-2 px-4 py-2.5 text-right transition ${
                     on
                       ? 'border-teal bg-teal/10 shadow-card'
-                      : 'border-line bg-white/95 hover:border-teal/60'
+                      : 'border-line bg-surface/95 hover:border-teal/60'
                   }`}
                 >
                   <div className={`text-[15px] font-black ${on ? 'text-tealD' : 'text-navy'}`}>
@@ -91,7 +91,7 @@ export default function SearchBar({
           onChange={(e) => setQ(e.target.value)}
           placeholder='כתובת מלאה או גוש וחלקה — למשל: דיזנגוף 100 תל אביב  ·  גוש 7091 חלקה 203'
           aria-label="כתובת או גוש וחלקה"
-          className={`w-full rounded-xl border border-line bg-white px-4 text-ink outline-none placeholder:text-muted/70 focus:border-teal ${
+          className={`w-full rounded-xl border border-line bg-surface px-4 text-ink outline-none placeholder:text-muted/70 focus:border-teal ${
             big ? 'py-4 text-lg' : 'py-3'
           }`}
         />
@@ -123,7 +123,7 @@ export default function SearchBar({
         )}
 
         {open && (
-          <div className="mt-2 rounded-xl border border-line bg-white p-3">
+          <div className="mt-2 rounded-xl border border-line bg-surface p-3">
             <p className="text-[12px] leading-relaxed text-muted">
               רוצים לברר על נכס מסוים? מומלץ להוסיף מספר כניסה, קומה וחדרים. כל השדות
               אינם חובה — בלעדיהם הדוח יתייחס לבניין ולסביבה.

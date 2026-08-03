@@ -98,10 +98,25 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   errorComponent: ErrorComponent,
 });
 
+/**
+ * מצב כהה (DESIGN_STANDARD §3).
+ *
+ * ערכת ‎.dark‎ מלאה כבר קיימת ב-‎src/styles.css‎ מאז שהאפליקציה נוצרה, ומעולם
+ * לא הודלקה. הסקריפט הזה חייב לרוץ בתוך ה-‎<head>‎ ולפני הציור הראשון:
+ * ב-SSR העמוד נשלח מהשרת, ולכן החלה מתוך ‎useEffect‎ הייתה מגיעה רק אחרי
+ * שהדפדפן כבר צייר אותו לבן — הבזק שנראה כמו תקלה.
+ *
+ * הוא גם אינו יוצר אי-התאמת הידרציה: הוא משנה מחלקה על ‎<html>‎, שאינו חלק
+ * מהעץ ש-React מנהל.
+ */
+const THEME_BOOT = `(function(){var m=window.matchMedia("(prefers-color-scheme: dark)");var a=function(d){document.documentElement.classList.toggle("dark",d)};a(m.matches);m.addEventListener?m.addEventListener("change",function(e){a(e.matches)}):m.addListener(function(e){a(e.matches)})})()`;
+
 function RootShell({ children }: { children: ReactNode }) {
   return (
     <html lang="he" dir="rtl">
       <head>
+        <meta name="color-scheme" content="light dark" />
+        <script dangerouslySetInnerHTML={{ __html: THEME_BOOT }} />
         <HeadContent />
       </head>
       <body>

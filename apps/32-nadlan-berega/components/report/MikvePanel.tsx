@@ -12,7 +12,7 @@ export default function MikvePanel({ mikvaot }: { mikvaot: Mikve[] }) {
   if (!mikvaot.length) return null;
 
   return (
-    <div className="mt-6 rounded-2xl border border-line bg-white p-5 shadow-card">
+    <div className="mt-6 rounded-2xl border border-line bg-surface p-5 shadow-card">
       <div className="flex items-baseline justify-between gap-2">
         <h3 className="text-lg font-black text-navy">מקוואות</h3>
         <div className="flex items-center gap-2">

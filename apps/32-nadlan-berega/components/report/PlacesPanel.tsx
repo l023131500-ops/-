@@ -18,7 +18,7 @@ export default function PlacesPanel({
   return (
     <div className="mt-6 grid gap-4 lg:grid-cols-2">
       {groups.filter((g) => g.places.length > 0 || g.showEmpty).map((g) => (
-        <div key={g.title} className="rounded-2xl border border-line bg-white p-5 shadow-card">
+        <div key={g.title} className="rounded-2xl border border-line bg-surface p-5 shadow-card">
           <div className="flex items-baseline justify-between gap-2">
             <h3 className="text-lg font-black text-navy">{g.title}</h3>
             {g.places.length > 0 && (

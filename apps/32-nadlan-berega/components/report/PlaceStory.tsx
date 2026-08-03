@@ -75,7 +75,7 @@ export function PlaceStory({
 
   return (
     <section
-      className="mt-4 rounded-2xl border border-line bg-white p-5 shadow-card"
+      className="mt-4 rounded-2xl border border-line bg-surface p-5 shadow-card"
       data-testid="panel-place-story"
     >
       <h2 className="text-lg font-black text-navy">על המקום</h2>

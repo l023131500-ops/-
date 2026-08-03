@@ -59,7 +59,7 @@ export default function SavedReportsBoard({ token }: { token: string }) {
   if (!rows) return <div className="text-sm text-muted">טוען…</div>;
   if (!rows.length) {
     return (
-      <div className="rounded-xl border border-line bg-white px-4 py-3 text-sm text-muted">
+      <div className="rounded-xl border border-line bg-surface px-4 py-3 text-sm text-muted">
         עוד לא הופק אף דוח. כל דוח שיופק יישמר כאן אוטומטית, עם קישור קבוע.
       </div>
     );
@@ -85,14 +85,14 @@ export default function SavedReportsBoard({ token }: { token: string }) {
           placeholder="סינון לפי כתובת, עיר, גוש או מזהה"
           aria-label="סינון הדוחות השמורים"
           type="search"
-          className="w-full max-w-sm rounded-lg border border-line bg-white px-3 py-2 text-[13px] outline-none focus:border-teal"
+          className="w-full max-w-sm rounded-lg border border-line bg-surface px-3 py-2 text-[13px] outline-none focus:border-teal"
         />
         <span className="text-[12px] text-muted">
           {shown.length} מתוך {rows.length} נכסים
         </span>
       </div>
 
-      <div className="overflow-x-auto rounded-2xl border border-line bg-white shadow-card">
+      <div className="overflow-x-auto rounded-2xl border border-line bg-surface shadow-card">
         <table className="w-full min-w-[900px] text-right text-sm">
           <thead>
             <tr className="border-b border-line bg-slate-50 text-[12px] text-muted">

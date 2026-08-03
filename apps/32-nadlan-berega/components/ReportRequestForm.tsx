@@ -222,14 +222,14 @@ export default function ReportRequestForm() {
           <button
             type="button"
             onClick={() => setLayers([...ALL_LAYERS])}
-            className="rounded-lg border border-line bg-white px-3 py-1.5 text-[12.5px] font-bold text-ink transition hover:border-teal hover:text-tealD"
+            className="rounded-lg border border-line bg-surface px-3 py-1.5 text-[12.5px] font-bold text-ink transition hover:border-teal hover:text-tealD"
           >
             סמן הכול
           </button>
           <button
             type="button"
             onClick={() => setLayers(DATA_LAYERS.filter((l) => l.locked).map((l) => l.key))}
-            className="rounded-lg border border-line bg-white px-3 py-1.5 text-[12.5px] font-bold text-ink transition hover:border-teal hover:text-tealD"
+            className="rounded-lg border border-line bg-surface px-3 py-1.5 text-[12.5px] font-bold text-ink transition hover:border-teal hover:text-tealD"
           >
             נקה הכול
           </button>
@@ -247,7 +247,7 @@ export default function ReportRequestForm() {
               <label
                 key={l.key}
                 className={`flex gap-2.5 rounded-xl border-2 px-3.5 py-2.5 text-right transition ${
-                  on ? 'border-teal bg-teal/[0.07]' : 'border-line bg-white hover:border-teal/60'
+                  on ? 'border-teal bg-teal/[0.07]' : 'border-line bg-surface hover:border-teal/60'
                 } ${l.locked ? 'cursor-default' : 'cursor-pointer'}`}
               >
                 {/* 24×24 ולא 16×16: יעד מגע מתחת ל-24 נכשל בבדיקת הנגישות,
@@ -287,7 +287,7 @@ export default function ReportRequestForm() {
         title="פרטי הנכס"
         hint="אפשר למלא את כולם או חלקם. גוש וחלקה בלבד — הכתובת תושלם מהמרשם; רחוב ומספר בלבד — הגוש והחלקה יושלמו."
       >
-        <div className="mb-3 inline-flex rounded-xl border border-line bg-white p-1" role="tablist">
+        <div className="mb-3 inline-flex rounded-xl border border-line bg-surface p-1" role="tablist">
           {(
             [
               ['address', 'לפי כתובת'],
@@ -301,7 +301,7 @@ export default function ReportRequestForm() {
               aria-selected={mode === m}
               onClick={() => setMode(m)}
               className={`rounded-lg px-4 py-1.5 text-[13px] font-bold transition ${
-                mode === m ? 'bg-navy text-white' : 'text-ink hover:text-tealD'
+                mode === m ? 'bg-navysurface text-white' : 'text-ink hover:text-tealD'
               }`}
             >
               {label}
@@ -359,7 +359,7 @@ export default function ReportRequestForm() {
           onChange={(e) => setFree(e.target.value)}
           aria-label="חיפוש חופשי — כתובת מלאה או גוש וחלקה"
           placeholder='דיזנגוף 100 תל אביב · גוש 7091 חלקה 203'
-          className="w-full rounded-xl border border-line bg-white px-4 py-3 text-ink outline-none placeholder:text-muted/70 focus:border-teal"
+          className="w-full rounded-xl border border-line bg-surface px-4 py-3 text-ink outline-none placeholder:text-muted/70 focus:border-teal"
         />
         <p className="mt-1.5 text-[12px] text-muted">
           החיפוש החופשי משמש רק כשהשדות המובנים ריקים. גם שם רחוב מוכר-בפי-הבריות יגיע לנכס הנכון.
@@ -367,7 +367,7 @@ export default function ReportRequestForm() {
       </Step>
 
       {/* ===== הפקה ===== */}
-      <div className="mt-6 rounded-2xl border border-line bg-white p-4 shadow-card">
+      <div className="mt-6 rounded-2xl border border-line bg-surface p-4 shadow-card">
         {err && (
           <p role="alert" className="mb-3 rounded-lg bg-red-50 px-3 py-2 text-[13px] font-bold text-red-700">
             {err}
@@ -439,7 +439,7 @@ function Step({
   return (
     <section className="mt-5 first:mt-0">
       <div className="mb-2 flex items-baseline gap-2">
-        <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-navy text-[12px] font-black text-white">
+        <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-navysurface text-[12px] font-black text-white">
           {n}
         </span>
         {/* h2, not h3: these are the form's top-level steps and the only heading
@@ -472,7 +472,7 @@ function Card({
       onClick={onClick}
       aria-pressed={on}
       className={`rounded-xl border-2 px-4 py-3 text-right text-navy transition ${
-        on ? `${active} shadow-card` : 'border-line bg-white hover:border-teal/60'
+        on ? `${active} shadow-card` : 'border-line bg-surface hover:border-teal/60'
       }`}
     >
       {children}
@@ -503,7 +503,7 @@ function Field({
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         inputMode={numeric ? 'numeric' : undefined}
-        className="w-full rounded-lg border border-line bg-white px-3 py-2.5 text-ink outline-none placeholder:text-muted/60 focus:border-teal"
+        className="w-full rounded-lg border border-line bg-surface px-3 py-2.5 text-ink outline-none placeholder:text-muted/60 focus:border-teal"
       />
       {note && <span className="mt-1 block text-[11.5px] leading-relaxed text-muted">{note}</span>}
     </label>

@@ -5,7 +5,7 @@ import { CertaintyBadge } from './Bits';
 
 const BAR_COLOR: Record<string, string> = {
   'חילוני וכללי': 'bg-teal',
-  חרדי: 'bg-navy',
+  חרדי: 'bg-navysurface',
   'דתי-לאומי': 'bg-gold',
   ערבי: 'bg-indigo',
 };
@@ -13,7 +13,7 @@ const BAR_COLOR: Record<string, string> = {
 export default function PopulationPanel({ population }: { population: PopulationProfile | null }) {
   if (!population) {
     return (
-      <div className="rounded-2xl border border-line bg-white p-5 shadow-card">
+      <div className="rounded-2xl border border-line bg-surface p-5 shadow-card">
         <h2 className="text-lg font-black text-navy">מי גר באזור</h2>
         <p className="mt-2 text-[14px] leading-relaxed text-muted">
           לא הצלחנו לאפיין את האוכלוסייה באזור הזה ברמת פירוט מספקת.
@@ -23,7 +23,7 @@ export default function PopulationPanel({ population }: { population: Population
   }
 
   return (
-    <div className="rounded-2xl border border-line bg-white p-5 shadow-card">
+    <div className="rounded-2xl border border-line bg-surface p-5 shadow-card">
       <div className="flex items-start justify-between gap-2">
         <h2 className="text-lg font-black text-navy">מי גר באזור</h2>
         {/* פילוח מגזרי הוא תמיד הערכה — לא "מקורב" ובוודאי לא "אמת". */}

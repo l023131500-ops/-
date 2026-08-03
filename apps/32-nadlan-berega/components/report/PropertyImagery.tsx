@@ -64,7 +64,7 @@ export default function PropertyImagery({
 
   if (lat == null || lng == null) {
     return (
-      <section className="mt-6 rounded-2xl border border-line bg-white p-5 shadow-card">
+      <section className="mt-6 rounded-2xl border border-line bg-surface p-5 shadow-card">
         <h2 className="text-lg font-black text-navy">מפה ותמונות</h2>
         <p className="mt-2 text-[14px] leading-relaxed text-muted">
           לא אותר מיקום מדויק לנכס, ולכן אין באפשרותנו להציג מפה, צילום או תצלום אוויר.
@@ -81,7 +81,7 @@ export default function PropertyImagery({
       <h2 className="text-lg font-black text-navy">הנכס על המפה</h2>
 
       {/* ===== §4 · מפה אינטראקטיבית — בכל הרמות ===== */}
-      <figure className="mt-3 overflow-hidden rounded-2xl border border-line bg-white shadow-card">
+      <figure className="mt-3 overflow-hidden rounded-2xl border border-line bg-surface shadow-card">
         <figcaption className="border-b border-line px-4 py-3 font-black text-navy">
           מפה אינטראקטיבית — מיקום הנכס, הגדלה, הזזה ותצלום לוויין
         </figcaption>
@@ -92,7 +92,7 @@ export default function PropertyImagery({
       {imagery ? (
         <>
           <div className="mt-4 grid gap-4 lg:grid-cols-2">
-            <figure className="overflow-hidden rounded-2xl border border-line bg-white shadow-card">
+            <figure className="overflow-hidden rounded-2xl border border-line bg-surface shadow-card">
               <figcaption className="border-b border-line px-4 py-3 font-black text-navy">
                 צילום הבניין
               </figcaption>
@@ -126,7 +126,7 @@ export default function PropertyImagery({
               )}
             </figure>
 
-            <figure className="overflow-hidden rounded-2xl border border-line bg-white shadow-card">
+            <figure className="overflow-hidden rounded-2xl border border-line bg-surface shadow-card">
               <figcaption className="border-b border-line px-4 py-3 font-black text-navy">
                 תצלום אוויר
               </figcaption>
@@ -151,7 +151,7 @@ export default function PropertyImagery({
           </div>
 
           {/* מפה אזורית מתויגת — נכנסת גם ל-PDF ולמצגת, שם אין מפה אינטראקטיבית. */}
-          <figure className="mt-4 overflow-hidden rounded-2xl border border-line bg-white shadow-card">
+          <figure className="mt-4 overflow-hidden rounded-2xl border border-line bg-surface shadow-card">
             <figcaption className="border-b border-line px-4 py-3 font-black text-navy">
               מפה אזורית — כל סימון מתויג
             </figcaption>

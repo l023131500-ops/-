@@ -124,15 +124,15 @@ export default function PropertyIdCard({ q }: { q: string }) {
       )}
 
       {/* ==== סרגל ייצוא ==== */}
-      <div className="mt-6 rounded-xl border border-line bg-white p-5 shadow-card print:hidden">
+      <div className="mt-6 rounded-xl border border-line bg-surface p-5 shadow-card print:hidden">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex gap-2">
             <button onClick={() => setReportType('property_id')}
-              className={`rounded-lg px-4 py-2 text-sm font-bold ${reportType === 'property_id' ? 'bg-navy text-white' : 'bg-[#eef2fa] text-navy'}`}>
+              className={`rounded-lg px-4 py-2 text-sm font-bold ${reportType === 'property_id' ? 'bg-navysurface text-white' : 'bg-[#eef2fa] text-navy'}`}>
               תעודת זהות מלאה
             </button>
             <button onClick={() => setReportType('deal_quality')}
-              className={`rounded-lg px-4 py-2 text-sm font-bold ${reportType === 'deal_quality' ? 'bg-navy text-white' : 'bg-[#eef2fa] text-navy'}`}>
+              className={`rounded-lg px-4 py-2 text-sm font-bold ${reportType === 'deal_quality' ? 'bg-navysurface text-white' : 'bg-[#eef2fa] text-navy'}`}>
               דו"ח איכות עסקה
             </button>
           </div>
@@ -151,7 +151,7 @@ export default function PropertyIdCard({ q }: { q: string }) {
           <div className="flex flex-wrap gap-2">
             {profile.layers.map((l) => (
               <label key={l.key}
-                className={`flex cursor-pointer items-center gap-2 rounded-lg border px-3 py-1.5 text-sm ${selected.has(l.key) ? 'border-teal bg-[#eef7f7]' : 'border-line bg-white'}`}>
+                className={`flex cursor-pointer items-center gap-2 rounded-lg border px-3 py-1.5 text-sm ${selected.has(l.key) ? 'border-teal bg-[#eef7f7]' : 'border-line bg-surface'}`}>
                 <input type="checkbox" checked={selected.has(l.key)} onChange={() => toggleLayer(l.key)} className="accent-teal" />
                 {l.title.split('—')[0].trim()}
               </label>
@@ -162,7 +162,7 @@ export default function PropertyIdCard({ q }: { q: string }) {
 
       {/* ==== דוח AI מקיף ==== */}
       {agent && (
-        <div className="mt-6 rounded-xl border border-line bg-white p-5 shadow-card">
+        <div className="mt-6 rounded-xl border border-line bg-surface p-5 shadow-card">
           <div className="mb-2 flex items-center justify-between">
             <h3 className="text-lg font-extrabold text-navy">דוח AI מקיף</h3>
             <span className="text-[11px] text-muted">{agent.usedAi ? 'נוצר ע"י מנוע AI' : 'סיכום אוטומטי (ללא מפתח AI)'}</span>
@@ -173,7 +173,7 @@ export default function PropertyIdCard({ q }: { q: string }) {
 
       {/* ==== דו"ח איכות עסקה ==== */}
       {reportType === 'deal_quality' && (
-        <div className="mt-6 rounded-xl border border-line bg-white p-5 shadow-card">
+        <div className="mt-6 rounded-xl border border-line bg-surface p-5 shadow-card">
           <h3 className="text-lg font-extrabold text-navy">דו"ח איכות עסקה</h3>
           <div className="mt-3 flex flex-wrap items-end gap-3 print:hidden">
             <div>
@@ -182,7 +182,7 @@ export default function PropertyIdCard({ q }: { q: string }) {
                 placeholder="לדוגמה 2850000"
                 className="mt-1 w-48 rounded-lg border border-line px-3 py-2 outline-none focus:border-teal" />
             </div>
-            <button onClick={() => setAskApplied(ask)} className="rounded-lg bg-navy px-4 py-2 text-sm font-bold text-white">
+            <button onClick={() => setAskApplied(ask)} className="rounded-lg bg-navysurface px-4 py-2 text-sm font-bold text-white">
               חשב איכות עסקה
             </button>
           </div>
@@ -215,7 +215,7 @@ export default function PropertyIdCard({ q }: { q: string }) {
 
       {/* ==== גרף היסטוריית מחיר למ"ר ==== */}
       {selected.has('value') && (
-        <div className="mt-6 rounded-xl border border-line bg-white p-5 shadow-card">
+        <div className="mt-6 rounded-xl border border-line bg-surface p-5 shadow-card">
           <div className="mb-3 flex items-center justify-between">
             <h3 className="text-lg font-extrabold text-navy">היסטוריית מחיר למ"ר — עסקאות השוואה בסביבה</h3>
             <ConfidencePill level={profile.transactions.length ? 'high' : 'low'} />
@@ -254,7 +254,7 @@ export default function PropertyIdCard({ q }: { q: string }) {
       <div className="mt-6 space-y-3">
         {profile.layers.map((layer) => (
           <details key={layer.key} open={layer.key === 'value'}
-            className={`rounded-xl border border-line bg-white shadow-card ${selected.has(layer.key) ? '' : 'print:hidden'}`}>
+            className={`rounded-xl border border-line bg-surface shadow-card ${selected.has(layer.key) ? '' : 'print:hidden'}`}>
             <summary className="flex cursor-pointer list-none items-center justify-between px-5 py-4">
               <span className="text-base font-extrabold text-navy">{layer.title}</span>
               <ConfidencePill level={layer.confidence} />
@@ -277,12 +277,12 @@ export default function PropertyIdCard({ q }: { q: string }) {
                   <div className="mt-1 text-xs text-muted">{profile.legal.note}</div>
                   <div className="mt-2 flex flex-wrap gap-2 text-xs">
                     {profile.legal.options.map((o) => (
-                      <span key={o.type} className="rounded-full bg-white px-2 py-1 text-[#d99a1a]">{o.type} · ~{o.costIls}₪</span>
+                      <span key={o.type} className="rounded-full bg-surface px-2 py-1 text-[#d99a1a]">{o.type} · ~{o.costIls}₪</span>
                     ))}
                   </div>
                   <div className="mt-2 flex flex-wrap gap-2">
                     <a href={profile.legal.officialUrl} target="_blank" rel="noreferrer"
-                      className="inline-block rounded-lg bg-navy px-4 py-1.5 text-xs font-bold text-white">
+                      className="inline-block rounded-lg bg-navysurface px-4 py-1.5 text-xs font-bold text-white">
                       להזמנה באתר הרשמי ←
                     </a>
                     <a href={apiUrl(`/request?docType=tabu&address=${encodeURIComponent(k.address || q)}&gush=${k.gush || ''}&helka=${k.helka || ''}`)}
@@ -303,7 +303,7 @@ export default function PropertyIdCard({ q }: { q: string }) {
 
       {/* ==== טבלת עסקאות ==== */}
       {selected.has('value') && profile.transactions.length > 0 && (
-        <div className="mt-6 overflow-x-auto rounded-xl border border-line bg-white p-5 shadow-card">
+        <div className="mt-6 overflow-x-auto rounded-xl border border-line bg-surface p-5 shadow-card">
           <h3 className="mb-3 text-lg font-extrabold text-navy">
             עסקאות אחרונות בסביבת הנכס ({profile.transactions.length})
           </h3>

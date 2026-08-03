@@ -56,10 +56,10 @@ export default function RequestForm({
 
   if (state === 'done') {
     return (
-      <div className="rounded-xl border border-line bg-white p-6 text-center shadow-card">
+      <div className="rounded-xl border border-line bg-surface p-6 text-center shadow-card">
         <div className="text-xl font-black text-[#1a9e6a]">הבקשה נשמרה ✓</div>
         <p className="mt-2 text-muted">ניצור קשר להשלמת הפקת {label}. אפשר גם להזמין ישירות:</p>
-        <a href={link.url} target="_blank" rel="noreferrer" className="mt-3 inline-block rounded-lg bg-navy px-5 py-2 font-bold text-white">
+        <a href={link.url} target="_blank" rel="noreferrer" className="mt-3 inline-block rounded-lg bg-navysurface px-5 py-2 font-bold text-white">
           {link.label} ←
         </a>
       </div>
@@ -67,7 +67,7 @@ export default function RequestForm({
   }
 
   return (
-    <form onSubmit={submit} className="rounded-xl border border-line bg-white p-6 shadow-card">
+    <form onSubmit={submit} className="rounded-xl border border-line bg-surface p-6 shadow-card">
       <div className="mb-4 rounded-lg bg-[#eef7f7] p-3 text-sm">
         סוג מסמך: <b>{label}</b>
         {address ? <> · {address}</> : null}

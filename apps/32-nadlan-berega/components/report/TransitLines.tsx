@@ -10,7 +10,7 @@ import { distanceText } from '@/lib/report';
 export default function TransitLines({ stops }: { stops: StopWithLines[] }) {
   if (!stops.length) {
     return (
-      <div className="mt-6 rounded-2xl border border-line bg-white p-5 shadow-card">
+      <div className="mt-6 rounded-2xl border border-line bg-surface p-5 shadow-card">
         <h3 className="text-lg font-black text-navy">קווים בכל תחנה</h3>
         <p className="mt-2 text-[14px] leading-relaxed text-muted">
           לא נמצאו תחנות עם קווים בטווח הליכה מהנקודה הזו.
@@ -20,7 +20,7 @@ export default function TransitLines({ stops }: { stops: StopWithLines[] }) {
   }
 
   return (
-    <div className="mt-6 rounded-2xl border border-line bg-white p-5 shadow-card">
+    <div className="mt-6 rounded-2xl border border-line bg-surface p-5 shadow-card">
       <h3 className="text-lg font-black text-navy">קווים בכל תחנה</h3>
       <p className="mt-1 text-[13px] text-muted">
         לכל תחנה בטווח הליכה — הקווים שעוצרים בה בפועל, לפי לוח הזמנים הרשמי.

@@ -186,7 +186,7 @@ export default function NeighborhoodProfile({ report }: { report: PropertyReport
   if (!groups.length && !pop && !b.neighborhoodDescription && !hasHistory) return null;
 
   return (
-    <section className="mt-6 rounded-2xl border border-line bg-white p-5 shadow-card">
+    <section className="mt-6 rounded-2xl border border-line bg-surface p-5 shadow-card">
       <h2 className="text-lg font-black text-navy">איך זה לגור כאן</h2>
       <p className="mt-1 text-[13px] text-muted">
         {where} — אופי המקום, מי גר בו, ומה יש מסביב. הכול מהמרחקים והמוסדות שנמדדו בפועל.

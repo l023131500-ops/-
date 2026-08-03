@@ -78,7 +78,7 @@ export default function SessionGate() {
         <div className="flex flex-wrap justify-center gap-2">
           <a
             href={`https://more30.com/login?from=${back}`}
-            className="rounded-xl bg-navy px-4 py-2 text-sm font-bold text-white"
+            className="rounded-xl bg-navysurface px-4 py-2 text-sm font-bold text-white"
           >
             כניסה עם חשבון more30
           </a>

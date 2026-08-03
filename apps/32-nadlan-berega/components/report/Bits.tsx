@@ -49,7 +49,7 @@ export function FactCard({ fact }: { fact: Fact }) {
 
   return (
     <div
-      className={`rounded-xl border bg-white p-4 shadow-card ${
+      className={`rounded-xl border bg-surface p-4 shadow-card ${
         fact.highlight && has ? 'border-teal/50 ring-1 ring-teal/20' : 'border-line'
       }`}
     >
@@ -89,7 +89,7 @@ export function FactCard({ fact }: { fact: Fact }) {
 /** מקרא הוודאות — מוצג פעם אחת בראש הדוח. */
 export function CertaintyLegend() {
   return (
-    <div className="flex flex-wrap items-center gap-x-5 gap-y-2 rounded-xl border border-line bg-white px-4 py-3 text-[12px] text-muted shadow-card">
+    <div className="flex flex-wrap items-center gap-x-5 gap-y-2 rounded-xl border border-line bg-surface px-4 py-3 text-[12px] text-muted shadow-card">
       <span className="font-bold text-navy">מה המשמעות של הסימונים:</span>
       {(['verified', 'approx', 'estimate'] as Certainty[]).map((c) => (
         <span key={c} className="inline-flex items-center gap-1.5">

@@ -105,7 +105,7 @@ export default function HomePage() {
       </section>
 
       {/* ===== ארבעה תחומים ===== */}
-      <section className="border-b border-line bg-white">
+      <section className="border-b border-line bg-surface">
         <div className="mx-auto max-w-6xl px-5 py-14">
           <h2 className="text-center text-2xl font-black text-navy">ארבעה תחומים, אותו עומק</h2>
           <p className="mx-auto mt-2 max-w-2xl text-center text-[15px] leading-relaxed text-muted">
@@ -114,7 +114,7 @@ export default function HomePage() {
           </p>
           <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {FLOWS.map(([t, d]) => (
-              <div key={t} className="rounded-xl border border-line bg-white p-5 shadow-card">
+              <div key={t} className="rounded-xl border border-line bg-surface p-5 shadow-card">
                 <div className="text-lg font-extrabold text-navy">{t}</div>
                 <div className="mt-1 text-sm leading-relaxed text-muted">{d}</div>
               </div>
@@ -154,7 +154,7 @@ export default function HomePage() {
             </Link>
           </div>
 
-          <div className="rounded-2xl border border-line bg-white p-6 shadow-card">
+          <div className="rounded-2xl border border-line bg-surface p-6 shadow-card">
             <div className="text-[15px] font-black text-navy">מה נשלח בפועל</div>
             <div className="mt-3 space-y-2.5 text-[13px] leading-relaxed">
               {[
@@ -176,7 +176,7 @@ export default function HomePage() {
       </section>
 
       {/* ===== שלוש הרמות ===== */}
-      <section className="border-b border-line bg-white">
+      <section className="border-b border-line bg-surface">
         <div className="mx-auto max-w-6xl px-5 py-14">
           <h2 className="text-center text-2xl font-black text-navy">שלוש רמות של דוח</h2>
           <p className="mx-auto mt-2 max-w-2xl text-center text-[15px] leading-relaxed text-muted">
@@ -190,7 +190,7 @@ export default function HomePage() {
               <div
                 key={t.key}
                 className={`flex flex-col rounded-2xl border-2 p-6 shadow-card ${
-                  t.featured ? 'border-teal bg-teal/[0.06]' : 'border-line bg-white'
+                  t.featured ? 'border-teal bg-teal/[0.06]' : 'border-line bg-surface'
                 } ${t.key === 'vip' ? 'border-gold bg-gold/[0.07]' : ''}`}
               >
                 <div className="flex items-baseline justify-between gap-2">
@@ -237,7 +237,7 @@ export default function HomePage() {
         </p>
         <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {CATEGORIES.map(([t, d]) => (
-            <div key={t} className="rounded-xl border border-line bg-white p-5 shadow-card">
+            <div key={t} className="rounded-xl border border-line bg-surface p-5 shadow-card">
               <div className="text-lg font-extrabold text-navy">{t}</div>
               <div className="mt-1 text-sm leading-relaxed text-muted">{d}</div>
             </div>
@@ -245,7 +245,7 @@ export default function HomePage() {
         </div>
 
         {/* ===== שמות רחוב כפולים ===== */}
-        <div className="mt-10 rounded-2xl border border-line bg-white p-6 shadow-card">
+        <div className="mt-10 rounded-2xl border border-line bg-surface p-6 shadow-card">
           <h3 className="text-lg font-black text-navy">לרחוב אחד יש לפעמים שני שמות</h3>
           <p className="mt-2 text-[15px] leading-relaxed text-ink">
             הרבה רחובות מוכרים בפי התושבים בשם אחד, ורשומים במרשם הרשמי בשם אחר — ומרשם
@@ -265,7 +265,7 @@ export default function HomePage() {
           </p>
         </div>
 
-        <div className="mt-8 rounded-2xl border border-line bg-white p-6 shadow-card">
+        <div className="mt-8 rounded-2xl border border-line bg-surface p-6 shadow-card">
           <h3 className="text-lg font-black text-navy">איך אנחנו מציגים נתונים</h3>
           <p className="mt-2 text-[15px] leading-relaxed text-ink">
             לכל נתון בדוח יש מקור, ולכל נתון יש רמת ודאות:{' '}

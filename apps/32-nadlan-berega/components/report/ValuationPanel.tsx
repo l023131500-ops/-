@@ -20,7 +20,7 @@ export default function ValuationPanel({ valuation }: { valuation: ValuationResu
   if (!hasValuation(valuation)) {
     const reg = valuation.regional;
     return (
-      <section className="mt-6 rounded-2xl border border-line bg-white p-5 shadow-card">
+      <section className="mt-6 rounded-2xl border border-line bg-surface p-5 shadow-card">
         <h2 className="text-lg font-black text-navy">הערכת שווי</h2>
         <p className="mt-2 text-[14.5px] leading-relaxed text-ink">{valuation.notEnoughData}</p>
         {reg && (
@@ -87,13 +87,13 @@ export default function ValuationPanel({ valuation }: { valuation: ValuationResu
             type="button"
             onClick={() => setOpen((x) => !x)}
             aria-expanded={open}
-            className="inline-block rounded-lg border border-line bg-white px-4 py-2 text-[13px] font-bold text-tealD hover:border-teal"
+            className="inline-block rounded-lg border border-line bg-surface px-4 py-2 text-[13px] font-bold text-tealD hover:border-teal"
           >
             {open ? 'הסתר את העסקאות שההערכה נשענת עליהן' : `הצג את ${v.comparables.length} העסקאות שההערכה נשענת עליהן`}
           </button>
 
           {open && (
-            <div className="mt-3 overflow-x-auto rounded-xl border border-line bg-white">
+            <div className="mt-3 overflow-x-auto rounded-xl border border-line bg-surface">
               <table className="w-full min-w-[520px] text-right text-[13px]">
                 <thead>
                   <tr className="border-b border-line bg-bgsoft text-[12px] text-muted">
@@ -137,7 +137,7 @@ export default function ValuationPanel({ valuation }: { valuation: ValuationResu
 
 function Cell({ label, value, note }: { label: string; value: string; note?: string }) {
   return (
-    <div className="rounded-xl border border-line bg-white p-3">
+    <div className="rounded-xl border border-line bg-surface p-3">
       <div className="text-[12px] text-muted">{label}</div>
       <div className="mt-0.5 text-[16px] font-black text-navy">{value}</div>
       {note && <div className="mt-0.5 text-[11px] leading-relaxed text-muted">{note}</div>}

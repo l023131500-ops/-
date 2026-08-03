@@ -29,7 +29,7 @@ export default function OrderPage({
         <ReportOrderForm defaultQuery={searchParams.q ?? ''} defaultTier={tier} />
       </div>
 
-      <div className="mt-8 rounded-2xl border border-line bg-white p-5 text-[13px] leading-relaxed text-muted shadow-card">
+      <div className="mt-8 rounded-2xl border border-line bg-surface p-5 text-[13px] leading-relaxed text-muted shadow-card">
         <div className="text-[15px] font-black text-navy">מה קורה אחרי שתשלחו</div>
         <ol className="mt-2 list-decimal space-y-1 pr-5">
           <li>הבקשה נרשמת ומופיעה מיד בלוח הניהול שלנו.</li>

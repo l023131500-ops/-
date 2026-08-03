@@ -4,8 +4,58 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ===== שכבת המשטחים והדיו =====
+   מצב כהה (DESIGN_STANDARD §3). המערכת נבנתה עם פלטה קבועה ב-tailwind.config,
+   ולכן לא היה שום דבר שערכה כהה יכולה להחליף — `scripts/qa/dark-probe.mjs`
+   מדד כאן אפס חוקי `.dark`.
+
+   ההפרדה כאן היא העיקר: **צבעי המותג אינם מתהפכים.** הזהב, הטורקיז והנייבי
+   כמשטח נשארים בדיוק כפי שהם בשתי הערכות, כי הם הזהות. מה שמתהפך הוא רק
+   הדיו, המשטחים והקווים — ולכן `bg-navy` הועבר ל-`bg-navysurface` (נייבי
+   קבוע), בעוד ש-`text-navy` נשאר על המשתנה ומתבהר בחושך כמו כל כותרת.
+
+   כל הערכים נמדדו: טקסט ראשי 13.5:1 · מושתק 6.2:1 · כותרת 14:1. */
 :root {
   color-scheme: light;
+
+  --c-navy: #0d1b3e;
+  --c-ink: #1a2233;
+  --c-muted: #5b6577;
+  --c-line: #e3e8f0;
+  --c-bgsoft: #f6f8fc;
+  --c-surface: #ffffff;
+
+  /* סקאלת slate משמשת כאן לשני דברים הפוכים: 50–300 הם משטחים משניים
+     (פסי טבלה, שבבי קוד, גבולות) ו-400–700 הם טקסט. לכן בחושך הסקאלה
+     מתהפכת בשני קצותיה ולא נעשית פשוט כהה יותר. */
+  --c-slate-50: #f8fafc;
+  --c-slate-100: #f1f5f9;
+  --c-slate-200: #e2e8f0;
+  --c-slate-300: #cbd5e1;
+  --c-slate-400: #94a3b8;
+  --c-slate-500: #64748b;
+  --c-slate-600: #475569;
+  --c-slate-700: #334155;
+}
+
+.dark {
+  color-scheme: dark;
+
+  --c-navy: #e8edf7;
+  --c-ink: #dde3ee;
+  --c-muted: #9aa5bb;
+  --c-line: #2a3550;
+  --c-bgsoft: #0c1220;
+  --c-surface: #151d31;
+
+  --c-slate-50: #1a2338;
+  --c-slate-100: #1f293f;
+  --c-slate-200: #27324b;
+  --c-slate-300: #38455f;
+  --c-slate-400: #6b7891;
+  --c-slate-500: #8b97ad;
+  --c-slate-600: #a7b2c6;
+  --c-slate-700: #c2ccdd;
 }
 
 html,
@@ -16,8 +66,8 @@ body {
 
 body {
   font-family: 'Heebo', 'Assistant', Arial, sans-serif;
-  background: #f6f8fc;
-  color: #1a2233;
+  background: var(--c-bgsoft);
+  color: var(--c-ink);
   -webkit-font-smoothing: antialiased;
 }
 
@@ -35,6 +85,12 @@ body {
   background-size: 200% 100%;
   animation: shimmer 1.4s ease-in-out infinite;
   border-radius: 8px;
+}
+/* הנצנוץ הוא גרדיאנט ולא טוקן, ולכן אינו מתהפך לבד — בלי זה מצב הטעינה
+   היה בוהק לבן בתוך עמוד כהה, בדיוק ברגע שבו אין עדיין תוכן שיסיח. */
+.dark .skeleton {
+  background: linear-gradient(90deg, #1b2440 25%, #24304f 37%, #1b2440 63%);
+  background-size: 200% 100%;
 }
 
 .hero-gradient {

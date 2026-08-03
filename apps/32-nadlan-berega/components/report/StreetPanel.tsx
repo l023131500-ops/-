@@ -269,7 +269,7 @@ export default function StreetPanel({ report }: { report: PropertyReport }) {
                 <button
                   type="button"
                   onClick={() => setExpanded((v) => !v)}
-                  className="mt-3 rounded-lg border border-line bg-white px-4 py-2 text-[13px] font-bold text-navy transition hover:border-teal hover:text-tealD print:hidden"
+                  className="mt-3 rounded-lg border border-line bg-surface px-4 py-2 text-[13px] font-bold text-navy transition hover:border-teal hover:text-tealD print:hidden"
                 >
                   {expanded
                     ? 'הצג פחות'
@@ -293,7 +293,7 @@ export default function StreetPanel({ report }: { report: PropertyReport }) {
 
 function Shell({ children }: { children: React.ReactNode }) {
   return (
-    <section className="mt-4 rounded-2xl border border-line bg-white p-5 shadow-card">
+    <section className="mt-4 rounded-2xl border border-line bg-surface p-5 shadow-card">
       <div className="flex items-start justify-between gap-2">
         <h2 className="text-lg font-black text-navy">הרחוב</h2>
         <CertaintyBadge certainty="verified" small />

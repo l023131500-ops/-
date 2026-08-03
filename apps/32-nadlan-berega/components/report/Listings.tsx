@@ -63,7 +63,7 @@ export default function Listings({
 
   if (!status.configured) {
     return (
-      <div className="mt-6 rounded-2xl border border-line bg-white p-6 shadow-card">
+      <div className="mt-6 rounded-2xl border border-line bg-surface p-6 shadow-card">
         <div className="text-lg font-black text-navy">דורש מקור מורשה</div>
         <p className="mt-2 text-[14px] leading-relaxed text-muted">
           המידע על נכסים שמוצעים כרגע מגיע מלוחות המודעות. כדי להציג אותו צריך חיבור לספק
@@ -89,7 +89,7 @@ export default function Listings({
 
   if (!listings.length) {
     return (
-      <div className="mt-6 rounded-2xl border border-line bg-white p-6 shadow-card">
+      <div className="mt-6 rounded-2xl border border-line bg-surface p-6 shadow-card">
         <div className="text-[14px] leading-relaxed text-muted">
           לא נמצאו {noun.plural} כרגע באזור הזה.
         </div>
@@ -118,7 +118,7 @@ export default function Listings({
 
       <div className="mt-3 grid gap-3 md:grid-cols-2">
         {listings.slice(0, 24).map((l, i) => (
-          <div key={i} className="rounded-2xl border border-line bg-white p-4 shadow-card">
+          <div key={i} className="rounded-2xl border border-line bg-surface p-4 shadow-card">
             <div className="flex items-start justify-between gap-3">
               <div>
                 <div className="font-bold text-navy">{l.address ?? 'כתובת לא צוינה'}</div>
@@ -188,8 +188,13 @@ export default function Listings({
 function Tag({ children, highlight }: { children: React.ReactNode; highlight?: boolean }) {
   return (
     <span
+      /* ‎#7a5f1f‎ הוא חום-זהב כהה שנבחר לרקע הזהב השקוף במצב בהיר. במצב
+         כהה אותו רקע יושב על משטח כהה, ושם הוא יורד ל-2.4:1 — לכן הגוון
+         הבהיר של המותג (`goldL`) נכנס במקומו ומחזיר את הקריאות. */
       className={`rounded-md px-2 py-0.5 font-semibold ${
-        highlight ? 'bg-gold/20 text-[#7a5f1f]' : 'bg-slate-100 text-slate-600'
+        highlight
+          ? 'bg-gold/20 text-[#7a5f1f] dark:text-goldL'
+          : 'bg-slate-100 text-slate-600'
       }`}
     >
       {children}

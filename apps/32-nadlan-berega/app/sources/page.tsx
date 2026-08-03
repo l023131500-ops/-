@@ -48,10 +48,10 @@ function SourceTable({ title, items }: { title: string; items: typeof SOURCE_LIS
   return (
     <div className="mt-8">
       <h2 className="mb-3 text-xl font-extrabold text-indigo">{title}</h2>
-      <div className="overflow-x-auto rounded-xl border border-line bg-white shadow-card">
+      <div className="overflow-x-auto rounded-xl border border-line bg-surface shadow-card">
         <table className="w-full text-right text-sm">
           <thead>
-            <tr className="bg-navy text-white">
+            <tr className="bg-navysurface text-white">
               <th className="px-3 py-2.5">מקור</th>
               <th className="px-3 py-2.5">API</th>
               <th className="px-3 py-2.5">עלות</th>
@@ -107,7 +107,7 @@ function PlanCard({
   return (
     <div
       className={`rounded-xl border p-5 shadow-card ${
-        highlight ? 'border-teal bg-[#eef7f7]' : 'border-line bg-white'
+        highlight ? 'border-teal bg-[#eef7f7]' : 'border-line bg-surface'
       }`}
     >
       <div className="text-lg font-black text-navy">{name}</div>

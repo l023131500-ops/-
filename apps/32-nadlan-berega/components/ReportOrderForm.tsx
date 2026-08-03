@@ -77,7 +77,7 @@ export default function ReportOrderForm({
   return (
     <form
       onSubmit={submit}
-      className="rounded-2xl border border-line bg-white p-6 text-right shadow-card"
+      className="rounded-2xl border border-line bg-surface p-6 text-right shadow-card"
     >
       {!compact && (
         <>
@@ -150,7 +150,7 @@ export default function ReportOrderForm({
               value={form.entrance}
               onChange={set('entrance')}
               placeholder="א / 1"
-              className="mt-1 w-full rounded-xl border border-line bg-white px-3 py-2 text-[15px] font-normal outline-none focus:border-teal"
+              className="mt-1 w-full rounded-xl border border-line bg-surface px-3 py-2 text-[15px] font-normal outline-none focus:border-teal"
             />
           </label>
           <label className="text-sm font-semibold text-ink">
@@ -159,7 +159,7 @@ export default function ReportOrderForm({
               value={form.floor}
               onChange={set('floor')}
               placeholder="שניה / 2"
-              className="mt-1 w-full rounded-xl border border-line bg-white px-3 py-2 text-[15px] font-normal outline-none focus:border-teal"
+              className="mt-1 w-full rounded-xl border border-line bg-surface px-3 py-2 text-[15px] font-normal outline-none focus:border-teal"
             />
           </label>
           <label className="text-sm font-semibold text-ink">
@@ -168,7 +168,7 @@ export default function ReportOrderForm({
               value={form.rooms}
               onChange={set('rooms')}
               placeholder="4"
-              className="mt-1 w-full rounded-xl border border-line bg-white px-3 py-2 text-[15px] font-normal outline-none focus:border-teal"
+              className="mt-1 w-full rounded-xl border border-line bg-surface px-3 py-2 text-[15px] font-normal outline-none focus:border-teal"
             />
           </label>
         </div>
@@ -189,7 +189,7 @@ export default function ReportOrderForm({
                   ? t === 'vip'
                     ? 'border-gold bg-gold/15 text-[#8a6d24]'
                     : 'border-teal bg-teal/10 text-tealD'
-                  : 'border-line bg-white text-navy hover:border-teal/60'
+                  : 'border-line bg-surface text-navy hover:border-teal/60'
               }`}
             >
               {t === 'vip' && '✦ '}

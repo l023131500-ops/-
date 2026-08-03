@@ -69,7 +69,7 @@ export default function Presentation({
 
   if (!data) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-navy text-white">
+      <div className="flex min-h-screen items-center justify-center bg-navysurface text-white">
         <div className="text-xl font-bold">טוען את המצגת…</div>
       </div>
     );
@@ -133,7 +133,7 @@ export default function Presentation({
           <button
             onClick={() => go(1)}
             disabled={i >= total - 1}
-            className="rounded-lg bg-white px-4 py-2 font-bold text-navy disabled:opacity-30"
+            className="rounded-lg bg-surface px-4 py-2 font-bold text-navy disabled:opacity-30"
           >
             הבא
           </button>

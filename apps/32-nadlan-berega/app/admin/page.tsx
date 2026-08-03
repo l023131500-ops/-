@@ -59,8 +59,8 @@ export default function AdminPage({ searchParams }: { searchParams: { key?: stri
       {!process.env.ADMIN_TOKEN && (
         <div className="mt-5 rounded-xl border border-gold/40 bg-gold/10 px-4 py-3 text-sm text-[#7a5f1f]">
           העמוד הזה אינו מוגן כרגע. כדי לנעול אותו, הגדר משתנה סביבה{' '}
-          <code className="rounded bg-white/60 px-1.5 py-0.5">ADMIN_TOKEN</code> וגש עם{' '}
-          <code className="rounded bg-white/60 px-1.5 py-0.5">?key=…</code>.
+          <code className="rounded bg-surface/60 px-1.5 py-0.5">ADMIN_TOKEN</code> וגש עם{' '}
+          <code className="rounded bg-surface/60 px-1.5 py-0.5">?key=…</code>.
         </div>
       )}
 
@@ -89,7 +89,7 @@ export default function AdminPage({ searchParams }: { searchParams: { key?: stri
 
       {/* ===== מפתחות ===== */}
       <Section title="מפתחות ומשתני סביבה" note="לכל מפתח: למה הוא משמש ומה נשבר בלעדיו.">
-        <div className="overflow-x-auto rounded-2xl border border-line bg-white shadow-card">
+        <div className="overflow-x-auto rounded-2xl border border-line bg-surface shadow-card">
           <table className="w-full min-w-[860px] text-right text-sm">
             <thead>
               <tr className="border-b border-line bg-slate-50 text-[12px] text-muted">
@@ -160,7 +160,7 @@ export default function AdminPage({ searchParams }: { searchParams: { key?: stri
             const lines = costBreakdown(t, apifyMax);
             const total = totalCost(lines);
             return (
-              <div key={t} className="rounded-2xl border border-line bg-white p-5 shadow-card">
+              <div key={t} className="rounded-2xl border border-line bg-surface p-5 shadow-card">
                 <div className="flex items-baseline justify-between">
                   <h3 className="text-lg font-black text-navy">{TIER_LABEL[t]}</h3>
                   <div className="text-left">
@@ -191,7 +191,7 @@ export default function AdminPage({ searchParams }: { searchParams: { key?: stri
 
       {/* ===== ספקי AI ===== */}
       <Section title="ספקי AI" note="מה כל ספק עושה, האם הוא מחובר, ואיפה מוסיפים מפתח וקרדיטים.">
-        <div className="overflow-x-auto rounded-2xl border border-line bg-white shadow-card">
+        <div className="overflow-x-auto rounded-2xl border border-line bg-surface shadow-card">
           <table className="w-full min-w-[760px] text-right text-sm">
             <thead>
               <tr className="border-b border-line bg-slate-50 text-[12px] text-muted">
@@ -247,7 +247,7 @@ export default function AdminPage({ searchParams }: { searchParams: { key?: stri
       <Section title="סטטוס המקורות" note="מה עובד באמת, מה דורש מפתח, ומה חייב טיפול ידני.">
         <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
           {sourceHealth().map((s) => (
-            <div key={s.name} className="rounded-xl border border-line bg-white p-4 shadow-card">
+            <div key={s.name} className="rounded-xl border border-line bg-surface p-4 shadow-card">
               <div className="flex items-start justify-between gap-2">
                 <div className="font-bold text-navy">{s.name}</div>
                 <Pill tone={s.status === 'live' ? 'ok' : s.status === 'needs_key' ? 'warn' : 'info'}>
@@ -270,7 +270,7 @@ export default function AdminPage({ searchParams }: { searchParams: { key?: stri
               href={l.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="rounded-xl border border-line bg-white p-4 shadow-card transition hover:border-teal"
+              className="rounded-xl border border-line bg-surface p-4 shadow-card transition hover:border-teal"
             >
               <div className="font-bold text-navy">{l.label}</div>
               <div className="mt-1 text-[12px] text-muted">{l.note}</div>
@@ -288,7 +288,7 @@ export default function AdminPage({ searchParams }: { searchParams: { key?: stri
             : 'מצב: הזמנה רשמית מ-gov.il לפי דרישה. להפעלת ספק צד-ג\' יש להגדיר TABU_API_URL וגם TABU_API_KEY.'
         }
       >
-        <div className="overflow-x-auto rounded-xl border border-line bg-white shadow-card">
+        <div className="overflow-x-auto rounded-xl border border-line bg-surface shadow-card">
           <table className="w-full text-right text-sm">
             <thead className="bg-slate-50 text-[12px] text-muted">
               <tr>

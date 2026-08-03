@@ -37,7 +37,7 @@ export default function VipPanel({ report }: { report: PropertyReport }) {
       </div>
 
       {/* תשואת שכירות */}
-      <div className="mt-4 rounded-2xl border border-line bg-white p-5 shadow-card">
+      <div className="mt-4 rounded-2xl border border-line bg-surface p-5 shadow-card">
         <div className="flex items-start justify-between gap-2">
           <h3 className="text-lg font-black text-navy">תשואת שכירות</h3>
           <CertaintyBadge certainty="estimate" small />
@@ -88,13 +88,13 @@ export default function VipPanel({ report }: { report: PropertyReport }) {
       <div className="mt-4 flex flex-wrap gap-3 print:hidden">
         <a
           href={apiUrl(`/present?q=${encodeURIComponent(report.query)}`)}
-          className="rounded-xl bg-navy px-6 py-3 font-bold text-white hover:bg-navy2"
+          className="rounded-xl bg-navysurface px-6 py-3 font-bold text-white hover:bg-navy2"
         >
           פתח מצגת להצגה ללקוח
         </a>
         <a
           href={apiUrl(`/api/deck?q=${encodeURIComponent(report.query)}`)}
-          className="rounded-xl border border-line bg-white px-6 py-3 font-bold text-navy hover:border-teal hover:text-tealD"
+          className="rounded-xl border border-line bg-surface px-6 py-3 font-bold text-navy hover:border-teal hover:text-tealD"
         >
           הורדת המצגת
         </a>
@@ -104,7 +104,7 @@ export default function VipPanel({ report }: { report: PropertyReport }) {
         */}
         <a
           href={apiUrl(`/api/pdf?q=${encodeURIComponent(report.query)}&tier=vip`)}
-          className="rounded-xl border border-line bg-white px-6 py-3 font-bold text-navy hover:border-teal hover:text-tealD"
+          className="rounded-xl border border-line bg-surface px-6 py-3 font-bold text-navy hover:border-teal hover:text-tealD"
         >
           הורד PDF מעוצב
         </a>

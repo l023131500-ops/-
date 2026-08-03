@@ -97,14 +97,14 @@ export default function RequestsBoard({ token }: { token: string }) {
       <div className="flex flex-wrap items-center gap-3">
         <div
           className={`rounded-xl border px-4 py-2 text-[14px] font-bold ${
-            pending ? 'border-gold/50 bg-gold/10 text-[#7a5f1f]' : 'border-line bg-white text-muted'
+            pending ? 'border-gold/50 bg-gold/10 text-[#7a5f1f]' : 'border-line bg-surface text-muted'
           }`}
         >
           {pending ? `${pending} בקשות ממתינות להפקה` : 'אין בקשות ממתינות'}
         </div>
         <button
           onClick={load}
-          className="rounded-xl border border-line bg-white px-4 py-2 text-[13px] font-bold text-navy hover:border-teal"
+          className="rounded-xl border border-line bg-surface px-4 py-2 text-[13px] font-bold text-navy hover:border-teal"
         >
           רענון
         </button>
@@ -127,7 +127,7 @@ export default function RequestsBoard({ token }: { token: string }) {
 
       <div className="mt-4 space-y-3">
         {rows.map((r) => (
-          <div key={r.id} className="rounded-2xl border border-line bg-white p-4 shadow-card">
+          <div key={r.id} className="rounded-2xl border border-line bg-surface p-4 shadow-card">
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div className="min-w-0">
                 <div className="flex flex-wrap items-center gap-2">
@@ -184,14 +184,14 @@ export default function RequestsBoard({ token }: { token: string }) {
                   <button
                     disabled={busy === r.id}
                     onClick={() => act(r.id, 'retry')}
-                    className="rounded-xl border border-line bg-white px-4 py-2 text-[13px] font-bold text-navy hover:border-teal disabled:opacity-50"
+                    className="rounded-xl border border-line bg-surface px-4 py-2 text-[13px] font-bold text-navy hover:border-teal disabled:opacity-50"
                   >
                     החזר לתור
                   </button>
                 )}
                 <button
                   onClick={() => setOpen(open === r.id ? null : r.id)}
-                  className="rounded-xl border border-line bg-white px-4 py-2 text-[13px] font-bold text-navy hover:border-teal"
+                  className="rounded-xl border border-line bg-surface px-4 py-2 text-[13px] font-bold text-navy hover:border-teal"
                 >
                   {open === r.id ? 'סגור טאבו' : 'נסח טאבו'}
                 </button>
@@ -385,7 +385,7 @@ function TabuPanel({ token, request }: { token: string; request: ReportRequestRo
           <button
             type="submit"
             disabled={busy}
-            className="rounded-xl bg-navy px-4 py-2 text-[13px] font-bold text-white hover:bg-navy/90 disabled:opacity-50"
+            className="rounded-xl bg-navysurface px-4 py-2 text-[13px] font-bold text-white hover:bg-navy/90 disabled:opacity-50"
           >
             {busy ? 'מעלה…' : 'העלאת נסח טאבו'}
           </button>
@@ -438,7 +438,7 @@ function TabuPanel({ token, request }: { token: string; request: ReportRequestRo
                   <button
                     disabled={busy || analysisOk === false}
                     onClick={() => analyze(d.id)}
-                    className="rounded-lg border border-line bg-white px-3 py-1.5 text-[12px] font-bold text-navy hover:border-teal disabled:opacity-50"
+                    className="rounded-lg border border-line bg-surface px-3 py-1.5 text-[12px] font-bold text-navy hover:border-teal disabled:opacity-50"
                   >
                     {d.analysis_status === 'done' ? 'ניתוח מחדש' : 'ניתוח טאבו'}
                   </button>
@@ -452,7 +452,7 @@ function TabuPanel({ token, request }: { token: string; request: ReportRequestRo
               )}
 
               {d.analysis && (
-                <div className="mt-2 rounded-lg border border-line bg-white p-3 text-[12px] leading-relaxed text-ink">
+                <div className="mt-2 rounded-lg border border-line bg-surface p-3 text-[12px] leading-relaxed text-ink">
                   {d.analysis.owners.length > 0 && (
                     <div>
                       <b>בעלות:</b>{' '}

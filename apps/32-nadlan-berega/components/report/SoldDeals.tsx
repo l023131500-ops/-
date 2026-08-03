@@ -49,7 +49,7 @@ export default function SoldDeals({
 
   if (!deals.length) {
     return (
-      <div className="mt-6 rounded-2xl border border-line bg-white p-6 text-[14px] leading-relaxed text-muted shadow-card">
+      <div className="mt-6 rounded-2xl border border-line bg-surface p-6 text-[14px] leading-relaxed text-muted shadow-card">
         לא נמצאו עסקאות מכר שנסגרו בבניין הזה או בסביבתו הקרובה. זה קורה באזורים חדשים,
         בבניינים שטרם נמכרו בהם דירות, ובנכסים שאינם דירות מגורים.
       </div>
@@ -108,7 +108,7 @@ export default function SoldDeals({
         </p>
       </div>
 
-      <div className="mt-3 overflow-x-auto rounded-2xl border border-line bg-white shadow-card">
+      <div className="mt-3 overflow-x-auto rounded-2xl border border-line bg-surface shadow-card">
         <table className="w-full min-w-[880px] text-right text-sm">
           <thead>
             <tr className="border-b border-line bg-slate-50 text-[12px] text-muted">
@@ -198,7 +198,7 @@ export default function SoldDeals({
           ) : (
             <button
               onClick={() => setShowAllRecent(true)}
-              className="rounded-xl border border-line bg-white px-5 py-2 text-sm font-bold text-navy hover:border-teal hover:text-tealD"
+              className="rounded-xl border border-line bg-surface px-5 py-2 text-sm font-bold text-navy hover:border-teal hover:text-tealD"
             >
               הצג את כל {recent.length} העסקאות מ-{RECENT_YEARS} השנים האחרונות
             </button>
@@ -207,7 +207,7 @@ export default function SoldDeals({
         {older.length > 0 && !showOlder && (
           <button
             onClick={() => setShowOlder(true)}
-            className="rounded-xl border border-line bg-white px-5 py-2 text-sm font-bold text-navy hover:border-teal hover:text-tealD"
+            className="rounded-xl border border-line bg-surface px-5 py-2 text-sm font-bold text-navy hover:border-teal hover:text-tealD"
           >
             הצג שנים קודמות ({older.length} עסקאות עד {cutoffYear})
           </button>

@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -184,7 +184,7 @@ export default function ReportView({
   if (error) {
     return (
       <div className="mx-auto max-w-3xl px-5 py-20 text-center">
-        <div className="rounded-2xl border border-line bg-white p-8 shadow-card">
+        <div className="rounded-2xl border border-line bg-surface p-8 shadow-card">
           <div className="text-xl font-black text-navy">לא הצלחנו להפיק את הדוח</div>
           <p className="mt-2 text-muted">{error}</p>
           <button
@@ -212,7 +212,7 @@ export default function ReportView({
   return (
     <div className="pb-20">
       {/* ===== כותרת ===== */}
-      <section className="hero-gradient text-white print:bg-white print:text-black">
+      <section className="hero-gradient text-white print:bg-surface print:text-black">
         <div className="mx-auto max-w-6xl px-5 py-10">
           <div className="text-xs font-bold tracking-widest text-goldL print:text-gold">
             {ASSET_LABEL[assetType]} · {BUTTONS.find((b) => b.tier === tier)?.title}
@@ -271,7 +271,7 @@ export default function ReportView({
                   onClick={() => setAssetType(a)}
                   aria-pressed={on}
                   className={`rounded-2xl border-2 px-4 py-2.5 text-right transition ${
-                    on ? 'border-navy bg-white shadow-card' : 'border-line bg-white/70 hover:border-navy/40'
+                    on ? 'border-navy bg-surface shadow-card' : 'border-line bg-surface/70 hover:border-navy/40'
                   }`}
                 >
                   <div className={`text-[15px] font-black ${on ? 'text-navy' : 'text-ink'}`}>
@@ -287,7 +287,7 @@ export default function ReportView({
       </div>
 
       {/* ===== שלושת הכפתורים ===== */}
-      <div className={`border-b border-line bg-white print:hidden ${preloaded ? 'hidden' : ''}`}>
+      <div className={`border-b border-line bg-surface print:hidden ${preloaded ? 'hidden' : ''}`}>
         <div className="mx-auto max-w-6xl px-5 py-4">
           <div className="grid gap-3 sm:grid-cols-3">
             {BUTTONS.map((b) => {
@@ -303,7 +303,7 @@ export default function ReportView({
                       ? vip
                         ? 'border-gold bg-gold/15 shadow-card'
                         : 'border-teal bg-teal/10 shadow-card'
-                      : 'border-line bg-white hover:border-teal/60'
+                      : 'border-line bg-surface hover:border-teal/60'
                   }`}
                 >
                   <div
@@ -348,7 +348,7 @@ export default function ReportView({
               <button
                 type="button"
                 onClick={() => setLayers([...ALL_LAYERS])}
-                className="shrink-0 rounded-lg bg-navy px-4 py-2 text-[13px] font-bold text-white hover:bg-navy/90"
+                className="shrink-0 rounded-lg bg-navysurface px-4 py-2 text-[13px] font-bold text-white hover:bg-navy/90"
               >
                 הצג את כל השכבות
               </button>
@@ -373,7 +373,7 @@ export default function ReportView({
         {/* ===== רקע השכונה — שכבת `neighborhood` ===== */}
         {layers.includes('neighborhood') && (
         <section className="mt-6 grid gap-4 lg:grid-cols-[1.1fr_1fr]">
-          <div className="rounded-2xl border border-line bg-white p-5 shadow-card">
+          <div className="rounded-2xl border border-line bg-surface p-5 shadow-card">
             <h2 className="text-lg font-black text-navy">איפה זה נמצא</h2>
             {data.background.neighborhoodDisplay ? (
               <>
@@ -472,7 +472,7 @@ export default function ReportView({
                   key={k}
                   onClick={() => jumpTo(k)}
                   className={`shrink-0 rounded-lg px-3.5 py-2 text-sm font-bold transition ${
-                    active === k ? 'bg-navy text-white' : 'bg-white text-ink hover:text-tealD'
+                    active === k ? 'bg-navysurface text-white' : 'bg-surface text-ink hover:text-tealD'
                   }`}
                 >
                   {cat.title}
@@ -601,13 +601,13 @@ export default function ReportView({
             </a>
             <a
               href={apiUrl(`/present?${sharedQs}`)}
-              className="rounded-xl border border-line bg-white px-6 py-3 font-bold text-navy hover:border-teal hover:text-tealD"
+              className="rounded-xl border border-line bg-surface px-6 py-3 font-bold text-navy hover:border-teal hover:text-tealD"
             >
               פתח מצגת
             </a>
             <a
               href={apiUrl(`/api/deck?${sharedQs}`)}
-              className="rounded-xl border border-line bg-white px-6 py-3 font-bold text-navy hover:border-teal hover:text-tealD"
+              className="rounded-xl border border-line bg-surface px-6 py-3 font-bold text-navy hover:border-teal hover:text-tealD"
             >
               הורדת המצגת
             </a>
@@ -622,7 +622,7 @@ export default function ReportView({
           </div>
         )}
 
-        <footer className="mt-12 rounded-2xl border border-line bg-white p-5 text-[12px] leading-relaxed text-muted shadow-card">
+        <footer className="mt-12 rounded-2xl border border-line bg-surface p-5 text-[12px] leading-relaxed text-muted shadow-card">
           הדוח כולל {filledFacts} נתונים מתוך {totalFacts} שנבדקו. הופק ב-
           {new Date(data.generatedAt).toLocaleString('he-IL')}. כל נתון מוצג עם המקור שלו ועם
           רמת הוודאות שלו. נתונים המסומנים "מקורב" או "הערכה" אינם קביעה לגבי הנכס עצמו.
@@ -652,7 +652,7 @@ function PermalinkBox({ url }: { url: string }) {
           value={url}
           aria-label="הקישור הקבוע של הנכס"
           onFocus={(e) => e.currentTarget.select()}
-          className="min-w-0 flex-1 rounded-lg border border-line bg-white px-3 py-2 text-[13px] text-ink"
+          className="min-w-0 flex-1 rounded-lg border border-line bg-surface px-3 py-2 text-[13px] text-ink"
         />
         <button
           type="button"
@@ -665,7 +665,7 @@ function PermalinkBox({ url }: { url: string }) {
               () => {},
             );
           }}
-          className="shrink-0 rounded-lg bg-navy px-4 py-2 text-[13px] font-bold text-white hover:bg-navy/90"
+          className="shrink-0 rounded-lg bg-navysurface px-4 py-2 text-[13px] font-bold text-white hover:bg-navy/90"
         >
           {copied ? 'הועתק ✓' : 'העתק קישור'}
         </button>
@@ -698,7 +698,7 @@ function LoadingState({ q, tier }: { q: string; tier: ReportTier }) {
       <p className="mt-2 text-muted">אנחנו אוספים נתונים ממקורות רשמיים. זה לוקח כמה שניות.</p>
       <div className="mx-auto mt-8 max-w-md space-y-2 text-right">
         {steps.map((s) => (
-          <div key={s} className="flex items-center gap-3 rounded-xl border border-line bg-white p-3">
+          <div key={s} className="flex items-center gap-3 rounded-xl border border-line bg-surface p-3">
             <span className="h-2.5 w-2.5 shrink-0 animate-pulse rounded-full bg-teal" />
             <span className="text-sm text-ink">{s}</span>
           </div>

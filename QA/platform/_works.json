@@ -199,7 +199,11 @@
     "buttons": 30,
     "failedAssets": [],
     "failedCount": 0,
-    "errors": [],
+    "errors": [
+      "Minified React error #418; visit https://reactjs.org/docs/error-decoder.html?invariant=418 for the full message or use t",
+      "Minified React error #418; visit https://reactjs.org/docs/error-decoder.html?invariant=418 for the full message or use t",
+      "Minified React error #418; visit https://reactjs.org/docs/error-decoder.html?invariant=418 for the full message or use t"
+    ],
     "overflow": 0,
     "works": true
   },
@@ -231,8 +235,8 @@
     "sys": "27",
     "path": "/mechiron",
     "status": 200,
-    "text": 302,
-    "buttons": 11,
+    "text": 933,
+    "buttons": 32,
     "failedAssets": [
       "404 /mechiron/api/public/chatbot/config"
     ],

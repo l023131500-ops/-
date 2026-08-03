@@ -8,11 +8,27 @@ export const metadata: Metadata = {
     'מנוע אגרגציה שמאחד מקורות מידע ממשלתיים ומסחריים לכדי תעודת זהות דיגיטלית לכל נכס בישראל. מבית מור מערכות תוכנה.',
 };
 
+/**
+ * מצב כהה (DESIGN_STANDARD §3) — ראה את שכבת המשטחים ב-`app/globals.css`.
+ *
+ * חייב לרוץ בתוך ה-`<head>` ולפני הציור הראשון. Next מגיש כאן HTML מוכן,
+ * ולכן החלה מתוך `useEffect` הייתה מגיעה רק אחרי שהדפדפן כבר צייר את העמוד
+ * לבן — הבזק שנראה כמו תקלה, ובעמוד דוח ארוך גם כואב לעיניים.
+ *
+ * הוא אינו יוצר אי-התאמת הידרציה: הוא כותב מחלקה על `<html>`, שאינו חלק
+ * מהעץ ש-React מנהל.
+ */
+const THEME_BOOT = `(function(){var m=window.matchMedia("(prefers-color-scheme: dark)");var a=function(d){document.documentElement.classList.toggle("dark",d)};a(m.matches);m.addEventListener?m.addEventListener("change",function(e){a(e.matches)}):m.addListener(function(e){a(e.matches)})})()`;
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="he" dir="rtl">
+      <head>
+        <meta name="color-scheme" content="light dark" />
+        <script dangerouslySetInnerHTML={{ __html: THEME_BOOT }} />
+      </head>
       <body className="font-heebo">
-        <header className="sticky top-0 z-40 border-b border-line bg-white/90 backdrop-blur print:hidden">
+        <header className="sticky top-0 z-40 border-b border-line bg-surface/90 backdrop-blur print:hidden">
           {/* כפתור הכניסה המשותף (למטה בקובץ) יושב `fixed` בפינה השמאלית
               העליונה — הקצה האינליין-סופי ב-RTL — ושם בדיוק נגמר הנווט.
               נמדד ב-390px ש"מקורות ותמחור" מכוסה והלחיצה מגיעה לכדור.
@@ -39,7 +55,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </div>
         </header>
         <main className="min-h-[70vh]">{children}</main>
-        <footer className="mt-16 bg-navy py-8 text-sm text-[#cdd6ea] print:hidden">
+        <footer className="mt-16 bg-navysurface py-8 text-sm text-[#cdd6ea] print:hidden">
           <div className="mx-auto flex max-w-6xl flex-wrap justify-between gap-4 px-5">
             <div>
               <span className="font-black text-white">נדל"ן ברגע</span> · מבית מור מערכות תוכנה

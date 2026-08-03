@@ -45,7 +45,7 @@ export default function PlanMap({
 
   if (failed) {
     return (
-      <div className="mt-5 rounded-2xl border border-line bg-white p-5 text-[14px] leading-relaxed text-muted shadow-card">
+      <div className="mt-5 rounded-2xl border border-line bg-surface p-5 text-[14px] leading-relaxed text-muted shadow-card">
         התשריט התכנוני לא נטען כרגע משירות המפות של מינהל התכנון. הנתונים התכנוניים שמוצגים
         למעלה נמשכו מאותו שירות והם תקפים.
       </div>
@@ -56,7 +56,7 @@ export default function PlanMap({
   const span = zoomed ? 0.0006 : 0.0016;
 
   return (
-    <figure className="mt-5 overflow-hidden rounded-2xl border border-line bg-white shadow-card">
+    <figure className="mt-5 overflow-hidden rounded-2xl border border-line bg-surface shadow-card">
       <figcaption className="flex flex-wrap items-center justify-between gap-2 border-b border-line px-4 py-3">
         <span className="font-black text-navy">התשריט התכנוני על החלקה</span>
         <button

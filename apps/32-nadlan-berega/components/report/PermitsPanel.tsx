@@ -34,7 +34,7 @@ export default function PermitsPanel({ permits }: { permits: PermitsResult | nul
 
   if (!groups.length) {
     return (
-      <div className="mt-5 rounded-2xl border border-line bg-white p-5 text-[14px] leading-relaxed text-muted shadow-card">
+      <div className="mt-5 rounded-2xl border border-line bg-surface p-5 text-[14px] leading-relaxed text-muted shadow-card">
         לא נמצאה אף תוכנית שהקו הכחול שלה חולש על הנקודה הזו.
       </div>
     );
@@ -62,7 +62,7 @@ export default function PermitsPanel({ permits }: { permits: PermitsResult | nul
             {!showAll && g.plans.length > visible.length && (
               <button
                 onClick={() => setShowAll(true)}
-                className="mt-3 rounded-lg border border-line bg-white px-4 py-2 text-[13px] font-bold text-tealD hover:border-teal"
+                className="mt-3 rounded-lg border border-line bg-surface px-4 py-2 text-[13px] font-bold text-tealD hover:border-teal"
               >
                 הצג את כל {g.plans.length} התוכניות
               </button>
@@ -80,7 +80,7 @@ export default function PermitsPanel({ permits }: { permits: PermitsResult | nul
 
 function PlanCard({ plan }: { plan: PlanWithDocs }) {
   return (
-    <div className="rounded-xl border border-line bg-white p-4 shadow-card">
+    <div className="rounded-xl border border-line bg-surface p-4 shadow-card">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         <div className="text-[15px] font-black text-navy">
           {plan.planNumber ?? 'תוכנית ללא מספר'}
@@ -133,7 +133,7 @@ export function RamiPolicyPanel({
 }) {
   if (!policy || !policy.sections.length) return null;
   return (
-    <div className="mt-5 rounded-2xl border border-line bg-white p-5 shadow-card">
+    <div className="mt-5 rounded-2xl border border-line bg-surface p-5 shadow-card">
       <h3 className="text-[17px] font-black text-navy">
         מדיניות רמ"י — שינוי ייעוד של קרקע חקלאית
       </h3>

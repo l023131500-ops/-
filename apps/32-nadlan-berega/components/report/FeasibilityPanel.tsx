@@ -26,7 +26,7 @@ export default function FeasibilityPanel({ feasibility }: { feasibility: Feasibi
         className={`w-full rounded-2xl border-2 px-5 py-4 text-right transition ${
           open
             ? 'border-teal bg-teal/[0.07] shadow-card'
-            : 'border-teal/60 bg-white hover:border-teal hover:shadow-card'
+            : 'border-teal/60 bg-surface hover:border-teal hover:shadow-card'
         }`}
       >
         <div className="flex items-center justify-between gap-3">
@@ -43,7 +43,7 @@ export default function FeasibilityPanel({ feasibility }: { feasibility: Feasibi
       </button>
 
       {open && (
-        <div className="mt-3 space-y-5 rounded-2xl border border-line bg-white p-5 shadow-card">
+        <div className="mt-3 space-y-5 rounded-2xl border border-line bg-surface p-5 shadow-card">
           <p className="text-[15px] leading-relaxed text-ink">{f.headline}</p>
 
           {/* ===== תכניות שמאפשרות תוספת ===== */}

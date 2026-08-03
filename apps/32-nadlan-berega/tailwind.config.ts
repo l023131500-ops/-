@@ -6,10 +6,19 @@ const config: Config = {
     './components/**/*.{ts,tsx}',
     './lib/**/*.{ts,tsx}',
   ],
+  // מצב כהה נדלק ממחלקה על <html>, שנכתבת בסקריפט לפני הציור הראשון
+  // (app/layout.tsx). לא media: המשתמש צריך שהאתר יעקוב אחרי מערכת ההפעלה
+  // שלו, אבל הטוקנים חייבים להיות ניתנים להחלפה גם ידנית בהמשך.
+  darkMode: 'class',
   theme: {
     extend: {
       colors: {
-        navy: '#0d1b3e',
+        // `navy` הוא **דיו** — הוא מתבהר בחושך כמו כל כותרת. הנייבי כמשטח
+        // (ה-hero, כפתורי הפעולה הכהים) הוא `navysurface` והוא קבוע, כי הוא
+        // צבע מותג ולא שכבת תצוגה. ההפרדה הזו היא מה שמאפשר ל-147 מופעי
+        // `text-navy` להתהפך בלי לשבור אף אחד מ-23 מופעי הרקע.
+        navy: 'var(--c-navy)',
+        navysurface: '#0d1b3e',
         navy2: '#122a5e',
         indigo: '#1e3a8a',
         // White on the old #0ea5a4 measured 3.03:1 — below AA, on the primary
@@ -21,10 +30,24 @@ const config: Config = {
         tealD: '#0e6e6c',
         gold: '#c8a24a',
         goldL: '#e6c988',
-        ink: '#1a2233',
-        muted: '#5b6577',
-        line: '#e3e8f0',
-        bgsoft: '#f6f8fc',
+        ink: 'var(--c-ink)',
+        muted: 'var(--c-muted)',
+        line: 'var(--c-line)',
+        bgsoft: 'var(--c-bgsoft)',
+        // `bg-white` היה המשטח של כל כרטיס במערכת. הוא הועבר ל-`bg-surface`
+        // כדי שהמשטח יוכל להתהפך בלי לגעת ב-`text-white`, שיושב על נייבי
+        // ועל זהב וחייב להישאר לבן בשתי הערכות.
+        surface: 'var(--c-surface)',
+        slate: {
+          50: 'var(--c-slate-50)',
+          100: 'var(--c-slate-100)',
+          200: 'var(--c-slate-200)',
+          300: 'var(--c-slate-300)',
+          400: 'var(--c-slate-400)',
+          500: 'var(--c-slate-500)',
+          600: 'var(--c-slate-600)',
+          700: 'var(--c-slate-700)',
+        },
       },
       fontFamily: {
         heebo: ['Heebo', 'Assistant', 'Arial', 'sans-serif'],
