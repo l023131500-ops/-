@@ -103,11 +103,7 @@
     "buttons": 46,
     "failedAssets": [],
     "failedCount": 0,
-    "errors": [
-      "Unexpected token '<'",
-      "Unexpected token '<'",
-      "Unexpected token '<'"
-    ],
+    "errors": [],
     "overflow": 0,
     "works": true
   },

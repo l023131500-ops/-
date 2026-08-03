@@ -55,9 +55,30 @@ const FALLBACK = new RegExp(
 
 const TOKEN = /\b(eyJhbGciOiJ[\w-]{6,}|sbp_[a-z0-9]{20,}|sb_secret_[\w-]{10,}|ghp_[\w]{30,}|github_pat_[\w]{30,}|sk-[\w-]{25,}|re_[\w]{20,}|AIza[\w-]{30,}|xox[baprs]-[\w-]{10,})\b/g;
 
-// Values that are obviously not credentials.
+// Values that are obviously not credentials. `[REDACTED]` and `not-a-real…`
+// are here rather than in ACCEPTED because they are self-describing wherever
+// they appear — including in documentation that quotes the redaction.
 const BENIGN =
-  /^(process\.env|import\.meta|undefined|null|true|false|localhost|https?:\/\/|\/|\.{1,2}\/|[A-Z_]+$|your[_-]|xxx|placeholder|example|changeme|<[^>]+>|\$\{)/i;
+  /^(process\.env|import\.meta|undefined|null|true|false|localhost|https?:\/\/|\/|\.{1,2}\/|[A-Z_]+$|your[_-]|xxx|placeholder|example|changeme|redacted|\[redacted\]|not-a-real|<[^>]+>|\$\{)/i;
+
+/**
+ * Known-benign findings, each read and understood rather than pattern-matched
+ * away. A scanner that always reports the same five things it cannot act on is
+ * a scanner people stop reading, and then it misses the sixth. Every entry
+ * here says why it is safe.
+ */
+const ACCEPTED = [
+  { file: 'apps/01-torah-platform/supabase/functions/nedarim-admin/index.ts',
+    value: '[REDACTED]', why: 'the literal string written INTO the audit log in place of the secret' },
+  { file: 'packages/billing/src/index.ts',
+    value: '7016674', why: 'the Mosad (institution) id — public, and documented as not a secret in that file' },
+  { file: 'scripts/Use-SupabasePat.ps1',
+    value: 'sbp_...', why: 'placeholder shown in usage text' },
+  { file: 'scripts/qa/nadlan-pro-smoke.ps1',
+    value: 'not-a-real-token-just-a-string', why: 'a test fixture that is meant to be rejected' },
+];
+const accepted = (file, value) =>
+  ACCEPTED.some((a) => file === a.file && value.startsWith(a.value.replace(/\.\.\.$/, '')));
 
 /**
  * A Supabase key is only a finding if it is not the anon key. The anon key is
@@ -78,6 +99,7 @@ function jwtRole(token) {
 
 let hits = 0;
 let publicKeys = 0;
+let acceptedCount = 0;
 for (const file of tracked) {
   let text;
   try { text = readFileSync(file, 'utf8'); } catch { continue; }
@@ -90,6 +112,7 @@ for (const file of tracked) {
       for (const m of line.matchAll(re)) {
         const { name, value } = m.groups;
         if (BENIGN.test(value.trim())) continue;
+        if (accepted(file, value.trim())) { acceptedCount++; continue; }
         const k = `${name}:${value}`;
         if (seen.has(k)) continue;
         seen.add(k);
@@ -115,6 +138,7 @@ for (const file of tracked) {
 
 console.log(
   `\nscanned ${tracked.length} tracked files · ${hits} finding(s)` +
-    ` · ${publicKeys} anon key(s) skipped (public by design)`,
+    ` · ${publicKeys} anon key(s) skipped (public by design)` +
+    ` · ${acceptedCount} known-benign accepted (see ACCEPTED above)`,
 );
 process.exit(hits ? 1 : 0);
