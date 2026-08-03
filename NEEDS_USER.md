@@ -67,6 +67,11 @@ Resource is limited - try again in 24 hours
 | `apps/31-hebrew-bridge-crm/vercel.json` | **מתקן עמוד ריק לגמרי** — rewrite לנכסים |
 | `apps/21-mthbram/src/App.tsx` | `basename="/mthbram"` — המערכת הייתה 404 |
 | `apps/24-galilee-connect-hub/src/App.tsx` | `basename="/galil"` + הוסר וידאו מת |
+| `apps/15-egod/src/components/home/TipsSection.tsx` | אזור מגע 24px + `aria-label` ל-8 נקודות |
+| `apps/15-egod/src/components/Footer.tsx` | `py-1` ל-11 קישורי פוטר |
+| `apps/03-igud-ads/app/(public)/page.tsx` | `py-1` ל-3 קישורי נווט ⏳ **טרם נפרס** |
+| `apps/02-igud-transcribe/app/page.tsx` | `py-1` לקישור המייל ⏳ **טרם נפרס** |
+| `apps/21-mthbram/src/pages/NotFound.tsx` | `py-1` לקישור חזרה ⏳ **טרם נפרס** |
 
 **בנייה הבאה מהריפו של אחת המערכות תמחק אותם.**
 
