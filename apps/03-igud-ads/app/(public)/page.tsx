@@ -3,7 +3,18 @@ import Link from "next/link";
 export default function HomePage() {
   return (
     <main className="min-h-screen bg-gradient-to-b from-brand-blue to-brand-dark text-white">
-      <header className="container mx-auto px-6 py-6 flex items-center justify-between">
+      {/* כפתור הכניסה המשותף של more30 יושב `fixed` בפינה השמאלית העליונה
+          (הקצה האינליין-סופי ב-RTL), ושם `justify-between` מניח את
+          "התחברות". נמדד ב-390px אחרי שהכפתור נוסף למערכת הזו: חפיפה 54×4
+          והלחיצה מגיעה לכדור. `--more30-auth-inset` הוא הרוחב שהכדור
+          מפרסם בפועל; החיסור מקזז את השוליים שה-container כבר נותן. */}
+      <header
+        className="container mx-auto px-6 py-6 flex items-center justify-between"
+        style={{
+          paddingInlineEnd:
+            'max(1.5rem, calc(var(--more30-auth-inset, 124px) - max(0px, (100vw - 1400px) / 2)))',
+        }}
+      >
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-md bg-brand-gold/20 flex items-center justify-center">
             <span className="text-brand-gold font-serif font-bold text-xl">א</span>

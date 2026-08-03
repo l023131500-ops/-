@@ -80,7 +80,21 @@ export default function PublicLanding() {
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col" dir="rtl">
       <header className="border-b border-border bg-sidebar text-sidebar-foreground">
-        <div className="max-w-[1200px] mx-auto px-4 sm:px-6 h-14 flex items-center justify-between gap-4">
+        {/* כפתור הכניסה המשותף של more30 יושב `fixed` בפינה השמאלית העליונה
+            (הקצה האינליין-סופי ב-RTL), ושם נגמר הנווט. נמדד ב-390px אחרי
+            שהכפתור נוסף למערכת הזו: "ניהול פיננסי" ו"יצירת קשר" מכוסים
+            והלחיצה מגיעה לכדור. `--more30-auth-inset` הוא הרוחב שהכדור
+            מפרסם בפועל; החיסור מקזז את השוליים שה-container כבר נותן.
+
+            ⚠️ שינוי תצוגה בלבד, ונפרס רק ל-`mechiron-more30` ב-Vercel —
+            אינו נוגע בשרת `bkalut-app` המוגן. */}
+        <div
+          className="max-w-[1200px] mx-auto px-4 sm:px-6 h-14 flex items-center justify-between gap-4"
+          style={{
+            paddingInlineEnd:
+              'max(1rem, calc(var(--more30-auth-inset, 124px) - max(0px, (100vw - 1200px) / 2)))',
+          }}
+        >
           <Link href="/" data-testid="link-home-public" className="flex items-center -mr-2 px-2 py-1">
             <Logo size={28} showWordmark={false} />
             <span className="font-bold text-base mr-2">בקלות</span>
