@@ -1,11 +1,43 @@
 // Nedarim Plus payment integration — reuses torah-platform credentials.
-// Tenant: igud — MosadId 7016674, ApiValid LU/Aw5hcm1, ApiPassword nc334
 // Allowed webhook IP: 18.194.219.73
+//
+// 🚨 The ApiValid and ApiPassword for this Mosad used to sit here as literal
+// `||` fallbacks, and a comment above repeated them in plain text. On 03/08 the
+// whole apps/ tree was force-added to the monorepo — which is **public** — so
+// they were published. They are set as environment variables on the
+// `modaot-more30` Vercel project now, and they are gone from here.
+//
+// **Treat both as compromised and rotate them with Nedarim Plus.** Removing
+// them from the working tree does not remove them from git history, and a
+// public repository must be assumed to have been read. Logged in NEEDS_USER.
+//
+// A fallback is not a safe place for a credential — it is a worse one than a
+// plain assignment, because it reads as though the value came from the
+// environment. `scripts/qa/secret-scan.mjs` now looks for exactly this shape.
+
+/** Fail loudly and at import time, rather than silently charging with a guess. */
+function required(name: string): string {
+  const v = process.env[name];
+  if (!v) {
+    throw new Error(
+      `${name} is not set. Nedarim credentials come from the deployment secret ` +
+        `store — never from a literal in this file.`,
+    );
+  }
+  return v;
+}
 
 export const NEDARIM_CONFIG = {
-  mosad_id: process.env.NEDARIM_MOSAD_ID || "7016674",
-  api_valid: process.env.NEDARIM_API_VALID || "LU/Aw5hcm1",
-  api_password: process.env.NEDARIM_API_PASSWORD || "nc334",
+  get mosad_id() {
+    return required("NEDARIM_MOSAD_ID");
+  },
+  get api_valid() {
+    return required("NEDARIM_API_VALID");
+  },
+  get api_password() {
+    return required("NEDARIM_API_PASSWORD");
+  },
+  // Not a credential: the public iframe endpoint every Nedarim Plus site uses.
   endpoint:
     process.env.NEDARIM_ENDPOINT ||
     "https://matara.pro/nedarimplus/iframe?language=he",

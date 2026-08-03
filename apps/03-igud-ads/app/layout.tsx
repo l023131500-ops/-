@@ -31,7 +31,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           href="https://fonts.googleapis.com/css2?family=Noto+Serif+Hebrew:wght@500;700;900&family=Rubik:wght@300;400;500;700&display=swap"
         />
       </head>
-      <body>{children}</body>
+      <body>
+        {children}
+        {/* כפתור הכניסה המשותף של more30 (DESIGN_STANDARD §9). ‎/modaot‎ הייתה
+            המערכת האחרונה בלעדיו — `scripts/qa/authbutton-overlap.mjs` דיווח
+            "no pill" בשני הרוחבים. הוא נדחה עד עכשיו כי זו מערכת עם סליקה
+            חיה, ולא בגלל השינוי עצמו: זו שורת ‎<script>‎ אחת שאינה נוגעת
+            במסד, ב-‎lib/nedarim.ts‎ ולא במסלולי ‎/api/payments/*‎. */}
+        <script src="https://more30.com/auth-button.js" defer />
+      </body>
     </html>
   );
 }
