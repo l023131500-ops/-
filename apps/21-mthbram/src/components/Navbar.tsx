@@ -19,17 +19,15 @@ const Navbar = () => {
   return (
     <nav className="fixed top-0 right-0 left-0 z-50 bg-background/70 backdrop-blur-2xl border-b border-border/40 shadow-sm">
       {/* כפתור הכניסה המשותף של more30 יושב `fixed` בפינה השמאלית העליונה
-          (הקצה האינליין-סופי ב-RTL) — בדיוק על כפתור התפריט במובייל. נמדד
-          ב-`scripts/qa/authbutton-overlap.mjs` שהלחיצה מגיעה לכדור.
-          `--more30-auth-inset` הוא הרוחב שהכדור מפרסם בפועל; החיסור מקזז
-          את השוליים שה-container כבר נותן במסך רחב. */}
-      <div
-        className="container mx-auto px-6 py-3 flex items-center justify-between"
-        style={{
-          paddingInlineEnd:
-            'max(1.5rem, calc(var(--more30-auth-inset, 124px) - max(0px, (100vw - 1400px) / 2)))',
-        }}
-      >
+          (הקצה האינליין-סופי ב-RTL) — בדיוק על כפתור התפריט במובייל.
+
+          ⚠️ הפינוי **אינו** יושב על ה-container, וזו לא בחירת סגנון. ה-CSS
+          של המערכת מכיל `.container{padding-left:1rem!important}`, ו-
+          `!important` בגיליון מחבר גובר על סגנון inline רגיל — כלומר
+          `style={{paddingInlineEnd}}` נבלע כאן בשקט. נמדד: הצהרה תקינה
+          בתכונת ה-style, וערך מחושב 16px; אפילו כפייה של 150px מהקונסולה
+          לא זזה. לכן המרווח נוסף לפקד עצמו, שאין עליו חוק מתחרה. */}
+      <div className="container mx-auto px-6 py-3 flex items-center justify-between">
         <Link to="/">
           <BrandLogo size="sm" />
         </Link>
@@ -67,6 +65,10 @@ const Navbar = () => {
           className="md:hidden text-foreground p-2"
           aria-label={isOpen ? 'סגירת התפריט' : 'פתיחת התפריט'}
           aria-expanded={isOpen}
+          style={{
+            marginInlineEnd:
+              'max(0px, calc(var(--more30-auth-inset, 124px) - 1rem - max(0px, (100vw - 1400px) / 2)))',
+          }}
           onClick={() => setIsOpen(!isOpen)}
         >
           <AnimatePresence mode="wait">
