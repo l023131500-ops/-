@@ -53,8 +53,22 @@ const paint = () => {
   const opaque = (c) => c && c !== 'rgba(0, 0, 0, 0)' && c !== 'transparent';
   let el = document.body;
   while (el && !opaque(bg(el))) el = el.parentElement;
+
+  // A page can paint its background with a gradient rather than a colour, and
+  // then `backgroundColor` stays transparent all the way up — which this probe
+  // used to report as "no change" even when the theme flipped correctly.
+  // Measured on /galil: body background-image went from rgb(245,247,249) to
+  // rgb(14,24,32) while every backgroundColor stayed rgba(0,0,0,0). So the
+  // gradient counts as paint, and is reported alongside the colour.
+  const image = (e) => {
+    const v = getComputedStyle(e).backgroundImage;
+    return v && v !== 'none' ? v.slice(0, 160) : '';
+  };
+  const bodyImage = image(document.body) || image(document.documentElement);
+
   return {
     effectiveBg: el ? bg(el) : bg(document.documentElement),
+    bodyImage,
     bodyBg: bg(document.body),
     htmlBg: bg(document.documentElement),
     fg: getComputedStyle(document.body).color,
@@ -92,9 +106,14 @@ for (const p of ROUTES) {
       darkRuleSample: css.darkRules,
       sheetsUnreadable: css.sheetsUnreadable,
       before, after,
-      changed: before.effectiveBg !== after.effectiveBg,
+      changed: before.effectiveBg !== after.effectiveBg || before.bodyImage !== after.bodyImage,
     };
-    console.log(`${p.padEnd(14)} rules:${css.darkRules.length}  ${before.effectiveBg} -> ${after.effectiveBg}  ${before.effectiveBg !== after.effectiveBg ? 'CHANGED' : 'no change'}`);
+    const via = before.effectiveBg !== after.effectiveBg ? '' : ' (via gradient)';
+    const shown =
+      before.effectiveBg !== after.effectiveBg
+        ? `${before.effectiveBg} -> ${after.effectiveBg}`
+        : `${before.bodyImage.slice(0, 40)} -> ${after.bodyImage.slice(0, 40)}`;
+    console.log(`${p.padEnd(14)} rules:${css.darkRules.length}  ${shown}  ${results[p].changed ? 'CHANGED' + via : 'no change'}`);
   } catch (e) {
     results[p] = { error: String(e).slice(0, 160) };
     console.log(`${p.padEnd(14)} ERROR ${String(e).slice(0, 90)}`);

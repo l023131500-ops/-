@@ -3,6 +3,28 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light dark">
+<!-- מצב כהה (DESIGN_STANDARD §3).
+     הערכה הכהה **כבר קיימת** — היא מגיעה מגיליון הטוקנים הגלובלי של בקלות
+     שנטען למטה. `scripts/qa/dark-probe.mjs` דיווח כאן "0 חוקי dark" רק כי
+     הגיליון ההוא חוצה-מקורות ולכן ‎cssRules‎ שלו אינו קריא לסקריפט
+     (‎sheetsUnreadable: 2‎) — אבל הכפייה של המחלקה כן העבירה את הרקע מ-
+     ‎rgb(247,246,242)‎ ל-‎rgb(20,19,15)‎ ואת הטקסט ללבן. כלומר לא חסרה כאן
+     ערכה, חסר היה מי שידליק אותה.
+
+     בתוך ה-‎<head>‎ ולפני הציור הראשון, ולכן אין הבזק לבן. -->
+<script>
+  (function () {
+    var mq = window.matchMedia("(prefers-color-scheme: dark)");
+    var apply = function (dark) {
+      document.documentElement.classList.toggle("dark", dark);
+    };
+    apply(mq.matches);
+    mq.addEventListener
+      ? mq.addEventListener("change", function (e) { apply(e.matches); })
+      : mq.addListener(function (e) { apply(e.matches); });
+  })();
+</script>
 <title>בדיקה מקיפה על כל הזכויות וההטבות שניתן לקבל</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

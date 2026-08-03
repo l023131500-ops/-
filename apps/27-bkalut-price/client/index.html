@@ -39,5 +39,13 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    <!-- כפתור הכניסה המשותף של more30 (DESIGN_STANDARD §9). היה חסר:
+         `scripts/qa/authbutton-overlap.mjs` דיווח "no pill" על ‎/mechiron‎
+         בשני הרוחבים.
+
+         ⚠️ תוספת תצוגה בלבד, ואינה נוגעת בשרת ‎bkalut-app‎ המוגן — היא
+         נפרסת רק לפרויקט ‎mechiron-more30‎ ב-Vercel. הכפתור נטען מ-
+         ‎more30.com‎ ואינו קיים בדומיינים של בקלות עצמה. -->
+    <script src="https://more30.com/auth-button.js" defer></script>
   </body>
 </html>

@@ -1,105 +1,94 @@
 {
-  "/torah": {
+  "/galil": {
     "hasDarkRules": true,
     "darkRuleSample": [
       {
         "sel": ".dark",
-        "decl": "--background: 220 40% 8%; --foreground: 0 0% 98%; --card: 220 40% 10%; --card-foreground: 0 0% 98%; --popover: 220 40% 10%; --popover-foreground: 0 0% 98%; --pr"
+        "decl": "--background: 205 40% 9%; --foreground: 210 25% 94%; --card: 205 35% 13%; --card-foreground: 210 25% 94%; --popover: 205 35% 13%; --popover-foreground: 210 25% "
       },
       {
-        "sel": ".dark\\:bg-blue-950\\/20:is(.dark *)",
-        "decl": "background-color: rgba(23, 37, 84, 0.2);"
-      },
-      {
-        "sel": ".dark\\:bg-green-950\\/20:is(.dark *)",
-        "decl": "background-color: rgba(5, 46, 22, 0.2);"
-      },
-      {
-        "sel": ".dark\\:bg-green-950\\/30:is(.dark *)",
-        "decl": "background-color: rgba(5, 46, 22, 0.3);"
-      },
-      {
-        "sel": ".dark\\:bg-red-950\\/20:is(.dark *)",
-        "decl": "background-color: rgba(69, 10, 10, 0.2);"
-      },
-      {
-        "sel": ".dark\\:bg-yellow-950\\/20:is(.dark *)",
-        "decl": "background-color: rgba(66, 32, 6, 0.2);"
-      },
-      {
-        "sel": ".dark\\:text-green-200:is(.dark *)",
-        "decl": "--tw-text-opacity: 1; color: rgb(187 247 208 / var(--tw-text-opacity, 1));"
+        "sel": ".dark\\:border-destructive:is(.dark *)",
+        "decl": "border-color: hsl(var(--destructive));"
       }
     ],
-    "sheetsUnreadable": 1,
+    "sheetsUnreadable": 0,
     "before": {
-      "effectiveBg": "rgb(255, 255, 255)",
-      "bodyBg": "rgb(255, 255, 255)",
+      "effectiveBg": "rgba(0, 0, 0, 0)",
+      "bodyImage": "linear-gradient(160deg, rgb(245, 247, 249) 0%, rgb(243, 245, 247) 30%, rgb(240, 243, 245) 60%, rgb(245, 247, 249) 100%)",
+      "bodyBg": "rgba(0, 0, 0, 0)",
       "htmlBg": "rgba(0, 0, 0, 0)",
-      "fg": "rgb(18, 27, 43)",
+      "fg": "rgb(21, 29, 40)",
       "surfaces": [
         "rgba(0, 0, 0, 0)",
-        "rgba(255, 255, 255, 0.8)",
+        "rgba(23, 54, 69, 0.8)",
         "rgba(0, 0, 0, 0)",
         "rgba(0, 0, 0, 0)",
+        "rgb(252, 252, 253)",
         "rgba(0, 0, 0, 0)",
         "rgba(0, 0, 0, 0)",
-        "rgba(201, 167, 74, 0.05)",
-        "rgba(0, 0, 0, 0)"
+        "rgb(252, 252, 253)"
       ]
     },
     "after": {
-      "effectiveBg": "rgb(12, 18, 29)",
-      "bodyBg": "rgb(12, 18, 29)",
+      "effectiveBg": "rgba(0, 0, 0, 0)",
+      "bodyImage": "linear-gradient(160deg, rgb(14, 24, 32) 0%, rgb(18, 30, 38) 30%, rgb(20, 34, 41) 60%, rgb(14, 24, 32) 100%)",
+      "bodyBg": "rgba(0, 0, 0, 0)",
       "htmlBg": "rgba(0, 0, 0, 0)",
-      "fg": "rgb(250, 250, 250)",
+      "fg": "rgb(236, 240, 244)",
       "surfaces": [
         "rgba(0, 0, 0, 0)",
-        "rgba(12, 18, 29, 0.8)",
+        "rgba(20, 41, 52, 0.8)",
         "rgba(0, 0, 0, 0)",
         "rgba(0, 0, 0, 0)",
+        "rgb(22, 35, 45)",
         "rgba(0, 0, 0, 0)",
         "rgba(0, 0, 0, 0)",
-        "rgba(26, 46, 91, 0.05)",
-        "rgba(0, 0, 0, 0)"
+        "rgb(22, 35, 45)"
       ]
     },
     "changed": true
   },
-  "/tamlul": {
-    "hasDarkRules": false,
-    "darkRuleSample": [],
-    "sheetsUnreadable": 1,
+  "/mthbram": {
+    "hasDarkRules": true,
+    "darkRuleSample": [
+      {
+        "sel": ".dark\\:border-destructive:is(.dark *)",
+        "decl": "border-color: hsl(var(--destructive));"
+      }
+    ],
+    "sheetsUnreadable": 0,
     "before": {
-      "effectiveBg": "rgb(251, 250, 246)",
-      "bodyBg": "rgb(251, 250, 246)",
+      "effectiveBg": "rgb(9, 26, 32)",
+      "bodyImage": "radial-gradient(circle at 20% 10%, rgba(13, 55, 63, 0.6) 0%, rgba(0, 0, 0, 0) 45%), radial-gradient(circle at 85% 90%, rgba(119, 88, 34, 0.15) 0%, rgba(0, 0, 0,",
+      "bodyBg": "rgb(9, 26, 32)",
       "htmlBg": "rgba(0, 0, 0, 0)",
-      "fg": "rgb(26, 26, 26)",
+      "fg": "rgb(241, 234, 218)",
       "surfaces": [
-        "rgba(255, 255, 255, 0.8)",
         "rgba(0, 0, 0, 0)",
+        "rgba(9, 26, 32, 0.7)",
         "rgba(0, 0, 0, 0)",
-        "rgba(0, 0, 0, 0)",
-        "rgba(0, 0, 0, 0)",
-        "rgb(255, 255, 255)",
-        "rgb(255, 255, 255)",
-        "rgb(255, 255, 255)"
+        "rgba(18, 42, 48, 0.5)",
+        "rgba(18, 42, 48, 0.5)",
+        "rgba(18, 42, 48, 0.5)",
+        "rgba(18, 42, 48, 0.5)",
+        "rgba(0, 0, 0, 0)"
       ]
     },
     "after": {
-      "effectiveBg": "rgb(251, 250, 246)",
-      "bodyBg": "rgb(251, 250, 246)",
+      "effectiveBg": "rgb(9, 26, 32)",
+      "bodyImage": "radial-gradient(circle at 20% 10%, rgba(13, 55, 63, 0.6) 0%, rgba(0, 0, 0, 0) 45%), radial-gradient(circle at 85% 90%, rgba(119, 88, 34, 0.15) 0%, rgba(0, 0, 0,",
+      "bodyBg": "rgb(9, 26, 32)",
       "htmlBg": "rgba(0, 0, 0, 0)",
-      "fg": "rgb(26, 26, 26)",
+      "fg": "rgb(241, 234, 218)",
       "surfaces": [
-        "rgba(255, 255, 255, 0.8)",
         "rgba(0, 0, 0, 0)",
+        "rgba(9, 26, 32, 0.7)",
         "rgba(0, 0, 0, 0)",
-        "rgba(0, 0, 0, 0)",
-        "rgba(0, 0, 0, 0)",
-        "rgb(255, 255, 255)",
-        "rgb(255, 255, 255)",
-        "rgb(255, 255, 255)"
+        "rgba(18, 42, 48, 0.5)",
+        "rgba(18, 42, 48, 0.5)",
+        "rgba(18, 42, 48, 0.5)",
+        "rgba(18, 42, 48, 0.5)",
+        "rgba(0, 0, 0, 0)"
       ]
     },
     "changed": false
@@ -110,6 +99,7 @@
     "sheetsUnreadable": 1,
     "before": {
       "effectiveBg": "rgb(248, 245, 236)",
+      "bodyImage": "",
       "bodyBg": "rgb(248, 245, 236)",
       "htmlBg": "rgba(0, 0, 0, 0)",
       "fg": "rgb(26, 26, 26)",
@@ -126,6 +116,7 @@
     },
     "after": {
       "effectiveBg": "rgb(248, 245, 236)",
+      "bodyImage": "",
       "bodyBg": "rgb(248, 245, 236)",
       "htmlBg": "rgba(0, 0, 0, 0)",
       "fg": "rgb(26, 26, 26)",
@@ -142,63 +133,13 @@
     },
     "changed": false
   },
-  "/imud": {
-    "hasDarkRules": true,
-    "darkRuleSample": [
-      {
-        "sel": ".dark",
-        "decl": "--button-outline: rgba(255, 255, 255, .1); --badge-outline: rgba(255, 255, 255, .05); --opaque-button-border-intensity: 9; --elevate-1: rgba(255, 255, 255, .04)"
-      },
-      {
-        "sel": ".dark\\:border-destructive:is(.dark *)",
-        "decl": "--tw-border-opacity: 1; border-color: hsl(var(--destructive) / var(--tw-border-opacity, 1));"
-      },
-      {
-        "sel": ".dark\\:after\\:border-white\\/10:is(.dark *)::after",
-        "decl": "content: var(--tw-content); border-color: rgba(255, 255, 255, 0.1);"
-      }
-    ],
-    "sheetsUnreadable": 1,
-    "before": {
-      "effectiveBg": "rgb(250, 248, 245)",
-      "bodyBg": "rgb(250, 248, 245)",
-      "htmlBg": "rgba(0, 0, 0, 0)",
-      "fg": "rgb(46, 34, 25)",
-      "surfaces": [
-        "rgba(250, 248, 245, 0.85)",
-        "rgba(0, 0, 0, 0)",
-        "rgba(0, 0, 0, 0)",
-        "rgba(0, 0, 0, 0)",
-        "rgb(253, 253, 251)",
-        "rgb(253, 253, 251)",
-        "rgb(253, 253, 251)",
-        "rgb(253, 253, 251)"
-      ]
-    },
-    "after": {
-      "effectiveBg": "rgb(27, 22, 19)",
-      "bodyBg": "rgb(27, 22, 19)",
-      "htmlBg": "rgba(0, 0, 0, 0)",
-      "fg": "rgb(241, 237, 228)",
-      "surfaces": [
-        "rgba(27, 22, 19, 0.85)",
-        "rgba(0, 0, 0, 0)",
-        "rgba(0, 0, 0, 0)",
-        "rgba(0, 0, 0, 0)",
-        "rgb(35, 30, 26)",
-        "rgb(35, 30, 26)",
-        "rgb(35, 30, 26)",
-        "rgb(35, 30, 26)"
-      ]
-    },
-    "changed": true
-  },
   "/briut": {
     "hasDarkRules": false,
     "darkRuleSample": [],
     "sheetsUnreadable": 1,
     "before": {
       "effectiveBg": "rgb(246, 248, 249)",
+      "bodyImage": "",
       "bodyBg": "rgb(246, 248, 249)",
       "htmlBg": "rgba(0, 0, 0, 0)",
       "fg": "rgb(22, 35, 43)",
@@ -215,6 +156,7 @@
     },
     "after": {
       "effectiveBg": "rgb(246, 248, 249)",
+      "bodyImage": "",
       "bodyBg": "rgb(246, 248, 249)",
       "htmlBg": "rgba(0, 0, 0, 0)",
       "fg": "rgb(22, 35, 43)",
@@ -237,491 +179,38 @@
     "sheetsUnreadable": 2,
     "before": {
       "effectiveBg": "rgb(247, 246, 242)",
+      "bodyImage": "",
       "bodyBg": "rgb(247, 246, 242)",
       "htmlBg": "rgba(0, 0, 0, 0)",
       "fg": "rgb(35, 33, 28)",
       "surfaces": [
-        "rgba(247, 246, 242, 0.9)",
         "rgba(0, 0, 0, 0)",
         "rgba(0, 0, 0, 0)",
         "rgba(0, 0, 0, 0)",
-        "rgb(255, 255, 255)",
-        "rgb(247, 246, 242)",
-        "rgb(247, 246, 242)",
-        "rgb(247, 246, 242)"
-      ]
-    },
-    "after": {
-      "effectiveBg": "rgb(247, 246, 242)",
-      "bodyBg": "rgb(247, 246, 242)",
-      "htmlBg": "rgba(0, 0, 0, 0)",
-      "fg": "rgb(35, 33, 28)",
-      "surfaces": [
-        "rgba(247, 246, 242, 0.9)",
         "rgba(0, 0, 0, 0)",
         "rgba(0, 0, 0, 0)",
         "rgba(0, 0, 0, 0)",
-        "rgb(255, 255, 255)",
-        "rgb(247, 246, 242)",
-        "rgb(247, 246, 242)",
-        "rgb(247, 246, 242)"
-      ]
-    },
-    "changed": false
-  },
-  "/egod": {
-    "hasDarkRules": true,
-    "darkRuleSample": [
-      {
-        "sel": ".dark\\:border-destructive:is(.dark *)",
-        "decl": "border-color: hsl(var(--destructive));"
-      }
-    ],
-    "sheetsUnreadable": 0,
-    "before": {
-      "effectiveBg": "rgb(245, 246, 250)",
-      "bodyBg": "rgb(245, 246, 250)",
-      "htmlBg": "rgba(0, 0, 0, 0)",
-      "fg": "rgb(27, 44, 90)",
-      "surfaces": [
         "rgba(0, 0, 0, 0)",
-        "rgba(27, 44, 90, 0.95)",
-        "rgba(0, 0, 0, 0)",
-        "rgb(27, 44, 90)",
-        "rgb(245, 246, 250)",
-        "rgb(255, 255, 255)",
-        "rgb(255, 255, 255)",
-        "rgb(255, 255, 255)"
-      ]
-    },
-    "after": {
-      "effectiveBg": "rgb(245, 246, 250)",
-      "bodyBg": "rgb(245, 246, 250)",
-      "htmlBg": "rgba(0, 0, 0, 0)",
-      "fg": "rgb(27, 44, 90)",
-      "surfaces": [
-        "rgba(0, 0, 0, 0)",
-        "rgba(27, 44, 90, 0.95)",
-        "rgba(0, 0, 0, 0)",
-        "rgb(27, 44, 90)",
-        "rgb(245, 246, 250)",
-        "rgb(255, 255, 255)",
-        "rgb(255, 255, 255)",
-        "rgb(255, 255, 255)"
-      ]
-    },
-    "changed": false
-  },
-  "/chizukim/": {
-    "hasDarkRules": true,
-    "darkRuleSample": [
-      {
-        "sel": ".dark",
-        "decl": "--button-outline: rgba(255, 255, 255, .1); --badge-outline: rgba(255, 255, 255, .05); --opaque-button-border-intensity: 9; --elevate-1: rgba(255, 255, 255, .04)"
-      },
-      {
-        "sel": ".dark\\:border-destructive:is(.dark *)",
-        "decl": "--tw-border-opacity: 1; border-color: hsl(var(--destructive) / var(--tw-border-opacity, 1));"
-      },
-      {
-        "sel": ".dark\\:after\\:border-white\\/10:is(.dark *)::after",
-        "decl": "content: var(--tw-content); border-color: rgba(255, 255, 255, 0.1);"
-      }
-    ],
-    "sheetsUnreadable": 1,
-    "before": {
-      "effectiveBg": "rgb(248, 246, 242)",
-      "bodyBg": "rgb(248, 246, 242)",
-      "htmlBg": "rgba(0, 0, 0, 0)",
-      "fg": "rgb(45, 38, 31)",
-      "surfaces": [
-        "rgba(252, 250, 248, 0.6)",
-        "rgba(0, 0, 0, 0)",
-        "rgb(252, 250, 248)",
-        "rgb(252, 250, 248)",
-        "rgb(252, 250, 248)",
-        "rgb(252, 250, 248)",
-        "rgb(252, 250, 248)",
-        "rgb(252, 250, 248)"
-      ]
-    },
-    "after": {
-      "effectiveBg": "rgb(26, 23, 20)",
-      "bodyBg": "rgb(26, 23, 20)",
-      "htmlBg": "rgba(0, 0, 0, 0)",
-      "fg": "rgb(235, 231, 224)",
-      "surfaces": [
-        "rgba(31, 28, 25, 0.6)",
-        "rgba(0, 0, 0, 0)",
-        "rgb(31, 28, 25)",
-        "rgb(31, 28, 25)",
-        "rgb(31, 28, 25)",
-        "rgb(31, 28, 25)",
-        "rgb(31, 28, 25)",
-        "rgb(31, 28, 25)"
-      ]
-    },
-    "changed": true
-  },
-  "/orech": {
-    "hasDarkRules": false,
-    "darkRuleSample": [],
-    "sheetsUnreadable": 0,
-    "before": {
-      "effectiveBg": "rgb(250, 247, 240)",
-      "bodyBg": "rgb(250, 247, 240)",
-      "htmlBg": "rgb(250, 247, 240)",
-      "fg": "rgb(31, 26, 18)",
-      "surfaces": [
-        "rgba(0, 0, 0, 0)",
-        "rgb(255, 255, 255)",
-        "rgb(255, 255, 255)",
-        "rgb(255, 255, 255)"
-      ]
-    },
-    "after": {
-      "effectiveBg": "rgb(250, 247, 240)",
-      "bodyBg": "rgb(250, 247, 240)",
-      "htmlBg": "rgb(250, 247, 240)",
-      "fg": "rgb(31, 26, 18)",
-      "surfaces": [
-        "rgba(0, 0, 0, 0)",
-        "rgb(255, 255, 255)",
-        "rgb(255, 255, 255)",
-        "rgb(255, 255, 255)"
-      ]
-    },
-    "changed": false
-  },
-  "/zchuyot": {
-    "hasDarkRules": true,
-    "darkRuleSample": [
-      {
-        "sel": ".dark",
-        "decl": "--background: 220 25% 8%; --foreground: 120 10% 94%; --card: 220 20% 12%; --card-foreground: 120 10% 94%; --popover: 220 20% 12%; --popover-foreground: 120 10% "
-      },
-      {
-        "sel": ".dark\\:border-destructive:is(.dark *)",
-        "decl": "border-color: hsl(var(--destructive));"
-      }
-    ],
-    "sheetsUnreadable": 0,
-    "before": {
-      "effectiveBg": "rgb(249, 251, 249)",
-      "bodyBg": "rgb(249, 251, 249)",
-      "htmlBg": "rgba(0, 0, 0, 0)",
-      "fg": "rgb(23, 28, 38)",
-      "surfaces": [
-        "rgba(0, 0, 0, 0)",
-        "rgba(0, 0, 0, 0)",
-        "rgba(0, 0, 0, 0)",
-        "rgb(255, 255, 255)",
-        "rgba(0, 0, 0, 0)",
-        "rgba(0, 0, 0, 0)",
-        "rgb(255, 255, 255)",
-        "rgb(255, 255, 255)"
-      ]
-    },
-    "after": {
-      "effectiveBg": "rgb(15, 19, 26)",
-      "bodyBg": "rgb(15, 19, 26)",
-      "htmlBg": "rgba(0, 0, 0, 0)",
-      "fg": "rgb(238, 241, 238)",
-      "surfaces": [
-        "rgba(0, 0, 0, 0)",
-        "rgba(0, 0, 0, 0)",
-        "rgba(0, 0, 0, 0)",
-        "rgb(24, 29, 37)",
-        "rgba(0, 0, 0, 0)",
-        "rgba(0, 0, 0, 0)",
-        "rgb(24, 29, 37)",
-        "rgb(24, 29, 37)"
-      ]
-    },
-    "changed": true
-  },
-  "/studio": {
-    "hasDarkRules": true,
-    "darkRuleSample": [
-      {
-        "sel": ".dark",
-        "decl": "--button-outline: rgba(255, 255, 255, .1); --badge-outline: rgba(255, 255, 255, .05); --opaque-button-border-intensity: 9; --elevate-1: rgba(255, 255, 255, .04)"
-      },
-      {
-        "sel": ".dark\\:border-destructive:is(.dark *)",
-        "decl": "--tw-border-opacity: 1; border-color: hsl(var(--destructive) / var(--tw-border-opacity, 1));"
-      },
-      {
-        "sel": ".dark\\:after\\:border-white\\/10:is(.dark *)::after",
-        "decl": "content: var(--tw-content); border-color: rgba(255, 255, 255, 0.1);"
-      }
-    ],
-    "sheetsUnreadable": 2,
-    "before": {
-      "effectiveBg": "rgb(250, 248, 245)",
-      "bodyBg": "rgb(250, 248, 245)",
-      "htmlBg": "rgba(0, 0, 0, 0)",
-      "fg": "rgb(20, 30, 52)",
-      "surfaces": [
-        "rgba(11, 18, 32, 0.8)",
-        "rgba(0, 0, 0, 0)",
-        "rgba(0, 0, 0, 0)",
-        "rgba(0, 0, 0, 0)",
-        "rgb(16, 27, 50)",
-        "rgb(16, 27, 50)",
-        "rgb(16, 27, 50)",
         "rgba(0, 0, 0, 0)"
       ]
     },
     "after": {
-      "effectiveBg": "rgb(12, 17, 29)",
-      "bodyBg": "rgb(12, 17, 29)",
+      "effectiveBg": "rgb(20, 19, 15)",
+      "bodyImage": "",
+      "bodyBg": "rgb(20, 19, 15)",
       "htmlBg": "rgba(0, 0, 0, 0)",
-      "fg": "rgb(243, 238, 226)",
+      "fg": "rgb(232, 230, 223)",
       "surfaces": [
-        "rgba(11, 18, 32, 0.8)",
         "rgba(0, 0, 0, 0)",
         "rgba(0, 0, 0, 0)",
         "rgba(0, 0, 0, 0)",
-        "rgb(16, 27, 50)",
-        "rgb(16, 27, 50)",
-        "rgb(16, 27, 50)",
+        "rgba(0, 0, 0, 0)",
+        "rgba(0, 0, 0, 0)",
+        "rgba(0, 0, 0, 0)",
+        "rgba(0, 0, 0, 0)",
         "rgba(0, 0, 0, 0)"
       ]
     },
     "changed": true
-  },
-  "/mechiron": {
-    "hasDarkRules": true,
-    "darkRuleSample": [
-      {
-        "sel": ".dark",
-        "decl": "--button-outline: rgba(255, 255, 255, .08); --badge-outline: rgba(255, 255, 255, .05); --opaque-button-border-intensity: 9; --elevate-1: rgba(255, 255, 255, .04"
-      },
-      {
-        "sel": ".dark\\:border-amber-800:is(.dark *)",
-        "decl": "--tw-border-opacity: 1; border-color: rgb(146 64 14 / var(--tw-border-opacity, 1));"
-      },
-      {
-        "sel": ".dark\\:border-destructive:is(.dark *)",
-        "decl": "--tw-border-opacity: 1; border-color: hsl(var(--destructive) / var(--tw-border-opacity, 1));"
-      },
-      {
-        "sel": ".dark\\:border-emerald-800:is(.dark *)",
-        "decl": "--tw-border-opacity: 1; border-color: rgb(6 95 70 / var(--tw-border-opacity, 1));"
-      },
-      {
-        "sel": ".dark\\:border-slate-700:is(.dark *)",
-        "decl": "--tw-border-opacity: 1; border-color: rgb(51 65 85 / var(--tw-border-opacity, 1));"
-      },
-      {
-        "sel": ".dark\\:bg-amber-900\\/30:is(.dark *)",
-        "decl": "background-color: rgba(120, 53, 15, 0.3);"
-      },
-      {
-        "sel": ".dark\\:bg-amber-950\\/30:is(.dark *)",
-        "decl": "background-color: rgba(69, 26, 3, 0.3);"
-      },
-      {
-        "sel": ".dark\\:bg-emerald-900\\/30:is(.dark *)",
-        "decl": "background-color: rgba(6, 78, 59, 0.3);"
-      },
-      {
-        "sel": ".dark\\:bg-slate-800\\/40:is(.dark *)",
-        "decl": "background-color: rgba(30, 41, 59, 0.4);"
-      },
-      {
-        "sel": ".dark\\:text-amber-200:is(.dark *)",
-        "decl": "--tw-text-opacity: 1; color: rgb(253 230 138 / var(--tw-text-opacity, 1));"
-      },
-      {
-        "sel": ".dark\\:text-amber-400:is(.dark *)",
-        "decl": "--tw-text-opacity: 1; color: rgb(251 191 36 / var(--tw-text-opacity, 1));"
-      },
-      {
-        "sel": ".dark\\:text-amber-500:is(.dark *)",
-        "decl": "--tw-text-opacity: 1; color: rgb(245 158 11 / var(--tw-text-opacity, 1));"
-      }
-    ],
-    "sheetsUnreadable": 2,
-    "before": {
-      "effectiveBg": "rgb(248, 246, 242)",
-      "bodyBg": "rgb(248, 246, 242)",
-      "htmlBg": "rgba(0, 0, 0, 0)",
-      "fg": "rgb(23, 33, 38)",
-      "surfaces": [
-        "rgb(251, 250, 248)",
-        "rgba(0, 0, 0, 0)",
-        "rgba(0, 0, 0, 0)",
-        "rgba(0, 0, 0, 0)",
-        "rgba(0, 0, 0, 0)",
-        "rgba(0, 0, 0, 0)",
-        "rgba(11, 100, 111, 0.05)",
-        "rgba(11, 100, 111, 0.05)"
-      ]
-    },
-    "after": {
-      "effectiveBg": "rgb(18, 25, 28)",
-      "bodyBg": "rgb(18, 25, 28)",
-      "htmlBg": "rgba(0, 0, 0, 0)",
-      "fg": "rgb(240, 236, 230)",
-      "surfaces": [
-        "rgb(22, 30, 34)",
-        "rgba(0, 0, 0, 0)",
-        "rgba(0, 0, 0, 0)",
-        "rgba(0, 0, 0, 0)",
-        "rgba(0, 0, 0, 0)",
-        "rgba(0, 0, 0, 0)",
-        "rgba(46, 168, 184, 0.05)",
-        "rgba(46, 168, 184, 0.05)"
-      ]
-    },
-    "changed": true
-  },
-  "/nadlan": {
-    "hasDarkRules": false,
-    "darkRuleSample": [],
-    "sheetsUnreadable": 0,
-    "before": {
-      "effectiveBg": "rgb(246, 248, 252)",
-      "bodyBg": "rgb(246, 248, 252)",
-      "htmlBg": "rgba(0, 0, 0, 0)",
-      "fg": "rgb(26, 34, 51)",
-      "surfaces": [
-        "rgba(255, 255, 255, 0.9)",
-        "rgba(0, 0, 0, 0)",
-        "rgba(0, 0, 0, 0)",
-        "rgba(0, 0, 0, 0)",
-        "rgba(0, 0, 0, 0)",
-        "rgba(14, 165, 164, 0.1)",
-        "rgba(0, 0, 0, 0)",
-        "rgba(14, 165, 164, 0.1)"
-      ]
-    },
-    "after": {
-      "effectiveBg": "rgb(246, 248, 252)",
-      "bodyBg": "rgb(246, 248, 252)",
-      "htmlBg": "rgba(0, 0, 0, 0)",
-      "fg": "rgb(26, 34, 51)",
-      "surfaces": [
-        "rgba(255, 255, 255, 0.9)",
-        "rgba(0, 0, 0, 0)",
-        "rgba(0, 0, 0, 0)",
-        "rgba(0, 0, 0, 0)",
-        "rgba(0, 0, 0, 0)",
-        "rgba(14, 165, 164, 0.1)",
-        "rgba(0, 0, 0, 0)",
-        "rgba(14, 165, 164, 0.1)"
-      ]
-    },
-    "changed": false
-  },
-  "/login": {
-    "hasDarkRules": true,
-    "darkRuleSample": [
-      {
-        "sel": "@media (prefers-color-scheme: dark)",
-        "decl": "1 rules"
-      }
-    ],
-    "sheetsUnreadable": 1,
-    "before": {
-      "effectiveBg": "rgba(0, 0, 0, 0)",
-      "bodyBg": "rgba(0, 0, 0, 0)",
-      "htmlBg": "rgba(0, 0, 0, 0)",
-      "fg": "rgb(11, 13, 46)",
-      "surfaces": [
-        "rgb(255, 255, 255)"
-      ]
-    },
-    "after": {
-      "effectiveBg": "rgba(0, 0, 0, 0)",
-      "bodyBg": "rgba(0, 0, 0, 0)",
-      "htmlBg": "rgba(0, 0, 0, 0)",
-      "fg": "rgb(11, 13, 46)",
-      "surfaces": [
-        "rgb(255, 255, 255)"
-      ]
-    },
-    "changed": false
-  },
-  "/galil": {
-    "hasDarkRules": true,
-    "darkRuleSample": [
-      {
-        "sel": ".dark\\:border-destructive:is(.dark *)",
-        "decl": "border-color: hsl(var(--destructive));"
-      }
-    ],
-    "sheetsUnreadable": 0,
-    "before": {
-      "effectiveBg": "rgba(0, 0, 0, 0)",
-      "bodyBg": "rgba(0, 0, 0, 0)",
-      "htmlBg": "rgba(0, 0, 0, 0)",
-      "fg": "rgb(21, 29, 40)",
-      "surfaces": [
-        "rgba(0, 0, 0, 0)",
-        "rgba(23, 54, 69, 0.8)"
-      ]
-    },
-    "after": {
-      "effectiveBg": "rgba(0, 0, 0, 0)",
-      "bodyBg": "rgba(0, 0, 0, 0)",
-      "htmlBg": "rgba(0, 0, 0, 0)",
-      "fg": "rgb(21, 29, 40)",
-      "surfaces": [
-        "rgba(0, 0, 0, 0)",
-        "rgba(23, 54, 69, 0.8)"
-      ]
-    },
-    "changed": false
-  },
-  "/crm": {
-    "hasDarkRules": false,
-    "darkRuleSample": [],
-    "sheetsUnreadable": 0,
-    "before": {
-      "effectiveBg": "rgba(0, 0, 0, 0)",
-      "bodyBg": "rgba(0, 0, 0, 0)",
-      "htmlBg": "rgba(0, 0, 0, 0)",
-      "fg": "rgb(0, 0, 0)",
-      "surfaces": [
-        "rgba(0, 0, 0, 0)"
-      ]
-    },
-    "after": {
-      "effectiveBg": "rgba(0, 0, 0, 0)",
-      "bodyBg": "rgba(0, 0, 0, 0)",
-      "htmlBg": "rgba(0, 0, 0, 0)",
-      "fg": "rgb(0, 0, 0)",
-      "surfaces": [
-        "rgba(0, 0, 0, 0)"
-      ]
-    },
-    "changed": false
-  },
-  "/gesher": {
-    "hasDarkRules": false,
-    "darkRuleSample": [],
-    "sheetsUnreadable": 0,
-    "before": {
-      "effectiveBg": "rgba(0, 0, 0, 0)",
-      "bodyBg": "rgba(0, 0, 0, 0)",
-      "htmlBg": "rgba(0, 0, 0, 0)",
-      "fg": "rgb(0, 0, 0)",
-      "surfaces": [
-        "rgba(0, 0, 0, 0)"
-      ]
-    },
-    "after": {
-      "effectiveBg": "rgba(0, 0, 0, 0)",
-      "bodyBg": "rgba(0, 0, 0, 0)",
-      "htmlBg": "rgba(0, 0, 0, 0)",
-      "fg": "rgb(0, 0, 0)",
-      "surfaces": [
-        "rgba(0, 0, 0, 0)"
-      ]
-    },
-    "changed": false
   }
 }
