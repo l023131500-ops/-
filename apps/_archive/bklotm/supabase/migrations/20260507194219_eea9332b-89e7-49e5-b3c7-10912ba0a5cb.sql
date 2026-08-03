@@ -1,0 +1,1 @@
+ALTER TABLE public.rights_reference ADD COLUMN IF NOT EXISTS service_cost text;

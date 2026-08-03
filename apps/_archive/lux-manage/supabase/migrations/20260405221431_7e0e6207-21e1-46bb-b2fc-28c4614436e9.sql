@@ -1,0 +1,1 @@
+UPDATE profiles SET id_number = '123456789', ivr_pin = '123456' WHERE id = '0c7c0b9c-b700-4a1c-bc9a-6ee48e301522'

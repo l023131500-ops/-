@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <!-- ⚠️ ‎maximum-scale‎ / ‎user-scalable=no‎ הוסרו: הם מונעים מהמשתמש
+         להגדיל את העמוד, וזה כשל נגישות לפי DESIGN_STANDARD §5 (תקן 5568).
+         בעמוד עברי צפוף זו בדיוק היכולת שמי שמתקשה לקרוא זקוק לה. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SMEL NDLN — מחקר נדל"ן חכם</title>
+    <meta name="description" content="SMEL NDLN — מערכת מחקר נדלן חכם המבוססת על נתוני ממשלה רשמיים. הזינו כתובת וקבלו הערכת שווי, ציון כדאיות ותובנות על השכונה." />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;500;600;700;800&family=Heebo:wght@300;400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+      <!-- כפתור הכניסה המשותף של more30 (DESIGN_STANDARD §9). חייב לשבת
+         כאן במקור ולא רק בעותק הפרוס: כל בנייה מחדש דורסת את ‎index.html‎
+         שב-‎_deploy‎, ואז הכפתור נעלם בלי שאיש ישים לב. -->
+    <script src="https://more30.com/auth-button.js" defer></script>
+  </body>
+</html>

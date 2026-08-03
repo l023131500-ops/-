@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Root>
+  <ChainID>7290027600007</ChainID>
+  <SubChainID>001</SubChainID>
+  <StoreID>001</StoreID>
+  <BikoretNo>9</BikoretNo>
+  <Items>
+    <Item>
+      <PriceUpdateTime>2024-12-31T12:36:00</PriceUpdateTime>
+      <ItemCode>11182700954</ItemCode>
+      <ItemType>1</ItemType>
+      <ItemName>שעועית שחורה 439 גרם</ItemName>
+      <ManufactureName>האנאובר פודס קורפורשיין</ManufactureName>
+      <ManufactureCountry>US</ManufactureCountry>
+      <ManufactureItemDescription>שעועית שחורה 439 גרם</ManufactureItemDescription>
+      <UnitQty>גרם</UnitQty>
+      <Quantity>439.00</Quantity>
+      <UnitOfMeasure>100 גרם</UnitOfMeasure>
+      <bIsWeighted>0</bIsWeighted>
+      <QtyInPackage>1</QtyInPackage>
+      <ItemPrice>11.50</ItemPrice>
+      <UnitOfMeasurePrice>2.62</UnitOfMeasurePrice>
+      <AllowDiscount>1</AllowDiscount>
+      <ItemStatus />
+    </Item>
+    <Item>
+      <PriceUpdateTime>2024-12-31T12:36:00</PriceUpdateTime>
+      <ItemCode>7290000066189</ItemCode>
+      <ItemType>1</ItemType>
+      <ItemName>חלב טרי 3% 1 ליטר</ItemName>
+      <ManufactureName>תנובה</ManufactureName>
+      <ManufactureCountry>IL</ManufactureCountry>
+      <UnitQty>ליטר</UnitQty>
+      <Quantity>1.00</Quantity>
+      <UnitOfMeasure>1 ליטר</UnitOfMeasure>
+      <bIsWeighted>0</bIsWeighted>
+      <QtyInPackage>1</QtyInPackage>
+      <ItemPrice>6.90</ItemPrice>
+      <UnitOfMeasurePrice>6.90</UnitOfMeasurePrice>
+      <AllowDiscount>1</AllowDiscount>
+      <ItemStatus />
+    </Item>
+  </Items>
+</Root>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Root>
+  <ChainId>7290027600007</ChainId>
+  <SubChains>
+    <SubChain>
+      <SubChainId>1</SubChainId>
+      <SubChainName>שופרסל שלי</SubChainName>
+      <Stores>
+        <Store>
+          <StoreId>1</StoreId>
+          <BikoretNo>5</BikoretNo>
+          <StoreType>1</StoreType>
+          <StoreName>שלי TLV יגאל אלון</StoreName>
+          <Address>יגאל אלון 98</Address>
+          <City>תל אביב</City>
+          <ZipCode>67891</ZipCode>
+        </Store>
+        <Store>
+          <StoreId>2</StoreId>
+          <BikoretNo>3</BikoretNo>
+          <StoreType>1</StoreType>
+          <StoreName>שלי רמת אביב</StoreName>
+          <Address>אבן גבירול 30</Address>
+          <City>תל אביב</City>
+          <ZipCode>61000</ZipCode>
+        </Store>
+      </Stores>
+    </SubChain>
+  </SubChains>
+</Root>

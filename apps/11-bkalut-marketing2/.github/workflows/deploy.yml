@@ -1,0 +1,20 @@
+name: Deploy to Server
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: root
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /tmp/bkalut-marketing
+            /usr/bin/git pull origin main
+            cp -r /tmp/bkalut-marketing/* /www/wwwroot/rights.l023131500.work/

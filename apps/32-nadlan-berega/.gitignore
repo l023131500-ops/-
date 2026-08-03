@@ -1,0 +1,21 @@
+/node_modules
+/.next
+/out
+/build
+.DS_Store
+*.pem
+npm-debug.log*
+.env*.local
+.vercel
+next-env.d.ts
+
+# ארטיפקטים של בנייה והגדרות מקומיות
+tsconfig.tsbuildinfo
+.claude/settings.local.json
+
+# קובץ סודות מרכזי — לעולם לא בגיט (נמצא ממילא מחוץ ל-repo)
+.env.shared
+
+.vercel
+.env*
+.devlog.txt

@@ -1,0 +1,9 @@
+# סודות נשארים במשתני הסביבה של Vercel — לא נארזים לפריסה.
+.env
+.env.*
+!.env.example
+
+node_modules
+.next
+docs
+*.md

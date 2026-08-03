@@ -1,0 +1,93 @@
+@import url('https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;500;600;700;800&family=Frank+Ruhl+Libre:wght@400;500;700;900&family=Heebo:wght@300;400;500;600;700;800;900&family=Noto+Serif+Hebrew:wght@400;600;700;800;900&family=Rubik:wght@300;400;500;600;700;800;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* פורטל מגידי השיעורים – Design System
+   Gold (#C9A84C), Navy (#1A2E5A), White, Light Gray (#F7F8FC)
+*/
+
+@layer base {
+  :root {
+    --background: 228 33% 97%;
+    --foreground: 224 54% 23%;
+    --card: 0 0% 100%;
+    --card-foreground: 224 54% 23%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 224 54% 23%;
+    --primary: 224 54% 23%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 42 50% 54%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 228 33% 96%;
+    --muted-foreground: 224 20% 50%;
+    --accent: 42 50% 54%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 224 20% 88%;
+    --input: 224 20% 88%;
+    --ring: 42 50% 54%;
+    --radius: 1rem;
+    --sidebar-background: 224 54% 23%;
+    --sidebar-foreground: 0 0% 95%;
+    --sidebar-primary: 42 50% 54%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 224 45% 30%;
+    --sidebar-accent-foreground: 0 0% 95%;
+    --sidebar-border: 224 40% 30%;
+    --sidebar-ring: 42 50% 54%;
+    --gold: 42 50% 54%;
+    --gold-light: 42 60% 72%;
+    --gold-dark: 42 55% 42%;
+    --navy: 224 54% 23%;
+    --navy-light: 224 40% 35%;
+
+    /* Premium gradients & shadows */
+    --gradient-gold: linear-gradient(135deg, hsl(42 60% 62%) 0%, hsl(38 70% 50%) 100%);
+    --gradient-navy: linear-gradient(135deg, hsl(224 54% 23%) 0%, hsl(230 60% 32%) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(224 54% 23%) 0%, hsl(228 50% 30%) 50%, hsl(42 50% 54%) 100%);
+    --gradient-soft: linear-gradient(180deg, hsl(228 33% 99%) 0%, hsl(228 33% 95%) 100%);
+    --shadow-elegant: 0 20px 60px -20px hsl(224 54% 23% / 0.18);
+    --shadow-gold: 0 10px 40px -10px hsl(42 50% 54% / 0.35);
+    --shadow-soft: 0 4px 20px -4px hsl(224 30% 30% / 0.08);
+    --transition-smooth: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-body antialiased;
+    direction: rtl;
+    font-feature-settings: "kern", "liga", "calt";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading;
+    letter-spacing: -0.01em;
+  }
+}
+
+@layer utilities {
+  .bg-gradient-gold { background: var(--gradient-gold); }
+  .bg-gradient-navy { background: var(--gradient-navy); }
+  .bg-gradient-hero { background: var(--gradient-hero); }
+  .bg-gradient-soft { background: var(--gradient-soft); }
+  .shadow-elegant { box-shadow: var(--shadow-elegant); }
+  .shadow-gold { box-shadow: var(--shadow-gold); }
+  .shadow-soft { box-shadow: var(--shadow-soft); }
+  .transition-smooth { transition: var(--transition-smooth); }
+  .text-gradient-gold {
+    background: var(--gradient-gold);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+}

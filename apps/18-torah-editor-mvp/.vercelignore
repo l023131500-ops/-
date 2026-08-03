@@ -1,0 +1,7 @@
+# Keep local secrets and build junk out of the uploaded deployment.
+# Config comes from the Vercel project env vars, never from a bundled .env.
+.env
+.env.*
+node_modules
+.next
+.git

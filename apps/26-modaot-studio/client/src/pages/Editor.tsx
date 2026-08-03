@@ -1,0 +1,985 @@
+// עמוד העורך — הלב של המערכת. קנבאס חי במרכז, פאנל שדות+שכבות מימין, סרגל עליון.
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useLocation } from "wouter";
+import type Konva from "konva";
+import {
+  Crown,
+  Download,
+  FileImage,
+  FileText,
+  Save,
+  Sparkles,
+  Wand2,
+  Upload,
+  ArrowRight,
+  Layers as LayersIcon,
+  Type as TypeIcon,
+  Image as ImageIcon,
+  AlignRight,
+  AlignCenter,
+  AlignLeft,
+  Lightbulb,
+  Plus,
+  Trash2,
+  Copy,
+  Eye,
+  EyeOff,
+  Lock,
+  Unlock,
+  ArrowUp,
+  ArrowDown,
+} from "lucide-react";
+
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Slider } from "@/components/ui/slider";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { Badge } from "@/components/ui/badge";
+import { useToast } from "@/hooks/use-toast";
+
+import CanvasStage from "@/components/CanvasStage";
+import ColorPicker from "@/components/ColorPicker";
+import FontControl from "@/components/FontControl";
+import { useTemplateContext } from "@/lib/templateContext";
+import { getCategoryCopy, getCategoryFields, setFieldText } from "@/lib/copyEngine";
+import { getCategory } from "@shared/knowledge";
+import { getStyle } from "@shared/styles";
+import { FORMATS, getFormat } from "@shared/formats";
+import { downloadPNG, downloadPDF } from "@/lib/exporter";
+import { apiRequest } from "@/lib/queryClient";
+import { nextId } from "@shared/layers";
+import type { TemplateDoc, TextLayer, ImageLayer, AnyLayer, TemplateBackground } from "@shared/layers";
+
+export default function Editor() {
+  const [, navigate] = useLocation();
+  const { selected, setSelected } = useTemplateContext();
+  const { toast } = useToast();
+  const stageRef = useRef<Konva.Stage | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  const [doc, setDoc] = useState<TemplateDoc | null>(selected?.doc ?? null);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [copyDialogOpen, setCopyDialogOpen] = useState(false);
+  const [aiDialogOpen, setAiDialogOpen] = useState(false);
+  const [aiPrompt, setAiPrompt] = useState("");
+  const [aiLoading, setAiLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  // קופי חכם (Claude)
+  const [aiCopyOpen, setAiCopyOpen] = useState(false);
+  const [aiCopyMsg, setAiCopyMsg] = useState("");
+  const [aiCopyLoading, setAiCopyLoading] = useState(false);
+  type CopyVariant = { title?: string; subtitle?: string; body?: string; cta?: string };
+  const [aiCopyVariants, setAiCopyVariants] = useState<CopyVariant[]>([]);
+
+  // אם נכנסים ישירות ל-/editor בלי בחירה (רענון) — חזרה לבית
+  useEffect(() => {
+    if (!selected) {
+      navigate("/");
+    }
+  }, [selected, navigate]);
+
+  if (!selected || !doc) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-[#0B1220] text-[#F5EEDD]">
+        <p>לא נבחרה תבנית — מעביר לעמוד הבית...</p>
+      </div>
+    );
+  }
+
+  const category = getCategory(selected.category);
+  const style = getStyle(selected.style);
+  const fields = getCategoryFields(selected.category);
+  const copyExamples = getCategoryCopy(selected.category);
+  const format = getFormat(selected.format);
+
+  const selectedLayer = useMemo(
+    () => doc.layers.find((l) => l.id === selectedId) ?? null,
+    [doc, selectedId],
+  );
+
+  function updateDoc(next: TemplateDoc) {
+    setDoc(next);
+    setSelected({ ...selected!, doc: next });
+  }
+
+  function handleFieldChange(fieldName: string, value: string) {
+    updateDoc(setFieldText(doc!, fieldName, value));
+  }
+
+  function handleChangeLayer(id: string, patch: Partial<AnyLayer>) {
+    updateDoc({
+      ...doc!,
+      layers: doc!.layers.map((l) => (l.id === id ? ({ ...l, ...patch } as AnyLayer) : l)),
+    });
+  }
+
+  // ---- ניהול שכבות: הוספה / מחיקה / שכפול / נראות / נעילה / סדר ----
+  const maxZ = () => doc!.layers.reduce((m, l) => Math.max(m, l.z ?? 0), 0);
+
+  // הוספת שכבת טקסט חופשית מעל המודעה (ניתנת לגרירה/עריכה/מחיקה)
+  function handleAddTextLayer() {
+    const id = nextId("txt");
+    const layer: TextLayer = {
+      id,
+      type: "text",
+      text: "טקסט חדש",
+      x: Math.round(doc!.width * 0.18),
+      y: Math.round(doc!.height * 0.42),
+      width: Math.round(doc!.width * 0.64),
+      height: Math.round(doc!.height * 0.16),
+      fontFamily: "Heebo",
+      fontSize: Math.round(doc!.width * 0.07),
+      fontWeight: 700,
+      fill: style.palette.accent ?? "#C9A227",
+      align: "center",
+      verticalAlign: "middle",
+      autoFit: true,
+      role: "body",
+      editable: true,
+      label: "שכבת טקסט חופשית",
+      z: maxZ() + 1,
+    };
+    updateDoc({ ...doc!, layers: [...doc!.layers, layer] });
+    setSelectedId(id);
+    toast({ title: "נוספה שכבת טקסט — גררו, ערכו או מחקו לפני הייצוא" });
+  }
+
+  function handleDeleteLayer(id: string) {
+    const l = doc!.layers.find((x) => x.id === id);
+    if (l?.locked) {
+      toast({ title: "השכבה נעולה — בטלו נעילה כדי למחוק", variant: "destructive" });
+      return;
+    }
+    updateDoc({ ...doc!, layers: doc!.layers.filter((x) => x.id !== id) });
+    if (selectedId === id) setSelectedId(null);
+    toast({ title: "השכבה נמחקה" });
+  }
+
+  function handleDuplicateLayer(id: string) {
+    const src = doc!.layers.find((x) => x.id === id);
+    if (!src) return;
+    const copy = {
+      ...src,
+      id: nextId("cp"),
+      x: src.x + 24,
+      y: src.y + 24,
+      z: maxZ() + 1,
+      locked: false,
+    } as AnyLayer;
+    updateDoc({ ...doc!, layers: [...doc!.layers, copy] });
+    setSelectedId(copy.id);
+    toast({ title: "השכבה שוכפלה" });
+  }
+
+  function handleToggleVisible(id: string) {
+    const l = doc!.layers.find((x) => x.id === id);
+    handleChangeLayer(id, { visible: l?.visible === false ? true : false });
+  }
+
+  function handleToggleLock(id: string) {
+    const l = doc!.layers.find((x) => x.id === id);
+    handleChangeLayer(id, { locked: !l?.locked });
+  }
+
+  // הזזת שכבה קדימה/אחורה בסדר ה-z
+  function handleMoveZ(id: string, dir: 1 | -1) {
+    const sorted = [...doc!.layers].sort((a, b) => (a.z ?? 0) - (b.z ?? 0));
+    const idx = sorted.findIndex((l) => l.id === id);
+    const swapIdx = idx + dir;
+    if (swapIdx < 0 || swapIdx >= sorted.length) return;
+    const a = sorted[idx], b = sorted[swapIdx];
+    const az = a.z ?? idx, bz = b.z ?? swapIdx;
+    updateDoc({
+      ...doc!,
+      layers: doc!.layers.map((l) =>
+        l.id === a.id ? { ...l, z: bz } : l.id === b.id ? { ...l, z: az } : l,
+      ),
+    });
+  }
+
+  function applyCopyExample(text: string) {
+    // ממלא את שדה הכותרת (title) אם קיים, אחרת body/subtitle הראשון
+    const titleField = fields.find((f) => f.role === "title") ?? fields[0];
+    if (titleField) {
+      handleFieldChange(titleField.name, text);
+    }
+    setCopyDialogOpen(false);
+  }
+
+  // מייצר קופי חכם עם Claude ומציג וריאציות
+  async function handleGenerateAiCopy() {
+    setAiCopyLoading(true);
+    setAiCopyVariants([]);
+    try {
+      // שדות קיימים (כדי ש-Claude ישלים/ישפר ולא ימחק מידע קיים)
+      const existing: Record<string, string> = {};
+      doc!.layers.forEach((l) => {
+        if (l.type === "text" && (l as TextLayer).fieldName) {
+          const t = (l as TextLayer).text?.trim();
+          if (t) existing[(l as TextLayer).fieldName!] = t;
+        }
+      });
+      const res = await apiRequest("POST", "/api/ai/copy", {
+        category: selected!.category,
+        message: aiCopyMsg,
+        mood: [style.label],
+        fields: existing,
+        variants: 3,
+      });
+      const data = await res.json();
+      const variants: CopyVariant[] = Array.isArray(data?.variants) ? data.variants : [];
+      if (!variants.length) {
+        toast({ title: "לא התקבלו הצעות קופי — נסה לנסח מחדש", variant: "destructive" });
+      }
+      setAiCopyVariants(variants);
+    } catch (err: any) {
+      toast({
+        title: "מנוע הקופי דורש הפעלת חיוב או אינו זמין כרגע",
+        description: String(err?.message ?? err).slice(0, 150),
+        variant: "destructive",
+      });
+    } finally {
+      setAiCopyLoading(false);
+    }
+  }
+
+  // מחיל וריאציית קופי על שדות המודעה לפי תפקיד (title/subtitle/body)
+  function applyAiVariant(v: CopyVariant) {
+    let next = doc!;
+    const byRole = (role: string) => fields.find((f) => f.role === role);
+    const titleField = byRole("title");
+    const subtitleField = byRole("subtitle");
+    const bodyField = byRole("body");
+    if (v.title && titleField) next = setFieldText(next, titleField.name, v.title);
+    if (v.subtitle && subtitleField) next = setFieldText(next, subtitleField.name, v.subtitle);
+    // גוף: אם יש שדה body ניצור טקסט משולב (body + cta), אחרת נשתמש בכותרת המשנה
+    const bodyText = [v.body, v.cta].filter(Boolean).join("\n");
+    if (bodyText && bodyField) next = setFieldText(next, bodyField.name, bodyText);
+    else if (v.body && subtitleField && !v.subtitle) next = setFieldText(next, subtitleField.name, v.body);
+    updateDoc(next);
+    setAiCopyOpen(false);
+    toast({ title: "הקופי הוחל על המודעה" });
+  }
+
+  function handleFormatChange(formatKey: string) {
+    const fmt = getFormat(formatKey);
+    updateDoc({ ...doc!, width: fmt.width, height: fmt.height });
+    setSelected({ ...selected!, format: formatKey });
+  }
+
+  function handleRabbiUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      const dataUrl = reader.result as string;
+      // מחפש שכבת תמונה placeholder (בד"כ rabbiPhoto)
+      const imgLayer = doc!.layers.find((l) => l.type === "image") as ImageLayer | undefined;
+      if (imgLayer) {
+        handleChangeLayer(imgLayer.id, { src: dataUrl, placeholder: false });
+        toast({ title: "תמונת הרב הועלתה בהצלחה" });
+      } else {
+        toast({ title: "לא נמצאה שכבת תמונה בתבנית זו", variant: "destructive" });
+      }
+    };
+    reader.readAsDataURL(file);
+  }
+
+  async function handleAiBackground() {
+    setAiLoading(true);
+    try {
+      const res = await apiRequest("POST", "/api/ai/background", {
+        prompt: aiPrompt,
+        aspectRatio: format.width >= format.height ? "16:9" : "4:5",
+        enhance: true,
+      });
+      const data = await res.json();
+      if (data.fallback) {
+        toast({
+          title: "מנוע ה-AI דורש הפעלת חיוב — נעשה שימוש ברקע המובנה",
+          description: data.error,
+        });
+      } else if (data.dataUrl) {
+        updateDoc({ ...doc!, background: { type: "image", src: data.dataUrl } });
+        toast({ title: "רקע AI הוחל בהצלחה" });
+        setAiDialogOpen(false);
+      }
+    } catch (err: any) {
+      toast({
+        title: "מנוע ה-AI דורש הפעלת חיוב — נעשה שימוש ברקע המובנה",
+        description: String(err?.message ?? err).slice(0, 150),
+      });
+    } finally {
+      setAiLoading(false);
+    }
+  }
+
+  async function handleSaveProject() {
+    setSaving(true);
+    try {
+      const payload = {
+        name: selected!.name,
+        category: selected!.category,
+        style: selected!.style,
+        format: selected!.format,
+        width: doc!.width,
+        height: doc!.height,
+        layersJson: JSON.stringify({ background: doc!.background, layers: doc!.layers }),
+        thumbnail: null as string | null,
+      };
+      await apiRequest("POST", "/api/projects", payload);
+      toast({ title: "הפרויקט נשמר בהצלחה" });
+    } catch (err: any) {
+      toast({ title: "שגיאה בשמירת הפרויקט", description: String(err?.message ?? err), variant: "destructive" });
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  function handleDownloadPNG() {
+    if (!stageRef.current) return;
+    downloadPNG(stageRef.current, doc!.width, `${selected!.name}.png`);
+  }
+
+  function handleDownloadPDF() {
+    if (!stageRef.current) return;
+    downloadPDF(stageRef.current, doc!.width, doc!.height, `${selected!.name}.pdf`);
+  }
+
+  return (
+    <div className="flex min-h-screen flex-col bg-[#0B1220] text-[#F5EEDD]" dir="rtl">
+      {/* סרגל עליון */}
+      <header className="flex items-center justify-between border-b border-[#C9A227]/20 bg-[#0B1220]/95 px-5 py-3">
+        <div className="flex items-center gap-3">
+          <Button variant="ghost" size="icon" onClick={() => navigate("/")} title="חזרה לעמוד הבית">
+            <ArrowRight className="h-5 w-5" />
+          </Button>
+          <Crown className="h-5 w-5 text-[#C9A227]" />
+          <div>
+            <h1 className="text-sm font-bold leading-tight">{selected.name}</h1>
+            <p className="text-[11px] text-[#F5EEDD]/50">{style.label}</p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <Select value={selected.format} onValueChange={handleFormatChange}>
+            <SelectTrigger className="w-44 border-[#C9A227]/30 bg-[#101B32] text-xs">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {FORMATS.map((f) => (
+                <SelectItem key={f.key} value={f.key}>
+                  {f.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          <Button variant="outline" size="sm" className="gap-1.5 border-[#C9A227]/40 text-[#C9A227]" onClick={handleDownloadPNG}>
+            <FileImage className="h-4 w-4" /> הורד PNG
+          </Button>
+          <Button variant="outline" size="sm" className="gap-1.5 border-[#C9A227]/40 text-[#C9A227]" onClick={handleDownloadPDF}>
+            <FileText className="h-4 w-4" /> הורד PDF
+          </Button>
+          <Button size="sm" className="gap-1.5 bg-[#C9A227] text-[#0B1220] hover:bg-[#C9A227]/90" onClick={handleSaveProject} disabled={saving}>
+            <Save className="h-4 w-4" /> {saving ? "שומר..." : "שמור פרויקט"}
+          </Button>
+        </div>
+      </header>
+
+      <div className="flex flex-1 overflow-hidden">
+        {/* קנבאס מרכזי */}
+        <main className="flex flex-1 items-center justify-center overflow-auto bg-[#070C17] p-8">
+          <CanvasStage
+            doc={doc}
+            selectedId={selectedId}
+            onSelect={setSelectedId}
+            onChangeLayer={handleChangeLayer}
+            onEditText={(id) => {
+              setSelectedId(id);
+              // גלילה לתיבת עריכת הטקסט ומיקוד
+              setTimeout(() => {
+                const el = document.querySelector('[data-testid="input-layer-text"]') as HTMLTextAreaElement | null;
+                el?.scrollIntoView({ behavior: "smooth", block: "center" });
+                el?.focus();
+                el?.select();
+              }, 60);
+            }}
+            maxDisplayWidth={560}
+            stageRef={stageRef}
+            interactive={true}
+          />
+        </main>
+
+        {/* פאנל צד ימין */}
+        <aside className="w-[380px] shrink-0 overflow-y-auto border-r border-[#C9A227]/20 bg-[#0E1830] p-4">
+          <div className="mb-4 flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              className="flex-1 gap-1.5 border-[#C9A227]/40 text-[#C9A227]"
+              onClick={() => setCopyDialogOpen(true)}
+            >
+              <Sparkles className="h-4 w-4" /> קופי מוכן
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="flex-1 gap-1.5 border-[#C9A227]/40 text-[#C9A227]"
+              onClick={() => {
+                setAiPrompt(`רקע יודאיקה ${style.label} עם עיטורי זהב, ללא טקסט`);
+                setAiDialogOpen(true);
+              }}
+            >
+              <Wand2 className="h-4 w-4" /> רקע AI
+            </Button>
+          </div>
+          <Button
+            size="sm"
+            className="mb-4 w-full gap-1.5 bg-gradient-to-l from-[#C9A227] to-[#E4C55A] text-[#0B1220] hover:opacity-90"
+            onClick={() => {
+              setAiCopyVariants([]);
+              setAiCopyOpen(true);
+            }}
+            data-testid="button-ai-copy"
+          >
+            <Sparkles className="h-4 w-4" /> כתיבת קופי חכם (Claude)
+          </Button>
+
+          {/* שדות חכמים */}
+          <Card className="mb-4 border-[#C9A227]/15 bg-[#101B32]">
+            <CardContent className="p-4">
+              <h2 className="mb-3 flex items-center gap-2 text-sm font-bold text-[#F5EEDD]">
+                <TypeIcon className="h-4 w-4 text-[#C9A227]" /> שדות המודעה
+              </h2>
+              <div className="space-y-3">
+                {fields.map((f) => {
+                  const layer = doc.layers.find(
+                    (l) => l.type === "text" && (l as TextLayer).fieldName === f.name,
+                  ) as TextLayer | undefined;
+                  const value = layer?.text ?? "";
+                  return (
+                    <div key={f.name}>
+                      <Label className="mb-1 block text-xs text-[#F5EEDD]/70">{f.label}</Label>
+                      {f.multiline ? (
+                        <Textarea
+                          value={value}
+                          placeholder={f.placeholder}
+                          onChange={(e) => handleFieldChange(f.name, e.target.value)}
+                          className="border-[#C9A227]/20 bg-[#0B1220] text-sm text-[#F5EEDD]"
+                          rows={2}
+                        />
+                      ) : (
+                        <Input
+                          value={value}
+                          placeholder={f.placeholder}
+                          onChange={(e) => handleFieldChange(f.name, e.target.value)}
+                          className="border-[#C9A227]/20 bg-[#0B1220] text-sm text-[#F5EEDD]"
+                        />
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+
+              <Button
+                variant="outline"
+                size="sm"
+                className="mt-4 w-full gap-1.5 border-[#C9A227]/40 text-[#C9A227]"
+                onClick={() => fileInputRef.current?.click()}
+              >
+                <Upload className="h-4 w-4" /> העלה תמונת הרב
+              </Button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleRabbiUpload}
+              />
+            </CardContent>
+          </Card>
+
+          {/* פאנל שכבות */}
+          <Card className="mb-4 border-[#C9A227]/15 bg-[#101B32]">
+            <CardContent className="p-4">
+              <div className="mb-3 flex items-center justify-between">
+                <h2 className="flex items-center gap-2 text-sm font-bold text-[#F5EEDD]">
+                  <LayersIcon className="h-4 w-4 text-[#C9A227]" /> שכבות
+                </h2>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="h-7 gap-1 border-[#C9A227]/40 px-2 text-[11px] text-[#C9A227]"
+                  onClick={handleAddTextLayer}
+                  data-testid="button-add-text-layer"
+                >
+                  <Plus className="h-3.5 w-3.5" /> הוסף טקסט
+                </Button>
+              </div>
+              <div className="mb-3 max-h-52 space-y-1 overflow-y-auto">
+                {[...doc.layers]
+                  .filter((l) => l.type === "text" || l.type === "image")
+                  .sort((a, b) => (b.z ?? 0) - (a.z ?? 0))
+                  .map((l) => {
+                    const isSel = selectedId === l.id;
+                    const hidden = l.visible === false;
+                    return (
+                      <div
+                        key={l.id}
+                        className={`group flex items-center gap-1 rounded px-2 py-1 text-xs transition ${
+                          isSel ? "bg-[#C9A227]/20" : "hover:bg-[#C9A227]/10"
+                        }`}
+                        data-testid={`row-layer-${l.id}`}
+                      >
+                        <button
+                          onClick={() => setSelectedId(l.id)}
+                          className={`flex min-w-0 flex-1 items-center gap-2 text-right ${
+                            isSel ? "text-[#C9A227]" : "text-[#F5EEDD]/70"
+                          } ${hidden ? "opacity-40" : ""}`}
+                        >
+                          {l.type === "text" ? (
+                            <TypeIcon className="h-3.5 w-3.5 shrink-0" />
+                          ) : (
+                            <ImageIcon className="h-3.5 w-3.5 shrink-0" />
+                          )}
+                          <span className="truncate">
+                            {l.type === "text"
+                              ? (l as TextLayer).text?.slice(0, 20) || (l as TextLayer).label || l.id
+                              : (l as ImageLayer).label || l.id}
+                          </span>
+                          {l.locked && <Lock className="h-3 w-3 shrink-0 text-[#C9A227]/60" />}
+                        </button>
+                        <div className="flex shrink-0 items-center gap-0.5">
+                          <button title="הזז קדימה" onClick={() => handleMoveZ(l.id, 1)} className="rounded p-1 text-[#F5EEDD]/50 hover:bg-[#C9A227]/20 hover:text-[#C9A227]">
+                            <ArrowUp className="h-3 w-3" />
+                          </button>
+                          <button title="הזז אחורה" onClick={() => handleMoveZ(l.id, -1)} className="rounded p-1 text-[#F5EEDD]/50 hover:bg-[#C9A227]/20 hover:text-[#C9A227]">
+                            <ArrowDown className="h-3 w-3" />
+                          </button>
+                          <button title={hidden ? "הצג" : "הסתר"} onClick={() => handleToggleVisible(l.id)} className="rounded p-1 text-[#F5EEDD]/50 hover:bg-[#C9A227]/20 hover:text-[#C9A227]">
+                            {hidden ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
+                          </button>
+                          <button title={l.locked ? "בטל נעילה" : "נעל"} onClick={() => handleToggleLock(l.id)} className="rounded p-1 text-[#F5EEDD]/50 hover:bg-[#C9A227]/20 hover:text-[#C9A227]">
+                            {l.locked ? <Unlock className="h-3 w-3" /> : <Lock className="h-3 w-3" />}
+                          </button>
+                          <button title="שכפל" onClick={() => handleDuplicateLayer(l.id)} className="rounded p-1 text-[#F5EEDD]/50 hover:bg-[#C9A227]/20 hover:text-[#C9A227]">
+                            <Copy className="h-3 w-3" />
+                          </button>
+                          <button title="מחק" onClick={() => handleDeleteLayer(l.id)} className="rounded p-1 text-[#F5EEDD]/50 hover:bg-red-500/20 hover:text-red-400" data-testid={`button-delete-layer-${l.id}`}>
+                            <Trash2 className="h-3 w-3" />
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+              </div>
+
+              {selectedLayer && selectedLayer.type === "text" && (
+                <>
+                  {/* עריכת טקסט ישירה — חשוב בעיקר לשכבות חופשיות ללא שדה מובנה */}
+                  <div className="mb-3">
+                    <Label className="mb-1 block text-xs text-[#F5EEDD]/70">תוכן הטקסט</Label>
+                    <Textarea
+                      value={(selectedLayer as TextLayer).text}
+                      onChange={(e) => handleChangeLayer(selectedLayer.id, { text: e.target.value })}
+                      className="border-[#C9A227]/20 bg-[#0B1220] text-sm text-[#F5EEDD]"
+                      rows={2}
+                      data-testid="input-layer-text"
+                    />
+                  </div>
+                  <TextLayerControls
+                    layer={selectedLayer as TextLayer}
+                    stylePalette={style.palette}
+                    onChange={(patch) => handleChangeLayer(selectedLayer.id, patch)}
+                  />
+                </>
+              )}
+
+              {!selectedLayer && (
+                <p className="text-xs text-[#F5EEDD]/40">בחר שכבה מהרשימה או מהקנבאס לעריכה, או הוסף שכבת טקסט חדשה</p>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* פאנל רקע — צבע מלא / גרדיאנט / תמונת AI */}
+          <Card className="mb-4 border-[#C9A227]/15 bg-[#101B32]">
+            <CardContent className="p-4">
+              <h2 className="mb-3 flex items-center gap-2 text-sm font-bold text-[#F5EEDD]">
+                <Wand2 className="h-4 w-4 text-[#C9A227]" /> רקע
+              </h2>
+              <BackgroundControls
+                background={doc.background}
+                onChange={(bg) => updateDoc({ ...doc, background: bg })}
+              />
+            </CardContent>
+          </Card>
+
+          {/* טיפים מהקטגוריה */}
+          {category && (
+            <Card className="border-[#C9A227]/15 bg-[#101B32]">
+              <CardContent className="p-4">
+                <h2 className="mb-2 flex items-center gap-2 text-sm font-bold text-[#F5EEDD]">
+                  <Lightbulb className="h-4 w-4 text-[#C9A227]" /> טיפים לקטגוריה
+                </h2>
+                {category.honorifics.length > 0 && (
+                  <div className="mb-2">
+                    <p className="mb-1 text-[11px] text-[#F5EEDD]/50">כינויי כבוד:</p>
+                    <div className="flex flex-wrap gap-1">
+                      {category.honorifics.map((h) => (
+                        <Badge key={h} variant="outline" className="border-[#C9A227]/30 text-[10px] text-[#C9A227]">
+                          {h}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {category.symbols.length > 0 && (
+                  <div>
+                    <p className="mb-1 text-[11px] text-[#F5EEDD]/50">סמלים מתאימים:</p>
+                    <div className="flex flex-wrap gap-1">
+                      {category.symbols.map((s) => (
+                        <Badge key={s} variant="outline" className="border-[#F5EEDD]/20 text-[10px] text-[#F5EEDD]/70">
+                          {s}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          )}
+        </aside>
+      </div>
+
+      {/* דיאלוג הצע קופי */}
+      <Dialog open={copyDialogOpen} onOpenChange={setCopyDialogOpen}>
+        <DialogContent className="max-w-lg border-[#C9A227]/30 bg-[#0E1830] text-[#F5EEDD]" dir="rtl">
+          <DialogHeader>
+            <DialogTitle className="text-[#F5EEDD]">הצע קופי — {category?.label}</DialogTitle>
+            <DialogDescription>לחיצה על דוגמה תמלא אותה בשדה הכותרת</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3">
+            {copyExamples.length === 0 && (
+              <p className="text-sm text-[#F5EEDD]/60">אין דוגמאות קופי לקטגוריה זו כרגע</p>
+            )}
+            {copyExamples.map((ex, i) => (
+              <button
+                key={i}
+                onClick={() => applyCopyExample(ex.text)}
+                className="block w-full rounded-lg border border-[#C9A227]/20 bg-[#101B32] p-3 text-right text-sm leading-relaxed transition hover:border-[#C9A227]/60"
+              >
+                {ex.text}
+              </button>
+            ))}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* דיאלוג קופי חכם (Claude) */}
+      <Dialog open={aiCopyOpen} onOpenChange={setAiCopyOpen}>
+        <DialogContent className="max-w-lg border-[#C9A227]/30 bg-[#0E1830] text-[#F5EEDD]" dir="rtl">
+          <DialogHeader>
+            <DialogTitle className="text-[#F5EEDD]">כתיבת קופי חכם — {category?.label}</DialogTitle>
+            <DialogDescription>
+              תארו במשפט את הרעיון/המסר, ו-Claude יציע ניסוחי קופי מכובדים בעברית תורנית
+            </DialogDescription>
+          </DialogHeader>
+          <Textarea
+            value={aiCopyMsg}
+            onChange={(e) => setAiCopyMsg(e.target.value)}
+            placeholder="לדוגמה: שיעור דף היומי חדש בשכונה, בהשתתפות הרב, מדי ערב אחרי מעריב"
+            className="border-[#C9A227]/20 bg-[#101B32] text-sm text-[#F5EEDD]"
+            rows={3}
+            data-testid="input-ai-copy-message"
+          />
+          <Button
+            className="w-full gap-1.5 bg-[#C9A227] text-[#0B1220] hover:bg-[#C9A227]/90"
+            onClick={handleGenerateAiCopy}
+            disabled={aiCopyLoading}
+            data-testid="button-generate-ai-copy"
+          >
+            <Sparkles className="h-4 w-4" /> {aiCopyLoading ? "Claude כותב..." : "הצע ניסוחים"}
+          </Button>
+
+          {aiCopyVariants.length > 0 && (
+            <div className="mt-2 max-h-[42vh] space-y-2 overflow-y-auto">
+              {aiCopyVariants.map((v, i) => (
+                <button
+                  key={i}
+                  onClick={() => applyAiVariant(v)}
+                  className="block w-full rounded-lg border border-[#C9A227]/20 bg-[#101B32] p-3 text-right transition hover:border-[#C9A227]/60"
+                  data-testid={`card-copy-variant-${i}`}
+                >
+                  {v.title && <p className="text-sm font-bold text-[#F5EEDD]">{v.title}</p>}
+                  {v.subtitle && <p className="mt-0.5 text-xs text-[#C9A227]">{v.subtitle}</p>}
+                  {v.body && (
+                    <p className="mt-1 whitespace-pre-line text-xs leading-relaxed text-[#F5EEDD]/75">
+                      {v.body}
+                    </p>
+                  )}
+                  {v.cta && <p className="mt-1 text-xs font-semibold text-[#E4C55A]">{v.cta}</p>}
+                </button>
+              ))}
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* דיאלוג רקע AI */}
+      <Dialog open={aiDialogOpen} onOpenChange={setAiDialogOpen}>
+        <DialogContent className="max-w-md border-[#C9A227]/30 bg-[#0E1830] text-[#F5EEDD]" dir="rtl">
+          <DialogHeader>
+            <DialogTitle className="text-[#F5EEDD]">רקע AI</DialogTitle>
+            <DialogDescription>תיאור הרקע הרצוי (ללא טקסט, דקורטיבי בלבד)</DialogDescription>
+          </DialogHeader>
+          <Textarea
+            value={aiPrompt}
+            onChange={(e) => setAiPrompt(e.target.value)}
+            className="border-[#C9A227]/20 bg-[#101B32] text-sm text-[#F5EEDD]"
+            rows={3}
+          />
+          <Button
+            className="w-full gap-1.5 bg-[#C9A227] text-[#0B1220] hover:bg-[#C9A227]/90"
+            onClick={handleAiBackground}
+            disabled={aiLoading}
+          >
+            <Wand2 className="h-4 w-4" /> {aiLoading ? "יוצר רקע..." : "צור רקע"}
+          </Button>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
+
+function TextLayerControls({
+  layer,
+  stylePalette,
+  onChange,
+}: {
+  layer: TextLayer;
+  stylePalette: { primary: string; secondary: string; accent: string; text: string; textLight: string; cream: string };
+  onChange: (patch: Partial<TextLayer>) => void;
+}) {
+  const paletteColors = Array.from(new Set(Object.values(stylePalette)));
+  return (
+    <div className="space-y-3 border-t border-[#C9A227]/10 pt-3">
+      {/* פונט + עובי חופשי */}
+      <FontControl
+        fontFamily={layer.fontFamily}
+        fontWeight={layer.fontWeight ?? 400}
+        onChange={(patch) => onChange(patch)}
+      />
+
+      <div>
+        <Label className="mb-1 block text-xs text-[#F5EEDD]/70">גודל: {layer.fontSize}</Label>
+        <Slider
+          value={[layer.fontSize]}
+          min={12}
+          max={220}
+          step={1}
+          onValueChange={([v]) => onChange({ fontSize: v, maxFontSize: v })}
+        />
+      </div>
+
+      <div>
+        <Label className="mb-1 block text-xs text-[#F5EEDD]/70">יישור</Label>
+        <div className="flex gap-1.5">
+          <Button
+            size="sm"
+            variant={layer.align === "right" ? "default" : "outline"}
+            className={layer.align === "right" ? "flex-1 bg-[#C9A227] text-[#0B1220]" : "flex-1 border-[#C9A227]/30"}
+            onClick={() => onChange({ align: "right" })}
+          >
+            <AlignRight className="h-4 w-4" />
+          </Button>
+          <Button
+            size="sm"
+            variant={layer.align === "center" ? "default" : "outline"}
+            className={layer.align === "center" ? "flex-1 bg-[#C9A227] text-[#0B1220]" : "flex-1 border-[#C9A227]/30"}
+            onClick={() => onChange({ align: "center" })}
+          >
+            <AlignCenter className="h-4 w-4" />
+          </Button>
+          <Button
+            size="sm"
+            variant={layer.align === "left" ? "default" : "outline"}
+            className={layer.align === "left" ? "flex-1 bg-[#C9A227] text-[#0B1220]" : "flex-1 border-[#C9A227]/30"}
+            onClick={() => onChange({ align: "left" })}
+          >
+            <AlignLeft className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
+
+      {/* צבע טקסט — בורר מלא עם מפת צבעים */}
+      <div>
+        <Label className="mb-1 block text-xs text-[#F5EEDD]/70">צבע טקסט</Label>
+        <ColorPicker
+          value={layer.fill}
+          onChange={(c) => onChange({ fill: c })}
+          presets={paletteColors}
+          label="צבע הטקסט"
+        />
+      </div>
+
+      {/* מתאר (קו מתאר) */}
+      <div className="grid grid-cols-2 gap-2">
+        <div>
+          <Label className="mb-1 block text-xs text-[#F5EEDD]/70">צבע מתאר</Label>
+          <ColorPicker
+            value={layer.stroke ?? "#000000"}
+            onChange={(c) => onChange({ stroke: c })}
+            presets={paletteColors}
+            compact
+            label="צבע מתאר"
+          />
+        </div>
+        <div>
+          <Label className="mb-1 block text-xs text-[#F5EEDD]/70">עובי מתאר: {layer.strokeWidth ?? 0}</Label>
+          <Slider
+            value={[layer.strokeWidth ?? 0]}
+            min={0}
+            max={12}
+            step={0.5}
+            onValueChange={([v]) => onChange({ strokeWidth: v })}
+          />
+        </div>
+      </div>
+
+      {/* צל טקסט */}
+      <div className="grid grid-cols-2 gap-2">
+        <div>
+          <Label className="mb-1 block text-xs text-[#F5EEDD]/70">צבע צל</Label>
+          <ColorPicker
+            value={layer.shadowColor ?? "rgba(0, 0, 0, 0.5)"}
+            onChange={(c) => onChange({ shadowColor: c })}
+            compact
+            label="צבע הצל"
+          />
+        </div>
+        <div>
+          <Label className="mb-1 block text-xs text-[#F5EEDD]/70">טשטוש צל: {layer.shadowBlur ?? 0}</Label>
+          <Slider
+            value={[layer.shadowBlur ?? 0]}
+            min={0}
+            max={40}
+            step={1}
+            onValueChange={([v]) => onChange({ shadowBlur: v })}
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ---- פאנל רקע: צבע מלא / גרדיאנט (from/to/angle) / תמונת AI ----
+function BackgroundControls({
+  background,
+  onChange,
+}: {
+  background: TemplateBackground;
+  onChange: (bg: TemplateBackground) => void;
+}) {
+  const type = background.type;
+  const grad = background.gradient ?? { from: "#0B1220", to: "#1A2A4A", angle: 135 };
+  const bgPresets = ["#0B1220", "#101B32", "#1A2A4A", "#C9A227", "#E4C55A", "#F5EEDD", "#FFFFFF", "#000000", "#2E1A0B", "#4A1010"];
+
+  return (
+    <div className="space-y-3">
+      {/* בורר סוג רקע */}
+      <div className="flex gap-1.5">
+        <Button
+          size="sm"
+          variant={type === "solid" ? "default" : "outline"}
+          className={type === "solid" ? "flex-1 bg-[#C9A227] text-[#0B1220]" : "flex-1 border-[#C9A227]/30 text-[#F5EEDD]/70"}
+          onClick={() => onChange({ type: "solid", color: background.color ?? "#0B1220" })}
+          data-testid="button-bg-solid"
+        >
+          צבע מלא
+        </Button>
+        <Button
+          size="sm"
+          variant={type === "gradient" ? "default" : "outline"}
+          className={type === "gradient" ? "flex-1 bg-[#C9A227] text-[#0B1220]" : "flex-1 border-[#C9A227]/30 text-[#F5EEDD]/70"}
+          onClick={() => onChange({ type: "gradient", gradient: grad })}
+          data-testid="button-bg-gradient"
+        >
+          גרדיאנט
+        </Button>
+      </div>
+
+      {/* צבע מלא */}
+      {type === "solid" && (
+        <div>
+          <Label className="mb-1 block text-xs text-[#F5EEDD]/70">צבע הרקע</Label>
+          <ColorPicker
+            value={background.color ?? "#0B1220"}
+            onChange={(c) => onChange({ type: "solid", color: c })}
+            presets={bgPresets}
+            label="צבע הרקע"
+          />
+        </div>
+      )}
+
+      {/* גרדיאנט: from / to / זווית */}
+      {type === "gradient" && (
+        <div className="space-y-3">
+          <div className="grid grid-cols-2 gap-2">
+            <div>
+              <Label className="mb-1 block text-xs text-[#F5EEDD]/70">צבע עליון</Label>
+              <ColorPicker
+                value={grad.from}
+                onChange={(c) => onChange({ type: "gradient", gradient: { ...grad, from: c } })}
+                presets={bgPresets}
+                compact
+                label="צבע עליון"
+              />
+            </div>
+            <div>
+              <Label className="mb-1 block text-xs text-[#F5EEDD]/70">צבע תחתון</Label>
+              <ColorPicker
+                value={grad.to}
+                onChange={(c) => onChange({ type: "gradient", gradient: { ...grad, to: c } })}
+                presets={bgPresets}
+                compact
+                label="צבע תחתון"
+              />
+            </div>
+          </div>
+          <div>
+            <Label className="mb-1 block text-xs text-[#F5EEDD]/70">זווית: {grad.angle ?? 135}°</Label>
+            <Slider
+              value={[grad.angle ?? 135]}
+              min={0}
+              max={360}
+              step={5}
+              onValueChange={([v]) => onChange({ type: "gradient", gradient: { ...grad, angle: v } })}
+            />
+          </div>
+        </div>
+      )}
+
+      {type === "image" && (
+        <p className="text-[11px] text-[#F5EEDD]/50">רקע תמונה פעיל. לחיצה על “צבע מלא” או “גרדיאנט” תחליף אותו.</p>
+      )}
+    </div>
+  );
+}

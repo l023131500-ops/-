@@ -1,0 +1,17 @@
+{
+  "version": 2,
+  "buildCommand": "npm run build:vercel",
+  "installCommand": "npm install",
+  "functions": {
+    "api/handler.js": {
+      "maxDuration": 300,
+      "includeFiles": "dist/public/**"
+    }
+  },
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/api/handler.js"
+    }
+  ]
+}

@@ -1,0 +1,58 @@
+<!doctype html>
+<!--
+  ⚠️ ‎class="dark"‎ קבוע, ולא לפי העדפת המערכת.
+
+  הסטודיו כהה בעיצובו: ‎Home‎ צובע ‎bg-[#0B1220]‎ קשיח, וכל המסכים בנויים
+  סביב הכהה. אבל ‎body‎ עצמו ירש ‎--background: 40 30% 97%‎ — קרם — כי אף אחד
+  לא הוסיף את המחלקה ‎.dark‎, שקיימת ב-‎index.css‎ במלואה מהיום הראשון.
+  התוצאה שנמדדה: הרקע האפקטיבי של העמוד היה ‎rgb(250,248,245)‎, כלומר
+  **המשתמש ראה מסך קרם לכל אורך הטעינה — כמעט ארבע שניות — ואז הבזק לכהה.**
+
+  זה לא "אין מצב כהה": זה מצב כהה שהיה כתוב ולא הופעל. כאן, על התג עצמו,
+  הוא פעיל לפני הבייט הראשון של ה-CSS. DESIGN_STANDARD §3 סעיף 2:
+  עמוד כהה מלכתחילה עובר, ובלבד שיצהיר על כך.
+-->
+<html lang="he" dir="rtl" class="dark" style="color-scheme: dark">
+  <head>
+    <meta charset="UTF-8" />
+    <!-- ⚠️ ‎maximum-scale‎ / ‎user-scalable=no‎ הוסרו: הם מונעים מהמשתמש
+         להגדיל את העמוד, וזה כשל נגישות לפי DESIGN_STANDARD §5 (תקן 5568).
+         בעמוד עברי צפוף זו בדיוק היכולת שמי שמתקשה לקרוא זקוק לה. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>מודעות AI — יצירת מודעות מעוצבות לקהילה</title>
+    <meta name="description" content="מערכת ליצירת מודעות אבל, שמחה וארגון בעיצוב גרפי מקצועי עם בינה מלאכותית — טקסט עברי מדויק ורקעים מרהיבים." />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <!-- ‎canonical‎ ו-‎og:url‎ **לא היו בעמוד כלל** — נמדד ריק בשלושת המצבים.
+         DESIGN_STANDARD §8 מחייב את שניהם, מצביעים ל-more30.com. -->
+    <link rel="canonical" href="https://more30.com/studio" />
+    <meta property="og:url" content="https://more30.com/studio" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="he_IL" />
+    <meta property="og:title" content="מודעות AI — יצירת מודעות מעוצבות לקהילה" />
+    <meta
+      property="og:description"
+      content="מערכת ליצירת מודעות אבל, שמחה וארגון בעיצוב גרפי מקצועי עם בינה מלאכותית — טקסט עברי מדויק ורקעים מרהיבים."
+    />
+    <meta name="theme-color" content="#0B1220" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- שני גיליונות הפונטים ירדו מנתיב הציור הראשון. הם נושאים כחמישים
+         משפחות גופנים — זה מה שהמערכת מציעה למשתמש לבחור מהן — ובתור
+         בקשות חוסמות הם עיכבו את הציור עד שכולן הגיעו. הבחירה בעורך
+         עדיין עובדת: הגיליון מוחזר ברגע שהוא נטען. -->
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@100..900&family=Frank+Ruhl+Libre:wght@300..900&family=Rubik:wght@300..900&family=Assistant:wght@200..800&family=Noto+Sans+Hebrew:wght@100..900&family=Noto+Serif+Hebrew:wght@100..900&family=Noto+Rashi+Hebrew:wght@100..900&family=David+Libre:wght@400;500;700&family=Suez+One&family=Secular+One&family=Miriam+Libre:wght@400;700&family=Bellefair&family=Alef:wght@400;700&family=Amatic+SC:wght@400;700&family=Karantina:wght@300;400;700&family=Gveret+Levin&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+    <link href="https://fonts.googleapis.com/css2?family=Architects+Daughter&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Fira+Code:wght@300..700&family=Geist+Mono:wght@100..900&family=Geist:wght@100..900&family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=IBM+Plex+Sans:ital,wght@0,100..700;1,100..700&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Lora:ital,wght@0,400..700;1,400..700&family=Merriweather:ital,opsz,wght@0,18..144,300..900;1,18..144,300..900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Outfit:wght@100..900&family=Oxanium:wght@200..800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&family=Roboto:ital,wght@0,100..900;1,100..900&family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&family=Space+Grotesk:wght@300..700&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+    <noscript>
+      <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@100..900&family=Frank+Ruhl+Libre:wght@300..900&family=Rubik:wght@300..900&family=Assistant:wght@200..800&family=Noto+Sans+Hebrew:wght@100..900&family=Noto+Serif+Hebrew:wght@100..900&family=Noto+Rashi+Hebrew:wght@100..900&family=David+Libre:wght@400;500;700&family=Suez+One&family=Secular+One&family=Miriam+Libre:wght@400;700&family=Bellefair&family=Alef:wght@400;700&family=Amatic+SC:wght@400;700&family=Karantina:wght@300;400;700&family=Gveret+Levin&display=swap" rel="stylesheet" />
+      <link href="https://fonts.googleapis.com/css2?family=Architects+Daughter&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Fira+Code:wght@300..700&family=Geist+Mono:wght@100..900&family=Geist:wght@100..900&family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=IBM+Plex+Sans:ital,wght@0,100..700;1,100..700&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Lora:ital,wght@0,400..700;1,400..700&family=Merriweather:ital,opsz,wght@0,18..144,300..900;1,18..144,300..900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Outfit:wght@100..900&family=Oxanium:wght@200..800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&family=Roboto:ital,wght@0,100..900;1,100..900&family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&family=Space+Grotesk:wght@300..700&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet" />
+    </noscript>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+    <!-- כפתור הכניסה המשותף של more30. ⚠️ הוא היה קיים **רק בעותק הפרוס**
+         ולא כאן במקור, ולכן הבנייה הראשונה בסבב הזה מחקה אותו בשקט — בדיוק
+         המלכודת שכבר תועדה על 16 חצור. במקור, ולא רק ב-staging. -->
+    <script src="https://more30.com/auth-button.js" defer></script>
+  </body>
+</html>

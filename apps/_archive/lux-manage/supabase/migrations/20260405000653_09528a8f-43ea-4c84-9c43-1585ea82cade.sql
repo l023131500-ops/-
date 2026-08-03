@@ -1,0 +1,2 @@
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS id_number text DEFAULT '';
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS ivr_pin text DEFAULT '';

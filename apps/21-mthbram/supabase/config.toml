@@ -1,0 +1,25 @@
+project_id = "aypsqqvfohekxxuqsmrw"
+
+[functions.chat]
+verify_jwt = false
+
+[functions.api]
+verify_jwt = false
+
+[functions.search-lessons]
+verify_jwt = false
+
+[functions.nedarim-webhook]
+verify_jwt = false
+
+[functions.ivr-search]
+verify_jwt = false
+
+[functions.ivr-submit]
+verify_jwt = false
+
+[functions.ivr-menu]
+verify_jwt = false
+
+[functions.ivr-agent]
+verify_jwt = false

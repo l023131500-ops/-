@@ -1,0 +1,7 @@
+project_id = "trerolyveytzgksawrme"
+
+[functions.rights-agent]
+verify_jwt = false
+
+[functions.n8n-notify]
+verify_jwt = false

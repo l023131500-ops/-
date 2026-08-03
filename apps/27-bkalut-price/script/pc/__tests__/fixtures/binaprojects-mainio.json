@@ -1,0 +1,10 @@
+[
+  {"FileNm":"PriceFull7290058148776-319-202606301003.gz","Company":"1","Store":"319 - aaa","TypeFile":"מחירים","TypeExpFile":"gz","DateFile":"13:01 30/06/2026"},
+  {"FileNm":"PriceFull7290058148776-319-202606300800.gz","Company":"1","Store":"319 - aaa","TypeFile":"מחירים","TypeExpFile":"gz","DateFile":"08:00 30/06/2026"},
+  {"FileNm":"PriceFull7290058148776-313-202606301003.gz","Company":"1","Store":"313 - bbb","TypeFile":"מחירים","TypeExpFile":"gz","DateFile":"13:01 30/06/2026"},
+  {"FileNm":"Price7290058148776-319-202606301003.gz","Company":"1","Store":"319 - aaa","TypeFile":"מחירים","TypeExpFile":"gz","DateFile":"13:01 30/06/2026"},
+  {"FileNm":"PromoFull7290058148776-319-202606301006.gz","Company":"1","Store":"319 - aaa","TypeFile":"מבצעים","TypeExpFile":"gz","DateFile":"13:06 30/06/2026"},
+  {"FileNm":"Promo7290058148776-319-202606301006.gz","Company":"1","Store":"319 - aaa","TypeFile":"מבצעים","TypeExpFile":"gz","DateFile":"13:06 30/06/2026"},
+  {"FileNm":"StoresFull7290058148776-000-202606301003.gz","Company":"1","Store":"000","TypeFile":"מחסנים","TypeExpFile":"gz","DateFile":"13:01 30/06/2026"},
+  {"FileNm":"CompanyLogo.jpg","Company":"1","Store":"","TypeFile":"","TypeExpFile":"jpg","DateFile":""}
+]

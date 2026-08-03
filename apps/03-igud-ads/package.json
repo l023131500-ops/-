@@ -1,0 +1,36 @@
+{
+  "name": "igud-ads",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@supabase/ssr": "^0.5.2",
+    "@supabase/supabase-js": "^2.45.4",
+    "docx": "^9.7.1",
+    "next": "14.2.35",
+    "openai": "^4.67.3",
+    "pdfkit": "^0.15.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "sharp": "^0.33.5",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@types/node": "^20.16.10",
+    "@types/pdfkit": "^0.13.4",
+    "@types/react": "^18.3.11",
+    "@types/react-dom": "^18.3.0",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.47",
+    "tailwindcss": "^3.4.13",
+    "typescript": "^5.6.2"
+  },
+  "allowScripts": {
+    "sharp@0.33.5": true
+  }
+}

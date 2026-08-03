@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>בקלות — השוואת קופות חולים והמלצות מעבר</title>
+  <meta name="description" content="השוואה מלאה בין קופות החולים בישראל — כללית, מכבי, מאוחדת ולאומית. המלצה לאיזו קופה כדאי לעבור לפי מצב המשפחה, הבריאות והילדים, על בסיס נתוני בקלות." />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&family=Frank+Ruhl+Libre:wght@500;700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- Skip link -->
+  <a href="#main" class="skip-link">דלג לתוכן</a>
+
+  <!-- Header -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="#top" aria-label="בקלות — דף הבית">
+        <svg class="brand-logo" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <rect x="2" y="2" width="36" height="36" rx="10" stroke="currentColor" stroke-width="2.5"/>
+          <path d="M20 10v20M10 20h20" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/>
+        </svg>
+        <span class="brand-text">בקלות<span class="brand-sub">קופות חולים</span></span>
+      </a>
+      <nav class="main-nav" aria-label="ניווט ראשי">
+        <a href="#recommend">המלצה לפי מצב</a>
+        <a href="#compare">השוואה</a>
+        <a href="#how-to-switch">איך עוברים</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <!-- Hero -->
+    <section class="hero" id="top">
+      <div class="container hero-inner">
+        <p class="hero-eyebrow">מבוסס על נתוני בקלות · 435 נושאי הטבה</p>
+        <h1 class="hero-title">לאיזו קופת חולים <span class="hl">כדאי לעבור?</span></h1>
+        <p class="hero-lede">
+          השוואה מלאה ואובייקטיבית בין ארבע קופות החולים — כללית, מכבי, מאוחדת ולאומית.
+          בחרו את המצב שמתאים לכם, וקבלו המלצה מבוססת נתונים לאיזו קופה משתלם לעבור.
+        </p>
+        <div class="hero-cta">
+          <a href="#recommend" class="btn btn-primary">קבלו המלצה לפי המצב שלכם</a>
+          <a href="#compare" class="btn btn-ghost">לטבלת ההשוואה המלאה</a>
+        </div>
+        <div class="fund-chips" aria-hidden="true">
+          <span class="fund-chip" data-fund="clalit">כללית</span>
+          <span class="fund-chip" data-fund="maccabi">מכבי</span>
+          <span class="fund-chip" data-fund="meuhedet">מאוחדת</span>
+          <span class="fund-chip" data-fund="leumit">לאומית</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Recommendations by life situation -->
+    <section class="section" id="recommend">
+      <div class="container">
+        <div class="section-head">
+          <h2 class="section-title">המלצה לפי מצב חיים</h2>
+          <p class="section-sub">בחרו את המצב שמתאר אתכם — ההמלצה מחושבת אוטומטית מתוך מספר הנושאים שבהם כל קופה יוצאת המשתלמת ביותר בנתונים שלנו.</p>
+        </div>
+        <div class="profile-grid" id="profileGrid"><!-- JS --></div>
+      </div>
+    </section>
+
+    <!-- Detail panel (opens on profile click) -->
+    <div class="drawer-backdrop" id="drawerBackdrop" hidden></div>
+    <aside class="drawer" id="profileDrawer" hidden aria-labelledby="drawerTitle" role="dialog" aria-modal="true">
+      <button class="drawer-close" id="drawerClose" aria-label="סגור">&times;</button>
+      <div class="drawer-body" id="drawerBody"><!-- JS --></div>
+    </aside>
+
+    <!-- Comparison table -->
+    <section class="section section-alt" id="compare">
+      <div class="container">
+        <div class="section-head">
+          <h2 class="section-title">טבלת השוואה מלאה</h2>
+          <p class="section-sub">כל נושאי ההטבה, לפי קטגוריה. סננו לפי קטגוריה או חפשו נושא. לחיצה על נושא פותחת את הפירוט וההבדל בין הקופות.</p>
+        </div>
+        <div class="filters">
+          <div class="search-wrap">
+            <input type="search" id="searchInput" placeholder="חיפוש נושא, זכות או הטבה…" aria-label="חיפוש נושא" />
+          </div>
+          <div class="cat-filter" id="catFilter" role="tablist" aria-label="סינון לפי קטגוריה"><!-- JS --></div>
+        </div>
+        <div class="results-meta" id="resultsMeta" aria-live="polite"></div>
+        <div class="topic-list" id="topicList"><!-- JS --></div>
+        <button class="btn btn-ghost load-more" id="loadMore" hidden>הצג עוד נושאים</button>
+      </div>
+    </section>
+
+    <!-- How to switch -->
+    <section class="section" id="how-to-switch">
+      <div class="container">
+        <div class="section-head">
+          <h2 class="section-title">איך עוברים קופת חולים?</h2>
+          <p class="section-sub">מעבר קופה הוא זכות בסיסית, חינמי, ואפשר לבצע אותו אונליין בכמה דקות. הנה ההסבר המלא בשלבים.</p>
+        </div>
+        <ol class="steps">
+          <li class="step">
+            <span class="step-num">1</span>
+            <div>
+              <h3>בודקים זכאות</h3>
+              <p>כל תושב ישראל רשאי לעבור קופת חולים. אין צורך בסיבה, וההצטרפות אינה כרוכה בתשלום. אפשר לעבור עד 6 פעמים בשנה, כאשר המעבר בפועל מתבצע פעמיים בשנה (בתחילת חודשים אי-זוגיים).</p>
+            </div>
+          </li>
+          <li class="step">
+            <span class="step-num">2</span>
+            <div>
+              <h3>מגישים בקשה</h3>
+              <p>מגישים בקשת מעבר דרך אתר האינטרנט או האפליקציה של הקופה החדשה, בסניף הדואר, או דרך אתר "כל הזכויות". צריך תעודת זהות וכתובת עדכנית.</p>
+            </div>
+          </li>
+          <li class="step">
+            <span class="step-num">3</span>
+            <div>
+              <h3>ממתינים לאישור</h3>
+              <p>המעבר נכנס לתוקף בתחילת החודש הזוגי הקרוב (ינואר, מרץ, מאי, יולי, ספטמבר, נובמבר). עד אז נשארים מבוטחים בקופה הנוכחית ומקבלים בה את כל השירותים.</p>
+            </div>
+          </li>
+          <li class="step">
+            <span class="step-num">4</span>
+            <div>
+              <h3>מסדירים ביטוח משלים</h3>
+              <p>שימו לב: מעבר קופה מאפס את הוותק בביטוח המשלים (השב"ן). כדאי לבדוק תקופות אכשרה מראש ולשקול רצף ביטוחי. מומלץ לקבל ליווי אישי לפני המעבר.</p>
+            </div>
+          </li>
+        </ol>
+        <div class="cta-band">
+          <div>
+            <h3>רוצים ליווי אישי במעבר?</h3>
+            <p>צוות בקלות ילווה אתכם בבחירת הקופה המתאימה ובתהליך המעבר — בקלות ובלי בירוקרטיה.</p>
+          </div>
+          <button class="btn btn-primary" data-open-contact="switch">מעוניינים במעבר קופה</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Contact modal -->
+  <div class="modal-backdrop" id="modalBackdrop" hidden></div>
+  <div class="modal" id="contactModal" hidden role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <button class="modal-close" id="modalClose" aria-label="סגור">&times;</button>
+    <h2 id="modalTitle" class="modal-title">מעוניינים במידע המפורט למייל</h2>
+    <p class="modal-sub" id="modalSub">השאירו פרטים ונחזור אליכם עם מידע מלא והמלצה אישית.</p>
+    <form id="contactForm" class="contact-form" novalidate>
+      <input type="hidden" name="context" id="ctxField" value="info" />
+      <div class="switch-fields" id="switchFields" hidden>
+        <div class="field">
+          <label for="fromFund">קופה נוכחית</label>
+          <select id="fromFund" name="fromFund">
+            <option value="">בחרו קופה…</option>
+            <option>כללית</option><option>מכבי</option><option>מאוחדת</option><option>לאומית</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="toFund">קופה שמעוניינים לעבור אליה</label>
+          <select id="toFund" name="toFund">
+            <option value="">בחרו קופה…</option>
+            <option>כללית</option><option>מכבי</option><option>מאוחדת</option><option>לאומית</option>
+          </select>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="field">
+          <label for="fullName">שם מלא <span class="req">*</span></label>
+          <input type="text" id="fullName" name="fullName" required autocomplete="name" />
+        </div>
+        <div class="field">
+          <label for="phone">טלפון <span class="req">*</span></label>
+          <input type="tel" id="phone" name="phone" required autocomplete="tel" inputmode="tel" />
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="field">
+          <label for="email">דוא"ל</label>
+          <input type="email" id="email" name="email" autocomplete="email" inputmode="email" />
+        </div>
+        <div class="field">
+          <label for="address">כתובת מגורים</label>
+          <input type="text" id="address" name="address" placeholder="עיר, רחוב ומספר" autocomplete="street-address" />
+        </div>
+      </div>
+      <div class="field">
+        <label for="topicField">נושא שמעניין אתכם (לא חובה)</label>
+        <input type="text" id="topicField" name="topic" placeholder="לדוגמה: הריון ולידה, שיניים לילדים…" />
+      </div>
+      <div class="req-type" role="group" aria-label="סוג הפנייה">
+        <label><input type="radio" name="reqType" value="info" checked /> מידע</label>
+        <label><input type="radio" name="reqType" value="reminder" /> תזכורות</label>
+        <label><input type="radio" name="reqType" value="treatment" /> טיפול ע"י צוות</label>
+      </div>
+      <button type="submit" class="btn btn-primary btn-block">שליחת הפנייה</button>
+      <p class="form-note">הפרטים נשמרים בבקלות בלבד ומשמשים ליצירת קשר. אין כאן ייעוץ רפואי או משפטי מחייב.</p>
+    </form>
+    <div class="form-success" id="formSuccess" hidden>
+      <div class="success-icon">✓</div>
+      <h3>הפנייה נשלחה בהצלחה</h3>
+      <p>תודה! צוות בקלות יחזור אליכם בהקדם.</p>
+      <button class="btn btn-ghost" id="successClose">סגירה</button>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div class="footer-brand">
+        <strong>בקלות</strong>
+        <p>השוואת קופות חולים והמלצות מעבר — מבוסס נתונים, ללא פרסום ממומן.</p>
+      </div>
+      <div class="footer-note">
+        <p>המידע מבוסס על נתוני בקלות ומיועד להתמצאות כללית בלבד. ההטבות והתקנונים משתנים — יש לאמת מול הקופה טרם החלטה. אין באמור ייעוץ רפואי, ביטוחי או משפטי.</p>
+        <p class="muted">© <span id="year"></span> בקלות · כל הזכויות שמורות</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="supabase-config.js"></script>
+  <script src="leads-store.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

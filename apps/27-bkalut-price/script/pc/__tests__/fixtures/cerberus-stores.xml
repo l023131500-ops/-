@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Root>
+  <ChainId>7290058140886</ChainId>
+  <SubChains>
+    <SubChain>
+      <SubChainId>1</SubChainId>
+      <SubChainName>רמי לוי</SubChainName>
+      <Stores>
+        <Store>
+          <StoreId>1</StoreId>
+          <BikoretNo>0</BikoretNo>
+          <StoreType>1</StoreType>
+          <StoreName>רמי לוי באקה</StoreName>
+          <Address>דרך חברון 101</Address>
+          <City>ירושלים</City>
+          <ZipCode>5000</ZipCode>
+        </Store>
+        <Store>
+          <StoreId>2</StoreId>
+          <BikoretNo>5</BikoretNo>
+          <StoreType>1</StoreType>
+          <StoreName>רמי לוי ראשון</StoreName>
+          <Address>הרצל 12</Address>
+          <City>0</City>
+          <ZipCode>7900</ZipCode>
+        </Store>
+      </Stores>
+    </SubChain>
+  </SubChains>
+</Root>

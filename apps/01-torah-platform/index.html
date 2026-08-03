@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <!-- ⚠️ ‎maximum-scale‎ / ‎user-scalable=no‎ הוסרו: הם מונעים מהמשתמש
+         להגדיל את העמוד, וזה כשל נגישות לפי DESIGN_STANDARD §5 (תקן 5568).
+         בעמוד עברי צפוף זו בדיוק היכולת שמי שמתקשה לקרוא זקוק לה. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#1A2E5A" />
+    <meta name="color-scheme" content="light dark" />
+    <!-- מצב כהה (DESIGN_STANDARD §3). המערכת יובאה עם ערכה בהירה בלבד, ולכן
+         מי שהגיע מדף הבית הכהה של more30.com קיבל כאן הבזק לבן.
+         טוקני ‎.dark‎ כבר היו קיימים ב-‎index.css‎ ומעולם לא הופעלו: ‎darkMode‎
+         מוגדר ‎["class"]‎, ואף אחד לא הוסיף את המחלקה. השורות האלה יושבות
+         בתוך ה-‎<head>‎ ורצות לפני הציור הראשון, ולכן אין הבזק — בניגוד
+         להחלה מתוך ‎React‎, שרצה רק אחרי שהעמוד כבר צויר בהיר. -->
+    <script>
+      (function () {
+        var mq = window.matchMedia("(prefers-color-scheme: dark)");
+        var apply = function (dark) {
+          document.documentElement.classList.toggle("dark", dark);
+        };
+        apply(mq.matches);
+        mq.addEventListener
+          ? mq.addEventListener("change", function (e) { apply(e.matches); })
+          : mq.addListener(function (e) { apply(e.matches); });
+      })();
+    </script>
+    <title>איגוד השיעורים · מערכת תורנית מאוחדת</title>
+    <meta name="description" content="המערכת המאוחדת לאיגוד השיעורים, מועצות דתיות, ארגונים, בתי כנסת ומגידי שיעור." />
+    <link rel="canonical" href="https://more30.com/torah" />
+    <meta property="og:url" content="https://more30.com/torah" />
+    <meta property="og:title" content="איגוד השיעורים · מערכת תורנית מאוחדת" />
+    <meta
+      property="og:description"
+      content="המערכת המאוחדת לאיגוד השיעורים, מועצות דתיות, ארגונים, בתי כנסת ומגידי שיעור."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="he_IL" />
+
+    <!-- Fonts: Noto Serif Hebrew (כותרות) + Rubik (גוף) — שתי המשפחות שהעמוד
+         באמת מצייר בהן.
+         מה שהוסר ולמה: ‎Frank Ruhl Libre‎ ו-‎Heebo‎ מופיעים ב-‎index.css‎ אך ורק
+         כערך גיבוי **אחרי** משפחה שתמיד נטענת, ולכן הדפדפן לעולם לא מגיע
+         אליהם; ‎Assistant‎ נקרא בקוד דרך ‎font-assistant‎, מחלקה שאינה מוגדרת
+         ב-‎tailwind.config‎ ולכן אינה עושה דבר. שלוש משפחות מלאות ירדו בלי
+         לשנות ולו פיקסל אחד במה שנראה על המסך.
+         הגיליון גם יורד מנתיב הציור הראשון (DESIGN_STANDARD §1): נטפרי חוסמת
+         כאן את ‎fonts.googleapis.com‎ לסירוגין, ובקשה חוסמת שנכשלת מעכבת את
+         כל העמוד עד שהיא נופלת. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Serif+Hebrew:wght@400;600;700&family=Rubik:wght@300;400;500;700&display=swap"
+      rel="stylesheet"
+      media="print"
+      onload="this.media='all'"
+    />
+    <noscript>
+      <link
+        href="https://fonts.googleapis.com/css2?family=Noto+Serif+Hebrew:wght@400;600;700&family=Rubik:wght@300;400;500;700&display=swap"
+        rel="stylesheet"
+      />
+    </noscript>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+      <!-- כפתור הכניסה המשותף של more30 (DESIGN_STANDARD §9). חייב לשבת
+         כאן במקור ולא רק בעותק הפרוס: כל בנייה מחדש דורסת את ‎index.html‎
+         שב-‎_deploy‎, ואז הכפתור נעלם בלי שאיש ישים לב. -->
+    <script src="https://more30.com/auth-button.js" defer></script>
+  </body>
+</html>

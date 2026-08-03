@@ -1,0 +1,1 @@
+ALTER TABLE public.leads ADD COLUMN IF NOT EXISTS delivery_channels TEXT[] DEFAULT '{}'::TEXT[];

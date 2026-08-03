@@ -1,0 +1,160 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@import url('https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700;800&family=Assistant:wght@300;400;500;600;700&display=swap');
+
+@theme inline {
+  --font-sans: 'Assistant', system-ui, sans-serif;
+  --font-display: 'Heebo', system-ui, sans-serif;
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary-glow: var(--primary-glow);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+/* Bekalut 2026 — Deep Navy #1A2B3C, Charcoal #333333, Off-White #F8F9FA */
+:root {
+  --radius: 0.625rem;
+
+  --background: oklch(0.984 0.002 247);          /* #F8F9FA off-white */
+  --foreground: oklch(0.255 0.025 250);          /* deep navy text */
+
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.255 0.025 250);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.255 0.025 250);
+
+  --primary: oklch(0.275 0.035 250);             /* #1A2B3C deep navy */
+  --primary-foreground: oklch(0.984 0.002 247);
+  --primary-glow: oklch(0.42 0.05 245);
+
+  --secondary: oklch(0.945 0.005 247);
+  --secondary-foreground: oklch(0.275 0.035 250);
+
+  --muted: oklch(0.955 0.004 247);
+  --muted-foreground: oklch(0.5 0.015 250);
+
+  --accent: oklch(0.93 0.012 245);
+  --accent-foreground: oklch(0.275 0.035 250);
+
+  --destructive: oklch(0.58 0.2 25);
+  --destructive-foreground: oklch(0.98 0 0);
+
+  --border: oklch(0.91 0.006 247);
+  --input: oklch(0.93 0.006 247);
+  --ring: oklch(0.275 0.035 250);
+
+  --sidebar: oklch(0.255 0.03 250);               /* deep navy sidebar */
+  --sidebar-foreground: oklch(0.94 0.005 247);
+  --sidebar-primary: oklch(0.55 0.05 245);
+  --sidebar-primary-foreground: oklch(0.99 0 0);
+  --sidebar-accent: oklch(0.32 0.035 250);
+  --sidebar-accent-foreground: oklch(0.97 0 0);
+  --sidebar-border: oklch(0.32 0.035 250);
+  --sidebar-ring: oklch(0.55 0.05 245);
+
+  --gradient-primary: linear-gradient(135deg, oklch(0.275 0.035 250), oklch(0.42 0.05 245));
+  --shadow-elegant: 0 8px 28px -12px oklch(0.255 0.025 250 / 0.18);
+}
+
+.dark {
+  --background: oklch(0.18 0.02 250);
+  --foreground: oklch(0.96 0.004 247);
+  --card: oklch(0.22 0.025 250);
+  --card-foreground: oklch(0.96 0.004 247);
+  --popover: oklch(0.22 0.025 250);
+  --popover-foreground: oklch(0.96 0.004 247);
+  --primary: oklch(0.7 0.04 245);
+  --primary-foreground: oklch(0.18 0.02 250);
+  --primary-glow: oklch(0.78 0.05 240);
+  --secondary: oklch(0.27 0.025 250);
+  --secondary-foreground: oklch(0.96 0.004 247);
+  --muted: oklch(0.27 0.025 250);
+  --muted-foreground: oklch(0.72 0.01 247);
+  --accent: oklch(0.32 0.03 245);
+  --accent-foreground: oklch(0.96 0.004 247);
+  --destructive: oklch(0.65 0.2 25);
+  --destructive-foreground: oklch(0.98 0 0);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 12%);
+  --ring: oklch(0.7 0.04 245);
+  --sidebar: oklch(0.14 0.02 250);
+  --sidebar-foreground: oklch(0.94 0.005 247);
+  --sidebar-primary: oklch(0.7 0.04 245);
+  --sidebar-primary-foreground: oklch(0.14 0.02 250);
+  --sidebar-accent: oklch(0.23 0.025 250);
+  --sidebar-accent-foreground: oklch(0.96 0 0);
+  --sidebar-border: oklch(1 0 0 / 8%);
+  --sidebar-ring: oklch(0.7 0.04 245);
+}
+
+@layer base {
+  * { border-color: var(--color-border); }
+
+  html { direction: rtl; }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    font-feature-settings: "kern", "liga";
+    letter-spacing: 0.005em;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    letter-spacing: -0.015em;
+  }
+}
+
+/* Bekalut micro-interactions — gentle, professional */
+@keyframes bekalut-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes bekalut-slide-up {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@utility animate-fade-in {
+  animation: bekalut-fade-in 0.25s ease-out both;
+}
+
+@utility animate-slide-up {
+  animation: bekalut-slide-up 0.28s ease-out both;
+}

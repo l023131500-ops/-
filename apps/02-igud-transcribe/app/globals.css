@@ -1,0 +1,45 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+html { font-family: "Rubik", "Heebo", system-ui, sans-serif; }
+
+body {
+  background: #FBFAF6;
+  color: #1A1A1A;
+  direction: rtl;
+}
+
+h1, h2, h3, h4, .font-display {
+  font-family: "Noto Serif Hebrew", "Frank Ruhl Libre", serif;
+  letter-spacing: -0.01em;
+}
+
+@layer components {
+  .container-rtl { @apply mx-auto max-w-6xl px-5; }
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 font-medium transition;
+  }
+  .btn-primary {
+    @apply btn bg-brand text-white hover:bg-brand-dark;
+  }
+  .btn-accent {
+    @apply btn bg-accent text-brand-dark hover:bg-accent-dark;
+  }
+  .btn-outline {
+    @apply btn border border-brand/20 bg-white text-brand hover:bg-sand;
+  }
+  .input {
+    @apply w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-right shadow-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20;
+  }
+  .label {
+    @apply mb-1 block text-sm font-medium text-ink;
+  }
+  .card {
+    @apply rounded-xl border border-stone-200 bg-white p-5 shadow-card;
+  }
+}

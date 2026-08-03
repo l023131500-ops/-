@@ -1,0 +1,2 @@
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS available_for_matching boolean NOT NULL DEFAULT false;
+ALTER TABLE public.leads ADD COLUMN IF NOT EXISTS kind text NOT NULL DEFAULT 'lesson_request';

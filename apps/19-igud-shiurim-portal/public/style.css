@@ -1,0 +1,491 @@
+/* ============================================================================
+   איגוד השיעורים — עיצוב RTL מודרני, נקי ופונקציונלי (v2)
+   ============================================================================ */
+
+:root {
+  --color-primary: #2c3577;
+  --color-primary-dark: #171b45;
+  --color-primary-soft: #eef0fb;
+  --color-accent: #d99a2b;
+  --color-accent-soft: #fbf1de;
+  --color-bg: #f6f5f1;
+  --color-card: #ffffff;
+  --color-text: #20222b;
+  --color-muted: #6b7280;
+  --color-border: #e8e5db;
+  --color-danger: #b3261e;
+  --color-success: #2f7a3e;
+  --radius: 16px;
+  --radius-sm: 10px;
+  --radius-lg: 22px;
+  --shadow: 0 1px 3px rgba(20, 20, 40, 0.06), 0 8px 24px rgba(20, 20, 40, 0.05);
+  --shadow-hover: 0 10px 30px rgba(20, 20, 40, 0.12);
+  --max-width: 1160px;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: 'Assistant', 'Heebo', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  direction: rtl;
+  text-align: right;
+  line-height: 1.55;
+  font-size: 16px;
+}
+
+a { color: inherit; text-decoration: none; }
+* { scrollbar-width: thin; }
+
+h1, h2, h3, h4 { margin: 0 0 .5em; font-weight: 800; color: var(--color-primary-dark); letter-spacing: -0.01em; }
+h1 { font-size: 2rem; }
+h2 { font-size: 1.35rem; }
+h3 { font-size: 1.1rem; }
+p { margin: 0 0 1em; color: var(--color-text); }
+
+/* --- שכבת עמוד --- */
+.page { max-width: var(--max-width); margin: 0 auto; padding: 0 20px 70px; }
+.section { margin-top: 34px; }
+.section-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 4px; }
+.section-head h2 { margin-bottom: 2px; }
+
+/* --- ניווט עליון --- */
+.topnav {
+  background: var(--color-primary);
+  color: #fff;
+  position: sticky; top: 0; z-index: 40;
+  box-shadow: 0 2px 10px rgba(0,0,0,.08);
+}
+.topnav-inner {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 13px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.brand { font-size: 1.28rem; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 8px; }
+.brand .brand-mark {
+  width: 30px; height: 30px; border-radius: 9px;
+  background: linear-gradient(135deg, var(--color-accent), #f0c168);
+  display: inline-flex; align-items: center; justify-content: center;
+  color: var(--color-primary-dark); font-weight: 900; font-size: .95rem;
+}
+.brand span { color: var(--color-accent); }
+.nav-links { display: flex; gap: 18px; flex-wrap: wrap; align-items: center; }
+.nav-links a { color: #dfe2f5; font-weight: 600; padding: 6px 2px; border-bottom: 2px solid transparent; font-size: .95rem; }
+.nav-links a:hover, .nav-links a.active { border-bottom-color: var(--color-accent); color: #fff; }
+.nav-links a.nav-cta {
+  background: rgba(255,255,255,.12); padding: 7px 14px; border-radius: 999px; border-bottom: none;
+}
+.nav-links a.nav-cta:hover { background: rgba(255,255,255,.2); }
+
+/* --- כרטיסים --- */
+.card {
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 20px;
+}
+.card-link { transition: box-shadow .16s ease, transform .16s ease, border-color .16s ease; }
+.card-link:hover { box-shadow: var(--shadow-hover); transform: translateY(-2px); border-color: #d8dcf5; }
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 18px;
+  margin-top: 18px;
+}
+.grid-2 { grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); }
+
+/* --- לוגו/אווטאר גוף --- */
+.logo-circle {
+  width: 52px; height: 52px; border-radius: 14px;
+  background: var(--color-primary); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 800; font-size: 1.15rem; flex-shrink: 0;
+  overflow: hidden;
+}
+.logo-circle img { width: 100%; height: 100%; object-fit: cover; }
+.logo-circle.sm { width: 36px; height: 36px; border-radius: 10px; font-size: .9rem; }
+
+.entity-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.entity-card .row-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.entity-card .type-tag {
+  display: inline-block;
+  font-size: .72rem; font-weight: 700;
+  color: var(--color-primary);
+  background: var(--color-primary-soft);
+  padding: 3px 11px; border-radius: 999px;
+  width: fit-content;
+}
+.entity-card .city { color: var(--color-muted); font-size: .88rem; }
+
+/* --- פילטרים / חיפוש --- */
+.filters {
+  display: flex; gap: 10px; flex-wrap: wrap; align-items: center;
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 14px;
+  margin-top: 16px;
+  box-shadow: var(--shadow);
+}
+.filters input, .filters select {
+  flex: 1 1 160px;
+  padding: 10px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: .96rem;
+  font-family: inherit;
+  background: #fbfaf7;
+}
+.filters input:focus, .filters select:focus { outline: 2px solid var(--color-primary-soft); border-color: var(--color-primary); }
+
+/* --- טפסים --- */
+.form-field { margin-bottom: 14px; display: flex; flex-direction: column; gap: 6px; }
+.form-field label { font-weight: 700; font-size: .9rem; color: var(--color-primary-dark); }
+.form-field input, .form-field textarea, .form-field select {
+  padding: 10px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-family: inherit;
+  font-size: 1rem;
+  background: #fff;
+}
+.form-field input:focus, .form-field textarea:focus, .form-field select:focus {
+  outline: none; border-color: var(--color-primary); box-shadow: 0 0 0 3px var(--color-primary-soft);
+}
+.form-field textarea { min-height: 90px; resize: vertical; }
+.form-row { display: flex; gap: 12px; flex-wrap: wrap; }
+.form-row > .form-field { flex: 1 1 160px; }
+.form-hint { font-size: .82rem; color: var(--color-muted); margin-top: -8px; margin-bottom: 10px; }
+
+.role-choice { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px,1fr)); gap: 10px; margin: 8px 0 16px; }
+.role-choice label {
+  display: flex; align-items: center; justify-content: center; text-align: center;
+  gap: 6px; padding: 12px 10px; border: 1.5px solid var(--color-border); border-radius: var(--radius-sm);
+  cursor: pointer; font-weight: 700; font-size: .9rem; background: #fff; transition: all .12s ease;
+}
+.role-choice input { display: none; }
+.role-choice input:checked + span { color: var(--color-primary); }
+.role-choice label:has(input:checked) { border-color: var(--color-primary); background: var(--color-primary-soft); }
+
+.topic-picker { display: flex; flex-wrap: wrap; gap: 8px; margin: 6px 0 16px; }
+.topic-picker label {
+  display: inline-flex; align-items: center; gap: 5px; padding: 6px 12px; border-radius: 999px;
+  border: 1.3px solid var(--color-border); font-size: .86rem; cursor: pointer; background: #fff;
+}
+.topic-picker input { display: none; }
+.topic-picker label:has(input:checked) { background: var(--color-accent-soft); border-color: var(--color-accent); color: #6b4a08; font-weight: 700; }
+
+fieldset.subform { border: 1.5px dashed var(--color-border); border-radius: var(--radius); padding: 16px; margin: 6px 0 18px; }
+fieldset.subform legend { font-weight: 800; color: var(--color-primary); padding: 0 8px; font-size: .95rem; }
+
+/* --- כפתורים --- */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: 6px;
+  padding: 11px 20px;
+  border-radius: var(--radius-sm);
+  border: none;
+  font-weight: 700;
+  font-size: .95rem;
+  cursor: pointer;
+  font-family: inherit;
+  transition: opacity .12s ease, transform .12s ease;
+}
+.btn:hover { opacity: .92; }
+.btn:active { transform: scale(.98); }
+.btn-primary { background: var(--color-primary); color: #fff; }
+.btn-accent { background: var(--color-accent); color: #2a1c00; }
+.btn-outline { background: transparent; color: var(--color-primary); border: 1.5px solid var(--color-primary); }
+.btn-danger { background: #fdecea; color: var(--color-danger); }
+.btn-sm { padding: 6px 13px; font-size: .82rem; }
+
+/* כפתורים משניים/קטנים לפעולות "מחפשים מגיד שיעור" / "פתיחת שיעור" — לא הירו */
+.btn-quiet {
+  background: transparent; color: var(--color-muted); border: 1px solid var(--color-border);
+  padding: 8px 14px; font-size: .84rem; font-weight: 600; border-radius: 999px;
+}
+.btn-quiet:hover { color: var(--color-primary); border-color: var(--color-primary); }
+
+.quiet-cta-row { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin: 8px 0 4px; }
+
+/* --- Hero --- */
+.hero {
+  background: radial-gradient(1200px 400px at 20% -10%, #3d478f 0%, transparent 60%),
+              linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+  color: #fff;
+  padding: 44px 20px 40px;
+  text-align: center;
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+}
+.hero h1 { color: #fff; font-size: 2.15rem; margin-bottom: .3em; }
+.hero p { color: #dfe2ff; max-width: 620px; margin: 0 auto 1.1em; }
+.hero-badge {
+  display: inline-block; background: rgba(255,255,255,.14);
+  padding: 4px 14px; border-radius: 999px; font-size: .82rem; margin-bottom: 12px; font-weight: 600;
+}
+
+/* --- זמנים הלכתיים --- */
+.zmanim-strip {
+  display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px;
+}
+.zman-pill {
+  background: var(--color-card); border: 1px solid var(--color-border); border-radius: 999px;
+  padding: 8px 16px; font-size: .86rem; display: flex; gap: 8px; align-items: center; box-shadow: var(--shadow);
+}
+.zman-pill b { color: var(--color-primary-dark); font-size: .95rem; }
+
+/* --- כרטיס בית כנסת עם נוסח + תפילות --- */
+.syn-card { display: flex; flex-direction: column; gap: 10px; }
+.nusach-tag {
+  background: var(--color-accent-soft); color: #6b4a08; font-weight: 700; font-size: .75rem;
+  padding: 2px 10px; border-radius: 999px; width: fit-content;
+}
+.prayer-mini-table { width: 100%; font-size: .86rem; border-collapse: collapse; margin-top: 6px; }
+.prayer-mini-table td { padding: 4px 2px; border-bottom: 1px dashed var(--color-border); }
+.prayer-mini-table td:last-child { text-align: left; font-weight: 700; color: var(--color-primary-dark); }
+
+/* --- טאבים (דשבורד) --- */
+.tabs { display: flex; gap: 4px; border-bottom: 2px solid var(--color-border); margin: 24px 0 20px; flex-wrap: wrap; }
+.tab-btn {
+  padding: 10px 16px; border: none; background: none; cursor: pointer;
+  font-weight: 700; font-size: .95rem; color: var(--color-muted);
+  border-bottom: 3px solid transparent; margin-bottom: -2px;
+  font-family: inherit; border-radius: 8px 8px 0 0;
+}
+.tab-btn:hover { background: var(--color-primary-soft); }
+.tab-btn.active { color: var(--color-primary); border-bottom-color: var(--color-accent); }
+
+/* --- טבלאות --- */
+table { width: 100%; border-collapse: collapse; }
+th, td { padding: 10px 8px; text-align: right; border-bottom: 1px solid var(--color-border); }
+th { color: var(--color-muted); font-size: .8rem; font-weight: 700; text-transform: none; }
+
+/* --- תגיות/צ'יפים --- */
+.chip {
+  display: inline-block; background: #f1eee3; color: var(--color-primary-dark);
+  padding: 3px 12px; border-radius: 999px; font-size: .82rem; margin: 2px 4px 2px 0;
+}
+
+/* --- מצבים --- */
+.empty-state { text-align: center; padding: 50px 20px; color: var(--color-muted); }
+.badge-unread { background: var(--color-accent); color: #2a1c00; border-radius: 999px; font-size: .7rem; padding: 1px 8px; font-weight: 800; margin-inline-start: 6px; }
+.alert { padding: 12px 16px; border-radius: var(--radius-sm); margin-bottom: 16px; font-weight: 600; }
+.alert-success { background: #e9f7ec; color: var(--color-success); }
+.alert-error { background: #fdecea; color: var(--color-danger); }
+.muted { color: var(--color-muted); font-size: .9rem; }
+.stack { display: flex; flex-direction: column; gap: 14px; }
+.row-between { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+
+.lesson-row { display: flex; align-items: center; gap: 12px; padding: 12px 4px; border-bottom: 1px dashed var(--color-border); }
+.lesson-row:last-child { border-bottom: none; }
+.lesson-row .time-badge {
+  background: var(--color-primary-soft); color: var(--color-primary-dark); font-weight: 800;
+  border-radius: var(--radius-sm); padding: 6px 10px; font-size: .82rem; text-align: center; min-width: 58px;
+}
+.lesson-row .live-badge { background: #fdecea; color: var(--color-danger); font-size: .7rem; font-weight: 800; padding: 2px 8px; border-radius: 999px; }
+.lesson-row .rec-badge { background: #eef0fb; color: var(--color-primary); font-size: .7rem; font-weight: 800; padding: 2px 8px; border-radius: 999px; }
+
+footer.site-footer {
+  text-align: center; color: var(--color-muted); padding: 34px 20px 24px; font-size: .85rem;
+}
+
+@media (max-width: 640px) {
+  .page { padding: 0 14px 40px; }
+  h1 { font-size: 1.55rem; }
+  .hero h1 { font-size: 1.7rem; }
+}
+
+/* ============================================================================
+   אנימציות ומעברים כלליים
+   ============================================================================ */
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes popIn { 0% { transform: scale(.92); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes pulseSuccess { 0% { box-shadow: 0 0 0 0 rgba(47,122,62,.35); } 100% { box-shadow: 0 0 0 9px rgba(47,122,62,0); } }
+@keyframes pulseError { 0% { box-shadow: 0 0 0 0 rgba(179,38,30,.3); } 100% { box-shadow: 0 0 0 9px rgba(179,38,30,0); } }
+@keyframes shimmer { 0% { background-position: -320px 0; } 100% { background-position: 320px 0; } }
+
+/* מעבר-דף עדין בכל ניווט (הקלאס מוחלף מחדש ב-router() בכל שינוי hash) */
+.route-fade { animation: fadeInUp .28s ease both; }
+
+/* כרטיסים/רשתות נכנסים לתצוגה בעדינות בכל רינדור */
+.card { animation: fadeInUp .3s ease both; }
+.grid > * { animation: fadeInUp .32s ease both; }
+.grid > *:nth-child(1) { animation-delay: .02s; }
+.grid > *:nth-child(2) { animation-delay: .05s; }
+.grid > *:nth-child(3) { animation-delay: .08s; }
+.grid > *:nth-child(4) { animation-delay: .11s; }
+.grid > *:nth-child(5) { animation-delay: .14s; }
+.grid > *:nth-child(6) { animation-delay: .17s; }
+.lesson-row { animation: fadeInUp .28s ease both; }
+
+/* הודעות התראה נכנסות בתנועה קלה, במקום להופיע פתאום */
+.alert { animation: fadeInUp .22s ease both; }
+
+/* פוקוס חלק יותר בשדות טופס (במקום מעבר חד) */
+.form-field input, .form-field textarea, .form-field select {
+  transition: border-color .16s ease, box-shadow .16s ease;
+}
+.role-choice label, .topic-picker label { transition: border-color .14s ease, background .14s ease, color .14s ease; }
+
+/* כפתורים - הרמה עדינה בהובר בנוסף לאפקט הקיים */
+.btn { transition: opacity .12s ease, transform .12s ease, box-shadow .15s ease; }
+.btn:hover { transform: translateY(-1px); }
+.btn:active { transform: translateY(0) scale(.98); }
+
+/* מסך טעינה כללי (ניתוב/טאבים אסינכרוניים) */
+.page-loading {
+  display: flex; flex-direction: column; align-items: center; gap: 14px;
+  padding: 70px 0; animation: fadeIn .18s ease both;
+}
+.spinner-lg {
+  width: 34px; height: 34px; border-radius: 50%;
+  border: 3px solid var(--color-primary-soft); border-top-color: var(--color-primary);
+  animation: spin .75s linear infinite;
+}
+
+/* ---- לוגו ברירת מחדל (SVG) בתוך העיגול/הכרטיס ---- */
+.logo-circle .default-logo-icon { width: 60%; height: 60%; display: block; }
+.brand .brand-mark svg { width: 60%; height: 60%; }
+
+/* ---- ווידג'ט העלאת קובץ (dropzone) ---- */
+.dropzone {
+  position: relative;
+  display: flex; align-items: center; gap: 14px;
+  border: 1.6px dashed var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  cursor: pointer;
+  background: #fbfaf7;
+  transition: border-color .15s ease, background .15s ease, box-shadow .15s ease;
+  outline: none;
+}
+.dropzone:hover, .dropzone:focus-visible {
+  border-color: var(--color-primary); background: var(--color-primary-soft);
+}
+.dropzone.dropzone-over {
+  border-color: var(--color-accent); background: var(--color-accent-soft);
+  box-shadow: 0 0 0 3px rgba(217,154,43,.16);
+}
+.dropzone-preview {
+  width: 52px; height: 52px; border-radius: 12px; overflow: hidden; flex-shrink: 0;
+  background: var(--color-primary);
+  display: flex; align-items: center; justify-content: center;
+  transition: transform .18s ease;
+}
+.dropzone-preview img { width: 100%; height: 100%; object-fit: cover; }
+.dropzone-body { display: flex; flex-direction: column; gap: 3px; flex: 1; min-width: 0; }
+.dropzone-cta { font-weight: 700; font-size: .9rem; color: var(--color-primary-dark); transition: opacity .15s ease; }
+.dropzone-status { font-size: .8rem; color: var(--color-muted); }
+.dropzone.dropzone-error .dropzone-status { color: var(--color-danger); font-weight: 700; }
+.dropzone.dropzone-success .dropzone-status { color: var(--color-success); font-weight: 700; }
+.dropzone.dropzone-success { border-color: var(--color-success); animation: pulseSuccess .6s ease; }
+.dropzone.dropzone-error { border-color: var(--color-danger); animation: pulseError .5s ease; }
+.dropzone.dropzone-loading .dropzone-cta { opacity: .55; }
+.dropzone.dropzone-loading .dropzone-preview { transform: scale(.96); }
+.dropzone-spinner {
+  display: none;
+  width: 20px; height: 20px; border-radius: 50%; flex-shrink: 0;
+  border: 2.5px solid var(--color-primary-soft); border-top-color: var(--color-primary);
+}
+.dropzone.dropzone-loading .dropzone-spinner { display: inline-block; animation: spin .7s linear infinite; }
+.upload-field { margin-bottom: 16px; }
+
+/* ============================================================================
+   עיצוב מחדש דשבורד ראשי — צ'יפים לנושאים, פריסת עמודות, סרגל שיעורים קרובים,
+   באנר פרסומות, ותג "בעוד X ימים" על כל שיעור.
+   ============================================================================ */
+
+/* ---- צ'יפים לנושאים (סינון מהיר) ---- */
+.topic-pills {
+  display: flex; gap: 8px; flex-wrap: wrap; margin-top: 18px;
+}
+.topic-pill {
+  font-family: inherit; cursor: pointer; white-space: nowrap;
+  background: var(--color-card); border: 1.5px solid var(--color-border);
+  color: var(--color-text); font-weight: 600; font-size: .86rem;
+  padding: 7px 15px; border-radius: 999px; transition: all .14s ease;
+}
+.topic-pill:hover { border-color: var(--color-primary); color: var(--color-primary); }
+.topic-pill.active {
+  background: var(--color-primary); border-color: var(--color-primary); color: #fff;
+  box-shadow: 0 3px 10px rgba(44,53,119,.25);
+}
+
+/* ---- פריסת דשבורד: תוכן ראשי + סרגל צד קבוע ---- */
+.dashboard-layout {
+  display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 22px; align-items: start; margin-top: 8px;
+}
+.dashboard-aside { position: sticky; top: 78px; }
+@media (max-width: 900px) {
+  .dashboard-layout { grid-template-columns: 1fr; }
+  .dashboard-aside { position: static; }
+}
+
+/* ---- כרטיס "שיעורים קרובים" בסרגל הצד ---- */
+.upcoming-card h3 { margin-bottom: 14px; }
+.upcoming-item {
+  display: flex; gap: 12px; align-items: flex-start; padding: 10px 0;
+  border-bottom: 1px dashed var(--color-border); text-decoration: none; color: inherit;
+  transition: background .12s ease; border-radius: 8px;
+}
+.upcoming-item:last-child { border-bottom: none; }
+.upcoming-item:hover { background: var(--color-primary-soft); padding-inline: 8px; margin-inline: -8px; }
+.upcoming-day {
+  flex-shrink: 0; min-width: 68px; text-align: center;
+  background: var(--color-primary-soft); color: var(--color-primary-dark);
+  border-radius: var(--radius-sm); padding: 6px 4px; font-size: .74rem; font-weight: 800;
+  display: flex; flex-direction: column; gap: 2px;
+}
+.upcoming-day span { font-size: .8rem; font-weight: 700; color: var(--color-primary); }
+.upcoming-info { min-width: 0; flex: 1; }
+.upcoming-title { font-weight: 700; font-size: .92rem; }
+.upcoming-info .muted { font-size: .78rem; margin: 1px 0; }
+
+/* ---- תג "בעוד X ימים" על כל שורת שיעור ---- */
+.lesson-row { position: relative; }
+.day-pill {
+  flex-shrink: 0; background: var(--color-accent-soft); color: #6b4a08;
+  font-size: .72rem; font-weight: 800; padding: 4px 11px; border-radius: 999px;
+  white-space: nowrap;
+}
+
+/* ---- באנר פרסומות (קרוסלת גלילה אופקית) ---- */
+.ads-strip {
+  display: flex; gap: 14px; overflow-x: auto; padding: 4px 2px 14px; margin-top: 18px;
+  scrollbar-width: thin;
+}
+.ad-card {
+  flex: 0 0 auto; width: 260px; display: flex; flex-direction: column;
+  background: var(--color-card); border: 1px solid var(--color-border); border-radius: var(--radius);
+  overflow: hidden; text-decoration: none; color: inherit; box-shadow: var(--shadow);
+  transition: box-shadow .16s ease, transform .16s ease;
+}
+.ad-card:hover { box-shadow: var(--shadow-hover); transform: translateY(-2px); }
+.ad-card img { width: 100%; height: 120px; object-fit: cover; display: block; }
+.ad-card-body { padding: 12px 14px; display: flex; flex-direction: column; gap: 3px; }
+.ad-card-body strong { font-size: .95rem; color: var(--color-primary-dark); }
+.ad-card-body span { font-size: .82rem; color: var(--color-muted); }
+.ad-card-source { font-weight: 700; color: var(--color-accent) !important; }
+
+@media (max-width: 640px) {
+  .topic-pills { gap: 6px; }
+  .topic-pill { font-size: .8rem; padding: 6px 12px; }
+  .ad-card { width: 220px; }
+}
