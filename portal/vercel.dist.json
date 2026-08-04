@@ -15,6 +15,7 @@
     { "source": "/admin/pricing", "destination": "/admin-pricing.html" },
     { "source": "/admin/systems", "destination": "/admin-systems.html" },
     { "source": "/admin/customers", "destination": "/admin-customers.html" },
+    { "source": "/admin/automation", "destination": "/admin-automation.html" },
     { "source": "/showcase", "destination": "/showcase.html" },
     { "source": "/admin", "destination": "https://nihul-more30.vercel.app/admin" },
     { "source": "/admin/:path*", "destination": "https://nihul-more30.vercel.app/admin/:path*" },
