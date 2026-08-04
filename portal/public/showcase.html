@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light dark" />
+    <title>עולם הסטארטאפים — מור מערכות תוכנה</title>
+    <meta
+      name="description"
+      content="המערכות של מור מערכות תוכנה שנבחרו להצגה — כל אחת חיה, עובדת, ופתוחה לבדיקה."
+    />
+    <link rel="canonical" href="https://more30.com/showcase" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://more30.com/showcase" />
+    <meta property="og:title" content="עולם הסטארטאפים — מור מערכות תוכנה" />
+    <meta
+      property="og:description"
+      content="המערכות של מור מערכות תוכנה שנבחרו להצגה — כל אחת חיה, עובדת, ופתוחה לבדיקה."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        color-scheme: light dark;
+        --royal: #0b0d2e;
+        --gold: #c9a227;
+        --bg: #f6f7fb;
+        --surface: #ffffff;
+        --ink: #0b0d2e;
+        --ink-2: #5b6076;
+        --line: #e4e6f0;
+        --live: #157f4b;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #0b0d18; --surface: #151827; --ink: #e9ebf5;
+          --ink-2: #a2a8c0; --line: #262b40; --live: #5fd39b;
+        }
+      }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body {
+        font-family: 'Heebo', system-ui, sans-serif;
+        background: var(--bg); color: var(--ink); line-height: 1.65;
+      }
+      a { color: inherit; }
+      .wrap { max-width: 1080px; margin: 0 auto; padding: 0 20px; }
+
+      header.hero {
+        background: linear-gradient(160deg, var(--royal) 0%, #16194a 60%, #1d2160 100%);
+        color: #f2f3fa; padding: clamp(56px, 10vw, 110px) 0 clamp(44px, 8vw, 80px);
+      }
+      .eyebrow {
+        font-size: 13px; letter-spacing: .16em; color: var(--gold);
+        font-weight: 600; margin-bottom: 14px;
+      }
+      h1 { font-size: clamp(30px, 6vw, 54px); font-weight: 900; line-height: 1.15; }
+      .lede {
+        margin-top: 16px; max-width: 60ch; font-size: clamp(16px, 2.2vw, 19px);
+        color: #c9cde6;
+      }
+
+      main { padding: clamp(36px, 6vw, 64px) 0 90px; }
+      .count { color: var(--ink-2); font-size: 14px; margin-bottom: 18px; }
+      .grid {
+        display: grid; gap: 16px;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      }
+      .card {
+        background: var(--surface); border: 1px solid var(--line);
+        border-radius: 16px; padding: 22px; display: flex; flex-direction: column;
+        text-decoration: none; transition: border-color .15s, transform .15s;
+      }
+      .card:hover { border-color: var(--gold); transform: translateY(-2px); }
+      .card h2 { font-size: 19px; font-weight: 800; }
+      .card .tag {
+        display: inline-block; font-size: 11px; font-weight: 700; margin-top: 8px;
+        padding: 2px 9px; border-radius: 999px; align-self: flex-start;
+        background: color-mix(in srgb, var(--live) 15%, transparent); color: var(--live);
+      }
+      .card p { margin-top: 10px; color: var(--ink-2); font-size: 14.5px; }
+      .card .go {
+        margin-top: auto; padding-top: 14px; font-size: 13.5px;
+        font-weight: 700; color: var(--gold);
+      }
+
+      .empty {
+        border: 1px dashed var(--line); border-radius: 16px;
+        padding: 34px 24px; text-align: center; color: var(--ink-2);
+      }
+      .empty b { color: var(--ink); display: block; margin-bottom: 6px; font-size: 17px; }
+      footer {
+        border-top: 1px solid var(--line); padding: 26px 0 40px;
+        color: var(--ink-2); font-size: 13.5px;
+      }
+      footer a { color: var(--ink); }
+    </style>
+  </head>
+  <body>
+    <header class="hero">
+      <div class="wrap">
+        <div class="eyebrow">מור מערכות תוכנה</div>
+        <h1>עולם הסטארטאפים</h1>
+        <p class="lede">
+          המערכות שנבחרו להצגה. כל אחת מהן חיה באוויר, עובדת על נתוני אמת,
+          ופתוחה לבדיקה עכשיו — בלי הרשמה ובלי הדגמה מתוזמנת.
+        </p>
+      </div>
+    </header>
+
+    <main class="wrap">
+      <p class="count" id="count">טוען…</p>
+      <div id="grid" class="grid"></div>
+    </main>
+
+    <footer>
+      <div class="wrap">
+        © <span id="yr"></span> מור מערכות תוכנה ·
+        <a href="/">לאתר הראשי</a>
+      </div>
+    </footer>
+
+    <script type="module">
+      import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+      const SUPABASE_URL = 'https://uhnrgujbdxhhmoxcjria.supabase.co';
+      const SUPABASE_ANON =
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVobnJndWpiZHhoaG1veGNqcmlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMzNjE3MjgsImV4cCI6MjA5ODkzNzcyOH0.nHuOhw-WQEU17lNa7XOlORnBhVAYbJBHudKafWkSHBw';
+
+      const sb = createClient(SUPABASE_URL, SUPABASE_ANON, {
+        auth: { persistSession: false },
+      });
+
+      const esc = (s) =>
+        String(s ?? '').replace(/[&<>"']/g, (c) =>
+          ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]),
+        );
+
+      document.getElementById('yr').textContent = new Date().getFullYear();
+
+      const { data, error } = await sb.rpc('more30_showcase');
+      const grid = document.getElementById('grid');
+      const count = document.getElementById('count');
+
+      if (error) {
+        count.textContent = '';
+        grid.innerHTML =
+          '<div class="empty"><b>הקטלוג לא נטען</b>נסו לרענן בעוד רגע.</div>';
+      } else {
+        const list = data.systems || [];
+        if (!list.length) {
+          // מצב ריק אמיתי, ולא "אין לנו מערכות": אף אחת עדיין לא סומנה
+          // להצגה בניהול. אומרים בדיוק את זה.
+          count.textContent = '';
+          grid.innerHTML =
+            '<div class="empty"><b>עדיין לא נבחרו מערכות להצגה</b>' +
+            'הקטלוג מציג רק מערכות שסומנו במפורש במרכז השליטה.</div>';
+        } else {
+          count.textContent =
+            list.length === 1 ? 'מערכת אחת מוצגת' : `${list.length} מערכות מוצגות`;
+          grid.innerHTML = list
+            .map(
+              (s) => `<a class="card" href="${esc(s.url || '/')}">
+                <h2>${esc(s.name || '')}</h2>
+                ${s.live ? '<span class="tag">חי באוויר</span>' : ''}
+                <p>${esc(s.tagline || s.what || 'לא זמין')}</p>
+                <span class="go">לצפייה במערכת ←</span>
+              </a>`,
+            )
+            .join('');
+        }
+      }
+    </script>
+
+    <script src="https://more30.com/auth-button.js" defer></script>
+  </body>
+</html>
