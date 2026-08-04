@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light dark" />
+    <title>דוח מערכות · מרכז השליטה — more30</title>
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        color-scheme: light dark;
+        --gold: #c9a227; --bg: #f6f7fb; --surface: #ffffff;
+        --ink: #0b0d2e; --ink-2: #5b6076; --line: #e4e6f0;
+        --ok: #157f4b; --warn: #8a6d10;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root { --bg: #0b0d18; --surface: #151827; --ink: #e9ebf5;
+                --ink-2: #a2a8c0; --line: #262b40; --ok: #5fd39b; --warn: #e0bd5a; }
+      }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body { font-family: 'Heebo', system-ui, sans-serif; background: var(--bg);
+             color: var(--ink); line-height: 1.6; padding: 28px 20px 80px; }
+      .wrap { max-width: 1180px; margin: 0 auto; }
+      .back { display: inline-flex; align-items: center; min-height: 24px;
+              font-size: 14px; color: var(--ink-2); text-decoration: none; }
+      .back:hover { color: var(--ink); }
+      h1 { font-size: clamp(24px, 4vw, 34px); font-weight: 800; margin-top: 10px; }
+      .sub { color: var(--ink-2); font-size: 15px; margin-top: 6px; max-width: 66ch; }
+      .nav { display: flex; gap: 8px; flex-wrap: wrap; margin: 18px 0 6px; }
+      .nav a { font-size: 13.5px; font-weight: 600; text-decoration: none;
+               border: 1px solid var(--line); border-radius: 999px;
+               padding: 6px 14px; min-height: 24px; display: inline-flex;
+               align-items: center; color: var(--ink); background: var(--surface); }
+      .nav a:hover { border-color: var(--gold); }
+
+      .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px,1fr));
+               gap: 12px; margin: 20px 0 26px; }
+      .kpi { background: var(--surface); border: 1px solid var(--line);
+             border-radius: 14px; padding: 14px 16px; }
+      .kpi .n { font-size: 27px; font-weight: 800; line-height: 1.1; }
+      .kpi .l { font-size: 12.5px; color: var(--ink-2); margin-top: 3px; }
+
+      .grid { display: grid; gap: 12px;
+              grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); }
+      .sys { background: var(--surface); border: 1px solid var(--line);
+             border-radius: 14px; padding: 16px 18px; }
+      .sys h2 { font-size: 16.5px; font-weight: 800; }
+      .sys h2 a { color: inherit; text-decoration: none; border-bottom: 1px solid transparent; }
+      .sys h2 a:hover { border-bottom-color: var(--gold); }
+      .row1 { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+      .num { font-variant-numeric: tabular-nums; font-weight: 800;
+             color: var(--ink-2); font-size: 12.5px; }
+      .tag { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; }
+      .tag.live { background: color-mix(in srgb, var(--ok) 16%, transparent); color: var(--ok); }
+      .tag.off  { background: color-mix(in srgb, var(--ink-2) 16%, transparent); color: var(--ink-2); }
+      .tag.show { background: color-mix(in srgb, var(--gold) 22%, transparent); color: var(--warn); }
+      .tagline { color: var(--ink-2); font-size: 13.5px; margin-top: 6px; min-height: 20px; }
+
+      dl { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px;
+           margin-top: 12px; font-size: 13.5px; }
+      dt { color: var(--ink-2); }
+      dd { font-variant-numeric: tabular-nums; }
+      .muted { color: var(--ink-2); }
+      .note { border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px;
+              font-size: 14px; background: var(--surface); margin-top: 14px; }
+      .note.warn { border-color: color-mix(in srgb, var(--warn) 45%, var(--line)); }
+      .foot { margin-top: 26px; font-size: 12.5px; color: var(--ink-2); }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <a class="back" href="/admin">← חזרה למרכז השליטה</a>
+      <h1>דוח מערכות</h1>
+      <p class="sub" id="tagline">טוען…</p>
+
+      <nav class="nav">
+        <a href="/admin/pricing">מחירים ותצוגה</a>
+        <a href="/admin/activity">משתמשים פעילים</a>
+        <a href="/showcase">עולם הסטארטאפים</a>
+      </nav>
+
+      <div id="content" hidden>
+        <div class="cards" id="kpis"></div>
+        <div class="grid" id="grid"></div>
+        <div class="note" id="notes"></div>
+        <p class="foot" id="stamp"></p>
+      </div>
+      <div id="denied" class="note warn" hidden></div>
+    </div>
+
+    <script type="module">
+      import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+      const SUPABASE_URL = 'https://uhnrgujbdxhhmoxcjria.supabase.co';
+      const SUPABASE_ANON =
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVobnJndWpiZHhoaG1veGNqcmlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMzNjE3MjgsImV4cCI6MjA5ODkzNzcyOH0.nHuOhw-WQEU17lNa7XOlORnBhVAYbJBHudKafWkSHBw';
+      const sb = createClient(SUPABASE_URL, SUPABASE_ANON, {
+        auth: { persistSession: true, storageKey: 'more30-auth' },
+      });
+      const $ = (id) => document.getElementById(id);
+      const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) =>
+        ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+
+      function when(ts) {
+        if (!ts) return '<span class="muted">—</span>';
+        const d = new Date(ts), m = Math.round((Date.now() - d) / 60000);
+        if (m < 60) return `לפני ${m} דק׳`;
+        if (m < 1440) return `לפני ${Math.round(m/60)} שע׳`;
+        return d.toLocaleDateString('he-IL');
+      }
+      const money = (n) => (Number(n) || 0).toLocaleString('he-IL') + ' ₪';
+
+      (async function () {
+        const { data: s } = await sb.auth.getSession();
+        if (!s?.session) {
+          $('tagline').textContent = 'הדף פתוח לסופר-אדמין בלבד.';
+          $('denied').innerHTML =
+            `צריך להתחבר. <a href="/login?from=${encodeURIComponent(location.href)}">מעבר לכניסה</a>`;
+          $('denied').hidden = false;
+          return;
+        }
+        const { data, error } = await sb.rpc('more30_admin_systems_report');
+        if (error) {
+          $('tagline').textContent = 'הדף פתוח לסופר-אדמין בלבד.';
+          $('denied').innerHTML =
+            'החשבון הזה אינו סופר-אדמין.<br><span class="muted" style="font-size:13px">' +
+            esc(error.message) + '</span>';
+          $('denied').hidden = false;
+          return;
+        }
+
+        $('tagline').textContent =
+          'כרטיס לכל מערכת: סטטוס, משתמשים, מנויים, מחירים והכנסה משוערת.';
+
+        const t = data.totals || {};
+        $('kpis').innerHTML = [
+          [t.systems, 'מערכות'],
+          [t.live, 'חיות'],
+          [t.users_counted, 'מאגר המשתמשים בהאב'],
+          [t.in_showcase, 'מוצגות בעולם הסטארטאפים'],
+        ].map(([n,l]) => `<div class="kpi"><div class="n">${Number(n)||0}</div><div class="l">${l}</div></div>`).join('');
+
+        $('grid').innerHTML = (data.systems || []).map((x) => {
+          const u = x.users;
+          const users = x.users_counted
+            ? `<dt>משתמשים</dt><dd>${u?.members ?? 0}</dd>
+               <dt>פעילים 7 ימים</dt><dd>${u?.active_7d ?? 0}</dd>
+               <dt>פעילות אחרונה</dt><dd>${when(u?.last_activity)}</dd>`
+            // מערכת מחוץ להאב לא מקבלת 0 — היא מקבלת את הסיבה.
+            : `<dt>משתמשים</dt><dd class="muted">לא נספרים — המאגר ב-${esc(
+                 x.supabase_project || 'פרויקט אחר')}</dd>`;
+          const p = x.pricing || {};
+          const price = (k) => p[k]?.price_ils == null
+            ? '<span class="muted">טרם נקבע</span>'
+            : (p[k].price_ils === 0 ? 'ללא חיוב' : money(p[k].price_ils));
+          return `<article class="sys">
+            <div class="row1">
+              <span class="num">${esc(x.number ?? '—')}</span>
+              <h2>${x.live_url ? `<a href="${esc(x.live_url)}">${esc(x.name)}</a>` : esc(x.name)}</h2>
+              <span class="tag ${x.live ? 'live':'off'}">${x.live ? 'חי':'לא חי'}</span>
+              ${x.show_in_showcase ? '<span class="tag show">בתצוגה</span>' : ''}
+            </div>
+            <p class="tagline">${esc(x.tagline || '')}</p>
+            <dl>
+              ${users}
+              <dt>מנויים פעילים</dt><dd>${x.subscriptions?.active ?? 0}</dd>
+              <dt>מנוי</dt><dd>${price('subscription')}</dd>
+              <dt>סליקה</dt><dd>${price('charge')}</dd>
+              <dt>חד-פעמי</dt><dd>${price('one_time')}</dd>
+              <dt>הכנסה חודשית משוערת</dt><dd>${money(x.mrr_estimate_ils)}</dd>
+            </dl>
+          </article>`;
+        }).join('');
+
+        $('notes').innerHTML = Object.values(data.notes || {})
+          .map((n) => `<div>· ${esc(n)}</div>`).join('');
+        $('stamp').textContent = 'נמדד ' + new Date(data.generated_at).toLocaleString('he-IL');
+        $('content').hidden = false;
+      })();
+    </script>
+    <script src="https://more30.com/auth-button.js" defer></script>
+  </body>
+</html>
