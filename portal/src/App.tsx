@@ -4,7 +4,7 @@ import { createBrowserClient } from "@more30/db";
 import { SpecWizard } from "./SpecWizard";
 
 /**
- * more30 — אתר התדמית של מור מערכות תוכנה (מערכת 33).
+ * more30 — אתר התדמית של עולם הסטארטאפים (מערכת 33).
  *
  * כל מערכת נגישה תחת more30.com/<נושא>; נטפרי חוסמת ‎*.vercel.app‎, ולכן הפורטל
  * מנתב את הנתיב לפריסה שמאחוריו ואף פעם לא חושף את הכתובת האמיתית.
@@ -130,7 +130,7 @@ function ComingSoon({ row }: { row: System }) {
   return (
     <main className="soon" dir="rtl">
       <div className="soon-in">
-        <div className="eyebrow">מור מערכות תוכנה</div>
+        <div className="eyebrow">עולם הסטארטאפים</div>
         <h1 className="display soon-title">{row.title}</h1>
         <p className="serif soon-desc">{row.what_it_does || "המערכת בהקמה ותעלה לאוויר תחת more30.com."}</p>
         <div className="rule" />
@@ -167,7 +167,7 @@ function Portal({ load, retry }: { load: Load; retry: () => void }) {
     <div dir="rtl">
       <nav className="nav">
         <div className="nav-in">
-          <a className="wordmark" href="#top">מור מערכות תוכנה</a>
+          <a className="wordmark" href="#top">עולם הסטארטאפים</a>
           <div className="nav-links">
             <a href="#systems">המערכות</a>
             <a href="#about">מה אנחנו עושים</a>
@@ -183,7 +183,7 @@ function Portal({ load, retry }: { load: Load; retry: () => void }) {
       {/* פתיחה — השם הראשי, הרבה אוויר, שום דבר מעבר */}
       <header className="hero" id="top">
         <div className="hero-in">
-          <div className="eyebrow">מור מערכות תוכנה</div>
+          <div className="eyebrow">עולם הסטארטאפים</div>
           <h1 className="display hero-title">עולם הסטארטאפים</h1>
           <p className="serif hero-lead">
             עשרות מערכות נבנו כאן, עובדות היום בשטח, וחיות כולן תחת כתובת אחת.
@@ -271,7 +271,7 @@ function Portal({ load, retry }: { load: Load; retry: () => void }) {
       <footer className="footer">
         <div className="wrap footer-in">
           <div className="display footer-mark">עולם הסטארטאפים</div>
-          <div className="footer-note">מור מערכות תוכנה · more30.com</div>
+          <div className="footer-note">עולם הסטארטאפים · more30.com</div>
           <div className="footer-note muted">© 2026 כל המערכות תחת קורת גג אחת.</div>
         </div>
       </footer>

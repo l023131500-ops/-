@@ -239,7 +239,7 @@
         }
 
         var label = (ctx && ctx.full_name) || session.label;
-        // בסרגל מוצג השם הפרטי בלבד — "מור מערכות תוכנה" נחתך באמצע מילה
+        // בסרגל מוצג השם הפרטי בלבד — "עולם הסטארטאפים" נחתך באמצע מילה
         // ונראה כמו תקלה. השם המלא מופיע בכותרת התפריט.
         btn.querySelector('span:last-child').textContent = String(label).split(/\s+/)[0];
 
@@ -272,6 +272,8 @@
                        'צירוף לקוח למערכת וצפייה ברשומים');
           html += item(HOME + '/admin/automation', STAR_ICON, 'אוטומציית תוכן',
                        'נושאים, תצוגה מקדימה ותור שליחה — מצב בדיקה');
+          html += item(HOME + '/admin/credits', STAR_ICON, 'יתרות וחיבורים',
+                       'האם כל ספק פועל, כמה נשאר, ואיפה מוסיפים');
         }
 
         // שדרוג מוצג למשתמש רגיל בתוכנית החינמית. למנהל אין מה לשדרג.
@@ -346,9 +348,68 @@
 
   if (!customElements.get(TAG)) customElements.define(TAG, More30AuthElement);
 
+  /**
+   * קרדיט הפוטר — "פותח ע״י עולם הסטארטאפים", בכל מערכת.
+   *
+   * למה כאן ולא ב-24 קודקודים נפרדים: זה בדיוק אותו שיקול שבגללו הכפתור
+   * עצמו יושב בקובץ הזה. שורה שצריכה להופיע בכל אתר ולהיראות אותו דבר בכולם
+   * חייבת לחיות במקום אחד, אחרת היא תהיה 24 גרסאות שמתפצלות.
+   *
+   * שלושה כללים שמונעים מזה להיות הזרקה גסה:
+   *  · נכנס **בתוך** ה-<footer> הקיים אם יש כזה, ורק אם אין — נוצר בלוק
+   *    משלו בסוף הדף. אתר עם פוטר מעוצב מקבל שורה נוספת בפוטר שלו, לא רצועה
+   *    זרה שמרחפת מתחתיו.
+   *  · יורש `color` ו-`font` מהסביבה ומורד לשקיפות חלקית, ולכן הוא מתאים
+   *    את עצמו למצב כהה ולפלטה של כל אתר בלי שנצטרך לדעת מה הם.
+   *  · אם כבר קיים קרדיט כזה בדף (למשל בפורטל עצמו) — לא מוסיף שני.
+   */
+  var CREDIT_CLASS = 'more30-credit';
+
+  function mountCredit() {
+    if (document.querySelector('.' + CREDIT_CLASS)) return;
+
+    // בפורטל עצמו הקרדיט מיותר — הוא כבר הבית.
+    try {
+      if (location.hostname === 'more30.com' && location.pathname === '/') return;
+    } catch (e) {}
+
+    var link = document.createElement('a');
+    link.className = CREDIT_CLASS;
+    link.href = HOME;
+    link.textContent = 'פותח ע״י עולם הסטארטאפים';
+    link.rel = 'noopener';
+    link.setAttribute('dir', 'rtl');
+    link.style.cssText = [
+      'display:block',
+      'text-align:center',
+      'font:inherit',
+      'font-size:12px',
+      'line-height:1.6',
+      'padding:10px 12px',
+      'color:inherit',
+      'opacity:.65',
+      'text-decoration:none',
+    ].join(';');
+    link.addEventListener('mouseenter', function () { link.style.opacity = '1'; });
+    link.addEventListener('mouseleave', function () { link.style.opacity = '.65'; });
+
+    var host = document.querySelector('footer');
+    if (host) {
+      host.appendChild(link);
+      return;
+    }
+
+    var box = document.createElement('div');
+    box.style.cssText = 'padding:8px 0 18px;color:inherit';
+    box.appendChild(link);
+    document.body.appendChild(box);
+  }
+
   function mount() {
-    if (document.querySelector(TAG)) return;
-    document.body.appendChild(document.createElement(TAG));
+    if (!document.querySelector(TAG)) {
+      document.body.appendChild(document.createElement(TAG));
+    }
+    mountCredit();
   }
 
   if (document.readyState === 'loading') {

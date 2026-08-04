@@ -5,7 +5,7 @@ import Link from 'next/link';
 export const metadata: Metadata = {
   title: 'נדל"ן ברגע — תעודת זהות דיגיטלית לכל נכס',
   description:
-    'מנוע אגרגציה שמאחד מקורות מידע ממשלתיים ומסחריים לכדי תעודת זהות דיגיטלית לכל נכס בישראל. מבית מור מערכות תוכנה.',
+    'מנוע אגרגציה שמאחד מקורות מידע ממשלתיים ומסחריים לכדי תעודת זהות דיגיטלית לכל נכס בישראל. מבית עולם הסטארטאפים.',
 };
 
 /**
@@ -44,7 +44,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <Link href="/" className="flex items-center gap-2">
               <span className="inline-block h-3.5 w-3.5 rounded-full bg-gold shadow-[0_0_0_4px_rgba(200,162,74,0.25)]" />
               <span className="text-lg font-black text-navy">נדל"ן ברגע</span>
-              <span className="text-xs font-medium text-muted">· מבית מור מערכות תוכנה</span>
+              <span className="text-xs font-medium text-muted">· מבית עולם הסטארטאפים</span>
             </Link>
             <nav className="flex items-center gap-4 text-sm font-semibold text-ink">
               {/* py-1 אינו קישוט: בלעדיו גובה יעד המגע 20px, מתחת ל-24px
@@ -58,7 +58,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <footer className="mt-16 bg-navysurface py-8 text-sm text-[#cdd6ea] print:hidden">
           <div className="mx-auto flex max-w-6xl flex-wrap justify-between gap-4 px-5">
             <div>
-              <span className="font-black text-white">נדל"ן ברגע</span> · מבית מור מערכות תוכנה
+              <span className="font-black text-white">נדל"ן ברגע</span> · מבית עולם הסטארטאפים
               <div className="opacity-70">גרסה 0.1 — MVP · כל נתון מגובה במקור ובתאריך</div>
             </div>
             <div className="text-right opacity-75">

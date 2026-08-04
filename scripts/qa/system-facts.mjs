@@ -17,11 +17,24 @@ import fs from 'node:fs';
 const EXE = 'C:\\Users\\USER\\AppData\\Local\\ms-playwright\\chromium-1234\\chrome-win64\\chrome.exe';
 const ORIGIN = 'https://more30.com';
 
+/**
+ * Every path-mounted system, not just the thirteen that had no QA record.
+ *
+ * The reason it grew: core.projects still marked briut, smachot, mthbram, galil,
+ * crm and gesher as `live=false` while all six were serving 200 with real
+ * content, and marked others visible without anything having checked lately.
+ * Deciding what appears on the home page from stale flags is how a dead system
+ * gets advertised and a working one stays hidden — so the flags get set from
+ * this file, and this file gets set from a browser.
+ */
 const ROUTES = {
-  tamlul: '/tamlul', modaot: '/modaot', imud: '/imud', briut: '/briut',
-  bkalot: '/bkalot', smel: '/smel', smachot: '/smachot', egod: '/egod',
-  mthbram: '/mthbram', galil: '/galil', mechiron: '/mechiron',
-  crm: '/crm', gesher: '/gesher',
+  torah: '/torah', tamlul: '/tamlul', modaot: '/modaot', imud: '/imud',
+  briut: '/briut', bkalot: '/bkalot', smel: '/smel', smachot: '/smachot',
+  egod: '/egod', chatzor: '/chatzor/', chizukim: '/chizukim/',
+  orech: '/orech', zchuyot: '/zchuyot', mthbram: '/mthbram', galil: '/galil',
+  studio: '/studio', mechiron: '/mechiron', kupot: '/kupot',
+  nadlan: '/nadlan/', crm: '/crm', gesher: '/gesher', kesef: '/kesef',
+  kiosk: '/kiosk/', tivuch: '/tivuch', portal: '/',
 };
 
 const only = process.argv.slice(2);

@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>מור מערכות תוכנה</title>
+    <title>עולם הסטארטאפים</title>
     <meta name="description" content="עמוד השירות — מה המערכת עושה, איך היא עובדת, והמסלולים." />
     <!-- אותו קובץ משרת כל מערכת, ולכן הכתובת הקנונית נכתבת בזמן ריצה מהנתיב
          עצמו (‎/chatzor‎, ‎/chizukim‎ …). ברירת המחדל כאן היא השורש, כדי
@@ -95,7 +95,7 @@
     <header class="bar">
       <div class="wrap">
         <span class="dot" aria-hidden="true"></span>
-        <a class="home" href="/">מור מערכות תוכנה</a>
+        <a class="home" href="/">עולם הסטארטאפים</a>
         <span class="muted" style="font-size:13px">·</span>
         <span class="muted" style="font-size:13px" id="crumb">שירות</span>
       </div>
@@ -137,7 +137,7 @@
         <section>
           <h2>מתחילים</h2>
           <p class="muted">
-            חשבון אחד פותח את כל מערכות מור מערכות תוכנה — כניסה עם Google או עם
+            חשבון אחד פותח את כל מערכות עולם הסטארטאפים — כניסה עם Google או עם
             מייל וסיסמה, ואותו אזור אישי בכל מערכת.
           </p>
           <div class="cta">
@@ -163,7 +163,7 @@
 
     <footer>
       <div class="wrap">
-        <a href="/">מור מערכות תוכנה</a> · כל מערכת בכתובת אחת, וחשבון אחד לכולן.
+        <a href="/">עולם הסטארטאפים</a> · כל מערכת בכתובת אחת, וחשבון אחד לכולן.
       </div>
     </footer>
 
@@ -237,14 +237,14 @@
         if (!data?.found) {
           $('missing').appendChild($('missingTpl').content.cloneNode(true));
           $('missing').hidden = false;
-          document.title = 'בהכנה · מור מערכות תוכנה';
+          document.title = 'בהכנה · עולם הסטארטאפים';
           return;
         }
 
         $('content').hidden = false;
 
         const name = data.name_he || appKey;
-        document.title = `${name} · מור מערכות תוכנה`;
+        document.title = `${name} · עולם הסטארטאפים`;
         $('crumb').textContent = name;
         $('title').textContent = name;
 

@@ -57,7 +57,7 @@ export async function GET(req: NextRequest) {
       footerTemplate:
         '<div style="width:100%;font-size:8px;color:#64748b;padding:0 10mm;' +
         'display:flex;justify-content:space-between;direction:rtl">' +
-        '<span>נדל"ן ברגע — מור מערכות תוכנה</span>' +
+        '<span>נדל"ן ברגע — עולם הסטארטאפים</span>' +
         '<span class="pageNumber"></span>/<span class="totalPages"></span>' +
         '</div>',
     });
