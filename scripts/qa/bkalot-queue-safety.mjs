@@ -43,6 +43,12 @@ for (const [fn, body] of [
   ['queue_enqueue', { p_app: 'bkalot', p_contact: 1, p_topic: 1, p_channel: 'email' }],
   ['queue_due', { p_limit: 5 }],
   ['queue_mark', { p_id: 1, p_outcome: 'sent' }],
+  // The public wrappers are the ones a browser can actually reach, so they
+  // matter more than the schema-local names above.
+  ['more30_auto_overview', { p_app: 'bkalot' }],
+  ['more30_auto_build', { p_topic: 1 }],
+  ['more30_auto_enqueue', { p_app: 'bkalot', p_contact: 1, p_topic: 1, p_channel: 'email' }],
+  ['more30_auto_dryrun', { p_limit: 5 }],
 ]) {
   const r = await rpc(fn, body);
   ok(`anon cannot call ${fn}`, r.status >= 400, `HTTP ${r.status}`);

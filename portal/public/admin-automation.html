@@ -108,7 +108,15 @@
 
         <section class="panel">
           <h2>תור השליחה</h2>
-          <div id="queue"></div>
+          <p class="muted" style="font-size:13.5px;margin-bottom:10px">
+            <b>ריצה יבשה</b> עוברת על התור, בונה את התוכן האמיתי לכל שורה,
+            מוודאת שהיעד עדיין מאושר, ורושמת ביומן <b>מה היה נשלח</b> —
+            בלי לשלוח. הסטטוס נשאר <code>skipped</code> ולא
+            <code>sent</code>, כי שום דבר לא יצא.
+          </p>
+          <button id="dryrun">הרץ ריצה יבשה</button>
+          <div class="msg" id="drymsg"></div>
+          <div id="queue" style="margin-top:14px"></div>
         </section>
       </div>
       <div id="denied" class="note" hidden></div>
@@ -208,6 +216,21 @@
           msg.className='msg ok'; msg.textContent=`נשמר. ${res.rights_available} זכויות בקטגוריה.`;
           const r=await sb.rpc('more30_auto_overview',{p_app:'bkalot'});
           if(!r.error){ data=r.data; renderTopics(); renderQueue(); }
+        });
+
+        // ── ריצה יבשה ───────────────────────────────────────────────────
+        $('dryrun').addEventListener('click', async ()=>{
+          const m=$('drymsg'); m.className='msg'; m.textContent='מריץ…';
+          $('dryrun').disabled=true;
+          const { data:res, error } = await sb.rpc('more30_auto_dryrun',{ p_limit:20 });
+          $('dryrun').disabled=false;
+          if(error){ m.className='msg err'; m.textContent=error.message; return; }
+          m.className='msg ok';
+          // מציינים במפורש שנשלחו אפס — זו התוצאה החשובה, לא כמה נבנו.
+          m.textContent = `נבנה ואומת: ${res.content_verified} · בעיות: ${res.problems} · ` +
+                          `נשלחו בפועל: ${res.sent_for_real}. ${res.message}`;
+          const r=await sb.rpc('more30_auto_overview',{p_app:'bkalot'});
+          if(!r.error){ data=r.data; renderQueue(); }
         });
 
         $('content').hidden=false;
