@@ -355,10 +355,20 @@
    * עצמו יושב בקובץ הזה. שורה שצריכה להופיע בכל אתר ולהיראות אותו דבר בכולם
    * חייבת לחיות במקום אחד, אחרת היא תהיה 24 גרסאות שמתפצלות.
    *
-   * שלושה כללים שמונעים מזה להיות הזרקה גסה:
-   *  · נכנס **בתוך** ה-<footer> הקיים אם יש כזה, ורק אם אין — נוצר בלוק
-   *    משלו בסוף הדף. אתר עם פוטר מעוצב מקבל שורה נוספת בפוטר שלו, לא רצועה
-   *    זרה שמרחפת מתחתיו.
+   * ── למה **לא** בתוך ה-<footer> הקיים, אף שזה נראה הטבעי יותר
+   * הגרסה הראשונה הכניסה את השורה לתוך ה-`<footer>` של האתר, כדי שתיראה חלק
+   * מהעיצוב. זה עבד — ושבר את ההידרציה. ב-`/modaot` קפצו שלוש שגיאות React
+   * (#425, #418, #423) שלא היו שם לפני כן: ה-`<footer>` הוא חלק מהעץ ש-React
+   * מרנדר, והוספת צומת לתוכו לפני ההידרציה גורמת ל-HTML מהשרת ולרינדור
+   * בדפדפן לא להסכים. התוצאה אינה קוסמטית — React זורק את כל העץ ומרנדר מחדש
+   * בצד הלקוח, כלומר האתר מאבד את ה-SSR שלו בגלל שורת קרדיט.
+   *
+   * לכן הכלל: **לא נוגעים בעץ של המסגרת.** הקרדיט נוסף כבלוק משלו בסוף
+   * ה-`<body>`, בדיוק כמו הכפתור — ושם הוא מעולם לא הפריע לאף אתר, כי הוא
+   * מחוץ לשורש שהמסגרת מרנדרת. ויזואלית הוא יושב מתחת לפוטר במקום בתוכו;
+   * זה מחיר קטן לעומת שבירת ההידרציה של מערכת עם סליקה חיה.
+   *
+   * שני כללים נוספים:
    *  · יורש `color` ו-`font` מהסביבה ומורד לשקיפות חלקית, ולכן הוא מתאים
    *    את עצמו למצב כהה ולפלטה של כל אתר בלי שנצטרך לדעת מה הם.
    *  · אם כבר קיים קרדיט כזה בדף (למשל בפורטל עצמו) — לא מוסיף שני.
@@ -393,13 +403,8 @@
     link.addEventListener('mouseenter', function () { link.style.opacity = '1'; });
     link.addEventListener('mouseleave', function () { link.style.opacity = '.65'; });
 
-    var host = document.querySelector('footer');
-    if (host) {
-      host.appendChild(link);
-      return;
-    }
-
     var box = document.createElement('div');
+    box.setAttribute('data-more30-credit', '');
     box.style.cssText = 'padding:8px 0 18px;color:inherit';
     box.appendChild(link);
     document.body.appendChild(box);
@@ -412,9 +417,66 @@
     mountCredit();
   }
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', mount);
-  } else {
+  /**
+   * שמירה על הכפתור אחרי הידרציה — ולא רק הוספה שלו.
+   *
+   * ב-`/nadlan` (Next.js) הכפתור פשוט לא היה שם, ולא בגלל שגיאת טעינה: הקובץ
+   * חזר 200, הקוד רץ, `window.__more30AuthButton` היה `true` — ובכל זאת
+   * `<more30-auth>` לא היה ב-DOM. הסיבה היא React #418 ו-#423 שהופיעו באותו
+   * דף: כשההידרציה נכשלת React מרנדר את העץ מחדש מאפס, **ומוחק כל צומת
+   * שהוא לא יצר** — כולל מה שהזרקנו לפניה.
+   *
+   * מכאן ההבחנה: "להוסיף את הכפתור" ו"שהכפתור יישאר" הן שתי דרישות שונות,
+   * והקוד הכיר רק את הראשונה. מסגרת שמרנדרת מחדש היא התנהגות נורמלית ולא
+   * תקלה, ולכן התיקון אינו לתזמן טוב יותר — אין רגע שבטוח בכל 33 המערכות —
+   * אלא לשמור על הנוכחות: אם הצומת נעלם, הוא חוזר.
+   *
+   * מוגבל בזמן ובמספר ניסיונות כדי שלא ייווצר לולאה אינסופית מול מסגרת
+   * שמתעקשת למחוק — עדיף כפתור חסר מאשר דף שנלחם בעצמו לנצח.
+   */
+  function keepMounted() {
+    if (!window.MutationObserver) return;
+
+    var restores = 0;
+    var pending = false;
+
+    var observer = new MutationObserver(function () {
+      if (pending) return;
+      if (document.querySelector(TAG) && document.querySelector('.' + CREDIT_CLASS)) return;
+      if (restores >= 20) {
+        observer.disconnect();
+        return;
+      }
+      pending = true;
+      // אחרי ה-microtask הנוכחי: נותן למסגרת לסיים את מחזור הרינדור שלה
+      // במקום להתחרות איתה באמצע.
+      requestAnimationFrame(function () {
+        pending = false;
+        restores++;
+        mount();
+      });
+    });
+
+    observer.observe(document.body, { childList: true });
+
+    // ההידרציה של רוב המסגרות מסתיימת אחרי `load`; ניסיון אחד נוסף שם מכסה
+    // את המקרה שבו העץ הוחלף בלי שהתצפית תפסה את הסדר.
+    window.addEventListener('load', function () {
+      setTimeout(mount, 0);
+    });
+
+    // ‎`pageshow` מכסה חזרה מ-bfcache, שבה הדף חוזר בלי להריץ את הסקריפט שוב.
+    window.addEventListener('pageshow', function () { mount(); });
+  }
+
+  function boot() {
     mount();
+    keepMounted();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', boot);
+  } else {
+    boot();
   }
 })();

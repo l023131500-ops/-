@@ -180,6 +180,11 @@ for (const [key, route] of targets) {
         dir: document.documentElement.dir,
         baseHref: document.querySelector('base')?.getAttribute('href') ?? null,
         hasAuthButton: !!document.querySelector('more30-auth'),
+        // הכפתור והקרדיט נמדדים בנפרד כי הם יכולים להיעלם משתי סיבות שונות:
+        // אי-טעינה של הקובץ המשותף, או מסגרת שמרנדרת מחדש ומוחקת מה שהוזרק
+        // (React #418 מחק את שניהם ב-/nadlan). מדד אחד היה מסתיר את השני.
+        hasCredit: !!document.querySelector('.more30-credit'),
+        creditInFooter: !!document.querySelector('footer .more30-credit'),
         darkVar: getComputedStyle(document.documentElement).getPropertyValue('--more30-auth-inset').trim(),
         smallTargets: small.slice(0, 6),
         unnamedControls: unnamed.slice(0, 6),
@@ -243,6 +248,7 @@ for (const [key, route] of targets) {
     `${key.padEnd(10)} ${String(facts.status).padEnd(4)} text=${String(facts.textLen ?? '?').padEnd(6)}` +
       ` links=${String(facts.links ?? '?').padEnd(4)} forms=${facts.forms ?? '?'}` +
       ` dark=${String(facts.darkMechanism ?? 'NONE').padEnd(12)} auth=${facts.hasAuthButton ? 'yes' : 'NO '}` +
+      ` credit=${facts.hasCredit ? 'yes' : 'NO '}` +
       ` small=${facts.smallTargets?.length ?? '?'} unnamed=${facts.unnamedControls?.length ?? '?'}` +
       ` ph=${facts.placeholderOnlyNames ?? '?'}` +
       ` err=${facts.consoleErrors.length}`,
