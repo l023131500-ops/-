@@ -28,7 +28,25 @@ const only = process.argv.slice(2);
 const targets = Object.entries(ROUTES).filter(([k]) => !only.length || only.includes(k));
 
 const browser = await chromium.launch({ executablePath: EXE, headless: true });
-const out = {};
+
+/**
+ * Start from whatever was measured before, so a filtered run updates one system
+ * instead of replacing the file with one system.
+ *
+ * It did the latter: `node system-facts.mjs mthbram` left _facts.json holding a
+ * single entry, and write-records.mjs — which trusts this file — promptly
+ * deleted the other twelve QA records. A filtered re-measure after a fix is the
+ * normal way to use this script, so the destructive shape was on the happy path.
+ */
+const OUT = 'QA/platform/_facts.json';
+let out = {};
+if (only.length && fs.existsSync(OUT)) {
+  try {
+    out = JSON.parse(fs.readFileSync(OUT, 'utf8'));
+  } catch {
+    out = {};
+  }
+}
 
 for (const [key, route] of targets) {
   const facts = { route, url: ORIGIN + route };
@@ -220,5 +238,5 @@ for (const [key, route] of targets) {
 
 await browser.close();
 fs.mkdirSync('QA/platform', { recursive: true });
-fs.writeFileSync('QA/platform/_facts.json', JSON.stringify(out, null, 2), 'utf8');
-console.log('\n-> QA/platform/_facts.json');
+fs.writeFileSync(OUT, JSON.stringify(out, null, 2), 'utf8');
+console.log(`\n-> ${OUT} (${Object.keys(out).length} systems)`);
