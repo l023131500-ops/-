@@ -106,40 +106,49 @@ export default function PublicFinancial() {
           ) : (
             <Card className="p-6 md:p-8 border border-card-border">
               <form onSubmit={submit} className="space-y-4" data-testid="form-financial-lead">
+                {/* אותו טופס ואותה תקלה כמו בעמוד הבית — תוקן בשני המקומות
+                    כדי שלא יישאר מסלול אחד שבו השדות עדיין חסרי שם. */}
                 <div>
-                  <label className="text-sm font-medium block mb-1.5">שם מלא <span className="text-destructive">*</span></label>
+                  <label htmlFor="fin-name" className="text-sm font-medium block mb-1.5">שם מלא <span className="text-destructive" aria-hidden="true">*</span></label>
                   <Input
+                    id="fin-name"
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
                     placeholder="שם פרטי ושם משפחה"
+                    autoComplete="name"
                     required
                     data-testid="input-fin-name"
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium block mb-1.5">טלפון <span className="text-destructive">*</span></label>
+                  <label htmlFor="fin-phone" className="text-sm font-medium block mb-1.5">טלפון <span className="text-destructive" aria-hidden="true">*</span></label>
                   <Input
+                    id="fin-phone"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     type="tel"
                     placeholder="05X-XXXXXXX"
+                    autoComplete="tel"
                     required
                     data-testid="input-fin-phone"
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium block mb-1.5">אימייל</label>
+                  <label htmlFor="fin-email" className="text-sm font-medium block mb-1.5">אימייל</label>
                   <Input
+                    id="fin-email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     type="email"
                     placeholder="name@example.com"
+                    autoComplete="email"
                     data-testid="input-fin-email"
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium block mb-1.5">קצת על הצורך (לא חובה)</label>
+                  <label htmlFor="fin-message" className="text-sm font-medium block mb-1.5">קצת על הצורך (לא חובה)</label>
                   <Textarea
+                    id="fin-message"
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
                     rows={4}

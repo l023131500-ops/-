@@ -294,9 +294,15 @@
     <div class="wrap">
       <h2>קטלוג מלא — כל הנושאים</h2>
       <div class="cat-controls">
-        <input type="search" id="catSearch" placeholder="חיפוש לפי שם, גוף מטפל או מספר...">
-        <select id="catSrc"><option value="">כל המקורות</option><option value="bklot">בקלות</option><option value="fund">קופה</option><option value="gov">ממשלה</option><option value="ngo">עמותה</option></select>
-        <select id="catPrio"><option value="">כל העדיפויות</option><option value="must">חובה לבדוק</option><option value="recommended">מומלץ לבדוק</option><option value="tip">טיפ לשיפור</option></select>
+        <!--
+          שלושת הפקדים האלה מזוהים חזותית לפי מיקומם מתחת לכותרת "קטלוג מלא",
+          ולקורא מסך הם לא נשמעו כלל: ל-select אין placeholder ואין טקסט משלו,
+          ולחיפוש היה רק placeholder — שם שנעלם ברגע שמתחילים להקליד.
+          aria-label ולא <label> גלוי, כדי לא לשנות את הפריסה של שורת הסינון.
+        -->
+        <input type="search" id="catSearch" aria-label="חיפוש בקטלוג הזכויות" placeholder="חיפוש לפי שם, גוף מטפל או מספר...">
+        <select id="catSrc" aria-label="סינון לפי מקור הזכות"><option value="">כל המקורות</option><option value="bklot">בקלות</option><option value="fund">קופה</option><option value="gov">ממשלה</option><option value="ngo">עמותה</option></select>
+        <select id="catPrio" aria-label="סינון לפי רמת עדיפות"><option value="">כל העדיפויות</option><option value="must">חובה לבדוק</option><option value="recommended">מומלץ לבדוק</option><option value="tip">טיפ לשיפור</option></select>
       </div>
       <div id="catCount" class="cat-count"></div>
       <div id="catList" class="cat-list"></div>

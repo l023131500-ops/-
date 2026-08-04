@@ -50,13 +50,84 @@ for (const [key, route] of targets) {
       const txt = document.body.innerText.replace(/\s+/g, ' ').trim();
       const small = [];
       const unnamed = [];
+
+      /**
+       * The accessible name, the way a screen reader computes it — not the way
+       * that is easy to write.
+       *
+       * The first version of this used `aria-label || textContent`, which is
+       * fine for a link or a button and simply wrong for a form field: an
+       * <input> has no text content, ever. It reported eleven "unnamed
+       * controls" across smel, mechiron, crm and gesher that were all the same
+       * shadcn <Input> sitting under a correct <label for>. Filing those as
+       * accessibility defects would have sent me editing four healthy pages.
+       */
+      const nameOf = (el) => {
+        const by = el.getAttribute('aria-labelledby');
+        if (by) {
+          const t = by.split(/\s+/).map((id) => document.getElementById(id)?.textContent ?? '').join(' ').trim();
+          if (t) return t;
+        }
+        const al = el.getAttribute('aria-label');
+        if (al?.trim()) return al.trim();
+
+        if (el.id) {
+          const lab = document.querySelector(`label[for="${CSS.escape(el.id)}"]`);
+          if (lab?.textContent?.trim()) return lab.textContent.trim();
+        }
+        const wrap = el.closest('label');
+        if (wrap?.textContent?.trim()) return wrap.textContent.trim();
+
+        // A placeholder is a weak name — it vanishes on typing — but it is a
+        // name, so it is not a "no name at all" defect. Tracked separately.
+        const ph = el.getAttribute('placeholder');
+        if (ph?.trim()) return `placeholder:${ph.trim()}`;
+
+        const t = (el.textContent ?? '').replace(/\s+/g, ' ').trim();
+        if (t) return t;
+        if (el.getAttribute('title')?.trim()) return el.getAttribute('title').trim();
+
+        // `value` names a push button and nothing else. Using it as a general
+        // fallback hid every unlabelled <select> on the platform, because a
+        // select's value is whichever option happens to be chosen — bkalot's
+        // two filters and mthbram's three read as "named" while a screen reader
+        // announces them as nothing at all.
+        if (el.tagName === 'INPUT' && ['submit', 'button', 'reset'].includes(el.type)) {
+          return el.value?.trim() ?? '';
+        }
+        return '';
+      };
+
+      /**
+       * WCAG 2.5.8 exempts a target that sits inline in a sentence — a footer
+       * link inherits its line-height and cannot be enlarged without breaking
+       * the paragraph. Flagging those produced two "violations" that are not
+       * violations, so inline links are excluded and counted separately.
+       */
+      const isInlineText = (el) => {
+        if (el.tagName !== 'A') return false;
+        const d = getComputedStyle(el).display;
+        if (d !== 'inline' && d !== 'inline-block') return false;
+        const p = el.parentElement;
+        if (!p) return false;
+        const own = (el.textContent ?? '').trim();
+        const around = (p.textContent ?? '').trim();
+        return around.length > own.length;
+      };
+
+      let inlineExempt = 0;
       for (const el of document.querySelectorAll('a[href],button,[role="button"],input,select,summary')) {
         const r = el.getBoundingClientRect();
         const s = getComputedStyle(el);
         if (!r.width || !r.height || s.visibility === 'hidden' || s.display === 'none') continue;
-        const name = (el.getAttribute('aria-label') || el.textContent || '').replace(/\s+/g, ' ').trim();
-        if (r.width < 24 || r.height < 24) small.push({ tag: el.tagName.toLowerCase(), name: name.slice(0, 30), w: Math.round(r.width), h: Math.round(r.height) });
-        if (!name && !el.getAttribute('title')) unnamed.push({ tag: el.tagName.toLowerCase(), cls: String(el.className).slice(0, 40) });
+        if (el.type === 'hidden') continue;
+
+        const name = nameOf(el);
+        if (r.width < 24 || r.height < 24) {
+          if (isInlineText(el)) inlineExempt++;
+          else small.push({ tag: el.tagName.toLowerCase(), name: name.slice(0, 30), w: Math.round(r.width), h: Math.round(r.height) });
+        }
+        if (!name) unnamed.push({ tag: el.tagName.toLowerCase(), cls: String(el.className).slice(0, 40) });
       }
       return {
         textLen: txt.length,
@@ -73,15 +144,54 @@ for (const [key, route] of targets) {
         darkVar: getComputedStyle(document.documentElement).getPropertyValue('--more30-auth-inset').trim(),
         smallTargets: small.slice(0, 6),
         unnamedControls: unnamed.slice(0, 6),
+        inlineExemptTargets: inlineExempt,
+        placeholderOnlyNames: [...document.querySelectorAll('input,select,textarea')].filter(
+          (el) => nameOf(el).startsWith('placeholder:'),
+        ).length,
       };
     }));
 
-    // does the dark theme actually respond?
-    const before = await page.evaluate(() => getComputedStyle(document.body).backgroundColor + '|' + getComputedStyle(document.body).backgroundImage.slice(0, 60));
+    // Does the dark theme actually respond?
+    //
+    // Two mechanisms are in use across the platform and testing only one
+    // produces confident false negatives: the Tailwind sites key off `.dark` on
+    // <html>, while smachot keys off `[data-theme="dark"]` and ships its own
+    // toggle. Asserting the class alone reported smachot as having no dark mode
+    // at all, and it has a complete one — 40-odd rules and a sun/moon button.
+    //
+    // A site that is dark to begin with (mthbram: rgb(9,26,32) by brand) is
+    // recorded as `already-dark`, not as a failure. "Doesn't flip" and "has no
+    // dark theme" are different facts and the QA record should not merge them.
+    const swatch = () =>
+      page.evaluate(
+        () =>
+          getComputedStyle(document.body).backgroundColor +
+          '|' +
+          getComputedStyle(document.body).backgroundImage.slice(0, 60),
+      );
+
+    const before = await swatch();
     await page.evaluate(() => document.documentElement.classList.add('dark'));
     await page.waitForTimeout(700);
-    const after = await page.evaluate(() => getComputedStyle(document.body).backgroundColor + '|' + getComputedStyle(document.body).backgroundImage.slice(0, 60));
-    facts.darkResponds = before !== after;
+    const viaClass = await swatch();
+
+    await page.evaluate(() => {
+      document.documentElement.classList.remove('dark');
+      document.documentElement.dataset.theme = 'dark';
+    });
+    await page.waitForTimeout(700);
+    const viaAttr = await swatch();
+
+    facts.darkMechanism =
+      viaClass !== before ? 'class' : viaAttr !== before ? 'data-theme' : null;
+    facts.darkResponds = facts.darkMechanism !== null;
+
+    // luminance of the default background, to tell brand-dark from broken
+    const lum = Number(/rgb\((\d+)/.exec(before)?.[1] ?? NaN);
+    if (!facts.darkResponds && Number.isFinite(lum) && lum < 60) {
+      facts.darkMechanism = 'already-dark';
+    }
+    facts.defaultBg = before.split('|')[0];
   } catch (e) {
     facts.error = String(e.message).slice(0, 120);
   }
@@ -93,8 +203,9 @@ for (const [key, route] of targets) {
   console.log(
     `${key.padEnd(10)} ${String(facts.status).padEnd(4)} text=${String(facts.textLen ?? '?').padEnd(6)}` +
       ` links=${String(facts.links ?? '?').padEnd(4)} forms=${facts.forms ?? '?'}` +
-      ` dark=${facts.darkResponds ? 'yes' : 'NO '} auth=${facts.hasAuthButton ? 'yes' : 'NO '}` +
+      ` dark=${String(facts.darkMechanism ?? 'NONE').padEnd(12)} auth=${facts.hasAuthButton ? 'yes' : 'NO '}` +
       ` small=${facts.smallTargets?.length ?? '?'} unnamed=${facts.unnamedControls?.length ?? '?'}` +
+      ` ph=${facts.placeholderOnlyNames ?? '?'}` +
       ` err=${facts.consoleErrors.length}`,
   );
 }

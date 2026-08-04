@@ -17,6 +17,8 @@
     "darkVar": "98px",
     "smallTargets": [],
     "unnamedControls": [],
+    "inlineExemptTargets": 0,
+    "placeholderOnlyNames": 0,
     "darkResponds": true,
     "consoleErrors": [],
     "badResponses": []
@@ -39,6 +41,8 @@
     "darkVar": "98px",
     "smallTargets": [],
     "unnamedControls": [],
+    "inlineExemptTargets": 0,
+    "placeholderOnlyNames": 0,
     "darkResponds": true,
     "consoleErrors": [],
     "badResponses": []
@@ -61,6 +65,8 @@
     "darkVar": "98px",
     "smallTargets": [],
     "unnamedControls": [],
+    "inlineExemptTargets": 0,
+    "placeholderOnlyNames": 0,
     "darkResponds": true,
     "consoleErrors": [],
     "badResponses": []
@@ -83,6 +89,8 @@
     "darkVar": "98px",
     "smallTargets": [],
     "unnamedControls": [],
+    "inlineExemptTargets": 0,
+    "placeholderOnlyNames": 0,
     "darkResponds": true,
     "consoleErrors": [],
     "badResponses": []
@@ -104,17 +112,10 @@
     "hasAuthButton": true,
     "darkVar": "98px",
     "smallTargets": [],
-    "unnamedControls": [
-      {
-        "tag": "input",
-        "cls": ""
-      },
-      {
-        "tag": "select",
-        "cls": "fund-select"
-      }
-    ],
-    "darkResponds": false,
+    "unnamedControls": [],
+    "inlineExemptTargets": 0,
+    "placeholderOnlyNames": 1,
+    "darkResponds": true,
     "consoleErrors": [],
     "badResponses": []
   },
@@ -135,20 +136,9 @@
     "hasAuthButton": true,
     "darkVar": "98px",
     "smallTargets": [],
-    "unnamedControls": [
-      {
-        "tag": "input",
-        "cls": "flex h-9 w-full rounded-md border border"
-      },
-      {
-        "tag": "input",
-        "cls": "flex h-9 w-full rounded-md border border"
-      },
-      {
-        "tag": "input",
-        "cls": "flex h-9 w-full rounded-md border border"
-      }
-    ],
+    "unnamedControls": [],
+    "inlineExemptTargets": 0,
+    "placeholderOnlyNames": 3,
     "darkResponds": true,
     "consoleErrors": [],
     "badResponses": []
@@ -178,6 +168,8 @@
       }
     ],
     "unnamedControls": [],
+    "inlineExemptTargets": 0,
+    "placeholderOnlyNames": 0,
     "darkResponds": false,
     "consoleErrors": [],
     "badResponses": []
@@ -200,6 +192,8 @@
     "darkVar": "98px",
     "smallTargets": [],
     "unnamedControls": [],
+    "inlineExemptTargets": 0,
+    "placeholderOnlyNames": 0,
     "darkResponds": true,
     "consoleErrors": [],
     "badResponses": []
@@ -221,12 +215,9 @@
     "hasAuthButton": true,
     "darkVar": "98px",
     "smallTargets": [],
-    "unnamedControls": [
-      {
-        "tag": "input",
-        "cls": "w-full bg-transparent py-1 font-body tex"
-      }
-    ],
+    "unnamedControls": [],
+    "inlineExemptTargets": 0,
+    "placeholderOnlyNames": 1,
     "darkResponds": false,
     "consoleErrors": [],
     "badResponses": []
@@ -249,6 +240,8 @@
     "darkVar": "98px",
     "smallTargets": [],
     "unnamedControls": [],
+    "inlineExemptTargets": 0,
+    "placeholderOnlyNames": 0,
     "darkResponds": true,
     "consoleErrors": [],
     "badResponses": []
@@ -269,28 +262,10 @@
     "baseHref": null,
     "hasAuthButton": true,
     "darkVar": "98px",
-    "smallTargets": [
-      {
-        "tag": "a",
-        "name": "תנאי שימוש ומדיניות פרטיות",
-        "w": 130,
-        "h": 17
-      }
-    ],
-    "unnamedControls": [
-      {
-        "tag": "input",
-        "cls": "flex h-9 w-full rounded-md border border"
-      },
-      {
-        "tag": "input",
-        "cls": "flex h-9 w-full rounded-md border border"
-      },
-      {
-        "tag": "input",
-        "cls": "flex h-9 w-full rounded-md border border"
-      }
-    ],
+    "smallTargets": [],
+    "unnamedControls": [],
+    "inlineExemptTargets": 1,
+    "placeholderOnlyNames": 4,
     "darkResponds": true,
     "consoleErrors": [],
     "badResponses": []
@@ -312,16 +287,9 @@
     "hasAuthButton": true,
     "darkVar": "98px",
     "smallTargets": [],
-    "unnamedControls": [
-      {
-        "tag": "input",
-        "cls": "flex h-9 w-full rounded-md border border"
-      },
-      {
-        "tag": "input",
-        "cls": "flex h-9 w-full rounded-md border border"
-      }
-    ],
+    "unnamedControls": [],
+    "inlineExemptTargets": 0,
+    "placeholderOnlyNames": 0,
     "darkResponds": true,
     "consoleErrors": [],
     "badResponses": []
@@ -343,16 +311,9 @@
     "hasAuthButton": true,
     "darkVar": "98px",
     "smallTargets": [],
-    "unnamedControls": [
-      {
-        "tag": "input",
-        "cls": "flex h-9 w-full rounded-md border border"
-      },
-      {
-        "tag": "input",
-        "cls": "flex h-9 w-full rounded-md border border"
-      }
-    ],
+    "unnamedControls": [],
+    "inlineExemptTargets": 0,
+    "placeholderOnlyNames": 0,
     "darkResponds": true,
     "consoleErrors": [],
     "badResponses": []

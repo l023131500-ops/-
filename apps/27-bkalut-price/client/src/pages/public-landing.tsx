@@ -416,40 +416,55 @@ export default function PublicLanding() {
                   <form onSubmit={submitFinancialLead} className="space-y-3.5" data-testid="form-home-financial-lead">
                     <h3 className="font-semibold text-lg">השארת פרטים</h3>
                     <p className="text-xs text-muted-foreground -mt-1">לא לכניסה למערכת — רק כדי שניצור איתכם קשר.</p>
+                    {/*
+                      טופס יצירת הקשר הוא המקום היחיד בעמוד שבו מבקר מוסר פרטים,
+                      וארבעת השדות שלו הוכרזו בלי שם: <label> בלי htmlFor ליד
+                      <Input> בלי id. מי שממלא אותו בקורא מסך שמע "עריכה, חובה"
+                      ולא ידע אם מבקשים ממנו טלפון או אימייל.
+                      ה-* של שדה חובה נשאר חזותי בלבד — required מודיע עליו,
+                      וכוכבית בתוך התווית הייתה מוקראת כ"כוכב" באמצע השם.
+                    */}
                     <div>
-                      <label className="text-sm font-medium block mb-1.5">שם מלא <span className="text-destructive">*</span></label>
+                      <label htmlFor="fin-lead-name" className="text-sm font-medium block mb-1.5">שם מלא <span className="text-destructive" aria-hidden="true">*</span></label>
                       <Input
+                        id="fin-lead-name"
                         value={leadName}
                         onChange={(e) => setLeadName(e.target.value)}
                         placeholder="שם פרטי ושם משפחה"
+                        autoComplete="name"
                         required
                         data-testid="input-home-fin-name"
                       />
                     </div>
                     <div>
-                      <label className="text-sm font-medium block mb-1.5">טלפון <span className="text-destructive">*</span></label>
+                      <label htmlFor="fin-lead-phone" className="text-sm font-medium block mb-1.5">טלפון <span className="text-destructive" aria-hidden="true">*</span></label>
                       <Input
+                        id="fin-lead-phone"
                         value={leadPhone}
                         onChange={(e) => setLeadPhone(e.target.value)}
                         type="tel"
                         placeholder="05X-XXXXXXX"
+                        autoComplete="tel"
                         required
                         data-testid="input-home-fin-phone"
                       />
                     </div>
                     <div>
-                      <label className="text-sm font-medium block mb-1.5">אימייל</label>
+                      <label htmlFor="fin-lead-email" className="text-sm font-medium block mb-1.5">אימייל</label>
                       <Input
+                        id="fin-lead-email"
                         value={leadEmail}
                         onChange={(e) => setLeadEmail(e.target.value)}
                         type="email"
                         placeholder="name@example.com"
+                        autoComplete="email"
                         data-testid="input-home-fin-email"
                       />
                     </div>
                     <div>
-                      <label className="text-sm font-medium block mb-1.5">קצת על הצורך (לא חובה)</label>
+                      <label htmlFor="fin-lead-message" className="text-sm font-medium block mb-1.5">קצת על הצורך (לא חובה)</label>
                       <Textarea
+                        id="fin-lead-message"
                         value={leadMessage}
                         onChange={(e) => setLeadMessage(e.target.value)}
                         rows={3}

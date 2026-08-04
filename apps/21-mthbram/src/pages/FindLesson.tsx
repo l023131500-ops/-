@@ -40,8 +40,10 @@ const FilterSelect = ({
   label, value, options, onChange,
 }: { label: string; value: string; options: string[]; onChange: (v: string) => void }) => (
   <div className="relative">
+    {/* Same fix as LessonsDashboard: the name has to outlive the selection. */}
     <select
       value={value}
+      aria-label={label}
       onChange={(e) => onChange(e.target.value)}
       className={`w-full appearance-none bg-card border-2 rounded-xl pr-3 pl-9 py-2.5 font-body text-sm text-right transition-all cursor-pointer ${
         value ? "border-gold/60 text-gold font-semibold bg-gold/5" : "border-border text-foreground hover:border-gold/30"
@@ -191,6 +193,7 @@ const FindLesson = () => {
               <Search className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gold" />
               <input
                 value={filters.q}
+                aria-label="חיפוש שיעורים"
                 onChange={e => update("q", e.target.value)}
                 placeholder="חיפוש חופשי — שם רב, נושא, עיר, בית כנסת..."
                 className="w-full bg-muted/30 rounded-2xl pr-12 pl-4 py-3.5 font-body text-base text-foreground border-2 border-gold/30 focus:border-gold focus:ring-2 focus:ring-gold/20 outline-none transition-all"

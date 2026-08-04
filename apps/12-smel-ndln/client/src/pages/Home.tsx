@@ -136,11 +136,19 @@ export default function Home() {
           <Card className="mx-auto mt-9 max-w-2xl border-card-border bg-card/95 p-5 text-right shadow-2xl backdrop-blur sm:p-6">
             <form onSubmit={submit} className="space-y-4">
               <div className="grid gap-3 sm:grid-cols-[1.4fr_1fr_0.7fr]">
+                {/*
+                  שלוש הכותרות האלה נראו כמו תוויות ולא היו כאלה: <label> בלי
+                  htmlFor ליד <Input> בלי id הוא טקסט שמרחף ליד השדה. מי שרואה
+                  את המסך קורא "עיר" ומבין; קורא מסך הכריז על שדה בלי שם, ומה
+                  שנשאר לו היה ה-placeholder — שנעלם ברגע שמתחילים להקליד.
+                  הקישור מפורש עכשיו, והעיצוב לא זז.
+                */}
                 <div className="text-right">
-                  <label className="mb-1.5 block text-sm font-semibold text-foreground">
+                  <label htmlFor="smel-city" className="mb-1.5 block text-sm font-semibold text-foreground">
                     עיר
                   </label>
                   <Input
+                    id="smel-city"
                     value={city}
                     onChange={(e) => setCity(e.target.value)}
                     placeholder="תל אביב"
@@ -149,10 +157,11 @@ export default function Home() {
                   />
                 </div>
                 <div className="text-right">
-                  <label className="mb-1.5 block text-sm font-semibold text-foreground">
+                  <label htmlFor="smel-street" className="mb-1.5 block text-sm font-semibold text-foreground">
                     רחוב
                   </label>
                   <Input
+                    id="smel-street"
                     value={street}
                     onChange={(e) => setStreet(e.target.value)}
                     placeholder="דיזנגוף"
@@ -161,10 +170,11 @@ export default function Home() {
                   />
                 </div>
                 <div className="text-right">
-                  <label className="mb-1.5 block text-sm font-semibold text-foreground">
+                  <label htmlFor="smel-number" className="mb-1.5 block text-sm font-semibold text-foreground">
                     מספר
                   </label>
                   <Input
+                    id="smel-number"
                     value={num}
                     onChange={(e) => setNum(e.target.value)}
                     placeholder="100"

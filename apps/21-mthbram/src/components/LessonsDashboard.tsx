@@ -91,8 +91,15 @@ const LessonSquare = ({ lesson, onClick }: { lesson: any; onClick: () => void })
 
 const FilterSelect = ({ label, value, options, onChange }: { label: string; value: string; options: string[]; onChange: (v: string) => void }) => (
   <div className="relative">
+    {/*
+      `label` was carrying the name only through the empty option, so the field
+      introduced itself as "נושא" until you picked something — and from then on
+      announced just "גמרא", with nothing to say which filter that was. The
+      visible design is unchanged; aria-label makes the name survive selection.
+    */}
     <select
       value={value}
+      aria-label={label}
       onChange={(e) => onChange(e.target.value)}
       className={`w-full appearance-none rounded-xl pr-3 pl-8 py-2 font-body text-sm text-right transition-all cursor-pointer border ${
         value ? "border-gold/60 text-gold bg-gold/8 font-semibold" : "border-gold/25 text-foreground bg-card/50 hover:border-gold/40"
@@ -165,6 +172,7 @@ const LessonsDashboard = () => {
                   <Search className="w-4 h-4 text-gold flex-shrink-0" />
                   <input
                     value={filters.q}
+                    aria-label="חיפוש שיעורים"
                     onChange={e => update("q", e.target.value)}
                     placeholder="חיפוש חכם — רב, נושא, עיר, בית כנסת..."
                     className="w-full bg-transparent py-1 font-body text-sm text-foreground placeholder:text-muted-foreground/60 outline-none"
