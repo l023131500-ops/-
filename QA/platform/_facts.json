@@ -19,7 +19,9 @@
     "unnamedControls": [],
     "inlineExemptTargets": 0,
     "placeholderOnlyNames": 0,
+    "darkMechanism": "class",
     "darkResponds": true,
+    "defaultBg": "rgb(251, 250, 246)",
     "consoleErrors": [],
     "badResponses": []
   },
@@ -43,7 +45,9 @@
     "unnamedControls": [],
     "inlineExemptTargets": 0,
     "placeholderOnlyNames": 0,
+    "darkMechanism": "class",
     "darkResponds": true,
+    "defaultBg": "rgb(248, 245, 236)",
     "consoleErrors": [],
     "badResponses": []
   },
@@ -67,7 +71,9 @@
     "unnamedControls": [],
     "inlineExemptTargets": 0,
     "placeholderOnlyNames": 0,
+    "darkMechanism": "class",
     "darkResponds": true,
+    "defaultBg": "rgb(250, 248, 245)",
     "consoleErrors": [],
     "badResponses": []
   },
@@ -91,7 +97,9 @@
     "unnamedControls": [],
     "inlineExemptTargets": 0,
     "placeholderOnlyNames": 0,
+    "darkMechanism": "class",
     "darkResponds": true,
+    "defaultBg": "rgb(246, 248, 249)",
     "consoleErrors": [],
     "badResponses": []
   },
@@ -112,10 +120,21 @@
     "hasAuthButton": true,
     "darkVar": "98px",
     "smallTargets": [],
-    "unnamedControls": [],
+    "unnamedControls": [
+      {
+        "tag": "select",
+        "cls": ""
+      },
+      {
+        "tag": "select",
+        "cls": ""
+      }
+    ],
     "inlineExemptTargets": 0,
     "placeholderOnlyNames": 1,
+    "darkMechanism": "class",
     "darkResponds": true,
+    "defaultBg": "rgb(247, 246, 242)",
     "consoleErrors": [],
     "badResponses": []
   },
@@ -139,7 +158,9 @@
     "unnamedControls": [],
     "inlineExemptTargets": 0,
     "placeholderOnlyNames": 3,
+    "darkMechanism": "class",
     "darkResponds": true,
+    "defaultBg": "rgb(251, 250, 248)",
     "consoleErrors": [],
     "badResponses": []
   },
@@ -170,7 +191,9 @@
     "unnamedControls": [],
     "inlineExemptTargets": 0,
     "placeholderOnlyNames": 0,
-    "darkResponds": false,
+    "darkMechanism": "data-theme",
+    "darkResponds": true,
+    "defaultBg": "rgb(244, 246, 246)",
     "consoleErrors": [],
     "badResponses": []
   },
@@ -194,7 +217,9 @@
     "unnamedControls": [],
     "inlineExemptTargets": 0,
     "placeholderOnlyNames": 0,
+    "darkMechanism": "class",
     "darkResponds": true,
+    "defaultBg": "rgb(245, 246, 250)",
     "consoleErrors": [],
     "badResponses": []
   },
@@ -215,10 +240,25 @@
     "hasAuthButton": true,
     "darkVar": "98px",
     "smallTargets": [],
-    "unnamedControls": [],
+    "unnamedControls": [
+      {
+        "tag": "select",
+        "cls": "w-full appearance-none rounded-xl pr-3 p"
+      },
+      {
+        "tag": "select",
+        "cls": "w-full appearance-none rounded-xl pr-3 p"
+      },
+      {
+        "tag": "select",
+        "cls": "w-full appearance-none rounded-xl pr-3 p"
+      }
+    ],
     "inlineExemptTargets": 0,
     "placeholderOnlyNames": 1,
+    "darkMechanism": "already-dark",
     "darkResponds": false,
+    "defaultBg": "rgb(9, 26, 32)",
     "consoleErrors": [],
     "badResponses": []
   },
@@ -242,7 +282,9 @@
     "unnamedControls": [],
     "inlineExemptTargets": 0,
     "placeholderOnlyNames": 0,
+    "darkMechanism": "class",
     "darkResponds": true,
+    "defaultBg": "rgba(0, 0, 0, 0)",
     "consoleErrors": [],
     "badResponses": []
   },
@@ -266,7 +308,9 @@
     "unnamedControls": [],
     "inlineExemptTargets": 1,
     "placeholderOnlyNames": 4,
+    "darkMechanism": "class",
     "darkResponds": true,
+    "defaultBg": "rgb(248, 246, 242)",
     "consoleErrors": [],
     "badResponses": []
   },
@@ -290,7 +334,9 @@
     "unnamedControls": [],
     "inlineExemptTargets": 0,
     "placeholderOnlyNames": 0,
+    "darkMechanism": "class",
     "darkResponds": true,
+    "defaultBg": "lab(98.8899 -1.58331 -0.665271)",
     "consoleErrors": [],
     "badResponses": []
   },
@@ -314,7 +360,9 @@
     "unnamedControls": [],
     "inlineExemptTargets": 0,
     "placeholderOnlyNames": 0,
+    "darkMechanism": "class",
     "darkResponds": true,
+    "defaultBg": "lab(98.144 -0.25627 -0.702512)",
     "consoleErrors": [],
     "badResponses": []
   }

@@ -83,8 +83,16 @@ for (const [key, route] of targets) {
         const ph = el.getAttribute('placeholder');
         if (ph?.trim()) return `placeholder:${ph.trim()}`;
 
-        const t = (el.textContent ?? '').replace(/\s+/g, ' ').trim();
-        if (t) return t;
+        // Text content names a link, a button or a summary. It does NOT name a
+        // form control, and for <select> it is actively misleading: the text
+        // content of a select is every option concatenated, so bkalot's two
+        // unlabelled filters read as "all sources rights fund government ngo"
+        // and passed. Form controls get their name from a label or nothing.
+        const isFormControl = ['SELECT', 'TEXTAREA', 'INPUT'].includes(el.tagName);
+        if (!isFormControl) {
+          const t = (el.textContent ?? '').replace(/\s+/g, ' ').trim();
+          if (t) return t;
+        }
         if (el.getAttribute('title')?.trim()) return el.getAttribute('title').trim();
 
         // `value` names a push button and nothing else. Using it as a general
