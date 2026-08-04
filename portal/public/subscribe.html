@@ -130,12 +130,15 @@
         $('msg').className = 'msg ' + kind;
         $('msg').hidden = false;
       }
+      // למחיר שלושה מצבים, ולכל אחד ניסוח אחר — "₪0" אינו אחד מהם.
+      // ריק = טרם הוכרע · 0 = הוכרע שאין חיוב · מעל 0 = מחיר לגבייה.
       function priceText(p) {
         if (p.price_ils == null) {
           return p.is_default
             ? 'ללא עלות'
             : 'המחיר טרם נקבע <small>· נעדכן לפני שנפתחת הסליקה</small>';
         }
+        if (Number(p.price_ils) === 0) return 'ללא עלות';
         const per = { month: 'לחודש', year: 'לשנה', once: 'חד־פעמי' }[p.period] ?? '';
         return `₪${p.price_ils} <small>${per}</small>`;
       }
