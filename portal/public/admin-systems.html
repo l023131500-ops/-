@@ -80,6 +80,8 @@
       <p class="sub" id="tagline">טוען…</p>
 
       <nav class="nav">
+        <a href="/admin/issues">תקלות ומה דורש אותך</a>
+        <a href="/admin/credits">יתרות וחיבורים</a>
         <a href="/admin/pricing">מחירים ותצוגה</a>
         <a href="/admin/activity">משתמשים פעילים</a>
         <a href="/showcase">עולם הסטארטאפים</a>
@@ -115,6 +117,13 @@
       }
       const money = (n) => (Number(n) || 0).toLocaleString('he-IL') + ' ₪';
 
+      /**
+       * שורת הבאגים בכרטיס. מערכת בלי שורה ב-core.issues מקבלת "לא נרשמו",
+       * ולא 0 — "אין תקלות ידועות" ו"אף אחד לא בדק" הן שתי עובדות שונות,
+       * ולהציג 0 לשנייה זו הבטחה שלא נמדדה.
+       */
+      let bugs = () => '';
+
       (async function () {
         const { data: s } = await sb.auth.getSession();
         if (!s?.session) {
@@ -125,6 +134,19 @@
           return;
         }
         const { data, error } = await sb.rpc('more30_admin_systems_report');
+        // התקלות נטענות בנפרד ובאופן סלחני: אם ה-RPC הזה נכשל, הדוח עדיין
+        // מוצג בלי עמודת הבאגים — עדיף כרטיס חסר שורה מאשר מסך ריק.
+        const { data: issues } = await sb.rpc('more30_admin_issues');
+        const byApp = issues?.by_app ?? {};
+        bugs = (path) => {
+          const b = path ? byApp[path] : null;
+          if (!b) return '<dt>באגים</dt><dd class="muted">לא נרשמו</dd>';
+          const parts = [];
+          if (b.open) parts.push(`${b.open} פתוחים`);
+          if (b.needs_user) parts.push(`${b.needs_user} דורשים אותך`);
+          if (b.fixed) parts.push(`${b.fixed} תוקנו`);
+          return `<dt>באגים</dt><dd>${parts.join(' · ') || 'אין'}</dd>`;
+        };
         if (error) {
           $('tagline').textContent = 'הדף פתוח לסופר-אדמין בלבד.';
           $('denied').innerHTML =
@@ -173,7 +195,13 @@
               <dt>סליקה</dt><dd>${price('charge')}</dd>
               <dt>חד-פעמי</dt><dd>${price('one_time')}</dd>
               <dt>הכנסה חודשית משוערת</dt><dd>${money(x.mrr_estimate_ils)}</dd>
+              ${bugs(x.path)}
             </dl>
+            <p style="margin-top:10px">
+              <a class="nav-inline" href="/admin/issues"
+                 style="font-size:13px;font-weight:700;color:inherit;text-decoration:none;border-bottom:1px solid var(--gold)">
+                ניהול המערכת הזאת ←</a>
+            </p>
           </article>`;
         }).join('');
 
