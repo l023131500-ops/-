@@ -1,0 +1,360 @@
+{
+  "tamlul": {
+    "route": "/tamlul",
+    "url": "https://more30.com/tamlul",
+    "status": 200,
+    "textLen": 1327,
+    "links": 8,
+    "forms": 0,
+    "inputs": 0,
+    "images": 0,
+    "imagesNoAlt": 0,
+    "h1": 1,
+    "lang": "he",
+    "dir": "rtl",
+    "baseHref": null,
+    "hasAuthButton": true,
+    "darkVar": "98px",
+    "smallTargets": [],
+    "unnamedControls": [],
+    "darkResponds": true,
+    "consoleErrors": [],
+    "badResponses": []
+  },
+  "modaot": {
+    "route": "/modaot",
+    "url": "https://more30.com/modaot",
+    "status": 200,
+    "textLen": 661,
+    "links": 7,
+    "forms": 0,
+    "inputs": 0,
+    "images": 0,
+    "imagesNoAlt": 0,
+    "h1": 1,
+    "lang": "he",
+    "dir": "rtl",
+    "baseHref": null,
+    "hasAuthButton": true,
+    "darkVar": "98px",
+    "smallTargets": [],
+    "unnamedControls": [],
+    "darkResponds": true,
+    "consoleErrors": [],
+    "badResponses": []
+  },
+  "imud": {
+    "route": "/imud",
+    "url": "https://more30.com/imud",
+    "status": 200,
+    "textLen": 575,
+    "links": 8,
+    "forms": 0,
+    "inputs": 0,
+    "images": 0,
+    "imagesNoAlt": 0,
+    "h1": 1,
+    "lang": "he",
+    "dir": "rtl",
+    "baseHref": null,
+    "hasAuthButton": true,
+    "darkVar": "98px",
+    "smallTargets": [],
+    "unnamedControls": [],
+    "darkResponds": true,
+    "consoleErrors": [],
+    "badResponses": []
+  },
+  "briut": {
+    "route": "/briut",
+    "url": "https://more30.com/briut",
+    "status": 200,
+    "textLen": 4800,
+    "links": 7,
+    "forms": 1,
+    "inputs": 12,
+    "images": 0,
+    "imagesNoAlt": 0,
+    "h1": 1,
+    "lang": "he",
+    "dir": "rtl",
+    "baseHref": "/briut/",
+    "hasAuthButton": true,
+    "darkVar": "98px",
+    "smallTargets": [],
+    "unnamedControls": [],
+    "darkResponds": true,
+    "consoleErrors": [],
+    "badResponses": []
+  },
+  "bkalot": {
+    "route": "/bkalot",
+    "url": "https://more30.com/bkalot",
+    "status": 200,
+    "textLen": 2985,
+    "links": 39,
+    "forms": 1,
+    "inputs": 4,
+    "images": 0,
+    "imagesNoAlt": 0,
+    "h1": 1,
+    "lang": "he",
+    "dir": "rtl",
+    "baseHref": "/bkalot/",
+    "hasAuthButton": true,
+    "darkVar": "98px",
+    "smallTargets": [],
+    "unnamedControls": [
+      {
+        "tag": "input",
+        "cls": ""
+      },
+      {
+        "tag": "select",
+        "cls": "fund-select"
+      }
+    ],
+    "darkResponds": false,
+    "consoleErrors": [],
+    "badResponses": []
+  },
+  "smel": {
+    "route": "/smel",
+    "url": "https://more30.com/smel",
+    "status": 200,
+    "textLen": 1141,
+    "links": 2,
+    "forms": 1,
+    "inputs": 3,
+    "images": 0,
+    "imagesNoAlt": 0,
+    "h1": 1,
+    "lang": "he",
+    "dir": "rtl",
+    "baseHref": null,
+    "hasAuthButton": true,
+    "darkVar": "98px",
+    "smallTargets": [],
+    "unnamedControls": [
+      {
+        "tag": "input",
+        "cls": "flex h-9 w-full rounded-md border border"
+      },
+      {
+        "tag": "input",
+        "cls": "flex h-9 w-full rounded-md border border"
+      },
+      {
+        "tag": "input",
+        "cls": "flex h-9 w-full rounded-md border border"
+      }
+    ],
+    "darkResponds": true,
+    "consoleErrors": [],
+    "badResponses": []
+  },
+  "smachot": {
+    "route": "/smachot",
+    "url": "https://more30.com/smachot",
+    "status": 200,
+    "textLen": 1445,
+    "links": 2,
+    "forms": 0,
+    "inputs": 1,
+    "images": 0,
+    "imagesNoAlt": 0,
+    "h1": 1,
+    "lang": "he",
+    "dir": "rtl",
+    "baseHref": "/smachot/",
+    "hasAuthButton": true,
+    "darkVar": "98px",
+    "smallTargets": [
+      {
+        "tag": "a",
+        "name": "מאגר GitHub",
+        "w": 232,
+        "h": 20
+      }
+    ],
+    "unnamedControls": [],
+    "darkResponds": false,
+    "consoleErrors": [],
+    "badResponses": []
+  },
+  "egod": {
+    "route": "/egod",
+    "url": "https://more30.com/egod",
+    "status": 200,
+    "textLen": 2324,
+    "links": 22,
+    "forms": 0,
+    "inputs": 0,
+    "images": 0,
+    "imagesNoAlt": 0,
+    "h1": 1,
+    "lang": "he",
+    "dir": "rtl",
+    "baseHref": null,
+    "hasAuthButton": true,
+    "darkVar": "98px",
+    "smallTargets": [],
+    "unnamedControls": [],
+    "darkResponds": true,
+    "consoleErrors": [],
+    "badResponses": []
+  },
+  "mthbram": {
+    "route": "/mthbram",
+    "url": "https://more30.com/mthbram",
+    "status": 200,
+    "textLen": 826,
+    "links": 11,
+    "forms": 0,
+    "inputs": 4,
+    "images": 2,
+    "imagesNoAlt": 0,
+    "h1": 0,
+    "lang": "he",
+    "dir": "rtl",
+    "baseHref": null,
+    "hasAuthButton": true,
+    "darkVar": "98px",
+    "smallTargets": [],
+    "unnamedControls": [
+      {
+        "tag": "input",
+        "cls": "w-full bg-transparent py-1 font-body tex"
+      }
+    ],
+    "darkResponds": false,
+    "consoleErrors": [],
+    "badResponses": []
+  },
+  "galil": {
+    "route": "/galil",
+    "url": "https://more30.com/galil",
+    "status": 200,
+    "textLen": 1553,
+    "links": 21,
+    "forms": 0,
+    "inputs": 0,
+    "images": 3,
+    "imagesNoAlt": 0,
+    "h1": 1,
+    "lang": "he",
+    "dir": "rtl",
+    "baseHref": null,
+    "hasAuthButton": true,
+    "darkVar": "98px",
+    "smallTargets": [],
+    "unnamedControls": [],
+    "darkResponds": true,
+    "consoleErrors": [],
+    "badResponses": []
+  },
+  "mechiron": {
+    "route": "/mechiron",
+    "url": "https://more30.com/mechiron",
+    "status": 200,
+    "textLen": 2974,
+    "links": 10,
+    "forms": 1,
+    "inputs": 4,
+    "images": 0,
+    "imagesNoAlt": 0,
+    "h1": 1,
+    "lang": "he",
+    "dir": "rtl",
+    "baseHref": null,
+    "hasAuthButton": true,
+    "darkVar": "98px",
+    "smallTargets": [
+      {
+        "tag": "a",
+        "name": "תנאי שימוש ומדיניות פרטיות",
+        "w": 130,
+        "h": 17
+      }
+    ],
+    "unnamedControls": [
+      {
+        "tag": "input",
+        "cls": "flex h-9 w-full rounded-md border border"
+      },
+      {
+        "tag": "input",
+        "cls": "flex h-9 w-full rounded-md border border"
+      },
+      {
+        "tag": "input",
+        "cls": "flex h-9 w-full rounded-md border border"
+      }
+    ],
+    "darkResponds": true,
+    "consoleErrors": [],
+    "badResponses": []
+  },
+  "crm": {
+    "route": "/crm",
+    "url": "https://more30.com/crm",
+    "status": 200,
+    "textLen": 135,
+    "links": 0,
+    "forms": 1,
+    "inputs": 2,
+    "images": 0,
+    "imagesNoAlt": 0,
+    "h1": 1,
+    "lang": "he",
+    "dir": "rtl",
+    "baseHref": null,
+    "hasAuthButton": true,
+    "darkVar": "98px",
+    "smallTargets": [],
+    "unnamedControls": [
+      {
+        "tag": "input",
+        "cls": "flex h-9 w-full rounded-md border border"
+      },
+      {
+        "tag": "input",
+        "cls": "flex h-9 w-full rounded-md border border"
+      }
+    ],
+    "darkResponds": true,
+    "consoleErrors": [],
+    "badResponses": []
+  },
+  "gesher": {
+    "route": "/gesher",
+    "url": "https://more30.com/gesher",
+    "status": 200,
+    "textLen": 105,
+    "links": 0,
+    "forms": 1,
+    "inputs": 2,
+    "images": 0,
+    "imagesNoAlt": 0,
+    "h1": 1,
+    "lang": "he",
+    "dir": "rtl",
+    "baseHref": null,
+    "hasAuthButton": true,
+    "darkVar": "98px",
+    "smallTargets": [],
+    "unnamedControls": [
+      {
+        "tag": "input",
+        "cls": "flex h-9 w-full rounded-md border border"
+      },
+      {
+        "tag": "input",
+        "cls": "flex h-9 w-full rounded-md border border"
+      }
+    ],
+    "darkResponds": true,
+    "consoleErrors": [],
+    "badResponses": []
+  }
+}

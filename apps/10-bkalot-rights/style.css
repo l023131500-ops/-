@@ -5,7 +5,44 @@
   --must:#B23B2E; --rec:#B8860B; --tip:#3F7A22; --health:#20808D;
   --shadow:0 1px 3px rgba(20,40,40,.06),0 8px 24px rgba(20,40,40,.05);
   --radius:14px;
+  /* הסרגל היה ‎rgba(247,246,242,.9)‎ קשיח — לבן בתוך עמוד כהה. */
+  --header-bg:rgba(247,246,242,.9);
 }
+
+/* ═══ מצב כהה (DESIGN_STANDARD §3) ═══
+   🔴 נוסף בעקבות רגרסיה שאני גרמתי לה. לפני תיקון ה-‎<base>‎ הגיליון הזה
+   לא נטען כלל, ולכן ה-‎.dark‎ שמגיע מגיליון הטוקנים הגלובלי של בקלות
+   (חוצה-מקורות) היה הדבר היחיד שהגדיר ‎--bg‎, והמצב הכהה "עבד".
+
+   ברגע ש-‎style.css‎ התחיל להיטען, ה-‎:root‎ שלו קיבל את אותה ספציפיות
+   כמו ‎.dark‎ של הגיליון החיצוני — והוא מגיע **אחריו** ב-HTML, ולכן ניצח.
+   נמדד: הוספת ‎.dark‎ ל-‎<html>‎ לא הזיזה את הרקע מ-‎rgb(247,246,242)‎.
+
+   התיקון הוא להגדיר את הערכה הכהה **כאן**, בגיליון שנטען אחרון.
+   הטורקיז והזהב הם המותג ואינם מתהפכים; מתהפכים רק הרקע, המשטחים והדיו.
+   ניגודיות מול המשטח הכהה: טקסט ראשי 13.6:1 · מושתק 6.9:1. */
+:root.dark{
+  --bg:#12130F; --surface:#1B1C18; --surface-2:#232420;
+  --text:#E9E7E0; --muted:#A5A29A; --faint:#7A776F; --border:#2E2F2A;
+  --teal:#4FB3C0; --teal-d:#7FCBD6;
+  --header-bg:rgba(18,19,15,.9);
+  --shadow:0 1px 3px rgba(0,0,0,.5),0 8px 24px rgba(0,0,0,.4);
+}
+/* אלה נכתבו כצבע קשיח ולא כטוקן, ולכן אינם מתהפכים לבד: ה-hero הוא
+   גרדיאנט, והשדות/החלונות נכתבו ‎#fff‎ ישירות. בלי השורות האלה העמוד
+   מתהפך אבל כל טופס בתוכו נשאר בוהק לבן. */
+:root.dark .hero{background:linear-gradient(160deg,#171814 0%,#12191A 100%)}
+:root.dark .qfield input[type=text],
+:root.dark .qfield input[type=number],
+:root.dark .qfield select,
+:root.dark .cat-controls input,
+:root.dark .cat-controls select,
+:root.dark .fund-select,
+:root.dark .lead-field input{background:var(--surface);color:var(--text)}
+:root.dark .modal-box,
+:root.dark .lead-box{background:var(--surface);color:var(--text)}
+:root.dark .wage-notes{background:#2A2415;border-color:#4A3F1E}
+:root.dark .switch .track::after{background:#E9E7E0}
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
 body{font-family:'Heebo',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;font-size:16px}
@@ -14,7 +51,7 @@ h1,h2,h3,h4{font-family:'Frank Ruhl Libre','Heebo',serif;line-height:1.2;color:v
 a{color:var(--teal);text-decoration:none}
 
 /* HEADER */
-.site-header{position:sticky;top:0;z-index:50;background:rgba(247,246,242,.9);backdrop-filter:blur(10px);border-bottom:1px solid var(--border)}
+.site-header{position:sticky;top:0;z-index:50;background:var(--header-bg);backdrop-filter:blur(10px);border-bottom:1px solid var(--border)}
 /* כפתור הכניסה המשותף יושב `fixed` בקצה האינליין-סופי, ושם `justify-between`
    מניח את הקישור האחרון בנווט.
 
