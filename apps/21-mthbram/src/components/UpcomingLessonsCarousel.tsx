@@ -117,9 +117,15 @@ const UpcomingLessonsCarousel = () => {
             <Sparkles className="w-3.5 h-3.5 text-gold" />
             <span className="font-body text-xs font-bold text-gold-cream">מאגר שיעורי התורה</span>
           </div>
-          <h1 className="font-display text-3xl md:text-5xl font-black text-foreground mb-2">
+          {/*
+            היה h1, וזו הייתה הכותרת הראשית היחידה בעמוד — בתוך קומפוננטה
+            שמחזירה null כשאין שיעורים. כלומר הכותרת של הדף נעלמה בדיוק במצב
+            שבו המאגר ריק, וזה המצב הנוכחי. עכשיו זו כותרת מקטע (h2), וה-h1
+            היציב יושב ב-Index. הסגנון נשמר במחלקות, ולכן חזותית שום דבר לא זז.
+          */}
+          <h2 className="font-display text-3xl md:text-5xl font-black text-foreground mb-2">
             השיעורים <span className="text-gradient-gold">הקרובים</span>
-          </h1>
+          </h2>
           <p className="font-body text-sm md:text-base text-muted-foreground">
             השיעור המודגש הוא הקרוב ביותר להתחלה
           </p>
