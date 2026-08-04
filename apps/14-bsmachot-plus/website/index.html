@@ -2,6 +2,14 @@
 <html lang="he" dir="rtl">
 <head>
   <meta charset="UTF-8" />
+  <!--
+    האתר מותקן על נתיב (/smachot/) ולא על שורש דומיין, וכל הנכסים כאן יחסיים
+    (./base.css, ./app.js). בלי base href הם נפתרים מול שורש הפורטל, שמחזיר
+    index.html עם 200 — ולכן שום דבר לא מחזיר 404 ובדיקות הנכסים "עוברות",
+    בזמן שהדפדפן מקבל HTML במקום CSS ו-JS ונופל על 'Unexpected token <'.
+    זו בדיוק התקלה ש-/bkalot רץ איתה שבועות.
+  -->
+  <base href="/smachot/" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>שמחות פלוס — תוכנית עסקית</title>
   <meta name="description" content="תוכנית עסקית מורחבת, ניתוח שוק, מיפוי אולמות ומצגת — שמחות פלוס" />
@@ -67,5 +75,7 @@
   </div>
 
   <script src="./app.js"></script>
+  <!-- כפתור הכניסה המשותף לכל מערכות more30, כמו בשאר האתרים. -->
+  <script src="https://more30.com/auth-button.js" defer></script>
 </body>
 </html>

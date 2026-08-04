@@ -120,18 +120,9 @@
     "hasAuthButton": true,
     "darkVar": "98px",
     "smallTargets": [],
-    "unnamedControls": [
-      {
-        "tag": "select",
-        "cls": ""
-      },
-      {
-        "tag": "select",
-        "cls": ""
-      }
-    ],
+    "unnamedControls": [],
     "inlineExemptTargets": 0,
-    "placeholderOnlyNames": 1,
+    "placeholderOnlyNames": 0,
     "darkMechanism": "class",
     "darkResponds": true,
     "defaultBg": "rgb(247, 246, 242)",
@@ -157,7 +148,7 @@
     "smallTargets": [],
     "unnamedControls": [],
     "inlineExemptTargets": 0,
-    "placeholderOnlyNames": 3,
+    "placeholderOnlyNames": 0,
     "darkMechanism": "class",
     "darkResponds": true,
     "defaultBg": "rgb(251, 250, 248)",
@@ -180,14 +171,7 @@
     "baseHref": "/smachot/",
     "hasAuthButton": true,
     "darkVar": "98px",
-    "smallTargets": [
-      {
-        "tag": "a",
-        "name": "מאגר GitHub",
-        "w": 232,
-        "h": 20
-      }
-    ],
+    "smallTargets": [],
     "unnamedControls": [],
     "inlineExemptTargets": 0,
     "placeholderOnlyNames": 0,
@@ -240,22 +224,9 @@
     "hasAuthButton": true,
     "darkVar": "98px",
     "smallTargets": [],
-    "unnamedControls": [
-      {
-        "tag": "select",
-        "cls": "w-full appearance-none rounded-xl pr-3 p"
-      },
-      {
-        "tag": "select",
-        "cls": "w-full appearance-none rounded-xl pr-3 p"
-      },
-      {
-        "tag": "select",
-        "cls": "w-full appearance-none rounded-xl pr-3 p"
-      }
-    ],
+    "unnamedControls": [],
     "inlineExemptTargets": 0,
-    "placeholderOnlyNames": 1,
+    "placeholderOnlyNames": 0,
     "darkMechanism": "already-dark",
     "darkResponds": false,
     "defaultBg": "rgb(9, 26, 32)",
@@ -307,7 +278,7 @@
     "smallTargets": [],
     "unnamedControls": [],
     "inlineExemptTargets": 1,
-    "placeholderOnlyNames": 4,
+    "placeholderOnlyNames": 0,
     "darkMechanism": "class",
     "darkResponds": true,
     "defaultBg": "rgb(248, 246, 242)",
