@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light dark" />
+    <title>מחירים ותצוגה · מרכז השליטה — more30</title>
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        color-scheme: light dark;
+        --gold: #c9a227;
+        --bg: #f6f7fb;
+        --surface: #ffffff;
+        --ink: #0b0d2e;
+        --ink-2: #5b6076;
+        --line: #e4e6f0;
+        --ok: #157f4b;
+        --warn: #8a6d10;
+        --live: #157f4b;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #0b0d18; --surface: #151827; --ink: #e9ebf5;
+          --ink-2: #a2a8c0; --line: #262b40; --ok: #5fd39b;
+          --warn: #e0bd5a; --live: #5fd39b;
+        }
+      }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body {
+        font-family: 'Heebo', system-ui, sans-serif;
+        background: var(--bg); color: var(--ink);
+        line-height: 1.6; padding: 28px 20px 80px;
+      }
+      .wrap { max-width: 1100px; margin: 0 auto; }
+      .back {
+        display: inline-flex; align-items: center; min-height: 24px;
+        font-size: 14px; color: var(--ink-2); text-decoration: none;
+      }
+      .back:hover { color: var(--ink); }
+      h1 { font-size: clamp(24px, 4vw, 34px); font-weight: 800; margin-top: 10px; }
+      .sub { color: var(--ink-2); font-size: 15px; margin-top: 6px; max-width: 66ch; }
+
+      .legend {
+        display: flex; flex-wrap: wrap; gap: 10px 22px; margin: 22px 0 10px;
+        font-size: 13px; color: var(--ink-2);
+      }
+      .legend b { color: var(--ink); font-weight: 700; }
+
+      .sys {
+        background: var(--surface); border: 1px solid var(--line);
+        border-radius: 14px; padding: 16px 18px; margin-bottom: 12px;
+      }
+      .sys-head {
+        display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
+        margin-bottom: 12px;
+      }
+      .sys-num {
+        font-variant-numeric: tabular-nums; font-weight: 800;
+        color: var(--ink-2); font-size: 13px; min-width: 26px;
+      }
+      .sys-name { font-weight: 700; font-size: 16px; }
+      .sys-name a { color: inherit; text-decoration: none; border-bottom: 1px solid transparent; }
+      .sys-name a:hover { border-bottom-color: var(--gold); }
+      .tag {
+        font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px;
+        background: color-mix(in srgb, var(--live) 16%, transparent); color: var(--live);
+      }
+      .tag.off { background: color-mix(in srgb, var(--ink-2) 16%, transparent); color: var(--ink-2); }
+
+      .rows { display: grid; gap: 8px; }
+      .row {
+        display: grid; grid-template-columns: 1fr 130px 92px auto;
+        gap: 10px; align-items: center;
+      }
+      @media (max-width: 640px) { .row { grid-template-columns: 1fr 110px 80px; } }
+      .kind { font-size: 14px; }
+      .kind small { display: block; color: var(--ink-2); font-size: 11.5px; }
+      input[type='number'] {
+        width: 100%; font: inherit; font-size: 15px; text-align: start;
+        padding: 8px 10px; border-radius: 9px; border: 1px solid var(--line);
+        background: var(--bg); color: var(--ink); min-height: 40px;
+      }
+      input[type='number']:focus { outline: 2px solid var(--gold); outline-offset: 1px; }
+      button {
+        font: inherit; font-weight: 700; font-size: 14px; cursor: pointer;
+        border: 1px solid var(--line); background: var(--bg); color: var(--ink);
+        border-radius: 9px; padding: 8px 14px; min-height: 40px; min-width: 72px;
+      }
+      button:hover { border-color: var(--gold); }
+      button:disabled { opacity: .5; cursor: default; }
+      .state { font-size: 12px; min-height: 18px; }
+      .state.ok { color: var(--ok); }
+      .state.warn { color: var(--warn); }
+      .state.err { color: #c0392b; }
+
+      .showcase {
+        display: flex; align-items: center; gap: 8px; margin-inline-start: auto;
+        font-size: 13px; color: var(--ink-2);
+      }
+      .showcase input { width: 20px; height: 20px; accent-color: var(--gold); }
+
+      .note {
+        border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px;
+        font-size: 14px; background: var(--surface); margin-top: 14px;
+      }
+      .note.warn { border-color: color-mix(in srgb, var(--warn) 45%, var(--line)); }
+      .foot { margin-top: 26px; font-size: 12.5px; color: var(--ink-2); }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <a class="back" href="/admin">← חזרה למרכז השליטה</a>
+      <h1>מחירים ותצוגה</h1>
+      <p class="sub" id="tagline">טוען…</p>
+
+      <div id="content" hidden>
+        <div class="legend">
+          <span><b>ריק</b> = טרם נקבע. סליקה חסומה.</span>
+          <span><b>0</b> = הוחלט: ללא חיוב. המערכת פעילה.</span>
+          <span><b>מעל 0</b> = מחיר לגבייה.</span>
+        </div>
+
+        <div class="note warn">
+          <b>הסליקה אינה מחוברת.</b> שמירה כאן קובעת מחיר ומשתקפת מיד באתר
+          הלקוח — אבל אף אחד לא מחויב בפועל. מסלול <b>"פרו (בדיקה)"</b> נקבע
+          ל-1 ₪ בכל מערכת כדי לאפשר בדיקת סליקה בסכום זניח כשתחליט לחבר.
+        </div>
+
+        <div id="systems"></div>
+        <p class="foot" id="stamp"></p>
+      </div>
+
+      <div id="denied" class="note warn" hidden></div>
+    </div>
+
+    <script type="module">
+      import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+      const SUPABASE_URL = 'https://uhnrgujbdxhhmoxcjria.supabase.co';
+      const SUPABASE_ANON =
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVobnJndWpiZHhoaG1veGNqcmlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMzNjE3MjgsImV4cCI6MjA5ODkzNzcyOH0.nHuOhw-WQEU17lNa7XOlORnBhVAYbJBHudKafWkSHBw';
+
+      const sb = createClient(SUPABASE_URL, SUPABASE_ANON, {
+        auth: { persistSession: true, storageKey: 'more30-auth' },
+      });
+
+      const $ = (id) => document.getElementById(id);
+      const esc = (s) =>
+        String(s ?? '').replace(/[&<>"']/g, (c) =>
+          ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]),
+        );
+
+      const KIND_LABEL = {
+        subscription: ['מנוי', 'חיוב חוזר'],
+        charge: ['סליקה', 'תשלום כללי'],
+        one_time: ['שימוש חד-פעמי', 'תשלום לפעולה'],
+      };
+
+      function deny(msg) {
+        $('tagline').textContent = 'המסך הזה פתוח לסופר-אדמין בלבד.';
+        $('denied').innerHTML = msg;
+        $('denied').hidden = false;
+      }
+
+      (async function () {
+        const { data: s } = await sb.auth.getSession();
+        if (!s?.session) {
+          deny(
+            'צריך להתחבר. ' +
+              `<a href="/login?from=${encodeURIComponent(location.href)}">מעבר לכניסה</a>`,
+          );
+          return;
+        }
+
+        // ההרשאה נבדקת בשרת: הפונקציה זורקת 42501 למי שאינו סופר-אדמין.
+        const { data, error } = await sb.rpc('more30_admin_pricing_list');
+        if (error) {
+          deny(
+            'החשבון הזה אינו סופר-אדמין, ולכן אינו יכול לקבוע מחירים.' +
+              `<br><span style="color:var(--ink-2);font-size:13px">${esc(error.message)}</span>`,
+          );
+          return;
+        }
+
+        $('tagline').textContent =
+          'שמירה כותבת מיד ל-core.plans, ומשתקפת באתר הלקוח. כל שינוי נרשם ביומן.';
+
+        $('systems').innerHTML = (data.systems || [])
+          .map((sys) => {
+            const rows = (sys.plans || [])
+              .map((p) => {
+                const [lbl, sub] = KIND_LABEL[p.billing_kind] ?? [p.name_he, p.code];
+                const id = `${sys.app_key}::${p.code}`;
+                return `<div class="row">
+                  <div class="kind">${esc(lbl)}${
+                    p.code === 'pro' ? ' — <b>פרו (בדיקה)</b>' : ''
+                  }<small>${esc(sub)} · ${esc(p.code)}</small></div>
+                  <input type="number" min="0" step="0.5" inputmode="decimal"
+                         id="in::${esc(id)}" value="${p.price_ils ?? ''}"
+                         placeholder="טרם נקבע"
+                         aria-label="מחיר ${esc(lbl)} עבור ${esc(sys.name)}" />
+                  <button data-app="${esc(sys.app_key)}" data-code="${esc(p.code)}">שמור</button>
+                  <span class="state" id="st::${esc(id)}">${
+                    p.price_ils == null
+                      ? '<span class="warn">טרם נקבע</span>'
+                      : p.price_ils === 0
+                      ? 'ללא חיוב'
+                      : 'לגבייה'
+                  }</span>
+                </div>`;
+              })
+              .join('');
+
+            return `<section class="sys">
+              <div class="sys-head">
+                <span class="sys-num">${esc(sys.number)}</span>
+                <span class="sys-name">${
+                  sys.live_url
+                    ? `<a href="${esc(sys.live_url)}">${esc(sys.name)}</a>`
+                    : esc(sys.name)
+                }</span>
+                <span class="tag ${sys.live ? '' : 'off'}">${sys.live ? 'חי' : 'לא חי'}</span>
+                <label class="showcase">
+                  <input type="checkbox" data-showcase="${esc(sys.app_key)}"
+                         ${sys.show_in_showcase ? 'checked' : ''} />
+                  הצג בעולם הסטארטאפים
+                </label>
+              </div>
+              <div class="rows">${rows}</div>
+            </section>`;
+          })
+          .join('');
+
+        // ── שמירת מחיר ──────────────────────────────────────────────────
+        $('systems').addEventListener('click', async (e) => {
+          const btn = e.target.closest('button[data-app]');
+          if (!btn) return;
+          const app = btn.dataset.app;
+          const code = btn.dataset.code;
+          const input = $(`in::${app}::${code}`);
+          const state = $(`st::${app}::${code}`);
+          const raw = input.value.trim();
+          // ריק נשמר כ-null בכוונה: זה "טרם נקבע", ולא אפס.
+          const price = raw === '' ? null : Number(raw);
+          if (price !== null && (!Number.isFinite(price) || price < 0)) {
+            state.className = 'state err';
+            state.textContent = 'מספר לא תקין';
+            return;
+          }
+
+          btn.disabled = true;
+          state.className = 'state';
+          state.textContent = 'שומר…';
+          const { data: res, error: err } = await sb.rpc('more30_admin_pricing_set', {
+            p_app: app, p_code: code, p_price: price,
+          });
+          btn.disabled = false;
+          if (err) {
+            state.className = 'state err';
+            state.textContent = err.message.slice(0, 60);
+            return;
+          }
+          state.className = 'state ok';
+          state.textContent = res.chargeable
+            ? 'נשמר · לגבייה'
+            : price === null
+            ? 'נשמר · טרם נקבע'
+            : 'נשמר · ללא חיוב';
+        });
+
+        // ── מתג showcase ────────────────────────────────────────────────
+        $('systems').addEventListener('change', async (e) => {
+          const box = e.target.closest('input[data-showcase]');
+          if (!box) return;
+          const app = box.dataset.showcase;
+          box.disabled = true;
+          const { error: err } = await sb.rpc('more30_admin_showcase_set', {
+            p_app: app, p_flag: box.checked,
+          });
+          box.disabled = false;
+          if (err) {
+            box.checked = !box.checked; // החזרה למצב האמיתי אם השמירה נכשלה
+            alert('לא נשמר: ' + err.message);
+          }
+        });
+
+        $('stamp').textContent = 'נטען ' + new Date(data.generated_at).toLocaleString('he-IL');
+        $('content').hidden = false;
+      })();
+    </script>
+
+    <script src="https://more30.com/auth-button.js" defer></script>
+  </body>
+</html>
