@@ -43,7 +43,21 @@ const only = process.argv.slice(2).map((s) => s.replace(/^\//, '').replace(/\/$/
 const targets = Object.entries(ROUTES).filter(([k]) => !only.length || only.includes(k));
 
 const browser = await chromium.launch({ executablePath: EXE, headless: true });
-const out = {};
+
+/**
+ * A filtered run updates the file; it does not replace it.
+ *
+ * I fixed exactly this in system-facts.mjs after a one-system run left that
+ * file holding a single entry and the report generator deleted twelve QA
+ * documents. I did not carry the fix here, and running this for one system
+ * promptly dropped 408 lines from _design.json — the same trap, the same shape,
+ * caught by a commit diff rather than by having learned it.
+ */
+const OUT = 'QA/platform/_design.json';
+let out = {};
+if (only.length && fs.existsSync(OUT)) {
+  try { out = JSON.parse(fs.readFileSync(OUT, 'utf8')); } catch { out = {}; }
+}
 
 for (const [key, route] of targets) {
   const page = await browser.newPage({ viewport: { width: 1280, height: 900 }, locale: 'he-IL' });
@@ -213,5 +227,5 @@ console.log(`\n=== icon-chip rainbows (4+ distinct colours) — ${rainbow.length
 for (const [k, f] of rainbow) console.log(`  ${String(f.iconChipColours).padStart(2)}  ${k}`);
 
 fs.mkdirSync('QA/platform', { recursive: true });
-fs.writeFileSync('QA/platform/_design.json', JSON.stringify(out, null, 2), 'utf8');
-console.log('-> QA/platform/_design.json');
+fs.writeFileSync(OUT, JSON.stringify(out, null, 2), 'utf8');
+console.log(`-> ${OUT} (${Object.keys(out).length} systems)`);
