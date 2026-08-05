@@ -95,6 +95,12 @@ const blurb = (r: System) => {
 /** שם התחום לתצוגה. מפתח שאין לו תרגום מוצג כמו שהוא ולא נעלם מהעמוד. */
 const deptLabel = (key: string) => (DEPARTMENTS as Record<string, string>)[key] ?? key;
 
+type RightsStats = {
+  total: number;
+  by_source: Record<string, number>;
+  labels: Record<string, string>;
+};
+
 export function App() {
   const [load, setLoad] = useState<Load>({ state: "loading" });
 
@@ -152,6 +158,21 @@ function Portal({ load, retry }: { load: Load; retry: () => void }) {
   const rows = load.state === "ready" ? load.rows : [];
   useReveal(load.state === "ready" ? rows.length : load.state);
 
+  /**
+   * מאגר הזכויות בדף הבית (§5).
+   *
+   * ספירות בלבד — הקטלוג עצמו חי ב-/bkalot, ושכפול 888 שורות לעמוד שיווקי
+   * היה מאט אותו בלי להוסיף מידע. אם הקריאה נכשלת המקטע פשוט לא מוצג:
+   * מספר שגוי על מאגר זכויות גרוע ממקטע חסר, ו-0 היה שקר.
+   */
+  const [rights, setRights] = useState<RightsStats | null>(null);
+  useEffect(() => {
+    if (!supa) return;
+    supa.rpc("more30_rights_stats").then(({ data, error }) => {
+      if (!error && data) setRights(data as RightsStats);
+    });
+  }, []);
+
   // התחומים נגזרים מהשורות עצמן, לפי סדר ההופעה — תחום חדש במסד מופיע כאן
   // מעצמו, ותחום שהתרוקן נעלם מעצמו.
   // ⚠️ מערכת בלי תחום מקבלת תחום "אחר" ולא נופלת מהרשימה. העמוד מציג את כל
@@ -197,7 +218,8 @@ function Portal({ load, retry }: { load: Load; retry: () => void }) {
           <div><b>{load.state === "ready" ? rows.length : "—"}</b><span>מערכות</span></div>
           <div><b>{load.state === "ready" ? liveCount : "—"}</b><span>חיות בשטח</span></div>
           <div><b>{load.state === "ready" ? depts.length : "—"}</b><span>תחומים</span></div>
-          <div><b>more30.com</b><span>כתובת אחת</span></div>
+          {/* נתון אמת מ-rights.catalog. אין נתון → לא מוצג, ולא 0. */}
+          <div><b>{rights ? rights.total.toLocaleString("he-IL") : "—"}</b><span>זכויות במאגר</span></div>
         </div>
       </header>
 
@@ -218,6 +240,40 @@ function Portal({ load, retry }: { load: Load; retry: () => void }) {
           </div>
         </div>
       </section>
+
+      {/*
+        מאגר הזכויות (§5). מוצג רק כשיש נתון אמיתי — מקטע שמכריז על מאגר
+        זכויות ומראה 0 גרוע ממקטע שלא קיים.
+      */}
+      {rights && rights.total > 0 && (
+        <section id="rights" className="section">
+          <div className="wrap">
+            <div className="sec-head reveal">
+              <div className="eyebrow">מאגר הזכויות</div>
+              <h2 className="display sec-title">
+                {rights.total.toLocaleString("he-IL")} זכויות והטבות, במקום אחד
+              </h2>
+              <p className="serif">
+                מה שמגיע לך מהמדינה, מקופת החולים ומהעמותות — נאסף, נבדק ומוצג
+                בשפה אנושית. החיפוש והסינון המלאים נמצאים במערכת עצמה.
+              </p>
+            </div>
+            <div className="pillars">
+              {Object.entries(rights.by_source)
+                .sort((a, b) => b[1] - a[1])
+                .map(([src, n]) => (
+                  <div className="pillar reveal" key={src}>
+                    <h3>{n.toLocaleString("he-IL")}</h3>
+                    <p className="serif">{rights.labels[src] ?? src}</p>
+                  </div>
+                ))}
+            </div>
+            <div className="hero-actions" style={{ marginTop: 22 }}>
+              <a className="btn" href="/bkalot">למאגר המלא</a>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* המערכות */}
       <section id="systems" className="section section-systems">
