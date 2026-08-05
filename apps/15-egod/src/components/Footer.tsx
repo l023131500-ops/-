@@ -15,7 +15,7 @@ const Footer = () => {
               <span className="font-heading text-xl font-bold tracking-tight">איגוד מגידי השיעורים</span>
             </div>
             <p className="text-primary-foreground/70 text-sm leading-relaxed">
-              פלטפורמה דיגיטלית מקיפה למגידי שיעורים, ארגונים ובתי כנסת – כלים, מעטפת וקהילה תחת קורת גג אחת.
+              דף לכל שיעור, ניהול משתתפים וחומרי עזר — למגידי שיעורים, ארגונים ובתי כנסת.
             </p>
           </div>
           <div>

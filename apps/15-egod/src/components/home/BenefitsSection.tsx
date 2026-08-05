@@ -24,7 +24,7 @@ const BenefitsSection = () => {
           <h2 className="font-heading text-3xl md:text-4xl font-bold text-foreground mb-4">
             למה להצטרף ל<span className="text-secondary">איגוד השיעורים</span>?
           </h2>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">כל מה שמגיד שיעור צריך – במקום אחד, בחינם, עם תמיכה מלאה.</p>
+          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">בלי התקנה, בלי ידע טכני, וללא תשלום.</p>
         </motion.div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {benefits.map((b, i) => (

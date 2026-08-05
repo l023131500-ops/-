@@ -39,7 +39,7 @@ const TipsSection = () => {
             <Lightbulb className="w-4 h-4" />טיפים וכלים למגיד השיעור
           </div>
           <h2 className="font-heading text-3xl md:text-4xl font-bold text-foreground">
-            תובנות יומיות שמשדרגות כל שיעור
+            תובנה קצרה ליום, לשימוש בשיעור עצמו
           </h2>
         </motion.div>
 
