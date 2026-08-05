@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light dark" />
+    <title>ניהול מאגר הזכויות · בקלות (10) — more30</title>
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        color-scheme: light dark;
+        --gold: #c9a227; --bg: #f6f7fb; --surface: #ffffff;
+        --ink: #0b0d2e; --ink-2: #5b6076; --line: #e4e6f0;
+        --ok: #157f4b; --warn: #8a6d10; --bad: #a4262c;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root { --bg: #0b0d18; --surface: #151827; --ink: #e9ebf5;
+                --ink-2: #a2a8c0; --line: #262b40;
+                --ok: #5fd39b; --warn: #e0bd5a; --bad: #f08a8f; }
+      }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body { font-family: 'Heebo', system-ui, sans-serif; background: var(--bg);
+             color: var(--ink); line-height: 1.6; padding: 28px 20px 80px; }
+      .wrap { max-width: 1180px; margin: 0 auto; }
+      .back { display: inline-flex; align-items: center; min-height: 24px;
+              font-size: 14px; color: var(--ink-2); text-decoration: none; }
+      .back:hover { color: var(--ink); }
+      h1 { font-size: clamp(24px, 4vw, 34px); font-weight: 800; margin-top: 10px; }
+      .sub { color: var(--ink-2); font-size: 15px; margin-top: 6px; max-width: 72ch; }
+      .nav { display: flex; gap: 8px; flex-wrap: wrap; margin: 18px 0 6px; }
+      .nav a { font-size: 13.5px; font-weight: 600; text-decoration: none;
+               border: 1px solid var(--line); border-radius: 999px;
+               padding: 6px 14px; min-height: 24px; display: inline-flex;
+               align-items: center; color: var(--ink); background: var(--surface); }
+      .nav a:hover { border-color: var(--gold); }
+
+      .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px,1fr));
+               gap: 12px; margin: 20px 0 18px; }
+      .kpi { background: var(--surface); border: 1px solid var(--line);
+             border-radius: 14px; padding: 14px 16px; }
+      .kpi .n { font-size: 27px; font-weight: 800; line-height: 1.1; }
+      .kpi .l { font-size: 12.5px; color: var(--ink-2); margin-top: 3px; }
+      .kpi.gap { border-color: color-mix(in srgb, var(--warn) 50%, var(--line)); }
+      .kpi.gap .n { color: var(--warn); }
+
+      .tools { display: flex; gap: 8px; flex-wrap: wrap; margin: 8px 0 16px; }
+      input, select { font: inherit; padding: 8px 12px; min-height: 40px;
+                      border: 1px solid var(--line); border-radius: 10px;
+                      background: var(--surface); color: var(--ink); }
+      input { flex: 1; min-width: 220px; }
+
+      table { width: 100%; border-collapse: collapse; background: var(--surface);
+              border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+      th, td { text-align: right; padding: 10px 12px; font-size: 13.5px;
+               border-bottom: 1px solid var(--line); vertical-align: top; }
+      th { background: color-mix(in srgb, var(--ink-2) 8%, transparent);
+           font-weight: 700; font-size: 12.5px; color: var(--ink-2); }
+      tr:last-child td { border-bottom: 0; }
+      .num { font-variant-numeric: tabular-nums; color: var(--ink-2); }
+      .tag { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px;
+             background: color-mix(in srgb, var(--ink-2) 15%, transparent); color: var(--ink-2); }
+      .miss { color: var(--warn); font-weight: 700; }
+      .has { color: var(--ok); }
+      .note { border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px;
+              font-size: 14px; background: var(--surface); margin-top: 16px; }
+      .note.warn { border-color: color-mix(in srgb, var(--warn) 45%, var(--line)); }
+      .foot { margin-top: 20px; font-size: 12.5px; color: var(--ink-2); }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <a class="back" href="/admin">← חזרה למרכז השליטה</a>
+      <h1>ניהול מאגר הזכויות</h1>
+      <p class="sub" id="tagline">טוען…</p>
+
+      <nav class="nav">
+        <a href="/bkalot">לאתר עצמו ↗</a>
+        <a href="/admin/systems">דוח מערכות</a>
+        <a href="/admin/issues">תקלות ומה דורש אותך</a>
+        <a href="/admin/credits">יתרות וחיבורים</a>
+      </nav>
+
+      <div id="content" hidden>
+        <div class="cards" id="kpis"></div>
+
+        <div class="tools">
+          <input id="q" type="search" placeholder="חיפוש לפי שם זכות, קטגוריה או גוף מטפל"
+                 aria-label="חיפוש במאגר הזכויות" />
+          <select id="src" aria-label="סינון לפי מקור">
+            <option value="">כל המקורות</option>
+          </select>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>#</th><th>שם הזכות</th><th>מקור</th><th>קטגוריה</th>
+              <th>גוף מטפל</th><th>תנאים</th><th>איך מגישים</th><th>קישור</th>
+            </tr>
+          </thead>
+          <tbody id="rows"></tbody>
+        </table>
+
+        <div class="note warn" id="gapNote"></div>
+        <p class="foot" id="stamp"></p>
+      </div>
+      <div id="denied" class="note warn" hidden></div>
+    </div>
+
+    <script type="module">
+      import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+      const SUPABASE_URL = 'https://uhnrgujbdxhhmoxcjria.supabase.co';
+      const SUPABASE_ANON =
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVobnJndWpiZHhoaG1veGNqcmlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMzNjE3MjgsImV4cCI6MjA5ODkzNzcyOH0.nHuOhw-WQEU17lNa7XOlORnBhVAYbJBHudKafWkSHBw';
+      const sb = createClient(SUPABASE_URL, SUPABASE_ANON, {
+        auth: { persistSession: true, storageKey: 'more30-auth' },
+      });
+      const $ = (id) => document.getElementById(id);
+      const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) =>
+        ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+
+      const SRC = { bklot: 'בקלות', fund: 'קופות חולים', gov: 'ממשלה', ngo: 'עמותות' };
+      const mark = (ok) => ok ? '<span class="has">✓</span>' : '<span class="miss">חסר</span>';
+
+      let timer = null;
+
+      async function load() {
+        const { data, error } = await sb.rpc('more30_admin_rights', {
+          p_q: $('q').value || null,
+          p_src: $('src').value || null,
+          p_limit: 60,
+        });
+        if (error) {
+          $('tagline').textContent = 'הדף פתוח לסופר-אדמין בלבד.';
+          $('denied').innerHTML =
+            'החשבון הזה אינו סופר-אדמין.<br><span style="font-size:13px;color:var(--ink-2)">' +
+            esc(error.message) + '</span>';
+          $('denied').hidden = false;
+          $('content').hidden = true;
+          return;
+        }
+
+        const t = data.totals || {};
+        $('kpis').innerHTML = [
+          [t.rights, 'זכויות במאגר', ''],
+          [t.categories, 'קטגוריות', ''],
+          [t.missing_conditions, 'בלי תנאי זכאות', 'gap'],
+          [t.missing_how, 'בלי הסבר איך מגישים', 'gap'],
+          [t.missing_links, 'בלי קישור למקור', 'gap'],
+        ].map(([n, l, c]) =>
+          `<div class="kpi ${c}"><div class="n">${Number(n) || 0}</div><div class="l">${l}</div></div>`
+        ).join('');
+
+        // רשימת המקורות נבנית מהנתונים, כדי שמקור חדש יופיע מעצמו.
+        if ($('src').options.length === 1) {
+          for (const key of Object.keys(t.by_source || {})) {
+            const o = document.createElement('option');
+            o.value = key;
+            o.textContent = `${SRC[key] ?? key} (${t.by_source[key]})`;
+            $('src').appendChild(o);
+          }
+        }
+
+        $('rows').innerHTML = (data.rows || []).map((r) => `<tr>
+          <td class="num">${esc(r.no ?? '')}</td>
+          <td>${esc(r.name)}</td>
+          <td><span class="tag">${esc(SRC[r.src] ?? r.src ?? '')}</span></td>
+          <td>${esc(r.cat ?? '')}</td>
+          <td>${esc(r.prov ?? '')}</td>
+          <td>${mark(r.has_conditions)}</td>
+          <td>${mark(r.has_how)}</td>
+          <td>${mark(r.has_links)}</td>
+        </tr>`).join('') ||
+          '<tr><td colspan="8" style="color:var(--ink-2)">לא נמצאו זכויות מתאימות.</td></tr>';
+
+        // ההסבר על הפער נכתב מהמספרים עצמם, ולא כטקסט קבוע שעלול להתיישן.
+        const gap = Number(t.missing_conditions) || 0;
+        $('gapNote').innerHTML = gap
+          ? `<b>${gap} מתוך ${t.rights} זכויות חסרות תנאי זכאות, הסבר איך מגישים וקישור למקור.</b>
+             זכות כזו נראית מלאה בקטלוג — יש לה שם, קטגוריה וגוף מטפל — אבל מי שמנסה
+             לממש אותה בפועל לא מקבל ממנה את מה שהוא צריך. זה הפער האמיתי במאגר,
+             והוא לא נראה מהאתר הציבורי.`
+          : 'לכל הזכויות במאגר יש תנאים, הסבר והפניה למקור.';
+
+        $('tagline').textContent =
+          'מאגר הזכויות של מערכת 10 — מה יש בו, ואיפה הוא חסר.';
+        $('stamp').textContent =
+          'נמדד ' + new Date(data.generated_at).toLocaleString('he-IL') +
+          ' · מוצגות עד 60 שורות; החיפוש עובד על כל המאגר.';
+        $('content').hidden = false;
+      }
+
+      (async function () {
+        const { data: s } = await sb.auth.getSession();
+        if (!s?.session) {
+          $('tagline').textContent = 'הדף פתוח לסופר-אדמין בלבד.';
+          $('denied').innerHTML =
+            `צריך להתחבר. <a href="/login?from=${encodeURIComponent(location.href)}">מעבר לכניסה</a>`;
+          $('denied').hidden = false;
+          return;
+        }
+        await load();
+        $('q').addEventListener('input', () => {
+          clearTimeout(timer);
+          timer = setTimeout(load, 300);
+        });
+        $('src').addEventListener('change', load);
+      })();
+    </script>
+    <script src="https://more30.com/auth-button.js" defer></script>
+  </body>
+</html>
