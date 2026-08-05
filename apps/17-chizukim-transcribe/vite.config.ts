@@ -12,11 +12,18 @@ export default defineConfig({
     },
   },
   root: path.resolve(import.meta.dirname, "client"),
-  // Relative by default (works at any mount point when the URL ends in "/").
-  // Served under more30.com/chizukim there is no trailing slash, so relative
-  // asset URLs would resolve against the site root — set VITE_BASE=/chizukim/
-  // to emit absolute asset paths instead.
-  base: process.env.VITE_BASE || "./",
+  // ⚠️ The default is the real mount, not "./".
+  //
+  // The note that used to sit here had the diagnosis exactly right: served
+  // under /chizukim with no trailing slash, relative asset URLs resolve against
+  // the site root and 404. It then left the fix to whoever remembered to set
+  // VITE_BASE — and a build that is only correct when someone remembers a
+  // variable is the same defect that took kupot down and forced zchuyot and
+  // egod to be rebuilt by hand today.
+  //
+  // The portal rewrites /chizukim/ to chizukim2-more30, so that is the default.
+  // VITE_BASE still overrides it for preview at another path.
+  base: process.env.VITE_BASE || "/chizukim/",
   build: {
     outDir: path.resolve(import.meta.dirname, "dist/public"),
     emptyOutDir: true,
