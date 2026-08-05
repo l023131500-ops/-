@@ -1,4 +1,4 @@
-﻿// ==== Google Maps — מוסדות בשם ובמרחק מדויק, זמני הליכה, צילום בניין ====
+// ==== Google Maps — מוסדות בשם ובמרחק מדויק, זמני הליכה, צילום בניין ====
 //
 // ⚠️ המפתח הוא סוד צד-שרת. הוא לעולם לא נשלח לדפדפן:
 // תמונות (Street View / מפה) עוברות דרך /api/image שמושך אותן בשרת.
@@ -7,6 +7,9 @@
 // ומרחקי הליכה רק ל-N הקרובים ביותר. המרחק האווירי מחושב אצלנו בחינם.
 
 import { haversineKm } from './datagov';
+// יבוא לשימוש מקומי (‎streetViewShot‎ קורא ל-‎aimQuality‎). הייצוא-מחדש למטה
+// הוא לטובת שאר המערכת; ייצוא-מחדש לבדו אינו מכניס את השם לתחום הקובץ.
+import { aimQuality } from './aim';
 import { robustFetch } from './http';
 import { env } from './env';
 
@@ -525,15 +528,13 @@ export async function streetViewMeta(lat: number, lng: number): Promise<StreetVi
  * אזימוט אמיתי (0–360°) מנקודה אחת לשנייה.
  * נחוץ כדי לכוון את מצלמת ה-Street View אל הבניין.
  */
-export function bearingDeg(fromLat: number, fromLng: number, toLat: number, toLng: number): number {
-  const rad = Math.PI / 180;
-  const φ1 = fromLat * rad;
-  const φ2 = toLat * rad;
-  const Δλ = (toLng - fromLng) * rad;
-  const y = Math.sin(Δλ) * Math.cos(φ2);
-  const x = Math.cos(φ1) * Math.sin(φ2) - Math.sin(φ1) * Math.cos(φ2) * Math.cos(Δλ);
-  return (Math.atan2(y, x) / rad + 360) % 360;
-}
+// ‎bearingDeg‎, ‎AimQuality‎ ו-‎aimQuality‎ עברו ל-`./aim` — גאומטריה טהורה בלי
+// רשת, ולכן ניתנת להרצה בבדיקה. ראה ההסבר שם ואת scripts/qa/streetview-aim.mjs.
+// מיוצאות מחדש כאן כדי שכל היבוא הקיים ימשיך לעבוד ללא שינוי.
+export { bearingDeg } from './aim';
+export { aimQuality };
+export type { AimQuality, PanoMeta } from './aim';
+
 
 export function streetViewImageUrl(
   lat: number,
@@ -610,74 +611,6 @@ export async function streetViewShot(
   };
 }
 
-export interface AimQuality {
-  /** מותר לצלם: אפשר לכוון את המצלמה אל הבניין הזה ולא אל משהו אחר. */
-  ok: boolean;
-  /** למה לא — בעברית מדוברת, להצגה ללקוח במקום התמונה. */
-  reason?: string;
-  heading: number | null;
-  panoMeters: number | null;
-}
-
-/**
- * §3 · האם אפשר להראות את **הבניין הנכון**, או שעדיף לא להראות כלום.
- *
- * המפרט קובע כלל חד: "אם Street View לא יכול להראות את הבניין/הכניסה
- * המדויקים — אל תציג צילום שגוי. כתוב 'צילום מדויק לא זמין'. עדיף כך מאשר
- * פדיחה." שלושה מצבים שבהם התמונה אינה בת-אמון, וכולם החזירו עד עכשיו תמונה:
- *
- * 1. **אין מיקום לפנורמה.** בלי לדעת איפה עמדה המצלמה אי אפשר לחשב אזימוט,
- *    וגוגל מצלם לכיוון ברירת המחדל שלה — כלומר לאן שיצא. זה בדיוק הבאג
- *    שהמפרט מציין בשם ("דורש טוב 17 הראה את הצד השני").
- * 2. **הפנורמה יושבת כמעט על הנכס** (פחות מ-4 מ'). האזימוט אז נקבע מרעש של
- *    מטרים בודדים, ויכול להצביע לכל כיוון. תמונה רחבה במקרה כזה היא ניחוש.
- * 3. **הפנורמה רחוקה מדי** (מעל 80 מ'). גם בכיוון נכון, הבניין המבוקש הוא
- *    נקודה בין בניינים אחרים, ואי אפשר לזהות אותו או את הכניסה שלו.
- */
-export function aimQuality(meta: StreetView, lat: number, lng: number): AimQuality {
-  if (!meta.available) {
-    return {
-      ok: false,
-      reason: 'אין צילום רחוב זמין לנקודה הזו.',
-      heading: null,
-      panoMeters: null,
-    };
-  }
-  if (meta.lat == null || meta.lng == null) {
-    return {
-      ok: false,
-      reason:
-        'שירות צילומי הרחוב לא מסר את המיקום שממנו צולמה הפנורמה, ולכן אי אפשר לכוון את ' +
-        'המצלמה אל הבניין. לא הצגנו צילום, כדי שלא יוצג בניין אחר.',
-      heading: null,
-      panoMeters: null,
-    };
-  }
-
-  const panoMeters = Math.round(haversineKm(meta.lat, meta.lng, lat, lng) * 1000);
-  if (panoMeters < 4) {
-    return {
-      ok: false,
-      reason:
-        `נקודת הצילום הקרובה ביותר יושבת כמעט בדיוק על הנכס (${panoMeters} מ׳), ולכן אין כיוון ` +
-        'מובהק שאפשר לכוון אליו את המצלמה. לא הצגנו צילום, כדי שלא יוצג הצד הלא נכון.',
-      heading: null,
-      panoMeters,
-    };
-  }
-  if (panoMeters > 80) {
-    return {
-      ok: false,
-      reason:
-        `נקודת הצילום הקרובה ביותר רחוקה ${panoMeters} מ׳ מהנכס. במרחק כזה הבניין אינו ניתן ` +
-        'לזיהוי ודאי בתמונה, ולכן לא הצגנו צילום.',
-      heading: null,
-      panoMeters,
-    };
-  }
-
-  return { ok: true, heading: bearingDeg(meta.lat, meta.lng, lat, lng), panoMeters };
-}
 
 export interface MapMarker {
   lat: number;
