@@ -75,6 +75,29 @@ const CLEARED = ['adminLink', 'pricesBtn'];
 const only = process.argv.slice(2).map((s) => s.replace(/^\//, '').replace(/\/$/, ''));
 const targets = Object.entries(ROUTES).filter(([k]) => !only.length || only.includes(k));
 
+/**
+ * Wait for the page to stop growing — with a floor, and three stable samples.
+ *
+ * ⚠️ Same correction as placeholder-leak.mjs, applied here at the same time
+ * rather than left for the next person to rediscover. Two stable samples
+ * accepts a loading plateau as the finished page: kupot reads 908 characters at
+ * two seconds and 3,164 at five. On this check that would mean judging a nav
+ * that has not rendered yet and reporting no dead controls because there were
+ * no controls at all.
+ */
+async function settle(page) {
+  const FLOOR_MS = 5000;
+  const start = Date.now();
+  let last = -1, stable = 0;
+  for (let i = 0; i < 20; i++) {
+    await page.waitForTimeout(1200);
+    const n = await page.evaluate(() => document.body.innerText.length);
+    stable = n === last ? stable + 1 : 0;
+    last = n;
+    if (stable >= 3 && Date.now() - start >= FLOOR_MS) return;
+  }
+}
+
 const browser = await chromium.launch({ executablePath: EXE, headless: true });
 const out = {};
 let dead = 0;
@@ -89,13 +112,7 @@ for (const [key, route] of targets) {
       .catch(() => {});
 
     // Let a client-rendered nav finish before judging what it links to.
-    let last = -1, stable = 0;
-    for (let i = 0; i < 14 && stable < 2; i++) {
-      await page.waitForTimeout(1200);
-      const n = await page.evaluate(() => document.body.innerText.length);
-      stable = n === last ? stable + 1 : 0;
-      last = n;
-    }
+    await settle(page);
 
     const seen = await page.evaluate((cleared) => {
       const DEAD = ['#', '', 'javascript:void(0)', 'javascript:void(0);', 'javascript:;'];

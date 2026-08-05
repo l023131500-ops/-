@@ -50,6 +50,34 @@ const LEAK_PATTERNS = [
   { name: 'bare null', re: /(^|[\s:>,])null([\s<,.]|$)/ },
 ];
 
+/**
+ * Wait for the page to stop growing — with a floor, and three stable samples.
+ *
+ * ⚠️ Two stable samples was not enough, and this is measured, not theoretical.
+ * A sweep recorded kupot at 908 characters; watching the same page it reads 908
+ * at two seconds and 3,164 at five. The shell holds steady long enough to look
+ * finished, and a check sampling twice 1.2s apart accepts that plateau as the
+ * final article.
+ *
+ * That is the identical mistake already found and fixed in report-integrity.mjs
+ * for the property report, and it sat here uncorrected because the fix was
+ * never carried across. This project has now done that twice — the same lapse
+ * put a destructive merge bug into design-fingerprint.mjs after it was fixed in
+ * write-records.mjs. When a probe is wrong, its siblings are worth checking.
+ */
+async function settle(page) {
+  const FLOOR_MS = 5000;
+  const start = Date.now();
+  let last = -1, stable = 0;
+  for (let i = 0; i < 20; i++) {
+    await page.waitForTimeout(1200);
+    const n = await page.evaluate(() => document.body.innerText.length);
+    stable = n === last ? stable + 1 : 0;
+    last = n;
+    if (stable >= 3 && Date.now() - start >= FLOOR_MS) return;
+  }
+}
+
 const browser = await chromium.launch({ executablePath: EXE, headless: true });
 const out = {};
 let leaks = 0;
@@ -60,21 +88,12 @@ for (const [key, route] of targets) {
   try {
     await page.goto('https://more30.com' + route, { waitUntil: 'domcontentloaded', timeout: 90000 });
 
-    // Same lesson as report-integrity: wait for content to exist and then
-    // settle, rather than sleeping a fixed time. A page measured mid-load looks
-    // broken, and a check that reports working systems as broken gets ignored.
     // See report-integrity.mjs: options go third, not second. Harmless here
     // because the catch swallows it and landing pages are fast, but wrong is
     // wrong and the next person would copy it.
     await page.waitForFunction(() => document.body.innerText.length > 60, undefined, { timeout: 30000 })
       .catch(() => {});
-    let last = -1, stable = 0;
-    for (let i = 0; i < 14 && stable < 2; i++) {
-      await page.waitForTimeout(1200);
-      const n = await page.evaluate(() => document.body.innerText.length);
-      stable = n === last ? stable + 1 : 0;
-      last = n;
-    }
+    await settle(page);
 
     const seen = await page.evaluate(() => ({
       text: document.body.innerText,
