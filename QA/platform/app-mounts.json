@@ -1,0 +1,26 @@
+{
+  "_why": "Which sub-path each app is served from, and how that was established. No entry here is a guess: each names the evidence. The audit in scripts/qa/vite-base-audit.mjs checks every vite config against this, so removing or changing a base is caught instead of surfacing as 404s after a deploy.",
+  "_verified": "2026-08-06",
+  "_methods": {
+    "title-match": "The app's index.html title is identical to the deployed HTML under _deploy/<project>/<route>/. The deployed file is generated from that template, so the titles tie them together.",
+    "rewrite-table": "portal/vercel.dist.json maps the route to a Vercel project; authoritative for what more30.com actually serves.",
+    "vercel-link": "apps/<app>/.vercel/project.json names the project, matched against the rewrite table.",
+    "deployed-by-hand": "Confirmed while deploying this system during this run."
+  },
+  "apps": {
+    "01-torah-platform": { "mount": "/torah/", "how": "title-match" },
+    "04-imud-torani": { "mount": "/imud/", "how": "title-match", "note": "index.html lives in client/, not at the app root" },
+    "12-smel-ndln": { "mount": "/smel/", "how": "deployed-by-hand", "note": "portal routes /smel to smel-more30; deployed from _deploy/smel-more30" },
+    "15-egod": { "mount": "/egod/", "how": "title-match" },
+    "16-chatzor-connect": { "mount": "/chatzor/", "how": "title-match", "note": "BASE_PATH still overrides for local preview" },
+    "17-chizukim-transcribe": { "mount": "/chizukim/", "how": "rewrite-table", "note": "/chizukim with no trailing slash serves a static system page; /chizukim/ and /chizukim/:path* go to chizukim2-more30. VITE_BASE still overrides." },
+    "21-mthbram": { "mount": "/mthbram/", "how": "title-match" },
+    "22-get-your-rights": { "mount": "/zchuyot/", "how": "title-match", "note": "config had declared /rights/, which is why this one needed a manual --base flag" },
+    "24-galilee-connect-hub": { "mount": "/galil/", "how": "title-match" },
+    "26-modaot-studio": { "mount": "/modaot/", "how": "rewrite-table" },
+    "27-bkalut-price": { "mount": "/mechiron/", "how": "title-match", "note": "the folder name is not the deployment name — this app deploys as mechiron" },
+    "28-kupot-health-funds": { "mount": "/kupot/", "how": "title-match", "note": "index.html lives in client/" },
+    "30-zchuyotpro-crm": { "mount": "/crm/", "how": "vercel-link" },
+    "31-hebrew-bridge-crm": { "mount": "/gesher/", "how": "vercel-link" }
+  }
+}
