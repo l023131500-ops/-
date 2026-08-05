@@ -154,12 +154,31 @@ for (const [key, route] of targets) {
         return around.length > own.length;
       };
 
+      /**
+       * Visually hidden until focused — a skip link, not an undersized target.
+       *
+       * chatzor's one "violation" was its "skip to content" link at 1×1px,
+       * which is the correct implementation of that pattern: clipped away for
+       * pointer users, revealed at full size when a keyboard focuses it.
+       * WCAG 2.5.8 governs targets that are visually presented; a clipped 1×1
+       * affordance is not one, and enlarging it would put a stray link in the
+       * corner of every page. Fifth instrument gap that read as a defect.
+       */
+      const isVisuallyHidden = (el, r, s) => {
+        if (r.width <= 4 && r.height <= 4) return true;
+        const clip = s.clipPath && s.clipPath !== 'none';
+        const legacyClip = s.clip && s.clip !== 'auto';
+        return clip || legacyClip;
+      };
+
       let inlineExempt = 0;
+      let hiddenExempt = 0;
       for (const el of document.querySelectorAll('a[href],button,[role="button"],input,select,summary')) {
         const r = el.getBoundingClientRect();
         const s = getComputedStyle(el);
         if (!r.width || !r.height || s.visibility === 'hidden' || s.display === 'none') continue;
         if (el.type === 'hidden') continue;
+        if (isVisuallyHidden(el, r, s)) { hiddenExempt++; continue; }
 
         const name = nameOf(el);
         if (r.width < 24 || r.height < 24) {
@@ -189,6 +208,7 @@ for (const [key, route] of targets) {
         smallTargets: small.slice(0, 6),
         unnamedControls: unnamed.slice(0, 6),
         inlineExemptTargets: inlineExempt,
+        hiddenExemptTargets: hiddenExempt,
         placeholderOnlyNames: [...document.querySelectorAll('input,select,textarea')].filter(
           (el) => nameOf(el).startsWith('placeholder:'),
         ).length,
@@ -226,8 +246,25 @@ for (const [key, route] of targets) {
     await page.waitForTimeout(700);
     const viaAttr = await swatch();
 
+    // Third mechanism: follow the operating system and nothing else.
+    //
+    // orech was reported as the one system on the platform with no dark mode.
+    // It has a complete one — a full token palette under
+    // `@media (prefers-color-scheme: dark)`, with a comment explaining why the
+    // warm paper hue is kept rather than going neutral grey. It simply has no
+    // class and no attribute to toggle, so testing only those two found
+    // nothing. Fourth time an instrument gap has masqueraded as a defect here.
+    await page.evaluate(() => { delete document.documentElement.dataset.theme; });
+    await page.emulateMedia({ colorScheme: 'dark' });
+    await page.waitForTimeout(700);
+    const viaMedia = await swatch();
+    await page.emulateMedia({ colorScheme: 'light' });
+
     facts.darkMechanism =
-      viaClass !== before ? 'class' : viaAttr !== before ? 'data-theme' : null;
+      viaClass !== before ? 'class'
+      : viaAttr !== before ? 'data-theme'
+      : viaMedia !== before ? 'prefers-color-scheme'
+      : null;
     facts.darkResponds = facts.darkMechanism !== null;
 
     // luminance of the default background, to tell brand-dark from broken

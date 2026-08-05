@@ -279,9 +279,13 @@ export default function Home() {
           <div className="flex flex-col gap-3 sm:flex-row">
             <div className="relative flex-1">
               <Search className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              {/* שדה החיפוש זוהה חזותית רק לפי אייקון הזכוכית, ושמו היחיד היה
+                  ה-placeholder — שם שנעלם ברגע שמתחילים להקליד. aria-label ולא
+                  <label> גלוי, כדי לא לשנות את שורת הסינון. */}
               <Input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
+                aria-label="חיפוש נושא, קהל יעד או הטבה"
                 placeholder="חיפוש נושא, קהל יעד או הטבה..."
                 className="pr-9"
                 type="search"

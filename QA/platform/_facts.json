@@ -267,18 +267,12 @@
     "baseHref": null,
     "hasAuthButton": true,
     "hasCredit": true,
-    "creditInFooter": true,
+    "creditInFooter": false,
     "darkVar": "98px",
-    "smallTargets": [
-      {
-        "tag": "a",
-        "name": "דלג לתוכן",
-        "w": 1,
-        "h": 1
-      }
-    ],
+    "smallTargets": [],
     "unnamedControls": [],
     "inlineExemptTargets": 0,
+    "hiddenExemptTargets": 1,
     "placeholderOnlyNames": 0,
     "darkMechanism": "class",
     "darkResponds": true,
@@ -335,9 +329,10 @@
     "smallTargets": [],
     "unnamedControls": [],
     "inlineExemptTargets": 0,
+    "hiddenExemptTargets": 0,
     "placeholderOnlyNames": 0,
-    "darkMechanism": null,
-    "darkResponds": false,
+    "darkMechanism": "prefers-color-scheme",
+    "darkResponds": true,
     "defaultBg": "rgb(250, 247, 240)",
     "consoleErrors": [],
     "badResponses": []
@@ -503,6 +498,7 @@
     "smallTargets": [],
     "unnamedControls": [],
     "inlineExemptTargets": 0,
+    "hiddenExemptTargets": 0,
     "placeholderOnlyNames": 1,
     "darkMechanism": "class",
     "darkResponds": true,
