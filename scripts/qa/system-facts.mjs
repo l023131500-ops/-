@@ -13,6 +13,7 @@
  */
 import { chromium } from 'playwright-core';
 import fs from 'node:fs';
+import { settle } from './lib/settle.mjs';
 
 const EXE = 'C:\\Users\\USER\\AppData\\Local\\ms-playwright\\chromium-1234\\chrome-win64\\chrome.exe';
 const ORIGIN = 'https://more30.com';
@@ -75,7 +76,15 @@ for (const [key, route] of targets) {
   try {
     const res = await page.goto(facts.url, { waitUntil: 'domcontentloaded', timeout: 90000 });
     facts.status = res?.status() ?? null;
-    await page.waitForTimeout(4500);
+
+    /**
+     * ⚠️ Was a flat 4.5 second sleep, and these readings get written to the QA
+     * records — so a page still loading was persisted as that system's facts.
+     * kupot reads 908 characters at two seconds and 3,164 at five; at 4.5 the
+     * answer depends on the network that minute. Now waits for the page to stop
+     * changing. See lib/settle.mjs for why three samples and a floor.
+     */
+    await settle(page, { minChars: 60 });
 
     Object.assign(facts, await page.evaluate(() => {
       const txt = document.body.innerText.replace(/\s+/g, ' ').trim();
