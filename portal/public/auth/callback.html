@@ -123,10 +123,17 @@
       // הכתובת שממנה נכנסו. נשמרה ב-/login לפני הקפיצה לספק, ולכן היא שורדת
       // את כל הלולאה. מוגבלת ל-more30.com כדי שפרמטר `from` לא יהפוך את הדף
       // למפנה פתוח לאתר זר.
+      // ‎/login‎ שומר נתיב (`/bkalot`), ולא כתובת מלאה. הקריאה כאן דרשה
+      // `https://more30.com/` ולכן דחתה כל ערך אמיתי — אותו באג משני צדדיו,
+      // והתוצאה הייתה שכל לקוח שהתחבר מתוך מערכת נחת ב-`/me`.
+      // ההגנה מפני הפניה פתוחה נשמרת: נתיב יחיד בלבד, לא `//`.
       function returnTo() {
         try {
           const v = sessionStorage.getItem('more30-return-to');
-          return v && v.startsWith('https://more30.com/') ? v : null;
+          if (!v) return null;
+          if (v.startsWith('/') && !v.startsWith('//')) return v;
+          const u = new URL(v, location.origin);
+          return u.origin === 'https://more30.com' ? u.pathname + u.search + u.hash : null;
         } catch (e) {
           return null;
         }

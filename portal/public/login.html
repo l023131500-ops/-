@@ -203,13 +203,35 @@
       // ל-"404 Page Not Found". עכשיו יש יעד אחד שיודע לטפל בזה ולנתב הלאה.
       const CALLBACK = '/auth/callback';
 
-      // לאן המשתמש רצה לחזור — נשמר כאן ונקרא אחרי הכניסה (שורד את
-      // המעבר ל-Google וחזרה, כי זו אותה לשונית ואותו origin). זה גם מה
-      // שקובע לאיזה אתר תירשם החברות.
+      /**
+       * לאן המשתמש רצה לחזור — נשמר כאן ונקרא אחרי הכניסה (שורד את המעבר
+       * ל-Google וחזרה, כי זו אותה לשונית ואותו origin). זה גם מה שקובע
+       * לאיזה אתר תירשם החברות.
+       *
+       * ⚠️ הבדיקה כאן דרשה קודם `https://more30.com/` בתחילת הערך — אבל
+       * הכפתור המשותף שולח **נתיב** (`?from=/bkalot`), וזה כל המקרים
+       * האמיתיים. התוצאה: התנאי לא התקיים אף פעם, `more30-return-to` נשאר
+       * ריק, וכל מי שהתחבר מתוך מערכת נחת ב-`/me` במקום לחזור למוצר. זו
+       * בדיוק התלונה שבגללה §1 קיים — "נכנס למוצר עצמו, לא לתדמית".
+       *
+       * ההגנה מפני הפניה פתוחה נשמרת, ועכשיו היא מנוסחת נכון: נתיב יחיד
+       * שמתחיל ב-`/` ואינו `//` (שהוא protocol-relative ומוביל לדומיין זר),
+       * או כתובת מלאה על more30.com. הכול נשמר כנתיב, כדי שיהיה ערך אחד
+       * ולא שתי צורות.
+       */
+      function safeReturnPath(value) {
+        if (!value) return null;
+        try {
+          if (value.startsWith('/') && !value.startsWith('//')) return value;
+          const u = new URL(value, location.origin);
+          if (u.origin === 'https://more30.com') return u.pathname + u.search + u.hash;
+        } catch {}
+        return null;
+      }
+
       try {
-        if (back && back.startsWith('https://more30.com/')) {
-          sessionStorage.setItem('more30-return-to', back);
-        }
+        const safe = safeReturnPath(back);
+        if (safe) sessionStorage.setItem('more30-return-to', safe);
       } catch {}
 
       function show(text, kind) {
