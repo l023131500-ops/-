@@ -1,8 +1,8 @@
-﻿// ==== ׳×׳•׳¨ ׳”׳‘׳§׳©׳•׳× ׳‘׳ ׳™׳”׳•׳: ׳¨׳©׳™׳׳”, ׳”׳₪׳§׳” ׳•׳©׳׳™׳—׳” ׳׳׳™׳™׳ ====
+﻿// ==== תור הבקשות בניהול: רשימה, הפקה ושליחה למייל ====
 //
-// ׳–׳”׳• ׳”׳¦׳™׳ ׳•׳¨ ׳©׳”׳׳₪׳¨׳˜ ׳׳×׳׳¨: ׳‘׳§׳©׳” ג†’ ׳”׳×׳¨׳׳” ׳‘׳ ׳™׳”׳•׳ ג†’ ׳¢׳™׳‘׳•׳“ ג†’ ׳©׳׳™׳—׳” ׳‘-Resend.
-// ׳”׳”׳₪׳§׳” ׳•׳”׳©׳׳™׳—׳” ׳”׳ ׳₪׳¢׳•׳׳” ׳׳—׳× ׳׳›׳•׳•׳ ׳×: ׳“׳•׳— ׳©׳”׳•׳₪׳§ ׳•׳׳ ׳ ׳©׳׳— ׳”׳•׳ ׳¢׳‘׳•׳“׳” ׳©׳ ׳©׳¨׳₪׳”,
-// ׳•׳“׳•׳— ׳©׳ ׳©׳׳— ׳‘׳׳™ ׳©׳”׳•׳₪׳§ ׳׳™׳ ׳• ׳§׳™׳™׳.
+// זהו הצינור שהמפרט מתאר: בקשה → התראה בניהול → עיבוד → שליחה ב-Resend.
+// ההפקה והשליחה הן פעולה אחת מכוונת: דוח שהופק ולא נשלח הוא עבודה שנשרפה,
+// ודוח שנשלח בלי שהופק אינו קיים.
 
 import { NextRequest, NextResponse } from 'next/server';
 import { adminGate } from '@/lib/adminauth';
@@ -23,12 +23,12 @@ import {
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
-// ׳”׳₪׳§׳× ׳“׳•׳— ׳׳§׳™׳£ ׳׳•׳§׳—׳× ׳¢׳©׳¨׳•׳× ׳©׳ ׳™׳•׳×, ׳•׳׳—׳¨׳™׳” ׳©׳׳™׳—׳× ׳׳™׳™׳. 60 ׳©׳ ׳™׳•׳× ׳ ׳—׳×׳›׳• ׳‘׳׳׳¦׳¢.
+// הפקת דוח מקיף לוקחת עשרות שניות, ואחריה שליחת מייל. 60 שניות נחתכו באמצע.
 export const maxDuration = 300;
 
 const STATUSES: RequestStatus[] = ['pending', 'processing', 'sent', 'failed'];
 
-/** ׳›׳×׳•׳‘׳× ׳”׳‘׳¡׳™׳¡ ׳”׳¦׳™׳‘׳•׳¨׳™׳× ג€” ׳׳×׳׳•׳ ׳•׳× ׳•׳׳§׳™׳©׳•׳¨׳™׳ ׳‘׳×׳•׳ ׳”׳׳™׳™׳. */
+/** כתובת הבסיס הציבורית — לתמונות ולקישורים בתוך המייל. */
 function publicBaseUrl(req: NextRequest): string {
   const explicit = process.env.PUBLIC_BASE_URL?.trim();
   if (explicit) return explicit.replace(/\/+$/, '');
@@ -58,7 +58,7 @@ export async function GET(req: NextRequest) {
       emailConfigured: emailConfigured(),
     });
   } catch (e: any) {
-    return NextResponse.json({ error: e?.message ?? '׳©׳’׳™׳׳” ׳‘׳§׳¨׳™׳׳× ׳”׳‘׳§׳©׳•׳×' }, { status: 500 });
+    return NextResponse.json({ error: e?.message ?? 'שגיאה בקריאת הבקשות' }, { status: 500 });
   }
 }
 
@@ -70,33 +70,33 @@ export async function POST(req: NextRequest) {
   try {
     body = await req.json();
   } catch {
-    return NextResponse.json({ error: '׳’׳•׳£ ׳‘׳§׳©׳” ׳׳ ׳×׳§׳™׳' }, { status: 400 });
+    return NextResponse.json({ error: 'גוף בקשה לא תקין' }, { status: 400 });
   }
 
   const id = Number(body?.id);
   const action = String(body?.action ?? 'process');
-  if (!Number.isFinite(id)) return NextResponse.json({ error: '׳—׳¡׳¨ ׳׳–׳”׳” ׳‘׳§׳©׳”' }, { status: 400 });
+  if (!Number.isFinite(id)) return NextResponse.json({ error: 'חסר מזהה בקשה' }, { status: 400 });
 
   if (action === 'retry') {
     try {
       await resetToPending(id);
       return NextResponse.json({ ok: true, status: 'pending' });
     } catch (e: any) {
-      return NextResponse.json({ error: e?.message ?? '׳©׳’׳™׳׳”' }, { status: 500 });
+      return NextResponse.json({ error: e?.message ?? 'שגיאה' }, { status: 500 });
     }
   }
 
   if (action !== 'process') {
-    return NextResponse.json({ error: '׳₪׳¢׳•׳׳” ׳׳ ׳׳•׳›׳¨׳×' }, { status: 400 });
+    return NextResponse.json({ error: 'פעולה לא מוכרת' }, { status: 400 });
   }
 
-  // ג ן¸ ׳‘׳׳™ ׳¡׳₪׳§ ׳׳™׳™׳ ׳׳™׳ ׳׳”׳×׳—׳™׳: ׳”׳₪׳§׳” ׳¢׳•׳׳” ׳›׳¡׳£ ׳׳׳™׳×׳™ (Places, Apify), ׳•׳׳
-  // ׳‘׳¡׳•׳₪׳” ׳׳™׳ ׳“׳¨׳ ׳׳©׳׳•׳— ג€” ׳©׳¨׳₪׳ ׳• ׳׳× ׳”׳¢׳׳•׳× ׳•׳”׳׳§׳•׳— ׳׳ ׳§׳™׳‘׳ ׳›׳׳•׳.
+  // ⚠️ בלי ספק מייל אין להתחיל: הפקה עולה כסף אמיתי (Places, Apify), ואם
+  // בסופה אין דרך לשלוח — שרפנו את העלות והלקוח לא קיבל כלום.
   if (!emailConfigured()) {
     return NextResponse.json(
       {
         error:
-          '׳©׳׳™׳—׳× ׳׳™׳™׳ ׳׳™׳ ׳” ׳׳•׳’׳“׳¨׳× (RESEND_API_KEY ׳•-RESEND_FROM). ׳”׳‘׳§׳©׳” ׳׳ ׳¢׳•׳‘׳“׳”, ׳›׳“׳™ ׳׳ ׳׳©׳¨׳•׳£ ׳¢׳׳•׳× ׳”׳₪׳§׳” ׳‘׳׳™ ׳™׳›׳•׳׳× ׳׳©׳׳•׳—.',
+          'שליחת מייל אינה מוגדרת (RESEND_API_KEY ו-RESEND_FROM). הבקשה לא עובדה, כדי לא לשרוף עלות הפקה בלי יכולת לשלוח.',
       },
       { status: 503 },
     );
@@ -108,8 +108,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(
       {
         error: current
-          ? `׳”׳‘׳§׳©׳” ׳׳™׳ ׳” ׳‘׳׳¦׳‘ "׳׳׳×׳™׳" ׳׳׳ "${current.status}". ׳׳ ׳”׳™׳ ׳ ׳›׳©׳׳” ג€” ׳׳₪׳©׳¨ ׳׳”׳—׳–׳™׳¨ ׳׳•׳×׳” ׳׳×׳•׳¨.`
-          : '׳”׳‘׳§׳©׳” ׳׳ ׳ ׳׳¦׳׳”.',
+          ? `הבקשה אינה במצב "ממתין" אלא "${current.status}". אם היא נכשלה — אפשר להחזיר אותה לתור.`
+          : 'הבקשה לא נמצאה.',
       },
       { status: 409 },
     );
@@ -122,7 +122,7 @@ export async function POST(req: NextRequest) {
       rooms: claimed.rooms,
     });
 
-    // ׳ ׳¡׳—׳™ ׳˜׳׳‘׳• ׳©׳”׳•׳¢׳׳• ׳•׳ ׳•׳×׳—׳• ׳‘׳ ׳™׳”׳•׳, ׳׳©׳•׳™׳›׳™׳ ׳׳ ׳›׳¡ ׳׳₪׳™ ׳“׳™׳¨׳”/׳›׳ ׳™׳¡׳”/׳‘׳ ׳™׳™׳.
+    // נסחי טאבו שהועלו ונותחו בניהול, משויכים לנכס לפי דירה/כניסה/בניין.
     const tabuDocs = await tabuForProperty({
       gush: report.title.gush,
       helka: report.building.registeredHelka ?? report.title.helka,
@@ -139,20 +139,20 @@ export async function POST(req: NextRequest) {
 
     const sent = await sendEmail({
       to: claimed.email,
-      subject: `׳“׳•׳— ׳ ׳“׳"׳ ג€” ${report.title.headline}`,
+      subject: `דוח נדל"ן — ${report.title.headline}`,
       html,
       text: reportEmailText(report),
     });
 
     if (!sent.ok) {
-      await markFailed(id, sent.error ?? '׳©׳׳™׳—׳× ׳”׳׳™׳™׳ ׳ ׳›׳©׳׳”');
+      await markFailed(id, sent.error ?? 'שליחת המייל נכשלה');
       return NextResponse.json({ error: sent.error, reportProduced: true }, { status: 502 });
     }
 
     await markSent(id, {
       providerId: sent.id,
       costUsd: report.costUsd,
-      // ׳×׳¦׳׳•׳ ׳”׳“׳•׳— ׳©׳ ׳©׳׳— ג€” ׳›׳“׳™ ׳©׳׳₪׳©׳¨ ׳™׳”׳™׳” ׳׳¨׳׳•׳× ׳‘׳“׳™׳•׳§ ׳׳” ׳”׳׳§׳•׳— ׳§׳™׳‘׳.
+      // תצלום הדוח שנשלח — כדי שאפשר יהיה לראות בדיוק מה הלקוח קיבל.
       snapshot: report,
     });
 
@@ -168,6 +168,6 @@ export async function POST(req: NextRequest) {
   } catch (e: any) {
     const msg = e?.message ?? String(e);
     await markFailed(id, msg);
-    return NextResponse.json({ error: `׳”׳₪׳§׳× ׳”׳“׳•׳— ׳ ׳›׳©׳׳”: ${msg}` }, { status: 500 });
+    return NextResponse.json({ error: `הפקת הדוח נכשלה: ${msg}` }, { status: 500 });
   }
 }

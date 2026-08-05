@@ -1,11 +1,11 @@
-﻿// ==== ׳˜׳׳‘׳• ׳‘׳ ׳™׳”׳•׳: ׳”׳¢׳׳׳× ׳ ׳¡׳—, ׳ ׳™׳×׳•׳—, ׳•׳¨׳©׳™׳׳” ====
+﻿// ==== טאבו בניהול: העלאת נסח, ניתוח, ורשימה ====
 //
-// ׳”׳׳₪׳¨׳˜: ׳›׳₪׳×׳•׳¨ "׳”׳¢׳׳׳× ׳ ׳¡׳— ׳˜׳׳‘׳•" + ׳›׳₪׳×׳•׳¨ "׳ ׳™׳×׳•׳— ׳˜׳׳‘׳•" ׳©׳׳¦׳¨׳£ ׳׳“׳•׳— ׳׳₪׳™ ׳“׳™׳¨׳” /
-// ׳‘׳ ׳™׳™׳ / ׳›׳ ׳™׳¡׳”. ׳©׳ ׳™ ׳”׳›׳₪׳×׳•׳¨׳™׳ ׳׳“׳‘׳¨׳™׳ ׳¢׳ ׳”׳׳¡׳׳•׳ ׳”׳–׳”.
+// המפרט: כפתור "העלאת נסח טאבו" + כפתור "ניתוח טאבו" שמצרף לדוח לפי דירה /
+// בניין / כניסה. שני הכפתורים מדברים עם המסלול הזה.
 //
-// ג ן¸ ׳”׳§׳•׳‘׳¥ ׳ ׳©׳׳¨ ׳‘-bucket ׳₪׳¨׳˜׳™ (`tabu`) ׳•׳׳ ׳‘׳˜׳‘׳׳”, ׳•׳׳™׳ ׳׳• ׳©׳•׳ ׳׳¡׳׳•׳ ׳¦׳™׳‘׳•׳¨׳™:
-// ׳ ׳¡׳— ׳˜׳׳‘׳• ׳׳›׳™׳ ׳©׳׳•׳× ׳‘׳¢׳׳™׳, ׳׳©׳›׳ ׳×׳׳•׳× ׳•׳¢׳™׳§׳•׳׳™׳. ׳’׳ ׳”׳˜׳‘׳׳” `tabu_documents`
-// ׳”׳™׳ RLS ׳׳׳ policies ג€” ׳›׳ ׳’׳™׳©׳” ׳¢׳•׳‘׳¨׳× ׳“׳¨׳ service key ׳‘׳¦׳“ ׳”׳©׳¨׳×.
+// ⚠️ הקובץ נשמר ב-bucket פרטי (`tabu`) ולא בטבלה, ואין לו שום מסלול ציבורי:
+// נסח טאבו מכיל שמות בעלים, משכנתאות ועיקולים. גם הטבלה `tabu_documents`
+// היא RLS ללא policies — כל גישה עוברת דרך service key בצד השרת.
 
 import { NextRequest, NextResponse } from 'next/server';
 import { adminGate } from '@/lib/adminauth';
@@ -44,11 +44,11 @@ export async function GET(req: NextRequest) {
     });
     return NextResponse.json({ documents: docs, analysisConfigured: tabuAnalysisConfigured() });
   } catch (e: any) {
-    return NextResponse.json({ error: e?.message ?? '׳©׳’׳™׳׳”' }, { status: 500 });
+    return NextResponse.json({ error: e?.message ?? 'שגיאה' }, { status: 500 });
   }
 }
 
-/** ׳”׳¢׳׳׳× ׳ ׳¡׳— ג€” multipart/form-data ׳¢׳ ׳”׳©׳“׳” `file`. */
+/** העלאת נסח — multipart/form-data עם השדה `file`. */
 export async function PUT(req: NextRequest) {
   const gate = await adminGate(req);
   if (!gate.ok) return NextResponse.json({ error: gate.error }, { status: gate.status });
@@ -56,7 +56,7 @@ export async function PUT(req: NextRequest) {
   const db = serviceStore();
   if (!db) {
     return NextResponse.json(
-      { error: 'SUPABASE_SERVICE_KEY ׳—׳¡׳¨ ג€” ׳׳™׳ ׳”׳¨׳©׳׳× ׳׳—׳¡׳•׳ ׳׳ ׳¡׳—׳™׳.' },
+      { error: 'SUPABASE_SERVICE_KEY חסר — אין הרשאת אחסון לנסחים.' },
       { status: 503 },
     );
   }
@@ -65,21 +65,21 @@ export async function PUT(req: NextRequest) {
   try {
     form = await req.formData();
   } catch {
-    return NextResponse.json({ error: '׳ ׳“׳¨׳© multipart/form-data ׳¢׳ ׳©׳“׳” file' }, { status: 400 });
+    return NextResponse.json({ error: 'נדרש multipart/form-data עם שדה file' }, { status: 400 });
   }
 
   const file = form.get('file');
   if (!(file instanceof File)) {
-    return NextResponse.json({ error: '׳׳ ׳ ׳‘׳—׳¨ ׳§׳•׳‘׳¥.' }, { status: 400 });
+    return NextResponse.json({ error: 'לא נבחר קובץ.' }, { status: 400 });
   }
   if (!ALLOWED_MIME.includes(file.type)) {
     return NextResponse.json(
-      { error: `׳¡׳•׳’ ׳§׳•׳‘׳¥ ׳׳ ׳ ׳×׳׳ (${file.type || '׳׳ ׳™׳“׳•׳¢'}). ׳ ׳×׳׳›׳™׳: PDF, JPG, PNG, WEBP.` },
+      { error: `סוג קובץ לא נתמך (${file.type || 'לא ידוע'}). נתמכים: PDF, JPG, PNG, WEBP.` },
       { status: 400 },
     );
   }
   if (file.size > MAX_BYTES) {
-    return NextResponse.json({ error: '׳”׳§׳•׳‘׳¥ ׳’׳“׳•׳ ׳-25MB.' }, { status: 400 });
+    return NextResponse.json({ error: 'הקובץ גדול מ-25MB.' }, { status: 400 });
   }
 
   const str = (k: string) => {
@@ -94,28 +94,28 @@ export async function PUT(req: NextRequest) {
 
   if (!gush || !helka) {
     return NextResponse.json(
-      { error: '׳ ׳“׳¨׳©׳™׳ ׳’׳•׳© ׳•׳—׳׳§׳” ג€” ׳‘׳׳¢׳“׳™׳”׳ ׳׳™׳ ׳“׳¨׳ ׳׳©׳™׳™׳ ׳׳× ׳”׳ ׳¡׳— ׳׳“׳•׳—.' },
+      { error: 'נדרשים גוש וחלקה — בלעדיהם אין דרך לשייך את הנסח לדוח.' },
       { status: 400 },
     );
   }
-  // ׳©׳™׳•׳ ׳‘׳׳™ ׳׳–׳”׳” ׳₪׳™׳¨׳•׳©׳• ׳ ׳×׳•׳ ׳™׳ ׳׳©׳₪׳˜׳™׳™׳ ׳©׳™׳•׳¦׳’׳• ׳׳“׳™׳¨׳” ׳”׳׳ ׳ ׳›׳•׳ ׳”.
+  // שיוך בלי מזהה פירושו נתונים משפטיים שיוצגו לדירה הלא נכונה.
   if (scope === 'apartment' && !str('tat_helka') && !str('apartment')) {
     return NextResponse.json(
       {
         error:
-          '׳׳ ׳¡׳— ׳©׳ ׳“׳™׳¨׳” ׳ ׳“׳¨׳© ׳׳¡׳₪׳¨ ׳×׳×-׳—׳׳§׳” ׳׳• ׳׳¡׳₪׳¨ ׳“׳™׳¨׳”. ׳‘׳׳¢׳“׳™׳• ׳”׳ ׳×׳•׳ ׳™׳ ׳”׳׳©׳₪׳˜׳™׳™׳ ׳¢׳׳•׳׳™׳ ׳׳”׳™׳•׳× ׳׳•׳¦׳’׳™׳ ׳׳“׳™׳¨׳” ׳׳—׳¨׳× ׳‘׳‘׳ ׳™׳™׳.',
+          'לנסח של דירה נדרש מספר תת-חלקה או מספר דירה. בלעדיו הנתונים המשפטיים עלולים להיות מוצגים לדירה אחרת בבניין.',
       },
       { status: 400 },
     );
   }
   if (scope === 'entrance' && !str('entrance')) {
-    return NextResponse.json({ error: '׳׳ ׳¡׳— ׳©׳ ׳›׳ ׳™׳¡׳” ׳ ׳“׳¨׳© ׳׳¡׳₪׳¨ ׳›׳ ׳™׳¡׳”.' }, { status: 400 });
+    return NextResponse.json({ error: 'לנסח של כניסה נדרש מספר כניסה.' }, { status: 400 });
   }
 
   const bytes = Buffer.from(await file.arrayBuffer());
   const ext = (file.name.split('.').pop() || 'bin').toLowerCase().slice(0, 8);
   const stamp = new Date().toISOString().replace(/[:.]/g, '-');
-  // ׳”׳ ׳×׳™׳‘ ׳׳™׳ ׳• ׳ ׳’׳–׳¨ ׳׳©׳ ׳”׳§׳•׳‘׳¥ ׳©׳”׳׳©׳×׳׳© ׳‘׳—׳¨ ג€” ׳©׳ ׳§׳•׳‘׳¥ ׳©׳׳’׳™׳¢ ׳׳‘׳—׳•׳¥ ׳׳ ׳ ׳›׳ ׳¡ ׳׳ ׳×׳™׳‘.
+  // הנתיב אינו נגזר משם הקובץ שהמשתמש בחר — שם קובץ שמגיע מבחוץ לא נכנס לנתיב.
   const path = `${gush}-${helka}/${stamp}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
 
   const up = await db.storage.from(TABU_BUCKET).upload(path, bytes, {
@@ -123,7 +123,7 @@ export async function PUT(req: NextRequest) {
     upsert: false,
   });
   if (up.error) {
-    return NextResponse.json({ error: `׳©׳׳™׳¨׳× ׳”׳§׳•׳‘׳¥ ׳ ׳›׳©׳׳”: ${up.error.message}` }, { status: 500 });
+    return NextResponse.json({ error: `שמירת הקובץ נכשלה: ${up.error.message}` }, { status: 500 });
   }
 
   try {
@@ -145,13 +145,13 @@ export async function PUT(req: NextRequest) {
     });
     return NextResponse.json({ ok: true, document: row, analysisConfigured: tabuAnalysisConfigured() });
   } catch (e: any) {
-    // ׳”׳§׳•׳‘׳¥ ׳¢׳׳” ׳׳‘׳ ׳”׳©׳•׳¨׳” ׳׳ ׳ ׳›׳×׳‘׳” ג€” ׳׳¡׳™׳¨׳™׳ ׳׳× ׳”׳§׳•׳‘׳¥ ׳›׳“׳™ ׳׳ ׳׳”׳©׳׳™׳¨ ׳™׳×׳•׳.
+    // הקובץ עלה אבל השורה לא נכתבה — מסירים את הקובץ כדי לא להשאיר יתום.
     await db.storage.from(TABU_BUCKET).remove([path]).catch(() => null);
-    return NextResponse.json({ error: e?.message ?? '׳©׳’׳™׳׳” ׳‘׳©׳׳™׳¨׳× ׳”׳¨׳©׳•׳׳”' }, { status: 500 });
+    return NextResponse.json({ error: e?.message ?? 'שגיאה בשמירת הרשומה' }, { status: 500 });
   }
 }
 
-/** "׳ ׳™׳×׳•׳— ׳˜׳׳‘׳•" ג€” ׳§׳•׳¨׳ ׳׳× ׳”׳§׳•׳‘׳¥ ׳©׳ ׳©׳׳¨ ׳•׳׳—׳׳¥ ׳׳׳ ׳• ׳׳× ׳”׳ ׳×׳•׳ ׳™׳ ׳”׳׳©׳₪׳˜׳™׳™׳. */
+/** "ניתוח טאבו" — קורא את הקובץ שנשמר ומחלץ ממנו את הנתונים המשפטיים. */
 export async function POST(req: NextRequest) {
   const gate = await adminGate(req);
   if (!gate.ok) return NextResponse.json({ error: gate.error }, { status: gate.status });
@@ -160,36 +160,36 @@ export async function POST(req: NextRequest) {
   try {
     body = await req.json();
   } catch {
-    return NextResponse.json({ error: '׳’׳•׳£ ׳‘׳§׳©׳” ׳׳ ׳×׳§׳™׳' }, { status: 400 });
+    return NextResponse.json({ error: 'גוף בקשה לא תקין' }, { status: 400 });
   }
   const id = Number(body?.id);
-  if (!Number.isFinite(id)) return NextResponse.json({ error: '׳—׳¡׳¨ ׳׳–׳”׳” ׳׳¡׳׳' }, { status: 400 });
+  if (!Number.isFinite(id)) return NextResponse.json({ error: 'חסר מזהה מסמך' }, { status: 400 });
 
   if (!tabuAnalysisConfigured()) {
     return NextResponse.json(
       {
         error:
-          '׳ ׳™׳×׳•׳— ׳ ׳¡׳— ׳“׳•׳¨׳© AI_API_KEY ׳¢׳ AI_PROVIDER=anthropic. ׳”׳§׳•׳‘׳¥ ׳©׳׳•׳¨, ׳׳ ׳׳ ׳ ׳¦׳™׳’ ׳ ׳×׳•׳ ׳™׳ ׳׳©׳₪׳˜׳™׳™׳ ׳‘׳׳™ ׳׳§׳¨׳•׳ ׳׳× ׳”׳ ׳¡׳— ׳‘׳׳׳×.',
+          'ניתוח נסח דורש AI_API_KEY עם AI_PROVIDER=anthropic. הקובץ שמור, אך לא נציג נתונים משפטיים בלי לקרוא את הנסח באמת.',
       },
       { status: 503 },
     );
   }
 
   const db = serviceStore();
-  if (!db) return NextResponse.json({ error: 'SUPABASE_SERVICE_KEY ׳—׳¡׳¨.' }, { status: 503 });
+  if (!db) return NextResponse.json({ error: 'SUPABASE_SERVICE_KEY חסר.' }, { status: 503 });
 
   const existing = await getTabuDocument(id).catch(() => null);
-  if (!existing) return NextResponse.json({ error: '׳”׳׳¡׳׳ ׳׳ ׳ ׳׳¦׳.' }, { status: 404 });
+  if (!existing) return NextResponse.json({ error: 'המסמך לא נמצא.' }, { status: 404 });
   if (existing.analysis_status === 'running') {
-    return NextResponse.json({ error: '׳ ׳™׳×׳•׳— ׳›׳‘׳¨ ׳¨׳¥ ׳¢׳ ׳”׳׳¡׳׳ ׳”׳–׳”.' }, { status: 409 });
+    return NextResponse.json({ error: 'ניתוח כבר רץ על המסמך הזה.' }, { status: 409 });
   }
 
   const claimed = await claimTabuAnalysis(id).catch(() => null);
-  if (!claimed) return NextResponse.json({ error: '׳׳ ׳ ׳™׳×׳ ׳׳”׳×׳—׳™׳ ׳ ׳™׳×׳•׳—.' }, { status: 409 });
+  if (!claimed) return NextResponse.json({ error: 'לא ניתן להתחיל ניתוח.' }, { status: 409 });
 
   try {
     const dl = await db.storage.from(TABU_BUCKET).download(claimed.file_path!);
-    if (dl.error || !dl.data) throw new Error(dl.error?.message ?? '׳”׳§׳•׳‘׳¥ ׳׳ ׳ ׳׳¦׳ ׳‘׳׳—׳¡׳•׳');
+    if (dl.error || !dl.data) throw new Error(dl.error?.message ?? 'הקובץ לא נמצא באחסון');
     const b64 = Buffer.from(await dl.data.arrayBuffer()).toString('base64');
 
     const res = await analyzeTabuFile(b64, claimed.mime_type ?? 'application/pdf', {
@@ -200,7 +200,7 @@ export async function POST(req: NextRequest) {
     });
 
     if (!res.analysis) {
-      await failTabuAnalysis(id, res.error ?? '׳”׳ ׳™׳×׳•׳— ׳׳ ׳”׳—׳–׳™׳¨ ׳×׳•׳¦׳׳”');
+      await failTabuAnalysis(id, res.error ?? 'הניתוח לא החזיר תוצאה');
       return NextResponse.json({ error: res.error }, { status: 502 });
     }
 
@@ -209,6 +209,6 @@ export async function POST(req: NextRequest) {
   } catch (e: any) {
     const msg = e?.message ?? String(e);
     await failTabuAnalysis(id, msg);
-    return NextResponse.json({ error: `׳ ׳™׳×׳•׳— ׳”׳ ׳¡׳— ׳ ׳›׳©׳: ${msg}` }, { status: 500 });
+    return NextResponse.json({ error: `ניתוח הנסח נכשל: ${msg}` }, { status: 500 });
   }
 }
