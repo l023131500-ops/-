@@ -45,7 +45,11 @@ const Navbar = () => {
         בלבד — היא תחזור בכל נווט RTL שיש בו פקד בקצה. הריפוד מפנה 112px.
       */}
       <div className="container mx-auto ps-6 pe-28 flex items-center justify-between h-16">
-        <a href="#" className="flex items-center gap-2">
+        {/* ⚠️ היה ‎href="#"‎ — עוגן חי עם ‎cursor:pointer‎ שאינו מוביל לשום מקום.
+            זה לא "קישור חסר" אלא גרוע ממנו: הוא נראה ומרגיש לחיץ, ולחיצה עליו
+            לא עושה כלום. שאר פריטי הנווט כאן הם עוגנים בתוך העמוד, ולכן הלוגו
+            מצביע על ראש העמוד באותה שיטה ולא בפתרון אחר. */}
+        <a href="#top" className="flex items-center gap-2">
           <motion.span
             initial={{ opacity: 0, scale: 0.5 }}
             animate={{ opacity: 1, scale: 1 }}

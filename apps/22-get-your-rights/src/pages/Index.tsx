@@ -23,7 +23,11 @@ const Index = () => {
     <div className="min-h-screen relative">
       <FloatingElements />
       <Navbar />
-      <HeroSection />
+      {/* ‎id="top"‎ קיים כדי שללוגו בנווט יהיה יעד אמיתי. עד עכשיו הוא היה
+          ‎href="#"‎ עם ‎cursor:pointer‎ — נראה לחיץ לחלוטין ולא עשה כלום. */}
+      <section id="top">
+        <HeroSection />
+      </section>
       <StatsSection />
       <section id="categories">
         <RightsCategories />
