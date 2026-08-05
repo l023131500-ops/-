@@ -77,7 +77,18 @@ for (const q of QUERIES) {
     // finished article — which is how the second version of this still reported
     // a broken report. So first wait for a report to exist at all, then wait
     // for it to stop changing.
-    await page.waitForFunction(() => document.body.innerText.length > 1200, { timeout: 90000 });
+    // ⚠️ The `undefined` is load-bearing. waitForFunction's signature is
+    // (fn, arg, options); passing the options object second makes it the
+    // *argument* and leaves the default 30s timeout in force. This report
+    // legitimately takes 11–46 seconds depending on which sources are slow, so
+    // the check failed at 30s and I spent a rollback and a live-incident scare
+    // before noticing the error message said 30000ms while the source said
+    // 90000.
+    await page.waitForFunction(
+      () => document.body.innerText.length > 1200,
+      undefined,
+      { timeout: 120000 },
+    );
 
     let last = -1, stable = 0;
     for (let i = 0; i < 40 && stable < 3; i++) {

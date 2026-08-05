@@ -63,7 +63,10 @@ for (const [key, route] of targets) {
     // Same lesson as report-integrity: wait for content to exist and then
     // settle, rather than sleeping a fixed time. A page measured mid-load looks
     // broken, and a check that reports working systems as broken gets ignored.
-    await page.waitForFunction(() => document.body.innerText.length > 60, { timeout: 30000 })
+    // See report-integrity.mjs: options go third, not second. Harmless here
+    // because the catch swallows it and landing pages are fast, but wrong is
+    // wrong and the next person would copy it.
+    await page.waitForFunction(() => document.body.innerText.length > 60, undefined, { timeout: 30000 })
       .catch(() => {});
     let last = -1, stable = 0;
     for (let i = 0; i < 14 && stable < 2; i++) {

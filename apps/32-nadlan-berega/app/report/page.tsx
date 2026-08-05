@@ -16,6 +16,19 @@ export default function ReportPage({
     entrance?: string;
     floor?: string;
     rooms?: string;
+    /**
+     * תת-חלקה ומספר דירה.
+     *
+     * ⚠️ שניהם היו נתמכים בכל מקום **חוץ** מכאן: `PropertyInput` מכיר אותם,
+     * `tabu.ts` משייך לפיהם נסח לדירה הנכונה, `requests.ts` מדרג לפיהם התאמה,
+     * ו-`savedreports.ts` בונה מהם את מפתח הקישור הקבוע. רק עמוד הדוח המיידי
+     * לא קרא אותם מהכתובת, ולכן הם מעולם לא הגיעו למנוע.
+     *
+     * לזה הייתה תוצאה שקטה: מפתח הדוח השמור נבנה בלי דירה, ולכן **שתי דירות
+     * שונות באותו בניין נשמרו לאותו קישור קבוע** — הדוח השני דרס את הראשון.
+     */
+    tatHelka?: string;
+    apartment?: string;
     /** §1 · אילו שכבות מידע נבחרו בעמוד התדמית. חסר → הכול. */
     include?: string;
   };
@@ -30,6 +43,8 @@ export default function ReportPage({
     entrance: searchParams.entrance?.trim() || '',
     floor: searchParams.floor?.trim() || '',
     rooms: searchParams.rooms?.trim() || '',
+    tatHelka: searchParams.tatHelka?.trim() || '',
+    apartment: searchParams.apartment?.trim() || '',
   };
 
   if (!q) {

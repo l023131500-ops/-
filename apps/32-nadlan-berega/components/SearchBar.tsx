@@ -51,6 +51,17 @@ export default function SearchBar({
   const [helka, setHelka] = useState('');
 
   /**
+   * תת-חלקה ומספר דירה — רשות, ולא חלק ממחרוזת החיפוש.
+   *
+   * ⚠️ תת-חלקה **אינה** נכנסת ל-`q`: הפרסר מזהה גוש וחלקה בלבד, והוספת מילה
+   * שהוא לא מכיר הייתה מסכנת את הזיהוי עצמו. היא נשלחת כפרמטר נפרד, שם המנוע
+   * כבר יודע מה לעשות איתה — לשייך נסח טאבו לדירה הנכונה ולבנות את מפתח
+   * הקישור הקבוע.
+   */
+  const [tatHelka, setTatHelka] = useState('');
+  const [apartment, setApartment] = useState('');
+
+  /**
    * ⚠️ הפורמט נבחר לפי מה ש-`parseQuery` באמת מקבל, ולא לפי מה שנראה טבעי:
    * `/גוש\s*(\d{3,6})\D{0,12}?חלקה\s*(\d{1,5})/`. הרכבה לפורמט שהפרסר אינו
    * מכיר הייתה שולחת את המשתמש למסלול הכתובות עם מחרוזת חסרת פשר — כלומר
@@ -68,6 +79,8 @@ export default function SearchBar({
     if (entrance.trim()) p.set('entrance', entrance.trim());
     if (floor.trim()) p.set('floor', floor.trim());
     if (rooms.trim()) p.set('rooms', rooms.trim());
+    if (tatHelka.trim()) p.set('tatHelka', tatHelka.trim());
+    if (apartment.trim()) p.set('apartment', apartment.trim());
     router.push(`/report?${p.toString()}`);
   }
 
@@ -248,6 +261,29 @@ export default function SearchBar({
                   placeholder="לדוגמה: 4"
                   className="w-full rounded-lg border border-line px-3 py-2 outline-none focus:border-teal"
                 />
+              </label>
+              <label className="text-[13px]">
+                <span className="mb-1 block font-semibold text-ink">מספר דירה</span>
+                <input
+                  value={apartment}
+                  onChange={(e) => setApartment(e.target.value)}
+                  placeholder="לדוגמה: 12"
+                  className="w-full rounded-lg border border-line px-3 py-2 outline-none focus:border-teal"
+                />
+              </label>
+              <label className="text-[13px]">
+                <span className="mb-1 block font-semibold text-ink">תת-חלקה</span>
+                <input
+                  value={tatHelka}
+                  onChange={(e) => setTatHelka(e.target.value.replace(/\D/g, ''))}
+                  inputMode="numeric"
+                  placeholder="לדוגמה: 5"
+                  className="w-full rounded-lg border border-line px-3 py-2 outline-none focus:border-teal"
+                />
+                {/* אומרים איפה מוצאים אותה — מי שלא יודע מה זה פשוט ידלג. */}
+                <span className="mt-1 block text-[11px] leading-snug text-muted">
+                  מופיעה בנסח טאבו. מזהה את הדירה בתוך הבניין.
+                </span>
               </label>
             </div>
           </div>
