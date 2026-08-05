@@ -17,49 +17,84 @@ import Footer from '@/components/Footer';
 import ServiceRequestForm from '@/components/ServiceRequestForm';
 import { useSynagogues } from '@/hooks/useSynagogues';
 
-/* ---- Unified service hub cards (info + contact in one) ---- */
+/* ---- Unified service hub cards (info + contact in one) ----
+ *
+ * ⚠️ עד עכשיו לכל כרטיס היה gradient משלו: emerald→teal, sky→blue,
+ * amber→orange, yellow→amber, slate→gray, indigo→purple, rose→pink,
+ * teal→cyan. שמונה מדרגים רוויים ובלתי קשורים זה לזה, **כולם מפלטת ברירת
+ * המחדל של Tailwind ואף אחד מהם לא מהטוקנים של האתר** — הכרטיסים התעלמו
+ * מהמותג לגמרי.
+ *
+ * זו בדיוק החתימה שנמדדה ב-QA/platform/DESIGN_SAMENESS.md: לא צבע חסר אלא
+ * ערכת רכיבים גנרית. קשת של מדרגי סטארט-אפ על אתר שירותי דת קהילתיים
+ * בחצור הגלילית אינה "צבעוני", היא פשוט לא שייכת לנושא.
+ *
+ * הכיוון הוא הפחתה: צבע אחד, שהוא הצבע של האתר. ההבחנה בין הכרטיסים
+ * נעשית על ידי השם והתיאור — כלומר על ידי מידע — ולא על ידי רעש.
+ */
 const serviceHub = [
   {
     id: 'kashrut', label: 'כשרות בחצור', Icon: Scale, link: '/kashrut',
     desc: 'מוסדות מהדרין ורגיל, משגיחים ופרטי קשר',
-    gradient: 'from-emerald-500 to-teal-600', requestType: 'kashrut',
+    requestType: 'kashrut',
   },
   {
     id: 'mikvaot', label: 'מקוואות', Icon: Droplets, link: '/mikvaot',
     desc: 'שעות, כתובות, רבני טהרה וייעוץ',
-    gradient: 'from-sky-500 to-blue-600', requestType: 'mikveh',
+    requestType: 'mikveh',
   },
   {
     id: 'info', label: 'מידע דת וקהילה', Icon: BookOpen, link: '/info',
     desc: 'סת"ם, גמ"חים, בית דין, ייעוץ',
-    gradient: 'from-amber-500 to-orange-600', requestType: 'other',
+    requestType: 'other',
   },
   {
     id: 'halacha', label: 'הלכה יומית', Icon: Star, link: '/halacha',
     desc: 'הלכות יומיות והנחיות עונתיות מהרב',
-    gradient: 'from-yellow-500 to-amber-600', requestType: 'shiur_kavua',
+    requestType: 'shiur_kavua',
   },
   {
     id: 'mourning', label: 'אבלות ואזכרות', Icon: Heart, link: '/mourning',
     desc: 'הלכות אבלות, בקשת אזכרה ותמיכה',
-    gradient: 'from-slate-500 to-gray-600', requestType: 'azkara',
+    requestType: 'azkara',
   },
   {
     id: 'newsletter', label: 'עלון מחוברים', Icon: FileText, link: '/newsletter',
     desc: 'העלון השבועי — צפייה והורדה',
-    gradient: 'from-indigo-500 to-purple-600', requestType: undefined,
+    requestType: undefined,
   },
   {
     id: 'services', label: 'שירותי דת', Icon: Scroll, link: '/contact',
     desc: 'חזן, בעל קורא, בר מצווה, אירועים',
-    gradient: 'from-rose-500 to-pink-600', requestType: 'event',
+    requestType: 'event',
   },
   {
     id: 'contact', label: 'צור קשר', Icon: Phone, link: '/contact',
     desc: 'פניות, בקשות ותמיכה',
-    gradient: 'from-teal-500 to-cyan-600', requestType: 'other',
+    requestType: 'other',
   },
 ];
+
+/**
+ * כותרת מקטע. הייתה משוכפלת מילה במילה בשני מקטעים — אותו div ממורכז, אותה
+ * כותרת, אותה שורת משנה זעירה, ואותו קו זהב באורך קבוע. שכפול של אותו בלוק
+ * הוא חלק ממה שגורם לעמוד להיראות מיוצר; מקום אחד גם מקטין את הקוד וגם
+ * מבטיח שהמקטעים לא יתפצלו בעתיד.
+ */
+const SectionHead = ({ title, sub }: { title: string; sub: string }) => (
+  <motion.div
+    initial={{ opacity: 0, y: 20 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true }}
+    className="text-center mb-8"
+  >
+    <h2 className="text-2xl md:text-3xl font-display font-black text-foreground mb-2 tracking-tight">
+      {title}
+    </h2>
+    <p className="text-muted-foreground text-xs">{sub}</p>
+    <div className="h-1 bg-gradient-gold max-w-20 mx-auto rounded-full mt-3" />
+  </motion.div>
+);
 
 const ServiceHubCard = ({ item, index }: { item: typeof serviceHub[0]; index: number }) => {
   const [expanded, setExpanded] = useState(false);
@@ -76,7 +111,9 @@ const ServiceHubCard = ({ item, index }: { item: typeof serviceHub[0]; index: nu
         className={`block bg-card rounded-2xl shadow-card border border-border overflow-hidden hover:shadow-elevated hover:border-primary/20 transition-all duration-300 group`}
       >
         <div className="p-4 flex items-start gap-3">
-          <div className={`w-11 h-11 rounded-xl flex items-center justify-center bg-gradient-to-br ${item.gradient} text-white shadow-sm shrink-0`}>
+          {/* צ׳יפ אחד, בצבע האתר. הטוקנים מטפלים גם במצב הכהה — מדרג
+              מקודד-קשיח לא היה משתנה שם ונשאר זוהר על רקע כהה. */}
+          <div className="w-11 h-11 rounded-xl flex items-center justify-center bg-primary/10 text-primary ring-1 ring-primary/15 shrink-0 transition-colors group-hover:bg-primary/15">
             <item.Icon className="w-5 h-5" />
           </div>
           <div className="flex-1 min-w-0">
@@ -106,18 +143,10 @@ const Index = () => {
 
         {/* Synagogues section - compact */}
         <section className="container py-10" id="synagogues" aria-label="בתי הכנסת בחצור הגלילית">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-8"
-          >
-            <h2 className="text-2xl md:text-3xl font-display font-black text-foreground mb-2 tracking-tight">
-              בתי הכנסת בחצור הגלילית
-            </h2>
-            <p className="text-muted-foreground text-xs">לחצו על בית כנסת לפרטים מלאים</p>
-            <div className="h-1 bg-gradient-gold max-w-20 mx-auto rounded-full mt-3" />
-          </motion.div>
+          <SectionHead
+            title="בתי הכנסת בחצור הגלילית"
+            sub="לחצו על בית כנסת לפרטים מלאים"
+          />
 
           {loading ? (
             <div className="text-center py-12">
@@ -159,18 +188,10 @@ const Index = () => {
         {/* Unified Service Hub - replaces duplicated buttons */}
         <section className="py-10" id="services" aria-label="שירותי הקהילה">
           <div className="container">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="text-center mb-8"
-            >
-              <h2 className="text-2xl md:text-3xl font-display font-black text-foreground mb-2 tracking-tight">
-                שירותי הקהילה
-              </h2>
-              <p className="text-muted-foreground text-xs">כל השירותים הדתיים והקהילתיים במקום אחד</p>
-              <div className="h-1 bg-gradient-gold max-w-20 mx-auto rounded-full mt-3" />
-            </motion.div>
+            <SectionHead
+              title="שירותי הקהילה"
+              sub="כל השירותים הדתיים והקהילתיים במקום אחד"
+            />
 
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {serviceHub.map((item, i) => (

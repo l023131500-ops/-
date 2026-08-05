@@ -414,6 +414,7 @@
     "smallTargets": [],
     "unnamedControls": [],
     "inlineExemptTargets": 0,
+    "hiddenExemptTargets": 0,
     "placeholderOnlyNames": 0,
     "darkMechanism": "class",
     "darkResponds": true,

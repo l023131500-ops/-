@@ -127,6 +127,30 @@ for (const [key, route] of targets) {
         })(),
         backdropBlur: [...document.querySelectorAll('*')]
           .filter((e) => String(e.className).includes('backdrop-blur')).length,
+
+        // ── the sharpest signal of the lot, added after fixing galil
+        //
+        // The kit counts above said galil was 4/4 before the work and 4/4
+        // after, because it still uses shadcn tokens, lucide and rounded
+        // corners — and it should. What actually changed was that eight
+        // service cards stopped wearing eight unrelated saturated gradients
+        // (emerald, sky, amber, yellow, slate, indigo, rose, teal — every one
+        // from Tailwind's default palette, none from the site's own tokens).
+        //
+        // That is the thing that reads as generated: a rainbow of chips that
+        // carry no meaning, on a site whose brand is a single Galilee teal. So
+        // count it directly. One distinct chip colour is a design decision;
+        // eight is a template nobody revisited.
+        iconChipColours: (() => {
+          const chips = [...document.querySelectorAll('div,span,a')].filter((e) => {
+            const r = e.getBoundingClientRect();
+            return r.width >= 32 && r.width <= 60 && r.height >= 32 && r.height <= 60 &&
+                   e.querySelector('svg');
+          });
+          return new Set(chips.map((e) => getComputedStyle(e).backgroundImage !== 'none'
+            ? getComputedStyle(e).backgroundImage
+            : getComputedStyle(e).backgroundColor)).size;
+        })(),
       };
     });
   } catch (e) {
@@ -180,6 +204,13 @@ console.log(`  shadcn token names (3+):  ${pct(good.filter((f) => f.shadcnTokens
 console.log(`  lucide icons:             ${pct(good.filter((f) => f.lucideIcons > 0).length)}`);
 console.log(`  rounded-xl/2xl/3xl:       ${pct(good.filter((f) => f.roundedXl > 0).length)}`);
 console.log(`  backdrop-blur surfaces:   ${pct(good.filter((f) => f.backdropBlur > 0).length)}`);
+
+// Four or more distinct icon-chip colours means a rainbow nobody chose.
+const rainbow = Object.entries(out)
+  .filter(([, f]) => !f.error && f.iconChipColours >= 4)
+  .sort((a, b) => b[1].iconChipColours - a[1].iconChipColours);
+console.log(`\n=== icon-chip rainbows (4+ distinct colours) — ${rainbow.length} systems ===`);
+for (const [k, f] of rainbow) console.log(`  ${String(f.iconChipColours).padStart(2)}  ${k}`);
 
 fs.mkdirSync('QA/platform', { recursive: true });
 fs.writeFileSync('QA/platform/_design.json', JSON.stringify(out, null, 2), 'utf8');

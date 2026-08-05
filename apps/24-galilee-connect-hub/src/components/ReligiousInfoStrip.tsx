@@ -57,14 +57,14 @@ const IconCounseling = () => (
 );
 
 const topicCards = [
-  { id: 'סת"ם', label: 'סת"ם', Icon: IconSTAM, desc: 'מזוזות, תפילין, ספרי תורה', gradient: 'from-amber-600 to-amber-800' },
-  { id: 'כשרות', label: 'כשרות', Icon: IconKashrut, desc: 'השגחה, בדיקות, שאלות', gradient: 'from-emerald-600 to-emerald-800' },
-  { id: 'מקוואות', label: 'מקוואות', Icon: IconMikveh, desc: 'שעות, מיקום, הנחיות', gradient: 'from-sky-600 to-sky-800' },
-  { id: 'גמ"חים', label: 'גמ"חים', Icon: IconGemach, desc: 'ציוד, ביגוד, מזון, שמחות', gradient: 'from-rose-500 to-rose-700' },
-  { id: 'נישואין', label: 'נישואין', Icon: IconMarriage, desc: 'רישום, הכנה, ייעוץ', gradient: 'from-pink-500 to-pink-700' },
-  { id: 'פטירה ואבלות', label: 'פטירה ואבלות', Icon: IconMourning, desc: 'חברה קדישא, ליווי', gradient: 'from-slate-500 to-slate-700' },
-  { id: 'בית דין', label: 'בית הדין', Icon: IconCourt, desc: 'ממונות, בוררות, דין תורה', gradient: 'from-indigo-600 to-indigo-800' },
-  { id: 'ייעוץ נישואין', label: 'ייעוץ זוגי', Icon: IconCounseling, desc: 'ייעוץ משפחתי ותמיכה', gradient: 'from-teal-500 to-teal-700' },
+  { id: 'סת"ם', label: 'סת"ם', Icon: IconSTAM, desc: 'מזוזות, תפילין, ספרי תורה' },
+  { id: 'כשרות', label: 'כשרות', Icon: IconKashrut, desc: 'השגחה, בדיקות, שאלות' },
+  { id: 'מקוואות', label: 'מקוואות', Icon: IconMikveh, desc: 'שעות, מיקום, הנחיות' },
+  { id: 'גמ"חים', label: 'גמ"חים', Icon: IconGemach, desc: 'ציוד, ביגוד, מזון, שמחות' },
+  { id: 'נישואין', label: 'נישואין', Icon: IconMarriage, desc: 'רישום, הכנה, ייעוץ' },
+  { id: 'פטירה ואבלות', label: 'פטירה ואבלות', Icon: IconMourning, desc: 'חברה קדישא, ליווי' },
+  { id: 'בית דין', label: 'בית הדין', Icon: IconCourt, desc: 'ממונות, בוררות, דין תורה' },
+  { id: 'ייעוץ נישואין', label: 'ייעוץ זוגי', Icon: IconCounseling, desc: 'ייעוץ משפחתי ותמיכה' },
 ];
 
 const InfoCard = ({ item }: { item: KnowledgeItem }) => (
@@ -157,7 +157,7 @@ const ReligiousInfoStrip = () => {
                     className={`relative p-3 rounded-2xl text-center transition-all duration-300 border ${
                       isActive ? 'bg-card shadow-elevated border-primary/30 ring-2 ring-primary/20' : 'bg-card shadow-card border-border hover:shadow-elevated hover:border-primary/15'
                     }`}>
-                    <div className={`mx-auto mb-2 w-10 h-10 rounded-xl flex items-center justify-center bg-gradient-to-br ${topic.gradient} text-white shadow-sm`}>
+                    <div className="mx-auto mb-2 w-10 h-10 rounded-xl flex items-center justify-center bg-primary/10 text-primary ring-1 ring-primary/15">
                       <topic.Icon />
                     </div>
                     <div className="font-display font-black text-foreground text-xs leading-tight">{topic.label}</div>

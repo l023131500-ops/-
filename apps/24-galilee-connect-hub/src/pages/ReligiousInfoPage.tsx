@@ -23,17 +23,10 @@ const categoryIcons: Record<string, React.ReactNode> = {
   'ייעוץ נישואין': <Heart className="w-6 h-6" />,
 };
 
-const categoryColors: Record<string, string> = {
-  'סת"ם': 'from-amber-600 to-amber-800',
-  'כשרות': 'from-emerald-600 to-emerald-800',
-  'מקוואות': 'from-sky-600 to-sky-800',
-  'גמ"חים': 'from-rose-500 to-rose-700',
-  'נישואין': 'from-violet-500 to-violet-700',
-  'פטירה ואבלות': 'from-slate-600 to-slate-800',
-  'מידע כללי': 'from-teal-600 to-teal-800',
-  'בית דין': 'from-indigo-600 to-indigo-800',
-  'ייעוץ נישואין': 'from-pink-500 to-pink-700',
-};
+/* המפה הזאת הקצתה מדרג ייחודי לכל קטגוריה — תשעה צבעים מפלטת ברירת המחדל
+   של Tailwind, אף אחד מהם מהטוקנים של האתר. ראה ההסבר המלא ב-Index.tsx:
+   הקטגוריה מזוהה לפי שמה ולפי האייקון שלה, ותשעה מדרגים רוויים לא הוסיפו
+   מידע — הם רק הפכו עמוד מידע דתי לקטלוג צבעוני. */
 
 const ReligiousInfoPage = () => {
   const [knowledge, setKnowledge] = useState<KnowledgeItem[]>([]);
@@ -95,7 +88,7 @@ const ReligiousInfoPage = () => {
                       ? 'border-primary bg-primary/10 shadow-elevated'
                       : 'border-border bg-card hover:border-primary/30 shadow-card'
                   }`}>
-                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center bg-gradient-to-br ${categoryColors[cat] || 'from-primary to-primary'} text-white mb-3`}>
+                  <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-primary/10 text-primary ring-1 ring-primary/15 mb-3">
                     {categoryIcons[cat] || <BookOpen className="w-6 h-6" />}
                   </div>
                   <h3 className="font-display font-black text-foreground">{cat}</h3>
