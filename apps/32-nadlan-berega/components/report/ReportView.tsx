@@ -52,7 +52,17 @@ export default function ReportView({
   q: string;
   tier: ReportTier;
   assetType?: AssetType;
-  input?: { entrance?: string; floor?: string; rooms?: string };
+  /**
+   * ⚠️ הטיפוס הזה הוא מה שתפס את הבאג: העמוד כבר קרא `tatHelka` ו-`apartment`
+   * מהכתובת, אבל הם לא היו כאן, ולכן נעצרו בגבול הרכיב בלי שאיש ישים לב.
+   */
+  input?: {
+    entrance?: string;
+    floor?: string;
+    rooms?: string;
+    tatHelka?: string;
+    apartment?: string;
+  };
   /**
    * §1 · שכבות המידע שנבחרו בעמוד התדמית. חסר → הכול, כדי שקישור ישן או
    * דוח שמור לא ייראו פתאום קטועים.
@@ -128,22 +138,51 @@ export default function ReportView({
     if (input?.entrance) params.set('entrance', input.entrance);
     if (input?.floor) params.set('floor', input.floor);
     if (input?.rooms) params.set('rooms', input.rooms);
+    // ⚠️ אלה נקראו בעמוד ולא נשלחו מכאן, ולכן מעולם לא הגיעו למנוע — כלומר
+    // החיווט של הסבב הקודם נעצר צעד אחד לפני הסוף. בלעדיהם נסח הטאבו אינו
+    // משויך לדירה הנכונה ומפתח הקישור הקבוע נבנה בלי מספר הדירה.
+    if (input?.tatHelka) params.set('tatHelka', input.tatHelka);
+    if (input?.apartment) params.set('apartment', input.apartment);
     // §1 · שכבה שבוטלה ועולה כסף — לא נמשכת בכלל, ולא רק מוסתרת.
     if (skipListings) params.set('skipListings', '1');
 
-    fetch(apiUrl(`/api/report?${params.toString()}`))
+    /**
+     * תקרת זמן לבקשה.
+     *
+     * ⚠️ בלי זה `fetch` ממתין כל עוד השרת לא סגר את החיבור, ומסך הטעינה נשאר
+     * על המסך ללא הגבלה. נמדדה ריצה שעברה 180 שניות. שתי דקות הן הרבה מעבר
+     * לריצה הארוכה שנמדדה בפועל (46 שניות), ולכן הן לא יקטעו דוח תקין —
+     * אבל הן מבטיחות שהלקוח יקבל **משפט** במקום להישאר מול נקודות מהבהבות.
+     */
+    const ctl = new AbortController();
+    const ceiling = setTimeout(() => ctl.abort(), 120_000);
+
+    fetch(apiUrl(`/api/report?${params.toString()}`), { signal: ctl.signal })
       .then((r) => r.json())
       .then((d) => {
         if (cancelled) return;
         if (d.error) setError(d.error);
         else setData(d);
       })
-      .catch(() => !cancelled && setError('לא הצלחנו להתחבר לשרת.'))
-      .finally(() => !cancelled && setLoading(false));
+      .catch((e) => {
+        if (cancelled) return;
+        setError(
+          e?.name === 'AbortError'
+            ? 'אחד המקורות הרשמיים לא הגיב בזמן, ולכן לא הצלחנו להרכיב את הדוח. אפשר לנסות שוב בעוד רגע.'
+            : 'לא הצלחנו להתחבר לשרת.',
+        );
+      })
+      .finally(() => {
+        clearTimeout(ceiling);
+        if (!cancelled) setLoading(false);
+      });
     return () => {
       cancelled = true;
+      clearTimeout(ceiling);
+      ctl.abort();
     };
-  }, [q, tier, assetType, input?.entrance, input?.floor, input?.rooms, skipListings, preloaded]);
+  }, [q, tier, assetType, input?.entrance, input?.floor, input?.rooms,
+      input?.tatHelka, input?.apartment, skipListings, preloaded]);
 
   // הדגשת הקטגוריה שנמצאת כרגע מול העין.
   useEffect(() => {
@@ -682,6 +721,21 @@ function Chip({ children }: { children: React.ReactNode }) {
   );
 }
 
+/**
+ * מסך ההמתנה.
+ *
+ * ⚠️ מה שהיה כתוב כאן — "זה לוקח כמה שניות" — פשוט לא נכון. נמדד ישירות מול
+ * ה-API באותה שאילתה: 11.1 שניות, 25.6, 45.9, ובניסיון אחד מעל 180. במשך כל
+ * הזמן הזה המסך היה זהה: אותן נקודות מהבהבות, בלי מונה, בלי תקרה ובלי מילה
+ * על כך שמקור מגיב לאט.
+ *
+ * המשמעות היא שריצה איטית ומוצר תקוע נראים ללקוח **בדיוק אותו דבר**. זו לא
+ * השערה: אני עצמי הסקתי מהמסך הזה שהדוח שבור, גלגלתי פריסה אחורה וחיפשתי
+ * תקלה שלא הייתה — עם הרבה יותר מידע ממה שיש למי שרק מסתכל בעמוד.
+ *
+ * לכן שלוש תוספות, וכולן אמירת אמת ולא הרגעה: מונה שניות שמראה שמשהו קורה,
+ * טקסט שמשתנה כשזה נמשך מעבר לצפוי, ובקשה שנגמרת בהודעה במקום להמשיך לנצח.
+ */
 function LoadingState({ q, tier }: { q: string; tier: ReportTier }) {
   const steps = [
     'מאתרים את הכתובת ואת הגוש והחלקה',
@@ -690,12 +744,30 @@ function LoadingState({ q, tier }: { q: string; tier: ReportTier }) {
     ...(tier !== 'basic' ? ['אוספים דירות שמוצעות למכירה כרגע'] : []),
     'מרכיבים את הדוח',
   ];
+
+  const [seconds, setSeconds] = useState(0);
+  useEffect(() => {
+    const t = setInterval(() => setSeconds((s) => s + 1), 1000);
+    return () => clearInterval(t);
+  }, []);
+
+  // הסף נגזר מהמדידה: רוב הריצות מסתיימות מתחת ל-30 שניות, ולכן מעבר לזה
+  // כבר הוגן לומר שזה חורג — ולא להשאיר את אותו משפט מרגיע לנצח.
+  const slow = seconds >= 30;
+
   return (
     <div className="mx-auto max-w-3xl px-5 py-24 text-center">
       <div className="text-2xl font-black text-navy">
         מכינים {BUTTONS.find((b) => b.tier === tier)?.title} על "{q}"
       </div>
-      <p className="mt-2 text-muted">אנחנו אוספים נתונים ממקורות רשמיים. זה לוקח כמה שניות.</p>
+      <p className="mt-2 text-muted">
+        {slow
+          ? 'אחד המקורות הרשמיים מגיב לאט הפעם. אנחנו עדיין עובדים — הדוח ייטען מעצמו.'
+          : 'אנחנו אוספים נתונים ממקורות רשמיים. בדרך כלל זה לוקח 10 עד 30 שניות.'}
+      </p>
+      <p className="mt-1 text-[13px] tabular-nums text-muted" aria-live="polite">
+        {seconds} שניות
+      </p>
       <div className="mx-auto mt-8 max-w-md space-y-2 text-right">
         {steps.map((s) => (
           <div key={s} className="flex items-center gap-3 rounded-xl border border-line bg-surface p-3">
