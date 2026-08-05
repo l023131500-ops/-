@@ -210,11 +210,15 @@
         const editing = params.get('edit') === '1';
         const known = (session.user.user_metadata || {}).full_name;
 
-        // מי שכבר הקליד שם מלא בטופס ההרשמה לא יישאל עליו שוב שנייה אחרי —
-        // הוא נשמר לפרופיל ברקע והמשתמש ממשיך ישר ליעד.
+        // מי שכבר הקליד שם וטלפון בטופס ההרשמה לא יישאל עליהם שוב שנייה
+        // אחרי — הם נשמרים לפרופיל ברקע והמשתמש ממשיך ישר ליעד. זה בדיוק
+        // מה ש"הרשמה מיידית → מיד נכנס לתוך המוצר" אומר: ארבעת השדות
+        // נמסרו פעם אחת, ואין שלב ביניים שמבקש אותם שוב.
+        const knownPhone = (session.user.user_metadata || {}).phone;
         if (!profile.full_name && !editing && known && known.trim().length >= 2) {
-          const { data: saved, error } = await sb.rpc('more30_profile_set_name', {
+          const { data: saved, error } = await sb.rpc('more30_profile_set_contact', {
             p_full_name: known.trim(),
+            p_phone: knownPhone || null,
           });
           if (!error) return go(destination(saved));
         }

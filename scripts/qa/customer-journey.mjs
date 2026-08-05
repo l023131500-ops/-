@@ -47,6 +47,54 @@ async function newCustomer() {
   return { email, password };
 }
 
+/**
+ * The other half of the requirement: "Google **or** immediate registration
+ * (name · phone · email · password) → straight into the product".
+ *
+ * The API signup above skips the form entirely, so it proves the login path but
+ * says nothing about registration. This drives the actual sign-up form, which
+ * is the only way to catch a missing field or a validation that rejects a real
+ * number — and the phone field did not exist at all until this was written.
+ */
+async function registerThroughForm(browser, target) {
+  const email = `qa.customer+${Date.now()}${Math.floor(Math.random() * 1000)}@more30.com`;
+  const password = `Qa!${Math.random().toString(36).slice(2, 10)}A9`;
+  const page = await (await browser.newContext({
+    viewport: { width: 1280, height: 900 }, locale: 'he-IL',
+  })).newPage();
+
+  await page.goto(
+    `https://more30.com/login?mode=signup&from=${encodeURIComponent(target)}`,
+    { waitUntil: 'domcontentloaded', timeout: 90000 },
+  );
+  await page.waitForTimeout(2500);
+
+  const phoneField = await page.$('#phone');
+  ok('signup form asks for a phone', !!phoneField, 'no #phone field on the form');
+  if (!phoneField) { await page.close(); return null; }
+
+  await (await page.$('#fullName')).fill('לקוח בדיקה');
+  await phoneField.fill('0501234567');
+  await (await page.$('#ident')).fill(email);
+  await (await page.$('#password')).fill(password);
+  await (await page.$('button[type=submit]')).click();
+  await page.waitForTimeout(9000);
+
+  // No intermediate step may ask again for what was just typed.
+  const askedAgain = !!(await page.$('#onboard:not([hidden])'));
+  ok('no second screen asks for the name again', !askedAgain, 'onboarding shown after full signup');
+  if (askedAgain) {
+    await (await page.$('#fullName')).fill('לקוח בדיקה');
+    await (await page.$('#saveName')).click();
+    await page.waitForTimeout(7000);
+  }
+
+  const landed = new URL(page.url()).pathname;
+  ok(`registration lands in ${target}`, landed.startsWith(target), `landed on ${landed}`);
+  await page.close();
+  return email;
+}
+
 const browser = await chromium.launch({ executablePath: EXE, headless: true });
 console.log('=== customer journey — does login land inside the product? ===');
 
@@ -99,6 +147,9 @@ for (const target of TARGETS) {
   }
   await page.close();
 }
+
+console.log('\n=== immediate registration through the real form ===');
+await registerThroughForm(browser, TARGETS[0]);
 
 await browser.close();
 console.log(`\n${pass} passed · ${fail} failed`);

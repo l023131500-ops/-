@@ -141,6 +141,22 @@
           <input id="fullName" class="he" name="fullName" type="text" autocomplete="name" />
         </div>
 
+        <!--
+          טלפון נאסף רק במסלול ההרשמה המיידית. Google אינו מוסר טלפון, ולכן
+          שדה חובה גלוי תמיד היה חוסם את המסלול הראשון כדי לאכוף דרישה ששייכת
+          לשני. ‎inputmode="tel"‎ פותח מקלדת מספרים בנייד — זה שדה שממלאים
+          כמעט תמיד מהטלפון עצמו.
+        -->
+        <div id="phoneRow" hidden>
+          <label for="phone">טלפון</label>
+          <input id="phone" name="phone" type="tel" autocomplete="tel"
+                 inputmode="tel" dir="ltr" style="text-align:right"
+                 aria-describedby="phoneHint" />
+          <p id="phoneHint" class="lead" style="margin:6px 0 0;font-size:12px">
+            כדי שנוכל לחזור אליך. לא נשלח הודעות בלי שתבקש.
+          </p>
+        </div>
+
         <label for="ident" id="identLabel">שם משתמש או כתובת אימייל</label>
         <input id="ident" name="ident" type="text" autocomplete="username"
                autocapitalize="off" autocorrect="off" spellcheck="false" required
@@ -259,6 +275,8 @@
           : 'חשבון אחד לכל מערכות עולם הסטארטאפים. אותה כניסה בכל מערכת, ואותו אזור אישי — לא צריך להירשם מחדש בכל פעם.';
         $('nameRow').hidden = !up;
         $('fullName').required = up;
+        $('phoneRow').hidden = !up;
+        $('phone').required = up;
         $('identLabel').textContent = up ? 'כתובת אימייל (או שם משתמש)' : 'שם משתמש או כתובת אימייל';
         $('pwLabel').textContent = up ? 'סיסמה (8 תווים לפחות)' : 'סיסמה';
         $('password').autocomplete = up ? 'new-password' : 'current-password';
@@ -328,19 +346,30 @@
 
         const up = mode === 'signup';
         const fullName = $('fullName').value.trim();
+        const phoneDigits = $('phone').value.replace(/\D/g, '');
         if (up && fullName.length < 2) { show('שם מלא חייב להכיל לפחות שני תווים.', 'err'); return; }
+        // נבדקת צורה ולא רק קיום: מספר בן 3 ספרות עובר "לא ריק" ואי אפשר
+        // להתקשר אליו. הטווח 9–15 מכסה מספר ישראלי עם ובלי קידומת מדינה,
+        // והבדיקה חוזרת גם בשרת — טופס אינו גבול אבטחה.
+        if (up && (phoneDigits.length < 9 || phoneDigits.length > 15)) {
+          show('מספר טלפון לא תקין. הזינו מספר מלא, למשל 0501234567.', 'err'); return;
+        }
         if (up && password.length < 8) { show('הסיסמה חייבת להכיל לפחות 8 תווים.', 'err'); return; }
 
         submit.disabled = true;
         submit.textContent = up ? 'פותח חשבון…' : 'נכנס…';
 
-        // ההרשמה שולחת גם את השם המלא, כדי שהמשתמש לא יישאל עליו שוב מיד
-        // אחרי שהקליד אותו. עמוד ה-callback הוא זה שכותב אותו לפרופיל.
+        // ההרשמה שולחת גם את השם המלא וגם את הטלפון, כדי שהמשתמש לא יישאל
+        // עליהם שוב מיד אחרי שהקליד אותם — זה מה ש"מיד נכנס לתוך המוצר"
+        // דורש בפועל. עמוד ה-callback הוא זה שכותב אותם לפרופיל.
         const { data, error } = up
           ? await sb.auth.signUp({
               email: toEmail(ident),
               password,
-              options: { data: { full_name: fullName }, emailRedirectTo: location.origin + CALLBACK },
+              options: {
+                data: { full_name: fullName, phone: phoneDigits },
+                emailRedirectTo: location.origin + CALLBACK,
+              },
             })
           : await sb.auth.signInWithPassword({ email: toEmail(ident), password });
 
