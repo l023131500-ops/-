@@ -63,21 +63,76 @@ export default function HtrPage() {
 // ============================================================
 // טופס העלאה
 // ============================================================
+/**
+ * סיבוב והיפוך של תמונת כתב היד לפני השליחה.
+ *
+ * ⚠️ ההחלטה המהותית כאן: הטרנספורם נצרב **לקובץ שנשלח**, ולא רק לתצוגה.
+ * כפתור שמסובב את התצוגה בלבד גרוע מכפתור שלא קיים — המשתמש רואה עמוד ישר,
+ * מנוע הזיהוי מקבל עמוד שוכב, והתוצאה הגרועה נראית כאילו המנוע פשוט לא מדייק.
+ * הבקשה במפרט היא "שתיכנס **ישרה** לתוכנה", כלומר על הבייטים.
+ *
+ * כשאין שינוי (0° בלי היפוך) הקובץ המקורי נשלח כמו שהוא — בלי קידוד מחדש
+ * ובלי אובדן איכות. קידוד מחדש מיותר של סריקה הוא נזק שקט.
+ */
+async function bakeTransform(file: File, rotation: number, flipped: boolean): Promise<File> {
+  if (rotation === 0 && !flipped) return file;
+
+  const bitmap = await createImageBitmap(file);
+  const swap = rotation === 90 || rotation === 270;
+  const canvas = document.createElement('canvas');
+  canvas.width = swap ? bitmap.height : bitmap.width;
+  canvas.height = swap ? bitmap.width : bitmap.height;
+
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return file; // בלי canvas עדיף לשלוח את המקור מאשר להיכשל
+  ctx.translate(canvas.width / 2, canvas.height / 2);
+  ctx.rotate((rotation * Math.PI) / 180);
+  if (flipped) ctx.scale(-1, 1);
+  ctx.drawImage(bitmap, -bitmap.width / 2, -bitmap.height / 2);
+  bitmap.close();
+
+  // PNG ולא JPEG: כתב יד סרוק הוא בדיוק התוכן שארטיפקטים של JPEG פוגעים בו,
+  // וזיהוי אותיות הוא המשימה שהכי רגישה לזה.
+  const blob: Blob | null = await new Promise((res) => canvas.toBlob(res, 'image/png'));
+  if (!blob) return file;
+  return new File([blob], file.name.replace(/\.\w+$/, '') + '.png', { type: 'image/png' });
+}
+
 function UploadForm({ onDone }: { onDone: () => void }) {
   const [file, setFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [rotation, setRotation] = useState(0);
+  const [flipped, setFlipped] = useState(false);
   const [material, setMaterial] = useState('modern_handwriting');
   const [tier, setTier] = useState('regular');
   const [pageLabel, setPageLabel] = useState('');
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<{ type: 'ok' | 'err'; text: string } | null>(null);
 
+  // כתובת ה-blob משוחררת בכל החלפת קובץ ובעת פירוק הרכיב. בלי זה כל בחירת
+  // תמונה מדליפה את הקודמת, וסריקות הן קבצים גדולים.
+  useEffect(() => {
+    if (!file) { setPreviewUrl(null); return; }
+    const url = URL.createObjectURL(file);
+    setPreviewUrl(url);
+    return () => URL.revokeObjectURL(url);
+  }, [file]);
+
+  function pick(f: File | null) {
+    setFile(f);
+    setRotation(0);
+    setFlipped(false);
+    setMsg(null);
+  }
+
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     if (!file) { setMsg({ type: 'err', text: 'יש לבחור תמונה' }); return; }
     setBusy(true); setMsg(null);
     try {
+      const toSend = await bakeTransform(file, rotation, flipped);
       const fd = new FormData();
-      fd.append('file', file);
+      fd.append('file', toSend);
       fd.append('material', material);
       fd.append('tier', tier);
       if (pageLabel) fd.append('page_label', pageLabel);
@@ -102,7 +157,7 @@ function UploadForm({ onDone }: { onDone: () => void }) {
       } else {
         setMsg({ type: 'ok', text: `הושלם: ${pd.stage === 'corrected' ? 'זוהה ותוקן' : 'זוהה'}` });
       }
-      setFile(null);
+      pick(null);
       onDone();
     } catch (err: any) {
       setMsg({ type: 'err', text: err.message });
@@ -116,7 +171,7 @@ function UploadForm({ onDone }: { onDone: () => void }) {
       <div className="upload-row">
         <label className="field">
           <span>תמונת כתב יד</span>
-          <input type="file" accept="image/*" onChange={(e) => setFile(e.target.files?.[0] || null)} />
+          <input type="file" accept="image/*" onChange={(e) => pick(e.target.files?.[0] || null)} />
         </label>
         <label className="field">
           <span>סוג החומר</span>
@@ -137,6 +192,53 @@ function UploadForm({ onDone }: { onDone: () => void }) {
           <input type="text" value={pageLabel} placeholder='למשל: "כתב יד, עמ׳ 12"' onChange={(e) => setPageLabel(e.target.value)} />
         </label>
       </div>
+      {/*
+        תצוגה מקדימה — מה שנשלח בפועל, כולל בזמן השליחה.
+        עד עכשיו התמונה הופיעה רק **אחרי** שהעבודה נוצרה, כלומר המשתמש לחץ
+        "העלה" בלי לראות מה הוא שולח, וגילה שהעמוד הפוך רק מהתוצאה.
+        ה-transform כאן זהה למה ש-`bakeTransform` צורב לקובץ, ולכן מה שנראה
+        הוא מה שנשלח.
+      */}
+      {previewUrl && (
+        <div className="upload-preview">
+          <div className="preview-frame">
+            <img
+              src={previewUrl}
+              alt="תצוגה מקדימה של כתב היד כפי שיישלח לזיהוי"
+              style={{
+                transform: `rotate(${rotation}deg) scaleX(${flipped ? -1 : 1})`,
+                maxWidth: '100%',
+                maxHeight: 320,
+                transition: 'transform .2s',
+              }}
+            />
+          </div>
+          <div className="preview-tools">
+            <span className="preview-hint">
+              סובבו עד שהשורות ישרות. התמונה נשלחת במצב שרואים כאן.
+            </span>
+            <button type="button" className="action" disabled={busy}
+              onClick={() => setRotation((r) => (r + 270) % 360)}>
+              ⟲ סיבוב שמאלה
+            </button>
+            <button type="button" className="action" disabled={busy}
+              onClick={() => setRotation((r) => (r + 90) % 360)}>
+              ⟳ סיבוב ימינה
+            </button>
+            <button type="button" className="action" disabled={busy}
+              onClick={() => setFlipped((f) => !f)}>
+              ⇋ היפוך אופקי
+            </button>
+            {(rotation !== 0 || flipped) && (
+              <button type="button" className="action" disabled={busy}
+                onClick={() => { setRotation(0); setFlipped(false); }}>
+                איפוס
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+
       <div className="upload-actions">
         <button className="action" type="submit" disabled={busy}>
           {busy ? 'מעבד...' : 'העלה והרץ זיהוי'}
