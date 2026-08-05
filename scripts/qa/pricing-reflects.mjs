@@ -61,13 +61,27 @@ for (const app of APPS) {
   // `Number(null)` is 0, so the null check has to come first or undecided rows
   // get counted as free as well — which is exactly the conflation this whole
   // change exists to remove, and it made the first run print "-1 priced".
-  const nul = plans.filter((p) => p.price_ils == null);
-  const zero = plans.filter((p) => p.price_ils != null && Number(p.price_ils) === 0);
+  //
+  // A null price on an `is_default` row is a *third* case and must not be read
+  // as either of the first two: the default tier is free by definition, and
+  // more30_subscribe returns 'free' for it before it ever looks at the price.
+  // Calling it "undecided" was misleading in the direction that invites damage
+  // — someone reads the report, writes 0 to "fix" it, and the customer page
+  // starts printing "0 ₪" beside a plan whose whole point is that there is no
+  // payment.
+  const free = plans.filter((p) => p.is_default || (p.price_ils != null && Number(p.price_ils) === 0));
+  const nul = plans.filter((p) => !p.is_default && p.price_ils == null);
   console.log(
     `        ${app}: ${codes.join(', ')}  ` +
-      `(${nul.length} undecided, ${zero.length} free, ` +
-      `${plans.length - nul.length - zero.length} priced)`,
+      `(${nul.length} undecided, ${free.length} free, ` +
+      `${plans.length - nul.length - free.length} priced)`,
   );
+
+  // The free path is a stated requirement, not a nicety: whoever signs up with
+  // Google or a password must be able to enter the product. A page showing only
+  // paid tiers contradicts that, and it is the shape this system had for a few
+  // minutes between adding prices and adding the default tier.
+  ok(`${app}: a free way in is offered`, free.length > 0, 'only paid tiers on the page');
 }
 
 console.log(`\n${pass} passed · ${fail} failed`);
