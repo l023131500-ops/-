@@ -19,10 +19,14 @@ export function Header() {
             'max(1rem, calc(var(--more30-auth-inset, 124px) - max(0px, (100vw - 1152px) / 2)))',
         }}
       >
-        <Link href="/" data-testid="link-home">
-          <a className="cursor-pointer">
-            <Logo />
-          </a>
+        {/* ⚠️ אין כאן <a> פנימי בכוונה. זו תבנית wouter v2; ב-v3 הרכיב מרנדר
+            עוגן משלו, וכשהילד עצמו הוא <a> הוא מטפל בו כעוגן הקיים ומחבר לו
+            onClick בלבד — בלי href. התוצאה נראתה תקינה לגמרי ובפועל הלוגו לא
+            הוביל לשום מקום: אומת בדפדפן על האתר החי, הקישור היחיד מתוך ארבעה
+            שאין לו href. הקישור ל"פרימיום" שמתחת עובד בדיוק כי הילד שלו אינו
+            עוגן. */}
+        <Link href="/" data-testid="link-home" className="cursor-pointer">
+          <Logo />
         </Link>
         <div className="flex items-center gap-2">
           <Link href="/premium" data-testid="link-premium-header">

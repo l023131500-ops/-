@@ -18,3 +18,4 @@ data.db-journal
 # QA artifacts
 qa_*.png
 sample_response.json
+.vercel
