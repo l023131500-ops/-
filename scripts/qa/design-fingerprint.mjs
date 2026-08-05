@@ -155,15 +155,50 @@ for (const [key, route] of targets) {
         // carry no meaning, on a site whose brand is a single Galilee teal. So
         // count it directly. One distinct chip colour is a design decision;
         // eight is a template nobody revisited.
+        // Counted as distinct **hues**, not distinct colour strings.
+        //
+        // The string version flagged zchuyot at 4 after its rainbow was
+        // removed, and all four turned out to be the site's own palette at
+        // different opacities: primary/10, primary/20, secondary/20, and a
+        // foreground tint sitting on a coloured surface. Those are decisions,
+        // not noise — a chip on a primary background *must* contrast with it.
+        //
+        // Hue is what separates "one brand used carefully" from "eight unrelated
+        // colours nobody chose": brand tints share a hue, a rainbow does not.
+        // Greys, white and transparent carry no hue and are skipped rather than
+        // counted as a colour each.
         iconChipColours: (() => {
+          const hueOf = (css) => {
+            const m = css.match(/(\d+(?:\.\d+)?)\s*,\s*(\d+(?:\.\d+)?)\s*,\s*(\d+(?:\.\d+)?)/);
+            if (!m) return null;
+            const [r, g, b] = [+m[1] / 255, +m[2] / 255, +m[3] / 255];
+            const max = Math.max(r, g, b), min = Math.min(r, g, b), d = max - min;
+            if (d < 0.06) return null;                 // grey / white / black
+            let h;
+            if (max === r) h = ((g - b) / d) % 6;
+            else if (max === g) h = (b - r) / d + 2;
+            else h = (r - g) / d + 4;
+            h = Math.round(h * 60);
+            if (h < 0) h += 360;
+            return Math.round(h / 30);                 // 30° buckets
+          };
+
           const chips = [...document.querySelectorAll('div,span,a')].filter((e) => {
             const r = e.getBoundingClientRect();
             return r.width >= 32 && r.width <= 60 && r.height >= 32 && r.height <= 60 &&
                    e.querySelector('svg');
           });
-          return new Set(chips.map((e) => getComputedStyle(e).backgroundImage !== 'none'
-            ? getComputedStyle(e).backgroundImage
-            : getComputedStyle(e).backgroundColor)).size;
+          const hues = new Set();
+          for (const e of chips) {
+            const s = getComputedStyle(e);
+            const src = s.backgroundImage !== 'none' ? s.backgroundImage : s.backgroundColor;
+            // A gradient names two colours; both count, which is the point.
+            for (const part of String(src).split(/rgba?\(/).slice(1)) {
+              const h = hueOf('(' + part);
+              if (h !== null) hues.add(h);
+            }
+          }
+          return hues.size;
         })(),
       };
     });
@@ -219,11 +254,12 @@ console.log(`  lucide icons:             ${pct(good.filter((f) => f.lucideIcons 
 console.log(`  rounded-xl/2xl/3xl:       ${pct(good.filter((f) => f.roundedXl > 0).length)}`);
 console.log(`  backdrop-blur surfaces:   ${pct(good.filter((f) => f.backdropBlur > 0).length)}`);
 
-// Four or more distinct icon-chip colours means a rainbow nobody chose.
+// Three or more distinct hues on icon chips means a rainbow nobody chose. Two
+// is a brand with an accent, which is normal and deliberate.
 const rainbow = Object.entries(out)
-  .filter(([, f]) => !f.error && f.iconChipColours >= 4)
+  .filter(([, f]) => !f.error && f.iconChipColours >= 3)
   .sort((a, b) => b[1].iconChipColours - a[1].iconChipColours);
-console.log(`\n=== icon-chip rainbows (4+ distinct colours) — ${rainbow.length} systems ===`);
+console.log(`\n=== icon-chip rainbows (3+ distinct hues) — ${rainbow.length} systems ===`);
 for (const [k, f] of rainbow) console.log(`  ${String(f.iconChipColours).padStart(2)}  ${k}`);
 
 fs.mkdirSync('QA/platform', { recursive: true });

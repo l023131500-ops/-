@@ -29,109 +29,105 @@ const helpPaths = [
   {
     id: "comprehensive" as const,
     icon: Search,
-    title: "בדיקה מקיפה",
-    desc: "נעבור יחד על כל התחומים ונמצא מה מגיע לך",
-    gradient: "from-primary to-emerald-600",
+    title: "׳‘׳“׳™׳§׳” ׳׳§׳™׳₪׳”",
+    desc: "׳ ׳¢׳‘׳•׳¨ ׳™׳—׳“ ׳¢׳ ׳›׳ ׳”׳×׳—׳•׳׳™׳ ׳•׳ ׳׳¦׳ ׳׳” ׳׳’׳™׳¢ ׳׳",
   },
   {
     id: "family-form" as const,
     icon: Users,
-    title: "לפי מצב משפחתי",
-    desc: "נתאים את הזכויות למצב האישי שלך",
-    gradient: "from-secondary to-amber-500",
+    title: "׳׳₪׳™ ׳׳¦׳‘ ׳׳©׳₪׳—׳×׳™",
+    desc: "׳ ׳×׳׳™׳ ׳׳× ׳”׳–׳›׳•׳™׳•׳× ׳׳׳¦׳‘ ׳”׳׳™׳©׳™ ׳©׳׳",
   },
   {
     id: "topics" as const,
     icon: List,
-    title: "בחירה לפי נושאים",
-    desc: "בחר נושא ספציפי שמעניין אותך",
-    gradient: "from-blue-500 to-indigo-600",
+    title: "׳‘׳—׳™׳¨׳” ׳׳₪׳™ ׳ ׳•׳©׳׳™׳",
+    desc: "׳‘׳—׳¨ ׳ ׳•׳©׳ ׳¡׳₪׳¦׳™׳₪׳™ ׳©׳׳¢׳ ׳™׳™׳ ׳׳•׳×׳",
   },
   {
     id: "community" as const,
     icon: Heart,
-    title: "הצטרפות לקהילה",
-    desc: "נותנים יד לקהילה - הצטרפו למיזם",
-    gradient: "from-pink-500 to-rose-500",
+    title: "׳”׳¦׳˜׳¨׳₪׳•׳× ׳׳§׳”׳™׳׳”",
+    desc: "׳ ׳•׳×׳ ׳™׳ ׳™׳“ ׳׳§׳”׳™׳׳” - ׳”׳¦׳˜׳¨׳₪׳• ׳׳׳™׳–׳",
   },
 ];
 
-const genderOptions = ["זכר", "נקבה", "אחר"];
-const maritalOptions = ["רווק/ה", "נשוי/אה", "גרוש/ה", "אלמן/ה"];
-const healthOptions = ["תקין", "מוגבלות קלה", "מוגבלות בינונית", "מוגבלות קשה"];
-const economicOptions = ["מצב טוב", "מצב בינוני", "קושי כלכלי", "מצוקה כלכלית"];
+const genderOptions = ["׳–׳›׳¨", "׳ ׳§׳‘׳”", "׳׳—׳¨"];
+const maritalOptions = ["׳¨׳•׳•׳§/׳”", "׳ ׳©׳•׳™/׳׳”", "׳’׳¨׳•׳©/׳”", "׳׳׳׳/׳”"];
+const healthOptions = ["׳×׳§׳™׳", "׳׳•׳’׳‘׳׳•׳× ׳§׳׳”", "׳׳•׳’׳‘׳׳•׳× ׳‘׳™׳ ׳•׳ ׳™׳×", "׳׳•׳’׳‘׳׳•׳× ׳§׳©׳”"];
+const economicOptions = ["׳׳¦׳‘ ׳˜׳•׳‘", "׳׳¦׳‘ ׳‘׳™׳ ׳•׳ ׳™", "׳§׳•׳©׳™ ׳›׳׳›׳׳™", "׳׳¦׳•׳§׳” ׳›׳׳›׳׳™׳×"];
 
 // Enhanced comprehensive check questions
 const comprehensiveGroups = [
   {
-    title: "👤 פרטים אישיים",
-    message: "בוא נתחיל! ספר לי קצת על עצמך - זה יעזור לי למצוא בדיוק מה מגיע לך.",
+    title: "נ‘₪ ׳₪׳¨׳˜׳™׳ ׳׳™׳©׳™׳™׳",
+    message: "׳‘׳•׳ ׳ ׳×׳—׳™׳! ׳¡׳₪׳¨ ׳׳™ ׳§׳¦׳× ׳¢׳ ׳¢׳¦׳׳ - ׳–׳” ׳™׳¢׳–׳•׳¨ ׳׳™ ׳׳׳¦׳•׳ ׳‘׳“׳™׳•׳§ ׳׳” ׳׳’׳™׳¢ ׳׳.",
     fields: [
-      { key: "id_number", label: "תעודת זהות", type: "text", placeholder: "מספר ת.ז" },
-      { key: "date_of_birth", label: "תאריך לידה", type: "date" },
-      { key: "gender", label: "מגדר", type: "select", options: genderOptions },
-      { key: "marital", label: "מצב משפחתי", type: "select", options: maritalOptions },
+      { key: "id_number", label: "׳×׳¢׳•׳“׳× ׳–׳”׳•׳×", type: "text", placeholder: "׳׳¡׳₪׳¨ ׳×.׳–" },
+      { key: "date_of_birth", label: "׳×׳׳¨׳™׳ ׳׳™׳“׳”", type: "date" },
+      { key: "gender", label: "׳׳’׳“׳¨", type: "select", options: genderOptions },
+      { key: "marital", label: "׳׳¦׳‘ ׳׳©׳₪׳—׳×׳™", type: "select", options: maritalOptions },
     ],
   },
   {
-    title: "👫 בן/בת זוג",
-    message: "אם את/ה נשוי/אה, ספר/י לנו על בן/בת הזוג - זה עשוי לזכות אתכם בהטבות נוספות.",
-    showIf: (answers: Record<string, string>) => answers.marital === "נשוי/אה",
+    title: "נ‘« ׳‘׳/׳‘׳× ׳–׳•׳’",
+    message: "׳׳ ׳׳×/׳” ׳ ׳©׳•׳™/׳׳”, ׳¡׳₪׳¨/׳™ ׳׳ ׳• ׳¢׳ ׳‘׳/׳‘׳× ׳”׳–׳•׳’ - ׳–׳” ׳¢׳©׳•׳™ ׳׳–׳›׳•׳× ׳׳×׳›׳ ׳‘׳”׳˜׳‘׳•׳× ׳ ׳•׳¡׳₪׳•׳×.",
+    showIf: (answers: Record<string, string>) => answers.marital === "׳ ׳©׳•׳™/׳׳”",
     fields: [
-      { key: "spouse_name", label: "שם בן/בת הזוג", type: "text", placeholder: "שם מלא" },
-      { key: "spouse_id_number", label: "ת.ז בן/בת הזוג", type: "text", placeholder: "מספר ת.ז" },
-      { key: "spouse_employment", label: "תעסוקת בן/בת הזוג", type: "select", options: ["שכיר/ה", "עצמאי/ת", "לא עובד/ת", "גמלאי/ת"] },
-      { key: "spouse_health", label: "מצב בריאותי בן/בת הזוג", type: "select", options: healthOptions },
+      { key: "spouse_name", label: "׳©׳ ׳‘׳/׳‘׳× ׳”׳–׳•׳’", type: "text", placeholder: "׳©׳ ׳׳׳" },
+      { key: "spouse_id_number", label: "׳×.׳– ׳‘׳/׳‘׳× ׳”׳–׳•׳’", type: "text", placeholder: "׳׳¡׳₪׳¨ ׳×.׳–" },
+      { key: "spouse_employment", label: "׳×׳¢׳¡׳•׳§׳× ׳‘׳/׳‘׳× ׳”׳–׳•׳’", type: "select", options: ["׳©׳›׳™׳¨/׳”", "׳¢׳¦׳׳׳™/׳×", "׳׳ ׳¢׳•׳‘׳“/׳×", "׳’׳׳׳׳™/׳×"] },
+      { key: "spouse_health", label: "׳׳¦׳‘ ׳‘׳¨׳™׳׳•׳×׳™ ׳‘׳/׳‘׳× ׳”׳–׳•׳’", type: "select", options: healthOptions },
     ],
   },
   {
-    title: "👶 ילדים",
-    message: "ספר/י לנו על הילדים - יש הרבה זכויות מבוססות מספר ילדים ומצבם.",
+    title: "נ‘¶ ׳™׳׳“׳™׳",
+    message: "׳¡׳₪׳¨/׳™ ׳׳ ׳• ׳¢׳ ׳”׳™׳׳“׳™׳ - ׳™׳© ׳”׳¨׳‘׳” ׳–׳›׳•׳™׳•׳× ׳׳‘׳•׳¡׳¡׳•׳× ׳׳¡׳₪׳¨ ׳™׳׳“׳™׳ ׳•׳׳¦׳‘׳.",
     fields: [
-      { key: "children_count", label: "מספר ילדים", type: "select", options: ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10+"] },
-      { key: "children_ages", label: "גילאי הילדים (בערך)", type: "text", placeholder: "לדוגמה: 2, 5, 8" },
-      { key: "children_health", label: "מצב בריאותי ילדים", type: "select", options: ["כולם בריאים", "ילד עם מוגבלות קלה", "ילד עם מוגבלות משמעותית", "ילד עם מחלה כרונית"] },
+      { key: "children_count", label: "׳׳¡׳₪׳¨ ׳™׳׳“׳™׳", type: "select", options: ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10+"] },
+      { key: "children_ages", label: "׳’׳™׳׳׳™ ׳”׳™׳׳“׳™׳ (׳‘׳¢׳¨׳)", type: "text", placeholder: "׳׳“׳•׳’׳׳”: 2, 5, 8" },
+      { key: "children_health", label: "׳׳¦׳‘ ׳‘׳¨׳™׳׳•׳×׳™ ׳™׳׳“׳™׳", type: "select", options: ["׳›׳•׳׳ ׳‘׳¨׳™׳׳™׳", "׳™׳׳“ ׳¢׳ ׳׳•׳’׳‘׳׳•׳× ׳§׳׳”", "׳™׳׳“ ׳¢׳ ׳׳•׳’׳‘׳׳•׳× ׳׳©׳׳¢׳•׳×׳™׳×", "׳™׳׳“ ׳¢׳ ׳׳—׳׳” ׳›׳¨׳•׳ ׳™׳×"] },
     ],
   },
   {
-    title: "💼 תעסוקה והכנסה",
-    message: "מצוין! עכשיו נבדוק את מצב התעסוקה שלך - הרבה זכויות תלויות בזה.",
+    title: "נ’¼ ׳×׳¢׳¡׳•׳§׳” ׳•׳”׳›׳ ׳¡׳”",
+    message: "׳׳¦׳•׳™׳! ׳¢׳›׳©׳™׳• ׳ ׳‘׳“׳•׳§ ׳׳× ׳׳¦׳‘ ׳”׳×׳¢׳¡׳•׳§׳” ׳©׳׳ - ׳”׳¨׳‘׳” ׳–׳›׳•׳™׳•׳× ׳×׳׳•׳™׳•׳× ׳‘׳–׳”.",
     fields: [
-      { key: "employment", label: "סטטוס תעסוקתי", type: "select", options: ["שכיר", "עצמאי", "שכיר + עצמאי", "לא עובד", "סטודנט", "גמלאי"] },
-      { key: "economic", label: "מצב כלכלי", type: "select", options: economicOptions },
-      { key: "changed_job", label: "החלפת עבודה ב-6 שנים?", type: "yesno" },
-      { key: "pension_check", label: "בדקת דמי ניהול בפנסיה?", type: "yesno" },
+      { key: "employment", label: "׳¡׳˜׳˜׳•׳¡ ׳×׳¢׳¡׳•׳§׳×׳™", type: "select", options: ["׳©׳›׳™׳¨", "׳¢׳¦׳׳׳™", "׳©׳›׳™׳¨ + ׳¢׳¦׳׳׳™", "׳׳ ׳¢׳•׳‘׳“", "׳¡׳˜׳•׳“׳ ׳˜", "׳’׳׳׳׳™"] },
+      { key: "economic", label: "׳׳¦׳‘ ׳›׳׳›׳׳™", type: "select", options: economicOptions },
+      { key: "changed_job", label: "׳”׳—׳׳₪׳× ׳¢׳‘׳•׳“׳” ׳‘-6 ׳©׳ ׳™׳?", type: "yesno" },
+      { key: "pension_check", label: "׳‘׳“׳§׳× ׳“׳׳™ ׳ ׳™׳”׳•׳ ׳‘׳₪׳ ׳¡׳™׳”?", type: "yesno" },
     ],
   },
   {
-    title: "🏥 בריאות",
-    message: "בואו נבדוק את הצד הבריאותי - יש הרבה הטבות שאנשים לא יודעים עליהן.",
+    title: "נ¥ ׳‘׳¨׳™׳׳•׳×",
+    message: "׳‘׳•׳׳• ׳ ׳‘׳“׳•׳§ ׳׳× ׳”׳¦׳“ ׳”׳‘׳¨׳™׳׳•׳×׳™ - ׳™׳© ׳”׳¨׳‘׳” ׳”׳˜׳‘׳•׳× ׳©׳׳ ׳©׳™׳ ׳׳ ׳™׳•׳“׳¢׳™׳ ׳¢׳׳™׳”׳.",
     fields: [
-      { key: "health", label: "מצב בריאותי", type: "select", options: healthOptions },
-      { key: "disability_pct", label: "אחוזי נכות מוכרים", type: "select", options: ["אין", "עד 19%", "20-49%", "50-74%", "75-89%", "90%+"] },
-      { key: "chronic", label: "מחלה כרונית?", type: "yesno" },
-      { key: "care_needed", label: "צורך בעזרה יומיומית?", type: "yesno" },
+      { key: "health", label: "׳׳¦׳‘ ׳‘׳¨׳™׳׳•׳×׳™", type: "select", options: healthOptions },
+      { key: "disability_pct", label: "׳׳—׳•׳–׳™ ׳ ׳›׳•׳× ׳׳•׳›׳¨׳™׳", type: "select", options: ["׳׳™׳", "׳¢׳“ 19%", "20-49%", "50-74%", "75-89%", "90%+"] },
+      { key: "chronic", label: "׳׳—׳׳” ׳›׳¨׳•׳ ׳™׳×?", type: "yesno" },
+      { key: "care_needed", label: "׳¦׳•׳¨׳ ׳‘׳¢׳–׳¨׳” ׳™׳•׳׳™׳•׳׳™׳×?", type: "yesno" },
     ],
   },
   {
-    title: "🏠 דיור ומגורים",
-    message: "כמעט סיימנו! עוד כמה שאלות על המגורים שלך.",
+    title: "נ  ׳“׳™׳•׳¨ ׳•׳׳’׳•׳¨׳™׳",
+    message: "׳›׳׳¢׳˜ ׳¡׳™׳™׳׳ ׳•! ׳¢׳•׳“ ׳›׳׳” ׳©׳׳׳•׳× ׳¢׳ ׳”׳׳’׳•׳¨׳™׳ ׳©׳׳.",
     fields: [
-      { key: "housing", label: "מצב דיור", type: "select", options: ["שוכר", "בעל דירה", "גר עם הורים", "דיור ציבורי", "חסר דירה"] },
-      { key: "periphery", label: "גר בפריפריה?", type: "yesno" },
-      { key: "arnona_discount", label: "מקבל הנחה בארנונה?", type: "yesno" },
-      { key: "military", label: "שירתת במילואים השנה?", type: "yesno" },
+      { key: "housing", label: "׳׳¦׳‘ ׳“׳™׳•׳¨", type: "select", options: ["׳©׳•׳›׳¨", "׳‘׳¢׳ ׳“׳™׳¨׳”", "׳’׳¨ ׳¢׳ ׳”׳•׳¨׳™׳", "׳“׳™׳•׳¨ ׳¦׳™׳‘׳•׳¨׳™", "׳—׳¡׳¨ ׳“׳™׳¨׳”"] },
+      { key: "periphery", label: "׳’׳¨ ׳‘׳₪׳¨׳™׳₪׳¨׳™׳”?", type: "yesno" },
+      { key: "arnona_discount", label: "׳׳§׳‘׳ ׳”׳ ׳—׳” ׳‘׳׳¨׳ ׳•׳ ׳”?", type: "yesno" },
+      { key: "military", label: "׳©׳™׳¨׳×׳× ׳‘׳׳™׳׳•׳׳™׳ ׳”׳©׳ ׳”?", type: "yesno" },
     ],
   },
 ];
 
-const communityStyles = ["חרדי", "דתי", "חסידי", "תימני", "בני תורה", "ספרדי", "מסורתי", "חילוני"];
+const communityStyles = ["׳—׳¨׳“׳™", "׳“׳×׳™", "׳—׳¡׳™׳“׳™", "׳×׳™׳׳ ׳™", "׳‘׳ ׳™ ׳×׳•׳¨׳”", "׳¡׳₪׳¨׳“׳™", "׳׳¡׳•׳¨׳×׳™", "׳—׳™׳׳•׳ ׳™"];
 const cooperationTypes = [
-  "מכירות מוזלות לקהילה",
-  "סיוע במיצוי זכויות",
-  "מידע לקהילה",
-  "הרצאות והדרכות",
-  "אירועי קהילה",
+  "׳׳›׳™׳¨׳•׳× ׳׳•׳–׳׳•׳× ׳׳§׳”׳™׳׳”",
+  "׳¡׳™׳•׳¢ ׳‘׳׳™׳¦׳•׳™ ׳–׳›׳•׳™׳•׳×",
+  "׳׳™׳“׳¢ ׳׳§׳”׳™׳׳”",
+  "׳”׳¨׳¦׳׳•׳× ׳•׳”׳“׳¨׳›׳•׳×",
+  "׳׳™׳¨׳•׳¢׳™ ׳§׳”׳™׳׳”",
 ];
 
 // Calculate eligibility score based on answers
@@ -142,18 +138,18 @@ const calculateEligibilityScore = (answers: Record<string, string>): string => {
   // Economic status
   if (answers.economic) {
     total++;
-    if (answers.economic === "מצוקה כלכלית" || answers.economic === "קושי כלכלי") score += 2;
-    else if (answers.economic === "מצב בינוני") score += 1;
+    if (answers.economic === "׳׳¦׳•׳§׳” ׳›׳׳›׳׳™׳×" || answers.economic === "׳§׳•׳©׳™ ׳›׳׳›׳׳™") score += 2;
+    else if (answers.economic === "׳׳¦׳‘ ׳‘׳™׳ ׳•׳ ׳™") score += 1;
   }
 
   // Health
   if (answers.health) {
     total++;
-    if (answers.health !== "תקין") score += 2;
+    if (answers.health !== "׳×׳§׳™׳") score += 2;
   }
 
   // Disability
-  if (answers.disability_pct && answers.disability_pct !== "אין") {
+  if (answers.disability_pct && answers.disability_pct !== "׳׳™׳") {
     total++;
     score += 2;
   }
@@ -164,33 +160,33 @@ const calculateEligibilityScore = (answers: Record<string, string>): string => {
   else if (childCount >= 1) { total++; score += 1; }
 
   // Children health
-  if (answers.children_health && answers.children_health !== "כולם בריאים") {
+  if (answers.children_health && answers.children_health !== "׳›׳•׳׳ ׳‘׳¨׳™׳׳™׳") {
     total++; score += 2;
   }
 
   // Housing
-  if (answers.housing === "שוכר" || answers.housing === "חסר דירה") {
+  if (answers.housing === "׳©׳•׳›׳¨" || answers.housing === "׳—׳¡׳¨ ׳“׳™׳¨׳”") {
     total++; score += 2;
   }
 
   // Employment
-  if (answers.employment === "לא עובד") { total++; score += 2; }
-  else if (answers.employment === "עצמאי") { total++; score += 1; }
+  if (answers.employment === "׳׳ ׳¢׳•׳‘׳“") { total++; score += 2; }
+  else if (answers.employment === "׳¢׳¦׳׳׳™") { total++; score += 1; }
 
   // Periphery
-  if (answers.periphery === "כן") { total++; score += 1; }
+  if (answers.periphery === "׳›׳") { total++; score += 1; }
 
   // Military service
-  if (answers.military === "כן") { total++; score += 1; }
+  if (answers.military === "׳›׳") { total++; score += 1; }
 
   // Changed job
-  if (answers.changed_job === "כן") { total++; score += 1; }
+  if (answers.changed_job === "׳›׳") { total++; score += 1; }
 
   // Chronic disease
-  if (answers.chronic === "כן") { total++; score += 1; }
+  if (answers.chronic === "׳›׳") { total++; score += 1; }
 
   // Care needed
-  if (answers.care_needed === "כן") { total++; score += 2; }
+  if (answers.care_needed === "׳›׳") { total++; score += 2; }
 
   if (total === 0) return "unknown";
   const pct = score / (total * 2);
@@ -293,7 +289,7 @@ const FloatingBot = () => {
     // New lead
     const { error } = await supabase.from("leads").insert(payload as any);
     if (error) {
-      toast({ title: "שגיאה", description: "לא הצלחנו לשמור את הפרטים. נסו שוב.", variant: "destructive" });
+      toast({ title: "׳©׳’׳™׳׳”", description: "׳׳ ׳”׳¦׳׳—׳ ׳• ׳׳©׳׳•׳¨ ׳׳× ׳”׳₪׳¨׳˜׳™׳. ׳ ׳¡׳• ׳©׳•׳‘.", variant: "destructive" });
       return false;
     }
     return true;
@@ -333,21 +329,21 @@ const FloatingBot = () => {
 
   const handleCompSubmit = async (type: "free" | "paid") => {
     if (!contactForm.name.trim()) {
-      toast({ title: "שדות חובה", description: "נא למלא שם מלא", variant: "destructive" });
+      toast({ title: "׳©׳“׳•׳× ׳—׳•׳‘׳”", description: "׳ ׳ ׳׳׳׳ ׳©׳ ׳׳׳", variant: "destructive" });
       return;
     }
     const phoneErr = getPhoneError(contactForm.phone);
     if (phoneErr) {
-      toast({ title: "שגיאה בטלפון", description: phoneErr, variant: "destructive" });
+      toast({ title: "׳©׳’׳™׳׳” ׳‘׳˜׳׳₪׳•׳", description: phoneErr, variant: "destructive" });
       return;
     }
     if (compAnswers.id_number && !validateIdNumber(compAnswers.id_number)) {
-      toast({ title: "שגיאה בת.ז", description: "תעודת זהות חייבת להכיל 9 ספרות", variant: "destructive" });
+      toast({ title: "׳©׳’׳™׳׳” ׳‘׳×.׳–", description: "׳×׳¢׳•׳“׳× ׳–׳”׳•׳× ׳—׳™׳™׳‘׳× ׳׳”׳›׳™׳ 9 ׳¡׳₪׳¨׳•׳×", variant: "destructive" });
       return;
     }
     setIsSubmitting(true);
     const details = comprehensiveGroups.flatMap(g =>
-      g.fields.map(f => `${f.label}: ${compAnswers[f.key] || "לא צוין"}`)
+      g.fields.map(f => `${f.label}: ${compAnswers[f.key] || "׳׳ ׳¦׳•׳™׳"}`)
     ).join("\n");
 
     const eligibility = calculateEligibilityScore(compAnswers);
@@ -370,7 +366,7 @@ const FloatingBot = () => {
       disability_percentage: compAnswers.disability_pct || null,
       housing_status: compAnswers.housing || null,
       eligibility_score: eligibility,
-      details: `${contactForm.details}\n\n--- תשובות הבדיקה ---\n${details}`,
+      details: `${contactForm.details}\n\n--- ׳×׳©׳•׳‘׳•׳× ׳”׳‘׳“׳™׳§׳” ---\n${details}`,
       gender: compAnswers.gender || null,
       marital_status: compAnswers.marital || null,
       children: compAnswers.children_count || null,
@@ -384,17 +380,17 @@ const FloatingBot = () => {
   // Topics flow
   const handleTopicSubmit = async (type: "free" | "paid") => {
     if (!contactForm.name.trim()) {
-      toast({ title: "שדות חובה", description: "נא למלא שם מלא", variant: "destructive" });
+      toast({ title: "׳©׳“׳•׳× ׳—׳•׳‘׳”", description: "׳ ׳ ׳׳׳׳ ׳©׳ ׳׳׳", variant: "destructive" });
       return;
     }
     const phoneErr = getPhoneError(contactForm.phone);
     if (phoneErr) {
-      toast({ title: "שגיאה בטלפון", description: phoneErr, variant: "destructive" });
+      toast({ title: "׳©׳’׳™׳׳” ׳‘׳˜׳׳₪׳•׳", description: phoneErr, variant: "destructive" });
       return;
     }
     setIsSubmitting(true);
     const qDetails = selectedTopic?.questions
-      .map((q, i) => `${q}: ${topicAnswers[`q${i}`] === true ? "כן" : topicAnswers[`q${i}`] === false ? "לא" : "לא ענה"}`)
+      .map((q, i) => `${q}: ${topicAnswers[`q${i}`] === true ? "׳›׳" : topicAnswers[`q${i}`] === false ? "׳׳" : "׳׳ ׳¢׳ ׳”"}`)
       .join("\n") || "";
 
     // Calculate topic eligibility based on yes answers
@@ -407,7 +403,7 @@ const FloatingBot = () => {
       service_type: type,
       name: contactForm.name,
       phone: contactForm.phone,
-      details: `${contactForm.details}\n\n--- שאלות זכאות ---\n${qDetails}`,
+      details: `${contactForm.details}\n\n--- ׳©׳׳׳•׳× ׳–׳›׳׳•׳× ---\n${qDetails}`,
       category: selectedCat?.label || null,
       selected_right: selectedTopic?.label || null,
       eligibility_score: eligibility,
@@ -419,16 +415,16 @@ const FloatingBot = () => {
   const handleFamilySubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!familyData.name.trim()) {
-      toast({ title: "שדות חובה", description: "נא למלא שם מלא", variant: "destructive" });
+      toast({ title: "׳©׳“׳•׳× ׳—׳•׳‘׳”", description: "׳ ׳ ׳׳׳׳ ׳©׳ ׳׳׳", variant: "destructive" });
       return;
     }
     const phoneErr = getPhoneError(familyData.phone);
     if (phoneErr) {
-      toast({ title: "שגיאה בטלפון", description: phoneErr, variant: "destructive" });
+      toast({ title: "׳©׳’׳™׳׳” ׳‘׳˜׳׳₪׳•׳", description: phoneErr, variant: "destructive" });
       return;
     }
     if (familyData.id_number && !validateIdNumber(familyData.id_number)) {
-      toast({ title: "שגיאה בת.ז", description: "תעודת זהות חייבת להכיל 9 ספרות", variant: "destructive" });
+      toast({ title: "׳©׳’׳™׳׳” ׳‘׳×.׳–", description: "׳×׳¢׳•׳“׳× ׳–׳”׳•׳× ׳—׳™׳™׳‘׳× ׳׳”׳›׳™׳ 9 ׳¡׳₪׳¨׳•׳×", variant: "destructive" });
       return;
     }
     setIsSubmitting(true);
@@ -454,7 +450,7 @@ const FloatingBot = () => {
     const ok = await saveLead({
       source: "bot-community",
       name: communityData.contactName, phone: communityData.contactPhone,
-      details: `קהילה: ${communityData.communityName} | עיר: ${communityData.city} | מיקום: ${communityData.location} | סגנון: ${communityData.style} | משפחות: ${communityData.familyCount} | שיתוף פעולה: ${communityData.cooperation.join(", ")}`,
+      details: `׳§׳”׳™׳׳”: ${communityData.communityName} | ׳¢׳™׳¨: ${communityData.city} | ׳׳™׳§׳•׳: ${communityData.location} | ׳¡׳’׳ ׳•׳: ${communityData.style} | ׳׳©׳₪׳—׳•׳×: ${communityData.familyCount} | ׳©׳™׳×׳•׳£ ׳₪׳¢׳•׳׳”: ${communityData.cooperation.join(", ")}`,
       category: "community",
     });
     setIsSubmitting(false);
@@ -491,9 +487,9 @@ const FloatingBot = () => {
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             onClick={() => setIsOpen(true)}
-            /* אייקון בלבד, בלי טקסט ובלי aria-label — קורא מסך הכריז "לחצן"
-               ותו לא, וזה ה-‎button-name‎ שנכשל ב-Lighthouse. */
-            aria-label="פתיחת בודק הזכויות"
+            /* ׳׳™׳™׳§׳•׳ ׳‘׳׳‘׳“, ׳‘׳׳™ ׳˜׳§׳¡׳˜ ׳•׳‘׳׳™ aria-label ג€” ׳§׳•׳¨׳ ׳׳¡׳ ׳”׳›׳¨׳™׳– "׳׳—׳¦׳"
+               ׳•׳×׳• ׳׳, ׳•׳–׳” ׳”-ג€button-nameג€ ׳©׳ ׳›׳©׳ ׳‘-Lighthouse. */
+            aria-label="׳₪׳×׳™׳—׳× ׳‘׳•׳“׳§ ׳”׳–׳›׳•׳™׳•׳×"
             className="fixed bottom-6 left-6 z-50 w-16 h-16 rounded-full bg-primary text-primary-foreground shadow-2xl flex items-center justify-center"
             style={{ boxShadow: "0 0 30px hsl(var(--primary) / 0.5)" }}
           >
@@ -521,8 +517,8 @@ const FloatingBot = () => {
                   <Sparkles className="w-5 h-5 text-primary-foreground" />
                 </div>
                 <div>
-                  <h3 className="text-primary-foreground font-bold text-sm">הסוכן החכם של בקלות</h3>
-                  <p className="text-primary-foreground text-xs">מיצוי זכויות אישי</p>
+                  <h3 className="text-primary-foreground font-bold text-sm">׳”׳¡׳•׳›׳ ׳”׳—׳›׳ ׳©׳ ׳‘׳§׳׳•׳×</h3>
+                  <p className="text-primary-foreground text-xs">׳׳™׳¦׳•׳™ ׳–׳›׳•׳™׳•׳× ׳׳™׳©׳™</p>
                 </div>
               </div>
               <button onClick={() => setIsOpen(false)} className="text-primary-foreground/70 hover:text-primary-foreground transition-colors">
@@ -537,9 +533,9 @@ const FloatingBot = () => {
                 {step === "choose" && (
                   <motion.div key="choose" variants={stepVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.3 }}>
                     <BotMessage>
-                      שלום! 👋 אני כאן כדי לעזור לך <strong>למצות את כל הזכויות</strong> שמגיעות לך.
+                      ׳©׳׳•׳! נ‘‹ ׳׳ ׳™ ׳›׳׳ ׳›׳“׳™ ׳׳¢׳–׳•׳¨ ׳׳ <strong>׳׳׳¦׳•׳× ׳׳× ׳›׳ ׳”׳–׳›׳•׳™׳•׳×</strong> ׳©׳׳’׳™׳¢׳•׳× ׳׳.
                       <br /><br />
-                      איך נתחיל? 😊
+                      ׳׳™׳ ׳ ׳×׳—׳™׳? נ˜
                     </BotMessage>
                     <div className="space-y-2.5 mt-4">
                       {helpPaths.map((path) => (
@@ -550,7 +546,7 @@ const FloatingBot = () => {
                           onClick={() => setStep(path.id)}
                           className="w-full flex items-center gap-3 p-3.5 rounded-xl bg-card border border-border hover:border-primary/40 hover:shadow-md transition-all text-right"
                         >
-                          <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${path.gradient} flex items-center justify-center shrink-0`}>
+                          <div className={`w-10 h-10 rounded-lg bg-primary/10 text-primary ring-1 ring-primary/15 flex items-center justify-center shrink-0`}>
                             <path.icon className="w-5 h-5 text-white" />
                           </div>
                           <div className="flex-1 min-w-0">
@@ -613,7 +609,7 @@ const FloatingBot = () => {
                               onChange={(e) => setCompAnswers({ ...compAnswers, [field.key]: e.target.value })}
                               className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                             >
-                              <option value="">בחר...</option>
+                              <option value="">׳‘׳—׳¨...</option>
                               {field.options!.map((o) => (
                                 <option key={o} value={o}>{o}</option>
                               ))}
@@ -623,25 +619,25 @@ const FloatingBot = () => {
                             <div className="flex gap-2">
                               <button
                                 type="button"
-                                onClick={() => setCompAnswers({ ...compAnswers, [field.key]: "כן" })}
+                                onClick={() => setCompAnswers({ ...compAnswers, [field.key]: "׳›׳" })}
                                 className={`flex-1 py-2 rounded-lg text-sm font-bold transition-all ${
-                                  compAnswers[field.key] === "כן"
+                                  compAnswers[field.key] === "׳›׳"
                                     ? "bg-primary text-primary-foreground shadow-sm"
                                     : "bg-muted text-muted-foreground hover:bg-primary/10"
                                 }`}
                               >
-                                ✓ כן
+                                ג“ ׳›׳
                               </button>
                               <button
                                 type="button"
-                                onClick={() => setCompAnswers({ ...compAnswers, [field.key]: "לא" })}
+                                onClick={() => setCompAnswers({ ...compAnswers, [field.key]: "׳׳" })}
                                 className={`flex-1 py-2 rounded-lg text-sm font-bold transition-all ${
-                                  compAnswers[field.key] === "לא"
+                                  compAnswers[field.key] === "׳׳"
                                     ? "bg-destructive/80 text-white shadow-sm"
                                     : "bg-muted text-muted-foreground hover:bg-destructive/10"
                                 }`}
                               >
-                                ✗ לא
+                                ג— ׳׳
                               </button>
                             </div>
                           )}
@@ -651,10 +647,10 @@ const FloatingBot = () => {
 
                     <div className="flex gap-2 mt-5">
                       <Button variant="ghost" size="sm" onClick={handleCompBack} className="gap-1">
-                        <ArrowRight className="w-3 h-3" /> חזרה
+                        <ArrowRight className="w-3 h-3" /> ׳—׳–׳¨׳”
                       </Button>
                       <Button onClick={handleCompNext} className="flex-1 gap-1">
-                        {activeGroupIndex < activeGroups.length - 1 ? "המשך" : "סיום הבדיקה"}
+                        {activeGroupIndex < activeGroups.length - 1 ? "׳”׳׳©׳" : "׳¡׳™׳•׳ ׳”׳‘׳“׳™׳§׳”"}
                         <ChevronLeft className="w-3 h-3" />
                       </Button>
                     </div>
@@ -665,9 +661,9 @@ const FloatingBot = () => {
                 {step === "comprehensive-contact" && (
                   <motion.div key="comp-contact" variants={stepVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.3 }}>
                     <BotMessage>
-                      מעולה, סיימנו את הבדיקה! 🎉
+                      ׳׳¢׳•׳׳”, ׳¡׳™׳™׳׳ ׳• ׳׳× ׳”׳‘׳“׳™׳§׳”! נ‰
                       <br /><br />
-                      השאירו פרטים ונחזור אליכם עם <strong>סיכום מלא של כל הזכויות</strong> שמגיעות לכם.
+                      ׳”׳©׳׳™׳¨׳• ׳₪׳¨׳˜׳™׳ ׳•׳ ׳—׳–׳•׳¨ ׳׳׳™׳›׳ ׳¢׳ <strong>׳¡׳™׳›׳•׳ ׳׳׳ ׳©׳ ׳›׳ ׳”׳–׳›׳•׳™׳•׳×</strong> ׳©׳׳’׳™׳¢׳•׳× ׳׳›׳.
                     </BotMessage>
 
                     <ContactForm
@@ -696,9 +692,9 @@ const FloatingBot = () => {
                 {step === "topics" && !selectedCat && (
                   <motion.div key="topics-list" variants={stepVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.3 }}>
                     <BotMessage>
-                      באיזה נושא תרצו שנבדוק? 🔎
+                      ׳‘׳׳™׳–׳” ׳ ׳•׳©׳ ׳×׳¨׳¦׳• ׳©׳ ׳‘׳“׳•׳§? נ”
                       <br />
-                      בחרו קטגוריה ונצלול פנימה יחד.
+                      ׳‘׳—׳¨׳• ׳§׳˜׳’׳•׳¨׳™׳” ׳•׳ ׳¦׳׳•׳ ׳₪׳ ׳™׳׳” ׳™׳—׳“.
                     </BotMessage>
 
                     <div className="space-y-1.5 mt-3 max-h-[380px] overflow-y-auto">
@@ -710,12 +706,12 @@ const FloatingBot = () => {
                           onClick={() => setSelectedCat(cat)}
                           className="w-full flex items-center gap-2.5 p-2.5 rounded-xl border border-border hover:border-primary/40 hover:bg-primary/5 transition-all text-right"
                         >
-                          <div className={`w-8 h-8 rounded-lg bg-gradient-to-br ${cat.gradient} flex items-center justify-center shrink-0`}>
+                          <div className={`w-8 h-8 rounded-lg bg-primary/10 text-primary ring-1 ring-primary/15 flex items-center justify-center shrink-0`}>
                             <cat.icon className="w-4 h-4 text-white" />
                           </div>
                           <div className="flex-1 min-w-0">
                             <p className="font-bold text-foreground text-xs">{cat.label}</p>
-                            <p className="text-muted-foreground text-[10px]">{cat.topics.length} נושאים</p>
+                            <p className="text-muted-foreground text-[10px]">{cat.topics.length} ׳ ׳•׳©׳׳™׳</p>
                           </div>
                           <ChevronLeft className="w-3 h-3 text-muted-foreground shrink-0" />
                         </motion.button>
@@ -729,7 +725,7 @@ const FloatingBot = () => {
                 {step === "topics" && selectedCat && !selectedTopic && (
                   <motion.div key="topics-cat" variants={stepVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.3 }}>
                     <BotMessage>
-                      הנה הנושאים ב<strong>{selectedCat.label}</strong> - בחרו את מה שמעניין אתכם:
+                      ׳”׳ ׳” ׳”׳ ׳•׳©׳׳™׳ ׳‘<strong>{selectedCat.label}</strong> - ׳‘׳—׳¨׳• ׳׳× ׳׳” ׳©׳׳¢׳ ׳™׳™׳ ׳׳×׳›׳:
                     </BotMessage>
 
                     <div className="space-y-1.5 mt-3 max-h-[360px] overflow-y-auto">
@@ -758,9 +754,9 @@ const FloatingBot = () => {
                 {step === "topics-detail" && selectedTopic && (
                   <motion.div key="topics-detail" variants={stepVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.3 }}>
                     <BotMessage>
-                      בואו נבדוק את הזכאות שלך ל<strong>{selectedTopic.label}</strong>.
+                      ׳‘׳•׳׳• ׳ ׳‘׳“׳•׳§ ׳׳× ׳”׳–׳›׳׳•׳× ׳©׳׳ ׳<strong>{selectedTopic.label}</strong>.
                       <br />
-                      ענו על השאלות הבאות:
+                      ׳¢׳ ׳• ׳¢׳ ׳”׳©׳׳׳•׳× ׳”׳‘׳׳•׳×:
                     </BotMessage>
 
                     <div className="space-y-2.5 mt-3">
@@ -782,7 +778,7 @@ const FloatingBot = () => {
                                     ? "bg-primary text-primary-foreground"
                                     : "bg-muted text-muted-foreground hover:bg-primary/10"
                                 }`}
-                              >✓ כן</button>
+                              >ג“ ׳›׳</button>
                               <button
                                 type="button"
                                 onClick={() => setTopicAnswers({ ...topicAnswers, [`q${i}`]: false })}
@@ -791,7 +787,7 @@ const FloatingBot = () => {
                                     ? "bg-destructive/80 text-white"
                                     : "bg-muted text-muted-foreground hover:bg-destructive/10"
                                 }`}
-                              >✗ לא</button>
+                              >ג— ׳׳</button>
                             </div>
                           </div>
                         );
@@ -807,17 +803,17 @@ const FloatingBot = () => {
                           const pct = yesCount / totalQ;
                           if (pct >= 0.6) return (
                             <p className="text-xs font-bold text-primary flex items-center gap-1.5">
-                              🟢 סיכוי גבוה שמגיעה לך הזכות!
+                              נ¢ ׳¡׳™׳›׳•׳™ ׳’׳‘׳•׳” ׳©׳׳’׳™׳¢׳” ׳׳ ׳”׳–׳›׳•׳×!
                             </p>
                           );
                           if (pct >= 0.3) return (
                             <p className="text-xs font-bold text-secondary flex items-center gap-1.5">
-                              🟡 ייתכן שמגיעה לך הזכות - כדאי לבדוק
+                              נ¡ ׳™׳™׳×׳›׳ ׳©׳׳’׳™׳¢׳” ׳׳ ׳”׳–׳›׳•׳× - ׳›׳“׳׳™ ׳׳‘׳“׳•׳§
                             </p>
                           );
                           return (
                             <p className="text-xs font-bold text-destructive flex items-center gap-1.5">
-                              🔴 סיכוי נמוך - אבל שווה לבדוק עם מומחה
+                              נ”´ ׳¡׳™׳›׳•׳™ ׳ ׳׳•׳ - ׳׳‘׳ ׳©׳•׳•׳” ׳׳‘׳“׳•׳§ ׳¢׳ ׳׳•׳׳—׳”
                             </p>
                           );
                         })()}
@@ -826,7 +822,7 @@ const FloatingBot = () => {
 
                     <div className="border-t border-border mt-4 pt-3">
                       <BotMessage>
-                        מצוין! 💪 השאירו פרטים ונחזור אליכם עם תשובה מקצועית.
+                        ׳׳¦׳•׳™׳! נ’× ׳”׳©׳׳™׳¨׳• ׳₪׳¨׳˜׳™׳ ׳•׳ ׳—׳–׳•׳¨ ׳׳׳™׳›׳ ׳¢׳ ׳×׳©׳•׳‘׳” ׳׳§׳¦׳•׳¢׳™׳×.
                       </BotMessage>
                       <ContactForm
                         contactForm={contactForm}
@@ -845,30 +841,30 @@ const FloatingBot = () => {
                 {step === "family-form" && (
                   <motion.div key="family" variants={stepVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.3 }}>
                     <BotMessage>
-                      👨‍👩‍👧‍👦 ספרו לי על עצמכם - ככל שנדע יותר, נוכל למצוא יותר זכויות שמתאימות בדיוק לכם.
+                      נ‘¨ג€נ‘©ג€נ‘§ג€נ‘¦ ׳¡׳₪׳¨׳• ׳׳™ ׳¢׳ ׳¢׳¦׳׳›׳ - ׳›׳›׳ ׳©׳ ׳“׳¢ ׳™׳•׳×׳¨, ׳ ׳•׳›׳ ׳׳׳¦׳•׳ ׳™׳•׳×׳¨ ׳–׳›׳•׳™׳•׳× ׳©׳׳×׳׳™׳׳•׳× ׳‘׳“׳™׳•׳§ ׳׳›׳.
                     </BotMessage>
                     <form onSubmit={handleFamilySubmit} className="space-y-3 mt-3">
-                      <Input placeholder="שם מלא *" value={familyData.name} onChange={(e) => setFamilyData({ ...familyData, name: e.target.value })} required className="text-sm" />
-                      <Input placeholder="תעודת זהות *" value={familyData.id_number} onChange={(e) => setFamilyData({ ...familyData, id_number: e.target.value })} required className="text-sm" />
+                      <Input placeholder="׳©׳ ׳׳׳ *" value={familyData.name} onChange={(e) => setFamilyData({ ...familyData, name: e.target.value })} required className="text-sm" />
+                      <Input placeholder="׳×׳¢׳•׳“׳× ׳–׳”׳•׳× *" value={familyData.id_number} onChange={(e) => setFamilyData({ ...familyData, id_number: e.target.value })} required className="text-sm" />
                       <div>
-                        <label className="text-xs font-medium text-foreground mb-1 block">תאריך לידה *</label>
+                        <label className="text-xs font-medium text-foreground mb-1 block">׳×׳׳¨׳™׳ ׳׳™׳“׳” *</label>
                         <Input type="date" value={familyData.date_of_birth} onChange={(e) => setFamilyData({ ...familyData, date_of_birth: e.target.value })} required className="text-sm" dir="ltr" />
                       </div>
-                      <SelectField value={familyData.gender} options={genderOptions} placeholder="מגדר *" onChange={(v) => setFamilyData({ ...familyData, gender: v })} />
-                      <SelectField value={familyData.marital} options={maritalOptions} placeholder="מצב משפחתי *" onChange={(v) => setFamilyData({ ...familyData, marital: v })} />
-                      <SelectField value={familyData.children_count} options={["0","1","2","3","4","5","6","7","8","9","10+"]} placeholder="מספר ילדים *" onChange={(v) => setFamilyData({ ...familyData, children_count: v })} />
+                      <SelectField value={familyData.gender} options={genderOptions} placeholder="׳׳’׳“׳¨ *" onChange={(v) => setFamilyData({ ...familyData, gender: v })} />
+                      <SelectField value={familyData.marital} options={maritalOptions} placeholder="׳׳¦׳‘ ׳׳©׳₪׳—׳×׳™ *" onChange={(v) => setFamilyData({ ...familyData, marital: v })} />
+                      <SelectField value={familyData.children_count} options={["0","1","2","3","4","5","6","7","8","9","10+"]} placeholder="׳׳¡׳₪׳¨ ׳™׳׳“׳™׳ *" onChange={(v) => setFamilyData({ ...familyData, children_count: v })} />
                       {parseInt(familyData.children_count) > 0 && (
                         <>
-                          <Input placeholder="גילאי הילדים (לדוגמה: 2, 5, 8)" value={familyData.children_ages} onChange={(e) => setFamilyData({ ...familyData, children_ages: e.target.value })} className="text-sm" />
-                          <SelectField value={familyData.children_health} options={["כולם בריאים", "ילד עם מוגבלות קלה", "ילד עם מוגבלות משמעותית", "ילד עם מחלה כרונית"]} placeholder="מצב בריאותי ילדים" onChange={(v) => setFamilyData({ ...familyData, children_health: v })} />
+                          <Input placeholder="׳’׳™׳׳׳™ ׳”׳™׳׳“׳™׳ (׳׳“׳•׳’׳׳”: 2, 5, 8)" value={familyData.children_ages} onChange={(e) => setFamilyData({ ...familyData, children_ages: e.target.value })} className="text-sm" />
+                          <SelectField value={familyData.children_health} options={["׳›׳•׳׳ ׳‘׳¨׳™׳׳™׳", "׳™׳׳“ ׳¢׳ ׳׳•׳’׳‘׳׳•׳× ׳§׳׳”", "׳™׳׳“ ׳¢׳ ׳׳•׳’׳‘׳׳•׳× ׳׳©׳׳¢׳•׳×׳™׳×", "׳™׳׳“ ׳¢׳ ׳׳—׳׳” ׳›׳¨׳•׳ ׳™׳×"]} placeholder="׳׳¦׳‘ ׳‘׳¨׳™׳׳•׳×׳™ ׳™׳׳“׳™׳" onChange={(v) => setFamilyData({ ...familyData, children_health: v })} />
                         </>
                       )}
-                      <SelectField value={familyData.health} options={healthOptions} placeholder="מצב בריאותי *" onChange={(v) => setFamilyData({ ...familyData, health: v })} />
-                      <SelectField value={familyData.economic} options={economicOptions} placeholder="מצב כלכלי *" onChange={(v) => setFamilyData({ ...familyData, economic: v })} />
-                      <Input placeholder="מספר טלפון *" type="tel" value={familyData.phone} onChange={(e) => setFamilyData({ ...familyData, phone: e.target.value })} required className="text-sm" />
+                      <SelectField value={familyData.health} options={healthOptions} placeholder="׳׳¦׳‘ ׳‘׳¨׳™׳׳•׳×׳™ *" onChange={(v) => setFamilyData({ ...familyData, health: v })} />
+                      <SelectField value={familyData.economic} options={economicOptions} placeholder="׳׳¦׳‘ ׳›׳׳›׳׳™ *" onChange={(v) => setFamilyData({ ...familyData, economic: v })} />
+                      <Input placeholder="׳׳¡׳₪׳¨ ׳˜׳׳₪׳•׳ *" type="tel" value={familyData.phone} onChange={(e) => setFamilyData({ ...familyData, phone: e.target.value })} required className="text-sm" />
                       <Button type="submit" disabled={isSubmitting} className="w-full gap-2">
                         <Send className="w-4 h-4" />
-                        {isSubmitting ? "שולח..." : "שליחה"}
+                        {isSubmitting ? "׳©׳•׳׳—..." : "׳©׳׳™׳—׳”"}
                       </Button>
                     </form>
                     <BackButton onClick={handleReset} />
@@ -879,18 +875,18 @@ const FloatingBot = () => {
                 {step === "community" && (
                   <motion.div key="community" variants={stepVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.3 }}>
                     <BotMessage>
-                      💚 נהדר שאתם רוצים להצטרף למיזם <strong>"נותנים יד לקהילה"</strong>!
-                      <br />ספרו לנו על הקהילה שלכם.
+                      נ’ ׳ ׳”׳“׳¨ ׳©׳׳×׳ ׳¨׳•׳¦׳™׳ ׳׳”׳¦׳˜׳¨׳£ ׳׳׳™׳–׳ <strong>"׳ ׳•׳×׳ ׳™׳ ׳™׳“ ׳׳§׳”׳™׳׳”"</strong>!
+                      <br />׳¡׳₪׳¨׳• ׳׳ ׳• ׳¢׳ ׳”׳§׳”׳™׳׳” ׳©׳׳›׳.
                     </BotMessage>
                     <form onSubmit={handleCommunitySubmit} className="space-y-3 mt-3">
-                      <Input placeholder="שם הקהילה" value={communityData.communityName} onChange={(e) => setCommunityData({ ...communityData, communityName: e.target.value })} required className="text-sm" />
-                      <Input placeholder="עיר" value={communityData.city} onChange={(e) => setCommunityData({ ...communityData, city: e.target.value })} required className="text-sm" />
-                      <Input placeholder="מיקום (שכונה/רחוב)" value={communityData.location} onChange={(e) => setCommunityData({ ...communityData, location: e.target.value })} className="text-sm" />
-                      <SelectField value={communityData.style} options={communityStyles} placeholder="סגנון הקהילה" onChange={(v) => setCommunityData({ ...communityData, style: v })} />
-                      <SelectField value={communityData.familyCount} options={["עד 50", "50-100", "100-200", "200-500", "500+"]} placeholder="כמות משפחות" onChange={(v) => setCommunityData({ ...communityData, familyCount: v })} />
+                      <Input placeholder="׳©׳ ׳”׳§׳”׳™׳׳”" value={communityData.communityName} onChange={(e) => setCommunityData({ ...communityData, communityName: e.target.value })} required className="text-sm" />
+                      <Input placeholder="׳¢׳™׳¨" value={communityData.city} onChange={(e) => setCommunityData({ ...communityData, city: e.target.value })} required className="text-sm" />
+                      <Input placeholder="׳׳™׳§׳•׳ (׳©׳›׳•׳ ׳”/׳¨׳—׳•׳‘)" value={communityData.location} onChange={(e) => setCommunityData({ ...communityData, location: e.target.value })} className="text-sm" />
+                      <SelectField value={communityData.style} options={communityStyles} placeholder="׳¡׳’׳ ׳•׳ ׳”׳§׳”׳™׳׳”" onChange={(v) => setCommunityData({ ...communityData, style: v })} />
+                      <SelectField value={communityData.familyCount} options={["׳¢׳“ 50", "50-100", "100-200", "200-500", "500+"]} placeholder="׳›׳׳•׳× ׳׳©׳₪׳—׳•׳×" onChange={(v) => setCommunityData({ ...communityData, familyCount: v })} />
 
                       <div>
-                        <p className="text-xs font-medium text-foreground mb-2">סוג שיתוף פעולה:</p>
+                        <p className="text-xs font-medium text-foreground mb-2">׳¡׳•׳’ ׳©׳™׳×׳•׳£ ׳₪׳¢׳•׳׳”:</p>
                         <div className="space-y-1.5">
                           {cooperationTypes.map((item) => (
                             <label
@@ -914,16 +910,16 @@ const FloatingBot = () => {
                       </div>
 
                       <div className="border-t border-border pt-3">
-                        <p className="text-xs text-muted-foreground mb-2">פרטי קשר:</p>
+                        <p className="text-xs text-muted-foreground mb-2">׳₪׳¨׳˜׳™ ׳§׳©׳¨:</p>
                         <div className="space-y-2">
-                          <Input placeholder="שם איש קשר" value={communityData.contactName} onChange={(e) => setCommunityData({ ...communityData, contactName: e.target.value })} required className="text-sm" />
-                          <Input placeholder="טלפון" type="tel" value={communityData.contactPhone} onChange={(e) => setCommunityData({ ...communityData, contactPhone: e.target.value })} required className="text-sm" />
+                          <Input placeholder="׳©׳ ׳׳™׳© ׳§׳©׳¨" value={communityData.contactName} onChange={(e) => setCommunityData({ ...communityData, contactName: e.target.value })} required className="text-sm" />
+                          <Input placeholder="׳˜׳׳₪׳•׳" type="tel" value={communityData.contactPhone} onChange={(e) => setCommunityData({ ...communityData, contactPhone: e.target.value })} required className="text-sm" />
                         </div>
                       </div>
 
                       <Button type="submit" disabled={isSubmitting} className="w-full gap-2">
                         <Send className="w-4 h-4" />
-                        {isSubmitting ? "שולח..." : "שליחת בקשת הצטרפות"}
+                        {isSubmitting ? "׳©׳•׳׳—..." : "׳©׳׳™׳—׳× ׳‘׳§׳©׳× ׳”׳¦׳˜׳¨׳₪׳•׳×"}
                       </Button>
                     </form>
                     <BackButton onClick={handleReset} />
@@ -942,16 +938,16 @@ const FloatingBot = () => {
                       >
                         <CheckCircle className="w-9 h-9 text-primary" />
                       </motion.div>
-                      <h4 className="text-foreground font-bold text-lg mb-2">הפרטים התקבלו</h4>
+                      <h4 className="text-foreground font-bold text-lg mb-2">׳”׳₪׳¨׳˜׳™׳ ׳”׳×׳§׳‘׳׳•</h4>
                       <p className="text-muted-foreground text-sm mb-6 leading-relaxed">
                         {successType === "free"
-                          ? "מעולה! נשלח לך סיכום מקצועי עם כל הזכויות שמצאנו עבורך."
+                          ? "׳׳¢׳•׳׳”! ׳ ׳©׳׳— ׳׳ ׳¡׳™׳›׳•׳ ׳׳§׳¦׳•׳¢׳™ ׳¢׳ ׳›׳ ׳”׳–׳›׳•׳™׳•׳× ׳©׳׳¦׳׳ ׳• ׳¢׳‘׳•׳¨׳."
                           : successType === "paid"
-                          ? "נהדר! נציג מומחה שלנו ייצור איתך קשר בהקדם לליווי אישי."
-                          : "תודה שפניתם! נחזור אליכם בהקדם."}
+                          ? "׳ ׳”׳“׳¨! ׳ ׳¦׳™׳’ ׳׳•׳׳—׳” ׳©׳׳ ׳• ׳™׳™׳¦׳•׳¨ ׳׳™׳×׳ ׳§׳©׳¨ ׳‘׳”׳§׳“׳ ׳׳׳™׳•׳•׳™ ׳׳™׳©׳™."
+                          : "׳×׳•׳“׳” ׳©׳₪׳ ׳™׳×׳! ׳ ׳—׳–׳•׳¨ ׳׳׳™׳›׳ ׳‘׳”׳§׳“׳."}
                       </p>
                       <Button onClick={handleReset} variant="outline" className="w-full text-sm">
-                        חזרה לתפריט הראשי
+                        ׳—׳–׳¨׳” ׳׳×׳₪׳¨׳™׳˜ ׳”׳¨׳׳©׳™
                       </Button>
                     </div>
                   </motion.div>
@@ -961,7 +957,7 @@ const FloatingBot = () => {
 
             {/* Footer */}
             <div className="px-4 py-3 border-t border-border bg-muted/50 text-center shrink-0">
-              <p className="text-xs text-muted-foreground">בקלות - מיצוי זכויות חכם 💚</p>
+              <p className="text-xs text-muted-foreground">׳‘׳§׳׳•׳× - ׳׳™׳¦׳•׳™ ׳–׳›׳•׳™׳•׳× ׳—׳›׳ נ’</p>
             </div>
           </motion.div>
         )}
@@ -984,7 +980,7 @@ const BackButton = ({ onClick }: { onClick: () => void }) => (
     className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground mt-4 mx-auto transition-colors"
   >
     <ArrowRight className="w-3.5 h-3.5" />
-    חזרה
+    ׳—׳–׳¨׳”
   </button>
 );
 
@@ -1019,14 +1015,14 @@ const ContactForm = ({
 }) => (
   <div className="space-y-3 mt-3">
     <Input
-      placeholder="שם מלא *"
+      placeholder="׳©׳ ׳׳׳ *"
       value={contactForm.name}
       onChange={(e) => setContactForm({ ...contactForm, name: e.target.value })}
       className="text-sm"
       required={requireFields}
     />
     <Input
-      placeholder="מספר טלפון *"
+      placeholder="׳׳¡׳₪׳¨ ׳˜׳׳₪׳•׳ *"
       type="tel"
       value={contactForm.phone}
       onChange={(e) => setContactForm({ ...contactForm, phone: e.target.value })}
@@ -1034,7 +1030,7 @@ const ContactForm = ({
       required={requireFields}
     />
     <Textarea
-      placeholder="רוצים להוסיף משהו? (לא חובה)"
+      placeholder="׳¨׳•׳¦׳™׳ ׳׳”׳•׳¡׳™׳£ ׳׳©׳”׳•? (׳׳ ׳—׳•׳‘׳”)"
       value={contactForm.details}
       onChange={(e) => setContactForm({ ...contactForm, details: e.target.value })}
       className="text-sm min-h-[60px]"
@@ -1043,10 +1039,10 @@ const ContactForm = ({
     <div className="space-y-2">
       <Button onClick={() => onSubmit("free")} disabled={isSubmitting} className="w-full gap-2 bg-primary hover:bg-primary/90 text-sm">
         <Send className="w-4 h-4" />
-        {isSubmitting ? "שולח..." : "שלחו לי מידע בחינם"}
+        {isSubmitting ? "׳©׳•׳׳—..." : "׳©׳׳—׳• ׳׳™ ׳׳™׳“׳¢ ׳‘׳—׳™׳ ׳"}
       </Button>
       <Button onClick={() => onSubmit("paid")} disabled={isSubmitting} variant="secondary" className="w-full gap-2 text-sm">
-        אני רוצה ליווי מקצועי של נציג
+        ׳׳ ׳™ ׳¨׳•׳¦׳” ׳׳™׳•׳•׳™ ׳׳§׳¦׳•׳¢׳™ ׳©׳ ׳ ׳¦׳™׳’
       </Button>
     </div>
   </div>

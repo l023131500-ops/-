@@ -15,7 +15,7 @@
     "lucideIcons": 17,
     "roundedXl": 0,
     "backdropBlur": 1,
-    "iconChipColours": 2
+    "iconChipColours": 1
   },
   "tamlul": {
     "displayFont": "Noto Serif Hebrew",
@@ -141,7 +141,7 @@
     "lucideIcons": 0,
     "roundedXl": 0,
     "backdropBlur": 0,
-    "iconChipColours": 1
+    "iconChipColours": 0
   },
   "egod": {
     "displayFont": "Noto Serif Hebrew",
@@ -159,7 +159,7 @@
     "lucideIcons": 34,
     "roundedXl": 35,
     "backdropBlur": 1,
-    "iconChipColours": 4
+    "iconChipColours": 1
   },
   "chatzor": {
     "displayFont": "Frank Ruhl Libre",
@@ -177,7 +177,7 @@
     "lucideIcons": 23,
     "roundedXl": 7,
     "backdropBlur": 4,
-    "iconChipColours": 3
+    "iconChipColours": 2
   },
   "chizukim": {
     "displayFont": "Assistant",
@@ -231,7 +231,7 @@
     "lucideIcons": 58,
     "roundedXl": 39,
     "backdropBlur": 5,
-    "iconChipColours": 11
+    "iconChipColours": 2
   },
   "mthbram": {
     "displayFont": "Secular One",
@@ -249,7 +249,7 @@
     "lucideIcons": 25,
     "roundedXl": 19,
     "backdropBlur": 7,
-    "iconChipColours": 2
+    "iconChipColours": 1
   },
   "galil": {
     "displayFont": "Suez One",
@@ -318,8 +318,8 @@
     "centredHero": false,
     "heroButtons": 4,
     "shadcnTokens": 5,
-    "lucideIcons": 40,
-    "roundedXl": 27,
+    "lucideIcons": 3,
+    "roundedXl": 26,
     "backdropBlur": 0,
     "iconChipColours": 0
   },
@@ -357,7 +357,7 @@
     "lucideIcons": 1,
     "roundedXl": 2,
     "backdropBlur": 0,
-    "iconChipColours": 1
+    "iconChipColours": 0
   },
   "gesher": {
     "displayFont": "Heebo",

@@ -1,4 +1,4 @@
-﻿import { useState, useRef } from "react";
+import { useState, useRef } from "react";
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
 import {
   ChevronLeft, ChevronDown, Send, CheckCircle, ArrowRight, Search,
@@ -143,7 +143,7 @@ const RightsCategories = () => {
                     transition={{ delay: idx * 0.04 }}
                     onClick={() => { setOpenCat(cat); setSelectedTopic(topic); }}
                     className="w-full flex items-center gap-3 p-3 rounded-xl border border-border hover:border-primary/40 hover:bg-primary/5 transition-all text-right">
-                    <div className={`w-8 h-8 rounded-lg bg-gradient-to-br ${cat.gradient} flex items-center justify-center shrink-0`}>
+                    <div className={`w-8 h-8 rounded-lg bg-primary/10 text-primary ring-1 ring-primary/15 flex items-center justify-center shrink-0`}>
                       <cat.icon className="w-4 h-4 text-white" />
                     </div>
                     <div className="flex-1 min-w-0">
@@ -187,7 +187,7 @@ const RightsCategories = () => {
                         }`}
                       >
                         <motion.div
-                          className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${cat.gradient} flex items-center justify-center shadow-lg`}
+                          className={`w-14 h-14 rounded-2xl bg-primary/10 text-primary ring-1 ring-primary/15 flex items-center justify-center shadow-lg`}
                           animate={expandedCat === cat.id
                             ? { scale: [1, 1.25, 1], rotate: [0, 15, -15, 0] }
                             : {}
@@ -240,7 +240,7 @@ const RightsCategories = () => {
 
                       <div className="flex items-center gap-3 mb-5">
                         <motion.div
-                          className={`w-11 h-11 rounded-xl bg-gradient-to-br ${cat.gradient} flex items-center justify-center shadow-md`}
+                          className={`w-11 h-11 rounded-xl bg-primary/10 text-primary ring-1 ring-primary/15 flex items-center justify-center shadow-md`}
                           animate={{ rotate: [0, 5, -5, 0] }}
                           transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
                         >
@@ -272,7 +272,7 @@ const RightsCategories = () => {
                             className="flex items-center gap-3 p-3.5 rounded-xl border border-border/50 bg-card/90 backdrop-blur-sm hover:border-primary/50 hover:bg-primary/5 transition-all text-right group"
                           >
                             <motion.div
-                              className={`w-9 h-9 rounded-lg bg-gradient-to-br ${cat.gradient}/20 flex items-center justify-center shrink-0`}
+                              className={`w-9 h-9 rounded-lg bg-primary/10 text-primary ring-1 ring-primary/15 flex items-center justify-center shrink-0`}
                               whileHover={{ rotate: 20, scale: 1.15 }}
                               transition={{ type: "spring", stiffness: 300 }}
                             >
@@ -326,7 +326,7 @@ const RightsCategories = () => {
           {openCat && !showTopicDetail && (
             <>
               <DialogHeader className="text-center">
-                <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${openCat.gradient} flex items-center justify-center mx-auto mb-2`}>
+                <div className={`w-14 h-14 rounded-xl bg-primary/10 text-primary ring-1 ring-primary/15 flex items-center justify-center mx-auto mb-2`}>
                   <openCat.icon className="w-7 h-7 text-white" />
                 </div>
                 <DialogTitle className="text-xl">{openCat.label}</DialogTitle>
