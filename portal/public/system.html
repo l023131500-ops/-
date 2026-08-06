@@ -280,7 +280,11 @@
           $('howSec').hidden = false;
         }
 
-        const plans = data.plans?.plans ?? [];
+        // ‎plans‎ מגיע כמערך שטוחה מ-more30_system_page. הקריאה המקוננת
+        // ‎data.plans.plans‎ שהייתה כאן החזירה undefined תמיד, ולכן גם אילו
+        // נלקח הענף הזה, מקטע המסלולים היה נשאר ריק. אותה סובלנות לשני
+        // המבנים כמו ב-subscribe.html, כדי ששני העמודים ישברו יחד או בכלל לא.
+        const plans = data.plans?.plans ?? data.plans ?? [];
         $('planList').innerHTML = plans
           .map((p) => {
             const feats = (p.features ?? []).map((f) => `<li>${esc(f)}</li>`).join('');
@@ -297,7 +301,8 @@
           })
           .join('');
 
-        if (data.plans?.plans_from === 'more30' && data.app_key !== 'more30') {
+        const plansFrom = data.plans?.plans_from ?? data.plans_from;
+        if (plansFrom === 'more30' && data.app_key !== 'more30') {
           $('plansLede').textContent =
             'מסלולי הפלטפורמה חלים גם על השירות הזה. אפשר להתחיל בחינם.';
         }
