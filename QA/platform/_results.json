@@ -3266,10 +3266,8 @@
       "url": "https://more30.com/mechiron",
       "desktop": {
         "status": 200,
-        "loadMs": 4670,
-        "consoleErrors": [
-          "Failed to load resource: the server responded with a status of 404 (Not Found)"
-        ],
+        "loadMs": 47087,
+        "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "mechiron-desktop.png",
         "title": "מאגר בקלות — כלי פנימי לצוות",
@@ -3281,14 +3279,31 @@
         "canonical": "",
         "ogUrl": "",
         "h1Count": 1,
-        "h1": "השוואת מחירים — חוסכים בקלות",
+        "h1": "בקלות — הזכויות וההטבות שמגיעות לכם, בלי בירוקרטיה",
         "headings": [
-          "H1: השוואת מחירים — חוסכים בקלות",
-          "H2: מבצעים"
+          "H1: בקלות — הזכויות וההטבות שמגיעות לכם, בלי בירוקרטיה",
+          "H2: מסבירים, מלווים, ועוזרים לממש בפועל",
+          "H3: איתור הזכויות שלכם",
+          "H3: הסבר ברור ומעשי",
+          "H3: ליווי אישי כשצריך",
+          "H2: חמש דרכים שבקלות עוזרת לכם",
+          "H3: איתור הזכויות שמתאימות לכם",
+          "H3: בדיקת זכאות בקליק",
+          "H3: מידע ברור על הזכות",
+          "H3: תזכורת לפעולה בזמן הנכון",
+          "H3: טיפול בפועל על ידי בקלות",
+          "H3: ליווי ברור וממוקד"
         ],
-        "textLen": 937,
-        "interactiveCount": 30,
-        "smallTargets": [],
+        "textLen": 3040,
+        "interactiveCount": 25,
+        "smallTargets": [
+          {
+            "tag": "a",
+            "w": 130,
+            "h": 17,
+            "name": "תנאי שימוש ומדיניות פרטיות"
+          }
+        ],
         "srOnlyTargets": [],
         "unnamedControls": [],
         "imgsNoAlt": [],
@@ -3306,10 +3321,8 @@
       },
       "mobile": {
         "status": 200,
-        "loadMs": 4631,
-        "consoleErrors": [
-          "Failed to load resource: the server responded with a status of 404 (Not Found)"
-        ],
+        "loadMs": 38774,
+        "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "mechiron-mobile.png",
         "title": "מאגר בקלות — כלי פנימי לצוות",
@@ -3321,14 +3334,31 @@
         "canonical": "",
         "ogUrl": "",
         "h1Count": 1,
-        "h1": "השוואת מחירים — חוסכים בקלות",
+        "h1": "בקלות — הזכויות וההטבות שמגיעות לכם, בלי בירוקרטיה",
         "headings": [
-          "H1: השוואת מחירים — חוסכים בקלות",
-          "H2: מבצעים"
+          "H1: בקלות — הזכויות וההטבות שמגיעות לכם, בלי בירוקרטיה",
+          "H2: מסבירים, מלווים, ועוזרים לממש בפועל",
+          "H3: איתור הזכויות שלכם",
+          "H3: הסבר ברור ומעשי",
+          "H3: ליווי אישי כשצריך",
+          "H2: חמש דרכים שבקלות עוזרת לכם",
+          "H3: איתור הזכויות שמתאימות לכם",
+          "H3: בדיקת זכאות בקליק",
+          "H3: מידע ברור על הזכות",
+          "H3: תזכורת לפעולה בזמן הנכון",
+          "H3: טיפול בפועל על ידי בקלות",
+          "H3: ליווי ברור וממוקד"
         ],
-        "textLen": 15478,
-        "interactiveCount": 190,
-        "smallTargets": [],
+        "textLen": 3040,
+        "interactiveCount": 25,
+        "smallTargets": [
+          {
+            "tag": "a",
+            "w": 130,
+            "h": 17,
+            "name": "תנאי שימוש ומדיניות פרטיות"
+          }
+        ],
         "srOnlyTargets": [],
         "unnamedControls": [],
         "imgsNoAlt": [],
@@ -3346,10 +3376,8 @@
       },
       "dark": {
         "status": 200,
-        "loadMs": 4575,
-        "consoleErrors": [
-          "Failed to load resource: the server responded with a status of 404 (Not Found)"
-        ],
+        "loadMs": 49070,
+        "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "mechiron-dark.png",
         "title": "מאגר בקלות — כלי פנימי לצוות",
@@ -3361,31 +3389,48 @@
         "canonical": "",
         "ogUrl": "",
         "h1Count": 1,
-        "h1": "השוואת מחירים — חוסכים בקלות",
+        "h1": "בקלות — הזכויות וההטבות שמגיעות לכם, בלי בירוקרטיה",
         "headings": [
-          "H1: השוואת מחירים — חוסכים בקלות",
-          "H2: מבצעים"
+          "H1: בקלות — הזכויות וההטבות שמגיעות לכם, בלי בירוקרטיה",
+          "H2: מסבירים, מלווים, ועוזרים לממש בפועל",
+          "H3: איתור הזכויות שלכם",
+          "H3: הסבר ברור ומעשי",
+          "H3: ליווי אישי כשצריך",
+          "H2: חמש דרכים שבקלות עוזרת לכם",
+          "H3: איתור הזכויות שמתאימות לכם",
+          "H3: בדיקת זכאות בקליק",
+          "H3: מידע ברור על הזכות",
+          "H3: תזכורת לפעולה בזמן הנכון",
+          "H3: טיפול בפועל על ידי בקלות",
+          "H3: ליווי ברור וממוקד"
         ],
-        "textLen": 15478,
-        "interactiveCount": 190,
-        "smallTargets": [],
+        "textLen": 3040,
+        "interactiveCount": 25,
+        "smallTargets": [
+          {
+            "tag": "a",
+            "w": 130,
+            "h": 17,
+            "name": "תנאי שימוש ומדיניות פרטיות"
+          }
+        ],
         "srOnlyTargets": [],
         "unnamedControls": [],
         "imgsNoAlt": [],
         "hasAuthScript": true,
         "authBtnText": "",
-        "bodyBg": "rgb(248, 246, 242)",
-        "bodyFg": "rgb(23, 33, 38)",
-        "effBg": "rgb(248, 246, 242)",
+        "bodyBg": "rgb(18, 25, 28)",
+        "bodyFg": "rgb(240, 236, 230)",
+        "effBg": "rgb(18, 25, 28)",
         "bgImages": "",
-        "bgLuminance": 0.9228,
+        "bgLuminance": 0.0091,
         "colorScheme": "normal",
         "vercelLeak": [],
         "scrollW": 1440,
         "clientW": 1440
       },
-      "darkModeImplemented": false,
-      "darkModeBasis": "none",
+      "darkModeImplemented": true,
+      "darkModeBasis": "responds",
       "horizontalOverflow": false
     },
     "kupot": {
@@ -3396,7 +3441,7 @@
       "url": "https://more30.com/kupot",
       "desktop": {
         "status": 200,
-        "loadMs": 4584,
+        "loadMs": 33651,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "kupot-desktop.png",
@@ -3414,8 +3459,8 @@
           "H1: השוואת קופות חולים",
           "H2: באילו נושאים כל קופה בולטת"
         ],
-        "textLen": 3139,
-        "interactiveCount": 50,
+        "textLen": 3164,
+        "interactiveCount": 51,
         "smallTargets": [],
         "srOnlyTargets": [],
         "unnamedControls": [],
@@ -3434,7 +3479,7 @@
       },
       "mobile": {
         "status": 200,
-        "loadMs": 4357,
+        "loadMs": 36627,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "kupot-mobile.png",
@@ -3452,8 +3497,8 @@
           "H1: השוואת קופות חולים",
           "H2: באילו נושאים כל קופה בולטת"
         ],
-        "textLen": 3139,
-        "interactiveCount": 50,
+        "textLen": 3164,
+        "interactiveCount": 51,
         "smallTargets": [],
         "srOnlyTargets": [],
         "unnamedControls": [],
@@ -3472,7 +3517,7 @@
       },
       "dark": {
         "status": 200,
-        "loadMs": 4991,
+        "loadMs": 37205,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "kupot-dark.png",
@@ -3490,8 +3535,8 @@
           "H1: השוואת קופות חולים",
           "H2: באילו נושאים כל קופה בולטת"
         ],
-        "textLen": 3139,
-        "interactiveCount": 50,
+        "textLen": 3164,
+        "interactiveCount": 51,
         "smallTargets": [],
         "srOnlyTargets": [],
         "unnamedControls": [],
@@ -4413,5 +4458,5 @@
       "horizontalOverflow": false
     }
   },
-  "finishedAt": "2026-08-03T08:00:32.721Z"
+  "finishedAt": "2026-08-06T23:20:38.880Z"
 }

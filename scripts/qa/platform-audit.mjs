@@ -17,6 +17,7 @@
 import { chromium } from 'playwright-core';
 import fs from 'node:fs';
 import path from 'node:path';
+import { settle } from './lib/settle.mjs';
 
 const EXE = 'C:\\Users\\USER\\AppData\\Local\\ms-playwright\\chromium-1234\\chrome-win64\\chrome.exe';
 const ORIGIN = 'https://more30.com';
@@ -250,8 +251,19 @@ for (const route of targets) {
     try {
       const resp = await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 90000 });
       status = resp ? resp.status() : 0;
-      // client-rendered apps need a beat; 3s is enough for every route measured so far
-      await page.waitForTimeout(3500);
+      // ⚠️ 07/08 — this was `waitForTimeout(3500)` with the comment "3s is enough
+      // for every route measured so far". It was not, and this file carried the
+      // proof: /mechiron was recorded at 937 characters on desktop and 15,478 on
+      // mobile and dark, in the same run, off the same URL. desktop is the first
+      // of the three modes, so it alone paid the cold load and the sleep expired
+      // on the loading shell; the two warm passes read the real page. That 937
+      // is what QA/mechiron.md was written from.
+      //
+      // settle() waits for the text to stop changing instead — see lib/settle.mjs
+      // for why three stable samples and a 9s floor, both bought with measurement.
+      // minChars is low on purpose: a route that is genuinely broken must still be
+      // recorded as broken, so the wait for a page to exist is a hint, not a gate.
+      await settle(page, { minChars: 50 });
     } catch (e) {
       rec[mode] = { error: String(e).slice(0, 200) };
       await ctx.close();
