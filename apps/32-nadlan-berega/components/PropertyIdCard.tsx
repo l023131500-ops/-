@@ -330,7 +330,7 @@ export default function PropertyIdCard({ q }: { q: string }) {
       )}
 
       <div className="mt-6 text-center text-xs text-muted">
-        הופק ב-{heDate(profile.generatedAt)} · נדל"ן ברגע · מבית מור מערכות תוכנה · הערכות אינן מהוות ייעוץ
+        הופק ב-{heDate(profile.generatedAt)} · נדל"ן ברגע · מבית עולם הסטארטאפים · הערכות אינן מהוות ייעוץ
       </div>
     </div>
   );

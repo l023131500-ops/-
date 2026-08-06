@@ -2,7 +2,7 @@
   "name": "nadlan-berega",
   "version": "0.1.0",
   "private": true,
-  "description": "נדל\"ן ברגע — תעודת זהות דיגיטלית לכל נכס בישראל | מבית מור מערכות תוכנה",
+  "description": "נדל\"ן ברגע — תעודת זהות דיגיטלית לכל נכס בישראל | מבית עולם הסטארטאפים",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
