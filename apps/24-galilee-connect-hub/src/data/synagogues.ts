@@ -7,17 +7,16 @@ export const BACKGROUND_PRESETS = [
   { id: 5, name: 'חום חם', gradient: 'linear-gradient(135deg, hsl(25 40% 20%), hsl(35 50% 30%))' },
 ];
 
-// Zmanim for Hazor HaGlilit (approximate)
-export const dailyZmanim = [
-  { name: 'עלות השחר', time: '04:52' },
-  { name: 'הנץ החמה', time: '06:12' },
-  { name: 'סוף זמן ק"ש (מג"א)', time: '08:45' },
-  { name: 'סוף זמן ק"ש (גר"א)', time: '09:21' },
-  { name: 'סוף זמן תפילה', time: '10:30' },
-  { name: 'חצות היום', time: '12:38' },
-  { name: 'מנחה גדולה', time: '13:08' },
-  { name: 'מנחה קטנה', time: '16:15' },
-  { name: 'פלג המנחה', time: '17:22' },
-  { name: 'שקיעה', time: '19:05' },
-  { name: 'צאת הכוכבים', time: '19:35' },
-];
+// Zmanim are computed, not stored.
+//
+// There used to be a hardcoded `dailyZmanim` array here — eleven fixed times
+// commented "(approximate)" and shown to the town under the heading
+// "זמני היום". Fixed times cannot be today's times: against the real sun on
+// 6 Aug 2026 that table had sunrise 20 minutes late, sunset 29 minutes early
+// and צאת הכוכבים 36 minutes early, and it said the same thing in December.
+//
+// It now comes from @hebcal/core with Chatzor's coordinates — the same engine
+// and the same numbers as apps/16-chatzor-connect, so the two sites for this
+// town cannot disagree. See lib/zmanim.ts.
+export { getDailyZmanim } from '@/lib/zmanim';
+export type { DailyZman } from '@/lib/zmanim';

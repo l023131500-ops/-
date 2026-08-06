@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { Sun, Sunrise, Sunset, Moon, Clock } from 'lucide-react';
-import { dailyZmanim } from '@/data/synagogues';
+import { getDailyZmanim } from '@/data/synagogues';
 
 const iconMap: Record<string, React.ReactNode> = {
   'עלות השחר': <Moon className="w-4 h-4" />,
@@ -13,6 +13,7 @@ const iconMap: Record<string, React.ReactNode> = {
 const ZmanimSidebar = () => {
   const now = new Date();
   const currentMinutes = now.getHours() * 60 + now.getMinutes();
+  const dailyZmanim = getDailyZmanim(now);
 
   const getMinutes = (time: string) => {
     const [h, m] = time.split(':').map(Number);

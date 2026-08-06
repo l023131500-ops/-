@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useSynagogue } from '@/hooks/useSynagogues';
 import { supabase } from '@/integrations/supabase/client';
-import { dailyZmanim, BACKGROUND_PRESETS } from '@/data/synagogues';
+import { getDailyZmanim, BACKGROUND_PRESETS } from '@/data/synagogues';
 import Footer from '@/components/Footer';
 
 const SynagoguePage = () => {
@@ -153,7 +153,7 @@ const SynagoguePage = () => {
               <Sparkles className="w-5 h-5 text-accent" /> זמני היום
             </h2>
             <div className="space-y-2">
-              {dailyZmanim.map((z, i) => (
+              {getDailyZmanim().map((z, i) => (
                 <div key={i} className="flex items-center justify-between py-2 px-3 rounded-lg bg-muted/40 border border-border/20">
                   <span className="text-sm font-semibold text-foreground">{z.name}</span>
                   <span className="font-mono font-black text-primary text-sm">{z.time}</span>

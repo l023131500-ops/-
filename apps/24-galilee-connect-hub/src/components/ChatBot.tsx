@@ -6,7 +6,7 @@ import {
   ArrowRight, Droplets, Sparkles, Phone, ExternalLink, Mail, AlertTriangle
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import { dailyZmanim } from '@/data/synagogues';
+import { getDailyZmanim } from '@/data/synagogues';
 import type { KnowledgeItem } from '@/lib/knowledgeStore';
 import type { QuestionDestination } from '@/lib/rabbiQuestionsStore';
 
@@ -105,7 +105,8 @@ const getAnswerByCategory = async (catId: string): Promise<string> => {
 
   switch (catId) {
     case 'zmanim': {
-      const zmanimText = dailyZmanim.map(z => `• ${z.name}: ${z.time}`).join('\n');
+      // Computed at answer time, so the bot cannot quote yesterday's sunset.
+      const zmanimText = getDailyZmanim().map(z => `• ${z.name}: ${z.time}`).join('\n');
       return `🕐 **זמני היום — חצור הגלילית:**\n${zmanimText}`;
     }
     case 'prayers': {
