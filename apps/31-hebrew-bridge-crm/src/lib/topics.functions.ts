@@ -247,7 +247,15 @@ export const sendTopicToClient = createServerFn({ method: "POST" })
       partner_email: partnerEmail,
     };
 
-    console.log("[send-topic] queueing", payload);
+    // Identifiers only — see the note in lib/leads.functions.ts. This payload is
+    // the worst of the four: a named client's e-mail and phone, the full body
+    // of the message, and the contact details of every professional attached.
+    console.log("[send-topic] queueing", {
+      client_id: clientRes.data.id,
+      topic_id: topicRes.data.id,
+      professionals: professionals.length,
+      notify_partner: topicRes.data.notify_partner,
+    });
 
     const { data: row, error } = await supabaseAdmin
       .from("outbox_queue")

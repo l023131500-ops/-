@@ -77,11 +77,15 @@ export const Route = createFileRoute("/api/public/hooks/outbox-dispatch")({
             : "";
 
           try {
+            // No `payload` here — see the note in lib/leads.functions.ts. Every
+            // row on this queue carries someone's personal details, so logging
+            // the body wrote the same data a second time, after the producer
+            // had already logged it once.
             console.log("[outbox-dispatch] sending", {
               id: row.id,
               event_type: row.event_type,
               target: outboundUrl,
-              payload: JSON.parse(payload),
+              bytes: payload.length,
             });
             const res = await fetch(outboundUrl, {
               method: "POST",

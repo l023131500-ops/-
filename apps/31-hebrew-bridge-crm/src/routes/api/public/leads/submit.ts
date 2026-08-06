@@ -58,7 +58,13 @@ export const Route = createFileRoute("/api/public/leads/submit")({
           metadata: data.metadata ?? {},
           created_at: lead.created_at,
         };
-        console.log("[api/leads/submit] queueing", payload);
+        // Identifier only — see the note in lib/leads.functions.ts. This is the
+        // same lead arriving over HTTP (n8n / external forms), so logging the
+        // payload here would leak exactly the same personal details.
+        console.log("[api/leads/submit] queueing", {
+          lead_id: lead.id,
+          source: data.source ?? "web",
+        });
 
         const { error: qErr } = await supabaseAdmin.from("outbox_queue").insert({
           event_type: "new_lead",

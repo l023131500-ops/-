@@ -45,7 +45,12 @@ export const submitLead = createServerFn({ method: "POST" })
       created_at: lead.created_at,
     };
 
-    console.log("[submit-lead] queueing", payload);
+    // ⚠️ Log the identifier, never the payload. `payload` carries the name,
+    // e-mail, phone and free-text message of a member of the public, and
+    // console output on this host goes to the platform log, which is a wider
+    // audience than the CRM's own consent rules allow. The lead id is enough
+    // to find the row.
+    console.log("[submit-lead] queueing", { lead_id: lead.id, source: data.source ?? "web" });
 
     const { error: qErr } = await supabaseAdmin.from("outbox_queue").insert({
       event_type: "new_lead",

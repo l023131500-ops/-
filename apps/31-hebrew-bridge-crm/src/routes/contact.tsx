@@ -14,9 +14,9 @@ import { submitLead } from "@/lib/leads.functions";
 export const Route = createFileRoute("/contact")({
   head: () => ({
     meta: [
-      { title: "צור קשר — בקלוט" },
+      { title: "צור קשר — בקלות" },
       { name: "description", content: "השאירו פרטים ונחזור אליכם בהקדם." },
-      { property: "og:title", content: "צור קשר — בקלוט" },
+      { property: "og:title", content: "צור קשר — בקלות" },
       { property: "og:description", content: "השאירו פרטים ונחזור אליכם בהקדם." },
     ],
   }),
