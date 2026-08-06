@@ -95,11 +95,20 @@ console.log(`        customer: ${me.email}`);
 
 const reached = [];   // hidden tier the customer got a subscription row for
 const shown = [];     // hidden tier that turned up on a public page
+const listed = [];    // hidden tier more30_plans handed to an anonymous caller
 let asked = 0, offered = 0;
 
 for (const app of mounts) {
   const page = (await rpc('more30_system_page', { p_app: app })).json;
   const codes = (page?.plans ?? []).map((p) => p.code);
+
+  // The fourth public reader of core.plans. more30_system_page is what the
+  // subscribe page calls today, but more30_plans carries the obvious name and
+  // the same anon EXECUTE grant, so whichever page reaches for it next inherits
+  // whatever it returns. Asked without a token, as a stranger would.
+  const cat = (await rpc('more30_plans', { p_app: app })).json;
+  const catCodes = (cat?.plans ?? []).map((p) => p.code);
+  for (const c of ADMIN_ONLY) if (catCodes.includes(c)) listed.push(`${app}/${c}`);
 
   // What makes a code "hidden" is that the customer is never shown it. If that
   // stops being true the rest of this file is asking the wrong question, so it
@@ -135,6 +144,8 @@ for (const app of mounts) {
 
 ok(`no admin-only tier is offered on any public page (${mounts.length} checked)`,
    shown.length === 0, shown.join(', '));
+ok(`more30_plans hands an anonymous caller no admin-only tier (${mounts.length} checked)`,
+   listed.length === 0, `${listed.length} leaked: ${listed.slice(0, 6).join(', ')}${listed.length > 6 ? ' …' : ''}`);
 ok(`no admin-only tier can be subscribed to (${asked} asked)`,
    reached.filter((r) => !r.got[0].startsWith('control')).length === 0,
    reached.map((r) => `${r.app}: ${r.got.join(', ')}`).join(' ; '));
