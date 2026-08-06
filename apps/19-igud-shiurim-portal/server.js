@@ -1115,7 +1115,15 @@ app.post('/api/webhooks/nedarim', express.urlencoded({ extended: true }), async 
   const transactionId = data.TransactionId || data.transactionId || data.Shovar;
   const amount = data.Amount || data.amount;
   if (!correlationToken) {
-    console.warn('נדרים פלוס callback ללא Param1 - מתעלם', data);
+    // Field names only. This used to log `data` whole, and a Nedarim Plus
+    // callback carries the payer's name, phone and e-mail alongside the
+    // transaction fields — so the one branch that fires when the callback is
+    // misconfigured was the branch that wrote a donor's details to the log.
+    // The key list is what a misconfiguration actually needs to diagnose.
+    console.warn(
+      'נדרים פלוס callback ללא Param1 - מתעלם. שדות שהתקבלו:',
+      Object.keys(data).join(', ') || '(אין)',
+    );
     return res.status(200).send('ok'); // עדיין מאשרים קבלה כדי שלא ינסו שוב לשווא
   }
   const result = await supabaseAnon.rpc('mark_subscription_payment_paid', {

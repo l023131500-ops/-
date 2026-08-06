@@ -27,6 +27,13 @@ function getSupabaseClient() {
   });
 }
 
+/** 0501234567 → 050***4567. Enough to match a record, not enough to dial. */
+function maskPhone(phone: string): string {
+  const d = phone.replace(/\D/g, "");
+  if (d.length < 7) return "***";
+  return `${d.slice(0, 3)}***${d.slice(-4)}`;
+}
+
 function textCacheKey(text: string): string {
   return crypto.createHash("sha256").update(text, "utf8").digest("hex") + ".mp3";
 }
@@ -152,14 +159,12 @@ async function sendTTS(apiKey: string, phone: string, message: string): Promise<
   formData.append("repeatFile", "1");
 
   const url = `${YEMOT_BASE}/SendTTS`;
-  console.log("[yemot] SendTTS request:", {
-    url,
-    phone,
-    message,
-    apiKeyLength: apiKey.length,
-    apiKeyPrefix: apiKey.slice(0, 6) + "...",
-    authHeader: `Basic ${apiKey.slice(0, 6)}...`,
-  });
+  // Log that a send happened and enough to debug it — not who it went to or
+  // what it said. This line used to carry `phone` and `message` in full: the
+  // customer's number and the text read out to them, on every send.
+  console.log(
+    `[yemot] SendTTS request: ${url} to=${maskPhone(phone)} chars=${message.length} keyLen=${apiKey.length}`,
+  );
 
   const res = await fetch(url, {
     method: "POST",
@@ -167,7 +172,10 @@ async function sendTTS(apiKey: string, phone: string, message: string): Promise<
     body: formData,
   });
   const rawText = await res.text();
-  console.log("[yemot] SendTTS response:", { status: res.status, body: rawText });
+  // Size, not contents — the provider echoes the destination number in some of
+  // its error strings. The full text still reaches the caller: on failure it is
+  // thrown below, and the route stores it against the message record.
+  console.log(`[yemot] SendTTS response: ${res.status} (${rawText.length} chars)`);
 
   let result: { responseStatus: string; message?: string };
   try {

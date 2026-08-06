@@ -1413,7 +1413,10 @@ const GabaiPortal = () => {
     if (loginType === 'admin') {
       // Check admin from gabai_accounts table
       const { data, error: dbError } = await supabase.from('gabai_accounts').select('*').eq('is_admin', true).eq('is_active', true);
-      console.log('Admin login query result:', { data, dbError, passwordEntered: password });
+      // No console.log here. The line that was here printed
+      // `{ data, dbError, passwordEntered: password }` — the password the user
+      // just typed, plus every admin account row (password_hash included), into
+      // the browser console of a live page. Measured on production 06/08/2026.
       if (dbError) {
         setError('שגיאת חיבור למסד הנתונים. נסה שוב.');
         return;
