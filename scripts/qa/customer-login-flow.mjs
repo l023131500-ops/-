@@ -18,6 +18,7 @@
  *   node scripts/qa/customer-login-flow.mjs
  */
 import { chromium } from 'playwright-core';
+import { settle } from './lib/settle.mjs';
 
 const EXE = 'C:\\Users\\USER\\AppData\\Local\\ms-playwright\\chromium-1234\\chrome-win64\\chrome.exe';
 const ORIGIN = 'https://more30.com';
@@ -41,7 +42,7 @@ const browser = await chromium.launch({ executablePath: EXE, headless: true });
   await page.goto(`${ORIGIN}/login?from=${encodeURIComponent(back)}`, {
     waitUntil: 'domcontentloaded', timeout: 90000,
   });
-  await page.waitForTimeout(3000);
+  await settle(page, { minChars: 50 }).catch(() => {});
   // The identifier field is `type=text` with autocomplete=username, not
   // `type=email`: an internal account like `eueu1234` is a username, and the
   // same box accepts an address. Checking for type=email would fail a page
@@ -68,7 +69,20 @@ for (const route of ROUTES) {
   const page = await browser.newPage({ viewport: { width: 1280, height: 900 }, locale: 'he-IL' });
   try {
     await page.goto(ORIGIN + route, { waitUntil: 'domcontentloaded', timeout: 90000 });
-    await page.waitForTimeout(4500);
+    // ⚠️ load-bearing guard — do not replace with a sleep. The only thing this
+    // loop reads is the pill inside <more30-auth>'s shadow root, so the honest
+    // wait is for that element to exist, not for a page-text length to hold
+    // still. A fixed 4.5s was reporting "no pill on the page" for any system
+    // whose auth-button.js was still in flight. The 15s ceiling matters as
+    // much as the guard: absence of a pill is a real finding this must report,
+    // not a reason to hang.
+    await page
+      .waitForFunction(
+        () => !!document.querySelector('more30-auth')?.shadowRoot?.querySelector('.pill'),
+        undefined,
+        { timeout: 15000 },
+      )
+      .catch(() => {});
     const r = await page.evaluate(() => {
       const host = document.querySelector('more30-auth');
       const pill = host?.shadowRoot?.querySelector('.pill');

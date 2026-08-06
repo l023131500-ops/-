@@ -7,9 +7,16 @@
 //
 // Screenshots land in QA/chizukim/.
 
+// ⚠️ headline, searchTotal and detailTextLen are all read out of
+// document.body.innerText, so a fixed sleep decided them by network luck.
+// settle() waits for the text to stop changing instead. The read after the
+// search box is filled takes no minChars — the archive is already on screen at
+// that point, and the thing being waited for is the result count *changing*.
+
 import { chromium } from 'playwright-core';
 import fs from 'node:fs';
 import path from 'node:path';
+import { settle } from './lib/settle.mjs';
 
 const EXE = 'C:\\Users\\USER\\AppData\\Local\\ms-playwright\\chromium-1234\\chrome-win64\\chrome.exe';
 const OUT = 'C:\\Users\\USER\\Downloads\\more30\\QA\\chizukim';
@@ -35,7 +42,7 @@ for (const mode of ['light', 'dark', 'mobile']) {
 
   const rec = { mode, errors: errs };
   await page.goto(URL, { waitUntil: 'domcontentloaded', timeout: 90000 });
-  await page.waitForTimeout(4000);
+  await settle(page, { minChars: 50 }).catch(() => {});
   await page.screenshot({ path: path.join(OUT, `01-archive-${mode}.png`), fullPage: mode !== 'mobile' });
 
   rec.bodyBg = await page.evaluate(() => getComputedStyle(document.body).backgroundColor);
@@ -45,7 +52,7 @@ for (const mode of ['light', 'dark', 'mobile']) {
   const box = page.locator('input[type="search"], input[placeholder*="חיפוש"], input[placeholder*="חפש"]').first();
   if (await box.count()) {
     await box.fill(TERM);
-    await page.waitForTimeout(4500);
+    await settle(page).catch(() => {});
     rec.searchTotal = await page.evaluate(() => {
       const m = document.body.innerText.match(/([\d,]+)\s*(?:תוצאות|הקלטות|נמצאו)/);
       return m ? m[0] : null;
@@ -56,7 +63,7 @@ for (const mode of ['light', 'dark', 'mobile']) {
     const hit = page.locator('a[href*="/recordings/"], [data-testid*="recording"], article a').first();
     if (await hit.count()) {
       await hit.click().catch(() => {});
-      await page.waitForTimeout(4500);
+      await settle(page, { minChars: 50 }).catch(() => {});
       rec.detailUrl = page.url();
       rec.detailTextLen = await page.evaluate(() => (document.body.innerText || '').length);
       rec.hasTranscript = await page.evaluate(() => !!document.querySelector('.prose-hebrew'));

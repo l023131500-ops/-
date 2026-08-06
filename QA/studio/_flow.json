@@ -2,7 +2,7 @@
   "light": {
     "mode": "light",
     "errors": [],
-    "previewsRendered": 18,
+    "previewsRendered": 10,
     "effBg": "rgb(12, 17, 29)",
     "colorScheme": "dark",
     "overflow": false,
@@ -34,7 +34,7 @@
     },
     "templates": 4,
     "editor": {
-      "textLen": 892,
+      "textLen": 917,
       "stuckOnFallback": false,
       "hasCanvas": true,
       "controls": 8,
@@ -76,7 +76,7 @@
     },
     "templates": 4,
     "editor": {
-      "textLen": 892,
+      "textLen": 917,
       "stuckOnFallback": false,
       "hasCanvas": true,
       "controls": 8,
@@ -118,7 +118,7 @@
     },
     "templates": 4,
     "editor": {
-      "textLen": 968,
+      "textLen": 993,
       "stuckOnFallback": false,
       "hasCanvas": false,
       "controls": 8,

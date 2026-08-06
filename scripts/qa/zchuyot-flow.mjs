@@ -13,6 +13,7 @@
 import { chromium } from 'playwright-core';
 import fs from 'node:fs';
 import path from 'node:path';
+import { settle } from './lib/settle.mjs';
 
 const EXE = 'C:\\Users\\USER\\AppData\\Local\\ms-playwright\\chromium-1234\\chrome-win64\\chrome.exe';
 const OUT = 'C:\\Users\\USER\\Downloads\\more30\\QA\\zchuyot';
@@ -51,7 +52,7 @@ for (const mode of ['light', 'dark', 'mobile']) {
 
   const rec = { mode, errors: errs };
   await page.goto(URL, { waitUntil: 'domcontentloaded', timeout: 90000 });
-  await page.waitForTimeout(4000);
+  await settle(page, { minChars: 50 }).catch(() => {});
   // ⚠️ ה-hero קשור לגלילה (‎opacity‎ יורדת ל-0 עד 400px). צילום ‎fullPage‎
   // גולל בעצמו, ולכן הכותרת יוצאת דהויה בו. הצילום שמעיד על ה-hero חייב
   // להילקח לפני כל גלילה ובלי fullPage.
@@ -87,6 +88,11 @@ for (const mode of ['light', 'dark', 'mobile']) {
     const input = page.locator('input[placeholder], textarea').last();
     await input.fill(QUESTION);
     await page.keyboard.press('Enter');
+    // ⚠️ ההמתנה הזו נשארת קבועה במכוון, ואינה מהסוג ש-settle() מתקן.
+    // settle() מזהה "העמוד הפסיק להשתנות" — וסוכן שחושב לפני שהוא מתחיל
+    // לכתוב משאיר את הפאנל דומם בדיוק כך. שלוש דגימות יציבות בתוך ההמתנה
+    // לתשובה ייקראו כתשובה ריקה. 20 שניות הן תקציב זמן-תגובה של המודל,
+    // לא ניחוש של זמן רינדור.
     await page.waitForTimeout(20000);
     rec.agentReply = await page.evaluate(() => {
       const panel = document.querySelector('.fixed.bottom-6.right-6');

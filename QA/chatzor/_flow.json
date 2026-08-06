@@ -6,16 +6,16 @@
     "zmanim": {
       "count": 14,
       "sample": [
-        "05:48",
-        "05:48",
-        "19:39",
-        "04:29"
+        "04:33",
+        "05:52",
+        "19:34",
+        "04:33"
       ]
     },
     "hasSunrise": true,
     "synagogues": 4,
     "siteUrl": "https://more30.com/chatzor/k/beit-el",
-    "siteTextLen": 539
+    "siteTextLen": 565
   },
   "dark": {
     "mode": "dark",
@@ -24,16 +24,16 @@
     "zmanim": {
       "count": 14,
       "sample": [
-        "05:48",
-        "05:48",
-        "19:39",
-        "04:29"
+        "04:33",
+        "05:52",
+        "19:34",
+        "04:33"
       ]
     },
     "hasSunrise": true,
     "synagogues": 4,
     "siteUrl": "https://more30.com/chatzor/k/beit-el",
-    "siteTextLen": 539
+    "siteTextLen": 565
   },
   "mobile": {
     "mode": "mobile",
@@ -42,15 +42,15 @@
     "zmanim": {
       "count": 14,
       "sample": [
-        "05:48",
-        "05:48",
-        "19:39",
-        "04:29"
+        "04:33",
+        "05:52",
+        "19:34",
+        "04:33"
       ]
     },
     "hasSunrise": true,
     "synagogues": 4,
     "siteUrl": "https://more30.com/chatzor/k/beit-el",
-    "siteTextLen": 539
+    "siteTextLen": 565
   }
 }
