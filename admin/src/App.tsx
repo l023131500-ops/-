@@ -505,7 +505,7 @@ export function App() {
   if (!authReady) {
     return (
       <main style={{ ...shell, display: "grid", placeItems: "center" }}>
-        <div style={{ color: "#64748b", fontSize: 14 }}>בודקים התחברות…</div>
+        <div style={{ color: "var(--muted)", fontSize: 14 }}>בודקים התחברות…</div>
       </main>
     );
   }
@@ -515,7 +515,7 @@ export function App() {
       <main style={{ ...shell, display: "grid", placeItems: "center" }}>
         <div style={{ ...card, width: "min(420px, 92vw)" }}>
           <h1 style={{ margin: 0, fontSize: 22 }}>more30 · ניהול</h1>
-          <p style={{ fontSize: 13, color: "#64748b", lineHeight: 1.6, marginTop: 8 }}>
+          <p style={{ fontSize: 13, color: "var(--muted)", lineHeight: 1.6, marginTop: 8 }}>
             כניסה אחת לניהול כל המערכות: המצב האמיתי של כל אחת, לוח הביקורת,
             המפתחות החסרים, הקרדיטים אצל הספקים, והרעיונות והאפיונים שנכנסו.
           </p>
@@ -526,7 +526,7 @@ export function App() {
               onChange={(e) => setPassword(e.target.value)} autoComplete="current-password"
               onKeyDown={(e) => { if (e.key === "Enter") signInWithPassword(); }}
               style={{ ...inp, padding: "8px 12px" }} />
-            <button onClick={signInWithPassword} style={{ ...btn, background: "#4f46e5", color: "#fff", borderColor: "#4f46e5", padding: "8px 12px", fontWeight: 700 }}>
+            <button onClick={signInWithPassword} style={{ ...btn, background: "var(--accent)", color: "#fff", borderColor: "var(--accent)", padding: "8px 12px", fontWeight: 700 }}>
               כניסה
             </button>
             <button onClick={signInWithLink} style={{ ...btn, padding: "8px 12px" }}>
@@ -535,11 +535,11 @@ export function App() {
             {/* הכניסה המשותפת של הפלטפורמה — אותה אחת של כל 33 המערכות,
                 כולל Google. מי שנכנס שם כבר נכנס גם לכאן. */}
             <a href="https://more30.com/login?from=https%3A%2F%2Fmore30.com%2Fadmin"
-               style={{ ...btn, padding: "8px 12px", textAlign: "center", textDecoration: "none", color: "#0f172a" }}>
+               style={{ ...btn, padding: "8px 12px", textAlign: "center", textDecoration: "none", color: "var(--fg)" }}>
               כניסה דרך החשבון של more30 (כולל Google)
             </a>
           </div>
-          {msg && <div style={{ background: "#fef9c3", border: "1px solid #fde68a", padding: "8px 12px", borderRadius: 8, marginTop: 12, fontSize: 13, lineHeight: 1.6 }}>{msg}</div>}
+          {msg && <div style={{ background: "var(--t-yellow)", border: "1px solid var(--t-yellow-b)", padding: "8px 12px", borderRadius: 8, marginTop: 12, fontSize: 13, lineHeight: 1.6 }}>{msg}</div>}
         </div>
       </main>
     );
@@ -552,7 +552,7 @@ export function App() {
       <main style={{ ...shell, display: "grid", placeItems: "center" }}>
         <div style={{ ...card, width: "min(460px, 92vw)" }}>
           <h1 style={{ margin: 0, fontSize: 22 }}>אין הרשאת ניהול</h1>
-          <p style={{ fontSize: 14, color: "#475569", lineHeight: 1.7, marginTop: 10 }}>
+          <p style={{ fontSize: 14, color: "var(--fg-3)", lineHeight: 1.7, marginTop: 10 }}>
             אתה מחובר כ־<b style={{ direction: "ltr", display: "inline-block" }}>{deniedEmail}</b>,
             וזה חשבון משתמש רגיל. מרכז השליטה פתוח לסופר-אדמין של הפלטפורמה בלבד.
           </p>
@@ -583,7 +583,7 @@ export function App() {
         <div style={{ fontSize: 13, display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
           <span>מחובר</span>
           <details>
-            <summary style={{ cursor: "pointer", color: "#4f46e5" }}>שינוי סיסמה</summary>
+            <summary style={{ cursor: "pointer", color: "var(--accent-fg)" }}>שינוי סיסמה</summary>
             <div style={{ display: "flex", gap: 6, marginTop: 6 }}>
               <input type="password" placeholder="סיסמה חדשה (8+)" value={newPassword} autoComplete="new-password"
                 onChange={(e) => setNewPassword(e.target.value)} style={inp} />
@@ -593,13 +593,13 @@ export function App() {
           <button onClick={signOut} style={btn}>התנתק</button>
         </div>
       </header>
-      {msg && <div style={{ background: "#fef9c3", border: "1px solid #fde68a", padding: "8px 12px", borderRadius: 8, margin: "10px 0", fontSize: 13 }}>{msg}</div>}
+      {msg && <div style={{ background: "var(--t-yellow)", border: "1px solid var(--t-yellow-b)", padding: "8px 12px", borderRadius: 8, margin: "10px 0", fontSize: 13 }}>{msg}</div>}
 
       {/* המסכים שאינם חלק מהאפליקציה הזו — ראה CONSOLE_SCREENS. בלי השורה הזו
           הם קיימים בכתובת ואין מהיכן ללחוץ עליהם. */}
       <nav aria-label="מסכי מרכז השליטה"
         style={{ ...card, marginTop: 12, display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
-        <b style={{ fontSize: 13, color: "#475569" }}>מרכז השליטה:</b>
+        <b style={{ fontSize: 13, color: "var(--fg-3)" }}>מרכז השליטה:</b>
         {CONSOLE_SCREENS.map((s) => (
           <a key={s.href} href={s.href} title={s.hint}
             style={{ ...linkBtn, padding: "5px 12px", fontSize: 12.5, fontWeight: 600 }}>
@@ -611,7 +611,7 @@ export function App() {
       {view === "systems" ? (
         <>
           {/* ביקורת 29/07 — התמונה בשורה אחת. הניהול תמיד מציג את כל המערכות. */}
-          <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center", background: "#fff", border: "1px solid #e2e8f0", borderRadius: 12, padding: "10px 14px", marginTop: 12 }}>
+          <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center", background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 12, padding: "10px 14px", marginTop: 12 }}>
             <b style={{ fontSize: 13 }}>ביקורת 29/07:</b>
             {(["A", "B", "C"] as const).map((c) => (
               <button key={c} onClick={() => setFClass(fClass === c ? "" : c)}
@@ -619,7 +619,7 @@ export function App() {
                 {c} · {CLASS_HE[c]} ({classCount(c)})
               </button>
             ))}
-            <span style={{ fontSize: 12, color: "#64748b" }}>מוצגות באתר: {shownCount} מתוך {merged.length}</span>
+            <span style={{ fontSize: 12, color: "var(--muted)" }}>מוצגות באתר: {shownCount} מתוך {merged.length}</span>
           </div>
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap", margin: "10px 0 16px" }}>
             <select value={fDept} onChange={(e) => setFDept(e.target.value)} style={inp}><option value="">כל המחלקות</option>{deptOrder.map((d) => <option key={d} value={d}>{deptLabel(d)}</option>)}</select>
@@ -629,21 +629,21 @@ export function App() {
           </div>
           {deptOrder.map((dep) => ({ dep, list: byDept[dep] ?? [] })).filter((g) => g.list.length).map(({ dep, list }) => (
             <section key={dep} style={{ marginBottom: 22 }}>
-              <h2 style={{ fontSize: 18, borderBottom: "2px solid #e2e8f0", paddingBottom: 6 }}>{deptLabel(dep)} <span style={{ color: "#94a3b8", fontSize: 14 }}>({list.length})</span></h2>
+              <h2 style={{ fontSize: 18, borderBottom: "2px solid var(--border)", paddingBottom: 6 }}>{deptLabel(dep)} <span style={{ color: "var(--muted-2)", fontSize: 14 }}>({list.length})</span></h2>
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: 12 }}>
                 {list.sort((a, b) => a.number.localeCompare(b.number)).map((r) => {
                   const myTasks = tasks.filter((t) => t.project_num === r.number);
                   const myTokens = tokens.filter((t) => t.project_num === r.number);
                   const myBugs = bugs.filter((b) => b.project_num === r.number && b.status !== "closed");
                   return (
-                    <div key={r.number} style={{ ...card, opacity: r.is_protected ? 0.7 : 1, borderColor: r.to_delete ? "#fca5a5" : "#e2e8f0" }}>
+                    <div key={r.number} style={{ ...card, opacity: r.is_protected ? 0.7 : 1, borderColor: r.to_delete ? "var(--t-red-b)" : "var(--border)" }}>
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
-                        <b>{r.number} · {r.name_he || r.name}{r.is_protected ? " 🔒" : ""}</b><span style={{ fontSize: 11, color: "#94a3b8" }}>{r.category}</span>
+                        <b>{r.number} · {r.name_he || r.name}{r.is_protected ? " 🔒" : ""}</b><span style={{ fontSize: 11, color: "var(--muted-2)" }}>{r.category}</span>
                       </div>
                       {r.path && <div style={{ fontSize: 12, marginTop: 2, direction: "ltr", textAlign: "right" }}>
                         {routedOnDomain(r)
-                          ? <a href={`https://more30.com/${r.path}`} target="_blank" rel="noreferrer" style={{ color: "#16a34a", fontWeight: 700 }}>● more30.com/{r.path} ↗</a>
-                          : <span style={{ color: "#94a3b8" }}>◦ more30.com/{r.path} · בהכנה</span>}
+                          ? <a href={`https://more30.com/${r.path}`} target="_blank" rel="noreferrer" style={{ color: "var(--on-green)", fontWeight: 700 }}>● more30.com/{r.path} ↗</a>
+                          : <span style={{ color: "var(--muted-2)" }}>◦ more30.com/{r.path} · בהכנה</span>}
                       </div>}
                       <div style={{ display: "flex", gap: 6, flexWrap: "wrap", margin: "6px 0" }}>
                         {r.audit_class && <Badge on label={`${r.audit_class} · ${CLASS_HE[r.audit_class] ?? ""}`} color={CLASS_COLOR[r.audit_class] ?? "#334155"} />}
@@ -657,21 +657,21 @@ export function App() {
                         {r.missing_tokens > 0 && <Badge on label={`${r.missing_tokens} טוקנים`} color="#dc2626" />}
                         {myBugs.length > 0 && <Badge on label={`${myBugs.length} באגים`} color="#ea580c" />}
                       </div>
-                      <div style={{ fontSize: 12, color: "#475569" }}>DB: {r.supabase_project ? `${r.supabase_project.slice(0, 8)}… / ${r.supabase_schema ?? "?"}` : "—"}</div>
-                      {r.note && <div style={{ fontSize: 12, color: "#64748b", marginTop: 4 }}>{r.note}</div>}
-                      {r.audit_status && <div style={{ fontSize: 12, color: "#0f172a", marginTop: 6, background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: 8, padding: "6px 8px" }}>
+                      <div style={{ fontSize: 12, color: "var(--fg-3)" }}>DB: {r.supabase_project ? `${r.supabase_project.slice(0, 8)}… / ${r.supabase_schema ?? "?"}` : "—"}</div>
+                      {r.note && <div style={{ fontSize: 12, color: "var(--muted)", marginTop: 4 }}>{r.note}</div>}
+                      {r.audit_status && <div style={{ fontSize: 12, color: "var(--fg)", marginTop: 6, background: "var(--surface-2)", border: "1px solid var(--border)", borderRadius: 8, padding: "6px 8px" }}>
                         <b>מצב אמת:</b> {r.audit_status}
                       </div>}
                       <details style={{ marginTop: 8 }}>
-                        <summary style={{ fontSize: 12, cursor: "pointer", fontWeight: 700, color: "#4f46e5" }}>דו״ח מערכת 📋</summary>
-                        <div style={{ fontSize: 12, color: "#334155", display: "grid", gap: 5, marginTop: 6, lineHeight: 1.5 }}>
-                          {r.audit_evidence && <div style={{ background: "#f1f5f9", padding: "5px 8px", borderRadius: 6 }}><b>🔎 מה נמדד:</b> {r.audit_evidence}</div>}
-                          {r.audit_gaps && <div style={{ background: "#fff7ed", padding: "5px 8px", borderRadius: 6 }}><b>💳 חסר למנוי בתשלום:</b> {r.audit_gaps}</div>}
-                          {r.audit_revenue && <div style={{ background: "#ecfdf5", padding: "5px 8px", borderRadius: 6 }}><b>💰 הכי קרוב לכסף:</b> {r.audit_revenue}</div>}
+                        <summary style={{ fontSize: 12, cursor: "pointer", fontWeight: 700, color: "var(--accent-fg)" }}>דו״ח מערכת 📋</summary>
+                        <div style={{ fontSize: 12, color: "var(--fg-2)", display: "grid", gap: 5, marginTop: 6, lineHeight: 1.5 }}>
+                          {r.audit_evidence && <div style={{ background: "var(--surface-2)", padding: "5px 8px", borderRadius: 6 }}><b>🔎 מה נמדד:</b> {r.audit_evidence}</div>}
+                          {r.audit_gaps && <div style={{ background: "var(--t-amber)", padding: "5px 8px", borderRadius: 6 }}><b>💳 חסר למנוי בתשלום:</b> {r.audit_gaps}</div>}
+                          {r.audit_revenue && <div style={{ background: "var(--t-green)", padding: "5px 8px", borderRadius: 6 }}><b>💰 הכי קרוב לכסף:</b> {r.audit_revenue}</div>}
                           {r.what_it_does && <div><b>מה עושה:</b> {r.what_it_does}</div>}
                           {r.functions && <div><b>פונקציות:</b> {r.functions}</div>}
-                          {r.fixed_notes && <div style={{ background: "#f0fdf4", padding: "5px 8px", borderRadius: 6 }}><b>🔧 מה תוקן:</b> {r.fixed_notes}</div>}
-                          {r.changed_notes && <div style={{ background: "#eff6ff", padding: "5px 8px", borderRadius: 6 }}><b>🔄 מה השתנה:</b> {r.changed_notes}</div>}
+                          {r.fixed_notes && <div style={{ background: "var(--t-green)", padding: "5px 8px", borderRadius: 6 }}><b>🔧 מה תוקן:</b> {r.fixed_notes}</div>}
+                          {r.changed_notes && <div style={{ background: "var(--t-blue)", padding: "5px 8px", borderRadius: 6 }}><b>🔄 מה השתנה:</b> {r.changed_notes}</div>}
                         </div>
                       </details>
                       <div style={{ display: "flex", gap: 6, marginTop: 8, flexWrap: "wrap" }}>
@@ -686,24 +686,24 @@ export function App() {
                         })()}
                         {accessOf(r) !== "none" && <Badge on label={ACCESS_HE[accessOf(r)]} color={ACCESS_COLOR[accessOf(r)]} />}
                       </div>
-                      {myBugs.length > 0 && <details style={{ marginTop: 8 }}><summary style={{ fontSize: 12, color: "#ea580c", cursor: "pointer" }}>באגים ({myBugs.length})</summary>
-                        <ul style={{ fontSize: 12, margin: "4px 0", paddingInlineStart: 18 }}>{myBugs.map((b) => <li key={b.id}>{b.title} <em style={{ color: "#94a3b8" }}>({b.severity})</em></li>)}</ul></details>}
-                      {myTokens.length > 0 && <details style={{ marginTop: 8 }}><summary style={{ fontSize: 12, color: "#dc2626", cursor: "pointer" }}>מפתחות חסרים ({myTokens.length})</summary>
+                      {myBugs.length > 0 && <details style={{ marginTop: 8 }}><summary style={{ fontSize: 12, color: "var(--on-amber)", cursor: "pointer" }}>באגים ({myBugs.length})</summary>
+                        <ul style={{ fontSize: 12, margin: "4px 0", paddingInlineStart: 18 }}>{myBugs.map((b) => <li key={b.id}>{b.title} <em style={{ color: "var(--muted-2)" }}>({b.severity})</em></li>)}</ul></details>}
+                      {myTokens.length > 0 && <details style={{ marginTop: 8 }}><summary style={{ fontSize: 12, color: "var(--on-red)", cursor: "pointer" }}>מפתחות חסרים ({myTokens.length})</summary>
                         <ul style={{ fontSize: 12, margin: "4px 0", paddingInlineStart: 18 }}>{myTokens.map((t) => <li key={t.id}><code>{t.env_var}</code>{t.obtain_url ? <> · <a href={t.obtain_url} target="_blank" rel="noreferrer">השג</a></> : null}</li>)}</ul></details>}
                       <details style={{ marginTop: 8 }} open={myTasks.length > 0}>
                         <summary style={{ fontSize: 12, cursor: "pointer" }}>משימות ({myTasks.filter((t) => t.status !== "done").length})</summary>
                         <ul style={{ listStyle: "none", padding: 0, margin: "6px 0" }}>{myTasks.map((t) => (
                           <li key={t.id} style={{ fontSize: 12, display: "flex", gap: 6, alignItems: "center" }}>
                             <input type="checkbox" checked={t.status === "done"} onChange={() => toggleTask(t)} />
-                            <span style={{ textDecoration: t.status === "done" ? "line-through" : "none" }}>{t.title} <em style={{ color: "#94a3b8" }}>({t.author})</em></span>
+                            <span style={{ textDecoration: t.status === "done" ? "line-through" : "none" }}>{t.title} <em style={{ color: "var(--muted-2)" }}>({t.author})</em></span>
                           </li>))}</ul>
                         {!r.is_protected && <div style={{ display: "flex", gap: 4 }}>
                           <input placeholder="משימה חדשה…" value={draft[r.number] ?? ""} onChange={(e) => setDraft({ ...draft, [r.number]: e.target.value })} style={{ ...inp, flex: 1, fontSize: 12 }} />
                           <button onClick={() => addTask(r.number)} style={btn}>＋</button></div>}
                       </details>
-                      {!r.is_protected && <label style={{ fontSize: 12, color: "#0369a1", display: "block", marginTop: 8 }}>
+                      {!r.is_protected && <label style={{ fontSize: 12, color: "var(--on-blue)", display: "block", marginTop: 8 }}>
                         <input type="checkbox" checked={r.public_visible !== false} onChange={(e) => toggleVisible(r.number, e.target.checked)} /> מוצגת באתר הציבורי</label>}
-                      {!r.is_protected && <label style={{ fontSize: 12, color: "#dc2626", display: "block", marginTop: 4 }}>
+                      {!r.is_protected && <label style={{ fontSize: 12, color: "var(--on-red)", display: "block", marginTop: 4 }}>
                         <input type="checkbox" checked={r.to_delete} onChange={(e) => toggleDelete(r.number, e.target.checked)} /> סמן למחיקה</label>}
                     </div>
                   );
@@ -720,7 +720,7 @@ export function App() {
             <b style={{ fontSize: 15 }}>
               הכניסה הזו פותחת {sameLogin} מתוך {withAdmin.length} מסכי האדמין שקיימים.
             </b>
-            <div style={{ color: "#475569", marginTop: 6 }}>
+            <div style={{ color: "var(--fg-3)", marginTop: 6 }}>
               אותו מייל ואותה סיסמה נכנסים לכל מערכת שיושבת על פרויקט ה-Supabase
               של הניהול (<code style={code}>{HUB_PROJECT || "—"}</code>). מערכת על
               פרויקט אחר מחזיקה מאגר משתמשים נפרד, ואיחוד שלה דורש את מפתח
@@ -730,8 +730,8 @@ export function App() {
           </div>
 
           {alarming.length > 0 && (
-            <div style={{ ...card, marginTop: 10, borderColor: "#fecaca", background: "#fef2f2", fontSize: 13, lineHeight: 1.7 }}>
-              <b style={{ color: "#b91c1c" }}>דורש את תשומת ליבך ({alarming.length}):</b>
+            <div style={{ ...card, marginTop: 10, borderColor: "var(--t-red-b)", background: "var(--t-red)", fontSize: 13, lineHeight: 1.7 }}>
+              <b style={{ color: "var(--on-red)" }}>דורש את תשומת ליבך ({alarming.length}):</b>
               <ul style={{ margin: "6px 0 0", paddingInlineStart: 20 }}>
                 {alarming.map((r) => (
                   <li key={r.number}>
@@ -755,24 +755,24 @@ export function App() {
                   <div style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
                     <b style={{ minWidth: 190 }}>{r.number} · {r.name_he || r.name}</b>
                     <Badge on label={ACCESS_HE[kind]} color={ACCESS_COLOR[kind]} />
-                    <span style={{ fontSize: 12, color: "#64748b", direction: "ltr" }}>
+                    <span style={{ fontSize: 12, color: "var(--muted)", direction: "ltr" }}>
                       {r.supabase_project ? r.supabase_project.slice(0, 10) + "…" : "— ללא מסד"}
                     </span>
                     <span style={{ flex: 1 }} />
                     {routedOnDomain(r) && <a href={`https://more30.com/${r.path}`} target="_blank" rel="noreferrer" style={linkBtn}>המערכת ↗</a>}
                     {href
-                      ? <a href={href} target="_blank" rel="noreferrer" style={{ ...linkBtn, borderColor: "#4f46e5", color: "#4f46e5", fontWeight: 700 }}>ניהול ↗</a>
+                      ? <a href={href} target="_blank" rel="noreferrer" style={{ ...linkBtn, borderColor: "var(--accent)", color: "var(--accent-fg)", fontWeight: 700 }}>ניהול ↗</a>
                       : r.admin_url
                         ? <span style={{ ...linkBtn, opacity: 0.75 }}>{r.admin_url}</span>
                         : <span style={{ ...linkBtn, opacity: 0.75 }}>מנוהלת מכאן</span>}
                   </div>
-                  <div style={{ fontSize: 12, color: "#64748b", marginTop: 5 }}>{ACCESS_WHY[kind]}</div>
+                  <div style={{ fontSize: 12, color: "var(--muted)", marginTop: 5 }}>{ACCESS_WHY[kind]}</div>
                 </div>
               );
             })}
           </div>
 
-          <div style={{ fontSize: 12, color: "#94a3b8", marginTop: 12 }}>
+          <div style={{ fontSize: 12, color: "var(--muted-2)", marginTop: 12 }}>
             מתוכן {merged.filter((r) => accessOf(r) === "none" && !r.is_protected).length} אינן
             מציגות מסך אדמין משלהן — הנתיב שלהן נופל לאפליקציה עצמה, והניהול שלהן
             נעשה מהמסך הזה. {merged.filter((r) => r.is_protected).length} מערכות מוגנות
@@ -785,7 +785,7 @@ export function App() {
             <b style={{ fontSize: 15 }}>
               {users.length} משתמשים במאגר המשותף · {users.filter((u) => u.apps.length > 0).length} מחוברים לאתר אחד לפחות
             </b>
-            <div style={{ color: "#475569", marginTop: 6 }}>
+            <div style={{ color: "var(--fg-3)", marginTop: 6 }}>
               הכניסה משותפת לכל המערכות (origin אחד), אבל <b>החברות היא לאתר</b>:
               מי שנרשם ב-<code style={code}>/chizukim</code> מופיע כמשתמש של chizukim
               בלבד. סינון לפי אתר מראה בדיוק את רשימת המשתמשים של אותה מערכת.
@@ -800,7 +800,7 @@ export function App() {
               ))}
             </select>
             <button onClick={loadUsers} style={btn}>רענון</button>
-            <span style={{ fontSize: 12, color: "#64748b" }}>
+            <span style={{ fontSize: 12, color: "var(--muted)" }}>
               נקרא חי מ-<code style={code}>auth.users</code> + <code style={code}>core.app_memberships</code>.
             </span>
           </div>
@@ -817,7 +817,7 @@ export function App() {
                     {u.plan === "premium" && <Badge on label="פרימיום" color="#c9a227" />}
                     {!u.confirmed && <Badge on label="אימייל לא אושר" color="#dc2626" />}
                     <span style={{ flex: 1 }} />
-                    <span style={{ fontSize: 12, color: "#64748b" }}>
+                    <span style={{ fontSize: 12, color: "var(--muted)" }}>
                       {u.last_sign_in_at
                         ? "כניסה אחרונה " + new Date(u.last_sign_in_at).toLocaleDateString("he-IL")
                         : "טרם נכנס"}
@@ -826,7 +826,7 @@ export function App() {
                   </div>
                   <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 7, alignItems: "center" }}>
                     {u.apps.length === 0 ? (
-                      <span style={{ fontSize: 12, color: "#94a3b8" }}>לא מחובר לאף אתר</span>
+                      <span style={{ fontSize: 12, color: "var(--muted-2)" }}>לא מחובר לאף אתר</span>
                     ) : (
                       u.apps.map((a) => (
                         <span key={a.app_key} style={{ ...linkBtn, display: "inline-flex", gap: 6, alignItems: "center" }}>
@@ -834,7 +834,7 @@ export function App() {
                           <select
                             value={a.role}
                             onChange={(e) => setUserRole(u.user_id, a.app_key, e.target.value)}
-                            style={{ border: "1px solid #e2e8f0", borderRadius: 6, fontSize: 11, padding: "1px 4px" }}
+                            style={{ border: "1px solid var(--border)", borderRadius: 6, fontSize: 11, padding: "1px 4px" }}
                           >
                             {Object.keys(ROLE_HE).map((r) => <option key={r} value={r}>{ROLE_HE[r]}</option>)}
                           </select>
@@ -845,7 +845,7 @@ export function App() {
                 </div>
               ))}
             {users.length === 0 && (
-              <div style={{ ...card, fontSize: 13, color: "#64748b" }}>אין משתמשים להצגה.</div>
+              <div style={{ ...card, fontSize: 13, color: "var(--muted)" }}>אין משתמשים להצגה.</div>
             )}
           </div>
         </section>
@@ -854,12 +854,12 @@ export function App() {
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 12, flexWrap: "wrap" }}>
             <h2 style={{ fontSize: 18, margin: 0 }}>קרדיטים אצל הספקים</h2>
             <button onClick={loadCredits} style={btn}>בדוק עכשיו</button>
-            <span style={{ fontSize: 12, color: "#64748b" }}>
+            <span style={{ fontSize: 12, color: "var(--muted)" }}>
               נמדד בשרת מול הספק עצמו. אף מפתח אינו מגיע לדפדפן.
             </span>
           </div>
-          {creditsMsg && <div style={{ background: "#fee2e2", border: "1px solid #fecaca", padding: "8px 12px", borderRadius: 8, margin: "10px 0", fontSize: 13 }}>{creditsMsg}</div>}
-          {!credits && !creditsMsg && <div style={{ ...card, marginTop: 10, color: "#64748b", fontSize: 13 }}>בודקים מול הספקים…</div>}
+          {creditsMsg && <div style={{ background: "var(--t-red-2)", border: "1px solid var(--t-red-b)", padding: "8px 12px", borderRadius: 8, margin: "10px 0", fontSize: 13 }}>{creditsMsg}</div>}
+          {!credits && !creditsMsg && <div style={{ ...card, marginTop: 10, color: "var(--muted)", fontSize: 13 }}>בודקים מול הספקים…</div>}
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 12, marginTop: 10 }}>
             {(credits ?? []).map((p) => (
               <div key={p.key} style={card}>
@@ -867,21 +867,21 @@ export function App() {
                   <b>{p.label}</b>
                   <Badge on label={CREDIT_STATE_HE[p.state] ?? p.state} color={CREDIT_STATE_COLOR[p.state] ?? "#334155"} />
                 </div>
-                <div style={{ fontSize: 12, color: "#64748b", marginTop: 4 }}>{p.usedBy}</div>
+                <div style={{ fontSize: 12, color: "var(--muted)", marginTop: 4 }}>{p.usedBy}</div>
                 {/* מד היתרה רק כשיש תקרה אמיתית. עמודה ריקה ליד ספק שאינו
                     מפרסם יתרה נקראת כמו "אפס נשאר" — בדיוק ההפך מהאמת. */}
                 {p.usage && p.usage.limit > 0 && (
                   <div style={{ marginTop: 8 }}>
-                    <div style={{ height: 8, background: "#e2e8f0", borderRadius: 999, overflow: "hidden" }}>
+                    <div style={{ height: 8, background: "var(--border)", borderRadius: 999, overflow: "hidden" }}>
                       <div style={{ width: `${Math.max(0, Math.min(100, p.usage.percent))}%`, height: "100%", background: p.usage.percent >= 80 ? "#dc2626" : "#16a34a" }} />
                     </div>
-                    <div style={{ fontSize: 12, color: "#334155", marginTop: 4 }}>
+                    <div style={{ fontSize: 12, color: "var(--fg-2)", marginTop: 4 }}>
                       נותרו {nfHe(p.usage.limit - p.usage.used)} {p.usage.unit} · {nfHe(p.usage.used)} מתוך {nfHe(p.usage.limit)}
                     </div>
-                    {p.usage.cycleEnds && <div style={{ fontSize: 11, color: "#94a3b8" }}>מתאפס ב-{new Date(p.usage.cycleEnds).toLocaleDateString("he-IL")}</div>}
+                    {p.usage.cycleEnds && <div style={{ fontSize: 11, color: "var(--muted-2)" }}>מתאפס ב-{new Date(p.usage.cycleEnds).toLocaleDateString("he-IL")}</div>}
                   </div>
                 )}
-                <div style={{ fontSize: 12, color: "#475569", marginTop: 8, lineHeight: 1.5 }}>{p.detail}</div>
+                <div style={{ fontSize: 12, color: "var(--fg-3)", marginTop: 8, lineHeight: 1.5 }}>{p.detail}</div>
                 <a href={p.topUp} target="_blank" rel="noreferrer" style={{ ...linkBtn, marginTop: 8, alignSelf: "start" }}>
                   {p.state === "missing" ? "פתיחת חשבון והוספת מפתח ↗" : "הוספת קרדיט אצל הספק ↗"}
                 </a>
@@ -889,7 +889,7 @@ export function App() {
             ))}
           </div>
           {credits && (
-            <div style={{ fontSize: 12, color: "#64748b", marginTop: 10, lineHeight: 1.7 }}>
+            <div style={{ fontSize: 12, color: "var(--muted)", marginTop: 10, lineHeight: 1.7 }}>
               <b>לא נפרס</b> — המפתח קיים ב-<code style={code}>core.secrets</code> אבל אינו משתנה
               סביבה בפריסה הזאת: תיקון של העתקת ערך קיים, לא של פתיחת חשבון.
               <b> לא נמדד</b> — לספק אין ממשק שמחזיר יתרה, או שלא ענה בזמן; לא מוצג מספר
@@ -899,13 +899,13 @@ export function App() {
           )}
 
           <h2 style={{ fontSize: 18, margin: "24px 0 4px" }}>מפתחות חסרים למערכות ({tokens.filter((t) => t.status === "missing").length})</h2>
-          <div style={{ fontSize: 12, color: "#64748b", marginBottom: 10 }}>
+          <div style={{ fontSize: 12, color: "var(--muted)", marginBottom: 10 }}>
             אלה שמות המשתנים בלבד — הערכים לעולם לא נשמרים כאן.
           </div>
           {(() => {
             const missing = tokens.filter((t) => t.status === "missing");
             const nums = [...new Set(missing.map((t) => t.project_num))].sort();
-            if (!nums.length) return <div style={{ ...card, color: "#64748b", fontSize: 13 }}>אין מפתחות מסומנים כחסרים.</div>;
+            if (!nums.length) return <div style={{ ...card, color: "var(--muted)", fontSize: 13 }}>אין מפתחות מסומנים כחסרים.</div>;
             return nums.map((num) => {
               const sys = merged.find((r) => r.number === num);
               return (
@@ -915,8 +915,8 @@ export function App() {
                     {missing.filter((t) => t.project_num === num).map((t) => (
                       <li key={t.id}>
                         <code style={code}>{t.env_var}</code>
-                        {t.purpose ? <span style={{ color: "#475569" }}> — {t.purpose}</span> : null}
-                        {t.paste_location ? <span style={{ color: "#94a3b8" }}> · להזין ב-{t.paste_location}</span> : null}
+                        {t.purpose ? <span style={{ color: "var(--fg-3)" }}> — {t.purpose}</span> : null}
+                        {t.paste_location ? <span style={{ color: "var(--muted-2)" }}> · להזין ב-{t.paste_location}</span> : null}
                         {t.obtain_url ? <> · <a href={t.obtain_url} target="_blank" rel="noreferrer">להשגה ↗</a></> : null}
                       </li>
                     ))}
@@ -937,10 +937,10 @@ export function App() {
                   <b>{i.project_name || "(ללא שם פרויקט)"} — {i.full_name}</b>
                   <span style={{ display: "flex", gap: 6, alignItems: "center" }}>
                     {IDEA_STATUS.map((s) => <button key={s} onClick={() => setIdeaStatus(i.id, s)}
-                      style={{ ...pillBtn, background: i.status === s ? "#4f46e5" : "#f1f5f9", color: i.status === s ? "#fff" : "#334155" }}>{IDEA_STATUS_HE[s]}</button>)}
+                      style={{ ...pillBtn, background: i.status === s ? "var(--accent)" : "var(--surface-2)", color: i.status === s ? "#fff" : "var(--fg-2)" }}>{IDEA_STATUS_HE[s]}</button>)}
                   </span>
                 </div>
-                <div style={{ fontSize: 12, color: "#64748b", marginTop: 4 }}>{new Date(i.created_at).toLocaleDateString("he-IL")} · {i.phone} · {i.email} · {i.city}</div>
+                <div style={{ fontSize: 12, color: "var(--muted)", marginTop: 4 }}>{new Date(i.created_at).toLocaleDateString("he-IL")} · {i.phone} · {i.email} · {i.city}</div>
                 <div style={{ fontSize: 13, marginTop: 8, display: "grid", gap: 4 }}>
                   {i.short_description && <div><b>תיאור:</b> {i.short_description}</div>}
                   {i.problem && <div><b>בעיה:</b> {i.problem}</div>}
@@ -953,16 +953,16 @@ export function App() {
                   {i.dream_free_text && <div><b>החלום:</b> {i.dream_free_text}</div>}
                 </div>
                 {i.converted_project_num
-                  ? <div style={{ marginTop: 8, color: "#16a34a", fontSize: 13 }}>✅ הומר לפרויקט #{i.converted_project_num}</div>
+                  ? <div style={{ marginTop: 8, color: "var(--on-green)", fontSize: 13 }}>✅ הומר לפרויקט #{i.converted_project_num}</div>
                   : <div style={{ display: "flex", gap: 6, marginTop: 10, flexWrap: "wrap", alignItems: "center" }}>
                       <input placeholder="slug לפרויקט" value={c.slug} onChange={(e) => setConv({ ...conv, [i.id]: { ...c, slug: e.target.value } })} style={{ ...inp, fontSize: 12 }} />
                       <select value={c.dept} onChange={(e) => setConv({ ...conv, [i.id]: { ...c, dept: e.target.value } })} style={{ ...inp, fontSize: 12 }}>{DEPT_KEYS.map((d) => <option key={d} value={d}>{DEPARTMENTS[d]}</option>)}</select>
-                      <button onClick={() => convertIdea(i.id)} style={{ ...btn, background: "#4f46e5", color: "#fff", border: "none" }}>הפוך לפרויקט →</button>
+                      <button onClick={() => convertIdea(i.id)} style={{ ...btn, background: "var(--accent)", color: "#fff", border: "none" }}>הפוך לפרויקט →</button>
                     </div>}
               </div>
             );
           })}
-          {isAuthed && ideas.length === 0 && <div style={{ ...card, textAlign: "center", color: "#64748b" }}>אין רעיונות נכנסים עדיין.</div>}
+          {isAuthed && ideas.length === 0 && <div style={{ ...card, textAlign: "center", color: "var(--muted)" }}>אין רעיונות נכנסים עדיין.</div>}
         </section>
       ) : (
         <section>
@@ -975,10 +975,10 @@ export function App() {
                   <b>{sp.project_name || "(ללא שם פרויקט)"} — {sp.full_name}</b>
                   <span style={{ display: "flex", gap: 6, alignItems: "center" }}>
                     {SPEC_STATUS.map((s) => <button key={s} onClick={() => setSpecStatus(sp.id, s)}
-                      style={{ ...pillBtn, background: sp.status === s ? "#4f46e5" : "#f1f5f9", color: sp.status === s ? "#fff" : "#334155" }}>{SPEC_STATUS_HE[s]}</button>)}
+                      style={{ ...pillBtn, background: sp.status === s ? "var(--accent)" : "var(--surface-2)", color: sp.status === s ? "#fff" : "var(--fg-2)" }}>{SPEC_STATUS_HE[s]}</button>)}
                   </span>
                 </div>
-                <div style={{ fontSize: 12, color: "#64748b", marginTop: 4 }}>
+                <div style={{ fontSize: 12, color: "var(--muted)", marginTop: 4 }}>
                   {new Date(sp.created_at).toLocaleString("he-IL")}
                   {sp.track ? ` · מסלול: ${sp.track}` : ""}
                   {sp.phone ? ` · ${sp.phone}` : ""}{sp.email ? ` · ${sp.email}` : ""}{sp.city ? ` · ${sp.city}` : ""}
@@ -987,7 +987,7 @@ export function App() {
 
                 {/* התשובות מוצגות עם נוסח השאלה שהוצג בפועל — השאלון דינמי. */}
                 <details style={{ marginTop: 8 }} open>
-                  <summary style={{ fontSize: 12, cursor: "pointer", fontWeight: 700, color: "#4f46e5" }}>
+                  <summary style={{ fontSize: 12, cursor: "pointer", fontWeight: 700, color: "var(--accent-fg)" }}>
                     התשובות ({sp.questions?.length ?? 0})
                   </summary>
                   <div style={{ fontSize: 13, marginTop: 6, display: "grid", gap: 4 }}>
@@ -1001,7 +1001,7 @@ export function App() {
 
                 <div style={{ display: "flex", gap: 8, marginTop: 10, alignItems: "center", flexWrap: "wrap" }}>
                   <button onClick={() => analyzeSpec(sp.id)} disabled={busy || !isAuthed}
-                    style={{ ...btn, background: busy ? "#c7d2fe" : "#4f46e5", color: "#fff", border: "none", cursor: busy ? "wait" : "pointer", fontWeight: 700 }}>
+                    style={{ ...btn, background: busy ? "var(--accent-soft)" : "var(--accent)", color: "#fff", border: "none", cursor: busy ? "wait" : "pointer", fontWeight: 700 }}>
                     {busy ? "מנתח…" : sp.ai_analysis ? "🤖 נתח מחדש" : "🤖 שלח לניתוח AI"}
                   </button>
                   <span style={{ fontSize: 12, color: sp.ai_status === "error" ? "#dc2626" : "#64748b" }}>
@@ -1013,35 +1013,46 @@ export function App() {
                 </div>
 
                 {sp.ai_analysis && (
-                  <div style={{ marginTop: 10, background: "#f5f3ff", border: "1px solid #ddd6fe", borderRadius: 10, padding: "10px 12px" }}>
-                    <div style={{ fontSize: 12, fontWeight: 700, color: "#5b21b6", marginBottom: 6 }}>🤖 ניתוח AI</div>
-                    <div style={{ fontSize: 13, whiteSpace: "pre-wrap", lineHeight: 1.6, color: "#1e1b4b" }}>{sp.ai_analysis}</div>
+                  <div style={{ marginTop: 10, background: "var(--t-violet)", border: "1px solid var(--t-violet-b)", borderRadius: 10, padding: "10px 12px" }}>
+                    <div style={{ fontSize: 12, fontWeight: 700, color: "var(--on-violet)", marginBottom: 6 }}>🤖 ניתוח AI</div>
+                    <div style={{ fontSize: 13, whiteSpace: "pre-wrap", lineHeight: 1.6, color: "var(--on-violet)" }}>{sp.ai_analysis}</div>
                   </div>
                 )}
               </div>
             );
           })}
-          {isAuthed && specs.length === 0 && <div style={{ ...card, textAlign: "center", color: "#64748b" }}>אין אפיונים עדיין. השאלון חי ב-more30.com (מקטע "שאלון האפיון החכם").</div>}
+          {isAuthed && specs.length === 0 && <div style={{ ...card, textAlign: "center", color: "var(--muted)" }}>אין אפיונים עדיין. השאלון חי ב-more30.com (מקטע "שאלון האפיון החכם").</div>}
         </section>
       )}
     </main>
   );
 }
 
+/**
+ * הגוון מגיע כ-hex מהמפות שלמעלה (CLASS_COLOR / ACCESS / STATUS) ומשורשר כאן
+ * ל-"22" בשביל הרקע, ולכן הוא חייב להישאר hex ולא יכול להיות משתנה ערכה.
+ * במצב כהה חלק מהגוונים האלה כהים מדי (למשל הפצחה של deploy_target, #334155)
+ * ומתמזגים ברקע — color-mix מושך כל אחד מהם רבע-הדרך אל צבע הטקסט של העמוד,
+ * שהוא כהה במצב בהיר ובהיר במצב כהה, ולכן הכיוון נכון בשני המצבים.
+ */
 function Badge({ on, label, color }: { on: boolean; label: string; color: string }) {
-  return <span style={{ ...badge, background: on ? color + "22" : "#f1f5f9", color: on ? color : "#94a3b8" }}>{label}</span>;
+  return <span style={{
+    ...badge,
+    background: on ? color + "22" : "var(--surface-2)",
+    color: on ? `color-mix(in oklab, ${color}, var(--fg) 25%)` : "var(--muted-2)",
+  }}>{label}</span>;
 }
 /** המסגרת של כל המסך — גם מסך ההתחברות וגם הלוח, כדי ששניהם ייראו אותו דבר. */
 const shell: React.CSSProperties = {
   fontFamily: "Assistant, system-ui, sans-serif", direction: "rtl",
-  background: "#f8fafc", minHeight: "100vh", padding: 20,
+  background: "var(--bg)", minHeight: "100vh", padding: 20,
 };
-const card: React.CSSProperties = { background: "#fff", border: "1px solid #e2e8f0", borderRadius: 12, padding: 14, boxShadow: "0 1px 2px rgba(0,0,0,0.04)" };
-const code: React.CSSProperties = { background: "#f1f5f9", padding: "1px 6px", borderRadius: 5, direction: "ltr", display: "inline-block", fontSize: 12 };
+const card: React.CSSProperties = { background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 12, padding: 14, boxShadow: "0 1px 2px rgba(0,0,0,0.04)" };
+const code: React.CSSProperties = { background: "var(--surface-2)", padding: "1px 6px", borderRadius: 5, direction: "ltr", display: "inline-block", fontSize: 12 };
 const badge: React.CSSProperties = { fontSize: 11, padding: "2px 8px", borderRadius: 999, fontWeight: 600 };
-const btn: React.CSSProperties = { border: "1px solid #cbd5e1", background: "#fff", borderRadius: 8, padding: "4px 10px", cursor: "pointer", fontSize: 13 };
+const btn: React.CSSProperties = { border: "1px solid var(--border-2)", background: "var(--surface)", borderRadius: 8, padding: "4px 10px", cursor: "pointer", fontSize: 13 };
 const pillBtn: React.CSSProperties = { border: "none", borderRadius: 999, padding: "3px 10px", cursor: "pointer", fontSize: 12 };
-const linkBtn: React.CSSProperties = { border: "1px solid #cbd5e1", background: "#f8fafc", borderRadius: 8, padding: "4px 10px", fontSize: 12, textDecoration: "none", color: "#0f172a" };
-const inp: React.CSSProperties = { border: "1px solid #cbd5e1", borderRadius: 8, padding: "5px 10px", fontSize: 13 };
-const tab: React.CSSProperties = { border: "1px solid #cbd5e1", background: "#fff", borderRadius: 8, padding: "5px 14px", cursor: "pointer", fontSize: 14 };
-const tabOn: React.CSSProperties = { background: "#4f46e5", color: "#fff", borderColor: "#4f46e5" };
+const linkBtn: React.CSSProperties = { border: "1px solid var(--border-2)", background: "var(--surface-2)", borderRadius: 8, padding: "4px 10px", fontSize: 12, textDecoration: "none", color: "var(--fg)" };
+const inp: React.CSSProperties = { border: "1px solid var(--border-2)", borderRadius: 8, padding: "5px 10px", fontSize: 13 };
+const tab: React.CSSProperties = { border: "1px solid var(--border-2)", background: "var(--surface)", borderRadius: 8, padding: "5px 14px", cursor: "pointer", fontSize: 14 };
+const tabOn: React.CSSProperties = { background: "var(--accent)", color: "#fff", borderColor: "var(--accent)" };
