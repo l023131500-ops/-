@@ -1,0 +1,44 @@
+{
+  "/orech": {
+    "route": "/orech",
+    "osDark": {
+      "effectiveBg": "rgb(20, 17, 12)",
+      "bodyImage": "",
+      "fg": "rgb(237, 230, 216)",
+      "rootClass": "",
+      "rootTheme": ""
+    },
+    "light": {
+      "effectiveBg": "rgb(250, 247, 240)",
+      "bodyImage": "",
+      "fg": "rgb(31, 26, 18)",
+      "rootClass": "",
+      "rootTheme": ""
+    },
+    "toggleCandidates": [],
+    "osDarkFollows": true,
+    "alwaysDark": false,
+    "reachable": true
+  },
+  "/admin": {
+    "route": "/admin",
+    "osDark": {
+      "effectiveBg": "rgba(0, 0, 0, 0)",
+      "bodyImage": "",
+      "fg": "rgb(0, 0, 0)",
+      "rootClass": "",
+      "rootTheme": ""
+    },
+    "light": {
+      "effectiveBg": "rgba(0, 0, 0, 0)",
+      "bodyImage": "",
+      "fg": "rgb(0, 0, 0)",
+      "rootClass": "",
+      "rootTheme": ""
+    },
+    "toggleCandidates": [],
+    "osDarkFollows": false,
+    "alwaysDark": false,
+    "reachable": false
+  }
+}
