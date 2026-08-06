@@ -1,0 +1,13 @@
+﻿=== does arriving at a system record you as its customer? ===
+  PASS  /kiosk/: not a customer of it before arriving
+  PASS  /kiosk/: the pill is on the page
+  PASS  /kiosk/: nothing on the page is refused by policy
+  PASS  /kiosk/: the visit alone recorded the membership
+  PASS  /kiosk/: the answer carries the admin decision
+  PASS  /bkalot: not a customer of it before arriving
+  PASS  /bkalot: the pill is on the page
+  PASS  /bkalot: nothing on the page is refused by policy
+  PASS  /bkalot: the visit alone recorded the membership
+  PASS  /bkalot: the answer carries the admin decision
+
+10 passed · 0 failed
