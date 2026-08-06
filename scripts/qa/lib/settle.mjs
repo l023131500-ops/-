@@ -79,21 +79,59 @@
  * The networkidle wait is bounded and swallowed on purpose: a page holding a
  * WebSocket open (/kiosk) or polling on an interval never goes idle at all, and
  * must fall through to plain sampling rather than stall the run.
+ *
+ * ⚠️ 07/08 — the floor was being charged twice, and issue #80 is the bill: a
+ * full platform-audit pass went from ten minutes to an hour. Once networkidle
+ * is reached, the fetch the shell was waiting on is *finished*, which is the
+ * one thing the floor was raised three times to outlast. Keeping a 13s floor
+ * behind a satisfied networkidle waits again for something that already
+ * happened, on every route, in all three modes.
+ *
+ * So the floor became conditional, and the split was measured rather than
+ * assumed — scripts/qa/settle-cost.mjs records ONE sample series per target and
+ * replays both policies over it, so the two readings cannot differ by run-to-run
+ * drift. QA/platform/_settle-cost.json, 8 targets:
+ *
+ *   kupot desktop     networkidle TIMEOUT   3164 ch — floor retained
+ *   kupot mobile      networkidle TIMEOUT   3164 ch — floor retained
+ *   mechiron desktop  idle at  7.3s   3040 ch both policies   −8.5s
+ *   kiosk desktop     idle at 12.3s   2599 ch both policies   −8.5s
+ *   home desktop      idle at 14.3s   3295 ch both policies   −8.5s
+ *   zchuyot desktop   idle at 11.1s   2511 ch both policies   −8.5s
+ *   nadlan desktop    idle at 12.1s   6464 ch both policies   −8.5s
+ *   chatzor-app       idle at  5.9s   2101 ch both policies   −8.5s
+ *
+ * 0 of 8 read differently. Note which route is in the retained column: kupot,
+ * the page this whole module was written around, is the one that never reaches
+ * networkidle — so the floor is not being relaxed on the case that bought it.
+ * (Issue #80 guessed mechiron was the never-idle page. It is not; it idles at
+ * 7.3s. kupot and, on other runs, /kiosk are the ones that hold a connection.)
+ *
+ * The zero is not "no floor". Three stable samples at 1200ms is structurally
+ * 4.8s of watching and 3.6s of proven stillness AFTER the network went quiet.
+ * Do not lower SAMPLE_MS or STABLE_SAMPLES thinking they are free — they are
+ * now the whole guarantee on the idle path.
  */
 
 export const SETTLE_FLOOR_MS = 13000;
+/** floor once networkidle has actually been reached — see the 07/08 note. */
+export const SETTLE_IDLE_FLOOR_MS = 0;
 const SAMPLE_MS = 1200;
 const STABLE_SAMPLES = 3;
 const MAX_SAMPLES = 20;
 
 /**
  * @param {import('playwright-core').Page} page
- * @param {{ floorMs?: number, minChars?: number }} [opts]
+ * @param {{ floorMs?: number, idleFloorMs?: number, minChars?: number }} [opts]
  *   minChars — wait for a page to exist at all before timing its stability;
  *   without it a shell of 0 characters counts as three stable samples.
+ *   floorMs — the floor for a page that never reaches networkidle.
+ *   idleFloorMs — the floor once it has. An explicit floorMs still overrides
+ *   both, so a caller that passes one gets the floor it asked for either way.
  */
 export async function settle(page, opts = {}) {
   const floor = opts.floorMs ?? SETTLE_FLOOR_MS;
+  const idleFloor = opts.floorMs ?? opts.idleFloorMs ?? SETTLE_IDLE_FLOOR_MS;
 
   if (opts.minChars) {
     await page
@@ -108,7 +146,14 @@ export async function settle(page, opts = {}) {
   // the shell is waiting on a fetch, not idling — wait for that, not for a
   // duration. Bounded and swallowed: a page that never goes idle (WebSocket,
   // polling) falls through to sampling instead of stalling the run.
-  await page.waitForLoadState('networkidle', { timeout: 20000 }).catch(() => {});
+  let reachedIdle = true;
+  await page
+    .waitForLoadState('networkidle', { timeout: 20000 })
+    .catch(() => { reachedIdle = false; });
+
+  // the floor is the backstop for pages that render late off already-loaded
+  // data. A page that reached networkidle has no such fetch left outstanding.
+  const effectiveFloor = reachedIdle ? idleFloor : floor;
 
   const start = Date.now();
   let last = -1;
@@ -118,7 +163,7 @@ export async function settle(page, opts = {}) {
     const n = await page.evaluate(() => document.body.innerText.length);
     stable = n === last ? stable + 1 : 0;
     last = n;
-    if (stable >= STABLE_SAMPLES && Date.now() - start >= floor) return last;
+    if (stable >= STABLE_SAMPLES && Date.now() - start >= effectiveFloor) return last;
   }
   return last;
 }

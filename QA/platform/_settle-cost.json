@@ -1,0 +1,839 @@
+{
+  "sampleMs": 1200,
+  "stableSamples": 3,
+  "currentFloorMs": 13000,
+  "results": [
+    {
+      "key": "kupot",
+      "mode": "desktop",
+      "path": "/kupot",
+      "why": "the shell every floor raise was bought for",
+      "url": "https://more30.com/kupot",
+      "idleReached": false,
+      "idleMs": 20017,
+      "series": [
+        {
+          "atMs": 1295,
+          "chars": 3164
+        },
+        {
+          "atMs": 2513,
+          "chars": 3164
+        },
+        {
+          "atMs": 3729,
+          "chars": 3164
+        },
+        {
+          "atMs": 4936,
+          "chars": 3164
+        },
+        {
+          "atMs": 6145,
+          "chars": 3164
+        },
+        {
+          "atMs": 7355,
+          "chars": 3164
+        },
+        {
+          "atMs": 8563,
+          "chars": 3164
+        },
+        {
+          "atMs": 9783,
+          "chars": 3164
+        },
+        {
+          "atMs": 10995,
+          "chars": 3164
+        },
+        {
+          "atMs": 12207,
+          "chars": 3164
+        },
+        {
+          "atMs": 13417,
+          "chars": 3164
+        },
+        {
+          "atMs": 14629,
+          "chars": 3164
+        },
+        {
+          "atMs": 15842,
+          "chars": 3164
+        },
+        {
+          "atMs": 17048,
+          "chars": 3164
+        },
+        {
+          "atMs": 18261,
+          "chars": 3164
+        },
+        {
+          "atMs": 19510,
+          "chars": 3164
+        },
+        {
+          "atMs": 20721,
+          "chars": 3164
+        },
+        {
+          "atMs": 21928,
+          "chars": 3164
+        },
+        {
+          "atMs": 23140,
+          "chars": 3164
+        },
+        {
+          "atMs": 24349,
+          "chars": 3164
+        }
+      ],
+      "settled": 3164,
+      "current": {
+        "chars": 3164,
+        "sampleMs": 13417,
+        "totalMs": 33434
+      },
+      "proposed": {
+        "chars": 3164,
+        "sampleMs": 13417,
+        "totalMs": 33434
+      },
+      "sameReading": true,
+      "savedMs": 0
+    },
+    {
+      "key": "kupot",
+      "mode": "mobile",
+      "path": "/kupot",
+      "why": "read 908 at 18.5s — the case 13000ms did NOT cover",
+      "url": "https://more30.com/kupot",
+      "idleReached": false,
+      "idleMs": 20010,
+      "series": [
+        {
+          "atMs": 1210,
+          "chars": 3164
+        },
+        {
+          "atMs": 2417,
+          "chars": 3164
+        },
+        {
+          "atMs": 3625,
+          "chars": 3164
+        },
+        {
+          "atMs": 4843,
+          "chars": 3164
+        },
+        {
+          "atMs": 6052,
+          "chars": 3164
+        },
+        {
+          "atMs": 7262,
+          "chars": 3164
+        },
+        {
+          "atMs": 8469,
+          "chars": 3164
+        },
+        {
+          "atMs": 9678,
+          "chars": 3164
+        },
+        {
+          "atMs": 10896,
+          "chars": 3164
+        },
+        {
+          "atMs": 12110,
+          "chars": 3164
+        },
+        {
+          "atMs": 13327,
+          "chars": 3164
+        },
+        {
+          "atMs": 14544,
+          "chars": 3164
+        },
+        {
+          "atMs": 15761,
+          "chars": 3164
+        },
+        {
+          "atMs": 16980,
+          "chars": 3164
+        },
+        {
+          "atMs": 18190,
+          "chars": 3164
+        },
+        {
+          "atMs": 19406,
+          "chars": 3164
+        },
+        {
+          "atMs": 20620,
+          "chars": 3164
+        },
+        {
+          "atMs": 21839,
+          "chars": 3164
+        },
+        {
+          "atMs": 23047,
+          "chars": 3164
+        },
+        {
+          "atMs": 24260,
+          "chars": 3164
+        }
+      ],
+      "settled": 3164,
+      "current": {
+        "chars": 3164,
+        "sampleMs": 13327,
+        "totalMs": 33337
+      },
+      "proposed": {
+        "chars": 3164,
+        "sampleMs": 13327,
+        "totalMs": 33337
+      },
+      "sameReading": true,
+      "savedMs": 0
+    },
+    {
+      "key": "mechiron",
+      "mode": "desktop",
+      "path": "/mechiron",
+      "why": "never reaches networkidle (issue #80)",
+      "url": "https://more30.com/mechiron",
+      "idleReached": true,
+      "idleMs": 7259,
+      "series": [
+        {
+          "atMs": 1219,
+          "chars": 3040
+        },
+        {
+          "atMs": 2426,
+          "chars": 3040
+        },
+        {
+          "atMs": 3644,
+          "chars": 3040
+        },
+        {
+          "atMs": 4856,
+          "chars": 3040
+        },
+        {
+          "atMs": 6069,
+          "chars": 3040
+        },
+        {
+          "atMs": 7288,
+          "chars": 3040
+        },
+        {
+          "atMs": 8498,
+          "chars": 3040
+        },
+        {
+          "atMs": 9708,
+          "chars": 3040
+        },
+        {
+          "atMs": 10923,
+          "chars": 3040
+        },
+        {
+          "atMs": 12128,
+          "chars": 3040
+        },
+        {
+          "atMs": 13345,
+          "chars": 3040
+        },
+        {
+          "atMs": 14562,
+          "chars": 3040
+        },
+        {
+          "atMs": 15767,
+          "chars": 3040
+        },
+        {
+          "atMs": 16985,
+          "chars": 3040
+        },
+        {
+          "atMs": 18192,
+          "chars": 3040
+        },
+        {
+          "atMs": 19411,
+          "chars": 3040
+        },
+        {
+          "atMs": 20631,
+          "chars": 3040
+        },
+        {
+          "atMs": 21845,
+          "chars": 3040
+        },
+        {
+          "atMs": 23059,
+          "chars": 3040
+        },
+        {
+          "atMs": 24270,
+          "chars": 3040
+        }
+      ],
+      "settled": 3040,
+      "current": {
+        "chars": 3040,
+        "sampleMs": 13345,
+        "totalMs": 20604
+      },
+      "proposed": {
+        "chars": 3040,
+        "sampleMs": 4856,
+        "totalMs": 12115
+      },
+      "sameReading": true,
+      "savedMs": 8489
+    },
+    {
+      "key": "kiosk",
+      "mode": "desktop",
+      "path": "/kiosk/",
+      "why": "holds a WebSocket open — never idle by design",
+      "url": "https://more30.com/kiosk/",
+      "idleReached": true,
+      "idleMs": 12322,
+      "series": [
+        {
+          "atMs": 1213,
+          "chars": 2599
+        },
+        {
+          "atMs": 2426,
+          "chars": 2599
+        },
+        {
+          "atMs": 3641,
+          "chars": 2599
+        },
+        {
+          "atMs": 4862,
+          "chars": 2599
+        },
+        {
+          "atMs": 6067,
+          "chars": 2599
+        },
+        {
+          "atMs": 7275,
+          "chars": 2599
+        },
+        {
+          "atMs": 8483,
+          "chars": 2599
+        },
+        {
+          "atMs": 9693,
+          "chars": 2599
+        },
+        {
+          "atMs": 10907,
+          "chars": 2599
+        },
+        {
+          "atMs": 12119,
+          "chars": 2599
+        },
+        {
+          "atMs": 13331,
+          "chars": 2599
+        },
+        {
+          "atMs": 14539,
+          "chars": 2599
+        },
+        {
+          "atMs": 15747,
+          "chars": 2599
+        },
+        {
+          "atMs": 16964,
+          "chars": 2599
+        },
+        {
+          "atMs": 18183,
+          "chars": 2599
+        },
+        {
+          "atMs": 19400,
+          "chars": 2599
+        },
+        {
+          "atMs": 20615,
+          "chars": 2599
+        },
+        {
+          "atMs": 21826,
+          "chars": 2599
+        },
+        {
+          "atMs": 23049,
+          "chars": 2599
+        },
+        {
+          "atMs": 24252,
+          "chars": 2599
+        }
+      ],
+      "settled": 2599,
+      "current": {
+        "chars": 2599,
+        "sampleMs": 13331,
+        "totalMs": 25653
+      },
+      "proposed": {
+        "chars": 2599,
+        "sampleMs": 4862,
+        "totalMs": 17184
+      },
+      "sameReading": true,
+      "savedMs": 8469
+    },
+    {
+      "key": "home",
+      "mode": "desktop",
+      "path": "/",
+      "why": "ordinary route",
+      "url": "https://more30.com/",
+      "idleReached": true,
+      "idleMs": 14263,
+      "series": [
+        {
+          "atMs": 1221,
+          "chars": 3295
+        },
+        {
+          "atMs": 2440,
+          "chars": 3295
+        },
+        {
+          "atMs": 3673,
+          "chars": 3295
+        },
+        {
+          "atMs": 4880,
+          "chars": 3295
+        },
+        {
+          "atMs": 6085,
+          "chars": 3295
+        },
+        {
+          "atMs": 7301,
+          "chars": 3295
+        },
+        {
+          "atMs": 8516,
+          "chars": 3295
+        },
+        {
+          "atMs": 9733,
+          "chars": 3295
+        },
+        {
+          "atMs": 10942,
+          "chars": 3295
+        },
+        {
+          "atMs": 12152,
+          "chars": 3295
+        },
+        {
+          "atMs": 13359,
+          "chars": 3295
+        },
+        {
+          "atMs": 14575,
+          "chars": 3295
+        },
+        {
+          "atMs": 15781,
+          "chars": 3295
+        },
+        {
+          "atMs": 16989,
+          "chars": 3295
+        },
+        {
+          "atMs": 18194,
+          "chars": 3295
+        },
+        {
+          "atMs": 19405,
+          "chars": 3295
+        },
+        {
+          "atMs": 20616,
+          "chars": 3295
+        },
+        {
+          "atMs": 21823,
+          "chars": 3295
+        },
+        {
+          "atMs": 23039,
+          "chars": 3295
+        },
+        {
+          "atMs": 24248,
+          "chars": 3295
+        }
+      ],
+      "settled": 3295,
+      "current": {
+        "chars": 3295,
+        "sampleMs": 13359,
+        "totalMs": 27622
+      },
+      "proposed": {
+        "chars": 3295,
+        "sampleMs": 4880,
+        "totalMs": 19143
+      },
+      "sameReading": true,
+      "savedMs": 8479
+    },
+    {
+      "key": "zchuyot",
+      "mode": "desktop",
+      "path": "/zchuyot",
+      "why": "ordinary route",
+      "url": "https://more30.com/zchuyot",
+      "idleReached": true,
+      "idleMs": 11114,
+      "series": [
+        {
+          "atMs": 1271,
+          "chars": 2511
+        },
+        {
+          "atMs": 2481,
+          "chars": 2511
+        },
+        {
+          "atMs": 3698,
+          "chars": 2511
+        },
+        {
+          "atMs": 4904,
+          "chars": 2511
+        },
+        {
+          "atMs": 6112,
+          "chars": 2511
+        },
+        {
+          "atMs": 7330,
+          "chars": 2511
+        },
+        {
+          "atMs": 8536,
+          "chars": 2511
+        },
+        {
+          "atMs": 9744,
+          "chars": 2511
+        },
+        {
+          "atMs": 10958,
+          "chars": 2511
+        },
+        {
+          "atMs": 12167,
+          "chars": 2511
+        },
+        {
+          "atMs": 13376,
+          "chars": 2511
+        },
+        {
+          "atMs": 14588,
+          "chars": 2511
+        },
+        {
+          "atMs": 15799,
+          "chars": 2511
+        },
+        {
+          "atMs": 17016,
+          "chars": 2511
+        },
+        {
+          "atMs": 18224,
+          "chars": 2511
+        },
+        {
+          "atMs": 19432,
+          "chars": 2511
+        },
+        {
+          "atMs": 20647,
+          "chars": 2511
+        },
+        {
+          "atMs": 21856,
+          "chars": 2511
+        },
+        {
+          "atMs": 23062,
+          "chars": 2511
+        },
+        {
+          "atMs": 24270,
+          "chars": 2511
+        }
+      ],
+      "settled": 2511,
+      "current": {
+        "chars": 2511,
+        "sampleMs": 13376,
+        "totalMs": 24490
+      },
+      "proposed": {
+        "chars": 2511,
+        "sampleMs": 4904,
+        "totalMs": 16018
+      },
+      "sameReading": true,
+      "savedMs": 8472
+    },
+    {
+      "key": "nadlan",
+      "mode": "desktop",
+      "path": "/nadlan",
+      "why": "ordinary route",
+      "url": "https://more30.com/nadlan",
+      "idleReached": true,
+      "idleMs": 12120,
+      "series": [
+        {
+          "atMs": 1218,
+          "chars": 6464
+        },
+        {
+          "atMs": 2426,
+          "chars": 6464
+        },
+        {
+          "atMs": 3639,
+          "chars": 6464
+        },
+        {
+          "atMs": 4848,
+          "chars": 6464
+        },
+        {
+          "atMs": 6070,
+          "chars": 6464
+        },
+        {
+          "atMs": 7277,
+          "chars": 6464
+        },
+        {
+          "atMs": 8486,
+          "chars": 6464
+        },
+        {
+          "atMs": 9696,
+          "chars": 6464
+        },
+        {
+          "atMs": 10906,
+          "chars": 6464
+        },
+        {
+          "atMs": 12115,
+          "chars": 6464
+        },
+        {
+          "atMs": 13323,
+          "chars": 6464
+        },
+        {
+          "atMs": 14534,
+          "chars": 6464
+        },
+        {
+          "atMs": 15740,
+          "chars": 6464
+        },
+        {
+          "atMs": 16964,
+          "chars": 6464
+        },
+        {
+          "atMs": 18177,
+          "chars": 6464
+        },
+        {
+          "atMs": 19398,
+          "chars": 6464
+        },
+        {
+          "atMs": 20609,
+          "chars": 6464
+        },
+        {
+          "atMs": 21822,
+          "chars": 6464
+        },
+        {
+          "atMs": 23032,
+          "chars": 6464
+        },
+        {
+          "atMs": 24246,
+          "chars": 6464
+        }
+      ],
+      "settled": 6464,
+      "current": {
+        "chars": 6464,
+        "sampleMs": 13323,
+        "totalMs": 25443
+      },
+      "proposed": {
+        "chars": 6464,
+        "sampleMs": 4848,
+        "totalMs": 16968
+      },
+      "sameReading": true,
+      "savedMs": 8475
+    },
+    {
+      "key": "chatzor-app",
+      "mode": "desktop",
+      "path": "/chatzor/",
+      "why": "ordinary route",
+      "url": "https://more30.com/chatzor/",
+      "idleReached": true,
+      "idleMs": 5941,
+      "series": [
+        {
+          "atMs": 1212,
+          "chars": 2101
+        },
+        {
+          "atMs": 2417,
+          "chars": 2101
+        },
+        {
+          "atMs": 3625,
+          "chars": 2101
+        },
+        {
+          "atMs": 4832,
+          "chars": 2101
+        },
+        {
+          "atMs": 6041,
+          "chars": 2101
+        },
+        {
+          "atMs": 7248,
+          "chars": 2101
+        },
+        {
+          "atMs": 8458,
+          "chars": 2101
+        },
+        {
+          "atMs": 9663,
+          "chars": 2101
+        },
+        {
+          "atMs": 10878,
+          "chars": 2101
+        },
+        {
+          "atMs": 12095,
+          "chars": 2101
+        },
+        {
+          "atMs": 13302,
+          "chars": 2101
+        },
+        {
+          "atMs": 14512,
+          "chars": 2101
+        },
+        {
+          "atMs": 15725,
+          "chars": 2101
+        },
+        {
+          "atMs": 16933,
+          "chars": 2101
+        },
+        {
+          "atMs": 18141,
+          "chars": 2101
+        },
+        {
+          "atMs": 19351,
+          "chars": 2101
+        },
+        {
+          "atMs": 20557,
+          "chars": 2101
+        },
+        {
+          "atMs": 21773,
+          "chars": 2101
+        },
+        {
+          "atMs": 22989,
+          "chars": 2101
+        },
+        {
+          "atMs": 24204,
+          "chars": 2101
+        }
+      ],
+      "settled": 2101,
+      "current": {
+        "chars": 2101,
+        "sampleMs": 13302,
+        "totalMs": 19243
+      },
+      "proposed": {
+        "chars": 2101,
+        "sampleMs": 4832,
+        "totalMs": 10773
+      },
+      "sameReading": true,
+      "savedMs": 8470
+    }
+  ]
+}

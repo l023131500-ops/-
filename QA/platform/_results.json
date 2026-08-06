@@ -2007,7 +2007,7 @@
       "url": "https://more30.com/chatzor/",
       "desktop": {
         "status": 200,
-        "loadMs": 4919,
+        "loadMs": 25149,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "chatzor-app-desktop.png",
@@ -2035,8 +2035,8 @@
           "H3: מקווה תל חי",
           "H3: ניווט"
         ],
-        "textLen": 2073,
-        "interactiveCount": 29,
+        "textLen": 2101,
+        "interactiveCount": 30,
         "smallTargets": [],
         "srOnlyTargets": [
           {
@@ -2063,7 +2063,7 @@
       },
       "mobile": {
         "status": 200,
-        "loadMs": 4572,
+        "loadMs": 24554,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "chatzor-app-mobile.png",
@@ -2091,8 +2091,8 @@
           "H3: מקווה תל חי",
           "H3: ניווט"
         ],
-        "textLen": 2060,
-        "interactiveCount": 29,
+        "textLen": 2088,
+        "interactiveCount": 30,
         "smallTargets": [],
         "srOnlyTargets": [
           {
@@ -2119,7 +2119,7 @@
       },
       "dark": {
         "status": 200,
-        "loadMs": 4672,
+        "loadMs": 20801,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "chatzor-app-dark.png",
@@ -2147,8 +2147,8 @@
           "H3: מקווה תל חי",
           "H3: ניווט"
         ],
-        "textLen": 2073,
-        "interactiveCount": 29,
+        "textLen": 2101,
+        "interactiveCount": 30,
         "smallTargets": [],
         "srOnlyTargets": [
           {
@@ -3266,7 +3266,7 @@
       "url": "https://more30.com/mechiron",
       "desktop": {
         "status": 200,
-        "loadMs": 47087,
+        "loadMs": 18637,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "mechiron-desktop.png",
@@ -3321,7 +3321,7 @@
       },
       "mobile": {
         "status": 200,
-        "loadMs": 38774,
+        "loadMs": 31412,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "mechiron-mobile.png",
@@ -3376,7 +3376,7 @@
       },
       "dark": {
         "status": 200,
-        "loadMs": 49070,
+        "loadMs": 15371,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "mechiron-dark.png",
@@ -3441,7 +3441,7 @@
       "url": "https://more30.com/kupot",
       "desktop": {
         "status": 200,
-        "loadMs": 33651,
+        "loadMs": 12232,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "kupot-desktop.png",
@@ -3479,7 +3479,7 @@
       },
       "mobile": {
         "status": 200,
-        "loadMs": 36627,
+        "loadMs": 13792,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "kupot-mobile.png",
@@ -3517,7 +3517,7 @@
       },
       "dark": {
         "status": 200,
-        "loadMs": 37205,
+        "loadMs": 17681,
         "consoleErrors": [],
         "failedRequests": [],
         "screenshot": "kupot-dark.png",
@@ -4458,5 +4458,5 @@
       "horizontalOverflow": false
     }
   },
-  "finishedAt": "2026-08-06T23:20:38.880Z"
+  "finishedAt": "2026-08-06T23:36:59.216Z"
 }
