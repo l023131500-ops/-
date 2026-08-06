@@ -1,0 +1,162 @@
+{
+  "/tamlul": {
+    "route": "/tamlul",
+    "osDark": {
+      "effectiveBg": "rgb(20, 22, 28)",
+      "bodyImage": "",
+      "fg": "rgb(228, 230, 236)",
+      "rootClass": "dark",
+      "rootTheme": ""
+    },
+    "light": {
+      "effectiveBg": "rgb(251, 250, 246)",
+      "bodyImage": "",
+      "fg": "rgb(26, 26, 26)",
+      "rootClass": "",
+      "rootTheme": ""
+    },
+    "toggleCandidates": [],
+    "osDarkFollows": true,
+    "reachable": true
+  },
+  "/modaot": {
+    "route": "/modaot",
+    "osDark": {
+      "effectiveBg": "rgb(15, 18, 24)",
+      "bodyImage": "",
+      "fg": "rgb(228, 230, 236)",
+      "rootClass": "dark",
+      "rootTheme": ""
+    },
+    "light": {
+      "effectiveBg": "rgb(248, 245, 236)",
+      "bodyImage": "",
+      "fg": "rgb(26, 26, 26)",
+      "rootClass": "",
+      "rootTheme": ""
+    },
+    "toggleCandidates": [
+      {
+        "tag": "a",
+        "hay": "card text-brand-dark hover:shadow-md transition text-right block פלטפורמת השיעוריםחיפוש שי",
+        "visible": true,
+        "x": 836,
+        "y": 1217
+      },
+      {
+        "tag": "a",
+        "hay": "card text-brand-dark hover:shadow-md transition text-right block תמלול שיעוריםמקובץ שמע ל-",
+        "visible": true,
+        "x": 444,
+        "y": 1217
+      }
+    ],
+    "afterClick": {
+      "effectiveBg": "rgb(248, 245, 236)",
+      "bodyImage": "",
+      "fg": "rgb(26, 26, 26)",
+      "rootClass": "",
+      "rootTheme": ""
+    },
+    "clickChanged": false,
+    "osDarkFollows": true,
+    "reachable": true
+  },
+  "/briut": {
+    "route": "/briut",
+    "osDark": {
+      "effectiveBg": "rgb(14, 21, 25)",
+      "bodyImage": "",
+      "fg": "rgb(227, 233, 237)",
+      "rootClass": "dark",
+      "rootTheme": ""
+    },
+    "light": {
+      "effectiveBg": "rgb(246, 248, 249)",
+      "bodyImage": "",
+      "fg": "rgb(22, 35, 43)",
+      "rootClass": "",
+      "rootTheme": ""
+    },
+    "toggleCandidates": [],
+    "osDarkFollows": true,
+    "reachable": true
+  },
+  "/bkalot": {
+    "route": "/bkalot",
+    "osDark": {
+      "effectiveBg": "rgb(18, 19, 15)",
+      "bodyImage": "",
+      "fg": "rgb(233, 231, 224)",
+      "rootClass": "dark",
+      "rootTheme": ""
+    },
+    "light": {
+      "effectiveBg": "rgb(247, 246, 242)",
+      "bodyImage": "",
+      "fg": "rgb(35, 33, 28)",
+      "rootClass": "",
+      "rootTheme": ""
+    },
+    "toggleCandidates": [],
+    "osDarkFollows": true,
+    "reachable": true
+  },
+  "/kiosk/": {
+    "route": "/kiosk/",
+    "osDark": {
+      "effectiveBg": "rgb(11, 18, 32)",
+      "bodyImage": "",
+      "fg": "rgb(230, 235, 244)",
+      "rootClass": "dark",
+      "rootTheme": ""
+    },
+    "light": {
+      "effectiveBg": "rgb(245, 247, 251)",
+      "bodyImage": "",
+      "fg": "rgb(11, 18, 32)",
+      "rootClass": "",
+      "rootTheme": ""
+    },
+    "toggleCandidates": [
+      {
+        "tag": "a",
+        "hay": "btn btn-primary כניסה למערכת הניהול",
+        "visible": true,
+        "x": 1117.90625,
+        "y": 473.390625
+      },
+      {
+        "tag": "a",
+        "hay": "btn btn-light התחלה",
+        "visible": true,
+        "x": 1027.3359375,
+        "y": 3411.828125
+      },
+      {
+        "tag": "a",
+        "hay": "btn btn-light דברו איתנו",
+        "visible": true,
+        "x": 252.6640625,
+        "y": 3411.828125
+      },
+      {
+        "tag": "a",
+        "hay": "btn btn-ghost כניסה למערכת ←",
+        "visible": true,
+        "x": 640,
+        "y": 3832.125
+      }
+    ],
+    "afterClick": {
+      "effectiveBg": "rgb(245, 247, 251)",
+      "bodyImage": "",
+      "fg": "rgb(11, 18, 32)",
+      "rootClass": "",
+      "rootTheme": ""
+    },
+    "clickChanged": false,
+    "osDarkFollows": true,
+    "reachable": true
+  }
+}

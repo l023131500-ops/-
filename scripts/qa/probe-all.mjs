@@ -9,6 +9,14 @@
  *   1. the route answers 200
  *   2. every asset the HTML references also answers 200
  *   3. the rendered DOM contains real text
+ *   4. the text is the SYSTEM's, not the portal apologising for it
+ *
+ * (4) was added on 06/08 because (3) let a real failure through for weeks.
+ * `/chatzor` and `/chizukim` were rewritten to the portal's system.html, which
+ * renders "השירות הזה עדיין בהכנה" — 190 characters, comfortably over the
+ * 150-character bar, so both scored OK while telling every visitor the system
+ * did not exist. A generic length threshold cannot tell real content from a
+ * well-formed apology; the placeholder has to be named.
  *
  * Writes QA/platform/_works.json for SYSTEMS_STATUS.md to read.
  *
@@ -31,6 +39,12 @@ const ROUTES = [
   ['crm', '30', '/crm/dashboard'], ['gesher', '31', '/gesher/'], ['nadlan', '32', '/nadlan'],
   ['kesef', '34', '/kesef'], ['kiosk', '35', '/kiosk/'], ['tivuch', '36', '/tivuch'],
 ];
+
+// The portal's stand-in for a system it has no page for. Matched on the
+// sentence rather than on system.html, because the route that serves it is
+// exactly what goes wrong — by the time the browser has the text, the rewrite
+// that produced it is invisible.
+const PLACEHOLDER = 'השירות הזה עדיין בהכנה';
 
 const out = {};
 const browser = await chromium.launch({ executablePath: EXE });
@@ -57,9 +71,11 @@ for (const [key, sys, path] of ROUTES) {
     errors.push('navigation: ' + e.message.slice(0, 100));
   }
 
-  const text = await page
-    .evaluate(() => (document.body ? document.body.innerText.replace(/\s+/g, ' ').trim().length : 0))
-    .catch(() => 0);
+  const body = await page
+    .evaluate(() => (document.body ? document.body.innerText.replace(/\s+/g, ' ').trim() : ''))
+    .catch(() => '');
+  const text = body.length;
+  const placeholder = body.includes(PLACEHOLDER);
   const buttons = await page.locator('button, a[href]').count().catch(() => 0);
   const overflow = await page
     .evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)
@@ -75,12 +91,13 @@ for (const [key, sys, path] of ROUTES) {
     failedCount: ours.length,
     errors: errors.slice(0, 3),
     overflow,
-    works: status === 200 && text > 150 && ours.length === 0,
+    placeholder,
+    works: status === 200 && text > 150 && ours.length === 0 && !placeholder,
   };
   console.log(
     `${key.padEnd(10)} ${sys.padEnd(3)} ${String(status).padEnd(4)} text=${String(text).padEnd(6)} ` +
     `links=${String(buttons).padEnd(4)} badAssets=${String(ours.length).padEnd(3)} ` +
-    `err=${errors.length} ${out[key].works ? 'OK' : '<-- CHECK'}`,
+    `err=${errors.length} ${out[key].works ? 'OK' : placeholder ? '<-- PLACEHOLDER' : '<-- CHECK'}`,
   );
   await ctx.close();
 }
