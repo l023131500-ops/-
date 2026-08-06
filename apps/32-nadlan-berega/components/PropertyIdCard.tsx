@@ -61,7 +61,7 @@ export default function PropertyIdCard({ q }: { q: string }) {
     let alive = true;
     setLoading(true);
     setError(null);
-    const url = `/api/profile?q=${encodeURIComponent(q)}${askApplied ? `&ask=${encodeURIComponent(askApplied)}` : ''}`;
+    const url = apiUrl(`/api/profile?q=${encodeURIComponent(q)}${askApplied ? `&ask=${encodeURIComponent(askApplied)}` : ''}`);
     fetch(url)
       .then((r) => (r.ok ? r.json() : r.json().then((j) => Promise.reject(j.error || r.status))))
       .then((data: FullProfile) => alive && setProfile(data))
