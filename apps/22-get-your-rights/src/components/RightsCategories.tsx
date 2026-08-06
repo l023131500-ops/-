@@ -17,6 +17,9 @@ import { validateIdNumber, validatePhone, getIdError, getPhoneError } from "@/li
 
 const INITIAL_VISIBLE = 8;
 
+/** נספר מהקטלוג כדי שהמספר שבכותרת לא יוכל להיות שגוי. */
+const rightsCount = mainCategories.reduce((n, c) => n + c.topics.length, 0);
+
 const genderOptions = ["זכר", "נקבה", "אחר"];
 const maritalOptions = ["רווק/ה", "נשוי/אה", "גרוש/ה", "אלמן/ה"];
 const healthOptions = ["תקין", "מוגבלות קלה", "מוגבלות בינונית", "מוגבלות קשה"];
@@ -111,7 +114,16 @@ const RightsCategories = () => {
         <div className="container mx-auto px-6">
           <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-extrabold text-foreground mb-4">גלו את הזכויות שמגיעות לכם</h2>
-            <p className="text-lg text-muted-foreground max-w-xl mx-auto">מעל 200 זכויות, מענקים והטבות - מביטוח לאומי, רשויות המס, בנקים ועוד. חפשו או בחרו קטגוריה</p>
+            {/* ⚠️ כאן היה כתוב "מעל 200 זכויות". בקטלוג יש 194 — כלומר המספר
+                פשוט לא היה נכון. באתר שהכלל שלו הוא "נתוני אמת בלבד; אין נתון
+                → לא זמין", מספר מנופח בכותרת הוא ליקוי ולא ניסוח.
+
+                לכן הוא נספר מהקטלוג עצמו ולא נכתב ביד: כך הוא נכון היום, וימשיך
+                להיות נכון כשיתווספו זכויות — במקום להתיישן בשקט כפי שקרה. */}
+            <p className="text-lg text-muted-foreground max-w-xl mx-auto">
+              {rightsCount} זכויות, מענקים והטבות ב-{mainCategories.length} קטגוריות — מביטוח לאומי,
+              רשויות המס, בנקים ועוד. חפשו או בחרו קטגוריה
+            </p>
           </motion.div>
 
           {/* Search bar */}
