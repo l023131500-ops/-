@@ -163,6 +163,32 @@ interface PlatformUser {
 
 const ROLE_HE: Record<string, string> = { member: "משתמש", manager: "מנהל תוכן", admin: "מנהל" };
 
+/**
+ * המסכים שיושבים תחת /admin אבל אינם חלק מהאפליקציה הזו.
+ *
+ * ‎more30.com/admin הוא שני דברים באותה כתובת: הלוח הזה (פרויקט `nihul-more30`)
+ * עונה ל-`/admin`, ותשעה מסכים עצמאיים עונים ל-`/admin/<שם>` מתוך הפורטל —
+ * ה-rewrites ב-`portal/vercel.dist.json` נבדקים לפני הנפילה ל-`/admin/:path*`.
+ * שני הצדדים נפרסים בנפרד ואף אחד מהם לא ידע על השני, ולכן שמונה מהמסכים היו
+ * מוגשים כהלכה ובכל זאת נגישים רק למי שמקליד את הכתובת בעצמו
+ * (`scripts/qa/admin-screens-reachable.mjs`: 1 מתוך 9).
+ *
+ * הרשימה כתובה כאן ולא נקראת מהמסד בכוונה: אלה מסכים של הניהול עצמו, לא
+ * מערכות. הכניסות לאדמין של המערכות מגיעות מ-`core.projects.admin_url`
+ * ומוצגות בלשונית "כניסות לאדמין".
+ */
+const CONSOLE_SCREENS: { href: string; label: string; hint: string }[] = [
+  { href: "/admin/systems", label: "דוח מערכות", hint: "מצב, קישור ו-Lighthouse לכל מערכת" },
+  { href: "/admin/issues", label: "תקלות ומה דורש אותך", hint: "תוקן · בטיפול · פתוח" },
+  { href: "/admin/leads", label: "לידים", hint: "הלידים של כל המערכות במקום אחד" },
+  { href: "/admin/customers", label: "לקוחות", hint: "מנויים וחשבונות" },
+  { href: "/admin/pricing", label: "מחירים ותצוגה", hint: "core.plans — עריכה חיה" },
+  { href: "/admin/credits", label: "יתרות וחיבורים", hint: "מה נשאר אצל כל ספק" },
+  { href: "/admin/activity", label: "משתמשים פעילים", hint: "כניסות ושימוש" },
+  { href: "/admin/automation", label: "אוטומציית תוכן", hint: "התור של בקלות · מצב טסט" },
+  { href: "/admin/rights", label: "מאגר הזכויות · בקלות (10)", hint: "ניהול הקטלוג" },
+];
+
 const accessOf = (r: Overview): AccessKind =>
   (r.admin_auth && r.admin_auth in ACCESS_HE ? r.admin_auth : "none") as AccessKind;
 
@@ -568,6 +594,19 @@ export function App() {
         </div>
       </header>
       {msg && <div style={{ background: "#fef9c3", border: "1px solid #fde68a", padding: "8px 12px", borderRadius: 8, margin: "10px 0", fontSize: 13 }}>{msg}</div>}
+
+      {/* המסכים שאינם חלק מהאפליקציה הזו — ראה CONSOLE_SCREENS. בלי השורה הזו
+          הם קיימים בכתובת ואין מהיכן ללחוץ עליהם. */}
+      <nav aria-label="מסכי מרכז השליטה"
+        style={{ ...card, marginTop: 12, display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
+        <b style={{ fontSize: 13, color: "#475569" }}>מרכז השליטה:</b>
+        {CONSOLE_SCREENS.map((s) => (
+          <a key={s.href} href={s.href} title={s.hint}
+            style={{ ...linkBtn, padding: "5px 12px", fontSize: 12.5, fontWeight: 600 }}>
+            {s.label}
+          </a>
+        ))}
+      </nav>
 
       {view === "systems" ? (
         <>
