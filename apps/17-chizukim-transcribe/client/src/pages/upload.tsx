@@ -9,6 +9,21 @@ import { ChevronRight, UploadCloud, FileAudio, X } from "lucide-react";
 
 const ALLOWED_EXT = /\.(mp3|wav|m4a|aac|ogg|opus|webm|flac)$/i;
 
+/**
+ * The real ceiling, measured against the bucket — not a number chosen here.
+ *
+ * This page used to promise "עד 500MB". 500MB is the multer limit on the
+ * Express fallback route, which the direct-to-storage path never touches;
+ * what governs is the Supabase bucket. Asked directly, it accepts 50MB and
+ * answers 413 "Maximum size exceeded" at 51MB — so the page was overstating
+ * by a factor of ten, and a large shiur failed only after the user had
+ * watched the progress bar climb.
+ *
+ * Re-measure with scripts/qa/chizukim-upload-ceiling.mjs before changing it.
+ * Raising this constant does not raise the limit; the bucket does.
+ */
+const MAX_UPLOAD_BYTES = 50 * 1024 * 1024;
+
 function fmtBytes(n: number): string {
   if (n < 1024) return `${n} B`;
   if (n < 1024 * 1024) return `${(n / 1024).toFixed(1)} KB`;
@@ -81,6 +96,16 @@ export default function UploadPage() {
       toast({
         title: "קובץ לא נתמך",
         description: "אנא בחר קובץ אודיו (mp3, wav, m4a, ogg, flac ועוד).",
+        variant: "destructive",
+      });
+      return;
+    }
+    // Refuse here rather than after a full upload: the storage service rejects
+    // it anyway, and finding out at 100% is the worst possible moment.
+    if (f && f.size > MAX_UPLOAD_BYTES) {
+      toast({
+        title: "הקובץ גדול מדי",
+        description: `המגבלה היא ${fmtBytes(MAX_UPLOAD_BYTES)} והקובץ הזה ${fmtBytes(f.size)}. אפשר לפצל את ההקלטה או לדחוס אותה לאיכות נמוכה יותר לפני ההעלאה.`,
         variant: "destructive",
       });
       return;
@@ -188,7 +213,8 @@ export default function UploadPage() {
       <main className="max-w-3xl mx-auto px-4 py-10">
         <h1 className="text-xl font-bold mb-2">העלאת הקלטה חדשה</h1>
         <p className="text-sm text-muted-foreground mb-6">
-          תומך בקבצים גדולים (עד 500MB) — ההעלאה נעשית ישירות לאחסון עם מד התקדמות.
+          עד {fmtBytes(MAX_UPLOAD_BYTES)} לקובץ — ההעלאה נעשית ישירות לאחסון עם מד התקדמות.
+          הקלטה ארוכה יותר אפשר לפצל, או לדחוס לאיכות נמוכה יותר.
         </p>
 
         <Card className="p-6 space-y-5">

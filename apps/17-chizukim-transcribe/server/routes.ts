@@ -37,10 +37,18 @@ const ALLOWED_AUDIO = [
   "audio/x-flac",
 ];
 
-// Small-file / fallback path: buffer in memory (kept generous for shiurim).
+// Small-file / fallback path: buffer in memory.
+//
+// This used to allow 500MB, and that figure had leaked onto the upload page as
+// a promise to the user. It was never reachable: whichever route the file
+// takes it ends up in the Supabase bucket, which accepts 50MB and answers 413
+// at 51MB (measured — scripts/qa/chizukim-upload-ceiling.mjs). A generous
+// limit here only bought a longer wait before the same refusal, on a path that
+// buffers the whole file in memory first.
+const MAX_UPLOAD_BYTES = 50 * 1024 * 1024;
 const upload = multer({
   storage: multer.memoryStorage(),
-  limits: { fileSize: 500 * 1024 * 1024 }, // 500MB
+  limits: { fileSize: MAX_UPLOAD_BYTES },
   fileFilter: (_req, file, cb) => {
     const ok =
       ALLOWED_AUDIO.includes((file.mimetype || "").toLowerCase()) ||
