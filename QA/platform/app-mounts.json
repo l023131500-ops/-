@@ -5,9 +5,17 @@
     "title-match": "The app's index.html title is identical to the deployed HTML under _deploy/<project>/<route>/. The deployed file is generated from that template, so the titles tie them together.",
     "rewrite-table": "portal/vercel.dist.json maps the route to a Vercel project; authoritative for what more30.com actually serves.",
     "vercel-link": "apps/<app>/.vercel/project.json names the project, matched against the rewrite table.",
-    "deployed-by-hand": "Confirmed while deploying this system during this run."
+    "deployed-by-hand": "Confirmed while deploying this system during this run.",
+    "live-html": "Fetched the canonical URL through more30.com and read the asset prefix the deployed HTML actually references. The strongest evidence available, because it is what production serves right now rather than what a config claims."
   },
+  "_root_note": "Most entries live under apps/, but not all path-mounted builds do — `root` names the folder when it is somewhere else. admin/ was mounted under /admin for eleven days with base './' and nobody noticed, precisely because this audit only ever walked apps/.",
   "apps": {
+    "admin": {
+      "root": "admin",
+      "mount": "/admin/",
+      "how": "live-html",
+      "note": "The control centre, served at more30.com/admin. Production references /admin/assets/index-<hash>.js, so the deployed artifact was built with this prefix — but the config said './', which resolves to /assets/... on the bare /admin URL and 404s. Fixed and redeployed 06/08/2026."
+    },
     "01-torah-platform": { "mount": "/torah/", "how": "title-match" },
     "04-imud-torani": { "mount": "/imud/", "how": "title-match", "note": "index.html lives in client/, not at the app root" },
     "12-smel-ndln": { "mount": "/smel/", "how": "deployed-by-hand", "note": "portal routes /smel to smel-more30; deployed from _deploy/smel-more30" },

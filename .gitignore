@@ -41,6 +41,10 @@ service-account*.json
 # reproducible from the sources in apps/, and some of it embeds build-time env —
 # so it stays local, exactly like apps/.
 /_deploy/**
+# admin/deploy/ is the same thing for the control centre: scripts/stage-admin.ps1
+# rebuilds it from admin/dist on every run, so tracking it would only ever mean
+# a stale copy competing with the real build output.
+/admin/deploy/**
 
 # logs / os
 *.log

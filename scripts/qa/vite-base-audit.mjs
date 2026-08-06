@@ -29,7 +29,15 @@ const rows = [];
 const missing = [];
 
 for (const [app, spec] of Object.entries(expected)) {
-  const root = path.join('apps', app);
+  /**
+   * Not every path-mounted build lives under apps/. The control centre sits at
+   * admin/ and was mounted under /admin with base "./" for eleven days without
+   * this audit ever looking at it — a hardcoded apps/ prefix meant the one
+   * config outside that folder could not be checked, and a check that cannot
+   * see a file reports nothing rather than a failure. `root` names the folder
+   * when it is not apps/<app>.
+   */
+  const root = spec.root ?? path.join('apps', app);
   if (!fs.existsSync(root)) { missing.push(`${app} (folder gone)`); continue; }
 
   const cfg = ['vite.config.ts', 'vite.config.js', 'vite.config.mts']

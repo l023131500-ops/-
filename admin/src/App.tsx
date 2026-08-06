@@ -74,19 +74,36 @@ const SPEC_STATUS_HE: Record<string, string> = { new: "חדש", reviewing: "בב
  */
 const API_BASE = (import.meta as any).env?.VITE_API_BASE ?? "";
 
-/** ספק חיצוני, כפי ש-/api/credits מחזיר אותו. אין כאן מפתחות — רק מספרים. */
+/**
+ * ספק חיצוני, כפי ש-`/api/credits` מחזיר אותו. אין כאן מפתחות — רק מספרים.
+ *
+ * ⚠️ השדות כאן חייבים להיות בדיוק אלה של `portal/api/credits.ts`. הגרסה
+ * הקודמת הכריזה `usedUsd`/`limitUsd` — שמות שהפונקציה מעולם לא החזירה — ולכן
+ * המסך הדפיס `$undefined / $undefined` לכל ספק שכן מפרסם יתרה. TypeScript לא
+ * תפס את זה כי המבנה נוצק ל-`ProviderCredit` בלי אימות (`as`), והסורק
+ * הרוחבי שמחפש `undefined` על המסך אינו מגיע לכאן כי `/admin` דורש כניסה.
+ */
 interface ProviderCredit {
   key: string; label: string; usedBy: string;
-  state: "ok" | "missing" | "invalid" | "unknown";
-  usage?: { usedUsd: number; limitUsd: number; percent: number; cycleEnds: string | null };
+  /** `not-deployed` = המפתח בכספת אך לא נפרס כאן. מצב נפרד מ"אין מפתח". */
+  state: "ok" | "missing" | "not-deployed" | "invalid" | "unknown";
+  usage?: { used: number; limit: number; percent: number; unit: string; cycleEnds?: string | null };
   detail: string;
+  /** עמוד ההוספה אצל הספק — §3א דורש קישור ישיר לכל אחד. */
+  topUp: string;
+  inVault: boolean;
+  deployed: boolean;
 }
 const CREDIT_STATE_HE: Record<string, string> = {
-  ok: "תקף", missing: "לא מוגדר", invalid: "נדחה", unknown: "לא נמדד",
+  ok: "פועל", missing: "אין מפתח", "not-deployed": "לא נפרס",
+  invalid: "נדחה", unknown: "לא נמדד",
 };
 const CREDIT_STATE_COLOR: Record<string, string> = {
-  ok: "#16a34a", missing: "#94a3b8", invalid: "#dc2626", unknown: "#d97706",
+  ok: "#16a34a", missing: "#94a3b8", "not-deployed": "#d97706",
+  invalid: "#dc2626", unknown: "#d97706",
 };
+/** מספר בעברית, ליחידה שהספק באמת החזיר — ולא סימן דולר קבוע. */
+const nfHe = (n: number) => Number(n).toLocaleString("he-IL", { maximumFractionDigits: 2 });
 
 /**
  * פרויקט ה-Supabase שהכניסה הזו נמצאת בו. מערכת שיושבת על אותו פרויקט
@@ -812,21 +829,35 @@ export function App() {
                   <Badge on label={CREDIT_STATE_HE[p.state] ?? p.state} color={CREDIT_STATE_COLOR[p.state] ?? "#334155"} />
                 </div>
                 <div style={{ fontSize: 12, color: "#64748b", marginTop: 4 }}>{p.usedBy}</div>
-                {p.usage && (
+                {/* מד היתרה רק כשיש תקרה אמיתית. עמודה ריקה ליד ספק שאינו
+                    מפרסם יתרה נקראת כמו "אפס נשאר" — בדיוק ההפך מהאמת. */}
+                {p.usage && p.usage.limit > 0 && (
                   <div style={{ marginTop: 8 }}>
                     <div style={{ height: 8, background: "#e2e8f0", borderRadius: 999, overflow: "hidden" }}>
-                      <div style={{ width: `${Math.min(100, p.usage.percent)}%`, height: "100%", background: p.usage.percent >= 80 ? "#dc2626" : "#16a34a" }} />
+                      <div style={{ width: `${Math.max(0, Math.min(100, p.usage.percent))}%`, height: "100%", background: p.usage.percent >= 80 ? "#dc2626" : "#16a34a" }} />
                     </div>
-                    <div style={{ fontSize: 12, color: "#334155", marginTop: 4, direction: "ltr", textAlign: "right" }}>
-                      ${p.usage.usedUsd} / ${p.usage.limitUsd} · {p.usage.percent}%
+                    <div style={{ fontSize: 12, color: "#334155", marginTop: 4 }}>
+                      נותרו {nfHe(p.usage.limit - p.usage.used)} {p.usage.unit} · {nfHe(p.usage.used)} מתוך {nfHe(p.usage.limit)}
                     </div>
                     {p.usage.cycleEnds && <div style={{ fontSize: 11, color: "#94a3b8" }}>מתאפס ב-{new Date(p.usage.cycleEnds).toLocaleDateString("he-IL")}</div>}
                   </div>
                 )}
                 <div style={{ fontSize: 12, color: "#475569", marginTop: 8, lineHeight: 1.5 }}>{p.detail}</div>
+                <a href={p.topUp} target="_blank" rel="noreferrer" style={{ ...linkBtn, marginTop: 8, alignSelf: "start" }}>
+                  {p.state === "missing" ? "פתיחת חשבון והוספת מפתח ↗" : "הוספת קרדיט אצל הספק ↗"}
+                </a>
               </div>
             ))}
           </div>
+          {credits && (
+            <div style={{ fontSize: 12, color: "#64748b", marginTop: 10, lineHeight: 1.7 }}>
+              <b>לא נפרס</b> — המפתח קיים ב-<code style={code}>core.secrets</code> אבל אינו משתנה
+              סביבה בפריסה הזאת: תיקון של העתקת ערך קיים, לא של פתיחת חשבון.
+              <b> לא נמדד</b> — לספק אין ממשק שמחזיר יתרה, או שלא ענה בזמן; לא מוצג מספר
+              שאין מאחוריו מדידה. מד יתרה קיים רק אצל Apify, Recraft ו-ElevenLabs.
+              {" "}<a href="https://more30.com/admin/credits" target="_blank" rel="noreferrer">המסך המלא ↗</a>
+            </div>
+          )}
 
           <h2 style={{ fontSize: 18, margin: "24px 0 4px" }}>מפתחות חסרים למערכות ({tokens.filter((t) => t.status === "missing").length})</h2>
           <div style={{ fontSize: 12, color: "#64748b", marginBottom: 10 }}>
