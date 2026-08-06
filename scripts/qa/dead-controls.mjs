@@ -38,7 +38,7 @@
  *   node scripts/qa/dead-controls.mjs zchuyot smel
  */
 import { chromium } from 'playwright-core';
-import fs from 'node:fs';
+import { writeRecord } from './lib/records.mjs';
 
 const EXE = 'C:\\Users\\USER\\AppData\\Local\\ms-playwright\\chromium-1234\\chrome-win64\\chrome.exe';
 
@@ -154,11 +154,11 @@ for (const [key, route] of targets) {
 }
 
 await browser.close();
-fs.mkdirSync('QA/platform', { recursive: true });
-fs.writeFileSync('QA/platform/_deadcontrols.json', JSON.stringify(out, null, 2), 'utf8');
 
 console.log(`\n${Object.keys(out).length} routes · ${dead} control(s) that look clickable and go nowhere`);
-console.log('-> QA/platform/_deadcontrols.json');
+// This file used to be replaced wholesale by a filtered run, so re-checking one
+// route after a fix threw away the other 24 results. See lib/records.mjs.
+writeRecord('QA/platform/_deadcontrols.json', out, { filtered: only.length > 0 });
 console.log(
   '\nEach hit needs looking at on the page before it is fixed: a handful of\n' +
     'component libraries render href="#" and attach a real click handler.',

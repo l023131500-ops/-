@@ -1,5 +1,5 @@
-import { motion, useScroll, useTransform } from "framer-motion";
-import { Phone, Mail, Sparkles } from "lucide-react";
+﻿import { motion, useScroll, useTransform } from "framer-motion";
+import { Phone, Mail, MapPin } from "lucide-react";
 import heroBg from "@/assets/hero-bg.jpg";
 import { useDecorativeMotion } from "@/hooks/use-decorative-motion";
 
@@ -108,8 +108,12 @@ const HeroSection = () => {
             {/* ‎text-secondary‎ (זהב) על ‎bg-secondary/20‎ מעל הירוק הכהה נותן
                 3.42:1 בגודל 14px — מתחת ל-4.5. ‎gold-on-dark‎ הוא אותה משפחת
                 צבע בגוון בהיר, ובמכוון אינו מתהפך בערכה הכהה. */}
-            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-secondary/20 border border-secondary/40 text-gold-on-dark text-sm font-semibold">
-              <Sparkles className="w-4 h-4" />
+            {/* היה כאן ‎Sparkles‎. נמדד ב-‎icon-noise.mjs‎: ארבעה ניצוצות מרונדרים
+                בעמוד — בתג הזה, בכותרת בפוטר ובשתי רצועות "עמדות נדרים פלוס" —
+                בלי שאף אחד מהם אומר דבר שהטקסט לידו לא אומר. ניצוץ הוא הסמל
+                שמופיע כשצריך אייקון ואין מה להגיד, וזו בדיוק החתימה ש-§6 מתלונן
+                עליה. התג אומר "מיזם חברתי למיצוי זכויות" והוא מספיק. */}
+            <span className="inline-flex items-center px-4 py-1.5 rounded-full bg-secondary/20 border border-secondary/40 text-gold-on-dark text-sm font-semibold">
               מיזם חברתי למיצוי זכויות
             </span>
           </motion.div>
@@ -166,13 +170,18 @@ const HeroSection = () => {
                 transition={{ duration: 3, repeat: Infinity, repeatDelay: 2 }}
               />
             </motion.a>
+            {/* ‎backdrop-blur‎ הוסר משלושת המשטחים בגיבור (הכפתור הזה ושתי רצועות
+                יצירת הקשר). מה שהוא מטשטש כאן הוא גרדיאנט אחיד — כלומר הוא כמעט
+                לא משנה פיקסל, ורק מוסיף את שכבת ה"זכוכית" שהיא אחד מארבעה סימני
+                הקיט ב-DESIGN_SAMENESS. בסרגל הניווט הוא נשאר, שם הוא כן עושה
+                עבודה: תוכן נגלל מתחתיו וצריך להישאר קריא. */}
             <motion.a
               href="https://nedar.im/F4064"
               target="_blank"
               rel="noopener noreferrer"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.98 }}
-              className="px-10 py-5 rounded-2xl border-2 border-white/40 text-white font-bold text-lg backdrop-blur-sm hover:bg-white/10 transition-colors"
+              className="px-10 py-5 rounded-2xl border-2 border-white/40 text-white font-bold text-lg hover:bg-white/10 transition-colors"
             >
               הצטרפו ללא עלות
             </motion.a>
@@ -188,7 +197,7 @@ const HeroSection = () => {
             <motion.a
               href="tel:023131500"
               whileHover={{ scale: 1.05 }}
-              className="flex items-center justify-center gap-3 px-5 py-3.5 rounded-xl bg-white/15 backdrop-blur-md border border-white/30 hover:bg-white/25 transition-all"
+              className="flex items-center justify-center gap-3 px-5 py-3.5 rounded-xl bg-white/15 border border-white/30 hover:bg-white/25 transition-all"
             >
               <Phone className="w-5 h-5 text-secondary" />
               <div className="text-right">
@@ -199,7 +208,7 @@ const HeroSection = () => {
             <motion.a
               href="mailto:L023131500@gmail.com"
               whileHover={{ scale: 1.05 }}
-              className="flex items-center justify-center gap-3 px-5 py-3.5 rounded-xl bg-white/15 backdrop-blur-md border border-white/30 hover:bg-white/25 transition-all"
+              className="flex items-center justify-center gap-3 px-5 py-3.5 rounded-xl bg-white/15 border border-white/30 hover:bg-white/25 transition-all"
             >
               <Mail className="w-5 h-5 text-secondary" />
               <div className="text-right">
@@ -209,9 +218,13 @@ const HeroSection = () => {
             </motion.a>
             <motion.div
               whileHover={{ scale: 1.05 }}
-              className="flex items-center justify-center gap-3 px-5 py-3.5 rounded-xl bg-secondary/20 backdrop-blur-md border border-secondary/30 cursor-default"
+              className="flex items-center justify-center gap-3 px-5 py-3.5 rounded-xl bg-secondary/20 border border-secondary/30 cursor-default"
             >
-              <Sparkles className="w-5 h-5 text-secondary" />
+              {/* ‎MapPin‎ ולא ‎Sparkles‎: שתי הרצועות לידה הן ערוצי קשר ולכן קיבלו
+                  טלפון ומעטפה, ולשלישית לא היה אייקון מתבקש — אז נשתל ניצוץ.
+                  עמדות נדרים פלוס הן מקומות פיזיים "בכל הארץ", וסיכה על מפה
+                  אומרת את זה. */}
+              <MapPin className="w-5 h-5 text-secondary" />
               <div className="text-right">
                 <p className="text-white font-bold text-sm">עמדות נדרים פלוס</p>
                 <p className="text-white/85 text-xs">בכל הארץ</p>

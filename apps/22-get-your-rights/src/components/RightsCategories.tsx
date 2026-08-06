@@ -264,6 +264,9 @@ const RightsCategories = () => {
                         </div>
                       </div>
                       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                        {/* ‎backdrop-blur-sm‎ מאחורי ‎bg-card/90‎ מעל רקע אטום מטשטש
+                            10% שקיפות מול משטח בצבע אחיד — עלות ציור בכל אחד
+                            מעשרות הכרטיסים, בלי הבדל נראה. הוסר. */}
                         {cat.topics.map((topic, tIdx) => (
                           <motion.button
                             key={topic.id}
@@ -281,7 +284,7 @@ const RightsCategories = () => {
                               boxShadow: "0 8px 25px -5px hsl(152 45% 38% / 0.15)",
                             }}
                             onClick={() => { setOpenCat(cat); setSelectedTopic(topic); }}
-                            className="flex items-center gap-3 p-3.5 rounded-xl border border-border/50 bg-card/90 backdrop-blur-sm hover:border-primary/50 hover:bg-primary/5 transition-all text-right group"
+                            className="flex items-center gap-3 p-3.5 rounded-xl border border-border/50 bg-card/90 hover:border-primary/50 hover:bg-primary/5 transition-all text-right group"
                           >
                             <motion.div
                               className={`w-9 h-9 rounded-lg bg-primary/10 text-primary ring-1 ring-primary/15 flex items-center justify-center shrink-0`}

@@ -1,5 +1,5 @@
 ﻿import { motion, useScroll, useTransform } from "framer-motion";
-import { HeartHandshake, Gift, Users, ArrowLeft, Sparkles } from "lucide-react";
+import { HeartHandshake, Gift, Users, ArrowLeft, ClipboardCheck } from "lucide-react";
 import { useRef } from "react";
 
 const CommunitySection = () => {
@@ -49,7 +49,11 @@ const CommunitySection = () => {
                 desc: "סדנאות מקצועיות, הרצאות, ייעוץ כלכלי וליווי ברמה אחרת",
               },
               {
-                icon: Sparkles,
+                // מתנה למכירות, אנשים לקהילה — ולשלישי, "בדיקה מקיפה של
+                // זכויות", לא היה אייקון מתבקש ולכן הוא קיבל ניצוץ. לוח בדיקה
+                // אומר מה הכרטיס נותן; ‎HeartHandshake‎ כבר משמש ככותרת הסקשן
+                // ולכן אינו פנוי.
+                icon: ClipboardCheck,
                 title: "סיוע למשפחות",
                 desc: "כל משפחה שמצטרפת מקבלת בדיקה מקיפה של זכויות וליווי אישי - בחינם",
               },

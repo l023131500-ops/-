@@ -1,7 +1,7 @@
 ﻿import { useState } from "react";
 // שלושת האמוג'ים ששימשו כאייקונים (🔍 📋 🤝) הוחלפו באייקוני lucide —
 // DESIGN_STANDARD §2. אמוג'י מרונדר בגופן המערכת ונראה אחרת בכל מכשיר.
-import { Phone, Mail, Heart, Send, PhoneCall, Printer, MessageCircle, CheckCircle, ArrowLeft, Sparkles, Search, ClipboardList, HeartHandshake } from "lucide-react";
+import { Phone, Mail, Heart, Send, PhoneCall, Printer, MessageCircle, CheckCircle, ArrowLeft, MapPin, Search, ClipboardList, HeartHandshake } from "lucide-react";
 import { motion } from "framer-motion";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -192,8 +192,11 @@ const Footer = () => {
 
             {/* Quick actions - upgraded */}
             <div>
-              <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-secondary" />
+              {/* אייקון על כותרת אינו מוסיף מידע — הכותרת כבר אומרת את מה שהוא
+                  אמור לרמוז, וכשזה ניצוץ הוא לא רומז אפילו על זה. הוסר כאן
+                  ובכותרת "דברו איתנו" למטה. שלוש השורות שמתחת שומרות את
+                  האייקונים שלהן, כי שם הם מבדילים בין שלוש פעולות שונות. */}
+              <h3 className="font-bold text-lg mb-4">
                 מה אפשר לעשות עכשיו?
               </h3>
               <div className="space-y-3">
@@ -250,8 +253,7 @@ const Footer = () => {
 
             {/* Contact - upgraded */}
             <div>
-              <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
-                <Phone className="w-5 h-5 text-secondary" />
+              <h3 className="font-bold text-lg mb-4">
                 דברו איתנו
               </h3>
               <div className="space-y-3">
@@ -278,7 +280,9 @@ const Footer = () => {
                   </div>
                 </motion.a>
                 <div className="flex items-center gap-3 p-3 rounded-xl bg-background/5 border border-background/10">
-                  <Sparkles className="w-5 h-5 text-secondary" />
+                  {/* אותה החלפה כמו בגיבור: עמדות הן מקום פיזי, ולכן סיכה על
+                      מפה — ולא ניצוץ שנבחר כי היה צריך שם משהו. */}
+                  <MapPin className="w-5 h-5 text-secondary" />
                   <div>
                     <p className="text-background font-bold text-sm">עמדות נדרים פלוס</p>
                     <p className="text-background/70 text-xs">בכל הארץ - הצטרפו במקום</p>

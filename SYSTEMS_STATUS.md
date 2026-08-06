@@ -116,7 +116,7 @@
 | 16 | חצור קונקט | [/chatzor](https://more30.com/chatzor) | ✅ עובדת | 911 | ✅ | |
 | 17 | תמלול חיזוקים | [/chizukim](https://more30.com/chizukim) | ✅ עובדת | 904 | ✅ | |
 | 18 | עורך תורני | [/orech](https://more30.com/orech) | ✅ עובדת | 471 | ✅ | |
-| 22 | מימוש זכויות | [/zchuyot](https://more30.com/zchuyot) | ✅ עובדת | 2,407 | ✅ | |
+| 22 | מימוש זכויות | [/zchuyot](https://more30.com/zchuyot) | ✅ עובדת | 2,511 | ✅ | **תוקן: 3 מספרים מומצאים הוסרו מרצועת הנתונים** |
 | 26 | סטודיו מודעות | [/studio](https://more30.com/studio) | ✅ עובדת | 892 | ✅ | |
 | 28 | השוואת קופות | [/kupot](https://more30.com/kupot) | ✅ עובדת | 3,132 | ✅ | |
 | 32 | נדל"ן ברגע | [/nadlan](https://more30.com/nadlan) | ✅ עובדת | 6,413 | ✅ | **תוקן: נגישות 95→100** |

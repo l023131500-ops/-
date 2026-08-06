@@ -12,8 +12,8 @@
  * Writes QA/platform/_facts.json and prints a summary.
  */
 import { chromium } from 'playwright-core';
-import fs from 'node:fs';
 import { settle } from './lib/settle.mjs';
+import { writeRecord } from './lib/records.mjs';
 
 const EXE = 'C:\\Users\\USER\\AppData\\Local\\ms-playwright\\chromium-1234\\chrome-win64\\chrome.exe';
 const ORIGIN = 'https://more30.com';
@@ -53,14 +53,9 @@ const browser = await chromium.launch({ executablePath: EXE, headless: true });
  * normal way to use this script, so the destructive shape was on the happy path.
  */
 const OUT = 'QA/platform/_facts.json';
-let out = {};
-if (only.length && fs.existsSync(OUT)) {
-  try {
-    out = JSON.parse(fs.readFileSync(OUT, 'utf8'));
-  } catch {
-    out = {};
-  }
-}
+// The merge itself now lives in lib/records.mjs — see the note there for why it
+// had to be shared rather than copied a third time.
+const out = {};
 
 for (const [key, route] of targets) {
   const facts = { route, url: ORIGIN + route };
@@ -302,6 +297,4 @@ for (const [key, route] of targets) {
 }
 
 await browser.close();
-fs.mkdirSync('QA/platform', { recursive: true });
-fs.writeFileSync(OUT, JSON.stringify(out, null, 2), 'utf8');
-console.log(`\n-> ${OUT} (${Object.keys(out).length} systems)`);
+writeRecord(OUT, out, { filtered: only.length > 0 });

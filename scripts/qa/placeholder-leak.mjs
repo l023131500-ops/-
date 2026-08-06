@@ -24,7 +24,7 @@
  *   node scripts/qa/placeholder-leak.mjs /kupot /torah
  */
 import { chromium } from 'playwright-core';
-import fs from 'node:fs';
+import { writeRecord } from './lib/records.mjs';
 
 const EXE = 'C:\\Users\\USER\\AppData\\Local\\ms-playwright\\chromium-1234\\chrome-win64\\chrome.exe';
 
@@ -128,9 +128,9 @@ for (const [key, route] of targets) {
 }
 
 await browser.close();
-fs.mkdirSync('QA/platform', { recursive: true });
-fs.writeFileSync('QA/platform/_leaks.json', JSON.stringify(out, null, 2), 'utf8');
 
 console.log(`\n${Object.keys(out).length} routes · ${leaks} values shown that do not exist`);
-console.log('-> QA/platform/_leaks.json');
+// A run given routes on argv updates those entries and keeps the rest; only a
+// full sweep may define the whole file. See lib/records.mjs.
+writeRecord('QA/platform/_leaks.json', out, { filtered: only.length > 0 });
 process.exit(leaks ? 1 : 0);
