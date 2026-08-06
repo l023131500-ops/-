@@ -1,0 +1,28 @@
+[
+  {
+    "name": "bare",
+    "finalUrl": "https://more30.com/kiosk/",
+    "sheets": 3,
+    "rules": 142,
+    "bodyBg": "rgb(245, 247, 251)",
+    "h1Size": "56px",
+    "css": [
+      "200 text/css; charset=UTF-8 https://more30.com/kiosk/css/style.css",
+      "200 text/css; charset=utf-8 https://netfree.link/fonts/Assistant/stylesheet.css",
+      "200 text/css; charset=utf-8 https://netfree.link/fonts/font-awesome-4.3.0/css/font-awesome.css"
+    ]
+  },
+  {
+    "name": "slash",
+    "finalUrl": "https://more30.com/kiosk/",
+    "sheets": 3,
+    "rules": 142,
+    "bodyBg": "rgb(245, 247, 251)",
+    "h1Size": "56px",
+    "css": [
+      "200 text/css; charset=UTF-8 https://more30.com/kiosk/css/style.css",
+      "200 text/css; charset=utf-8 https://netfree.link/fonts/Assistant/stylesheet.css",
+      "200 text/css; charset=utf-8 https://netfree.link/fonts/font-awesome-4.3.0/css/font-awesome.css"
+    ]
+  }
+]

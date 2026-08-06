@@ -1,0 +1,578 @@
+{
+  "/admin": {
+    "route": "/admin",
+    "osDark": {
+      "effectiveBg": "rgba(0, 0, 0, 0)",
+      "bodyImage": "",
+      "fg": "rgb(0, 0, 0)",
+      "rootClass": "",
+      "rootTheme": ""
+    },
+    "light": {
+      "effectiveBg": "rgba(0, 0, 0, 0)",
+      "bodyImage": "",
+      "fg": "rgb(0, 0, 0)",
+      "rootClass": "",
+      "rootTheme": ""
+    },
+    "toggleCandidates": [],
+    "osDarkFollows": false,
+    "alwaysDark": false,
+    "reachable": false
+  },
+  "/bkalot": {
+    "route": "/bkalot",
+    "osDark": {
+      "effectiveBg": "rgb(18, 19, 15)",
+      "bodyImage": "",
+      "fg": "rgb(233, 231, 224)",
+      "rootClass": "dark",
+      "rootTheme": ""
+    },
+    "light": {
+      "effectiveBg": "rgb(247, 246, 242)",
+      "bodyImage": "",
+      "fg": "rgb(35, 33, 28)",
+      "rootClass": "",
+      "rootTheme": ""
+    },
+    "toggleCandidates": [],
+    "osDarkFollows": true,
+    "alwaysDark": false,
+    "reachable": true
+  },
+  "/briut": {
+    "route": "/briut",
+    "osDark": {
+      "effectiveBg": "rgb(14, 21, 25)",
+      "bodyImage": "",
+      "fg": "rgb(227, 233, 237)",
+      "rootClass": "dark",
+      "rootTheme": ""
+    },
+    "light": {
+      "effectiveBg": "rgb(246, 248, 249)",
+      "bodyImage": "",
+      "fg": "rgb(22, 35, 43)",
+      "rootClass": "",
+      "rootTheme": ""
+    },
+    "toggleCandidates": [],
+    "osDarkFollows": true,
+    "alwaysDark": false,
+    "reachable": true
+  },
+  "/chatzor": {
+    "route": "/chatzor",
+    "osDark": {
+      "effectiveBg": "rgb(13, 22, 33)",
+      "bodyImage": "",
+      "fg": "rgb(228, 235, 241)",
+      "rootClass": "dark",
+      "rootTheme": ""
+    },
+    "light": {
+      "effectiveBg": "rgb(251, 252, 253)",
+      "bodyImage": "",
+      "fg": "rgb(20, 34, 52)",
+      "rootClass": "",
+      "rootTheme": ""
+    },
+    "toggleCandidates": [
+      {
+        "tag": "button",
+        "hay": "מעבר למצב כהה | grid h-10 w-10 place-items-center rounded-md text-muted-foreground transition-colors",
+        "visible": true,
+        "x": 233.71875,
+        "y": 32,
+        "repainted": true
+      }
+    ],
+    "afterClick": {
+      "effectiveBg": "rgb(13, 22, 33)",
+      "bodyImage": "",
+      "fg": "rgb(228, 235, 241)",
+      "rootClass": "dark",
+      "rootTheme": ""
+    },
+    "clickChanged": true,
+    "osDarkFollows": true,
+    "alwaysDark": false,
+    "reachable": true
+  },
+  "/chizukim": {
+    "route": "/chizukim",
+    "osDark": {
+      "effectiveBg": "rgb(26, 23, 20)",
+      "bodyImage": "",
+      "fg": "rgb(235, 231, 224)",
+      "rootClass": "dark",
+      "rootTheme": ""
+    },
+    "light": {
+      "effectiveBg": "rgb(248, 246, 242)",
+      "bodyImage": "",
+      "fg": "rgb(45, 38, 31)",
+      "rootClass": "",
+      "rootTheme": ""
+    },
+    "toggleCandidates": [],
+    "osDarkFollows": true,
+    "alwaysDark": false,
+    "reachable": true
+  },
+  "/crm": {
+    "route": "/crm",
+    "osDark": {
+      "effectiveBg": "lab(3.73265 -2.14425 -4.02555)",
+      "bodyImage": "",
+      "fg": "lab(96.5699 -1.58328 -0.665271)",
+      "rootClass": "dark",
+      "rootTheme": ""
+    },
+    "light": {
+      "effectiveBg": "lab(98.8899 -1.58331 -0.665271)",
+      "bodyImage": "",
+      "fg": "lab(5.38274 -4.89521 -6.47179)",
+      "rootClass": "",
+      "rootTheme": ""
+    },
+    "toggleCandidates": [],
+    "osDarkFollows": true,
+    "alwaysDark": false,
+    "reachable": true
+  },
+  "/egod": {
+    "route": "/egod",
+    "osDark": {
+      "effectiveBg": "rgb(15, 21, 36)",
+      "bodyImage": "",
+      "fg": "rgb(235, 237, 244)",
+      "rootClass": "dark",
+      "rootTheme": ""
+    },
+    "light": {
+      "effectiveBg": "rgb(245, 246, 250)",
+      "bodyImage": "",
+      "fg": "rgb(27, 44, 90)",
+      "rootClass": "",
+      "rootTheme": ""
+    },
+    "toggleCandidates": [],
+    "osDarkFollows": true,
+    "alwaysDark": false,
+    "reachable": true
+  },
+  "/galil": {
+    "route": "/galil",
+    "osDark": {
+      "effectiveBg": "rgba(0, 0, 0, 0)",
+      "bodyImage": "linear-gradient(160deg, rgb(14, 24, 32) 0%, rgb(18, 30, 38) 30%, rgb(20, 34, 41) 60%, rgb(14, 24, 32) 100%)",
+      "fg": "rgb(236, 240, 244)",
+      "rootClass": "dark",
+      "rootTheme": ""
+    },
+    "light": {
+      "effectiveBg": "rgba(0, 0, 0, 0)",
+      "bodyImage": "linear-gradient(160deg, rgb(245, 247, 249) 0%, rgb(243, 245, 247) 30%, rgb(240, 243, 245) 60%, rgb(245, 247, 249) 100%)",
+      "fg": "rgb(21, 29, 40)",
+      "rootClass": "",
+      "rootTheme": ""
+    },
+    "toggleCandidates": [],
+    "osDarkFollows": true,
+    "alwaysDark": false,
+    "reachable": true
+  },
+  "/gesher": {
+    "route": "/gesher",
+    "osDark": {
+      "effectiveBg": "lab(5.23127 -1.15929 -6.2068)",
+      "bodyImage": "",
+      "fg": "lab(95.3599 -0.510246 -1.40362)",
+      "rootClass": "dark",
+      "rootTheme": ""
+    },
+    "light": {
+      "effectiveBg": "lab(98.144 -0.25627 -0.702512)",
+      "bodyImage": "",
+      "fg": "lab(13.5245 -2.06289 -8.6511)",
+      "rootClass": "",
+      "rootTheme": ""
+    },
+    "toggleCandidates": [],
+    "osDarkFollows": true,
+    "alwaysDark": false,
+    "reachable": true
+  },
+  "/imud": {
+    "route": "/imud",
+    "osDark": {
+      "effectiveBg": "rgb(27, 22, 19)",
+      "bodyImage": "",
+      "fg": "rgb(241, 237, 228)",
+      "rootClass": "dark",
+      "rootTheme": ""
+    },
+    "light": {
+      "effectiveBg": "rgb(250, 248, 245)",
+      "bodyImage": "",
+      "fg": "rgb(46, 34, 25)",
+      "rootClass": "",
+      "rootTheme": ""
+    },
+    "toggleCandidates": [],
+    "osDarkFollows": true,
+    "alwaysDark": false,
+    "reachable": true
+  },
+  "/kesef": {
+    "route": "/kesef",
+    "osDark": {
+      "effectiveBg": "rgb(11, 13, 46)",
+      "bodyImage": "",
+      "fg": "rgb(236, 233, 245)",
+      "rootClass": "",
+      "rootTheme": ""
+    },
+    "light": {
+      "effectiveBg": "rgb(11, 13, 46)",
+      "bodyImage": "",
+      "fg": "rgb(236, 233, 245)",
+      "rootClass": "",
+      "rootTheme": ""
+    },
+    "toggleCandidates": [],
+    "osDarkFollows": false,
+    "alwaysDark": true,
+    "reachable": true
+  },
+  "/kiosk": {
+    "route": "/kiosk",
+    "osDark": {
+      "effectiveBg": "rgba(0, 0, 0, 0)",
+      "bodyImage": "",
+      "fg": "rgb(255, 255, 255)",
+      "rootClass": "dark",
+      "rootTheme": ""
+    },
+    "light": {
+      "effectiveBg": "rgba(0, 0, 0, 0)",
+      "bodyImage": "",
+      "fg": "rgb(0, 0, 0)",
+      "rootClass": "",
+      "rootTheme": ""
+    },
+    "toggleCandidates": [],
+    "osDarkFollows": true,
+    "alwaysDark": false,
+    "reachable": true
+  },
+  "/kupot": {
+    "route": "/kupot",
+    "osDark": {
+      "effectiveBg": "rgb(13, 20, 23)",
+      "bodyImage": "",
+      "fg": "rgb(238, 242, 242)",
+      "rootClass": "dark",
+      "rootTheme": ""
+    },
+    "light": {
+      "effectiveBg": "rgb(249, 251, 251)",
+      "bodyImage": "",
+      "fg": "rgb(21, 37, 40)",
+      "rootClass": "",
+      "rootTheme": ""
+    },
+    "toggleCandidates": [],
+    "osDarkFollows": true,
+    "alwaysDark": false,
+    "reachable": true
+  },
+  "/mechiron": {
+    "route": "/mechiron",
+    "osDark": {
+      "effectiveBg": "rgb(18, 25, 28)",
+      "bodyImage": "",
+      "fg": "rgb(240, 236, 230)",
+      "rootClass": "dark",
+      "rootTheme": ""
+    },
+    "light": {
+      "effectiveBg": "rgb(248, 246, 242)",
+      "bodyImage": "",
+      "fg": "rgb(23, 33, 38)",
+      "rootClass": "",
+      "rootTheme": ""
+    },
+    "toggleCandidates": [],
+    "osDarkFollows": true,
+    "alwaysDark": false,
+    "reachable": true
+  },
+  "/modaot": {
+    "route": "/modaot",
+    "osDark": {
+      "effectiveBg": "rgb(15, 18, 24)",
+      "bodyImage": "",
+      "fg": "rgb(228, 230, 236)",
+      "rootClass": "dark",
+      "rootTheme": ""
+    },
+    "light": {
+      "effectiveBg": "rgb(248, 245, 236)",
+      "bodyImage": "",
+      "fg": "rgb(26, 26, 26)",
+      "rootClass": "",
+      "rootTheme": ""
+    },
+    "toggleCandidates": [],
+    "osDarkFollows": true,
+    "alwaysDark": false,
+    "reachable": true
+  },
+  "/mthbram": {
+    "route": "/mthbram",
+    "osDark": {
+      "effectiveBg": "rgb(9, 26, 32)",
+      "bodyImage": "radial-gradient(circle at 20% 10%, rgba(13, 55, 63, 0.6) 0%, rgba(0, 0, 0, 0) 45%), radial-gradient(circle at 85% 90%, rgba(119, 88, 34, 0.15) 0%, rgba(0, 0, 0,",
+      "fg": "rgb(241, 234, 218)",
+      "rootClass": "",
+      "rootTheme": ""
+    },
+    "light": {
+      "effectiveBg": "rgb(9, 26, 32)",
+      "bodyImage": "radial-gradient(circle at 20% 10%, rgba(13, 55, 63, 0.6) 0%, rgba(0, 0, 0, 0) 45%), radial-gradient(circle at 85% 90%, rgba(119, 88, 34, 0.15) 0%, rgba(0, 0, 0,",
+      "fg": "rgb(241, 234, 218)",
+      "rootClass": "",
+      "rootTheme": ""
+    },
+    "toggleCandidates": [],
+    "osDarkFollows": false,
+    "alwaysDark": true,
+    "reachable": true
+  },
+  "/nadlan": {
+    "route": "/nadlan",
+    "osDark": {
+      "effectiveBg": "rgb(12, 18, 32)",
+      "bodyImage": "",
+      "fg": "rgb(221, 227, 238)",
+      "rootClass": "dark",
+      "rootTheme": ""
+    },
+    "light": {
+      "effectiveBg": "rgb(246, 248, 252)",
+      "bodyImage": "",
+      "fg": "rgb(26, 34, 51)",
+      "rootClass": "",
+      "rootTheme": ""
+    },
+    "toggleCandidates": [],
+    "osDarkFollows": true,
+    "alwaysDark": false,
+    "reachable": true
+  },
+  "/orech": {
+    "route": "/orech",
+    "osDark": {
+      "effectiveBg": "rgb(20, 17, 12)",
+      "bodyImage": "",
+      "fg": "rgb(237, 230, 216)",
+      "rootClass": "",
+      "rootTheme": ""
+    },
+    "light": {
+      "effectiveBg": "rgb(250, 247, 240)",
+      "bodyImage": "",
+      "fg": "rgb(31, 26, 18)",
+      "rootClass": "",
+      "rootTheme": ""
+    },
+    "toggleCandidates": [],
+    "osDarkFollows": true,
+    "alwaysDark": false,
+    "reachable": true
+  },
+  "/smachot": {
+    "route": "/smachot",
+    "osDark": {
+      "effectiveBg": "rgb(10, 33, 37)",
+      "bodyImage": "",
+      "fg": "rgb(238, 245, 245)",
+      "rootClass": "",
+      "rootTheme": "dark"
+    },
+    "light": {
+      "effectiveBg": "rgb(244, 246, 246)",
+      "bodyImage": "",
+      "fg": "rgb(20, 40, 43)",
+      "rootClass": "",
+      "rootTheme": "light"
+    },
+    "toggleCandidates": [
+      {
+        "tag": "button",
+        "hay": "החלף מצב תצוגה themeBtn | theme-btn",
+        "visible": true,
+        "x": 208.109375,
+        "y": 31,
+        "repainted": true
+      }
+    ],
+    "afterClick": {
+      "effectiveBg": "rgb(10, 33, 37)",
+      "bodyImage": "",
+      "fg": "rgb(238, 245, 245)",
+      "rootClass": "",
+      "rootTheme": "dark"
+    },
+    "clickChanged": true,
+    "osDarkFollows": true,
+    "alwaysDark": false,
+    "reachable": true
+  },
+  "/smel": {
+    "route": "/smel",
+    "osDark": {
+      "effectiveBg": "rgb(13, 20, 33)",
+      "bodyImage": "",
+      "fg": "rgb(244, 241, 235)",
+      "rootClass": "dark",
+      "rootTheme": ""
+    },
+    "light": {
+      "effectiveBg": "rgb(251, 250, 248)",
+      "bodyImage": "",
+      "fg": "rgb(21, 34, 55)",
+      "rootClass": "",
+      "rootTheme": ""
+    },
+    "toggleCandidates": [
+      {
+        "tag": "button",
+        "hay": "החלף מצב תצוגה button-theme-toggle | inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-m",
+        "visible": true,
+        "x": 122,
+        "y": 32,
+        "repainted": true
+      }
+    ],
+    "afterClick": {
+      "effectiveBg": "rgb(13, 20, 33)",
+      "bodyImage": "",
+      "fg": "rgb(244, 241, 235)",
+      "rootClass": "dark",
+      "rootTheme": ""
+    },
+    "clickChanged": true,
+    "osDarkFollows": true,
+    "alwaysDark": false,
+    "reachable": true
+  },
+  "/studio": {
+    "route": "/studio",
+    "osDark": {
+      "effectiveBg": "rgb(12, 17, 29)",
+      "bodyImage": "",
+      "fg": "rgb(243, 238, 226)",
+      "rootClass": "dark",
+      "rootTheme": ""
+    },
+    "light": {
+      "effectiveBg": "rgb(12, 17, 29)",
+      "bodyImage": "",
+      "fg": "rgb(243, 238, 226)",
+      "rootClass": "dark",
+      "rootTheme": ""
+    },
+    "toggleCandidates": [],
+    "osDarkFollows": false,
+    "alwaysDark": true,
+    "reachable": true
+  },
+  "/tamlul": {
+    "route": "/tamlul",
+    "osDark": {
+      "effectiveBg": "rgb(20, 22, 28)",
+      "bodyImage": "",
+      "fg": "rgb(228, 230, 236)",
+      "rootClass": "dark",
+      "rootTheme": ""
+    },
+    "light": {
+      "effectiveBg": "rgb(251, 250, 246)",
+      "bodyImage": "",
+      "fg": "rgb(26, 26, 26)",
+      "rootClass": "",
+      "rootTheme": ""
+    },
+    "toggleCandidates": [],
+    "osDarkFollows": true,
+    "alwaysDark": false,
+    "reachable": true
+  },
+  "/tivuch": {
+    "route": "/tivuch",
+    "osDark": {
+      "effectiveBg": "rgb(11, 13, 46)",
+      "bodyImage": "",
+      "fg": "rgb(236, 233, 245)",
+      "rootClass": "",
+      "rootTheme": ""
+    },
+    "light": {
+      "effectiveBg": "rgb(11, 13, 46)",
+      "bodyImage": "",
+      "fg": "rgb(236, 233, 245)",
+      "rootClass": "",
+      "rootTheme": ""
+    },
+    "toggleCandidates": [],
+    "osDarkFollows": false,
+    "alwaysDark": true,
+    "reachable": true
+  },
+  "/torah": {
+    "route": "/torah",
+    "osDark": {
+      "effectiveBg": "rgb(12, 18, 29)",
+      "bodyImage": "",
+      "fg": "rgb(250, 250, 250)",
+      "rootClass": "dark",
+      "rootTheme": ""
+    },
+    "light": {
+      "effectiveBg": "rgb(255, 255, 255)",
+      "bodyImage": "",
+      "fg": "rgb(18, 27, 43)",
+      "rootClass": "",
+      "rootTheme": ""
+    },
+    "toggleCandidates": [],
+    "osDarkFollows": true,
+    "alwaysDark": false,
+    "reachable": true
+  },
+  "/zchuyot": {
+    "route": "/zchuyot",
+    "osDark": {
+      "effectiveBg": "rgb(15, 19, 26)",
+      "bodyImage": "",
+      "fg": "rgb(238, 241, 238)",
+      "rootClass": "dark",
+      "rootTheme": ""
+    },
+    "light": {
+      "effectiveBg": "rgb(249, 251, 249)",
+      "bodyImage": "",
+      "fg": "rgb(23, 28, 38)",
+      "rootClass": "",
+      "rootTheme": ""
+    },
+    "toggleCandidates": [],
+    "osDarkFollows": true,
+    "alwaysDark": false,
+    "reachable": true
+  }
+}

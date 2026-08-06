@@ -4,7 +4,8 @@
   "framework": null,
   "redirects": [
     { "source": "/nihul", "destination": "/admin", "permanent": false },
-    { "source": "/nihul/:path*", "destination": "/admin/:path*", "permanent": false }
+    { "source": "/nihul/:path*", "destination": "/admin/:path*", "permanent": false },
+    { "source": "/kiosk", "destination": "/kiosk/", "permanent": false }
   ],
   "rewrites": [
     { "source": "/login", "destination": "/login.html" },
@@ -94,7 +95,6 @@
     { "source": "/tivuch", "destination": "https://nadlan-pro-more30.vercel.app/tivuch" },
     { "source": "/tivuch/", "destination": "https://nadlan-pro-more30.vercel.app/tivuch/" },
     { "source": "/tivuch/:path*", "destination": "https://nadlan-pro-more30.vercel.app/tivuch/:path*" },
-    { "source": "/kiosk", "destination": "https://kioskfleet-production.up.railway.app/kiosk/" },
     { "source": "/kiosk/", "destination": "https://kioskfleet-production.up.railway.app/kiosk/" },
     { "source": "/kiosk/:path*", "destination": "https://kioskfleet-production.up.railway.app/kiosk/:path*" },
     { "source": "/(.*)", "destination": "/index.html" }
