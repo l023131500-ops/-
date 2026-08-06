@@ -80,6 +80,7 @@
       <p class="sub" id="tagline">טוען…</p>
 
       <nav class="nav">
+        <a href="/admin/leads">לידים</a>
         <a href="/admin/issues">תקלות ומה דורש אותך</a>
         <a href="/admin/credits">יתרות וחיבורים</a>
         <a href="/admin/pricing">מחירים ותצוגה</a>
@@ -169,8 +170,15 @@
 
         $('grid').innerHTML = (data.systems || []).map((x) => {
           const u = x.users;
+          // חשבונות הבדיקה מוצגים בשורה משלהם ולא נבלעים במספר הלקוחות.
+          // אחרת "3 משתמשים" ב-torah היו שלושה חשבונות שיצרתי בעצמי במבחן
+          // הרגרסיה — מספר שנראה לגמרי סביר ואינו נכון. מוצגים רק כשיש
+          // כאלה, כדי שהכרטיס לא יתמלא שורות "0".
           const users = x.users_counted
-            ? `<dt>משתמשים</dt><dd>${u?.members ?? 0}</dd>
+            ? `<dt>לקוחות</dt><dd>${u?.members ?? 0}</dd>
+               ${u?.test_accounts
+                 ? `<dt>חשבונות בדיקה</dt><dd class="muted">${u.test_accounts} — לא לקוחות</dd>`
+                 : ''}
                <dt>פעילים 7 ימים</dt><dd>${u?.active_7d ?? 0}</dd>
                <dt>פעילות אחרונה</dt><dd>${when(u?.last_activity)}</dd>`
             // מערכת מחוץ להאב לא מקבלת 0 — היא מקבלת את הסיבה.

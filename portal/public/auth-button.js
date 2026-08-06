@@ -274,6 +274,8 @@
                        'נושאים, תצוגה מקדימה ותור שליחה — מצב בדיקה');
           html += item(HOME + '/admin/credits', STAR_ICON, 'יתרות וחיבורים',
                        'האם כל ספק פועל, כמה נשאר, ואיפה מוסיפים');
+          html += item(HOME + '/admin/leads', ADD_ICON, 'לידים',
+                       'כל הפניות מכל המערכות במקום אחד');
           html += item(HOME + '/admin/issues', ADMIN_ICON, 'תקלות ומה דורש אותך',
                        'פתוח, בטיפול ותוקן — מופרד לפי מי יכול לסגור');
           html += item(HOME + '/admin/rights', STAR_ICON, 'מאגר הזכויות',

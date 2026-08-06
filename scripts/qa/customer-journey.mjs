@@ -27,7 +27,22 @@ const SUPABASE = 'https://uhnrgujbdxhhmoxcjria.supabase.co';
 const ANON =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVobnJndWpiZHhoaG1veGNqcmlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMzNjE3MjgsImV4cCI6MjA5ODkzNzcyOH0.nHuOhw-WQEU17lNa7XOlORnBhVAYbJBHudKafWkSHBw';
 
-const TARGETS = process.argv.slice(2).length ? process.argv.slice(2) : ['/bkalot', '/kupot', '/mechiron'];
+/**
+ * §1 says "אמת בכל מערכת עם משתמש בדיקה" — verify in EVERY system. The default
+ * used to be three mounts, so eighteen systems were never walked at all and the
+ * report still read as a pass. These are the live, public_visible mounts from
+ * core.projects; the list is written out rather than queried because every other
+ * QA script here does the same (see probe-all.mjs) and because a list that reads
+ * itself from the database cannot fail loudly when the database is the thing
+ * that drifted.
+ */
+const PUBLIC_MOUNTS = [
+  '/torah', '/tamlul', '/modaot', '/imud', '/briut', '/bkalot', '/smel',
+  '/egod', '/chatzor', '/chizukim', '/orech', '/zchuyot', '/galil', '/studio',
+  '/mechiron', '/kupot', '/nadlan', '/kesef', '/kiosk', '/tivuch',
+];
+
+const TARGETS = process.argv.slice(2).length ? process.argv.slice(2) : PUBLIC_MOUNTS;
 
 let pass = 0, fail = 0;
 const ok = (n, c, d) => {
@@ -142,6 +157,37 @@ for (const target of TARGETS) {
       try { return !!localStorage.getItem('more30-auth'); } catch { return false; }
     });
     ok(`${target}: session survives the round trip`, authed, 'no session in storage');
+
+    // …and until now nothing checked that the membership was actually written.
+    // callback.html calls more30_join_app inside a try/catch that swallows every
+    // failure on purpose — membership is a record, not a gate — so a customer
+    // can land in the product, look completely signed in, and not be a customer
+    // of it. That failure is silent by design, which is exactly why it needs an
+    // assertion. Asked as the user, through more30_my_apps.
+    const joined = await page.evaluate(async ([url, anon]) => {
+      try {
+        const s = JSON.parse(localStorage.getItem('more30-auth') || 'null');
+        if (!s?.access_token) return null;
+        const r = await fetch(url + '/rest/v1/rpc/more30_my_apps', {
+          method: 'POST',
+          headers: {
+            apikey: anon,
+            Authorization: 'Bearer ' + s.access_token,
+            'content-type': 'application/json',
+          },
+          body: '{}',
+        });
+        if (!r.ok) return null;
+        return (await r.json()).map((a) => a.app_key);
+      } catch { return null; }
+    }, [SUPABASE, ANON]);
+
+    const wanted = target.replace(/^\/|\/$/g, '');
+    ok(
+      `${target}: recorded as a customer of this system`,
+      Array.isArray(joined) && joined.includes(wanted),
+      joined === null ? 'more30_my_apps did not answer' : `memberships: ${joined.join(', ') || 'none'}`,
+    );
   } catch (e) {
     ok(`${target}: journey completes`, false, String(e.message).slice(0, 120));
   }

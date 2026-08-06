@@ -62,6 +62,7 @@
       <p class="sub" id="tagline">טוען…</p>
       <nav class="nav">
         <a href="/admin/systems">דוח מערכות</a>
+        <a href="/admin/leads">לידים</a>
         <a href="/admin/pricing">מחירים ותצוגה</a>
         <a href="/admin/activity">משתמשים פעילים</a>
       </nav>
@@ -148,7 +149,7 @@
               <th>אימייל</th><th>תפקיד</th><th>מסלול</th><th>הצטרף</th><th>פעילות אחרונה</th><th>אומת</th>
             </tr></thead><tbody>` + data.map(c=>`<tr>
               <td dir="ltr">${esc(c.email)}</td>
-              <td>${c.role==='admin'?'אדמין אתר':'לקוח'}</td>
+              <td>${c.is_test?'<span class="muted">חשבון בדיקה</span>':(c.role==='admin'?'אדמין אתר':'לקוח')}</td>
               <td>${esc(c.plan||'—')}</td>
               <td>${when(c.joined_at)}</td>
               <td>${when(c.last_seen_at)}</td>
