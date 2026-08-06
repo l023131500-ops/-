@@ -1,0 +1,23 @@
+﻿kesef         clear @ 390,834,1100,1280,1440
+kiosk         clear @ 390,834,1100,1280,1440
+home          clear @ 390,834,1100,1280,1440
+torah         clear @ 390,834,1100,1280,1440
+tamlul        clear @ 390,834,1100,1280,1440
+modaot        clear @ 390,834,1100,1280,1440
+imud          clear @ 390,834,1100,1280,1440
+briut         834: OVERLAP a"איך עוברים" 20x34  |  1100: OVERLAP a"איך עוברים" 20x34  |  1280: OVERLAP a"איך עוברים" 12x34
+bkalot        clear @ 390,834,1100,1280,1440
+smel          clear @ 390,834,1100,1280,1440
+smachot       390: OVERLAP button"החלף מצב תצוגה" 38x32  |  834: OVERLAP button"החלף מצב תצוגה" 38x36  |  1100: OVERLAP button"החלף מצב תצוגה" 38x36  |  1280: OVERLAP button"החלף מצב תצוגה" 38x36  |  1440: OVERLAP button"החלף מצב תצוגה" 38x36
+egod          clear @ 390,834,1100,1280,1440
+chatzor       clear @ 390,834,1100,1280,1440
+chatzor-app   clear @ 390,834,1100,1280,1440
+chizukim      clear @ 390,834,1100,1280,1440
+chizukim-app  clear @ 390,834,1100,1280,1440
+orech         clear @ 390,834,1100,1280,1440
+mthbram       clear @ 390,834,1100,1280,1440
+zchuyot       clear @ 390,834,1100,1280,1440
+galil         clear @ 390,834,1100,1280,1440
+studio        clear @ 390,834,1100,1280,1440
+mechiron      clear @ 390,834,1100,1280,1440
+kupot         clear @ 390,834,1100,1280,1440

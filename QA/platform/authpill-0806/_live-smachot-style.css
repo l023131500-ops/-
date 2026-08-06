@@ -1,4 +1,4 @@
-:root {
+﻿:root {
   /* brand */
   --teal-900: #0a3a3f;
   --teal-800: #0c4e54;
@@ -99,29 +99,10 @@ body {
 
 /* ===== Shell / main ===== */
 .shell { flex: 1; min-width: 0; display: flex; flex-direction: column; }
-/* כפתור הכניסה המשותף של more30 יושב `fixed` בקצה האינליין-סופי של החלון —
-   בעברית, הפינה השמאלית העליונה. `.topbar` נמתחת עד אותו קצה בכל רוחב (אין
-   לה max-width, והסרגל הצדי יושב בצד ההתחלה), ולכן הפריט האחרון ב-
-   `.topbar-actions` — כפתור החלפת מצב התצוגה — נופל בדיוק מתחתיו: נמדד
-   ב-06/08 חיתוך של 38×36 פיקסל ב-390/834/1100/1280/1440, כלומר **בכל**
-   הרוחבים שנבדקו, ו-elementFromPoint החזיר את הכדור. הכפתור לא היה ניתן
-   ללחיצה בשום מסך.
-
-   התקלה הזו הייתה מוסתרת עד היום: הפקד היחיד שהבדיקה דיווחה עליו כאן היה
-   קישור הקרדיט "פותח ע״י עולם הסטארטאפים", שנחת בפינה בגלל ש-body כאן הוא
-   `display:flex`. משתוקן הקרדיט, מה שהיה מתחתיו נחשף.
-
-   --more30-auth-inset הוא המקום שהכדור תופס מקצה החלון כולל המרווח שאחריו,
-   ונמדד בזמן ריצה כי רוחבו תלוי בשם המשתמש ובפונט (נמדד 98px ב-390 ו-104px
-   מעליו). בניגוד ל-`.header-inner` ב-06-kupot-holim, כאן אין להחסיר שוליים
-   של מיכל — ל-`.topbar` אין max-width, וקצה האינליין-סופי שלה הוא קצה
-   החלון בכל רוחב. אומת מול הייצור ב-scripts/qa/authpill-inset-formula.mjs:
-   5/5 רוחבים נקיים. */
 .topbar {
   position: sticky; top: 0; z-index: 30;
   display: flex; align-items: center; gap: 14px;
   padding: 12px 22px;
-  padding-inline-end: max(22px, var(--more30-auth-inset, 124px));
   background: color-mix(in srgb, var(--bg) 86%, transparent);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--border);
@@ -275,3 +256,4 @@ tbody td a { color: var(--teal-500); font-weight: 600; }
   .search-wrap { display: none; }
   .kpi .k-val { font-size: 1.4rem; }
 }
+

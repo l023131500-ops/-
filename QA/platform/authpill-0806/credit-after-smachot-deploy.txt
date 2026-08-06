@@ -1,0 +1,4 @@
+﻿briut         body:block  ok  y=5714 of 5779 (static)
+smachot       ERR page.waitForTimeout: Target page, context or brows
+
+1/2 routes place the credit at the foot of the page

@@ -1,0 +1,82 @@
+﻿
+=== smachot @ 390 ===
+{
+  "inset": "98px",
+  "pill": "10..86 y 8..44",
+  "hits": [
+    {
+      "tag": "a",
+      "label": "פותח ע״י עולם הסטארטאפים",
+      "rect": "0..167 y 8..47",
+      "overlap": "76x36",
+      "coveredBy": "auth-pill",
+      "ancestors": [
+        {
+          "sel": "div",
+          "rect": "0..167",
+          "pos": "static",
+          "padInlineEnd": "0px",
+          "maxWidth": "none",
+          "display": "block"
+        },
+        {
+          "sel": "body",
+          "rect": "0..390",
+          "pos": "static",
+          "padInlineEnd": "0px",
+          "maxWidth": "none",
+          "display": "flex"
+        },
+        {
+          "sel": "html",
+          "rect": "0..390",
+          "pos": "static",
+          "padInlineEnd": "0px",
+          "maxWidth": "none",
+          "display": "block"
+        }
+      ]
+    }
+  ]
+}
+
+=== smachot @ 1440 ===
+{
+  "inset": "104px",
+  "pill": "16..92 y 12..48",
+  "hits": [
+    {
+      "tag": "a",
+      "label": "פותח ע״י עולם הסטארטאפים",
+      "rect": "0..167 y 8..47",
+      "overlap": "76x35",
+      "coveredBy": "auth-pill",
+      "ancestors": [
+        {
+          "sel": "div",
+          "rect": "0..167",
+          "pos": "static",
+          "padInlineEnd": "0px",
+          "maxWidth": "none",
+          "display": "block"
+        },
+        {
+          "sel": "body",
+          "rect": "0..1440",
+          "pos": "static",
+          "padInlineEnd": "0px",
+          "maxWidth": "none",
+          "display": "flex"
+        },
+        {
+          "sel": "html",
+          "rect": "0..1440",
+          "pos": "static",
+          "padInlineEnd": "0px",
+          "maxWidth": "none",
+          "display": "block"
+        }
+      ]
+    }
+  ]
+}

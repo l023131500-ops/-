@@ -38,7 +38,13 @@ const Navbar = () => {
           <span className="font-heading text-xl font-bold">איגוד מגידי השיעורים</span>
         </Link>
 
-        <div className="hidden md:flex items-center gap-1">
+        {/* md ← lg. הריפוד למעלה מפנה 104px, ונמדד ב-06/08 שהוא אכן מחושב
+            ל-104px ב-834px — ובכל זאת קבוצת הכפתורים ישבה ב-x=14, כלומר
+            **גלשה** מעבר לו: לוגו ארוך, שישה קישורים ושני כפתורים אינם
+            נכנסים מתחת ל-1024px, וגלישת flex ב-RTL יוצאת שמאלה, היישר אל
+            מתחת לכדור הכניסה. ריפוד אינו מפנה מקום שאין; לכן בין 768 ל-1024
+            מוצג תפריט המובייל, שכבר יושב בתוך הריפוד. */}
+        <div className="hidden lg:flex items-center gap-1">
           {navLinks.map((link) => (
             <Link
               key={link.path}
@@ -54,7 +60,7 @@ const Navbar = () => {
           ))}
         </div>
 
-        <div className="hidden md:flex items-center gap-3">
+        <div className="hidden lg:flex items-center gap-3">
           <Button variant="outline" asChild className="border-secondary text-secondary hover:bg-secondary hover:text-secondary-foreground">
             <Link to="/login">התחברות</Link>
           </Button>
@@ -63,7 +69,7 @@ const Navbar = () => {
           </Button>
         </div>
 
-        <button className="md:hidden text-primary-foreground p-2" aria-label="תפריט" aria-expanded={mobileOpen} onClick={() => setMobileOpen(!mobileOpen)}>
+        <button className="lg:hidden text-primary-foreground p-2" aria-label="תפריט" aria-expanded={mobileOpen} onClick={() => setMobileOpen(!mobileOpen)}>
           {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
         </button>
       </div>
@@ -74,7 +80,7 @@ const Navbar = () => {
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            className="md:hidden bg-primary border-t border-sidebar-border overflow-hidden"
+            className="lg:hidden bg-primary border-t border-sidebar-border overflow-hidden"
           >
             <div className="container mx-auto px-4 py-4 flex flex-col gap-2">
               {navLinks.map((link) => (

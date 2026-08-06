@@ -378,67 +378,11 @@
    *  · יורש `color` ו-`font` מהסביבה ומורד לשקיפות חלקית, ולכן הוא מתאים
    *    את עצמו למצב כהה ולפלטה של כל אתר בלי שנצטרך לדעת מה הם.
    *  · אם כבר קיים קרדיט כזה בדף (למשל בפורטל עצמו) — לא מוסיף שני.
-   *
-   * ── ה-body שאינו מיכל בלוקי (נמדד 06/08/2026)
-   * `document.body.appendChild` מניח ש-body מסדר את ילדיו לאורך העמוד, כלומר
-   * שילד אחרון נופל לתחתית. באתר שה-body שלו הוא עצמו `display:flex` —
-   * מעטפת אפליקציה של סרגל צד + אזור תוכן — ההנחה נשברת: הקרדיט הופך לפריט
-   * flex נוסף **בשורה**. ב-`/smachot` נמדד שהוא גזל עמודה של 167px מהפריסה,
-   * נמתח לגובה 900px, ונחת בפינה העליונה מתחת לכדור הכניסה — בכל חמשת רוחבי
-   * הבדיקה. שתי בדיקות עברו מעליו: `brand-audit` שואלת רק אם הקרדיט קיים
-   * ב-DOM, ו-`authbutton-overlap` מדדה עד אותו יום שני רוחבים בלבד.
-   *
-   * במעטפת כזו אין "תחתית עמוד" להיתלות בה — התוכן גולל בתוך מיכל פנימי,
-   * וה-body גבוה בדיוק כגובה החלון. לכן במקרה הזה הקרדיט יוצא מהזרימה ונצמד
-   * לפינה התחתונה בקצה האינליין-סופי. הכלל "לא נוגעים בעץ של המסגרת" נשמר:
-   * הצומת עדיין נוסף ל-body בלבד, רק בלי להשתתף בפריסה שלו.
    */
   var CREDIT_CLASS = 'more30-credit';
 
-  // ה-body מסדר את ילדיו כזרימה רגילה (בלוק), ולא כשורת flex/grid.
-  function bodyIsBlockFlow() {
-    try {
-      var d = getComputedStyle(document.body).display;
-      return d.indexOf('flex') === -1 && d.indexOf('grid') === -1;
-    } catch (e) {
-      return true;
-    }
-  }
-
-  function placeCredit(box) {
-    if (!box) return;
-    if (bodyIsBlockFlow()) {
-      box.style.cssText = 'padding:8px 0 18px;color:inherit';
-      return;
-    }
-    // מחוץ לזרימה. z-index נמוך מזה של הכדור כדי שאם השניים ייפגשו אי-פעם,
-    // הכדור — שהוא פקד ולא טקסט — יישאר העליון. pointer-events רק על
-    // הקישור עצמו, כדי שהפינה לא תבלע לחיצות על מה שמתחתיה.
-    box.style.cssText = [
-      'position:fixed',
-      'inset-block-end:0',
-      'inset-inline-end:0',
-      'padding:2px 8px',
-      'color:inherit',
-      'z-index:2147482000',
-      'pointer-events:none',
-    ].join(';');
-    var link = box.querySelector('.' + CREDIT_CLASS);
-    if (link) {
-      link.style.pointerEvents = 'auto';
-      link.style.padding = '6px 10px';
-    }
-  }
-
   function mountCredit() {
-    var existing = document.querySelector('.' + CREDIT_CLASS);
-    if (existing) {
-      // כבר קיים — אבל ה-display של ה-body יכול להשתנות אחרי הרינדור
-      // הראשון (media query, או מסגרת שמחליפה מחלקה על ה-body), ולכן
-      // המיקום נבדק מחדש בכל קריאה ל-mount ולא רק פעם אחת.
-      placeCredit(existing.closest('[data-more30-credit]'));
-      return;
-    }
+    if (document.querySelector('.' + CREDIT_CLASS)) return;
 
     // בפורטל עצמו הקרדיט מיותר — הוא כבר הבית.
     try {
@@ -467,11 +411,9 @@
 
     var box = document.createElement('div');
     box.setAttribute('data-more30-credit', '');
+    box.style.cssText = 'padding:8px 0 18px;color:inherit';
     box.appendChild(link);
     document.body.appendChild(box);
-    // אחרי ה-append דווקא: getComputedStyle על ה-body מחזיר את הערך בפועל
-    // רק כשהצומת כבר בעץ ובגיליונות שנטענו.
-    placeCredit(box);
   }
 
   function mount() {
@@ -480,13 +422,6 @@
     }
     mountCredit();
   }
-
-  // ה-display של ה-body יכול להתחלף בשינוי רוחב (מעטפת שהופכת ל-flex רק
-  // בדסקטופ), ואז המיקום הנכון של הקרדיט מתחלף איתו.
-  addEventListener('resize', function () {
-    var link = document.querySelector('.' + CREDIT_CLASS);
-    if (link) placeCredit(link.closest('[data-more30-credit]'));
-  });
 
   /**
    * שמירה על הכפתור אחרי הידרציה — ולא רק הוספה שלו.

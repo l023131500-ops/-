@@ -10,13 +10,24 @@
 // הבדיקה גיאומטרית ולא ויזואלית: חיתוך מלבנים בין הכדור לבין כל פקד
 // אינטראקטיבי גלוי ב-80 הפיקסלים העליונים.
 //
+// ⚠️ רוחבי המדידה אינם קישוט. עד 06/08 נמדדו כאן **שני** רוחבים בלבד, 390
+// ו-1440, והם דווקא שני הרוחבים שבהם התקלה הזו לא מופיעה: במובייל הנווט
+// מתקפל לתפריט, וברוחב גדול מיכל הנווט חסום ב-`max-width` ולכן הפקד האחרון
+// שלו יושב פנימה מהקצה. החפיפה חיה **בין** שני אלה — בדיוק סביב רוחב המיכל.
+// /kiosk נמדד "clear" בשניהם, ובפועל הכדור כיסה 72×32 פיקסל מ"כניסת לקוחות"
+// ברוחב 1100 ו-22×32 ברוחב 1280. מכאן הרוחבים הבינוניים, ואין להוריד אותם
+// בלי מדידה שמצדיקה את זה.
+//
 // Usage:  node authbutton-overlap.mjs [routeKey ...]
 
 import { chromium } from 'playwright-core';
+import { settle } from './lib/settle.mjs';
 
 const EXE = 'C:\\Users\\USER\\AppData\\Local\\ms-playwright\\chromium-1234\\chrome-win64\\chrome.exe';
 const ORIGIN = 'https://more30.com';
 const ONLY = process.argv.slice(2);
+
+const WIDTHS = [390, 834, 1100, 1280, 1440];
 
 const ROUTES = [
   ['kesef', '/kesef'], ['kiosk', '/kiosk/'],
@@ -63,9 +74,11 @@ const PROBE = () => {
 const browser = await chromium.launch({ executablePath: EXE, headless: true });
 const targets = ONLY.length ? ROUTES.filter(([k]) => ONLY.includes(k)) : ROUTES;
 
+let covered = 0;
 for (const [key, p] of targets) {
-  const line = [];
-  for (const width of [390, 1440]) {
+  const clear = [];
+  const bad = [];
+  for (const width of WIDTHS) {
     const ctx = await browser.newContext({
       viewport: { width, height: width <= 500 ? 844 : 900 },
       locale: 'he-IL', isMobile: width <= 500, hasTouch: width <= 500,
@@ -73,16 +86,21 @@ for (const [key, p] of targets) {
     const page = await ctx.newPage();
     try {
       await page.goto(ORIGIN + p, { waitUntil: 'domcontentloaded', timeout: 90000 });
-      await page.waitForTimeout(4500);
+      await settle(page, { minChars: 40 });
       const r = await page.evaluate(PROBE);
-      if (!r.pill) line.push(`${width}: no pill`);
-      else if (!r.hit.length) line.push(`${width}: clear`);
-      else line.push(`${width}: OVERLAP ${r.hit.map((h) => `${h.tag}"${h.label}" ${h.overlap} covered-by:${h.coveredBy}`).join(' ; ')}`);
+      if (!r.pill) bad.push(`${width}: no pill`);
+      else if (!r.hit.length) clear.push(width);
+      // רק חפיפה שהכדור **מצויר מעליה** היא פקד שאי אפשר ללחוץ עליו. חיתוך
+      // מלבנים שבו האתר עצמו למעלה הוא חפיפה בקואורדינטות בלבד.
+      else if (r.hit.every((h) => h.coveredBy !== 'auth-pill')) clear.push(width);
+      else bad.push(`${width}: OVERLAP ${r.hit.filter((h) => h.coveredBy === 'auth-pill').map((h) => `${h.tag}"${h.label}" ${h.overlap}`).join(' ; ')}`);
     } catch (e) {
-      line.push(`${width}: ERR ${String(e.message).slice(0, 40)}`);
+      bad.push(`${width}: ERR ${String(e.message).slice(0, 40)}`);
     }
     await ctx.close();
   }
-  console.log(`${key.padEnd(13)} ${line.join('  |  ')}`);
+  if (bad.length) covered++;
+  console.log(`${key.padEnd(13)} ${bad.length ? bad.join('  |  ') : `clear @ ${clear.join(',')}`}`);
 }
+console.log(`\n${targets.length - covered}/${targets.length} routes clear at ${WIDTHS.join('/')}`);
 await browser.close();

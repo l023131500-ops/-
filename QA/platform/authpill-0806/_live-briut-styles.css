@@ -118,27 +118,7 @@ img,svg{display:block}
 
 /* Header */
 .site-header{position:sticky;top:0;z-index:100;background:var(--header-bg);backdrop-filter:blur(10px);border-bottom:1px solid var(--border)}
-/* כפתור הכניסה המשותף של more30 יושב `fixed` בקצה האינליין-סופי — בעברית,
-   הפינה השמאלית העליונה — ושם בדיוק יושב "איך עוברים", הפריט האחרון בנווט.
-   נמדד ב-06/08 ברוחב 834 ו-1100: חפיפה של 60×34 פיקסל, ו-elementFromPoint
-   מחזיר את הכדור, כלומר הקישור לא היה ניתן ללחיצה כלל. ב-390 הנווט מוסתר
-   וב-1440 השוליים של ה-container כבר מרחיקים אותו — ולכן שני הרוחבים
-   שנבדקו עד היום החמיצו את זה.
-
-   --more30-auth-inset הוא המקום שהכדור באמת תופס מקצה החלון, כולל המרווח
-   שאחריו; הוא נמדד בזמן ריצה כי רוחב הכדור תלוי בשם המשתמש ובפונט. נמדד
-   כאן 104px.
-
-   ⚠️ הניסוח הראשון החסיר מה-inset גם את ריפוד ה-container, כאילו
-   `.header-inner` יושב **בתוך** המיכל. הוא לא — הוא `class="container
-   header-inner"`, כלומר המיכל עצמו, ולכן `padding-inline-end` **מחליף** את
-   ה-32px של `.container` ולא מתווסף אליהם. התוצאה נמדדה בייצור: ב-834
-   הריפוד יצא 72px, התוכן התחיל ב-x=72 והכדור נגמר ב-92 — 20px עדיין
-   מכוסים; וב-1280, שהיה תקין קודם, הביטוי התאפס והתוכן זז מ-112 ל-80,
-   כלומר התיקון **הרע** את המצב. מכאן שהערך הנכון נמדד מקצה החלון: מחסירים
-   רק את השוליים שהמיכל כבר יוצר כשהמסך רחב מ---max, ולא יורדים אף פעם
-   מתחת לריפוד המקורי, כדי שברוחב גדול הפריסה תישאר בדיוק כפי שעוצבה. */
-.header-inner{display:flex;align-items:center;justify-content:space-between;height:68px;padding-inline-end:max(clamp(16px,4vw,32px), calc(var(--more30-auth-inset, 124px) - max(0px, (100vw - var(--max)) / 2)))}
+.header-inner{display:flex;align-items:center;justify-content:space-between;height:68px}
 .brand{display:flex;align-items:center;gap:10px;color:var(--primary)}
 .brand-logo{width:34px;height:34px;color:var(--primary)}
 .brand-text{font-family:var(--font-head);font-weight:900;font-size:22px;color:var(--text);display:flex;flex-direction:column;line-height:1}

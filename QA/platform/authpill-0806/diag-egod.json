@@ -1,0 +1,57 @@
+﻿
+=== egod @ 834 ===
+{
+  "inset": "104px",
+  "pill": "16..92 y 12..48",
+  "hits": [
+    {
+      "tag": "a",
+      "label": "הצטרף כמגיד שיעור",
+      "rect": "14..162 y 12..52",
+      "overlap": "76x36",
+      "coveredBy": "auth-pill",
+      "ancestors": [
+        {
+          "sel": "div.hidden.md:flex.items-center",
+          "rect": "14..264",
+          "pos": "static",
+          "padInlineEnd": "0px",
+          "maxWidth": "none",
+          "display": "flex"
+        },
+        {
+          "sel": "div.container.mx-auto.px-4",
+          "rect": "0..834",
+          "pos": "static",
+          "padInlineEnd": "104px",
+          "maxWidth": "none",
+          "display": "flex"
+        },
+        {
+          "sel": "nav.sticky.top-0.z-50",
+          "rect": "0..834",
+          "pos": "sticky",
+          "padInlineEnd": "0px",
+          "maxWidth": "none",
+          "display": "block"
+        },
+        {
+          "sel": "div.min-h-screen.flex.flex-col",
+          "rect": "0..834",
+          "pos": "static",
+          "padInlineEnd": "0px",
+          "maxWidth": "none",
+          "display": "flex"
+        },
+        {
+          "sel": "div#root",
+          "rect": "0..834",
+          "pos": "static",
+          "padInlineEnd": "0px",
+          "maxWidth": "none",
+          "display": "block"
+        }
+      ]
+    }
+  ]
+}

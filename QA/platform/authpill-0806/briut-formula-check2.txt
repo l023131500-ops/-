@@ -1,0 +1,17 @@
+﻿@390  inset=98px  pill 10..86
+   live   padding-inline-end=82px     covered: none
+   fixed  padding-inline-end=98px     covered: none   CLEAR
+@834  inset=104px  pill 16..92
+   live   padding-inline-end=72px     covered: "איך עוברים" 20x34
+   fixed  padding-inline-end=104px    covered: none   CLEAR
+@1100  inset=104px  pill 16..92
+   live   padding-inline-end=72px     covered: "איך עוברים" 20x34
+   fixed  padding-inline-end=104px    covered: none   CLEAR
+@1280  inset=104px  pill 16..92
+   live   padding-inline-end=0px      covered: "איך עוברים" 12x34
+   fixed  padding-inline-end=32px     covered: none   CLEAR
+@1440  inset=104px  pill 16..92
+   live   padding-inline-end=0px      covered: none
+   fixed  padding-inline-end=32px     covered: none   CLEAR
+
+5/5 widths clear with padding-inline-end: max(clamp(16px,4vw,32px), calc(var(--more30-auth-inset, 124px) - max(0px, (100vw - var(--max)) / 2)))

@@ -1,0 +1,5 @@
+﻿briut @834  "איך עוברים"  y 14..54 x 104..177  click-lands-on:a  reaches:true
+briut @1100  "איך עוברים"  y 14..54 x 104..177  click-lands-on:a  reaches:true
+egod @834  "הצטרף כמגיד שיעור"  moved into the collapsed menu at this width — no rect to cover
+mthbram @834  "הצטרפות כרב"  moved into the collapsed menu at this width — no rect to cover
+smachot @1280  "פותח ע״י עולם הסטארטאפים"  y 867..898 x 8..171  click-lands-on:a  reaches:true

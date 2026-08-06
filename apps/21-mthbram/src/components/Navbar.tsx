@@ -32,8 +32,15 @@ const Navbar = () => {
           <BrandLogo size="sm" />
         </Link>
 
-        {/* Desktop Nav */}
-        <div className="hidden md:flex items-center gap-1 font-body text-sm font-medium">
+        {/* Desktop Nav — md ← lg.
+            הפינוי שנעשה קודם ישב על כפתור ההמבורגר בלבד, וההמבורגר מוסתר
+            מ-md ומעלה. לכן ב-834px, שבו הנווט הדסקטופי כבר מוצג, לא היה שום
+            פינוי: נמדד ב-06/08 ש"הצטרפות כרב" יושב ב-x=83 והכדור ב-16..92,
+            חפיפה של 9×35 ו-elementFromPoint מחזיר את הכדור.
+            הפתרון אינו margin על הקבוצה: הקבוצה עצמה 497px ועם הלוגו היא
+            תופסת כמעט את כל הרוחב, כך שאין מרווח פנוי לדחוף לתוכו והפריט
+            פשוט לא יזוז. מ-1024 ומעלה יש מקום לשניהם. */}
+        <div className="hidden lg:flex items-center gap-1 font-body text-sm font-medium">
           {NAV_LINKS.map((l) => {
             const isActive = location.pathname === l.to;
             return (
@@ -55,14 +62,14 @@ const Navbar = () => {
           })}
         </div>
 
-        <div className="hidden md:flex items-center gap-2" />
+        <div className="hidden lg:flex items-center gap-2" />
 
         {/* Mobile hamburger.
             כל תוכנו אייקון, ולכן קורא מסך הכריז עליו "לחצן" בלי לומר מה
             הוא עושה — נמדד כפקד ללא שם נגיש ב-`platform-audit.mjs`.
             `aria-expanded` מאותה סיבה: בלעדיו אין דרך לדעת אם התפריט פתוח. */}
         <button
-          className="md:hidden text-foreground p-2"
+          className="lg:hidden text-foreground p-2"
           aria-label={isOpen ? 'סגירת התפריט' : 'פתיחת התפריט'}
           aria-expanded={isOpen}
           style={{
@@ -92,7 +99,7 @@ const Navbar = () => {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            className="md:hidden bg-background/95 backdrop-blur-2xl border-b border-border overflow-hidden"
+            className="lg:hidden bg-background/95 backdrop-blur-2xl border-b border-border overflow-hidden"
           >
             <div className="px-6 py-4 space-y-1">
               {NAV_LINKS.map((l, i) => {
