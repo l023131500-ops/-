@@ -18,12 +18,19 @@
  * did not exist. A generic length threshold cannot tell real content from a
  * well-formed apology; the placeholder has to be named.
  *
+ * On 06/08 this file was still waiting a fixed 4.2s while its three siblings had
+ * moved to lib/settle.mjs. That is the wrong instrument here more than anywhere
+ * else: (2), (3) and (4) are all read off a half-rendered page, so a slow render
+ * is indistinguishable from a dead system — and this file's verdict is what
+ * SYSTEMS_STATUS.md and core.projects.public_visible are set from.
+ *
  * Writes QA/platform/_works.json for SYSTEMS_STATUS.md to read.
  *
  *   node scripts/qa/probe-all.mjs
  */
 import { chromium } from 'playwright-core';
 import fs from 'node:fs';
+import { settle } from './lib/settle.mjs';
 
 const EXE = 'C:\\Users\\USER\\AppData\\Local\\ms-playwright\\chromium-1234\\chrome-win64\\chrome.exe';
 const ORIGIN = 'https://more30.com';
@@ -66,7 +73,11 @@ for (const [key, sys, path] of ROUTES) {
   try {
     const res = await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 60000 });
     status = res ? res.status() : 0;
-    await page.waitForTimeout(4200);
+    // Not a fixed sleep: this file is the one that DECIDES whether a system is
+    // live, and a page read mid-render fails every one of the four tests below
+    // at once — short text, no links, and the placeholder check reading nothing.
+    // kupot is the proof: 901 characters at 4.2s, 3,157 once it has settled.
+    await settle(page, { minChars: 50 }).catch(() => {});
   } catch (e) {
     errors.push('navigation: ' + e.message.slice(0, 100));
   }

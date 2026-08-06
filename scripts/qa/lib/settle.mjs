@@ -16,14 +16,29 @@
  * A fixed sleep does not measure a page, it measures the network that minute.
  * Two stable samples is not enough either: a loading shell can hold steady for
  * seconds and be mistaken for the finished article. Three consecutive identical
- * readings plus a floor is what actually held up against kupot, the slowest
- * page measured here.
+ * readings plus a floor is the shape of the answer — but see the correction
+ * below for what the floor actually has to be, because the first one was set
+ * too low and kupot, the slowest page measured here, walked straight through it.
  *
  * The numbers are not arbitrary and are not to be tuned down without a
  * measurement that justifies it.
+ *
+ * ⚠️ 06/08 — the floor was 5000ms and that was not enough, on the very page
+ * this module cites as its worst case. Sampled once a second, twice:
+ *
+ *   run 1   2.7s..5.7s 901 chars / 24 links   →   6.7s onward 3157 / 50
+ *   run 2   2.9s..5.0s 901 chars / 24 links   →   6.0s onward 3157 / 50
+ *
+ * kupot serves a loading shell that sits PERFECTLY STILL for about six seconds.
+ * Three stable samples land inside it, and the floor released the reading at
+ * 6.0s — right as the real content arrived. probe-all.mjs adopted settle() and
+ * kupot promptly got *worse*, 3157 characters down to 901, because the fixed
+ * 4.2s sleep it replaced had been landing on the far side of the flip by luck.
+ * The floor is now 9000ms: three seconds clear of the longest plateau measured,
+ * so the sampler is guaranteed to still be watching when the shell gives way.
  */
 
-export const SETTLE_FLOOR_MS = 5000;
+export const SETTLE_FLOOR_MS = 9000;
 const SAMPLE_MS = 1200;
 const STABLE_SAMPLES = 3;
 const MAX_SAMPLES = 20;
