@@ -18,12 +18,23 @@
  *   node scripts/qa/checkout-flow.mjs                 # torah/basic
  *   node scripts/qa/checkout-flow.mjs kupot extended
  *
+ * It then sweeps every mount in the rewrite table, because one hand-picked app
+ * is exactly how the next defect hid: torah has its own rows in core.plans, and
+ * a system with none falls back to the platform's — more30_system_page and
+ * more30_subscribe both did, more30_checkout did not, so /subscribe offered
+ * "פרימיום · 10 ₪" on kiosk, studio and tivuch and answered the click with
+ * "unknown plan: premium for kiosk" in English on the customer's screen. The
+ * sweep asks every tier the page actually offers, on every mount, so a tier the
+ * page shows and the checkout rejects fails here.
+ *
  * The invariant asserted in every billing mode: charged is false. Nothing here
  * moves money, and it cannot — the mode column rejects 'live' at the CHECK.
  * Creates real rows in auth.users, identifiable by the qa.checkout+ prefix.
  */
 import { chromium } from 'playwright-core';
-import { mkdirSync } from 'node:fs';
+import { mkdirSync, readFileSync } from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const EXE = 'C:\\Users\\USER\\AppData\\Local\\ms-playwright\\chromium-1234\\chrome-win64\\chrome.exe';
 const SUPABASE = 'https://uhnrgujbdxhhmoxcjria.supabase.co';
@@ -201,5 +212,48 @@ try {
 }
 
 await browser.close();
+
+// --- the sweep: every mount, every tier its own page offers.
+//
+// The mount list comes out of the rewrite table rather than an array typed here,
+// for the reason admin-screens-reachable.mjs gives: a hardcoded list keeps
+// passing after the next system is added, and the systems that fall back to the
+// platform's plans are precisely the ones nobody remembers to add.
+const here = path.dirname(fileURLToPath(import.meta.url));
+const table = JSON.parse(readFileSync(path.resolve(here, '../../portal/vercel.dist.json'), 'utf8'));
+const mounts = [...new Set(
+  table.rewrites.map((r) => /^\/([a-z0-9-]+)\/:path\*$/.exec(r.source)?.[1]).filter(Boolean),
+)].sort();
+
+console.log(`\n=== sweep — does every offered tier reach a decision? (${mounts.length} mounts) ===`);
+const sweeper = await signup();
+console.log(`        sweep customer: ${sweeper.email}`);
+
+const rejected = [];
+let asked = 0;
+for (const app of mounts) {
+  const d = (await rpc('more30_system_page', { p_app: app })).json;
+  const tiers = (d?.plans ?? []).filter((t) => t.price_ils != null && Number(t.price_ils) > 0);
+  const from = d?.plans_from ?? '?';
+  const bad = [];
+  for (const t of tiers) {
+    asked++;
+    const c = await rpc('more30_checkout', { p_app: app, p_plan: t.code }, sweeper.token);
+    // charged must stay false even on the paths that answer — a 200 that
+    // charged something would be worse than the 400 this sweep was written for.
+    if (c.status !== 200 || c.json?.charged !== false) {
+      bad.push(`${t.code} -> HTTP ${c.status} ${(c.json?.message ?? c.text).slice(0, 60)}`);
+    }
+  }
+  if (bad.length) rejected.push({ app, from, bad });
+  console.log(
+    `        ${app.padEnd(12)} plans_from=${String(from).padEnd(8)} ` +
+      `${tiers.length} priced tier(s)  ${bad.length ? 'REJECTED: ' + bad.join(' | ') : 'ok'}`,
+  );
+}
+ok(`every priced tier on every mount reaches a decision (${asked} asked)`,
+   rejected.length === 0,
+   rejected.map((r) => `${r.app}[${r.from}]: ${r.bad.join(', ')}`).join(' ; '));
+
 console.log(`\n${pass} passed · ${fail} failed   (shots: ${SHOTS})`);
 process.exit(fail ? 1 : 0);
