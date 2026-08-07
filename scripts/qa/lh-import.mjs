@@ -4,6 +4,11 @@
 //
 //   node scripts/qa/lh-import.mjs            → prints the rows + writes _results.json
 //   node scripts/qa/lh-import.mjs --sql      → also writes the INSERT to stdout
+//   node scripts/qa/lh-import.mjs --out=DIR  → writes _results.json to DIR instead
+//
+// lh-batch.mjs overwrites QA/shots/lh-*.json in place, so every re-measure needs
+// its own evidence folder; a fixed one would be overwritten by the next run and
+// the earlier import would have nothing left to point at.
 //
 // Two rules this script keeps, because both were violated by reading the summary
 // file instead of the reports:
@@ -17,7 +22,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 const SHOTS = 'QA/shots';
-const OUT_DIR = 'QA/platform/lh-import-0807';
+const OUT_DIR = (process.argv.find((a) => a.startsWith('--out=')) || '').slice(6)
+  || 'QA/platform/lh-import-0807';
 
 // route as served → core.projects.path. Only routes that are actually a system;
 // a report whose route has no system is reported and skipped, never guessed.
