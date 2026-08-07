@@ -1,0 +1,66 @@
+{
+  "ran": "scripts/qa/admin-pricing-billing-mode.mjs",
+  "page": "portal/public/admin-pricing.html",
+  "rpc": "more30_admin_pricing_list (migration 0029)",
+  "served": "working tree",
+  "banners": {
+    "off": {
+      "cls": "note warn",
+      "text": "הסליקה סגורה. ‏core.billing_settings.mode=off ואין ספק מחובר, ולכן אף אחד אינו מחויב בפועל — אבל 70 מסלולים פעילים כבר נושאים מחיר גדול מאפס, והם ייגבו ברגע שהמתג ייפתח. מסלול \"פרו (בדיקה)\" נקבע ל-1 ₪ בכל מערכת כדי לאפשר בדיקה בסכום זניח. נקבע לאחרונה 6.8.2026."
+    },
+    "live": {
+      "cls": "note danger",
+      "text": "הסליקה פעילה — test מול nedarim-plus. שמירה כאן משנה סכום שנגבה בפועל, ו-70 מסלולים פעילים כבר נושאים מחיר גדול מאפס. נקבע לאחרונה 7.8.2026."
+    },
+    "unknown": {
+      "cls": "note warn",
+      "text": "מצב הסליקה אינו ידוע. ‏core.billing_settings לא החזירה שורה, ולכן אי אפשר להבטיח כאן שאיש אינו מחויב. אל תקבע מחיר לגבייה לפני שהמתג נקרא."
+    }
+  },
+  "summary": {
+    "pass": 8,
+    "fail": 0
+  },
+  "checks": [
+    {
+      "check": "the closed switch still reassures — and names the switch it read",
+      "pass": true,
+      "detail": "note warn · הסליקה סגורה. ‏core.billing_settings.mode=off ואין ספק מחובר, ולכן אף אחד אינו מחויב בפועל — אבל 70 מסלולים פע"
+    },
+    {
+      "check": "and it says how many plans are already priced — 0 charged is not 0 priced",
+      "pass": true,
+      "detail": "הסליקה סגורה. ‏core.billing_settings.mode=off ואין ספק מחובר, ולכן אף אחד אינו מחויב בפועל — אבל 70 מסלולים פעילים כבר נושאים מחיר גדול מאפס, והם ייגבו ברגע שהמ"
+    },
+    {
+      "check": "the systems list is untouched by the change",
+      "pass": true,
+      "detail": "2 sections"
+    },
+    {
+      "check": "an open switch stops reassuring — it says money moves",
+      "pass": true,
+      "detail": "note danger · הסליקה פעילה — test מול nedarim-plus. שמירה כאן משנה סכום שנגבה בפועל, ו-70 מסלולים פעילים כבר נושאים מחיר גדו"
+    },
+    {
+      "check": "and it names the mode and the provider, not just \"on\"",
+      "pass": true,
+      "detail": "הסליקה פעילה — test מול nedarim-plus. שמירה כאן משנה סכום שנגבה בפועל, ו-70 מסלולים פעילים כבר נושאים מחיר גדול מאפס. נקבע לאחרונה 7.8.2026."
+    },
+    {
+      "check": "no row at all reads as unknown, not as closed",
+      "pass": true,
+      "detail": "מצב הסליקה אינו ידוע. ‏core.billing_settings לא החזירה שורה, ולכן אי אפשר להבטיח כאן שאיש אינו מחויב. אל תקבע מחיר לגבייה לפני שהמתג נקרא."
+    },
+    {
+      "check": "dark mode draws the same banner",
+      "pass": true,
+      "detail": "הסליקה סגורה. ‏core.billing_settings.mode=off ואין ספק מחובר, ולכן אף אחד אינו מ"
+    },
+    {
+      "check": "and the danger branch survives dark mode",
+      "pass": true,
+      "detail": "note danger"
+    }
+  ]
+}
