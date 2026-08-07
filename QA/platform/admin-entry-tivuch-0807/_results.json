@@ -1,0 +1,48 @@
+{
+  "at": "2026-08-07T03:00:00Z",
+  "issue": 86,
+  "question": "Do the seven public systems still recorded with no admin entry have an admin screen in their source at all?",
+  "why_this_angle": "0022 measured against the live origin: admin-entry-probe.mjs fetches candidate addresses and reads the JS bundles for a nav link, and every candidate it tries is a variation on the word admin. A console under any other name is invisible to it. This run read the source trees instead.",
+  "source_scan": {
+    "method": "recursive file listing + content scan for (is_admin|isAdmin|role===admin|/admin|ניהול|adminOnly|service_role) and for route tables, excluding node_modules/dist/.next/build/.vercel",
+    "note": "apps/** is gitignored, so ripgrep reports no matches for text that is present; this scan used the filesystem directly.",
+    "results": [
+      { "path": "chizukim", "dir": "apps/17-chizukim-transcribe", "src_files": 85, "admin_hits": 0, "verdict": "no admin screen in source" },
+      { "path": "imud", "dir": "apps/04-imud-torani", "src_files": 89, "admin_hits": 2, "hits_are": "two comments about schema/service_role, not a screen", "routes": ["/", "/wizard", "/templates", "/editor/:id"], "verdict": "no admin screen in source" },
+      { "path": "kesef", "dir": "sites/34-kesef", "src_files": 1, "admin_hits": 0, "hits_are": "a single index.html, no script", "verdict": "no admin screen in source" },
+      { "path": "orech", "dir": "apps/18-torah-editor-mvp", "src_files": 31, "admin_hits": 2, "hits_are": "two comments about service_role", "route_dirs": ["api", "documents", "editor", "htr", "login", "citations", "extract", "nikud", "verify", "jobs", "process", "upload", "[id]", "approve"], "verdict": "no admin screen in source" },
+      { "path": "smel", "dir": "apps/12-smel-ndln", "src_files": 82, "admin_hits": 0, "verdict": "no admin screen in source" },
+      { "path": "studio", "dir": "apps/26-modaot-studio", "src_files": 112, "admin_hits": 1, "hits_are": "a comment about layer management inside the editor", "routes": ["/", "/editor", "/studio", "/brief", "/branding", "/branding/brief", "/branding/:id"], "verdict": "no admin screen in source" },
+      { "path": "tivuch", "dir": "sites/36-nadlan-pro", "src_files": 4, "admin_hits": 2, "verdict": "HAS a management surface — sites/36-nadlan-pro/tivuch/app.html, 88,112 b, office CRM with a role ladder owner/manager/agent at app.html:484 driving np_* RPCs under RLS" }
+    ]
+  },
+  "live_probe": {
+    "method": "HTTP without auto-redirect, then with; more30.com only (NetFree blocks *.vercel.app from this machine)",
+    "results": [
+      { "url": "https://more30.com/tivuch", "status": 200, "bytes": 17982, "title": "נדל״ן פרו — מערכת ניהול למתווכים ויועצי נדל״ן · עולם הסטארטאפים", "is": "landing page" },
+      { "url": "https://more30.com/tivuch/app.html", "status": 308, "location": "/tivuch/app", "is": "the reason a suffix probe misses it" },
+      { "url": "https://more30.com/tivuch/app", "status": 200, "bytes": 88348, "contains_np_me": true, "is": "the management app" },
+      { "url": "https://more30.com/tivuch/sign", "status": 200, "bytes": 16050, "is": "document signing" }
+    ],
+    "anonymous_at_tivuch_app": {
+      "renders": "פתיחת משרד — the office-opening form (name, licence number, city, phone, email) with the login pill in the corner",
+      "office_data_shown": false,
+      "screenshot": "tivuch-app-anon.png",
+      "not_claimed": "whether submitting that form as an anonymous visitor is refused was NOT measured here and is not asserted"
+    }
+  },
+  "recorded": {
+    "migration": "0027_the_probe_looked_for_a_page_called_admin_and_this_one_is_called_app.sql",
+    "change": "core.projects tivuch: admin_url '/app', admin_auth 'own'",
+    "verified_after": {
+      "more30_system_page('tivuch').admin_url": "/app",
+      "more30_system_page('tivuch').admin_auth": "own",
+      "more30_admin_systems_report totals.with_admin_url": "12 -> 13"
+    },
+    "no_deploy_needed": "both readers are RPCs; the already-deployed /admin and system pages pick this up on next load"
+  },
+  "issue_86_now": {
+    "was": "eight public live systems with no admin entry",
+    "is": "six with no admin screen in source at all (chizukim, imud, kesef, orech, smel, studio) — nothing to serve, one has to be built; plus briut, measured 07/08 as structurally unable to have one (its only key is insert-only: POST 201, GET/PATCH/DELETE 401), which needs a server-side path rather than a page"
+  }
+}
