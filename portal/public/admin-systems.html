@@ -168,12 +168,20 @@
         // מוצג בלי עמודת הבאגים — עדיף כרטיס חסר שורה מאשר מסך ריק.
         const { data: issues } = await sb.rpc('more30_admin_issues');
         const byApp = issues?.by_app ?? {};
+        // §3 מבקש שלושה מצבים — תוקן / בטיפול / פתוח — ועד היום היו כאן שניים:
+        // by_app קיפלה open ו-in_progress למספר אחד בשם open, ולכן "בטיפול"
+        // מעולם לא נכתב על אף כרטיס ותקלה שכבר עובדים עליה נקראה "פתוחה".
+        // מיגרציה 0026 מפרידה אותם, וכאן הם מצוירים בסדר שבו הם מעניינים.
+        //
+        // needs_user אינו מצב רביעי אלא תת-קבוצה של השניים הראשונים, ולכן הוא
+        // נכתב כ"מתוכם" — אחרת הסכום שעל הכרטיס גדול ממספר התקלות שיש לו.
         bugs = (path) => {
           const b = path ? byApp[path] : null;
           if (!b) return '<dt>באגים</dt><dd class="muted">לא נרשמו</dd>';
           const parts = [];
           if (b.open) parts.push(`${b.open} פתוחים`);
-          if (b.needs_user) parts.push(`${b.needs_user} דורשים אותך`);
+          if (b.in_progress) parts.push(`${b.in_progress} בטיפול`);
+          if (b.needs_user) parts.push(`מתוכם ${b.needs_user} דורשים אותך`);
           if (b.fixed) parts.push(`${b.fixed} תוקנו`);
           return `<dt>באגים</dt><dd>${parts.join(' · ') || 'אין'}</dd>`;
         };
