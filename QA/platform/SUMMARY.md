@@ -30,7 +30,7 @@
 | `/chizukim` | 17 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | 95/100/77/100 |  |
 | `/chizukim/` | 17 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | 82/100/77/100 |  |
 | `/orech` | 18 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | 98/100/77/100 |  |
-| `/mthbram` | 21 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | 66/98/73/100 |  |
+| `/mthbram` | 21 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅¹ ² | ✅ | 66/98/73/100 |  |
 | `/zchuyot` | 22 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | 46/100/77/100 |  |
 | `/galil` | 24 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | 71/84/73/100 |  |
 | `/studio` | 26 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅¹ | ✅ | 80/100/77/100 |  |
@@ -46,6 +46,13 @@
 > ¹ **כהה מלכתחילה.** העמוד אינו משתנה בין המצבים מפני שהוא כבר כהה, והוא
 > מצהיר על כך ב-`color-scheme` כדי שגם פקדי הדפדפן יירנדרו כהים. זה עומד
 > ב-`DESIGN_STANDARD` §3, שדורש שלא יהיה הבזק לבן — לא שיהיו שתי ערכות.
+>
+> ² **התא הזה נמדד מחדש לבדו ב-07/08 08:06, ולא בריצה הרוחבית שבראש הקובץ.**
+> `/mthbram` היה הנתיב היחיד מ-30 עם ❌ בעמודה הזאת. הפער היה ההצהרה, לא הערכה,
+> והפריסה שסוגרת אותו (`dpl_6PcRHMH3473rq1SjKtMLmYSv2Ddx`) ירדה רק עכשיו.
+> נמדד ב-`scripts/qa/color-scheme-probe.mjs` מול `more30.com` עם OS מאולץ ל-light:
+> computed `color-scheme` `"normal"` → **`"dark"`**, dark-by-design ❌ → ✅.
+> שאר התאים בשורה הם מהריצה הרוחבית ולא נמדדו מחדש. `core.issues #82` נסגר.
 
 ---
 
@@ -229,19 +236,24 @@
 כותרת: **איגוד השיעורים — שיעורי תורה, חברותות והרצאות** · h1: "מתחברים — מאגר שיעורי התורה" · טקסט מרונדר: 941 תווים · 19 אלמנטים אינטראקטיביים · טעינה 9544ms
 
 - חסר: `canonical` · `og:url`
-- הטבלה למעלה עדיין מסמנת ❌ בעמודת "כהה", וזו מדידת הייצור הנוכחי — לא מסקנה על
-  העיצוב. העמוד כהה מלכתחילה: הרקע האפקטיבי `rgb(9, 26, 32)` (בהירות 0.009) בשני
-  המצבים, ולכן `prefers-color-scheme: dark` אינו משנה בו דבר. מה שחסר הוא ההצהרה
-  עצמה — `index.html` נושא `<meta name="color-scheme" content="dark">`, אבל meta
-  הוא ברירת מחדל שאינה נראית ב-`getComputedStyle(documentElement).colorScheme`,
-  והייצור מחזיר שם `"normal"`. ענף ה-dark-by-design של `platform-audit` דורש את
-  המאפיין המחושב, ולכן זהו הנתיב היחיד מ-30 שנספר "בלי מצב כהה" (core.issues #82).
-  `color-scheme: dark` נוסף ל-`html` ב-`apps/21-mthbram/src/index.css`; הבנייה
-  המשוחזרת נמדדה ב-`scripts/qa/color-scheme-probe.mjs` ומחזירה `"dark"` עם
-  dark-by-design=YES, וה-JS זהה בייט-לבייט לזה שבייצור — כלומר השינוי הוא ה-CSS
-  בלבד. הפריסה נעצרה במכסת Vercel היומית (100 פריסות ליום); העמודה תתעדכן אחרי
-  שהיא תעבור. צילומים: `colorscheme-0807/mthbram-built-local.png` מול
-  `colorscheme-0807/mthbram-production.png`.
+- ✅ **עמודת "כהה" נסגרה ב-07/08 08:06.** העמוד היה כהה מלכתחילה כל הזמן: הרקע
+  האפקטיבי `rgb(9, 26, 32)` (בהירות 0.009) בשני המצבים, ולכן
+  `prefers-color-scheme: dark` אינו משנה בו דבר. מה שחסר היה ההצהרה עצמה —
+  `index.html` נושא `<meta name="color-scheme" content="dark">`, אבל meta הוא
+  ברירת מחדל שאינה נראית ב-`getComputedStyle(documentElement).colorScheme`,
+  והייצור החזיר שם `"normal"`. ענף ה-dark-by-design של `platform-audit` דורש את
+  המאפיין המחושב, ולכן זה היה הנתיב היחיד מ-30 שנספר "בלי מצב כהה"
+  (core.issues #82). `color-scheme: dark` נוסף ל-`html` ב-`apps/21-mthbram/src/index.css`
+  (קומיט `c882d65`), והפריסה `dpl_6PcRHMH3473rq1SjKtMLmYSv2Ddx` הורידה אותו
+  לייצור. `scripts/qa/color-scheme-probe.mjs` מול `more30.com` עם OS מאולץ ל-light
+  מחזיר עכשיו computed `"dark"`, בהירות 0.009, dark-by-design=YES — לפני הפריסה
+  אותה מדידה בדיוק החזירה `"normal"` ו-NO. חבילת ה-JS זהה בייט-לבייט לזו שהייתה
+  בייצור (sha256 `DE489454…BEEA96`), כלומר ירד גיליון סגנון בלבד. **מה שזה מתקן
+  בפועל, מעבר למדידה:** בלי ההצהרה הדפדפן צובע שדות קלט, `select` ופסי גלילה
+  בברירת המחדל הבהירה על גבי עמוד כהה. צילומים:
+  `colorscheme-mthbram-0807/os-light.png` · `colorscheme-mthbram-0807/os-dark.png`
+  (ההשוואה שלפני הפריסה: `colorscheme-0807/mthbram-built-local.png` מול
+  `colorscheme-0807/mthbram-production.png`).
 - Lighthouse מתחת ל-90: perf 66 · a11y 98 · bp 73 · seo 100
   - נכשלו: first-contentful-paint (4.7 s) · largest-contentful-paint (5.0 s) · speed-index (4.7 s) · total-blocking-time (240 ms) · max-potential-fid (160 ms) · errors-in-console · interactive (6.0 s) · third-party-cookies (2 cookies found)
 
