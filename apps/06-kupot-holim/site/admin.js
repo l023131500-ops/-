@@ -91,17 +91,25 @@
     body.innerHTML = '<tr><td colspan="10" class="loading">טוען פניות...</td></tr>';
     window.LeadsStore.listLeads().then(function (res) {
       ALL = res.rows || [];
-      renderStorageNote(res.storage);
+      renderStorageNote(res.storage, res.reason);
       applyFilter();
     }).catch(function () {
       body.innerHTML = '<tr><td colspan="10" class="empty">שגיאה בטעינת הפניות</td></tr>';
     });
   }
 
-  function renderStorageNote(storage) {
+  // "local" has three causes and they are not interchangeable: a refusal that
+  // no retry will fix, a network fault that one might, and no configuration at
+  // all. Until 07/08/2026 all three said "could not connect to Supabase" — and
+  // the one that actually happens here is the refusal (see leads-store.js).
+  function renderStorageNote(storage, reason) {
     var el = document.getElementById("storageNote");
     if (storage === "supabase") {
       el.innerHTML = '<span class="dot ok"></span>מחובר ל-Supabase — הפניות נשמרות במסד מרכזי.';
+    } else if (reason === "denied") {
+      el.innerHTML = '<span class="dot local"></span>המסד סירב לקריאה (401). המפתח שהאתר נושא מורשה להוספת פנייה בלבד, ולכן מסך הניהול אינו יכול להציג פניות אמיתיות — נדרשת קריאה מצד השרת. מוצגות רק פניות מדפדפן זה.';
+    } else if (reason === "unconfigured") {
+      el.innerHTML = '<span class="dot local"></span>לא הוגדר חיבור למסד. מוצגות רק פניות מדפדפן זה.';
     } else {
       el.innerHTML = '<span class="dot local"></span>מצב מקומי (localStorage) — מוצגות רק פניות מדפדפן זה. לא הצליח להתחבר ל-Supabase.';
     }

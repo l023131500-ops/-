@@ -69,20 +69,34 @@
   }
 
   // Admin: list all leads (Supabase first, merged with any local-only rows).
+  //
+  // The fallback reports *why* it fell back, because the two reasons need
+  // opposite responses and used to look identical. Measured 07/08/2026 against
+  // the live project (scripts/qa/briut-leads-access.mjs): this key is
+  // insert-only — POST returns 201, and GET/PATCH/DELETE all return 401. So the
+  // usual outcome here is not a connection problem that retrying might fix, it
+  // is a refusal that will never change while the browser is the one asking.
+  // Saying "could not connect to Supabase" sends the next reader looking for a
+  // network fault that is not there.
   function listLeads() {
     var localRows = readLocal();
-    if (!hasSupabase) return Promise.resolve({ rows: localRows.slice().reverse(), storage: "local" });
+    if (!hasSupabase) return Promise.resolve({ rows: localRows.slice().reverse(), storage: "local", reason: "unconfigured" });
     return fetch(restBase + "?select=*&order=created_at.desc", {
       headers: headers()
     }).then(function (r) {
+      if (r.status === 401 || r.status === 403) { var e = new Error("denied"); e.denied = true; throw e; }
       if (!r.ok) throw new Error("supabase list " + r.status);
       return r.json();
     }).then(function (rows) {
       // include any local-only rows that never synced
       var extras = localRows.filter(function (x) { return x._local; }).reverse();
       return { rows: extras.concat(rows), storage: "supabase" };
-    }).catch(function () {
-      return { rows: localRows.slice().reverse(), storage: "local" };
+    }).catch(function (err) {
+      return {
+        rows: localRows.slice().reverse(),
+        storage: "local",
+        reason: err && err.denied ? "denied" : "offline"
+      };
     });
   }
 
