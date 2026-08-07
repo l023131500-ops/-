@@ -1,0 +1,110 @@
+{
+  "generated_at": "2026-08-07T07:04:36.642Z",
+  "source": "core.subscriptions × auth.users × core.plans, read 07/08/2026 — the before/after pair was measured, not assumed",
+  "hub": {
+    "subs_active": 0,
+    "subs_test": 89,
+    "mrr_estimate_ils": 0
+  },
+  "kpis": [
+    {
+      "n": "30",
+      "l": "מערכות"
+    },
+    {
+      "n": "3",
+      "l": "חיות"
+    },
+    {
+      "n": "20",
+      "l": "משתמשים במאגר ההאב · 64 חשבונות בדיקה בנפרד"
+    },
+    {
+      "n": "8",
+      "l": "מתוכם נכנסו לתוך מערכת"
+    },
+    {
+      "n": "7",
+      "l": "מערכות שמשתמשיהן נספרים כאן · מתוך 30"
+    },
+    {
+      "n": "0",
+      "l": "מוצגות בעולם הסטארטאפים"
+    },
+    {
+      "n": "0",
+      "l": "מנויים פעילים · 89 מנויי בדיקה בנפרד"
+    },
+    {
+      "n": "0",
+      "l": "עם כניסה לניהול"
+    },
+    {
+      "n": "0",
+      "l": "נמדדו ב-Lighthouse · כולן טריות"
+    }
+  ],
+  "cards": [
+    {
+      "title": "איגוד השיעורים",
+      "text": "לקוחות 0 חשבונות בדיקה 2 — לא לקוחות פעילים 7 ימים 0 פעילות אחרונה — מנויים פעילים 0 מנויי בדיקה 10 — לא הכנסה מנוי טרם נקבע סליקה טרם נקבע חד-פעמי טרם נקבע הכנסה חודשית משוערת 0 ₪ באגים לא נרשמו Lighthouse לא נמדדה"
+    },
+    {
+      "title": "השוואת קופות חולים",
+      "text": "לקוחות 0 חשבונות בדיקה 2 — לא לקוחות פעילים 7 ימים 0 פעילות אחרונה — מנויים פעילים 0 מנויי בדיקה 8 — לא הכנסה מנוי טרם נקבע סליקה טרם נקבע חד-פעמי טרם נקבע הכנסה חודשית משוערת 0 ₪ באגים לא נרשמו Lighthouse לא נמדדה"
+    },
+    {
+      "title": "כרטיס בדיקה — לא מערכת",
+      "text": "לקוחות 0 חשבונות בדיקה 2 — לא לקוחות פעילים 7 ימים 0 פעילות אחרונה — מנויים פעילים 3 מנויי בדיקה 1 — לא הכנסה מנוי טרם נקבע סליקה טרם נקבע חד-פעמי טרם נקבע הכנסה חודשית משוערת 6 ₪ באגים לא נרשמו Lighthouse לא נמדדה"
+    }
+  ],
+  "results": [
+    {
+      "check": "the board renders instead of the access notice",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "the platform has a subscriber tile, and it shows the real count",
+      "pass": true,
+      "detail": "0 — expected 0"
+    },
+    {
+      "check": "the 89 test subscriptions are named beside it, not folded into it",
+      "pass": true,
+      "detail": "מנויים פעילים · 89 מנויי בדיקה בנפרד"
+    },
+    {
+      "check": "torah shows 0 subscribers, not the 1 that was really 10 plan rows",
+      "pass": true,
+      "detail": "לקוחות 0 חשבונות בדיקה 2 — לא לקוחות פעילים 7 ימים 0 פעילות אחרונה — מנויים פעילים 0 מנויי בדיקה 10 — לא הכנסה מנוי טרם "
+    },
+    {
+      "check": "torah names its 10 test subscriptions and says they are not revenue",
+      "pass": true,
+      "detail": "לקוחות 0 חשבונות בדיקה 2 — לא לקוחות פעילים 7 ימים 0 פעילות אחרונה — מנויים פעילים 0 מנויי בדיקה 10 — לא הכנסה מנוי טרם נקבע סליקה טרם נקבע חד-פעמי טרם נקבע הכנ"
+    },
+    {
+      "check": "torah no longer claims ₪20 a month from a single subscriber",
+      "pass": true,
+      "detail": " 0 ₪ באגים לא נרשמו Lighthouse לא נמדדה"
+    },
+    {
+      "check": "kupot shows 0 and 8, where the board used to show 2 and ₪28",
+      "pass": true,
+      "detail": "לקוחות 0 חשבונות בדיקה 2 — לא לקוחות פעילים 7 ימים 0 פעילות אחרונה — מנויים פעילים 0 מנויי בדיקה 8 — לא הכנסה מנוי טרם נקבע סליקה טרם נקבע ח"
+    },
+    {
+      "check": "a card with real subscribers still shows them, and its revenue",
+      "pass": true,
+      "detail": "לקוחות 0 חשבונות בדיקה 2 — לא לקוחות פעילים 7 ימים 0 פעילות אחרונה — מנויים פעילים 3 מנויי בדיקה 1 — לא הכנסה מנוי טרם נקבע סליקה טרם נקבע ח"
+    },
+    {
+      "check": "a card with no test subscriptions draws no empty test row",
+      "pass": true,
+      "detail": "a \"מנויי בדיקה 0\" row was rendered"
+    }
+  ],
+  "pass": 9,
+  "fail": 0
+}

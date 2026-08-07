@@ -259,6 +259,12 @@
           [t.hub_users_with_membership, 'מתוכם נכנסו לתוך מערכת'],
           [t.systems_users_counted, `מערכות שמשתמשיהן נספרים כאן · מתוך ${Number(t.systems)||0}`],
           [t.in_showcase, 'מוצגות בעולם הסטארטאפים'],
+          // אותה הפרדה שחלה על המשתמשים חלה כאן על הכסף: מנוי בדיקה נספר
+          // לצידו של מנוי אמיתי ולא בתוכו, ואינו מייצר שקל של הכנסה משוערת.
+          [t.subs_active,
+           'מנויים פעילים' + (t.subs_test
+             ? ` · ${Number(t.subs_test)} מנויי בדיקה בנפרד`
+             : '')],
           [t.with_admin_url, 'עם כניסה לניהול'],
           // מספר אחד היה מטעה כאן: "8 נמדדו" נקרא כ-8 מדידות שמתארות את
           // הייצור, גם כשכולן בנות ימים. הטריות נכתבת לצידו ולא מתחתיו.
@@ -299,6 +305,9 @@
             <dl>
               ${users}
               <dt>מנויים פעילים</dt><dd>${x.subscriptions?.active ?? 0}</dd>
+              ${x.subscriptions?.test
+                ? `<dt>מנויי בדיקה</dt><dd class="muted">${x.subscriptions.test} — לא הכנסה</dd>`
+                : ''}
               <dt>מנוי</dt><dd>${price('subscription')}</dd>
               <dt>סליקה</dt><dd>${price('charge')}</dd>
               <dt>חד-פעמי</dt><dd>${price('one_time')}</dd>
