@@ -1,0 +1,42 @@
+{
+  "measured_at": "2026-08-07T01:45:00Z",
+  "what": "more30_system_page — the RPC behind more30.com/<system> — now returns the admin entry the register already held. Measured over the public anon endpoint, the same call the deployed page makes.",
+  "migration": "0024_the_system_page_could_not_offer_an_entry_it_was_never_given.sql (applied)",
+  "page": "portal/public/system.html (renders it; awaits deploy, core.issues #83)",
+  "rule": "returned only when admin_auth in ('own','hub') and admin_url matches ^(/|https?://)\\S*$",
+  "public_systems": 20,
+  "entry_offered": 11,
+  "no_entry_recorded": 8,
+  "withheld_by_rule": 1,
+  "rows": [
+    { "path": "torah",    "recorded": "/admin",                                  "admin_auth": "own",   "offered": "/admin" },
+    { "path": "tamlul",   "recorded": "/admin",                                  "admin_auth": "own",   "offered": "/admin" },
+    { "path": "modaot",   "recorded": "/admin",                                  "admin_auth": "own",   "offered": "/admin" },
+    { "path": "imud",     "recorded": null,                                      "admin_auth": "none",  "offered": null },
+    { "path": "briut",    "recorded": null,                                      "admin_auth": "none",  "offered": null },
+    { "path": "bkalot",   "recorded": "https://more30.com/admin/rights",         "admin_auth": "hub",   "offered": "https://more30.com/admin/rights" },
+    { "path": "smel",     "recorded": null,                                      "admin_auth": "none",  "offered": null },
+    { "path": "egod",     "recorded": "/admin",                                  "admin_auth": "hub",   "offered": "/admin" },
+    { "path": "chatzor",  "recorded": "/admin",                                  "admin_auth": "hub",   "offered": "/admin" },
+    { "path": "chizukim", "recorded": null,                                      "admin_auth": "none",  "offered": null },
+    { "path": "orech",    "recorded": null,                                      "admin_auth": "none",  "offered": null },
+    { "path": "zchuyot",  "recorded": "/admin/login",                            "admin_auth": "own",   "offered": "/admin/login" },
+    { "path": "galil",    "recorded": "/gabai",                                  "admin_auth": "own",   "offered": "/gabai" },
+    { "path": "studio",   "recorded": null,                                      "admin_auth": "none",  "offered": null },
+    { "path": "mechiron", "recorded": "/admin",                                  "admin_auth": "own",   "offered": "/admin" },
+    { "path": "kupot",    "recorded": "/api/switch-leads (כותרת x-admin-token)", "admin_auth": "token", "offered": null,
+      "note": "withheld on purpose: an API endpoint plus the header it wants, not a screen. Linking it would 404 and call it a management entry." },
+    { "path": "nadlan",   "recorded": "/admin",                                  "admin_auth": "hub",   "offered": "/admin" },
+    { "path": "kesef",    "recorded": null,                                      "admin_auth": "none",  "offered": null },
+    { "path": "kiosk",    "recorded": "https://more30.com/kiosk/console",        "admin_auth": "own",   "offered": "https://more30.com/kiosk/console",
+      "note": "admin_auth was NULL until this step and the entry was withheld for a reason that was not a fact about the system. The console's own sign-in is documented (user 'admin', NEEDS_USER §4)." },
+    { "path": "tivuch",   "recorded": null,                                      "admin_auth": "none",  "offered": null }
+  ],
+  "page_render": {
+    "server": "node scripts/qa/_serve-static.mjs portal/public 5199 (live RPC, real data)",
+    "bkalot": { "note_hidden": false, "href": "https://more30.com/admin/rights", "who": "· עם חשבון הניהול של עולם הסטארטאפים" },
+    "torah": { "note_hidden": false, "href": "/torah/admin", "who": "· עם חשבון הניהול של המערכת עצמה" },
+    "console_errors": "none (only favicon.ico 404, an artefact of the bare static server)",
+    "screenshot": "bkalot-system-page.png"
+  }
+}

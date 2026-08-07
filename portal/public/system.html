@@ -144,6 +144,10 @@
             <a class="btn" id="enter2" href="#">כניסה למערכת</a>
             <a class="btn ghost" href="/">כל המערכות</a>
           </div>
+          <p class="note" id="adminNote" hidden>
+            <a id="adminLink" href="#">כניסה לניהול המערכת</a>
+            <span id="adminWho"></span>
+          </p>
         </section>
       </div>
 
@@ -300,6 +304,22 @@
               </article>`;
           })
           .join('');
+
+        // §3 מבקש קישור "נהל מערכת זו" לכל מערכת, §5 מבקש ש-bkalot תוצג
+        // "כולל כניסה לניהול". הכתובת מגיעה מהמרשם ולא מרשימה שנכתבת כאן,
+        // ולכן היא לא יכולה להתיישן מול המערכות. מוצגת רק כשיש כתובת עוקבת:
+        // מערכת שהניהול שלה הוא נקודת API עם כותרת (kupot) לא מקבלת קישור,
+        // כי קישור כזה היה מוביל ל-404 ומכנה אותו "ניהול".
+        if (data.admin_url) {
+          $('adminLink').href = data.admin_url.startsWith('http')
+            ? data.admin_url
+            : `/${data.app_key}${data.admin_url}`;
+          $('adminWho').textContent =
+            data.admin_auth === 'hub'
+              ? ' · עם חשבון הניהול של עולם הסטארטאפים'
+              : ' · עם חשבון הניהול של המערכת עצמה';
+          $('adminNote').hidden = false;
+        }
 
         const plansFrom = data.plans?.plans_from ?? data.plans_from;
         if (plansFrom === 'more30' && data.app_key !== 'more30') {
