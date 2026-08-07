@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-08-07T01:24:46.493Z",
+  "checkedAt": "2026-08-07T02:25:14.803Z",
   "origin": "https://more30.com",
   "mount": "/torah",
   "rows": [
@@ -18,120 +18,46 @@
       "verdict": "login-returning-to-admin"
     },
     {
-      "candidate": "/auth/sign-in",
-      "url": "https://more30.com/torah/auth/sign-in",
+      "candidate": "/legacy/admin",
+      "url": "https://more30.com/torah/legacy/admin",
       "status": 200,
-      "landed": "https://more30.com/torah/auth/sign-in",
+      "landed": "https://more30.com/torah/auth/sign-in?redirect=%2Flegacy%2Fadmin",
       "textLen": 137,
       "password": true,
       "heading": "",
       "notFound": false,
       "adminChrome": [],
-      "stayed": true,
-      "returnTo": null,
-      "verdict": "login-generic"
+      "stayed": false,
+      "returnTo": "/legacy/admin",
+      "verdict": "login-returning-to-admin"
     },
     {
-      "candidate": "/legacy/admin",
-      "url": "https://more30.com/torah/legacy/admin",
+      "candidate": "/legacy/ivr",
+      "url": "https://more30.com/torah/legacy/ivr",
       "status": 200,
-      "landed": "https://more30.com/torah/legacy/admin",
-      "textLen": 953,
-      "password": false,
-      "heading": "לוח ניהול",
-      "notFound": false,
-      "adminChrome": [
-        "ארגונים"
-      ],
-      "stayed": true,
-      "returnTo": null,
-      "verdict": "admin-console"
-    },
-    {
-      "candidate": "/legacy/admin-login",
-      "url": "https://more30.com/torah/legacy/admin-login",
-      "status": 200,
-      "landed": "https://more30.com/torah/legacy/admin-login",
-      "textLen": 122,
+      "landed": "https://more30.com/torah/auth/sign-in?redirect=%2Flegacy%2Fivr",
+      "textLen": 137,
       "password": true,
-      "heading": "כניסת ניהול",
+      "heading": "",
       "notFound": false,
       "adminChrome": [],
-      "stayed": true,
-      "returnTo": null,
+      "stayed": false,
+      "returnTo": "/legacy/ivr",
       "verdict": "login-generic"
     },
     {
       "candidate": "/legacy/nedarim",
       "url": "https://more30.com/torah/legacy/nedarim",
       "status": 200,
-      "landed": "https://more30.com/torah/legacy/nedarim",
-      "textLen": 394,
-      "password": false,
-      "heading": "ניהול נדרים פלוס",
+      "landed": "https://more30.com/torah/auth/sign-in?redirect=%2Flegacy%2Fnedarim",
+      "textLen": 137,
+      "password": true,
+      "heading": "",
       "notFound": false,
       "adminChrome": [],
-      "stayed": true,
-      "returnTo": null,
-      "verdict": "public-page"
-    },
-    {
-      "candidate": "/legacy/ivr",
-      "url": "https://more30.com/torah/legacy/ivr",
-      "status": 200,
-      "landed": "https://more30.com/torah/legacy/ivr",
-      "textLen": 1708,
-      "password": false,
-      "heading": "מערכת ימות המשיח",
-      "notFound": false,
-      "adminChrome": [
-        "ניהול מערכת"
-      ],
-      "stayed": true,
-      "returnTo": null,
-      "verdict": "admin-console"
-    },
-    {
-      "candidate": "/legacy/teacher-dashboard",
-      "url": "https://more30.com/torah/legacy/teacher-dashboard",
-      "status": 200,
-      "landed": "https://more30.com/torah/legacy/teacher-dashboard",
-      "textLen": 815,
-      "password": false,
-      "heading": "האזור האישי שלי",
-      "notFound": false,
-      "adminChrome": [],
-      "stayed": true,
-      "returnTo": null,
-      "verdict": "public-page"
-    },
-    {
-      "candidate": "/legacy/seeker-dashboard",
-      "url": "https://more30.com/torah/legacy/seeker-dashboard",
-      "status": 200,
-      "landed": "https://more30.com/torah/legacy/seeker-dashboard",
-      "textLen": 654,
-      "password": false,
-      "heading": "האזור האישי שלי",
-      "notFound": false,
-      "adminChrome": [],
-      "stayed": true,
-      "returnTo": null,
-      "verdict": "public-page"
-    },
-    {
-      "candidate": "/update-lesson",
-      "url": "https://more30.com/torah/update-lesson",
-      "status": 200,
-      "landed": "https://more30.com/torah/update-lesson",
-      "textLen": 224,
-      "password": false,
-      "heading": "עדכנו שיעור קיים",
-      "notFound": false,
-      "adminChrome": [],
-      "stayed": true,
-      "returnTo": null,
-      "verdict": "public-page"
+      "stayed": false,
+      "returnTo": "/legacy/nedarim",
+      "verdict": "login-generic"
     }
   ]
 }
