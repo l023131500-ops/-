@@ -48,6 +48,9 @@
       select:focus, input:focus { outline:2px solid var(--gold); outline-offset:1px; }
       .filters { display:grid; grid-template-columns:1fr 1fr; gap:10px; align-items:end; }
       @media (max-width:760px) { .filters { grid-template-columns:1fr; } }
+      .check { display:flex; align-items:center; gap:8px; margin-top:10px; font-size:13.5px; }
+      .check input { width:auto; min-height:0; }
+      .check label { margin:0; color:var(--ink); }
 
       .scroll { overflow-x:auto; }
       table { border-collapse:collapse; width:100%; font-size:14px; }
@@ -62,6 +65,10 @@
               background:color-mix(in srgb,var(--ink-2) 15%,transparent); color:var(--ink-2); }
       td.ok { color:var(--ok); font-weight:600; }
       td.warn { color:var(--warn); font-weight:600; }
+      tr.test td { color:var(--ink-2); }
+      .tpill { font-size:11px; font-weight:700; padding:2px 8px; border-radius:999px;
+               background:color-mix(in srgb,var(--warn) 20%,transparent); color:var(--warn); }
+      td.zero { color:var(--ink-2); }
       .note { border:1px solid var(--line); border-radius:12px; padding:14px 16px;
               font-size:14px; background:var(--surface); margin-top:14px; }
       .note.warn { border-color:color-mix(in srgb,var(--warn) 45%,var(--line)); }
@@ -104,6 +111,10 @@
               <input id="q" type="search" autocomplete="off" placeholder="הקלד כדי לסנן" />
             </div>
           </div>
+          <div class="check">
+            <input id="hideTest" type="checkbox" checked />
+            <label for="hideTest">הסתר פניות בדיקה</label>
+          </div>
           <p class="secsub" id="count" style="margin:12px 0 0"></p>
           <div class="scroll"><table id="tbl"></table></div>
         </section>
@@ -115,6 +126,9 @@
             עד היום מערכת בלי מקור רשום פשוט לא הופיעה כאן, ומי שלא מצא אותה
             ברשימה הסיק שלא היו לה פניות. <b>"אין פניות" ו"לא מחובר" הן שתי
             תשובות שונות</b>, ורק אחת מהן דורשת עבודה — ולכן הן מופרדות.
+            ומאותה סיבה יש כאן מצב שלישי: <b>"רק פניות בדיקה"</b>. מערכת
+            שכל התנועה שלה נכתבה על ידי מבחן אינה מערכת עם ביקוש, והיא הייתה
+            מסומנת כאן ירוק.
           </p>
           <div class="scroll"><table id="cov"></table></div>
         </section>
@@ -128,6 +142,8 @@
           </p>
           <div class="scroll"><table id="src"></table></div>
         </section>
+
+        <div class="note" id="testMeans"></div>
 
         <p class="foot" id="stamp"></p>
       </div>
@@ -156,16 +172,23 @@
       function renderLeads() {
         const sys = $('sys').value;
         const q = $('q').value.trim().toLowerCase();
-        const rows = LEADS.filter((l) => {
+        const hideTest = $('hideTest').checked;
+        const real = LEADS.filter((l) => !l.is_test);
+        const pool = hideTest ? real : LEADS;
+        const rows = pool.filter((l) => {
           if (sys && (l.system_name || '') !== sys) return false;
           if (!q) return true;
           return [l.full_name, l.phone, l.email, l.subject, l.kind]
             .some((f) => String(f ?? '').toLowerCase().includes(q));
         });
 
-        $('count').textContent = rows.length === LEADS.length
-          ? `${LEADS.length} פניות`
-          : `${rows.length} מתוך ${LEADS.length} פניות`;
+        // כמה הוסתרו נאמר תמיד, גם כשאין סינון אחר: רשימה שקצרה משהייתה
+        // בלי לומר למה נקראת כמו נתון חסר.
+        const hidden = LEADS.length - real.length;
+        const base = `${rows.length} מתוך ${pool.length} פניות`;
+        $('count').textContent =
+          (rows.length === pool.length ? `${pool.length} פניות` : base) +
+          (hideTest && hidden ? ` · ${hidden} פניות בדיקה מוסתרות` : '');
 
         $('tbl').innerHTML =
           `<thead><tr>
@@ -173,10 +196,10 @@
              <th>טלפון</th><th>מייל</th><th>נושא</th><th>סטטוס</th>
            </tr></thead><tbody>` +
           (rows.length
-            ? rows.map((l) => `<tr>
+            ? rows.map((l) => `<tr${l.is_test ? ' class="test"' : ''}>
                 <td>${when(l.created_at)}</td>
                 <td>${l.system_number ? `<span class="pill">${esc(l.system_number)}</span> ` : ''}${val(l.system_name)}</td>
-                <td>${val(l.kind)}</td>
+                <td>${l.is_test ? '<span class="tpill">בדיקה</span> ' : ''}${val(l.kind)}</td>
                 <td>${val(l.full_name)}</td>
                 <td dir="ltr">${val(l.phone)}</td>
                 <td dir="ltr">${val(l.email)}</td>
@@ -215,10 +238,13 @@
           'כל פנייה שהתקבלה בכל אחת מהמערכות המחוברות, במקום אחד. הנתונים נקראים ' +
           'ישירות מטבלאות המקור של כל מערכת — אין כאן העתק שצריך סנכרון. ' +
           `מחוברות ${t.systems_connected ?? 0} מתוך ${t.systems_public ?? 0} ` +
-          'המערכות הציבוריות החיות; טבלת הכיסוי למטה מונה גם את השאר.';
+          'המערכות הציבוריות החיות; טבלת הכיסוי למטה מונה גם את השאר. ' +
+          `${t.test_leads ?? 0} פניות נכתבו על ידי מבחנים ונספרות לצידן ולא בתוכן.`;
 
         $('kpis').innerHTML = [
-          [t.leads ?? 0, 'פניות בסך הכול'],
+          [t.leads ?? 0, 'פניות מאנשים'],
+          // לצידן ולא בתוכן, בדיוק כמו /admin/systems ו-/admin/activity.
+          [t.test_leads ?? 0, 'פניות בדיקה · לא נספרות'],
           [`${t.sources_with_leads ?? 0}/${t.sources ?? 0}`, 'מקורות עם פניות'],
           // מכנה, לא מספר יחיד: "6 מערכות עם פניות" נקרא כשלם כשאין לצידו
           // כמה מערכות יש בכלל וכמה מהן בכלל מחוברות.
@@ -226,9 +252,11 @@
           [`${t.systems_with_leads ?? 0}/${t.systems_public ?? 0}`, 'מערכות עם פניות'],
           [t.last_7_days ?? 0, '‏7 ימים אחרונים'],
           [t.last_30_days ?? 0, '‏30 יום אחרונים'],
-          [day(t.newest_at), 'הפנייה האחרונה'],
+          [day(t.newest_at), 'הפנייה האחרונה מאדם'],
         ].map(([n, l]) =>
           `<div class="kpi"><div class="n">${esc(n)}</div><div class="l">${l}</div></div>`).join('');
+
+        $('testMeans').textContent = data.test_leads_means || '';
 
         const names = [...new Set(LEADS.map((l) => l.system_name).filter(Boolean))].sort();
         $('sys').innerHTML = '<option value="">כל המערכות</option>' +
@@ -237,38 +265,49 @@
         const COV_STATE = {
           unconnected:     ['לא מחובר', 'warn'],
           connected_empty: ['מחובר · אפס פניות', ''],
+          test_only:       ['מחובר · רק פניות בדיקה', 'warn'],
           has_leads:       ['מחובר · יש פניות', 'ok'],
         };
         const coverage = data.coverage || [];
         $('cov').innerHTML =
-          `<thead><tr><th>מערכת</th><th>מצב</th><th>מקורות</th><th>פניות</th><th>אחרונה</th></tr></thead><tbody>` +
+          `<thead><tr><th>מערכת</th><th>מצב</th><th>מקורות</th><th>פניות מאנשים</th>` +
+          `<th>פניות בדיקה</th><th>אחרונה</th></tr></thead><tbody>` +
           coverage.map((x) => {
             const [label, tone] = COV_STATE[x.state] || [x.state ?? 'לא זמין', ''];
+            const test = Number(x.test_leads) || 0;
             return `<tr${x.state === 'has_leads' ? '' : ' class="empty"'}>
             <td>${x.number ? `<span class="pill">${esc(x.number)}</span> ` : ''}${val(x.name)}</td>
             <td class="${tone}">${esc(label)}</td>
             <td>${Number(x.sources) || 0}</td>
             <td>${Number(x.leads) || 0}</td>
+            <td class="${test ? 'warn' : 'zero'}">${test}</td>
             <td>${x.last_at ? when(x.last_at) : '<span class="muted">—</span>'}</td>
           </tr>`;
           }).join('') + '</tbody>';
 
         $('src').innerHTML =
-          `<thead><tr><th>טבלה</th><th>מערכת</th><th>פניות</th><th>אחרונה</th></tr></thead><tbody>` +
-          sources.map((x) => `<tr${x.count ? '' : ' class="empty"'}>
+          `<thead><tr><th>טבלה</th><th>מערכת</th><th>פניות מאנשים</th>` +
+          `<th>פניות בדיקה</th><th>אחרונה</th></tr></thead><tbody>` +
+          sources.map((x) => {
+            const test = Number(x.test_count) || 0;
+            return `<tr${x.count ? '' : ' class="empty"'}>
             <td dir="ltr">${esc(x.src)}</td>
             <td>${x.system_number ? `<span class="pill">${esc(x.system_number)}</span> ` : ''}${val(x.system_name)}</td>
             <td>${Number(x.count) || 0}</td>
+            <td class="${test ? 'warn' : 'zero'}">${test}</td>
             <td>${x.last_at ? when(x.last_at) : '<span class="muted">—</span>'}</td>
-          </tr>`).join('') + '</tbody>';
+          </tr>`;
+          }).join('') + '</tbody>';
 
         renderLeads();
         $('sys').addEventListener('change', renderLeads);
         $('q').addEventListener('input', renderLeads);
+        $('hideTest').addEventListener('change', renderLeads);
 
         $('stamp').textContent =
           'נוצר ' + new Date(data.generated_at).toLocaleString('he-IL') +
-          ` · מוצגות עד 2000 פניות אחרונות מתוך ${t.leads ?? 0}`;
+          ` · מוצגות עד 2000 פניות אחרונות מתוך ${(t.leads ?? 0) + (t.test_leads ?? 0)}` +
+          ` · ל-${t.without_email ?? 0} פניות אין כתובת מייל, והן נספרות כאמיתיות`;
         $('content').hidden = false;
       })();
     </script>

@@ -1,0 +1,248 @@
+{
+  "generated_at": "2026-08-07T09:30:13.919Z",
+  "source": "more30_admin_leads(2000) against the hub, 07/08/2026, after migration 0045 — no value here was written by hand",
+  "before_0045": {
+    "leads": 75,
+    "last_7_days": 13,
+    "last_30_days": 37,
+    "systems_with_leads": 8,
+    "newest_at": "2026-08-04T21:40:05.095626+00:00",
+    "coverage": {
+      "tivuch": 8,
+      "bkalot": 4
+    }
+  },
+  "totals": {
+    "leads": 64,
+    "test_leads": 11,
+    "without_email": 39,
+    "sources": 28,
+    "sources_with_leads": 7,
+    "systems_with_leads": 7,
+    "systems_public": 19,
+    "systems_connected": 8,
+    "systems_unconnected": 11,
+    "last_7_days": 2,
+    "test_last_7_days": 11,
+    "last_30_days": 26,
+    "test_last_30_days": 11,
+    "newest_at": "2026-08-02T19:53:57.056566+00:00",
+    "test_newest_at": "2026-08-04T21:40:05.095626+00:00"
+  },
+  "cards": [
+    {
+      "n": "64",
+      "l": "פניות מאנשים"
+    },
+    {
+      "n": "11",
+      "l": "פניות בדיקה · לא נספרות"
+    },
+    {
+      "n": "7/28",
+      "l": "מקורות עם פניות"
+    },
+    {
+      "n": "8/19",
+      "l": "מערכות מחוברות לצינור"
+    },
+    {
+      "n": "7/19",
+      "l": "מערכות עם פניות"
+    },
+    {
+      "n": "2",
+      "l": "‏7 ימים אחרונים"
+    },
+    {
+      "n": "26",
+      "l": "‏30 יום אחרונים"
+    },
+    {
+      "n": "2.8.2026",
+      "l": "הפנייה האחרונה מאדם"
+    }
+  ],
+  "covHeads": [
+    "מערכת",
+    "מצב",
+    "מקורות",
+    "פניות מאנשים",
+    "פניות בדיקה",
+    "אחרונה"
+  ],
+  "covRows": [
+    [
+      "06 לידים קופות חולים",
+      "לא מחובר",
+      "0",
+      "0",
+      "0",
+      "—"
+    ],
+    [
+      "10 מימוש זכויות בקלות",
+      "מחובר · רק פניות בדיקה",
+      "1",
+      "0",
+      "4",
+      "—"
+    ],
+    [
+      "16 חצור קונקט",
+      "מחובר · אפס פניות",
+      "2",
+      "0",
+      "0",
+      "—"
+    ],
+    [
+      "32 נדל\"ן ברגע",
+      "מחובר · יש פניות",
+      "3",
+      "22",
+      "0",
+      "30.07.2026, 06:19"
+    ],
+    [
+      "36 נדל״ן פרו — ניהול למתווכים",
+      "מחובר · יש פניות",
+      "1",
+      "1",
+      "7",
+      "02.08.2026, 22:53"
+    ]
+  ],
+  "srcRows": [
+    [
+      "nadlan.report_requests",
+      "32 נדל\"ן ברגע",
+      "22",
+      "0",
+      "30.07.2026, 06:19"
+    ],
+    [
+      "nadlan_pro.contacts",
+      "36 נדל״ן פרו — ניהול למתווכים",
+      "1",
+      "7",
+      "02.08.2026, 22:53"
+    ],
+    [
+      "bkalot_auto.contacts",
+      "10 מימוש זכויות בקלות",
+      "0",
+      "4",
+      "—"
+    ]
+  ],
+  "results": [
+    {
+      "check": "the board renders instead of the access notice",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "the total card counts the 64 people and not the 75 rows",
+      "pass": true,
+      "detail": "64 — expected 64, the old card showed 75"
+    },
+    {
+      "check": "\"7 ימים אחרונים\" is the 2 real inquiries, not the 13 that include the test runs",
+      "pass": true,
+      "detail": "2 — expected 2, the old card showed 13"
+    },
+    {
+      "check": "\"30 יום אחרונים\" drops the same 11 fixtures",
+      "pass": true,
+      "detail": "26 — expected 26, the old card showed 37"
+    },
+    {
+      "check": "the 11 test leads get their own card and say they are not counted",
+      "pass": true,
+      "detail": "11 · פניות בדיקה · לא נספרות"
+    },
+    {
+      "check": "\"הפנייה האחרונה\" is dated by a person, not by the 04/08 probe",
+      "pass": true,
+      "detail": "2.8.2026 · הפנייה האחרונה מאדם"
+    },
+    {
+      "check": "\"מערכות עם פניות\" no longer counts bkalot among the seven",
+      "pass": true,
+      "detail": "7/19 — expected 7/19, the old card showed 8/19"
+    },
+    {
+      "check": "no card on the page still shows any of the inflated totals",
+      "pass": true,
+      "detail": "64=פניות מאנשים | 11=פניות בדיקה · לא נספרות | 7/28=מקורות עם פניות | 8/19=מערכות מחוברות לצינור | 7/19=מערכות עם פניות | 2=‏7 ימים אחרונים | 26=‏30 יום אחרונים | 2.8.2026=הפנייה האחרונה מאדם"
+    },
+    {
+      "check": "the coverage table separates human inquiries from test ones",
+      "pass": true,
+      "detail": "מערכת | מצב | מקורות | פניות מאנשים | פניות בדיקה | אחרונה"
+    },
+    {
+      "check": "bkalot is no longer green: zero human inquiries and four fixtures",
+      "pass": true,
+      "detail": "מחובר · רק פניות בדיקה / 1 / 0 / 4 — the old row showed 4 leads, \"מחובר · יש פניות\""
+    },
+    {
+      "check": "tivuch keeps its one real contact with the seven copies beside it",
+      "pass": true,
+      "detail": "מחובר · יש פניות / 1 / 1 / 7 — the old row showed 8"
+    },
+    {
+      "check": "nadlan, which has no fixtures, is untouched at 22",
+      "pass": true,
+      "detail": "מחובר · יש פניות / 3 / 22 / 0"
+    },
+    {
+      "check": "every coverage row still draws one cell per column heading",
+      "pass": true,
+      "detail": "5 rows · 6 headings · widths 6"
+    },
+    {
+      "check": "the source table names bkalot_auto.contacts as four test rows and zero real ones",
+      "pass": true,
+      "detail": "bkalot_auto.contacts / 10 מימוש זכויות בקלות / 0 / 4 / —"
+    },
+    {
+      "check": "the list hides the fixtures by default and says how many it hid",
+      "pass": true,
+      "detail": "2 פניות · 4 פניות בדיקה מוסתרות"
+    },
+    {
+      "check": "unchecking the box brings every row back — nothing was deleted",
+      "pass": true,
+      "detail": "6 rows for 6 leads"
+    },
+    {
+      "check": "the four fixtures are labelled \"בדיקה\" in place, in date order",
+      "pass": true,
+      "detail": "TTTT.."
+    },
+    {
+      "check": "the fixture that was built to look real is still caught by its domain",
+      "pass": true,
+      "detail": "ה | נמען אמיתי לכאורה | בלי הסכמה | ישראל ישראלי"
+    },
+    {
+      "check": "the note says what a test lead is and that a lead without an email still counts",
+      "pass": true,
+      "detail": "פניית בדיקה נכתבה על ידי מבחן, לא על ידי אדם: כתובת qa.*@more30.com או דומיין ששמור ב-RFC 2606 (example.com ודומיו) ואינו יכול לקבל דואר. הי"
+    },
+    {
+      "check": "the footer states the 39 leads the rule cannot judge",
+      "pass": true,
+      "detail": "נוצר 7.8.2026, 12:41:12 · מוצגות עד 2000 פניות אחרונות מתוך 75 · ל-39 פניות אין כתובת מייל, והן נספרות כאמיתיות"
+    },
+    {
+      "check": "the tagline no longer presents a bare count of every row in the feed",
+      "pass": true,
+      "detail": "כל פנייה שהתקבלה בכל אחת מהמערכות המחוברות, במקום אחד. הנתונים נקראים ישירות מטבלאות המקור של כל מערכת — אין כאן העתק שצריך סנכרון. מחוברות 8 מתוך 19 המערכות הצ"
+    }
+  ],
+  "pass": 21,
+  "fail": 0
+}
