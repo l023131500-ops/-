@@ -123,6 +123,8 @@
         font-size: 13px; color: var(--ink-2);
       }
       .showcase input { width: 20px; height: 20px; accent-color: var(--gold); }
+      /* 0039 — שורה שאין מאחוריה פרויקט לא מקבלת מתג, אלא את הסיבה. */
+      .showcase.off { margin-inline-start: auto; }
 
       .note {
         border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px;
@@ -331,11 +333,24 @@
                     ? `<span class="tag off">לא מוצע למכירה</span>`
                     : ''
                 }
-                <label class="showcase">
+                ${
+                  // 0039: המתג נשען על more30_admin_showcase_set, שמוצא שורה
+                  // לפי core.projects.path. הרשימה כאן נבנית מ-core.plans
+                  // ב-left join, ולכן היו בה שורות בלי פרויקט מאחוריהן —
+                  // more30 עצמה, שהיא הפלטפורמה ולא אחת המערכות שהיא מציגה.
+                  // תיבה כזו נלחצה, נכשלה, וקפצה אחורה עם שגיאת מסד גולמית.
+                  sys.showcase_settable === false
+                    ? `<span class="showcase off mut">${
+                        sys.showcase_block === 'protected'
+                          ? 'מוגנת — אינה מתפרסמת'
+                          : 'אינה מערכת בקטלוג — אין מה להציג'
+                      }</span>`
+                    : `<label class="showcase">
                   <input type="checkbox" data-showcase="${esc(sys.app_key)}"
                          ${sys.show_in_showcase ? 'checked' : ''} />
                   הצג בעולם הסטארטאפים
-                </label>
+                </label>`
+                }
               </div>
               ${
                 sys.offer_note
