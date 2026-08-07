@@ -595,9 +595,9 @@
 | 33 | אתר התדמית | [more30.com](https://more30.com) | ✅ עובדת | 4,473 | ✅ | 30 קישורים |
 | — | כניסה אחידה | [/login](https://more30.com/login) | ✅ עובדת | 326 | ✅ | Google SSO + סיסמה |
 | 01 | איגוד השיעורים | [/torah](https://more30.com/torah) | ✅ עובדת | 1,211 | ✅ | **Lighthouse 69** — ראה §חסמים |
-| 02 | תמלול איגוד | [/tamlul](https://more30.com/tamlul) | ✅ עובדת | 1,327 | ✅ | אין מצב כהה |
+| 02 | תמלול איגוד | [/tamlul](https://more30.com/tamlul) | ✅ עובדת | 1,372 | ✅ | עוקב אחרי מצב כהה, אין מתג |
 | 03 | מודעות איגוד | [/modaot](https://more30.com/modaot) | ✅ עובדת | 661 | ✅ | 3 יעדי מגע < 24px |
-| 04 | עימוד תורני | [/imud](https://more30.com/imud) | ✅ עובדת | 575 | ✅ | אין מצב כהה |
+| 04 | עימוד תורני | [/imud](https://more30.com/imud) | ✅ עובדת | 612 | ✅ | עוקב אחרי מצב כהה, אין מתג |
 | 06 | לידים קופות חולים | [/briut](https://more30.com/briut) | ✅ עובדת | 4,832 | ✅ | 108 קישורים |
 | 10 | מימוש זכויות בקלות | [/bkalot](https://more30.com/bkalot) | ✅ עובדת | 3,041 | ✅ | |
 | 12 | נדל"ן Smel | [/smel](https://more30.com/smel) | ✅ עובדת | 1,149 | ✅ | |
