@@ -1,0 +1,224 @@
+{
+  "generated_at": "2026-08-07T09:17:06.930Z",
+  "source": "more30_admin_activity() against the hub, 07/08/2026, after migration 0044 — no value here was written by hand",
+  "before_0044": {
+    "users_total": 91,
+    "active_24h": 62,
+    "active_7d": 79,
+    "active_30d": 79,
+    "members": {
+      "kesef": 7,
+      "chatzor": 4,
+      "kupot": 5,
+      "nadlan": 4,
+      "tivuch": 5,
+      "imud": 3,
+      "studio": 3,
+      "portal": 7
+    }
+  },
+  "payload": {
+    "users_total": 20,
+    "confirmed": 20,
+    "active_24h": 2,
+    "active_7d": 8,
+    "active_30d": 8,
+    "never_signed_in": 9,
+    "test_accounts": 71,
+    "test_active_24h": 60
+  },
+  "cards": [
+    {
+      "n": "20",
+      "l": "לקוחות רשומים"
+    },
+    {
+      "n": "2",
+      "l": "נכנסו ב-24 שעות"
+    },
+    {
+      "n": "8",
+      "l": "נכנסו ב-7 ימים"
+    },
+    {
+      "n": "8",
+      "l": "נכנסו ב-30 יום"
+    },
+    {
+      "n": "9",
+      "l": "מעולם לא נכנסו"
+    },
+    {
+      "n": "71",
+      "l": "חשבונות בדיקה (לא נספרים)"
+    }
+  ],
+  "heads": [
+    "מערכת",
+    "לקוחות",
+    "חשבונות בדיקה",
+    "24 שעות",
+    "7 ימים",
+    "30 יום",
+    "פעילות אחרונה"
+  ],
+  "rows": [
+    {
+      "cells": [
+        "הפורטל (more30.com) חי",
+        "6",
+        "1",
+        "2",
+        "6",
+        "6",
+        "לפני 4 שע׳"
+      ]
+    },
+    {
+      "cells": [
+        "כסף — שקיפות תקציבית חי",
+        "3",
+        "4",
+        "0",
+        "3",
+        "3",
+        "5.8.2026"
+      ]
+    },
+    {
+      "cells": [
+        "חצור קונקט חי",
+        "1",
+        "3",
+        "0",
+        "1",
+        "1",
+        "31.7.2026"
+      ]
+    },
+    {
+      "cells": [
+        "השוואת קופות חולים חי",
+        "1",
+        "4",
+        "0",
+        "1",
+        "1",
+        "5.8.2026"
+      ]
+    },
+    {
+      "cells": [
+        "נדל\"ן ברגע חי",
+        "1",
+        "3",
+        "1",
+        "1",
+        "1",
+        "לפני 17 שע׳"
+      ]
+    },
+    {
+      "cells": [
+        "נדל״ן פרו — ניהול למתווכים חי",
+        "1",
+        "4",
+        "0",
+        "1",
+        "1",
+        "4.8.2026"
+      ]
+    },
+    {
+      "cells": [
+        "עימוד תורני חי",
+        "0",
+        "3",
+        "0",
+        "0",
+        "0",
+        "—"
+      ]
+    },
+    {
+      "cells": [
+        "סטודיו מודעות חי",
+        "0",
+        "3",
+        "0",
+        "0",
+        "0",
+        "—"
+      ]
+    }
+  ],
+  "results": [
+    {
+      "check": "the board renders instead of the access notice",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "the headline card counts the 20 customers and not the 91 accounts",
+      "pass": true,
+      "detail": "20 — expected 20, the old card showed 91"
+    },
+    {
+      "check": "\"נכנסו ב-24 שעות\" is the 2 real sign-ins, not the 62 that include the test runs",
+      "pass": true,
+      "detail": "2 — expected 2, the old card showed 62"
+    },
+    {
+      "check": "the 71 test accounts get their own card and say they are not counted",
+      "pass": true,
+      "detail": "71 · חשבונות בדיקה (לא נספרים)"
+    },
+    {
+      "check": "no card on the page still shows any of the inflated totals",
+      "pass": true,
+      "detail": "20=לקוחות רשומים | 2=נכנסו ב-24 שעות | 8=נכנסו ב-7 ימים | 8=נכנסו ב-30 יום | 9=מעולם לא נכנסו | 71=חשבונות בדיקה (לא נספרים)"
+    },
+    {
+      "check": "the per-system table has a column for test accounts",
+      "pass": true,
+      "detail": "מערכת | לקוחות | חשבונות בדיקה | 24 שעות | 7 ימים | 30 יום | פעילות אחרונה"
+    },
+    {
+      "check": "the portal row leads the table with 6 customers and its 1 test account",
+      "pass": true,
+      "detail": "הפורטל (more30.com) חי / 6 / 1 — the old row showed 7"
+    },
+    {
+      "check": "imud shows zero customers where it used to show three",
+      "pass": true,
+      "detail": "עימוד תורני חי / 0 / 3 — the old row showed 3"
+    },
+    {
+      "check": "studio shows zero customers where it used to show three",
+      "pass": true,
+      "detail": "סטודיו מודעות חי / 0 / 3 — the old row showed 3"
+    },
+    {
+      "check": "kesef keeps its 3 real customers with the 4 robots beside them",
+      "pass": true,
+      "detail": "כסף — שקיפות תקציבית חי / 3 / 4 — the old row showed 7"
+    },
+    {
+      "check": "every row still draws one cell per column heading",
+      "pass": true,
+      "detail": "8 rows · 7 headings · widths 7"
+    },
+    {
+      "check": "the hint under the table says what a test account is and that it is excluded",
+      "pass": true,
+      "detail": "נפתחה מערכת על ידי משתמש מחובר (core.app_memberships.last_seen_at). מבקר אנונימי אינו נספר. חשבונות בדיקה (qa.*@more30.c"
+    },
+    {
+      "check": "the tagline no longer claims a bare count of everyone in auth.users",
+      "pass": true,
+      "detail": "נספר מההאב בלבד — auth.users ו-core.app_memberships, לקוחות אמיתיים. חשבונות הבדיקה של §1 נספרים לצידם ולא בתוכם. אין כאן הערכות."
+    }
+  ],
+  "pass": 13,
+  "fail": 0
+}

@@ -121,7 +121,7 @@
           <table>
             <thead>
               <tr>
-                <th>מערכת</th><th>משתמשים</th><th>24 שעות</th><th>7 ימים</th><th>30 יום</th><th>פעילות אחרונה</th>
+                <th>מערכת</th><th>לקוחות</th><th>חשבונות בדיקה</th><th>24 שעות</th><th>7 ימים</th><th>30 יום</th><th>פעילות אחרונה</th>
               </tr>
             </thead>
             <tbody id="systems"></tbody>
@@ -200,19 +200,25 @@
         }
 
         const p = data.platform || {};
+        // ‏"אין כאן הערכות" היה נכון במקורות ושגוי במסקנה: הספירה הייתה
+        // מדויקת, על הקהל הלא נכון. חשבונות ה-qa יושבים ב-auth.users כמו
+        // כולם, ועד 0044 הם נספרו בתוך המספרים האלה.
         $('tagline').textContent =
-          'נספר מההאב בלבד — auth.users ו-core.app_memberships. אין כאן הערכות.';
+          'נספר מההאב בלבד — auth.users ו-core.app_memberships, לקוחות אמיתיים. ' +
+          'חשבונות הבדיקה של §1 נספרים לצידם ולא בתוכם. אין כאן הערכות.';
         $('platform').innerHTML = [
-          [p.users_total, 'משתמשים רשומים'],
+          [p.users_total, 'לקוחות רשומים'],
           [p.active_24h, 'נכנסו ב-24 שעות'],
           [p.active_7d, 'נכנסו ב-7 ימים'],
           [p.active_30d, 'נכנסו ב-30 יום'],
           [p.never_signed_in, 'מעולם לא נכנסו'],
+          [p.test_accounts, 'חשבונות בדיקה (לא נספרים)'],
         ]
           .map(([n, l]) => `<div class="card"><div class="n">${Number(n) || 0}</div><div class="l">${l}</div></div>`)
           .join('');
 
-        $('activeMeans').textContent = data.active_means || '';
+        $('activeMeans').textContent =
+          [data.active_means, data.test_accounts_means].filter(Boolean).join(' ');
 
         const rows = [...(data.systems || [])];
         if (data.portal) {
@@ -233,11 +239,11 @@
                     ? `<a href="${esc(r.live_url)}">${esc(r.name || r.app_key)}</a>`
                     : esc(r.name || r.app_key)
                 } <span class="tag ${r.live ? 'live' : 'off'}">${r.live ? 'חי' : 'לא חי'}</span></td>
-                ${num(r.members)}${num(r.active_24h)}${num(r.active_7d)}${num(r.active_30d)}
+                ${num(r.members)}${num(r.test_accounts)}${num(r.active_24h)}${num(r.active_7d)}${num(r.active_30d)}
                 <td>${when(r.last_activity)}</td>
               </tr>`,
             )
-            .join('') || '<tr><td colspan="6">אין עדיין נתונים.</td></tr>';
+            .join('') || '<tr><td colspan="7">אין עדיין נתונים.</td></tr>';
 
         const nc = data.not_counted || [];
         $('notCountedHint').textContent =
