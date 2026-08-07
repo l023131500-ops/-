@@ -96,6 +96,13 @@
       }
       button:hover { border-color: var(--gold); }
       button:disabled { opacity: .5; cursor: default; }
+      /* שורה שאינה מגיעה ללקוח: אותו טיפוגרפיה, פחות משקל. לא אזהרה — עובדה. */
+      .mut { color: var(--ink-2); }
+      .blocked-note {
+        font-size: 12.5px; color: var(--ink-2); margin: -4px 0 12px;
+        padding-inline-start: 10px;
+        border-inline-start: 2px solid color-mix(in srgb, var(--ink-2) 40%, transparent);
+      }
       .state { font-size: 12px; min-height: 18px; }
       .state.ok { color: var(--ok); }
       .state.warn { color: var(--warn); }
@@ -206,6 +213,20 @@
         // הזה עשה עד היום.
         const b = data.billing;
         const priced = Number(data.chargeable_plans ?? 0);
+        // 0036: כמה מתוך המתומחרים לקוח יכול בכלל להגיע אליהם. עד היום הבאנר
+        // הבטיח שכל 70 ייגבו ברגע שהמתג ייפתח, ו-31 מהם אינם ניתנים להצעה:
+        // 29 שורות "פרו" נסתרות, ושתי שורות של mechiron שהקופה מסרבת למכור.
+        // null = ה-RPC ישן ולא החזיר את השדה; אז לא נמציא מספר.
+        const offerable =
+          data.offerable_plans == null ? null : Number(data.offerable_plans);
+        const unreachable = offerable == null ? null : priced - offerable;
+        const gapText =
+          unreachable == null
+            ? ''
+            : unreachable > 0
+            ? ` מתוכם <b>${offerable}</b> ניתנים להצעה ללקוח, ו-${unreachable} אינם — ` +
+              'מסלול נסתר, או מערכת שהקופה מסרבת למכור. אלה לא ייגבו גם אחרי שהמתג ייפתח.'
+            : ' וכולם ניתנים להצעה ללקוח.';
         const el = $('billing');
         const stamp = b?.updated_at
           ? ` נקבע לאחרונה ${new Date(b.updated_at).toLocaleDateString('he-IL')}.`
@@ -222,6 +243,7 @@
             `<b>הסליקה פעילה — ${esc(b.mode)} מול ${esc(b.provider)}.</b> ` +
             `שמירה כאן משנה סכום שנגבה בפועל, ו-${priced} מסלולים פעילים כבר ` +
             'נושאים מחיר גדול מאפס.' +
+            gapText +
             esc(stamp);
         } else {
           el.className = 'note warn';
@@ -229,8 +251,10 @@
             `<b>הסליקה סגורה.</b> ‏<code>core.billing_settings.mode=${esc(b.mode)}</code>` +
             (b.provider ? ` · ספק ${esc(b.provider)}` : ' ואין ספק מחובר') +
             `, ולכן אף אחד אינו מחויב בפועל — אבל ${priced} מסלולים פעילים כבר ` +
-            'נושאים מחיר גדול מאפס, והם ייגבו ברגע שהמתג ייפתח. מסלול ' +
-            '<b>"פרו (בדיקה)"</b> נקבע ל-1 ₪ בכל מערכת כדי לאפשר בדיקה בסכום זניח.' +
+            'נושאים מחיר גדול מאפס.' +
+            gapText +
+            ' מסלול <b>"פרו (בדיקה)"</b> נקבע ל-1 ₪ בכל מערכת כדי לאפשר בדיקה ' +
+            'בסכום זניח, והוא נסתר מהלקוח.' +
             esc(stamp);
         }
 
@@ -240,20 +264,32 @@
               .map((p) => {
                 const [lbl, sub] = KIND_LABEL[p.billing_kind] ?? [p.name_he, p.code];
                 const id = `${sys.app_key}::${p.code}`;
+                // 0036: השורה יודעת עכשיו אם היא מגיעה ללקוח. "פרו" סומן
+                // בשמו בלבד, ושתי שורות נסתרות נוספות בכל מערכת — "סליקה"
+                // ו"שימוש חד-פעמי" — נראו בדיוק כמו מסלול נמכר.
+                const hidden = p.customer_visible === false;
+                const blocked = sys.sellable === false;
                 return `<div class="row">
                   <div class="kind">${esc(lbl)}${
                     p.code === 'pro' ? ' — <b>פרו (בדיקה)</b>' : ''
-                  }<small>${esc(sub)} · ${esc(p.code)}</small></div>
+                  }${hidden ? ' <span class="mut">· נסתר מהלקוח</span>' : ''}<small>${esc(
+                  sub,
+                )} · ${esc(p.code)}</small></div>
                   <input type="number" min="0" step="0.5" inputmode="decimal"
                          id="in::${esc(id)}" value="${p.price_ils ?? ''}"
                          placeholder="טרם נקבע"
                          aria-label="מחיר ${esc(lbl)} עבור ${esc(sys.name)}" />
-                  <button data-app="${esc(sys.app_key)}" data-code="${esc(p.code)}">שמור</button>
+                  <button data-app="${esc(sys.app_key)}" data-code="${esc(p.code)}"
+                          data-reach="${blocked ? 'blocked' : hidden ? 'hidden' : 'open'}">שמור</button>
                   <span class="state" id="st::${esc(id)}">${
                     p.price_ils == null
                       ? '<span class="warn">טרם נקבע</span>'
                       : p.price_ils === 0
                       ? 'ללא חיוב'
+                      : blocked
+                      ? '<span class="mut">לא נמכר · המערכת חסומה</span>'
+                      : hidden
+                      ? '<span class="mut">לא נמכר · נסתר</span>'
                       : 'לגבייה'
                   }</span>
                 </div>`;
@@ -269,12 +305,23 @@
                     : esc(sys.name)
                 }</span>
                 <span class="tag ${sys.live ? '' : 'off'}">${sys.live ? 'חי' : 'לא חי'}</span>
+                ${
+                  sys.sellable === false
+                    ? `<span class="tag off">לא מוצע למכירה</span>`
+                    : ''
+                }
                 <label class="showcase">
                   <input type="checkbox" data-showcase="${esc(sys.app_key)}"
                          ${sys.show_in_showcase ? 'checked' : ''} />
                   הצג בעולם הסטארטאפים
                 </label>
               </div>
+              ${
+                sys.offer_note
+                  ? `<p class="blocked-note">${esc(sys.offer_note)} מחיר שנקבע כאן
+                     נשמר בקטלוג, ולא יוצג ללקוח כל עוד המערכת חסומה.</p>`
+                  : ''
+              }
               <div class="rows">${rows}</div>
             </section>`;
           })
@@ -310,11 +357,18 @@
             return;
           }
           state.className = 'state ok';
-          state.textContent = res.chargeable
-            ? 'נשמר · לגבייה'
-            : price === null
-            ? 'נשמר · טרם נקבע'
-            : 'נשמר · ללא חיוב';
+          // אותה הבחנה שבציור הראשוני: שמירה מוצלחת על שורה שאינה מגיעה
+          // ללקוח אינה "לגבייה", גם כשהמחיר נשמר.
+          const reach = btn.dataset.reach;
+          state.textContent = !res.chargeable
+            ? price === null
+              ? 'נשמר · טרם נקבע'
+              : 'נשמר · ללא חיוב'
+            : reach === 'blocked'
+            ? 'נשמר · לא נמכר · המערכת חסומה'
+            : reach === 'hidden'
+            ? 'נשמר · לא נמכר · נסתר'
+            : 'נשמר · לגבייה';
         });
 
         // ── מתג showcase ────────────────────────────────────────────────
