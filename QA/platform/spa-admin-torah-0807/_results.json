@@ -1,0 +1,65 @@
+{
+  "checkedAt": "2026-08-07T01:14:58.919Z",
+  "origin": "https://more30.com",
+  "mount": "/torah",
+  "rows": [
+    {
+      "candidate": "/admin",
+      "url": "https://more30.com/torah/admin",
+      "status": 200,
+      "landed": "https://more30.com/torah/auth/sign-in?redirect=%2Fadmin",
+      "textLen": 137,
+      "password": true,
+      "heading": "",
+      "notFound": false,
+      "adminChrome": [],
+      "stayed": false,
+      "returnTo": "/admin",
+      "verdict": "login-returning-to-admin"
+    },
+    {
+      "candidate": "/auth/sign-in",
+      "url": "https://more30.com/torah/auth/sign-in",
+      "status": 200,
+      "landed": "https://more30.com/torah/auth/sign-in",
+      "textLen": 137,
+      "password": true,
+      "heading": "",
+      "notFound": false,
+      "adminChrome": [],
+      "stayed": true,
+      "returnTo": null,
+      "verdict": "login-generic"
+    },
+    {
+      "candidate": "/legacy/admin",
+      "url": "https://more30.com/torah/legacy/admin",
+      "status": 200,
+      "landed": "https://more30.com/torah/legacy/admin",
+      "textLen": 953,
+      "password": false,
+      "heading": "לוח ניהול",
+      "notFound": false,
+      "adminChrome": [
+        "ארגונים"
+      ],
+      "stayed": true,
+      "returnTo": null,
+      "verdict": "admin-console"
+    },
+    {
+      "candidate": "/legacy/admin-login",
+      "url": "https://more30.com/torah/legacy/admin-login",
+      "status": 200,
+      "landed": "https://more30.com/torah/legacy/admin-login",
+      "textLen": 122,
+      "password": true,
+      "heading": "כניסת ניהול",
+      "notFound": false,
+      "adminChrome": [],
+      "stayed": true,
+      "returnTo": null,
+      "verdict": "login-generic"
+    }
+  ]
+}
