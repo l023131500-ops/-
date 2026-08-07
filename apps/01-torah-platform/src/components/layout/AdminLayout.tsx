@@ -1,37 +1,15 @@
-import { Outlet, NavLink, Navigate, useLocation } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { useAuth } from "@/hooks/useAuth";
-import { supabase } from "@/integrations/supabase/client";
-import { LayoutDashboard, Building2, Users, Sparkles, MessageSquare, ShoppingCart, BarChart3, Loader2, Lightbulb, MessageCircle, Settings2 } from "lucide-react";
+import { Outlet, NavLink } from "react-router-dom";
+import { useSuperAdminGate } from "@/hooks/useSuperAdmin";
+import { LayoutDashboard, Building2, Users, Sparkles, MessageSquare, ShoppingCart, BarChart3, Lightbulb, MessageCircle, Settings2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Navbar } from "./Navbar";
 
 export function AdminLayout() {
-  const { user, loading } = useAuth();
-  const loc = useLocation();
-  const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
-
-  useEffect(() => {
-    if (!user) {
-      setIsAdmin(false);
-      return;
-    }
-    (async () => {
-      const { data } = await supabase.rpc("is_super_admin", { _uid: user.id });
-      setIsAdmin(Boolean(data));
-    })();
-  }, [user]);
-
-  if (loading || isAdmin === null) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
-  }
-
-  if (!user) return <Navigate to={`/auth/sign-in?redirect=${encodeURIComponent(loc.pathname)}`} replace />;
-  if (!isAdmin) return <Navigate to="/" replace />;
+  /* The check itself moved to useSuperAdminGate so the legacy consoles, which
+     have no layout to inherit it from, can run the same one. Same spinner, same
+     two redirects — nothing about this screen's behaviour changed. */
+  const gate = useSuperAdminGate();
+  if (gate) return gate;
 
   const items = [
     { to: "/admin", icon: LayoutDashboard, label: "סקירה כללית", end: true },

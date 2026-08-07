@@ -6,6 +6,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { AuthProvider } from "@/hooks/useAuth";
 import { TenantProvider } from "@/hooks/useTenant";
 import { CartSync } from "@/components/branding/CartSync";
+import { RequireSuperAdmin } from "@/components/auth/RequireSuperAdmin";
 
 /* עמוד הנחיתה והמעטפת שלו נטענים מיידית — הם מה שהמבקר רואה ראשון,
    ו-Lighthouse נמדד עליהם (DESIGN_STANDARD §7). כל שאר 70 העמודים נטענים
@@ -275,12 +276,23 @@ export default function App() {
                   <Route path="/view/shul/:publicToken" element={<PublicSynagoguePage />} />
                   <Route path="/study-days/:token" element={<StudyDayUpload />} />
                   <Route path="/update-lesson" element={<UpdateLesson />} />
-                  <Route path="/legacy/admin" element={<LegacyAdminDashboard />} />
                   <Route path="/legacy/admin-login" element={<LegacyAdminLogin />} />
                   <Route path="/legacy/teacher-dashboard" element={<TeacherDashboard />} />
                   <Route path="/legacy/seeker-dashboard" element={<SeekerDashboard />} />
-                  <Route path="/legacy/nedarim" element={<NedarimManagement />} />
-                  <Route path="/legacy/ivr" element={<IvrBuilder />} />
+
+                  {/* The legacy consoles. "standalone, no layout wrapper" above
+                      was also, until now, "no gate": measured against production
+                      on 07/08/2026, an anonymous visitor got /legacy/admin
+                      (953 chars, the lesson board with edit, ZIP backup and
+                      Nedarim export) and /legacy/ivr (1708 chars, "ניהול מערכת")
+                      fully painted, while /admin beside them redirected to
+                      sign-in. core.issues #87. They keep their own chrome —
+                      RequireSuperAdmin adds the check and nothing else. */}
+                  <Route element={<RequireSuperAdmin />}>
+                    <Route path="/legacy/admin" element={<LegacyAdminDashboard />} />
+                    <Route path="/legacy/nedarim" element={<NedarimManagement />} />
+                    <Route path="/legacy/ivr" element={<IvrBuilder />} />
+                  </Route>
 
                   <Route path="*" element={<NotFound />} />
                 </Routes>
