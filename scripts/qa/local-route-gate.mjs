@@ -38,7 +38,12 @@ if (!ROUTES.length) {
   process.exit(2);
 }
 
-const SHOT_DIR = join(ROOT, 'QA', 'platform', `route-gate-${new URL(BASE).pathname.replace(/\//g, '-').replace(/^-|-$/g, '') || 'root'}-local`);
+/* The base URL is an argument, so this runs against production just as well as
+   against `vite preview` — and a folder named "-local" holding a production
+   measurement is a lie that outlives the run. Name it after the host. */
+const { pathname: BASE_PATH, hostname: BASE_HOST } = new URL(BASE);
+const WHERE = /^(localhost|127\.0\.0\.1)$/.test(BASE_HOST) ? 'local' : BASE_HOST.replace(/\./g, '-');
+const SHOT_DIR = join(ROOT, 'QA', 'platform', `route-gate-${BASE_PATH.replace(/\//g, '-').replace(/^-|-$/g, '') || 'root'}-${WHERE}`);
 mkdirSync(SHOT_DIR, { recursive: true });
 
 /** Labels the consoles render and no public page does. */
