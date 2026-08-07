@@ -57,6 +57,16 @@
       h1 { font-size: clamp(24px, 4vw, 34px); font-weight: 800; margin-top: 10px; }
       .sub { color: var(--ink-2); font-size: 15px; margin-top: 6px; max-width: 62ch; }
 
+      /* אותו סרגל אחים שיש לחמשת המסכים שמקשרים לכאן. בלעדיו "חזרה
+         למרכז השליטה" היה היציאה היחידה, והיא מובילה אל ‎/admin‎ — SPA
+         שאינו מקשר בחזרה לאף אחד ממסכי הלוח. */
+      .nav { display: flex; gap: 8px; flex-wrap: wrap; margin: 18px 0 6px; }
+      .nav a { font-size: 13.5px; font-weight: 600; text-decoration: none;
+               border: 1px solid var(--line); border-radius: 999px;
+               padding: 6px 14px; min-height: 24px; display: inline-flex;
+               align-items: center; color: var(--ink); background: var(--surface); }
+      .nav a:hover { border-color: var(--gold); }
+
       .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 14px; margin: 26px 0; }
       .card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px; }
       .card .n { font-size: 30px; font-weight: 800; line-height: 1.1; }
@@ -89,6 +99,14 @@
         <a class="back" href="/admin">← חזרה למרכז השליטה</a>
         <h1>משתמשים פעילים בכל המערכות</h1>
         <p class="sub" id="tagline">טוען…</p>
+
+        <nav class="nav">
+          <a href="/admin/systems">דוח מערכות</a>
+          <a href="/admin/issues">תקלות ומה דורש אותך</a>
+          <a href="/admin/leads">לידים</a>
+          <a href="/admin/credits">יתרות וחיבורים</a>
+          <a href="/admin/pricing">מחירים ותצוגה</a>
+        </nav>
       </header>
 
       <div id="content" hidden>
