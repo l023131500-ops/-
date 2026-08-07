@@ -27,9 +27,22 @@ const OUT_DIR = (process.argv.find((a) => a.startsWith('--out=')) || '').slice(6
 
 // route as served → core.projects.path. Only routes that are actually a system;
 // a report whose route has no system is reported and skipped, never guessed.
+// The list is every `path` in core.projects where live = true — the register's
+// own answer to "which routes exist", which is also the key the admin board
+// joins on (more30_admin_systems_report matches lighthouse_runs.app_key to
+// projects.path). A report for a route the register does not know still falls
+// through to `skipped`. Rows with a null path are left out on purpose rather
+// than mapped to a route they do not own; the live one is more30-spec-loop,
+// the home page itself, which the board's join cannot reach either.
 const ROUTE_TO_APP = {
+  // public_visible
   torah: 'torah', egod: 'egod', chatzor: 'chatzor', zchuyot: 'zchuyot',
   mechiron: 'mechiron', kupot: 'kupot', nadlan: 'nadlan', tivuch: 'tivuch',
+  bkalot: 'bkalot', briut: 'briut', chizukim: 'chizukim', galil: 'galil',
+  imud: 'imud', kesef: 'kesef', kiosk: 'kiosk', modaot: 'modaot',
+  orech: 'orech', smel: 'smel', studio: 'studio', tamlul: 'tamlul',
+  // live but hidden from the home page — still a route the board lists
+  smachot: 'smachot', gesher: 'gesher', mthbram: 'mthbram', crm: 'crm',
 };
 
 const files = fs.readdirSync(SHOTS)
