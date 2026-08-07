@@ -67,6 +67,10 @@
       dt { color: var(--ink-2); }
       dd { font-variant-numeric: tabular-nums; }
       .muted { color: var(--ink-2); }
+      .entry { margin-top: 10px; font-size: 13px; }
+      .entry a { font-weight: 700; color: inherit; text-decoration: none;
+                 border-bottom: 1px solid var(--gold); min-height: 24px;
+                 display: inline-flex; align-items: center; }
       .note { border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px;
               font-size: 14px; background: var(--surface); margin-top: 14px; }
       .note.warn { border-color: color-mix(in srgb, var(--warn) 45%, var(--line)); }
@@ -125,6 +129,31 @@
        */
       let bugs = () => '';
 
+      /**
+       * "נהל מערכת זו" של §3. הקישור הזה הצביע עד היום על /admin/issues בכל
+       * שלושים הכרטיסים — אותה כתובת לכל מערכת, ולא מסך הניהול של אף אחת מהן.
+       * הכתובת האמיתית יושבת ב-core.projects.admin_url ומגיעה עכשיו בדוח
+       * (מיגרציה 0025), אחרי אותו שער שקבעה 0024: רק admin_auth של own/hub ורק
+       * כתובת שאפשר ללחוץ עליה.
+       *
+       * מערכת בלי מסך ניהול אומרת זאת במפורש ואינה מקבלת קישור חלופי — שמונה
+       * מהן הן core.issues #86, ולתת להן קישור גנרי זה בדיוק מה שהסתיר את
+       * החוסר עד עכשיו.
+       */
+      const adminEntry = (x) => {
+        if (!x.admin_url) {
+          return '<span class="muted">אין מסך ניהול — נמדד, לא הונח (core.issues #86)</span>';
+        }
+        const href = x.admin_url.startsWith('http')
+          ? x.admin_url
+          : `/${x.app_key}${x.admin_url}`;
+        const who = x.admin_auth === 'hub'
+          ? 'כניסת סופר-אדמין של הפלטפורמה'
+          : 'הכניסה של המערכת עצמה';
+        return `<a href="${esc(href)}">ניהול המערכת הזאת ←</a>
+                <span class="muted"> · ${who}</span>`;
+      };
+
       (async function () {
         const { data: s } = await sb.auth.getSession();
         if (!s?.session) {
@@ -166,6 +195,7 @@
           [t.live, 'חיות'],
           [t.users_counted, 'מאגר המשתמשים בהאב'],
           [t.in_showcase, 'מוצגות בעולם הסטארטאפים'],
+          [t.with_admin_url, 'עם כניסה לניהול'],
         ].map(([n,l]) => `<div class="kpi"><div class="n">${Number(n)||0}</div><div class="l">${l}</div></div>`).join('');
 
         $('grid').innerHTML = (data.systems || []).map((x) => {
@@ -205,11 +235,7 @@
               <dt>הכנסה חודשית משוערת</dt><dd>${money(x.mrr_estimate_ils)}</dd>
               ${bugs(x.path)}
             </dl>
-            <p style="margin-top:10px">
-              <a class="nav-inline" href="/admin/issues"
-                 style="font-size:13px;font-weight:700;color:inherit;text-decoration:none;border-bottom:1px solid var(--gold)">
-                ניהול המערכת הזאת ←</a>
-            </p>
+            <p class="entry">${adminEntry(x)}</p>
           </article>`;
         }).join('');
 
