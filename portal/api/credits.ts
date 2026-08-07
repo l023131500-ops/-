@@ -21,6 +21,20 @@
  * (קרדיטים) ו-ElevenLabs (תווים מתוך מכסה). ל-OpenAI, Anthropic ו-Gemini אין
  * ממשק יתרה למפתח רגיל — שם נבדקת **תקפות המפתח** בלבד, וכך גם נאמר במסך.
  * עדיף "לא נמדד" מאשר מספר יפה שאין מאחוריו כלום.
+ *
+ * ── כיסוי: כל ספק שיש לו סוד בכספת
+ * §3א מבקש את **כל** הספקים שאנחנו מחוברים אליהם, ו-`core.secrets` הוא הרשימה
+ * הקובעת. ספק שיש לו סוד בכספת ואין לו שורה כאן פשוט נעלם מהמסך — לא "תקין"
+ * ולא "חסר", אלא לא-קיים; וזה בדיוק המצב שבו נגמר קרדיט בלי שאף אחד ראה.
+ * `scripts/qa/credits-coverage.mjs` מאמת את הכיסוי מול צילום של רשימת השירותים
+ * שבכספת, כדי ששירות חדש בכספת ייכשל בבדיקה ולא יישכח.
+ *
+ * שני דברים שהכיסוי הזה חייב לדעת ושלא היו בטיפוס המקורי:
+ * 1. **ספק שדורש יותר ממפתח אחד.** Google OAuth בלי ה-secret אינו "פועל", והוא
+ *    היה מוצג כפועל אם היינו בודקים רק את ה-client id. `alsoNeeds` מונה את שאר
+ *    השמות, ו-inVault/deployed נמדדים על כולם.
+ * 2. **ספק ציבורי בלי מפתח.** data.gov.il אינו דורש מאיתנו כלום, ולכן היעדר
+ *    משתנה סביבה כאן אינו אומר שהחיבור שבור. `keyless` מריץ את הבדיקה בכל מקרה.
  */
 
 const clean = (v: string | undefined) => (v ?? '').replace(/﻿/g, '').trim();
@@ -43,6 +57,10 @@ type Provider = {
   detail: string;
   /** לאן הולכים כדי להוסיף קרדיט או לחדש מפתח. */
   topUp: string;
+  /** כשהיעד אינו עמוד חיוב — "הוספת קרדיט" יהיה שקר, ולכן הכיתוב נאמר במפורש. */
+  topUpLabel?: string;
+  /** ספק ציבורי שאינו דורש מאיתנו מפתח כלל. */
+  keyless?: boolean;
   inVault: boolean;
   deployed: boolean;
 };
@@ -90,8 +108,20 @@ type Spec = {
   key: string;
   label: string;
   env: string;
+  /** שמות נוספים שהספק אינו עובד בלעדיהם. inVault/deployed נמדדים על כל הרשימה. */
+  alsoNeeds?: string[];
+  /** הממשק ציבורי — הבדיקה תרוץ גם בלי משתנה סביבה. */
+  keyless?: boolean;
   usedBy: string;
   topUp: string;
+  topUpLabel?: string;
+  /** מה באמת חסר, כשלספק אין מפתח — לא כל "אין מפתח" הוא פתיחת חשבון. */
+  whenMissing?: string;
+  /**
+   * ערכי `core.secrets.service` שהשורה הזאת מכסה, כשהם אינם נגזרים משמות
+   * המפתחות. אינו בשימוש בזמן ריצה — רק בדיקת הכיסוי קוראת אותו.
+   */
+  covers?: string[];
   check?: (k: string) => Promise<Partial<Provider>>;
 };
 
@@ -245,6 +275,96 @@ const SPECS: Spec[] = [
     },
   },
   {
+    key: 'google-oauth',
+    label: 'Google — כניסה עם חשבון',
+    env: 'GOOGLE_OAUTH_CLIENT_ID',
+    alsoNeeds: ['GOOGLE_OAUTH_CLIENT_SECRET'],
+    usedBy: 'המסלול החינמי בכל המערכות — כניסה עם Google (§8ב)',
+    topUp: 'https://console.cloud.google.com/apis/credentials',
+    topUpLabel: 'עמוד ההרשאות אצל גוגל',
+    async check(id) {
+      const secret = clean(process.env.GOOGLE_OAUTH_CLIENT_SECRET);
+      // בקשת טוקן עם קוד פסול: אינה מנפיקה דבר ואינה נוגעת במשתמש אמיתי, ובכל
+      // זאת מבחינה בין שתי תקלות שנראות זהות מבחוץ. נמדד 07/08 מול גוגל:
+      // זיהוי נכון → 400 invalid_grant ("Malformed auth code"), כלומר הזוג
+      // התקבל; סוד שגוי → 401 invalid_client. זה ההפרש שאנחנו קוראים.
+      const res = await probe('https://oauth2.googleapis.com/token', {
+        method: 'POST',
+        headers: { 'content-type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+          grant_type: 'authorization_code',
+          code: 'more30-probe-not-a-real-code',
+          client_id: id,
+          client_secret: secret,
+          redirect_uri: 'https://more30.com/auth/callback',
+        }).toString(),
+      });
+      if (!res) return { state: 'unknown', detail: 'גוגל לא ענתה בזמן.' };
+      const j: any = await res.json().catch(() => null);
+      const err = String(j?.error ?? '');
+      if (err === 'invalid_grant') {
+        return { state: 'ok', detail: 'זיהוי הלקוח והסוד התקבלו על ידי גוגל. ל-OAuth אין יתרה — הוא חינמי.' };
+      }
+      if (err === 'invalid_client' || err === 'unauthorized_client') {
+        return {
+          state: 'invalid',
+          detail: `גוגל דחתה את זוג הזיהוי: ${j?.error_description ?? err}. כניסה עם Google לא תעבוד באף מערכת.`,
+        };
+      }
+      return { state: 'unknown', detail: `גוגל החזירה ${err || res.status} — לא מסקנה על תקפות הזוג.` };
+    },
+  },
+  {
+    key: 'gov-il',
+    label: 'data.gov.il — מאגרים ציבוריים',
+    env: 'DATAGOV_POLLING_STATIONS',
+    alsoNeeds: [
+      'DATAGOV_ELECTIONS_BALLOTS',
+      'DATAGOV_ELECTIONS_CITIES',
+      'DATAGOV_TRANSPORT_RESOURCE',
+      'CBS_HOUSING_INDEX_ID',
+      'XPLAN_BASE',
+    ],
+    keyless: true,
+    usedBy: 'נדל״ן ברגע · סמל נדל״ן — קלפיות, תחבורה, תב״ע ומדד מחירי הדיור',
+    topUp: 'https://data.gov.il/dataset',
+    topUpLabel: 'קטלוג המאגרים',
+    async check(resourceId) {
+      // הערכים כאן הם מזהי מאגר, לא מפתחות: הממשק פתוח לכל. לכן שאלת "האם
+      // החיבור פועל" נשאלת גם בפריסה שאין בה את המזהים — ואם יש מזהה, נמדד
+      // המאגר עצמו ולא רק שהשרת חי. status_show חסום (403), datastore_search
+      // ו-package_search פתוחים; נמדד 07/08.
+      if (resourceId) {
+        const res = await probe(
+          `https://data.gov.il/api/3/action/datastore_search?resource_id=${encodeURIComponent(resourceId)}&limit=0`,
+          {},
+          15_000,
+        );
+        if (!res) return { state: 'unknown', detail: 'data.gov.il לא ענה בזמן.' };
+        const j: any = await res.json().catch(() => null);
+        if (res.ok && j?.success) {
+          const total = Number(j?.result?.total ?? NaN);
+          return {
+            state: 'ok',
+            detail: Number.isFinite(total)
+              ? `המאגר חי — ${total.toLocaleString('he-IL')} שורות בקלפיות. אין מפתח ואין יתרה: הממשק ציבורי.`
+              : 'המאגר עונה. אין מפתח ואין יתרה: הממשק ציבורי.',
+          };
+        }
+        return { state: 'invalid', detail: `המאגר לא נמצא (${res.status}) — מזהה שהוחלף מפיל את הנתון בשקט.` };
+      }
+      const res = await probe('https://data.gov.il/api/3/action/package_search?rows=0', {}, 15_000);
+      if (!res) return { state: 'unknown', detail: 'data.gov.il לא ענה בזמן.' };
+      const j: any = await res.json().catch(() => null);
+      if (!res.ok || !j?.success) return { state: 'unknown', detail: `data.gov.il החזיר ${res.status}.` };
+      const count = Number(j?.result?.count ?? 0);
+      return {
+        state: 'ok',
+        detail: `הממשק הציבורי עונה · ${count.toLocaleString('he-IL')} מאגרים בקטלוג. מזהי המאגרים שלנו יושבים בכספת בהיקף nadlan ואינם משתני סביבה כאן, ולכן נמדד השרת ולא המאגר עצמו.`,
+      };
+    },
+  },
+  {
     key: 'resend',
     label: 'Resend',
     env: 'RESEND_API_KEY',
@@ -272,8 +392,35 @@ const SPECS: Spec[] = [
     env: 'NEDARIM_MOSAD_ID',
     usedBy: 'סליקה וחשבוניות — סטודיו המודעות ומנויים',
     topUp: 'https://matara.pro/nedarimplus/Reports/',
+    topUpLabel: 'לוח נדרים פלוס',
     // אין ל"נדרים" ממשק יתרה, וסליקה אינה קרדיט שנגמר. בדיקה אמיתית כאן
     // הייתה מחייבת קריאה לממשק החיוב — ולא נוגעים בסליקה חיה כדי לצייר מסך.
+  },
+  {
+    key: 'nedarim-platform',
+    label: 'נדרים פלוס — חשבון הפלטפורמה',
+    env: 'PLATFORM_NEDARIM_MOSAD',
+    alsoNeeds: ['PLATFORM_NEDARIM_API_VALID'],
+    usedBy: 'המנויים של more30 עצמם — חשבון נפרד מזה של הלקוח',
+    topUp: 'https://matara.pro/nedarimplus/Reports/',
+    topUpLabel: 'לוח נדרים פלוס',
+    // חשבון סליקה שני, ולא כפילות: מוסד 7016674 גובה את המנויים שלנו, בעוד
+    // ה-NEDARIM_* למעלה הוא החשבון שדרכו נגבים לקוחות המערכות. אין ממשק יתרה,
+    // ומאותה סיבה כמו למעלה אין כאן קריאה לממשק החיוב.
+  },
+  {
+    key: 'greeninvoice',
+    label: 'Green Invoice — חשבוניות',
+    env: 'GREENINVOICE_API_KEY',
+    alsoNeeds: ['GREENINVOICE_API_SECRET'],
+    // בכספת יושב INVOICE_PROVIDER בלבד — שם הספק שנבחר, לא מפתח שלו.
+    covers: ['invoicing'],
+    usedBy: 'חשבונית על כל מנוי ועל כל תשלום — §8ג',
+    topUp: 'https://app.greeninvoice.co.il/settings/api',
+    topUpLabel: 'מפתחות ה-API אצל Green Invoice',
+    whenMissing:
+      'הספק כבר נבחר — INVOICE_PROVIDER=greeninvoice יושב בכספת, ו-iCount הוא החלופה המאושרת. ' +
+      'מה שחסר הוא זוג המפתחות של חשבון אמיתי (core.issues #14), ובלעדיו אין חשבונית על אף תשלום.',
   },
   {
     key: 'yemot',
@@ -307,6 +454,9 @@ const SPECS: Spec[] = [
     key: 'supabase',
     label: 'Supabase',
     env: 'SUPABASE_ACCESS_TOKEN',
+    // service='supabase' בכספת הוא כתובות ומפתחות anon של הפרויקטים עצמם, ולא
+    // חשבון נפרד: מי שמחזיק את החשבון הוא הטוקן הניהולי, ולכן הוא מכסה את שניהם.
+    covers: ['supabase', 'supabase-management'],
     usedBy: 'המסד המרכזי וכל מסדי המערכות',
     topUp: 'https://supabase.com/dashboard/org/_/billing',
     async check(k) {
@@ -350,27 +500,43 @@ export default async function handler(req: any, res: any) {
   const providers = await Promise.all(
     SPECS.map(async (spec): Promise<Provider> => {
       const key = clean(process.env[spec.env]);
-      const inVault = vault.has(spec.env);
+      // ספק יכול לדרוש יותר משם אחד, ואז "יש מפתח" נמדד על כולם: זוג שחסר בו
+      // צד אחד אינו עובד, ואין טעם להציג אותו כפועל.
+      const names = [spec.env, ...(spec.alsoNeeds ?? [])];
+      const notInVault = names.filter((n) => !vault.has(n));
+      const notDeployed = names.filter((n) => !clean(process.env[n]));
+      const inVault = notInVault.length === 0;
+      const deployed = notDeployed.length === 0;
+
       const base: Provider = {
         key: spec.key,
         label: spec.label,
         usedBy: spec.usedBy,
         topUp: spec.topUp,
+        topUpLabel: spec.topUpLabel,
+        keyless: spec.keyless,
         inVault,
-        deployed: !!key,
+        deployed,
         state: 'missing',
-        detail: 'אין מפתח לספק הזה — לא בכספת ולא בפריסה. צריך לפתוח חשבון ולהוסיף מפתח.',
+        detail:
+          spec.whenMissing ??
+          'אין מפתח לספק הזה — לא בכספת ולא בפריסה. צריך לפתוח חשבון ולהוסיף מפתח.',
       };
 
-      if (!key) {
-        return inVault
-          ? {
-              ...base,
-              state: 'not-deployed',
-              detail:
-                'המפתח קיים ב-core.secrets אבל אינו מוגדר כמשתנה סביבה בפריסה הזאת, ולכן אי אפשר לבדוק אותו מכאן. זה תיקון של העתקת ערך קיים, לא של פתיחת חשבון.',
-            }
-          : base;
+      // ספק ציבורי נבדק תמיד: היעדר משתנה סביבה אצלנו אינו אומר שהממשק שלו שבור.
+      if (!deployed && !spec.keyless) {
+        if (notInVault.length === names.length) return base;
+        if (notInVault.length) {
+          return {
+            ...base,
+            detail: `חסר בכספת: ${notInVault.join(', ')}. הספק לא יעבוד גם אם השאר קיימים.`,
+          };
+        }
+        return {
+          ...base,
+          state: 'not-deployed',
+          detail: `${notDeployed.join(', ')} — קיים ב-core.secrets אבל אינו משתנה סביבה בפריסה הזאת, ולכן אי אפשר לבדוק אותו מכאן. זה תיקון של העתקת ערך קיים, לא של פתיחת חשבון.`,
+        };
       }
 
       if (!spec.check) {

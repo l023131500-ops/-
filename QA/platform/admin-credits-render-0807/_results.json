@@ -1,0 +1,95 @@
+{
+  "ran": "scripts/qa/admin-credits-render.mjs",
+  "page": "portal/public/admin-credits.html",
+  "served": "working tree",
+  "cards": [
+    {
+      "label": "נדרים פלוס — חשבון הפלטפורמה",
+      "tag": "לא נפרס",
+      "detail": "PLATFORM_NEDARIM_MOSAD, PLATFORM_NEDARIM_API_VALID — קיים ב-core.secrets אבל אינו משתנה סביבה בפריסה הזאת, ולכן אי אפשר לבדוק אותו מכאן. זה תיקון של העתקת ערך קיים, לא של פתיחת חשבון.",
+      "cta": "לוח נדרים פלוס ↗",
+      "href": "https://matara.pro/nedarimplus/Reports/"
+    },
+    {
+      "label": "Green Invoice — חשבוניות",
+      "tag": "אין מפתח",
+      "detail": "הספק כבר נבחר — INVOICE_PROVIDER=greeninvoice יושב בכספת, ו-iCount הוא החלופה המאושרת. מה שחסר הוא זוג המפתחות של חשבון אמיתי (core.issues #14), ובלעדיו אין חשבונית על אף תשלום.",
+      "cta": "מפתחות ה-API אצל Green Invoice ↗",
+      "href": "https://app.greeninvoice.co.il/settings/api"
+    },
+    {
+      "label": "ElevenLabs",
+      "tag": "אין מפתח",
+      "detail": "אין מפתח לספק הזה — לא בכספת ולא בפריסה. צריך לפתוח חשבון ולהוסיף מפתח.",
+      "cta": "פתיחת חשבון והוספת מפתח ↗",
+      "href": "https://elevenlabs.io/app/subscription"
+    },
+    {
+      "label": "Apify",
+      "tag": "פועל",
+      "detail": "יתרה חודשית אמיתית, נמדדת מול הספק.",
+      "cta": "הוספת קרדיט אצל הספק ↗",
+      "href": "https://console.apify.com/billing"
+    },
+    {
+      "label": "Google — כניסה עם חשבון",
+      "tag": "פועל",
+      "detail": "זיהוי הלקוח והסוד התקבלו על ידי גוגל. ל-OAuth אין יתרה — הוא חינמי.",
+      "cta": "עמוד ההרשאות אצל גוגל ↗",
+      "href": "https://console.cloud.google.com/apis/credentials"
+    },
+    {
+      "label": "data.gov.il — מאגרים ציבוריים",
+      "tag": "פועל",
+      "detail": "הממשק הציבורי עונה · 1,198 מאגרים בקטלוג. מזהי המאגרים שלנו יושבים בכספת בהיקף nadlan ואינם משתני סביבה כאן, ולכן נמדד השרת ולא המאגר עצמו.",
+      "cta": "קטלוג המאגרים ↗",
+      "href": "https://data.gov.il/dataset"
+    }
+  ],
+  "summary": {
+    "pass": 8,
+    "fail": 0
+  },
+  "checks": [
+    {
+      "check": "every provider in the answer is drawn",
+      "pass": true,
+      "detail": "6 of 6"
+    },
+    {
+      "check": "Google OAuth appears at all — it had no row before",
+      "pass": true,
+      "detail": "פועל"
+    },
+    {
+      "check": "the free public catalogue is NOT offered as a place to add credit",
+      "pass": true,
+      "detail": "קטלוג המאגרים ↗"
+    },
+    {
+      "check": "and it points at the catalogue itself",
+      "pass": true,
+      "detail": "https://data.gov.il/dataset"
+    },
+    {
+      "check": "Green Invoice says the provider is already chosen and the key pair is what is missing",
+      "pass": true,
+      "detail": "הספק כבר נבחר — INVOICE_PROVIDER=greeninvoice יושב בכספת, ו-iCount הוא החלופה המאושרת. מה שחסר הוא זוג המפתחות של חשבון אמיתי (core.issues #14), ובלעדיו אין חשבונית על אף תשלום."
+    },
+    {
+      "check": "the platform clearing account is drawn as a second, separate account",
+      "pass": true,
+      "detail": "לא נפרס · PLATFORM_NEDARIM_MOSAD, PLATFORM_NEDARIM_API_VALID — קיים ב-core.secrets אבל אינו משתנה סביבה בפריסה הזאת, ולכן אי אפשר לבדוק אותו מכאן. זה תיקון של העתקת ערך קיים, לא של פתיחת חשבון."
+    },
+    {
+      "check": "a provider without topUpLabel keeps the old wording — the default was not lost",
+      "pass": true,
+      "detail": "apify=\"הוספת קרדיט אצל הספק ↗\" · elevenlabs=\"פתיחת חשבון והוספת מפתח ↗\""
+    },
+    {
+      "check": "the legend explains the keyless provider and the multi-key provider",
+      "pass": true,
+      "detail": "· פועל — המפתח התקבל על ידי הספק ברגע הבדיקה.· לא נפרס — המפתח קיים ב-core.secrets אבל אינו משתנה סביבה בפריסה הזאת. זה "
+    }
+  ]
+}

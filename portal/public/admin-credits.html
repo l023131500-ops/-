@@ -202,7 +202,7 @@
             ${meter}
             <div class="detail">${esc(p.detail)}</div>
             <a class="act" href="${esc(p.topUp)}" target="_blank" rel="noopener noreferrer">
-              ${p.state === 'missing' ? 'פתיחת חשבון והוספת מפתח' : 'הוספת קרדיט אצל הספק'} ↗
+              ${esc(p.topUpLabel || (p.state === 'missing' ? 'פתיחת חשבון והוספת מפתח' : 'הוספת קרדיט אצל הספק'))} ↗
             </a>
           </article>`;
         }).join('');
@@ -214,6 +214,10 @@
           '<div>· <b>לא נמדד</b> — לספק אין ממשק שמחזיר יתרה, או שהוא לא ענה בזמן. ' +
             'לא מוצג כאן מספר שאין מאחוריו מדידה.</div>',
           '<div>· מד היתרה מופיע רק אצל הספקים שבאמת מפרסמים אחת: Apify, Recraft ו-ElevenLabs.</div>',
+          '<div>· ספק ציבורי בלי מפתח (<code>data.gov.il</code>) נבדק בכל מקרה — היעדר מפתח אצלנו ' +
+            'אינו אומר שהממשק שלו שבור, ואין לו יתרה. אצלו הקישור מוביל לקטלוג המאגרים ולא לעמוד חיוב.</div>',
+          '<div>· ספק שדורש יותר ממפתח אחד נמדד על כולם: זוג שחסר בו צד אחד אינו "פועל", ' +
+            'והשם החסר נאמר בשורה שלו.</div>',
         ].join('');
 
         $('stamp').textContent = 'נבדק ' + new Date(data.checkedAt).toLocaleString('he-IL');
