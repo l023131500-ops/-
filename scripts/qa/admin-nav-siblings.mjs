@@ -13,6 +13,13 @@
  * itself. Both were true of /admin/pricing at different times, and the second
  * one is the one no HTTP status can answer.
  *
+ * "Connected" has two strengths, and until now this file only measured the weak
+ * one: does the screen appear on *some* bar. That passed 9 of 9 while
+ * /admin/customers sat on 4 bars out of 8 — so which siblings you could walk to
+ * depended on which screen you happened to be standing on, and no run said so.
+ * Every bar carries every sibling now, and both strengths are measured: each
+ * screen linked from at least one bar, and each bar walking to all of them.
+ *
  * The screen list is parsed from portal/vercel.dist.json, not written here, so
  * a tenth screen is measured the day it gets a route.
  *
@@ -91,5 +98,22 @@ for (const [route, targets] of bars) {
   }
 }
 
-console.log(`\n${screens.length - fail} of ${screens.length} screens reachable from a sibling · ${fail} problem(s)`);
+// The strong question: standing on this screen, can you walk to every other one?
+// A bar that carries some of its siblings still passes the reachability loop
+// above, because a screen it drops is on somebody else's bar.
+console.log("");
+let complete = 0;
+for (const [route, targets] of bars) {
+  const missing = [...routes].filter((r) => r !== route && !targets.includes(r));
+  if (missing.length) {
+    fail++;
+    console.log(`  FAIL  ${route}  << its bar drops ${missing.length}: ${missing.join(" ")}`);
+  } else {
+    complete++;
+    console.log(`  PASS  ${route}  — walks to all ${routes.size - 1} siblings`);
+  }
+}
+
+console.log(
+  `\n${complete} of ${screens.length} bars carry every sibling · ${fail} problem(s)`);
 process.exit(fail ? 1 : 0);
