@@ -1,0 +1,331 @@
+{
+  "measured_at": "2026-08-07T06:48:28.034Z",
+  "customer": "qa.adminhref+1786085294258852@more30.com",
+  "mounts": 19,
+  "rows": [
+    {
+      "path": "torah",
+      "app_key": "torah",
+      "admin_href": "https://more30.com/torah/admin",
+      "has_system_admin": true,
+      "admin_reason": "own",
+      "ok": true
+    },
+    {
+      "path": "tamlul",
+      "app_key": "tamlul",
+      "admin_href": "https://more30.com/tamlul/admin",
+      "has_system_admin": true,
+      "admin_reason": "own",
+      "ok": true
+    },
+    {
+      "path": "modaot",
+      "app_key": "modaot",
+      "admin_href": "https://more30.com/modaot/admin",
+      "has_system_admin": true,
+      "admin_reason": "own",
+      "ok": true
+    },
+    {
+      "path": "imud",
+      "app_key": "imud",
+      "admin_href": null,
+      "has_system_admin": false,
+      "admin_reason": "no_admin_screen",
+      "ok": true
+    },
+    {
+      "path": "briut",
+      "app_key": "briut",
+      "admin_href": null,
+      "has_system_admin": false,
+      "admin_reason": "no_admin_screen",
+      "ok": true
+    },
+    {
+      "path": "bkalot",
+      "app_key": "bkalot",
+      "admin_href": "https://more30.com/admin/rights",
+      "has_system_admin": true,
+      "admin_reason": "own",
+      "ok": true
+    },
+    {
+      "path": "smel",
+      "app_key": "smel",
+      "admin_href": null,
+      "has_system_admin": false,
+      "admin_reason": "no_admin_screen",
+      "ok": true
+    },
+    {
+      "path": "egod",
+      "app_key": "egod",
+      "admin_href": "https://more30.com/egod/admin",
+      "has_system_admin": true,
+      "admin_reason": "own",
+      "ok": true
+    },
+    {
+      "path": "chatzor",
+      "app_key": "chatzor",
+      "admin_href": "https://more30.com/chatzor/admin",
+      "has_system_admin": true,
+      "admin_reason": "own",
+      "ok": true
+    },
+    {
+      "path": "chizukim",
+      "app_key": "chizukim",
+      "admin_href": null,
+      "has_system_admin": false,
+      "admin_reason": "no_admin_screen",
+      "ok": true
+    },
+    {
+      "path": "orech",
+      "app_key": "orech",
+      "admin_href": null,
+      "has_system_admin": false,
+      "admin_reason": "no_admin_screen",
+      "ok": true
+    },
+    {
+      "path": "zchuyot",
+      "app_key": "zchuyot",
+      "admin_href": "https://more30.com/zchuyot/admin/login",
+      "has_system_admin": true,
+      "admin_reason": "own",
+      "ok": true
+    },
+    {
+      "path": "galil",
+      "app_key": "galil",
+      "admin_href": "https://more30.com/galil/gabai",
+      "has_system_admin": true,
+      "admin_reason": "own",
+      "ok": true
+    },
+    {
+      "path": "studio",
+      "app_key": "studio",
+      "admin_href": null,
+      "has_system_admin": false,
+      "admin_reason": "no_admin_screen",
+      "ok": true
+    },
+    {
+      "path": "kupot",
+      "app_key": "kupot",
+      "admin_href": null,
+      "has_system_admin": false,
+      "admin_reason": "api_only",
+      "ok": true
+    },
+    {
+      "path": "nadlan",
+      "app_key": "nadlan",
+      "admin_href": "https://more30.com/nadlan/admin",
+      "has_system_admin": true,
+      "admin_reason": "own",
+      "ok": true
+    },
+    {
+      "path": "kesef",
+      "app_key": "kesef",
+      "admin_href": null,
+      "has_system_admin": false,
+      "admin_reason": "no_admin_screen",
+      "ok": true
+    },
+    {
+      "path": "kiosk",
+      "app_key": "kiosk",
+      "admin_href": "https://more30.com/kiosk/console",
+      "has_system_admin": true,
+      "admin_reason": "own",
+      "ok": true
+    },
+    {
+      "path": "tivuch",
+      "app_key": "tivuch",
+      "admin_href": "https://more30.com/tivuch/app",
+      "has_system_admin": true,
+      "admin_reason": "own",
+      "ok": true
+    }
+  ],
+  "menu_with_screen": [
+    {
+      "href": "https://more30.com/me",
+      "text": "האזור האישיהחשבון, התוכנית והאתרים שלך"
+    },
+    {
+      "href": "https://more30.com/torah/admin",
+      "text": "ניהולניהול פלטפורמת איגוד השיעורים"
+    },
+    {
+      "href": "https://more30.com/admin",
+      "text": "מרכז השליטהכל המערכות במקום אחד"
+    },
+    {
+      "href": "https://more30.com/admin/systems",
+      "text": "דוח מערכותסטטוס, משתמשים, מנויים והכנסה"
+    },
+    {
+      "href": "https://more30.com/admin/pricing",
+      "text": "מחירים ותצוגהמחיר לכל מערכת · הצגה בעולם הסטארטאפים"
+    },
+    {
+      "href": "https://more30.com/admin/customers",
+      "text": "לקוחותצירוף לקוח למערכת וצפייה ברשומים"
+    },
+    {
+      "href": "https://more30.com/admin/automation",
+      "text": "אוטומציית תוכןנושאים, תצוגה מקדימה ותור שליחה — מצב בדיקה"
+    },
+    {
+      "href": "https://more30.com/admin/credits",
+      "text": "יתרות וחיבוריםהאם כל ספק פועל, כמה נשאר, ואיפה מוסיפים"
+    },
+    {
+      "href": "https://more30.com/admin/leads",
+      "text": "לידיםכל הפניות מכל המערכות במקום אחד"
+    },
+    {
+      "href": "https://more30.com/admin/issues",
+      "text": "תקלות ומה דורש אותךפתוח, בטיפול ותוקן — מופרד לפי מי יכול לסגור"
+    },
+    {
+      "href": "https://more30.com/admin/rights",
+      "text": "מאגר הזכויותניהול התוכן של מערכת 10 — מה יש ואיפה חסר"
+    }
+  ],
+  "menu_no_screen": [
+    {
+      "href": "https://more30.com/me",
+      "text": "האזור האישיהחשבון, התוכנית והאתרים שלך"
+    },
+    {
+      "href": "https://more30.com/admin",
+      "text": "מרכז השליטהכל המערכות במקום אחד"
+    },
+    {
+      "href": "https://more30.com/admin/systems",
+      "text": "דוח מערכותסטטוס, משתמשים, מנויים והכנסה"
+    },
+    {
+      "href": "https://more30.com/admin/pricing",
+      "text": "מחירים ותצוגהמחיר לכל מערכת · הצגה בעולם הסטארטאפים"
+    },
+    {
+      "href": "https://more30.com/admin/customers",
+      "text": "לקוחותצירוף לקוח למערכת וצפייה ברשומים"
+    },
+    {
+      "href": "https://more30.com/admin/automation",
+      "text": "אוטומציית תוכןנושאים, תצוגה מקדימה ותור שליחה — מצב בדיקה"
+    },
+    {
+      "href": "https://more30.com/admin/credits",
+      "text": "יתרות וחיבוריםהאם כל ספק פועל, כמה נשאר, ואיפה מוסיפים"
+    },
+    {
+      "href": "https://more30.com/admin/leads",
+      "text": "לידיםכל הפניות מכל המערכות במקום אחד"
+    },
+    {
+      "href": "https://more30.com/admin/issues",
+      "text": "תקלות ומה דורש אותךפתוח, בטיפול ותוקן — מופרד לפי מי יכול לסגור"
+    },
+    {
+      "href": "https://more30.com/admin/rights",
+      "text": "מאגר הזכויותניהול התוכן של מערכת 10 — מה יש ואיפה חסר"
+    }
+  ],
+  "checks": [
+    {
+      "name": "the live public mounts are readable",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "every mount answers",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "no system is handed https://more30.com/admin as its own admin screen",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "the 8 systems with no reachable admin screen get null",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "kupot — an API endpoint behind a header — is not dressed up as a page",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "a null href always carries the reason it is null",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "has_system_admin agrees with the href on every row",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "every href that is returned is a well-formed https URL without spaces",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "and it is the address of the system that was asked about",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "the systems that do have a screen still get one",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "a system with a screen still draws \"ניהול\", at its own address",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "and that menu names the system it opens",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "a system with no screen draws no \"ניהול\" item at all",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "so the control center appears once in that menu, not twice",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "and the one that remains is the one that says what it is",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "the super-admin still reaches every board from there",
+      "pass": true,
+      "detail": null
+    }
+  ],
+  "passed": 16,
+  "failed": 0
+}

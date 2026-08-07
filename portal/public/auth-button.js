@@ -249,9 +249,16 @@
 
         // "ניהול" מוצג רק למי שהשרת אישר שהוא מנהל של האתר הזה — סופר-אדמין
         // גלובלי או אדמין מקומי. עד שהתשובה מגיעה, אין פריט.
-        if (ctx && ctx.is_admin) {
+        //
+        // ‏ctx.admin_href הוא מסך הניהול של **המערכת הזו**, ומ-0037 הוא null
+        // כשאין כזה. הנפילה החזרה אל ADMIN_URL שהייתה כאן הפכה את ההיעדר
+        // לפריט שני אל מרכז השליטה — עם שם המערכת מתחתיו — בשבע מערכות
+        // ציבוריות חיות (briut · chizukim · imud · kesef · orech · smel ·
+        // studio), ובדיוק מתחתיו כבר יושב "מרכז השליטה" אל אותה כתובת.
+        // ב-kupot היא הרכיבה href מהערה בעברית עם רווחים. אין כתובת → אין פריט.
+        if (ctx && ctx.is_admin && ctx.admin_href) {
           html += item(
-            ctx.admin_href || ADMIN_URL, ADMIN_ICON, 'ניהול',
+            ctx.admin_href, ADMIN_ICON, 'ניהול',
             ctx.is_super_admin && ctx.app_name
               ? 'ניהול ' + escapeText(ctx.app_name)
               : 'ניהול המערכת',
