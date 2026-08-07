@@ -1,0 +1,67 @@
+=== can the login pill reach the platform from each mount? ===
+  PASS  /  (HTTP 401)
+  PASS  /torah  (HTTP 401)
+  PASS  /tamlul  (HTTP 401)
+  PASS  /modaot  (HTTP 401)
+  PASS  /imud  (HTTP 401)
+  PASS  /briut  (HTTP 401)
+  PASS  /bkalot  (HTTP 401)
+  PASS  /smel  (HTTP 401)
+  PASS  /egod  (HTTP 401)
+  PASS  /chatzor  (HTTP 401)
+  PASS  /chizukim  (HTTP 401)
+  PASS  /orech  (HTTP 401)
+  PASS  /zchuyot  (HTTP 401)
+  PASS  /galil  (HTTP 401)
+  PASS  /studio  (HTTP 401)
+  PASS  /mechiron  (HTTP 401)
+  PASS  /kupot  (HTTP 401)
+  PASS  /nadlan  (HTTP 401)
+  PASS  /kesef  (HTTP 401)
+  PASS  /kiosk/  (HTTP 401)
+  PASS  /tivuch  (HTTP 401)
+
+21 reachable · 0 blocked
+
+--------------------------------------------------------------------------
+07/08 — הרצה לסגירת core.issues #71 (נרשם high/open ומעולם לא נסגר)
+--------------------------------------------------------------------------
+
+מקור האמת בקוד, נקרא מהריפו שממנו Railway בונה בפועל
+(l023131500-ops/zol, ענף claude/what-do-you-see-gxo5tc, שורש kiosk/server,
+HEAD 9d380d3) — kiosk/server/src/index.js:36-47:
+
+    const PLATFORM_API    = 'https://uhnrgujbdxhhmoxcjria.supabase.co';
+    const PLATFORM_ORIGIN = 'https://more30.com';
+    ...
+      scriptSrc:  ["'self'", "'unsafe-inline'", PLATFORM_ORIGIN],
+      connectSrc: ["'self'", 'ws:', 'wss:', PLATFORM_API],
+
+הכותרת החיה, more30.com/kiosk/ → HTTP 200:
+
+    connect-src 'self' ws: wss: https://uhnrgujbdxhhmoxcjria.supabase.co
+
+והסקריפט שהכל תלוי בו נטען בפועל מהעמוד:
+
+    <script src="https://more30.com/auth-button.js" defer>
+
+כלומר לא רק ש-connect-src מכיר את ה-API — גם script-src מכיר את המקור
+שממנו הכפתור עצמו מגיע. שני הסעיפים שהתיקון נגע בהם מאומתים בייצור.
+
+--------------------------------------------------------------------------
+אזהרה למי שיפתה להחליף את הבדיקה הזו בקריאת כותרת
+--------------------------------------------------------------------------
+
+הכותרת שהמכונה הזאת מקבלת אינה הכותרת שהשרת שלח. NetFree משכתב אותה
+בדרך ומזריק מקורות משלו לשלושה סעיפים:
+
+    default-src 'self' netfree.link *.internal.netfree.link:12001 *.internal.netfree.link
+    script-src  'self' 'unsafe-inline' https://more30.com netfree.link ...
+    img-src     'self' data: netfree.link ...
+
+connect-src במקרה הזה עבר בלי שינוי, ולכן הקריאה שלמעלה תקפה — אבל זה
+מקרה ולא כלל. הערת הפתיחה של csp-blocks-auth.mjs אמרה מראש שזו בדיקת
+התנהגות ולא ניתוח כותרת, "כי כותרת יכולה להיראות מתירנית ועדיין להידרס";
+המדידה הזו מוסיפה סיבה שלישית ומוחשית: מהמכונה הזאת הכותרת נדרסת בפועל,
+בכל טעינה, על ידי מתווך שאינו הייצור. מי שיחליף את הריצה בקריאת כותרת
+יבדוק את NetFree, לא את more30.com.
