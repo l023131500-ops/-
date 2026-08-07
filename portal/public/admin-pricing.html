@@ -48,6 +48,16 @@
       h1 { font-size: clamp(24px, 4vw, 34px); font-weight: 800; margin-top: 10px; }
       .sub { color: var(--ink-2); font-size: 15px; margin-top: 6px; max-width: 66ch; }
 
+      /* אותו סרגל אחים שיש לשאר מסכי הלוח. שבעה מהם מקשרים לכאן, וכאן
+         "חזרה למרכז השליטה" הייתה היציאה היחידה — והיא מובילה אל ‎/admin‎,
+         SPA שאינו מקשר בחזרה לאף אחד ממסכי הלוח. */
+      .nav { display: flex; gap: 8px; flex-wrap: wrap; margin: 18px 0 6px; }
+      .nav a { font-size: 13.5px; font-weight: 600; text-decoration: none;
+               border: 1px solid var(--line); border-radius: 999px;
+               padding: 6px 14px; min-height: 24px; display: inline-flex;
+               align-items: center; color: var(--ink); background: var(--surface); }
+      .nav a:hover { border-color: var(--gold); }
+
       .legend {
         display: flex; flex-wrap: wrap; gap: 10px 22px; margin: 22px 0 10px;
         font-size: 13px; color: var(--ink-2);
@@ -133,6 +143,15 @@
       <a class="back" href="/admin">← חזרה למרכז השליטה</a>
       <h1>מחירים ותצוגה</h1>
       <p class="sub" id="tagline">טוען…</p>
+
+      <nav class="nav">
+        <a href="/admin/systems">דוח מערכות</a>
+        <a href="/admin/customers">לקוחות</a>
+        <a href="/admin/leads">לידים</a>
+        <a href="/admin/issues">תקלות ומה דורש אותך</a>
+        <a href="/admin/credits">יתרות וחיבורים</a>
+        <a href="/admin/activity">משתמשים פעילים</a>
+      </nav>
 
       <div id="content" hidden>
         <div class="legend">
