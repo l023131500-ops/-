@@ -1,0 +1,78 @@
+{
+  "measured_at": "2026-08-07T05:54:21.811Z",
+  "served_from": "portal/public",
+  "pass": 14,
+  "fail": 0,
+  "results": [
+    {
+      "name": "system.html(mechiron) draws no plan card",
+      "pass": true,
+      "detail": "cards=0"
+    },
+    {
+      "name": "and states why in place of the plan list",
+      "pass": true,
+      "detail": "המערכת הזאת אינה מוצעת כרגע למנוי."
+    },
+    {
+      "name": "the \"choosing a plan registers a request\" note is withdrawn",
+      "pass": true,
+      "detail": "hidden=true"
+    },
+    {
+      "name": "the system itself is still named",
+      "pass": true,
+      "detail": "השוואת מחירים בקלות"
+    },
+    {
+      "name": "and the link into the product is still there",
+      "pass": true,
+      "detail": "href=https://more30.com/mechiron"
+    },
+    {
+      "name": "subscribe(mechiron) draws no plan card",
+      "pass": true,
+      "detail": "cards=0"
+    },
+    {
+      "name": "and no button that could send a subscribe call",
+      "pass": true,
+      "detail": "buttons=0"
+    },
+    {
+      "name": "and states why",
+      "pass": true,
+      "detail": "המערכת הזאת אינה מוצעת כרגע למנוי."
+    },
+    {
+      "name": "system.html(kupot) still draws its three plans",
+      "pass": true,
+      "detail": "cards=3"
+    },
+    {
+      "name": "and keeps the billing note",
+      "pass": true,
+      "detail": "hidden=false"
+    },
+    {
+      "name": "and does not claim it is unavailable",
+      "pass": true,
+      "detail": "בוחרים מסלול אחרי ההתחברות. אפשר להתחיל בחינם."
+    },
+    {
+      "name": "subscribe(kupot) still draws its three plans",
+      "pass": true,
+      "detail": "cards=3"
+    },
+    {
+      "name": "with a choosable button on each",
+      "pass": true,
+      "detail": "buttons=3"
+    },
+    {
+      "name": "no page threw on any of the four loads",
+      "pass": true,
+      "detail": ""
+    }
+  ]
+}

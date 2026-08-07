@@ -1,0 +1,425 @@
+{
+  "measured_at": "2026-08-07T05:52:02.727Z",
+  "supabase": "https://uhnrgujbdxhhmoxcjria.supabase.co",
+  "qa_account": "qa.offer+1786081920916896@more30.com",
+  "subscription_written": 195,
+  "pass": 83,
+  "fail": 0,
+  "results": [
+    {
+      "name": "more30_plans(mechiron) draws no plan — live, hidden by 0032 — the only hidden system carrying plans of its own",
+      "pass": true,
+      "detail": "plans=0"
+    },
+    {
+      "name": "more30_plans(mechiron) says why, and says which why",
+      "pass": true,
+      "detail": "offered=false block=not_offered note=\"המערכת הזאת אינה מוצעת כרגע למנוי.\""
+    },
+    {
+      "name": "more30_plans(mechiron) names no source for plans it did not draw",
+      "pass": true,
+      "detail": "plans_from=null"
+    },
+    {
+      "name": "more30_system_page(mechiron) draws no plan — live, hidden by 0032 — the only hidden system carrying plans of its own",
+      "pass": true,
+      "detail": "plans=0"
+    },
+    {
+      "name": "more30_system_page(mechiron) says why, and says which why",
+      "pass": true,
+      "detail": "offered=false block=not_offered note=\"המערכת הזאת אינה מוצעת כרגע למנוי.\""
+    },
+    {
+      "name": "more30_system_page(mechiron) names no source for plans it did not draw",
+      "pass": true,
+      "detail": "plans_from=null"
+    },
+    {
+      "name": "more30_plans(crm) draws no plan — live, hidden",
+      "pass": true,
+      "detail": "plans=0"
+    },
+    {
+      "name": "more30_plans(crm) says why, and says which why",
+      "pass": true,
+      "detail": "offered=false block=not_offered note=\"המערכת הזאת אינה מוצעת כרגע למנוי.\""
+    },
+    {
+      "name": "more30_plans(crm) names no source for plans it did not draw",
+      "pass": true,
+      "detail": "plans_from=null"
+    },
+    {
+      "name": "more30_system_page(crm) draws no plan — live, hidden",
+      "pass": true,
+      "detail": "plans=0"
+    },
+    {
+      "name": "more30_system_page(crm) says why, and says which why",
+      "pass": true,
+      "detail": "offered=false block=not_offered note=\"המערכת הזאת אינה מוצעת כרגע למנוי.\""
+    },
+    {
+      "name": "more30_system_page(crm) names no source for plans it did not draw",
+      "pass": true,
+      "detail": "plans_from=null"
+    },
+    {
+      "name": "more30_plans(gesher) draws no plan — live, hidden",
+      "pass": true,
+      "detail": "plans=0"
+    },
+    {
+      "name": "more30_plans(gesher) says why, and says which why",
+      "pass": true,
+      "detail": "offered=false block=not_offered note=\"המערכת הזאת אינה מוצעת כרגע למנוי.\""
+    },
+    {
+      "name": "more30_plans(gesher) names no source for plans it did not draw",
+      "pass": true,
+      "detail": "plans_from=null"
+    },
+    {
+      "name": "more30_system_page(gesher) draws no plan — live, hidden",
+      "pass": true,
+      "detail": "plans=0"
+    },
+    {
+      "name": "more30_system_page(gesher) says why, and says which why",
+      "pass": true,
+      "detail": "offered=false block=not_offered note=\"המערכת הזאת אינה מוצעת כרגע למנוי.\""
+    },
+    {
+      "name": "more30_system_page(gesher) names no source for plans it did not draw",
+      "pass": true,
+      "detail": "plans_from=null"
+    },
+    {
+      "name": "more30_plans(mthbram) draws no plan — live, hidden",
+      "pass": true,
+      "detail": "plans=0"
+    },
+    {
+      "name": "more30_plans(mthbram) says why, and says which why",
+      "pass": true,
+      "detail": "offered=false block=not_offered note=\"המערכת הזאת אינה מוצעת כרגע למנוי.\""
+    },
+    {
+      "name": "more30_plans(mthbram) names no source for plans it did not draw",
+      "pass": true,
+      "detail": "plans_from=null"
+    },
+    {
+      "name": "more30_system_page(mthbram) draws no plan — live, hidden",
+      "pass": true,
+      "detail": "plans=0"
+    },
+    {
+      "name": "more30_system_page(mthbram) says why, and says which why",
+      "pass": true,
+      "detail": "offered=false block=not_offered note=\"המערכת הזאת אינה מוצעת כרגע למנוי.\""
+    },
+    {
+      "name": "more30_system_page(mthbram) names no source for plans it did not draw",
+      "pass": true,
+      "detail": "plans_from=null"
+    },
+    {
+      "name": "more30_plans(smachot) draws no plan — live, hidden",
+      "pass": true,
+      "detail": "plans=0"
+    },
+    {
+      "name": "more30_plans(smachot) says why, and says which why",
+      "pass": true,
+      "detail": "offered=false block=not_offered note=\"המערכת הזאת אינה מוצעת כרגע למנוי.\""
+    },
+    {
+      "name": "more30_plans(smachot) names no source for plans it did not draw",
+      "pass": true,
+      "detail": "plans_from=null"
+    },
+    {
+      "name": "more30_system_page(smachot) draws no plan — live, hidden",
+      "pass": true,
+      "detail": "plans=0"
+    },
+    {
+      "name": "more30_system_page(smachot) says why, and says which why",
+      "pass": true,
+      "detail": "offered=false block=not_offered note=\"המערכת הזאת אינה מוצעת כרגע למנוי.\""
+    },
+    {
+      "name": "more30_system_page(smachot) names no source for plans it did not draw",
+      "pass": true,
+      "detail": "plans_from=null"
+    },
+    {
+      "name": "more30_plans(zol) draws no plan — not live",
+      "pass": true,
+      "detail": "plans=0"
+    },
+    {
+      "name": "more30_plans(zol) says why, and says which why",
+      "pass": true,
+      "detail": "offered=false block=not_live note=\"המערכת הזאת אינה פעילה כרגע, ולכן אין לה מסלולים להצגה.\""
+    },
+    {
+      "name": "more30_plans(zol) names no source for plans it did not draw",
+      "pass": true,
+      "detail": "plans_from=null"
+    },
+    {
+      "name": "more30_system_page(zol) draws no plan — not live",
+      "pass": true,
+      "detail": "plans=0"
+    },
+    {
+      "name": "more30_system_page(zol) says why, and says which why",
+      "pass": true,
+      "detail": "offered=false block=not_live note=\"המערכת הזאת אינה פעילה כרגע, ולכן אין לה מסלולים להצגה.\""
+    },
+    {
+      "name": "more30_system_page(zol) names no source for plans it did not draw",
+      "pass": true,
+      "detail": "plans_from=null"
+    },
+    {
+      "name": "more30_plans(events) draws no plan — not live",
+      "pass": true,
+      "detail": "plans=0"
+    },
+    {
+      "name": "more30_plans(events) says why, and says which why",
+      "pass": true,
+      "detail": "offered=false block=not_live note=\"המערכת הזאת אינה פעילה כרגע, ולכן אין לה מסלולים להצגה.\""
+    },
+    {
+      "name": "more30_plans(events) names no source for plans it did not draw",
+      "pass": true,
+      "detail": "plans_from=null"
+    },
+    {
+      "name": "more30_system_page(events) draws no plan — not live",
+      "pass": true,
+      "detail": "plans=0"
+    },
+    {
+      "name": "more30_system_page(events) says why, and says which why",
+      "pass": true,
+      "detail": "offered=false block=not_live note=\"המערכת הזאת אינה פעילה כרגע, ולכן אין לה מסלולים להצגה.\""
+    },
+    {
+      "name": "more30_system_page(events) names no source for plans it did not draw",
+      "pass": true,
+      "detail": "plans_from=null"
+    },
+    {
+      "name": "more30_plans(financial) draws no plan — not live",
+      "pass": true,
+      "detail": "plans=0"
+    },
+    {
+      "name": "more30_plans(financial) says why, and says which why",
+      "pass": true,
+      "detail": "offered=false block=not_live note=\"המערכת הזאת אינה פעילה כרגע, ולכן אין לה מסלולים להצגה.\""
+    },
+    {
+      "name": "more30_plans(financial) names no source for plans it did not draw",
+      "pass": true,
+      "detail": "plans_from=null"
+    },
+    {
+      "name": "more30_system_page(financial) draws no plan — not live",
+      "pass": true,
+      "detail": "plans=0"
+    },
+    {
+      "name": "more30_system_page(financial) says why, and says which why",
+      "pass": true,
+      "detail": "offered=false block=not_live note=\"המערכת הזאת אינה פעילה כרגע, ולכן אין לה מסלולים להצגה.\""
+    },
+    {
+      "name": "more30_system_page(financial) names no source for plans it did not draw",
+      "pass": true,
+      "detail": "plans_from=null"
+    },
+    {
+      "name": "more30_plans(igud) draws no plan — not live",
+      "pass": true,
+      "detail": "plans=0"
+    },
+    {
+      "name": "more30_plans(igud) says why, and says which why",
+      "pass": true,
+      "detail": "offered=false block=not_live note=\"המערכת הזאת אינה פעילה כרגע, ולכן אין לה מסלולים להצגה.\""
+    },
+    {
+      "name": "more30_plans(igud) names no source for plans it did not draw",
+      "pass": true,
+      "detail": "plans_from=null"
+    },
+    {
+      "name": "more30_system_page(igud) draws no plan — not live",
+      "pass": true,
+      "detail": "plans=0"
+    },
+    {
+      "name": "more30_system_page(igud) says why, and says which why",
+      "pass": true,
+      "detail": "offered=false block=not_live note=\"המערכת הזאת אינה פעילה כרגע, ולכן אין לה מסלולים להצגה.\""
+    },
+    {
+      "name": "more30_system_page(igud) names no source for plans it did not draw",
+      "pass": true,
+      "detail": "plans_from=null"
+    },
+    {
+      "name": "more30_plans(shiurim) draws no plan — not live",
+      "pass": true,
+      "detail": "plans=0"
+    },
+    {
+      "name": "more30_plans(shiurim) says why, and says which why",
+      "pass": true,
+      "detail": "offered=false block=not_live note=\"המערכת הזאת אינה פעילה כרגע, ולכן אין לה מסלולים להצגה.\""
+    },
+    {
+      "name": "more30_plans(shiurim) names no source for plans it did not draw",
+      "pass": true,
+      "detail": "plans_from=null"
+    },
+    {
+      "name": "more30_system_page(shiurim) draws no plan — not live",
+      "pass": true,
+      "detail": "plans=0"
+    },
+    {
+      "name": "more30_system_page(shiurim) says why, and says which why",
+      "pass": true,
+      "detail": "offered=false block=not_live note=\"המערכת הזאת אינה פעילה כרגע, ולכן אין לה מסלולים להצגה.\""
+    },
+    {
+      "name": "more30_system_page(shiurim) names no source for plans it did not draw",
+      "pass": true,
+      "detail": "plans_from=null"
+    },
+    {
+      "name": "more30_plans(bkalot-studio) draws no plan — not live",
+      "pass": true,
+      "detail": "plans=0"
+    },
+    {
+      "name": "more30_plans(bkalot-studio) says why, and says which why",
+      "pass": true,
+      "detail": "offered=false block=not_live note=\"המערכת הזאת אינה פעילה כרגע, ולכן אין לה מסלולים להצגה.\""
+    },
+    {
+      "name": "more30_plans(bkalot-studio) names no source for plans it did not draw",
+      "pass": true,
+      "detail": "plans_from=null"
+    },
+    {
+      "name": "more30_system_page(bkalot-studio) draws no plan — not live",
+      "pass": true,
+      "detail": "plans=0"
+    },
+    {
+      "name": "more30_system_page(bkalot-studio) says why, and says which why",
+      "pass": true,
+      "detail": "offered=false block=not_live note=\"המערכת הזאת אינה פעילה כרגע, ולכן אין לה מסלולים להצגה.\""
+    },
+    {
+      "name": "more30_system_page(bkalot-studio) names no source for plans it did not draw",
+      "pass": true,
+      "detail": "plans_from=null"
+    },
+    {
+      "name": "more30_system_page(mechiron) still returns the system itself",
+      "pass": true,
+      "detail": "found=true name_he=\"השוואת מחירים בקלות\""
+    },
+    {
+      "name": "more30_plans(kupot) still draws its plans",
+      "pass": true,
+      "detail": "plans=3 offered=true"
+    },
+    {
+      "name": "more30_system_page(kupot) still draws its plans",
+      "pass": true,
+      "detail": "plans=3 offered=true"
+    },
+    {
+      "name": "more30_plans(torah) still draws its plans",
+      "pass": true,
+      "detail": "plans=3 offered=true"
+    },
+    {
+      "name": "more30_system_page(torah) still draws its plans",
+      "pass": true,
+      "detail": "plans=3 offered=true"
+    },
+    {
+      "name": "more30_plans(nadlan) still draws its plans",
+      "pass": true,
+      "detail": "plans=3 offered=true"
+    },
+    {
+      "name": "more30_system_page(nadlan) still draws its plans",
+      "pass": true,
+      "detail": "plans=3 offered=true"
+    },
+    {
+      "name": "more30_plans(bkalot) still draws its plans",
+      "pass": true,
+      "detail": "plans=3 offered=true"
+    },
+    {
+      "name": "more30_system_page(bkalot) still draws its plans",
+      "pass": true,
+      "detail": "plans=3 offered=true"
+    },
+    {
+      "name": "more30_plans(kiosk) still draws its plans",
+      "pass": true,
+      "detail": "plans=3 offered=true"
+    },
+    {
+      "name": "more30_system_page(kiosk) still draws its plans",
+      "pass": true,
+      "detail": "plans=3 offered=true"
+    },
+    {
+      "name": "more30_plans() with no argument is still the platform",
+      "pass": true,
+      "detail": "app_key=more30 plans=2"
+    },
+    {
+      "name": "more30_subscribe(mechiron, basic) is refused",
+      "pass": true,
+      "detail": "HTTP 400 {\"code\":\"22023\",\"details\":null,\"hint\":null,\"message\":\"המערכת הזאת אינה מוצעת כרגע למנוי.\"}"
+    },
+    {
+      "name": "the refusal says what happened, in the language the customer reads",
+      "pass": true,
+      "detail": "{\"code\":\"22023\",\"details\":null,\"hint\":null,\"message\":\"המערכת הזאת אינה מוצעת כרגע למנוי.\"}"
+    },
+    {
+      "name": "the refusal did not fall back to a platform subscription",
+      "pass": true,
+      "detail": "app_key=undefined"
+    },
+    {
+      "name": "more30_subscribe(kupot, basic) still works",
+      "pass": true,
+      "detail": "HTTP 200 {\"id\": 195, \"ok\": true, \"plan\": \"basic\", \"status\": \"requested\", \"already\": false, \"app_key\": \"kupot\", \"charged\": false, \"message\": \"הבקשה נרשמה (2 ₪). הסליקה עדיין לא נפתחה, ולכן לא בוצע חיוב.\", \"plan"
+    },
+    {
+      "name": "and it charged nothing",
+      "pass": true,
+      "detail": "charged=false"
+    }
+  ]
+}

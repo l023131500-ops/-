@@ -179,6 +179,17 @@
 
       function render(data) {
         const plans = plansOf(data);
+
+        // 0033 — מערכת שאינה מוצעת (מוסתרת מדף הבית או שאינה חיה) מקבלת מה-RPC
+        // מסלולים ריקים בכוונה. בלי השורה הזאת המסך היה שטח לבן מתחת לכותרת:
+        // "בחירת מסלול" בלי מסלול ובלי סיבה. הסיבה מגיעה מהמסד ולא נכתבת כאן.
+        if (data?.offered === false) {
+          $('planList').innerHTML = '';
+          $('lede').textContent =
+            data.offer_note ?? 'המערכת הזאת אינה מוצעת כרגע למנוי.';
+          return;
+        }
+
         $('planList').innerHTML = plans
           .map((p) => {
             // אותו תיקון כמו ב-system.html: מסלול בלי features קיבל ‎<ul></ul>‎ —
