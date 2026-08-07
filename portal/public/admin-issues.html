@@ -64,6 +64,8 @@
       .tag.crit { background: color-mix(in srgb, var(--bad) 16%, transparent); color: var(--bad); }
       .tag.high { background: color-mix(in srgb, var(--warn) 22%, transparent); color: var(--warn); }
       .tag.fixed{ background: color-mix(in srgb, var(--ok) 16%, transparent); color: var(--ok); }
+      .tag.wip  { background: color-mix(in srgb, var(--gold) 24%, transparent); color: var(--warn); }
+      .tag.no   { background: color-mix(in srgb, var(--ink-2) 15%, transparent); color: var(--ink-2); }
       .dt { font-size: 13.5px; margin-top: 6px; }
       .meta { font-size: 12.5px; color: var(--ink-2); margin-top: 6px; }
       .meta b { color: var(--ink); font-weight: 700; }
@@ -104,7 +106,9 @@
         <div class="list" id="user"></div>
 
         <h2 class="sec">אצלי</h2>
-        <p class="secsub">פתוח, ואני יכול לסגור בלי שתתערב.</p>
+        <p class="secsub">
+          פתוח או בטיפול, ואני יכול לסגור בלי שתתערב. מה שסומן «בטיפול» כבר בעבודה.
+        </p>
         <div class="list" id="mine"></div>
 
         <h2 class="sec">תוקן</h2>
@@ -112,6 +116,24 @@
           לכל שורה כאן יש שדה אימות — איך נמדד שזה באמת נסגר, ולא רק שנגעתי בו.
         </p>
         <div class="list" id="fixed"></div>
+
+        <div id="declined-sec" hidden>
+          <h2 class="sec">נבדק ואינו ליקוי</h2>
+          <p class="secsub">
+            נפתח כתקלה, נבדק, והתברר שאין מה לתקן. לא נספר בשום אריח למעלה —
+            אבל גם לא נמחק, כדי שהבדיקה עצמה לא תלך לאיבוד.
+          </p>
+          <div class="list" id="declined"></div>
+        </div>
+
+        <div id="other-sec" hidden>
+          <h2 class="sec">מצב לא מוכר</h2>
+          <p class="secsub">
+            שורות שה-status שלהן אינו אחד מהמצבים שהלוח הזה יודע לצייר.
+            מוצגות כאן במקום להיעלם בשקט.
+          </p>
+          <div class="list" id="other"></div>
+        </div>
 
         <p class="foot" id="stamp"></p>
       </div>
@@ -134,17 +156,25 @@
         s === 'critical' ? '<span class="tag crit">קריטי</span>'
         : s === 'high'   ? '<span class="tag high">גבוה</span>' : '';
 
+      // שלושת המצבים ש-§3 מבקש — תוקן / בטיפול / פתוח — כל אחד עם תווית משלו.
+      // «פתוח» נשאר בלי תווית: הוא ברירת המחדל, והתווית שם היא החומרה.
+      const stateTag = (x) =>
+        x.status === 'fixed'       ? '<span class="tag fixed">תוקן</span>'
+        : x.status === 'in_progress' ? '<span class="tag wip">בטיפול</span>' + sevTag(x.severity)
+        : x.status === 'wont_fix'    ? '<span class="tag no">אינו ליקוי</span>'
+        : sevTag(x.severity);
+
       function card(x) {
-        const done = x.status === 'fixed';
-        return `<article class="it ${x.severity === 'critical' && !done ? 'crit' : ''} ${done ? 'done' : ''}">
+        const closed = x.status === 'fixed' || x.status === 'wont_fix';
+        return `<article class="it ${x.severity === 'critical' && !closed ? 'crit' : ''} ${closed ? 'done' : ''}">
           <div class="hd">
             <span class="ttl">${esc(x.title)}</span>
             ${x.app ? `<span class="tag app">${esc(x.app)}</span>` : '<span class="tag app">רוחבי</span>'}
-            ${done ? '<span class="tag fixed">תוקן</span>' : sevTag(x.severity)}
+            ${stateTag(x)}
           </div>
           ${x.detail ? `<div class="dt">${esc(x.detail)}</div>` : ''}
           ${x.blocked_on ? `<div class="meta">חסום על: <b>${esc(x.blocked_on)}</b></div>` : ''}
-          ${x.evidence ? `<div class="meta">${done ? 'אימות' : 'נמדד'}: ${esc(x.evidence)}</div>` : ''}
+          ${x.evidence ? `<div class="meta">${closed ? 'אימות' : 'נמדד'}: ${esc(x.evidence)}</div>` : ''}
         </article>`;
       }
 
@@ -188,19 +218,38 @@
         const t = data.totals || {};
         $('kpis').innerHTML = [
           [t.needs_user, 'דורש אותך', 'you'],
-          [t.mine, 'פתוח אצלי', ''],
+          [t.mine, 'פתוח או בטיפול אצלי', ''],
+          [t.in_progress, 'בטיפול', ''],
           [t.critical_open, 'קריטי ופתוח', ''],
           [t.fixed, 'תוקן', ''],
         ].map(([n,l,c]) =>
           `<div class="kpi ${c}"><div class="n">${Number(n)||0}</div><div class="l">${l}</div></div>`
         ).join('');
 
+        // האריחים למעלה סופרים status in ('open','in_progress'); הרשימות מתחתיהם
+        // סיננו "כל מה שאינו fixed", ולכן wont_fix נפל לתוך "אצלי" — תקלה שנבדקה
+        // ונדחתה הוצגה כעבודה שעוד תיעשה, והמונה הראה 3 מעל רשימה של 4.
+        // אותו תנאי בדיוק משמש עכשיו את שניהם.
         const all = data.issues || [];
-        const open = (o) => all.filter((x) => x.status !== 'fixed' && x.owner === o);
-        $('user').innerHTML  = open('user').map(card).join('')  || '<div class="note">אין פריטים שדורשים אותך.</div>';
-        $('mine').innerHTML  = open('agent').map(card).join('') || '<div class="note">אין פריטים פתוחים אצלי.</div>';
+        const PENDING = new Set(['open', 'in_progress']);
+        const pending = (o) => all.filter((x) => PENDING.has(x.status) && x.owner === o);
+        const declined = all.filter((x) => x.status === 'wont_fix');
+        const other = all.filter(
+          (x) => !PENDING.has(x.status) && x.status !== 'fixed' && x.status !== 'wont_fix');
+
+        $('user').innerHTML  = pending('user').map(card).join('')  || '<div class="note">אין פריטים שדורשים אותך.</div>';
+        $('mine').innerHTML  = pending('agent').map(card).join('') || '<div class="note">אין פריטים פתוחים אצלי.</div>';
         $('fixed').innerHTML = all.filter((x) => x.status === 'fixed').map(card).join('')
                                || '<div class="note">עדיין לא נסגרו פריטים.</div>';
+
+        if (declined.length) {
+          $('declined').innerHTML = declined.map(card).join('');
+          $('declined-sec').hidden = false;
+        }
+        if (other.length) {
+          $('other').innerHTML = other.map(card).join('');
+          $('other-sec').hidden = false;
+        }
 
         $('stamp').textContent = 'נוצר ' + new Date(data.generated_at).toLocaleString('he-IL');
         $('content').hidden = false;
