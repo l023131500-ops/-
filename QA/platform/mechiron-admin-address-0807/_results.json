@@ -1,0 +1,59 @@
+{
+  "at": "2026-08-07T10:07:33.483Z",
+  "origin": "https://more30.com",
+  "app": "mechiron",
+  "measured": "production, logged out",
+  "recorded_admin_url": "/admin",
+  "source": "apps/27-bkalut-price/client/src/App.tsx — useHashLocation (211), isAdminSubdomain (198)",
+  "addresses_that_reach_a_sign_in": [],
+  "rows": [
+    {
+      "key": "root",
+      "url": "https://more30.com/mechiron/",
+      "why": "the public root, for comparison",
+      "status": 200,
+      "final_url": "https://more30.com/mechiron/#/",
+      "h1": "בקלות — הזכויות וההטבות שמגיעות לכם, בלי בירוקרטיה",
+      "text": "בקלות עלינו איך זה עובד השוואת קופות חולים ניהול פיננסי יצירת קשר ארגון בקלות · זכויות והטבות לכל משפחה בקלות — הזכויות וההטבות שמגיעות לכם, בלי בירוקרטיה ארגון בקלות מסייע למשפחות לממש זכויות והטבות שמגיעות להן לפי חוק. מידע ברור, ליווי אישי, ובדיקת זכאות בקליק — לכל נושא רלוונטי. בדיקת זכאות בקליק השוואת קופות חולים איך זה עובד שירות ציבורי · ללא עלות לבדיקה ראשונית · ליווי ברור וממוקד. מה אנחנו עושים מסבירים, מלווים, ועוזרים לממש בפועל המון משפחות מפספסות זכויות והטבות פשוט כי לא יודעות עליהן או לא יודעות איך לגשת. אנחנו מצמצמים את הפער הזה — בלשון ברורה, צעדים מעשיים, וליווי אנושי כשצריך. ",
+      "renders": "a_screen_with_no_gate",
+      "title": "מאגר בקלות — כלי פנימי לצוות",
+      "text_len": 2999
+    },
+    {
+      "key": "recorded",
+      "url": "https://more30.com/mechiron/admin",
+      "why": "core.projects.admin_url as recorded",
+      "status": 200,
+      "final_url": "https://more30.com/mechiron/admin#/",
+      "h1": "בקלות — הזכויות וההטבות שמגיעות לכם, בלי בירוקרטיה",
+      "text": "בקלות עלינו איך זה עובד השוואת קופות חולים ניהול פיננסי יצירת קשר ארגון בקלות · זכויות והטבות לכל משפחה בקלות — הזכויות וההטבות שמגיעות לכם, בלי בירוקרטיה ארגון בקלות מסייע למשפחות לממש זכויות והטבות שמגיעות להן לפי חוק. מידע ברור, ליווי אישי, ובדיקת זכאות בקליק — לכל נושא רלוונטי. בדיקת זכאות בקליק השוואת קופות חולים איך זה עובד שירות ציבורי · ללא עלות לבדיקה ראשונית · ליווי ברור וממוקד. מה אנחנו עושים מסבירים, מלווים, ועוזרים לממש בפועל המון משפחות מפספסות זכויות והטבות פשוט כי לא יודעות עליהן או לא יודעות איך לגשת. אנחנו מצמצמים את הפער הזה — בלשון ברורה, צעדים מעשיים, וליווי אנושי כשצריך. ",
+      "renders": "a_screen_with_no_gate",
+      "title": "מאגר בקלות — כלי פנימי לצוות",
+      "text_len": 2999
+    },
+    {
+      "key": "hash-admin",
+      "url": "https://more30.com/mechiron/#/admin",
+      "why": "the same route, in the form useHashLocation reads",
+      "status": 200,
+      "final_url": "https://more30.com/mechiron/#/admin",
+      "h1": "404 Page Not Found",
+      "text": "404 Page Not Found Did you forget to add the page to the router? פותח ע״י עולם הסטארטאפים",
+      "renders": "not_found",
+      "title": "מאגר בקלות — כלי פנימי לצוות",
+      "text_len": 89
+    },
+    {
+      "key": "hash-login",
+      "url": "https://more30.com/mechiron/#/login",
+      "why": "the sign-in that guards it",
+      "status": 200,
+      "final_url": "https://more30.com/mechiron/#/login",
+      "h1": "404 Page Not Found",
+      "text": "404 Page Not Found Did you forget to add the page to the router? פותח ע״י עולם הסטארטאפים",
+      "renders": "not_found",
+      "title": "מאגר בקלות — כלי פנימי לצוות",
+      "text_len": 89
+    }
+  ]
+}

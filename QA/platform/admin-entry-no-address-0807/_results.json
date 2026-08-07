@@ -1,0 +1,75 @@
+{
+  "at": "2026-08-07T10:14:23.275Z",
+  "source": "portal/public/admin-systems.html",
+  "checks": [
+    {
+      "ok": true,
+      "what": "a system with no address is offered no entry link"
+    },
+    {
+      "ok": true,
+      "what": "the empty branch no longer asserts the screen was never laid"
+    },
+    {
+      "ok": true,
+      "what": "the empty branch says the absence was measured"
+    },
+    {
+      "ok": true,
+      "what": "the empty branch points at תקלות, where the per-system reason is written"
+    },
+    {
+      "ok": true,
+      "what": "both recorded causes are named — #86 (never laid) and #115 (laid, unreachable)"
+    },
+    {
+      "ok": true,
+      "what": "a relative own address still mounts under the system"
+    },
+    {
+      "ok": true,
+      "what": "an own address still names its own gate"
+    },
+    {
+      "ok": true,
+      "what": "an absolute hub address is left alone"
+    },
+    {
+      "ok": true,
+      "what": "a hub address still names the platform gate"
+    }
+  ],
+  "failures": 0,
+  "rendered": [
+    {
+      "name": "no address",
+      "row": {
+        "app_key": "mechiron",
+        "admin_url": null,
+        "admin_auth": null
+      },
+      "html": "<span class=\"muted\">אין כתובת שמגיעה למסך ניהול — נמדד.\n                  הסיבה לכל מערכת ב<a href=\"/admin/issues\">תקלות</a>\n                  (core.issues #86 · #115)</span>",
+      "text": "אין כתובת שמגיעה למסך ניהול — נמדד. הסיבה לכל מערכת ב תקלות (core.issues #86 · #115)"
+    },
+    {
+      "name": "own address",
+      "row": {
+        "app_key": "torah",
+        "admin_url": "/admin",
+        "admin_auth": "own"
+      },
+      "html": "<a href=\"/torah/admin\">ניהול המערכת הזאת ←</a>\n                <span class=\"muted\"> · הכניסה של המערכת עצמה</span>",
+      "text": "ניהול המערכת הזאת ← · הכניסה של המערכת עצמה"
+    },
+    {
+      "name": "hub address",
+      "row": {
+        "app_key": "bkalot",
+        "admin_url": "https://more30.com/admin/rights",
+        "admin_auth": "hub"
+      },
+      "html": "<a href=\"https://more30.com/admin/rights\">ניהול המערכת הזאת ←</a>\n                <span class=\"muted\"> · כניסת סופר-אדמין של הפלטפורמה</span>",
+      "text": "ניהול המערכת הזאת ← · כניסת סופר-אדמין של הפלטפורמה"
+    }
+  ]
+}
