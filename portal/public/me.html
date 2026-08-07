@@ -287,9 +287,36 @@
         }
 
         // אם הגעת לכאן מתוך מערכת — כפתור חזרה אליה.
+        //
+        // ⚠️ שני באגים חיו כאן יחד, ולכן הכפתור מעולם לא הופיע:
+        //
+        //  · ‏`?from=` לא נשלח בכלל. הכפתור המשותף העביר את הכתובת הנוכחית
+        //    לפריטי הכניסה, אבל לפריט "האזור האישי" שלח ‎/me‎ חשוף.
+        //  · ‏`more30-return-to` נכתב **כנתיב** (`/bkalot`) מאז שתוקנו
+        //    ‎/login‎ ו-‎/auth/callback‎, והתנאי כאן עדיין דרש קידומת
+        //    `https://more30.com/` — העותק השלישי של אותה השוואה, שנשכח.
+        //    ומעבר לזה ‎callback‎ מוחק את המפתח ברגע שהוא משתמש בו, ולכן
+        //    ‎sessionStorage‎ לבדו לא יכול היה להחזיק את התשובה.
+        //
+        // ההגנה מפני הפניה פתוחה נשמרת, ומנוסחת כמו בשני הקבצים האחרים:
+        // נתיב יחיד שמתחיל ב-`/` ואינו `//`, או כתובת מלאה על more30.com.
+        function safeReturnPath(value) {
+          if (!value) return null;
+          try {
+            if (value.startsWith('/') && !value.startsWith('//')) return value;
+            const u = new URL(value, location.origin);
+            if (u.origin === 'https://more30.com') return u.pathname + u.search + u.hash;
+          } catch {}
+          return null;
+        }
+
         try {
-          const back = sessionStorage.getItem('more30-return-to');
-          if (back && back.startsWith('https://more30.com/')) {
+          const fromParam = new URLSearchParams(location.search).get('from');
+          const back =
+            safeReturnPath(fromParam) ||
+            safeReturnPath(sessionStorage.getItem('more30-return-to'));
+          // ‎/me‎ עצמו אינו "מערכת" — כפתור שמחזיר לעמוד שאתה עומד בו הוא רעש.
+          if (back && !back.startsWith('/me')) {
             $('backTo').href = back;
             $('backTo').hidden = false;
           }
