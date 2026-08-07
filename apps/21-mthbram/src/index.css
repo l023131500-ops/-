@@ -81,6 +81,15 @@
 
   html {
     direction: rtl;
+    /* ‎index.html‎ כבר נושא ‎<meta name="color-scheme" content="dark">‎ מאז שהוסבר
+       שם למה המערכת הזו כהה מלכתחילה — אבל ה-meta הוא ברירת מחדל שה-CSS גובר
+       עליה, והוא אינו נראה ב-‎getComputedStyle(documentElement).colorScheme‎.
+       שתי תוצאות מדודות מכך (core.issues #82): הדפדפן צובע פסי גלילה, שדות
+       קלט ותיבות בחירה בברירת המחדל הבהירה על גבי רקע ‎hsl(195 55% 8%)‎;
+       ו-platform-audit, שענף ה-dark-by-design שלו דורש "dark" בתוך המאפיין
+       המחושב, רשם את ‎/mthbram‎ כנתיב היחיד מ-30 בלי מצב כהה. ההצהרה כאן
+       מתקנת את שניהם באותה שורה. */
+    color-scheme: dark;
   }
 
   body {

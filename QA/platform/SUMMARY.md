@@ -229,7 +229,19 @@
 כותרת: **איגוד השיעורים — שיעורי תורה, חברותות והרצאות** · h1: "מתחברים — מאגר שיעורי התורה" · טקסט מרונדר: 941 תווים · 19 אלמנטים אינטראקטיביים · טעינה 9544ms
 
 - חסר: `canonical` · `og:url`
-- אין מצב כהה — הרקע האפקטיבי נשאר `rgb(9, 26, 32)` גם ב-`prefers-color-scheme: dark` (בהירות 0.009)
+- הטבלה למעלה עדיין מסמנת ❌ בעמודת "כהה", וזו מדידת הייצור הנוכחי — לא מסקנה על
+  העיצוב. העמוד כהה מלכתחילה: הרקע האפקטיבי `rgb(9, 26, 32)` (בהירות 0.009) בשני
+  המצבים, ולכן `prefers-color-scheme: dark` אינו משנה בו דבר. מה שחסר הוא ההצהרה
+  עצמה — `index.html` נושא `<meta name="color-scheme" content="dark">`, אבל meta
+  הוא ברירת מחדל שאינה נראית ב-`getComputedStyle(documentElement).colorScheme`,
+  והייצור מחזיר שם `"normal"`. ענף ה-dark-by-design של `platform-audit` דורש את
+  המאפיין המחושב, ולכן זהו הנתיב היחיד מ-30 שנספר "בלי מצב כהה" (core.issues #82).
+  `color-scheme: dark` נוסף ל-`html` ב-`apps/21-mthbram/src/index.css`; הבנייה
+  המשוחזרת נמדדה ב-`scripts/qa/color-scheme-probe.mjs` ומחזירה `"dark"` עם
+  dark-by-design=YES, וה-JS זהה בייט-לבייט לזה שבייצור — כלומר השינוי הוא ה-CSS
+  בלבד. הפריסה נעצרה במכסת Vercel היומית (100 פריסות ליום); העמודה תתעדכן אחרי
+  שהיא תעבור. צילומים: `colorscheme-0807/mthbram-built-local.png` מול
+  `colorscheme-0807/mthbram-production.png`.
 - Lighthouse מתחת ל-90: perf 66 · a11y 98 · bp 73 · seo 100
   - נכשלו: first-contentful-paint (4.7 s) · largest-contentful-paint (5.0 s) · speed-index (4.7 s) · total-blocking-time (240 ms) · max-potential-fid (160 ms) · errors-in-console · interactive (6.0 s) · third-party-cookies (2 cookies found)
 
