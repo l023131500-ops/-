@@ -57,7 +57,8 @@ const sys = (number, app_key, name, admin_url, admin_auth) => ({
 const PAYLOAD = {
   generated_at: '2026-08-07T02:20:00Z',
   notes: {},
-  totals: { systems: 4, live: 4, in_showcase: 0, users_counted: 4, with_admin_url: 2 },
+  totals: { systems: 4, live: 4, in_showcase: 0, systems_users_counted: 4, with_admin_url: 2,
+            hub_users: 20, hub_users_test: 64, hub_users_with_membership: 8 },
   systems: [
     sys('01', 'torah',  'איגוד השיעורים',        '/admin', 'own'),
     sys('04', 'imud',   'אימוד',                  null,     null),

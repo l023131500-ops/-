@@ -72,7 +72,8 @@ const PAYLOAD = {
   generated_at: new Date().toISOString(),
   notes: {},
   totals: {
-    systems: 6, live: 6, in_showcase: 0, users_counted: 6, with_admin_url: 0,
+    systems: 6, live: 6, in_showcase: 0, systems_users_counted: 6, with_admin_url: 0,
+    hub_users: 20, hub_users_test: 64, hub_users_with_membership: 8,
     with_lighthouse: 5, lighthouse_fresh: 4,
   },
   systems: [

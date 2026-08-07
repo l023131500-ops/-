@@ -68,7 +68,8 @@ const sys = (number, app_key, name) => ({
 const PAYLOAD = {
   generated_at: '2026-08-07T02:35:00Z',
   notes: {},
-  totals: { systems: 5, live: 5, in_showcase: 0, users_counted: 5, with_admin_url: 0 },
+  totals: { systems: 5, live: 5, in_showcase: 0, systems_users_counted: 5, with_admin_url: 0,
+            hub_users: 20, hub_users_test: 64, hub_users_with_membership: 8 },
   systems: [
     sys('01', 'torah',   'איגוד השיעורים'),
     sys('04', 'imud',    'עימוד תורני'),

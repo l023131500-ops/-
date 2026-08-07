@@ -1,0 +1,99 @@
+{
+  "generated_at": "2026-08-07T04:30:33.002Z",
+  "source": "core.projects · auth.users · core.app_memberships, read 07/08/2026 — no value here was written by hand",
+  "hub": {
+    "systems": 30,
+    "systems_users_counted": 7,
+    "hub_users": 20,
+    "hub_users_test": 64,
+    "hub_users_with_membership": 8
+  },
+  "kpis": [
+    {
+      "n": "30",
+      "l": "מערכות"
+    },
+    {
+      "n": "2",
+      "l": "חיות"
+    },
+    {
+      "n": "20",
+      "l": "משתמשים במאגר ההאב · 64 חשבונות בדיקה בנפרד"
+    },
+    {
+      "n": "8",
+      "l": "מתוכם נכנסו לתוך מערכת"
+    },
+    {
+      "n": "7",
+      "l": "מערכות שמשתמשיהן נספרים כאן · מתוך 30"
+    },
+    {
+      "n": "0",
+      "l": "מוצגות בעולם הסטארטאפים"
+    },
+    {
+      "n": "0",
+      "l": "עם כניסה לניהול"
+    },
+    {
+      "n": "0",
+      "l": "נמדדו ב-Lighthouse · כולן טריות"
+    }
+  ],
+  "cards": [
+    {
+      "title": "איגוד השיעורים",
+      "text": "לקוחות 3 חשבונות בדיקה 2 — לא לקוחות פעילים 7 ימים 1 פעילות אחרונה — מנויים פעילים 0 מנוי טרם נקבע סליקה טרם נקבע חד-פעמי טרם נקבע הכנסה חודשית משוערת 0 ₪ באגים לא נרשמו Lighthouse לא נמדדה"
+    },
+    {
+      "title": "גבאי הגליל",
+      "text": "משתמשים לא נספרים — המאגר ב-mwljkonwdeuaahsigjdp מנויים פעילים 0 מנוי טרם נקבע סליקה טרם נקבע חד-פעמי טרם נקבע הכנסה חודשית משוערת 0 ₪ באגים לא נרשמו Lighthouse לא נמדדה"
+    }
+  ],
+  "results": [
+    {
+      "check": "the board renders instead of the access notice",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "the user-pool tile shows the account count and not the system count",
+      "pass": true,
+      "detail": "20 — expected 20, the old tile showed 7"
+    },
+    {
+      "check": "no tile that opens by claiming to count users shows the system count",
+      "pass": true,
+      "detail": "30=מערכות | 2=חיות | 20=משתמשים במאגר ההאב · 64 חשבונות בדיקה בנפרד | 8=מתוכם נכנסו לתוך מערכת | 7=מערכות שמשתמשיהן נספרים כאן · מתוך 30 | 0=מוצגות בעולם הסטארטאפים | 0=עם כניסה לניהול | 0=נמדדו ב-Lighthouse · כולן טריות"
+    },
+    {
+      "check": "the 64 test accounts are named beside the pool, not folded into it",
+      "pass": true,
+      "detail": "משתמשים במאגר ההאב · 64 חשבונות בדיקה בנפרד"
+    },
+    {
+      "check": "how many of the real accounts ever entered a system is its own number",
+      "pass": true,
+      "detail": "8 — expected 8"
+    },
+    {
+      "check": "the system count keeps its own tile, now saying what it counts",
+      "pass": true,
+      "detail": "7 · מערכות שמשתמשיהן נספרים כאן · מתוך 30"
+    },
+    {
+      "check": "a system inside the hub still counts its customers on the card",
+      "pass": true,
+      "detail": "לקוחות 3 חשבונות בדיקה 2 — לא לקוחות פעילים 7 ימים 1 פעילות אחרונה — מנויים פעילים 0 מנוי "
+    },
+    {
+      "check": "a system outside the hub still says why it is not counted, and shows no 0",
+      "pass": true,
+      "detail": "משתמשים לא נספרים — המאגר ב-mwljkonwdeuaahsigjdp מנויים פעילים 0 מנוי טרם נקבע סליקה טרם נקבע חד-פעמי טרם נקבע"
+    }
+  ],
+  "pass": 8,
+  "fail": 0
+}
