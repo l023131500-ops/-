@@ -339,12 +339,15 @@
                   // ב-left join, ולכן היו בה שורות בלי פרויקט מאחוריהן —
                   // more30 עצמה, שהיא הפלטפורמה ולא אחת המערכות שהיא מציגה.
                   // תיבה כזו נלחצה, נכשלה, וקפצה אחורה עם שגיאת מסד גולמית.
+                  //
+                  // 0040: הסיבה מגיעה מהשרת (core.app_showcase_note) ולא נכתבת
+                  // כאן. שתי המחרוזות שהיו כאן קשיחות כיסו שני מצבים מתוך
+                  // שלושה, והשלישי — "מוסתרת מדף הבית" — היה מקבל בשתיקה את
+                  // הנוסח של הראשון, שהוא פשוט לא נכון.
                   sys.showcase_settable === false
-                    ? `<span class="showcase off mut">${
-                        sys.showcase_block === 'protected'
-                          ? 'מוגנת — אינה מתפרסמת'
-                          : 'אינה מערכת בקטלוג — אין מה להציג'
-                      }</span>`
+                    ? `<span class="showcase off mut">${esc(
+                        sys.showcase_note || 'אינה ניתנת להצגה',
+                      )}</span>`
                     : `<label class="showcase">
                   <input type="checkbox" data-showcase="${esc(sys.app_key)}"
                          ${sys.show_in_showcase ? 'checked' : ''} />
