@@ -305,10 +305,15 @@
 ולא בייצור. זו **אינה** פקודה אחת: הפורטל דורש בנייה לפני פריסה.
 
 ```
-pnpm --filter @more30/portal build
-pwsh scripts/stage-portal.ps1
-cd portal/dist ; vercel deploy --prod --yes --scope l023131500-ops-projects
+npx pnpm --filter @more30/portal build
+.\scripts\stage-portal.ps1
+cd portal/dist ; npx vercel deploy --prod --yes --scope l023131500-ops-projects
 ```
+
+> `pwsh` אינו מותקן על המכונה הזאת — הבלוק הקודם נפתח ב-`pwsh scripts/stage-portal.ps1`
+> ומחזיר "is not recognized". החלון של PowerShell 5.1 מריץ את הסקריפט ישירות.
+> נמדד 07/08 09:0x: הבנייה והערימה עוברות (`dist` מלא, `vercel.json` ו-`api/`
+> במקומם), והפריסה עצמה עדיין נדחית ב-`api-deployments-free-per-day`.
 
 **מה עדיין דורש אותך:** `core.issues #83` נשאר פתוח — המכסה לא בוטלה, החלון רק
 מתגלגל ומשחרר כמקום אחד לסבב, ולכן כל צעד שנגמר בפריסה ימשיך להמתין תור.
