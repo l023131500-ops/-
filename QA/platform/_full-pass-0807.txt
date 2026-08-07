@@ -1,0 +1,153 @@
+﻿
+=== home  https://more30.com/
+  desktop: 200 15629ms · text 3295 · small 0 · unnamed 0 · errs 0
+  mobile: 200 11158ms · text 3280 · small 0 · unnamed 0 · errs 0
+  dark: 200 9509ms · text 3295 · small 0 · unnamed 0 · errs 0
+
+=== login  https://more30.com/login
+  desktop: 200 10423ms · text 331 · small 0 · unnamed 0 · errs 0
+  mobile: 200 8717ms · text 331 · small 0 · unnamed 0 · errs 0
+  dark: 200 9120ms · text 331 · small 0 · unnamed 0 · errs 0
+
+=== me  https://more30.com/me
+  desktop: 200 13797ms · text 94 · small 0 · unnamed 0 · errs 0
+  mobile: 200 9524ms · text 94 · small 0 · unnamed 0 · errs 0
+  dark: 200 14104ms · text 94 · small 0 · unnamed 0 · errs 0
+
+=== subscribe  https://more30.com/subscribe
+  desktop: 200 9215ms · text 662 · small 0 · unnamed 0 · errs 0
+  mobile: 200 8727ms · text 662 · small 0 · unnamed 0 · errs 0
+  dark: 200 8886ms · text 662 · small 0 · unnamed 0 · errs 0
+
+=== torah  https://more30.com/torah
+  desktop: 200 10419ms · text 1262 · small 0 · unnamed 0 · errs 0
+  mobile: 200 10386ms · text 1134 · small 0 · unnamed 0 · errs 0
+  dark: 200 11074ms · text 1262 · small 0 · unnamed 0 · errs 0
+
+=== tamlul  https://more30.com/tamlul
+  desktop: 200 8935ms · text 1372 · small 0 · unnamed 0 · errs 0
+  mobile: 200 9244ms · text 1372 · small 0 · unnamed 0 · errs 0
+  dark: 200 9510ms · text 1372 · small 0 · unnamed 0 · errs 0
+
+=== modaot  https://more30.com/modaot
+  desktop: 200 12288ms · text 696 · small 0 · unnamed 0 · errs 0
+  mobile: 200 8493ms · text 696 · small 0 · unnamed 0 · errs 0
+  dark: 200 8885ms · text 696 · small 0 · unnamed 0 · errs 0
+
+=== imud  https://more30.com/imud
+  desktop: 200 10083ms · text 612 · small 0 · unnamed 0 · errs 0
+  mobile: 200 12363ms · text 612 · small 0 · unnamed 0 · errs 0
+  dark: 200 8697ms · text 612 · small 0 · unnamed 0 · errs 0
+
+=== briut  https://more30.com/briut
+  desktop: 200 9255ms · text 4899 · small 0 · unnamed 0 · errs 0
+  mobile: 200 10951ms · text 4867 · small 0 · unnamed 0 · errs 0
+  dark: 200 11601ms · text 4899 · small 0 · unnamed 0 · errs 0
+
+=== bkalot  https://more30.com/bkalot
+  desktop: 200 12252ms · text 8446 · small 0 · unnamed 0 · errs 0
+  mobile: 200 15052ms · text 6676 · small 0 · unnamed 0 · errs 0
+  dark: 200 12286ms · text 8446 · small 0 · unnamed 0 · errs 0
+
+=== smel  https://more30.com/smel
+  desktop: 200 10520ms · text 1208 · small 0 · unnamed 0 · errs 0
+  mobile: 200 12429ms · text 1200 · small 0 · unnamed 0 · errs 0
+  dark: 200 9316ms · text 1208 · small 0 · unnamed 0 · errs 0
+
+=== smachot  https://more30.com/smachot
+  desktop: 200 11521ms · text 1473 · small 0 · unnamed 0 · errs 0
+  mobile: 200 9720ms · text 1473 · small 0 · unnamed 0 · errs 0
+  dark: 200 8984ms · text 1473 · small 0 · unnamed 0 · errs 0
+
+=== egod  https://more30.com/egod
+  desktop: 200 9459ms · text 2426 · small 0 · unnamed 0 · errs 0
+  mobile: 200 13004ms · text 2334 · small 0 · unnamed 0 · errs 0
+  dark: 200 12714ms · text 2417 · small 0 · unnamed 0 · errs 0
+
+=== chatzor  https://more30.com/chatzor
+  desktop: 200 9549ms · text 2101 · small 0 · unnamed 0 · errs 0
+  mobile: 200 10922ms · text 2088 · small 0 · unnamed 0 · errs 0
+  dark: 200 9868ms · text 2101 · small 0 · unnamed 0 · errs 0
+
+=== chatzor-app  https://more30.com/chatzor/
+  desktop: 200 11220ms · text 2101 · small 0 · unnamed 0 · errs 0
+  mobile: 200 9443ms · text 2088 · small 0 · unnamed 0 · errs 0
+  dark: 200 10652ms · text 2101 · small 0 · unnamed 0 · errs 0
+
+=== chizukim  https://more30.com/chizukim
+  desktop: 200 10275ms · text 1951 · small 0 · unnamed 0 · errs 0
+  mobile: 200 9983ms · text 1951 · small 0 · unnamed 0 · errs 0
+  dark: 200 8774ms · text 1951 · small 0 · unnamed 0 · errs 0
+
+=== chizukim-app  https://more30.com/chizukim/
+  desktop: 200 9133ms · text 1951 · small 0 · unnamed 0 · errs 0
+  mobile: 200 10525ms · text 1951 · small 0 · unnamed 0 · errs 0
+  dark: 200 12826ms · text 1951 · small 0 · unnamed 0 · errs 0
+
+=== orech  https://more30.com/orech
+  desktop: 200 9061ms · text 504 · small 0 · unnamed 0 · errs 0
+  mobile: 200 8830ms · text 504 · small 0 · unnamed 0 · errs 0
+  dark: 200 8336ms · text 504 · small 0 · unnamed 0 · errs 0
+
+=== mthbram  https://more30.com/mthbram
+  desktop: 200 9544ms · text 941 · small 0 · unnamed 0 · errs 0
+  mobile: 200 9726ms · text 894 · small 0 · unnamed 0 · errs 0
+  dark: 200 9932ms · text 941 · small 0 · unnamed 0 · errs 0
+
+=== zchuyot  https://more30.com/zchuyot
+  desktop: 200 9421ms · text 2511 · small 0 · unnamed 0 · errs 0
+  mobile: 200 9113ms · text 2459 · small 0 · unnamed 0 · errs 0
+  dark: 200 10318ms · text 2511 · small 0 · unnamed 0 · errs 0
+
+=== galil  https://more30.com/galil
+  desktop: 200 14609ms · text 1680 · small 0 · unnamed 0 · errs 0
+  mobile: 200 9670ms · text 1609 · small 0 · unnamed 0 · errs 0
+  dark: 200 13466ms · text 1680 · small 0 · unnamed 0 · errs 0
+
+=== studio  https://more30.com/studio
+  desktop: 200 10632ms · text 927 · small 0 · unnamed 0 · errs 0
+  mobile: 200 9159ms · text 1003 · small 0 · unnamed 0 · errs 0
+  dark: 200 8876ms · text 927 · small 0 · unnamed 0 · errs 0
+
+=== mechiron  https://more30.com/mechiron
+  desktop: 200 14851ms · text 3040 · small 1 · unnamed 0 · errs 0
+  mobile: 200 9086ms · text 3040 · small 1 · unnamed 0 · errs 0
+  dark: 200 9132ms · text 3040 · small 1 · unnamed 0 · errs 0
+
+=== kupot  https://more30.com/kupot
+  desktop: 200 10932ms · text 3164 · small 0 · unnamed 0 · errs 0
+  mobile: 200 10045ms · text 3164 · small 0 · unnamed 0 · errs 0
+  dark: 200 10144ms · text 3164 · small 0 · unnamed 0 · errs 0
+
+=== crm  https://more30.com/crm
+  desktop: 200 10571ms · text 162 · small 0 · unnamed 0 · errs 0
+  mobile: 200 9287ms · text 162 · small 0 · unnamed 0 · errs 0
+  dark: 200 9307ms · text 162 · small 0 · unnamed 0 · errs 0
+
+=== gesher  https://more30.com/gesher
+  desktop: 200 9728ms · text 132 · small 0 · unnamed 0 · errs 0
+  mobile: 200 9368ms · text 132 · small 0 · unnamed 0 · errs 0
+  dark: 200 8861ms · text 132 · small 0 · unnamed 0 · errs 0
+
+=== nadlan  https://more30.com/nadlan
+  desktop: 200 9907ms · text 6464 · small 0 · unnamed 0 · errs 0
+  mobile: 200 9105ms · text 6464 · small 0 · unnamed 0 · errs 0
+  dark: 200 10419ms · text 6464 · small 0 · unnamed 0 · errs 0
+
+=== kesef  https://more30.com/kesef
+  desktop: 200 8949ms · text 2427 · small 0 · unnamed 0 · errs 0
+  mobile: 200 9096ms · text 2385 · small 0 · unnamed 0 · errs 0
+  dark: 200 8651ms · text 2427 · small 0 · unnamed 0 · errs 0
+
+=== kiosk  https://more30.com/kiosk/
+  desktop: 200 9097ms · text 2599 · small 1 · unnamed 0 · errs 0
+  mobile: 200 9775ms · text 2549 · small 1 · unnamed 0 · errs 0
+  dark: 200 9019ms · text 2599 · small 1 · unnamed 0 · errs 0
+
+=== tivuch  https://more30.com/tivuch
+  desktop: 200 8869ms · text 2836 · small 0 · unnamed 0 · errs 0
+  mobile: 200 9509ms · text 2795 · small 0 · unnamed 0 · errs 0
+  dark: 200 8736ms · text 2836 · small 0 · unnamed 0 · errs 0
+
+Done. 30 routes -> C:\Users\USER\Downloads\more30\QA\platform
+TOTAL_WALL_SECONDS=999.5
