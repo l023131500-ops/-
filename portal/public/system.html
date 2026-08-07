@@ -291,7 +291,16 @@
         const plans = data.plans?.plans ?? data.plans ?? [];
         $('planList').innerHTML = plans
           .map((p) => {
-            const feats = (p.features ?? []).map((f) => `<li>${esc(f)}</li>`).join('');
+            // 57 מתוך 60 שורות המסלול הגלויות ללקוח מגיעות עם features ריק —
+            // 19 מערכות × (חינמי · בסיסי · מורחב) — ו-`<ul>${feats}</ul>` צייר
+            // עבורן ‎<ul></ul>‎: רשימה בת אפס פריטים שקורא מסך מכריז עליה, ועוד
+            // 18px של margin-bottom מתחת למחיר בלי שום דבר שמסביר אותם. רשימה
+            // נמסרת רק כשיש בה פריט. מה כל מסלול כולל בפועל הוא core.issues #92
+            // והכרעה של המשתמש — היא לא נכתבת כאן.
+            const items = Array.isArray(p.features) ? p.features : [];
+            const feats = items.length
+              ? `<ul>${items.map((f) => `<li>${esc(f)}</li>`).join('')}</ul>`
+              : '';
             const href = `/subscribe?app=${encodeURIComponent(data.app_key)}&plan=${encodeURIComponent(p.code)}`;
             const label = p.is_default ? 'התחלה בחינם' : 'בחירת המסלול';
             return `
@@ -299,7 +308,7 @@
                 <h3>${esc(p.name_he)}</h3>
                 <p class="tag">${esc(p.tagline ?? '')}</p>
                 <p class="price">${priceText(p)}</p>
-                <ul>${feats}</ul>
+                ${feats}
                 <a class="btn ${p.is_default ? 'ghost' : ''}" href="${href}">${label}</a>
               </article>`;
           })
