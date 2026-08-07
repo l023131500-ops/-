@@ -1,14 +1,23 @@
-/* Admin panel: client-side login gate + leads management.
-   NOTE: Client-side auth only — this is a basic gate, not real server security.
-   The credentials below can be seen by anyone reading the source. */
+/* Admin panel: login gate + leads management.
+ *
+ * SECURITY: this file used to carry the admin username and password as plain
+ * literals, and this repo is public — so they were published, not merely
+ * readable by a visitor. They have been removed. There is no env var to move
+ * them to: this is a static site with no build step, so anything the gate could
+ * compare against would ship to the browser just the same. The gate therefore
+ * fails closed, exactly as apps/27-bkalut-price/server/auth.ts does when no
+ * credential is configured, rather than falling back to a known-public default.
+ *
+ * Measured 07/08/2026, so this is not a live regression: production does not
+ * serve this page at all. more30.com/briut/admin.html returns the SPA fallback
+ * — byte-identical to more30.com/briut/ — so nothing that works today stops
+ * working. Real access needs server-side auth (an Edge Function or an RPC in
+ * SECURITY DEFINER), which is the same fix /galil/gabai is waiting on.
+ */
 (function () {
   "use strict";
 
-  // --- Credentials (client-side gate) ---
-  var ADMIN_USER = "023131500";
-  var ADMIN_PASS = "eueu1234";
   var SESSION_KEY = "kupot_admin_session";
-  var SESSION_HOURS = 12;
 
   var loginView = document.getElementById("loginView");
   var dashView = document.getElementById("dashView");
@@ -42,17 +51,11 @@
   }
 
   // --- Session ---
-  function isLoggedIn() {
-    try {
-      var s = JSON.parse(localStorage.getItem(SESSION_KEY) || "null");
-      return s && s.exp && Date.now() < s.exp;
-    } catch (e) { return false; }
-  }
-  function setSession() {
-    try {
-      localStorage.setItem(SESSION_KEY, JSON.stringify({ exp: Date.now() + SESSION_HOURS * 3600 * 1000 }));
-    } catch (e) {}
-  }
+  // isLoggedIn/setSession are gone with the credentials. They were the real
+  // hole anyway: the "session" was a localStorage key with an expiry and no
+  // signature, so setting it by hand opened the dashboard without ever seeing
+  // the password. clearSession stays because logout still has to clear any key
+  // left over from before this change.
   function clearSession() { try { localStorage.removeItem(SESSION_KEY); } catch (e) {} }
 
   function showDashboard() {
@@ -70,17 +73,11 @@
 
   loginForm.addEventListener("submit", function (e) {
     e.preventDefault();
-    var u = document.getElementById("adminUser").value.trim();
-    var p = document.getElementById("adminPass").value;
-    if (u === ADMIN_USER && p === ADMIN_PASS) {
-      loginErr.textContent = "";
-      setSession();
-      showDashboard();
-    } else {
-      loginErr.textContent = "שם משתמש או סיסמה שגויים";
-      document.getElementById("adminPass").value = "";
-      document.getElementById("adminPass").focus();
-    }
+    // No credential is configured, and none can be: see the note at the top of
+    // this file. Refusing every login is the honest state — the alternative is
+    // a password that every visitor can read.
+    loginErr.textContent = "התחברות לניהול אינה מוגדרת בסביבה זו";
+    document.getElementById("adminPass").value = "";
   });
 
   document.getElementById("logoutBtn").addEventListener("click", function () {
@@ -265,5 +262,9 @@
   document.getElementById("xlsBtn").addEventListener("click", exportExcel);
 
   // --- Boot ---
-  if (isLoggedIn()) { showDashboard(); } else { showLogin(); }
+  // Always the login view. A stale localStorage session from before this change
+  // must not be honoured — it was forgeable, and there is no credential behind
+  // it any more either way.
+  clearSession();
+  showLogin();
 })();

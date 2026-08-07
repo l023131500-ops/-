@@ -28,10 +28,16 @@ const tracked = execFileSync(GIT, ['ls-files', ...scope], { encoding: 'utf8', ma
 
 // A name that means "secret", assigned a literal that is long enough to be one.
 // Deliberately not anchored on a provider prefix: that is what missed nedarim.
+//
+// `[_-]pass\b` and `[_-]pwd\b` are separate from the `password|passwd` branch
+// on purpose: they need the separator so that `bypass` and `compass` are not
+// secrets, and without them `ADMIN_PASS = "…"` reads as an ordinary variable.
+// That is exactly the spelling that hid a live admin password in
+// apps/06-kupot-holim/site/admin.js through every run of this scan.
 const NAME =
   '[A-Za-z_][A-Za-z0-9_]*(?:api[_-]?(?:key|valid|password|secret|token)|' +
   'secret|password|passwd|token|private[_-]?key|client[_-]?secret|mosad[_-]?id|' +
-  'access[_-]?key|auth[_-]?key|service[_-]?role)';
+  'access[_-]?key|auth[_-]?key|service[_-]?role|[_-]pass\\b|[_-]pwd\\b)';
 
 const ASSIGN = new RegExp(
   `(?<name>${NAME})\\s*[:=]\\s*["'\`](?<value>[^"'\`\\n]{4,})["'\`]`,
@@ -50,6 +56,23 @@ const ASSIGN = new RegExp(
  */
 const FALLBACK = new RegExp(
   `(?<name>${NAME})\\s*[:=][^\\n]*?\\|\\|\\s*["'\`](?<value>[^"'\`\\n]{4,})["'\`]`,
+  'gi',
+);
+
+/**
+ * The third shape, and the one both patterns above are blind to by design:
+ *
+ *   *   SOME_ADMIN_PASSWORD  plain password — preview only (default: <redacted>)
+ *
+ * There is no assignment and no quotes — it is a doc comment. ASSIGN and
+ * FALLBACK both want `name <op> "literal"`, so a prose default walks free.
+ * It should not: apps/27-bkalut-price/server/auth.ts had removed the hardcoded
+ * fallback from the code and left the password in the comment describing it,
+ * three lines above a SECURITY note saying there is no default. The comment is
+ * as public as the code.
+ */
+const DOC = new RegExp(
+  `(?<name>${NAME})[^\\n]{0,80}?\\bdefaults?\\s*[:=]\\s*["'\`]?(?<value>[^\\s)\\]}"'\`,;]{6,})`,
   'gi',
 );
 
@@ -108,7 +131,7 @@ for (const file of tracked) {
 
   lines.forEach((line, i) => {
     const seen = new Set();
-    for (const re of [ASSIGN, FALLBACK]) {
+    for (const re of [ASSIGN, FALLBACK, DOC]) {
       for (const m of line.matchAll(re)) {
         const { name, value } = m.groups;
         if (BENIGN.test(value.trim())) continue;
