@@ -152,7 +152,19 @@ interface PlatformUser {
   user_id: string;
   email: string;
   full_name: string | null;
+  /** מאיפה השם הגיע: 'profile' (הוקלד ב-/auth/callback) או 'signup' (טופס §8ב / Google). */
+  name_source?: "profile" | "signup" | null;
+  phone?: string | null;
+  /**
+   * המסלול שבתוקף. ממיגרציה 0041 הוא נגזר מ-core.subscriptions ולא מעמודת
+   * more30_profiles.plan שאיש אינו כותב אליה — אותו תיקון ש-0031 עשה ל-/me
+   * ולתפריט החשבון, ושהקורא הזה נשאר מאחוריו.
+   */
   plan: string;
+  /** בקשת מנוי שטרם נגבתה. אינה מסלול בתוקף, ולכן שדה נפרד. */
+  plan_requested?: string | null;
+  plan_status?: string | null;
+  has_profile?: boolean;
   created_at: string;
   last_sign_in_at: string | null;
   provider: string | null;
@@ -160,6 +172,10 @@ interface PlatformUser {
   is_super_admin: boolean;
   apps: { app_key: string; role: string }[];
 }
+
+const PLAN_HE: Record<string, string> = {
+  free: "חינמי", basic: "בסיסי", extended: "מורחב", premium: "פרימיום", vip: "VIP", pro: "פרו",
+};
 
 const ROLE_HE: Record<string, string> = { member: "משתמש", manager: "מנהל תוכן", admin: "מנהל" };
 
@@ -801,7 +817,8 @@ export function App() {
             </select>
             <button onClick={loadUsers} style={btn}>רענון</button>
             <span style={{ fontSize: 12, color: "var(--muted)" }}>
-              נקרא חי מ-<code style={code}>auth.users</code> + <code style={code}>core.app_memberships</code>.
+              נקרא חי מ-<code style={code}>auth.users</code> + <code style={code}>core.app_memberships</code> +
+              {" "}<code style={code}>core.subscriptions</code>.
             </span>
           </div>
 
@@ -812,9 +829,32 @@ export function App() {
                 <div key={u.user_id} style={{ ...card, padding: "10px 14px" }}>
                   <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
                     <b style={{ minWidth: 190 }}>{u.full_name || "— ללא שם מלא"}</b>
+                    {/*
+                      "יש שם" ו"יש פרופיל" אינם אותו דבר: 37 מ-91 המשתמשים אינם
+                      מחזיקים שורה ב-more30_profiles, ו-14 מהם בכל זאת נושאים שם
+                      אמיתי שההרשמה שלחה ב-signUp. הסימון אומר מאיפה השם הגיע.
+                    */}
+                    {u.name_source === "signup" && (
+                      <span style={{ fontSize: 11, color: "var(--muted-2)" }}>מההרשמה</span>
+                    )}
                     <span style={{ ...code, fontSize: 12 }}>{u.email}</span>
+                    {u.phone && <span style={{ ...code, fontSize: 12 }}>{u.phone}</span>}
                     {u.is_super_admin && <Badge on label="סופר-אדמין" color="#16a34a" />}
-                    {u.plan === "premium" && <Badge on label="פרימיום" color="#c9a227" />}
+                    {u.plan !== "free" && (
+                      <Badge on label={PLAN_HE[u.plan] ?? u.plan} color="#c9a227" />
+                    )}
+                    {/*
+                      בקשה רשומה אינה תשלום: כל שורות המנוי הן status='requested'
+                      ו-core.billing_settings.mode='off'. באדג' זהב על בקשה היה
+                      הופך את המסך לשקר מסוג אחר, ולכן היא נאמרת בלשונה.
+                    */}
+                    {u.plan === "free" && u.plan_requested && (
+                      <Badge
+                        on
+                        label={`ביקש ${PLAN_HE[u.plan_requested] ?? u.plan_requested} · טרם נגבה`}
+                        color="#6b7280"
+                      />
+                    )}
                     {!u.confirmed && <Badge on label="אימייל לא אושר" color="#dc2626" />}
                     <span style={{ flex: 1 }} />
                     <span style={{ fontSize: 12, color: "var(--muted)" }}>
@@ -822,6 +862,7 @@ export function App() {
                         ? "כניסה אחרונה " + new Date(u.last_sign_in_at).toLocaleDateString("he-IL")
                         : "טרם נכנס"}
                       {u.provider ? ` · ${u.provider}` : ""}
+                      {u.has_profile === false ? " · ללא פרופיל" : ""}
                     </span>
                   </div>
                   <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 7, alignItems: "center" }}>
