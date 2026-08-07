@@ -1,0 +1,190 @@
+{
+  "summary": {
+    "page": "portal/public/admin-customers.html",
+    "payload": "QA/platform/admin-customers-name-phone-0807/_payload.json",
+    "apps": 22,
+    "rows": 110,
+    "named": 63,
+    "blank": 47,
+    "with_phone": 7,
+    "plan_requested": 1,
+    "plan_active": 0,
+    "distinct_plans": [
+      "free"
+    ],
+    "pass": 34,
+    "fail": 0
+  },
+  "results": [
+    {
+      "check": "חמש הפונקציות נחלצו מהעמוד ורצות",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "העותק ב-portal/dist זהה למקור",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "הטבלה מצהירה עמודת שם",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "הטבלה מצהירה עמודת אימייל",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "הטבלה מצהירה עמודת טלפון",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "הטבלה מצהירה עמודת תפקיד",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "הטבלה מצהירה עמודת מסלול",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "הטבלה מצהירה עמודת הצטרף",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "הטבלה מצהירה עמודת פעילות אחרונה",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "הטבלה מצהירה עמודת אומת",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "הטבלה עטופה במיכל גלילה אופקית",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "המטען מכסה כל מערכת שיש בה רשומים",
+      "pass": true,
+      "detail": "apps=22"
+    },
+    {
+      "check": "המטען מחזיק את כל שורות החברות",
+      "pass": true,
+      "detail": "rows=110"
+    },
+    {
+      "check": "כל שורה נושאת את שלושת השדות ש-0043 הוסיפה",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "כל שורה עם שם מציירת אותו, ולא את מציין הריק",
+      "pass": true,
+      "detail": "named=63"
+    },
+    {
+      "check": "שורה בלי שם אומרת זאת במילים ואינה מציירת null",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "63 השמות שהפונקציה מחזירה מגיעים לתא",
+      "pass": true,
+      "detail": "named=63"
+    },
+    {
+      "check": "שם עם תו HTML היה נמלט",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "כל טלפון הופך לקישור חיוג",
+      "pass": true,
+      "detail": "with_phone=7"
+    },
+    {
+      "check": "קישור החיוג נושא ספרות בלבד",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "שורה בלי טלפון אומרת \"לא נמסר\" ולא נשארת ריקה",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "7 הטלפונים שהפונקציה מחזירה מגיעים לתא",
+      "pass": true,
+      "detail": "with_phone=7"
+    },
+    {
+      "check": "המסלול נאמר בעברית ולא בקוד",
+      "pass": true,
+      "detail": "free"
+    },
+    {
+      "check": "אף שורה אינה מוצגת כמסלול בתשלום כל עוד אין מנוי פעיל",
+      "pass": true,
+      "detail": "non_free=0 active=0"
+    },
+    {
+      "check": "בקשה שטרם נגבתה נאמרת בשורה משלה",
+      "pass": true,
+      "detail": "requested=1"
+    },
+    {
+      "check": "שורה בלי בקשה אינה מקבלת את הכיתוב הזה",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "מנוי פעיל היה מוצג כמסלול, ובלי כיתוב הבקשה",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "קוד מסלול בלי תרגום נופל לקוד עצמו ולא לריק",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "השדה email עדיין מגיע בכל שורה",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "השדה role עדיין מגיע בכל שורה",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "השדה joined_at עדיין מגיע בכל שורה",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "השדה last_seen_at עדיין מגיע בכל שורה",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "השדה confirmed עדיין מגיע בכל שורה",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "השדה is_test עדיין מגיע בכל שורה",
+      "pass": true,
+      "detail": null
+    }
+  ]
+}

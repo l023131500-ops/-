@@ -43,10 +43,15 @@
                border-radius:9px; padding:9px 18px; }
       button:hover { border-color:var(--gold); }
       button:disabled { opacity:.5; cursor:default; }
+      /* שמונה עמודות אינן נכנסות למסך צר, וטבלה שנחתכת בשקט גרועה מטבלה
+         שנגללת. הגלילה על העטיפה, כדי שכותרות העמודות ייגללו עם הגוף. */
+      .tbl { overflow-x:auto; }
       table { border-collapse:collapse; width:100%; font-size:14px; margin-top:4px; }
       th,td { padding:9px 12px; text-align:start; border-bottom:1px solid var(--line); white-space:nowrap; }
       th { font-size:12px; color:var(--ink-2); font-weight:700; }
       tbody tr:last-child td { border-bottom:0; }
+      td a { color:inherit; }
+      .sub2 { display:block; font-size:12px; color:var(--ink-2); }
       .muted { color:var(--ink-2); }
       .msg { font-size:14px; margin-top:10px; min-height:20px; }
       .msg.ok { color:var(--ok); } .msg.err { color:#c0392b; }
@@ -127,6 +132,36 @@
         if(m<60) return `לפני ${m} דק׳`; if(m<1440) return `לפני ${Math.round(m/60)} שע׳`;
         return d.toLocaleDateString('he-IL'); };
 
+      // ── מה שהפונקציה כבר מחזירה, ומה שהטבלה לא ציירה ──────────────────────
+      // מיגרציה 0043 לימדה את more30_admin_customers להחזיר שם, טלפון,
+      // ואת בקשת המנוי בנפרד מהמסלול בתוקף. הטבלה נשארה על שש עמודות שאין
+      // בהן אף אחד מהשלושה. §8ב גובה שם וטלפון בהרשמה, ו-§2 מבקש ניהול
+      // לקוחות מלא — ולקוח שאי אפשר לפנות אליו אינו מנוהל.
+      const PLAN_HE = { free:'חינמי', basic:'בסיסי', extended:'מורחב',
+                        premium:'פרימיום', vip:'VIP', pro:'פרו' };
+      const planHe = (code) => PLAN_HE[code] ?? code;
+
+      /** שם: הריק נאמר במילים. תא ריק נקרא כמו תקלה בטעינה. */
+      const nameCell = (c) =>
+        c.full_name ? esc(c.full_name) : '<span class="muted">ללא שם</span>';
+
+      /** טלפון: מה ש-§8ב גובה בהרשמה, כקישור חיוג. Google אינו מוסר טלפון,
+          ולכן "לא נמסר" הוא תשובה נכונה ולא חסר נתונים. */
+      const phoneCell = (c) => {
+        if (!c.phone) return '<span class="muted">לא נמסר</span>';
+        const digits = String(c.phone).replace(/[^\d+]/g, '');
+        return `<a dir="ltr" href="tel:${esc(digits)}">${esc(c.phone)}</a>`;
+      };
+
+      /** מסלול: המסלול בתוקף בלבד. בקשה שטרם נגבתה נאמרת בשורה נפרדת
+          ובמילים שלה — core.billing_settings במצב off, ואין אף מנוי פעיל. */
+      const planCell = (c) => {
+        const head = esc(planHe(c.plan || 'free'));
+        return c.plan === 'free' && c.plan_requested
+          ? `${head}<span class="sub2">ביקש ${esc(planHe(c.plan_requested))} · טרם נגבה</span>`
+          : head;
+      };
+
       (async function(){
         const { data:s } = await sb.auth.getSession();
         if(!s?.session){
@@ -149,16 +184,24 @@
           const { data, error:e } = await sb.rpc('more30_admin_customers',{ p_app: app });
           if(e){ $('list').innerHTML=`<p class="muted">${esc(e.message)}</p>`; return; }
           if(!data.length){ $('list').innerHTML='<p class="muted">אין עדיין לקוחות רשומים במערכת הזו.</p>'; return; }
-          $('list').innerHTML = `<table><thead><tr>
-              <th>אימייל</th><th>תפקיד</th><th>מסלול</th><th>הצטרף</th><th>פעילות אחרונה</th><th>אומת</th>
+          const withName = data.filter(c=>c.full_name).length;
+          const withPhone = data.filter(c=>c.phone).length;
+          $('list').innerHTML = `<div class="tbl"><table><thead><tr>
+              <th>שם</th><th>אימייל</th><th>טלפון</th><th>תפקיד</th><th>מסלול</th>
+              <th>הצטרף</th><th>פעילות אחרונה</th><th>אומת</th>
             </tr></thead><tbody>` + data.map(c=>`<tr>
+              <td>${nameCell(c)}</td>
               <td dir="ltr">${esc(c.email)}</td>
+              <td>${phoneCell(c)}</td>
               <td>${c.is_test?'<span class="muted">חשבון בדיקה</span>':(c.role==='admin'?'אדמין אתר':'לקוח')}</td>
-              <td>${esc(c.plan||'—')}</td>
+              <td>${planCell(c)}</td>
               <td>${when(c.joined_at)}</td>
               <td>${when(c.last_seen_at)}</td>
               <td>${c.confirmed?'כן':'<span class="muted">לא</span>'}</td>
-            </tr>`).join('') + '</tbody></table>';
+            </tr>`).join('') + '</tbody></table></div>' +
+            `<p class="muted" style="font-size:12.5px;margin-top:8px">` +
+            `${data.length} רשומים · ${withName} עם שם · ${withPhone} עם טלפון. ` +
+            `שם וטלפון מגיעים מהפרופיל או מטופס ההרשמה; חשבון Google אינו מוסר טלפון.</p>`;
         }
         $('app').addEventListener('change', load);
         await load();
