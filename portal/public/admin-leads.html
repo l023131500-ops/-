@@ -60,6 +60,8 @@
       tr.empty td { color:var(--ink-2); }
       .pill { font-size:11px; font-weight:700; padding:2px 8px; border-radius:999px;
               background:color-mix(in srgb,var(--ink-2) 15%,transparent); color:var(--ink-2); }
+      td.ok { color:var(--ok); font-weight:600; }
+      td.warn { color:var(--warn); font-weight:600; }
       .note { border:1px solid var(--line); border-radius:12px; padding:14px 16px;
               font-size:14px; background:var(--surface); margin-top:14px; }
       .note.warn { border-color:color-mix(in srgb,var(--warn) 45%,var(--line)); }
@@ -104,6 +106,17 @@
           </div>
           <p class="secsub" id="count" style="margin:12px 0 0"></p>
           <div class="scroll"><table id="tbl"></table></div>
+        </section>
+
+        <section class="panel">
+          <h2 class="sec">הכיסוי — מי מחובר בכלל</h2>
+          <p class="secsub">
+            שורה לכל מערכת ציבורית חיה, <b>כולל מערכות שאין להן שום צינור לידים</b>.
+            עד היום מערכת בלי מקור רשום פשוט לא הופיעה כאן, ומי שלא מצא אותה
+            ברשימה הסיק שלא היו לה פניות. <b>"אין פניות" ו"לא מחובר" הן שתי
+            תשובות שונות</b>, ורק אחת מהן דורשת עבודה — ולכן הן מופרדות.
+          </p>
+          <div class="scroll"><table id="cov"></table></div>
         </section>
 
         <section class="panel">
@@ -199,13 +212,18 @@
         const sources = data.sources || [];
 
         $('tagline').textContent =
-          'כל פנייה שהתקבלה בכל אחת מהמערכות, במקום אחד. הנתונים נקראים ישירות ' +
-          'מטבלאות המקור של כל מערכת — אין כאן העתק שצריך סנכרון.';
+          'כל פנייה שהתקבלה בכל אחת מהמערכות המחוברות, במקום אחד. הנתונים נקראים ' +
+          'ישירות מטבלאות המקור של כל מערכת — אין כאן העתק שצריך סנכרון. ' +
+          `מחוברות ${t.systems_connected ?? 0} מתוך ${t.systems_public ?? 0} ` +
+          'המערכות הציבוריות החיות; טבלת הכיסוי למטה מונה גם את השאר.';
 
         $('kpis').innerHTML = [
           [t.leads ?? 0, 'פניות בסך הכול'],
           [`${t.sources_with_leads ?? 0}/${t.sources ?? 0}`, 'מקורות עם פניות'],
-          [t.systems_with_leads ?? 0, 'מערכות עם פניות'],
+          // מכנה, לא מספר יחיד: "6 מערכות עם פניות" נקרא כשלם כשאין לצידו
+          // כמה מערכות יש בכלל וכמה מהן בכלל מחוברות.
+          [`${t.systems_connected ?? 0}/${t.systems_public ?? 0}`, 'מערכות מחוברות לצינור'],
+          [`${t.systems_with_leads ?? 0}/${t.systems_public ?? 0}`, 'מערכות עם פניות'],
           [t.last_7_days ?? 0, '‏7 ימים אחרונים'],
           [t.last_30_days ?? 0, '‏30 יום אחרונים'],
           [day(t.newest_at), 'הפנייה האחרונה'],
@@ -215,6 +233,25 @@
         const names = [...new Set(LEADS.map((l) => l.system_name).filter(Boolean))].sort();
         $('sys').innerHTML = '<option value="">כל המערכות</option>' +
           names.map((n) => `<option value="${esc(n)}">${esc(n)}</option>`).join('');
+
+        const COV_STATE = {
+          unconnected:     ['לא מחובר', 'warn'],
+          connected_empty: ['מחובר · אפס פניות', ''],
+          has_leads:       ['מחובר · יש פניות', 'ok'],
+        };
+        const coverage = data.coverage || [];
+        $('cov').innerHTML =
+          `<thead><tr><th>מערכת</th><th>מצב</th><th>מקורות</th><th>פניות</th><th>אחרונה</th></tr></thead><tbody>` +
+          coverage.map((x) => {
+            const [label, tone] = COV_STATE[x.state] || [x.state ?? 'לא זמין', ''];
+            return `<tr${x.state === 'has_leads' ? '' : ' class="empty"'}>
+            <td>${x.number ? `<span class="pill">${esc(x.number)}</span> ` : ''}${val(x.name)}</td>
+            <td class="${tone}">${esc(label)}</td>
+            <td>${Number(x.sources) || 0}</td>
+            <td>${Number(x.leads) || 0}</td>
+            <td>${x.last_at ? when(x.last_at) : '<span class="muted">—</span>'}</td>
+          </tr>`;
+          }).join('') + '</tbody>';
 
         $('src').innerHTML =
           `<thead><tr><th>טבלה</th><th>מערכת</th><th>פניות</th><th>אחרונה</th></tr></thead><tbody>` +
