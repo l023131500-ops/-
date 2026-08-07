@@ -1,0 +1,301 @@
+{
+  "ran": "scripts/qa/showcase-populated.mjs",
+  "page": "portal/public/showcase.html (working tree, live RPC)",
+  "read_as": "anon",
+  "measured": {
+    "home_page_systems": 20,
+    "showcase_systems": 19,
+    "home_only": [
+      "#33 (no path)"
+    ],
+    "showcase_only": []
+  },
+  "drawn": {
+    "light": {
+      "count": "19 מערכות מוצגות",
+      "empty": null,
+      "cards": [
+        {
+          "name": "פלטפורמת איגוד השיעורים",
+          "blurb": "כל שיעור, כל מגיד, כל תרומה — תחת קורת גג אחת.",
+          "href": "https://more30.com/torah",
+          "live": true
+        },
+        {
+          "name": "תמלול איגוד",
+          "blurb": "מהקלטה לטקסט ערוך — בלי להקליד מילה.",
+          "href": "https://more30.com/tamlul",
+          "live": true
+        },
+        {
+          "name": "מודעות איגוד",
+          "blurb": "מודעה שנוצרת, מופצת ונגבית — בלי לרדוף אחרי אף אחד.",
+          "href": "https://more30.com/modaot",
+          "live": true
+        },
+        {
+          "name": "עימוד תורני",
+          "blurb": "הטקסט נכנס. הדף יוצא מוכן לדפוס.",
+          "href": "https://more30.com/imud",
+          "live": true
+        },
+        {
+          "name": "לידים קופות חולים",
+          "blurb": "כל מבוטח שרוצה לעבור קופה — מגיע אליכם מסודר.",
+          "href": "https://more30.com/briut",
+          "live": true
+        },
+        {
+          "name": "מימוש זכויות בקלות",
+          "blurb": "הכסף שמגיע לך כבר מחכה. אנחנו עוזרים לך לקחת אותו.",
+          "href": "https://more30.com/bkalot",
+          "live": true
+        },
+        {
+          "name": "נדל\"ן (Smel)",
+          "blurb": "הנתונים על הנכס — לפני שמחליטים עליו.",
+          "href": "https://more30.com/smel",
+          "live": true
+        },
+        {
+          "name": "איגוד (egod)",
+          "blurb": "כל מערך השיעורים, במקום אחד מסודר.",
+          "href": "https://more30.com/egod",
+          "live": true
+        },
+        {
+          "name": "חצור קונקט",
+          "blurb": "כל מה שקורה בחצור, בכתובת אחת.",
+          "href": "https://more30.com/chatzor",
+          "live": true
+        },
+        {
+          "name": "תמלול חיזוקים",
+          "blurb": "מילה שנשמעה הופכת למילה שנקראת.",
+          "href": "https://more30.com/chizukim",
+          "live": true
+        },
+        {
+          "name": "עורך תורני",
+          "blurb": "גם כתב יד ישן הופך לטקסט שאפשר לערוך.",
+          "href": "https://more30.com/orech",
+          "live": true
+        },
+        {
+          "name": "מימוש זכויות (Get Your Rights)",
+          "blurb": "עונים על כמה שאלות, ומגלים מה מגיע לכם.",
+          "href": "https://more30.com/zchuyot",
+          "live": true
+        },
+        {
+          "name": "גליל קונקט",
+          "blurb": "כל השירותים והמידע של הגליל, במקום אחד.",
+          "href": "https://more30.com/galil",
+          "live": true
+        },
+        {
+          "name": "סטודיו מודעות",
+          "blurb": "מודעה מוכנה לפרסום, בזמן שלוקח לנסח רעיון.",
+          "href": "https://more30.com/studio",
+          "live": true
+        },
+        {
+          "name": "השוואת קופות חולים",
+          "blurb": "בוחרים קופה לפי מה שבאמת מגיע לכם.",
+          "href": "https://more30.com/kupot",
+          "live": true
+        },
+        {
+          "name": "נדל\"ן ברגע",
+          "blurb": "כל מה שצריך לדעת על נכס, עוד לפני שנכנסים בדלת.",
+          "href": "https://more30.com/nadlan",
+          "live": true
+        },
+        {
+          "name": "כסף — שקיפות תקציבית",
+          "blurb": "לראות בדיוק כמה כסף ציבורי הגיע לרשות שלך — וכמה נתקע בדרך.",
+          "href": "https://more30.com/kesef",
+          "live": true
+        },
+        {
+          "name": "KioskFleet — נעילת מכשיר",
+          "blurb": "מכשיר שפותח רק מה שאישרתם — רשימת כתובות מותרות, נאכפת גם בלי רשת.",
+          "href": "https://more30.com/kiosk",
+          "live": true
+        },
+        {
+          "name": "נדל״ן פרו — ניהול למתווכים",
+          "blurb": "כל העסק של המתווך ממסך אחד, מחובר לדוח נכס מבוסס מקורות רשמיים",
+          "href": "https://more30.com/tivuch",
+          "live": true
+        }
+      ]
+    },
+    "dark": {
+      "count": "19 מערכות מוצגות",
+      "empty": null,
+      "cards": [
+        {
+          "name": "פלטפורמת איגוד השיעורים",
+          "blurb": "כל שיעור, כל מגיד, כל תרומה — תחת קורת גג אחת.",
+          "href": "https://more30.com/torah",
+          "live": true
+        },
+        {
+          "name": "תמלול איגוד",
+          "blurb": "מהקלטה לטקסט ערוך — בלי להקליד מילה.",
+          "href": "https://more30.com/tamlul",
+          "live": true
+        },
+        {
+          "name": "מודעות איגוד",
+          "blurb": "מודעה שנוצרת, מופצת ונגבית — בלי לרדוף אחרי אף אחד.",
+          "href": "https://more30.com/modaot",
+          "live": true
+        },
+        {
+          "name": "עימוד תורני",
+          "blurb": "הטקסט נכנס. הדף יוצא מוכן לדפוס.",
+          "href": "https://more30.com/imud",
+          "live": true
+        },
+        {
+          "name": "לידים קופות חולים",
+          "blurb": "כל מבוטח שרוצה לעבור קופה — מגיע אליכם מסודר.",
+          "href": "https://more30.com/briut",
+          "live": true
+        },
+        {
+          "name": "מימוש זכויות בקלות",
+          "blurb": "הכסף שמגיע לך כבר מחכה. אנחנו עוזרים לך לקחת אותו.",
+          "href": "https://more30.com/bkalot",
+          "live": true
+        },
+        {
+          "name": "נדל\"ן (Smel)",
+          "blurb": "הנתונים על הנכס — לפני שמחליטים עליו.",
+          "href": "https://more30.com/smel",
+          "live": true
+        },
+        {
+          "name": "איגוד (egod)",
+          "blurb": "כל מערך השיעורים, במקום אחד מסודר.",
+          "href": "https://more30.com/egod",
+          "live": true
+        },
+        {
+          "name": "חצור קונקט",
+          "blurb": "כל מה שקורה בחצור, בכתובת אחת.",
+          "href": "https://more30.com/chatzor",
+          "live": true
+        },
+        {
+          "name": "תמלול חיזוקים",
+          "blurb": "מילה שנשמעה הופכת למילה שנקראת.",
+          "href": "https://more30.com/chizukim",
+          "live": true
+        },
+        {
+          "name": "עורך תורני",
+          "blurb": "גם כתב יד ישן הופך לטקסט שאפשר לערוך.",
+          "href": "https://more30.com/orech",
+          "live": true
+        },
+        {
+          "name": "מימוש זכויות (Get Your Rights)",
+          "blurb": "עונים על כמה שאלות, ומגלים מה מגיע לכם.",
+          "href": "https://more30.com/zchuyot",
+          "live": true
+        },
+        {
+          "name": "גליל קונקט",
+          "blurb": "כל השירותים והמידע של הגליל, במקום אחד.",
+          "href": "https://more30.com/galil",
+          "live": true
+        },
+        {
+          "name": "סטודיו מודעות",
+          "blurb": "מודעה מוכנה לפרסום, בזמן שלוקח לנסח רעיון.",
+          "href": "https://more30.com/studio",
+          "live": true
+        },
+        {
+          "name": "השוואת קופות חולים",
+          "blurb": "בוחרים קופה לפי מה שבאמת מגיע לכם.",
+          "href": "https://more30.com/kupot",
+          "live": true
+        },
+        {
+          "name": "נדל\"ן ברגע",
+          "blurb": "כל מה שצריך לדעת על נכס, עוד לפני שנכנסים בדלת.",
+          "href": "https://more30.com/nadlan",
+          "live": true
+        },
+        {
+          "name": "כסף — שקיפות תקציבית",
+          "blurb": "לראות בדיוק כמה כסף ציבורי הגיע לרשות שלך — וכמה נתקע בדרך.",
+          "href": "https://more30.com/kesef",
+          "live": true
+        },
+        {
+          "name": "KioskFleet — נעילת מכשיר",
+          "blurb": "מכשיר שפותח רק מה שאישרתם — רשימת כתובות מותרות, נאכפת גם בלי רשת.",
+          "href": "https://more30.com/kiosk",
+          "live": true
+        },
+        {
+          "name": "נדל״ן פרו — ניהול למתווכים",
+          "blurb": "כל העסק של המתווך ממסך אחד, מחובר לדוח נכס מבוסס מקורות רשמיים",
+          "href": "https://more30.com/tivuch",
+          "live": true
+        }
+      ]
+    }
+  },
+  "summary": {
+    "pass": 8,
+    "fail": 0
+  },
+  "checks": [
+    {
+      "check": "the catalogue is not empty",
+      "pass": true,
+      "detail": "19 cards, empty-state=(none)"
+    },
+    {
+      "check": "every card carries a name",
+      "pass": true,
+      "detail": "0 without one"
+    },
+    {
+      "check": "every card links somewhere real, not the \"/\" fallback",
+      "pass": true,
+      "detail": "none"
+    },
+    {
+      "check": "every card says what the system is, not \"לא זמין\"",
+      "pass": true,
+      "detail": "none"
+    },
+    {
+      "check": "no card is a system the home page hides — showcase ⊆ home",
+      "pass": true,
+      "detail": "none"
+    },
+    {
+      "check": "the count line agrees with the cards under it",
+      "pass": true,
+      "detail": "\"19 מערכות מוצגות\" vs \"19 מערכות מוצגות\""
+    },
+    {
+      "check": "the empty state is not drawn",
+      "pass": true,
+      "detail": "none"
+    },
+    {
+      "check": "dark mode draws the same catalogue",
+      "pass": true,
+      "detail": "19 cards · \"19 מערכות מוצגות\""
+    }
+  ]
+}
