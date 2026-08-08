@@ -290,7 +290,47 @@
              : ` · ${Number(t.lighthouse_fresh) || 0} טריות`)],
         ].map(([n,l]) => `<div class="kpi"><div class="n">${Number(n)||0}</div><div class="l">${l}</div></div>`).join('');
 
-        $('grid').innerHTML = (data.systems || []).map((x) => {
+        // ‏§3 מבקש מנויים והכנסה לכל מערכת. עד היום הכותרת ספרה 90 מנויי בדיקה
+        // ותשעה-עשר הכרטיסים שמתחתיה ספרו 79: אחת-עשרה שורות המנוי של
+        // more30/premium — המסלול הכללי של §8א, 10 ₪ — יושבות על app_key שאין
+        // לו שורה ב-core.projects, ולכן נספרו בכותרת ובאף כרטיס. אותו דבר
+        // לשבע שורות החברות. מיגרציה 0051 מוציאה אותן למפתח platform, וכאן
+        // הן מקבלות כרטיס ראשון בשורה — עם אותם שדות בדיוק, בלי מספר מערכת,
+        // בלי Lighthouse ובלי כניסה לניהול, שאין לפלטפורמה אף אחד מהם.
+        const platformCard = () => {
+          const pf = data.platform;
+          if (!pf) return '';
+          const u = pf.users || {};
+          const tiers = (pf.tiers || [])
+            .map((t) => `${esc(t.name_he || t.code)} ${t.price_ils ? money(t.price_ils) : 'ללא חיוב'}`)
+            .join(' · ');
+          return `<article class="sys">
+            <div class="row1">
+              <span class="num">—</span>
+              <h2>${esc(pf.name || 'more30')}</h2>
+              <span class="tag show">פלטפורמה</span>
+            </div>
+            <p class="tagline">המסלולים שנמכרים על הפלטפורמה עצמה ולא על מערכת אחת.
+              הם נספרים בכותרת שלמעלה ואינם יכולים להופיע בכרטיס של מערכת.</p>
+            <dl>
+              <dt>לקוחות</dt><dd>${u.members ?? 0}</dd>
+              ${u.test_accounts
+                ? `<dt>חשבונות בדיקה</dt><dd class="muted">${u.test_accounts} — לא לקוחות</dd>`
+                : ''}
+              <dt>פעילים 7 ימים</dt><dd>${u.active_7d ?? 0}</dd>
+              <dt>פעילות אחרונה</dt><dd>${when(u.last_activity)}</dd>
+              <dt>מנויים פעילים</dt><dd>${pf.subscriptions?.active ?? 0}</dd>
+              ${pf.subscriptions?.test
+                ? `<dt>מנויי בדיקה</dt><dd class="muted">${pf.subscriptions.test} — לא הכנסה</dd>`
+                : ''}
+              <dt>מסלולים</dt><dd>${tiers || '<span class="muted">אין</span>'}</dd>
+              <dt>הכנסה חודשית משוערת</dt><dd>${money(pf.mrr_estimate_ils)}</dd>
+            </dl>
+            <p class="entry"><span class="muted">אין מסך ניהול נפרד — הלוח הזה הוא הניהול שלה.</span></p>
+          </article>`;
+        };
+
+        $('grid').innerHTML = platformCard() + (data.systems || []).map((x) => {
           const u = x.users;
           // חשבונות הבדיקה מוצגים בשורה משלהם ולא נבלעים במספר הלקוחות.
           // אחרת "3 משתמשים" ב-torah היו שלושה חשבונות שיצרתי בעצמי במבחן

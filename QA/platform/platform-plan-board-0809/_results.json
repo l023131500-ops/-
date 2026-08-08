@@ -1,0 +1,71 @@
+{
+  "at": "2026-08-08T22:20:19.219Z",
+  "page": "https://more30.com/admin/systems",
+  "measured": {
+    "totals_subs_test": 90,
+    "sum_over_system_cards_test": 79,
+    "platform_subs_test": 11,
+    "platform_subs_active": 0,
+    "platform_members_real": 6,
+    "platform_members_test": 1,
+    "platform_active_7d": 4,
+    "platform_tiers": [
+      "free",
+      "premium 10 ₪"
+    ]
+  },
+  "pass": 10,
+  "fail": 0,
+  "results": [
+    {
+      "check": "הכתובת מגישה 200",
+      "pass": true,
+      "detail": "status=200"
+    },
+    {
+      "check": "ה-HTML קורא את data.platform",
+      "pass": true,
+      "detail": "המפתח החדש אינו נקרא בעמוד שהייצור מגיש"
+    },
+    {
+      "check": "מפתח חסר מחזיר כלום ולא כרטיס ריק",
+      "pass": true,
+      "detail": "אין נפילה רכה"
+    },
+    {
+      "check": "הכרטיס נגזר מ-users של הדוח",
+      "pass": true,
+      "detail": "pf.users אינו ב-HTML"
+    },
+    {
+      "check": "הכרטיס נגזר מ-subscriptions של הדוח",
+      "pass": true,
+      "detail": "pf.subscriptions?.active אינו ב-HTML"
+    },
+    {
+      "check": "הכרטיס נגזר מ-tiers של הדוח",
+      "pass": true,
+      "detail": "pf.tiers אינו ב-HTML"
+    },
+    {
+      "check": "הכרטיס נגזר מ-mrr_estimate_ils של הדוח",
+      "pass": true,
+      "detail": "money(pf.mrr_estimate_ils) אינו ב-HTML"
+    },
+    {
+      "check": "הכרטיס משורשר לפני systems ואינו נספר בתוכו",
+      "pass": true,
+      "detail": "הכרטיס נדחף לתוך רשימת המערכות"
+    },
+    {
+      "check": "הכרטיס מסומן \"פלטפורמה\" ובלי מספר מערכת",
+      "pass": true,
+      "detail": "הסימון חסר, והכרטיס נקרא כמערכת"
+    },
+    {
+      "check": "more30_admin_systems_report עדיין חסום לאנונימי",
+      "pass": true,
+      "detail": "status=401 body={\"code\":\"42501\",\"details\":null,\"hint\":null,\"message\":\"super admin only\"}"
+    }
+  ]
+}
