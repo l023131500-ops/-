@@ -129,7 +129,63 @@ export function App() {
   const topicRow = seg ? rows.find((r) => r.path === seg) : undefined;
   if (topicRow && !enterable(topicRow)) return <ComingSoon row={topicRow} />;
 
+  /**
+   * כתובת שאין מאחוריה מערכת (באג #119).
+   *
+   * ה-rewrite האחרון ב-portal/vercel.dist.json הוא `/(.*) → /index.html`, ולכן
+   * כל נתיב שלא נתפס למעלה מגיע לכאן — /events, /zol וגם /no-such-system.
+   * עד עכשיו הם קיבלו את דף הבית עצמו, כאילו זו הכתובת שביקשו: המבקר לא ידע
+   * שטעה, וגוגל אינדקס את אותו עמוד תחת עשרות כתובות.
+   *
+   * ⚠️ רק אחרי `ready`. ב-loading הרשימה ריקה, וב-failed היא ריקה מטעות רשת —
+   * לומר "לא נמצא" באחד מהשניים היה הופך תקלה זמנית לעמוד שגיאה על מערכת חיה.
+   */
+  if (load.state === "ready" && seg && !topicRow && !PORTAL_PATHS.has(seg)) {
+    return <NotFound seg={seg} />;
+  }
+
   return <Portal load={load} retry={fetchSystems} />;
+}
+
+/**
+ * נתיבים שהפורטל מגיש בעצמו — יש להם rewrite משלהם ב-portal/vercel.dist.json,
+ * ולכן ה-SPA לעולם אינו רואה אותם בייצור. הרשימה כאן היא חגורת ביטחון בלבד:
+ * אם rewrite אחד ייפול, עדיף שהמבקר יקבל את דף הבית ולא הכרזה ש-/login אינו קיים.
+ */
+const PORTAL_PATHS = new Set([
+  "login", "me", "subscribe", "showcase", "admin", "nihul", "auth", "api", "assets",
+]);
+
+/**
+ * הכתובת אינה קיימת. הסטטוס עצמו נשאר 200 — ה-rewrite של Vercel אינו יכול
+ * להחזיר קוד אחר לעמוד SPA — ולכן `noindex` הוא מה שמונע את האינדוקס הכפול.
+ */
+function NotFound({ seg }: { seg: string }) {
+  useEffect(() => {
+    const prevTitle = document.title;
+    document.title = "הכתובת לא נמצאה · עולם הסטארטאפים";
+    const meta = document.createElement("meta");
+    meta.name = "robots";
+    meta.content = "noindex";
+    document.head.appendChild(meta);
+    return () => { document.title = prevTitle; meta.remove(); };
+  }, []);
+
+  return (
+    <main className="soon" dir="rtl">
+      <div className="soon-in">
+        <div className="eyebrow">עולם הסטארטאפים</div>
+        <h1 className="display soon-title">הכתובת הזו לא נמצאה</h1>
+        <p className="serif soon-desc">
+          אין מערכת שיושבת תחת more30.com/{seg}. ייתכן שהכתובת הוקלדה אחרת, או שהיא הובילה
+          למשהו שכבר אינו באוויר. כל המערכות הפעילות מרוכזות בדף אחד.
+        </p>
+        <div className="rule" />
+        <p className="soon-note">404 · more30.com/{seg}</p>
+        <a className="btn" href="/">לרשימת המערכות</a>
+      </div>
+    </main>
+  );
 }
 
 function ComingSoon({ row }: { row: System }) {
