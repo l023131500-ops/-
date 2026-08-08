@@ -3,6 +3,30 @@
   "phase": "after",
   "read_as": "anon, through more30.com",
   "netfree_lines_stripped": 3,
+  "route_list": "derived from portal/vercel.dist.json + every file under portal/public/**",
+  "html_files": [
+    "404.html",
+    "admin-activity.html",
+    "admin-automation.html",
+    "admin-credits.html",
+    "admin-customers.html",
+    "admin-issues.html",
+    "admin-leads.html",
+    "admin-pricing.html",
+    "admin-rights.html",
+    "admin-systems.html",
+    "auth/callback.html",
+    "login.html",
+    "me.html",
+    "showcase.html",
+    "subscribe.html",
+    "system.html"
+  ],
+  "asset_files": [
+    "auth-button.js",
+    "robots.txt",
+    "sitemap.xml"
+  ],
   "routes": [
     {
       "route": "/login",
@@ -12,6 +36,16 @@
       "tree_bytes": 21915,
       "live_sha": "c64b556d8872",
       "tree_sha": "c64b556d8872",
+      "identical": true
+    },
+    {
+      "route": "/auth/callback",
+      "file": "auth/callback.html",
+      "status": 200,
+      "live_bytes": 13107,
+      "tree_bytes": 13107,
+      "live_sha": "c3a04996fb40",
+      "tree_sha": "c3a04996fb40",
       "identical": true
     },
     {
@@ -35,33 +69,13 @@
       "identical": true
     },
     {
-      "route": "/showcase",
-      "file": "showcase.html",
-      "status": 200,
-      "live_bytes": 7319,
-      "tree_bytes": 7319,
-      "live_sha": "ba41ea5acb2d",
-      "tree_sha": "ba41ea5acb2d",
-      "identical": true
-    },
-    {
-      "route": "/auth/callback",
-      "file": "auth/callback.html",
-      "status": 200,
-      "live_bytes": 13107,
-      "tree_bytes": 13107,
-      "live_sha": "c3a04996fb40",
-      "tree_sha": "c3a04996fb40",
-      "identical": true
-    },
-    {
       "route": "/admin/activity",
       "file": "admin-activity.html",
       "status": 200,
-      "live_bytes": 12439,
-      "tree_bytes": 12439,
-      "live_sha": "0e5ec1cd259d",
-      "tree_sha": "0e5ec1cd259d",
+      "live_bytes": 14899,
+      "tree_bytes": 14899,
+      "live_sha": "45f871fd6817",
+      "tree_sha": "45f871fd6817",
       "identical": true
     },
     {
@@ -78,10 +92,10 @@
       "route": "/admin/systems",
       "file": "admin-systems.html",
       "status": 200,
-      "live_bytes": 21275,
-      "tree_bytes": 21275,
-      "live_sha": "eca8f312db02",
-      "tree_sha": "eca8f312db02",
+      "live_bytes": 24007,
+      "tree_bytes": 24007,
+      "live_sha": "c66abc088f73",
+      "tree_sha": "c66abc088f73",
       "identical": true
     },
     {
@@ -145,29 +159,100 @@
       "identical": true
     },
     {
+      "route": "/showcase",
+      "file": "showcase.html",
+      "status": 200,
+      "live_bytes": 7319,
+      "tree_bytes": 7319,
+      "live_sha": "ba41ea5acb2d",
+      "tree_sha": "ba41ea5acb2d",
+      "identical": true
+    },
+    {
+      "route": "/404.html",
+      "file": "404.html",
+      "status": 200,
+      "live_bytes": 4227,
+      "tree_bytes": 4227,
+      "live_sha": "3e5fe94d1c86",
+      "tree_sha": "3e5fe94d1c86",
+      "identical": true
+    },
+    {
+      "route": "/system.html",
+      "file": "system.html",
+      "status": 200,
+      "live_bytes": 18926,
+      "tree_bytes": 18926,
+      "live_sha": "1c9dc0abc1b4",
+      "tree_sha": "1c9dc0abc1b4",
+      "identical": true
+    },
+    {
       "route": "/auth-button.js",
       "file": "auth-button.js",
       "status": 200,
-      "live_bytes": 31191,
-      "tree_bytes": 31191,
-      "live_sha": "9593d969bcb8",
-      "tree_sha": "9593d969bcb8",
+      "live_bytes": 32558,
+      "tree_bytes": 32558,
+      "live_sha": "99f4f0810025",
+      "tree_sha": "99f4f0810025",
+      "identical": true
+    },
+    {
+      "route": "/robots.txt",
+      "file": "robots.txt",
+      "status": 200,
+      "live_bytes": 1019,
+      "tree_bytes": 1019,
+      "live_sha": "14f983eba350",
+      "tree_sha": "14f983eba350",
+      "identical": true
+    },
+    {
+      "route": "/sitemap.xml",
+      "file": "sitemap.xml",
+      "status": 200,
+      "live_bytes": 2637,
+      "tree_bytes": 2637,
+      "live_sha": "d835ad24953a",
+      "tree_sha": "d835ad24953a",
       "identical": true
     }
   ],
   "stale": [],
+  "dangling_rewrites": [],
+  "not_200": [],
+  "unmeasured_files": [],
   "missing_commits": [],
   "summary": {
-    "pass": 2,
+    "pass": 5,
     "fail": 0,
     "stale": 0,
-    "served": 15
+    "served": 19,
+    "html_files": 16,
+    "asset_files": 3,
+    "public_files": 19
   },
   "checks": [
     {
       "check": "every page the portal serves matches the file in the tree",
       "pass": true,
       "detail": "none"
+    },
+    {
+      "check": "every rewrite destination in vercel.dist.json exists in the tree",
+      "pass": true,
+      "detail": "all 14"
+    },
+    {
+      "check": "every page the portal serves answers 200",
+      "pass": true,
+      "detail": "all 19"
+    },
+    {
+      "check": "every file under portal/public is measured by one of the routes above",
+      "pass": true,
+      "detail": "all 19"
     },
     {
       "check": "every committed fix on those pages is the one production serves",

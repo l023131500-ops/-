@@ -23,6 +23,11 @@
  * HTML מקומי, ובנוסף כל קובץ HTML שאין לו rewrite ולכן מוגש בשמו המלא. בדיקה
  * שלישית קובעת שלא נשאר קובץ שאיש לא מדד.
  *
+ * ‏**וגם רשימת הנכסים.** אחרי אותו תיקון היא עדיין הייתה מוקלדת, ובה שורה
+ * אחת: `auth-button.js`. `robots.txt` ו-`sitemap.xml` — שני הקבצים שמספרים
+ * למנועי החיפוש מה קיים באתר — לא נמדדו מעולם, וב-09/08 הייצור הגיש מפה בת
+ * 20 כתובות בזמן שהעץ החזיק 21. עכשיו נמדד כל קובץ שתחת `portal/public`.
+ *
  *   node scripts/qa/portal-deploy-drift.mjs [--after]
  */
 import { readFile, readdir, mkdir, writeFile } from 'node:fs/promises';
@@ -32,18 +37,19 @@ const AFTER = process.argv.includes('--after');
 const OUT = 'QA/platform/portal-deploy-drift-0808';
 const PUBLIC = 'portal/public';
 
-/** כל קבצי ה-HTML שיושבים תחת portal/public, בנתיב יחסי עם לוכסן קדימה. */
-async function htmlFiles(dir = PUBLIC, prefix = '') {
+/** כל הקבצים שיושבים תחת portal/public, בנתיב יחסי עם לוכסן קדימה. */
+async function allFiles(dir = PUBLIC, prefix = '') {
   const out = [];
   for (const e of await readdir(dir, { withFileTypes: true })) {
     const rel = prefix + e.name;
-    if (e.isDirectory()) out.push(...(await htmlFiles(`${dir}/${e.name}`, `${rel}/`)));
-    else if (e.name.endsWith('.html')) out.push(rel);
+    if (e.isDirectory()) out.push(...(await allFiles(`${dir}/${e.name}`, `${rel}/`)));
+    else out.push(rel);
   }
   return out.sort();
 }
 
-const FILES = await htmlFiles();
+const ALL_FILES = await allFiles();
+const FILES = ALL_FILES.filter((f) => f.endsWith('.html'));
 
 /**
  * המסלולים, נגזרים משני המקורות:
@@ -54,12 +60,30 @@ const dist = JSON.parse(await readFile('portal/vercel.dist.json', 'utf8'));
 const rewritten = (dist.rewrites ?? [])
   .filter((r) => r.destination.startsWith('/') && r.destination.endsWith('.html'))
   .map((r) => [r.source, r.destination.slice(1)]);
-const routedFiles = new Set(rewritten.map(([, f]) => f));
+/** כל יעד rewrite מקומי, גם כשאינו HTML — כדי שנכס מנותב לא יימדד פעמיים. */
+const routedFiles = new Set(
+  (dist.rewrites ?? [])
+    .filter((r) => r.destination.startsWith('/'))
+    .map((r) => r.destination.slice(1)),
+);
 const direct = FILES.filter((f) => !routedFiles.has(f)).map((f) => ['/' + f, f]);
 const ROUTES = [...rewritten, ...direct];
 
-/** קובץ משותף שכל העמודים טוענים — הוא נפרס באותה פריסה. */
-const ASSETS = [['/auth-button.js', 'auth-button.js']];
+/**
+ * ‏**רשימת הנכסים נגזרת אף היא, מאותה סיבה.** כשהיא הייתה מוקלדת היא החזיקה
+ * שורה אחת — `auth-button.js`, הקובץ שכל העמודים טוענים — ושני הקבצים
+ * שמספרים למנועי החיפוש מה קיים באתר, `robots.txt` ו-`sitemap.xml`, לא נמדדו
+ * מעולם. `sitemap.xml` הוא בדיוק הקובץ שהקומיט הקודם (8d7cb59, #127) שינה,
+ * ולכן השומר שהצהיר "כל עמוד שהפורטל מגיש" עבר 4/4 בזמן שהייצור הגיש מפה
+ * ישנה בת 20 כתובות בלי `/showcase` — אתר התדמית שכל 26 הפוטרים מקשרים אליו.
+ *
+ * עכשיו: כל קובץ שאינו HTML תחת `portal/public` שאין לו rewrite. קובץ חדש
+ * נכנס למדידה מעצם קיומו.
+ */
+const ASSETS = ALL_FILES.filter((f) => !f.endsWith('.html') && !routedFiles.has(f)).map((f) => [
+  '/' + f,
+  f,
+]);
 
 /**
  * סימנים בשמם: המחרוזת שקומיט הוסיף, והעמוד שנושא אותה.
@@ -150,6 +174,18 @@ ok('every page the portal serves answers 200',
    notOk.length === 0,
    notOk.length ? notOk.join(', ') : `all ${rows.length}`);
 
+/**
+ * השלישית, וזו שהייתה תופסת את sitemap.xml: קובץ שיושב ב-portal/public ואף
+ * שורה למעלה לא מדדה אותו. שתי הרשימות נגזרות עכשיו, אבל גזירה יכולה להשאיר
+ * קטגוריה בחוץ בדיוק כפי שרשימה מוקלדת משאירה שורה — ולכן ההשוואה כאן היא
+ * מול תוכן התיקייה כולה ולא מול מה שהגזירה ייצרה.
+ */
+const measured = new Set([...ROUTES, ...ASSETS].map(([, f]) => f));
+const unmeasured = ALL_FILES.filter((f) => !measured.has(f));
+ok('every file under portal/public is measured by one of the routes above',
+   unmeasured.length === 0,
+   unmeasured.length ? unmeasured.join(' · ') : `all ${ALL_FILES.length}`);
+
 /** הסימנים: מחרוזת שקיימת בעץ ואיננה בייצור. */
 const missing = [];
 for (const [commit, route, marker, what] of MARKERS) {
@@ -172,14 +208,23 @@ await writeFile(
     phase: AFTER ? 'after' : 'before',
     read_as: 'anon, through more30.com',
     netfree_lines_stripped: 3,
-    route_list: 'derived from portal/vercel.dist.json + portal/public/**/*.html',
+    route_list: 'derived from portal/vercel.dist.json + every file under portal/public/**',
     html_files: FILES,
+    asset_files: ASSETS.map(([, f]) => f),
     routes: rows,
     stale: stale.map((r) => r.route),
     dangling_rewrites: dangling,
     not_200: notOk,
+    unmeasured_files: unmeasured,
     missing_commits: missing,
-    summary: { pass, fail, stale: stale.length, served: rows.length, html_files: FILES.length },
+    summary: {
+      pass, fail,
+      stale: stale.length,
+      served: rows.length,
+      html_files: FILES.length,
+      asset_files: ASSETS.length,
+      public_files: ALL_FILES.length,
+    },
     checks: results,
   }, null, 2) + '\n',
   'utf8',

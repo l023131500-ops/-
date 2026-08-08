@@ -3,7 +3,7 @@
   "phase": "before",
   "read_as": "anon, through more30.com",
   "netfree_lines_stripped": 3,
-  "route_list": "derived from portal/vercel.dist.json + portal/public/**/*.html",
+  "route_list": "derived from portal/vercel.dist.json + every file under portal/public/**",
   "html_files": [
     "404.html",
     "admin-activity.html",
@@ -21,6 +21,11 @@
     "showcase.html",
     "subscribe.html",
     "system.html"
+  ],
+  "asset_files": [
+    "auth-button.js",
+    "robots.txt",
+    "sitemap.xml"
   ],
   "routes": [
     {
@@ -192,24 +197,49 @@
       "live_sha": "99f4f0810025",
       "tree_sha": "99f4f0810025",
       "identical": true
+    },
+    {
+      "route": "/robots.txt",
+      "file": "robots.txt",
+      "status": 200,
+      "live_bytes": 1019,
+      "tree_bytes": 1019,
+      "live_sha": "14f983eba350",
+      "tree_sha": "14f983eba350",
+      "identical": true
+    },
+    {
+      "route": "/sitemap.xml",
+      "file": "sitemap.xml",
+      "status": 200,
+      "live_bytes": 2514,
+      "tree_bytes": 2637,
+      "live_sha": "17cd00ffa62e",
+      "tree_sha": "d835ad24953a",
+      "identical": false
     }
   ],
-  "stale": [],
+  "stale": [
+    "/sitemap.xml"
+  ],
   "dangling_rewrites": [],
   "not_200": [],
+  "unmeasured_files": [],
   "missing_commits": [],
   "summary": {
     "pass": 4,
-    "fail": 0,
-    "stale": 0,
-    "served": 17,
-    "html_files": 16
+    "fail": 1,
+    "stale": 1,
+    "served": 19,
+    "html_files": 16,
+    "asset_files": 3,
+    "public_files": 19
   },
   "checks": [
     {
       "check": "every page the portal serves matches the file in the tree",
-      "pass": true,
-      "detail": "none"
+      "pass": false,
+      "detail": "1/19 stale: /sitemap.xml"
     },
     {
       "check": "every rewrite destination in vercel.dist.json exists in the tree",
@@ -219,7 +249,12 @@
     {
       "check": "every page the portal serves answers 200",
       "pass": true,
-      "detail": "all 17"
+      "detail": "all 19"
+    },
+    {
+      "check": "every file under portal/public is measured by one of the routes above",
+      "pass": true,
+      "detail": "all 19"
     },
     {
       "check": "every committed fix on those pages is the one production serves",
