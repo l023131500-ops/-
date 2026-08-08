@@ -419,6 +419,26 @@
    */
   var CREDIT_CLASS = 'more30-credit';
 
+  /**
+   * לאן הקרדיט מוביל — `/showcase`, ולא דף הבית.
+   *
+   * §7 מנסח את זה בדיוק: קישור בפוטר של כל אתר, "פותח ע״י עולם הסטארטאפים",
+   * **שמוביל לאתר התדמית שלנו**. שני עמודים ציבוריים נושאים את השם הזה,
+   * והם אינם אותו דבר: `more30.com/` הוא קטלוג המערכות — מי שנוחת בו רואה
+   * רשת של 19 מוצרים למכירה; `more30.com/showcase` הוא אתר התדמית — ה-title,
+   * ה-h1 והפוטר שלו הם "עולם הסטארטאפים" (זו הזהות ש-`core.issues #117`
+   * קבע שאליה §7 מקשר, והעמוד מלא מאז `bbc64b1`).
+   *
+   * הקישור הצביע על דף הבית מאז שנכתב, כלומר משפט על **מי בנה** את האתר
+   * הוביל לחנות ולא למי שבנה. נמדד 09/08/2026 על 21 הרכבות בייצור: אפס
+   * מהן מקשרות ל-/showcase.
+   *
+   * ובאתר התדמית עצמו אין קרדיט — כמו בדף הבית, "פותח ע״י" שמוביל לעצמו
+   * אינו אמירה.
+   */
+  var CREDIT_HREF = HOME + '/showcase';
+  var CREDIT_SKIP = { '/': 1, '/showcase': 1, '/showcase/': 1, '/showcase.html': 1 };
+
   // ה-body מסדר את ילדיו כזרימה רגילה (בלוק), ולא כשורת flex/grid.
   function bodyIsBlockFlow() {
     try {
@@ -464,14 +484,14 @@
       return;
     }
 
-    // בפורטל עצמו הקרדיט מיותר — הוא כבר הבית.
+    // בפורטל עצמו הקרדיט מיותר — הוא כבר הבית, וגם היעד של הקישור.
     try {
-      if (location.hostname === 'more30.com' && location.pathname === '/') return;
+      if (location.hostname === 'more30.com' && CREDIT_SKIP[location.pathname]) return;
     } catch (e) {}
 
     var link = document.createElement('a');
     link.className = CREDIT_CLASS;
-    link.href = HOME;
+    link.href = CREDIT_HREF;
     link.textContent = 'פותח ע״י עולם הסטארטאפים';
     link.rel = 'noopener';
     link.setAttribute('dir', 'rtl');
