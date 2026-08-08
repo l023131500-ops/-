@@ -1,5 +1,5 @@
 {
-  "measured_at": "2026-08-08T21:11:46.215Z",
+  "measured_at": "2026-08-08T21:30:30.147Z",
   "source": {
     "routes": "portal/vercel.dist.json",
     "public": "portal/public"
@@ -429,7 +429,7 @@
   "wild": [
     {
       "input": "https://evil.com/bkalot",
-      "app_key": "bkalot"
+      "app_key": null
     },
     {
       "input": "ftp://x/y/torah",
@@ -460,13 +460,13 @@
       "app_key": "torah"
     }
   ],
-  "known_open": {
+  "foreign_host": {
     "issue": 122,
     "input": "https://evil.com/bkalot",
-    "app_key": "bkalot",
-    "note": "הדומיין נחתך בלי להיבדק — התנהגות מ-0015, לא נגעה בסבב הזה"
+    "app_key": null,
+    "note": "נסגר ב-0049 — השער יושב ב-core.trusted_origins"
   },
-  "passed": 6,
+  "passed": 7,
   "failed": 0,
   "checks": [
     {
@@ -493,6 +493,11 @@
       "check": "כל ערך שיוצא מהנורמליזציה הוא מערכת רשומה או more30 — אף פעם מפתח מומצא",
       "pass": true,
       "detail": "[]"
+    },
+    {
+      "check": "מארח שאיננו מגישים ממנו אינו רושם חברות (#122)",
+      "pass": true,
+      "detail": "got=null"
     },
     {
       "check": "?app= עם ערך שאינו מערכת רשומה נופל חזרה לנתיב ואינו מומצא",

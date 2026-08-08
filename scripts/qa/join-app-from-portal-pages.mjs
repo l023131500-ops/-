@@ -172,11 +172,14 @@ const invented = wildRows.filter((r) => r.app_key !== null && !known.has(r.app_k
 ok('כל ערך שיוצא מהנורמליזציה הוא מערכת רשומה או more30 — אף פעם מפתח מומצא',
    invented.length === 0, JSON.stringify(invented));
 
-// ⚠️ פתוח ונמדד, לא מוסתר: הדומיין נחתך בלי להיבדק (התנהגות של 0015), ולכן
-// `https://evil.com/bkalot` מחזיר `bkalot`. זה אינו יכול להמציא מערכת — רק
-// לרשום חברות במערכת קיימת מתוך referrer זר. core.issues #122.
+// ‏#122, שנפתח כאן ונסגר ב-0049: עד אז הדומיין נחתך בלי להיבדק (התנהגות של
+// 0015), ולכן `https://evil.com/bkalot` החזיר `bkalot` — referrer זר שרושם
+// חברות במערכת קיימת. השורה נשארת כאן כגלאי רגרסיה; המדידה המלאה של השער,
+// על עשר צורות ועל 25 מארחי ההרכבה, יושבת ב-
+// scripts/qa/normalize-rejects-foreign-hosts.mjs.
 const foreignHost = await appKey('https://evil.com/bkalot');
-console.log(`\n  ידוע ופתוח (#122): https://evil.com/bkalot → ${foreignHost}\n`);
+ok('מארח שאיננו מגישים ממנו אינו רושם חברות (#122)',
+   foreignHost === null, `got=${foreignHost}`);
 
 // ‏?app= לא הופך לדלת אחורית: ערך שאינו מערכת רשומה אינו מתקבל.
 const bogus = await appKey('/system.html?app=notasystem');
@@ -189,8 +192,8 @@ writeFileSync(
   JSON.stringify(
     { measured_at: new Date().toISOString(), source: { routes: ROUTES, public: PUBLIC },
       portal_routes: table, mounts: mountRows, plans_page: planRows, wild: wildRows,
-      known_open: { issue: 122, input: 'https://evil.com/bkalot', app_key: foreignHost,
-                    note: 'הדומיין נחתך בלי להיבדק — התנהגות מ-0015, לא נגעה בסבב הזה' },
+      foreign_host: { issue: 122, input: 'https://evil.com/bkalot', app_key: foreignHost,
+                      note: 'נסגר ב-0049 — השער יושב ב-core.trusted_origins' },
       passed: pass, failed: fail, checks: results },
     null, 2,
   ),

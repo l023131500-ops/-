@@ -1,0 +1,332 @@
+{
+  "measured_at": "2026-08-08T21:26:08.663Z",
+  "issue": 122,
+  "source": {
+    "routes": "portal/vercel.dist.json"
+  },
+  "rejected": [
+    {
+      "url": "https://evil.com/bkalot",
+      "why": "הממצא של #122 כלשונו",
+      "app_key": "bkalot"
+    },
+    {
+      "url": "http://evil.com/bkalot",
+      "why": "גם בלי TLS",
+      "app_key": "bkalot"
+    },
+    {
+      "url": "https://more30.com.evil.com/bkalot",
+      "why": "הדומיין שלנו כתחילית של דומיין זר",
+      "app_key": "bkalot"
+    },
+    {
+      "url": "https://evil-more30.vercel.app/bkalot",
+      "why": "שם פרויקט שאיננו מכירים במרחב vercel.app",
+      "app_key": "bkalot"
+    },
+    {
+      "url": "https://more30.co/bkalot",
+      "why": "סיומת אחרת",
+      "app_key": "bkalot"
+    },
+    {
+      "url": "https://notmore30.com/bkalot",
+      "why": "הדומיין שלנו כסיומת של דומיין זר",
+      "app_key": "bkalot"
+    },
+    {
+      "url": "https://more30.com@evil.com/bkalot",
+      "why": "userinfo — המארח האמיתי הוא מה שאחרי ה-@",
+      "app_key": "bkalot"
+    },
+    {
+      "url": "//evil.com/bkalot",
+      "why": "כתובת ללא פרוטוקול",
+      "app_key": null
+    },
+    {
+      "url": "https://evil.com?x=/bkalot",
+      "why": "הדומיין מוברח כחלק מה-query",
+      "app_key": "bkalot"
+    },
+    {
+      "url": "https://evil.com/system.html?app=nadlan",
+      "why": "הדלת של 0048 אינה עוקפת את השער",
+      "app_key": "nadlan"
+    }
+  ],
+  "assembly_hosts": [
+    {
+      "host": "nihul-more30.vercel.app",
+      "canonical": "https://more30.com/admin",
+      "direct": "https://nihul-more30.vercel.app/admin",
+      "expected": "more30",
+      "got": "more30",
+      "same": true
+    },
+    {
+      "host": "torah-more30.vercel.app",
+      "canonical": "https://more30.com/torah",
+      "direct": "https://torah-more30.vercel.app/torah",
+      "expected": "torah",
+      "got": "torah",
+      "same": true
+    },
+    {
+      "host": "tamlul-more30.vercel.app",
+      "canonical": "https://more30.com/tamlul",
+      "direct": "https://tamlul-more30.vercel.app/tamlul",
+      "expected": "tamlul",
+      "got": "tamlul",
+      "same": true
+    },
+    {
+      "host": "modaot-more30.vercel.app",
+      "canonical": "https://more30.com/modaot",
+      "direct": "https://modaot-more30.vercel.app/modaot",
+      "expected": "modaot",
+      "got": "modaot",
+      "same": true
+    },
+    {
+      "host": "chizukim2-more30.vercel.app",
+      "canonical": "https://more30.com/chizukim",
+      "direct": "https://chizukim2-more30.vercel.app/chizukim",
+      "expected": "chizukim",
+      "got": "chizukim",
+      "same": true
+    },
+    {
+      "host": "chatzor-more30.vercel.app",
+      "canonical": "https://more30.com/chatzor",
+      "direct": "https://chatzor-more30.vercel.app/chatzor",
+      "expected": "chatzor",
+      "got": "chatzor",
+      "same": true
+    },
+    {
+      "host": "egod-more30.vercel.app",
+      "canonical": "https://more30.com/egod",
+      "direct": "https://egod-more30.vercel.app/egod",
+      "expected": "egod",
+      "got": "egod",
+      "same": true
+    },
+    {
+      "host": "mthbram-more30.vercel.app",
+      "canonical": "https://more30.com/mthbram",
+      "direct": "https://mthbram-more30.vercel.app/mthbram",
+      "expected": "mthbram",
+      "got": "mthbram",
+      "same": true
+    },
+    {
+      "host": "zchuyot-more30.vercel.app",
+      "canonical": "https://more30.com/zchuyot",
+      "direct": "https://zchuyot-more30.vercel.app/zchuyot",
+      "expected": "zchuyot",
+      "got": "zchuyot",
+      "same": true
+    },
+    {
+      "host": "galil-more30.vercel.app",
+      "canonical": "https://more30.com/galil",
+      "direct": "https://galil-more30.vercel.app/galil",
+      "expected": "galil",
+      "got": "galil",
+      "same": true
+    },
+    {
+      "host": "bkalot-more30.vercel.app",
+      "canonical": "https://more30.com/bkalot",
+      "direct": "https://bkalot-more30.vercel.app/bkalot",
+      "expected": "bkalot",
+      "got": "bkalot",
+      "same": true
+    },
+    {
+      "host": "smel-more30.vercel.app",
+      "canonical": "https://more30.com/smel",
+      "direct": "https://smel-more30.vercel.app/smel",
+      "expected": "smel",
+      "got": "smel",
+      "same": true
+    },
+    {
+      "host": "kupot-more30.vercel.app",
+      "canonical": "https://more30.com/kupot",
+      "direct": "https://kupot-more30.vercel.app/kupot",
+      "expected": "kupot",
+      "got": "kupot",
+      "same": true
+    },
+    {
+      "host": "gesher-more30.vercel.app",
+      "canonical": "https://more30.com/gesher",
+      "direct": "https://gesher-more30.vercel.app/gesher/",
+      "expected": "gesher",
+      "got": "gesher",
+      "same": true
+    },
+    {
+      "host": "smachot-more30.vercel.app",
+      "canonical": "https://more30.com/smachot",
+      "direct": "https://smachot-more30.vercel.app/smachot",
+      "expected": "smachot",
+      "got": "smachot",
+      "same": true
+    },
+    {
+      "host": "briut-more30.vercel.app",
+      "canonical": "https://more30.com/briut",
+      "direct": "https://briut-more30.vercel.app/briut",
+      "expected": "briut",
+      "got": "briut",
+      "same": true
+    },
+    {
+      "host": "nadlan-more30.vercel.app",
+      "canonical": "https://more30.com/nadlan",
+      "direct": "https://nadlan-more30.vercel.app/nadlan",
+      "expected": "nadlan",
+      "got": "nadlan",
+      "same": true
+    },
+    {
+      "host": "mechiron-more30.vercel.app",
+      "canonical": "https://more30.com/mechiron",
+      "direct": "https://mechiron-more30.vercel.app/mechiron",
+      "expected": "mechiron",
+      "got": "mechiron",
+      "same": true
+    },
+    {
+      "host": "studio-more30.vercel.app",
+      "canonical": "https://more30.com/studio",
+      "direct": "https://studio-more30.vercel.app/studio",
+      "expected": "studio",
+      "got": "studio",
+      "same": true
+    },
+    {
+      "host": "imud-more30.vercel.app",
+      "canonical": "https://more30.com/imud",
+      "direct": "https://imud-more30.vercel.app/imud",
+      "expected": "imud",
+      "got": "imud",
+      "same": true
+    },
+    {
+      "host": "orech-more30.vercel.app",
+      "canonical": "https://more30.com/orech",
+      "direct": "https://orech-more30.vercel.app/orech",
+      "expected": "orech",
+      "got": "orech",
+      "same": true
+    },
+    {
+      "host": "crm-more30.vercel.app",
+      "canonical": "https://more30.com/crm",
+      "direct": "https://crm-more30.vercel.app/crm/",
+      "expected": "crm",
+      "got": "crm",
+      "same": true
+    },
+    {
+      "host": "kesef-more30.vercel.app",
+      "canonical": "https://more30.com/kesef",
+      "direct": "https://kesef-more30.vercel.app/kesef",
+      "expected": "kesef",
+      "got": "kesef",
+      "same": true
+    },
+    {
+      "host": "nadlan-pro-more30.vercel.app",
+      "canonical": "https://more30.com/tivuch",
+      "direct": "https://nadlan-pro-more30.vercel.app/tivuch",
+      "expected": "tivuch",
+      "got": "tivuch",
+      "same": true
+    },
+    {
+      "host": "kioskfleet-production.up.railway.app",
+      "canonical": "https://more30.com/kiosk/",
+      "direct": "https://kioskfleet-production.up.railway.app/kiosk/",
+      "expected": "kiosk",
+      "got": "kiosk",
+      "same": true
+    }
+  ],
+  "allowed": [
+    {
+      "url": "https://more30.com/bkalot",
+      "expect": "bkalot",
+      "app_key": "bkalot"
+    },
+    {
+      "url": "https://www.more30.com/bkalot",
+      "expect": "bkalot",
+      "app_key": "bkalot"
+    },
+    {
+      "url": "https://more30.com/",
+      "expect": "more30",
+      "app_key": "more30"
+    },
+    {
+      "url": "https://more30.com/system.html?app=nadlan",
+      "expect": "nadlan",
+      "app_key": "nadlan"
+    },
+    {
+      "url": "https://evil.com@more30.com/bkalot",
+      "expect": "bkalot",
+      "app_key": "bkalot"
+    },
+    {
+      "url": "http://localhost:5173/nadlan/",
+      "expect": "nadlan",
+      "app_key": "nadlan"
+    },
+    {
+      "url": "http://127.0.0.1:3000/torah",
+      "expect": "torah",
+      "app_key": "torah"
+    },
+    {
+      "url": "/bkalot",
+      "expect": "bkalot",
+      "app_key": "bkalot"
+    },
+    {
+      "url": "more30",
+      "expect": "more30",
+      "app_key": "more30"
+    }
+  ],
+  "passed": 3,
+  "failed": 1,
+  "checks": [
+    {
+      "check": "10 כתובות ממארח שאיננו מגישים ממנו — כולן null",
+      "pass": false,
+      "detail": "https://evil.com/bkalot → bkalot · http://evil.com/bkalot → bkalot · https://more30.com.evil.com/bkalot → bkalot · https://evil-more30.vercel.app/bkalot → bkalot · https://more30.co/bkalot → bkalot · https://notmore30.com/bkalot → bkalot · https://more30.com@evil.com/bkalot → bkalot · https://evil.com?x=/bkalot → bkalot · https://evil.com/system.html?app=nadlan → nadlan"
+    },
+    {
+      "check": "25 מארחי ההרכבה שהניתוב מפנה אליהם עונים כמו הכתובת הקנונית",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "אף מארח הרכבה אינו נדחה",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "9 כתובות מהמקור הקנוני ומפיתוח מקומי ממשיכות להיענות",
+      "pass": true,
+      "detail": ""
+    }
+  ]
+}
