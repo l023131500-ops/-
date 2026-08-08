@@ -7,21 +7,26 @@
  * בייט — גם /, גם /events. מה שקובע מה המבקר רואה הוא מה שמצויר אחרי הטעינה,
  * וזה מה שנמדד כאן, בדפדפן אמיתי.
  *
- * מה תוקן: App.tsx מצייר עמוד "הכתובת הזו לא נמצאה" ממותג לכל נתיב שאינו
- * מערכת מוכרת ואינו עמוד של הפורטל עצמו, ומוסיף לו meta robots=noindex.
+ * מה תוקן בסבב הראשון: App.tsx מצייר עמוד "הכתובת הזו לא נמצאה" ממותג לכל נתיב
+ * שאינו מערכת מוכרת ואינו עמוד של הפורטל עצמו, ומוסיף לו meta robots=noindex.
+ * הסטטוס נשאר 200, כי rewrite של Vercel מגיש עמוד אחר בלי לשנות את הקוד.
  *
- * ⚠️ הסטטוס עצמו נשאר 200. rewrite של Vercel אינו יכול להחזיר קוד אחר לעמוד
- * SPA, ולכן `noindex` הוא מה שמונע מגוגל לאנדקס את אותו עמוד תחת עשרות
- * כתובות. סטטוס 404 אמיתי דורש להחליף את ה-rewrites ב-routes — צעד נפרד.
+ * מה תוקן בסבב הזה: ה-catch-all `/(.*) → /index.html` הוסר מ-vercel.dist.json,
+ * ובמקומו נוסף portal/public/404.html. Vercel בודק את מערכת הקבצים לפני
+ * ה-rewrites, ולכן כל קובץ ועמוד שיש לו rewrite משלו ממשיכים כרגיל; מה שלא
+ * נתפס באף אחד מהם מקבל את 404.html — בסטטוס 404 אמיתי.
  *
- * הבדיקה רצה מול כל בסיס: התצוגה המקומית (`npx vite preview --port 4188`
- * בתוך portal/, אחרי build) או הייצור אחרי פריסה.
+ * הבדיקה רצה מול כל בסיס, אבל **הסטטוס נמדד רק בייצור**: `vite preview` אינו
+ * קורא את vercel.json, ולכן שם הכל 200 והבדיקה מוותרת על טענת הסטטוס.
+ * מקומית: `npx vite preview --port 4188` בתוך portal/, אחרי build.
  *
  *   node scripts/qa/unknown-path-renders-404.mjs [base-url]
  */
 import { chromium } from 'playwright';
 
 const BASE = (process.argv[2] || 'http://localhost:4188').replace(/\/$/, '');
+/** רק פריסה אמיתית מריצה את vercel.json, ולכן רק שם יש טעם לדרוש 404. */
+const ROUTED = /^https:\/\/(www\.)?more30\.com$/.test(BASE);
 
 // core.projects, 08/08/2026 — נתיב מוכרז שאינו חי. אין להם rewrite, ולכן הם
 // נופלים ל-catch-all ומגיעים ל-SPA גם בייצור.
@@ -64,11 +69,15 @@ const home = await render('');
 ok(`דף הבית מצייר את רשימת המערכות (${home.cards} כרטיסים)`,
    home.cards > 0 && !home.notFound,
    home.notFound ? 'דף הבית עצמו הוכרז כלא-נמצא' : 'לא נמצאו כרטיסים');
+ok('דף הבית מחזיר 200', home.status === 200, `הסטטוס הוא ${home.status}`);
 
 // ── 2. הבקרה השנייה: נתיב של מערכת חיה לא מוכרז כלא-קיים
+// ⚠️ הבקרה שנועדה לתפוס נזק מהסרת ה-catch-all: /nadlan נתפס ב-rewrite משלו,
+// ולכן חייב להמשיך להגיש את המערכת עם 200 — לא את 404.html.
 const live = await render('nadlan');
-ok('/nadlan (מערכת חיה) אינו מוכרז כלא-נמצא', !live.notFound || live.h1.includes('לא נמצאה') === false,
+ok('/nadlan (מערכת חיה) אינו מוכרז כלא-נמצא', !live.h1.includes('לא נמצאה'),
    'מערכת חיה קיבלה עמוד לא-נמצא');
+ok('/nadlan מחזיר 200', live.status === 200, `הסטטוס הוא ${live.status}`);
 
 // ── 3. התיקון עצמו
 console.log('\n— כתובת שאין מאחוריה מערכת —\n');
@@ -79,9 +88,14 @@ for (const p of [...DECLARED_DEAD, ...INVENTED]) {
      `נמצא במקום זה: "${r.h1}"`);
   ok(`/${p} מסומן noindex`, r.robots.includes('noindex'),
      r.robots ? `robots="${r.robots}"` : 'אין meta robots — הכתובת ניתנת לאינדוקס');
+  if (ROUTED) {
+    ok(`/${p} מחזיר סטטוס 404`, r.status === 404, `הסטטוס הוא ${r.status}`);
+  }
 }
 
 await browser.close();
 console.log(`\n${pass} passed · ${fail} failed`);
-console.log('הסטטוס נשאר 200 לפי מגבלת rewrite של Vercel — ראו את ההערה בראש הקובץ.');
+console.log(ROUTED
+  ? 'הסטטוס נמדד: 404.html מוגש בקוד 404 אמיתי.'
+  : 'בסיס לא-מנותב — טענת הסטטוס דולגה; vite preview אינו קורא את vercel.json.');
 process.exit(fail ? 1 : 0);
