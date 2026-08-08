@@ -1,0 +1,220 @@
+{
+  "at": "2026-08-08T23:39:26.518Z",
+  "issue": 86,
+  "measured": {
+    "at": "2026-08-09",
+    "projects_this_account_administers": [
+      "uhnrgujbdxhhmoxcjria"
+    ],
+    "registered_project": {
+      "chizukim": "csjekrvukbdznetsrodj",
+      "imud": "uhnrgujbdxhhmoxcjria",
+      "kesef": "uhnrgujbdxhhmoxcjria",
+      "orech": "bieebmnmkffwbqlsfozh",
+      "smel": "csjekrvukbdznetsrodj",
+      "studio": "uhnrgujbdxhhmoxcjria"
+    },
+    "hub_stores": {
+      "kesef": {
+        "schema": "kesef",
+        "rows": 283,
+        "detail": {
+          "authority": 259,
+          "data_source": 12,
+          "chart_of_accounts": 8,
+          "term_normalization": 4
+        },
+        "empty_tables": 34
+      },
+      "imud": {
+        "schema": "public",
+        "rows": 2,
+        "detail": {
+          "otvedaf_books": 2
+        },
+        "empty_tables": 1
+      },
+      "studio": {
+        "schema": "public",
+        "rows": 4,
+        "detail": {
+          "studio_templates": 4
+        },
+        "empty_tables": 3
+      }
+    }
+  },
+  "systems": [
+    {
+      "app": "chizukim",
+      "number": "17",
+      "dir": "apps/17-chizukim-transcribe",
+      "source_files": 85,
+      "refs_in_source": {
+        "csjekrvukbdznetsrodj": 3
+      },
+      "refs_in_env_example": [],
+      "registered_project": "csjekrvukbdznetsrodj",
+      "foreign_refs": [
+        "csjekrvukbdznetsrodj"
+      ],
+      "reachable_from_here": false,
+      "hub_store": null
+    },
+    {
+      "app": "imud",
+      "number": "04",
+      "dir": "apps/04-imud-torani",
+      "source_files": 89,
+      "refs_in_source": {},
+      "refs_in_env_example": [],
+      "registered_project": "uhnrgujbdxhhmoxcjria",
+      "foreign_refs": [],
+      "reachable_from_here": true,
+      "hub_store": {
+        "schema": "public",
+        "rows": 2,
+        "detail": {
+          "otvedaf_books": 2
+        },
+        "empty_tables": 1
+      }
+    },
+    {
+      "app": "kesef",
+      "number": "34",
+      "dir": "apps/34-kesef",
+      "source_files": 1,
+      "refs_in_source": {},
+      "refs_in_env_example": [],
+      "registered_project": "uhnrgujbdxhhmoxcjria",
+      "foreign_refs": [],
+      "reachable_from_here": true,
+      "hub_store": {
+        "schema": "kesef",
+        "rows": 283,
+        "detail": {
+          "authority": 259,
+          "data_source": 12,
+          "chart_of_accounts": 8,
+          "term_normalization": 4
+        },
+        "empty_tables": 34
+      }
+    },
+    {
+      "app": "orech",
+      "number": "18",
+      "dir": "apps/18-torah-editor-mvp",
+      "source_files": 31,
+      "refs_in_source": {},
+      "refs_in_env_example": [
+        "bieebmnmkffwbqlsfozh"
+      ],
+      "registered_project": "bieebmnmkffwbqlsfozh",
+      "foreign_refs": [
+        "bieebmnmkffwbqlsfozh"
+      ],
+      "reachable_from_here": false,
+      "hub_store": null
+    },
+    {
+      "app": "smel",
+      "number": "12",
+      "dir": "apps/12-smel-ndln",
+      "source_files": 82,
+      "refs_in_source": {
+        "csjekrvukbdznetsrodj": 2
+      },
+      "refs_in_env_example": [],
+      "registered_project": "csjekrvukbdznetsrodj",
+      "foreign_refs": [
+        "csjekrvukbdznetsrodj"
+      ],
+      "reachable_from_here": false,
+      "hub_store": null
+    },
+    {
+      "app": "studio",
+      "number": "26",
+      "dir": "apps/26-modaot-studio",
+      "source_files": 112,
+      "refs_in_source": {},
+      "refs_in_env_example": [],
+      "registered_project": "uhnrgujbdxhhmoxcjria",
+      "foreign_refs": [],
+      "reachable_from_here": true,
+      "hub_store": {
+        "schema": "public",
+        "rows": 4,
+        "detail": {
+          "studio_templates": 4
+        },
+        "empty_tables": 3
+      }
+    }
+  ],
+  "blocked_on_credentials": [
+    {
+      "app": "chizukim",
+      "project": "csjekrvukbdznetsrodj"
+    },
+    {
+      "app": "orech",
+      "project": "bieebmnmkffwbqlsfozh"
+    },
+    {
+      "app": "smel",
+      "project": "csjekrvukbdznetsrodj"
+    }
+  ],
+  "buildable_here": [
+    {
+      "app": "kesef",
+      "rows": 283
+    },
+    {
+      "app": "studio",
+      "rows": 4
+    },
+    {
+      "app": "imud",
+      "rows": 2
+    }
+  ],
+  "checks": [
+    {
+      "ok": true,
+      "what": "at least one of the six stores its rows outside the project this account administers"
+    },
+    {
+      "ok": true,
+      "what": "every blocked system names exactly one foreign project — no ambiguity about which"
+    },
+    {
+      "ok": true,
+      "what": "the blocked three are chizukim · orech · smel, and they are named by measurement"
+    },
+    {
+      "ok": true,
+      "what": "every system that is reachable from here has a measured store, so none is a guess"
+    },
+    {
+      "ok": true,
+      "what": "orech names no project in source and is still blocked — a literal-only scan would clear it"
+    },
+    {
+      "ok": true,
+      "what": "no system is counted as reachable while still carrying a foreign ref"
+    },
+    {
+      "ok": true,
+      "what": "#86 splits — it is not one job for six systems"
+    },
+    {
+      "ok": true,
+      "what": "the first screen to build is kesef — it holds the most rows nobody can see (283)"
+    }
+  ],
+  "failures": 0
+}
