@@ -130,7 +130,7 @@
 |---|---|
 | `probe-all` | **27/27 מגישים**, אפס נכסים שבורים |
 | `relative-asset-probe` | **0 תשובות שגויות** |
-| `secret-scan` | **0 ממצאים** |
+| `secret-scan` | **0 ממצאים חדשים** · 1 דליפה מוכרת שעדיין פורסמה (core.issues #88, apps/27 — מוגן) |
 | `showcase-flow` | 4/4 |
 | `bkalot-queue-safety` | **8/8** — כל ה-RPC חסומים ל-anon |
 | `pricing-reflects` | **10/10** — מחיר מגיע ללקוח, מסלולי ניהול לא |

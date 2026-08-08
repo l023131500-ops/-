@@ -81,8 +81,15 @@ const TOKEN = /\b(eyJhbGciOiJ[\w-]{6,}|sbp_[a-z0-9]{20,}|sb_secret_[\w-]{10,}|gh
 // Values that are obviously not credentials. `[REDACTED]` and `not-a-real…`
 // are here rather than in ACCEPTED because they are self-describing wherever
 // they appear — including in documentation that quotes the redaction.
+//
+// `qa.fixture` joined them for the same reason. Fourteen Playwright checks seed
+// localStorage with `access_token: 'qa.fixture.token'` to get past the client
+// gate; the real gate is more30_is_admin on the server, so the string is not a
+// credential and could not become one. Left unlisted it produced 28 of this
+// scan's 29 findings — and a scan whose output is 97% noise is one nobody reads
+// to the bottom, where the single real finding was sitting.
 const BENIGN =
-  /^(process\.env|import\.meta|undefined|null|true|false|localhost|https?:\/\/|\/|\.{1,2}\/|[A-Z_]+$|your[_-]|xxx|placeholder|example|changeme|redacted|\[redacted\]|not-a-real|<[^>]+>|\$\{)/i;
+  /^(process\.env|import\.meta|undefined|null|true|false|localhost|https?:\/\/|\/|\.{1,2}\/|[A-Z_]+$|your[_-]|xxx|placeholder|example|changeme|redacted|\[redacted\]|not-a-real|qa\.fixture|<[^>]+>|\$\{)/i;
 
 /**
  * Known-benign findings, each read and understood rather than pattern-matched
@@ -91,17 +98,57 @@ const BENIGN =
  * here says why it is safe.
  */
 const ACCEPTED = [
-  { file: 'apps/01-torah-platform/supabase/functions/nedarim-admin/index.ts',
-    value: '[REDACTED]', why: 'the literal string written INTO the audit log in place of the secret' },
   { file: 'packages/billing/src/index.ts',
     value: '7016674', why: 'the Mosad (institution) id — public, and documented as not a secret in that file' },
   { file: 'scripts/Use-SupabasePat.ps1',
     value: 'sbp_...', why: 'placeholder shown in usage text' },
-  { file: 'scripts/qa/nadlan-pro-smoke.ps1',
-    value: 'not-a-real-token-just-a-string', why: 'a test fixture that is meant to be rejected' },
 ];
-const accepted = (file, value) =>
-  ACCEPTED.some((a) => file === a.file && value.startsWith(a.value.replace(/\.\.\.$/, '')));
+// Two entries were removed the day the staleness check below was added — the
+// nedarim-admin `[REDACTED]` literal and nadlan-pro-smoke's
+// `not-a-real-token-just-a-string`. Neither file changed; both values were
+// already caught by BENIGN, which runs first, so the entries had never once
+// been reached. They read like understanding this scan did not have.
+
+/**
+ * Real leaks that are open in core.issues and cannot be closed from here.
+ *
+ * This is a separate list from ACCEPTED on purpose. ACCEPTED says "read it,
+ * it is not a secret". KNOWN says "it IS a secret, it is published, and the
+ * decision to remove it is not this scan's to make". Collapsing the two would
+ * let a genuine leak be filed under "benign" and quietly stop being a problem.
+ *
+ * KNOWN entries do not fail the run — otherwise the scan is red forever and
+ * stops being read — but they are printed on every run, with their issue
+ * number, so nobody mistakes silence for safety.
+ */
+const KNOWN = [
+  { file: 'apps/27-bkalut-price/server/auth.ts',
+    value: 'eueu1234',
+    issue: 88,
+    why:
+      'a real admin password, published in the doc comment three lines above the ' +
+      'SECURITY note that says there is no default. The code itself is already ' +
+      'env-driven and fails closed. Not redacted here because apps/27 deploys to ' +
+      '/var/www/bkalut-app/ (its own CLAUDE.md), and bkalut-app is on the protected ' +
+      'list — a one-line comment edit is still an edit inside a protected boundary. ' +
+      'NEEDS_USER.',
+  },
+];
+
+// Every suppression records whether it actually matched anything this run. An
+// entry that stops matching is a line of dead permission: it looks like the
+// scan understands that file when it no longer does, and it silently widens
+// what a future edit there could hide. Stale entries fail the run.
+const matched = new Map();
+const hit = (list, file, value) => {
+  const e = list.find(
+    (a) => file === a.file && value.startsWith(a.value.replace(/\.\.\.$/, '')),
+  );
+  if (e) matched.set(e, (matched.get(e) ?? 0) + 1);
+  return e;
+};
+const accepted = (file, value) => hit(ACCEPTED, file, value);
+const known = (file, value) => hit(KNOWN, file, value);
 
 /**
  * A Supabase key is only a finding if it is not the anon key. The anon key is
@@ -123,6 +170,7 @@ function jwtRole(token) {
 let hits = 0;
 let publicKeys = 0;
 let acceptedCount = 0;
+const knownFound = [];
 for (const file of tracked) {
   let text;
   try { text = readFileSync(file, 'utf8'); } catch { continue; }
@@ -139,6 +187,11 @@ for (const file of tracked) {
         const k = `${name}:${value}`;
         if (seen.has(k)) continue;
         seen.add(k);
+        const open = known(file, value.trim());
+        if (open) {
+          knownFound.push({ ...open, where: `${file}:${i + 1}`, name });
+          continue;
+        }
         hits++;
         console.log(`${file}:${i + 1}\n  ${name} = ${value.slice(0, 6)}… (${value.length} chars)`);
       }
@@ -159,9 +212,26 @@ for (const file of tracked) {
   });
 }
 
+if (knownFound.length) {
+  console.log(`\nknown and still published — open in core.issues, not new:`);
+  for (const k of knownFound) {
+    console.log(`  ${k.where}  ${k.name}  (core.issues #${k.issue})`);
+    console.log(`    ${k.why}`);
+  }
+}
+
+// A suppression that matched nothing has outlived the thing it excused.
+const stale = [...ACCEPTED, ...KNOWN].filter((e) => !matched.has(e));
+if (stale.length) {
+  console.log(`\nstale suppressions — matched nothing this run, delete them:`);
+  for (const e of stale) console.log(`  ${e.file}  ${e.value}`);
+}
+
 console.log(
-  `\nscanned ${tracked.length} tracked files · ${hits} finding(s)` +
+  `\nscanned ${tracked.length} tracked files · ${hits} new finding(s)` +
+    ` · ${knownFound.length} known leak(s) still published` +
     ` · ${publicKeys} anon key(s) skipped (public by design)` +
-    ` · ${acceptedCount} known-benign accepted (see ACCEPTED above)`,
+    ` · ${acceptedCount} known-benign accepted (see ACCEPTED above)` +
+    ` · ${stale.length} stale suppression(s)`,
 );
-process.exit(hits ? 1 : 0);
+process.exit(hits || stale.length ? 1 : 0);

@@ -1,0 +1,6 @@
+﻿
+known and still published — open in core.issues, not new:
+  apps/27-bkalut-price/server/auth.ts:12  BKALUT_ADMIN_PASSWORD  (core.issues #88)
+    a real admin password, published in the doc comment three lines above the SECURITY note that says there is no default. The code itself is already env-driven and fails closed. Not redacted here because apps/27 deploys to /var/www/bkalut-app/ (its own CLAUDE.md), and bkalut-app is on the protected list — a one-line comment edit is still an edit inside a protected boundary. NEEDS_USER.
+
+scanned 3126 tracked files · 0 new finding(s) · 1 known leak(s) still published · 56 anon key(s) skipped (public by design) · 3 known-benign accepted (see ACCEPTED above) · 0 stale suppression(s)
