@@ -8,38 +8,55 @@
  * ‏`NEEDS_USER.md §0ט` פתח את הפער הזה ב-07/08 על עמוד אחד (`/subscribe`)
  * וקרא לו "כולם בגיט ולא בייצור". אף ריצה לא ספרה כמה עמודים זה באמת.
  *
- * הריצה הזאת מודדת כל אחד מ-14 המסלולים כאנונימי מול `more30.com` ומשווה
- * את הבייטים שהוגשו לקובץ שבעץ העבודה, אחרי שהיא מסירה את שלוש שורות
- * ההזרקה של NetFree — שהן של הרשת הזאת ולא של הפריסה.
+ * הריצה הזאת מודדת כל מסלול כאנונימי מול `more30.com` ומשווה את הבייטים
+ * שהוגשו לקובץ שבעץ העבודה, אחרי שהיא מסירה את שלוש שורות ההזרקה של
+ * NetFree — שהן של הרשת הזאת ולא של הפריסה.
  *
  * בנוסף היא בודקת סימנים בשמם: מחרוזת שקומיט מסוים הוסיף, שאם היא בעץ
  * ואיננה בייצור אז אותו קומיט אינו חי.
  *
+ * ‏**רשימת המסלולים נגזרת ואינה מוקלדת.** כשהיא הייתה מוקלדת היא החזיקה 14
+ * שורות, ו-`portal/public/` החזיק 16 קבצי HTML: `system.html` — עמוד המסלולים
+ * של §8, שדרכו עוברת ההכנסה — ו-`404.html` של §4 נוספו אחריה ואיש לא הוסיף
+ * אותם לרשימה. השומר שנבנה כדי שלא יישנה #118 הצהיר "כל עמוד שהפורטל מגיש",
+ * ובדק 14 מתוך 16. עכשיו שני המקורות נקראים מהדיסק: כל rewrite שיעדו קובץ
+ * HTML מקומי, ובנוסף כל קובץ HTML שאין לו rewrite ולכן מוגש בשמו המלא. בדיקה
+ * שלישית קובעת שלא נשאר קובץ שאיש לא מדד.
+ *
  *   node scripts/qa/portal-deploy-drift.mjs [--after]
  */
-import { readFile, mkdir, writeFile } from 'node:fs/promises';
+import { readFile, readdir, mkdir, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 
 const AFTER = process.argv.includes('--after');
 const OUT = 'QA/platform/portal-deploy-drift-0808';
+const PUBLIC = 'portal/public';
 
-/** 14 המסלולים ש-portal/vercel.dist.json מגיש מ-portal/public/. */
-const ROUTES = [
-  ['/login', 'login.html'],
-  ['/me', 'me.html'],
-  ['/subscribe', 'subscribe.html'],
-  ['/showcase', 'showcase.html'],
-  ['/auth/callback', 'auth/callback.html'],
-  ['/admin/activity', 'admin-activity.html'],
-  ['/admin/pricing', 'admin-pricing.html'],
-  ['/admin/systems', 'admin-systems.html'],
-  ['/admin/customers', 'admin-customers.html'],
-  ['/admin/automation', 'admin-automation.html'],
-  ['/admin/credits', 'admin-credits.html'],
-  ['/admin/issues', 'admin-issues.html'],
-  ['/admin/leads', 'admin-leads.html'],
-  ['/admin/rights', 'admin-rights.html'],
-];
+/** כל קבצי ה-HTML שיושבים תחת portal/public, בנתיב יחסי עם לוכסן קדימה. */
+async function htmlFiles(dir = PUBLIC, prefix = '') {
+  const out = [];
+  for (const e of await readdir(dir, { withFileTypes: true })) {
+    const rel = prefix + e.name;
+    if (e.isDirectory()) out.push(...(await htmlFiles(`${dir}/${e.name}`, `${rel}/`)));
+    else if (e.name.endsWith('.html')) out.push(rel);
+  }
+  return out.sort();
+}
+
+const FILES = await htmlFiles();
+
+/**
+ * המסלולים, נגזרים משני המקורות:
+ * ‏(א) rewrite שיעדו קובץ HTML מקומי — הכתובת היפה שהמשתמש פוגש;
+ * ‏(ב) קובץ HTML שאיש לא ניתב אליו — Vercel מגיש אותו בשמו המלא.
+ */
+const dist = JSON.parse(await readFile('portal/vercel.dist.json', 'utf8'));
+const rewritten = (dist.rewrites ?? [])
+  .filter((r) => r.destination.startsWith('/') && r.destination.endsWith('.html'))
+  .map((r) => [r.source, r.destination.slice(1)]);
+const routedFiles = new Set(rewritten.map(([, f]) => f));
+const direct = FILES.filter((f) => !routedFiles.has(f)).map((f) => ['/' + f, f]);
+const ROUTES = [...rewritten, ...direct];
 
 /** קובץ משותף שכל העמודים טוענים — הוא נפרס באותה פריסה. */
 const ASSETS = [['/auth-button.js', 'auth-button.js']];
@@ -87,7 +104,7 @@ for (const [route, file] of [...ROUTES, ...ASSETS]) {
     rows.push({ route, file, status: 0, error: e.message });
     continue;
   }
-  const tree = norm(await readFile('portal/public/' + file, 'utf8'));
+  const tree = norm(await readFile(`${PUBLIC}/${file}`, 'utf8'));
   rows.push({
     route, file, status,
     live_bytes: Buffer.byteLength(live, 'utf8'),
@@ -111,12 +128,34 @@ ok('every page the portal serves matches the file in the tree',
    stale.length === 0,
    stale.length ? `${stale.length}/${rows.length} stale: ${stale.map((r) => r.route).join(', ')}` : 'none');
 
+/**
+ * שתי בדיקות ששומרות על השומר עצמו. הן אינן על הפער בין העץ לייצור אלא על
+ * הרשימה שנגזרה — כי הרשימה היא מה שקבע ש-#118 ייתפס או לא.
+ *
+ * הראשונה: rewrite שמצביע על קובץ שאינו בעץ. הכתובת היפה תיפרס, תיראה תקינה
+ * בקובץ הניתוב, ותחזיר 404 ללקוח. שלוש-עשרה מהמסלולים כאן הם מסכי לוח, ואף
+ * אחד מהם אינו נטען משום מקום אחר — אין מי שיגלה את זה חוץ מכאן.
+ */
+const dangling = rewritten.filter(([, f]) => !FILES.includes(f)).map(([s, f]) => `${s} → ${f}`);
+ok('every rewrite destination in vercel.dist.json exists in the tree',
+   dangling.length === 0,
+   dangling.length ? dangling.join(' · ') : `all ${rewritten.length}`);
+
+/**
+ * השנייה: עמוד שנמדד וענה משהו שאינו 200. השוואת הבייטים למעלה משווה גם שני
+ * גופי שגיאה זהים ועוברת, ולכן היא לבדה אינה יודעת להבחין בין "מוגש" ל"נפל".
+ */
+const notOk = rows.filter((r) => r.status !== 200).map((r) => `${r.route} (${r.status})`);
+ok('every page the portal serves answers 200',
+   notOk.length === 0,
+   notOk.length ? notOk.join(', ') : `all ${rows.length}`);
+
 /** הסימנים: מחרוזת שקיימת בעץ ואיננה בייצור. */
 const missing = [];
 for (const [commit, route, marker, what] of MARKERS) {
   const row = rows.find((r) => r.route === route);
   if (!row || row.error) continue;
-  const tree = norm(await readFile('portal/public/' + row.file, 'utf8'));
+  const tree = norm(await readFile(`${PUBLIC}/${row.file}`, 'utf8'));
   const live = norm(stripNetFree(await (await fetch('https://more30.com' + route)).text()));
   const inTree = tree.includes(marker), inLive = live.includes(marker);
   if (inTree && !inLive) missing.push({ commit, route, marker, what });
@@ -133,10 +172,14 @@ await writeFile(
     phase: AFTER ? 'after' : 'before',
     read_as: 'anon, through more30.com',
     netfree_lines_stripped: 3,
+    route_list: 'derived from portal/vercel.dist.json + portal/public/**/*.html',
+    html_files: FILES,
     routes: rows,
     stale: stale.map((r) => r.route),
+    dangling_rewrites: dangling,
+    not_200: notOk,
     missing_commits: missing,
-    summary: { pass, fail, stale: stale.length, served: rows.length },
+    summary: { pass, fail, stale: stale.length, served: rows.length, html_files: FILES.length },
     checks: results,
   }, null, 2) + '\n',
   'utf8',
