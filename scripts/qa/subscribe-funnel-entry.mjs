@@ -98,17 +98,24 @@ for (const t of TARGETS) {
 }
 console.log('');
 
-// ⚠️ "יש מפנה" אינו מספיק. `vercel.dist.json` הוא קובץ ניתוב ולא עמוד, ו-
-// `system.html` עצמו יתום — מפנה שאי אפשר להגיע אליו אינו כניסה. הדרישה היא
-// מפנה שלקוח יכול לפגוש בו.
+// ⚠️ "יש מפנה" אינו מספיק. `vercel.dist.json` הוא קובץ ניתוב ולא עמוד, ולכן
+// מפנה שיושב בו אינו דלת. וגם מפנה שיושב ב-`system.html` נחשב רק אם מגיעים אל
+// `system.html` עצמו — זו הסיבה שהבדיקה הזו נכשלה עד עכשיו. לכן הגעה נמדדת
+// בשני צעדים: כרטיס בדף הבית → עמוד המסלולים → /subscribe.
+const systemPageLinked = referrers.get('system.html').length > 0;
 const reachable = referrers
   .get('/subscribe')
-  .filter((r) => !/^portal\/public\/system\.html:/.test(r) && !/\.json:/.test(r));
-console.log(`  מתוכם ניתנים להגעה על ידי לקוח: ${reachable.length ? reachable.join(' · ') : 'אף אחד'}\n`);
+  .filter((r) => !/\.json:/.test(r))
+  .filter((r) => systemPageLinked || !/^portal\/public\/system\.html:/.test(r));
+console.log(`  מתוכם ניתנים להגעה על ידי לקוח: ${reachable.length ? reachable.join(' · ') : 'אף אחד'}`);
+if (systemPageLinked) {
+  console.log(`  (system.html נחשב נגיש — מפנים אליו: ${referrers.get('system.html').join(' · ')})`);
+}
+console.log('');
 
 ok('קיים עמוד שלקוח יכול להגיע אליו ומקשר אל /subscribe', reachable.length > 0,
-   'שני המפנים היחידים הם קובץ ניתוב ועמוד יתום — אין דרך ללקוח להגיע לבחירת מסלול');
-ok('קיים עמוד אחד לפחות שמקשר אל system.html', referrers.get('system.html').length > 0,
+   'המפנים היחידים הם קובץ ניתוב ועמוד שאין אליו קישור — אין דרך ללקוח להגיע לבחירת מסלול');
+ok('קיים עמוד אחד לפחות שמקשר אל system.html', systemPageLinked,
    'עמוד המסלולים של כל מערכת יתום — אין אליו קישור');
 
 // ── הייצור: האם העמודים בכלל מוגשים

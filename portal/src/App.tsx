@@ -415,13 +415,29 @@ function SystemsUnavailable({ onRetry }: { onRetry: () => void }) {
 }
 
 /**
+ * עמוד המסלולים של מערכת אחת — `portal/public/system.html`.
+ *
+ * ⚠️ העמוד גוזר את מזהה המערכת מ-`location.pathname`, אבל `vercel.dist.json`
+ * מרכיב את `/<נתיב>` על הפריסה של המערכת עצמה, ולכן אין לו כתובת נקייה משלו.
+ * `?app=` הוא הדרך היחידה להגיע אליו בלי להזיז את הכתובת של מערכת חיה.
+ * מזהה המערכת ב-`core.plans.app_key` זהה ל-`path` בכל 19 המערכות המנותבות.
+ */
+const plansHref = (r: System): string | null =>
+  r.path ? `/system.html?app=${encodeURIComponent(r.path)}` : null;
+
+/**
  * כרטיס מערכת: תיאור קצר בסריף מעל, השם העברי בגדול, וכפתור כניסה.
  * הקישור נבנה מהנתיב — כלומר more30.com/<נתיב> — ולעולם לא מכתובת הפריסה,
  * כדי שלא תדלוף כתובת vercel.app שנטפרי חוסמת.
+ *
+ * לצד הכניסה יושב קישור שקט אל המסלולים (באג #120). עד עכשיו עמוד המסלולים
+ * היה יתום: הוא נבנה, הוא מוגש בייצור, ואף עמוד שלקוח פוגש לא הוביל אליו —
+ * כלומר הצינור של §8 היה שלם חוץ מהדלת.
  */
 function SystemCard({ r }: { r: System }) {
   const open = openToPublic(r);
   const desc = blurb(r);
+  const plans = plansHref(r);
 
   return (
     <div className={`card reveal ${open ? "" : "card-soon"}`}>
@@ -431,7 +447,12 @@ function SystemCard({ r }: { r: System }) {
       {!open && <p className="card-stage">{stageNote(r)}</p>}
       <div className="card-foot">
         {open
-          ? <a className="btn btn-card" href={entryHref(r) ?? "/"}>כניסה למערכת</a>
+          ? (
+            <span className="card-actions">
+              <a className="btn btn-card" href={entryHref(r) ?? "/"}>כניסה למערכת</a>
+              {plans && <a className="card-plans" href={plans}>מסלולים ומחירים</a>}
+            </span>
+          )
           : <span className="card-soon-tag">{r.is_protected ? "פנימית" : "בקרוב"}</span>}
         {open && <span className="card-live">● פעילה</span>}
       </div>

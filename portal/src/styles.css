@@ -249,6 +249,14 @@
 .card:hover .btn-card { background: var(--gold); color: var(--royal); border-color: var(--gold); box-shadow: none; }
 .btn-card:hover { background: var(--gold); color: var(--royal); border-color: var(--gold); box-shadow: none; }
 
+/* כניסה + מסלולים יושבים יחד בצד אחד, כדי ש"● פעילה" יישאר בקצה הנגדי */
+.card-actions { display: inline-flex; align-items: center; gap: 14px; }
+.card-plans {
+  font-size: 13px; color: var(--muted); white-space: nowrap;
+  border-bottom: 1px solid transparent; transition: color 0.2s var(--ease), border-color 0.2s var(--ease);
+}
+.card-plans:hover { color: var(--gold-soft); border-bottom-color: var(--gold); }
+
 .card-soon-tag { font-size: 13px; color: var(--muted); letter-spacing: 0.14em; }
 .card-live { font-size: 12px; color: var(--emerald); letter-spacing: 0.08em; white-space: nowrap; }
 
