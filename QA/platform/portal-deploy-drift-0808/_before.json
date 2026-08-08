@@ -1,0 +1,216 @@
+{
+  "ran": "scripts/qa/portal-deploy-drift.mjs",
+  "phase": "before",
+  "read_as": "anon, through more30.com",
+  "netfree_lines_stripped": 3,
+  "routes": [
+    {
+      "route": "/login",
+      "file": "login.html",
+      "status": 200,
+      "live_bytes": 21915,
+      "tree_bytes": 21915,
+      "live_sha": "c64b556d8872",
+      "tree_sha": "c64b556d8872",
+      "identical": true
+    },
+    {
+      "route": "/me",
+      "file": "me.html",
+      "status": 200,
+      "live_bytes": 14854,
+      "tree_bytes": 19278,
+      "live_sha": "3291cb857592",
+      "tree_sha": "2034ca7258a7",
+      "identical": false
+    },
+    {
+      "route": "/subscribe",
+      "file": "subscribe.html",
+      "status": 200,
+      "live_bytes": 17530,
+      "tree_bytes": 19000,
+      "live_sha": "8428f2801d3d",
+      "tree_sha": "aa3b7dc735e4",
+      "identical": false
+    },
+    {
+      "route": "/showcase",
+      "file": "showcase.html",
+      "status": 200,
+      "live_bytes": 7319,
+      "tree_bytes": 7319,
+      "live_sha": "ba41ea5acb2d",
+      "tree_sha": "ba41ea5acb2d",
+      "identical": true
+    },
+    {
+      "route": "/auth/callback",
+      "file": "auth/callback.html",
+      "status": 200,
+      "live_bytes": 13107,
+      "tree_bytes": 13107,
+      "live_sha": "c3a04996fb40",
+      "tree_sha": "c3a04996fb40",
+      "identical": true
+    },
+    {
+      "route": "/admin/activity",
+      "file": "admin-activity.html",
+      "status": 200,
+      "live_bytes": 10529,
+      "tree_bytes": 12439,
+      "live_sha": "15f19b3c5ac7",
+      "tree_sha": "0e5ec1cd259d",
+      "identical": false
+    },
+    {
+      "route": "/admin/pricing",
+      "file": "admin-pricing.html",
+      "status": 200,
+      "live_bytes": 12893,
+      "tree_bytes": 21558,
+      "live_sha": "6dd0fe4b93b7",
+      "tree_sha": "4449bd47bd90",
+      "identical": false
+    },
+    {
+      "route": "/admin/systems",
+      "file": "admin-systems.html",
+      "status": 200,
+      "live_bytes": 12107,
+      "tree_bytes": 21275,
+      "live_sha": "95dc8a620c78",
+      "tree_sha": "eca8f312db02",
+      "identical": false
+    },
+    {
+      "route": "/admin/customers",
+      "file": "admin-customers.html",
+      "status": 200,
+      "live_bytes": 11241,
+      "tree_bytes": 14482,
+      "live_sha": "6baa390d3681",
+      "tree_sha": "4d24eb4be83d",
+      "identical": false
+    },
+    {
+      "route": "/admin/automation",
+      "file": "admin-automation.html",
+      "status": 200,
+      "live_bytes": 15146,
+      "tree_bytes": 15409,
+      "live_sha": "59216729de50",
+      "tree_sha": "f96115951547",
+      "identical": false
+    },
+    {
+      "route": "/admin/credits",
+      "file": "admin-credits.html",
+      "status": 200,
+      "live_bytes": 11611,
+      "tree_bytes": 12375,
+      "live_sha": "a35665fe0934",
+      "tree_sha": "d8768b18dc85",
+      "identical": false
+    },
+    {
+      "route": "/admin/issues",
+      "file": "admin-issues.html",
+      "status": 200,
+      "live_bytes": 11683,
+      "tree_bytes": 14581,
+      "live_sha": "3c6f4efc5c1b",
+      "tree_sha": "d42107fbf629",
+      "identical": false
+    },
+    {
+      "route": "/admin/leads",
+      "file": "admin-leads.html",
+      "status": 200,
+      "live_bytes": 12548,
+      "tree_bytes": 17724,
+      "live_sha": "54e4efdce859",
+      "tree_sha": "0cb07dec0cfe",
+      "identical": false
+    },
+    {
+      "route": "/admin/rights",
+      "file": "admin-rights.html",
+      "status": 200,
+      "live_bytes": 10858,
+      "tree_bytes": 11107,
+      "live_sha": "9c01874c1324",
+      "tree_sha": "ee509be7ce4d",
+      "identical": false
+    },
+    {
+      "route": "/auth-button.js",
+      "file": "auth-button.js",
+      "status": 200,
+      "live_bytes": 28667,
+      "tree_bytes": 31191,
+      "live_sha": "e55795f9697c",
+      "tree_sha": "9593d969bcb8",
+      "identical": false
+    }
+  ],
+  "stale": [
+    "/me",
+    "/subscribe",
+    "/admin/activity",
+    "/admin/pricing",
+    "/admin/systems",
+    "/admin/customers",
+    "/admin/automation",
+    "/admin/credits",
+    "/admin/issues",
+    "/admin/leads",
+    "/admin/rights",
+    "/auth-button.js"
+  ],
+  "missing_commits": [
+    {
+      "commit": "e95b47e",
+      "route": "/admin/pricing",
+      "marker": "nav class=\"nav\"",
+      "what": "סרגל אחים למסך המחירים"
+    },
+    {
+      "commit": "f12dd5b",
+      "route": "/admin/systems",
+      "marker": "/admin/rights",
+      "what": "שני המסכים שלא היו על אף סרגל"
+    },
+    {
+      "commit": "5c0c007",
+      "route": "/admin/leads",
+      "marker": "/admin/automation",
+      "what": "סרגל אחים מלא בכל תשעת המסכים"
+    },
+    {
+      "commit": "7d25bea",
+      "route": "/admin/customers",
+      "marker": "טלפון",
+      "what": "שם וטלפון בטבלת הלקוחות"
+    }
+  ],
+  "summary": {
+    "pass": 0,
+    "fail": 2,
+    "stale": 12,
+    "served": 15
+  },
+  "checks": [
+    {
+      "check": "every page the portal serves matches the file in the tree",
+      "pass": false,
+      "detail": "12/15 stale: /me, /subscribe, /admin/activity, /admin/pricing, /admin/systems, /admin/customers, /admin/automation, /admin/credits, /admin/issues, /admin/leads, /admin/rights, /auth-button.js"
+    },
+    {
+      "check": "every committed fix on those pages is the one production serves",
+      "pass": false,
+      "detail": "e95b47e /admin/pricing — סרגל אחים למסך המחירים · f12dd5b /admin/systems — שני המסכים שלא היו על אף סרגל · 5c0c007 /admin/leads — סרגל אחים מלא בכל תשעת המסכים · 7d25bea /admin/customers — שם וטלפון בטבלת הלקוחות"
+    }
+  ]
+}

@@ -1,0 +1,178 @@
+{
+  "ran": "scripts/qa/portal-deploy-drift.mjs",
+  "phase": "after",
+  "read_as": "anon, through more30.com",
+  "netfree_lines_stripped": 3,
+  "routes": [
+    {
+      "route": "/login",
+      "file": "login.html",
+      "status": 200,
+      "live_bytes": 21915,
+      "tree_bytes": 21915,
+      "live_sha": "c64b556d8872",
+      "tree_sha": "c64b556d8872",
+      "identical": true
+    },
+    {
+      "route": "/me",
+      "file": "me.html",
+      "status": 200,
+      "live_bytes": 19278,
+      "tree_bytes": 19278,
+      "live_sha": "2034ca7258a7",
+      "tree_sha": "2034ca7258a7",
+      "identical": true
+    },
+    {
+      "route": "/subscribe",
+      "file": "subscribe.html",
+      "status": 200,
+      "live_bytes": 19000,
+      "tree_bytes": 19000,
+      "live_sha": "aa3b7dc735e4",
+      "tree_sha": "aa3b7dc735e4",
+      "identical": true
+    },
+    {
+      "route": "/showcase",
+      "file": "showcase.html",
+      "status": 200,
+      "live_bytes": 7319,
+      "tree_bytes": 7319,
+      "live_sha": "ba41ea5acb2d",
+      "tree_sha": "ba41ea5acb2d",
+      "identical": true
+    },
+    {
+      "route": "/auth/callback",
+      "file": "auth/callback.html",
+      "status": 200,
+      "live_bytes": 13107,
+      "tree_bytes": 13107,
+      "live_sha": "c3a04996fb40",
+      "tree_sha": "c3a04996fb40",
+      "identical": true
+    },
+    {
+      "route": "/admin/activity",
+      "file": "admin-activity.html",
+      "status": 200,
+      "live_bytes": 12439,
+      "tree_bytes": 12439,
+      "live_sha": "0e5ec1cd259d",
+      "tree_sha": "0e5ec1cd259d",
+      "identical": true
+    },
+    {
+      "route": "/admin/pricing",
+      "file": "admin-pricing.html",
+      "status": 200,
+      "live_bytes": 21558,
+      "tree_bytes": 21558,
+      "live_sha": "4449bd47bd90",
+      "tree_sha": "4449bd47bd90",
+      "identical": true
+    },
+    {
+      "route": "/admin/systems",
+      "file": "admin-systems.html",
+      "status": 200,
+      "live_bytes": 21275,
+      "tree_bytes": 21275,
+      "live_sha": "eca8f312db02",
+      "tree_sha": "eca8f312db02",
+      "identical": true
+    },
+    {
+      "route": "/admin/customers",
+      "file": "admin-customers.html",
+      "status": 200,
+      "live_bytes": 14482,
+      "tree_bytes": 14482,
+      "live_sha": "4d24eb4be83d",
+      "tree_sha": "4d24eb4be83d",
+      "identical": true
+    },
+    {
+      "route": "/admin/automation",
+      "file": "admin-automation.html",
+      "status": 200,
+      "live_bytes": 15409,
+      "tree_bytes": 15409,
+      "live_sha": "f96115951547",
+      "tree_sha": "f96115951547",
+      "identical": true
+    },
+    {
+      "route": "/admin/credits",
+      "file": "admin-credits.html",
+      "status": 200,
+      "live_bytes": 12375,
+      "tree_bytes": 12375,
+      "live_sha": "d8768b18dc85",
+      "tree_sha": "d8768b18dc85",
+      "identical": true
+    },
+    {
+      "route": "/admin/issues",
+      "file": "admin-issues.html",
+      "status": 200,
+      "live_bytes": 14581,
+      "tree_bytes": 14581,
+      "live_sha": "d42107fbf629",
+      "tree_sha": "d42107fbf629",
+      "identical": true
+    },
+    {
+      "route": "/admin/leads",
+      "file": "admin-leads.html",
+      "status": 200,
+      "live_bytes": 17724,
+      "tree_bytes": 17724,
+      "live_sha": "0cb07dec0cfe",
+      "tree_sha": "0cb07dec0cfe",
+      "identical": true
+    },
+    {
+      "route": "/admin/rights",
+      "file": "admin-rights.html",
+      "status": 200,
+      "live_bytes": 11107,
+      "tree_bytes": 11107,
+      "live_sha": "ee509be7ce4d",
+      "tree_sha": "ee509be7ce4d",
+      "identical": true
+    },
+    {
+      "route": "/auth-button.js",
+      "file": "auth-button.js",
+      "status": 200,
+      "live_bytes": 31191,
+      "tree_bytes": 31191,
+      "live_sha": "9593d969bcb8",
+      "tree_sha": "9593d969bcb8",
+      "identical": true
+    }
+  ],
+  "stale": [],
+  "missing_commits": [],
+  "summary": {
+    "pass": 2,
+    "fail": 0,
+    "stale": 0,
+    "served": 15
+  },
+  "checks": [
+    {
+      "check": "every page the portal serves matches the file in the tree",
+      "pass": true,
+      "detail": "none"
+    },
+    {
+      "check": "every committed fix on those pages is the one production serves",
+      "pass": true,
+      "detail": "none"
+    }
+  ]
+}
