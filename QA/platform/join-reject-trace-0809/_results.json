@@ -1,0 +1,67 @@
+{
+  "at": "2026-08-09",
+  "migration": "0050_the_join_that_recognised_no_system_returned_a_reason_and_wrote_it_nowhere.sql",
+  "applied": true,
+
+  "why": "more30_join_app החזיר unknown_app וכתב לשום מקום. זו הצורה שבה #121 ו-#122 שרדו חודשיים בלי שאף מונה יזוז. 0049 (אתמול) הוסיפה שער דומיין ולכן הכפילה את מחיר השתיקה: מהיום גם הרכבה שתיווסף לניתוב ולא ל-core.trusted_origins תפיל חברות בלי סימן.",
+
+  "measured_before": {
+    "trusted_origins_rows": 29,
+    "routing_destination_hosts_in_vercel_dist_json": 25,
+    "routing_hosts_missing_from_trusted_origins": 0,
+    "non_obvious_hosts_verified_present": [
+      "chizukim2-more30.vercel.app",
+      "nadlan-pro-more30.vercel.app",
+      "kioskfleet-production.up.railway.app"
+    ],
+    "real_users": 20,
+    "real_users_with_no_membership_row": 12,
+    "oldest_membership_row": "2026-07-31T11:38:39Z",
+    "the_twelve_created_on_or_before": "2026-06-25",
+    "the_twelve_last_signed_in_on_or_before": "2026-06-25",
+    "reading": "השער תקין היום, ושנים-עשר החשבונות בלי חברות קדמו לטבלה ולא חזרו מאז — היסטוריה, לא דליפה פעילה. 0050 אינה מתקנת נזילה שרצה; היא הופכת את המחלקה הזאת של באגים לנראית."
+  },
+
+  "write_path_measured_by_direct_sql": {
+    "note": "הענף יושב אחרי בדיקת auth.uid() ולכן בדיקה אנונימית אינה יכולה להגיע אליו. נמדד ביד על המסד, ושש שורות הבדיקה נמחקו אחריה (rows_left=0).",
+    "inputs": [
+      "https://evil.com/bkalot  (פעמיים)",
+      "https://more30.com@evil.com/x",
+      "https://more30.com/no-such-system",
+      "https://more30.com/zzz?email=a@b.com&token=SECRET123#frag",
+      "bogus-key",
+      "'' (מחרוזת ריקה)",
+      "null"
+    ],
+    "rows_written": [
+      { "host": "evil.com", "hits": 3, "path_sample": "x", "host_trusted": false },
+      { "host": "more30.com", "hits": 2, "path_sample": "zzz", "host_trusted": true },
+      { "host": "(no-host)", "hits": 3, "path_sample": "bogus-key", "host_trusted": null }
+    ],
+    "assertions": {
+      "userinfo_stripped": "https://more30.com@evil.com/x נרשם תחת evil.com ולא תחת more30.com",
+      "query_string_not_stored": "האימות והטוקן שב-?email=..&token=SECRET123 אינם בשורה — נשמר 'zzz' בלבד",
+      "counter_not_log": "שלוש שורות לשמונה קריאות; hits סופר, אין יומן שגדל",
+      "null_and_empty_bucketed": "'' ו-null נספרו תחת (no-host) יחד עם המפתח החשוף",
+      "trusted_host_can_still_reject": "more30.com מסומן trusted=true ובכל זאת נרשם — נתיב שאינו מערכת הוא סיבה נפרדת ממארח זר, ושתיהן נראות בטבלה"
+    },
+    "rows_left_after_cleanup": 0
+  },
+
+  "bounds_on_the_write_surface": {
+    "authenticated_only": "הענף רץ אחרי raise 'not authenticated' (28000); אנונימי אינו מגיע אליו",
+    "distinct_host_cap": 200,
+    "overflow_bucket": "(overflow)",
+    "host_truncated_to": 120,
+    "path_sample_truncated_to": 60,
+    "path_sample_charset": "[A-Za-z0-9_.-] בלבד, אחרי הסרת query ו-fragment",
+    "rls": "דלוק, בלי אף policy — anon ו-authenticated אינם רואים את הטבלה"
+  },
+
+  "anonymous_checks": "scripts/qa/join-reject-leaves-a-trace.mjs — 12 passed · 0 failed (_anon-checks.json)",
+
+  "not_done_deliberately": {
+    "no_admin_screen_yet": "more30_admin_join_rejects קיים ואף מסך אינו קורא לו. חיווט ל-/admin/issues או /admin/activity הוא קובץ סטטי בפורטל, ולכן צעד נפרד שתלוי בפריסה (core.issues #83).",
+    "no_deploy": "הצעד כולו במסד וחי מרגע החלת המיגרציה. auth-button.js ו-callback.html שכבר בייצור אינם משתנים — ה-JSON שחוזר ללקוח זהה בדיוק."
+  }
+}
