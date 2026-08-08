@@ -137,6 +137,21 @@
           </table>
         </div>
 
+        <div id="rejectsBlock" hidden>
+          <h2>הצטרפויות שנשמטו</h2>
+          <p class="hint" id="rejectsHint"></p>
+          <div class="tablewrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>מארח</th><th>ניסיונות</th><th>דגימת נתיב</th><th>ב-trusted_origins</th><th>ראשון</th><th>אחרון</th>
+                </tr>
+              </thead>
+              <tbody id="rejects"></tbody>
+            </table>
+          </div>
+        </div>
+
         <p class="foot" id="stamp"></p>
       </div>
 
@@ -263,6 +278,40 @@
 
         $('stamp').textContent = 'נמדד ' + new Date(data.generated_at).toLocaleString('he-IL');
         $('content').hidden = false;
+
+        // ‏0050 פתחה את core.join_rejects: כל לקוח מחובר שביקש להצטרף למערכת
+        // ולא זוהתה לו אחת נספר שם. עד כאן אף מסך לא קרא את הטבלה, ולכן
+        // #121 ו-#122 יכלו לחיות חודשיים בלי שאף מונה יזוז. קריאה נפרדת
+        // ובלוק נפרד במכוון: אם היא תיפול, שאר העמוד כבר צויר.
+        const { data: jr, error: jrErr } = await sb.rpc('more30_admin_join_rejects');
+        if (!jrErr && jr) {
+          const rows = jr.rows || [];
+          $('rejectsHint').textContent = rows.length
+            ? `${jr.hosts} מארחים · ${jr.attempts} ניסיונות. ${jr.note || ''}`
+            : 'לא נרשמה אף שמיטה מאז שהמנייה נפתחה (מיגרציה 0050). ריק כאן אינו ' +
+              '"מעולם לא קרה" אלא "לא קרה מאז" — לפני כן ההצטרפות נשמטה בשקט ' +
+              'ולא נספרה בשום מקום.';
+          $('rejects').innerHTML =
+            rows
+              .map(
+                (r) => `<tr>
+                  <td class="name">${esc(r.host)}</td>
+                  ${num(r.hits)}
+                  <td class="zero">${esc(r.path_sample || '—')}</td>
+                  <td>${
+                    r.host_trusted == null
+                      ? '<span class="zero">—</span>'
+                      : `<span class="tag ${r.host_trusted ? 'live' : 'off'}">${
+                          r.host_trusted ? 'מוכר' : 'חסר'
+                        }</span>`
+                  }</td>
+                  <td>${when(r.first_at)}</td>
+                  <td>${when(r.last_at)}</td>
+                </tr>`,
+              )
+              .join('') || '<tr><td colspan="6" class="zero">אין שורות.</td></tr>';
+          $('rejectsBlock').hidden = false;
+        }
       })();
     </script>
 
