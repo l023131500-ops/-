@@ -1,0 +1,90 @@
+{
+  "measured_at_utc_day": "2026-08-10",
+  "live_row_count_in_studio_projects": 0,
+  "runs": [
+    {
+      "label": "empty",
+      "file": "projects-empty.png",
+      "rows": 0,
+      "seen": {
+        "heading": "העבודות שלי",
+        "empty": 1,
+        "cards": 0,
+        "canvases": 0,
+        "deleteButtons": 0,
+        "errorBox": 0
+      },
+      "console_errors": [],
+      "blocked_off_host": [
+        "https://fonts.googleapis.com/css2?family=Architects+Daughter&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Fira+Code:wght@300..700&family=Geist+Mono:wght@100..900&family=Geist:wght@100..900&family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=IBM+Plex+Sans:ital,wght@0,100..700;1,100..700&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Lora:ital,wght@0,400..700;1,400..700&family=Merriweather:ital,opsz,wght@0,18..144,300..900;1,18..144,300..900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Outfit:wght@100..900&family=Oxanium:wght@200..800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&family=Roboto:ital,wght@0,100..900;1,100..900&family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&family=Space+Grotesk:wght@300..700&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap",
+        "https://fonts.googleapis.com/css2?family=Heebo:wght@100..900&family=Frank+Ruhl+Libre:wght@300..900&family=Rubik:wght@300..900&family=Assistant:wght@200..800&family=Noto+Sans+Hebrew:wght@100..900&family=Noto+Serif+Hebrew:wght@100..900&family=Noto+Rashi+Hebrew:wght@100..900&family=David+Libre:wght@400;500;700&family=Suez+One&family=Secular+One&family=Miriam+Libre:wght@400;700&family=Bellefair&family=Alef:wght@400;700&family=Amatic+SC:wght@400;700&family=Karantina:wght@300;400;700&family=Gveret+Levin&display=swap",
+        "https://more30.com/auth-button.js"
+      ]
+    },
+    {
+      "label": "one-saved-work",
+      "file": "projects-one.png",
+      "rows": 1,
+      "seen": {
+        "heading": "העבודות שלי",
+        "empty": 0,
+        "cards": 1,
+        "canvases": 1,
+        "deleteButtons": 1,
+        "errorBox": 0
+      },
+      "console_errors": [],
+      "blocked_off_host": [
+        "https://fonts.googleapis.com/css2?family=Architects+Daughter&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Fira+Code:wght@300..700&family=Geist+Mono:wght@100..900&family=Geist:wght@100..900&family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=IBM+Plex+Sans:ital,wght@0,100..700;1,100..700&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Lora:ital,wght@0,400..700;1,400..700&family=Merriweather:ital,opsz,wght@0,18..144,300..900;1,18..144,300..900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Outfit:wght@100..900&family=Oxanium:wght@200..800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&family=Roboto:ital,wght@0,100..900;1,100..900&family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&family=Space+Grotesk:wght@300..700&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap",
+        "https://fonts.googleapis.com/css2?family=Heebo:wght@100..900&family=Frank+Ruhl+Libre:wght@300..900&family=Rubik:wght@300..900&family=Assistant:wght@200..800&family=Noto+Sans+Hebrew:wght@100..900&family=Noto+Serif+Hebrew:wght@100..900&family=Noto+Rashi+Hebrew:wght@100..900&family=David+Libre:wght@400;500;700&family=Suez+One&family=Secular+One&family=Miriam+Libre:wght@400;700&family=Bellefair&family=Alef:wght@400;700&family=Amatic+SC:wght@400;700&family=Karantina:wght@300;400;700&family=Gveret+Levin&display=swap",
+        "https://more30.com/auth-button.js"
+      ]
+    }
+  ],
+  "checks": [
+    {
+      "ok": true,
+      "what": "the screen draws, headed \"העבודות שלי\""
+    },
+    {
+      "ok": true,
+      "what": "with zero rows — the live state — it says so instead of drawing a blank page"
+    },
+    {
+      "ok": true,
+      "what": "and an empty list is not reported as an error"
+    },
+    {
+      "ok": true,
+      "what": "no console errors on the empty state"
+    },
+    {
+      "ok": true,
+      "what": "one row draws one card and no empty state"
+    },
+    {
+      "ok": true,
+      "what": "the card carries a live CanvasStage preview — the saved layers are drawn, not a stored thumbnail (thumbnail is null)"
+    },
+    {
+      "ok": true,
+      "what": "and a delete control, which is the DELETE /api/projects/:id caller"
+    },
+    {
+      "ok": true,
+      "what": "no console errors on the populated state"
+    },
+    {
+      "ok": true,
+      "what": "Editor saves an opened project with PATCH instead of posting a second copy of it"
+    },
+    {
+      "ok": true,
+      "what": "Home links to /projects — the screen has a door"
+    },
+    {
+      "ok": true,
+      "what": "and it is routed lazily, so the entry chunk does not grow for a screen most visits never open"
+    }
+  ]
+}

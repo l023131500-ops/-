@@ -15,6 +15,7 @@ import {
   Crown,
   ArrowLeft,
   ScrollText,
+  FolderOpen,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -132,6 +133,14 @@ export default function Home() {
             </h1>
           </div>
           <div className="flex items-center gap-3">
+            <Button
+              variant="outline"
+              className="gap-2 border-[#C9A227]/40 text-[#C9A227] hover:bg-[#C9A227]/10"
+              onClick={() => navigate("/projects")}
+              data-testid="link-projects"
+            >
+              <FolderOpen className="h-4 w-4" /> העבודות שלי
+            </Button>
             <Button
               variant="outline"
               className="gap-2 border-[#C9A227]/40 text-[#C9A227] hover:bg-[#C9A227]/10"

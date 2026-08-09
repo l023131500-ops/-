@@ -344,8 +344,16 @@ export default function Editor() {
         layersJson: JSON.stringify({ background: doc!.background, layers: doc!.layers }),
         thumbnail: null as string | null,
       };
-      await apiRequest("POST", "/api/projects", payload);
-      toast({ title: "הפרויקט נשמר בהצלחה" });
+      // עבודה שנפתחה מ-/projects נושאת מזהה, ולכן היא מתעדכנת במקום.
+      // בלי זה כל לחיצה על "שמור" הייתה יוצרת עותק נוסף של אותה מודעה.
+      if (selected!.projectId) {
+        await apiRequest("PATCH", `/api/projects/${selected!.projectId}`, payload);
+        toast({ title: "העבודה עודכנה" });
+      } else {
+        const saved = await apiRequest("POST", "/api/projects", payload).then((r) => r.json());
+        if (saved?.id) setSelected({ ...selected!, projectId: saved.id });
+        toast({ title: "הפרויקט נשמר בהצלחה" });
+      }
     } catch (err: any) {
       toast({ title: "שגיאה בשמירת הפרויקט", description: String(err?.message ?? err), variant: "destructive" });
     } finally {

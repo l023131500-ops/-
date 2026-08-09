@@ -9,6 +9,8 @@ export interface SelectedTemplate {
   format: string;
   name: string;
   templateId?: number;
+  /** מזהה פרויקט שמור שנפתח מ-/projects — קיים ⇒ "שמור" מעדכן אותו ולא יוצר עותק. */
+  projectId?: number;
 }
 
 interface TemplateContextValue {

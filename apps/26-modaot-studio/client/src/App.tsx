@@ -19,6 +19,7 @@ import { TemplateProvider } from "@/lib/templateContext";
   במסלול שבו הבאת קובץ נוסף היא הדבר הגרוע ביותר.
 */
 const Editor = lazy(() => import("@/pages/Editor"));
+const Projects = lazy(() => import("@/pages/Projects"));
 const Studio = lazy(() => import("@/pages/Studio"));
 const Brief = lazy(() => import("@/pages/Brief"));
 const BrandingHome = lazy(() => import("@/pages/BrandingHome"));
@@ -39,6 +40,7 @@ function AppRouter() {
       <Switch>
         <Route path="/" component={Home} />
         <Route path="/editor" component={Editor} />
+        <Route path="/projects" component={Projects} />
         <Route path="/studio" component={Studio} />
         <Route path="/brief" component={Brief} />
         <Route path="/branding" component={BrandingHome} />

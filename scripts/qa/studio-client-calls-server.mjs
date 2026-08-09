@@ -32,10 +32,18 @@
  * segments, so queryKey:["/api/brands", id] is GET /api/brands/:id and is
  * counted as one.
  *
- * The source tree is scanned the same way and must agree with the bundle. A
+ * The source tree is scanned the same way and is compared against the bundle. A
  * bundle that calls something the source does not is a stale deploy; the point
  * of checking both is that "the client does not call it" and "the deployed
  * client is old" are different bugs with different fixes.
+ *
+ * The two sides now differ on purpose. What #129 turned out to be is that the
+ * five project routes were written to and never read back, and the fix is a
+ * screen — client/src/pages/Projects.tsx, routed at /projects, plus a save in
+ * Editor.tsx that PATCHes an opened project instead of posting a copy. That is
+ * source; the bundle under _deploy is the last deploy, and #83 blocks the next
+ * one. So the project routes are asserted per side, and the drift between them
+ * is pinned to exactly that set: anything else is a stale deploy and fails.
  *
  * No network, no database, no keys (#88). Everything read is a file in the repo.
  *
@@ -162,15 +170,36 @@ check(bundle.some((c) => !/^index-/.test(c.file)),
 check(brandRoutes.length === 5 && brandRoutes.every((r) => r.called_by_bundle),
   `all ${brandRoutes.length} brand routes are called by the shipped client, not none of them`);
 
-const projectsCalled = projectRoutes.filter((r) => r.called_by_bundle);
-const projectsUncalled = projectRoutes.filter((r) => !r.called_by_bundle);
-check(projectsCalled.length === 1 && projectsCalled[0].method === 'POST',
-  'of the five project routes the client calls exactly one, POST — work is written');
-check(projectsUncalled.length === 4 && projectsUncalled.every((r) => r.method !== 'POST'),
-  `and never reads it back: ${projectsUncalled.map((r) => `${r.method} ${r.path}`).join(', ')}`);
+const projectsInBundle = projectRoutes.filter((r) => r.called_by_bundle);
+check(projectsInBundle.length === 1 && projectsInBundle[0].method === 'POST',
+  'the deployed bundle still calls exactly one project route, POST — this is the state #129 was opened on');
 
-check(matrix.every((r) => r.called_by_bundle === r.called_by_source),
-  'the bundle and the source agree on every route — the deployed client is not stale');
+// The fix for #129 is a screen, /projects, and a save that updates in place. That
+// is source, and source is where it is asserted: the bundle only changes on the
+// next deploy, which #83 blocks.
+const readsBack = ['GET /api/projects', 'PATCH /api/projects/:p', 'DELETE /api/projects/:p'];
+const missingInSource = readsBack.filter((k) => !sourceKeys.has(k));
+check(missingInSource.length === 0,
+  missingInSource.length
+    ? `the source still does not read work back: ${missingInSource.join(', ')}`
+    : `the source now reads work back as well as writing it: ${readsBack.join(', ')}`);
+
+// GET /api/projects/:id stays uncalled on purpose: the list route selects "*", so
+// layersJson is already in the row the screen holds. Fetching the same project a
+// second time by id would be a redundant call, not a missing feature.
+const byId = matrix.find((r) => key(r) === 'GET /api/projects/:p');
+check(byId && !byId.called_by_source,
+  'and GET /api/projects/:id is deliberately still uncalled — the list already carries layersJson');
+
+// Bundle and source disagreeing is normally a stale deploy. Here the disagreement
+// is exactly the three routes the new screen added and nothing else — anything
+// beyond this set is a real drift and fails.
+const drift = matrix.filter((r) => r.called_by_bundle !== r.called_by_source).map(key).sort();
+const expectedDrift = [...readsBack].sort();
+check(JSON.stringify(drift) === JSON.stringify(expectedDrift),
+  drift.length === expectedDrift.length
+    ? 'the only bundle/source disagreement is the projects screen, which reaches production on the next deploy (#83)'
+    : `bundle and source disagree beyond the projects screen: ${drift.join(', ')}`);
 
 check(orphanCalls.length === 0,
   orphanCalls.length
@@ -196,7 +225,9 @@ const results = {
   chunks: readdirSync(assetsDir).filter((n) => n.endsWith('.js')).length,
   entry_chunk_calls: entry.map((c) => `${c.method} ${c.path}`),
   matrix,
-  uncalled: uncalled.map((r) => `${r.method} ${r.path}`),
+  uncalled_by_bundle: uncalled.map((r) => `${r.method} ${r.path}`),
+  uncalled_by_source: matrix.filter((r) => !r.called_by_source).map((r) => `${r.method} ${r.path}`),
+  bundle_source_drift: drift,
   orphan_calls: orphanCalls,
   source_only_calls_with_no_route: deadSourceCalls,
 };
@@ -204,9 +235,11 @@ mkdirSync(outDir, { recursive: true });
 writeFileSync(join(outDir, '_results.json'), JSON.stringify(results, null, 2) + '\n', 'utf8');
 
 console.log(`server routes: ${routes.length}   shipped chunks: ${results.chunks}   call sites: ${bundle.length}\n`);
+console.log('  bundle    source');
 for (const r of matrix) {
-  const mark = r.called_by_bundle ? 'called ' : 'UNCALLED';
-  console.log(`  ${mark}  ${r.method.padEnd(6)} ${r.path.padEnd(38)} ${r.callers.join(' ')}`);
+  const b = r.called_by_bundle ? 'called  ' : 'UNCALLED';
+  const s = r.called_by_source ? 'called  ' : 'UNCALLED';
+  console.log(`  ${b}  ${s}  ${r.method.padEnd(6)} ${r.path.padEnd(38)} ${r.callers.join(' ')}`);
 }
 console.log('');
 const failures = checks.filter((c) => !c.ok);

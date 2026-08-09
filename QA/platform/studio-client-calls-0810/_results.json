@@ -100,7 +100,7 @@
       "method": "GET",
       "path": "/api/projects",
       "called_by_bundle": false,
-      "called_by_source": false,
+      "called_by_source": true,
       "callers": []
     },
     {
@@ -123,14 +123,14 @@
       "method": "PATCH",
       "path": "/api/projects/:id",
       "called_by_bundle": false,
-      "called_by_source": false,
+      "called_by_source": true,
       "callers": []
     },
     {
       "method": "DELETE",
       "path": "/api/projects/:id",
       "called_by_bundle": false,
-      "called_by_source": false,
+      "called_by_source": true,
       "callers": []
     },
     {
@@ -231,7 +231,7 @@
       ]
     }
   ],
-  "uncalled": [
+  "uncalled_by_bundle": [
     "GET /api/health",
     "GET /api/templates/:id",
     "GET /api/projects",
@@ -240,6 +240,18 @@
     "DELETE /api/projects/:id",
     "GET /api/branding/meta",
     "GET /api/branding/visuals/:archetype"
+  ],
+  "uncalled_by_source": [
+    "GET /api/health",
+    "GET /api/templates/:id",
+    "GET /api/projects/:id",
+    "GET /api/branding/meta",
+    "GET /api/branding/visuals/:archetype"
+  ],
+  "bundle_source_drift": [
+    "DELETE /api/projects/:p",
+    "GET /api/projects",
+    "PATCH /api/projects/:p"
   ],
   "orphan_calls": [],
   "source_only_calls_with_no_route": [
