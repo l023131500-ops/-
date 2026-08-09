@@ -1,0 +1,18 @@
+﻿=== §3+§5 · are the admin screens reachable from /admin? ===
+    12 screens declared in portal/vercel.dist.json
+    hub bundles read: 1
+
+  PASS  /admin/activity  — served, and the hub links to it
+  PASS  /admin/pricing  — served, and the hub links to it
+  PASS  /admin/systems  — served, and the hub links to it
+  PASS  /admin/customers  — served, and the hub links to it
+  PASS  /admin/automation  — served, and the hub links to it
+  PASS  /admin/credits  — served, and the hub links to it
+  PASS  /admin/issues  — served, and the hub links to it
+  PASS  /admin/leads  — served, and the hub links to it
+  PASS  /admin/rights  — served, and the hub links to it
+  PASS  /admin/kesef  — served, and the hub links to it
+  PASS  /admin/imud  — served, and the hub links to it
+  PASS  /admin/studio  — served, and the hub links to it
+
+12 reachable · 0 not

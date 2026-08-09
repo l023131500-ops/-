@@ -10,10 +10,13 @@
     "admin-automation.html",
     "admin-credits.html",
     "admin-customers.html",
+    "admin-imud.html",
     "admin-issues.html",
+    "admin-kesef.html",
     "admin-leads.html",
     "admin-pricing.html",
     "admin-rights.html",
+    "admin-studio.html",
     "admin-systems.html",
     "auth/callback.html",
     "login.html",
@@ -72,90 +75,120 @@
       "route": "/admin/activity",
       "file": "admin-activity.html",
       "status": 200,
-      "live_bytes": 14899,
-      "tree_bytes": 14899,
-      "live_sha": "45f871fd6817",
-      "tree_sha": "45f871fd6817",
+      "live_bytes": 15131,
+      "tree_bytes": 15131,
+      "live_sha": "d50782106378",
+      "tree_sha": "d50782106378",
       "identical": true
     },
     {
       "route": "/admin/pricing",
       "file": "admin-pricing.html",
       "status": 200,
-      "live_bytes": 21558,
-      "tree_bytes": 21558,
-      "live_sha": "4449bd47bd90",
-      "tree_sha": "4449bd47bd90",
+      "live_bytes": 21784,
+      "tree_bytes": 21784,
+      "live_sha": "cf93f284f6ed",
+      "tree_sha": "cf93f284f6ed",
       "identical": true
     },
     {
       "route": "/admin/systems",
       "file": "admin-systems.html",
       "status": 200,
-      "live_bytes": 24007,
-      "tree_bytes": 24007,
-      "live_sha": "c66abc088f73",
-      "tree_sha": "c66abc088f73",
+      "live_bytes": 24233,
+      "tree_bytes": 24233,
+      "live_sha": "9ebcfd63bbd4",
+      "tree_sha": "9ebcfd63bbd4",
       "identical": true
     },
     {
       "route": "/admin/customers",
       "file": "admin-customers.html",
       "status": 200,
-      "live_bytes": 14482,
-      "tree_bytes": 14482,
-      "live_sha": "4d24eb4be83d",
-      "tree_sha": "4d24eb4be83d",
+      "live_bytes": 14708,
+      "tree_bytes": 14708,
+      "live_sha": "ada279a086b4",
+      "tree_sha": "ada279a086b4",
       "identical": true
     },
     {
       "route": "/admin/automation",
       "file": "admin-automation.html",
       "status": 200,
-      "live_bytes": 15409,
-      "tree_bytes": 15409,
-      "live_sha": "f96115951547",
-      "tree_sha": "f96115951547",
+      "live_bytes": 15635,
+      "tree_bytes": 15635,
+      "live_sha": "633bd8fe6d37",
+      "tree_sha": "633bd8fe6d37",
       "identical": true
     },
     {
       "route": "/admin/credits",
       "file": "admin-credits.html",
       "status": 200,
-      "live_bytes": 12375,
-      "tree_bytes": 12375,
-      "live_sha": "d8768b18dc85",
-      "tree_sha": "d8768b18dc85",
+      "live_bytes": 12601,
+      "tree_bytes": 12601,
+      "live_sha": "9c5f9ec4db31",
+      "tree_sha": "9c5f9ec4db31",
       "identical": true
     },
     {
       "route": "/admin/issues",
       "file": "admin-issues.html",
       "status": 200,
-      "live_bytes": 14581,
-      "tree_bytes": 14581,
-      "live_sha": "d42107fbf629",
-      "tree_sha": "d42107fbf629",
+      "live_bytes": 14807,
+      "tree_bytes": 14807,
+      "live_sha": "e42e40208143",
+      "tree_sha": "e42e40208143",
       "identical": true
     },
     {
       "route": "/admin/leads",
       "file": "admin-leads.html",
       "status": 200,
-      "live_bytes": 17724,
-      "tree_bytes": 17724,
-      "live_sha": "0cb07dec0cfe",
-      "tree_sha": "0cb07dec0cfe",
+      "live_bytes": 17950,
+      "tree_bytes": 17950,
+      "live_sha": "28212148e9f9",
+      "tree_sha": "28212148e9f9",
       "identical": true
     },
     {
       "route": "/admin/rights",
       "file": "admin-rights.html",
       "status": 200,
-      "live_bytes": 11107,
-      "tree_bytes": 11107,
-      "live_sha": "ee509be7ce4d",
-      "tree_sha": "ee509be7ce4d",
+      "live_bytes": 11333,
+      "tree_bytes": 11333,
+      "live_sha": "2d87be2ddc44",
+      "tree_sha": "2d87be2ddc44",
+      "identical": true
+    },
+    {
+      "route": "/admin/kesef",
+      "file": "admin-kesef.html",
+      "status": 200,
+      "live_bytes": 16121,
+      "tree_bytes": 16121,
+      "live_sha": "4eb250302dc5",
+      "tree_sha": "4eb250302dc5",
+      "identical": true
+    },
+    {
+      "route": "/admin/imud",
+      "file": "admin-imud.html",
+      "status": 200,
+      "live_bytes": 17084,
+      "tree_bytes": 17084,
+      "live_sha": "0b223c4d8b35",
+      "tree_sha": "0b223c4d8b35",
+      "identical": true
+    },
+    {
+      "route": "/admin/studio",
+      "file": "admin-studio.html",
+      "status": 200,
+      "live_bytes": 20091,
+      "tree_bytes": 20091,
+      "live_sha": "8d93cf37395a",
+      "tree_sha": "8d93cf37395a",
       "identical": true
     },
     {
@@ -212,49 +245,47 @@
       "route": "/sitemap.xml",
       "file": "sitemap.xml",
       "status": 200,
-      "live_bytes": 2514,
+      "live_bytes": 2637,
       "tree_bytes": 2637,
-      "live_sha": "17cd00ffa62e",
-      "tree_sha": "d835ad24953a",
-      "identical": false
+      "live_sha": "5c04111a926b",
+      "tree_sha": "5c04111a926b",
+      "identical": true
     }
   ],
-  "stale": [
-    "/sitemap.xml"
-  ],
+  "stale": [],
   "dangling_rewrites": [],
   "not_200": [],
   "unmeasured_files": [],
   "missing_commits": [],
   "summary": {
-    "pass": 4,
-    "fail": 1,
-    "stale": 1,
-    "served": 19,
-    "html_files": 16,
+    "pass": 5,
+    "fail": 0,
+    "stale": 0,
+    "served": 22,
+    "html_files": 19,
     "asset_files": 3,
-    "public_files": 19
+    "public_files": 22
   },
   "checks": [
     {
       "check": "every page the portal serves matches the file in the tree",
-      "pass": false,
-      "detail": "1/19 stale: /sitemap.xml"
+      "pass": true,
+      "detail": "none"
     },
     {
       "check": "every rewrite destination in vercel.dist.json exists in the tree",
       "pass": true,
-      "detail": "all 14"
+      "detail": "all 17"
     },
     {
       "check": "every page the portal serves answers 200",
       "pass": true,
-      "detail": "all 19"
+      "detail": "all 22"
     },
     {
       "check": "every file under portal/public is measured by one of the routes above",
       "pass": true,
-      "detail": "all 19"
+      "detail": "all 22"
     },
     {
       "check": "every committed fix on those pages is the one production serves",
