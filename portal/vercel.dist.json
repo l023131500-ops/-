@@ -23,6 +23,7 @@
     { "source": "/admin/rights", "destination": "/admin-rights.html" },
     { "source": "/admin/kesef", "destination": "/admin-kesef.html" },
     { "source": "/admin/imud", "destination": "/admin-imud.html" },
+    { "source": "/admin/studio", "destination": "/admin-studio.html" },
     { "source": "/showcase", "destination": "/showcase.html" },
     { "source": "/admin", "destination": "https://nihul-more30.vercel.app/admin" },
     { "source": "/admin/", "destination": "https://nihul-more30.vercel.app/admin/" },

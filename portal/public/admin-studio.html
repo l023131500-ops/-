@@ -1,0 +1,353 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light dark" />
+    <title>סטודיו מודעות (26) — תבניות ועבודות · מרכז השליטה — more30</title>
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        color-scheme: light dark;
+        --gold: #c9a227; --bg: #f6f7fb; --surface: #ffffff;
+        --ink: #0b0d2e; --ink-2: #5b6076; --line: #e4e6f0;
+        --ok: #157f4b; --warn: #8a6d10; --bad: #a4262c;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root { --bg: #0b0d18; --surface: #151827; --ink: #e9ebf5;
+                --ink-2: #a2a8c0; --line: #262b40;
+                --ok: #5fd39b; --warn: #e0bd5a; --bad: #f08a8f; }
+      }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body { font-family: 'Heebo', system-ui, sans-serif; background: var(--bg);
+             color: var(--ink); line-height: 1.6; padding: 28px 20px 80px; }
+      .wrap { max-width: 1080px; margin: 0 auto; }
+      .back { display: inline-flex; align-items: center; min-height: 24px;
+              font-size: 14px; color: var(--ink-2); text-decoration: none; }
+      .back:hover { color: var(--ink); }
+      h1 { font-size: clamp(24px, 4vw, 34px); font-weight: 800; margin-top: 10px; }
+      .sub { color: var(--ink-2); font-size: 15px; margin-top: 6px; max-width: 74ch; }
+      .nav { display: flex; gap: 8px; flex-wrap: wrap; margin: 18px 0 6px; }
+      .nav a { font-size: 13.5px; font-weight: 600; text-decoration: none;
+               border: 1px solid var(--line); border-radius: 999px;
+               padding: 6px 14px; min-height: 24px; display: inline-flex;
+               align-items: center; color: var(--ink); background: var(--surface); }
+      .nav a:hover { border-color: var(--gold); }
+
+      .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px,1fr));
+               gap: 12px; margin: 20px 0 8px; }
+      .kpi { background: var(--surface); border: 1px solid var(--line);
+             border-radius: 14px; padding: 14px 16px; }
+      .kpi .n { font-size: 27px; font-weight: 800; line-height: 1.1; }
+      .kpi .l { font-size: 12.5px; color: var(--ink-2); margin-top: 3px; }
+      .kpi.warn { border-color: color-mix(in srgb, var(--warn) 55%, var(--line)); }
+      .kpi.warn .n { color: var(--warn); }
+      .kpi.good .n { color: var(--ok); }
+
+      h2.sec { font-size: 19px; font-weight: 800; margin: 28px 0 4px; }
+      p.secsub { color: var(--ink-2); font-size: 13.5px; margin-bottom: 12px; max-width: 78ch; }
+
+      .note { border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px;
+              font-size: 14px; background: var(--surface); margin-top: 16px; }
+      .note.warn { border-color: color-mix(in srgb, var(--warn) 45%, var(--line)); }
+      .note b { font-weight: 700; }
+      .note p + p { margin-top: 8px; }
+
+      .panel { background: var(--surface); border: 1px solid var(--line);
+               border-radius: 14px; overflow-x: auto; }
+      table { border-collapse: collapse; width: 100%; font-size: 13.5px; }
+      th, td { text-align: right; padding: 9px 14px; border-bottom: 1px solid var(--line);
+               white-space: nowrap; }
+      th { font-size: 12px; font-weight: 700; color: var(--ink-2); }
+      tr:last-child td { border-bottom: 0; }
+      td.name { white-space: normal; min-width: 200px; }
+      code { font-family: ui-monospace, monospace; font-size: 12.5px; color: var(--ink-2); }
+
+      .tag { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px;
+             display: inline-block; }
+      .tag.builtin { background: color-mix(in srgb, var(--ink-2) 16%, transparent); color: var(--ink-2); }
+      .tag.custom  { background: color-mix(in srgb, var(--ok) 16%, transparent); color: var(--ok); }
+      .miss { color: var(--warn); }
+
+      .bar { display: block; height: 6px; border-radius: 999px; margin-top: 5px;
+             background: color-mix(in srgb, var(--ink-2) 18%, transparent); }
+      .bar i { display: block; height: 100%; border-radius: 999px; background: var(--ok); }
+
+      .split { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px,1fr)); gap: 14px; }
+      .chips { display: flex; gap: 8px; flex-wrap: wrap; }
+      .chip { background: var(--surface); border: 1px solid var(--line);
+              border-radius: 999px; padding: 5px 12px; font-size: 13px; }
+      .chip b { font-weight: 800; }
+      .foot { margin-top: 24px; font-size: 12.5px; color: var(--ink-2); }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <a class="back" href="/admin">← חזרה למרכז השליטה</a>
+      <h1>סטודיו מודעות (26) — תבניות ועבודות</h1>
+      <p class="sub" id="tagline">טוען…</p>
+
+      <nav class="nav">
+        <a href="/admin/systems">דוח מערכות</a>
+        <a href="/admin/leads">לידים</a>
+        <a href="/admin/credits">יתרות וחיבורים</a>
+        <a href="/admin/pricing">מחירים ותצוגה</a>
+        <a href="/admin/activity">משתמשים פעילים</a>
+        <a href="/admin/automation">אוטומציית תוכן</a>
+        <a href="/admin/rights">מאגר הזכויות</a>
+        <a href="/admin/customers">לקוחות</a>
+        <a href="/admin/issues">תקלות ומה דורש אותך</a>
+        <a href="/admin/kesef">כסף — קליטת נתונים</a>
+        <a href="/admin/imud">עימוד — ספרים ותבניות</a>
+        <a href="/studio">לאתר עצמו ↗</a>
+      </nav>
+
+      <div id="content" hidden>
+        <div class="cards" id="kpis"></div>
+        <div class="note warn" id="gap"></div>
+
+        <h2 class="sec">התבניות</h2>
+        <p class="secsub" id="tplsub"></p>
+        <div class="panel"><table id="templates"></table></div>
+
+        <h2 class="sec">שכבות התבניות</h2>
+        <p class="secsub" id="laysub"></p>
+        <div class="panel"><table id="layers"></table></div>
+
+        <h2 class="sec">חתכים</h2>
+        <p class="secsub">
+          קטגוריה, סגנון ומידה — נספרים על התבניות ועל העבודות בנפרד. עמודת העבודות
+          תתמלא מעצמה כשעבודות יתחילו להישמר; היא אינה מוקלדת בשום מקום.
+        </p>
+        <div class="split">
+          <div class="panel"><table id="cats"></table></div>
+          <div class="panel"><table id="styles"></table></div>
+          <div class="panel"><table id="formats"></table></div>
+        </div>
+
+        <h2 class="sec">העבודות</h2>
+        <p class="secsub" id="prjsub"></p>
+        <div class="panel"><table id="projects"></table></div>
+
+        <h2 class="sec">המותגים</h2>
+        <p class="secsub" id="brdsub"></p>
+        <div class="panel"><table id="brands"></table></div>
+
+        <h2 class="sec">פעילות</h2>
+        <p class="secsub">
+          שלוש הטבלאות נמדדות בנפרד. תבנית שנזרעה ביום ההתקנה אינה אומרת דבר על
+          עבודות, ולכן אין כאן «עדכון אחרון» אחד לכל המערכת.
+        </p>
+        <div class="chips" id="activity"></div>
+
+        <div class="note" id="notes"></div>
+        <p class="foot" id="stamp"></p>
+      </div>
+      <div id="denied" class="note warn" hidden></div>
+    </div>
+
+    <script type="module">
+      import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+      const SUPABASE_URL = 'https://uhnrgujbdxhhmoxcjria.supabase.co';
+      const SUPABASE_ANON =
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVobnJndWpiZHhoaG1veGNqcmlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMzNjE3MjgsImV4cCI6MjA5ODkzNzcyOH0.nHuOhw-WQEU17lNa7XOlORnBhVAYbJBHudKafWkSHBw';
+      const sb = createClient(SUPABASE_URL, SUPABASE_ANON, {
+        auth: { persistSession: true, storageKey: 'more30-auth' },
+      });
+      const $ = (id) => document.getElementById(id);
+      const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) =>
+        ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+      const num = (n) => (Number(n) || 0).toLocaleString('he-IL');
+      const when = (v) => (v ? new Date(v).toLocaleString('he-IL') : 'לא זמין');
+
+      (async function () {
+        const { data: s } = await sb.auth.getSession();
+        if (!s?.session) {
+          $('tagline').textContent = 'הדף פתוח לסופר-אדמין בלבד.';
+          $('denied').innerHTML =
+            `צריך להתחבר. <a href="/login?from=${encodeURIComponent(location.href)}">מעבר לכניסה</a>`;
+          $('denied').hidden = false;
+          return;
+        }
+        const { data, error } = await sb.rpc('more30_admin_studio_report');
+        if (error) {
+          $('tagline').textContent = 'הדף פתוח לסופר-אדמין בלבד.';
+          $('denied').innerHTML =
+            'החשבון הזה אינו סופר-אדמין.<br><span style="font-size:13px;color:var(--ink-2)">' +
+            esc(error.message) + '</span>';
+          $('denied').hidden = false;
+          return;
+        }
+
+        const t = data.totals || {};
+        const act = data.activity || {};
+        const tables = data.tables || [];
+        $('tagline').innerHTML =
+          'מה מערכת 26 מחזיקה במסד. ' +
+          `${tables.length} טבלאות — ${tables.map((x) => `<code>${esc(x)}</code>`).join(' · ')} — ` +
+          'וכל מספר בדף נספר עליהן בזמן הקריאה.';
+
+        // ‏אפס אינו אזהרה מעצם היותו אפס. 0 עבודות כאן הוא הממצא, כי לשרת יש
+        // ‏CRUD מלא לעבודות; 0 תבניות מותאמות אינו ממצא כלל — איש עוד לא בנה
+        // ‏תבנית משלו, וזה מצב פתיחה תקין. צביעה גורפת של אפסים הייתה משטחת
+        // ‏את ההבדל.
+        $('kpis').innerHTML = [
+          [t.templates, 'תבניות', Number(t.templates) ? '' : 'warn'],
+          [t.templates_builtin, 'מתוכן מובנות', ''],
+          [t.templates_custom, 'מתוכן מותאמות', ''],
+          [t.layers, 'שכבות בתבניות', ''],
+          [t.projects, 'עבודות שמורות', Number(t.projects) ? '' : 'warn'],
+          [t.brands, 'מותגים', Number(t.brands) ? '' : 'warn'],
+          [t.users, 'משתמשים', Number(t.users) ? '' : 'warn'],
+          [act.days_since_last_project ?? '—', 'ימים מאז עבודה אחרונה',
+            act.days_since_last_project == null ? 'warn' : ''],
+        ].map(([n, l, tone]) =>
+          `<div class="kpi ${tone}"><div class="n">${typeof n === 'number' ? num(n) : esc(n)}</div>` +
+          `<div class="l">${esc(l)}</div></div>`).join('');
+
+        // ‏המשפט נגזר מהמספרים ולא מוקלד. ברגע שעבודה ראשונה תישמר, הענף
+        // ‏מתחלף לבד — בלי לגעת בקובץ הזה ובלי לגעת בפונקציה.
+        const emptyWork = Number(t.projects) === 0 && Number(t.brands) === 0;
+        $('gap').innerHTML = emptyWork
+          ? `<b>0 עבודות ו-0 מותגים — וזה לא מדד שימוש.</b>` +
+            `<p>${esc((data.notes || {}).disconnect || '')}</p>` +
+            `<p>כלומר מי שעיצב מודעה בסטודיו לא איבד אותה בתקלה: לא היה קוד ` +
+            `שישלח אותה. עד שהחיבור ייסגר, שתי השורות האלה יישארו אפס גם אם ` +
+            `המערכת בשימוש מלא, ולכן אין לקרוא אותן כ«אין מבקרים».</p>`
+          : `${num(t.projects)} עבודות · ${num(t.brands)} מותגים · ${num(t.users)} משתמשים.`;
+
+        // ‏הטבלה מוצגת במלואה. היא קטנה, וחיתוך שקט היה הופך «אלה כל התבניות»
+        // ‏ל«אלה חלק מהן» בלי שאיש ידע.
+        const tpl = data.templates || [];
+        $('tplsub').textContent =
+          `${tpl.length} תבניות, כולן. משקל השכבות מוצג בבייטים של המסמך — התוכן ` +
+          `עצמו אינו מוחזר לדף הזה.`;
+        $('templates').innerHTML =
+          '<tr><th>#</th><th>שם</th><th>קטגוריה</th><th>סגנון</th><th>מידה</th>' +
+          '<th>רקע</th><th>שכבות</th><th>משקל</th><th>מקור</th><th>תמונה מקדימה</th><th>נוצרה</th></tr>' +
+          (tpl.length
+            ? tpl.map((x) => `<tr>
+                <td><code>${num(x.id)}</code></td>
+                <td class="name">${esc(x.name || '—')}</td>
+                <td><code>${esc(x.category ?? '—')}</code></td>
+                <td><code>${esc(x.style ?? '—')}</code></td>
+                <td>${num(x.width)}×${num(x.height)}</td>
+                <td>${esc(x.background ?? '—')}</td>
+                <td>${x.layers == null ? '<span class="miss">לא נפרש</span>' : num(x.layers)}</td>
+                <td>${num(x.layers_bytes)} ב׳</td>
+                <td><span class="tag ${x.builtin ? 'builtin' : 'custom'}">${
+                  x.builtin ? 'מובנית' : 'מותאמת'}</span></td>
+                <td>${x.has_thumbnail ? 'יש' : '<span class="miss">אין</span>'}</td>
+                <td>${esc(when(x.created_at))}</td>
+              </tr>`).join('')
+            : '<tr><td colspan="11">אין תבניות בטבלה.</td></tr>');
+
+        // ‏ההיסטוגרמה נגזרת מהשכבות עצמן. סוג שאף תבנית לא השתמשה בו אינו
+        // ‏שורת אפס כאן — רשימה מרופדת לקטלוג המלא הייתה מדווחת אפסים שאיש
+        // ‏לא ביקש.
+        const lay = data.by_layer_type || [];
+        const totalLayers = lay.reduce((a, x) => a + Number(x.layers || 0), 0);
+        $('laysub').textContent =
+          `${lay.length} סוגי שכבה מופיעים ב-${num(totalLayers)} השכבות של ${tpl.length} ` +
+          `התבניות. סוג שאף תבנית לא בחרה אינו נמדד כאן.`;
+        $('layers').innerHTML =
+          '<tr><th>סוג</th><th>שכבות</th><th style="width:50%">חלק</th></tr>' +
+          (lay.length
+            ? lay.map((x) => {
+                const pct = totalLayers ? Math.round((Number(x.layers) / totalLayers) * 100) : 0;
+                return `<tr>
+                  <td><code>${esc(x.type ?? '—')}</code></td>
+                  <td>${num(x.layers)} מתוך ${num(totalLayers)}</td>
+                  <td><span class="bar"><i style="width:${pct}%"></i></span>${pct}%</td>
+                </tr>`;
+              }).join('')
+            : '<tr><td colspan="3">אין שכבות.</td></tr>');
+
+        const cut = (rows, head, label) =>
+          `<tr><th>${esc(head)}</th><th>תבניות</th><th>עבודות</th></tr>` +
+          (rows.length
+            ? rows.map((x) => `<tr>
+                <td><code>${esc(x.key ?? '—')}</code>${
+                  x.width ? ` <span style="color:var(--ink-2)">${num(x.width)}×${num(x.height)}</span>` : ''}</td>
+                <td>${num(x.templates)}</td>
+                <td>${num(x.projects)}</td>
+              </tr>`).join('')
+            : `<tr><td colspan="3">${esc(label)}</td></tr>`);
+        $('cats').innerHTML = cut(data.by_category || [], 'קטגוריה', 'אין קטגוריות.');
+        $('styles').innerHTML = cut(data.by_style || [], 'סגנון', 'אין סגנונות.');
+        $('formats').innerHTML = cut(data.by_format || [], 'מידה', 'אין מידות.');
+
+        const prj = data.projects || [];
+        $('prjsub').textContent = prj.length
+          ? `${prj.length} עבודות, כולן.`
+          : 'הטבלה ריקה. ריק כאן פירושו שאין שורות — לא שהקריאה נכשלה.';
+        $('projects').innerHTML =
+          '<tr><th>#</th><th>שם</th><th>תבנית</th><th>קטגוריה</th><th>סגנון</th>' +
+          '<th>שכבות</th><th>משקל</th><th>בעלים</th><th>נוצרה</th><th>עודכנה</th></tr>' +
+          (prj.length
+            ? prj.map((x) => `<tr>
+                <td><code>${num(x.id)}</code></td>
+                <td class="name">${esc(x.name || '—')}</td>
+                <td><code>${esc(x.template_id ?? '—')}</code></td>
+                <td><code>${esc(x.category ?? '—')}</code></td>
+                <td><code>${esc(x.style ?? '—')}</code></td>
+                <td>${x.layers == null ? '<span class="miss">לא נפרש</span>' : num(x.layers)}</td>
+                <td>${num(x.layers_bytes)} ב׳</td>
+                <td>${esc(x.user_id ?? '—')}</td>
+                <td>${esc(when(x.created_at))}</td>
+                <td>${esc(when(x.updated_at))}</td>
+              </tr>`).join('')
+            : '<tr><td colspan="10">אין עבודות שמורות.</td></tr>');
+
+        const brd = data.brands || [];
+        $('brdsub').textContent = brd.length
+          ? `${brd.length} מותגים, כולם. הלוגו עצמו אינו נטען לדף — מדווח באורך בלבד.`
+          : 'הטבלה ריקה. הלוגו עצמו לא היה נטען לכאן גם אילו הייתה מלאה — רק אורכו.';
+        $('brands').innerHTML =
+          '<tr><th>#</th><th>שם</th><th>בעלים</th><th>תקציר</th><th>ערכה</th>' +
+          '<th>לוגו PNG</th><th>לוגו SVG</th><th>נוצר</th></tr>' +
+          (brd.length
+            ? brd.map((x) => `<tr>
+                <td><code>${num(x.id)}</code></td>
+                <td class="name">${esc(x.name || '—')}</td>
+                <td>${esc(x.user_id ?? '—')}</td>
+                <td>${num(x.brief_bytes)} ב׳</td>
+                <td>${num(x.kit_bytes)} ב׳</td>
+                <td>${num(x.logo_png_bytes)} ב׳</td>
+                <td>${num(x.logo_svg_bytes)} ב׳</td>
+                <td>${esc(when(x.created_at))}</td>
+              </tr>`).join('')
+            : '<tr><td colspan="8">אין מותגים.</td></tr>');
+
+        $('activity').innerHTML = [
+          ['התבנית הראשונה', when(act.templates_first)],
+          ['התבנית האחרונה', when(act.templates_last)],
+          ['העבודה הראשונה', when(act.projects_first)],
+          ['העבודה האחרונה', when(act.projects_last)],
+          ['מאז העבודה האחרונה',
+            act.days_since_last_project == null ? 'לא זמין' : `${act.days_since_last_project} ימים`],
+          ['המותג הראשון', when(act.brands_first)],
+          ['המותג האחרון', when(act.brands_last)],
+          ['מאז המותג האחרון',
+            act.days_since_last_brand == null ? 'לא זמין' : `${act.days_since_last_brand} ימים`],
+        ].map(([l, v]) => `<span class="chip">${esc(l)} <b>${esc(v)}</b></span>`).join('');
+
+        // ‏למה אין כאן כפתור. הכתיבה של המוצר עוברת דרך שרת שמחזיק service_role,
+        // ‏ולוח שיכתוב לטבלאות ישירות יעקוף אותו.
+        const n = data.notes || {};
+        $('notes').innerHTML = [n.what, n.read_only, n.content, n.layers, n.time, n.users, n.zero]
+          .filter(Boolean).map((x) => `<p>${esc(x)}</p>`).join('');
+
+        $('stamp').textContent = 'נוצר ' + when(data.generated_at);
+        $('content').hidden = false;
+      })();
+    </script>
+    <script src="https://more30.com/auth-button.js" defer></script>
+  </body>
+</html>

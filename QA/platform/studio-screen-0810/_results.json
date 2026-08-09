@@ -1,0 +1,220 @@
+{
+  "ran": "scripts/qa/studio-screen-render.mjs",
+  "issue": 86,
+  "screen": "portal/public/admin-studio.html",
+  "route": "/admin/studio",
+  "payload_from": "QA/platform/studio-screen-0810/payload.json",
+  "cross_checked_against": "QA/platform/studio-report-0810/report.json",
+  "keys_read": [
+    "activity",
+    "brands",
+    "by_category",
+    "by_format",
+    "by_layer_type",
+    "by_style",
+    "generated_at",
+    "notes",
+    "projects",
+    "tables",
+    "templates",
+    "totals"
+  ],
+  "checks": [
+    {
+      "ok": true,
+      "what": "the evidence file drops notes on purpose, and still does"
+    },
+    {
+      "ok": true,
+      "what": "payload.json and the reader's evidence agree on brands"
+    },
+    {
+      "ok": true,
+      "what": "payload.json and the reader's evidence agree on tables"
+    },
+    {
+      "ok": true,
+      "what": "payload.json and the reader's evidence agree on totals"
+    },
+    {
+      "ok": true,
+      "what": "payload.json and the reader's evidence agree on app_key"
+    },
+    {
+      "ok": true,
+      "what": "payload.json and the reader's evidence agree on activity"
+    },
+    {
+      "ok": true,
+      "what": "payload.json and the reader's evidence agree on by_style"
+    },
+    {
+      "ok": true,
+      "what": "payload.json and the reader's evidence agree on projects"
+    },
+    {
+      "ok": true,
+      "what": "payload.json and the reader's evidence agree on by_format"
+    },
+    {
+      "ok": true,
+      "what": "payload.json and the reader's evidence agree on templates"
+    },
+    {
+      "ok": true,
+      "what": "payload.json and the reader's evidence agree on by_category"
+    },
+    {
+      "ok": true,
+      "what": "the evidence file drops generated_at on purpose, and still does"
+    },
+    {
+      "ok": true,
+      "what": "payload.json and the reader's evidence agree on by_layer_type"
+    },
+    {
+      "ok": true,
+      "what": "the screen reads data.activity, and the payload carries it"
+    },
+    {
+      "ok": true,
+      "what": "the screen reads data.brands, and the payload carries it"
+    },
+    {
+      "ok": true,
+      "what": "the screen reads data.by_category, and the payload carries it"
+    },
+    {
+      "ok": true,
+      "what": "the screen reads data.by_format, and the payload carries it"
+    },
+    {
+      "ok": true,
+      "what": "the screen reads data.by_layer_type, and the payload carries it"
+    },
+    {
+      "ok": true,
+      "what": "the screen reads data.by_style, and the payload carries it"
+    },
+    {
+      "ok": true,
+      "what": "the screen reads data.generated_at, and the payload carries it"
+    },
+    {
+      "ok": true,
+      "what": "the screen reads data.notes, and the payload carries it"
+    },
+    {
+      "ok": true,
+      "what": "the screen reads data.projects, and the payload carries it"
+    },
+    {
+      "ok": true,
+      "what": "the screen reads data.tables, and the payload carries it"
+    },
+    {
+      "ok": true,
+      "what": "the screen reads data.templates, and the payload carries it"
+    },
+    {
+      "ok": true,
+      "what": "the screen reads data.totals, and the payload carries it"
+    },
+    {
+      "ok": true,
+      "what": "portal/vercel.dist.json serves /admin/studio from admin-studio.html"
+    },
+    {
+      "ok": true,
+      "what": "the createClient import is where the stub expects it"
+    },
+    {
+      "ok": true,
+      "what": "the client construction is where the stub expects it"
+    },
+    {
+      "ok": true,
+      "what": "the payload says 0 projects and 0 brands — the branch the screen draws"
+    },
+    {
+      "ok": true,
+      "what": "the disconnect note the gap branch prints comes from the function, not from the page"
+    },
+    {
+      "ok": true,
+      "what": "the template list carries every row it counted (4/4)"
+    },
+    {
+      "ok": true,
+      "what": "the templates sum to totals.layers"
+    },
+    {
+      "ok": true,
+      "what": "the layer histogram sums to totals.layers — the denominator the bars divide by"
+    },
+    {
+      "ok": true,
+      "what": "builtin + custom accounts for every template, with none left over"
+    },
+    {
+      "ok": true,
+      "what": "admin-activity.html links to /admin/studio"
+    },
+    {
+      "ok": true,
+      "what": "admin-automation.html links to /admin/studio"
+    },
+    {
+      "ok": true,
+      "what": "admin-credits.html links to /admin/studio"
+    },
+    {
+      "ok": true,
+      "what": "admin-customers.html links to /admin/studio"
+    },
+    {
+      "ok": true,
+      "what": "admin-imud.html links to /admin/studio"
+    },
+    {
+      "ok": true,
+      "what": "admin-issues.html links to /admin/studio"
+    },
+    {
+      "ok": true,
+      "what": "admin-kesef.html links to /admin/studio"
+    },
+    {
+      "ok": true,
+      "what": "admin-leads.html links to /admin/studio"
+    },
+    {
+      "ok": true,
+      "what": "admin-pricing.html links to /admin/studio"
+    },
+    {
+      "ok": true,
+      "what": "admin-rights.html links to /admin/studio"
+    },
+    {
+      "ok": true,
+      "what": "admin-systems.html links to /admin/studio"
+    },
+    {
+      "ok": true,
+      "what": "the studio screen does not list itself in its own sibling bar"
+    },
+    {
+      "ok": true,
+      "what": "the harness changed the file it was given"
+    },
+    {
+      "ok": true,
+      "what": "the rendered copy reaches no network"
+    }
+  ],
+  "summary": {
+    "pass": 48,
+    "total": 48
+  }
+}
