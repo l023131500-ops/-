@@ -1,0 +1,249 @@
+{
+  "measured_at_utc_day": "2026-08-10",
+  "deployed_routes": 26,
+  "bundle_call_sites": 34,
+  "chunks": 22,
+  "entry_chunk_calls": [
+    "GET /api/templates"
+  ],
+  "matrix": [
+    {
+      "method": "GET",
+      "path": "/api/meta",
+      "called_by_bundle": true,
+      "called_by_source": true,
+      "callers": [
+        "Brief-B2u5KoMl.js",
+        "Studio-B437o4yV.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/health",
+      "called_by_bundle": false,
+      "called_by_source": false,
+      "callers": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/presets",
+      "called_by_bundle": true,
+      "called_by_source": true,
+      "callers": [
+        "Brief-B2u5KoMl.js",
+        "Studio-B437o4yV.js"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/presets/:key/render",
+      "called_by_bundle": true,
+      "called_by_source": true,
+      "callers": [
+        "Brief-B2u5KoMl.js",
+        "Studio-B437o4yV.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/categories/:key/templates",
+      "called_by_bundle": true,
+      "called_by_source": true,
+      "callers": [
+        "Brief-B2u5KoMl.js"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/categories/:key/templates/:tpl/render",
+      "called_by_bundle": true,
+      "called_by_source": true,
+      "callers": [
+        "Brief-B2u5KoMl.js"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/brief/concepts",
+      "called_by_bundle": true,
+      "called_by_source": true,
+      "callers": [
+        "Brief-B2u5KoMl.js"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/ai/copy",
+      "called_by_bundle": true,
+      "called_by_source": true,
+      "callers": [
+        "Editor-CwCRs6Lo.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/templates",
+      "called_by_bundle": true,
+      "called_by_source": true,
+      "callers": [
+        "index-CsiCgOfk.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/templates/:id",
+      "called_by_bundle": false,
+      "called_by_source": false,
+      "callers": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/projects",
+      "called_by_bundle": false,
+      "called_by_source": false,
+      "callers": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/projects/:id",
+      "called_by_bundle": false,
+      "called_by_source": false,
+      "callers": []
+    },
+    {
+      "method": "POST",
+      "path": "/api/projects",
+      "called_by_bundle": true,
+      "called_by_source": true,
+      "callers": [
+        "Editor-CwCRs6Lo.js"
+      ]
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/projects/:id",
+      "called_by_bundle": false,
+      "called_by_source": false,
+      "callers": []
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/projects/:id",
+      "called_by_bundle": false,
+      "called_by_source": false,
+      "callers": []
+    },
+    {
+      "method": "POST",
+      "path": "/api/ai/background",
+      "called_by_bundle": true,
+      "called_by_source": true,
+      "callers": [
+        "Editor-CwCRs6Lo.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/branding/meta",
+      "called_by_bundle": false,
+      "called_by_source": false,
+      "callers": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/brands",
+      "called_by_bundle": true,
+      "called_by_source": true,
+      "callers": [
+        "BrandKitPage-BRu8xlxu.js",
+        "BrandingBrief-DiKobybg.js",
+        "BrandingHome-BJBqjcBb.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/brands/:id",
+      "called_by_bundle": true,
+      "called_by_source": true,
+      "callers": [
+        "BrandKitPage-BRu8xlxu.js"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/brands",
+      "called_by_bundle": true,
+      "called_by_source": true,
+      "callers": [
+        "BrandingBrief-DiKobybg.js"
+      ]
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/brands/:id",
+      "called_by_bundle": true,
+      "called_by_source": true,
+      "callers": [
+        "BrandKitPage-BRu8xlxu.js"
+      ]
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/brands/:id",
+      "called_by_bundle": true,
+      "called_by_source": true,
+      "callers": [
+        "BrandingHome-BJBqjcBb.js"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/branding/strategy",
+      "called_by_bundle": true,
+      "called_by_source": true,
+      "callers": [
+        "BrandingBrief-DiKobybg.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/branding/visuals/:archetype",
+      "called_by_bundle": false,
+      "called_by_source": false,
+      "callers": []
+    },
+    {
+      "method": "POST",
+      "path": "/api/branding/logo",
+      "called_by_bundle": true,
+      "called_by_source": true,
+      "callers": [
+        "BrandKitPage-BRu8xlxu.js"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/branding/vectorize",
+      "called_by_bundle": true,
+      "called_by_source": true,
+      "callers": [
+        "BrandKitPage-BRu8xlxu.js"
+      ]
+    }
+  ],
+  "uncalled": [
+    "GET /api/health",
+    "GET /api/templates/:id",
+    "GET /api/projects",
+    "GET /api/projects/:id",
+    "PATCH /api/projects/:id",
+    "DELETE /api/projects/:id",
+    "GET /api/branding/meta",
+    "GET /api/branding/visuals/:archetype"
+  ],
+  "orphan_calls": [],
+  "source_only_calls_with_no_route": [
+    "GET /api/ads  (gallery.tsx)",
+    "GET /api/config  (generator.tsx)"
+  ]
+}
