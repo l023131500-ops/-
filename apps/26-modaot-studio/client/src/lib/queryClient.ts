@@ -1,11 +1,15 @@
 import { QueryClient, QueryFunction } from "@tanstack/react-query";
 
-// VITE_API_BASE lets the same bundle be served under a path prefix (e.g. the
-// more30.com/studio deployment sets it to "/studio"). Unset = current
-// behaviour: same-origin, root-relative /api calls.
+// The bundle ships under a path prefix (more30.com/studio), where root-relative
+// /api calls reach the portal instead of the studio server and come back 404.
+// Vite's BASE_URL is exactly the mount the bundle was built for — "/studio/" in
+// production, "/" in dev — so deriving the prefix from it keeps the two in step
+// without a build-time env var. VITE_API_BASE still wins when the API lives
+// somewhere else entirely.
+const MOUNT = (import.meta.env.BASE_URL || "/").replace(/\/+$/, "");
 export const API_BASE =
   (import.meta.env.VITE_API_BASE as string | undefined) ||
-  ("__PORT_5000__".startsWith("__") ? "" : "__PORT_5000__");
+  ("__PORT_5000__".startsWith("__") ? MOUNT : "__PORT_5000__");
 
 async function throwIfResNotOk(res: Response) {
   if (!res.ok) {
