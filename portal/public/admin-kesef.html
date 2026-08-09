@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light dark" />
+    <title>כסף (34) — קליטת נתונים · מרכז השליטה — more30</title>
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        color-scheme: light dark;
+        --gold: #c9a227; --bg: #f6f7fb; --surface: #ffffff;
+        --ink: #0b0d2e; --ink-2: #5b6076; --line: #e4e6f0;
+        --ok: #157f4b; --warn: #8a6d10; --bad: #a4262c;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root { --bg: #0b0d18; --surface: #151827; --ink: #e9ebf5;
+                --ink-2: #a2a8c0; --line: #262b40;
+                --ok: #5fd39b; --warn: #e0bd5a; --bad: #f08a8f; }
+      }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body { font-family: 'Heebo', system-ui, sans-serif; background: var(--bg);
+             color: var(--ink); line-height: 1.6; padding: 28px 20px 80px; }
+      .wrap { max-width: 1080px; margin: 0 auto; }
+      .back { display: inline-flex; align-items: center; min-height: 24px;
+              font-size: 14px; color: var(--ink-2); text-decoration: none; }
+      .back:hover { color: var(--ink); }
+      h1 { font-size: clamp(24px, 4vw, 34px); font-weight: 800; margin-top: 10px; }
+      .sub { color: var(--ink-2); font-size: 15px; margin-top: 6px; max-width: 74ch; }
+      .nav { display: flex; gap: 8px; flex-wrap: wrap; margin: 18px 0 6px; }
+      .nav a { font-size: 13.5px; font-weight: 600; text-decoration: none;
+               border: 1px solid var(--line); border-radius: 999px;
+               padding: 6px 14px; min-height: 24px; display: inline-flex;
+               align-items: center; color: var(--ink); background: var(--surface); }
+      .nav a:hover { border-color: var(--gold); }
+
+      .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px,1fr));
+               gap: 12px; margin: 20px 0 8px; }
+      .kpi { background: var(--surface); border: 1px solid var(--line);
+             border-radius: 14px; padding: 14px 16px; }
+      .kpi .n { font-size: 27px; font-weight: 800; line-height: 1.1; }
+      .kpi .l { font-size: 12.5px; color: var(--ink-2); margin-top: 3px; }
+      .kpi.zero { border-color: color-mix(in srgb, var(--warn) 55%, var(--line)); }
+      .kpi.zero .n { color: var(--warn); }
+
+      h2.sec { font-size: 19px; font-weight: 800; margin: 28px 0 4px; }
+      p.secsub { color: var(--ink-2); font-size: 13.5px; margin-bottom: 12px; max-width: 78ch; }
+
+      .note { border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px;
+              font-size: 14px; background: var(--surface); margin-top: 16px; }
+      .note.warn { border-color: color-mix(in srgb, var(--warn) 45%, var(--line)); }
+      .note b { font-weight: 700; }
+
+      .panel { background: var(--surface); border: 1px solid var(--line);
+               border-radius: 14px; overflow-x: auto; }
+      table { border-collapse: collapse; width: 100%; font-size: 13.5px; }
+      th, td { text-align: right; padding: 9px 14px; border-bottom: 1px solid var(--line);
+               white-space: nowrap; }
+      th { font-size: 12px; font-weight: 700; color: var(--ink-2); }
+      tr:last-child td { border-bottom: 0; }
+      td.name { white-space: normal; min-width: 220px; }
+      code { font-family: ui-monospace, monospace; font-size: 12.5px; color: var(--ink-2); }
+
+      .tag { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px;
+             display: inline-block; }
+      .tag.ok   { background: color-mix(in srgb, var(--ok) 16%, transparent); color: var(--ok); }
+      .tag.never{ background: color-mix(in srgb, var(--bad) 16%, transparent); color: var(--bad); }
+      .tag.on   { background: color-mix(in srgb, var(--ink-2) 15%, transparent); color: var(--ink-2); }
+      .tag.off  { background: color-mix(in srgb, var(--ink-2) 10%, transparent); color: var(--ink-2); }
+
+      .bar { display: block; height: 6px; border-radius: 999px; margin-top: 5px;
+             background: color-mix(in srgb, var(--ink-2) 18%, transparent); }
+      .bar i { display: block; height: 100%; border-radius: 999px; background: var(--ok); }
+
+      .chips { display: flex; gap: 8px; flex-wrap: wrap; }
+      .chip { background: var(--surface); border: 1px solid var(--line);
+              border-radius: 999px; padding: 5px 12px; font-size: 13px; }
+      .chip b { font-weight: 800; }
+      .chip.empty { color: var(--ink-2); font-size: 12.5px; }
+      .foot { margin-top: 24px; font-size: 12.5px; color: var(--ink-2); }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <a class="back" href="/admin">← חזרה למרכז השליטה</a>
+      <h1>כסף (34) — קליטת נתונים</h1>
+      <p class="sub" id="tagline">טוען…</p>
+
+      <nav class="nav">
+        <a href="/admin/systems">דוח מערכות</a>
+        <a href="/admin/leads">לידים</a>
+        <a href="/admin/credits">יתרות וחיבורים</a>
+        <a href="/admin/pricing">מחירים ותצוגה</a>
+        <a href="/admin/activity">משתמשים פעילים</a>
+        <a href="/admin/automation">אוטומציית תוכן</a>
+        <a href="/admin/rights">מאגר הזכויות</a>
+        <a href="/admin/customers">לקוחות</a>
+        <a href="/admin/issues">תקלות ומה דורש אותך</a>
+        <a href="/kesef">לאתר עצמו ↗</a>
+      </nav>
+
+      <div id="content" hidden>
+        <div class="cards" id="kpis"></div>
+        <div class="note warn" id="gap"></div>
+
+        <h2 class="sec">מקורות הנתונים</h2>
+        <p class="secsub" id="ingsub"></p>
+        <div class="panel"><table id="ingestion"></table></div>
+
+        <h2 class="sec">הקטלוג — מה שנזרע ביד</h2>
+        <p class="secsub">
+          שמות הרשויות, סעיפי התקציב ומילון המונחים נכתבו כשהסכימה נבנתה.
+          זה מה שיש, והוא אינו נתון שנקלט.
+        </p>
+        <div class="chips" id="catalog"></div>
+
+        <h2 class="sec">כיסוי — כמה מהרשויות מחזיקות ערך</h2>
+        <p class="secsub" id="covsub"></p>
+        <div class="panel"><table id="coverage"></table></div>
+
+        <h2 class="sec">מה שהמוצר עצמו כתב</h2>
+        <p class="secsub">
+          בנפרד מהקטלוג. כל מספר כאן הוא ספירה חיה על טבלה בסכימת <code>kesef</code>.
+        </p>
+        <div class="chips" id="product"></div>
+
+        <h2 class="sec">הטבלאות</h2>
+        <p class="secsub" id="tabsub"></p>
+        <div class="chips" id="tables"></div>
+
+        <div class="note" id="notes"></div>
+        <p class="foot" id="stamp"></p>
+      </div>
+      <div id="denied" class="note warn" hidden></div>
+    </div>
+
+    <script type="module">
+      import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+      const SUPABASE_URL = 'https://uhnrgujbdxhhmoxcjria.supabase.co';
+      const SUPABASE_ANON =
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVobnJndWpiZHhoaG1veGNqcmlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMzNjE3MjgsImV4cCI6MjA5ODkzNzcyOH0.nHuOhw-WQEU17lNa7XOlORnBhVAYbJBHudKafWkSHBw';
+      const sb = createClient(SUPABASE_URL, SUPABASE_ANON, {
+        auth: { persistSession: true, storageKey: 'more30-auth' },
+      });
+      const $ = (id) => document.getElementById(id);
+      const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) =>
+        ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+      const num = (n) => (Number(n) || 0).toLocaleString('he-IL');
+      const when = (v) => (v ? new Date(v).toLocaleString('he-IL') : 'לא זמין');
+
+      (async function () {
+        const { data: s } = await sb.auth.getSession();
+        if (!s?.session) {
+          $('tagline').textContent = 'הדף פתוח לסופר-אדמין בלבד.';
+          $('denied').innerHTML =
+            `צריך להתחבר. <a href="/login?from=${encodeURIComponent(location.href)}">מעבר לכניסה</a>`;
+          $('denied').hidden = false;
+          return;
+        }
+        const { data, error } = await sb.rpc('more30_admin_kesef_report');
+        if (error) {
+          $('tagline').textContent = 'הדף פתוח לסופר-אדמין בלבד.';
+          $('denied').innerHTML =
+            'החשבון הזה אינו סופר-אדמין.<br><span style="font-size:13px;color:var(--ink-2)">' +
+            esc(error.message) + '</span>';
+          $('denied').hidden = false;
+          return;
+        }
+
+        const t = data.totals || {};
+        $('tagline').textContent =
+          'מה נקלט למערכת 34 ומה לא. כל מספר כאן נספר בזמן הקריאה על סכימת kesef עצמה.';
+
+        // ‏האריחים מפרידים בכוונה בין הקטלוג לקליטה. סכום אחד גדול היה אומר
+        // ‏"283 שורות" ומשאיר את הקורא עם הרושם שהמערכת עובדת — והיא מעולם
+        // ‏לא קלטה שורה. מה שאפס מסומן כאפס ולא נבלע בתוך ממוצע.
+        $('kpis').innerHTML = [
+          [t.rows, 'שורות בסך הכל'],
+          [t.authorities, 'רשויות בקטלוג'],
+          [t.sources, 'מקורות מוגדרים'],
+          [t.sources_ok, 'מקורות שהצליחו אי-פעם'],
+          [t.sync_runs, 'ריצות סנכרון'],
+          [t.facts, 'עובדות פיננסיות'],
+          [t.users, 'משתמשים במערכת'],
+          [t.empty_tables, `טבלאות ריקות מתוך ${num(t.tables)}`],
+        ].map(([n, l]) =>
+          `<div class="kpi ${Number(n) === 0 ? 'zero' : ''}"><div class="n">${num(n)}</div>` +
+          `<div class="l">${l}</div></div>`).join('');
+
+        // ‏המשפט שמסביר את הפער נכתב מהמספרים ולא מוקלד, כדי שהיום שבו
+        // ‏סנכרון ראשון יצליח ישנה גם אותו.
+        const ingested = Number(t.facts) + Number(t.sync_runs);
+        $('gap').innerHTML = ingested === 0
+          ? `<b>המערכת מחזיקה ${num(t.rows)} שורות, ואף אחת מהן לא הגיעה מקליטה.</b> ` +
+            `כולן קטלוג שנזרע ביד: ${num(t.authorities)} רשויות, סעיפי תקציב ומילון מונחים. ` +
+            `${num(t.sources)} מקורות מוגדרים, ${num(t.sources_ok)} מהם הצליחו אי-פעם, ` +
+            `ואין ולו ריצת סנכרון אחת. ‏0 כאן הוא מדידה ולא כשל בקריאה.`
+          : `${num(t.rows)} שורות · ${num(t.sync_runs)} ריצות סנכרון · ` +
+            `${num(t.facts)} עובדות פיננסיות שנקלטו.`;
+
+        // ‏is_active הוא הגדרה ולא מצב. הטור שקובע הוא ok — בדיוק
+        // ‏(last_ok_at is not null) — ולכן שניהם מוצגים זה לצד זה.
+        const ing = data.ingestion || [];
+        $('ingsub').textContent =
+          `${ing.length} מקורות. «פעיל» הוא הגדרה; «הצליח» הוא מצב — מקור שלא הצליח מעולם ` +
+          `מסומן כך גם כשהוא פעיל.`;
+        $('ingestion').innerHTML =
+          '<tr><th>מקור</th><th>סוג</th><th>תדירות</th><th>פעיל</th><th>הצליח</th>' +
+          '<th>הצלחה אחרונה</th><th>ריצות</th><th>שגיאה אחרונה</th></tr>' +
+          (ing.length
+            ? ing.map((x) => `<tr>
+                <td class="name">${esc(x.display_name || x.slug)}<br><code>${esc(x.slug)}</code></td>
+                <td>${esc(x.kind ?? '—')}</td>
+                <td>${esc(x.sync_frequency ?? '—')}</td>
+                <td><span class="tag ${x.is_active ? 'on' : 'off'}">${x.is_active ? 'פעיל' : 'כבוי'}</span></td>
+                <td><span class="tag ${x.ok ? 'ok' : 'never'}">${x.ok ? 'כן' : 'מעולם לא'}</span></td>
+                <td>${x.last_ok_at ? esc(when(x.last_ok_at)) : '—'}</td>
+                <td>${num(x.runs)}</td>
+                <td class="name">${x.last_error ? esc(x.last_error) : '—'}</td>
+              </tr>`).join('')
+            : '<tr><td colspan="8">אין מקורות מוגדרים.</td></tr>');
+
+        const c = data.catalog || {};
+        const chip = (label, n) => `<span class="chip">${esc(label)} <b>${num(n)}</b></span>`;
+        $('catalog').innerHTML = [
+          ...Object.entries(c.authorities_by_status || {}).map(([k, n]) => chip(k, n)),
+          ...Object.entries(c.authorities_by_district || {}).map(([k, n]) => chip(k, n)),
+          chip('סעיפי תקציב', c.chart_of_accounts),
+          chip('מונחים במילון', c.term_normalization),
+        ].join('');
+
+        // ‏שיעור ולא שני מספרים זה לצד זה: המכנה הוא coverage.of, שהוא
+        // ‏ספירת הרשויות עצמה, ולכן "0 מתוך 259" נכון גם כשהמספר ישתנה.
+        const cov = data.coverage || { of: 0, fields: {} };
+        $('covsub').textContent =
+          `כל עמודה שמסך לקוח היה מציג, וכמה מ-${num(cov.of)} הרשויות מחזיקות בה ערך.`;
+        $('coverage').innerHTML =
+          '<tr><th>עמודה</th><th>מלאות</th><th style="width:45%">שיעור</th></tr>' +
+          Object.entries(cov.fields || {}).map(([k, n]) => {
+            const pct = cov.of ? Math.round((Number(n) / cov.of) * 100) : 0;
+            return `<tr><td><code>${esc(k)}</code></td>
+              <td>${num(n)} מתוך ${num(cov.of)}</td>
+              <td><span class="bar"><i style="width:${pct}%"></i></span>${pct}%</td></tr>`;
+          }).join('');
+
+        $('product').innerHTML = Object.entries(data.product || {})
+          .map(([k, n]) => chip(k, n)).join('');
+
+        // ‏רשימת הטבלאות נגזרת מ-row_counts, שהפונקציה בונה בלולאה על
+        // ‏information_schema — לא מרשימה קשיחה. טבלה חדשה מופיעה מעצמה.
+        const rc = Object.entries(data.row_counts || {}).sort((a, b) => b[1] - a[1]);
+        const filled = rc.filter(([, n]) => n > 0);
+        const emptyN = rc.length - filled.length;
+        $('tabsub').textContent =
+          `${rc.length} טבלאות בסיס בסכימה, ${filled.length} מהן מחזיקות שורות ו-${emptyN} ריקות. ` +
+          `תצוגות (v_*) אינן נספרות — הן נגזרות, וספירתן הייתה סופרת את אותן עובדות פעמיים.`;
+        $('tables').innerHTML =
+          filled.map(([k, n]) => `<span class="chip"><code>${esc(k)}</code> <b>${num(n)}</b></span>`).join('') +
+          rc.filter(([, n]) => n === 0)
+            .map(([k]) => `<span class="chip empty"><code>${esc(k)}</code> 0</span>`).join('');
+
+        // ‏למה אין כאן כפתור. מקור המוצר של 34 אינו בעץ הזה, וכתיבה לסכימה
+        // ‏שחוזה הכתיבה שלה לא נקרא היא ניחוש.
+        const n = data.notes || {};
+        $('notes').innerHTML = [n.read_only, n.catalog_vs_ingested]
+          .filter(Boolean).map((x) => `<p>${esc(x)}</p>`).join('');
+
+        $('stamp').textContent = 'נוצר ' + when(data.generated_at);
+        $('content').hidden = false;
+      })();
+    </script>
+    <script src="https://more30.com/auth-button.js" defer></script>
+  </body>
+</html>

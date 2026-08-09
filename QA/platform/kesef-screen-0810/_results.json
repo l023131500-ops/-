@@ -1,0 +1,71 @@
+{
+  "ran": "scripts/qa/kesef-screen-render.mjs",
+  "issue": 86,
+  "screen": "portal/public/admin-kesef.html",
+  "route": "/admin/kesef",
+  "payload_from": "QA/platform/kesef-report-0810/_results.json",
+  "keys_read": [
+    "catalog",
+    "coverage",
+    "generated_at",
+    "ingestion",
+    "notes",
+    "product",
+    "row_counts",
+    "totals"
+  ],
+  "checks": [
+    {
+      "ok": true,
+      "what": "the screen reads data.catalog, and the payload carries it"
+    },
+    {
+      "ok": true,
+      "what": "the screen reads data.coverage, and the payload carries it"
+    },
+    {
+      "ok": true,
+      "what": "the screen reads data.generated_at, and the payload carries it"
+    },
+    {
+      "ok": true,
+      "what": "the screen reads data.ingestion, and the payload carries it"
+    },
+    {
+      "ok": true,
+      "what": "the screen reads data.notes, and the payload carries it"
+    },
+    {
+      "ok": true,
+      "what": "the screen reads data.product, and the payload carries it"
+    },
+    {
+      "ok": true,
+      "what": "the screen reads data.row_counts, and the payload carries it"
+    },
+    {
+      "ok": true,
+      "what": "the screen reads data.totals, and the payload carries it"
+    },
+    {
+      "ok": true,
+      "what": "the createClient import is where the stub expects it"
+    },
+    {
+      "ok": true,
+      "what": "the client construction is where the stub expects it"
+    },
+    {
+      "ok": true,
+      "what": "the harness changed the file it was given"
+    },
+    {
+      "ok": true,
+      "what": "the rendered copy reaches no network"
+    }
+  ],
+  "summary": {
+    "pass": 12,
+    "total": 12
+  }
+}
