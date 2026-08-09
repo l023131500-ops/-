@@ -1,8 +1,8 @@
 {
   "measured_at_utc_day": "2026-08-10",
   "deployed_routes": 26,
-  "bundle_call_sites": 34,
-  "chunks": 22,
+  "bundle_call_sites": 38,
+  "chunks": 23,
   "entry_chunk_calls": [
     "GET /api/templates"
   ],
@@ -13,8 +13,8 @@
       "called_by_bundle": true,
       "called_by_source": true,
       "callers": [
-        "Brief-B2u5KoMl.js",
-        "Studio-B437o4yV.js"
+        "Brief-D-mOg179.js",
+        "Studio-BfoJvS6t.js"
       ]
     },
     {
@@ -30,8 +30,8 @@
       "called_by_bundle": true,
       "called_by_source": true,
       "callers": [
-        "Brief-B2u5KoMl.js",
-        "Studio-B437o4yV.js"
+        "Brief-D-mOg179.js",
+        "Studio-BfoJvS6t.js"
       ]
     },
     {
@@ -40,8 +40,8 @@
       "called_by_bundle": true,
       "called_by_source": true,
       "callers": [
-        "Brief-B2u5KoMl.js",
-        "Studio-B437o4yV.js"
+        "Brief-D-mOg179.js",
+        "Studio-BfoJvS6t.js"
       ]
     },
     {
@@ -50,7 +50,7 @@
       "called_by_bundle": true,
       "called_by_source": true,
       "callers": [
-        "Brief-B2u5KoMl.js"
+        "Brief-D-mOg179.js"
       ]
     },
     {
@@ -59,7 +59,7 @@
       "called_by_bundle": true,
       "called_by_source": true,
       "callers": [
-        "Brief-B2u5KoMl.js"
+        "Brief-D-mOg179.js"
       ]
     },
     {
@@ -68,7 +68,7 @@
       "called_by_bundle": true,
       "called_by_source": true,
       "callers": [
-        "Brief-B2u5KoMl.js"
+        "Brief-D-mOg179.js"
       ]
     },
     {
@@ -77,7 +77,7 @@
       "called_by_bundle": true,
       "called_by_source": true,
       "callers": [
-        "Editor-CwCRs6Lo.js"
+        "Editor-CKcFwvRS.js"
       ]
     },
     {
@@ -86,7 +86,7 @@
       "called_by_bundle": true,
       "called_by_source": true,
       "callers": [
-        "index-CsiCgOfk.js"
+        "index-BmqlUxxO.js"
       ]
     },
     {
@@ -99,9 +99,11 @@
     {
       "method": "GET",
       "path": "/api/projects",
-      "called_by_bundle": false,
+      "called_by_bundle": true,
       "called_by_source": true,
-      "callers": []
+      "callers": [
+        "Projects-BikVqxrp.js"
+      ]
     },
     {
       "method": "GET",
@@ -116,22 +118,26 @@
       "called_by_bundle": true,
       "called_by_source": true,
       "callers": [
-        "Editor-CwCRs6Lo.js"
+        "Editor-CKcFwvRS.js"
       ]
     },
     {
       "method": "PATCH",
       "path": "/api/projects/:id",
-      "called_by_bundle": false,
+      "called_by_bundle": true,
       "called_by_source": true,
-      "callers": []
+      "callers": [
+        "Editor-CKcFwvRS.js"
+      ]
     },
     {
       "method": "DELETE",
       "path": "/api/projects/:id",
-      "called_by_bundle": false,
+      "called_by_bundle": true,
       "called_by_source": true,
-      "callers": []
+      "callers": [
+        "Projects-BikVqxrp.js"
+      ]
     },
     {
       "method": "POST",
@@ -139,7 +145,7 @@
       "called_by_bundle": true,
       "called_by_source": true,
       "callers": [
-        "Editor-CwCRs6Lo.js"
+        "Editor-CKcFwvRS.js"
       ]
     },
     {
@@ -155,9 +161,9 @@
       "called_by_bundle": true,
       "called_by_source": true,
       "callers": [
-        "BrandKitPage-BRu8xlxu.js",
-        "BrandingBrief-DiKobybg.js",
-        "BrandingHome-BJBqjcBb.js"
+        "BrandKitPage-C4O-6MDT.js",
+        "BrandingBrief-CUF0-Vnc.js",
+        "BrandingHome-D8spj-wl.js"
       ]
     },
     {
@@ -166,7 +172,7 @@
       "called_by_bundle": true,
       "called_by_source": true,
       "callers": [
-        "BrandKitPage-BRu8xlxu.js"
+        "BrandKitPage-C4O-6MDT.js"
       ]
     },
     {
@@ -175,7 +181,7 @@
       "called_by_bundle": true,
       "called_by_source": true,
       "callers": [
-        "BrandingBrief-DiKobybg.js"
+        "BrandingBrief-CUF0-Vnc.js"
       ]
     },
     {
@@ -184,7 +190,7 @@
       "called_by_bundle": true,
       "called_by_source": true,
       "callers": [
-        "BrandKitPage-BRu8xlxu.js"
+        "BrandKitPage-C4O-6MDT.js"
       ]
     },
     {
@@ -193,7 +199,7 @@
       "called_by_bundle": true,
       "called_by_source": true,
       "callers": [
-        "BrandingHome-BJBqjcBb.js"
+        "BrandingHome-D8spj-wl.js"
       ]
     },
     {
@@ -202,7 +208,7 @@
       "called_by_bundle": true,
       "called_by_source": true,
       "callers": [
-        "BrandingBrief-DiKobybg.js"
+        "BrandingBrief-CUF0-Vnc.js"
       ]
     },
     {
@@ -218,7 +224,7 @@
       "called_by_bundle": true,
       "called_by_source": true,
       "callers": [
-        "BrandKitPage-BRu8xlxu.js"
+        "BrandKitPage-C4O-6MDT.js"
       ]
     },
     {
@@ -227,17 +233,14 @@
       "called_by_bundle": true,
       "called_by_source": true,
       "callers": [
-        "BrandKitPage-BRu8xlxu.js"
+        "BrandKitPage-C4O-6MDT.js"
       ]
     }
   ],
   "uncalled_by_bundle": [
     "GET /api/health",
     "GET /api/templates/:id",
-    "GET /api/projects",
     "GET /api/projects/:id",
-    "PATCH /api/projects/:id",
-    "DELETE /api/projects/:id",
     "GET /api/branding/meta",
     "GET /api/branding/visuals/:archetype"
   ],
@@ -248,11 +251,7 @@
     "GET /api/branding/meta",
     "GET /api/branding/visuals/:archetype"
   ],
-  "bundle_source_drift": [
-    "DELETE /api/projects/:p",
-    "GET /api/projects",
-    "PATCH /api/projects/:p"
-  ],
+  "bundle_source_drift": [],
   "orphan_calls": [],
   "source_only_calls_with_no_route": [
     "GET /api/ads  (gallery.tsx)",

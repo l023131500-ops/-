@@ -170,13 +170,19 @@ check(bundle.some((c) => !/^index-/.test(c.file)),
 check(brandRoutes.length === 5 && brandRoutes.every((r) => r.called_by_bundle),
   `all ${brandRoutes.length} brand routes are called by the shipped client, not none of them`);
 
-const projectsInBundle = projectRoutes.filter((r) => r.called_by_bundle);
-check(projectsInBundle.length === 1 && projectsInBundle[0].method === 'POST',
-  'the deployed bundle still calls exactly one project route, POST — this is the state #129 was opened on');
+// #129 was opened on a bundle that called exactly one project route, POST. The
+// screen shipped: the deployed chunks now carry the read-back too, so the state
+// the bug described no longer exists in the client the browser receives.
+const projectsInBundle = projectRoutes.filter((r) => r.called_by_bundle).map(key).sort();
+const expectedProjects = ['DELETE /api/projects/:p', 'GET /api/projects', 'PATCH /api/projects/:p', 'POST /api/projects'];
+check(JSON.stringify(projectsInBundle) === JSON.stringify(expectedProjects),
+  JSON.stringify(projectsInBundle) === JSON.stringify(expectedProjects)
+    ? 'the deployed bundle calls four project routes, not one — work saved from the editor can be listed, opened and deleted'
+    : `the deployed bundle calls ${projectsInBundle.length} project routes: ${projectsInBundle.join(', ')}`);
 
-// The fix for #129 is a screen, /projects, and a save that updates in place. That
-// is source, and source is where it is asserted: the bundle only changes on the
-// next deploy, which #83 blocks.
+// The fix for #129 is a screen, /projects, and a save that updates in place. It
+// is asserted on both sides: the source has it, and so does the bundle that was
+// built from that source and deployed.
 const readsBack = ['GET /api/projects', 'PATCH /api/projects/:p', 'DELETE /api/projects/:p'];
 const missingInSource = readsBack.filter((k) => !sourceKeys.has(k));
 check(missingInSource.length === 0,
@@ -191,15 +197,15 @@ const byId = matrix.find((r) => key(r) === 'GET /api/projects/:p');
 check(byId && !byId.called_by_source,
   'and GET /api/projects/:id is deliberately still uncalled — the list already carries layersJson');
 
-// Bundle and source disagreeing is normally a stale deploy. Here the disagreement
-// is exactly the three routes the new screen added and nothing else — anything
-// beyond this set is a real drift and fails.
+// Bundle and source disagreeing is a stale deploy: a route the source calls and
+// the shipped chunks do not is a fix that never left the tree. The projects
+// screen was exactly that for one round; it is deployed, so the set is empty and
+// anything appearing in it again is the next stale deploy.
 const drift = matrix.filter((r) => r.called_by_bundle !== r.called_by_source).map(key).sort();
-const expectedDrift = [...readsBack].sort();
-check(JSON.stringify(drift) === JSON.stringify(expectedDrift),
-  drift.length === expectedDrift.length
-    ? 'the only bundle/source disagreement is the projects screen, which reaches production on the next deploy (#83)'
-    : `bundle and source disagree beyond the projects screen: ${drift.join(', ')}`);
+check(drift.length === 0,
+  drift.length === 0
+    ? 'the deployed bundle and the source call the same routes — no route is fixed in the tree and missing from production'
+    : `bundle and source disagree — stale deploy: ${drift.join(', ')}`);
 
 check(orphanCalls.length === 0,
   orphanCalls.length
