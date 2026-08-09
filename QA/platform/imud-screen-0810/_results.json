@@ -1,0 +1,87 @@
+{
+  "ran": "scripts/qa/imud-screen-render.mjs",
+  "issue": 86,
+  "screen": "portal/public/admin-imud.html",
+  "route": "/admin/imud",
+  "payload_from": "QA/platform/imud-report-0810/_results.json",
+  "keys_read": [
+    "activity",
+    "books",
+    "generated_at",
+    "layers",
+    "notes",
+    "table",
+    "templates",
+    "totals"
+  ],
+  "checks": [
+    {
+      "ok": true,
+      "what": "the screen reads data.activity, and the payload carries it"
+    },
+    {
+      "ok": true,
+      "what": "the screen reads data.books, and the payload carries it"
+    },
+    {
+      "ok": true,
+      "what": "the screen reads data.generated_at, and the payload carries it"
+    },
+    {
+      "ok": true,
+      "what": "the screen reads data.layers, and the payload carries it"
+    },
+    {
+      "ok": true,
+      "what": "the screen reads data.notes, and the payload carries it"
+    },
+    {
+      "ok": true,
+      "what": "the screen reads data.table, and the payload carries it"
+    },
+    {
+      "ok": true,
+      "what": "the screen reads data.templates, and the payload carries it"
+    },
+    {
+      "ok": true,
+      "what": "the screen reads data.totals, and the payload carries it"
+    },
+    {
+      "ok": true,
+      "what": "portal/vercel.dist.json serves /admin/imud from admin-imud.html"
+    },
+    {
+      "ok": true,
+      "what": "the createClient import is where the stub expects it"
+    },
+    {
+      "ok": true,
+      "what": "the client construction is where the stub expects it"
+    },
+    {
+      "ok": true,
+      "what": "the payload says all 2 books sit on anon — the branch the screen draws"
+    },
+    {
+      "ok": true,
+      "what": "the books list carries every row it counted (2/2)"
+    },
+    {
+      "ok": true,
+      "what": "the layer histogram sums to totals.blocks — the denominator the bars divide by"
+    },
+    {
+      "ok": true,
+      "what": "the harness changed the file it was given"
+    },
+    {
+      "ok": true,
+      "what": "the rendered copy reaches no network"
+    }
+  ],
+  "summary": {
+    "pass": 16,
+    "total": 16
+  }
+}
