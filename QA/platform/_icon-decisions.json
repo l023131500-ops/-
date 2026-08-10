@@ -1,0 +1,91 @@
+{
+  "imud": {
+    "rendered": 8,
+    "decisions": 8,
+    "perRecord": 0,
+    "lucide": 7,
+    "top": []
+  },
+  "smel": {
+    "rendered": 20,
+    "decisions": 12,
+    "perRecord": 8,
+    "lucide": 19,
+    "top": [
+      "check×5",
+      "check×5"
+    ]
+  },
+  "egod": {
+    "rendered": 34,
+    "decisions": 32,
+    "perRecord": 2,
+    "lucide": 34,
+    "top": [
+      "quote×3"
+    ]
+  },
+  "chatzor": {
+    "rendered": 23,
+    "decisions": 13,
+    "perRecord": 10,
+    "lucide": 23,
+    "top": [
+      "map-pin×4",
+      "arrow-left×4",
+      "navigation×4",
+      "arrow-left×2"
+    ]
+  },
+  "chizukim": {
+    "rendered": 81,
+    "decisions": 9,
+    "perRecord": 72,
+    "lucide": 81,
+    "top": [
+      "clock×25",
+      "coins×25",
+      "chevron-left×25"
+    ]
+  },
+  "zchuyot": {
+    "rendered": 52,
+    "decisions": 43,
+    "perRecord": 9,
+    "lucide": 54,
+    "top": [
+      "chevron-down×8",
+      "arrow-left×3"
+    ]
+  },
+  "mthbram": {
+    "rendered": 24,
+    "decisions": 21,
+    "perRecord": 3,
+    "lucide": 25,
+    "top": [
+      "filter×3",
+      "arrow-left×2"
+    ]
+  },
+  "galil": {
+    "rendered": 68,
+    "decisions": 29,
+    "perRecord": 39,
+    "lucide": 104,
+    "top": [
+      "clock×15",
+      "send×7",
+      "chevron-down×7",
+      "moon×6",
+      "sunrise×3"
+    ]
+  },
+  "gesher": {
+    "rendered": 1,
+    "decisions": 1,
+    "perRecord": 0,
+    "lucide": 1,
+    "top": []
+  }
+}
