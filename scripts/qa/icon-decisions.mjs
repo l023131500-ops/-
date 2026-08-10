@@ -208,11 +208,55 @@ for (const [key, route] of targets) {
 
       // The text the glyph sits next to. Climb until there IS text: an icon
       // alone in its own <span> says nothing about what it is labelling.
+      //
+      // Climbing crosses control boundaries, and that is how the sheet named the
+      // wrong button. mthbram's 16px `search` marks the search FIELD; the field
+      // and the «הוספת שיעור למאגר» button share one flex row, so the first
+      // ancestor with any text at all handed back the button's caption
+      // (DESIGN_SAMENESS 10/08 (י) — read against production, that button draws
+      // Plus only and carries no search glyph). A caption that belongs to a
+      // control the icon is not inside is not the text beside the icon.
+      //
+      // So the climb subtracts foreign controls instead of stopping dead at the
+      // nearest one: an icon-only <a> inside a card is still labelled by the
+      // card's own heading, which a hard ceiling would have thrown away. Only
+      // text sitting inside a control that does NOT contain this svg is dropped.
+      const CONTROL = 'a,button,input,textarea,select,label,summary,[role="button"],[role="link"]';
+      const textBesides = (el, svg) => {
+        let s = '';
+        for (const n of el.childNodes) {
+          if (n.nodeType === 3) { s += n.nodeValue; continue; }
+          if (n.nodeType !== 1) continue;
+          if (!n.contains(svg) && n.matches(CONTROL)) continue;   // someone else's control
+          if (!n.getClientRects().length) continue;               // not rendered
+          s += ' ' + textBesides(n, svg);
+        }
+        return s;
+      };
+      // A field with no visible label is marked by the icon, not by whatever
+      // text the row happens to hold. Its own accessible name is the honest
+      // answer, and saying where it came from keeps the sheet readable.
+      const fieldNameNear = (el, svg) => {
+        for (const f of el.querySelectorAll('input,textarea,select')) {
+          if (f.contains(svg)) continue;
+          const n = (f.getAttribute('aria-label') || f.getAttribute('placeholder') ||
+                     f.getAttribute('title') || '').replace(/\s+/g, ' ').trim();
+          if (n) return n;
+        }
+        return '';
+      };
       const labelOf = (svg) => {
         let el = svg.parentElement;
         for (let i = 0; i < 4 && el && el !== document.body; i++) {
-          const t = txt(el, 70);
+          // innerText where nothing foreign is in the way, so every label that
+          // was never crossing a boundary keeps exactly the value it had.
+          const foreign = [...el.querySelectorAll(CONTROL)].some((c) => !c.contains(svg));
+          const t = foreign
+            ? textBesides(el, svg).replace(/\s+/g, ' ').trim().slice(0, 70)
+            : txt(el, 70);
           if (t) return t;
+          const field = fieldNameNear(el, svg);
+          if (field) return 'שדה: ' + field.slice(0, 64);
           el = el.parentElement;
         }
         return '';
