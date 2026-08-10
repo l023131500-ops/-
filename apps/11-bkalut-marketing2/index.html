@@ -62,9 +62,18 @@
                 מערכת קולית 02-3131500
               </a>
             </div>
+            <!--
+              שלושת המספרים נמדדים, ולא מוערכים. מקור ותאריך:
+              888 · select count(*) from public.rights_catalog            (uhnrgujbdxhhmoxcjria, 10/08/2026)
+              362 · select count(distinct btrim(prov)) from אותה טבלה — אפס שורות בלי גוף מטפל
+                9 · מספר כרטיסי .category-card בדף הזה עצמו (סעיף «קטגוריות»)
+              האתר סטטי ואינו טוען את המאגר, ולכן המספרים כתובים כאן ביד ומתיישנים.
+              לפני שינוי תוכן במאגר — הרץ scripts/qa/hardcoded-stats.mjs ועדכן כאן.
+              888 הוא אותו מספר שהירו החי של מערכת 10 מציג (apps/10-bkalot-rights/index.html:92).
+            -->
             <ul class="hero-stats" aria-label="נתונים מרכזיים">
-              <li><strong>600+</strong><span>זכויות במאגר</span></li>
-              <li><strong>250+</strong><span>עמותות וארגוני סיוע</span></li>
+              <li><strong>888</strong><span>זכויות במאגר</span></li>
+              <li><strong>362</strong><span>גופים מטפלים</span></li>
               <li><strong>9</strong><span>קטגוריות תוכן</span></li>
             </ul>
           </div>

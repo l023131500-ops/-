@@ -126,103 +126,6 @@
       ]
     },
     {
-      "app": "11-bkalut-marketing2",
-      "files": 1,
-      "total": 12,
-      "loud": 2,
-      "found": [
-        {
-          "file": "apps/11-bkalut-marketing2/index.html",
-          "hits": [
-            {
-              "line": 23,
-              "num": "2",
-              "kind": "string",
-              "loud": false,
-              "code": "<rect x=\"2\" y=\"2\" width=\"36\" height=\"36\" rx=\"8\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"/>"
-            },
-            {
-              "line": 23,
-              "num": "2",
-              "kind": "string",
-              "loud": false,
-              "code": "<rect x=\"2\" y=\"2\" width=\"36\" height=\"36\" rx=\"8\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"/>"
-            },
-            {
-              "line": 23,
-              "num": "36",
-              "kind": "string",
-              "loud": false,
-              "code": "<rect x=\"2\" y=\"2\" width=\"36\" height=\"36\" rx=\"8\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"/>"
-            },
-            {
-              "line": 23,
-              "num": "36",
-              "kind": "string",
-              "loud": false,
-              "code": "<rect x=\"2\" y=\"2\" width=\"36\" height=\"36\" rx=\"8\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"/>"
-            },
-            {
-              "line": 23,
-              "num": "8",
-              "kind": "string",
-              "loud": false,
-              "code": "<rect x=\"2\" y=\"2\" width=\"36\" height=\"36\" rx=\"8\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"/>"
-            },
-            {
-              "line": 23,
-              "num": "2",
-              "kind": "string",
-              "loud": false,
-              "code": "<rect x=\"2\" y=\"2\" width=\"36\" height=\"36\" rx=\"8\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"/>"
-            },
-            {
-              "line": 25,
-              "num": "20",
-              "kind": "string",
-              "loud": false,
-              "code": "<circle cx=\"20\" cy=\"22\" r=\"2\" fill=\"currentColor\"/>"
-            },
-            {
-              "line": 25,
-              "num": "22",
-              "kind": "string",
-              "loud": false,
-              "code": "<circle cx=\"20\" cy=\"22\" r=\"2\" fill=\"currentColor\"/>"
-            },
-            {
-              "line": 25,
-              "num": "2",
-              "kind": "string",
-              "loud": false,
-              "code": "<circle cx=\"20\" cy=\"22\" r=\"2\" fill=\"currentColor\"/>"
-            },
-            {
-              "line": 280,
-              "num": "0",
-              "kind": "string",
-              "loud": false,
-              "code": "<input type=\"hidden\" name=\"score\" value=\"0\" />"
-            },
-            {
-              "line": 66,
-              "num": "600+",
-              "kind": "markup",
-              "loud": true,
-              "code": "<li><strong>600+</strong><span>זכויות במאגר</span></li>"
-            },
-            {
-              "line": 67,
-              "num": "250+",
-              "kind": "markup",
-              "loud": true,
-              "code": "<li><strong>250+</strong><span>עמותות וארגוני סיוע</span></li>"
-            }
-          ]
-        }
-      ]
-    },
-    {
       "app": "22-get-your-rights",
       "files": 1,
       "total": 49,
@@ -1809,6 +1712,89 @@
               "kind": "string",
               "loud": false,
               "code": "<line x1=\"16\" y1=\"4\" x2=\"16\" y2=\"28\" stroke=\"currentColor\" stroke-width=\"2\"/>"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "app": "11-bkalut-marketing2",
+      "files": 1,
+      "total": 10,
+      "loud": 0,
+      "found": [
+        {
+          "file": "apps/11-bkalut-marketing2/index.html",
+          "hits": [
+            {
+              "line": 23,
+              "num": "2",
+              "kind": "string",
+              "loud": false,
+              "code": "<rect x=\"2\" y=\"2\" width=\"36\" height=\"36\" rx=\"8\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"/>"
+            },
+            {
+              "line": 23,
+              "num": "2",
+              "kind": "string",
+              "loud": false,
+              "code": "<rect x=\"2\" y=\"2\" width=\"36\" height=\"36\" rx=\"8\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"/>"
+            },
+            {
+              "line": 23,
+              "num": "36",
+              "kind": "string",
+              "loud": false,
+              "code": "<rect x=\"2\" y=\"2\" width=\"36\" height=\"36\" rx=\"8\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"/>"
+            },
+            {
+              "line": 23,
+              "num": "36",
+              "kind": "string",
+              "loud": false,
+              "code": "<rect x=\"2\" y=\"2\" width=\"36\" height=\"36\" rx=\"8\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"/>"
+            },
+            {
+              "line": 23,
+              "num": "8",
+              "kind": "string",
+              "loud": false,
+              "code": "<rect x=\"2\" y=\"2\" width=\"36\" height=\"36\" rx=\"8\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"/>"
+            },
+            {
+              "line": 23,
+              "num": "2",
+              "kind": "string",
+              "loud": false,
+              "code": "<rect x=\"2\" y=\"2\" width=\"36\" height=\"36\" rx=\"8\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"/>"
+            },
+            {
+              "line": 25,
+              "num": "20",
+              "kind": "string",
+              "loud": false,
+              "code": "<circle cx=\"20\" cy=\"22\" r=\"2\" fill=\"currentColor\"/>"
+            },
+            {
+              "line": 25,
+              "num": "22",
+              "kind": "string",
+              "loud": false,
+              "code": "<circle cx=\"20\" cy=\"22\" r=\"2\" fill=\"currentColor\"/>"
+            },
+            {
+              "line": 25,
+              "num": "2",
+              "kind": "string",
+              "loud": false,
+              "code": "<circle cx=\"20\" cy=\"22\" r=\"2\" fill=\"currentColor\"/>"
+            },
+            {
+              "line": 289,
+              "num": "0",
+              "kind": "string",
+              "loud": false,
+              "code": "<input type=\"hidden\" name=\"score\" value=\"0\" />"
             }
           ]
         }
