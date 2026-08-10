@@ -1,0 +1,2485 @@
+{
+  "apps": [
+    {
+      "app": "21-mthbram",
+      "files": 6,
+      "total": 42,
+      "loud": 7,
+      "found": [
+        {
+          "file": "apps/21-mthbram/src/lib/lessonExcel.ts",
+          "hits": [
+            {
+              "line": 56,
+              "num": "12",
+              "kind": "string",
+              "loud": false,
+              "code": "\"12\","
+            }
+          ]
+        },
+        {
+          "file": "apps/21-mthbram/src/lib/studyDayExcel.ts",
+          "hits": [
+            {
+              "line": 43,
+              "num": "12",
+              "kind": "string",
+              "loud": false,
+              "code": "\"12\","
+            },
+            {
+              "line": 46,
+              "num": "0501234567",
+              "kind": "string",
+              "loud": false,
+              "code": "\"0501234567\","
+            }
+          ]
+        },
+        {
+          "file": "apps/21-mthbram/src/pages/IvrBuilder.tsx",
+          "hits": [
+            {
+              "line": 46,
+              "num": "0501234567",
+              "kind": "string",
+              "loud": false,
+              "code": "example: `curl -X POST \"${baseUrl}/ivr-submit\" -H \"Content-Type: application/json\" -d '{\"caller_phone\":\"0501234567\",\"request_type\":\"request_lesson\",\"message\":\"מ"
+            },
+            {
+              "line": 208,
+              "num": "1",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"1\", label: \"חיפוש שיעור\", sub: \"שפה → נושא → עיר → תוצאות\" },"
+            },
+            {
+              "line": 209,
+              "num": "2",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"2\", label: \"עדכון שיעור קיים\", sub: \"הקלטת הודעה עם פרטים\" },"
+            },
+            {
+              "line": 210,
+              "num": "3",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"3\", label: \"הקמת שיעור חדש\", sub: \"הקלטת בקשה\" },"
+            },
+            {
+              "line": 211,
+              "num": "4",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"4\", label: \"הצטרפות כמגיד שיעור\", sub: \"הקלטת פרטים\" },"
+            },
+            {
+              "line": 212,
+              "num": "0",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"0\", label: \"שיחה עם נציג\", sub: \"העברה ל-023-133-0600\" },"
+            }
+          ]
+        },
+        {
+          "file": "apps/21-mthbram/src/pages/SeekerDashboard.tsx",
+          "hits": [
+            {
+              "line": 58,
+              "num": "8",
+              "kind": "field",
+              "loud": true,
+              "code": "{ icon: BookOpen, label: \"מגידי שיעור מתאימים\", value: \"8\", color: \"text-accent\" },"
+            },
+            {
+              "line": 59,
+              "num": "3",
+              "kind": "field",
+              "loud": true,
+              "code": "{ icon: Heart, label: \"שמורים\", value: \"3\", color: \"text-destructive\" },"
+            },
+            {
+              "line": 60,
+              "num": "24",
+              "kind": "field",
+              "loud": true,
+              "code": "{ icon: Eye, label: \"צפיות בבקשה\", value: \"24\", color: \"text-muted-foreground\" },"
+            },
+            {
+              "line": 58,
+              "num": "8",
+              "kind": "string",
+              "loud": false,
+              "code": "{ icon: BookOpen, label: \"מגידי שיעור מתאימים\", value: \"8\", color: \"text-accent\" },"
+            },
+            {
+              "line": 59,
+              "num": "3",
+              "kind": "string",
+              "loud": false,
+              "code": "{ icon: Heart, label: \"שמורים\", value: \"3\", color: \"text-destructive\" },"
+            },
+            {
+              "line": 60,
+              "num": "24",
+              "kind": "string",
+              "loud": false,
+              "code": "{ icon: Eye, label: \"צפיות בבקשה\", value: \"24\", color: \"text-muted-foreground\" },"
+            }
+          ]
+        },
+        {
+          "file": "apps/21-mthbram/src/pages/TeacherDashboard.tsx",
+          "hits": [
+            {
+              "line": 78,
+              "num": "12",
+              "kind": "field",
+              "loud": true,
+              "code": "{ icon: Users, label: \"בקשות מתאימות\", value: \"12\", color: \"text-accent\" },"
+            },
+            {
+              "line": 79,
+              "num": "4",
+              "kind": "field",
+              "loud": true,
+              "code": "{ icon: Star, label: \"התאמה גבוהה\", value: \"4\", color: \"text-gold\" },"
+            },
+            {
+              "line": 80,
+              "num": "3",
+              "kind": "field",
+              "loud": true,
+              "code": "{ icon: BookOpen, label: \"שיעורים פעילים\", value: \"3\", color: \"text-navy\" },"
+            },
+            {
+              "line": 81,
+              "num": "156",
+              "kind": "field",
+              "loud": true,
+              "code": "{ icon: Eye, label: \"צפיות בפרופיל\", value: \"156\", color: \"text-muted-foreground\" },"
+            },
+            {
+              "line": 78,
+              "num": "12",
+              "kind": "string",
+              "loud": false,
+              "code": "{ icon: Users, label: \"בקשות מתאימות\", value: \"12\", color: \"text-accent\" },"
+            },
+            {
+              "line": 79,
+              "num": "4",
+              "kind": "string",
+              "loud": false,
+              "code": "{ icon: Star, label: \"התאמה גבוהה\", value: \"4\", color: \"text-gold\" },"
+            },
+            {
+              "line": 80,
+              "num": "3",
+              "kind": "string",
+              "loud": false,
+              "code": "{ icon: BookOpen, label: \"שיעורים פעילים\", value: \"3\", color: \"text-navy\" },"
+            },
+            {
+              "line": 81,
+              "num": "156",
+              "kind": "string",
+              "loud": false,
+              "code": "{ icon: Eye, label: \"צפיות בפרופיל\", value: \"156\", color: \"text-muted-foreground\" },"
+            }
+          ]
+        },
+        {
+          "file": "apps/21-mthbram/supabase/functions/ivr-menu/index.ts",
+          "hits": [
+            {
+              "line": 12,
+              "num": "1",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"1\", label: \"חיפוש שיעור\", action: \"goto\", target: \"search_language\" },"
+            },
+            {
+              "line": 13,
+              "num": "2",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"2\", label: \"עדכון שיעור קיים\", action: \"goto\", target: \"update_lesson\" },"
+            },
+            {
+              "line": 14,
+              "num": "3",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"3\", label: \"הקמת שיעור חדש\", action: \"goto\", target: \"request_lesson\" },"
+            },
+            {
+              "line": 15,
+              "num": "4",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"4\", label: \"הצטרפות כמגיד שיעור\", action: \"goto\", target: \"register_teacher\" },"
+            },
+            {
+              "line": 16,
+              "num": "0",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"0\", label: \"שיחה עם נציג\", action: \"transfer\", target: \"0231330600\" },"
+            },
+            {
+              "line": 16,
+              "num": "0231330600",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"0\", label: \"שיחה עם נציג\", action: \"transfer\", target: \"0231330600\" },"
+            },
+            {
+              "line": 23,
+              "num": "1",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"1\", label: \"עברית\", action: \"set_param\", param: \"language\", value: \"עברית\", next: \"search_subject\" },"
+            },
+            {
+              "line": 24,
+              "num": "2",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"2\", label: \"אידיש\", action: \"set_param\", param: \"language\", value: \"אידיש\", next: \"search_subject\" },"
+            },
+            {
+              "line": 25,
+              "num": "3",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"3\", label: \"אנגלית\", action: \"set_param\", param: \"language\", value: \"אנגלית\", next: \"search_subject\" },"
+            },
+            {
+              "line": 26,
+              "num": "9",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"9\", label: \"חזרה\", action: \"goto\", target: \"root\" },"
+            },
+            {
+              "line": 33,
+              "num": "1",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"1\", label: \"גמרא\", action: \"set_param\", param: \"subject\", value: \"גמרא\", next: \"search_city\" },"
+            },
+            {
+              "line": 34,
+              "num": "2",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"2\", label: \"הלכה\", action: \"set_param\", param: \"subject\", value: \"הלכה\", next: \"search_city\" },"
+            },
+            {
+              "line": 35,
+              "num": "3",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"3\", label: \"פרשת שבוע\", action: \"set_param\", param: \"subject\", value: \"פרשת שבוע\", next: \"search_city\" },"
+            },
+            {
+              "line": 36,
+              "num": "4",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"4\", label: \"מוסר וחסידות\", action: \"set_param\", param: \"subject\", value: \"מוסר\", next: \"search_city\" },"
+            },
+            {
+              "line": 37,
+              "num": "5",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"5\", label: \"דף יומי\", action: \"set_param\", param: \"subject\", value: \"דף יומי\", next: \"search_city\" },"
+            },
+            {
+              "line": 38,
+              "num": "9",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"9\", label: \"חזרה\", action: \"goto\", target: \"search_language\" },"
+            },
+            {
+              "line": 53,
+              "num": "9",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"9\", label: \"חזרה\", action: \"goto\", target: \"root\" },"
+            },
+            {
+              "line": 61,
+              "num": "9",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"9\", label: \"חזרה\", action: \"goto\", target: \"root\" },"
+            },
+            {
+              "line": 69,
+              "num": "9",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"9\", label: \"חזרה\", action: \"goto\", target: \"root\" },"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "app": "01-torah-platform",
+      "files": 7,
+      "total": 31,
+      "loud": 7,
+      "found": [
+        {
+          "file": "apps/01-torah-platform/src/lib/lessonExcel.ts",
+          "hits": [
+            {
+              "line": 56,
+              "num": "12",
+              "kind": "string",
+              "loud": false,
+              "code": "\"12\","
+            }
+          ]
+        },
+        {
+          "file": "apps/01-torah-platform/src/lib/studyDayExcel.ts",
+          "hits": [
+            {
+              "line": 43,
+              "num": "12",
+              "kind": "string",
+              "loud": false,
+              "code": "\"12\","
+            },
+            {
+              "line": 46,
+              "num": "0501234567",
+              "kind": "string",
+              "loud": false,
+              "code": "\"0501234567\","
+            }
+          ]
+        },
+        {
+          "file": "apps/01-torah-platform/src/pages/legacy/IvrBuilder.tsx",
+          "hits": [
+            {
+              "line": 46,
+              "num": "0501234567",
+              "kind": "string",
+              "loud": false,
+              "code": "example: `curl -X POST \"${baseUrl}/ivr-submit\" -H \"Content-Type: application/json\" -d '{\"caller_phone\":\"0501234567\",\"request_type\":\"request_lesson\",\"message\":\"מ"
+            },
+            {
+              "line": 208,
+              "num": "1",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"1\", label: \"חיפוש שיעור\", sub: \"שפה → נושא → עיר → תוצאות\" },"
+            },
+            {
+              "line": 209,
+              "num": "2",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"2\", label: \"עדכון שיעור קיים\", sub: \"הקלטת הודעה עם פרטים\" },"
+            },
+            {
+              "line": 210,
+              "num": "3",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"3\", label: \"הקמת שיעור חדש\", sub: \"הקלטת בקשה\" },"
+            },
+            {
+              "line": 211,
+              "num": "4",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"4\", label: \"הצטרפות כמגיד שיעור\", sub: \"הקלטת פרטים\" },"
+            },
+            {
+              "line": 212,
+              "num": "0",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"0\", label: \"שיחה עם נציג\", sub: \"העברה ל-023-133-0600\" },"
+            }
+          ]
+        },
+        {
+          "file": "apps/01-torah-platform/src/pages/legacy/SeekerDashboard.tsx",
+          "hits": [
+            {
+              "line": 58,
+              "num": "8",
+              "kind": "field",
+              "loud": true,
+              "code": "{ icon: BookOpen, label: \"מגידי שיעור מתאימים\", value: \"8\", color: \"text-accent\" },"
+            },
+            {
+              "line": 59,
+              "num": "3",
+              "kind": "field",
+              "loud": true,
+              "code": "{ icon: Heart, label: \"שמורים\", value: \"3\", color: \"text-destructive\" },"
+            },
+            {
+              "line": 60,
+              "num": "24",
+              "kind": "field",
+              "loud": true,
+              "code": "{ icon: Eye, label: \"צפיות בבקשה\", value: \"24\", color: \"text-muted-foreground\" },"
+            },
+            {
+              "line": 58,
+              "num": "8",
+              "kind": "string",
+              "loud": false,
+              "code": "{ icon: BookOpen, label: \"מגידי שיעור מתאימים\", value: \"8\", color: \"text-accent\" },"
+            },
+            {
+              "line": 59,
+              "num": "3",
+              "kind": "string",
+              "loud": false,
+              "code": "{ icon: Heart, label: \"שמורים\", value: \"3\", color: \"text-destructive\" },"
+            },
+            {
+              "line": 60,
+              "num": "24",
+              "kind": "string",
+              "loud": false,
+              "code": "{ icon: Eye, label: \"צפיות בבקשה\", value: \"24\", color: \"text-muted-foreground\" },"
+            }
+          ]
+        },
+        {
+          "file": "apps/01-torah-platform/src/pages/legacy/TeacherDashboard.tsx",
+          "hits": [
+            {
+              "line": 78,
+              "num": "12",
+              "kind": "field",
+              "loud": true,
+              "code": "{ icon: Users, label: \"בקשות מתאימות\", value: \"12\", color: \"text-accent\" },"
+            },
+            {
+              "line": 79,
+              "num": "4",
+              "kind": "field",
+              "loud": true,
+              "code": "{ icon: Star, label: \"התאמה גבוהה\", value: \"4\", color: \"text-gold\" },"
+            },
+            {
+              "line": 80,
+              "num": "3",
+              "kind": "field",
+              "loud": true,
+              "code": "{ icon: BookOpen, label: \"שיעורים פעילים\", value: \"3\", color: \"text-navy\" },"
+            },
+            {
+              "line": 81,
+              "num": "156",
+              "kind": "field",
+              "loud": true,
+              "code": "{ icon: Eye, label: \"צפיות בפרופיל\", value: \"156\", color: \"text-muted-foreground\" },"
+            },
+            {
+              "line": 78,
+              "num": "12",
+              "kind": "string",
+              "loud": false,
+              "code": "{ icon: Users, label: \"בקשות מתאימות\", value: \"12\", color: \"text-accent\" },"
+            },
+            {
+              "line": 79,
+              "num": "4",
+              "kind": "string",
+              "loud": false,
+              "code": "{ icon: Star, label: \"התאמה גבוהה\", value: \"4\", color: \"text-gold\" },"
+            },
+            {
+              "line": 80,
+              "num": "3",
+              "kind": "string",
+              "loud": false,
+              "code": "{ icon: BookOpen, label: \"שיעורים פעילים\", value: \"3\", color: \"text-navy\" },"
+            },
+            {
+              "line": 81,
+              "num": "156",
+              "kind": "string",
+              "loud": false,
+              "code": "{ icon: Eye, label: \"צפיות בפרופיל\", value: \"156\", color: \"text-muted-foreground\" },"
+            }
+          ]
+        },
+        {
+          "file": "apps/01-torah-platform/src/pages/portal/BulkUpload.tsx",
+          "hits": [
+            {
+              "line": 16,
+              "num": "0",
+              "kind": "string",
+              "loud": false,
+              "code": "\"0\": 0, \"1\": 1, \"2\": 2, \"3\": 3, \"4\": 4, \"5\": 5, \"6\": 6,"
+            },
+            {
+              "line": 16,
+              "num": "1",
+              "kind": "string",
+              "loud": false,
+              "code": "\"0\": 0, \"1\": 1, \"2\": 2, \"3\": 3, \"4\": 4, \"5\": 5, \"6\": 6,"
+            },
+            {
+              "line": 16,
+              "num": "2",
+              "kind": "string",
+              "loud": false,
+              "code": "\"0\": 0, \"1\": 1, \"2\": 2, \"3\": 3, \"4\": 4, \"5\": 5, \"6\": 6,"
+            },
+            {
+              "line": 16,
+              "num": "3",
+              "kind": "string",
+              "loud": false,
+              "code": "\"0\": 0, \"1\": 1, \"2\": 2, \"3\": 3, \"4\": 4, \"5\": 5, \"6\": 6,"
+            },
+            {
+              "line": 16,
+              "num": "4",
+              "kind": "string",
+              "loud": false,
+              "code": "\"0\": 0, \"1\": 1, \"2\": 2, \"3\": 3, \"4\": 4, \"5\": 5, \"6\": 6,"
+            },
+            {
+              "line": 16,
+              "num": "5",
+              "kind": "string",
+              "loud": false,
+              "code": "\"0\": 0, \"1\": 1, \"2\": 2, \"3\": 3, \"4\": 4, \"5\": 5, \"6\": 6,"
+            },
+            {
+              "line": 16,
+              "num": "6",
+              "kind": "string",
+              "loud": false,
+              "code": "\"0\": 0, \"1\": 1, \"2\": 2, \"3\": 3, \"4\": 4, \"5\": 5, \"6\": 6,"
+            }
+          ]
+        },
+        {
+          "file": "apps/01-torah-platform/supabase/functions/nedarim-webhook/index.ts",
+          "hits": [
+            {
+              "line": 100,
+              "num": "0",
+              "kind": "string",
+              "loud": false,
+              "code": "const amount = parseFloat(payload.Amount || payload.amount || \"0\");"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "app": "10-bkalot-rights",
+      "files": 1,
+      "total": 16,
+      "loud": 4,
+      "found": [
+        {
+          "file": "apps/10-bkalot-rights/index.html",
+          "hits": [
+            {
+              "line": 83,
+              "num": "888",
+              "kind": "tile",
+              "loud": true,
+              "code": "<div class=\"stat\"><span class=\"num\" data-count=\"888\">0</span><span class=\"lbl\">נושאים מקוטלגים</span></div>"
+            },
+            {
+              "line": 84,
+              "num": "373",
+              "kind": "tile",
+              "loud": true,
+              "code": "<div class=\"stat\"><span class=\"num\" data-count=\"373\">0</span><span class=\"lbl\">זכויות מבקלות</span></div>"
+            },
+            {
+              "line": 85,
+              "num": "515",
+              "kind": "tile",
+              "loud": true,
+              "code": "<div class=\"stat\"><span class=\"num\" data-count=\"515\">0</span><span class=\"lbl\">נושאי קופות חולים</span></div>"
+            },
+            {
+              "line": 86,
+              "num": "25",
+              "kind": "tile",
+              "loud": true,
+              "code": "<div class=\"stat\"><span class=\"num\" data-count=\"25\">0</span><span class=\"lbl\">מצבי חיים ממופים</span></div>"
+            },
+            {
+              "line": 57,
+              "num": "34",
+              "kind": "string",
+              "loud": false,
+              "code": "<svg width=\"34\" height=\"34\" viewBox=\"0 0 48 48\" fill=\"none\" aria-hidden=\"true\">"
+            },
+            {
+              "line": 57,
+              "num": "34",
+              "kind": "string",
+              "loud": false,
+              "code": "<svg width=\"34\" height=\"34\" viewBox=\"0 0 48 48\" fill=\"none\" aria-hidden=\"true\">"
+            },
+            {
+              "line": 58,
+              "num": "3",
+              "kind": "string",
+              "loud": false,
+              "code": "<rect x=\"3\" y=\"3\" width=\"42\" height=\"42\" rx=\"11\" stroke=\"currentColor\" stroke-width=\"2.5\"/>"
+            },
+            {
+              "line": 58,
+              "num": "3",
+              "kind": "string",
+              "loud": false,
+              "code": "<rect x=\"3\" y=\"3\" width=\"42\" height=\"42\" rx=\"11\" stroke=\"currentColor\" stroke-width=\"2.5\"/>"
+            },
+            {
+              "line": 58,
+              "num": "42",
+              "kind": "string",
+              "loud": false,
+              "code": "<rect x=\"3\" y=\"3\" width=\"42\" height=\"42\" rx=\"11\" stroke=\"currentColor\" stroke-width=\"2.5\"/>"
+            },
+            {
+              "line": 58,
+              "num": "42",
+              "kind": "string",
+              "loud": false,
+              "code": "<rect x=\"3\" y=\"3\" width=\"42\" height=\"42\" rx=\"11\" stroke=\"currentColor\" stroke-width=\"2.5\"/>"
+            },
+            {
+              "line": 58,
+              "num": "11",
+              "kind": "string",
+              "loud": false,
+              "code": "<rect x=\"3\" y=\"3\" width=\"42\" height=\"42\" rx=\"11\" stroke=\"currentColor\" stroke-width=\"2.5\"/>"
+            },
+            {
+              "line": 58,
+              "num": "2.5",
+              "kind": "string",
+              "loud": false,
+              "code": "<rect x=\"3\" y=\"3\" width=\"42\" height=\"42\" rx=\"11\" stroke=\"currentColor\" stroke-width=\"2.5\"/>"
+            },
+            {
+              "line": 83,
+              "num": "888",
+              "kind": "string",
+              "loud": false,
+              "code": "<div class=\"stat\"><span class=\"num\" data-count=\"888\">0</span><span class=\"lbl\">נושאים מקוטלגים</span></div>"
+            },
+            {
+              "line": 84,
+              "num": "373",
+              "kind": "string",
+              "loud": false,
+              "code": "<div class=\"stat\"><span class=\"num\" data-count=\"373\">0</span><span class=\"lbl\">זכויות מבקלות</span></div>"
+            },
+            {
+              "line": 85,
+              "num": "515",
+              "kind": "string",
+              "loud": false,
+              "code": "<div class=\"stat\"><span class=\"num\" data-count=\"515\">0</span><span class=\"lbl\">נושאי קופות חולים</span></div>"
+            },
+            {
+              "line": 86,
+              "num": "25",
+              "kind": "string",
+              "loud": false,
+              "code": "<div class=\"stat\"><span class=\"num\" data-count=\"25\">0</span><span class=\"lbl\">מצבי חיים ממופים</span></div>"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "app": "11-bkalut-marketing2",
+      "files": 1,
+      "total": 12,
+      "loud": 2,
+      "found": [
+        {
+          "file": "apps/11-bkalut-marketing2/index.html",
+          "hits": [
+            {
+              "line": 23,
+              "num": "2",
+              "kind": "string",
+              "loud": false,
+              "code": "<rect x=\"2\" y=\"2\" width=\"36\" height=\"36\" rx=\"8\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"/>"
+            },
+            {
+              "line": 23,
+              "num": "2",
+              "kind": "string",
+              "loud": false,
+              "code": "<rect x=\"2\" y=\"2\" width=\"36\" height=\"36\" rx=\"8\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"/>"
+            },
+            {
+              "line": 23,
+              "num": "36",
+              "kind": "string",
+              "loud": false,
+              "code": "<rect x=\"2\" y=\"2\" width=\"36\" height=\"36\" rx=\"8\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"/>"
+            },
+            {
+              "line": 23,
+              "num": "36",
+              "kind": "string",
+              "loud": false,
+              "code": "<rect x=\"2\" y=\"2\" width=\"36\" height=\"36\" rx=\"8\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"/>"
+            },
+            {
+              "line": 23,
+              "num": "8",
+              "kind": "string",
+              "loud": false,
+              "code": "<rect x=\"2\" y=\"2\" width=\"36\" height=\"36\" rx=\"8\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"/>"
+            },
+            {
+              "line": 23,
+              "num": "2",
+              "kind": "string",
+              "loud": false,
+              "code": "<rect x=\"2\" y=\"2\" width=\"36\" height=\"36\" rx=\"8\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"/>"
+            },
+            {
+              "line": 25,
+              "num": "20",
+              "kind": "string",
+              "loud": false,
+              "code": "<circle cx=\"20\" cy=\"22\" r=\"2\" fill=\"currentColor\"/>"
+            },
+            {
+              "line": 25,
+              "num": "22",
+              "kind": "string",
+              "loud": false,
+              "code": "<circle cx=\"20\" cy=\"22\" r=\"2\" fill=\"currentColor\"/>"
+            },
+            {
+              "line": 25,
+              "num": "2",
+              "kind": "string",
+              "loud": false,
+              "code": "<circle cx=\"20\" cy=\"22\" r=\"2\" fill=\"currentColor\"/>"
+            },
+            {
+              "line": 280,
+              "num": "0",
+              "kind": "string",
+              "loud": false,
+              "code": "<input type=\"hidden\" name=\"score\" value=\"0\" />"
+            },
+            {
+              "line": 66,
+              "num": "600+",
+              "kind": "markup",
+              "loud": true,
+              "code": "<li><strong>600+</strong><span>זכויות במאגר</span></li>"
+            },
+            {
+              "line": 67,
+              "num": "250+",
+              "kind": "markup",
+              "loud": true,
+              "code": "<li><strong>250+</strong><span>עמותות וארגוני סיוע</span></li>"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "app": "22-get-your-rights",
+      "files": 1,
+      "total": 49,
+      "loud": 0,
+      "found": [
+        {
+          "file": "apps/22-get-your-rights/src/components/RightBrandedCard.tsx",
+          "hits": [
+            {
+              "line": 21,
+              "num": "18",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"plain_description\", label: \"מה זה\", iconSvg: `<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-lineca"
+            },
+            {
+              "line": 21,
+              "num": "18",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"plain_description\", label: \"מה זה\", iconSvg: `<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-lineca"
+            },
+            {
+              "line": 21,
+              "num": "2.5",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"plain_description\", label: \"מה זה\", iconSvg: `<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-lineca"
+            },
+            {
+              "line": 21,
+              "num": "12",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"plain_description\", label: \"מה זה\", iconSvg: `<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-lineca"
+            },
+            {
+              "line": 21,
+              "num": "12",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"plain_description\", label: \"מה זה\", iconSvg: `<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-lineca"
+            },
+            {
+              "line": 21,
+              "num": "10",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"plain_description\", label: \"מה זה\", iconSvg: `<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-lineca"
+            },
+            {
+              "line": 21,
+              "num": "12",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"plain_description\", label: \"מה זה\", iconSvg: `<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-lineca"
+            },
+            {
+              "line": 21,
+              "num": "16",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"plain_description\", label: \"מה זה\", iconSvg: `<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-lineca"
+            },
+            {
+              "line": 21,
+              "num": "12",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"plain_description\", label: \"מה זה\", iconSvg: `<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-lineca"
+            },
+            {
+              "line": 21,
+              "num": "12",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"plain_description\", label: \"מה זה\", iconSvg: `<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-lineca"
+            },
+            {
+              "line": 21,
+              "num": "12",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"plain_description\", label: \"מה זה\", iconSvg: `<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-lineca"
+            },
+            {
+              "line": 21,
+              "num": "8",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"plain_description\", label: \"מה זה\", iconSvg: `<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-lineca"
+            },
+            {
+              "line": 21,
+              "num": "12.01",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"plain_description\", label: \"מה זה\", iconSvg: `<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-lineca"
+            },
+            {
+              "line": 21,
+              "num": "8",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"plain_description\", label: \"מה זה\", iconSvg: `<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-lineca"
+            },
+            {
+              "line": 22,
+              "num": "18",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"financial_potential\", label: \"פוטנציאל\", iconSvg: `<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-l"
+            },
+            {
+              "line": 22,
+              "num": "18",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"financial_potential\", label: \"פוטנציאל\", iconSvg: `<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-l"
+            },
+            {
+              "line": 22,
+              "num": "2.5",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"financial_potential\", label: \"פוטנציאל\", iconSvg: `<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-l"
+            },
+            {
+              "line": 22,
+              "num": "12",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"financial_potential\", label: \"פוטנציאל\", iconSvg: `<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-l"
+            },
+            {
+              "line": 22,
+              "num": "1",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"financial_potential\", label: \"פוטנציאל\", iconSvg: `<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-l"
+            },
+            {
+              "line": 22,
+              "num": "12",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"financial_potential\", label: \"פוטנציאל\", iconSvg: `<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-l"
+            },
+            {
+              "line": 22,
+              "num": "23",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"financial_potential\", label: \"פוטנציאל\", iconSvg: `<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-l"
+            },
+            {
+              "line": 23,
+              "num": "18",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"eligibility_criteria\", label: \"תנאי סף\", iconSvg: `<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-l"
+            },
+            {
+              "line": 23,
+              "num": "18",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"eligibility_criteria\", label: \"תנאי סף\", iconSvg: `<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-l"
+            },
+            {
+              "line": 23,
+              "num": "2.5",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"eligibility_criteria\", label: \"תנאי סף\", iconSvg: `<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-l"
+            },
+            {
+              "line": 23,
+              "num": "16",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"eligibility_criteria\", label: \"תנאי סף\", iconSvg: `<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-l"
+            },
+            {
+              "line": 23,
+              "num": "13",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"eligibility_criteria\", label: \"תנאי סף\", iconSvg: `<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-l"
+            },
+            {
+              "line": 23,
+              "num": "8",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"eligibility_criteria\", label: \"תנאי סף\", iconSvg: `<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-l"
+            },
+            {
+              "line": 23,
+              "num": "13",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"eligibility_criteria\", label: \"תנאי סף\", iconSvg: `<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-l"
+            },
+            {
+              "line": 23,
+              "num": "16",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"eligibility_criteria\", label: \"תנאי סף\", iconSvg: `<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-l"
+            },
+            {
+              "line": 23,
+              "num": "17",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"eligibility_criteria\", label: \"תנאי סף\", iconSvg: `<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-l"
+            },
+            {
+              "line": 23,
+              "num": "8",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"eligibility_criteria\", label: \"תנאי סף\", iconSvg: `<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-l"
+            },
+            {
+              "line": 23,
+              "num": "17",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"eligibility_criteria\", label: \"תנאי סף\", iconSvg: `<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-l"
+            },
+            {
+              "line": 24,
+              "num": "18",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"required_documents\", label: \"מסמכים\", iconSvg: `<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-line"
+            },
+            {
+              "line": 24,
+              "num": "18",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"required_documents\", label: \"מסמכים\", iconSvg: `<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-line"
+            },
+            {
+              "line": 24,
+              "num": "2.5",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"required_documents\", label: \"מסמכים\", iconSvg: `<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-line"
+            },
+            {
+              "line": 25,
+              "num": "18",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"how_to_apply\", label: \"איך\", iconSvg: `<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-linecap=\"roun"
+            },
+            {
+              "line": 25,
+              "num": "18",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"how_to_apply\", label: \"איך\", iconSvg: `<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-linecap=\"roun"
+            },
+            {
+              "line": 25,
+              "num": "2.5",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"how_to_apply\", label: \"איך\", iconSvg: `<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-linecap=\"roun"
+            },
+            {
+              "line": 26,
+              "num": "18",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"accompanying_benefit\", label: \"הטבות\", iconSvg: `<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-lin"
+            },
+            {
+              "line": 26,
+              "num": "18",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"accompanying_benefit\", label: \"הטבות\", iconSvg: `<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-lin"
+            },
+            {
+              "line": 26,
+              "num": "2.5",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"accompanying_benefit\", label: \"הטבות\", iconSvg: `<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-lin"
+            },
+            {
+              "line": 26,
+              "num": "2",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"accompanying_benefit\", label: \"הטבות\", iconSvg: `<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-lin"
+            },
+            {
+              "line": 26,
+              "num": "12",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"accompanying_benefit\", label: \"הטבות\", iconSvg: `<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-lin"
+            },
+            {
+              "line": 26,
+              "num": "22",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"accompanying_benefit\", label: \"הטבות\", iconSvg: `<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-lin"
+            },
+            {
+              "line": 26,
+              "num": "12",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"accompanying_benefit\", label: \"הטבות\", iconSvg: `<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-lin"
+            },
+            {
+              "line": 26,
+              "num": "7",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"accompanying_benefit\", label: \"הטבות\", iconSvg: `<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-lin"
+            },
+            {
+              "line": 27,
+              "num": "18",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"bureaucratic_pitfalls\", label: \"מוקשים\", iconSvg: `<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-l"
+            },
+            {
+              "line": 27,
+              "num": "18",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"bureaucratic_pitfalls\", label: \"מוקשים\", iconSvg: `<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-l"
+            },
+            {
+              "line": 27,
+              "num": "2.5",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"bureaucratic_pitfalls\", label: \"מוקשים\", iconSvg: `<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-l"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "app": "03-igud-ads",
+      "files": 5,
+      "total": 16,
+      "loud": 0,
+      "found": [
+        {
+          "file": "apps/03-igud-ads/app/(admin)/admin/coupons/page.tsx",
+          "hits": [
+            {
+              "line": 53,
+              "num": "1",
+              "kind": "string",
+              "loud": false,
+              "code": "<div><label className=\"label\">מספר מודעות</label><input className=\"input\" type=\"number\" min={1} value={maxD} onChange={(e) => setMaxD(parseInt(e.target.value ||"
+            }
+          ]
+        },
+        {
+          "file": "apps/03-igud-ads/app/(admin)/admin/templates/page.tsx",
+          "hits": [
+            {
+              "line": 332,
+              "num": "0",
+              "kind": "string",
+              "loud": false,
+              "code": "<input className=\"input w-24\" type=\"number\" value={form.sort_order} onChange={(e) => setForm({ ...form, sort_order: parseInt(e.target.value || \"0\") })} />"
+            }
+          ]
+        },
+        {
+          "file": "apps/03-igud-ads/app/(admin)/admin/templates/[id]/page.tsx",
+          "hits": [
+            {
+              "line": 291,
+              "num": "0",
+              "kind": "string",
+              "loud": false,
+              "code": "onChange={(e) => setForm({ ...form, sort_order: parseInt(e.target.value || \"0\") })}"
+            }
+          ]
+        },
+        {
+          "file": "apps/03-igud-ads/components/NotificationBell.tsx",
+          "hits": [
+            {
+              "line": 77,
+              "num": "20",
+              "kind": "string",
+              "loud": false,
+              "code": "width=\"20\""
+            },
+            {
+              "line": 78,
+              "num": "20",
+              "kind": "string",
+              "loud": false,
+              "code": "height=\"20\""
+            }
+          ]
+        },
+        {
+          "file": "apps/03-igud-ads/components/SiteHeader.tsx",
+          "hits": [
+            {
+              "line": 35,
+              "num": "3",
+              "kind": "string",
+              "loud": false,
+              "code": "<rect x=\"3\" y=\"6\" width=\"28\" height=\"22\" rx=\"3\" stroke=\"currentColor\" strokeWidth=\"2.2\" />"
+            },
+            {
+              "line": 35,
+              "num": "6",
+              "kind": "string",
+              "loud": false,
+              "code": "<rect x=\"3\" y=\"6\" width=\"28\" height=\"22\" rx=\"3\" stroke=\"currentColor\" strokeWidth=\"2.2\" />"
+            },
+            {
+              "line": 35,
+              "num": "28",
+              "kind": "string",
+              "loud": false,
+              "code": "<rect x=\"3\" y=\"6\" width=\"28\" height=\"22\" rx=\"3\" stroke=\"currentColor\" strokeWidth=\"2.2\" />"
+            },
+            {
+              "line": 35,
+              "num": "22",
+              "kind": "string",
+              "loud": false,
+              "code": "<rect x=\"3\" y=\"6\" width=\"28\" height=\"22\" rx=\"3\" stroke=\"currentColor\" strokeWidth=\"2.2\" />"
+            },
+            {
+              "line": 35,
+              "num": "3",
+              "kind": "string",
+              "loud": false,
+              "code": "<rect x=\"3\" y=\"6\" width=\"28\" height=\"22\" rx=\"3\" stroke=\"currentColor\" strokeWidth=\"2.2\" />"
+            },
+            {
+              "line": 35,
+              "num": "2.2",
+              "kind": "string",
+              "loud": false,
+              "code": "<rect x=\"3\" y=\"6\" width=\"28\" height=\"22\" rx=\"3\" stroke=\"currentColor\" strokeWidth=\"2.2\" />"
+            },
+            {
+              "line": 36,
+              "num": "8",
+              "kind": "string",
+              "loud": false,
+              "code": "<line x1=\"8\" y1=\"13\" x2=\"26\" y2=\"13\" stroke=\"currentColor\" strokeWidth=\"1.8\" strokeLinecap=\"round\" />"
+            },
+            {
+              "line": 36,
+              "num": "13",
+              "kind": "string",
+              "loud": false,
+              "code": "<line x1=\"8\" y1=\"13\" x2=\"26\" y2=\"13\" stroke=\"currentColor\" strokeWidth=\"1.8\" strokeLinecap=\"round\" />"
+            },
+            {
+              "line": 36,
+              "num": "26",
+              "kind": "string",
+              "loud": false,
+              "code": "<line x1=\"8\" y1=\"13\" x2=\"26\" y2=\"13\" stroke=\"currentColor\" strokeWidth=\"1.8\" strokeLinecap=\"round\" />"
+            },
+            {
+              "line": 36,
+              "num": "13",
+              "kind": "string",
+              "loud": false,
+              "code": "<line x1=\"8\" y1=\"13\" x2=\"26\" y2=\"13\" stroke=\"currentColor\" strokeWidth=\"1.8\" strokeLinecap=\"round\" />"
+            },
+            {
+              "line": 36,
+              "num": "1.8",
+              "kind": "string",
+              "loud": false,
+              "code": "<line x1=\"8\" y1=\"13\" x2=\"26\" y2=\"13\" stroke=\"currentColor\" strokeWidth=\"1.8\" strokeLinecap=\"round\" />"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "app": "14-bsmachot-plus",
+      "files": 1,
+      "total": 16,
+      "loud": 0,
+      "found": [
+        {
+          "file": "apps/14-bsmachot-plus/website/index.html",
+          "hits": [
+            {
+              "line": 29,
+              "num": "36",
+              "kind": "string",
+              "loud": false,
+              "code": "<svg viewBox=\"0 0 40 40\" width=\"36\" height=\"36\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">"
+            },
+            {
+              "line": 29,
+              "num": "36",
+              "kind": "string",
+              "loud": false,
+              "code": "<svg viewBox=\"0 0 40 40\" width=\"36\" height=\"36\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">"
+            },
+            {
+              "line": 57,
+              "num": "22",
+              "kind": "string",
+              "loud": false,
+              "code": "<svg viewBox=\"0 0 24 24\" width=\"22\" height=\"22\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"M3 6h18M3 12h18M3 18h18\"/></svg>"
+            },
+            {
+              "line": 57,
+              "num": "22",
+              "kind": "string",
+              "loud": false,
+              "code": "<svg viewBox=\"0 0 24 24\" width=\"22\" height=\"22\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"M3 6h18M3 12h18M3 18h18\"/></svg>"
+            },
+            {
+              "line": 57,
+              "num": "2",
+              "kind": "string",
+              "loud": false,
+              "code": "<svg viewBox=\"0 0 24 24\" width=\"22\" height=\"22\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"M3 6h18M3 12h18M3 18h18\"/></svg>"
+            },
+            {
+              "line": 62,
+              "num": "16",
+              "kind": "string",
+              "loud": false,
+              "code": "<svg viewBox=\"0 0 24 24\" width=\"16\" height=\"16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><circle cx=\"11\" cy=\"11\" r=\"7\"/><path d=\"m20 20-3.5-3.5\"/></sv"
+            },
+            {
+              "line": 62,
+              "num": "2",
+              "kind": "string",
+              "loud": false,
+              "code": "<svg viewBox=\"0 0 24 24\" width=\"16\" height=\"16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><circle cx=\"11\" cy=\"11\" r=\"7\"/><path d=\"m20 20-3.5-3.5\"/></sv"
+            },
+            {
+              "line": 62,
+              "num": "11",
+              "kind": "string",
+              "loud": false,
+              "code": "<svg viewBox=\"0 0 24 24\" width=\"16\" height=\"16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><circle cx=\"11\" cy=\"11\" r=\"7\"/><path d=\"m20 20-3.5-3.5\"/></sv"
+            },
+            {
+              "line": 62,
+              "num": "11",
+              "kind": "string",
+              "loud": false,
+              "code": "<svg viewBox=\"0 0 24 24\" width=\"16\" height=\"16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><circle cx=\"11\" cy=\"11\" r=\"7\"/><path d=\"m20 20-3.5-3.5\"/></sv"
+            },
+            {
+              "line": 62,
+              "num": "7",
+              "kind": "string",
+              "loud": false,
+              "code": "<svg viewBox=\"0 0 24 24\" width=\"16\" height=\"16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><circle cx=\"11\" cy=\"11\" r=\"7\"/><path d=\"m20 20-3.5-3.5\"/></sv"
+            },
+            {
+              "line": 66,
+              "num": "20",
+              "kind": "string",
+              "loud": false,
+              "code": "<svg class=\"ico-sun\" viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><circle cx=\"12\" cy=\"12\" r=\"4\"/><path d=\"M12 2"
+            },
+            {
+              "line": 66,
+              "num": "20",
+              "kind": "string",
+              "loud": false,
+              "code": "<svg class=\"ico-sun\" viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><circle cx=\"12\" cy=\"12\" r=\"4\"/><path d=\"M12 2"
+            },
+            {
+              "line": 66,
+              "num": "2",
+              "kind": "string",
+              "loud": false,
+              "code": "<svg class=\"ico-sun\" viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><circle cx=\"12\" cy=\"12\" r=\"4\"/><path d=\"M12 2"
+            },
+            {
+              "line": 66,
+              "num": "12",
+              "kind": "string",
+              "loud": false,
+              "code": "<svg class=\"ico-sun\" viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><circle cx=\"12\" cy=\"12\" r=\"4\"/><path d=\"M12 2"
+            },
+            {
+              "line": 66,
+              "num": "12",
+              "kind": "string",
+              "loud": false,
+              "code": "<svg class=\"ico-sun\" viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><circle cx=\"12\" cy=\"12\" r=\"4\"/><path d=\"M12 2"
+            },
+            {
+              "line": 66,
+              "num": "4",
+              "kind": "string",
+              "loud": false,
+              "code": "<svg class=\"ico-sun\" viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><circle cx=\"12\" cy=\"12\" r=\"4\"/><path d=\"M12 2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "app": "26-modaot-studio",
+      "files": 4,
+      "total": 16,
+      "loud": 0,
+      "found": [
+        {
+          "file": "apps/26-modaot-studio/client/src/components/Logo.tsx",
+          "hits": [
+            {
+              "line": 5,
+              "num": "34",
+              "kind": "string",
+              "loud": false,
+              "code": "width=\"34\""
+            },
+            {
+              "line": 6,
+              "num": "34",
+              "kind": "string",
+              "loud": false,
+              "code": "height=\"34\""
+            },
+            {
+              "line": 13,
+              "num": "6",
+              "kind": "string",
+              "loud": false,
+              "code": "<rect x=\"6\" y=\"4\" width=\"28\" height=\"32\" rx=\"3\" stroke=\"currentColor\" strokeWidth=\"2\" />"
+            },
+            {
+              "line": 13,
+              "num": "4",
+              "kind": "string",
+              "loud": false,
+              "code": "<rect x=\"6\" y=\"4\" width=\"28\" height=\"32\" rx=\"3\" stroke=\"currentColor\" strokeWidth=\"2\" />"
+            },
+            {
+              "line": 13,
+              "num": "28",
+              "kind": "string",
+              "loud": false,
+              "code": "<rect x=\"6\" y=\"4\" width=\"28\" height=\"32\" rx=\"3\" stroke=\"currentColor\" strokeWidth=\"2\" />"
+            },
+            {
+              "line": 13,
+              "num": "32",
+              "kind": "string",
+              "loud": false,
+              "code": "<rect x=\"6\" y=\"4\" width=\"28\" height=\"32\" rx=\"3\" stroke=\"currentColor\" strokeWidth=\"2\" />"
+            },
+            {
+              "line": 13,
+              "num": "3",
+              "kind": "string",
+              "loud": false,
+              "code": "<rect x=\"6\" y=\"4\" width=\"28\" height=\"32\" rx=\"3\" stroke=\"currentColor\" strokeWidth=\"2\" />"
+            },
+            {
+              "line": 13,
+              "num": "2",
+              "kind": "string",
+              "loud": false,
+              "code": "<rect x=\"6\" y=\"4\" width=\"28\" height=\"32\" rx=\"3\" stroke=\"currentColor\" strokeWidth=\"2\" />"
+            }
+          ]
+        },
+        {
+          "file": "apps/26-modaot-studio/client/src/lib/autofit.ts",
+          "hits": [
+            {
+              "line": 8,
+              "num": "700",
+              "kind": "string",
+              "loud": false,
+              "code": "return `${bold ? \"700\" : \"400\"} ${fontSize}px \"${fontFamily}\"`;"
+            },
+            {
+              "line": 8,
+              "num": "400",
+              "kind": "string",
+              "loud": false,
+              "code": "return `${bold ? \"700\" : \"400\"} ${fontSize}px \"${fontFamily}\"`;"
+            }
+          ]
+        },
+        {
+          "file": "apps/26-modaot-studio/client/src/pages/BrandKitPage.tsx",
+          "hits": [
+            {
+              "line": 65,
+              "num": "3",
+              "kind": "field",
+              "loud": false,
+              "code": "count: 3,"
+            }
+          ]
+        },
+        {
+          "file": "apps/26-modaot-studio/server/branding.ts",
+          "hits": [
+            {
+              "line": 147,
+              "num": "700",
+              "kind": "string",
+              "loud": false,
+              "code": "{ label: \"H1 — כותרת ראשית\", size: \"48px\", weight: \"700\", use: \"כותרת עמוד\" },"
+            },
+            {
+              "line": 148,
+              "num": "600",
+              "kind": "string",
+              "loud": false,
+              "code": "{ label: \"H2 — כותרת משנה\", size: \"32px\", weight: \"600\", use: \"כותרות מדורים\" },"
+            },
+            {
+              "line": 149,
+              "num": "600",
+              "kind": "string",
+              "loud": false,
+              "code": "{ label: \"H3 — כותרת קטנה\", size: \"24px\", weight: \"600\", use: \"תת-מדורים\" },"
+            },
+            {
+              "line": 150,
+              "num": "400",
+              "kind": "string",
+              "loud": false,
+              "code": "{ label: \"גוף טקסט\", size: \"18px\", weight: \"400\", use: \"פסקאות\" },"
+            },
+            {
+              "line": 151,
+              "num": "400",
+              "kind": "string",
+              "loud": false,
+              "code": "{ label: \"טקסט משני\", size: \"14px\", weight: \"400\", use: \"כיתובים והערות\" },"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "app": "27-bkalut-price",
+      "files": 10,
+      "total": 16,
+      "loud": 0,
+      "found": [
+        {
+          "file": "apps/27-bkalut-price/client/src/pages/public-price-comparison.tsx",
+          "hits": [
+            {
+              "line": 363,
+              "num": "2",
+              "kind": "string",
+              "loud": false,
+              "code": "<option value=\"2\">נמכר ב-2 רשתות ומעלה</option>"
+            },
+            {
+              "line": 364,
+              "num": "3",
+              "kind": "string",
+              "loud": false,
+              "code": "<option value=\"3\">נמכר ב-3 רשתות ומעלה</option>"
+            },
+            {
+              "line": 365,
+              "num": "4",
+              "kind": "string",
+              "loud": false,
+              "code": "<option value=\"4\">נמכר ב-4 רשתות ומעלה</option>"
+            }
+          ]
+        },
+        {
+          "file": "apps/27-bkalut-price/client/src/pages/service-form.tsx",
+          "hits": [
+            {
+              "line": 50,
+              "num": "0213131500",
+              "kind": "string",
+              "loud": false,
+              "code": "const CONTACT_PHONE = \"0213131500\";"
+            }
+          ]
+        },
+        {
+          "file": "apps/27-bkalut-price/script/pc/__tests__/catalog-compare.test.ts",
+          "hits": [
+            {
+              "line": 113,
+              "num": "7290000088882",
+              "kind": "string",
+              "loud": false,
+              "code": "const lonely = createProduct({ name: \"מוצר בודד\", barcode: \"7290000088882\" });"
+            },
+            {
+              "line": 114,
+              "num": "9999999999999",
+              "kind": "string",
+              "loud": false,
+              "code": "const onlyStore = createStore({ name: \"חנות בודדה\", chainId: \"9999999999999\" });"
+            }
+          ]
+        },
+        {
+          "file": "apps/27-bkalut-price/script/pc/__tests__/supabase-repo.test.ts",
+          "hits": [
+            {
+              "line": 268,
+              "num": "7290027600007",
+              "kind": "string",
+              "loud": false,
+              "code": "pc_stores: [{ id: 7, chain_id: \"7290027600007\", store_code: \"2\", name: \"שלי רמת אביב\", branch: null, city: null, active: 1 }],"
+            },
+            {
+              "line": 268,
+              "num": "2",
+              "kind": "string",
+              "loud": false,
+              "code": "pc_stores: [{ id: 7, chain_id: \"7290027600007\", store_code: \"2\", name: \"שלי רמת אביב\", branch: null, city: null, active: 1 }],"
+            }
+          ]
+        },
+        {
+          "file": "apps/27-bkalut-price/script/pc-daily-import.ts",
+          "hits": [
+            {
+              "line": 427,
+              "num": "60",
+              "kind": "string",
+              "loud": false,
+              "code": "const STUCK_AFTER_MIN = Number(process.env.PC_STUCK_JOB_MINUTES || \"60\");"
+            }
+          ]
+        },
+        {
+          "file": "apps/27-bkalut-price/script/pc-probe-login.ts",
+          "hits": [
+            {
+              "line": 95,
+              "num": "7290700100008",
+              "kind": "string",
+              "loud": false,
+              "code": "{ label: \"חצי חינם (7290700100008)\", users: [\"HaziHinam\", \"hazihinam\", \"Hazi-Hinam\", \"HaziHinam2\", \"halfprice\", \"7290700100008\"] },"
+            },
+            {
+              "line": 96,
+              "num": "7290055700007",
+              "kind": "string",
+              "loud": false,
+              "code": "{ label: \"מגה / קרפור (7290055700007)\", users: [\"Carrefour\", \"carrefour\", \"mega\", \"Mega\", \"CarrefourIL\", \"7290055700007\"] },"
+            }
+          ]
+        },
+        {
+          "file": "apps/27-bkalut-price/server/routes.ts",
+          "hits": [
+            {
+              "line": 3081,
+              "num": "1",
+              "kind": "field",
+              "loud": false,
+              "code": "submitHits.set(key, { count: 1, resetAt: now + 60 * 60 * 1000 });"
+            }
+          ]
+        },
+        {
+          "file": "apps/27-bkalut-price/server/storage.ts",
+          "hits": [
+            {
+              "line": 569,
+              "num": "7",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"webhook_yemot_podcast\", label: \"וובהוק — Yemot / מערכת קולית\", description: \"כתובת לדחיפת תכני פודקאסט / מערכת קולית למערכת ימות.\", enabled: 0, endpoint"
+            },
+            {
+              "line": 573,
+              "num": "7",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"voice\", label: \"מערכת קולית\", description: \"מערכת קולית טלפונית. שלוחה ראשית 02-3131500.\", enabled: 0, endpointUrl: \"\", secretRef: \"VOICE_API_TOKEN\", co"
+            }
+          ]
+        },
+        {
+          "file": "apps/27-bkalut-price/server/supabase-storage.ts",
+          "hits": [
+            {
+              "line": 265,
+              "num": "7",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"voice\", label: \"מערכת קולית\", description: \"מערכת קולית טלפונית. שלוחה ראשית 02-3131500.\", enabled: 0, endpoint_url: \"\", secret_ref: \"VOICE_API_TOKEN\", "
+            }
+          ]
+        },
+        {
+          "file": "apps/27-bkalut-price/shared/tts-hebrew.ts",
+          "hits": [
+            {
+              "line": 204,
+              "num": "0",
+              "kind": "string",
+              "loud": false,
+              "code": "const dec = decimals ? Number(decimals.padEnd(2, \"0\")) / 100 : 0;"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "app": "02-igud-transcribe",
+      "files": 1,
+      "total": 11,
+      "loud": 0,
+      "found": [
+        {
+          "file": "apps/02-igud-transcribe/components/SiteHeader.tsx",
+          "hits": [
+            {
+              "line": 26,
+              "num": "3",
+              "kind": "string",
+              "loud": false,
+              "code": "<rect x=\"3\" y=\"6\" width=\"28\" height=\"22\" rx=\"3\" stroke=\"currentColor\" strokeWidth=\"2.2\" />"
+            },
+            {
+              "line": 26,
+              "num": "6",
+              "kind": "string",
+              "loud": false,
+              "code": "<rect x=\"3\" y=\"6\" width=\"28\" height=\"22\" rx=\"3\" stroke=\"currentColor\" strokeWidth=\"2.2\" />"
+            },
+            {
+              "line": 26,
+              "num": "28",
+              "kind": "string",
+              "loud": false,
+              "code": "<rect x=\"3\" y=\"6\" width=\"28\" height=\"22\" rx=\"3\" stroke=\"currentColor\" strokeWidth=\"2.2\" />"
+            },
+            {
+              "line": 26,
+              "num": "22",
+              "kind": "string",
+              "loud": false,
+              "code": "<rect x=\"3\" y=\"6\" width=\"28\" height=\"22\" rx=\"3\" stroke=\"currentColor\" strokeWidth=\"2.2\" />"
+            },
+            {
+              "line": 26,
+              "num": "3",
+              "kind": "string",
+              "loud": false,
+              "code": "<rect x=\"3\" y=\"6\" width=\"28\" height=\"22\" rx=\"3\" stroke=\"currentColor\" strokeWidth=\"2.2\" />"
+            },
+            {
+              "line": 26,
+              "num": "2.2",
+              "kind": "string",
+              "loud": false,
+              "code": "<rect x=\"3\" y=\"6\" width=\"28\" height=\"22\" rx=\"3\" stroke=\"currentColor\" strokeWidth=\"2.2\" />"
+            },
+            {
+              "line": 27,
+              "num": "8",
+              "kind": "string",
+              "loud": false,
+              "code": "<line x1=\"8\" y1=\"13\" x2=\"26\" y2=\"13\" stroke=\"currentColor\" strokeWidth=\"1.8\" strokeLinecap=\"round\" />"
+            },
+            {
+              "line": 27,
+              "num": "13",
+              "kind": "string",
+              "loud": false,
+              "code": "<line x1=\"8\" y1=\"13\" x2=\"26\" y2=\"13\" stroke=\"currentColor\" strokeWidth=\"1.8\" strokeLinecap=\"round\" />"
+            },
+            {
+              "line": 27,
+              "num": "26",
+              "kind": "string",
+              "loud": false,
+              "code": "<line x1=\"8\" y1=\"13\" x2=\"26\" y2=\"13\" stroke=\"currentColor\" strokeWidth=\"1.8\" strokeLinecap=\"round\" />"
+            },
+            {
+              "line": 27,
+              "num": "13",
+              "kind": "string",
+              "loud": false,
+              "code": "<line x1=\"8\" y1=\"13\" x2=\"26\" y2=\"13\" stroke=\"currentColor\" strokeWidth=\"1.8\" strokeLinecap=\"round\" />"
+            },
+            {
+              "line": 27,
+              "num": "1.8",
+              "kind": "string",
+              "loud": false,
+              "code": "<line x1=\"8\" y1=\"13\" x2=\"26\" y2=\"13\" stroke=\"currentColor\" strokeWidth=\"1.8\" strokeLinecap=\"round\" />"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "app": "06-kupot-holim",
+      "files": 3,
+      "total": 11,
+      "loud": 0,
+      "found": [
+        {
+          "file": "apps/06-kupot-holim/site/admin.html",
+          "hits": [
+            {
+              "line": 81,
+              "num": "11",
+              "kind": "string",
+              "loud": false,
+              "code": "<svg width=\"26\" height=\"26\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"3\" y="
+            },
+            {
+              "line": 81,
+              "num": "18",
+              "kind": "string",
+              "loud": false,
+              "code": "<svg width=\"26\" height=\"26\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"3\" y="
+            },
+            {
+              "line": 81,
+              "num": "11",
+              "kind": "string",
+              "loud": false,
+              "code": "<svg width=\"26\" height=\"26\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"3\" y="
+            },
+            {
+              "line": 81,
+              "num": "2",
+              "kind": "string",
+              "loud": false,
+              "code": "<svg width=\"26\" height=\"26\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"3\" y="
+            }
+          ]
+        },
+        {
+          "file": "apps/06-kupot-holim/site/app.js",
+          "hits": [
+            {
+              "line": 45,
+              "num": "0",
+              "kind": "string",
+              "loud": false,
+              "code": "return '<article class=\"profile-card\" tabindex=\"0\" role=\"button\" data-profile=\"' + i + '\" aria-label=\"' + esc(p.title) + ' — הצג המלצה\">' +"
+            }
+          ]
+        },
+        {
+          "file": "apps/06-kupot-holim/site/index.html",
+          "hits": [
+            {
+              "line": 45,
+              "num": "2",
+              "kind": "string",
+              "loud": false,
+              "code": "<rect x=\"2\" y=\"2\" width=\"36\" height=\"36\" rx=\"10\" stroke=\"currentColor\" stroke-width=\"2.5\"/>"
+            },
+            {
+              "line": 45,
+              "num": "2",
+              "kind": "string",
+              "loud": false,
+              "code": "<rect x=\"2\" y=\"2\" width=\"36\" height=\"36\" rx=\"10\" stroke=\"currentColor\" stroke-width=\"2.5\"/>"
+            },
+            {
+              "line": 45,
+              "num": "36",
+              "kind": "string",
+              "loud": false,
+              "code": "<rect x=\"2\" y=\"2\" width=\"36\" height=\"36\" rx=\"10\" stroke=\"currentColor\" stroke-width=\"2.5\"/>"
+            },
+            {
+              "line": 45,
+              "num": "36",
+              "kind": "string",
+              "loud": false,
+              "code": "<rect x=\"2\" y=\"2\" width=\"36\" height=\"36\" rx=\"10\" stroke=\"currentColor\" stroke-width=\"2.5\"/>"
+            },
+            {
+              "line": 45,
+              "num": "10",
+              "kind": "string",
+              "loud": false,
+              "code": "<rect x=\"2\" y=\"2\" width=\"36\" height=\"36\" rx=\"10\" stroke=\"currentColor\" stroke-width=\"2.5\"/>"
+            },
+            {
+              "line": 46,
+              "num": "3.2",
+              "kind": "string",
+              "loud": false,
+              "code": "<path d=\"M20 10v20M10 20h20\" stroke=\"currentColor\" stroke-width=\"3.2\" stroke-linecap=\"round\"/>"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "app": "23-haorech-torani",
+      "files": 1,
+      "total": 11,
+      "loud": 0,
+      "found": [
+        {
+          "file": "apps/23-haorech-torani/index.html",
+          "hits": [
+            {
+              "line": 169,
+              "num": "3",
+              "kind": "string",
+              "loud": false,
+              "code": "<rect x=\"3\" y=\"4\" width=\"26\" height=\"24\" rx=\"3\" stroke=\"currentColor\" stroke-width=\"2\"/>"
+            },
+            {
+              "line": 169,
+              "num": "4",
+              "kind": "string",
+              "loud": false,
+              "code": "<rect x=\"3\" y=\"4\" width=\"26\" height=\"24\" rx=\"3\" stroke=\"currentColor\" stroke-width=\"2\"/>"
+            },
+            {
+              "line": 169,
+              "num": "26",
+              "kind": "string",
+              "loud": false,
+              "code": "<rect x=\"3\" y=\"4\" width=\"26\" height=\"24\" rx=\"3\" stroke=\"currentColor\" stroke-width=\"2\"/>"
+            },
+            {
+              "line": 169,
+              "num": "24",
+              "kind": "string",
+              "loud": false,
+              "code": "<rect x=\"3\" y=\"4\" width=\"26\" height=\"24\" rx=\"3\" stroke=\"currentColor\" stroke-width=\"2\"/>"
+            },
+            {
+              "line": 169,
+              "num": "3",
+              "kind": "string",
+              "loud": false,
+              "code": "<rect x=\"3\" y=\"4\" width=\"26\" height=\"24\" rx=\"3\" stroke=\"currentColor\" stroke-width=\"2\"/>"
+            },
+            {
+              "line": 169,
+              "num": "2",
+              "kind": "string",
+              "loud": false,
+              "code": "<rect x=\"3\" y=\"4\" width=\"26\" height=\"24\" rx=\"3\" stroke=\"currentColor\" stroke-width=\"2\"/>"
+            },
+            {
+              "line": 170,
+              "num": "16",
+              "kind": "string",
+              "loud": false,
+              "code": "<line x1=\"16\" y1=\"4\" x2=\"16\" y2=\"28\" stroke=\"currentColor\" stroke-width=\"2\"/>"
+            },
+            {
+              "line": 170,
+              "num": "4",
+              "kind": "string",
+              "loud": false,
+              "code": "<line x1=\"16\" y1=\"4\" x2=\"16\" y2=\"28\" stroke=\"currentColor\" stroke-width=\"2\"/>"
+            },
+            {
+              "line": 170,
+              "num": "16",
+              "kind": "string",
+              "loud": false,
+              "code": "<line x1=\"16\" y1=\"4\" x2=\"16\" y2=\"28\" stroke=\"currentColor\" stroke-width=\"2\"/>"
+            },
+            {
+              "line": 170,
+              "num": "28",
+              "kind": "string",
+              "loud": false,
+              "code": "<line x1=\"16\" y1=\"4\" x2=\"16\" y2=\"28\" stroke=\"currentColor\" stroke-width=\"2\"/>"
+            },
+            {
+              "line": 170,
+              "num": "2",
+              "kind": "string",
+              "loud": false,
+              "code": "<line x1=\"16\" y1=\"4\" x2=\"16\" y2=\"28\" stroke=\"currentColor\" stroke-width=\"2\"/>"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "app": "19-igud-shiurim-portal",
+      "files": 1,
+      "total": 9,
+      "loud": 0,
+      "found": [
+        {
+          "file": "apps/19-igud-shiurim-portal/server.js",
+          "hits": [
+            {
+              "line": 809,
+              "num": "0",
+              "kind": "string",
+              "loud": false,
+              "code": "const iso = `${y}-${mo.padStart(2, '0')}-${d.padStart(2, '0')}T${(h || '00').padStart(2, '0')}:${(mi || '00').padStart(2, '0')}:00`;"
+            },
+            {
+              "line": 809,
+              "num": "0",
+              "kind": "string",
+              "loud": false,
+              "code": "const iso = `${y}-${mo.padStart(2, '0')}-${d.padStart(2, '0')}T${(h || '00').padStart(2, '0')}:${(mi || '00').padStart(2, '0')}:00`;"
+            },
+            {
+              "line": 809,
+              "num": "00",
+              "kind": "string",
+              "loud": false,
+              "code": "const iso = `${y}-${mo.padStart(2, '0')}-${d.padStart(2, '0')}T${(h || '00').padStart(2, '0')}:${(mi || '00').padStart(2, '0')}:00`;"
+            },
+            {
+              "line": 992,
+              "num": "1",
+              "kind": "string",
+              "loud": false,
+              "code": "Tashlumim: '1',"
+            },
+            {
+              "line": 993,
+              "num": "2",
+              "kind": "string",
+              "loud": false,
+              "code": "Currency: payment.currency === 'USD' ? '2' : '1',"
+            },
+            {
+              "line": 993,
+              "num": "1",
+              "kind": "string",
+              "loud": false,
+              "code": "Currency: payment.currency === 'USD' ? '2' : '1',"
+            },
+            {
+              "line": 1070,
+              "num": "1",
+              "kind": "string",
+              "loud": false,
+              "code": "Tashlumim: '1',"
+            },
+            {
+              "line": 1071,
+              "num": "2",
+              "kind": "string",
+              "loud": false,
+              "code": "Currency: payment.currency === 'USD' ? '2' : '1',"
+            },
+            {
+              "line": 1071,
+              "num": "1",
+              "kind": "string",
+              "loud": false,
+              "code": "Currency: payment.currency === 'USD' ? '2' : '1',"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "app": "05-financial-marketing-site",
+      "files": 1,
+      "total": 6,
+      "loud": 0,
+      "found": [
+        {
+          "file": "apps/05-financial-marketing-site/index.html",
+          "hits": [
+            {
+              "line": 23,
+              "num": "20",
+              "kind": "string",
+              "loud": false,
+              "code": "<circle cx=\"20\" cy=\"20\" r=\"17\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"/>"
+            },
+            {
+              "line": 23,
+              "num": "20",
+              "kind": "string",
+              "loud": false,
+              "code": "<circle cx=\"20\" cy=\"20\" r=\"17\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"/>"
+            },
+            {
+              "line": 23,
+              "num": "17",
+              "kind": "string",
+              "loud": false,
+              "code": "<circle cx=\"20\" cy=\"20\" r=\"17\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"/>"
+            },
+            {
+              "line": 23,
+              "num": "2",
+              "kind": "string",
+              "loud": false,
+              "code": "<circle cx=\"20\" cy=\"20\" r=\"17\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"/>"
+            },
+            {
+              "line": 25,
+              "num": "13",
+              "kind": "string",
+              "loud": false,
+              "code": "<circle cx=\"29\" cy=\"13\" r=\"2\" fill=\"currentColor\"/>"
+            },
+            {
+              "line": 25,
+              "num": "2",
+              "kind": "string",
+              "loud": false,
+              "code": "<circle cx=\"29\" cy=\"13\" r=\"2\" fill=\"currentColor\"/>"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "app": "04-imud-torani",
+      "files": 2,
+      "total": 4,
+      "loud": 0,
+      "found": [
+        {
+          "file": "apps/04-imud-torani/client/src/pages/departments/EditDept.tsx",
+          "hits": [
+            {
+              "line": 173,
+              "num": "0.05",
+              "kind": "string",
+              "loud": false,
+              "code": "<Input type=\"number\" step=\"0.05\" min=\"0.8\" max=\"3\""
+            },
+            {
+              "line": 173,
+              "num": "0.8",
+              "kind": "string",
+              "loud": false,
+              "code": "<Input type=\"number\" step=\"0.05\" min=\"0.8\" max=\"3\""
+            },
+            {
+              "line": 173,
+              "num": "3",
+              "kind": "string",
+              "loud": false,
+              "code": "<Input type=\"number\" step=\"0.05\" min=\"0.8\" max=\"3\""
+            }
+          ]
+        },
+        {
+          "file": "apps/04-imud-torani/server/docx.ts",
+          "hits": [
+            {
+              "line": 362,
+              "num": "2",
+              "kind": "field",
+              "loud": false,
+              "code": "? { count: 2, space: MM(s.columnGap ?? 8) }"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "app": "30-zchuyotpro-crm",
+      "files": 3,
+      "total": 4,
+      "loud": 0,
+      "found": [
+        {
+          "file": "apps/30-zchuyotpro-crm/src/features/clients/tabs/FinancialTab.tsx",
+          "hits": [
+            {
+              "line": 110,
+              "num": "0",
+              "kind": "field",
+              "loud": false,
+              "code": "<Button size=\"sm\" variant=\"outline\" onClick={() => setF({ ...f, income_sources: [...f.income_sources, { name: \"\", amount: 0 }] })}>"
+            }
+          ]
+        },
+        {
+          "file": "apps/30-zchuyotpro-crm/src/features/clients/tabs/HousingTab.tsx",
+          "hits": [
+            {
+              "line": 115,
+              "num": "0",
+              "kind": "field",
+              "loud": false,
+              "code": "<Button size=\"sm\" variant=\"outline\" onClick={() => setF({ ...f, additional_properties: [...f.additional_properties, { address: \"\", type: \"\", value: 0 }] })}><Pl"
+            }
+          ]
+        },
+        {
+          "file": "apps/30-zchuyotpro-crm/src/routes/_authenticated/analytics.tsx",
+          "hits": [
+            {
+              "line": 118,
+              "num": "100%",
+              "kind": "string",
+              "loud": false,
+              "code": "<ResponsiveContainer width=\"100%\" height=\"100%\">"
+            },
+            {
+              "line": 118,
+              "num": "100%",
+              "kind": "string",
+              "loud": false,
+              "code": "<ResponsiveContainer width=\"100%\" height=\"100%\">"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "app": "17-chizukim-transcribe",
+      "files": 1,
+      "total": 3,
+      "loud": 0,
+      "found": [
+        {
+          "file": "apps/17-chizukim-transcribe/tailwind.config.ts",
+          "hits": [
+            {
+              "line": 58,
+              "num": "3",
+              "kind": "string",
+              "loud": false,
+              "code": "\"3\": \"hsl(var(--chart-3) / <alpha-value>)\","
+            },
+            {
+              "line": 59,
+              "num": "4",
+              "kind": "string",
+              "loud": false,
+              "code": "\"4\": \"hsl(var(--chart-4) / <alpha-value>)\","
+            },
+            {
+              "line": 60,
+              "num": "5",
+              "kind": "string",
+              "loud": false,
+              "code": "\"5\": \"hsl(var(--chart-5) / <alpha-value>)\","
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "app": "32-nadlan-berega",
+      "files": 2,
+      "total": 3,
+      "loud": 0,
+      "found": [
+        {
+          "file": "apps/32-nadlan-berega/app/api/planmap/route.ts",
+          "hits": [
+            {
+              "line": 54,
+              "num": "4",
+              "kind": "string",
+              "loud": false,
+              "code": "const layers = p.get('layers') === 'landuse' ? '4' : '4,2,1';"
+            },
+            {
+              "line": 54,
+              "num": "4,2,1",
+              "kind": "string",
+              "loud": false,
+              "code": "const layers = p.get('layers') === 'landuse' ? '4' : '4,2,1';"
+            }
+          ]
+        },
+        {
+          "file": "apps/32-nadlan-berega/lib/cbs.ts",
+          "hits": [
+            {
+              "line": 84,
+              "num": "0",
+              "kind": "string",
+              "loud": false,
+              "code": "period: year && month ? `${year}-${String(month).padStart(2, '0')}` : String(year ?? ''),"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "app": "18-torah-editor-mvp",
+      "files": 1,
+      "total": 1,
+      "loud": 0,
+      "found": [
+        {
+          "file": "apps/18-torah-editor-mvp/app/login/page.tsx",
+          "hits": [
+            {
+              "line": 44,
+              "num": "100%",
+              "kind": "string",
+              "loud": false,
+              "code": "width: '100%',"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "app": "24-galilee-connect-hub",
+      "files": 1,
+      "total": 1,
+      "loud": 0,
+      "found": [
+        {
+          "file": "apps/24-galilee-connect-hub/src/components/ChatBot.tsx",
+          "hits": [
+            {
+              "line": 390,
+              "num": "972542030901",
+              "kind": "string",
+              "loud": false,
+              "code": "const whatsappNumber = '972542030901';"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "app": "28-kupot-health-funds",
+      "files": 1,
+      "total": 1,
+      "loud": 0,
+      "found": [
+        {
+          "file": "apps/28-kupot-health-funds/client/src/components/BrandLogo.tsx",
+          "hits": [
+            {
+              "line": 15,
+              "num": "0.12",
+              "kind": "string",
+              "loud": false,
+              "code": "fillOpacity=\"0.12\""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "app": "29-bkalot-design",
+      "files": 1,
+      "total": 1,
+      "loud": 0,
+      "found": [
+        {
+          "file": "apps/29-bkalot-design/style-guide.html",
+          "hits": [
+            {
+              "line": 131,
+              "num": "123",
+              "kind": "string",
+              "loud": false,
+              "code": "<input class=\"bk-input bk-input--error\" id=\"sg-err\" value=\"123\">"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "app": "07-zol",
+      "files": 0,
+      "total": 0,
+      "loud": 0,
+      "found": []
+    },
+    {
+      "app": "12-smel-ndln",
+      "files": 0,
+      "total": 0,
+      "loud": 0,
+      "found": []
+    },
+    {
+      "app": "13-property-identity",
+      "files": 0,
+      "total": 0,
+      "loud": 0,
+      "found": []
+    },
+    {
+      "app": "15-egod",
+      "files": 0,
+      "total": 0,
+      "loud": 0,
+      "found": []
+    },
+    {
+      "app": "16-chatzor-connect",
+      "files": 0,
+      "total": 0,
+      "loud": 0,
+      "found": []
+    },
+    {
+      "app": "20-igud-portal",
+      "files": 0,
+      "total": 0,
+      "loud": 0,
+      "found": []
+    },
+    {
+      "app": "25-mor1-main-site",
+      "files": 0,
+      "total": 0,
+      "loud": 0,
+      "found": []
+    },
+    {
+      "app": "31-hebrew-bridge-crm",
+      "files": 0,
+      "total": 0,
+      "loud": 0,
+      "found": []
+    },
+    {
+      "app": "34-kesef",
+      "files": 0,
+      "total": 0,
+      "loud": 0,
+      "found": []
+    },
+    {
+      "app": "35-kioskfleet",
+      "files": 0,
+      "total": 0,
+      "loud": 0,
+      "found": []
+    }
+  ]
+}
