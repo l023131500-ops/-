@@ -2,12 +2,11 @@ import Link from "next/link";
 import { seedItems, type ShelfItem } from "@/lib/catalog";
 import { getDriveItem } from "@/lib/drive-catalog";
 import { getUploaded } from "@/lib/supabase";
-import PageTool from "@/components/PageTool";
+import { readOverrides } from "@/lib/overrides";
+import PdfViewer from "@/components/PdfViewer";
 
-export function generateStaticParams() {
-  return seedItems.map((i) => ({ id: i.id }));
-}
-export const dynamicParams = true;
+// Rendered on demand so admin overrides (hidden file / trimmed pages) always apply.
+export const dynamic = "force-dynamic";
 
 function fmtDate(d: string) {
   if (!d) return "";
@@ -39,7 +38,16 @@ async function resolveItem(id: string): Promise<ShelfItem | null> {
 }
 
 export default async function ShelfItemPage({ params }: { params: { id: string } }) {
-  const item = await resolveItem(params.id);
+  const base = await resolveItem(params.id);
+  const overrides = await readOverrides();
+  const ov = base ? overrides[base.id] : undefined;
+  // Admin-hidden file → behave as removed.
+  const item: ShelfItem | null =
+    base && !ov?.hidden
+      ? ov?.hiddenPages?.length
+        ? { ...base, hiddenPages: ov.hiddenPages }
+        : base
+      : null;
 
   if (!item) {
     return (
@@ -81,41 +89,36 @@ export default async function ShelfItemPage({ params }: { params: { id: string }
           )}
         </div>
 
-        <div style={{ marginTop: 20, borderRadius: 14, overflow: "hidden", border: "1px solid #ebe7de", background: "#f4f2ec" }}>
-          {item.kind === "pdf" ? (
-            <object data={item.file} type="application/pdf" style={{ width: "100%", height: "82vh", display: "block" }}>
-              <div style={{ padding: 24, textAlign: "center" }}>
-                <p style={{ color: "#6d6f88" }}>הדפדפן אינו מציג PDF מוטמע.</p>
-                <a href={item.file} target="_blank" rel="noopener" className="btn btn-main" style={{ marginTop: 10 }}>פתיחת הקובץ</a>
-              </div>
-            </object>
-          ) : item.kind === "image" ? (
-            <img src={item.file} alt={item.title} style={{ width: "100%", height: "auto", display: "block" }} />
-          ) : item.kind === "media" ? (
-            <div style={{ padding: 24 }}>
-              {item.mime.startsWith("video/") ? (
-                <video src={item.file} controls style={{ width: "100%", borderRadius: 10 }} />
-              ) : (
-                <audio src={item.file} controls style={{ width: "100%" }} />
-              )}
-            </div>
-          ) : (
-            <div style={{ padding: 30, textAlign: "center" }}>
-              <p style={{ color: "#6d6f88", lineHeight: 1.7 }}>
-                סוג הקובץ ({item.mime.split("/").pop()}) אינו מוצג בתצוגה מוטמעת.<br />
-                אפשר להוריד אותו, או לפתוח ב-Google Drive.
-              </p>
-              <div style={{ display: "flex", gap: 10, justifyContent: "center", marginTop: 14, flexWrap: "wrap" }}>
-                <a href={downloadUrl(item)} className="btn btn-main" style={{ fontSize: 14 }}>הורדת הקובץ</a>
-                {item.viewUrl && (
-                  <a href={item.viewUrl} target="_blank" rel="noopener" className="btn btn-ghost" style={{ fontSize: 14 }}>פתיחה ב-Drive</a>
+        {item.kind === "pdf" ? (
+          <PdfViewer fileUrl={item.file} title={item.title} hiddenPages={item.hiddenPages || []} />
+        ) : (
+          <div style={{ marginTop: 20, borderRadius: 14, overflow: "hidden", border: "1px solid #ebe7de", background: "#f4f2ec" }}>
+            {item.kind === "image" ? (
+              <img src={item.file} alt={item.title} style={{ width: "100%", height: "auto", display: "block" }} />
+            ) : item.kind === "media" ? (
+              <div style={{ padding: 24 }}>
+                {item.mime.startsWith("video/") ? (
+                  <video src={item.file} controls style={{ width: "100%", borderRadius: 10 }} />
+                ) : (
+                  <audio src={item.file} controls style={{ width: "100%" }} />
                 )}
               </div>
-            </div>
-          )}
-        </div>
-
-        {item.kind === "pdf" && <PageTool fileUrl={item.file} title={item.title} />}
+            ) : (
+              <div style={{ padding: 30, textAlign: "center" }}>
+                <p style={{ color: "#6d6f88", lineHeight: 1.7 }}>
+                  סוג הקובץ ({item.mime.split("/").pop()}) אינו מוצג בתצוגה מוטמעת.<br />
+                  אפשר להוריד אותו, או לפתוח ב-Google Drive.
+                </p>
+                <div style={{ display: "flex", gap: 10, justifyContent: "center", marginTop: 14, flexWrap: "wrap" }}>
+                  <a href={downloadUrl(item)} className="btn btn-main" style={{ fontSize: 14 }}>הורדת הקובץ</a>
+                  {item.viewUrl && (
+                    <a href={item.viewUrl} target="_blank" rel="noopener" className="btn btn-ghost" style={{ fontSize: 14 }}>פתיחה ב-Drive</a>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

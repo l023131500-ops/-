@@ -13,6 +13,7 @@ export type ShelfItem = {
   sizeKB: number;
   kind: ShelfKind;
   viewUrl?: string; // Drive view link (fallback for non-embeddable types)
+  hiddenPages?: number[]; // admin-trimmed pages (e.g. leading email page) — dropped everywhere
   source?: "seed" | "upload" | "drive";
 };
 
