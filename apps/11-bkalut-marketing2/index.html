@@ -77,9 +77,17 @@
               <li><strong>9</strong><span>קטגוריות תוכן</span></li>
             </ul>
           </div>
-          <aside class="hero-card" aria-label="דוגמה למה אפשר לזהות">
+          <!--
+            הכרטיס הזה הוא המחשה, ולא תוצאה. הוא נטען סטטית ואין מאחוריו חישוב:
+            script.js אינו נוגע בו, ואיש לא מסר נתון לפני שהוא מצויר.
+            לכן הגילוי חייב להיות חזותי ולא רק ב-aria — קורא רואה ושומע צריכים
+            לקבל את אותו מידע. שלוש השורות למטה נשארות כדוגמה לניסוח, ואין בהן
+            סכום כסף: סכום שמופיע לפני בדיקה הוא הבטחה אישית בלי כיסוי.
+          -->
+          <aside class="hero-card" aria-label="דוגמה — כך נראית תוצאת בדיקת זכאות">
             <div class="hero-card-head">
-              <span class="dot dot-green"></span> זוהו עבורך 3 זכויות חדשות
+              <span class="sample-badge">דוגמה</span>
+              <span>כך נראית תוצאת בדיקת זכאות</span>
             </div>
             <ul class="hero-card-list">
               <li>
@@ -98,7 +106,7 @@
                 <div class="hint">ביטוח לאומי + משרד החינוך</div>
               </li>
             </ul>
-            <div class="hero-card-foot">חסכון משוער: ₪7,200 לשנה</div>
+            <div class="hero-card-foot">מה מגיע לך נקבע לפי הנתונים שלך. הבדיקה חינם.</div>
           </aside>
         </div>
       </section>

@@ -256,6 +256,18 @@ a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visib
 }
 .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
 .dot-green { background: #2f9e6c; }
+/* תווית «דוגמה» על כרטיס הירו — גילוי חזותי, לא עיטור.
+   ניגודיות נמדדה: --ink (#0e201d) על --sand (#d9c8a4) = 10.26:1, מעל 4.5:1 של WCAG AA. */
+.sample-badge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  padding: 0.1rem 0.5rem;
+  border-radius: 999px;
+  background: var(--sand);
+  color: var(--ink);
+  border: 1px solid var(--line-strong);
+}
 .hero-card-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.75rem; }
 .hero-card-list li {
   padding: 0.65rem 0.75rem;
