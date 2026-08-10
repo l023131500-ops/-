@@ -245,7 +245,38 @@ for (const [key, route] of targets) {
         }
         return '';
       };
+      // The accessible name a control carries itself, in the order a screen
+      // reader resolves it. aria-labelledby points at ids elsewhere in the
+      // document, so it is followed rather than read as text.
+      const accNameOf = (el) => {
+        const by = (el.getAttribute('aria-labelledby') || '').trim();
+        if (by) {
+          const t = by.split(/\s+/)
+            .map((id) => document.getElementById(id)?.innerText || '')
+            .join(' ').replace(/\s+/g, ' ').trim();
+          if (t) return t;
+        }
+        return (el.getAttribute('aria-label') || el.getAttribute('title') || '')
+          .replace(/\s+/g, ' ').trim();
+      };
       const labelOf = (svg) => {
+        // A control the icon sits INSIDE, drawing no text of its own, is named
+        // by that control — not by whatever prose the climb reaches next.
+        // Measured 10/08 (יא) against production: smel's 16px moon sits on a
+        // <button> with aria-label «החלף מצב תצוגה» and chatzor's 20px moon on
+        // «מעבר למצב כהה», and both sheets printed "—"; zchuyot's floating
+        // launcher carries «פתיחת בודק הזכויות» (as update ט measured by hand)
+        // while the sheet quoted the page shell around it. The name is the
+        // answer to the question the sheet asks — "does the text beside the
+        // glyph already say what the glyph draws" — and for an icon-only
+        // control the text that answers it is the control's own name.
+        // Only when the control is silent: a button that shows a caption keeps
+        // the caption, so «וואטסאפ» stays «וואטסאפ».
+        const own = svg.closest(CONTROL);
+        if (own && !txt(own, 70)) {
+          const n = accNameOf(own);
+          if (n) return 'פקד: ' + n.slice(0, 64);
+        }
         let el = svg.parentElement;
         for (let i = 0; i < 4 && el && el !== document.body; i++) {
           // innerText where nothing foreign is in the way, so every label that
