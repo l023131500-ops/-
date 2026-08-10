@@ -1,0 +1,62 @@
+﻿<!doctype html>
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <!-- ⚠️ ‎maximum-scale‎ / ‎user-scalable=no‎ הוסרו: הם מונעים מהמשתמש
+         להגדיל את העמוד, וזה כשל נגישות לפי DESIGN_STANDARD §5 (תקן 5568).
+         בעמוד עברי צפוף זו בדיוק היכולת שמי שמתקשה לקרוא זקוק לה. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light dark" />
+    <!-- מצב כהה (DESIGN_STANDARD §3). טוקני ‎.dark‎ נוספו ב-‎src/index.css‎;
+         כאן מדליקים אותם. רץ בתוך ה-‎<head>‎ לפני הציור הראשון, ולכן אין
+         הבזק לבן — בניגוד להחלה מתוך React, שרצה רק אחרי הציור. -->
+    <script>
+      (function () {
+        var mq = window.matchMedia("(prefers-color-scheme: dark)");
+        var apply = function (dark) {
+          document.documentElement.classList.toggle("dark", dark);
+        };
+        apply(mq.matches);
+        mq.addEventListener
+          ? mq.addEventListener("change", function (e) { apply(e.matches); })
+          : mq.addListener(function (e) { apply(e.matches); });
+      })();
+    </script>
+    <title>מחוברים — בתי כנסת חצור הגלילית</title>
+    <meta name="description" content="מחוברים — איגוד בתי הכנסת בחצור הגלילית. זמני תפילות, שיעורים ופעילויות קהילתיות.">
+    <meta name="author" content="מחוברים — יהדות וקהילה" />
+    <meta name="theme-color" content="#0f766e" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="מחוברים" />
+    <!-- ‎vite-plugin-pwa‎ מזריק בעצמו ‎<link rel="manifest">‎ עם ה-‎base‎ של
+         ההרכבה (‎/galil/manifest.webmanifest‎). הצהרה ידנית כאן קדמה לו,
+         נכתבה מוחלטת-לשורש, וקדמה גם בסדר ה-‎<head>‎ — ולכן הדפדפן לקח אותה
+         וביקש ‎more30.com/manifest.webmanifest‎, שאינו קיים. אין להחזירה. -->
+    <link rel="apple-touch-icon" href="/galil/pwa-512.png" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/b3bc138e-3f8b-4689-85d6-7e9400506c53/id-preview-4593568a--506805d0-89de-4112-84ff-741553892b34.lovable.app-1773074843204.png">
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/b3bc138e-3f8b-4689-85d6-7e9400506c53/id-preview-4593568a--506805d0-89de-4112-84ff-741553892b34.lovable.app-1773074843204.png">
+    <meta property="og:title" content="מחוברים — בתי כנסת חצור הגלילית">
+    <meta name="twitter:title" content="מחוברים — בתי כנסת חצור הגלילית">
+    <meta property="og:description" content="מחוברים — איגוד בתי הכנסת בחצור הגלילית. זמני תפילות, שיעורים ופעילויות קהילתיות.">
+    <meta name="twitter:description" content="מחוברים — איגוד בתי הכנסת בחצור הגלילית. זמני תפילות, שיעורים ופעילויות קהילתיות.">
+  <script type="module" crossorigin src="/galil/assets/index-CN7M8vyl.js"></script>
+  <link rel="stylesheet" crossorigin href="/galil/assets/index-amMzjW3O.css">
+<link rel="manifest" href="/galil/manifest.webmanifest"><script id="vite-plugin-pwa:register-sw" src="/galil/registerSW.js"></script></head>
+
+  <body>
+    <div id="root"></div>
+      <!-- כפתור הכניסה המשותף של more30 (DESIGN_STANDARD §9). חייב לשבת
+         כאן במקור ולא רק בעותק הפרוס: כל בנייה מחדש דורסת את ‎index.html‎
+         שב-‎_deploy‎, ואז הכפתור נעלם בלי שאיש ישים לב. -->
+    <script src="https://more30.com/auth-button.js" defer></script>
+  </body>
+</html>
+
+<!-- Injection By NetFree -->
+<script src="//netfree.link/injection-script/go-payment.js" type="text/javascript" async ></script>
+<script src="//netfree.link/injection-script/popup-card-init.js" type="text/javascript" async ></script>
+

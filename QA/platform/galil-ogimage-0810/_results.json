@@ -1,0 +1,58 @@
+{
+  "what": "og:image / twitter:image on three live sites pointed at a screenshot of the Lovable preview sandbox, hosted on a third-party R2 bucket",
+  "when": "2026-08-10",
+  "section": "more30priority.md §6",
+  "measured_before_touching": {
+    "scan": "every apps/*/index.html (excluding node_modules, dist, _archive) grepped for r2.dev | lovable.app | lovable.dev",
+    "hits": ["apps/15-egod/index.html:28,31", "apps/21-mthbram/index.html:26,29", "apps/24-galilee-connect-hub/index.html:39,41"],
+    "note": "all three carry BOTH og:image and twitter:image, all on the same bucket host pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev"
+  },
+  "production_before": {
+    "method": "GET of the live page, meta tags parsed out of the served HTML (saved as before-production-*.html)",
+    "https://more30.com/galil/": "og:image + twitter:image = .../b3bc138e-.../id-preview-4593568a--...lovable.app-1773074843204.png, twitter:card=summary_large_image",
+    "https://more30.com/mthbram/": "og:image + twitter:image = .../c48fbdb2-.../id-preview-6a3cc52a--...lovable.app-1772990456848.png, twitter:card=summary_large_image",
+    "https://more30.com/egod/": "og:image + twitter:image = .../565316d9-.../id-preview-a6acbecc--...lovable.app-1777595828138.png, twitter:card=summary_large_image"
+  },
+  "the_assets_are_live_and_foreign": {
+    "HEAD galil": "200 image/png 453140",
+    "HEAD mthbram": "200 image/png 1854154",
+    "HEAD egod": "200 image/png 113052",
+    "so_not_a_broken_image": "all three resolve today; the defect is ownership and provenance, not a 404",
+    "filename_epoch_utc": {
+      "1772990456848": "2026-03-08 17:20 (mthbram)",
+      "1773074843204": "2026-03-09 16:47 (galil)",
+      "1777595828138": "2026-05-01 00:37 (egod)"
+    },
+    "why_that_matters": "the filename is the builder's own screenshot of id-preview-*.lovable.app. It is a picture of the PREVIEW SANDBOX, not of production, taken months before every copy and icon change made since. Nothing we deploy can refresh it and nothing we deploy can keep it alive."
+  },
+  "not_claimed": {
+    "image_contents": "what the three screenshots actually depict was NOT verified. The connection here is Netfree-filtered: downloading the galil one returned 69866 bytes against a declared Content-Length of 453140, and the bytes decode to Netfree's placeholder ('כעת התמונה נשלחה לנטפרי לבדיקה'), not to the site. current-og-image.png in this folder is that placeholder, kept as the evidence of the substitution.",
+    "consequence": "the finding rests only on facts that survive the filter: the host, the filename, the timestamp, the HTTP status. No claim is made about how the card looks."
+  },
+  "fix": {
+    "galil": "og:image + twitter:image -> https://more30.com/galil/pwa-512.png (self-hosted, the icon the PWA already installs); twitter:card summary_large_image -> summary, because the asset is square and not 1.91:1",
+    "mthbram": "og:image + twitter:image -> https://more30.com/mthbram/icon-512.png (self-hosted, the icon manifest.json already declares); twitter:card -> summary",
+    "egod": "the three tags REMOVED, not repointed. egod has no image of its own: public/ holds favicon.ico and placeholder.svg only, and that favicon.ico is byte-identical (SHA256 DD821076A9B03ADC...) across 15-egod, 21-mthbram, 22-get-your-rights and 24-galilee-connect-hub — it is the builder's default. Pointing at it would swap one generator signature for another. Recorded in NEEDS_USER."
+  },
+  "replacement_assets_exist_in_production": {
+    "HEAD https://more30.com/galil/pwa-512.png": "200 image/png 97813",
+    "HEAD https://more30.com/mthbram/icon-512.png": "200 image/png 10662"
+  },
+  "verified_on_the_build_not_the_source": {
+    "method": "npm run build in all three apps, then the emitted dist/index.html parsed",
+    "lovable_bucket_host_occurrences": { "15-egod": 0, "21-mthbram": 0, "24-galilee-connect-hub": 0 },
+    "og_image_tags": { "15-egod": 0, "21-mthbram": 1, "24-galilee-connect-hub": 1 },
+    "twitter_image_tags": { "15-egod": 0, "21-mthbram": 1, "24-galilee-connect-hub": 1 },
+    "twitter_card_value": { "15-egod": "(tag absent)", "21-mthbram": "summary", "24-galilee-connect-hub": "summary" },
+    "og_image_value": { "21-mthbram": "https://more30.com/mthbram/icon-512.png", "24-galilee-connect-hub": "https://more30.com/galil/pwa-512.png" },
+    "why_a_grep_is_admissible_here": "the earlier rule (a missing Hebrew string in dist is not evidence, because esbuild escapes some of it to \\uXXXX) does not apply: these are ASCII URLs in static HTML, not strings inside a JS bundle. The first count run was 1-per-app and that was the new HTML COMMENT, which contains the literal 'r2.dev'; re-counted on the bucket host itself and it is 0."
+  },
+  "a_thing_measured_on_the_way": {
+    "identical_favicon": "favicon.ico is the same file, same SHA256, in 15-egod, 21-mthbram, 22-get-your-rights and 24-galilee-connect-hub. 16-chatzor-connect and 12-smel-ndln have none. This is a §6 signature on the browser tab and it is not fixed here.",
+    "manifest_paths_checked_and_fine": "mthbram's index.html writes href=\"/manifest.json\" and \"/icon-192.png\" root-absolute, which looked like the /bkalot base-href trap. Production serves them rewritten to /mthbram/... — Vite applies base to index.html hrefs at build. No defect."
+  },
+  "not_deployed": {
+    "reason": "the Vercel free-per-day window is exhausted (core.issues #83); it drops under the ceiling around 11/08 00:11Z",
+    "staging_left_alone": "_deploy/egod-more30/egod holds a build that PREDATES this change. It was not overwritten. Whoever gets the next slot must rebuild egod and re-copy, and must diff against the live HTML first (deploy-copy-can-break-live-sites)."
+  }
+}

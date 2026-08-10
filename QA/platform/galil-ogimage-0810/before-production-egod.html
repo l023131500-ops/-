@@ -1,0 +1,51 @@
+﻿<!doctype html>
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light dark" />
+    <!-- מצב כהה (DESIGN_STANDARD §3). טוקני ‎.dark‎ נוספו ב-‎src/index.css‎;
+         השורות האלה הן מי שמדליק אותם. הן יושבות בתוך ה-‎<head>‎ ורצות לפני
+         הציור הראשון, ולכן אין הבזק לבן — בניגוד להחלה מתוך React, שרצה רק
+         אחרי שהעמוד כבר צויר בהיר. -->
+    <script>
+      (function () {
+        var mq = window.matchMedia("(prefers-color-scheme: dark)");
+        var apply = function (dark) {
+          document.documentElement.classList.toggle("dark", dark);
+        };
+        apply(mq.matches);
+        mq.addEventListener
+          ? mq.addEventListener("change", function (e) { apply(e.matches); })
+          : mq.addListener(function (e) { apply(e.matches); });
+      })();
+    </script>
+    <title>איגוד השיעורים — פורטל מגידי השיעורים</title>
+    <meta name="description" content="דף לכל שיעור עם נושא, זמנים ומיקום, ניהול משתתפים וחומרי עזר — למגידי שיעורים.">
+    <meta name="author" content="איגוד השיעורים" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/565316d9-64fd-4397-acd0-9303ce9f5cb4/id-preview-a6acbecc--3827209f-42d3-4cf8-8db0-98bb4f8410be.lovable.app-1777595828138.png">
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/565316d9-64fd-4397-acd0-9303ce9f5cb4/id-preview-a6acbecc--3827209f-42d3-4cf8-8db0-98bb4f8410be.lovable.app-1777595828138.png">
+    <meta property="og:title" content="איגוד השיעורים — פורטל מגידי השיעורים">
+    <meta name="twitter:title" content="איגוד השיעורים — פורטל מגידי השיעורים">
+    <meta property="og:description" content="דף לכל שיעור עם נושא, זמנים ומיקום, ניהול משתתפים וחומרי עזר — למגידי שיעורים.">
+    <meta name="twitter:description" content="דף לכל שיעור עם נושא, זמנים ומיקום, ניהול משתתפים וחומרי עזר — למגידי שיעורים.">
+    <link rel="icon" type="image/x-icon" href="/egod/favicon.ico">
+  <script type="module" crossorigin src="/egod/assets/index-y8vBmSHh.js"></script>
+  <link rel="stylesheet" crossorigin href="/egod/assets/index-CCW5-dLB.css">
+</head>
+
+  <body>
+    <div id="root"></div>
+      <!-- כפתור הכניסה המשותף של more30 (חייב לשבת במקור, לא רק בעותק הפרוס) -->
+    <script src="https://more30.com/auth-button.js" defer></script>
+  </body>
+</html>
+
+<!-- Injection By NetFree -->
+<script src="//netfree.link/injection-script/go-payment.js" type="text/javascript" async ></script>
+<script src="//netfree.link/injection-script/popup-card-init.js" type="text/javascript" async ></script>
+
