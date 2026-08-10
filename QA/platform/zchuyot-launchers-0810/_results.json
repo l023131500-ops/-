@@ -1,0 +1,34 @@
+{
+  "url": "https://more30.com/zchuyot",
+  "viewport": "1280x900",
+  "pinnedMessageCircleControls": [
+    {
+      "glyph": "28px",
+      "control": "button",
+      "corner": "bottom-left",
+      "z": "50",
+      "box": [
+        24,
+        812,
+        64,
+        64
+      ],
+      "text": "(אין טקסט)",
+      "label": "פתיחת בודק הזכויות"
+    },
+    {
+      "glyph": "20px",
+      "control": "button",
+      "corner": "bottom-right",
+      "z": "50",
+      "box": [
+        986,
+        808,
+        270,
+        68
+      ],
+      "text": "יש לכם משהו שמעניין אותכם? מוזמנים לדבר איתי במילים שלכם",
+      "label": ""
+    }
+  ]
+}

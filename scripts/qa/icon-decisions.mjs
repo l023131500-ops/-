@@ -78,7 +78,12 @@
  *      16px on a chip and 24px on the card. Both were found by reading the
  *      review sheet by hand while this file printed "אין".
  *
- * `doubleMark`, `splitGlyph` and `repeatInBand` below measure exactly those three.
+ *   D. One page, two floating controls wearing the same glyph. zchuyot pins a
+ *      chat launcher in each bottom corner — FloatingBot on the left, AIAgent on
+ *      the right — both drawing message-circle. Neither sits in a band, so C
+ *      could only see it while every landmark-less slot shared the key "—".
+ *
+ * `doubleMark`, `splitGlyph`, `repeatInBand` and `floatingTwice` measure those four.
  * They are lists, not counts: each entry names a place to look. They deliberately
  * do not feed the `decisions` ranking — the work order stays comparable across
  * rounds.
@@ -159,19 +164,46 @@ for (const [key, route] of targets) {
 
       const txt = (el, max) => (el?.innerText || '').replace(/\s+/g, ' ').trim().slice(0, max);
 
-      // Which band of the page the slot sits in, named the way a reader would
-      // name it: the landmark's own heading, not its class list.
-      const sectionOf = (svg) => {
-        let el = svg.parentElement;
+      // Which band of the page the slot sits in. Two things are needed and they
+      // are not the same thing: a NAME a reader recognises, and an IDENTITY that
+      // says whether two slots are in the same band.
+      //
+      // The name is the landmark's own heading, not its class list.
+      // The identity is the landmark ELEMENT. Keying the pair check by the name
+      // merged every band that has no heading into one: an unheaded <section>
+      // prints "section", and a slot with no landmark ancestor at all prints "—",
+      // so a floating launcher fixed to the corner of the viewport shared a key
+      // with whatever else the page left unheaded. That is exactly how the first
+      // run reported message-circle ×2 on zchuyot — a defect DESIGN_SAMENESS
+      // 10/08 (ח) recorded as "requires reading" because the tool could not tell
+      // one band from two.
+      // A control pinned to the viewport is not in any band of the page — it
+      // floats over all of them. Two of them are two places, however close their
+      // glyphs sit in the markup, so the pinned element is the unit there.
+      const LANDMARK = /^(section|footer|header|nav|main)$/;
+      const bandElOf = (svg) => {
+        let el = svg.parentElement, pinned = null, top = svg;
         while (el && el !== document.body) {
-          const t = el.tagName.toLowerCase();
-          if (t === 'section' || t === 'footer' || t === 'header' || t === 'nav' || t === 'main') {
-            const h = el.querySelector('h1, h2, h3');
-            return (h && txt(h, 40)) || (t === 'nav' ? 'ניווט' : t);
-          }
+          if (LANDMARK.test(el.tagName.toLowerCase())) return { el, kind: 'landmark' };
+          if (!pinned && getComputedStyle(el).position === 'fixed') pinned = el;
+          top = el;
           el = el.parentElement;
         }
-        return '—';
+        // No landmark: a pinned ancestor is a real unit, the page shell is not.
+        return pinned ? { el: pinned, kind: 'floating' } : { el: top, kind: 'page' };
+      };
+      const sectionOf = (svg) => {
+        const { el, kind } = bandElOf(svg);
+        if (kind !== 'landmark') return kind === 'floating' ? 'צף' : '—';
+        const t = el.tagName.toLowerCase();
+        const h = el.querySelector('h1, h2, h3');
+        return (h && txt(h, 40)) || (t === 'nav' ? 'ניווט' : t);
+      };
+      const bandIds = new Map();
+      const bandOf = (svg) => {
+        const { el, kind } = bandElOf(svg);
+        if (!bandIds.has(el)) bandIds.set(el, bandIds.size + 1);
+        return { band: bandIds.get(el), kind };
       };
 
       // The text the glyph sits next to. Climb until there IS text: an icon
@@ -208,7 +240,7 @@ for (const [key, route] of targets) {
         const k = chain(svg);
         const g = groups.get(k) || {
           icon: nameOf(svg), n: 0, names: new Set(),
-          section: sectionOf(svg), label: labelOf(svg),
+          section: sectionOf(svg), ...bandOf(svg), label: labelOf(svg),
           size: Math.round(r.width),
         };
         g.n++;
@@ -287,7 +319,7 @@ for (const [key, route] of targets) {
       const list = [...groups.values()]
         .map((g) => ({
           icon: g.icon, n: g.n, names: [...g.names],
-          section: g.section, label: g.label, size: g.size,
+          section: g.section, band: g.band, kind: g.kind, label: g.label, size: g.size,
         }))
         .sort((a, b) => b.n - a.n);
 
@@ -304,8 +336,9 @@ for (const [key, route] of targets) {
       // Two slots, not two icons: a glyph repeated down a list is one slot and
       // is not this. Slots whose glyph comes from the data are skipped — their
       // name is a per-record value, so a collision there says nothing about a
-      // choice someone made. Sections are compared by their heading, which is
-      // what makes "the same band" mean the band a reader sees.
+      // choice someone made. Bands are compared by the landmark ELEMENT the slot
+      // sits in (see `bandOf`), not by the heading text, so two bands that happen
+      // to share a name — or share the absence of one — stay two bands.
       //
       // This is a list of places to open, like A and B, and deliberately stays
       // out of the `decisions` ranking: a repeat is one glyph to remove, not a
@@ -314,7 +347,7 @@ for (const [key, route] of targets) {
       const bands = new Map();
       for (const g of list) {
         if (g.names.length > 1) continue;          // glyph comes from the data
-        const k = g.section + '|' + g.icon;
+        const k = g.band + '|' + g.icon;
         if (!bands.has(k)) bands.set(k, []);
         bands.get(k).push(g);
       }
@@ -340,14 +373,43 @@ for (const [key, route] of targets) {
       const allPaired = [...bands.entries()].filter(([, gs]) => gs.length > 1);
       const paired = allPaired.filter(([, gs]) => !sharesDatum(gs));
       const repeatSameDatum = allPaired.filter(([, gs]) => sharesDatum(gs));
-      const describe = ([k, gs]) => {
-        const [section, icon] = k.split('|');
+      // The key is an element id, which means nothing to a reader — the band is
+      // named from the slots themselves, which all sit in that one landmark.
+      const describe = ([, gs]) => {
         const where = gs.map((g) => `${g.size}px "${(g.label || '—').slice(0, 40)}"`).join(' + ');
-        return `${section} · ${icon} ×${gs.length} — ${where}`;
+        return `${gs[0].section} · ${gs[0].icon} ×${gs.length} — ${where}`;
       };
-      const repeatInBand = paired.filter(([, gs]) => gs.every((g) => g.n === 1)).map(describe);
+      const oneOff = paired.filter(([, gs]) => gs.every((g) => g.n === 1));
+      // Only a landmark is a band. A pair with no landmark over it sits in the
+      // page shell, which every slot on the page shares — that is not evidence
+      // of one placement made twice, and it is reported apart rather than
+      // dropped, because the shape it hides is real (see `floatingTwice`).
+      const repeatInBand = oneOff.filter(([, gs]) => gs[0].kind === 'landmark').map(describe);
+      const repeatUnbanded = oneOff.filter(([, gs]) => gs[0].kind === 'page').map(describe);
       const repeatPerRecord = paired.filter(([, gs]) => gs.some((g) => g.n > 1)).map(describe);
       const settledByDatum = repeatSameDatum.map(describe);
+
+      // ── Fault D: one page, two floating controls wearing the same glyph ──
+      // Not a band repeat and not one control marked twice: two separate pinned
+      // buttons, each its own unit, drawing the same mark. zchuyot ships both
+      // AIAgent (bottom-6 right-6, MessageCircle 20px) and FloatingBot (bottom-6
+      // left-6, MessageCircle 28px) — two chat launchers in two corners of one
+      // viewport. The first version of fault C reported this pair only because
+      // every landmark-less slot shared the key "—"; it was right by accident,
+      // and this is the check that is right on purpose.
+      const byFloat = new Map();
+      for (const g of list) {
+        if (g.kind !== 'floating' || g.names.length > 1 || g.n > 1) continue;
+        if (!byFloat.has(g.icon)) byFloat.set(g.icon, new Map());
+        byFloat.get(g.icon).set(g.band, g);
+      }
+      const floatingTwice = [...byFloat.entries()]
+        .filter(([, byBand]) => byBand.size > 1)
+        .map(([icon, byBand]) => {
+          const gs = [...byBand.values()];
+          return `${icon} ×${gs.length} פקדים צפים — ` +
+            gs.map((g) => `${g.size}px "${(g.label || '—').slice(0, 40)}"`).join(' + ');
+        });
       const rendered = list.reduce((s, g) => s + g.n, 0);
       // The old name-keyed count, kept so a jump between the two is visible
       // instead of silently rewriting a number the work order was built on.
@@ -377,6 +439,8 @@ for (const [key, route] of targets) {
         doubleMark,
         splitGlyph,
         repeatInBand,
+        floatingTwice,
+        repeatUnbanded,
         repeatPerRecord,
         settledByDatum,
         // every slot with its on-page context. Stripped before the JSON is
@@ -433,10 +497,14 @@ for (const [key, route] of targets) {
   for (const d of f.doubleMark || []) console.log(`   ⚠ סמל כפול באותו פקד: ${d}`);
   for (const s of f.splitGlyph || []) console.log(`   ⚠ אותו נתון, שני גליפים: ${s}`);
   for (const s of f.repeatInBand || []) console.log(`   ⚠ אותו גליף פעמיים ברצועה: ${s}`);
+  for (const s of f.floatingTwice || []) console.log(`   ⚠ שני פקדים צפים, אותו גליף: ${s}`);
   // Not a warning and not hidden either: the pairs set aside as list markers are
   // counted out loud so the filter above can be audited from the run itself.
   if (f.repeatPerRecord?.length) {
     console.log(`   · ${f.repeatPerRecord.length} זוגות הוצאו כסימני רשימה (repeatPerRecord ב-JSON)`);
+  }
+  if (f.repeatUnbanded?.length) {
+    console.log(`   · ${f.repeatUnbanded.length} זוגות בלי רצועה משותפת (repeatUnbanded ב-JSON — לפתוח ולקרוא)`);
   }
   for (const s of f.settledByDatum || []) console.log(`   ✓ חזרה שתקלה B דורשת — אותו נתון, אותו גליף: ${s}`);
 }
@@ -464,12 +532,13 @@ for (const [k, f] of good.sort((a, b) => b[1].decisions - a[1].decisions)) {
 // a system can sit last on `decisions` and still be drawing one phone number two
 // different ways, and that is a fix worth a round on its own.
 const faults = good.filter(([, f]) =>
-  (f.doubleMark?.length || f.splitGlyph?.length || f.repeatInBand?.length));
+  (f.doubleMark?.length || f.splitGlyph?.length || f.repeatInBand?.length || f.floatingTwice?.length));
 console.log('\n=== ליקויים שהדירוג לעיל עיוור אליהם ===');
 if (!faults.length) console.log('  אין');
 for (const [k, f] of faults) {
   console.log(
     `  ${k}: ${f.doubleMark?.length || 0} סמל כפול · ${f.splitGlyph?.length || 0} נתון עם שני גליפים` +
-      ` · ${f.repeatInBand?.length || 0} גליף כפול ברצועה`);
+      ` · ${f.repeatInBand?.length || 0} גליף כפול ברצועה` +
+      ` · ${f.floatingTwice?.length || 0} גליף על שני פקדים צפים`);
 }
 console.log(`-> ${OUT} (${Object.keys(out).length} systems)`);
