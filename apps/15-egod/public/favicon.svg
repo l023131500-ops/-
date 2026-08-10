@@ -1,0 +1,43 @@
+<!--
+  סמל הלשונית של egod. הצורה אינה מומצאת כאן: זה בדיוק הסימן שהנווט מצייר
+  חי — Navbar.tsx:35-37, אריח מעוגל עם הגליף BookOpen של lucide בתוכו,
+  בתוך Layout.tsx שכל עמוד (כולל pages/Index.tsx) עוטף בו. זו ההבחנה מול
+  zchuyot: שם הנווט הוא כיתוב בלבד ולכן נכתבה אות, וכאן יש סימן גרפי אמיתי
+  להעתיק.
+
+  היחסים נמדדו מהמחלקות ולא נבחרו: האריח w-10 h-10 (40px) עם rounded-xl
+  (0.75rem = 12px, שכן tailwind.config מגדיר מחדש רק lg/md/sm) — כלומר
+  רדיוס של 0.3 מהצלע, שהוא 19.2 על צלע 64. הגליף w-6 h-6 (24px) ממורכז
+  בתוך 40px, כלומר 0.6 מהאריח: 38.4 על 64, ומכאן scale של 1.6 על תיבת
+  ה-24 של lucide ו-stroke-width 2 שנצייר כ-3.2. נתיבי הגליף הועתקו כלשונם
+  מ-node_modules/lucide-react/dist/esm/icons/book-open.js (v0.462.0).
+
+  הצבעים כולם טוקנים של המוצר מ-src/index.css. מה שכן הוכרע כאן הוא איזה
+  זוג מתוכם: האריח החי הוא bg-secondary עם גליף ב-secondary-foreground,
+  כלומר לבן על זהב, ונמדד שיחס הניגודיות שלו הוא 2.27:1 — מתחת ל-3:1 גם
+  לגרפיקה, ולשונית נצפית ב-16px. הזוג ההפוך יושב חי באותו נווט עצמו: כפתור
+  «התחברות» הוא border-secondary text-secondary על סרגל bg-primary, כלומר
+  זהב על נייבי. לכן האריח נושא את gradient-navy כלשונו — 135° מ-
+  hsl(224 54% 23%) שהוא navy/primary (#1B2C5A) אל hsl(230 60% 32%)
+  (#213183) — והגליף הוא secondary/gold, 42 50% 54% (#C4A14F). הניגודיות
+  נעה בין 5.95:1 בקצה הכהה ל-5.05:1 בקצה הבהיר.
+
+  שמות הטוקנים נכתבים כאן בלי שני המקפים שמקדימים אותם ב-CSS: הערת XML
+  אינה יכולה להכיל שני מקפים רצופים, וקובץ כזה אינו מפוענח ואינו מצויר —
+  תקלה שכבר נתפסה בסמל של zchuyot.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="איגוד מגידי השיעורים">
+  <defs>
+    <linearGradient id="e" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1B2C5A"/>
+      <stop offset="1" stop-color="#213183"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="19.2" fill="url(#e)"/>
+  <g transform="translate(12.8 12.8) scale(1.6)"
+     fill="none" stroke="#C4A14F" stroke-width="2"
+     stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 7v14"/>
+    <path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/>
+  </g>
+</svg>

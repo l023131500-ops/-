@@ -1,0 +1,69 @@
+{
+  "date": "2026-08-10",
+  "system": "15-egod",
+  "mount": "/egod",
+  "section": "more30-priority.md §6 — favicon",
+  "question_from_previous_round": "האם הנווט של egod מצייר סימן גרפי חי או כיתוב בלבד? התשובה קובעת מה הסמל צריך להיות.",
+  "answer": "סימן גרפי חי. Navbar.tsx:35-37 מצייר אריח מעוגל עם הגליף BookOpen של lucide בתוכו, בתוך Layout.tsx שכל עמוד עוטף בו (נבדק pages/Index.tsx). זו ההבחנה מול zchuyot, ששם הנווט הוא טקסט בלבד ולכן נכתבה שם אות.",
+
+  "builder_default_confirmed": {
+    "method": "SHA-256 על כל favicon.ico תחת apps/ (מלבד node_modules)",
+    "sha256_prefix": "DD821076A9B0",
+    "bytes": 20373,
+    "copies": [
+      "apps/15-egod/public/favicon.ico",
+      "apps/22-get-your-rights/public/favicon.ico",
+      "apps/_archive/bklotm/public/favicon.ico",
+      "apps/_archive/lux-manage/public/favicon.ico"
+    ],
+    "note": "ברירת המחדל של Lovable (לב צבעוני — נראה בקצה השמאלי של mark-vs-navbar.png). נשאר על הדיסק, אינו מוצהר."
+  },
+
+  "bug_found_this_round": {
+    "what": "ההצהרה על הסמל הייתה קיימת ובכל זאת הלשונית ציירה את הסמל של הפורטל.",
+    "before": "<link rel=\"icon\" type=\"image/x-icon\" href=\"/favicon.ico\">",
+    "why": "נתיב מוחלט-לשורש נפתר מול ה-origin ולא מול המונט, ולכן מי שנענה הוא more30.com/favicon.ico. הקובץ שהשורה כביכול הצביעה עליו לא נטען מעולם.",
+    "after": "<link rel=\"icon\" type=\"image/svg+xml\" href=\"/egod/favicon.svg\" />"
+  },
+
+  "geometry_measured_from_live_dom": {
+    "source": "getComputedStyle על האריח והגליף ב-http://localhost:4183/egod/",
+    "tile": { "width": "40px", "height": "40px", "border_radius": "12px", "background": "rgb(196, 161, 79)" },
+    "glyph": { "width": "24px", "height": "24px", "color": "rgb(255, 255, 255)", "stroke_width": "2" },
+    "derived_for_64px_icon": {
+      "rx": "19.2 (12/40 = 0.3 מהצלע)",
+      "glyph_box": "38.4 (24/40 = 0.6 מהאריח), ממורכז — translate(12.8) scale(1.6)",
+      "stroke_rendered": "3.2 (‏2 × 1.6)"
+    },
+    "glyph_source": "node_modules/lucide-react/dist/esm/icons/book-open.js (v0.462.0), שני הנתיבים הועתקו כלשונם"
+  },
+
+  "colour_decision": {
+    "live_pair": { "tile": "secondary/gold 42 50% 54% = #C4A14F", "glyph": "secondary-foreground 0 0% 100% = #FFFFFF", "contrast": "2.27:1" },
+    "why_not_used": "מתחת ל-3:1 (המינימום גם לגרפיקה לא-טקסטואלית), ולשונית נצפית ב-16px.",
+    "chosen_pair": {
+      "tile": "gradient-navy כלשונו — 135° מ-hsl(224 54% 23%) (#1B2C5A, navy/primary) אל hsl(230 60% 32%) (#213183)",
+      "glyph": "secondary/gold 42 50% 54% = #C4A14F",
+      "contrast": "5.95:1 בקצה הכהה, 5.05:1 בקצה הבהיר"
+    },
+    "why_legitimate": "זהב-על-נייבי יושב חי באותו נווט עצמו: כפתור «התחברות» הוא border-secondary text-secondary על סרגל bg-primary. כל הערכים הם טוקנים מ-src/index.css, לא צבעים שנבחרו כאן."
+  },
+
+  "verified_on_a_real_render": {
+    "how": "vite build → vite preview (base /egod/) → Chromium",
+    "rel_icon_in_dom": [{ "rel": "icon", "type": "image/svg+xml", "href": "http://localhost:4183/egod/favicon.svg" }],
+    "browser_issued_request": { "name": "http://localhost:4183/egod/favicon.svg", "initiatorType": "other", "transferSize": 1871, "note": "בקשה של הדפדפן עצמו, בלי מחרוזת שאילתה" },
+    "svg_response": { "status": 200, "content_type": "image/svg+xml", "bytes": 2256, "xml_parse_error": false, "root_tag": "svg" },
+    "decode": "img.decode() נפתר, naturalWidth 64x64, נבדק ב-16/32/48/64",
+    "origin_fallback_unreachable": { "GET /favicon.svg": 404 },
+    "vite_did_not_double_the_prefix": true
+  },
+
+  "not_claimed": [
+    "לא נפרס. dist נבנה ולא הועתק אל _deploy — הייצור עדיין מגיש את הסמל של הפורטל למונט הזה.",
+    "לא נכתב ICO או PNG; לקוח שאינו תומך בסמלי SVG עדיין נופל אל ה-origin.",
+    "הבדיקה היא preview מקומי, לא הייצור."
+  ],
+
+  "evidence": "mark-vs-navbar.png — משמאל לימין (RTL): ה-.ico של הבנאי · הסמל החדש ב-64/48/32/16 · הסימן החי מהנווט ב-40px, משובט מה-DOM עם ה-CSS שלו."
+}
