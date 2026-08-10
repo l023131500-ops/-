@@ -34,6 +34,14 @@
          נכתבה מוחלטת-לשורש, וקדמה גם בסדר ה-‎<head>‎ — ולכן הדפדפן לקח אותה
          וביקש ‎more30.com/manifest.webmanifest‎, שאינו קיים. אין להחזירה. -->
     <link rel="apple-touch-icon" href="/pwa-512.png" />
+    <!-- סמל הלשונית (§6). לא הייתה כאן שום ‎<link rel="icon">‎, ולכן הדפדפן
+         נפל לברירת המחדל שלו — ‎/favicon.ico‎ על ה-origin, כלומר
+         ‎more30.com/favicon.ico‎ שהוא הסמל של הפורטל (805 בתים) ולא של
+         המערכת. ‎public/favicon.ico‎ שישב כאן מעולם לא נתבקש (איש לא הצביע
+         עליו, והדפדפן מבקש את השורש) והיה ממילא ברירת המחדל של הבנאי —
+         אותו קובץ בדיוק, ‎SHA256 dd821076…‎, ב-‎egod‎, ‎mthbram‎, ‎zchuyot‎
+         ו-‎galil‎. הוסר. במקומו ‎pwa-512.png‎, אותו סמל שה-PWA כבר מתקין. -->
+    <link rel="icon" type="image/png" sizes="512x512" href="/pwa-512.png" />
 
     <meta property="og:type" content="website" />
     <!-- כרטיס השיתוף (§6). מה שישב כאן היה צילום מסך של **סביבת התצוגה
