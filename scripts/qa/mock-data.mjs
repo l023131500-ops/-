@@ -42,6 +42,16 @@ const HEBREW = /[֐-׿]{2,}/;
 // מפתחות שהופכים רשומה ל**אדם**: זה מה שהפריד את mockSeekers ממערך הגדרות.
 const PERSON_KEY = /\b(name|fullName|full_name|firstName|lastName|phone|mobile|email|city|address|avatar|initials)\s*:/i;
 
+// ---- הפס השני: רשומות אדם בלי שהשם מצהיר עליהן ----
+//
+// המגבלה נרשמה במפורש בסוף MOCK_DATA.md: הכלי תופס נתון בדוי ש**מצהיר על עצמו
+// בשם**, ולו `mockSeekers` היה נקרא `seekers` — הוא היה חוזר «נקי». הפס הזה אינו
+// קורא את השם בכלל. הסימן הוא התוכן: מערך של שתי רשומות ומעלה, שבו מפתח-שם נושא
+// **מחרוזת עברית כתובה בקוד**, ולצידו מפתח מזהה שני (טלפון/מייל/עיר/כתובת).
+// שני התנאים ביחד הם מה שמפריד רשומת אדם מתפריט ניווט או ממערך הגדרות.
+const NAME_VALUE = /\b(name|fullName|full_name|firstName|lastName|contactName|clientName|ownerName)\s*:\s*(["'])(?=[^"']*[֐-׿]{2})[^"']{2,60}\2/;
+const CONTACT_VALUE = /\b(phone|mobile|tel|email|city|address|location|neighborhood|street)\s*:\s*(["'])[^"']{2,80}\2/;
+
 function walk(dir, out = []) {
   let entries;
   try { entries = readdirSync(dir); } catch { return out; }
@@ -117,15 +127,21 @@ function scanFile(file, text) {
   const decl = /(?:^|[\n;])\s*(?:export\s+)?(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*(?::[^=\n]{0,200})?=\s*([[{])/g;
   for (const m of text.matchAll(decl)) {
     const name = m[1];
-    if (!FAKE_NAME.test(name)) continue;
+    const declared = FAKE_NAME.test(name);
+    const isArray = m[2] === '[';
+    // מועמד אם השם מצהיר עליו — או, ללא קשר לשם, אם התוכן הוא רשומות אדם.
+    if (!declared && !isArray) continue;
     const open = m.index + m[0].lastIndexOf(m[2]);
     const body = literalBody(text, open);
     if (!body) continue;
     const records = countRecords(body);
     const hebrew = HEBREW.test(body);
-    const person = PERSON_KEY.test(body) && hebrew;
+    const roster = !declared && records >= 2 && NAME_VALUE.test(body) && CONTACT_VALUE.test(body);
+    if (!declared && !roster) continue;
+    const person = declared ? PERSON_KEY.test(body) && hebrew : true;
     hits.push({
       name,
+      kind: declared ? 'declared' : 'roster',
       line: lineOf(text, m.index + 1),
       records,
       chars: body.length,
@@ -229,7 +245,7 @@ if (fileFlag !== -1) {
   const hits = scanFile(target, readFileSync(target, 'utf8'));
   console.log(target + ' — ' + hits.length + ' מועמדים');
   for (const h of hits) {
-    const tags = [h.person ? 'person' : null, h.hebrew ? 'he' : null].filter(Boolean).join(' ');
+    const tags = [h.kind, h.person ? 'person' : null, h.hebrew ? 'he' : null].filter(Boolean).join(' ');
     console.log(`  :${h.line}  ${h.name}  ${h.records} רשומות  [${tags}]   ${h.preview}`);
   }
   process.exit(hits.length ? 0 : 1);
@@ -283,6 +299,8 @@ for (const app of apps) {
     reachableFiles: live.length,
     records: live.reduce((n, f) => n + f.hits.reduce((k, h) => k + h.records, 0), 0),
     people: live.reduce((n, f) => n + f.hits.filter((h) => h.person).length, 0),
+    // הפס השני בנפרד: אלה נמצאו על התוכן, לא על השם — הפס הישן היה עיוור להם.
+    rosters: live.reduce((n, f) => n + f.hits.filter((h) => h.kind === 'roster').length, 0),
     testSkipped,
     found,
   });
@@ -314,7 +332,7 @@ if (wantJson) {
     console.log('### ' + r.app);
     for (const f of live) {
       for (const h of f.hits) {
-        const tags = [h.person ? 'person' : null, h.hebrew ? 'he' : null].filter(Boolean).join(' ');
+        const tags = [h.kind, h.person ? 'person' : null, h.hebrew ? 'he' : null].filter(Boolean).join(' ');
         console.log(`  ${f.file}:${h.line}  ${h.name}  ${h.records} רשומות  [${tags}]`);
       }
     }

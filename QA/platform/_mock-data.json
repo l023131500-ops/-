@@ -5,18 +5,36 @@
       "sourceFiles": 157,
       "reachableTotal": 81,
       "entries": 4,
-      "files": 5,
-      "reachableFiles": 2,
-      "records": 0,
-      "people": 0,
+      "files": 6,
+      "reachableFiles": 3,
+      "records": 5,
+      "people": 1,
+      "rosters": 1,
       "testSkipped": 2,
       "found": [
+        {
+          "file": "apps/21-mthbram/src/components/admin/ApiReferenceSection.tsx",
+          "reachable": true,
+          "hits": [
+            {
+              "name": "ENDPOINTS",
+              "kind": "roster",
+              "line": 18,
+              "records": 5,
+              "chars": 7039,
+              "hebrew": true,
+              "person": true,
+              "preview": "[ { category: \"שיעורים\", color: \"teal\", endpoints: [ { method: \"GET\", path: \""
+            }
+          ]
+        },
         {
           "file": "apps/21-mthbram/src/lib/lessonExcel.ts",
           "reachable": true,
           "hits": [
             {
               "name": "example",
+              "kind": "declared",
               "line": 46,
               "records": 0,
               "chars": 326,
@@ -32,6 +50,7 @@
           "hits": [
             {
               "name": "example",
+              "kind": "declared",
               "line": 38,
               "records": 0,
               "chars": 354,
@@ -47,6 +66,7 @@
           "hits": [
             {
               "name": "sampleRows",
+              "kind": "declared",
               "line": 217,
               "records": 0,
               "chars": 287,
@@ -62,6 +82,7 @@
           "hits": [
             {
               "name": "mockTeachers",
+              "kind": "declared",
               "line": 5,
               "records": 3,
               "chars": 892,
@@ -77,6 +98,7 @@
           "hits": [
             {
               "name": "mockSeekers",
+              "kind": "declared",
               "line": 8,
               "records": 4,
               "chars": 1242,
@@ -89,65 +111,40 @@
       ]
     },
     {
-      "app": "30-zchuyotpro-crm",
-      "sourceFiles": 386,
-      "reachableTotal": 94,
-      "entries": 34,
-      "files": 2,
-      "reachableFiles": 1,
-      "records": 1,
-      "people": 0,
-      "testSkipped": 0,
-      "found": [
-        {
-          "file": "apps/30-zchuyotpro-crm/.output/server/_ssr/router-6-5Xpiew.mjs",
-          "reachable": false,
-          "hits": [
-            {
-              "name": "mock",
-              "line": 628,
-              "records": 1,
-              "chars": 281,
-              "hebrew": false,
-              "person": false,
-              "preview": "{ gross_salary: 12500, net_salary: 9800, employer: \"—\", deductio"
-            }
-          ]
-        },
-        {
-          "file": "apps/30-zchuyotpro-crm/src/routes/api/public/analyze-paystub.ts",
-          "reachable": true,
-          "hits": [
-            {
-              "name": "mock",
-              "line": 32,
-              "records": 1,
-              "chars": 271,
-              "hebrew": false,
-              "person": false,
-              "preview": "{ gross_salary: 12500, net_salary: 9800, employer: \"—\", dedu"
-            }
-          ]
-        }
-      ]
-    },
-    {
       "app": "01-torah-platform",
       "sourceFiles": 193,
       "reachableTotal": 151,
       "entries": 4,
-      "files": 3,
-      "reachableFiles": 1,
-      "records": 0,
-      "people": 0,
+      "files": 4,
+      "reachableFiles": 2,
+      "records": 5,
+      "people": 1,
+      "rosters": 1,
       "testSkipped": 0,
       "found": [
+        {
+          "file": "apps/01-torah-platform/src/components/admin/ApiReferenceSection.tsx",
+          "reachable": true,
+          "hits": [
+            {
+              "name": "ENDPOINTS",
+              "kind": "roster",
+              "line": 18,
+              "records": 5,
+              "chars": 7039,
+              "hebrew": true,
+              "person": true,
+              "preview": "[ { category: \"שיעורים\", color: \"teal\", endpoints: [ { method: \"GET\", path: \""
+            }
+          ]
+        },
         {
           "file": "apps/01-torah-platform/src/lib/lessonExcel.ts",
           "reachable": false,
           "hits": [
             {
               "name": "example",
+              "kind": "declared",
               "line": 46,
               "records": 0,
               "chars": 326,
@@ -163,6 +160,7 @@
           "hits": [
             {
               "name": "example",
+              "kind": "declared",
               "line": 38,
               "records": 0,
               "chars": 354,
@@ -178,12 +176,89 @@
           "hits": [
             {
               "name": "sampleRows",
+              "kind": "declared",
               "line": 217,
               "records": 0,
               "chars": 287,
               "hebrew": true,
               "person": false,
               "preview": "[ [\"הרב ישראל ישראלי\", \"גמרא\", \"ירושלים\", \"גאולה\", \"מאה שערים 12\", \"בית כנסת אור חדש\", \"עברית\", \"גברים\", \"עיון מע"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "app": "31-hebrew-bridge-crm",
+      "sourceFiles": 125,
+      "reachableTotal": 93,
+      "entries": 33,
+      "files": 1,
+      "reachableFiles": 1,
+      "records": 5,
+      "people": 1,
+      "rosters": 1,
+      "testSkipped": 0,
+      "found": [
+        {
+          "file": "apps/31-hebrew-bridge-crm/src/lib/admin.functions.ts",
+          "reachable": true,
+          "hits": [
+            {
+              "name": "MOCK_CLIENTS",
+              "kind": "roster",
+              "line": 225,
+              "records": 5,
+              "chars": 1272,
+              "hebrew": true,
+              "person": true,
+              "preview": "[ { email: \"mock.israel.cohen@crm.local\", full_name: \"ישראל כהן\", phone: \"050-1234567\", lead_sour"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "app": "15-egod",
+      "sourceFiles": 124,
+      "reachableTotal": 76,
+      "entries": 4,
+      "files": 2,
+      "reachableFiles": 1,
+      "records": 3,
+      "people": 1,
+      "rosters": 1,
+      "testSkipped": 2,
+      "found": [
+        {
+          "file": "apps/15-egod/src/components/home/TestimonialsSection.tsx",
+          "reachable": true,
+          "hits": [
+            {
+              "name": "testimonials",
+              "kind": "roster",
+              "line": 2,
+              "records": 3,
+              "chars": 387,
+              "hebrew": true,
+              "person": true,
+              "preview": "[ { name: \"הרב ישראל כהן\", location: \"ירושלים\", text: \"מאז שהצטרפתי לאיגוד, השיעור שלי גדל פי שלושה. הכלים המקצועיים "
+            }
+          ]
+        },
+        {
+          "file": "apps/15-egod/supabase/functions/seed-demo-portals/index.ts",
+          "reachable": false,
+          "hits": [
+            {
+              "name": "demos",
+              "kind": "roster",
+              "line": 6,
+              "records": 3,
+              "chars": 1287,
+              "hebrew": true,
+              "person": true,
+              "preview": "[ { email: \"rabbi.cohen@igud-shiurim.org\", password: \"Cohen2026!\", full_name: \"הרב יעקב כהן\", pho"
             }
           ]
         }
@@ -198,6 +273,7 @@
       "reachableFiles": 1,
       "records": 0,
       "people": 0,
+      "rosters": 0,
       "testSkipped": 2,
       "found": [
         {
@@ -206,6 +282,7 @@
           "hits": [
             {
               "name": "example",
+              "kind": "declared",
               "line": 111,
               "records": 0,
               "chars": 126,
@@ -215,6 +292,7 @@
             },
             {
               "name": "exampleRow",
+              "kind": "declared",
               "line": 839,
               "records": 0,
               "chars": 155,
@@ -235,6 +313,7 @@
       "reachableFiles": 0,
       "records": 0,
       "people": 0,
+      "rosters": 0,
       "testSkipped": 0,
       "found": []
     },
@@ -247,6 +326,7 @@
       "reachableFiles": 0,
       "records": 0,
       "people": 0,
+      "rosters": 0,
       "testSkipped": 0,
       "found": []
     },
@@ -259,6 +339,7 @@
       "reachableFiles": 0,
       "records": 0,
       "people": 0,
+      "rosters": 0,
       "testSkipped": 0,
       "found": []
     },
@@ -271,6 +352,7 @@
       "reachableFiles": 0,
       "records": 0,
       "people": 0,
+      "rosters": 0,
       "testSkipped": 0,
       "found": []
     },
@@ -283,6 +365,7 @@
       "reachableFiles": 0,
       "records": 0,
       "people": 0,
+      "rosters": 0,
       "testSkipped": 0,
       "found": []
     },
@@ -295,6 +378,7 @@
       "reachableFiles": 0,
       "records": 0,
       "people": 0,
+      "rosters": 0,
       "testSkipped": 0,
       "found": []
     },
@@ -307,6 +391,7 @@
       "reachableFiles": 0,
       "records": 0,
       "people": 0,
+      "rosters": 0,
       "testSkipped": 0,
       "found": []
     },
@@ -319,6 +404,7 @@
       "reachableFiles": 0,
       "records": 0,
       "people": 0,
+      "rosters": 0,
       "testSkipped": 0,
       "found": []
     },
@@ -331,6 +417,7 @@
       "reachableFiles": 0,
       "records": 0,
       "people": 0,
+      "rosters": 0,
       "testSkipped": 0,
       "found": []
     },
@@ -343,6 +430,7 @@
       "reachableFiles": 0,
       "records": 0,
       "people": 0,
+      "rosters": 0,
       "testSkipped": 0,
       "found": []
     },
@@ -355,19 +443,8 @@
       "reachableFiles": 0,
       "records": 0,
       "people": 0,
+      "rosters": 0,
       "testSkipped": 0,
-      "found": []
-    },
-    {
-      "app": "15-egod",
-      "sourceFiles": 124,
-      "reachableTotal": 76,
-      "entries": 4,
-      "files": 0,
-      "reachableFiles": 0,
-      "records": 0,
-      "people": 0,
-      "testSkipped": 2,
       "found": []
     },
     {
@@ -379,6 +456,7 @@
       "reachableFiles": 0,
       "records": 0,
       "people": 0,
+      "rosters": 0,
       "testSkipped": 0,
       "found": []
     },
@@ -391,6 +469,7 @@
       "reachableFiles": 0,
       "records": 0,
       "people": 0,
+      "rosters": 0,
       "testSkipped": 0,
       "found": []
     },
@@ -403,6 +482,7 @@
       "reachableFiles": 0,
       "records": 0,
       "people": 0,
+      "rosters": 0,
       "testSkipped": 0,
       "found": []
     },
@@ -415,6 +495,7 @@
       "reachableFiles": 0,
       "records": 0,
       "people": 0,
+      "rosters": 0,
       "testSkipped": 0,
       "found": []
     },
@@ -427,6 +508,7 @@
       "reachableFiles": 0,
       "records": 0,
       "people": 0,
+      "rosters": 0,
       "testSkipped": 0,
       "found": []
     },
@@ -439,6 +521,7 @@
       "reachableFiles": 0,
       "records": 0,
       "people": 0,
+      "rosters": 0,
       "testSkipped": 2,
       "found": []
     },
@@ -451,6 +534,7 @@
       "reachableFiles": 0,
       "records": 0,
       "people": 0,
+      "rosters": 0,
       "testSkipped": 0,
       "found": []
     },
@@ -463,6 +547,7 @@
       "reachableFiles": 0,
       "records": 0,
       "people": 0,
+      "rosters": 0,
       "testSkipped": 0,
       "found": []
     },
@@ -475,6 +560,7 @@
       "reachableFiles": 0,
       "records": 0,
       "people": 0,
+      "rosters": 0,
       "testSkipped": 0,
       "found": []
     },
@@ -483,12 +569,30 @@
       "sourceFiles": 188,
       "reachableTotal": 12,
       "entries": 9,
-      "files": 0,
+      "files": 1,
       "reachableFiles": 0,
       "records": 0,
       "people": 0,
+      "rosters": 0,
       "testSkipped": 18,
-      "found": []
+      "found": [
+        {
+          "file": "apps/27-bkalut-price/server/price-comparison.ts",
+          "reachable": false,
+          "hits": [
+            {
+              "name": "storeDefs",
+              "kind": "roster",
+              "line": 1648,
+              "records": 4,
+              "chars": 258,
+              "hebrew": true,
+              "person": true,
+              "preview": "[ { name: \"רמי לוי\", branch: \"סניף ראשי\", city: \"ירושלים\" }, { name: \"שופרסל\", branch: \"דיל\", city: \"בני ברק\" "
+            }
+          ]
+        }
+      ]
     },
     {
       "app": "28-kupot-health-funds",
@@ -499,6 +603,7 @@
       "reachableFiles": 0,
       "records": 0,
       "people": 0,
+      "rosters": 0,
       "testSkipped": 0,
       "found": []
     },
@@ -511,20 +616,39 @@
       "reachableFiles": 0,
       "records": 0,
       "people": 0,
+      "rosters": 0,
       "testSkipped": 0,
       "found": []
     },
     {
-      "app": "31-hebrew-bridge-crm",
-      "sourceFiles": 125,
-      "reachableTotal": 93,
-      "entries": 33,
-      "files": 0,
+      "app": "30-zchuyotpro-crm",
+      "sourceFiles": 386,
+      "reachableTotal": 94,
+      "entries": 34,
+      "files": 1,
       "reachableFiles": 0,
       "records": 0,
       "people": 0,
+      "rosters": 0,
       "testSkipped": 0,
-      "found": []
+      "found": [
+        {
+          "file": "apps/30-zchuyotpro-crm/.output/server/_ssr/router-6-5Xpiew.mjs",
+          "reachable": false,
+          "hits": [
+            {
+              "name": "mock",
+              "kind": "declared",
+              "line": 628,
+              "records": 1,
+              "chars": 281,
+              "hebrew": false,
+              "person": false,
+              "preview": "{ gross_salary: 12500, net_salary: 9800, employer: \"—\", deductio"
+            }
+          ]
+        }
+      ]
     },
     {
       "app": "32-nadlan-berega",
@@ -535,6 +659,7 @@
       "reachableFiles": 0,
       "records": 0,
       "people": 0,
+      "rosters": 0,
       "testSkipped": 0,
       "found": []
     },
@@ -547,6 +672,7 @@
       "reachableFiles": 0,
       "records": 0,
       "people": 0,
+      "rosters": 0,
       "testSkipped": 0,
       "found": []
     },
@@ -559,6 +685,7 @@
       "reachableFiles": 0,
       "records": 0,
       "people": 0,
+      "rosters": 0,
       "testSkipped": 0,
       "found": []
     }
