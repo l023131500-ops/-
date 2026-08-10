@@ -72,9 +72,16 @@
  *      contact strip and phone in the footer list. Both slots existed before and
  *      after — a swap is not a removal, so nothing shrank.
  *
- * `doubleMark` and `splitGlyph` below measure exactly those two. They are lists,
- * not counts: each entry names a place to look. They deliberately do not feed the
- * `decisions` ranking — the work order stays comparable across rounds.
+ *   C. One band, the same glyph in two slots — A drawn entirely in lucide, with
+ *      no emoji to trip the check. mthbram's donation band held heart 12px on a
+ *      chip and heart 16px on the link below it; egod's tips band held lightbulb
+ *      16px on a chip and 24px on the card. Both were found by reading the
+ *      review sheet by hand while this file printed "אין".
+ *
+ * `doubleMark`, `splitGlyph` and `repeatInBand` below measure exactly those three.
+ * They are lists, not counts: each entry names a place to look. They deliberately
+ * do not feed the `decisions` ranking — the work order stays comparable across
+ * rounds.
  */
 import { chromium } from 'playwright-core';
 import fs from 'node:fs';
@@ -283,6 +290,64 @@ for (const [key, route] of targets) {
           section: g.section, label: g.label, size: g.size,
         }))
         .sort((a, b) => b.n - a.n);
+
+      // ── Fault C: one band, the same glyph in two slots ───────────────────
+      // Fault A above only sees an SVG paired with an emoji, because that is the
+      // shape the zchuyot launcher had. The next two findings were the same
+      // defect drawn entirely in lucide and it missed both: mthbram's donation
+      // band held heart 12px on a chip reading «שותפים בהפצת התורה» and heart
+      // 16px on the link below it (Footer.tsx:21/36), and egod's tips band held
+      // lightbulb 16px on a chip whose first word is «טיפים» and lightbulb 24px
+      // on the card under it (TipsSection.tsx:39/57). Both were found by reading
+      // the review sheet by hand; the tool said the page was clean.
+      //
+      // Two slots, not two icons: a glyph repeated down a list is one slot and
+      // is not this. Slots whose glyph comes from the data are skipped — their
+      // name is a per-record value, so a collision there says nothing about a
+      // choice someone made. Sections are compared by their heading, which is
+      // what makes "the same band" mean the band a reader sees.
+      //
+      // This is a list of places to open, like A and B, and deliberately stays
+      // out of the `decisions` ranking: a repeat is one glyph to remove, not a
+      // reason to reorder the work. Two entries here are already known and
+      // fixed in source, waiting on a deploy (core.issues #83).
+      const bands = new Map();
+      for (const g of list) {
+        if (g.names.length > 1) continue;          // glyph comes from the data
+        const k = g.section + '|' + g.icon;
+        if (!bands.has(k)) bands.set(k, []);
+        bands.get(k).push(g);
+      }
+      // A slot drawn once per record is a list marker, not a second placement:
+      // chatzor's arrow-left sits on four synagogue cards and again on the CTA
+      // under them, and smel draws check on every bullet of two plan tiers. That
+      // is one affordance marked consistently — the same per-record repetition
+      // `decisions` already refuses to count. Both hand-found defects were slots
+      // of one. So the pairs where every slot is a one-off are the finding, and
+      // the rest are kept apart rather than dropped, under `repeatPerRecord`.
+      // Fault B and fault C pull in opposite directions on one shape, and the
+      // first run hit it: zchuyot's phone band draws `phone` on 02-3131500 twice,
+      // which is a repeat — but it is a repeat the 10/08 round *created on
+      // purpose*, unifying a phone-call/phone split that fault B had flagged as
+      // one datum wearing two glyphs. Flagging it back would ask the next round
+      // to re-split the number. When both slots carry the same datum, fault B
+      // wins and the pair is recorded as settled, not as a defect.
+      const datumOf = (g) => new Set((g.label.match(DATUM) || []).map((s) => s.replace(/-/g, '')));
+      const sharesDatum = (gs) => {
+        const first = datumOf(gs[0]);
+        return first.size > 0 && gs.slice(1).every((g) => [...datumOf(g)].some((d) => first.has(d)));
+      };
+      const allPaired = [...bands.entries()].filter(([, gs]) => gs.length > 1);
+      const paired = allPaired.filter(([, gs]) => !sharesDatum(gs));
+      const repeatSameDatum = allPaired.filter(([, gs]) => sharesDatum(gs));
+      const describe = ([k, gs]) => {
+        const [section, icon] = k.split('|');
+        const where = gs.map((g) => `${g.size}px "${(g.label || '—').slice(0, 40)}"`).join(' + ');
+        return `${section} · ${icon} ×${gs.length} — ${where}`;
+      };
+      const repeatInBand = paired.filter(([, gs]) => gs.every((g) => g.n === 1)).map(describe);
+      const repeatPerRecord = paired.filter(([, gs]) => gs.some((g) => g.n > 1)).map(describe);
+      const settledByDatum = repeatSameDatum.map(describe);
       const rendered = list.reduce((s, g) => s + g.n, 0);
       // The old name-keyed count, kept so a jump between the two is visible
       // instead of silently rewriting a number the work order was built on.
@@ -311,6 +376,9 @@ for (const [key, route] of targets) {
         // deliberately outside the `decisions` ranking.
         doubleMark,
         splitGlyph,
+        repeatInBand,
+        repeatPerRecord,
+        settledByDatum,
         // every slot with its on-page context. Stripped before the JSON is
         // written; only --list keeps it, and only into the review sheet.
         slots: list,
@@ -364,6 +432,13 @@ for (const [key, route] of targets) {
   // says which control to look at.
   for (const d of f.doubleMark || []) console.log(`   ⚠ סמל כפול באותו פקד: ${d}`);
   for (const s of f.splitGlyph || []) console.log(`   ⚠ אותו נתון, שני גליפים: ${s}`);
+  for (const s of f.repeatInBand || []) console.log(`   ⚠ אותו גליף פעמיים ברצועה: ${s}`);
+  // Not a warning and not hidden either: the pairs set aside as list markers are
+  // counted out loud so the filter above can be audited from the run itself.
+  if (f.repeatPerRecord?.length) {
+    console.log(`   · ${f.repeatPerRecord.length} זוגות הוצאו כסימני רשימה (repeatPerRecord ב-JSON)`);
+  }
+  for (const s of f.settledByDatum || []) console.log(`   ✓ חזרה שתקלה B דורשת — אותו נתון, אותו גליף: ${s}`);
 }
 
 await browser.close();
@@ -388,10 +463,13 @@ for (const [k, f] of good.sort((a, b) => b[1].decisions - a[1].decisions)) {
 // The two fault lists get their own roll-up. They do not reorder anything above:
 // a system can sit last on `decisions` and still be drawing one phone number two
 // different ways, and that is a fix worth a round on its own.
-const faults = good.filter(([, f]) => (f.doubleMark?.length || f.splitGlyph?.length));
+const faults = good.filter(([, f]) =>
+  (f.doubleMark?.length || f.splitGlyph?.length || f.repeatInBand?.length));
 console.log('\n=== ליקויים שהדירוג לעיל עיוור אליהם ===');
 if (!faults.length) console.log('  אין');
 for (const [k, f] of faults) {
-  console.log(`  ${k}: ${f.doubleMark?.length || 0} סמל כפול · ${f.splitGlyph?.length || 0} נתון עם שני גליפים`);
+  console.log(
+    `  ${k}: ${f.doubleMark?.length || 0} סמל כפול · ${f.splitGlyph?.length || 0} נתון עם שני גליפים` +
+      ` · ${f.repeatInBand?.length || 0} גליף כפול ברצועה`);
 }
 console.log(`-> ${OUT} (${Object.keys(out).length} systems)`);
