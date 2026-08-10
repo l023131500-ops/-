@@ -22,8 +22,15 @@ export type Category =
   | "crm"
   | "other";
 
-/** Lifecycle stage of a system. */
-export type Stage = "live" | "beta" | "wip" | "archived" | "protected";
+/**
+ * Lifecycle stage of a system.
+ *
+ * `idea` was missing here while `core.projects` already held two rows carrying
+ * it (37, 38) — the union was written before those rows existed, and nothing
+ * checks one against the other. Added 10/08 so the two lists can hold the same
+ * value; it means scoped but not started, one step earlier than `wip`.
+ */
+export type Stage = "idea" | "live" | "beta" | "wip" | "archived" | "protected";
 
 /** Where the system is deployed. */
 export type DeployTarget = "railway" | "vercel" | "netlify" | "lovable" | "unknown";
