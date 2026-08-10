@@ -420,6 +420,26 @@ function renderFundCompare(uid) {
 }
 
 /* ---------- Counters ---------- */
+/* מספרי ההירו נגזרים מהמאגר שנטען, ולא נכתבים ביד. כל אחד מהם הוא ספירה
+   שאפשר לחזור עליה: הקטלוג עצמו, שני מקורות בתוכו, ומפת מצבי החיים.
+   מה שלא נמצא במאגר — נשאר עם הערך שב-data-count, כלומר עם המדידה
+   האחרונה, ולא מתאפס. core.issues #141. */
+function applyHeroStats(master) {
+  if (!master || !master.catalog) return;
+  const codes = Object.keys(master.catalog);
+  const bySrc = (s) => codes.filter(c => master.catalog[c] && master.catalog[c].src === s).length;
+  const counts = {
+    catalog: codes.length,
+    bklot: bySrc('bklot'),
+    fund: bySrc('fund'),
+    situations: master.situation_map ? Object.keys(master.situation_map).length : null,
+  };
+  document.querySelectorAll('.num[data-stat]').forEach(el => {
+    const n = counts[el.dataset.stat];
+    if (typeof n === 'number' && n > 0) el.dataset.count = String(n);
+  });
+}
+
 function animateCounters() {
   document.querySelectorAll('.num[data-count]').forEach(el => {
     const target = +el.dataset.count; const dur = 1200; const t0 = performance.now();
@@ -450,6 +470,7 @@ async function init() {
       return;
     }
   }
+  applyHeroStats(MASTER);
   buildForm();
   buildCatalogIndex();
   renderCatalog();

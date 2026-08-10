@@ -79,11 +79,20 @@
       <div class="kicker">מחקר מקיף · מעודכן 2026</div>
       <h1>בדיקה מקיפה על כל הזכויות<br>וההטבות שניתן לקבל</h1>
       <p class="lede">מלאו שאלון קצר — והמערכת תבנה עבורכם רשימת המלצות מותאמת אישית לפי המצב המשפחתי, ההכנסה והבריאות שלכם. כל זכות עם מספר הנושא ממאגר בקלות, הגוף המטפל, הסכום הצפוי ורמת הסיכוי.</p>
+      <!-- ארבעה מספרים על עמוד חי. עד עכשיו הם היו ליטרלים, ושניים מהם לא
+           הסכימו עם הנתונים שאותו עמוד עצמו טוען: 515 סופר את כל מרחב ה-H,
+           שממנו 435 הם קופות חולים ו-80 הם pool בריאות כללי (gov ו-ngo);
+           ו-25 סופר את meta.situations, שכולל את health_check — סינון בריאות
+           ולא מצב חיים ממופה, ו-engine.js עצמו מוציא אותו מרשימת מצבי הנושאים
+           (שורה 206). situation_map מכיל 24. עכשיו כל הארבעה נגזרים מ-MASTER
+           בטעינה (applyHeroStats ב-app.js) ולכן אינם יכולים לסטות שוב;
+           data-count נשאר עם הערך הנמדד כגיבוי למקרה שהמאגר אינו נטען.
+           core.issues #141. -->
       <div class="hero-stats">
-        <div class="stat"><span class="num" data-count="888">0</span><span class="lbl">נושאים מקוטלגים</span></div>
-        <div class="stat"><span class="num" data-count="373">0</span><span class="lbl">זכויות מבקלות</span></div>
-        <div class="stat"><span class="num" data-count="515">0</span><span class="lbl">נושאי קופות חולים</span></div>
-        <div class="stat"><span class="num" data-count="25">0</span><span class="lbl">מצבי חיים ממופים</span></div>
+        <div class="stat"><span class="num" data-stat="catalog" data-count="888">0</span><span class="lbl">נושאים מקוטלגים</span></div>
+        <div class="stat"><span class="num" data-stat="bklot" data-count="373">0</span><span class="lbl">זכויות מבקלות</span></div>
+        <div class="stat"><span class="num" data-stat="fund" data-count="435">0</span><span class="lbl">נושאי קופות חולים</span></div>
+        <div class="stat"><span class="num" data-stat="situations" data-count="24">0</span><span class="lbl">מצבי חיים ממופים</span></div>
       </div>
       <a href="#check" class="btn-primary">התחילו את הבדיקה ←</a>
     </div>
