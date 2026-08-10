@@ -17,8 +17,10 @@ const Footer = () => {
           viewport={{ once: true }}
           className="max-w-3xl mx-auto text-center mb-10"
         >
-          <div className="inline-flex items-center gap-2 mb-3 px-3 py-1 rounded-full bg-gold/10 border border-gold/30">
-            <Heart className="w-3 h-3 text-gold fill-gold" />
+          {/* הלב מופיע פעם אחת בבאנר הזה — על ה-CTA למטה, שם הוא מסמן את
+              הפעולה. הצ'יפ אומר "שותפים בהפצת התורה" במילים, ולב שני 15 שורות
+              מעליו צייר את אותו סימן פעמיים באותו פקד (‏core.issues #5, §6). */}
+          <div className="inline-flex items-center mb-3 px-3 py-1 rounded-full bg-gold/10 border border-gold/30">
             <span className="font-body text-[11px] font-bold text-gold-cream">שותפים בהפצת התורה</span>
           </div>
           <h3 className="font-display text-xl md:text-2xl font-bold text-gold-cream mb-2">

@@ -36,14 +36,14 @@
     "splitGlyph": []
   },
   "egod": {
-    "rendered": 33,
-    "decisions": 16,
-    "named": 31,
-    "perRecord": 17,
+    "rendered": 30,
+    "decisions": 15,
+    "named": 30,
+    "perRecord": 15,
     "decor": [
       "1280px"
     ],
-    "lucide": 34,
+    "lucide": 31,
     "dataDriven": [
       "12 names in 1 slot (globe, clipboard-list, building2…)",
       "3 names in 1 slot (users, book-open, map-pin…)",
@@ -53,7 +53,6 @@
     "top": [
       "globe×12",
       "users×3",
-      "quote×3",
       "chevron-right×2",
       "phone×2"
     ],
