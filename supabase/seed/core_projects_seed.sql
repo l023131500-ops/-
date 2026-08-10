@@ -37,7 +37,8 @@ insert into core.projects (number, slug, repo, name, category, stage, live, supa
   ('28','kupot-health-funds','kupot-health-funds','Kupot Health Funds','health','wip',false,null,null,'unknown',false,null),
   ('29','bkalot-design','bkalot-design','Bkalot Design','marketing','wip',false,null,null,'unknown',false,null),
   ('30','zchuyotpro-crm','zchuyotpro-crm','ZchuyotPro CRM','crm','wip',false,null,null,'unknown',false,null),
-  ('31','hebrew-bridge-crm','hebrew-bridge-crm','Hebrew Bridge CRM','crm','wip',false,null,null,'unknown',false,null)
+  ('31','hebrew-bridge-crm','hebrew-bridge-crm','Hebrew Bridge CRM','crm','wip',false,null,null,'unknown',false,null),
+  ('40','gannenet','-','גננות בקליק','other','live',true,null,null,'railway',false,'Kindergarten materials shelf (monorepo gannenet-app/). 2,977 Drive files streamed via same-origin /api/drive proxy; in-site page selection (download/print); offline PWA; password-gated admin. Served under more.30.com; set APP_BASE_PATH to the routed subpath.')
 on conflict (number) do update set
   slug = excluded.slug, repo = excluded.repo, name = excluded.name,
   category = excluded.category, stage = excluded.stage, live = excluded.live,
