@@ -28,7 +28,9 @@ const APPS = join(ROOT, 'apps');
 
 // מוגן — לא נקרא ולא נדווח.
 const PROTECTED = ['08-bkalut-app', '09-bkalot-admin', 'bkalut-app', 'bkalot-admin', 'zr_', 'NEDARIM3873'];
-const SKIP_DIRS = new Set(['node_modules', 'dist', 'build', 'out', '.next', '.vercel', '.git', '_deploy', '_archive', 'coverage']);
+// `.output` הוא פלט הבנייה של Nitro/TanStack Start — הוא היה חסר, ולכן הסריקה
+// הרחבה החזירה את `mock` המבונה של 30 כאילו הוא מקור.
+const SKIP_DIRS = new Set(['node_modules', 'dist', 'build', 'out', '.output', '.next', '.vercel', '.git', '_deploy', '_archive', 'coverage']);
 const EXTS = ['.tsx', '.jsx', '.ts', '.js', '.mjs', '.vue', '.html'];
 
 // קובץ בדיקה, סטורי או שרת-mock: שם בדוי שם הוא **התפקיד**, לא ליקוי.
@@ -36,7 +38,23 @@ const EXTS = ['.tsx', '.jsx', '.ts', '.js', '.mjs', '.vue', '.html'];
 const TEST_FILE = /(\.test\.|\.spec\.|\.stories\.|[\\/]__tests__[\\/]|[\\/]__mocks__[\\/]|[\\/]tests?[\\/]|[\\/]e2e[\\/]|[\\/]cypress[\\/]|[\\/]msw[\\/]|setupTests)/i;
 
 // שם שמצהיר על עצמו כבדוי. `MOCK_USERS` ו-`mockSeekers` — אותה כוונה, שתי צורות.
-const FAKE_NAME = /^(mock|dummy|fake|sample|placeholder|stub|seed|example|fixture)([_A-Z0-9]|$)/;
+//
+// התגובה הזאת הבטיחה שתי צורות, והביטוי הכיר אחת: `FAKE_NAME.test('MOCK_USERS')`
+// החזיר false, ולכן כל שם ב-SCREAMING_CASE חמק — כולל `MOCK_CLIENTS` ב-31, שנתפס
+// רק במקרה ע"י פס-התוכן שנוסף אחריו. הצורות נבנות מהמילים במקום להיכתב פעמיים.
+//
+// **אין `i` על הביטוי בכוונה.** הדגל אינו חל על הקידומת בלבד — הוא היה מפרק גם
+// את גבול-המילה `[_A-Z0-9]`, ואז `samples`, `seedling`, `mocked` ו-`stubborn`
+// היו נעשים מועמדים. הגבול הוא מה שמפריד `sampleRows` מ-`samples`.
+// ב-camel/Pascal האות הגדולה היא הגבול (`mockSeekers`, `MockClients`); ב-SCREAMING
+// אין אות גדולה שמפרידה, ולכן הגבול שם הוא `_`/ספרה/סוף בלבד — אחרת `SEEDLING`
+// ו-`STUBBORN` היו נכנסים.
+const FAKE_WORDS = ['mock', 'dummy', 'fake', 'sample', 'placeholder', 'stub', 'seed', 'example', 'fixture'];
+const alt = (ws) => ws.join('|');
+const FAKE_NAME = new RegExp(
+  '^(?:(?:' + alt([...FAKE_WORDS, ...FAKE_WORDS.map((w) => w[0].toUpperCase() + w.slice(1))]) + ')([_A-Z0-9]|$)' +
+  '|(?:' + alt(FAKE_WORDS.map((w) => w.toUpperCase())) + ')(_|[0-9]|$))',
+);
 
 const HEBREW = /[֐-׿]{2,}/;
 // מפתחות שהופכים רשומה ל**אדם**: זה מה שהפריד את mockSeekers ממערך הגדרות.

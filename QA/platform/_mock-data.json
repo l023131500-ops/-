@@ -1,6 +1,76 @@
 {
   "apps": [
     {
+      "app": "16-chatzor-connect",
+      "sourceFiles": 66,
+      "reachableTotal": 63,
+      "entries": 4,
+      "files": 1,
+      "reachableFiles": 1,
+      "records": 21,
+      "people": 2,
+      "rosters": 0,
+      "testSkipped": 0,
+      "found": [
+        {
+          "file": "apps/16-chatzor-connect/src/data/seed.ts",
+          "reachable": true,
+          "hits": [
+            {
+              "name": "SAMPLE_SYNAGOGUES",
+              "kind": "declared",
+              "line": 19,
+              "records": 3,
+              "chars": 1170,
+              "hebrew": true,
+              "person": true,
+              "preview": "[ { id: \"sample-1\", slug: \"tiferet-israel\", name: \"בית הכנסת תפארת ישראל\", nusach: \"עדות המזרח\", "
+            },
+            {
+              "name": "SAMPLE_LESSONS",
+              "kind": "declared",
+              "line": 67,
+              "records": 3,
+              "chars": 681,
+              "hebrew": true,
+              "person": false,
+              "preview": "[ { id: \"l-1\", synagogueId: null, title: \"דף היומי\", teacher: null, day: \"כל יום\", time"
+            },
+            {
+              "name": "SAMPLE_SERVICES",
+              "kind": "declared",
+              "line": 103,
+              "records": 3,
+              "chars": 414,
+              "hebrew": true,
+              "person": true,
+              "preview": "[ { id: \"s-1\", name: 'גמ\"ח כלי עבודה', category: 'גמ\"ח', description: \"השאלת כלי עבודה לתושבים.\", contact: null, isSa"
+            },
+            {
+              "name": "SAMPLE_PRAYER_TIMES",
+              "kind": "declared",
+              "line": 109,
+              "records": 10,
+              "chars": 1058,
+              "hebrew": true,
+              "person": false,
+              "preview": "[ { id: \"pt-1\", synagogueId: \"sample-1\", type: \"shacharit\", label: \"שחרית א׳\", time: \"06:00\", note: \"ותיקין\" }, { "
+            },
+            {
+              "name": "SAMPLE_ANNOUNCEMENTS",
+              "kind": "declared",
+              "line": 122,
+              "records": 2,
+              "chars": 464,
+              "hebrew": true,
+              "person": false,
+              "preview": "[ { id: \"a-1\", synagogueId: \"sample-1\", title: \"שיעור מיוחד לרגל ראש חודש\", body: \"השבוע יתקיים ש"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "app": "21-mthbram",
       "sourceFiles": 157,
       "reachableTotal": 81,
@@ -197,7 +267,7 @@
       "reachableFiles": 1,
       "records": 5,
       "people": 1,
-      "rosters": 1,
+      "rosters": 0,
       "testSkipped": 0,
       "found": [
         {
@@ -206,59 +276,13 @@
           "hits": [
             {
               "name": "MOCK_CLIENTS",
-              "kind": "roster",
+              "kind": "declared",
               "line": 225,
               "records": 5,
               "chars": 1272,
               "hebrew": true,
               "person": true,
               "preview": "[ { email: \"mock.israel.cohen@crm.local\", full_name: \"ישראל כהן\", phone: \"050-1234567\", lead_sour"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "app": "15-egod",
-      "sourceFiles": 124,
-      "reachableTotal": 76,
-      "entries": 4,
-      "files": 2,
-      "reachableFiles": 1,
-      "records": 3,
-      "people": 1,
-      "rosters": 1,
-      "testSkipped": 2,
-      "found": [
-        {
-          "file": "apps/15-egod/src/components/home/TestimonialsSection.tsx",
-          "reachable": true,
-          "hits": [
-            {
-              "name": "testimonials",
-              "kind": "roster",
-              "line": 2,
-              "records": 3,
-              "chars": 387,
-              "hebrew": true,
-              "person": true,
-              "preview": "[ { name: \"הרב ישראל כהן\", location: \"ירושלים\", text: \"מאז שהצטרפתי לאיגוד, השיעור שלי גדל פי שלושה. הכלים המקצועיים "
-            }
-          ]
-        },
-        {
-          "file": "apps/15-egod/supabase/functions/seed-demo-portals/index.ts",
-          "reachable": false,
-          "hits": [
-            {
-              "name": "demos",
-              "kind": "roster",
-              "line": 6,
-              "records": 3,
-              "chars": 1287,
-              "hebrew": true,
-              "person": true,
-              "preview": "[ { email: \"rabbi.cohen@igud-shiurim.org\", password: \"Cohen2026!\", full_name: \"הרב יעקב כהן\", pho"
             }
           ]
         }
@@ -335,13 +359,46 @@
       "sourceFiles": 84,
       "reachableTotal": 4,
       "entries": 1,
-      "files": 0,
+      "files": 2,
       "reachableFiles": 0,
       "records": 0,
       "people": 0,
       "rosters": 0,
       "testSkipped": 0,
-      "found": []
+      "found": [
+        {
+          "file": "apps/04-imud-torani/client/src/pages/Templates.tsx",
+          "reachable": false,
+          "hits": [
+            {
+              "name": "SAMPLE",
+              "kind": "declared",
+              "line": 12,
+              "records": 1,
+              "chars": 1262,
+              "hebrew": true,
+              "person": false,
+              "preview": "{ regular: [ { id: \"h1\", layer: \"heading\", text: \"שער הביטחון\", meta: { level: 1 } }, { id: \"m1\", layer: \"m"
+            }
+          ]
+        },
+        {
+          "file": "apps/04-imud-torani/client/src/pages/Wizard.tsx",
+          "reachable": false,
+          "hits": [
+            {
+              "name": "SAMPLE",
+              "kind": "declared",
+              "line": 37,
+              "records": 1,
+              "chars": 2253,
+              "hebrew": true,
+              "person": false,
+              "preview": "{ regular: [ { id: \"h1\", layer: \"heading\", text: \"שער הביטחון\", meta: { level: 1 } }, { id: \"o1\", layer: \"o"
+            }
+          ]
+        }
+      ]
     },
     {
       "app": "05-financial-marketing-site",
@@ -448,30 +505,64 @@
       "found": []
     },
     {
-      "app": "16-chatzor-connect",
-      "sourceFiles": 66,
-      "reachableTotal": 63,
+      "app": "15-egod",
+      "sourceFiles": 123,
+      "reachableTotal": 75,
       "entries": 4,
-      "files": 0,
+      "files": 1,
       "reachableFiles": 0,
       "records": 0,
       "people": 0,
       "rosters": 0,
-      "testSkipped": 0,
-      "found": []
+      "testSkipped": 2,
+      "found": [
+        {
+          "file": "apps/15-egod/supabase/functions/seed-demo-portals/index.ts",
+          "reachable": false,
+          "hits": [
+            {
+              "name": "demos",
+              "kind": "roster",
+              "line": 6,
+              "records": 3,
+              "chars": 1287,
+              "hebrew": true,
+              "person": true,
+              "preview": "[ { email: \"rabbi.cohen@igud-shiurim.org\", password: \"Cohen2026!\", full_name: \"הרב יעקב כהן\", pho"
+            }
+          ]
+        }
+      ]
     },
     {
       "app": "17-chizukim-transcribe",
       "sourceFiles": 79,
       "reachableTotal": 4,
       "entries": 1,
-      "files": 0,
+      "files": 1,
       "reachableFiles": 0,
       "records": 0,
       "people": 0,
       "rosters": 0,
       "testSkipped": 0,
-      "found": []
+      "found": [
+        {
+          "file": "apps/17-chizukim-transcribe/server/transcribe.ts",
+          "reachable": false,
+          "hits": [
+            {
+              "name": "SAMPLE_RATES",
+              "kind": "declared",
+              "line": 141,
+              "records": 1,
+              "chars": 79,
+              "hebrew": false,
+              "person": false,
+              "preview": "{ 3: [44100, 48000, 32000], 2: [22050, 24000, 16000], 0: [11025, 12000, 8000] }"
+            }
+          ]
+        }
+      ]
     },
     {
       "app": "18-torah-editor-mvp",
@@ -569,13 +660,29 @@
       "sourceFiles": 188,
       "reachableTotal": 12,
       "entries": 9,
-      "files": 1,
+      "files": 2,
       "reachableFiles": 0,
       "records": 0,
       "people": 0,
       "rosters": 0,
       "testSkipped": 18,
       "found": [
+        {
+          "file": "apps/27-bkalut-price/server/params-topics.ts",
+          "reachable": false,
+          "hits": [
+            {
+              "name": "SEED",
+              "kind": "declared",
+              "line": 206,
+              "records": 68,
+              "chars": 16898,
+              "hebrew": true,
+              "person": false,
+              "preview": "[ // family { title: \"משפחה חד הורית\", category: \"מצב משפחתי\", profileConditions: [\"single_parent\"], description: "
+            }
+          ]
+        },
         {
           "file": "apps/27-bkalut-price/server/price-comparison.ts",
           "reachable": false,
@@ -622,33 +729,16 @@
     },
     {
       "app": "30-zchuyotpro-crm",
-      "sourceFiles": 386,
+      "sourceFiles": 126,
       "reachableTotal": 94,
       "entries": 34,
-      "files": 1,
+      "files": 0,
       "reachableFiles": 0,
       "records": 0,
       "people": 0,
       "rosters": 0,
       "testSkipped": 0,
-      "found": [
-        {
-          "file": "apps/30-zchuyotpro-crm/.output/server/_ssr/router-6-5Xpiew.mjs",
-          "reachable": false,
-          "hits": [
-            {
-              "name": "mock",
-              "kind": "declared",
-              "line": 628,
-              "records": 1,
-              "chars": 281,
-              "hebrew": false,
-              "person": false,
-              "preview": "{ gross_salary: 12500, net_salary: 9800, employer: \"—\", deductio"
-            }
-          ]
-        }
-      ]
+      "found": []
     },
     {
       "app": "32-nadlan-berega",
