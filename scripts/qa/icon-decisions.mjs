@@ -21,9 +21,22 @@
  * forty — and that is what reads as generated.
  *
  * The grouping is structural, not visual. For every SVG we build a signature from
- * its own name plus its ancestor chain (tag + classes, five levels up). Instances
- * of one component in a list share the chain exactly and collapse to one entry;
- * a hand-placed icon in a hero has a chain nothing else shares and stands alone.
+ * its ancestor chain (tag + classes, five levels up) plus the slot it occupies
+ * among its parent's element children. Instances of one component in a list share
+ * that signature exactly and collapse to one entry; a hand-placed icon in a hero
+ * has a chain nothing else shares and stands alone.
+ *
+ * The signature deliberately does NOT include the icon's own name. An icon that
+ * comes from the data — `<cat.icon />` inside a category grid — renders a
+ * different glyph per record while staying in the same slot of the same markup.
+ * That is ONE thing a designer chose ("each category carries its own mark"), and
+ * keying by name counted it once per record: zchuyot's first measurement said 43
+ * decisions when 20 of them were the single `<cat.icon>` at RightsCategories.tsx:210.
+ * Two icons that are genuinely separate choices sit in different slots — a clock
+ * at slot 0 and a coin at slot 1 of the same row stay two entries — so collapsing
+ * by slot loses nothing that was really a choice.
+ *
+ * `named` keeps the old name-keyed count so the two can be compared.
  *
  *   node scripts/qa/icon-decisions.mjs             # the 9 full-kit systems
  *   node scripts/qa/icon-decisions.mjs /galil      # one
@@ -90,15 +103,18 @@ for (const [key, route] of targets) {
       };
 
       // Five levels is enough to separate two different cards and not so deep
-      // that it reaches the page shell, where everything shares ancestors.
+      // that it reaches the page shell, where everything shares ancestors. The
+      // slot index keeps sibling icons apart: two marks in one row are two
+      // choices, the same mark repeated down a list is one.
       const chain = (svg) => {
         const parts = [];
         let el = svg.parentElement;
+        const slot = el ? [...el.children].indexOf(svg) : 0;
         for (let i = 0; i < 5 && el && el !== document.body; i++) {
           parts.push(el.tagName.toLowerCase() + '.' + cls(el).join('.'));
           el = el.parentElement;
         }
-        return parts.join('>');
+        return '#' + slot + '@' + parts.join('>');
       };
 
       const svgs = [...document.querySelectorAll('svg')];
@@ -107,19 +123,35 @@ for (const [key, route] of targets) {
         const r = svg.getBoundingClientRect();
         // Zero-size SVGs are sprite definitions and defs, not marks on a page.
         if (r.width < 4 || r.height < 4) continue;
-        const k = nameOf(svg) + '@' + chain(svg);
-        const g = groups.get(k) || { icon: nameOf(svg), n: 0 };
+        const k = chain(svg);
+        const g = groups.get(k) || { icon: nameOf(svg), n: 0, names: new Set() };
         g.n++;
+        g.names.add(nameOf(svg));
         groups.set(k, g);
       }
 
-      const list = [...groups.values()].sort((a, b) => b.n - a.n);
+      const list = [...groups.values()]
+        .map((g) => ({ icon: g.icon, n: g.n, names: [...g.names] }))
+        .sort((a, b) => b.n - a.n);
       const rendered = list.reduce((s, g) => s + g.n, 0);
+      // The old name-keyed count, kept so a jump between the two is visible
+      // instead of silently rewriting a number the work order was built on.
+      const named = new Set();
+      for (const svg of svgs) {
+        const r = svg.getBoundingClientRect();
+        if (r.width < 4 || r.height < 4) continue;
+        named.add(nameOf(svg) + '@' + chain(svg));
+      }
       return {
         rendered,                                     // every icon the visitor sees
         decisions: list.length,                       // distinct placements a person chose
+        named: named.size,                            // the previous, name-keyed count
         perRecord: rendered - list.length,            // repetition owed to the data
         lucide: document.querySelectorAll('svg.lucide, svg[class*="lucide"]').length,
+        // Placements whose glyph comes from the data: one slot, many names. These
+        // are the whole of the gap between `decisions` and `named`.
+        dataDriven: list.filter((g) => g.names.length > 1)
+          .map((g) => `${g.names.length} names in 1 slot (${g.names.slice(0, 3).join(', ')}…)`),
         // The heaviest repeats, so the ranking can be checked by eye rather than
         // trusted — the last two §6 findings were measurement errors.
         top: list.filter((g) => g.n > 1).slice(0, 5).map((g) => `${g.icon}×${g.n}`),
@@ -136,7 +168,8 @@ for (const [key, route] of targets) {
       (f.error
         ? 'ERROR ' + f.error
         : `rendered=${String(f.rendered).padStart(3)}  decisions=${String(f.decisions).padStart(3)}` +
-          `  per-record=${String(f.perRecord).padStart(3)}  ${f.top.join(' ')}`),
+          `  (named=${String(f.named).padStart(3)})  per-record=${String(f.perRecord).padStart(3)}` +
+          `  ${f.top.join(' ')}${f.dataDriven.length ? '  | ' + f.dataDriven.join(' ') : ''}`),
   );
 }
 

@@ -1,91 +1,157 @@
 {
   "imud": {
     "rendered": 8,
-    "decisions": 8,
-    "perRecord": 0,
+    "decisions": 5,
+    "named": 8,
+    "perRecord": 3,
     "lucide": 7,
-    "top": []
+    "dataDriven": [
+      "4 names in 1 slot (layers, mouse-pointer-click, book-open…)"
+    ],
+    "top": [
+      "layers×4"
+    ]
   },
   "smel": {
     "rendered": 20,
-    "decisions": 12,
-    "perRecord": 8,
+    "decisions": 8,
+    "named": 12,
+    "perRecord": 12,
     "lucide": 19,
+    "dataDriven": [
+      "3 names in 1 slot (shield-check, trending-up, building2…)",
+      "3 names in 1 slot (map-pin, file-search, sparkles…)"
+    ],
     "top": [
       "check×5",
-      "check×5"
+      "check×5",
+      "shield-check×3",
+      "map-pin×3"
     ]
   },
   "egod": {
     "rendered": 34,
-    "decisions": 32,
-    "perRecord": 2,
+    "decisions": 17,
+    "named": 32,
+    "perRecord": 17,
     "lucide": 34,
+    "dataDriven": [
+      "12 names in 1 slot (globe, clipboard-list, building2…)",
+      "3 names in 1 slot (users, book-open, map-pin…)",
+      "2 names in 1 slot (chevron-right, chevron-left…)",
+      "2 names in 1 slot (phone, message-circle…)"
+    ],
     "top": [
-      "quote×3"
+      "globe×12",
+      "users×3",
+      "quote×3",
+      "chevron-right×2",
+      "phone×2"
     ]
   },
   "chatzor": {
     "rendered": 23,
-    "decisions": 13,
-    "perRecord": 10,
+    "decisions": 11,
+    "named": 13,
+    "perRecord": 12,
     "lucide": 23,
+    "dataDriven": [
+      "2 names in 1 slot (calendar-days, clock…)",
+      "2 names in 1 slot (sunrise, sunset…)"
+    ],
     "top": [
       "map-pin×4",
       "arrow-left×4",
       "navigation×4",
-      "arrow-left×2"
+      "calendar-days×2",
+      "sunrise×2"
     ]
   },
   "chizukim": {
     "rendered": 81,
-    "decisions": 9,
-    "perRecord": 72,
+    "decisions": 6,
+    "named": 9,
+    "perRecord": 75,
     "lucide": 81,
+    "dataDriven": [
+      "2 names in 1 slot (clock, coins…)",
+      "2 names in 1 slot (file-audio, coins…)",
+      "2 names in 1 slot (chevron-right, chevron-left…)"
+    ],
     "top": [
-      "clock×25",
-      "coins×25",
-      "chevron-left×25"
+      "clock×50",
+      "chevron-left×25",
+      "file-audio×2",
+      "chevron-right×2"
     ]
   },
   "zchuyot": {
     "rendered": 52,
-    "decisions": 43,
-    "perRecord": 9,
+    "decisions": 24,
+    "named": 43,
+    "perRecord": 28,
     "lucide": 54,
+    "dataDriven": [
+      "8 names in 1 slot (shield, receipt, house…)",
+      "4 names in 1 slot (shield-check, headphones, clock…)",
+      "4 names in 1 slot (phone-call, message-circle, mail…)",
+      "3 names in 1 slot (file-check, layout-grid, list-checks…)",
+      "3 names in 1 slot (gift, users, clipboard-check…)",
+      "2 names in 1 slot (phone, mail…)",
+      "2 names in 1 slot (search, heart-handshake…)"
+    ],
     "top": [
+      "shield×8",
       "chevron-down×8",
-      "arrow-left×3"
+      "shield-check×4",
+      "phone-call×4",
+      "file-check×3"
     ]
   },
   "mthbram": {
     "rendered": 24,
-    "decisions": 21,
-    "perRecord": 3,
+    "decisions": 17,
+    "named": 21,
+    "perRecord": 7,
     "lucide": 25,
+    "dataDriven": [
+      "4 names in 1 slot (search, refresh-cw, circle-plus…)",
+      "2 names in 1 slot (book-open, mic…)"
+    ],
     "top": [
+      "search×4",
       "filter×3",
+      "book-open×2",
       "arrow-left×2"
     ]
   },
   "galil": {
     "rendered": 68,
-    "decisions": 29,
-    "perRecord": 39,
+    "decisions": 14,
+    "named": 29,
+    "perRecord": 54,
     "lucide": 104,
+    "dataDriven": [
+      "5 names in 1 slot (moon, sunrise, clock…)",
+      "8 names in 1 slot (scale, droplets, book-open…)",
+      "4 names in 1 slot (map-pin, phone, mail…)",
+      "2 names in 1 slot (sun, clock…)"
+    ],
     "top": [
-      "clock×15",
+      "moon×30",
+      "scale×8",
       "send×7",
       "chevron-down×7",
-      "moon×6",
-      "sunrise×3"
+      "map-pin×4"
     ]
   },
   "gesher": {
     "rendered": 1,
     "decisions": 1,
+    "named": 1,
     "perRecord": 0,
     "lucide": 1,
+    "dataDriven": [],
     "top": []
   }
 }
