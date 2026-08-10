@@ -1,0 +1,140 @@
+{
+  "url": "https://more30.com/mthbram/",
+  "api": {
+    "ok": true,
+    "all": {
+      "status": 200,
+      "count": 0
+    },
+    "approved": {
+      "status": 200,
+      "count": 0
+    }
+  },
+  "seen": {
+    "heading": "0 שיעורים",
+    "searches": [
+      {
+        "size": 16,
+        "inControl": "a",
+        "controlText": "חיפוש שיעור",
+        "fieldAriaLabel": null,
+        "fieldPlaceholder": null,
+        "nearestText": "חיפוש שיעור"
+      },
+      {
+        "size": 16,
+        "inControl": null,
+        "controlText": null,
+        "fieldAriaLabel": "חיפוש שיעורים",
+        "fieldPlaceholder": "חיפוש חכם — רב, נושא, עיר, בית כנסת...",
+        "nearestText": ""
+      },
+      {
+        "size": 40,
+        "inControl": null,
+        "controlText": null,
+        "fieldAriaLabel": null,
+        "fieldPlaceholder": null,
+        "nearestText": "0 שיעורים לא נמצאו שיעורים מתאימים"
+      }
+    ],
+    "plusOnAdd": [
+      [
+        "lucide-plus"
+      ],
+      [
+        "lucide-plus"
+      ]
+    ],
+    "emptyText": true,
+    "honestText": false,
+    "lessonCards": 3,
+    "bodyHasLoading": false
+  },
+  "built": {
+    "heading": "0 שיעורים",
+    "honestText": true,
+    "matchingText": false,
+    "searchGlyphs": 3,
+    "bodyHasLoading": false
+  },
+  "results": [
+    {
+      "name": "A. directory heading reports 0",
+      "pass": true,
+      "detail": "heading=\"0 שיעורים\""
+    },
+    {
+      "name": "A2. nothing is still loading",
+      "pass": true,
+      "detail": "fetch settled"
+    },
+    {
+      "name": "B. three search glyphs — the tool paired two and never saw the nav one",
+      "pass": true,
+      "detail": "found 3: 16px/a + 16px + 40px"
+    },
+    {
+      "name": "B1. the third is a nav link carrying its own words",
+      "pass": true,
+      "detail": "link text=\"חיפוש שיעור\""
+    },
+    {
+      "name": "B2. the paired 16px search marks an input with no visible text label",
+      "pass": true,
+      "detail": "aria-label=\"חיפוש שיעורים\" placeholder present=true inControl=null"
+    },
+    {
+      "name": "B3. every add-lesson control draws Plus and no search — slot 1 mislabelled",
+      "pass": true,
+      "detail": "add-lesson controls=[[\"lucide-plus\"],[\"lucide-plus\"]]"
+    },
+    {
+      "name": "C. the 40px search is not inside any control",
+      "pass": true,
+      "detail": "size=40px inControl=null"
+    },
+    {
+      "name": "D. anon REST count for lessons is 0",
+      "pass": true,
+      "detail": "all=0 (HTTP 200) approved=0"
+    },
+    {
+      "name": "E. empty state says \"no MATCHING lessons\" with no filter applied",
+      "pass": true,
+      "detail": "this is the finding, not a regression"
+    },
+    {
+      "name": "E2. the honest string is absent from the live page",
+      "pass": true,
+      "detail": "LessonDirectory.tsx:213 already has it"
+    },
+    {
+      "name": "F. built page says \"עדיין אין שיעורים במאגר\"",
+      "pass": true,
+      "detail": "heading=\"0 שיעורים\""
+    },
+    {
+      "name": "F2. the \"no matching\" wording is gone",
+      "pass": true,
+      "detail": "it returns only when a filter is on and the store is not empty"
+    },
+    {
+      "name": "F3. the count did not move — copy changed, data did not",
+      "pass": true,
+      "detail": "0 שיעורים → 0 שיעורים"
+    },
+    {
+      "name": "F4. the glyphs did not move — this fix removes no icon",
+      "pass": true,
+      "detail": "3 → 3"
+    },
+    {
+      "name": "F5. the built page is not stuck loading",
+      "pass": true
+    }
+  ],
+  "passed": 15,
+  "total": 15
+}

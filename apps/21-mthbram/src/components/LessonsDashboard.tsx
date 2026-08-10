@@ -224,7 +224,12 @@ const LessonsDashboard = () => {
           ) : filtered.length === 0 ? (
             <div className="text-center py-16">
               <Search className="w-10 h-10 text-gold/30 mx-auto mb-3" />
-              <p className="font-body text-muted-foreground">לא נמצאו שיעורים מתאימים</p>
+              {/* אין מאגר ואין תוצאות הן שתי עובדות שונות. כשהמאגר ריק לא בוצע
+                  חיפוש, ו"לא נמצאו מתאימים" מטיל את הריקנות על המבקר. אותה
+                  הבחנה כבר נעשית ב-LessonDirectory.tsx:213. */}
+              <p className="font-body text-muted-foreground">
+                {all.length === 0 ? "עדיין אין שיעורים במאגר" : "לא נמצאו שיעורים מתאימים"}
+              </p>
             </div>
           ) : (
             <>
