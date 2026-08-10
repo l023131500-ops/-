@@ -58,3 +58,10 @@ coverage/
 .playwright-mcp/
 sv4-body.json
 deck-print-full.png
+# A `_probe-*` script is a one-off sweep written to answer a single question in a
+# single round (scripts/qa/_probe-footer-brand.mjs, _probe-egod.mjs). The leading
+# underscore is the convention that says "scratch"; naming it here is what lets
+# scripts/qa/untracked-imports.mjs tell scratch apart from a script that was
+# written, used, and then left out of its own commit.
+_probe-*.mjs
+_probe-*.js

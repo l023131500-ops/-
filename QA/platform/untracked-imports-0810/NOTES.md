@@ -91,3 +91,8 @@ accident of the `trackedDirs` guard.
 This checks `apps/`. Nothing here says anything about `admin/`, `scripts/` or
 `_deploy/` — `_deploy/**` is gitignored too (line 43), by the same reasoning that
 it is reproducible, and that claim was not tested.
+
+**Closed by `NOTES-2-roots.md` (same day):** the detector now covers eight roots.
+`_deploy/**` turned out to hold 34 tracked sources that are *not* reproducible
+from `apps/` — Vercel serverless functions — and they scan clean. One real orphan
+was found in `scripts/`.
