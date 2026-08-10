@@ -29,6 +29,7 @@
     "apple-touch-icon.png",
     "auth-button.js",
     "favicon.ico",
+    "favicon.png",
     "favicon.svg",
     "robots.txt",
     "sitemap.xml"
@@ -251,6 +252,14 @@
       "note": "binary — not comparable through this network"
     },
     {
+      "route": "/favicon.png",
+      "file": "favicon.png",
+      "status": 200,
+      "binary": true,
+      "tree_bytes": 4477,
+      "note": "binary — not comparable through this network"
+    },
+    {
       "route": "/favicon.svg",
       "file": "favicon.svg",
       "status": 200,
@@ -283,6 +292,7 @@
   "unverifiable_here": [
     "/apple-touch-icon.png",
     "/favicon.ico",
+    "/favicon.png",
     "/favicon.svg"
   ],
   "dangling_rewrites": [],
@@ -293,18 +303,18 @@
     "pass": 5,
     "fail": 0,
     "stale": 0,
-    "served": 25,
+    "served": 26,
     "compared": 22,
-    "binary_skipped": 3,
+    "binary_skipped": 4,
     "html_files": 19,
-    "asset_files": 6,
-    "public_files": 25
+    "asset_files": 7,
+    "public_files": 26
   },
   "checks": [
     {
       "check": "every page the portal serves matches the file in the tree",
       "pass": true,
-      "detail": "all 22 (3 binary skipped: /apple-touch-icon.png, /favicon.ico, /favicon.svg)"
+      "detail": "all 22 (4 binary skipped: /apple-touch-icon.png, /favicon.ico, /favicon.png, /favicon.svg)"
     },
     {
       "check": "every rewrite destination in vercel.dist.json exists in the tree",
@@ -319,7 +329,7 @@
     {
       "check": "every file under portal/public is measured by one of the routes above",
       "pass": true,
-      "detail": "all 25"
+      "detail": "all 26"
     },
     {
       "check": "every committed fix on those pages is the one production serves",

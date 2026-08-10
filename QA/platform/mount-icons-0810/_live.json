@@ -1,0 +1,40 @@
+{
+  "ran": "mount icons — three mounts asked the browser for /favicon.png, and the portal root had no such file",
+  "date": "2026-08-10",
+  "why_server_side": "NetFree rewrites images in flight from this machine — 41bc299 watched more30.com/favicon.ico answer 418 while production served it fine. A status code read from here proves nothing about an icon, so the asset was read through Vercel's own fetch.",
+  "before": {
+    "mounts_checked": 25,
+    "declaring_a_dead_root_address": ["/chizukim/", "/imud/", "/studio/"],
+    "address": "/favicon.png",
+    "probe_through_more30_com": 404,
+    "why_it_matters": "a page that declares an icon does not fall back to the automatic /favicon.ico — so these three ended up with no icon *because* they asked for one"
+  },
+  "fix": {
+    "file": "portal/public/favicon.png",
+    "bytes": 4477,
+    "pixels": "180x180",
+    "source": "the same rasterised mark as portal/public/apple-touch-icon.png (41bc299) — 180px rather than 32px so a 2x/3x tab renders it sharp",
+    "not_done": "the three mounts still name a portal-root address from their own deployment instead of shipping an icon of their own; each would need its own build and deploy"
+  },
+  "deploy": "dpl_HRGCNMfXtNrppj6n4yJ3SNMShhPH — more30-portal-czvgwxwk6, prod, from portal/dist after scripts/stage-portal.ps1",
+  "after": {
+    "asset_read_server_side": {
+      "url": "https://more30.com/favicon.png",
+      "status": 200,
+      "content_type": "image/png",
+      "content_length": 4477,
+      "matches_tree_bytes": true
+    },
+    "mount_icon_declarations": "16 passed · 0 failed",
+    "portal_deploy_drift": "5 passed · 0 failed — the guard picked favicon.png up on its own; it derives its route list from portal/public"
+  },
+  "still_open": {
+    "served_by_the_mount_itself": [
+      "/chatzor/favicon.svg", "/egod/favicon.ico", "/galil/pwa-192.png",
+      "/kupot/favicon.svg", "/mechiron/favicon.svg", "/mthbram/icon-192.png",
+      "/nadlan/icon.svg", "/smel/favicon.svg", "/tivuch/icon.svg",
+      "/briut/ (relative favicon.svg)"
+    ],
+    "note": "those files live in each system's own deployment, which this repo does not hold, so the check reports them without a verdict"
+  }
+}

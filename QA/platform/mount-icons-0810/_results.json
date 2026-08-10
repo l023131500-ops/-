@@ -1,0 +1,490 @@
+{
+  "base": "https://more30.com",
+  "mounts": [
+    "/admin/",
+    "/bkalot/",
+    "/briut/",
+    "/chatzor/",
+    "/chizukim/",
+    "/crm/",
+    "/egod/",
+    "/galil/",
+    "/gesher/",
+    "/imud/",
+    "/kesef/",
+    "/kiosk/",
+    "/kupot/",
+    "/mechiron/",
+    "/modaot/",
+    "/mthbram/",
+    "/nadlan/",
+    "/orech/",
+    "/smachot/",
+    "/smel/",
+    "/studio/",
+    "/tamlul/",
+    "/tivuch/",
+    "/torah/",
+    "/zchuyot/"
+  ],
+  "results": [
+    {
+      "mount": "/admin/",
+      "url": "https://more30.com/admin/",
+      "status": 200,
+      "bytes": 4789,
+      "base": null,
+      "icons": [],
+      "verdict": "falls back to the root"
+    },
+    {
+      "mount": "/bkalot/",
+      "url": "https://more30.com/bkalot/",
+      "status": 200,
+      "bytes": 19688,
+      "base": "/bkalot/",
+      "icons": [],
+      "verdict": "falls back to the root"
+    },
+    {
+      "mount": "/briut/",
+      "url": "https://more30.com/briut/",
+      "status": 200,
+      "bytes": 12344,
+      "base": "/briut/",
+      "icons": [
+        {
+          "rel": "icon",
+          "href": "favicon.svg",
+          "tag": "<link rel=\"icon\" type=\"image/svg+xml\" href=\"favicon.svg\" />",
+          "resolves_from": "absolute or relative"
+        }
+      ]
+    },
+    {
+      "mount": "/chatzor/",
+      "url": "https://more30.com/chatzor/",
+      "status": 200,
+      "bytes": 33282,
+      "base": null,
+      "icons": [
+        {
+          "rel": "icon",
+          "href": "/chatzor/favicon.svg",
+          "tag": "<link rel=\"icon\" type=\"image/svg+xml\" href=\"/chatzor/favicon.svg\" />",
+          "resolves_from": "the mount deployment",
+          "exists": null
+        }
+      ]
+    },
+    {
+      "mount": "/chizukim/",
+      "url": "https://more30.com/chizukim/",
+      "status": 200,
+      "bytes": 3343,
+      "base": null,
+      "icons": [
+        {
+          "rel": "icon",
+          "href": "/favicon.png",
+          "tag": "<link rel=\"icon\" type=\"image/png\" href=\"/favicon.png\" />",
+          "resolves_from": "portal/public",
+          "exists": true
+        }
+      ]
+    },
+    {
+      "mount": "/crm/",
+      "url": "https://more30.com/crm/",
+      "status": 200,
+      "bytes": 10559,
+      "base": null,
+      "icons": [],
+      "verdict": "falls back to the root"
+    },
+    {
+      "mount": "/egod/",
+      "url": "https://more30.com/egod/",
+      "status": 200,
+      "bytes": 2836,
+      "base": null,
+      "icons": [
+        {
+          "rel": "icon",
+          "href": "/egod/favicon.ico",
+          "tag": "<link rel=\"icon\" type=\"image/x-icon\" href=\"/egod/favicon.ico\">",
+          "resolves_from": "the mount deployment",
+          "exists": null
+        }
+      ]
+    },
+    {
+      "mount": "/galil/",
+      "url": "https://more30.com/galil/",
+      "status": 200,
+      "bytes": 3595,
+      "base": null,
+      "icons": [
+        {
+          "rel": "apple-touch-icon",
+          "href": "/galil/pwa-192.png",
+          "tag": "<link rel=\"apple-touch-icon\" href=\"/galil/pwa-192.png\" />",
+          "resolves_from": "the mount deployment",
+          "exists": null
+        }
+      ]
+    },
+    {
+      "mount": "/gesher/",
+      "url": "https://more30.com/gesher/",
+      "status": 200,
+      "bytes": 10760,
+      "base": null,
+      "icons": [],
+      "verdict": "falls back to the root"
+    },
+    {
+      "mount": "/imud/",
+      "url": "https://more30.com/imud/",
+      "status": 200,
+      "bytes": 2965,
+      "base": null,
+      "icons": [
+        {
+          "rel": "icon",
+          "href": "/favicon.png",
+          "tag": "<link rel=\"icon\" type=\"image/png\" href=\"/favicon.png\" />",
+          "resolves_from": "portal/public",
+          "exists": true
+        }
+      ]
+    },
+    {
+      "mount": "/kesef/",
+      "url": "https://more30.com/kesef/",
+      "status": 200,
+      "bytes": 15590,
+      "base": null,
+      "icons": [],
+      "verdict": "falls back to the root"
+    },
+    {
+      "mount": "/kiosk/",
+      "url": "https://more30.com/kiosk/",
+      "status": 200,
+      "bytes": 9931,
+      "base": null,
+      "icons": [],
+      "verdict": "falls back to the root"
+    },
+    {
+      "mount": "/kupot/",
+      "url": "https://more30.com/kupot/",
+      "status": 200,
+      "bytes": 3693,
+      "base": null,
+      "icons": [
+        {
+          "rel": "icon",
+          "href": "/kupot/favicon.svg",
+          "tag": "<link rel=\"icon\" type=\"image/svg+xml\" href=\"/kupot/favicon.svg\" />",
+          "resolves_from": "the mount deployment",
+          "exists": null
+        }
+      ]
+    },
+    {
+      "mount": "/mechiron/",
+      "url": "https://more30.com/mechiron/",
+      "status": 200,
+      "bytes": 31585,
+      "base": null,
+      "icons": [
+        {
+          "rel": "icon",
+          "href": "/mechiron/favicon.svg",
+          "tag": "<link rel=\"icon\" type=\"image/svg+xml\" href=\"/mechiron/favicon.svg\" />",
+          "resolves_from": "the mount deployment",
+          "exists": null
+        }
+      ]
+    },
+    {
+      "mount": "/modaot/",
+      "url": "https://more30.com/modaot/",
+      "status": 200,
+      "bytes": 17732,
+      "base": null,
+      "icons": [
+        {
+          "rel": "icon",
+          "href": "/favicon.svg",
+          "tag": "<link rel=\"icon\" href=\"/favicon.svg\"/>",
+          "resolves_from": "portal/public",
+          "exists": true
+        }
+      ]
+    },
+    {
+      "mount": "/mthbram/",
+      "url": "https://more30.com/mthbram/",
+      "status": 200,
+      "bytes": 3120,
+      "base": null,
+      "icons": [
+        {
+          "rel": "apple-touch-icon",
+          "href": "/mthbram/icon-192.png",
+          "tag": "<link rel=\"apple-touch-icon\" href=\"/mthbram/icon-192.png\">",
+          "resolves_from": "the mount deployment",
+          "exists": null
+        }
+      ]
+    },
+    {
+      "mount": "/nadlan/",
+      "url": "https://more30.com/nadlan/",
+      "status": 200,
+      "bytes": 64702,
+      "base": null,
+      "icons": [
+        {
+          "rel": "icon",
+          "href": "/nadlan/icon.svg?afd788af8975d9cb",
+          "tag": "<link rel=\"icon\" href=\"/nadlan/icon.svg?afd788af8975d9cb\" type=\"image/svg+xml\" sizes=\"any\"/>",
+          "resolves_from": "the mount deployment",
+          "exists": null
+        }
+      ]
+    },
+    {
+      "mount": "/orech/",
+      "url": "https://more30.com/orech/",
+      "status": 200,
+      "bytes": 8240,
+      "base": null,
+      "icons": [],
+      "verdict": "falls back to the root"
+    },
+    {
+      "mount": "/smachot/",
+      "url": "https://more30.com/smachot/",
+      "status": 200,
+      "bytes": 4205,
+      "base": "/smachot/",
+      "icons": [],
+      "verdict": "falls back to the root"
+    },
+    {
+      "mount": "/smel/",
+      "url": "https://more30.com/smel/",
+      "status": 200,
+      "bytes": 1754,
+      "base": null,
+      "icons": [
+        {
+          "rel": "icon",
+          "href": "/smel/favicon.svg",
+          "tag": "<link rel=\"icon\" type=\"image/svg+xml\" href=\"/smel/favicon.svg\" />",
+          "resolves_from": "the mount deployment",
+          "exists": null
+        }
+      ]
+    },
+    {
+      "mount": "/studio/",
+      "url": "https://more30.com/studio/",
+      "status": 200,
+      "bytes": 7298,
+      "base": null,
+      "icons": [
+        {
+          "rel": "icon",
+          "href": "/favicon.png",
+          "tag": "<link rel=\"icon\" type=\"image/png\" href=\"/favicon.png\" />",
+          "resolves_from": "portal/public",
+          "exists": true
+        }
+      ]
+    },
+    {
+      "mount": "/tamlul/",
+      "url": "https://more30.com/tamlul/",
+      "status": 200,
+      "bytes": 23224,
+      "base": null,
+      "icons": [],
+      "verdict": "falls back to the root"
+    },
+    {
+      "mount": "/tivuch/",
+      "url": "https://more30.com/tivuch/",
+      "status": 200,
+      "bytes": 15596,
+      "base": null,
+      "icons": [
+        {
+          "rel": "icon",
+          "href": "/tivuch/icon.svg",
+          "tag": "<link rel=\"icon\" href=\"/tivuch/icon.svg\" type=\"image/svg+xml\" />",
+          "resolves_from": "the mount deployment",
+          "exists": null
+        }
+      ]
+    },
+    {
+      "mount": "/torah/",
+      "url": "https://more30.com/torah/",
+      "status": 200,
+      "bytes": 27089,
+      "base": null,
+      "icons": [
+        {
+          "rel": "icon",
+          "href": "/favicon.svg",
+          "tag": "<link rel=\"icon\" type=\"image/svg+xml\" href=\"/favicon.svg\" />",
+          "resolves_from": "portal/public",
+          "exists": true
+        }
+      ]
+    },
+    {
+      "mount": "/zchuyot/",
+      "url": "https://more30.com/zchuyot/",
+      "status": 200,
+      "bytes": 58466,
+      "base": null,
+      "icons": [],
+      "verdict": "falls back to the root"
+    }
+  ],
+  "checks": [
+    {
+      "check": "the rewrite map named mounts to check",
+      "result": "pass",
+      "detail": null
+    },
+    {
+      "check": "/admin/ — declares nothing, falls back to /favicon.ico",
+      "result": "pass",
+      "detail": "the root icon itself is missing"
+    },
+    {
+      "check": "/bkalot/ — declares nothing, falls back to /favicon.ico",
+      "result": "pass",
+      "detail": "the root icon itself is missing"
+    },
+    {
+      "check": "/chatzor/ — /chatzor/favicon.svg",
+      "result": "unverifiable_here",
+      "detail": "lives in that system's deployment, not in this repo"
+    },
+    {
+      "check": "/chizukim/ — /favicon.png exists at the portal root",
+      "result": "pass",
+      "detail": "portal/public/favicon.png is not in the tree, so the browser gets nothing and the /favicon.ico fallback is suppressed"
+    },
+    {
+      "check": "/crm/ — declares nothing, falls back to /favicon.ico",
+      "result": "pass",
+      "detail": "the root icon itself is missing"
+    },
+    {
+      "check": "/egod/ — /egod/favicon.ico",
+      "result": "unverifiable_here",
+      "detail": "lives in that system's deployment, not in this repo"
+    },
+    {
+      "check": "/galil/ — /galil/pwa-192.png",
+      "result": "unverifiable_here",
+      "detail": "lives in that system's deployment, not in this repo"
+    },
+    {
+      "check": "/gesher/ — declares nothing, falls back to /favicon.ico",
+      "result": "pass",
+      "detail": "the root icon itself is missing"
+    },
+    {
+      "check": "/imud/ — /favicon.png exists at the portal root",
+      "result": "pass",
+      "detail": "portal/public/favicon.png is not in the tree, so the browser gets nothing and the /favicon.ico fallback is suppressed"
+    },
+    {
+      "check": "/kesef/ — declares nothing, falls back to /favicon.ico",
+      "result": "pass",
+      "detail": "the root icon itself is missing"
+    },
+    {
+      "check": "/kiosk/ — declares nothing, falls back to /favicon.ico",
+      "result": "pass",
+      "detail": "the root icon itself is missing"
+    },
+    {
+      "check": "/kupot/ — /kupot/favicon.svg",
+      "result": "unverifiable_here",
+      "detail": "lives in that system's deployment, not in this repo"
+    },
+    {
+      "check": "/mechiron/ — /mechiron/favicon.svg",
+      "result": "unverifiable_here",
+      "detail": "lives in that system's deployment, not in this repo"
+    },
+    {
+      "check": "/modaot/ — /favicon.svg exists at the portal root",
+      "result": "pass",
+      "detail": "portal/public/favicon.svg is not in the tree, so the browser gets nothing and the /favicon.ico fallback is suppressed"
+    },
+    {
+      "check": "/mthbram/ — /mthbram/icon-192.png",
+      "result": "unverifiable_here",
+      "detail": "lives in that system's deployment, not in this repo"
+    },
+    {
+      "check": "/nadlan/ — /nadlan/icon.svg?afd788af8975d9cb",
+      "result": "unverifiable_here",
+      "detail": "lives in that system's deployment, not in this repo"
+    },
+    {
+      "check": "/orech/ — declares nothing, falls back to /favicon.ico",
+      "result": "pass",
+      "detail": "the root icon itself is missing"
+    },
+    {
+      "check": "/smachot/ — declares nothing, falls back to /favicon.ico",
+      "result": "pass",
+      "detail": "the root icon itself is missing"
+    },
+    {
+      "check": "/smel/ — /smel/favicon.svg",
+      "result": "unverifiable_here",
+      "detail": "lives in that system's deployment, not in this repo"
+    },
+    {
+      "check": "/studio/ — /favicon.png exists at the portal root",
+      "result": "pass",
+      "detail": "portal/public/favicon.png is not in the tree, so the browser gets nothing and the /favicon.ico fallback is suppressed"
+    },
+    {
+      "check": "/tamlul/ — declares nothing, falls back to /favicon.ico",
+      "result": "pass",
+      "detail": "the root icon itself is missing"
+    },
+    {
+      "check": "/tivuch/ — /tivuch/icon.svg",
+      "result": "unverifiable_here",
+      "detail": "lives in that system's deployment, not in this repo"
+    },
+    {
+      "check": "/torah/ — /favicon.svg exists at the portal root",
+      "result": "pass",
+      "detail": "portal/public/favicon.svg is not in the tree, so the browser gets nothing and the /favicon.ico fallback is suppressed"
+    },
+    {
+      "check": "/zchuyot/ — declares nothing, falls back to /favicon.ico",
+      "result": "pass",
+      "detail": "the root icon itself is missing"
+    }
+  ],
+  "pass": 16,
+  "fail": 0
+}
