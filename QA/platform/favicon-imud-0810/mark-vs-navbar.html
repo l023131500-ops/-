@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>imud favicon — הסמל החדש מול הסימן החי</title>
+<style>
+  body { font-family: Assistant, Arial, sans-serif; background:#fff; margin:0; padding:28px; color:#25201a; }
+  h2 { font-size:15px; margin:0 0 10px; font-weight:700; }
+  .row { display:flex; align-items:flex-end; gap:26px; margin-bottom:26px; padding:16px;
+         border:1px solid #e6e0d8; border-radius:10px; background:#fff; }
+  .cell { text-align:center; }
+  .cell small { display:block; margin-top:6px; font-size:11px; color:#7a6f63; }
+  /* שכפול של סרגל הנווט החי: הרקע והצבע נמדדו ב-more30.com/imud */
+  .navbar { display:flex; align-items:center; gap:10px; background:rgba(250,248,245,.85);
+            border-bottom:1px solid #e6e0d8; padding:10px 16px; color:rgb(134,39,56); }
+  .navbar .t1 { font-size:20px; font-weight:700; color:#25201a; }
+  .navbar .t2 { font-size:11px; color:#7a6f63; }
+  .note { font-size:12px; color:#7a6f63; max-width:760px; line-height:1.7; }
+</style>
+</head>
+<body>
+
+<h2>1. הסימן החי בנווט (משוכפל עם הצבעים שנמדדו) — 34px, קו 2.2, כולל האות המסוגננת</h2>
+<div class="row">
+  <div class="navbar">
+    <svg width="34" height="34" viewBox="0 0 48 48" fill="none">
+      <path d="M24 10C19 6.5 11 6.5 6 8.5V38C11 36 19 36 24 39.5C29 36 37 36 42 38V8.5C37 6.5 29 6.5 24 10Z" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" fill="none"/>
+      <path d="M24 10V39.5" stroke="currentColor" stroke-width="2.2"/>
+      <path d="M18 18L30 30M30 18L18 30" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" opacity="0.55"/>
+    </svg>
+    <div>
+      <div class="t1">אות ודף</div>
+      <div class="t2">עימוד תורני מקצועי</div>
+    </div>
+  </div>
+</div>
+
+<h2>2. הסמל שנכתב, בגדלים שהלשונית באמת מציגה</h2>
+<div class="row">
+  <div class="cell"><img src="../../../apps/04-imud-torani/client/public/favicon.svg" width="16" height="16"><small>16</small></div>
+  <div class="cell"><img src="../../../apps/04-imud-torani/client/public/favicon.svg" width="32" height="32"><small>32</small></div>
+  <div class="cell"><img src="../../../apps/04-imud-torani/client/public/favicon.svg" width="64" height="64"><small>64</small></div>
+  <div class="cell"><img src="../../../apps/04-imud-torani/client/public/favicon.svg" width="192" height="192"><small>192</small></div>
+</div>
+
+<h2>3. מה שהלשונית הראתה עד עכשיו — הסמל של הפורטל, בגלל <code>href="/favicon.png"</code></h2>
+<div class="row">
+  <div class="cell"><img src="https://more30.com/favicon.png" width="16" height="16"><small>16</small></div>
+  <div class="cell"><img src="https://more30.com/favicon.png" width="32" height="32"><small>32</small></div>
+  <div class="cell"><img src="https://more30.com/favicon.png" width="64" height="64"><small>64</small></div>
+  <p class="note">‏4,477 בתים, ‏<code>more30.com/favicon.png</code> — הסמל של הפורטל.
+     ‏<code>/favicon.png</code> נכתב מוחלט-לשורש, ומונט שיושב תחת נתיב פותר אותו מול
+     ה-origin. למערכת הזו מעולם לא היה <code>favicon.png</code> משלה.</p>
+</div>
+
+<p class="note">
+  שלוש הסטיות מהחי, כולן בגלל 16px: נוסף אריח (הסימן החי הוא קו בלבד בלי משטח,
+  ועל לשונית הוא נבלע); עובי הקו 2.2 → 3.44 אפקטיביים (‏2.2 היה יוצא 0.63px);
+  והאות א' המסוגננת הוסרה — ב-16px היא סותמת את פנים הספר במקום להיקרא כאות.
+  שני נתיבי הספר הועתקו כלשונם מ-<code>SiteHeader.tsx:14-21</code>.
+</p>
+
+</body>
+</html>

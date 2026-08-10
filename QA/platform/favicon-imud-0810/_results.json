@@ -1,0 +1,86 @@
+{
+  "measured_at": "2026-08-10T20:00Z",
+  "mount": "imud",
+  "app": "apps/04-imud-torani",
+  "queue_item": "DESIGN_SAMENESS.md (כו) — the three 'declares but lands on origin' mounts still on /favicon.png: imud, chizukim, studio",
+
+  "structure_measured_before_touching": {
+    "note": "the queue asked to measure where index.html sits and what base actually is, before assuming these three are like the earlier apps",
+    "all_three_are_vite_with_client_root": true,
+    "rows": [
+      { "app": "04-imud-torani",        "mount": "imud",      "index_html": "client/index.html", "vite_root": "client", "vite_base": "/imud/",     "base_matches_mount": true,  "client_public_existed": false },
+      { "app": "17-chizukim-transcribe","mount": "chizukim",  "index_html": "client/index.html", "vite_root": "client", "vite_base": "process.env.VITE_BASE || '/chizukim/'", "base_matches_mount": true, "client_public_existed": false },
+      { "app": "26-modaot-studio",      "mount": "studio",    "index_html": "client/index.html", "vite_root": "client", "vite_base": "/modaot/",   "base_matches_mount": false, "client_public_existed": true, "public_holds": "fonts/ only, 6 ttf" }
+    ],
+    "why_imud_was_taken_first": "its vite base equals its mount, so the icon href is the only variable. studio's base (/modaot/) does not match its mount (/studio/) — that is a second, separate defect and must not be conflated with this one.",
+    "not_claimed": "the studio base mismatch was observed here, not investigated or fixed."
+  },
+
+  "live_before": {
+    "url": "https://more30.com/imud/",
+    "declared_icon": { "href": "/favicon.png", "type": "image/png", "resolved": "https://more30.com/favicon.png", "status": 200, "bytes": 4477 },
+    "what_the_tab_actually_drew": "the portal's mark — /favicon.png is root-absolute and a path-mounted site resolves it against the origin",
+    "app_has_no_favicon_png_of_its_own": true
+  },
+
+  "live_navbar_mark_computed_style": {
+    "source": "getComputedStyle on the live DOM at more30.com/imud, not a code read",
+    "selector": "a[data-testid=link-home] svg",
+    "glyph_color": "rgb(134, 39, 56)",
+    "glyph_token": "primary (349 55% 34%)",
+    "surface": "rgb(250, 248, 245)",
+    "surface_token": "background (40 33% 97%)",
+    "header_bg": "rgba(250, 248, 245, 0.85)",
+    "rendered_size_px": 34,
+    "viewBox": "0 0 48 48",
+    "stroke_widths": [2.2, 2.2, 1.4],
+    "contrast_ratio": 8.4,
+    "token_pair_swapped": false,
+    "why_no_swap": "8.4:1 is far above the 3:1 minimum for non-text graphics, so unlike egod no substitute pair was needed"
+  },
+
+  "component_is_live_not_dead": {
+    "checked_because": "two earlier rounds (yod-zayin, kaf-dalet) found the obvious source component was never imported",
+    "component": "client/src/components/SiteHeader.tsx",
+    "Logo_and_SiteHeader_importers": ["pages/Home.tsx:4,34", "pages/Templates.tsx:5,75", "pages/Wizard.tsx:10,166", "pages/Editor.tsx:5 (Logo only)"],
+    "verdict": "mounted on three routes — the mark copied here is one users actually see"
+  },
+
+  "what_changed": {
+    "added": "apps/04-imud-torani/client/public/favicon.svg (2750 bytes)",
+    "edited": "apps/04-imud-torani/client/index.html — href /favicon.png -> /imud/favicon.svg, type image/png -> image/svg+xml",
+    "paths_copied_verbatim_from": "SiteHeader.tsx:14-21 (book outline + spine)",
+    "declared_deviations_from_live": [
+      { "what": "a tile was added", "why": "the live mark is stroke-only with no surface; on a tab that reads as transparent and is lost against both light and dark browser chrome. the tile carries the exact surface colour the live mark sits on, so the pair is unchanged." },
+      { "what": "stroke 2.2 -> 4 before a 0.86 scale = 3.44 effective", "why": "2.2 would render 0.63px at 16px, below one pixel" },
+      { "what": "the stylised alef (third path, stroke 1.4 at opacity 0.55) was dropped", "why": "at 16px the book interior is ~4px per side; three crossing strokes there clog the shape instead of reading as a letter" }
+    ],
+    "chosen_not_measured": "the tile corner radius. the live mark has no tile and therefore no radius to measure. the system's radius token (0.5rem = 8px) was applied as 8 units in a 48-unit box — an interpretation, stated as one."
+  },
+
+  "verification": {
+    "method": "vite build, then vite preview, then a real Chromium against the built output — not a source read",
+    "dist_index_html_href": "/imud/favicon.svg",
+    "vite_did_not_double_prefix_the_base": true,
+    "favicon_svg_in_dist": true,
+    "favicon_png_in_dist": false,
+    "dom_icon_links": 1,
+    "resolved_to": "http://localhost:4372/imud/favicon.svg",
+    "serve": { "status": 200, "content_type": "image/svg+xml", "bytes": 2750 },
+    "bytes_match_file_on_disk": true,
+    "domparser_parsererror": false,
+    "decode_ok_at": { "16": "48x48", "32": "48x48", "64": "48x48", "192": "48x48" },
+    "origin_fallbacks_unavailable_here": { "/favicon.svg": 404, "/favicon.png": 404, "/favicon.ico": 404 },
+    "why_parse_and_decode_are_checked_separately": "update (כד) shipped an svg that served 200 with the right byte count and still drew nothing — a doubled hyphen inside an XML comment. status, content-type and byte count all pass on a broken file; only parse and decode catch it."
+  },
+
+  "not_claimed": {
+    "browser_issued_tab_request": "NOT captured in this run. earlier rounds recorded the browser's own request (initiatorType 'other'); here the network log shows no favicon entry on a fresh page load — the asset was already in the HTTP cache from the checks above, and headless Chromium has no tab strip. the evidence for this one is the resolved href, the served bytes, the parse and the decode — not a captured request.",
+    "tab_screenshot": "impossible by construction — the tab icon lives in browser chrome, not the viewport. mark-vs-navbar.png renders the asset as <img> at the four sizes instead.",
+    "ico_or_png_fallback": "none written. a client with no SVG-icon support still falls through to the origin.",
+    "deployed": false,
+    "deploy_note": "dist was built and NOT copied to _deploy, so production still serves the portal's mark for this mount."
+  },
+
+  "artifacts": ["mark-vs-navbar.png", "mark-vs-navbar.html"]
+}

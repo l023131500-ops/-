@@ -27,7 +27,12 @@
     </script>
     <title>אות ודף — מנוע עימוד תורני</title>
     <meta name="description" content="מערכת עימוד תורני מקצועית ללא ידע גרפי: בחר תבנית, הזן תוכן, ייצא PDF מהודר לספרי קודש." />
-    <link rel="icon" type="image/png" href="/favicon.png" />
+    <!-- ⚠️ הקידומת `/imud/` נכתבת ביד ובכוונה. `href` מוחלט-לשורש נפתר מול
+         ה-origin ולא מול המונט, ו-Vite **אינו** מוסיף את ה-`base` לשורה הזו
+         (נבדק על `dist/index.html`). השורה שהייתה כאן הצביעה על `/favicon.png`
+         — קובץ שלמערכת הזו אין — ונענתה במקרה על ידי הסמל של הפורטל
+         ב-more30.com, כלומר הלשונית הציגה סמל של אתר אחר. -->
+    <link rel="icon" type="image/svg+xml" href="/imud/favicon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
