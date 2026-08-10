@@ -1,0 +1,50 @@
+{
+  "issue": 136,
+  "app": "mthbram",
+  "measured_at": "2026-08-10T02:54:00Z",
+  "claim": "BrandLogo imported a .asset.json pointer to the build-sandbox CDN; the URL 404s in production, so Navbar and Footer painted the alt text instead of the mark",
+  "before": {
+    "import": "@/assets/logo-igud.jpg.asset.json",
+    "img_src": "/__l5e/assets-v1/cb36b2ea-29b4-4980-a8e2-808a99c3a96a/logo-igud.jpg",
+    "probe": "HEAD https://more30.com/__l5e/assets-v1/cb36b2ea-29b4-4980-a8e2-808a99c3a96a/logo-igud.jpg -> 404",
+    "evidence": "QA/platform/mount-icons-0810/mthbram-after.png (previous round, top-right corner)"
+  },
+  "after": {
+    "import": "@/assets/agud-logo-mark.jpg",
+    "asset": {
+      "derived_from": "src/assets/agud-logo.png (1536x1024, 1356654 B)",
+      "crop": "centre square 1024x1024 at x=256,y=0 — the same crop object-cover applies inside the circle; the whole plaque falls inside it",
+      "output": "256x256 JPEG q88, 17915 B"
+    },
+    "built": "dist/assets/agud-logo-mark-BYVcxdW1.jpg 17915 B; js hash _LQLkb77 -> y-Q5UqSS; css hash unchanged",
+    "deployment": "mthbram-more30 dpl_CSWZvN48kkzhqZWB1WJBbwmvRwxM (production, READY)"
+  },
+  "verification": [
+    {
+      "where": "vite preview localhost:4188/mthbram/",
+      "imgs": 2,
+      "src": "/mthbram/assets/agud-logo-mark-BYVcxdW1.jpg",
+      "naturalWidth": 256,
+      "naturalHeight": 256,
+      "broken": false,
+      "html_contains___l5e": false,
+      "screenshot": "preview-header.png"
+    },
+    {
+      "where": "https://more30.com/mthbram/?cachebust=logo0810 (Chromium)",
+      "imgs": 2,
+      "src": "https://more30.com/mthbram/assets/agud-logo-mark-BYVcxdW1.jpg",
+      "naturalWidth": 256,
+      "naturalHeight": 256,
+      "broken": false,
+      "html_contains___l5e": false,
+      "script_src": "/mthbram/assets/index-y-Q5UqSS.js",
+      "screenshot": "live-after.png"
+    }
+  ],
+  "not_fixed_here": [
+    "apple-mobile-web-app-capable deprecation warning — same page load, untouched",
+    "core.issues #17: the catalogue still shows 0 approved lessons; owner=user, unrelated to this step"
+  ],
+  "byte_note": "The 1.35 MB agud-logo.png stays in the bundle because BulkUpload, StudyDayUpload and SynagoguePortal import it directly. BrandLogo sits in Navbar and Footer, i.e. every page, which is why it takes the 18 KB derivative instead."
+}
