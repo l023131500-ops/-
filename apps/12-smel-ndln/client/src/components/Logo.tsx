@@ -41,7 +41,7 @@ export function Logo({ compact = false }: { compact?: boolean }) {
             SMEL <span className="gold-text">NDLN</span>
           </span>
           <span className="text-[11px] font-medium text-muted-foreground">
-            מחקר נדל״ן חכם
+            מחקר נדל״ן מנתוני ממשלה
           </span>
         </div>
       )}

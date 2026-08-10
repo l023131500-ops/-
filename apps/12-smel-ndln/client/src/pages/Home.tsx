@@ -35,7 +35,7 @@ const STEPS = [
   },
   {
     icon: Sparkles,
-    title: "מקבלים דוח חכם",
+    title: "מקבלים את הדוח",
     body: "הערכת שווי, ציון כדאיות ותובנות ברורות — בשפה שמובנת לכולם.",
   },
 ];
@@ -321,7 +321,7 @@ export default function Home() {
       </section>
 
       <footer className="border-t border-border py-8 text-center text-sm text-muted-foreground">
-        <p>SMEL NDLN — מחקר נדל״ן חכם. הנתונים מבוססים על מקורות ממשלתיים רשמיים ואינם מהווים ייעוץ.</p>
+        <p>SMEL NDLN — מחקר נדל״ן. הנתונים מבוססים על מקורות ממשלתיים רשמיים ואינם מהווים ייעוץ.</p>
       </footer>
     </div>
   );

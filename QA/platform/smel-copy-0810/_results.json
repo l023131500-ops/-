@@ -1,0 +1,102 @@
+{
+  "step": "smel (§6): the empty adjective that survived the hero cleanup, on the five surfaces it was left on",
+  "measured_at": "2026-08-10T15:46Z",
+  "app": "apps/12-smel-ndln",
+  "why_this_step": "The previous round (DESIGN_SAMENESS update 17) cleaned the Home hero of \"מחקר נדל\\\"ן חכם וברור\" and recorded, explicitly, that the same empty adjective survived on five other surfaces of the same product. The deploy quota is blocked until ~2026-08-11T00:11Z (core.issues #83), so the queue continues on the read side.",
+
+  "before_production": {
+    "url": "https://more30.com/smel/",
+    "viewport": "1280x900",
+    "title": "SMEL NDLN — מחקר נדל\"ן חכם",
+    "meta_description": "SMEL NDLN — מערכת מחקר נדלן חכם המבוססת על נתוני ממשלה רשמיים. הזינו כתובת וקבלו הערכת שווי, ציון כדאיות ותובנות על השכונה.",
+    "body_occurrences_of_חכם": 3,
+    "logo_tagline": "מחקר נדל״ן חכם",
+    "step_card_title": "מקבלים דוח חכם",
+    "footer": "SMEL NDLN — מחקר נדל״ן חכם. הנתונים מבוססים על מקורות ממשלתיים רשמיים ואינם מהווים ייעוץ.",
+    "screenshot": "before-production.png",
+    "note": "Production served exactly what the source says — title and description matched client/index.html byte for byte. Checked before touching anything, because several static sites here serve HTML that is not in the on-disk source."
+  },
+
+  "after_local_build": {
+    "url": "http://localhost:4319/smel/#/ (vite preview over dist/public)",
+    "bundle": "index-DxypDKat.js",
+    "verified_against": "the built bundle, not the source",
+    "title": "SMEL NDLN — מחקר נדל\"ן מנתוני ממשלה",
+    "meta_description": "SMEL NDLN — מערכת מחקר נדלן המבוססת על נתוני ממשלה רשמיים. הזינו כתובת וקבלו הערכת שווי, ציון כדאיות ותובנות על השכונה.",
+    "body_occurrences_of_חכם": 0,
+    "logo_tagline": "מחקר נדל״ן מנתוני ממשלה",
+    "step_card_title": "מקבלים את הדוח",
+    "footer": "SMEL NDLN — מחקר נדל״ן. הנתונים מבוססים על מקורות ממשלתיים רשמיים ואינם מהווים ייעוץ.",
+    "hero_h1_unchanged": "כל מה שצריך לדעת על הנכס לפני שקונים",
+    "step_cards_still_three": ["הזינו כתובת", "מנוע המחקר עובד", "מקבלים את הדוח"],
+    "screenshot": "after-localbuild.png"
+  },
+
+  "surfaces": [
+    {
+      "file": "client/src/components/Logo.tsx:44",
+      "was": "מחקר נדל״ן חכם",
+      "now": "מחקר נדל״ן מנתוני ממשלה",
+      "reasoning": "The brand tagline rides the header on every page, so it is the widest surface of the five. Replaced rather than deleted, because a tagline slot left empty is a layout change and not a copy fix; the replacement is a claim the product actually meets."
+    },
+    {
+      "file": "client/src/pages/Home.tsx:38",
+      "was": "מקבלים דוח חכם",
+      "now": "מקבלים את הדוח",
+      "reasoning": "Deleted rather than replaced: the card's own body already lists what the report contains (הערכת שווי, ציון כדאיות, תובנות), so the title only has to name the step."
+    },
+    {
+      "file": "client/src/pages/Home.tsx:324",
+      "was": "SMEL NDLN — מחקר נדל״ן חכם. הנתונים מבוססים על מקורות ממשלתיים רשמיים…",
+      "now": "SMEL NDLN — מחקר נדל״ן. הנתונים מבוססים על מקורות ממשלתיים רשמיים…",
+      "reasoning": "Deleted and not replaced with the tagline's wording: the very next sentence in the same paragraph already says the data comes from official government sources. Repeating it would be filler of a different kind."
+    },
+    {
+      "file": "client/index.html:9 (<title>)",
+      "was": "SMEL NDLN — מחקר נדל\"ן חכם",
+      "now": "SMEL NDLN — מחקר נדל\"ן מנתוני ממשלה",
+      "seo": true
+    },
+    {
+      "file": "client/index.html:10 (meta description)",
+      "was": "…מערכת מחקר נדלן חכם המבוססת על…",
+      "now": "…מערכת מחקר נדלן המבוססת על…",
+      "seo": true
+    }
+  ],
+
+  "seo_decision": {
+    "flagged_by": "the previous round, which stopped short of touching these two and said the decision had to be made first",
+    "decision": "Both changed, minimally and deliberately.",
+    "rationale": [
+      "The only token removed is the adjective חכם. It is not a query anyone types next to נדלן, so nothing that ranks is being given up.",
+      "The <title> gains מנתוני ממשלה in its place — a phrase that is both a real query and a claim the product meets, so the title is not merely shorter.",
+      "The description keeps the unpointed spelling נדלן, which is a common search variant; the title carries the pointed spelling נדל\"ן. Both variants stay covered across the two tags."
+    ],
+    "not_claimed": "That ranking will improve, or that it will not move. No rank measurement was taken before or after, and none is being inferred."
+  },
+
+  "remaining_occurrences_in_source": {
+    "count": 4,
+    "user_facing": 0,
+    "items": [
+      "client/src/pages/Home.tsx:130-131 — an existing ⚠️ comment that quotes the hero text removed in the previous round",
+      "client/index.html:10 — the new ⚠️ comment recording the SEO decision above",
+      "BUILD_BRIEF.md:4 — the internal build spec. Left alone: it is a historical brief for the build agent, not product copy, and rewriting it would erase what the product was originally asked to be."
+    ]
+  },
+
+  "not_deployed": {
+    "reason": "Deploy quota exhausted; the rolling window drops below the ceiling around 2026-08-11T00:11Z (core.issues #83).",
+    "dist_copied_to_deploy": false,
+    "why_not": "Copying a build over _deploy without first verifying the live directory matches is the pattern that has broken live sites here before."
+  },
+
+  "not_claimed": [
+    "That §6 is finished for smel. This round covered one copy pattern on five surfaces; the icon slots of smel were read in an earlier round, and the sub-pages (/report) were not re-read here.",
+    "That the Report page header renders the new tagline — it shares Logo.tsx, so it follows by construction, but it was not opened and photographed."
+  ],
+
+  "protected_untouched": ["08", "09", "bkalut-app", "bkalot-admin", "zr_*", "NEDARIM3873"],
+  "test_mode": "No charge, no message sent, no migration."
+}
