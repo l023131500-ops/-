@@ -1,0 +1,27 @@
+<!--
+  סמל הלשונית של zchuyot. כל צבע כאן נלקח מ-src/index.css ולא נבחר כאן:
+  #1C543A הוא הטוקן emerald-dark (152 50% 22%), #2D7654 הוא primary
+  (152 45% 32%), והזהב #EEB32B הוא secondary / gold (42 85% 55%). כיוון
+  המעבר 135° הוא אותו כיוון של hero-gradient.
+
+  האות היא ב' — הראשונה של הכיתוב "בקלות", שהוא הלוגו שהנווט באמת מצייר
+  (Navbar.tsx:59, טקסט בלבד). היא מצוירת כנתיב ולא כאלמנט text בכוונה: SVG
+  שמשמש כסמל לשונית נטען כתמונה, ולכן אינו מביא גופן חיצוני — Rubik לא
+  היה מגיע, וגופן המערכת אינו מובטח לתמוך בעברית בכל מערכת הפעלה.
+
+  שמות הטוקנים נכתבים כאן בלי שני המקפים שמקדימים אותם ב-CSS, וזו לא
+  רשלנות: הערת XML אינה יכולה להכיל שני מקפים רצופים, והגרסה הראשונה של
+  הקובץ הזה נפלה על כך בדיוק ולא צוירה כלל.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="בקלות">
+  <defs>
+    <linearGradient id="z" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#2D7654"/>
+      <stop offset="1" stop-color="#1C543A"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="14" fill="url(#z)"/>
+  <path d="M23 20 H44 V42 H18"
+        fill="none" stroke="#EEB32B" stroke-width="8"
+        stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

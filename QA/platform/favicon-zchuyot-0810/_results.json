@@ -1,0 +1,62 @@
+{
+  "ran": "favicon — zchuyot was one of the twelve 'blocked on an asset'. It turns out it carries an asset; the asset is the builder's, and that is measurable rather than assumed.",
+  "date": "2026-08-10",
+  "follows": "QA/platform/favicon-mounts-0810/_results.json — that round measured all 24 mounts and found 16 drawing the portal's mark, twelve of them with no icon asset of their own. zchuyot was counted among the twelve.",
+
+  "what_the_twelve_were_blocked_on_actually_is": {
+    "claim_tested": "the previous round wrote that pointing these mounts at the builder's default .ico would trade the portal's mark for the builder's — stated as a judgement, not measured",
+    "how_measured": "SHA-256 of every favicon.* under apps/ (excluding node_modules and .git)",
+    "result": {
+      "apps/22-get-your-rights/public/favicon.ico": "20373 bytes, sha256 DD821076A9B0…",
+      "apps/15-egod/public/favicon.ico": "20373 bytes, sha256 DD821076A9B0…",
+      "apps/_archive/bklotm/public/favicon.ico": "20373 bytes, sha256 DD821076A9B0…",
+      "apps/_archive/lux-manage/public/favicon.ico": "20373 bytes, sha256 DD821076A9B0…"
+    },
+    "conclusion": "four byte-identical copies across four unrelated Lovable projects, two of them archived. It is the builder's default. The judgement was right, and it is now a measurement.",
+    "not_claimed": "the other ten of the twelve were not hashed for this — the scan found no favicon.* in their trees at all, which is a different finding (no asset) from zchuyot's (a borrowed asset)."
+  },
+
+  "the_mark_that_was_authored": {
+    "file": "apps/22-get-your-rights/public/favicon.svg, 1658 bytes",
+    "derived_from": "the product's own live tokens in src/index.css — primary 152 45% 32% (#2D7654), emerald-dark 152 50% 22% (#1C543A), secondary/gold 42 85% 55% (#EEB32B); the 135° gradient direction is hero-gradient's",
+    "letter": "ב — the initial of «בקלות», which is what the navbar actually draws (Navbar.tsx:59, a text wordmark with no graphic mark beside it)",
+    "why_a_path_and_not_text": "an SVG used as a favicon is loaded as an image, so it fetches no external resource: Rubik would never arrive, and the system fallback is not guaranteed to cover Hebrew on every OS. The letter is drawn as a stroked path.",
+    "explicitly_not_used": "src/components/AnimatedLogo.tsx draws a ring-and-checkmark mark in the same palette and looks like the obvious source — it is dead code. No file imports it, and the path literal 'M20 30 L27 37 L40 22' does not appear anywhere in the built bundle. A favicon taken from it would have been a mark no visitor has ever seen."
+  },
+
+  "a_defect_this_round_produced_and_caught": {
+    "what": "the first version of favicon.svg did not render at all — broken image at every size",
+    "cause": "its header comment cited the CSS custom properties verbatim (--emerald-dark, --primary). An XML comment may not contain two consecutive hyphens, so the whole document failed to parse.",
+    "why_it_was_caught": "the file served 200 image/svg+xml at the right byte count, and the browser issued the request — every check short of rendering it passed. Only the <img> render showed the break.",
+    "fixed": "the comment now names the tokens without their leading double hyphen, and says why"
+  },
+
+  "verified_on_a_real_render": {
+    "how": "vite build, then vite preview on port 4361 (base /zchuyot/), then a real Chromium page load of http://127.0.0.1:4361/zchuyot/",
+    "not_grep": "the check is the resolved href in the live DOM, the request the browser itself issued, and the decoded image",
+    "rel_icon_links_in_dom": 1,
+    "resolved": "http://127.0.0.1:4361/zchuyot/favicon.svg",
+    "browser_actually_requested": "http://127.0.0.1:4361/zchuyot/favicon.svg (request #19, no query string — the tab's own fetch)",
+    "asset_response": "200 image/svg+xml 1328 bytes on the first build; the corrected file is 1658 bytes and was copied into dist and re-served",
+    "origin_root_favicon_svg": "404 — the fallback production takes is not reachable here",
+    "decoded": "naturalWidth/naturalHeight 64×64 at all four render sizes, img.decode() resolved — i.e. the document parses",
+    "vite_did_not_double_prefix": "dist/index.html carries href=\"/zchuyot/favicon.svg\" exactly as written; Vite left the root-absolute href alone rather than applying base to it",
+    "bundle_unchanged": "index-0ikxyjGB.js before and after — no JS was touched"
+  },
+
+  "screenshot": {
+    "file": "mark-at-four-sizes.png",
+    "what_it_is": "the asset rendered as an <img> at 16/32/64/128 px, inside the running page",
+    "what_it_is_not": "a picture of the tab. A tab icon lives in the browser chrome, not the viewport, and screenshot cannot capture it — the evidence for the tab is the resolved href and the network request."
+  },
+
+  "not_claimed": [
+    "not deployed. The build was not copied into _deploy/zchuyot-more30, so production still serves the portal's mark for this mount.",
+    "nothing was measured about the other eleven mounts this round.",
+    "public/favicon.ico (the builder default) was left in place and is simply not declared. Nothing requests it: the browser's .ico fallback goes to the origin, not the mount.",
+    "no ICO or PNG was authored, so a client that ignores SVG icons still falls back to the origin."
+  ],
+
+  "protected_untouched": "08 · 09 · bkalut-app · bkalot-admin · zr_* · NEDARIM3873 — none read or written this round",
+  "database": "read only — core.issues and core.run_progress, no migration"
+}
