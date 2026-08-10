@@ -1,0 +1,54 @@
+{
+  "when": "2026-08-10T18:22Z",
+  "system": "12-smel-ndln",
+  "issue": 158,
+  "route": "/smel/#/report",
+  "what_was_wrong": {
+    "typed": "עיר=ירושלים · רחוב=יפו · מספר=30",
+    "returned": "matched_address=\"דרך יפו-ת\\\"א 30 ת\\\"א\" · locality_name=\"תל אביב-יפו\" · neighborhood_name=\"פלורנטין\"",
+    "why_it_matters": "שם העיר שהוקלד אינו מגביל את ההתאמה בפונקציית הקצה, וכל מספר בדוח — ציון הכדאיות, המחיר הממוצע בשכונה, מדד התשואה ומגמת המחירים — חושב על עיר אחרת מזו שנשאלה. הכותרת הדפיסה את הכתובת המותאמת, אבל שום דבר על המסך לא אמר שההתאמה נפלה בעיר אחרת.",
+    "not_a_regression": "נמדד גם בייצור (more30.com/smel) וגם על הבנייה המקומית לפני השינוי הזה — אותה תוצאה."
+  },
+  "what_this_step_does_not_do": "אינו מתקן את ההתאמה עצמה. ההתאמה רצה בתוך nadlan-smart-research (פונקציית Edge בפרויקט csjekrvukbdznetsrodj), ולא נגעתי בה. הצעד הזה מזהה את הפער ואומר אותו במפורש, במקום להגיש דוח שקט על מקום אחר.",
+  "change": {
+    "files": [
+      "client/src/lib/app-state.tsx — typedCity נשמר בנפרד מהמחרוזת המורכבת \"רחוב מספר עיר\"",
+      "client/src/pages/Home.tsx — setTypedCity(city.trim()) בשליחת הטופס",
+      "client/src/lib/research.ts — localityMismatch() + normalizeLocality()",
+      "client/src/pages/Report.tsx — כרטיס אזהרה card-locality-mismatch מעל ציון הכדאיות"
+    ],
+    "comparison_rule": "מתריע רק כששני השמות אינם מכילים זה את זה אחרי נרמול (הסרת גרשיים, מקף→רווח, כיווץ רווחים). לכן «תל אביב» מול «תל אביב-יפו» שותק. שם חסר בצד אחד אינו אי-התאמה — הוא לא-ידוע, ולא-ידוע אינו טוען דבר.",
+    "single_alias": "תא→תל אביב בלבד, כי זו הצורה שהמרשם עצמו מחזיר (matched_address=\"…ת\\\"א\"). כל כינוי אחר היה טענה על מקום שלא נבדק.",
+    "nothing_invented": "הכרטיס מדפיס את שני השמות כפי שהם — מה שהוקלד ומה שחזר. אין גיאוקודינג, אין ניחוש עיר, ואין חסימה של הדוח."
+  },
+  "verified_on_build_not_source": {
+    "served_from": "vite preview על dist/public שנבנה מהמקור הזה (index-BzxcokTm.js)",
+    "width": 1280,
+    "cases": [
+      {
+        "typed": "יפו 30 ירושלים",
+        "locality_returned": "תל אביב-יפו · פלורנטין",
+        "banner": true,
+        "banner_text": "ביקשתם כתובת בירושלים, והמרשם החזיר התאמה בתל אביב-יפו (דרך יפו-ת\"א 30 ת\"א). כל הנתונים בדוח הזה — ציון הכדאיות, המחיר הממוצע, מדד התשואה ומגמת המחירים — מתייחסים לתל אביב-יפו, ולא לירושלים.",
+        "screenshot": "after-mismatch-jlm.png"
+      },
+      {
+        "typed": "דיזנגוף 100 תל אביב",
+        "locality_returned": "תל אביב-יפו · הצפון הישן החלק הדרומי",
+        "banner": false,
+        "why": "הבדל שם רשמי בלבד — «תל אביב» מוכל ב«תל אביב יפו» אחרי נרמול. זו בדיקת השתיקה: בלי הכלל החד-צדדי, כל חיפוש בתל אביב היה מקבל אזהרת שווא."
+      },
+      {
+        "typed": "הרצל 20 חיפה",
+        "locality_returned": "חיפה · הדר",
+        "banner": false,
+        "why": "התאמה נכונה בעיר שאינה תל אביב — מוודא שהשתיקה אינה תוצאה של המקרה הקודם בלבד.",
+        "screenshot": "after-match-haifa-nobanner.png"
+      }
+    ],
+    "retry_button": "button-retry-address נלחץ והחזיר ל-#/ עם הטופס — נבדק בפועל, לא רק נרנדר.",
+    "typecheck": "npx tsc --noEmit -p tsconfig.json — אפס שגיאות. אומת שאינו ריק: --listFiles מחזיר 1105 קבצים, מהם 65 תחת client/src, ושלושת הקבצים שנערכו ברשימה."
+  },
+  "not_deployed": "מכסת הפריסה של Vercel חסומה עד ~11/08 00:11Z (core.issues #83). dist נבנה ולא הועתק אל _deploy. הייצור ממשיך להציג את הדוח בלי האזהרה עד שהפריסה תעבור.",
+  "protected_untouched": "08 · 09 · bkalut-app · bkalot-admin · zr_* · NEDARIM3873 — לא נגעתי."
+}

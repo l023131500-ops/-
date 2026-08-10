@@ -11,6 +11,7 @@ import {
   Building2,
   Users,
   BadgeCheck,
+  AlertTriangle,
 } from "lucide-react";
 import { Header } from "@/components/Header";
 import { Card } from "@/components/ui/card";
@@ -24,6 +25,7 @@ import {
   formatCurrency,
   formatNumber,
   friendlyInsights,
+  localityMismatch,
   placeFacts,
   scoreVerdict,
 } from "@/lib/research";
@@ -64,7 +66,7 @@ const PREMIUM_ITEMS = [
 
 export default function Report() {
   const [, navigate] = useHashLocation();
-  const { profile, address } = useAppState();
+  const { profile, address, typedCity } = useAppState();
 
   useEffect(() => {
     // Guard against direct visits without a profile. Delay slightly so we do
@@ -96,6 +98,7 @@ export default function Report() {
   const placeRows = placeFacts(profile);
   const verdict = scoreVerdict(profile.opportunity_score);
   const shownAddress = profile.matched_address || address;
+  const wrongCity = localityMismatch(typedCity, profile.locality_name);
 
   return (
     <div className="min-h-screen bg-background">
@@ -126,6 +129,43 @@ export default function Report() {
             {profile.neighborhood_name ? ` · ${profile.neighborhood_name}` : ""}
           </p>
         </div>
+
+        {/* ⚠️ שם העיר שהוקלד אינו מגביל את ההתאמה בפונקציית המחקר: «יפו 30
+            ירושלים» אותר כ«דרך יפו-ת"א 30» בתל אביב-יפו, וכל מספר בדוח — הציון,
+            המחיר הממוצע, התשואה והמגמה — חושב אז על עיר אחרת מזו שנשאלה. עד
+            שההתאמה עצמה תתוקן, הפער נאמר כאן במפורש במקום להיקרא בשקט מתוך
+            כותרת הדוח. אין כאן ניחוש: מוצגים שני השמות כפי שהם. */}
+        {wrongCity && (
+          <Card
+            className="mb-8 border-destructive/50 bg-destructive/5 p-5 text-right sm:p-6"
+            data-testid="card-locality-mismatch"
+          >
+            <div className="mb-2 flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5 shrink-0 text-destructive" />
+              <h2 className="text-lg font-bold text-foreground">
+                המרשם איתר את הכתובת בעיר אחרת
+              </h2>
+            </div>
+            <p className="leading-relaxed text-muted-foreground" data-testid="text-locality-mismatch">
+              ביקשתם כתובת ב<span className="font-semibold text-foreground">{typedCity}</span>,
+              והמרשם החזיר התאמה ב
+              <span className="font-semibold text-foreground">{profile.locality_name}</span>
+              {profile.matched_address ? ` (${profile.matched_address})` : ""}. כל הנתונים
+              בדוח הזה — ציון הכדאיות, המחיר הממוצע, מדד התשואה ומגמת המחירים —
+              מתייחסים ל{profile.locality_name}, ולא ל{typedCity}.
+            </p>
+            <Button
+              variant="outline"
+              size="sm"
+              className="mt-4"
+              onClick={() => navigate("/")}
+              data-testid="button-retry-address"
+            >
+              <ArrowLeft className="ml-1.5 h-4 w-4" />
+              לחיפוש כתובת מדויקת יותר
+            </Button>
+          </Card>
+        )}
 
         {/* Score + summary */}
         <Card className="mb-8 overflow-hidden">

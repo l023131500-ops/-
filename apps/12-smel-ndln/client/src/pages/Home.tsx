@@ -58,7 +58,7 @@ const PREMIUM_FEATURES = [
 
 export default function Home() {
   const [, navigate] = useHashLocation();
-  const { setAddress, setProfile, setLeadSubmitted } = useAppState();
+  const { setAddress, setTypedCity, setProfile, setLeadSubmitted } = useAppState();
   const { toast } = useToast();
   const [city, setCity] = useState("");
   const [street, setStreet] = useState("");
@@ -98,6 +98,7 @@ export default function Home() {
       return;
     }
     setAddress(address);
+    setTypedCity(city.trim());
     research.mutate(address);
   }
 

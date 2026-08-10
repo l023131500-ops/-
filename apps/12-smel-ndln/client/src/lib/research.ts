@@ -73,6 +73,40 @@ export function placeFacts(
     }));
 }
 
+// ---- העיר שהוקלדה מול העיר שהמרשם החזיר ----
+// «יפו 30 ירושלים» matched "דרך יפו-ת\"א 30" with locality_name="תל אביב-יפו":
+// the typed city does not constrain the match, and every number in the report —
+// score, average price, yield, trend — is then computed for a different city
+// with nothing on screen saying so. This does not fix the matching (that runs
+// inside the edge function); it detects the gap and says it out loud.
+//
+// Deliberately one-sided: we warn only when neither name contains the other, so
+// "תל אביב" against "תל אביב-יפו" stays quiet. A missing name on either side is
+// not a mismatch — it is an unknown, and an unknown makes no claim.
+// The one abbreviation the registry itself emits — matched_address came back as
+// "דרך יפו-ת\"א 30 ת\"א" while locality_name was spelled out. Nothing else is
+// aliased: an alias we invent would be a claim about a place we did not check.
+const LOCALITY_ALIASES: Record<string, string> = { תא: "תל אביב" };
+
+function normalizeLocality(name: string): string {
+  const clean = name
+    .replace(/["'׳״]/g, "") // ת"א · ת״א → תא
+    .replace(/[-–—־]/g, " ") // תל אביב-יפו → תל אביב יפו
+    .replace(/\s+/g, " ")
+    .trim();
+  return LOCALITY_ALIASES[clean] ?? clean;
+}
+
+export function localityMismatch(
+  typedCity: string | null | undefined,
+  localityName: string | null | undefined,
+): boolean {
+  const typed = normalizeLocality(typedCity ?? "");
+  const matched = normalizeLocality(localityName ?? "");
+  if (!typed || !matched) return false;
+  return !matched.includes(typed) && !typed.includes(matched);
+}
+
 // Friendly conclusion label for the opportunity score.
 export function scoreVerdict(score: number): {
   label: string;
