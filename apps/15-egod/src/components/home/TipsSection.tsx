@@ -35,8 +35,13 @@ const TipsSection = () => {
     <section className="py-20 bg-gradient-to-br from-secondary/5 via-background to-secondary/10">
       <div className="container mx-auto px-4">
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-10">
-          <div className="inline-flex items-center gap-2 bg-secondary/10 text-secondary rounded-full px-4 py-1.5 mb-4 text-sm font-medium">
-            <Lightbulb className="w-4 h-4" />טיפים וכלים למגיד השיעור
+          {/* This band drew Lightbulb twice: here, and again on the card below.
+              The chip's own words open with "טיפים", so its glyph repeated the
+              label beside it. The card's tile keeps its lightbulb — a rotating
+              card shows a tip's title and body and nothing on it says the word
+              "tip", so there the mark carries what the text does not. */}
+          <div className="inline-flex items-center bg-secondary/10 text-secondary rounded-full px-4 py-1.5 mb-4 text-sm font-medium">
+            טיפים וכלים למגיד השיעור
           </div>
           <h2 className="font-heading text-3xl md:text-4xl font-bold text-foreground">
             תובנה קצרה ליום, לשימוש בשיעור עצמו
