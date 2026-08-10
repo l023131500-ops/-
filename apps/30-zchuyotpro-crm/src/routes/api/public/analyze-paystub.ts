@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-// Pay-stub analysis dispatch — forwards a document to n8n which runs OCR/LLM extraction
-// and writes the result back via PATCH to /api/public/paystub-result (or directly via service role).
+// Pay-stub analysis dispatch — forwards a document to n8n which runs OCR/LLM extraction.
+// n8n is expected to write documents.analysis_result back itself via the service role;
+// there is no /api/public/paystub-result route in this app to receive it.
 export const Route = createFileRoute("/api/public/analyze-paystub")({
   server: {
     handlers: {
@@ -27,18 +28,15 @@ export const Route = createFileRoute("/api/public/analyze-paystub")({
           }
           await supabaseAdmin.from("documents").update({ processing_status: "processing" }).eq("id", body.documentId);
 
+          // Never invent an analysis_result. AnalysisView reads gross_salary/net_salary out of it
+          // and the "עדכון פרופיל הלקוח" button writes those numbers into client_financial_profile,
+          // where they are indistinguishable from extracted data. If the analysis did not run, say so.
           if (!webhookUrl) {
-            // Demo / no-webhook fallback: write a plausible mock result so UI flows can be tested
-            const mock = {
-              gross_salary: 12500,
-              net_salary: 9800,
-              employer: "—",
-              deductions: { tax: 1200, social: 800, health: 700 },
-              period: new Date().toISOString().slice(0, 7),
-              mock: true,
-            };
-            await supabaseAdmin.from("documents").update({ processing_status: "completed", analysis_result: mock }).eq("id", body.documentId);
-            return new Response(JSON.stringify({ ok: true, dispatched: false, result: mock }), { status: 200, headers: { "content-type": "application/json" } });
+            await supabaseAdmin.from("documents").update({ processing_status: "failed" }).eq("id", body.documentId);
+            return new Response(
+              JSON.stringify({ ok: false, dispatched: false, error: "ניתוח תלושים אינו מוגדר בסביבה זו — לא הוגדר N8N_ANALYZE_PAYSTUB_URL" }),
+              { status: 503, headers: { "content-type": "application/json" } },
+            );
           }
 
           const res = await fetch(webhookUrl, {
@@ -46,7 +44,16 @@ export const Route = createFileRoute("/api/public/analyze-paystub")({
             headers: { "content-type": "application/json" },
             body: JSON.stringify({ event: "paystub.analyze", document: doc, signedUrl }),
           }).catch((e) => { console.warn("[analyze-paystub] webhook fetch failed", e); return null; });
-          return new Response(JSON.stringify({ ok: true, dispatched: !!res?.ok }), { status: 200, headers: { "content-type": "application/json" } });
+          if (!res?.ok) {
+            // The document was already marked "processing" above; leaving it there would show
+            // "בעיבוד" forever for a dispatch that never landed.
+            await supabaseAdmin.from("documents").update({ processing_status: "failed" }).eq("id", body.documentId);
+            return new Response(
+              JSON.stringify({ ok: false, dispatched: false, error: "שליחת המסמך לניתוח נכשלה" }),
+              { status: 502, headers: { "content-type": "application/json" } },
+            );
+          }
+          return new Response(JSON.stringify({ ok: true, dispatched: true }), { status: 200, headers: { "content-type": "application/json" } });
         } catch (e) {
           console.error("[analyze-paystub]", e);
           return new Response(JSON.stringify({ error: "internal" }), { status: 500, headers: { "content-type": "application/json" } });

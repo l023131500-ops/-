@@ -204,14 +204,13 @@ function Page() {
         method: "POST", headers: { "content-type": "application/json" },
         body: JSON.stringify({ documentId: d.id }),
       });
-      if (!r.ok) throw new Error("נכשל ניתוח");
-      const out = await r.json();
-      return out as { ok: boolean; dispatched: boolean; result?: Record<string, unknown> };
+      const out = (await r.json().catch(() => null)) as { ok: boolean; dispatched: boolean; error?: string } | null;
+      if (!r.ok) throw new Error(out?.error || "נכשל ניתוח");
+      return out!;
     },
-    onSuccess: (out, d) => {
+    onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["doc-center"] });
-      if (out.result) setAnalysisDoc({ ...d, analysis_result: out.result, processing_status: "completed" });
-      else toast.info("הניתוח נשלח, התוצאות יעודכנו כשיתקבלו");
+      toast.info("הניתוח נשלח, התוצאות יעודכנו כשיתקבלו");
     },
     onError: (e: Error) => toast.error(e.message),
   });
@@ -370,9 +369,13 @@ function AnalysisView({ doc, onApply }: { doc: DocRow; onApply: () => void }) {
   const net = Number(r.net_salary ?? 0);
   const employer = String(r.employer ?? "—");
   const deductions = r.deductions as Record<string, number> | undefined;
+  // Rows written by the old no-webhook fallback carry mock:true. The numbers in them were never
+  // extracted from anything, so they must not reach client_financial_profile.
+  const isMock = !!(r.mock as boolean);
   const [busy, setBusy] = useState(false);
 
   async function applyToProfile() {
+    if (isMock) { toast.error("נתוני דמו — לא ניתן לעדכן מהם פרופיל לקוח"); return; }
     if (!doc.client_id) { toast.error("המסמך לא משויך ללקוח"); return; }
     if (!confirm("לעדכן את פרופיל הלקוח עם הנתונים שחולצו?")) return;
     setBusy(true);
@@ -408,9 +411,9 @@ function AnalysisView({ doc, onApply }: { doc: DocRow; onApply: () => void }) {
           </div>
         </div>
       )}
-      {(r.mock as boolean) && <div className="text-xs text-muted-foreground italic">(נתוני דמו — N8N_ANALYZE_PAYSTUB_URL לא מוגדר)</div>}
+      {isMock && <div className="text-xs text-destructive">נתוני דמו — המספרים כאן לא חולצו מהמסמך ואינם ניתנים להחלה על פרופיל הלקוח</div>}
       <DialogFooter>
-        <Button onClick={applyToProfile} disabled={busy || !doc.client_id}>
+        <Button onClick={applyToProfile} disabled={busy || !doc.client_id || isMock}>
           {busy && <Loader2 className="h-4 w-4 animate-spin ms-2" />}החל על פרופיל הלקוח
         </Button>
       </DialogFooter>
