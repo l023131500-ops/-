@@ -21,7 +21,10 @@ export async function buildApp(): Promise<Express> {
   // בפריסה תחת נתיב (more30.com/kupot) הבקשות מגיעות כ-/kupot/api/... בעוד
   // registerRoutes מגדיר /api/... — מסירים את הקידומת לפני הניתוב. ריק בברירת
   // מחדל, כך שההרצה בשורש הדומיין לא משתנה.
-  const PREFIX = (process.env.API_PATH_PREFIX || "").replace(/\/$/, "");
+  // ברירת המחדל היא "/kupot" ולא ריק: הפונקציה נקראת דרך rewrite של Vercel,
+  // ולכן היא רואה את הנתיב המקורי. אין לאפליקציה מסלול שמתחיל ב-/kupot, ולכן
+  // ההסרה חסרת השפעה כשמריצים בשורש הדומיין — ומכאן שאין צורך במשתנה סביבה.
+  const PREFIX = (process.env.API_PATH_PREFIX ?? "/kupot").replace(/\/$/, "");
   if (PREFIX) {
     app.use((req, _res, next) => {
       if (req.url === PREFIX) req.url = "/";

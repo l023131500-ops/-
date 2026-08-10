@@ -42460,7 +42460,7 @@ var appPromise = null;
 async function buildApp() {
   const app = (0, import_express.default)();
   const httpServer = createServer(app);
-  const PREFIX2 = (process.env.API_PATH_PREFIX || "").replace(/\/$/, "");
+  const PREFIX2 = (process.env.API_PATH_PREFIX ?? "/kupot").replace(/\/$/, "");
   if (PREFIX2) {
     app.use((req2, _res, next) => {
       if (req2.url === PREFIX2) req2.url = "/";

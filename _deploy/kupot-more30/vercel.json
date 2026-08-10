@@ -12,6 +12,7 @@
   },
 
   "rewrites": [
+    { "source": "/kupot/api/(.*)", "destination": "/api/index" },
     { "source": "/api/(.*)", "destination": "/api/index" },
     { "source": "/kupot", "destination": "/kupot/index.html" },
     { "source": "/kupot/:path*", "destination": "/kupot/index.html" }
