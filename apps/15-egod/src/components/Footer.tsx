@@ -42,7 +42,7 @@ const Footer = () => {
                 <Phone className="w-4 h-4 text-secondary" />
                 <span dir="ltr">02-3131600</span>
               </a>
-              <a href="https://wa.me/9722313160?text=שלום%2C%20אני%20מעוניין%20בפרטים%20על%20איגוד%20השיעורים" target="_blank" rel="noopener" className="flex items-center gap-2 inline-block py-1 text-sm text-primary-foreground/70 hover:text-secondary transition-smooth">
+              <a href="https://wa.me/97223131600?text=שלום%2C%20אני%20מעוניין%20בפרטים%20על%20איגוד%20השיעורים" target="_blank" rel="noopener" className="flex items-center gap-2 inline-block py-1 text-sm text-primary-foreground/70 hover:text-secondary transition-smooth">
                 <MessageCircle className="w-4 h-4 text-secondary" />
                 <span dir="ltr">WhatsApp 02-3131600</span>
               </a>

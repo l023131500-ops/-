@@ -42,8 +42,8 @@
 | `apps/27-bkalut-price/server/routes.ts` | 1936 | `972237131500` | `97223131500` |
 | `apps/27-bkalut-price/server/storage.ts` | 590 | `972237131500` | `97223131500` |
 | `apps/27-bkalut-price/server/supabase-storage.ts` | 274 | `972237131500` | `97223131500` |
-| `apps/15-egod/src/components/Footer.tsx` | 45 | `9722313160` | `97223131600` |
-| `apps/15-egod/src/pages/About.tsx` | 40 | `9722313160` | `97223131600` |
+| ~~`apps/15-egod/src/components/Footer.tsx`~~ | 45 | `9722313160` | `97223131600` ✅ |
+| ~~`apps/15-egod/src/pages/About.tsx`~~ | 40 | `9722313160` | `97223131600` ✅ |
 
 ⚠️ **לפני התיקון של 11 ו-27:** `11-bkalut-marketing2` ו-`27-bkalut-price` אינם
 ברשימת המוגנות (08 · 09 · `bkalut-app` · `bkalot-admin` · `zr_*` ·
@@ -52,6 +52,20 @@
 ⚠️ **התיקון לבדו אינו נראה בייצור.** שמונה מהקישורים יושבים ב-HTML סטטי ושישה
 נבנים; כל אחד מהם דורש בנייה ופריסה של האפליקציה שלו. זו עבודה של כמה סבבים,
 לא של אחד — ראה `deploy-copy-can-break-live-sites`.
+
+### עודכן 10/08/2026 (ו) — 15-egod תוקן וחי (2 מתוך 14)
+
+שני הקישורים של `15-egod` תוקנו במקור, נבנו (`index-Bjobj1kE.js`) ונפרסו
+לייצור (`dpl_8sS5FspXLie1x51EY1cbwrnytwh5`). לפני הפריסה החבילה החיה נשאה
+`wa.me/9722313160`; אחריה קריאת DOM חי על `https://more30.com/egod/about`
+מחזירה `https://wa.me/97223131600` לשני ה-`<a>`, מול הטקסט המוצג
+`02-3131600`. צילום: `QA/platform/egod-whatsapp-0810.png`.
+
+`index.html` של הבנייה החדשה זהה לזה שהיה ב-`_deploy` פרט ל-hash של החבילה,
+ו-hash זה הוא בדיוק מה שהיה חי לפני הפריסה — כלומר העתקת ה-`_deploy` בטוחה כאן
+(ראה `deploy-copy-can-break-live-sites`).
+
+**נותרו 12 קישורים** — 8 ב-`27-bkalut-price`, 4 ב-`05` ו-`11`.
 
 ## מה שדורש אותך (קישור אחד)
 

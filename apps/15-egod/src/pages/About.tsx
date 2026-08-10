@@ -37,7 +37,7 @@ const About = () => (
           <h2 className="font-heading text-3xl font-bold text-primary-foreground mb-6">רוצה לדעת עוד?</h2>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <a href="tel:023131600" className="px-5 py-3 rounded-xl bg-gradient-gold text-primary font-semibold shadow-gold hover:scale-105 transition-smooth" dir="ltr">📞 02-3131600</a>
-            <a href="https://wa.me/9722313160" target="_blank" rel="noopener" className="px-5 py-3 rounded-xl bg-card/10 border border-secondary/30 text-primary-foreground font-semibold hover:bg-card/20 transition-smooth" dir="ltr">💬 WhatsApp</a>
+            <a href="https://wa.me/97223131600" target="_blank" rel="noopener" className="px-5 py-3 rounded-xl bg-card/10 border border-secondary/30 text-primary-foreground font-semibold hover:bg-card/20 transition-smooth" dir="ltr">💬 WhatsApp</a>
             <a href="mailto:a023131600@gmail.com" className="px-5 py-3 rounded-xl bg-card/10 border border-secondary/30 text-primary-foreground font-semibold hover:bg-card/20 transition-smooth" dir="ltr">✉️ Email</a>
           </div>
         </div>
