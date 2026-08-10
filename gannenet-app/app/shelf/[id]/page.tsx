@@ -3,6 +3,7 @@ import { seedItems, type ShelfItem } from "@/lib/catalog";
 import { getDriveItem } from "@/lib/drive-catalog";
 import { getUploaded } from "@/lib/supabase";
 import { readOverrides } from "@/lib/overrides";
+import { withBase } from "@/lib/base";
 import PdfViewer from "@/components/PdfViewer";
 
 // Rendered on demand so admin overrides (hidden file / trimmed pages) always apply.
@@ -26,7 +27,7 @@ function kindChip(kind: ShelfItem["kind"]) {
 
 // Drive-streamed files force attachment via ?dl=1; local assets download directly.
 function downloadUrl(item: ShelfItem) {
-  return item.source === "drive" ? `${item.file}?dl=1` : item.file;
+  return item.source === "drive" ? `${withBase(item.file)}?dl=1` : withBase(item.file);
 }
 
 async function resolveItem(id: string): Promise<ShelfItem | null> {
@@ -79,7 +80,7 @@ export default async function ShelfItemPage({ params }: { params: { id: string }
           <a href={downloadUrl(item)} className="btn btn-main" style={{ fontSize: 14.5 }}>
             הורדת הקובץ
           </a>
-          <a href={item.file} target="_blank" rel="noopener" className="btn btn-ghost" style={{ fontSize: 14.5 }}>
+          <a href={withBase(item.file)} target="_blank" rel="noopener" className="btn btn-ghost" style={{ fontSize: 14.5 }}>
             פתיחה בכרטיסייה חדשה
           </a>
           {item.viewUrl && (
@@ -90,17 +91,17 @@ export default async function ShelfItemPage({ params }: { params: { id: string }
         </div>
 
         {item.kind === "pdf" ? (
-          <PdfViewer fileUrl={item.file} title={item.title} hiddenPages={item.hiddenPages || []} />
+          <PdfViewer fileUrl={withBase(item.file)} title={item.title} hiddenPages={item.hiddenPages || []} />
         ) : (
           <div style={{ marginTop: 20, borderRadius: 14, overflow: "hidden", border: "1px solid #ebe7de", background: "#f4f2ec" }}>
             {item.kind === "image" ? (
-              <img src={item.file} alt={item.title} style={{ width: "100%", height: "auto", display: "block" }} />
+              <img src={withBase(item.file)} alt={item.title} style={{ width: "100%", height: "auto", display: "block" }} />
             ) : item.kind === "media" ? (
               <div style={{ padding: 24 }}>
                 {item.mime.startsWith("video/") ? (
-                  <video src={item.file} controls style={{ width: "100%", borderRadius: 10 }} />
+                  <video src={withBase(item.file)} controls style={{ width: "100%", borderRadius: 10 }} />
                 ) : (
-                  <audio src={item.file} controls style={{ width: "100%" }} />
+                  <audio src={withBase(item.file)} controls style={{ width: "100%" }} />
                 )}
               </div>
             ) : (

@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { withBase } from "@/lib/base";
 
 type Row = {
   id: string;
@@ -53,7 +54,7 @@ export default function AdminPage() {
   async function login(k: string) {
     setErr("");
     try {
-      const res = await fetch("/api/admin/list", { method: "POST", headers: { "x-admin-key": k } });
+      const res = await fetch(withBase("/api/admin/list"), { method: "POST", headers: { "x-admin-key": k } });
       if (res.status === 401) {
         setErr("סיסמה שגויה.");
         setAuthed(false);
@@ -80,7 +81,7 @@ export default function AdminPage() {
     setMsg("");
     try {
       const hiddenPages = parsePages(pagesText);
-      const res = await fetch("/api/admin/override", {
+      const res = await fetch(withBase("/api/admin/override"), {
         method: "POST",
         headers: { "x-admin-key": key, "Content-Type": "application/json" },
         body: JSON.stringify({ fileId: r.id, hidden, hiddenPages }),

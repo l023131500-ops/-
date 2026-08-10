@@ -1,20 +1,25 @@
 /* גננת בקליק — service worker: offline for the whole app (except AI) */
-const VERSION = "gannenet-v1";
+const VERSION = "gannenet-v2";
 const SHELL = "shell-" + VERSION;
 const FILES = "files-" + VERSION;
 const CATALOG = "catalog-" + VERSION;
 
+// Base path this app is served under (e.g. "/40" on more.30.com, "" standalone),
+// derived from the registration scope so the SW works in both modes.
+const BASE = new URL(self.registration.scope).pathname.replace(/\/$/, "");
+const p = (path) => BASE + path;
+
 const CORE = [
-  "/",
-  "/shelf",
-  "/shelf/upload",
-  "/library",
-  "/newsletter",
-  "/calendar",
-  "/pricing",
-  "/generator",
-  "/manifest.webmanifest",
-  "/icon.svg",
+  p("/"),
+  p("/shelf"),
+  p("/shelf/upload"),
+  p("/library"),
+  p("/newsletter"),
+  p("/calendar"),
+  p("/pricing"),
+  p("/generator"),
+  p("/manifest.webmanifest"),
+  p("/icon.svg"),
 ];
 
 self.addEventListener("install", (e) => {
@@ -36,10 +41,10 @@ self.addEventListener("activate", (e) => {
   );
 });
 
-const isFile = (u) => u.pathname.startsWith("/api/drive/");
-const isCatalog = (u) => u.pathname === "/api/drive-catalog";
+const isFile = (u) => u.pathname.startsWith(p("/api/drive/"));
+const isCatalog = (u) => u.pathname === p("/api/drive-catalog");
 const isStatic = (u) =>
-  u.pathname.startsWith("/_next/static") ||
+  u.pathname.includes("/_next/static") ||
   /\.(png|jpe?g|svg|gif|webp|css|js|woff2?|ico|webmanifest)$/.test(u.pathname);
 
 self.addEventListener("fetch", (e) => {
@@ -50,9 +55,9 @@ self.addEventListener("fetch", (e) => {
 
   // Never cache admin surfaces or the AI generator API — must stay live.
   if (
-    url.pathname.startsWith("/api/admin") ||
-    url.pathname.startsWith("/shelf/admin") ||
-    url.pathname.startsWith("/api/generate")
+    url.pathname.startsWith(p("/api/admin")) ||
+    url.pathname.startsWith(p("/shelf/admin")) ||
+    url.pathname.startsWith(p("/api/generate"))
   ) {
     return;
   }
@@ -109,8 +114,8 @@ async function navigation(req) {
   } catch {
     return (
       (await cache.match(req)) ||
-      (await cache.match("/shelf")) ||
-      (await cache.match("/")) ||
+      (await cache.match(p("/shelf"))) ||
+      (await cache.match(p("/"))) ||
       Response.error()
     );
   }

@@ -8,6 +8,7 @@ import {
   allSenders,
   type ShelfItem,
 } from "@/lib/catalog";
+import { withBase } from "@/lib/base";
 
 function fmtDate(d: string) {
   if (!d) return "";
@@ -50,8 +51,8 @@ export default function ShelfPage() {
   useEffect(() => {
     let alive = true;
     Promise.all([
-      fetch("/api/drive-catalog").then((r) => (r.ok ? r.json() : { items: [] })).catch(() => ({ items: [] })),
-      fetch("/api/catalog").then((r) => (r.ok ? r.json() : { items: [] })).catch(() => ({ items: [] })),
+      fetch(withBase("/api/drive-catalog")).then((r) => (r.ok ? r.json() : { items: [] })).catch(() => ({ items: [] })),
+      fetch(withBase("/api/catalog")).then((r) => (r.ok ? r.json() : { items: [] })).catch(() => ({ items: [] })),
     ]).then(([d, u]) => {
       if (!alive) return;
       if (Array.isArray(d.items)) setDrive(d.items as ShelfItem[]);
@@ -104,7 +105,7 @@ export default function ShelfPage() {
 
   function saveOffline() {
     // Same-origin files only (Drive proxy + in-repo assets); cross-origin uploads are skipped.
-    const urls = filtered.filter((i) => i.file.startsWith("/")).slice(0, 500).map((i) => i.file);
+    const urls = filtered.filter((i) => i.file.startsWith("/")).slice(0, 500).map((i) => withBase(i.file));
     if (!urls.length) return;
     if (urls.length > 50 && !confirm(`לשמור ${urls.length} קבצים לצפייה ללא אינטרנט? זה עשוי לקחת זמן ולתפוס מקום במכשיר.`)) return;
     const sw = navigator.serviceWorker?.controller;
@@ -196,7 +197,7 @@ export default function ShelfPage() {
                 <Link href={`/shelf/${i.id}`} className="btn btn-main" style={{ flex: 1, justifyContent: "center", padding: ".5rem", fontSize: 14 }}>
                   פתיחה וצפייה
                 </Link>
-                <a href={i.source === "drive" ? `${i.file}?dl=1` : i.file} className="btn btn-ghost" style={{ padding: ".5rem .7rem", fontSize: 14 }}>
+                <a href={i.source === "drive" ? `${withBase(i.file)}?dl=1` : withBase(i.file)} className="btn btn-ghost" style={{ padding: ".5rem .7rem", fontSize: 14 }}>
                   הורדה
                 </a>
               </div>
