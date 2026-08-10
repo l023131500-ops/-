@@ -45,6 +45,34 @@ export function formatDistance(meters: number | null | undefined): string {
   return `${(m / 1000).toFixed(1)} ק״מ`;
 }
 
+// ---- "רקע על המקום" ----
+// The card used to assert a character — "אופי מובהק", "תמהיל אוכלוסייה ייחודי",
+// "אטרקטיבי במיוחד" — that no field in the payload backs and that came out
+// identical for every address in the country. These are the keys the same card
+// can stand on: fields the payload actually carries, that are not demographic
+// (those belong to the paid report, per the premium gate) and that no other
+// surface already prints. A key the registry did not answer is skipped, not
+// filled in — the same rule the rest of the report follows.
+const PLACE_KEYS = ["dist_central_place", "dist_synagogue", "synagogues_500m"];
+const PLACE_DISTANCE_KEYS = new Set(["dist_central_place", "dist_synagogue"]);
+
+export function placeFacts(
+  profile: ResearchProfile,
+): { key: string; label: string; value: string }[] {
+  return PLACE_KEYS.map((key) => paramByKey(profile, key))
+    .filter(
+      (p): p is ResearchParameter =>
+        !!p && p.value !== null && p.value !== undefined && p.value !== "",
+    )
+    .map((p) => ({
+      key: p.key,
+      label: p.label,
+      value: PLACE_DISTANCE_KEYS.has(p.key)
+        ? formatDistance(Number(p.value))
+        : formatNumber(p.value),
+    }));
+}
+
 // Friendly conclusion label for the opportunity score.
 export function scoreVerdict(score: number): {
   label: string;

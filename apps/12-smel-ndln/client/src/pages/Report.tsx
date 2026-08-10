@@ -24,6 +24,7 @@ import {
   formatCurrency,
   formatNumber,
   friendlyInsights,
+  placeFacts,
   scoreVerdict,
 } from "@/lib/research";
 
@@ -92,6 +93,7 @@ export default function Report() {
     (metric(profile, "index_yield") as number);
   const priceTrend = paramByKey(profile, "price_increases")?.value as number;
   const insights = friendlyInsights(profile);
+  const placeRows = placeFacts(profile);
   const verdict = scoreVerdict(profile.opportunity_score);
   const shownAddress = profile.matched_address || address;
 
@@ -169,21 +171,48 @@ export default function Report() {
 
         {/* Place background + highlights */}
         <div className="mb-8 grid gap-4 md:grid-cols-2">
+          {/* ⚠️ הפסקה שהייתה כאן נכתבה בלקוח ולא נשענה על אף שדה: "אזור עם אופי
+              מובהק המשלב נגישות, ביקוש ותמהיל אוכלוסייה ייחודי" יצא זהה מילה
+              במילה לכל כתובת בארץ, והמשפט "הנתונים שאספנו מציירים תמונה" הצהיר
+              על נתונים בלי להציג אחד. זה הבלוק היחיד בדוח שכתב טענה בלי מקור,
+              בזמן שכל השאר מדפיס "—" כשאין ערך. במקומו: היכן המרשם איתר את
+              הכתובת, ואילו שדות סביבה הוא באמת החזיר. */}
           <Card className="p-6 text-right" data-testid="card-place-background">
             <div className="mb-3 flex items-center gap-2">
               <HomeIcon className="h-5 w-5 text-primary dark:text-accent" />
               <h3 className="text-lg font-bold text-foreground">רקע על המקום</h3>
             </div>
             <p className="leading-relaxed text-muted-foreground">
+              הכתובת אותרה במרשם כ
+              <span className="font-semibold text-foreground">
+                {profile.matched_address || shownAddress}
+              </span>
               {profile.neighborhood_name ? (
-                <>שכונת <span className="font-semibold text-foreground">{profile.neighborhood_name}</span> ב{profile.locality_name} </>
+                <>, בשכונת <span className="font-semibold text-foreground">{profile.neighborhood_name}</span> ב{profile.locality_name}.</>
               ) : (
-                <>{profile.locality_name} </>
+                <> ב{profile.locality_name}. שיוך לשכונה אינו זמין במרשם לכתובת זו.</>
               )}
-              היא אזור עם אופי מובהק המשלב נגישות, ביקוש ותמהיל אוכלוסייה ייחודי. הנתונים
-              שאספנו מציירים תמונה של אזור {verdict.tone === "high" ? "אטרקטיבי במיוחד" : "בעל פוטנציאל"} להשקעה
-              ולמגורים כאחד.
             </p>
+            {/* הודעת ההיעדר אינה נושאת "text-place-…": הקידומת הזו שמורה לשורות
+                העובדה עצמן, וכל שאילתה שסופרת אותן הייתה סופרת גם אותה. */}
+            {placeRows.length > 0 ? (
+              <ul className="mt-4 space-y-2" data-testid="list-place-facts">
+                {placeRows.map((f) => (
+                  <li
+                    key={f.key}
+                    className="flex items-baseline justify-between gap-3 text-sm"
+                    data-testid={`text-place-${f.key}`}
+                  >
+                    <span className="text-muted-foreground">{f.label}</span>
+                    <span className="font-semibold text-foreground">{f.value}</span>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="mt-4 text-sm text-muted-foreground" data-testid="text-noplace">
+                נתוני סביבה נוספים אינם זמינים במרשם לכתובת זו.
+              </p>
+            )}
           </Card>
 
           <Card className="p-6 text-right" data-testid="card-highlights">

@@ -1,0 +1,59 @@
+{
+  "when": "2026-08-10T15:45Z",
+  "system": "12-smel-ndln",
+  "route": "/smel/#/report",
+  "section": "§6 — קופי ממלא-מקום",
+  "finding": {
+    "where": "client/src/pages/Report.tsx — כרטיס \"רקע על המקום\"",
+    "what": "פסקה שנכתבה בלקוח ולא נשענה על אף שדה מה-payload. המשתנה היחיד בה היה שם השכונה ובינארי אחד מ-scoreVerdict(tone); כל השאר יצא זהה מילה במילה לכל כתובת בארץ.",
+    "why_it_matters": "זה הבלוק היחיד בדוח שכותב טענה בלי מקור. כל שאר המשטחים ב-Report.tsx מדפיסים \"—\" כשאין ערך (StatCard), מסננים לפי סף (friendlyInsights) או מוצגים רק כשיש (מקורות), וההירו של Home.tsx כבר נוקה מאותה שפה בסבב קודם — הכרטיס הזה נשאר.",
+    "proven_identical_across_addresses": true
+  },
+  "before_production": {
+    "url": "https://more30.com/smel/",
+    "measured_at_width": 1280,
+    "samples": [
+      {
+        "typed": "דיזנגוף 100 תל אביב",
+        "card_text": "שכונת הצפון הישן החלק הדרומי בתל אביב-יפו היא אזור עם אופי מובהק המשלב נגישות, ביקוש ותמהיל אוכלוסייה ייחודי. הנתונים שאספנו מציירים תמונה של אזור בעל פוטנציאל להשקעה ולמגורים כאחד.",
+        "screenshot": "before-place-production-tlv.png"
+      },
+      {
+        "typed": "יפו 30 ירושלים",
+        "card_text": "שכונת פלורנטין בתל אביב-יפו היא אזור עם אופי מובהק המשלב נגישות, ביקוש ותמהיל אוכלוסייה ייחודי. הנתונים שאספנו מציירים תמונה של אזור בעל פוטנציאל להשקעה ולמגורים כאחד.",
+        "screenshot": "before-place-production-jlm.png"
+      }
+    ],
+    "identical_tail": "שתי הכתובות — ערים שונות, שכונות שונות, ציונים שונים — מחזירות את אותו משפט בדיוק אחרי שם השכונה."
+  },
+  "payload_evidence": {
+    "endpoint": "POST https://csjekrvukbdznetsrodj.supabase.co/functions/v1/nadlan-smart-research (verify_jwt=false)",
+    "no_description_field": "ResearchProfile ב-shared/schema.ts אינו נושא שדה תיאור/רקע כלשהו. הפרוזה נוצרה כולה בלקוח.",
+    "parameter_set_is_not_fixed": "אותה כתובת בדיוק (דיזנגוף 100 תל אביב) החזירה בקריאה אחת 19 פרמטרים ובאחרת 17 — dist_synagogue · synagogues_500m · dist_central_place נכחו בחלק מהקריאות ולא בכולן. לכן הכרטיס חייב לדלג על מפתח שלא חזר, ולא למלא אותו."
+  },
+  "fix": {
+    "files": [
+      "client/src/lib/research.ts — placeFacts(): PLACE_KEYS = dist_central_place · dist_synagogue · synagogues_500m, מסונן למה שבאמת חזר",
+      "client/src/pages/Report.tsx — הכרטיס מדפיס איתור-במרשם + שורות העובדה, או הודעת היעדר"
+    ],
+    "keys_chosen_because": "שדות שה-payload נושא, שאינם דמוגרפיים (אלה של הדוח בתשלום — לפי שער הפרימיום עצמו: \"סוג אוכלוסייה (גיל, השכלה, שכר)\"), ושאף משטח אחר אינו מדפיס כבר.",
+    "nothing_invented": "לא בוצע גיאוקודינג הפוך, לא הומצא ערך, ולא נוסחה טענה על אופי האזור. מפתח שהמרשם לא ענה עליו — נעדר.",
+    "testid_note": "הודעת ההיעדר היא text-noplace ולא text-place-…: שאילתת קידומת שסופרת את שורות העובדה הייתה סופרת גם אותה (זו הייתה טעות המדידה בריצה הראשונה כאן — 'rows:1' על כרטיס בלי אף שורה)."
+  },
+  "after_local_build": {
+    "served_from": "vite preview על dist/public שנבנה מהמקור הזה (index-ewZkQnZA.js), לא מהקוד",
+    "samples": [
+      { "typed": "דיזנגוף 100 תל אביב", "fact_rows": 2, "none_row": 0, "text": "הכתובת אותרה במרשם כדיזנגוף 100 תל אביב, בשכונת הצפון הישן החלק הדרומי בתל אביב-יפו. · מרחק לבית כנסת קרוב 319 מ׳ · בתי כנסת ברדיוס 500 מ' 4", "screenshot": "after-place-localbuild.png" },
+      { "typed": "יפו 30 ירושלים", "fact_rows": 0, "none_row": 1, "text": "הכתובת אותרה במרשם כדרך יפו-ת\"א 30 ת\"א, בשכונת פלורנטין בתל אביב-יפו. · נתוני סביבה נוספים אינם זמינים במרשם לכתובת זו.", "screenshot": "after-place-localbuild-nodata.png" },
+      { "typed": "הרצל 20 חיפה", "fact_rows": 0, "none_row": 1, "text": "הכתובת אותרה במרשם כהרצל 20 חיפה, בשכונת הדר בחיפה. · נתוני סביבה נוספים אינם זמינים במרשם לכתובת זו." }
+    ],
+    "old_prose_occurrences": 0,
+    "both_branches_exercised": true
+  },
+  "found_in_passing_not_fixed_here": {
+    "what": "«יפו 30 ירושלים» מותאם ל«דרך יפו-ת\"א 30» בתל אביב-יפו — שם העיר שהוקלד אינו מגביל את ההתאמה, והדוח כולו (ציון, מחיר ממוצע, שכונה) מתייחס לעיר אחרת.",
+    "visible_before_this_change_too": "כן — H1 של הדוח כבר הדפיס את matched_address. השינוי כאן רק אומר במפורש שזו התאמת מרשם, ולכן הפער בולט יותר.",
+    "scope": "באג נכונות בפונקציית הקצה/הגיאוקודר, לא §6. נרשם ולא תוקן בצעד הזה."
+  },
+  "not_deployed": "מכסת הפריסה חסומה עד ~00:11Z (core.issues #83). dist נבנה ולא הועתק אל _deploy."
+}
