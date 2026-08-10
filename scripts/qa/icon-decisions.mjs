@@ -58,6 +58,23 @@
  * page instead of against an import list. It writes a review sheet per system
  * and deliberately does NOT touch _icon-decisions.json — the counts there come
  * from the unfiltered pass and a listing run must not narrow them.
+ *
+ * ── Two faults the slot count cannot see ────────────────────────────────────
+ * The 10/08 zchuyot round fixed two real §6 defects and every number here stayed
+ * identical bit-for-bit (git diff on _icon-decisions.json was empty). Neither was
+ * a caching problem — the counts simply do not measure those shapes:
+ *
+ *   A. One control, the same mark twice. The chat launcher drew
+ *      lucide-message-circle and, forty pixels later, a 💬 in its own label. An
+ *      emoji is a text node, not an SVG, so it was never counted; removing it
+ *      could not move `rendered`, `decisions` or `lucide`.
+ *   B. One datum, two glyphs. 02-3131500 was drawn with phone-call in the
+ *      contact strip and phone in the footer list. Both slots existed before and
+ *      after — a swap is not a removal, so nothing shrank.
+ *
+ * `doubleMark` and `splitGlyph` below measure exactly those two. They are lists,
+ * not counts: each entry names a place to look. They deliberately do not feed the
+ * `decisions` ranking — the work order stays comparable across rounds.
  */
 import { chromium } from 'playwright-core';
 import fs from 'node:fs';
@@ -162,12 +179,25 @@ for (const [key, route] of targets) {
         return '';
       };
 
+      // A glyph is a mark at glyph scale. `egod` ranked second on 17 decisions
+      // and one of them was the hero's wave divider — a single 1280px-wide
+      // <path> that separates two bands of the page. It is artwork, not an
+      // icon, and no §6 reduction could ever apply to it. The rule is narrowed
+      // to non-lucide only, so it cannot move a count that came from the icon
+      // library: measured 10/08 across the four leaders, `egod` holds the only
+      // such SVG (zchuyot 52 · mthbram 24 · galil 68 visible lucide, zero
+      // non-lucide each), so this changes exactly one number.
+      const decorative = (svg, r) =>
+        !(svg.getAttribute('class') || '').includes('lucide') && r.width >= 200;
+
       const svgs = [...document.querySelectorAll('svg')];
       const groups = new Map();
+      const decor = [];
       for (const svg of svgs) {
         const r = svg.getBoundingClientRect();
         // Zero-size SVGs are sprite definitions and defs, not marks on a page.
         if (r.width < 4 || r.height < 4) continue;
+        if (decorative(svg, r)) { decor.push(Math.round(r.width) + 'px'); continue; }
         const k = chain(svg);
         const g = groups.get(k) || {
           icon: nameOf(svg), n: 0, names: new Set(),
@@ -178,6 +208,74 @@ for (const [key, route] of targets) {
         g.names.add(nameOf(svg));
         groups.set(k, g);
       }
+
+      // ── Fault A: one control, the same mark twice ────────────────────────
+      // The container has to be a control, not a band of the page: an icon in a
+      // section that also holds an emoji three paragraphs down is not drawing
+      // anything twice. The ceiling of 80 characters is what keeps this to
+      // buttons, chips and list rows.
+      // \p{Extended_Pictographic} alone also matches ©, ® and ™, which every
+      // footer carries and which are typography, not marks. The narrowing keeps
+      // characters that are drawn as pictures: astral-plane emoji, or a BMP
+      // character explicitly given emoji presentation with U+FE0F.
+      const PICTO = /\p{Extended_Pictographic}️|[\u{1F000}-\u{1FAFF}]/gu;
+      const doubleMark = [];
+      const seenDouble = new Set();
+      for (const svg of svgs) {
+        const r = svg.getBoundingClientRect();
+        if (r.width < 4 || r.height < 4) continue;
+        let el = svg.parentElement;
+        for (let i = 0; i < 3 && el && el !== document.body; i++) {
+          const t = txt(el, 80);
+          if (t) {
+            const emoji = t.match(PICTO);
+            if (emoji) {
+              const k = nameOf(svg) + '|' + t;
+              if (!seenDouble.has(k)) {
+                seenDouble.add(k);
+                doubleMark.push(`${nameOf(svg)} + ${[...new Set(emoji)].join('')} — "${t}"`);
+              }
+            }
+            break;                       // the innermost container with text wins
+          }
+          el = el.parentElement;
+        }
+      }
+
+      // ── Fault B: one datum, two glyphs ───────────────────────────────────
+      // A phone number, an email or a street address is the same fact wherever
+      // it appears, so it should carry the same mark. Grouping by the fact
+      // instead of by the slot is what makes a swap visible.
+      // The first run of this check flagged egod: 02-3131600 carrying `phone`
+      // in one place and `message-circle` in another. Reading the page showed
+      // the two sit on a tel: link and a wa.me link — one number, two CHANNELS,
+      // and the glyph is marking the channel, which is correct. So the datum
+      // alone is not the key; the datum *within one channel* is. Two marks for
+      // the same number on the same kind of link is the fault; two marks on a
+      // call and a chat is a label.
+      const channelOf = (svg) => {
+        const href = svg.closest('a')?.getAttribute('href') || '';
+        const m = href.match(/^(tel|mailto|sms|whatsapp):/i);
+        if (m) return m[1].toLowerCase();
+        if (/^https?:/i.test(href)) { try { return new URL(href).hostname; } catch { return 'http'; } }
+        return href ? 'other' : '—';
+      };
+      const DATUM = /[\w.+-]+@[\w.-]+\.\w{2,}|0\d{1,2}-?\d{7}|\+972[-\d]{8,}/g;
+      const byDatum = new Map();
+      for (const svg of svgs) {
+        const r = svg.getBoundingClientRect();
+        if (r.width < 4 || r.height < 4) continue;
+        if (decorative(svg, r)) continue;
+        const ch = channelOf(svg);
+        for (const d of new Set((labelOf(svg).match(DATUM) || []).map((s) => s.replace(/-/g, '')))) {
+          const k = d + ' @' + ch;
+          if (!byDatum.has(k)) byDatum.set(k, new Set());
+          byDatum.get(k).add(nameOf(svg));
+        }
+      }
+      const splitGlyph = [...byDatum.entries()]
+        .filter(([, names]) => names.size > 1)
+        .map(([k, names]) => `${k} → ${[...names].join(' / ')}`);
 
       const list = [...groups.values()]
         .map((g) => ({
@@ -192,6 +290,7 @@ for (const [key, route] of targets) {
       for (const svg of svgs) {
         const r = svg.getBoundingClientRect();
         if (r.width < 4 || r.height < 4) continue;
+        if (decorative(svg, r)) continue;
         named.add(nameOf(svg) + '@' + chain(svg));
       }
       return {
@@ -199,6 +298,7 @@ for (const [key, route] of targets) {
         decisions: list.length,                       // distinct placements a person chose
         named: named.size,                            // the previous, name-keyed count
         perRecord: rendered - list.length,            // repetition owed to the data
+        decor,                                        // page artwork, excluded above
         lucide: document.querySelectorAll('svg.lucide, svg[class*="lucide"]').length,
         // Placements whose glyph comes from the data: one slot, many names. These
         // are the whole of the gap between `decisions` and `named`.
@@ -207,6 +307,10 @@ for (const [key, route] of targets) {
         // The heaviest repeats, so the ranking can be checked by eye rather than
         // trusted — the last two §6 findings were measurement errors.
         top: list.filter((g) => g.n > 1).slice(0, 5).map((g) => `${g.icon}×${g.n}`),
+        // The two shapes the counts above are blind to. Lists of places to look,
+        // deliberately outside the `decisions` ranking.
+        doubleMark,
+        splitGlyph,
         // every slot with its on-page context. Stripped before the JSON is
         // written; only --list keeps it, and only into the review sheet.
         slots: list,
@@ -255,6 +359,11 @@ for (const [key, route] of targets) {
           `  (named=${String(f.named).padStart(3)})  per-record=${String(f.perRecord).padStart(3)}` +
           `  ${f.top.join(' ')}${f.dataDriven.length ? '  | ' + f.dataDriven.join(' ') : ''}`),
   );
+  // Printed under the line rather than on it: these are addresses to open, not
+  // figures to rank, and folding them into the row would hide the text that
+  // says which control to look at.
+  for (const d of f.doubleMark || []) console.log(`   ⚠ סמל כפול באותו פקד: ${d}`);
+  for (const s of f.splitGlyph || []) console.log(`   ⚠ אותו נתון, שני גליפים: ${s}`);
 }
 
 await browser.close();
@@ -274,5 +383,15 @@ for (const [k, f] of good.sort((a, b) => b[1].decisions - a[1].decisions)) {
     `  ${String(f.decisions).padStart(3)} decisions  ${String(f.rendered).padStart(3)} rendered` +
       `  ${String(share).padStart(3)}% from records   ${k}`,
   );
+}
+
+// The two fault lists get their own roll-up. They do not reorder anything above:
+// a system can sit last on `decisions` and still be drawing one phone number two
+// different ways, and that is a fix worth a round on its own.
+const faults = good.filter(([, f]) => (f.doubleMark?.length || f.splitGlyph?.length));
+console.log('\n=== ליקויים שהדירוג לעיל עיוור אליהם ===');
+if (!faults.length) console.log('  אין');
+for (const [k, f] of faults) {
+  console.log(`  ${k}: ${f.doubleMark?.length || 0} סמל כפול · ${f.splitGlyph?.length || 0} נתון עם שני גליפים`);
 }
 console.log(`-> ${OUT} (${Object.keys(out).length} systems)`);

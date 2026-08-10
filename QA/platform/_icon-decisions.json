@@ -4,19 +4,23 @@
     "decisions": 5,
     "named": 8,
     "perRecord": 3,
+    "decor": [],
     "lucide": 7,
     "dataDriven": [
       "4 names in 1 slot (layers, mouse-pointer-click, book-open…)"
     ],
     "top": [
       "layers×4"
-    ]
+    ],
+    "doubleMark": [],
+    "splitGlyph": []
   },
   "smel": {
     "rendered": 20,
     "decisions": 8,
     "named": 12,
     "perRecord": 12,
+    "decor": [],
     "lucide": 19,
     "dataDriven": [
       "3 names in 1 slot (shield-check, trending-up, building2…)",
@@ -27,13 +31,18 @@
       "check×5",
       "shield-check×3",
       "map-pin×3"
-    ]
+    ],
+    "doubleMark": [],
+    "splitGlyph": []
   },
   "egod": {
-    "rendered": 34,
-    "decisions": 17,
-    "named": 32,
+    "rendered": 33,
+    "decisions": 16,
+    "named": 31,
     "perRecord": 17,
+    "decor": [
+      "1280px"
+    ],
     "lucide": 34,
     "dataDriven": [
       "12 names in 1 slot (globe, clipboard-list, building2…)",
@@ -47,13 +56,16 @@
       "quote×3",
       "chevron-right×2",
       "phone×2"
-    ]
+    ],
+    "doubleMark": [],
+    "splitGlyph": []
   },
   "chatzor": {
     "rendered": 23,
     "decisions": 11,
     "named": 13,
     "perRecord": 12,
+    "decor": [],
     "lucide": 23,
     "dataDriven": [
       "2 names in 1 slot (calendar-days, clock…)",
@@ -65,13 +77,16 @@
       "navigation×4",
       "calendar-days×2",
       "sunrise×2"
-    ]
+    ],
+    "doubleMark": [],
+    "splitGlyph": []
   },
   "chizukim": {
     "rendered": 81,
     "decisions": 6,
     "named": 9,
     "perRecord": 75,
+    "decor": [],
     "lucide": 81,
     "dataDriven": [
       "2 names in 1 slot (clock, coins…)",
@@ -83,13 +98,16 @@
       "chevron-left×25",
       "file-audio×2",
       "chevron-right×2"
-    ]
+    ],
+    "doubleMark": [],
+    "splitGlyph": []
   },
   "zchuyot": {
     "rendered": 52,
     "decisions": 24,
     "named": 43,
     "perRecord": 28,
+    "decor": [],
     "lucide": 54,
     "dataDriven": [
       "8 names in 1 slot (shield, receipt, house…)",
@@ -106,13 +124,16 @@
       "shield-check×4",
       "phone-call×4",
       "file-check×3"
-    ]
+    ],
+    "doubleMark": [],
+    "splitGlyph": []
   },
   "mthbram": {
     "rendered": 24,
     "decisions": 17,
     "named": 21,
     "perRecord": 7,
+    "decor": [],
     "lucide": 25,
     "dataDriven": [
       "4 names in 1 slot (search, refresh-cw, circle-plus…)",
@@ -123,13 +144,16 @@
       "filter×3",
       "book-open×2",
       "arrow-left×2"
-    ]
+    ],
+    "doubleMark": [],
+    "splitGlyph": []
   },
   "galil": {
     "rendered": 68,
     "decisions": 14,
     "named": 29,
     "perRecord": 54,
+    "decor": [],
     "lucide": 104,
     "dataDriven": [
       "5 names in 1 slot (moon, sunrise, clock…)",
@@ -143,15 +167,20 @@
       "send×7",
       "chevron-down×7",
       "map-pin×4"
-    ]
+    ],
+    "doubleMark": [],
+    "splitGlyph": []
   },
   "gesher": {
     "rendered": 1,
     "decisions": 1,
     "named": 1,
     "perRecord": 0,
+    "decor": [],
     "lucide": 1,
     "dataDriven": [],
-    "top": []
+    "top": [],
+    "doubleMark": [],
+    "splitGlyph": []
   }
 }
