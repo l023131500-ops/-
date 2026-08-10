@@ -1,0 +1,45 @@
+kiosk (35): the code an owner generated had nowhere on the device to be typed
+
+KIOSK_BUILD §2★ז — IdentifyDevice. The registry (§2★ד) and the per-device
+approvals (§2★ה) had assembled everything the device screen needs and left none
+of it reachable *from* the device: resolveClientCode() sat in approvals.js with
+nothing calling it, so a "מזהה לקוח" could be generated in the console, printed,
+and handed to a hall whose keypad had no route to redeem it against.
+
+server/src/identify.js — profile + active context + ready links, the shape §2★ז
+names. kioskUrl is the "אתר ראשי" that locks the device; displayUrl is what it
+shows now. They differ only while a code is selected, and nothing is stored:
+idle-return and reboot go back to the venue's own site rather than to whichever
+client was last pulled up. The returned allowedHost is the widened list, so a
+device that follows this answer does not then block the page it was sent to.
+
+Resolution happens inside identify(), against the rows the caller passes. A
+route that accepted a client id and trusted it would let anyone at the keypad
+open a business the device was never approved for — the exact hole §2★ה exists
+to close. Unknown, disabled and belonging-to-another-device give one identical
+404; any other answer turns the keypad into a directory of the chain. The
+attempt is logged, because a burst of them is the only signal that someone
+standing at the device is guessing.
+
+POST /api/agent/identify — device-token auth, no dashboard session. POST rather
+than GET: the typed code is a secret staff hold, and a query string lands in
+access logs and in every proxy in front of the service. The optional serial
+narrows but never authorises — it is printed on the case — and a mismatch is
+refused (409) so a copied token on other hardware is not handed this device's
+clients.
+
+Verified in QA/kiosk/identify-0811/: 7 unit cases in server/test/identify.test.mjs
+driven against node:sqlite with the same DDL text as src/db.js (27/27 green
+across the runnable suite; test/routing.test.mjs still fails to LOAD here on a
+missing express, pre-existing and unchanged), plus six calls over a real socket
+against a dependency-free stub that imports the real approvals.js/identify.js —
+401/401/200/200/404/409.
+
+Not deployed: the Railway service still runs the previous build, and the Android
+agent does not call this yet (KioskActivity still opens home_url only). No
+migration — no schema change. Protected systems (08/09/bkalut-app/bkalot-admin/
+zr_/NEDARIM3873) untouched. Test mode.
+
+Note: /apps/** is gitignored in this repo, so the source files above live on
+disk only — this commit carries STATUS.md and the QA evidence, as the previous
+kiosk commits did.

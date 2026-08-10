@@ -94,16 +94,47 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
 
   **Not deployed.** No console screen yet — approving is an HTTP call.
 
+- **IdentifyDevice (§2★ז)** — the registry and the approvals had built everything
+  the device screen needs and left none of it reachable *from* the device:
+  `resolveClientCode()` sat with nothing calling it, so a code an owner generated
+  in the console could be printed and handed to a hall, and the keypad had no
+  route to redeem it against. Added:
+  - `server/src/identify.js` — profile + active context + ready links, the shape
+    §2★ז names. `kioskUrl` is the "אתר ראשי" that locks the device; `displayUrl`
+    is what it shows now. They differ only while a code is selected, and nothing
+    is stored: idle-return and reboot go back to the venue's own site rather than
+    to whichever client was last pulled up.
+  - resolution happens **inside** `identify()`, against the rows the caller
+    passes. A route that accepted a client id and trusted it would let anyone at
+    the keypad open a business the device was never approved for — the exact hole
+    §2★ה exists to close.
+  - `POST /api/agent/identify` — device-token auth, no dashboard session. POST
+    rather than GET because the typed code is a secret staff hold and a query
+    string lands in access logs. An optional `serial` narrows but never
+    authorises: it is printed on the case. A mismatch is refused (409) so a
+    copied token on other hardware is not handed this device's clients.
+  - unknown, disabled, and belonging-to-another-device all give one 404, and the
+    attempt is logged — a burst of them is the only signal that someone standing
+    at the device is guessing codes.
+
+  Verified in `QA/kiosk/identify-0811/` — 7 unit cases against `node:sqlite`
+  (27/27 green across the runnable suite) plus six calls over a real socket
+  against a dependency-free stub that imports the real `approvals.js` /
+  `identify.js`.
+
+  **Not deployed.** The Android agent does not call it yet — `KioskActivity`
+  still opens `home_url` only.
+
 ## Next, in order
 
-1. Deploy: the registry (API + screen) and the approvals are only on disk and in
-   this file.
+1. Deploy: the registry (API + screen), the approvals and `identify` are only on
+   disk and in this file.
 2. §2★א's two fields — "אתר ראשי" and "קישור שיוצג על המכשיר" — on the device
    screen, feeding the same registry.
 3. The console side of the approvals: a "מזהי לקוח מאושרים" picker on the device
    screen, driving `PUT /api/devices/:id/clients`.
-4. `IdentifyDevice` (§2★ז): `serial_number` **or** `client_id` → profile +
-   ready links, device-facing, no dashboard session.
+4. The selection screen on the device (§2★ה/ו): `KioskActivity` calls
+   `identify`, offers the approved list, and locks onto what is chosen.
 5. `/kiosk-launcher/:code` — 6-character access code → the approved list → open
    the locked kiosk.
 6. The "הפעל" wizard with the live checklist (§2★ב).
