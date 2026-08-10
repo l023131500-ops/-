@@ -4,6 +4,7 @@ import { useLessons } from "@/hooks/useData";
 import { Section } from "@/components/ui/Section";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { SampleBadge } from "@/components/ui/SampleBadge";
 
 export function LessonsPreview() {
   const { data: lessons, isLoading } = useLessons();
@@ -34,7 +35,10 @@ export function LessonsPreview() {
                 <BookOpen className="h-6 w-6" aria-hidden />
               </span>
               <div className="min-w-0 flex-1">
-                <h3 className="font-display text-lg font-bold text-foreground">{l.title}</h3>
+                <div className="flex flex-wrap items-center gap-2">
+                  <h3 className="font-display text-lg font-bold text-foreground">{l.title}</h3>
+                  {l.isSample && <SampleBadge />}
+                </div>
                 <div className="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground">
                   {(l.day || l.time) && (
                     <span className="inline-flex items-center gap-1.5">

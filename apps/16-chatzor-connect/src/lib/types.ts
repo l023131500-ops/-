@@ -27,6 +27,7 @@ export interface PrayerTime {
   label: string;
   time: string; // HH:MM (fixed community time, not an astronomical zman)
   note: string | null;
+  isSample?: boolean;
 }
 
 export interface Lesson {

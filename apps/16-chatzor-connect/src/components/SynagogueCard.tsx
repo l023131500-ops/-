@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { ArrowLeft, MapPin, Navigation } from "lucide-react";
 import type { Synagogue } from "@/lib/types";
 import { formatDistance, navigationUrl } from "@/hooks/useNearby";
+import { SampleBadge } from "@/components/ui/SampleBadge";
 
 /** Shared synagogue card — used on the homepage preview and the directory page. */
 export function SynagogueCard({
@@ -26,11 +27,7 @@ export function SynagogueCard({
       className="group overflow-hidden rounded-lg border border-border bg-card shadow-soft transition-shadow hover:shadow-glow"
     >
       <div className="relative h-24" style={{ background: s.brandGradient }}>
-        {s.isSample && (
-          <span className="absolute right-3 top-3 rounded-full bg-black/30 px-2 py-0.5 text-[11px] text-white backdrop-blur">
-            דוגמה
-          </span>
-        )}
+        {s.isSample && <SampleBadge variant="overlay" className="absolute right-3 top-3" />}
         {s.logoUrl ? (
           <img
             src={s.logoUrl}

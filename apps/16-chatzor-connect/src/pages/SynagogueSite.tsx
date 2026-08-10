@@ -11,6 +11,7 @@ import { useTheme } from "@/hooks/useTheme";
 import { Reveal } from "@/components/ui/Reveal";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { SampleBadge } from "@/components/ui/SampleBadge";
 import { InquiryForm } from "@/components/InquiryForm";
 
 const PRAYER_GROUPS = [
@@ -143,8 +144,11 @@ export function SynagogueSite() {
                   </div>
                   <ul className="divide-y divide-border">
                     {g.items.map((p) => (
-                      <li key={p.id} className="flex items-center justify-between py-2">
-                        <span className="text-sm text-muted-foreground">{p.label}{p.note ? ` · ${p.note}` : ""}</span>
+                      <li key={p.id} className="flex items-center justify-between gap-2 py-2">
+                        <span className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+                          {p.label}{p.note ? ` · ${p.note}` : ""}
+                          {p.isSample && <SampleBadge />}
+                        </span>
                         <span className="text-lg font-semibold tabular-nums">{p.time}</span>
                       </li>
                     ))}
@@ -181,7 +185,10 @@ export function SynagogueSite() {
                   className="flex items-center gap-4 rounded-lg border border-border bg-card p-4 shadow-soft">
                   <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-accent/10 text-accent"><BookOpen className="h-5 w-5" /></span>
                   <div>
-                    <h3 className="font-semibold text-foreground">{l.title}</h3>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <h3 className="font-semibold text-foreground">{l.title}</h3>
+                      {l.isSample && <SampleBadge />}
+                    </div>
                     <div className="text-sm text-muted-foreground">{[l.day, l.time, l.teacher].filter(Boolean).join(" · ")}</div>
                   </div>
                 </motion.div>
@@ -197,8 +204,9 @@ export function SynagogueSite() {
             <div className="mx-auto grid max-w-3xl gap-4">
               {announcements!.map((a) => (
                 <div key={a.id} className="rounded-lg border border-border bg-card p-5 shadow-soft">
-                  <div className="flex items-center gap-2 text-gold"><Megaphone className="h-5 w-5" aria-hidden />
+                  <div className="flex flex-wrap items-center gap-2 text-gold"><Megaphone className="h-5 w-5" aria-hidden />
                     <h3 className="font-display text-lg font-bold text-foreground">{a.title}</h3>
+                    {a.isSample && <SampleBadge />}
                   </div>
                   {a.body && <p className="mt-2 text-sm text-muted-foreground">{a.body}</p>}
                 </div>
