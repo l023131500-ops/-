@@ -84,8 +84,28 @@
  * cost of that is a probe that could have been skipped — never a bug that is
  * hidden. The detector errs toward reporting.
  *
+ * Both forms are sent with GET, and a route the client only ever POSTs to cannot
+ * answer one. studio (26) is the case: /api/ai/copy, /api/ai/background,
+ * /api/branding/logo, /api/branding/strategy and /api/branding/vectorize are all
+ * app.post(...) in server/routes.ts, and a run that read their GET 404 as
+ * "absent_in_production" was describing its own verb. The verb is recoverable
+ * from the bundle — these clients call apiRequest("POST", path), so the literal
+ * is preceded by "POST", — and when it is not GET, express's own 404 settles the
+ * question without sending a write: finalhandler answers
+ *
+ *     <pre>Cannot GET /studio/api/branding/logo</pre>
+ *
+ * which only a server that received the request at that address can produce. An
+ * SPA fallback returns its shell and the portal returns its own 404; neither
+ * names the path back. So the reply is read rather than a POST being sent blind
+ * at 24 mounts.
+ *
  *   mount_prefix       root is not JSON, mounted is JSON. The route exists and
  *                      only the prefix is missing. This is #131 exactly.
+ *   mount_other_method the client declares a verb other than GET, and the mounted
+ *                      address answered with express's "Cannot GET <path>". The
+ *                      route is served under the mount; same candidate standing
+ *                      as mount_prefix, and for the same reason.
  *   absent_in_production
  *                      neither form is JSON. The route is not served at all —
  *                      usually an SPA fallback answering 200 text/html, which
@@ -168,6 +188,11 @@ const API_LITERAL = /["'`](\/api\/[^"'`\s]*)["'`]?/g;
 // own origin, so more30.com's answer for it means nothing.
 const ON_A_URL_PATHNAME = /\.pathname\s*=\s*$|pathname\s*\+\s*$/;
 
+// apiRequest("POST", "/api/...") survives minification as f("POST","/api/...") —
+// the verb sits immediately before the literal. Recovering it keeps a GET probe
+// from reporting a POST-only route as missing.
+const DECLARED_METHOD = /["'`](GET|POST|PUT|PATCH|DELETE)["'`]\s*,\s*$/i;
+
 // Skip past a quoted string starting at i, honouring backslash escapes, and
 // return the index just after its closing quote. Minified bundles put brackets
 // and braces inside strings, so a depth counter that does not do this drifts.
@@ -242,7 +267,8 @@ const scanClient = (a) => {
         });
         continue;
       }
-      hits.push({ file: rel, path: m[1] });
+      const declared = DECLARED_METHOD.exec(before);
+      hits.push({ file: rel, path: m[1], ...(declared ? { method: declared[1].toUpperCase() } : {}) });
     }
   }
   return { hits, skipped };
@@ -299,12 +325,32 @@ for (const [mount, project] of [...mounts.entries()].sort()) {
     const asMounted = await get(`https://more30.com/${mount}${p}`);
     const shape = (r) => ({ status: r.status, type: r.type.split(';')[0], bytes: r.bytes });
     const isJson = (r) => r.status === 200 && r.type.includes('json');
-    const verdict = isJson(asShipped) ? 'served_at_root' : isJson(asMounted) ? 'mount_prefix' : 'absent_in_production';
+    // Verbs the shipped client uses for this path. GET is the probe's own, so
+    // only the others make the probe unable to answer on status alone.
+    const verbs = [...new Set(entry.client_hits.filter((h) => h.path === p && h.method).map((h) => h.method))];
+    const otherVerb = verbs.filter((v) => v !== 'GET')[0];
+    // express/finalhandler names the path it could not route back to you. The
+    // portal's 404 and an SPA shell do not, so this only matches a server that
+    // received the request at this exact address.
+    const expressMissedVerb = (r, at) => r.status === 404 && r.body.includes(`Cannot GET ${at}`);
+    const verdict = isJson(asShipped)
+      ? 'served_at_root'
+      : isJson(asMounted)
+        ? 'mount_prefix'
+        : otherVerb && expressMissedVerb(asMounted, `/${mount}${p}`)
+          ? 'mount_other_method'
+          : otherVerb && expressMissedVerb(asShipped, p)
+            ? 'served_at_root'
+            : 'absent_in_production';
     entry.probes.push({
       path: p,
       as_shipped: shape(asShipped),
       as_mounted: shape(asMounted),
       verdict,
+      ...(otherVerb ? { client_method: otherVerb } : {}),
+      ...(verdict === 'mount_other_method'
+        ? { caveat: `the client sends ${otherVerb} here; the mounted address answered with express's own "Cannot GET", so the route is served under /${mount} and only the probe's verb missed. Whether the client prefixes it is a call-site question, as with mount_prefix` }
+        : {}),
       // mount_prefix proves the route is served under the mount. It does not
       // prove the shipped client fails to prefix it: studio applies its base at
       // the call, so "/api/brands" reads bare in the bundle and still resolves
@@ -317,14 +363,20 @@ for (const [mount, project] of [...mounts.entries()].sort()) {
     });
   }
   const count = (v) => entry.probes.filter((p) => p.verdict === v).length;
-  entry.verdict_counts = { served_at_root: count('served_at_root'), mount_prefix: count('mount_prefix'), absent_in_production: count('absent_in_production') };
+  entry.verdict_counts = {
+    served_at_root: count('served_at_root'),
+    mount_prefix: count('mount_prefix'),
+    mount_other_method: count('mount_other_method'),
+    absent_in_production: count('absent_in_production'),
+  };
   const files = [...new Set(entry.client_hits.map((h) => h.file))];
 
-  if (count('mount_prefix') === 0 && count('absent_in_production') === 0) {
+  if (count('mount_prefix') === 0 && count('mount_other_method') === 0 && count('absent_in_production') === 0) {
     ok(`${mount}: every probed path is answered at more30.com (${entry.probes.length} probed)`);
   } else {
     const parts = [];
     if (count('mount_prefix')) parts.push(`${count('mount_prefix')} answered only under /${mount} (candidate — read the call site)`);
+    if (count('mount_other_method')) parts.push(`${count('mount_other_method')} served under /${mount} for the verb the client sends (candidate — read the call site)`);
     if (count('absent_in_production')) parts.push(`${count('absent_in_production')} answered by neither form`);
     bad(`${mount}: ${parts.join(', ')} — ${entry.client_hits.length} literal(s) in ${files.length} file(s), e.g. ${files[0]}`);
   }

@@ -1,0 +1,117 @@
+{
+  "measured_at": "2026-08-10T10:48:37.462Z",
+  "origin": "https://more30.com",
+  "mount": "/studio",
+  "results": [
+    {
+      "path": "/api/ai/copy",
+      "declared": "POST",
+      "url": "https://more30.com/studio/api/ai/copy",
+      "as_get": {
+        "status": 404,
+        "type": "text/html",
+        "bytes": 393,
+        "excerpt": "<!DOCTYPE html> <html lang=\"en\"> <head> <meta charset=\"utf-8\"> <title>Error</title> </head> <body> <pre>Cannot GET /studio/api/ai/copy</pre> </body> </html> <!-- Injection By NetFree --> <script src="
+      },
+      "as_declared": {
+        "skipped": "reaches a paid provider — pass --include-billed",
+        "recorded": {
+          "status": 200,
+          "type": "application/json",
+          "bytes": 920
+        }
+      },
+      "verdict": "method_only"
+    },
+    {
+      "path": "/api/ai/background",
+      "declared": "POST",
+      "url": "https://more30.com/studio/api/ai/background",
+      "as_get": {
+        "status": 404,
+        "type": "text/html",
+        "bytes": 399,
+        "excerpt": "<!DOCTYPE html> <html lang=\"en\"> <head> <meta charset=\"utf-8\"> <title>Error</title> </head> <body> <pre>Cannot GET /studio/api/ai/background</pre> </body> </html> <!-- Injection By NetFree --> <scrip"
+      },
+      "as_declared": {
+        "status": 400,
+        "type": "application/json",
+        "bytes": 38,
+        "excerpt": "{\"error\":\"חסר תיאור לרקע\"}"
+      },
+      "verdict": "method_only"
+    },
+    {
+      "path": "/api/branding/logo",
+      "declared": "POST",
+      "url": "https://more30.com/studio/api/branding/logo",
+      "as_get": {
+        "status": 404,
+        "type": "text/html",
+        "bytes": 399,
+        "excerpt": "<!DOCTYPE html> <html lang=\"en\"> <head> <meta charset=\"utf-8\"> <title>Error</title> </head> <body> <pre>Cannot GET /studio/api/branding/logo</pre> </body> </html> <!-- Injection By NetFree --> <scrip"
+      },
+      "as_declared": {
+        "status": 400,
+        "type": "application/json",
+        "bytes": 32,
+        "excerpt": "{\"error\":\"חסר שם מותג\"}"
+      },
+      "verdict": "method_only"
+    },
+    {
+      "path": "/api/branding/strategy",
+      "declared": "POST",
+      "url": "https://more30.com/studio/api/branding/strategy",
+      "as_get": {
+        "status": 404,
+        "type": "text/html",
+        "bytes": 403,
+        "excerpt": "<!DOCTYPE html> <html lang=\"en\"> <head> <meta charset=\"utf-8\"> <title>Error</title> </head> <body> <pre>Cannot GET /studio/api/branding/strategy</pre> </body> </html> <!-- Injection By NetFree --> <s"
+      },
+      "as_declared": {
+        "status": 400,
+        "type": "application/json",
+        "bytes": 32,
+        "excerpt": "{\"error\":\"חסר שם מותג\"}"
+      },
+      "verdict": "method_only"
+    },
+    {
+      "path": "/api/branding/vectorize",
+      "declared": "POST",
+      "url": "https://more30.com/studio/api/branding/vectorize",
+      "as_get": {
+        "status": 404,
+        "type": "text/html",
+        "bytes": 404,
+        "excerpt": "<!DOCTYPE html> <html lang=\"en\"> <head> <meta charset=\"utf-8\"> <title>Error</title> </head> <body> <pre>Cannot GET /studio/api/branding/vectorize</pre> </body> </html> <!-- Injection By NetFree --> <"
+      },
+      "as_declared": {
+        "status": 400,
+        "type": "application/json",
+        "bytes": 31,
+        "excerpt": "{\"error\":\"חסרה תמונה\"}"
+      },
+      "verdict": "method_only"
+    },
+    {
+      "path": "/api/brands",
+      "declared": "GET",
+      "url": "https://more30.com/studio/api/brands",
+      "as_get": {
+        "status": 200,
+        "type": "application/json",
+        "bytes": 2,
+        "excerpt": "[]"
+      },
+      "as_declared": {
+        "status": 200,
+        "type": "application/json",
+        "bytes": 2,
+        "excerpt": "[]"
+      },
+      "verdict": "served"
+    }
+  ]
+}

@@ -1,5 +1,5 @@
 {
-  "measured_at": "2026-08-10T10:26:27.373Z",
+  "measured_at": "2026-08-10T10:48:42.271Z",
   "mounts": {
     "admin": {
       "project": "nihul-more30",
@@ -213,7 +213,8 @@
         },
         {
           "file": "imud/assets/index-7IQk_wi0.js",
-          "path": "/api/books/${s}"
+          "path": "/api/books/${s}",
+          "method": "DELETE"
         },
         {
           "file": "imud/assets/index-7IQk_wi0.js",
@@ -221,27 +222,8 @@
         },
         {
           "file": "imud/assets/index-7IQk_wi0.js",
-          "path": "/api/books"
-        },
-        {
-          "file": "imud/assets/index-7IQk_wi0.js",
-          "path": "/api/books"
-        },
-        {
-          "file": "imud/assets/index-7IQk_wi0.js",
-          "path": "/api/meta"
-        },
-        {
-          "file": "imud/assets/index-7IQk_wi0.js",
-          "path": "/api/wizard/infer"
-        },
-        {
-          "file": "imud/assets/index-7IQk_wi0.js",
-          "path": "/api/books"
-        },
-        {
-          "file": "imud/assets/index-7IQk_wi0.js",
-          "path": "/api/books"
+          "path": "/api/books",
+          "method": "POST"
         },
         {
           "file": "imud/assets/index-7IQk_wi0.js",
@@ -253,7 +235,31 @@
         },
         {
           "file": "imud/assets/index-7IQk_wi0.js",
-          "path": "/api/books/${t}"
+          "path": "/api/wizard/infer",
+          "method": "POST"
+        },
+        {
+          "file": "imud/assets/index-7IQk_wi0.js",
+          "path": "/api/books",
+          "method": "POST"
+        },
+        {
+          "file": "imud/assets/index-7IQk_wi0.js",
+          "path": "/api/books"
+        },
+        {
+          "file": "imud/assets/index-7IQk_wi0.js",
+          "path": "/api/books"
+        },
+        {
+          "file": "imud/assets/index-7IQk_wi0.js",
+          "path": "/api/meta",
+          "method": "GET"
+        },
+        {
+          "file": "imud/assets/index-7IQk_wi0.js",
+          "path": "/api/books/${t}",
+          "method": "PATCH"
         },
         {
           "file": "imud/assets/index-7IQk_wi0.js",
@@ -285,7 +291,8 @@
             "type": "text/html",
             "bytes": 2965
           },
-          "verdict": "absent_in_production"
+          "verdict": "absent_in_production",
+          "client_method": "POST"
         },
         {
           "path": "/api/meta",
@@ -313,7 +320,8 @@
             "type": "text/html",
             "bytes": 2965
           },
-          "verdict": "absent_in_production"
+          "verdict": "absent_in_production",
+          "client_method": "POST"
         }
       ],
       "live_document": {
@@ -330,6 +338,7 @@
       "verdict_counts": {
         "served_at_root": 0,
         "mount_prefix": 0,
+        "mount_other_method": 0,
         "absent_in_production": 3
       }
     },
@@ -361,11 +370,13 @@
       "client_hits": [
         {
           "file": "kupot/assets/index-BlT4DUpe.js",
-          "path": "/api/switch-lead"
+          "path": "/api/switch-lead",
+          "method": "POST"
         },
         {
           "file": "kupot/assets/index-BlT4DUpe.js",
-          "path": "/api/agent"
+          "path": "/api/agent",
+          "method": "POST"
         },
         {
           "file": "kupot/assets/index-BlT4DUpe.js",
@@ -394,7 +405,8 @@
             "type": "text/html",
             "bytes": 3693
           },
-          "verdict": "absent_in_production"
+          "verdict": "absent_in_production",
+          "client_method": "POST"
         },
         {
           "path": "/api/hf/meta",
@@ -436,7 +448,8 @@
             "type": "text/html",
             "bytes": 3693
           },
-          "verdict": "absent_in_production"
+          "verdict": "absent_in_production",
+          "client_method": "POST"
         }
       ],
       "live_document": {
@@ -453,6 +466,7 @@
       "verdict_counts": {
         "served_at_root": 2,
         "mount_prefix": 0,
+        "mount_other_method": 0,
         "absent_in_production": 2
       }
     },
@@ -485,7 +499,8 @@
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/rights"
+          "path": "/api/rights",
+          "method": "POST"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
@@ -501,7 +516,8 @@
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/rights/${e.id}"
+          "path": "/api/rights/${e.id}",
+          "method": "PATCH"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
@@ -525,7 +541,8 @@
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/orgs/${e.id}"
+          "path": "/api/orgs/${e.id}",
+          "method": "PATCH"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
@@ -577,11 +594,13 @@
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/clients/by-phone?phone=${encodeURIComponent(ae)}"
+          "path": "/api/clients/by-phone?phone=${encodeURIComponent(ae)}",
+          "method": "GET"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/service-submissions"
+          "path": "/api/service-submissions",
+          "method": "POST"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
@@ -589,7 +608,8 @@
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/admin/me"
+          "path": "/api/admin/me",
+          "method": "GET"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
@@ -597,7 +617,8 @@
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/admin/logout"
+          "path": "/api/admin/logout",
+          "method": "POST"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
@@ -617,7 +638,8 @@
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/financial/clients"
+          "path": "/api/financial/clients",
+          "method": "POST"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
@@ -625,7 +647,8 @@
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/financial/clients/${u}"
+          "path": "/api/financial/clients/${u}",
+          "method": "DELETE"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
@@ -641,7 +664,8 @@
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/financial/transactions"
+          "path": "/api/financial/transactions",
+          "method": "POST"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
@@ -649,7 +673,8 @@
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/financial/transactions/${c}"
+          "path": "/api/financial/transactions/${c}",
+          "method": "DELETE"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
@@ -665,7 +690,8 @@
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/financial/budgets"
+          "path": "/api/financial/budgets",
+          "method": "POST"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
@@ -673,7 +699,8 @@
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/financial/budgets/${c}"
+          "path": "/api/financial/budgets/${c}",
+          "method": "DELETE"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
@@ -685,7 +712,8 @@
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/financial/recurring"
+          "path": "/api/financial/recurring",
+          "method": "POST"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
@@ -693,7 +721,8 @@
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/financial/recurring/${l}"
+          "path": "/api/financial/recurring/${l}",
+          "method": "DELETE"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
@@ -705,7 +734,8 @@
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/financial/clients/${e.id}/suggest-opportunities"
+          "path": "/api/financial/clients/${e.id}/suggest-opportunities",
+          "method": "POST"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
@@ -713,7 +743,8 @@
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/financial/opportunities/${s}"
+          "path": "/api/financial/opportunities/${s}",
+          "method": "PATCH"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
@@ -725,7 +756,8 @@
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/financial/clients/${i}/assign-coach"
+          "path": "/api/financial/clients/${i}/assign-coach",
+          "method": "PATCH"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
@@ -741,7 +773,8 @@
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/financial/leads/${n}"
+          "path": "/api/financial/leads/${n}",
+          "method": "PATCH"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
@@ -753,7 +786,8 @@
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/financial/tips"
+          "path": "/api/financial/tips",
+          "method": "POST"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
@@ -761,7 +795,8 @@
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/financial/tips/${l}"
+          "path": "/api/financial/tips/${l}",
+          "method": "PATCH"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
@@ -769,7 +804,8 @@
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/financial/tips/${l}"
+          "path": "/api/financial/tips/${l}",
+          "method": "DELETE"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
@@ -781,7 +817,8 @@
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/admin/automations/${e.key}"
+          "path": "/api/admin/automations/${e.key}",
+          "method": "PATCH"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
@@ -789,7 +826,8 @@
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/admin/automations/${e.key}/test"
+          "path": "/api/admin/automations/${e.key}/test",
+          "method": "POST"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
@@ -809,7 +847,8 @@
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/admin/users"
+          "path": "/api/admin/users",
+          "method": "POST"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
@@ -817,7 +856,8 @@
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/admin/users/${u.id}"
+          "path": "/api/admin/users/${u.id}",
+          "method": "PATCH"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
@@ -825,7 +865,8 @@
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/admin/users/${u.id}"
+          "path": "/api/admin/users/${u.id}",
+          "method": "DELETE"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
@@ -837,7 +878,8 @@
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/admin/users/${i.id}/send-credentials"
+          "path": "/api/admin/users/${i.id}/send-credentials",
+          "method": "POST"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
@@ -857,7 +899,8 @@
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/admin/delivery/${u.id}/send"
+          "path": "/api/admin/delivery/${u.id}/send",
+          "method": "POST"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
@@ -865,7 +908,8 @@
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/admin/delivery/${u.id}"
+          "path": "/api/admin/delivery/${u.id}",
+          "method": "DELETE"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
@@ -877,11 +921,13 @@
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/admin/delivery"
+          "path": "/api/admin/delivery",
+          "method": "POST"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/admin/delivery/${D.id}/send"
+          "path": "/api/admin/delivery/${D.id}/send",
+          "method": "POST"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
@@ -893,7 +939,8 @@
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/me/financial/transactions"
+          "path": "/api/me/financial/transactions",
+          "method": "POST"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
@@ -901,7 +948,8 @@
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/me/financial/alerts/${u}/ack"
+          "path": "/api/me/financial/alerts/${u}/ack",
+          "method": "POST"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
@@ -909,7 +957,8 @@
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/user/premium-requests"
+          "path": "/api/user/premium-requests",
+          "method": "POST"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
@@ -921,7 +970,8 @@
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/admin/webhook-log/${c}/retry"
+          "path": "/api/admin/webhook-log/${c}/retry",
+          "method": "POST"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
@@ -937,7 +987,8 @@
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/admin/premium-requests/${l}"
+          "path": "/api/admin/premium-requests/${l}",
+          "method": "PATCH"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
@@ -981,7 +1032,8 @@
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/financial/leads"
+          "path": "/api/financial/leads",
+          "method": "POST"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
@@ -1005,11 +1057,13 @@
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/financial/leads"
+          "path": "/api/financial/leads",
+          "method": "POST"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/public/reminder-response"
+          "path": "/api/public/reminder-response",
+          "method": "POST"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
@@ -1017,23 +1071,28 @@
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/admin/advanced-match"
+          "path": "/api/admin/advanced-match",
+          "method": "POST"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/admin/general-inquiry-reply"
+          "path": "/api/admin/general-inquiry-reply",
+          "method": "GET"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/admin/general-inquiry-reply"
+          "path": "/api/admin/general-inquiry-reply",
+          "method": "PATCH"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/admin/general-inquiry-reply/preview"
+          "path": "/api/admin/general-inquiry-reply/preview",
+          "method": "POST"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/admin/general-inquiry-reply/send"
+          "path": "/api/admin/general-inquiry-reply/send",
+          "method": "POST"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
@@ -1041,11 +1100,13 @@
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/public/chatbot/answer"
+          "path": "/api/public/chatbot/answer",
+          "method": "POST"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/public/chatbot/lead"
+          "path": "/api/public/chatbot/lead",
+          "method": "POST"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
@@ -1053,7 +1114,8 @@
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/admin/chatbot"
+          "path": "/api/admin/chatbot",
+          "method": "PATCH"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
@@ -1089,7 +1151,8 @@
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/admin/potential/config"
+          "path": "/api/admin/potential/config",
+          "method": "PATCH"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
@@ -1097,7 +1160,8 @@
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/admin/potential/config/reset-defaults"
+          "path": "/api/admin/potential/config/reset-defaults",
+          "method": "POST"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
@@ -1105,7 +1169,8 @@
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/admin/potential/links"
+          "path": "/api/admin/potential/links",
+          "method": "POST"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
@@ -1113,7 +1178,8 @@
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/admin/potential/links/${R}"
+          "path": "/api/admin/potential/links/${R}",
+          "method": "PATCH"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
@@ -1121,7 +1187,8 @@
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/admin/potential/links/${R}"
+          "path": "/api/admin/potential/links/${R}",
+          "method": "DELETE"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
@@ -1137,7 +1204,8 @@
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/admin/catalog-settings"
+          "path": "/api/admin/catalog-settings",
+          "method": "PATCH"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
@@ -1149,19 +1217,13 @@
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/admin/params-topics"
+          "path": "/api/admin/params-topics",
+          "method": "POST"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/admin/params-topics/${f}"
-        },
-        {
-          "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/admin/params-topics"
-        },
-        {
-          "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/admin/params-topics/${P}"
+          "path": "/api/admin/params-topics/${f}",
+          "method": "PATCH"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
@@ -1169,7 +1231,12 @@
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/admin/api-access"
+          "path": "/api/admin/params-topics/${P}",
+          "method": "DELETE"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/admin/params-topics"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
@@ -1177,11 +1244,17 @@
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/admin/api-access",
+          "method": "PATCH"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
           "path": "/api/admin/api-access"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/admin/api-access/rotate"
+          "path": "/api/admin/api-access/rotate",
+          "method": "POST"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
@@ -1189,7 +1262,8 @@
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/admin/api-access/clear"
+          "path": "/api/admin/api-access/clear",
+          "method": "POST"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
@@ -1317,43 +1391,53 @@
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/financial/tasks"
+          "path": "/api/financial/tasks",
+          "method": "POST"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/financial/tasks/${T}"
+          "path": "/api/financial/tasks/${T}",
+          "method": "PATCH"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/financial/tasks/${T}"
+          "path": "/api/financial/tasks/${T}",
+          "method": "DELETE"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/financial/messages"
+          "path": "/api/financial/messages",
+          "method": "POST"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/financial/documents"
+          "path": "/api/financial/documents",
+          "method": "POST"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/financial/documents/${T}"
+          "path": "/api/financial/documents/${T}",
+          "method": "PATCH"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/financial/documents/${T}"
+          "path": "/api/financial/documents/${T}",
+          "method": "DELETE"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/financial/reminders"
+          "path": "/api/financial/reminders",
+          "method": "POST"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/financial/reminders/${T}"
+          "path": "/api/financial/reminders/${T}",
+          "method": "DELETE"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/financial/reports"
+          "path": "/api/financial/reports",
+          "method": "POST"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
@@ -1381,111 +1465,138 @@
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/pc/admin/categories"
+          "path": "/api/pc/admin/categories",
+          "method": "GET"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/pc/admin/stores"
+          "path": "/api/pc/admin/stores",
+          "method": "GET"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/pc/admin/products"
+          "path": "/api/pc/admin/products",
+          "method": "GET"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/pc/admin/promotions"
+          "path": "/api/pc/admin/promotions",
+          "method": "GET"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/pc/admin/settings"
+          "path": "/api/pc/admin/settings",
+          "method": "GET"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/pc/admin/stats"
+          "path": "/api/pc/admin/stats",
+          "method": "GET"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/pc/admin/feeds"
+          "path": "/api/pc/admin/feeds",
+          "method": "GET"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/pc/admin/jobs"
+          "path": "/api/pc/admin/jobs",
+          "method": "GET"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/pc/admin/data-health"
+          "path": "/api/pc/admin/data-health",
+          "method": "GET"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/pc/admin/submissions${W}"
+          "path": "/api/pc/admin/submissions${W}",
+          "method": "GET"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/pc/admin/submissions/${W}/${We}"
+          "path": "/api/pc/admin/submissions/${W}/${We}",
+          "method": "POST"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/pc/admin/voluntary-tokens"
+          "path": "/api/pc/admin/voluntary-tokens",
+          "method": "GET"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/pc/admin/voluntary-tokens"
+          "path": "/api/pc/admin/voluntary-tokens",
+          "method": "POST"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/pc/admin/voluntary-tokens/${W.id}"
+          "path": "/api/pc/admin/voluntary-tokens/${W.id}",
+          "method": "PATCH"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/pc/admin/feeds"
+          "path": "/api/pc/admin/feeds",
+          "method": "POST"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/pc/admin/feeds/${W.id}"
+          "path": "/api/pc/admin/feeds/${W.id}",
+          "method": "PATCH"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/pc/admin/feeds/${W}/run"
+          "path": "/api/pc/admin/feeds/${W}/run",
+          "method": "POST"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/pc/admin/import/daily"
+          "path": "/api/pc/admin/import/daily",
+          "method": "POST"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/pc/admin/jobs/${W}/logs"
+          "path": "/api/pc/admin/jobs/${W}/logs",
+          "method": "GET"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/pc/admin/feeds/${se||0}/upload"
+          "path": "/api/pc/admin/feeds/${se||0}/upload",
+          "method": "POST"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/pc/admin/settings"
+          "path": "/api/pc/admin/settings",
+          "method": "PATCH"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/pc/admin/products/${W.id}/prices"
+          "path": "/api/pc/admin/products/${W.id}/prices",
+          "method": "GET"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/pc/admin/categories"
+          "path": "/api/pc/admin/categories",
+          "method": "POST"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/pc/admin/stores"
+          "path": "/api/pc/admin/stores",
+          "method": "POST"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/pc/admin/products"
+          "path": "/api/pc/admin/products",
+          "method": "POST"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/pc/admin/prices"
+          "path": "/api/pc/admin/prices",
+          "method": "POST"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/pc/admin/promotions"
+          "path": "/api/pc/admin/promotions",
+          "method": "POST"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
@@ -1529,59 +1640,73 @@
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/community/admin/questionnaires"
+          "path": "/api/community/admin/questionnaires",
+          "method": "GET"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/community/admin/settings"
+          "path": "/api/community/admin/settings",
+          "method": "GET"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/community/admin/settings"
+          "path": "/api/community/admin/settings",
+          "method": "PATCH"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/community/admin/questionnaires/${T}"
+          "path": "/api/community/admin/questionnaires/${T}",
+          "method": "GET"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/community/admin/submissions?questionnaireId=${T}"
+          "path": "/api/community/admin/submissions?questionnaireId=${T}",
+          "method": "GET"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/community/admin/questionnaires"
+          "path": "/api/community/admin/questionnaires",
+          "method": "POST"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/community/admin/questionnaires/${i.questionnaire.id}"
+          "path": "/api/community/admin/questionnaires/${i.questionnaire.id}",
+          "method": "PATCH"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/community/admin/questionnaires/${i.questionnaire.id}/questions"
+          "path": "/api/community/admin/questionnaires/${i.questionnaire.id}/questions",
+          "method": "POST"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/community/admin/questions/${T}"
+          "path": "/api/community/admin/questions/${T}",
+          "method": "PATCH"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/community/admin/questions/${T}"
+          "path": "/api/community/admin/questions/${T}",
+          "method": "DELETE"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/community/admin/questionnaires/${i.questionnaire.id}/links"
+          "path": "/api/community/admin/questionnaires/${i.questionnaire.id}/links",
+          "method": "POST"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/community/admin/links/${T.id}"
+          "path": "/api/community/admin/links/${T.id}",
+          "method": "PATCH"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/community/admin/links/${T}"
+          "path": "/api/community/admin/links/${T}",
+          "method": "DELETE"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/hf/public/switch-lead"
+          "path": "/api/hf/public/switch-lead",
+          "method": "POST"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
@@ -1597,79 +1722,98 @@
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/hf/public/request"
+          "path": "/api/hf/public/request",
+          "method": "POST"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/hf/admin/topics?withTiers=1${b?"
+          "path": "/api/hf/admin/topics?withTiers=1${b?",
+          "method": "GET"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/hf/admin/requests"
+          "path": "/api/hf/admin/requests",
+          "method": "GET"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/hf/admin/switch-leads"
+          "path": "/api/hf/admin/switch-leads",
+          "method": "GET"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/hf/admin/switch-leads/${J}"
+          "path": "/api/hf/admin/switch-leads/${J}",
+          "method": "PATCH"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/hf/admin/switch-leads/${J}"
+          "path": "/api/hf/admin/switch-leads/${J}",
+          "method": "DELETE"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/hf/admin/topics/${J}"
+          "path": "/api/hf/admin/topics/${J}",
+          "method": "PATCH"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/hf/admin/topics/${J.id}"
+          "path": "/api/hf/admin/topics/${J.id}",
+          "method": "PATCH"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/hf/admin/topics/${J.id}"
+          "path": "/api/hf/admin/topics/${J.id}",
+          "method": "DELETE"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/hf/admin/topics/${J}/tiers"
+          "path": "/api/hf/admin/topics/${J}/tiers",
+          "method": "POST"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/hf/admin/topics/${J}"
+          "path": "/api/hf/admin/topics/${J}",
+          "method": "GET"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/hf/admin/tiers/${J.id}"
+          "path": "/api/hf/admin/tiers/${J.id}",
+          "method": "PATCH"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/hf/admin/tiers/${J.id}"
+          "path": "/api/hf/admin/tiers/${J.id}",
+          "method": "DELETE"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/hf/admin/topics/${J}/podcast/script"
+          "path": "/api/hf/admin/topics/${J}/podcast/script",
+          "method": "POST"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/hf/admin/topics/${J}/podcast/script"
+          "path": "/api/hf/admin/topics/${J}/podcast/script",
+          "method": "PUT"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/hf/admin/topics/${J}/podcast/audio"
+          "path": "/api/hf/admin/topics/${J}/podcast/audio",
+          "method": "POST"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/hf/admin/topics/${J}/podcast/audio"
+          "path": "/api/hf/admin/topics/${J}/podcast/audio",
+          "method": "DELETE"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/hf/admin/topics/${J}/podcast/send"
+          "path": "/api/hf/admin/topics/${J}/podcast/send",
+          "method": "POST"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/hf/admin/topics"
+          "path": "/api/hf/admin/topics",
+          "method": "POST"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
@@ -1703,7 +1847,8 @@
             "type": "application/json",
             "bytes": 53
           },
-          "verdict": "absent_in_production"
+          "verdict": "absent_in_production",
+          "client_method": "POST"
         },
         {
           "path": "/api/admin/api-access",
@@ -1717,7 +1862,8 @@
             "type": "application/json",
             "bytes": 49
           },
-          "verdict": "absent_in_production"
+          "verdict": "absent_in_production",
+          "client_method": "PATCH"
         },
         {
           "path": "/api/admin/api-access/clear",
@@ -1731,7 +1877,8 @@
             "type": "application/json",
             "bytes": 55
           },
-          "verdict": "absent_in_production"
+          "verdict": "absent_in_production",
+          "client_method": "POST"
         },
         {
           "path": "/api/admin/api-access/rotate",
@@ -1745,7 +1892,8 @@
             "type": "application/json",
             "bytes": 56
           },
-          "verdict": "absent_in_production"
+          "verdict": "absent_in_production",
+          "client_method": "POST"
         },
         {
           "path": "/api/admin/automations",
@@ -1773,7 +1921,8 @@
             "type": "application/json",
             "bytes": 55
           },
-          "verdict": "absent_in_production"
+          "verdict": "absent_in_production",
+          "client_method": "PATCH"
         }
       ],
       "live_document": {
@@ -1788,6 +1937,7 @@
       "verdict_counts": {
         "served_at_root": 0,
         "mount_prefix": 0,
+        "mount_other_method": 0,
         "absent_in_production": 6
       }
     },
@@ -1903,26 +2053,47 @@
       "client_hits": [
         {
           "file": "public/studio/assets/BrandingBrief-DlnSH3li.js",
-          "path": "/api/branding/strategy"
+          "path": "/api/branding/strategy",
+          "method": "POST"
+        },
+        {
+          "file": "public/studio/assets/BrandingBrief-DlnSH3li.js",
+          "path": "/api/brands",
+          "method": "POST"
         },
         {
           "file": "public/studio/assets/BrandingBrief-DlnSH3li.js",
           "path": "/api/brands"
         },
         {
-          "file": "public/studio/assets/BrandingBrief-DlnSH3li.js",
+          "file": "public/studio/assets/BrandingHome-BODyNKHd.js",
           "path": "/api/brands"
+        },
+        {
+          "file": "public/studio/assets/BrandingHome-BODyNKHd.js",
+          "path": "/api/brands/${s}",
+          "method": "DELETE"
         },
         {
           "file": "public/studio/assets/BrandingHome-BODyNKHd.js",
           "path": "/api/brands"
         },
         {
-          "file": "public/studio/assets/BrandingHome-BODyNKHd.js",
-          "path": "/api/brands/${s}"
+          "file": "public/studio/assets/BrandKitPage-BUzlfv7N.js",
+          "path": "/api/brands"
         },
         {
-          "file": "public/studio/assets/BrandingHome-BODyNKHd.js",
+          "file": "public/studio/assets/BrandKitPage-BUzlfv7N.js",
+          "path": "/api/branding/logo",
+          "method": "POST"
+        },
+        {
+          "file": "public/studio/assets/BrandKitPage-BUzlfv7N.js",
+          "path": "/api/brands/${o}",
+          "method": "PATCH"
+        },
+        {
+          "file": "public/studio/assets/BrandKitPage-BUzlfv7N.js",
           "path": "/api/brands"
         },
         {
@@ -1931,27 +2102,13 @@
         },
         {
           "file": "public/studio/assets/BrandKitPage-BUzlfv7N.js",
-          "path": "/api/branding/logo"
+          "path": "/api/branding/vectorize",
+          "method": "POST"
         },
         {
           "file": "public/studio/assets/BrandKitPage-BUzlfv7N.js",
-          "path": "/api/brands/${o}"
-        },
-        {
-          "file": "public/studio/assets/BrandKitPage-BUzlfv7N.js",
-          "path": "/api/brands"
-        },
-        {
-          "file": "public/studio/assets/BrandKitPage-BUzlfv7N.js",
-          "path": "/api/brands"
-        },
-        {
-          "file": "public/studio/assets/BrandKitPage-BUzlfv7N.js",
-          "path": "/api/branding/vectorize"
-        },
-        {
-          "file": "public/studio/assets/BrandKitPage-BUzlfv7N.js",
-          "path": "/api/brands/${o}"
+          "path": "/api/brands/${o}",
+          "method": "PATCH"
         },
         {
           "file": "public/studio/assets/BrandKitPage-BUzlfv7N.js",
@@ -1963,43 +2120,53 @@
         },
         {
           "file": "public/studio/assets/Brief-DTTM4z7O.js",
-          "path": "/api/categories/${encodeURIComponent(n)}/templates"
+          "path": "/api/categories/${encodeURIComponent(n)}/templates",
+          "method": "GET"
         },
         {
           "file": "public/studio/assets/Brief-DTTM4z7O.js",
-          "path": "/api/categories/${encodeURIComponent(n)}/templates/${encodeURIComponent(t.key)}/render"
+          "path": "/api/categories/${encodeURIComponent(n)}/templates/${encodeURIComponent(t.key)}/render",
+          "method": "POST"
         },
         {
           "file": "public/studio/assets/Brief-DTTM4z7O.js",
-          "path": "/api/brief/concepts"
+          "path": "/api/brief/concepts",
+          "method": "POST"
         },
         {
           "file": "public/studio/assets/Brief-DTTM4z7O.js",
-          "path": "/api/presets/${encodeURIComponent(r)}/render"
+          "path": "/api/presets/${encodeURIComponent(r)}/render",
+          "method": "POST"
         },
         {
           "file": "public/studio/assets/Brief-DTTM4z7O.js",
-          "path": "/api/categories/${encodeURIComponent(s)}/templates/${encodeURIComponent(a.key)}/render"
+          "path": "/api/categories/${encodeURIComponent(s)}/templates/${encodeURIComponent(a.key)}/render",
+          "method": "POST"
         },
         {
           "file": "public/studio/assets/Brief-DTTM4z7O.js",
-          "path": "/api/presets/${encodeURIComponent(l)}/render"
+          "path": "/api/presets/${encodeURIComponent(l)}/render",
+          "method": "POST"
         },
         {
           "file": "public/studio/assets/Editor-ChIy4ID1.js",
-          "path": "/api/ai/copy"
+          "path": "/api/ai/copy",
+          "method": "POST"
         },
         {
           "file": "public/studio/assets/Editor-ChIy4ID1.js",
-          "path": "/api/ai/background"
+          "path": "/api/ai/background",
+          "method": "POST"
         },
         {
           "file": "public/studio/assets/Editor-ChIy4ID1.js",
-          "path": "/api/projects/${e.projectId}"
+          "path": "/api/projects/${e.projectId}",
+          "method": "PATCH"
         },
         {
           "file": "public/studio/assets/Editor-ChIy4ID1.js",
-          "path": "/api/projects"
+          "path": "/api/projects",
+          "method": "POST"
         },
         {
           "file": "public/studio/assets/index-DN36X7rm.js",
@@ -2011,7 +2178,8 @@
         },
         {
           "file": "public/studio/assets/Projects-B4j6y0A-.js",
-          "path": "/api/projects/${t}"
+          "path": "/api/projects/${t}",
+          "method": "DELETE"
         },
         {
           "file": "public/studio/assets/Projects-B4j6y0A-.js",
@@ -2023,15 +2191,18 @@
         },
         {
           "file": "public/studio/assets/Studio-BwURaOFy.js",
-          "path": "/api/presets?${t.toString()}"
+          "path": "/api/presets?${t.toString()}",
+          "method": "GET"
         },
         {
           "file": "public/studio/assets/Studio-BwURaOFy.js",
-          "path": "/api/presets/${encodeURIComponent(t.key)}/render"
+          "path": "/api/presets/${encodeURIComponent(t.key)}/render",
+          "method": "POST"
         },
         {
           "file": "public/studio/assets/Studio-BwURaOFy.js",
-          "path": "/api/presets/${encodeURIComponent(a.key)}/render"
+          "path": "/api/presets/${encodeURIComponent(a.key)}/render",
+          "method": "POST"
         }
       ],
       "not_requested_from_root": [
@@ -2079,7 +2250,9 @@
             "type": "text/html",
             "bytes": 399
           },
-          "verdict": "absent_in_production"
+          "verdict": "mount_other_method",
+          "client_method": "POST",
+          "caveat": "the client sends POST here; the mounted address answered with express's own \"Cannot GET\", so the route is served under /studio and only the probe's verb missed. Whether the client prefixes it is a call-site question, as with mount_prefix"
         },
         {
           "path": "/api/ai/copy",
@@ -2093,7 +2266,9 @@
             "type": "text/html",
             "bytes": 393
           },
-          "verdict": "absent_in_production"
+          "verdict": "mount_other_method",
+          "client_method": "POST",
+          "caveat": "the client sends POST here; the mounted address answered with express's own \"Cannot GET\", so the route is served under /studio and only the probe's verb missed. Whether the client prefixes it is a call-site question, as with mount_prefix"
         },
         {
           "path": "/api/branding/logo",
@@ -2107,7 +2282,9 @@
             "type": "text/html",
             "bytes": 399
           },
-          "verdict": "absent_in_production"
+          "verdict": "mount_other_method",
+          "client_method": "POST",
+          "caveat": "the client sends POST here; the mounted address answered with express's own \"Cannot GET\", so the route is served under /studio and only the probe's verb missed. Whether the client prefixes it is a call-site question, as with mount_prefix"
         },
         {
           "path": "/api/branding/strategy",
@@ -2121,7 +2298,9 @@
             "type": "text/html",
             "bytes": 403
           },
-          "verdict": "absent_in_production"
+          "verdict": "mount_other_method",
+          "client_method": "POST",
+          "caveat": "the client sends POST here; the mounted address answered with express's own \"Cannot GET\", so the route is served under /studio and only the probe's verb missed. Whether the client prefixes it is a call-site question, as with mount_prefix"
         },
         {
           "path": "/api/branding/vectorize",
@@ -2135,7 +2314,9 @@
             "type": "text/html",
             "bytes": 404
           },
-          "verdict": "absent_in_production"
+          "verdict": "mount_other_method",
+          "client_method": "POST",
+          "caveat": "the client sends POST here; the mounted address answered with express's own \"Cannot GET\", so the route is served under /studio and only the probe's verb missed. Whether the client prefixes it is a call-site question, as with mount_prefix"
         },
         {
           "path": "/api/brands",
@@ -2150,6 +2331,7 @@
             "bytes": 2
           },
           "verdict": "mount_prefix",
+          "client_method": "POST",
           "caveat": "the route answers under the mount; a client that prefixes at the call site would already reach it, so this needs the call site read before it counts as a bug"
         }
       ],
@@ -2165,7 +2347,8 @@
       "verdict_counts": {
         "served_at_root": 0,
         "mount_prefix": 1,
-        "absent_in_production": 5
+        "mount_other_method": 5,
+        "absent_in_production": 0
       }
     },
     "tamlul": {
@@ -2283,6 +2466,6 @@
     "imud: 3 answered by neither form — 14 literal(s) in 1 file(s), e.g. imud/assets/index-7IQk_wi0.js",
     "kupot: 2 answered by neither form — 5 literal(s) in 1 file(s), e.g. kupot/assets/index-BlT4DUpe.js",
     "mechiron: 6 answered by neither form — 303 literal(s) in 1 file(s), e.g. public/mechiron/assets/index-DcMphBNb.js",
-    "studio: 1 answered only under /studio (candidate — read the call site), 5 answered by neither form — 33 literal(s) in 8 file(s), e.g. public/studio/assets/BrandingBrief-DlnSH3li.js"
+    "studio: 1 answered only under /studio (candidate — read the call site), 5 served under /studio for the verb the client sends (candidate — read the call site) — 33 literal(s) in 8 file(s), e.g. public/studio/assets/BrandingBrief-DlnSH3li.js"
   ]
 }
