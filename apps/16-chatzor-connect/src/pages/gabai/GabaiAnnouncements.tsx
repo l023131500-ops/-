@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from "react";
+﻿import { useState, type FormEvent } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Megaphone, Plus, Trash2 } from "lucide-react";
 import type { AnnouncementInput } from "@/lib/types";
@@ -9,17 +9,20 @@ import { Modal } from "@/components/ui/Modal";
 import { Button } from "@/components/ui/Button";
 import { Field, Input, Textarea } from "@/components/ui/Field";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { ErrorState } from "@/components/ui/ErrorState";
+import { ListSkeleton } from "@/components/ui/Skeleton";
 import { SampleBadge } from "@/components/ui/SampleBadge";
 import { sampleRowProps } from "@/lib/sampleRow";
 import { useGabai } from "./GabaiLayout";
-import { NoSynagogue } from "./NoSynagogue";
+import { useSynagogueGate } from "./SynagogueGate";
 
 export function GabaiAnnouncements() {
   const { synagogue } = useGabai();
   const toast = useToast();
   const qc = useQueryClient();
-  const { data: items } = useAnnouncements(synagogue?.id);
+  const { data: items, isLoading, isError, refetch } = useAnnouncements(synagogue?.id);
   const [open, setOpen] = useState(false);
+  const gate = useSynagogueGate();
 
   const create = useMutation({
     mutationFn: (input: AnnouncementInput) => createAnnouncement(input),
@@ -32,7 +35,7 @@ export function GabaiAnnouncements() {
     onError: (e: Error) => toast(e.message, "error"),
   });
 
-  if (!synagogue) return <NoSynagogue />;
+  if (gate || !synagogue) return gate;
 
   function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -53,7 +56,17 @@ export function GabaiAnnouncements() {
       </div>
 
       <div className="mt-6">
-        {(items ?? []).length === 0 ? (
+        {isLoading ? (
+          <ListSkeleton count={3} />
+        ) : isError ? (
+          /* ‏"אין מודעות" על קריאה שנכשלה מסתיר מהגבאי מודעה שכבר תלויה
+             ‏למתפללים, והוא מפרסם לצידה מודעה כפולה או סותרת. */
+          <ErrorState
+            title="לא הצלחנו לטעון את המודעות"
+            description="הרשימה אינה מוצגת כי הקריאה נכשלה — ייתכן שכבר מפורסמות מודעות. נסו שוב לפני פרסום מודעה."
+            onRetry={() => refetch()}
+          />
+        ) : (items ?? []).length === 0 ? (
           <EmptyState icon={Megaphone} title="אין מודעות" description="פרסמו את המודעה הראשונה." />
         ) : (
           <div className="space-y-3">

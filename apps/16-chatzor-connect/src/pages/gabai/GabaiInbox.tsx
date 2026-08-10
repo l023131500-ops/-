@@ -1,23 +1,26 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+﻿import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Check, Inbox, Mail, Phone } from "lucide-react";
 import { markInquiryRead } from "@/data/repositories";
 import { useInquiries } from "@/hooks/useAdminData";
 import { cn } from "@/lib/cn";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { ErrorState } from "@/components/ui/ErrorState";
+import { ListSkeleton } from "@/components/ui/Skeleton";
 import { useGabai } from "./GabaiLayout";
-import { NoSynagogue } from "./NoSynagogue";
+import { useSynagogueGate } from "./SynagogueGate";
 
 export function GabaiInbox() {
   const { synagogue } = useGabai();
   const qc = useQueryClient();
-  const { data: all } = useInquiries();
+  const { data: all, isLoading, isError, refetch } = useInquiries();
+  const gate = useSynagogueGate();
 
   const markRead = useMutation({
     mutationFn: (id: string) => markInquiryRead(id),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["inquiries"] }),
   });
 
-  if (!synagogue) return <NoSynagogue />;
+  if (gate || !synagogue) return gate;
 
   const inquiries = (all ?? []).filter((i) => i.synagogueId === synagogue.id);
 
@@ -27,7 +30,17 @@ export function GabaiInbox() {
       <p className="mt-1 text-muted-foreground">פניות שהתקבלו דרך דף בית הכנסת.</p>
 
       <div className="mt-6 space-y-3">
-        {inquiries.length === 0 ? (
+        {isLoading ? (
+          <ListSkeleton count={3} />
+        ) : isError ? (
+          /* ‏"אין פניות" על קריאה שנכשלה גורם לגבאי לסגור את התיבה בזמן
+             ‏שפניות של מתפללים ממתינות בה ללא מענה. */
+          <ErrorState
+            title="לא הצלחנו לטעון את הפניות"
+            description="התיבה אינה מוצגת כי הקריאה נכשלה — ייתכן שממתינות פניות שלא נקראו."
+            onRetry={() => refetch()}
+          />
+        ) : inquiries.length === 0 ? (
           <EmptyState icon={Inbox} title="אין פניות" description="פניות מדף בית הכנסת יופיעו כאן." />
         ) : (
           inquiries.map((i) => (

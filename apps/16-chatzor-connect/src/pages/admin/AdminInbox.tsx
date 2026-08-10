@@ -6,17 +6,9 @@ import { useInquiries, useRabbiQuestions } from "@/hooks/useAdminData";
 import { cn } from "@/lib/cn";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
-import { Skeleton } from "@/components/ui/Skeleton";
+import { ListSkeleton } from "@/components/ui/Skeleton";
 
 type Tab = "inquiries" | "questions";
-
-function ListSkeleton() {
-  return (
-    <div className="space-y-3">
-      {Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-24 w-full" />)}
-    </div>
-  );
-}
 
 export function AdminInbox() {
   const qc = useQueryClient();

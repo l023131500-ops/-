@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from "react";
+﻿import { useState, type FormEvent } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { BookOpen, Plus, Trash2 } from "lucide-react";
 import type { LessonInput } from "@/lib/types";
@@ -9,17 +9,20 @@ import { Modal } from "@/components/ui/Modal";
 import { Button } from "@/components/ui/Button";
 import { Field, Input } from "@/components/ui/Field";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { ErrorState } from "@/components/ui/ErrorState";
+import { ListSkeleton } from "@/components/ui/Skeleton";
 import { SampleBadge } from "@/components/ui/SampleBadge";
 import { sampleRowProps } from "@/lib/sampleRow";
 import { useGabai } from "./GabaiLayout";
-import { NoSynagogue } from "./NoSynagogue";
+import { useSynagogueGate } from "./SynagogueGate";
 
 export function GabaiLessons() {
   const { synagogue } = useGabai();
   const toast = useToast();
   const qc = useQueryClient();
-  const { data: lessons } = useLessons(synagogue?.id);
+  const { data: lessons, isLoading, isError, refetch } = useLessons(synagogue?.id);
   const [open, setOpen] = useState(false);
+  const gate = useSynagogueGate();
 
   const create = useMutation({
     mutationFn: (input: LessonInput) => createLesson(input),
@@ -32,7 +35,7 @@ export function GabaiLessons() {
     onError: (e: Error) => toast(e.message, "error"),
   });
 
-  if (!synagogue) return <NoSynagogue />;
+  if (gate || !synagogue) return gate;
 
   function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -59,7 +62,15 @@ export function GabaiLessons() {
       </div>
 
       <div className="mt-6">
-        {(lessons ?? []).length === 0 ? (
+        {isLoading ? (
+          <ListSkeleton count={3} />
+        ) : isError ? (
+          <ErrorState
+            title="לא הצלחנו לטעון את השיעורים"
+            description="הרשימה אינה מוצגת כי הקריאה נכשלה — ייתכן שכבר קיימים שיעורים. נסו שוב לפני הוספת שיעור."
+            onRetry={() => refetch()}
+          />
+        ) : (lessons ?? []).length === 0 ? (
           <EmptyState icon={BookOpen} title="אין שיעורים" description="הוסיפו שיעור." />
         ) : (
           <div className="overflow-hidden rounded-xl border border-border bg-card shadow-soft">

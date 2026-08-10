@@ -8,8 +8,20 @@ import { PortalShell, type NavItem } from "@/components/portal/PortalShell";
 interface GabaiCtx {
   synagogue: Synagogue | null;
   managed: Synagogue[];
+  /* ‏שלושת אלה קיימים כדי שהמסכים יבחינו בין "לא שויך בית כנסת" — טענה על
+     ‏העולם — לבין "לא הצלחנו לקרוא איזה בית כנסת שויך". בכשל `managed` נשאר
+     ‏מערך ריק, ובלעדיהם כל מסך גבאי מודיע לגבאי שהוא לא מנהל שום בית כנסת. */
+  isLoading: boolean;
+  isError: boolean;
+  refetch: () => void;
 }
-const GabaiContext = createContext<GabaiCtx>({ synagogue: null, managed: [] });
+const GabaiContext = createContext<GabaiCtx>({
+  synagogue: null,
+  managed: [],
+  isLoading: false,
+  isError: false,
+  refetch: () => {},
+});
 export const useGabai = () => useContext(GabaiContext);
 
 const NAV: NavItem[] = [
@@ -23,7 +35,10 @@ const NAV: NavItem[] = [
 const STORAGE_KEY = "chatzor-gabai-syn";
 
 export function GabaiLayout() {
-  const { data: managed = [] } = useQuery({ queryKey: ["managed-synagogues"], queryFn: listManagedSynagogues });
+  const { data: managed = [], isLoading, isError, refetch } = useQuery({
+    queryKey: ["managed-synagogues"],
+    queryFn: listManagedSynagogues,
+  });
   const [selectedId, setSelectedId] = useState<string>(() => window.localStorage.getItem(STORAGE_KEY) ?? "");
 
   useEffect(() => {
@@ -38,8 +53,12 @@ export function GabaiLayout() {
 
   const synagogue = useMemo(() => managed.find((s) => s.id === selectedId) ?? null, [managed, selectedId]);
 
-  const selector =
-    managed.length > 0 ? (
+  const selector = isError ? (
+    /* ‏בורר שנעלם בכשל נראה כמו גבאי של בית כנסת אחד. */
+    <p role="alert" className="rounded-lg border border-red-400/50 bg-red-500/5 px-3 py-2 text-xs text-red-500">
+      רשימת בתי הכנסת שלכם אינה זמינה כרגע.
+    </p>
+  ) : managed.length > 0 ? (
       <div>
         <label htmlFor="syn-select" className="mb-1 block px-1 text-xs font-medium text-muted-foreground">בית הכנסת שלי</label>
         <select
@@ -54,7 +73,7 @@ export function GabaiLayout() {
     ) : null;
 
   return (
-    <GabaiContext.Provider value={{ synagogue, managed }}>
+    <GabaiContext.Provider value={{ synagogue, managed, isLoading, isError, refetch }}>
       <PortalShell title="פורטל גבאים" subtitle="חצור הגלילית" nav={NAV} loginPath="/gabai/login" sidebarExtra={selector} />
     </GabaiContext.Provider>
   );

@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from "react";
+﻿import { useState, type FormEvent } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Clock, Plus, Trash2 } from "lucide-react";
 import type { PrayerTimeInput, PrayerType } from "@/lib/types";
@@ -9,10 +9,12 @@ import { Modal } from "@/components/ui/Modal";
 import { Button } from "@/components/ui/Button";
 import { Field, Input, Select } from "@/components/ui/Field";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { ErrorState } from "@/components/ui/ErrorState";
+import { ListSkeleton } from "@/components/ui/Skeleton";
 import { SampleBadge } from "@/components/ui/SampleBadge";
 import { sampleRowProps } from "@/lib/sampleRow";
 import { useGabai } from "./GabaiLayout";
-import { NoSynagogue } from "./NoSynagogue";
+import { useSynagogueGate } from "./SynagogueGate";
 
 const TYPE_LABELS: Record<PrayerType, string> = {
   shacharit: "שחרית", mincha: "מנחה", arvit: "ערבית", special: "מיוחד",
@@ -22,8 +24,9 @@ export function GabaiPrayers() {
   const { synagogue } = useGabai();
   const toast = useToast();
   const qc = useQueryClient();
-  const { data: times } = usePrayerTimes(synagogue?.id);
+  const { data: times, isLoading, isError, refetch } = usePrayerTimes(synagogue?.id);
   const [open, setOpen] = useState(false);
+  const gate = useSynagogueGate();
 
   const key = ["prayer-times", synagogue?.id];
   const create = useMutation({
@@ -37,7 +40,7 @@ export function GabaiPrayers() {
     onError: (e: Error) => toast(e.message, "error"),
   });
 
-  if (!synagogue) return <NoSynagogue />;
+  if (gate || !synagogue) return gate;
 
   function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -65,7 +68,17 @@ export function GabaiPrayers() {
       </div>
 
       <div className="mt-6">
-        {(times ?? []).length === 0 ? (
+        {isLoading ? (
+          <ListSkeleton count={3} />
+        ) : isError ? (
+          /* ‏"אין זמני תפילה" על קריאה שנכשלה מוביל את הגבאי להזין מחדש זמנים
+             ‏שכבר קיימים, ולפרסם למתפללים לוח כפול. */
+          <ErrorState
+            title="לא הצלחנו לטעון את זמני התפילה"
+            description="הרשימה אינה מוצגת כי הקריאה נכשלה — ייתכן שכבר קיימים זמנים. נסו שוב לפני הוספת זמן."
+            onRetry={() => refetch()}
+          />
+        ) : (times ?? []).length === 0 ? (
           <EmptyState icon={Clock} title="אין זמני תפילה" description="הוסיפו את זמן התפילה הראשון." />
         ) : (
           <div className="overflow-hidden rounded-xl border border-border bg-card shadow-soft">
