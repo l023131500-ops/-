@@ -1,0 +1,40 @@
+{
+  "system": "35 kioskfleet",
+  "priority": "KIOSK_BUILD.md §2★ד / §2★ז — client-identifier registry",
+  "date": "2026-08-11",
+  "what_changed": [
+    "server/src/clientcode.js — new pure module: canonical form of a \"מזהה לקוח\"",
+    "server/src/db.js — new `clients` table + UNIQUE(owner_id, code) + owner index",
+    "server/src/routes/clients.js — owner-scoped CRUD at /api/clients",
+    "server/src/index.js — mounted under the site router, like links"
+  ],
+  "verification": {
+    "unit_tests": {
+      "command": "node --test test/clientcode.test.mjs",
+      "output": "node-test.txt",
+      "pass": 6,
+      "fail": 0
+    },
+    "schema": {
+      "command": "node <tmp>/kiosk-schemacheck.mjs src/db.js",
+      "how": "the DDL string is read out of db.js and executed against node:sqlite (built into node 24), because better-sqlite3 is not installed in this checkout",
+      "output": "schema-check.txt",
+      "asserted": [
+        "the full DDL — every table, both new indexes — executes",
+        "two different owners may both use the code \"1\"",
+        "a duplicate code within ONE owner is refused by the database, not only by the route",
+        "deleting the owner cascades their clients away"
+      ]
+    }
+  },
+  "not_done_in_this_step": [
+    "no console UI for the registry yet",
+    "no IdentifyDevice endpoint yet (serial_number | client_id → profile + links)",
+    "no /kiosk-launcher/:code page yet",
+    "no per-device approval list of which client codes a device may show",
+    "not deployed — the kiosk server runs on Railway and was not redeployed"
+  ],
+  "no_screenshot_reason": "server-side only; there is no rendered surface for it until the console screen lands in the next step",
+  "protected_untouched": ["08", "09", "bkalut-app", "bkalot-admin", "zr_*", "NEDARIM3873"],
+  "db_writes": "none — core.* read only, plus the run_progress heartbeat"
+}

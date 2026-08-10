@@ -1,0 +1,18 @@
+﻿DDL executes: OK
+two owners may both use code "1": OK
+duplicate within one owner refused: UNIQUE constraint failed: clients.owner_id, clients.code
+[
+  [Object: null prototype] {
+    owner_id: 1,
+    code: '1',
+    name: 'shop one',
+    active: 1
+  },
+  [Object: null prototype] {
+    owner_id: 2,
+    code: '1',
+    name: 'other owner, same code',
+    active: 1
+  }
+]
+clients remaining after owner 1 deleted (cascade): 1
