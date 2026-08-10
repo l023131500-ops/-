@@ -66,13 +66,42 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
 
   **Not deployed** — the Railway service still serves the previous console.
 
+- **per-device approval (§2★ה)** — every client an owner registered was reachable
+  from every device they own, so a tablet in one hall was a directory of the
+  whole chain. §2★ה says the selection screen offers *only* what management
+  approved for that device. Added:
+  - `device_clients` — `PRIMARY KEY (device_id, client_id)`, cascading from both
+    sides. **Absence of a row is a "no"**: a device with no rows offers nothing
+    rather than everything, which is the opposite of how the host allow-list
+    treats an empty list, and deliberately so.
+  - `server/src/approvals.js` — the join plus the rules, kept free of express and
+    better-sqlite3 so the tests can run here. `resolveClientCode` gives the same
+    `null` for not-approved, disabled and never-registered: any other answer
+    makes the keypad a probe for which businesses are in the chain.
+  - `GET`/`PUT /api/devices/:id/clients` — owner-scoped, replaces the set in one
+    transaction (a half-applied revocation leaves a client reachable on a device
+    the owner believes they removed it from), then pushes `update_config`.
+  - the allow-list pushed to the device — on heartbeat, on `PATCH`, and on
+    approval — is now widened to cover the approved clients' sites, or selecting
+    one lands on a blocked page. An **unset** list is left unset: it means "no
+    lock configured" to `hostAllowed()`, so merging into it would create a lock
+    and cut a live device off from what it is showing. Every device that exists
+    today has no approvals and receives byte-identical config.
+
+  Verified in `QA/kiosk/device-approvals-0811/` — 7 cases, the storage half
+  against `node:sqlite` with the same DDL text. 20/20 green across the runnable
+  suite.
+
+  **Not deployed.** No console screen yet — approving is an HTTP call.
+
 ## Next, in order
 
-1. Deploy: the registry (API + screen) is only on disk and in this file.
+1. Deploy: the registry (API + screen) and the approvals are only on disk and in
+   this file.
 2. §2★א's two fields — "אתר ראשי" and "קישור שיוצג על המכשיר" — on the device
    screen, feeding the same registry.
-3. Per-device approval: which client codes this device is allowed to show
-   (§2★ה). Nothing else may be reachable from the selection screen.
+3. The console side of the approvals: a "מזהי לקוח מאושרים" picker on the device
+   screen, driving `PUT /api/devices/:id/clients`.
 4. `IdentifyDevice` (§2★ז): `serial_number` **or** `client_id` → profile +
    ready links, device-facing, no dashboard session.
 5. `/kiosk-launcher/:code` — 6-character access code → the approved list → open

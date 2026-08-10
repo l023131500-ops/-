@@ -1,0 +1,42 @@
+kiosk (35): every client an owner registered was reachable from every device they own
+
+KIOSK_BUILD §2★ה: the person standing at the device may go back to the selection
+screen and pick another client — "רק מתוך אלה שאישרנו בניהול לאותו מכשיר". The
+registry built yesterday has no such notion. A chain registers each business it
+serves once, and the tablet in one hall could show any of them; the only thing
+between staff there and a competitor's brand site was that no screen existed yet.
+
+Added the list and the gate:
+
+- device_clients, PRIMARY KEY (device_id, client_id), cascading from both sides.
+  Absence of a row is a "no". That is the opposite of how the host allow-list
+  treats an empty list — hostAllowed() fails open on purpose — and it has to be:
+  fail-open here makes every tablet a directory of every business in the chain.
+- src/approvals.js — the join and the rules, free of express and better-sqlite3
+  so it can be run in a checkout with no node_modules. resolveClientCode returns
+  the same null for not-approved, disabled and never-registered; any other answer
+  turns the keypad into a probe for which businesses exist.
+- GET/PUT /api/devices/:id/clients, owner-scoped. PUT replaces the whole set in
+  one transaction: a half-applied revocation leaves a client reachable on a
+  device the owner believes they just removed it from. Ids that belong to
+  another customer are dropped rather than stored.
+- The allow-list pushed to the device — heartbeat, PATCH, and on approval — is
+  widened to cover the approved clients' hosts, or selecting one from the screen
+  lands on a blocked page that reads as "the kiosk is broken".
+
+The last one is where this could have broken something live. An unset allow-list
+means "no lock configured" and allows everything, so merging client hosts into it
+would have created a lock where there was none and cut a running device off from
+the site it is showing. effectiveHostCsv() returns an unset list unchanged, and
+the test asserts it. Every device that exists today has no approvals, so every
+device that exists today receives byte-identical config to before.
+
+QA/kiosk/device-approvals-0811/ — 7 cases, the storage half driven against
+node:sqlite with the same DDL text as db.js, so the primary key and both cascades
+are asserted against a real engine. 20/20 green across the runnable suite;
+routing.test.mjs cannot load here at all (it imports express, absent in this
+checkout) and that is pre-existing.
+
+Not deployed, and no console screen yet — approving is an HTTP call until the
+picker lands. The app source under apps/ is gitignored, so the change itself is
+recorded in apps/35-kioskfleet/STATUS.md.
