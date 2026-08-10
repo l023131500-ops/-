@@ -1,0 +1,36 @@
+kiosk (35): the registry added yesterday could only be reached by an HTTP call
+
+The clients table and /api/clients landed in f9c3845 with no surface at all, so
+the two-tier model §2★ד is built on — our customer registers the businesses they
+serve, staff type a code on the device, that business's site comes up — was
+reachable only by hand-writing a request. Added the console screen: "מזהי לקוח"
+in the sidebar, add / edit / disable / delete.
+
+Three things it does deliberately:
+
+- It reads the generated code back in the toast. Whoever adds a client is the
+  person who then has to hand that code to the staff standing at the device, and
+  a code that only exists in a table nobody reads is not handed to anyone.
+- The allow-list is the same hostListEditor the device screen uses, so a pasted
+  checkout URL becomes a bare host here too. In the edit dialog the client's own
+  host is pinned — and changing the site URL drops the *previous* host instead of
+  leaving it on the list. Moving a client to a new site would otherwise leave the
+  old site permanently open on a locked device, which is the one direction an
+  allow-list must not fail in.
+- Disabling sits next to deleting. A disabled client keeps its code reserved, so
+  the code cannot later be handed to a different business and still resolve to
+  the site the first one used.
+
+Verified in QA/kiosk/clients-console-0811/ — ten cases driven in a real browser
+against a dependency-free stub of /api/clients that imports the real hosts.js and
+clientcode.js (server/node_modules is not installed here, so express and
+better-sqlite3 cannot run in this checkout). "12-34" reaches the row as 1234, a
+domain typed but never "added" is adopted rather than dropped, a duplicate code
+is refused with no row created, and a rejected attempt keeps what was typed.
+Light and dark screenshots included. A layout bug found in that run — six columns
+pushed the last button off the edge of the card — is fixed in the same step.
+
+apps/** is gitignored, so the source change is recorded in
+apps/35-kioskfleet/STATUS.md as before. Not deployed: the Railway service still
+serves the previous console. Protected systems untouched, no writes beyond the
+run_progress heartbeat.

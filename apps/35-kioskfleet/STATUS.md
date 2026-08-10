@@ -44,14 +44,37 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
   Verified in `QA/kiosk/clients-registry-0811/` — 6 unit tests, plus the DDL
   executed against `node:sqlite` to prove the constraint and the cascade.
 
+- **registry console screen (§2★ד)** — the table above had no surface, so the
+  only way to register a client was an HTTP call. Added `מזהי לקוח` to the
+  console sidebar (`public/console.html`, `public/js/app.js`):
+  - add / edit / disable / delete, against `/api/clients`. The generated code is
+    read back in the toast, because whoever adds the client is the one who has to
+    hand that code to the staff standing at the device.
+  - the allow-list uses the same `hostListEditor` the device screen uses, so a
+    pasted checkout URL becomes a bare host here too. In the edit dialog the
+    client's own host is pinned — and when the site URL is changed, the *previous*
+    host is dropped rather than left on the list, so moving a client to a new site
+    does not quietly leave the old one open on the device.
+  - disabling is offered next to deleting: a disabled client keeps its code
+    reserved, so the code cannot be handed to a different business and still
+    resolve to the site the first one used.
+
+  Verified in `QA/kiosk/clients-console-0811/` — ten cases driven in a real
+  browser against a dependency-free stub of `/api/clients` that imports the real
+  `hosts.js`/`clientcode.js`, plus light and dark screenshots. A layout bug found
+  there (the last column of buttons was cut off the edge of the card) is fixed.
+
+  **Not deployed** — the Railway service still serves the previous console.
+
 ## Next, in order
 
-1. Console screen for the registry (list / add / edit a client), then §2★א's two
-   fields — "אתר ראשי" and "קישור שיוצג על המכשיר" — on the device screen.
-2. Per-device approval: which client codes this device is allowed to show
+1. Deploy: the registry (API + screen) is only on disk and in this file.
+2. §2★א's two fields — "אתר ראשי" and "קישור שיוצג על המכשיר" — on the device
+   screen, feeding the same registry.
+3. Per-device approval: which client codes this device is allowed to show
    (§2★ה). Nothing else may be reachable from the selection screen.
-3. `IdentifyDevice` (§2★ז): `serial_number` **or** `client_id` → profile +
+4. `IdentifyDevice` (§2★ז): `serial_number` **or** `client_id` → profile +
    ready links, device-facing, no dashboard session.
-4. `/kiosk-launcher/:code` — 6-character access code → the approved list → open
+5. `/kiosk-launcher/:code` — 6-character access code → the approved list → open
    the locked kiosk.
-5. The "הפעל" wizard with the live checklist (§2★ב).
+6. The "הפעל" wizard with the live checklist (§2★ב).
