@@ -8,6 +8,10 @@ export const metadata: Metadata = {
   // ‎*.vercel.app‎, וכתובת כזו באינדקס שולחת את הקוראים לדף חסימה.
   metadataBase: new URL('https://more30.com'),
   alternates: { canonical: '/orech' },
+  // ‎basePath‎ אינו חל על ‎metadata.icons‎ — זה המקום היחיד ב-Next שאינו מקבל
+  // אותו, ולכן הקידומת כתובה ביד. בלעדיה ה-‎href‎ היה ‎/favicon.svg‎, שנפתר מול
+  // ‎more30.com‎ ולא מול ‎/orech‎, ומצייר בלשונית את הסמל של הפורטל.
+  icons: { icon: '/orech/favicon.svg' },
   openGraph: {
     type: 'website',
     locale: 'he_IL',

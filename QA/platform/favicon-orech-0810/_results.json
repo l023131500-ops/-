@@ -1,0 +1,102 @@
+{
+  "ran": "favicon §6 — orech: the eleventh of the sixteen mounts that draw the portal's mark, and the fourth to turn out not to need a file from the user",
+  "date": "2026-08-10",
+  "app": "apps/18-torah-editor-mvp (Next 14.2.35, basePath and assetPrefix /orech)",
+  "queue": "torah · imud · chizukim · studio · bkalot · smachot · orech · crm · gesher · kesef — studio is skipped, not done: it builds with base /modaot/ while its mount is /studio/ (a separate defect, recorded in commit 2291abb)",
+
+  "measured_before_touching": {
+    "read": "production, https://more30.com/orech, real Chromium",
+    "rel_icon_links_in_dom": 0,
+    "consequence": "no declaration at all, so the browser asks the ORIGIN for /favicon.ico — and the origin is more30.com. The tab drew the portal's mark.",
+    "agrees_with": "QA/platform/favicon-mounts-0810/_results.json, which listed orech under inherits-portal"
+  },
+
+  "which_source_is_actually_served": {
+    "trap": "apps/23-haorech-torani/ is a static index.html titled 'העורך התורני — ארכיטקטורה ותוכנית בנייה', and its app.json says slug haorech-torani. It is NOT what /orech serves.",
+    "how_resolved": "production /orech returns a Next.js document (/orech/_next/static/...). The only next.config in the tree with basePath '/orech' is apps/18-torah-editor-mvp/next.config.js.",
+    "note": "the static file has a nav with an inline <svg> brand mark; copying THAT would have put another system's mark on this tab."
+  },
+
+  "the_identity": {
+    "graphic_mark": "none — no <svg> anywhere in app/, no Header component, no nav",
+    "what_the_page_draws": "one <h1>, 'העורך התורני', 28px/700, on warm paper",
+    "so": "the mark is the first letter of the wordmark the page actually draws — the same rule used for zchuyot",
+    "tile": "rgb(122,92,46) = getComputedStyle(button.action).backgroundColor",
+    "glyph": "rgb(255,255,255) = getComputedStyle(button.action).color",
+    "pair_is_live_not_chosen": "button.action is the accent token on background with the surface token on text; white-on-brown is a pair the page itself renders",
+    "contrast": "6.17:1 — no token pair was swapped",
+    "radius": "8px on a 37px button = 0.216, i.e. 10.4 in a 48 box (measured, not chosen)"
+  },
+
+  "the_font_was_measured_not_assumed": {
+    "css_asks_for": "'Frank Ruhl Libre', 'David Libre', 'Noto Serif Hebrew', serif",
+    "app_loads": "none of them — no next/font, no @font-face ([...document.fonts] is empty in production), no font <link>",
+    "document_fonts_check": "returns true for all three — a known trap, it answers about fallback, not availability",
+    "the_check_that_decides": "measureText('העורך התורני') = 137.4297px, identical to 4 decimal places for all three names AND for generic serif",
+    "conclusion": "the h1 renders in the platform serif, so the letter was measured from what actually renders — unlike chizukim, where Frank Ruhl Libre was confirmed loaded and the letter came from it"
+  },
+
+  "how_the_path_was_made": {
+    "not_drawn_by_hand": true,
+    "method": "rendered to canvas at 600px in the full computed font-family at weight 700, binarised at 128, marching squares for the contours, RDP simplification at 1.8px",
+    "contours": 2,
+    "raw_points": [1304, 488],
+    "simplified_points": [33, 20],
+    "ink_box": "271 x 335, aspect 0.809",
+    "what_the_two_contours_are": "roof+right-leg as one body, left leg detached — the two strokes of ה. No holes, so fill-rule is irrelevant.",
+    "a_bug_found_and_fixed_in_the_tracer": "RDP on a closed loop degenerates — first and last point coincide, so the baseline has zero length and every point measures 0 distance from it. The first run simplified 1304 points to 2. Fixed by splitting each loop at the point farthest from its start before simplifying."
+  },
+
+  "deviations_declared_in_the_file": [
+    "glyph height 32 of 48 (67%) — chosen, not measured, because there is no live tile to compare against (a heading on paper). It is the only unmeasured number in the file.",
+    "RDP tolerance 1.8px at 600 rounds the serif curves; that unit is 0.048px at 16px."
+  ],
+
+  "the_defect_this_round_nearly_shipped": {
+    "what": "the first version of favicon.svg served 200, at exactly the byte count on disk, with the correct image/svg+xml type — and painted nothing.",
+    "cause": "the Hebrew comment header documented the tokens as var(--accent) / var(--surface). Two consecutive hyphens are illegal inside an XML comment.",
+    "parser_said": "error on line 16 at column 61: Comment must not contain '--' (double-hyphen)",
+    "caught_by": "Image decode, not by status or byte count — which is exactly why update (24) put decode in this checklist as a separate assertion from status",
+    "fix": "the token names are written without their var() wrapper, and the file says why so it is not reintroduced"
+  },
+
+  "verified_on_a_real_render": {
+    "how": "next dev on port 4353, fetched through the basePath, then a real Chromium load of /orech",
+    "not_grep": "the assertions are the resolved href in the live DOM and the bytes the browser got back — not a string in a source file",
+    "rel_icon_links_in_dom": 1,
+    "raw_href": "/orech/favicon.svg",
+    "resolved": "http://127.0.0.1:4353/orech/favicon.svg",
+    "doubled_prefix": false,
+    "asset_response": "200 image/svg+xml 6610 bytes",
+    "parse": "clean, 2 <path> elements present",
+    "decode": "48x48",
+    "paints_at": {"16": "254/256 px", "32": "1000/1024", "64": "3963/4096", "192": "35460/36864"},
+    "origin_root_fallbacks": {"/favicon.ico": 404, "/favicon.svg": 404, "/favicon.png": 404},
+    "screenshot": "sizes.png beside this file — 16/32/64/192 on a light tab strip, a dark tab strip, and both of orech's own paper tones"
+  },
+
+  "measured_on_the_16px_raster": {
+    "why": "at 16px ה can collapse into one blob, and the detached leg is what makes it that letter",
+    "roof": "rows 3-6, 8px wide (7 on the last row)",
+    "gap": "row 7 only — x6-x8 are clean rgb(122,92,46)",
+    "left_leg": "rows 8-12, 2px wide",
+    "right_leg": "rows 7-12, 1-2px wide",
+    "peaks": "all three regions reach exact 255,255,255 — 6.18:1 against the tile. chizukim's legs never reached full white; these do.",
+    "tile_against_a_dark_tab_strip": "2.60:1 — the tile barely separates, but the letter is white and the letter is what is read",
+    "tile_against_a_light_tab_strip": "5.55:1 — there the tile carries the identity"
+  },
+
+  "an_error_of_mine_worth_recording": "three verification runs reported 'decode failed' and a 404 on the asset after the file was already correct. The asset was fine; the probe mapped the link elements to {rel, raw, resolved} and then read .href off the mapped object, so it fetched the string 'undefined'. The dev server log ('GET /undefined 404') is what settled it. Nothing was concluded about the file from those three runs.",
+
+  "not_claimed": [
+    "no tab-strip screenshot: a favicon lives in the browser chrome, not the viewport. The evidence is the resolved DOM href, the bytes, the parse, the decode and the rasters.",
+    "the browser's own tab request was not captured (headless has no tab strip)",
+    "no ICO or PNG fallback was added",
+    "not deployed — the app was not built for production and nothing was copied to _deploy, so production still shows the portal's mark on this tab",
+    "studio was not touched this round; it remains blocked on its base/mount mismatch"
+  ],
+
+  "protected_untouched": "08 · 09 · bkalut-app · bkalot-admin · zr_* · NEDARIM3873 — none read, none written",
+  "database": "read only — core.issues and core.run_progress; no migration",
+  "mode": "test — nothing was sent, nothing was charged"
+}
