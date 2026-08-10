@@ -1,598 +1,6 @@
 {
   "apps": [
     {
-      "app": "21-mthbram",
-      "files": 6,
-      "total": 42,
-      "loud": 7,
-      "found": [
-        {
-          "file": "apps/21-mthbram/src/lib/lessonExcel.ts",
-          "hits": [
-            {
-              "line": 56,
-              "num": "12",
-              "kind": "string",
-              "loud": false,
-              "code": "\"12\","
-            }
-          ]
-        },
-        {
-          "file": "apps/21-mthbram/src/lib/studyDayExcel.ts",
-          "hits": [
-            {
-              "line": 43,
-              "num": "12",
-              "kind": "string",
-              "loud": false,
-              "code": "\"12\","
-            },
-            {
-              "line": 46,
-              "num": "0501234567",
-              "kind": "string",
-              "loud": false,
-              "code": "\"0501234567\","
-            }
-          ]
-        },
-        {
-          "file": "apps/21-mthbram/src/pages/IvrBuilder.tsx",
-          "hits": [
-            {
-              "line": 46,
-              "num": "0501234567",
-              "kind": "string",
-              "loud": false,
-              "code": "example: `curl -X POST \"${baseUrl}/ivr-submit\" -H \"Content-Type: application/json\" -d '{\"caller_phone\":\"0501234567\",\"request_type\":\"request_lesson\",\"message\":\"מ"
-            },
-            {
-              "line": 208,
-              "num": "1",
-              "kind": "string",
-              "loud": false,
-              "code": "{ key: \"1\", label: \"חיפוש שיעור\", sub: \"שפה → נושא → עיר → תוצאות\" },"
-            },
-            {
-              "line": 209,
-              "num": "2",
-              "kind": "string",
-              "loud": false,
-              "code": "{ key: \"2\", label: \"עדכון שיעור קיים\", sub: \"הקלטת הודעה עם פרטים\" },"
-            },
-            {
-              "line": 210,
-              "num": "3",
-              "kind": "string",
-              "loud": false,
-              "code": "{ key: \"3\", label: \"הקמת שיעור חדש\", sub: \"הקלטת בקשה\" },"
-            },
-            {
-              "line": 211,
-              "num": "4",
-              "kind": "string",
-              "loud": false,
-              "code": "{ key: \"4\", label: \"הצטרפות כמגיד שיעור\", sub: \"הקלטת פרטים\" },"
-            },
-            {
-              "line": 212,
-              "num": "0",
-              "kind": "string",
-              "loud": false,
-              "code": "{ key: \"0\", label: \"שיחה עם נציג\", sub: \"העברה ל-023-133-0600\" },"
-            }
-          ]
-        },
-        {
-          "file": "apps/21-mthbram/src/pages/SeekerDashboard.tsx",
-          "hits": [
-            {
-              "line": 58,
-              "num": "8",
-              "kind": "field",
-              "loud": true,
-              "code": "{ icon: BookOpen, label: \"מגידי שיעור מתאימים\", value: \"8\", color: \"text-accent\" },"
-            },
-            {
-              "line": 59,
-              "num": "3",
-              "kind": "field",
-              "loud": true,
-              "code": "{ icon: Heart, label: \"שמורים\", value: \"3\", color: \"text-destructive\" },"
-            },
-            {
-              "line": 60,
-              "num": "24",
-              "kind": "field",
-              "loud": true,
-              "code": "{ icon: Eye, label: \"צפיות בבקשה\", value: \"24\", color: \"text-muted-foreground\" },"
-            },
-            {
-              "line": 58,
-              "num": "8",
-              "kind": "string",
-              "loud": false,
-              "code": "{ icon: BookOpen, label: \"מגידי שיעור מתאימים\", value: \"8\", color: \"text-accent\" },"
-            },
-            {
-              "line": 59,
-              "num": "3",
-              "kind": "string",
-              "loud": false,
-              "code": "{ icon: Heart, label: \"שמורים\", value: \"3\", color: \"text-destructive\" },"
-            },
-            {
-              "line": 60,
-              "num": "24",
-              "kind": "string",
-              "loud": false,
-              "code": "{ icon: Eye, label: \"צפיות בבקשה\", value: \"24\", color: \"text-muted-foreground\" },"
-            }
-          ]
-        },
-        {
-          "file": "apps/21-mthbram/src/pages/TeacherDashboard.tsx",
-          "hits": [
-            {
-              "line": 78,
-              "num": "12",
-              "kind": "field",
-              "loud": true,
-              "code": "{ icon: Users, label: \"בקשות מתאימות\", value: \"12\", color: \"text-accent\" },"
-            },
-            {
-              "line": 79,
-              "num": "4",
-              "kind": "field",
-              "loud": true,
-              "code": "{ icon: Star, label: \"התאמה גבוהה\", value: \"4\", color: \"text-gold\" },"
-            },
-            {
-              "line": 80,
-              "num": "3",
-              "kind": "field",
-              "loud": true,
-              "code": "{ icon: BookOpen, label: \"שיעורים פעילים\", value: \"3\", color: \"text-navy\" },"
-            },
-            {
-              "line": 81,
-              "num": "156",
-              "kind": "field",
-              "loud": true,
-              "code": "{ icon: Eye, label: \"צפיות בפרופיל\", value: \"156\", color: \"text-muted-foreground\" },"
-            },
-            {
-              "line": 78,
-              "num": "12",
-              "kind": "string",
-              "loud": false,
-              "code": "{ icon: Users, label: \"בקשות מתאימות\", value: \"12\", color: \"text-accent\" },"
-            },
-            {
-              "line": 79,
-              "num": "4",
-              "kind": "string",
-              "loud": false,
-              "code": "{ icon: Star, label: \"התאמה גבוהה\", value: \"4\", color: \"text-gold\" },"
-            },
-            {
-              "line": 80,
-              "num": "3",
-              "kind": "string",
-              "loud": false,
-              "code": "{ icon: BookOpen, label: \"שיעורים פעילים\", value: \"3\", color: \"text-navy\" },"
-            },
-            {
-              "line": 81,
-              "num": "156",
-              "kind": "string",
-              "loud": false,
-              "code": "{ icon: Eye, label: \"צפיות בפרופיל\", value: \"156\", color: \"text-muted-foreground\" },"
-            }
-          ]
-        },
-        {
-          "file": "apps/21-mthbram/supabase/functions/ivr-menu/index.ts",
-          "hits": [
-            {
-              "line": 12,
-              "num": "1",
-              "kind": "string",
-              "loud": false,
-              "code": "{ key: \"1\", label: \"חיפוש שיעור\", action: \"goto\", target: \"search_language\" },"
-            },
-            {
-              "line": 13,
-              "num": "2",
-              "kind": "string",
-              "loud": false,
-              "code": "{ key: \"2\", label: \"עדכון שיעור קיים\", action: \"goto\", target: \"update_lesson\" },"
-            },
-            {
-              "line": 14,
-              "num": "3",
-              "kind": "string",
-              "loud": false,
-              "code": "{ key: \"3\", label: \"הקמת שיעור חדש\", action: \"goto\", target: \"request_lesson\" },"
-            },
-            {
-              "line": 15,
-              "num": "4",
-              "kind": "string",
-              "loud": false,
-              "code": "{ key: \"4\", label: \"הצטרפות כמגיד שיעור\", action: \"goto\", target: \"register_teacher\" },"
-            },
-            {
-              "line": 16,
-              "num": "0",
-              "kind": "string",
-              "loud": false,
-              "code": "{ key: \"0\", label: \"שיחה עם נציג\", action: \"transfer\", target: \"0231330600\" },"
-            },
-            {
-              "line": 16,
-              "num": "0231330600",
-              "kind": "string",
-              "loud": false,
-              "code": "{ key: \"0\", label: \"שיחה עם נציג\", action: \"transfer\", target: \"0231330600\" },"
-            },
-            {
-              "line": 23,
-              "num": "1",
-              "kind": "string",
-              "loud": false,
-              "code": "{ key: \"1\", label: \"עברית\", action: \"set_param\", param: \"language\", value: \"עברית\", next: \"search_subject\" },"
-            },
-            {
-              "line": 24,
-              "num": "2",
-              "kind": "string",
-              "loud": false,
-              "code": "{ key: \"2\", label: \"אידיש\", action: \"set_param\", param: \"language\", value: \"אידיש\", next: \"search_subject\" },"
-            },
-            {
-              "line": 25,
-              "num": "3",
-              "kind": "string",
-              "loud": false,
-              "code": "{ key: \"3\", label: \"אנגלית\", action: \"set_param\", param: \"language\", value: \"אנגלית\", next: \"search_subject\" },"
-            },
-            {
-              "line": 26,
-              "num": "9",
-              "kind": "string",
-              "loud": false,
-              "code": "{ key: \"9\", label: \"חזרה\", action: \"goto\", target: \"root\" },"
-            },
-            {
-              "line": 33,
-              "num": "1",
-              "kind": "string",
-              "loud": false,
-              "code": "{ key: \"1\", label: \"גמרא\", action: \"set_param\", param: \"subject\", value: \"גמרא\", next: \"search_city\" },"
-            },
-            {
-              "line": 34,
-              "num": "2",
-              "kind": "string",
-              "loud": false,
-              "code": "{ key: \"2\", label: \"הלכה\", action: \"set_param\", param: \"subject\", value: \"הלכה\", next: \"search_city\" },"
-            },
-            {
-              "line": 35,
-              "num": "3",
-              "kind": "string",
-              "loud": false,
-              "code": "{ key: \"3\", label: \"פרשת שבוע\", action: \"set_param\", param: \"subject\", value: \"פרשת שבוע\", next: \"search_city\" },"
-            },
-            {
-              "line": 36,
-              "num": "4",
-              "kind": "string",
-              "loud": false,
-              "code": "{ key: \"4\", label: \"מוסר וחסידות\", action: \"set_param\", param: \"subject\", value: \"מוסר\", next: \"search_city\" },"
-            },
-            {
-              "line": 37,
-              "num": "5",
-              "kind": "string",
-              "loud": false,
-              "code": "{ key: \"5\", label: \"דף יומי\", action: \"set_param\", param: \"subject\", value: \"דף יומי\", next: \"search_city\" },"
-            },
-            {
-              "line": 38,
-              "num": "9",
-              "kind": "string",
-              "loud": false,
-              "code": "{ key: \"9\", label: \"חזרה\", action: \"goto\", target: \"search_language\" },"
-            },
-            {
-              "line": 53,
-              "num": "9",
-              "kind": "string",
-              "loud": false,
-              "code": "{ key: \"9\", label: \"חזרה\", action: \"goto\", target: \"root\" },"
-            },
-            {
-              "line": 61,
-              "num": "9",
-              "kind": "string",
-              "loud": false,
-              "code": "{ key: \"9\", label: \"חזרה\", action: \"goto\", target: \"root\" },"
-            },
-            {
-              "line": 69,
-              "num": "9",
-              "kind": "string",
-              "loud": false,
-              "code": "{ key: \"9\", label: \"חזרה\", action: \"goto\", target: \"root\" },"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "app": "01-torah-platform",
-      "files": 7,
-      "total": 31,
-      "loud": 7,
-      "found": [
-        {
-          "file": "apps/01-torah-platform/src/lib/lessonExcel.ts",
-          "hits": [
-            {
-              "line": 56,
-              "num": "12",
-              "kind": "string",
-              "loud": false,
-              "code": "\"12\","
-            }
-          ]
-        },
-        {
-          "file": "apps/01-torah-platform/src/lib/studyDayExcel.ts",
-          "hits": [
-            {
-              "line": 43,
-              "num": "12",
-              "kind": "string",
-              "loud": false,
-              "code": "\"12\","
-            },
-            {
-              "line": 46,
-              "num": "0501234567",
-              "kind": "string",
-              "loud": false,
-              "code": "\"0501234567\","
-            }
-          ]
-        },
-        {
-          "file": "apps/01-torah-platform/src/pages/legacy/IvrBuilder.tsx",
-          "hits": [
-            {
-              "line": 46,
-              "num": "0501234567",
-              "kind": "string",
-              "loud": false,
-              "code": "example: `curl -X POST \"${baseUrl}/ivr-submit\" -H \"Content-Type: application/json\" -d '{\"caller_phone\":\"0501234567\",\"request_type\":\"request_lesson\",\"message\":\"מ"
-            },
-            {
-              "line": 208,
-              "num": "1",
-              "kind": "string",
-              "loud": false,
-              "code": "{ key: \"1\", label: \"חיפוש שיעור\", sub: \"שפה → נושא → עיר → תוצאות\" },"
-            },
-            {
-              "line": 209,
-              "num": "2",
-              "kind": "string",
-              "loud": false,
-              "code": "{ key: \"2\", label: \"עדכון שיעור קיים\", sub: \"הקלטת הודעה עם פרטים\" },"
-            },
-            {
-              "line": 210,
-              "num": "3",
-              "kind": "string",
-              "loud": false,
-              "code": "{ key: \"3\", label: \"הקמת שיעור חדש\", sub: \"הקלטת בקשה\" },"
-            },
-            {
-              "line": 211,
-              "num": "4",
-              "kind": "string",
-              "loud": false,
-              "code": "{ key: \"4\", label: \"הצטרפות כמגיד שיעור\", sub: \"הקלטת פרטים\" },"
-            },
-            {
-              "line": 212,
-              "num": "0",
-              "kind": "string",
-              "loud": false,
-              "code": "{ key: \"0\", label: \"שיחה עם נציג\", sub: \"העברה ל-023-133-0600\" },"
-            }
-          ]
-        },
-        {
-          "file": "apps/01-torah-platform/src/pages/legacy/SeekerDashboard.tsx",
-          "hits": [
-            {
-              "line": 58,
-              "num": "8",
-              "kind": "field",
-              "loud": true,
-              "code": "{ icon: BookOpen, label: \"מגידי שיעור מתאימים\", value: \"8\", color: \"text-accent\" },"
-            },
-            {
-              "line": 59,
-              "num": "3",
-              "kind": "field",
-              "loud": true,
-              "code": "{ icon: Heart, label: \"שמורים\", value: \"3\", color: \"text-destructive\" },"
-            },
-            {
-              "line": 60,
-              "num": "24",
-              "kind": "field",
-              "loud": true,
-              "code": "{ icon: Eye, label: \"צפיות בבקשה\", value: \"24\", color: \"text-muted-foreground\" },"
-            },
-            {
-              "line": 58,
-              "num": "8",
-              "kind": "string",
-              "loud": false,
-              "code": "{ icon: BookOpen, label: \"מגידי שיעור מתאימים\", value: \"8\", color: \"text-accent\" },"
-            },
-            {
-              "line": 59,
-              "num": "3",
-              "kind": "string",
-              "loud": false,
-              "code": "{ icon: Heart, label: \"שמורים\", value: \"3\", color: \"text-destructive\" },"
-            },
-            {
-              "line": 60,
-              "num": "24",
-              "kind": "string",
-              "loud": false,
-              "code": "{ icon: Eye, label: \"צפיות בבקשה\", value: \"24\", color: \"text-muted-foreground\" },"
-            }
-          ]
-        },
-        {
-          "file": "apps/01-torah-platform/src/pages/legacy/TeacherDashboard.tsx",
-          "hits": [
-            {
-              "line": 78,
-              "num": "12",
-              "kind": "field",
-              "loud": true,
-              "code": "{ icon: Users, label: \"בקשות מתאימות\", value: \"12\", color: \"text-accent\" },"
-            },
-            {
-              "line": 79,
-              "num": "4",
-              "kind": "field",
-              "loud": true,
-              "code": "{ icon: Star, label: \"התאמה גבוהה\", value: \"4\", color: \"text-gold\" },"
-            },
-            {
-              "line": 80,
-              "num": "3",
-              "kind": "field",
-              "loud": true,
-              "code": "{ icon: BookOpen, label: \"שיעורים פעילים\", value: \"3\", color: \"text-navy\" },"
-            },
-            {
-              "line": 81,
-              "num": "156",
-              "kind": "field",
-              "loud": true,
-              "code": "{ icon: Eye, label: \"צפיות בפרופיל\", value: \"156\", color: \"text-muted-foreground\" },"
-            },
-            {
-              "line": 78,
-              "num": "12",
-              "kind": "string",
-              "loud": false,
-              "code": "{ icon: Users, label: \"בקשות מתאימות\", value: \"12\", color: \"text-accent\" },"
-            },
-            {
-              "line": 79,
-              "num": "4",
-              "kind": "string",
-              "loud": false,
-              "code": "{ icon: Star, label: \"התאמה גבוהה\", value: \"4\", color: \"text-gold\" },"
-            },
-            {
-              "line": 80,
-              "num": "3",
-              "kind": "string",
-              "loud": false,
-              "code": "{ icon: BookOpen, label: \"שיעורים פעילים\", value: \"3\", color: \"text-navy\" },"
-            },
-            {
-              "line": 81,
-              "num": "156",
-              "kind": "string",
-              "loud": false,
-              "code": "{ icon: Eye, label: \"צפיות בפרופיל\", value: \"156\", color: \"text-muted-foreground\" },"
-            }
-          ]
-        },
-        {
-          "file": "apps/01-torah-platform/src/pages/portal/BulkUpload.tsx",
-          "hits": [
-            {
-              "line": 16,
-              "num": "0",
-              "kind": "string",
-              "loud": false,
-              "code": "\"0\": 0, \"1\": 1, \"2\": 2, \"3\": 3, \"4\": 4, \"5\": 5, \"6\": 6,"
-            },
-            {
-              "line": 16,
-              "num": "1",
-              "kind": "string",
-              "loud": false,
-              "code": "\"0\": 0, \"1\": 1, \"2\": 2, \"3\": 3, \"4\": 4, \"5\": 5, \"6\": 6,"
-            },
-            {
-              "line": 16,
-              "num": "2",
-              "kind": "string",
-              "loud": false,
-              "code": "\"0\": 0, \"1\": 1, \"2\": 2, \"3\": 3, \"4\": 4, \"5\": 5, \"6\": 6,"
-            },
-            {
-              "line": 16,
-              "num": "3",
-              "kind": "string",
-              "loud": false,
-              "code": "\"0\": 0, \"1\": 1, \"2\": 2, \"3\": 3, \"4\": 4, \"5\": 5, \"6\": 6,"
-            },
-            {
-              "line": 16,
-              "num": "4",
-              "kind": "string",
-              "loud": false,
-              "code": "\"0\": 0, \"1\": 1, \"2\": 2, \"3\": 3, \"4\": 4, \"5\": 5, \"6\": 6,"
-            },
-            {
-              "line": 16,
-              "num": "5",
-              "kind": "string",
-              "loud": false,
-              "code": "\"0\": 0, \"1\": 1, \"2\": 2, \"3\": 3, \"4\": 4, \"5\": 5, \"6\": 6,"
-            },
-            {
-              "line": 16,
-              "num": "6",
-              "kind": "string",
-              "loud": false,
-              "code": "\"0\": 0, \"1\": 1, \"2\": 2, \"3\": 3, \"4\": 4, \"5\": 5, \"6\": 6,"
-            }
-          ]
-        },
-        {
-          "file": "apps/01-torah-platform/supabase/functions/nedarim-webhook/index.ts",
-          "hits": [
-            {
-              "line": 100,
-              "num": "0",
-              "kind": "string",
-              "loud": false,
-              "code": "const amount = parseFloat(payload.Amount || payload.amount || \"0\");"
-            }
-          ]
-        }
-      ]
-    },
-    {
       "app": "10-bkalot-rights",
       "files": 1,
       "total": 16,
@@ -602,32 +10,32 @@
           "file": "apps/10-bkalot-rights/index.html",
           "hits": [
             {
-              "line": 83,
+              "line": 92,
               "num": "888",
               "kind": "tile",
               "loud": true,
-              "code": "<div class=\"stat\"><span class=\"num\" data-count=\"888\">0</span><span class=\"lbl\">נושאים מקוטלגים</span></div>"
+              "code": "<div class=\"stat\"><span class=\"num\" data-stat=\"catalog\" data-count=\"888\">0</span><span class=\"lbl\">נושאים מקוטלגים</span></div>"
             },
             {
-              "line": 84,
+              "line": 93,
               "num": "373",
               "kind": "tile",
               "loud": true,
-              "code": "<div class=\"stat\"><span class=\"num\" data-count=\"373\">0</span><span class=\"lbl\">זכויות מבקלות</span></div>"
+              "code": "<div class=\"stat\"><span class=\"num\" data-stat=\"bklot\" data-count=\"373\">0</span><span class=\"lbl\">זכויות מבקלות</span></div>"
             },
             {
-              "line": 85,
-              "num": "515",
+              "line": 94,
+              "num": "435",
               "kind": "tile",
               "loud": true,
-              "code": "<div class=\"stat\"><span class=\"num\" data-count=\"515\">0</span><span class=\"lbl\">נושאי קופות חולים</span></div>"
+              "code": "<div class=\"stat\"><span class=\"num\" data-stat=\"fund\" data-count=\"435\">0</span><span class=\"lbl\">נושאי קופות חולים</span></div>"
             },
             {
-              "line": 86,
-              "num": "25",
+              "line": 95,
+              "num": "24",
               "kind": "tile",
               "loud": true,
-              "code": "<div class=\"stat\"><span class=\"num\" data-count=\"25\">0</span><span class=\"lbl\">מצבי חיים ממופים</span></div>"
+              "code": "<div class=\"stat\"><span class=\"num\" data-stat=\"situations\" data-count=\"24\">0</span><span class=\"lbl\">מצבי חיים ממופים</span></div>"
             },
             {
               "line": 57,
@@ -686,32 +94,32 @@
               "code": "<rect x=\"3\" y=\"3\" width=\"42\" height=\"42\" rx=\"11\" stroke=\"currentColor\" stroke-width=\"2.5\"/>"
             },
             {
-              "line": 83,
+              "line": 92,
               "num": "888",
               "kind": "string",
               "loud": false,
-              "code": "<div class=\"stat\"><span class=\"num\" data-count=\"888\">0</span><span class=\"lbl\">נושאים מקוטלגים</span></div>"
+              "code": "<div class=\"stat\"><span class=\"num\" data-stat=\"catalog\" data-count=\"888\">0</span><span class=\"lbl\">נושאים מקוטלגים</span></div>"
             },
             {
-              "line": 84,
+              "line": 93,
               "num": "373",
               "kind": "string",
               "loud": false,
-              "code": "<div class=\"stat\"><span class=\"num\" data-count=\"373\">0</span><span class=\"lbl\">זכויות מבקלות</span></div>"
+              "code": "<div class=\"stat\"><span class=\"num\" data-stat=\"bklot\" data-count=\"373\">0</span><span class=\"lbl\">זכויות מבקלות</span></div>"
             },
             {
-              "line": 85,
-              "num": "515",
+              "line": 94,
+              "num": "435",
               "kind": "string",
               "loud": false,
-              "code": "<div class=\"stat\"><span class=\"num\" data-count=\"515\">0</span><span class=\"lbl\">נושאי קופות חולים</span></div>"
+              "code": "<div class=\"stat\"><span class=\"num\" data-stat=\"fund\" data-count=\"435\">0</span><span class=\"lbl\">נושאי קופות חולים</span></div>"
             },
             {
-              "line": 86,
-              "num": "25",
+              "line": 95,
+              "num": "24",
               "kind": "string",
               "loud": false,
-              "code": "<div class=\"stat\"><span class=\"num\" data-count=\"25\">0</span><span class=\"lbl\">מצבי חיים ממופים</span></div>"
+              "code": "<div class=\"stat\"><span class=\"num\" data-stat=\"situations\" data-count=\"24\">0</span><span class=\"lbl\">מצבי חיים ממופים</span></div>"
             }
           ]
         }
@@ -1165,6 +573,382 @@
               "kind": "string",
               "loud": false,
               "code": "{ key: \"bureaucratic_pitfalls\", label: \"מוקשים\", iconSvg: `<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-l"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "app": "21-mthbram",
+      "files": 4,
+      "total": 28,
+      "loud": 0,
+      "found": [
+        {
+          "file": "apps/21-mthbram/src/lib/lessonExcel.ts",
+          "hits": [
+            {
+              "line": 56,
+              "num": "12",
+              "kind": "string",
+              "loud": false,
+              "code": "\"12\","
+            }
+          ]
+        },
+        {
+          "file": "apps/21-mthbram/src/lib/studyDayExcel.ts",
+          "hits": [
+            {
+              "line": 43,
+              "num": "12",
+              "kind": "string",
+              "loud": false,
+              "code": "\"12\","
+            },
+            {
+              "line": 46,
+              "num": "0501234567",
+              "kind": "string",
+              "loud": false,
+              "code": "\"0501234567\","
+            }
+          ]
+        },
+        {
+          "file": "apps/21-mthbram/src/pages/IvrBuilder.tsx",
+          "hits": [
+            {
+              "line": 46,
+              "num": "0501234567",
+              "kind": "string",
+              "loud": false,
+              "code": "example: `curl -X POST \"${baseUrl}/ivr-submit\" -H \"Content-Type: application/json\" -d '{\"caller_phone\":\"0501234567\",\"request_type\":\"request_lesson\",\"message\":\"מ"
+            },
+            {
+              "line": 208,
+              "num": "1",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"1\", label: \"חיפוש שיעור\", sub: \"שפה → נושא → עיר → תוצאות\" },"
+            },
+            {
+              "line": 209,
+              "num": "2",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"2\", label: \"עדכון שיעור קיים\", sub: \"הקלטת הודעה עם פרטים\" },"
+            },
+            {
+              "line": 210,
+              "num": "3",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"3\", label: \"הקמת שיעור חדש\", sub: \"הקלטת בקשה\" },"
+            },
+            {
+              "line": 211,
+              "num": "4",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"4\", label: \"הצטרפות כמגיד שיעור\", sub: \"הקלטת פרטים\" },"
+            },
+            {
+              "line": 212,
+              "num": "0",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"0\", label: \"שיחה עם נציג\", sub: \"העברה ל-023-133-0600\" },"
+            }
+          ]
+        },
+        {
+          "file": "apps/21-mthbram/supabase/functions/ivr-menu/index.ts",
+          "hits": [
+            {
+              "line": 12,
+              "num": "1",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"1\", label: \"חיפוש שיעור\", action: \"goto\", target: \"search_language\" },"
+            },
+            {
+              "line": 13,
+              "num": "2",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"2\", label: \"עדכון שיעור קיים\", action: \"goto\", target: \"update_lesson\" },"
+            },
+            {
+              "line": 14,
+              "num": "3",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"3\", label: \"הקמת שיעור חדש\", action: \"goto\", target: \"request_lesson\" },"
+            },
+            {
+              "line": 15,
+              "num": "4",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"4\", label: \"הצטרפות כמגיד שיעור\", action: \"goto\", target: \"register_teacher\" },"
+            },
+            {
+              "line": 16,
+              "num": "0",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"0\", label: \"שיחה עם נציג\", action: \"transfer\", target: \"0231330600\" },"
+            },
+            {
+              "line": 16,
+              "num": "0231330600",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"0\", label: \"שיחה עם נציג\", action: \"transfer\", target: \"0231330600\" },"
+            },
+            {
+              "line": 23,
+              "num": "1",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"1\", label: \"עברית\", action: \"set_param\", param: \"language\", value: \"עברית\", next: \"search_subject\" },"
+            },
+            {
+              "line": 24,
+              "num": "2",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"2\", label: \"אידיש\", action: \"set_param\", param: \"language\", value: \"אידיש\", next: \"search_subject\" },"
+            },
+            {
+              "line": 25,
+              "num": "3",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"3\", label: \"אנגלית\", action: \"set_param\", param: \"language\", value: \"אנגלית\", next: \"search_subject\" },"
+            },
+            {
+              "line": 26,
+              "num": "9",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"9\", label: \"חזרה\", action: \"goto\", target: \"root\" },"
+            },
+            {
+              "line": 33,
+              "num": "1",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"1\", label: \"גמרא\", action: \"set_param\", param: \"subject\", value: \"גמרא\", next: \"search_city\" },"
+            },
+            {
+              "line": 34,
+              "num": "2",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"2\", label: \"הלכה\", action: \"set_param\", param: \"subject\", value: \"הלכה\", next: \"search_city\" },"
+            },
+            {
+              "line": 35,
+              "num": "3",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"3\", label: \"פרשת שבוע\", action: \"set_param\", param: \"subject\", value: \"פרשת שבוע\", next: \"search_city\" },"
+            },
+            {
+              "line": 36,
+              "num": "4",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"4\", label: \"מוסר וחסידות\", action: \"set_param\", param: \"subject\", value: \"מוסר\", next: \"search_city\" },"
+            },
+            {
+              "line": 37,
+              "num": "5",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"5\", label: \"דף יומי\", action: \"set_param\", param: \"subject\", value: \"דף יומי\", next: \"search_city\" },"
+            },
+            {
+              "line": 38,
+              "num": "9",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"9\", label: \"חזרה\", action: \"goto\", target: \"search_language\" },"
+            },
+            {
+              "line": 53,
+              "num": "9",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"9\", label: \"חזרה\", action: \"goto\", target: \"root\" },"
+            },
+            {
+              "line": 61,
+              "num": "9",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"9\", label: \"חזרה\", action: \"goto\", target: \"root\" },"
+            },
+            {
+              "line": 69,
+              "num": "9",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"9\", label: \"חזרה\", action: \"goto\", target: \"root\" },"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "app": "01-torah-platform",
+      "files": 5,
+      "total": 17,
+      "loud": 0,
+      "found": [
+        {
+          "file": "apps/01-torah-platform/src/lib/lessonExcel.ts",
+          "hits": [
+            {
+              "line": 56,
+              "num": "12",
+              "kind": "string",
+              "loud": false,
+              "code": "\"12\","
+            }
+          ]
+        },
+        {
+          "file": "apps/01-torah-platform/src/lib/studyDayExcel.ts",
+          "hits": [
+            {
+              "line": 43,
+              "num": "12",
+              "kind": "string",
+              "loud": false,
+              "code": "\"12\","
+            },
+            {
+              "line": 46,
+              "num": "0501234567",
+              "kind": "string",
+              "loud": false,
+              "code": "\"0501234567\","
+            }
+          ]
+        },
+        {
+          "file": "apps/01-torah-platform/src/pages/legacy/IvrBuilder.tsx",
+          "hits": [
+            {
+              "line": 46,
+              "num": "0501234567",
+              "kind": "string",
+              "loud": false,
+              "code": "example: `curl -X POST \"${baseUrl}/ivr-submit\" -H \"Content-Type: application/json\" -d '{\"caller_phone\":\"0501234567\",\"request_type\":\"request_lesson\",\"message\":\"מ"
+            },
+            {
+              "line": 208,
+              "num": "1",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"1\", label: \"חיפוש שיעור\", sub: \"שפה → נושא → עיר → תוצאות\" },"
+            },
+            {
+              "line": 209,
+              "num": "2",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"2\", label: \"עדכון שיעור קיים\", sub: \"הקלטת הודעה עם פרטים\" },"
+            },
+            {
+              "line": 210,
+              "num": "3",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"3\", label: \"הקמת שיעור חדש\", sub: \"הקלטת בקשה\" },"
+            },
+            {
+              "line": 211,
+              "num": "4",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"4\", label: \"הצטרפות כמגיד שיעור\", sub: \"הקלטת פרטים\" },"
+            },
+            {
+              "line": 212,
+              "num": "0",
+              "kind": "string",
+              "loud": false,
+              "code": "{ key: \"0\", label: \"שיחה עם נציג\", sub: \"העברה ל-023-133-0600\" },"
+            }
+          ]
+        },
+        {
+          "file": "apps/01-torah-platform/src/pages/portal/BulkUpload.tsx",
+          "hits": [
+            {
+              "line": 16,
+              "num": "0",
+              "kind": "string",
+              "loud": false,
+              "code": "\"0\": 0, \"1\": 1, \"2\": 2, \"3\": 3, \"4\": 4, \"5\": 5, \"6\": 6,"
+            },
+            {
+              "line": 16,
+              "num": "1",
+              "kind": "string",
+              "loud": false,
+              "code": "\"0\": 0, \"1\": 1, \"2\": 2, \"3\": 3, \"4\": 4, \"5\": 5, \"6\": 6,"
+            },
+            {
+              "line": 16,
+              "num": "2",
+              "kind": "string",
+              "loud": false,
+              "code": "\"0\": 0, \"1\": 1, \"2\": 2, \"3\": 3, \"4\": 4, \"5\": 5, \"6\": 6,"
+            },
+            {
+              "line": 16,
+              "num": "3",
+              "kind": "string",
+              "loud": false,
+              "code": "\"0\": 0, \"1\": 1, \"2\": 2, \"3\": 3, \"4\": 4, \"5\": 5, \"6\": 6,"
+            },
+            {
+              "line": 16,
+              "num": "4",
+              "kind": "string",
+              "loud": false,
+              "code": "\"0\": 0, \"1\": 1, \"2\": 2, \"3\": 3, \"4\": 4, \"5\": 5, \"6\": 6,"
+            },
+            {
+              "line": 16,
+              "num": "5",
+              "kind": "string",
+              "loud": false,
+              "code": "\"0\": 0, \"1\": 1, \"2\": 2, \"3\": 3, \"4\": 4, \"5\": 5, \"6\": 6,"
+            },
+            {
+              "line": 16,
+              "num": "6",
+              "kind": "string",
+              "loud": false,
+              "code": "\"0\": 0, \"1\": 1, \"2\": 2, \"3\": 3, \"4\": 4, \"5\": 5, \"6\": 6,"
+            }
+          ]
+        },
+        {
+          "file": "apps/01-torah-platform/supabase/functions/nedarim-webhook/index.ts",
+          "hits": [
+            {
+              "line": 100,
+              "num": "0",
+              "kind": "string",
+              "loud": false,
+              "code": "const amount = parseFloat(payload.Amount || payload.amount || \"0\");"
             }
           ]
         }
