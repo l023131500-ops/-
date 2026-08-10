@@ -1,5 +1,5 @@
 {
-  "measured_at": "2026-08-10T08:44:54.723Z",
+  "measured_at": "2026-08-10T10:14:53.599Z",
   "mounts": {
     "admin": {
       "project": "nihul-more30",
@@ -8,32 +8,22 @@
         "nihul-more30"
       ],
       "live_artifact": null,
-      "client_hits": [
+      "client_hits": [],
+      "not_requested_from_root": [
         {
           "file": "admin/assets/index-BpjLLbPu.js",
-          "path": "/api/broadcast"
+          "path": "/api/broadcast",
+          "reason": "written onto a URL object .pathname — carried by an absolute origin, never requested from more30.com",
+          "context": "bsocket$/i,\"\"),e.pathname===\"\"||e.pathname===\"/\"?e.pathname=\"/api/broadcast\""
         },
         {
           "file": "admin/assets/index-BpjLLbPu.js",
-          "path": "/api/broadcast"
-        }
-      ],
-      "probes": [
-        {
           "path": "/api/broadcast",
-          "as_shipped": {
-            "status": 404,
-            "type": "text/plain",
-            "bytes": 79
-          },
-          "as_mounted": {
-            "status": 404,
-            "type": "text/plain",
-            "bytes": 84
-          },
-          "verdict": "absent_in_production"
+          "reason": "written onto a URL object .pathname — carried by an absolute origin, never requested from more30.com",
+          "context": "ame===\"/\"?e.pathname=\"/api/broadcast\":e.pathname=e.pathname+\"/api/broadcast\""
         }
       ],
+      "probes": [],
       "live_document": {
         "status": 200,
         "bytes": 4789,
@@ -44,12 +34,7 @@
       "staged_not_deployed": [
         "admin-more30",
         "nihul-more30"
-      ],
-      "verdict_counts": {
-        "served_at_root": 0,
-        "mount_prefix": 0,
-        "absent_in_production": 1
-      }
+      ]
     },
     "bkalot": {
       "project": "bkalot-more30",
@@ -58,6 +43,7 @@
       ],
       "live_artifact": null,
       "client_hits": [],
+      "not_requested_from_root": [],
       "probes": [],
       "live_document": {
         "status": 200,
@@ -75,6 +61,7 @@
       ],
       "live_artifact": null,
       "client_hits": [],
+      "not_requested_from_root": [],
       "probes": [],
       "live_document": {
         "status": 200,
@@ -91,32 +78,22 @@
         "chatzor-more30"
       ],
       "live_artifact": "chatzor-more30",
-      "client_hits": [
+      "client_hits": [],
+      "not_requested_from_root": [
         {
           "file": "chatzor/assets/index-CVT2cZJc.js",
-          "path": "/api/broadcast"
+          "path": "/api/broadcast",
+          "reason": "written onto a URL object .pathname — carried by an absolute origin, never requested from more30.com",
+          "context": "bsocket$/i,\"\"),e.pathname===\"\"||e.pathname===\"/\"?e.pathname=\"/api/broadcast\""
         },
         {
           "file": "chatzor/assets/index-CVT2cZJc.js",
-          "path": "/api/broadcast"
-        }
-      ],
-      "probes": [
-        {
           "path": "/api/broadcast",
-          "as_shipped": {
-            "status": 404,
-            "type": "text/plain",
-            "bytes": 79
-          },
-          "as_mounted": {
-            "status": 200,
-            "type": "text/html",
-            "bytes": 33282
-          },
-          "verdict": "absent_in_production"
+          "reason": "written onto a URL object .pathname — carried by an absolute origin, never requested from more30.com",
+          "context": "ame===\"/\"?e.pathname=\"/api/broadcast\":e.pathname=e.pathname+\"/api/broadcast\""
         }
       ],
+      "probes": [],
       "live_document": {
         "status": 200,
         "bytes": 33282,
@@ -129,18 +106,14 @@
           "index-Ce8_JRl3.css"
         ]
       },
-      "staged_not_deployed": [],
-      "verdict_counts": {
-        "served_at_root": 0,
-        "mount_prefix": 0,
-        "absent_in_production": 1
-      }
+      "staged_not_deployed": []
     },
     "chizukim": {
       "project": "chizukim2-more30",
       "artifacts": [],
       "live_artifact": null,
       "client_hits": [],
+      "not_requested_from_root": [],
       "probes": [],
       "note": "no _deploy directory deploys this project"
     },
@@ -149,6 +122,7 @@
       "artifacts": [],
       "live_artifact": null,
       "client_hits": [],
+      "not_requested_from_root": [],
       "probes": [],
       "note": "no _deploy directory deploys this project"
     },
@@ -158,32 +132,22 @@
         "egod-more30"
       ],
       "live_artifact": "egod-more30",
-      "client_hits": [
+      "client_hits": [],
+      "not_requested_from_root": [
         {
           "file": "egod/assets/index-y8vBmSHh.js",
-          "path": "/api/broadcast"
+          "path": "/api/broadcast",
+          "reason": "written onto a URL object .pathname — carried by an absolute origin, never requested from more30.com",
+          "context": "bsocket$/i,\"\"),t.pathname===\"\"||t.pathname===\"/\"?t.pathname=\"/api/broadcast\""
         },
         {
           "file": "egod/assets/index-y8vBmSHh.js",
-          "path": "/api/broadcast"
-        }
-      ],
-      "probes": [
-        {
           "path": "/api/broadcast",
-          "as_shipped": {
-            "status": 404,
-            "type": "text/plain",
-            "bytes": 79
-          },
-          "as_mounted": {
-            "status": 200,
-            "type": "text/html",
-            "bytes": 2836
-          },
-          "verdict": "absent_in_production"
+          "reason": "written onto a URL object .pathname — carried by an absolute origin, never requested from more30.com",
+          "context": "ame===\"/\"?t.pathname=\"/api/broadcast\":t.pathname=t.pathname+\"/api/broadcast\""
         }
       ],
+      "probes": [],
       "live_document": {
         "status": 200,
         "bytes": 2836,
@@ -192,12 +156,7 @@
           "index-CCW5-dLB.css"
         ]
       },
-      "staged_not_deployed": [],
-      "verdict_counts": {
-        "served_at_root": 0,
-        "mount_prefix": 0,
-        "absent_in_production": 1
-      }
+      "staged_not_deployed": []
     },
     "galil": {
       "project": "galil-more30",
@@ -205,32 +164,22 @@
         "galil-more30"
       ],
       "live_artifact": "galil-more30",
-      "client_hits": [
+      "client_hits": [],
+      "not_requested_from_root": [
         {
           "file": "galil/assets/index-CN7M8vyl.js",
-          "path": "/api/broadcast"
+          "path": "/api/broadcast",
+          "reason": "written onto a URL object .pathname — carried by an absolute origin, never requested from more30.com",
+          "context": "bsocket$/i,\"\"),t.pathname===\"\"||t.pathname===\"/\"?t.pathname=\"/api/broadcast\""
         },
         {
           "file": "galil/assets/index-CN7M8vyl.js",
-          "path": "/api/broadcast"
-        }
-      ],
-      "probes": [
-        {
           "path": "/api/broadcast",
-          "as_shipped": {
-            "status": 404,
-            "type": "text/plain",
-            "bytes": 79
-          },
-          "as_mounted": {
-            "status": 200,
-            "type": "text/html",
-            "bytes": 3845
-          },
-          "verdict": "absent_in_production"
+          "reason": "written onto a URL object .pathname — carried by an absolute origin, never requested from more30.com",
+          "context": "ame===\"/\"?t.pathname=\"/api/broadcast\":t.pathname=t.pathname+\"/api/broadcast\""
         }
       ],
+      "probes": [],
       "live_document": {
         "status": 200,
         "bytes": 3845,
@@ -239,18 +188,14 @@
           "index-amMzjW3O.css"
         ]
       },
-      "staged_not_deployed": [],
-      "verdict_counts": {
-        "served_at_root": 0,
-        "mount_prefix": 0,
-        "absent_in_production": 1
-      }
+      "staged_not_deployed": []
     },
     "gesher": {
       "project": "gesher-more30",
       "artifacts": [],
       "live_artifact": null,
       "client_hits": [],
+      "not_requested_from_root": [],
       "probes": [],
       "note": "no _deploy directory deploys this project"
     },
@@ -323,6 +268,7 @@
           "path": "/api/books"
         }
       ],
+      "not_requested_from_root": [],
       "probes": [
         {
           "path": "/api/books",
@@ -389,6 +335,7 @@
       "artifacts": [],
       "live_artifact": null,
       "client_hits": [],
+      "not_requested_from_root": [],
       "probes": [],
       "note": "no _deploy directory deploys this project"
     },
@@ -397,6 +344,7 @@
       "artifacts": [],
       "live_artifact": null,
       "client_hits": [],
+      "not_requested_from_root": [],
       "probes": [],
       "note": "no _deploy directory deploys this project"
     },
@@ -429,6 +377,7 @@
           "path": "/api/hf/topics"
         }
       ],
+      "not_requested_from_root": [],
       "probes": [
         {
           "path": "/api/agent",
@@ -1732,6 +1681,7 @@
           "path": "/api/pc/submit/${encodeURIComponent(t)}/template.csv"
         }
       ],
+      "not_requested_from_root": [],
       "probes": [
         {
           "path": "/api/admin/advanced-match",
@@ -1838,6 +1788,7 @@
       "artifacts": [],
       "live_artifact": null,
       "client_hits": [],
+      "not_requested_from_root": [],
       "probes": [],
       "note": "no _deploy directory deploys this project"
     },
@@ -1847,32 +1798,22 @@
         "mthbram-more30"
       ],
       "live_artifact": "mthbram-more30",
-      "client_hits": [
+      "client_hits": [],
+      "not_requested_from_root": [
         {
           "file": "mthbram/assets/index-y-Q5UqSS.js",
-          "path": "/api/broadcast"
+          "path": "/api/broadcast",
+          "reason": "written onto a URL object .pathname — carried by an absolute origin, never requested from more30.com",
+          "context": "bsocket$/i,\"\"),t.pathname===\"\"||t.pathname===\"/\"?t.pathname=\"/api/broadcast\""
         },
         {
           "file": "mthbram/assets/index-y-Q5UqSS.js",
-          "path": "/api/broadcast"
-        }
-      ],
-      "probes": [
-        {
           "path": "/api/broadcast",
-          "as_shipped": {
-            "status": 404,
-            "type": "text/plain",
-            "bytes": 79
-          },
-          "as_mounted": {
-            "status": 200,
-            "type": "text/html",
-            "bytes": 3120
-          },
-          "verdict": "absent_in_production"
+          "reason": "written onto a URL object .pathname — carried by an absolute origin, never requested from more30.com",
+          "context": "ame===\"/\"?t.pathname=\"/api/broadcast\":t.pathname=t.pathname+\"/api/broadcast\""
         }
       ],
+      "probes": [],
       "live_document": {
         "status": 200,
         "bytes": 3120,
@@ -1881,18 +1822,14 @@
           "index-CIaqlLS4.css"
         ]
       },
-      "staged_not_deployed": [],
-      "verdict_counts": {
-        "served_at_root": 0,
-        "mount_prefix": 0,
-        "absent_in_production": 1
-      }
+      "staged_not_deployed": []
     },
     "nadlan": {
       "project": "nadlan-more30",
       "artifacts": [],
       "live_artifact": null,
       "client_hits": [],
+      "not_requested_from_root": [],
       "probes": [],
       "note": "no _deploy directory deploys this project"
     },
@@ -1901,6 +1838,7 @@
       "artifacts": [],
       "live_artifact": null,
       "client_hits": [],
+      "not_requested_from_root": [],
       "probes": [],
       "note": "no _deploy directory deploys this project"
     },
@@ -1911,6 +1849,7 @@
       ],
       "live_artifact": null,
       "client_hits": [],
+      "not_requested_from_root": [],
       "probes": [],
       "live_document": {
         "status": 200,
@@ -1933,6 +1872,7 @@
           "path": "/api/questionnaire"
         }
       ],
+      "not_requested_from_root": [],
       "probes": [
         {
           "path": "/api/questionnaire",
@@ -2124,6 +2064,7 @@
           "path": "/api/presets/${encodeURIComponent(a.key)}/render"
         }
       ],
+      "not_requested_from_root": [],
       "probes": [
         {
           "path": "/api/ai/background",
@@ -2230,6 +2171,7 @@
       "artifacts": [],
       "live_artifact": null,
       "client_hits": [],
+      "not_requested_from_root": [],
       "probes": [],
       "note": "no _deploy directory deploys this project"
     },
@@ -2238,6 +2180,7 @@
       "artifacts": [],
       "live_artifact": null,
       "client_hits": [],
+      "not_requested_from_root": [],
       "probes": [],
       "note": "no _deploy directory deploys this project"
     },
@@ -2247,32 +2190,22 @@
         "torah-more30"
       ],
       "live_artifact": "torah-more30",
-      "client_hits": [
+      "client_hits": [],
+      "not_requested_from_root": [
         {
           "file": "torah/assets/index-DMSjp30O.js",
-          "path": "/api/broadcast"
+          "path": "/api/broadcast",
+          "reason": "written onto a URL object .pathname — carried by an absolute origin, never requested from more30.com",
+          "context": "bsocket$/i,\"\"),t.pathname===\"\"||t.pathname===\"/\"?t.pathname=\"/api/broadcast\""
         },
         {
           "file": "torah/assets/index-DMSjp30O.js",
-          "path": "/api/broadcast"
-        }
-      ],
-      "probes": [
-        {
           "path": "/api/broadcast",
-          "as_shipped": {
-            "status": 404,
-            "type": "text/plain",
-            "bytes": 79
-          },
-          "as_mounted": {
-            "status": 200,
-            "type": "text/html",
-            "bytes": 27089
-          },
-          "verdict": "absent_in_production"
+          "reason": "written onto a URL object .pathname — carried by an absolute origin, never requested from more30.com",
+          "context": "ame===\"/\"?t.pathname=\"/api/broadcast\":t.pathname=t.pathname+\"/api/broadcast\""
         }
       ],
+      "probes": [],
       "live_document": {
         "status": 200,
         "bytes": 27089,
@@ -2281,12 +2214,7 @@
           "index-DlHhswkm.css"
         ]
       },
-      "staged_not_deployed": [],
-      "verdict_counts": {
-        "served_at_root": 0,
-        "mount_prefix": 0,
-        "absent_in_production": 1
-      }
+      "staged_not_deployed": []
     },
     "zchuyot": {
       "project": "zchuyot-more30",
@@ -2295,32 +2223,22 @@
         "zchuyot2"
       ],
       "live_artifact": "zchuyot-more30",
-      "client_hits": [
+      "client_hits": [],
+      "not_requested_from_root": [
         {
           "file": "zchuyot/assets/supabase-DkJWwO3P.js",
-          "path": "/api/broadcast"
+          "path": "/api/broadcast",
+          "reason": "written onto a URL object .pathname — carried by an absolute origin, never requested from more30.com",
+          "context": "bsocket$/i,\"\"),e.pathname===\"\"||e.pathname===\"/\"?e.pathname=\"/api/broadcast\""
         },
         {
           "file": "zchuyot/assets/supabase-DkJWwO3P.js",
-          "path": "/api/broadcast"
-        }
-      ],
-      "probes": [
-        {
           "path": "/api/broadcast",
-          "as_shipped": {
-            "status": 404,
-            "type": "text/plain",
-            "bytes": 79
-          },
-          "as_mounted": {
-            "status": 200,
-            "type": "text/html",
-            "bytes": 58476
-          },
-          "verdict": "absent_in_production"
+          "reason": "written onto a URL object .pathname — carried by an absolute origin, never requested from more30.com",
+          "context": "ame===\"/\"?e.pathname=\"/api/broadcast\":e.pathname=e.pathname+\"/api/broadcast\""
         }
       ],
+      "probes": [],
       "live_document": {
         "status": 200,
         "bytes": 58476,
@@ -2338,12 +2256,7 @@
       },
       "staged_not_deployed": [
         "zchuyot2"
-      ],
-      "verdict_counts": {
-        "served_at_root": 0,
-        "mount_prefix": 0,
-        "absent_in_production": 1
-      }
+      ]
     }
   },
   "portal_root_api_rewrites": [
@@ -2351,23 +2264,23 @@
     "/api/image"
   ],
   "pass": [
-    "bkalot: the shipped client names no /api path",
-    "briut: the shipped client names no /api path",
-    "smachot: the shipped client names no /api path",
+    "admin: the shipped client names no /api path the browser asks more30.com for",
+    "bkalot: the shipped client names no /api path the browser asks more30.com for",
+    "briut: the shipped client names no /api path the browser asks more30.com for",
+    "chatzor: the shipped client names no /api path the browser asks more30.com for",
+    "egod: the shipped client names no /api path the browser asks more30.com for",
+    "galil: the shipped client names no /api path the browser asks more30.com for",
+    "mthbram: the shipped client names no /api path the browser asks more30.com for",
+    "smachot: the shipped client names no /api path the browser asks more30.com for",
+    "torah: the shipped client names no /api path the browser asks more30.com for",
+    "zchuyot: the shipped client names no /api path the browser asks more30.com for",
     "studio stays fixed (#131): /studio/api/brands answers JSON"
   ],
   "fail": [
-    "admin: 1 answered by neither form — 2 literal(s) in 1 file(s), e.g. admin/assets/index-BpjLLbPu.js",
-    "chatzor: 1 answered by neither form — 2 literal(s) in 1 file(s), e.g. chatzor/assets/index-CVT2cZJc.js",
-    "egod: 1 answered by neither form — 2 literal(s) in 1 file(s), e.g. egod/assets/index-y8vBmSHh.js",
-    "galil: 1 answered by neither form — 2 literal(s) in 1 file(s), e.g. galil/assets/index-CN7M8vyl.js",
     "imud: 3 answered by neither form — 15 literal(s) in 1 file(s), e.g. imud/assets/index-7IQk_wi0.js",
     "kupot: 2 answered by neither form — 5 literal(s) in 1 file(s), e.g. kupot/assets/index-BlT4DUpe.js",
     "mechiron: 6 answered by neither form — 305 literal(s) in 1 file(s), e.g. public/mechiron/assets/index-DcMphBNb.js",
-    "mthbram: 1 answered by neither form — 2 literal(s) in 1 file(s), e.g. mthbram/assets/index-y-Q5UqSS.js",
     "smel: 1 answered by neither form — 1 literal(s) in 1 file(s), e.g. smel/assets/index-BjP8VGql.js",
-    "studio: 1 need the /studio prefix, 5 answered by neither form — 38 literal(s) in 8 file(s), e.g. public/studio/assets/BrandingBrief-DlnSH3li.js",
-    "torah: 1 answered by neither form — 2 literal(s) in 1 file(s), e.g. torah/assets/index-DMSjp30O.js",
-    "zchuyot: 1 answered by neither form — 2 literal(s) in 1 file(s), e.g. zchuyot/assets/supabase-DkJWwO3P.js"
+    "studio: 1 need the /studio prefix, 5 answered by neither form — 38 literal(s) in 8 file(s), e.g. public/studio/assets/BrandingBrief-DlnSH3li.js"
   ]
 }

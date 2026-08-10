@@ -47,6 +47,22 @@
  * what a base-less client asks for, and https://more30.com/<mount><path>, what a
  * based one asks for — and each pair is classified by what production returned:
  *
+ * The probe only settles paths the browser actually asks more30.com for, and one
+ * class of literal is never one of those. @supabase/realtime-js is bundled into
+ * every client that imports supabase-js, and it builds its HTTP broadcast address
+ * by taking the project's own socket URL and overwriting the path:
+ *
+ *     e.pathname === "" || e.pathname === "/" ? e.pathname = "/api/broadcast"
+ *                                             : e.pathname = e.pathname + "/api/broadcast"
+ *
+ * The request that leaves the browser is https://<project>.supabase.co/realtime/v1/api/broadcast.
+ * more30.com is never asked, so probing /api/broadcast against it can only return
+ * "absent_in_production" — a failure the client cannot experience. A literal
+ * written onto a URL object's .pathname is carried by an absolute origin by
+ * construction, so those are recorded as skipped, with the context that proves it,
+ * and not probed. (The first run of this script reported exactly that false
+ * positive on seven mounts: admin, chatzor, egod, galil, mthbram, torah, zchuyot.)
+ *
  *   mount_prefix       root is not JSON, mounted is JSON. The route exists and
  *                      only the prefix is missing. This is #131 exactly.
  *   absent_in_production
@@ -126,17 +142,35 @@ const walk = (d, acc = []) => {
 // ${...} so they can be recognised and skipped by the prober.
 const API_LITERAL = /["'`](\/api\/[^"'`\s]*)["'`]?/g;
 
+// A literal assigned to, or appended to, a URL object's .pathname is placed on
+// whatever origin that object already carries. It is not a request to the page's
+// own origin, so more30.com's answer for it means nothing.
+const ON_A_URL_PATHNAME = /\.pathname\s*=\s*$|pathname\s*\+\s*$/;
+
 const scanClient = (a) => {
   const base = join(deployRoot, a.dir, a.outputDirectory === '.' ? '' : a.outputDirectory);
-  if (!existsSync(base)) return [];
+  if (!existsSync(base)) return { hits: [], skipped: [] };
   const hits = [];
+  const skipped = [];
   for (const f of walk(base)) {
     const rel = relative(join(deployRoot, a.dir), f).replace(/\\/g, '/');
     if (rel === 'api' || rel.startsWith('api/')) continue; // the function, not the browser
     const text = readFileSync(f, 'utf8');
-    for (const m of text.matchAll(API_LITERAL)) hits.push({ file: rel, path: m[1] });
+    for (const m of text.matchAll(API_LITERAL)) {
+      const before = text.slice(Math.max(0, m.index - 80), m.index);
+      if (ON_A_URL_PATHNAME.test(before)) {
+        skipped.push({
+          file: rel,
+          path: m[1],
+          reason: 'written onto a URL object .pathname — carried by an absolute origin, never requested from more30.com',
+          context: (before.slice(-60) + m[0]).replace(/\s+/g, ' '),
+        });
+        continue;
+      }
+      hits.push({ file: rel, path: m[1] });
+    }
   }
-  return hits;
+  return { hits, skipped };
 };
 
 /* ---- which artifact is live --------------------------------------------- */
@@ -155,7 +189,7 @@ const results = { measured_at: new Date().toISOString(), mounts: {} };
 
 for (const [mount, project] of [...mounts.entries()].sort()) {
   const candidates = artifacts.filter((a) => a.project === project);
-  const entry = { project, artifacts: candidates.map((c) => c.dir), live_artifact: null, client_hits: [], probes: [] };
+  const entry = { project, artifacts: candidates.map((c) => c.dir), live_artifact: null, client_hits: [], not_requested_from_root: [], probes: [] };
   results.mounts[mount] = entry;
   if (candidates.length === 0) { entry.note = 'no _deploy directory deploys this project'; continue; }
 
@@ -172,8 +206,13 @@ for (const [mount, project] of [...mounts.entries()].sort()) {
   entry.staged_not_deployed = candidates.filter((c) => c.dir !== entry.live_artifact).map((c) => c.dir);
 
   const target = entry.live_artifact ? live : candidates[0];
-  entry.client_hits = scanClient(target);
-  if (entry.client_hits.length === 0) { ok(`${mount}: the shipped client names no /api path`); continue; }
+  const scanned = scanClient(target);
+  entry.client_hits = scanned.hits;
+  entry.not_requested_from_root = scanned.skipped;
+  if (scanned.skipped.length) {
+    console.log(`  NOTE  ${mount}: ${scanned.skipped.length} literal(s) skipped — ${[...new Set(scanned.skipped.map((s) => s.path))].join(', ')} (${scanned.skipped[0].reason})`);
+  }
+  if (entry.client_hits.length === 0) { ok(`${mount}: the shipped client names no /api path the browser asks more30.com for`); continue; }
 
   const concrete = [...new Set(entry.client_hits.map((h) => h.path))]
     .filter((p) => !/[$:{}*]/.test(p) && p !== '/api/' && p.length > 5)
