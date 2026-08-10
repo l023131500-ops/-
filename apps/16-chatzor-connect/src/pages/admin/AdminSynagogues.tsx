@@ -8,6 +8,7 @@ import { useToast } from "@/components/ui/Toaster";
 import { Modal } from "@/components/ui/Modal";
 import { Button } from "@/components/ui/Button";
 import { CardGridSkeleton } from "@/components/ui/Skeleton";
+import { ErrorState } from "@/components/ui/ErrorState";
 import { SampleBadge } from "@/components/ui/SampleBadge";
 import { sampleRowProps } from "@/lib/sampleRow";
 import { cn } from "@/lib/cn";
@@ -16,7 +17,7 @@ import { SynagogueForm } from "./SynagogueForm";
 export function AdminSynagogues() {
   const toast = useToast();
   const qc = useQueryClient();
-  const { data: synagogues, isLoading } = useAllSynagogues();
+  const { data: synagogues, isLoading, isError, refetch } = useAllSynagogues();
   const [modal, setModal] = useState<{ open: boolean; editing?: Synagogue }>({ open: false });
 
   const invalidate = () => {
@@ -72,6 +73,14 @@ export function AdminSynagogues() {
       <div className="mt-6">
         {isLoading ? (
           <CardGridSkeleton count={3} />
+        ) : isError ? (
+          /* ‏ברשימת ניהול הסיכון חמור מטענה לא נכונה: "אין בתי כנסת עדיין"
+             ‏על קריאה שנכשלה מזמין את המנהל להקים מחדש רשומות שכבר קיימות. */
+          <ErrorState
+            title="לא הצלחנו לטעון את רשימת בתי הכנסת"
+            description="הרשימה אינה מוצגת כי הקריאה נכשלה — ייתכן שיש בתי כנסת קיימים. נסו שוב לפני יצירת רשומה חדשה."
+            onRetry={() => refetch()}
+          />
         ) : (
           <div className="overflow-hidden rounded-xl border border-border bg-card shadow-soft">
             <ul className="divide-y divide-border">

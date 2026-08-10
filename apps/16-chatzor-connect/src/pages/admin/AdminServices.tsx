@@ -9,6 +9,8 @@ import { Modal } from "@/components/ui/Modal";
 import { Button } from "@/components/ui/Button";
 import { Field, Input, Select, Textarea } from "@/components/ui/Field";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { ErrorState } from "@/components/ui/ErrorState";
+import { CardGridSkeleton } from "@/components/ui/Skeleton";
 import { SampleBadge } from "@/components/ui/SampleBadge";
 import { sampleRowProps } from "@/lib/sampleRow";
 
@@ -17,7 +19,7 @@ const CATEGORIES = ['גמ"ח', "שירות דת", "חסד", "בריאות", "ח�
 export function AdminServices() {
   const toast = useToast();
   const qc = useQueryClient();
-  const { data: services } = useServices();
+  const { data: services, isLoading, isError, refetch } = useServices();
   const [open, setOpen] = useState(false);
 
   const create = useMutation({
@@ -55,7 +57,15 @@ export function AdminServices() {
       </div>
 
       <div className="mt-6">
-        {(services ?? []).length === 0 ? (
+        {isLoading ? (
+          <CardGridSkeleton count={3} />
+        ) : isError ? (
+          <ErrorState
+            title="לא הצלחנו לטעון את השירותים"
+            description="הרשימה אינה מוצגת כי הקריאה נכשלה — ייתכן שיש שירותים קיימים. נסו שוב לפני הוספת שירות."
+            onRetry={() => refetch()}
+          />
+        ) : (services ?? []).length === 0 ? (
           <EmptyState icon={HeartHandshake} title="אין שירותים" description="הוסיפו את השירות הראשון." />
         ) : (
           <div className="overflow-hidden rounded-xl border border-border bg-card shadow-soft">
