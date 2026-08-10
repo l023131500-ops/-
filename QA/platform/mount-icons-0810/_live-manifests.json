@@ -1,0 +1,134 @@
+{
+  "probed_at_utc": "2026-08-10T00:25:07Z",
+  "rows": [
+    {
+      "url": "https://more30.com/manifest.webmanifest",
+      "status": 404,
+      "server": "Vercel",
+      "content_type": "text/html; charset=utf-8",
+      "bytes": 4654
+    },
+    {
+      "url": "https://more30.com/galil/manifest.webmanifest",
+      "status": 200,
+      "server": "Vercel",
+      "content_type": "application/manifest+json; charset=utf-8",
+      "bytes": 524,
+      "body": {
+        "name": "מחוברים — יהדות וקהילה",
+        "short_name": "מחוברים",
+        "description": "מרכז המידע התורני והקהילתי של חצור הגלילית",
+        "start_url": "/",
+        "display": "standalone",
+        "background_color": "#f0fdfa",
+        "theme_color": "#0f766e",
+        "lang": "he",
+        "scope": "/galil/",
+        "dir": "rtl",
+        "icons": [
+          {
+            "src": "/pwa-192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+          },
+          {
+            "src": "/pwa-512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+          },
+          {
+            "src": "/pwa-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable"
+          }
+        ]
+      }
+    },
+    {
+      "url": "https://more30.com/galil/pwa-192.png",
+      "status": 200,
+      "server": "Vercel",
+      "content_type": "image/png",
+      "bytes": 645577,
+      "pixels": "1024x1024"
+    },
+    {
+      "url": "https://more30.com/galil/pwa-512.png",
+      "status": 200,
+      "server": "Vercel",
+      "content_type": "image/png",
+      "bytes": 97813,
+      "pixels": "512x512"
+    },
+    {
+      "url": "https://more30.com/mthbram/manifest.webmanifest",
+      "status": 200,
+      "server": "Vercel",
+      "content_type": "text/html; charset=utf-8",
+      "bytes": 3870
+    },
+    {
+      "url": "https://more30.com/icon-192.png",
+      "status": 404,
+      "server": "Vercel",
+      "content_type": "text/html; charset=utf-8",
+      "bytes": 4654
+    },
+    {
+      "url": "https://more30.com/icon-512.png",
+      "status": 404,
+      "server": "Vercel",
+      "content_type": "text/html; charset=utf-8",
+      "bytes": 4654
+    },
+    {
+      "url": "https://more30.com/mthbram/icon-192.png",
+      "status": 200,
+      "server": "Vercel",
+      "content_type": "image/png",
+      "bytes": 10662
+    },
+    {
+      "url": "https://more30.com/pwa-192.png",
+      "status": 404,
+      "server": "Vercel",
+      "content_type": "text/html; charset=utf-8",
+      "bytes": 4654
+    },
+    {
+      "url": "https://more30.com/pwa-512.png",
+      "status": 404,
+      "server": "Vercel",
+      "content_type": "text/html; charset=utf-8",
+      "bytes": 4654
+    },
+    {
+      "url": "https://more30.com/tivuch/manifest.webmanifest",
+      "status": 200,
+      "server": "Vercel",
+      "content_type": "application/manifest+json; charset=utf-8",
+      "bytes": 501,
+      "body": {
+        "name": "נדל\"ן פרו — ניהול למתווכים",
+        "short_name": "נדל\"ן פרו",
+        "description": "לידים, נכסים, עסקאות, עמלות וחוזים — במקום אחד.",
+        "lang": "he",
+        "dir": "rtl",
+        "start_url": "/tivuch/app",
+        "scope": "/tivuch/",
+        "display": "standalone",
+        "background_color": "#0B0D2E",
+        "theme_color": "#0B0D2E",
+        "icons": [
+          {
+            "src": "/tivuch/icon.svg",
+            "sizes": "any",
+            "type": "image/svg+xml",
+            "purpose": "any maskable"
+          }
+        ]
+      }
+    }
+  ]
+}

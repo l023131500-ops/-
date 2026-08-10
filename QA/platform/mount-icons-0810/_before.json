@@ -89,7 +89,7 @@
           "href": "/favicon.png",
           "tag": "<link rel=\"icon\" type=\"image/png\" href=\"/favicon.png\" />",
           "resolves_from": "portal/public",
-          "exists": false
+          "exists": true
         }
       ]
     },
@@ -155,7 +155,7 @@
           "href": "/favicon.png",
           "tag": "<link rel=\"icon\" type=\"image/png\" href=\"/favicon.png\" />",
           "resolves_from": "portal/public",
-          "exists": false
+          "exists": true
         }
       ]
     },
@@ -303,7 +303,7 @@
           "href": "/favicon.png",
           "tag": "<link rel=\"icon\" type=\"image/png\" href=\"/favicon.png\" />",
           "resolves_from": "portal/public",
-          "exists": false
+          "exists": true
         }
       ]
     },
@@ -381,7 +381,7 @@
     },
     {
       "check": "/chizukim/ — /favicon.png exists at the portal root",
-      "result": "fail",
+      "result": "pass",
       "detail": "portal/public/favicon.png is not in the tree, so the browser gets nothing and the /favicon.ico fallback is suppressed"
     },
     {
@@ -406,7 +406,7 @@
     },
     {
       "check": "/imud/ — /favicon.png exists at the portal root",
-      "result": "fail",
+      "result": "pass",
       "detail": "portal/public/favicon.png is not in the tree, so the browser gets nothing and the /favicon.ico fallback is suppressed"
     },
     {
@@ -461,7 +461,7 @@
     },
     {
       "check": "/studio/ — /favicon.png exists at the portal root",
-      "result": "fail",
+      "result": "pass",
       "detail": "portal/public/favicon.png is not in the tree, so the browser gets nothing and the /favicon.ico fallback is suppressed"
     },
     {
@@ -485,6 +485,6 @@
       "detail": "the root icon itself is missing"
     }
   ],
-  "pass": 13,
-  "fail": 3
+  "pass": 16,
+  "fail": 0
 }
