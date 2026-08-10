@@ -337,8 +337,9 @@
             "status": 200,
             "served_by": "Vercel",
             "content_type": "image/png",
-            "bytes": 10662,
-            "trusted": true
+            "bytes": 8925,
+            "trusted": true,
+            "pixels": "192x192"
           }
         }
       ],
@@ -348,7 +349,8 @@
         "name": "איגוד השיעורים",
         "short_name": "איגוד השיעורים",
         "description": "הפלטפורמה המובילה לחיבור בין מגידי שיעור ולומדים",
-        "start_url": "/",
+        "start_url": "/mthbram/",
+        "scope": "/mthbram/",
         "display": "standalone",
         "dir": "rtl",
         "lang": "he",
@@ -356,12 +358,12 @@
         "background_color": "#1a2332",
         "icons": [
           {
-            "src": "/icon-192.png",
+            "src": "/mthbram/icon-192.png",
             "sizes": "192x192",
             "type": "image/png"
           },
           {
-            "src": "/icon-512.png",
+            "src": "/mthbram/icon-512.png",
             "sizes": "512x512",
             "type": "image/png"
           }
@@ -698,14 +700,19 @@
       "detail": null
     },
     {
-      "check": "/mthbram/ — manifest icon /icon-192.png resolves inside its own mount",
-      "result": "fail",
-      "detail": "it resolves to /icon-192.png — the portal root, not /mthbram/ — and portal/public/icon-192.png does not exist, so this icon is simply absent"
+      "check": "/mthbram/ — start_url /mthbram/ sits inside scope /mthbram/",
+      "result": "pass",
+      "detail": "start_url resolves to /mthbram/, outside /mthbram/ — installing the app lands the user somewhere else, and the browser may refuse the manifest outright"
     },
     {
-      "check": "/mthbram/ — manifest icon /icon-512.png resolves inside its own mount",
-      "result": "fail",
-      "detail": "it resolves to /icon-512.png — the portal root, not /mthbram/ — and portal/public/icon-512.png does not exist, so this icon is simply absent"
+      "check": "/mthbram/ — manifest icon /mthbram/icon-192.png answers",
+      "result": "pass",
+      "detail": null
+    },
+    {
+      "check": "/mthbram/ — manifest icon /mthbram/icon-512.png answers",
+      "result": "pass",
+      "detail": null
     },
     {
       "check": "/tivuch/ — the manifest answers and parses",
@@ -723,6 +730,6 @@
       "detail": null
     }
   ],
-  "pass": 34,
-  "fail": 2
+  "pass": 37,
+  "fail": 0
 }
