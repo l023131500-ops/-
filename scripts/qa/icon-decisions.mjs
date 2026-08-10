@@ -41,8 +41,23 @@
  *   node scripts/qa/icon-decisions.mjs             # the 9 full-kit systems
  *   node scripts/qa/icon-decisions.mjs /galil      # one
  *   node scripts/qa/icon-decisions.mjs --all       # every route
+ *   node scripts/qa/icon-decisions.mjs /zchuyot --list   # the slots themselves
  *
  * Writes QA/platform/_icon-decisions.json and prints the corrected work order.
+ *
+ * ⚠️ `--list` exists because the count is not actionable on its own, and the
+ * last two §6 findings were stopped by reading the page rather than the number.
+ * DESIGN_SAMENESS.md ends on that instruction:
+ *
+ *   "מה שנשאר לבדיקה ידנית הוא ההנחות החד-פעמיות, ואת אלה צריך לראות בעמוד
+ *    לפני שנוגעים."
+ *
+ * A decision slot is a removal candidate only if the glyph carries something the
+ * text beside it does not. `--list` prints, per slot, the section it sits in and
+ * the text of its own container, so that judgement is made against the rendered
+ * page instead of against an import list. It writes a review sheet per system
+ * and deliberately does NOT touch _icon-decisions.json — the counts there come
+ * from the unfiltered pass and a listing run must not narrow them.
  */
 import { chromium } from 'playwright-core';
 import fs from 'node:fs';
@@ -68,6 +83,7 @@ const FULL_KIT = ['imud', 'smel', 'egod', 'chatzor', 'chizukim', 'zchuyot',
 
 const args = process.argv.slice(2);
 const all = args.includes('--all');
+const listing = args.includes('--list');
 const only = args.filter((a) => !a.startsWith('--')).map((s) => s.replace(/^\//, '').replace(/\/$/, ''));
 const targets = Object.entries(ROUTES).filter(([k]) =>
   only.length ? only.includes(k) : all ? true : FULL_KIT.includes(k));
@@ -117,6 +133,35 @@ for (const [key, route] of targets) {
         return '#' + slot + '@' + parts.join('>');
       };
 
+      const txt = (el, max) => (el?.innerText || '').replace(/\s+/g, ' ').trim().slice(0, max);
+
+      // Which band of the page the slot sits in, named the way a reader would
+      // name it: the landmark's own heading, not its class list.
+      const sectionOf = (svg) => {
+        let el = svg.parentElement;
+        while (el && el !== document.body) {
+          const t = el.tagName.toLowerCase();
+          if (t === 'section' || t === 'footer' || t === 'header' || t === 'nav' || t === 'main') {
+            const h = el.querySelector('h1, h2, h3');
+            return (h && txt(h, 40)) || (t === 'nav' ? 'ניווט' : t);
+          }
+          el = el.parentElement;
+        }
+        return '—';
+      };
+
+      // The text the glyph sits next to. Climb until there IS text: an icon
+      // alone in its own <span> says nothing about what it is labelling.
+      const labelOf = (svg) => {
+        let el = svg.parentElement;
+        for (let i = 0; i < 4 && el && el !== document.body; i++) {
+          const t = txt(el, 70);
+          if (t) return t;
+          el = el.parentElement;
+        }
+        return '';
+      };
+
       const svgs = [...document.querySelectorAll('svg')];
       const groups = new Map();
       for (const svg of svgs) {
@@ -124,14 +169,21 @@ for (const [key, route] of targets) {
         // Zero-size SVGs are sprite definitions and defs, not marks on a page.
         if (r.width < 4 || r.height < 4) continue;
         const k = chain(svg);
-        const g = groups.get(k) || { icon: nameOf(svg), n: 0, names: new Set() };
+        const g = groups.get(k) || {
+          icon: nameOf(svg), n: 0, names: new Set(),
+          section: sectionOf(svg), label: labelOf(svg),
+          size: Math.round(r.width),
+        };
         g.n++;
         g.names.add(nameOf(svg));
         groups.set(k, g);
       }
 
       const list = [...groups.values()]
-        .map((g) => ({ icon: g.icon, n: g.n, names: [...g.names] }))
+        .map((g) => ({
+          icon: g.icon, n: g.n, names: [...g.names],
+          section: g.section, label: g.label, size: g.size,
+        }))
         .sort((a, b) => b.n - a.n);
       const rendered = list.reduce((s, g) => s + g.n, 0);
       // The old name-keyed count, kept so a jump between the two is visible
@@ -155,6 +207,9 @@ for (const [key, route] of targets) {
         // The heaviest repeats, so the ranking can be checked by eye rather than
         // trusted — the last two §6 findings were measurement errors.
         top: list.filter((g) => g.n > 1).slice(0, 5).map((g) => `${g.icon}×${g.n}`),
+        // every slot with its on-page context. Stripped before the JSON is
+        // written; only --list keeps it, and only into the review sheet.
+        slots: list,
       };
     });
   } catch (e) {
@@ -163,6 +218,35 @@ for (const [key, route] of targets) {
   await page.close();
 
   const f = out[key];
+  const slots = f.slots || [];
+  delete f.slots;                 // the JSON keeps counts, not the page dump
+
+  if (listing && !f.error) {
+    const sheet = `QA/platform/_icon-slots-${key}.md`;
+    const rows = slots.map((g, i) => {
+      const fromData = g.names.length > 1;
+      const glyph = fromData ? `${g.names.length} גליפים` : g.icon;
+      // A slot whose glyph comes from the data is a single choice carrying a
+      // per-record value — DESIGN_SAMENESS 10/08 (ב). Not a removal candidate.
+      const verdict = fromData ? 'מהנתונים — נושא מידע' : (g.n > 1 ? `×${g.n} ברשימה` : 'הנחה חד-פעמית');
+      return `| ${i + 1} | ${g.section} | \`${glyph}\` | ${g.size}px | ${g.n} | ${verdict} | ${g.label || '—'} |`;
+    });
+    const fromData = slots.filter((g) => g.names.length > 1).length;
+    fs.mkdirSync('QA/platform', { recursive: true });
+    fs.writeFileSync(sheet,
+      `# ${key} — ${slots.length} החלטות אייקון, סלוט־סלוט\n\n` +
+      `> נמדד מול https://more30.com${route} · \`node scripts/qa/icon-decisions.mjs ${route} --list\`\n` +
+      `> ${slots.length} סלוטים · ${fromData} מהם מקבלים את הגליף מהנתונים · ` +
+      `${f.rendered} אייקונים מוצגים בפועל.\n\n` +
+      `העמודה האחרונה היא הטקסט שיושב ליד האייקון. **אם הטקסט כבר אומר את מה\n` +
+      `שהאייקון מצייר — האייקון קישוט.** אם אין טקסט כלל, האייקון הוא הפקד\n` +
+      `היחיד ואסור להסיר אותו בלי להחליף אותו בתווית.\n\n` +
+      `| # | סקשן | גליף | גודל | מוצג | סוג | הטקסט לידו |\n` +
+      `|---|---|---|---|---|---|---|\n${rows.join('\n')}\n`,
+      'utf8');
+    console.log(`   -> ${sheet}`);
+  }
+
   console.log(
     key.padEnd(10) +
       (f.error
