@@ -435,6 +435,37 @@ cd portal/dist ; npx vercel deploy --prod --yes --scope l023131500-ops-projects
 מתגלגל ומשחרר כמקום אחד לסבב, ולכן כל צעד שנגמר בפריסה ימשיך להמתין תור.
 **ההכרעה שלך:** לשדרג ל-Vercel Pro, או להשאיר כך.
 
+### ⬅️ הפריט האחרון בתור, ולכן **זהו** הבלוק החי בסעיף: `kupot` (10/08/2026)
+
+הפריט הקודם שנכתב כאן, `portal`, אינו הבא בתור יותר. הבא הוא `kupot-more30`,
+והוא **פקודה אחת בלי בנייה** — הכל כבר שוכן ב-`_deploy/kupot-more30`:
+
+```
+cd _deploy/kupot-more30
+vercel deploy --prod --yes --scope l023131500-ops-projects
+```
+
+**מה הוא מתקן:** שתי הכתיבות שהדף של `/kupot` עושה — מעבר קופה
+(`SwitchFundDialog`) והשאלה ליועץ החכם (`SmartAdvisor`) — לא מגיעות לשרת היום.
+נמדד 10/08 מול הייצור, אנונימית: `https://more30.com/kupot/api/switch-lead`
+מחזיר **200 `text/html`** באורך 4,497 בייט, כלומר קליפת ה-SPA ולא ה-API. זהו
+הכישלון הקשה יותר לראות — הלקוח נופל על פענוח JSON ולא על סטטוס, ולכן שום
+מדידת סטטוס לא סימנה אותו. `/api/hf/*` שורד רק מפני שהפורטל נושא עבורו rewrite
+שנכתב ביד. התיקון עצמו נכנס לגיט ב-`6551b75`.
+
+**נוסה 10/08 13:2x ונדחה באותה הודעה בדיוק** — ההעלאה עברה (2.3MB) והשחרור לא.
+הייצור לא זז ואין ממה לחזור: עדיין `index-BlT4DUpe.js`, `textLen` 3,157, אפס
+שגיאות קונסולה — נמדד גם אחרי הניסיון.
+
+**מיד אחרי שהפריסה תעבור, בלי לעזוב:** `/kupot/api/hf/meta` חייב לחזור
+`application/json` (היום `text/html`), ו-`node scripts/qa/system-facts.mjs kupot`
+חייב להישאר על `textLen` 3,157 — ירידה חדה פירושה שה-API נעלם, וזה קרה כאן
+שלוש פעמים בעבר. חזרה:
+`npx vercel promote https://kupot-more30-aiwtncgj7-l023131500-ops-projects.vercel.app --scope l023131500-ops-projects --yes`.
+
+ראיות: `QA/platform/kupot-deploy-0810/_results.json`,
+`_deploy/kupot-more30/README.md`. `core.issues #154`.
+
 ---
 
 ## 🔴 0ח. פורטל הגבאים של גליל — הדלת פתוחה, והמפתח לא עובד (06/08/2026)
