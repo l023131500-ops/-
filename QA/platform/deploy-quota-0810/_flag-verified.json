@@ -1,0 +1,50 @@
+{
+  "question": "Previous round (_team-wide.json) proved the root vercel.json is inside the build root of both Git-linked projects, but could not prove `git.deploymentEnabled:false` is OBEYED - because an exhausted quota also stops previews, so 'no preview appeared' was consistent with both hypotheses. It concluded the only decisive test was to wait 24h for the cap to reset. That was wrong: a discriminator existed already.",
+  "measured_at": "2026-08-10T14:38:00Z",
+  "why_this_was_the_step": "The deploy queue has been blocked for six rounds. Nothing that ends in a deploy can finish, and the one open question about the fix was answerable by reading GitHub, not by waiting.",
+
+  "the_discriminator": {
+    "idea": "A quota refusal and a disabled integration are not the same absence. If Vercel's GitHub App is connected and merely refused by the cap, it still POSTS a commit status, and that status reads `failure`. If the integration is switched off for the repo, no status is posted at all. So the two hypotheses differ on a field that is readable now.",
+    "method": "GET /repos/l023131500-ops/-/commits/<sha>/status and /check-runs for the 14 newest commits on fix/nadlan-a11y, with the GitHub token from git-credential-manager (protocol=https host=github.com username=l023131500-ops).",
+    "note_on_the_token": "The bare `host=github.com` query fails with 'Cannot prompt because user interactivity has been disabled'. Adding `username=l023131500-ops` hits the stored `git:https://l023131500-ops@github.com` entry and returns the token non-interactively."
+  },
+
+  "result": {
+    "vercel_json_landed_in": "92a0eef, committed 2026-08-10T14:19:07Z",
+    "commits": [
+      { "sha": "7fa6774", "at": "2026-08-10T14:30:57Z", "flag_present": true,  "combined_status": "pending", "vercel_statuses": [] },
+      { "sha": "e968cf0", "at": "2026-08-10T14:21:12Z", "flag_present": true,  "combined_status": "pending", "vercel_statuses": [] },
+      { "sha": "92a0eef", "at": "2026-08-10T14:19:07Z", "flag_present": true,  "combined_status": "pending", "vercel_statuses": [] },
+      { "sha": "059a9fc", "at": "2026-08-10T14:05:47Z", "flag_present": false, "combined_status": "failure", "vercel_statuses": ["Vercel – more30-portal=failure", "Vercel – more30-admin=failure"] },
+      { "sha": "46afd6b", "at": "2026-08-10T13:53:23Z", "flag_present": false, "combined_status": "failure", "vercel_statuses": ["Vercel – more30-admin=failure", "Vercel – more30-portal=failure"] },
+      { "sha": "24e0523", "at": "2026-08-10T13:41:08Z", "flag_present": false, "combined_status": "failure", "vercel_statuses": ["Vercel – more30-admin=failure", "Vercel – more30-portal=success"] },
+      { "sha": "43118dc", "at": "2026-08-10T13:23:27Z", "flag_present": false, "combined_status": "failure", "vercel_statuses": ["Vercel – more30-portal=failure", "Vercel – more30-admin=success"] }
+    ],
+    "verdict": "The flag is obeyed, and it took effect on the very commit that introduced it. 46afd6b and 059a9fc were pushed under the SAME exhausted cap, 26 and 14 minutes before the flag existed, and both carry two Vercel statuses reading `failure`. The three commits from 92a0eef onward carry no Vercel status of any kind - GitHub reports `pending` because nothing has posted to them. The cap produces a failing status; the flag produces no status. The absence after 14:19Z is therefore the flag, not the cap.",
+    "corroboration_from_the_vercel_side": "GET /v6/deployments team-wide: the newest deployment of any kind is 13:59:41Z (kupot-more30, CLI, production). Zero deployments team-wide since 14:00Z, across three pushes. Also note 46afd6b and 059a9fc produced no deployment ROW at all - a quota refusal posts a failing status without creating a deployment, which is why counting deployments alone could never have separated the two cases."
+  },
+
+  "the_leak_is_stopped_and_the_queue_is_still_blocked": {
+    "these_are_two_different_facts": "Stopping the leak does not refund what it already spent. The 117 previews are inside the rolling window and have to age out.",
+    "rolling_24h_measured_at_14:38Z": { "total": 132, "git_previews": 117, "cli": 15 },
+    "cap": "'more than 100' per the error string; the exact window boundary is still not measured.",
+    "must_age_out_to_reach_99": 33,
+    "first_free_slot_estimate": "2026-08-11T00:11Z",
+    "drain_curve_count_remaining_at": {
+      "+0h_to_+7h": 132,
+      "+8h": 126,
+      "+9h": 114,
+      "+10h": 93,
+      "+11h": 88,
+      "+12h": 88
+    },
+    "method_for_the_forecast": "Every deployment in the window sorted by `created`; the 33rd oldest expires at 2026-08-11T00:10:54Z, at which point the window holds 99. Pure arithmetic on measured timestamps, assuming a rolling 24h window and no new deployments.",
+    "what_this_means_for_the_run": "No production deploy is possible for roughly the next ten hours. Earlier rounds read the occasional success as 'about one deploy available per round' and planned a queue around it; that was leakage, and now that the leak is closed there is no trickle either. The two builds waiting - 15-egod (already copied into _deploy/egod-more30/egod) and 21-mthbram - ship after the window drains, in that order."
+  },
+
+  "not_claimed": [
+    "That the cap is exactly 100 on a rolling 24h window. The drain forecast inherits that assumption from the error string.",
+    "That nothing else could explain the missing statuses after 14:19Z - e.g. the Vercel GitHub App being disconnected at that minute. It was not separately checked. The flag landing on exactly that commit is the parsimonious reading, not a proven exclusion.",
+    "That 15-egod's build is correct in production. It is staged, not shipped, and has never been served to a visitor."
+  ]
+}
