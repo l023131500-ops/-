@@ -1,0 +1,22 @@
+{
+  "number": "40",
+  "slug": "gannenet",
+  "name": "גננות בקליק",
+  "department": "education",
+  "category": "education",
+  "stage": "wip",
+  "live": false,
+  "isDeployed": false,
+  "repo": "l023131500-ops/- @ claude/ganenet-full-system-gdrive-fdflfc (gannenet-app/)",
+  "basePath": "/gannenet",
+  "supabase": {
+    "project": "uhnrgujbdxhhmoxcjria",
+    "schema": null,
+    "bucket": "gannenet-shelf"
+  },
+  "deployTarget": "vercel",
+  "liveUrl": null,
+  "protected": false,
+  "source": "vendored",
+  "note": "Next.js 14 (App Router). הקוד יובא מ-branch claude/ganenet-full-system-gdrive-fdflfc, commit f489e2c8437d5de79a46f5b7ef8e8b460784ccec — 49 קבצי מקור, כל אחד אומת מול blob-sha של המקור (49/49 זהים). המונט מוכן מראש: next.config.js קורא APP_BASE_PATH ו-lib/base.ts חושף withBase() ל-fetch/href/service-worker שה-basePath של Next אינו מקדים, לכן אין צורך לערוך קוד כדי להגיש תחת /gannenet. אחסון: אין טבלאות ואין schema — lib/supabase.ts עובד מול bucket אחד (gannenet-shelf) עם index.json בתוכו, ואם SUPABASE_URL/SUPABASE_ANON_KEY חסרים האתר עובד במלואו מקטלוג הזרע שבתיקיית content. לא יובא: gannenet-app/public/shelf/** — 258 קבצי PDF/תמונה בנפח 166MB שנמצאים ב-git של המקור; הם שייכים ל-bucket ולא לריפו, וזו העברה נפרדת. טרם בוצע: bucket, env מ-core.secrets (ADMIN_PASSWORD אינו בגיט), npm install, build, פריסה, rewrite ב-portal/vercel.dist.json. public_visible נשאר false עד שהאתר חי ואומת."
+}
