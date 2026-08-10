@@ -1,34 +1,39 @@
 # kupot-more30 — מה חייב להיות כאן, ולמה
 
-> ## ⚠️ 10/08 — העץ הזה **מקדים את הייצור**, ואינו משקף אותו יותר
+> ## ✅ 10/08 14:01Z — נפרס. העץ הזה **שוב משקף את הייצור**
 >
-> עד היום התיקייה הזאת שיקפה את מה שחי. עכשיו לא: הבנייה של `6551b75`
-> (‏`core.issues #154` — שתי הכתיבות שבדף הלכו לפורטל) שוכנה כאן, והפריסה
-> **נדחתה במכסה** — `api-deployments-free-per-day` (‏`core.issues #83`).
-> ההעלאה הצליחה (2.3MB) והשחרור לא, ולכן הייצור לא זז: עדיין
-> `index-BlT4DUpe.js`, ‏`textLen` 3,157, אפס שגיאות קונסולה.
+> האזהרה שעמדה כאן — "העץ מקדים את הייצור" — בוטלה: אותה פקודה בדיוק שנדחתה
+> ב-11:47Z במכסה (`api-deployments-free-per-day`, ‏`core.issues #83`) התקבלה
+> ב-14:00Z. החלון המתגלגל שחרר משבצת; לא היה כאן שום ליקוי בקוד.
+> ‏`dpl_AyL2TUY2T2ycfkRoE3JhPgsDJkcD` · `READY` · production.
 >
-> **מה מוכן כאן:** `kupot/` מ-`dist/public` (‏`index-DbBm6hnF.js`),
-> `api/index.js` החדש (‏1,820,578 בייט, נושא את ברירת המחדל
-> `API_PATH_PREFIX ?? "/kupot"`), ו-`vercel.json` עם `/kupot/api/(.*)` לפני
-> ה-catch-all. הכל נבדק מול הייצור לפני השיכון: ‏`index.html` החדש זהה בתוכן
-> לזה שחי חוץ משם החבילה — ‏`QA/platform/kupot-deploy-0810/_results.json`.
+> **מה שהשתנה בייצור:** ‏`index-BlT4DUpe.js` → `index-DbBm6hnF.js`, ושלושת
+> המסלולים שנבלעו ב-catch-all של ה-SPA עונים עכשיו מהפונקציה:
 >
-> **הפריסה הבאה היא פקודה אחת, בלי בנייה ובלי העתקה נוספת:**
+> | מסלול | לפני | אחרי |
+> |---|---|---|
+> | `GET /kupot/api/hf/meta` | ‏200 `text/html` (קליפת SPA) | ‏200 `application/json`, ‏1,875 בייט |
+> | `POST /kupot/api/agent` | ‏200 `text/html` | ‏400 `application/json` — «Required at "topicId"…» |
+> | `POST /kupot/api/switch-lead` | ‏200 `text/html` | ‏400 `application/json` — «Required at "fullName"…» |
+>
+> ה-400 הוא ההוכחה ולא כשל: שתי הכתיבות נשלחו `{}` ריק בכוונה, ורק המטפל של
+> האפליקציה עצמה יודע לקרוא לשדות בשמותיהם. משלוח גוף תקין ל-`switch-lead`
+> היה כותב ליד אמיתי במערכת חיה.
+>
+> **הבדיקה שאחרי הפריסה עברה:** ‏`textLen` נשאר 3,157 (הסימן שה-API לא נעלם —
+> פריסה גרועה בעבר הפילה אותו ל-513), אפס שגיאות קונסולה, והעמוד מצייר את
+> המספרים של הפונקציה: 435 נושאים · 65 זכויות ממשלה · 15 עמותות.
+> ‏`QA/platform/kupot-deploy-0810/_results-shipped.json` · `prod-after-deploy.png`.
+>
+> **החזרה, אם פריסה עתידית תשבור:**
+> `npx vercel promote https://kupot-more30-aiwtncgj7-l023131500-ops-projects.vercel.app --scope l023131500-ops-projects --yes`
+>
+> הפקודה לפריסה הבאה מכאן נשארת אחת, בלי בנייה ובלי העתקה:
 >
 > ```
 > cd _deploy/kupot-more30
 > vercel deploy --prod --yes --scope l023131500-ops-projects
 > ```
->
-> **ומיד אחריה, לפני שעוזבים** — ‏`/kupot/api/hf/meta` חייב לחזור
-> `application/json` ולא `text/html`, ו-`node scripts/qa/system-facts.mjs kupot`
-> חייב להישאר על `textLen` 3,157. ירידה חדה פירושה שה-API נעלם, והחזרה היא
-> `npx vercel promote https://kupot-more30-aiwtncgj7-l023131500-ops-projects.vercel.app --scope l023131500-ops-projects --yes`.
->
-> **מה זה משנה לכל מי שיפתח את התיקייה עד אז:** אי אפשר להשתמש בה כבסיס
-> להשוואה מול הייצור, כי היא כבר לא הוא. הבסיס האמין היחיד הוא
-> `more30.com` עצמו.
 
 התיקייה הזאת החזיקה **רק** את הבנייה הסטטית, בזמן שהפרודקשן מגיש גם
 `/api/hf/*` מפונקציית serverless. פריסה ממנה במצב הזה **מחקה את ה-API**:

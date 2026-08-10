@@ -1,0 +1,55 @@
+{
+  "measured_at": "2026-08-10T14:01Z",
+  "system": "kupot",
+  "mount": "https://more30.com/kupot",
+  "vercel_project": "kupot-more30",
+  "purpose": "The second half of _results.json. That file ends at a deploy the quota refused; this one is the same artifact released, and the first measurement of the fix running in production rather than staged next to it.",
+  "supersedes": "_results.json — its \"after\" block (production unchanged, index-BlT4DUpe.js) was true at 13:26Z and is no longer.",
+
+  "deploy": {
+    "command": "vercel deploy --prod --yes --scope l023131500-ops-projects (from _deploy/kupot-more30)",
+    "built_nothing": "buildCommand is \"echo no-build\" — the bytes released are the ones _results.json recorded as staged, unrebuilt",
+    "result": "ok",
+    "readyState": "READY",
+    "deployment_id": "dpl_AyL2TUY2T2ycfkRoE3JhPgsDJkcD",
+    "url": "https://kupot-more30-5lej3hu7t-l023131500-ops-projects.vercel.app",
+    "note": "Same command, same tree, refused at 11:47Z and accepted at 14:00Z. The rolling window freed a slot; core.issues #83 was never a code fault."
+  },
+
+  "after": {
+    "live_bundle": "index-DbBm6hnF.js",
+    "was": "index-BlT4DUpe.js",
+    "system_facts": { "status": 200, "textLen": 3157, "links": 1, "forms": 0, "dark": "class", "auth": true, "credit": true, "consoleErrors": 0 },
+    "textLen_reading": "3157 before and 3157 after. This is the README's fast signal for \"the API vanished\" (a past bad deploy dropped it to 513), and it held — the deploy added the /kupot/api route without costing the page anything it already rendered."
+  },
+
+  "the_defect_itself": {
+    "shape": "core.issues #154 — a mounted system calling root-relative /api/*. The portal owns the root and rewrites only /<mount>/:path*, so the call landed on the SPA catch-all and came back 200 text/html. The page then failed on JSON.parse, not on a status code.",
+    "probes": [
+      { "method": "GET", "url": "/kupot/api/hf/meta", "before": "200 text/html, 4497 bytes (SPA shell)", "after": "200 application/json, 1875 bytes", "body_after": "{\"title\":\"השוואת קופות חולים מבית בקלות\",\"fundCount\":435,\"govCount\":65,\"ngoCount\":15,...}" },
+      { "method": "POST", "url": "/kupot/api/agent", "before": "200 text/html (SPA shell)", "after": "400 application/json", "body_after": "{\"error\":\"Validation error: Required at \\\"topicId\\\"; Required at \\\"question\\\"\"}" },
+      { "method": "POST", "url": "/kupot/api/switch-lead", "before": "200 text/html (SPA shell)", "after": "400 application/json", "body_after": "{\"error\":\"Validation error: Required at \\\"fullName\\\"; Required at \\\"phone\\\"\"}" }
+    ],
+    "why_400_is_the_proof_and_not_a_failure": "Both writes were sent an empty {} body on purpose. A 400 carrying the app's own Zod field names (topicId/question, fullName/phone) can only come from the app's own handler — the SPA shell has no opinion about fullName. Sending a valid switch-lead payload would have written a real lead row on a live system, so the routing was proven without one.",
+    "not_a_regression": { "method": "GET", "url": "/kupot/api/hf/funds", "after": "404 text/html \"Cannot GET /kupot/api/hf/funds\"", "reading": "Express's own 404, not the SPA shell — the function is answering and this path is simply not registered on it. The page does not call it." }
+  },
+
+  "browser": {
+    "url": "https://more30.com/kupot/",
+    "screenshot": "prod-after-deploy.png (1024px viewport)",
+    "console_errors": 0,
+    "api_calls_the_page_makes_on_load": [
+      { "url": "https://more30.com/kupot/api/hf/meta", "status": 200 },
+      { "url": "https://more30.com/kupot/api/hf/topics", "status": 200 }
+    ],
+    "rendered_from_those_calls": "435 נושאי קופות חולים · 65 זכויות ממשלה · 15 עמותות וסיוע in the hero tiles, and the per-fund band מאוחדת 71 · מכבי 60 · כללית 29 · לאומית 29. Real numbers off the live function, not placeholders — fundCount/govCount/ngoCount in the JSON body above are the same three.",
+    "netfree_requests": "the api.internal.netfree.link / netfree.link entries in the network log are the proxy on this machine, not the product"
+  },
+
+  "rollback_if_needed": "npx vercel promote https://kupot-more30-aiwtncgj7-l023131500-ops-projects.vercel.app --scope l023131500-ops-projects --yes",
+
+  "not_claimed": [
+    "That a switch-lead or agent request succeeds end to end. What is proven is that both reach the app and are judged by it. Neither was sent a valid payload — one writes a lead row, the other spends an AI call, and both on a live system.",
+    "That the other systems on core.issues #154 moved. mechiron (27) and the shared /api/broadcast of seven mounts were not touched by this deploy and are not measured here."
+  ]
+}
