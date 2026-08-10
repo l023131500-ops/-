@@ -45,6 +45,7 @@ export default function ShelfPage() {
   const [kind, setKind] = useState("");
   const [q, setQ] = useState("");
   const [limit, setLimit] = useState(PAGE);
+  const [prefetch, setPrefetch] = useState<{ on: boolean; done: number; total: number }>({ on: false, done: 0, total: 0 });
 
   useEffect(() => {
     let alive = true;
@@ -89,6 +90,32 @@ export default function ShelfPage() {
   // reset visible count whenever the filter changes
   useEffect(() => setLimit(PAGE), [cat, sender, kind, q]);
 
+  // Offline pre-cache progress messages from the service worker.
+  useEffect(() => {
+    if (!("serviceWorker" in navigator)) return;
+    const onMsg = (e: MessageEvent) => {
+      const d: any = e.data || {};
+      if (d.type === "PREFETCH_PROGRESS") setPrefetch({ on: true, done: d.done, total: d.total });
+      if (d.type === "PREFETCH_DONE") setPrefetch({ on: false, done: d.total, total: d.total });
+    };
+    navigator.serviceWorker.addEventListener("message", onMsg);
+    return () => navigator.serviceWorker.removeEventListener("message", onMsg);
+  }, []);
+
+  function saveOffline() {
+    // Same-origin files only (Drive proxy + in-repo assets); cross-origin uploads are skipped.
+    const urls = filtered.filter((i) => i.file.startsWith("/")).slice(0, 500).map((i) => i.file);
+    if (!urls.length) return;
+    if (urls.length > 50 && !confirm(`לשמור ${urls.length} קבצים לצפייה ללא אינטרנט? זה עשוי לקחת זמן ולתפוס מקום במכשיר.`)) return;
+    const sw = navigator.serviceWorker?.controller;
+    if (!sw) {
+      alert("האחסון לאופליין עדיין נטען — נסו שוב בעוד רגע (רעננו את הדף פעם אחת).");
+      return;
+    }
+    setPrefetch({ on: true, done: 0, total: urls.length });
+    sw.postMessage({ type: "PREFETCH", urls });
+  }
+
   const visible = filtered.slice(0, limit);
 
   return (
@@ -106,10 +133,18 @@ export default function ShelfPage() {
           <Link href="/shelf/upload" className="btn btn-main" style={{ fontSize: 14.5 }}>
             הוספת חומר למדף
           </Link>
+          <button onClick={saveOffline} disabled={prefetch.on || loading} className="btn btn-ghost" style={{ fontSize: 14.5 }}>
+            {prefetch.on ? `שומר לאופליין… ${prefetch.done}/${prefetch.total}` : "שמירת התצוגה לאופליין"}
+          </button>
           <span style={{ alignSelf: "center", color: "#6d6f88", fontSize: 14 }}>
             {loading ? "טוען…" : `${all.length.toLocaleString("he")} פריטים · ${cats.length} קטגוריות`}
           </span>
         </div>
+        {prefetch.total > 0 && !prefetch.on && (
+          <p style={{ color: "#1f6a62", fontSize: 12.5, marginTop: 8 }}>
+            ✓ {prefetch.total.toLocaleString("he")} קבצים זמינים כעת גם ללא אינטרנט
+          </p>
+        )}
       </div>
 
       {/* Category quick chips (ordered) */}

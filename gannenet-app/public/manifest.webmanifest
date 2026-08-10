@@ -1,0 +1,17 @@
+{
+  "name": "גננת בקליק — מדף הגננת",
+  "short_name": "גננת בקליק",
+  "description": "כל אוסף החומרים לגננת — צפייה, בחירת עמודים, הורדה והדפסה. עובד גם ללא אינטרנט.",
+  "start_url": "/shelf",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "dir": "rtl",
+  "lang": "he",
+  "background_color": "#f4f2ec",
+  "theme_color": "#2b4a8b",
+  "icons": [
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "/icon-maskable.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
+  ]
+}
