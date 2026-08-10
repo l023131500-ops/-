@@ -1,6 +1,6 @@
 import { lazy, Suspense } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/sonner";
 import { AuthProvider } from "@/hooks/useAuth";
@@ -103,8 +103,6 @@ const NotFound = lazy(() => import("@/pages/NotFound"));
 const RabbiPortal = lazy(() => import("@/pages/legacy/RabbiPortal"));
 const SynagoguePortal = lazy(() => import("@/pages/legacy/SynagoguePortal"));
 const OrgPortal = lazy(() => import("@/pages/legacy/OrgPortal"));
-const TeacherDashboard = lazy(() => import("@/pages/legacy/TeacherDashboard"));
-const SeekerDashboard = lazy(() => import("@/pages/legacy/SeekerDashboard"));
 const LessonDirectory = lazy(() => import("@/pages/legacy/LessonDirectory"));
 const TeachersLanding = lazy(() => import("@/pages/legacy/TeachersLanding"));
 const PublicOrgPage = lazy(() => import("@/pages/legacy/PublicOrgPage"));
@@ -277,8 +275,21 @@ export default function App() {
                   <Route path="/study-days/:token" element={<StudyDayUpload />} />
                   <Route path="/update-lesson" element={<UpdateLesson />} />
                   <Route path="/legacy/admin-login" element={<LegacyAdminLogin />} />
-                  <Route path="/legacy/teacher-dashboard" element={<TeacherDashboard />} />
-                  <Route path="/legacy/seeker-dashboard" element={<SeekerDashboard />} />
+
+                  {/* /legacy/teacher-dashboard and /legacy/seeker-dashboard used
+                      to render two pages from the original ZIP whose entire
+                      contents were literals: four invented seekers with names,
+                      cities and "התאמה 95%" beside a יצירת קשר button, four
+                      invented rabbis, and seven counters (12 · 4 · 3 · 156 ·
+                      8 · 3 · 24). Both were routed with no gate under the title
+                      "האזור האישי שלי", and both were painted to anonymous
+                      visitors in production — measured 10/08/2026 on
+                      more30.com/torah. Nothing in the tree linked to either.
+                      The real personal area is /portal, which is gated and
+                      reads the tenant, so the addresses now point there rather
+                      than 404. core.issues #141. */}
+                  <Route path="/legacy/teacher-dashboard" element={<Navigate to="/portal" replace />} />
+                  <Route path="/legacy/seeker-dashboard" element={<Navigate to="/portal" replace />} />
 
                   {/* The legacy consoles. "standalone, no layout wrapper" above
                       was also, until now, "no gate": measured against production
