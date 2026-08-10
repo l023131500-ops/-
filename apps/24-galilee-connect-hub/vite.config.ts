@@ -32,11 +32,16 @@ export default defineConfig(({ mode }) => ({
         display: 'standalone',
         dir: 'rtl',
         lang: 'he',
-        start_url: '/',
+        // ‎scope‎ נגזר אוטומטית מ-‎base‎ ויוצא ‎/galil/‎; ‎start_url‎ ו-‎icons[].src‎
+        // אינם — התוסף כותב אותם כלשונם. כשהיו ‎/‎ ו-‎/pwa-*.png‎ הם נפתרו מול
+        // שורש ‎more30.com‎: ‎start_url‎ נפל מחוץ ל-‎scope‎ ושני האייקונים החזירו
+        // 404. הם חייבים לשאת את הקידומת במפורש.
+        start_url: '/galil/',
         icons: [
-          { src: '/pwa-192.png', sizes: '192x192', type: 'image/png' },
-          { src: '/pwa-512.png', sizes: '512x512', type: 'image/png' },
-          { src: '/pwa-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+          // ‎pwa-192.png‎ הוסר: הוא היה 1024x1024 במשקל 645 ק״ב והצהיר על עצמו
+          // 192 — כל מבקר iOS הוריד אותו לשווא. ‎pwa-512.png‎ הוא 97 ק״ב.
+          { src: '/galil/pwa-512.png', sizes: '512x512', type: 'image/png' },
+          { src: '/galil/pwa-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
         ],
       },
     }),

@@ -95,6 +95,12 @@ for (const m of mounts) {
 
   if (html === null) { results.push({ mount: m, url, status, error: err, icons: [] }); continue; }
 
+  // הערות HTML נמחקות לפני כל חיפוש. הדפדפן אינו מצהיר דבר מתוך הערה, אבל
+  // ביטוי רגולרי כן — ותגובה שמסבירה מדוע ‎<link rel="manifest">‎ אינו נכתב
+  // ביד נקראה כאן כהצהרה חסרת href, בלעה את ההצהרה האמיתית שאחריה, והשומר
+  // דילג בשקט על כל בדיקות המניפסט של אותה הרכבה. שקט הוא הכישלון הגרוע.
+  html = html.replace(/<!--[\s\S]*?-->/g, '');
+
   // <base href> משנה את משמעות ה-href היחסי; מוחלט-לשורש אינו מושפע ממנו.
   const base = html.match(/<base\b[^>]*\bhref=["']([^"']+)["']/i)?.[1] ?? null;
   const icons = [...html.matchAll(ICON)].map((mm) => ({

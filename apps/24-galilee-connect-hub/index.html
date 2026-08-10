@@ -29,9 +29,12 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="מחוברים" />
-    <link rel="apple-touch-icon" href="/pwa-192.png" />
-    <link rel="manifest" href="/manifest.webmanifest" />
-    
+    <!-- ‎vite-plugin-pwa‎ מזריק בעצמו ‎<link rel="manifest">‎ עם ה-‎base‎ של
+         ההרכבה (‎/galil/manifest.webmanifest‎). הצהרה ידנית כאן קדמה לו,
+         נכתבה מוחלטת-לשורש, וקדמה גם בסדר ה-‎<head>‎ — ולכן הדפדפן לקח אותה
+         וביקש ‎more30.com/manifest.webmanifest‎, שאינו קיים. אין להחזירה. -->
+    <link rel="apple-touch-icon" href="/pwa-512.png" />
+
     <meta property="og:type" content="website" />
     <meta property="og:image" content="https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/b3bc138e-3f8b-4689-85d6-7e9400506c53/id-preview-4593568a--506805d0-89de-4112-84ff-741553892b34.lovable.app-1773074843204.png">
     <meta name="twitter:card" content="summary_large_image" />
