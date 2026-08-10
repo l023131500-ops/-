@@ -1,0 +1,20 @@
+{
+  "//": "בדיקת טיפוסים מקומית בלבד. Vercel אינו קורא קובץ בשם הזה — הוא מתקין node_modules אמיתי מ-package.json ומהדר עם ברירות המחדל שלו. כאן אין node_modules בתיקייה, ולכן ה-paths מפנה לעץ התלויות של האפליקציה המקורית, שבו יושבות בדיוק אותן חבילות. הרצה: apps/04-imud-torani/node_modules/.bin/tsc -p _deploy/imud-more30/tsconfig.check.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "strict": true,
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "types": ["node"],
+    "typeRoots": ["../../apps/04-imud-torani/node_modules/@types"],
+    "baseUrl": ".",
+    "paths": {
+      "*": ["../../apps/04-imud-torani/node_modules/*"]
+    }
+  },
+  "include": ["api/**/*.ts"]
+}
