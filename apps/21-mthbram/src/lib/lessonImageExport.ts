@@ -127,7 +127,7 @@ export const downloadLessonAsImage = async (lesson: any, options?: LessonImageOp
   drawRTL(headerName, W - 60, curY, "bold 16px Arial", "rgba(212, 175, 55, 0.6)");
   curY += 25;
   if (!options?.portalName) {
-    drawRTL("הארגון העולמי של שיעורי התורה", W - 60, curY, "13px Arial", "rgba(255,255,255,0.35)");
+    drawRTL("שיעורי תורה, חברותות והרצאות", W - 60, curY, "13px Arial", "rgba(255,255,255,0.35)");
   }
 
   // Divider

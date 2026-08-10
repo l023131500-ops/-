@@ -1,0 +1,67 @@
+{
+  "run": "mthbram-orgclaim-0810",
+  "section": "§6 — unique copy per system, unmeasured institutional claim",
+  "app": "apps/21-mthbram",
+  "claim_removed": "הארגון העולמי של שיעורי התורה",
+  "replacement": "שיעורי תורה, חברותות והרצאות",
+  "why_the_replacement_is_grounded": {
+    "חברותא": "a real value in LESSON_STYLES, src/components/PortalLessonForm.tsx:22, and an option id in src/components/PublicContactForm.tsx:14",
+    "הרצאות": "named alongside lessons and chavrutot in src/components/MissionSection.tsx:8",
+    "note": "no ranking, no scope claim — the line now names what the product carries"
+  },
+  "sites_changed": [
+    { "file": "src/components/LessonDetailModal.tsx", "line": 20, "surface": "navigator.share / clipboard body" },
+    { "file": "src/components/LessonDetailModal.tsx", "line": 36, "surface": "downloaded .txt header" },
+    { "file": "src/lib/lessonImageExport.ts", "line": 130, "surface": "exported PNG header band" },
+    { "file": "src/pages/AdminDashboard.tsx", "line": 164, "surface": "admin .txt export header" },
+    { "file": "src/pages/OrgPortal.tsx", "line": 436, "surface": "footer" },
+    { "file": "src/pages/PublicOrgPage.tsx", "line": 275, "surface": "footer" },
+    { "file": "src/pages/PublicRabbiPage.tsx", "line": 280, "surface": "footer" },
+    { "file": "src/pages/PublicSynagoguePage.tsx", "line": 219, "surface": "footer" },
+    { "file": "src/pages/RabbiPortal.tsx", "line": 350, "surface": "footer" }
+  ],
+  "all_nine_are_on_mounted_routes": {
+    "checked": "src/App.tsx",
+    "result": "every one of the five pages has a Route, and the modal + both exporters are reached from them — unlike HeroSection.tsx, which the previous round found is imported by nothing"
+  },
+  "bundle_check": {
+    "file": "dist/assets/index-CFb-adav.js",
+    "method": "\\uXXXX escapes decoded before matching, because absence of a Hebrew string in dist is not evidence on its own",
+    "old_occurrences_raw": 0,
+    "old_occurrences_decoded": 0,
+    "new_occurrences_raw": 9,
+    "new_occurrences_decoded": 9,
+    "note": "esbuild did not escape the Hebrew in this bundle, so raw and decoded agree here; the decode is kept so the check does not depend on that"
+  },
+  "the_two_surfaces_that_are_not_a_string_replacement": {
+    "harness": "canvas-and-share.html, served over http and driven in a real browser",
+    "screenshot": "after-canvas-and-share.png",
+    "canvas": {
+      "drawn_with": "the real drawRTL, W=800, right anchor 740, 13px Arial, no maxWidth (lessonImageExport.ts:130)",
+      "new_width_px": 159.9,
+      "old_width_px": 163.8,
+      "room_to_inner_border_px": 705,
+      "overflows": false,
+      "reading": "the new line is narrower than the one it replaced, so the exported PNG cannot clip where it did not clip before"
+    },
+    "share_text": {
+      "composed_from": "the real template at LessonDetailModal.tsx:20 with a lesson row of the shape the modal is handed",
+      "carries_old_claim": false,
+      "carries_new_line": true,
+      "renders_rtl_correctly": true
+    }
+  },
+  "not_verified_live": {
+    "what": "the five footers and the admin .txt export",
+    "why": "all five footers render only behind a valid portal token, and the admin export behind auth. The app's own anon key returns 401 on synagogue_portals, rabbi_portals and org_portals (the same key returns 404 for a table that does not exist, so the 401s are RLS, not a typo).",
+    "so": "no production screenshot of a footer this round. The evidence for those six is the decoded bundle count, not a live DOM."
+  },
+  "not_claimed": [
+    "that §6 is finished in mthbram",
+    "that the change is visible in production — it was not deployed"
+  ],
+  "deploy": "not deployed",
+  "migration": "none",
+  "protected_untouched": ["08", "09", "bkalut-app", "bkalot-admin", "zr_*", "NEDARIM3873"],
+  "still_open": "«חיפוש חכם» appears in 12 files in mthbram as a feature name, not a lone adjective — a product naming decision, deliberately left alone"
+}

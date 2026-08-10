@@ -272,7 +272,7 @@ const PublicOrgPage = () => {
 
         {/* Footer */}
         <div className="bg-navy/80 py-6 text-center border-t border-border">
-          <p className="font-body text-xs text-muted-foreground">באדיבות איגוד השיעורים • הארגון העולמי של שיעורי התורה</p>
+          <p className="font-body text-xs text-muted-foreground">באדיבות איגוד השיעורים • שיעורי תורה, חברותות והרצאות</p>
         </div>
       </div>
 

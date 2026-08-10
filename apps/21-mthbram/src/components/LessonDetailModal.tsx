@@ -17,7 +17,7 @@ const LessonDetailModal = ({ lesson, onClose, imageOptions }: LessonDetailModalP
   if (!lesson) return null;
 
   const handleShare = async () => {
-    const text = `📖 שיעור תורה: ${lesson.subject}\n👨‍🏫 ${lesson.rabbi_name}${lesson.rabbi_role ? ` — ${lesson.rabbi_role}` : ""}\n📍 ${[lesson.city, lesson.neighborhood, lesson.synagogue_name].filter(Boolean).join(", ")}${lesson.is_recurring && lesson.schedule_days?.length ? `\n🕐 ${(lesson.schedule_days as any[]).map((d: any) => `${d.day} ${d.time}`).join(", ")}` : ""}\n\nבאדיבות: איגוד השיעורים — הארגון העולמי של שיעורי התורה`;
+    const text = `📖 שיעור תורה: ${lesson.subject}\n👨‍🏫 ${lesson.rabbi_name}${lesson.rabbi_role ? ` — ${lesson.rabbi_role}` : ""}\n📍 ${[lesson.city, lesson.neighborhood, lesson.synagogue_name].filter(Boolean).join(", ")}${lesson.is_recurring && lesson.schedule_days?.length ? `\n🕐 ${(lesson.schedule_days as any[]).map((d: any) => `${d.day} ${d.time}`).join(", ")}` : ""}\n\nבאדיבות: איגוד השיעורים — שיעורי תורה, חברותות והרצאות`;
 
     if (navigator.share) {
       try {
@@ -33,7 +33,7 @@ const LessonDetailModal = ({ lesson, onClose, imageOptions }: LessonDetailModalP
     const lines = [
       "═══════════════════════════════════",
       "       איגוד השיעורים",
-      "   הארגון העולמי של שיעורי התורה",
+      "   שיעורי תורה, חברותות והרצאות",
       "═══════════════════════════════════",
       "",
       `📖 נושא: ${lesson.subject}`,
