@@ -1,0 +1,190 @@
+﻿[
+  {
+    "name": "portal-static",
+    "url": "https://more30.com/",
+    "mode": "static",
+    "ok": true,
+    "assets": [
+      {
+        "ref": "/404.html",
+        "bytes": 4418,
+        "sha": "2433d767ce0b",
+        "ok": true,
+        "eol": true
+      },
+      {
+        "ref": "/admin-activity.html",
+        "bytes": 15322,
+        "sha": "8eb06ab17d2c",
+        "ok": true,
+        "eol": true
+      },
+      {
+        "ref": "/admin-automation.html",
+        "bytes": 15826,
+        "sha": "3b2078d1e09d",
+        "ok": true,
+        "eol": true
+      },
+      {
+        "ref": "/admin-credits.html",
+        "bytes": 12792,
+        "sha": "cb06478e6c9d",
+        "ok": true,
+        "eol": true
+      },
+      {
+        "ref": "/admin-customers.html",
+        "bytes": 14899,
+        "sha": "bcc44b65df59",
+        "ok": true,
+        "eol": true
+      },
+      {
+        "ref": "/admin-imud.html",
+        "bytes": 17275,
+        "sha": "431a826b9978",
+        "ok": true,
+        "eol": true
+      },
+      {
+        "ref": "/admin-issues.html",
+        "bytes": 14998,
+        "sha": "6dc49d9ad18d",
+        "ok": true,
+        "eol": true
+      },
+      {
+        "ref": "/admin-kesef.html",
+        "bytes": 16312,
+        "sha": "8c211274128e",
+        "ok": true,
+        "eol": true
+      },
+      {
+        "ref": "/admin-leads.html",
+        "bytes": 18141,
+        "sha": "339dd7cc679c",
+        "ok": true,
+        "eol": true
+      },
+      {
+        "ref": "/admin-pricing.html",
+        "bytes": 21975,
+        "sha": "de23cde1852b",
+        "ok": true,
+        "eol": true
+      },
+      {
+        "ref": "/admin-rights.html",
+        "bytes": 11524,
+        "sha": "ef435641deb7",
+        "ok": true,
+        "eol": true
+      },
+      {
+        "ref": "/admin-studio.html",
+        "bytes": 20282,
+        "sha": "1e46c84f4d20",
+        "ok": true,
+        "eol": true
+      },
+      {
+        "ref": "/admin-systems.html",
+        "bytes": 24424,
+        "sha": "ede58e4a7f4e",
+        "ok": true,
+        "eol": true
+      },
+      {
+        "ref": "/apple-touch-icon.png",
+        "bytes": 4477,
+        "sha": "8aa5fd7edf0a",
+        "ok": true
+      },
+      {
+        "ref": "/auth-button.js",
+        "bytes": 32559,
+        "sha": "c4996a78db1c",
+        "ok": true,
+        "eol": true
+      },
+      {
+        "ref": "/auth/callback.html",
+        "bytes": 13108,
+        "sha": "50f3b75600c7",
+        "ok": true,
+        "eol": true
+      },
+      {
+        "ref": "/favicon.ico",
+        "bytes": 805,
+        "sha": "bb860cea9357",
+        "ok": true
+      },
+      {
+        "ref": "/favicon.png",
+        "bytes": 4477,
+        "sha": "8aa5fd7edf0a",
+        "ok": true
+      },
+      {
+        "ref": "/favicon.svg",
+        "bytes": 806,
+        "sha": "4eff67506251",
+        "ok": true,
+        "eol": false
+      },
+      {
+        "ref": "/login.html",
+        "bytes": 22106,
+        "sha": "e50828795606",
+        "ok": true,
+        "eol": true
+      },
+      {
+        "ref": "/me.html",
+        "bytes": 19469,
+        "sha": "c0edf2becdff",
+        "ok": true,
+        "eol": true
+      },
+      {
+        "ref": "/robots.txt",
+        "bytes": 1020,
+        "sha": "50adf516e14c",
+        "ok": true,
+        "eol": true
+      },
+      {
+        "ref": "/showcase.html",
+        "bytes": 7510,
+        "sha": "bd5a9cf910a4",
+        "ok": true,
+        "eol": true
+      },
+      {
+        "ref": "/sitemap.xml",
+        "bytes": 2638,
+        "sha": "ef9a3baa625d",
+        "ok": true,
+        "eol": false
+      },
+      {
+        "ref": "/subscribe.html",
+        "bytes": 19191,
+        "sha": "cff49f3738f7",
+        "ok": true,
+        "eol": true
+      },
+      {
+        "ref": "/system.html",
+        "bytes": 19117,
+        "sha": "ee56a3d4fd1b",
+        "ok": true,
+        "eol": true
+      }
+    ],
+    "head": "6b85620"
+  }
+]
