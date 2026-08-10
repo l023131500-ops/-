@@ -21,8 +21,23 @@ import { db, newId } from "@/data/store";
  * Data access layer. Reads/writes the `chatzor` schema when Supabase is
  * configured; otherwise uses an in-memory store so the whole system (including
  * admin CRUD) is fully clickable in preview. Writes THROW on error.
+ *
+ * **קריאות זורקות גם הן, ומאותה סיבה.** עד עכשיו ענף השגיאה היה מפוצל לשני
+ * כיוונים סותרים: חמש קריאות (listSynagogues, listAllSynagogues,
+ * listPrayerTimes, listLessons, listServices) החזירו זרעים מ-`seed.ts`, וארבע
+ * (listAnnouncements, listInquiries, listRabbiQuestions, listManagedSynagogues)
+ * החזירו `[]`. שני הכיוונים אומרים לצופה משהו שאינו נכון: הראשון מצייר תוכן
+ * מומצא כאילו הוא נתון המועצה, והשני טוען שאין נתון בזמן שהשאילתה בכלל לא
+ * הצליחה. ההכרעה היא לכיוון שלישי — **הזרעים הם מתקן תצוגה של מצב `!supabase`
+ * בלבד**, וכשה-Supabase כן מוגדר שגיאה נזרקת אל react-query.
+ *
+ * ‏`!data` בלי `error` אינו שגיאה אלא תוצאה ריקה, ולכן נשאר `[]`.
  */
 const ORG_SLUG = "chatzor-hagelilit";
+
+/** מנסח שגיאת PostgREST להודעה אחת שאפשר לזרוק. */
+const readFailed = (what: string, message: string) =>
+  new Error(`טעינת ${what} נכשלה: ${message}`);
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const toSynagogue = (r: any): Synagogue => ({
@@ -61,39 +76,47 @@ const nowIso = () => new Date().toISOString();
 export async function listSynagogues(): Promise<Synagogue[]> {
   if (!supabase) return db.synagogues.filter((s) => s.isPublished);
   const { data, error } = await supabase.from("synagogues").select("*").eq("is_published", true).order("name");
-  if (error || !data) return db.synagogues.filter((s) => s.isPublished);
-  return data.map(toSynagogue);
+  if (error) throw readFailed("בתי הכנסת", error.message);
+  return (data ?? []).map(toSynagogue);
 }
 
 export async function listAllSynagogues(): Promise<Synagogue[]> {
   if (!supabase) return db.synagogues;
   const { data, error } = await supabase.from("synagogues").select("*").order("name");
-  if (error || !data) return db.synagogues;
-  return data.map(toSynagogue);
+  if (error) throw readFailed("בתי הכנסת", error.message);
+  return (data ?? []).map(toSynagogue);
 }
 
 /** Synagogues the signed-in gabai/admin may manage (demo: all). */
 export async function listManagedSynagogues(): Promise<Synagogue[]> {
   if (!supabase) return db.synagogues;
-  const { data: memberships } = await supabase.from("synagogue_admins").select("synagogue_id");
+  // ‏שגיאה כאן חייבת להיזרק ולא להיבלע: `memberships ?? []` הופך כישלון שאילתה
+  // ל-`ids.length === 0`, וזה הענף שמחזיר את **כל** בתי הכנסת. כלומר תקלת רשת
+  // אחת הייתה מרחיבה גבאי של בית כנסת אחד לניהול כולם.
+  const { data: memberships, error: membershipError } = await supabase
+    .from("synagogue_admins").select("synagogue_id");
+  if (membershipError) throw readFailed("ההרשאות", membershipError.message);
   const ids = (memberships ?? []).map((m: { synagogue_id: string }) => m.synagogue_id);
   if (ids.length === 0) return listAllSynagogues(); // org admins manage all
   const { data, error } = await supabase.from("synagogues").select("*").in("id", ids).order("name");
-  if (error || !data) return [];
-  return data.map(toSynagogue);
+  if (error) throw readFailed("בתי הכנסת", error.message);
+  return (data ?? []).map(toSynagogue);
 }
 
 export async function getSynagogueBySlug(slug: string): Promise<Synagogue | null> {
   if (!supabase) return db.synagogues.find((s) => s.slug === slug) ?? null;
-  const { data } = await supabase.from("synagogues").select("*").eq("slug", slug).maybeSingle();
+  // ‏בלי בדיקת השגיאה, שאילתה שנכשלה הייתה מוחזרת כ-null — כלומר "בית הכנסת
+  // הזה לא קיים", שזו טענה אחרת לגמרי מ"לא הצלחנו לבדוק".
+  const { data, error } = await supabase.from("synagogues").select("*").eq("slug", slug).maybeSingle();
+  if (error) throw readFailed("בית הכנסת", error.message);
   return data ? toSynagogue(data) : null;
 }
 
 export async function listPrayerTimes(synagogueId: string): Promise<PrayerTime[]> {
   if (!supabase) return db.prayerTimes.filter((p) => p.synagogueId === synagogueId);
   const { data, error } = await supabase.from("prayer_times").select("*").eq("synagogue_id", synagogueId).order("sort_order");
-  if (error || !data) return db.prayerTimes.filter((p) => p.synagogueId === synagogueId);
-  return data.map(toPrayerTime);
+  if (error) throw readFailed("זמני התפילה", error.message);
+  return (data ?? []).map(toPrayerTime);
 }
 
 export async function listLessons(synagogueId?: string): Promise<Lesson[]> {
@@ -101,17 +124,15 @@ export async function listLessons(synagogueId?: string): Promise<Lesson[]> {
   let q = supabase.from("lessons").select("*").eq("is_published", true);
   if (synagogueId) q = q.eq("synagogue_id", synagogueId);
   const { data, error } = await q;
-  // נפילה חזרה לזרעים חייבת לכבד את אותו סינון כמו הענף שלמעלה — אחרת שיעור
-  // של בית כנסת אחר נצבע כשיעור שלו במסך הגבאי.
-  if (error || !data) return synagogueId ? db.lessons.filter((l) => l.synagogueId === synagogueId) : db.lessons;
-  return data.map(toLesson);
+  if (error) throw readFailed("השיעורים", error.message);
+  return (data ?? []).map(toLesson);
 }
 
 export async function listServices(): Promise<CommunityService[]> {
   if (!supabase) return db.services;
   const { data, error } = await supabase.from("community_services").select("*").eq("is_published", true).order("name");
-  if (error || !data) return db.services;
-  return data.map(toService);
+  if (error) throw readFailed("השירותים הקהילתיים", error.message);
+  return (data ?? []).map(toService);
 }
 
 export async function listAnnouncements(synagogueId?: string): Promise<Announcement[]> {
@@ -119,15 +140,15 @@ export async function listAnnouncements(synagogueId?: string): Promise<Announcem
   let q = supabase.from("announcements").select("*").eq("is_published", true).order("created_at", { ascending: false });
   if (synagogueId) q = q.eq("synagogue_id", synagogueId);
   const { data, error } = await q;
-  if (error || !data) return [];
-  return data.map(toAnnouncement);
+  if (error) throw readFailed("ההודעות", error.message);
+  return (data ?? []).map(toAnnouncement);
 }
 
 export async function listInquiries(): Promise<Inquiry[]> {
   if (!supabase) return [...db.inquiries].reverse();
   const { data, error } = await supabase.from("inquiries").select("*").order("created_at", { ascending: false });
-  if (error || !data) return [];
-  return data.map((r) => ({
+  if (error) throw readFailed("הפניות", error.message);
+  return (data ?? []).map((r) => ({
     id: r.id, name: r.name, phone: r.phone ?? null, email: r.email ?? null, subject: r.subject ?? null,
     body: r.body, synagogueId: r.synagogue_id ?? null, isRead: r.is_read ?? false, createdAt: r.created_at,
   }));
@@ -136,8 +157,8 @@ export async function listInquiries(): Promise<Inquiry[]> {
 export async function listRabbiQuestions(): Promise<RabbiQuestion[]> {
   if (!supabase) return [...db.rabbiQuestions].reverse();
   const { data, error } = await supabase.from("rabbi_questions").select("*").order("created_at", { ascending: false });
-  if (error || !data) return [];
-  return data.map((r) => ({
+  if (error) throw readFailed("השאלות לרב", error.message);
+  return (data ?? []).map((r) => ({
     id: r.id, name: r.name ?? null, contact: r.contact ?? null, question: r.question,
     answer: r.answer ?? null, createdAt: r.created_at,
   }));
