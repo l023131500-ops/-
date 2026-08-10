@@ -1,15 +1,14 @@
 import { useMemo, useState } from "react";
-import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { Link } from "@tanstack/react-router";
-import { toast } from "sonner";
-import { MoreHorizontal, Search, UserPlus, FileText, Eye, DatabaseZap } from "lucide-react";
+import { MoreHorizontal, Search, UserPlus, FileText, Eye } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
-import { listClientsForAdmin, seedMockClients, type AdminClientRow } from "@/lib/admin.functions";
+import { listClientsForAdmin, type AdminClientRow } from "@/lib/admin.functions";
 import { LeadSourceBadge, PaymentStatusBadge } from "./badges";
 import { AssignPartnerDialog } from "./AssignPartnerDialog";
 import { AdminNotesPopover } from "./AdminNotesPopover";
@@ -21,8 +20,6 @@ export const adminClientsQueryOptions = {
 
 export function ClientsTable() {
   const listFn = useServerFn(listClientsForAdmin);
-  const seedFn = useServerFn(seedMockClients);
-  const qc = useQueryClient();
 
   const { data } = useSuspenseQuery({
     queryKey: ["adminClients"],
@@ -45,15 +42,6 @@ export function ClientsTable() {
       );
     });
   }, [data, search, sourceFilter]);
-
-  const seedMutation = useMutation({
-    mutationFn: () => seedFn(),
-    onSuccess: (r) => {
-      toast.success(`נטענו נתוני בדיקה (${r.created} חדשים, ${r.skipped} קיימים)`);
-      qc.invalidateQueries({ queryKey: ["adminClients"] });
-    },
-    onError: (e: Error) => toast.error(e.message),
-  });
 
   const fmtDate = (s: string) => new Intl.DateTimeFormat("he-IL", { dateStyle: "short" }).format(new Date(s));
 
@@ -80,10 +68,6 @@ export function ClientsTable() {
             <SelectItem value="nedarim_plus">נדרים פלוס</SelectItem>
           </SelectContent>
         </Select>
-        <Button onClick={() => seedMutation.mutate()} disabled={seedMutation.isPending} variant="outline">
-          <DatabaseZap className="w-4 h-4 ml-2" />
-          {seedMutation.isPending ? "טוען..." : "טעינת נתוני בדיקה"}
-        </Button>
       </div>
 
       <div className="rounded-lg border bg-card">
@@ -104,7 +88,9 @@ export function ClientsTable() {
             {filtered.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={8} className="text-center text-muted-foreground py-12">
-                  לא נמצאו לקוחות. ניתן לטעון נתוני בדיקה באמצעות הכפתור למעלה.
+                  {data.length === 0
+                    ? "אין עדיין לקוחות רשומים. לקוח חדש יופיע כאן עם הרשמתו."
+                    : "אין לקוחות התואמים לחיפוש או לסינון."}
                 </TableCell>
               </TableRow>
             ) : (
