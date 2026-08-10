@@ -54,6 +54,18 @@
       "The measurement above is the evidence: 0 of 20 Git deployments were production. Disabling them removes nothing that ships.",
       "Reversible in one line - delete the file, or narrow it to { \"deploymentEnabled\": { \"fix/nadlan-a11y\": false } }."
     ],
-    "verification_is_next_round_not_this_one": "The flag takes effect on the Git integration's next read, i.e. the push that carries this commit. Whether it worked is a measurement on the same endpoint after the next two or three pushes: if the newest more30-portal deployment stays at 13:41Z while the branch advances, it held. Recorded here so the next round checks rather than assumes."
+    "verification_is_next_round_not_this_one": "The flag takes effect on the Git integration's next read, i.e. the push that carries this commit."
+  },
+
+  "verification_attempted_and_the_test_was_wrong": {
+    "at": "2026-08-10T14:25Z",
+    "written_first": "'If the newest more30-portal deployment stays at 13:41Z while the branch advances, deploymentEnabled:false held.'",
+    "then_measured": "Same endpoint, since=1786369300000 (13:41:40Z): zero deployments.",
+    "why_that_proves_nothing": "Three pushes landed after 13:41:15Z - 46afd6b at 13:55Z, 059a9fc at 14:06Z, and 92a0eef which carries this file - and the first two are older than the vercel.json. They created no preview either. So previews had ALREADY stopped before the flag existed, almost certainly because the exhausted cap blocks the Git integration exactly as it blocked the CLI at 14:14Z. The condition was going to be true whether or not the fix worked, which makes it not a test.",
+    "the_test_that_would_actually_separate_them": [
+      "Wait for the cap to reset (Vercel says 24h; the refusal was 14:14Z on 10/08). Then push one commit and re-read this endpoint. A preview appearing means the flag is not being read - the project's rootDirectory is not the repo root - and the setting has to move to the project dashboard. No preview, while a CLI `vercel deploy --prod` in the same period succeeds, means it held.",
+      "Cheaper and available before the reset: read the GitHub commit status for 92a0eef. With deploymentEnabled:false the Vercel check is absent entirely; with the cap merely exhausted the check is present and failed. Not run here - `gh` is not installed on this machine and it needs a REST call with the credential-manager token."
+    ],
+    "note": "Recorded rather than quietly corrected, because the bad condition was already written into DESIGN_SAMENESS (יג) and NEEDS_USER §0פ in the same commit (92a0eef) and both were amended to point here."
   }
 }
