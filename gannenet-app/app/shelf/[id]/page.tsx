@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { seedItems, type ShelfItem } from "@/lib/catalog";
 import { getUploaded } from "@/lib/supabase";
+import PageTool from "@/components/PageTool";
 
 export function generateStaticParams() {
   return seedItems.map((i) => ({ id: i.id }));
@@ -70,9 +71,7 @@ export default async function ShelfItemPage({ params }: { params: { id: string }
           )}
         </div>
 
-        <p style={{ marginTop: 14, fontSize: 12.5, color: "#9a9cb0" }}>
-          טיפ להורדת טווח עמודים: בתוך התצוגה — Ctrl+P, בחירת טווח עמודים, ושמירה כ-PDF.
-        </p>
+        {item.kind === "pdf" && <PageTool fileUrl={item.file} title={item.title} />}
       </div>
     </div>
   );
