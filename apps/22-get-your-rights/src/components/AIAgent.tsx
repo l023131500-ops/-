@@ -123,7 +123,9 @@ const AIAgent = () => {
             </div>
             <div className="text-right">
               <p className="font-bold text-sm leading-tight">יש לכם משהו שמעניין אותכם?</p>
-              <p className="text-xs text-primary-foreground">מוזמנים לדבר איתי במילים שלכם 💬</p>
+              {/* ה-💬 חזר על ‎MessageCircle‎ שכבר יושב במשגר, בהפרש של כארבעים
+                  פיקסל ובאותו פקד. DESIGN_STANDARD §2 אוסר אמוג׳י בממשק. */}
+              <p className="text-xs text-primary-foreground">מוזמנים לדבר איתי במילים שלכם</p>
             </div>
             <span className="absolute -top-1 -left-1 w-4 h-4 bg-secondary rounded-full animate-pulse" />
           </motion.button>

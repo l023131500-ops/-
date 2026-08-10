@@ -262,7 +262,10 @@ const Footer = () => {
                   whileHover={{ scale: 1.03 }}
                   className="flex items-center gap-3 p-3 rounded-xl bg-secondary/10 border border-secondary/20 hover:bg-secondary/20 transition-all"
                 >
-                  <PhoneCall className="w-5 h-5 text-secondary" />
+                  {/* אותו מספר מופיע פעמיים בפוטר — כאן וב-CTA של המערכת
+                      הקולית — ונשא שני גליפים שונים. ‎Phone‎ הוא המספר,
+                      ‎PhoneCall‎ נשאר לצ׳יפ שמדבר על המערכת עצמה. */}
+                  <Phone className="w-5 h-5 text-secondary" />
                   <div>
                     <p className="text-background font-bold" dir="ltr">02-3131500</p>
                     <p className="text-background/70 text-xs">מערכת קולית 24/6</p>
