@@ -4,10 +4,11 @@ import { useServices } from "@/hooks/useData";
 import { PageHero } from "@/components/ui/PageHero";
 import { CardGridSkeleton } from "@/components/ui/Skeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { ErrorState } from "@/components/ui/ErrorState";
 import { SampleBadge } from "@/components/ui/SampleBadge";
 
 export function Gemachim() {
-  const { data: services, isLoading } = useServices();
+  const { data: services, isLoading, isError, refetch } = useServices();
 
   return (
     <>
@@ -19,6 +20,12 @@ export function Gemachim() {
       <div className="container-page py-16">
         {isLoading ? (
           <CardGridSkeleton count={6} />
+        ) : isError ? (
+          <ErrorState
+            title="לא הצלחנו לטעון את השירותים"
+            description="הרשימה לא נקראה מהמסד, ולכן איננו יודעים אילו שירותים קיימים."
+            onRetry={() => refetch()}
+          />
         ) : (services ?? []).length === 0 ? (
           <EmptyState icon={HeartHandshake} title="עדיין לא נוספו שירותים" description="השירותים והגמ״חים יתווספו על ידי המועצה הדתית." />
         ) : (

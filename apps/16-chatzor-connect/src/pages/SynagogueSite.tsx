@@ -11,6 +11,7 @@ import { useTheme } from "@/hooks/useTheme";
 import { Reveal } from "@/components/ui/Reveal";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { ErrorState } from "@/components/ui/ErrorState";
 import { SampleBadge } from "@/components/ui/SampleBadge";
 import { InquiryForm } from "@/components/InquiryForm";
 
@@ -29,15 +30,37 @@ export function SynagogueSite() {
   const { slug = "" } = useParams();
   const { theme, toggle } = useTheme();
   const now = useNow(30_000);
-  const { data: synagogue, isLoading } = useSynagogue(slug);
-  const { data: prayerTimes } = usePrayerTimes(synagogue?.id);
-  const { data: lessons } = useLessons(synagogue?.id);
-  const { data: announcements } = useAnnouncements(synagogue?.id);
+  const { data: synagogue, isLoading, isError, refetch } = useSynagogue(slug);
+  const prayerTimesQuery = usePrayerTimes(synagogue?.id);
+  const lessonsQuery = useLessons(synagogue?.id);
+  const announcementsQuery = useAnnouncements(synagogue?.id);
+  const { data: prayerTimes } = prayerTimesQuery;
+  const { data: lessons } = lessonsQuery;
+  const { data: announcements } = announcementsQuery;
 
   if (isLoading) {
     return (
       <div className="container-page py-24">
         <Skeleton className="mx-auto h-64 max-w-4xl rounded-xl" />
+      </div>
+    );
+  }
+
+  // ‏"לא נמצא" ו"לא הצלחנו לבדוק" הן שתי טענות שונות. עד עכשיו שאילתה שנכשלה
+  // ‏נחתה על ענף ה-null והכריזה שבית הכנסת אינו קיים.
+  if (isError) {
+    return (
+      <div className="container-page py-24">
+        <ErrorState
+          title="לא הצלחנו לטעון את בית הכנסת"
+          description="הדף לא נקרא מהמסד. ייתכן שהוא קיים — פשוט לא הצלחנו לבדוק."
+          onRetry={() => refetch()}
+        />
+        <div className="mt-6 text-center">
+          <Link to="/batei-knesset" className="link-hit gap-1.5 font-semibold text-accent">
+            <ArrowLeft className="h-4 w-4" /> לכל בתי הכנסת
+          </Link>
+        </div>
       </div>
     );
   }
@@ -132,7 +155,16 @@ export function SynagogueSite() {
         {/* prayer times */}
         <section>
           <h2 className="mb-6 text-center font-display text-2xl font-bold sm:text-3xl">זמני התפילות</h2>
-          {grouped.length === 0 ? (
+          {prayerTimesQuery.isError ? (
+            <ErrorState
+              title="לא הצלחנו לטעון את זמני התפילות"
+              onRetry={() => prayerTimesQuery.refetch()}
+            />
+          ) : prayerTimesQuery.isPending ? (
+            // ‏בלי הענף הזה, refetch (שמחזיר את השאילתה ל-pending) היה מציג
+            // ‏"יעודכנו בקרוב" — טענה על העולם — בזמן שהקריאה עוד רצה.
+            <Skeleton className="mx-auto h-40 max-w-3xl rounded-xl" />
+          ) : grouped.length === 0 ? (
             <EmptyState icon={Clock} title="זמני התפילות יעודכנו בקרוב" description="הגבאי יעדכן את זמני התפילות מאזור הניהול." />
           ) : (
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -175,7 +207,14 @@ export function SynagogueSite() {
         {/* lessons */}
         <section>
           <h2 className="mb-6 text-center font-display text-2xl font-bold sm:text-3xl">שיעורי תורה</h2>
-          {(lessons ?? []).length === 0 ? (
+          {lessonsQuery.isError ? (
+            <ErrorState
+              title="לא הצלחנו לטעון את השיעורים"
+              onRetry={() => lessonsQuery.refetch()}
+            />
+          ) : lessonsQuery.isPending ? (
+            <Skeleton className="mx-auto h-40 max-w-3xl rounded-xl" />
+          ) : (lessons ?? []).length === 0 ? (
             <EmptyState icon={BookOpen} title="אין שיעורים מעודכנים" description="הגבאי יוכל להוסיף שיעורים מאזור הניהול." />
           ) : (
             <div className="mx-auto grid max-w-3xl gap-4">
@@ -197,7 +236,16 @@ export function SynagogueSite() {
           )}
         </section>
 
-        {/* announcements */}
+        {/* announcements — הסתרה שקטה של הסקציה בכשל היא טענה שאין מודעות */}
+        {announcementsQuery.isError && (
+          <section>
+            <h2 className="mb-6 text-center font-display text-2xl font-bold sm:text-3xl">מודעות והודעות</h2>
+            <ErrorState
+              title="לא הצלחנו לטעון את המודעות"
+              onRetry={() => announcementsQuery.refetch()}
+            />
+          </section>
+        )}
         {(announcements ?? []).length > 0 && (
           <section>
             <h2 className="mb-6 text-center font-display text-2xl font-bold sm:text-3xl">מודעות והודעות</h2>

@@ -4,10 +4,11 @@ import { ArrowLeft, HeartHandshake } from "lucide-react";
 import { useServices } from "@/hooks/useData";
 import { Section } from "@/components/ui/Section";
 import { Skeleton } from "@/components/ui/Skeleton";
+import { ErrorState } from "@/components/ui/ErrorState";
 import { SampleBadge } from "@/components/ui/SampleBadge";
 
 export function ServicesPreview() {
-  const { data: services, isLoading } = useServices();
+  const { data: services, isLoading, isError, refetch } = useServices();
   const shown = (services ?? []).slice(0, 3);
 
   return (
@@ -22,6 +23,11 @@ export function ServicesPreview() {
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-44 w-full" />)}
         </div>
+      ) : isError ? (
+        <ErrorState
+          title="לא הצלחנו לטעון את השירותים"
+          onRetry={() => refetch()}
+        />
       ) : (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {shown.map((s, i) => (
