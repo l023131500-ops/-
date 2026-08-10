@@ -1,5 +1,7 @@
 import catalog from "@/content/catalog.json";
 
+export type ShelfKind = "pdf" | "image" | "doc" | "media" | "gapp";
+
 export type ShelfItem = {
   id: string;
   title: string;
@@ -7,10 +9,11 @@ export type ShelfItem = {
   sender: string;
   date: string;
   mime: string;
-  file: string; // public URL / path
+  file: string; // public URL / path (local asset or /api/drive/{id})
   sizeKB: number;
-  kind: "pdf" | "image";
-  source?: "seed" | "upload";
+  kind: ShelfKind;
+  viewUrl?: string; // Drive view link (fallback for non-embeddable types)
+  source?: "seed" | "upload" | "drive";
 };
 
 // Pedagogical / Hebrew-calendar ordering — "סיווג לפי סדר".

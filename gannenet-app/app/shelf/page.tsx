@@ -15,42 +15,81 @@ function fmtDate(d: string) {
   return day && m && y ? `${day}/${m}/${y}` : d;
 }
 
+function kindLabel(k: ShelfItem["kind"]) {
+  switch (k) {
+    case "pdf": return "PDF";
+    case "image": return "תמונה";
+    case "media": return "מדיה";
+    case "gapp": return "Google";
+    default: return "מסמך";
+  }
+}
+function kindColor(k: ShelfItem["kind"]) {
+  switch (k) {
+    case "pdf": return { bg: "#f8e8ee", fg: "#a03a5c" };
+    case "image": return { bg: "#f7efd8", fg: "#a2781f" };
+    case "media": return { bg: "#e6eefb", fg: "#2b4a8b" };
+    case "gapp": return { bg: "#e2f3f0", fg: "#1f6a62" };
+    default: return { bg: "#efe9f6", fg: "#6b4aa0" };
+  }
+}
+
+const PAGE = 48;
+
 export default function ShelfPage() {
-  const [dynamic, setDynamic] = useState<ShelfItem[]>([]);
+  const [drive, setDrive] = useState<ShelfItem[]>([]);
+  const [uploads, setUploads] = useState<ShelfItem[]>([]);
+  const [loading, setLoading] = useState(true);
   const [cat, setCat] = useState("");
   const [sender, setSender] = useState("");
   const [kind, setKind] = useState("");
   const [q, setQ] = useState("");
+  const [limit, setLimit] = useState(PAGE);
 
   useEffect(() => {
     let alive = true;
-    fetch("/api/catalog")
-      .then((r) => (r.ok ? r.json() : { items: [] }))
-      .then((d) => {
-        if (alive && Array.isArray(d.items)) setDynamic(d.items as ShelfItem[]);
-      })
-      .catch(() => {});
+    Promise.all([
+      fetch("/api/drive-catalog").then((r) => (r.ok ? r.json() : { items: [] })).catch(() => ({ items: [] })),
+      fetch("/api/catalog").then((r) => (r.ok ? r.json() : { items: [] })).catch(() => ({ items: [] })),
+    ]).then(([d, u]) => {
+      if (!alive) return;
+      if (Array.isArray(d.items)) setDrive(d.items as ShelfItem[]);
+      if (Array.isArray(u.items)) setUploads(u.items as ShelfItem[]);
+      setLoading(false);
+    });
     return () => {
       alive = false;
     };
   }, []);
 
+  // Merge sources; seed (in-repo) wins over drive for the same id; uploads added last.
   const all = useMemo(() => {
-    const seen = new Set(seedItems.map((i) => i.id));
-    const merged = [...seedItems, ...dynamic.filter((i) => !seen.has(i.id))];
-    return sortItems(merged);
-  }, [dynamic]);
+    const map = new Map<string, ShelfItem>();
+    for (const i of drive) map.set(i.id, i);
+    for (const i of seedItems) map.set(i.id, i); // override drive with local hosted asset
+    for (const i of uploads) if (!map.has(i.id)) map.set(i.id, i);
+    return sortItems(Array.from(map.values()));
+  }, [drive, uploads]);
 
   const cats = useMemo(() => orderedCategories(all), [all]);
   const senders = useMemo(() => allSenders(all), [all]);
 
-  const filtered = all.filter(
-    (i) =>
-      (!cat || i.category === cat) &&
-      (!sender || i.sender === sender) &&
-      (!kind || i.kind === kind) &&
-      (!q || (i.title + i.category + i.sender).includes(q))
+  const filtered = useMemo(
+    () =>
+      all.filter(
+        (i) =>
+          (!cat || i.category === cat) &&
+          (!sender || i.sender === sender) &&
+          (!kind || i.kind === kind) &&
+          (!q || (i.title + i.category + i.sender).toLowerCase().includes(q.toLowerCase()))
+      ),
+    [all, cat, sender, kind, q]
   );
+
+  // reset visible count whenever the filter changes
+  useEffect(() => setLimit(PAGE), [cat, sender, kind, q]);
+
+  const visible = filtered.slice(0, limit);
 
   return (
     <div className="container-r" style={{ padding: "34px 20px 60px" }}>
@@ -60,15 +99,15 @@ export default function ShelfPage() {
         </span>
         <h1 style={{ fontSize: 34, fontWeight: 800, marginTop: 12 }}>מדף הגננת</h1>
         <p style={{ color: "#6d6f88", marginTop: 6, maxWidth: 640, marginInline: "auto", lineHeight: 1.7 }}>
-          חומרים אמינים לגננת — דפי עבודה, דפי צביעה, יצירה וחומרי חג — מסודרים לפי סדר השנה.
-          צפייה והורדה בקליק. אפשר גם להוסיף חומרים משלכם.
+          כל אוסף החומרים — דפי עבודה, דפי צביעה, יצירה וחומרי חג — מסודרים לפי סדר השנה.
+          צפייה, בחירת עמודים, הורדה והדפסה — הכול בקליק.
         </p>
         <div style={{ marginTop: 16, display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap" }}>
           <Link href="/shelf/upload" className="btn btn-main" style={{ fontSize: 14.5 }}>
             הוספת חומר למדף
           </Link>
           <span style={{ alignSelf: "center", color: "#6d6f88", fontSize: 14 }}>
-            {all.length} פריטים · {cats.length} קטגוריות
+            {loading ? "טוען…" : `${all.length.toLocaleString("he")} פריטים · ${cats.length} קטגוריות`}
           </span>
         </div>
       </div>
@@ -85,7 +124,7 @@ export default function ShelfPage() {
         ))}
       </div>
 
-      <div className="card" style={{ padding: 14, display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center", marginBottom: 22 }}>
+      <div className="card" style={{ padding: 14, display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center", marginBottom: 14 }}>
         <input className="input" style={{ flex: "1 1 220px" }} placeholder="חיפוש חומר…" value={q} onChange={(e) => setQ(e.target.value)} />
         <select className="input" style={{ flex: "0 0 190px" }} value={sender} onChange={(e) => setSender(e.target.value)}>
           <option value="">כל המקורות</option>
@@ -95,35 +134,52 @@ export default function ShelfPage() {
           <option value="">כל הסוגים</option>
           <option value="pdf">מסמכי PDF</option>
           <option value="image">תמונות</option>
+          <option value="doc">מסמכים (Word/PPT)</option>
+          <option value="media">אודיו / וידאו</option>
+          <option value="gapp">Google Docs</option>
         </select>
       </div>
 
+      <p style={{ textAlign: "center", color: "#9a9cb0", fontSize: 13, marginBottom: 18 }}>
+        {loading ? "" : `מוצגים ${Math.min(limit, filtered.length)} מתוך ${filtered.length.toLocaleString("he")}`}
+      </p>
+
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(270px,1fr))", gap: 16 }}>
-        {filtered.map((i) => (
-          <div key={i.id} className="card" style={{ padding: 18, display: "flex", flexDirection: "column" }}>
-            <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 10 }}>
-              <span className="chip" style={{ background: "#e2f3f0", color: "#1f6a62" }}>{i.category}</span>
-              <span className="chip" style={{ background: i.kind === "pdf" ? "#f8e8ee" : "#f7efd8", color: i.kind === "pdf" ? "#a03a5c" : "#a2781f" }}>
-                {i.kind === "pdf" ? "PDF" : "תמונה"}
-              </span>
+        {visible.map((i) => {
+          const kc = kindColor(i.kind);
+          return (
+            <div key={i.id} className="card" style={{ padding: 18, display: "flex", flexDirection: "column" }}>
+              <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 10 }}>
+                <span className="chip" style={{ background: "#e2f3f0", color: "#1f6a62" }}>{i.category}</span>
+                <span className="chip" style={{ background: kc.bg, color: kc.fg }}>{kindLabel(i.kind)}</span>
+              </div>
+              <h3 style={{ fontSize: 15.5, fontWeight: 700, color: "#2b4a8b", lineHeight: 1.5, minHeight: 46 }}>{i.title}</h3>
+              <p style={{ fontSize: 12.5, color: "#6d6f88", marginTop: 8 }}>
+                {i.sender}{i.sender && i.date ? " · " : ""}{fmtDate(i.date)}{i.sizeKB ? ` · ${i.sizeKB}KB` : ""}
+              </p>
+              <div style={{ display: "flex", gap: 8, marginTop: 14 }}>
+                <Link href={`/shelf/${i.id}`} className="btn btn-main" style={{ flex: 1, justifyContent: "center", padding: ".5rem", fontSize: 14 }}>
+                  פתיחה וצפייה
+                </Link>
+                <a href={i.source === "drive" ? `${i.file}?dl=1` : i.file} className="btn btn-ghost" style={{ padding: ".5rem .7rem", fontSize: 14 }}>
+                  הורדה
+                </a>
+              </div>
             </div>
-            <h3 style={{ fontSize: 16.5, fontWeight: 700, color: "#2b4a8b", lineHeight: 1.5, minHeight: 48 }}>{i.title}</h3>
-            <p style={{ fontSize: 12.5, color: "#6d6f88", marginTop: 8 }}>
-              {i.sender}{i.sender && i.date ? " · " : ""}{fmtDate(i.date)}{i.sizeKB ? ` · ${i.sizeKB}KB` : ""}
-            </p>
-            <div style={{ display: "flex", gap: 8, marginTop: 14 }}>
-              <Link href={`/shelf/${i.id}`} className="btn btn-main" style={{ flex: 1, justifyContent: "center", padding: ".5rem", fontSize: 14 }}>
-                פתיחה וצפייה
-              </Link>
-              <a href={i.file} download target="_blank" rel="noopener" className="btn btn-ghost" style={{ padding: ".5rem .7rem", fontSize: 14 }}>
-                הורדה
-              </a>
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
-      {filtered.length === 0 && (
+
+      {!loading && filtered.length === 0 && (
         <p style={{ textAlign: "center", color: "#6d6f88", marginTop: 40 }}>לא נמצאו חומרים לסינון הזה.</p>
+      )}
+
+      {limit < filtered.length && (
+        <div style={{ textAlign: "center", marginTop: 26 }}>
+          <button onClick={() => setLimit((l) => l + PAGE)} className="btn btn-main" style={{ fontSize: 14.5, padding: ".6rem 1.6rem" }}>
+            טעינת עוד ({(filtered.length - limit).toLocaleString("he")} נוספים)
+          </button>
+        </div>
       )}
     </div>
   );
