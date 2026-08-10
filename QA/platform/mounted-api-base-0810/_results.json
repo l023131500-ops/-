@@ -1,5 +1,5 @@
 {
-  "measured_at": "2026-08-10T10:14:53.599Z",
+  "measured_at": "2026-08-10T10:26:27.373Z",
   "mounts": {
     "admin": {
       "project": "nihul-more30",
@@ -253,10 +253,6 @@
         },
         {
           "file": "imud/assets/index-7IQk_wi0.js",
-          "path": "/api/meta"
-        },
-        {
-          "file": "imud/assets/index-7IQk_wi0.js",
           "path": "/api/books/${t}"
         },
         {
@@ -268,7 +264,14 @@
           "path": "/api/books"
         }
       ],
-      "not_requested_from_root": [],
+      "not_requested_from_root": [
+        {
+          "file": "imud/assets/index-7IQk_wi0.js",
+          "path": "/api/meta",
+          "reason": "a react-query cache key whose query supplies its own queryFn — the default queryFn that would turn a key into a URL never runs, so more30.com is never asked for it",
+          "context": "[\"/api/meta\"],queryFn:async()=>{const U=await(await "
+        }
+      ],
       "probes": [
         {
           "path": "/api/books",
@@ -798,10 +801,6 @@
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/admin/google/status"
-        },
-        {
-          "file": "public/mechiron/assets/index-DcMphBNb.js",
           "path": "/api/admin/google/start"
         },
         {
@@ -951,10 +950,6 @@
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
           "path": "/api/admin/db-status"
-        },
-        {
-          "file": "public/mechiron/assets/index-DcMphBNb.js",
-          "path": "/api/admin/google/status"
         },
         {
           "file": "public/mechiron/assets/index-DcMphBNb.js",
@@ -1681,7 +1676,20 @@
           "path": "/api/pc/submit/${encodeURIComponent(t)}/template.csv"
         }
       ],
-      "not_requested_from_root": [],
+      "not_requested_from_root": [
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/admin/google/status",
+          "reason": "a react-query cache key whose query supplies its own queryFn — the default queryFn that would turn a key into a URL never runs, so more30.com is never asked for it",
+          "context": "[\"/api/admin/google/status\"],queryFn:async()=>{const b=await fetch("
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/admin/google/status",
+          "reason": "a react-query cache key whose query supplies its own queryFn — the default queryFn that would turn a key into a URL never runs, so more30.com is never asked for it",
+          "context": "[\"/api/admin/google/status\"],queryFn:async()=>{const n=await fetch("
+        }
+      ],
       "probes": [
         {
           "path": "/api/admin/advanced-match",
@@ -1866,29 +1874,16 @@
         "smel-more30"
       ],
       "live_artifact": "smel-more30",
-      "client_hits": [
+      "client_hits": [],
+      "not_requested_from_root": [
         {
           "file": "smel/assets/index-BjP8VGql.js",
-          "path": "/api/questionnaire"
-        }
-      ],
-      "not_requested_from_root": [],
-      "probes": [
-        {
           "path": "/api/questionnaire",
-          "as_shipped": {
-            "status": 404,
-            "type": "text/plain",
-            "bytes": 79
-          },
-          "as_mounted": {
-            "status": 200,
-            "type": "text/html",
-            "bytes": 1754
-          },
-          "verdict": "absent_in_production"
+          "reason": "a react-query cache key whose query supplies its own queryFn — the default queryFn that would turn a key into a URL never runs, so more30.com is never asked for it",
+          "context": "[\"/api/questionnaire\"],queryFn:()=>Yb()}),y=jC({resolver:DC(U"
         }
       ],
+      "probes": [],
       "live_document": {
         "status": 200,
         "bytes": 1754,
@@ -1897,12 +1892,7 @@
           "index-CF04gbI5.css"
         ]
       },
-      "staged_not_deployed": [],
-      "verdict_counts": {
-        "served_at_root": 0,
-        "mount_prefix": 0,
-        "absent_in_production": 1
-      }
+      "staged_not_deployed": []
     },
     "studio": {
       "project": "studio-more30",
@@ -1973,10 +1963,6 @@
         },
         {
           "file": "public/studio/assets/Brief-DTTM4z7O.js",
-          "path": "/api/categories"
-        },
-        {
-          "file": "public/studio/assets/Brief-DTTM4z7O.js",
           "path": "/api/categories/${encodeURIComponent(n)}/templates"
         },
         {
@@ -1993,15 +1979,7 @@
         },
         {
           "file": "public/studio/assets/Brief-DTTM4z7O.js",
-          "path": "/api/categories"
-        },
-        {
-          "file": "public/studio/assets/Brief-DTTM4z7O.js",
           "path": "/api/categories/${encodeURIComponent(s)}/templates/${encodeURIComponent(a.key)}/render"
-        },
-        {
-          "file": "public/studio/assets/Brief-DTTM4z7O.js",
-          "path": "/api/presets"
         },
         {
           "file": "public/studio/assets/Brief-DTTM4z7O.js",
@@ -2045,10 +2023,6 @@
         },
         {
           "file": "public/studio/assets/Studio-BwURaOFy.js",
-          "path": "/api/presets"
-        },
-        {
-          "file": "public/studio/assets/Studio-BwURaOFy.js",
           "path": "/api/presets?${t.toString()}"
         },
         {
@@ -2057,14 +2031,41 @@
         },
         {
           "file": "public/studio/assets/Studio-BwURaOFy.js",
-          "path": "/api/presets"
-        },
-        {
-          "file": "public/studio/assets/Studio-BwURaOFy.js",
           "path": "/api/presets/${encodeURIComponent(a.key)}/render"
         }
       ],
-      "not_requested_from_root": [],
+      "not_requested_from_root": [
+        {
+          "file": "public/studio/assets/Brief-DTTM4z7O.js",
+          "path": "/api/categories",
+          "reason": "a react-query cache key whose query supplies its own queryFn — the default queryFn that would turn a key into a URL never runs, so more30.com is never asked for it",
+          "context": "[\"/api/categories\",n,\"templates\"],enabled:S,staleTime:1/0,queryFn:async("
+        },
+        {
+          "file": "public/studio/assets/Brief-DTTM4z7O.js",
+          "path": "/api/categories",
+          "reason": "a react-query cache key whose query supplies its own queryFn — the default queryFn that would turn a key into a URL never runs, so more30.com is never asked for it",
+          "context": "[\"/api/categories\",s,\"templates\",a.key,\"preview\"],staleTime:1/0,queryFn:async()=>(await "
+        },
+        {
+          "file": "public/studio/assets/Brief-DTTM4z7O.js",
+          "path": "/api/presets",
+          "reason": "a react-query cache key whose query supplies its own queryFn — the default queryFn that would turn a key into a URL never runs, so more30.com is never asked for it",
+          "context": "[\"/api/presets\",l,\"concept-preview\"],enabled:!!l,staleTime:1/0,queryFn:asyn"
+        },
+        {
+          "file": "public/studio/assets/Studio-BwURaOFy.js",
+          "path": "/api/presets",
+          "reason": "a react-query cache key whose query supplies its own queryFn — the default queryFn that would turn a key into a URL never runs, so more30.com is never asked for it",
+          "context": "[\"/api/presets\",s,n],queryFn:async()=>{const t=new URLSearc"
+        },
+        {
+          "file": "public/studio/assets/Studio-BwURaOFy.js",
+          "path": "/api/presets",
+          "reason": "a react-query cache key whose query supplies its own queryFn — the default queryFn that would turn a key into a URL never runs, so more30.com is never asked for it",
+          "context": "[\"/api/presets\",a.key,\"preview\"],queryFn:async()=>(await j(\"POST\",`/api"
+        }
+      ],
       "probes": [
         {
           "path": "/api/ai/background",
@@ -2148,7 +2149,8 @@
             "type": "application/json",
             "bytes": 2
           },
-          "verdict": "mount_prefix"
+          "verdict": "mount_prefix",
+          "caveat": "the route answers under the mount; a client that prefixes at the call site would already reach it, so this needs the call site read before it counts as a bug"
         }
       ],
       "live_document": {
@@ -2272,15 +2274,15 @@
     "galil: the shipped client names no /api path the browser asks more30.com for",
     "mthbram: the shipped client names no /api path the browser asks more30.com for",
     "smachot: the shipped client names no /api path the browser asks more30.com for",
+    "smel: the shipped client names no /api path the browser asks more30.com for",
     "torah: the shipped client names no /api path the browser asks more30.com for",
     "zchuyot: the shipped client names no /api path the browser asks more30.com for",
     "studio stays fixed (#131): /studio/api/brands answers JSON"
   ],
   "fail": [
-    "imud: 3 answered by neither form — 15 literal(s) in 1 file(s), e.g. imud/assets/index-7IQk_wi0.js",
+    "imud: 3 answered by neither form — 14 literal(s) in 1 file(s), e.g. imud/assets/index-7IQk_wi0.js",
     "kupot: 2 answered by neither form — 5 literal(s) in 1 file(s), e.g. kupot/assets/index-BlT4DUpe.js",
-    "mechiron: 6 answered by neither form — 305 literal(s) in 1 file(s), e.g. public/mechiron/assets/index-DcMphBNb.js",
-    "smel: 1 answered by neither form — 1 literal(s) in 1 file(s), e.g. smel/assets/index-BjP8VGql.js",
-    "studio: 1 need the /studio prefix, 5 answered by neither form — 38 literal(s) in 8 file(s), e.g. public/studio/assets/BrandingBrief-DlnSH3li.js"
+    "mechiron: 6 answered by neither form — 303 literal(s) in 1 file(s), e.g. public/mechiron/assets/index-DcMphBNb.js",
+    "studio: 1 answered only under /studio (candidate — read the call site), 5 answered by neither form — 33 literal(s) in 8 file(s), e.g. public/studio/assets/BrandingBrief-DlnSH3li.js"
   ]
 }

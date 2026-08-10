@@ -63,6 +63,27 @@
  * and not probed. (The first run of this script reported exactly that false
  * positive on seven mounts: admin, chatzor, egod, galil, mthbram, torah, zchuyot.)
  *
+ * A second class is a literal that is only a react-query cache key. Usually a
+ * queryKey element IS the path, because the default queryFn in these bundles is
+ * fetch(API_BASE + queryKey.join("/")) — so the key must stay probed by default.
+ * But a query that supplies its own queryFn never lets that run, and then the key
+ * is a cache label and nothing more. smel (12) is the case: its bundle carries
+ * "/api/questionnaire" inside
+ *
+ *     {queryKey:["/api/questionnaire"],queryFn:()=>Yb()}
+ *
+ * and Yb is fetchQuestionnaire from client/src/lib/nadlanApi.ts, which requests
+ * <project>.supabase.co/rest/v1/questionnaire_templates. more30.com is never
+ * asked for /api/questionnaire, so probing it there can only return
+ * "absent_in_production" — the probe describing itself again. So a queryKey array
+ * whose enclosing options object also declares queryFn is skipped, per occurrence:
+ * the same path elsewhere in the bundle without a queryFn is still probed.
+ *
+ * The sibling search runs forward from the key array only. A queryFn written
+ * before its queryKey in the same object is therefore not recognised, and the
+ * cost of that is a probe that could have been skipped — never a bug that is
+ * hidden. The detector errs toward reporting.
+ *
  *   mount_prefix       root is not JSON, mounted is JSON. The route exists and
  *                      only the prefix is missing. This is #131 exactly.
  *   absent_in_production
@@ -147,6 +168,49 @@ const API_LITERAL = /["'`](\/api\/[^"'`\s]*)["'`]?/g;
 // own origin, so more30.com's answer for it means nothing.
 const ON_A_URL_PATHNAME = /\.pathname\s*=\s*$|pathname\s*\+\s*$/;
 
+// Skip past a quoted string starting at i, honouring backslash escapes, and
+// return the index just after its closing quote. Minified bundles put brackets
+// and braces inside strings, so a depth counter that does not do this drifts.
+const afterString = (text, i) => {
+  const q = text[i];
+  for (let j = i + 1; j < text.length; j++) {
+    if (text[j] === '\\') { j++; continue; }
+    if (text[j] === q) return j + 1;
+  }
+  return text.length;
+};
+
+// Index ranges of every queryKey:[...] array whose enclosing options object also
+// declares queryFn. A literal inside one of these is a cache label: the default
+// queryFn — the only thing that turns a key into a URL — does not run for it.
+const SHADOWED_KEY_WINDOW = 4000;
+const shadowedKeyRanges = (text) => {
+  const ranges = [];
+  for (const m of text.matchAll(/queryKey\s*:\s*\[/g)) {
+    const start = m.index + m[0].length - 1; // at the '['
+    let depth = 0, end = -1;
+    for (let i = start; i < text.length; i++) {
+      const ch = text[i];
+      if (ch === '"' || ch === "'" || ch === '`') { i = afterString(text, i) - 1; continue; }
+      if (ch === '[' || ch === '{' || ch === '(') depth++;
+      else if (ch === ']' || ch === '}' || ch === ')') { depth--; if (depth === 0) { end = i; break; } }
+    }
+    if (end < 0) continue;
+    // Walk the rest of the enclosing object for a sibling queryFn, stopping at
+    // the '}' that closes it.
+    let d = 0;
+    for (let j = end + 1; j < text.length && j < end + SHADOWED_KEY_WINDOW; j++) {
+      const ch = text[j];
+      if (ch === '"' || ch === "'" || ch === '`') { j = afterString(text, j) - 1; continue; }
+      else if (ch === '[' || ch === '{' || ch === '(') d++;
+      else if (ch === ']' || ch === ')') d--;
+      else if (ch === '}') { if (d === 0) break; d--; }
+      else if (d === 0 && text.startsWith('queryFn', j)) { ranges.push([start, end]); break; }
+    }
+  }
+  return ranges;
+};
+
 const scanClient = (a) => {
   const base = join(deployRoot, a.dir, a.outputDirectory === '.' ? '' : a.outputDirectory);
   if (!existsSync(base)) return { hits: [], skipped: [] };
@@ -156,8 +220,19 @@ const scanClient = (a) => {
     const rel = relative(join(deployRoot, a.dir), f).replace(/\\/g, '/');
     if (rel === 'api' || rel.startsWith('api/')) continue; // the function, not the browser
     const text = readFileSync(f, 'utf8');
+    const shadowed = shadowedKeyRanges(text);
     for (const m of text.matchAll(API_LITERAL)) {
       const before = text.slice(Math.max(0, m.index - 80), m.index);
+      const key = shadowed.find(([s, e]) => m.index >= s && m.index <= e);
+      if (key) {
+        skipped.push({
+          file: rel,
+          path: m[1],
+          reason: 'a react-query cache key whose query supplies its own queryFn — the default queryFn that would turn a key into a URL never runs, so more30.com is never asked for it',
+          context: text.slice(key[0], Math.min(key[1] + 40, text.length)).replace(/\s+/g, ' '),
+        });
+        continue;
+      }
       if (ON_A_URL_PATHNAME.test(before)) {
         skipped.push({
           file: rel,
@@ -209,8 +284,9 @@ for (const [mount, project] of [...mounts.entries()].sort()) {
   const scanned = scanClient(target);
   entry.client_hits = scanned.hits;
   entry.not_requested_from_root = scanned.skipped;
-  if (scanned.skipped.length) {
-    console.log(`  NOTE  ${mount}: ${scanned.skipped.length} literal(s) skipped — ${[...new Set(scanned.skipped.map((s) => s.path))].join(', ')} (${scanned.skipped[0].reason})`);
+  for (const reason of new Set(scanned.skipped.map((s) => s.reason))) {
+    const of = scanned.skipped.filter((s) => s.reason === reason);
+    console.log(`  NOTE  ${mount}: ${of.length} literal(s) skipped — ${[...new Set(of.map((s) => s.path))].join(', ')} (${reason})`);
   }
   if (entry.client_hits.length === 0) { ok(`${mount}: the shipped client names no /api path the browser asks more30.com for`); continue; }
 
@@ -223,11 +299,21 @@ for (const [mount, project] of [...mounts.entries()].sort()) {
     const asMounted = await get(`https://more30.com/${mount}${p}`);
     const shape = (r) => ({ status: r.status, type: r.type.split(';')[0], bytes: r.bytes });
     const isJson = (r) => r.status === 200 && r.type.includes('json');
+    const verdict = isJson(asShipped) ? 'served_at_root' : isJson(asMounted) ? 'mount_prefix' : 'absent_in_production';
     entry.probes.push({
       path: p,
       as_shipped: shape(asShipped),
       as_mounted: shape(asMounted),
-      verdict: isJson(asShipped) ? 'served_at_root' : isJson(asMounted) ? 'mount_prefix' : 'absent_in_production',
+      verdict,
+      // mount_prefix proves the route is served under the mount. It does not
+      // prove the shipped client fails to prefix it: studio applies its base at
+      // the call, so "/api/brands" reads bare in the bundle and still resolves
+      // to /studio/api/brands — which the regression lock below confirms. The
+      // verdict stays a failure because under-reporting a real #131 is the worse
+      // error, but it is a candidate and not a proof.
+      ...(verdict === 'mount_prefix'
+        ? { caveat: 'the route answers under the mount; a client that prefixes at the call site would already reach it, so this needs the call site read before it counts as a bug' }
+        : {}),
     });
   }
   const count = (v) => entry.probes.filter((p) => p.verdict === v).length;
@@ -238,7 +324,7 @@ for (const [mount, project] of [...mounts.entries()].sort()) {
     ok(`${mount}: every probed path is answered at more30.com (${entry.probes.length} probed)`);
   } else {
     const parts = [];
-    if (count('mount_prefix')) parts.push(`${count('mount_prefix')} need the /${mount} prefix`);
+    if (count('mount_prefix')) parts.push(`${count('mount_prefix')} answered only under /${mount} (candidate — read the call site)`);
     if (count('absent_in_production')) parts.push(`${count('absent_in_production')} answered by neither form`);
     bad(`${mount}: ${parts.join(', ')} — ${entry.client_hits.length} literal(s) in ${files.length} file(s), e.g. ${files[0]}`);
   }
