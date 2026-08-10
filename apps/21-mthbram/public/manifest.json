@@ -1,7 +1,7 @@
 {
   "name": "איגוד השיעורים",
   "short_name": "איגוד השיעורים",
-  "description": "הפלטפורמה המובילה לחיבור בין מגידי שיעור ולומדים",
+  "description": "מחברים בין מגידי שיעור ללומדים — שיעורי תורה, חברותות והרצאות",
   "start_url": "/mthbram/",
   "scope": "/mthbram/",
   "display": "standalone",

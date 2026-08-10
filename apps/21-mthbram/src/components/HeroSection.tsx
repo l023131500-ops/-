@@ -4,6 +4,14 @@ import { Link } from "react-router-dom";
 import heroMic from "@/assets/hero-microphone.png";
 import AIIcon from "@/components/ui/AIIcon";
 
+/**
+ * ⚠️ הרכיב הזה **אינו מורכב לשום מסלול** — נמדד ב-10/08/2026: `HeroSection`
+ * מיוצא כאן ואינו מיובא באף קובץ ב-`src/`, ואף אחד מ-20 המסלולים ב-`App.tsx`
+ * אינו מגיע אליו. הטקסטים שלו לא מופיעים ב-DOM של `/mthbram/` בבנייה
+ * (‏`index-bxKxiOtM.js`, נבדק ב-vite preview). הקופי כאן תוקן בכל זאת כדי
+ * שלא ישוכפל בחזרה אל משטח חי, אבל **תיקון כאן אינו משנה דבר למשתמש** —
+ * מי שמחפש את הטקסט של דף הבית יחפש ב-`src/pages/Index.tsx`.
+ */
 const HeroSection = () => {
   const actions = [
     {
@@ -105,7 +113,11 @@ const HeroSection = () => {
               className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-gold/15 border border-gold/30 text-gold text-sm font-body font-bold mb-6 shadow-lg"
             >
               <Star className="w-4 h-4 animate-pulse" />
-              הארגון העולמי של שיעורי התורה
+              {/* קופי (§6): «הארגון העולמי» היה טענה מוסדית שאין לה מדידה.
+                  התגית הוחלפה ולא נמחקה — היא נושאת את הכותרת שמתחתיה, וסלוט
+                  ריק כאן הוא שינוי פריסה. שלושת הפריטים הם בדיוק שלושת
+                  העמודים של ThreePillarsSection. */}
+              שיעורי תורה · חברותות · הרצאות
               <AIIcon size={18} variant="primary" />
             </motion.div>
 
@@ -124,7 +136,11 @@ const HeroSection = () => {
             </p>
 
             <p className="font-body text-base text-primary-foreground/50 max-w-2xl mx-auto md:mx-0 leading-relaxed hidden md:block">
-              מאגר שיעורי התורה הגדול בעולם • חיפוש חכם ומתקדם
+              {/* קופי (§6): «הגדול בעולם» הוא דירוג מדיד, ואיש לא מדד אותו —
+                  ומעל מאגר שמגיש 0 שיעורים מאושרים לציבור (‎lessons‎ עם
+                  ‎is_approved=true‎, נמדד ב-10/08) הוא גם נסתר בעמוד עצמו.
+                  במקומו: הסינונים שקיימים בפועל ב-LessonDirectory. */}
+              חיפוש לפי נושא, עיר, קהל יעד, סגנון ושפה • שיעורים מוקלטים ובשידור חי
             </p>
           </motion.div>
         </div>

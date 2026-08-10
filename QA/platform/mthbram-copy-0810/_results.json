@@ -1,0 +1,95 @@
+{
+  "at": "2026-08-10T16:05Z",
+  "system": "21-mthbram",
+  "mount": "https://more30.com/mthbram/",
+  "priority_section": "§6 — קופי, לא-גנרי",
+  "pattern_hunted": "תואר/דירוג שיווקי שאיש לא מדד, בתגית מותג / <title> / meta / פוטר — אותה צורה שנמצאה ב-smel בסבב הקודם",
+
+  "measured_before_touching": {
+    "source": "production HTML, ?cb=before2",
+    "title": "איגוד השיעורים — שיעורי תורה, חברותות והרצאות",
+    "meta_description": "הפלטפורמה המובילה לחיבור בין מגידי שיעור ולומדים. מצאו שיעורי תורה, חברותות והרצאות בכל נושא.",
+    "manifest_description": "הפלטפורמה המובילה לחיבור בין מגידי שיעור ולומדים",
+    "note": "המוגש בייצור זהה לתו למקור — אין פער בין _deploy למקור בקבצים האלה. נבדק, לא הונח."
+  },
+
+  "findings": [
+    {
+      "id": "leading-platform",
+      "claim": "«הפלטפורמה המובילה»",
+      "why_wrong": "דירוג מול מתחרים שאיש לא מדד ואין מקור למדוד בו",
+      "surfaces": 4,
+      "where": [
+        "index.html:14 meta[name=description]",
+        "index.html:29 og:description",
+        "index.html:30 twitter:description",
+        "public/manifest.json:4 description"
+      ],
+      "status": "fixed",
+      "replacement": "מחברים בין מגידי שיעור ללומדים: שיעורי תורה, חברותות והרצאות. חיפוש לפי נושא, עיר, קהל יעד ושפה.",
+      "why_this_text": "כל טוקן בו מצביע על משהו שקיים: שלושת הסוגים הם שלושת העמודים של ThreePillarsSection, וארבעת הסינונים הם filterCity/filterAudience/filterStyle/filterLanguage ב-src/pages/LessonDirectory.tsx:67-83."
+    },
+    {
+      "id": "largest-in-world",
+      "claim": "«מאגר שיעורי התורה הגדול בעולם»",
+      "why_wrong": "דירוג מדיד שלא נמדד — ומעל מאגר שמגיש 0 שיעורים לציבור הוא גם נסתר בעמוד עצמו",
+      "surfaces": 1,
+      "where": ["src/components/HeroSection.tsx:127"],
+      "status": "fixed-in-dead-code",
+      "replacement": "חיפוש לפי נושא, עיר, קהל יעד, סגנון ושפה • שיעורים מוקלטים ובשידור חי"
+    },
+    {
+      "id": "world-organization",
+      "claim": "«הארגון העולמי של שיעורי התורה»",
+      "why_wrong": "טענה מוסדית בלי מדידה",
+      "surfaces_total": 10,
+      "fixed_here": ["src/components/HeroSection.tsx:108 (רכיב מת — ראו למטה)"],
+      "still_open_on_live_surfaces": [
+        "src/components/LessonDetailModal.tsx:20 — טקסט השיתוף לוואטסאפ",
+        "src/components/LessonDetailModal.tsx:36 — ייצוא",
+        "src/lib/lessonImageExport.ts:130 — נצרב לתוך תמונת השיעור המיוצאת",
+        "src/pages/AdminDashboard.tsx:164 — ייצוא",
+        "src/pages/OrgPortal.tsx:436 — פוטר",
+        "src/pages/PublicOrgPage.tsx:275 — פוטר",
+        "src/pages/PublicRabbiPage.tsx:280 — פוטר",
+        "src/pages/PublicSynagoguePage.tsx:219 — פוטר",
+        "src/pages/RabbiPortal.tsx:350 — פוטר"
+      ],
+      "status": "open",
+      "note": "תשעת אלה חיים ולא נגעתי בהם בסבב הזה. שניים מהם אינם טקסט אלא תוכן מיוצא (קנבס + שיתוף), ולכן הם החלטה בפני עצמה ולא החלפת מחרוזת."
+    }
+  ],
+
+  "unrelated_finding_HeroSection_is_dead": {
+    "what": "src/components/HeroSection.tsx מיוצא ואינו מיובא באף קובץ ב-src/",
+    "how_measured": [
+      "חיפוש 'HeroSection' בכל ה-*.tsx החזיר רק את ההגדרה (שורה 7) ואת ה-export (שורה 205) — אפס יבואים",
+      "20 המסלולים ב-App.tsx נקראו; אף אחד אינו מגיע אליו",
+      "ב-vite preview על הבנייה: document.body.innerText אינו מכיל לא את הטקסט הישן ולא את החדש"
+    ],
+    "consequence": "שתי ההחלפות ב-HeroSection נכונות כקופי ואינן משנות דבר למשתמש. נרשם בראש הקובץ כדי שסבב הבא לא יבזבז עליו זמן."
+  },
+
+  "empty_directory": {
+    "what": "מאגר השיעורים הציבורי ריק",
+    "measured": "REST עם מפתח האנון של האפליקציה: lessons → Content-Range */0. אותו מפתח בדיוק שהדפדפן שולח.",
+    "in_the_page": "«0 שיעורים» ו«עדיין אין שיעורים במאגר» — after-localbuild-directory-empty.png",
+    "not_claimed": "לא נבדק אם RLS מסתיר שורות ממשתמש אנונימי או שהטבלה ריקה בפועל. מה שנמדד הוא מה שהציבור רואה, וזה 0."
+  },
+
+  "verified_after": {
+    "build": "dist/assets/index-bxKxiOtM.js (vite build, 3048 modules)",
+    "how": "vite preview על הבנייה, http://localhost:4181/mthbram/, 1280×900",
+    "dom_meta_description": "מחברים בין מגידי שיעור ללומדים: שיעורי תורה, חברותות והרצאות. חיפוש לפי נושא, עיר, קהל יעד ושפה.",
+    "title_unchanged": "איגוד השיעורים — שיעורי תורה, חברותות והרצאות",
+    "grep_caveat": "לא לאמת מחרוזות עברית ב-JS הבנוי עם Select-String — esbuild מברֵח חלק מהתווים ל-\\uXXXX, ולכן 'נעדר מה-dist' שם אינו ראיה. האימות כאן הוא DOM חי."
+  },
+
+  "not_deployed": {
+    "reason": "מכסת הפריסה חסומה עד ~00:11Z 11/08 (core.issues #83)",
+    "state": "dist נבנה ולא הועתק אל _deploy — ההעתקה תיעשה בסבב שמקבל משבצת, אחרי השוואה מול החי"
+  },
+
+  "protected_untouched": ["08", "09", "bkalut-app", "bkalot-admin", "zr_*", "NEDARIM3873"],
+  "test_mode": "לא נשלחה הודעה, לא בוצע חיוב"
+}
