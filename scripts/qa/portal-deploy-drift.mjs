@@ -30,7 +30,7 @@
  *
  *   node scripts/qa/portal-deploy-drift.mjs [--after]
  */
-import { readFile, readdir, mkdir, writeFile } from 'node:fs/promises';
+import { readFile, readdir, mkdir, writeFile, stat } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 
 const AFTER = process.argv.includes('--after');
@@ -98,6 +98,25 @@ const MARKERS = [
   ['d004dab', '/me', 'more30-return-to', 'כתובת החזרה אל תוך המערכת'],
 ];
 
+/**
+ * נכס בינארי — לא נקרא כטקסט ולא מושווה בייטים.
+ *
+ * נמדד ב-10/08, כששלושת קובצי האייקון נכנסו ל-portal/public: נטפרי אינה
+ * מעבירה תמונה כמות שהיא. `favicon.svg` חזר 806 בייטים מהמקור ו-2842 כאן,
+ * בטיפוס image/webp; `apple-touch-icon.png` חזר 4477 מול 13850; ו-`favicon.ico`
+ * חזר 418 עם גוף בן 76 בייטים במקום 200. שלושתם נכונים בייצור — נמדדו
+ * שרת-צד ב-200 עם image/vnd.microsoft.icon ו-image/svg+xml באורכים המדויקים
+ * של העץ. כלומר ההפרש הוא הרשת שבדרך, לא הפריסה.
+ *
+ * לכן השוואת בייטים ובדיקת 200 מדלגות עליהם: שומר שנצבע אדום בגלל המתווך
+ * שבדרך מלמד להתעלם ממנו, וזה בדיוק מה שהוא אמור לתפוס. הם עדיין נספרים
+ * ב"כל קובץ נמדד" ומדווחים ב-_results תחת unverifiable_here, כדי שהדילוג
+ * יהיה גלוי ולא שקט. אימות בינארי אמיתי דורש קריאה שאינה עוברת כאן.
+ */
+const isBinary = (f) => /\.(png|ico|jpe?g|gif|webp|avif|svg|woff2?|ttf|otf|mp[34]|pdf)$/i.test(f);
+// `svg` ברשימה למרות שהוא טקסט: נטפרי ממירה גם אותו ל-webp, ולכן מה שמגיע
+// לכאן אינו הקובץ אלא תמונה שנוצרה ממנו. אין כאן מה להשוות תו מול תו.
+
 /** שלוש שורות שהרשת הזאת מזריקה לכל תשובה, ואינן חלק מהפריסה. */
 const stripNetFree = (html) =>
   html
@@ -128,6 +147,14 @@ for (const [route, file] of [...ROUTES, ...ASSETS]) {
     rows.push({ route, file, status: 0, error: e.message });
     continue;
   }
+  if (isBinary(file)) {
+    rows.push({
+      route, file, status, binary: true,
+      tree_bytes: (await stat(`${PUBLIC}/${file}`)).size,
+      note: 'binary — not comparable through this network',
+    });
+    continue;
+  }
   const tree = norm(await readFile(`${PUBLIC}/${file}`, 'utf8'));
   rows.push({
     route, file, status,
@@ -142,15 +169,20 @@ for (const [route, file] of [...ROUTES, ...ASSETS]) {
 console.log(`\nהפורטל — ${rows.length} קבצים מוגשים, ${AFTER ? 'אחרי' : 'לפני'} הפריסה\n`);
 for (const r of rows) {
   console.log(
-    `  ${r.identical ? 'חי  ' : 'ישן '} ${r.route.padEnd(20)} ` +
-    `live ${String(r.live_bytes ?? 0).padStart(6)}  tree ${String(r.tree_bytes ?? 0).padStart(6)}`,
+    `  ${r.binary ? 'בינ׳' : r.identical ? 'חי  ' : 'ישן '} ${r.route.padEnd(20)} ` +
+    `live ${String(r.binary ? '—' : r.live_bytes ?? 0).padStart(6)}  tree ${String(r.tree_bytes ?? 0).padStart(6)}`,
   );
 }
 
-const stale = rows.filter((r) => !r.identical);
+/** מה שהושווה בפועל — בלי הבינאריים, שהרשת שבדרך משכתבת. */
+const comparable = rows.filter((r) => !r.binary);
+const skipped = rows.filter((r) => r.binary).map((r) => r.route);
+
+const stale = comparable.filter((r) => !r.identical);
 ok('every page the portal serves matches the file in the tree',
    stale.length === 0,
-   stale.length ? `${stale.length}/${rows.length} stale: ${stale.map((r) => r.route).join(', ')}` : 'none');
+   stale.length ? `${stale.length}/${comparable.length} stale: ${stale.map((r) => r.route).join(', ')}`
+                : `all ${comparable.length}${skipped.length ? ` (${skipped.length} binary skipped: ${skipped.join(', ')})` : ''}`);
 
 /**
  * שתי בדיקות ששומרות על השומר עצמו. הן אינן על הפער בין העץ לייצור אלא על
@@ -169,10 +201,10 @@ ok('every rewrite destination in vercel.dist.json exists in the tree',
  * השנייה: עמוד שנמדד וענה משהו שאינו 200. השוואת הבייטים למעלה משווה גם שני
  * גופי שגיאה זהים ועוברת, ולכן היא לבדה אינה יודעת להבחין בין "מוגש" ל"נפל".
  */
-const notOk = rows.filter((r) => r.status !== 200).map((r) => `${r.route} (${r.status})`);
+const notOk = comparable.filter((r) => r.status !== 200).map((r) => `${r.route} (${r.status})`);
 ok('every page the portal serves answers 200',
    notOk.length === 0,
-   notOk.length ? notOk.join(', ') : `all ${rows.length}`);
+   notOk.length ? notOk.join(', ') : `all ${comparable.length}`);
 
 /**
  * השלישית, וזו שהייתה תופסת את sitemap.xml: קובץ שיושב ב-portal/public ואף
@@ -213,6 +245,7 @@ await writeFile(
     asset_files: ASSETS.map(([, f]) => f),
     routes: rows,
     stale: stale.map((r) => r.route),
+    unverifiable_here: skipped,
     dangling_rewrites: dangling,
     not_200: notOk,
     unmeasured_files: unmeasured,
@@ -221,6 +254,8 @@ await writeFile(
       pass, fail,
       stale: stale.length,
       served: rows.length,
+      compared: comparable.length,
+      binary_skipped: skipped.length,
       html_files: FILES.length,
       asset_files: ASSETS.length,
       public_files: ALL_FILES.length,

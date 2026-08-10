@@ -26,7 +26,10 @@
     "system.html"
   ],
   "asset_files": [
+    "apple-touch-icon.png",
     "auth-button.js",
+    "favicon.ico",
+    "favicon.svg",
     "robots.txt",
     "sitemap.xml"
   ],
@@ -35,10 +38,10 @@
       "route": "/login",
       "file": "login.html",
       "status": 200,
-      "live_bytes": 21915,
-      "tree_bytes": 21915,
-      "live_sha": "c64b556d8872",
-      "tree_sha": "c64b556d8872",
+      "live_bytes": 22105,
+      "tree_bytes": 22105,
+      "live_sha": "2cfb50bc1b01",
+      "tree_sha": "2cfb50bc1b01",
       "identical": true
     },
     {
@@ -55,171 +58,179 @@
       "route": "/me",
       "file": "me.html",
       "status": 200,
-      "live_bytes": 19278,
-      "tree_bytes": 19278,
-      "live_sha": "2034ca7258a7",
-      "tree_sha": "2034ca7258a7",
+      "live_bytes": 19468,
+      "tree_bytes": 19468,
+      "live_sha": "8d03f946d54c",
+      "tree_sha": "8d03f946d54c",
       "identical": true
     },
     {
       "route": "/subscribe",
       "file": "subscribe.html",
       "status": 200,
-      "live_bytes": 19000,
-      "tree_bytes": 19000,
-      "live_sha": "aa3b7dc735e4",
-      "tree_sha": "aa3b7dc735e4",
+      "live_bytes": 19190,
+      "tree_bytes": 19190,
+      "live_sha": "a76826161013",
+      "tree_sha": "a76826161013",
       "identical": true
     },
     {
       "route": "/admin/activity",
       "file": "admin-activity.html",
       "status": 200,
-      "live_bytes": 15131,
-      "tree_bytes": 15131,
-      "live_sha": "d50782106378",
-      "tree_sha": "d50782106378",
+      "live_bytes": 15321,
+      "tree_bytes": 15321,
+      "live_sha": "611bf90e24e6",
+      "tree_sha": "611bf90e24e6",
       "identical": true
     },
     {
       "route": "/admin/pricing",
       "file": "admin-pricing.html",
       "status": 200,
-      "live_bytes": 21784,
-      "tree_bytes": 21784,
-      "live_sha": "cf93f284f6ed",
-      "tree_sha": "cf93f284f6ed",
+      "live_bytes": 21974,
+      "tree_bytes": 21974,
+      "live_sha": "1206029c2ebb",
+      "tree_sha": "1206029c2ebb",
       "identical": true
     },
     {
       "route": "/admin/systems",
       "file": "admin-systems.html",
       "status": 200,
-      "live_bytes": 24233,
-      "tree_bytes": 24233,
-      "live_sha": "9ebcfd63bbd4",
-      "tree_sha": "9ebcfd63bbd4",
+      "live_bytes": 24423,
+      "tree_bytes": 24423,
+      "live_sha": "78741611d561",
+      "tree_sha": "78741611d561",
       "identical": true
     },
     {
       "route": "/admin/customers",
       "file": "admin-customers.html",
       "status": 200,
-      "live_bytes": 14708,
-      "tree_bytes": 14708,
-      "live_sha": "ada279a086b4",
-      "tree_sha": "ada279a086b4",
+      "live_bytes": 14898,
+      "tree_bytes": 14898,
+      "live_sha": "5bdc35d09a92",
+      "tree_sha": "5bdc35d09a92",
       "identical": true
     },
     {
       "route": "/admin/automation",
       "file": "admin-automation.html",
       "status": 200,
-      "live_bytes": 15635,
-      "tree_bytes": 15635,
-      "live_sha": "633bd8fe6d37",
-      "tree_sha": "633bd8fe6d37",
+      "live_bytes": 15825,
+      "tree_bytes": 15825,
+      "live_sha": "6e7c7b27bb54",
+      "tree_sha": "6e7c7b27bb54",
       "identical": true
     },
     {
       "route": "/admin/credits",
       "file": "admin-credits.html",
       "status": 200,
-      "live_bytes": 12601,
-      "tree_bytes": 12601,
-      "live_sha": "9c5f9ec4db31",
-      "tree_sha": "9c5f9ec4db31",
+      "live_bytes": 12791,
+      "tree_bytes": 12791,
+      "live_sha": "de892f22df94",
+      "tree_sha": "de892f22df94",
       "identical": true
     },
     {
       "route": "/admin/issues",
       "file": "admin-issues.html",
       "status": 200,
-      "live_bytes": 14807,
-      "tree_bytes": 14807,
-      "live_sha": "e42e40208143",
-      "tree_sha": "e42e40208143",
+      "live_bytes": 14997,
+      "tree_bytes": 14997,
+      "live_sha": "26d8d5010372",
+      "tree_sha": "26d8d5010372",
       "identical": true
     },
     {
       "route": "/admin/leads",
       "file": "admin-leads.html",
       "status": 200,
-      "live_bytes": 17950,
-      "tree_bytes": 17950,
-      "live_sha": "28212148e9f9",
-      "tree_sha": "28212148e9f9",
+      "live_bytes": 18140,
+      "tree_bytes": 18140,
+      "live_sha": "9795ae9703e1",
+      "tree_sha": "9795ae9703e1",
       "identical": true
     },
     {
       "route": "/admin/rights",
       "file": "admin-rights.html",
       "status": 200,
-      "live_bytes": 11333,
-      "tree_bytes": 11333,
-      "live_sha": "2d87be2ddc44",
-      "tree_sha": "2d87be2ddc44",
+      "live_bytes": 11523,
+      "tree_bytes": 11523,
+      "live_sha": "f1cd23f3580a",
+      "tree_sha": "f1cd23f3580a",
       "identical": true
     },
     {
       "route": "/admin/kesef",
       "file": "admin-kesef.html",
       "status": 200,
-      "live_bytes": 16121,
-      "tree_bytes": 16121,
-      "live_sha": "4eb250302dc5",
-      "tree_sha": "4eb250302dc5",
+      "live_bytes": 16311,
+      "tree_bytes": 16311,
+      "live_sha": "93a1b20b392a",
+      "tree_sha": "93a1b20b392a",
       "identical": true
     },
     {
       "route": "/admin/imud",
       "file": "admin-imud.html",
       "status": 200,
-      "live_bytes": 17084,
-      "tree_bytes": 17084,
-      "live_sha": "0b223c4d8b35",
-      "tree_sha": "0b223c4d8b35",
+      "live_bytes": 17274,
+      "tree_bytes": 17274,
+      "live_sha": "0a9b7e0ce179",
+      "tree_sha": "0a9b7e0ce179",
       "identical": true
     },
     {
       "route": "/admin/studio",
       "file": "admin-studio.html",
       "status": 200,
-      "live_bytes": 20091,
-      "tree_bytes": 20091,
-      "live_sha": "8d93cf37395a",
-      "tree_sha": "8d93cf37395a",
+      "live_bytes": 20281,
+      "tree_bytes": 20281,
+      "live_sha": "c0b3d098f9e7",
+      "tree_sha": "c0b3d098f9e7",
       "identical": true
     },
     {
       "route": "/showcase",
       "file": "showcase.html",
       "status": 200,
-      "live_bytes": 7319,
-      "tree_bytes": 7319,
-      "live_sha": "ba41ea5acb2d",
-      "tree_sha": "ba41ea5acb2d",
+      "live_bytes": 7509,
+      "tree_bytes": 7509,
+      "live_sha": "b0d854f04b1e",
+      "tree_sha": "b0d854f04b1e",
       "identical": true
     },
     {
       "route": "/404.html",
       "file": "404.html",
       "status": 200,
-      "live_bytes": 4227,
-      "tree_bytes": 4227,
-      "live_sha": "3e5fe94d1c86",
-      "tree_sha": "3e5fe94d1c86",
+      "live_bytes": 4417,
+      "tree_bytes": 4417,
+      "live_sha": "2e1c8e71f28e",
+      "tree_sha": "2e1c8e71f28e",
       "identical": true
     },
     {
       "route": "/system.html",
       "file": "system.html",
       "status": 200,
-      "live_bytes": 18926,
-      "tree_bytes": 18926,
-      "live_sha": "1c9dc0abc1b4",
-      "tree_sha": "1c9dc0abc1b4",
+      "live_bytes": 19116,
+      "tree_bytes": 19116,
+      "live_sha": "dfb8f7bf17ba",
+      "tree_sha": "dfb8f7bf17ba",
       "identical": true
+    },
+    {
+      "route": "/apple-touch-icon.png",
+      "file": "apple-touch-icon.png",
+      "status": 200,
+      "binary": true,
+      "tree_bytes": 4477,
+      "note": "binary — not comparable through this network"
     },
     {
       "route": "/auth-button.js",
@@ -230,6 +241,22 @@
       "live_sha": "99f4f0810025",
       "tree_sha": "99f4f0810025",
       "identical": true
+    },
+    {
+      "route": "/favicon.ico",
+      "file": "favicon.ico",
+      "status": 418,
+      "binary": true,
+      "tree_bytes": 805,
+      "note": "binary — not comparable through this network"
+    },
+    {
+      "route": "/favicon.svg",
+      "file": "favicon.svg",
+      "status": 200,
+      "binary": true,
+      "tree_bytes": 806,
+      "note": "binary — not comparable through this network"
     },
     {
       "route": "/robots.txt",
@@ -253,6 +280,11 @@
     }
   ],
   "stale": [],
+  "unverifiable_here": [
+    "/apple-touch-icon.png",
+    "/favicon.ico",
+    "/favicon.svg"
+  ],
   "dangling_rewrites": [],
   "not_200": [],
   "unmeasured_files": [],
@@ -261,16 +293,18 @@
     "pass": 5,
     "fail": 0,
     "stale": 0,
-    "served": 22,
+    "served": 25,
+    "compared": 22,
+    "binary_skipped": 3,
     "html_files": 19,
-    "asset_files": 3,
-    "public_files": 22
+    "asset_files": 6,
+    "public_files": 25
   },
   "checks": [
     {
       "check": "every page the portal serves matches the file in the tree",
       "pass": true,
-      "detail": "none"
+      "detail": "all 22 (3 binary skipped: /apple-touch-icon.png, /favicon.ico, /favicon.svg)"
     },
     {
       "check": "every rewrite destination in vercel.dist.json exists in the tree",
@@ -285,7 +319,7 @@
     {
       "check": "every file under portal/public is measured by one of the routes above",
       "pass": true,
-      "detail": "all 22"
+      "detail": "all 25"
     },
     {
       "check": "every committed fix on those pages is the one production serves",
