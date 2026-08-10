@@ -106,6 +106,21 @@
  *                      address answered with express's "Cannot GET <path>". The
  *                      route is served under the mount; same candidate standing
  *                      as mount_prefix, and for the same reason.
+ *   reached_mount_function
+ *                      the mounted address answered JSON that names the path
+ *                      back. Only a server that received the request there can
+ *                      do that: the portal's 404 is text/plain and an SPA shell
+ *                      is text/html, and neither echoes the path. So the prefix
+ *                      arrived and the deployment refused the route itself.
+ *                      mechiron (27) is the case — its six /api/admin/* answer
+ *                      {"message":"not found","path":"admin/…"} under /mechiron,
+ *                      which is _deploy/mechiron-more30/api/index.ts's own
+ *                      terminal 404. That handler says in its header that admin
+ *                      routes are deliberately absent, because the origin app
+ *                      gates them on an "admin." hostname this deployment never
+ *                      has (apps/27-bkalut-price/server/routes.ts:858). Not a
+ *                      prefix bug; whether the admin screen should be reachable
+ *                      at all is core.issues #115.
  *   absent_in_production
  *                      neither form is JSON. The route is not served at all —
  *                      usually an SPA fallback answering 200 text/html, which
@@ -333,6 +348,13 @@ for (const [mount, project] of [...mounts.entries()].sort()) {
     // portal's 404 and an SPA shell do not, so this only matches a server that
     // received the request at this exact address.
     const expressMissedVerb = (r, at) => r.status === 404 && r.body.includes(`Cannot GET ${at}`);
+    // The same argument in the other shape. A function that answers JSON and
+    // names the path back received the request at this address and refused it
+    // itself. The portal's 404 is text/plain and an SPA shell is text/html, and
+    // neither can echo the path, so this cannot be a routing miss above the
+    // system — which is exactly what a missing prefix would be.
+    const declinedByOwnFunction = (r) =>
+      r.type.includes('json') && (r.body.includes(p) || r.body.includes(p.replace(/^\/api\//, '')));
     const verdict = isJson(asShipped)
       ? 'served_at_root'
       : isJson(asMounted)
@@ -341,7 +363,9 @@ for (const [mount, project] of [...mounts.entries()].sort()) {
           ? 'mount_other_method'
           : otherVerb && expressMissedVerb(asShipped, p)
             ? 'served_at_root'
-            : 'absent_in_production';
+            : declinedByOwnFunction(asMounted)
+              ? 'reached_mount_function'
+              : 'absent_in_production';
     entry.probes.push({
       path: p,
       as_shipped: shape(asShipped),
@@ -360,6 +384,12 @@ for (const [mount, project] of [...mounts.entries()].sort()) {
       ...(verdict === 'mount_prefix'
         ? { caveat: 'the route answers under the mount; a client that prefixes at the call site would already reach it, so this needs the call site read before it counts as a bug' }
         : {}),
+      // Not a #131 candidate, and not silence either: the paths are named in
+      // the NOTE below and carried in the results file. Whether the refusal is
+      // right is a question for the system's own issue, not for the prefix.
+      ...(verdict === 'reached_mount_function'
+        ? { caveat: `the mounted address reached ${mount}'s own API function, which answered ${asMounted.status} JSON naming the path back. The prefix works; this deployment does not carry the route` }
+        : {}),
     });
   }
   const count = (v) => entry.probes.filter((p) => p.verdict === v).length;
@@ -367,12 +397,18 @@ for (const [mount, project] of [...mounts.entries()].sort()) {
     served_at_root: count('served_at_root'),
     mount_prefix: count('mount_prefix'),
     mount_other_method: count('mount_other_method'),
+    reached_mount_function: count('reached_mount_function'),
     absent_in_production: count('absent_in_production'),
   };
   const files = [...new Set(entry.client_hits.map((h) => h.file))];
 
+  if (count('reached_mount_function')) {
+    const named = entry.probes.filter((x) => x.verdict === 'reached_mount_function').map((x) => x.path);
+    console.log(`  NOTE  ${mount}: ${named.length} path(s) reached the mount's own function and were refused there, so the prefix is not the question — ${named.join(', ')}`);
+  }
+
   if (count('mount_prefix') === 0 && count('mount_other_method') === 0 && count('absent_in_production') === 0) {
-    ok(`${mount}: every probed path is answered at more30.com (${entry.probes.length} probed)`);
+    ok(`${mount}: every probed path is answered at more30.com or refused by the mount's own function (${entry.probes.length} probed)`);
   } else {
     const parts = [];
     if (count('mount_prefix')) parts.push(`${count('mount_prefix')} answered only under /${mount} (candidate — read the call site)`);

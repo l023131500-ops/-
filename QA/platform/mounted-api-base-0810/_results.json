@@ -1,5 +1,5 @@
 {
-  "measured_at": "2026-08-10T10:48:42.271Z",
+  "measured_at": "2026-08-10T10:56:15.455Z",
   "mounts": {
     "admin": {
       "project": "nihul-more30",
@@ -339,6 +339,7 @@
         "served_at_root": 0,
         "mount_prefix": 0,
         "mount_other_method": 0,
+        "reached_mount_function": 0,
         "absent_in_production": 3
       }
     },
@@ -467,6 +468,7 @@
         "served_at_root": 2,
         "mount_prefix": 0,
         "mount_other_method": 0,
+        "reached_mount_function": 0,
         "absent_in_production": 2
       }
     },
@@ -1847,8 +1849,9 @@
             "type": "application/json",
             "bytes": 53
           },
-          "verdict": "absent_in_production",
-          "client_method": "POST"
+          "verdict": "reached_mount_function",
+          "client_method": "POST",
+          "caveat": "the mounted address reached mechiron's own API function, which answered 404 JSON naming the path back. The prefix works; this deployment does not carry the route"
         },
         {
           "path": "/api/admin/api-access",
@@ -1862,8 +1865,9 @@
             "type": "application/json",
             "bytes": 49
           },
-          "verdict": "absent_in_production",
-          "client_method": "PATCH"
+          "verdict": "reached_mount_function",
+          "client_method": "PATCH",
+          "caveat": "the mounted address reached mechiron's own API function, which answered 404 JSON naming the path back. The prefix works; this deployment does not carry the route"
         },
         {
           "path": "/api/admin/api-access/clear",
@@ -1877,8 +1881,9 @@
             "type": "application/json",
             "bytes": 55
           },
-          "verdict": "absent_in_production",
-          "client_method": "POST"
+          "verdict": "reached_mount_function",
+          "client_method": "POST",
+          "caveat": "the mounted address reached mechiron's own API function, which answered 404 JSON naming the path back. The prefix works; this deployment does not carry the route"
         },
         {
           "path": "/api/admin/api-access/rotate",
@@ -1892,8 +1897,9 @@
             "type": "application/json",
             "bytes": 56
           },
-          "verdict": "absent_in_production",
-          "client_method": "POST"
+          "verdict": "reached_mount_function",
+          "client_method": "POST",
+          "caveat": "the mounted address reached mechiron's own API function, which answered 404 JSON naming the path back. The prefix works; this deployment does not carry the route"
         },
         {
           "path": "/api/admin/automations",
@@ -1907,7 +1913,8 @@
             "type": "application/json",
             "bytes": 50
           },
-          "verdict": "absent_in_production"
+          "verdict": "reached_mount_function",
+          "caveat": "the mounted address reached mechiron's own API function, which answered 404 JSON naming the path back. The prefix works; this deployment does not carry the route"
         },
         {
           "path": "/api/admin/catalog-settings",
@@ -1921,8 +1928,9 @@
             "type": "application/json",
             "bytes": 55
           },
-          "verdict": "absent_in_production",
-          "client_method": "PATCH"
+          "verdict": "reached_mount_function",
+          "client_method": "PATCH",
+          "caveat": "the mounted address reached mechiron's own API function, which answered 404 JSON naming the path back. The prefix works; this deployment does not carry the route"
         }
       ],
       "live_document": {
@@ -1938,7 +1946,8 @@
         "served_at_root": 0,
         "mount_prefix": 0,
         "mount_other_method": 0,
-        "absent_in_production": 6
+        "reached_mount_function": 6,
+        "absent_in_production": 0
       }
     },
     "modaot": {
@@ -2348,6 +2357,7 @@
         "served_at_root": 0,
         "mount_prefix": 1,
         "mount_other_method": 5,
+        "reached_mount_function": 0,
         "absent_in_production": 0
       }
     },
@@ -2455,6 +2465,7 @@
     "chatzor: the shipped client names no /api path the browser asks more30.com for",
     "egod: the shipped client names no /api path the browser asks more30.com for",
     "galil: the shipped client names no /api path the browser asks more30.com for",
+    "mechiron: every probed path is answered at more30.com or refused by the mount's own function (6 probed)",
     "mthbram: the shipped client names no /api path the browser asks more30.com for",
     "smachot: the shipped client names no /api path the browser asks more30.com for",
     "smel: the shipped client names no /api path the browser asks more30.com for",
@@ -2465,7 +2476,6 @@
   "fail": [
     "imud: 3 answered by neither form — 14 literal(s) in 1 file(s), e.g. imud/assets/index-7IQk_wi0.js",
     "kupot: 2 answered by neither form — 5 literal(s) in 1 file(s), e.g. kupot/assets/index-BlT4DUpe.js",
-    "mechiron: 6 answered by neither form — 303 literal(s) in 1 file(s), e.g. public/mechiron/assets/index-DcMphBNb.js",
     "studio: 1 answered only under /studio (candidate — read the call site), 5 served under /studio for the verb the client sends (candidate — read the call site) — 33 literal(s) in 8 file(s), e.g. public/studio/assets/BrandingBrief-DlnSH3li.js"
   ]
 }
