@@ -106,6 +106,17 @@
  *                      address answered with express's "Cannot GET <path>". The
  *                      route is served under the mount; same candidate standing
  *                      as mount_prefix, and for the same reason.
+ *   prefixed_at_call_site
+ *                      one of those two, with the call site read. Both say the
+ *                      route answers under the mount and neither says whether the
+ *                      shipped client gets there, because the prefix is applied at
+ *                      the call and never written into the literal. readCallSite
+ *                      resolves the identifier the fetch template opens with —
+ *                      fetch(`${em}${o}`), where em is "/studio/" stripped of its
+ *                      trailing slash, Vite's BASE_URL inlined at build time — and
+ *                      when it equals /<mount> and no fetch() in the client passes
+ *                      /api bare, the literal leaves the browser mounted. That is
+ *                      not a bug, and studio (26) is the whole of it today.
  *   reached_mount_function
  *                      the mounted address answered JSON that names the path
  *                      back. Only a server that received the request there can
@@ -251,15 +262,24 @@ const shadowedKeyRanges = (text) => {
   return ranges;
 };
 
-const scanClient = (a) => {
+// The browser-side files of an artifact: everything the outputDirectory ships
+// minus api/, which is the function and not the client.
+const clientTexts = (a) => {
   const base = join(deployRoot, a.dir, a.outputDirectory === '.' ? '' : a.outputDirectory);
-  if (!existsSync(base)) return { hits: [], skipped: [] };
-  const hits = [];
-  const skipped = [];
+  if (!existsSync(base)) return [];
+  const out = [];
   for (const f of walk(base)) {
     const rel = relative(join(deployRoot, a.dir), f).replace(/\\/g, '/');
-    if (rel === 'api' || rel.startsWith('api/')) continue; // the function, not the browser
-    const text = readFileSync(f, 'utf8');
+    if (rel === 'api' || rel.startsWith('api/')) continue;
+    out.push({ rel, text: readFileSync(f, 'utf8') });
+  }
+  return out;
+};
+
+const scanClient = (a) => {
+  const hits = [];
+  const skipped = [];
+  for (const { rel, text } of clientTexts(a)) {
     const shadowed = shadowedKeyRanges(text);
     for (const m of text.matchAll(API_LITERAL)) {
       const before = text.slice(Math.max(0, m.index - 80), m.index);
@@ -287,6 +307,104 @@ const scanClient = (a) => {
     }
   }
   return { hits, skipped };
+};
+
+/* ---- the call site ------------------------------------------------------- */
+
+// mount_prefix and mount_other_method both prove the route is served under the
+// mount and neither proves the shipped client fails to reach it, because the
+// prefix is applied at the call and never written into the literal. Every run so
+// far has carried that as a caveat and said the call site has to be read. This
+// reads it.
+//
+// The two functions that issue requests in these bundles are apiRequest and the
+// default queryFn, and both build their URL the same way:
+//
+//     const wv = "/studio/".replace(/\/+$/, ""),
+//           em = "__PORT_5000__".startsWith("__") ? wv : "__PORT_5000__";
+//     fetch(`${em}${o}`, ...)                       // apiRequest
+//     fetch(`${em}${o.join("/")}`)                  // default queryFn
+//
+// So the question is decidable from the artifact: resolve the identifier the
+// fetch template opens with, and compare it to the mount. "/studio/" is Vite's
+// BASE_URL inlined at build time, which is why the fix in bbf2472 was to derive
+// the base from it — an unset VITE_API_BASE leaves the empty string instead, and
+// that is what kupot (28) and imud (04) shipped.
+//
+// A grant is only made when nothing else in the client asks for /api bare: a
+// single fetch("/api/…") anywhere in the browser files is a call site that skips
+// the base, so the artifact does not get the pass.
+
+const CLOSERS = { '(': ')', '[': ']', '{': '}' };
+
+// The expression starting at `from`, ending at the first `,` or `;` that is not
+// inside brackets or a string. Minified code puts both inside regex literals and
+// strings, so a plain split drifts.
+const readExpr = (text, from) => {
+  const stack = [];
+  for (let i = from; i < text.length; i++) {
+    const ch = text[i];
+    if (ch === '"' || ch === "'" || ch === '`') { i = afterString(text, i) - 1; continue; }
+    if (CLOSERS[ch]) { stack.push(CLOSERS[ch]); continue; }
+    if (ch === stack[stack.length - 1]) { stack.pop(); continue; }
+    if (!stack.length && (ch === ',' || ch === ';' || ch === '\n')) return text.slice(from, i);
+  }
+  return text.slice(from, from + 400);
+};
+
+const STR = /^"([^"\\]*)"|^'([^'\\]*)'|^`([^`\\$]*)`/;
+
+// Only the forms these bundles actually produce are evaluated. Anything else
+// returns null and the artifact gets no grant — the detector errs toward
+// reporting, as everywhere else in this script.
+const evalBase = (expr, resolve, depth = 0) => {
+  const e = expr.trim();
+  if (depth > 4) return null;
+  // "__PORT_5000__".startsWith("__") ? wv : "__PORT_5000__"  — a build-time
+  // placeholder that was never substituted, so the condition is statically true.
+  const ternary = /^(["'`])((?:(?!\1).)*)\1\.startsWith\((["'`])((?:(?!\3).)*)\3\)\s*\?\s*([^:]+):\s*(.+)$/.exec(e);
+  if (ternary) return evalBase(ternary[2].startsWith(ternary[4]) ? ternary[5] : ternary[6], resolve, depth + 1);
+  // "/studio/".replace(/\/+$/, "")
+  const trimmed = /^(["'`])((?:(?!\1).)*)\1\.replace\(\/\\\/\+\$\/\s*,\s*(["'`])\3\)$/.exec(e);
+  if (trimmed) return trimmed[2].replace(/\/+$/, '');
+  const lit = STR.exec(e);
+  if (lit && lit[0].length === e.length) return lit[1] ?? lit[2] ?? lit[3] ?? '';
+  if (/^[A-Za-z_$][\w$]*$/.test(e)) return resolve(e, depth + 1);
+  return null;
+};
+
+const readCallSite = (a, mount) => {
+  const files = clientTexts(a);
+  const out = { base: null, base_expression: null, base_file: null, bare_fetch_sites: [], prefixes_the_mount: false };
+
+  const resolve = (ident, depth = 0) => {
+    if (depth > 4) return null;
+    const decl = new RegExp(`[;,{}()\\s](?:const |let |var )?${ident.replace(/\$/g, '\\$')}\\s*=\\s*`, 'g');
+    for (const { rel, text } of files) {
+      for (const m of text.matchAll(decl)) {
+        const from = m.index + m[0].length;
+        const expr = readExpr(text, from);
+        const value = evalBase(expr, resolve, depth);
+        if (value !== null) {
+          if (out.base_expression === null) { out.base_expression = `${ident}=${expr.trim()}`.slice(0, 200); out.base_file = rel; }
+          return value;
+        }
+      }
+    }
+    return null;
+  };
+
+  for (const { rel, text } of files) {
+    for (const m of text.matchAll(/fetch\(\s*`\$\{([A-Za-z_$][\w$]*)\}/g)) {
+      const value = resolve(m[1]);
+      if (value !== null && out.base === null) out.base = value;
+    }
+    for (const m of text.matchAll(/fetch\(\s*["'`]\/api\//g)) {
+      out.bare_fetch_sites.push({ file: rel, context: text.slice(m.index, m.index + 60).replace(/\s+/g, ' ') });
+    }
+  }
+  out.prefixes_the_mount = out.base === `/${mount}` && out.bare_fetch_sites.length === 0;
+  return out;
 };
 
 /* ---- which artifact is live --------------------------------------------- */
@@ -325,6 +443,10 @@ for (const [mount, project] of [...mounts.entries()].sort()) {
   const scanned = scanClient(target);
   entry.client_hits = scanned.hits;
   entry.not_requested_from_root = scanned.skipped;
+  entry.call_site = readCallSite(target, mount);
+  if (entry.call_site.base !== null) {
+    console.log(`  NOTE  ${mount}: the client applies base ${JSON.stringify(entry.call_site.base)} at the call site (${entry.call_site.base_file}: ${entry.call_site.base_expression})${entry.call_site.bare_fetch_sites.length ? `, but ${entry.call_site.bare_fetch_sites.length} fetch() site(s) pass /api bare` : ''}`);
+  }
   for (const reason of new Set(scanned.skipped.map((s) => s.reason))) {
     const of = scanned.skipped.filter((s) => s.reason === reason);
     console.log(`  NOTE  ${mount}: ${of.length} literal(s) skipped — ${[...new Set(of.map((s) => s.path))].join(', ')} (${reason})`);
@@ -355,7 +477,7 @@ for (const [mount, project] of [...mounts.entries()].sort()) {
     // system — which is exactly what a missing prefix would be.
     const declinedByOwnFunction = (r) =>
       r.type.includes('json') && (r.body.includes(p) || r.body.includes(p.replace(/^\/api\//, '')));
-    const verdict = isJson(asShipped)
+    const reached = isJson(asShipped)
       ? 'served_at_root'
       : isJson(asMounted)
         ? 'mount_prefix'
@@ -366,6 +488,13 @@ for (const [mount, project] of [...mounts.entries()].sort()) {
             : declinedByOwnFunction(asMounted)
               ? 'reached_mount_function'
               : 'absent_in_production';
+    // Both candidate verdicts say the same thing — the route answers under the
+    // mount — and the call site is what decides whether the shipped client gets
+    // there. When it resolves the base to this mount and nothing asks bare, it
+    // does, and the candidate is not a bug.
+    const verdict = (reached === 'mount_prefix' || reached === 'mount_other_method') && entry.call_site.prefixes_the_mount
+      ? 'prefixed_at_call_site'
+      : reached;
     entry.probes.push({
       path: p,
       as_shipped: shape(asShipped),
@@ -390,6 +519,15 @@ for (const [mount, project] of [...mounts.entries()].sort()) {
       ...(verdict === 'reached_mount_function'
         ? { caveat: `the mounted address reached ${mount}'s own API function, which answered ${asMounted.status} JSON naming the path back. The prefix works; this deployment does not carry the route` }
         : {}),
+      // The call site settled it. Kept in the record with the reading that
+      // settled it, so the grant can be argued with rather than trusted.
+      ...(verdict === 'prefixed_at_call_site'
+        ? {
+            would_have_been: reached,
+            call_site: `${entry.call_site.base_file}: ${entry.call_site.base_expression}`,
+            caveat: `answers under /${mount}, and the shipped client resolves its fetch base to "${entry.call_site.base}" — so this literal leaves the browser as /${mount}${p} and the route is reached`,
+          }
+        : {}),
     });
   }
   const count = (v) => entry.probes.filter((p) => p.verdict === v).length;
@@ -397,10 +535,16 @@ for (const [mount, project] of [...mounts.entries()].sort()) {
     served_at_root: count('served_at_root'),
     mount_prefix: count('mount_prefix'),
     mount_other_method: count('mount_other_method'),
+    prefixed_at_call_site: count('prefixed_at_call_site'),
     reached_mount_function: count('reached_mount_function'),
     absent_in_production: count('absent_in_production'),
   };
   const files = [...new Set(entry.client_hits.map((h) => h.file))];
+
+  if (count('prefixed_at_call_site')) {
+    const named = entry.probes.filter((x) => x.verdict === 'prefixed_at_call_site').map((x) => x.path);
+    console.log(`  NOTE  ${mount}: ${named.length} path(s) answer under the mount and the client prefixes them at the call site, so they are reached — ${named.join(', ')}`);
+  }
 
   if (count('reached_mount_function')) {
     const named = entry.probes.filter((x) => x.verdict === 'reached_mount_function').map((x) => x.path);
@@ -408,7 +552,7 @@ for (const [mount, project] of [...mounts.entries()].sort()) {
   }
 
   if (count('mount_prefix') === 0 && count('mount_other_method') === 0 && count('absent_in_production') === 0) {
-    ok(`${mount}: every probed path is answered at more30.com or refused by the mount's own function (${entry.probes.length} probed)`);
+    ok(`${mount}: every probed path is reached by the shipped client or refused by the mount's own function (${entry.probes.length} probed)`);
   } else {
     const parts = [];
     if (count('mount_prefix')) parts.push(`${count('mount_prefix')} answered only under /${mount} (candidate — read the call site)`);

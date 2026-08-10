@@ -1,5 +1,5 @@
 {
-  "measured_at": "2026-08-10T10:56:15.455Z",
+  "measured_at": "2026-08-10T11:39:04.865Z",
   "mounts": {
     "admin": {
       "project": "nihul-more30",
@@ -34,7 +34,14 @@
       "staged_not_deployed": [
         "admin-more30",
         "nihul-more30"
-      ]
+      ],
+      "call_site": {
+        "base": null,
+        "base_expression": null,
+        "base_file": null,
+        "bare_fetch_sites": [],
+        "prefixes_the_mount": false
+      }
     },
     "bkalot": {
       "project": "bkalot-more30",
@@ -52,7 +59,14 @@
       },
       "staged_not_deployed": [
         "bkalot-more30"
-      ]
+      ],
+      "call_site": {
+        "base": "https://bieebmnmkffwbqlsfozh.supabase.co",
+        "base_expression": "SUPABASE_URL='https://bieebmnmkffwbqlsfozh.supabase.co'",
+        "base_file": "bkalot/app.js",
+        "bare_fetch_sites": [],
+        "prefixes_the_mount": false
+      }
     },
     "briut": {
       "project": "briut-more30",
@@ -70,7 +84,14 @@
       },
       "staged_not_deployed": [
         "briut-more30"
-      ]
+      ],
+      "call_site": {
+        "base": null,
+        "base_expression": null,
+        "base_file": null,
+        "bare_fetch_sites": [],
+        "prefixes_the_mount": false
+      }
     },
     "chatzor": {
       "project": "chatzor-more30",
@@ -106,7 +127,14 @@
           "index-Ce8_JRl3.css"
         ]
       },
-      "staged_not_deployed": []
+      "staged_not_deployed": [],
+      "call_site": {
+        "base": null,
+        "base_expression": null,
+        "base_file": null,
+        "bare_fetch_sites": [],
+        "prefixes_the_mount": false
+      }
     },
     "chizukim": {
       "project": "chizukim2-more30",
@@ -156,7 +184,14 @@
           "index-CCW5-dLB.css"
         ]
       },
-      "staged_not_deployed": []
+      "staged_not_deployed": [],
+      "call_site": {
+        "base": null,
+        "base_expression": null,
+        "base_file": null,
+        "bare_fetch_sites": [],
+        "prefixes_the_mount": false
+      }
     },
     "galil": {
       "project": "galil-more30",
@@ -188,7 +223,14 @@
           "index-amMzjW3O.css"
         ]
       },
-      "staged_not_deployed": []
+      "staged_not_deployed": [],
+      "call_site": {
+        "base": null,
+        "base_expression": null,
+        "base_file": null,
+        "bare_fetch_sites": [],
+        "prefixes_the_mount": false
+      }
     },
     "gesher": {
       "project": "gesher-more30",
@@ -208,71 +250,71 @@
       "live_artifact": "imud-more30",
       "client_hits": [
         {
-          "file": "imud/assets/index-7IQk_wi0.js",
+          "file": "public/imud/assets/index-7IQk_wi0.js",
           "path": "/api/books"
         },
         {
-          "file": "imud/assets/index-7IQk_wi0.js",
+          "file": "public/imud/assets/index-7IQk_wi0.js",
           "path": "/api/books/${s}",
           "method": "DELETE"
         },
         {
-          "file": "imud/assets/index-7IQk_wi0.js",
+          "file": "public/imud/assets/index-7IQk_wi0.js",
           "path": "/api/books"
         },
         {
-          "file": "imud/assets/index-7IQk_wi0.js",
+          "file": "public/imud/assets/index-7IQk_wi0.js",
           "path": "/api/books",
           "method": "POST"
         },
         {
-          "file": "imud/assets/index-7IQk_wi0.js",
+          "file": "public/imud/assets/index-7IQk_wi0.js",
           "path": "/api/books"
         },
         {
-          "file": "imud/assets/index-7IQk_wi0.js",
+          "file": "public/imud/assets/index-7IQk_wi0.js",
           "path": "/api/meta"
         },
         {
-          "file": "imud/assets/index-7IQk_wi0.js",
+          "file": "public/imud/assets/index-7IQk_wi0.js",
           "path": "/api/wizard/infer",
           "method": "POST"
         },
         {
-          "file": "imud/assets/index-7IQk_wi0.js",
+          "file": "public/imud/assets/index-7IQk_wi0.js",
           "path": "/api/books",
           "method": "POST"
         },
         {
-          "file": "imud/assets/index-7IQk_wi0.js",
+          "file": "public/imud/assets/index-7IQk_wi0.js",
           "path": "/api/books"
         },
         {
-          "file": "imud/assets/index-7IQk_wi0.js",
+          "file": "public/imud/assets/index-7IQk_wi0.js",
           "path": "/api/books"
         },
         {
-          "file": "imud/assets/index-7IQk_wi0.js",
+          "file": "public/imud/assets/index-7IQk_wi0.js",
           "path": "/api/meta",
           "method": "GET"
         },
         {
-          "file": "imud/assets/index-7IQk_wi0.js",
+          "file": "public/imud/assets/index-7IQk_wi0.js",
           "path": "/api/books/${t}",
           "method": "PATCH"
         },
         {
-          "file": "imud/assets/index-7IQk_wi0.js",
+          "file": "public/imud/assets/index-7IQk_wi0.js",
           "path": "/api/books"
         },
         {
-          "file": "imud/assets/index-7IQk_wi0.js",
+          "file": "public/imud/assets/index-7IQk_wi0.js",
           "path": "/api/books"
         }
       ],
       "not_requested_from_root": [
         {
-          "file": "imud/assets/index-7IQk_wi0.js",
+          "file": "public/imud/assets/index-7IQk_wi0.js",
           "path": "/api/meta",
           "reason": "a react-query cache key whose query supplies its own queryFn — the default queryFn that would turn a key into a URL never runs, so more30.com is never asked for it",
           "context": "[\"/api/meta\"],queryFn:async()=>{const U=await(await "
@@ -335,10 +377,18 @@
       "staged_not_deployed": [
         "imud2"
       ],
+      "call_site": {
+        "base": null,
+        "base_expression": null,
+        "base_file": null,
+        "bare_fetch_sites": [],
+        "prefixes_the_mount": false
+      },
       "verdict_counts": {
         "served_at_root": 0,
         "mount_prefix": 0,
         "mount_other_method": 0,
+        "prefixed_at_call_site": 0,
         "reached_mount_function": 0,
         "absent_in_production": 3
       }
@@ -464,10 +514,18 @@
       "staged_not_deployed": [
         "kupot2"
       ],
+      "call_site": {
+        "base": null,
+        "base_expression": null,
+        "base_file": null,
+        "bare_fetch_sites": [],
+        "prefixes_the_mount": false
+      },
       "verdict_counts": {
         "served_at_root": 2,
         "mount_prefix": 0,
         "mount_other_method": 0,
+        "prefixed_at_call_site": 0,
         "reached_mount_function": 0,
         "absent_in_production": 2
       }
@@ -1942,10 +2000,55 @@
         ]
       },
       "staged_not_deployed": [],
+      "call_site": {
+        "base": "",
+        "base_expression": "Un=\"__PORT_5000__\".startsWith(\"__\")?\"\":\"__PORT_5000__\"",
+        "base_file": "public/mechiron/assets/index-DcMphBNb.js",
+        "bare_fetch_sites": [
+          {
+            "file": "public/mechiron/assets/index-DcMphBNb.js",
+            "context": "fetch(\"/api/admin/login\",{method:\"POST\",headers:{\"Content-Ty"
+          },
+          {
+            "file": "public/mechiron/assets/index-DcMphBNb.js",
+            "context": "fetch(\"/api/admin/google/status\");if(!b.ok)throw new Error(\""
+          },
+          {
+            "file": "public/mechiron/assets/index-DcMphBNb.js",
+            "context": "fetch(\"/api/admin/google/status\");if(!n.ok)throw new Error(\""
+          },
+          {
+            "file": "public/mechiron/assets/index-DcMphBNb.js",
+            "context": "fetch(\"/api/public/potential/submit\",{method:\"POST\",headers:"
+          },
+          {
+            "file": "public/mechiron/assets/index-DcMphBNb.js",
+            "context": "fetch(\"/api/public/potential/submit\",{method:\"POST\",headers:"
+          },
+          {
+            "file": "public/mechiron/assets/index-DcMphBNb.js",
+            "context": "fetch(`/api/public/community/${encodeURIComponent(t)}`).then"
+          },
+          {
+            "file": "public/mechiron/assets/index-DcMphBNb.js",
+            "context": "fetch(`/api/public/community/${encodeURIComponent(t)}/submit"
+          },
+          {
+            "file": "public/mechiron/assets/index-DcMphBNb.js",
+            "context": "fetch(`/api/hf/public/search?${G(F).toString()}`)).json();s("
+          },
+          {
+            "file": "public/mechiron/assets/index-DcMphBNb.js",
+            "context": "fetch(\"/api/hf/public/meta\").then(F=>F.json()).then(F=>n(F))"
+          }
+        ],
+        "prefixes_the_mount": false
+      },
       "verdict_counts": {
         "served_at_root": 0,
         "mount_prefix": 0,
         "mount_other_method": 0,
+        "prefixed_at_call_site": 0,
         "reached_mount_function": 6,
         "absent_in_production": 0
       }
@@ -1989,7 +2092,14 @@
           "index-CIaqlLS4.css"
         ]
       },
-      "staged_not_deployed": []
+      "staged_not_deployed": [],
+      "call_site": {
+        "base": null,
+        "base_expression": null,
+        "base_file": null,
+        "bare_fetch_sites": [],
+        "prefixes_the_mount": false
+      }
     },
     "nadlan": {
       "project": "nadlan-more30",
@@ -2025,7 +2135,14 @@
       },
       "staged_not_deployed": [
         "smachot-more30"
-      ]
+      ],
+      "call_site": {
+        "base": null,
+        "base_expression": null,
+        "base_file": null,
+        "bare_fetch_sites": [],
+        "prefixes_the_mount": false
+      }
     },
     "smel": {
       "project": "smel-more30",
@@ -2051,7 +2168,14 @@
           "index-CF04gbI5.css"
         ]
       },
-      "staged_not_deployed": []
+      "staged_not_deployed": [],
+      "call_site": {
+        "base": "",
+        "base_expression": "J1=\"__PORT_5000__\".startsWith(\"__\")?\"\":\"__PORT_5000__\"",
+        "base_file": "smel/assets/index-BjP8VGql.js",
+        "bare_fetch_sites": [],
+        "prefixes_the_mount": false
+      }
     },
     "studio": {
       "project": "studio-more30",
@@ -2259,9 +2383,11 @@
             "type": "text/html",
             "bytes": 399
           },
-          "verdict": "mount_other_method",
+          "verdict": "prefixed_at_call_site",
           "client_method": "POST",
-          "caveat": "the client sends POST here; the mounted address answered with express's own \"Cannot GET\", so the route is served under /studio and only the probe's verb missed. Whether the client prefixes it is a call-site question, as with mount_prefix"
+          "would_have_been": "mount_other_method",
+          "call_site": "public/studio/assets/index-DN36X7rm.js: wv=\"/studio/\".replace(/\\/+$/,\"\")",
+          "caveat": "answers under /studio, and the shipped client resolves its fetch base to \"/studio\" — so this literal leaves the browser as /studio/api/ai/background and the route is reached"
         },
         {
           "path": "/api/ai/copy",
@@ -2275,9 +2401,11 @@
             "type": "text/html",
             "bytes": 393
           },
-          "verdict": "mount_other_method",
+          "verdict": "prefixed_at_call_site",
           "client_method": "POST",
-          "caveat": "the client sends POST here; the mounted address answered with express's own \"Cannot GET\", so the route is served under /studio and only the probe's verb missed. Whether the client prefixes it is a call-site question, as with mount_prefix"
+          "would_have_been": "mount_other_method",
+          "call_site": "public/studio/assets/index-DN36X7rm.js: wv=\"/studio/\".replace(/\\/+$/,\"\")",
+          "caveat": "answers under /studio, and the shipped client resolves its fetch base to \"/studio\" — so this literal leaves the browser as /studio/api/ai/copy and the route is reached"
         },
         {
           "path": "/api/branding/logo",
@@ -2291,9 +2419,11 @@
             "type": "text/html",
             "bytes": 399
           },
-          "verdict": "mount_other_method",
+          "verdict": "prefixed_at_call_site",
           "client_method": "POST",
-          "caveat": "the client sends POST here; the mounted address answered with express's own \"Cannot GET\", so the route is served under /studio and only the probe's verb missed. Whether the client prefixes it is a call-site question, as with mount_prefix"
+          "would_have_been": "mount_other_method",
+          "call_site": "public/studio/assets/index-DN36X7rm.js: wv=\"/studio/\".replace(/\\/+$/,\"\")",
+          "caveat": "answers under /studio, and the shipped client resolves its fetch base to \"/studio\" — so this literal leaves the browser as /studio/api/branding/logo and the route is reached"
         },
         {
           "path": "/api/branding/strategy",
@@ -2307,9 +2437,11 @@
             "type": "text/html",
             "bytes": 403
           },
-          "verdict": "mount_other_method",
+          "verdict": "prefixed_at_call_site",
           "client_method": "POST",
-          "caveat": "the client sends POST here; the mounted address answered with express's own \"Cannot GET\", so the route is served under /studio and only the probe's verb missed. Whether the client prefixes it is a call-site question, as with mount_prefix"
+          "would_have_been": "mount_other_method",
+          "call_site": "public/studio/assets/index-DN36X7rm.js: wv=\"/studio/\".replace(/\\/+$/,\"\")",
+          "caveat": "answers under /studio, and the shipped client resolves its fetch base to \"/studio\" — so this literal leaves the browser as /studio/api/branding/strategy and the route is reached"
         },
         {
           "path": "/api/branding/vectorize",
@@ -2323,9 +2455,11 @@
             "type": "text/html",
             "bytes": 404
           },
-          "verdict": "mount_other_method",
+          "verdict": "prefixed_at_call_site",
           "client_method": "POST",
-          "caveat": "the client sends POST here; the mounted address answered with express's own \"Cannot GET\", so the route is served under /studio and only the probe's verb missed. Whether the client prefixes it is a call-site question, as with mount_prefix"
+          "would_have_been": "mount_other_method",
+          "call_site": "public/studio/assets/index-DN36X7rm.js: wv=\"/studio/\".replace(/\\/+$/,\"\")",
+          "caveat": "answers under /studio, and the shipped client resolves its fetch base to \"/studio\" — so this literal leaves the browser as /studio/api/branding/vectorize and the route is reached"
         },
         {
           "path": "/api/brands",
@@ -2339,9 +2473,11 @@
             "type": "application/json",
             "bytes": 2
           },
-          "verdict": "mount_prefix",
+          "verdict": "prefixed_at_call_site",
           "client_method": "POST",
-          "caveat": "the route answers under the mount; a client that prefixes at the call site would already reach it, so this needs the call site read before it counts as a bug"
+          "would_have_been": "mount_prefix",
+          "call_site": "public/studio/assets/index-DN36X7rm.js: wv=\"/studio/\".replace(/\\/+$/,\"\")",
+          "caveat": "answers under /studio, and the shipped client resolves its fetch base to \"/studio\" — so this literal leaves the browser as /studio/api/brands and the route is reached"
         }
       ],
       "live_document": {
@@ -2353,10 +2489,18 @@
         ]
       },
       "staged_not_deployed": [],
+      "call_site": {
+        "base": "/studio",
+        "base_expression": "wv=\"/studio/\".replace(/\\/+$/,\"\")",
+        "base_file": "public/studio/assets/index-DN36X7rm.js",
+        "bare_fetch_sites": [],
+        "prefixes_the_mount": true
+      },
       "verdict_counts": {
         "served_at_root": 0,
-        "mount_prefix": 1,
-        "mount_other_method": 5,
+        "mount_prefix": 0,
+        "mount_other_method": 0,
+        "prefixed_at_call_site": 6,
         "reached_mount_function": 0,
         "absent_in_production": 0
       }
@@ -2409,7 +2553,14 @@
           "index-DlHhswkm.css"
         ]
       },
-      "staged_not_deployed": []
+      "staged_not_deployed": [],
+      "call_site": {
+        "base": null,
+        "base_expression": null,
+        "base_file": null,
+        "bare_fetch_sites": [],
+        "prefixes_the_mount": false
+      }
     },
     "zchuyot": {
       "project": "zchuyot-more30",
@@ -2451,7 +2602,14 @@
       },
       "staged_not_deployed": [
         "zchuyot2"
-      ]
+      ],
+      "call_site": {
+        "base": null,
+        "base_expression": null,
+        "base_file": null,
+        "bare_fetch_sites": [],
+        "prefixes_the_mount": false
+      }
     }
   },
   "portal_root_api_rewrites": [
@@ -2465,17 +2623,17 @@
     "chatzor: the shipped client names no /api path the browser asks more30.com for",
     "egod: the shipped client names no /api path the browser asks more30.com for",
     "galil: the shipped client names no /api path the browser asks more30.com for",
-    "mechiron: every probed path is answered at more30.com or refused by the mount's own function (6 probed)",
+    "mechiron: every probed path is reached by the shipped client or refused by the mount's own function (6 probed)",
     "mthbram: the shipped client names no /api path the browser asks more30.com for",
     "smachot: the shipped client names no /api path the browser asks more30.com for",
     "smel: the shipped client names no /api path the browser asks more30.com for",
+    "studio: every probed path is reached by the shipped client or refused by the mount's own function (6 probed)",
     "torah: the shipped client names no /api path the browser asks more30.com for",
     "zchuyot: the shipped client names no /api path the browser asks more30.com for",
     "studio stays fixed (#131): /studio/api/brands answers JSON"
   ],
   "fail": [
-    "imud: 3 answered by neither form — 14 literal(s) in 1 file(s), e.g. imud/assets/index-7IQk_wi0.js",
-    "kupot: 2 answered by neither form — 5 literal(s) in 1 file(s), e.g. kupot/assets/index-BlT4DUpe.js",
-    "studio: 1 answered only under /studio (candidate — read the call site), 5 served under /studio for the verb the client sends (candidate — read the call site) — 33 literal(s) in 8 file(s), e.g. public/studio/assets/BrandingBrief-DlnSH3li.js"
+    "imud: 3 answered by neither form — 14 literal(s) in 1 file(s), e.g. public/imud/assets/index-7IQk_wi0.js",
+    "kupot: 2 answered by neither form — 5 literal(s) in 1 file(s), e.g. kupot/assets/index-BlT4DUpe.js"
   ]
 }
