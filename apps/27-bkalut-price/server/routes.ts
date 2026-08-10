@@ -1933,7 +1933,7 @@ export async function registerRoutes(
           instructions: "ענה בעברית, בקצרה (1-3 משפטים), בלשון מכבדת.",
           ctaText: "רוצה לקבל את פרטי הנושא? אפשר לבדוק זכאות מלאה בקליק.",
           closingText: "שמחנו שפנית אלינו! צוות בקלות תמיד כאן עבורך.",
-          contact: { phone: "02-3131500", email: "l023131500@gmail.com", whatsapp: "https://wa.me/972237131500" },
+          contact: { phone: "02-3131500", email: "l023131500@gmail.com", whatsapp: "https://wa.me/97223131500" },
         },
         updatedAt: null,
       });

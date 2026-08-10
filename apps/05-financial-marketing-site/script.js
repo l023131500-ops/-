@@ -137,7 +137,7 @@
     if (!navigator.onLine) {
       status.innerHTML =
         "נראה שאין חיבור לאינטרנט כרגע. אפשר ליצור קשר ישירות: " +
-        '<a href="https://wa.me/972023131500">WhatsApp</a> · ' +
+        '<a href="https://wa.me/97223131500">WhatsApp</a> · ' +
         '<a href="tel:023131500">02-3131500</a>.';
       status.style.color = "var(--rose, #b7493e)";
       if (submitBtn) submitBtn.disabled = false;
@@ -175,7 +175,7 @@
       console.warn("Lead submit failed", lastErr);
       status.innerHTML =
         'לא הצלחנו לקלוט את הטופס כרגע. אפשר ליצור קשר ישירות: ' +
-        '<a href="https://wa.me/972023131500">WhatsApp</a> · ' +
+        '<a href="https://wa.me/97223131500">WhatsApp</a> · ' +
         '<a href="tel:023131500">02-3131500</a> · ' +
         '<a href="mailto:l023131500@gmail.com">l023131500@gmail.com</a>.';
       status.style.color = "var(--rose, #b7493e)";

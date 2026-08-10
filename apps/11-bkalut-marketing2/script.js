@@ -90,7 +90,7 @@
     } catch (err) {
       status.innerHTML =
         "קליטה אוטומטית לא הצליחה כרגע. אפשר ליצור קשר מיידי: " +
-        '<a href="https://wa.me/972023131500">WhatsApp 02-3131500</a> או ' +
+        '<a href="https://wa.me/97223131500">WhatsApp 02-3131500</a> או ' +
         '<a href="tel:023131500">בטלפון</a>.';
       status.style.color = "var(--rose)";
     } finally {

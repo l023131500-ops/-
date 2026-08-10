@@ -159,7 +159,7 @@ const DEFAULT_PUBLIC_CONFIG: PublicChatbotConfig = {
   contact: {
     phone: "02-3131500",
     email: "l023131500@gmail.com",
-    whatsapp: "https://wa.me/972237131500",
+    whatsapp: "https://wa.me/97223131500",
   },
 };
 
