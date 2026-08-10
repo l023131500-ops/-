@@ -1,0 +1,63 @@
+{
+  "ran": "favicon (§6) — torah: the tab DID declare an icon, the file it named never existed, and the answer came from the portal",
+  "date": "2026-08-10",
+  "mount": "/torah",
+  "app": "apps/01-torah-platform (Vite, base \"/torah/\")",
+  "follows": "QA/platform/favicon-mounts-0810/_results.json — torah was one of the five mounts in the 'declares-but-lands-on-origin' group. Four of that group remain after this round: imud, chizukim, studio (all /favicon.png).",
+
+  "measured_before_touching": {
+    "read": "production, more30.com/torah, real Chromium, anon",
+    "declaration_in_the_live_dom": {
+      "count": 1,
+      "href": "/favicon.svg",
+      "resolved_to": "https://more30.com/favicon.svg",
+      "whose": "the portal's"
+    },
+    "the_named_file_did_not_exist": "apps/01-torah-platform/public/ held .gitkeep and logo.svg.placeholder only — no favicon.* of any kind. The previous round's production probe of /torah/favicon.svg returned 200 with text/html 29,186 bytes, which is the SPA shell, i.e. absent.",
+    "why_the_declaration_missed": "href=\"/favicon.svg\" is root-absolute, and a mount that sits under a path resolves it against the origin, not against the mount. Vite does NOT prefix this line with base — checked on dist/index.html, which carried \"/favicon.svg\" verbatim after a build with base \"/torah/\".",
+    "so_the_line_was_worse_than_absent": "it made the mount count as 'declares an icon' while the file it named was never loaded once — the same shape found on egod in the previous round."
+  },
+
+  "what_the_navbar_actually_draws": {
+    "measured": "getComputedStyle on the live header tile at more30.com/torah",
+    "not_a_graphic_mark": "Navbar.tsx:60-66 renders an <img> only when tenant.branding.logo_url is set. In production it is not set, so the second branch draws a letter tile.",
+    "tile": { "w": 35.7, "h": 40, "borderRadius": "14px", "background": "rgb(26, 47, 91)", "color": "rgb(255, 255, 255)", "fontFamily": "Noto Serif Hebrew, serif", "fontSize": "18px", "fontWeight": "400" },
+    "the_letter_is_the_tenant_s_not_the_system_s": "the branch draws site_name.charAt(0). The tenant this mount serves is «איגוד מגידי השיעורים», so the live letter is א — not the ת fallback written in the code.",
+    "separate_latent_bug_not_fixed_here": "the tile is h-10 w-10 (40x40) but measures 35.7 wide on the live page — flex is compressing it, so the 'square' tile is not square. Recorded, not touched.",
+    "contrast": "white on rgb(26,47,91) is 13.3:1 — far above the 3:1 minimum for non-text graphics, so unlike egod no token pair had to be swapped here."
+  },
+
+  "the_glyph_choice_and_why_it_is_not_the_letter": {
+    "first_attempt_failed_and_the_screenshot_is_what_caught_it": "א was hand-traced as three strokes. It rendered as a Latin X — the upper-left arm and lower-right leg came out near-collinear and merged through the centre. A second attempt, re-traced off a 400px render of the real glyph on a 50px grid, still read as X. The tracing was abandoned rather than shipped.",
+    "chosen": "lucide Mic — the mark BrandLogo.tsx:1,20 draws, i.e. the system's own sign rather than one tenant's initial",
+    "copied_verbatim": "both paths and the line come from node_modules/lucide-react/dist/esm/icons/mic.js (v0.462.0); nothing was drawn by hand",
+    "ratios_from_BrandLogo": "tile w-9 (36px) with glyph w-4 (16px) = 44.4%. On a 64 side that is a 28.4 box centred, i.e. translate(17.8) scale(1.1833) over lucide's 24 box. Radius: rounded-xl (12px) on 36 = 33.3%; the rect uses rx 22.4, which is the navbar's own measured 14/40 instead.",
+    "one_value_deliberately_not_the_live_one": "stroke-width. lucide draws 2, which at this scale is 2.37 on a 64 side and under one pixel at 16px. Written as 2.8.",
+    "a_bug_found_on_the_way": "BrandLogo.tsx asks for bg-gradient-gold and text-navy. Neither name is defined in src/index.css or tailwind.config.ts (index.css defines .text-gradient-gold, a different name, and the config has no navy colour). The platform's own brand mark therefore renders with no tile background and no glyph colour wherever BrandLogo is mounted — Footer.tsx:69 and RoleSelection.tsx:19. NOT fixed here; the pair used in this icon is the one measured live in the navbar, not the one the code asks for and does not get."
+  },
+
+  "verified_on_a_real_render": {
+    "how": "vite build, then vite preview on base /torah/ at 127.0.0.1:4371, then a real Chromium page load",
+    "not_grep": "the check is the resolved href in the live DOM, the request the browser itself issued, and the bytes returned",
+    "built_href_is_not_double_prefixed": "dist/index.html carries href=\"/torah/favicon.svg\" exactly as written — Vite neither stripped nor duplicated the base",
+    "rel_icon_links_in_dom": 1,
+    "resolved": "http://127.0.0.1:4371/torah/favicon.svg",
+    "browser_actually_requested": "http://127.0.0.1:4371/torah/favicon.svg — captured on the first load of this declaration as initiatorType \"other\", 1,220 bytes encoded, no query string. On the re-check after the final asset was written the entry was absent because the browser served it from cache.",
+    "asset_response": "200 image/svg+xml, 2,361 bytes",
+    "domparser": "no parsererror — the two-hyphen XML-comment trap was avoided up front",
+    "decode": "resolved at 16, 32, 64 and 128; naturalWidth 64 at each",
+    "origin_root_favicon_svg": "404 — the fallback production takes is not reachable here",
+    "glyph_paths_present_in_the_served_bytes": ["M12 2a3...", "M19 10v2..."]
+  },
+
+  "not_claimed": [
+    "no screenshot of a tab icon: it lives in the browser chrome, not the viewport. mark-vs-navbar.png shows the asset drawn as an <img> at 16/32/64/192 beside a clone of the live navbar tile at 40 and 192.",
+    "at 16px the microphone's head and stand nearly merge — it reads as a mark, not as a legible microphone. No ICO or PNG was written, so a client that ignores SVG icons still falls through to the origin.",
+    "the icon does not follow the tenant. If /torah is ever pointed at a different tenant the navbar letter changes and this file does not.",
+    "NOT deployed. dist was built but not copied into _deploy, so production still serves the portal's mark for this mount.",
+    "the BrandLogo undefined-class bug and the non-square navbar tile were measured, recorded and NOT fixed."
+  ],
+
+  "protected_untouched": "08 · 09 · bkalut-app · bkalot-admin · zr_* · NEDARIM3873 — none read, none written",
+  "database": "read only — core.run_progress heartbeat, no migration"
+}

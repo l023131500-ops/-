@@ -2,7 +2,12 @@
 <html lang="he" dir="rtl">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <!-- הקידומת נכתבת ביד. "/favicon.svg" הוא נתיב מוחלט-לשורש, ומונט שיושב
+         תחת נתיב פותר אותו מול ה-origin ולא מול המונט: מי שנענה היה
+         more30.com/favicon.svg, כלומר הסמל של הפורטל, והקובץ הזה לא נטען
+         מעולם. Vite אינו מוסיף את ה-base לשורה הזו — נבדק על dist/index.html
+         שנשא "/favicon.svg" כלשונו אחרי בנייה עם base "/torah/". -->
+    <link rel="icon" type="image/svg+xml" href="/torah/favicon.svg" />
     <!-- ⚠️ ‎maximum-scale‎ / ‎user-scalable=no‎ הוסרו: הם מונעים מהמשתמש
          להגדיל את העמוד, וזה כשל נגישות לפי DESIGN_STANDARD §5 (תקן 5568).
          בעמוד עברי צפוף זו בדיוק היכולת שמי שמתקשה לקרוא זקוק לה. -->
