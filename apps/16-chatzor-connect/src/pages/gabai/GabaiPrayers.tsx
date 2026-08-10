@@ -9,6 +9,8 @@ import { Modal } from "@/components/ui/Modal";
 import { Button } from "@/components/ui/Button";
 import { Field, Input, Select } from "@/components/ui/Field";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { SampleBadge } from "@/components/ui/SampleBadge";
+import { sampleRowProps } from "@/lib/sampleRow";
 import { useGabai } from "./GabaiLayout";
 import { NoSynagogue } from "./NoSynagogue";
 
@@ -74,9 +76,10 @@ export function GabaiPrayers() {
                   <div className="min-w-0 flex-1">
                     <span className="font-semibold text-foreground">{p.label}</span>
                     {p.note && <span className="text-xs text-muted-foreground"> · {p.note}</span>}
+                    {p.isSample && <SampleBadge className="ms-2" />}
                   </div>
                   <span className="text-lg font-bold tabular-nums">{p.time}</span>
-                  <button onClick={() => remove.mutate(p.id)} className="grid h-9 w-9 place-items-center rounded-md text-muted-foreground hover:bg-red-500/10 hover:text-red-500"><Trash2 className="h-4 w-4" /></button>
+                  <button onClick={() => remove.mutate(p.id)} {...sampleRowProps(p.isSample)}><Trash2 className="h-4 w-4" /></button>
                 </li>
               ))}
             </ul>

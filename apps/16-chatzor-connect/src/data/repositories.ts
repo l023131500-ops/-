@@ -101,7 +101,9 @@ export async function listLessons(synagogueId?: string): Promise<Lesson[]> {
   let q = supabase.from("lessons").select("*").eq("is_published", true);
   if (synagogueId) q = q.eq("synagogue_id", synagogueId);
   const { data, error } = await q;
-  if (error || !data) return db.lessons;
+  // נפילה חזרה לזרעים חייבת לכבד את אותו סינון כמו הענף שלמעלה — אחרת שיעור
+  // של בית כנסת אחר נצבע כשיעור שלו במסך הגבאי.
+  if (error || !data) return synagogueId ? db.lessons.filter((l) => l.synagogueId === synagogueId) : db.lessons;
   return data.map(toLesson);
 }
 

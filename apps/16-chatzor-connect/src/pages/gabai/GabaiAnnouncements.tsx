@@ -9,6 +9,8 @@ import { Modal } from "@/components/ui/Modal";
 import { Button } from "@/components/ui/Button";
 import { Field, Input, Textarea } from "@/components/ui/Field";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { SampleBadge } from "@/components/ui/SampleBadge";
+import { sampleRowProps } from "@/lib/sampleRow";
 import { useGabai } from "./GabaiLayout";
 import { NoSynagogue } from "./NoSynagogue";
 
@@ -59,10 +61,13 @@ export function GabaiAnnouncements() {
               <div key={a.id} className="flex items-start gap-3 rounded-lg border border-border bg-card p-4 shadow-soft">
                 <span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-gold/15 text-gold"><Megaphone className="h-5 w-5" /></span>
                 <div className="min-w-0 flex-1">
-                  <div className="font-semibold text-foreground">{a.title}</div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-semibold text-foreground">{a.title}</span>
+                    {a.isSample && <SampleBadge />}
+                  </div>
                   {a.body && <p className="mt-1 text-sm text-muted-foreground">{a.body}</p>}
                 </div>
-                <button onClick={() => remove.mutate(a.id)} className="grid h-9 w-9 place-items-center rounded-md text-muted-foreground hover:bg-red-500/10 hover:text-red-500"><Trash2 className="h-4 w-4" /></button>
+                <button onClick={() => remove.mutate(a.id)} {...sampleRowProps(a.isSample)}><Trash2 className="h-4 w-4" /></button>
               </div>
             ))}
           </div>

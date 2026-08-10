@@ -9,6 +9,8 @@ import { Modal } from "@/components/ui/Modal";
 import { Button } from "@/components/ui/Button";
 import { Field, Input } from "@/components/ui/Field";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { SampleBadge } from "@/components/ui/SampleBadge";
+import { sampleRowProps } from "@/lib/sampleRow";
 import { useGabai } from "./GabaiLayout";
 import { NoSynagogue } from "./NoSynagogue";
 
@@ -66,10 +68,13 @@ export function GabaiLessons() {
                 <li key={l.id} className="flex items-center gap-3 p-4">
                   <span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-accent/10 text-accent"><BookOpen className="h-5 w-5" /></span>
                   <div className="min-w-0 flex-1">
-                    <div className="font-semibold text-foreground">{l.title}</div>
+                    <div className="flex items-center gap-2">
+                      <span className="font-semibold text-foreground">{l.title}</span>
+                      {l.isSample && <SampleBadge />}
+                    </div>
                     <div className="text-xs text-muted-foreground">{[l.day, l.time, l.teacher, l.audience].filter(Boolean).join(" · ")}</div>
                   </div>
-                  <button onClick={() => remove.mutate(l.id)} className="grid h-9 w-9 place-items-center rounded-md text-muted-foreground hover:bg-red-500/10 hover:text-red-500"><Trash2 className="h-4 w-4" /></button>
+                  <button onClick={() => remove.mutate(l.id)} {...sampleRowProps(l.isSample)}><Trash2 className="h-4 w-4" /></button>
                 </li>
               ))}
             </ul>
