@@ -5,7 +5,14 @@ export const metadata: Metadata = {
   title: "יוצר מודעות לשיעורי תורה — מבית איגוד השיעורים",
   description:
     "פלטפורמת AI ליצירת מודעות מקצועיות לשיעורי תורה, גמ\"ח, בית כנסת ואירועים — בעברית מלאה.",
-  icons: { icon: "/favicon.svg" },
+  /**
+   * הנתיב נושא את ה-`basePath` במפורש. `metadata.icons` הוא המקום היחיד ב-Next
+   * שאינו מקבל את `basePath` אוטומטית (בניגוד ל-`<Image>`, ל-`<Link>` ולנכסי
+   * `app/icon.*`), ולכן "/favicon.svg" נפתר אל השורש של more30.com ולא אל המונט:
+   * הלשונית ציירה את הסמל של הפורטל (806b) בשעה ש-`public/favicon.svg` של המערכת
+   * (383b) יושב ב-/modaot/favicon.svg ואיש לא ביקש אותו.
+   */
+  icons: { icon: "/modaot/favicon.svg" },
 };
 
 /**

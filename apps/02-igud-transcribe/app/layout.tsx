@@ -5,7 +5,14 @@ export const metadata: Metadata = {
   title: "תמלול מבית איגוד השיעורים",
   description:
     "מערכת תמלול מקצועית בעברית לשיעורי תורה — תמלול אוטומטי, עריכה לפי מסלולי סגנון, יצוא Word.",
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000")
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"),
+  /**
+   * בלי השורה הזו לא הוצהר סמל כלל, והדפדפן נפל אל /favicon.ico על ה-origin —
+   * כלומר אל הסמל של הפורטל. `public/favicon.svg` (505b) כבר מוגש ב-
+   * /tamlul/favicon.svg. הנתיב נושא את ה-`basePath` במפורש כי `metadata.icons`
+   * אינו מקבל אותו אוטומטית.
+   */
+  icons: { icon: "/tamlul/favicon.svg" }
 };
 
 /**

@@ -1,0 +1,87 @@
+{
+  "ran": "favicon — the previous round measured six mounts; this one measured all twenty-four, and found a second way to end up with the portal's mark",
+  "date": "2026-08-10",
+  "follows": "QA/platform/favicon-0810/_mounts.json — that round found that a mount with no <link rel=icon> falls back to /favicon.ico on the ORIGIN, and the origin is more30.com. It measured six of the twenty-four mounts.",
+  "tool": "scripts/qa/favicon-mounts.mjs · raw scan in _scan.json beside this file",
+
+  "measured_before_touching": {
+    "read": "production only (more30.com), anon, no cache",
+    "mounts": 24,
+    "draw_the_portal_mark": 16,
+    "draw_their_own": 8,
+    "two_distinct_faults": {
+      "inherits-portal": {
+        "count": 11,
+        "what": "no rel=icon at all — the browser's own default is a root-absolute path",
+        "mounts": ["tamlul", "bkalot", "smachot", "orech", "zchuyot", "mthbram", "galil", "crm", "gesher", "kesef", "kiosk"],
+        "note": "mthbram and galil were fixed in the previous round; the fix is built and NOT deployed, so production still shows the fault"
+      },
+      "declares-but-lands-on-origin": {
+        "count": 5,
+        "what": "a rel=icon IS declared, resolves 200, and still draws the portal mark — the href is root-absolute, and a mount under a path resolves it against the origin",
+        "mounts": [
+          { "mount": "torah", "href": "/favicon.svg", "resolves_to": "https://more30.com/favicon.svg", "bytes": 806, "whose": "the portal" },
+          { "mount": "modaot", "href": "/favicon.svg", "resolves_to": "https://more30.com/favicon.svg", "bytes": 806, "whose": "the portal" },
+          { "mount": "imud", "href": "/favicon.png", "resolves_to": "https://more30.com/favicon.png", "bytes": 4477, "whose": "the portal" },
+          { "mount": "chizukim", "href": "/favicon.png", "resolves_to": "https://more30.com/favicon.png", "bytes": 4477, "whose": "the portal" },
+          { "mount": "studio", "href": "/favicon.png", "resolves_to": "https://more30.com/favicon.png", "bytes": 4477, "whose": "the portal" }
+        ],
+        "not_visible_until_today": "before commit 41bc299 (03:06 today) the origin root had no icon at all — these five declarations answered 404. They did not start pointing at the portal; the portal started answering."
+      }
+    },
+    "mount_asset_probes": {
+      "why": "a declaration can only be repointed at an asset that exists under the mount",
+      "/tamlul/favicon.svg": "200, image/webp 646b — NetFree transcodes SVG in flight from this machine, so the type and size here are the filter's, not the server's. The file exists.",
+      "/modaot/favicon.svg": "200, image/webp 1370b — same transcode",
+      "/torah/favicon.svg": "200 but text/html 29186b — the SPA shell, i.e. absent",
+      "/chizukim/favicon.png": "200 but text/html 4013b — the SPA shell, i.e. absent"
+    }
+  },
+
+  "fixed_this_round": {
+    "which": "the two of the sixteen that already own an asset and were not pointing at it",
+    "tamlul": {
+      "app": "apps/02-igud-transcribe (Next 14, basePath /tamlul)",
+      "was": "no icons field in app/layout.tsx metadata at all",
+      "now": "icons: { icon: \"/tamlul/favicon.svg\" }",
+      "asset": "public/favicon.svg, 505 bytes, already served at /tamlul/favicon.svg"
+    },
+    "modaot": {
+      "app": "apps/03-igud-ads (Next 14, basePath /modaot)",
+      "was": "icons: { icon: \"/favicon.svg\" }",
+      "now": "icons: { icon: \"/modaot/favicon.svg\" }",
+      "asset": "public/favicon.svg, 383 bytes, already served at /modaot/favicon.svg"
+    },
+    "why_the_prefix_is_written_by_hand": "next.config.mjs already sets basePath and assetPrefix for both, and metadata.icons is the one place in Next that does not receive either — unlike <Image>, <Link> and the app/icon.* file convention. That is exactly why modaot's existing declaration missed: it was written the way it would be written for a root-mounted app."
+  },
+
+  "verified_on_a_real_render": {
+    "how": "next dev on each app (ports 4351/4352), fetched through the basePath, then a real Chromium page load",
+    "not_grep": "the check is the resolved href in the live DOM and the request the browser itself issued — not a string in a source file",
+    "tamlul": {
+      "rel_icon_links_in_dom": 1,
+      "resolved": "http://127.0.0.1:4351/tamlul/favicon.svg",
+      "browser_actually_requested": "http://127.0.0.1:4351/tamlul/favicon.svg",
+      "asset_response": "200 image/svg+xml 505 bytes",
+      "origin_root_favicon_svg": "404 — the fallback that production takes is no longer reachable here"
+    },
+    "modaot": {
+      "rel_icon_links_in_dom": 1,
+      "resolved": "http://127.0.0.1:4352/modaot/favicon.svg",
+      "browser_actually_requested": "http://127.0.0.1:4352/modaot/favicon.svg",
+      "asset_response": "200 image/svg+xml 383 bytes",
+      "origin_root_favicon_svg": "404"
+    },
+    "byte_counts_agree": "505 and 383 locally match apps/02-igud-transcribe/public/favicon.svg and apps/03-igud-ads/public/favicon.svg on disk — the production probes could not confirm this because NetFree re-encodes SVG to WebP in flight"
+  },
+
+  "not_claimed": [
+    "no screenshot: a tab icon lives in the browser chrome, not the viewport, and screenshot cannot capture it. The evidence is the resolved DOM href, the bytes returned, and the network request.",
+    "not measured what any of these icons depict — only which file the tab asks for.",
+    "the fourteen other mounts that draw the portal mark were NOT fixed: twelve own no icon asset at all, and pointing them at the builder's default .ico would swap the portal's mark for the builder's. Recorded in NEEDS_USER.",
+    "not deployed. Neither app was built for production or copied to _deploy."
+  ],
+
+  "protected_untouched": "08 · 09 · bkalut-app · bkalot-admin · zr_* · NEDARIM3873 — the /bkalot mount was read in production only and nothing under it was modified",
+  "database": "read only — core.run_progress heartbeat, no migration"
+}
