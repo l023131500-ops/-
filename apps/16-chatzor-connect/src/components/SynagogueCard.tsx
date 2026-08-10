@@ -49,10 +49,14 @@ export function SynagogueCard({
           </span>
         )}
         {s.description && <p className="mt-3 text-sm text-muted-foreground">{s.description}</p>}
-        <p className="mt-3 inline-flex items-center gap-1.5 text-xs text-muted-foreground">
-          <MapPin className="h-3.5 w-3.5" aria-hidden />
-          {s.address ?? "כתובת לא זמינה"}
-        </p>
+        {/* כתובת רק כשיש כתובת — כמו בעמוד בית הכנסת (SynagogueSite). כשאין, «ניווט» למטה
+            הוא מה שעונה על «איפה זה», והסימון נשאר של הכתובת עצמה ולא של היעדרה. */}
+        {s.address && (
+          <p className="mt-3 inline-flex items-center gap-1.5 text-xs text-muted-foreground">
+            <MapPin className="h-3.5 w-3.5" aria-hidden />
+            {s.address}
+          </p>
+        )}
 
         {meters != null && (
           <p className="mt-2 text-xs font-semibold text-accent" data-testid="synagogue-distance">
