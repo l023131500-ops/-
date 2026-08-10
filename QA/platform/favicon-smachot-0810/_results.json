@@ -1,0 +1,79 @@
+{
+  "ran": "favicon §6 — smachot: the mark was already on the page, and this is the first of the queue that is a plain static site rather than a framework build",
+  "date": "2026-08-10",
+  "app": "apps/14-bsmachot-plus/website — hand-written static HTML/CSS/JS, no build step, no framework",
+  "queue": "torah · imud · chizukim · studio · bkalot · smachot · orech · crm · gesher · kesef — done so far: torah, imud, chizukim, orech, smachot (this round). studio stays skipped (base /modaot/ vs mount /studio/, commit 2291abb). bkalot is deliberately NOT taken: the /bkalot mount is served by the protected bkalut-app.",
+
+  "measured_before_touching": {
+    "read": "production, https://more30.com/smachot/, real Chromium",
+    "rel_icon_links_in_dom": 0,
+    "consequence": "no declaration at all, so the browser asks the ORIGIN for /favicon.ico — and the origin is more30.com. The tab drew the portal's mark.",
+    "agrees_with": "QA/platform/favicon-mounts-0810/_results.json, which listed smachot under inherits-portal"
+  },
+
+  "the_source_was_confirmed_to_be_what_production_serves": {
+    "why_this_check": "a previous round found sites whose live HTML is not the HTML on disk, so copying source over _deploy can break them",
+    "how": "fetched production and compared, newline-normalised, against apps/14-bsmachot-plus/website/index.html and _deploy/smachot-more30/smachot/index.html",
+    "source_vs_deploy": "identical, 3888 chars",
+    "source_vs_production": "identical except three lines production has and disk does not: an 'Injection By NetFree' comment and two netfree.link script tags — the local filter's, not the server's",
+    "conclusion": "editing the source and copying it to _deploy is safe here; there is no third version"
+  },
+
+  "the_identity": {
+    "graphic_mark": "yes — the sidebar draws an inline <svg> brand mark on every page (index.html, span.brand-logo): a rounded tile, a five-point star, a dot beneath it",
+    "so": "nothing was drawn or invented. The mark was copied, the way egod's was — no letter had to be traced, unlike chizukim and orech.",
+    "measured_from_the_live_page_not_from_css": {
+      "tile": "linear-gradient(rgb(12,78,84), rgb(10,58,63)) = getComputedStyle('.sidebar').backgroundImage, i.e. teal-800 → teal-900",
+      "star": "rgb(230,183,61) = getComputedStyle('.brand-logo').color, i.e. gold-soft",
+      "dot": "rgb(209,153,0) = getComputedStyle(circle).fill, i.e. gold",
+      "path_d": "copied verbatim from the nav svg, not redrawn",
+      "corner": "rx/side of the original tile is 9/34 = 0.2647, which is 12.71 in a 48 box"
+    },
+    "geometry_is_a_mapping_not_a_choice": "the original mark's content lives inside its own rounded rect, (3,3)→(37,37) of a 40 viewBox. That 34-box is mapped onto the full 48 box — scale 48/34 = 1.4118, translate −4.235 — so the star-to-tile ratio in the tab is exactly the ratio on the page. No number was picked by eye."
+  },
+
+  "deviation_declared_in_the_file": [
+    "in the nav the tile is gold at 12% opacity over the sidebar's teal; here the tile is that teal itself. In a tab there is no sidebar underneath to take the colour from, and a 12% wash is not visible at 16px anyway. This is the only change to the mark."
+  ],
+
+  "the_trap_from_the_previous_round_was_avoided": "orech shipped a favicon that returned 200 at the right byte count and painted nothing, because the Hebrew comment documented tokens as var(--…) and two consecutive hyphens are illegal inside an XML comment. This file writes token names without their var() wrapper and says why, and decode is asserted separately from status.",
+
+  "verified_on_a_real_render": {
+    "how": "scripts/qa/serve-smachot.mjs serves _deploy/smachot-more30 the way Vercel does — /smachot/ is a real directory inside the deploy root, and the root itself is empty so origin fallbacks 404. Then a real Chromium load of /smachot/.",
+    "not_grep": "the assertions are the resolved href in the live DOM and the bytes the browser got back — not a string in a source file",
+    "rel_icon_links_in_dom": 1,
+    "raw_href": "./favicon.svg",
+    "resolved": "http://127.0.0.1:4354/smachot/favicon.svg",
+    "resolved_via": "the <base href=\"/smachot/\"> already in the document — the relative href is deliberate, it is what makes the path survive the mount",
+    "doubled_prefix": false,
+    "asset_response": "200 image/svg+xml 2394 bytes",
+    "parse": "clean — 1 <path>, 1 <circle>, 1 <linearGradient>",
+    "decode": "48x48",
+    "paints_at": {"16": "252/256 px", "32": "986/1024", "64": "3892/4096", "192": "34798/36864"},
+    "origin_root_fallbacks": {"/favicon.ico": 404, "/favicon.svg": 404, "/favicon.png": 404},
+    "screenshot": "sizes.png beside this file — 16/32/64/192 on a light tab strip, a dark tab strip, and both of smachot's own tones"
+  },
+
+  "measured_on_the_16px_raster": {
+    "why": "a five-point star is the shape most likely to turn into a blob at 16px",
+    "star": "rows 3-10, widest 8px on row 6; the two lower arms are still separated by tile on row 10",
+    "dot": "row 13, 2px wide — it survives as a mark, not as a shape",
+    "star_peak": "exact rgb(230,183,61), i.e. full gold-soft with no dilution — 5.16:1 against the tile",
+    "dot_at_16px": "rgb(190,144,6), 2.74:1 against the tile beneath it — the weakest element in the icon, and deliberately so: it is a secondary detail in the original too, and the star is what carries the identity",
+    "tile_against_a_light_tab_strip": "9.67:1 — the tile carries the shape there",
+    "tile_against_a_dark_tab_strip": "1.66:1 — the tile nearly vanishes, but the star reads 8.59:1 against that strip, so the icon still resolves",
+    "note_on_sampling": "pixel (1,1) reads alpha 226, not 255. That is the corner arc being antialiased, not a transparency bug — rx 12.71 of 48 is ~4.2px at 16. Tile colours were therefore sampled at (8,1) and (1,8), which are fully opaque."
+  },
+
+  "not_claimed": [
+    "no tab-strip screenshot: a favicon lives in the browser chrome, not the viewport. The evidence is the resolved DOM href, the bytes, the parse, the decode and the rasters.",
+    "the browser's own tab request was not captured (headless has no tab strip)",
+    "no ICO or PNG fallback was added, and no apple-touch-icon",
+    "not deployed — the files are in _deploy but no vercel deploy was run, so production still shows the portal's mark on this tab",
+    "nothing was measured about the rest of the page; only which file the tab asks for"
+  ],
+
+  "protected_untouched": "08 · 09 · bkalut-app · bkalot-admin · zr_* · NEDARIM3873 — none read, none written. bkalot was skipped in the queue for exactly this reason.",
+  "database": "read only — core.run_progress and core.issues; no migration",
+  "mode": "test — nothing was sent, nothing was charged"
+}
