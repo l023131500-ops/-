@@ -1,17 +1,24 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Home, BookOpen, Phone, Settings, Menu, X, MessageCircle, Download } from 'lucide-react';
+import { Home, BookOpen, Phone, Settings, Menu, X, Landmark, HelpCircle, ShieldCheck, Download } from 'lucide-react';
 import logoMechubarim from '@/assets/logo-mechubarim.png';
 
+// במגירת המובייל הגליף הוא מה שמזהה את היעד, ולכן שני יעדים שונים לא יכולים
+// לשאת אותו סמל. נמדד בייצור: שבע שורות נשאו חמישה גליפים — `book-open`
+// ל"בתי כנסת" ול"דת וקהילה", `settings` ל"פורטל גבאים" ול"ניהול",
+// ו-`message-circle` ל"שאל את הרב" בזמן שאותו סמל מציין בעמוד גם את
+// הוואטסאפ וגם את פקד הצ'אט. כל סמל כאן לקוח מהיעד עצמו: `help-circle`
+// הוא הסמל של AskRabbiSection, `book-open` נשאר ל-/info כי הכרטיס שמוביל
+// לשם מצייר אותו, ו-`settings` נשאר לפורטל הגבאים מאותה סיבה.
 const navItems = [
   { label: 'ראשי', to: '/', icon: Home },
-  { label: 'בתי כנסת', to: '/#synagogues', icon: BookOpen, isAnchor: true },
+  { label: 'בתי כנסת', to: '/#synagogues', icon: Landmark, isAnchor: true },
   { label: 'דת וקהילה', to: '/info', icon: BookOpen },
-  { label: 'שאל את הרב', to: '/#ask-rabbi', icon: MessageCircle, isAnchor: true },
+  { label: 'שאל את הרב', to: '/#ask-rabbi', icon: HelpCircle, isAnchor: true },
   { label: 'צור קשר', to: '/contact', icon: Phone },
   { label: 'פורטל גבאים', to: '/gabai', icon: Settings },
-  { label: 'ניהול ⚡', to: '/gabai?auto=admin', icon: Settings },
+  { label: 'ניהול ⚡', to: '/gabai?auto=admin', icon: ShieldCheck },
 ];
 
 const Navbar = () => {

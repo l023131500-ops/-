@@ -451,7 +451,9 @@ const ChatBot = () => {
         whileHover={{ rotate: [0, -10, 10, 0] }}
         aria-label="פתח צ'אט"
       >
-        <MessageCircle className="w-7 h-7" />
+        {/* הפקד נושא את הסמל של הפאנל שהוא פותח (`Bot`, כותרת "מחוברים בוט")
+            ולא את `message-circle`, שמציין בעמוד הזה את הוואטסאפ. */}
+        <Bot className="w-7 h-7" />
         <span className="absolute -top-1 -right-1 w-4 h-4 bg-destructive rounded-full animate-pulse-gentle" />
       </motion.button>
 
