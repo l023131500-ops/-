@@ -828,6 +828,39 @@ PDF bodies from `supabase.co`; none of that applies to the production server.
   paths, `/lesson/[id]` 183 B of route JS unchanged and every other route
   byte-identical, 0 console errors. Evidence in `QA/gannenet/unit-size-0812/`.
 
+- **`components/PdfViewer.tsx`** — the preview under every PDF on `/shelf/[id]`
+  could not paint until the *last* byte of the file had arrived. It fetched the
+  whole document into an `ArrayBuffer`, wrapped it in a `Blob`, and only then
+  handed a `blob:` URL to `<object>` — and a blob does not exist until the
+  download is complete, so the reader watched "טוען תצוגה…" for the whole
+  transfer before seeing page 1. 234 of the 258 shelf files are PDFs, the largest
+  ~1.9 MB. The blob was also a second full copy of the document in memory, and
+  the embedded viewer's title bar showed its UUID instead of the file's name.
+
+  When nothing is hidden — the overwhelming majority; `hiddenPages` is admin
+  curation — `<object data>` is now `fileUrl` itself, set as the effect runs, so
+  the native viewer paints page 1 while the rest is still arriving. The buffer
+  the page-selection tool needs is still fetched, from the same same-origin URL,
+  served `Cache-Control: public, max-age=86400`. Trimmed files are untouched:
+  their preview is a genuinely different document (visible pages only) and still
+  goes through pdf-lib and a blob. A failure *before* the bytes arrive takes the
+  optimistic preview back down and shows the notice — the `<object>` is reading
+  the same URL and would fail the same way — while a failure *after* them
+  (pdf-lib chunk, trimming) leaves the preview up, as before.
+
+  This machine cannot reach the `gannenet-shelf` bucket (`/api/shelf/…` answers
+  502; all 258 seed objects are present in Storage, checked over MCP), so the
+  component was exercised against a local 12-page PDF added to
+  `content/catalog.json` as two temporary entries for the run and removed after —
+  the catalog is back to its 258 items, byte-identical. Untrimmed: `<object
+  data>` is the file URL, not `blob:`, the viewer reads `1 / 12` and names the
+  file, the page tool reads `12 עמ׳`, and the `<object>` request came back
+  `transferSize 300, encodedBodySize 0` — a 304, no second copy of the body over
+  the wire. Trimmed (`hiddenPages: [1,2]`): still `blob:`, `10 עמ׳ (הוסתרו 2)`,
+  and the preview opens on page 3. `tsc --noEmit` 0, `next build` ✓ 194 pages,
+  `/shelf/[id]` 2.78 kB / 98.8 kB first load and every other route unchanged, 0
+  console errors. Evidence in `QA/gannenet/pdf-stream-0812/`.
+
 No other file was modified. The mount itself needs no code edit: `next.config.js`
 already reads `APP_BASE_PATH`, and `lib/base.ts` exports `withBase()` for the
 fetch calls, hrefs and service worker that Next's `basePath` does not prefix.
