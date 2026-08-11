@@ -1,0 +1,37 @@
+kiosk (35): a field took its text colour from the browser, and the browser was in dark mode
+
+The first item on this app's own "Next, in order" list: every input in the
+console was white-on-white in dark mode, at 1.03:1 — measured again here, in the
+same browser run, by re-injecting the declaration being replaced.
+
+`.field input, .field select` set `background: #fbfcfe` and never set `color`. An
+input does not inherit `color`; it takes the browser's `fieldtext`, and the
+`<meta name="color-scheme" content="light dark">` in the head is what licenses a
+dark-preference browser to make that white. So the dark theme — which inverted
+`--ink`, `--card`, `--bg`, `--line` and correctly left the brand navy alone —
+produced white text on a white box, on both password fields included.
+
+Four tokens (`--field-bg`, `--field-bg-focus`, `--field-border`, `--sunken`)
+whose light values are exactly the hard-coded ones they replace, so light mode
+does not move; `color: var(--ink)` on the fields, which is the actual fix; and
+`color-scheme` declared on `:root` / `:root.dark` so the parts the browser paints
+itself — caret, scrollbar, select popup, number spinners, and the background
+Chrome forces onto an autofilled field, which no ordinary declaration can
+reach — follow the theme rather than the OS.
+
+Two more surfaces in the same family: `.hl-new`, the new-domain box, sat outside
+`.field` and had no styling at all (it takes the field's look but not its
+`width: 100%` — it is a flex child with an inline `flex: 1`); and `.hl-row`, the
+domain allow-list itself, had a hard-coded `#f7f9fc` under `var(--ink)` text.
+
+QA/kiosk/dark-inputs-0811/ — real Chromium under `emulateMedia({colorScheme})`,
+i.e. the OS preference and not a hand-toggled class, against a stub that serves
+the real `server/public/` and cans only the API. Eight fields measured dark
+(13.5–15.1:1), the light values measured back to their pre-change bytes, three
+screenshots. 70/71 on `node --test`, the documented baseline.
+
+Left alone deliberately and written down rather than quietly claimed: the field
+border is 1.62:1 against the card where 1.4.11 wants 3:1 — but light mode is
+~1.06:1 and always was, so that is a console-wide design change and its own step.
+
+Not deployed: the Railway service still serves the previous CSS.

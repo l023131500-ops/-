@@ -408,13 +408,58 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
 
   **Not deployed.**
 
+- **the inputs in dark mode** — every field in the console was white-on-white at
+  **1.03:1**. `.field input, .field select` declared `background: #fbfcfe` and no
+  `color`; an input does not inherit `color`, it takes the browser's `fieldtext`,
+  and the `<meta name="color-scheme" content="light dark">` in the head licenses
+  a dark-preference browser to make that **white**. So the console's own dark
+  theme, which never touched the field background, produced white text on a white
+  box — including the two password fields, where nothing on screen tells you what
+  you typed. Now 15.13:1. In `css/style.css`:
+  - four tokens — `--field-bg`, `--field-bg-focus`, `--field-border`, `--sunken` —
+    whose **light values are exactly the hard-coded ones they replace**, so the
+    light console is byte-identical apart from the one deliberate change below.
+    The dark field is *sunken* under the card (`#0d1626` under `#131c2e`), the way
+    `#fbfcfe` sits under `#fff` in light.
+  - `color: var(--ink)` on the fields. That is the fix; the rest is theming. Its
+    one visible effect in light mode is that the text is now `#0b1220` rather than
+    the browser's black (18.24:1 vs 18.72:1) — which is the point: the colour is
+    ours in both modes instead of the browser's in one.
+  - `color-scheme: light` / `dark` on `:root` / `:root.dark`, so what the browser
+    paints itself follows the theme: caret, scrollbar, `select` popup, number
+    spinners, and the background Chrome forces onto an autofilled field — the last
+    of which no ordinary declaration can reach, and which lands on the login form.
+  - `.hl-new`, the new-domain box in `hostListEditor`, was outside `.field` and so
+    had no styling at all; it now takes the field's appearance but **not** its
+    `width: 100%`, because it is a flex child carrying an inline `flex: 1`.
+  - `.hl-row` had a hard-coded `#f7f9fc` under `var(--ink)` text — the domain
+    allow-list, the product's core control, was light-on-light in dark mode too.
+
+  Verified in `QA/kiosk/dark-inputs-0811/` — a real Chromium with
+  `emulateMedia({colorScheme})`, i.e. the OS preference rather than a class
+  toggled by hand, against a stub that serves the **real** `server/public/` and
+  cans only the API. The 1.03:1 "before" was re-measured in the same run by
+  re-injecting the declaration that was replaced. Eight fields measured dark,
+  the light values measured back to their pre-change bytes, three screenshots.
+  70/71 on `node --test` — the documented baseline, `routing.test.mjs` still
+  needs express.
+
+  Found and **not** fixed here, so it is not silently claimed: the field border is
+  1.62:1 against the card (WCAG 1.4.11 wants 3:1) — but light mode is ~1.06:1 and
+  always was, so raising it is a console-wide design change and its own step.
+  Same for `.btn-danger` at 3.3:1. The light chips (`.hl-tag`, `.code-chip`,
+  `.pill`, `.alert-*`, `.btn-light`) stay light inside the dark console; they all
+  pass contrast, so that is consistency, not accessibility.
+
+  **Not deployed.**
+
 ## Next, in order
 
-1. Every input in the console is white-on-white in dark mode (≈1.03:1) — found
-   in the QA above, console-wide and older than that change, so it was left for
-   its own step in `css/style.css`.
-2. Deploy: the registry (API + screen), the approvals (API + picker), `identify`,
-   the launcher and both of §2★א's fields are only on disk and in this file.
-3. The selection screen on the device (§2★ה/ו): `KioskActivity` calls
+1. Deploy: the registry (API + screen), the approvals (API + picker), `identify`,
+   the launcher, both of §2★א's fields and the dark-mode CSS are only on disk and
+   in this file.
+2. The selection screen on the device (§2★ה/ו): `KioskActivity` calls
    `identify`, offers the approved list, and locks onto what is chosen.
-4. The "הפעל" wizard with the live checklist (§2★ב).
+3. The "הפעל" wizard with the live checklist (§2★ב).
+4. Non-text contrast, console-wide: the field border at 1.62:1 dark / ~1.06:1
+   light, and `.btn-danger` at 3.3:1.
