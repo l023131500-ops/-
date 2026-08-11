@@ -13,7 +13,7 @@ this file are committed. So changes to the app are recorded here.
 | Source | 49 files / 1.9MB, vendored from `l023131500-ops/-` @ `claude/ganenet-full-system-gdrive-fdflfc` (`f489e2c`) |
 | Build | Next.js 14.2.35, production build present, `basePath=/gannenet` via `APP_BASE_PATH` |
 | Shelf | 258 files / 157MB in the Supabase bucket `gannenet-shelf` under `seed/`, streamed through `/api/shelf/<name>` |
-| Secrets | `core.secrets` only — `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `ANTHROPIC_API_KEY`, `ADMIN_PASSWORD`. Never in git. |
+| Secrets | `core.secrets` only — `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `ANTHROPIC_API_KEY`, `ADMIN_PASSWORD`, and `SUPABASE_SERVICE_ROLE_KEY` (server-side, `/api/admin/delete` alone). Never in git. |
 | Vercel project | **not created yet** |
 | Portal rewrite | **not added yet** (`portal/vercel.dist.json`) |
 | `public_visible` | `false`, until it is verified live |
@@ -345,6 +345,39 @@ PDF bodies from `supabase.co`; none of that applies to the production server.
   `QA/gannenet/upload-origin-0811/`. **Open:** the anon key cannot DELETE from
   Storage, so the two QA blobs and the earlier upload-race orphan stay in the
   bucket, hidden but not removed — cleanup needs a service-role key.
+
+- **`app/api/admin/delete/route.ts` (new) + `lib/supabase.ts` + `app/shelf/admin/page.tsx`
+  + `app/api/upload/[name]/route.ts`** — uploaded material could be hidden and never
+  removed. `lib/overrides.ts` drops a file from every shelf, but the blob stays in
+  `gannenet-shelf` for ever; **no code path in this app deleted anything at all**,
+  because the anon key cannot DELETE from Storage (403 `AccessDenied`,
+  `QA/gannenet/overrides-cas-0811/`). So the bucket only grew, a file a teacher
+  uploaded by mistake stayed retrievable to anyone holding its URL, and the
+  orphans earlier failures left had no way out except a hand-run script — which is
+  what the previous step had to leave open. Deletion, and only deletion, uses
+  `SUPABASE_SERVICE_ROLE_KEY`; unset, everything else runs unchanged and the route
+  answers 503 rather than pretending. `deleteUpload()` takes the blobs first and
+  the entry last — the entry is the only thing that can name the blob, so dropping
+  it first strands the bytes exactly the way an orphan is made; in between, the
+  shelf shows an item whose file 404s, which is recoverable. The id pattern
+  `^up_[a-z0-9]+_[a-z0-9]+$` is deliberately narrower than
+  `/api/admin/override`'s, so no Drive or seed id can reach the one destructive
+  route. Verified against the production build and the real bucket: 401 without
+  the key, 400 for a Drive id / a traversal / `index.json` / `seed`, 404 for a
+  well-formed absent id; a real seed asset uploaded through the real
+  `POST /api/catalog` and deleted → catalog 0 items, blob gone, retry 404; and
+  through the real UI, the button (which asks first) removes the row and the count
+  goes 2,978 → 2,977, 0 console errors. Two defects the run itself found are fixed
+  here: an already-gone delete arrives as **400** with the 404 in the body, so the
+  retry used to be a permanent 502; and `/api/upload/[name]` kept returning **200
+  and the full body** for an object Storage had already dropped, because Next
+  caches `fetch()` in a route handler by default. The same run cleared, through
+  the product path, the two QA uploads and the `up_msoxh0q3_hx4s.png` orphan
+  earlier steps left — `seed/` still 258, `uploads/` empty. `tsc --noEmit` 0.
+  Evidence in `QA/gannenet/upload-delete-0811/`. **Open:** the deployed
+  environment needs `SUPABASE_SERVICE_ROLE_KEY` set or the button answers 503
+  (`NEEDS_USER.md`); and a copy already in a teacher's browser or service-worker
+  cache survives the delete — nothing server-side can reach it.
 
 No other file was modified. The mount itself needs no code edit: `next.config.js`
 already reads `APP_BASE_PATH`, and `lib/base.ts` exports `withBase()` for the

@@ -1,0 +1,17 @@
+POST /gannenet/api/admin/delete — production build (next start :3043, APP_BASE_PATH=/gannenet)
+
+no key      : 401 unauthorized
+wrong key   : 401 unauthorized
+drive id    : 400 {"error":"אפשר למחוק לצמיתות רק חומר שהועלה כאן. חומר מהמדף אפשר להסתיר."}
+traversal   : 400 {"error":"אפשר למחוק לצמיתות רק חומר שהועלה כאן. חומר מהמדף אפשר להסתיר."}
+index.json  : 400 {"error":"אפשר למחוק לצמיתות רק חומר שהועלה כאן. חומר מהמדף אפשר להסתיר."}
+seed id     : 400 {"error":"אפשר למחוק לצמיתות רק חומר שהועלה כאן. חומר מהמדף אפשר להסתיר."}
+absent up_  : 404 {"error":"החומר כבר אינו קיים באחסון."}
+bad body    : 400 bad body
+
+bucket after the run (service-role list):
+  root    : index.json, overrides.json
+  uploads/: (empty)
+  seed/   : 258
+  /api/catalog: {"ready":true,"items":[]}
+  a deleted file's URL: /api/upload/up_msp0reno_d5pk.jpg -> 502 (object gone upstream)
