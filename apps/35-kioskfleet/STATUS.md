@@ -286,6 +286,55 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
 
   **Not deployed**, and no page yet — the launcher screen is the next step.
 
+- **the launcher page (§2★ז)** — the API above had no screen, so the URL the spec
+  names resolved to a 404 and the only way to redeem a device code was `curl`.
+  Added `server/public/kiosk-launcher.html` and the `/kiosk-launcher/:code?`
+  route in `index.js`:
+  - **one page, both forms.** `/kiosk-launcher` asks for the code;
+    `/kiosk-launcher/A7K2M9` — the printed-card / QR form the spec names —
+    prefills it and resolves on load. The route never reads `:code`; the client
+    pulls it out of `location.pathname` and POSTs it, because a path parameter
+    read server-side is a credential in the access log of every proxy in front
+    of the service.
+  - **everything is inline** — the one page here where that is true. The
+    console's `css/style.css` is document-relative, which is what lets it work
+    at `/` and at `/kiosk/` both; this page is served at two *depths*, so the
+    same href resolves to `/kiosk/kiosk-launcher/css/style.css` on the form with
+    a code in it. An unstyled code box on a tablet in a hall is
+    indistinguishable from a broken kiosk, and nothing 404s loudly enough for
+    anyone to notice. The shared more30 login pill is left off for the same
+    class of reason: the caller is staff holding a code, not a signed-in
+    customer, and the pill is fixed over this page's own controls.
+  - a typed code is **never written into the URL**, and one that arrived *in* the
+    URL is scrubbed out when the person taps `הזנת קוד אחר` — that tap means
+    "wrong device", and leaving the code in the address bar puts one hall's
+    credential on the next hall's tablet and silently restores it on reload.
+  - the chosen business is opened from `/open`'s answer, not from the URL already
+    rendered in the list: the id is re-checked there against *this device's*
+    approvals, so a page left open across an un-approval cannot still open it.
+  - `client_code`s are never rendered — the businesses are offered by name, which
+    is the whole reason `launcher.js` leaves them out of the payload.
+  - a device with **no** approvals gets the venue button plus a sentence saying
+    so. Absence of an approval is a "no", so that state is correct and common;
+    an empty card would read as a failed load.
+
+  Verified in `QA/kiosk/launcher-page-0811/` — 16 cases in a real browser
+  against a stub that rewrites only the express glue and imports the real
+  `accesscode.js` / `approvals.js` / `launcher.js` / `ratelimit.js` over the
+  production DDL on `node:sqlite`, driven at **both** mounts (`/kiosk/…` and the
+  un-prefixed one). 59/60 across the suite; `routing.test.mjs` still needs
+  express. Five screenshots.
+
+  Two defects were found in that run and fixed: the fifteen-minute lockout was
+  counting down in seconds (`נסו שוב בעוד 900 שניות`), and it gave no reason at
+  all — a dead button with a timer on it, which reads as a fault rather than as
+  a rate limiter doing its job.
+
+  **Not deployed.** `more30.com/kiosk/kiosk-launcher` is a 404 until the Railway
+  service is rebuilt. The "locked kiosk" here is a plain navigation — the real
+  lock is Lock Task Mode in the Android agent, which still does not call
+  `identify`.
+
 ## Next, in order
 
 1. Deploy: the registry (API + screen), the approvals (API + picker) and
@@ -294,7 +343,4 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
    screen, feeding the same registry.
 3. The selection screen on the device (§2★ה/ו): `KioskActivity` calls
    `identify`, offers the approved list, and locks onto what is chosen.
-4. `/kiosk-launcher/:code` — the **page**. Its API and its rate limiter now
-   exist; what is missing is the screen that takes the typed code, shows the
-   approved list and opens the locked kiosk.
-5. The "הפעל" wizard with the live checklist (§2★ב).
+4. The "הפעל" wizard with the live checklist (§2★ב).

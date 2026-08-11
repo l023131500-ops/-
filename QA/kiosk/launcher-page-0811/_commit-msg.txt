@@ -1,0 +1,53 @@
+kiosk (35): the launcher had an API, a rate limiter and no screen
+
+KIOSK_BUILD §2*z names /kiosk-launcher/:code. Its API landed last round
+(33a3ddd) and the URL itself was still a 404, so the only way to redeem a
+device access code was an HTTP call - and the person that code exists for is
+standing in front of a tablet with a printed card.
+
+Added server/public/kiosk-launcher.html plus the /kiosk-launcher/:code? route
+in index.js. One page serves both forms: the bare path asks for the code, and
+the path with a code in it prefills and resolves on load. The route never reads
+:code - the client takes it out of location.pathname and POSTs it, because a
+path parameter read server-side is a credential in the access log of every
+proxy in front of the service.
+
+Everything on the page is inline, which is true of no other page here.
+css/style.css is document-relative, and that is exactly what lets the console
+work at / and at /kiosk/ both - but this page is served at two depths, so the
+same href resolves to /kiosk/kiosk-launcher/css/style.css on the form that
+carries a code. An unstyled code box on a tablet in a hall is indistinguishable
+from a broken kiosk, and nothing 404s loudly enough for anyone to notice. The
+shared more30 login pill is left off for a related reason: the caller is staff
+holding six characters, not a signed-in customer, and the pill is fixed over
+this page's own controls.
+
+A typed code is never written into the URL, and a code that arrived in the URL
+is scrubbed out the moment the person taps "enter a different code" - that tap
+means wrong device, and leaving it in the address bar puts one hall's
+credential on the next hall's tablet and silently restores it on reload. The
+chosen business is opened from /open's answer rather than the URL already in
+the list, so the id is re-checked against this device's approvals and a page
+left open across an un-approval cannot still open it. Client codes are never
+rendered; the businesses are offered by name, which is why launcher.js leaves
+the codes out of the payload in the first place.
+
+Verified in QA/kiosk/launcher-page-0811/ - 16 cases in a real browser against a
+stub that rewrites only the express glue and imports the real accesscode.js /
+approvals.js / launcher.js / ratelimit.js over the production DDL on
+node:sqlite, driven at both mounts. 59/60 across the suite; routing.test.mjs
+still imports express and cannot run in this checkout. Five screenshots.
+
+Two defects found in that run and fixed: the fifteen-minute lockout counted
+down in raw seconds ("try again in 900 seconds", ticking to 899), and it gave
+no reason at all - a disabled button with a timer on it reads as a fault, not
+as a rate limiter working.
+
+Not deployed: more30.com/kiosk/kiosk-launcher is a 404 until the Railway
+service is rebuilt. The "locked kiosk" here is a plain navigation - the real
+lock is Lock Task Mode in the Android agent, which still does not call
+identify. No migration; the database is read-only apart from the heartbeat row.
+Protected systems untouched. Test mode.
+
+apps/** is gitignored, so the page and the route are on disk only; the change
+is recorded in apps/35-kioskfleet/STATUS.md alongside the QA evidence.
