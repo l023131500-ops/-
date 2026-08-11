@@ -1,0 +1,30 @@
+== guards (no upload needed) ==
+GET  /api/upload/index.json                         -> 400  text/plain;charset=UTF-8  len=8  cc=-
+HEAD /api/upload/index.json                         -> 400  -  len=-  cc=-
+GET  /api/upload/seed                               -> 400  text/plain;charset=UTF-8  len=8  cc=-
+HEAD /api/upload/seed                               -> 400  -  len=-  cc=-
+GET  /api/upload/up_a_b.tar.gz                      -> 400  text/plain;charset=UTF-8  len=8  cc=-
+HEAD /api/upload/up_a_b.tar.gz                      -> 400  -  len=-  cc=-
+GET  /api/upload/up_a_b                             -> 400  text/plain;charset=UTF-8  len=8  cc=-
+HEAD /api/upload/up_a_b                             -> 400  -  len=-  cc=-
+GET  /api/upload/..%2Findex.json                    -> 400  text/plain;charset=UTF-8  len=8  cc=-
+HEAD /api/upload/..%2Findex.json                    -> 400  -  len=-  cc=-
+
+== upload ==
+source: 200 image/jpeg 29278 B
+upload: 200 id=up_msp1ycrf_ig1w
+
+== while it exists ==
+GET  /api/upload/up_msp1ycrf_ig1w.jpg               -> 200  image/jpeg  len=29278  cc=public, max-age=300, s-maxage=300
+HEAD /api/upload/up_msp1ycrf_ig1w.jpg               -> 200  image/jpeg  len=-  cc=public, max-age=300, s-maxage=300
+HEAD /api/upload/up_msp1ycrf_ig1w.jpg?dl=1          -> 200  image/jpeg  len=-  cc=public, max-age=300, s-maxage=300
+
+== delete ==
+200 {"ok":true,"removed":["up_msp1ycrf_ig1w.jpg","uploads/up_msp1ycrf_ig1w.json"]}
+
+== after it is gone ==
+GET  /api/upload/up_msp1ycrf_ig1w.jpg               -> 404  text/plain;charset=UTF-8  len=4  cc=-
+HEAD /api/upload/up_msp1ycrf_ig1w.jpg               -> 404  -  len=-  cc=-
+HEAD /api/upload/up_msp1ycrf_ig1w.jpg?dl=1          -> 404  -  len=-  cc=-
+
+catalog final: 0 item(s)

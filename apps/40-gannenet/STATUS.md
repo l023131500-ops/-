@@ -379,6 +379,43 @@ PDF bodies from `supabase.co`; none of that applies to the production server.
   (`NEEDS_USER.md`); and a copy already in a teacher's browser or service-worker
   cache survives the delete — nothing server-side can reach it.
 
+- **`app/api/upload/[name]/route.ts` + `public/sw.js`** — half of that last line
+  was untrue: the copy on her disk is unreachable, the copy in her **service
+  worker** is not, because this app writes the service worker. Files are
+  cache-first in `FILES` with no expiry and no revalidation, which is simply
+  correct for Drive files and the 258 seed assets — they are immutable — and
+  wrong for the one source that can now be deleted. And nothing on the client
+  could have acted on it anyway: every non-ok upstream collapsed into `502`, so
+  a deleted file and a broken one were the same answer, and a service worker may
+  not drop a teacher's offline material on a maybe. The route now returns a real
+  **404** for gone (`502` kept for broken) and exports a `HEAD`, so the check
+  costs no bytes; `evictIfGone()` runs behind the response for `/api/upload/`
+  only and deletes with `ignoreSearch`, since `?dl=1` and the bare URL are two
+  keys for one file. Verified on the production build against the real bucket: a
+  real upload cached under both keys, deleted through the real
+  `/api/admin/delete`, then viewed again — the view is still served `200 29278B`
+  from the cache, both keys are gone after it, and the next view is **404** with
+  nothing put back. Offline (server stopped) the same file is served from `FILES`
+  and is **still cached** three seconds later; a rejected check is not "gone".
+  Three defects the run itself found, all fixed here: **(1)** the obvious HEAD —
+  reuse the GET upstream and `body.cancel()` it — *hangs*, returning 400 and 404
+  fine and never returning even a status line for the one id with bytes behind
+  it (two harness runs plus a raw `http.request` that timed out before the
+  headers); it asks Storage with HEAD now. **(2)** Storage's CDN and its origin
+  disagreed about whether the file exists — seconds after the delete an upstream
+  HEAD said gone and an upstream GET returned 200 and all 29,278 bytes, so the
+  route called a deleted file "broken" *and served it*; the upstream URL takes
+  the same cache-buster `lib/overrides.ts` uses. **(3)** the eviction worked and
+  the **browser** undid it: `max-age=86400` let the HTTP cache re-serve the
+  deleted bytes and `cacheFirst` put them straight back, so the network leg for
+  uploads is `cache:"no-store"` and the response `max-age` is 300, matching
+  `s-maxage`. `/shelf` 2,977 items, 0 console errors; `tsc --noEmit` 0; bucket
+  left as found (`uploads/` empty, `seed/` 258, drive catalog 2,977). Evidence in
+  `QA/gannenet/upload-gone-0811/`. **Open:** a file already downloaded to disk,
+  or cached in a browser that never comes back online, is reachable from nowhere;
+  and an upload now bypasses the Supabase CDN on every `FILES` miss — cheap at 0
+  uploaded items, the line to revisit if that grows.
+
 No other file was modified. The mount itself needs no code edit: `next.config.js`
 already reads `APP_BASE_PATH`, and `lib/base.ts` exports `withBase()` for the
 fetch calls, hrefs and service worker that Next's `basePath` does not prefix.
