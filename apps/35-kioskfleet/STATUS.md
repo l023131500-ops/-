@@ -1037,6 +1037,59 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
 
   **Not deployed.**
 
+- **the other half of the selection screen (§2★ה, storage half)** — §2★ה gives
+  the person at the device exactly two moves, both bounded by what management
+  approved *for that device*: pick another `מזהה לקוח`, and pick another
+  **קישור**. §2★ז repeats it — the launcher shows `כל הפריטים המאושרים
+  (מזהי-לקוח/קישורים)`. The first half has been built for a while
+  (`device_clients` → `approvals.js` → the console picker → the launcher list);
+  the second had **nothing**. `links` is an owner-wide library with no
+  per-device relation at all, so the only two addresses a device could ever open
+  were its own `home_url` and an approved client's site — an owner running four
+  halls off one library could not put hall B's link on hall B's tablet without
+  editing the main site, which is the field that locks the whole device. Added
+  `device_links` and `server/src/linkapprovals.js`:
+  - a **separate table**, not a column on `device_clients`. A link is not a
+    client: no code to type on a keypad, no `active` flag, and it belongs to the
+    owner's own library rather than to a business they serve. Folding them
+    together puts a nullable code and a meaningless active column on half the
+    rows. Absence of a row is a "no" here too.
+  - **nothing resolves a typed string.** That is the whole difference in threat
+    model — a client is redeemed by a code a stranger can guess at, and a link is
+    chosen off a list the server already decided to show.
+  - `selectableLinks()` filters **nothing**, unlike `selectableClients()`. There
+    is no `active` column, so the only ways a link leaves the list — deleted from
+    the library, un-approved — already remove the row; a filter here would hide
+    a link an owner ticked. `allowed_host` is left out of the offer: the hosts go
+    to the device, not to whoever is choosing.
+  - `approvalSelection()` is **reused, not copied**. It filters ids against an
+    owner's own set and knows nothing about clients; a second copy would be the
+    same eight lines free to drift from the one under test.
+  - `withLinkHosts()` **composes with** `effectiveHostCsv()` rather than
+    extending it, and the run measures why: that one filters on
+    `Number(r.active) === 1`, so a link row — which has no `active` — is dropped
+    from its own widening. Both keep the same two rules: an **unset** list stays
+    unset (seeding it would *create* a lock on a device that had none), and the
+    host is derived from the link's own address as well as its stored extras, so
+    an approved link can never open as the device's blocked page.
+
+  Verified in `QA/kiosk/link-approvals-0811/` — 9 unit cases (134/135 across the
+  suite; 125/126 before, so the 9 are the whole difference, and the one failure
+  is still `routing.test.mjs`, which imports express) plus an 11-assertion replay
+  of the boot against a database shaped like the live volume, with the DDL **read
+  out of `src/db.js`** rather than copied, so it cannot pass against a text the
+  server does not run.
+
+  Found and **not** fixed, and asserted rather than assumed: the foreign key
+  checks that a link exists, **not that it is the owner's** — approving another
+  customer's link id succeeds at the database. `approvalSelection()` is the only
+  thing standing there, and it is the first call the route must make.
+
+  **Not wired**, the same split `setupprogress.js` and `display_url` used:
+  nothing imports the module yet. In order — the two routes and the widened
+  `update_config`, then the console picker beside `🆔 מזהי לקוח`, then the
+  launcher and `identify()` offering links alongside clients. **Not deployed.**
+
 ## Next, in order
 
 1. Deploy — and it is not a redeploy of this repo. The Railway service

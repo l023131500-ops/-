@@ -1,0 +1,192 @@
+{
+  "total": 11,
+  "passed": 11,
+  "results": [
+    {
+      "ok": true,
+      "name": "the extracted DDL really did contain the new table",
+      "actual": false,
+      "expected": false
+    },
+    {
+      "ok": true,
+      "name": "the old database has no device_links table",
+      "actual": 0,
+      "expected": 0
+    },
+    {
+      "ok": true,
+      "name": "the boot creates device_links",
+      "actual": "table",
+      "expected": "table"
+    },
+    {
+      "ok": true,
+      "name": "…and its reverse index",
+      "actual": "index",
+      "expected": "index"
+    },
+    {
+      "ok": true,
+      "name": "every existing row survives the migration untouched",
+      "actual": {
+        "devices": [
+          {
+            "id": 1,
+            "serial": "SER-1",
+            "name": "לובי",
+            "device_token": "tok-1",
+            "allowed_host": "hall.example.com",
+            "home_url": "https://hall.example.com/"
+          },
+          {
+            "id": 2,
+            "serial": "SER-2",
+            "name": "כניסה",
+            "device_token": "tok-2",
+            "allowed_host": null,
+            "home_url": "https://hall.example.com/b"
+          }
+        ],
+        "links": [
+          {
+            "id": 1,
+            "name": "חתונה 12/8",
+            "url": "https://hadar.example.com/wed",
+            "allowed_host": "hadar.example.com,pay.example.com"
+          },
+          {
+            "id": 2,
+            "name": "תפריט הערב",
+            "url": "https://menu.example.com/tonight",
+            "allowed_host": null
+          }
+        ],
+        "clients": [
+          {
+            "id": 1,
+            "code": "1234",
+            "name": "אולם הדר",
+            "site_url": "https://hadar.example.com/"
+          }
+        ],
+        "deviceClients": [
+          {
+            "device_id": 1,
+            "client_id": 1
+          }
+        ]
+      },
+      "expected": {
+        "devices": [
+          {
+            "id": 1,
+            "serial": "SER-1",
+            "name": "לובי",
+            "device_token": "tok-1",
+            "allowed_host": "hall.example.com",
+            "home_url": "https://hall.example.com/"
+          },
+          {
+            "id": 2,
+            "serial": "SER-2",
+            "name": "כניסה",
+            "device_token": "tok-2",
+            "allowed_host": null,
+            "home_url": "https://hall.example.com/b"
+          }
+        ],
+        "links": [
+          {
+            "id": 1,
+            "name": "חתונה 12/8",
+            "url": "https://hadar.example.com/wed",
+            "allowed_host": "hadar.example.com,pay.example.com"
+          },
+          {
+            "id": 2,
+            "name": "תפריט הערב",
+            "url": "https://menu.example.com/tonight",
+            "allowed_host": null
+          }
+        ],
+        "clients": [
+          {
+            "id": 1,
+            "code": "1234",
+            "name": "אולם הדר",
+            "site_url": "https://hadar.example.com/"
+          }
+        ],
+        "deviceClients": [
+          {
+            "device_id": 1,
+            "client_id": 1
+          }
+        ]
+      }
+    },
+    {
+      "ok": true,
+      "name": "approvals are per device, not per owner",
+      "actual": [
+        1
+      ],
+      "expected": [
+        1
+      ]
+    },
+    {
+      "ok": true,
+      "name": "a duplicate approval is refused by the primary key",
+      "actual": true,
+      "expected": true
+    },
+    {
+      "ok": true,
+      "name": "deleting a link from the library clears it off every device",
+      "actual": 0,
+      "expected": 0
+    },
+    {
+      "ok": true,
+      "name": "deleting a device clears its approvals",
+      "actual": [
+        1
+      ],
+      "expected": [
+        1
+      ]
+    },
+    {
+      "ok": true,
+      "name": "the foreign key does NOT enforce ownership — the route filter must",
+      "actual": "accepted",
+      "expected": "accepted"
+    },
+    {
+      "ok": true,
+      "name": "a second boot adds nothing and loses nothing",
+      "actual": [
+        {
+          "device_id": 1,
+          "link_id": 1
+        },
+        {
+          "device_id": 1,
+          "link_id": 3
+        }
+      ],
+      "expected": [
+        {
+          "device_id": 1,
+          "link_id": 1
+        },
+        {
+          "device_id": 1,
+          "link_id": 3
+        }
+      ]
+    }
+  ]
+}
