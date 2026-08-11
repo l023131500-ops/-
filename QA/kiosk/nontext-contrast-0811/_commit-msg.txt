@@ -1,0 +1,41 @@
+kiosk (35): the border that marks where you can type was 1.22:1, which is no border
+
+Item 4 of "Next, in order" in apps/35-kioskfleet/STATUS.md — the two things the
+dark-mode step found, documented as unfixed, and left for their own step.
+
+The field border was `--line` (#e4e9f2), measured 1.22:1 against the card in
+light and 1.62:1 in dark; WCAG 1.4.11 wants 3:1 for a control's boundary. And
+`.btn-danger` painted `--danger` (#ef4444) on #fee2e2 at 3.08:1 — under the
+4.5:1 normal text needs, on every delete button in the console and on the
+"כן, בצע" that confirms rebooting a device.
+
+- `--field-border` is no longer `--line`. `--line` separates surfaces (a card
+  edge, a table row) and being faint is right for it; a control's border is what
+  defines the control. Chosen against BOTH surfaces it touches — the card
+  outside, the field fill inside — because a border that vanishes on one side has
+  vanished: #858e9e light (3.30 / 3.22), #61708f dark (3.42 / 3.64). No other
+  `--line` use moves.
+- `--danger-ink`, the dark red already hard-coded in `.alert-error`. Both it and
+  `.btn-danger` read from it now so they cannot drift. `--danger` stays the
+  brand's destructive colour: right as a surface, wrong as text.
+
+Verified in QA/kiosk/nontext-contrast-0811/ — a real Chromium at both
+`colorScheme` values against a stub serving the real server/public/, every number
+from `getComputedStyle`. 14/14 pass; the four re-injected "before" rows fail, so
+the check can fail. The previous step's text contrast is re-measured in the same
+run and has not moved. 70/71 on `node --test` (routing.test.mjs imports express,
+the documented baseline). Six screenshots.
+
+A harness bug was found and fixed there: the `.btn-danger` "before" row first
+reported the *new* colour — i.e. claimed the bug never existed — because `.btn`
+carries `transition: .15s` over all properties including `color`, so a computed
+read in the injection's own tick returns where the transition started.
+
+Found and not fixed, so it is not silently claimed: `.btn-light` / `.btn-danger`
+are light fills on a white card (~1.1:1), so the button's own boundary still
+fails 1.4.11. That is every button on every screen, and is its own step.
+
+No migration — the database is read-only here apart from core.run_progress. Not
+deployed: the kiosk server runs on Railway and was not rebuilt, so the live
+console still serves the previous CSS. Protected systems (08/09/bkalut-app/
+bkalot-admin/zr_*/NEDARIM3873) untouched. Test mode.

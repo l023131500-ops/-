@@ -453,13 +453,52 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
 
   **Not deployed.**
 
+- **non-text contrast (the two things the step above found and left)** — a field
+  border at **1.22:1** is not a subtle border, it is no border: what marks
+  "you can type here" disappears for anyone on an uncalibrated screen, in
+  daylight, or with less than perfect sight. And `.btn-danger` — every delete
+  button in the console, plus the `כן, בצע` that confirms rebooting a device —
+  was red-on-pink at **3.08:1**, under the 4.5:1 normal text needs. In
+  `css/style.css`:
+  - `--field-border` is **no longer `--line`**. `--line` separates surfaces (a
+    card edge, a table row), so being a faint hint is right for it; a control's
+    border is what defines the control, and WCAG 1.4.11 is about that one. The
+    value is chosen against **both** surfaces the border touches — the card
+    outside it and the field fill inside it — because a border that vanishes on
+    one side has vanished. `#858e9e` light (3.30 / 3.22), `#61708f` dark (3.42 /
+    3.64). Every other `--line` use is untouched.
+  - `--danger-ink` — the dark red already hard-coded in `.alert-error`. Both it
+    and `.btn-danger` now read from it so the two cannot drift apart. `--danger`
+    stays the brand's destructive colour: it is right as a *surface* and wrong as
+    text, which is the whole bug.
+
+  Verified in `QA/kiosk/nontext-contrast-0811/` — a real Chromium at both
+  `colorScheme` values against a stub serving the real `server/public/`, every
+  number read from `getComputedStyle`. 14/14 assertions pass and the four
+  re-injected "before" rows fail, so the check can fail. The previous step's text
+  contrast is re-measured in the same run and has not moved. 70/71 on
+  `node --test` — the documented baseline.
+
+  A bug in the harness was found and fixed there: the `.btn-danger` "before"
+  measurement first reported the *new* colour, i.e. claimed the bug never
+  existed. `.btn` carries `transition: .15s` — all properties, `color` included —
+  so a computed read in the injection's own tick returns where the transition
+  started.
+
+  Found and **not** fixed, so it is not silently claimed: `.btn-light` and
+  `.btn-danger` are light fills on a white card (~1.1:1), so the *button's own*
+  boundary still fails 1.4.11. That is every button on every screen, not two
+  tokens, and is its own step.
+
+  **Not deployed.**
+
 ## Next, in order
 
 1. Deploy: the registry (API + screen), the approvals (API + picker), `identify`,
-   the launcher, both of §2★א's fields and the dark-mode CSS are only on disk and
-   in this file.
+   the launcher, both of §2★א's fields and the two contrast fixes are only on
+   disk and in this file.
 2. The selection screen on the device (§2★ה/ו): `KioskActivity` calls
    `identify`, offers the approved list, and locks onto what is chosen.
 3. The "הפעל" wizard with the live checklist (§2★ב).
-4. Non-text contrast, console-wide: the field border at 1.62:1 dark / ~1.06:1
-   light, and `.btn-danger` at 3.3:1.
+4. Button boundaries console-wide: `.btn-light` / `.btn-danger` fills at ~1.1:1
+   against the card.
