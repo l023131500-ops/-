@@ -1228,6 +1228,53 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
   arrives in its payload undrawn — that is the next step and it is `public/`
   only.
 
+- **the launcher page draws the links (§2★ה/§2★ז)** — the step above put `links`
+  into `/resolve`'s answer and taught `/open` to accept a `linkId`, and the page
+  drew clients only: the field arrived on every response and was never rendered,
+  so the person standing in the hall could not pick one and half of what §2★ה
+  says the selection screen offers was unreachable from the screen that exists to
+  offer it. `public/kiosk-launcher.html` only:
+  - the approved links follow the businesses on **one** list, because the person
+    is making one choice — but the ids are carried in **different attributes**
+    (`data-link` / `data-client`). Ids are unique only within a table, so client 1
+    and link 1 both exist; a single `data-id` would send whichever the handler
+    guessed and the server would resolve it against the wrong approvals. The QA
+    fixture approves exactly that pair.
+  - **exactly one id is sent**, built from which attribute the button carries
+    rather than setting both and leaving one `undefined`. `/open` refuses a body
+    naming both rather than resolving by precedence, and `JSON.stringify` drops an
+    undefined value — so the other shape would make that refusal depend on a
+    serialisation detail.
+  - a link row shows **host and path**, not the host. `hostOf()` is right for a
+    client — a business is its domain — and wrong here: `links.url` is the
+    specific event sub-link, so a library routinely holds several under one host
+    and every row would print the same line. The query and fragment are dropped
+    (they carry tokens often enough to be careful with on a screen in a hall) and
+    the tail is elided rather than wrapped. `dir="ltr"`, because a `/` is
+    directionally neutral and inside the RTL card the segments of `host/a/b` can
+    be laid out in an order that is not the address.
+  - the "nothing approved" sentence now counts **both** lists. A device with links
+    and no clients is not an unconfigured device, and saying so under a list of
+    links reads as a fault.
+
+  Verified in `QA/kiosk/launcher-page-links-0811/` — 12 cases in a real browser
+  against a stub that rewrites only the express glue and imports the real
+  `accesscode.js` / `approvals.js` / `linkapprovals.js` / `launcher.js` /
+  `ratelimit.js` over the production DDL on `node:sqlite`, driven at **both**
+  mounts. Clicking link id 1 lands on the link's address rather than the
+  same-numbered client's and logs `launcher_link_opened`; the `/open` body is
+  asserted on the wire in both directions. Three screenshots. 146 tests, 145 pass
+  — the documented baseline, unchanged, since this step adds no server code.
+
+  Found and fixed in that run: the two-links-under-one-domain collision above,
+  and a harness bug inherited from `launcher-page-0811` — its stub read the page
+  into a constant at boot, so a stub outliving an edit reports on the previous
+  version of the thing under test. The first driven pass here did exactly that.
+  This stub reads the file per request.
+
+  **Not deployed.** `more30.com/kiosk/kiosk-launcher` is still a 404 until the
+  Railway service is rebuilt.
+
 ## Next, in order
 
 1. Deploy — and it is not a redeploy of this repo. The Railway service
@@ -1250,8 +1297,10 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
 3. The selection screen on the device (§2★ה/ו): `KioskActivity` calls
    `identify`, offers the approved list, and locks onto what is chosen. Needs an
    Android toolchain, which this checkout does not have.
-4. `public/kiosk-launcher.html` draws the clients list only, so the `links` the
-   `/resolve` payload now carries reach the page and are never rendered — the
-   person in the hall still cannot pick one, and `/open` already accepts the
-   `linkId` that screen would send. A second list, and the venue's own site as
-   the way back. No Android toolchain needed — it is `public/` alone.
+4. The device's own `display_url` is not offered anywhere on the launcher page.
+   `identify()` distinguishes `kioskUrl` (the venue's main site, what the device
+   locks to) from `displayUrl` (what *this* device shows), and
+   `launcherProfile()` answers with `kioskUrl` alone — so on a device given its
+   own link, the launcher's `🏠 אתר האולם` button opens something other than what
+   the tablet was showing a moment earlier. `public/` cannot fix this on its own:
+   the field has to reach the payload first. Server then page.
