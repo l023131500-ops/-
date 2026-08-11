@@ -1135,6 +1135,50 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
   picker beside `🆔 מזהי לקוח` is the next step, then the launcher and
   `identify()` offering links alongside clients. **Not deployed.**
 
+- **the link picker, on the device card (§2★ה, console side)** — the table and
+  its two routes landed above and left approving a link an HTTP call, so the
+  second half of the selection screen was still unreachable to the person who
+  owns the fleet: the link library is owner-wide, and without this every device
+  offered nothing but its own main site and its approved clients. Added
+  `linkApprovals()` in `public/js/app.js` and **📚 קישורים מאושרים** on every
+  device card, next to `🆔 מזהי לקוח`:
+  - **a separate dialog, next to the clients one rather than merged with it.**
+    On the device the two are one screen — the person standing there picks a
+    מזהה לקוח *or* a קישור — but each `PUT` replaces its whole set, so one modal
+    carrying both lists would make un-approving every client the price of
+    touching the links. They are also different things to tick: a client is a
+    business whose staff type a code on a keypad, a link is an address the
+    server has already decided to offer.
+  - **no disabled row**, unlike the clients picker, and that is a difference in
+    the data rather than a simplification: `links` has no `active` column, so the
+    only ways a link leaves this list — deleted from the library, un-ticked here
+    — already remove the row. There is no disabled-but-reserved state to grey
+    out, because a link has no code to keep reserved.
+  - the hint under the list is the same two branches the clients picker has, for
+    the same reason: approving widens the device's allowed-domain list, but only
+    if it has one, and the server leaves an **unset** list unset rather than
+    creating a lock. Saying the wrong one of the two ends as `האתר חסום` on a
+    tablet in a hall, which reads as a broken kiosk.
+  - the subtitle says in as many words that this is **not** a change of the main
+    site — the device stays locked on it and returns to it. `🔗 החלף אתר` sits
+    four buttons away and does exactly that, and the two are one careless click
+    apart.
+  - saving nothing is a legitimate save and says so (`לא אושר למכשיר אף קישור`),
+    because absence of a row is a "no" here, not a no-op.
+  - an empty library gets no save button — just a route to `ספריית קישורים`.
+
+  Verified in `QA/kiosk/link-approvals-console-0811/` — 17 cases in a real
+  browser against a stub that rewrites only the express glue and makes the same
+  calls `routes/devices.js` makes, in the same order, over the production DDL
+  **read out of `src/db.js`** on `node:sqlite`; both devices driven, the stored
+  rows and the pushed `update_config` both asserted, plus light/dark screenshots
+  and the empty-library state. 137/138 on `node --test "test/*.test.mjs"` — the
+  documented baseline, unchanged, since this step adds no server code.
+
+  **Not deployed.** Still to come on this half: the launcher page and
+  `identify()` offering the approved links alongside the approved clients — both
+  payloads carry clients only today.
+
 ## Next, in order
 
 1. Deploy — and it is not a redeploy of this repo. The Railway service
@@ -1157,3 +1201,8 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
 3. The selection screen on the device (§2★ה/ו): `KioskActivity` calls
    `identify`, offers the approved list, and locks onto what is chosen. Needs an
    Android toolchain, which this checkout does not have.
+4. `identify()` and `launcher.js` still answer with **clients only**, so an
+   approved link is a row the console can write and nothing on the device can
+   read. Both payloads want `selectableLinks(approvedLinksForDevice(...))`
+   alongside the clients, and the launcher page a second list. No Android
+   toolchain needed for either — they are server + `public/`.
