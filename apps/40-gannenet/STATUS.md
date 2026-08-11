@@ -542,6 +542,35 @@ PDF bodies from `supabase.co`; none of that applies to the production server.
   offline loses its cached copy at activate; online it comes back on the next
   click. **Open:** nothing from this change.
 
+- **`lib/content.ts` + `app/library/page.tsx`** — the previous change closed
+  everything it opened, so this followed the one lesson surface no step had read:
+  `/library`, "מאגר המערכים". Its month filter was built from `l.month` as it
+  stands, and on **12 of the 47** משלימה lessons that field does not hold the
+  month — it holds the whole meta line, `אלול  |  גיל 3–6  |  משך: כ־45 דק׳  |
+  תחום: חברה והתנהגות`. So the dropdown offered **19** options where eleven
+  months exist, twelve of them long strings clipped inside the `<select>`; the
+  chip on twelve cards printed that line; and picking `אלול` returned **4 of the
+  6** Elul lessons, the other two reachable only through the garbage entry each
+  had become. Every lesson was reachable through *some* option — the option
+  counts summed to 52 — just not through the name of its month.
+
+  One `monthOf()` now serves both audiences: cut at the first `|` or `·`, drop a
+  leading `חודש`. It is a single reading rule for the two shapes the data has —
+  a משלימה `month` field, and the `meta` line that is the only month a רגילה
+  lesson carries (`חודש תשרי · יום א׳ מתוך 5  |  …`). The רגילה path had its own
+  `meta.split("·")[0].replace("חודש","")`, correct against today's five rows and
+  breakable the same way by one meta line written with `|`. `allMonths()` reads
+  through it too. **No content file was touched** — the data stands, only the
+  reading of it changed. Measured in the browser both ways: 19 → **11** options
+  in year order (אלול→סיוון plus `כל השנה`), 12 → **0** over-long chips, `אלול`
+  4 → **6**, and the eleven month counts still sum to 52, so nothing was dropped
+  or double-counted. `tsc --noEmit` 0, 0 console errors. Evidence in
+  `QA/gannenet/library-month-0811/`. Note for the next run: the first
+  measurement after the edit returned the *old* numbers — `shell-gannenet-v3`
+  served the previous bundle until the worker was unregistered. **Open:** the
+  free-text box searches title + category + the one-line `sub` only, so a word
+  that appears in the lesson body itself finds nothing.
+
 No other file was modified. The mount itself needs no code edit: `next.config.js`
 already reads `APP_BASE_PATH`, and `lib/base.ts` exports `withBase()` for the
 fetch calls, hrefs and service worker that Next's `basePath` does not prefix.
