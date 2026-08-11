@@ -1,0 +1,30 @@
+gannenet (40): eight uploads returned 200 and one of them was kept
+
+The previous step moved overrides off a single shared object. The upload store
+was still the same shape and worse, because the loser's bytes stay in the bucket
+and only the entry naming them is lost, leaving an orphan nothing can reach.
+
+Measured before touching it, two uploads at once through the real route against
+the real bucket: eight uploads, every one answering 200, one entry surviving,
+eight blobs left behind. The count explained itself only when the object was
+read twice at the same instant -- the authenticated read is fronted by Supabase's
+CDN, `?t=<random>` returned the real array and the plain URL returned `[]`. So
+the catalog showed nothing after a successful upload, and every read-modify-write
+started from a stale empty array and overwrote the list. overrides.ts documents
+that CDN behaviour and busts its read-back; this file never did, and its comment
+claimed the opposite.
+
+One object per upload, uploads/<id>.json. Two uploads are two keys, no shared
+array to rewrite, and each object is written once and never mutated, so a cached
+copy of it is the correct copy. The legacy index.json is folded in underneath.
+Ids already carry a base36 timestamp, so "newest first" -- which was the array's
+insertion order -- comes off the id, and legacy entries sort beside new ones.
+uploadItem now reports a failed metadata write instead of leaving an orphan.
+
+Same harness after: 0 of 4 lost, /api/catalog 9 items with the legacy entry
+folded in, /shelf 2,986 items / 21 categories, 0 console errors, tsc 0. All 24
+probe objects deleted with the service-role key; bucket back to index.json [],
+overrides.json {}, seed, and the pre-existing orphan. Test mode; no protected
+system touched.
+
+Evidence in QA/gannenet/upload-index-race-0811/.

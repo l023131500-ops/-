@@ -254,6 +254,38 @@ PDF bodies from `supabase.co`; none of that applies to the production server.
   body (`{"statusCode":"409",...}`). Every probe above reads the body, not the
   status. It is a property of this network, not of production.
 
+- **`lib/supabase.ts`** — the upload store still held every uploaded item in one
+  `index.json` array and wrote it read-modify-write, the shape the entry above
+  moved overrides off. It is the worse of the two: the loser's **bytes are
+  already in the bucket**, so what is lost is the entry naming them and the file
+  becomes an orphan nothing can list, reach or clean up — the bucket was already
+  carrying one, `up_msoxh0q3_hx4s.png`, left by `hide-holds-0811`. Measured
+  first, two uploads at once through the real route against the real bucket:
+  eight uploads, all answering **200**, and **one** entry survived, beside eight
+  blobs. Reading the object directly explained why it was one and not the four a
+  pure race would cost — the authenticated read is fronted by Supabase's CDN and
+  the two disagreed at the same instant, `?t=<random>` returning the real array
+  and the plain URL `[]`. So `/api/catalog` showed nothing after a successful
+  upload and every read-modify-write started from a stale empty array and
+  overwrote the whole list. `lib/overrides.ts` documents that CDN behaviour and
+  busts its admin read-back; this file never did, and its comment claimed the
+  opposite ("avoids CDN staleness"). Now **one object per upload**,
+  `uploads/<id>.json`: two uploads are two keys, there is no shared array to
+  rewrite, and each object is written once and never mutated, so a cached copy
+  of it is the correct copy. `readEntries()` folds the legacy `index.json` in
+  underneath, per-upload objects authoritative. Per-object storage has no
+  insertion order and the array's order *was* the shelf's "newest first" — ids
+  are `up_<base36 ms>_<base36 rand>`, so creation time comes off the id, no
+  field added and legacy entries sort beside new ones. `uploadItem` no longer
+  swallows the metadata write: the bytes are in the bucket by then, so a failure
+  says so instead of leaving an orphan. Same harness after: **0 of 4 lost**, and
+  `/api/catalog` listed 9 — the 8 concurrent uploads plus the legacy entry
+  folded in, so the migration is verified against real data. `/shelf` 2,986
+  items / 21 categories, 0 console errors; `tsc --noEmit` 0. Bucket left exactly
+  as found: 24 probe objects deleted with the service-role key, `index.json`
+  back to `[]`, `/api/drive-catalog` 2,977. Evidence in
+  `QA/gannenet/upload-index-race-0811/`.
+
 No other file was modified. The mount itself needs no code edit: `next.config.js`
 already reads `APP_BASE_PATH`, and `lib/base.ts` exports `withBase()` for the
 fetch calls, hrefs and service worker that Next's `basePath` does not prefix.
