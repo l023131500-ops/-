@@ -2186,6 +2186,67 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
 
   **Not deployed.**
 
+- **a dialog could be on screen while the keyboard was still on the page behind
+  it.** 2026-08-11, `dialog-focus-0811`. The console does not use `<dialog>`:
+  `modal()` appends a `.modal-bg` into `#modal-root`, a sibling of `#app-view`,
+  so the platform gives it nothing — no top layer, no focus move on open, no
+  Escape, and Tab walks the card underneath. The only way out was the backdrop
+  click, which is a mouse. Every destructive confirmation here is one of these,
+  so someone reading `לאתחל את המכשיר?` had their focus on `♻️ אתחל` beneath it.
+  In `public/js/app.js`, on `modal()` itself rather than at forty call sites:
+  - **focus goes to the box, not to the first control.** The first control is
+    `כן, בצע` in every confirmation here, and landing there puts a reboot or a
+    delete one Space away from somebody who was only tabbing. A dialog that
+    opens to *take* a value is the opposite case and gets its field, where
+    focusing types nothing.
+  - the focusable set is **recomputed on every press**, never cached: the wizard
+    redraws its own list after each tick, and `offsetParent` drops what is
+    hidden — the exit-code dialog and the wizard both toggle `.hidden` sections
+    in place.
+  - the handler is on `document` in **capture**, so a field inside the dialog
+    that swallows the key (the domain editor's `Enter` is one) cannot take
+    Escape or Tab first; and only `#modal-root.lastElementChild` acts, or two
+    open dialogs would both `preventDefault` and fight over where focus lands.
+  - the teardown is on **`bg.remove`**, the one method every close path in the
+    file already calls, so the listener cannot outlive a dialog nobody can see —
+    and `closeModals()` is `.remove()` per child rather than `innerHTML = ''`
+    for the same reason. Focus returns to the opener **only if it is still
+    connected**: a save reloads the device list, and `focus()` on a detached
+    node silently sends focus to `<body>`, i.e. back to the top of a long
+    column of cards.
+  - the `<h3>` every dialog opens with becomes its accessible name
+    (`aria-labelledby`), beside `role="dialog"` / `aria-modal="true"`.
+
+  Verified in `QA/kiosk/dialog-focus-0811/` — **42/42, exit 0**, both colour
+  schemes, against `warn-ink-0811`'s stub. Three dialogs for the three shapes
+  `modal()` tells apart (destructive confirmation, value-taking, controls but no
+  field): focus lands where intended, Tab ×24 — several laps of the largest —
+  stays inside, Shift+Tab off the first control wraps to the last, Escape
+  closes, focus comes home. Focus is taken **by Tab and never by `el.focus()`**,
+  since the subject is a keydown handler that a scripted focus does not run.
+
+  **The control is the previous behaviour rebuilt in the same live page**: the
+  same markup appended to `#modal-root` by hand, without `modal()`. All three
+  "before" rows fail in both modes — focus stays on the button underneath, all
+  six Tab presses land on the card behind, Escape does nothing.
+
+  A harness defect, found by a failing run and worth the line because of which
+  direction it failed in: the first run was 36/42 with every "focus came home"
+  row red while its own value column named the correct button. The expectation
+  had been written out by hand alongside the `WHERE` that produces it, and the
+  two descriptions drifted. A red harness over a green fix is what gets a
+  working change reverted.
+
+  Found and **not** fixed: the page behind an open dialog is not `inert`. The
+  trap covers Tab and Shift+Tab, which is what a keyboard user does, and
+  `aria-modal="true"` is what AT reads — but neither makes the cards behind it
+  actually unreachable.
+
+  152 tests / 151 pass — the documented baseline, unchanged (no server code in
+  this step; `routing.test.mjs` needs express).
+
+  **Not deployed.**
+
 ## Next, in order
 
 1. Deploy — and it is not a redeploy of this repo. The Railway service
@@ -2310,11 +2371,20 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
      the navy. What that run leaves for the next one is a method, not a defect:
      the tab order is a **ring**, so a sweep must stop when it wraps, and an
      index into the recorded stops is not a number of key presses.
+   - **the dialogs are now closed.** `dialog-focus-0811` measured the second of
+     the two: a `.modal-bg` is a sibling of `#app-view`, so nothing moved focus
+     into it, Tab walked the card behind it and Escape did nothing — a
+     destructive confirmation on screen with the keyboard still on the button
+     underneath. `modal()` now moves focus, traps Tab in both directions,
+     closes on Escape and returns focus to the opener; graded on three dialogs
+     in both modes, with the previous shape rebuilt in the same page as the
+     control. What that leaves is one reading, not a measurement: the page
+     behind is not `inert`, so the trap covers the keyboard and not a screen
+     reader's virtual cursor.
    - **focus order (WCAG 2.4.3)** is measured on one screen and no further. The
-     console rebuilds `#content` with `innerHTML` on every route change and
-     opens dialogs as `.modal-bg` siblings, so the sequence **after a redraw**
-     and **whether focus is trapped in an open dialog** are both still
-     unmeasured. That is the next thing under this heading.
+     console rebuilds `#content` with `innerHTML` on every route change, so
+     where focus lands **after a redraw** is still unmeasured. That is the next
+     thing under this heading.
    - the console's **buttons, links and checkboxes inside `#content`** declare
      no focus style and fall back to the UA ring. Read, not measured — the run
      above covered the sidebar only.

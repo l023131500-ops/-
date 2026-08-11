@@ -1,0 +1,26 @@
+kiosk (35): a dialog was on screen while the keyboard was still on the page behind it
+
+The console does not use <dialog>. modal() appends a .modal-bg into
+#modal-root, a sibling of #app-view, so the platform gave it nothing: no focus
+move on open, no Escape, and Tab walked the device card underneath. The only
+close path was the backdrop click, which is a mouse. Every destructive
+confirmation here is one of these, so someone reading "lehatchel et hamachshir?"
+had their focus on the reboot button beneath it.
+
+modal() now moves focus in, traps Tab both directions, closes on Escape and
+returns focus to the opener. Focus lands on the box and not on the first
+control, because that one is "ken, batze" in every confirmation here; a dialog
+that opens to take a value gets its field instead. The focusable set is
+recomputed per press (the wizard redraws itself), the handler is on document in
+capture (the domain editor swallows Enter), only the topmost dialog acts, and
+the teardown hangs off bg.remove -- the one method every close path already
+calls -- so no listener outlives a dialog nobody can see.
+
+QA/kiosk/dialog-focus-0811: 42/42, exit 0, both colour schemes, three dialogs
+for the three shapes modal() tells apart. The control is the previous behaviour
+rebuilt in the same live page and fails all three of its rows. 152 tests / 151
+pass, the documented baseline, unchanged.
+
+Found and not fixed: the page behind is not inert.
+
+Not deployed.
