@@ -444,6 +444,59 @@ PDF bodies from `supabase.co`; none of that applies to the production server.
   upload straight to Storage — a design decision, and nothing on the shelf today
   needs it.
 
+- **`lib/download-name.ts` (new) + `app/api/drive/[id]/route.ts` + `app/api/shelf/[name]/route.ts`
+  + `app/api/upload/[name]/route.ts`** — every download was named after the URL
+  instead of the file. All three sources stream through one of our own routes and
+  all three answered a bare `Content-Disposition: attachment`, with no `filename`,
+  so the browser fell back to the last path segment — which is an id.
+  `/api/shelf/<id>.pdf` at least kept the extension; **`/api/drive/<id>` has none
+  at all**, so all 2,977 files on the shelf's dominant source saved as a
+  33-character Drive id that Windows will not open by double-click. The title was
+  in the catalog the whole time.
+
+  One `downloadFilename()` + `contentDisposition()` now serves all three, and every
+  rule in it comes from a count over the real catalogs rather than from caution
+  (`catalog-scan.mjs`): **1,648** drive titles and **70** seed titles carry a
+  character illegal in a filename (`Fwd: …`, `"דוידוני במקלט"…`, `…התפילה?`), so a
+  title cannot be used raw; **25** drive and **40** seed titles have no extension
+  of their own, so the mime supplies it; **20** carry `.pdf` *twice* — Google's own
+  data — so the strip repeats; the longest is 133 characters, so the stem is
+  bounded at 80. Every title here is Hebrew, which needs RFC 6266's two-parameter
+  form (ASCII `filename` fallback plus `filename*=UTF-8''…`, with `'()*` escaped on
+  top of `encodeURIComponent`, which leaves them). An unknown mime yields **no**
+  extension rather than a guessed one — one file, an `ms-tnef` attachment.
+
+  `name-check.mjs` runs the shipped source (annotations stripped, so it cannot
+  drift from a copy) over all **3,235** catalog rows: 0 failures against empty,
+  illegal character, leading/trailing dot, over-length, doubled extension, CR-LF
+  header injection, and malformed header. Verified live on the production build
+  against the real bucket — a seed image serves `inline` and, with `?dl=1`, the
+  full header decoding to `וואוו, איזה פתרון גאוני קיבלה הגננת תמר---- - מודעה
+  יוני גננות.jpg`; and **in the browser through the real UI**, "הורדת הקובץ" saved
+  `הופה, סוף שנה כבר כאן! - דוגמא לעמוד מתוך הקטלוג.png` where it used to save
+  `1E5LUC8aYmijfBR3zDYg3Gz222ft3s9nO.png`. The upload route reads the teacher's own
+  title back out of Storage, on the download path only — a view needs no filename
+  and the service worker's HEAD check must stay cheap — and that was exercised with
+  a real upload through the real form and removed through the real
+  `/api/admin/delete`. `tsc --noEmit` 0; bucket left as found (`uploads/` empty,
+  `seed/` 258, drive catalog 2,977). Evidence in
+  `QA/gannenet/download-filename-0811/`.
+
+  Two limits of this machine, both pre-existing: `/api/drive/[id]` answers 502 for
+  every id here because `drive.usercontent.google.com` returns NetFree's block page
+  (418, verified this run), and seed PDFs likewise; the image proves the identical
+  code path end to end.
+
+  **Open:** the first file tested kept saving as its id, and the cause is not this
+  change — `cacheFirst()` in `public/sw.js` returns a `FILES` hit *ignoring the
+  request's cache mode*, so a copy cached before an update keeps its old response
+  headers for ever and even `fetch(url, {cache:"reload"})` never reaches the
+  network (measured: same URL → old header, same URL + `&z=<random>` → new one).
+  The same cache also stores `?dl=1` and the bare URL as two entries for one file —
+  two full copies against her storage quota, differing in one header. Bumping the
+  `FILES` version would drop a teacher's offline material, which is the one thing
+  it exists to keep, so this needs its own step.
+
 No other file was modified. The mount itself needs no code edit: `next.config.js`
 already reads `APP_BASE_PATH`, and `lib/base.ts` exports `withBase()` for the
 fetch calls, hrefs and service worker that Next's `basePath` does not prefix.
