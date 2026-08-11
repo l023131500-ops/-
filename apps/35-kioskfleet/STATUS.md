@@ -148,6 +148,39 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
 
   **Not deployed.**
 
+- **the device's own access code (§2★ז)** — §2★ז names three things; two existed
+  (`identify`, and the launcher page still to come) and the third, "לכל מכשיר קוד
+  קצר לשיוך מהיר", had no representation at all. The launcher cannot be built
+  without it: the person at the device types a **device** code, on hardware
+  holding no device token, and there was no column for it and nothing to resolve
+  it against. Added `server/src/accesscode.js` + `devices.access_code`:
+  - it is not the "מזהה לקוח" of `clientcode.js`. That one is redeemed *inside*
+    an already-authenticated device and only picks which approved business comes
+    up; this one identifies the device to an unauthenticated caller. Hence:
+    **globally unique** (the launcher has no session to scope by, so two owners
+    sharing a code would resolve one to the other's device), **generated, never
+    chosen** (32⁶ ≈ 1.07e9; an owner picking would pick 1234), and
+    **re-issuable** — it ends up printed on a card beside a tablet, so leaking is
+    its normal end state and `POST /devices/:id/access-code` replaces it.
+  - the four ambiguous glyphs are excluded from *generation* rather than folded
+    on input. No real code can hold `0 1 I O`, so a typed one is honestly "no
+    such code"; folding would have to guess whether `1` meant L or I, and a wrong
+    guess opens a device that is not the caller's.
+  - collisions are resolved by the UNIQUE index, not by a SELECT first — two
+    devices enrolling in the same second would both find a code free and both
+    store it, leaving the launcher with a code naming two devices.
+  - the index is created *after* the `ALTER`, not in the `CREATE TABLE` block:
+    SQLite refuses `ADD COLUMN ... UNIQUE`, and an index declared up there names
+    a column the existing database file does not have and takes the boot down.
+
+  Verified in `QA/kiosk/device-access-code-0811/` — 8 unit cases (35/36 across
+  the suite; `routing.test.mjs` imports express and cannot run here, unchanged),
+  plus a replay of the migration against `node:sqlite` proving 3 existing devices
+  get unique codes with `home_url`/`allowed_host` untouched and a second boot a
+  no-op.
+
+  **Not deployed.** No console UI yet — the code is in the API payload only.
+
 ## Next, in order
 
 1. Deploy: the registry (API + screen), the approvals (API + picker) and
@@ -156,6 +189,9 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
    screen, feeding the same registry.
 3. The selection screen on the device (§2★ה/ו): `KioskActivity` calls
    `identify`, offers the approved list, and locks onto what is chosen.
-4. `/kiosk-launcher/:code` — 6-character access code → the approved list → open
-   the locked kiosk.
+4. `/kiosk-launcher/:code` — the access code now exists and resolves; what is
+   missing is the page that takes it, shows the approved list, and opens the
+   locked kiosk. It needs a rate limiter: six characters is guessable given
+   unlimited attempts. The code also has to be shown on the device card in the
+   console, or the owner cannot read it out.
 5. The "הפעל" wizard with the live checklist (§2★ב).

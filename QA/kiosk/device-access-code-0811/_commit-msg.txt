@@ -1,0 +1,34 @@
+kiosk (35): the launcher is entered by typing a device code, and no device had one
+
+§2★ז names three things. IdentifyDevice was built on 11/08 and the launcher page
+is next; the third — "לכל מכשיר קוד קצר לשיוך מהיר" — had no representation at
+all, which is what blocks the page. Whoever stands at the device types a *device*
+code, on hardware holding no device token yet, and there was no column for that
+code and nothing to resolve it against.
+
+It is not the "מזהה לקוח" of clientcode.js, and the difference forces everything
+else: a client code is redeemed inside an already-authenticated device and only
+picks which approved business comes up, while this one identifies the device to
+an unauthenticated caller. So it is globally unique rather than per owner (the
+launcher has no session to scope by; two owners sharing a code would resolve one
+to the other's device), generated rather than chosen (32^6, and an owner allowed
+to pick would pick 1234), and re-issuable, because a code printed on a card
+beside a tablet in a hall leaks as a matter of course.
+
+The four ambiguous glyphs are kept out of generation instead of folded on input:
+no real code holds 0 1 I O, so a typed one is honestly "no such code", whereas
+folding would have to guess whether 1 meant L or I, and a wrong guess opens
+somebody else's device. Collisions are settled by the UNIQUE index rather than a
+SELECT first — two devices enrolling in the same second would both find a code
+free and both store it. The index is created after the ALTER and not in the
+CREATE TABLE block, because SQLite refuses ADD COLUMN ... UNIQUE and an index
+declared up there names a column the live database file does not have yet and
+takes the boot down before the migration runs.
+
+QA/kiosk/device-access-code-0811: 8 unit cases (35/36 across the suite;
+routing.test.mjs imports express and cannot run in this checkout, untouched), and
+the migration replayed against node:sqlite — 3 existing devices get unique codes,
+home_url/allowed_host unchanged, second boot a no-op, duplicate refused by the
+engine.
+
+Not deployed; no console UI yet.

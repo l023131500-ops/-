@@ -1,0 +1,13 @@
+﻿pre-migration: 3 devices, no access_code column
+1. ALTER TABLE devices ADD COLUMN access_code TEXT — ok
+2. CREATE UNIQUE INDEX idx_devices_access_code — ok (three NULL rows present, NULLs stay distinct)
+3. backfillAccessCodes — issued 3 codes
+   #1 SER-1 → HWUTK7
+   #2 SER-2 → F3BGE5
+   #3 SER-9 → VUATVS
+   every issued code resolves back to its own device — ok
+   home_url / allowed_host / serial unchanged on all 3 — ok
+second boot: 0 codes issued, none of the existing codes re-rolled — ok
+duplicate access_code refused by the engine — ok
+
+ALL CHECKS PASSED
