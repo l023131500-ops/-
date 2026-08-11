@@ -1325,6 +1325,50 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
   still labels the venue button from `kioskUrl`. That is the next step and it is
   `public/` only.
 
+- **the launcher page draws the second field (§2★א/§2★ז)** — the step above put
+  `displayUrl` into `/resolve`'s answer and the page still labelled and opened one
+  button from `kioskUrl`. So on a device given its own link, the person who typed
+  a code and wanted out again had no row leading back to the page the tablet was
+  showing a moment earlier, and the single button offered — `🏠 אתר האולם` —
+  moved it off that page instead. `public/kiosk-launcher.html` only:
+  - **two rows whenever the two fields differ, one when they do not.** The server
+    sends `displayUrl` as the device's own link *or* the main site
+    (`deviceDisplayUrl()` falls back), so inequality is the whole test: a device
+    following the main site draws exactly the button it always drew. A stored
+    equal copy — impossible to write today, since `normalizeDisplayUrl` collapses
+    it, but writable before that rule existed — collapses here too rather than
+    printing one address twice under two names.
+  - the device's own link comes **first**. It is the state the person arrived
+    from, so it is the row they are looking for; the venue's main site stays and
+    keeps its own label, because the two have to remain distinguishable — one is
+    where "back" goes and the other is what the device is locked to.
+  - it is drawn with `shortUrl` and `dir="ltr"`, like a library link and unlike
+    the venue: a display link is routinely a sub-page of the venue's own host, so
+    `hostOf()` would print the same line under both names and the two rows would
+    differ only in their titles.
+  - both navigate from the profile rather than from an address written into the
+    button, so a later `data-url` cannot swap them — and neither is re-checked by
+    `/open`, because neither is an approval: they are the device's own two
+    addresses, and the server already sent both to this caller.
+
+  Verified in `QA/kiosk/launcher-display-url-page-0811/` — 13 cases in a real
+  Chromium at the production mount against a stub that rewrites only the express
+  glue and imports the real `accesscode.js` / `approvals.js` /
+  `linkapprovals.js` / `launcher.js` / `ratelimit.js` over the production DDL on
+  `node:sqlite`, with three device fixtures (own link / following the main site /
+  an equal copy stored). Both rows were clicked and land on **different** pages.
+  Three screenshots. 152 tests, 151 pass — the documented baseline, unchanged,
+  since this step adds no server code.
+
+  Two things the run changed: the row's icon was 🔙, which renders as a glyph
+  with the English word BACK inside it on an otherwise-Hebrew screen — it is now
+  📺, the icon the console already prints this field with on the device card; and
+  its first tint sat close to the client rows' blue, so the four kinds of row are
+  now amber / green / blue / purple.
+
+  **Not deployed.** `more30.com/kiosk/kiosk-launcher` is still a 404 until the
+  Railway service is rebuilt.
+
 ## Next, in order
 
 1. Deploy — and it is not a redeploy of this repo. The Railway service
@@ -1347,9 +1391,10 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
 3. The selection screen on the device (§2★ה/ו): `KioskActivity` calls
    `identify`, offers the approved list, and locks onto what is chosen. Needs an
    Android toolchain, which this checkout does not have.
-4. The launcher page does not draw the `displayUrl` the payload now carries.
-   `kiosk-launcher.html` labels and opens its venue button from `kioskUrl`, so on
-   a device given its own link that button still moves the tablet off the page it
-   was showing. The server half landed above; this is `public/` only, and the two
-   addresses have to stay distinguishable on the screen — going "back" is the
-   device's own link, and the venue's main site is what it is locked to.
+4. `--line` — the console-wide contrast question three steps have now recorded
+   and deliberately left: 1.29:1 in dark, ~1.06:1 in light, and it draws the
+   wizard's fully clickable step rows, the table rules and the card edges. The
+   field border and the two button rings were split out of it precisely because
+   they are controls; what is left is a design decision across every screen, so
+   it wants measuring in one pass rather than another token. `css/` only, and
+   runnable in this checkout.
