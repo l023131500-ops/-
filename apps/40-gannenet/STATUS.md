@@ -753,7 +753,53 @@ PDF bodies from `supabase.co`; none of that applies to the production server.
   `/lesson/[id]` paths unchanged, 0 console errors. Evidence in
   `QA/gannenet/search-index-0812/`. **Open:** `/shelf/[id]` is 178 kB of route JS
   (274 kB first load) — the one route still above 120 kB, and the page a teacher
-  reaches from every file card.
+  reaches from every file card. → **closed below.**
+
+- **`components/PdfViewer.tsx`** — closes that line. `/shelf/[id]` is the page
+  behind every card on the shelf, and **176 kB of its 178 kB was `pdf-lib`**,
+  statically imported at the top of `PdfViewer`. Two things follow from where
+  that import sat. The route bundles what the module graph reaches, not what
+  renders, so **634 of the 3,235 items on the shelf** — every `image` (316),
+  `doc` (268), `media` (28) and `gapp` (22) row, counted from the two catalogs —
+  downloaded and parsed a PDF-writing library on a page that never mounts the
+  viewer. And for the 2,601 that are PDFs it was the wrong shape anyway: a static
+  import blocks hydration, where the tool it serves is not needed until the file
+  itself has arrived.
+
+  `import("pdf-lib")` behind a module-level `loadPdfLib()` (import() caches, so
+  the effect and `buildSelectedPdf` share one fetch of it). **178 kB → 2.77 kB of
+  route JS, 274 kB → 98.8 kB first load**; every other route byte-identical.
+
+  The same effect was also re-serialising the whole document to produce a copy of
+  it. `hiddenPages` is empty for everything on the shelf today — the trim is an
+  admin override and `overrides.json` is `{}` — yet the preview was always built
+  by `PDFDocument.create()` + `copyPages(all)` + `save()`, so the teacher waited
+  for the download **plus** a full parse and re-write before the first page
+  appeared. Untrimmed, the bytes just fetched *are* the preview, and they are now
+  shown as their own blob before pdf-lib is even requested; the copy still runs
+  when pages really are hidden. One consequence worth stating: the preview now
+  outlives a later failure — if the pdf-lib chunk never arrives, the file is
+  already on screen, so `status === "error"` only replaces it when there is no
+  preview at all.
+
+  Verified in the browser against the production build (`next start` :3045). On
+  an image item: 13 scripts, **no 459 kB chunk**, no `<object>`, the image
+  renders, 0 console errors. On a PDF item: the chunk appears (`659.*.js`,
+  459,570 B — lazily, and only here), the preview is a `blob:`, the grid builds
+  8 page buttons, the counter reads `8 עמ׳ · נבחרו 8` and `נבחרו 3` after `2-4`
+  through the real range box, and the real download button saves a **3-page**
+  PDF named `שבוע טוב וחודש טוב! - קטלוג ט''ו בשבט — עמודים 2-4.pdf`. 0 console
+  errors. `tsc --noEmit` 0, `next build` ✓ 194 pages. Evidence in
+  `QA/gannenet/pdf-viewer-weight-0812/`.
+
+  The PDF's bytes are supplied at Playwright's network layer, at the app's own
+  URL, because this machine cannot fetch a real seed PDF at all — NetFree answers
+  418 to PDF bodies from `supabase.co` (recorded twice above). Everything over
+  the wire is the shipped path; `make-sample.mjs` builds the 8-page file.
+  **Open:** the fetch still pulls the whole PDF into memory before anything
+  paints, where `<object data={fileUrl}>` would render progressively and let the
+  browser stream it — worth doing, but it costs a second request for the buffer
+  the page tool needs, so it wants its own measurement.
 
 No other file was modified. The mount itself needs no code edit: `next.config.js`
 already reads `APP_BASE_PATH`, and `lib/base.ts` exports `withBase()` for the

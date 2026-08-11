@@ -1,0 +1,43 @@
+{
+  "sampleBytes": 2188,
+  "image": {
+    "scripts": 13,
+    "bigChunks": [
+      {
+        "url": "/_next/static/chunks/fd9d1056-e3d373074663785d.js",
+        "bytes": 172834
+      },
+      {
+        "url": "/_next/static/chunks/117-99c2382f8685ef7a.js",
+        "bytes": 124463
+      }
+    ],
+    "hasImg": 1,
+    "hasPdfViewer": 0,
+    "consoleErrors": []
+  },
+  "pdf": {
+    "previewIsBlob": true,
+    "gridButtons": 8,
+    "counterOnLoad": "8 עמ׳ · נבחרו 8",
+    "counterAfterRange": "8 עמ׳ · נבחרו 3",
+    "bigChunks": [
+      {
+        "url": "/_next/static/chunks/fd9d1056-e3d373074663785d.js",
+        "bytes": 172834
+      },
+      {
+        "url": "/_next/static/chunks/117-99c2382f8685ef7a.js",
+        "bytes": 124463
+      },
+      {
+        "url": "/_next/static/chunks/659.a60840ca1321f459.js",
+        "bytes": 459570
+      }
+    ],
+    "downloadName": "שבוע טוב וחודש טוב! - קטלוג ט''ו בשבט — עמודים 2-4.pdf",
+    "downloadBytes": 1237,
+    "downloadPages": 3,
+    "consoleErrors": []
+  }
+}
