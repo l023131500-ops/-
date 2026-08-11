@@ -571,6 +571,36 @@ PDF bodies from `supabase.co`; none of that applies to the production server.
   free-text box searches title + category + the one-line `sub` only, so a word
   that appears in the lesson body itself finds nothing.
 
+- **`lib/content.ts` + `app/library/page.tsx`** — closes that line, and a second
+  defect sitting on top of it. The box matched
+  `(title + category + sub).includes(q)`: **75 characters of an average
+  3,020-character lesson, 2.5%** of what the lesson holds. A word in the body —
+  `כוורן`, `האבקה`, `צנצנת`, `ריקוד` — found nothing, and the material is on the
+  page one click later. The second defect is why fixing only the first would
+  still have missed the obvious searches: the text is matched **as stored**, and
+  **50 of the 52** lessons carry nikud somewhere (`בְּרִיאַת הָעוֹלָם`,
+  `מוֹדֶה אֲנִי`). Nobody types the points, so the word printed in the title was
+  itself unsearchable.
+
+  `normalizeSearch()` strips nikud (U+0591–U+05C7) and geresh/gershayim — the
+  same word appears with both the typographic and the ASCII form — collapses
+  whitespace and lowercases, and **both sides go through it**, term and text.
+  `searchTextOf()` walks every string a lesson holds, minus the `id` slug,
+  normalizes each field on its own and joins on newline, so a term must sit
+  inside one field rather than straddle the seam two concatenated fields make.
+  Neither content file was touched, and the page already imported both, so the
+  bundle is unchanged.
+
+  Measured in the browser against the real corpus, before → after:
+  `מודה אני` 0 → **5**, `צנצנת` 0 → **5**, `ריקוד` 0 → **3**, `האבקה` 0 → **2**,
+  `סוכה` 0 → **1**, `תפוח` 1 → **6**, `ראש השנה` 5 → **10**, `שופר` 3 → **5**.
+  No regression: empty query still 52, an exact title still 1, nonsense still 0,
+  a padded query equals the unpadded one, and search composes with both filters
+  (`אלול` + `ראש השנה` → 3; `ראש השנה` splits 5 רגילה / 5 משלימה). The
+  placeholder now says what it searches and the box got an `aria-label`.
+  `tsc --noEmit` 0, 0 console errors. Evidence in
+  `QA/gannenet/library-search-0811/`.
+
 No other file was modified. The mount itself needs no code edit: `next.config.js`
 already reads `APP_BASE_PATH`, and `lib/base.ts` exports `withBase()` for the
 fetch calls, hrefs and service worker that Next's `basePath` does not prefix.
