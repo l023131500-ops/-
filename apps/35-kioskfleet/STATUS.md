@@ -1631,6 +1631,60 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
 
   **Not deployed.**
 
+- **the label on every field (`--label-ink`)** — `danger-text-0811` closed the
+  hard-coded-colour-beside-an-inverting-token class in `console.html` and
+  `js/app.js`, and named those as the two files it swept. `css/style.css` itself
+  had never been swept for it, and the one literal there sitting on a surface
+  that **does** invert is `.field label`: `#33455f`, written between `--field-bg`
+  and `--ink`, which is **1.75:1** on the dark card. That is every form label in
+  the console — 33 `.field` blocks in `app.js` and two in `console.html` — and
+  the two in `console.html` are **`שם משתמש` and `סיסמה` on the login screen**,
+  the first thing that opens, where the label is the only thing saying which box
+  is which and the password box's own text is masked.
+  - a third token in the shape of `--danger`/`--danger-ink`/`--danger-text`:
+    `--label-ink`, `#33455f` light and `#c3cfe3` dark. The **light value is
+    exactly the one it replaces**, so the light console does not move a byte, and
+    the harness enforces that directly rather than leaving it as a claim.
+  - the dark value was chosen to **hold the ratio**, not merely to clear the
+    threshold. In light the label is 9.73:1, sitting between the ink (18.7:1) and
+    the muted text (5.49:1); `#c3cfe3` is 10.83:1 against a dark ink of 14.23:1
+    and muted of 7.08:1. A value that only passed 4.5:1 would flatten the label
+    and the `--muted` hint printed under it into one block of text — and the
+    device edit dialog has exactly that pair under both of §2★א's fields, where
+    the labels are the only thing distinguishing the link that locks from the
+    link that shows. The harness asserts the two colours differ and grades the
+    hint in the same pass.
+  - `--label-ink` is asserted to be neither `--ink` nor `--muted` in either
+    mode. Collapsing onto either is the failure this token exists to avoid, and
+    it is the kind of thing a later "simplify the palette" edit would do.
+
+  Verified in `QA/kiosk/label-ink-0811/` — a real Chromium at both `colorScheme`
+  values against `warn-ink-0811/stub-server.mjs`, reused rather than copied. The
+  background is read from **the surface actually painted** behind each label
+  rather than assumed from the token: these labels sit on `.auth-card`, `.card`
+  and `.modal`, and one quoted value would be right for some and wrong for the
+  rest. The login screen is driven on its own page with no `kf_token`, since the
+  token is read once at load. 13/16 rows pass; the three failures are the
+  **before** rows, re-injected into the same DOM in the same run and each
+  asserted **dark-only**. Six screenshots. 152 tests, 151 pass — the documented
+  baseline, unchanged, since this step adds no server code.
+
+  A harness bug found and fixed mid-run: the "is the label distinguishable from
+  the hint under it" check first selected `.field:has(#h) + .field label` as a
+  fallback — another *label*, so it compared the token against itself and
+  reported a defect that was not there. It now selects the hint `<div>` and fails
+  loudly if that selector ever stops matching, rather than silently skipping.
+
+  Found and **not** fixed, with numbers rather than silence: `.pill.off`
+  (`#64748b` on `#f1f5f9`) is **4.38:1** at 12px/600 — under 4.5:1 and not large
+  text. It is not this class: it is a light chip that deliberately does not
+  invert, so it fails equally in both modes, and fixing it properly touches
+  `.pill.on`, `.alert-ok`, `.hl-tag` and `.code-chip` together. `.dot.off` is
+  1.55:1 on the light card, and is a status dot beside a `.pill` that says the
+  same thing in words — 1.4.11 exempts it as duplicated information.
+
+  **Not deployed.**
+
 ## Next, in order
 
 1. Deploy — and it is not a redeploy of this repo. The Railway service
@@ -1675,4 +1729,10 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
    graded there, per the above, and `index-contrast-0811/verify.mjs` is the
    harness to reuse — it is the one that grades both, folds `opacity` into the
    foreground, and reads an inset ring rather than mistaking a fill for a
-   boundary.
+   boundary. **`css/style.css`'s own literals are now swept** — `label-ink-0811`
+   found the one that sat on an inverting surface (`.field label`, 1.75:1 dark,
+   every label in the console) and fixed it. What that sweep left is the **light
+   chips**, which fail equally in both modes and so are a different question:
+   `.pill.off` is 4.38:1 at 12px/600, and `.pill.on` / `.alert-ok` / `.hl-tag` /
+   `.code-chip` are the same decision and have to move together. That is the
+   next thing under this heading, ahead of the screen-by-screen pass.
