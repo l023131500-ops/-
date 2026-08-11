@@ -378,12 +378,43 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
   the API, and the Android agent still opens `homeUrl` — `displayUrl` is sent
   *alongside* it so an older agent keeps working.
 
+- **the two fields, on the device screen (§2★א, console side)** — the column and
+  the API landed above and the console still showed one URL field, so the second
+  field was reachable only by hand-writing a PATCH. Added to
+  `public/js/app.js`:
+  - the edit dialog now has **אתר ראשי** and, under it, **קישור שיוצג על
+    המכשיר** — the order and the wording §2★א names. The first field's old label
+    was `קישור האירוע/אולם (Home URL)`, which described both jobs back when one
+    column did both.
+  - `displayUrl` is sent on **every** save, empty included. The server reads it
+    by presence (`''` is a clear, and `COALESCE` cannot express that), so
+    omitting the key when the field is blank would make clearing it impossible.
+  - the hint under the field is recomputed from `hl.value()` rather than written
+    once, so an owner who edits the domain list in this same dialog is told
+    whether the widening still applies. It describes the state **after** the
+    save, which is what the owner is about to cause.
+  - the card shows `📺 מוצג במכשיר` only when the device has a link of its own.
+    `mapDevice` reads `display_url ?? displayUrl ?? null` — `??` and not `||`,
+    because "following the main site" and "given its own link" have to stay
+    distinguishable on the card. Both URLs are wrapped `dir="ltr"`: they now sit
+    after a Hebrew label on the same line, where bidi would otherwise reorder
+    them.
+
+  Verified in `QA/kiosk/display-url-console-0811/` — 9 cases in a real browser
+  against a stub that rewrites only the express glue and calls the real
+  `displayurl.js`/`approvals.js`/`hosts.js` in the order `routes/devices.js`
+  calls them, asserting the stored column *and* the `update_config` pushed, plus
+  light/dark screenshots.
+
+  **Not deployed.**
+
 ## Next, in order
 
-1. Deploy: the registry (API + screen), the approvals (API + picker) and
-   `identify` are only on disk and in this file.
-2. §2★א's two fields on the device screen in the console — the storage and the
-   API landed above; the screen still shows one URL field.
+1. Every input in the console is white-on-white in dark mode (≈1.03:1) — found
+   in the QA above, console-wide and older than that change, so it was left for
+   its own step in `css/style.css`.
+2. Deploy: the registry (API + screen), the approvals (API + picker), `identify`,
+   the launcher and both of §2★א's fields are only on disk and in this file.
 3. The selection screen on the device (§2★ה/ו): `KioskActivity` calls
    `identify`, offers the approved list, and locks onto what is chosen.
 4. The "הפעל" wizard with the live checklist (§2★ב).
