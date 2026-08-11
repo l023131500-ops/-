@@ -20,6 +20,14 @@ import { fileURLToPath } from 'node:url';
 import { setupChecklist, checklistProgress, TRACKS } from '../../../apps/35-kioskfleet/server/src/setupsteps.js';
 
 const PUBLIC = fileURLToPath(new URL('../../../apps/35-kioskfleet/server/public/', import.meta.url));
+// `src/index.js` mounts the docs directory at `/docs` beside `public/`
+// (`if (fs.existsSync(docsDir)) site.use('/docs', express.static(docsDir))`), and
+// the console's one guide link points into it. This stub was 404ing that path,
+// which is invisible to a run that only reads the link's colour and fatal to one
+// that has to follow it — Chromium does not record an error page in history, so
+// the link could never enter `:visited`. Added by `visited-link-0811`,
+// additively; nothing else in this file changes.
+const DOCS = fileURLToPath(new URL('../../../apps/35-kioskfleet/docs/', import.meta.url));
 const PORT = Number(process.argv[2] || 8797);
 
 const USER = { username: 'qa', fullName: 'בדיקת QA', role: 'owner', devicesUsed: 2, deviceLimit: 5 };
@@ -53,7 +61,17 @@ const CLIENTS = [
 ];
 const LINKS = [{ id: 11, name: 'אולם הדר — חתונה 12/8', url: 'https://hadar.example.com/event/12', allowedHost: 'hadar.example.com' }];
 
-const TYPES = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8' };
+// `.md` is `text/plain` and not the default `application/octet-stream` for a
+// reason `visited-link-0811` had to find out: an octet-stream response is a
+// download, a download is not a navigation, and a link that triggers one never
+// enters history. `express.static` serves `.md` as `text/markdown`, which
+// Chromium also renders inline.
+const TYPES = {
+  '.html': 'text/html; charset=utf-8',
+  '.css': 'text/css; charset=utf-8',
+  '.js': 'text/javascript; charset=utf-8',
+  '.md': 'text/plain; charset=utf-8',
+};
 
 const json = (res, body, code = 200) => {
   res.writeHead(code, { 'content-type': 'application/json; charset=utf-8' });
@@ -112,9 +130,13 @@ createServer(async (req, res) => {
     return json(res, { error: 'not stubbed: ' + p }, 404);
   }
 
-  const file = p === '/console' || p === '/console/' ? 'console.html' : p === '/' ? 'index.html' : p.replace(/^\//, '');
-  const abs = normalize(join(PUBLIC, file));
-  if (!abs.startsWith(normalize(PUBLIC))) { res.writeHead(403); return res.end('no'); }
+  const docs = p.startsWith('/docs/');
+  const root = docs ? DOCS : PUBLIC;
+  const file = docs ? p.slice('/docs/'.length)
+    : p === '/console' || p === '/console/' ? 'console.html'
+      : p === '/' ? 'index.html' : p.replace(/^\//, '');
+  const abs = normalize(join(root, file));
+  if (!abs.startsWith(normalize(root))) { res.writeHead(403); return res.end('no'); }
   try {
     const buf = await readFile(abs);
     res.writeHead(200, { 'content-type': TYPES[extname(abs)] || 'application/octet-stream' });

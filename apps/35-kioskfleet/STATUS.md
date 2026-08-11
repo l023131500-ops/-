@@ -2010,6 +2010,63 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
 
   **Not deployed.**
 
+- **`:visited` measured — the reading above is now a measurement, and the
+  console is unchanged by it.** 2026-08-11, `visited-link-0811`. The last open
+  item under item 6 below, and the only property in this console that nine
+  screen-by-screen runs could not see: `getComputedStyle` returns the
+  **unvisited** style no matter what is painted, by design and as a privacy
+  guarantee. So every link in the console has been graded without any run
+  measuring what a person who has already clicked one actually sees.
+
+  What is compared is the **rendered PNG of the link element**, byte for byte,
+  in three states — `U` on a fresh profile before the href has ever been opened,
+  `V` after genuinely following that link and coming back, `M` again with
+  `a:visited { color: #ff00ff }` injected. `V === U` is the finding. `M !== V`
+  is the control, and it is the half that makes the finding mean anything: it
+  proves the link really was in the visited state when `U` and `V` were
+  compared, where otherwise `V === U` is equally consistent with *nothing was
+  ever recorded in history*. The grade is on the hash of the whole element and
+  not on one pixel because the guide link opens with `📄` — its extremal pixel
+  is black in light and white in dark, i.e. the emoji rather than the ink. That
+  is reported as measured, with a note, not filtered out.
+
+  **12/12, exit 0. Six control rows, six detected the visited state.** All three
+  in-text links paint identically after being visited, in both modes. The
+  install link is the same hash in *both* schemes — it sits on `.alert-ok`, a
+  light fill that does not invert, which is exactly what `--chip-link-ink` was
+  split off to do in `screens-enrol-settings-0811`; that is now one row measured
+  twice rather than a claim. Printed alongside, while the control is painting
+  the link magenta: `getComputedStyle` still says `rgb(42, 97, 232)` /
+  `rgb(126, 166, 255)` / `rgb(31, 79, 216)` — the lie, recorded in-run.
+
+  **The side finding is worth the run on its own.** `_probe.mjs`, kept in the
+  run directory, tried five configurations: a self-link, `newContext()`,
+  `launchPersistentContext`, the same with
+  `--disable-features=PartitionVisitedLinkDatabase`, and headed on a real
+  profile. **Only the headed one paints `:visited` at all.** A headless
+  accessibility suite cannot see this property, so any future check of it has to
+  be written headed — which is why this one is.
+
+  Two harness corrections, both found by a failing run rather than reasoned
+  about. (1) `warn-ink-0811/stub-server.mjs` never served `/docs`, which
+  `src/index.js` mounts beside `public/`; invisible to a run that reads a link's
+  colour and fatal to one that must *follow* it, because Chromium does not
+  record an error page in history — the guide link's two controls failed on
+  exactly that. Added additively, with `.md` as `text/plain` rather than
+  `octet-stream`, since a download is not a navigation and is not recorded.
+  `link-underline-0811` re-run after the change: 22/24, the documented baseline,
+  unchanged. (2) `U` was the only sample taken on a cold profile with an empty
+  font cache, and all three dark rows failed for that and not for `:visited`;
+  the console is loaded twice before the `U` pass now and `shot()` waits on
+  `document.fonts.ready`. A `diff()` was added at the same time — a hash
+  mismatch alone cannot tell *`:visited` repainted this* from *these are not the
+  same two screenshots*, and those are opposite findings.
+
+  152 tests / 151 pass — the documented baseline, unchanged (no server code in
+  this step; `routing.test.mjs` needs express).
+
+  **Not deployed.**
+
 ## Next, in order
 
 1. Deploy — and it is not a redeploy of this repo. The Railway service
@@ -2104,9 +2161,16 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
    not been measured anywhere. **The first of those is now closed** —
    `link-underline-0811` underlined the three in-text links (and asserted the
    line does *not* reach navigation or buttons, which flipping the global
-   default would have done). `:visited` remains the only open item here:
-   `getComputedStyle` lies about it by design, so it needs pixel sampling on a
-   genuinely visited link rather than another computed read. The
+   default would have done). **`:visited` is now closed too** —
+   `visited-link-0811` compared the rendered PNG of each link before and after
+   genuinely visiting it, with an injected `a:visited` rule as the control that
+   proves the visited state was live; all three are byte-identical in both
+   modes, so the reading STATUS.md had been carrying is now a measurement and
+   the answer did not change. Nothing is open under this heading. What that run
+   leaves for whoever writes the next one is a constraint, not a defect: of five
+   Chromium configurations only a **headed** profile paints `:visited` at all,
+   so a headless suite cannot check this and a future check has to be written
+   the same way. The
    screen-by-screen sweep found four real
    defects across seven screens (`.serial`, the UA checkbox hue, `.pill.off`,
    and this one), all of them the same shape — a fixed value beside a surface
