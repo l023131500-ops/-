@@ -1,0 +1,36 @@
+gannenet (40): the library shipped all 180 lessons to read the search box
+
+/library was a client component importing lib/content, so the whole corpus —
+3.5 MB of JSON — was bundled into the route: 422 kB of route JS, 518 kB first
+load, downloaded and parsed before the first card appeared. The only thing in
+the browser that reads that mass is the free-text box, and only once someone
+types. Measured: the searchable text is 2,745 kB of it; the 180 cards are 79 kB.
+Everyone who used the three dropdowns, or nothing, paid for a search they never
+ran.
+
+The corpus moved behind /api/library-index — a force-static route prerendered
+into the build output — fetched once on the first keystroke, 342 kB gzipped.
+/library is now a server component that builds the cards and hands them to
+library-client.tsx; normalizeSearch/monthOf/isMonthLabel moved to lib/search.ts
+so the client half can import them without the lessons behind them (lib/content
+re-exports; no caller changed). /library: 422 kB -> 2.04 kB of route JS,
+518 kB -> 98 kB first load, and the 180 cards are in the HTML now rather than
+painted by JS.
+
+Behaviour unchanged, verified rather than assumed: all 180 served entries are
+byte-identical to searchTextOf(lesson) as the page used to compute it (0
+missing, 0 differing), and ten terms return the same lesson-id set both ways.
+In the real page a fresh /library renders 180 cards with 0 index requests;
+typing fires exactly 1 and returns 12 for ציפור, including cards whose title
+and blurb do not carry the word. The loading gap is not silent — the line under
+the heading says the search is on titles only until the index lands, which is a
+subset of the answer and never a wrong one, and a failed fetch says so and
+retries on the next keystroke. Filters unchanged (180 / תשרי 19 / +חגי השנה 15
+/ 45 / משלימה 61). public/sw.js needs no change: the route falls to its
+network-first rule, which is correct for a URL that is stable across builds.
+
+tsc --noEmit 0, next build 194 pages, 180 /lesson/[id] paths unchanged, 0
+console errors. Evidence in QA/gannenet/search-index-0812/.
+
+Open: /shelf/[id] is 178 kB of route JS (274 kB first load) — the one route
+still above 120 kB, and the page a teacher reaches from every file card.

@@ -715,6 +715,46 @@ PDF bodies from `supabase.co`; none of that applies to the production server.
   content ships to the phone. It was the same shape at 52 lessons and 3½× smaller;
   at 180 it wants a prebuilt index.
 
+- **`lib/search.ts` (new) + `lib/content.ts` + `app/api/library-index/route.ts` (new)
+  + `app/library/page.tsx` + `app/library/library-client.tsx` (new)** — closed the
+  open line above. `/library` was a client component importing `lib/content`, so
+  **all 180 lessons — 3.5 MB of JSON — were bundled into the route**: 422 kB of
+  route JS, 518 kB first load, downloaded and parsed before the first card
+  appeared. Measured what that mass actually is: the searchable text of the
+  corpus is 2,745 kB of it and the 180 cards are 79 kB. Only the free-text box
+  reads the first number, and only after someone types — so every visitor who
+  used the three dropdowns, or none, paid for a search they never ran.
+
+  The corpus now sits behind `/api/library-index`, a `force-static` route
+  prerendered into the build output (`○` in the build listing), and is fetched
+  once on the first keystroke — 342 kB gzipped, and only then. `/library` became
+  a server component that builds the cards and hands them to `library-client.tsx`;
+  the three string helpers moved to `lib/search.ts` so the client half can import
+  them without the corpus behind them (`lib/content.ts` re-exports, no caller
+  changed). **`/library`: 422 kB → 2.04 kB of route JS, 518 kB → 98 kB first
+  load**, and the 180 cards are now in the HTML itself rather than painted by JS.
+
+  Behaviour is unchanged, not approximately: all 180 served entries are
+  byte-identical to `searchTextOf(lesson)` as the page used to compute it (0
+  missing, 0 differing), and ten terms return the same lesson-id set both ways
+  (ציפור 12, מנורה 12, בראשית 28, שבת 93, פרשת 55, ריקוד 9, טבע 44, and three
+  terms in no lesson → 0). In the real page: a fresh `/library` renders 180 cards
+  with **0** requests to the index; typing ציפור fires exactly **1** and returns
+  12, including cards whose title and blurb do not contain the word. The gap
+  while it loads is not silent — with the fetch held open the line under the
+  heading reads "מחפש בכותרות בלבד — תוכן כל המערכים נטען…" and the term is
+  matched against the card, which is a subset of the answer and never a wrong
+  one; a failed fetch says so and a later keystroke retries. Filters unchanged
+  (180 / תשרי 19 / +חגי השנה 15 / that domain alone 45 / משלימה 61).
+  `public/sw.js` needs no change: the new route falls to its network-first rule,
+  which is the right one — the URL is stable across builds, so a cache-first copy
+  would outlive the content it indexes, and network-first still answers offline
+  from the last copy. `tsc --noEmit` 0, `next build` ✓ 194 pages, 180
+  `/lesson/[id]` paths unchanged, 0 console errors. Evidence in
+  `QA/gannenet/search-index-0812/`. **Open:** `/shelf/[id]` is 178 kB of route JS
+  (274 kB first load) — the one route still above 120 kB, and the page a teacher
+  reaches from every file card.
+
 No other file was modified. The mount itself needs no code edit: `next.config.js`
 already reads `APP_BASE_PATH`, and `lib/base.ts` exports `withBase()` for the
 fetch calls, hrefs and service worker that Next's `basePath` does not prefix.
