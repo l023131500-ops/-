@@ -2914,6 +2914,24 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
    not asserted, because `--line` is a console-wide decision and not a
    four-boxes-on-one-screen decision. Outside the console, `--accent-2` is still
    text in `.plan li::before` on the marketing page.
+   **That last line is now closed, and it was the same defect with a harder
+   threshold.** `plan-ink-0811` graded the ✓ on all three pricing cards in both
+   modes: **2.28:1** light, the identical value the admin screen produced,
+   because it is the identical colour on the identical `--card`. What differs is
+   the bar — `.stat .v` is 32px/800 and got 1.4.3's large-text 3:1, while the ✓ is
+   800 at the body's **16px**, which is under the 18.66px where bold becomes
+   large, so it is graded at 4.5:1. Fixed as `--ok-ink`; dark is byte-identical
+   (7.47:1 before and after — the bug was light-mode only). **No use of
+   `--accent-2` as text remains anywhere in `server/public/`.**
+   The reason no earlier run could have caught it is worth carrying beyond this
+   screen: `getComputedStyle(el)` does not return a pseudo-element's colour, so
+   **every** contrast harness under this item has been blind to `::before` and
+   `::after` on every page it ever swept, not just this one. `plan-ink-0811`'s
+   `PAINTED` takes a pseudo argument and is the first that is not. 24/24 measured
+   rows, four control rows, three of which must fail and do. What is open under
+   this heading is the same deliberate line as above and nothing new: the dashed
+   `--line` between list items (1.22:1) is reported, not asserted. 151/152 on
+   `node --test`, the documented baseline, unchanged — this step touches CSS only.
 7. **Keyboard**, which item 6 never covered: every run under it graded the
    console *at rest*, and none pressed Tab. `focus-ring-0811` opened this and
    closed its first half — the focus indicator on the fields, which was 1.06:1

@@ -1,0 +1,54 @@
+kiosk (35): the tick beside every price was a colour no sweep could read
+
+apps/35-kioskfleet/STATUS.md item 6 ended on the one thing admin-contrast-0811
+found and deliberately left: "--accent-2 is text in one more place,
+.plan li::before on the marketing page, which is a different screen and
+untouched here." That is this step, and it is the same defect with a harder bar.
+
+The ✓ before every line of every pricing card was 2.28:1 in light — the identical
+number the admin screen produced, because it is the identical #22c55e on the
+identical white --card. What differs is the threshold. .stat .v is 32px/800 and
+got 1.4.3's large-text carve-out at 3:1; the ✓ is font-weight 800 at the body's
+16px, and 800 only becomes large text from 18.66px, so it is graded at 4.5:1.
+The value misses by a factor of 1.97 rather than 1.32.
+
+Fifth appearance of the shape a brand token beside a surface that inverts, and
+second in a row where a stylesheet sweep could not have looked. Last time it was
+an inline style= inside a JS template. This time it is generated content, and the
+reason is worth more than this screen: getComputedStyle(el) does not return a
+pseudo-element's colour, so every contrast harness written under item 6 has been
+blind to ::before and ::after on every page it ever swept — not only this one.
+plan-ink-0811's PAINTED takes a pseudo argument and is the first that is not.
+
+Fixed as --ok-ink, the token the previous step created for exactly this: #15803d
+light (5.02:1, measured), #22c55e dark. The bug was light-mode only, so the dark
+page is byte-identical — 7.47:1 before and after. --accent-2 stays the brand's
+green and stays right as a surface: .brand .logo's gradient and .dot.on do not
+move. After this, no use of --accent-2 as text remains anywhere in
+server/public/.
+
+24/24 measured rows, exit 0. Twelve per mode: the ✓ on the first card, on the
+featured one and on the last item of the third, plus the nine things painted
+beside them on those cards — section heading, two plan names, two prices, the
+/חודש, the item text itself and both buttons — so a fix cannot pass by moving
+the neighbours out from under the probe. None of the nine was ever under
+threshold. Four control rows, three of which must fail and do: an injected bad
+value per mode (one grey cannot be a near-miss on both a white card and a
+near-black one), and a "before" row that re-measures #22c55e instead of quoting
+it — failing in light and passing in dark, which is the defect's own shape and
+what stops the dark row reading as a second bug. Two further fact rows: that the
+::before generated "✓" at all (a pseudo that never rendered and one with a
+correct colour look identical through a ratio), and that the <head> script did
+switch :root.dark on — it is a matchMedia toggle, not a media query in the
+stylesheet, and without it both passes would have graded the light page.
+
+Found and not fixed: the dashed --line between list items is 1.22:1 light /
+1.29:1 dark against the card, reported and not asserted — the console-wide --line
+question every contrast step has left open on purpose, and a separator between
+two pricing rows is not where it gets decided.
+
+151/152 on node --test, the documented baseline, unchanged: this step touches CSS
+only. The CSS itself is under /apps/**, which .gitignore excludes, as with every
+kiosk step before it — the repo carries STATUS.md and the QA run.
+
+Not deployed.
