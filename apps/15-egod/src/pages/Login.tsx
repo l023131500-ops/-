@@ -3,12 +3,19 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { BookOpen, Mail, Lock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { getPublicSiteUrl } from "@/lib/site";
+import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
+
+// המינימום שהאימות עצמו אוכף: signup עם 4 תווים חוזר
+// weak_password / "Password should be at least 6 characters".
+// מוצג ליד השדה, נאכף ב-minLength ונבדק לפני השליחה — כולם קוראים את הקבוע הזה.
+const PASSWORD_MIN_LENGTH = 6;
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -25,6 +32,10 @@ const Login = () => {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSignup && password.length < PASSWORD_MIN_LENGTH) {
+      toast.error(`הסיסמה חייבת להיות באורך ${PASSWORD_MIN_LENGTH} תווים לפחות`);
+      return;
+    }
     setLoading(true);
     if (isSignup) {
       const { error } = await supabase.auth.signUp({
@@ -82,15 +93,38 @@ const Login = () => {
                 <label className="text-sm font-medium text-foreground mb-1 block">דוא"ל</label>
                 <div className="relative">
                   <Mail className="absolute right-3 top-3 w-4 h-4 text-muted-foreground" />
-                  <Input type="email" placeholder="email@example.com" value={email} onChange={(e) => setEmail(e.target.value)} className="pr-9" dir="ltr" />
+                  <Input type="email" placeholder="email@example.com" value={email} onChange={(e) => setEmail(e.target.value)} className="pr-9" dir="ltr" required />
                 </div>
               </div>
               <div>
-                <label className="text-sm font-medium text-foreground mb-1 block">סיסמה</label>
+                <label className="text-sm font-medium text-foreground mb-1 block" htmlFor="password">סיסמה</label>
                 <div className="relative">
-                  <Lock className="absolute right-3 top-3 w-4 h-4 text-muted-foreground" />
-                  <Input type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} className="pr-9" dir="ltr" />
+                  <Lock className="absolute right-3 top-3 z-10 w-4 h-4 text-muted-foreground" />
+                  <PasswordInput
+                    id="password"
+                    placeholder="••••••••"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="pr-9"
+                    dir="ltr"
+                    required
+                    autoComplete={isSignup ? "new-password" : "current-password"}
+                    minLength={isSignup ? PASSWORD_MIN_LENGTH : undefined}
+                    aria-describedby={isSignup ? "password-rule" : undefined}
+                  />
                 </div>
+                {isSignup && (
+                  <p
+                    id="password-rule"
+                    className={cn(
+                      "mt-1 text-xs",
+                      password.length >= PASSWORD_MIN_LENGTH ? "text-secondary" : "text-muted-foreground",
+                    )}
+                  >
+                    {password.length >= PASSWORD_MIN_LENGTH ? "✓ " : ""}
+                    לפחות {PASSWORD_MIN_LENGTH} תווים
+                  </p>
+                )}
               </div>
               <Button type="submit" disabled={loading} className="w-full bg-primary text-primary-foreground hover:bg-navy-light text-lg py-5">
                 {loading ? "מתחבר..." : isSignup ? "הרשם" : "התחבר"}
