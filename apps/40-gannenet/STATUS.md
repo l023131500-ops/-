@@ -177,6 +177,34 @@ PDF bodies from `supabase.co`; none of that applies to the production server.
   read-modify-write with no compare-and-set — two saves in the same second lost
   one during this run's own cleanup.
 
+- **`public/sw.js`** — the line above ended on the service worker serving a
+  pre-hide catalog to a returning teacher. Following it into `activate()` found
+  something larger sitting beside it: `keys.filter(k => !k.endsWith(VERSION))`
+  deleted **every** cache the filter did not recognise, and Cache Storage is
+  keyed by *origin*, not by service-worker scope. Under `more30.com` this app
+  shares that origin with every other system mounted there — `/galil` (#24) is a
+  vite-plugin-pwa build whose Workbox precache is named
+  `workbox-precache-v2-https://more30.com/galil/` — so every gannenet activation
+  would have wiped them. Reproduced with the old line restored: four caches
+  seeded at the origin, reload, and galil's and a stubbed kiosk cache are both
+  gone (`caches.match('/galil/index.html')` → `null`). Nothing was lost in
+  production because `/gannenet` is not mounted yet; this fires on the first
+  activation after it is. The cleanup now only considers names this app itself
+  created, `/^(shell|files|catalog)-gannenet-v\d+$/`, and each cache carries its
+  own version so one can be dropped without taking the others — `FILES` is the
+  teacher's own "שמירת התצוגה לאופליין" downloads and must survive every bump.
+  With that separation the catalog cache could be bumped to `v4` and its strategy
+  changed from stale-while-revalidate (`hit || fetching` — the stale copy always
+  wins) to network-first with a 3 s budget, which is the other half of the open
+  line: the curation surface may not answer from a pre-hide copy. Measured both
+  ways: online, a primed `STALE-PRE-HIDE` body is ignored and the live one served
+  and re-cached; offline, the cached copy comes back in 8 ms and `/shelf` still
+  falls back to the 258 seeds. Online count unchanged at **2,977**. Also
+  corrected `p("/api/generate")` in the never-cache list to the route that
+  exists, `/api/ai-generate`. `tsc --noEmit` 0. Evidence in
+  `QA/gannenet/sw-origin-scope-0811/`. **Open:** `setOverride()` is still a
+  read-modify-write with no compare-and-set.
+
 No other file was modified. The mount itself needs no code edit: `next.config.js`
 already reads `APP_BASE_PATH`, and `lib/base.ts` exports `withBase()` for the
 fetch calls, hrefs and service worker that Next's `basePath` does not prefix.
