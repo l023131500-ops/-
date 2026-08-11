@@ -1,0 +1,36 @@
+platform (§1א): the one password field on the platform could not be read back
+
+more30.com/login is the single sign-in for every system, and its password
+field had no way to reveal what was typed and no statement of the rule it
+enforces. §1א asks for both: an eye button on every password field, and the
+requirement shown beside the field while typing. The portal was scanned --
+portal/**/*.{html,js} holds exactly one type="password", login.html:172 --
+so this closes the portal side of that item.
+
+The button sits inside the field on the right, where the LTR password text
+does not reach (the field keeps 46px of padding for it), 36x36, hit-tested.
+It is type="button" on purpose: inside a <form> a button with no type is a
+submit button, and every "show" would have sent the form. State lives in one
+place -- type, aria-pressed, aria-label and icon change together -- because a
+button that says "show" while the field is already visible is worse than no
+button. Switching between the sign-in and sign-up tabs puts the field back to
+masked.
+
+The requirement (8 characters) is shown only in sign-up, where it applies, and
+reads from the same constant the submit path checks, so the two cannot drift.
+It turns from a bullet to a green check as the rule is met, and is wired with
+aria-describedby rather than a live region -- announcing on every keystroke is
+noise.
+
+Found and fixed mid-step: `svg.hidden = true` does nothing. `hidden` is defined
+on HTMLElement, not SVGElement ('hidden' in SVGElement.prototype === false), so
+the assignment created a plain JS field and the icon stayed an open eye while
+the password was visible. toggleAttribute now.
+
+Deployed: dpl_8TEKo4tNP5fL6e9VcRvMpgsyCCxQ, more30-portal, production, aliased
+to more30.com. No rebuild -- all of portal/public was hashed against
+portal/dist first and only login.html differed. Verified on the domain, not the
+deployment: /login returns the new markup, and five DOM states were measured in
+the browser on more30.com.
+
+Evidence: QA/platform/login-show-password-0812/

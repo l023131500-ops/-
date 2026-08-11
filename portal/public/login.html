@@ -79,6 +79,25 @@
       }
       input.he { direction: rtl; }
       input:focus { outline: 2px solid var(--gold); outline-offset: 1px; border-color: transparent; }
+      /* שדה הסיסמה מקבל כפתור "עין" בתוך המסגרת. השדה עצמו dir=ltr (סיסמה
+         אינה טקסט עברי), ולכן הנקודות נכתבות משמאל לימין והצד הפנוי הוא
+         הימני — שם יושב הכפתור, והריפוד הימני שומר שהתווים לא ייכנסו מתחתיו. */
+      .pw-wrap { position: relative; }
+      .pw-wrap input { padding-right: 46px; }
+      .pw-toggle {
+        position: absolute; right: 5px; top: 50%; transform: translateY(-50%);
+        width: 36px; height: 36px; min-height: 36px; padding: 0;
+        display: grid; place-items: center;
+        background: transparent; border: 0; border-radius: 8px;
+        color: var(--muted); cursor: pointer;
+      }
+      .pw-toggle:hover { color: var(--ink); }
+      .pw-toggle svg { width: 20px; height: 20px; display: block; }
+      /* דרישת הסיסמה מוצגת ליד השדה בזמן ההקלדה (ולא רק כשגיאה אחרי שליחה),
+         ומשנה מצב כשהיא מתקיימת. */
+      .pw-req { margin: 6px 0 0; font-size: 12px; line-height: 1.7; color: var(--muted); }
+      .pw-req[data-met='1'] { color: var(--ok-ink); }
+      .pw-req .mark { font-weight: 700; }
       button {
         width: 100%; padding: 12px; border: 0; border-radius: 10px;
         font-family: inherit; font-size: 15px; font-weight: 700; cursor: pointer;
@@ -169,7 +188,26 @@
         </p>
 
         <label for="password" id="pwLabel">סיסמה</label>
-        <input id="password" name="password" type="password" autocomplete="current-password" required />
+        <div class="pw-wrap">
+          <input id="password" name="password" type="password" autocomplete="current-password" required />
+          <!-- type="button" מפורש: בתוך <form> כפתור בלי type הוא submit,
+               וכל לחיצה על "הצג" הייתה שולחת את הטופס. -->
+          <button id="pwToggle" class="pw-toggle" type="button"
+                  aria-pressed="false" aria-controls="password" aria-label="הצג סיסמה" title="הצג סיסמה">
+            <svg id="pwEye" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M2 12s3.6-6.5 10-6.5S22 12 22 12s-3.6 6.5-10 6.5S2 12 2 12z" />
+              <circle cx="12" cy="12" r="2.8" />
+            </svg>
+            <svg id="pwEyeOff" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" hidden>
+              <path d="M2 12s3.6-6.5 10-6.5c1.7 0 3.2.5 4.5 1.1M22 12s-1.3 2.4-3.9 4.2M12 18.5C5.6 18.5 2 12 2 12" />
+              <path d="M9.9 9.9a3 3 0 0 0 4.2 4.2" />
+              <path d="M3.5 3.5l17 17" />
+            </svg>
+          </button>
+        </div>
+        <p id="pwReq" class="pw-req" hidden><span class="mark" aria-hidden="true">•</span> לפחות 8 תווים</p>
 
         <button id="submit" type="submit">כניסה</button>
       </form>
@@ -283,6 +321,12 @@
         $('identLabel').textContent = up ? 'כתובת אימייל (או שם משתמש)' : 'שם משתמש או כתובת אימייל';
         $('pwLabel').textContent = up ? 'סיסמה (8 תווים לפחות)' : 'סיסמה';
         $('password').autocomplete = up ? 'new-password' : 'current-password';
+        // הדרישה שייכת להרשמה בלבד — בכניסה הסיסמה כבר קיימת ואין מה לדרוש.
+        $('pwReq').hidden = !up;
+        if (up) $('password').setAttribute('aria-describedby', 'pwReq');
+        else $('password').removeAttribute('aria-describedby');
+        showPassword(false);
+        updatePwReq();
         $('submit').textContent = up ? 'פתיחת חשבון' : 'כניסה';
         $('googleLabel').textContent = up ? 'הרשמה עם Google' : 'המשך עם Google';
         $('footHint').textContent = up
@@ -290,6 +334,41 @@
           : 'אין לך חשבון? עברו ללשונית "הרשמה".';
         msg.hidden = true;
       }
+
+      // ── הצגת סיסמה ─────────────────────────────────────────────────────────
+      // המצב נקבע במקום אחד, כי ה-type, ה-aria והאייקון חייבים להסכים; כפתור
+      // שאומר "הצג" בזמן שהשדה כבר גלוי גרוע מאין כפתור בכלל.
+      function showPassword(on) {
+        const pw = $('password');
+        const btn = $('pwToggle');
+        pw.type = on ? 'text' : 'password';
+        btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+        const label = on ? 'הסתר סיסמה' : 'הצג סיסמה';
+        btn.setAttribute('aria-label', label);
+        btn.title = label;
+        // ‎toggleAttribute ולא ‎.hidden‎: המאפיין `hidden` מוגדר על HTMLElement
+        // בלבד, ועל אלמנט SVG ההשמה יוצרת שדה JS שאינו משפיע על התצוגה —
+        // האייקון היה נשאר "עין" גם כשהסיסמה גלויה (נמדד בדפדפן).
+        $('pwEye').toggleAttribute('hidden', on);
+        $('pwEyeOff').toggleAttribute('hidden', !on);
+      }
+
+      // הדרישה נקראת מאותו מספר שהשליחה בודקת (8), ומשנה מצב בזמן ההקלדה.
+      const PW_MIN = 8;
+      function updatePwReq() {
+        const req = $('pwReq');
+        if (req.hidden) return;
+        const met = $('password').value.length >= PW_MIN;
+        req.dataset.met = met ? '1' : '0';
+        req.querySelector('.mark').textContent = met ? '✓' : '•';
+      }
+
+      $('pwToggle').addEventListener('click', () => {
+        const on = $('pwToggle').getAttribute('aria-pressed') !== 'true';
+        showPassword(on);
+        $('password').focus();
+      });
+      $('password').addEventListener('input', updatePwReq);
 
       $('tabIn').addEventListener('click', () => { mode = 'signin'; applyMode(); });
       $('tabUp').addEventListener('click', () => { mode = 'signup'; applyMode(); });
