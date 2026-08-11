@@ -1576,6 +1576,61 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
 
   **Not deployed.**
 
+- **the red that stands on its own (`--danger-text`)** — `index-contrast-0811`
+  closed the three `public/` pages and left one thing open: **a hard-coded colour
+  beside an inverting token is invisible in the mode you are not looking at**,
+  and it named `console.html` / `js/app.js` as never having been searched for
+  them. A sweep of every colour literal in those two files returns **four**
+  hits — the rest is tokenised — and three of them are red or amber text sitting
+  on a surface that *does* invert:
+  - `.hl-err`, the error under the domain allow-list, `#b91c1c` on the dark card:
+    **2.63:1**. The guide screen's load error, `var(--danger-ink)` on the same
+    card: the same 2.63:1. `.hl-empty`, the "no domains — the device can open
+    **anything**" warning, `#b45309` on `#2e2510`: **3.01:1**.
+  - two of the three were written **inline**, and that is what hid them: an
+    inline `color` beats every stylesheet rule — including `:root.dark .hl-empty`
+    sitting one line below, which already replaced that box's *background* and
+    could never reach the text above it. Both are back in `css/style.css`.
+  - **`--danger-ink` does not move.** It was chosen against the pink `#fee2e2`
+    fill, which does not invert, so it is right there in both modes
+    (`.btn-danger`, `.alert-error`). What is added is a third split —
+    `--danger-text`, the red that sits directly on the surface and therefore
+    inverts with it: `#b91c1c` light, `#f87171` dark. Exactly the shape of
+    `--danger`/`--danger-ink` and `--warn`/`--warn-ink`.
+  - `--danger` itself was **not** taken as the dark value, though that is the
+    move `--warn-ink: --warn` made: `#ef4444` is **4.53:1** on the dark card —
+    passing with no margin at all, and a future change to the card tone drops it
+    under.
+  - the two literals left alone, with their numbers rather than silence: the
+    `toast` backgrounds are an opaque overlay that is not supposed to invert
+    (white on them is 18.7:1 and 6.47:1), and `#user-quota` sits on `--navy`, a
+    brand colour verified as surface-only, at 6.72:1.
+
+  Verified in `QA/kiosk/danger-text-0811/` — a real Chromium at both
+  `colorScheme` values against `warn-ink-0811/stub-server.mjs` reused rather than
+  copied. The first two sites are driven from the **links screen**, the one place
+  in the console where `hostListEditor` mounts with no locked host and so renders
+  the empty-list warning by itself; the error is driven by a duplicate rather
+  than an invalid domain, which is a deterministic route into `fail()` and does
+  not depend on what `normalizeHost` rejects; the third is driven by faulting
+  `/api/devices` at the network, since it is painted only from `viewGuide`'s
+  catch. 11/14 rows pass, the three failures being the **before** rows, each
+  asserted **dark-only** — in light the old colour and the new token are the same
+  value on purpose, so the light console does not move a byte, and demanding they
+  fail there would claim a bug that never existed. Three token assertions per
+  mode (that `--danger-text` resolves, that it *differs* from `--danger-ink` in
+  dark, and that `--danger-ink` has not moved) plus a `.btn-danger` regression row
+  are the other half of that claim. Six screenshots. 152 tests, 151 pass — the
+  documented baseline, unchanged, since this step adds no server code.
+
+  Found and **not** fixed: `.toast` declares `background: var(--ink); color:#fff`,
+  which in dark mode is white on near-white. It never happens because `toast()`
+  always writes an inline background, so the rule is dead — a trap rather than a
+  bug, and removing dead declarations belongs to a pass over `css/style.css`
+  itself, not to this one.
+
+  **Not deployed.**
+
 ## Next, in order
 
 1. Deploy — and it is not a redeploy of this repo. The Railway service
@@ -1611,8 +1666,10 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
    and did not close is that a hardcoded colour beside an inverting token is
    invisible in the mode you are looking at: `index.html` shipped two unreadable
    sections for as long as it has had a dark mode. `console.html` and
-   `public/js/app.js` write colours inline too, and nothing has looked for them
-   — that is item 6's real scope, not just the dialogs.
+   `public/js/app.js` write colours inline too. **That half is now closed** —
+   `danger-text-0811` swept every colour literal in both files; four exist, three
+   were the same defect and are fixed. What is left under item 6 is the console's
+   own screens, not its inline colours.
 6. The console's own screens, other than the wizard, have still had no pass:
    `nontext-contrast-0811` onward each opened one dialog. Both modes have to be
    graded there, per the above, and `index-contrast-0811/verify.mjs` is the
