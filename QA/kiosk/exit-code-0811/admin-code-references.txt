@@ -1,0 +1,2 @@
+﻿KioskActivity.kt:246: val code = Prefs.get(this, Prefs.ADMIN_CODE)
+Prefs.kt:16: const val ADMIN_CODE   = "admin_code"      // local maintenance code

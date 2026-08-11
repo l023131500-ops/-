@@ -836,6 +836,57 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
   constraint that blocks the device-side selection screen below. **Not
   deployed.**
 
+- **the way out of the kiosk (§2★ה/§4, server half)** — §4's first tier is
+  already on the device: `KioskActivity` counts five taps in the corner and then
+  asks for `Prefs.ADMIN_CODE`. That pref has exactly two references in the whole
+  Android tree — declared in `Prefs.kt`, read in `showAdminDialog()` — and
+  **nothing writes it**. Not `EnrollActivity`, not `AgentClient`'s config
+  handler, not the server, which had no such column. So on every device that
+  exists the dialog answers `קוד תחזוקה לא הוגדר`, and the one remaining way out
+  of a locked tablet is the remote `unlock` command, which needs the network. A
+  device in a hall with no internet — the case §0 requires the lock to survive —
+  had **no** way out at all. Added `server/src/exitcode.js` and
+  `devices.exit_code`:
+  - it is pushed as `adminCode` in **all three** places the agent learns config:
+    the enrollment response, the heartbeat config and `update_config`. Enrollment
+    is the one that matters most — it is the last moment before the device locks,
+    and the first heartbeat may come after it.
+  - **unset is sent as `''`, not `null`.** The agent puts config values straight
+    into `SharedPreferences`, where a missing key and `''` read the same through
+    `Prefs.get()`; `null` would arrive as the string `"null"` and become a
+    maintenance code nobody set.
+  - **the ends are trimmed and the middle is not.** A trailing space is invisible
+    in a console field and unenterable on the device's dialog, and on an offline
+    tablet there is no second route in to fix it with. An interior space is part
+    of a passphrase somebody chose.
+  - obvious codes are refused, by **shape** and not only by a list: `abcdef` and
+    `987654` are the same idea as `123456` to whoever is guessing, and a deny
+    list cannot enumerate them. Reuse of the launcher **access code** is refused
+    too — that one is printed on a card taped beside the tablet, so reusing it
+    would put the way out of the kiosk on the wall next to the kiosk.
+  - `exit_code` is in `CONSOLE_DEVICE_FIELDS` and `publicDevice()`, unlike
+    `device_token`. It is the owner's own code on the owner's own screen, and the
+    scenario it exists for is an offline tablet where reading it off the console
+    and walking over is the only remaining way in; a write-only field would make
+    exactly that case unrecoverable. Holding it lets a person out of the kiosk,
+    not impersonate the device.
+  - **stored recoverable, not hashed**, and reasoned rather than overlooked: the
+    check runs on the device with no network, and what the device compares today
+    is the plain value. Hashing needs the Kotlin comparison to change first.
+  - setting and clearing get their own event rows, **without the value**.
+
+  Verified in `QA/kiosk/exit-code-0811/` — 11 unit cases (121/122 across the
+  suite; `routing.test.mjs` imports express and still cannot run here, and
+  110/111 before, so the 11 are the whole difference), including the `ALTER
+  TABLE` replayed against `node:sqlite` on a two-device database with every other
+  column asserted unmoved, and the PATCH round trip against real storage.
+
+  **The device still ignores the field.** `AgentClient.kt` writes three config
+  keys into `Prefs` and `adminCode` is not one of them, so the value travels and
+  is dropped. That is a two-line Kotlin edit and it waits for item 2 below rather
+  than becoming the third unverified Android change. **No console UI** — the
+  field is API-only, the same split `display_url` used. **Not deployed.**
+
 ## Next, in order
 
 1. Deploy — and it is not a redeploy of this repo. The Railway service
@@ -849,7 +900,12 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
 2. The Android half of this tree has now been edited twice without a compiler
    (`setSystemUpdatePolicy` above; `KioskActivity` still to come). Whoever has a
    toolchain should build `android/` once before the next Kotlin change lands on
-   top of an unverified one.
+   top of an unverified one. Waiting on this: `AgentClient.kt` must write the
+   `adminCode` it is now sent into `Prefs.ADMIN_CODE` (enrollment + heartbeat +
+   `update_config`), or the maintenance code above reaches the device and is
+   dropped, and the corner-tap dialog keeps saying `לא הוגדר`. The same file
+   should then rate-limit attempts in that dialog — it accepts unlimited guesses
+   today, and the check happens offline, so `ratelimit.js` cannot cover it.
 3. The selection screen on the device (§2★ה/ו): `KioskActivity` calls
    `identify`, offers the approved list, and locks onto what is chosen. Needs an
    Android toolchain, which this checkout does not have.
