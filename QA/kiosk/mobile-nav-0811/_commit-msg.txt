@@ -1,0 +1,48 @@
+kiosk (35): on a phone the marketing page's navigation did not exist
+
+apps/35-kioskfleet/STATUS.md item 7 closed on this and said in as many words
+that it is not a focus question: below 901px .nav-links was display:none with
+nothing behind it, so the four nav links and כניסת לקוחות were absent from the
+layout, from the tab order and from the accessibility tree. That is the page
+more30.com/kiosk opens, and one of the five is the only route from it into the
+customer console.
+
+Added #nav-toggle plus the panel to public/index.html, public/css/style.css and
+an inline script (a <script> block and not onclick="", because the server sends
+script-src-attr 'none').
+
+The toggle brings no colour of its own: it is .btn .btn-ghost .btn-sm, the
+control כניסת לקוחות already uses on this same bar, whose .45 border was
+measured there at 3.67:1. It does need its own :focus-visible line — .nav a
+does not match a <button>, and landing-focus-0811 measured the UA fallback on
+this exact bar at 1.07:1 in dark mode.
+
+Four decisions that are not defaults:
+
+- the open state is data-open on the element and the rule that paints it lives
+  inside the max-width:900px block, so an open panel that survives a resize
+  cannot break the wide layout; the script clears it on the crossing anyway.
+- display:none and not opacity: a closed panel leaves the tab order, not only
+  the eye. Otherwise it is five tab stops on controls nobody can see.
+- Escape closes and returns focus to the toggle. Without the return, focus sits
+  on a link that has just become display:none, i.e. on <body>.
+- the min-width:901px bound on the login pill's reservation is removed. It
+  rested on there being nothing at the inline-end below it, which was true only
+  because .nav-links was hidden there — and the toggle now sits in that corner.
+
+Verified in QA/kiosk/mobile-nav-0811/ — 38/38 in a real Chromium at both
+colorScheme values and both widths, four "before" rows rebuilding the shipped
+state in the same live page, eight screenshots. The pill is simulated at the
+geometry auth-button.js writes before its own measurement, because the real
+script is blocked from this machine. 151/152 on node --test — the documented
+baseline, unchanged because this step touches no server code.
+
+Found in the run and fixed: the toggle was 33px, which clears WCAG 2.5.8's
+24px but not the 44px the panel's own items got.
+
+Three harness corrections the run forced, recorded in _results.md: blur() does
+not send the next Tab back to the top of the document; five tabTo() calls are
+not five positions; and the sweep's fallback key has to carry the element's
+position or two identical pricing buttons look like the ring wrapping.
+
+Not deployed.

@@ -2445,6 +2445,76 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
 
   **Not deployed.**
 
+- **the marketing page had no mobile navigation (the step above's last line)** —
+  below 901px `.nav-links` was `display: none` and there was nothing behind it,
+  so the four nav links and כניסת לקוחות were absent from the layout, from the
+  tab order and from the accessibility tree. Not a focus question and not a
+  contrast one: on a phone those five controls did not exist, on the page
+  `more30.com/kiosk` opens, and one of the five is the only route from it into
+  the customer console. Added `#nav-toggle` + the panel in `public/index.html`,
+  `public/css/style.css` and an inline script:
+  - the toggle carries **no colour of its own**. It is `.btn .btn-ghost
+    .btn-sm` — the control כניסת לקוחות already uses on this same bar, whose
+    `.45` border was measured there at 3.67:1. A new control with a new value
+    would have been another colour decision on a composited surface, and this
+    step does not need one.
+  - the open state is `data-open` on the element and the rule that paints it
+    lives **inside** the `max-width: 900px` block. Above 901px `.nav-links` has
+    to be its horizontal row again even if the attribute is still set, so an
+    open panel that survives a resize cannot break the wide layout — and the
+    script clears it on the crossing anyway, because `aria-expanded="true"`
+    would otherwise describe a control nobody can see and would come back down
+    with the next resize.
+  - `display: none` and not opacity or zero height: a closed panel leaves the
+    tab order, not only the eye. Otherwise it is five tab stops on controls
+    that are not on screen.
+  - Escape closes **and hands focus back to the toggle**. Without the return,
+    focus sits on a link that has just become `display: none`, i.e. on
+    `<body>` — the state `screen-focus-0811` fixed elsewhere.
+  - `aria-expanded` and the painted state are written by one function on
+    purpose, so they cannot disagree; the QA reads them separately so that it
+    could see them disagree.
+  - **the `min-width: 901px` bound on the login pill's reservation is gone.**
+    That bound rested on there being nothing at the inline-end below it, which
+    was true only because `.nav-links` was hidden there — and the toggle now
+    sits in exactly that corner. The pill is fixed at every width
+    (`auth-button.js` only moves it to 10px/8px under 480px), so the
+    reservation belongs at every width; below 1180px the gutter term clamps to
+    0 and the value is the inset itself, so the wide layout does not move.
+
+  Verified in `QA/kiosk/mobile-nav-0811/` — 38/38 in a real Chromium at both
+  `colorScheme` values and both widths, against the `warn-ink-0811` stub, with
+  four "before" rows rebuilding the shipped state in the same live page. The
+  pill is **simulated** at the geometry `auth-button.js` writes before its own
+  measurement (96×36, `--more30-auth-inset: 118px`), because the real script is
+  blocked from this machine; the control row puts the old `20px` back and
+  asserts `elementFromPoint` returns the pill. Eight screenshots. 151/152 on
+  `node --test` — the documented baseline, unchanged because this step touches
+  no server code.
+
+  Found in that run and fixed: the toggle was **33px**, which clears WCAG
+  2.5.8's 24px but not the 44px the panel's own items got — and it is the only
+  control through which they are reached. `min-height: 44px`, inside the mobile
+  block only, so `.btn-sm` elsewhere does not move.
+
+  Three harness corrections the run forced, all recorded in `_results.md`:
+  `blur()` does **not** send the next Tab back to the top of the document
+  (`screen-focus-0811`'s fact, from the other direction — the first sweep here
+  opened two thirds down the page and reported a three-stop ring with the nav
+  in none of it; focusing `<body>` is what moves the starting point). Five
+  `tabTo()` calls are **not** five positions — each resumes where the last
+  stopped, so the order came out `1, 1, 1, 1, 1`, and order is a property of
+  the sequence, so one sweep is recorded instead. And within that sweep the
+  fallback key has to carry the element's position in the document, or the two
+  `.btn-light` buttons in the pricing table share a key and a break in the
+  middle of the ring is reported as a complete one.
+
+  Found and **not** fixed: the panel is not a focus trap, and that is the
+  decision rather than an omission — it is a disclosure, not a dialog, so Tab
+  from its last item continues into the page.
+
+  **Not deployed.**
+
 ## Next, in order
 
 1. Deploy — and it is not a redeploy of this repo. The Railway service
@@ -2629,3 +2699,15 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
      `display: none` with no hamburger behind it, so on a phone the four nav
      links and כניסת לקוחות do not exist at all — the marketing page has no
      mobile navigation.
+     **That is now done too** — `mobile-nav-0811` gave the page a toggle and a
+     panel, 38/38 in both modes at both widths. Two things it leaves for
+     whoever writes the next step, and neither is a keyboard question. The
+     first is a **scope** line, the same shape as the one this heading opened
+     with: `console.html` has its own navigation, `.side`, and it is
+     `display: none` below 800px with nothing behind it either — so the
+     customer console has no mobile navigation for exactly the reason the
+     marketing page did not, and nobody has measured what that leaves reachable
+     on a phone. The second is that the login pill's reservation is now
+     unconditional on this page, which makes `scripts/qa/authbutton-overlap.mjs`
+     worth re-running against production after the deploy rather than trusting
+     the simulated pill this run used.
