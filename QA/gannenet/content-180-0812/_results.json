@@ -1,0 +1,104 @@
+{
+  "system": "40 — גננת בקליק",
+  "step": "priority §0.3 — ingest the 180-lesson content package from gannenet-incoming/",
+  "date": "2026-08-12",
+  "package": {
+    "zip": "gannenet-incoming/gannenet-content-180.zip.zip",
+    "moved_to": "gannenet-incoming/done/gannenet-content-180.zip.zip",
+    "instructions_file": "הוראות.md (inside the ZIP)",
+    "ingested": ["content/regular.json", "content/mashlima.json", "content/tags-taxonomy.json"],
+    "deliberately_not_ingested": {
+      "files": ["lib/content.ts", "app/library/page.tsx", "app/lesson/[id]/page.tsx"],
+      "why": "The ZIP ships the pre-monthOf / pre-normalizeSearch versions of these three. Copying them in would have reverted the month fix (commit b3d43aa) and the search fix (commit d8ec075). The existing files were extended by hand instead."
+    }
+  },
+  "safety_checks_before_overwriting_content": {
+    "existing_lessons": 52,
+    "new_lessons": 180,
+    "new_unique_ids": 180,
+    "existing_ids_missing_from_new": 0,
+    "field_level_diffs_across_all_52_shared_lessons": 0,
+    "note": "Every field of all 52 existing lessons is byte-identical in the new files — a pure superset, nothing overwritten with a rewrite.",
+    "required_arrays_missing_on_any_of_180": 0,
+    "required_arrays_checked": {
+      "mashlima": ["background", "objectives", "story", "crafts", "rhyme", "summary", "extensions"],
+      "regular": ["teacherKnowledge", "childLearning", "deepening", "transitions", "crafts"]
+    }
+  },
+  "defects_found_and_fixed": [
+    {
+      "id": "lesson-id-percent-encoded",
+      "severity": "high",
+      "where": "app/lesson/[id]/page.tsx",
+      "symptom": "175 of 180 lesson pages prerendered to \"המערך לא נמצא\" and were served under HTTP 200.",
+      "cause": "params.id arrives percent-encoded; every lesson id but the 61 משלימה ones is Hebrew (p-פרשת-בא), so `l.id === params.id` never matched.",
+      "pre_existing": true,
+      "pre_existing_scope": "5 of 52 lessons before this package — the only Hebrew ids the app then had.",
+      "fix": "lessonIdOf() decodes params.id and keeps the raw form as a fallback for an id that was never encoded.",
+      "evidence": {
+        "before": "p-פרשת-בא.html existed, 15332 chars, contained 'המערך לא נמצא'; m3.html 32793 chars, did not.",
+        "after_prerendered_files_containing_not_found": 0,
+        "after_http_probe_of_all_180": {"probed": 180, "ok": 180, "bad": 0}
+      }
+    },
+    {
+      "id": "month-select-listed-book-names",
+      "severity": "medium",
+      "where": "lib/content.ts (isMonthLabel), app/library/page.tsx",
+      "symptom": "A select headed \"כל החודשים\" offered ספר בראשית / שמות / ויקרא / במדבר / דברים and נושא ליבה.",
+      "cause": "74 of the 119 רגילה lessons carry a unit label where the month is read from — the five books for the 54 parasha lessons, נושא ליבה for the 20 values lessons.",
+      "fix": "isMonthLabel() gates the select to real Hebrew months, plus \"כל השנה\" (an answer about time, and the answer for the 5 משלימה lessons in no single month). Those lessons are found by the new domain filter instead.",
+      "month_options_before": ["אלול","תשרי","חשוון","כסלו","טבת","שבט","אדר","ניסן","אייר","סיוון","כל השנה","תמוז–אב","סיון","נושא ליבה","ספר בראשית","ספר שמות","ספר ויקרא","ספר במדבר","ספר דברים"],
+      "month_options_after": ["אלול","תשרי","חשוון","כסלו","טבת","שבט","אדר","ניסן","אייר","סיוון","כל השנה","תמוז–אב"]
+    },
+    {
+      "id": "sivan-spelled-two-ways",
+      "severity": "low",
+      "where": "lib/content.ts (monthOf)",
+      "symptom": "סיון and סיוון were two dropdown entries that each hid half of the month — the רגילה files use one spelling, the משלימה files the other.",
+      "fix": "monthOf folds סיון to סיוון."
+    }
+  ],
+  "feature_added": {
+    "what": "תחום filter on /library — the package's own acceptance criterion (\"סינון לפי תחום עובד\").",
+    "source_field": "tags.domain — the only axis filled on all 180 and free of the meta-line leakage the month fields have.",
+    "measured_in_the_page": {
+      "בעלי מלאכה": 16,
+      "גוף ובריאות": 7,
+      "חגי השנה ומועדים": 45,
+      "טבע וצומח": 10,
+      "מדע ותופעות": 12,
+      "מרחב וחשיבה": 1,
+      "עולם החי": 7,
+      "ערכים ואמונה": 20,
+      "פרשת השבוע ותורה": 54,
+      "רגש וחברה": 8,
+      "sum": 180
+    },
+    "composition_checked": {"תשרי": 19, "תשרי + חגי השנה ומועדים": 15, "cleared": 180},
+    "also": [
+      "A parasha card had lost both its chips to the two fixes above; the unit chip (\"פרשות השבוע — בְּרֵאשִׁית\") is now shown beside the domain.",
+      "The header counts what is on screen (aria-live=\"polite\") — \"19 מתוך 180 מערכים\".",
+      "The three selects that had no accessible name now have aria-label."
+    ]
+  },
+  "verification": {
+    "tsc_noEmit": 0,
+    "next_build": "✓ 193 pages, /lesson/[id] 180 paths",
+    "library_cards_rendered": 180,
+    "library_by_audience": {"גננת רגילה": 119, "גננת משלימה": 61},
+    "home_page": "180+ מערכים מוכנים (derived from the data, no edit)",
+    "pricing_page": "reads 180 (derived from the data, no edit)",
+    "console_errors": 0,
+    "console_warnings": 1,
+    "console_warning_note": "pre-existing apple-mobile-web-app-capable deprecation from layout.tsx",
+    "server": "next start -p 3046 on the production build, APP_BASE_PATH=/gannenet"
+  },
+  "screenshots": [
+    "library-domain-parasha.png — /library filtered to פרשת השבוע ותורה",
+    "lesson-parashat-bereshit.png — /lesson/p-פרשת-בראשית, one of the 175 that was a not-found page"
+  ],
+  "open": "/library is 422 kB of route JS: searchTextOf runs in the client over all 180 lessons, so the whole 3.6 MB of content ships to the phone. Same shape at 52 lessons and 3.5× smaller; at 180 it wants a prebuilt search index.",
+  "protected_systems_touched": "none — 08, 09, bkalut-app, bkalot-admin, zr_*, NEDARIM3873 untouched; csj/csj_src/igud untouched",
+  "test_mode": "no send or billing path exists on any surface changed here"
+}

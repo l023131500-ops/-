@@ -667,6 +667,54 @@ PDF bodies from `supabase.co`; none of that applies to the production server.
   waiting on a permission prompt that never appears — capture the argument to
   `writeText` instead. **Open:** nothing from this change.
 
+- **`content/regular.json`, `content/mashlima.json`, `content/tags-taxonomy.json`,
+  `lib/content.ts`, `app/library/page.tsx`, `app/lesson/[id]/page.tsx`** — the
+  content package sitting in `gannenet-incoming/` since before this run, ingested
+  per priority §0.3. **The app had 52 of the 180 lessons it was built for**: 5
+  רגילה and 47 משלימה. The package brings 119 + 61. Ingested as data only — the
+  ZIP also ships `lib/content.ts`, `app/library/page.tsx` and `app/lesson/[id]/page.tsx`,
+  but those are the pre-`monthOf`/pre-`normalizeSearch` versions and copying them
+  in would have reverted the month and search fixes of the two steps before this
+  one. Verified safe first: all 52 existing ids survive in the new files and
+  every field of all 52 is byte-identical, so nothing was overwritten with a
+  rewrite; and every array the lesson page indexes unguarded is present on all
+  180, so the build could not crash on a missing field.
+
+  Three defects came with it, all found in the real pages. **175 of the 180
+  lesson pages were a not-found page served under a 200** — `params.id` arrives
+  percent-encoded and every id but the 61 משלימה ones is Hebrew (`p-פרשת-בא`),
+  so `l.id === params.id` never matched; the file `p-פרשת-בא.html` existed, was
+  15 KB, and its content was "המערך לא נמצא". This is not new — it was 5 of 52
+  before, on the only Hebrew ids the app then had — but the package turns it from
+  a corner into the site. `lessonIdOf()` now decodes and keeps the raw form as a
+  fallback. All 180 prerendered files were then re-checked for that string: 0.
+  **The month select offered "ספר בראשית".** 74 of the 119 רגילה lessons carry a
+  unit label where the month is read from — the five books for the 54 parasha
+  lessons, "נושא ליבה" for the 20 values lessons — so a select headed
+  "כל החודשים" listed six book names. `isMonthLabel()` keeps the select to real
+  months (and "כל השנה", which is an answer about time); those lessons are found
+  by domain instead. **And סיון and סיוון are the same month spelled two ways**,
+  one in each audience's files, which had made two entries that each hid half of
+  it; `monthOf` folds them.
+
+  The filter the package is for now exists: a **תחום** select off `tags.domain`,
+  the one axis filled on all 180 and free of the meta-line leakage the month
+  fields have. Ten values, every lesson in exactly one — measured in the page,
+  the ten filtered counts sum to 180 — and month × domain compose (תשרי 19 →
+  תשרי + חגי השנה 15). A parasha card had lost both its chips to the two fixes
+  above, so the unit chip ("פרשות השבוע — בְּרֵאשִׁית") is now shown beside the
+  domain. The header counts what is on screen (`aria-live="polite"`), and the
+  three selects that had no accessible name have one.
+
+  `tsc --noEmit` 0, `next build` ✓ 193 pages with 180 `/lesson/[id]` paths, all
+  180 probed over HTTP on the production build (180 × 200, 0 not-found), 0
+  console errors. Home and `/pricing` derive their counts from the data and read
+  180 with no edit. Evidence in `QA/gannenet/content-180-0812/`; the ZIP moved to
+  `gannenet-incoming/done/`. **Open:** `/library` is now 422 kB of route JS —
+  `searchTextOf` runs in the client over all 180 lessons, so the whole 3.6 MB of
+  content ships to the phone. It was the same shape at 52 lessons and 3½× smaller;
+  at 180 it wants a prebuilt index.
+
 No other file was modified. The mount itself needs no code edit: `next.config.js`
 already reads `APP_BASE_PATH`, and `lib/base.ts` exports `withBase()` for the
 fetch calls, hrefs and service worker that Next's `basePath` does not prefix.
