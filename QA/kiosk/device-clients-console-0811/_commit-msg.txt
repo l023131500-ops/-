@@ -1,0 +1,54 @@
+kiosk (35): approving a client for a device was an HTTP call, and nothing in the console made one
+
+KIOSK_BUILD §2★ה, console side. PUT /api/devices/:id/clients landed yesterday
+with the storage, the owner-scoping and the allow-list widening all in place and
+no screen anywhere that calls it: an owner could register clients and could not
+say which of them the tablet in a given hall may show. Absence of a row is a
+"no" here, so every device shipped with an empty list — the feature was
+unreachable and, from the console, invisible.
+
+Added the picker: "🆔 מזהי לקוח" on each device card opens the owner's registry
+as a checkbox list, with סמן הכל / נקה הכל and a live "n מתוך m מאושרים".
+
+Four decisions in it that are not cosmetic:
+
+- A disabled client that is already approved is shown *checked*. The list is
+  saved whole, so rendering it unchecked would revoke the approval as a side
+  effect of opening the dialog and pressing save — and re-enabling the client
+  later would then not bring it back to this device. It carries the reason on
+  the row instead (⛔ מושבת, לא יעלה על המכשיר).
+
+- The hint under the list is read off the device, not written once. A device
+  with an allow-list is told the approved clients' domains join it; a device
+  with none is told it blocks nothing and that approving does not change that.
+  Both are exactly what effectiveHostCsv() does — it returns an unset list
+  unchanged rather than creating a lock — and a hint that claimed otherwise
+  would have owners hunting a domain problem that is not there while the hall
+  screen says "האתר חסום".
+
+- Saving an empty selection is a real save and says so: "לא אושר למכשיר אף מזהה
+  לקוח". It is the state every device is in today, and it must not be reported
+  in the same words as an approval that was just granted.
+
+- An empty registry gets no save button at all, just a route to the registry
+  screen. A checkbox list with nothing in it plus a שמירה button invites the
+  save that stores nothing.
+
+Verified in QA/kiosk/device-clients-console-0811/ — 10 cases in a real browser
+against a stub that serves the real public/ and imports the real approvals.js
+(approvalSelection / effectiveHostCsv / selectableClients), called as
+routes/devices.js calls them; server/node_modules is not installed here, so
+express and better-sqlite3 cannot run in this checkout. Asserted on both sides
+of each save: what the store holds and what update_config carried. Approving
+adds the client's pay host and skips the disabled client's host; revoking
+narrows back; a device with no allow-list still receives ""; device 2's save
+leaves device 1's rows alone. Light and dark screenshots included. The three
+console errors in the run are the stub's own (no favicon, no websocket).
+
+Not deployed — the Railway service still serves the previous console, and the
+Android agent still does not call identify. No migration, no schema change; the
+database was read only, with core.run_progress the single write. Protected
+systems (08/09/bkalut-app/bkalot-admin/zr_/NEDARIM3873) untouched. Test mode.
+
+/apps/** is gitignored in this repo, so the source lives on disk only — this
+commit carries STATUS.md and the QA evidence, as the previous kiosk commits did.

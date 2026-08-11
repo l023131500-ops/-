@@ -125,16 +125,37 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
   **Not deployed.** The Android agent does not call it yet — `KioskActivity`
   still opens `home_url` only.
 
+- **the approvals picker (§2★ה, console side)** — `PUT /api/devices/:id/clients`
+  had no surface, so approving a client for a device was an HTTP call. Added
+  **🆔 מזהי לקוח** to each device card (`public/js/app.js`): the owner's registry
+  as a checkbox list, `סמן הכל` / `נקה הכל`, a live `n מתוך m מאושרים` counter.
+  - a **disabled** client that is already approved is shown *checked*, not
+    dropped. The server stores it happily; un-approving it silently here would
+    mean re-enabling the client no longer brings it back to this device.
+  - the hint under the list depends on the device: with an allow-list it says the
+    approved clients' domains are added to it, and with **no** list it says the
+    device blocks nothing and approving does not change that. Both are what
+    `effectiveHostCsv` actually does, and "האתר חסום" in a hall reads as a broken
+    kiosk.
+  - an empty registry gets no save button — just a route to the registry screen.
+  - saving nothing is a legitimate save and says so (`לא אושר למכשיר אף מזהה
+    לקוח`), because absence of a row is a "no" here, not a no-op.
+
+  Verified in `QA/kiosk/device-clients-console-0811/` — 10 cases in a real
+  browser against a stub that imports the real `approvals.js`, asserting both the
+  stored set and the `update_config` that follows it, plus light/dark
+  screenshots.
+
+  **Not deployed.**
+
 ## Next, in order
 
-1. Deploy: the registry (API + screen), the approvals and `identify` are only on
-   disk and in this file.
+1. Deploy: the registry (API + screen), the approvals (API + picker) and
+   `identify` are only on disk and in this file.
 2. §2★א's two fields — "אתר ראשי" and "קישור שיוצג על המכשיר" — on the device
    screen, feeding the same registry.
-3. The console side of the approvals: a "מזהי לקוח מאושרים" picker on the device
-   screen, driving `PUT /api/devices/:id/clients`.
-4. The selection screen on the device (§2★ה/ו): `KioskActivity` calls
+3. The selection screen on the device (§2★ה/ו): `KioskActivity` calls
    `identify`, offers the approved list, and locks onto what is chosen.
-5. `/kiosk-launcher/:code` — 6-character access code → the approved list → open
+4. `/kiosk-launcher/:code` — 6-character access code → the approved list → open
    the locked kiosk.
-6. The "הפעל" wizard with the live checklist (§2★ב).
+5. The "הפעל" wizard with the live checklist (§2★ב).
