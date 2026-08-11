@@ -2515,6 +2515,66 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
 
   **Not deployed.**
 
+- **the console had no mobile navigation either (the scope line above)** — below
+  801px the whole of `.side` was `display: none` with nothing behind it, so on a
+  phone the seven view buttons, the signed-in name, the device quota **and
+  התנתקות** were absent from the layout, from the tab order and from the
+  accessibility tree. Whoever signed in on a phone landed on המכשירים שלי and
+  could not change screen or sign out at all. That is the same defect the
+  marketing page had one step earlier, and it is worse here because what went
+  missing includes the way *out* of the session. Added `.side-head` +
+  `#side-toggle` + `#side-panel` in `public/console.html`, the `max-width: 800px`
+  block in `public/css/style.css`, and an inline script:
+  - the toggle carries **no colour of its own** — `.btn .btn-ghost .btn-sm`, the
+    control התנתקות already uses on this same `--navy`. A new control with a new
+    value would be another colour decision, and this step does not need one. It
+    does need its own `:focus-visible` rule: `.side nav button` and
+    `.side .userbox .btn` each name their element, so without it the one control
+    through which the whole navigation is reached on a phone falls back to the
+    UA ring — 1.07:1 in dark mode, as `landing-focus-0811` measured on navy.
+    Measured 7.29:1 here.
+  - the open state is `data-open` on the panel and the rule that paints it lives
+    **inside** the media query, so an open panel that survives a resize cannot
+    break the 250px column; the script clears the ARIA on the crossing anyway.
+    `display: none` and not opacity: a closed panel leaves the tab order, not
+    only the eye.
+  - **choosing a screen closes the panel and does not touch focus.** This is the
+    console's own case and the marketing page had nothing like it: `route()`
+    already moves focus to the new screen's `<h1>` (`focusNewScreen()`), so
+    returning focus to the toggle here — which is exactly what Escape must do —
+    would fight it. The listener sits on `#side-panel`, an *ancestor* of
+    `#menu`, so it runs after `app.js`'s own handler on the way up and the
+    button is still in the DOM when that reads `dataset.view`.
+  - the script is a **second inline block, not `js/app.js`**: this is the page
+    shell, and it has to work when `app.js` fails its first call — otherwise the
+    one control that gets you out of that state (התנתקות) is behind a panel
+    nobody can open.
+  - `.side-head` reserves room for the shared more30 login pill. The console
+    reserved none anywhere, and that was survivable only because nothing sat at
+    the inline-end; the toggle now sits exactly in the RTL top-left corner the
+    pill is fixed to. There is no centred container here, so there is no gutter
+    to subtract — only `.side`'s own 16px, with a 12px floor.
+
+  Verified in `QA/kiosk/console-mobile-nav-0811/` — 70/70 in a real Chromium at
+  both `colorScheme` values and both widths, against the `warn-ink-0811` stub,
+  with eight "before" rows rebuilding the shipped state in the same live page.
+  The pill is **simulated** at the geometry `auth-button.js` writes before its
+  own measurement (96×36, `--more30-auth-inset: 118px`), because the real script
+  is blocked from this machine; the control row removes the reservation and gets
+  `elementFromPoint → qa-pill`. Eight screenshots.
+
+  Two harness corrections the run forced: a flex item's `display` is
+  **blockified**, so the toggle's declared `inline-flex` reads back as `flex` and
+  the first version of that row failed correct CSS. And `screenshot`'s `clip` is
+  in page coordinates while the Tab sweeps scroll — the open-panel shot first
+  came back showing the bottom of the panel and none of the navigation it exists
+  to show.
+
+  Found and **not** fixed: the panel is not a focus trap, the same decision as on
+  the marketing page — it is a disclosure, not a dialog.
+
+  **Not deployed.**
+
 ## Next, in order
 
 1. Deploy — and it is not a redeploy of this repo. The Railway service
@@ -2711,3 +2771,18 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
      unconditional on this page, which makes `scripts/qa/authbutton-overlap.mjs`
      worth re-running against production after the deploy rather than trusting
      the simulated pill this run used.
+     **The first of those is now closed** — `console-mobile-nav-0811` gave the
+     console the same toggle and panel, 70/70 in both modes at both widths. What
+     it measured is that the console's version was the worse of the two: what
+     `display: none` was hiding included **התנתקות**, so a phone user could not
+     leave the session either. The second is now *two* pages rather than one:
+     `.side-head` reserves for the pill as well, on a page that reserved nowhere,
+     and both reservations rest on the same simulated geometry until that script
+     runs against production.
+     Nothing is open under this heading. What the console run leaves for whoever
+     writes the next step is not a keyboard question: `console.html` is the only
+     one of the three pages whose layout has ever been driven at a phone width,
+     and what the shots show below the sidebar is the device grid at 390px —
+     `.device-grid`'s `minmax(300px, 1fr)` fits, but the button rows inside a
+     card have never been measured there, and `clients-console-0811` already
+     found a column of buttons running off a card's edge once.
