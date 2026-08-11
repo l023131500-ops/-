@@ -1,0 +1,35 @@
+kiosk (35): the code the owner is supposed to read out was never on screen
+
+Last round gave every device an access code (§2★ז, third bullet) and left it in
+the database and in the API payload only. That is the one place it cannot live:
+the code exists to be read off the console by the owner and typed by whoever is
+standing at the device, so a code nobody can see is the same as no code, and the
+launcher page it feeds could not be tested by a person.
+
+The code is shown in full on the device card, not masked. Masking defeats the
+only thing it is for, and this card is already behind the owner's own session.
+A device that has none — an owner whose server has not restarted since the
+column landed — says "טרם הונפק" rather than showing a blank: a blank field
+reads as a bug, and an em dash reads as "no code exists" when in fact one is a
+button away.
+
+Re-issue asks before it replaces, and asks *inline* rather than in a second
+modal. Both halves matter: the code ends up on a card taped beside a tablet, so
+one stray click strands whoever is standing there, but a modal stacked over this
+one would hide the code being replaced at the moment the owner is deciding. On
+success the card is refreshed too, or the owner reads the dead code off the list
+a second later.
+
+mapDevice takes access_code and accessCode both — the REST payload is
+publicDevice()'s camelCase, a device_update over the socket is the raw row, and
+the card renders from either.
+
+QA/kiosk/access-code-console-0811: 10 cases in a real browser against a stub
+whose storage is the real accesscode.js on node:sqlite with the production DDL
+(same non-partial UNIQUE index), so a re-issue there allocates as it does live.
+Light and dark screenshots. The copy button is the one thing not driven —
+headless Chromium blocks on clipboard permission — and the results file says so.
+
+Not deployed; Railway still serves the previous console. Noted in STATUS as a
+separate next step: hub.js fans out the raw device row, which carries
+device_token, the one field publicDevice() exists to strip.

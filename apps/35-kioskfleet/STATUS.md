@@ -181,6 +181,33 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
 
   **Not deployed.** No console UI yet — the code is in the API payload only.
 
+- **the access code, on screen (§2★ז, console side)** — the code was in the
+  database and in the API payload and nowhere a person could see it, which makes
+  it useless: it exists to be read off this screen by the owner and typed by
+  whoever is standing at the device. Added to `public/js/app.js`:
+  - the code on the **device card**, in full. Masking it would defeat the one
+    thing it is for, and the card is already behind the owner's own session. A
+    device that has none — an owner whose server has not restarted since the
+    column landed — says `טרם הונפק` rather than showing a blank field, because
+    a blank reads as a bug and `—` reads as "no code exists" when one does.
+  - a **🔑 קוד גישה** dialog: the code large enough to read across a room, a
+    copy button, and re-issue.
+  - re-issuing asks first, **inline** rather than in a second modal — the code
+    is taped to a wall next to a tablet, so replacing it strands whoever is
+    standing there; but a second modal over this one would hide the code being
+    replaced. On success the card updates too, so the owner does not read the
+    old code off the list a second later.
+  - `mapDevice` takes `access_code` and `accessCode` both: the REST payload is
+    `publicDevice()`'s camelCase and a `device_update` over the socket is the
+    raw row, and the card is rendered from either.
+
+  Verified in `QA/kiosk/access-code-console-0811/` — 10 cases in a real browser
+  against a stub whose storage is the real `accesscode.js` on `node:sqlite` with
+  the production DDL, plus light/dark screenshots. The copy button is the one
+  thing not driven there (headless clipboard permissions); noted in the results.
+
+  **Not deployed.**
+
 ## Next, in order
 
 1. Deploy: the registry (API + screen), the approvals (API + picker) and
@@ -189,9 +216,15 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
    screen, feeding the same registry.
 3. The selection screen on the device (§2★ה/ו): `KioskActivity` calls
    `identify`, offers the approved list, and locks onto what is chosen.
-4. `/kiosk-launcher/:code` — the access code now exists and resolves; what is
-   missing is the page that takes it, shows the approved list, and opens the
-   locked kiosk. It needs a rate limiter: six characters is guessable given
-   unlimited attempts. The code also has to be shown on the device card in the
-   console, or the owner cannot read it out.
+4. `/kiosk-launcher/:code` — the access code exists, resolves, and is now
+   readable in the console; what is missing is the page that takes it, shows the
+   approved list, and opens the locked kiosk. It needs a rate limiter: six
+   characters is guessable given unlimited attempts.
 5. The "הפעל" wizard with the live checklist (§2★ב).
+6. `notifyConsolesOfDevice()` sends the **raw device row** over the console
+   socket, which carries `device_token` — the agent's long-lived secret, and the
+   one field `publicDevice()` exists to strip. Only the owner and admins receive
+   it, so nothing is exposed to a stranger today, but a console XSS or a browser
+   extension reading it can impersonate the device. It is a one-line fix in
+   `hub.js`; it is listed here rather than folded into a UI step because it is an
+   auth change and deserves its own test.
