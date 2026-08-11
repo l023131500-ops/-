@@ -3161,3 +3161,35 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
      dialogs on other screens have still never been walked (`clientModal`,
      `confirmDeleteClient`, and the הגדרות → משתמשים set, which needs a
      `role: admin` stub user — `warn-ink-0811`'s is `owner`).
+     **Those three were walked by `dialogs-rtl-admin-0811` and the sweep is
+     finished; what it left behind was a reflow defect, and that class is now
+     closed by enumeration rather than by accident** — `narrow-tables-0811`,
+     60/60. Twice now a run has found a table dragging the whole console
+     sideways at 390px while it was on the screen for another reason
+     (`clients-console-0811` on `#c-list`, `dialogs-rtl-admin-0811` on
+     `#users`), and neither asked the follow-up, which is a grep and not a
+     rendering: **`app.js` builds four tables and only two of them were
+     wrapped.** Both of the others are defects. `#e-list` (הוספת מכשיר) wants
+     548px in a 276px card and put `main` at **605px in 390px**; `#l-list`
+     (ספריית קישורים) wants 408px and put it at **465px**. `#l-list` is the one
+     worth naming: its URL column already carries `max-width:220px` with an
+     ellipsis, so it looks like a table that was thought about at a narrow width
+     — a per-cell cap cannot fix a table whose *sum* does not fit. `#e-list` is
+     the worse one, because its אתר cell has no cap at all and how far it drags
+     the console is a function of whatever URL the customer pasted. Both wrapped
+     now; `main` is 390px in 390px on all three tables in both modes.
+     The run is written so it could not have passed for the wrong reason, and
+     all three of the ways it could have are ones earlier runs paid for: the two
+     wrong gradings `clients-console-0811` recorded are kept as `method` rows
+     instead of assertions (`documentElement.scrollWidth` reads 950px in *both*
+     states, and "the last button is inside the viewport" fails **with** the
+     fix, because a scroll container starts at the RTL origin); the negative
+     control removes the wrapper from the DOM rather than setting
+     `overflow-x: visible`, which `dialogs-rtl-admin-0811` found computes back
+     to `auto` and rebuilds the fixed state; and `#c-list` is graded alongside as
+     a **positive** control, because a harness that reports no defect on the
+     unwrapped pair and was never shown passing on the pair that carries the fix
+     proves nothing. 151/152 on `node --test`, the documented baseline, unchanged
+     — this step touches `public/js/app.js` only. Open after it is a copy
+     decision and not an accessibility one: `#e-list`'s אתר column is contained
+     but not bounded, where the other two tables cap theirs at 230px and 220px.
