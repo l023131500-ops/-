@@ -1,0 +1,49 @@
+kiosk (35): the accent was measured on one surface and declared on all of them
+
+screens-approvals-code-0811 put accent-color: var(--accent-control) on :root —
+a global declaration — and graded it on exactly one screen, the approvals
+picker, where the checkbox sits on the modal's --card. It wrote down that the
+wizard's own checkbox and radio were now on that token without having been
+re-measured there. This is that re-measurement. No CSS changed.
+
+The wizard's controls are not on --card. .wz-step.wz-ticked is --sunken, and so
+is #wz-track label — the two track radios, which no run had ever measured at
+all. --sunken sits below --card in dark (#0d1626 vs #131c2e) and below white in
+light, so the two modes were not one question.
+
+The token holds, and by more in dark than where it was chosen: ticked checkbox
+5.01:1 light / 7.57:1 dark on --sunken, against 5.28 / 7.12 on --card; the
+selected radio is the same two numbers. Both asserted to be the right hue, not
+eyeballed. The narrowest control on the screen is the unselected radio at
+3.64:1 light — a UA grey the console does not set, clearing 1.4.11, and the
+number to watch if --sunken is ever lightened.
+
+What the run caught is in the harness. The first pass read the ticked checkbox
+as rgb(0, 0, 0): 19.91:1 light and 1.16:1 dark, which reads exactly like a
+dark-mode failure and is not a colour. The ticked step is the 7th of 12 and its
+box was below the fold; getImageData outside the canvas returns transparent
+black rather than raising, and that becomes rgb(0, 0, 0) once alpha is dropped.
+One non-measurement, scoring 19.91 on a light surface and 1.16 on a dark one.
+sampleBox() now scrolls into view, refuses a box still outside the viewport,
+and throws on any pixel with alpha != 255. The approvals run could not hit this
+and would have been the next harness to.
+
+The wizard's text was graded in the same pass, which item 6's sweep had not
+covered: 14 rows per mode, narrowest .wz-complete at 4.57:1 — the --chip-ok-ink
+pair chip-ink-0811 recorded at exactly that number. #wz-complete only renders
+when every step is ticked, so it is unhidden for the measurement and re-hidden;
+it is the one line saying the device is locked and how to get out. Three
+hierarchy checks pass.
+
+QA/kiosk/wizard-controls-0811/ — real Chromium at both colorScheme values
+against warn-ink-0811/stub-server.mjs, reused not copied. 38/40, exit 0; the
+two failures are the per-mode injected control rows. Two screenshots.
+152 tests, 151 pass — the documented baseline, unchanged (routing.test.mjs
+imports express, which is not installed here).
+
+Not deployed, and nothing to deploy: no source changed. The standing blocker is
+unchanged — the Railway service kioskfleet builds from l023131500-ops/zol,
+NEEDS_USER 0tz.
+
+No protected system touched (08, 09, bkalut-app, bkalot-admin, zr_*,
+NEDARIM3873). Test mode only; no real data written.

@@ -1847,6 +1847,55 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
 
   **Not deployed.**
 
+- **2026-08-11 — the token was measured on one surface and applied to every
+  surface.** `wizard-controls-0811`. No CSS changed here: this is the
+  re-measurement the run above wrote down for itself. `accent-color:
+  var(--accent-control)` is declared on `:root`, i.e. globally, and was graded
+  on exactly one screen — the approvals picker, where the checkbox sits on the
+  modal's `--card`. The wizard is the other place the browser draws a control
+  and its controls are **not** on `--card`: `.wz-step.wz-ticked` is `--sunken`,
+  and so is `#wz-track label`, the two §2★ו track radios, which no run had ever
+  measured. `--sunken` is *below* `--card` in dark (`#0d1626` vs `#131c2e`) and
+  below white in light, so the two modes were not one question.
+
+  **The token holds, and by more in dark than where it was chosen.**
+
+  | control | mode | vs | ratio | on `--card` |
+  |---|---|---|---|---|
+  | checkbox, ticked | light | `#f7f9fc` | **5.01:1** | 5.28:1 |
+  | checkbox, ticked | dark | `#0d1626` | **7.57:1** | 7.12:1 |
+  | radio, selected | light / dark | `--sunken` | **5.01 / 7.57:1** | never measured |
+  | radio, unselected | light | `#f7f9fc` | 3.64:1 | — |
+
+  Both accented controls are asserted to be the right hue and are
+  (`rgb(42, 97, 232)` / `rgb(126, 166, 255)`). The unselected radio at 3.64:1 is
+  the narrowest control on the screen — a UA grey the console does not set,
+  clearing 1.4.11, and the number to watch if `--sunken` is ever lightened.
+
+  What the run **caught** is in the harness, and it is worth carrying forward.
+  The first pass read the ticked checkbox as `rgb(0, 0, 0)`: 19.91:1 light,
+  **1.16:1 dark**, which reads exactly like a dark-mode failure and is not a
+  colour at all. The ticked step is the 7th of 12 and its box was below the
+  fold; `getImageData` outside the canvas returns *transparent black* rather
+  than raising, and that becomes `rgb(0, 0, 0)` once alpha is dropped — one
+  non-measurement scoring 19.91 on a light surface and 1.16 on a dark one. The
+  approvals run could not hit this (every control it graded was in a dialog
+  shorter than the window) and would have been the next to. `sampleBox()` now
+  scrolls into view, refuses a box still outside the viewport, and throws on any
+  pixel with alpha ≠ 255.
+
+  The wizard's **text** was graded in the same pass, which item 6's sweep had
+  not covered: 14 rows per mode, narrowest `.wz-complete` at 4.57:1 (the
+  `--chip-ok-ink` pair `chip-ink-0811` recorded at exactly that number).
+  `#wz-complete` only renders when every step is ticked, so it is unhidden for
+  the measurement and re-hidden — it is the one line saying the device is locked
+  and how to get out. Three hierarchy checks pass.
+
+  38/40 rows, exit 0; the two failures are the per-mode injected control rows.
+  Two screenshots. 152 tests / 151 pass — the documented baseline, unchanged.
+
+  **Not deployed** (nothing to deploy — no source changed).
+
 ## Next, in order
 
 1. Deploy — and it is not a redeploy of this repo. The Railway service
@@ -1924,3 +1973,10 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
    heading is the **enrol screen** and the **settings screen**, which no step
    has named yet — and, given the above, the wizard's own checkbox and radio
    are now on `--accent-control` without having been re-measured there.
+   **The wizard is now re-measured and closed** — `wizard-controls-0811`, both
+   controls on `--sunken` in both modes, plus the wizard's text, which had never
+   been graded either. Nothing under threshold. What is left under this heading
+   is the **enrol screen** and the **settings screen**. Reuse
+   `wizard-controls-0811/verify.mjs` and not the approvals one: it is that
+   harness plus the off-canvas guard, and the enrol screen is the other one
+   taller than the window.
