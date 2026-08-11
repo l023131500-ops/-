@@ -1275,6 +1275,56 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
   **Not deployed.** `more30.com/kiosk/kiosk-launcher` is still a 404 until the
   Railway service is rebuilt.
 
+- **the launcher answers with §2★א's second field too** — `identify()` separates
+  `kioskUrl` (the venue's main site: what the device locks to, where idle-return
+  and a reboot land) from `displayUrl` (what *this* device shows). The launcher's
+  payload carried `kioskUrl` alone, so on a device given its own link the
+  `🏠 אתר האולם` button opened something other than what the tablet was showing a
+  moment before the code was typed. `server/src/launcher.js` only:
+  - `displayUrl` is `deviceDisplayUrl(device)` — never null while the device has
+    a main site, because that function falls back to it. So the page opens the
+    field unconditionally instead of re-deriving "NULL means follow the main
+    site" a second time, in a second language, on a screen in a hall.
+  - **withholding it was never the reason it was absent.** This payload is an
+    allow-list built for a weak credential, and the test asserting that is the
+    reason the field had to be argued rather than added: but the caller is
+    already handed the venue's address, the approved businesses' and the approved
+    links'. `displayUrl` is one of those or `home_url` itself.
+  - **the allow-list was the real defect again.** Three widenings exist and this
+    composed two — the same shape found in `identify()` one step earlier, and
+    this was the last call site outside `deviceConfigHostCsv()`. A device whose
+    own link is on a host nothing else mentions was handed a list that blocks the
+    page it is showing right now. Now wrapped in `configHostCsv`, in the same
+    order, so **unset stays unset**: each widening only widens, and a device with
+    no lock is still handed no lock.
+  - `kioskUrl` is untouched and still `home_url`. A display link is not a second
+    lock, which is what lets idle-return come back to the venue's own page.
+  - `POST /api/launcher/open` takes its `allowedHost` from this same function, so
+    it is fixed by the same change rather than by a second copy of the
+    expression.
+
+  Verified in `QA/kiosk/launcher-display-url-0811/` — **152 tests, 151 pass** on
+  `node --test "test/*.test.mjs"` (146/145 before, so the 6 new cases in
+  `launcher.test.mjs` are the whole difference; the failure is still
+  `routing.test.mjs`, which imports express), plus an 8/8 before-and-after
+  harness. #35's source is gitignored here, so there is no `git show` of the
+  previous version to diff: the harness rebuilds the **pre-change expression
+  verbatim** from the same modules over the same rows and measures what it was
+  missing — no `displayUrl` at all, and an `allowedHost` omitting the device's
+  own host while carrying the client's and the link's, which is what makes it the
+  third widening rather than a broken fixture. It also asserts the fields this
+  step did not touch are unmoved, and that the launcher and `identify()` agree
+  on all three context fields for one device.
+
+  `/open` is covered by a test that reads `routes/launcher.js` off disk and
+  asserts it still destructures `launcherProfile()` rather than writing a second
+  expression — which is exactly how the call sites `deviceConfigHostCsv()` exists
+  to unify drifted apart in the first place.
+
+  **Not deployed**, and the page does not draw it yet: `kiosk-launcher.html`
+  still labels the venue button from `kioskUrl`. That is the next step and it is
+  `public/` only.
+
 ## Next, in order
 
 1. Deploy — and it is not a redeploy of this repo. The Railway service
@@ -1297,10 +1347,9 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
 3. The selection screen on the device (§2★ה/ו): `KioskActivity` calls
    `identify`, offers the approved list, and locks onto what is chosen. Needs an
    Android toolchain, which this checkout does not have.
-4. The device's own `display_url` is not offered anywhere on the launcher page.
-   `identify()` distinguishes `kioskUrl` (the venue's main site, what the device
-   locks to) from `displayUrl` (what *this* device shows), and
-   `launcherProfile()` answers with `kioskUrl` alone — so on a device given its
-   own link, the launcher's `🏠 אתר האולם` button opens something other than what
-   the tablet was showing a moment earlier. `public/` cannot fix this on its own:
-   the field has to reach the payload first. Server then page.
+4. The launcher page does not draw the `displayUrl` the payload now carries.
+   `kiosk-launcher.html` labels and opens its venue button from `kioskUrl`, so on
+   a device given its own link that button still moves the tablet off the page it
+   was showing. The server half landed above; this is `public/` only, and the two
+   addresses have to stay distinguishable on the screen — going "back" is the
+   device's own link, and the venue's main site is what it is locked to.
