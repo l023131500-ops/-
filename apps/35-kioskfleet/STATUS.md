@@ -2125,6 +2125,67 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
 
   **Not deployed.**
 
+- **the whole navigation was unreachable by keyboard.** 2026-08-11,
+  `nav-keyboard-0811`. Item 7 named this as the first thing to measure under the
+  keyboard heading, and what it had was a *reading* off the markup: `<nav
+  id="menu">` held seven `<a data-view=…>` with no `href`, and logout was an
+  `<a class="btn">` with no `href` either. An `<a>` without `href` is not a link
+  and is not focusable, so **every one of the console's seven screens, plus
+  logging out, was mouse-only** — WCAG 2.1.1, Level A. It is not a contrast
+  question: no colour value makes an element that is not in the tab sequence
+  reachable.
+  - they are `<button type="button">` now. `<a href>` is not the fix — these
+    swap a view inside the page and change no URL, so `button` is the correct
+    semantics, and it is also the element the platform gives `Enter`, `Space`
+    and a place in the tab order without a line of code. `.side nav a` became
+    `.side nav button` plus an `appearance/background/border/font/width/
+    text-align` reset; every other declaration is byte-identical, so the look
+    does not move. `closest('a[data-view]')` became `closest('[data-view]')`.
+  - **`--focus-ring-navy`, one value with no dark partner** — the same decision
+    as `--btn-light-edge`. The sidebar is `--navy` (`#071a33`) in *both* modes,
+    so a ring that inverts with the theme is painted right once and on the wrong
+    colour once. The light `--focus-ring` (`#2a61e8`) measures **3.30:1** there:
+    over 3:1 by a hair, and on the active item it is nearly the fill colour
+    itself. Measured after: **7.29:1**, in both modes.
+  - `:focus-visible`, not `:focus`. On a text field a ring after a mouse click
+    is right — the caret is already there; on a nav button it is noise.
+
+  Verified in `QA/kiosk/nav-keyboard-0811/` — **50/50, exit 0**, both colour
+  schemes, against `warn-ink-0811`'s stub. The tab sweep finds all seven targets
+  at stops #1–#7 of 37 and in DOM order (2.4.3); `Enter` and `Space` both route;
+  the ring is graded on the pixel actually painted behind it. Focus is taken
+  **by Tab and never by `el.focus()`** — the rule under test is
+  `:focus-visible`, which a scripted focus does not always match.
+
+  **The control is the previous markup, re-injected into the live page**: same
+  classes, same text, same order, `<button>` back to `<a>` with no `href`. All
+  eight are then absent from the sweep *and* refuse an explicit `focus()` — the
+  sweep alone cannot tell "not in the order" from "not focusable", and
+  `tabindex="-1"` is the difference. 30 other stops survive, so the control did
+  not remove more than it meant to.
+
+  Three harness defects, each found by a failing run rather than reasoned about,
+  and each of a kind worth carrying into the next keyboard step. (1) **The tab
+  order is a ring** — a fixed press count reports the early stops a second time,
+  and that is what made the control rows first claim the old markup was
+  reachable; what they had found was the new markup's second lap. (2) **An index
+  into the recorded array is not a number of key presses** — a stop whose key is
+  null is dropped from it, so `indexOf + 1` landed every ring measurement on the
+  *next* nav item. Tab now presses **until** the target is focused. (3)
+  **`blur()` does not move the sequential focus navigation starting point**; a
+  click leaves it on the element clicked, so `devices` was reached after 38
+  presses instead of one.
+
+  Four earlier harnesses select `.side nav a[data-view=…]`
+  (`focus-ring-0811`, `link-underline-0811`, `screens-enrol-settings-0811`,
+  `visited-link-0811`); they were moved to `.side nav [data-view=…]` in the same
+  commit so they stay runnable.
+
+  152 tests / 151 pass — the documented baseline, unchanged (no server code in
+  this step; `routing.test.mjs` needs express).
+
+  **Not deployed.**
+
 ## Next, in order
 
 1. Deploy — and it is not a redeploy of this repo. The Railway service
@@ -2241,9 +2302,19 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
      console builds `#content` with `innerHTML` on every route change and opens
      dialogs as `.modal-bg` siblings, so both the tab sequence after a redraw and
      whether focus is trapped in an open dialog are unmeasured.
-   - the console's **buttons, links, checkboxes and sidebar** declare no focus
-     style and fall back to the UA ring. Read, not measured.
-   - `.side nav a` are `<a>` with no `href`, which are **not focusable at all** —
-     read off the markup here rather than measured, and it would make the whole
-     navigation unreachable by keyboard. That is the first thing to measure under
-     this heading, ahead of order and rings.
+   - **the sidebar is now closed.** `nav-keyboard-0811` measured what the
+     reading below had guessed and the guess was right: the seven nav items and
+     logout were `<a>` with no `href`, i.e. the whole navigation was mouse-only
+     (2.1.1, Level A). They are `<button>` now, graded reachable at stops #1–#7
+     in DOM order, activating on both `Enter` and `Space`, with a 7.29:1 ring on
+     the navy. What that run leaves for the next one is a method, not a defect:
+     the tab order is a **ring**, so a sweep must stop when it wraps, and an
+     index into the recorded stops is not a number of key presses.
+   - **focus order (WCAG 2.4.3)** is measured on one screen and no further. The
+     console rebuilds `#content` with `innerHTML` on every route change and
+     opens dialogs as `.modal-bg` siblings, so the sequence **after a redraw**
+     and **whether focus is trapped in an open dialog** are both still
+     unmeasured. That is the next thing under this heading.
+   - the console's **buttons, links and checkboxes inside `#content`** declare
+     no focus style and fall back to the UA ring. Read, not measured — the run
+     above covered the sidebar only.

@@ -1,0 +1,57 @@
+kiosk (35): the console's whole navigation could not be reached by keyboard
+
+STATUS.md item 7 named this as the first thing to measure under the keyboard
+heading, and it was a reading off the markup rather than a measurement. The
+markup was right: <nav id="menu"> held seven <a data-view=…> with no href, and
+logout was an <a class="btn"> with no href either. An <a> without href is not a
+link and is not focusable, so every one of the console's seven screens, plus
+logging out, was mouse-only — WCAG 2.1.1, Level A. No colour value fixes that;
+an element outside the tab sequence is not reachable at any contrast.
+
+They are <button type="button"> now. <a href> is not the fix — these swap a view
+inside the page and change no URL, so button is the right semantics, and it is
+also what the platform hands Enter, Space and a place in the tab order without a
+line of code. .side nav a became .side nav button plus an appearance/background/
+border/font/width/text-align reset; every other declaration is byte-identical,
+so the look does not move. closest('a[data-view]') became closest('[data-view]').
+
+--focus-ring-navy is one value with no dark partner, the same decision as
+--btn-light-edge: the sidebar is --navy (#071a33) in both modes, so a ring that
+inverts with the theme is painted right once and on the wrong colour once. The
+light --focus-ring (#2a61e8) measures 3.30:1 there — over 3:1 by a hair, and on
+the active item nearly the fill colour itself. Measured after: 7.29:1, both
+modes. :focus-visible and not :focus, because on a text field a ring after a
+mouse click is right and on a nav button it is noise.
+
+Verified in QA/kiosk/nav-keyboard-0811: 50/50, exit 0, a real Chromium at both
+colorScheme values against warn-ink-0811's stub, which serves the real
+server/public/. The sweep finds all seven at stops #1–#7 of 37 and in DOM order
+(2.4.3); Enter and Space both route; the ring is graded against the pixel
+actually painted behind it. Focus is taken by Tab and never by el.focus(), since
+the rule under test is :focus-visible and a scripted focus does not always match
+it.
+
+The control is the previous markup re-injected into the live page — same
+classes, same text, same order, <button> back to <a> with no href. All eight are
+then absent from the sweep and refuse an explicit focus() as well: the sweep
+alone cannot tell "not in the order" from "not focusable", and tabindex="-1" is
+the difference. 30 other stops survive, so it removed no more than it meant to.
+
+Three harness defects, each found by a failing run. The tab order is a ring, so
+a fixed press count reports the early stops a second time — which is what first
+made the control rows claim the old markup was reachable, when what they had
+found was the new markup's second lap. An index into the recorded stops is not a
+number of key presses, because a stop whose key is null is dropped from the
+array; indexOf + 1 landed every ring measurement on the next nav item. And
+blur() does not move the sequential focus navigation starting point, which a
+click leaves on the element clicked, so devices was reached after 38 presses
+instead of one.
+
+focus-ring-0811, link-underline-0811, screens-enrol-settings-0811 and
+visited-link-0811 select .side nav a[data-view=…]; moved to
+.side nav [data-view=…] here so they stay runnable.
+
+152 tests / 151 pass — the documented baseline, unchanged (no server code;
+routing.test.mjs needs express).
+
+Not deployed.

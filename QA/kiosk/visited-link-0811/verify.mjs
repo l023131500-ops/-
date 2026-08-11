@@ -143,7 +143,7 @@ const LINKS = [
     // is on the hash of the whole element and not on one pixel.
     inkNote: 'הפיקסל הקיצוני כאן הוא ה-📄, לא הדיו',
     open: async (page) => {
-      await page.locator('.side nav a[data-view=guide]').click();
+      await page.locator('.side nav [data-view=guide]').click();
       await page.waitForSelector('#gd-list .device-row, #gd-list p');
     },
     blank: true,
@@ -154,7 +154,7 @@ const LINKS = [
     screen: 'הוספת מכשיר',
     sel: '#e-result a',
     open: async (page) => {
-      await page.locator('.side nav a[data-view=enroll]').click();
+      await page.locator('.side nav [data-view=enroll]').click();
       await page.waitForSelector('#e-create');
       await page.fill('#e-url', 'https://hadar.example.com/event/12');
       await page.locator('#e-create').click();
@@ -168,7 +168,7 @@ const LINKS = [
     screen: 'מסך הכניסה',
     sel: '#login-view .auth-card p.hint > a',
     open: async (page) => {
-      await page.locator('.side nav a[data-view=devices]').click();
+      await page.locator('.side nav [data-view=devices]').click();
       await page.waitForSelector('.device');
       await page.evaluate(() => document.querySelector('#login-view').classList.remove('hidden'));
     },

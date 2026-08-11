@@ -96,7 +96,7 @@ try {
     // ── the three in-text links, which are all of them ────────────
     // 1. the guide link. A `<p>` on a `--card`, and the only sentence on that
     //    screen that goes anywhere.
-    await page.locator('.side nav a[data-view=guide]').click();
+    await page.locator('.side nav [data-view=guide]').click();
     await page.waitForSelector('#gd-list .device-row, #gd-list p');
     await grade(page, mode, 'הוראות הפעלה', '#content .card p > a', 'underline',
       'הקישור למדריך המשתמש', 'טקסט רץ');
@@ -113,7 +113,7 @@ try {
     console.log(`[${mode}] הוראות הפעלה · הטקסט סביב הקישור: ${near.color} ${near.size}/${near.weight}`);
 
     // 2. the install link, inside `.alert-ok`. It only exists after a POST.
-    await page.locator('.side nav a[data-view=enroll]').click();
+    await page.locator('.side nav [data-view=enroll]').click();
     await page.waitForSelector('#e-create');
     await page.fill('#e-url', 'https://hadar.example.com/event/12');
     await page.locator('#e-create').click();
@@ -136,7 +136,7 @@ try {
     await page.evaluate(() => document.querySelector('#login-view').classList.add('hidden'));
 
     // ── the half that must stay unlined ───────────────────────────
-    await grade(page, mode, 'סרגל הצד', '.side nav a[data-view=devices]', 'none',
+    await grade(page, mode, 'סרגל הצד', '.side nav [data-view=devices]', 'none',
       'פריט ניווט נבחר', 'ניווט');
     await grade(page, mode, 'סרגל הצד', '#logout-btn', 'none', 'כפתור התנתקות', 'כפתור');
 
@@ -144,7 +144,7 @@ try {
     // Without it the table above is a list of the values this run wanted. The
     // injected row is the declaration that was replaced (`a { text-decoration:
     // none }` reaching an in-text link), measured here rather than quoted.
-    await page.locator('.side nav a[data-view=guide]').click();
+    await page.locator('.side nav [data-view=guide]').click();
     await page.waitForSelector('#gd-list .device-row, #gd-list p');
     const was = await page.evaluate(INJECTED, ['#content .card p > a',
       '#content .card p > a { text-decoration: none !important; }']);

@@ -159,7 +159,7 @@ try {
 
     // ── הוספת מכשיר, before anything is created ───────────────────
     const E = 'הוספת מכשיר';
-    await page.locator('.side nav a[data-view=enroll]').click();
+    await page.locator('.side nav [data-view=enroll]').click();
     await page.waitForSelector('#e-create');
     await page.waitForSelector('#e-list table');
 
@@ -218,7 +218,7 @@ try {
     // table cannot be read as if the enrol link failed. `--accent` is one value
     // for both modes, so this is the `--label-ink` shape: a fixed colour beside
     // an inverting surface.
-    await page.locator('.side nav a[data-view=guide]').click();
+    await page.locator('.side nav [data-view=guide]').click();
     await page.waitForSelector('#gd-list .device-row, #gd-list p');
     const g = await page.evaluate(PAINTED, '#content .card p > a');
     if (!g) fail('הוראות הפעלה: הקישור למדריך לא נמצא');
@@ -245,7 +245,7 @@ try {
 
     // ── הגדרות ────────────────────────────────────────────────────
     const S = 'הגדרות';
-    await page.locator('.side nav a[data-view=settings]').click();
+    await page.locator('.side nav [data-view=settings]').click();
     await page.waitForSelector('#chp');
     // Something has to be typed, or the two password fields are graded empty —
     // and what a password field renders is the one thing on that screen nobody

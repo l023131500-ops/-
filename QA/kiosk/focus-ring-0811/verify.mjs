@@ -190,7 +190,7 @@ try {
     await page.waitForSelector('.device');
 
     for (const c of CONTROLS) {
-      await page.locator(`.side nav a[data-view=${c.view}]`).click();
+      await page.locator(`.side nav [data-view=${c.view}]`).click();
       await page.waitForSelector(c.ready);
       if (c.after) await c.after(page);
 
