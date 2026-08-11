@@ -887,6 +887,62 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
   than becoming the third unverified Android change. **No console UI** — the
   field is API-only, the same split `display_url` used. **Not deployed.**
 
+- **the maintenance code, on screen (§2★ה/§4, console side)** — the column, the
+  validation and the three config pushes landed above and left the field
+  reachable only by hand-writing a PATCH. So on every device that exists the
+  corner-tap dialog still answers `קוד תחזוקה לא הוגדר`, and the only way out of a
+  locked tablet remains the remote `unlock` command, which needs the network.
+  Added `exitCodeDialog()` + `exitCodeState()` in `public/js/app.js` and
+  **🚪 קוד יציאה** on every device card:
+  - **the code is not printed on the card**, unlike the access code two lines
+    above it. The two look alike and are opposites: that one is meant to be
+    printed and taped beside the tablet, so leaking is its normal end state, while
+    this one is the way *out* of the lock — and a console left open on a desk in
+    an office would otherwise show the exit code of the whole fleet at once. The
+    card carries the state only, `מוגדר` / `לא הוגדר — אין יציאה מקומית`.
+  - it is still **readable on demand**: the dialog prefills the real code. That is
+    the entire reason it is stored recoverable rather than hashed (see
+    `exitcode.js`) — the scenario it exists for is an offline tablet, where reading
+    the code off this screen and walking over is the only remaining route in. A
+    write-only field would make exactly that case unrecoverable.
+  - **emptying the field is a clear, and it lands on a confirmation** rather than
+    being a quiet side effect of a blank input. There is no separate "clear"
+    button, so both routes to it are one path. The confirmation says what is lost —
+    with no network there is no way in short of a factory reset — and cancelling
+    puts the code that was in the field back.
+  - errors are shown **inline**, not only as a toast. Every one of the five
+    messages `routes/devices.js` returns is an instruction for the next attempt
+    (`too short`, `a run`, `the access code taped beside it`), and a toast is gone
+    by the time the person has re-read what they typed.
+  - saving goes through the ordinary `PATCH /devices/:id`, because that is the one
+    path that also issues `update_config`. A code stored here and never pushed is
+    a code the device does not have.
+  - neither card state is **coloured**. There is no `--ok` token, and `--warn` is
+    **1.95:1** on the white card — the `טרם הונפק` line directly above already
+    carries that defect, and raising it is a `--warn-ink` change across every
+    screen, the same shape as the `--danger-ink` step. So the distinction is
+    carried by the words, which have to say it anyway, and by weight; both states
+    inherit `.meta`'s `--muted`, measured at 5.49:1.
+
+  Verified in `QA/kiosk/exit-code-console-0811/` — 16 cases in a real browser
+  against a stub that rewrites only the express glue and calls the real
+  `exitcode.js` over the production DDL on `node:sqlite`, asserting the stored
+  column **and** the `update_config` that follows it (`adminCode` is `''` on a
+  clear, not `null`). Two screenshots. 121/122 on `node --test` — the documented
+  baseline, unchanged because this step adds no server logic.
+
+  Two defects found in that run and fixed, both the same one: `4–32 תווים`
+  rendered as `32–4 תווים`, and the server's own `…מתו חוזר (1234, 0000)` put its
+  brackets on the wrong sides and split across the line wrap. Digit ranges and
+  parenthesised digit lists are directionally neutral inside a Hebrew sentence;
+  both are now wrapped U+2066…U+2069, the fix `windowLabel()` already carries.
+  Only a screenshot catches this class — the source string and `innerText` are
+  both correct.
+
+  **The device still ignores the field**, so this does not yet make a locked
+  tablet openable: `AgentClient.kt` writes three config keys into `Prefs` and
+  `adminCode` is not one of them. That is item 2 below. **Not deployed.**
+
 ## Next, in order
 
 1. Deploy — and it is not a redeploy of this repo. The Railway service
