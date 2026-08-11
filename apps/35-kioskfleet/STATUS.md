@@ -208,6 +208,40 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
 
   **Not deployed.**
 
+- **the console socket stopped carrying the agent's secret** —
+  `notifyConsolesOfDevice()` fanned out `{ ...device, ...payload }` where
+  `device` is a raw `SELECT * FROM devices` row, and that row holds
+  `device_token`: the agent's long-lived secret, sufficient on its own at
+  `/ws/agent?token=…`, and the one field `publicDevice()` exists to strip. The
+  socket path never went through it. Added `server/src/devicepayload.js`:
+  - `consoleDevice(device, payload)` — an **allow-list** of the 18 fields a
+    console may receive, applied *after* the merge so an override cannot
+    reintroduce a stripped field. `hub.js` calls it once per notify, covering
+    all seven call sites.
+  - allow-list rather than `delete device_token`, because a deny-list is right
+    exactly once: the next secret column added to `devices` would ship to every
+    open console until someone remembered to extend it, and nothing fails when
+    they don't. The test asserts the dropped set is exactly `['device_token']`
+    against a real `SELECT *`, so a new column fails it until reviewed.
+  - absent keys stay absent instead of becoming `undefined`. The console applies
+    updates as `{ ...DEVICES[i], ...mapDevice(m.device) }`, so an `undefined`
+    value overwrites a good one — a status frame would have erased the device's
+    name off the card.
+  - the frame keeps the row's snake_case. `mapDevice()` reads both shapes on
+    purpose, and converting here would ride a second change along with an auth
+    fix.
+
+  Verified in `QA/kiosk/console-socket-token-0811/` — 8 unit cases against the
+  production DDL on `node:sqlite` (43/44 across the suite; `routing.test.mjs`
+  imports express and still cannot run here), plus the real console in a browser
+  against a stub whose `/ws/console` is a hand-rolled RFC6455 handshake pushing
+  a frame built by the real `consoleDevice()` from a row holding a real token.
+  The token appears in no frame, nowhere in the DOM, and nowhere in the
+  console's in-memory `DEVICES`; the card still updates from the frame.
+
+  **Not deployed.** Until the Railway service is rebuilt, the live console still
+  receives the raw row.
+
 ## Next, in order
 
 1. Deploy: the registry (API + screen), the approvals (API + picker) and
@@ -221,10 +255,3 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
    approved list, and opens the locked kiosk. It needs a rate limiter: six
    characters is guessable given unlimited attempts.
 5. The "הפעל" wizard with the live checklist (§2★ב).
-6. `notifyConsolesOfDevice()` sends the **raw device row** over the console
-   socket, which carries `device_token` — the agent's long-lived secret, and the
-   one field `publicDevice()` exists to strip. Only the owner and admins receive
-   it, so nothing is exposed to a stranger today, but a console XSS or a browser
-   extension reading it can impersonate the device. It is a one-line fix in
-   `hub.js`; it is listed here rather than folded into a UI step because it is an
-   auth change and deserves its own test.
