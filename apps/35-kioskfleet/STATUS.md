@@ -2344,6 +2344,55 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
 
   **Not deployed.**
 
+- **every other control in the console had no focus ring** — five runs closed
+  the keyboard heading's other halves and between them gave an explicit
+  `:focus-visible` to exactly three things: `.field input`, `.side nav button`,
+  `.topbar h1`. Everything else fell back to the UA ring — every ✏️ עריכה,
+  every 🗑️, every save button in every dialog, the guide's in-text link, the
+  wizard's twelve checkboxes. That is not the same as "fine":
+  - `outline-style: auto` **is not a colour you can read**. `getComputedStyle`
+    returns the style; the ring Chromium paints for `auto` is its own two-tone
+    construction. So every harness under items 6 and 7 — all of which graded
+    colours off computed style — was structurally unable to see this one, which
+    is exactly why it survived to be the last thing left.
+  - the UA ring follows **`color-scheme`**, which this console sets on `:root`.
+    Its colour is therefore the browser's answer to a question `--focus-ring`
+    already answers, and nothing makes the two agree.
+  - the fix is one rule, scoped to `#content` and `.modal`:
+    `outline: 2px solid var(--focus-ring); outline-offset: 2px`. `outline` and
+    not `box-shadow` — `.btn`'s existing edge (`--btn-light-edge`) is already an
+    inset shadow and a second one overwrites it, `outline` takes no space in the
+    packed `.btn-sm` row inside a device card, and it is the one thing painted in
+    Windows high-contrast mode. `--focus-ring` and not `--focus-ring-navy`
+    because the ring lands *outside* the control, on the card or the page —
+    surfaces that invert, unlike the sidebar.
+  - the scope stops at the console **on purpose**: `.btn` also exists on the
+    marketing page, where `.btn-ghost` sits on a navy bar. That is the case
+    `--focus-ring-navy` was created for and it is its own measurement.
+
+  Verified in `QA/kiosk/content-focus-0811/` — five controls × both
+  `colorScheme` values in a real Chromium against the stub that serves the real
+  `public/`, each reached by **Tab** so `:focus-visible` matches the way it does
+  for a person. 40/40, with ten control rows (`outline: revert`, i.e. the
+  shipped UA `auto`) confirming there was a defect to fix. 152 tests / 151 pass
+  — the documented baseline, unchanged; no server code here.
+
+  Two corrections the run forced: the first version failed all six button rows
+  reporting `solid 0px`, because `.btn` carries `transition: .15s` on **all**
+  properties and a computed read in the tick focus lands returns where the
+  transition started — `button-boundary-0811` paid for the same thing on
+  `color`. And the surface probe started at the control itself, so it returned
+  the button's own fill and graded the ring against the thing it is drawn
+  outside of.
+
+  Found and **not** fixed, so it is not silently claimed: the pixel sample is a
+  max over an 8px band, so a dark neighbouring element can satisfy the 3:1 in
+  place of the ring — it did on two rows. The strong claim rests on the computed
+  `solid 2px` in `--focus-ring`'s value; a harness that wants to grade the ring
+  alone has to sample only the band at the ring's own offset and width.
+
+  **Not deployed.**
+
 ## Next, in order
 
 1. Deploy — and it is not a redeploy of this repo. The Railway service
@@ -2491,7 +2540,27 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
      the sequential focus navigation starting point in Chromium, so a forward
      Tab keeps working and only the focus itself is lost — a harness that
      grades this by counting Tab stops measures nothing.
-   - the console's **buttons, links and checkboxes inside `#content`** declare
-     no focus style and fall back to the UA ring. Read, not measured — the runs
-     above covered the sidebar and the screen heading only. That is the next
-     thing under this heading.
+   - **the controls inside `#content` are now closed.** They declared no focus
+     style and fell back to the UA ring — read, not measured, until
+     `content-focus-0811` pressed Tab on them. Between them the five runs above
+     had given an explicit ring to exactly three things (`.field input`,
+     `.side nav button`, `.topbar h1`); every ✏️ עריכה, every 🗑️, every save
+     button in every dialog, the guide's link and the wizard's twelve
+     checkboxes had no `:focus-visible` rule at all. Now one rule, scoped to
+     `#content` and `.modal`: `outline: 2px solid var(--focus-ring)` at
+     `offset: 2px` — `outline` and not `box-shadow` because the button's
+     existing edge (`--btn-light-edge`) is already an inset shadow and the two
+     overwrite each other, and `--focus-ring` and not `--focus-ring-navy`
+     because the ring sits *outside* the control, on a surface that inverts.
+     Graded on five controls × both modes, 40/40, with ten control rows
+     confirming the UA `auto` that was there before.
+     What that run leaves for the next one is a measurement fact and a scope
+     line. The fact: `outline-style: auto` **cannot be read as a colour** —
+     `getComputedStyle` returns the style and Chromium paints its own two-tone
+     ring, so every harness under items 6 and 7 that graded a colour was
+     structurally unable to see this defect; pixel sampling is the only route,
+     and a max-over-band sample can be satisfied by a neighbouring dark pixel
+     rather than by the ring (it was, on two rows). The scope: the rule stops
+     at the console. `index.html`'s `.btn-ghost` sits on a navy bar — the exact
+     case `--focus-ring-navy` exists for — and the marketing page's focus has
+     never been measured. That is the next thing under this heading.
