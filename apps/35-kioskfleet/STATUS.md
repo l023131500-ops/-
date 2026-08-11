@@ -683,6 +683,65 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
 
   **Not deployed**, and no screen — nothing in `public/` calls these routes yet.
 
+- **the wizard, on screen (§2★ב)** — the checklist and the ticks both existed and
+  neither was reachable: the console still offered `viewGuide()`, four paragraphs
+  with no boxes, not tied to a device, stopping at enrollment — i.e. never
+  reaching the part that locks the tablet. Added `setupWizard()` in
+  `public/js/app.js`, the `.wz-*` block in `css/style.css`, and **🚀 הפעל** as the
+  *first* button on every device card:
+  - first in the row on purpose. On a device that is not installed yet it is the
+    only button there that does anything — the rest send commands to an agent
+    that is not running.
+  - **the list is never rendered from local state.** Every tick round-trips and
+    the answer redraws the boxes, the count, the bar and which step is marked
+    next. §2★ב's flow is two people at once — the owner in the console and an
+    installer beside the tablet — and the failure that matters is progress
+    appearing to run backwards while someone watches. A tick made behind the
+    console's back shows up on the next box, which the QA drives directly.
+  - a failed tick **puts the box back**. A tick that failed but stayed on screen
+    is the worst outcome available here: the next person reads the list as "this
+    was done" and the install stops at a step nobody returns to.
+  - the copy button for the `adb` line lives inside the step's `<label>`, so it
+    calls `preventDefault`/`stopPropagation` — otherwise copying the command
+    ticks `set-owner`, and those command steps are exactly the ones that must not
+    be ticked early.
+  - the track radios say the switch keeps the ticks, because the server keeps
+    them deliberately and a switch that *might* wipe an hour of work does not get
+    used by the person who needs it — whoever has just discovered the tablet in
+    their hands has no Play Store.
+  - `התחל מחדש` is confirmed **inline** rather than in a second modal, the same
+    shape as re-issuing an access code, and is separate from unticking twelve
+    boxes one at a time.
+  - `.wz-*` colours were chosen against the surface actually behind them in both
+    modes; the progress fill is `#15803d` rather than `--accent-2` (`#22c55e` is
+    2.20:1 on the sunken track, under 1.4.11), and the same number is printed as
+    text beside the bar.
+
+  Verified in `QA/kiosk/setup-wizard-console-0811/` — 14 cases in a real browser
+  against a stub that serves the real `public/` and answers the four setup routes
+  through the real `setupsteps.js` / `setupprogress.js` over the production DDL
+  on `node:sqlite`, at both `colorScheme` values, plus three screenshots and a
+  contrast table. 106/107 on `node --test` — the documented baseline, unchanged
+  because this step adds no server code.
+
+  A defect found in that run and fixed: the step's parts were `<span>`s and
+  therefore inline, so "what to do", "what should appear" and the warning ran
+  together into one paragraph — which is exactly `viewGuide()`, the thing this
+  screen exists to replace.
+
+  Found and **not** fixed: the step row's border is `--line` (1.29:1 in dark).
+  It separates rows rather than being the control — the control is a real
+  checkbox with the UA's own border — but a fully clickable row arguably wants a
+  stronger edge, and that is the console-wide `--line` question the earlier
+  contrast steps left alone on purpose.
+
+  **The wizard is device-scoped, and it has to be:** `/api/devices/:id/setup`
+  needs a device row, and an enrollment code exists *before* any device does. So
+  it is not opened from the enrollment toast, which keeps the install link; the
+  wizard is reached from the card as soon as the device appears.
+
+  **Not deployed.**
+
 ## Next, in order
 
 1. Deploy — and it is not a redeploy of this repo. The Railway service
@@ -693,10 +752,10 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
    `identify`, the launcher, both of §2★א's fields, the install link and the
    three contrast fixes means syncing the source across first. That is its own
    step, and it is outward-facing on a live beta.
-2. The "הפעל" wizard screen (§2★ב) — the checkbox list rendered from
-   `setupsteps.js` and driven by `/api/devices/:id/setup`, opened from the device
-   card and from the enrollment toast. Both halves behind it now exist; this is
-   the only thing between them and the owner.
-4. The selection screen on the device (§2★ה/ו): `KioskActivity` calls
+2. `viewGuide()` — the four paragraphs under "הוראות הפעלה" in the sidebar are
+   now the *second* description of the same install, and they still stop at
+   enrollment. Either point that screen at the wizard or delete it; two
+   instructions that disagree is worse than one that is short.
+3. The selection screen on the device (§2★ה/ו): `KioskActivity` calls
    `identify`, offers the approved list, and locks onto what is chosen. Needs an
    Android toolchain, which this checkout does not have.
