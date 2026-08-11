@@ -205,6 +205,55 @@ PDF bodies from `supabase.co`; none of that applies to the production server.
   `QA/gannenet/sw-origin-scope-0811/`. **Open:** `setOverride()` is still a
   read-modify-write with no compare-and-set.
 
+- **`lib/overrides.ts` + `app/api/admin/override/route.ts`** — closes that line.
+  The whole override map lived in one `overrides.json`, so every save was a
+  read-modify-write of shared state and two admins saving **different** files at
+  once lost one of the two. Measured before touching anything, two concurrent
+  saves against the real bucket: **a save was lost in 4 of 4 runs**, and both
+  calls returned `ok`.
+
+  Storage offers no compare-and-set, and rather than assume that, both
+  candidates were probed against the real bucket. `If-Match` is *accepted and
+  ignored* on upload — a deliberately bogus ETag still returned 200 and still
+  overwrote. A lock object is unusable: create-if-absent on an existing key is a
+  real atomic **409 `KeyAlreadyExists`**, but DELETE with the anon key is
+  **403 `AccessDenied`**, so a lock could be taken and never released.
+
+  Write-then-verify was the obvious remaining fix and it was implemented, tested
+  and **thrown away**: re-reading after the write and retrying still lost a save
+  in 4 of 4 runs, because "it landed" is only true at the instant of the check —
+  one writer verified its own entry, returned `ok`, and a concurrent write
+  clobbered it a moment later. It is recorded here because it looks correct.
+
+  What ships removes the shared write instead of guarding it: **one object per
+  file**, `overrides/<fileId>.json`. Two files are two keys and cannot collide;
+  two saves of the same file are last-writer-wins on one field, which is what a
+  human expects. Same race, same harness: **0 of 4 lost**. Clearing an override
+  writes `{}` rather than deleting, since the anon key cannot delete, and
+  readers treat an empty entry as absent — so cleared override objects
+  accumulate, one per file ever curated, harmlessly. `readOverrides()` folds the
+  legacy `overrides.json` in underneath the per-file objects, which stay
+  authoritative, so a bucket written by the old code keeps its curation; it was
+  `{}` here, so nothing needed migrating.
+
+  Verified end to end on `next dev` :3042 with `APP_BASE_PATH=/gannenet` against
+  the real bucket: hide through the real admin route → 200 and
+  `/api/drive-catalog` 2,977 → **2,976** without that file; unhide → 200,
+  `{"override":{}}`, back to **2,977** with it; `/api/admin/list` 2,977 rows;
+  a wrong `x-admin-key` still 401. `/shelf` renders 2,977 items / 21 categories
+  with no console errors — the screenshot, since `readOverrides()` is now a list
+  plus N fetches and that page is what it could have broken. `tsc --noEmit` 0
+  (665 files — this app's tsconfig really does compile, unlike the repo root's).
+  The bucket was left exactly as found: all three probe objects deleted, root
+  back to `index.json, overrides.json, seed, up_msoxh0q3_hx4s.png`, and
+  `overrides.json` still `{}`. Evidence and the reusable race harness in
+  `QA/gannenet/overrides-cas-0811/`.
+
+  One note for whoever reads storage from this machine: NetFree rewrites the
+  upstream status of a Supabase error to **400** and carries the real one in the
+  body (`{"statusCode":"409",...}`). Every probe above reads the body, not the
+  status. It is a property of this network, not of production.
+
 No other file was modified. The mount itself needs no code edit: `next.config.js`
 already reads `APP_BASE_PATH`, and `lib/base.ts` exports `withBase()` for the
 fetch calls, hrefs and service worker that Next's `basePath` does not prefix.
