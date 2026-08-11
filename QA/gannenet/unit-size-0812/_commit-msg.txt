@@ -1,0 +1,30 @@
+gannenet (40): 54 lessons said which of five meetings they were, in a unit of twelve
+
+The line above every רגילה lesson title printed its position in the unit
+as "מפגש {day} מתוך 5", with the total fixed in the JSX. Counted off
+content/regular.json, the units are not all five long: the 13 holiday and
+value units are (65 lessons), but the five פרשות השבוע books hold 12, 11,
+10, 10 and 11 -- one lesson per parasha. So 54 of the 119 carried a false
+total, and 34 of those contradicted themselves on their face: פרשת ויחי
+read "מפגש 12 מתוך 5" directly above its own meta line, "ספר בראשית ·
+פרשה י״ב". The claim was true of the 52-lesson app it was written for;
+the 180-lesson package brought the parasha books with it.
+
+lib/content.ts gains unitSizeOf(topic), counted once from regularLessons.
+The page prints the total only when it is at least `day`, so a future
+package with a gap prints "מפגש 12" rather than a made-up total. The home
+page's library card carried the same claim in copy ("5 מפגשים לנושא") and
+now describes both shapes.
+
+Verified against every page, not a sample: all 180 prerendered lesson HTML
+files were parsed -- 119 carry a unit line, 61 (משלימה) carry none, and
+for all 18 units the claimed total equals the number of pages actually in
+that unit. In the browser on the production build: פרשת ויחי reads
+"מפגש 12 מתוך 12" over "פרשה י״ב", and חנוכה מפגש 2 still reads
+"מפגש 2 מתוך 5", unchanged. tsc --noEmit 0, next build 194 pages with 180
+/lesson/[id] paths, route JS byte-identical on every route, 0 console
+errors. Evidence in QA/gannenet/unit-size-0812/.
+
+The app's own sources are untracked here (/apps/** in .gitignore, "vendored
+private source"), so this commit carries STATUS.md and the evidence, as
+every gannenet step before it has.

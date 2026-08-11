@@ -801,6 +801,33 @@ PDF bodies from `supabase.co`; none of that applies to the production server.
   browser stream it — worth doing, but it costs a second request for the buffer
   the page tool needs, so it wants its own measurement.
 
+- **`app/lesson/[id]/page.tsx` + `lib/content.ts` + `app/page.tsx`** — the line
+  above every רגילה lesson title printed its position in the unit as
+  `מפגש {day} מתוך 5`, with the total fixed in the JSX. The units are not all
+  five long. Counted off `content/regular.json`: the 13 holiday and value units
+  are (65 lessons), but the five פרשות השבוע books hold **12, 11, 10, 10 and 11**
+  — one lesson per parasha — so **54 of the 119 carried a false total**, and 34
+  of those were self-contradictory on their face: פרשת ויחי read "מפגש 12 מתוך 5"
+  directly above its own meta line, "ספר בראשית · פרשה י״ב". The claim had been
+  true of the 52-lesson app it was written for; the 180-lesson package brought
+  the parasha books with it.
+
+  `lib/content.ts` gains `unitSizeOf(topic)`, counted once from `regularLessons`,
+  and the page prints the total only when it is at least `day` — a future package
+  with a gap prints "מפגש 12" rather than a made-up total. `app/page.tsx`'s
+  library card carried the same claim in copy ("5 מפגשים לנושא") and now
+  describes both shapes.
+
+  Verified against every page rather than a sample: all 180 prerendered
+  `.next/server/app/lesson/*.html` were parsed, **119 carry a unit line and 61
+  (משלימה) carry none**, and for all 18 units the claimed total equals the number
+  of pages actually in that unit. In the browser on the production build
+  (`next start` :3046): פרשת ויחי reads "מפגש 12 מתוך 12" over "פרשה י״ב", and
+  חנוכה מפגש 2 still reads "מפגש 2 מתוך 5" over "יום ב׳ מתוך 5" — unchanged, as
+  it should be. `tsc --noEmit` 0, `next build` ✓ 194 pages, 180 `/lesson/[id]`
+  paths, `/lesson/[id]` 183 B of route JS unchanged and every other route
+  byte-identical, 0 console errors. Evidence in `QA/gannenet/unit-size-0812/`.
+
 No other file was modified. The mount itself needs no code edit: `next.config.js`
 already reads `APP_BASE_PATH`, and `lib/base.ts` exports `withBase()` for the
 fetch calls, hrefs and service worker that Next's `basePath` does not prefix.
