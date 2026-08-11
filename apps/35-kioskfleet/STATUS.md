@@ -2240,7 +2240,49 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
   Found and **not** fixed: the page behind an open dialog is not `inert`. The
   trap covers Tab and Shift+Tab, which is what a keyboard user does, and
   `aria-modal="true"` is what AT reads — but neither makes the cards behind it
-  actually unreachable.
+  actually unreachable. Closed by the entry below.
+
+  152 tests / 151 pass — the documented baseline, unchanged (no server code in
+  this step; `routing.test.mjs` needs express).
+
+  **Not deployed.**
+
+- **the page behind an open dialog was still there.** 2026-08-11,
+  `dialog-inert-0811`. The line the entry above left open. `aria-modal="true"`
+  is a promise to AT, not a fact about the DOM: measured, the device card's own
+  buttons were still in the browser's accessibility tree behind
+  `לאתחל את המכשיר?`, and still took a scripted `focus()` — which is what a
+  screen reader's virtual cursor and a Ctrl+F → Enter both end in, neither of
+  them ever pressing Tab. `public/js/app.js` now sets `inert` on `#login-view`
+  and `#app-view` from `syncInert()`, called by `modal()` after the append and
+  by `bg.remove` / `closeModals()` after the removal. Three decisions in it:
+  - **driven off `#modal-root.children.length`, not a boolean.** A flag set on
+    open and cleared on close un-inerts the page when a dialog opened *on top
+    of* another one closes, while the first is still on screen.
+  - **`#toast-root` is deliberately left out.** It is the live region that
+    announces what a dialog's save did, and `inert` removes a subtree from the
+    accessibility tree — it would silence the message the dialog produced.
+  - **`syncInert()` runs before `opener.focus()`** in `bg.remove`. `focus()`
+    inside an inert subtree is a no-op that does not throw: the wrong order
+    would silently drop focus to `<body>` and reintroduce the defect the entry
+    above fixed. Asserted as a pair.
+
+  Verified in `QA/kiosk/dialog-inert-0811/` — **28/28, exit 0**, both colour
+  schemes. The accessibility rows are read through the browser's real tree
+  (`page.accessibility.snapshot()`), not a selector query, which would answer
+  "still there" for both states and measure nothing. `dialog-focus-0811` re-run
+  against the changed `modal()`: **42/42**, unchanged — it owns the Tab trap and
+  the return of focus to the opener, the two things this step could have broken.
+
+  **The control is the previous behaviour produced in the same live page**: the
+  attribute taken off by hand with the dialog still open and the backdrop still
+  on screen. Both rows flip back in both modes — the button returns to the
+  accessibility tree, and `focus()` on it takes, leaving a control underneath an
+  open confirmation focused.
+
+  Found and not fixed: `inert` has **no fallback** here. Every current browser
+  ships it and the console is an internal tool, but there is no polyfill and no
+  feature test, so a browser without it keeps the old behaviour silently.
 
   152 tests / 151 pass — the documented baseline, unchanged (no server code in
   this step; `routing.test.mjs` needs express).
@@ -2378,9 +2420,11 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
      underneath. `modal()` now moves focus, traps Tab in both directions,
      closes on Escape and returns focus to the opener; graded on three dialogs
      in both modes, with the previous shape rebuilt in the same page as the
-     control. What that leaves is one reading, not a measurement: the page
-     behind is not `inert`, so the trap covers the keyboard and not a screen
-     reader's virtual cursor.
+     control. `dialog-inert-0811` then closed what it left: the page behind is
+     `inert` while a dialog is open, so the cards underneath are out of the
+     accessibility tree and out of reach of `focus()`, not only of Tab. What
+     remains here is a dependency, not a defect — `inert` has no fallback, so a
+     browser without it keeps the old behaviour silently.
    - **focus order (WCAG 2.4.3)** is measured on one screen and no further. The
      console rebuilds `#content` with `innerHTML` on every route change, so
      where focus lands **after a redraw** is still unmeasured. That is the next

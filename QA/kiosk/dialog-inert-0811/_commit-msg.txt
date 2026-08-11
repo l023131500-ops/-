@@ -1,0 +1,44 @@
+kiosk (35): the page behind an open dialog was still reachable
+
+`dialog-focus-0811` trapped Tab inside the console's dialogs and wrote one
+thing down as found-and-not-fixed: the page behind them is not `inert`. Tab is
+what a keyboard user presses; it is not the only way in. A screen reader's
+virtual cursor walks the whole document without pressing it, and Ctrl+F → Enter
+lands on a button under the backdrop the same way. `aria-modal="true"` was
+already set, and that is a promise to AT rather than a fact about the DOM —
+measured here, the device card's buttons were still in the browser's
+accessibility tree behind `לאתחל את המכשיר?`, and still took a scripted
+`focus()`.
+
+`public/js/app.js`: `syncInert()` sets `inert` on `#login-view` and `#app-view`,
+called from `modal()` after the append and from `bg.remove` / `closeModals()`
+after the removal. Three decisions in it, each of them a row in the run:
+
+- driven off `#modal-root.children.length`, not a boolean — a flag set on open
+  and cleared on close un-inerts the page when a dialog opened on top of another
+  one closes, while the first is still on screen;
+- `#toast-root` is deliberately left out: it is the live region that announces
+  what the dialog's save did, and inert would silence it;
+- `syncInert()` runs *before* `opener.focus()` in `bg.remove`, because `focus()`
+  inside an inert subtree is a no-op that does not throw — the wrong order drops
+  focus to `<body>` and silently reintroduces the defect the previous step fixed.
+
+QA/kiosk/dialog-inert-0811/ — 28/28, exit 0, both colour schemes, against
+warn-ink-0811's stub (the real server/public/, canned API). The accessibility
+rows are read through the browser's real tree, not a selector query: a query
+answers "still there" for both states and measures nothing.
+
+The control is the previous behaviour produced in the same live page — the
+attribute taken off by hand with the dialog still open and the backdrop still
+on screen. Both rows flip back in both modes: the button returns to the
+accessibility tree, and `focus()` on it takes.
+
+dialog-focus-0811 re-run against the changed modal(): 42/42, unchanged. It owns
+the Tab trap and the return of focus to the opener — the two things this step
+could have broken. 152 tests / 151 pass, the documented baseline.
+
+Found and not fixed: `inert` has no fallback here — no polyfill, no feature
+test. Every current browser ships it and the console is an internal tool, but a
+browser without it keeps the old behaviour silently.
+
+Not deployed — the Railway service builds from another repo.
