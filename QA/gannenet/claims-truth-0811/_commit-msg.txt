@@ -1,0 +1,15 @@
+gannenet (40): four features were on sale and none of them had been built
+
+The pricing page asked 49 ILS a month for a week-preparation wizard that has no
+route, for WhatsApp sending on a page that has no send button, for print-and-PDF
+from a generator that returns a text card, and for a 3-a-month AI quota on an app
+with no accounts and no counter. 49 is on no price scale this platform set
+(2/5/10/12/15) and in no core.plans row, and all three of its buttons - the one
+reading "talk to us" included - went to /library, as did the nav button on every
+page, which read "sign up" and asked for an account nothing here can create.
+
+The copy now says what the app does. The paid tier reads "in preparation", names
+the real 2-15 ILS scale, and states that nothing charges; which plan #40 belongs
+to is the user's call and is in NEEDS_USER.md. The footer gained the developer
+credit link it never carried. tsc 0, build 65 pages, 0 console errors, 19 string
+assertions. Evidence in QA/gannenet/claims-truth-0811/.

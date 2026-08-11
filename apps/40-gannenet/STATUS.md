@@ -601,6 +601,47 @@ PDF bodies from `supabase.co`; none of that applies to the production server.
   `tsc --noEmit` 0, 0 console errors. Evidence in
   `QA/gannenet/library-search-0811/`.
 
+- **`app/pricing/page.tsx` + `app/page.tsx` + `components/Nav.tsx` + `components/Footer.tsx`**
+  — the previous step closed everything it opened, so this read the surfaces that
+  make claims rather than the ones that do work. **Four features were being sold
+  and none of them exists.** `אשף הכנה לשבוע` — a home card, the hero sentence,
+  the footer paragraph on every page and a premium bullet — has no route, no
+  component and no handler; the build renders 65 pages and none is a wizard.
+  `שילוב תמונות ושליחה בוואטסאפ`: `/newsletter` has two inputs and one button
+  that sets state, renders the draft into a `<div>`, and offers no image field,
+  no send and not even a copy button (0 hits for whatsapp anywhere in the 45
+  source files). `מוכן להדפסה ו-PDF` on the מחולל card: `/generator` returns a
+  title, instructions and two lists — the only `print()` in the app is
+  `components/PdfViewer.tsx`, which is the shelf's file viewer. And the tier
+  split itself — `3 הפקות AI בחודש` against `ללא הגבלה` — described metering on
+  an app that **has no accounts at all** (the one `login()` is the admin-key
+  prompt on `/shelf/admin`) and no counter, so everything listed as paid was in
+  fact open to everyone reading the page.
+
+  The price was invented too: **49 ₪**, on a platform whose scale
+  `more30-priority.md` §8א fixes at 2/5/10/12/15 and in no `core.plans` row. And
+  every call to action landed somewhere else than it said — all three pricing
+  buttons, `דברו איתנו` included, were `href="/library"`, and the one prominent
+  button in the nav of every page read `הרשמה` and went to the price table,
+  asking for an account this app cannot create.
+
+  Copy now matches the product. `/pricing` states what is open (all of it,
+  counted from the content files rather than typed in) beside a `בהכנה` tier that
+  names the real 2–15 ₪ platform scale and says plainly that the mapping for #40
+  is undecided and nothing here charges; the שלישי tier — multi-gan management, a
+  supervisor dashboard, central billing, dedicated support — was fiction end to
+  end and is gone. The home shelf card said `עשרות חומרים` for 2,977. The footer
+  gained the §7 credit link `פותח ע״י עולם הסטארטאפים` → `more30.com`, which it
+  did not carry at all. Verified on the production build at :3044: 19 string
+  assertions (13 gone / 6 present) pass, 7 → 6 feature cards, `tsc --noEmit` 0,
+  `next build` ✓ 65 pages, 0 console errors on `/` and `/pricing`. Two apparent
+  assertion failures were run down rather than waved off — `49` matches
+  `lineHeight:49px` in Next's built-in 404 payload, and the interpolated count
+  renders as `כל <!-- -->52<!-- --> המערכים`. Evidence in
+  `QA/gannenet/claims-truth-0811/`. **Open:** which plan (2 ₪ or 5 ₪) #40 sells
+  and what sits behind it is the user's decision — `NEEDS_USER.md` — and neither
+  row exists in `core.plans` yet.
+
 No other file was modified. The mount itself needs no code edit: `next.config.js`
 already reads `APP_BASE_PATH`, and `lib/base.ts` exports `withBase()` for the
 fetch calls, hrefs and service worker that Next's `basePath` does not prefix.

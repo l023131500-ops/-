@@ -1,0 +1,67 @@
+{
+  "step": "gannenet (40) — the marketing surfaces sold four features the app does not have, at a price nobody set",
+  "date": "2026-08-11",
+  "system": 40,
+  "files": [
+    "apps/40-gannenet/app/pricing/page.tsx",
+    "apps/40-gannenet/app/page.tsx",
+    "apps/40-gannenet/components/Nav.tsx",
+    "apps/40-gannenet/components/Footer.tsx"
+  ],
+  "how_measured": "Every claim on the three copy surfaces (home, nav+footer on every page, /pricing) was checked against the source: a case-sensitive scan of all 45 .ts/.tsx/.js files under apps/40-gannenet for the thing each claim names, plus reading the page that would implement it.",
+  "false_claims_found": [
+    {
+      "claim": "אשף הכנה לשבוע",
+      "appeared_in": ["home feature card", "home hero sentence", "footer paragraph (every page)", "/pricing premium tier"],
+      "evidence": "no route, no component, no handler. Nav lists 7 destinations and none is a wizard; `next build` renders 65 pages and none is one.",
+      "fix": "removed from all four places"
+    },
+    {
+      "claim": "שילוב תמונות ושליחה בוואטסאפ",
+      "appeared_in": ["home feature card (דפי קשר)", "/pricing premium tier"],
+      "evidence": "0 hits for whatsapp/וואטסאפ outside those two strings. app/newsletter/page.tsx has two text inputs and one button that sets state; it renders the draft into a <div> — no image field, no send, not even a copy button.",
+      "fix": "card now describes what the page does; removed from /pricing"
+    },
+    {
+      "claim": "מוכן להדפסה ו-PDF (המחולל) / הורדה ל-PDF ולהדפסה",
+      "appeared_in": ["home feature card (מחולל)", "/pricing premium tier"],
+      "evidence": "app/generator/page.tsx renders title + instructions + two <ul>s. No print(), no export, no download. The only print path in the app is components/PdfViewer.tsx, which is the shelf's file viewer — a different feature.",
+      "fix": "card now names what the generator returns; removed from /pricing"
+    },
+    {
+      "claim": "3 הפקות AI בחודש (חינם) / הפקות AI ללא הגבלה (פרימיום) / גישה מוגבלת למאגר",
+      "appeared_in": ["/pricing"],
+      "evidence": "there is no account system in this app — the only login() is the admin-key prompt on /shelf/admin — and no counter, quota or gate anywhere. /library, /shelf and /generator are open to anyone. So the tier split described a product that does not exist and everything listed as paid was in fact free.",
+      "fix": "the page now states what is open (all of it) instead of splitting it"
+    },
+    {
+      "claim": "49 ₪ לחודש",
+      "appeared_in": ["/pricing"],
+      "evidence": "more30-priority.md §8א fixes the platform scale at 2/5/10/12/15 ₪. 49 is not on it and is in no core.plans row.",
+      "fix": "no number is quoted; the tier reads בהכנה and names the real 2–15 ₪ scale as the platform's, with the mapping for #40 left undecided"
+    },
+    {
+      "claim": "עשרות חומרים אמינים (מדף הגננת)",
+      "appeared_in": ["home feature card"],
+      "evidence": "the shelf serves 2,977 items (measured repeatedly this week, /api/drive-catalog).",
+      "fix": "אלפי"
+    }
+  ],
+  "dead_ctas_found": [
+    { "where": "/pricing", "was": "three buttons — התחלה חינם / מנוי פרימיום / דברו איתנו — all href=/library", "now": "one button, למאגר המערכים, which is where it goes" },
+    { "where": "Nav, every page", "was": "the one prominent button read הרשמה and went to /pricing", "now": "כניסה למאגר → /library. There is no sign-up in this app, so the button could not have been honoured." },
+    { "where": "home bottom CTA", "was": "הרשמה חינם → /pricing", "now": "כניסה למאגר המערכים → /library" }
+  ],
+  "also": "footer credit link פותח ע״י עולם הסטארטאפים → https://more30.com, per more30-priority §7. It was absent; the footer carried no developer credit at all.",
+  "verification": {
+    "typecheck": "npx tsc --noEmit → 0 errors (665 files)",
+    "build": "APP_BASE_PATH=/gannenet npx next build → ✓ 65 pages",
+    "server": "next start :3044, production build",
+    "assertions": "13 string assertions for claims that must be gone and 6 for what must be there — all pass. Two apparent failures were artifacts and were run down: '49' matches lineHeight:49px inside Next's built-in 404 RSC payload, and 'כל 52 המערכים' renders as 'כל <!-- -->52<!-- --> המערכים' because React separates the interpolated count.",
+    "console": "0 errors on / and /pricing (1 pre-existing warning: apple-mobile-web-app-capable deprecation, from layout.tsx)",
+    "counts": "home feature cards 7 → 6; the 52 on /pricing is computed from content/mashlima.json + content/regular.json, not typed in",
+    "screenshots": ["home-after.png", "pricing-after.png"]
+  },
+  "not_done": "The 2 ₪ and 5 ₪ plan rows are not created — no Supabase MCP this run, and which of them #40 belongs to (and what would sit behind it) is a product decision. Logged to NEEDS_USER.md.",
+  "heartbeat": "unwritten — Supabase MCP absent this run. Row prepared in _heartbeat.sql."
+}
