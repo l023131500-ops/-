@@ -580,6 +580,53 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
 
   **Not deployed.**
 
+- **the wizard's checklist (§2★ב, content half)** — §2★ב asks for an אשף התקנה
+  behind "הפעל" where every step has a tick box and says exactly *what to tap,
+  which button to confirm, and what should appear*. What the console has is
+  `viewGuide()`: four paragraphs, no boxes, not tied to a device, and it stops
+  at enrollment — it never reaches the part that actually locks the tablet.
+  Added `server/src/setupsteps.js`, the ordered list plus the arithmetic, with
+  the screen left to its own step:
+  - **no QR / `afw#setup` route is offered, and a test asserts it isn't.** Both
+    provision by having the device download the DPC from a URL, and no APK of
+    this agent is hosted anywhere — `install.html` already says the file comes
+    by USB or disk-on-key. A wizard step that cannot complete is worse than a
+    longer wizard when the reader is standing at a tablet in a hall. So the one
+    Device Owner route offered is `adb dpm set-device-owner`, for **both** of
+    §2★ו's tracks.
+  - the adb line is **built from the manifest's component**, not quoted, and is
+    carried as `command` rather than inside the prose so the wizard can render a
+    copy button. A retyped `dpm set-device-owner` that names the wrong component
+    fails *after* the device has been factory reset for it.
+  - the two tracks are one list with a flag, not two lists. They differ in three
+    steps — unknown-sources wording, whether an accounts screen has anything on
+    it, and the OEM USB driver — and an unknown track resolves to `generic`,
+    which is the safe default: it assumes no Play Store and no Google account,
+    so it is merely less specific on a GMS device, where the reverse sends
+    someone hunting a menu their device does not have.
+  - `no-accounts` is a step with a warning rather than a footnote: Android
+    refuses Device Owner while an account exists, and it is the one thing in the
+    flow that cannot be fixed afterwards without a factory reset.
+  - **no code means an extra first step, not a checklist missing one.** The
+    wizard opens from the device card, which is exactly where someone lands when
+    a code has expired; dropping the step that needs one leaves a list that
+    cannot be completed and does not say why. Same reason the server address
+    falls back to the real one — `serverAddress()` is `''` when `PUBLIC_URL` is
+    unset, and "הקלידו בדיוק: " is an instruction to type nothing.
+  - `checklistProgress()` filters ticked ids against the checklist that exists
+    **now**. Progress outlives the list it was recorded against (a step added
+    here, a track switched half way), and an unrecognised id must not count
+    toward `done` or the wizard shows 12/11 and a completed banner over an
+    unfinished install. `nextId` is the first *hole*, not the step after the
+    last tick.
+
+  Verified in `QA/kiosk/setup-steps-0811/` — 16 unit cases, 94/95 across the
+  suite (`routing.test.mjs` imports express and still cannot run here).
+
+  **Not deployed**, and no screen yet: nothing imports this module — the wizard
+  UI and the per-device storage of which boxes are ticked are the next two
+  steps.
+
 ## Next, in order
 
 1. Deploy — and it is not a redeploy of this repo. The Railway service
@@ -590,6 +637,11 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
    `identify`, the launcher, both of §2★א's fields, the install link and the
    three contrast fixes means syncing the source across first. That is its own
    step, and it is outward-facing on a live beta.
-2. The selection screen on the device (§2★ה/ו): `KioskActivity` calls
-   `identify`, offers the approved list, and locks onto what is chosen.
-3. The "הפעל" wizard with the live checklist (§2★ב).
+2. The "הפעל" wizard screen (§2★ב) — the checkbox list rendered from
+   `setupsteps.js`, opened from the device card and from the enrollment toast.
+3. Per-device storage of which boxes are ticked, so the wizard is live across a
+   reload and across two people (the owner in the console, the installer at the
+   device).
+4. The selection screen on the device (§2★ה/ו): `KioskActivity` calls
+   `identify`, offers the approved list, and locks onto what is chosen. Needs an
+   Android toolchain, which this checkout does not have.
