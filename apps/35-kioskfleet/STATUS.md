@@ -2067,6 +2067,64 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
 
   **Not deployed.**
 
+- **every field in the console suppressed the browser's focus ring, and what
+  replaced it was invisible in dark mode.** 2026-08-11, `focus-ring-0811`. Every
+  contrast run here so far graded the console *at rest* — what a colour is when
+  nothing is focused — and not one of them pressed Tab. The two rules that decide
+  what a keyboard user sees both opened with `outline: none`
+  (`.field input:focus, .field select:focus, .field textarea:focus` and
+  `.hl-new:focus`), and what stood in for the ring was a border-colour swap to
+  `--accent`. Measured, that swap is **1.60:1** in light and **1.06:1** in dark —
+  the second of those is not a faint indicator, it is no indicator: someone
+  navigating the console by keyboard in dark mode could not tell which field they
+  were in, on every screen including the login form. WCAG 2.4.7 is Level A.
+  - `--focus-ring`, and it is **not one value**. Light is `--accent` itself
+    (5.28:1 measured on the white card). Dark is `--accent-control` — the
+    lightened blue already chosen for controls in dark by
+    `screens-approvals-code-0811` — at 7.12:1, because `--accent` against the
+    *paler* dark border `#61708f` is the 1.06:1 that is the bug.
+  - `outline`, not `border`: a border grows the field by 2px on every focus, and
+    an outline follows `border-radius`, costs no layout, and **is painted in
+    Windows high-contrast mode**, where the `box-shadow` ring
+    `button-boundary-0811` gave the buttons is not.
+  - the border-colour swap is **kept**. It is a second cue and not the one
+    carrying the indicator; removing it would change the console's look further
+    than an accessibility fix needs to.
+  - `.modal` and `.main` both declare `overflow: auto`, so a ring at
+    `outline-offset: 2px` is a clipping risk — checked rather than assumed: both
+    carry ≥28px of padding, so 4px of ring is nowhere near an edge.
+
+  Verified in `QA/kiosk/focus-ring-0811/` — six controls (text, `select`,
+  `number`, `password`, `.hl-new`, and the login field) across four screens in
+  both colour schemes, against `warn-ink-0811`'s stub, which serves the real
+  `public/`. **24/24, exit 0.** Twelve screenshots of the focused state.
+  152 tests / 151 pass — the documented baseline, unchanged (no server code).
+
+  Three things about the method, because this is the first run here that grades a
+  *state change* rather than a resting colour. The clip is in page coordinates
+  and expanded by 8px, not `elementHandle.screenshot()` — that one crops to the
+  border box, which is exactly where an `outline` is not. The surface under the
+  ring is read from the pixel actually painted in the unfocused shot rather than
+  from the token, because with an offset the ring lands on whatever is behind the
+  control. And the grade is the **best** of three cues (ring, border swap, fill
+  swap) rather than the ring alone, so a control cannot pass on a ring while the
+  credit belongs to the border, or fail while a visible fill change is on screen.
+
+  The twelve control rows re-inject `outline: none` and are required to come out
+  **under** 3:1; all twelve do. They are what makes this measurable at all: a
+  pixel diff was **not** enough here, because the border and fill did move a
+  little before the fix, so "did anything change" passed in both states and
+  measured nothing. Each control row records that in as many words.
+
+  Found and **not** fixed: the selector is `:focus` and not `:focus-visible`, so
+  the ring shows for a mouse click too — correct for text fields, and stated
+  rather than left implicit. And the console's other focusable things (buttons,
+  links, checkboxes, the sidebar) declare no focus style at all and so fall back
+  to the UA ring. That is probably sufficient, but it is a reading and not a
+  measurement, and **focus order itself (2.4.3) has never been checked**.
+
+  **Not deployed.**
+
 ## Next, in order
 
 1. Deploy — and it is not a redeploy of this repo. The Railway service
@@ -2175,3 +2233,17 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
    defects across seven screens (`.serial`, the UA checkbox hue, `.pill.off`,
    and this one), all of them the same shape — a fixed value beside a surface
    that moves.
+7. **Keyboard**, which item 6 never covered: every run under it graded the
+   console *at rest*, and none pressed Tab. `focus-ring-0811` opened this and
+   closed its first half — the focus indicator on the fields, which was 1.06:1
+   in dark mode, i.e. absent. What is open under this heading:
+   - **focus order (WCAG 2.4.3)** has never been checked on any screen. The
+     console builds `#content` with `innerHTML` on every route change and opens
+     dialogs as `.modal-bg` siblings, so both the tab sequence after a redraw and
+     whether focus is trapped in an open dialog are unmeasured.
+   - the console's **buttons, links, checkboxes and sidebar** declare no focus
+     style and fall back to the UA ring. Read, not measured.
+   - `.side nav a` are `<a>` with no `href`, which are **not focusable at all** —
+     read off the markup here rather than measured, and it would make the whole
+     navigation unreachable by keyboard. That is the first thing to measure under
+     this heading, ahead of order and rings.
