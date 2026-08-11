@@ -148,6 +148,35 @@ PDF bodies from `supabase.co`; none of that applies to the production server.
   only, so material added through `/shelf/upload` still cannot be hidden or
   trimmed there.
 
+- **`app/shelf/page.tsx` + `app/api/catalog/route.ts` + `app/api/admin/list/route.ts`
+  + `app/shelf/admin/page.tsx`** — the line above ended on the admin list being
+  `driveItems` only. Following it found that the hide held for one of the shelf's
+  three sources. All 258 seed assets are in-repo copies of Drive files and carry
+  those files' ids (258/258 verified against `content/drive-catalog.json`), so the
+  seed loop on `/shelf` is meant to *upgrade* a drive row to the local copy — but
+  it was written `for (const i of seedItems) map.set(i.id, i)`, unconditional, so
+  hiding one of those 258 dropped it from `/api/drive-catalog` and this loop put
+  it straight back. Reproduced with the override in place and the old line
+  restored: API **2,976** without the file, page beside it **2,977** with the card.
+  Uploaded material could not be curated at all — no row in the admin list to
+  tick, and `/api/catalog` never applied the override map, so the hide
+  `/shelf/[id]` already honoured left the card and its download button on the
+  shelf. The seed loop now merges onto rows the catalog still lists and keeps the
+  `hiddenPages` it attached; a new `driveOk` flag separates "nothing is left"
+  from "the catalog never answered", because the second is the PWA's offline path
+  and must still show the 258. `/api/catalog` applies overrides;
+  `/api/admin/list` includes uploads, tagged `source` and placed **first** (the
+  list pages 40 at a time — nobody reaches the tail of 2,977); an upload row reads
+  `· הועלה כאן`. Verified on `next dev` :3042 against the real bucket both ways,
+  including the aborted-catalog offline path (258 shown) and a real upload through
+  the real form (`/api/catalog` 1 → 0 after the tick). `tsc --noEmit` 0; storage
+  and both catalog counts left as found. Evidence in
+  `QA/gannenet/hide-holds-0811/`. **Open:** the service worker holds
+  `catalog-gannenet-v3` and served a pre-hide catalog to a reloaded page twice in
+  this run, so a hide can lag for a returning teacher; and `setOverride()` is a
+  read-modify-write with no compare-and-set — two saves in the same second lost
+  one during this run's own cleanup.
+
 No other file was modified. The mount itself needs no code edit: `next.config.js`
 already reads `APP_BASE_PATH`, and `lib/base.ts` exports `withBase()` for the
 fetch calls, hrefs and service worker that Next's `basePath` does not prefix.
