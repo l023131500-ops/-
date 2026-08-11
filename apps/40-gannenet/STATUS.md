@@ -52,6 +52,22 @@ PDF bodies from `supabase.co`; none of that applies to the production server.
   name so a category arriving later from the Drive catalog still groups together.
   Evidence in `QA/gannenet/shelf-category-order-0811/`.
 
+- **`lib/season.ts` (new) + `app/calendar/page.tsx` + `app/shelf/page.tsx`** —
+  §1ה of `GANNENET_BUILD.md` asks the calendar to reach the shelf; the calendar
+  page instead ended on the sentence "בהמשך יחובר לנושאים המומלצים לכל שבוע",
+  and neither page linked to the other. `season.ts` maps a hebcal `basename()`
+  — stable English, unlike the Hebrew string the page renders — to a shelf
+  category, and `weekTopics()` returns the dates in the next 45 days that have
+  material behind them, one entry per category. `/calendar` now shows those, and
+  the week's parasha, as cards carrying the real count and linking to
+  `/shelf?cat=…`; `/shelf` reads `cat` and `q` off the URL on mount, which it
+  never did. The counts repeat the shelf's own merge (drive, then seed by id) so
+  they cannot drift: 19 and 202 on the cards, "מוצגים … מתוך 19 / 202" on the
+  shelf. A category with no material is dropped rather than linked. Walked over
+  all 53 weeks of 5787 it reaches 8 categories — every holiday category the
+  shelf holds except `סוף שנה / קיץ`, which no date triggers. Evidence in
+  `QA/gannenet/calendar-shelf-link-0811/`.
+
 No other file was modified. The mount itself needs no code edit: `next.config.js`
 already reads `APP_BASE_PATH`, and `lib/base.ts` exports `withBase()` for the
 fetch calls, hrefs and service worker that Next's `basePath` does not prefix.
