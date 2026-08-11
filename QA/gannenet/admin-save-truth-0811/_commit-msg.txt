@@ -1,0 +1,26 @@
+gannenet (40): the admin was told the file was hidden when nothing had been written
+
+setOverride() discarded the boolean writeOverrides() returns, /api/admin/override
+answered {ok:true} unconditionally, and /shelf/admin printed "נשמר: <title>" on it.
+Every failed write was reported as a save, and the reachable case is the ordinary
+one: with SUPABASE_* unset, writeOverrides returns false on its first line.
+
+The same lie ran through the UI — the "הסתר קובץ" checkbox wrote into rows, the
+state that mirrors storage, so the row dimmed to opacity:.6 before anything was
+sent and stayed dimmed when the save failed.
+
+setOverride now returns {ok, reason}; the route maps it to 503 (unconfigured) /
+502 (write failed) with a Hebrew sentence and says ok only after the object lands;
+the page holds pending edits in hiddenDrafts beside the existing drafts, marks a
+row "· לא נשמר" while it differs from storage, and shows the route's own message.
+
+It narrows with `"reason" in res`, not `!res.ok`: tsconfig has strict:false, which
+switches discriminated-union narrowing off. /api/catalog tests `"error" in result`
+for the same reason.
+
+Verified on next dev :3042 with the real key. Unconfigured: 503 with the Hebrew
+error, no "נשמר:" on screen. Configured: 200, overrides.json carries the entry,
+/api/drive-catalog drops to 2,976 of 2,977. Both test overrides reverted through
+the same UI; overrides.json is back to {} and the catalog back to 2,977.
+
+Evidence in QA/gannenet/admin-save-truth-0811/.

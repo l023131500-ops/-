@@ -123,6 +123,31 @@ PDF bodies from `supabase.co`; none of that applies to the production server.
   picked 6–7) nor `instructions` (376–572 chars) — and that is a product
   decision, so it is in `NEEDS_USER.md`.
 
+- **`lib/overrides.ts` + `app/api/admin/override/route.ts` + `app/shelf/admin/page.tsx`**
+  — `setOverride()` threw away the boolean `writeOverrides()` returns, the route
+  answered `{ok:true}` unconditionally, and the page printed `נשמר: <title>` on
+  it. So a write that never happened was reported as a save, and the reachable
+  case is the ordinary one: with `SUPABASE_*` unset `writeOverrides` returns
+  `false` on its first line and the admin was still told the file was hidden.
+  The same lie ran the other way through the UI — the `הסתר קובץ` checkbox wrote
+  into `rows`, the state that mirrors storage, so a row dimmed to `opacity:.6`
+  *before* anything was sent and stayed that way when the save failed.
+  `setOverride` now returns `{ok, reason}`, the route maps that to **503**
+  (unconfigured) / **502** (write failed) with a Hebrew sentence and only says
+  `ok` after the object lands, and the page keeps pending edits in
+  `hiddenDrafts` beside the existing `drafts`, marks a row `· לא נשמר` while it
+  differs from storage, and shows the route's own message. It narrows with
+  `"reason" in res` rather than `!res.ok`: `tsconfig.json` sets `strict:false`,
+  which switches discriminated-union narrowing off — `/api/catalog` tests
+  `"error" in result` for the same reason. Verified both ways on `next dev`
+  :3042 with the real key: unconfigured → 503 and no `נשמר:` on screen;
+  configured → 200, `overrides.json` carries the entry and `/api/drive-catalog`
+  drops to 2,976 of 2,977 items. Both test overrides were reverted through the
+  same UI — `overrides.json` is back to `{}`. Evidence in
+  `QA/gannenet/admin-save-truth-0811/`. **Open:** the admin list is `driveItems`
+  only, so material added through `/shelf/upload` still cannot be hidden or
+  trimmed there.
+
 No other file was modified. The mount itself needs no code edit: `next.config.js`
 already reads `APP_BASE_PATH`, and `lib/base.ts` exports `withBase()` for the
 fetch calls, hrefs and service worker that Next's `basePath` does not prefix.
