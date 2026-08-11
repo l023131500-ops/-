@@ -1,0 +1,16 @@
+﻿ITEM 1lfiQT79XaO-05RO7Qj8sVeXaoEbnLI6f
+  api href: /gannenet/api/shelf/1lfiQT79XaO-05RO7Qj8sVeXaoEbnLI6f.pdf?dl=1
+  api href: /gannenet/api/shelf/1lfiQT79XaO-05RO7Qj8sVeXaoEbnLI6f.pdf
+
+ITEM 16QLfhd7JsxdUZtVXgs33DhIXUZGT916_
+  api href: /gannenet/api/shelf/16QLfhd7JsxdUZtVXgs33DhIXUZGT916_.jpg
+  api href: /gannenet/api/shelf/16QLfhd7JsxdUZtVXgs33DhIXUZGT916_.jpg?dl=1
+  api href: /gannenet/api/shelf/16QLfhd7JsxdUZtVXgs33DhIXUZGT916_.jpg
+
+GRID /shelf (first 6 api hrefs):
+  /gannenet/api/shelf/1gkTYVvWEzN9vpF-F7PfZIA7jPitBSOH5.pdf?dl=1
+  /gannenet/api/shelf/1tlqLwhWIK6rvHFiXgw8FDJYLjaI-ZqNl.pdf?dl=1
+  /gannenet/api/shelf/1DieP3YGL27m_sWFkoSD1Ipou7QtnpEy3.pdf?dl=1
+  /gannenet/api/shelf/1WCBvVVLTtvrQFdxD0M-QBY21yzomjhoK.pdf?dl=1
+  /gannenet/api/shelf/1L1SvVKB2ux3Q6wFONYib7wZ5pBLyHUi1.pdf?dl=1
+  /gannenet/api/shelf/1rY48URLjlUJih-OcuRdm1TitMK8SpwhQ.pdf?dl=1

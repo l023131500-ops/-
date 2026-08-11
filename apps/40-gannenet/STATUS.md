@@ -286,6 +286,38 @@ PDF bodies from `supabase.co`; none of that applies to the production server.
   back to `[]`, `/api/drive-catalog` 2,977. Evidence in
   `QA/gannenet/upload-index-race-0811/`.
 
+- **`lib/base.ts` + `app/shelf/[id]/page.tsx` + `app/shelf/page.tsx`** — the
+  "הורדת הקובץ" button did not download. `/api/shelf/[name]` and `/api/drive/[id]`
+  both serve `Content-Disposition: inline` unless the request carries `?dl=1`,
+  and only drive items ever carried it: the helper read
+  `source === "drive" ? file + "?dl=1" : file`, under the comment "local assets
+  download directly". That was true while the seed assets were static files in
+  `public/shelf/`; they now live in the bucket behind `/api/shelf/<name>` — all
+  258 of them (`content/catalog.json`, 234 pdf + 24 image). So for every seed
+  file the download button's href was byte-identical to the "פתיחה בכרטיסייה
+  חדשה" beside it and opened the PDF instead of saving it, on the item page and
+  on the `/shelf` grid both. `public/sw.js`'s `isFile()` carried the same stale
+  assumption after that move and was fixed for the same reason; this was the
+  second site. One `downloadUrl(file)` now lives in `lib/base.ts`, keyed on the
+  URL (`/api/` → append `dl=1`) rather than on `source`, so it stays right for
+  whatever a later source streams through our origin — applied to the raw `file`,
+  since the prefixed `/gannenet/api/…` would not match. Verified in the browser
+  against the production build (`next build` ✓ 65 pages, `next start` :3043):
+  download → **attachment** 29,278 B, open → **inline**, same file; every
+  download button on `/shelf` carries `dl=1` across both sources (13 seed + 35
+  drive in dev, 2 + 46 in prod), 0 off-origin; counts unchanged at 2,977 / 21
+  categories; drive items untouched. Two things ruled out along the way: a dev
+  hydration warning (`Server: …?dl=1  Client: …pdf`) was HMR serving the old
+  chunk — the production build logs 0 console errors — and `/api/shelf/*.pdf`
+  502s on this machine only because NetFree answers **418** to PDF bodies from
+  `supabase.co` (the `.jpg` proves the same code path end to end). `tsc --noEmit`
+  0. Evidence in `QA/gannenet/download-disposition-0811/`. **Open:** uploaded
+  material is the one source not streamed through our own origin —
+  `entryToItem()` returns an absolute `supabase.co` URL, which cannot be made to
+  download (no `Content-Disposition`, and `download` is ignored cross-origin),
+  is `no-store` so never cached, is skipped by both the service worker and the
+  offline prefetch, and is off-domain against §0.
+
 No other file was modified. The mount itself needs no code edit: `next.config.js`
 already reads `APP_BASE_PATH`, and `lib/base.ts` exports `withBase()` for the
 fetch calls, hrefs and service worker that Next's `basePath` does not prefix.
