@@ -86,6 +86,17 @@ createServer(async (req, res) => {
     if (p === '/api/devices') return json(res, { devices: DEVICES });
     if (p === '/api/links') return json(res, { links: LINKS });
     if (p === '/api/clients') return json(res, { clients: CLIENTS });
+    // Added by `chip-ink-0811`, additively: `.alert-ok` exists in exactly one
+    // place in the console — the answer `createEnrollment()` paints after a
+    // successful POST — so it is unreachable without these two. The GET was
+    // 404ing before, which left `#e-list` on `טוען…`; the earlier runs that
+    // drove this screen measured labels and are unaffected either way.
+    if (p === '/api/enrollments' && req.method === 'POST') {
+      return json(res, { enrollment: { id: 91, code: 'QA7X2K', installUrl: 'https://kiosk.more30.com/kiosk/install/QA7X2K' } });
+    }
+    if (p === '/api/enrollments') {
+      return json(res, { enrollments: [{ id: 90, code: 'QA1234', home_url: 'https://hadar.example.com/event/12', name: 'כניסה ראשית', used: 0, installUrl: 'https://kiosk.more30.com/kiosk/install/QA1234' }] });
+    }
     const setup = p.match(/^\/api\/devices\/(\d+)\/setup$/);
     if (setup) return json(res, setupPayload(Number(setup[1])));
     const approvals = p.match(/^\/api\/devices\/(\d+)\/clients$/);

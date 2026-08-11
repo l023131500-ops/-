@@ -1,0 +1,56 @@
+kiosk (35): the chip that says a tablet stopped answering was 4.34:1
+
+The three steps before this one all chased the same defect — a hard-coded
+colour sitting beside a token that inverts, i.e. something unreadable in the
+mode you are not looking at. The five light chips were left alone precisely
+because they are the opposite shape.
+
+.pill.on, .pill.off, .alert-ok, .hl-tag and .code-chip are light fills that
+deliberately do NOT invert: #f1f5f9 sits on the dark card exactly as it sits on
+white. So their ratio is identical in both modes and they fail, or pass,
+equally everywhere. One decision, five rules — and one of them was under.
+
+.pill.off is #64748b on #f1f5f9: 4.34:1, at 12px/600, which is not large text.
+That is the "מנותק" chip, i.e. the word that says a tablet in another room has
+stopped answering. --chip-off-ink is #56637a, one shade darker and visually
+near-identical, at 5.54:1.
+
+The other four are tokenised WITHOUT moving, and their numbers are recorded
+rather than left silent: #15803d on #dcfce7 is 4.57:1 and #2a61e8 on #eef3ff is
+4.76:1. Both pass on thin margins, which is exactly what a token stops from
+being worn away.
+
+The ink of a chip is chosen against its own fill, so it must not ride --accent.
+.hl-tag and .code-chip read var(--accent) on a fill that stays #eef3ff, and
+more30-priority.md §6 asks for a different palette per system — so that token
+WILL move, and would have taken both chips with it onto a background that does
+not follow. Same split as --danger / --danger-ink. The harness forces
+--accent: #ff0000 on the live DOM and asserts .hl-tag does not move.
+
+.code-chip is declared at 20px/700 — large text, 3:1 — and app.js renders the
+same class at 14px on the device card and 15px in both code tables, so it lands
+on both sides of 1.4.3's line. The value is chosen for the stricter threshold,
+and the harness computes the threshold from the rule rather than quoting a
+constant.
+
+Verified in QA/kiosk/chip-ink-0811/ — a real Chromium at both colorScheme
+values against warn-ink-0811/stub-server.mjs, reused rather than copied, with
+the background read from the surface actually painted behind each chip. 14/16
+rows pass; the two failures are the "before" rows, re-injected into the same DOM
+in the same run and asserted to fail in BOTH modes — the class's defining
+property, and the opposite of what the previous step's harness demanded. The six
+tokens are also asserted byte-identical across the modes, and the measured
+.pill.off ratio asserted equal in both. Six screenshots. 152 tests, 151 pass —
+the documented baseline, unchanged, since this step adds no server code.
+
+Two routes were added to the shared stub, additively: .alert-ok is painted in
+exactly one place in the console — the answer to a successful
+POST /api/enrollments — and was unreachable without them.
+
+Found and not fixed, with numbers: the chip's own boundary is ~1.10:1 on a white
+card for all three fills. 1.4.11 covers controls and graphical objects; a chip is
+a status label whose whole content is the word inside it, so it is exempt —
+unlike .btn-light/.btn-danger, which are controls and got a ring in
+button-boundary-0811.
+
+Not deployed.

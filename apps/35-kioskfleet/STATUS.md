@@ -1685,6 +1685,59 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
 
   **Not deployed.**
 
+- **the light chips (`--chip-*`)** — the three steps before this one all chased
+  the same defect: a hard-coded colour beside a token that inverts, i.e.
+  something unreadable in the mode you are *not* looking at. The five light chips
+  are the opposite shape and were left for exactly that reason. `.pill.on`,
+  `.pill.off`, `.alert-ok`, `.hl-tag` and `.code-chip` are light fills that
+  **deliberately do not invert** — `#f1f5f9` sits on the dark card unchanged — so
+  their ratio is identical in both modes and they fail, or pass, equally
+  everywhere. One decision, five rules, and one of them was under: `.pill.off` is
+  `#64748b` on `#f1f5f9` at **4.34:1**, which is the **מנותק** chip — the word
+  that says a tablet in another room has stopped answering, at 12px/600, which is
+  not large text. Six tokens in `css/style.css`:
+  - `--chip-off-ink` is the only value that moved: `#56637a`, one shade darker
+    and visually near-identical, **5.54:1**. The other four are tokenised
+    **without moving**, and their numbers are recorded rather than left silent —
+    `#15803d` on `#dcfce7` is 4.57:1 and `#2a61e8` on `#eef3ff` is 4.76:1. Both
+    pass on thin margins, which is precisely what a token stops from being worn
+    away.
+  - the ink of a chip is chosen against **its own fill**, so it must not ride
+    `--accent`. `.hl-tag` and `.code-chip` read `var(--accent)` on a fill that
+    stays `#eef3ff` — and `more30-priority.md` §6 asks for a different palette per
+    system, so that token *will* move and would have taken both chips with it,
+    onto a background that does not follow. Same split as `--danger` /
+    `--danger-ink`. The harness forces `--accent: #ff0000` on the live DOM and
+    asserts `.hl-tag` does not move.
+  - `.code-chip` is **declared** at 20px/700 — large text, 3:1 — and `app.js`
+    renders the same class at 14px on the device card and 15px in both code
+    tables. So the class lands on both sides of 1.4.3's line and the value is
+    chosen for the stricter threshold. The harness computes the threshold from
+    the rule rather than quoting a constant.
+
+  Verified in `QA/kiosk/chip-ink-0811/` — a real Chromium at both `colorScheme`
+  values against `warn-ink-0811/stub-server.mjs`, reused rather than copied, with
+  the background read from the surface actually painted behind each chip. 14/16
+  rows pass; the two failures are the **before** rows, re-injected into the same
+  DOM in the same run and asserted to fail in **both** modes — which is the
+  class's defining property, and the opposite of what the previous step's harness
+  demanded. The six tokens are also asserted byte-identical across the two modes
+  (a light chip that inverts is a second, unmeasured design) and the measured
+  `.pill.off` ratio is asserted equal in both. Six screenshots. 152 tests, 151
+  pass — the documented baseline, unchanged, since this step adds no server code.
+
+  Two routes were added to the shared stub, **additively**: `.alert-ok` is
+  painted in exactly one place in the console — the answer to a successful
+  `POST /api/enrollments` — and was unreachable without them.
+
+  Found and **not** fixed, with numbers: the chip's **own boundary** is ~1.10:1
+  on a white card for all three fills. 1.4.11 covers controls and graphical
+  objects; a chip is a status label whose whole content is the word inside it, so
+  it is exempt — unlike `.btn-light`/`.btn-danger`, which are controls and got a
+  ring in `button-boundary-0811`.
+
+  **Not deployed.**
+
 ## Next, in order
 
 1. Deploy — and it is not a redeploy of this repo. The Railway service
@@ -1736,3 +1789,10 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
    `.pill.off` is 4.38:1 at 12px/600, and `.pill.on` / `.alert-ok` / `.hl-tag` /
    `.code-chip` are the same decision and have to move together. That is the
    next thing under this heading, ahead of the screen-by-screen pass.
+   **The light chips are now closed** — `chip-ink-0811` moved all five together
+   as one token family; `.pill.off` was the one under 4.5:1 and the other four
+   are tokenised without moving, with their margins recorded. What is left under
+   this heading is the screen-by-screen pass itself: `nontext-contrast-0811`
+   onward each opened one dialog, and the console's own screens — links, clients,
+   the approvals picker, the access-code dialog — have still had no graded pass
+   in both modes. `index-contrast-0811/verify.mjs` remains the harness to reuse.
