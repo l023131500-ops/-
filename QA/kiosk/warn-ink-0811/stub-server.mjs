@@ -30,7 +30,26 @@ const PUBLIC = fileURLToPath(new URL('../../../apps/35-kioskfleet/server/public/
 const DOCS = fileURLToPath(new URL('../../../apps/35-kioskfleet/docs/', import.meta.url));
 const PORT = Number(process.argv[2] || 8797);
 
-const USER = { username: 'qa', fullName: 'בדיקת QA', role: 'owner', devicesUsed: 2, deviceLimit: 5 };
+// Added by `dialogs-rtl-admin-0811`, additively and **off by default**: every
+// harness that reuses this file gets the `owner` it has always got, because
+// `#menu-admin` is `hidden` for an owner and a sidebar that grew an eighth item
+// would move the tab stops `nav-keyboard-0811` recorded by index.
+//
+// It is an argv flag rather than a second stub file because `role` is the only
+// difference — `viewAdmin()` returns to the devices screen on `ME.role !==
+// 'admin'`, so the three אשף → משתמשים dialogs are unreachable without it, and a
+// copy of this file would drift from the real `public/` it serves.
+const ADMIN = process.argv[3] === 'admin';
+
+const USER = { username: 'qa', fullName: 'בדיקת QA', role: ADMIN ? 'admin' : 'owner', devicesUsed: 2, deviceLimit: 5 };
+
+// The two rows `loadUsers()` renders. One is the admin themself — `delUser` is
+// deliberately not offered on an admin row (`u.role === 'admin' ? '' : …`), so a
+// second, non-admin row is what makes 🗑️ reachable at all.
+const USERS = [
+  { id: 1, username: 'qa', full_name: 'בדיקת QA', role: 'admin', devices_used: 2, device_limit: 5, active: 1 },
+  { id: 2, username: 'hadar-halls', full_name: 'אולמי הדר', role: 'owner', devices_used: 3, device_limit: 10, active: 1 },
+];
 
 // Device 1 has an access code and an exit code — it opens the 🔑 re-issue
 // confirmation and the 🚪 clear confirmation, two of the five sites.
@@ -127,6 +146,14 @@ createServer(async (req, res) => {
     // links *screen* off it by `nth-child`.
     const linkApprovals = p.match(/^\/api\/devices\/(\d+)\/links$/);
     if (linkApprovals) return json(res, { links: LINKS.map((l) => ({ ...l, approved: l.id === 11 })) });
+    // Added by `dialogs-rtl-admin-0811`, additively. `viewAdmin()` awaits
+    // `/admin/stats` **before** it calls `loadUsers()`, so a 404 there leaves the
+    // users table on `טוען…` and none of its three dialogs can be opened — the
+    // same shape that left `#e-list` hanging before `chip-ink-0811` added
+    // `/enrollments`. Served regardless of the flag: they are only reachable from
+    // a screen an owner cannot route to.
+    if (p === '/api/admin/stats') return json(res, { stats: { users: USERS.length, devices: 5, online: 1, offline: 4 } });
+    if (p === '/api/admin/users') return json(res, { users: USERS });
     return json(res, { error: 'not stubbed: ' + p }, 404);
   }
 

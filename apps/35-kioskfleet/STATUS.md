@@ -2679,6 +2679,66 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
 
   **Not deployed.**
 
+- **the eighth screen — ניהול-על, which no harness had ever rendered** — the run
+  above ended on the three dialog sets it had not reached: `clientModal`,
+  `confirmDeleteClient`, and the הגדרות → משתמשים set, "which needs a
+  `role: admin` stub user". All six views are now walked, and walking them
+  required rendering a screen that turns out never to have been on screen at all.
+  `viewAdmin()` opens with `if (ME.role !== 'admin') return route('devices')`,
+  and the shared stub's user is an owner — so item 6's "every console screen has
+  now been graded" is true of the seven screens an owner can reach, and ניהול-על
+  was **redirected away from, not skipped**, in every run since it existed.
+  - the painted-order answer is that there is almost nothing to answer: **22
+    token pairs across six views**, twenty of them the one host chip in
+    `clientModal`. `delUser` is a Hebrew sentence, `resetPw` is a Hebrew label
+    over an `<input>`, and `userModal`'s five values are all inside inputs, where
+    a Range cannot go. No defect, and four of the six could not have one.
+  - so the harness stops proving a dialog opened by requiring it to carry pairs,
+    which is what `dialogs-rtl-0811` could legitimately do with six dialogs full
+    of hosts and codes. A zero census and a selector that missed are the same
+    output here, so every view carries an explicit **`opened`** row read from the
+    DOM and the census is reported beside it rather than standing in for it.
+  - what rendering the screen found is a layout defect no painted-order probe
+    could see: seven columns ending in three buttons, in a 276px card at 390px,
+    and the table wants 455px. `loadClients()` has wrapped its six-column table
+    in an `overflow-x:auto` div since `clients-console-0811` found this exact
+    shape; this one never got the wrapper. Wrapped now — `main` goes from 512px
+    in 390px to 390px in 390px, and 🗑️ מחק from x = −99 to x = 70.
+  - **it is reflow (WCAG 1.4.10), not an unreachable control**, and the
+    difference is the whole finding. `documentElement.scrollWidth` stays at the
+    window width, which reads as "there is nothing to scroll" — but `main.main`
+    is `overflow: auto` and absorbs the drag (`scrollLeft: −99`). The button can
+    be reached, by dragging the entire console sideways. At 320 CSS px content
+    must not require scrolling in two dimensions; one table scrolling inside its
+    own box is the accepted shape and is what the wrapper produces.
+  - the stub gained an **opt-in** `admin` argv flag plus `/api/admin/stats` and
+    `/api/admin/users`. Off by default, because an eighth sidebar item would move
+    the tab stops `nav-keyboard-0811` records by index; both sides are exercised
+    (the client dialogs on an owner, the rest on an admin) and a row asserts the
+    flag unhides `#menu-admin`. `viewAdmin()` awaits `/admin/stats` *before*
+    `loadUsers()`, so without that route the table hangs on `טוען…` and no dialog
+    opens — the shape that left `#e-list` hanging before `chip-ink-0811`.
+
+  Verified in `QA/kiosk/dialogs-rtl-admin-0811/` — 115/115 in a real Chromium at
+  both `colorScheme` values × 390px and 1200px, twelve screenshots. 151/152 on
+  `node --test` — the documented baseline, unchanged because this step touches no
+  server code.
+
+  Two wrong gradings are recorded there rather than quietly dropped, because each
+  overclaims in a different direction: "inside the viewport" fails *with* the fix
+  (a scroll container starts at the RTL origin), and "unreachable" was false. A
+  third is in the control — setting `overflow-x: visible` on the wrapper computes
+  back to `auto` beside an `overflow-y` that is `auto`, so the first negative row
+  rebuilt the *fixed* state while claiming to rebuild the shipped one and passed
+  for the wrong reason. The wrapper is now removed from the DOM instead, moved
+  rather than re-created so `loadUsers()`'s `onclick` bindings survive.
+
+  Found and **not** fixed: the admin screen is graded here for painted order and
+  reflow only. Its **contrast** is ungraded — the one screen item 6 believed it
+  had covered is the one it never saw.
+
+  **Not deployed.**
+
 ## Next, in order
 
 1. Deploy — and it is not a redeploy of this repo. The Railway service
@@ -2787,6 +2847,13 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
    defects across seven screens (`.serial`, the UA checkbox hue, `.pill.off`,
    and this one), all of them the same shape — a fixed value beside a surface
    that moves.
+   **Item 6 is re-opened by one screen, and it was never closed over it.**
+   `dialogs-rtl-admin-0811` had to render ניהול-על to reach its dialogs and
+   found that no harness ever had: `viewAdmin()` returns `route('devices')` for
+   `ME.role !== 'admin'`, and every stub user is an owner, so the sweep above
+   covers **seven of eight** screens. The eighth is graded for painted order and
+   reflow but not for colour. `screens-enrol-settings-0811/verify.mjs` is the
+   harness, and `warn-ink-0811/stub-server.mjs admin` now renders the screen.
 7. **Keyboard**, which item 6 never covered: every run under it graded the
    console *at rest*, and none pressed Tab. `focus-ring-0811` opened this and
    closed its first half — the focus indicator on the fields, which was 1.06:1
@@ -2957,6 +3024,17 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
      is behind `if (TOKEN) boot()` and could not be focused; and `promptUrl`'s
      own **label** interpolates a host into a Hebrew sentence, which is
      `console-rtl-0811`'s sweep on a tenth view rather than an input question.
+     **The painted-order sweep is now finished** — `dialogs-rtl-admin-0811`
+     walked the last six views and found no defect, which was the likely answer:
+     four of them are Hebrew prose over `<input>`s and have nothing the bidi
+     algorithm can reorder. What it found instead is on the screen behind them,
+     which no harness had ever rendered because `viewAdmin()` redirects an owner
+     away from it — the users table overflows its card at 390px and drags the
+     whole console sideways (1.4.10), the same defect `clients-console-0811`
+     fixed once and the same fix. What is open after it is not a bidi question:
+     **the admin screen's contrast has never been graded**, so item 6's
+     screen-by-screen sweep is complete over the seven screens an owner can
+     reach and has an eighth it could not see.
      **That tenth view is now swept, and five more with it** —
      `dialogs-rtl-0811`, 170/170, and **no defect**. The scope is deliberately
      wider than the sentence above: the devices screen opens **eleven** dialogs,
