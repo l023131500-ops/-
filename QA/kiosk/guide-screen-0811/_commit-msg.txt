@@ -1,0 +1,51 @@
+kiosk (35): the sidebar still described the install, and it disagreed with the wizard
+
+KIOSK_BUILD §2★ב's wizard landed last step, and the console kept the screen it
+was supposed to replace: viewGuide(), four paragraphs behind "הוראות הפעלה".
+Two descriptions of one install, and they did not say the same thing. The old
+one calls Device Owner "מומלץ" where the wizard's set-owner step says that
+without it Home and Recents still walk out of the app; it stops at enrollment,
+so it never reaches the lock; and being tied to no device it cannot name the
+enrollment code, the server address or the track — the three things that make
+the wizard's wording usable by someone standing at a tablet.
+
+Of the two, the one that cannot be kept is the one that cannot know which
+device it is talking about. So the screen no longer instructs — it says the
+instructions belong to the device and opens them: one row per device with a
+button calling the same setupWizard(d) the card's first button calls. That is
+a real job, because the wizard lives behind a button on a device card and the
+sidebar is where someone looking for instructions goes first.
+
+The devices are fetched rather than read off DEVICES: this can be the first
+screen opened in a session, and a cold cache would render as "no devices" —
+the one state here that sends the reader somewhere else entirely. With no
+devices it says the wizard is device-scoped and cannot open yet, and offers
+הוספת מכשיר; the wizard needs a device row, and an enrollment code exists
+before any device does.
+
+The three "recommended device settings" were dropped rather than carried over.
+KioskActivity holds a wake lock and FLAG_KEEP_SCREEN_ON, so "מצב שינה → לעולם
+לא" is advice to do by hand what the app already does, and KioskPolicy blocks
+sideloading, safe boot and factory reset once Device Owner is on. What is left
+is the link to docs/user-guide-he.md — background, not a second checklist.
+
+Verified in QA/kiosk/guide-screen-0811/ — 13 cases in a real browser at both
+colorScheme values against a stub serving the real public/ and answering the
+setup routes through the real setupsteps.js / setupprogress.js over the
+production DDL on node:sqlite, plus a second stub instance with an empty fleet.
+Both rows driven; a tick made from this screen is asserted as a row against
+that device. Four screenshots. 106/107 on node --test — the documented
+baseline, unchanged because this step adds no server code.
+
+Found and fixed in that run: the sentence naming the card's button ended
+"(🚀 הפעל)." and the bracket pair wrapped across a line with the brackets on
+the wrong sides of it.
+
+Found and not fixed, so it is not silently claimed: nothing anywhere turns
+system updates off — KioskPolicy never calls setSystemUpdatePolicy, so a locked
+tablet can still reboot into an OTA mid-event. The old guide's advice to
+disable auto-updates was not carried over: that belongs in a wizard step or in
+a policy call, not in a paragraph. It is now item 2 in STATUS.md.
+
+Not deployed — the Railway service builds from l023131500-ops/zol, so the live
+console still serves the four paragraphs.

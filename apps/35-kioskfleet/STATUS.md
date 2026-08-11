@@ -742,6 +742,55 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
 
   **Not deployed.**
 
+- **the sidebar guide stopped being a second set of instructions** — `viewGuide()`
+  behind **📖 הוראות הפעלה** held four paragraphs describing the same install the
+  wizard describes, and the two disagreed. It called Device Owner `מומלץ`, where
+  the wizard's `set-owner` step says in as many words that without it Home and
+  Recents still walk out of the app; it stopped at enrollment, so it never
+  reached the lock at all; and being tied to no device it could not name the
+  enrollment code, the server address or the track — the three things that make
+  the wizard's wording usable by someone standing at a tablet. Of the two, the
+  one that cannot be kept is the one that cannot know which device it is talking
+  about. So the screen no longer instructs:
+  - it says the instructions belong to the device, and **opens them**: one row
+    per device with a `🚀 אשף התקנה` button calling the same `setupWizard(d)` the
+    card's first button calls. That is a real job — the wizard lives behind a
+    button on a device card, and the sidebar is where someone looking for
+    instructions goes first.
+  - the devices are **fetched**, not read off `DEVICES`: this screen can be the
+    first one opened in a session, and a cold cache would render as "no devices"
+    — the one state here that sends the reader somewhere else entirely.
+  - with no devices it says the wizard is device-scoped and cannot open yet, and
+    offers `➕ הוספת מכשיר`. The wizard needs a device row and an enrollment code
+    exists before any device does, so this is the honest route rather than a
+    disabled button.
+  - the three "recommended device settings" went with the paragraphs rather than
+    being carried over: `KioskActivity` holds a wake lock **and**
+    `FLAG_KEEP_SCREEN_ON`, so `מצב שינה → לעולם לא` is advice to do by hand what
+    the app already does, and `KioskPolicy` blocks sideloading, safe boot and
+    factory reset once Device Owner is on. What is left is the link to
+    `docs/user-guide-he.md`, which is background rather than a second checklist.
+
+  Verified in `QA/kiosk/guide-screen-0811/` — 13 cases in a real browser at both
+  `colorScheme` values against a stub serving the real `public/` and answering
+  the setup routes through the real `setupsteps.js` / `setupprogress.js` over the
+  production DDL on `node:sqlite`, including a second stub instance with an empty
+  fleet. Both rows were driven, and a tick made from here is asserted as a row
+  against **that** device. Four screenshots. 106/107 on `node --test` — the
+  documented baseline, unchanged because this step adds no server code.
+
+  Found and fixed in that run: the sentence naming the card's button ended
+  `(🚀 הפעל).`, and the bracket pair wrapped across a line with the brackets on
+  the wrong sides of it.
+
+  Found and **not** fixed: nothing in the checklist or in `KioskPolicy` addresses
+  **system updates**. `setSystemUpdatePolicy` is not called, so a tablet in a hall
+  can still reboot into an OTA on its own schedule; the old guide's advice to
+  turn auto-updates off was not carried over because a paragraph on this screen
+  is not where that belongs — it is either a wizard step or a policy call.
+
+  **Not deployed.** The live console still serves the four paragraphs.
+
 ## Next, in order
 
 1. Deploy — and it is not a redeploy of this repo. The Railway service
@@ -752,10 +801,10 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
    `identify`, the launcher, both of §2★א's fields, the install link and the
    three contrast fixes means syncing the source across first. That is its own
    step, and it is outward-facing on a live beta.
-2. `viewGuide()` — the four paragraphs under "הוראות הפעלה" in the sidebar are
-   now the *second* description of the same install, and they still stop at
-   enrollment. Either point that screen at the wizard or delete it; two
-   instructions that disagree is worse than one that is short.
+2. System updates. Nothing in the flow turns them off: `KioskPolicy` never calls
+   `setSystemUpdatePolicy`, so a locked tablet can still reboot into an OTA in
+   the middle of an event. Either a Device Owner policy call or a wizard step —
+   not a paragraph.
 3. The selection screen on the device (§2★ה/ו): `KioskActivity` calls
    `identify`, offers the approved list, and locks onto what is chosen. Needs an
    Android toolchain, which this checkout does not have.
