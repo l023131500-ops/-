@@ -1738,6 +1738,54 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
 
   **Not deployed.**
 
+- **the first two screens graded as screens (`.serial`)** — every step from
+  `nontext-contrast-0811` onward opened whichever one dialog it happened to
+  touch, so the console's own screens had never been read. **ספריית קישורים** and
+  **מזהי לקוח** are the pair that share a shape — a "X חדש" card over a table of
+  the existing ones — so they are one pass, in both modes, 46/48 with the two
+  failures being the injected control rows.
+  - what it found is not a contrast failure, it is the opposite. `.serial` is
+    declared `.device .serial`, and `loadClients()` renders that same class
+    **inside a cell of the client table** — the client's internal note. The rule
+    does not apply there at all, so the note came out `--ink` at 14px: the same
+    colour and the same size as the client's name directly above it. The field
+    whose own label says `לא מוצגת על המכשיר` read as a second line of the name
+    that *is* shown. 18.72:1 and wrong.
+  - the base rule is promoted to the global level (`--muted`, 12px) and the
+    **monospace stays scoped to `.device`**: there the content is a serial number
+    and reads as one, and in the client table it is Hebrew prose. So the fix is
+    two rules rather than one, and the device card does not move — which is
+    asserted in the run rather than claimed, by reading `.device .serial` back in
+    both modes.
+  - the note is now 5.49:1 light / 7.08:1 dark, and the harness also asserts it
+    is distinguishable from the name above it — the same shape as
+    `label-ink-0811`'s label-vs-hint check, and the only reason this defect was
+    caught at all, since both colours passed 1.4.3 on their own.
+
+  Verified in `QA/kiosk/screens-links-clients-0811/` — a real Chromium at both
+  `colorScheme` values against `warn-ink-0811/stub-server.mjs`, reused rather
+  than copied, with the background read from the surface actually painted and
+  every ancestor `opacity` folded into the foreground's alpha. One client is
+  given a note through `page.route` rather than by editing the shared fixture:
+  `.serial` renders only for a client that has one, and four other harnesses
+  import that stub. Four screenshots. 152 tests, 151 pass — the documented
+  baseline, unchanged, since this step adds no server code.
+
+  Two harness defects were found mid-run and fixed, so the table is not larger
+  than what it measured: `.field label` was selected unscoped, and `console.html`
+  carries a **hidden login card** with one of its own — the first run graded the
+  login screen and reported it as this one (`שם משתמש` in the links row). And the
+  injected control row was one value for both modes: `#b9c3d4` fails on a white
+  card and **passes at 9.58:1** on a near-black one, so the dark half of the
+  table could not have failed. Both are scoped/per-mode now.
+
+  Found and **not** fixed: the shared more30 login pill sits over the top-left
+  corner of both screens. Nothing is actually obscured here — the headings are
+  right-aligned — but it is the same layer already fixed on the other sites and
+  not on this console.
+
+  **Not deployed.**
+
 ## Next, in order
 
 1. Deploy — and it is not a redeploy of this repo. The Railway service
@@ -1792,7 +1840,17 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
    **The light chips are now closed** — `chip-ink-0811` moved all five together
    as one token family; `.pill.off` was the one under 4.5:1 and the other four
    are tokenised without moving, with their margins recorded. What is left under
-   this heading is the screen-by-screen pass itself: `nontext-contrast-0811`
-   onward each opened one dialog, and the console's own screens — links, clients,
-   the approvals picker, the access-code dialog — have still had no graded pass
-   in both modes. `index-contrast-0811/verify.mjs` remains the harness to reuse.
+   this heading is the screen-by-screen pass itself, and **two of its four
+   screens are now done**: `screens-links-clients-0811` graded ספריית קישורים and
+   מזהי לקוח in both modes and fixed `.serial`, which was rendering the client's
+   internal note identically to the client's name. The remaining two are the
+   **approvals picker** and the **access-code dialog**, plus the enrol and
+   settings screens, which no step has named yet. Reuse
+   `screens-links-clients-0811/verify.mjs` rather than `index-contrast-0811`'s —
+   it is that harness plus the two corrections that run turned up: selectors
+   scoped to `#content` (an unscoped `.field label` grades the hidden login
+   card), and a per-mode control value (one grey cannot fail on both a white
+   card and a near-black one). Note that what it caught was **not** a ratio
+   under threshold — both colours passed — but a secondary text that had become
+   indistinguishable from the primary above it, so that comparison is worth
+   carrying into the remaining screens.

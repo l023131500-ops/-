@@ -1,0 +1,39 @@
+kiosk (35): the client's private note was printed in the same ink as the name
+
+Every contrast step since nontext-contrast-0811 opened whichever one dialog it
+happened to touch, so the console's own screens had never been read as screens.
+ספריית קישורים and מזהי לקוח share a shape — a "new X" card over a table of the
+existing ones — so they are one pass, in both colour schemes.
+
+What it found is not a ratio under threshold. `.serial` is declared
+`.device .serial`, and `loadClients()` renders that class inside a cell of the
+client table — the internal note. The rule does not apply there at all, so the
+note came out `--ink` at 14px: the same colour and the same size as the client's
+name directly above it. 18.72:1, and wrong. The field whose own label says
+`לא מוצגת על המכשיר` read as a second line of the name that is shown.
+
+The base rule moves to the global level (`--muted`, 12px); the monospace stays
+scoped to `.device`, where the content is a serial number and reads as one. So
+the device card does not move, and that is asserted in the run rather than
+claimed. The note is now 5.49:1 light / 7.08:1 dark and is checked against the
+name above it — the only reason this was caught, since both colours passed 1.4.3
+on their own.
+
+Two harness defects found mid-run and fixed, so the table is not larger than
+what it measured: `.field label` was unscoped and console.html carries a hidden
+login card with one of its own, so the first run graded the login screen and
+reported it as this one; and the injected control row was a single value for
+both modes, where #b9c3d4 fails on a white card and passes at 9.58:1 on a
+near-black one — the dark half of the table could not have failed.
+
+Verified in QA/kiosk/screens-links-clients-0811/ — a real Chromium at both
+colorScheme values against warn-ink-0811's stub, reused rather than copied, the
+background read from the surface actually painted. 46/48, the two failures being
+the control rows. Four screenshots. 152 tests, 151 pass — the documented
+baseline, unchanged.
+
+Found and not fixed: the shared more30 login pill sits over the top-left corner
+of both screens. Nothing is obscured — the headings are right-aligned — but it
+is the same layer already fixed on the other sites and not on this console.
+
+Not deployed.
