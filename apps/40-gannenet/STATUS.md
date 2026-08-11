@@ -14,7 +14,7 @@ this file are committed. So changes to the app are recorded here.
 | Build | Next.js 14.2.35, production build present, `basePath=/gannenet` via `APP_BASE_PATH` |
 | Shelf | 258 files / 157MB in the Supabase bucket `gannenet-shelf` under `seed/`, streamed through `/api/shelf/<name>` |
 | Secrets | `core.secrets` only — `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `ANTHROPIC_API_KEY`, `ADMIN_PASSWORD`, and `SUPABASE_SERVICE_ROLE_KEY` (server-side, `/api/admin/delete` alone). Never in git. |
-| Vercel project | **not created yet** |
+| Vercel project | `gannenet-more30` (`prj_T7jBm2fMQdIa4bDnnCNbUXlVQV2M`), production live at `https://gannenet-more30.vercel.app/gannenet` |
 | Portal rewrite | **not added yet** (`portal/vercel.dist.json`) |
 | `public_visible` | `false`, until it is verified live |
 
@@ -865,10 +865,47 @@ No other file was modified. The mount itself needs no code edit: `next.config.js
 already reads `APP_BASE_PATH`, and `lib/base.ts` exports `withBase()` for the
 fetch calls, hrefs and service worker that Next's `basePath` does not prefix.
 
+## Deployed (12/08)
+
+`more30-priority.md` §0.2 — the free-tier deploy cap that blocked this (`core.issues`
+#83) is gone with the move to Vercel Pro, so the mount's first half is done:
+**`gannenet-more30` exists and its production deployment serves the whole app**
+(`dpl_3ymxAHwvxJy75v4Vuwdad9iaB6sy`, `READY`). `vercel link --yes` created it,
+auto-detected Next.js, and the six secrets went in for `production` and `preview`
+from `.env.local` — whose values are `core.secrets`, never git. A `.vercelignore`
+keeps `node_modules`, `.next`, `.env*`, `QA/` and the logs out of the 5.1 MB upload.
+
+Verified through the Vercel MCP's own fetch, because NetFree answers 418 to
+`*.vercel.app` from this machine: `/gannenet` → **200**, the real page — RTL Hebrew
+shell, nav, "180+ מערכים מוכנים", the §7 footer credit — with every asset and href
+already carrying the `/gannenet` prefix (`assetPrefix:"/gannenet"`,
+`/gannenet/_next/…`, `/gannenet/manifest.webmanifest`), so `basePath` took. And
+`/gannenet/api/catalog` → **200 `{"ready":true,"items":[]}`**, which is the server
+reaching Storage with the real key rather than the unconfigured path.
+
+**Two builds failed first, on one character.** `Error: Specified basePath has to
+start with a /, found "﻿/gannenet"` — a **U+FEFF** sat in front of the value. It
+was not in `.env.local`: PowerShell 5.1 encodes what it pipes into a native
+command's stdin with `[Console]::OutputEncoding`, which emits a UTF-8 **BOM**, so
+`$value | vercel env add NAME production` stores `﻿<value>` for *every*
+variable — `APP_BASE_PATH` is merely the one Next validates loudly. Setting
+`[Console]::OutputEncoding` to a BOM-less `UTF8Encoding($false)` before the pipe
+did **not** help (second failed build, identical error). What worked: delete all
+twelve entries and POST them to
+`https://api.vercel.com/v10/projects/gannenet-more30/env` as a UTF-8 JSON body,
+which never crosses a console encoder. Note the values cannot be read back for
+checking — `vercel env pull` prints `[SENSITIVE]` and the API returns `value: null`
+for `type: encrypted` — so the build is the only test.
+
+`ssoProtection` is `all_except_custom_domains`, byte-identical to `galil-more30`
+and every other mount project: the hashed *deployment* URL 302s to Vercel SSO, the
+project alias `gannenet-more30.vercel.app` is open. That is exactly what the portal
+rewrites proxy to, so the next step needs no protection change.
+
 ## Next
 
-1. Create the `gannenet-more30` Vercel project, deploy with `APP_BASE_PATH=/gannenet`.
-2. Add the three `/gannenet` rewrites to `portal/vercel.dist.json`.
-3. Verify live, then set `public_visible=true` and show the card on the home page.
-
-Deploys are still refused until the Vercel quota resets — `core.issues` #83.
+1. Add the three `/gannenet` rewrites to `portal/vercel.dist.json` (bare, trailing
+   slash, `:path*` → `https://gannenet-more30.vercel.app/gannenet…`) and deploy the
+   portal.
+2. Verify live on `more30.com/gannenet` with a cache-buster, then set
+   `public_visible=true` and show the card on the home page.

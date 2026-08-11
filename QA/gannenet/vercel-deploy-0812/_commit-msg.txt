@@ -1,0 +1,36 @@
+gannenet (40): the mount's first half — it is deployed, and a BOM cost two builds
+
+more30-priority.md §0.2: the free-tier deploy cap (core.issues #83) is gone with
+the move to Vercel Pro, so the deploy that had been blocked since the app was
+vendored could finally run. `gannenet-more30` now exists and its production
+deployment serves the whole app at https://gannenet-more30.vercel.app/gannenet
+(dpl_3ymxAHwvxJy75v4Vuwdad9iaB6sy, READY). The six secrets went in for production
+and preview from .env.local — values are core.secrets, never git — and a
+.vercelignore keeps node_modules, .next, .env*, QA/ and the logs out of the
+5.1 MB upload.
+
+Verified through the Vercel MCP's own fetch, since NetFree answers 418 to
+*.vercel.app from this machine: /gannenet -> 200 and the real page (RTL shell,
+nav, "180+ מערכים מוכנים", the §7 footer credit), every asset and href already
+carrying the prefix (assetPrefix:"/gannenet"), so basePath took; and
+/gannenet/api/catalog -> 200 {"ready":true,"items":[]}, which is the server
+reaching Storage with the real key rather than the unconfigured path.
+
+Two builds failed first, on one character: `Specified basePath has to start with
+a /, found "﻿/gannenet"`. A U+FEFF sat in front of the value, and not because
+.env.local carries one — PowerShell 5.1 encodes what it pipes into a native
+command's stdin with [Console]::OutputEncoding, which emits a UTF-8 BOM, so
+`$value | vercel env add` stored `﻿<value>` for every variable; APP_BASE_PATH is
+just the one Next validates loudly. Forcing a BOM-less UTF8Encoding($false)
+before the pipe did not help (second failed build, identical error). What worked
+was deleting all twelve entries and POSTing them to the REST API as a UTF-8 JSON
+body, which never crosses a console encoder. The values cannot be read back to
+check — `vercel env pull` prints [SENSITIVE] and the API returns value:null for
+encrypted vars — so the build is the only test.
+
+ssoProtection is all_except_custom_domains, byte-identical to galil-more30 and
+every other mount project: the hashed deployment URL 302s to SSO, the project
+alias is open, and that alias is what the portal rewrites proxy to — so the next
+step needs no protection change.
+
+Only STATUS.md is committed; /apps/** is gitignored.
