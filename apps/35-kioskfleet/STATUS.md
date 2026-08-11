@@ -2846,3 +2846,26 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
      screenshot caught the OTA window, and only the screenshot caught this one.
      Anything mixing a Hebrew label with two digit runs is the shape to look at
      next; `install.html` and `kiosk-launcher.html` have never been read this way.
+     **Those two are now read, and both are clean** — `rtl-digits-0811`, 179/179,
+     172 real token pairs across eight views. It is a probe rather than a spot
+     check: it walks every visible text node and grades the painted order of
+     every adjacent token pair from a `Range`, in two groups — Hebrew between the
+     tokens (separate bidi runs, so RTL order) and neutrals only (one logical
+     left-to-right value, so increasing). Nothing is out of order, including the
+     one address rendered **without** `dir="ltr"` (`.choice small` on the venue
+     row) when fed a host **with a port**: the colon is a CS between two EN, so
+     W4 folds it into the number run before the paragraph direction reaches it.
+     Three things that run leaves for whoever writes the next one. Two are method
+     and cost the next harness real time if rediscovered: **`getBoundingClientRect()`
+     is the wrong read** — both pages set `word-break: break-all`, a token split
+     across a line break has a bounding box starting at the left edge of the
+     *second* line, and this harness's first version reported the server URL as
+     painted 132px backwards because of it; compare last-rect to first-rect and
+     skip pairs on different lines. And **`unicode-bidi: bidi-override` cannot
+     build a negative control** — it overrides to the element's own `direction`,
+     which is `rtl`, so it paints the control exactly as the correct case does;
+     U+202D in the text is what works. The third is scope: a `Range` cannot reach
+     an `<input>`'s value, and **`console.html` has never been swept this way** —
+     it is the page with the most numbers interpolated into Hebrew sentences, so
+     it is the only place the Hebrew-between-tokens group is likely to have real
+     matches at all. On these two pages it matched nothing.
