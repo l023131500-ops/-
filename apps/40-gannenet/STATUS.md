@@ -68,6 +68,22 @@ PDF bodies from `supabase.co`; none of that applies to the production server.
   shelf holds except `סוף שנה / קיץ`, which no date triggers. Evidence in
   `QA/gannenet/calendar-shelf-link-0811/`.
 
+- **`lib/season.ts` + `app/calendar/page.tsx`** — "מועדים בחודש זה" built its
+  list by scanning the whole Hebrew year, filtering to the current month and
+  cutting it at `.slice(0, 8)`. Three months hold more than eight dates and they
+  are the three a gan plans hardest for: תשרי (16) lost שמיני עצרת, כסלו (11)
+  stopped at the sixth candle, ניסן (14) lost פסח ז׳ and יום השואה. Worse,
+  standing in Elul the list showed ערב ראש השנה **twice** — the year scan for
+  year Y opens with 29 Elul of Y−1, whose month is also Elul — and since the
+  list printed bare names with no date, the two lines were identical a year
+  apart. The new `monthEvents()` bounds the query by the Gregorian dates of day
+  1 and the last day of that Hebrew month, so nothing needs cutting and the
+  previous year cannot leak in, and each line now carries the day in gematriya
+  and the civil date, mutes what has passed, marks today, and links to the shelf
+  category where there is material. Across 5786 and 5787 that is 183 dates
+  listed against 149 real ones before. Evidence in
+  `QA/gannenet/calendar-month-dates-0811/`.
+
 No other file was modified. The mount itself needs no code edit: `next.config.js`
 already reads `APP_BASE_PATH`, and `lib/base.ts` exports `withBase()` for the
 fetch calls, hrefs and service worker that Next's `basePath` does not prefix.
