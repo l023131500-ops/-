@@ -1,0 +1,26 @@
+kiosk (35): the lock covers everything a person can do, and nothing the system does
+
+The user restrictions block sideloading, safe boot, disk-on-key and factory
+reset — all of them things a person standing at the tablet would have to do.
+The update client is the system's own, so none of that reaches it: a locked
+device with nobody attending it could start an OTA at 20:30, hold an install
+screen for minutes and reboot itself out of the kiosk in the middle of an event.
+
+KioskPolicy now sets a windowed system update policy, 04:00-06:00, and clears it
+when the device is decommissioned. Windowed rather than postponed: postponing
+expires after 30 days and then installs whenever it likes, which moves the
+reboot rather than scheduling it. 04:00 rather than 02:00 because an evening
+event in a hall routinely runs past one in the morning.
+
+The checklist's verify-lock step already lists what Device Owner blocks, so it
+names the window too - and only track B is told the OEM's own updater may
+ignore it. There is no Kotlin toolchain in this checkout, so the guard against
+that sentence quoting an hour the device does not honour is a test that reads
+KioskPolicy.kt off disk and compares the constants; it was proved able to fail
+before it was trusted.
+
+Found in the browser and fixed: 04:00-06:00 is directionally-neutral text inside
+a Hebrew sentence, so it rendered as 06:00-04:00 on screen while the source
+string, the API response and innerText all stayed correct.
+
+Not compiled: no Android toolchain here. Not deployed.

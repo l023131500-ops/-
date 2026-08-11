@@ -791,6 +791,51 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
 
   **Not deployed.** The live console still serves the four paragraphs.
 
+- **system updates stopped being able to reboot a device mid-event** — the user
+  restrictions above block what a *person* can do; the update client is the
+  system's own, and nothing addressed it. So a locked tablet with nobody
+  attending it could start an OTA at 20:30, hold an install screen for minutes
+  and reboot — the one way out of the kiosk that the lock does not cover. It was
+  the last thing the guide-screen step found and left. `KioskPolicy` now calls
+  `setSystemUpdatePolicy`:
+  - **windowed, not postponed.** `createPostponeInstallPolicy()` expires after
+    30 days and then installs whenever it likes, which moves the reboot rather
+    than scheduling it. `createWindowedInstallPolicy(04:00, 06:00)` keeps
+    security patches landing, overnight. 04:00 rather than the more usual 02:00
+    because an evening event in a hall routinely runs past 01:00.
+  - `clear()` sets the policy to `null`. A decommissioned tablet that still
+    refuses to update before 04:00 is a restriction outliving the app that set
+    it.
+  - the window is **two named constants**, mirrored by `OTA_INSTALL_WINDOW` in
+    `server/src/setupsteps.js`, and `verify-lock` — the step that already lists
+    what Device Owner blocks — now names it. There is no Kotlin toolchain here,
+    so the guard against the checklist quoting an hour the device does not
+    honour is a test that **reads `KioskPolicy.kt` off disk**: both constants,
+    the call, the `null` clear, the import. It skips where `android/` is not
+    alongside `server/`, since the deploy repo builds the server on its own.
+  - only **track B** is warned that the OEM's own updater may ignore the policy.
+    Saying it on both would read as "this might not work" on a GMS device where
+    it does; saying it on neither would promise a generic tablet something the
+    platform cannot enforce there.
+
+  Verified in `QA/kiosk/ota-window-0811/` — 4 unit cases (110/111 across the
+  suite; `routing.test.mjs` imports express and still cannot run here, and
+  106/107 before, so the four are the whole difference), the parity test proved
+  able to fail by moving the Kotlin constant to `3 * 60`, plus the real console
+  in a browser against the wizard step's existing stub.
+
+  A defect was found there and fixed: `04:00–06:00` is directionally-neutral
+  text inside a Hebrew sentence, so it rendered **`06:00–04:00`** — a window
+  from the evening to the small hours. The source string, the API response and
+  `innerText` are all correct, which is why only the screenshot caught it. The
+  range is now wrapped U+2066…U+2069 by `windowLabel()`, and a test counts the
+  isolates rather than spot-checking one.
+
+  **Not compiled and not run on a device** — there is no Android toolchain in
+  this checkout (`kotlinc`, `gradle`, `java`, `adb` all absent), the same
+  constraint that blocks the device-side selection screen below. **Not
+  deployed.**
+
 ## Next, in order
 
 1. Deploy — and it is not a redeploy of this repo. The Railway service
@@ -801,10 +846,10 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
    `identify`, the launcher, both of §2★א's fields, the install link and the
    three contrast fixes means syncing the source across first. That is its own
    step, and it is outward-facing on a live beta.
-2. System updates. Nothing in the flow turns them off: `KioskPolicy` never calls
-   `setSystemUpdatePolicy`, so a locked tablet can still reboot into an OTA in
-   the middle of an event. Either a Device Owner policy call or a wizard step —
-   not a paragraph.
+2. The Android half of this tree has now been edited twice without a compiler
+   (`setSystemUpdatePolicy` above; `KioskActivity` still to come). Whoever has a
+   toolchain should build `android/` once before the next Kotlin change lands on
+   top of an unverified one.
 3. The selection screen on the device (§2★ה/ו): `KioskActivity` calls
    `identify`, offers the approved list, and locks onto what is chosen. Needs an
    Android toolchain, which this checkout does not have.
