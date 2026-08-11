@@ -1,0 +1,8 @@
+before: ready=true items=1
+5MB pdf   -> 413 {"error":"הקובץ גדול מדי (מקסימום 4MB)."}
+2KB png   -> 200 {"ok":true,"item":{"id":"up_msp2dthx_5h65","title":"QA under limit","category":"כללי","sender":"QA","date":"2026-08-11",
+txt       -> 400 {"error":"יש להעלות קובץ PDF או תמונה בלבד."}
+after:    items=2 (QA under limit, QA — upload limit 0811)
+delete up_msp2dthx_5h65 -> 200 {"ok":true,"removed":["up_msp2dthx_5h65.png","uploads/up_msp2dthx_5h65.json"]}
+delete up_msp2cb40_a10i -> 200 {"ok":true,"removed":["up_msp2cb40_a10i.png","uploads/up_msp2cb40_a10i.json"]}
+end:      items=0

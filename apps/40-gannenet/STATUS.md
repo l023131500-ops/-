@@ -416,6 +416,34 @@ PDF bodies from `supabase.co`; none of that applies to the production server.
   and an upload now bypasses the Supabase CDN on every `FILES` miss — cheap at 0
   uploaded items, the line to revisit if that grows.
 
+- **`lib/upload-limits.ts` (new) + `app/shelf/upload/page.tsx` + `app/api/catalog/route.ts`**
+  — the form promised "עד 25MB" and the route checked 25MB, but the request body
+  of a Vercel Function may not exceed **4.5 MB**: past that the platform answers
+  **413 `FUNCTION_PAYLOAD_TOO_LARGE`** and the function is never invoked, so the
+  route's own check could only ever run for files the edge had already let
+  through. Everything between the two — which the page invited — was uploaded in
+  full over the teacher's connection and then refused by something that does not
+  speak this app's language. What she saw was not a sentence: the edge answers
+  HTML, the page did `await res.json()`, and that throws
+  `SyntaxError: Unexpected token '<', "<!DOCTYPE "…`, which `err.message` printed
+  into the middle of a Hebrew form (reproduced in the same browser, not reasoned
+  about). One constant now, **4 MB** — room for the multipart envelope under the
+  4.5 MB the platform counts, and free against this shelf's own material: the 258
+  seed files average 622 KB and the largest is 1,944 KB, so nothing already on
+  the shelf would have been refused. The file is checked when it is *picked*, so
+  an oversized one never leaves the browser and the message names its size;
+  errors are read once as text and parsed only if they are JSON, with a
+  413/503/5xx fallback, and a failed `fetch` gets its own sentence. The route
+  answers **413** rather than 400, matching what the edge would have said.
+  Verified on the production build against the real bucket: 5MB picked → refused
+  with **no POST issued**; 5MB straight at the route → 413; 2KB png → 200 through
+  the real form; wrong type still 400; an HTML 413 fulfilled at the network layer
+  → Hebrew. Both QA uploads removed through `/api/admin/delete`, catalog back to
+  0, drive catalog 2,977. `tsc --noEmit` 0. Evidence in
+  `QA/gannenet/upload-limit-0811/`. **Open:** a scan over 4MB needs a signed
+  upload straight to Storage — a design decision, and nothing on the shelf today
+  needs it.
+
 No other file was modified. The mount itself needs no code edit: `next.config.js`
 already reads `APP_BASE_PATH`, and `lib/base.ts` exports `withBase()` for the
 fetch calls, hrefs and service worker that Next's `basePath` does not prefix.
