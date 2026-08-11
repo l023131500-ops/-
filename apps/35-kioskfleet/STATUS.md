@@ -1516,6 +1516,66 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
 
   **Not deployed.**
 
+- **the page a stranger lands on, measured** — `index.html` was the last of the
+  three `public/` pages never put through a contrast pass, and it is a **third**
+  kind of surface: the nav, hero and CTA band are translucent/gradient over
+  `--navy` like the launcher, while everything below them is the console's opaque
+  tokens out of the same `css/style.css`. And unlike the other two pages this one
+  **inverts** — it toggles `:root.dark` from `prefers-color-scheme` in the head —
+  so both modes are real screens here and both are graded, where on
+  `install.html` the second mode was only asserted identical. Three real defects:
+  - **two of the five sections were unreadable in dark mode.** `#features` and
+    `#pricing` carried `style="background:#fff"`, hardcoded, while the text on
+    them is `--ink` and `--muted`, which do invert: **1.20:1** for the section
+    heading and **2.41:1** for the sub-heading. It survived this long precisely
+    because in *light* mode the hardcoded white and `--card` are the same colour,
+    so nothing looked wrong in the mode anyone was looking at. Now a
+    `.section-alt` class on `var(--card)` — `#ffffff` exactly, so the light page
+    does not move a byte, and the section-to-card relationship (both `--card`,
+    separated by border and shadow) is preserved rather than invented.
+  - **the page's main call to action had no boundary.** `.btn` declares
+    `border: none`, so a filled button's *fill* is its boundary, and `--accent`
+    on the hero navy is **2.93:1**. `--accent` itself could not move: it sits on
+    a white card everywhere else in the system (5.29:1 there), and the two
+    constraints cross — lightening it far enough to clear 3:1 against the navy
+    drops the white label below 4.5:1 (the window is L∈[0.154, 0.183], which is
+    why `launcher-contrast-0811` had to make its label large text instead). So a
+    ring, in `button-boundary-0811`'s technique: `box-shadow: inset` rather than
+    `border`, because `.btn` has none and a real border grows every button by
+    2px. 3.42:1 inside, 10.02:1 outside. `.btn-primary` elsewhere is untouched.
+  - **`.btn-ghost` is a transparent fill, so its border is the whole control**,
+    and at `rgba(255,255,255,.35)` it was **2.84:1** on the nav — where the
+    button is `כניסת לקוחות`, the only way in. Light mode only: the strip is
+    `rgba(7,26,51,.85)` over the page background, which inverts, so the same
+    border reads 3.19:1 in dark. `.45` gives 3.67:1 there and 4.25:1 on the hero.
+    The CTA band's ghost overrides the colour to `#fff` inline and is unaffected.
+
+  Verified in `QA/kiosk/index-contrast-0811/` — a real Chromium at both
+  `colorScheme` values against `install-link-0811/stub-server.mjs` reused rather
+  than copied (it already serves the real `public/`, and `/` is `index.html`
+  there exactly as `src/index.js` declares it). 74/79 graded rows pass; the five
+  failures are the **before** rows, re-injected into the same DOM in the same
+  run, and each is asserted only in the mode its defect was in — claiming
+  `#features` in light or the nav border in dark would be claiming a larger bug
+  than the one that was there. Two full-page screenshots. 152 tests, 151 pass —
+  the documented baseline, unchanged, since this step adds no server code.
+
+  A harness bug found and fixed mid-run: the first version graded `.btn-light`'s
+  *fill* as its boundary and reported **1.11:1**, i.e. re-reported the very defect
+  `button-boundary-0811` fixed. These buttons carry an inset ring, which is
+  nowhere in `borderTopColor`; the harness now reads `boxShadow` and grades the
+  ring against both the surface outside and the fill inside.
+
+  Left with numbers rather than silence: `.plan li::before`, the green `✓`, is
+  2.28:1 on the white card — it is a list bullet and the text beside it carries
+  the information, and it is `--accent-2`, a brand colour. `.feature .ico` is a
+  brand-tinted square holding an emoji (1.00:1 against the same fill on the
+  light card) and carries nothing on its own. Both are the call
+  `launcher-contrast-0811` made for its `.ico` tints and
+  `install-contrast-0811` for its step disc.
+
+  **Not deployed.**
+
 ## Next, in order
 
 1. Deploy — and it is not a redeploy of this repo. The Railway service
@@ -1546,11 +1606,16 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
    distinguished from the page mostly by its shadow. That is a look, and it is
    the kind of thing `more30-priority.md` §6 asks for — worth revisiting with the
    console's visual identity rather than as a contrast token.
-5. Two of the three `public/` pages are **measured** — `kiosk-launcher.html` and
-   `install.html`, both above. The last is `index.html`, the marketing page
-   (`.feature` / `.plan` / `.step`): `public/` only and runnable in this
-   checkout, and `install-contrast-0811/verify.mjs` is the harness to reuse — it
-   is the same translucent surface the opaque-backdrop walk cannot measure, and
-   it already composites translucent *text*, which that page uses throughout.
+5. All three `public/` pages are **measured** — `kiosk-launcher.html`,
+   `install.html` and now `index.html`. **Closed.** What the last one turned up
+   and did not close is that a hardcoded colour beside an inverting token is
+   invisible in the mode you are looking at: `index.html` shipped two unreadable
+   sections for as long as it has had a dark mode. `console.html` and
+   `public/js/app.js` write colours inline too, and nothing has looked for them
+   — that is item 6's real scope, not just the dialogs.
 6. The console's own screens, other than the wizard, have still had no pass:
-   `nontext-contrast-0811` onward each opened one dialog.
+   `nontext-contrast-0811` onward each opened one dialog. Both modes have to be
+   graded there, per the above, and `index-contrast-0811/verify.mjs` is the
+   harness to reuse — it is the one that grades both, folds `opacity` into the
+   foreground, and reads an inset ring rather than mistaking a fill for a
+   boundary.
