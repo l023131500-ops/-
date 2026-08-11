@@ -495,7 +495,52 @@ PDF bodies from `supabase.co`; none of that applies to the production server.
   The same cache also stores `?dl=1` and the bare URL as two entries for one file —
   two full copies against her storage quota, differing in one header. Bumping the
   `FILES` version would drop a teacher's offline material, which is the one thing
-  it exists to keep, so this needs its own step.
+  it exists to keep, so this needs its own step. → **closed below.**
+
+- **`public/sw.js`** — the download URL was cached as a second copy of the file,
+  and no copy could ever be updated. `downloadUrl()` appends `?dl=1`, and `dl`
+  changes exactly one response header: `/api/shelf`, `/api/drive` and
+  `/api/upload` answer `inline` without it and `attachment` with it. `isFile()`
+  matched that URL too, so `cacheFirst` filed it in `FILES` as a file of its own —
+  **a second full copy of every file a teacher downloaded**, differing from the
+  viewer's copy in one header. And because `cacheFirst` returned any hit before
+  looking at the request's cache mode, that copy's headers were frozen: once the
+  routes learned each file's real name (the entry above), a browser that had
+  already downloaded the file went on saving it under its Drive id, and
+  `fetch(url, {cache:"reload"})` could not get past the cache either — only a URL
+  that had never been seen could.
+
+  Three changes. `downloadVariant()`: a `?dl=1` request is never stored and always
+  goes to the network; offline it falls back to the bare copy in `FILES`, re-headed
+  to `attachment` so the button still saves rather than opens. `cacheFirst()` now
+  honours the request's cache mode — `reload`/`no-store`/`no-cache` skip the hit
+  and replace the entry, `force-cache`/`only-if-cached` stay cache-first, and a
+  reload that cannot reach the network still returns her copy.
+  `dropDownloadVariants()` on activate clears the `?dl=1` entries already out
+  there. That is deliberately **not** a `FILES` bump: what "שמירת התצוגה לאופליין"
+  saves is the bare URL (`app/shelf/page.tsx` prefetches `withBase(i.file)`, no
+  `dl`), so her offline material is untouched and only the duplicate is released.
+
+  Measured on the production build against the real bucket. A `FILES` seeded to
+  look like a pre-change browser — bare copy plus a stale `?dl=1` entry carrying
+  the old header — now answers the download with the live header
+  (`…filename*=UTF-8''…` → `הופה, סוף שנה כבר כאן! - דוגמא לעמוד מתוך הקטלוג.png`)
+  and the real 20,481 bytes. Through the real UI on a clean browser, view +
+  download leave **one** cache entry where they used to leave two. A seeded
+  17-byte stand-in is still returned to a plain `fetch` and replaced by
+  `{cache:"reload"}`. With the server stopped and the port confirmed closed, a
+  saved file still views (`inline`) and still downloads (`attachment`, from cache),
+  and a file she never saved fails as it did before. Three legacy `dl` entries were
+  dropped at activate with the bare copy kept — note that `unregister()` +
+  `register()` of a byte-identical script does *not* reinstall (the browser reuses
+  the running worker and `activate` never fires), so that reads as a false no-op; a
+  distinct script URL on the same scope is what forces a real install. `tsc
+  --noEmit` 0; bucket as found. Evidence in
+  `QA/gannenet/sw-download-variant-0811/`.
+
+  **Cost, stated plainly:** a file downloaded but never viewed and never saved for
+  offline loses its cached copy at activate; online it comes back on the next
+  click. **Open:** nothing from this change.
 
 No other file was modified. The mount itself needs no code edit: `next.config.js`
 already reads `APP_BASE_PATH`, and `lib/base.ts` exports `withBase()` for the

@@ -1,0 +1,286 @@
+/* גננת בקליק — service worker: offline for the whole app (except AI) */
+// Each cache carries its own version, so one of them can be dropped without
+// taking the others with it. FILES is what "שמירת התצוגה לאופליין" fills — a
+// teacher's own downloads — and must survive every other bump.
+const SHELL = "shell-gannenet-v3";
+const FILES = "files-gannenet-v3";
+const CATALOG = "catalog-gannenet-v4";
+const CURRENT = [SHELL, FILES, CATALOG];
+
+// Cache Storage is per **origin**, not per scope. Under more30.com this app
+// shares it with every other system mounted there (e.g. /galil, a Workbox PWA
+// whose precache is named "workbox-precache-v2-https://more30.com/galil/"), so
+// the cleanup below may only ever touch names this app itself created.
+const OWN = /^(shell|files|catalog)-gannenet-v\d+$/;
+
+// How long the shelf waits for a fresh catalog before falling back to the
+// cached one. Curation has to reach a returning teacher on the first load.
+const CATALOG_TIMEOUT_MS = 3000;
+
+// Base path this app is served under (e.g. "/40" on more.30.com, "" standalone),
+// derived from the registration scope so the SW works in both modes.
+const BASE = new URL(self.registration.scope).pathname.replace(/\/$/, "");
+const p = (path) => BASE + path;
+
+const CORE = [
+  p("/"),
+  p("/shelf"),
+  p("/shelf/upload"),
+  p("/library"),
+  p("/newsletter"),
+  p("/calendar"),
+  p("/pricing"),
+  p("/generator"),
+  p("/manifest.webmanifest"),
+  p("/icon.svg"),
+];
+
+self.addEventListener("install", (e) => {
+  e.waitUntil(
+    caches
+      .open(SHELL)
+      .then((c) => c.addAll(CORE).catch(() => {}))
+      .then(() => self.skipWaiting())
+  );
+});
+
+self.addEventListener("activate", (e) => {
+  e.waitUntil(
+    (async () => {
+      const keys = await caches.keys();
+      const stale = keys.filter((k) => OWN.test(k) && !CURRENT.includes(k));
+      await Promise.all(stale.map((k) => caches.delete(k)));
+      await dropDownloadVariants();
+      await self.clients.claim();
+    })()
+  );
+});
+
+// `?dl=1` used to be cached as an entry of its own — a second full copy of a
+// file the bare URL already holds, differing in one response header. It is no
+// longer stored (see downloadVariant), so drop the copies already sitting in a
+// teacher's browser. This is not the same thing as bumping FILES: what "שמירת
+// התצוגה לאופליין" saves is the bare URL — its list carries no `dl` at all — so
+// her offline material is untouched, and the bytes released are a duplicate of
+// it. The one case that does lose a copy is a file she downloaded but never
+// viewed and never saved; online it comes back on the next click.
+async function dropDownloadVariants() {
+  const cache = await caches.open(FILES);
+  const dupes = (await cache.keys()).filter((r) => new URL(r.url).searchParams.has("dl"));
+  await Promise.all(dupes.map((r) => cache.delete(r)));
+}
+
+// The three file proxies: Drive files, the seed shelf files, and uploaded
+// material — all streamed out of our own origin. All must be cache-first in
+// FILES — that is the cache "שמירת התצוגה לאופליין" fills, and the only one it
+// is ever read back from. /api/upload/ joined the list when uploads stopped
+// being served from supabase.co, where the SW could not see them at all.
+const isFile = (u) =>
+  u.pathname.startsWith(p("/api/drive/")) ||
+  u.pathname.startsWith(p("/api/shelf/")) ||
+  u.pathname.startsWith(p("/api/upload/"));
+// Uploaded material is the one shelf source that can be **deleted**
+// (/api/admin/delete). Drive files and the 258 seed assets are immutable, so for
+// them cache-first with no expiry is simply correct; for an upload it means a
+// file an admin removed on purpose keeps being served out of a teacher's own
+// browser for ever, and nothing server-side can reach it.
+const isUpload = (u) => u.pathname.startsWith(p("/api/upload/"));
+const isCatalog = (u) => u.pathname === p("/api/drive-catalog") || u.pathname === p("/api/catalog");
+const isStatic = (u) =>
+  u.pathname.includes("/_next/static") ||
+  /\.(png|jpe?g|svg|gif|webp|css|js|woff2?|ico|webmanifest)$/.test(u.pathname);
+
+self.addEventListener("fetch", (e) => {
+  const req = e.request;
+  if (req.method !== "GET") return;
+  const url = new URL(req.url);
+  if (url.origin !== location.origin) return; // leave cross-origin alone
+
+  // Never cache admin surfaces or the AI generator API — must stay live.
+  if (
+    url.pathname.startsWith(p("/api/admin")) ||
+    url.pathname.startsWith(p("/shelf/admin")) ||
+    url.pathname.startsWith(p("/api/ai-generate"))
+  ) {
+    return;
+  }
+
+  if (isFile(url)) {
+    // Answer from the cache as before, and check behind the answer. The teacher
+    // still gets her copy instantly and still gets it offline; she just stops
+    // getting it after it has been deleted.
+    if (isUpload(url)) e.waitUntil(evictIfGone(req));
+    if (url.searchParams.has("dl")) return e.respondWith(downloadVariant(req, url));
+    return e.respondWith(cacheFirst(req, FILES, isUpload(url)));
+  }
+  if (isCatalog(url)) return e.respondWith(catalogFirst(req, CATALOG));
+  if (isStatic(url)) return e.respondWith(cacheFirst(req, SHELL));
+  if (req.mode === "navigate") return e.respondWith(navigation(req));
+  return e.respondWith(networkFirst(req, SHELL));
+});
+
+// `fresh` bypasses the browser's own HTTP cache on the network leg. It is set
+// for uploads and only for uploads, and it is the other half of evictIfGone:
+// measured without it, the eviction worked and the very next view came back
+// **200** anyway, because the file's own `max-age=300` let the HTTP cache
+// re-serve the deleted bytes and cacheFirst put them straight back into FILES.
+// Offline reading is this cache's job, so an HTTP cache sitting behind it adds
+// nothing and can only be wrong.
+//
+// A request can also ask for the **current** copy rather than any copy: a hard
+// reload's subresources, or an explicit `fetch(url, {cache:"reload"})`. Cache
+// Storage sits in *front* of the HTTP cache, so a cache-first hit answered those
+// too, and nothing could refresh a file the browser already held — the same URL
+// returned the same bytes and the same headers for ever, and only a URL that had
+// never been seen (`&z=…`) could get past it. `force-cache`/`only-if-cached` ask
+// for the opposite and stay cache-first.
+const RELOADING = ["reload", "no-store", "no-cache"];
+
+async function cacheFirst(req, cacheName, fresh) {
+  const cache = await caches.open(cacheName);
+  const hit = await cache.match(req);
+  const reload = RELOADING.includes(req.cache);
+  if (hit && !reload) return hit;
+  try {
+    const res = fresh || reload ? await fetch(req.url, { cache: "no-store" }) : await fetch(req);
+    if (res && res.ok) cache.put(req, res.clone());
+    return res;
+  } catch {
+    // Offline is no reason to lose what she already has: a reload that cannot
+    // reach the network still gets the cached copy.
+    return hit || Response.error();
+  }
+}
+
+// The download button's URL is the file's URL plus `?dl=1`, and `dl` changes one
+// response header and nothing else: /api/shelf, /api/drive and /api/upload all
+// answer `Content-Disposition: inline` without it and `attachment` with it.
+// Caching it as a file of its own therefore stored a second full copy of every
+// file a teacher downloaded — a 6MB PDF twice against her quota — and, being
+// cache-first, froze that copy's headers: the day the routes learned to send
+// each file's real name, a browser that had already downloaded it went on saving
+// it under its Drive id, and there was no way to reach the new header.
+//
+// So the download variant is never stored and always current. Offline it falls
+// back to the bare copy — which is the one "שמירת התצוגה לאופליין" fills the
+// cache with — re-headed to `attachment` so the button still saves rather than
+// opens in a tab.
+async function downloadVariant(req, url) {
+  try {
+    return await fetch(req);
+  } catch {
+    const cache = await caches.open(FILES);
+    const hit = await cache.match(bare(url));
+    return hit ? asAttachment(hit) : Response.error();
+  }
+}
+
+const bare = (url) => {
+  const u = new URL(url);
+  u.searchParams.delete("dl");
+  return u.toString().replace(/\?$/, "");
+};
+
+// No `filename`: the cached copy is the viewer's, and a file's real name lives
+// in the catalog, on the server, out of reach here. The browser falls back to
+// the URL's last segment — exactly what it did before any of this, and now only
+// when she is offline.
+function asAttachment(res) {
+  const headers = new Headers(res.headers);
+  headers.set("Content-Disposition", "attachment");
+  return new Response(res.body, { status: res.status, statusText: res.statusText, headers });
+}
+
+// Drops a cached upload once the origin says it is gone. Only ever removes on a
+// definite **404/410** from our own route: anything else — offline, a 502 from
+// Storage, a captive portal — leaves the copy alone, because losing a teacher's
+// offline material to a guess is worse than serving a deleted file one more
+// time. HEAD, not GET, so re-checking a 6MB PDF she already has costs nothing;
+// `no-store` because the same file's `Cache-Control` would otherwise let the
+// browser's own HTTP cache answer this check with the copy we are checking.
+async function evictIfGone(req) {
+  const cache = await caches.open(FILES);
+  if (!(await cache.match(req, { ignoreSearch: true }))) return; // nothing to drop
+  let res;
+  try {
+    res = await fetch(req.url, { method: "HEAD", cache: "no-store" });
+  } catch {
+    return;
+  }
+  if (res.status !== 404 && res.status !== 410) return;
+  // `ignoreSearch`, so a `?dl=1` entry left over from before downloadVariant
+  // goes with the file it is a duplicate of.
+  await cache.delete(req, { ignoreSearch: true });
+}
+
+// The catalog is the curation surface: when the admin hides a file it must
+// leave the shelf, so a stale copy may never be preferred over the live one.
+// Network first, with a budget — past it the cached copy is served and the
+// request keeps running into the cache for the next load. Offline (the fetch
+// rejects) still falls back, which is the PWA's whole point.
+async function catalogFirst(req, cacheName) {
+  const cache = await caches.open(cacheName);
+  const fetching = fetch(req)
+    .then((res) => {
+      if (res && res.ok) cache.put(req, res.clone());
+      return res;
+    })
+    .catch(() => null);
+
+  const fresh = await Promise.race([fetching, wait(CATALOG_TIMEOUT_MS)]);
+  if (fresh) return fresh; // undefined = timed out, null = network refused
+  return (await cache.match(req)) || (await fetching) || Response.error();
+}
+
+const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+
+async function networkFirst(req, cacheName) {
+  const cache = await caches.open(cacheName);
+  try {
+    const res = await fetch(req);
+    if (res && res.ok) cache.put(req, res.clone());
+    return res;
+  } catch {
+    return (await cache.match(req)) || Response.error();
+  }
+}
+
+async function navigation(req) {
+  const cache = await caches.open(SHELL);
+  try {
+    const res = await fetch(req);
+    if (res && res.ok) cache.put(req, res.clone());
+    return res;
+  } catch {
+    return (
+      (await cache.match(req)) ||
+      (await cache.match(p("/shelf"))) ||
+      (await cache.match(p("/"))) ||
+      Response.error()
+    );
+  }
+}
+
+// "Save for offline" — the page posts a list of file URLs to pre-cache.
+self.addEventListener("message", (e) => {
+  const data = e.data || {};
+  if (data.type === "PREFETCH" && Array.isArray(data.urls)) {
+    e.waitUntil(
+      (async () => {
+        const cache = await caches.open(FILES);
+        let done = 0;
+        for (const u of data.urls) {
+          try {
+            const res = await fetch(u);
+            if (res && res.ok) await cache.put(u, res.clone());
+          } catch {}
+          done++;
+          const clients = await self.clients.matchAll();
+          clients.forEach((c) => c.postMessage({ type: "PREFETCH_PROGRESS", done, total: data.urls.length }));
+        }
+        const clients = await self.clients.matchAll();
+        clients.forEach((c) => c.postMessage({ type: "PREFETCH_DONE", total: data.urls.length }));
+      })()
+    );
+  }
+});

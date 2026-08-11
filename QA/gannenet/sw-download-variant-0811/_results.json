@@ -1,0 +1,71 @@
+{
+  "date": "2026-08-11",
+  "system": "40 — gannenet (גננת בקליק)",
+  "change": "public/sw.js — the download URL was cached as a second copy of the file, and no copy could ever be updated",
+  "environment": {
+    "build": "next build (65 pages) + next start -p 3043, APP_BASE_PATH=/gannenet",
+    "data": "real bucket — /api/catalog 0 items, /api/drive-catalog 2,977, seed/ 258",
+    "browser": "Chromium via Playwright, service worker active and controlling",
+    "typecheck": "tsc --noEmit 0; sw.js parses under node vm"
+  },
+
+  "problem": [
+    "downloadUrl() appends ?dl=1, and dl changes exactly one response header: /api/shelf, /api/drive and /api/upload answer Content-Disposition: inline without it and attachment with it.",
+    "isFile() matched the ?dl=1 URL too, so cacheFirst stored it in FILES as a file of its own — a SECOND full copy of every file a teacher downloaded, differing from the copy the viewer had already stored in one header.",
+    "cacheFirst returned any hit before looking at the request's cache mode, so that copy's headers were frozen: after the routes learned each file's real name (commit 14a8f29), a browser that had already downloaded the file went on saving it under its Drive id, and fetch(url,{cache:'reload'}) could not get past the cache either. Only a URL that had never been seen could.",
+    "'שמירת התצוגה לאופליין' prefetches the BARE urls (app/shelf/page.tsx: withBase(i.file), no dl), so the duplicate was never the offline copy — only extra bytes."
+  ],
+
+  "change_detail": [
+    "downloadVariant(): a ?dl=1 request is never stored and always goes to the network. Offline it falls back to the bare copy in FILES, re-headed to attachment by asAttachment() so the button still saves rather than opens.",
+    "cacheFirst(): honours the request's cache mode — reload / no-store / no-cache skip the hit, fetch with cache:'no-store', and replace the entry; force-cache / only-if-cached stay cache-first; a reload that cannot reach the network still returns the cached copy.",
+    "dropDownloadVariants() on activate: removes ?dl=1 entries already sitting in FILES. Not a FILES version bump — her offline material is bare-keyed and untouched."
+  ],
+
+  "measured": {
+    "1_stale_copy_on_a_real_browser": {
+      "setup": "FILES seeded as a pre-change browser: bare URL cached inline, plus a ?dl=1 entry carrying the old bare 'attachment' header",
+      "fetched": "/gannenet/api/shelf/1E5LUC8aYmijfBR3zDYg3Gz222ft3s9nO.png?dl=1",
+      "before": "the seeded stale entry — Content-Disposition: attachment, no filename",
+      "after": "attachment; filename=\"____, ___ ___ ___ ___! - _____ _____ ____ ______.png\"; filename*=UTF-8''%D7%94%D7%95%D7%A4%D7%94...%D7%94%D7%A7%D7%98%D7%9C%D7%95%D7%92.png",
+      "decoded": "הופה, סוף שנה כבר כאן! - דוגמא לעמוד מתוך הקטלוג.png",
+      "bytes": "20,481 — the real PNG, not the 15-byte stale body"
+    },
+    "2_no_second_copy_is_created": {
+      "flow": "clean browser, real UI, real service worker: viewed the item, then fetched the download button's own href",
+      "button_href": "/gannenet/api/shelf/1E5LUC8aYmijfBR3zDYg3Gz222ft3s9nO.png?dl=1",
+      "view_disposition": "inline",
+      "download_filename": "הופה, סוף שנה כבר כאן! - דוגמא לעמוד מתוך הקטלוג.png",
+      "files_cache_after": ["/gannenet/api/shelf/1E5LUC8aYmijfBR3zDYg3Gz222ft3s9nO.png"],
+      "note": "one entry where the same flow used to leave two"
+    },
+    "3_legacy_duplicates_dropped_on_activate": {
+      "before": [
+        "/gannenet/api/shelf/1E5...9nO.png",
+        "/gannenet/api/shelf/1E5...9nO.png?dl=1",
+        "/gannenet/api/shelf/1E5...9nO.png?dl=1&x=2"
+      ],
+      "worker_states": ["installing", "installed", "activating", "activated"],
+      "after": ["/gannenet/api/shelf/1E5...9nO.png"],
+      "method_note": "unregister()+register() of a byte-identical script does NOT reinstall — the browser clears the uninstalling flag and reuses the running worker, and activate never fires. Measured that way first and it read as a no-op. A distinct script URL (sw.js?probe=1, same scope) forces a real install+activate; that is the run recorded here."
+    },
+    "4_cache_mode_is_honoured": {
+      "setup": "FILES seeded with a 17-byte stand-in for the file",
+      "fetch_default": "returned the seeded copy — still cache-first",
+      "fetch_reload": "returned the real 20,481-byte file from the network",
+      "cache_after_reload": "20,481 — the stale entry was replaced",
+      "cache_put_with_reload_request": "accepted by Cache.put (checked explicitly)"
+    },
+    "5_offline": {
+      "method": "server process stopped, port 3043 confirmed closed",
+      "view_of_a_saved_file": "served from FILES, Content-Disposition: inline — unchanged",
+      "download_of_a_saved_file": "200 image/jpeg, Content-Disposition: attachment — the bare cached copy, re-headed",
+      "download_of_a_file_never_saved": "rejected (Failed to fetch) — nothing to fall back to, which is what it was before",
+      "note": "the first offline attempt returned the live header instead: the browser's own HTTP cache still held that URL under max-age=300. Re-run on a file whose ?dl=1 URL had never been fetched, which is the case the fallback exists for."
+    }
+  },
+
+  "cost": "a file downloaded but never viewed and never saved for offline loses its cached copy at activate; online it returns on the next click. The shelf's own 'save for offline' is unaffected — its list carries no dl.",
+  "untouched": "no other file modified. Bucket left as found: uploads/ empty, seed/ 258, /api/catalog 0, /api/drive-catalog 2,977. Test browser's registrations and gannenet caches cleared after the run.",
+  "machine_limits": "/api/drive/[id] answers 502 here and seed PDFs likewise — NetFree blocks drive.usercontent.google.com and supabase.co. The seed image exercises the identical code path end to end."
+}
