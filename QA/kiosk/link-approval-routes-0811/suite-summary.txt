@@ -1,0 +1,12 @@
+﻿ℹ pass 137
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2327.3387
+
+✖ failing tests:
+
+test at test\routing.test.mjs:1:1
+✖ test\routing.test.mjs (281.1213ms)
+  'test failed'

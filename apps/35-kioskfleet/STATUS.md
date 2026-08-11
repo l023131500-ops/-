@@ -1090,6 +1090,51 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
   `update_config`, then the console picker beside `🆔 מזהי לקוח`, then the
   launcher and `identify()` offering links alongside clients. **Not deployed.**
 
+- **the link approvals, wired (§2★ה, second half)** — the module above sat with
+  nothing importing it, so `device_links` was a table no route could write. Added
+  `GET`/`PUT /api/devices/:id/links` in `routes/devices.js`, the mirror of the
+  clients pair directly above them, and put the pushed allow-list behind one
+  function:
+  - **`approvalSelection()` is the first call the `PUT` makes**, which is the
+    hole the previous step found and asserted rather than fixed: `device_links`'s
+    foreign key proves a link *exists* and says nothing about whose it is, so an
+    id from another customer is stored happily by the database. The filter is the
+    whole authorisation check, and the test asserts on the table rather than on
+    the filter's return value.
+  - **not merged into the clients routes.** One `PUT` carrying both lists would
+    make un-approving every client the price of touching the links, and the two
+    are different in kind — a client is redeemed by a code someone types on a
+    keypad, a link is chosen off a list the server already decided to show.
+  - `deviceConfigHostCsv(db, device)` in `linkapprovals.js` — the device's own
+    list, then its approved clients, then its approved links, then whatever it is
+    being told to display. That four-part expression was written out at **four**
+    call sites (the device `PATCH`, the clients `PUT`, the new links `PUT`, the
+    agent's heartbeat), and the device enforces the list locally and offline: a
+    push that composes three of the four fails nowhere a developer can see it,
+    only as a blocked page on a tablet in a hall, on whichever route was the
+    stale copy. The order survives "unset stays unset" — a device with no lock is
+    still handed no lock, whatever has been approved for it.
+  - the **enrollment** response was handing back the raw `allowed_host` column
+    while the heartbeat sent the widened one. Hardware that re-enrols already has
+    its approvals, so it was blocked from the clients and links it was approved
+    for until the first heartbeat landed. On a first enrollment nothing is
+    approved and no display link is set, so the value is byte-identical.
+  - the config is read **after** the write, or the push describes the set the
+    owner just replaced.
+
+  Verified in `QA/kiosk/link-approval-routes-0811/` — 3 new cases replaying the
+  route's own sequence against the production DDL on `node:sqlite`, asserting the
+  stored rows and the pushed list (137/138 across the suite; 134/135 before, so
+  the three are the whole difference, and the one failure is still
+  `routing.test.mjs`, which imports express).
+
+  Not verified: the express glue itself — the mount, `requireAuth`,
+  `getOwnedDevice` — the same constraint every prior step has had.
+
+  **No console UI**, so approving a link for a device is still an HTTP call; the
+  picker beside `🆔 מזהי לקוח` is the next step, then the launcher and
+  `identify()` offering links alongside clients. **Not deployed.**
+
 ## Next, in order
 
 1. Deploy — and it is not a redeploy of this repo. The Railway service

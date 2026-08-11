@@ -1,0 +1,20 @@
+﻿✔ an approval is a row, and its absence is a "no" (11.0856ms)
+✔ the same link cannot be approved twice for one device (11.3632ms)
+✔ deleting a device or a link clears its approvals (3.0166ms)
+✔ the approved list is ordered by name, not by insert order (3.366ms)
+✔ a foreign link id in the payload is dropped, not stored (4.0849ms)
+✔ everything approved is offerable — links have no disabled state (4.4488ms)
+✔ a chosen id is resolved against this device's approvals, never trusted (3.6873ms)
+✔ the pushed allow-list covers the approved links (5.8484ms)
+✔ the PUT stores the owner's ids only, and replaces rather than merges (8.0913ms)
+✔ one config push carries all three widenings, from one function (7.8105ms)
+✔ a device with no lock is still handed no lock, whatever is approved (4.7212ms)
+✔ the two widenings compose without either dropping the other's hosts (3.3625ms)
+ℹ tests 12
+ℹ suites 0
+ℹ pass 12
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 389.2325
