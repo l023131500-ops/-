@@ -1,0 +1,47 @@
+kiosk (35): a button that is a pale fill on a pale card has no shape, only text
+
+.btn-light is #eef3ff on a white card and .btn-danger is #fee2e2 on the same:
+1.11:1 and 1.22:1, and 1.04:1 where the button sits on the page rather than on
+a card. WCAG 1.4.11 wants 3:1 from the boundary that identifies a control, and
+here there was none — the only thing marking these as pressable was the label
+inside them. That is every cancel, every edit and every delete in the console.
+It is item 4 of STATUS.md's "Next, in order", left explicitly by the previous
+contrast step.
+
+Two tokens, --btn-light-edge and --btn-danger-edge, drawn as an inset ring:
+
+- one value each rather than a light/dark pair. These two fills are the "light
+  chips stay light" decision from the previous step, so they do not invert;
+  each ring is therefore chosen against every surface such a button lands on —
+  white card, dark card, --navy, the page background in both modes, and the
+  button's own fill from the inside. Worst case 3.79 and 3.32.
+- the button's ink could not be reused, which was the obvious move: #1f4fd8 is
+  2.57:1 and #b91c1c is 2.63:1 against the dark card. Both were picked against
+  a light fill and only ever sit on one.
+- box-shadow: inset, not border. .btn declares border: none, so a real border
+  grows every button by 2px, and .btn-sm buttons pack into a row inside a device
+  card — exactly where QA/kiosk/clients-console-0811 already found a column of
+  buttons running off the card's edge. An inset ring takes no space and follows
+  the border-radius exactly.
+
+Verified in QA/kiosk/button-boundary-0811: a real Chromium at both colorScheme
+values against a stub serving the real server/public/, every number read from
+getComputedStyle, and the background taken from the surface actually painted
+behind each button rather than from the token — these sit on .modal, .device,
+.card and the page itself, so one quoted value would be right for some and wrong
+for the rest. 24/26, the two failures being the "before" rows, which is what
+shows the check can fail. 70/71 on node --test, the documented baseline
+(routing.test.mjs still imports express).
+
+Two corrections the run forced, so the claim is no larger than the change: the
+defect was light-mode only, because the same pale fills on a dark card were
+already their own boundary at 13.9:1 and 16.9:1; and .btn-primary was first
+measured on the card's edit button, which is itself a .btn-light. Read from the
+real primary it is 5.28 / 3.22 and needed nothing.
+
+Found and not fixed, so it is not silently claimed: a box-shadow is not painted
+in Windows high-contrast mode. Every one of these is a real <button>, so the UA
+supplies ButtonBorder there — enough in practice, but not measured here.
+
+Not deployed; the Railway service still serves the previous console. The app
+source is gitignored, so the change itself is recorded in STATUS.md.

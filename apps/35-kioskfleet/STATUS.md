@@ -492,13 +492,57 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
 
   **Not deployed.**
 
+- **the button's own boundary (the last thing the step above left)** — a
+  `.btn-light` is `#eef3ff` on a white card and a `.btn-danger` is `#fee2e2` on
+  the same: **1.11:1** and **1.22:1**, and 1.04:1 where the button sits on the
+  page rather than on a card. That is not a faint button, it is a button with no
+  shape — the only thing saying "this is a control you can press" is the text
+  inside it, and WCAG 1.4.11 is about the boundary. It is every cancel, every
+  edit, every delete in the console. Two tokens in `css/style.css`:
+  - `--btn-light-edge` / `--btn-danger-edge`, one value each rather than a
+    light/dark pair, because these two fills are the "light chips stay light"
+    decision from the previous step: they **do not invert**. So each ring is
+    chosen against *every* surface such a button lands on — white card, dark
+    card, `--navy`, the page background in both modes, and the button's own fill
+    from the inside. Worst case 3.79 (light) and 3.32 (danger).
+  - the button's own **ink** could not be reused as the ring, which was the
+    obvious move: `#1f4fd8` is 2.57:1 and `#b91c1c` is 2.63:1 against the dark
+    card. They were picked against a light fill and only ever sit on one.
+  - the ring is `box-shadow: inset`, not `border`. `.btn` declares
+    `border: none`, so a real border grows every button by 2px — and `.btn-sm`
+    buttons pack into a row inside a device card, which is exactly where
+    `QA/kiosk/clients-console-0811` already found a column of buttons running off
+    the card's edge. An inset shadow takes no space and follows the button's
+    `border-radius` exactly.
+
+  Verified in `QA/kiosk/button-boundary-0811` — a real Chromium at both
+  `colorScheme` values against a stub serving the real `server/public/`, with the
+  background measured from **the surface actually painted behind each button**
+  (walking up the DOM to the first opaque background) rather than assumed from
+  the token: these buttons sit on `.modal`, `.device`, `.card` and the page
+  itself, and one quoted value would be right for some and wrong for the rest.
+  24/26, the two failures being the "before" rows. 70/71 on `node --test` — the
+  documented baseline.
+
+  Two corrections the run itself forced, so the claim is not larger than the
+  change: **the defect was light-mode only** — the same light fills on a dark
+  card were already their own boundary at 13.9:1 / 16.9:1, and the harness's
+  first version wrongly demanded the "before" row fail in both modes. And
+  `.btn-primary` was first measured on `✏️ עריכה`, which is a `.btn-light`; read
+  from the real primary it is 5.28 / 3.22 and genuinely needed nothing.
+
+  Found and **not** fixed: the ring is a `box-shadow`, which Windows
+  high-contrast mode does not paint. Every one of these is a real `<button>`, so
+  the UA supplies `ButtonBorder` there — sufficient in practice, but not measured
+  in this run.
+
+  **Not deployed.**
+
 ## Next, in order
 
 1. Deploy: the registry (API + screen), the approvals (API + picker), `identify`,
-   the launcher, both of §2★א's fields and the two contrast fixes are only on
+   the launcher, both of §2★א's fields and the three contrast fixes are only on
    disk and in this file.
 2. The selection screen on the device (§2★ה/ו): `KioskActivity` calls
    `identify`, offers the approved list, and locks onto what is chosen.
 3. The "הפעל" wizard with the live checklist (§2★ב).
-4. Button boundaries console-wide: `.btn-light` / `.btn-danger` fills at ~1.1:1
-   against the card.
