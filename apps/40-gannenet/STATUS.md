@@ -40,6 +40,18 @@ PDF bodies from `supabase.co`; none of that applies to the production server.
   `VERSION` bumped to `gannenet-v3` to drop the caches built under the old
   routing. Verified offline — evidence in `QA/gannenet/sw-shelf-offline-0811/`.
 
+- **`lib/catalog.ts`** — `CATEGORY_ORDER` named 11 categories; the shelf holds 21.
+  It is read twice: `/shelf` orders its category chips by it ("מסודרים לפי סדר
+  השנה"), and `/shelf/upload` *is* it — the category dropdown is
+  `CATEGORY_ORDER.map()`. So 937 of 2,977 files (31.5%) sat in ten rank-tied
+  categories ordered by the date of each one's oldest file — `ספירת העומר /
+  ל"ג בעומר`, a holiday belonging between פסח and שבועות, came 14th, after
+  `דפי צביעה` — and a teacher adding material could not file it under any of
+  those ten, including `כללי`, which holds 679 files. The list now carries all
+  21 in year order, and `sortItems`/`orderedCategories` tie-break equal ranks by
+  name so a category arriving later from the Drive catalog still groups together.
+  Evidence in `QA/gannenet/shelf-category-order-0811/`.
+
 No other file was modified. The mount itself needs no code edit: `next.config.js`
 already reads `APP_BASE_PATH`, and `lib/base.ts` exports `withBase()` for the
 fetch calls, hrefs and service worker that Next's `basePath` does not prefix.

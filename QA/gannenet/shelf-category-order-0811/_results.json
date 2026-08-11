@@ -1,0 +1,61 @@
+{
+  "system": "40-gannenet",
+  "date": "2026-08-11",
+  "claim": "/shelf says the archive is 'מסודרים לפי סדר השנה', and /shelf/upload asks which category a new file belongs to. Both read one list — lib/catalog.ts CATEGORY_ORDER — and that list named 11 of the 21 categories the shelf actually holds.",
+  "how_measured": "Merged the two catalogs exactly as app/shelf/page.tsx does (drive-catalog.json, then catalog.json wins on id) and ranked every item with categoryRank(), before and after. Then read the rendered page: 'next dev' on the app with APP_BASE_PATH=/gannenet, Playwright reading the chip row on /shelf and the <select> on /shelf/upload.",
+  "before": {
+    "category_order_entries": 11,
+    "categories_in_use": 21,
+    "unranked_categories": 10,
+    "unranked_items": 937,
+    "unranked_share_of_shelf": "31.5%",
+    "consequence_browse": "All 10 unranked categories tie at rank 11, so the chip tail was ordered by the date of each category's oldest file: מיומנויות — מוכנות חשבון, מיומנויות — גרפומוטוריקה, כללי, ספירת העומר / ל\"ג בעומר, שבת ופרשת שבוע, מיומנויות — תפיסה חזותית, מידות ורגש, משחקים והפעלות, סיפורים ושירים, מיומנויות — קריאה ושפה. ספירת העומר / ל\"ג בעומר — a holiday, between פסח and שבועות — sat 14th, after דפי צביעה.",
+    "consequence_upload": "The upload form's category dropdown is CATEGORY_ORDER.map(), so a teacher adding material could file it into 11 categories and not into the other 10 — including כללי, which holds 679 files."
+  },
+  "after": {
+    "category_order_entries": 21,
+    "categories_in_use": 21,
+    "unranked_categories": 0,
+    "unranked_items": 0,
+    "unranked_share_of_shelf": "0.0%",
+    "order": [
+      "ראש השנה / תשרי",
+      "חנוכה",
+      "ט\"ו בשבט",
+      "פורים",
+      "פסח",
+      "ספירת העומר / ל\"ג בעומר",
+      "שבועות",
+      "תשעה באב / בין המצרים",
+      "סוף שנה / קיץ",
+      "שבת ופרשת שבוע",
+      "מיומנויות — קריאה ושפה",
+      "מיומנויות — מוכנות חשבון",
+      "מיומנויות — גרפומוטוריקה",
+      "מיומנויות — תפיסה חזותית",
+      "מידות ורגש",
+      "דפי עבודה",
+      "דפי צביעה",
+      "יצירה ואומנות",
+      "משחקים והפעלות",
+      "סיפורים ושירים",
+      "כללי"
+    ],
+    "rationale": "Holidays in the order the school year meets them, then the year-round groups: the weekly parasha, the four skills tracks, מידות ורגש, the material types, and כללי last as the catch-all."
+  },
+  "rendered": {
+    "shelf_counter": "2,977 פריטים · 21 קטגוריות",
+    "shelf_chips": 22,
+    "shelf_chips_note": "21 categories + the 'הכול' chip; the rendered order equals the computed order exactly",
+    "upload_dropdown_options": 21,
+    "console_errors": 0
+  },
+  "also_changed": "sortItems() and orderedCategories() now tie-break equal ranks by category name (he). Nothing in the current data is unranked any more, but a category arriving later from the Drive catalog would otherwise have had its items scattered through the tail by date instead of staying together.",
+  "evidence": [
+    "_before.json — the merged shelf read through the 11-entry list",
+    "_after.json — the same read through the 21-entry list",
+    "shelf-chips-year-order.png — the chip row on /shelf",
+    "upload-all-21-categories.png — the category dropdown on /shelf/upload"
+  ],
+  "not_done": "Nothing is deployed: gannenet still has no Vercel project and the quota is refused (core.issues #83). public_visible stays false. No database write, nothing protected touched, test mode."
+}

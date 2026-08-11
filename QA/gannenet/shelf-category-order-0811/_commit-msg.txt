@@ -1,0 +1,37 @@
+gannenet (40): the shelf named 21 categories and could sort or file only 11
+
+CATEGORY_ORDER in lib/catalog.ts is read twice. /shelf orders its category
+chips by it, under a heading that promises the archive is "מסודרים לפי סדר
+השנה". /shelf/upload *is* it - the category dropdown on the add-material
+form is CATEGORY_ORDER.map(). The list held 11 entries. The shelf, once the
+Drive catalog is merged with the 258 seed files the way the page merges
+them, holds 21.
+
+So 937 of 2,977 files - 31.5% - sat in ten categories that all rank equal
+and therefore tie. The chip tail came out ordered by the date of each
+category's oldest file: ספירת העומר / ל"ג בעומר, a holiday that falls
+between פסח and שבועות, was fourteenth, after דפי צביעה. And a teacher
+adding her own material could file it into eleven categories and none of
+the other ten - including כללי, which is where 679 of the files already
+are.
+
+The list now carries all 21, holidays in the order the school year meets
+them, then the year-round groups: the weekly parasha, the four skills
+tracks, מידות ורגש, the material types, and כללי last as the catch-all.
+sortItems and orderedCategories tie-break equal ranks by name, so a
+category arriving later from the Drive catalog groups together instead of
+scattering through the tail by date.
+
+Verified by rendering, not by reading: next dev with APP_BASE_PATH=/gannenet,
+the chip row on /shelf comes back as 21 categories in exactly the computed
+order next to the counter "2,977 פריטים · 21 קטגוריות", and the dropdown on
+/shelf/upload offers 21 options. Zero console errors. Before and after
+readings of the merged catalog, and both screenshots, are in
+QA/gannenet/shelf-category-order-0811/.
+
+The source cannot be committed (/apps/** is ignored), so the change is
+recorded in apps/40-gannenet/STATUS.md, which the ignore rules allow.
+
+No migration - the database was read only. No deploy: gannenet still has no
+Vercel project and the quota is refused (#83); public_visible stays false.
+Nothing protected was read or written. Test mode.
