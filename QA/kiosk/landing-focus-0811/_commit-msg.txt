@@ -1,0 +1,51 @@
+kiosk (35): in dark mode the marketing page had no focus ring at all
+
+The console's `:focus-visible` rule stops at `#content` and `.modal` on
+purpose, so every control on `index.html` — the skip link, the four nav
+links, כניסת לקוחות, both hero calls to action, the three pricing
+buttons, the closing band's button and the footer link — was still on the
+browser's default ring. That is the page `more30.com/kiosk` opens.
+
+STATUS.md carried this as a scope line rather than a defect. Measuring it
+in both modes says otherwise: Chromium paints `outline-style: auto` dark
+when `color-scheme` is dark, so on the navy bar the ring it drew is
+**1.07:1** on `.btn-ghost` and **1.22:1** on the hero's. Not "a value that
+is not ours and cannot be read from getComputedStyle" — no focus
+indicator. The same two controls in light mode were white at 15.5:1,
+which is why a one-mode run would have found nothing.
+
+Three rules and one token, because the ring sits at `outline-offset: 2px`
+*outside* the control and is graded against what is behind it, and this
+page has three kinds of surface:
+
+- navy that does not invert — nav bar, hero, footer, and the skip link
+  which opens over the nav — ⇒ `--focus-ring-navy`. `.nav` is
+  `rgba(7,26,51,.85)` over a page background that *does* invert, so the
+  surface had to be composited rather than read; 4.77:1 light, 7.45:1
+  dark.
+- the pricing card, which is `--card` ⇒ `--focus-ring`, as in the console.
+- the closing band ⇒ `--focus-ring-band`, the one new token, and it was
+  not avoidable: on the `--accent`→`#6d4bff` gradient the navy ring is
+  2.88:1 at the blue end and 2.14:1 at the purple one, i.e. it falls under
+  3:1 on exactly the page's last call to action. White is 6.87 / 5.12 and
+  is already the colour that button is outlined in.
+
+QA/kiosk/landing-focus-0811 — a real Chromium at both `colorScheme`
+values against the warn-ink stub, which already serves the real
+`public/`. 90/90, 18 control rows confirming the UA `auto` that was there
+before, six screenshots.
+
+Two harness corrections the run forced. The ring is identified by its own
+colour and not as the strongest pixel in the band: the skip link opens at
+`inset-inline-start: 0`, which in RTL is the top *right* corner where the
+white ◈ KioskFleet wordmark sits, so the strongest pixel within 5px was a
+letter of the brand at 11.40:1 and the row would have passed with no ring
+painted. And `rgb()` reads decimal runs, so it parsed the `#7ea6ff` token
+as `[7, 6]` and every ratio against a token came out NaN.
+
+Found and not fixed: below 901px `.nav-links` is `display: none` with no
+hamburger behind it, so on a phone those five controls are not merely
+unreachable by keyboard — they do not exist. Navigation, not focus, and
+its own step.
+
+Not deployed.

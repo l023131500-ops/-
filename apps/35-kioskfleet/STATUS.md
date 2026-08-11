@@ -2393,6 +2393,58 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
 
   **Not deployed.**
 
+- **the marketing page's focus ring (the scope line the step above left)** — the
+  `#content` / `.modal` rule stops at the console on purpose, so every control on
+  `index.html` still had no `:focus-visible` rule: the skip link, the four nav
+  links, כניסת לקוחות, both hero calls to action, the three pricing buttons, the
+  closing band's button and the footer link. That is the page `more30.com/kiosk`
+  opens — the first thing in this system a keyboard user meets. Three rules in
+  `css/style.css` plus one token:
+  - **three rings, not one.** The ring sits at `outline-offset: 2px` *outside*
+    the control and is therefore graded against what is behind it, and this page
+    has three kinds of surface: navy that does not invert (nav bar, hero, footer,
+    and the skip link which opens over the nav) → `--focus-ring-navy`; the
+    pricing card, which is `--card` and does invert → `--focus-ring`, the same as
+    the console; and the closing band, a fixed brand gradient →
+    `--focus-ring-band`.
+  - `--focus-ring-band` is the one new token and it was not avoidable:
+    `--focus-ring-navy` on the `--accent`→`#6d4bff` gradient is **2.88:1** at the
+    blue end and **2.14:1** at the purple one, i.e. the ring chosen against the
+    navy falls under 3:1 on precisely the page's last call to action. White is
+    6.87 / 5.12, and is already the colour that button is outlined in.
+  - `.nav` is `rgba(7,26,51,.85)` over a page background that inverts, so the
+    surface had to be **composited** rather than read — every console surface
+    graded so far was opaque. Measured 4.77:1 light, 7.45:1 dark.
+
+  Verified in `QA/kiosk/landing-focus-0811/` — a real Chromium at both
+  `colorScheme` values against the `warn-ink-0811` stub (it already serves the
+  real `public/` and answers `/` with `index.html`), 90/90, with 18 control rows
+  confirming the UA `auto` that was there before. Six screenshots.
+
+  What the run turned up that was not known: **in dark mode the UA ring was
+  invisible on the navy.** Chromium paints `auto` dark when `color-scheme` is
+  dark, so the "before" rows measure **1.07:1** for the nav's `.btn-ghost` and
+  **1.22:1** for the hero's — so on those two controls this is not only the
+  "unowned, unmeasurable value" argument of `content-focus-0811`, it is no focus
+  indicator at all. The same controls in light mode were white at 15.5:1, which
+  is why a single-mode run would have seen nothing.
+
+  Two harness corrections the run forced, both recorded in `_results.md`: the
+  ring is now identified **by its own colour** rather than as the strongest pixel
+  in the band — the skip link opens at `inset-inline-start: 0`, which in RTL is
+  the top *right* corner where the white `◈ KioskFleet` wordmark sits, so the
+  strongest pixel within 5px was a letter of the brand at 11.40:1 and the row
+  would have passed with no ring painted at all. And the harness's `rgb()` reads
+  decimal runs, so it parsed the `#7ea6ff` token as `[7, 6]` and every
+  ratio-against-a-token came out `NaN`.
+
+  Found and **not** fixed: below 901px `.nav-links` is `display: none` with no
+  hamburger behind it, so on a phone those five controls are not merely
+  unreachable by keyboard — they do not exist. That is a navigation question,
+  not a focus one, and its own step.
+
+  **Not deployed.**
+
 ## Next, in order
 
 1. Deploy — and it is not a redeploy of this repo. The Railway service
@@ -2564,3 +2616,16 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
      at the console. `index.html`'s `.btn-ghost` sits on a navy bar — the exact
      case `--focus-ring-navy` exists for — and the marketing page's focus has
      never been measured. That is the next thing under this heading.
+   - **the marketing page is now closed too.** `landing-focus-0811` measured all
+     nine of its controls in both modes and gave them three rings, one per
+     surface (`--focus-ring-band` is the new token, for the closing band's
+     gradient). It also found what the reading above did not predict: the UA
+     ring was **1.07:1** on the nav's `.btn-ghost` in dark mode, i.e. absent
+     rather than merely unowned. The max-over-band hazard the run above recorded
+     arrived here for real and the harness now identifies the ring by its own
+     colour.
+     Nothing is open under this heading. What is left for whoever writes the
+     next step is not a focus question: below 901px `.nav-links` is
+     `display: none` with no hamburger behind it, so on a phone the four nav
+     links and כניסת לקוחות do not exist at all — the marketing page has no
+     mobile navigation.
