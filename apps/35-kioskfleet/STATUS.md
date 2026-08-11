@@ -2869,3 +2869,24 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
      it is the page with the most numbers interpolated into Hebrew sentences, so
      it is the only place the Hebrew-between-tokens group is likely to have real
      matches at all. On these two pages it matched nothing.
+     **The console is now swept too, and it is clean** — `console-rtl-0811`,
+     585/585, 526 real pairs across nine views (six screens, three dialogs) in
+     both modes at both widths. The prediction held: **group A has 56 matches
+     here** against zero on the other two pages, nearly all of them in the setup
+     wizard, which is where Hebrew instructions and Latin product names mix most
+     densely. What the run corrects is the *harness*, twice, and both times off
+     one line — the device card's `🔋 84% · 📱 Lenovo TB-X306F · v1.4.0`. A
+     bullet is not proof of one value: `84` and `Lenovo` are two **fields**, RTL
+     order is correct there, and the old two-group rule reported a defect that is
+     not one. A bullet is not proof of two either: `TB-X306F · v1.4.0`, the same
+     bullet on the same line, is **one run**, because both sides are strong L and
+     N1 hands neutrals between two L to L — only a bare digit run (EN, which N1
+     treats as R) lets a field mark decide anything. The groups are now the
+     algorithm's own split rather than a guess about semantics, with `–` and `/`
+     deliberately outside the field-mark set so `06:00–04:00` stays gradable.
+     Both shipped defects stay in the group that must increase, and three control
+     rows per combination assert it — including one that rebuilds
+     `TB-X306F · v1.4.0` and would have caught the second correction. What is
+     open after it is the same limit, now on the page where it bites: a `Range`
+     cannot enter an `<input>`, so `#e-url`, `#l-url` and `#c-code` are right by
+     declaration (`dir="ltr"`) and not by measurement.
