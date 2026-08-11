@@ -4,6 +4,7 @@ import { Loader2, LogIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
@@ -65,7 +66,7 @@ export default function SignIn() {
           </div>
           <form onSubmit={submit} className="space-y-3">
             <div><Label>דוא״ל</Label><Input required type="email" value={email} onChange={(e) => setEmail(e.target.value)} /></div>
-            <div><Label>סיסמה</Label><Input required type="password" value={password} onChange={(e) => setPassword(e.target.value)} /></div>
+            <div><Label htmlFor="password">סיסמה</Label><PasswordInput id="password" required autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} /></div>
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <><LogIn className="ml-2 h-4 w-4" /> התחבר</>}
             </Button>

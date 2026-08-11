@@ -1,0 +1,48 @@
+{
+  "step": "priority §1א — show-password on system 01 (torah)",
+  "date": "2026-08-12",
+  "scope": "apps/01-torah-platform — all six type=password fields in the app",
+  "fields_covered": [
+    "src/pages/auth/SignIn.tsx — סיסמה",
+    "src/pages/auth/SignUp.tsx — סיסמה (+ live requirement)",
+    "src/pages/auth/ActivateInvite.tsx — סיסמה ראשונית",
+    "src/pages/auth/ActivateInvite.tsx — סיסמה חדשה",
+    "src/pages/legacy/AdminLogin.tsx — סיסמה",
+    "src/pages/portal/Settings.tsx — API Password"
+  ],
+  "shared_component": "src/components/ui/password-input.tsx",
+  "build": "vite build — 3928 modules, ok; password-input chunk 0.86 kB",
+  "verified_in_browser": {
+    "server": "vite preview on the real production bundle, base /torah/",
+    "signup": {
+      "field_found": true,
+      "initial_type": "password",
+      "toggle_aria_pressed_initial": "false",
+      "toggle_aria_label_initial": "הצג סיסמה",
+      "requirement_wired": "aria-describedby=password-req",
+      "requirement_unmet_4_chars": "• לפחות 6 תווים",
+      "requirement_met_8_chars": "✓ לפחות 6 תווים, color rgb(22,163,74)",
+      "after_click_type": "text",
+      "after_click_aria_pressed": "true",
+      "after_click_aria_label": "הסתר סיסמה",
+      "after_click_icon": "lucide-eye-off",
+      "form_not_submitted": "url unchanged, 0 toasts",
+      "hit_test": "elementFromPoint at button centre resolves inside the button",
+      "input_padding_left": "40px (button is 32x32 at left+4) — text never runs under it"
+    },
+    "admin_login": {
+      "input_padding": "padding-left 40px, padding-right 40px (own KeyRound icon kept)",
+      "toggle_type": "button",
+      "toggle_click": "type -> text, aria-pressed -> true, url unchanged",
+      "key_icon_topmost_before_fix": false,
+      "key_icon_topmost_after_fix": true
+    }
+  },
+  "regression_found_and_fixed_mid_step": "PasswordInput wraps the field in a position:relative div that comes after AdminLogin's absolutely-positioned KeyRound icon in the DOM, so with both at z-index auto the wrapper painted over the icon and it vanished behind the field background. Measured with elementFromPoint (keyIconTopmost=false while the untouched Mail icon on the username field was true). Fixed with z-10 on the icon. before-fix-key-icon-hidden.png keeps the wrong state.",
+  "screenshots": [
+    "signup-req-unmet.png — requirement not yet met, masked",
+    "signup-revealed.png — revealed, eye-off, requirement met",
+    "before-fix-key-icon-hidden.png — AdminLogin with the KeyRound icon painted under the field",
+    "admin-login-fixed.png — KeyRound icon back, toggle in revealed state"
+  ]
+}

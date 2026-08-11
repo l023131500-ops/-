@@ -4,6 +4,7 @@ import { Loader2, Save, Palette, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
@@ -98,7 +99,7 @@ export default function Settings() {
             <CardHeader><CardTitle>הגדרות נדרים פלוס</CardTitle><CardDescription>פרטי מוסד עבור סליקת כרטיסי אשראי. הסיסמה מוצפנת במסד הנתונים.</CardDescription></CardHeader>
             <CardContent className="space-y-3">
               <div><Label>Mosad ID</Label><Input value={nedarim.mosad_id} onChange={(e) => setNedarim({ ...nedarim, mosad_id: e.target.value })} /></div>
-              <div><Label>API Password</Label><Input type="password" value={nedarim.api_password} onChange={(e) => setNedarim({ ...nedarim, api_password: e.target.value })} placeholder="השאר ריק כדי לא לשנות" /></div>
+              <div><Label htmlFor="api-password">API Password</Label><PasswordInput id="api-password" value={nedarim.api_password} onChange={(e) => setNedarim({ ...nedarim, api_password: e.target.value })} placeholder="השאר ריק כדי לא לשנות" /></div>
               <Button onClick={() => saveNedarim.mutate()} disabled={saveNedarim.isPending}>שמור</Button>
             </CardContent>
           </Card>

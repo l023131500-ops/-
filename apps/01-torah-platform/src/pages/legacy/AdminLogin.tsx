@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Lock, Mail, KeyRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 // TODO: lovable integration replaced with supabase OAuth directly
@@ -145,9 +146,11 @@ const AdminLogin = () => {
             <div>
               <label className="font-body text-sm font-medium text-foreground mb-1.5 block">סיסמה</label>
               <div className="relative">
-                <KeyRound className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <Input
-                  type="password"
+                {/* z-10: PasswordInput עוטף את השדה ב-div עם position:relative,
+                    שמגיע אחרי האייקון ב-DOM — בלי z-index הוא נצבע מעליו
+                    והאייקון פשוט נעלם מאחורי רקע השדה (נמדד בדפדפן). */}
+                <KeyRound className="absolute right-3 top-1/2 z-10 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <PasswordInput
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
