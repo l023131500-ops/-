@@ -1,0 +1,39 @@
+kiosk (35): the app asks for two things and the console only ever gave one
+
+KIOSK_BUILD §2★א ends by saying that saving a device produces a קישור התקנה.
+What it produced was a six-character code — and EnrollActivity's first field is
+the server address, which is the one nobody can guess: https://kiosk.more30.com/kiosk,
+prefix included, typed on a tablet keyboard by whoever is holding the device.
+One wrong character there surfaces as שגיאת רשת, which reads as a broken server
+rather than as a typo.
+
+- src/installlink.js — the address carries the base path, because /api/agent is
+  mounted inside the prefix. Without it the agent reaches the portal, and the
+  only symptom is an enrollment that never completes.
+- the link is built on the server from PUBLIC_URL. The console is served through
+  the portal rewrite, so location.origin there is a hostname no device can
+  enroll against — a link built in the browser looks right in the console and
+  fails on every device.
+- public/install.html + site.get('/install/:code?') — the page resolves nothing.
+  It reads the code out of its own URL; the only thing entitled to redeem an
+  enrollment code is the device, against /api/agent/enroll. Everything is inline,
+  same as kiosk-launcher.html and for the same reason: two depths.
+- the code is in the URL here on purpose, the opposite of the launcher's rule. A
+  link the installer has to complete by hand is the thing it replaces.
+- a non-code yields null rather than a half-built URL: /install/undefined would
+  load and show an installer a wrong code, which is worse than no link at all.
+- no download is offered. No APK is hosted anywhere, so the page says where the
+  file comes from instead of linking to one that does not exist. The steps say
+  what the app actually does and the error table is the six strings
+  routes/agent.js really returns.
+
+QA/kiosk/install-link-0811 — 8 unit cases (78/79 across the suite; routing.test
+still imports express), plus a real browser against a stub answering on
+127.0.0.1 while its PUBLIC_URL says kiosk.more30.com — the production mismatch —
+driven at both mounts and both depths. Three screenshots. A wrapped two-line
+button in the codes table was found there and fixed.
+
+Also recorded in STATUS: item 1 of Next is not a redeploy of this repo. The
+Railway service kioskfleet builds from l023131500-ops/zol, branch
+claude/what-do-you-see-gxo5tc, root kiosk/server — so shipping any of the last
+thirteen steps means syncing the source across first, which is its own step.

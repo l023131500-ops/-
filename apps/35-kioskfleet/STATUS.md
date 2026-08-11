@@ -538,11 +538,58 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
 
   **Not deployed.**
 
+- **the install link (§2★א, last line)** — §2★א ends by saying that saving
+  produces a **קישור התקנה**, and what the console produced was a six-character
+  code. `EnrollActivity` asks for **two** things: a server address and the code.
+  The console only ever showed the second, and the first is the one nobody can
+  guess — `https://kiosk.more30.com/kiosk`, prefix included, typed on a tablet
+  keyboard by whoever is holding the device. One wrong character there surfaces
+  as `שגיאת רשת`, which reads as a broken server rather than as a typo. Added
+  `server/src/installlink.js`, `public/install.html`, and the
+  `/install/:code?` route:
+  - the link is built **on the server**, from `PUBLIC_URL`. The console is
+    served through the portal rewrite, so `location.origin` there is a hostname
+    no device can enroll against — building the link in the browser would look
+    right in the console and fail on every device.
+  - the base path is part of the address, because `/api/agent` is mounted
+    *inside* the prefix (`site.use('/api/agent', …)`, inside `app.use(base,
+    site)`). An address without it reaches the portal, and the only symptom is
+    an enrollment that never completes.
+  - the page **resolves nothing**. It reads the code out of its own URL and
+    shows it; the only thing entitled to redeem an enrollment code is the device,
+    against `/api/agent/enroll`. So `:code` is never read server-side, the same
+    as `/kiosk-launcher/:code` — and everything is inline for the same reason
+    too, since this page is also served at two depths.
+  - the code is in the URL here **on purpose**, which is the opposite of the
+    launcher's rule. A link that the installer has to complete by hand is the
+    thing this replaces.
+  - a code that is not a code yields `null`, not a half-built URL: the console
+    then renders no link. `/install/undefined` would load and show an installer
+    a wrong code, which is worse than no link.
+  - the steps say what the app actually does, and the error table is the six
+    strings `routes/agent.js` really returns. **No download is offered** — no
+    APK is hosted anywhere, so the page says where the file comes from instead
+    of linking to one that does not exist.
+
+  Verified in `QA/kiosk/install-link-0811/` — 8 unit cases (78/79 across the
+  suite; `routing.test.mjs` still imports express), plus a real browser against
+  a stub answering on `127.0.0.1` while its `PUBLIC_URL` says
+  `kiosk.more30.com` — the production mismatch — driven at both mounts and both
+  depths. Three screenshots. A wrapped two-line button in the codes table was
+  found there and fixed.
+
+  **Not deployed.**
+
 ## Next, in order
 
-1. Deploy: the registry (API + screen), the approvals (API + picker), `identify`,
-   the launcher, both of §2★א's fields and the three contrast fixes are only on
-   disk and in this file.
+1. Deploy — and it is not a redeploy of this repo. The Railway service
+   `kioskfleet` builds from **`l023131500-ops/zol`**, branch
+   `claude/what-do-you-see-gxo5tc`, root directory `kiosk/server`; this tree is
+   `apps/35-kioskfleet/server`, which is gitignored here and is not that repo.
+   So shipping the registry (API + screen), the approvals (API + picker),
+   `identify`, the launcher, both of §2★א's fields, the install link and the
+   three contrast fixes means syncing the source across first. That is its own
+   step, and it is outward-facing on a live beta.
 2. The selection screen on the device (§2★ה/ו): `KioskActivity` calls
    `identify`, offers the approved list, and locks onto what is chosen.
 3. The "הפעל" wizard with the live checklist (§2★ב).
