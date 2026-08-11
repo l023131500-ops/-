@@ -335,12 +335,55 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
   lock is Lock Task Mode in the Android agent, which still does not call
   `identify`.
 
+- **the second of §2★א's two fields (server half)** — §2★א asks for two fields,
+  one under the other: "אתר ראשי", the link that is right for the whole fleet and
+  the one the device locks onto, and "קישור שיוצג על המכשיר", what *this* device
+  shows. There was one column doing both jobs, so they could not differ: pointing
+  one tablet at a sub-page meant editing the field that defines what every device
+  locks to, and `identify()` had nothing to answer with but `home_url` twice.
+  Added `devices.display_url` and `server/src/displayurl.js`:
+  - **empty is stored as NULL, not as a copy of `home_url`.** The main site is
+    the fleet-wide default, so a device that was never given its own link has to
+    move when the owner changes it. A copy looks identical the day it is written
+    and pins that device to the old address forever after — drift nobody finds
+    until a tablet in a hall is showing last season's page. A display link typed
+    identical to the main site collapses to NULL for the same reason, checked
+    against the main site as it will be *after* the same save.
+  - **it is not a lock.** `kioskUrl` stays `home_url` in every answer; this moves
+    only what is on screen, which is what lets idle-return and a reboot go back
+    to the venue's own page. A code typed at the keypad still wins over it:
+    standing configuration loses to a choice someone just made, and returning to
+    the selection screen brings the device's own link back.
+  - the pushed allow-list is widened to cover it (`configHostCsv`), or the device
+    renders its own blocked page — a broken kiosk, as read in a hall. An **unset**
+    list stays unset, the same rule `effectiveHostCsv` follows: seeding it would
+    create a lock on a device that had none.
+  - only `http(s)` is accepted. The value is loaded in the kiosk webview, so a
+    `javascript:` or `data:` URL here is script running in the one browser on the
+    device that is supposed to run nothing.
+  - `''` is storable, which `COALESCE` cannot express — hence the second UPDATE
+    statement. Presence of the key, not truthiness, is what makes it a clear.
+  - `display_url` is named in `CONSOLE_DEVICE_FIELDS`, so the console sees it;
+    the allow-list test is what would have caught it being invisible.
+  - the migration is `NULL` on every existing row, which *is* the correct
+    value — it means "show the main site", which is what every device did before
+    the column existed.
+
+  Verified in `QA/kiosk/display-url-0811/` — 11 new unit cases (70/71 across the
+  suite; `routing.test.mjs` still needs express) plus 18 assertions replaying the
+  real `PATCH /devices/:id` against the production DDL on `node:sqlite`, on both
+  the stored column and the `update_config` the device is handed.
+
+  **Not deployed**, and no console UI yet: the field is reachable only through
+  the API, and the Android agent still opens `homeUrl` — `displayUrl` is sent
+  *alongside* it so an older agent keeps working.
+
 ## Next, in order
 
 1. Deploy: the registry (API + screen), the approvals (API + picker) and
    `identify` are only on disk and in this file.
-2. §2★א's two fields — "אתר ראשי" and "קישור שיוצג על המכשיר" — on the device
-   screen, feeding the same registry.
+2. §2★א's two fields on the device screen in the console — the storage and the
+   API landed above; the screen still shows one URL field.
 3. The selection screen on the device (§2★ה/ו): `KioskActivity` calls
    `identify`, offers the approved list, and locks onto what is chosen.
 4. The "הפעל" wizard with the live checklist (§2★ב).

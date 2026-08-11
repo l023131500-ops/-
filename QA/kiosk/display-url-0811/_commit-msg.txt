@@ -1,0 +1,40 @@
+kiosk (35): one column was doing the job of both fields in the spec
+
+KIOSK_BUILD §2★א asks for two fields on the device screen, one under the
+other: "אתר ראשי", the link that is right for the whole fleet and the one the
+device locks onto, and "קישור שיוצג על המכשיר", what this particular device
+shows. `devices` had one column for both, so they could not differ — pointing
+one tablet at a sub-page meant editing the field that defines what every device
+locks to, and identify() had nothing to answer with except home_url twice.
+
+Adds devices.display_url and server/src/displayurl.js (server half; the console
+screen is the next step).
+
+- Empty is stored as NULL rather than as a copy of home_url. The main site is
+  the fleet-wide default, so a device that was never given its own link must
+  move when the owner changes it; a copy looks identical the day it is written
+  and pins that device to the old address forever after. A display link typed
+  identical to the main site collapses to NULL for the same reason, compared
+  against the main site as it will be after the same save.
+- It is not a lock: kioskUrl stays home_url in every answer, which is what lets
+  idle-return and a reboot go back to the venue's own page. A "מזהה לקוח" typed
+  at the keypad still wins over it.
+- The pushed allow-list is widened to cover it, or the device renders its own
+  blocked page. An unset list is left unset — the rule effectiveHostCsv already
+  follows — because seeding it would create a lock on a device that had none.
+- Only http(s) is accepted: the value is loaded in the kiosk webview, so a
+  javascript: or data: URL is script running in the one browser on the device
+  that is supposed to run nothing.
+- '' has to be storable, which COALESCE cannot express, so the field gets its
+  own UPDATE and is read by presence of the key rather than truthiness.
+- display_url is named in CONSOLE_DEVICE_FIELDS, so the console can see it.
+- The migration leaves NULL on every existing row, which is the correct value:
+  it means "show the main site", which is what every device did before.
+
+Verified in QA/kiosk/display-url-0811 — 11 new unit cases (70/71 across the
+suite; routing.test.mjs still needs express, unchanged) plus 18 assertions
+replaying the real PATCH /devices/:id against the production DDL on
+node:sqlite, covering both the stored column and the update_config payload.
+
+Not deployed. The Android agent still opens homeUrl; displayUrl is sent
+alongside it rather than instead of it for that reason.
