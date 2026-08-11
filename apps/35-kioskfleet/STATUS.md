@@ -1410,6 +1410,58 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
 
   **Not deployed.**
 
+- **the page that renders in the hall, measured** — every contrast pass so far
+  opened one dialog in the **console**. `kiosk-launcher.html` had never been
+  measured, and it is the one that comes up full-screen on a tablet, read at
+  arm's length by someone typing a six-character code off a printed card. It
+  also cannot be measured the way the console was: the console's surfaces are
+  opaque, so `button-boundary-0811`'s "walk up to the first opaque background"
+  finds the real backdrop, while **here nothing is opaque** — every card, row
+  and button is a translucent white over two radial gradients over `--navy`, and
+  that walk lands on `body`'s navy, the darkest thing on the page. Every ratio
+  would have come out flattering. So the backdrop is **sampled from the pixels
+  Chromium painted**, and translucent foregrounds are composited over that
+  measured pixel. Three real defects, in `public/kiosk-launcher.html` only:
+  - **`#code::placeholder` at 2.70:1.** It is the only thing on the screen
+    saying the code is six characters long, and it is read *before* anything is
+    typed. `.3` → `.55`, i.e. 5.78:1, still far dimmer than the typed value
+    (16.27:1) — which is the one job a placeholder's colour has.
+  - **`.choice` at 1.83:1.** Every row of the selection screen, and the row *is*
+    the control. `.2` → a `--edge` token at `.45`: 3.60:1 against the row's own
+    fill, 3.95:1 against the card. `:hover` was `.4` — *below* the new resting
+    value, so hovering a row would have made its outline fainter — and is now
+    `.62`.
+  - **the primary button at 2.51:1.** `.btn` declares `border: none`, so the
+    fill **is** the boundary, and this one could not be fixed by moving one
+    number: white text needs 4.5:1 from the inside and the card needs 3:1 from
+    the outside, and **no solid fill satisfies both** at 17px — the two
+    constraints cross at L≈0.185. So the label became WCAG *large text* (19px at
+    700, over the 18.66px line, and a better label on a tablet besides) and the
+    fill moved to `--accent-btn: #3d74ff`: 3.24:1 against the card, 4.09:1 under
+    the label. `--accent` is untouched; the console still uses it.
+
+  Verified in `QA/kiosk/launcher-contrast-0811/` — a real Chromium at both
+  `colorScheme` values against `launcher-display-url-page-0811`'s stub reused
+  rather than copied. 23/28 graded rows pass; the five failures are the
+  **before** rows, re-injected into the same DOM in the same run. Four
+  screenshots. 152 tests, 151 pass — the documented baseline, unchanged, since
+  this step adds no server code.
+
+  Two harness bugs found and fixed there: **the input is focused on load**, so
+  the first read reported the green `:focus` ring as the resting border — which
+  is how `.25` survived this whole build unmeasured; and `transition: .15s`
+  covers `color`, so a read in the tick after the text-hiding style is removed
+  returns a value part way back from transparent (`rgba(255,255,255,0.74)` for
+  the button's label). `check()` now **throws** on any non-opaque colour reaching
+  it, since `lum()` reads three channels and would have graded it flatteringly.
+
+  Left with numbers rather than silence: the card edge (1.54:1) and the alert
+  are separators, which 1.4.11 exempts; the four `.ico` tints (1.37–1.77:1) are
+  not the sole carrier of which row is which — each row also has its own emoji
+  and a name — and raising them is a design change.
+
+  **Not deployed.**
+
 ## Next, in order
 
 1. Deploy — and it is not a redeploy of this repo. The Railway service
@@ -1440,8 +1492,12 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
    distinguished from the page mostly by its shadow. That is a look, and it is
    the kind of thing `more30-priority.md` §6 asks for — worth revisiting with the
    console's visual identity rather than as a contrast token.
-5. The console's own screens, other than the wizard, have had no contrast pass at
-   all — `nontext-contrast-0811` onward each opened one dialog. `index.html`
-   (the marketing page, `.feature` / `.plan` / `.step`), `install.html` and
-   `kiosk-launcher.html` are unmeasured. `css/` and `public/` only, runnable in
-   this checkout, and the launcher is the one that renders on a tablet in a hall.
+5. `kiosk-launcher.html` is **measured** — the one of the three that renders on a
+   tablet in a hall, done above. Still unmeasured: `install.html` (served at two
+   depths, inline, and read by whoever is holding the device) and `index.html`
+   (the marketing page — `.feature` / `.plan` / `.step`). Both are `public/`
+   only and runnable in this checkout; `launcher-contrast-0811/verify.mjs` is the
+   harness to reuse, since both pages are the same kind of translucent surface
+   the opaque-backdrop walk cannot measure.
+6. The console's own screens, other than the wizard, have still had no pass:
+   `nontext-contrast-0811` onward each opened one dialog.
