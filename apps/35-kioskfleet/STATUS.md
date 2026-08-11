@@ -1369,6 +1369,47 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
   **Not deployed.** `more30.com/kiosk/kiosk-launcher` is still a 404 until the
   Railway service is rebuilt.
 
+- **`--line`, measured in one pass** — three contrast steps each split something
+  out of `--line` into its own token and each recorded the same leftover: the
+  token itself is 1.29:1 in dark and ~1.2:1 in light, and it draws the wizard's
+  step rows, the table rules and every card edge. A fourth token guessed at was
+  the wrong move, so this step measured every `--line` consumer that renders in
+  the console, in both modes, against **the surface actually painted behind it**.
+  The consumers split into 1.4.11's two kinds and the split is not close:
+  - **one control.** `.wz-step` is a `<label>` wrapping a checkbox with the whole
+    row clickable, so its border is a control's boundary and 3:1 applies. It
+    measured **1.22:1** light and **1.29:1** dark against the card, and
+    **1.16:1 / 1.37:1** against the sunken fill a *ticked* row takes — i.e. the
+    row a person has already acted on had the weakest edge of the three.
+  - what makes that a mistake rather than a choice is two lines up in the same
+    dialog: **`.wz-track label` is the identical shape** — a label wrapping a
+    radio, whole row clickable — and was already on `--field-border` at 3.30 /
+    3.42. One dialog, two clickable rows, two different borders. So the fix is
+    that one declaration and **no new token**: `--field-border` was already
+    chosen against both surfaces a control's border touches. Now 3.30 / 3.13
+    light, 3.42 / 3.64 dark. `.wz-step.wz-next` still overrides with `--accent`
+    and was re-measured (5.28 / 3.22) so this is not claimed to have fixed it.
+  - **everything else is a separator, and 1.4.11 exempts separators.** Card edge
+    1.14:1 light / 1.42:1 dark; the card's own **fill** against the page is
+    1.07 / 1.10. None of them is the only thing marking its boundary — cards
+    carry `--shadow` and a fill, `.hl-row` and `.wz-step.wz-ticked` carry
+    `--sunken`. Raising `--line` to 3:1 would put a mid-grey rule around every
+    card, stat tile and table row on every screen: a redesign of the console, not
+    an accessibility fix. **Left, deliberately** — but printed as `ℹ️` rows in the
+    run rather than left silent, so the cost is a number for whoever revisits it.
+
+  Verified in `QA/kiosk/line-contrast-0811/` — a real Chromium at both
+  `colorScheme` values, every value from `getComputedStyle`, against
+  `setup-wizard-console-0811/stub-server.mjs` reused rather than copied (it
+  already serves the real `public/` and answers the four setup routes through the
+  real `setupsteps.js` / `setupprogress.js` over the production DDL on
+  `node:sqlite`). 10/12 graded rows pass; the two failures are the **before**
+  rows, which re-inject `--line` onto the same rule in the same DOM and are
+  supposed to fail. Two screenshots. 152 tests, 151 pass — the documented
+  baseline, unchanged, since this step adds no server code.
+
+  **Not deployed.**
+
 ## Next, in order
 
 1. Deploy — and it is not a redeploy of this repo. The Railway service
@@ -1391,10 +1432,16 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
 3. The selection screen on the device (§2★ה/ו): `KioskActivity` calls
    `identify`, offers the approved list, and locks onto what is chosen. Needs an
    Android toolchain, which this checkout does not have.
-4. `--line` — the console-wide contrast question three steps have now recorded
-   and deliberately left: 1.29:1 in dark, ~1.06:1 in light, and it draws the
-   wizard's fully clickable step rows, the table rules and the card edges. The
-   field border and the two button rings were split out of it precisely because
-   they are controls; what is left is a design decision across every screen, so
-   it wants measuring in one pass rather than another token. `css/` only, and
-   runnable in this checkout.
+4. `--line` is **closed** — measured in one pass above. The one control drawn
+   with it (`.wz-step`) is now on `--field-border`; the rest are separators that
+   1.4.11 exempts, and their numbers are recorded rather than left as an open
+   question. What remains under this heading is a *design* choice, not an
+   accessibility one: card edges are 1.14:1 light / 1.42:1 dark, so a card is
+   distinguished from the page mostly by its shadow. That is a look, and it is
+   the kind of thing `more30-priority.md` §6 asks for — worth revisiting with the
+   console's visual identity rather than as a contrast token.
+5. The console's own screens, other than the wizard, have had no contrast pass at
+   all — `nontext-contrast-0811` onward each opened one dialog. `index.html`
+   (the marketing page, `.feature` / `.plan` / `.step`), `install.html` and
+   `kiosk-launcher.html` are unmeasured. `css/` and `public/` only, runnable in
+   this checkout, and the launcher is the one that renders on a tablet in a hall.
