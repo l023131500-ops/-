@@ -242,6 +242,50 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
   **Not deployed.** Until the Railway service is rebuilt, the live console still
   receives the raw row.
 
+- **the launcher's API + its rate limiter (§2★ז)** — every other credential in
+  the service is either 40 characters (`device_token`) or only redeemable from
+  inside an already-authenticated device (`clientcode.js`). The device access
+  code is neither: six characters, typed by an unauthenticated caller over the
+  open internet. 1.07e9 codes is a lot to a person and nothing to a script — at
+  50 req/s the whole space falls inside eight months, and any one owner's
+  handful of devices far sooner. So the limiter landed with the route rather
+  than after it. Added:
+  - `server/src/ratelimit.js` — a sliding-window failure counter with a lockout,
+    ten failures per ten minutes then fifteen minutes refused. **Failures are
+    counted and a success clears the bucket**: the person at the tablet types one
+    code and never accumulates, so the whole budget is spent on the script.
+    **Keyed by caller, not by code** — an attacker varies the code and holds the
+    address, so keying by code would count one guess against each of a billion
+    buckets and limit nothing. The map is pruned and capped: rotating the source
+    address is free on IPv6, and an unbounded map turns the endpoint that
+    protects the code into the one that takes the service down.
+  - the lockout fires **on** the attempt that spends the budget, not on the next
+    one — otherwise every window hands out one free guess, and it arrives as a
+    404 rather than a 429. The failures are cleared with the lockout, or the
+    caller re-locks the moment it lapses and the first lockout is permanent.
+  - `server/src/launcher.js` — an allow-list payload, in the spirit of
+    `devicepayload.js` but built for the weaker credential. No `device_token`
+    (it would make a card taped to a wall equal to the device), no serial, and
+    **no client codes**: a "מזהה לקוח" is a secret the staff hold, so listing
+    them would turn one leaked device code into every client code in that hall.
+    The businesses are offered by name and the chosen one is opened.
+  - `POST /api/launcher/resolve` and `/open` (`server/src/routes/launcher.js`,
+    mounted in `index.js`) — the only unauthenticated router here. POST though
+    they read nothing: the code is the whole credential and a query string lands
+    in access logs, in history, and in the Referer of the next request. Wrong
+    length, no such device and not-approved all give one 404.
+  - `clientId` is resolved against *this device's* approvals rather than
+    trusted, or holding one device's code would open any business in the chain —
+    §2★ה's hole, re-opened one layer up.
+
+  Verified in `QA/kiosk/launcher-api-0811/` — 16 new unit cases (59/60 across
+  the suite; `routing.test.mjs` imports express and still cannot run here), plus
+  16 calls over a real socket against a stub that rewrites only the express glue
+  and imports the real `accesscode.js`/`approvals.js`/`launcher.js`/
+  `ratelimit.js` over the production DDL on `node:sqlite`.
+
+  **Not deployed**, and no page yet — the launcher screen is the next step.
+
 ## Next, in order
 
 1. Deploy: the registry (API + screen), the approvals (API + picker) and
@@ -250,8 +294,7 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
    screen, feeding the same registry.
 3. The selection screen on the device (§2★ה/ו): `KioskActivity` calls
    `identify`, offers the approved list, and locks onto what is chosen.
-4. `/kiosk-launcher/:code` — the access code exists, resolves, and is now
-   readable in the console; what is missing is the page that takes it, shows the
-   approved list, and opens the locked kiosk. It needs a rate limiter: six
-   characters is guessable given unlimited attempts.
+4. `/kiosk-launcher/:code` — the **page**. Its API and its rate limiter now
+   exist; what is missing is the screen that takes the typed code, shows the
+   approved list and opens the locked kiosk.
 5. The "הפעל" wizard with the live checklist (§2★ב).
