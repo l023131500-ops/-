@@ -1,0 +1,36 @@
+gannenet (40): the mount's second half — more30.com/gannenet now answers
+
+The previous step deployed gannenet-more30 and verified it at its own
+vercel.app alias. That address is unreachable to the people the system is
+for: NetFree 418s *.vercel.app. The mount was half a mount — a live
+deployment nothing on the domain pointed at.
+
+portal/vercel.dist.json is the routing source of truth for more30.com, and
+it had no /gannenet entry. Added the same three rewrites every other mount
+carries (bare, trailing-slash, and :path*), staged with stage-portal.ps1 and
+deployed the portal to production (dpl_HPXLxmpuF1nJKd6CedUrW5oB1o9B, aliased
+to more30.com). No rebuild: portal/public was verified byte-identical to
+portal/dist first — 26 files, every one matching — so vite had nothing new
+to produce and only vercel.json changed.
+
+Verified from the domain, not from the deployment:
+- /gannenet -> 200, the real page (title "גננת בקליק — כל התוכן לגן במקום אחד")
+- /gannenet/library -> 200, all 180 lessons with their filters
+- /gannenet/api/catalog -> 200 JSON, so Storage is reached through the proxy
+- /gannenet/ -> 308 to /gannenet, Next's own trailing-slash normalisation,
+  and the Location is a same-origin path — the vercel.app host never leaks
+- all 9 _next asset refs resolve under /gannenet/_next/..., three fetched at
+  200; zero references to gannenet-more30.vercel.app in the served HTML
+
+Then the registry, which the portal home reads live (more30_public_systems,
+no build): #40 said is_deployed=false, live_url=null, public_visible=false —
+true when it was written, false now. Set is_deployed=true,
+live_url=https://more30.com/gannenet, public_visible=true. stage stays 'wip';
+the app is reachable, not finished, and #06/#10/#12 sit public at wip too.
+The card now renders on more30.com with "כניסה למערכת" -> /gannenet and
+reads "● פעילה".
+
+Screenshots: QA/gannenet/mount-portal-0812/.
+
+Open line: SYSTEMS_STATUS.md still has no gannenet entry — the DB registry
+carries the live truth and the doc lags it for this system.

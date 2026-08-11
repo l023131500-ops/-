@@ -99,6 +99,9 @@
     { "source": "/tivuch", "destination": "https://nadlan-pro-more30.vercel.app/tivuch" },
     { "source": "/tivuch/", "destination": "https://nadlan-pro-more30.vercel.app/tivuch/" },
     { "source": "/tivuch/:path*", "destination": "https://nadlan-pro-more30.vercel.app/tivuch/:path*" },
+    { "source": "/gannenet", "destination": "https://gannenet-more30.vercel.app/gannenet" },
+    { "source": "/gannenet/", "destination": "https://gannenet-more30.vercel.app/gannenet/" },
+    { "source": "/gannenet/:path*", "destination": "https://gannenet-more30.vercel.app/gannenet/:path*" },
     { "source": "/kiosk/", "destination": "https://kioskfleet-production.up.railway.app/kiosk/" },
     { "source": "/kiosk/:path*", "destination": "https://kioskfleet-production.up.railway.app/kiosk/:path*" }
   ]
