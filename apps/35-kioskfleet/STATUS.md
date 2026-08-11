@@ -2739,6 +2739,55 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
 
   **Not deployed.**
 
+- **the eighth screen's colour** — the run above rendered ניהול-על for the first
+  time and graded it for painted order and reflow only, saying so in as many
+  words. Graded for contrast now, and the screen that no sweep had ever seen was
+  carrying a real defect: **`מחוברים כעת` was 2.28:1**. `viewAdmin()` writes the
+  number as `style="color:var(--accent-2)"` **inline in its template**, and
+  `--accent-2` is `#22c55e` — a *brand* token, one value for both modes: 7.47:1
+  on the dark card and 2.28:1 on the white one. At 32px/800 it is large text, so
+  the bar is 1.4.3's 3:1 rather than 4.5:1, and it does not clear that either.
+  - it is the `--label-ink` / `--link-ink` pattern exactly — a fixed value beside
+    a surface that inverts — and the same decision the console has already taken
+    once: the wizard's progress fill is `#15803d` and not `--accent-2`, for this
+    reason (`setup-wizard-console-0811`).
+  - `--ok-ink`: `#15803d` light (**5.02:1**, measured rather than quoted),
+    `#22c55e` dark — **the value that is already there**. The defect was
+    light-mode only, so the dark console is byte-identical. `--accent-2` stays
+    the brand's green and stays right as a *surface* (`.dot.on`); it is wrong as
+    text, which is the whole split, the same one `--danger` / `--danger-ink` made.
+  - the light value is `#15803d`, which is `--chip-ok-ink` and the wizard's bar:
+    one green in the console rather than a third.
+  - **an inline `style=` in a JS template is the one place a stylesheet sweep
+    cannot look.** Two of the four `.stat` numbers carry one, and they are also
+    the console's only 32px text — i.e. the only place the large-text threshold
+    is what decides.
+
+  Verified in `QA/kiosk/admin-contrast-0811/` — 82/82 graded rows in a real
+  Chromium at both `colorScheme` values against `warn-ink-0811`'s stub with the
+  `admin` flag, across the screen and **four** dialog views (`userModal` on both
+  branches — the edit branch drops two fields, so they are two views — plus
+  `resetPw` and `delUser`). Ten screenshots. Four control rows, three of which
+  fail: two injected greys, and the "before" re-injected per mode, which fails in
+  light at 2.28 and **passes in dark at 7.47** — recorded that way in the source
+  so the dark row cannot read as a second bug. 151/152 on `node --test` — the
+  documented baseline, unchanged because this step touches no server code.
+
+  Two harness errors are recorded rather than quietly fixed: `label:has-text()`
+  is Playwright's selector engine and a `SyntaxError` inside `querySelector`,
+  where this probe runs; and deriving a screenshot slug as
+  `view.replace(/[^a-z]/gi, '')` from a Hebrew view name yields the empty string,
+  so the first run wrote four files called `dialog`.
+
+  Found and **not** fixed: the `.stat` border is `--line` (1.14:1 light, 1.42:1
+  dark against the page), reported here and not asserted — that is the
+  console-wide `--line` question every contrast step so far has left open on
+  purpose, and four boxes on one screen are not where it gets decided. And
+  `--accent-2` is text in one more place, `.plan li::before` on the **marketing**
+  page, which is a different screen and untouched here.
+
+  **Not deployed.**
+
 ## Next, in order
 
 1. Deploy — and it is not a redeploy of this repo. The Railway service
@@ -2854,6 +2903,17 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
    covers **seven of eight** screens. The eighth is graded for painted order and
    reflow but not for colour. `screens-enrol-settings-0811/verify.mjs` is the
    harness, and `warn-ink-0811/stub-server.mjs admin` now renders the screen.
+   **Item 6 is CLOSED again, and the eighth screen was not clean.**
+   `admin-contrast-0811` graded it and its four dialog views in both modes:
+   `מחוברים כעת` was **2.28:1**, written `style="color:var(--accent-2)"` inline
+   in `viewAdmin()`'s template — a brand token beside an inverting surface, the
+   fourth time that shape has appeared, and the first time it was hiding in a JS
+   template rather than in the stylesheet. Fixed as `--ok-ink`. Nothing else on
+   the screen was under threshold. What is open under this heading is one line
+   and it is deliberate: the `.stat` border is `--line` (1.14:1), reported and
+   not asserted, because `--line` is a console-wide decision and not a
+   four-boxes-on-one-screen decision. Outside the console, `--accent-2` is still
+   text in `.plan li::before` on the marketing page.
 7. **Keyboard**, which item 6 never covered: every run under it graded the
    console *at rest*, and none pressed Tab. `focus-ring-0811` opened this and
    closed its first half — the focus indicator on the fields, which was 1.06:1
