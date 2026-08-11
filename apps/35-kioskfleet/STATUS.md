@@ -2289,6 +2289,61 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
 
   **Not deployed.**
 
+- **a screen change left nobody focused.** 2026-08-11, `screen-focus-0811`. The
+  last thing open under item 7's keyboard heading. `route()` replaces the whole
+  of `#content`, and the control that asked for the change is often *inside* it
+  — `➕ הוספת מכשיר` on the devices screen, `🚀 אשף התקנה` on the guide screen.
+  Removing the node that holds focus drops focus to `<body>`: after the screen
+  change nothing is focused, so a screen reader announces nothing and there is
+  no position to press Shift+Tab back from. `public/js/app.js` gains
+  `focusNewScreen()` and `route(view, fromUser)`:
+  - **focus goes to the new screen's `<h1>`, not to its first control.** The
+    first control is `רענון` on one screen and a submit on another, and landing
+    on a control puts it one Space away — the same rule `modal()` follows. A
+    heading also names the screen, which is what a route change otherwise
+    leaves unannounced.
+  - **`fromUser` is what tells a screen change from the boot render.** At login
+    nothing holds focus yet, and dragging it to a heading there would push the
+    page past the login pill and the sidebar before anyone pressed a key. The
+    five in-page routers (`#add`, the two `#go` buttons, the guide's per-device
+    button, the sidebar) pass it; `route('devices')` at boot does not.
+  - it is a **MutationObserver**, not a call in each view function: three of the
+    seven `await` before they mount (`viewEnroll` loads the link library first),
+    so `route()` cannot find the heading synchronously — and a per-view call is
+    seven places to forget on the eighth screen.
+  - **`childList` without `subtree`.** Every in-screen redraw — `renderDevices()`,
+    the links table, the codes box — replaces the children of a box *inside*
+    `#content`, and pulling focus back up to the heading on every list refresh
+    would fight the person using the screen. Only a whole-screen mount is a
+    direct-child change. That is the row `subtree: true` fails.
+  - `.topbar h1:focus-visible` and not `:focus`: a heading is not a control, so
+    a mouse user gets no ring and a keyboard user does — the browser matches
+    `:focus-visible` on a programmatic focus by how the last input arrived.
+
+  Verified in `QA/kiosk/screen-focus-0811/` — **32/32, exit 0**, both colour
+  schemes, against `warn-ink-0811`'s stub. Six screens activated by `Enter` on
+  a nav button all land on their own `<h1>`; the ring is 4.93:1 light / 7.83:1
+  dark on the surface actually painted behind it; a mouse click focuses the
+  heading with `outline: none`; and `renderDevices()` leaves focus on `רענון`.
+
+  **The control is the previous behaviour in the same live page**: `route(view)`
+  without the flag is byte-for-byte the shipped path. Focus falls to `<body>` in
+  both modes.
+
+  A correction the run forced, and the reason the control row is worth its line:
+  the harness first asserted that the next Tab restarts at the top of the
+  document, and failed. **It does not, in Chromium** — removing the focused node
+  leaves the *sequential focus navigation starting point* where that node was,
+  so a forward Tab continues into the new screen anyway. That row is now a
+  recorded measurement rather than a claim, and what is fixed here is the cost
+  that was really there: `activeElement` is `<body>`.
+
+  Re-run against the change: `nav-keyboard-0811` **50/50**, `dialog-focus-0811`
+  **42/42**, `dialog-inert-0811` **28/28** — all unchanged. 152 tests / 151 pass,
+  the documented baseline (no server code in this step).
+
+  **Not deployed.**
+
 ## Next, in order
 
 1. Deploy — and it is not a redeploy of this repo. The Railway service
@@ -2425,10 +2480,18 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
      accessibility tree and out of reach of `focus()`, not only of Tab. What
      remains here is a dependency, not a defect — `inert` has no fallback, so a
      browser without it keeps the old behaviour silently.
-   - **focus order (WCAG 2.4.3)** is measured on one screen and no further. The
-     console rebuilds `#content` with `innerHTML` on every route change, so
-     where focus lands **after a redraw** is still unmeasured. That is the next
-     thing under this heading.
+   - **the screen redraw is now closed.** `screen-focus-0811` measured what was
+     left of 2.4.3: `route()` replaces the whole of `#content`, and the control
+     that asked for the change is usually inside it, so after a screen change
+     **nobody was focused** — `activeElement` was `<body>`, nothing announced,
+     nothing to Shift+Tab back from. Focus now moves to the new screen's
+     `<h1>`; graded on six screens in both modes, with an in-screen redraw
+     asserted *not* to steal it. What that run leaves for the next one is a
+     browser fact worth carrying: removing the focused node does **not** reset
+     the sequential focus navigation starting point in Chromium, so a forward
+     Tab keeps working and only the focus itself is lost — a harness that
+     grades this by counting Tab stops measures nothing.
    - the console's **buttons, links and checkboxes inside `#content`** declare
-     no focus style and fall back to the UA ring. Read, not measured — the run
-     above covered the sidebar only.
+     no focus style and fall back to the UA ring. Read, not measured — the runs
+     above covered the sidebar and the screen heading only. That is the next
+     thing under this heading.
