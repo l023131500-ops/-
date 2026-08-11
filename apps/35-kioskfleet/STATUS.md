@@ -2932,6 +2932,32 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
    this heading is the same deliberate line as above and nothing new: the dashed
    `--line` between list items (1.22:1) is reported, not asserted. 151/152 on
    `node --test`, the documented baseline, unchanged — this step touches CSS only.
+   **The blind spot that sentence names is now closed, and it was the only one
+   left in this item.** `plan-ink-0811` fixed the pseudo it was looking at; it
+   did not answer how many others there are. `pseudo-sweep-0811` answers it by
+   **enumeration rather than by grepping the stylesheet** — `ENUM` walks every
+   element on every page and asks the browser for
+   `getComputedStyle(el, '::before').content`, because a grep finds rules and not
+   which rules paint, and cannot see a rule that lives in `install.html`'s own
+   `<style>` rather than in `css/style.css`. One of the three does. The set the
+   browser paints is exactly three: the ✓ that was just fixed, `.step
+   .n::before` on the marketing page and `ol.steps > li::before` on the install
+   page — the last two both `#fff` on `--accent`, **5.28:1** in both modes, and
+   both graded at 4.5:1 rather than 3:1 because 800 at 18px is under the 18.66px
+   where bold becomes large text. 42/42 measured rows, no defect. The console
+   paints **no generated content at all**, across seven owner screens and
+   ניהול-על, and that zero is recorded with a working-counter assertion beside
+   it because a sweep that reports nothing and a sweep whose selector missed
+   look identical.
+   What the run had to change is the *harness*, and the correction is worth
+   carrying: `plan-ink-0811`'s `PAINTED` walks the **originating element** upward
+   for the background, on the reasoning that a `::before` has no box of its own
+   — true of the ✓, false of both counter badges, which set
+   `background: var(--accent)` on the pseudo itself. Reused unchanged it grades
+   white on `--card` and reports **1.00:1** in light mode, a defect that is not
+   there; and in dark it passes at 17.03:1, so the same error is invisible in one
+   mode and loud in the other. The uncorrected read is kept as a control row in
+   both modes rather than quietly replaced. Nothing is open under this item.
 7. **Keyboard**, which item 6 never covered: every run under it graded the
    console *at rest*, and none pressed Tab. `focus-ring-0811` opened this and
    closed its first half — the focus indicator on the fields, which was 1.06:1
