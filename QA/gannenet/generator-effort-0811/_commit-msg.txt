@@ -1,0 +1,41 @@
+gannenet (40): the generation that would have been killed the moment it deployed
+
+generator-dead-model-0811 revived the מחולל and left one line open: a generation
+takes ~72 s, the route is a plain non-streaming handler, and that exceeds the
+function limit as soon as /gannenet is deployed. It also recorded that both
+levers -- output_config.effort and streaming -- need an @anthropic-ai/sdk newer
+than the vendored 0.27.3, "which has neither in its types", and filed the
+upgrade to NEEDS_USER as a decision to approve.
+
+That was true of the types and only the types. The SDK serialises the params
+object as-is, so an untyped field still goes out on the wire. Tested rather than
+argued: a deliberately invalid output_config.effort comes back 400 -- "Input
+should be 'low', 'medium', 'high', 'xhigh' or 'max'" -- so the API received it
+and validated it. A valid one comes back 200. No install, no upgrade, no
+decision to wait on; a cast to MessageCreateParamsNonStreaming is the whole cost
+of using a GA field on a September-2024 SDK.
+
+The route now carries output_config: {effort: "low"} -- writing one worksheet
+from a brief that already names the topic, the age group and the output schema
+is not an intelligence-sensitive task -- and export const maxDuration = 60,
+since there is nothing to stream to the browser until the JSON parses. Five runs
+through the route: 37.1 / 59.1 / 32.7 / 33.1 / 57.3 s. Every one returns.
+
+The spread is the finding, not the mean. Time tracks the size of the answer
+almost linearly: 1349 chars -> 32.7 s, 1405 -> 33.1 s, 2209 -> 57.3 s. What this
+route pays for is writing ~2 KB of menuqad Hebrew, which tokenises expensively;
+the thinking pass is a minor term. That was measured, not assumed -- adding
+thinking: {type:"disabled"} on top ran the same three topics in 41.2 / 37.3 /
+32.8 s, inside the noise. So thinking stays on rather than buy a few seconds at
+the documented risk of internal XML tags leaking into the answer.
+
+Left open, and it is a product question rather than a performance one: a long
+answer still lands at ~57 s against the 60 s ceiling, and the remaining lever is
+the size of the page. The system prompt bounds neither contentElements /
+designHints (the model picked 6-7) nor instructions (376-572 chars). Capping
+those is a decision about what a דף משימה should contain, so it replaces the
+now-obsolete SDK-upgrade item in NEEDS_USER.md.
+
+Verified against next dev on 3042 with the real key from .env.local. Evidence,
+including the probe and the browser screenshot, in
+QA/gannenet/generator-effort-0811/.

@@ -98,9 +98,30 @@ PDF bodies from `supabase.co`; none of that applies to the production server.
   page `.map()`s both, and a string would have passed the `?.length` guard and
   crashed the render. The page checks `r.ok`/`data.error` and moved
   `setLoading(false)` into `finally`. Evidence in
-  `QA/gannenet/generator-dead-model-0811/`. **Open:** a generation takes ~72 s,
-  which will exceed the function limit once deployed; `effort` and streaming
-  both need an SDK newer than the vendored 0.27.3.
+  `QA/gannenet/generator-dead-model-0811/`.
+
+- **`app/api/ai-generate/route.ts`** — the same generation took ~72 s, longer
+  than any serverless function limit it would be deployed behind. The previous
+  entry recorded that `effort` and streaming "both need an SDK newer than the
+  vendored 0.27.3"; that is true of the *types* only — the SDK serialises the
+  params object as-is, so an untyped field still goes on the wire. Proven rather
+  than assumed: a deliberately invalid `output_config.effort` comes back **400
+  `Input should be 'low', 'medium', 'high', 'xhigh' or 'max'`**, so the API
+  received it. The request is now built as a plain object carrying
+  `output_config: {effort: "low"}` and cast to
+  `MessageCreateParamsNonStreaming` at the call, plus `export const maxDuration
+  = 60`. Five runs: 37.1 / 59.1 / 32.7 / 33.1 / 57.3 s — every one returns, none
+  is cut off. The spread is the finding: **time tracks the size of the answer
+  almost linearly** (1349 ch → 32.7 s, 2209 ch → 57.3 s). What the route pays
+  for is writing ~2 KB of menuqad Hebrew, not reasoning — adding
+  `thinking: {type:"disabled"}` on top ran the same three topics in 41.2 / 37.3
+  / 32.8 s, inside the noise, so thinking stays on rather than take the
+  documented XML-tag-leak risk for nothing. Evidence in
+  `QA/gannenet/generator-effort-0811/`. **Open:** a long answer still lands at
+  ~57 s against the 60 s ceiling. The remaining lever is the size of the page —
+  the system prompt bounds neither `contentElements`/`designHints` (the model
+  picked 6–7) nor `instructions` (376–572 chars) — and that is a product
+  decision, so it is in `NEEDS_USER.md`.
 
 No other file was modified. The mount itself needs no code edit: `next.config.js`
 already reads `APP_BASE_PATH`, and `lib/base.ts` exports `withBase()` for the
