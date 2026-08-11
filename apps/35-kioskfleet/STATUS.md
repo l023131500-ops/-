@@ -1896,6 +1896,66 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
 
   **Not deployed** (nothing to deploy — no source changed).
 
+- **2026-08-11 — the link colour was a brand token, and brand tokens do not
+  invert.** `screens-enrol-settings-0811`. The last two screens item 6 names —
+  **הוספת מכשיר** and **הגדרות** — in both colour schemes.
+
+  **Both screens are clean.** No ratio on either is under threshold in either
+  mode; the narrowest is `.alert-ok` at 4.57:1, the `--chip-ok-ink` pair
+  `chip-ink-0811` recorded at exactly that number. That includes two things no
+  earlier run had measured: the **placeholders** (5.34:1 light / 7.52:1 dark),
+  which in three of the four fields are the only statement of the format the
+  field wants, and the open-enrollment-codes table.
+
+  What failed is a **global declaration** these screens merely exposed:
+  `a { color: var(--accent) }`, and `--accent` is a brand colour that does
+  **not** invert — **3.22:1** on the dark card. The `--label-ink` pattern
+  exactly. Three such links exist in the console and all three are measured:
+
+  | link | surface | dark, before | dark, after |
+  |---|---|---|---|
+  | the guide link, מסך הוראות הפעלה | `--card` | **3.22:1** ❌ | **7.12:1** |
+  | `← חזרה לאתר`, the login card | `--card` | 3.22:1 ❌ | **7.12:1** |
+  | **the install link**, inside `.alert-ok` here | `--chip-ok-bg` | 4.81:1 ✅ | **6.04:1** |
+
+  Light mode does not move (5.28:1 before and after) — the defect was dark-only.
+
+  **Two tokens, not one, and the third row is why.** `.alert-ok` is one of the
+  light chips: its fill stays light on a dark card, so the one link that was
+  already fine is the one sitting on a surface that does not invert — and a
+  lightened ink on it is **2.18:1**. A single inverting token would have fixed
+  two links and broken the third, which is also the one that matters most: the
+  install link is what gets sent to whoever is holding the tablet.
+  - `--link-ink` inverts. `#2a61e8` light (identical to `--accent`), `#7ea6ff`
+    dark — the same value already chosen for `--accent-control`, deliberately,
+    so the dark console keeps one blue.
+  - `--chip-link-ink` does **not**, like the rest of the chip family. `#1f4fd8`
+    rather than `--chip-accent-ink` (`#2a61e8`) for a measured reason: `.alert`
+    is two families, and on `.alert-error`'s pink that value is **4.33:1** — a
+    link added to an error alert would have failed silently. The chosen value is
+    6.03:1 on `#dcfce7` and 5.43:1 on `#fee2e2`.
+
+  `index.html` is unaffected — every `<a>` there is a `.btn`, a `.nav-links a`,
+  the `.skip` link or `color:inherit`. Checked in the file rather than assumed.
+
+  A harness correction the run forced: the field border on הגדרות was first
+  measured after `page.fill`, which leaves the last field **focused**, and
+  `.field input:focus` swaps the border to `--accent`. That number was the focus
+  ring recorded as the resting border. Both are rows now — 3.30/3.42 at rest,
+  5.28/3.22 focused.
+
+  77/80, exit 0; the three failures are the two injected control rows and the
+  dark "before" row, i.e. the defect, measured here rather than quoted. Six
+  screenshots. 152 tests / 151 pass — the documented baseline, unchanged (no
+  server code in this step).
+
+  Found and **not** fixed, so it is not silently claimed: `a { text-decoration:
+  none }` means those three links are distinguished from surrounding text by
+  **colour alone** — WCAG 1.4.1, which no contrast ratio can answer. `:visited`
+  was not measured either.
+
+  **Not deployed.**
+
 ## Next, in order
 
 1. Deploy — and it is not a redeploy of this repo. The Railway service
@@ -1980,3 +2040,14 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
    `wizard-controls-0811/verify.mjs` and not the approvals one: it is that
    harness plus the off-canvas guard, and the enrol screen is the other one
    taller than the window.
+   **Item 6 is now CLOSED.** `screens-enrol-settings-0811` graded the last two
+   screens in both modes; neither had a ratio under threshold, and what the pass
+   turned up was a *global* declaration they exposed — `a { color:
+   var(--accent) }` at 3.22:1 on the dark card, fixed as `--link-ink` /
+   `--chip-link-ink`. Every console screen has now been graded. Two things are
+   recorded as open rather than closed, and neither is a contrast question:
+   links are distinguished by **colour alone** (WCAG 1.4.1), and `:visited` has
+   not been measured anywhere. The screen-by-screen sweep found four real
+   defects across seven screens (`.serial`, the UA checkbox hue, `.pill.off`,
+   and this one), all of them the same shape — a fixed value beside a surface
+   that moves.
