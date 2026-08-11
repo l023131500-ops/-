@@ -642,6 +642,31 @@ PDF bodies from `supabase.co`; none of that applies to the production server.
   and what sits behind it is the user's decision — `NEEDS_USER.md` — and neither
   row exists in `core.plans` yet.
 
+- **`app/newsletter/page.tsx`** — the open line above is a product decision and is
+  in `NEEDS_USER.md`, so this took the surface that step's own evidence named and
+  no step had read: `/newsletter`, the page behind two of the claims it deleted.
+  Two defects. **The letter could be written out of nothing:** `build()` ran
+  unconditionally, and with the topics box empty `list.map().join("\n")` is the
+  empty string — so the page produced a complete 177-character letter home to
+  parents reading "בשבוע המבורך שחלף עסקנו יחד בנושאים חשובים ומרתקים:" followed
+  by no topic, signed "צוות הגן" (the old expression evaluated in the page to
+  confirm, rather than reasoned about). It now shows an inline `role="alert"` and
+  renders nothing. **And the subtitle said "מוכן לשליחה"** over a `<div>` with
+  `white-space:pre-wrap` — on the phone a gannenet writes this on, getting the
+  text out is a long-press selection across a multi-line block. There is now an
+  "העתקת הטקסט" button, and the subtitle says what the page does. No send path
+  was added: nothing here sends, and the pricing step removed that claim rather
+  than acquire it. All three clipboard paths verified in the real page against
+  the production build: the API receives the exact rendered letter (222 chars, 3
+  bullets, `===` the rendered `innerText`); with `navigator.clipboard` forced
+  absent — the plain-http LAN case — `execCommand("copy")` runs and returns true;
+  a rejected write says so and leaves the letter on screen to select by hand.
+  `tsc --noEmit` 0, `next build` ✓ 65 pages, 0 console errors. Evidence in
+  `QA/gannenet/newsletter-copy-0811/`. One note for the next run:
+  `navigator.clipboard.readText()` **hangs** the page in headless Chromium
+  waiting on a permission prompt that never appears — capture the argument to
+  `writeText` instead. **Open:** nothing from this change.
+
 No other file was modified. The mount itself needs no code edit: `next.config.js`
 already reads `APP_BASE_PATH`, and `lib/base.ts` exports `withBase()` for the
 fetch calls, hrefs and service worker that Next's `basePath` does not prefix.
