@@ -101,6 +101,14 @@ createServer(async (req, res) => {
     if (setup) return json(res, setupPayload(Number(setup[1])));
     const approvals = p.match(/^\/api\/devices\/(\d+)\/clients$/);
     if (approvals) return json(res, { clients: CLIENTS.map((c) => ({ ...c, approved: c.id === 21 })) });
+    // Added by `screens-approvals-code-0811`, additively and for the same reason
+    // the two routes above exist: `linkApprovals()` returns on the first `api()`
+    // rejection, so without this the 📚 dialog never opens and its rows cannot be
+    // graded. Mirrors the clients shape (`{ links: [...approved] }`). `LINKS` is
+    // left alone rather than grown a second row — four other harnesses grade the
+    // links *screen* off it by `nth-child`.
+    const linkApprovals = p.match(/^\/api\/devices\/(\d+)\/links$/);
+    if (linkApprovals) return json(res, { links: LINKS.map((l) => ({ ...l, approved: l.id === 11 })) });
     return json(res, { error: 'not stubbed: ' + p }, 404);
   }
 

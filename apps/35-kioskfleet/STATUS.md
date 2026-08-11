@@ -1786,6 +1786,67 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
 
   **Not deployed.**
 
+- **2026-08-11 — the box you tick was the browser's blue, not ours.**
+  `screens-approvals-code-0811`. The last two screens of item 6's
+  screen-by-screen pass: the approvals picker (both halves — 🆔 מזהי לקוח and
+  📚 קישורים מאושרים) and the 🔑 קוד גישה dialog including its inline
+  confirmation. Both colour schemes.
+
+  **No ratio was under threshold.** 54 text and button rows across the three
+  dialogs pass in both modes; the narrowest is the access code itself at
+  4.76:1 (threshold 3:1 at 30px/700), then `--warn-ink` at 5.02:1 and the
+  client's code at 5.11:1 on its `--bg` fill.
+
+  What the pass found is the **control**. The picker is entirely checkboxes —
+  everything graded above is text *describing* them — and a checkbox has no
+  `border-color` and no `background-color` to read, because the UA draws it.
+  So it had never been measured, here or in any earlier run. Measured by pixel
+  sampling, and the answer is not a failing ratio but the **hue**: the console
+  declared no `accent-color`, so the ticked box — the only control in the
+  console that carries state — was painted `#0075ff`, Chromium's default blue,
+  a colour that appears nowhere else in the system.
+
+  Fix is a third token in the shape of `--danger-text` / `--label-ink`:
+  `--accent-control`, with `accent-color: var(--accent-control)` on `:root`.
+  Not `--accent` itself, for a measured reason — Chromium *lightens its own*
+  blue in dark scheme (`#0075ff` → `#99c8ff`) and a fixed `accent-color` does
+  not invert, so `#2a61e8` alone would have taken the control boundary from
+  9.78:1 down to 3.23:1. Passing, but a regression. `#2a61e8` light (identical
+  to `--accent`, and the light value does not move), `#7ea6ff` dark.
+
+  | mode | ticked box | before | after |
+  |---|---|---|---|
+  | light | vs `#ffffff` | `#0075ff` 4.21:1 | `#2a61e8` **5.28:1** |
+  | dark | vs `--card` | `#99c8ff` 9.78:1 | `#7ea6ff` **7.12:1** |
+
+  The unticked box is a UA grey in both modes and does not move (4.54:1 /
+  4.61:1). Both rows clear 1.4.11's 3:1 before *and* after — the "before" row
+  is recorded rather than required to fail, because what it shows is precisely
+  what a ratio cannot say.
+
+  Harness: `screens-links-clients-0811/verify.mjs` reused, plus `sampleBox()`
+  — every pixel Chromium painted inside the element's box, caller takes the
+  extreme. `launcher-contrast-0811` warned that picking "whichever pixel looks
+  like the border" is a way to get the answer you wanted; the extreme is a
+  one-sided test, an upper bound on the boundary, so it can miss a failure but
+  cannot invent one. Selectors are scoped to `.modal-bg` (the device grid
+  stays mounted under an open dialog, so an unscoped `.card p` grades a device
+  card), and that run's hierarchy check is carried forward as a check rather
+  than a note — three picker rows verified distinct from the name above them.
+
+  `/api/devices/:id/links` added to the shared stub, additively:
+  `linkApprovals()` returns on the first `api()` rejection, so without it the
+  📚 dialog never opens. `LINKS` itself was not grown — four other harnesses
+  grade the links *screen* off it by `nth-child` — and
+  `screens-links-clients-0811` was re-run after the change: 46/48, the
+  documented baseline, unchanged.
+
+  58/60 rows, exit 0; the two failures are the per-mode injected control rows.
+  Eight screenshots. 152 tests / 151 pass — the documented baseline, unchanged
+  (no server code in this step; `routing.test.mjs` needs express).
+
+  **Not deployed.**
+
 ## Next, in order
 
 1. Deploy — and it is not a redeploy of this repo. The Railway service
@@ -1854,3 +1915,12 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
    under threshold — both colours passed — but a secondary text that had become
    indistinguishable from the primary above it, so that comparison is worth
    carrying into the remaining screens.
+   **The approvals picker and the access-code dialog are now done too** —
+   `screens-approvals-code-0811`, 54 text rows, no ratio under threshold. What
+   it turned up is a *different* kind of gap and worth carrying forward: the
+   checkbox is drawn by the UA, so `getComputedStyle` cannot see it and no run
+   before this one had measured a control the browser paints. Pixel sampling
+   (`sampleBox()`) is now in the harness for that. What is left under this
+   heading is the **enrol screen** and the **settings screen**, which no step
+   has named yet — and, given the above, the wizard's own checkbox and radio
+   are now on `--accent-control` without having been re-measured there.
