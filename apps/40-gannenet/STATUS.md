@@ -84,6 +84,24 @@ PDF bodies from `supabase.co`; none of that applies to the production server.
   listed against 149 real ones before. Evidence in
   `QA/gannenet/calendar-month-dates-0811/`.
 
+- **`app/api/ai-generate/route.ts` + `app/generator/page.tsx`** — the מחולל
+  asked for `claude-3-5-sonnet-latest`, which is retired, so every generation
+  came back `404 not_found_error`; the feature had never produced a page. It
+  read as silent rather than broken because the page did `setRes(await
+  r.json())` — an error body is valid JSON, so the result card rendered with an
+  undefined title and no reason on screen. Model → `claude-opus-5` with
+  `max_tokens` 1500 → 16000 (thinking is on by default there and `max_tokens`
+  bounds thinking + text together). The route now passes the upstream status
+  through and maps 429/401/5xx to an actionable sentence, strips a ```` ```json ````
+  fence before parsing (the old bare `JSON.parse` dumped the raw reply into
+  `instructions`), and coerces `contentElements`/`designHints` to arrays — the
+  page `.map()`s both, and a string would have passed the `?.length` guard and
+  crashed the render. The page checks `r.ok`/`data.error` and moved
+  `setLoading(false)` into `finally`. Evidence in
+  `QA/gannenet/generator-dead-model-0811/`. **Open:** a generation takes ~72 s,
+  which will exceed the function limit once deployed; `effort` and streaming
+  both need an SDK newer than the vendored 0.27.3.
+
 No other file was modified. The mount itself needs no code edit: `next.config.js`
 already reads `APP_BASE_PATH`, and `lib/base.ts` exports `withBase()` for the
 fetch calls, hrefs and service worker that Next's `basePath` does not prefix.
