@@ -1,0 +1,58 @@
+kiosk (35): the links were told apart from the text by colour and nothing else
+
+`screens-enrol-settings-0811` closed item 6 and wrote down one thing as open
+rather than closed, because no contrast ratio can answer it: `a {
+text-decoration: none }` meant the console's three in-text links differed from
+the text around them in hue alone. Measured in this run rather than assumed —
+the paragraph holding the guide link is `--muted` at 16px/400 and the link was
+16px/400 too, so the underline was the whole of the missing difference. Anyone
+who does not separate `--link-ink` from the ink beside it does not see that
+there is a link there.
+
+One rule in `css/style.css`:
+
+  p a:not(.btn), .alert a:not(.btn), li a:not(.btn) {
+    text-decoration: underline; text-underline-offset: .2em;
+  }
+
+- **the global default stays `none`.** Flipping it is the obvious move and is
+  wrong here: it draws a line under all seven sidebar items, under every `.btn`
+  in the console and under five `.btn`s on the marketing page — a worse screen
+  than the one this fixes. The three in-text links that exist all sit inside a
+  `p` or inside `.alert`, and all three are measured.
+- `:not(.btn)` is kept even so, because a button inside running text is a shape
+  that exists: `.plan a.btn` sits after `<ul><li>` on the marketing page. That
+  row is graded too.
+- navigation is not underlined, and that is the same standard rather than an
+  exemption taken quietly: 1.4.1 is about telling a link apart from the text
+  around it, and `.nav-links` / `.side nav` / `.skip` are not in text.
+- `text-underline-offset` for the descenders of the Hebrew face, and for the
+  install link, which is `word-break: break-all` and wraps mid-URL.
+
+Verified in `QA/kiosk/link-underline-0811/` — the graded property is
+`text-decoration-line`, which no earlier run measured, in both colour schemes
+against `warn-ink-0811`'s stub (unchanged: it serves the real `public/` and
+already answers the two `/api/enrollments` routes that paint `.alert-ok`). Both
+halves are asserted — a line where one belongs and no line where one does not —
+because an underline on every `<a>` is its own defect. 22/24, exit 0; the two
+failures are the per-mode injected control rows, i.e. the replaced declaration
+re-measured here rather than quoted. Eight screenshots. 152 tests / 151 pass,
+the documented baseline, unchanged: no server code in this step.
+
+The decoration colour follows `color` in all eleven rows, so the previous step's
+two tokens survive into the line: `--link-ink` inverts (rgb(42,97,232) /
+rgb(126,166,255)) and `--chip-link-ink` does not (rgb(31,79,216) in both), which
+is why the install link's underline is the same blue in dark as in light.
+
+Found and not fixed: `:visited` is still unmeasured anywhere.
+`getComputedStyle` lies about it on purpose, so a real number needs pixel
+sampling on a genuinely visited link. What the file says is that `a { color:
+var(--link-ink) }` is an author rule and overrides the UA's `:visited`, so the
+browser's purple never reaches the screen — a reading, not a measurement, and it
+stays open as one.
+
+NEEDS_USER §0צ recounted by the convention `415c297` set — measured, not
+incremented: `grep -c "Not deployed"` over `STATUS.md` returns **42**, up from
+34 at `e3f2ab2`. All three occurrences updated. One of the 42 changes no source
+at all (`wizard-controls-0811` is a re-measurement), so the sentence asking for
+the decision says forty-one — that is what the deploy would release.

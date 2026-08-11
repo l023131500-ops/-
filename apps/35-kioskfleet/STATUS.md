@@ -1956,6 +1956,60 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
 
   **Not deployed.**
 
+- **2026-08-11 — the links were distinguished by colour alone.**
+  `link-underline-0811`. The one thing the run above wrote down as open rather
+  than closed, and the only defect on these screens that no ratio can answer:
+  `a { text-decoration: none }` meant the three in-text links differed from the
+  text around them in **colour and nothing else**. The paragraph holding the
+  guide link is `--muted` at 16px/400 and the link was 16px/400 too — measured
+  in this run, so the claim is not "no underline" but "no difference except
+  hue". Anyone who does not separate `--link-ink` from the ink beside it does
+  not see that there is a link there at all.
+
+  One rule in `css/style.css`:
+  `p a:not(.btn), .alert a:not(.btn), li a:not(.btn) { text-decoration:
+  underline; text-underline-offset: .2em }`.
+  - **the global default stays `none`**, deliberately. Flipping it is the
+    obvious move and it is wrong here: it draws a line under all seven sidebar
+    items, under every `.btn` in the console and under five `.btn`s on the
+    marketing page — a worse screen than the one this fixes. The three in-text
+    links that exist all sit inside a `p` or inside `.alert`, and all three are
+    measured rather than assumed.
+  - `:not(.btn)` is kept even so, because a button *inside* running text is a
+    shape that exists: `.plan a.btn` sits after `<ul><li>` on the marketing
+    page. That row is graded.
+  - navigation is **not** underlined and that is the same standard, not an
+    exemption taken quietly: 1.4.1 is about telling a link apart from the text
+    around it, and `.nav-links` / `.side nav` / `.skip` are not in text.
+  - `text-underline-offset` rather than the default, for the descenders of the
+    Hebrew face and for the install link, which is `word-break: break-all` and
+    wraps mid-URL.
+
+  Verified in `QA/kiosk/link-underline-0811/` — the property graded is
+  `text-decoration-line`, which no earlier run measured, in both colour schemes
+  against `warn-ink-0811`'s stub (unchanged: it serves the real `public/` and
+  already answers the two `/api/enrollments` routes that paint `.alert-ok`).
+  **Both halves are asserted** — a line where one belongs and no line where one
+  does not — because an underline on every `<a>` is its own defect. 22/24, exit
+  0; the two failures are the per-mode injected control rows, i.e. the replaced
+  declaration re-measured here rather than quoted. Eight screenshots. 152 tests
+  / 151 pass — the documented baseline, unchanged (no server code in this step).
+
+  The decoration colour follows `color` in all eleven rows, so the previous
+  step's two tokens survive into the line itself: `--link-ink` inverts
+  (`rgb(42,97,232)` / `rgb(126,166,255)`) and `--chip-link-ink` does not
+  (`rgb(31,79,216)` in both modes), which is why the install link's underline is
+  the same blue in dark as in light.
+
+  Found and **not** fixed: `:visited` is still unmeasured anywhere.
+  `getComputedStyle` lies about it on purpose, so a real number needs pixel
+  sampling on a genuinely visited link. What can be said from the file is that
+  `a { color: var(--link-ink) }` is an author rule and overrides the UA's
+  `:visited`, so the browser's purple never reaches the screen — a reading, not
+  a measurement, and it stays open as one.
+
+  **Not deployed.**
+
 ## Next, in order
 
 1. Deploy — and it is not a redeploy of this repo. The Railway service
@@ -2047,7 +2101,13 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
    `--chip-link-ink`. Every console screen has now been graded. Two things are
    recorded as open rather than closed, and neither is a contrast question:
    links are distinguished by **colour alone** (WCAG 1.4.1), and `:visited` has
-   not been measured anywhere. The screen-by-screen sweep found four real
+   not been measured anywhere. **The first of those is now closed** —
+   `link-underline-0811` underlined the three in-text links (and asserted the
+   line does *not* reach navigation or buttons, which flipping the global
+   default would have done). `:visited` remains the only open item here:
+   `getComputedStyle` lies about it by design, so it needs pixel sampling on a
+   genuinely visited link rather than another computed read. The
+   screen-by-screen sweep found four real
    defects across seven screens (`.serial`, the UA checkbox hue, `.pill.off`,
    and this one), all of them the same shape — a fixed value beside a surface
    that moves.
