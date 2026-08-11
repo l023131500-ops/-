@@ -2625,6 +2625,60 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
 
   **Not deployed.**
 
+- **the one URL field that was never told which way to read** — the sweep above
+  ended on a limit, not a defect: a `Range` cannot enter an `<input>`, so the
+  console's URL fields were "right by declaration (`dir="ltr"`) and not by
+  measurement". That declaration has been the **fix** three times now
+  (`06:00–04:00`, `4:40:00 ,11.8.2026`, and the two before them), so trusting it
+  on the one class of element no probe could look inside was the weakest thing
+  left. Measured, and one field does not have it: `promptUrl()` — the
+  **🔗 החלף אתר** dialog on every device card — declares `<input id="u" …/>`
+  with **no `dir` at all** and so inherits the page's `rtl`. With
+  `https://hadar.example.com/event/12/` in it the **last** character painted
+  7px *left* of the first: the trailing `/` of a pasted URL sat at the wrong end
+  of the field. `#h` in `editDevice()` holds the **same value** — `d.homeUrl` —
+  and has had `dir="ltr"` since `display-url-console-0811`. One attribute.
+  - the field feeds `set_url` to a locked tablet, so it is read by someone
+    checking an address before pushing it to a device in a hall — which is
+    exactly the state in which a wrong address looks right.
+  - **the measurement is the selection highlight.** A `Range` cannot span an
+    input's value, so a character's painted position is unreachable from the
+    DOM; the browser paints the *selection* at that position, so
+    `setSelectionRange(i, i+1)` under a `::selection` colour nothing else uses
+    turns one character into a band of known pixels and a screenshot says where
+    it landed. The marker sets `background` **and** `color` to one value, so the
+    band is the character's box rather than the inked part of a glyph, and the
+    input has to be focused or Chromium paints the selection grey — a colour the
+    console already uses.
+  - graded as **first character left of last**, not as a token sweep. Every
+    value here is one logical left-to-right string, so the single comparison
+    catches a run that swaps, a trailing neutral that jumps to the far end, and a
+    value painted wholly backwards — and it is the only comparison that survives
+    not knowing where the browser broke the string, which inside an input cannot
+    be inspected. The URLs end in `/` on purpose: a trailing neutral takes the
+    paragraph's direction (N2), which is the shape that moves a character to the
+    opposite end.
+
+  Verified in `QA/kiosk/input-rtl-0811/` — 20/20 in a real Chromium in both
+  modes across nine fields in three dialogs and three screens, with **two**
+  negative rows rebuilt in the same live page: the defect's own "before", and a
+  field that ships correct with its `dir` removed. Both come back at −7.0, so
+  eight rows that pass by describing a correct declaration are not
+  indistinguishable from a probe that measured nothing. Four screenshots.
+  151/152 on `node --test` — the documented baseline, unchanged because this
+  step touches no server code.
+
+  Found and **not** fixed: only the first and last character are measured, so a
+  value whose *middle* reorders while its ends do not would pass — nothing in the
+  console has that shape today. `#login-user` has no `dir` either and could not
+  be focused here (the login card is behind `if (TOKEN) boot()`); a username is a
+  single L run with no trailing neutral, so the shape that bit `#u` does not
+  apply, but it is unmeasured. And `promptUrl`'s **label** interpolates a host
+  into a Hebrew sentence — `console-rtl-0811` swept nine views and this dialog
+  was not one of them.
+
+  **Not deployed.**
+
 ## Next, in order
 
 1. Deploy — and it is not a redeploy of this repo. The Railway service
@@ -2890,3 +2944,16 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
      open after it is the same limit, now on the page where it bites: a `Range`
      cannot enter an `<input>`, so `#e-url`, `#l-url` and `#c-code` are right by
      declaration (`dir="ltr"`) and not by measurement.
+     **That is now measured too, and it was not only a limit** —
+     `input-rtl-0811` reads a character's painted position out of the
+     **selection highlight**, which is the one thing the browser paints at that
+     position, and found the one URL field in the console with no `dir` at all:
+     `promptUrl()`'s `#u`, inheriting the page's `rtl`, painting the trailing `/`
+     of a pasted URL 7px left of the value's first character. Nine fields graded
+     in both modes, 20/20, with the shipped shape rebuilt in the same live page
+     as the negative row. What is open after it is narrower than what it closed:
+     only the **first and last** character are compared, so a value whose middle
+     reorders would pass (nothing in the console has that shape); `#login-user`
+     is behind `if (TOKEN) boot()` and could not be focused; and `promptUrl`'s
+     own **label** interpolates a host into a Hebrew sentence, which is
+     `console-rtl-0811`'s sweep on a tenth view rather than an input question.

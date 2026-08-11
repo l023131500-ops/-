@@ -1,0 +1,58 @@
+kiosk (35): the one URL field that was never told which way to read
+
+apps/35-kioskfleet/STATUS.md item 7 ended on a limit rather than a defect: a
+Range cannot enter an <input>, so the console's URL fields were "right by
+declaration (dir=ltr) and not by measurement". That declaration has been the
+fix three times now, on a bug class where the string, the DOM and innerText are
+all correct and only the painted line is wrong. Trusting it on the one class of
+element no probe could look inside was the weakest thing left under that item.
+
+Measured, and one field does not have it. promptUrl() -- the "החלף אתר" dialog
+on every device card -- declares its input with no dir at all, so it inherits
+the page's rtl. With https://hadar.example.com/event/12/ in it the LAST
+character painted 7px left of the first: the trailing slash of a pasted URL sat
+at the wrong end of the field. #h in editDevice() holds the same value,
+d.homeUrl, and has had dir=ltr since display-url-console-0811. One attribute.
+
+That field feeds set_url to a locked tablet, so it is read by someone checking
+an address before pushing it to a device in a hall -- which is exactly the state
+in which a wrong address looks right.
+
+The measurement is the selection highlight. A Range cannot span an input's
+value, so a character's painted position is unreachable from the DOM; the
+browser paints the selection at that position, so setSelectionRange(i, i+1)
+under a ::selection colour nothing else on the page uses turns one character
+into a band of known pixels, and a screenshot says where it landed. The marker
+sets background and color to one value, so the band is the character's box
+rather than the inked part of a glyph, and the input has to be focused or
+Chromium paints the selection grey -- a colour the console already uses.
+
+Graded as "first character left of last", not as a token sweep. Every value here
+is one logical left-to-right string, so the single comparison catches a run that
+swaps, a trailing neutral that jumps to the far end, and a value painted wholly
+backwards -- and it is the only comparison that survives not knowing where the
+browser broke the string, which inside an input cannot be inspected. The URLs
+end in a slash on purpose: a trailing neutral takes the paragraph's direction
+(UAX #9 N2), which is the shape that moves a character to the opposite end.
+
+Verified in QA/kiosk/input-rtl-0811/ -- 20/20 in a real Chromium in both modes
+across nine fields in three dialogs and three screens, against the warn-ink-0811
+stub, which serves the real server/public/. Eight rows pass by describing a
+correct declaration, which is indistinguishable from a probe that measured
+nothing, so there are two negative rows and both are rebuilt in the same live
+page rather than quoted: the defect's own "before", and a field that ships
+correct with its dir removed. Both come back at -7.0. Four screenshots.
+151/152 on node --test -- the documented baseline, routing.test.mjs imports
+express and still cannot run here; unchanged, because this step touches no
+server code.
+
+Found and not fixed, so the claim is not larger than the change: only the first
+and last character are measured, so a value whose middle reorders while its ends
+do not would pass -- nothing in the console has that shape today. #login-user
+has no dir either and could not be focused here, the login card being behind
+"if (TOKEN) boot()"; a username is a single L run with no trailing neutral, so
+the shape that bit #u does not apply, but it is unmeasured. And promptUrl's
+label interpolates a host into a Hebrew sentence, which is console-rtl-0811's
+sweep on a tenth view rather than an input question.
+
+Not deployed.
