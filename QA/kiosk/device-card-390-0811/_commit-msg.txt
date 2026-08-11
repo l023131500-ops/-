@@ -1,0 +1,52 @@
+kiosk (35): the device card's clock read the time before the date
+
+STATUS.md item 7 ended on a layout line, not a defect: console.html is the only
+one of the three pages ever driven at a phone width, .device-grid's
+minmax(300px, 1fr) was shown to fit at 390px, but the thirteen .btn-sm buttons
+inside a card had never been measured there — and clients-console-0811 had
+already found a column of buttons running off a card's edge once.
+
+Measured, and the width question is nothing. The grid column is 322px, the
+card's content box 320px, every button sits inside it on both edges,
+scrollWidth equals innerWidth, the .topbar's no-wrap flex fits because its
+button group wraps, and every button clears 2.5.8's 24px. A 73-character
+customer URL injected into .meta — the one input the stub could not supply —
+wraps and stays in the card. Four groups therefore pass by describing correct
+CSS, which alone is indistinguishable from a run that measured nothing, so the
+run carries a control: .actions's flex-wrap: wrap is the one declaration making
+thirteen buttons fit a 284px row, and removing it in the same live page
+rebuilds exactly the clients-console-0811 shape — spill +507.6px at 390,
++397.6px at 1200.
+
+What the run did find is not a width defect, and no harness under items 6 or 7
+could have seen it. The 390px screenshot showed the last-seen line as
+"4:40:00 ,11.8.2026" — the time before the date, the comma on the wrong side of
+both. toLocaleString('he-IL') returns two digit runs separated by a comma AND a
+space; UAX #9 folds a comma between two numbers into the number run, but only
+as a single separator, so the space breaks that and two European-number runs in
+an RTL paragraph order right-to-left like any other pair. Same defect as
+ota-window-0811's 06:00-04:00, hidden for the same reason: the string, the DOM
+and innerText are all correct and only the painted order is wrong.
+
+Fixed with <span dir="ltr">, which is unicode-bidi: isolate from the UA
+stylesheet — the same LRI...PDI, and the shape the two lines directly above it
+in the same .meta block already use for URLs, so it is the block's convention
+rather than a new one. Graded by geometry, since no computed value can express
+it: Range rectangles over the two digit runs. The before rows unwrap the
+isolate in the same live page and assert the two swap back (date x=260.9,
+time x=213.8 against date x=213.8, time x=274.9 after), at both widths in both
+modes. The probe walks text nodes rather than reading the span, so it reads the
+fixed shape and the shipped one without knowing which it is looking at.
+
+Verified in QA/kiosk/device-card-390-0811/ — 268/268 in a real Chromium at both
+colorScheme values x 390px and 1200px, against the warn-ink-0811 stub. Four
+screenshots. 151/152 on node --test, the documented baseline, unchanged because
+this step touches no server code.
+
+Not fixed, stated rather than claimed: the long URL wraps on Chromium's break
+opportunity after / and -, not on a declaration — nothing sets overflow-wrap on
+.meta, so a long unbroken host would still overflow. The login pill is
+simulated here as everywhere else on this machine.
+
+Not deployed: item 1 still blocks. The Railway service kioskfleet builds from
+l023131500-ops/zol, not this tree.

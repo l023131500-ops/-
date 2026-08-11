@@ -2575,6 +2575,56 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
 
   **Not deployed.**
 
+- **the device card at 390px, and the timestamp it read backwards** — the step
+  above left this as a layout line: `console.html` is the only one of the three
+  pages ever driven at a phone width, `.device-grid`'s `minmax(300px, 1fr)` was
+  shown to fit, but the thirteen `.btn-sm` buttons inside a card had never been
+  measured there, and `clients-console-0811` had already found a column of
+  buttons running off a card's edge once. Measured, and **the width question is
+  nothing**: the column is 322px, the card's content box 320px, every button sits
+  inside it on both edges, `scrollWidth` equals `innerWidth`, the `.topbar`'s
+  no-wrap flex fits because its button group wraps, and every button clears
+  2.5.8's 24px. A **73-character** customer URL injected into `.meta` — the one
+  input the stub could not supply — wraps and stays in the card.
+  - four groups therefore pass by describing correct CSS, which is
+    indistinguishable from a run that measured nothing, so there is a **control**:
+    `.actions`'s `flex-wrap: wrap` is the one declaration making thirteen buttons
+    fit a 284px row, and removing it in the same live page rebuilds exactly the
+    `clients-console-0811` shape — spill goes to **+507.6px** at 390 and +397.6px
+    at 1200. The check can fail.
+  - what the run **did** find is not a width defect and no harness under items 6
+    or 7 could have seen it. The 390px screenshot showed the last-seen line as
+    `4:40:00 ,11.8.2026` — **the time before the date**.
+    `toLocaleString('he-IL')` returns two digit runs separated by a comma *and a
+    space*; UAX #9 folds a comma between two numbers into the number run, but
+    only as a single separator, so the space breaks that and two
+    European-number runs inside an RTL paragraph are ordered right-to-left like
+    any other pair. Same defect as `ota-window-0811`'s `06:00–04:00`, hidden for
+    the same reason: the string, the DOM and `innerText` are all correct and only
+    the painted order is wrong.
+  - fixed with `<span dir="ltr">`, which is `unicode-bidi: isolate` from the UA
+    stylesheet — the same LRI…PDI, and the shape the two lines directly above it
+    in the same `.meta` block already use for URLs, so it is the block's existing
+    convention rather than a new one.
+  - graded by **geometry**, since no computed value can express it: `Range`
+    rectangles over the two digit runs. The `before` rows unwrap the isolate in
+    the same live page and assert the two swap back (`date x=260.9, time x=213.8`
+    against `date x=213.8, time x=274.9` after), at both widths in both modes.
+    The probe walks text nodes rather than reading the span, so it reads the
+    fixed shape and the shipped one without knowing which it is looking at.
+
+  Verified in `QA/kiosk/device-card-390-0811/` — 268/268 in a real Chromium at
+  both `colorScheme` values × 390px and 1200px, against the `warn-ink-0811` stub.
+  Four screenshots. 151/152 on `node --test` — the documented baseline, unchanged
+  because this step touches no server code.
+
+  Found and **not** fixed: the long URL wraps on **Chromium's** break opportunity
+  after `/` and `-`, not on a declaration — nothing sets `overflow-wrap` on
+  `.meta`, so a long unbroken host would still overflow. And the login pill is
+  simulated here as everywhere else on this machine.
+
+  **Not deployed.**
+
 ## Next, in order
 
 1. Deploy — and it is not a redeploy of this repo. The Railway service
@@ -2786,3 +2836,13 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
      `.device-grid`'s `minmax(300px, 1fr)` fits, but the button rows inside a
      card have never been measured there, and `clients-console-0811` already
      found a column of buttons running off a card's edge once.
+     **That is now measured and closed** — `device-card-390-0811`, 268/268: the
+     card holds at 390px on every edge, and the run's control shows the check
+     would have caught it if it did not. What it turned up instead is worth
+     carrying, because it is the third time the same class of bug has appeared:
+     the device's last-seen line was painted `4:40:00 ,11.8.2026`, the time
+     before the date, so **a correct string in an RTL paragraph is not a correct
+     line** — and computed-value harnesses are structurally blind to it. Only the
+     screenshot caught the OTA window, and only the screenshot caught this one.
+     Anything mixing a Hebrew label with two digit runs is the shape to look at
+     next; `install.html` and `kiosk-launcher.html` have never been read this way.
