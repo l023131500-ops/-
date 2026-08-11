@@ -1,0 +1,20 @@
+{
+  "project": "torah-more30",
+  "projectId": "prj_0JWao5UJpiQD80dX7jkypgKaA8Et",
+  "deployment": "torah-more30-2h6pd5rky-l023131500-ops-projects.vercel.app",
+  "target": "production",
+  "how": "The deployed index.html is NOT the one vite builds: _deploy/torah-more30/torah/index.html is 26,853 bytes against the fresh dist/index.html's 5,408 — the live HTML carries additions that never went back into the source. Copying dist over it would have thrown those away. Both files reference exactly two hashed assets, so the new assets/ was copied in (hashed names, additive) and only the two hash strings were swapped inside the live HTML: 26,853 bytes in, 26,853 bytes out.",
+  "asset_swap": {
+    "js": "index-DMSjp30O.js -> index-CFrhj_pU.js",
+    "css": "index-DlHhswkm.css -> index-C8bPiKNL.css"
+  },
+  "verified_on_the_domain_not_the_deployment": {
+    "url": "https://more30.com/torah/auth/sign-up",
+    "serving_bundle": "/torah/assets/index-CFrhj_pU.js",
+    "masked_state": { "type": "password", "aria-pressed": "false" },
+    "requirement_met_at_8_chars": "✓ לפחות 6 תווים",
+    "after_click": { "type": "text", "aria-pressed": "true", "aria-label": "הסתר סיסמה", "icon": "lucide-eye-off" },
+    "home_page_still_renders": "https://more30.com/torah/ — h1 'איגוד מגידי השיעורים', 7 landmark sections, meta description intact; the only console errors are the pre-existing NetFree 404s on fonts.gstatic.com"
+  },
+  "open_line": "The source index.html and the deployed one have diverged (5,408 vs 26,853 bytes). This step deliberately did not reconcile them — it swapped hashes so nothing live was lost. Until they are reconciled, every torah deploy has to go through the same hash swap, and whatever the live HTML carries is not reproducible from the repo."
+}
