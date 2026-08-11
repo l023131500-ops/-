@@ -943,6 +943,49 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
   tablet openable: `AgentClient.kt` writes three config keys into `Prefs` and
   `adminCode` is not one of them. That is item 2 below. **Not deployed.**
 
+- **the warning colour (the thing the last three contrast steps kept deferring)**
+  — `--warn` (`#f59e0b`) was **2.15:1** on the white card and 2.00:1 on the page,
+  against the 4.5:1 normal text needs, and it was used in exactly five places,
+  **all of them text**. Three of the five are the paragraphs that sit above an
+  irreversible action: re-issuing an access code taped beside a tablet, clearing
+  the exit code — which removes the only way into a locked device with no
+  network — and resetting the wizard. Those sentences exist to be read before
+  someone presses the red button; at 2.15:1 they are decoration. Added
+  `--warn-ink` in `css/style.css`, the same split `--danger`/`--danger-ink`
+  already uses, and pointed the five at it:
+  - `#b45309` in light, chosen against **both** surfaces such text lands on —
+    the card and the modal (5.02:1) and the page background (4.68:1) — because
+    two of the five are on a card and three are in a dialog.
+  - **the defect was light-mode only**, and dark is therefore left alone:
+    `--warn-ink` *is* `--warn` there, because the same amber on the dark card is
+    already 7.93:1 and darkening it would take a warning down to 3.39:1. This is
+    the second time a contrast step here has turned out to be one-mode; the
+    harness's first version assumed both and was corrected by the run.
+  - **`--warn` itself is untouched.** It has no surface consumers today, but the
+    token that names the brand's amber and the token that is legible as text are
+    not the same thing, and collapsing them would leave the next person to write
+    an amber background reaching for a dark brown.
+  - the doc comment on `exitCodeState()` cited this exact defect as a reason its
+    two states are uncoloured. They stay uncoloured — there is still no `--ok`,
+    and a pair where only the bad half is coloured reads as an error rather than
+    a state — but the comment now says the reason that is still true.
+
+  Verified in `QA/kiosk/warn-ink-0811/` — a real Chromium at both `colorScheme`
+  values against a stub serving the real `public/`, with the wizard route
+  answered through the real `setupsteps.js` in the shape `routes/devices.js`
+  builds, since one of the three warnings lives inside the wizard. All five
+  sites were driven to the screen and measured, with the background read from
+  **the surface actually painted behind each one** rather than assumed from the
+  token. 14/16, the two failures being the light "before" rows. Ten screenshots.
+  121/122 on `node --test "test/*.test.mjs"` — the documented baseline,
+  unchanged because this step adds no server code.
+
+  Found and **not** fixed: `--line` at 1.29:1 in dark is still the open
+  console-wide question the earlier contrast steps left alone, and the wizard
+  step's clickable rows are the strongest argument for raising it.
+
+  **Not deployed.**
+
 ## Next, in order
 
 1. Deploy — and it is not a redeploy of this repo. The Railway service
