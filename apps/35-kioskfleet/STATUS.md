@@ -1462,6 +1462,60 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
 
   **Not deployed.**
 
+- **the page the installer reads, measured** — `install.html` was the second of
+  the three `public/` pages never put through a contrast pass, and the one held
+  in the hand of whoever is setting the tablet up: it carries the two values
+  `EnrollActivity` asks for and five numbered steps that are followed literally.
+  Same surface problem as the launcher — **nothing on it is opaque** — so the
+  same method: the backdrop sampled from the pixels Chromium painted, translucent
+  foregrounds composited over that measured pixel, borders composited rather than
+  sampled. Both depths driven (`/kiosk/install/A7K2M9` and `/kiosk/install`),
+  since they are different screens. One real defect, in `public/install.html`
+  only:
+  - **the two `.copy` buttons, the only controls on the page.** `.btn` fills
+    elsewhere in this fleet are their own boundary; here the button declares a
+    real `border`, and its fill is `rgba(255,255,255,.12)` over the `.value`
+    box — **1.2:1**, no boundary at all. So that one line is the whole of what
+    says "pressable", and it was `.34` → **2.65:1** against the fill inside it.
+    Now `.45`, 3.51:1 inside and 5.13:1 against the `.value` box outside.
+  - **`:hover` made the same edge fainter.** The hover rule lightened the fill
+    and left the border alone: **2.36:1**, below even the resting value.
+    Hovering a control must not weaken it, and 1.4.11 covers states, so
+    `.copy:hover` now carries a `border-color` of its own at `.58` — 3.90:1.
+  - the defect was **one-sided**, and the harness's first version wrongly
+    demanded the "before" row fail against the `.value` box too. It did not:
+    3.87:1. The edge was sufficient outside and vanished inside. That row is kept
+    and annotated rather than dropped — the shape of the bug is part of the
+    result.
+
+  A difference from the launcher page that the harness's own guard caught: there,
+  only the placeholder and the borders were translucent, and `check()` throws on
+  any non-opaque colour reaching `lum()`. Here the **text** is translucent too —
+  `.muted` and `table.errors th` are `rgba(255,255,255,.72)`, which is most of
+  the prose — so the first run died on `#lede` rather than reporting a flattering
+  8.6:1. Every foreground now goes through the same composite a border does.
+
+  Verified in `QA/kiosk/install-contrast-0811/` — a real Chromium at both
+  `colorScheme` values against `install-link-0811/stub-server.mjs` reused rather
+  than copied (it already serves the real `public/` and resolves `/install/:code?`
+  at both depths and both mounts off the real `installlink.js`). 20/22 graded
+  rows pass; the two failures are the **before** rows, re-injected into the same
+  DOM in the same run. Two full-page screenshots. 152 tests, 151 pass — the
+  documented baseline, unchanged, since this step adds no server code.
+
+  Found and **not** fixed, with the number rather than silence: the step-number
+  disc (`li::before`) is **2.01:1** against the card. The disc is not what
+  carries the step number — the white digit on it is, at 5.28:1 — and the disc is
+  `--accent`, the brand colour every page here uses identically, so moving it is
+  the design change `more30-priority.md` §6 asks for rather than a contrast
+  token. Same call `launcher-contrast-0811` made for the `.ico` tints. The
+  `.card` (1.52:1), `.value` (2.04:1), `.expect` (2.04:1) and `.warn` (2.63:1)
+  borders are separators and message frames, which 1.4.11 exempts — `.value` in
+  particular is a **display** box, deliberately not an `<input>`, so the control
+  inside it is the button that was fixed.
+
+  **Not deployed.**
+
 ## Next, in order
 
 1. Deploy — and it is not a redeploy of this repo. The Railway service
@@ -1492,12 +1546,11 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
    distinguished from the page mostly by its shadow. That is a look, and it is
    the kind of thing `more30-priority.md` §6 asks for — worth revisiting with the
    console's visual identity rather than as a contrast token.
-5. `kiosk-launcher.html` is **measured** — the one of the three that renders on a
-   tablet in a hall, done above. Still unmeasured: `install.html` (served at two
-   depths, inline, and read by whoever is holding the device) and `index.html`
-   (the marketing page — `.feature` / `.plan` / `.step`). Both are `public/`
-   only and runnable in this checkout; `launcher-contrast-0811/verify.mjs` is the
-   harness to reuse, since both pages are the same kind of translucent surface
-   the opaque-backdrop walk cannot measure.
+5. Two of the three `public/` pages are **measured** — `kiosk-launcher.html` and
+   `install.html`, both above. The last is `index.html`, the marketing page
+   (`.feature` / `.plan` / `.step`): `public/` only and runnable in this
+   checkout, and `install-contrast-0811/verify.mjs` is the harness to reuse — it
+   is the same translucent surface the opaque-backdrop walk cannot measure, and
+   it already composites translucent *text*, which that page uses throughout.
 6. The console's own screens, other than the wizard, have still had no pass:
    `nontext-contrast-0811` onward each opened one dialog.

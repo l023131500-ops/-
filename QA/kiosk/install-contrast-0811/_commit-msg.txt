@@ -1,0 +1,47 @@
+kiosk (35): the page held in the installer's hand had a button with no edge
+
+install.html was the second of the three public/ pages never measured for
+contrast, and the one read by whoever is standing at the tablet: it carries the
+two values EnrollActivity asks for and five steps followed literally.
+
+The two .copy buttons are the only controls on it. A .btn fill elsewhere in this
+fleet is its own boundary; here the button declares a real border, and its fill
+is rgba(255,255,255,.12) over the .value box - 1.2:1, no boundary at all. So
+that one line is the whole of what says "pressable", and at .34 it was 2.65:1
+against the fill inside it. Now .45: 3.51:1 inside, 5.13:1 against the box
+outside.
+
+:hover made the same edge fainter - it lightened the fill and left the border
+alone, 2.36:1, below even the resting value. Hovering a control must not weaken
+it, and 1.4.11 covers states, so .copy:hover now carries a border-color of its
+own at .58 (3.90:1).
+
+The defect was one-sided, and the harness's first version wrongly demanded the
+"before" row fail against the .value box too. It did not: 3.87:1. The edge was
+sufficient outside and vanished inside. That row is kept and annotated rather
+than dropped - the shape of the bug is part of the result.
+
+A difference from the launcher page that the harness's own guard caught: there,
+only the placeholder and the borders were translucent, and check() throws on any
+non-opaque colour reaching lum(). Here the text is translucent too - .muted and
+table.errors th are rgba(255,255,255,.72), which is most of the prose - so the
+first run died on #lede rather than reporting a flattering 8.6:1. Every
+foreground now goes through the same composite a border does.
+
+QA/kiosk/install-contrast-0811 - a real Chromium at both colorScheme values,
+backdrop sampled from the pixels Chromium painted (nothing on this page is
+opaque), both depths driven, against install-link-0811/stub-server.mjs reused
+rather than copied. 20/22 graded rows pass; the two failures are the before
+rows, re-injected into the same DOM in the same run. Two full-page screenshots.
+152 tests, 151 pass - the documented baseline, unchanged, since this step adds
+no server code.
+
+Found and not fixed, with the number rather than silence: the step-number disc
+is 2.01:1 against the card. The digit on it carries the number at 5.28:1, and
+the disc is --accent, the brand colour every page here uses identically - so
+moving it is more30-priority.md section 6's design work, not a contrast token.
+The .card, .value, .expect and .warn borders are separators and message frames,
+which 1.4.11 exempts.
+
+install.html itself is under apps/, which is gitignored here; the change is
+recorded in apps/35-kioskfleet/STATUS.md. Not deployed.
