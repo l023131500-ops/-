@@ -318,6 +318,34 @@ PDF bodies from `supabase.co`; none of that applies to the production server.
   is `no-store` so never cached, is skipped by both the service worker and the
   offline prefetch, and is off-domain against §0.
 
+- **`app/api/upload/[name]/route.ts` (new) + `lib/supabase.ts` + `public/sw.js` +
+  `app/shelf/page.tsx`** — closes the open line above: uploaded material was the
+  one shelf source not streamed through our own origin. `entryToItem()` returned
+  the bucket's public `supabase.co` URL, so an upload had none of what the other
+  two sources get from being same-origin — the download button could not download
+  (no `Content-Disposition` to set, and `download=` is ignored cross-origin), the
+  PDF viewer could not read it (it reads with `fetch()`), the service worker
+  returned early on it (`url.origin !== location.origin`), "שמירת התצוגה
+  לאופליין" filtered it out (`file.startsWith("/")`), and it put a file this app
+  serves back on an off-domain host — the thing serving under more30.com exists
+  to avoid. `/api/upload/[name]` is `/api/shelf/[name]`'s shape minus the `seed/`
+  prefix, admitting only the object names `uploadItem()` writes
+  (`^up_[a-z0-9]+_[a-z0-9]+\.[a-z0-9]{1,8}$`); the extension is the one part of
+  that name that comes from the user, so `uploadItem()` now replaces anything
+  that is not a plain short extension, which makes the pattern total. Verified
+  against the production build and the **real** bucket: a real seed file uploaded
+  through the real `POST /api/catalog` came back as
+  `/api/upload/up_msp02sp4_cr56.jpg`, served **200 `inline`** and **`attachment`**
+  with `?dl=1`, and the item page renders it with 0 console errors; `index.json`,
+  a double extension and a traversal all 400. Both QA uploads were then hidden
+  through the real admin override — the catalog is back to 0 items. Byte equality
+  on read-back and a PDF upload are the two things this machine cannot show
+  (NetFree recompresses images and answers 418 to PDF bodies from `supabase.co`);
+  sizes match at every hop we control. `tsc --noEmit` 0. Evidence in
+  `QA/gannenet/upload-origin-0811/`. **Open:** the anon key cannot DELETE from
+  Storage, so the two QA blobs and the earlier upload-race orphan stay in the
+  bucket, hidden but not removed — cleanup needs a service-role key.
+
 No other file was modified. The mount itself needs no code edit: `next.config.js`
 already reads `APP_BASE_PATH`, and `lib/base.ts` exports `withBase()` for the
 fetch calls, hrefs and service worker that Next's `basePath` does not prefix.

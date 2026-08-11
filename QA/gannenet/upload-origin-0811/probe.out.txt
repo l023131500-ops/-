@@ -1,0 +1,8 @@
+﻿seed  164F9uhfHMyaYSWifZtdZCNr-4MgTG-yJ.jpg: 200 9743 B
+POST /api/catalog: 200 {"ok":true,"item":{"id":"up_msp02sp4_cr56","title":"בדיקת מסלול העלאה (QA) 11/08","category":"כללי","sender":"QA","date":"2026-08-11","mime":"image/jpeg","file":"/api/upload/up_msp02sp4_cr56.jpg","sizeKB":10,"kind":"image","source":"upload"}}
+item.file = /api/upload/up_msp02sp4_cr56.jpg   (same-origin: true)
+GET  /api/catalog: 2 item(s); ours listed as /api/upload/up_msp02sp4_cr56.jpg
+GET  /api/upload/up_msp02sp4_cr56.jpg -> 200 image/jpeg disposition=inline 8406 B bytes-match=false
+GET  /api/upload/up_msp02sp4_cr56.jpg?dl=1 -> 200 image/jpeg disposition=attachment 8406 B bytes-match=false
+ITEM_ID=up_msp02sp4_cr56
+(re-run with `--hide ITEM_ID` once the item page has been photographed)
