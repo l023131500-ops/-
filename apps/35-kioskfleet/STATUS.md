@@ -2957,3 +2957,25 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
      is behind `if (TOKEN) boot()` and could not be focused; and `promptUrl`'s
      own **label** interpolates a host into a Hebrew sentence, which is
      `console-rtl-0811`'s sweep on a tenth view rather than an input question.
+     **That tenth view is now swept, and five more with it** —
+     `dialogs-rtl-0811`, 170/170, and **no defect**. The scope is deliberately
+     wider than the sentence above: the devices screen opens **eleven** dialogs,
+     `console-rtl-0811` opened three, and the remaining six cost one click each,
+     so stopping at the one the last commit named would have left five views
+     unread. 112 token pairs across eight views (six dialogs, two of them driven
+     on a second device for the branch an unconfigured device shows). The four
+     lines worth opening them for all hold: `promptUrl`'s host inside its Hebrew
+     parenthesis, the exit-code dialog's `· S/N SN-QA-0001` (a bullet with Latin
+     on *both* sides — the case that forced the classifier's second correction),
+     its `⁦(1234, 0000)⁩` behind the only explicit U+2066/U+2069 isolates in the
+     console, and `1 מתוך 1 מאושרים`. What that run had to change is its own
+     assertion, not the console: `A > 0 && B > 0 && C > 0` copied from
+     `console-rtl-0811` **fails here** at `A 12 · B 0 · C 100`, because group B
+     needs a bare digit run beside a field mark and that is the device *card*'s
+     `🔋 84% · 📱 Lenovo`, which no dialog carries. B is now proven by a control
+     row rather than by an assertion that is not true of these views — the
+     distinction worth carrying: a group with zero rows and a broken classifier
+     look identical, and only a control tells them apart. Open after it: three
+     dialogs on other screens have still never been walked (`clientModal`,
+     `confirmDeleteClient`, and the הגדרות → משתמשים set, which needs a
+     `role: admin` stub user — `warn-ink-0811`'s is `owner`).
