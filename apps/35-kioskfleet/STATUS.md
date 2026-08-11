@@ -1179,6 +1179,55 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
   `identify()` offering the approved links alongside the approved clients — both
   payloads carry clients only today.
 
+- **both selection payloads now carry the links (§2★ה, the read side)** — the
+  table, the two routes and the console picker all landed earlier today, so an
+  owner could tick "this tablet may also open the evening menu" and the row was
+  written. Nothing could then read it: `identify()` (the device's own screen) and
+  `launcherProfile()` (the page a hall code opens) both answered with `clients`
+  alone, and an approved link was write-only.
+  - `identify()` takes a 4th argument and answers with `profile.links`;
+    `launcherProfile()` a 3rd and the same field. Both are last and optional, so
+    every existing caller and test keeps working — the widening is a no-op on
+    `undefined`, which is what "nothing approved" already meant.
+  - **the allow-list was the real defect, not the missing list.** `identify()`
+    built it as `configHostCsv(effectiveHostCsv(dev, clients), shown)` — three
+    widenings exist and it composed two. `deviceConfigHostCsv()` was introduced
+    because that expression was written out at four call sites and a copy that
+    drops one fails nowhere a developer can see it; this was the fifth call site
+    and was already the stale copy. Both payloads now wrap `withLinkHosts()`, in
+    the same order, so a link on the screen is a link the device can actually
+    open rather than its own blocked page.
+  - **empty still stays empty.** `hostAllowed()` reads an unset list as "no lock
+    configured", so seeding it from the approvals would create a lock on a device
+    that had none and cut it off from the page it is showing right now. Asserted
+    on a second fixture device with no `allowed_host`.
+  - **a link is picked, never typed.** `typedCode` resolves against clients only,
+    and must: `links` has no code column, and matching on name or id would turn a
+    list whose addresses are on the screen into a credential. Typing `1` and
+    typing `תפריט הערב` are both `unknown_code`.
+  - `POST /api/launcher/open` accepts `linkId` beside `clientId` and **refuses a
+    body naming both** — the two lists are separate approvals, and resolving by
+    precedence would make which page opens depend on an order nobody stated.
+  - `approvedLinkTarget()` now requires the row to carry a `url`. Ids are unique
+    per table, so client 1 and link 1 both exist; handed the *clients* list it
+    used to find a row by id and read `url` off something storing `site_url`,
+    answering with a target that had no address. It only ever fires on a mixed
+    list, and now it fires closed. `launcherTarget()` was already safe the other
+    way — it requires `active`, which a link row has no column for.
+
+  Verified in `QA/kiosk/selection-links-payload-0811/` — 16 cases replaying all
+  three routes' own sequence against the production DDL on `node:sqlite`, with
+  the express glue rewritten and every decision taken by the real module, plus
+  three cases that read `routes/agent.js` and `routes/launcher.js` off disk so
+  the replay cannot drift from them. **146 tests, 145 pass** on
+  `node --test "test/*.test.mjs"` — 8 new (4 in `identify.test.mjs`, 4 in
+  `launcher.test.mjs`), and the one failure is still `routing.test.mjs`, which
+  imports express.
+
+  **Not deployed.** `public/kiosk-launcher.html` still draws one list, so `links`
+  arrives in its payload undrawn — that is the next step and it is `public/`
+  only.
+
 ## Next, in order
 
 1. Deploy — and it is not a redeploy of this repo. The Railway service
@@ -1201,8 +1250,8 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
 3. The selection screen on the device (§2★ה/ו): `KioskActivity` calls
    `identify`, offers the approved list, and locks onto what is chosen. Needs an
    Android toolchain, which this checkout does not have.
-4. `identify()` and `launcher.js` still answer with **clients only**, so an
-   approved link is a row the console can write and nothing on the device can
-   read. Both payloads want `selectableLinks(approvedLinksForDevice(...))`
-   alongside the clients, and the launcher page a second list. No Android
-   toolchain needed for either — they are server + `public/`.
+4. `public/kiosk-launcher.html` draws the clients list only, so the `links` the
+   `/resolve` payload now carries reach the page and are never rendered — the
+   person in the hall still cannot pick one, and `/open` already accepts the
+   `linkId` that screen would send. A second list, and the venue's own site as
+   the way back. No Android toolchain needed — it is `public/` alone.
