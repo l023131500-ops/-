@@ -29,6 +29,50 @@
 
 ---
 
+## 🔴 0י′. גשר (31) — חסר `SUPABASE_SERVICE_ROLE_KEY`, וכל פאנל הניהול מת בייצור — 12/08/2026
+
+**מה נמדד.** `npx vercel env ls` על הפרויקט `gesher-more30` מחזיר **בדיוק שני**
+משתני סביבה, בשלושת ה-scopes (Production, Preview, Development):
+
+| שם | scopes |
+|---|---|
+| `SUPABASE_URL` | Production, Preview, Development |
+| `SUPABASE_PUBLISHABLE_KEY` | Production, Preview, Development |
+
+אין `SUPABASE_SERVICE_ROLE_KEY`. במקביל, ה-bundle **הבנוי** של השרת
+(`.vercel/output/functions/__server.func/_ssr/client.server-*.mjs`) קורא את
+`process.env.SUPABASE_SERVICE_ROLE_KEY` **בזמן ריצה** — הערך אינו מוטמע בבנייה —
+וזורק אם הוא חסר:
+
+```js
+if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) { ... throw new Error(message); }
+```
+
+**מה זה מפיל.** כל גישה ראשונה ל-`supabaseAdmin` בייצור זורקת
+`Missing Supabase environment variable(s): SUPABASE_SERVICE_ROLE_KEY`. יש לו 40
+אתרי קריאה במקור, ובהם: **כל פאנל הניהול** (`admin.functions`, `categories`,
+`topics`, `professionals`, `custom-fields`, `webhooks`, `communication`), **טופס
+הלידים הציבורי** `/api/public/leads/submit`, `listMyClients` (מסך הלקוחות של
+השותף) ברגע שלשותף יש שיוך אחד, `getClientDashboard` ללקוח שיש לו שותף משויך,
+ומחיקת קובץ מהאחסון.
+
+**מה עוד לא נמדד, ונרשם ככזה.** זו ראיה סטטית משני מקורות בלתי-תלויים, לא
+מדידה בזמן ריצה. אין בייצור אף נתיב שמגיע ל-`supabaseAdmin` בלי לכתוב: שני
+הנתיבים הקריאים מותנים בשיוך שותף, ול-`test@more30.com` אין שורה ב-
+`partner_assignments` (נמדד: `200 []`), וכל היתר כותבים — `/api/public/leads/submit`
+היה יוצר ליד אמיתי ומכניס `new_lead` ל-`outbox_queue`, ולכן לא הורץ (מצב טסט).
+
+**מה אתה יכול לעשות (רק אתה):** Supabase `ygaqqnuyfnumezxxmtbh` → Settings → API →
+להעתיק את `service_role` ולהוסיף אותו כ-`SUPABASE_SERVICE_ROLE_KEY` בפרויקט
+`gesher-more30` ב-Vercel, לשלושת ה-scopes, ואז לפרוס מחדש. המפתח אינו נגיש מכאן.
+
+⚠️ **בהוספה דרך ה-CLI ב-PowerShell:** אל תעביר את הערך ב-pipe — PowerShell מזריק
+BOM של UTF-8 לתוך stdin והערך שנשמר נפגם, ואי אפשר לקרוא אותו בחזרה כדי לגלות זאת.
+
+`core.issues` #180. פרטים ומדידה: `QA/gesher/partner-status-grant-0812/`.
+
+---
+
 ## 🟠 0ט. הגדרות ה-Supabase של 8 מערכות חסומות לקריאה מכאן — 12/08/2026
 
 **מה נמדד.** סביבת הייצור ב-Vercel של 11 המערכות שכל עבודתן בצד השרת

@@ -110,8 +110,8 @@ export const updateTreatmentStatus = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context as any;
-    // The UPDATE policy on partner_assignments is USING-only, so it would also let a
-    // partner rewrite partner_id. Own the check here and touch one column.
+    // Read as the caller: "Partners read own assignments" scopes this to rows that are his,
+    // so a foreign or missing id both come back empty and both answer Forbidden.
     const { data: row } = await supabase
       .from("partner_assignments")
       .select("partner_id")
@@ -119,10 +119,18 @@ export const updateTreatmentStatus = createServerFn({ method: "POST" })
       .maybeSingle();
     if (!row || row.partner_id !== userId) throw new Error("Forbidden");
 
-    const { error } = await supabase
+    // The write cannot go through the caller. Migration 20260605003212 revoked UPDATE on this
+    // table from `authenticated` and granted back exactly one column — partner_feedback_notes —
+    // so a partner writing treatment_status himself gets 42501 (verified against production).
+    // That revoke is deliberate: it stops a partner from moving his own row through the funnel
+    // by hand, or rewriting partner_id past the USING-only policy. Honour it and make the one
+    // legitimate transition here, as service_role, on the single column, after the check above.
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin
       .from("partner_assignments")
       .update({ treatment_status: data.status })
-      .eq("id", data.assignmentId);
+      .eq("id", data.assignmentId)
+      .eq("partner_id", userId);
     if (error) throw new Error(error.message);
     return { ok: true };
   });
