@@ -116,7 +116,10 @@
  *                      trailing slash, Vite's BASE_URL inlined at build time — and
  *                      when it equals /<mount> and no fetch() in the client passes
  *                      /api bare, the literal leaves the browser mounted. That is
- *                      not a bug, and studio (26) is the whole of it today.
+ *                      not a bug. studio (26), imud (04) and kupot (28) are the
+ *                      three today; the last two wrap the same base in a
+ *                      VITE_API_BASE override, and it only decides anything when
+ *                      the env object it reads is a statically empty literal.
  *   reached_mount_function
  *                      the mounted address answered JSON that names the path
  *                      back. Only a server that received the request there can
@@ -152,7 +155,9 @@ import { dirname, resolve, join, relative } from 'node:path';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = resolve(here, '../..');
-const outDir = join(root, 'QA/platform/mounted-api-base-0810');
+// The 0810 run is the evidence core.issues #154 cites; a re-run must not
+// overwrite it. QA_OUT_DIR names the folder for this run, default unchanged.
+const outDir = join(root, process.env.QA_OUT_DIR || 'QA/platform/mounted-api-base-0810');
 
 const pass = [];
 const fail = [];
@@ -354,6 +359,12 @@ const readExpr = (text, from) => {
 
 const STR = /^"([^"\\]*)"|^'([^'\\]*)'|^`([^`\\$]*)`/;
 
+// Two values that are neither a base nor a failure to decode. Keeping them
+// apart from null is the whole point: "could not read this" must never be
+// allowed to act like "this is provably empty".
+const EMPTY_OBJECT = Symbol('an object literal with no properties');
+const ABSENT = Symbol('a property read off that object — undefined');
+
 // Only the forms these bundles actually produce are evaluated. Anything else
 // returns null and the artifact gets no grant — the detector errs toward
 // reporting, as everywhere else in this script.
@@ -367,6 +378,20 @@ const evalBase = (expr, resolve, depth = 0) => {
   // "/studio/".replace(/\/+$/, "")
   const trimmed = /^(["'`])((?:(?!\1).)*)\1\.replace\(\/\\\/\+\$\/\s*,\s*(["'`])\3\)$/.exec(e);
   if (trimmed) return trimmed[2].replace(/\/+$/, '');
+  // {} — the import.meta.env object, emitted with nothing in it because no
+  // VITE_* variable was defined for the build. Only the bare literal counts.
+  if (e === '{}') return EMPTY_OBJECT;
+  // Cx?.VITE_API_BASE — undefined when Cx is that empty object, and unknown in
+  // every other case, including an object this reader cannot see inside.
+  const member = /^([A-Za-z_$][\w$]*)\s*\??\.\s*([A-Za-z_$][\w$]*)$/.exec(e);
+  if (member) return resolve(member[1], depth + 1) === EMPTY_OBJECT ? ABSENT : null;
+  // z1 && z1.trim() ? z1.trim().replace(/\/$/, "") : <fallback>  — the
+  // VITE_API_BASE override that queryClient.ts wraps its base in. It decides
+  // the base only when the override is provably absent; if the override cannot
+  // be read the whole expression stays undecided, because a build that did set
+  // VITE_API_BASE would take the other branch and the base would be its value.
+  const override = /^([A-Za-z_$][\w$]*)\s*&&\s*\1\.trim\(\)\s*\?\s*([^:]+):\s*(.+)$/.exec(e);
+  if (override) return resolve(override[1], depth + 1) === ABSENT ? evalBase(override[3], resolve, depth + 1) : null;
   const lit = STR.exec(e);
   if (lit && lit[0].length === e.length) return lit[1] ?? lit[2] ?? lit[3] ?? '';
   if (/^[A-Za-z_$][\w$]*$/.test(e)) return resolve(e, depth + 1);
@@ -386,7 +411,10 @@ const readCallSite = (a, mount) => {
         const expr = readExpr(text, from);
         const value = evalBase(expr, resolve, depth);
         if (value !== null) {
-          if (out.base_expression === null) { out.base_expression = `${ident}=${expr.trim()}`.slice(0, 200); out.base_file = rel; }
+          // The expression worth reporting is the one the fetch template opens
+          // with, not whichever identifier it bottoms out in — a NOTE reading
+          // "Cx={}" would say nothing about the base that ships.
+          if (depth === 0 && out.base_expression === null) { out.base_expression = `${ident}=${expr.trim()}`.slice(0, 200); out.base_file = rel; }
           return value;
         }
       }
@@ -397,7 +425,9 @@ const readCallSite = (a, mount) => {
   for (const { rel, text } of files) {
     for (const m of text.matchAll(/fetch\(\s*`\$\{([A-Za-z_$][\w$]*)\}/g)) {
       const value = resolve(m[1]);
-      if (value !== null && out.base === null) out.base = value;
+      // A base is a string. EMPTY_OBJECT and ABSENT can only surface from the
+      // middle of a chain, and neither is a prefix the browser would send.
+      if (typeof value === 'string' && out.base === null) out.base = value;
     }
     for (const m of text.matchAll(/fetch\(\s*["'`]\/api\//g)) {
       out.bare_fetch_sites.push({ file: rel, context: text.slice(m.index, m.index + 60).replace(/\s+/g, ' ') });

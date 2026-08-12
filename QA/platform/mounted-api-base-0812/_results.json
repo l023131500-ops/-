@@ -1,0 +1,2684 @@
+{
+  "measured_at": "2026-08-12T06:39:31.306Z",
+  "mounts": {
+    "admin": {
+      "project": "nihul-more30",
+      "artifacts": [
+        "admin-more30",
+        "nihul-more30"
+      ],
+      "live_artifact": null,
+      "client_hits": [],
+      "not_requested_from_root": [
+        {
+          "file": "admin/assets/index-BpjLLbPu.js",
+          "path": "/api/broadcast",
+          "reason": "written onto a URL object .pathname — carried by an absolute origin, never requested from more30.com",
+          "context": "bsocket$/i,\"\"),e.pathname===\"\"||e.pathname===\"/\"?e.pathname=\"/api/broadcast\""
+        },
+        {
+          "file": "admin/assets/index-BpjLLbPu.js",
+          "path": "/api/broadcast",
+          "reason": "written onto a URL object .pathname — carried by an absolute origin, never requested from more30.com",
+          "context": "ame===\"/\"?e.pathname=\"/api/broadcast\":e.pathname=e.pathname+\"/api/broadcast\""
+        }
+      ],
+      "probes": [],
+      "live_document": {
+        "status": 200,
+        "bytes": 4789,
+        "assets": [
+          "index-CinF3ubK.js"
+        ]
+      },
+      "staged_not_deployed": [
+        "admin-more30",
+        "nihul-more30"
+      ],
+      "call_site": {
+        "base": null,
+        "base_expression": null,
+        "base_file": null,
+        "bare_fetch_sites": [],
+        "prefixes_the_mount": false
+      }
+    },
+    "bkalot": {
+      "project": "bkalot-more30",
+      "artifacts": [
+        "bkalot-more30"
+      ],
+      "live_artifact": null,
+      "client_hits": [],
+      "not_requested_from_root": [],
+      "probes": [],
+      "live_document": {
+        "status": 200,
+        "bytes": 19688,
+        "assets": []
+      },
+      "staged_not_deployed": [
+        "bkalot-more30"
+      ],
+      "call_site": {
+        "base": "https://bieebmnmkffwbqlsfozh.supabase.co",
+        "base_expression": "SUPABASE_URL='https://bieebmnmkffwbqlsfozh.supabase.co'",
+        "base_file": "bkalot/app.js",
+        "bare_fetch_sites": [],
+        "prefixes_the_mount": false
+      }
+    },
+    "briut": {
+      "project": "briut-more30",
+      "artifacts": [
+        "briut-more30"
+      ],
+      "live_artifact": null,
+      "client_hits": [],
+      "not_requested_from_root": [],
+      "probes": [],
+      "live_document": {
+        "status": 200,
+        "bytes": 12344,
+        "assets": []
+      },
+      "staged_not_deployed": [
+        "briut-more30"
+      ],
+      "call_site": {
+        "base": null,
+        "base_expression": null,
+        "base_file": null,
+        "bare_fetch_sites": [],
+        "prefixes_the_mount": false
+      }
+    },
+    "chatzor": {
+      "project": "chatzor-more30",
+      "artifacts": [
+        "chatzor-more30"
+      ],
+      "live_artifact": "chatzor-more30",
+      "client_hits": [],
+      "not_requested_from_root": [
+        {
+          "file": "chatzor/assets/index-YX4TUtOq.js",
+          "path": "/api/broadcast",
+          "reason": "written onto a URL object .pathname — carried by an absolute origin, never requested from more30.com",
+          "context": "bsocket$/i,\"\"),e.pathname===\"\"||e.pathname===\"/\"?e.pathname=\"/api/broadcast\""
+        },
+        {
+          "file": "chatzor/assets/index-YX4TUtOq.js",
+          "path": "/api/broadcast",
+          "reason": "written onto a URL object .pathname — carried by an absolute origin, never requested from more30.com",
+          "context": "ame===\"/\"?e.pathname=\"/api/broadcast\":e.pathname=e.pathname+\"/api/broadcast\""
+        }
+      ],
+      "probes": [],
+      "live_document": {
+        "status": 200,
+        "bytes": 31347,
+        "assets": [
+          "index-YX4TUtOq.js",
+          "query-Ckr_mWGU.js",
+          "react-NN3IinNy.js",
+          "hebcal-CwmBLrNI.js",
+          "motion--tJVryAK.js",
+          "index-VDdZNEWo.css"
+        ]
+      },
+      "staged_not_deployed": [],
+      "call_site": {
+        "base": null,
+        "base_expression": null,
+        "base_file": null,
+        "bare_fetch_sites": [],
+        "prefixes_the_mount": false
+      }
+    },
+    "chizukim": {
+      "project": "chizukim2-more30",
+      "artifacts": [],
+      "live_artifact": null,
+      "client_hits": [],
+      "not_requested_from_root": [],
+      "probes": [],
+      "note": "no _deploy directory deploys this project"
+    },
+    "crm": {
+      "project": "crm-more30",
+      "artifacts": [],
+      "live_artifact": null,
+      "client_hits": [],
+      "not_requested_from_root": [],
+      "probes": [],
+      "note": "no _deploy directory deploys this project"
+    },
+    "egod": {
+      "project": "egod-more30",
+      "artifacts": [
+        "egod-more30"
+      ],
+      "live_artifact": "egod-more30",
+      "client_hits": [],
+      "not_requested_from_root": [
+        {
+          "file": "egod/assets/index-RNBwDqT2.js",
+          "path": "/api/broadcast",
+          "reason": "written onto a URL object .pathname — carried by an absolute origin, never requested from more30.com",
+          "context": "bsocket$/i,\"\"),t.pathname===\"\"||t.pathname===\"/\"?t.pathname=\"/api/broadcast\""
+        },
+        {
+          "file": "egod/assets/index-RNBwDqT2.js",
+          "path": "/api/broadcast",
+          "reason": "written onto a URL object .pathname — carried by an absolute origin, never requested from more30.com",
+          "context": "ame===\"/\"?t.pathname=\"/api/broadcast\":t.pathname=t.pathname+\"/api/broadcast\""
+        }
+      ],
+      "probes": [],
+      "live_document": {
+        "status": 200,
+        "bytes": 3430,
+        "assets": [
+          "index-RNBwDqT2.js",
+          "index-BSCEuFUl.css"
+        ]
+      },
+      "staged_not_deployed": [],
+      "call_site": {
+        "base": null,
+        "base_expression": null,
+        "base_file": null,
+        "bare_fetch_sites": [],
+        "prefixes_the_mount": false
+      }
+    },
+    "galil": {
+      "project": "galil-more30",
+      "artifacts": [
+        "galil-more30"
+      ],
+      "live_artifact": "galil-more30",
+      "client_hits": [],
+      "not_requested_from_root": [
+        {
+          "file": "galil/assets/index-pSOB0569.js",
+          "path": "/api/broadcast",
+          "reason": "written onto a URL object .pathname — carried by an absolute origin, never requested from more30.com",
+          "context": "bsocket$/i,\"\"),t.pathname===\"\"||t.pathname===\"/\"?t.pathname=\"/api/broadcast\""
+        },
+        {
+          "file": "galil/assets/index-pSOB0569.js",
+          "path": "/api/broadcast",
+          "reason": "written onto a URL object .pathname — carried by an absolute origin, never requested from more30.com",
+          "context": "ame===\"/\"?t.pathname=\"/api/broadcast\":t.pathname=t.pathname+\"/api/broadcast\""
+        }
+      ],
+      "probes": [],
+      "live_document": {
+        "status": 200,
+        "bytes": 4694,
+        "assets": [
+          "index-pSOB0569.js",
+          "index-MzAykEnS.css"
+        ]
+      },
+      "staged_not_deployed": [],
+      "call_site": {
+        "base": null,
+        "base_expression": null,
+        "base_file": null,
+        "bare_fetch_sites": [],
+        "prefixes_the_mount": false
+      }
+    },
+    "gannenet": {
+      "project": "gannenet-more30",
+      "artifacts": [],
+      "live_artifact": null,
+      "client_hits": [],
+      "not_requested_from_root": [],
+      "probes": [],
+      "note": "no _deploy directory deploys this project"
+    },
+    "gesher": {
+      "project": "gesher-more30",
+      "artifacts": [],
+      "live_artifact": null,
+      "client_hits": [],
+      "not_requested_from_root": [],
+      "probes": [],
+      "note": "no _deploy directory deploys this project"
+    },
+    "imud": {
+      "project": "imud-more30",
+      "artifacts": [
+        "imud-more30",
+        "imud2"
+      ],
+      "live_artifact": "imud-more30",
+      "client_hits": [
+        {
+          "file": "public/imud/assets/index-DbqCalt6.js",
+          "path": "/api/books"
+        },
+        {
+          "file": "public/imud/assets/index-DbqCalt6.js",
+          "path": "/api/books/${s}",
+          "method": "DELETE"
+        },
+        {
+          "file": "public/imud/assets/index-DbqCalt6.js",
+          "path": "/api/books"
+        },
+        {
+          "file": "public/imud/assets/index-DbqCalt6.js",
+          "path": "/api/books",
+          "method": "POST"
+        },
+        {
+          "file": "public/imud/assets/index-DbqCalt6.js",
+          "path": "/api/books"
+        },
+        {
+          "file": "public/imud/assets/index-DbqCalt6.js",
+          "path": "/api/meta"
+        },
+        {
+          "file": "public/imud/assets/index-DbqCalt6.js",
+          "path": "/api/wizard/infer",
+          "method": "POST"
+        },
+        {
+          "file": "public/imud/assets/index-DbqCalt6.js",
+          "path": "/api/books",
+          "method": "POST"
+        },
+        {
+          "file": "public/imud/assets/index-DbqCalt6.js",
+          "path": "/api/books"
+        },
+        {
+          "file": "public/imud/assets/index-DbqCalt6.js",
+          "path": "/api/books"
+        },
+        {
+          "file": "public/imud/assets/index-DbqCalt6.js",
+          "path": "/api/meta",
+          "method": "GET"
+        },
+        {
+          "file": "public/imud/assets/index-DbqCalt6.js",
+          "path": "/api/books/${t}",
+          "method": "PATCH"
+        },
+        {
+          "file": "public/imud/assets/index-DbqCalt6.js",
+          "path": "/api/books"
+        },
+        {
+          "file": "public/imud/assets/index-DbqCalt6.js",
+          "path": "/api/books"
+        }
+      ],
+      "not_requested_from_root": [
+        {
+          "file": "public/imud/assets/index-DbqCalt6.js",
+          "path": "/api/meta",
+          "reason": "a react-query cache key whose query supplies its own queryFn — the default queryFn that would turn a key into a URL never runs, so more30.com is never asked for it",
+          "context": "[\"/api/meta\"],queryFn:async()=>{const B=await(await "
+        }
+      ],
+      "probes": [
+        {
+          "path": "/api/books",
+          "as_shipped": {
+            "status": 404,
+            "type": "text/plain",
+            "bytes": 79
+          },
+          "as_mounted": {
+            "status": 200,
+            "type": "application/json",
+            "bytes": 2285
+          },
+          "verdict": "prefixed_at_call_site",
+          "client_method": "POST",
+          "would_have_been": "mount_prefix",
+          "call_site": "public/imud/assets/index-DbqCalt6.js: v2=z1&&z1.trim()?z1.trim().replace(/\\/$/,\"\"):\"__PORT_5000__\".startsWith(\"__\")?Nx:\"__PORT_5000__\"",
+          "caveat": "answers under /imud, and the shipped client resolves its fetch base to \"/imud\" — so this literal leaves the browser as /imud/api/books and the route is reached"
+        },
+        {
+          "path": "/api/meta",
+          "as_shipped": {
+            "status": 404,
+            "type": "text/plain",
+            "bytes": 79
+          },
+          "as_mounted": {
+            "status": 200,
+            "type": "application/json",
+            "bytes": 17539
+          },
+          "verdict": "prefixed_at_call_site",
+          "would_have_been": "mount_prefix",
+          "call_site": "public/imud/assets/index-DbqCalt6.js: v2=z1&&z1.trim()?z1.trim().replace(/\\/$/,\"\"):\"__PORT_5000__\".startsWith(\"__\")?Nx:\"__PORT_5000__\"",
+          "caveat": "answers under /imud, and the shipped client resolves its fetch base to \"/imud\" — so this literal leaves the browser as /imud/api/meta and the route is reached"
+        },
+        {
+          "path": "/api/wizard/infer",
+          "as_shipped": {
+            "status": 404,
+            "type": "text/plain",
+            "bytes": 79
+          },
+          "as_mounted": {
+            "status": 404,
+            "type": "application/json",
+            "bytes": 60
+          },
+          "verdict": "reached_mount_function",
+          "client_method": "POST",
+          "caveat": "the mounted address reached imud's own API function, which answered 404 JSON naming the path back. The prefix works; this deployment does not carry the route"
+        }
+      ],
+      "live_document": {
+        "status": 200,
+        "bytes": 3344,
+        "assets": [
+          "index-DbqCalt6.js",
+          "index-DRN1hLUe.css"
+        ]
+      },
+      "staged_not_deployed": [
+        "imud2"
+      ],
+      "call_site": {
+        "base": "/imud",
+        "base_expression": "v2=z1&&z1.trim()?z1.trim().replace(/\\/$/,\"\"):\"__PORT_5000__\".startsWith(\"__\")?Nx:\"__PORT_5000__\"",
+        "base_file": "public/imud/assets/index-DbqCalt6.js",
+        "bare_fetch_sites": [],
+        "prefixes_the_mount": true
+      },
+      "verdict_counts": {
+        "served_at_root": 0,
+        "mount_prefix": 0,
+        "mount_other_method": 0,
+        "prefixed_at_call_site": 2,
+        "reached_mount_function": 1,
+        "absent_in_production": 0
+      }
+    },
+    "kesef": {
+      "project": "kesef-more30",
+      "artifacts": [],
+      "live_artifact": null,
+      "client_hits": [],
+      "not_requested_from_root": [],
+      "probes": [],
+      "note": "no _deploy directory deploys this project"
+    },
+    "kiosk": {
+      "project": "kioskfleet-production",
+      "artifacts": [],
+      "live_artifact": null,
+      "client_hits": [],
+      "not_requested_from_root": [],
+      "probes": [],
+      "note": "no _deploy directory deploys this project"
+    },
+    "kupot": {
+      "project": "kupot-more30",
+      "artifacts": [
+        "kupot-more30",
+        "kupot2"
+      ],
+      "live_artifact": "kupot-more30",
+      "client_hits": [
+        {
+          "file": "kupot/assets/index-DbBm6hnF.js",
+          "path": "/api/switch-lead",
+          "method": "POST"
+        },
+        {
+          "file": "kupot/assets/index-DbBm6hnF.js",
+          "path": "/api/agent",
+          "method": "POST"
+        },
+        {
+          "file": "kupot/assets/index-DbBm6hnF.js",
+          "path": "/api/hf/topics/${e.id}"
+        },
+        {
+          "file": "kupot/assets/index-DbBm6hnF.js",
+          "path": "/api/hf/meta"
+        },
+        {
+          "file": "kupot/assets/index-DbBm6hnF.js",
+          "path": "/api/hf/topics"
+        }
+      ],
+      "not_requested_from_root": [],
+      "probes": [
+        {
+          "path": "/api/agent",
+          "as_shipped": {
+            "status": 404,
+            "type": "text/plain",
+            "bytes": 79
+          },
+          "as_mounted": {
+            "status": 404,
+            "type": "text/html",
+            "bytes": 390
+          },
+          "verdict": "prefixed_at_call_site",
+          "client_method": "POST",
+          "would_have_been": "mount_other_method",
+          "call_site": "kupot/assets/index-DbBm6hnF.js: ew=Bd&&Bd.trim()?Bd.trim().replace(/\\/$/,\"\"):\"__PORT_5000__\".startsWith(\"__\")?AT:\"__PORT_5000__\"",
+          "caveat": "answers under /kupot, and the shipped client resolves its fetch base to \"/kupot\" — so this literal leaves the browser as /kupot/api/agent and the route is reached"
+        },
+        {
+          "path": "/api/hf/meta",
+          "as_shipped": {
+            "status": 200,
+            "type": "application/json",
+            "bytes": 1198
+          },
+          "as_mounted": {
+            "status": 200,
+            "type": "application/json",
+            "bytes": 1198
+          },
+          "verdict": "served_at_root"
+        },
+        {
+          "path": "/api/hf/topics",
+          "as_shipped": {
+            "status": 200,
+            "type": "application/json",
+            "bytes": 432893
+          },
+          "as_mounted": {
+            "status": 200,
+            "type": "application/json",
+            "bytes": 432893
+          },
+          "verdict": "served_at_root"
+        },
+        {
+          "path": "/api/switch-lead",
+          "as_shipped": {
+            "status": 404,
+            "type": "text/plain",
+            "bytes": 79
+          },
+          "as_mounted": {
+            "status": 404,
+            "type": "text/html",
+            "bytes": 396
+          },
+          "verdict": "prefixed_at_call_site",
+          "client_method": "POST",
+          "would_have_been": "mount_other_method",
+          "call_site": "kupot/assets/index-DbBm6hnF.js: ew=Bd&&Bd.trim()?Bd.trim().replace(/\\/$/,\"\"):\"__PORT_5000__\".startsWith(\"__\")?AT:\"__PORT_5000__\"",
+          "caveat": "answers under /kupot, and the shipped client resolves its fetch base to \"/kupot\" — so this literal leaves the browser as /kupot/api/switch-lead and the route is reached"
+        }
+      ],
+      "live_document": {
+        "status": 200,
+        "bytes": 3693,
+        "assets": [
+          "index-DbBm6hnF.js",
+          "index-CqpVarLR.css"
+        ]
+      },
+      "staged_not_deployed": [
+        "kupot2"
+      ],
+      "call_site": {
+        "base": "/kupot",
+        "base_expression": "ew=Bd&&Bd.trim()?Bd.trim().replace(/\\/$/,\"\"):\"__PORT_5000__\".startsWith(\"__\")?AT:\"__PORT_5000__\"",
+        "base_file": "kupot/assets/index-DbBm6hnF.js",
+        "bare_fetch_sites": [],
+        "prefixes_the_mount": true
+      },
+      "verdict_counts": {
+        "served_at_root": 2,
+        "mount_prefix": 0,
+        "mount_other_method": 0,
+        "prefixed_at_call_site": 2,
+        "reached_mount_function": 0,
+        "absent_in_production": 0
+      }
+    },
+    "mechiron": {
+      "project": "mechiron-more30",
+      "artifacts": [
+        "mechiron-more30"
+      ],
+      "live_artifact": "mechiron-more30",
+      "client_hits": [
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/meta"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/rights"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/orgs"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/rights"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/meta"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/rights",
+          "method": "POST"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/rights"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/public/rights"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/meta"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/rights/${e.id}",
+          "method": "PATCH"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/rights"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/rights"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/rights"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/orgs"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/meta"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/orgs/${e.id}",
+          "method": "PATCH"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/orgs"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/orgs"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/orgs"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/rights"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/orgs"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/automation/schema"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/rights"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/orgs"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/automation/${e}/${j}?channel=${l}&clientName=${encodeURIComponent(u)}"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/public/service-context/${n}"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/meta"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/public/rights"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/clients/by-phone?phone=${encodeURIComponent(ae)}",
+          "method": "GET"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/service-submissions",
+          "method": "POST"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/crm/submissions"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/admin/me",
+          "method": "GET"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/admin/login"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/admin/logout",
+          "method": "POST"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/financial/overview"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/financial/clients"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/financial/clients"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/financial/tips"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/financial/clients",
+          "method": "POST"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/financial/clients"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/financial/clients/${u}",
+          "method": "DELETE"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/financial/clients"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/financial/clients/${e.id}/transactions"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/financial/categories"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/financial/transactions",
+          "method": "POST"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/financial/clients/${e.id}/transactions"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/financial/transactions/${c}",
+          "method": "DELETE"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/financial/clients/${e.id}/transactions"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/financial/clients/${e.id}/budgets"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/financial/categories"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/financial/budgets",
+          "method": "POST"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/financial/clients/${e.id}/budgets"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/financial/budgets/${c}",
+          "method": "DELETE"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/financial/clients/${e.id}/budgets"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/financial/clients/${e.id}/recurring"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/financial/recurring",
+          "method": "POST"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/financial/clients/${e.id}/recurring"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/financial/recurring/${l}",
+          "method": "DELETE"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/financial/clients/${e.id}/recurring"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/financial/opportunities"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/financial/clients/${e.id}/suggest-opportunities",
+          "method": "POST"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/financial/opportunities"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/financial/opportunities/${s}",
+          "method": "PATCH"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/financial/opportunities"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/financial/coaches"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/financial/clients/${i}/assign-coach",
+          "method": "PATCH"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/financial/clients"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/financial/coaches"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/financial/leads"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/financial/leads/${n}",
+          "method": "PATCH"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/financial/leads"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/financial/admin/tips"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/financial/tips",
+          "method": "POST"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/financial/admin/tips"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/financial/tips/${l}",
+          "method": "PATCH"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/financial/admin/tips"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/financial/tips/${l}",
+          "method": "DELETE"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/financial/admin/tips"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/admin/automations"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/admin/automations/${e.key}",
+          "method": "PATCH"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/admin/automations"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/admin/automations/${e.key}/test",
+          "method": "POST"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/admin/automations"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/admin/google/status"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/admin/google/start"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/admin/users"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/admin/users",
+          "method": "POST"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/admin/users"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/admin/users/${u.id}",
+          "method": "PATCH"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/admin/users"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/admin/users/${u.id}",
+          "method": "DELETE"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/admin/users"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/financial/clients"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/admin/users/${i.id}/send-credentials",
+          "method": "POST"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/admin/users"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/admin/delivery"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/clients"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/admin/users"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/admin/delivery/${u.id}/send",
+          "method": "POST"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/admin/delivery"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/admin/delivery/${u.id}",
+          "method": "DELETE"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/admin/delivery"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/admin/delivery"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/admin/delivery",
+          "method": "POST"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/admin/delivery/${D.id}/send",
+          "method": "POST"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/me/financial/dashboard"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/user/premium-requests"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/me/financial/transactions",
+          "method": "POST"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/me/financial/dashboard"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/me/financial/alerts/${u}/ack",
+          "method": "POST"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/me/financial/dashboard"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/user/premium-requests",
+          "method": "POST"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/user/premium-requests"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/admin/webhook-log"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/admin/webhook-log/${c}/retry",
+          "method": "POST"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/admin/webhook-log"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/admin/premium-requests"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/admin/users"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/admin/premium-requests/${l}",
+          "method": "PATCH"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/admin/premium-requests"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/admin/users"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/admin/db-status"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/admin/google/status"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/admin/db-status"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/*"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/*"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/admin/google/status"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/financial/leads"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/admin/reminder-responses"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/financial/leads",
+          "method": "POST"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/public/rights"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/meta"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/public/catalog-settings"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/public/params-topics"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/public/rights/${t}"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/financial/leads",
+          "method": "POST"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/public/reminder-response",
+          "method": "POST"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/public/rights/${t}"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/admin/advanced-match",
+          "method": "POST"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/admin/general-inquiry-reply",
+          "method": "GET"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/admin/general-inquiry-reply",
+          "method": "PATCH"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/admin/general-inquiry-reply/preview",
+          "method": "POST"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/admin/general-inquiry-reply/send",
+          "method": "POST"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/public/chatbot/config"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/public/chatbot/answer",
+          "method": "POST"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/public/chatbot/lead",
+          "method": "POST"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/admin/chatbot"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/admin/chatbot",
+          "method": "PATCH"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/admin/chatbot"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/public/potential/link/${encodeURIComponent(a)}"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/public/potential/config"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/public/potential/submit"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/public/potential/submit"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/admin/potential/config"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/admin/potential/links"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/admin/potential/submissions"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/admin/potential/config",
+          "method": "PATCH"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/admin/potential/config"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/admin/potential/config/reset-defaults",
+          "method": "POST"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/admin/potential/config"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/admin/potential/links",
+          "method": "POST"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/admin/potential/links"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/admin/potential/links/${R}",
+          "method": "PATCH"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/admin/potential/links"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/admin/potential/links/${R}",
+          "method": "DELETE"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/admin/potential/links"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/admin/params-topics"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/admin/catalog-settings"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/admin/catalog-settings",
+          "method": "PATCH"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/admin/catalog-settings"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/public/catalog-settings"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/admin/params-topics",
+          "method": "POST"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/admin/params-topics/${f}",
+          "method": "PATCH"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/admin/params-topics"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/admin/params-topics/${P}",
+          "method": "DELETE"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/admin/params-topics"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/admin/api-access"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/admin/api-access",
+          "method": "PATCH"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/admin/api-access"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/admin/api-access/rotate",
+          "method": "POST"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/admin/api-access"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/admin/api-access/clear",
+          "method": "POST"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/admin/api-access"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/external"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/external"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/external"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/external/health"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/external/rights/public"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/external/rights"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/external/orgs"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/external/params-topics"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/external/potential/submissions"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/external/service-submissions"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/external/inbound-leads"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/external/clients"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/external/financial/clients"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/external/financial/tasks?clientId=…"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/external/financial/messages?clientId=…"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/external/financial/documents?clientId=…"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/external/financial/plans?clientId=…"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/external/financial/activity?clientId=…"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/external/financial/reminders?clientId=…"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/external/financial/reports?clientId=…"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/financial/clients"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/financial/coaches"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/financial/clients/${a}/tasks"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/financial/clients/${a}/messages"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/financial/clients/${a}/documents"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/financial/clients/${a}/reminders"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/financial/clients/${a}/reports"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/financial/clients/${a}/activity"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/financial/clients/${a}/${T}"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/financial/clients/${a}/activity"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/financial/tasks",
+          "method": "POST"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/financial/tasks/${T}",
+          "method": "PATCH"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/financial/tasks/${T}",
+          "method": "DELETE"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/financial/messages",
+          "method": "POST"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/financial/documents",
+          "method": "POST"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/financial/documents/${T}",
+          "method": "PATCH"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/financial/documents/${T}",
+          "method": "DELETE"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/financial/reminders",
+          "method": "POST"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/financial/reminders/${T}",
+          "method": "DELETE"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/financial/reports",
+          "method": "POST"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/pc/public/catalog?${F(U).toString()}"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/pc/public/settings"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/pc/public/meta"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/pc/public/filters"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/pc/public/promotions"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/pc/public/compare/${encodeURIComponent(t)}"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/pc/admin/categories",
+          "method": "GET"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/pc/admin/stores",
+          "method": "GET"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/pc/admin/products",
+          "method": "GET"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/pc/admin/promotions",
+          "method": "GET"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/pc/admin/settings",
+          "method": "GET"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/pc/admin/stats",
+          "method": "GET"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/pc/admin/feeds",
+          "method": "GET"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/pc/admin/jobs",
+          "method": "GET"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/pc/admin/data-health",
+          "method": "GET"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/pc/admin/submissions${W}",
+          "method": "GET"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/pc/admin/submissions/${W}/${We}",
+          "method": "POST"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/pc/admin/voluntary-tokens",
+          "method": "GET"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/pc/admin/voluntary-tokens",
+          "method": "POST"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/pc/admin/voluntary-tokens/${W.id}",
+          "method": "PATCH"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/pc/admin/feeds",
+          "method": "POST"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/pc/admin/feeds/${W.id}",
+          "method": "PATCH"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/pc/admin/feeds/${W}/run",
+          "method": "POST"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/pc/admin/import/daily",
+          "method": "POST"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/pc/admin/jobs/${W}/logs",
+          "method": "GET"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/pc/admin/feeds/${se||0}/upload",
+          "method": "POST"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/pc/admin/settings",
+          "method": "PATCH"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/pc/admin/products/${W.id}/prices",
+          "method": "GET"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/pc/admin/categories",
+          "method": "POST"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/pc/admin/stores",
+          "method": "POST"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/pc/admin/products",
+          "method": "POST"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/pc/admin/prices",
+          "method": "POST"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/pc/admin/promotions",
+          "method": "POST"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/pc/admin/feeds/${W.id}"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/pc/admin/products/${W.id}"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/pc/admin/prices/${W.id}"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/pc/admin/stores/${W.id}"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/pc/admin/categories/${W.id}"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/pc/admin/promotions/${W.id}"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/pc/automation/query"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/pc/cron/daily-import"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/public/community/${encodeURIComponent(t)}"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/public/community/${encodeURIComponent(t)}/submit"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/community/admin/questionnaires",
+          "method": "GET"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/community/admin/settings",
+          "method": "GET"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/community/admin/settings",
+          "method": "PATCH"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/community/admin/questionnaires/${T}",
+          "method": "GET"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/community/admin/submissions?questionnaireId=${T}",
+          "method": "GET"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/community/admin/questionnaires",
+          "method": "POST"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/community/admin/questionnaires/${i.questionnaire.id}",
+          "method": "PATCH"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/community/admin/questionnaires/${i.questionnaire.id}/questions",
+          "method": "POST"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/community/admin/questions/${T}",
+          "method": "PATCH"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/community/admin/questions/${T}",
+          "method": "DELETE"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/community/admin/questionnaires/${i.questionnaire.id}/links",
+          "method": "POST"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/community/admin/links/${T.id}",
+          "method": "PATCH"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/community/admin/links/${T}",
+          "method": "DELETE"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/hf/public/switch-lead",
+          "method": "POST"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/hf/public/search?${G(F).toString()}"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/hf/public/meta"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/hf/public/topic"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/hf/public/request",
+          "method": "POST"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/hf/admin/topics?withTiers=1${b?",
+          "method": "GET"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/hf/admin/requests",
+          "method": "GET"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/hf/admin/switch-leads",
+          "method": "GET"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/hf/admin/switch-leads/${J}",
+          "method": "PATCH"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/hf/admin/switch-leads/${J}",
+          "method": "DELETE"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/hf/admin/topics/${J}",
+          "method": "PATCH"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/hf/admin/topics/${J.id}",
+          "method": "PATCH"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/hf/admin/topics/${J.id}",
+          "method": "DELETE"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/hf/admin/topics/${J}/tiers",
+          "method": "POST"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/hf/admin/topics/${J}",
+          "method": "GET"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/hf/admin/tiers/${J.id}",
+          "method": "PATCH"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/hf/admin/tiers/${J.id}",
+          "method": "DELETE"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/hf/admin/topics/${J}/podcast/script",
+          "method": "POST"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/hf/admin/topics/${J}/podcast/script",
+          "method": "PUT"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/hf/admin/topics/${J}/podcast/audio",
+          "method": "POST"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/hf/admin/topics/${J}/podcast/audio",
+          "method": "DELETE"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/hf/admin/topics/${J}/podcast/send",
+          "method": "POST"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/hf/admin/topics",
+          "method": "POST"
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/pc/submit/${encodeURIComponent(t)}/template.csv"
+        }
+      ],
+      "not_requested_from_root": [
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/admin/google/status",
+          "reason": "a react-query cache key whose query supplies its own queryFn — the default queryFn that would turn a key into a URL never runs, so more30.com is never asked for it",
+          "context": "[\"/api/admin/google/status\"],queryFn:async()=>{const b=await fetch("
+        },
+        {
+          "file": "public/mechiron/assets/index-DcMphBNb.js",
+          "path": "/api/admin/google/status",
+          "reason": "a react-query cache key whose query supplies its own queryFn — the default queryFn that would turn a key into a URL never runs, so more30.com is never asked for it",
+          "context": "[\"/api/admin/google/status\"],queryFn:async()=>{const n=await fetch("
+        }
+      ],
+      "probes": [
+        {
+          "path": "/api/admin/advanced-match",
+          "as_shipped": {
+            "status": 404,
+            "type": "text/plain",
+            "bytes": 79
+          },
+          "as_mounted": {
+            "status": 404,
+            "type": "application/json",
+            "bytes": 53
+          },
+          "verdict": "reached_mount_function",
+          "client_method": "POST",
+          "caveat": "the mounted address reached mechiron's own API function, which answered 404 JSON naming the path back. The prefix works; this deployment does not carry the route"
+        },
+        {
+          "path": "/api/admin/api-access",
+          "as_shipped": {
+            "status": 404,
+            "type": "text/plain",
+            "bytes": 79
+          },
+          "as_mounted": {
+            "status": 404,
+            "type": "application/json",
+            "bytes": 49
+          },
+          "verdict": "reached_mount_function",
+          "client_method": "PATCH",
+          "caveat": "the mounted address reached mechiron's own API function, which answered 404 JSON naming the path back. The prefix works; this deployment does not carry the route"
+        },
+        {
+          "path": "/api/admin/api-access/clear",
+          "as_shipped": {
+            "status": 404,
+            "type": "text/plain",
+            "bytes": 79
+          },
+          "as_mounted": {
+            "status": 404,
+            "type": "application/json",
+            "bytes": 55
+          },
+          "verdict": "reached_mount_function",
+          "client_method": "POST",
+          "caveat": "the mounted address reached mechiron's own API function, which answered 404 JSON naming the path back. The prefix works; this deployment does not carry the route"
+        },
+        {
+          "path": "/api/admin/api-access/rotate",
+          "as_shipped": {
+            "status": 404,
+            "type": "text/plain",
+            "bytes": 79
+          },
+          "as_mounted": {
+            "status": 404,
+            "type": "application/json",
+            "bytes": 56
+          },
+          "verdict": "reached_mount_function",
+          "client_method": "POST",
+          "caveat": "the mounted address reached mechiron's own API function, which answered 404 JSON naming the path back. The prefix works; this deployment does not carry the route"
+        },
+        {
+          "path": "/api/admin/automations",
+          "as_shipped": {
+            "status": 404,
+            "type": "text/plain",
+            "bytes": 79
+          },
+          "as_mounted": {
+            "status": 404,
+            "type": "application/json",
+            "bytes": 50
+          },
+          "verdict": "reached_mount_function",
+          "caveat": "the mounted address reached mechiron's own API function, which answered 404 JSON naming the path back. The prefix works; this deployment does not carry the route"
+        },
+        {
+          "path": "/api/admin/catalog-settings",
+          "as_shipped": {
+            "status": 404,
+            "type": "text/plain",
+            "bytes": 79
+          },
+          "as_mounted": {
+            "status": 404,
+            "type": "application/json",
+            "bytes": 55
+          },
+          "verdict": "reached_mount_function",
+          "client_method": "PATCH",
+          "caveat": "the mounted address reached mechiron's own API function, which answered 404 JSON naming the path back. The prefix works; this deployment does not carry the route"
+        }
+      ],
+      "live_document": {
+        "status": 200,
+        "bytes": 31585,
+        "assets": [
+          "index-DcMphBNb.js",
+          "index-BMbi5OZ_.css"
+        ]
+      },
+      "staged_not_deployed": [],
+      "call_site": {
+        "base": "",
+        "base_expression": "Un=\"__PORT_5000__\".startsWith(\"__\")?\"\":\"__PORT_5000__\"",
+        "base_file": "public/mechiron/assets/index-DcMphBNb.js",
+        "bare_fetch_sites": [
+          {
+            "file": "public/mechiron/assets/index-DcMphBNb.js",
+            "context": "fetch(\"/api/admin/login\",{method:\"POST\",headers:{\"Content-Ty"
+          },
+          {
+            "file": "public/mechiron/assets/index-DcMphBNb.js",
+            "context": "fetch(\"/api/admin/google/status\");if(!b.ok)throw new Error(\""
+          },
+          {
+            "file": "public/mechiron/assets/index-DcMphBNb.js",
+            "context": "fetch(\"/api/admin/google/status\");if(!n.ok)throw new Error(\""
+          },
+          {
+            "file": "public/mechiron/assets/index-DcMphBNb.js",
+            "context": "fetch(\"/api/public/potential/submit\",{method:\"POST\",headers:"
+          },
+          {
+            "file": "public/mechiron/assets/index-DcMphBNb.js",
+            "context": "fetch(\"/api/public/potential/submit\",{method:\"POST\",headers:"
+          },
+          {
+            "file": "public/mechiron/assets/index-DcMphBNb.js",
+            "context": "fetch(`/api/public/community/${encodeURIComponent(t)}`).then"
+          },
+          {
+            "file": "public/mechiron/assets/index-DcMphBNb.js",
+            "context": "fetch(`/api/public/community/${encodeURIComponent(t)}/submit"
+          },
+          {
+            "file": "public/mechiron/assets/index-DcMphBNb.js",
+            "context": "fetch(`/api/hf/public/search?${G(F).toString()}`)).json();s("
+          },
+          {
+            "file": "public/mechiron/assets/index-DcMphBNb.js",
+            "context": "fetch(\"/api/hf/public/meta\").then(F=>F.json()).then(F=>n(F))"
+          }
+        ],
+        "prefixes_the_mount": false
+      },
+      "verdict_counts": {
+        "served_at_root": 0,
+        "mount_prefix": 0,
+        "mount_other_method": 0,
+        "prefixed_at_call_site": 0,
+        "reached_mount_function": 6,
+        "absent_in_production": 0
+      }
+    },
+    "modaot": {
+      "project": "modaot-more30",
+      "artifacts": [],
+      "live_artifact": null,
+      "client_hits": [],
+      "not_requested_from_root": [],
+      "probes": [],
+      "note": "no _deploy directory deploys this project"
+    },
+    "mthbram": {
+      "project": "mthbram-more30",
+      "artifacts": [
+        "mthbram-more30"
+      ],
+      "live_artifact": "mthbram-more30",
+      "client_hits": [],
+      "not_requested_from_root": [
+        {
+          "file": "mthbram/assets/index-DheqMcgT.js",
+          "path": "/api/broadcast",
+          "reason": "written onto a URL object .pathname — carried by an absolute origin, never requested from more30.com",
+          "context": "bsocket$/i,\"\"),t.pathname===\"\"||t.pathname===\"/\"?t.pathname=\"/api/broadcast\""
+        },
+        {
+          "file": "mthbram/assets/index-DheqMcgT.js",
+          "path": "/api/broadcast",
+          "reason": "written onto a URL object .pathname — carried by an absolute origin, never requested from more30.com",
+          "context": "ame===\"/\"?t.pathname=\"/api/broadcast\":t.pathname=t.pathname+\"/api/broadcast\""
+        }
+      ],
+      "probes": [],
+      "live_document": {
+        "status": 200,
+        "bytes": 4224,
+        "assets": [
+          "index-DheqMcgT.js",
+          "index-CsFZVJhK.css"
+        ]
+      },
+      "staged_not_deployed": [],
+      "call_site": {
+        "base": null,
+        "base_expression": null,
+        "base_file": null,
+        "bare_fetch_sites": [],
+        "prefixes_the_mount": false
+      }
+    },
+    "nadlan": {
+      "project": "nadlan-more30",
+      "artifacts": [],
+      "live_artifact": null,
+      "client_hits": [],
+      "not_requested_from_root": [],
+      "probes": [],
+      "note": "no _deploy directory deploys this project"
+    },
+    "orech": {
+      "project": "orech-more30",
+      "artifacts": [],
+      "live_artifact": null,
+      "client_hits": [],
+      "not_requested_from_root": [],
+      "probes": [],
+      "note": "no _deploy directory deploys this project"
+    },
+    "smachot": {
+      "project": "smachot-more30",
+      "artifacts": [
+        "smachot-more30"
+      ],
+      "live_artifact": null,
+      "client_hits": [],
+      "not_requested_from_root": [],
+      "probes": [],
+      "live_document": {
+        "status": 200,
+        "bytes": 4205,
+        "assets": []
+      },
+      "staged_not_deployed": [
+        "smachot-more30"
+      ],
+      "call_site": {
+        "base": null,
+        "base_expression": null,
+        "base_file": null,
+        "bare_fetch_sites": [],
+        "prefixes_the_mount": false
+      }
+    },
+    "smel": {
+      "project": "smel-more30",
+      "artifacts": [
+        "smel-more30"
+      ],
+      "live_artifact": "smel-more30",
+      "client_hits": [],
+      "not_requested_from_root": [
+        {
+          "file": "smel/assets/index-BzxcokTm.js",
+          "path": "/api/questionnaire",
+          "reason": "a react-query cache key whose query supplies its own queryFn — the default queryFn that would turn a key into a URL never runs, so more30.com is never asked for it",
+          "context": "[\"/api/questionnaire\"],queryFn:()=>eC()}),y=zC({resolver:HC(q"
+        }
+      ],
+      "probes": [],
+      "live_document": {
+        "status": 200,
+        "bytes": 2110,
+        "assets": [
+          "index-BzxcokTm.js",
+          "index-D8RwD_06.css"
+        ]
+      },
+      "staged_not_deployed": [],
+      "call_site": {
+        "base": "",
+        "base_expression": "tS=\"__PORT_5000__\".startsWith(\"__\")?\"\":\"__PORT_5000__\"",
+        "base_file": "smel/assets/index-BzxcokTm.js",
+        "bare_fetch_sites": [],
+        "prefixes_the_mount": false
+      }
+    },
+    "studio": {
+      "project": "studio-more30",
+      "artifacts": [
+        "studio-more30"
+      ],
+      "live_artifact": "studio-more30",
+      "client_hits": [
+        {
+          "file": "public/studio/assets/BrandingBrief-DlnSH3li.js",
+          "path": "/api/branding/strategy",
+          "method": "POST"
+        },
+        {
+          "file": "public/studio/assets/BrandingBrief-DlnSH3li.js",
+          "path": "/api/brands",
+          "method": "POST"
+        },
+        {
+          "file": "public/studio/assets/BrandingBrief-DlnSH3li.js",
+          "path": "/api/brands"
+        },
+        {
+          "file": "public/studio/assets/BrandingHome-BODyNKHd.js",
+          "path": "/api/brands"
+        },
+        {
+          "file": "public/studio/assets/BrandingHome-BODyNKHd.js",
+          "path": "/api/brands/${s}",
+          "method": "DELETE"
+        },
+        {
+          "file": "public/studio/assets/BrandingHome-BODyNKHd.js",
+          "path": "/api/brands"
+        },
+        {
+          "file": "public/studio/assets/BrandKitPage-BUzlfv7N.js",
+          "path": "/api/brands"
+        },
+        {
+          "file": "public/studio/assets/BrandKitPage-BUzlfv7N.js",
+          "path": "/api/branding/logo",
+          "method": "POST"
+        },
+        {
+          "file": "public/studio/assets/BrandKitPage-BUzlfv7N.js",
+          "path": "/api/brands/${o}",
+          "method": "PATCH"
+        },
+        {
+          "file": "public/studio/assets/BrandKitPage-BUzlfv7N.js",
+          "path": "/api/brands"
+        },
+        {
+          "file": "public/studio/assets/BrandKitPage-BUzlfv7N.js",
+          "path": "/api/brands"
+        },
+        {
+          "file": "public/studio/assets/BrandKitPage-BUzlfv7N.js",
+          "path": "/api/branding/vectorize",
+          "method": "POST"
+        },
+        {
+          "file": "public/studio/assets/BrandKitPage-BUzlfv7N.js",
+          "path": "/api/brands/${o}",
+          "method": "PATCH"
+        },
+        {
+          "file": "public/studio/assets/BrandKitPage-BUzlfv7N.js",
+          "path": "/api/brands"
+        },
+        {
+          "file": "public/studio/assets/Brief-DTTM4z7O.js",
+          "path": "/api/meta"
+        },
+        {
+          "file": "public/studio/assets/Brief-DTTM4z7O.js",
+          "path": "/api/categories/${encodeURIComponent(n)}/templates",
+          "method": "GET"
+        },
+        {
+          "file": "public/studio/assets/Brief-DTTM4z7O.js",
+          "path": "/api/categories/${encodeURIComponent(n)}/templates/${encodeURIComponent(t.key)}/render",
+          "method": "POST"
+        },
+        {
+          "file": "public/studio/assets/Brief-DTTM4z7O.js",
+          "path": "/api/brief/concepts",
+          "method": "POST"
+        },
+        {
+          "file": "public/studio/assets/Brief-DTTM4z7O.js",
+          "path": "/api/presets/${encodeURIComponent(r)}/render",
+          "method": "POST"
+        },
+        {
+          "file": "public/studio/assets/Brief-DTTM4z7O.js",
+          "path": "/api/categories/${encodeURIComponent(s)}/templates/${encodeURIComponent(a.key)}/render",
+          "method": "POST"
+        },
+        {
+          "file": "public/studio/assets/Brief-DTTM4z7O.js",
+          "path": "/api/presets/${encodeURIComponent(l)}/render",
+          "method": "POST"
+        },
+        {
+          "file": "public/studio/assets/Editor-ChIy4ID1.js",
+          "path": "/api/ai/copy",
+          "method": "POST"
+        },
+        {
+          "file": "public/studio/assets/Editor-ChIy4ID1.js",
+          "path": "/api/ai/background",
+          "method": "POST"
+        },
+        {
+          "file": "public/studio/assets/Editor-ChIy4ID1.js",
+          "path": "/api/projects/${e.projectId}",
+          "method": "PATCH"
+        },
+        {
+          "file": "public/studio/assets/Editor-ChIy4ID1.js",
+          "path": "/api/projects",
+          "method": "POST"
+        },
+        {
+          "file": "public/studio/assets/index-DN36X7rm.js",
+          "path": "/api/templates"
+        },
+        {
+          "file": "public/studio/assets/Projects-B4j6y0A-.js",
+          "path": "/api/projects"
+        },
+        {
+          "file": "public/studio/assets/Projects-B4j6y0A-.js",
+          "path": "/api/projects/${t}",
+          "method": "DELETE"
+        },
+        {
+          "file": "public/studio/assets/Projects-B4j6y0A-.js",
+          "path": "/api/projects"
+        },
+        {
+          "file": "public/studio/assets/Studio-BwURaOFy.js",
+          "path": "/api/meta"
+        },
+        {
+          "file": "public/studio/assets/Studio-BwURaOFy.js",
+          "path": "/api/presets?${t.toString()}",
+          "method": "GET"
+        },
+        {
+          "file": "public/studio/assets/Studio-BwURaOFy.js",
+          "path": "/api/presets/${encodeURIComponent(t.key)}/render",
+          "method": "POST"
+        },
+        {
+          "file": "public/studio/assets/Studio-BwURaOFy.js",
+          "path": "/api/presets/${encodeURIComponent(a.key)}/render",
+          "method": "POST"
+        }
+      ],
+      "not_requested_from_root": [
+        {
+          "file": "public/studio/assets/Brief-DTTM4z7O.js",
+          "path": "/api/categories",
+          "reason": "a react-query cache key whose query supplies its own queryFn — the default queryFn that would turn a key into a URL never runs, so more30.com is never asked for it",
+          "context": "[\"/api/categories\",n,\"templates\"],enabled:S,staleTime:1/0,queryFn:async("
+        },
+        {
+          "file": "public/studio/assets/Brief-DTTM4z7O.js",
+          "path": "/api/categories",
+          "reason": "a react-query cache key whose query supplies its own queryFn — the default queryFn that would turn a key into a URL never runs, so more30.com is never asked for it",
+          "context": "[\"/api/categories\",s,\"templates\",a.key,\"preview\"],staleTime:1/0,queryFn:async()=>(await "
+        },
+        {
+          "file": "public/studio/assets/Brief-DTTM4z7O.js",
+          "path": "/api/presets",
+          "reason": "a react-query cache key whose query supplies its own queryFn — the default queryFn that would turn a key into a URL never runs, so more30.com is never asked for it",
+          "context": "[\"/api/presets\",l,\"concept-preview\"],enabled:!!l,staleTime:1/0,queryFn:asyn"
+        },
+        {
+          "file": "public/studio/assets/Studio-BwURaOFy.js",
+          "path": "/api/presets",
+          "reason": "a react-query cache key whose query supplies its own queryFn — the default queryFn that would turn a key into a URL never runs, so more30.com is never asked for it",
+          "context": "[\"/api/presets\",s,n],queryFn:async()=>{const t=new URLSearc"
+        },
+        {
+          "file": "public/studio/assets/Studio-BwURaOFy.js",
+          "path": "/api/presets",
+          "reason": "a react-query cache key whose query supplies its own queryFn — the default queryFn that would turn a key into a URL never runs, so more30.com is never asked for it",
+          "context": "[\"/api/presets\",a.key,\"preview\"],queryFn:async()=>(await j(\"POST\",`/api"
+        }
+      ],
+      "probes": [
+        {
+          "path": "/api/ai/background",
+          "as_shipped": {
+            "status": 404,
+            "type": "text/plain",
+            "bytes": 79
+          },
+          "as_mounted": {
+            "status": 404,
+            "type": "text/html",
+            "bytes": 399
+          },
+          "verdict": "prefixed_at_call_site",
+          "client_method": "POST",
+          "would_have_been": "mount_other_method",
+          "call_site": "public/studio/assets/index-DN36X7rm.js: em=\"__PORT_5000__\".startsWith(\"__\")?wv:\"__PORT_5000__\"",
+          "caveat": "answers under /studio, and the shipped client resolves its fetch base to \"/studio\" — so this literal leaves the browser as /studio/api/ai/background and the route is reached"
+        },
+        {
+          "path": "/api/ai/copy",
+          "as_shipped": {
+            "status": 404,
+            "type": "text/plain",
+            "bytes": 79
+          },
+          "as_mounted": {
+            "status": 404,
+            "type": "text/html",
+            "bytes": 393
+          },
+          "verdict": "prefixed_at_call_site",
+          "client_method": "POST",
+          "would_have_been": "mount_other_method",
+          "call_site": "public/studio/assets/index-DN36X7rm.js: em=\"__PORT_5000__\".startsWith(\"__\")?wv:\"__PORT_5000__\"",
+          "caveat": "answers under /studio, and the shipped client resolves its fetch base to \"/studio\" — so this literal leaves the browser as /studio/api/ai/copy and the route is reached"
+        },
+        {
+          "path": "/api/branding/logo",
+          "as_shipped": {
+            "status": 404,
+            "type": "text/plain",
+            "bytes": 79
+          },
+          "as_mounted": {
+            "status": 404,
+            "type": "text/html",
+            "bytes": 399
+          },
+          "verdict": "prefixed_at_call_site",
+          "client_method": "POST",
+          "would_have_been": "mount_other_method",
+          "call_site": "public/studio/assets/index-DN36X7rm.js: em=\"__PORT_5000__\".startsWith(\"__\")?wv:\"__PORT_5000__\"",
+          "caveat": "answers under /studio, and the shipped client resolves its fetch base to \"/studio\" — so this literal leaves the browser as /studio/api/branding/logo and the route is reached"
+        },
+        {
+          "path": "/api/branding/strategy",
+          "as_shipped": {
+            "status": 404,
+            "type": "text/plain",
+            "bytes": 79
+          },
+          "as_mounted": {
+            "status": 404,
+            "type": "text/html",
+            "bytes": 403
+          },
+          "verdict": "prefixed_at_call_site",
+          "client_method": "POST",
+          "would_have_been": "mount_other_method",
+          "call_site": "public/studio/assets/index-DN36X7rm.js: em=\"__PORT_5000__\".startsWith(\"__\")?wv:\"__PORT_5000__\"",
+          "caveat": "answers under /studio, and the shipped client resolves its fetch base to \"/studio\" — so this literal leaves the browser as /studio/api/branding/strategy and the route is reached"
+        },
+        {
+          "path": "/api/branding/vectorize",
+          "as_shipped": {
+            "status": 404,
+            "type": "text/plain",
+            "bytes": 79
+          },
+          "as_mounted": {
+            "status": 404,
+            "type": "text/html",
+            "bytes": 404
+          },
+          "verdict": "prefixed_at_call_site",
+          "client_method": "POST",
+          "would_have_been": "mount_other_method",
+          "call_site": "public/studio/assets/index-DN36X7rm.js: em=\"__PORT_5000__\".startsWith(\"__\")?wv:\"__PORT_5000__\"",
+          "caveat": "answers under /studio, and the shipped client resolves its fetch base to \"/studio\" — so this literal leaves the browser as /studio/api/branding/vectorize and the route is reached"
+        },
+        {
+          "path": "/api/brands",
+          "as_shipped": {
+            "status": 404,
+            "type": "text/plain",
+            "bytes": 79
+          },
+          "as_mounted": {
+            "status": 200,
+            "type": "application/json",
+            "bytes": 2
+          },
+          "verdict": "prefixed_at_call_site",
+          "client_method": "POST",
+          "would_have_been": "mount_prefix",
+          "call_site": "public/studio/assets/index-DN36X7rm.js: em=\"__PORT_5000__\".startsWith(\"__\")?wv:\"__PORT_5000__\"",
+          "caveat": "answers under /studio, and the shipped client resolves its fetch base to \"/studio\" — so this literal leaves the browser as /studio/api/brands and the route is reached"
+        }
+      ],
+      "live_document": {
+        "status": 200,
+        "bytes": 7298,
+        "assets": [
+          "index-DN36X7rm.js",
+          "index-DEngzYQk.css"
+        ]
+      },
+      "staged_not_deployed": [],
+      "call_site": {
+        "base": "/studio",
+        "base_expression": "em=\"__PORT_5000__\".startsWith(\"__\")?wv:\"__PORT_5000__\"",
+        "base_file": "public/studio/assets/index-DN36X7rm.js",
+        "bare_fetch_sites": [],
+        "prefixes_the_mount": true
+      },
+      "verdict_counts": {
+        "served_at_root": 0,
+        "mount_prefix": 0,
+        "mount_other_method": 0,
+        "prefixed_at_call_site": 6,
+        "reached_mount_function": 0,
+        "absent_in_production": 0
+      }
+    },
+    "tamlul": {
+      "project": "tamlul-more30",
+      "artifacts": [],
+      "live_artifact": null,
+      "client_hits": [],
+      "not_requested_from_root": [],
+      "probes": [],
+      "note": "no _deploy directory deploys this project"
+    },
+    "tivuch": {
+      "project": "nadlan-pro-more30",
+      "artifacts": [],
+      "live_artifact": null,
+      "client_hits": [],
+      "not_requested_from_root": [],
+      "probes": [],
+      "note": "no _deploy directory deploys this project"
+    },
+    "torah": {
+      "project": "torah-more30",
+      "artifacts": [
+        "torah-more30"
+      ],
+      "live_artifact": "torah-more30",
+      "client_hits": [],
+      "not_requested_from_root": [
+        {
+          "file": "torah/assets/index-CFrhj_pU.js",
+          "path": "/api/broadcast",
+          "reason": "written onto a URL object .pathname — carried by an absolute origin, never requested from more30.com",
+          "context": "bsocket$/i,\"\"),t.pathname===\"\"||t.pathname===\"/\"?t.pathname=\"/api/broadcast\""
+        },
+        {
+          "file": "torah/assets/index-CFrhj_pU.js",
+          "path": "/api/broadcast",
+          "reason": "written onto a URL object .pathname — carried by an absolute origin, never requested from more30.com",
+          "context": "ame===\"/\"?t.pathname=\"/api/broadcast\":t.pathname=t.pathname+\"/api/broadcast\""
+        },
+        {
+          "file": "torah/assets/index-Cg-YfQE5.js",
+          "path": "/api/broadcast",
+          "reason": "written onto a URL object .pathname — carried by an absolute origin, never requested from more30.com",
+          "context": "bsocket$/i,\"\"),t.pathname===\"\"||t.pathname===\"/\"?t.pathname=\"/api/broadcast\""
+        },
+        {
+          "file": "torah/assets/index-Cg-YfQE5.js",
+          "path": "/api/broadcast",
+          "reason": "written onto a URL object .pathname — carried by an absolute origin, never requested from more30.com",
+          "context": "ame===\"/\"?t.pathname=\"/api/broadcast\":t.pathname=t.pathname+\"/api/broadcast\""
+        },
+        {
+          "file": "torah/assets/index-DMSjp30O.js",
+          "path": "/api/broadcast",
+          "reason": "written onto a URL object .pathname — carried by an absolute origin, never requested from more30.com",
+          "context": "bsocket$/i,\"\"),t.pathname===\"\"||t.pathname===\"/\"?t.pathname=\"/api/broadcast\""
+        },
+        {
+          "file": "torah/assets/index-DMSjp30O.js",
+          "path": "/api/broadcast",
+          "reason": "written onto a URL object .pathname — carried by an absolute origin, never requested from more30.com",
+          "context": "ame===\"/\"?t.pathname=\"/api/broadcast\":t.pathname=t.pathname+\"/api/broadcast\""
+        }
+      ],
+      "probes": [],
+      "live_document": {
+        "status": 200,
+        "bytes": 27089,
+        "assets": [
+          "index-Cg-YfQE5.js",
+          "index-C8bPiKNL.css"
+        ]
+      },
+      "staged_not_deployed": [],
+      "call_site": {
+        "base": null,
+        "base_expression": null,
+        "base_file": null,
+        "bare_fetch_sites": [],
+        "prefixes_the_mount": false
+      }
+    },
+    "zchuyot": {
+      "project": "zchuyot-more30",
+      "artifacts": [
+        "zchuyot-more30",
+        "zchuyot2"
+      ],
+      "live_artifact": "zchuyot-more30",
+      "client_hits": [],
+      "not_requested_from_root": [
+        {
+          "file": "zchuyot/assets/supabase-DkJWwO3P.js",
+          "path": "/api/broadcast",
+          "reason": "written onto a URL object .pathname — carried by an absolute origin, never requested from more30.com",
+          "context": "bsocket$/i,\"\"),e.pathname===\"\"||e.pathname===\"/\"?e.pathname=\"/api/broadcast\""
+        },
+        {
+          "file": "zchuyot/assets/supabase-DkJWwO3P.js",
+          "path": "/api/broadcast",
+          "reason": "written onto a URL object .pathname — carried by an absolute origin, never requested from more30.com",
+          "context": "ame===\"/\"?e.pathname=\"/api/broadcast\":e.pathname=e.pathname+\"/api/broadcast\""
+        }
+      ],
+      "probes": [],
+      "live_document": {
+        "status": 200,
+        "bytes": 62796,
+        "assets": [
+          "index-DL2aSDPt.js",
+          "react-DVL3AbHF.js",
+          "radix-6-zCrMNl.js",
+          "icons-C1s0Riy3.js",
+          "query-DbTUnfhv.js",
+          "motion-B5vKfmr5.js",
+          "rights-data-D1YKd4DL.js",
+          "supabase-DkJWwO3P.js",
+          "index-EGLSZ9BH.css"
+        ]
+      },
+      "staged_not_deployed": [
+        "zchuyot2"
+      ],
+      "call_site": {
+        "base": null,
+        "base_expression": null,
+        "base_file": null,
+        "bare_fetch_sites": [],
+        "prefixes_the_mount": false
+      }
+    }
+  },
+  "portal_root_api_rewrites": [
+    "/api/hf/:path*",
+    "/api/image"
+  ],
+  "pass": [
+    "admin: the shipped client names no /api path the browser asks more30.com for",
+    "bkalot: the shipped client names no /api path the browser asks more30.com for",
+    "briut: the shipped client names no /api path the browser asks more30.com for",
+    "chatzor: the shipped client names no /api path the browser asks more30.com for",
+    "egod: the shipped client names no /api path the browser asks more30.com for",
+    "galil: the shipped client names no /api path the browser asks more30.com for",
+    "imud: every probed path is reached by the shipped client or refused by the mount's own function (3 probed)",
+    "kupot: every probed path is reached by the shipped client or refused by the mount's own function (4 probed)",
+    "mechiron: every probed path is reached by the shipped client or refused by the mount's own function (6 probed)",
+    "mthbram: the shipped client names no /api path the browser asks more30.com for",
+    "smachot: the shipped client names no /api path the browser asks more30.com for",
+    "smel: the shipped client names no /api path the browser asks more30.com for",
+    "studio: every probed path is reached by the shipped client or refused by the mount's own function (6 probed)",
+    "torah: the shipped client names no /api path the browser asks more30.com for",
+    "zchuyot: the shipped client names no /api path the browser asks more30.com for",
+    "studio stays fixed (#131): /studio/api/brands answers JSON"
+  ],
+  "fail": []
+}
