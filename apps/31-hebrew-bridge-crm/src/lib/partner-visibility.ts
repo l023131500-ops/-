@@ -36,6 +36,38 @@ export function canPartnerSeeField(
   return visibility.grantedClientIds.has(clientId);
 }
 
+export type VisibleField = { key: string; value: string | null };
+
+/**
+ * The fields of one client that a partner may actually be shown, in the order the
+ * admin configured them. `readField` is the raw (service-role) lookup; it is only
+ * ever called for a field that already passed canPartnerSeeField.
+ *
+ * full_name is excluded on purpose — it is rendered as the card's heading, via
+ * partnerFacingName below, so listing it again would duplicate it.
+ */
+export function visibleFieldsFor(
+  visibility: PartnerVisibility,
+  clientId: string,
+  readField: (field: string) => string | null,
+  exclude: string[] = ["full_name"]
+): VisibleField[] {
+  return visibility.allowedFields
+    .filter((f) => !exclude.includes(f))
+    .filter((f) => canPartnerSeeField(visibility, clientId, f))
+    .map((f) => ({ key: f, value: readField(f) }));
+}
+
+/** The client's name as a partner may see it, or the withheld label. */
+export function partnerFacingName(
+  visibility: PartnerVisibility,
+  clientId: string,
+  readField: (field: string) => string | null
+): string {
+  if (!canPartnerSeeField(visibility, clientId, "full_name")) return CONSENT_WITHHELD_NAME;
+  return readField("full_name") ?? CONSENT_WITHHELD_NAME;
+}
+
 /**
  * Reads the partner's category, its allowed fields and the consents the given
  * clients granted to that category. Must be called with the service-role client:
