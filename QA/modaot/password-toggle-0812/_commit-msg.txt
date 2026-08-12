@@ -1,0 +1,32 @@
+modaot (03): the one password field could not be read back, and it inherited its direction rather than declaring it
+
+priority §1א asks for a "show password" eye on every password field. modaot
+had exactly one type="password" input in source — app/login/page.tsx, the
+operator login — so one edit closes the system.
+
+The side was measured live before writing, not copied from the previous
+system. Unlike tamlul (02), this field carries no dir attribute of its own:
+it inherits rtl from <html dir="rtl"> while the shared .input class adds
+text-right. Characters are therefore flush against the right edge and the
+left side is the free one — same placement as 02, reached from the opposite
+starting point. left-2 for the eye, pl-10 (12px -> 40px) to reserve it.
+
+Measured after deploy on more30.com: padding-left 40px, button rect
+(319,369,32x32) contained in field rect (311,364,398x42), elementFromPoint at
+its centre returns the svg the button owns.
+
+The field is not inside a <form> here (the login button is an onClick
+handler), so there was no implicit-submit risk; type="button" is set anyway
+and verified rather than assumed — a wrapped window.fetch counted 0 calls
+across both toggles and location.href was unchanged, so nothing was sent to
+Supabase. Round trip both ways: password->text->password, the label and the
+icon following it, value More30Test2026 preserved.
+
+npm run build passed; deployed to production on modaot-more30
+(dpl_J4spsTGuHTbgHjzrcTtci3aBDvTv, READY). Verified on more30.com with a
+cache-buster, not the vercel.app alias. 0 console errors — the one VERBOSE
+line, Chrome noting the field is not in a form, predates this change.
+
+apps/ is gitignored, so the page needed git add -f.
+
+Evidence: QA/modaot/password-toggle-0812/

@@ -1,0 +1,69 @@
+{
+  "step": "priority §1א — show password, system 03 (modaot)",
+  "date": "2026-08-12",
+  "system": { "id": "03", "slug": "modaot", "dir": "apps/03-igud-ads", "url": "https://more30.com/modaot/login" },
+  "file_changed": "apps/03-igud-ads/app/login/page.tsx",
+  "password_fields_in_source": 1,
+
+  "side_derivation": {
+    "measured_before_edit": {
+      "dir_attribute": null,
+      "computed_direction": "rtl",
+      "computed_text_align": "right",
+      "padding_left": "12px",
+      "padding_right": "12px",
+      "input_rect": [311, 364, 398, 42]
+    },
+    "conclusion": "The field carries no dir of its own, so it inherits rtl from <html dir=\"rtl\">, and the shared .input class adds text-right. Characters are flush against the RIGHT edge and grow leftward, leaving the LEFT side free — so the eye takes left-2 and pl-10 keeps that space reserved when the password is long. Same side as tamlul (02) but reached from the opposite starting point: 02's field carries an explicit dir=\"ltr\"."
+  },
+
+  "measured_after_deploy": {
+    "padding_left": "40px",
+    "computed_direction": "rtl",
+    "computed_text_align": "right",
+    "input_rect": [311, 364, 398, 42],
+    "button_rect": [319, 369, 32, 32],
+    "button_contained_in_field": true,
+    "elementFromPoint_at_button_centre": "svg",
+    "hit_target_owned_by_button": true
+  },
+
+  "round_trip": {
+    "type": ["password", "text", "password"],
+    "aria_label": ["הצג סיסמה", "הסתר סיסמה", "הצג סיסמה"],
+    "icon": ["eye", "eye-off", "eye"],
+    "value_preserved": "More30Test2026",
+    "button_type_attribute": "button"
+  },
+
+  "no_submission_side_effect": {
+    "method": "window.fetch wrapped before the first toggle; counted across both toggles",
+    "fetch_calls": 0,
+    "location_href_unchanged": true,
+    "note": "This page's password field is NOT inside a <form> (measured inForm=false) and the login button is an onClick handler, so there was no implicit-submit risk to begin with. type=\"button\" is set anyway, and the zero-fetch count confirms no signInWithPassword attempt fired on toggle.",
+    "submit_button_still_disabled_after_toggles": true
+  },
+
+  "build": { "command": "npm run build", "result": "passed", "login_route": "67 kB, 154 kB first load" },
+  "deploy": {
+    "project": "modaot-more30",
+    "project_id": "prj_3i1BSUVSNU9oSOrpzr4usx2Bgcxq",
+    "deployment_id": "dpl_J4spsTGuHTbgHjzrcTtci3aBDvTv",
+    "state": "READY",
+    "verified_on": "more30.com with cache-buster ?cb=0812a, not the vercel.app alias"
+  },
+
+  "console": {
+    "errors": 0,
+    "warnings": 0,
+    "other": "one Chrome VERBOSE hint — 'Password field is not contained in a form'. Pre-existing: the field was already outside a <form> before this change."
+  },
+
+  "not_verified": [
+    "No real login was completed against a Supabase account — only the reveal control was exercised.",
+    "The Google OAuth button was not touched or retested.",
+    "Dark mode was not photographed for this field (the app has a dark surface layer in app/globals.css)."
+  ],
+
+  "evidence": ["modaot-password-hidden.png", "modaot-password-revealed.png"]
+}
