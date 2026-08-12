@@ -1,0 +1,46 @@
+{
+  "date": "2026-08-12",
+  "system": "31 gesher (hebrew-bridge-crm)",
+  "route": "https://more30.com/gesher/client/consents",
+  "measured_against": "production (more30.com), not a preview URL",
+  "user": "test@more30.com",
+  "supabase_project": "ygaqqnuyfnumezxxmtbh",
+  "deployment": {
+    "project": "gesher-more30",
+    "id": "dpl_CfBizxGLPxbe3gnoR9UD7zqSydnv",
+    "target": "production",
+    "state": "READY",
+    "from": "source (not --prebuilt, so vercel.json ships)"
+  },
+  "before": "PlaceholderPage — 6 lines, no data, no controls",
+  "categories_read_from_db": [
+    { "partner_category": "עורכי_דין", "allowed_schema_fields": ["lead_source", "payment_status", "raw_voicemail_transcription", "uploaded_documents"] },
+    { "partner_category": "יועצים_פיננסיים", "allowed_schema_fields": ["full_name", "phone", "email", "lead_source"] },
+    { "partner_category": "סוכני_פנסיה", "allowed_schema_fields": [] }
+  ],
+  "steps": [
+    { "n": 1, "action": "load page", "result": "3 real categories rendered, all switches off", "pass": true },
+    { "n": 2, "action": "grant עורכי_דין", "result": "toast + updated_at 2026-08-12 14:31 from DB", "pass": true },
+    { "n": 3, "action": "full page reload", "result": "still checked, timestamp still present — INSERT persisted", "pass": true },
+    { "n": 4, "action": "revoke עורכי_דין", "result": "toast", "pass": true },
+    { "n": 5, "action": "full page reload", "result": "aria-checked=false on all 3 — UPDATE persisted", "pass": true }
+  ],
+  "final_db_state": "all three consents false for test@more30.com — left as found",
+  "checks": {
+    "tsc_noEmit": "clean",
+    "vite_build": "built in 29.10s",
+    "zero_row_guard_on_write": true,
+    "category_validated_against_visibility_rules": true
+  },
+  "not_measured": [
+    "public.client_consents not queried directly — project not reachable via MCP, no SUPABASE_ACCESS_TOKEN",
+    "admin side not opened to view the consent from the other direction",
+    "whether any code actually ENFORCES visibility_rules + client_consents when a partner reads a client"
+  ],
+  "test_mode": {
+    "user_created": false,
+    "message_sent": false,
+    "charge_made": false,
+    "protected_systems_touched": false
+  }
+}

@@ -190,3 +190,89 @@ export const removeUploadedDocument = createServerFn({ method: "POST" })
 
     return { ok: true };
   });
+
+export type ClientConsent = {
+  category: string;
+  allowedFields: string[];
+  isGranted: boolean;
+  updatedAt: string | null;
+};
+
+export const getClientConsents = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }): Promise<ClientConsent[]> => {
+    const { supabase, userId } = context as any;
+
+    // The catalogue of partner categories lives in visibility_rules, which every
+    // authenticated user may read. Never invent a category that is not a row there.
+    const { data: rules, error: rulesErr } = await supabase
+      .from("visibility_rules")
+      .select("partner_category, allowed_schema_fields")
+      .order("partner_category");
+    if (rulesErr) throw new Error(rulesErr.message);
+
+    const { data: consents, error: consErr } = await supabase
+      .from("client_consents")
+      .select("partner_category, is_granted, updated_at")
+      .eq("client_id", userId);
+    if (consErr) throw new Error(consErr.message);
+
+    const granted = new Map<string, { is_granted: boolean; updated_at: string | null }>(
+      ((consents ?? []) as any[]).map((c) => [
+        c.partner_category as string,
+        { is_granted: Boolean(c.is_granted), updated_at: (c.updated_at as string) ?? null },
+      ])
+    );
+
+    return ((rules ?? []) as any[]).map((r) => {
+      const existing = granted.get(r.partner_category as string);
+      return {
+        category: r.partner_category as string,
+        allowedFields: Array.isArray(r.allowed_schema_fields)
+          ? (r.allowed_schema_fields as string[])
+          : [],
+        isGranted: existing?.is_granted ?? false,
+        updatedAt: existing?.updated_at ?? null,
+      };
+    });
+  });
+
+export const setClientConsent = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: { category: string; isGranted: boolean }) =>
+    z.object({ category: z.string().min(1).max(100), isGranted: z.boolean() }).parse(d)
+  )
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context as any;
+
+    // Only a category that actually exists as a visibility rule may be consented to.
+    const { data: rule, error: ruleErr } = await supabase
+      .from("visibility_rules")
+      .select("partner_category")
+      .eq("partner_category", data.category)
+      .maybeSingle();
+    if (ruleErr) throw new Error(ruleErr.message);
+    if (!rule) throw new Error("קטגוריית השותפים אינה קיימת.");
+
+    const { data: saved, error: upErr } = await supabase
+      .from("client_consents")
+      .upsert(
+        { client_id: userId, partner_category: data.category, is_granted: data.isGranted },
+        { onConflict: "client_id,partner_category" }
+      )
+      .select("partner_category, is_granted, updated_at");
+    if (upErr) throw new Error(upErr.message);
+    // A write filtered out by RLS is not an error in PostgREST — it returns zero rows.
+    if (!saved || saved.length === 0) {
+      throw new Error("שמירת ההרשאה נכשלה — אין הרשאה לעדכן את השיתוף.");
+    }
+
+    return {
+      ok: true,
+      consent: {
+        category: saved[0].partner_category as string,
+        isGranted: Boolean(saved[0].is_granted),
+        updatedAt: (saved[0].updated_at as string) ?? null,
+      },
+    };
+  });

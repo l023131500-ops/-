@@ -9,6 +9,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { listVisibilityRules, upsertVisibilityRule, type VisibilityRule } from "@/lib/admin.functions";
+import { PRETTY_CATEGORY } from "@/lib/partner-categories";
 
 const SCHEMA_FIELDS: { key: string; label: string }[] = [
   { key: "full_name", label: "שם מלא" },
@@ -20,12 +21,6 @@ const SCHEMA_FIELDS: { key: string; label: string }[] = [
   { key: "uploaded_documents", label: "מסמכים שהועלו" },
   { key: "internal_admin_notes", label: "הערות מנהל פנימיות" },
 ];
-
-const PRETTY_CATEGORY: Record<string, string> = {
-  סוכני_פנסיה: "סוכני פנסיה",
-  עורכי_דין: "עורכי דין",
-  יועצים_פיננסיים: "יועצים פיננסיים",
-};
 
 export function VisibilityRulesGrid() {
   const listFn = useServerFn(listVisibilityRules);
