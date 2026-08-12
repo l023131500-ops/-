@@ -1,0 +1,256 @@
+﻿{
+    "profile":  {
+                    "plan":  "free",
+                    "email":  "test@more30.com",
+                    "phone":  "0500000000",
+                    "exists":  true,
+                    "charged":  false,
+                    "user_id":  "78600fbc-3fd3-4f02-8552-e93ab6559649",
+                    "is_admin":  false,
+                    "full_name":  "לקוח בדיקה",
+                    "plan_name":  "חינמי",
+                    "plan_period":  null,
+                    "plan_status":  "free",
+                    "profile_plan":  "free",
+                    "subscriptions":  [
+
+                                      ],
+                    "plan_price_ils":  null
+                },
+    "joins":  [
+                  {
+                      "app":  "more30",
+                      "ok":  true,
+                      "reason":  null,
+                      "key":  "more30",
+                      "role":  "member",
+                      "created":  true,
+                      "plan":  "free"
+                  },
+                  {
+                      "app":  "torah",
+                      "ok":  true,
+                      "reason":  null,
+                      "key":  "torah",
+                      "role":  "member",
+                      "created":  true,
+                      "plan":  "free"
+                  },
+                  {
+                      "app":  "tamlul",
+                      "ok":  true,
+                      "reason":  null,
+                      "key":  "tamlul",
+                      "role":  "member",
+                      "created":  true,
+                      "plan":  "free"
+                  },
+                  {
+                      "app":  "modaot",
+                      "ok":  true,
+                      "reason":  null,
+                      "key":  "modaot",
+                      "role":  "member",
+                      "created":  true,
+                      "plan":  "free"
+                  },
+                  {
+                      "app":  "imud",
+                      "ok":  true,
+                      "reason":  null,
+                      "key":  "imud",
+                      "role":  "member",
+                      "created":  true,
+                      "plan":  "free"
+                  },
+                  {
+                      "app":  "briut",
+                      "ok":  true,
+                      "reason":  null,
+                      "key":  "briut",
+                      "role":  "member",
+                      "created":  true,
+                      "plan":  "free"
+                  },
+                  {
+                      "app":  "bkalot",
+                      "ok":  true,
+                      "reason":  null,
+                      "key":  "bkalot",
+                      "role":  "member",
+                      "created":  true,
+                      "plan":  "free"
+                  },
+                  {
+                      "app":  "smel",
+                      "ok":  true,
+                      "reason":  null,
+                      "key":  "smel",
+                      "role":  "member",
+                      "created":  true,
+                      "plan":  "free"
+                  },
+                  {
+                      "app":  "smachot",
+                      "ok":  true,
+                      "reason":  null,
+                      "key":  "smachot",
+                      "role":  "member",
+                      "created":  true,
+                      "plan":  "free"
+                  },
+                  {
+                      "app":  "egod",
+                      "ok":  true,
+                      "reason":  null,
+                      "key":  "egod",
+                      "role":  "member",
+                      "created":  true,
+                      "plan":  "free"
+                  },
+                  {
+                      "app":  "chatzor",
+                      "ok":  true,
+                      "reason":  null,
+                      "key":  "chatzor",
+                      "role":  "member",
+                      "created":  true,
+                      "plan":  "free"
+                  },
+                  {
+                      "app":  "chizukim",
+                      "ok":  true,
+                      "reason":  null,
+                      "key":  "chizukim",
+                      "role":  "member",
+                      "created":  true,
+                      "plan":  "free"
+                  },
+                  {
+                      "app":  "orech",
+                      "ok":  true,
+                      "reason":  null,
+                      "key":  "orech",
+                      "role":  "member",
+                      "created":  true,
+                      "plan":  "free"
+                  },
+                  {
+                      "app":  "mthbram",
+                      "ok":  true,
+                      "reason":  null,
+                      "key":  "mthbram",
+                      "role":  "member",
+                      "created":  true,
+                      "plan":  "free"
+                  },
+                  {
+                      "app":  "zchuyot",
+                      "ok":  true,
+                      "reason":  null,
+                      "key":  "zchuyot",
+                      "role":  "member",
+                      "created":  true,
+                      "plan":  "free"
+                  },
+                  {
+                      "app":  "galil",
+                      "ok":  true,
+                      "reason":  null,
+                      "key":  "galil",
+                      "role":  "member",
+                      "created":  true,
+                      "plan":  "free"
+                  },
+                  {
+                      "app":  "studio",
+                      "ok":  true,
+                      "reason":  null,
+                      "key":  "studio",
+                      "role":  "member",
+                      "created":  true,
+                      "plan":  "free"
+                  },
+                  {
+                      "app":  "mechiron",
+                      "ok":  true,
+                      "reason":  null,
+                      "key":  "mechiron",
+                      "role":  "member",
+                      "created":  true,
+                      "plan":  "free"
+                  },
+                  {
+                      "app":  "kupot",
+                      "ok":  true,
+                      "reason":  null,
+                      "key":  "kupot",
+                      "role":  "member",
+                      "created":  true,
+                      "plan":  "free"
+                  },
+                  {
+                      "app":  "crm",
+                      "ok":  true,
+                      "reason":  null,
+                      "key":  "crm",
+                      "role":  "member",
+                      "created":  true,
+                      "plan":  "free"
+                  },
+                  {
+                      "app":  "gesher",
+                      "ok":  true,
+                      "reason":  null,
+                      "key":  "gesher",
+                      "role":  "member",
+                      "created":  true,
+                      "plan":  "free"
+                  },
+                  {
+                      "app":  "nadlan",
+                      "ok":  true,
+                      "reason":  null,
+                      "key":  "nadlan",
+                      "role":  "member",
+                      "created":  true,
+                      "plan":  "free"
+                  },
+                  {
+                      "app":  "kesef",
+                      "ok":  true,
+                      "reason":  null,
+                      "key":  "kesef",
+                      "role":  "member",
+                      "created":  true,
+                      "plan":  "free"
+                  },
+                  {
+                      "app":  "kiosk",
+                      "ok":  true,
+                      "reason":  null,
+                      "key":  "kiosk",
+                      "role":  "member",
+                      "created":  true,
+                      "plan":  "free"
+                  },
+                  {
+                      "app":  "tivuch",
+                      "ok":  true,
+                      "reason":  null,
+                      "key":  "tivuch",
+                      "role":  "member",
+                      "created":  true,
+                      "plan":  "free"
+                  },
+                  {
+                      "app":  "gannenet",
+                      "ok":  true,
+                      "reason":  null,
+                      "key":  "gannenet",
+                      "role":  "member",
+                      "created":  true,
+                      "plan":  "free"
+                  }
+              ]
+}
