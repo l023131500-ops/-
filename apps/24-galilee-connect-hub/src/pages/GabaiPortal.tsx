@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import {
   ArrowRight, Plus, Trash2, Copy, Check, Building2, Clock,
   BookOpen, Phone, Megaphone, Upload, Users, Link2, Send, Shield,
-  MessageSquare, Mail, User, Calendar, Eye, Star, Inbox, Bell,
+  MessageSquare, Mail, User, Calendar, Eye, EyeOff, Star, Inbox, Bell,
   LogOut, ChevronLeft, Sparkles, Lock, KeyRound, Image, HelpCircle, MessageCircle,
   Download, FileSpreadsheet, Scale, RefreshCw, Edit3, Save, X, MapPin,
   FileText, Heart
@@ -1406,6 +1406,11 @@ const GabaiPortal = () => {
   const [loginType, setLoginType] = useState<'admin' | 'gabai'>('gabai');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  // priority §1א — "הצג סיסמה". Held next to `password` and not inside a shared
+  // component: this is the only type="password" field in the system, and its
+  // wrapper already carries a Lock icon, so a generic PasswordInput would have
+  // had to be told about it anyway.
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loggedGabai, setLoggedGabai] = useState<{ name: string; id: string } | null>(null);
 
@@ -1455,7 +1460,7 @@ const GabaiPortal = () => {
               <Link to="/" className="flex items-center gap-2 text-primary-foreground/70 hover:text-primary-foreground transition-colors">
                 <ArrowRight className="w-5 h-5" /><span className="font-display font-bold text-sm">לאתר</span>
               </Link>
-              <button onClick={() => { setView('login'); setLoggedGabai(null); setUsername(''); setPassword(''); }}
+              <button onClick={() => { setView('login'); setLoggedGabai(null); setUsername(''); setPassword(''); setShowPassword(false); }}
                 className="flex items-center gap-2 text-primary-foreground/70 hover:text-primary-foreground transition-colors text-sm font-bold">
                 <LogOut className="w-4 h-4" /> התנתק
               </button>
@@ -1535,9 +1540,22 @@ const GabaiPortal = () => {
                 <label className="block text-sm font-bold text-foreground mb-1.5">{loginType === 'admin' ? 'סיסמת מנהל' : 'סיסמה'}</label>
                 <div className="relative">
                   <Lock className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                  <Input type="password" value={password} onChange={e => { setPassword(e.target.value); setError(''); }}
+                  <Input type={showPassword ? 'text' : 'password'} value={password} onChange={e => { setPassword(e.target.value); setError(''); }}
                     placeholder={loginType === 'admin' ? 'הזן סיסמת מנהל' : 'הזן סיסמה'}
-                    className="pr-10 text-base" dir="ltr" onKeyDown={e => e.key === 'Enter' && handleLogin()} />
+                    className="pr-10 pl-10 text-base" dir="ltr" onKeyDown={e => e.key === 'Enter' && handleLogin()} />
+                  {/* The eye sits on the LEFT, and that side is derived rather than
+                      copied from the other systems. The page is RTL, but this field
+                      carries dir="ltr" — computed direction ltr, text-align start —
+                      so characters begin at the LEFT edge, which is normally where
+                      the toggle would be wrong. The right edge is already taken by
+                      the Lock above (pr-10), so the eye takes the left and pl-10
+                      moves the first character clear of it. */}
+                  <button type="button" onClick={() => setShowPassword(v => !v)}
+                    aria-pressed={showPassword} aria-label={showPassword ? 'הסתר סיסמה' : 'הצג סיסמה'}
+                    title={showPassword ? 'הסתר סיסמה' : 'הצג סיסמה'}
+                    className="absolute left-1 top-1/2 -translate-y-1/2 grid place-items-center w-8 h-8 rounded-md text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:text-foreground focus-visible:ring-2 focus-visible:ring-ring">
+                    {showPassword ? <EyeOff className="w-4 h-4" aria-hidden /> : <Eye className="w-4 h-4" aria-hidden />}
+                  </button>
                 </div>
               </div>
 
@@ -1572,7 +1590,7 @@ const GabaiPortal = () => {
             <Link to="/" className="flex items-center gap-2 text-primary-foreground/70 hover:text-primary-foreground transition-colors">
               <ArrowRight className="w-5 h-5" /><span className="font-display font-bold text-sm">לאתר</span>
             </Link>
-            <button onClick={() => { setView('login'); setPassword(''); }}
+            <button onClick={() => { setView('login'); setPassword(''); setShowPassword(false); }}
               className="flex items-center gap-2 text-primary-foreground/70 hover:text-primary-foreground transition-colors text-sm font-bold">
               <LogOut className="w-4 h-4" /> התנתק
             </button>
