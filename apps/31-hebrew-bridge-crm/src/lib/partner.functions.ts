@@ -22,6 +22,8 @@ export type PartnerClientRow = {
   display_name: string;
   /** Only the fields this partner is actually allowed to see, in the admin's configured order. */
   fields: PartnerClientField[];
+  /** The partner's own feedback note on this assignment — the one column he may write. */
+  feedback_notes: string | null;
 };
 
 // Where each allowed_schema_fields key is read from. uploaded_documents is deliberately
@@ -44,7 +46,7 @@ export const listMyClients = createServerFn({ method: "GET" })
     // explicit filter keeps the intent readable and the query index-backed.
     const { data: assignments, error } = await supabase
       .from("partner_assignments")
-      .select("id, client_id, treatment_status, created_at")
+      .select("id, client_id, treatment_status, partner_feedback_notes, created_at")
       .eq("partner_id", userId)
       .order("created_at", { ascending: false });
     if (error) throw new Error(error.message);
@@ -94,6 +96,7 @@ export const listMyClients = createServerFn({ method: "GET" })
         consent_granted: visibility.grantedClientIds.has(clientId),
         display_name: partnerFacingName(visibility, clientId, readField),
         fields: visibleFieldsFor(visibility, clientId, readField),
+        feedback_notes: (a.partner_feedback_notes as string | null) ?? null,
       };
     });
   });
@@ -129,6 +132,44 @@ export const updateTreatmentStatus = createServerFn({ method: "POST" })
     const { error } = await supabaseAdmin
       .from("partner_assignments")
       .update({ treatment_status: data.status })
+      .eq("id", data.assignmentId)
+      .eq("partner_id", userId);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+/** How much free text a partner may leave on one assignment. */
+export const FEEDBACK_MAX_LENGTH = 4000;
+
+export const savePartnerFeedback = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: { assignmentId: string; notes: string }) =>
+    z
+      .object({
+        assignmentId: z.string().uuid(),
+        notes: z.string().max(FEEDBACK_MAX_LENGTH),
+      })
+      .parse(d)
+  )
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context as any;
+    // Same ownership gate as updateTreatmentStatus: "Partners read own assignments" scopes
+    // the read to the caller, so a foreign or missing id both come back empty.
+    const { data: row } = await supabase
+      .from("partner_assignments")
+      .select("partner_id")
+      .eq("id", data.assignmentId)
+      .maybeSingle();
+    if (!row || row.partner_id !== userId) throw new Error("Forbidden");
+
+    // Unlike treatment_status, this write does NOT need service_role: migration
+    // 20260605003212 revoked UPDATE on the table from `authenticated` and granted back
+    // exactly this column, and "Partners update own assignments" scopes the row. So the
+    // partner writes his own note as himself, which is also what the grant was written for.
+    const notes = data.notes.trim();
+    const { error } = await supabase
+      .from("partner_assignments")
+      .update({ partner_feedback_notes: notes === "" ? null : notes })
       .eq("id", data.assignmentId)
       .eq("partner_id", userId);
     if (error) throw new Error(error.message);
