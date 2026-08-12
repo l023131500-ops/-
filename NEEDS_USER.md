@@ -29,6 +29,49 @@
 
 ---
 
+## 🔴 0יא. עגוד (15) — התיקון מוכן, ונתיב הפריסה היחיד שלו חסום ע"י Lovable — 12/08/2026
+
+**מה צריך ממך: 3 דקות בדפדפן.** פתח את
+[עורך Lovable של egod](https://lovable.dev/projects/3827209f-42d3-4cf8-8db0-98bb4f8410be),
+העתק את הקובץ `apps/15-egod/supabase/functions/seed-demo-portals/index.ts` מהריפו
+לתוך הפרויקט (הוא כבר מתוקן ומוכן), הוסף ל-`supabase/config.toml` את שתי השורות
+`[functions.seed-demo-portals]` / `verify_jwt = true`, ופרוס.
+**אל תגדיר `SEED_SECRET`** — היעדרו הוא ההגנה עצמה.
+
+**מה פתוח כרגע בייצור.**
+`https://hkkkynyoigzlttpynoeo.supabase.co/functions/v1/seed-demo-portals` עונה
+200 ל-GET בלי `apikey` ובלי `Authorization`. הפונקציה רצה עם
+`SUPABASE_SERVICE_ROLE_KEY` ומבצעת לכל קורא אנונימי: יצירת שלושה משתמשים עם
+סיסמאות שכתובות בקוד ו-`email_confirm=true`, כתיבת `profiles` עם
+`is_approved=true`, והכנסת ליד לטבלת `leads` החיה. זה #167, severity=critical.
+
+**מה כבר נעשה, ולמה זה לא הספיק.** התיקון נכתב במקור ב-10/08 (שער `SEED_SECRET`
++ POST + `x-seed-secret`, נכשל-סגור: בלי הסוד בסביבה הפונקציה מחזירה 403
+"seeding disabled"). הוא מעולם לא נפרס, כי egod יושבת על פרויקט Supabase
+`hkkkynyoigzlttpynoeo` שאינו מכוסה ע"י `SUPABASE_ACCESS_TOKEN` שב-`core.secrets`.
+ב-12/08, פעימת #160 גילתה ש-egod היא פרויקט Lovable, והסיקה שיש עכשיו נתיב
+פריסה — כי בדיוק אותה שיטה עבדה שעה קודם על mthbram.
+
+**מה נמדד היום, וסותר את זה.** ארבע הודעות ל-Lovable על הפרויקט הזה — מהמפורטת
+ועד לקצרה ביותר, בניסוחים שונים לגמרי — חזרו כולן עם
+`"I cannot process this request as it may violate Lovable's content policy"`,
+בלי שום שינוי קובץ. כדי לדעת אם זה הניסוח שלי או הפרויקט, נשלחה הודעת ביקורת
+תמימה לחלוטין ב-plan mode: *"Which files in this project define the main site
+header navigation?"* — **גם היא נדחתה באותו נוסח.** כלומר החסימה היא על פרויקט
+egod עצמו (או על ה-thread `main` שלו), לא על מה שביקשתי. mthbram, באותו חשבון
+ובאותו workspace, ענתה כרגיל שעה קודם — אז זה לא חסימה חשבונית.
+
+**שני נתיבים חלופיים נבדקו ונשללו:**
+- `mcp Supabase list_edge_functions` על `hkkkynyoigzlttpynoeo` → `You do not have
+  permission to perform this action`. ה-MCP רואה פרויקט אחד בלבד.
+- `get_project` על egod אינו חושף ריפו GitHub מקושר, כך שאין נתיב push-to-deploy.
+
+**האם צריך לפנות ל-Lovable.** אם גם בדפדפן העורך מסרב — זו תקלה בצד שלהם על
+הפרויקט, ושווה פנייה לתמיכה. אם בעורך זה עובד, החסימה היא ב-API בלבד וכדאי
+לדעת את זה לפעם הבאה.
+
+---
+
 ## 🔴 0י′. גשר (31) — חסר `SUPABASE_SERVICE_ROLE_KEY`, וכל פאנל הניהול מת בייצור — 12/08/2026
 
 **מה נמדד.** `npx vercel env ls` על הפרויקט `gesher-more30` מחזיר **בדיוק שני**
