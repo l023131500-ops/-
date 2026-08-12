@@ -1,11 +1,20 @@
 import { QueryClient, QueryFunction } from "@tanstack/react-query";
 
 // VITE_API_BASE lets the same bundle be served under a path prefix (e.g. the
-// more30.com/mechiron deployment sets it to "/mechiron"). Unset = current
-// behaviour: same-origin, root-relative /api calls.
+// more30.com/mechiron deployment sets it to "/mechiron").
+//
+// When it is unset the fallback is Vite's own BASE_URL rather than "". A bundle
+// built with `base: "/mechiron/"` is served from more30.com/mechiron, where a
+// root-relative /api/... is the portal's root and not this app at all — it
+// answered the platform's text/plain 404 for every call. Reusing BASE_URL keeps
+// the API on the same prefix the assets already came from. `base: "/"` leaves
+// BASE_URL "/", which strips to "" — exactly the previous behaviour, so the
+// origin deployment that serves this app from the root is unchanged.
+const VITE_BASE = String(import.meta.env.BASE_URL || "/").replace(/\/+$/, "");
+
 export const API_BASE =
-  (import.meta.env.VITE_API_BASE as string | undefined) ||
-  ("__PORT_5000__".startsWith("__") ? "" : "__PORT_5000__");
+  (import.meta.env.VITE_API_BASE as string | undefined)?.trim().replace(/\/+$/, "") ||
+  ("__PORT_5000__".startsWith("__") ? VITE_BASE : "__PORT_5000__");
 
 // In-memory only — survives navigation while the SPA is mounted. Refreshing the page logs out.
 // This is intentional: we avoid localStorage/sessionStorage/cookies in the sandbox.

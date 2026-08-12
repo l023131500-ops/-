@@ -8,6 +8,7 @@
  */
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { API_BASE } from "@/lib/queryClient";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -157,7 +158,7 @@ function AdminDocsInner() {
   const googleQ = useQuery<GoogleStatus>({
     queryKey: ["/api/admin/google/status"],
     queryFn: async () => {
-      const r = await fetch("/api/admin/google/status");
+      const r = await fetch(`${API_BASE}/api/admin/google/status`);
       if (!r.ok) throw new Error("status fetch failed");
       const j = await r.json();
       return j as GoogleStatus;

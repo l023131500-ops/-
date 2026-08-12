@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState, useCallback } from "react";
 import {
+  API_BASE,
   apiRequest,
   getAdminToken,
   setAdminToken,
@@ -68,7 +69,7 @@ export function AdminAuthProvider({ children }: { children: React.ReactNode }) {
   }, [token]);
 
   const login = useCallback(async (identity: string, password: string) => {
-    const r = await fetch("/api/admin/login", {
+    const r = await fetch(`${API_BASE}/api/admin/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ identity, password }),

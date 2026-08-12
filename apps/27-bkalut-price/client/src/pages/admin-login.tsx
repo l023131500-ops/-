@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/logo";
 import { useAdminAuth } from "@/lib/admin-auth";
-import { setAdminToken } from "@/lib/queryClient";
+import { API_BASE, setAdminToken } from "@/lib/queryClient";
 import { Lock, ShieldCheck, AlertCircle, Eye, EyeOff } from "lucide-react";
 
 interface GoogleStatus {
@@ -44,7 +44,7 @@ export default function AdminLoginPage() {
   const { data: googleStatus } = useQuery<GoogleStatus>({
     queryKey: ["/api/admin/google/status"],
     queryFn: async () => {
-      const r = await fetch("/api/admin/google/status");
+      const r = await fetch(`${API_BASE}/api/admin/google/status`);
       if (!r.ok) throw new Error("status fetch failed");
       return r.json();
     },

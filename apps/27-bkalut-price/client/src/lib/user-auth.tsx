@@ -4,7 +4,7 @@
  * Separate from AdminAuth: lives in-memory only, refreshes on each login.
  */
 import { createContext, useContext, useEffect, useState, useCallback } from "react";
-import { apiRequest, getUserToken, setUserToken, subscribeUserToken, queryClient } from "./queryClient";
+import { API_BASE, apiRequest, getUserToken, setUserToken, subscribeUserToken, queryClient } from "./queryClient";
 
 export interface AppUserInfo {
   id: number;
@@ -47,7 +47,7 @@ export function UserAuthProvider({ children }: { children: React.ReactNode }) {
     }
     setLoading(true);
     try {
-      const r = await fetch(`${"__PORT_5000__".startsWith("__") ? "" : "__PORT_5000__"}/api/user/me`, {
+      const r = await fetch(`${API_BASE}/api/user/me`, {
         headers: { Authorization: `Bearer ${getUserToken()}` },
       });
       if (!r.ok) {
@@ -72,7 +72,7 @@ export function UserAuthProvider({ children }: { children: React.ReactNode }) {
   const login = useCallback(async (identifier: string, password: string) => {
     setLoading(true);
     try {
-      const r = await fetch(`${"__PORT_5000__".startsWith("__") ? "" : "__PORT_5000__"}/api/user/login`, {
+      const r = await fetch(`${API_BASE}/api/user/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ identity: identifier, password }),
@@ -94,7 +94,7 @@ export function UserAuthProvider({ children }: { children: React.ReactNode }) {
   const logout = useCallback(async () => {
     try {
       if (getUserToken()) {
-        await fetch(`${"__PORT_5000__".startsWith("__") ? "" : "__PORT_5000__"}/api/user/logout`, {
+        await fetch(`${API_BASE}/api/user/logout`, {
           method: "POST",
           headers: { Authorization: `Bearer ${getUserToken()}` },
         });

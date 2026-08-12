@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Skeleton } from "@/components/ui/skeleton";
+import { API_BASE } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { CheckCircle2, Loader2 } from "lucide-react";
 
@@ -52,7 +53,7 @@ export default function PublicCommunity() {
   useEffect(() => {
     if (!slug) return;
     setLoading(true);
-    fetch(`/api/public/community/${encodeURIComponent(slug)}`)
+    fetch(`${API_BASE}/api/public/community/${encodeURIComponent(slug)}`)
       .then((r) => { if (!r.ok) throw new Error("not found"); return r.json(); })
       .then((d: Payload) => setData(d))
       .catch(() => setNotFound(true))
@@ -75,7 +76,7 @@ export default function PublicCommunity() {
     if (!data) return;
     setSubmitting(true);
     try {
-      const res = await fetch(`/api/public/community/${encodeURIComponent(slug)}/submit`, {
+      const res = await fetch(`${API_BASE}/api/public/community/${encodeURIComponent(slug)}/submit`, {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ answers, contact }),

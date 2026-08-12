@@ -9,6 +9,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Logo } from "@/components/logo";
+import { API_BASE } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import {
   ArrowRight,
@@ -451,7 +452,7 @@ export default function PublicPotential() {
   async function submitProfile() {
     setSubmitting(true);
     try {
-      const r = await fetch("/api/public/potential/submit", {
+      const r = await fetch(`${API_BASE}/api/public/potential/submit`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -488,7 +489,7 @@ export default function PublicPotential() {
     }
     setSubmitting(true);
     try {
-      const r = await fetch("/api/public/potential/submit", {
+      const r = await fetch(`${API_BASE}/api/public/potential/submit`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

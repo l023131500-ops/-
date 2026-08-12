@@ -12,7 +12,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Logo } from "@/components/logo";
 import { HealthBrand } from "@/components/health-brand";
 import { useToast } from "@/hooks/use-toast";
-import { apiRequest } from "@/lib/queryClient";
+import { API_BASE, apiRequest } from "@/lib/queryClient";
 import {
   Search, Tag, ArrowRight, Share2, X, ChevronDown,
   HeartPulse, Users, Award, ChevronLeft, Stethoscope, Landmark, HandHeart, Wallet,
@@ -180,7 +180,7 @@ export default function PublicHealthFunds() {
     setLoading(true);
     setOpenId(null);
     try {
-      const res = await fetch(`/api/hf/public/search?${buildParams(f).toString()}`);
+      const res = await fetch(`${API_BASE}/api/hf/public/search?${buildParams(f).toString()}`);
       const data = await res.json();
       setResults(Array.isArray(data) ? data : []);
     } catch {
@@ -191,7 +191,7 @@ export default function PublicHealthFunds() {
   }
 
   useEffect(() => {
-    fetch("/api/hf/public/meta")
+    fetch(`${API_BASE}/api/hf/public/meta`)
       .then((r) => r.json())
       .then((m: HfMeta) => setMeta(m))
       .catch(() => {});
