@@ -10,6 +10,15 @@ import { toast } from "sonner";
 import { authErrorMessage } from "@/lib/authErrors";
 import { Eye, EyeOff, Loader2, ShieldCheck } from "lucide-react";
 
+// האפליקציה מוגשת תחת /crm (vite base), אבל הראוטר עצמו חסר basepath —
+// ולכן window.location.origin לבדו מפיל כל קישור שנשלח במייל אל שורש
+// more30.com, שם אין את המסכים האלה בכלל: /reset-password ו-/dashboard
+// שניהם 404 בייצור, בעוד /crm/reset-password ו-/crm/dashboard מחזירים 200.
+// import.meta.env.BASE_URL הוא אותו "/crm/" שהבנייה כבר משתמשת בו לנכסים,
+// ולכן זה מקור אמת אחד ולא מחרוזת שנייה שאפשר לשכוח לעדכן.
+const appUrl = (path: string) =>
+  `${window.location.origin}${import.meta.env.BASE_URL}${path}`;
+
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
@@ -103,7 +112,7 @@ function SignInForm() {
     e.preventDefault();
     setResetLoading(true);
     const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
-      redirectTo: `${window.location.origin}/reset-password`,
+      redirectTo: appUrl("reset-password"),
     });
     setResetLoading(false);
     if (error) {
@@ -197,7 +206,7 @@ function SignUpForm() {
       email,
       password,
       options: {
-        emailRedirectTo: `${window.location.origin}/dashboard`,
+        emailRedirectTo: appUrl("dashboard"),
         data: { full_name: fullName, tenant_name: tenantName },
       },
     });
