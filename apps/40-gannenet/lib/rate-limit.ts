@@ -107,6 +107,39 @@ export type Reservation =
   | { ok: false; reason: "user" | "global" | "unavailable" };
 
 /**
+ * מה שהגננת רואה על המסך לפני שהיא לוחצת. התקרה נאכפה מהצעד הקודם אבל לא הוצגה
+ * בשום מקום — כלומר הדרך היחידה לגלות אותה הייתה להיחסם באמצע העבודה, וזו בדיוק
+ * ההפתעה שתקרה אמורה למנוע. אותו LIST של `reserveGeneration`, בלי לכתוב סימון.
+ */
+export type QuotaView = {
+  capUser: number; usedUser: number; remainingUser: number;
+  capAll: number; usedAll: number; remainingAll: number;
+};
+
+export function quotaView(usedUser: number, usedAll: number): QuotaView {
+  return {
+    capUser: CAP_USER,
+    usedUser,
+    remainingUser: Math.max(0, CAP_USER - usedUser),
+    capAll: CAP_ALL,
+    usedAll,
+    remainingAll: Math.max(0, CAP_ALL - usedAll),
+  };
+}
+
+/**
+ * ספירה בלבד — בלי הזמנה ובלי סימון. `null` כשאי אפשר לספור, מאותה סיבה
+ * ש-`listToday()` מבדיל בין אפס לכישלון: מסך שמציג "נותרו לך 20" כשהספירה לא
+ * עלתה בכלל משקר, ועדיף שלא יציג כלום.
+ */
+export async function peekQuota(userId: string): Promise<QuotaView | null> {
+  if (!URL_ || !KEY_) return null;
+  const names = await listToday(today());
+  if (names === null) return null;
+  return quotaView(names.filter((n) => n.startsWith(`${userId}__`)).length, names.length);
+}
+
+/**
  * נבדק ונרשם לפני שנוגעים ב-Anthropic — הסימון נכתב מראש ולא אחרי הצלחה, כי
  * אחרי הצלחה עשרים בקשות מקבילות היו כולן רואות אפס. המשמעות היא שיצירה שנפלה
  * במעלה הזרם עדיין נספרת: זה מחיר שנבחר ביודעין לטובת הצד שבו טעות אינה עולה

@@ -3,6 +3,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { callerFromRequest, GENERATE_AUTH_REQUIRED_MSG } from "@/lib/require-user";
 import {
   reserveGeneration,
+  quotaView,
   OVER_USER_MSG,
   OVER_ALL_MSG,
   QUOTA_UNAVAILABLE_MSG,
@@ -129,7 +130,10 @@ export async function POST(req: NextRequest) {
           designHints: asList(parsed.designHints),
         }
       : { title: `דף משימה: ${topic}`, ageGroup: ageGroup || "טרום־חובה", instructions: text, contentElements: [], designHints: [] };
-    return NextResponse.json(data);
+    // המכסה נוסעת חזרה עם הדף כדי שהמונה על המסך יתעדכן מהספירה שכבר נעשתה
+    // כאן, ולא מ-LIST שני שהעמוד יבקש מיד אחרי. `usedUser`/`usedAll` כוללים
+    // את היצירה הזאת — הסימון נכתב לפני הקריאה ל-Anthropic.
+    return NextResponse.json({ ...data, quota: quotaView(quota.usedUser, quota.usedAll) });
   } catch (e: any) {
     // Anthropic SDK errors carry a status; pass it through so the page can tell
     // "try again in a moment" apart from "this will never work".

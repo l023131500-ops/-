@@ -13,13 +13,32 @@ export default function Generator() {
   const [signedIn, setSignedIn] = useState<boolean | null>(null);
   const [loginHref, setLoginHref] = useState("https://more30.com/login");
   const [signupHref, setSignupHref] = useState("https://more30.com/login?mode=signup");
+  // המכסה היומית נאכפת מ-#186, ועד כה הדרך היחידה לפגוש אותה הייתה להיחסם
+  // באמצע העבודה. `null` = לא ידוע (הספירה לא עלתה) — ואז לא מוצג כלום, כי
+  // מספר מומצא גרוע ממספר חסר.
+  const [quota, setQuota] = useState<any>(null);
 
   useEffect(() => {
-    setSignedIn(Boolean(sessionToken()));
+    const token = sessionToken();
+    setSignedIn(Boolean(token));
     const links = authLinks();
     setLoginHref(links.login);
     setSignupHref(links.signup);
+    if (token) loadQuota(token);
   }, []);
+
+  async function loadQuota(token: string) {
+    try {
+      const r = await fetch(withBase("/api/ai-generate/quota"), {
+        headers: { Authorization: `Bearer ${token}` },
+        cache: "no-store",
+      });
+      const data = await r.json().catch(() => null);
+      setQuota(r.ok && data?.quota ? data.quota : null);
+    } catch {
+      setQuota(null);
+    }
+  }
 
   async function generate() {
     if (!topic.trim()) { setErr("נא להזין נושא"); return; }
@@ -44,8 +63,12 @@ export default function Generator() {
       // rendered a card with an empty title and no content — and no reason why.
       if (!r.ok || !data || data.error) {
         setErr(data?.error || `יצירת הדף נכשלה (${r.status}).`);
+        // הסירוב לא נושא מונה, ובדיוק אחריו המספר על המסך הוא הישן ביותר
+        // שיהיה — שאלי מחדש, כדי שמי שנחסמה תראה 0 ולא "נותרו לך 1".
+        if (r.status !== 401) loadQuota(token);
       } else {
         setRes(data);
+        if (data.quota) setQuota(data.quota);
       }
     } catch (e: any) {
       setErr(e?.message ? `אין חיבור לשרת: ${e.message}` : "אין חיבור לשרת.");
@@ -53,6 +76,10 @@ export default function Generator() {
       setLoading(false);
     }
   }
+
+  // כשהספירה אינה ידועה (`quota === null`) הכפתור נשאר פעיל: השרת הוא שאוכף,
+  // והמסך לא יחסום גננת בגלל תקלת ספירה שלו.
+  const quotaExhausted = Boolean(quota) && (quota.remainingUser === 0 || quota.remainingAll === 0);
 
   return (
     <div className="container-r" style={{ padding: "34px 20px 50px", maxWidth: 820 }}>
@@ -95,12 +122,24 @@ export default function Generator() {
         {err && <p style={{ color: "#c1607e", marginTop: 10 }}>{err}</p>}
         <button
           className="btn btn-main"
-          style={{ marginTop: 18, opacity: loading || signedIn === false ? 0.6 : 1 }}
+          style={{ marginTop: 18, opacity: loading || signedIn === false || quotaExhausted ? 0.6 : 1 }}
           onClick={generate}
-          disabled={loading || signedIn === false}
+          disabled={loading || signedIn === false || quotaExhausted}
         >
-          {loading ? "יוצר…" : signedIn === false ? "יש להתחבר כדי ליצור" : "צרי דף משימה"}
+          {loading ? "יוצר…"
+            : signedIn === false ? "יש להתחבר כדי ליצור"
+            : quotaExhausted ? "המכסה היומית מוצתה"
+            : "צרי דף משימה"}
         </button>
+        {quota && (
+          <p style={{ marginTop: 10, fontSize: 13.5, lineHeight: 1.7, color: quotaExhausted ? "#8a6a1c" : "#6d6f88" }}>
+            {quota.remainingAll === 0
+              ? "המחולל הגיע למכסת השימוש היומית של המערכת. הוא יחזור לפעול מחר; הצפייה במדף ובמערכי השיעור נשארת פתוחה."
+              : quota.remainingUser === 0
+              ? `השלמת היום ${quota.usedUser} דפים מתוך ${quota.capUser} — זו המכסה היומית לחשבון. היא מתחדשת מדי יום, והדפים שכבר יצרת נשארים אצלך.`
+              : `נותרו לך ${quota.remainingUser} דפים היום מתוך ${quota.capUser}. המכסה מתחדשת מדי יום.`}
+          </p>
+        )}
       </div>
 
       {res && (
