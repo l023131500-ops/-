@@ -1,0 +1,47 @@
+login (§1א): the customer really does land back inside the product, and 22 will not confirm itself
+
+The previous step left the test customer proven only at the auth API: eight
+Supabase projects returned a token for test@more30.com, and nobody had opened a
+browser as that user. That gap is exactly where §1א's first bug lives — "whoever
+logs in comes back to the brochure page with their name on top instead of going
+into the product" — because an API token says nothing about where the page sends
+you afterwards.
+
+Drove it end to end against production, with a cache-buster on every URL so the
+answer is not a CDN copy from before the last deploy:
+
+  /bkalot/ → the shared pill's login item carries ?from=<this page>
+           → /login stores more30-return-to = '/bkalot/?cachebust=0812a'
+           → submit → /auth/callback
+           → back on /bkalot/, the page it started from, pill reading "לקוח"
+             and the menu "מחובר כ־לקוח בדיקה".
+
+So the bug does not reproduce here — and not only on bkalot. That flow is one
+file, portal/public/auth-button.js, served by every static system, so the check
+covers all of them at once rather than one card on the board.
+
+Three things measured on the way, since the session was already open:
+  · /admin/rights refuses this account ("super admin only") and renders no admin
+    data — the customer cannot reach the super-admin screens.
+  · /me?from=… shows the profile and the "חזרה למערכת" button, i.e. the return
+    value is honoured on the way back out too.
+  · the session carries across sites: /galil/ already read "לקוח".
+
+What this does NOT cover, and the write-up says so: systems with a login screen
+of their own — galil's gabai portal is the clearest — are still proven only at
+the API layer.
+
+One finding recorded rather than fixed: bkalot's navbar shows "ניהול" to every
+visitor, and for a plain customer it leads to a page that answers "super admin
+only". Not a leak, a dead end. Hiding it is a product decision (§5א wants system
+10's management reachable), and doing it properly means auth-button.js
+publishing the admin verdict for the page to read — its own step.
+
+Also re-ran the item the previous step asked for: 22 (zchuyot). A second resend
+answered 200 and the mailbox has received nothing since 02:40:06Z, so neither
+send ever landed. This is no longer "wait for a late mail" — that project emits
+no mail at all, which also means no real customer can confirm an account there.
+NEEDS_USER now says so and names the console step instead of proposing another
+retry.
+
+Evidence: QA/platform/login-return-0812/ (four screenshots + _results.json).
