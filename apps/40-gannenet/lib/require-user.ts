@@ -25,6 +25,14 @@ export const AUTH_REQUIRED_MSG =
 export const MINE_AUTH_REQUIRED_MSG =
   "כדי לראות את החומרים שהעליתם יש להתחבר לחשבון more30.";
 
+/**
+ * מחולל דפי המשימה הוא נתיב הכתיבה השני של המערכת — לא לאחסון אלא לארנק:
+ * כל קריאה אליו היא קריאה בתשלום ל-Anthropic במפתח שלנו. הוא היה פתוח בדיוק
+ * כמו שהמדף היה, ולכן הוא נגדר באותה בדיקה.
+ */
+export const GENERATE_AUTH_REQUIRED_MSG =
+  "כדי ליצור דף משימה יש להתחבר לחשבון more30. הצפייה במדף ובמערכי השיעור נשארת פתוחה לכולן.";
+
 export async function callerFromRequest(req: Request): Promise<Caller | null> {
   const token = /^Bearer\s+(.+)$/i.exec(req.headers.get("authorization") || "")?.[1]?.trim();
   if (!token || !URL_ || !KEY_) return null;
