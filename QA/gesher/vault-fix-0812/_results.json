@@ -1,0 +1,43 @@
+{
+  "issue": 173,
+  "system": "31 gesher (gesher-more30)",
+  "date": "2026-08-12",
+  "priority_ref": "§8ב / §1ג — פעולה עסקית אמיתית בתוך המוצר",
+  "what_was_broken": "client uploads landed in storage, the serverFn returned ok:true, and the document was never recorded — RLS filtered the UPDATE on client_profiles to zero rows, which PostgREST does not report as an error",
+  "fix": {
+    "file": "apps/31-hebrew-bridge-crm/src/lib/client.functions.ts",
+    "functions": ["getClientDashboard", "appendUploadedDocument", "removeUploadedDocument"],
+    "moved_from": "client_profiles.uploaded_documents (jsonb, no client UPDATE policy)",
+    "moved_to": "public.documents (policy doc_all FOR ALL USING/WITH CHECK owner_client_id = auth.uid())",
+    "column_mapping": { "path": "storage_path", "uploaded_at": "created_at" },
+    "zero_row_guard": "insert and delete both use .select() and throw a Hebrew error when zero rows come back, so an RLS-blocked write can never report success again",
+    "ordering_change": "removeUploadedDocument now deletes the row first and the storage object second; previously it removed the file and then failed to update the row"
+  },
+  "typecheck": "tsc --noEmit -p tsconfig.json — clean",
+  "build": "vite build — ok, 31.58s",
+  "deploy": {
+    "project": "gesher-more30",
+    "id": "dpl_CmAEDD6Ed7JJU8AUmZ2tEjmfsHGz",
+    "target": "production",
+    "state": "READY",
+    "mode": "from source (not --prebuilt, so vercel.json ships)"
+  },
+  "walked_in_browser": {
+    "url": "https://more30.com/gesher/client/documents",
+    "user": "test@more30.com (לקוח בדיקה)",
+    "steps": [
+      { "step": "vault before", "result": "עדיין לא הועלו מסמכים", "shot": "01-vault-before.png" },
+      { "step": "upload sample.pdf (199 bytes) with description 'בדיקת QA כספת 12/08'", "result": "row appears: name + הועלה ב־12 באוג׳ 2026, 14:16 + status במתנה לבדיקה", "shot": "02-after-upload.png" },
+      { "step": "full page reload", "result": "document still there — this is the step that failed before the fix", "shot": "03-after-reload-persisted.png" },
+      { "step": "status page", "result": "תיק המסמכים המאובטח → הועלו 1 מסמכים", "shot": "04-status-counter.png" },
+      { "step": "delete + confirm + full reload", "result": "vault empty again, delete persisted", "shot": "05-after-delete-reload.png" }
+    ]
+  },
+  "not_measured": [
+    "public.documents was not queried directly — Supabase project ygaqqnuyfnumezxxmtbh is not reachable from here over MCP and there is no SUPABASE_ACCESS_TOKEN; the evidence is the browser and the shipped code",
+    "the admin side of 31 was not opened to confirm the same document is now visible there — client-profile.functions.ts:187 already reads public.documents, so it should be, but that was not walked",
+    "the orphan file from 11/08 (client-documents/1458bb7c-0dea-44b4-9007-ffc3e82b430f/df064ea8-3eb9-4e54-b7bd-1a24c3353fd8-sample.pdf) has no documents row and is therefore still stuck in storage with no screen that shows or deletes it",
+    "/gesher/client/consents is still an empty 'בקרוב' screen — untouched by this step"
+  ],
+  "test_mode": "no user created, no message sent, no charge. Protected systems (08, 09, bkalut-app, bkalot-admin, zr_*, NEDARIM3873) not touched; csj/csj_src/igud not used."
+}

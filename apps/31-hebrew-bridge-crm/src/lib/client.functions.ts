@@ -32,6 +32,32 @@ export type ClientDashboardData = {
   uploadedDocuments: UploadedDocument[];
 };
 
+type DocumentRow = {
+  id: string;
+  name: string;
+  storage_path: string;
+  mime: string | null;
+  size: number | null;
+  created_at: string;
+  status: string | null;
+  category: string | null;
+};
+
+function toUploadedDocument(row: DocumentRow): UploadedDocument {
+  return {
+    id: row.id,
+    name: row.name,
+    path: row.storage_path,
+    mime: row.mime ?? "",
+    size: Number(row.size ?? 0),
+    uploaded_at: row.created_at,
+    status: (row.status as UploadedDocument["status"]) ?? "pending_review",
+    category: (row.category as DocumentCategory | null) ?? null,
+  };
+}
+
+const DOCUMENT_COLUMNS = "id, name, storage_path, mime, size, created_at, status, category";
+
 export const getClientDashboard = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }): Promise<ClientDashboardData> => {
@@ -43,12 +69,12 @@ export const getClientDashboard = createServerFn({ method: "GET" })
       .eq("id", userId)
       .maybeSingle();
 
-    const { data: clientProfile, error: cpErr } = await supabase
-      .from("client_profiles")
-      .select("uploaded_documents")
-      .eq("id", userId)
-      .maybeSingle();
-    if (cpErr) throw new Error(cpErr.message);
+    const { data: docRows, error: docErr } = await supabase
+      .from("documents")
+      .select(DOCUMENT_COLUMNS)
+      .eq("owner_client_id", userId)
+      .order("created_at", { ascending: false });
+    if (docErr) throw new Error(docErr.message);
 
     const { data: assignment } = await supabase
       .from("partner_assignments")
@@ -69,8 +95,7 @@ export const getClientDashboard = createServerFn({ method: "GET" })
       partnerName = pProfile?.full_name ?? null;
     }
 
-    const rawDocs = clientProfile?.uploaded_documents;
-    const docs: UploadedDocument[] = Array.isArray(rawDocs) ? (rawDocs as any[]) : [];
+    const docs: UploadedDocument[] = ((docRows ?? []) as DocumentRow[]).map(toUploadedDocument);
 
     return {
       userId,
@@ -106,35 +131,27 @@ export const appendUploadedDocument = createServerFn({ method: "POST" })
       throw new Error("Invalid storage path");
     }
 
-    const { data: row, error: readErr } = await supabase
-      .from("client_profiles")
-      .select("uploaded_documents")
-      .eq("id", userId)
-      .maybeSingle();
-    if (readErr) throw new Error(readErr.message);
+    const { data: inserted, error: insErr } = await supabase
+      .from("documents")
+      .insert({
+        id: data.id,
+        owner_client_id: userId,
+        uploaded_by: userId,
+        name: data.name,
+        storage_path: data.path,
+        mime: data.mime,
+        size: data.size,
+        status: "pending_review",
+        category: data.category ?? null,
+      })
+      .select(DOCUMENT_COLUMNS);
+    if (insErr) throw new Error(insErr.message);
+    // A write filtered out by RLS is not an error in PostgREST — it returns zero rows.
+    if (!inserted || inserted.length === 0) {
+      throw new Error("שמירת המסמך נכשלה — אין הרשאה לרשום את המסמך בתיק.");
+    }
 
-    const current: UploadedDocument[] = Array.isArray(row?.uploaded_documents)
-      ? (row!.uploaded_documents as any[])
-      : [];
-
-    const entry: UploadedDocument = {
-      id: data.id,
-      name: data.name,
-      path: data.path,
-      mime: data.mime,
-      size: data.size,
-      uploaded_at: new Date().toISOString(),
-      status: "pending_review",
-      category: data.category ?? null,
-    };
-
-    const { error: upErr } = await supabase
-      .from("client_profiles")
-      .update({ uploaded_documents: [...current, entry] })
-      .eq("id", userId);
-    if (upErr) throw new Error(upErr.message);
-
-    return { ok: true, document: entry };
+    return { ok: true, document: toUploadedDocument(inserted[0] as DocumentRow) };
   });
 
 export const removeUploadedDocument = createServerFn({ method: "POST" })
@@ -143,32 +160,33 @@ export const removeUploadedDocument = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context as any;
 
-    const { data: row, error: readErr } = await supabase
-      .from("client_profiles")
-      .select("uploaded_documents")
-      .eq("id", userId)
+    const { data: target, error: readErr } = await supabase
+      .from("documents")
+      .select("id, storage_path")
+      .eq("id", data.id)
+      .eq("owner_client_id", userId)
       .maybeSingle();
     if (readErr) throw new Error(readErr.message);
-
-    const current: UploadedDocument[] = Array.isArray(row?.uploaded_documents)
-      ? (row!.uploaded_documents as any[])
-      : [];
-    const target = current.find((d) => d.id === data.id);
     if (!target) return { ok: true };
 
-    if (!target.path.startsWith(`${userId}/`)) {
+    if (!target.storage_path.startsWith(`${userId}/`)) {
       throw new Error("Invalid storage path");
     }
 
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    await supabaseAdmin.storage.from("client-documents").remove([target.path]);
+    const { data: deleted, error: delErr } = await supabase
+      .from("documents")
+      .delete()
+      .eq("id", data.id)
+      .eq("owner_client_id", userId)
+      .select("id");
+    if (delErr) throw new Error(delErr.message);
+    // A delete filtered out by RLS is not an error in PostgREST — it returns zero rows.
+    if (!deleted || deleted.length === 0) {
+      throw new Error("מחיקת המסמך נכשלה — אין הרשאה להסיר את המסמך מהתיק.");
+    }
 
-    const next = current.filter((d) => d.id !== data.id);
-    const { error: upErr } = await supabase
-      .from("client_profiles")
-      .update({ uploaded_documents: next })
-      .eq("id", userId);
-    if (upErr) throw new Error(upErr.message);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    await supabaseAdmin.storage.from("client-documents").remove([target.storage_path]);
 
     return { ok: true };
   });
