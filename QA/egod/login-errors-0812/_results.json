@@ -1,0 +1,41 @@
+{
+  "system": "15 / egod",
+  "path": "/egod",
+  "priority_item": "§1א — הרשמה→התחברות 'סיסמה שגויה'; §1ג — הלקוח נכנס לתוך המוצר",
+  "supabase_project": "hkkkynyoigzlttpynoeo",
+  "date": "2026-08-12",
+  "before": "כל שגיאת אימות הוצגה כטקסט האנגלי הגולמי: toast.error('שגיאה בהתחברות: ' + error.message) — כלומר 'Invalid login credentials' / 'Email not confirmed' למשתמש שקורא עברית, בלי הבחנה בין מייל שלא אומת לבין סיסמה שגויה.",
+  "after": "src/lib/authErrors.ts ממפה את error.code להודעה בעברית; קוד לא מוכר עדיין מציג את ההודעה המקורית עם הקידומת.",
+  "checks": [
+    {
+      "what": "unit — כל ענף במיפוי",
+      "how": "vitest run (src/lib/authErrors.test.ts)",
+      "result": "2 test files / 6 tests passed"
+    },
+    {
+      "what": "סיסמה שגויה מול שרת האימות האמיתי (dev server)",
+      "how": "http://localhost:5199/egod/login · test@more30.com + סיסמה שגויה",
+      "result": "toast = 'האימייל או הסיסמה שגויים.'",
+      "evidence": "01-wrong-password.png"
+    },
+    {
+      "what": "סיסמה נכונה — הלקוח נכנס לתוך המוצר (§1ג)",
+      "how": "אותו מסך · test@more30.com / More30Test2026",
+      "result": "הפניה ל-/egod/portal, הכותרת 'שלום הרב לקוח בדיקה! 👋' — לא נשאר בתדמית",
+      "evidence": "02-real-login-lands-in-portal.png"
+    },
+    {
+      "what": "אימות בפרודקשן אחרי הפריסה",
+      "how": "https://more30.com/egod/login?cachebust=0812egodC · סיסמה שגויה",
+      "result": "toast = 'האימייל או הסיסמה שגויים.' · הבאנדל שנטען: /egod/assets/index-RNBwDqT2.js (החדש)",
+      "evidence": "03-live-wrong-password.png"
+    }
+  ],
+  "deploy": {
+    "target": "egod-more30 (vercel, --prod, מתוך _deploy/egod-more30)",
+    "url": "egod-more30-abq59962r-l023131500-ops-projects.vercel.app",
+    "live_check": "https://more30.com/egod/ → 200, index-BCt1cfS2.js הוחלף ב-index-RNBwDqT2.js",
+    "pre_deploy_diff": "ה-HTML החי היה זהה לעותק שב-_deploy פרט ל-hash של ה-JS, ולכן ה-/MIR היה בטוח"
+  },
+  "not_covered": "הענף email_not_confirmed לא הופעל מול שרת אמיתי — כדי ליצור מצב כזה צריך להירשם עם כתובת חדשה, ולא נוצרו משתמשי בדיקה נוספים. הענף מכוסה ביחידה בלבד."
+}

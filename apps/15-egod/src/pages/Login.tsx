@@ -8,14 +8,10 @@ import { BookOpen, Mail, Lock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { getPublicSiteUrl } from "@/lib/site";
+import { authErrorMessage, PASSWORD_MIN_LENGTH } from "@/lib/authErrors";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
-
-// המינימום שהאימות עצמו אוכף: signup עם 4 תווים חוזר
-// weak_password / "Password should be at least 6 characters".
-// מוצג ליד השדה, נאכף ב-minLength ונבדק לפני השליחה — כולם קוראים את הקבוע הזה.
-const PASSWORD_MIN_LENGTH = 6;
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -44,13 +40,13 @@ const Login = () => {
         options: { data: { full_name: fullName } },
       });
       setLoading(false);
-      if (error) { toast.error("שגיאה בהרשמה: " + error.message); return; }
+      if (error) { toast.error(authErrorMessage(error, "signup")); return; }
       toast.success("נרשמת בהצלחה! בדוק את המייל לאימות.");
       return;
     }
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     setLoading(false);
-    if (error) { toast.error("שגיאה בהתחברות: " + error.message); return; }
+    if (error) { toast.error(authErrorMessage(error, "login")); return; }
     toast.success("התחברת בהצלחה!");
     navigate("/portal");
   };
