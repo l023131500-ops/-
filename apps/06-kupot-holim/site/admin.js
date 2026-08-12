@@ -71,6 +71,25 @@
     setTimeout(function () { document.getElementById("adminUser").focus(); }, 30);
   }
 
+  // --- Show password ---
+  // type="button" matters: the toggle sits inside a form with a real submit
+  // handler, so a bare <button> would attempt a login on every click.
+  (function () {
+    var input = document.getElementById("adminPass");
+    var btn = document.getElementById("adminPassToggle");
+    if (!input || !btn) return;
+    btn.addEventListener("click", function () {
+      var reveal = input.type === "password";
+      input.type = reveal ? "text" : "password";
+      // aria-pressed also drives which icon paints — see admin.html.
+      btn.setAttribute("aria-pressed", reveal ? "true" : "false");
+      var label = reveal ? "הסתר סיסמה" : "הצג סיסמה";
+      btn.setAttribute("aria-label", label);
+      btn.setAttribute("title", label);
+      input.focus();
+    });
+  })();
+
   loginForm.addEventListener("submit", function (e) {
     e.preventDefault();
     // No credential is configured, and none can be: see the note at the top of

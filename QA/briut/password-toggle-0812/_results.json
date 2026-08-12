@@ -1,0 +1,67 @@
+{
+  "date": "2026-08-12",
+  "priority": "§1א — הצגת סיסמה (show-password eye)",
+  "system": "06 briut (בקלות · קופות חולים)",
+  "app": "apps/06-kupot-holim",
+  "scope": {
+    "password_fields_found": 1,
+    "files": ["site/admin.html #adminPass (admin login gate)"],
+    "not_found_in": [
+      "site/index.html — no type=password anywhere (public lead form only)",
+      "site/app.js — no password field"
+    ],
+    "note": "ripgrep reports 'no matches' when traversing apps/ because app sources are gitignored; the scan was done with Select-String and by reading the files."
+  },
+  "requirement_text_added": false,
+  "requirement_text_reason": "No password rule exists to state. The gate fails closed by design (admin.js header comment, 07/08): no credential is configured and none can be, because this is a static site with no build step. §1א asks to display rules that exist; none do, so nothing was invented.",
+  "side_measurement": {
+    "html_dir": "rtl",
+    "input_dir_attr": "none — inherits",
+    "computed_direction": "rtl",
+    "computed_text_align": "start -> right",
+    "free_side": "left",
+    "button_placed": "left: 8px",
+    "input_padding_left": "44px",
+    "input_padding_right": "14px"
+  },
+  "defect_found_and_fixed_during_this_step": {
+    "what": "First cut hid the second icon with the HTML `hidden` attribute and toggled `svg.hidden` from JS. Both icons painted at once.",
+    "why": "`hidden` is not honoured on SVG elements — the UA `[hidden]{display:none}` rule is HTML-namespace only, and `.pw-toggle svg{display:block}` (specificity 0,1,1) outranks it regardless. Setting `.hidden` from JS on an SVGElement is an expando, not a reflected attribute.",
+    "fix": "Icon visibility is now pure CSS driven off `aria-pressed` on the button, so state has one source of truth.",
+    "evidence": "before-fix eval: {eye: visible, eyeOff: visible} at rest; after-fix eval: {eyeVisible:true, eyeOffVisible:false} at rest and inverted when pressed."
+  },
+  "verification": {
+    "route": "static server on :5128 over apps/06-kupot-holim/site (no build step in this app), Chromium via Playwright, viewport resized once before screenshotting",
+    "console_errors": 0,
+    "geometry": {
+      "input_rect": [473, 406, 334, 48],
+      "button_rect": [481, 415, 30, 30],
+      "button_contained_inside_input": true,
+      "elementFromPoint_at_button_centre": "adminPassToggle"
+    },
+    "round_trip": {
+      "before": {"type": "password", "aria-pressed": "false", "aria-label": "הצג סיסמה", "eyeVisible": true, "eyeOffVisible": false},
+      "revealed": {"type": "text", "aria-pressed": "true", "aria-label": "הסתר סיסמה", "eyeVisible": false, "eyeOffVisible": true},
+      "rehidden": {"type": "password", "aria-pressed": "false", "aria-label": "הצג סיסמה", "eyeVisible": true, "eyeOffVisible": false},
+      "typed_value_preserved": "More30Admin2026 across both toggles",
+      "focus_returns_to": "adminPass"
+    },
+    "no_accidental_submit": {
+      "why_it_matters": "the button sits inside #loginForm, which has a real submit handler",
+      "button_type": "button",
+      "wrapped_fetch_and_XHR_calls_during_both_toggles": 0,
+      "location_href_changed": false,
+      "loginErr_text_after_toggles": "\"\" — the submit handler would have written 'התחברות לניהול אינה מוגדרת בסביבה זו'"
+    },
+    "screenshots": [
+      "briut-admin-login-hidden.png",
+      "briut-admin-login-revealed.png"
+    ]
+  },
+  "deployment": {
+    "deployed": false,
+    "deliberate": true,
+    "reason": "Production does not serve this page. _deploy/briut-more30/briut/ contains index.html, app.js, styles.css, leads-store.js, site-data.json, supabase-config.js, favicon.svg — admin.html and admin.js are not in the deploy folder at all, so more30.com/briut/admin.html has nothing to serve. Shipping the admin page is a separate decision (it needs server-side auth first), not a password-toggle step.",
+    "incidental": "_deploy/briut-more30/briut/leads-store.js is 4614 bytes against 5432 in source — that copy is stale. Untouched here; belongs to the stale-_deploy sweep."
+  }
+}
