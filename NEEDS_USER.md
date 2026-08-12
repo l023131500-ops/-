@@ -29,6 +29,67 @@
 
 ---
 
+## 🔴 0ש′. `lux-manage` (מאורכב) — `leads-api` מחזיר את כל טבלת הלידים לכל אחד — 12/08/2026
+
+**מה נמדד.** `GET https://zwxwteebcoejrjdufzsv.supabase.co/functions/v1/leads-api`
+**בלי `apikey` ובלי `Authorization` כלל** החזיר `200` ואת תוכן טבלת `leads`:
+`name, email, phone, message, source, created_at` — שמות אמיתיים, כתובות gmail אמיתיות
+ופניות בטקסט חופשי. הפונקציה עצמה מדווחת `total = 6`. `?limit=` ו-`?offset=` בשליטת
+הקורא ובלי תקרה, כך שכל הטבלה נשלפת. הפונקציה בונה לקוח `service_role` ואינה בודקת
+דבר — ההערה מעל ה-handler טענה *"requires auth header with service key or admin JWT"*,
+והבדיקה הזאת מעולם לא נכתבה. **ההערה הייתה כל מודל האבטחה.**
+
+גם `POST` ו-`PUT` על אותה כתובת מכניסים לטבלה בלי שום שער (`PUT` מקבל מערך). **לא בדקתי
+אותם בכוונה** — הוכחה כזאת פירושה לכתוב זבל לטבלה חיה, והמקור חד-משמעי.
+
+**איך זה נמצא.** סריקה של `apps/_archive/**` שהצעד הקודם השאיר פתוחה בהנחה
+שפונקציות מאורכבות אינן פרוסות. **ההנחה שגויה: כל 10 הפונקציות בשתי האפליקציות
+המאורכבות פרוסות ועונות עכשיו.** ארכוב המקור לא הוריד כלום מהאוויר.
+
+**מה תוקן במקור (לא נפרס).** `readerGate()` ב-`leads-api/index.ts`: `GET` ו-`PUT`
+דורשים `x-api-key == LEADS_API_KEY`, **ונכשלים סגור** — בלי המשתנה בסביבה הקורא מקבל
+`403 leads-api reader disabled`, וזה מצב המנוחה הנכון ל-`service_role` על פרויקט שאין
+לו בעלים. `POST` נשאר פתוח במכוון: זה טופס יצירת הקשר הציבורי
+(`ContactSection.tsx`, `PublicConciergeBot.tsx`), והוא רק כותב. `verify_jwt` לבדו לא
+היה סוגר את הקריאה — מאותה סיבה כמו #161/#167: מפתח ה-anon הוא JWT תקין שנשלח לכל דפדפן.
+
+**מה אתה צריך לעשות.** לפרוס. אין Supabase CLI במכונה הזאת, אין `SUPABASE_ACCESS_TOKEN`,
+וה-MCP מציג רק `uhnrgujbdxhhmoxcjria`. **עד שזה יורץ, הגרסה הפתוחה חיה.**
+
+```bash
+supabase link --project-ref zwxwteebcoejrjdufzsv
+supabase secrets set LEADS_API_KEY="<סוד אקראי חדש>"
+supabase functions deploy leads-api
+```
+
+**בדיקת קבלה (אפשר להריץ בלעדיי).** אותו `curl` שהחזיר `200` חייב להחזיר `403`
+(או `401` אחרי שהסוד מוגדר):
+
+```bash
+curl -s -o /dev/null -w "%{http_code}\n" \
+  https://zwxwteebcoejrjdufzsv.supabase.co/functions/v1/leads-api
+```
+
+**שאלה נלווית.** `zwxwteebcoejrjdufzsv` אינו רשום ב-`core.projects` כלל, ואין לו אתר
+פרוס — פרויקט Supabase חי שאיש אינו מחזיק. אם הוא באמת מת, המחיקה שלו סוגרת את זה
+לתמיד ואינה דורשת פריסה. זו הכרעה שלך. (`core.issues` #170)
+
+---
+
+## 🟠 0ת′. מערכת 08 (מוגנת) — שלוש פונקציות `service_role` עונות לכל קורא — 12/08/2026
+
+באותה סריקה: `leads-webhook`, `n8n-notify` ו-`rights-agent` על `pwcswdfgorvlpdflzylm`
+(= **מערכת 08 `bkalut-app`, מוגנת**) הגיבו `500 "Unexpected end of JSON input"` ל-GET
+בלי שום הרשאה — כלומר ה-handler רץ, ורק הגוף הריק עצר אותו לפני כל כתיבה או שליחה.
+אף אחת לא החזירה נתונים, ולכן **זו אינה דליפה** — אבל אלה נתיבי כתיבה/העברה לא מגודרים
+על מערכת הזכאות החיה. (`leads-api` על אותו פרויקט דווקא מגודר נכון: `401 Missing API key`.)
+
+**לא שיניתי דבר ולא אשנה.** 08 מוגנת, וההרשאה היחידה שיש לי עליה היא קריאה בלבד —
+וזה בדיוק מה שנעשה כאן: `GET` בלי גוף, בלי כתיבה, בלי שליחה. הגידור עצמו הוא הכרעה
+שלך בלבד, כמו #164/#169. (`core.issues` #171)
+
+---
+
 ## 🔴 0ר′. איגוד השיעורים (15) — `seed-demo-portals` ענה 200 לכל אחד באינטרנט — 12/08/2026
 
 **מה נמדד.** `GET https://hkkkynyoigzlttpynoeo.supabase.co/functions/v1/seed-demo-portals`

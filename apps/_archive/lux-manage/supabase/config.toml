@@ -1,1 +1,18 @@
 project_id = "zwxwteebcoejrjdufzsv"
+
+# leads-api stays open at the gateway on purpose: POST is the public contact
+# form (ContactSection.tsx / PublicConciergeBot.tsx) and must work for a visitor
+# with no session. The real gate is inside the function — GET and PUT require
+# x-api-key == LEADS_API_KEY and fail closed when that secret is unset.
+# verify_jwt would not have closed the read anyway: the anon key is a valid JWT
+# shipped to every browser.
+[functions.leads-api]
+verify_jwt = false
+
+# These two already do their own auth (Authorization header + has_role admin).
+# Pinned so a redeploy cannot silently open them.
+[functions.admin-create-user]
+verify_jwt = true
+
+[functions.admin-set-password]
+verify_jwt = true
