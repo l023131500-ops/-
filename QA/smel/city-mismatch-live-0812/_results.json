@@ -1,0 +1,56 @@
+{
+  "what": "smel (12) — the city-mismatch warning from core.issues #158 reached production. It was written and verified against a local build on 10/08 and then never shipped, because deploys were blocked on #83 (Vercel quota). The quota is lifted, so this is priority.md §0.2: retry what #83 blocked.",
+  "measured_at": "2026-08-12T05:27Z",
+  "measured_against": "https://more30.com/smel — production, anonymous, real edge function nadlan-smart-research",
+  "source_commit_already_in_tree": "63f4882 (smel 158) — client/src/lib/research.ts localityMismatch(), app-state.tsx typedCity, pages/Report.tsx card-locality-mismatch",
+  "before": {
+    "html": "https://more30.com/smel served /smel/assets/index-BjP8VGql.js",
+    "bundle_matches_disk_copy": "_deploy/smel-more30/smel/assets/index-BjP8VGql.js — byte-for-byte the deployed copy, so the on-disk staging area was the live one and nothing unknown was overwritten",
+    "fix_present_in_live_bundle": false
+  },
+  "build": {
+    "command": "npm run build in apps/12-smel-ndln",
+    "output": "dist/public/assets/index-BzxcokTm.js (447674 B), index-D8RwD_06.css (75579 B)",
+    "reproducible": "same hash index-BzxcokTm.js that #158's 10/08 note names, so the build is deterministic and this is the exact artifact that was verified then",
+    "auth_button_survived": true
+  },
+  "deploy": {
+    "project": "smel-more30",
+    "id": "dpl_GpmUWcj76DTqxo37TAQcjcq6pQN6",
+    "target": "production",
+    "url": "https://smel-more30-g7jyl74hg-l023131500-ops-projects.vercel.app",
+    "method": "vercel deploy --prod from _deploy/smel-more30 (NOT --prebuilt — vercel.json carries the two /smel rewrites)",
+    "stale_assets_removed": ["index-BjP8VGql.js", "index-CF04gbI5.css"]
+  },
+  "after": {
+    "html_serves": "/smel/assets/index-BzxcokTm.js",
+    "js": {"status": 200, "bytes": 447674, "content_type": "application/javascript; charset=utf-8"},
+    "css": {"status": 200, "bytes": 75579},
+    "string_card-locality-mismatch_in_live_bundle": true
+  },
+  "browser_checks": [
+    {
+      "typed": "עיר=ירושלים · רחוב=יפו · מספר=30",
+      "matched_address": "דרך יפו-ת\"א 30 TELAVIVYAFO",
+      "locality_returned": "תל אביב-יפו",
+      "warning_shown": true,
+      "warning_text": "המרשם איתר את הכתובת בעיר אחרת — ביקשתם כתובת בירושלים, והמרשם החזיר התאמה בתל אביב-יפו (דרך יפו-ת\"א 30 TELAVIVYAFO). כל הנתונים בדוח הזה — ציון הכדאיות, המחיר הממוצע, מדד התשואה ומגמת המחירים — מתייחסים לתל אביב-יפו, ולא לירושלים.",
+      "position": "above the ציון כדאיות ההשקעה card, with a back-to-search button",
+      "screenshot": "01-jerusalem-typed-telaviv-matched.png"
+    },
+    {
+      "typed": "עיר=תל אביב · רחוב=דיזנגוף · מספר=100",
+      "heading": "דיזנגוף 100 תל אביב",
+      "warning_shown": false,
+      "why_this_case_matters": "proves the banner is not always-on; the rule is one-sided and stays silent when the two names contain each other after normalisation",
+      "screenshot": "02-telaviv-matched-no-banner.png"
+    }
+  ],
+  "still_open_on_158": "the edge function nadlan-smart-research still resolves «יפו 30 ירושלים» to Tel Aviv. Nothing about the match itself changed in this step — the user is now told, not protected. #158 stays open on that half.",
+  "side_measurement": {
+    "question": "open line (b) from the previous step — which other apps declare a Tailwind floor loose enough to land back on 4.3.0 and ship an empty stylesheet",
+    "answer": "none. Swept all 18 apps/ with a tailwindcss dependency: only 30-zchuyotpro-crm and 31-hebrew-bridge-crm are on Tailwind v4 (both declared ^4.3.3, both installed 4.3.3 after the previous step). The other 16 are v3.4.x, which scans via the content globs in tailwind.config, not @source, so the 4.3.0 directory-@source defect cannot reach them. The stray @tailwindcss/oxide 4.3.x under six v3 apps is transitive and unused by their build.",
+    "closes": "open line (b)"
+  },
+  "not_done": "no source change, no account created, nothing sent, no billing touched. Protected systems untouched."
+}

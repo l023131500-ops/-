@@ -1,0 +1,31 @@
+smel (12): the warning about landing in the wrong city was written two days ago and never reached anyone
+
+core.issues #158. On 10/08 the mismatch card was built and verified against a
+local bundle, and the note ended "not deployed - quota #83". The quota is gone,
+so priority.md §0.2 says retry exactly this. Production was still serving
+index-BjP8VGql.js, the bundle from before the fix.
+
+Checked the staging copy first: _deploy/smel-more30/smel/assets held that same
+BjP8VGql file, so the on-disk copy really was the live one and re-staging could
+not overwrite something that exists only in production.
+
+A fresh npm run build emitted index-BzxcokTm.js — the same hash #158's note
+names, so the artifact deployed here is the one that was verified then, not a
+re-derivation. Deployed from source, not --prebuilt: vercel.json carries the two
+/smel rewrites and --prebuilt ignores it.
+
+Driven on more30.com as an anonymous visitor, against the real edge function:
+- Jerusalem + Yafo 30 → matched Tel Aviv-Yafo, and the card now says so above
+  the score, naming both cities and what the numbers actually describe.
+- Tel Aviv + Dizengoff 100 → no card. That is the case that matters: it proves
+  the banner is not always-on.
+
+What did not change: nadlan-smart-research still resolves that address to Tel
+Aviv. The customer is told, not protected. #158 stays open on the match itself.
+
+Also closed the previous step's open line (b) by measurement: swept all 18 apps
+with a tailwindcss dependency. Only 30 and 31 are on v4, both already pinned and
+installed at 4.3.3. The other 16 are v3.4.x and scan via content globs, so the
+4.3.0 directory-@source defect cannot reach them. No further pins needed.
+
+QA/smel/city-mismatch-live-0812/
