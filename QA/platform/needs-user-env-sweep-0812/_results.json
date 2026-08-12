@@ -1,0 +1,110 @@
+{
+  "run": "needs-user-env-sweep-0812",
+  "at": "2026-08-12T06:20Z",
+  "why": "NEEDS_USER §0ס was closed on 12/08 after `vercel env ls` showed both keys it asked for had been set 17 days earlier. It was written up as blocked without running the command that checks. This run applies the same command to every remaining env-var ask in NEEDS_USER §3, and cross-checks each variable NAME against the code that reads it.",
+  "method": {
+    "env": "GET https://api.vercel.com/v9/projects/<project>/env?teamId=team_NLONMgS3DlFsznzcrz0j3OMs (Bearer token from disk). Values are `sensitive` and not returned; key names, targets and createdAt are.",
+    "readers": "Select-String over the app source on disk (apps/** is gitignored, so ripgrep/git grep are blind to it) for `process.env.<NAME>` / `import.meta.env.<NAME>`.",
+    "not_measured": "The VALUE of any variable. Vercel does not return sensitive values, so 'set' here means the key exists on Production, not that it is correct."
+  },
+  "projects": {
+    "chizukim2-more30": { "count": 5, "keys": ["APP_BASE_PATH", "LAB_TOKEN", "OPENAI_API_KEY", "VITE_API_BASE", "VITE_BASE"] },
+    "kupot-more30": { "count": 8, "keys": ["ADMIN_TOKEN", "ANTHROPIC_API_KEY", "ANTHROPIC_MODEL", "API_PATH_PREFIX", "DATA_STORE", "SUPABASE_ANON_KEY", "SUPABASE_SCHEMA", "SUPABASE_URL"] },
+    "mechiron-more30": { "count": 6, "keys": ["ELEVENLABS_API_KEY", "SUPABASE_ANON_KEY", "SUPABASE_URL", "YEMOT_API_KEY"] },
+    "tamlul-more30": { "count": 5, "keys": ["NEXT_PUBLIC_SUPABASE_ANON_KEY", "NEXT_PUBLIC_SUPABASE_URL", "OPENAI_API_KEY", "SUPABASE_SERVICE_ROLE_KEY", "SUPABASE_URL"] },
+    "orech-more30": { "count": 8, "keys": ["ANTHROPIC_API_KEY", "NEXT_PUBLIC_HUB_SUPABASE_ANON_KEY", "NEXT_PUBLIC_HUB_SUPABASE_URL", "NEXT_PUBLIC_SUPABASE_ANON_KEY", "NEXT_PUBLIC_SUPABASE_URL", "OPENAI_API_KEY", "SUPABASE_SERVICE_ROLE_KEY", "SUPABASE_URL"] },
+    "nadlan-more30": { "count": 24, "keys_of_interest": ["APIFY_TOKEN", "GOOGLE_MAPS_API_KEY", "SUPABASE_SERVICE_KEY", "AI_API_KEY", "RESEND_API_KEY", "POI_REFRESH_TOKEN", "ADMIN_TOKEN"] },
+    "chatzor-more30": { "count": 0, "keys": [], "note": "zero environment variables of any kind" },
+    "gannenet-more30": { "count": 6, "keys": ["ADMIN_PASSWORD", "ANTHROPIC_API_KEY", "APP_BASE_PATH", "SUPABASE_ANON_KEY", "SUPABASE_SERVICE_ROLE_KEY", "SUPABASE_URL"], "targets": "all six on production AND preview", "created": "2026-08-11" }
+  },
+  "findings": [
+    {
+      "needs_user_row": 1,
+      "system": "17 chizukim",
+      "asked_for": "RUNPOD_API_KEY",
+      "verdict": "WRONG NAME + NOT A BLOCKER",
+      "measured": "No file in apps/17-chizukim-transcribe reads RUNPOD_API_KEY. The reader is CUSTOM_CRED_API_RUNPOD_AI_TOKEN (server/routes.ts:90 and :131, and the built api/handler.js), with an optional CUSTOM_CRED_API_RUNPOD_AI_URL override. Neither is set on chizukim2-more30. Its absence is handled, not fatal: routes.ts branches on the token and falls back to OpenAI (TRANSCRIBE_MODEL, default gpt-transcribe) -- and OPENAI_API_KEY IS set on that project, Production, since 2026-07-26.",
+      "consequence": "Transcription has a configured engine today. What the missing token buys is price: the cost constants in the same file are 0.0004 $/min on RunPod against 0.006 $/min on OpenAI, i.e. 15x. This is an optimisation, not the outage it was filed as."
+    },
+    {
+      "needs_user_row": 2,
+      "system": "17 chizukim",
+      "asked_for": "SUPABASE_SERVICE_ROLE_KEY",
+      "verdict": "STILL OPEN",
+      "measured": "Not present among the 5 variables on chizukim2-more30.",
+      "consequence": "Unchanged, and it is downstream of the §1 decision anyway -- the key lives in Supabase project csjekrvukbdznetsrodj, which this account cannot see."
+    },
+    {
+      "needs_user_row": 3,
+      "system": "28 kupot",
+      "asked_for": "ADMIN_TOKEN",
+      "verdict": "ALREADY SET -- STALE ASK",
+      "measured": "ADMIN_TOKEN exists on kupot-more30, target production, created 2026-07-26 -- before the row was written. The reader is apps/28-kupot-health-funds/server/routes.ts:87 (and the built api/index.js), name matches exactly.",
+      "consequence": "Nothing was waiting on the user here."
+    },
+    {
+      "needs_user_row": 4,
+      "system": "27 mechiron",
+      "asked_for": "YEMOT_TOKEN",
+      "verdict": "WRONG NAME, AND THE REAL ONE IS ALREADY SET",
+      "measured": "Nothing reads YEMOT_TOKEN. The reader is YEMOT_API_KEY -- apps/27-bkalut-price/server/yemot.ts:208 and server/routes.ts:1015 -- and YEMOT_API_KEY exists on mechiron-more30, production, created 2026-07-27.",
+      "consequence": "Row closed. §3.3 had already noticed this and §3 was never reconciled with it."
+    },
+    {
+      "needs_user_row": 5,
+      "system": "27 mechiron",
+      "asked_for": "ELEVENLABS_API_KEY",
+      "verdict": "ALREADY SET -- STALE ASK",
+      "measured": "ELEVENLABS_API_KEY exists on mechiron-more30, production, created 2026-07-27. Readers: server/yemot.ts:209, server/hf-podcast.ts:167. Name matches exactly.",
+      "consequence": "Row closed."
+    },
+    {
+      "needs_user_row": 6,
+      "system": "02 tamlul",
+      "asked_for": "GOOGLE_CLIENT_ID + GOOGLE_CLIENT_SECRET",
+      "verdict": "STILL OPEN -- CONFIRMED MISSING",
+      "measured": "tamlul-more30 carries 5 variables and none is a Google credential. The names are right: apps/02-igud-transcribe/.env.example:16-17 declares GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET.",
+      "consequence": "Genuinely needs the user."
+    },
+    {
+      "needs_user_row": 7,
+      "system": "18 orech",
+      "asked_for": "TRANSKRIBUS_USER/PASS or KRAKEN_*",
+      "verdict": "STILL OPEN -- CONFIRMED MISSING, names sharpened",
+      "measured": "orech-more30 carries 8 variables and none is an HTR credential. The exact names lib/htr-engine.ts reads are TRANSKRIBUS_USER, TRANSKRIBUS_PASS, TRANSKRIBUS_MODEL_DEFAULT (required for a run, and it is a model id, not a credential), KRAKEN_ENDPOINT, KRAKEN_API_KEY, DICTALM_ENDPOINT. ANTHROPIC_API_KEY IS set on the project, but lib/htr-corrector.ts reads it as the corrector, not as a recogniser -- pickEngine still throws HtrEngineNotConfigured.",
+      "consequence": "Genuinely needs the user, and the ask now names TRANSKRIBUS_MODEL_DEFAULT, which the old row omitted and without which the Transkribus path cannot run even with credentials."
+    },
+    {
+      "needs_user_row": 8,
+      "system": "32 nadlan",
+      "asked_for": "Apify plan upgrade",
+      "verdict": "UNCHANGED -- not an env var",
+      "measured": "APIFY_TOKEN is set on nadlan-more30, production, created 2026-07-29. The block is billing quota, resetting 27/08/2026.",
+      "consequence": "No change."
+    },
+    {
+      "needs_user_row": 10,
+      "system": "16 chatzor",
+      "asked_for": "GOOGLE_MAPS_API_KEY (optional)",
+      "verdict": "NO LONGER AN ASK -- there is no consumer, and a key already exists in the account",
+      "measured": "Two things. (a) chatzor-more30 has ZERO environment variables of any kind -- it is a Vite SPA deployed prebuilt, so its Supabase values are baked in at build time from apps/16-chatzor-connect/.env.local, which is why it works with an empty Vercel env. (b) Nothing in apps/16 would consume a maps key: the only Google reference in the whole tree is src/hooks/useNearby.ts:48, a plain google.com/maps/dir deep link that needs no key. Separately, GOOGLE_MAPS_API_KEY already exists on nadlan-more30 (production, 2026-07-29).",
+      "consequence": "The row asked the user to obtain something the account already has, for a code path that does not exist. If walking distance is wanted in 16 it is a build task first, and the key is then a copy, not an acquisition."
+    }
+    {
+      "needs_user_row": "§0ר (gannenet 40)",
+      "system": "40 gannenet",
+      "asked_for": "SUPABASE_SERVICE_ROLE_KEY on the /gannenet Vercel project 'when it is created', plus SUPABASE_URL / SUPABASE_ANON_KEY / ANTHROPIC_API_KEY / ADMIN_PASSWORD / APP_BASE_PATH",
+      "verdict": "ALREADY SET -- STALE ASK",
+      "measured": "The project gannenet-more30 exists and carries all six of those keys, on Production AND Preview, created 2026-08-11.",
+      "consequence": "The 'permanent delete' button will not answer 503 after deployment. §0ר's remaining ask is closed."
+    }
+  ],
+  "summary": {
+    "rows_reviewed": 10,
+    "closed_as_already_satisfied": [3, 4, 5, "§0ר"],
+    "closed_as_no_consumer": [10],
+    "restated_not_a_blocker": [1],
+    "confirmed_still_needed": [2, 6, 7],
+    "unchanged_not_env": [8]
+  }
+}

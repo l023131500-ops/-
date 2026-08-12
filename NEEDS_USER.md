@@ -117,6 +117,14 @@ Supabase **`csjekrvukbdznetsrodj`**, שאינו נגיש מכאן (רשימת ה
 `SUPABASE_URL` / `SUPABASE_ANON_KEY` / `ANTHROPIC_API_KEY` / `ADMIN_PASSWORD` /
 `APP_BASE_PATH=/gannenet`.
 
+> **✅ עודכן 12/08 — גם זה כבר לא דורש אותך.** הפרויקט `gannenet-more30` קיים,
+> ונושא את **כל שישה** המשתנים שהפסקה מעל מונה — `SUPABASE_SERVICE_ROLE_KEY`,
+> `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `ANTHROPIC_API_KEY`, `ADMIN_PASSWORD`,
+> `APP_BASE_PATH` — כולם ב-Production **וגם** ב-Preview, מ-11/08. כלומר
+> כפתור «מחיקה לצמיתות» לא יענה 503 אחרי הפריסה. (נמדדו שמות המפתחות בלבד;
+> Vercel אינו מחזיר ערכים של משתנים `sensitive`.)
+> ‏`QA/platform/needs-user-env-sweep-0812/_results.json`.
+
 ---
 
 ## 🟠 0ש. גננת בקליק (40) — 2 ₪ או 5 ₪, ומה יהיה מאחורי התשלום? (11/08/2026)
@@ -1846,18 +1854,65 @@ Site URL ו-Redirect URLs אומתו כנכונים. ראיות מלאות ב-`Q
 
 ## 🟠 3. מפתחות חסרים — מה, מאיפה, ולאן
 
+> ### ⚠️ עודכן 12/08 — הרשימה הזאת נבדקה מול Vercel, ומחציתה לא הייתה נכונה
+>
+> ‏§0ס נסגר היום אחרי ש-`vercel env ls` הראה ששני המפתחות שביקשתי שם היו
+> מוגדרים 17 יום קודם — כלומר נרשמו כחסרים **בלי להריץ את הפקודה שבודקת**.
+> לכן הרצתי את אותה בדיקה על **כל** שורה בטבלה הזאת, ובנוסף הצלבתי כל **שם
+> משתנה** מול הקוד שקורא אותו בפועל (‏`apps/**` ב-gitignore, ולכן `git grep`
+> שותק עליו — נסרק מהדיסק).
+>
+> **התוצאה: מתוך תשע שורות, ארבע נסגרות ואחת משנה משמעות. שלוש באמת דורשות
+> אותך.** הפירוט המלא: `QA/platform/needs-user-env-sweep-0812/_results.json`.
+>
+> ‏**⚠️ מה לא נמדד:** הערך של אף משתנה. Vercel מסמן את כולם `sensitive` ואינו
+> מחזיר ערכים, ולכן "מוגדר" כאן פירושו שהמפתח קיים ב-Production — לא שהערך
+> שבתוכו נכון.
+
+### 3א. ✅ ארבע שורות נסגרות — אין בהן מה לעשות
+
+| # | מערכת | מה ביקשתי | מה נמדד |
+|---|---|---|---|
+| 3 | **28** kupot | `ADMIN_TOKEN` | **כבר מוגדר** ב-`kupot-more30`, Production, מ-26/07 — לפני שהשורה נכתבה. הקורא הוא `server/routes.ts:87`, והשם תואם בדיוק |
+| 4 | **27** mechiron | `YEMOT_TOKEN` | **השם היה שגוי, והאמיתי כבר מוגדר.** שום קובץ אינו קורא `YEMOT_TOKEN`; הקורא הוא `YEMOT_API_KEY` (`server/yemot.ts:208`, `server/routes.ts:1015`), והוא קיים ב-`mechiron-more30` מ-27/07 |
+| 5 | **27** mechiron | `ELEVENLABS_API_KEY` | **כבר מוגדר** ב-`mechiron-more30` מ-27/07. קוראים: `server/yemot.ts:209`, `server/hf-podcast.ts:167` |
+| 10 | **16** chatzor | `GOOGLE_MAPS_API_KEY` | **אין למי לתת אותו, והמפתח כבר קיים בחשבון.** בכל `apps/16` אין ולו קריאה אחת ל-API של מפות — ההפניה היחידה היא `useNearby.ts:48`, קישור `google.com/maps/dir` שאינו דורש מפתח כלל. ובמקביל, `GOOGLE_MAPS_API_KEY` **כן** מוגדר ב-`nadlan-more30` מ-29/07. כלומר ביקשתי ממך להשיג משהו שכבר יש, בשביל קוד שלא קיים. אם בכל זאת רוצים מרחק **הליכה** בחצור — זו קודם עבודת בנייה, והמפתח אז הוא העתקה |
+
+*(אגב הבדיקה: ל-`chatzor-more30` אין **אף** משתנה סביבה. זה לא תקלה — היא SPA
+של Vite שנפרסת בנויה מראש, וערכי ה-Supabase שלה נצרבים בזמן הבנייה מ-`.env.local`
+המקומי. לכן היא עובדת עם env ריק לגמרי.)*
+
+### 3ב. 🔁 שורה אחת משנה משמעות — לא חסם, אלא מחיר
+
+| # | מערכת | מה ביקשתי | מה נמדד |
+|---|---|---|---|
+| 1 | **17** chizukim | `RUNPOD_API_KEY` | **שם שגוי, ולא חסם.** שום קובץ אינו קורא `RUNPOD_API_KEY`; הקורא הוא **`CUSTOM_CRED_API_RUNPOD_AI_TOKEN`** (‏`server/routes.ts:90,131`, ובנוי גם ב-`api/handler.js`), עם עקיפה אופציונלית `CUSTOM_CRED_API_RUNPOD_AI_URL`. שניהם אינם מוגדרים — **וההיעדר מטופל בקוד ואינו קטלני**: יש הסתעפות על הטוקן ונפילה ל-OpenAI (`TRANSCRIBE_MODEL`, ברירת מחדל `gpt-transcribe`), ו-`OPENAI_API_KEY` **כן** מוגדר שם מ-26/07 |
+
+**כלומר לתמלול יש מנוע מוגדר היום.** מה שהטוקן החסר קונה הוא **מחיר**: קבועי
+העלות באותו קובץ הם ‎0.0004$‎ לדקה ב-RunPod מול ‎0.006$‎ לדקה ב-OpenAI — פי 15.
+זו אופטימיזציה, לא התקלה שבשמה נרשמה השורה. אם תרצה אותה: runpod.io → Settings
+→ API Keys, ולתוך `chizukim2-more30` בשם `CUSTOM_CRED_API_RUNPOD_AI_TOKEN`.
+
+### 3ג. 🟠 שלוש שורות באמת דורשות אותך — אומתו כחסרות
+
 | # | מערכת | המפתח | מאיפה משיגים | לאן נכנס |
 |---|---|---|---|---|
-| 1 | **17** chizukim | `RUNPOD_API_KEY` | runpod.io → Settings → API Keys | Vercel `chizukim2-more30` → env `RUNPOD_API_KEY` |
-| 2 | **17** chizukim | `SUPABASE_SERVICE_ROLE_KEY` | Supabase `csjekrvu` → Settings → API | Vercel `chizukim2-more30` + `apps/17-.../.env.local` |
-| 3 | **28** kupot | `ADMIN_TOKEN` | להמציא מחרוזת אקראית ארוכה | Vercel `kupot-more30` → env `ADMIN_TOKEN` |
-| 4 | **27** mechiron | `YEMOT_TOKEN` | ימות המשיח → אזור אישי → API | Vercel `mechiron-more30` |
-| 5 | **27** mechiron | `ELEVENLABS_API_KEY` | elevenlabs.io → Profile → API Key | Vercel `mechiron-more30` |
-| 6 | **02** tamlul | Google OAuth `CLIENT_ID` + `CLIENT_SECRET` | console.cloud.google.com → APIs → Credentials → OAuth client | Vercel `tamlul-more30` |
-| 7 | **18** orech | `TRANSKRIBUS_USER/PASS` או `KRAKEN_*` | readcoop.eu (Transkribus) / kraken — מודול ה-HTR | Vercel `orech-more30` + `apps/18-.../.env.local` |
-| 8 | **32** nadlan | שדרוג תוכנית **Apify** | apify.com → Billing (המכסה מוצתה: **$5.28 מתוך $5**, מתאפסת **27/08/2026**) | אין שינוי קוד — `APIFY_TOKEN` כבר מוגדר |
-| 9 | **הכול** | תיקון הרשאות ב-PAT שסיפקת | ראה סעיף 3.1 למטה — **הטוקן נשמר ועובד, ההרשאה חסרה** | — |
-| 10 | **16** chatzor *(רשות)* | `GOOGLE_MAPS_API_KEY` | console.cloud.google.com → Distance Matrix API | Vercel `chatzor-more30`. **לא חוסם** — בניתי מרחק אווירי מהדפדפן בלי מפתח; המפתח ישדרג למרחק/זמן **הליכה** |
+| 2 | **17** chizukim | `SUPABASE_SERVICE_ROLE_KEY` | Supabase `csjekrvu` → Settings → API | Vercel `chizukim2-more30` + `apps/17-.../.env.local`. **אומת חסר** (5 משתנים, אף אחד מהם לא זה). ממילא תלוי בהכרעת §1 — הפרויקט אינו נראה מהחשבון הזה |
+| 6 | **02** tamlul | `GOOGLE_CLIENT_ID` + `GOOGLE_CLIENT_SECRET` | console.cloud.google.com → APIs → Credentials → OAuth client | Vercel `tamlul-more30`. **אומת חסר** (5 משתנים, אף אחד אינו אישור Google). השמות אומתו מול `apps/02-igud-transcribe/.env.example:16-17` |
+| 7 | **18** orech | `TRANSKRIBUS_USER` + `TRANSKRIBUS_PASS` + **`TRANSKRIBUS_MODEL_DEFAULT`**, או `KRAKEN_ENDPOINT` + `KRAKEN_API_KEY` | readcoop.eu (Transkribus) / שרת Kraken | Vercel `orech-more30` + `apps/18-.../.env.local`. **אומת חסר** (8 משתנים, אף אחד אינו אישור HTR) |
+
+על שורה 7, שני חידודים שנמדדו ולא היו ברישום הקודם: **`TRANSKRIBUS_MODEL_DEFAULT`
+הוא חלק מהבקשה** — הוא מזהה מודל ולא אישור, ובלעדיו מסלול Transkribus אינו יכול
+לרוץ גם עם שם וסיסמה. ו-`ANTHROPIC_API_KEY` אמנם **כן** מוגדר ב-`orech-more30`,
+אבל `lib/htr-corrector.ts` קורא אותו כמתקן ולא כמזהה — `pickEngine` עדיין זורק
+‏`HtrEngineNotConfigured`.
+
+### 3ד. שתי שורות שלא השתנו
+
+| # | מערכת | מה | מצב |
+|---|---|---|---|
+| 8 | **32** nadlan | שדרוג תוכנית **Apify** | אינו משתנה סביבה. `APIFY_TOKEN` מוגדר ב-`nadlan-more30` מ-29/07; החסם הוא מכסת חיוב (**$5.28 מתוך $5**), שמתאפסת **27/08/2026** |
+| 9 | **הכול** | תיקון הרשאות ב-PAT | ראה §3.1 — נפתר 31/07 |
 
 ---
 
