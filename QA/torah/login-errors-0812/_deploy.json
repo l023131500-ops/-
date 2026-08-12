@@ -1,0 +1,47 @@
+{
+  "what": "Shipped commit d82b418 (torah 01 login/signup error handling) to production. That commit was explicitly NOT deployed — every screenshot in this folder was localhost:4183. These three are more30.com.",
+  "project": "torah-more30",
+  "projectId": "prj_0JWao5UJpiQD80dX7jkypgKaA8Et",
+  "deployment": "dpl_821nsqum8b8r4hZBfk6X48jvZtxm",
+  "deployment_url": "https://torah-more30-ph6qk2x9a-l023131500-ops-projects.vercel.app",
+  "target": "production",
+  "how": "Same hash-swap route as the 0329de9 deploy, and for the same reason: _deploy/torah-more30/torah/index.html is 28,950 bytes against the fresh dist/index.html's 5,408. The live HTML carries additions that were never written back to the source, so copying dist over it would throw them away. Built apps/01-torah-platform (base /torah/), copied dist/assets/* into the deploy assets dir (hashed names, additive: 329 files -> 491), then swapped the one changed hash inside the live HTML. 28,950 bytes in, 28,950 bytes out. Deployed from source (not --prebuilt) so vercel.json's /torah rewrites survive.",
+  "asset_swap": {
+    "js": "index-CFrhj_pU.js -> index-Cg-YfQE5.js",
+    "css": "index-C8bPiKNL.css unchanged — this build produced the identical CSS hash, so only one string moved"
+  },
+  "verified_on_the_domain_not_the_deployment": {
+    "bundle_served": "https://more30.com/torah/auth/sign-in serves /torah/assets/index-Cg-YfQE5.js",
+    "wrong_password": {
+      "url": "https://more30.com/torah/auth/sign-in",
+      "input": "test@more30.com + a deliberately wrong password, against the real auth server",
+      "network": "POST bieebmnmkffwbqlsfozh.supabase.co/auth/v1/token?grant_type=password -> 400",
+      "shown": "שגיאת התחברות / האימייל או הסיסמה שגויים.",
+      "before_this_deploy": "GoTrue's raw English",
+      "screenshot": "live-signin-invalid-credentials.png"
+    },
+    "signup_without_session": {
+      "url": "https://more30.com/torah/auth/sign-up",
+      "input": "the real form, submitted with test@more30.com — an address that already exists",
+      "network": "POST bieebmnmkffwbqlsfozh.supabase.co/auth/v1/signup -> 200, no session (mailer_autoconfirm=false on this project, measured in the previous step)",
+      "shown": "נשאר לאמת את המייל — 'שלחנו קישור אימות אל test@more30.com' and, in plain words, 'עד האימות ההתחברות תיכשל — זו לא סיסמה שגויה'",
+      "before_this_deploy": "a success toast and an immediate bounce back to the login screen, because PortalLayout redirects when session is null",
+      "screenshot": "live-signup-confirmation.png"
+    },
+    "nothing_lost_by_the_swap": {
+      "url": "https://more30.com/torah/",
+      "h1": "איגוד מגידי השיעורים",
+      "landmarks": "section, header, nav, main, 5x section, footer",
+      "section_headings": ["איגוד מגידי השיעורים", "טיפ היומי", "השירותים שלנו", "מערכות נוספות מבית איגוד השיעורים", "להצטרף לקהילה"],
+      "screenshot": "live-home-after-deploy.png",
+      "console": "only the pre-existing NetFree 404s on fonts.gstatic.com"
+    }
+  },
+  "not_covered": [
+    "The email_not_confirmed branch is still unit-tested only on the live bundle — reaching it needs an unconfirmed user on the torah project, and no new test accounts were created.",
+    "Whether the signup POST created a row could not be checked from here: the torah auth project (bieebmnmkffwbqlsfozh) is not reachable through the Supabase MCP, which only holds uhnrgujbdxhhmoxcjria. GoTrue returns the same obfuscated 200 for an existing address either way.",
+    "The Google OAuth button was not driven, only its error mapping.",
+    "02, 03, 16, 21, 30, 31 still print error.message raw on login."
+  ],
+  "open_line": "Still unreconciled, same as after 0329de9: the source index.html and the deployed one have diverged (5,408 vs 28,950). Until someone reconciles them, every torah deploy has to go through this hash swap, and whatever the live HTML carries is not reproducible from the repo."
+}

@@ -1,0 +1,31 @@
+torah (01): deployed — the two lies are gone from more30.com, not just from the branch
+
+The previous step fixed 01's login and signup errors and said so plainly: NOT
+DEPLOYED, every screenshot was localhost:4183. more30.com/torah was still
+serving the bundle that congratulated a new customer and then threw them back
+to the login screen. This ships it and re-shoots the same screens on the domain.
+
+Same hash-swap route as 0329de9, and for the same reason: the deployed
+index.html is 28,950 bytes against the fresh dist/index.html's 5,408 — the live
+HTML carries additions that were never written back to the source, so copying
+dist over it would throw them away. Built, copied dist/assets in (hashed names,
+additive, 329 -> 491 files), swapped the one hash that moved. The CSS hash came
+out identical this time, so only index-CFrhj_pU.js -> index-Cg-YfQE5.js changed.
+Deployed from source, not --prebuilt, so vercel.json's /torah rewrites survive.
+
+VERIFIED ON THE DOMAIN, against the real auth server:
+- wrong password on test@more30.com -> POST /auth/v1/token 400 -> the Hebrew
+  "the mail or the password are wrong" line, instead of GoTrue's English.
+- the real signup form with an address that already exists -> POST /auth/v1/signup
+  200 with no session -> the "you still need to verify your mail" screen, which
+  says outright that the failure to come is not a wrong password. No success
+  toast, no bounce.
+- more30.com/torah/ still renders: h1, all five content sections, footer. The
+  only console errors are the pre-existing NetFree font 404s.
+
+NOT COVERED: the email_not_confirmed branch is still unit-tested only — reaching
+it live needs an unconfirmed user and none were created. Whether that signup POST
+wrote a row could not be checked from here; the torah auth project is not
+reachable through the Supabase MCP. 02, 03, 16, 21, 30, 31 still print raw English.
+
+Evidence: QA/torah/login-errors-0812/_deploy.json + three live screenshots.

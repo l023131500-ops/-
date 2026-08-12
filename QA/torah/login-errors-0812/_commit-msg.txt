@@ -1,0 +1,34 @@
+torah (01): the registration that succeeded and then said "wrong password"
+
+Priority §1א names this bug directly: register, then log in with the same
+details and be told the password is wrong. On 01 it was not a hash
+mismatch. It was two separate lies on two screens.
+
+MEASURED FIRST. GET /auth/v1/settings on bieebmnmkffwbqlsfozh answers
+mailer_autoconfirm=false, so signUp there never returns a session. But
+SignUp.tsx read only { error }, so it toasted a success and navigated to
+/portal -- and PortalLayout.tsx:39 redirects to /auth/sign-in when there is
+no session. The new customer was thrown back to the login screen one frame
+after being congratulated. Logging in then failed with GoTrue's raw English
+"Email not confirmed", which to a Hebrew reader is indistinguishable from a
+wrong password. Nothing about the password was ever wrong.
+
+THE FIX, in three parts:
+- src/lib/authErrors.ts maps error.code to Hebrew, ported from system 22 and
+  extended: this screen HAS signup, so user_already_exists, weak_password,
+  signup_disabled and over_email_send_rate_limit are covered too. Unknown
+  codes still surface the original message rather than swallowing it.
+- useAuth.signUp now returns needsConfirmation (!error && !data.session).
+- SignUp shows a "verify your mail" screen instead of the false success and
+  the bounce. SignIn and legacy/AdminLogin print the mapping.
+
+VERIFIED in a browser on the production build (base /torah/), against the
+real auth server: wrong password on test@more30.com -> 400
+invalid_credentials -> the Hebrew "wrong mail or password" line; a full
+signup submit -> 200 with no session -> the confirmation screen, and no
+account created. The email_not_confirmed branch was driven with a patched
+fetch returning GoTrue's real 400 body, because reaching it live needs an
+unconfirmed user and no new test accounts were made. vitest 5/5.
+
+NOT DEPLOYED in this step -- every screenshot is localhost:4183, not
+more30.com. Evidence: QA/torah/login-errors-0812/.
