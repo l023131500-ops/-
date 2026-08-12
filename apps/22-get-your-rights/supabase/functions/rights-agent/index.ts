@@ -6,6 +6,10 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+// Requests per hour, per caller IP. Enough for a real advisory conversation,
+// far below what draining the AI credit would take.
+const RATE_LIMIT_PER_HOUR = 20;
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
@@ -14,11 +18,35 @@ serve(async (req) => {
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
-    // Fetch all rights data from database for context
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
+    // Rate limit per caller IP — this function spends LOVABLE_API_KEY credits and runs
+    // with verify_jwt=false, so without a cap anyone who knows the URL can drain it.
+    // Runs before the gateway call, so a blocked request costs nothing.
+    const ip = (req.headers.get("x-forwarded-for") ?? "").split(",")[0].trim() || "unknown";
+    const windowStart = new Date(Math.floor(Date.now() / 3_600_000) * 3_600_000).toISOString();
+    const { data: gate, error: gateError } = await supabase.rpc("ai_rate_limit_hit", {
+      p_bucket: `rights-agent:${ip}`,
+      p_window_start: windowStart,
+      p_limit: RATE_LIMIT_PER_HOUR,
+    });
+    if (gateError) {
+      // Fail open: a counter problem must not take the live advisor down.
+      console.error("rate limit check failed:", gateError.message);
+    } else if (gate?.[0]?.allowed === false) {
+      console.warn(`rate limited ${ip}: ${gate[0].hits} hits this hour`);
+      return new Response(
+        JSON.stringify({ error: "יותר מדי בקשות מהכתובת הזו. נסו שוב בעוד שעה." }),
+        {
+          status: 429,
+          headers: { ...corsHeaders, "Content-Type": "application/json", "Retry-After": "3600" },
+        }
+      );
+    }
+
+    // Fetch all rights data from database for context
     const { data: rights } = await supabase
       .from("rights_reference")
       .select("topic_name, category, plain_description, eligibility_criteria, financial_potential, required_documents, how_to_apply, accompanying_benefit, bureaucratic_pitfalls, target_audience, service_link, podcast_text")

@@ -1,0 +1,24 @@
+22 zchuyot (#190): the public rights advisor spent our AI credit for anyone who knew the URL
+
+The estate sweep on 12/08 named rights-agent as the same class as #165 and left it
+open. Measured before touching anything: an unauthenticated POST to
+/functions/v1/rights-agent, with no apikey and no Authorization header, returned 200
+and a real streamed gemini-3-flash completion. verify_jwt=false, no gate of its own,
+LOVABLE_API_KEY on every call.
+
+Capped per caller IP rather than behind an account, deliberately: the public rights
+advisor is this system's front door, and a login wall would have deleted a live public
+feature. 20 requests/hour per IP, counted in public.ai_rate_limits through
+ai_rate_limit_hit() — an atomic upsert, so two concurrent requests cannot read the same
+count. The check runs before the gateway call, so a blocked request costs nothing. Fail
+open on a counter error, logged: a counter outage must not take a live public advisor
+down. The threshold is RATE_LIMIT_PER_HOUR at the top of the file.
+
+Verified against production after deploy: the counter row was written by production
+itself, at the cap the endpoint returns 429 with Retry-After: 3600 and the Hebrew
+message, and with the counter cleared it returns 200 and a real answer. Evidence and
+what was not measured in QA/zchuyot/rights-agent-rate-limit-0812.
+
+Deployed through Lovable (the only deploy path for this satellite project), commit
+7244d8ce, 0.6 credits. The migration was applied to the live project directly and is
+committed here for the record.
