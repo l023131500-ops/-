@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/hooks/useAuth";
+import { authErrorMessage } from "@/lib/authErrors";
 import { toast } from "sonner";
 
 export default function SignIn() {
@@ -24,7 +25,7 @@ export default function SignIn() {
     setLoading(true);
     const { error } = await signIn(email, password);
     setLoading(false);
-    if (error) { toast.error("שגיאת התחברות: " + error.message); return; }
+    if (error) { toast.error("שגיאת התחברות", { description: authErrorMessage(error) }); return; }
     toast.success("התחברת בהצלחה");
     nav(redirect);
   };
@@ -32,7 +33,7 @@ export default function SignIn() {
   const google = async () => {
     setGoogleLoading(true);
     const { error } = await signInWithGoogle();
-    if (error) { toast.error("שגיאה: " + error.message); setGoogleLoading(false); }
+    if (error) { toast.error("שגיאה", { description: authErrorMessage(error) }); setGoogleLoading(false); }
   };
 
   return (

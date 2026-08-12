@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Loader2, UserPlus } from "lucide-react";
+import { Loader2, MailCheck, UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/hooks/useAuth";
+import { authErrorMessage } from "@/lib/authErrors";
 import { toast } from "sonner";
 
 // דרישת הסיסמה נכתבת פעם אחת ונקראת בכל שלושת המקומות — התווית, בדיקת
@@ -17,6 +18,9 @@ const PW_MIN = 6;
 export default function SignUp() {
   const [form, setForm] = useState({ name: "", email: "", password: "", phone: "" });
   const [loading, setLoading] = useState(false);
+  // כשהפרויקט דורש אימות מייל אין session אחרי ההרשמה, והמסך הזה מחליף את
+  // הטופס במקום לנווט לפורטל שאין אליו כניסה.
+  const [awaitingConfirmation, setAwaitingConfirmation] = useState(false);
   const { signUp } = useAuth();
   const nav = useNavigate();
 
@@ -24,12 +28,47 @@ export default function SignUp() {
     e.preventDefault();
     if (form.password.length < PW_MIN) { toast.error(`סיסמה לפחות ${PW_MIN} תווים`); return; }
     setLoading(true);
-    const { error } = await signUp(form.email, form.password, { full_name: form.name, phone: form.phone });
+    const { error, needsConfirmation } = await signUp(form.email, form.password, { full_name: form.name, phone: form.phone });
     setLoading(false);
-    if (error) { toast.error("שגיאה: " + error.message); return; }
+    if (error) { toast.error("ההרשמה נכשלה", { description: authErrorMessage(error) }); return; }
+    if (needsConfirmation) {
+      // הניווט ל-/portal כאן היה שולח את הנרשם למסך שמיד מחזיר אותו לכניסה,
+      // ואז ההתחברות נכשלת ב-email_not_confirmed — זה מה שנחווה כ"נרשמתי
+      // ואומרים לי סיסמה שגויה".
+      setAwaitingConfirmation(true);
+      return;
+    }
     toast.success("נרשמת בהצלחה");
     nav("/portal");
   };
+
+  if (awaitingConfirmation) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-muted/30 px-4">
+        <Card className="w-full max-w-md">
+          <CardHeader>
+            <CardTitle className="text-2xl flex items-center gap-2">
+              <MailCheck className="h-6 w-6 text-primary" aria-hidden="true" />
+              נשאר לאמת את המייל
+            </CardTitle>
+            <CardDescription>החשבון נוצר, אבל הכניסה נפתחת רק אחרי האימות</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3 text-sm">
+            <p>
+              שלחנו קישור אימות אל <span className="font-medium">{form.email}</span>. פתחו אותו,
+              ואז אפשר להתחבר עם אותה סיסמה בדיוק.
+            </p>
+            <p className="text-muted-foreground">
+              לא הגיע? בדקו בתיקיית הספאם. עד האימות ההתחברות תיכשל — זו לא סיסמה שגויה.
+            </p>
+            <Button asChild className="w-full">
+              <Link to="/auth/sign-in">למסך ההתחברות</Link>
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-muted/30 px-4">

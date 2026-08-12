@@ -8,7 +8,16 @@ interface AuthCtx {
   loading: boolean;
   signIn: (email: string, password: string) => Promise<{ error: any }>;
   signInWithGoogle: () => Promise<{ error: any }>;
-  signUp: (email: string, password: string, meta?: Record<string, any>) => Promise<{ error: any }>;
+  /**
+   * `needsConfirmation` הוא true כשההרשמה הצליחה אבל השרת לא החזיר session,
+   * כלומר הפרויקט דורש אימות מייל (mailer_autoconfirm=false). בלי הדגל הזה
+   * מסך ההרשמה בירך על ההצלחה וניווט לפורטל — שמיד החזיר לכניסה.
+   */
+  signUp: (
+    email: string,
+    password: string,
+    meta?: Record<string, any>,
+  ) => Promise<{ error: any; needsConfirmation: boolean }>;
   signOut: () => Promise<void>;
 }
 
@@ -44,8 +53,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return { error };
   };
   const signUp = async (email: string, password: string, meta?: any) => {
-    const { error } = await supabase.auth.signUp({ email, password, options: { data: meta || {} } });
-    return { error };
+    const { data, error } = await supabase.auth.signUp({ email, password, options: { data: meta || {} } });
+    return { error, needsConfirmation: !error && !data.session };
   };
   const signOut = async () => { await supabase.auth.signOut(); };
 

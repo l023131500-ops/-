@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
 import { supabase } from "@/integrations/supabase/client";
+import { authErrorMessage } from "@/lib/authErrors";
 import { toast } from "sonner";
 // TODO: lovable integration replaced with supabase OAuth directly
 
@@ -80,7 +81,7 @@ const AdminLogin = () => {
     const loginEmail = email.includes("@") ? email : `${email}@admin.local`;
     const { error } = await supabase.auth.signInWithPassword({ email: loginEmail, password });
     if (error) {
-      toast.error("שגיאה בכניסה: " + error.message);
+      toast.error("שגיאה בכניסה", { description: authErrorMessage(error) });
     } else {
       toast.success("התחברת בהצלחה!");
       navigate("/admin");
