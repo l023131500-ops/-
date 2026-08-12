@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/logo";
 import { useAdminAuth } from "@/lib/admin-auth";
 import { setAdminToken } from "@/lib/queryClient";
-import { Lock, ShieldCheck, AlertCircle } from "lucide-react";
+import { Lock, ShieldCheck, AlertCircle, Eye, EyeOff } from "lucide-react";
 
 interface GoogleStatus {
   ok?: boolean;
@@ -34,6 +34,7 @@ function readGoogleTokenFromHash(): { token: string; redirect: string } | null {
 export default function AdminLoginPage() {
   const [identity, setIdentity] = useState("");
   const [code, setCode] = useState("");
+  const [showCode, setShowCode] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [googleNotice, setGoogleNotice] = useState<string | null>(null);
@@ -164,17 +165,30 @@ export default function AdminLoginPage() {
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="code">קוד כניסה</Label>
-            <Input
-              id="code"
-              type="password"
-              autoComplete="current-password"
-              dir="ltr"
-              required
-              value={code}
-              onChange={(e) => setCode(e.target.value)}
-              placeholder="הקוד הפנימי שניתן לצוות"
-              data-testid="input-code"
-            />
+            <div className="relative">
+              <Input
+                id="code"
+                type={showCode ? "text" : "password"}
+                autoComplete="current-password"
+                dir="ltr"
+                required
+                value={code}
+                onChange={(e) => setCode(e.target.value)}
+                placeholder="הקוד הפנימי שניתן לצוות"
+                className="pr-10"
+                data-testid="input-code"
+              />
+              <button
+                type="button"
+                onClick={() => setShowCode((v) => !v)}
+                aria-label={showCode ? "הסתר סיסמה" : "הצג סיסמה"}
+                title={showCode ? "הסתר סיסמה" : "הצג סיסמה"}
+                className="absolute right-2 top-1/2 -translate-y-1/2 flex h-7 w-7 items-center justify-center rounded text-muted-foreground hover:text-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                data-testid="button-toggle-code"
+              >
+                {showCode ? <EyeOff className="h-4 w-4" aria-hidden="true" /> : <Eye className="h-4 w-4" aria-hidden="true" />}
+              </button>
+            </div>
           </div>
 
           {error && (

@@ -1,0 +1,49 @@
+{
+  "system": "27 (mechiron / bkalut-price)",
+  "priority_item": "§1א — הצגת סיסמה (show-password eye on every password field)",
+  "date": "2026-08-12",
+  "scope": "the only two type=\"password\" inputs in client source: client/src/pages/user-login.tsx (#password) and client/src/pages/admin-login.tsx (#code)",
+  "not_in_scope_and_why": {
+    "client/src/pages/users.tsx #u-password": "admin-side field that sets an initial password for a customer. It is NOT type=\"password\" — it renders as plain visible text with a 'generate' button beside it, so it is already readable and needs no eye.",
+    "password_requirement_text": "neither login field enforces a rule. server/routes.ts:874 (admin) and :1129 (user) only reject an empty string; there is no minLength anywhere on either path. Nothing was invented — §1א asks to state rules that exist, and none do."
+  },
+  "side_determination": "measured, not copied. Both inputs carry dir=\"ltr\" with no text-align class, so computed text-align resolves to 'start' -> LEFT, and the free side is the RIGHT one. Hence right-2 on the button and pr-10 on the input.",
+  "padding_conflict_check": {
+    "problem": "the shared Input (client/src/components/ui/input.tsx) already has px-3 in its base class list, merged through cn()/tailwind-merge 2.6.0 with the pr-10 passed in.",
+    "finding": "tailwind-merge keeps BOTH (it only lets a later shorthand px remove an earlier pl/pr, not the reverse), so CSS order decides.",
+    "verified": "in the built stylesheet dist/public/assets/index-BMbi5OZ_.css, .px-3 sits at byte 45364 and .pr-10 at 46533 — pr-10 comes later and wins. Confirmed live: computed padding-right 40px, padding-left 12px on both fields."
+  },
+  "build": "vite 7.3.3 build, 2409 modules transformed, exit 0. index.html 3.08 kB, index-BMbi5OZ_.css 109.84 kB, index-RsoEtrf1.js 1,433.30 kB.",
+  "how_verified": "the built client was served statically on :5127 with base /mechiron/ (qa-static-serve.mjs, kept in this folder). The user page was opened on localhost; the admin page needed a host starting with 'admin.' (App.tsx isAdminSubdomain), so it was opened on admin.localhost — Chrome resolves *.localhost to loopback.",
+  "measurements": {
+    "user_login_#password": {
+      "url": "http://localhost:5127/mechiron/#/user-login",
+      "computed": { "padding-right": "40px", "padding-left": "12px", "text-align": "start", "dir": "ltr" },
+      "input_rect": [247, 422, 526, 36],
+      "button_rect": [737, 426, 28, 28],
+      "button_contained_in_field": true,
+      "elementFromPoint_at_button_centre_is_the_button": true,
+      "round_trip": "password -> text -> password; aria-label הצג סיסמה -> הסתר סיסמה -> הצג סיסמה; icon eye -> eye-off -> eye; value More30Test2026 preserved throughout"
+    },
+    "admin_login_#code": {
+      "url": "http://admin.localhost:5127/mechiron/#/login",
+      "computed": { "padding-right": "40px", "padding-left": "12px", "text-align": "start" },
+      "input_rect": [252, 514, 382, 36],
+      "button_rect": [598, 518, 28, 28],
+      "button_contained_in_field": true,
+      "elementFromPoint_at_button_centre_is_the_button": true,
+      "round_trip": "password -> text -> password; aria-label flips both ways; value More30Admin2026 preserved"
+    }
+  },
+  "type_button_is_load_bearing": "both fields sit inside a form with a real onSubmit (user-login submit() calls login(); admin-login submit() calls login() then setLocation('/admin')), and both inputs are `required`. A bare <button> would have attempted a login on every toggle. Verified rather than assumed: window.fetch and XMLHttpRequest.open were wrapped and counted 0 calls across every toggle on both pages, and location.href was unchanged.",
+  "screenshots": [
+    "mechiron-user-login-revealed.png — customer login, password shown as plain text with the eye-off icon inside the field",
+    "mechiron-user-login-hidden.png — same field toggled back to dots, eye icon",
+    "mechiron-admin-login-revealed.png — staff login, code shown as plain text with the eye-off icon"
+  ],
+  "incidental_findings": [
+    "Headless screenshots of this app come back as a solid-colour PNG (2,683 bytes, even a 3px red outline does not paint) until the viewport is resized once — getComputedStyle reports correct dark-on-cream colours the whole time, so the DOM is fine and only the capture is empty. Any future QA run on 27 must resize the viewport before its first screenshot or it will photograph a blank page and think the app is broken.",
+    "`npm run dev` cannot start here: the script is `NODE_ENV=development tsx server/index.ts`, bash-style assignment that cmd.exe rejects. Building the client and serving dist/public statically is the working route on Windows.",
+    "NOT DEPLOYED by this step. more30.com/mechiron currently serves a bkalot landing page that contains none of the price-comparison product (recorded in core.projects.audit_evidence, 07/08), the mount ships only api/index.ts, and public_visible=false. What is live is not this client build, so shipping a rebuilt client here would be a change of what the mount serves — that is its own step, not a password-toggle step."
+  ]
+}

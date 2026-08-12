@@ -6,13 +6,14 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useUserAuth } from "@/lib/user-auth";
-import { LogIn, ShieldCheck, Sparkles } from "lucide-react";
+import { Eye, EyeOff, LogIn, ShieldCheck, Sparkles } from "lucide-react";
 
 export default function UserLoginPage() {
   const { login, isAuthed, loading } = useUserAuth();
   const [, navigate] = useLocation();
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   if (isAuthed) {
@@ -54,16 +55,29 @@ export default function UserLoginPage() {
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="password">סיסמה</Label>
-            <Input
-              id="password"
-              dir="ltr"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              autoComplete="current-password"
-              required
-              data-testid="input-password"
-            />
+            <div className="relative">
+              <Input
+                id="password"
+                dir="ltr"
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                autoComplete="current-password"
+                required
+                className="pr-10"
+                data-testid="input-password"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((v) => !v)}
+                aria-label={showPassword ? "הסתר סיסמה" : "הצג סיסמה"}
+                title={showPassword ? "הסתר סיסמה" : "הצג סיסמה"}
+                className="absolute right-2 top-1/2 -translate-y-1/2 flex h-7 w-7 items-center justify-center rounded text-muted-foreground hover:text-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                data-testid="button-toggle-password"
+              >
+                {showPassword ? <EyeOff className="h-4 w-4" aria-hidden="true" /> : <Eye className="h-4 w-4" aria-hidden="true" />}
+              </button>
+            </div>
           </div>
           {error && <div className="text-sm text-destructive">{error}</div>}
           <Button type="submit" disabled={loading} className="w-full gap-1.5" data-testid="button-submit-login">

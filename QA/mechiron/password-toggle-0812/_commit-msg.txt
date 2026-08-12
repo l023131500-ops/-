@@ -1,0 +1,47 @@
+mechiron (27): two login fields the user could not read back, and one that never needed an eye
+
+priority §1א asks for a "show password" eye on every password field. System 27
+has exactly two type="password" inputs in client source, and both are login
+fields the user is expected to type a given credential into:
+
+  client/src/pages/user-login.tsx  #password  (customer)
+  client/src/pages/admin-login.tsx #code      (staff)
+
+A third field looked like a candidate and is not one: users.tsx #u-password,
+where an admin sets a customer's initial password, is plain text with a
+"generate" button beside it. It is already readable; adding an eye there would
+hide something that is deliberately visible.
+
+The side was measured, not copied from the previous systems. Both inputs carry
+dir="ltr" with no text-align class, so computed text-align is "start" -> LEFT,
+and the free side is the RIGHT one: right-2 on the button, pr-10 on the input.
+
+The padding needed checking. The shared Input already ships px-3 in its base
+classes and merges it with the incoming pr-10 through cn()/tailwind-merge 2.6.0,
+which keeps both (a later shorthand px can drop pl/pr, not the reverse), so CSS
+order decides the winner. In the built stylesheet .px-3 sits at byte 45364 and
+.pr-10 at 46533 — pr-10 comes later and wins. Measured 40px live on both fields
+afterwards.
+
+type="button" is load-bearing on both. Each field sits in a form with a real
+onSubmit and is marked required, so a bare button would have attempted a login
+on every toggle. Verified rather than assumed: window.fetch and
+XMLHttpRequest.open were wrapped and counted 0 calls across every toggle on both
+pages, with location.href unchanged.
+
+No password rule text was added, because neither path enforces one — server
+routes reject only an empty string; there is no minLength on either side.
+
+Verified on the real build (vite, 2409 modules, exit 0) served statically at
+base /mechiron/. The staff page gates on a host starting with "admin."
+(App.tsx isAdminSubdomain), so it was opened on admin.localhost. Both fields:
+button contained inside the field rect, elementFromPoint at its centre returns
+the button, and the full round trip password -> text -> password with the
+aria-label and the eye/eye-off icon flipping both ways and the typed value
+preserved.
+
+Not deployed. more30.com/mechiron serves a bkalot landing page rather than this
+client (recorded in core.projects 07/08) and public_visible=false, so pushing a
+rebuilt client would change what the mount serves — a separate decision.
+
+Evidence: QA/mechiron/password-toggle-0812/.
