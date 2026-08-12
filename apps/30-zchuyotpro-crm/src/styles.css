@@ -1,8 +1,11 @@
+/* Heebo loads from a <link> in src/routes/__root.tsx, not from an @import url()
+   here — neither position for one works. Below the imports that follow,
+   lightningcss rejects the whole file ("@import rules must precede all rules") and
+   vite dev answers 500 for this stylesheet; above them, vite resolves the https URL
+   as a path and tries to read it off disk. */
 @import "tailwindcss" source(none);
 @source "../src";
 @import "tw-animate-css";
-
-@import url("https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&display=swap");
 
 @custom-variant dark (&:is(.dark *));
 

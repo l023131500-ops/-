@@ -1,0 +1,61 @@
+{
+  "date": "2026-08-12",
+  "systems": ["30 (crm / zchuyotpro)", "31 (gesher / hebrew-bridge)"],
+  "defect": "src/styles.css put the Google Fonts @import url(...) after @import \"tailwindcss\" / @source / @custom-variant. lightningcss rejects the file with \"@import rules must precede all rules aside from @charset and @layer statements\", so vite dev answers HTTP 500 for the app stylesheet and the app renders with no CSS in development.",
+  "before": {
+    "30": {
+      "url": "http://localhost:5391/crm/src/styles.css",
+      "status": 500,
+      "server_log": "[vite] Internal server error: [lightningcss] @import rules must precede all rules aside from @charset and @layer statements -- Plugin: vite:css -- File: .../30-zchuyotpro-crm/src/styles.css:3306:7"
+    },
+    "31": {
+      "url": "http://localhost:5392/gesher/src/styles.css",
+      "status": 500,
+      "server_log": "[vite] Internal server error: [lightningcss] @import rules must precede all rules aside from @charset and @layer statements -- Plugin: vite:css -- File: .../31-hebrew-bridge-crm/src/styles.css:250:7",
+      "screenshot": "../../gesher/styles-500-0812/00-gesher-vite-overlay-original-styles-css.png",
+      "note": "measured by temporarily writing the original line back while the dev server was running, then restoring the fix; the 200 came back at the same byte length as before the probe (14126)."
+    }
+  },
+  "rejected_alternative": {
+    "change": "move the font @import to line 1, above @import \"tailwindcss\"",
+    "result": "still 500 -- vite then resolves the https URL as a filesystem path: \"ENOENT: no such file or directory, open 'C:\\Users\\USER\\Downloads\\more30\\apps\\30-zchuyotpro-crm\\https:\\fonts.googleapis.com\\css2?family=Heebo...'\". Neither position for a url() @import works in this pipeline."
+  },
+  "fix": "Drop the @import url(...) from styles.css. Load the webfonts from head links in src/routes/__root.tsx (preconnect to fonts.googleapis.com + fonts.gstatic.com, then the stylesheet link), which is also one less request in the critical chain.",
+  "after": {
+    "30": {
+      "url": "http://localhost:5391/crm/src/styles.css",
+      "status": 200,
+      "bytes": 125533,
+      "browser": {
+        "page": "http://localhost:5391/crm/auth",
+        "app_stylesheet_rules": 102,
+        "computed_body_font": "Heebo, system-ui, -apple-system, sans-serif",
+        "document.fonts.check('16px Heebo')": true,
+        "head_links": [
+          "preconnect https://fonts.googleapis.com/",
+          "preconnect https://fonts.gstatic.com/",
+          "stylesheet https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&display=swap",
+          "stylesheet http://localhost:5391/crm/src/styles.css"
+        ]
+      },
+      "screenshot": "01-crm-auth-styled-after-fix.png",
+      "build": "vite build exit 0, built in 50.37s, no @import warning"
+    },
+    "31": {
+      "url": "http://localhost:5392/gesher/src/styles.css",
+      "status": 200,
+      "bytes": 14126,
+      "screenshot": "../../gesher/styles-500-0812/01-gesher-auth-styled-after-fix.png",
+      "build": "vite build exit 0, built in 23.53s, no @import warning"
+    }
+  },
+  "the_font_was_never_loading_in_production_either": {
+    "evidence": "Built app 31 twice from the same tree -- once with the original styles.css, once with the fix. Both produced the identical asset styles-BjvOoTZp.css, 10478 bytes, same content hash. lightningcss drops the misplaced @import silently in a production build the same way it errors on it in dev.",
+    "live": "https://more30.com/gesher/assets/styles-D114kNCN.css (87351 bytes) contains no fonts.googleapis reference either."
+  },
+  "open_after_this": [
+    "31 (gesher): a build from this tree emits static/assets/styles-*.css at 10478 bytes, while the CSS live on more30.com/gesher is 87351 bytes and sits under /gesher/assets/. Both the base and the Tailwind scan output differ from what is deployed, and the local build renders the broken layout in 01-gesher-auth-styled-after-fix.png. NOT caused by this change -- the original styles.css builds to the byte-identical 10478-byte file. Do not deploy 31 from this tree until that is understood.",
+    "30 (crm): builds to static/assets/styles-WejPaobM.css at 95349 bytes and renders correctly, so the base/scan problem above looks specific to 31."
+  ],
+  "not_deployed": "Nothing shipped in this step. Both apps were verified against a local vite dev server and a local production build only."
+}
