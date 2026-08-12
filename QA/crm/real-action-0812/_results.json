@@ -1,0 +1,99 @@
+{
+  "measured_at": "2026-08-12T10:58:00Z",
+  "section": "§8ב — 'פעולה אמיתית עובדת'",
+  "closes_open_line": "(3) זנב §8ב — פעולה עסקית אמיתית בתוך 30/31 לא בוצעה",
+  "method": "real browser against more30.com only, logged in as the §1ב test customer",
+  "test_user": "test@more30.com",
+  "deployed": false,
+  "systems": [
+    {
+      "number": "30",
+      "slug": "zchuyotpro-crm",
+      "url": "https://more30.com/crm",
+      "supabase_project": "jhbeelzvjvhnkxldqvxx",
+      "action": "create client (/crm/clients/new)",
+      "verdict": "pass",
+      "created_record": {
+        "id": "a08da34d-9ebc-4bc2-a432-c01eb982f3b3",
+        "file_number": "2026-000001",
+        "name": "בדיקת QA 12/08",
+        "phone": "050-0000000",
+        "email": "test@more30.com",
+        "status": "ממתין",
+        "note": "רשומת QA אוטומטית — אימות §8ב, 12/08/2026. מצב טסט. ניתן למחוק."
+      },
+      "persisted": true,
+      "propagated": {
+        "clients_list_counters": { "total": 1, "active": 0, "pending": 1, "new_this_month": 1 },
+        "dashboard_new_clients_this_month": 1,
+        "dashboard_activity_feed": "לקוח חדש נוסף · בדיקת QA 12/08 · עכשיו"
+      },
+      "screenshots": [
+        "01-dashboard-before.png",
+        "02-form-filled.png",
+        "03-client-created.png",
+        "04-list-persisted.png",
+        "05-dashboard-after.png"
+      ]
+    },
+    {
+      "number": "31",
+      "slug": "hebrew-bridge-crm",
+      "url": "https://more30.com/gesher",
+      "supabase_project": "ygaqqnuyfnumezxxmtbh",
+      "action": "upload document to secure vault (/gesher/client/documents)",
+      "verdict": "fail_silently",
+      "client_surfaces": {
+        "/gesher/client/status": "read-only progress rail",
+        "/gesher/client/consents": "placeholder — 'בקרוב', no action available",
+        "/gesher/client/documents": "upload form — the only real action"
+      },
+      "uploaded_file": { "name": "sample.pdf", "bytes": 2188, "mime": "application/pdf" },
+      "network": {
+        "storage_put": {
+          "url": "https://ygaqqnuyfnumezxxmtbh.supabase.co/storage/v1/object/client-documents/1458bb7c-0dea-44b4-9007-ffc3e82b430f/df064ea8-3eb9-4e54-b7bd-1a24c3353fd8-sample.pdf",
+          "status": 200
+        },
+        "append_serverfn": {
+          "path": "/gesher/_serverFn/4f67a03ddd5aee4cb18522a579af2a424226ebb737dee8ffbf11b7fac81603df",
+          "status": 200,
+          "body_says": { "ok": true, "document_status": "pending_review", "size": 2188 }
+        },
+        "read_serverfn_immediately_after": {
+          "path": "/gesher/_serverFn/560b342fd4ad622a1a08e2bc3233ef93dede0ceee2a1ee2f2addfd264caf7fc3",
+          "status": 200,
+          "body_says": { "uploadedDocuments": [] }
+        }
+      },
+      "ui_after": "עדיין לא הועלו מסמכים — no error, no toast, 0 console errors, unchanged after a full reload",
+      "root_cause": {
+        "file": "apps/31-hebrew-bridge-crm/src/lib/client.functions.ts",
+        "line": 131,
+        "what": "supabase.from('client_profiles').update({uploaded_documents}).eq('id', userId) runs as the CLIENT; client_profiles has RLS with a SELECT-only policy for clients and an admin-only FOR ALL policy, so the UPDATE matches zero rows",
+        "why_silent": "an UPDATE affecting zero rows is not an error in PostgREST — error is null, so `if (upErr) throw` never fires and the handler returns ok:true",
+        "misleading_grant": "GRANT UPDATE (uploaded_documents) ON client_profiles TO authenticated exists (migration 20260605003212) but a GRANT is not an RLS policy",
+        "correct_destination": "public.documents (migration 20260610185015) already exists with policy doc_all FOR ALL USING/WITH CHECK owner_client_id = auth.uid(), and even backfilled the old jsonb; the three server functions were never moved to it"
+      },
+      "fix_is_next_step": "move getClientDashboard / appendUploadedDocument / removeUploadedDocument onto public.documents, and add .select() + zero-row check so a blocked write reports failure instead of ok:true",
+      "screenshots": [
+        "06-gesher-consents-before.png",
+        "07-gesher-documents.png",
+        "08-gesher-upload-result.png",
+        "09-gesher-after-reload-still-empty.png"
+      ]
+    }
+  ],
+  "not_measured": [
+    "public.documents was not queried directly — project ygaqqnuyfnumezxxmtbh is not reachable via MCP from here and there is no SUPABASE_ACCESS_TOKEN; the root cause rests on source + migrations + three response bodies",
+    "the uploaded file remains in storage at client-documents/1458bb7c-0dea-44b4-9007-ffc3e82b430f/df064ea8-3eb9-4e54-b7bd-1a24c3353fd8-sample.pdf with no UI able to list or delete it",
+    "the QA client created on 30 was left in place (marked as deletable in its notes)",
+    "the admin side of 31 was not checked for the same document",
+    "21 mthbram excluded — the previous step established it has no customer login at all"
+  ],
+  "test_mode": {
+    "user_created": false,
+    "message_sent": false,
+    "charge_made": false,
+    "protected_systems_touched": false
+  }
+}
