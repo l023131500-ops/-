@@ -1,0 +1,54 @@
+{
+  "system": "40 — gannenet (גננת בקליק)",
+  "priority": "§1א — כפתור הצג-סיסמה בכל שדות הסיסמה",
+  "date": "2026-08-12",
+  "page": "https://more30.com/gannenet/shelf/admin",
+  "source": "apps/40-gannenet/app/shelf/admin/page.tsx",
+  "deployment": "gannenet-more30, dpl_52dYVUPzFfYTPbKUpivUWSnVMhAN, target production, READY",
+  "how_this_field_was_found": {
+    "method": "scanned every apps/** source outside node_modules/dist/_deploy/.next/_archive and the protected 08+09 for type=\"password\", then checked each hit for an existing toggle (showPassword | EyeOff | הצג סיסמה)",
+    "hits": 9,
+    "already_had_a_toggle": ["06-kupot-holim/site/admin.html", "24-galilee-connect-hub/src/pages/GabaiPortal.tsx"],
+    "without_a_toggle": ["40-gannenet/app/shelf/admin/page.tsx", "19-igud-shiurim-portal/public/app.js"],
+    "not_actionable": {
+      "19-igud-shiurim-portal": "core.projects: live=false, is_deployed=false, public_visible=false — nothing to deploy or verify, left for when 19 goes live",
+      "35-kioskfleet": "ships from a different repo; a commit here would not reach it",
+      "30-zchuyotpro-crm": "the two hits are built assets under .output/public, not source",
+      "18-torah-editor-mvp": "the hit is an unrelated string in lib/htr-engine.ts, not an input"
+    }
+  },
+  "change": {
+    "field": "the shelf admin key on /shelf/admin (the gate in front of hide-file / hide-pages / permanent-delete)",
+    "toggle": "inline SVG eye ⇄ eye-off, type=\"button\", aria-pressed + aria-label, positioned at inset-inline-end (the left, in RTL); the input reserves padding-inline-end: 44px so a long key never runs under the button",
+    "no_dependency_added": "the app carries no icon library (deps are anthropic/hebcal/next/pdf-lib/react) — the two icons are inline SVG",
+    "password_rule": "deliberately NOT shown. This is the shared ADMIN_PASSWORD key and the server compares it whole — there is no length or character requirement to state, and inventing one would be a made-up datum."
+  },
+  "live_verification": {
+    "browser": "Playwright, 1280x900, dir=rtl, after unregistering 2 service-worker registrations and clearing all caches (a stale SW has hidden a gannenet change before)",
+    "initial": { "input_type": "password", "aria-label": "הצג סיסמה", "aria-pressed": "false" },
+    "after_click": { "input_type": "text", "aria-label": "הסתר סיסמה", "aria-pressed": "true", "value_visible": "DemoQA-not-the-real-key" },
+    "after_second_click": { "input_type": "password", "aria-label": "הצג סיסמה", "aria-pressed": "false", "value_kept": true },
+    "url_unchanged": true,
+    "button_did_not_submit": true,
+    "not_covered_check": {
+      "why": "an absolutely-positioned control inside a card has been rendered unclickable before on this estate",
+      "how": "elementFromPoint at the button centre",
+      "result": "topmost = the button itself",
+      "geometry": "input x=477 w=326; button x=483 w=32 h=32 — inside the field's inline-end edge, 32x32 touch target"
+    },
+    "login_still_works": {
+      "typed": "DemoQA-not-the-real-key (a deliberately wrong key — the real ADMIN_PASSWORD was never typed into a screenshot)",
+      "clicked": "כניסה",
+      "result": "the page renders \"סיסמה שגויה.\" — the field still feeds login(), the 401 path is intact, and nothing was created or changed"
+    }
+  },
+  "build": {
+    "command": "APP_BASE_PATH=/gannenet npm run build",
+    "result": "passed; /shelf/admin static, and §0.3's own acceptance re-passes — 180 /lesson/[id] pages (3 named + 177 more)"
+  },
+  "screenshots": [
+    "admin-password-hidden.png — key masked, eye icon",
+    "admin-password-revealed.png — key readable, eye-off icon"
+  ],
+  "protected_systems": "untouched — 08/09/bkalut-app/bkalot-admin/zr_/NEDARIM3873 not read or written; no csj/csj_src/igud; no billing, no send, test mode"
+}

@@ -967,3 +967,25 @@ the filter.
 - `core.projects` #40 is still `stage='wip'` while `live`, `is_deployed` and
   `public_visible` are all true — part of the stage sweep in `core.issues` #156,
   not touched here.
+
+## 12/08 — §1א: כפתור הצג-סיסמה על מפתח הניהול של המדף
+
+`/shelf/admin` היה שדה הסיסמה היחיד על מערכת חיה, ציבורית ובת-פריסה שעדיין לא
+היה בו כפתור "הצג סיסמה" (נמצא בסריקת `type="password"` על כל `apps/**` מחוץ
+ל-node_modules/dist/_deploy/.next/_archive ומחוץ ל-08/09 המוגנות: תשעה מופעים,
+שניים כבר עם כפתור). זה השדה ששומר על הסתרת קובץ, הסתרת עמודים ומחיקה לצמיתות,
+והמפתח משותף — בדיוק המקרה שבו הקלדה עיוורת עולה בניסיון.
+
+עין/עין-חצויה כ-SVG מוטבע (לאפליקציה אין ספריית אייקונים), `type="button"`,
+`aria-pressed` ו-`aria-label` עברי שמתחלף, ו-`padding-inline-end: 44px`
+בשדה כדי שמפתח ארוך לא ייכנס מתחת לכפתור.
+
+**דרישות סיסמה לא מוצגות, במכוון.** `ADMIN_PASSWORD` נבדק בשלמותו בשרת — אין
+כלל אורך או תווים להציג, והמצאת כלל הייתה נתון מומצא.
+
+אומת חי על more30.com אחרי ביטול רישום שני service workers וניקוי המטמון:
+password → text → password בשתי הקלקות, הערך נשמר, הכתובת לא זזה,
+`elementFromPoint` במרכז הכפתור מחזיר את הכפתור עצמו, ומפתח שגוי עדיין מגיע
+ל-`login()` ומציג "סיסמה שגויה.". ה-build עבר ו-180 עמודי `/lesson/[id]`
+נוצרו כרגיל. פריסה: `dpl_52dYVUPzFfYTPbKUpivUWSnVMhAN` (production, READY).
+ראיות: `QA/gannenet/password-toggle-0812/`.

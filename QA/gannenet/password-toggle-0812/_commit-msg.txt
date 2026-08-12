@@ -1,0 +1,44 @@
+gannenet (40): the shelf admin key was the last password field on a live system with no way to see what you typed
+
+§1א asks for a show-password button on every password field. The sweep that
+placed one on egod (15) and tamlul (02) earlier today had never been run against
+the estate, so which fields were still bare was an assumption. Scanned every
+apps/** source outside node_modules/dist/_deploy/.next/_archive and the
+protected 08+09 for type="password" — nine hits. Two already carried a toggle
+(kupot admin.html, galil GabaiPortal). Of the rest, only one sits on a live,
+deployable, public system: gannenet's /shelf/admin.
+
+That field gates hide-file, hide-pages and permanent-delete, and it is a shared
+key nobody has muscle memory for — the exact case where typing blind costs you
+the attempt.
+
+The change: inline SVG eye ⇄ eye-off at the inline-end (the left, in RTL),
+type="button", aria-pressed and a Hebrew aria-label that flips with the state,
+and padding-inline-end: 44px on the field so a long key never runs under the
+button. No icon library was added — this app carries none, so the two icons are
+inline SVG.
+
+No password rule is displayed, on purpose. §1א asks for the requirements "if
+there are any"; the server compares this key whole, there is no length or
+character rule, and printing one would be an invented datum. egod's rule label
+was measured (a real 422 weak_password from GoTrue) before it was written; there
+is nothing to measure here.
+
+Verified live on more30.com after unregistering two service-worker registrations
+and clearing all caches — a stale SW has hidden a gannenet change before, and a
+clean console is exactly what that failure looks like. password → text →
+password across two clicks, aria-label and aria-pressed following each time, the
+typed value kept, the URL unchanged, and elementFromPoint at the button centre
+returning the button itself rather than the card above it. Then the whole point:
+a wrong key still reaches login() and still renders "סיסמה שגויה." The real
+ADMIN_PASSWORD was never typed into a screenshot.
+
+Build re-passes §0.3's own acceptance: 180 /lesson/[id] pages.
+
+19 (igud-shiurim-portal) is the one remaining bare field. core.projects has it
+live=false, is_deployed=false, public_visible=false — nothing to deploy or
+verify, so it is recorded rather than guessed at. 35 (kioskfleet) ships from a
+different repo and a commit here would not reach it.
+
+Deployed: gannenet-more30, dpl_52dYVUPzFfYTPbKUpivUWSnVMhAN, production, READY.
+Evidence QA/gannenet/password-toggle-0812/.
