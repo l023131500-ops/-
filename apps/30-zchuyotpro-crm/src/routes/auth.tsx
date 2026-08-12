@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
-import { Loader2, ShieldCheck } from "lucide-react";
+import { Eye, EyeOff, Loader2, ShieldCheck } from "lucide-react";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
@@ -80,6 +80,7 @@ function AuthPage() {
 function SignInForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [resetOpen, setResetOpen] = useState(false);
   const [resetEmail, setResetEmail] = useState("");
@@ -153,8 +154,24 @@ function SignInForm() {
             שכחתי סיסמה
           </button>
         </div>
-        <Input id="signin-password" type="password" required dir="ltr" className="text-start"
-          value={password} onChange={(e) => setPassword(e.target.value)} />
+        {/* dir="ltr" + text-align:start ⇒ התווים נצמדים לקצה השמאלי, ולכן הצד
+            הפנוי לעין הוא הימני. type="button" חובה: הכפתור יושב בתוך
+            <form onSubmit={onSubmit}> ובלעדיו כל לחיצה הייתה מנסה להתחבר. */}
+        <div className="relative">
+          <Input id="signin-password" type={showPassword ? "text" : "password"} required dir="ltr"
+            className="text-start pr-10"
+            value={password} onChange={(e) => setPassword(e.target.value)} />
+          <button
+            type="button"
+            onClick={() => setShowPassword((v) => !v)}
+            aria-label={showPassword ? "הסתר סיסמה" : "הצג סיסמה"}
+            title={showPassword ? "הסתר סיסמה" : "הצג סיסמה"}
+            className="absolute right-2 top-1/2 -translate-y-1/2 flex h-7 w-7 items-center justify-center rounded text-muted-foreground hover:text-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            {showPassword ? <EyeOff className="h-4 w-4" aria-hidden="true" />
+                          : <Eye className="h-4 w-4" aria-hidden="true" />}
+          </button>
+        </div>
       </div>
       <Button type="submit" className="w-full" disabled={loading}>
         {loading && <Loader2 className="h-4 w-4 animate-spin me-2" />}
@@ -169,6 +186,7 @@ function SignUpForm() {
   const [tenantName, setTenantName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
   async function onSubmit(e: React.FormEvent) {
@@ -207,8 +225,23 @@ function SignUpForm() {
       </div>
       <div className="space-y-2">
         <Label htmlFor="signup-password">סיסמה</Label>
-        <Input id="signup-password" type="password" required minLength={6} dir="ltr" className="text-start"
-          value={password} onChange={(e) => setPassword(e.target.value)} />
+        <div className="relative">
+          <Input id="signup-password" type={showPassword ? "text" : "password"} required minLength={6} dir="ltr"
+            className="text-start pr-10" aria-describedby="signup-password-rule"
+            value={password} onChange={(e) => setPassword(e.target.value)} />
+          <button
+            type="button"
+            onClick={() => setShowPassword((v) => !v)}
+            aria-label={showPassword ? "הסתר סיסמה" : "הצג סיסמה"}
+            title={showPassword ? "הסתר סיסמה" : "הצג סיסמה"}
+            className="absolute right-2 top-1/2 -translate-y-1/2 flex h-7 w-7 items-center justify-center rounded text-muted-foreground hover:text-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            {showPassword ? <EyeOff className="h-4 w-4" aria-hidden="true" />
+                          : <Eye className="h-4 w-4" aria-hidden="true" />}
+          </button>
+        </div>
+        {/* minLength={6} נאכף כאן מאז ומעולם ומעולם לא נאמר למשתמש. */}
+        <p id="signup-password-rule" className="text-xs text-muted-foreground">לפחות 6 תווים</p>
       </div>
       <Button type="submit" className="w-full" disabled={loading}>
         {loading && <Loader2 className="h-4 w-4 animate-spin me-2" />}

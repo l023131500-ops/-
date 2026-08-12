@@ -1,0 +1,27 @@
+crm (30): four password fields could not be read back, and two rules were enforced silently
+
+§1א asks for an eye on every password field. System 30 (CRM זכויות, more30.com/crm)
+had four type="password" inputs across two files and no way to read any of them
+back: src/routes/auth.tsx (signin-password, signup-password) and
+src/routes/reset-password.tsx (new-password, confirm-password).
+
+The side was measured, not copied. All four carry dir="ltr" together with
+text-start, so text-align:start resolves to LEFT and the free side is the RIGHT
+one — right-2 for the button, pr-10 to reserve 40px. Verified in the production
+CSS that .pr-10 (34138) is emitted after .px-3 (32828) in the same layer, so the
+reserved padding actually wins over the Input component's own px-3.
+
+type="button" is load-bearing on all four: every field sits inside a form with a
+real onSubmit — signInWithPassword, signUp, and auth.updateUser respectively — so
+a bare button would have attempted a login, a signup, or a live password change
+on each toggle.
+
+Two rules were enforced and never stated. signup-password and new-password both
+carry minLength={6} (new-password is checked twice, also in onSubmit), and
+neither said so; added "לפחות 6 תווים" beside each, wired with aria-describedby,
+per §1א's second sentence. confirm-password is left without its own rule text —
+it mirrors the field above it.
+
+reset-password uses two independent states rather than one shared, so one field
+can be read while the other is typed hidden; the two values there are genuinely
+different strings, unlike the login/signup pair in system 31.

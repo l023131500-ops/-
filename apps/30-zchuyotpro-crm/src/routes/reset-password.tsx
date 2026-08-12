@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
-import { Loader2, ShieldCheck } from "lucide-react";
+import { Eye, EyeOff, Loader2, ShieldCheck } from "lucide-react";
 
 export const Route = createFileRoute("/reset-password")({
   ssr: false,
@@ -19,6 +19,10 @@ function ResetPasswordPage() {
   const [ready, setReady] = useState(false);
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
+  // שני מצבים נפרדים ולא אחד משותף: כל שדה נחשף בנפרד, כדי שאפשר יהיה
+  // לקרוא את האחד ולהקליד את השני מוסתר.
+  const [showNew, setShowNew] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -75,13 +79,45 @@ function ResetPasswordPage() {
               <form onSubmit={onSubmit} className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="new-password">סיסמה חדשה</Label>
-                  <Input id="new-password" type="password" required minLength={6} dir="ltr" className="text-start"
-                    value={password} onChange={(e) => setPassword(e.target.value)} />
+                  {/* type="button" חובה: הכפתורים יושבים בתוך
+                      <form onSubmit={onSubmit}>, ובלעדיו כל לחיצה הייתה
+                      מנסה לעדכן את הסיסמה בפועל. */}
+                  <div className="relative">
+                    <Input id="new-password" type={showNew ? "text" : "password"} required minLength={6} dir="ltr"
+                      className="text-start pr-10" aria-describedby="new-password-rule"
+                      value={password} onChange={(e) => setPassword(e.target.value)} />
+                    <button
+                      type="button"
+                      onClick={() => setShowNew((v) => !v)}
+                      aria-label={showNew ? "הסתר סיסמה" : "הצג סיסמה"}
+                      title={showNew ? "הסתר סיסמה" : "הצג סיסמה"}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 flex h-7 w-7 items-center justify-center rounded text-muted-foreground hover:text-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    >
+                      {showNew ? <EyeOff className="h-4 w-4" aria-hidden="true" />
+                               : <Eye className="h-4 w-4" aria-hidden="true" />}
+                    </button>
+                  </div>
+                  {/* הכלל נאכף פעמיים — minLength={6} וגם onSubmit — ומעולם
+                      לא הוצג ליד השדה. */}
+                  <p id="new-password-rule" className="text-xs text-muted-foreground">לפחות 6 תווים</p>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="confirm-password">אימות סיסמה</Label>
-                  <Input id="confirm-password" type="password" required minLength={6} dir="ltr" className="text-start"
-                    value={confirm} onChange={(e) => setConfirm(e.target.value)} />
+                  <div className="relative">
+                    <Input id="confirm-password" type={showConfirm ? "text" : "password"} required minLength={6} dir="ltr"
+                      className="text-start pr-10"
+                      value={confirm} onChange={(e) => setConfirm(e.target.value)} />
+                    <button
+                      type="button"
+                      onClick={() => setShowConfirm((v) => !v)}
+                      aria-label={showConfirm ? "הסתר סיסמה" : "הצג סיסמה"}
+                      title={showConfirm ? "הסתר סיסמה" : "הצג סיסמה"}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 flex h-7 w-7 items-center justify-center rounded text-muted-foreground hover:text-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    >
+                      {showConfirm ? <EyeOff className="h-4 w-4" aria-hidden="true" />
+                                   : <Eye className="h-4 w-4" aria-hidden="true" />}
+                    </button>
+                  </div>
                 </div>
                 <Button type="submit" className="w-full" disabled={loading}>
                   {loading && <Loader2 className="h-4 w-4 animate-spin me-2" />}
