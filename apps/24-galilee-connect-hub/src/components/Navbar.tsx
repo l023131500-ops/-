@@ -18,7 +18,9 @@ const navItems = [
   { label: 'שאל את הרב', to: '/#ask-rabbi', icon: HelpCircle, isAnchor: true },
   { label: 'צור קשר', to: '/contact', icon: Phone },
   { label: 'פורטל גבאים', to: '/gabai', icon: Settings },
-  { label: 'ניהול ⚡', to: '/gabai?auto=admin', icon: ShieldCheck },
+  // `?login=admin` opens the portal's login screen on the admin tab. It used to
+  // be `?auto=admin`, which skipped the login screen outright.
+  { label: 'ניהול ⚡', to: '/gabai?login=admin', icon: ShieldCheck },
 ];
 
 const Navbar = () => {

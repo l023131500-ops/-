@@ -1401,9 +1401,15 @@ const RabbiQuestionsManager = () => {
 // ---- Main GabaiPortal ----
 const GabaiPortal = () => {
   const searchParams = new URLSearchParams(window.location.search);
-  const autoAdmin = searchParams.get('auto') === 'admin';
-  const [view, setView] = useState<'login' | 'admin' | 'gabai'>(autoAdmin ? 'admin' : 'login');
-  const [loginType, setLoginType] = useState<'admin' | 'gabai'>('gabai');
+  // The admin gate. `?auto=admin` used to seed view='admin' directly, so the
+  // public Navbar's "ניהול ⚡" link — and anyone who typed the URL — reached the
+  // full management UI without ever entering a password. The query string now
+  // only chooses which tab the login screen opens on; `view` always starts at
+  // 'login' and only handleLogin can move it. `auto=admin` is still read so old
+  // bookmarks keep landing on the admin tab instead of on the gabai one.
+  const adminRequested = searchParams.get('login') === 'admin' || searchParams.get('auto') === 'admin';
+  const [view, setView] = useState<'login' | 'admin' | 'gabai'>('login');
+  const [loginType, setLoginType] = useState<'admin' | 'gabai'>(adminRequested ? 'admin' : 'gabai');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   // priority §1א — "הצג סיסמה". Held next to `password` and not inside a shared

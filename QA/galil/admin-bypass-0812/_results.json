@@ -1,0 +1,30 @@
+{
+  "system": "24 — galil (מחוברים, more30.com/galil)",
+  "date": "2026-08-12",
+  "finding": "The public navbar linked to /gabai?auto=admin, and GabaiPortal seeded view='admin' from that query param. Any visitor reached the full management UI without entering a password.",
+  "severity": "auth bypass on a live, public, is_deployed + public_visible system",
+  "before": {
+    "evidence": "QA/galil/admin-bypass-0812/galil-BEFORE-deployed-bundle-admin-no-password.png",
+    "served_from": "_deploy/galil-more30/galil (byte-identical to what more30.com/galil serves)",
+    "observed": "ניהול בתי כנסת CRUD, CSV import, and the real contact record (054-203-0901 / M0542060903@GMAIL.COM) rendered with no credential"
+  },
+  "change": [
+    "src/pages/GabaiPortal.tsx — view always initialises to 'login'; the query param now only preselects the tab",
+    "src/components/Navbar.tsx — 'ניהול ⚡' now points at /gabai?login=admin"
+  ],
+  "after": {
+    "evidence": "QA/galil/admin-bypass-0812/galil-auto-admin-now-login.png",
+    "observed": "the old ?auto=admin URL renders the login screen with the מנהל tab preselected; submitting a wrong password leaves view='login'"
+  },
+  "supabase_grants_measured": {
+    "project": "mwljkonwdeuaahsigjdp (galil's own project — NOT in this account's org, so not writable from here)",
+    "anon_key_status": "valid — bad-key probe returns 'Invalid API key', the real key does not",
+    "gabai_accounts": "401 42501 permission denied — so the passwords the client tries to compare are not readable, and no login can ever succeed",
+    "synagogues": 200,
+    "rabbi_questions": 200,
+    "gallery_images": 200,
+    "activity_slides": 200
+  },
+  "console_errors": 0,
+  "note": "The 401 on gabai_accounts is pre-existing and identical in the deployed bundle (same anon key, verified byte-for-byte), not introduced by this change."
+}
