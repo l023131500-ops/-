@@ -1,0 +1,41 @@
+imud (04): the API key was typed blind, and nine days of build sat on the shelf
+
+§1א asks for a "show password" eye on every password field. A recursive grep of
+04-imud-torani finds exactly one type="password" input in source: the AI-proofread
+key in client/src/pages/departments/ProofreadDept.tsx. It is pasted by hand and
+never echoed back, so a single wrong character showed up only as a failed call to
+the provider.
+
+The side was measured, not copied. This field carries dir="ltr" inside an RTL page,
+so characters sit flush against the LEFT edge and grow rightward — the free side is
+the RIGHT one, the mirror of 02/03. right-1 for the eye, pr-9 (12px -> 36px) so a
+long key cannot slide under it. Measured live: padding-right 36px, button rect
+(764,314,28x28) contained in field rect (618,310,178x36), elementFromPoint at the
+button centre returns the button itself.
+
+type="button" is set and the risk it guards against was measured rather than
+assumed: the input is not inside a <form> (inForm=false), and a wrapped window.fetch
+counted 0 calls across both toggles with location.hash unchanged. Round trip both
+ways: password->text->password, "הצג מפתח"->"הסתר מפתח"->"הצג מפתח", eye->eye-off->eye,
+value sk-ant-More30Test2026-abcdef preserved throughout.
+
+Reaching the field on production needed a detour worth recording: POST
+/imud/api/books returns 405. imud is deployed to Vercel as static files only, while
+the app's whole book layer (create/load/save/export, server/routes.ts over Supabase)
+lives in an express server that is not deployed at all. So the editor is unreachable
+from the live site by normal use. The API was stubbed in the browser (page.route)
+purely to render the component — no database was written — and the bundle under test
+is the live bundle itself.
+
+The deploy also emptied the shelf: production last shipped 03/08 while dist had been
+built 10/08, so the JS that had been sitting unreleased went out with this change
+(CSS was unchanged until this edit added pr-9/right-1).
+
+Build: vite build, 2094 modules, index-DbqCalt6.js 1094.27 kB, index-DRN1hLUe.css
+73.51 kB. Deployed to imud-more30 (dpl_HQFKWtZ5vNmzjTRm1hTimXSsWvdT, READY,
+production); verified on more30.com/imud with a cache-buster, not the vercel.app
+alias.
+
+apps/ is gitignored, so the edited page needed git add -f.
+
+Evidence: QA/imud/apikey-toggle-0812/

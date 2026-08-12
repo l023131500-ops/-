@@ -1,0 +1,45 @@
+{
+  "system": "04 imud-torani (עימוד תורני) — https://more30.com/imud",
+  "priority": "§1א — כפתור \"הצג סיסמה\" בכל שדות הסיסמה",
+  "date": "2026-08-12",
+  "field": {
+    "file": "client/src/pages/departments/ProofreadDept.tsx",
+    "what": "מפתח API להגהת AI — שדה type=password היחיד בכל האפליקציה (grep רקורסיבי)",
+    "route": "#/editor/:id → מחלקת הגהה → הגהת AI"
+  },
+  "measured_live": {
+    "url": "https://more30.com/imud/#/editor/9001",
+    "computed_direction": "ltr",
+    "padding_right": "36px",
+    "field_rect": [618, 310, 178, 36],
+    "button_rect": [764, 314, 28, 28],
+    "button_contained_in_field": true,
+    "elementFromPoint_at_button_centre": "button-toggle-ai-key",
+    "input_in_form": false,
+    "button_type": "button"
+  },
+  "round_trip": [
+    { "type": "password", "aria-label": "הצג מפתח", "aria-pressed": "false", "icon": "lucide-eye" },
+    { "type": "text", "aria-label": "הסתר מפתח", "aria-pressed": "true", "icon": "lucide-eye-off" },
+    { "type": "password", "aria-label": "הצג מפתח", "aria-pressed": "false", "icon": "lucide-eye" }
+  ],
+  "value_preserved": "sk-ant-More30Test2026-abcdef (זהה בשלושת המצבים)",
+  "fetch_calls_during_toggle": 0,
+  "hash_unchanged": "#/editor/9001",
+  "build": "vite build — 2094 modules, index-DbqCalt6.js 1094.27 kB, index-DRN1hLUe.css 73.51 kB",
+  "deploy": {
+    "project": "imud-more30 (prj_AJVlmH3u6oL4BG7Fy3gy0ocnRJUj)",
+    "deployment": "dpl_HQFKWtZ5vNmzjTRm1hTimXSsWvdT",
+    "state": "READY",
+    "target": "production",
+    "verified_on": "https://more30.com/imud/?cb=0812imud → 200, assets/index-DbqCalt6.js + assets/index-DRN1hLUe.css",
+    "note": "הפריסה החיה הקודמת הייתה מ-03/08 בעוד dist נבנה ב-10/08 — הצעד הזה הוציא גם את מה שנשאר על המדף (JS השתנה, CSS לא)."
+  },
+  "how_the_editor_was_reached": "POST /imud/api/books מחזיר 405 בייצור — אין שרת. לכן ה-API מוסה בדפדפן בלבד (page.route) כדי להגיע ל-Editor; ה-bundle שנבדק הוא ה-bundle החי עצמו, וללא כתיבה לשום מסד.",
+  "not_verified": [
+    "לא בוצעה קריאה אמיתית לספק AI עם מפתח אמיתי",
+    "מצב כהה לא צולם לשדה הזה",
+    "לשדה אין autocomplete=\"off\" — לא נגעתי"
+  ],
+  "screenshots": ["imud-key-hidden.png", "imud-key-revealed.png"]
+}

@@ -13,7 +13,7 @@ import {
   aiScanBook, PROVIDER_LABELS, DEFAULT_MODELS,
   type AiProvider, type AiConfig,
 } from "@/lib/aiProofread";
-import { Check, X, Trash2, ScanSearch, Sparkles, ChevronLeft } from "lucide-react";
+import { Check, X, Trash2, ScanSearch, Sparkles, ChevronLeft, Eye, EyeOff } from "lucide-react";
 
 /**
  * מחלקת הגהה — סורקת את כל הספר, מציגה רשימת טעויות מסודרת לפי 3 קטגוריות,
@@ -39,6 +39,7 @@ export function ProofreadDept({
   const [showAi, setShowAi] = useState(false);
   const [provider, setProvider] = useState<AiProvider>("anthropic");
   const [apiKey, setApiKey] = useState("");
+  const [showKey, setShowKey] = useState(false);
   const [aiBusy, setAiBusy] = useState(false);
   const [aiProgress, setAiProgress] = useState({ done: 0, total: 0 });
 
@@ -133,10 +134,31 @@ export function ProofreadDept({
               </div>
               <div>
                 <Label className="mb-1 block text-[11px] font-semibold">מפתח API</Label>
-                <Input
-                  type="password" value={apiKey} onChange={(e) => setApiKey(e.target.value)}
-                  placeholder="sk-…" dir="ltr" data-testid="input-ai-key"
-                />
+                {/*
+                  כפתור "הצג סיסמה" (priority §1א). המפתח מודבק ידנית ואי אפשר לאמת
+                  אותו כשהוא מוסתר — טעות תו אחד מתגלה רק בכישלון הקריאה לספק.
+                  השדה dir="ltr" בתוך עמוד RTL, כלומר התווים נצמדים לשמאל וגדלים ימינה,
+                  ולכן הצד הפנוי הוא הימני; pr-9 שומר שהמפתח לא ייכנס מתחת לכפתור.
+                  ה-type, ה-aria-label והאייקון נגזרים מאותו state, כדי שלא ייתכן
+                  שהכפתור אומר "הצג" בזמן שהמפתח כבר גלוי.
+                */}
+                <div className="relative">
+                  <Input
+                    type={showKey ? "text" : "password"} value={apiKey} onChange={(e) => setApiKey(e.target.value)}
+                    placeholder="sk-…" dir="ltr" className="pr-9" data-testid="input-ai-key"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowKey((v) => !v)}
+                    aria-pressed={showKey}
+                    aria-label={showKey ? "הסתר מפתח" : "הצג מפתח"}
+                    title={showKey ? "הסתר מפתח" : "הצג מפתח"}
+                    className="absolute right-1 top-1/2 grid h-7 w-7 -translate-y-1/2 place-items-center rounded-md text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    data-testid="button-toggle-ai-key"
+                  >
+                    {showKey ? <EyeOff className="h-4 w-4" aria-hidden="true" /> : <Eye className="h-4 w-4" aria-hidden="true" />}
+                  </button>
+                </div>
               </div>
             </div>
             <Button size="sm" className="w-full" onClick={runAiScan} disabled={aiBusy} data-testid="button-scan-ai">
