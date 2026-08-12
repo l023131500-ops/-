@@ -1,0 +1,28 @@
+gesher (31): the login screen answered in English, so an unconfirmed mail read as a typo
+
+src/routes/auth.tsx passed error.message straight into
+toast.error("שגיאת התחברות", { description }) and the same again for signup.
+That is GoTrue's raw English under a Hebrew heading: "Email not confirmed" and
+"Invalid login credentials" look like the same failure to a Hebrew reader, and
+the first one sends the person who typed the RIGHT password off to try other
+passwords.
+
+Added src/lib/authErrors.ts and wired both Supabase call sites. Codes covered:
+email_not_confirmed / invalid_credentials / user_banned; user_already_exists /
+email_exists / weak_password / signup_disabled / email_address_invalid /
+validation_failed; over_email_send_rate_limit / over_request_rate_limit; plus
+status 429 and the status-0 AuthRetryableFetchError that carries no code. An
+unrecognised code keeps its original text rather than being swallowed.
+
+This screen has no reset-password route, so unlike system 30 there are no
+same_password / session_not_found / reauthentication_needed branches here.
+The login field is labelled "אימייל" with type="email", so invalid_credentials
+says "האימייל או הסיסמה שגויים" (system 21 says "שם המשתמש" for the same code,
+because that is the field that screen actually has).
+
+The Google button is deliberately left alone: lovable.auth.signInWithOAuth
+returns a plain Error with no code and no status, so routing it through the
+mapper would only add a "שגיאה:" prefix to the same English string.
+
+This was the last system named in the §1א sweep as still showing raw auth
+errors (01, 15, 16, 21, 22, 30 done before it).

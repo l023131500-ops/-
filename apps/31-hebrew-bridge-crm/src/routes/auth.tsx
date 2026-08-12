@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
+import { authErrorMessage } from "@/lib/authErrors";
 import { Eye, EyeOff, Loader2, Shield } from "lucide-react";
 
 export const Route = createFileRoute("/auth")({
@@ -39,7 +40,8 @@ function AuthPage() {
     setLoading(true);
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     setLoading(false);
-    if (error) return toast.error("שגיאת התחברות", { description: error.message });
+    // §1א: קודם הועבר כאן error.message — האנגלית של GoTrue מתחת לכותרת עברית.
+    if (error) return toast.error("שגיאת התחברות", { description: authErrorMessage(error) });
     toast.success("התחברת בהצלחה");
     navigate({ to: "/", replace: true });
   };
@@ -56,7 +58,7 @@ function AuthPage() {
       },
     });
     setLoading(false);
-    if (error) return toast.error("שגיאת הרשמה", { description: error.message });
+    if (error) return toast.error("שגיאת הרשמה", { description: authErrorMessage(error) });
     toast.success("נרשמת בהצלחה", { description: "בדוק את תיבת הדואר לאישור" });
   };
 
