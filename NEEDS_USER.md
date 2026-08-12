@@ -820,36 +820,23 @@ cd portal/dist ; npx vercel deploy --prod --yes --scope l023131500-ops-projects
 מתגלגל ומשחרר כמקום אחד לסבב, ולכן כל צעד שנגמר בפריסה ימשיך להמתין תור.
 **ההכרעה שלך:** לשדרג ל-Vercel Pro, או להשאיר כך.
 
-### ⬅️ הפריט האחרון בתור, ולכן **זהו** הבלוק החי בסעיף: `kupot` (10/08/2026)
+### ✅ ~~הפריט האחרון בתור: `kupot`~~ — נסגר 10/08, ואומת מחדש 12/08. **אינו דורש אותך.**
 
-הפריט הקודם שנכתב כאן, `portal`, אינו הבא בתור יותר. הבא הוא `kupot-more30`,
-והוא **פקודה אחת בלי בנייה** — הכל כבר שוכן ב-`_deploy/kupot-more30`:
+הבלוק הזה ביקש ממך להריץ פריסה אחת ל-`kupot-more30`. **היא כבר רצה** — אותה
+פקודה התקבלה ב-10/08 14:00Z כשהחלון המתגלגל שחרר משבצת
+(`dpl_AyL2TUY2T2ycfkRoE3JhPgsDJkcD`, `READY`), והייצור עבר
+`index-BlT4DUpe.js` → `index-DbBm6hnF.js`. הטקסט כאן פשוט לא עודכן.
 
-```
-cd _deploy/kupot-more30
-vercel deploy --prod --yes --scope l023131500-ops-projects
-```
+**אומת שוב 12/08, בדפדפן דרך `more30.com` ולא בקריאת סטטוס:** טעינת `/kupot/`
+שולחת `https://more30.com/kupot/api/hf/meta` ו-`/kupot/api/hf/topics`, ושתיהן
+מחזירות **200** מהפונקציה. הבדיקה שהבלוק דרש — `hf/meta` חייב לחזור
+`application/json` במקום `text/html` — עברה.
 
-**מה הוא מתקן:** שתי הכתיבות שהדף של `/kupot` עושה — מעבר קופה
-(`SwitchFundDialog`) והשאלה ליועץ החכם (`SmartAdvisor`) — לא מגיעות לשרת היום.
-נמדד 10/08 מול הייצור, אנונימית: `https://more30.com/kupot/api/switch-lead`
-מחזיר **200 `text/html`** באורך 4,497 בייט, כלומר קליפת ה-SPA ולא ה-API. זהו
-הכישלון הקשה יותר לראות — הלקוח נופל על פענוח JSON ולא על סטטוס, ולכן שום
-מדידת סטטוס לא סימנה אותו. `/api/hf/*` שורד רק מפני שהפורטל נושא עבורו rewrite
-שנכתב ביד. התיקון עצמו נכנס לגיט ב-`6551b75`.
-
-**נוסה 10/08 13:2x ונדחה באותה הודעה בדיוק** — ההעלאה עברה (2.3MB) והשחרור לא.
-הייצור לא זז ואין ממה לחזור: עדיין `index-BlT4DUpe.js`, `textLen` 3,157, אפס
-שגיאות קונסולה — נמדד גם אחרי הניסיון.
-
-**מיד אחרי שהפריסה תעבור, בלי לעזוב:** `/kupot/api/hf/meta` חייב לחזור
-`application/json` (היום `text/html`), ו-`node scripts/qa/system-facts.mjs kupot`
-חייב להישאר על `textLen` 3,157 — ירידה חדה פירושה שה-API נעלם, וזה קרה כאן
-שלוש פעמים בעבר. חזרה:
-`npx vercel promote https://kupot-more30-aiwtncgj7-l023131500-ops-projects.vercel.app --scope l023131500-ops-projects --yes`.
-
-ראיות: `QA/platform/kupot-deploy-0810/_results.json`,
-`_deploy/kupot-more30/README.md`. `core.issues #154`.
+שתי הכתיבות (`SwitchFundDialog`, `SmartAdvisor`) לא נשלחו בבדיקה הזאת בכוונה:
+גוף תקין ל-`switch-lead` כותב ליד אמיתי במערכת חיה. הן נשענות על אותו קבוע
+בסיס שבו משתמשות שתי הקריאות שכן נמדדו, ו-`core.issues #154` נסגר על הקריאה
+הזאת. ראיות: `QA/platform/kupot-deploy-0810/_results.json`,
+`QA/platform/mounted-api-base-0812/README.md`, קומיט `65aac9e`.
 
 ---
 
