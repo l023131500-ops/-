@@ -11,6 +11,7 @@ import RequestLesson from "./pages/RequestLesson";
 import LessonDirectory from "./pages/LessonDirectory";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminLogin from "./pages/AdminLogin";
+import AuthReset from "./pages/AuthReset";
 import NedarimManagement from "./pages/NedarimManagement";
 import IvrBuilder from "./pages/IvrBuilder";
 import RabbiPortal from "./pages/RabbiPortal";
@@ -46,6 +47,9 @@ const App = () => (
           <Route path="/request-lesson" element={<RequestLesson />} />
           <Route path="/lessons" element={<LessonDirectory />} />
           <Route path="/admin-login" element={<AdminLogin />} />
+          {/* היעד של קישור האיפוס מהמייל. חייב לשבת מעל ה-* שלמטה, אחרת
+              הקישור נוחת על NotFound עם טוקן חי ואין מה לעשות איתו (#201). */}
+          <Route path="/auth/reset" element={<AuthReset />} />
           <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
           <Route path="/admin/nedarim" element={<ProtectedRoute><NedarimManagement /></ProtectedRoute>} />
           <Route path="/admin/ivr" element={<ProtectedRoute><IvrBuilder /></ProtectedRoute>} />

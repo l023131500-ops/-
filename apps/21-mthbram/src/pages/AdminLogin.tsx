@@ -23,6 +23,11 @@ const AdminLogin = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
+  const [resetting, setResetting] = useState(false);
+  // הודעה בתוך הטופס ולא רק toast: נמדד כאן שהודעות ה-toast של המסך הזה
+  // אינן מגיעות למסך בפועל (אין [data-sonner-toast] אחרי לחיצה), ולכן
+  // משוב שנשען עליהן לבדו הוא לחיצה שלא קורה בה כלום מבחינת המשתמש.
+  const [resetNote, setResetNote] = useState<{ ok: boolean; text: string }>();
   const navigate = useNavigate();
 
   // If returning from Google OAuth, validate whitelist and redirect
@@ -63,6 +68,41 @@ const AdminLogin = () => {
       toast.error("שגיאה בכניסה עם Google");
       setGoogleLoading(false);
     }
+  };
+
+  // "שכחתי סיסמה" (core.issues #201). היעד נבנה מ-BASE_URL ולא מ-origin
+  // לבדו: האפליקציה מוגשת תחת more30.com/mthbram, ו-origin לבדו היה שולח
+  // את הקישור אל more30.com/auth/reset — כתובת שאינה קיימת. זה בדיוק
+  // הבאג שנמצא ב-30 crm.
+  const handleForgotPassword = async () => {
+    // השדה כאן מקבל גם שם משתמש, שמורכב אחר כך ל-@admin.local — כתובת
+    // שאינה תיבה אמיתית ואי אפשר לשלוח אליה דבר. לכן נדרש מייל מלא.
+    if (!email.includes("@")) {
+      const text = "איפוס סיסמה נשלח למייל. הקלידו בשדה למעלה את כתובת המייל המלאה של החשבון.";
+      setResetNote({ ok: false, text });
+      toast.error(text);
+      return;
+    }
+    setResetNote(undefined);
+    setResetting(true);
+    const base = import.meta.env.BASE_URL.endsWith("/")
+      ? import.meta.env.BASE_URL
+      : `${import.meta.env.BASE_URL}/`;
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}${base}auth/reset`,
+    });
+    setResetting(false);
+    if (error) {
+      const text = authErrorMessage(error);
+      setResetNote({ ok: false, text });
+      toast.error(text);
+      return;
+    }
+    // ניסוח מכוון שאינו מאשר ואינו מכחיש שהכתובת רשומה — Supabase עצמו
+    // מחזיר 200 בשני המקרים, ואישור כאן היה הופך את המסך למונה חשבונות.
+    const sent = "אם הכתובת רשומה במערכת, שלחנו אליה קישור לבחירת סיסמה חדשה. הקישור תקף לשעה.";
+    setResetNote({ ok: true, text: sent });
+    toast.success(sent);
   };
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -177,6 +217,24 @@ const AdminLogin = () => {
                 </button>
               </div>
             </div>
+            <div className="flex justify-start">
+              <button
+                type="button"
+                onClick={handleForgotPassword}
+                disabled={resetting}
+                className="font-body text-sm text-muted-foreground underline hover:text-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded disabled:opacity-60"
+              >
+                {resetting ? "שולחים…" : "שכחתי סיסמה"}
+              </button>
+            </div>
+            {resetNote && (
+              <p
+                className={`font-body text-sm ${resetNote.ok ? "text-muted-foreground" : "text-destructive"}`}
+                role="status"
+              >
+                {resetNote.text}
+              </p>
+            )}
             <Button
               type="submit"
               disabled={loading || !email || !password}
