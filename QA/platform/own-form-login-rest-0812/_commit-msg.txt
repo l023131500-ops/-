@@ -1,0 +1,41 @@
+§1א: the signup→login roundtrip finally RUN on 21, 30, 31 — and signup itself is clean
+
+Open line (10) from the previous heartbeat. Five live systems carry a login
+form of their own over Supabase Auth (01, 15, 21, 30, 31), but the acceptance
+test §1א is written as — "הרשמה → התנתקות → התחברות עובדת" — had only ever
+been executed against 01, 15 and 16. The other three were cleared by READING
+code and by the server's own declaration (GET /auth/v1/settings). Neither of
+those measures what happens when a customer actually registers.
+
+Two real failures are invisible to a settings read: an on_auth_user_created
+trigger that falls over (signup returns 500 "Database error saving new user",
+and the customer can never register at all, confirmed email or not), and the
+absence of §1ב's test customer. Both were checked by running the thing.
+
+RESULT — five of five behave identically. On 21 mthbram, 30 crm and 31 gesher:
+signup returns 200, the user row is created, no trigger 500. The login
+immediately after fails with email_not_confirmed VERBATIM — not
+invalid_credentials — which is positive proof the auth server matched the
+password and stopped only on confirmation. And test@more30.com exists and is
+issued a session on all three projects, which nobody had ever checked. The key
+production serves matches core.projects on all five.
+
+01 and 15 were re-run as CONTROLS and returned exactly what they returned this
+morning, so the script is trustworthy — the lesson from notconfirmed-message-
+sweep, whose first run "found" a missing message on a system where it is live.
+
+So on 21/30/31 there is no §1א code bug. What is left is the Confirm email
+setting on those three projects, which is the user's and already recorded.
+
+NOT MEASURED, and recorded as such: this is the auth server, not a browser
+screenshot of the login form; and what happens AFTER confirmation (§8ב —
+does the customer land inside the product) was not exercised on these three.
+
+Test mode: five QA users created at qa-roundtrip-<slug>-0812-*@more30.com,
+no message sent to any customer, no billing, nothing written to a business
+table. Protected systems (08, 09, bkalut-app, bkalot-admin, zr_*, NEDARIM3873)
+are not in the target list; no csj/csj_src/igud used as a source.
+
+Evidence QA/platform/own-form-login-rest-0812/ (README.md + _results.json),
+scripts/qa/own-form-login-roundtrip.mjs now takes first|rest and is re-runnable,
+NEEDS_USER §0א״ updated, core.issues #172 appended.

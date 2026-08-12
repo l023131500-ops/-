@@ -21,21 +21,38 @@
 // מצב טסט: נוצרים משתמשי QA בלבד, בכתובות qa-…, ואין שום שליחה ללקוח.
 // המערכות המוגנות (08/09/bkalut-app/bkalot-admin/zr_/NEDARIM3873) אינן כאן.
 //
-// שימוש:  node scripts/qa/own-form-login-roundtrip.mjs
-// פלט:    QA/platform/own-form-login-0812/_results.json
+// שימוש:  node scripts/qa/own-form-login-roundtrip.mjs [first|rest]
+//   first — שלוש המערכות של 12/08 (ברירת מחדל, כדי שהרצה חוזרת תשחזר)
+//   rest  — שלוש המערכות שנותרו: 21 mthbram, 30 crm, 31 gesher,
+//           עם 01 ו-15 כ**ביקורת**: תוצאה שסותרת אותן פוסלת את הסקריפט,
+//           לא את המערכת (הלקח מ-notconfirmed-message-sweep).
+// פלט:    QA/platform/own-form-login-<set>-0812/_results.json
+//         (הסט הראשון נשאר ב-own-form-login-0812/, ראיה קיימת)
 
 import { writeFileSync, mkdirSync } from 'node:fs';
 import { join } from 'node:path';
 
-const OUT = join(process.cwd(), 'QA', 'platform', 'own-form-login-0812');
+// חמש המערכות שיש להן טופס כניסה משלהן מעל Supabase Auth, לפי
+// QA/platform/own-login-hash-0812 ו-notconfirmed-message-0812, ועוד 16
+// chatzor שנמדדה בסט הראשון. ref הפרויקט הוא מה ש-core.projects רושם.
+const SETS = {
+  first: [
+    { num: '01', slug: 'torah', url: 'https://more30.com/torah/', project: 'bieebmnmkffwbqlsfozh' },
+    { num: '15', slug: 'egod', url: 'https://more30.com/egod/', project: 'hkkkynyoigzlttpynoeo' },
+    { num: '16', slug: 'chatzor', url: 'https://more30.com/chatzor/', project: 'uhnrgujbdxhhmoxcjria' },
+  ],
+  rest: [
+    { num: '21', slug: 'mthbram', url: 'https://more30.com/mthbram/', project: 'aypsqqvfohekxxuqsmrw' },
+    { num: '30', slug: 'crm', url: 'https://more30.com/crm/', project: 'jhbeelzvjvhnkxldqvxx' },
+    { num: '31', slug: 'gesher', url: 'https://more30.com/gesher/', project: 'ygaqqnuyfnumezxxmtbh' },
+    { num: '01', slug: 'torah', url: 'https://more30.com/torah/', project: 'bieebmnmkffwbqlsfozh', control: true },
+    { num: '15', slug: 'egod', url: 'https://more30.com/egod/', project: 'hkkkynyoigzlttpynoeo', control: true },
+  ],
+};
 
-// שלוש המערכות שיש להן טופס כניסה משלהן מעל Supabase Auth,
-// לפי QA/platform/own-login-hash-0812/_results.json.
-const TARGETS = [
-  { num: '01', slug: 'torah', url: 'https://more30.com/torah/', project: 'bieebmnmkffwbqlsfozh' },
-  { num: '15', slug: 'egod', url: 'https://more30.com/egod/', project: 'hkkkynyoigzlttpynoeo' },
-  { num: '16', slug: 'chatzor', url: 'https://more30.com/chatzor/', project: 'uhnrgujbdxhhmoxcjria' },
-];
+const SET = process.argv[2] === 'rest' ? 'rest' : 'first';
+const TARGETS = SETS[SET];
+const OUT = join(process.cwd(), 'QA', 'platform', SET === 'first' ? 'own-form-login-0812' : 'own-form-login-rest-0812');
 
 // משתמש הבדיקה הרשמי לפי §1ב.
 const TEST_EMAIL = 'test@more30.com';
@@ -140,7 +157,7 @@ function summarizeLogin(r) {
 const results = [];
 
 for (const t of TARGETS) {
-  const row = { number: t.num, slug: t.slug, live_url: t.url, project_in_core: t.project };
+  const row = { number: t.num, slug: t.slug, live_url: t.url, project_in_core: t.project, control: !!t.control };
   const creds = await credsFromProduction(t);
   if (creds.error) {
     row.creds = creds;
@@ -220,7 +237,7 @@ for (const t of TARGETS) {
 mkdirSync(OUT, { recursive: true });
 writeFileSync(
   join(OUT, '_results.json'),
-  JSON.stringify({ at: new Date().toISOString(), targets: TARGETS.length, results }, null, 2),
+  JSON.stringify({ at: new Date().toISOString(), set: SET, targets: TARGETS.length, results }, null, 2),
   'utf8',
 );
 console.log(JSON.stringify(results, null, 2));
