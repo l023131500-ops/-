@@ -1,10 +1,15 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
+
+// Requests per hour, per caller IP. Enough for a real advisory conversation,
+// far below what draining the AI credit would take.
+const RATE_LIMIT_PER_HOUR = 20;
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -17,6 +22,45 @@ serve(async (req) => {
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) {
       throw new Error("LOVABLE_API_KEY is not configured");
+    }
+
+    // Rate limit per caller IP — this function spends LOVABLE_API_KEY credits and runs
+    // with verify_jwt=false, so without a cap anyone who knows the URL can drain it.
+    const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
+    const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+    if (SUPABASE_URL && SUPABASE_SERVICE_ROLE_KEY) {
+      const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+      const ip =
+        (req.headers.get("x-forwarded-for") ?? "").split(",")[0].trim() || "unknown";
+      const windowStart = new Date(
+        Math.floor(Date.now() / 3_600_000) * 3_600_000
+      ).toISOString();
+      const { data: gate, error: gateError } = await supabase.rpc("ai_rate_limit_hit", {
+        p_bucket: `chat:${ip}`,
+        p_window_start: windowStart,
+        p_limit: RATE_LIMIT_PER_HOUR,
+      });
+      if (gateError) {
+        // Fail open: a counter problem must not take the live chat down.
+        console.error("rate limit check failed:", gateError.message);
+      } else if (gate?.[0]?.allowed === false) {
+        console.warn(`rate limited ${ip}: ${gate[0].hits} hits this hour`);
+        return new Response(
+          JSON.stringify({
+            error: "יותר מדי בקשות מהכתובת הזו. נסו שוב בעוד שעה.",
+          }),
+          {
+            status: 429,
+            headers: {
+              ...corsHeaders,
+              "Content-Type": "application/json",
+              "Retry-After": "3600",
+            },
+          }
+        );
+      }
+    } else {
+      console.error("rate limit skipped: SUPABASE_URL/SERVICE_ROLE_KEY missing");
     }
 
     // Build context-aware system prompt

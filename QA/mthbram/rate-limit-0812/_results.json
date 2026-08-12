@@ -1,0 +1,48 @@
+{
+  "issue": 165,
+  "system": "21 mthbram (איגוד השיעורים)",
+  "project": "aypsqqvfohekxxuqsmrw",
+  "date": "2026-08-12",
+  "what": "chat + search-lessons run with verify_jwt=false and spend LOVABLE_API_KEY credits on every call. Added a per-caller-IP cap of 20 requests/hour, counted in public.ai_rate_limits via the atomic RPC ai_rate_limit_hit.",
+  "deploy": {
+    "path": "Lovable (the only deploy path for this project)",
+    "lovable_project": "f53a4479-1aaf-45ee-810f-e8ea4ed3fbc2",
+    "commit_sha": "5777e9ca5f079c462389fe9bafc8293075fa5df1",
+    "credits": 1.3,
+    "functions": ["search-lessons", "chat"]
+  },
+  "measurements": [
+    {
+      "when": "15:54 UTC, before any change",
+      "call": "POST /functions/v1/search-lessons, no apikey and no Authorization header",
+      "result": "200, streamed a real gemini-2.5-flash completion",
+      "meaning": "any caller who knows the URL could spend the AI key without limit"
+    },
+    {
+      "when": "15:58 UTC, after deploy",
+      "call": "same unauthenticated POST",
+      "result": "200, and the live function wrote row bucket='search-lessons:<caller ip>' hits=1",
+      "meaning": "the counter is written by production, not by the test"
+    },
+    {
+      "when": "16:00 UTC",
+      "setup": "counter for this caller set to 20 (the cap) for both buckets",
+      "call": "POST search-lessons and POST chat",
+      "result": "429 on both, Retry-After: 3600, body {\"error\":\"יותר מדי בקשות מהכתובת הזו. נסו שוב בעוד שעה.\"}",
+      "meaning": "the cap refuses before the AI gateway is called, so a blocked request costs nothing"
+    },
+    {
+      "when": "16:01 UTC",
+      "setup": "test counter rows deleted",
+      "call": "POST search-lessons and POST chat",
+      "result": "200 on both, real streamed answers (1720 and 2998 bytes)",
+      "meaning": "the public feature still works for a visitor who is not logged in"
+    }
+  ],
+  "not_measured": [
+    "The 21st through 20th-per-hour boundary was not walked one call at a time — that would have spent 20 real AI calls. The counter itself was proven to increment and to flip allowed=false at the limit directly against the RPC (hits 1,2,3 against p_limit=2), and the 429 branch was proven end-to-end against production.",
+    "Rate limiting is per IP, so callers behind one NAT share a bucket and a caller with many IPs can still spread load. It caps the wallet against the cheap attack, it is not an identity check — system 21 has no customer login surface today (see #172 pattern)."
+  ],
+  "fail_open": "If the RPC errors the request is allowed and the failure is logged. A counter outage must not take a live public chat down.",
+  "test_mode": "No charge, no message sent, no account created. Only rate-counter rows were written and they were deleted."
+}

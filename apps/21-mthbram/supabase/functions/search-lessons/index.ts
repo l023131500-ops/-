@@ -7,6 +7,10 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+// Requests per hour, per caller IP. Enough for a real search conversation,
+// far below what draining the AI credit would take.
+const RATE_LIMIT_PER_HOUR = 20;
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -23,6 +27,38 @@ serve(async (req) => {
     }
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+
+    // Rate limit per caller IP — this function spends LOVABLE_API_KEY credits and runs
+    // with verify_jwt=false, so without a cap anyone who knows the URL can drain it.
+    const ip =
+      (req.headers.get("x-forwarded-for") ?? "").split(",")[0].trim() || "unknown";
+    const windowStart = new Date(
+      Math.floor(Date.now() / 3_600_000) * 3_600_000
+    ).toISOString();
+    const { data: gate, error: gateError } = await supabase.rpc("ai_rate_limit_hit", {
+      p_bucket: `search-lessons:${ip}`,
+      p_window_start: windowStart,
+      p_limit: RATE_LIMIT_PER_HOUR,
+    });
+    if (gateError) {
+      // Fail open: a counter problem must not take the live chat down.
+      console.error("rate limit check failed:", gateError.message);
+    } else if (gate?.[0]?.allowed === false) {
+      console.warn(`rate limited ${ip}: ${gate[0].hits} hits this hour`);
+      return new Response(
+        JSON.stringify({
+          error: "יותר מדי בקשות מהכתובת הזו. נסו שוב בעוד שעה.",
+        }),
+        {
+          status: 429,
+          headers: {
+            ...corsHeaders,
+            "Content-Type": "application/json",
+            "Retry-After": "3600",
+          },
+        }
+      );
+    }
 
     // Fetch all approved lessons
     const { data: lessons } = await supabase
