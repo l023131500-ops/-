@@ -263,7 +263,36 @@ const SynagogueCarousel = ({ synagogues }: { synagogues: SynagogueDB[] }) => {
 
   const visible = getVisible();
 
-  if (totalSynagogues === 0) return null;
+  /* המקטע הזה הוא כל תוכן העמוד — כותרת המקטע נשארה על המסך גם כשאין ולו
+     בית כנסת אחד, והקרוסלה החזירה null. התוצאה בייצור הייתה שטח לבן ריק
+     בגובה שני מסכים מתחת ל"לחצו על בית כנסת לפרטים מלאים", בלי מילה אחת
+     שמסבירה אותו — נראה כאילו העמוד נשבר בטעינה. אין להמציא בתי כנסת, ולכן
+     מה שנאמר כאן הוא המצב עצמו ומה שפותח אותו. */
+  if (totalSynagogues === 0) {
+    return (
+      <div
+        className="rounded-3xl bg-card/90 shadow-card ring-1 ring-border/40 px-6 py-12 text-center"
+        role="status"
+      >
+        <div className="w-14 h-14 rounded-2xl bg-primary/10 text-primary ring-1 ring-primary/15 flex items-center justify-center mx-auto mb-4">
+          <MapPin className="w-6 h-6" />
+        </div>
+        <h3 className="font-display font-black text-foreground text-lg">
+          עדיין לא נרשם כאן אף בית כנסת
+        </h3>
+        <p className="text-muted-foreground text-sm mt-2 max-w-md mx-auto leading-relaxed">
+          כל בית כנסת מופיע כאן ברגע שהגבאי שלו ממלא את הטופס — זמני התפילות,
+          השיעורים, הפעילות ופרטי הקשר.
+        </p>
+        <Link
+          to="/gabai"
+          className="inline-flex items-center gap-2 mt-6 bg-primary text-primary-foreground px-5 py-2.5 rounded-2xl font-display font-bold text-sm hover:shadow-elevated transition-shadow"
+        >
+          <Send className="w-4 h-4" /> כניסה לפורטל גבאים
+        </Link>
+      </div>
+    );
+  }
 
   return (
     <div

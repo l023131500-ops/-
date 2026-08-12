@@ -42,6 +42,17 @@ const PrayersTicker = () => {
         <p className="text-[10px] text-primary-foreground/60 mt-0.5">כל בתי הכנסת</p>
       </div>
 
+      {/* בלי אף תפילה רשומה זה היה כותרת מעל עמודה לבנה בגובה 75vh, שנראית
+          כמו רכיב שנתקע בטעינה. אותו מצב בדיוק מתקיים היום בייצור. */}
+      {allPrayers.length === 0 ? (
+        <div className="flex-1 flex items-center justify-center px-4 py-6 text-center">
+          <p className="text-muted-foreground text-[11px] leading-relaxed">
+            אין עדיין זמני תפילה רשומים.
+            <br />
+            הם יופיעו כאן ברגע שגבאי ימלא אותם.
+          </p>
+        </div>
+      ) : (
       <div className="flex-1 overflow-hidden relative">
         <div className="absolute top-0 left-0 right-0 h-6 bg-gradient-to-b from-card to-transparent z-10 pointer-events-none" />
         <div className="absolute bottom-0 left-0 right-0 h-6 bg-gradient-to-t from-card to-transparent z-10 pointer-events-none" />
@@ -80,6 +91,7 @@ const PrayersTicker = () => {
           })}
         </motion.div>
       </div>
+      )}
     </div>
   );
 };
