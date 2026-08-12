@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { ArrowRight, LogIn, ShieldCheck } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { Field, Input } from "@/components/ui/Field";
+import { PasswordInput } from "@/components/ui/PasswordInput";
 import { Button } from "@/components/ui/Button";
 
 export function AdminLogin({ target = "/admin", title = "כניסת מנהל" }: { target?: string; title?: string }) {
@@ -50,7 +51,7 @@ export function AdminLogin({ target = "/admin", title = "כניסת מנהל" }:
               <Input id="email" name="email" type="email" required autoComplete="email" className="bg-white/10 text-white placeholder:text-white/40" placeholder="admin@chatzor" />
             </Field>
             <Field label="סיסמה" htmlFor="password" required>
-              <Input id="password" name="password" type="password" required={!isDemo} autoComplete="current-password" className="bg-white/10 text-white placeholder:text-white/40" placeholder="••••••••" />
+              <PasswordInput id="password" name="password" required={!isDemo} autoComplete="current-password" className="bg-white/10 text-white placeholder:text-white/40" placeholder="••••••••" />
             </Field>
             {error && <p className="text-sm text-red-300">{error}</p>}
             <Button type="submit" variant="gold" size="lg" disabled={submitting} className="w-full">
