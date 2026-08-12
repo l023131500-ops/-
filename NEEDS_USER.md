@@ -585,6 +585,11 @@ Supabase **`csjekrvukbdznetsrodj`**, שאינו נגיש מכאן (רשימת ה
 הוא היה מציג רק פניות שהוקלדו באותו דפדפן. briut יורדת מהכותרת "הפריט הזול
 ברשימה" ודורשת נתיב צד-שרת כמו שאר השבע. `core.issues #86`.
 
+> **נמדד שוב 12/08 — המחיקה האחת עדיין דרושה ממך, ולא השתנה כלום.** עם ה-anon key:
+> `GET kupot_leads` → **401** (`permission denied`, hint: `GRANT SELECT … TO anon`);
+> `DELETE kupot_leads?source=eq.qa-anon-probe-0807` → **401** (hint: `GRANT SELECT, DELETE … TO anon`).
+> כלומר המפתח היחיד שיש לאתר עדיין insert-only, ולכן אינו יכול לא לקרוא ולא למחוק את שורת ה-QA — צריך עדיין מחיקה ידנית אחת ב-Table Editor. ראיות: `QA/platform/needs-user-nonenv-sweep-0812/`.
+
 ---
 
 ## 🔴 0י. סיסמת אדמין אחת, בטקסט גלוי, בשני קבצים בריפו הציבורי (07/08/2026)
@@ -1849,6 +1854,9 @@ Site URL ו-Redirect URLs אומתו כנכונים. ראיות מלאות ב-`Q
 > ה-anon key של `csjekrvu` אכן מוטמע בקוד הציבורי (אומת:
 > `apps/06-kupot-holim/site/supabase-config.js`, `role=anon`), כך שהפרצה
 > פתוחה בדיוק כפי שתוארה.
+>
+> **נמדד שוב 12/08 — עדיין פתוחה, וזו מדידה חיה לא הנחה.** עם ה-anon key:
+> `GET recordings` → 206 (`Content-Range 0-0/1138`); `DELETE …?id=eq.<uuid בלתי-אפשרי>` → **200** (ה-grant קיים ו-RLS לא חוסם, פשוט לא נמצאה שורה תואמת); `PATCH` באותו תנאי → **200**; `POST recordings {}` → **201**. את השורה הריקה שנוצרה (`941d6319-…`, נוצרה 06:09:38Z) מחקתי מיד לפי id והספירה חזרה בדיוק ל-1138 — כלום לא נגע חוץ מזה. כלומר: חלפו תשעה ימים והפרצה זהה. עדיין לא ניתן לתקן מכאן (חשבון Supabase אחר). ראיות: `QA/platform/needs-user-nonenv-sweep-0812/`.
 
 ---
 
