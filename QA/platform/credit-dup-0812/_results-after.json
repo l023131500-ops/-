@@ -1,0 +1,207 @@
+﻿[
+  {
+    "url": "https://more30.com/torah",
+    "status": 200,
+    "serverRenderedCredits": 0,
+    "anchors": [],
+    "willDuplicate": false,
+    "wrongTarget": []
+  },
+  {
+    "url": "https://more30.com/tamlul",
+    "status": 200,
+    "serverRenderedCredits": 0,
+    "anchors": [],
+    "willDuplicate": false,
+    "wrongTarget": []
+  },
+  {
+    "url": "https://more30.com/modaot",
+    "status": 200,
+    "serverRenderedCredits": 0,
+    "anchors": [],
+    "willDuplicate": false,
+    "wrongTarget": []
+  },
+  {
+    "url": "https://more30.com/imud",
+    "status": 200,
+    "serverRenderedCredits": 0,
+    "anchors": [],
+    "willDuplicate": false,
+    "wrongTarget": []
+  },
+  {
+    "url": "https://more30.com/briut",
+    "status": 200,
+    "serverRenderedCredits": 0,
+    "anchors": [],
+    "willDuplicate": false,
+    "wrongTarget": []
+  },
+  {
+    "url": "https://more30.com/bkalot",
+    "status": 200,
+    "serverRenderedCredits": 0,
+    "anchors": [],
+    "willDuplicate": false,
+    "wrongTarget": []
+  },
+  {
+    "url": "https://more30.com/smel",
+    "status": 200,
+    "serverRenderedCredits": 0,
+    "anchors": [],
+    "willDuplicate": false,
+    "wrongTarget": []
+  },
+  {
+    "url": "https://more30.com/smachot",
+    "status": 200,
+    "serverRenderedCredits": 0,
+    "anchors": [],
+    "willDuplicate": false,
+    "wrongTarget": []
+  },
+  {
+    "url": "https://more30.com/egod",
+    "status": 200,
+    "serverRenderedCredits": 0,
+    "anchors": [],
+    "willDuplicate": false,
+    "wrongTarget": []
+  },
+  {
+    "url": "https://more30.com/chatzor",
+    "status": 200,
+    "serverRenderedCredits": 0,
+    "anchors": [],
+    "willDuplicate": false,
+    "wrongTarget": []
+  },
+  {
+    "url": "https://more30.com/chizukim",
+    "status": 200,
+    "serverRenderedCredits": 0,
+    "anchors": [],
+    "willDuplicate": false,
+    "wrongTarget": []
+  },
+  {
+    "url": "https://more30.com/orech",
+    "status": 200,
+    "serverRenderedCredits": 0,
+    "anchors": [],
+    "willDuplicate": false,
+    "wrongTarget": []
+  },
+  {
+    "url": "https://more30.com/mthbram",
+    "status": 200,
+    "serverRenderedCredits": 0,
+    "anchors": [],
+    "willDuplicate": false,
+    "wrongTarget": []
+  },
+  {
+    "url": "https://more30.com/zchuyot",
+    "status": 200,
+    "serverRenderedCredits": 0,
+    "anchors": [],
+    "willDuplicate": false,
+    "wrongTarget": []
+  },
+  {
+    "url": "https://more30.com/galil",
+    "status": 200,
+    "serverRenderedCredits": 0,
+    "anchors": [],
+    "willDuplicate": false,
+    "wrongTarget": []
+  },
+  {
+    "url": "https://more30.com/studio",
+    "status": 200,
+    "serverRenderedCredits": 0,
+    "anchors": [],
+    "willDuplicate": false,
+    "wrongTarget": []
+  },
+  {
+    "url": "https://more30.com/mechiron",
+    "status": 200,
+    "serverRenderedCredits": 0,
+    "anchors": [],
+    "willDuplicate": false,
+    "wrongTarget": []
+  },
+  {
+    "url": "https://more30.com/kupot",
+    "status": 200,
+    "serverRenderedCredits": 0,
+    "anchors": [],
+    "willDuplicate": false,
+    "wrongTarget": []
+  },
+  {
+    "url": "https://more30.com/crm",
+    "status": 200,
+    "serverRenderedCredits": 0,
+    "anchors": [],
+    "willDuplicate": false,
+    "wrongTarget": []
+  },
+  {
+    "url": "https://more30.com/gesher",
+    "status": 200,
+    "serverRenderedCredits": 0,
+    "anchors": [],
+    "willDuplicate": false,
+    "wrongTarget": []
+  },
+  {
+    "url": "https://more30.com/nadlan",
+    "status": 200,
+    "serverRenderedCredits": 0,
+    "anchors": [],
+    "willDuplicate": false,
+    "wrongTarget": []
+  },
+  {
+    "url": "https://more30.com/kesef",
+    "status": 200,
+    "serverRenderedCredits": 0,
+    "anchors": [],
+    "willDuplicate": false,
+    "wrongTarget": []
+  },
+  {
+    "url": "https://more30.com/kiosk",
+    "status": 200,
+    "serverRenderedCredits": 0,
+    "anchors": [],
+    "willDuplicate": false,
+    "wrongTarget": []
+  },
+  {
+    "url": "https://more30.com/tivuch",
+    "status": 200,
+    "serverRenderedCredits": 0,
+    "anchors": [],
+    "willDuplicate": false,
+    "wrongTarget": []
+  },
+  {
+    "url": "https://more30.com/gannenet",
+    "status": 200,
+    "serverRenderedCredits": 1,
+    "anchors": [
+      {
+        "href": "https://more30.com/showcase",
+        "hasCreditClass": true
+      }
+    ],
+    "willDuplicate": false,
+    "wrongTarget": []
+  }
+]
