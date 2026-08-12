@@ -1,17 +1,37 @@
 import { NextRequest, NextResponse } from "next/server";
-import { listUploaded, uploadItem, supabaseReady } from "@/lib/supabase";
+import { listUploaded, listUploadedBy, uploadItem, supabaseReady } from "@/lib/supabase";
 import { readOverrides, applyOverrides } from "@/lib/overrides";
 import { MAX_UPLOAD_BYTES, isAcceptedType, TOO_LARGE_MSG, BAD_TYPE_MSG } from "@/lib/upload-limits";
-import { callerFromRequest, AUTH_REQUIRED_MSG } from "@/lib/require-user";
+import { callerFromRequest, AUTH_REQUIRED_MSG, MINE_AUTH_REQUIRED_MSG } from "@/lib/require-user";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const overrides = await readOverrides();
+
+  // `?mine=1` — מה שהקוראת הזאת עצמה העלתה, ורק היא. זה מה שהכניסה פותחת מעבר
+  // להעלאה עצמה, ולכן הוא נשאל באותה בדיקת טוקן: בלי חשבון אין "שלי".
+  if (req.nextUrl.searchParams.get("mine") === "1") {
+    const caller = await callerFromRequest(req);
+    if (!caller) return NextResponse.json({ error: MINE_AUTH_REQUIRED_MSG }, { status: 401 });
+    // כאן, בשונה מהמדף הציבורי, חומר שהוסתר לא נעלם אלא מסומן: המעלה צריכה
+    // לדעת שהחומר שלה כבר לא מוצג, ולא לחשוב שהוא נעלם מהמערכת.
+    const items = (await listUploadedBy(caller.id)).map((i) => {
+      const o = overrides[i.id];
+      return {
+        ...i,
+        ...(o?.hiddenPages?.length ? { hiddenPages: o.hiddenPages } : {}),
+        ...(o?.hidden ? { hidden: true } : {}),
+      };
+    });
+    return NextResponse.json({ ready: supabaseReady, items });
+  }
+
   // Overrides apply to uploaded material too. /shelf/[id] has always honoured
   // them; this list did not, so a hidden upload kept its card (and its download
   // button, which links straight at the file) on the shelf.
-  const items = applyOverrides(await listUploaded(), await readOverrides());
+  const items = applyOverrides(await listUploaded(), overrides);
   return NextResponse.json({ ready: supabaseReady, items });
 }
 
@@ -53,7 +73,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: BAD_TYPE_MSG }, { status: 400 });
     }
 
-    const result = await uploadItem({ title, category, sender, file });
+    const result = await uploadItem({ title, category, sender, file, uploader: caller });
     if ("error" in result) return NextResponse.json({ error: result.error }, { status: 500 });
     return NextResponse.json({ ok: true, item: result.item });
   } catch (e: any) {

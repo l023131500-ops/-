@@ -22,6 +22,9 @@ export type Caller = { id: string; email: string | null };
 export const AUTH_REQUIRED_MSG =
   "כדי להוסיף חומר למדף יש להתחבר לחשבון more30. הצפייה וההורדה נשארות פתוחות לכולם.";
 
+export const MINE_AUTH_REQUIRED_MSG =
+  "כדי לראות את החומרים שהעליתם יש להתחבר לחשבון more30.";
+
 export async function callerFromRequest(req: Request): Promise<Caller | null> {
   const token = /^Bearer\s+(.+)$/i.exec(req.headers.get("authorization") || "")?.[1]?.trim();
   if (!token || !URL_ || !KEY_) return null;

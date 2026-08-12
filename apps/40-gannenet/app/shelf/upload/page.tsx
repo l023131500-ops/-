@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { CATEGORY_ORDER } from "@/lib/catalog";
 import { withBase } from "@/lib/base";
+import { sessionToken, authLinks } from "@/lib/session";
 import {
   MAX_UPLOAD_BYTES,
   MAX_UPLOAD_LABEL,
@@ -33,26 +34,6 @@ async function readError(res: Response): Promise<string> {
   return `שגיאה בהעלאה (${res.status}).`;
 }
 
-/**
- * הסשן של הכניסה המשותפת. `auth-button.js` (שנטען ב-layout) כותב אותו
- * ל-localStorage תחת `more30-auth`, וכל המערכות מוגשות תחת more30.com — origin
- * אחד — ולכן אין כאן כניסה נפרדת ואין תלות ב-supabase-js. הטוקן נבדק בשרת מול
- * `/auth/v1/user` (lib/require-user.ts); מה שנעשה כאן הוא רק שלא נשלח טופס
- * שממילא ייענה 401, ושהגננת תדע מראש שצריך חשבון.
- */
-function sessionToken(): string | null {
-  try {
-    const raw = localStorage.getItem("more30-auth");
-    if (!raw) return null;
-    const s = JSON.parse(raw);
-    if (!s || !s.access_token) return null;
-    if (s.expires_at && s.expires_at * 1000 <= Date.now()) return null;
-    return String(s.access_token);
-  } catch {
-    return null;
-  }
-}
-
 export default function UploadPage() {
   const [ready, setReady] = useState<boolean | null>(null);
   const [signedIn, setSignedIn] = useState<boolean | null>(null);
@@ -71,11 +52,9 @@ export default function UploadPage() {
       .then((d) => setReady(Boolean(d.ready)))
       .catch(() => setReady(false));
     setSignedIn(Boolean(sessionToken()));
-    // אותם קישורים שהכפתור המשותף בונה, כולל `from` — כדי שהכניסה תחזיר את
-    // הגננת בדיוק לעמוד הזה ולא לדף הבית של הפורטל.
-    const from = encodeURIComponent(location.href);
-    setLoginHref(`https://more30.com/login?from=${from}`);
-    setSignupHref(`https://more30.com/login?mode=signup&from=${from}`);
+    const links = authLinks();
+    setLoginHref(links.login);
+    setSignupHref(links.signup);
   }, []);
 
   // Checked here and not only on the server: a file over the limit used to be
@@ -143,7 +122,10 @@ export default function UploadPage() {
 
   return (
     <div className="container-r" style={{ padding: "34px 20px 60px", maxWidth: 640 }}>
-      <Link href="/shelf" style={{ color: "#2b4a8b", fontWeight: 600 }}>→ חזרה למדף הגננת</Link>
+      <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
+        <Link href="/shelf" style={{ color: "#2b4a8b", fontWeight: 600 }}>→ חזרה למדף הגננת</Link>
+        <Link href="/shelf/mine" style={{ color: "#2b4a8b", fontWeight: 600 }}>החומרים שלי</Link>
+      </div>
       <h1 style={{ fontSize: 30, fontWeight: 800, marginTop: 14 }}>הוספת חומר למדף</h1>
       <p style={{ color: "#6d6f88", marginTop: 6, lineHeight: 1.7 }}>
         העלו דף עבודה, דף צביעה, יצירה או חומר חג (PDF או תמונה, עד {MAX_UPLOAD_LABEL}). החומר יתווסף למדף לצפייה והורדה.
@@ -198,6 +180,14 @@ export default function UploadPage() {
         {msg && (
           <div style={{ padding: "10px 14px", borderRadius: 10, fontSize: 14, background: msg.type === "ok" ? "#e2f3f0" : "#f8e8ee", color: msg.type === "ok" ? "#1f6a62" : "#a03a5c" }}>
             {msg.text}
+            {msg.type === "ok" && (
+              <>
+                {" "}
+                <Link href="/shelf/mine" style={{ color: "#1f6a62", fontWeight: 700, textDecoration: "underline" }}>
+                  לחומרים שלי
+                </Link>
+              </>
+            )}
           </div>
         )}
 

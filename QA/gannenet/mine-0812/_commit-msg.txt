@@ -1,0 +1,43 @@
+40 gannenet: the account could add material to the shelf and never see what it had added
+
+The previous step closed the shelf's one write path behind the shared login, so
+every upload now carries an uploader_id written from the token the server
+verified. What the teacher got back for signing in was a form she is allowed to
+submit — and nothing else. The public shelf holds thousands of items with no way
+to ask "which of these are mine", so the account cost a login and returned
+nothing.
+
+/shelf/mine is that answer, and it is the first surface in this system that
+exists only for a signed-in user.
+
+- app/shelf/mine/page.tsx — the same cards as the shelf, a sign-in card for
+  anyone without a session, an empty state that leads to the upload form, and a
+  "hidden from the shelf" chip on material the staff has hidden: the uploader
+  needs to know it is no longer shown rather than think the upload failed.
+- app/api/catalog/route.ts — GET ?mine=1, behind the same token check as the
+  upload. The filtering runs on the server; the browser never receives the full
+  list and never filters it itself. The public GET is untouched.
+- lib/supabase.ts — listUploadedBy(uploaderId). An empty id returns an empty
+  list rather than everything, so a fault on the calling side cannot turn "mine"
+  into everyone's shelf. entryToItem() does not carry uploader_email onward, so
+  the uploader's address leaves no response.
+- lib/session.ts — the shared-session read (more30-auth) and the login links
+  with ?from=, lifted out of /shelf/upload. Two screens reading the session two
+  ways are two screens that will disagree about whether the user is signed in.
+- app/shelf/upload/page.tsx — links to "my material" at the top and inside the
+  success message.
+
+Verified against production after deploy (QA/gannenet/mine-0812/, re-runnable
+verify-production.mjs, every request cache-busted): /shelf/mine 200; ?mine=1 401
+with no header and 401 with a bogus token; the public catalog still 200; ?mine=1
+with a real token for the official test user 200 with items=[]; uploader_email
+absent from the body. items=[] is the true number — the whole shelf reports 0
+uploads. tsc --noEmit 0, next build 0 with /shelf/mine among the built routes.
+
+Not verified, and recorded as such: the list has never been seen with an item in
+it. That needs a real file written to a live shelf, and removing it depends on
+SUPABASE_SERVICE_ROLE_KEY being set in 40's Vercel environment, which is still
+unchecked — the same caveat the previous step carried.
+
+Test mode: nothing sent, no user created, no charge, no object written to
+storage. Protected systems untouched.
