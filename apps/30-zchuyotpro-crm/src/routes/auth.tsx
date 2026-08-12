@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
+import { authErrorMessage } from "@/lib/authErrors";
 import { Eye, EyeOff, Loader2, ShieldCheck } from "lucide-react";
 
 export const Route = createFileRoute("/auth")({
@@ -92,7 +93,7 @@ function SignInForm() {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     setLoading(false);
     if (error) {
-      toast.error("שגיאת התחברות", { description: error.message });
+      toast.error("שגיאת התחברות", { description: authErrorMessage(error) });
       return;
     }
     toast.success("התחברת בהצלחה");
@@ -106,7 +107,7 @@ function SignInForm() {
     });
     setResetLoading(false);
     if (error) {
-      toast.error("שגיאה בשליחת המייל", { description: error.message });
+      toast.error("שגיאה בשליחת המייל", { description: authErrorMessage(error) });
       return;
     }
     toast.success("נשלח מייל לאיפוס סיסמה", { description: "בדקו את תיבת הדואר שלכם." });
@@ -202,7 +203,7 @@ function SignUpForm() {
     });
     setLoading(false);
     if (error) {
-      toast.error("שגיאת הרשמה", { description: error.message });
+      toast.error("שגיאת הרשמה", { description: authErrorMessage(error) });
       return;
     }
     toast.success("נרשמת בהצלחה", { description: "בדקו את תיבת המייל לאישור." });

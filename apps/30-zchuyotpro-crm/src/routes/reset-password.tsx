@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
+import { authErrorMessage } from "@/lib/authErrors";
 import { Eye, EyeOff, Loader2, ShieldCheck } from "lucide-react";
 
 export const Route = createFileRoute("/reset-password")({
@@ -49,7 +50,7 @@ function ResetPasswordPage() {
     const { error } = await supabase.auth.updateUser({ password });
     setLoading(false);
     if (error) {
-      toast.error("שגיאה בעדכון הסיסמה", { description: error.message });
+      toast.error("שגיאה בעדכון הסיסמה", { description: authErrorMessage(error) });
       return;
     }
     toast.success("הסיסמה עודכנה בהצלחה");
