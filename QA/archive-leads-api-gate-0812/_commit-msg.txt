@@ -1,0 +1,40 @@
+lux-manage (archived, #170): the whole leads table was readable with no key at all, and the blocker holding it was already obsolete
+
+GET /functions/v1/leads-api on zwxwteebcoejrjdufzsv, with no apikey and no
+Authorization header, returned 200 and the entire leads table -- name, email,
+phone, message -- total=6. The function built a service_role client and checked
+nothing; the comment above the handler claimed auth was required and that check
+was never written.
+
+The fix has sat written-but-undeployed for two days behind "no Supabase CLI, no
+SUPABASE_ACCESS_TOKEN, the MCP shows only uhnrgujbdxhhmoxcjria". Four satellite
+projects have since been deployed from here through Lovable (#160, #161, #165,
+#190), so the question was not how to deploy but whether this project has a
+Lovable twin. It does: supabase/config.toml in lux-manage (b095c3d6) is one
+line, project_id = "zwxwteebcoejrjdufzsv".
+
+Deployed via Lovable, one file, commit b230a60e, 0 credits. The gate covers GET
+and PUT only and fails closed: with no LEADS_API_KEY in the environment the
+reader is off, which is the correct resting state for a service_role endpoint on
+a project nobody owns. POST stays fully open -- it is the public contact form and
+only writes.
+
+Measured against production, four legs: GET with no headers 200+6 leads -> 403
+(x3); GET with a wrong x-api-key -> 403; PUT with an empty leads array -> 403
+before req.json(); POST with an empty object -> 400 from its own validation,
+unchanged and writing no row. OPTIONS still 200 with x-api-key in
+Access-Control-Allow-Headers.
+
+Not measured and not claimed: the 401 branch, which needs LEADS_API_KEY set --
+deliberately left unset, so 403 precedes it. AdminLeads.tsx falls back to a
+direct leads select under RLS when the function is not ok, read in source, not
+run: the archived app has no deployed site. The other nine deployed archived
+functions were not probed one by one.
+
+Test mode: no charge, no message, no account, no row written to a live table.
+Protected systems untouched.
+
+Evidence QA/archive-leads-api-gate-0812/. NEEDS_USER 0shin-prime now records the
+leak as closed and its CLI commands as not-to-be-run; what remains there is only
+the ownership question -- zwxwteebcoejrjdufzsv is in no core.projects row and has
+no site.

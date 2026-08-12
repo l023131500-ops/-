@@ -261,7 +261,21 @@ Settings → Environment Variables → להסתכל בערך של `SUPABASE_URL`
 
 ---
 
-## 🔴 0ש′. `lux-manage` (מאורכב) — `leads-api` מחזיר את כל טבלת הלידים לכל אחד — 12/08/2026
+## 🟢 0ש′. `lux-manage` (מאורכב) — `leads-api` החזיר את כל טבלת הלידים לכל אחד — **נסגר בייצור 12/08/2026**
+
+> **עדכון 12/08 ערב — הדליפה סגורה, ואין כאן יותר חסם.** החסם למטה ("צריך Supabase
+> CLI ו-`SUPABASE_ACCESS_TOKEN`") היה מיותר: `supabase/config.toml` בפרויקט Lovable
+> `lux-manage` מצביע על `project_id = "zwxwteebcoejrjdufzsv"` — כלומר יש לפרויקט הזה
+> נתיב פריסה מכאן, בדיוק כמו ב-#160/#161/#165/#190. השער נפרס (Lovable commit
+> `b230a60e`, 0 קרדיט), ואותה `GET` בלי שום כותרת שהחזירה `200` + 6 לידים מחזירה
+> עכשיו `403 leads-api reader disabled`. `PUT` גם הוא `403`; `POST` (טופס יצירת הקשר
+> הציבורי) ממשיך לעבוד ללא שינוי ולא נכתבה שום שורה. ראיות:
+> `QA/archive-leads-api-gate-0812/`.
+>
+> **מה שנשאר כאן שלך, וזה לא דחוף:** `zwxwteebcoejrjdufzsv` אינו רשום ב-`core.projects`
+> ואין לו אתר פרוס — פרויקט Supabase חי שאיש אינו מחזיק. מחיקתו סוגרת את הנושא לתמיד;
+> להשאיר אותו זה בסדר גם כן, עכשיו כשהקורא כבוי. **אין צורך להריץ את פקודות ה-CLI למטה.**
+> אם בעתיד יידרש צרכן חיצוני שקורא לידים — אז, ורק אז, יש להגדיר `LEADS_API_KEY`.
 
 **מה נמדד.** `GET https://zwxwteebcoejrjdufzsv.supabase.co/functions/v1/leads-api`
 **בלי `apikey` ובלי `Authorization` כלל** החזיר `200` ואת תוכן טבלת `leads`:
@@ -285,8 +299,10 @@ Settings → Environment Variables → להסתכל בערך של `SUPABASE_URL`
 (`ContactSection.tsx`, `PublicConciergeBot.tsx`), והוא רק כותב. `verify_jwt` לבדו לא
 היה סוגר את הקריאה — מאותה סיבה כמו #161/#167: מפתח ה-anon הוא JWT תקין שנשלח לכל דפדפן.
 
-**מה אתה צריך לעשות.** לפרוס. אין Supabase CLI במכונה הזאת, אין `SUPABASE_ACCESS_TOKEN`,
-וה-MCP מציג רק `uhnrgujbdxhhmoxcjria`. **עד שזה יורץ, הגרסה הפתוחה חיה.**
+**מה נכתב כאן ב-12/08 בבוקר, ואינו נדרש עוד** (נשמר כדי שיהיה ברור מה השתנה):
+לפרוס ידנית. הונח שאין Supabase CLI במכונה הזאת, אין `SUPABASE_ACCESS_TOKEN`,
+וה-MCP מציג רק `uhnrgujbdxhhmoxcjria` — ולכן שהגרסה הפתוחה חיה עד שהמשתמש ירוץ.
+**זה נפרס מכאן דרך Lovable בערב אותו יום. אל תריץ את שלוש הפקודות האלה.**
 
 ```bash
 supabase link --project-ref zwxwteebcoejrjdufzsv
