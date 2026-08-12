@@ -1,0 +1,672 @@
+{
+  "summary": {
+    "scanned_at_utc": "2026-08-12T09:10:46.661Z",
+    "live_systems": 24,
+    "with_own_password_screen": 7,
+    "shared_login_only": 16,
+    "supabase_auth": 3,
+    "custom_hash": [
+      "zchuyot",
+      "kiosk"
+    ],
+    "plain_compare": [],
+    "unclassified": [
+      "briut",
+      "galil"
+    ],
+    "source_not_in_repo": [
+      "kesef"
+    ],
+    "needs_manual_read": [
+      "briut",
+      "zchuyot",
+      "galil",
+      "kiosk"
+    ],
+    "manual_read_still_missing": [],
+    "hash_mismatch_found": []
+  },
+  "results": [
+    {
+      "number": "01",
+      "slug": "torah",
+      "dir": "01-torah-platform",
+      "present": true,
+      "source_in_repo": true,
+      "files_scanned": 196,
+      "own_password_screens": 5,
+      "screens": [
+        "01-torah-platform/src/pages/auth/ActivateInvite.tsx",
+        "01-torah-platform/src/pages/auth/SignIn.tsx",
+        "01-torah-platform/src/pages/auth/SignUp.tsx",
+        "01-torah-platform/src/pages/legacy/AdminLogin.tsx",
+        "01-torah-platform/src/pages/portal/Settings.tsx"
+      ],
+      "credential_path": "supabase-auth",
+      "needs_manual_read": false,
+      "manual_verdict": null,
+      "evidence": {
+        "supabase_auth": [
+          {
+            "file": "01-torah-platform/src/hooks/useAuth.tsx",
+            "hit": "signInWithPassword("
+          },
+          {
+            "file": "01-torah-platform/src/pages/legacy/AdminLogin.tsx",
+            "hit": "signInWithPassword("
+          },
+          {
+            "file": "01-torah-platform/src/pages/public/Invite.tsx",
+            "hit": "signInWithPassword("
+          }
+        ],
+        "custom_hash": [],
+        "plain_compare": []
+      }
+    },
+    {
+      "number": "02",
+      "slug": "tamlul",
+      "dir": "02-igud-transcribe",
+      "present": true,
+      "source_in_repo": true,
+      "files_scanned": 33,
+      "own_password_screens": 0,
+      "screens": [],
+      "credential_path": "shared-login-only",
+      "needs_manual_read": false,
+      "manual_verdict": null,
+      "evidence": {
+        "supabase_auth": [
+          {
+            "file": "02-igud-transcribe/app/login/page.tsx",
+            "hit": "signInWithPassword("
+          }
+        ],
+        "custom_hash": [],
+        "plain_compare": []
+      }
+    },
+    {
+      "number": "03",
+      "slug": "modaot",
+      "dir": "03-igud-ads",
+      "present": true,
+      "source_in_repo": true,
+      "files_scanned": 94,
+      "own_password_screens": 0,
+      "screens": [],
+      "credential_path": "shared-login-only",
+      "needs_manual_read": false,
+      "manual_verdict": null,
+      "evidence": {
+        "supabase_auth": [
+          {
+            "file": "03-igud-ads/app/login/page.tsx",
+            "hit": "signInWithPassword("
+          }
+        ],
+        "custom_hash": [],
+        "plain_compare": []
+      }
+    },
+    {
+      "number": "04",
+      "slug": "imud",
+      "dir": "04-imud-torani",
+      "present": true,
+      "source_in_repo": true,
+      "files_scanned": 98,
+      "own_password_screens": 0,
+      "screens": [],
+      "credential_path": "shared-login-only",
+      "needs_manual_read": false,
+      "manual_verdict": null,
+      "evidence": {
+        "supabase_auth": [],
+        "custom_hash": [],
+        "plain_compare": []
+      }
+    },
+    {
+      "number": "06",
+      "slug": "briut",
+      "dir": "06-kupot-holim",
+      "present": true,
+      "source_in_repo": true,
+      "files_scanned": 6,
+      "own_password_screens": 1,
+      "screens": [
+        "06-kupot-holim/site/admin.html"
+      ],
+      "credential_path": "unclassified",
+      "needs_manual_read": true,
+      "manual_verdict": {
+        "read_on": "2026-08-12",
+        "hash_mismatch": false,
+        "finding": "אין נתיב אישורים כלל, בכוונה: site/admin.js דוחה כל התחברות (\"התחברות לניהול אינה מוגדרת בסביבה זו\"), החלטה מ-07/08/2026, כי כל סיסמה בקובץ סטטי הייתה גלויה לכל מבקר. יש שדה סיסמה ואין מה להשוות אליו."
+      },
+      "evidence": {
+        "supabase_auth": [],
+        "custom_hash": [],
+        "plain_compare": []
+      }
+    },
+    {
+      "number": "10",
+      "slug": "bkalot",
+      "dir": "10-bkalot-rights",
+      "present": true,
+      "source_in_repo": true,
+      "files_scanned": 4,
+      "own_password_screens": 0,
+      "screens": [],
+      "credential_path": "shared-login-only",
+      "needs_manual_read": false,
+      "manual_verdict": null,
+      "evidence": {
+        "supabase_auth": [],
+        "custom_hash": [],
+        "plain_compare": []
+      }
+    },
+    {
+      "number": "12",
+      "slug": "smel",
+      "dir": "12-smel-ndln",
+      "present": true,
+      "source_in_repo": true,
+      "files_scanned": 77,
+      "own_password_screens": 0,
+      "screens": [],
+      "credential_path": "shared-login-only",
+      "needs_manual_read": false,
+      "manual_verdict": null,
+      "evidence": {
+        "supabase_auth": [],
+        "custom_hash": [],
+        "plain_compare": []
+      }
+    },
+    {
+      "number": "14",
+      "slug": "smachot",
+      "dir": "14-bsmachot-plus",
+      "present": true,
+      "source_in_repo": true,
+      "files_scanned": 2,
+      "own_password_screens": 0,
+      "screens": [],
+      "credential_path": "shared-login-only",
+      "needs_manual_read": false,
+      "manual_verdict": null,
+      "evidence": {
+        "supabase_auth": [],
+        "custom_hash": [],
+        "plain_compare": []
+      }
+    },
+    {
+      "number": "15",
+      "slug": "egod",
+      "dir": "15-egod",
+      "present": true,
+      "source_in_repo": true,
+      "files_scanned": 126,
+      "own_password_screens": 1,
+      "screens": [
+        "15-egod/src/pages/Login.tsx"
+      ],
+      "credential_path": "supabase-auth",
+      "needs_manual_read": false,
+      "manual_verdict": null,
+      "evidence": {
+        "supabase_auth": [
+          {
+            "file": "15-egod/src/pages/Invite.tsx",
+            "hit": "signInWithPassword("
+          },
+          {
+            "file": "15-egod/src/pages/Login.tsx",
+            "hit": "auth.signUp("
+          }
+        ],
+        "custom_hash": [],
+        "plain_compare": []
+      }
+    },
+    {
+      "number": "16",
+      "slug": "chatzor",
+      "dir": "16-chatzor-connect",
+      "present": true,
+      "source_in_repo": true,
+      "files_scanned": 73,
+      "own_password_screens": 1,
+      "screens": [
+        "16-chatzor-connect/src/pages/admin/AdminLogin.tsx"
+      ],
+      "credential_path": "supabase-auth",
+      "needs_manual_read": false,
+      "manual_verdict": null,
+      "evidence": {
+        "supabase_auth": [
+          {
+            "file": "16-chatzor-connect/src/lib/auth.tsx",
+            "hit": "signInWithPassword("
+          }
+        ],
+        "custom_hash": [],
+        "plain_compare": []
+      }
+    },
+    {
+      "number": "17",
+      "slug": "chizukim",
+      "dir": "17-chizukim-transcribe",
+      "present": true,
+      "source_in_repo": true,
+      "files_scanned": 79,
+      "own_password_screens": 0,
+      "screens": [],
+      "credential_path": "shared-login-only",
+      "needs_manual_read": false,
+      "manual_verdict": null,
+      "evidence": {
+        "supabase_auth": [],
+        "custom_hash": [
+          {
+            "file": "17-chizukim-transcribe/api/handler.js",
+            "hit": "createHash(\"sha1"
+          }
+        ],
+        "plain_compare": []
+      }
+    },
+    {
+      "number": "18",
+      "slug": "orech",
+      "dir": "18-torah-editor-mvp",
+      "present": true,
+      "source_in_repo": true,
+      "files_scanned": 26,
+      "own_password_screens": 0,
+      "screens": [],
+      "credential_path": "shared-login-only",
+      "needs_manual_read": false,
+      "manual_verdict": null,
+      "evidence": {
+        "supabase_auth": [],
+        "custom_hash": [],
+        "plain_compare": []
+      }
+    },
+    {
+      "number": "21",
+      "slug": "mthbram",
+      "dir": "21-mthbram",
+      "present": true,
+      "source_in_repo": true,
+      "files_scanned": 157,
+      "own_password_screens": 0,
+      "screens": [],
+      "credential_path": "shared-login-only",
+      "needs_manual_read": false,
+      "manual_verdict": null,
+      "evidence": {
+        "supabase_auth": [
+          {
+            "file": "21-mthbram/src/pages/AdminLogin.tsx",
+            "hit": "signInWithPassword("
+          }
+        ],
+        "custom_hash": [],
+        "plain_compare": []
+      }
+    },
+    {
+      "number": "22",
+      "slug": "zchuyot",
+      "dir": "22-get-your-rights",
+      "present": true,
+      "source_in_repo": true,
+      "files_scanned": 95,
+      "own_password_screens": 1,
+      "screens": [
+        "22-get-your-rights/src/pages/AdminLogin.tsx"
+      ],
+      "credential_path": "custom-hash",
+      "needs_manual_read": true,
+      "manual_verdict": {
+        "read_on": "2026-08-12",
+        "hash_mismatch": false,
+        "finding": "הגיבוב בקוד אינו של סיסמה אלא של מפתח API: AdminSettings.tsx מגבב את המפתח שנוצר (crypto.subtle.digest) לתוך api_keys.key_hash, ופונקציית leads-api מגבבת את המפתח הנכנס באותו אלגוריתם. ההתחברות עצמה (AdminLogin.tsx) היא supabase.auth.signInWithPassword — ההצפנה בצד Supabase, ולכן אי-התאמת hash אינה אפשרית."
+      },
+      "evidence": {
+        "supabase_auth": [
+          {
+            "file": "22-get-your-rights/src/pages/AdminLogin.tsx",
+            "hit": "signInWithPassword("
+          }
+        ],
+        "custom_hash": [
+          {
+            "file": "22-get-your-rights/src/pages/AdminSettings.tsx",
+            "hit": "crypto.subtle.digest"
+          },
+          {
+            "file": "22-get-your-rights/supabase/functions/leads-api/index.ts",
+            "hit": "crypto.subtle.digest"
+          }
+        ],
+        "plain_compare": []
+      }
+    },
+    {
+      "number": "24",
+      "slug": "galil",
+      "dir": "24-galilee-connect-hub",
+      "present": true,
+      "source_in_repo": true,
+      "files_scanned": 108,
+      "own_password_screens": 1,
+      "screens": [
+        "24-galilee-connect-hub/src/pages/GabaiPortal.tsx"
+      ],
+      "credential_path": "unclassified",
+      "needs_manual_read": true,
+      "manual_verdict": {
+        "read_on": "2026-08-12",
+        "hash_mismatch": false,
+        "finding": "אין גיבוב בכלל: GabaiPortal.tsx כותב ל-gabai_accounts.password_hash את המחרוזת שהוקלדה כפי שהיא, מציג אותה חזרה במסך הניהול, וההתחברות משווה בצד הלקוח. אין שתי שיטות ולכן אין אי-התאמה — הבעיה כאן אחרת ומתועדת כבר: אנונימי מקבל 401/42501 על הטבלה, ולכן שום התחברות אינה יכולה להצליח (NEEDS_USER, SYSTEMS_STATUS, QA/galil/admin-bypass-0812)."
+      },
+      "evidence": {
+        "supabase_auth": [],
+        "custom_hash": [],
+        "plain_compare": []
+      }
+    },
+    {
+      "number": "26",
+      "slug": "studio",
+      "dir": "26-modaot-studio",
+      "present": true,
+      "source_in_repo": true,
+      "files_scanned": 108,
+      "own_password_screens": 0,
+      "screens": [],
+      "credential_path": "shared-login-only",
+      "needs_manual_read": false,
+      "manual_verdict": null,
+      "evidence": {
+        "supabase_auth": [],
+        "custom_hash": [],
+        "plain_compare": []
+      }
+    },
+    {
+      "number": "27",
+      "slug": "mechiron",
+      "dir": "27-bkalut-price",
+      "present": true,
+      "source_in_repo": true,
+      "files_scanned": 191,
+      "own_password_screens": 0,
+      "screens": [],
+      "credential_path": "shared-login-only",
+      "needs_manual_read": false,
+      "manual_verdict": null,
+      "evidence": {
+        "supabase_auth": [],
+        "custom_hash": [
+          {
+            "file": "27-bkalut-price/client/src/pages/admin-docs.tsx",
+            "hit": "createHash('sha256"
+          },
+          {
+            "file": "27-bkalut-price/script/pc-daily-import.ts",
+            "hit": "createHash(\"sha256"
+          },
+          {
+            "file": "27-bkalut-price/server/api-external.ts",
+            "hit": "createHash(\"sha256"
+          },
+          {
+            "file": "27-bkalut-price/server/auth.ts",
+            "hit": "createHash(\"sha256"
+          },
+          {
+            "file": "27-bkalut-price/server/hf-podcast.ts",
+            "hit": "createHash(\"sha256"
+          },
+          {
+            "file": "27-bkalut-price/server/storage.ts",
+            "hit": "createHash(\"sha256"
+          }
+        ],
+        "plain_compare": [
+          {
+            "file": "27-bkalut-price/client/src/pages/admin-docs.tsx",
+            "hit": "ADMIN_PASSWORD"
+          },
+          {
+            "file": "27-bkalut-price/script/pc/adapters.ts",
+            "hit": "process.env.PC_CERBERUS_PASSWORD"
+          },
+          {
+            "file": "27-bkalut-price/server/auth.ts",
+            "hit": "ADMIN_PASSWORD"
+          },
+          {
+            "file": "27-bkalut-price/server/routes.ts",
+            "hit": "process.env.BKALUT_ADMIN_PASSWORD"
+          }
+        ]
+      }
+    },
+    {
+      "number": "28",
+      "slug": "kupot",
+      "dir": "28-kupot-health-funds",
+      "present": true,
+      "source_in_repo": true,
+      "files_scanned": 80,
+      "own_password_screens": 0,
+      "screens": [],
+      "credential_path": "shared-login-only",
+      "needs_manual_read": false,
+      "manual_verdict": null,
+      "evidence": {
+        "supabase_auth": [],
+        "custom_hash": [
+          {
+            "file": "28-kupot-health-funds/api/index.js",
+            "hit": "createHash(\"sha1"
+          }
+        ],
+        "plain_compare": []
+      }
+    },
+    {
+      "number": "30",
+      "slug": "crm",
+      "dir": "30-zchuyotpro-crm",
+      "present": true,
+      "source_in_repo": true,
+      "files_scanned": 127,
+      "own_password_screens": 0,
+      "screens": [],
+      "credential_path": "shared-login-only",
+      "needs_manual_read": false,
+      "manual_verdict": null,
+      "evidence": {
+        "supabase_auth": [
+          {
+            "file": "30-zchuyotpro-crm/src/routes/auth.tsx",
+            "hit": "signInWithPassword("
+          },
+          {
+            "file": "30-zchuyotpro-crm/src/routes/_authenticated/settings.tsx",
+            "hit": "auth.signUp("
+          }
+        ],
+        "custom_hash": [],
+        "plain_compare": []
+      }
+    },
+    {
+      "number": "31",
+      "slug": "gesher",
+      "dir": "31-hebrew-bridge-crm",
+      "present": true,
+      "source_in_repo": true,
+      "files_scanned": 126,
+      "own_password_screens": 0,
+      "screens": [],
+      "credential_path": "shared-login-only",
+      "needs_manual_read": false,
+      "manual_verdict": null,
+      "evidence": {
+        "supabase_auth": [
+          {
+            "file": "31-hebrew-bridge-crm/src/routes/auth.tsx",
+            "hit": "signInWithPassword("
+          }
+        ],
+        "custom_hash": [],
+        "plain_compare": []
+      }
+    },
+    {
+      "number": "32",
+      "slug": "nadlan",
+      "dir": "32-nadlan-berega",
+      "present": true,
+      "source_in_repo": true,
+      "files_scanned": 112,
+      "own_password_screens": 0,
+      "screens": [],
+      "credential_path": "shared-login-only",
+      "needs_manual_read": false,
+      "manual_verdict": null,
+      "evidence": {
+        "supabase_auth": [],
+        "custom_hash": [
+          {
+            "file": "32-nadlan-berega/lib/savedreports.ts",
+            "hit": "createHash('sha256"
+          }
+        ],
+        "plain_compare": []
+      }
+    },
+    {
+      "number": "34",
+      "slug": "kesef",
+      "dir": "34-kesef",
+      "present": true,
+      "source_in_repo": false,
+      "files_scanned": 0,
+      "own_password_screens": 0,
+      "screens": [],
+      "credential_path": "source-not-in-repo",
+      "needs_manual_read": false,
+      "manual_verdict": null,
+      "evidence": {
+        "supabase_auth": [],
+        "custom_hash": [],
+        "plain_compare": []
+      }
+    },
+    {
+      "number": "35",
+      "slug": "kiosk",
+      "dir": "35-kioskfleet",
+      "present": true,
+      "source_in_repo": true,
+      "files_scanned": 51,
+      "own_password_screens": 2,
+      "screens": [
+        "35-kioskfleet/server/public/console.html",
+        "35-kioskfleet/server/public/js/app.js"
+      ],
+      "credential_path": "custom-hash",
+      "needs_manual_read": true,
+      "manual_verdict": {
+        "read_on": "2026-08-12",
+        "hash_mismatch": false,
+        "finding": "server/src/auth.js מייצא hashPassword=bcrypt.hashSync(plain,12) ו-verifyPassword=bcrypt.compareSync — אותו אלגוריתם לשני הכיוונים. כל נתיבי הכתיבה עוברים דרכן: seedadmin.js מקבל אותן כפרמטרים מ-seed.js, ו-routes/admin.js מייבא hashPassword ליצירת משתמש. אין נתיב שכותב סיסמה בדרך אחרת."
+      },
+      "evidence": {
+        "supabase_auth": [],
+        "custom_hash": [
+          {
+            "file": "35-kioskfleet/server/src/auth.js",
+            "hit": "bcrypt"
+          },
+          {
+            "file": "35-kioskfleet/server/src/seedadmin.js",
+            "hit": "bcryptjs"
+          },
+          {
+            "file": "35-kioskfleet/server/test/seedadmin.test.mjs",
+            "hit": "bcryptjs"
+          }
+        ],
+        "plain_compare": [
+          {
+            "file": "35-kioskfleet/server/src/config.js",
+            "hit": "process.env.SEED_ADMIN_PASSWORD"
+          },
+          {
+            "file": "35-kioskfleet/server/src/seed.js",
+            "hit": "ADMIN_PASSWORD"
+          },
+          {
+            "file": "35-kioskfleet/server/src/seedadmin.js",
+            "hit": "ADMIN_PASSWORD"
+          },
+          {
+            "file": "35-kioskfleet/server/test/seedadmin.test.mjs",
+            "hit": "ADMIN_PASSWORD"
+          }
+        ]
+      }
+    },
+    {
+      "number": "40",
+      "slug": "gannenet",
+      "dir": "40-gannenet",
+      "present": true,
+      "source_in_repo": true,
+      "files_scanned": 42,
+      "own_password_screens": 0,
+      "screens": [],
+      "credential_path": "shared-login-only",
+      "needs_manual_read": false,
+      "manual_verdict": null,
+      "evidence": {
+        "supabase_auth": [],
+        "custom_hash": [],
+        "plain_compare": [
+          {
+            "file": "40-gannenet/app/api/admin/delete/route.ts",
+            "hit": "process.env.ADMIN_PASSWORD"
+          },
+          {
+            "file": "40-gannenet/app/api/admin/list/route.ts",
+            "hit": "process.env.ADMIN_PASSWORD"
+          },
+          {
+            "file": "40-gannenet/app/api/admin/override/route.ts",
+            "hit": "process.env.ADMIN_PASSWORD"
+          },
+          {
+            "file": "40-gannenet/app/shelf/admin/page.tsx",
+            "hit": "ADMIN_PASSWORD"
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+§1א: the "registered, then wrong password" bug asked of all 24 live systems at once
+
+The shared portal login was cleared end to end on 12/08. A system with its OWN
+login form had never been checked, and that is exactly where a hash mismatch
+between the signup path and the login path can live.
+
+scripts/qa/own-login-hash-sweep.mjs reads every live system's source, finds each
+screen carrying a password field, and classifies the credential path behind it.
+Result: 16 systems have no form of their own and rely on the shared login; 3
+(torah, egod, chatzor) put their own form over Supabase Auth, where a mismatch
+is structurally impossible because the hashing happens server-side in both
+directions; kesef (34) has no source in the repo at all (app.json only), which
+the scanner now says out loud instead of reporting silence.
+
+Four were flagged for a human read, because a regex cannot tell a password hash
+from an API-key hash:
+
+  zchuyot (22) - the hashing is of an API KEY, not a password. AdminSettings
+    hashes the generated key into api_keys.key_hash and the leads-api function
+    hashes the incoming one the same way. The login itself is signInWithPassword.
+  kiosk (35)   - bcrypt.hashSync(...,12) against bcrypt.compareSync, and every
+    write path goes through those two (seed.js -> seedadmin.js, routes/admin.js).
+  briut (06)   - no credential path at all, deliberately: admin.js refuses every
+    login, a decision from 07/08, because any password in a static file is
+    readable by every visitor.
+  galil (24)   - no hashing either: GabaiPortal writes the typed string into
+    gabai_accounts.password_hash as-is. One method, so no mismatch.
+
+Hash mismatch found in 0 of 24.
+
+galil's real problem is already open and was re-measured live rather than
+assumed: the anon key the production bundle at more30.com/galil carries answers
+200 on synagogues, community_leads and knowledge_base, and 401 42501 on
+gabai_accounts - so no gabai or admin login can succeed. The client already
+reports it as a database error, not as a wrong password.
+
+Two mistakes the first pass made are kept in the record rather than erased: the
+scanner skipped public/, which is exactly where kiosk's login screen lives as
+HTML, so "no form of its own" was false; and crm (30) was classified custom-hash
+on .output/, a build artifact. A scanner that skips a directory reports silence,
+not absence.
+
+The galil probe writes no data and never stores a password to disk - only the
+shape and length of the value it read back.
+
+Evidence: QA/platform/own-login-hash-0812/_results.json,
+QA/galil/gabai-accounts-0812/_results.json.
+
+Protected systems untouched: 08, 09, bkalut-app, bkalot-admin, zr_*,
+NEDARIM3873 not read or written; no csj/csj_src/igud; no billing, no send.
