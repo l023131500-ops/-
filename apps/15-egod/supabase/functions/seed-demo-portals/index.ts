@@ -47,8 +47,25 @@ const demos = [
   },
 ];
 
+const jr = (b: unknown, s = 200) =>
+  new Response(JSON.stringify(b), {
+    status: s,
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
+  });
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+
+  // ── שער ─────────────────────────────────────────────────────────────────
+  // הפונקציה רצה עם SERVICE_ROLE ויוצרת משתמשים מאושרים עם סיסמאות קבועות.
+  // verify_jwt לבדו אינו הגנה — מפתח ה-anon הוא JWT תקין שנשלח לכל דפדפן.
+  // לכן: POST + SEED_SECRET בלבד, ובלי הסוד המוגדר בסביבה הפונקציה מתה.
+  // אף מסך באפליקציה אינו קורא לה (רק Invite.tsx קורא ל-activate-invite).
+  const seedSecret = Deno.env.get("SEED_SECRET");
+  if (!seedSecret) return jr({ ok: false, error: "seeding disabled" }, 403);
+  if (req.method !== "POST") return jr({ ok: false, error: "method not allowed" }, 405);
+  if (req.headers.get("x-seed-secret") !== seedSecret)
+    return jr({ ok: false, error: "forbidden" }, 403);
 
   const supabase = createClient(
     Deno.env.get("SUPABASE_URL")!,

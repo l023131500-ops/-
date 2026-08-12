@@ -1,1 +1,8 @@
 project_id = "hkkkynyoigzlttpynoeo"
+
+# seed-demo-portals רץ עם SERVICE_ROLE ויוצר משתמשים מאושרים עם סיסמאות קבועות.
+# הגרסה שהייתה בפרודקשן ענתה 200 ל-GET בלי שום כותרת הרשאה. שכבה ראשונה:
+# verify_jwt. שכבה שנייה (האמיתית) — SEED_SECRET בתוך הפונקציה, כי מפתח ה-anon
+# הוא JWT תקין שנשלח לכל דפדפן ולכן verify_jwt לבדו אינו הגנה.
+[functions.seed-demo-portals]
+verify_jwt = true
