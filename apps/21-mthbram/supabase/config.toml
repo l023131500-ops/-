@@ -23,3 +23,10 @@ verify_jwt = false
 
 [functions.ivr-agent]
 verify_jwt = false
+
+# create-admin רצה עם SERVICE_ROLE ואינה פונקציה ציבורית. הגרסה שנפרסה ענתה
+# ל-POST בלי שום כותרת הרשאה, ולכן נרשמת כאן במפורש. verify_jwt לבדו אינו
+# הגנה — מפתח ה-anon הוא JWT תקין והוא נשלח לכל דפדפן — ההגנה בפועל היא
+# ADMIN_BOOTSTRAP_SECRET שבתוך הפונקציה.
+[functions.create-admin]
+verify_jwt = true
