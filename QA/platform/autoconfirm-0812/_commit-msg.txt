@@ -1,0 +1,69 @@
+§1א asked of all 26 live addresses at once: nine systems require email confirmation, not two
+
+The previous step reproduced §1א -- "I registered, then it says wrong
+password" -- and proved the cause is not a hash mismatch but one setting in
+the Supabase project: mailer_autoconfirm=false. It checked three systems,
+because only three carry a login form of their own, and it left the rest in
+writing as "probably fine -- probably, not measured".
+
+That setting belongs to the PROJECT, not to the form. So it can be asked of
+every live system at once, without creating a single user: GET
+/auth/v1/settings is a public endpoint every browser reads on page load.
+
+MEASURED. 26 live addresses (every non-protected system with live=true and a
+live_url). For each: the HTML production serves -> its JS bundles -> the
+SUPABASE_URL + key pair taken from WITHIN one file, with the shared portal
+widget /auth-button.js checked last (pairing one system's URL with another's
+key is what produced a phantom 401 on torah this morning) -> settings.
+
+Read-only. No user created, no login performed, nothing written to any
+database. Protected systems (08/09/bkalut-app/bkalot-admin/zr_/NEDARIM3873)
+are not in the list.
+
+THE RESULT IS THREE TIMES LARGER THAN WHAT WAS RECORDED.
+
+  Confirm email ON (signup 200 with no session, then email_not_confirmed --
+  indistinguishable from a wrong password, and §8ב cannot hold):
+    bieebmnmkffwbqlsfozh  -> 01 torah
+    csjekrvukbdznetsrodj  -> 06 briut, 12 smel, 17 chizukim
+    hkkkynyoigzlttpynoeo  -> 15 egod
+    aypsqqvfohekxxuqsmrw  -> 21 mthbram
+    mwljkonwdeuaahsigjdp  -> 24 galil
+    jhbeelzvjvhnkxldqvxx  -> 30 crm
+    ygaqqnuyfnumezxxmtbh  -> 31 gesher
+
+  Nine live systems on seven projects, where two on two were on record.
+
+A SEPARATE, WORSE CASE. 22 zchuyot (trerolyveytzgksawrme) has
+disable_signup=true. NEEDS_USER §0ש already said the test user is blocked
+there; the truth is broader -- no new customer can open an account at all,
+so §8ב cannot run on 22 no matter what the screen offers.
+
+THE OPEN LINE CLOSES. The 16 systems entered through the shared portal login
+all sit on uhnrgujbdxhhmoxcjria: autoconfirm on, signup open. That was
+"probably fine, not measured". It is now measured.
+
+match=false IS NOT A REGISTRY ERROR, and the report says so. Eleven systems
+carry no Supabase key of their own -- the pair was found only in the shared
+/auth-button.js -- so their customer account lives on the portal project even
+where core.projects records a different one (that is where their DATA lives).
+A from_shared_widget column separates the two. One genuine oddity is left
+unresolved and named: 10 bkalot carries its own key in /bkalot/repo.js, and
+it is the portal project, against a registry entry of bieebmnmkffwbqlsfozh.
+
+A CORRECTION KEPT IN THE RECORD. #172 and NEEDS_USER said torah (01) shows no
+Hebrew email_not_confirmed message. That was true of its main bundle only --
+the login screen is a separate chunk. Pulled from production today,
+/torah/assets/authErrors-COw_Oh82.js carries it. Commit d82b418 is live, and
+option (2) for the user is cheaper than it was written to be.
+
+NOT MEASURED, and recorded as such: what the other seven systems display when
+confirmation is required, and whether signup actually succeeds on each -- the
+sweep reads a server declaration, it does not run a roundtrip.
+
+Ownership: none of the eight projects outside uhnrgujbdxhhmoxcjria is visible
+to this environment (list_projects returns one), so the dashboard setting is
+the user's. #172 rewritten, NEEDS_USER §0א״ rewritten.
+
+Evidence: QA/platform/autoconfirm-0812/ (README.md + _results.json),
+scripts/qa/autoconfirm-sweep.mjs (re-runnable).
