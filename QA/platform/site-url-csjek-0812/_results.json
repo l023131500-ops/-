@@ -1,0 +1,43 @@
+{
+  "issue": 198,
+  "date": "2026-08-12",
+  "project_ref": "csjekrvukbdznetsrodj",
+  "systems_on_this_project": [
+    { "number": "06", "path": "https://more30.com/briut", "name_he": "לידים קופות חולים" },
+    { "number": "12", "path": "https://more30.com/smel", "name_he": "נדל\"ן (Smel)" },
+    { "number": "17", "path": "https://more30.com/chizukim", "name_he": "תמלול חיזוקים" },
+    { "number": "27", "path": "https://more30.com/mechiron", "name_he": "השוואת מחירים בקלות" }
+  ],
+  "how_measured": "POST https://csjekrvukbdznetsrodj.supabase.co/auth/v1/admin/generate_link with the project's service_role key, type=recovery, email=test@more30.com (the single auth user on this project). generate_link builds the real link and returns it WITHOUT sending mail — no message left the system, per the test-mode rule.",
+  "before": {
+    "config_site_url": "http://localhost:3000",
+    "config_uri_allow_list": "",
+    "recovery_default": "http://localhost:3000",
+    "recovery_asked_smel": "http://localhost:3000",
+    "recovery_asked_foreign": "http://localhost:3000",
+    "sample_action_link": "https://csjekrvukbdznetsrodj.supabase.co/auth/v1/verify?token=<redacted>&type=recovery&redirect_to=http://localhost:3000",
+    "reading": "Two faults, not one. (a) site_url pointed at the recipient's own machine, so every reset/confirm/magic-link mail from this project led nowhere. (b) uri_allow_list was empty, so an app asking for its own path was refused too and silently fell back to the same localhost."
+  },
+  "change": {
+    "endpoint": "PATCH https://api.supabase.com/v1/projects/csjekrvukbdznetsrodj/config/auth",
+    "body": { "site_url": "https://more30.com", "uri_allow_list": "https://more30.com/**,https://more30.com" },
+    "why_this_value": "Identical to the two other reachable projects (uhnrgujbdxhhmoxcjria and bieebmnmkffwbqlsfozh, both https://more30.com). site_url is one value for the whole project and four systems sit on it at four different paths, so the root is the only honest default; the allow-list is what lets each of the four ask for its own path."
+  },
+  "after": {
+    "config_site_url": "https://more30.com",
+    "config_uri_allow_list": "https://more30.com/**,https://more30.com",
+    "recovery_default": "https://more30.com",
+    "recovery_asked_briut": "https://more30.com/briut",
+    "recovery_asked_smel": "https://more30.com/smel",
+    "recovery_asked_chizukim": "https://more30.com/chizukim",
+    "recovery_asked_mechiron": "https://more30.com/mechiron",
+    "recovery_asked_foreign": "https://more30.com"
+  },
+  "untouched": {
+    "mailer_autoconfirm": true,
+    "disable_signup": false,
+    "note": "Both read back unchanged after the PATCH — the partial update did not disturb the signup fix from the previous step."
+  },
+  "still_open": "The link now lands on a page that exists, and that is all it does. Nothing in portal/ or in the four apps reads a PASSWORD_RECOVERY event or a #type=recovery fragment (searched portal/public, portal/src and the four app trees for PASSWORD_RECOVERY, type=recovery, resetPasswordForEmail, updateUser — no hits). A recipient who clicks now reaches more30.com with a live recovery token in the URL fragment and no screen that will spend it. Filed separately; this step deliberately did not build that screen.",
+  "not_reproduced_elsewhere": "The same two fields were read on all three ACTIVE_HEALTHY projects the PAT reaches. uhnrgujbdxhhmoxcjria and bieebmnmkffwbqlsfozh were already correct; csjekrvukbdznetsrodj was the only one broken. The other seven refs the PAT returns are INACTIVE."
+}
