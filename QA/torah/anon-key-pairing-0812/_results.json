@@ -1,0 +1,42 @@
+{
+  "at": "2026-08-12T09:19:09.791Z",
+  "page": "https://more30.com/torah/",
+  "files_read": 5,
+  "perFile": [
+    {
+      "file": "/torah/assets/index-Cg-YfQE5.js",
+      "bytes": 624494,
+      "url_refs": [
+        "bieebmnmkffwbqlsfozh"
+      ],
+      "keys": [],
+      "first_url_to_first_key_distance": null
+    },
+    {
+      "file": "/auth-button.js",
+      "bytes": 26400,
+      "url_refs": [
+        "uhnrgujbdxhhmoxcjria"
+      ],
+      "keys": [
+        {
+          "role": "anon",
+          "ref": "uhnrgujbdxhhmoxcjria",
+          "len": 208
+        }
+      ],
+      "first_url_to_first_key_distance": 72
+    }
+  ],
+  "pairs": [
+    {
+      "id": "uhnrgujbdxhhmoxcjria|uhnrgujbdxhhmoxcjria",
+      "url_ref": "uhnrgujbdxhhmoxcjria",
+      "key_ref": "uhnrgujbdxhhmoxcjria",
+      "key_role": "anon",
+      "file": "/auth-button.js",
+      "settings_status": 200,
+      "settings_says": "accepted"
+    }
+  ]
+}

@@ -1,0 +1,46 @@
+§1א reproduced: "wrong password" after signup is email confirmation, on 2 of 3 projects
+
+The previous step proved by reading source that no hash mismatch exists in any
+of the 24 live systems, and said explicitly what it had not done: run a login.
+This step runs §1א's own acceptance criterion — sign up, then immediately sign
+in with the same credentials — against the real auth server of the three
+systems that carry a login form of their own, using the URL and key more30.com
+actually serves.
+
+torah (01, bieebmnmkffwbqlsfozh) and egod (15, hkkkynyoigzlttpynoeo) have
+mailer_autoconfirm=false: signup returns 200 and creates the user with no
+session, and the login that follows returns email_not_confirmed. chatzor (16,
+uhnrgujbdxhhmoxcjria) has it on and the roundtrip passes. Same client code in
+all three, so this is a project setting, not a code bug — and from outside it
+is indistinguishable from "wrong password", which is exactly the complaint.
+It also breaks §8ב, which requires the person who signs up to land inside the
+product. test@more30.com signs in on all three, so any check that starts from
+the existing test user cannot find this.
+
+egod already tells the truth on screen — its live bundle maps
+email_not_confirmed to "המייל עדיין לא אומת… הסיסמה עצמה תקינה". torah does
+not: its main bundle carries no Hebrew error string at all and computes
+needsConfirmation without ever reading it. What torah's login screen actually
+displays was not measured — that screen is not in the entry bundle — and is
+recorded as not measured.
+
+Two mistakes kept in the record. The first run reported 401 Invalid API key on
+torah; the script was at fault, not the site — it took the first match of each
+kind across all bundles together and paired torah's URL with the portal key
+from the shared /auth-button.js, a combination never actually sent.
+torah-anon-key-pairing.mjs checked each file separately and showed it. And
+torah has moved to the sb_publishable_ key format, which the JWT-only regex
+never looked for — a silent report, not an absence. Both fixed and re-run.
+sb_secret_ appears in torah's bundle but is prefix-checking code inside
+supabase-js, not a leaked value; checked.
+
+Turning Confirm email off on those two projects is a Supabase dashboard
+setting this environment has no admin access to (neither project is in
+list_projects), so it is the user's call — NEEDS_USER §0א״, core.issues #172,
+with the alternative (keep verification, fix torah's message) written out.
+
+Test mode: three QA users created at qa-roundtrip-<slug>-… addresses, no
+customer message sent, no billing, protected systems untouched.
+
+Evidence: QA/platform/own-form-login-0812/ (README + _results.json),
+QA/torah/anon-key-pairing-0812/_results.json, both scripts re-runnable.
