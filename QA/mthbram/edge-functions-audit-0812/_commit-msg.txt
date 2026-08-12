@@ -1,0 +1,72 @@
+mthbram (21): every lead in the database was readable by anyone, with no key at all
+
+Open line (2) from the previous step was that the other verify_jwt=false edge
+functions on aypsqqvfohekxxuqsmrw had never been audited - create-admin was
+found by reading, not by a sweep. All nine functions have now been read.
+
+The sweep found a second open door, and this one returns data rather than
+creating an account.
+
+GET functions/v1/api/teachers, /seekers and /contacts each answer 200 with no
+apikey header and no Authorization header at all. The function runs with
+SUPABASE_SERVICE_ROLE_KEY and verify_jwt=false, so RLS does not apply to it,
+and each of the three returns a full select("*") over a lead table: name,
+phone, email, city and free-text notes for every person who ever filled in a
+form, used the chatbot or called the IVR line.
+
+Nothing has actually leaked. The tables are empty - /stats returns 0/0/0 - so
+the measurement is of an open route, not of a disclosure. Every lead collected
+from now on would have been public.
+
+This was not deliberate exposure. The three routes are documented only inside
+the admin panel, and the app does not call them at all: AdminDashboard and
+MatchingTab read the lead tables through PostgREST under the user's session.
+Gating them breaks no caller, which is why the fix is a gate and not a
+redesign.
+
+requireAdmin() now runs before all three: read Authorization: Bearer <user
+jwt>, auth.getUser(token), then has_role(uid,'admin'). 401 with no token or a
+token that is not a user, 403 without the role, and 403 if the role check
+itself errors - it fails closed. The public reads (lessons, lesson/:id,
+search, stats, cities, subjects) and all four POST submission routes stay open;
+that is the product. verify_jwt alone would not have closed this, for the same
+reason as #160: the anon key is a valid JWT and ships in every page load.
+
+The gate is verified live at the two inputs it decides on, against the real
+project. The anon key presented as a user token is refused by GoTrue with 403
+bad_jwt "missing sub claim", so auth.getUser errors and the caller gets 401. A
+genuinely signed-in customer (test@more30.com) is accepted as a user and then
+has_role(sub,'admin') returns False, so that caller gets 403. That is evidence
+about the decision inputs, not about the deployed function - see below.
+
+NOT DEPLOYED, and the open version is still the one running. There is no
+Supabase CLI on this machine, no SUPABASE_ACCESS_TOKEN in the environment or at
+~/.supabase/access-token, and the Supabase MCP reaches only uhnrgujbdxhhmoxcjria;
+aypsqqvfohekxxuqsmrw is not in its project list. NEEDS_USER 0-tsadi now asks for
+one deploy covering both this function and create-admin, with an acceptance
+check that needs no agent: the same unauthenticated GET must return 401 while
+GET /api/lessons keeps returning 200.
+
+Two more findings from the sweep, recorded and deliberately not fixed. #164:
+nedarim-webhook with type=portal_share returns rabbi and org contact phone,
+email and public tokens to any caller - it must stay JWT-less so Nedarim Plus
+can reach it, there is no agreed shared secret, and closing it could break the
+live integration, so it is the user's call. It was NOT measured live on
+purpose: any POST to that webhook writes a row into nedarim_submissions, and I
+would not pollute real data to prove a point, so that finding is from reading
+the source and the note says so. #165: chat and search-lessons burn
+LOVABLE_API_KEY credits unauthenticated and unthrottled; the threshold is a
+product decision.
+
+Found acceptable and left alone: ivr-submit is write-only (same exposure as the
+public forms), ivr-search and ivr-agent read approved lessons which are public
+by design, ivr-menu serves the public menu tree.
+
+apps/21-mthbram tsc --noEmit -p tsconfig.app.json exits 0.
+
+Protected systems untouched: no write to 08/09/bkalut-app/bkalot-admin/zr_/
+NEDARIM3873, no csj/csj_src/igud, nothing sent, no billing touched, test mode
+throughout. No account was created and no password overwritten.
+
+core.issues #161 critical (open until deployed), #164, #165.
+Evidence QA/mthbram/edge-functions-audit-0812/_results.json

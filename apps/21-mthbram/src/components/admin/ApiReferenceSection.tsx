@@ -11,6 +11,7 @@ interface Endpoint {
   method: "GET" | "POST";
   path: string;
   description: string;
+  adminOnly?: boolean;
   params?: { name: string; type: string; required?: boolean; desc: string }[];
   body?: { name: string; type: string; required?: boolean; desc: string }[];
   example?: string;
@@ -87,8 +88,13 @@ const ENDPOINTS: { category: string; color: string; endpoints: Endpoint[] }[] = 
       {
         method: "GET",
         path: "/teachers",
-        description: "רשימת כל מגידי השיעור שנרשמו",
-        example: `fetch("${BASE_URL}/teachers")`,
+        description: "רשימת כל מגידי השיעור שנרשמו — כולל טלפון ומייל, ולכן לניהול בלבד",
+        adminOnly: true,
+        example: `// דורש טוקן של משתמש מחובר בעל תפקיד admin
+const { data: { session } } = await supabase.auth.getSession();
+fetch("${BASE_URL}/teachers", {
+  headers: { Authorization: \`Bearer \${session.access_token}\` }
+})`,
       },
       {
         method: "POST",
@@ -123,8 +129,13 @@ const ENDPOINTS: { category: string; color: string; endpoints: Endpoint[] }[] = 
       {
         method: "GET",
         path: "/seekers",
-        description: "רשימת כל הבקשות לשיעורים",
-        example: `fetch("${BASE_URL}/seekers")`,
+        description: "רשימת כל הבקשות לשיעורים — כולל טלפון ומייל, ולכן לניהול בלבד",
+        adminOnly: true,
+        example: `// דורש טוקן של משתמש מחובר בעל תפקיד admin
+const { data: { session } } = await supabase.auth.getSession();
+fetch("${BASE_URL}/seekers", {
+  headers: { Authorization: \`Bearer \${session.access_token}\` }
+})`,
       },
       {
         method: "POST",
@@ -162,8 +173,13 @@ const ENDPOINTS: { category: string; color: string; endpoints: Endpoint[] }[] = 
       {
         method: "GET",
         path: "/contacts",
-        description: "רשימת כל הודעות יצירת הקשר",
-        example: `fetch("${BASE_URL}/contacts")`,
+        description: "רשימת כל הודעות יצירת הקשר — כולל טלפון ומייל, ולכן לניהול בלבד",
+        adminOnly: true,
+        example: `// דורש טוקן של משתמש מחובר בעל תפקיד admin
+const { data: { session } } = await supabase.auth.getSession();
+fetch("${BASE_URL}/contacts", {
+  headers: { Authorization: \`Bearer \${session.access_token}\` }
+})`,
       },
       {
         method: "POST",
@@ -296,6 +312,11 @@ const ApiReferenceSection = () => {
                     {ep.method}
                   </Badge>
                   <code className="font-mono text-sm text-foreground flex-1 text-right" dir="ltr">{ep.path}</code>
+                  {ep.adminOnly && (
+                    <Badge className="bg-destructive/15 text-destructive border-destructive/30 font-body text-[10px] px-1.5 flex-shrink-0">
+                      ניהול בלבד
+                    </Badge>
+                  )}
                   <span className="font-body text-xs text-muted-foreground hidden md:block">{ep.description}</span>
                   <CopyButton text={`${BASE_URL}${ep.path}`} />
                 </button>

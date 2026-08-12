@@ -26,6 +26,30 @@ serve(async (req) => {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
 
+    // הפונקציה רצה עם SERVICE_ROLE ו-verify_jwt=false, כלומר RLS לא מגן על כלום כאן.
+    // הקריאות הציבוריות (שיעורים מאושרים, סטטיסטיקות, ערים, נושאים) והטפסים ב-POST
+    // נשארות פתוחות — זה המוצר. אבל רשימות הלידים הן פרטי אנשים (שם, טלפון, מייל),
+    // ולכן כל endpoint שמחזיר אותן חייב לעבור כאן קודם.
+    // הבדיקה היא על ה-JWT של המשתמש עצמו: מפתח anon הוא JWT תקין ומשודר בכל דף,
+    // ולכן אינו הרשאה — רק משתמש מחובר עם תפקיד admin ב-user_roles עובר.
+    const requireAdmin = async (): Promise<Response | null> => {
+      const header = req.headers.get("Authorization") || "";
+      const token = header.startsWith("Bearer ") ? header.slice(7).trim() : "";
+      if (!token) return json({ error: "נדרשת הרשאת ניהול" }, 401);
+
+      const { data: userData, error: userError } = await supabase.auth.getUser(token);
+      const user = userData?.user;
+      if (userError || !user) return json({ error: "נדרשת הרשאת ניהול" }, 401);
+
+      const { data: isAdmin, error: roleError } = await supabase.rpc("has_role", {
+        _user_id: user.id,
+        _role: "admin",
+      });
+      // נכשל סגור: שגיאה בבדיקת התפקיד אינה מזכה בגישה.
+      if (roleError || isAdmin !== true) return json({ error: "נדרשת הרשאת ניהול" }, 403);
+      return null;
+    };
+
     // ─── GET /api/lessons — approved lessons with filters ───
     if ((path === "lessons" || path === "") && method === "GET") {
       const limit = parseInt(url.searchParams.get("limit") || "100");
@@ -129,8 +153,10 @@ serve(async (req) => {
       });
     }
 
-    // ─── GET /api/teachers ───
+    // ─── GET /api/teachers — לידים, ניהול בלבד ───
     if (path === "teachers" && method === "GET") {
+      const denied = await requireAdmin();
+      if (denied) return denied;
       const { data, error } = await supabase
         .from("teacher_leads")
         .select("*")
@@ -158,8 +184,10 @@ serve(async (req) => {
       return json({ data, message: "הפנייה נשלחה בהצלחה" }, 201);
     }
 
-    // ─── GET /api/seekers ───
+    // ─── GET /api/seekers — לידים, ניהול בלבד ───
     if (path === "seekers" && method === "GET") {
+      const denied = await requireAdmin();
+      if (denied) return denied;
       const { data, error } = await supabase
         .from("seeker_leads")
         .select("*")
@@ -189,8 +217,10 @@ serve(async (req) => {
       return json({ data, message: "הבקשה נשלחה בהצלחה" }, 201);
     }
 
-    // ─── GET /api/contacts ───
+    // ─── GET /api/contacts — פניות, ניהול בלבד ───
     if (path === "contacts" && method === "GET") {
+      const denied = await requireAdmin();
+      if (denied) return denied;
       const { data, error } = await supabase
         .from("contact_messages")
         .select("*")
@@ -251,7 +281,8 @@ serve(async (req) => {
     return json({
       error: "Endpoint not found",
       available_endpoints: {
-        GET: ["/lessons", "/lesson/:id", "/search?q=...", "/stats", "/teachers", "/seekers", "/contacts", "/cities", "/subjects"],
+        GET: ["/lessons", "/lesson/:id", "/search?q=...", "/stats", "/cities", "/subjects"],
+        GET_admin_only: ["/teachers", "/seekers", "/contacts"],
         POST: ["/lessons", "/teachers", "/seekers", "/contacts"],
       },
     }, 404);

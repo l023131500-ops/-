@@ -1,0 +1,70 @@
+{
+  "date": "2026-08-12",
+  "app": "mthbram (21)",
+  "supabase_project": "aypsqqvfohekxxuqsmrw",
+  "why": "Open line (2) from the previous heartbeat: the other verify_jwt=false edge functions on this project were never audited for what an unauthenticated caller can do. create-admin was found by reading, not by a sweep, and no sweep had been run.",
+  "scope": "all 9 edge functions in apps/21-mthbram/supabase/functions, read in full",
+
+  "finding_critical": {
+    "issue": 161,
+    "function": "api",
+    "endpoints": ["GET /api/teachers", "GET /api/seekers", "GET /api/contacts"],
+    "what": "runs with SUPABASE_SERVICE_ROLE_KEY and verify_jwt=false, so RLS does not apply; each returns select(\"*\") over a lead table (full_name/contact_name, phone, email, city, notes)",
+    "measured_live": {
+      "method": "GET with NO apikey header and NO Authorization header at all",
+      "base": "https://aypsqqvfohekxxuqsmrw.supabase.co/functions/v1/api",
+      "results": {
+        "/stats": "200 {\"lessons\":{\"total\":0,\"approved\":0},\"teacher_leads\":0,\"seeker_leads\":0,\"contact_messages\":0}",
+        "/teachers": "200 {\"data\":[]}",
+        "/seekers": "200 {\"data\":[]}",
+        "/contacts": "200 {\"data\":[]}"
+      },
+      "reading": "200 with no credentials proves the route is open. The tables are empty today, so nothing has actually leaked - but every lead submitted from now on is readable by anyone on the internet."
+    },
+    "not_accidental_exposure_by_design": "the three GETs are documented only inside the admin panel (src/components/admin/ApiReferenceSection.tsx); the public product reads lessons/stats/cities/subjects and writes via the POST routes",
+    "who_calls_them": "nothing in the app. AdminDashboard.tsx and MatchingTab.tsx read the lead tables through supabase.from(...) over PostgREST under the user session, not through this function. Gating the three GETs therefore breaks no caller.",
+    "fix": "requireAdmin() in api/index.ts: read Authorization: Bearer <user jwt>, supabase.auth.getUser(token), then rpc has_role(_user_id, _role='admin'). 401 without a token or if the token is not a user, 403 if not admin. Fails closed on a role-check error. Public GETs and all POST submissions left open.",
+    "why_not_verify_jwt": "the anon key is itself a valid JWT and ships in every page load, so verify_jwt would not have closed this - same reason as #160",
+    "gate_verified_live_at_its_decision_inputs": {
+      "anon_key_presented_as_user_token": "GET /auth/v1/user -> 403 {\"code\":403,\"error_code\":\"bad_jwt\",\"msg\":\"invalid claim: missing sub claim\"} => auth.getUser() errors => requireAdmin returns 401",
+      "real_signed_in_customer": "test@more30.com signed in OK (sub 6b0907f4-acae-42d6-8d79-3b07c49f9976); GET /auth/v1/user with that token -> 200; rpc has_role(sub,'admin') -> False => requireAdmin returns 403",
+      "limit": "this verifies the two primitives the gate decides on, against the live project. It is NOT a test of the deployed function - the function is not deployed (see below)."
+    },
+    "typecheck": "apps/21-mthbram tsc --noEmit -p tsconfig.app.json -> exit 0"
+  },
+
+  "finding_high": {
+    "issue": 164,
+    "function": "nedarim-webhook",
+    "what": "verify_jwt=false by necessity (Nedarim Plus posts without a JWT), service_role. Beyond intake it has seven search branches that RETURN data: portal_share returns rabbi_portals + org_portals including contact_phone, contact_email and public_token; synagogue_share returns synagogue phone; event_share returns contact_name + contact_phone.",
+    "measured": "NOT measured live on purpose - any POST to this webhook inserts a row into nedarim_submissions, and I would not write junk into real data to prove a point. Finding is from reading the source.",
+    "not_fixed_why": "there is no agreed shared secret with Nedarim Plus, and gating the route could break the live integration. User decision."
+  },
+
+  "finding_normal": {
+    "issue": 165,
+    "functions": ["chat", "search-lessons"],
+    "what": "both verify_jwt=false, both call ai.gateway.lovable.dev with LOVABLE_API_KEY from the environment, with no caller check and no rate limit - anyone can burn the credit (the code already handles 402 'out of credits'). search-lessons additionally injects the whole approved-lessons table plus synagogue_portals/org_portals contact details into every prompt; approved lessons are public by design so that is a token cost, not a leak.",
+    "not_fixed_why": "rate limiting is a behaviour change to a live product and a threshold decision, not a measurement"
+  },
+
+  "found_acceptable": {
+    "ivr-submit": "unauthenticated INSERT only into ivr_submissions / seeker_leads / teacher_leads - write-only, same exposure as the public web forms; spam risk only",
+    "ivr-search, ivr-agent": "read approved lessons (public by design) and log the query; no private data returned",
+    "ivr-menu": "returns the public IVR menu tree, read-only",
+    "create-admin": "already covered by #160 - fixed at source in the previous step, still awaiting the same deploy"
+  },
+
+  "deploy_status": {
+    "deployed": false,
+    "why": "no Supabase CLI on this machine, no SUPABASE_ACCESS_TOKEN in the environment or at ~/.supabase/access-token, and the Supabase MCP reaches only uhnrgujbdxhhmoxcjria - aypsqqvfohekxxuqsmrw is not in its project list",
+    "consequence": "until the deploy happens, the OPEN version is the one running and GET /api/teachers|seekers|contacts still answer 200 to anyone",
+    "folded_into": "NEEDS_USER 0-tsadi - same single 'supabase functions deploy' the create-admin fix (#160) already needs"
+  },
+
+  "protected_systems": "untouched - no write to 08/09/bkalut-app/bkalot-admin/zr_/NEDARIM3873, no csj/csj_src/igud, nothing sent, no billing, test mode throughout",
+  "files_changed": [
+    "apps/21-mthbram/supabase/functions/api/index.ts",
+    "apps/21-mthbram/src/components/admin/ApiReferenceSection.tsx"
+  ]
+}
