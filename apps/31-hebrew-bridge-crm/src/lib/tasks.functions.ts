@@ -1,6 +1,12 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import {
+  CONSENT_WITHHELD_NAME,
+  NO_PARTNER_VISIBILITY,
+  canPartnerSeeField,
+  loadPartnerVisibility,
+} from "@/lib/partner-visibility";
 
 export type TaskStatus = "pending" | "in_progress" | "completed";
 export type TaskPriority = "low" | "medium" | "high";
@@ -29,7 +35,9 @@ async function isAdmin(supabase: any, userId: string): Promise<boolean> {
   return !!data;
 }
 
-async function decorateTasks(rows: any[]): Promise<TaskRow[]> {
+type Viewer = { userId: string; isAdmin: boolean };
+
+async function decorateTasks(rows: any[], viewer: Viewer): Promise<TaskRow[]> {
   if (!rows.length) return [];
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   const ids = Array.from(new Set([
@@ -41,6 +49,25 @@ async function decorateTasks(rows: any[]): Promise<TaskRow[]> {
     .select("id, full_name")
     .in("id", ids);
   const nameById = new Map((profiles ?? []).map((p: any) => [p.id, p.full_name]));
+
+  // The names above were read as service_role, so RLS did not filter them. A partner
+  // may only be shown a client's name if that client consented to their category and
+  // the category is allowed the full_name field — see partner-visibility.ts.
+  const clientIds = Array.from(new Set(rows.map((r) => r.client_id as string)));
+  const visibility = viewer.isAdmin
+    ? NO_PARTNER_VISIBILITY
+    : await loadPartnerVisibility(supabaseAdmin, viewer.userId, clientIds);
+
+  const clientNameFor = (clientId: string): string | null => {
+    if (viewer.isAdmin) return nameById.get(clientId) ?? null;
+    // A client reading their own tasks is not a partner disclosure.
+    if (clientId === viewer.userId) return nameById.get(clientId) ?? null;
+    if (canPartnerSeeField(visibility, clientId, "full_name")) {
+      return nameById.get(clientId) ?? null;
+    }
+    return CONSENT_WITHHELD_NAME;
+  };
+
   return rows.map((r) => ({
     id: r.id,
     client_id: r.client_id,
@@ -51,7 +78,7 @@ async function decorateTasks(rows: any[]): Promise<TaskRow[]> {
     status: r.status,
     priority: r.priority,
     created_at: r.created_at,
-    client_name: nameById.get(r.client_id) ?? null,
+    client_name: clientNameFor(r.client_id as string),
     partner_name: r.partner_id ? nameById.get(r.partner_id) ?? null : null,
   }));
 }
@@ -66,7 +93,7 @@ export const listTasks = createServerFn({ method: "GET" })
       : supabase.from("tasks").select("*").eq("partner_id", userId).order("created_at", { ascending: false });
     const { data, error } = await query;
     if (error) throw new Error(error.message);
-    return decorateTasks(data ?? []);
+    return decorateTasks(data ?? [], { userId, isAdmin: admin });
   });
 
 export const listTasksForClient = createServerFn({ method: "GET" })
@@ -91,7 +118,7 @@ export const listTasksForClient = createServerFn({ method: "GET" })
       .eq("client_id", data.clientId)
       .order("created_at", { ascending: false });
     if (error) throw new Error(error.message);
-    return decorateTasks(rows ?? []);
+    return decorateTasks(rows ?? [], { userId, isAdmin: admin });
   });
 
 const createTaskSchema = z.object({
