@@ -902,10 +902,68 @@ and every other mount project: the hashed *deployment* URL 302s to Vercel SSO, t
 project alias `gannenet-more30.vercel.app` is open. That is exactly what the portal
 rewrites proxy to, so the next step needs no protection change.
 
+## §0 closed on the domain, driven in a browser (12/08)
+
+Both steps the previous "Next" listed are done and were verified, for the first
+time, in a real browser against `more30.com` rather than through a fetch — which is
+what `more30-priority.md` §0.3 actually asks for. Evidence in
+`QA/gannenet/live-verify-0812/`.
+
+| Asked (§0 · §0.3) | Measured on `more30.com` |
+|---|---|
+| mount answers 200 | `/gannenet` 200 · `/library` · `/lesson/m1` · `/shelf` · `/calendar` · `/generator` · `/pricing` · `/newsletter` all 200 |
+| assets reach the app | five sampled `/gannenet/_next/static/…` → 200 `application/javascript`; `/gannenet/sw.js` 200 |
+| 180 `/lesson/[id]` pages | `/library` renders **180** distinct `a[href*="/lesson/"]`, and the header reads "180 מערכים" |
+| filter by domain | the third `<select>` carries 10 domains; choosing **עולם החי** narrows the grid to 7 and the header to "7 מתוך 180 מערכים" |
+| a lesson shows the full delivery format | `/lesson/m1` renders 11 sections — רקע וידע לגננת · מטרות המפגש · פתיחה · הסיפור לילדים · פעילות בקבוצה · רעיון למעבר · יצירה · דקלום בחרוזים · שיח וסיכום · הרחבות · דף עבודה מוצע |
+| card on the home page | `more30.com/` renders the גננות בקליק card, linking `/gannenet` and `/system.html?app=gannenet`; `core.projects` #40 already `public_visible=true`, `live=true`, `is_deployed=true` |
+| shelf | `/shelf` reads "2,977 פריטים · 21 קטגוריות" over 21 category tabs; `/api/catalog` → `{"ready":true,"items":[]}`, i.e. the env is configured and no *uploads* exist yet — the 2,977 are catalog-backed, not uploads |
+| `gannenet-incoming/` (§0.3) | no new ZIP; the only file is `done/gannenet-content-180.zip.zip`, already processed |
+
+0 console errors on `/`, `/library` and `/lesson/m1`.
+
+The 2,977 shelf items split two ways and both backends answer: 258 are seed
+objects in the bucket (`/api/shelf/<name>.pdf`) and 2,719 are proxied from Drive
+(`/api/drive/<id>`). Eight Drive ids sampled across the catalog (indices 0, 1,
+300, 700, 1200, 1800, 2400, 2976) all returned **200** with real byte counts
+(66 KB … 24 MB), so the proxy works in production.
+
+## Fixed: every Drive-backed shelf file left the origin as `application/octet-stream`
+
+`app/api/drive/[id]/route.ts` passed the upstream `Content-Type` straight through,
+and `drive.usercontent.google.com` answers **all 2,977** of these files as
+`application/octet-stream` — while the same route sends
+`Content-Disposition: inline` for viewing. A browser honours `inline` only for a
+type it can render, so "פתיחה בכרטיסייה חדשה" downloaded the file instead of
+showing it, for every Drive-backed item on the shelf. The catalog knew the real
+type all along (`mime: "application/pdf"`); only the download *filename* was
+reading it. The catalog's mime is now the Content-Type, with upstream kept as the
+fallback for anything unlisted. `/api/shelf/<name>.pdf`, whose upstream sets the
+type properly, was already correct — the two routes serve the same shelf and now
+agree.
+
+`next build` ✓, 180 `/lesson/[id]` paths, every route's JS byte-identical.
+Deployed `dpl_6Yutj5wVER6RYinL7CLdDgDSy9Ks`, `READY`, target production, and
+measured on `more30.com` after: the 66 KB PDF and the 24 MB PDF both now
+`application/pdf`, and a `.docx` in the catalog comes back
+`application/vnd.openxmlformats-officedocument.wordprocessingml.document` — it was
+`application/octet-stream` on all three before. Lengths unchanged (66552 /
+24288335 / 1742102), the four pages still 200 at the same sizes.
+
+**What this did not fix, stated plainly.** From this machine NetFree answers
+**418** to the PDF *body* on both routes, so the in-browser viewer shows
+"לא ניתן להציג את הקובץ" here — before the fix and, re-measured after it, still
+after. The two blocks differ (`warning-file-distorted` on `/api/drive`, a generic
+`error` on `/api/shelf`) and the correct Content-Type did not change either. This
+line 418s PDF bodies from `supabase.co` as a rule (see above), so whether a real
+NetFree client can read these files is **not established from here** — the fix
+above stands on the `inline` + octet-stream mismatch, which is measured, not on
+the filter.
+
 ## Next
 
-1. Add the three `/gannenet` rewrites to `portal/vercel.dist.json` (bare, trailing
-   slash, `:path*` → `https://gannenet-more30.vercel.app/gannenet…`) and deploy the
-   portal.
-2. Verify live on `more30.com/gannenet` with a cache-buster, then set
-   `public_visible=true` and show the card on the home page.
+- Whether the shelf viewer works for a NetFree client is unverifiable from this
+  machine; it needs one look from a line that is not blocked.
+- `core.projects` #40 is still `stage='wip'` while `live`, `is_deployed` and
+  `public_visible` are all true — part of the stage sweep in `core.issues` #156,
+  not touched here.

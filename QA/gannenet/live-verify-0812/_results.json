@@ -1,0 +1,100 @@
+{
+  "run": "gannenet (40) — §0 / §0.3 verified in a browser on more30.com, and the Drive route's Content-Type fixed",
+  "date": "2026-08-12",
+  "origin": "https://more30.com",
+  "note": "Every row measured against production. Server-side probes are PowerShell (Invoke-WebRequest); rows marked browser are Playwright against more30.com, which is what §0.3 asks for and had never been run.",
+
+  "routes": {
+    "/gannenet": { "status": 200, "bytes": 29990, "title": "גננת בקליק — כל התוכן לגן במקום אחד" },
+    "/gannenet/library": { "status": 200, "bytes": 204442 },
+    "/gannenet/lesson/m1": { "status": 200, "bytes": 31342 },
+    "/gannenet/shelf": { "status": 200, "bytes": 64659 },
+    "/gannenet/calendar": { "status": 200, "bytes": 29181 },
+    "/gannenet/generator": { "status": 200, "bytes": 16665 },
+    "/gannenet/pricing": { "status": 200, "bytes": 21481 },
+    "/gannenet/newsletter": { "status": 200, "bytes": 16243 },
+    "/gannenet/sw.js": { "status": 200, "contentType": "application/javascript; charset=utf-8", "bytes": 12234 },
+    "/gannenet/api/catalog": { "status": 200, "body": "{\"ready\":true,\"items\":[]}" }
+  },
+
+  "assets_sampled": [
+    { "path": "/gannenet/_next/static/chunks/117-c3d31ad7eee7ebe0.js", "status": 200, "bytes": 124897 },
+    { "path": "/gannenet/_next/static/chunks/972-1a6a35b95e2837ad.js", "status": 200, "bytes": 26066 },
+    { "path": "/gannenet/_next/static/chunks/app/layout-54cf89b5c5515436.js", "status": 200, "bytes": 883 },
+    { "path": "/gannenet/_next/static/chunks/app/page-ab5a0e34999b28ea.js", "status": 200, "bytes": 224 },
+    { "path": "/gannenet/_next/static/chunks/fd9d1056-e3d373074663785d.js", "status": 200, "bytes": 172834 }
+  ],
+
+  "browser": {
+    "library": {
+      "lessonCards": 180,
+      "header": "180 מערכים",
+      "filters": [
+        { "label": "קהל", "options": ["כל הקהלים", "גננת רגילה", "גננת משלימה"] },
+        { "label": "חודש", "options": 12 },
+        { "label": "תחום", "options": ["כל התחומים", "בעלי מלאכה", "גוף ובריאות", "חגי השנה ומועדים", "טבע וצומח", "מדע ותופעות", "מרחב וחשיבה", "עולם החי", "ערכים ואמונה", "פרשת השבוע ותורה", "רגש וחברה"] }
+      ],
+      "filterApplied": { "domain": "עולם החי", "cardsAfter": 7, "headerAfter": "7 מתוך 180 מערכים · סננו לפי קהל, חודש ותחום" },
+      "search": "input[placeholder='חיפוש בכל תוכן המערך…'] present",
+      "consoleErrors": 0,
+      "screenshot": "gannenet-library-filter-0812.png"
+    },
+    "lesson_m1": {
+      "h1": "הכרות ופתיחה — אני והחברים בגן",
+      "meta": "חודש אלול · שבוע ראשון | גיל 3–6 | משך: כ־45 דק׳ | תחום: חברה ורגש",
+      "sections": ["רקע וידע לגננת", "מטרות המפגש", "פתיחה", "הסיפור לילדים", "פעילות בקבוצה", "רעיון למעבר", "יצירה", "דקלום בחרוזים", "שיח וסיכום", "הרחבות", "דף עבודה מוצע"],
+      "consoleErrors": 0,
+      "screenshot": "gannenet-lesson-m1-0812.png"
+    },
+    "shelf": { "header": "2,977 פריטים · 21 קטגוריות", "cardsInFirstView": 51 },
+    "home": {
+      "url": "https://more30.com/",
+      "gannenetCard": true,
+      "links": ["/gannenet", "/system.html?app=gannenet"],
+      "consoleErrors": 0
+    }
+  },
+
+  "core_projects_40": { "live": true, "is_deployed": true, "public_visible": true, "stage": "wip", "live_url": "https://more30.com/gannenet" },
+
+  "shelf_backends": {
+    "seed_objects_in_bucket": 258,
+    "drive_proxied": 2719,
+    "catalog_json_items": 258,
+    "drive_catalog_json_items": 2977,
+    "drive_sample_before_fix": [
+      { "index": 0, "id": "1xBLOKC5Yje5p6E9xl-YOGNYw57g2Ro1Y", "status": 200, "contentType": "application/octet-stream", "contentLength": 24288335 },
+      { "index": 1, "id": "14Zz0KrKncsLNG7b9ijzZG34EaOecDD7j", "status": 200, "contentType": "application/octet-stream", "contentLength": 24288334 },
+      { "index": 300, "id": "1qc_e8TtjmCZvZ8BUtJYIfgkf1tQ1_0rD", "status": 200, "contentType": "application/octet-stream", "contentLength": 66552 },
+      { "index": 700, "id": "1zBqwzXtLwk2U4Kp5WGXB7Y35tMYhtUV2", "status": 200, "contentType": "application/octet-stream", "contentLength": 131219 },
+      { "index": 1200, "id": "1yVajCFZB5XSASFLZrO6h0NasWmCr4aVR", "status": 200, "contentType": "application/octet-stream", "contentLength": 1742102 },
+      { "index": 1800, "id": "1E9c2W0TqmU4OfWjYZJ71-YLltMj2YPDC", "status": 200, "contentType": "application/octet-stream", "contentLength": 161435 },
+      { "index": 2400, "id": "1QqHjYpCuYFX9GzF0f-S_C0Tq0OSTOjKT", "status": 200, "contentType": "application/octet-stream", "contentLength": 697856 },
+      { "index": 2976, "id": "1d05SnnUw6lmVChmOK5_qHTqxQhal4Xxu", "status": 200, "contentType": "application/octet-stream", "contentLength": 297694 }
+    ]
+  },
+
+  "fix": {
+    "file": "apps/40-gannenet/app/api/drive/[id]/route.ts",
+    "was": "Content-Type = upstream's, which drive.usercontent.google.com sets to application/octet-stream for all 2,977 files, while the same route sends Content-Disposition: inline — so a browser downloaded the file instead of rendering it",
+    "now": "Content-Type = the catalog's own mime (already loaded for the download filename), upstream kept as fallback",
+    "build": "next build ✓, 180 /lesson/[id] paths, route JS byte-identical",
+    "deployment": "dpl_6Yutj5wVER6RYinL7CLdDgDSy9Ks, READY, target production",
+    "after_on_more30": [
+      { "id": "1qc_e8TtjmCZvZ8BUtJYIfgkf1tQ1_0rD", "status": 200, "contentType": "application/pdf", "contentLength": 66552, "contentDisposition": "inline" },
+      { "id": "1xBLOKC5Yje5p6E9xl-YOGNYw57g2Ro1Y", "status": 200, "contentType": "application/pdf", "contentLength": 24288335 },
+      { "id": "1yVajCFZB5XSASFLZrO6h0NasWmCr4aVR", "status": 200, "contentType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "contentLength": 1742102 }
+    ],
+    "seed_route_unchanged": { "path": "/gannenet/api/shelf/1lfiQT79XaO-05RO7Qj8sVeXaoEbnLI6f.pdf", "status": 200, "contentType": "application/pdf" },
+    "pages_after": { "/gannenet": 200, "/gannenet/library": 200, "/gannenet/lesson/m1": 200, "/gannenet/shelf": 200 }
+  },
+
+  "not_established_from_here": {
+    "what": "whether a NetFree client can actually read a shelf PDF",
+    "measured": "from this line the PDF body is 418 on both routes, before and after the fix — /api/drive blocked as warning-file-distorted, /api/shelf as a generic error. The correct Content-Type did not change either verdict.",
+    "why_it_is_not_a_product_verdict": "this machine 418s PDF bodies from supabase.co as a rule (apps/40-gannenet/STATUS.md), so the block is not attributable to the app. Needs one look from an unblocked line.",
+    "in_browser_symptom_here": "/gannenet/shelf/<id> renders the card, title, size, download and Drive links, then 'לא ניתן להציג את הקובץ (קובץ לא נטען)' where the viewer would be"
+  },
+
+  "gannenet_incoming": { "new_zips": 0, "done": ["gannenet-content-180.zip.zip"] }
+}

@@ -1,0 +1,35 @@
+gannenet (40): every Drive-backed shelf file was served as an unnamed blob, and §0 finally checked in a browser
+
+more30-priority.md §0.3 asks that /library be opened and seen to hold 180 lesson
+plans with a filter by domain, and that opening one show the full delivery format.
+That had never been run — §0 was verified with fetches. Driven on more30.com this
+time: /library renders 180 distinct lesson links over the header "180 מערכים",
+choosing תחום=עולם החי narrows it to 7 and the header to "7 מתוך 180 מערכים", and
+/lesson/m1 renders all 11 sections from רקע וידע לגננת to דף עבודה מוצע. Eight
+routes 200, five sampled _next assets 200, the home page carries the card, 0
+console errors. gannenet-incoming/ holds no new ZIP. So §0 and §0.2 are done.
+
+The bug the browser turned up is in app/api/drive/[id]/route.ts, which streams the
+2,719 Drive-backed items of the 2,977-item shelf. It passed the upstream
+Content-Type straight through, and drive.usercontent.google.com answers every one
+of them application/octet-stream — while the same route sends
+Content-Disposition: inline for viewing. A browser honours inline only for a type
+it can render, so "פתיחה בכרטיסייה חדשה" downloaded the file instead of showing
+it, on every Drive-backed item. The catalog knew the real type the whole time
+(mime: application/pdf) and only the download filename was reading it; it is now
+the Content-Type, with upstream kept as the fallback. /api/shelf/<name>.pdf was
+already correct — the two routes serve one shelf and now agree.
+
+Deployed dpl_6Yutj5wVER6RYinL7CLdDgDSy9Ks, READY, production, and re-measured on
+more30.com: the 66 KB and the 24 MB PDFs both come back application/pdf and a
+.docx as its own type, all three octet-stream before, lengths unchanged, the four
+pages still 200 at the same sizes.
+
+Not fixed and not claimed: from this line NetFree 418s the PDF *body* on both
+routes, before the fix and, re-measured, after it — so the in-browser viewer shows
+"לא ניתן להציג את הקובץ" here. This machine 418s PDF bodies from supabase.co as a
+rule, so that is not a verdict on the app; it needs one look from an unblocked
+line. The fix above rests on the inline/octet-stream mismatch, which is measured.
+
+/apps/** is gitignored, so the route change itself cannot be staged — STATUS.md is
+its committed record. Evidence in QA/gannenet/live-verify-0812/.
