@@ -6,6 +6,7 @@ import { PasswordInput } from "@/components/ui/password-input";
 import { Lock, LogIn } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
+import { authErrorMessage } from "@/lib/authErrors";
 
 const AdminLogin = () => {
   const [email, setEmail] = useState("");
@@ -28,7 +29,7 @@ const AdminLogin = () => {
     if (error) {
       toast({
         title: "שגיאה בהתחברות",
-        description: "שם משתמש או סיסמה שגויים",
+        description: authErrorMessage(error),
         variant: "destructive",
       });
       return;
