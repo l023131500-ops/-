@@ -1,0 +1,58 @@
+{
+  "measured_at": "2026-08-12T05:52Z",
+  "issue": "core.issues #153",
+  "deployment": {
+    "project": "imud-more30",
+    "id": "dpl_BLm2CYxrVKx8m1FWZa377DUBktgF",
+    "url": "https://imud-more30-h7it98x1g-l023131500-ops-projects.vercel.app",
+    "target": "production",
+    "from": "source (not --prebuilt: vercel.json carries the /imud rewrites)"
+  },
+  "env_vars_found_already_set": {
+    "note": "NEEDS_USER 0s asked the user for these two. `vercel env ls` shows both were already set on imud-more30 17 days ago, alongside SUPABASE_SCHEMA and SUPABASE_TABLE. The block was never real.",
+    "SUPABASE_URL": "Encrypted, Production, 17d ago",
+    "SUPABASE_SERVICE_KEY": "Encrypted, Production, 17d ago",
+    "SUPABASE_SCHEMA": "Encrypted, Production, 17d ago",
+    "SUPABASE_TABLE": "Encrypted, Production, 17d ago"
+  },
+  "staging_correction": {
+    "note": "_deploy/imud-more30/public/imud held index-7IQk_wi0.js -- the bundle #153 named on 10/08. Production had moved on to index-DbqCalt6.js. Deploying the staged copy as-is would have rolled the live SPA back.",
+    "was": ["assets/index-7IQk_wi0.js", "assets/index-VlNluIwL.css", "assets/index.es-C5FJE_wa.js"],
+    "now": ["assets/index-DbqCalt6.js", "assets/index-DRN1hLUe.css", "assets/index.es-BCowmrbo.js", "favicon.svg"],
+    "source": "apps/04-imud-torani/dist/public (built 12/08 03:59), byte-for-byte the bundle production was already serving"
+  },
+  "before": {
+    "GET https://more30.com/imud/api/meta": { "status": 200, "content_type": "text/html; charset=utf-8", "bytes": 4036, "body": "SPA shell -- swallowed by the catch-all, so the client failed on JSON.parse and not on status" }
+  },
+  "after": [
+    { "request": "GET /imud/", "status": 200, "content_type": "text/html; charset=utf-8", "bytes": 4036, "note": "same bundle as before the deploy -- index-DbqCalt6.js" },
+    { "request": "GET /imud/api/meta", "status": 200, "content_type": "application/json; charset=utf-8", "bytes": 20864, "note": "real data: 32 templates, 13 fonts, 15 functions, 4 questions" },
+    { "request": "GET /imud/api/books (no X-Visitor-Id)", "status": 200, "content_type": "application/json", "body": "the 2 real rows -- id 4 'ספר חדש', id 5 'ניסיון', both user_id=anon" },
+    { "request": "GET /imud/api/books (X-Visitor-Id: qa-imud-0812)", "status": 200, "body": "[]", "note": "isolation holds -- a new visitor does not see the anon rows" },
+    { "request": "GET /imud/api/nope", "status": 404, "content_type": "application/json; charset=utf-8", "note": "the function's own 404, not the portal's text/plain and not the SPA shell" }
+  ],
+  "round_trip": {
+    "note": "run under X-Visitor-Id qa-imud-0812 so it could not touch the 2 real anon rows; every row created was deleted again",
+    "steps": [
+      { "request": "POST /imud/api/books", "status": 201, "id": 6, "title": "QA round-trip 12/08" },
+      { "request": "GET /imud/api/books/6", "status": 200, "title": "QA round-trip 12/08" },
+      { "request": "PATCH /imud/api/books/6", "status": 200, "title": "QA renamed" },
+      { "request": "DELETE /imud/api/books/6", "status": 204 },
+      { "request": "GET /imud/api/books", "status": 200, "body": "[]", "note": "after delete" }
+    ],
+    "payload_note": "settings and content are zod strings, not objects -- an object body is rejected 400 with the field names. That is the contract, not a defect; the client stringifies."
+  },
+  "not_verified": {
+    "GET /imud/api/books/:id/docx": {
+      "seen_from_here": "418, content-type text/html, zero-length body -- identical on more30.com and on imud-more30.vercel.app",
+      "seen_at_the_origin": "200, logged by Vercel runtime logs for both attempts (05:52:13 and 05:52:27)",
+      "reading": "the function answered; something between this machine and Vercel replaced the binary download with an empty 418. Same shape as the status rewriting already recorded for Supabase from this network. Not claimed as working -- it needs one open in a real browser.",
+      "left_open": true
+    }
+  },
+  "unchanged": {
+    "real_rows": "public.otvedaf_books ids 4 and 5 (user_id=anon) untouched -- verified before and after",
+    "protected_systems": "none touched",
+    "billing_and_sending": "nothing sent, nothing charged"
+  }
+}
