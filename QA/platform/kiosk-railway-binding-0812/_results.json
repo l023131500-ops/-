@@ -1,0 +1,88 @@
+{
+  "at": "2026-08-12T10:47:12.354Z",
+  "base": "https://more30.com/kiosk",
+  "railway": {
+    "projectId": "776b3989-21c4-40d7-8232-893cf169ed3d",
+    "serviceId": "93efbfc0-bb13-4ccb-af69-2807a7bd693c",
+    "environmentId": "04950e10-9fa7-4e7c-a7df-fa989c46696d",
+    "source": {
+      "repo": "l023131500-ops/zol",
+      "branch": "claude/what-do-you-see-gxo5tc",
+      "rootDirectory": "kiosk/server"
+    },
+    "volumeMount": "/app/data",
+    "builder": "DOCKERFILE",
+    "healthcheckPath": "/api/health",
+    "region": "sfo",
+    "replicas": 1,
+    "serviceVariableNames": [
+      "BASE_PATH",
+      "DB_PATH",
+      "JWT_SECRET",
+      "KIOSK_ENV",
+      "NODE_ENV",
+      "OFFLINE_AFTER_MINUTES",
+      "PUBLIC_URL",
+      "SEED_ADMIN_PASSWORD",
+      "SEED_ADMIN_USER",
+      "WS_HOST"
+    ],
+    "supabaseVariableCount": 0,
+    "valuesRedacted": true,
+    "valuesRedactedReason": "list-variables returns names only to a connected OAuth app; a Railway API token would return plaintext",
+    "domains": {
+      "service": ["kioskfleet-production.up.railway.app"],
+      "custom": ["kioskfleet.more30.com", "kiosk.more30.com"]
+    }
+  },
+  "checks": {
+    "health": {
+      "status": 200,
+      "ok": true,
+      "basePath": "/kiosk",
+      "basePathCorrect": true
+    },
+    "login": {
+      "status": 200,
+      "ok": true,
+      "user": {
+        "id": 1,
+        "username": "admin",
+        "role": "admin",
+        "fullName": "מנהל מערכת",
+        "deviceLimit": 9999
+      },
+      "role": "admin"
+    },
+    "devices": {
+      "status": 200,
+      "count": 0
+    },
+    "notEndpoints": {
+      "/kiosk/api/users": 404,
+      "/kiosk/api/groups": 404
+    }
+  },
+  "registry": {
+    "table": "core.projects",
+    "number": "35",
+    "supabase_project": null,
+    "supabase_schema": null,
+    "deploy_target": "railway",
+    "live": true,
+    "is_deployed": true,
+    "live_url": "https://more30.com/kiosk",
+    "verdict": "matches the measurement — no change made"
+  },
+  "verdict": {
+    "supabaseBinding": "none — no SUPABASE_* variable exists on the service",
+    "dataStore": "SQLite at $DB_PATH on the Railway volume mounted at /app/data",
+    "registryMatches": true,
+    "seedAdminHolds": true
+  },
+  "notMeasured": [
+    "the VALUES of DB_PATH / SEED_ADMIN_* / JWT_SECRET — names only to an OAuth app",
+    "whether a device can actually enrol — the fleet is empty and no device was enrolled",
+    "the zol repo's server source was not re-read this step; the Railway config was"
+  ]
+}
