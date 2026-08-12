@@ -1,0 +1,44 @@
+platform: the server-side Supabase binding of the 12 keyless systems, asked of production
+
+QA/platform/multi-project-0812 found that 12 of 26 live systems serve no
+Supabase key to the browser, and recorded in writing that core.projects for
+them is "neither contradicted nor confirmed" by a browser-side measurement.
+This asks production itself: vercel env pull --environment=production for the
+11 that sit on Vercel (35 kioskfleet is on Railway and stays out).
+
+Read-only. Nothing deployed, nothing written to Vercel, Supabase or any site.
+
+THE MAIN RESULT IS A WALL, AND IT IS PERMANENT. Vercel marks the Supabase
+variables of 02, 03, 04, 18, 26, 27, 28, 32 as "sensitive": the value is
+written once and never readable again, by CLI or API. The CLI returns
+"[SENSITIVE]". So for 8 of 11 it is measurable THAT a server-side binding
+exists, and not WHICH project it points at. Their registry rows stay
+unverified from this environment. Logged to NEEDS_USER (0-tet) so the next
+pass does not spend itself on the same door.
+
+Three things were measured:
+
+40 gannenet - the registry was NULL and the binding is real. SUPABASE_URL in
+production is not sensitive and reads in full: uhnrgujbdxhhmoxcjria.
+core.projects.supabase_project set from that measurement, not from a guess.
+
+34 kesef - the registry names a project; production holds zero variables of
+its own. kesef-more30 has five production deployments, the latest READY, and
+more30.com/kesef returns 200 serving no key. Meanwhile the hub carries a
+kesef schema with 38 tables. The data is real and the live site cannot be
+reading it at runtime. Left unchanged in the registry - the measurement shows
+a missing binding, not a wrong project - and raised for decision.
+
+18 orech carries both NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_HUB_SUPABASE_URL.
+With 10 and 15 from the previous sweep, "one project per system" is now wrong
+in at least three places.
+
+14 smachot: zero Supabase variables, registry NULL. Consistent.
+
+Not measured, and recorded as such: which project 02/03/04/18/26/27/28/32
+talk to; 35 kioskfleet (Railway); what /kesef actually displays and from
+where; whether gannenet's 41-char service key (sb_secret_ format, not JWT)
+is valid - only that it is present.
+
+Evidence: QA/platform/server-side-binding-0812/ - README.md, _results.json.
+Re-runnable: scripts/qa/server-side-binding-sweep.mjs

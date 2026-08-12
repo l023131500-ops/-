@@ -1,0 +1,251 @@
+{
+  "measured_at_utc": "2026-08-12T10:39:40.159Z",
+  "source": "vercel env pull --environment=production",
+  "results": [
+    {
+      "number": "02",
+      "slug": "igud-transcribe",
+      "path": "tamlul",
+      "vercel": "tamlul-more30",
+      "registry": "bieebmnmkffwbqlsfozh",
+      "linked": true,
+      "pulled": true,
+      "own_var_count": 5,
+      "supabase_vars": [
+        "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+        "NEXT_PUBLIC_SUPABASE_URL",
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "SUPABASE_URL"
+      ],
+      "readable": {},
+      "sensitive": [
+        "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+        "NEXT_PUBLIC_SUPABASE_URL",
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "SUPABASE_URL"
+      ],
+      "measured_project": null,
+      "verdict": "BOUND_BUT_UNREADABLE"
+    },
+    {
+      "number": "03",
+      "slug": "igud-ads",
+      "path": "modaot",
+      "vercel": "modaot-more30",
+      "registry": "bieebmnmkffwbqlsfozh",
+      "linked": true,
+      "pulled": true,
+      "own_var_count": 8,
+      "supabase_vars": [
+        "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+        "NEXT_PUBLIC_SUPABASE_URL",
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "SUPABASE_URL"
+      ],
+      "readable": {},
+      "sensitive": [
+        "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+        "NEXT_PUBLIC_SUPABASE_URL",
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "SUPABASE_URL"
+      ],
+      "measured_project": null,
+      "verdict": "BOUND_BUT_UNREADABLE"
+    },
+    {
+      "number": "04",
+      "slug": "imud-torani",
+      "path": "imud",
+      "vercel": "imud-more30",
+      "registry": "uhnrgujbdxhhmoxcjria",
+      "linked": true,
+      "pulled": true,
+      "own_var_count": 4,
+      "supabase_vars": [
+        "SUPABASE_SCHEMA",
+        "SUPABASE_SERVICE_KEY",
+        "SUPABASE_TABLE",
+        "SUPABASE_URL"
+      ],
+      "readable": {},
+      "sensitive": [
+        "SUPABASE_SCHEMA",
+        "SUPABASE_SERVICE_KEY",
+        "SUPABASE_TABLE",
+        "SUPABASE_URL"
+      ],
+      "measured_project": null,
+      "verdict": "BOUND_BUT_UNREADABLE"
+    },
+    {
+      "number": "14",
+      "slug": "bsmachot-plus",
+      "path": "smachot",
+      "vercel": "smachot-more30",
+      "registry": null,
+      "linked": true,
+      "pulled": true,
+      "own_var_count": 0,
+      "supabase_vars": [],
+      "readable": {},
+      "sensitive": [],
+      "measured_project": null,
+      "verdict": "NO_SERVER_BINDING"
+    },
+    {
+      "number": "18",
+      "slug": "torah-editor-mvp",
+      "path": "orech",
+      "vercel": "orech-more30",
+      "registry": "bieebmnmkffwbqlsfozh",
+      "linked": true,
+      "pulled": true,
+      "own_var_count": 8,
+      "supabase_vars": [
+        "NEXT_PUBLIC_HUB_SUPABASE_ANON_KEY",
+        "NEXT_PUBLIC_HUB_SUPABASE_URL",
+        "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+        "NEXT_PUBLIC_SUPABASE_URL",
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "SUPABASE_URL"
+      ],
+      "readable": {},
+      "sensitive": [
+        "NEXT_PUBLIC_HUB_SUPABASE_ANON_KEY",
+        "NEXT_PUBLIC_HUB_SUPABASE_URL",
+        "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+        "NEXT_PUBLIC_SUPABASE_URL",
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "SUPABASE_URL"
+      ],
+      "measured_project": null,
+      "verdict": "BOUND_BUT_UNREADABLE"
+    },
+    {
+      "number": "26",
+      "slug": "modaot-studio",
+      "path": "studio",
+      "vercel": "studio-more30",
+      "registry": "uhnrgujbdxhhmoxcjria",
+      "linked": true,
+      "pulled": true,
+      "own_var_count": 6,
+      "supabase_vars": [
+        "SUPABASE_SERVICE_KEY",
+        "SUPABASE_URL"
+      ],
+      "readable": {},
+      "sensitive": [
+        "SUPABASE_SERVICE_KEY",
+        "SUPABASE_URL"
+      ],
+      "measured_project": null,
+      "verdict": "BOUND_BUT_UNREADABLE"
+    },
+    {
+      "number": "27",
+      "slug": "bkalut-price",
+      "path": "mechiron",
+      "vercel": "mechiron-more30",
+      "registry": "csjekrvukbdznetsrodj",
+      "linked": true,
+      "pulled": true,
+      "own_var_count": 4,
+      "supabase_vars": [
+        "SUPABASE_ANON_KEY",
+        "SUPABASE_URL"
+      ],
+      "readable": {},
+      "sensitive": [
+        "SUPABASE_ANON_KEY",
+        "SUPABASE_URL"
+      ],
+      "measured_project": null,
+      "verdict": "BOUND_BUT_UNREADABLE"
+    },
+    {
+      "number": "28",
+      "slug": "kupot-health-funds",
+      "path": "kupot",
+      "vercel": "kupot-more30",
+      "registry": "uhnrgujbdxhhmoxcjria",
+      "linked": true,
+      "pulled": true,
+      "own_var_count": 8,
+      "supabase_vars": [
+        "SUPABASE_ANON_KEY",
+        "SUPABASE_SCHEMA",
+        "SUPABASE_URL"
+      ],
+      "readable": {},
+      "sensitive": [
+        "SUPABASE_ANON_KEY",
+        "SUPABASE_SCHEMA",
+        "SUPABASE_URL"
+      ],
+      "measured_project": null,
+      "verdict": "BOUND_BUT_UNREADABLE"
+    },
+    {
+      "number": "32",
+      "slug": "nadlan-berega",
+      "path": "nadlan",
+      "vercel": "nadlan-more30",
+      "registry": "uhnrgujbdxhhmoxcjria",
+      "linked": true,
+      "pulled": true,
+      "own_var_count": 24,
+      "supabase_vars": [
+        "SUPABASE_ANON_KEY",
+        "SUPABASE_SERVICE_KEY",
+        "SUPABASE_URL"
+      ],
+      "readable": {},
+      "sensitive": [
+        "SUPABASE_ANON_KEY",
+        "SUPABASE_SERVICE_KEY",
+        "SUPABASE_URL"
+      ],
+      "measured_project": null,
+      "verdict": "BOUND_BUT_UNREADABLE"
+    },
+    {
+      "number": "34",
+      "slug": "kesef",
+      "path": "kesef",
+      "vercel": "kesef-more30",
+      "registry": "uhnrgujbdxhhmoxcjria",
+      "linked": true,
+      "pulled": true,
+      "own_var_count": 0,
+      "supabase_vars": [],
+      "readable": {},
+      "sensitive": [],
+      "measured_project": null,
+      "verdict": "NO_SERVER_BINDING"
+    },
+    {
+      "number": "40",
+      "slug": "gannenet",
+      "path": "gannenet",
+      "vercel": "gannenet-more30",
+      "registry": null,
+      "linked": true,
+      "pulled": true,
+      "own_var_count": 6,
+      "supabase_vars": [
+        "SUPABASE_ANON_KEY",
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "SUPABASE_URL"
+      ],
+      "readable": {
+        "SUPABASE_ANON_KEY": "<208 chars>",
+        "SUPABASE_SERVICE_ROLE_KEY": "<41 chars>",
+        "SUPABASE_URL": "https://uhnrgujbdxhhmoxcjria.supabase.co"
+      },
+      "sensitive": [],
+      "measured_project": "uhnrgujbdxhhmoxcjria",
+      "verdict": "REGISTRY_NULL_BUT_BOUND"
+    }
+  ]
+}
