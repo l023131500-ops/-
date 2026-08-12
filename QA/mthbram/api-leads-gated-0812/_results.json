@@ -1,0 +1,74 @@
+{
+  "step": "mthbram (21) — the three lead lists are closed in production; the blocker that held the deploy contradicted the audit that wrote it",
+  "at_utc": "2026-08-12T15:58Z",
+  "issue": 161,
+  "severity": "critical",
+  "system": "21-mthbram (not protected)",
+  "supabase_project": "aypsqqvfohekxxuqsmrw",
+  "lovable_project": "f53a4479-1aaf-45ee-810f-e8ea4ed3fbc2",
+  "endpoint_base": "https://aypsqqvfohekxxuqsmrw.supabase.co/functions/v1/api",
+
+  "why_this_step": [
+    "The previous heartbeat named #161 as the highest-value open debt and said it was blocked on order-of-operations: 'requireAdmin(has_role) and no account passes has_role today, so deploying before creating a real admin would lock the admin panel out of its own data' — which needs ADMIN_BOOTSTRAP_SECRET, a NEEDS_USER item.",
+    "That blocker was checked instead of honoured, and it contradicts the audit that produced it. QA/mthbram/edge-functions-audit-0812/_results.json already recorded: 'nothing in the app calls them. AdminDashboard.tsx and MatchingTab.tsx read the lead tables through supabase.from(...) over PostgREST under the user session. Gating the three GETs therefore breaks no caller.'",
+    "Re-verified here, not taken on trust: the only reference to the api function anywhere in apps/21-mthbram outside node_modules/dist is src/components/admin/ApiReferenceSection.tsx, and every fetch( there is inside a template string printed as documentation — BASE_URL is only rendered and copied, never called. So there is no admin screen to lock out, and the bootstrap is not a precondition for the deploy.",
+    "The cost of waiting was not zero: until this deploy, every lead submitted from the web form, the chatbot or the IVR was readable by anyone who knew the URL."
+  ],
+
+  "before": {
+    "measured_at_utc": "2026-08-12T15:44Z",
+    "request": "GET with no apikey header and no Authorization header at all",
+    "results": {
+      "/teachers": "200 {\"data\":[]}",
+      "/seekers": "200 {\"data\":[]}",
+      "/contacts": "200 {\"data\":[]}",
+      "/stats": "200 {\"lessons\":{\"total\":0,\"approved\":0},\"teacher_leads\":0,\"seeker_leads\":0,\"contact_messages\":0}",
+      "/lessons": "200 {\"data\":[],\"total\":0,\"limit\":100,\"offset\":0}"
+    },
+    "reading": "the open version was still the one running, three days after the fix was written at source. Tables still empty, so nothing has leaked."
+  },
+
+  "change": {
+    "source": "no source change in this step — apps/21-mthbram/supabase/functions/api/index.ts already carried requireAdmin() from the earlier commit; this step is the deploy that was missing",
+    "how": "Lovable send_message to project f53a4479-1aaf-45ee-810f-e8ea4ed3fbc2, one file replaced verbatim with the committed local source, agent then ran supabase deploy_edge_functions on 'api'",
+    "lovable_commit_sha": "2160a1bbf5bf3a68438de60669229f57ae9ea701",
+    "lovable_edit_id": "edt-817f9903-0a67-4e50-ba20-b2a13b11de2c",
+    "cost_credits": 1.9,
+    "files_touched": 1,
+    "read_before_write": "the Lovable copy of supabase/functions/api/index.ts was read first and was byte-for-byte the ungated version — confirming Lovable is what deploys this project, same evidence as #160"
+  },
+
+  "after": {
+    "measured_at_utc": "2026-08-12T15:55Z",
+    "no_credentials_at_all": {
+      "/teachers": "401 {\"error\":\"נדרשת הרשאת ניהול\"}",
+      "/seekers": "401 {\"error\":\"נדרשת הרשאת ניהול\"}",
+      "/contacts": "401 {\"error\":\"נדרשת הרשאת ניהול\"}"
+    },
+    "anon_key_as_bearer": {
+      "note": "the publishable key from apps/21-mthbram/.env, i.e. the exact token that ships in every page load",
+      "/teachers": "401 {\"error\":\"נדרשת הרשאת ניהול\"}",
+      "/contacts": "401 {\"error\":\"נדרשת הרשאת ניהול\"}",
+      "reading": "this is the leg verify_jwt could never have covered — the anon key is a valid JWT, and the gate rejects it because it carries no sub claim, so auth.getUser errors and requireAdmin returns 401"
+    },
+    "public_routes_unchanged": {
+      "/stats": "200",
+      "/lessons": "200",
+      "/cities": "200",
+      "/subjects": "200"
+    },
+    "acceptance_test_from_needs_user": "the test §0ק published for the user — 'the same GET with no headers must return 401 instead of 200, and GET /api/lessons must still return 200' — passes on both halves."
+  },
+
+  "not_measured": {
+    "signed_in_non_admin_403": "attempted and not obtained. POST /auth/v1/token?grant_type=password for test@more30.com on this project returned 401 today (the same shape as #172 — an unconfirmed email is indistinguishable from a wrong password). The 403 branch was verified against this project's primitives during the audit on 12/08 (has_role(sub,'admin') -> False for that user) and its code is unchanged, but it is not re-verified against the deployed function here. Stated as a limit, not claimed as a pass.",
+    "post_submission_routes": "not exercised on purpose — every POST to /teachers, /seekers or /contacts inserts a real row into a live lead table. The code path is untouched by this change and the routes are absent from requireAdmin()."
+  },
+
+  "test_mode": "no billing, no message sent, no account created, no row written. Protected systems (08, 09, bkalut-app, bkalot-admin, zr_*, NEDARIM3873) untouched; csj/csj_src/igud not used.",
+  "still_open": {
+    "165": "chat and search-lessons on the same project still spend LOVABLE_API_KEY with no caller check and no rate limit. Note that 21 has no customer login surface, so the gannenet answer (gate behind the account) would remove a public feature here — the fix has to be a per-caller rate limit, and that needs a store. Its own step.",
+    "167": "egod seed-demo-portals — still blocked, its Lovable project refuses every message (NEEDS_USER §0יא).",
+    "admin_bootstrap": "ADMIN_BOOTSTRAP_SECRET is still needed before any human can call these three routes. That is now a convenience item, not a security blocker — it no longer gates anything the product uses."
+  }
+}
