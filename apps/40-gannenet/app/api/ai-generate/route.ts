@@ -1,6 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { callerFromRequest, GENERATE_AUTH_REQUIRED_MSG } from "@/lib/require-user";
+import {
+  reserveGeneration,
+  OVER_USER_MSG,
+  OVER_ALL_MSG,
+  QUOTA_UNAVAILABLE_MSG,
+} from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 // A generation is one long upstream call with nothing to stream to the browser
@@ -66,6 +72,26 @@ export async function POST(req: NextRequest) {
         contentElements: [`פתיחה בנושא "${topic}"`, "3 שאלות התאמה מותאמות לגיל", "משימת צביעה נקייה", "דקלום קצר בחרוזים"],
         designHints: ["כותרת מעוצבת למעלה", "קווים נקיים לגזירה", "אלמנטים גרפיים צנועים בלבד"],
       });
+    }
+
+    // אחרי בדיקת המפתח ולפני יצירת הלקוח: תצוגת הדוגמה שלמעלה אינה עולה כלום
+    // ולכן אינה נספרת, וכל מה שמכאן והלאה כן. הגידור של #185 העלה את מחיר
+    // ההתעללות מאפס ל"צריך חשבון" ולא ביטל אותו — חשבון more30 הוא טופס של
+    // פחות מדקה (§8ב), והשורה הזאת היא מה שמפריד בין חשבון לבין ארנק פתוח.
+    const quota = await reserveGeneration(caller.id);
+    // `in`, ולא `!quota.ok`: ב-tsconfig כאן strict:false, ולכן צמצום טיפוס לפי
+    // שדה בוליאני מכובה — אותה סיבה בדיוק שבגללה /api/catalog, /api/admin/delete
+    // ו-/api/admin/override בודקים `"reason" in res`.
+    if ("reason" in quota) {
+      const status = quota.reason === "unavailable" ? 503 : 429;
+      const error =
+        quota.reason === "user" ? OVER_USER_MSG
+        : quota.reason === "global" ? OVER_ALL_MSG
+        : QUOTA_UNAVAILABLE_MSG;
+      // `quotaExceeded` כדי שהעמוד יוכל להבדיל בין "נגמרה המכסה" (חזרה מחר)
+      // לבין 429 של Anthropic עצמו ("נסי שוב בעוד רגע") — שתי תשובות שונות
+      // לגמרי לגננת, ושתיהן מגיעות באותו קוד סטטוס.
+      return NextResponse.json({ error, quotaExceeded: quota.reason !== "unavailable" }, { status });
     }
 
     const client = new Anthropic({ apiKey: key });
