@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Lock, Mail, KeyRound } from "lucide-react";
+import { Lock, Mail, KeyRound, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
@@ -19,6 +19,7 @@ const checkIsAdmin = async (userId: string) => {
 const AdminLogin = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const navigate = useNavigate();
@@ -142,15 +143,35 @@ const AdminLogin = () => {
             </div>
             <div>
               <label className="font-body text-sm font-medium text-foreground mb-1.5 block">סיסמה</label>
+              {/* כפתור "הצג סיסמה" (priority §1א). הצד נמדד על החי ולא הועתק
+                  ממערכת קודמת: השדה אינו נושא dir משלו, יורש rtl מ-<html> ו-
+                  text-align:start — התווים נצמדים לקצה הימני, שם כבר יושב
+                  KeyRound עם pr-10. הצד הפנוי הוא השמאלי (padding-left 12px),
+                  ולכן העין יושבת שם, ו-pl-10 שומר לה את המקום גם כשהסיסמה
+                  ארוכה. השדה נמצא בתוך <form>, ולכן type="button" חובה — בלעדיו
+                  לחיצה על העין הייתה שולחת את טופס הכניסה. */}
               <div className="relative">
                 <KeyRound className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <Input
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="pr-10"
+                  className="pr-10 pl-10"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((v) => !v)}
+                  aria-label={showPassword ? "הסתר סיסמה" : "הצג סיסמה"}
+                  title={showPassword ? "הסתר סיסמה" : "הצג סיסמה"}
+                  className="absolute left-2 top-1/2 -translate-y-1/2 flex h-7 w-7 items-center justify-center rounded text-muted-foreground hover:text-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                >
+                  {showPassword ? (
+                    <EyeOff className="w-4 h-4" aria-hidden="true" />
+                  ) : (
+                    <Eye className="w-4 h-4" aria-hidden="true" />
+                  )}
+                </button>
               </div>
             </div>
             <Button
