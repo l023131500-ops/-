@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
-import { Loader2, Shield } from "lucide-react";
+import { Eye, EyeOff, Loader2, Shield } from "lucide-react";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
@@ -25,6 +25,7 @@ function AuthPage() {
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [fullName, setFullName] = useState("");
 
   useEffect(() => {
@@ -102,8 +103,23 @@ function AuthPage() {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="login-password">סיסמה</Label>
-                  <Input id="login-password" type="password" required value={password} dir="ltr"
-                         onChange={(e) => setPassword(e.target.value)} />
+                  {/* השדה dir="ltr" — הטקסט צמוד לשמאל, ולכן העין יושבת בצד ימין הפנוי.
+                      type="button" חובה: הכפתור בתוך <form onSubmit={handleLogin}>. */}
+                  <div className="relative">
+                    <Input id="login-password" type={showPassword ? "text" : "password"} required
+                           value={password} dir="ltr" className="pr-10"
+                           onChange={(e) => setPassword(e.target.value)} />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword((v) => !v)}
+                      aria-label={showPassword ? "הסתר סיסמה" : "הצג סיסמה"}
+                      title={showPassword ? "הסתר סיסמה" : "הצג סיסמה"}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 flex h-7 w-7 items-center justify-center rounded text-muted-foreground hover:text-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    >
+                      {showPassword ? <EyeOff className="w-4 h-4" aria-hidden="true" />
+                                    : <Eye className="w-4 h-4" aria-hidden="true" />}
+                    </button>
+                  </div>
                 </div>
                 <Button type="submit" className="w-full" disabled={loading}>
                   {loading && <Loader2 className="w-4 h-4 animate-spin ml-2" />}
@@ -126,8 +142,25 @@ function AuthPage() {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="signup-password">סיסמה</Label>
-                  <Input id="signup-password" type="password" required minLength={6} value={password} dir="ltr"
-                         onChange={(e) => setPassword(e.target.value)} />
+                  <div className="relative">
+                    <Input id="signup-password" type={showPassword ? "text" : "password"} required minLength={6}
+                           value={password} dir="ltr" className="pr-10" aria-describedby="signup-password-rule"
+                           onChange={(e) => setPassword(e.target.value)} />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword((v) => !v)}
+                      aria-label={showPassword ? "הסתר סיסמה" : "הצג סיסמה"}
+                      title={showPassword ? "הסתר סיסמה" : "הצג סיסמה"}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 flex h-7 w-7 items-center justify-center rounded text-muted-foreground hover:text-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    >
+                      {showPassword ? <EyeOff className="w-4 h-4" aria-hidden="true" />
+                                    : <Eye className="w-4 h-4" aria-hidden="true" />}
+                    </button>
+                  </div>
+                  {/* minLength={6} נאכף בדפדפן אבל מעולם לא נאמר למשתמש (§1א). */}
+                  <p id="signup-password-rule" className="text-xs text-muted-foreground">
+                    לפחות 6 תווים
+                  </p>
                 </div>
                 <Button type="submit" className="w-full" disabled={loading}>
                   {loading && <Loader2 className="w-4 h-4 animate-spin ml-2" />}
