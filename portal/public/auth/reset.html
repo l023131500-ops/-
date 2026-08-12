@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>בחירת סיסמה חדשה · עולם הסטארטאפים</title>
+    <meta name="description" content="השלמת איפוס סיסמה לחשבון עולם הסטארטאפים." />
+    <meta name="robots" content="noindex" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Secular+One&family=Heebo:wght@300;400;500;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Secular+One&family=Heebo:wght@300;400;500;700&display=swap" rel="stylesheet" /></noscript>
+    <style>
+      /* אותה ערכת צבעים של /login ושל /auth/callback — DESIGN_STANDARD §עיצוב.
+         זה המסך השלישי באותה זרימה, ולכן הוא לא מרשה לעצמו מראה משלו. */
+      :root {
+        color-scheme: light dark;
+        --bg-1:#1b1f52; --bg-2:#0b0d2e; --card:#fff; --ink:#0b0d2e; --muted:#5c6178;
+        --line:#d9dbe8; --field:#fff; --gold:#c9a227;
+        --err-bg:#fdeaea; --err-ink:#8c1f1f; --ok-bg:#e9f7ef; --ok-ink:#15603a;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg-1:#131634; --bg-2:#06070f; --card:#14172f; --ink:#ece9f5; --muted:#9aa0bd;
+          --line:#2c3054; --field:#0e1128;
+          --err-bg:#3a1414; --err-ink:#ffb4b4; --ok-bg:#10301f; --ok-ink:#86e0ae;
+        }
+      }
+      *,*::before,*::after{box-sizing:border-box}
+      body{margin:0;min-height:100vh;display:grid;place-items:center;padding:24px;
+        font-family:'Heebo',system-ui,sans-serif;color:var(--ink);
+        background:radial-gradient(1200px 600px at 70% -10%,var(--bg-1) 0%,var(--bg-2) 60%)}
+      .card{width:100%;max-width:430px;background:var(--card);border:1px solid var(--line);
+        border-radius:18px;padding:28px;box-shadow:0 30px 70px rgba(0,0,0,.4)}
+      .brand{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+      .dot{width:12px;height:12px;border-radius:50%;background:var(--gold);flex:none;
+        box-shadow:0 0 0 4px rgba(201,162,39,.25)}
+      h1{font-family:'Secular One',sans-serif;font-size:22px;margin:0}
+      p.lead{margin:6px 0 18px;font-size:14px;color:var(--muted);line-height:1.7}
+      label{display:block;font-size:12px;font-weight:700;margin:14px 0 6px}
+      input{width:100%;padding:11px 13px;border:1px solid var(--line);border-radius:10px;
+        font-size:15px;font-family:inherit;direction:ltr;text-align:start;
+        background:var(--field);color:var(--ink);min-height:44px}
+      input:focus{outline:2px solid var(--gold);outline-offset:1px;border-color:transparent}
+      /* כפתור "עין" בתוך מסגרת השדה — אותה תבנית של /login, כי כאן מקלידים
+         סיסמה שאין לה עדיין מנהל סיסמאות שימלא אותה. */
+      .pw-wrap{position:relative}
+      .pw-wrap input{padding-right:46px}
+      .pw-toggle{position:absolute;right:5px;top:50%;transform:translateY(-50%);
+        width:36px;height:36px;min-height:36px;padding:0;margin:0;
+        display:grid;place-items:center;background:transparent;border:0;border-radius:8px;
+        color:var(--muted);cursor:pointer}
+      .pw-toggle:hover{color:var(--ink)}
+      .pw-toggle svg{width:20px;height:20px;display:block}
+      .pw-req{margin:6px 0 0;font-size:12px;line-height:1.7;color:var(--muted)}
+      .pw-req[data-met='1']{color:var(--ok-ink)}
+      .pw-req .mark{font-weight:700}
+      button{width:100%;margin-top:18px;padding:12px;border:0;border-radius:10px;
+        background:var(--ink);color:var(--card);font-family:inherit;font-size:15px;
+        font-weight:700;cursor:pointer;min-height:44px}
+      button:disabled{opacity:.6;cursor:progress}
+      button:focus-visible,a:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+      .msg{margin-top:14px;font-size:13px;line-height:1.7;border-radius:10px;padding:11px 13px}
+      .msg.err{background:var(--err-bg);color:var(--err-ink)}
+      .msg.ok{background:var(--ok-bg);color:var(--ok-ink)}
+      .spinner{width:26px;height:26px;border-radius:50%;border:3px solid var(--line);
+        border-top-color:var(--gold);animation:spin .8s linear infinite;margin:6px 0 2px}
+      @keyframes spin{to{transform:rotate(360deg)}}
+      @media (prefers-reduced-motion:reduce){.spinner{animation:none}}
+      .foot{margin-top:18px;font-size:12px;color:var(--muted);line-height:2}
+      .foot a{color:var(--ink);font-weight:600;display:inline-flex;align-items:center;min-height:24px}
+      [hidden]{display:none !important}
+    </style>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+  </head>
+  <body>
+    <main class="card">
+      <div class="brand"><span class="dot"></span><h1 id="title">בחירת סיסמה חדשה</h1></div>
+
+      <section id="waiting">
+        <div class="spinner" role="status" aria-label="בודקים את הקישור"></div>
+        <p class="lead">בודקים את הקישור מהמייל…</p>
+      </section>
+
+      <section id="chooser" hidden>
+        <p class="lead" id="chooserLead">
+          הקישור אומת. בחרו סיסמה חדשה לחשבון — אחריה תיכנסו ישירות פנימה.
+        </p>
+        <form id="form" novalidate>
+          <label for="password">סיסמה חדשה (8 תווים לפחות)</label>
+          <div class="pw-wrap">
+            <input id="password" name="password" type="password"
+                   autocomplete="new-password" required aria-describedby="pwReq" />
+            <!-- type="button" מפורש: בתוך <form> כפתור בלי type הוא submit,
+                 וכל לחיצה על "הצג" הייתה שולחת את הטופס. -->
+            <button id="pwToggle" class="pw-toggle" type="button"
+                    aria-pressed="false" aria-controls="password"
+                    aria-label="הצג סיסמה" title="הצג סיסמה">
+              <svg id="pwEye" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                   stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M2 12s3.6-6.5 10-6.5S22 12 22 12s-3.6 6.5-10 6.5S2 12 2 12z" />
+                <circle cx="12" cy="12" r="2.8" />
+              </svg>
+              <svg id="pwEyeOff" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                   stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" hidden>
+                <path d="M2 12s3.6-6.5 10-6.5c1.7 0 3.2.5 4.5 1.1M22 12s-1.3 2.4-3.9 4.2M12 18.5C5.6 18.5 2 12 2 12" />
+                <path d="M9.9 9.9a3 3 0 0 0 4.2 4.2" />
+                <path d="M3.5 3.5l17 17" />
+              </svg>
+            </button>
+          </div>
+          <p id="pwReq" class="pw-req"><span class="mark" aria-hidden="true">•</span> לפחות 8 תווים</p>
+
+          <label for="confirm">שוב, לאימות</label>
+          <input id="confirm" name="confirm" type="password" autocomplete="new-password" required />
+
+          <button id="submit" type="submit">שמירת הסיסמה וכניסה</button>
+        </form>
+      </section>
+
+      <section id="failed" hidden>
+        <p class="lead" id="failText"></p>
+        <p class="foot"><a href="/login">חזרה לדף הכניסה</a></p>
+      </section>
+
+      <div id="msg" class="msg" hidden role="status" aria-live="polite"></div>
+    </main>
+
+    <script type="module">
+      // המסך שמסיים איפוס סיסמה. עד היום הוא לא היה קיים בשום מערכת: הקישור
+      // מהמייל נחת על עמוד אמיתי (more30.com) עם טוקן חי ב-fragment, ואיש לא
+      // קרא אותו — כלומר מי שביקש איפוס לא יכול היה להשלים אותו. core.issues #200.
+      import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+      const SUPABASE_URL = 'https://uhnrgujbdxhhmoxcjria.supabase.co';
+      const SUPABASE_ANON =
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVobnJndWpiZHhoaG1veGNqcmlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMzNjE3MjgsImV4cCI6MjA5ODkzNzcyOH0.nHuOhw-WQEU17lNa7XOlORnBhVAYbJBHudKafWkSHBw';
+
+      // אותו storageKey של /login ושל /auth/callback — הסשן שנוצר כאן הוא
+      // הסשן שהמשתמש ימשיך איתו, ולכן הוא חייב להיכתב לאותו מקום.
+      const sb = createClient(SUPABASE_URL, SUPABASE_ANON, {
+        auth: { persistSession: true, storageKey: 'more30-auth', detectSessionInUrl: true },
+      });
+
+      const $ = (id) => document.getElementById(id);
+      const params = new URLSearchParams(location.search);
+      const hashParams = new URLSearchParams(location.hash.replace(/^#/, ''));
+      const PW_MIN = 8;
+
+      function fail(text) {
+        $('title').textContent = 'הקישור אינו תקף';
+        $('waiting').hidden = true;
+        $('chooser').hidden = true;
+        $('failed').hidden = false;
+        $('failText').textContent = text;
+      }
+
+      function show(text, kind) {
+        $('msg').textContent = text;
+        $('msg').className = 'msg ' + kind;
+        $('msg').hidden = false;
+      }
+
+      // ── הצגת סיסמה ─────────────────────────────────────────────────────────
+      // ‎toggleAttribute ולא ‎.hidden‎: על אלמנט SVG ההשמה יוצרת שדה JS שאינו
+      // משפיע על התצוגה, והאייקון היה נתקע על "עין" (נמדד ב-/login).
+      function showPassword(on) {
+        const pw = $('password');
+        pw.type = on ? 'text' : 'password';
+        const btn = $('pwToggle');
+        btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+        const label = on ? 'הסתר סיסמה' : 'הצג סיסמה';
+        btn.setAttribute('aria-label', label);
+        btn.title = label;
+        $('pwEye').toggleAttribute('hidden', on);
+        $('pwEyeOff').toggleAttribute('hidden', !on);
+      }
+
+      function updatePwReq() {
+        const req = $('pwReq');
+        const met = $('password').value.length >= PW_MIN;
+        req.dataset.met = met ? '1' : '0';
+        req.querySelector('.mark').textContent = met ? '✓' : '•';
+      }
+
+      $('pwToggle').addEventListener('click', () => {
+        showPassword($('pwToggle').getAttribute('aria-pressed') !== 'true');
+        $('password').focus();
+      });
+      $('password').addEventListener('input', updatePwReq);
+
+      // ── היעד אחרי ההצלחה ───────────────────────────────────────────────────
+      // /auth/callback הוא הנתיב היחיד שיודע להחליט לאן להמשיך (חזרה למערכת
+      // שממנה באת / ניהול / אזור אישי), ולכן מסיימים אצלו ולא ב-/me קשיח.
+      const CALLBACK = '/auth/callback';
+
+      function friendly(error) {
+        const m = error.message || '';
+        if (m.includes('should be different')) return 'הסיסמה החדשה זהה לקודמת. בחרו סיסמה אחרת.';
+        if (m.includes('Password should be')) return 'הסיסמה קצרה מדי — לפחות 8 תווים.';
+        if (m.includes('session') || m.includes('JWT') || m.includes('expired'))
+          return 'תוקף הקישור פג. בקשו קישור חדש מדף הכניסה.';
+        return 'שמירת הסיסמה נכשלה: ' + m;
+      }
+
+      async function run() {
+        // שגיאה שחזרה מ-Supabase עצמו (קישור שפג, נוצל, או נפתח פעמיים).
+        const err = params.get('error') || hashParams.get('error');
+        if (err) {
+          const code = params.get('error_code') || hashParams.get('error_code') || '';
+          if (code.includes('otp_expired')) {
+            return fail('תוקף הקישור פג. קישורי איפוס תקפים לשעה — בקשו קישור חדש מדף הכניסה.');
+          }
+          const d = params.get('error_description') || hashParams.get('error_description') || err;
+          return fail(decodeURIComponent(d.replace(/\+/g, ' ')));
+        }
+
+        // detectSessionInUrl קורא גם ‎?code=‎ (PKCE) וגם טוקנים ב-hash. נותנים
+        // לו להשלים לפני שמכריזים על כישלון — אותה המתנה של /auth/callback.
+        let session = null;
+        for (let i = 0; i < 25 && !session; i++) {
+          const { data } = await sb.auth.getSession();
+          session = data?.session ?? null;
+          if (!session) await new Promise((r) => setTimeout(r, 200));
+        }
+        if (!session) {
+          return fail(
+            'לא מצאנו קישור איפוס תקף בכתובת. ייתכן שהקישור פג, שכבר נוצל, או שנפתח בדפדפן אחר. בקשו קישור חדש מדף הכניסה.',
+          );
+        }
+
+        // הטוקן נשאר בשורת הכתובת אחרי שנקרא — ניקוי שלו מונע שהוא יישלח
+        // הלאה ב-Referer או יישמר בהיסטוריה של הדפדפן.
+        try { history.replaceState(null, '', location.pathname); } catch {}
+
+        $('waiting').hidden = true;
+        $('chooser').hidden = false;
+        const email = session.user?.email;
+        if (email) {
+          $('chooserLead').textContent =
+            'הקישור אומת עבור ' + email + '. בחרו סיסמה חדשה — אחריה תיכנסו ישירות פנימה.';
+        }
+        updatePwReq();
+        $('password').focus();
+
+        $('form').addEventListener('submit', async (e) => {
+          e.preventDefault();
+          $('msg').hidden = true;
+          const password = $('password').value;
+          if (password.length < PW_MIN) return show('הסיסמה חייבת להכיל לפחות 8 תווים.', 'err');
+          // שדה אימות ולא רק שדה אחד: כאן אין סיסמה קודמת שאפשר לנסות שוב
+          // איתה, ולכן שגיאת הקלדה נועלת את החשבון עד לאיפוס נוסף.
+          if (password !== $('confirm').value) return show('שתי הסיסמאות אינן זהות.', 'err');
+
+          $('submit').disabled = true;
+          $('submit').textContent = 'שומרים…';
+          const { error } = await sb.auth.updateUser({ password });
+          $('submit').disabled = false;
+          $('submit').textContent = 'שמירת הסיסמה וכניסה';
+          if (error) return show(friendly(error), 'err');
+
+          show('הסיסמה עודכנה. מעבירים אותך פנימה…', 'ok');
+          location.replace(CALLBACK);
+        });
+      }
+
+      run().catch((e) => fail('אירעה שגיאה בלתי צפויה: ' + e.message));
+    </script>
+  </body>
+</html>

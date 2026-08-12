@@ -98,6 +98,17 @@
       .pw-req { margin: 6px 0 0; font-size: 12px; line-height: 1.7; color: var(--muted); }
       .pw-req[data-met='1'] { color: var(--ok-ink); }
       .pw-req .mark { font-weight: 700; }
+      /* "שכחתי סיסמה" — קישור טקסט ולא כפתור מלא, כדי שלא יתחרה על העין עם
+         כפתור הכניסה. הוא <button> ולא <a> כי הוא מפעיל פעולה בעמוד ואין לו
+         כתובת יעד; ‎min-height‎ שומר על יעד מגע תקני למרות שהוא נראה כקישור. */
+      .forgot { margin: 8px 0 0; }
+      .forgot button {
+        width: auto; padding: 0; min-height: 44px;
+        display: inline-flex; align-items: center;
+        background: transparent; color: var(--muted);
+        font-size: 12px; font-weight: 600; text-decoration: underline;
+      }
+      .forgot button:hover { color: var(--ink); }
       button {
         width: 100%; padding: 12px; border: 0; border-radius: 10px;
         font-family: inherit; font-size: 15px; font-weight: 700; cursor: pointer;
@@ -208,6 +219,10 @@
           </button>
         </div>
         <p id="pwReq" class="pw-req" hidden><span class="mark" aria-hidden="true">•</span> לפחות 8 תווים</p>
+
+        <p id="forgotRow" class="forgot">
+          <button id="forgot" type="button">שכחתי סיסמה</button>
+        </p>
 
         <button id="submit" type="submit">כניסה</button>
       </form>
@@ -325,6 +340,9 @@
         $('pwReq').hidden = !up;
         if (up) $('password').setAttribute('aria-describedby', 'pwReq');
         else $('password').removeAttribute('aria-describedby');
+        // איפוס שייך לכניסה בלבד. במסלול ההרשמה עוד אין חשבון שאפשר לאפס לו
+        // סיסמה, וקישור שם רק מזמין את המשתמש למבוי סתום.
+        $('forgotRow').hidden = up;
         showPassword(false);
         updatePwReq();
         $('submit').textContent = up ? 'פתיחת חשבון' : 'כניסה';
@@ -469,6 +487,43 @@
 
         show(up ? 'החשבון נוצר ואתה מחובר.' : 'נכנסת בהצלחה.', 'ok');
         location.replace(CALLBACK);
+      });
+
+      // ── שכחתי סיסמה ────────────────────────────────────────────────────────
+      // עד היום לא הייתה בשום מסך נקודת כניסה לאיפוס, וגם מי שקיבל קישור
+      // (מלוח Supabase, למשל) נחת על עמוד שלא קורא אותו — core.issues #200.
+      // כאן נסגר החצי הראשון: הבקשה. החצי השני הוא /auth/reset.
+      const RESET_PAGE = '/auth/reset';
+
+      $('forgot').addEventListener('click', async () => {
+        msg.hidden = true;
+        const ident = $('ident').value;
+        if (!ident.trim()) {
+          $('ident').focus();
+          show('הזינו קודם שם משתמש או אימייל, ונשלח לשם קישור לאיפוס.', 'err');
+          return;
+        }
+
+        const btn = $('forgot');
+        btn.disabled = true;
+        btn.textContent = 'שולחים…';
+        const { error } = await sb.auth.resetPasswordForEmail(toEmail(ident), {
+          redirectTo: location.origin + RESET_PAGE,
+        });
+        btn.disabled = false;
+        btn.textContent = 'שכחתי סיסמה';
+
+        // חסימת קצב היא התשובה האמיתית היחידה ששווה להציג כשגיאה — היא מסבירה
+        // למה כלום לא קרה. כל שאר המקרים מקבלים את אותה תשובה בדיוק, כדי
+        // שהטופס לא יהפוך לכלי שבודק אילו כתובות רשומות אצלנו.
+        if (error && /rate|too many|seconds/i.test(error.message || '')) {
+          show('נשלחה כבר בקשה. המתינו דקה ונסו שוב.', 'err');
+          return;
+        }
+        show(
+          'אם קיים חשבון עם הכתובת הזו, שלחנו אליה קישור לבחירת סיסמה חדשה. הקישור תקף לשעה.',
+          'ok',
+        );
       });
 
       $('signout').addEventListener('click', async () => {
