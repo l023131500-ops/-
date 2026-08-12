@@ -11,6 +11,11 @@ const corsHeaders = {
 
 const LOVABLE_API = "https://ai.gateway.lovable.dev/v1/chat/completions";
 
+// Requests per hour, per caller IP. FindLesson.tsx calls this once per search
+// from a public page, so a real visitor never approaches this — but it is far
+// below what draining the AI credit would take.
+const RATE_LIMIT_PER_HOUR = 20;
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
@@ -22,6 +27,24 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
     );
+
+    // Cap per caller IP. This function spends LOVABLE_API_KEY credit and its only
+    // gate is verify_jwt — which the anon key satisfies, and that key is shipped to
+    // every browser. Runs before the lead lookup, so a blocked request costs nothing.
+    const ip = (req.headers.get("x-forwarded-for") ?? "").split(",")[0].trim() || "unknown";
+    const windowStart = new Date(Math.floor(Date.now() / 3_600_000) * 3_600_000).toISOString();
+    const { data: gate, error: gateError } = await supabase.rpc("ai_rate_limit_hit", {
+      p_bucket: `ai-match-teacher:${ip}`,
+      p_window_start: windowStart,
+      p_limit: RATE_LIMIT_PER_HOUR,
+    });
+    if (gateError) {
+      // Fail open: a counter problem must not take the live search down.
+      console.error("rate limit check failed:", gateError.message);
+    } else if (gate?.[0]?.allowed === false) {
+      console.warn(`rate limited ${ip}: ${gate[0].hits} hits this hour`);
+      return jr({ ok: false, error: "יותר מדי בקשות מהכתובת הזו. נסו שוב בעוד שעה." }, 429);
+    }
 
     const { data: lead } = await supabase
       .from("leads")

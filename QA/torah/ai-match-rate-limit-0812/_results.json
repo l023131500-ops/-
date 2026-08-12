@@ -1,0 +1,125 @@
+{
+  "at": "2026-08-12T17:16:10.132Z",
+  "project": "bieebmnmkffwbqlsfozh",
+  "fn": "ai-match-teacher",
+  "version": 2,
+  "limit_per_hour": 20,
+  "lead_id": "00000000-0000-4000-8000-000000000000",
+  "note": "404 = cap passed, lead lookup missed, AI gateway never reached",
+  "no_key": {
+    "status": 401,
+    "body": "{\"code\":\"UNAUTHORIZED_NO_AUTH_HEADER\",\"message\":\"Missing authorization header\"}"
+  },
+  "hits": [
+    {
+      "n": 1,
+      "status": 404,
+      "body": "{\"ok\":false,\"error\":\"lead not found\"}"
+    },
+    {
+      "n": 2,
+      "status": 404,
+      "body": "{\"ok\":false,\"error\":\"lead not found\"}"
+    },
+    {
+      "n": 3,
+      "status": 404,
+      "body": "{\"ok\":false,\"error\":\"lead not found\"}"
+    },
+    {
+      "n": 4,
+      "status": 404,
+      "body": "{\"ok\":false,\"error\":\"lead not found\"}"
+    },
+    {
+      "n": 5,
+      "status": 404,
+      "body": "{\"ok\":false,\"error\":\"lead not found\"}"
+    },
+    {
+      "n": 6,
+      "status": 404,
+      "body": "{\"ok\":false,\"error\":\"lead not found\"}"
+    },
+    {
+      "n": 7,
+      "status": 404,
+      "body": "{\"ok\":false,\"error\":\"lead not found\"}"
+    },
+    {
+      "n": 8,
+      "status": 404,
+      "body": "{\"ok\":false,\"error\":\"lead not found\"}"
+    },
+    {
+      "n": 9,
+      "status": 404,
+      "body": "{\"ok\":false,\"error\":\"lead not found\"}"
+    },
+    {
+      "n": 10,
+      "status": 404,
+      "body": "{\"ok\":false,\"error\":\"lead not found\"}"
+    },
+    {
+      "n": 11,
+      "status": 404,
+      "body": "{\"ok\":false,\"error\":\"lead not found\"}"
+    },
+    {
+      "n": 12,
+      "status": 404,
+      "body": "{\"ok\":false,\"error\":\"lead not found\"}"
+    },
+    {
+      "n": 13,
+      "status": 404,
+      "body": "{\"ok\":false,\"error\":\"lead not found\"}"
+    },
+    {
+      "n": 14,
+      "status": 404,
+      "body": "{\"ok\":false,\"error\":\"lead not found\"}"
+    },
+    {
+      "n": 15,
+      "status": 404,
+      "body": "{\"ok\":false,\"error\":\"lead not found\"}"
+    },
+    {
+      "n": 16,
+      "status": 404,
+      "body": "{\"ok\":false,\"error\":\"lead not found\"}"
+    },
+    {
+      "n": 17,
+      "status": 404,
+      "body": "{\"ok\":false,\"error\":\"lead not found\"}"
+    },
+    {
+      "n": 18,
+      "status": 404,
+      "body": "{\"ok\":false,\"error\":\"lead not found\"}"
+    },
+    {
+      "n": 19,
+      "status": 404,
+      "body": "{\"ok\":false,\"error\":\"lead not found\"}"
+    },
+    {
+      "n": 20,
+      "status": 404,
+      "body": "{\"ok\":false,\"error\":\"lead not found\"}"
+    },
+    {
+      "n": 21,
+      "status": 429,
+      "body": "{\"ok\":false,\"error\":\"יותר מדי בקשות מהכתובת הזו. נסו שוב בעוד שעה.\"}"
+    },
+    {
+      "n": 22,
+      "status": 429,
+      "body": "{\"ok\":false,\"error\":\"יותר מדי בקשות מהכתובת הזו. נסו שוב בעוד שעה.\"}"
+    }
+  ]
+}

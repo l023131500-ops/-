@@ -1,0 +1,61 @@
+{
+  "project": "bieebmnmkffwbqlsfozh",
+  "base": "https://bieebmnmkffwbqlsfozh.supabase.co/functions/v1",
+  "at": "2026-08-12T17:06:35.986Z",
+  "results": [
+    {
+      "fn": "activate-invite",
+      "method": "POST",
+      "expect": "400 חסרים פרטים if reachable unauthenticated",
+      "status": 404,
+      "ms": 950,
+      "bytes": 65,
+      "body": "{\"code\":\"NOT_FOUND\",\"message\":\"Requested function was not found\"}"
+    },
+    {
+      "fn": "admin-users",
+      "method": "POST",
+      "expect": "401 אין הרשאה (gate is first)",
+      "status": 401,
+      "ms": 233,
+      "bytes": 32,
+      "body": "{\"ok\":false,\"error\":\"אין הרשאה\"}"
+    },
+    {
+      "fn": "ai-match-teacher",
+      "method": "POST",
+      "expect": "400 missing lead_id if reachable unauthenticated",
+      "status": 401,
+      "ms": 200,
+      "bytes": 79,
+      "body": "{\"code\":\"UNAUTHORIZED_NO_AUTH_HEADER\",\"message\":\"Missing authorization header\"}"
+    },
+    {
+      "fn": "nedarim-admin",
+      "method": "POST",
+      "expect": "401 missing auth token (gate is first)",
+      "status": 401,
+      "ms": 206,
+      "bytes": 79,
+      "body": "{\"code\":\"UNAUTHORIZED_NO_AUTH_HEADER\",\"message\":\"Missing authorization header\"}"
+    },
+    {
+      "fn": "nedarim-create-payment",
+      "method": "POST",
+      "expect": "400 missing required fields if reachable unauthenticated",
+      "status": 400,
+      "ms": 224,
+      "bytes": 91,
+      "body": "{\"ok\":false,\"error\":\"missing required fields (tenant_id, amount, donor.name, donor.phone)\"}"
+    },
+    {
+      "fn": "nedarim-webhook",
+      "method": "OPTIONS",
+      "expect": "200 ok — preflight only, never POSTed (it writes on reject)",
+      "status": 200,
+      "ms": 244,
+      "bytes": 2,
+      "body": "ok"
+    }
+  ]
+}
