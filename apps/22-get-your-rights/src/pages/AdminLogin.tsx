@@ -2,6 +2,7 @@ import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { Lock, LogIn } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -58,12 +59,12 @@ const AdminLogin = () => {
               className="text-sm"
               dir="ltr"
             />
-            <Input
-              type="password"
+            <PasswordInput
               placeholder="סיסמה"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              autoComplete="current-password"
               className="text-sm"
               dir="ltr"
             />

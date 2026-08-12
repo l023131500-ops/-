@@ -1,0 +1,59 @@
+{
+  "system": "22 — get-your-rights / זכויות (more30.com/zchuyot)",
+  "priority": "§1א — כפתור \"הצג סיסמה\" בכל שדות הסיסמה",
+  "date": "2026-08-12",
+  "surface": "/zchuyot/admin/login — שדה הסיסמה היחיד במערכת",
+  "deployment": {
+    "project": "zchuyot-more30",
+    "deployment_id": "dpl_m429CsoDcr1kydCD9K6FkMfY2vMw",
+    "target": "production",
+    "readyState": "READY"
+  },
+  "pre_deploy_safety": {
+    "why": "העותק ב-_deploy עלול להיות מאחורי מה שחי (ראה deploy-copy-can-break-live-sites)",
+    "live_vs_deploy_index_html": "זהים לחלוטין פרט לשלוש שורות ההזרקה של נטפרי — 106 שורות חיות מול 101 מקומיות, ואין ולו שורה אחת שקיימת רק בחי",
+    "asset_diff": "מתוך 21 קבצי dist: 8 זהים בית-בית לפרוסים; כל היתר נבדלים רק בשם קובץ מיובא (מפל hash). השינויים האמיתיים: AdminLogin 1,858→2,628 בתים, icons 31,375→32,306 (Eye/EyeOff), CSS 76,633→76,727 (מחלקת pr-10)"
+  },
+  "checks": [
+    {
+      "name": "הכפתור חי על הדומיין",
+      "measured": "button[type=button] aria-label=\"הצג סיסמה\" aria-pressed=\"false\" קיים ב-/zchuyot/admin/login; לשדה יש class pr-10 ו-dir=ltr",
+      "pass": true
+    },
+    {
+      "name": "הכפתור יושב בתוך המסגרת ואינו מכוסה",
+      "measured": "rect הכפתור (633,343,32x32) מוכל ברקט השדה (351..669, גובה 40); elementFromPoint במרכזו מחזיר svg.lucide שהכפתור מכיל",
+      "pass": true
+    },
+    {
+      "name": "הצד נגזר מ-dir של השדה ולא של העמוד",
+      "measured": "העמוד RTL, השדה dir=ltr — לכן הכפתור מימין (right-1 + pr-10). משמאל הוא היה יושב על התו הראשון שמוקלד",
+      "pass": true
+    },
+    {
+      "name": "הלחיצה הופכת type, aria-pressed, aria-label ואייקון יחד",
+      "measured": "password→text · false→true · \"הצג סיסמה\"→\"הסתר סיסמה\" · lucide-eye→lucide-eye-off. הערך נשמר: More30Admin2026",
+      "pass": true
+    },
+    {
+      "name": "הלחיצה אינה שולחת את הטופס",
+      "measured": "location.href לא השתנה; 0 קריאות fetch אחרי הלחיצה — לא נוצר ניסיון התחברות ולא נכתב דבר ל-Supabase",
+      "pass": true
+    },
+    {
+      "name": "החזרה למצב מוסתר",
+      "measured": "לחיצה שנייה: text→password · true→false · \"הסתר סיסמה\"→\"הצג סיסמה\" · lucide-eye-off→lucide-eye",
+      "pass": true
+    },
+    {
+      "name": "דף הנחיתה לא נשבר מהבנייה מחדש ומה-prerender",
+      "measured": "/zchuyot/ מחזיר 200, h1=\"בקלות\", 15 כרטיסים, 9 כפתורים, 3 ילדים ל-#root",
+      "pass": true
+    }
+  ],
+  "not_checked": "אין כאן מסלול הרשמה — /zchuyot/admin/login הוא כניסה בלבד (supabase.auth.signInWithPassword), ולכן אין דרישת סיסמה להציג לצד השדה. לא נוצר משתמש ולא בוצעה התחברות אמיתית.",
+  "screenshots": [
+    "zchuyot-password-hidden.png — 15 תווים מוקלדים, מוסתרים, אייקון עין",
+    "zchuyot-password-revealed.png — אותו ערך גלוי, אייקון עין-חצויה"
+  ]
+}
