@@ -3014,3 +3014,38 @@ Ideogram/Flux; 10 (סליקה) דורש פרטי מוסד נדרים פלוס �
   *(אל תמחק את השורות הקיימות — הן מה שמחזיק את תצוגות ה-preview.)*
 
 עדות מלאה: `QA/zchuyot/password-reset-0813/_results.md`.
+
+## §0תא — רשימת ההרשאות של פרויקט 21 «מתחברים» (core.issues #207)
+
+**מה שבור:** «שכחתי סיסמה» של 21 נבנה ואומת היום (commit 978684e), אבל הקישור שיישלח
+במייל ייזרק על ידי Supabase כל עוד ההגדרה הזאת לא משתנה — המשתמש ינחת על
+`https://mthbram.lovable.app` במקום על `https://more30.com/mthbram/auth/reset`.
+
+**מה נמדד מהשרת עצמו — בלי דשבורד ובלי סוכן:** Supabase מחזיר 303 על
+`GET /auth/v1/verify?token=<לא-תקף>&type=recovery&redirect_to=<כתובת>`, וכתובת ה-`Location`
+שבתשובה **היא** התשובה: יעד שברשימת ההרשאות חוזר כפי שהוא, ויעד שאינו — מוחלף ב-Site URL.
+
+| מה נשלח כ-`redirect_to` | לאן השרת הפנה בפועל |
+|---|---|
+| `https://mthbram.lovable.app/auth/reset` *(ביקורת חיובית)* | `https://mthbram.lovable.app/auth/reset` |
+| `https://example.com/x` *(ביקורת שלילית)* | `https://mthbram.lovable.app` |
+| `https://more30.com/mthbram/auth/reset` | `https://mthbram.lovable.app` |
+| `https://more30.com/mthbram/**` | `https://mthbram.lovable.app` |
+
+שתי שורות הביקורת הן מה שהופך את זה למדידה ולא להנחה. כלומר **`more30.com` אינו ברשימת
+ההרשאות של `aypsqqvfohekxxuqsmrw`, וה-Site URL הוא ארגז Lovable.**
+
+**למה אני לא עושה את זה לבד:** `aypsqqvfohekxxuqsmrw` אינו אחד מעשרת הפרויקטים
+ש-`SUPABASE_ACCESS_TOKEN` מחזיר, ולכן ה-`PATCH /v1/projects/{ref}/config/auth` שסגר את #198
+אינו קיים כאן.
+
+**מה שאני צריך ממך — חמש דקות בדשבורד של הפרויקט (Auth → URL Configuration):**
+- **Site URL:** `https://more30.com/mthbram`
+- **להוסיף ל-Redirect allow list:** `https://more30.com/mthbram/auth/reset` ·
+  `https://more30.com/mthbram/**` · `https://more30.com/**`
+  *(אל תמחק את השורות הקיימות — הן מה שמחזיק את תצוגות ה-preview.)*
+
+זהו התאום הרביעי של אותה הגדרה: #202 (30 crm), #205 (31 גשר), #206 (22 זכויות), ועכשיו
+‏#207 (21 מתחברים). כולן אותן חמש דקות, כל אחת בפרויקט שלה.
+
+עדות מלאה: `QA/mthbram/password-reset-0813/_results.md`.
