@@ -2978,3 +2978,39 @@ Ideogram/Flux; 10 (סליקה) דורש פרטי מוסד נדרים פלוס �
   *(אל תמחק את חמש השורות הקיימות — הן מה שמחזיק את תצוגות ה-preview.)*
 
 עדות מלאה: `QA/gesher/password-reset-0813/_results.md`.
+
+---
+
+## §0ת — 22 מימוש זכויות: אותה הגדרה חסרה, והפעם נמדדה בלי לשאול איש (#206)
+
+זהו התאום השלישי של §0ק ו-§0ש. הקוד של איפוס הסיסמה ל-22 נכתב, נבנה ואומת
+מקומית (commit של הפעימה הזאת), אבל הקישור שיישלח במייל ייזרק על ידי Supabase
+כל עוד ההגדרה הזאת לא משתנה.
+
+**מה נמדד היום מהשרת עצמו — ובלי דשבורד ובלי סוכן:** ‏Supabase מחזיר 303 על
+`GET /auth/v1/verify?token=<לא-תקף>&type=recovery&redirect_to=<כתובת>`, וכתובת
+ה-`Location` שבתשובה **היא** התשובה: אם היעד ברשימת ההרשאות הוא חוזר כפי שהוא,
+ואם לא — הוא מוחלף ב-Site URL. זו מדידה חיה של ההגדרה, לא הנחה:
+
+| מה נשלח כ-`redirect_to` | לאן השרת הפנה בפועל |
+|---|---|
+| `https://example.com/pwned` *(ביקורת שלילית)* | `https://get-your-rights.lovable.app/` |
+| `https://more30.com/zchuyot/auth/reset` | `https://get-your-rights.lovable.app/` |
+| `https://more30.com/` | `https://get-your-rights.lovable.app/` |
+| `https://get-your-rights.lovable.app/auth/reset` *(ביקורת חיובית)* | `https://get-your-rights.lovable.app/auth/reset` |
+
+שתי שורות הביקורת הן מה שהופך את זה למדידה: היעד המורשה חזר כפי שהוא, וכתובת
+מומצאת קיבלה בדיוק את אותה תשובה שקיבל `more30.com`. כלומר **`more30.com` אינו
+ברשימת ההרשאות של `trerolyveytzgksawrme`, וה-Site URL הוא ארגז Lovable.**
+
+**למה אני לא עושה את זה לבד:** `trerolyveytzgksawrme` אינו אחד מעשרת הפרויקטים
+ש-`SUPABASE_ACCESS_TOKEN` מחזיר — `GET /v1/projects/trerolyveytzgksawrme/config/auth`
+החזיר **403** — ולכן ה-`PATCH` שסגר את #198 אינו קיים כאן.
+
+**מה שאני צריך ממך — חמש דקות בדשבורד של הפרויקט (Auth → URL Configuration):**
+- **Site URL:** `https://more30.com/zchuyot`
+- **להוסיף ל-Redirect allow list:** `https://more30.com/zchuyot/auth/reset` ·
+  `https://more30.com/zchuyot/**` · `https://more30.com/**`
+  *(אל תמחק את השורות הקיימות — הן מה שמחזיק את תצוגות ה-preview.)*
+
+עדות מלאה: `QA/zchuyot/password-reset-0813/_results.md`.

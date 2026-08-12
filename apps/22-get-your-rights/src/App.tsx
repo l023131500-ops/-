@@ -19,6 +19,7 @@ const AdminLogin = lazy(() => import("./pages/AdminLogin"));
 const AdminLeads = lazy(() => import("./pages/AdminLeads"));
 const AdminSettings = lazy(() => import("./pages/AdminSettings"));
 const AdminRightsReference = lazy(() => import("./pages/AdminRightsReference"));
+const AuthReset = lazy(() => import("./pages/AuthReset"));
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -61,6 +62,14 @@ const App = () => (
           <Route
             path="/admin/rights"
             element={<Suspense fallback={<AdminFallback />}><AdminRightsReference /></Suspense>}
+          />
+          {/*
+            היעד של קישור איפוס הסיסמה מהמייל (core.issues #201). בלי המסלול
+            הזה הקישור נופל על ה-catch-all ומציג 404 — עם טוקן חי בכתובת.
+          */}
+          <Route
+            path="/auth/reset"
+            element={<Suspense fallback={<AdminFallback />}><AuthReset /></Suspense>}
           />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

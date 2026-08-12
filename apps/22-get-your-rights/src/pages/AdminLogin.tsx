@@ -8,12 +8,55 @@ import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { authErrorMessage } from "@/lib/authErrors";
 
+/**
+ * היעד של קישור האיפוס נבנה מ-BASE_URL ולא מ-origin לבדו (core.issues #201).
+ * האתר מוגש תחת more30.com/zchuyot, ו-origin לבדו היה שולח את הקישור
+ * ל-more30.com/auth/reset — כתובת שאינה קיימת. זה בדיוק הבאג שנמצא ב-30.
+ */
+const resetRedirectTo = () =>
+  `${window.location.origin}${import.meta.env.BASE_URL.replace(/\/+$/, "")}/auth/reset`;
+
 const AdminLogin = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [sendingReset, setSendingReset] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  const handleForgotPassword = async () => {
+    // בלי מייל אין למי לשלוח, ושליחה ריקה מחזירה שגיאה שאינה מסבירה כלום.
+    if (!email) {
+      toast({
+        title: "צריך אימייל",
+        description: "הזינו את כתובת האימייל שלכם בשדה למעלה, ואז לחצו שוב.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setSendingReset(true);
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: resetRedirectTo(),
+    });
+    setSendingReset(false);
+
+    if (error) {
+      toast({
+        title: "לא הצלחנו לשלוח",
+        description: authErrorMessage(error),
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // בכוונה אותה הודעה גם לכתובת שאינה רשומה: אחרת המסך מדווח למי
+    // שמנחש כתובות אילו חשבונות קיימים.
+    toast({
+      title: "הקישור נשלח",
+      description: `אם ${email} רשום במערכת, נשלח אליו קישור לבחירת סיסמה חדשה. הקישור תקף לשעה.`,
+    });
+  };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -73,6 +116,14 @@ const AdminLogin = () => {
               <LogIn className="w-4 h-4" />
               {loading ? "מתחבר..." : "כניסה"}
             </Button>
+            <button
+              type="button"
+              onClick={handleForgotPassword}
+              disabled={sendingReset}
+              className="w-full text-sm text-muted-foreground underline hover:text-foreground disabled:opacity-60"
+            >
+              {sendingReset ? "שולחים קישור…" : "שכחתי סיסמה"}
+            </button>
           </form>
         </div>
       </div>
