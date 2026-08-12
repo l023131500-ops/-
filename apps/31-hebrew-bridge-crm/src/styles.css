@@ -4,6 +4,13 @@
    rules") and vite dev answers 500 for this stylesheet; above them, vite resolves
    the https URL as a path and tries to read it off disk. */
 @import "tailwindcss" source(none);
+/* Needs tailwindcss >= 4.3.3 (see package.json). On 4.3.0 the oxide scanner
+   returned nothing for this directory @source in a production build — dev was
+   fine, so the app looked healthy and only the built stylesheet was empty:
+   10478 bytes of theme + tw-animate-css, no .flex, no bg-background. 4.3.3
+   scans it and the same file builds to 86431 bytes. Replacing this with a
+   recursive glob over ts/tsx/js/jsx/html matched nothing on either version, so
+   keep the plain directory form. */
 @source "../src";
 @import "tw-animate-css";
 
