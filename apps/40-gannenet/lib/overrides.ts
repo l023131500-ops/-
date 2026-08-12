@@ -43,8 +43,20 @@ function objectUrl(name: string, fresh = false) {
   // `cache: "no-store"` is Next's own fetch cache and says nothing to Supabase's
   // CDN, which sits in front of the object and was seen once serving
   // `x-cache: HIT` with a superseded body; a request-header `Cache-Control:
-  // no-cache` did not dislodge it, a distinct URL did. Only the admin read-back
-  // pays for that, so public catalog reads keep their edge caching.
+  // no-cache` did not dislodge it, a distinct URL did.
+  //
+  // EVERY read of a per-file override object must be `fresh`. It was only the
+  // admin read-back, on the reasoning that public catalog reads should keep
+  // their edge caching, and that is exactly what broke un-hiding (#184): the
+  // write landed (`{"ok":true,"override":{}}`, and the object read back `{}`
+  // through a busted URL immediately after), yet the public shelf did not
+  // return the item and "החומרים שלי" still marked it hidden, because
+  // `readOverrides()` was asking the *un-busted* URL and the CDN was still
+  // holding `{"hidden":true}`. Hiding took effect at once and un-hiding did
+  // not, while the admin screen reported "נשמר" and promises hiding is
+  // reversible. The window closed by itself after some minutes — an
+  // unmeasured, unbounded stretch in which a human was told the material was
+  // back and it was not.
   const bust = fresh ? `?t=${Date.now()}-${Math.random().toString(36).slice(2)}` : "";
   return `${URL_}/storage/v1/object/${BUCKET}/${name}${bust}`;
 }
@@ -99,6 +111,8 @@ export async function readOverrides(): Promise<OverrideMap> {
   if (!overridesReady) return {};
   const map: OverrideMap = {};
 
+  // The legacy map is the one read that stays cacheable: no code path writes it
+  // any more, so its cached body cannot be superseded.
   const legacy = await getJson(LEGACY);
   if (legacy && typeof legacy === "object") {
     for (const [id, o] of Object.entries(legacy)) {
@@ -107,9 +121,14 @@ export async function readOverrides(): Promise<OverrideMap> {
     }
   }
 
+  // `fresh` — these are the objects `setOverride()` writes, and a stale one here
+  // is a curation change that silently did not happen. The cost is one uncached
+  // GET per *curated* file, not per shelf item: the LIST is scoped to the
+  // `overrides/` prefix, so it counts files an admin has ever acted on (3 in
+  // production when this was measured), not the 258 seeded materials.
   const names = await listOverrideFiles();
   const loaded = await Promise.all(
-    names.map(async (n) => [n.replace(/\.json$/, ""), await getJson(`${PREFIX}/${n}`)] as const)
+    names.map(async (n) => [n.replace(/\.json$/, ""), await getJson(`${PREFIX}/${n}`, true)] as const)
   );
   // Per-file objects are authoritative: an empty one clears a legacy entry.
   for (const [id, raw] of loaded) {
