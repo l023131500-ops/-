@@ -15,6 +15,7 @@ import { Placeholder } from "@/pages/Placeholder";
 // visitors never download the management bundles.
 const SynagogueSite = lazy(() => import("@/pages/SynagogueSite").then((m) => ({ default: m.SynagogueSite })));
 const AdminLogin = lazy(() => import("@/pages/admin/AdminLogin").then((m) => ({ default: m.AdminLogin })));
+const ResetPassword = lazy(() => import("@/pages/auth/ResetPassword").then((m) => ({ default: m.ResetPassword })));
 const AdminLayout = lazy(() => import("@/pages/admin/AdminLayout").then((m) => ({ default: m.AdminLayout })));
 const AdminOverview = lazy(() => import("@/pages/admin/AdminOverview").then((m) => ({ default: m.AdminOverview })));
 const AdminSynagogues = lazy(() => import("@/pages/admin/AdminSynagogues").then((m) => ({ default: m.AdminSynagogues })));
@@ -53,6 +54,10 @@ export function App() {
         <Routes>
           {/* Standalone branded synagogue mini-site (its own chrome) */}
           <Route path="/k/:slug" element={<SynagogueSite />} />
+
+          {/* היעד של קישור איפוס הסיסמה מהמייל. מחוץ ל-RootLayout: זה מסך של
+              זרימת אימות, ובאותו לבוש של מסכי הכניסה. */}
+          <Route path="/auth/reset" element={<ResetPassword />} />
 
           {/* Council admin portal (guarded, own chrome) */}
           <Route path="/admin/login" element={<AdminLogin target="/admin" title="כניסת מנהל המועצה" />} />
