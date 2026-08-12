@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
+import { authErrorMessage } from "@/lib/authErrors";
 import { toast } from "sonner";
 
 const checkIsAdmin = async (userId: string) => {
@@ -70,7 +71,9 @@ const AdminLogin = () => {
     const loginEmail = email.includes("@") ? email : `${email}@admin.local`;
     const { data, error } = await supabase.auth.signInWithPassword({ email: loginEmail, password });
     if (error) {
-      toast.error("שגיאה בכניסה: " + error.message);
+      // לא error.message כפי שהוא: הוא מגיע באנגלית ומאחד תחתיו מייל שלא אומת,
+      // חסימת קצב ונפילת רשת. authErrorMessage מפריד ביניהם בעברית.
+      toast.error(authErrorMessage(error));
       setLoading(false);
       return;
     }

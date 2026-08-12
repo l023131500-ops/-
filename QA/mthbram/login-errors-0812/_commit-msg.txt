@@ -1,0 +1,33 @@
+mthbram (21): the admin login said "check your password" for a mail that was never confirmed
+
+AdminLogin printed "שגיאה בכניסה: " + error.message — a Hebrew prefix glued to
+GoTrue's English. "Email not confirmed", "Request rate limit reached" and
+"Failed to fetch" all arrived in that one shape. Three failures, three different
+things for the person at the keyboard to do, and none of them is "try another
+password".
+
+src/lib/authErrors.ts maps the four codes this server actually returns
+(email_not_confirmed, invalid_credentials, user_banned,
+over_request_rate_limit), plus status 429 and the AuthRetryableFetchError that
+carries status 0 and no code at all. An unrecognised code keeps its original
+text behind a Hebrew prefix rather than being swallowed by a generic line.
+
+One wording differs from the four earlier copies, and it was read off this
+screen rather than copied: the first field is labelled "שם משתמש", and
+handleLogin appends @admin.local to anything without an "@". So
+invalid_credentials here is "שם המשתמש או הסיסמה שגויים" — saying "האימייל"
+would send the admin hunting for a mistake in a field they never filled in.
+
+Verified against the real auth server, not a mock: test@more30.com with a wrong
+password on the built bundle at localhost:4321/mthbram/admin-login ->
+POST /auth/v1/token 400 -> the toast read back from the DOM as
+"שם המשתמש או הסיסמה שגויים." vitest 5/5, tsc -p tsconfig.app.json --noEmit
+clean, npm run build passes.
+
+Not deployed in this step — all evidence is local. The email_not_confirmed
+branch is covered by test only; this project has no unconfirmed account to
+drive it live.
+
+This is the fifth copy of the module (01, 15, 16, 22, now 21). Sharing it needs
+the apps wired to packages/, which none of them are, so it stays a copy and the
+debt is recorded rather than paid here.
