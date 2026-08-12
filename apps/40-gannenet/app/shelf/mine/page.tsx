@@ -117,7 +117,10 @@ export default function MinePage() {
       {items !== null && items.length > 0 && (
         <>
           <p style={{ color: "#9a9cb0", fontSize: 13, margin: "18px 0 12px" }}>
-            {items.length.toLocaleString("he")} חומרים שהעליתן
+            {/* המדף הציבורי מונה אלפים ולכן רבים תמיד נכון שם; כאן המקרה הנפוץ
+                ביותר הוא בדיוק אחד — "1 חומרים שהעליתן" הוא מה שהגננת רואה אחרי
+                ההעלאה הראשונה שלה, וזה מה שנראה בפועל ברגע שהרשימה קיבלה פריט. */}
+            {items.length === 1 ? "חומר אחד שהעליתן" : `${items.length.toLocaleString("he")} חומרים שהעליתן`}
           </p>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(270px,1fr))", gap: 16 }}>
             {items.map((i) => (
