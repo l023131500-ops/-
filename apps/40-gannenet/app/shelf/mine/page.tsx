@@ -140,14 +140,24 @@ export default function MinePage() {
                 <p style={{ fontSize: 12.5, color: "#6d6f88", marginTop: 8 }}>
                   {i.sender}{i.sender && i.date ? " · " : ""}{fmtDate(i.date)}{i.sizeKB ? ` · ${i.sizeKB}KB` : ""}
                 </p>
-                <div style={{ display: "flex", gap: 8, marginTop: 14 }}>
-                  <Link href={`/shelf/${i.id}`} className="btn btn-main" style={{ flex: 1, justifyContent: "center", padding: ".5rem", fontSize: 14 }}>
-                    פתיחה וצפייה
-                  </Link>
-                  <a href={downloadUrl(i.file)} className="btn btn-ghost" style={{ padding: ".5rem .7rem", fontSize: 14 }}>
-                    הורדה
-                  </a>
-                </div>
+                {/* חומר מוסתר אינו נפתח ואינו יורד — לא לה ולא לאיש. שני
+                    הכפתורים הובילו לשתי תשובות שונות על אותו כרטיס: "פתיחה
+                    וצפייה" הגיע ל"החומר לא נמצא", וההורדה הצליחה. במקומם נאמר
+                    כאן מה מצבו של החומר, בלי כפתור שאינו עושה דבר. */}
+                {i.hidden ? (
+                  <p style={{ marginTop: 14, fontSize: 13, color: "#6b4aa0", background: "#f6f3fa", borderRadius: 10, padding: "10px 12px", lineHeight: 1.6 }}>
+                    צוות המדף הסתיר את החומר, ולכן הוא אינו נפתח ואינו ניתן להורדה. הקובץ עצמו נשמר — אפשר לפנות אלינו כדי לברר.
+                  </p>
+                ) : (
+                  <div style={{ display: "flex", gap: 8, marginTop: 14 }}>
+                    <Link href={`/shelf/${i.id}`} className="btn btn-main" style={{ flex: 1, justifyContent: "center", padding: ".5rem", fontSize: 14 }}>
+                      פתיחה וצפייה
+                    </Link>
+                    <a href={downloadUrl(i.file)} className="btn btn-ghost" style={{ padding: ".5rem .7rem", fontSize: 14 }}>
+                      הורדה
+                    </a>
+                  </div>
+                )}
               </div>
             ))}
           </div>
