@@ -140,6 +140,61 @@ export async function peekQuota(userId: string): Promise<QuotaView | null> {
 }
 
 /**
+ * מה שמנהל המערכת רואה — התקרה הכללית, שהיא היחידה כאן שנופלת על מישהי שלא
+ * עשתה כלום. גננת שמיצתה את 20 שלה יודעת למה: היא יצרה עשרים דפים. גננת
+ * שנחסמת על ה-200 של כלל המערכת נחסמת בגלל שימוש של אחרות, ועד עכשיו לא היה
+ * שום מקום שבו אפשר היה לראות שהמערכת מתקרבת לשם — התקרה נאכפה, הודעת החסימה
+ * הוצגה למי שנתקלה בה, ואיש לא יכול היה לדעת מראש שהיום עמוס.
+ *
+ * `accounts` הוא מספר החשבונות המובחנים שיצרו היום, ו-`top` הוא הפילוח לפיהם.
+ * שניהם נגזרים מאותו LIST — לא נוספת כאן אף בקשה מעבר לזו שהמכסה עושה ממילא.
+ * מזהה החשבון הוא ה-UUID שהסימון נכתב תחתיו; אין כאן מייל, כי אין בסימון מייל.
+ */
+// בכוונה לא `QuotaView` עם אפסים באישי: המסך הזה אינו של אף גננת, ושדה
+// `remainingUser: 20` שאין לו בעלים הוא בדיוק סוג המספר שנקרא לא נכון.
+export type SystemUsage = {
+  date: string;
+  capAll: number;
+  usedAll: number;
+  remainingAll: number;
+  capUser: number;
+  accounts: number;
+  top: { userId: string; count: number }[];
+};
+
+export async function peekSystemUsage(): Promise<SystemUsage | null> {
+  if (!URL_ || !KEY_) return null;
+  const date = today();
+  const names = await listToday(date);
+  if (names === null) return null;
+
+  const byUser = new Map<string, number>();
+  for (const n of names) {
+    // `usage/aigen/<date>/<userId>__<ts>-<rand>.json` — ה-LIST מחזיר שם יחסי
+    // לתיקייה, ולכן מה שנשאר הוא החלק שאחרי הקידומת. שם בלי `__` אינו סימון
+    // שהמערכת כתבה, ולכן הוא נספר בכללי (הוא צורך מהתקרה) ולא מיוחס לחשבון.
+    const base = n.slice(n.lastIndexOf("/") + 1);
+    const i = base.indexOf("__");
+    if (i <= 0) continue;
+    const id = base.slice(0, i);
+    byUser.set(id, (byUser.get(id) || 0) + 1);
+  }
+  const top = Array.from(byUser, ([userId, count]) => ({ userId, count }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 10);
+
+  return {
+    date,
+    capAll: CAP_ALL,
+    usedAll: names.length,
+    remainingAll: Math.max(0, CAP_ALL - names.length),
+    capUser: CAP_USER,
+    accounts: byUser.size,
+    top,
+  };
+}
+
+/**
  * נבדק ונרשם לפני שנוגעים ב-Anthropic — הסימון נכתב מראש ולא אחרי הצלחה, כי
  * אחרי הצלחה עשרים בקשות מקבילות היו כולן רואות אפס. המשמעות היא שיצירה שנפלה
  * במעלה הזרם עדיין נספרת: זה מחיר שנבחר ביודעין לטובת הצד שבו טעות אינה עולה

@@ -15,6 +15,16 @@ type Row = {
   hiddenPages: number[];
 };
 
+type Usage = {
+  date: string;
+  capAll: number;
+  usedAll: number;
+  remainingAll: number;
+  capUser: number;
+  accounts: number;
+  top: { userId: string; count: number }[];
+};
+
 const PAGE = 40;
 
 function parsePages(text: string): number[] {
@@ -47,6 +57,9 @@ export default function AdminPage() {
   const [cat, setCat] = useState("");
   const [onlyEdited, setOnlyEdited] = useState(false);
   const [limit, setLimit] = useState(PAGE);
+  // `undefined` = עוד לא נטען, `null` = הספירה נכשלה. שני מצבים שונים, ושניהם
+  // אינם "0 מתוך 200" — אותה הבחנה שהשרת עושה.
+  const [usage, setUsage] = useState<Usage | null | undefined>(undefined);
 
   useEffect(() => {
     const saved = sessionStorage.getItem("gannenet_admin_key");
@@ -78,8 +91,26 @@ export default function AdminPage() {
       setHiddenDrafts({});
       setAuthed(true);
       sessionStorage.setItem("gannenet_admin_key", k);
+      loadUsage(k);
     } catch {
       setErr("שגיאת רשת.");
+    }
+  }
+
+  // בקשה נפרדת ולא חלק מ-/api/admin/list בכוונה: הקטלוג הוא 2,977 שורות שנטענות
+  // פעם אחת, והמכסה משתנה תוך כדי היום וצריכה רענון בלי לטעון אותו שוב. כישלון
+  // כאן לא מפיל את מסך הניהול — הוא רק מסתיר את השורה.
+  async function loadUsage(k: string) {
+    try {
+      const res = await fetch(withBase("/api/admin/usage"), { method: "POST", headers: { "x-admin-key": k } });
+      if (!res.ok) {
+        setUsage(null);
+        return;
+      }
+      const data = await res.json();
+      setUsage(data.usage as Usage);
+    } catch {
+      setUsage(null);
     }
   }
 
@@ -245,6 +276,61 @@ export default function AdminPage() {
       <p style={{ color: "#6d6f88", fontSize: 13.5, marginTop: 6, lineHeight: 1.7 }}>
         <b>הסתרת קובץ</b> — מסירה אותו מהאתר לגמרי. <b>מחיקת עמודים</b> — הקלידו מספרי עמודים להסתרה (למשל <code>1</code> לעמוד המייל, או <code>1-2</code>). העמודים לא יופיעו בצפייה, בהורדה או בהדפסה.
       </p>
+
+      {/* מחולל דפי המשימה — התקרה היומית של כלל המערכת. זו התקרה היחידה כאן
+          שחוסמת גננת בגלל שימוש של אחרות, ועד עכשיו לא היה מקום לראות אותה
+          מתמלאת. אחוז ולא רק מספר, כי "148" לבדו לא אומר אם זה קרוב. */}
+      {usage && (() => {
+        const pct = usage.capAll > 0 ? Math.min(100, Math.round((usage.usedAll / usage.capAll) * 100)) : 0;
+        const full = usage.remainingAll <= 0;
+        const near = !full && pct >= 75;
+        const tone = full ? "#a03a5c" : near ? "#8a5a1f" : "#2b4a8b";
+        return (
+          <div className="card" style={{ padding: 14, marginTop: 14, borderInlineStartWidth: 4, borderInlineStartStyle: "solid", borderInlineStartColor: tone }}>
+            <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", flexWrap: "wrap", gap: 8 }}>
+              <b style={{ fontSize: 14.5, color: "#2b4a8b" }}>מחולל דפי המשימה — שימוש היום</b>
+              <button onClick={() => loadUsage(key)} className="btn btn-ghost" style={{ fontSize: 12.5, padding: ".3rem .6rem" }}>
+                רענון
+              </button>
+            </div>
+            <div style={{ fontSize: 14, color: tone, fontWeight: 700, marginTop: 8 }}>
+              {usage.usedAll.toLocaleString("he")} מתוך {usage.capAll.toLocaleString("he")} דפים ({pct}%)
+              {full && " — המכסה מוצתה, המחולל חסום לכולן עד מחר"}
+              {near && " — מתקרב לתקרה"}
+            </div>
+            <div
+              role="img"
+              aria-label={`נוצלו ${pct} אחוזים מהמכסה היומית של המערכת`}
+              style={{ height: 8, borderRadius: 99, background: "#e9ebf5", marginTop: 8, overflow: "hidden" }}
+            >
+              <div style={{ width: `${pct}%`, height: "100%", background: tone }} />
+            </div>
+            <div style={{ fontSize: 12.5, color: "#6d6f88", marginTop: 8, lineHeight: 1.7 }}>
+              {usage.accounts.toLocaleString("he")} חשבונות יצרו היום · תקרה אישית {usage.capUser} דפים לחשבון · המכסה מתאפסת בחצות UTC (03:00 בישראל) · תאריך הספירה {usage.date}
+            </div>
+            {usage.top.length > 0 && (
+              <details style={{ marginTop: 8 }}>
+                <summary style={{ fontSize: 12.5, color: "#2b4a8b", cursor: "pointer" }}>פילוח לפי חשבון</summary>
+                <ul style={{ fontSize: 12.5, color: "#6d6f88", marginTop: 6, paddingInlineStart: 18, lineHeight: 1.8 }}>
+                  {usage.top.map((t) => (
+                    <li key={t.userId}>
+                      <code>{t.userId.slice(0, 8)}…</code> — {t.count} מתוך {usage.capUser}
+                    </li>
+                  ))}
+                </ul>
+              </details>
+            )}
+          </div>
+        );
+      })()}
+      {usage === null && (
+        <p style={{ color: "#9a9cb0", fontSize: 12.5, marginTop: 14 }}>
+          לא ניתן לקרוא כרגע את שימוש המחולל.{" "}
+          <button onClick={() => loadUsage(key)} className="btn btn-ghost" style={{ fontSize: 12, padding: ".2rem .5rem" }}>
+            נסו שוב
+          </button>
+        </p>
+      )}
 
       <div className="card" style={{ padding: 12, display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center", marginTop: 14 }}>
         <input className="input" style={{ flex: "1 1 220px" }} placeholder="חיפוש…" value={q} onChange={(e) => setQ(e.target.value)} />
