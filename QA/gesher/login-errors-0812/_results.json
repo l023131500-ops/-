@@ -1,0 +1,60 @@
+{
+  "system": "31 gesher (hebrew-bridge-crm)",
+  "priority": "§1א — auth errors must name which failure happened, in Hebrew",
+  "date": "2026-08-12",
+  "url": "https://more30.com/gesher/auth?cb=0812gesher-errs",
+  "files_changed": [
+    "apps/31-hebrew-bridge-crm/src/lib/authErrors.ts (new)",
+    "apps/31-hebrew-bridge-crm/src/routes/auth.tsx"
+  ],
+  "before": "toast.error(\"שגיאת התחברות\", { description: error.message }) — GoTrue's raw English under a Hebrew heading; same again on signup",
+  "call_sites_wired": ["supabase.auth.signInWithPassword", "supabase.auth.signUp"],
+  "call_site_left_alone": {
+    "site": "lovable.auth.signInWithOAuth(\"google\")",
+    "why": "returns a plain Error with no code and no status — the mapper would only add a \"שגיאה:\" prefix to the same English string"
+  },
+  "codes_covered": [
+    "email_not_confirmed", "invalid_credentials", "user_banned",
+    "user_already_exists", "email_exists", "weak_password", "signup_disabled",
+    "email_address_invalid", "validation_failed",
+    "over_email_send_rate_limit", "over_request_rate_limit",
+    "status 429", "status 0 (AuthRetryableFetchError, no code)"
+  ],
+  "codes_not_present_here": {
+    "same_password / session_not_found / refresh_token_not_found / reauthentication_needed":
+      "system 30 has a /reset-password route; this app has none, so those branches would be dead code"
+  },
+  "verified_live": [
+    {
+      "branch": "invalid_credentials",
+      "how": "typed test@more30.com + a deliberately wrong password on more30.com and submitted",
+      "network": "POST https://ygaqqnuyfnumezxxmtbh.supabase.co/auth/v1/token?grant_type=password => 400 (real auth server, not a stub)",
+      "toast_read_back_from_dom": "שגיאת התחברות | האימייל או הסיסמה שגויים.",
+      "screenshot": "01-invalid-credentials-live-more30.png"
+    },
+    {
+      "branch": "status 0 — AuthRetryableFetchError",
+      "how": "window.fetch rejected for /auth/v1/ only, so supabase-js raised a genuine AuthRetryableFetchError rather than a stub of the mapper",
+      "toast_read_back_from_dom": "שגיאת התחברות | לא הצלחנו להגיע לשרת. בדקו את החיבור לאינטרנט ונסו שוב.",
+      "screenshot": "02-offline-live-more30.png"
+    }
+  ],
+  "screenshot_note": "sonner auto-dismisses after ~4s, which is shorter than the click->screenshot round trip; both shots were taken with window.setTimeout patched to swallow timers >= 3000ms so the toast survived. The toast text was also read straight out of the DOM, independently of the image.",
+  "checks": {
+    "tsc -p tsconfig.json --noEmit": "clean, and --listFiles confirms it inspected both edited files (1171 files) — not an empty-\"files\" tsconfig",
+    "vite build": "exit 0",
+    "unit tests": "none — this app has no vitest"
+  },
+  "deploy": {
+    "project": "gesher-more30",
+    "deployment": "dpl_HYpt1Xum1HU1LtwJteCvN2x2sS3m",
+    "state": "READY",
+    "target": "production",
+    "method": "vercel deploy --prod --yes (from source, NOT --prebuilt — --prebuilt drops vercel.json and every asset 404s)"
+  },
+  "not_verified": [
+    "email_not_confirmed and user_already_exists were not exercised against the server: producing them means creating a real account and sending a real confirmation mail, which is outside test mode for this step",
+    "the signup tab was not submitted at all — no account was created in the gesher project"
+  ],
+  "pre_existing_console_noise": "[DOM] Input elements should have autocomplete attributes — predates this change"
+}
