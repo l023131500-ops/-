@@ -2874,3 +2874,48 @@ Ideogram/Flux; 10 (סליקה) דורש פרטי מוסד נדרים פלוס �
 המיילים שלהן יתחילו לצאת דרך Resend במקום לא לצאת בכלל.
 
 עדות מלאה: `QA/torah/password-reset-0812/_results.md`.
+
+## 🔴 0ק. מערכת 30 (CRM זכויות) — חמש שורות בדשבורד, ואיפוס הסיסמה יעבוד (#202, 12/08)
+
+**מה בדיוק חסר:** להוסיף את `more30.com` לרשימת ההרשאות של כתובות ההפניה
+בפרויקט של 30, ולהחליף את ה-Site URL. זו הפעולה היחידה שנשארה — הקוד כבר נפרס
+ואומת היום (commit `6679a31`).
+
+**מה קורה היום ללקוח:** הוא לוחץ «שכחתי סיסמה» ב-`more30.com/crm`, מקבל מייל,
+לוחץ על הקישור — ונוחת על `https://zchuyot-care-hub.lovable.app/dashboard`,
+דומיין הארגז של Lovable, בלי מסך איפוס. האפליקציה שולחת את הכתובת הנכונה
+(`redirect_to=https://more30.com/crm/reset-password`, השרת עונה 200); השרת זורק
+אותה בשקט כי היא אינה ברשימה.
+
+**מה שנמדד היום, מילה במילה מהשרת:**
+
+| הגדרה | הערך היום |
+|---|---|
+| Site URL | `https://zchuyot-care-hub.lovable.app` |
+| Redirect allow list | חמש שורות, כולן `lovable.app` / `lovableproject.com` של הארגז — **אין בהן `more30.com`** |
+
+**למה אני לא עושה את זה לבד — שני מסלולים נבדקו ונסגרו, לא הונחו:**
+1. ‏`SUPABASE_ACCESS_TOKEN` שב-`core.secrets` מחזיר עשרה פרויקטים, ו-
+   `jhbeelzvjvhnkxldqvxx` (של 30) **אינו** אחד מהם — כלומר ה-`PATCH /config/auth`
+   שסגר את #198 אינו קיים כאן. *(שים לב: ברשימה כן יש פרויקט בשם «זכויות פרו»,
+   `svvpuypogqnkgcmtqlgu` — הוא **לא** זה, והוא `INACTIVE`.)*
+2. סוכן Lovable של הפרויקט **קרא** את ההגדרות ודיווח אותן, אבל אין לו כלי
+   לשנות אותן: *"I cannot make these backend auth URL changes with the tools
+   available to me."*
+
+**מה שאני צריך ממך — חמש דקות בדשבורד של הפרויקט (Auth → URL Configuration):**
+- **Site URL:** `https://more30.com/crm`
+- **להוסיף ל-Redirect allow list:** `https://more30.com/crm/reset-password` ·
+  `https://more30.com/crm/**` · `https://more30.com/**`
+  *(אל תמחק את חמש השורות הקיימות — הן מה שמחזיק את תצוגות ה-preview.)*
+
+**מה זה משנה מלבד האיפוס:** שינוי ה-Site URL אומר שגם מי שנכנס דרך
+`zchuyot-care-hub.lovable.app` יופנה מעכשיו ל-`more30.com/crm`. זה מכוון —
+`more30.com` הוא המוצר — אבל זה שינוי אמיתי ולכן הוא רשום כאן ולא נעשה בשקט.
+
+**דבר אחד שקרה ולא ביקשתי:** ההודעה לסוכן Lovable ייצרה commit `9eedb59`
+בפרויקט החי למרות שהוא לא נגע בקוד המוצר. ה-diff נקרא במלואו: הצמדת גרסה
+ב-`package.json` ובלוק טיפוסים אוטומטי ב-`src/routeTree.gen.ts`. אין נגיעה
+בלוגיקה, במסד או בסליקה.
+
+עדות מלאה: `QA/crm/redirect-allowlist-0812/_results.md`.
