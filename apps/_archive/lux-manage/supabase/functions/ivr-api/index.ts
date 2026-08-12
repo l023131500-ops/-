@@ -21,7 +21,7 @@ import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": "authorization, x-api-key, x-client-info, apikey, content-type",
   "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
 };
 
@@ -97,6 +97,29 @@ const ProfileUpdateSchema = z.object({
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
+  }
+
+  // Gate — this whole function runs on the service role and reads/writes any
+  // user's profile, budget and tasks by user_id alone. Its only legitimate
+  // caller is the Yemot HaMashiach gateway, so it is machine-to-machine and
+  // fails closed: with no IVR_API_KEY set the endpoint is off entirely.
+  {
+    const expected = Deno.env.get("IVR_API_KEY");
+    if (!expected) {
+      return new Response(
+        JSON.stringify({ error: "ivr-api disabled: IVR_API_KEY is not configured" }),
+        { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+    // Yemot dialplans can only issue plain URLs, so the key is also accepted
+    // as ?key= — set it long and rotate it if the URL is ever shared.
+    const provided = req.headers.get("x-api-key") || new URL(req.url).searchParams.get("key");
+    if (provided !== expected) {
+      return new Response(
+        JSON.stringify({ error: "Missing or invalid API key" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
   }
 
   const supabaseUrl = Deno.env.get("SUPABASE_URL")!;

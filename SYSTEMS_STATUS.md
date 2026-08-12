@@ -1,5 +1,39 @@
 # SYSTEMS_STATUS.md — מצב כל המערכות, נמדד
 
+> ## 🟢 12/08/2026 17:2x — **הסריקה שהרשומה שמתחת הזמינה מצאה שתי פונקציות גרועות מהדליפה שהיא סגרה (#191). שתיהן כבויות עכשיו.**
+>
+> הרשומה מ-17:0x השאירה במפורש: *"ותשע הפונקציות המאורכבות האחרות עדיין פרוסות ולא
+> נבדקו אחת-אחת."* הן נבדקו. בפועל פרוסות **חמש** ולא עשר (`admin-delete-user`
+> ו-`admin-list-users` מחזירות `404`), ומתוכן שתיים היו פתוחות לרווחה — ושתיהן
+> חמורות מ-`leads-api`, כי הן לא רק קוראות.
+>
+> `ivr-api` בונה `createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)` ומריצה את כל
+> הפעולות **בלי לבדוק שום כותרת**: `get_profile` / `get_budget` / `get_summary` /
+> `get_tasks` קוראות כל משתמש לפי `user_id`, `update_profile` ו-`add_expense` /
+> `add_income` / `add_task` כותבות לו, ו-`action=login` הוא **אורקל PIN בן 6 ספרות בלי
+> שום הגבלת קצב** שמחזיר את ה-`user_id` שפותח את כל השאר. `inbound-webhook` מכניסה
+> `transactions` ו-`chat_messages` ל-`user_id` שהגוף נוקב בו, גם היא על `service_role`
+> ובלי אימות.
+>
+> | בקשה (בלי `apikey` ובלי `Authorization`) | לפני | אחרי |
+> | --- | --- | --- |
+> | `GET ivr-api?action=get_summary&user_id=…` | `200` + סיכום מחושב | `403 ivr-api disabled` |
+> | `GET ivr-api?action=get_profile&user_id=…` | קריאת פרופיל מלא | `403` |
+> | `POST ivr-api?action=login` (פרטים שגויים) | `401` — `profiles` נשאלה | `403`, לפני המסד |
+> | `POST ivr-api?action=update_profile` | כתיבה לכל משתמש | `403`, לפני `req.json()` |
+> | `GET ivr-api?action=menu&key=wrong` | `200` | `403` |
+> | `POST inbound-webhook` (`STRUCTURED_DATA`) | `400` מהוולידציה → הכנסה | `403` |
+> | `POST leads-api {}` | `400` | `400` — הטופס הציבורי ללא רגרסיה |
+>
+> אותה תבנית **fail-closed** של `leads-api`: בלי `IVR_API_KEY` / `INBOUND_WEBHOOK_SECRET`
+> בסביבה הקורא מקבל `403` לפני שהמסד נוגע, והמשתנים **הושארו לא-מוגדרים בכוונה** —
+> אפליקציה מאורכבת בלי אתר פרוס צריכה להיות כבויה, והדלקה היא החלטת בעלים.
+> `admin-set-password` ו-`admin-create-user` נבדקו באותה סריקה ונמצאו **תקינות**:
+> `401 Missing authorization` בלי כותרת, ו-`has_role` נכשל סגור. שום גוף תשובה עם
+> נתוני אדם אמיתי לא נקרא — כל הבדיקות על `uuid` מומצא ועל פרטי הזדהות שגויים.
+> Lovable commit `1efe66d8`, שני קבצים, 1.3 קרדיט.
+> ראיות `QA/archive-ivr-webhook-gate-0812/` · `core.issues #191` → fixed.
+
 > ## 🟢 12/08/2026 17:0x — **טבלת הלידים של `lux-manage` כבר אינה נקראת בלי מפתח (#170). החסם שהחזיק אותה יומיים לא היה קיים.**
 >
 > הרשומה מ-07:4x למטה סגרה עם `blocked_on` מפורש: *"אין Supabase CLI במכונה ואין

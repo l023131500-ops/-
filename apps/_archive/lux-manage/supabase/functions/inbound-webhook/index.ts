@@ -2,12 +2,33 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.99.3";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": "authorization, x-webhook-secret, x-api-key, x-client-info, apikey, content-type",
 };
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
+  }
+
+  // Gate — this function inserts transactions and chat messages on the service
+  // role for whatever user_id the body names. Its callers are machines
+  // (WhatsApp / voice / email relays), so it fails closed: with no
+  // INBOUND_WEBHOOK_SECRET set the endpoint is off entirely.
+  {
+    const expected = Deno.env.get("INBOUND_WEBHOOK_SECRET");
+    if (!expected) {
+      return new Response(
+        JSON.stringify({ error: "inbound-webhook disabled: INBOUND_WEBHOOK_SECRET is not configured" }),
+        { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+    const provided = req.headers.get("x-webhook-secret") || req.headers.get("x-api-key");
+    if (provided !== expected) {
+      return new Response(
+        JSON.stringify({ error: "Missing or invalid webhook secret" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
   }
 
   try {
