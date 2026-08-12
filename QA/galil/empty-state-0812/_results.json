@@ -25,6 +25,21 @@
     "console_errors": 0,
     "screenshot": "02-local-empty-state-after.png"
   },
+  "deployed": {
+    "project": "galil-more30 (prj_aPpigaz95VHTVzoEkAopeYdXGOoo)",
+    "deployment": "dpl_Hb1K8MwYj9ibcEW23tyuVU1u2z7q",
+    "target": "production",
+    "how": "dist copied into _deploy/galil-more30/galil (the previous build's index-pSOB0569.js removed so only one bundle ships), then `vercel deploy --prod` from _deploy/galil-more30 — from source, not --prebuilt, so vercel.json's /galil rewrites survive",
+    "safety_check_before_copying": "the deploy dir held exactly the bundle production was serving (index-pSOB0569.js) and its index.html differed from the fresh build in that one line only — so nothing hand-edited was overwritten",
+    "verified_in_production": {
+      "GET https://more30.com/galil/": "serves assets/index-KFiwjeZS.js",
+      "'עדיין לא נרשם כאן אף בית כנסת' in #synagogues": true,
+      "'אין עדיין זמני תפילה רשומים' in #synagogues": true,
+      "console_errors": 0,
+      "screenshot": "03-production-after.png"
+    },
+    "trap_hit": "the first production check said false for both strings while already serving the new bundle — two service workers and a workbox-precache-v2-https://more30.com/galil/ cache were replaying the old app. Unregister and clear caches before concluding a galil deploy did not land."
+  },
   "not_done_and_why": {
     "seeding synagogues": "real data only — there is no list of Chatzor Hagelilit synagogues to load, and the gabai form is how the customer fills them.",
     "issue #62 second half": "the gabai/admin login still cannot succeed: gabai_accounts is 401 to anon and the password is compared in the browser. Fixing that needs mwljkonwdeuaahsigjdp, which the SUPABASE_ACCESS_TOKEN in core.secrets does not cover (10 projects, verified 12/08, this ref not among them). The project is Lovable-owned (galilee-connect-hub, 506805d0-89de-4112-84ff-741553892b34), which is a candidate path, not a measured one.",
