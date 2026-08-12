@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
@@ -38,6 +39,11 @@ import { Route as ApiPublicHooksSlaMonitorRouteImport } from './routes/api/publi
 import { Route as ApiPublicHooksOutboxDispatchRouteImport } from './routes/api/public/hooks/outbox-dispatch'
 import { Route as AuthenticatedAdminClientsClientIdRouteImport } from './routes/_authenticated/admin/clients.$clientId'
 
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
   path: '/contact',
@@ -202,6 +208,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/client': typeof AuthenticatedClientRouteRouteWithChildren
   '/partner': typeof AuthenticatedPartnerRouteRouteWithChildren
@@ -231,6 +238,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/admin/access': typeof AuthenticatedAdminAccessRoute
   '/admin/clients': typeof AuthenticatedAdminClientsRouteWithChildren
   '/admin/content': typeof AuthenticatedAdminContentRoute
@@ -259,6 +267,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/_authenticated/client': typeof AuthenticatedClientRouteRouteWithChildren
   '/_authenticated/partner': typeof AuthenticatedPartnerRouteRouteWithChildren
@@ -290,6 +299,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/contact'
+    | '/reset-password'
     | '/admin'
     | '/client'
     | '/partner'
@@ -319,6 +329,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/contact'
+    | '/reset-password'
     | '/admin/access'
     | '/admin/clients'
     | '/admin/content'
@@ -346,6 +357,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/contact'
+    | '/reset-password'
     | '/_authenticated/admin'
     | '/_authenticated/client'
     | '/_authenticated/partner'
@@ -377,6 +389,7 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   ContactRoute: typeof ContactRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
   ApiPublicHooksOutboxDispatchRoute: typeof ApiPublicHooksOutboxDispatchRoute
   ApiPublicHooksSlaMonitorRoute: typeof ApiPublicHooksSlaMonitorRoute
   ApiPublicLeadsSubmitRoute: typeof ApiPublicLeadsSubmitRoute
@@ -385,6 +398,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/contact': {
       id: '/contact'
       path: '/contact'
@@ -687,6 +707,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   ContactRoute: ContactRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
   ApiPublicHooksOutboxDispatchRoute: ApiPublicHooksOutboxDispatchRoute,
   ApiPublicHooksSlaMonitorRoute: ApiPublicHooksSlaMonitorRoute,
   ApiPublicLeadsSubmitRoute: ApiPublicLeadsSubmitRoute,

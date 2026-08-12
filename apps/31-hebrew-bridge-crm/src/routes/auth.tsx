@@ -11,6 +11,18 @@ import { toast } from "sonner";
 import { authErrorMessage } from "@/lib/authErrors";
 import { Eye, EyeOff, Loader2, Shield } from "lucide-react";
 
+/**
+ * כתובת מוחלטת בתוך האפליקציה.
+ *
+ * ‏`window.location.origin` לבדו הוא הבאג שמערכת 30 נפלה בו (#201): האפליקציה
+ * מוגשת תחת ‎/gesher‎ (‏`base` ב-vite.config, `basepath` ב-router), ולכן קישור
+ * שנבנה מ-origin בלבד נשלח במייל אל ‎https://more30.com/reset-password‎ — כתובת
+ * שאין בה כלום. ‏`import.meta.env.BASE_URL` הוא "/gesher/" בבנייה הזאת ומחזיר
+ * את הקידומת.
+ */
+const appUrl = (path: string) =>
+  `${window.location.origin}${import.meta.env.BASE_URL}${path}`.replace(/([^:]\/)\/+/g, "$1");
+
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
@@ -53,7 +65,7 @@ function AuthPage() {
       email,
       password,
       options: {
-        emailRedirectTo: `${window.location.origin}/`,
+        emailRedirectTo: appUrl(""),
         data: { full_name: fullName },
       },
     });
@@ -62,10 +74,36 @@ function AuthPage() {
     toast.success("נרשמת בהצלחה", { description: "בדוק את תיבת הדואר לאישור" });
   };
 
+  /**
+   * «שכחתי סיסמה» — החצי הראשון של #201. החצי השני הוא ‎/reset-password‎.
+   *
+   * התשובה זהה בין כתובת רשומה לשאינה רשומה, כדי שהטופס לא יהפוך לכלי שבודק
+   * אילו כתובות רשומות אצלנו. חסימת קצב היא היוצאת מן הכלל — היא ההודעה
+   * היחידה שמסבירה למה כלום לא קרה.
+   */
+  const handleForgot = async () => {
+    if (!email) {
+      toast.error("צריך אימייל", { description: "הקלידו את כתובת המייל שלכם בשדה למעלה ואז לחצו שוב." });
+      return;
+    }
+    setLoading(true);
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: appUrl("reset-password"),
+    });
+    setLoading(false);
+    if (error && (error.code?.includes("rate_limit") || error.status === 429)) {
+      toast.error("יותר מדי בקשות", { description: authErrorMessage(error) });
+      return;
+    }
+    toast.success("אם הכתובת רשומה אצלנו — הקישור בדרך", {
+      description: "בדקו את תיבת הדואר. הקישור תקף לשעה.",
+    });
+  };
+
   const handleGoogle = async () => {
     setLoading(true);
     const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin,
+      redirect_uri: appUrl(""),
     });
     setLoading(false);
     if (result.error) {
@@ -127,6 +165,15 @@ function AuthPage() {
                   {loading && <Loader2 className="w-4 h-4 animate-spin ml-2" />}
                   התחבר
                 </Button>
+                {/* type="button" חובה — הכפתור יושב בתוך <form onSubmit={handleLogin}>. */}
+                <button
+                  type="button"
+                  onClick={handleForgot}
+                  disabled={loading}
+                  className="block w-full text-center text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded"
+                >
+                  שכחתי סיסמה
+                </button>
               </form>
             </TabsContent>
 
