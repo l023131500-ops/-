@@ -1,0 +1,72 @@
+{
+  "at": "2026-08-12T18:45:00Z",
+  "issue": 172,
+  "section": "NEEDS_USER §0א״ / priority §1א / §8ב",
+  "what": "mailer_autoconfirm turned on for the one blocked project the PAT actually reaches",
+  "path_used": "GET/PATCH https://api.supabase.com/v1/projects/{ref}/config/auth with SUPABASE_ACCESS_TOKEN from core.secrets (scope=global)",
+
+  "projects_reachable_by_pat": {
+    "active": ["bieebmnmkffwbqlsfozh", "csjekrvukbdznetsrodj", "uhnrgujbdxhhmoxcjria"],
+    "inactive": ["rpamomtvqweqqiotgtta", "eygjmfftosigbmzpndib", "zxckwefnuectxqhtpfib", "tltfpznyqxpuydgefmnp", "tsnmjjnollodauelnvsz", "svvpuypogqnkgcmtqlgu", "qkszcdkzgfcpfwvskdna"],
+    "not_reachable_of_the_seven_in_172": ["hkkkynyoigzlttpynoeo", "aypsqqvfohekxxuqsmrw", "mwljkonwdeuaahsigjdp", "jhbeelzvjvhnkxldqvxx", "ygaqqnuyfnumezxxmtbh"]
+  },
+
+  "before": {
+    "bieebmnmkffwbqlsfozh": { "mailer_autoconfirm": false, "disable_signup": false, "site_url": "https://more30.com" },
+    "csjekrvukbdznetsrodj": { "mailer_autoconfirm": false, "disable_signup": false, "site_url": "http://localhost:3000" },
+    "uhnrgujbdxhhmoxcjria": { "mailer_autoconfirm": true, "disable_signup": false, "site_url": "https://more30.com" }
+  },
+
+  "changed": {
+    "ref": "csjekrvukbdznetsrodj",
+    "systems": ["06/briut", "12/smel", "17/chizukim"],
+    "field": "mailer_autoconfirm",
+    "from": false,
+    "to": true,
+    "readback": true,
+    "revert": "PATCH /v1/projects/csjekrvukbdznetsrodj/config/auth {\"mailer_autoconfirm\": false}"
+  },
+
+  "not_changed": {
+    "ref": "bieebmnmkffwbqlsfozh",
+    "systems": ["01/torah"],
+    "reason": "same project also carries zr-loader / zr-admin-api — the protected zr_* system. Confirm email is a project-wide setting, so flipping it changes a protected system's signup behaviour. Left for the user's explicit word.",
+    "still": { "mailer_autoconfirm": false }
+  },
+
+  "roundtrip_against_production": {
+    "endpoint": "https://csjekrvukbdznetsrodj.supabase.co/auth/v1",
+    "before": {
+      "signup": { "http": 200, "user_id": "e6053bc6-d2d8-44b2-b6c8-bfdf7c7ddbb3", "access_token": false, "confirmed_at": null },
+      "login": { "http": 400, "body": { "code": 400, "error_code": "email_not_confirmed", "msg": "Email not confirmed" } }
+    },
+    "after": {
+      "signup": { "http": 200, "access_token": true, "token_type": "bearer" },
+      "login": { "http": 200, "access_token": true }
+    },
+    "settings_endpoint_with_the_live_sites_own_key": {
+      "key_source": "https://more30.com/briut/supabase-config.js",
+      "GET /auth/v1/settings": { "mailer_autoconfirm": true, "disable_signup": false }
+    }
+  },
+
+  "test_data_cleanup": {
+    "created": ["qa-before-0812@more30.com", "qa-after-0812@more30.com"],
+    "deleted": [200, 200],
+    "auth_users_after": { "total": 1, "unconfirmed": 0, "emails": ["test@more30.com"] },
+    "note": "same single row the project held before this step"
+  },
+
+  "harm_measured_before_the_fix": {
+    "csjekrvukbdznetsrodj": { "auth_users": 1, "unconfirmed": 0 },
+    "bieebmnmkffwbqlsfozh": { "auth_users": 5, "unconfirmed": 2, "unconfirmed_created": "2026-08-12" },
+    "reading": "no real customer is stranded yet — the trap is prospective, and it is now closed for 06/12/17"
+  },
+
+  "found_on_the_way_not_fixed": {
+    "ref": "csjekrvukbdznetsrodj",
+    "site_url": "http://localhost:3000",
+    "impact": "every password-reset / magic-link mail this project sends points at localhost:3000, so it is unfollowable from any real machine. Signup no longer needs a link (autoconfirm is on), but password reset still does.",
+    "filed_as": "core.issues (new)"
+  }
+}

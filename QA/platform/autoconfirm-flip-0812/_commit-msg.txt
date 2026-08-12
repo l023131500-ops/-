@@ -1,0 +1,48 @@
+§1א: 06 briut, 12 smel and 17 chizukim now let a new customer straight in (#172, #193)
+
+The 09:34 sweep measured all 26 live addresses and found nine live systems
+where signup succeeds, the same password is then typed, and the server answers
+email_not_confirmed — which to a customer is indistinguishable from "wrong
+password". It closed with one ownership sentence: "of the eight projects that
+are not uhnrgujbdxhhmoxcjria, not one is visible from this environment."
+
+That sentence rests on the MCP's list_projects, which returns one project. It
+was checked rather than honoured. GET api.supabase.com/v1/projects with the
+SUPABASE_ACCESS_TOKEN already sitting in core.secrets returns ten, two of them
+from that list of eight, and the setting itself is readable and writable there
+through GET/PATCH /v1/projects/{ref}/config/auth.
+
+csjekrvukbdznetsrodj is now on, and it was verified as a real roundtrip against
+production rather than as a config read-back:
+
+  before  POST /signup  -> 200, user created, no access_token
+          POST /token   -> 400 {"error_code":"email_not_confirmed"}
+  after   POST /signup  -> 200 with access_token, token_type bearer
+          POST /token   -> 200 with access_token
+
+and in the same terms the original table was built in — GET /auth/v1/settings,
+with the key production itself serves at /briut/supabase-config.js —
+mailer_autoconfirm is now true. Three systems come off the card: 06 briut,
+12 smel, 17 chizukim. Reverting is one PATCH.
+
+Real data: auth.users in that project held exactly one row before this
+(test@more30.com, confirmed), so no real customer was stranded — the trap was
+prospective. The two accounts the roundtrip created were deleted (200 each) and
+the table is back to that one row.
+
+bieebmnmkffwbqlsfozh (01) is just as reachable and was deliberately left alone.
+It also carries zr-loader and zr-admin-api — the protected zr_* system — and
+Confirm email is a project-wide setting, so turning it on there changes a
+protected system's signup behaviour. That is the user's call, and it is written
+as one word away in NEEDS_USER. The remaining five (15, 21, 24, 30, 31) really
+are outside the token's ten; that is measured, not assumed.
+
+Found on the way and not folded in: site_url on csjekrvukbdznetsrodj is
+http://localhost:3000, so every password-reset mail that project sends points
+at the recipient's own machine. Signup no longer needs such a link; password
+reset still does. Filed as core.issues #198, high, its own step — the value is
+one per project and the three systems sit on three different paths under
+more30.com, so choosing it needs its own measurement.
+
+#172 goes from nine live systems to six. #193 is closed: both items it left for
+independent execution are done. Evidence in QA/platform/autoconfirm-flip-0812/.

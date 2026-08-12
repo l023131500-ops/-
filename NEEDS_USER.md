@@ -201,7 +201,7 @@ Settings → Environment Variables → להסתכל בערך של `SUPABASE_URL`
 | --- | --- | --- | --- |
 | `uhnrgujbdxhhmoxcjria` | ✅ דלוק | פתוחה | 16 מערכות — 02, 03, 04, 10, 14, 16, 18, 26, 27, 28, 32, פורטל, 34, 35, 36, 40 |
 | `bieebmnmkffwbqlsfozh` | ❌ **כבוי** | פתוחה | **01** פלטפורמת השיעורים |
-| `csjekrvukbdznetsrodj` | ❌ **כבוי** | פתוחה | **06** בריאות · **12** סמל נדל"ן · **17** חיזוקים |
+| `csjekrvukbdznetsrodj` | ✅ **דלוק — הודלק מכאן 12/08 בערב** | פתוחה | **06** בריאות · **12** סמל נדל"ן · **17** חיזוקים |
 | `hkkkynyoigzlttpynoeo` | ❌ **כבוי** | פתוחה | **15** איגוד השיעורים |
 | `aypsqqvfohekxxuqsmrw` | ❌ **כבוי** | פתוחה | **21** מתחברים |
 | `mwljkonwdeuaahsigjdp` | ❌ **כבוי** | פתוחה | **24** גליל קונקט |
@@ -232,18 +232,45 @@ Settings → Environment Variables → להסתכל בערך של `SUPABASE_URL`
 > הוא של ווידג'ט הכניסה המשותף. **מה שהמדידה הזו אינה רואה**: קריאות
 > Supabase שמתבצעות בצד השרת, מאחורי ה-API של המערכת.
 
-**למה זה אצלך.** זו הגדרה אחת בלוח הבקרה של Supabase לכל פרויקט
-(Authentication → Sign In / Providers → Email → **Confirm email**). מתוך שמונת
-הפרויקטים שאינם `uhnrgujbdxhhmoxcjria`, **אף אחד** אינו נראה מהסביבה הזו —
-`list_projects` מחזיר פרויקט אחד בלבד — ולכן אי אפשר לשנות את זה מכאן.
+> **עודכן 12/08 בערב — שליש מהסעיף הזה כבר לא אצלך, והוא בוצע.**
+> המשפט "אף אחד מהשמונה אינו נראה מהסביבה הזו" נשען על `list_projects` של
+> ה-MCP, שמחזיר פרויקט אחד. הוא נבדק במקום להיות מכובד:
+> `GET api.supabase.com/v1/projects` עם ה-`SUPABASE_ACCESS_TOKEN` שכבר יושב
+> ב-`core.secrets` מחזיר עשרה פרויקטים, ובהם **שניים** מהשמונה —
+> `bieebmnmkffwbqlsfozh` ו-`csjekrvukbdznetsrodj` — ואת ההגדרה עצמה אפשר
+> לקרוא ולכתוב שם דרך `GET/PATCH /v1/projects/{ref}/config/auth`.
+>
+> **`csjekrvukbdznetsrodj` — בוצע.** `mailer_autoconfirm` הודלק, ושלוש
+> המערכות שיושבות עליו — **06 בריאות · 12 סמל · 17 חיזוקים** — נרשמות ונכנסות
+> מיד. אומת בסבב אמיתי מול הייצור, לפני ואחרי, ב-`QA/platform/autoconfirm-flip-0812/`:
+> לפני — הרשמה החזירה משתמש בלי session וההתחברות מיד אחריה נפלה על
+> `{"error_code":"email_not_confirmed"}`; אחרי — אותה הרשמה מחזירה
+> `access_token` מיד, וההתחברות עונה 200. שני משתמשי הבדיקה נמחקו אחריה,
+> והפרויקט חזר למשתמש אחד בדיוק כפי שהיה. ‏`GET /auth/v1/settings` — אותה
+> נקודת קצה שממנה נבנתה הטבלה למעלה, ועם המפתח ש-`/briut/supabase-config.js`
+> מגיש בייצור — מחזיר עכשיו `mailer_autoconfirm: true`.
+>
+> **`bieebmnmkffwbqlsfozh` (01) — נגיש, ובכוונה לא נגעתי.** אותו פרויקט נושא
+> גם את `zr-loader` ו-`zr-admin-api`, כלומר את `zr_*` המוגן. `Confirm email`
+> היא הגדרה **של הפרויקט כולו**, ולכן הדלקת אישור אוטומטי שם משנה גם את
+> התנהגות ההרשמה של מערכת מוגנת. זו הכרעה שלך ולא שלי — **מילה ואדליק תוך דקה**.
+>
+> **חמשת הנותרים** (`hkkkynyoigzlttpynoeo`, `aypsqqvfohekxxuqsmrw`,
+> `mwljkonwdeuaahsigjdp`, `jhbeelzvjvhnkxldqvxx`, `ygaqqnuyfnumezxxmtbh`)
+> באמת אינם מכוסים ב-PAT — נמדד, רשימת העשרה אינה כוללת אותם. הם נשארים אצלך.
+
+**למה החלק שנשאר הוא אצלך.** זו הגדרה אחת בלוח הבקרה של Supabase לכל פרויקט
+(Authentication → Sign In / Providers → Email → **Confirm email**), וחמישה
+מהפרויקטים אינם נגישים מכאן בשום נתיב שנמדד.
 
 **מה לעשות — שתי דרכים, אחת מהן עדיפה:**
 
-1. **מומלץ, ותואם §8ב:** כבה את **Confirm email** בשבעת הפרויקטים
-   `bieebmnmkffwbqlsfozh`, `csjekrvukbdznetsrodj`, `hkkkynyoigzlttpynoeo`,
-   `aypsqqvfohekxxuqsmrw`, `mwljkonwdeuaahsigjdp`, `jhbeelzvjvhnkxldqvxx`,
-   `ygaqqnuyfnumezxxmtbh` — בדיוק כפי שהוא כבר כבוי ב-`uhnrgujbdxhhmoxcjria`.
+1. **מומלץ, ותואם §8ב:** כבה את **Confirm email** בחמשת הפרויקטים
+   `hkkkynyoigzlttpynoeo`, `aypsqqvfohekxxuqsmrw`, `mwljkonwdeuaahsigjdp`,
+   `jhbeelzvjvhnkxldqvxx`, `ygaqqnuyfnumezxxmtbh` — בדיוק כפי שהוא כבר כבוי
+   ב-`uhnrgujbdxhhmoxcjria` וב-`csjekrvukbdznetsrodj`.
    נרשם → נכנס מיד. עלות: כתובת מייל לא-מאומתת יכולה להירשם.
+   ו-`bieebmnmkffwbqlsfozh` (01) — תגיד מילה ואני מדליק, ראה למעלה.
    ובנפרד: ב-`trerolyveytzgksawrme` (22) יש לפתוח את ההרשמה, אחרת אין שם לקוחות.
 2. **אם אתה רוצה להשאיר אימות מייל:** אז §8ב לא מתקיים בתשע המערכות, אבל
    **חלק הקוד של הדרך הזו כבר עשוי במלואו** (נמדד 12/08 אחה״צ, ראה למטה):
