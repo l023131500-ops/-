@@ -1,0 +1,46 @@
+smel (12): the fix that told Jerusalem from Tel Aviv reached production (#158)
+
+core.issues #158 has been fixed-at-source and not-deployed since 10/08, on one
+stated blocker: nadlan-smart-research runs in Supabase project
+csjekrvukbdznetsrodj, "no access from here". That blocker was written before the
+PAT in core.secrets was known to reach ten projects, and before /functions/deploy
+was proven end-to-end on 01 last pulse. It was checked rather than honoured, and
+it was wrong: GET /v1/projects/csjekrvukbdznetsrodj returns ACTIVE_HEALTHY.
+
+Read before writing. The deployed bundle came back as a 7.3MB ESZIP and the
+original source sits inside it — the same method as the 01 sweep. The deployed
+geo.ts was the pre-fix one: geocodeAddress(searchText) with no cityHint, no
+resultCity/cityMatches, parseGovmapResult reading street and city only out of the
+long id form. index.ts, engine.ts and sources.ts matched the local tree, which git
+agrees with: this directory has changed exactly twice, cb6e4f5 (source import) and
+7a350e0 (geo.ts alone). So the deploy carried one file's worth of behaviour change.
+
+Measured against production before touching anything. «יפו 30 ירושלים» returned
+matched_address «דרך יפו-ת״א 30 ת״א», locality_name «תל אביב-יפו», code 5000,
+neighborhood «פלורנטין» — every number in that report keyed to the wrong city.
+
+Deployed via the Management API (multipart, 4 files), version 1 -> 2, ACTIVE,
+verify_jwt left false exactly as it was. scripts/qa/smel-deploy-nadlan-smart-research.mjs
+is dry-run by default and reads the token from the environment, never from code.
+
+After, three legs against production, each checking city, locality_code and real
+coordinates rather than just the pin:
+
+  יפו 30 ירושלים        -> ירושלים        3000
+  הרצל 10 חיפה          -> חיפה           4000
+  דיזנגוף 100 תל אביב   -> תל אביב-יפו    5000    3/3
+
+And in the browser on more30.com/smel: עיר=ירושלים · רחוב=יפו · מספר=30 now
+produces «יפו 30 ירושלים · ירושלים · מרכז העיר», score 69, and the mismatch banner
+shipped on 12/08 no longer appears — there is nothing left for it to warn about.
+
+Not measured: the no-candidate-in-the-typed-city path, where the old rule is meant
+to run on the whole list; it is covered at source by smel-geocode-city.mjs but was
+not reproduced against production. nadlan-search and nadlan-aggregates share that
+project and were not read, not deployed, and sent no request.
+
+The project is named bkalut-production-user-owned, and that name is not what it
+holds: all three functions in it are nadlan-*. No schema, table or other function
+was touched. Protected systems untouched; test mode; no charge, no message.
+
+Evidence: QA/smel/deploy-geocode-city-0812/
