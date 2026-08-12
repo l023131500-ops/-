@@ -1,0 +1,47 @@
+40 gannenet: the shelf's one write path took a file from anyone at all, and now the login pill is what opens it
+
+POST /gannenet/api/catalog is the route behind "הוספת חומר למדף". It asked for
+nothing: no account, no shared secret, no header. Any reader on the internet who
+knew the address could plant a PDF or an image on the shelf of a live public
+system, and it appeared on the shelf cards for viewing and download immediately,
+with no name behind it.
+
+Storage's own permissions could not stop that and were never going to: the write
+runs server-side under the app's anon key, so Storage sees our server, not the
+sender. The system's two other write paths (/api/admin/delete and
+/api/admin/override) were both gated on x-admin-key. This was the one that wasn't.
+
+It is also the other half of an open line from 08:42 today: gannenet got the
+shared login pill and there was nothing behind it that signing in unlocks. Now
+there is — signing in is what lets a teacher add material of her own. Viewing and
+downloading stay fully open with no account, exactly as the home page promises.
+
+lib/require-user.ts verifies the browser's token against /auth/v1/user on the very
+project the app already talks to (SUPABASE_URL); anything but 200 is "not signed
+in", which also covers an expired token and a token minted by another project.
+The check runs BEFORE the request body is read, so an anonymous upload does not
+move a single byte. GET is untouched. The upload page reads the shared session
+from localStorage under `more30-auth` (all systems share one origin under
+more30.com), sends Authorization: Bearer, and a visitor who is not signed in gets
+a card with כניסה/הרשמה links carrying ?from= back to this page and a disabled
+submit button; a 401 mid-session returns the screen to that same state.
+
+Verified against production after deploy (gannenet-more30,
+dpl_9RBUfQKRTCTYvvvHUbypuVVkWduQ, READY), every request cache-busted:
+POST with no header -> 401 with the Hebrew sentence; POST with a junk bearer ->
+401; POST with a real test@more30.com token and no file -> 400 "לא נבחר קובץ",
+which proves the gate opened and the request reached validation; GET -> 200,
+ready=true. The authenticated probe was shaped to stop before the write on
+purpose, so no test file was left on a live shelf. tsc --noEmit 0 (--listFiles
+684, includes require-user.ts); next build 0 with 180 lesson pages.
+
+Not verified, recorded as such: a full end-to-end upload by a signed-in teacher
+in a browser — it writes a real object, and deleting it depends on
+SUPABASE_SERVICE_ROLE_KEY being set in 40's Vercel environment, which was not
+checked. GET /api/catalog returns items=0, so nothing was ever planted while the
+route stood open.
+
+Test mode: no user created, no message sent, no billing, nothing written to
+storage. Protected systems untouched.
+
+Evidence: QA/gannenet/upload-auth-0812/
