@@ -1,0 +1,6 @@
+﻿[
+{"label":"boot1-empty","result":{"action":"created","changed":[]},"user":{"id":1,"username":"admin","role":"admin","active":1,"device_limit":9999},"hash":"stub:9bc373e0bbce9078:b5c5cad483a9dcb1d601a182a180d2e7","loginWithSeedPassword":true,"totalUsers":1},
+{"label":"boot2-unchanged","result":{"action":"unchanged","changed":[]},"user":{"id":1,"username":"admin","role":"admin","active":1,"device_limit":9999},"hash":"stub:9bc373e0bbce9078:b5c5cad483a9dcb1d601a182a180d2e7","loginWithSeedPassword":true,"totalUsers":1},
+{"label":"boot3-after-drift","result":{"action":"updated","changed":["password","role","active"]},"user":{"id":1,"username":"admin","role":"admin","active":1,"device_limit":9999},"hash":"stub:58d40d240f8d6cf8:90d1188752d212fdc9fce073c2ef499b","loginWithSeedPassword":true,"totalUsers":1},
+{"label":"boot4-settled","result":{"action":"unchanged","changed":[]},"user":{"id":1,"username":"admin","role":"admin","active":1,"device_limit":9999},"hash":"stub:58d40d240f8d6cf8:90d1188752d212fdc9fce073c2ef499b","loginWithSeedPassword":true,"totalUsers":1}
+]
