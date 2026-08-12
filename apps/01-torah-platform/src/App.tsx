@@ -62,6 +62,7 @@ const DonationSuccess = lazy(() => import("@/pages/public/DonationSuccess"));
 const SignIn = lazy(() => import("@/pages/auth/SignIn"));
 const SignUp = lazy(() => import("@/pages/auth/SignUp"));
 const ActivateInvite = lazy(() => import("@/pages/auth/ActivateInvite"));
+const ResetPassword = lazy(() => import("@/pages/auth/ResetPassword"));
 
 // New Pages
 const PortalAttendance = lazy(() => import("@/pages/portal/Attendance"));
@@ -220,6 +221,9 @@ export default function App() {
                   <Route path="/auth/sign-in" element={<SignIn />} />
                   <Route path="/auth/sign-up" element={<SignUp />} />
                   <Route path="/auth/activate" element={<ActivateInvite />} />
+                  {/* היעד של קישור האיפוס מהמייל. עד עכשיו הוא נחת על ‎*‎
+                      ומקבל את מסך ה-404 (core.issues #201). */}
+                  <Route path="/auth/reset" element={<ResetPassword />} />
 
                   {/* Portal */}
                   <Route path="/portal" element={<PortalLayout />}>

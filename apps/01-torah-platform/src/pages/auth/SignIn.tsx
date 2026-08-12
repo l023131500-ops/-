@@ -6,15 +6,26 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
 import { Label } from "@/components/ui/label";
+import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { authErrorMessage } from "@/lib/authErrors";
 import { toast } from "sonner";
+
+/**
+ * הכתובת שאליה קישור האיפוס במייל חוזר. ‎BASE_URL‎ הוא "/torah/" בייצור, כלומר
+ * הכתובת המלאה היא https://more30.com/torah/auth/reset — והיא נכללת
+ * ב-uri_allow_list של הפרויקט (https://more30.com/**), שנקרא ולא הונח.
+ */
+const resetUrl = (next: string) =>
+  `${location.origin}${import.meta.env.BASE_URL}auth/reset?next=${encodeURIComponent(next)}`;
 
 export default function SignIn() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [sent, setSent] = useState<string>();
   const { signIn, signInWithGoogle } = useAuth();
   const nav = useNavigate();
   const [params] = useSearchParams();
@@ -28,6 +39,32 @@ export default function SignIn() {
     if (error) { toast.error("שגיאת התחברות", { description: authErrorMessage(error) }); return; }
     toast.success("התחברת בהצלחה");
     nav(redirect);
+  };
+
+  /**
+   * "שכחתי סיסמה" — עד היום לא הייתה כאן נקודת כניסה כזאת בכלל, וגם מי שקיבל
+   * קישור נחת על עמוד שאינו קורא אותו (core.issues #201).
+   *
+   * התשובה זהה בין כתובת קיימת לשאינה קיימת, כדי שהטופס לא יהפוך לכלי שבודק
+   * אילו כתובות רשומות אצלנו. חסימת קצב היא היוצאת מן הכלל, כי היא זו שמסבירה
+   * למה כלום לא קרה.
+   */
+  const forgot = async () => {
+    setSent(undefined);
+    if (!email.trim()) {
+      toast.error("הזינו קודם את כתובת המייל", { description: "נשלח אליה קישור לבחירת סיסמה חדשה." });
+      return;
+    }
+    setSending(true);
+    const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+      redirectTo: resetUrl(redirect),
+    });
+    setSending(false);
+    if (error && /rate|too many|seconds/i.test(error.message)) {
+      toast.error("נשלחה כבר בקשה", { description: "המתינו דקה ונסו שוב." });
+      return;
+    }
+    setSent("אם קיים חשבון עם הכתובת הזו, שלחנו אליה קישור לבחירת סיסמה חדשה. הקישור תקף לשעה.");
   };
 
   const google = async () => {
@@ -68,6 +105,17 @@ export default function SignIn() {
           <form onSubmit={submit} className="space-y-3">
             <div><Label>דוא״ל</Label><Input required type="email" value={email} onChange={(e) => setEmail(e.target.value)} /></div>
             <div><Label htmlFor="password">סיסמה</Label><PasswordInput id="password" required autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} /></div>
+            {/* קישור טקסט ולא כפתור מלא, כדי שלא יתחרה על העין עם כפתור הכניסה.
+                הוא <button> ולא <a> כי הוא מפעיל פעולה בעמוד ואין לו כתובת יעד. */}
+            <button
+              type="button"
+              onClick={forgot}
+              disabled={sending}
+              className="-my-1 inline-flex min-h-[44px] items-center text-xs font-semibold text-muted-foreground underline hover:text-foreground disabled:opacity-60"
+            >
+              {sending ? "שולחים…" : "שכחתי סיסמה"}
+            </button>
+            {sent && <p className="text-sm text-emerald-600 dark:text-emerald-400">{sent}</p>}
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <><LogIn className="ml-2 h-4 w-4" /> התחבר</>}
             </Button>
