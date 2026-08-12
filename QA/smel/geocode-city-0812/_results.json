@@ -1,0 +1,62 @@
+{
+  "what": "smel (12) · core.issues #158, the half that was still open — the typed city now constrains the address match inside the geocoder, instead of only being compared to it afterwards.",
+  "measured_at": "2026-08-12T06:05Z",
+  "measured_against": [
+    "https://www.govmap.gov.il/api/search-service/autocomplete — the real registry, no fixtures",
+    "https://api.nadlan.gov.il/deal-info — the same call engine.ts makes for the settlement id",
+    "data.gov.il CBS locality list — the fallback engine.ts falls back to"
+  ],
+  "harness": "scripts/qa/smel-geocode-city.mjs — imports the shipped geocodeAddress()/resolveArea()/resolveLocalityByName() from the edge function source, so it exercises the code that would run, not a re-implementation",
+
+  "root_cause": {
+    "reported_as": "«יפו 30 ירושלים» returned a report about תל אביב",
+    "what_actually_happened": "the plain query «יפו 30 ירושלים» DID return the right address — govmap answered a single result, id address|ADDR|53576669, text «יפו 30 ירושלים», with a valid POINT shape. It was discarded because that id is the SHORT form and carries no street field, so the exact-street test read an empty string and failed. geocodeAddress then ran its street-type prefix variations (שדרות/רחוב/דרך), one of which surfaced דרך יפו-ת\"א 30 in TELAVIVYAFO — a LONG id whose street field «דרך יפו ת א» contains the token «יפו» — and the contains-rule preferred it over all[0], the correct Jerusalem hit.",
+    "so_the_defect_is_two_things": [
+      "the city was never consulted at all — only the street token was",
+      "the prefix-variation fallback, meant to repair fuzzy street spellings, could override a correct plain-query hit whenever that hit came back in the short id form"
+    ]
+  },
+
+  "change": {
+    "file": "apps/13-property-identity/smart-research/functions/nadlan-smart-research/geo.ts",
+    "added": [
+      "extractCityToken() — the client sends «street num city» (Home.tsx joins the three fields), so what follows the house number is the typed city",
+      "resultStreet()/resultCity() — read the street and city from the long id when present, otherwise split the result text on the house number. This is what makes the short id form usable instead of invisible",
+      "cityMatches() — containment either way after normalisation, the same one-sided rule research.ts localityMismatch() uses on the client, so «תל אביב» vs «תל אביב-יפו» is a match and not a miss",
+      "geocodeAddress(searchText, cityHint?) — an explicit hint wins, otherwise it is derived from the text, so engine.ts and index.ts need no change"
+    ],
+    "selection_rule_now": "if any candidate is in the typed city, the choice is restricted to those candidates; within that pool the old order still applies (exact street, then street containing the token, then first). If NO candidate is in the typed city the old rule runs on the whole list — a real address the registry spells differently must still resolve rather than vanish.",
+    "loop_break_now": "stops early only on an exact street match that is also in the typed city"
+  },
+
+  "before": {
+    "run": "the same harness against the same source before the change",
+    "result": "3 passed · 2 failed",
+    "failures": [
+      "«יפו 30 ירושלים» -> «דרך יפו-ת\"א 30 TELAVIVYAFO», matched city TELAVIVYAFO — #158's own case, reproduced at the root",
+      "«הרצל 10 חיפה» -> matched text was right but cityName came back undefined, because the short id carries no city field. engine.ts uses geo.cityName as its locality fallback when deal-info has no neighbourhood record, so that address had no city name to fall back on"
+    ],
+    "live_confirmation": "the 12/08 production run in QA/smel/city-mismatch-live-0812/ recorded locality_name «תל אביב-יפו» for that same typed address on more30.com/smel"
+  },
+
+  "after": {
+    "result": "5 passed · 0 failed",
+    "cases": [
+      {"typed": "יפו 30 ירושלים", "matched": "יפו 30 ירושלים", "city": "ירושלים", "locality": "ירושלים", "locality_code": 3000, "coords": true},
+      {"typed": "דיזנגוף 100 תל אביב", "matched": "דיזנגוף 100 תל אביב", "city": "תל אביב", "locality": "תל אביב-יפו", "locality_code": 5000, "coords": true, "note": "the control — was already correct, still correct"},
+      {"typed": "הרצל 10 חיפה", "matched": "הרצל 10 חיפה", "city": "חיפה", "locality": "חיפה", "locality_code": 4000, "coords": true},
+      {"typed": "ויצמן 5 באר שבע", "matched": "ויצמן 5 באר שבע", "city": "באר שבע", "locality": "באר שבע", "locality_code": 9000, "coords": true, "note": "also improved: previously matched «החיים ויצמן 5», a different street the user did not type"},
+      {"typed": "בן גוריון 20 רמת גן", "matched": "בן גוריון 20 רמת גן", "city": "רמת גן", "locality": "רמת גן", "locality_code": 8600, "coords": true}
+    ],
+    "why_locality_is_checked_too": "the city on the pin is only half the claim. Every number in the report — score, average price, yield index, price trend — is keyed by locality_code, so the harness resolves it the way engine.ts does and asserts the code lands in the typed city. A coordinate is worthless if the code beside it is wrong.",
+    "coords_checked_because": "the short id form was previously never selected, so it had to be proven it still carries a POINT shape. It does — all five have real lat/lon, so nothing downstream loses its geometry."
+  },
+
+  "not_deployed": {
+    "why": "nadlan-smart-research runs in Supabase project csjekrvukbdznetsrodj, which is not one of the projects this environment can reach — list_projects returns only uhnrgujbdxhhmoxcjria, and get_edge_function on that slug answers «Function not found». core.issues #86 already records that project as needing your approval (NEEDS_USER §1).",
+    "consequence": "production still resolves «יפו 30 ירושלים» to Tel Aviv. The customer is still told by the banner, not yet protected. #158 stays open on the deploy alone.",
+    "what_would_close_it": "either approval on csjekrvukbdznetsrodj, or confirmation that the global SUPABASE_ACCESS_TOKEN in core.secrets is allowed to be used against that project — it exists, and it was deliberately NOT tried against a project outside the approved set."
+  },
+
+  "not_done": "no client change, no deploy, no account created, nothing sent, no billing touched. Protected systems untouched — 08/09/bkalut-app/bkalot-admin/zr_*/NEDARIM3873 not read or written in this step."
+}

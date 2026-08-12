@@ -1,0 +1,53 @@
+smel (12): the city the customer typed now decides which address the registry returns
+
+core.issues #158, the half the banner could not cover. The 12/08 step shipped a
+warning that says: you asked about Jerusalem and got Tel Aviv. This is the
+matching itself.
+
+Reproduced at the root against the real govmap endpoint, not a fixture, and the
+cause was not the one the symptom suggested. The plain query «יפו 30 ירושלים»
+already returned the correct Jerusalem address — one result, id
+address|ADDR|53576669, with a valid POINT shape. It was thrown away because that
+is the SHORT id form and carries no street field, so the exact-street test read
+an empty string. geocodeAddress then ran its שדרות/רחוב/דרך prefix variations,
+one of which surfaced «דרך יפו-ת״א 30» in TELAVIVYAFO — a long id whose street
+field contains the token «יפו» — and the contains-rule preferred it over the
+correct hit sitting at all[0]. So two defects: the city was never consulted at
+all, and the fallback meant to repair fuzzy street spellings could override a
+correct answer whenever that answer came back in the short form.
+
+geo.ts now reads street and city out of the long id when it is there and out of
+the result text when it is not, derives the typed city from what follows the
+house number (Home.tsx joins the three fields as street-number-city), and lets
+it constrain the choice: if any candidate sits in the typed city, only those
+candidates are eligible. Inside that pool the old order is untouched. If no
+candidate is in the typed city the old rule runs on the whole list, so an
+address the registry spells differently still resolves instead of vanishing.
+The containment rule is the same one-sided one research.ts uses on the client,
+so «תל אביב» against «תל אביב-יפו» stays quiet. engine.ts and index.ts are
+unchanged — the hint is derived, and the new parameter is optional.
+
+scripts/qa/smel-geocode-city.mjs imports the shipped functions rather than
+re-implementing them, and checks three things per case, because the city on the
+pin is only half the claim: the matched city, the locality_code resolved the way
+engine.ts resolves it (every number in the report is keyed by it), and that the
+short id form still carries coordinates — it had never been selected before.
+
+  before  3 passed · 2 failed   יפו 30 ירושלים → דרך יפו-ת״א 30 TELAVIVYAFO
+                                הרצל 10 חיפה  → right address, cityName undefined
+  after   5 passed · 0 failed   ירושלים 3000 · תל אביב-יפו 5000 · חיפה 4000
+                                באר שבע 9000 · רמת גן 8600, all with real lat/lon
+
+«ויצמן 5 באר שבע» improved on the way past: it used to match «החיים ויצמן 5», a
+street the user did not type.
+
+NOT deployed. nadlan-smart-research runs in Supabase project
+csjekrvukbdznetsrodj, which this environment cannot reach — list_projects
+returns only uhnrgujbdxhhmoxcjria and get_edge_function answers Function not
+found. core.issues #86 already has that project waiting on your approval.
+Production still resolves that address to Tel Aviv, so the customer is still
+told rather than protected, and #158 stays open on the deploy alone. The global
+SUPABASE_ACCESS_TOKEN in core.secrets was deliberately not tried against a
+project outside the approved set.
+
+Evidence: QA/smel/geocode-city-0812/

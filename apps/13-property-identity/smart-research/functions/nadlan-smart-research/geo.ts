@@ -48,13 +48,48 @@ function extractStreetToken(searchText: string): string {
   return beforeNum.split(" ")[0]; // מילת הרחוב הראשית
 }
 
+// חילוץ טוקן היישוב מתוך טקסט חיפוש: הלקוח שולח "רחוב מספר עיר",
+// ולכן מה שאחרי המספר הוא שם היישוב שהוקלד.
+function extractCityToken(searchText: string): string {
+  const t = normHe(searchText);
+  const m = /\d+\s+(.+)$/.exec(t);
+  return m ? m[1].trim() : "";
+}
+
+// govmap מחזיר שתי צורות מזהה: הארוכה נושאת שדות רחוב/יישוב,
+// והקצרה ("address|ADDR|<id>") נושאת רק את הטקסט. בצורה הקצרה
+// שם הרחוב הוא מה שלפני המספר ושם היישוב הוא מה שאחריו — אותו פירוק
+// בדיוק שהלקוח עצמו עושה על הכתובת שהוקלדה.
+function resultStreet(r: any): string {
+  const fromId = String(r?.id ?? "").split("|")[3];
+  if (fromId) return fromId;
+  const t = normHe(r?.text ?? "");
+  const before = t.split(/\s+\d/)[0];
+  return before === t ? "" : before;
+}
+
+function resultCity(r: any): string {
+  const fromId = String(r?.id ?? "").split("|")[5];
+  if (fromId) return fromId;
+  return extractCityToken(r?.text ?? "");
+}
+
+// כלל חד-צדדי, זהה ל-localityMismatch שבצד הלקוח: הכלה לכל כיוון היא התאמה
+// ("תל אביב" מול "תל אביב-יפו"), ושם חסר בצד אחד הוא חוסר-ידיעה ולא סתירה.
+function cityMatches(hint: string, city: string): boolean {
+  const a = normHe(hint);
+  const b = normHe(city);
+  if (!a || !b) return false;
+  return a.includes(b) || b.includes(a);
+}
+
 function parseGovmapResult(r: any): GeoResult | null {
   if (!r) return null;
-  // id: address|ADDR|<addressId>|street|num|city
+  // id: address|ADDR|<addressId>|street|num|city  (או address|ADDR|<addressId>)
   const parts = String(r.id).split("|");
   const addressId = parts[2] ?? "";
-  const streetName = parts[3] ?? undefined;
-  const cityName = parts[5] ?? undefined;
+  const streetName = resultStreet(r) || undefined;
+  const cityName = resultCity(r) || undefined;
   let lat = 0, lon = 0;
   const m = /POINT\(([-\d.]+)\s+([-\d.]+)\)/.exec(r.shape ?? "");
   if (m) {
@@ -78,8 +113,18 @@ async function govmapAutocomplete(searchText: string): Promise<any[]> {
 
 // חיפוש כתובת דרך govmap autocomplete (חינמי, ללא מפתח)
 // עמיד: מנסה גם וריאציות עם תחיליות טיפוס-רחוב, ומעדיף התאמת שם רחוב מדויקת
-export async function geocodeAddress(searchText: string): Promise<GeoResult | null> {
+// *בתוך היישוב שהוקלד* — עיר שהוקלדה מגבילה את ההתאמה, ואינה קישוט.
+//
+// core.issues #158: «יפו 30 ירושלים» הוחזר כ«דרך יפו-ת"א 30» בתל אביב. השאילתה
+// הפשוטה דווקא החזירה את ירושלים הנכונה — אלא שמזהה קצר אינו נושא שם רחוב,
+// ולכן היא לא נספרה כהתאמה, וריאציות התחילית רצו והכניסו מועמד מעיר אחרת
+// ש"מכיל" את הטוקן. מרגע שיש מועמד ביישוב שהוקלד, מועמד מיישוב אחר אינו נבחר.
+export async function geocodeAddress(
+  searchText: string,
+  cityHint?: string,
+): Promise<GeoResult | null> {
   const wantStreet = normHe(extractStreetToken(searchText));
+  const wantCity = normHe(cityHint ?? extractCityToken(searchText));
 
   // וריאציות שאילתה: המקורית + עם "שדרות"/"רחוב"/"דרך" (מתקן התאמות מטושטשות שגויות)
   const queries = [
@@ -88,6 +133,10 @@ export async function geocodeAddress(searchText: string): Promise<GeoResult | nu
     `רחוב ${searchText}`,
     `דרך ${searchText}`,
   ];
+
+  const inCity = (r: any) => !wantCity || cityMatches(wantCity, resultCity(r));
+  const isExact = (r: any) => normHe(resultStreet(r)) === wantStreet;
+  const hasToken = (r: any) => normHe(resultStreet(r)).includes(wantStreet);
 
   const seen = new Set<string>();
   const all: any[] = [];
@@ -100,16 +149,18 @@ export async function geocodeAddress(searchText: string): Promise<GeoResult | nu
         all.push(r);
       }
     }
-    // אם כבר יש התאמת רחוב מדויקת — אין צורך להמשיך לוריאציות נוספות
-    const exact = all.find((r) => normHe(String(r.id).split("|")[3] ?? "") === wantStreet);
-    if (exact) break;
+    // אם כבר יש התאמת רחוב מדויקת ביישוב שהוקלד — אין צורך בוריאציות נוספות
+    if (all.some((r) => isExact(r) && inCity(r))) break;
   }
   if (all.length === 0) return null;
 
+  // היישוב שהוקלד קודם לשם הרחוב: אם יש ולו מועמד אחד בעיר הנכונה,
+  // הבחירה מצטמצמת אליהם. אין אף מועמד בעיר → נופלים לכלל הישן על כל הרשימה,
+  // כדי שכתובת אמיתית שהמרשם מאיית אחרת לא תיעלם בלי תשובה.
+  const pool = all.some(inCity) ? all.filter(inCity) : all;
+
   // בחירת מועמד: 1) שם רחוב זהה בדיוק  2) שם רחוב שמכיל את הטוקן  3) ראשון
-  const exact = all.find((r) => normHe(String(r.id).split("|")[3] ?? "") === wantStreet);
-  const contains = all.find((r) => normHe(String(r.id).split("|")[3] ?? "").includes(wantStreet));
-  const chosen = exact ?? contains ?? all[0];
+  const chosen = pool.find(isExact) ?? pool.find(hasToken) ?? pool[0];
   return parseGovmapResult(chosen);
 }
 
