@@ -22,25 +22,33 @@
 עשרת הפרויקטים שהטוקן מגיע אליהם. קריאה בלבד — לא נוצר משתמש, לא נשלח מייל,
 ולא נכתבה שום הגדרה.
 
-| ref | autoconfirm | הרשמה | site_url |
-| --- | --- | --- | --- |
-| `rpamomtvqweqqiotgtta` (ניהול תקציב חכם) | ❌ כבוי | פתוחה | `http://localhost:3000` |
-| `eygjmfftosigbmzpndib` (מחוברים) | ❌ כבוי | פתוחה | `http://localhost:3000` |
-| `zxckwefnuectxqhtpfib` (חיבור לשיעורים) | ❌ כבוי | פתוחה | `http://localhost:3000` |
-| `tltfpznyqxpuydgefmnp` (chatzor-connect) | ❌ כבוי | פתוחה | `http://localhost:3000` |
-| `bieebmnmkffwbqlsfozh` (bkalut-production) | ❌ **כבוי** | פתוחה | `https://more30.com` |
-| `csjekrvukbdznetsrodj` (bkalut-production-user-owned) | ✅ **דלוק** | פתוחה | `https://more30.com` |
-| `tsnmjjnollodauelnvsz` | ❌ כבוי | פתוחה | `http://localhost:3000` |
-| `svvpuypogqnkgcmtqlgu` (זכויות פרו) | ❌ כבוי | פתוחה | `http://localhost:3000` |
-| `qkszcdkzgfcpfwvskdna` | ❌ כבוי | פתוחה | `http://localhost:3000` |
-| `uhnrgujbdxhhmoxcjria` (הפורטל) | ✅ דלוק | פתוחה | `https://more30.com` |
+| ref | סטטוס | autoconfirm | הרשמה | site_url |
+| --- | --- | --- | --- | --- |
+| `rpamomtvqweqqiotgtta` (ניהול תקציב חכם) | INACTIVE | ❌ כבוי | פתוחה | `http://localhost:3000` |
+| `eygjmfftosigbmzpndib` (מחוברים) | INACTIVE | ❌ כבוי | פתוחה | `http://localhost:3000` |
+| `zxckwefnuectxqhtpfib` (חיבור לשיעורים) | INACTIVE | ❌ כבוי | פתוחה | `http://localhost:3000` |
+| `tltfpznyqxpuydgefmnp` (chatzor-connect) | INACTIVE | ❌ כבוי | פתוחה | `http://localhost:3000` |
+| `bieebmnmkffwbqlsfozh` (bkalut-production) | **ACTIVE** | ❌ **כבוי** | פתוחה | `https://more30.com` |
+| `csjekrvukbdznetsrodj` (bkalut-production-user-owned) | **ACTIVE** | ✅ **דלוק** | פתוחה | `https://more30.com` |
+| `tsnmjjnollodauelnvsz` | INACTIVE | ❌ כבוי | פתוחה | `http://localhost:3000` |
+| `svvpuypogqnkgcmtqlgu` (זכויות פרו) | INACTIVE | ❌ כבוי | פתוחה | `http://localhost:3000` |
+| `qkszcdkzgfcpfwvskdna` | INACTIVE | ❌ כבוי | פתוחה | `http://localhost:3000` |
+| `uhnrgujbdxhhmoxcjria` (הפורטל) | **ACTIVE** | ✅ דלוק | פתוחה | `https://more30.com` |
+
+**שלושה פרויקטים חיים, שבעה מושבתים.** החלוקה הזו נופלת בדיוק על עמודת
+ה-`site_url`: כל שלושת ה-`ACTIVE_HEALTHY` מצביעים ל-`https://more30.com`, וכל
+שבעת ה-`INACTIVE` על `localhost:3000`.
 
 ## שלוש מערכות חיות היו רשומות שבורות תחת קריאה בת יום
 
 `csjekrvukbdznetsrodj` — הפרויקט של **06 בריאות, 12 סמל ו-17 חיזוקים** — נמדד
 ב-12/08 כ-`mailer_autoconfirm=false` ונרשם כך בטבלה של אותו יום. היום הוא
-**דלוק**. השינוי לא נעשה כאן ולא תועד; מה שכן — הוא נכון עכשיו, ולכן שלוש
-המערכות האלה אינן חלק מ-§1א יותר.
+**דלוק**, ולכן שלוש המערכות האלה אינן חלק מ-§1א יותר.
+
+**מי הפך אותו: פעימה שלנו, באותו 12/08.** הסריקה שכתבה "זה של המשתמש" והפעימה
+שהפכה את ההגדרה רצו באותו יום, ורק הראשונה הגיעה לטבלה — ולכן הרישום נשאר
+"כבוי" בעוד ההגדרה כבר הייתה דלוקה. זו לא תקלת מדידה אלא תקלת רישום, וזה בדיוק
+המצב שבו נכתבים חסמים שכבר אינם קיימים.
 
 **נמדד בשני מכשירים בלתי-תלויים, ולא באחד:** ה-Management API
 (`GET /v1/projects/{ref}/config/auth`) ונקודת הקצה הציבורית שכל דפדפן קורא
@@ -73,15 +81,19 @@
 שבעה מהעשרה עדיין עם `site_url=http://localhost:3000`. זו בדיוק התקלה של #198
 (high): קישור איפוס נשלח, נראה תקין, ומצביע על `localhost` של מי שקיבל אותו.
 
-**אף אחד מהשבעה אינו מוגש בייצור.** הסריקה של 12/08 מדדה אילו refs נושאים
-26 האתרים החיים בפועל, והם תשעה: `uhnrgujbdxhhmoxcjria`, `bieebmnmkffwbqlsfozh`,
+**שבעתם `INACTIVE`** — מושבתים, כלומר אין להם GoTrue שירוץ ואין מהם ממה שיישלח
+מייל. זו הראיה החזקה, והיא מגיעה מאותה קריאה עצמה (`status` ב-`/v1/projects`).
+
+שתי ראיות עצמאיות מסכימות איתה. הסריקה של 12/08 מדדה אילו refs נושאים 26
+האתרים החיים בפועל, והם תשעה: `uhnrgujbdxhhmoxcjria`, `bieebmnmkffwbqlsfozh`,
 `csjekrvukbdznetsrodj`, `hkkkynyoigzlttpynoeo`, `aypsqqvfohekxxuqsmrw`,
 `trerolyveytzgksawrme`, `mwljkonwdeuaahsigjdp`, `jhbeelzvjvhnkxldqvxx`,
-`ygaqqnuyfnumezxxmtbh`. אף אחד משבעת ה-`localhost` אינו ברשימה. נבדק גם מהכיוון
-ההפוך על השם המטעה ביותר שבהם: `tltfpznyqxpuydgefmnp` נקרא `chatzor-connect`,
-ואילו `apps/16-chatzor-connect` נושא בקוד את `uhnrgujbdxhhmoxcjria` בלבד.
+`ygaqqnuyfnumezxxmtbh` — אף אחד משבעת ה-`localhost` אינו ברשימה. ונבדק גם
+מהכיוון ההפוך, על השם המטעה ביותר שבהם: `tltfpznyqxpuydgefmnp` נקרא
+`chatzor-connect`, ואילו `apps/16-chatzor-connect` נושא בקוד את
+`uhnrgujbdxhhmoxcjria` בלבד.
 
-כלומר אלה כפילויות/נטושים, ולא תקלה חיה. **לא תוקנו** — תיקון `site_url` של
+כלומר אלה כפילויות/נטושים מושבתים, ולא תקלה חיה. **לא תוקנו** — תיקון `site_url` של
 פרויקט שאיש אינו מוגש ממנו הוא בדיוק "משימת מילוי" שכלל אנטי-דריפט אוסר. נרשם
 כדי שריצה עתידית לא תגלה אותם מחדש ותקרא להם תקלה, וכדי שהמשתמש יוכל למחוק אותם.
 
@@ -89,9 +101,9 @@
 
 - **לא נבדק שהרשמה בפועל מצליחה** באף מערכת. נמדדה הצהרת השרת, לא סבב חי.
   הסבב עצמו רץ ב-`QA/platform/own-form-login-0812` על שלוש מערכות בלבד.
-- **מי הפך את `csjekrvukbdznetsrodj` לא ידוע.** ה-Management API אינו מחזיק
-  היסטוריית שינויים, ואין רישום שלנו. ייתכן שהמשתמש עשה זאת בעקבות
-  `NEEDS_USER §0א״`. מה שנמדד הוא המצב, לא הסיבה.
+- **המדידה כאן אינה מוכיחה מי הפך את `csjekrvukbdznetsrodj`.** ה-Management API
+  אינו מחזיק היסטוריית שינויים. שהפעימה של 12/08 היא שהפכה אותו ידוע מרישום
+  נפרד שלנו, לא מהקריאה הזו.
 - **השורה השנייה של §1א — "המסך אומר את האמת" — כבר סגורה בכל המערכות שיש להן
   טופס כניסה משלהן.** שבע מהן נושאות `src/lib/authErrors.ts` שממפה
   `email_not_confirmed` להודעה עברית נפרדת מ-"סיסמה שגויה" (01, 15, 16, 21, 22,
