@@ -32,6 +32,12 @@ service-account*.json
 !/apps/*/
 !/apps/*/app.json
 !/apps/*/STATUS.md
+# Exception: 37-bkalot-clone is AUTHORED here, not vendored — the ignore above
+# exists to keep private imported source out of a public repo, and none of that
+# applies to a file written in this tree. It holds no secret: the only key in it
+# is the Supabase anon key, which every Supabase site ships to the browser, and
+# which is explicitly denied EXECUTE on public.bkalot_clone_intake (0058).
+!/apps/37-bkalot-clone/**
 # belt-and-suspenders: never leak any vendored env file (incl. .env.example)
 /apps/**/.env*
 
