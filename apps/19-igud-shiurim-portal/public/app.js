@@ -46,6 +46,46 @@ function esc(v) {
     .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 }
 
+// ---------------------------------------------------------------------------
+// «הצג סיסמה» (priority §1א)
+// ---------------------------------------------------------------------------
+// Every screen here is drawn by assigning to APP.innerHTML, so a listener bound
+// after a render dies at the next one. One delegated listener on the document
+// covers fields drawn now and fields drawn later, including the two admin
+// screens that only exist behind a session.
+//
+// The id is generated per call because these fields carry name= and not id=,
+// and the reveal has to be able to name its own field in aria-controls.
+
+let pwFieldSeq = 0;
+const PW_EYE = `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>`;
+const PW_EYE_OFF = `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/><line x1="3" y1="21" x2="21" y2="3"/></svg>`;
+
+// attrs is spliced in raw — every call site below is a literal in this file.
+function pwField(attrs = '') {
+  const id = `pw-${++pwFieldSeq}`;
+  return `<div class="pw-wrap">
+      <input id="${id}" type="password" ${attrs} />
+      <button type="button" class="pw-toggle" data-pw-for="${id}" aria-controls="${id}"
+        aria-pressed="false" aria-label="הצג סיסמה" title="הצג סיסמה">${PW_EYE}</button>
+    </div>`;
+}
+
+// type="button" on the markup above is what keeps this from submitting the form
+// it sits in; the listener only ever toggles.
+document.addEventListener('click', (e) => {
+  const btn = e.target.closest && e.target.closest('.pw-toggle');
+  if (!btn) return;
+  const input = document.getElementById(btn.getAttribute('data-pw-for'));
+  if (!input) return;
+  const reveal = input.getAttribute('type') === 'password';
+  input.setAttribute('type', reveal ? 'text' : 'password');
+  btn.setAttribute('aria-pressed', String(reveal));
+  btn.setAttribute('aria-label', reveal ? 'הסתר סיסמה' : 'הצג סיסמה');
+  btn.setAttribute('title', reveal ? 'הסתר סיסמה' : 'הצג סיסמה');
+  btn.innerHTML = reveal ? PW_EYE_OFF : PW_EYE;
+});
+
 async function api(path, options = {}) {
   const headers = Object.assign({ 'Content-Type': 'application/json' }, options.headers || {});
   if (options.auth && currentSession) {
@@ -702,7 +742,7 @@ function renderJoin() {
           <div id="login-fields" style="display:none;">
             <div class="form-row">
               <div class="form-field"><label>אימייל להתחברות *</label><input name="login_email" type="email" /></div>
-              <div class="form-field"><label>סיסמה *</label><input name="login_password" type="password" minlength="6" /></div>
+              <div class="form-field"><label>סיסמה *</label>${pwField('name="login_password" minlength="6"')}</div>
             </div>
           </div>
         </fieldset>
@@ -1337,7 +1377,7 @@ async function renderAdmin(token) {
               <input name="mosad_id" value="${esc(config.mosad_id || '')}" placeholder="לדוגמה: 1234567" />
             </div>
             <div class="form-field"><label>סיסמת API ${config.has_api_password ? '(כבר מוגדרת — השאירו ריק כדי לא לשנות)' : ''}</label>
-              <input name="api_password" type="password" placeholder="${config.has_api_password ? '••••••••' : ''}" />
+              ${pwField(`name="api_password" placeholder="${config.has_api_password ? '••••••••' : ''}"`)}
             </div>
           </div>
           <label style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
@@ -1557,7 +1597,7 @@ async function renderSynagogueAdmin(token) {
               <input name="mosad_id" value="${esc(config.mosad_id || '')}" placeholder="לדוגמה: 1234567" />
             </div>
             <div class="form-field"><label>סיסמת API ${config.has_api_password ? '(כבר מוגדרת — השאירו ריק כדי לא לשנות)' : ''}</label>
-              <input name="api_password" type="password" placeholder="${config.has_api_password ? '••••••••' : ''}" />
+              ${pwField(`name="api_password" placeholder="${config.has_api_password ? '••••••••' : ''}"`)}
             </div>
           </div>
           <label style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
@@ -1970,7 +2010,7 @@ function renderLoginForm(client) {
       <div id="login-alert"></div>
       <form id="login-form" class="card">
         <div class="form-field"><label>אימייל</label><input name="email" type="email" required /></div>
-        <div class="form-field"><label>סיסמה</label><input name="password" type="password" required /></div>
+        <div class="form-field"><label>סיסמה</label>${pwField('name="password" required')}</div>
         <button class="btn btn-primary" type="submit">התחברות</button>
       </form>
       <p class="muted">עדיין אין לך חשבון? אפשר ליצור אחד דרך <a href="#/join">טופס ההצטרפות</a> (סמנו "גבאי" או "מגיד שיעור").</p>

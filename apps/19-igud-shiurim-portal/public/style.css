@@ -489,3 +489,17 @@ footer.site-footer {
   .topic-pill { font-size: .8rem; padding: 6px 12px; }
   .ad-card { width: 220px; }
 }
+
+/* «הצג סיסמה» (priority §1א) — pwField() ב-app.js.
+   נשאר בסוף הקובץ במכוון: `.pw-wrap input` ו-`.form-field input` באותה
+   ספציפיות בדיוק (0-1-1), ולכן רק הסדר קובע מי נותן את הריפוד לכפתור. */
+.pw-wrap { position: relative; display: flex; }
+.pw-wrap input { flex: 1 1 auto; width: 100%; padding: 10px 12px; padding-inline-end: 42px; }
+.pw-toggle {
+  position: absolute; inset-inline-end: 6px; top: 50%; transform: translateY(-50%);
+  display: flex; align-items: center; justify-content: center;
+  width: 30px; height: 30px; padding: 0; border: 0; border-radius: var(--radius-sm);
+  background: transparent; color: var(--color-muted); cursor: pointer;
+}
+.pw-toggle:hover { color: var(--color-primary); background: var(--color-primary-soft); }
+.pw-toggle:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 1px; }

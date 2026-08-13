@@ -13,11 +13,20 @@
 // So each idiom is decided on its own terms:
 //   JSX/TSX/vue/svelte — a dynamic type={...'password'} IS the reveal. A static
 //                        one is the finding.
-//   HTML               — find the control, don't infer it: a button that names
+//   HTML and .js       — find the control, don't infer it: a button that names
 //                        the field in aria-controls, plus a handler that flips
 //                        the type, in the page or in any same-folder script the
 //                        page loads. A field with no id cannot be resolved this
 //                        way and is reported as UNKNOWN, never as clean.
+//
+// .js is in that list because two systems draw their whole UI from template
+// literals inside plain script files (19 shiurim, 35 kioskfleet) — six fields
+// the markup-only walk never opened. Same idiom as HTML, same rules.
+//
+// Comments are blanked before matching. A comment that *describes* the idiom is
+// not a field, and the scan spent a day reporting one as the campaign's last
+// open bug (24 galil GabaiPortal.tsx:1416 — prose about the reveal button that
+// the field twelve lines below already had).
 //
 // Two controls run on every invocation and the scan exits 2 if either fails, so
 // a green report can't come from a scan that stopped reading files.
@@ -34,11 +43,20 @@ const SKIP_DIRS = new Set([
   'node_modules', '.git', 'dist', 'build', '.next', 'out', 'coverage',
   '.vercel', '.turbo', '_archive', 'gannenet-incoming', 'QA', '_fixtures',
 ]);
+// The QA tooling itself. Every scan that hunts for an idiom has to spell that
+// idiom out, so scripts/qa reports its own search patterns as bare fields — two
+// of them the moment .js joined the walk. Not a product surface; skipped by
+// path, not by folder name, so a real `qa/` inside an app still gets scanned.
+// Control files under it are still resolved, because controls are inspected
+// explicitly and not through the walk.
+const SKIP_PATHS = new Set(['scripts/qa']);
 // Protected systems — read nothing, report nothing (RUN_INSTRUCTIONS "מוגן").
 const PROTECTED = /(^|[\\/])(08-|09-|bkalut-app|bkalot-admin|zr_|NEDARIM3873|csj|csj_src|igud)/i;
 
 const MARKUP = new Set(['.html', '.htm']);
 const JSXISH = new Set(['.jsx', '.tsx', '.vue', '.svelte']);
+// Plain script files that build markup as strings. Decided by the HTML rules.
+const SCRIPTISH = new Set(['.js', '.mjs', '.cjs']);
 
 const STATIC_PW = /type\s*=\s*(["'])password\1/gi;
 const DYNAMIC_PW = /type\s*=\s*\{[^}]*["']password["'][^}]*\}/gi;
@@ -57,8 +75,10 @@ function walk(dir, out = []) {
     if (PROTECTED.test(sep + relative(ROOT, full))) continue;
     if (e.isDirectory()) {
       if (SKIP_DIRS.has(e.name)) continue;
+      if (SKIP_PATHS.has(relative(ROOT, full).split(sep).join('/'))) continue;
       walk(full, out);
-    } else if (MARKUP.has(extname(e.name)) || JSXISH.has(extname(e.name))) {
+    } else if (MARKUP.has(extname(e.name)) || JSXISH.has(extname(e.name))
+               || SCRIPTISH.has(extname(e.name))) {
       out.push(full);
     }
   }
@@ -81,6 +101,20 @@ function siblingScripts(file, text) {
   return js;
 }
 
+// Blank out comments, keeping every byte position so line numbers stay exact.
+// Deliberately conservative: a `//` is only a comment when it opens the line,
+// because `href="https://…"` mid-line would otherwise swallow the rest of it —
+// and a field drawn after a URL on the same line would vanish from the scan.
+// Blinding the scan is a worse failure than the false positive this removes.
+const blank = (s) => s.replace(/[^\n]/g, ' ');
+function stripComments(text) {
+  return text
+    .replace(/<!--[\s\S]*?-->/g, blank)          // HTML
+    .replace(/\{\s*\/\*[\s\S]*?\*\/\s*\}/g, blank) // JSX {/* … */}
+    .replace(/^[ \t]*\/\*[\s\S]*?\*\//gm, blank)   // block comment opening a line
+    .replace(/^[ \t]*\/\/[^\n]*/gm, blank);        // line comment opening a line
+}
+
 // The id of the input that this static type="password" belongs to.
 function fieldIdAt(text, index) {
   const start = text.lastIndexOf('<', index);
@@ -93,7 +127,9 @@ function fieldIdAt(text, index) {
 
 function inspect(file) {
   const ext = extname(file);
-  const text = readFileSync(file, 'utf8');
+  // Everything below reads the comment-blanked copy: a commented-out reveal
+  // button must not clear a live field either, not just the other way round.
+  const text = stripComments(readFileSync(file, 'utf8'));
   const rel = relative(ROOT, file).split(sep).join('/');
   const findings = [];
 
@@ -108,7 +144,7 @@ function inspect(file) {
     return findings;
   }
 
-  const js = text + siblingScripts(file, text);
+  const js = text + stripComments(siblingScripts(file, text));
   const flips = FLIPS_TYPE.some((re) => re.test(js));
   for (const m of text.matchAll(STATIC_PW)) {
     const id = fieldIdAt(text, m.index);
@@ -145,9 +181,14 @@ const escapeRe = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 // run — the scan exited 2 whether or not it had found anything, which is a
 // green light and a red light at once. A control aimed at a live bug dies the
 // moment the campaign succeeds.
+//
+// The third is want:'NONE' — a file that mentions the idiom in prose and must
+// produce no finding at all. Without it, restoring the old comment-blind match
+// would just make 24 galil light up again and read as a regression in galil.
 const CONTROLS = [
   { file: 'apps/06-kupot-holim/site/admin.html', field: 'adminPass', want: 'OK' },
   { file: 'scripts/qa/_fixtures/pw-bare.html', field: 'bare', want: 'MISSING' },
+  { file: 'scripts/qa/_fixtures/pw-commented.jsx', want: 'NONE' },
 ];
 
 const files = walk(ROOT);
@@ -164,11 +205,20 @@ const controlPool = [...all, ...CONTROLS.flatMap((c) => {
 
 let controlsOk = true;
 for (const c of CONTROLS) {
-  const hit = controlPool.find((f) => f.file === c.file && f.field === c.field);
-  const got = hit ? hit.verdict : 'NOT-FOUND';
+  let got;
+  if (c.want === 'NONE') {
+    // A file that must exist and must yield nothing. Missing file != clean.
+    const found = controlPool.filter((f) => f.file === c.file);
+    got = !existsSync(join(ROOT, c.file)) ? 'NOT-FOUND'
+        : found.length ? found.map((f) => `${f.verdict}@${f.line}`).join(',') : 'NONE';
+  } else {
+    const hit = controlPool.find((f) => f.file === c.file && f.field === c.field);
+    got = hit ? hit.verdict : 'NOT-FOUND';
+  }
   const pass = got === c.want;
   if (!pass) controlsOk = false;
-  console.log(`control ${pass ? 'PASS' : 'FAIL'}: ${c.file}#${c.field} want ${c.want}, got ${got}`);
+  const name = c.field ? `${c.file}#${c.field}` : c.file;
+  console.log(`control ${pass ? 'PASS' : 'FAIL'}: ${name} want ${c.want}, got ${got}`);
 }
 
 const missing = all.filter((f) => f.verdict === 'MISSING');
