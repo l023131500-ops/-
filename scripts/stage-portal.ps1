@@ -38,9 +38,14 @@ $cloneSrc = Join-Path $root 'apps\37-bkalot-clone\index.html'
 if (-not (Test-Path $cloneSrc)) {
   throw "apps/37-bkalot-clone/index.html חסר — /bkalot-studio ייפרס כ-404"
 }
+$cloneAdminSrc = Join-Path $root 'apps\37-bkalot-clone\admin.html'
+if (-not (Test-Path $cloneAdminSrc)) {
+  throw "apps/37-bkalot-clone/admin.html חסר — /bkalot-studio/admin ייפרס כ-404"
+}
 $cloneDst = Join-Path $dist 'bkalot-studio'
 New-Item -ItemType Directory -Force -Path $cloneDst | Out-Null
 Copy-Item $cloneSrc (Join-Path $cloneDst 'index.html') -Force
+Copy-Item $cloneAdminSrc (Join-Path $cloneDst 'admin.html') -Force
 
 $apiSrc = Join-Path $portal 'api'
 if (Test-Path $apiSrc) {

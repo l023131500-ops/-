@@ -26,6 +26,8 @@
     { "source": "/admin/imud", "destination": "/admin-imud.html" },
     { "source": "/admin/studio", "destination": "/admin-studio.html" },
     { "source": "/showcase", "destination": "/showcase.html" },
+    { "source": "/bkalot-studio/admin", "destination": "/bkalot-studio/admin.html" },
+    { "source": "/bkalot-studio/admin/", "destination": "/bkalot-studio/admin.html" },
     { "source": "/bkalot-studio", "destination": "/bkalot-studio/index.html" },
     { "source": "/bkalot-studio/", "destination": "/bkalot-studio/index.html" },
     { "source": "/admin", "destination": "https://nihul-more30.vercel.app/admin" },
