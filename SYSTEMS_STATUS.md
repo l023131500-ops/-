@@ -1,5 +1,45 @@
 # SYSTEMS_STATUS.md — מצב כל המערכות, נמדד
 
+> ## 🟢 14/08/2026 — **§1א: כל אובייקט חדש ב-`public` נולד עם `TRUNCATE` ל-`anon`, ו-RLS אינו בודק `TRUNCATE` כלל (#228 נסגר, #229 נפתח).**
+>
+> הרשומה הקודמת הותירה שורה אחת פתוחה במפורש: «`alter default privileges` על
+> סכמת `public` לא שונה», ובצידה הערכה — «לטבלה רגילה זה בלתי-מזיק כי RLS חוסם;
+> ל-view זה חור». **ההערכה נבדקה, וחציה לא נכון.**
+>
+> נמדד על טבלת בדיקה שנוצרה בדיוק כמו כל טבלה חדשה, עם **RLS דלוק ואפס
+> policies** — כלומר מצב ההגנה המקסימלי שטבלה יכולה להיות בו:
+>
+> | פעולה של `anon` על טבלה מוגנת-RLS | לפני | אחרי |
+> |---|---|---|
+> | `DELETE` | עבר, `rows_deleted=0` — RLS חסם, ההגנה עבדה | `42501` |
+> | `TRUNCATE` | **הצליח. הטבלה רוקנה.** | `42501` |
+> | שורות שנשארו | 0 | **3** |
+> | הרשאות טבלה חדשה ל-`anon` | `DELETE,INSERT,REFERENCES,SELECT,TRIGGER,TRUNCATE,UPDATE` | `INSERT,SELECT,UPDATE` |
+> | הרשאות view חדש ל-`anon` | אותן שבע בדיוק | `INSERT,SELECT,UPDATE` |
+>
+> **הסיבה:** ב-Postgres, RLS חל על `SELECT/INSERT/UPDATE/DELETE` ואינו חל על
+> `TRUNCATE`. לכן מפתח ה-`anon` — זה שיושב גלוי בקוד המקור של כל עמוד פורטל —
+> החזיק את היכולת לרוקן **כל טבלה עתידית** ב-`public`, בלי תלות בשום policy.
+> החור לא היה מוגבל ל-views; הם רק היו הצד שנתפס קודם.
+>
+> **מה נעשה (`0060`):** `revoke delete, truncate, references, trigger` מ-`anon`
+> ו-`revoke truncate` מ-`authenticated` על ברירת המחדל של `public`.
+> `SELECT/INSERT/UPDATE` נשמרו — הם ה-RLS-gated האמיתיים, ושלילתם הייתה שוברת כל
+> טבלה עתידית שנשענת על policy. `DELETE` ל-`authenticated` נשמר: «משתמש מוחק שורה
+> של עצמו» הוא דפוס לגיטימי ש-policy חוסמת כראוי. `service_role` לא נגענו.
+>
+> **מה זה לא עושה:** `pg_default_acl` אינו רטרואקטיבי. אף טבלה ואף view קיימים לא
+> השתנו, ולכן **שום מערכת חיה לא שינתה התנהגות** — ההקשחה חלה על מה שייווצר מכאן
+> והלאה בלבד. זו הסיבה שהיה אפשר להריץ אותה בלי סקירה של כל מערכת.
+>
+> **נשאר פתוח (#229):** ל-`pg_default_acl` על `public` יש **grantor שני** —
+> `supabase_admin` — והוא ללא שינוי (`anon` עדיין `arwdDxtm`).
+> `alter default privileges for role supabase_admin` מחזיר
+> `42501 permission denied to change default privileges`, כי `postgres` בפרויקט
+> Supabase אינו superuser. אובייקטים שנוצרים ב-`public` על-ידי `supabase_admin` —
+> בעיקר תוצרי extensions — עדיין נולדים פתוחים. אינו ניתן לסגירה מכאן.
+> עדות: `QA/platform/public-default-privileges-0814/_results.json`.
+
 > ## 🟢 14/08/2026 00:13 — **מאגר הזכויות (§1א): המיגרציה שסוגרת את מחיקת ה-888 נכתבה אתמול ולא הורצה מעולם, ומפתח ה-anon החזיק `DELETE` עד עכשיו.**
 >
 > `0059` נכתב ב-13/08 עם ניתוח מלא ועם שתי מדידות שמוכיחות את החור — **והקובץ

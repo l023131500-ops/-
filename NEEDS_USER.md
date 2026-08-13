@@ -3242,3 +3242,28 @@ node scripts/qa/allowlist-sweep.mjs
 ואפשר למחוק אותם: `rpamomtvqweqqiotgtta`,
 `eygjmfftosigbmzpndib`, `zxckwefnuectxqhtpfib`, `tltfpznyqxpuydgefmnp`,
 `tsnmjjnollodauelnvsz`, `svvpuypogqnkgcmtqlgu`, `qkszcdkzgfcpfwvskdna`.
+
+---
+
+## 🟡 0תג. ה-grantor השני של ברירת המחדל ב-`public` — נעול בפניי (#229) — 14/08/2026
+
+**מה צריך ממך: פנייה לתמיכת Supabase, או החלטה אחת.** לא חוסם עבודה — פריט
+הקשחה שנשאר פתוח אחרי `0060`, ואני רושם אותו כדי שלא ייעלם.
+
+**מה נמדד.** ל-`pg_default_acl` על סכמת `public` יש שני grantor-ים:
+`postgres` — הוקשח ב-`0060`, ו-`supabase_admin` — **ללא שינוי**, `anon` עדיין
+`arwdDxtm` (כולל `TRUNCATE`, ש-RLS אינו בודק). הניסיון לשנות אותו מחזיר
+`42501 permission denied to change default privileges` מכל נתיב שקיים כאן
+(MCP, SQL editor, PAT), כי `postgres` בפרויקט Supabase אינו superuser ואינו
+חבר בתפקיד `supabase_admin`.
+
+**מה זה אומר בפועל.** אובייקט שנוצר ב-`public` **על-ידי `supabase_admin`** —
+בעיקר תוצרי `create extension` — נולד פתוח ל-`anon`. אובייקט שנוצר על-ידי
+`postgres` (כלומר כל מיגרציה שלנו וכל פעולה מה-SQL editor) כבר לא.
+
+- **אפשרות א** → פנייה לתמיכת Supabase לבקש את ה-`alter` על ה-grantor הזה.
+- **אפשרות ב** → החלטה תפעולית: לא מתקינים extensions לתוך `public` (הן
+  שייכות ל-`extensions` ממילא), ואז ה-grantor הזה לא מייצר אובייקטים חדשים
+  והפער נשאר תיאורטי.
+
+עדות: `QA/platform/public-default-privileges-0814/_results.json`.
