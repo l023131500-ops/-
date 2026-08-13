@@ -35,6 +35,13 @@
 // 🚫 מצב טסט: אין כאן שום מסלול יוצא. render מפיק שורה ב-documents ותו לא —
 //    queue_id נשאר null, ואין נגיעה ב-outbound_queue, ב-delivery_log ולא בשום
 //    ערוץ שליחה. הכתיבה היחידה של הפונקציה הזו היא המסמך עצמו.
+//
+// ── v3 (שכבה 3, לבנה 3) ──────────────────────────────────────────────────────
+// נוסף נתיב document. render כותב גוף — 5,223 תווי HTML נמדדו בשורה — ואין ולו
+// נתיב אחד שקורא אותו בחזרה: bkalot_clone_admin_case מחזירה מטא-דאטה בלבד,
+// במפורש (0060 שורה 215). 0064 בנתה את bkalot_clone_admin_document, שוב
+// service_role בלבד. זו הכתובת שלה, והיא קריאה בלבד — הנתיב היחיד שכותב כאן
+// נשאר render.
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL") ?? "";
 const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
@@ -110,7 +117,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
     return json({ ok: false, error: "server_misconfigured" }, 500);
   }
 
-  const ROUTES = ["login", "session", "logout", "cases", "case", "render"];
+  const ROUTES = ["login", "session", "logout", "cases", "case", "render", "document"];
   const seg = new URL(req.url).pathname.split("/").filter(Boolean);
   const action = seg[seg.length - 1] ?? "";
   if (!ROUTES.includes(action)) {
@@ -182,6 +189,16 @@ Deno.serve(async (req: Request): Promise<Response> => {
     const out = await rpc("bkalot_clone_render", {
       p: { ...payload, site_url: SITE_URL },
     });
+    if (!out.ok) return out.res;
+    return json({ ...(out.body as Record<string, unknown>), admin: g.admin });
+  }
+
+  if (action === "document") {
+    // id עובר כפי שהוא, מאותה סיבה בדיוק כמו ב-render ולא מהעדפה: הארגומנט
+    // jsonb ולא bigint, ולכן שום ערך אינו מפיל את PostgREST על casting —
+    // ו-0064 כבר מחזיר document_id_required על מה שאינו ספרות. הבדיקה של case
+    // למטה קיימת רק כי שם הארגומנט bigint.
+    const out = await rpc("bkalot_clone_admin_document", { p: payload });
     if (!out.ok) return out.res;
     return json({ ...(out.body as Record<string, unknown>), admin: g.admin });
   }

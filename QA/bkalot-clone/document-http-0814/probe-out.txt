@@ -1,0 +1,72 @@
+﻿=== the route exists at all ===
+[00] OPTIONS /document, no headers at all -> HTTP 204
+     allow-headers: authorization, apikey, content-type, x-admin-token
+[01] POST /nope (route list must now contain document)
+     HTTP 404  {"ok":false,"error":"route_not_found","allowed":["login","session","logout","cases","case","render","document"]}
+[02] GET /document (wrong method)
+     HTTP 405  {"ok":false,"error":"method_not_allowed","allowed":["POST"]}
+[03] POST /document with NO Authorization (gateway)
+     HTTP 401  {"code":"UNAUTHORIZED_NO_AUTH_HEADER","message":"Missing authorization header"}
+
+=== the rpc itself is not reachable with the anon key ===
+[04] rpc bkalot_clone_admin_document with the anon key
+     HTTP 401  {"code":"42501","details":null,"hint":null,"message":"permission denied for function bkalot_clone_admin_document"}
+
+=== the gate ===
+[05] document: no x-admin-token
+     HTTP 401  {"ok":false,"error":"token_required"}
+[06] document: a token that was never issued
+     HTTP 401  {"ok":false,"error":"invalid_session"}
+
+=== login ===
+[07] login: correct
+     HTTP 200  {"ok":true,"admin":{"id":4,"email":"l023131500@gmail.com","full_name":"מנהל־על"},"token":"42xm5TP1XTcS-0y-XLeRsPPlqXlQ3VX2o_kkVYc5ewU","expires_at":"2026-08-14T10:07:13.37981+00:00"}
+     token length: 43
+
+=== a real case, through the real intake path (not injected into the db) ===
+[08] intake: treatment / disability
+     HTTP 200  {"ok": true, "kind": "treatment", "phone": "0501234567", "queued": false, "case_id": 21, "dropped": [], "situation": "disability", "contact_id": 26, "rights_linked": 59, "rights_unknown": []}
+     case_id=21  rights_linked=59  queued=False
+
+=== render, so there is a body to read back ===
+[09] render: the case
+     HTTP 200  {"ok":true,"queued":false,"case_id":21,"subject":"בקלות — 59 זכויות שאותרו עבורך (פנייה 21)","fallback":false,"html_chars":5223,"text_chars":3415,"document_id":12,"rights_count":59,"template_key":"rights_treatment_reply","rights_source":"all","placeholders_unresolved":[],"admin":{"id":4,"email":"l023131500@gmail.com","full_name":"מנהל־על"}}
+     document_id=12  text_chars=3415  html_chars=5223
+
+=== what admin_case returns for the same case: metadata, still no body ===
+[10] case: the same case
+     HTTP 200  {"ok":true,"case":{"id":21,"raw":{"kind":"treatment","note":"הערה לבדיקה","email":"qa-document@more30.com","phone":"0501234567","consent":"true","full_name":"ישראל בדיקה","situation":"disability"},"kind":"treatment","note":"הערה לבדיקה","source":"form","status":"new","contact":{"id":26,"email":"qa-document@more30.com","phone":"0501234567","source":"form","consent":true,"extension":null,"full_name" ...[15893 bytes]
+     documents[0]: id=12 has_body=True body_html present in payload: False
+
+=== the read itself ===
+[11] document: the id render just returned
+     HTTP 200  {"ok":true,"document":{"id":12,"kind":"email","title":"בקלות — 59 זכויות שאותרו עבורך (פנייה 21)","queued":false,"case_id":21,"queue_id":null,"body_html":"<div dir=\"rtl\" lang=\"he\" style=\"font-family:system-ui,Arial,sans-serif;line-height:1.7\">\n<p>שלום ישראל בדיקה,</p>\n<p>בדקנו את הפנייה שלך (מספר <strong>21</strong>, מתאריך 14/08/2026) ואיתרנו 59 זכויות שכדאי לבדוק:</p>\n<ul><li>פטור ממס ה ...[9188 bytes]
+     ok=True id=12 case_id=21 kind=email
+     html_chars=5223 text_chars=3415 queue_id= queued=False storage_path=
+     case_id matches the case we rendered: True
+     html_chars agrees with render: True   text_chars agrees: True
+     body_html actually present: True  (measured length 5223)
+     length of what arrived equals the count it reported: True
+     the applicant name survives in the html: True
+     the note survives in the text: True
+     pinned site url in the body: True   javascript: in the body: False
+
+=== reader errors stay distinguishable from data faults ===
+[12] document: no id
+     HTTP 200  {"ok":false,"error":"document_id_required","admin":{"id":4,"email":"l023131500@gmail.com","full_name":"מנהל־על"}}
+[13] document: id is a word
+     HTTP 200  {"ok":false,"error":"document_id_required","admin":{"id":4,"email":"l023131500@gmail.com","full_name":"מנהל־על"}}
+[14] document: id is a number as a string
+     HTTP 200  {"ok":true,"document":{"id":12,"kind":"email","title":"בקלות — 59 זכויות שאותרו עבורך (פנייה 21)","queued":false,"case_id":21,"queue_id":null,"body_html":"<div dir=\"rtl\" lang=\"he\" style=\"font-family:system-ui,Arial,sans-serif;line-height:1.7\">\n<p>שלום ישראל בדיקה,</p>\n<p>בדקנו את הפנייה שלך (מספר <strong>21</strong>, מתאריך 14/08/2026) ואיתרנו 59 זכויות שכדאי לבדוק:</p>\n<ul><li>פטור ממס ה ...[9188 bytes]
+[15] document: id that does not exist
+     HTTP 200  {"id":99999,"ok":false,"error":"document_not_found","admin":{"id":4,"email":"l023131500@gmail.com","full_name":"מנהל־על"}}
+[16] document: 25 digits (bigint overflow guard)
+     HTTP 200  {"id":"10000000000000000000000000","ok":false,"error":"document_not_found","admin":{"id":4,"email":"l023131500@gmail.com","full_name":"מנהל־על"}}
+
+=== logout: the read path closes with the session too ===
+[17] logout
+     HTTP 200  {"ok":true,"revoked":1}
+[18] document: same token after logout
+     HTTP 401  {"ok":false,"error":"invalid_session"}
+
+done: 18 requests   CASE_ID=21   DOC_ID=12
