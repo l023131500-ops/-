@@ -1,0 +1,34 @@
+שכפול בקלות: הפרויקט היה רשום מאז שהמפרט אושר, ולא היה לו מקום אחד לכתוב אליו פנייה (§5ב)
+
+core.projects #37 bkalot-clone קיימת עם path=bkalot-studio ו-is_protected=false,
+אבל supabase_schema שלה היה NULL. נוצרה הסכמה bkalot_clone: cases · case_rights ·
+documents, ו-view שקורא חי מ-rights.catalog (888, אומת מול המקור).
+
+שתי ההכרעות שהמפרט השאיר פתוחות הוכרעו במדידה. ל-rights.* אין ולו הרשאה אחת
+ל-anon/authenticated/service_role, וכל מה שמוגש היום עובר דרך views ב-public;
+rights.source_raw ו-catalog.imported_at מעידים שהקטלוג מיובא מחדש כמכלול. לכן
+קוראים חי ולא מעתיקים, ומאותה סיבה אין FK מ-case_rights אל הקטלוג — FK מהשכפול
+היה הופך אותו לגורם שחוסם ייבוא של מאגר הזכויות.
+
+מנוע השליחה לא נבנה מחדש: bkalot_auto אינו שלד אלא תור עובד (8 ב-outbound_queue,
+3 ב-delivery_log, mode ברירת מחדל test ברמת הסכמה), והמפרט מורה להרחיב ולא למחוק.
+cases מצביעה אל bkalot_auto.contacts במקום לשכפל שם/טלפון/מייל, ו-documents.queue_id
+מצביע אל outbound_queue.
+
+מה שנמצא תוך כדי ותוקן באותו צעד: grant on all tables in schema תופס גם את ה-view,
+ו-view של טבלה אחת בלי חישוב הוא auto-updatable בפוסטגרס — כלומר ההרשאה הגורפת פתחה
+ל-service_role נתיב כתיבה אל rights.catalog דרך view שרץ כבעליו. נמדד אחרי המתן
+(INSERT,UPDATE,DELETE הופיעו על rights_catalog) ונסגר; היום SELECT בלבד. ה-view
+נשאר SECURITY DEFINER בכוונה: ל-service_role אין SELECT על rights.catalog עצמה,
+ו-security_invoker היה מחזיר permission denied לכל קורא.
+
+אימות במסלול מלא שמתגלגל אחורה, כדי שלא תישאר שורת בדיקה במסד: פנייה → שלוש שורות
+case_rights → מסמך → join אל הקטלוג החי החזיר joined=3, source='sms' נדחה ע"י ה-check,
+ואחרי הבדיקה cases=0 case_rights=0 documents=0 ו-rights.catalog עדיין 888. RLS דלוק
+על שלוש הטבלאות, אפס policies, הרשאות ל-service_role בלבד — כלומר כל גישה תעבור דרך
+edge function ולא דרך PostgREST אנונימי.
+
+לא נגענו ב-08/09/bkalut-app/bkalot-admin/zr_*/NEDARIM3873 ולא ב-csj/csj_src/igud:
+נוצרה סכמה חדשה בלבד, והעדכון היחיד לטבלה קיימת הוא שורת core.projects של #37 עצמו.
+
+עדות: QA/bkalot-clone/schema-0813/_results.md
