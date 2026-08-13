@@ -1,0 +1,24 @@
+= run 2, 14/08/2026. The consent guard, this time actually reached: a phone that
+= has never existed here, so the contact is created fresh with consent=false.
+= Captured from the console for the same reason as run 1 (see probe-out.txt).
+
+[01] login
+     HTTP 200  {"ok":true,"admin":{"id":7,"email":"qa-queue-http@more30.com","full_name":"בודק נתיב תור"},"token":"[redacted]","expires_at":"2026-08-14T11:29:34.342963+00:00"}
+
+=== a contact that has never existed here, created with consent=false ===
+[02] intake: brand new phone, consent=false
+     HTTP 200  {"ok": true, "kind": "treatment", "phone": "0529998877", "queued": false, "case_id": 36, "dropped": [], "situation": "disability", "contact_id": 42, "rights_linked": 59, "rights_unknown": []}
+     case_id=36 contact_id=42 (must NOT be 39)
+[03] render: case 36
+     HTTP 200  {"ok":true,"queued":false,"case_id":36,"subject":"בקלות — 59 זכויות שאותרו עבורך (פנייה 36)","fallback":false,"html_chars":5263,"text_chars":3455,"document_id":31,"rights_count":59,"template_key":"rights_treatment_reply","rights_source":"all","situation_label":"נכות כללית / מוגבלות","placeholders_unresolved":[],"admin":{"id":7,"email":"qa-queue-http@more30.c ...[393 bytes]
+     document_id=31
+[04] queue: recipient never gave consent
+     HTTP 200  {"ok":false,"error":"no_consent","case_id":36,"message":"הנמען לא נתן הסכמה. לא נכנס לתור.","admin":{"id":7,"email":"qa-queue-http@more30.com","full_name":"בודק נתיב תור"}}
+     ok=False error=no_consent queue_id= (must be empty - no row at all)
+
+done: 4 requests   CASE_D=36 DOC_D=31 CONTACT_D=42
+
+= Confirmed in sql afterwards: no outbound_queue row was written for document 31,
+= and documents.queue_id stayed null. Three clone rows existed in total (11/12/13),
+= all with max_attempts=0, and the source engine's due predicate returned only
+= 6/bkalot. All of it rolled back; baseline restored exactly.

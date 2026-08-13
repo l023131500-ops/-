@@ -42,6 +42,25 @@
 // במפורש (0060 שורה 215). 0064 בנתה את bkalot_clone_admin_document, שוב
 // service_role בלבד. זו הכתובת שלה, והיא קריאה בלבד — הנתיב היחיד שכותב כאן
 // נשאר render.
+//
+// ── v4 (שכבה 3, לבנת השליחה הראשונה) ─────────────────────────────────────────
+// נוסף נתיב queue. 0067 בנתה את bkalot_clone_queue ומדדה אותה במסד — יעד ברשימת
+// הבדיקה, יעד שאינו בה, בלי הסכמה, לחיצה שנייה — ושוב service_role בלבד. כלומר
+// המסמך יכול להיכנס לתור ואין ולו כתובת אחת שמסך הניהול יכול לפנות אליה. זו
+// הכתובת, וזה בדיוק החצי הראשון של #234.
+//
+// ⚠️ זהו הנתיב השני כאן שכותב, והראשון שכותב לתוך מנגנון השליחה. לכן הוא יושב
+//    מאחורי אותו שער בדיוק כמו render — לא לפניו ולא לצידו — ואין לו הרשאה
+//    משלו: bkalot_clone_queue היא service_role בלבד, והדרך היחידה להגיע אליה
+//    היא דרך הקוד הזה.
+//
+// ⚠️ אין כאן ולו ארגומנט אחד שנוגע ב-mode, ב-status או ב-to_address. הנמען נגזר
+//    במסד מאיש הקשר של הפנייה, mode='test' קשיח שם, ורשימת ההיתר נבדקת שם.
+//    שכפול של אחד מהשלושה כאן היה עותק שני של כלל בטיחות שיכול להסתעף בשקט —
+//    וההסתעפות הזו היא מייל שיוצא לאדם אמיתי.
+//
+// 🚫 מצב טסט: הנתיב הזה מכניס לתור ואינו שולח. אין כאן קריאה יוצאת אחת — לא
+//    מייל, לא webhook ולא ערוץ. השורה נכנסת ל-outbound_queue ונשארת שם.
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL") ?? "";
 const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
@@ -117,7 +136,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
     return json({ ok: false, error: "server_misconfigured" }, 500);
   }
 
-  const ROUTES = ["login", "session", "logout", "cases", "case", "render", "document"];
+  const ROUTES = ["login", "session", "logout", "cases", "case", "render", "document", "queue"];
   const seg = new URL(req.url).pathname.split("/").filter(Boolean);
   const action = seg[seg.length - 1] ?? "";
   if (!ROUTES.includes(action)) {
@@ -199,6 +218,19 @@ Deno.serve(async (req: Request): Promise<Response> => {
     // ו-0064 כבר מחזיר document_id_required על מה שאינו ספרות. הבדיקה של case
     // למטה קיימת רק כי שם הארגומנט bigint.
     const out = await rpc("bkalot_clone_admin_document", { p: payload });
+    if (!out.ok) return out.res;
+    return json({ ...(out.body as Record<string, unknown>), admin: g.admin });
+  }
+
+  if (action === "queue") {
+    // document_id עובר כפי שהוא, מאותה סיבה בדיוק כמו ב-document: הארגומנט
+    // jsonb ולא bigint, ו-0067 כבר מחזיר document_id_required על מה שאינו
+    // ספרות ו-document_not_found על 25 ספרות שאינן נכנסות ל-bigint.
+    //
+    // הגוף מועבר כפי שהוא ובכוונה בלי סינון מפתחות: ל-0067 אין שום מפתח קלט
+    // מלבד document_id/id, וכל השאר נופל שם. סינון כאן היה נראה כמו הגנה
+    // ומוסיף מקום שני שצריך לעדכן כשהפונקציה תקבל מפתח נוסף.
+    const out = await rpc("bkalot_clone_queue", { p: payload });
     if (!out.ok) return out.res;
     return json({ ...(out.body as Record<string, unknown>), admin: g.admin });
   }
