@@ -1,0 +1,116 @@
+{
+  "reachable": 10,
+  "projects": [
+    {
+      "ref": "rpamomtvqweqqiotgtta",
+      "name": "ניהול תקציב חכם",
+      "region": "ap-northeast-1",
+      "status": "INACTIVE",
+      "autoconfirm": false,
+      "signup_disabled": false,
+      "site_url": "http://localhost:3000",
+      "custom_smtp": false,
+      "site_url_is_local": true
+    },
+    {
+      "ref": "eygjmfftosigbmzpndib",
+      "name": "מחוברים",
+      "region": "ap-northeast-2",
+      "status": "INACTIVE",
+      "autoconfirm": false,
+      "signup_disabled": false,
+      "site_url": "http://localhost:3000",
+      "custom_smtp": false,
+      "site_url_is_local": true
+    },
+    {
+      "ref": "zxckwefnuectxqhtpfib",
+      "name": "חיבור לשיעורים",
+      "region": "ap-northeast-2",
+      "status": "INACTIVE",
+      "autoconfirm": false,
+      "signup_disabled": false,
+      "site_url": "http://localhost:3000",
+      "custom_smtp": false,
+      "site_url_is_local": true
+    },
+    {
+      "ref": "tltfpznyqxpuydgefmnp",
+      "name": "chatzor-connect",
+      "region": "eu-central-1",
+      "status": "INACTIVE",
+      "autoconfirm": false,
+      "signup_disabled": false,
+      "site_url": "http://localhost:3000",
+      "custom_smtp": false,
+      "site_url_is_local": true
+    },
+    {
+      "ref": "bieebmnmkffwbqlsfozh",
+      "name": "bkalut-production",
+      "region": "eu-central-1",
+      "status": "ACTIVE_HEALTHY",
+      "autoconfirm": false,
+      "signup_disabled": false,
+      "site_url": "https://more30.com",
+      "custom_smtp": false,
+      "site_url_is_local": false,
+      "protected": "נושא את 08 בקלות זכאות ו-09 בקלות ניהול"
+    },
+    {
+      "ref": "csjekrvukbdznetsrodj",
+      "name": "bkalut-production-user-owned",
+      "region": "eu-central-1",
+      "status": "ACTIVE_HEALTHY",
+      "autoconfirm": true,
+      "signup_disabled": false,
+      "site_url": "https://more30.com",
+      "custom_smtp": false,
+      "site_url_is_local": false
+    },
+    {
+      "ref": "tsnmjjnollodauelnvsz",
+      "name": "b023131500@gmail.com's Project",
+      "region": "ap-northeast-1",
+      "status": "INACTIVE",
+      "autoconfirm": false,
+      "signup_disabled": false,
+      "site_url": "http://localhost:3000",
+      "custom_smtp": false,
+      "site_url_is_local": true
+    },
+    {
+      "ref": "svvpuypogqnkgcmtqlgu",
+      "name": "זכויות פרו",
+      "region": "ap-northeast-1",
+      "status": "INACTIVE",
+      "autoconfirm": false,
+      "signup_disabled": false,
+      "site_url": "http://localhost:3000",
+      "custom_smtp": false,
+      "site_url_is_local": true
+    },
+    {
+      "ref": "qkszcdkzgfcpfwvskdna",
+      "name": "l023131500-ops's Project",
+      "region": "ap-southeast-1",
+      "status": "INACTIVE",
+      "autoconfirm": false,
+      "signup_disabled": false,
+      "site_url": "http://localhost:3000",
+      "custom_smtp": false,
+      "site_url_is_local": true
+    },
+    {
+      "ref": "uhnrgujbdxhhmoxcjria",
+      "name": "l023131500-ops's Project",
+      "region": "ap-northeast-1",
+      "status": "ACTIVE_HEALTHY",
+      "autoconfirm": true,
+      "signup_disabled": false,
+      "site_url": "https://more30.com",
+      "custom_smtp": true,
+      "site_url_is_local": false
+    }
+  ]
+}
