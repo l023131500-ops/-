@@ -1,0 +1,17 @@
+﻿=== A preflight, no Authorization header | HTTP 204 | acao='*'
+=== B POST with no key | HTTP 401 | acao='*'
+{"code":"UNAUTHORIZED_NO_AUTH_HEADER","message":"Missing authorization header"}
+=== C GET with anon key | HTTP 405 | acao='*'
+{"ok":false,"error":"method_not_allowed","allowed":["POST"]}
+=== D body that is not JSON | HTTP 400 | acao='*'
+{"ok":false,"error":"body_not_json"}
+=== E body that is a JSON array | HTTP 400 | acao='*'
+{"ok":false,"error":"body_not_object"}
+=== F kind the DB rejects | HTTP 200 | acao='*'
+{"ok": false, "error": "kind_invalid", "allowed": ["info", "reminder", "treatment"]}
+=== G body over 16KB | HTTP 413 | acao='*'
+{"ok":false,"error":"body_too_large","max_bytes":16384}
+=== H full treatment case, Hebrew name, +972 phone | HTTP 200 | acao='*'
+{"ok": true, "kind": "treatment", "phone": "0509998877", "queued": false, "case_id": 8, "dropped": [], "situation": "disability", "contact_id": 12, "rights_linked": 59, "rights_unknown": []}
+=== I info case sending treatment-only fields | HTTP 200 | acao='*'
+{"ok": true, "kind": "info", "phone": "0509998877", "queued": false, "case_id": 9, "dropped": ["situation", "topic_no", "documents"], "situation": null, "contact_id": 12, "rights_linked": 0, "rights_unknown": []}
