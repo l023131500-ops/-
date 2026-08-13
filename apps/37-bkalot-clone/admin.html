@@ -145,6 +145,25 @@ pre{
   margin-top:calc(var(--sp)*4); font-size:14px; color:var(--text-soft);
   border-inline-start:3px solid var(--accent); padding-inline-start:12px;
 }
+/* ── הפקה והצגה של מסמך (שכבה 3) ── */
+.docbar{display:flex; flex-wrap:wrap; gap:var(--sp); align-items:center; margin-bottom:var(--sp)}
+.note{font-size:14px; color:var(--text-soft); margin:0 0 var(--sp)}
+.docview{
+  margin-top:calc(var(--sp)*2); background:var(--surface-2);
+  border:1px solid var(--line); border-radius:var(--r-md); padding:calc(var(--sp)*2);
+}
+.docview h3{margin-top:0}
+/* pre כללי כאן הוא ltr ומונוספייס — נכון ל-raw של הקליטה, שגוי לגוף מכתב בעברית. */
+.doc-text{
+  direction:rtl; text-align:start; white-space:pre-wrap; overflow:visible;
+  font-family:inherit; font-size:15px; line-height:1.7;
+  background:var(--surface); max-height:none;
+}
+.doc-html{
+  width:100%; height:420px; margin-top:var(--sp); background:#fff;
+  border:1px solid var(--line); border-radius:var(--r-sm);
+}
+.docview .doc-text{max-height:320px; overflow:auto}
 @media (prefers-reduced-motion:reduce){ *{transition:none !important} }
 </style>
 </head>
@@ -154,7 +173,7 @@ pre{
 <main class="wrap narrow" id="screen-login">
   <span class="eyebrow">בקלות — עותק עבודה</span>
   <h1>כניסה לניהול</h1>
-  <p class="lede">המסך מציג פניות שנקלטו בטופס. הוא לקריאה בלבד — אין ממנו שום שליחה.</p>
+  <p class="lede">המסך מציג פניות שנקלטו בטופס ומפיק מהן את מכתב התשובה. אין ממנו שום שליחה.</p>
   <div class="card">
     <form id="login-form" novalidate>
       <div class="field">
@@ -188,7 +207,7 @@ pre{
     </form>
     <div class="err" id="login-error" role="alert" hidden></div>
   </div>
-  <p class="testmode">מצב טסט: אין במסך הזה שום מסלול שליחה — לא מייל, לא מסמך ולא הודעה.</p>
+  <p class="testmode">מצב טסט: ההפקה נעצרת במסד — המסמך נשמר ואינו נכנס לתור. אין במסך הזה שום מסלול שליחה: לא מייל, לא ואטסאפ ולא הקלטה.</p>
 </main>
 
 <!-- ── רשימת הפניות ──────────────────────────────────────────────────────── -->
@@ -271,6 +290,11 @@ pre{
     invalid_session:      "הסשן פג או בוטל. התחברו מחדש.",
     case_not_found:       "הפנייה לא נמצאה. ייתכן שנמחקה.",
     case_id_required:     "מספר הפנייה אינו תקין.",
+    template_unknown:     "התבנית שהתבקשה אינה קיימת במסד.",
+    template_disabled:    "התבנית שהתבקשה מנוטרלת ואינה מפיקה.",
+    render_empty:         "התבנית הפיקה מסמך ריק, ולכן לא נשמר דבר.",
+    document_id_required: "מזהה המסמך אינו תקין.",
+    document_not_found:   "המסמך לא נמצא. רעננו את הפנייה.",
     status_unknown:       "הסטטוס שנבחר אינו מוכר. רעננו את הדף.",
     kind_unknown:         "הסוג שנבחר אינו מוכר. רעננו את הדף.",
     route_not_found:      "הכתובת שאליה פנינו אינה קיימת.",
@@ -510,7 +534,9 @@ pre{
   // ── פנייה בודדת ───────────────────────────────────────────────────────────
   $("back").addEventListener("click", () => { show("screen-list"); });
 
-  async function openCase(id) {
+  // note נמסר רק בחזרה מהפקה: openCase בונה את המסך מאפס בכל קריאה, ולכן
+  // הודעת ההפקה חייבת לעבור דרכה — אחרת היא נמחקת ברענון שהיא עצמה גרמה לו.
+  async function openCase(id, note) {
     const data = await call("case", { id });
     if (!data || data.ok !== true) {
       if (data?.expired) return toLogin(data.error);
@@ -600,22 +626,88 @@ pre{
 
     const docs = data.documents || [];
     body.append(h3(`מסמכים (${docs.length})`));
+
+    // ── הפקה ──────────────────────────────────────────────────────────────
+    // הכפתור יושב מעל הטבלה ולא בתוך שורה: הוא פועל על הפנייה, וצריך להיות
+    // לחיץ דווקא כשאין ולו מסמך אחד. render הוא upsert על (case_id, kind)
+    // (0063), ולכן לחיצה שנייה מעדכנת את אותו מסמך ואינה מייצרת עותק שני —
+    // וזו הסיבה שהכיתוב משתנה ל«הפק מחדש» ואינו מבטיח יצירה.
+    const bar = document.createElement("div");
+    bar.className = "docbar";
+    const renderBtn = document.createElement("button");
+    renderBtn.type = "button";
+    renderBtn.textContent = docs.length ? "הפק מחדש" : "הפק מסמך";
+    bar.append(renderBtn);
+    const renderNote = document.createElement("p");
+    renderNote.className = "note";
+    renderNote.setAttribute("role", "status");
+    if (note) renderNote.textContent = note; else renderNote.hidden = true;
+    const renderErr = document.createElement("div");
+    renderErr.className = "err";
+    renderErr.setAttribute("role", "alert");
+    renderErr.hidden = true;
+    body.append(bar, renderNote, renderErr);
+
+    renderBtn.addEventListener("click", async () => {
+      renderErr.hidden = true;
+      const was = renderBtn.textContent;
+      renderBtn.disabled = true;
+      renderBtn.textContent = "מפיק…";
+      const out = await call("render", { case_id: c.id });
+      renderBtn.disabled = false;
+      renderBtn.textContent = was;
+      if (!out || out.ok !== true) {
+        if (out?.expired) return toLogin(out.error);
+        showError(renderErr, out?.error || "bad_response", out?.template_key);
+        return;
+      }
+      // מה שנמדד ולא «בוצע»: איזה מסמך, מאיזו תבנית, כמה תווים ומה לא נפתר.
+      // מציין מקום שנשאר בלי ערך נמחק מהגוף (0063) — הסתרתו כאן הייתה משאירה
+      // חור שקט במכתב שאדם עומד לשלוח.
+      const bits = [
+        `מסמך #${out.document_id} הופק`,
+        `תבנית ${out.template_key}${out.fallback ? " (נוסח נפילה)" : ""}`,
+        `${out.text_chars} תווי טקסט`,
+        `${out.rights_count} זכויות (${out.rights_source === "chosen" ? "נבחרו" : "כל הרשימה"})`,
+      ];
+      const un = out.placeholders_unresolved || [];
+      if (un.length) bits.push(`מצייני מקום בלי ערך: ${un.join(", ")}`);
+      bits.push(out.queued ? "נכנס לתור שליחה" : "לא נשלח — מצב טסט");
+      await openCase(c.id, bits.join(" · "));
+    });
+
     if (docs.length) {
       const t = document.createElement("table");
-      t.innerHTML = "<thead><tr><th>#</th><th>סוג</th><th>כותרת</th><th>נוצר</th></tr></thead>";
+      t.innerHTML = "<thead><tr><th>#</th><th>סוג</th><th>כותרת</th><th>נוצר</th><th></th></tr></thead>";
       const tb = document.createElement("tbody");
+      const panel = document.createElement("div");
+      panel.className = "docview";
+      panel.hidden = true;
       for (const d of docs) {
         const tr = document.createElement("tr");
         for (const v of [String(d.id), d.kind || "", d.title || "", fmtDate(d.created_at)]) {
           const td = document.createElement("td"); td.textContent = v; tr.append(td);
         }
+        const td = document.createElement("td");
+        const openBtn = document.createElement("button");
+        openBtn.type = "button";
+        openBtn.className = "ghost";
+        openBtn.textContent = "הצג";
+        // has_body מגיע מ-0060. מסמך בלי גוף אינו דבר שצריך ללחוץ כדי לגלות.
+        if (d.has_body === false) {
+          openBtn.disabled = true;
+          openBtn.title = "למסמך הזה אין גוף שמור";
+        }
+        openBtn.addEventListener("click", () => showDocument(d.id, panel, openBtn));
+        td.append(openBtn);
+        tr.append(td);
         tb.append(tr);
       }
       t.append(tb);
-      body.append(t);
+      body.append(t, panel);
     } else {
       const p = document.createElement("p"); p.className = "empty";
-      p.textContent = "אין מסמכים. מנוע ההפקה והשליחה (שכבה 3) טרם נבנה.";
+      p.textContent = "אין מסמכים. «הפק מסמך» מייצר את מכתב התשובה מהתבנית — ואינו שולח אותו.";
       body.append(p);
     }
 
@@ -623,6 +715,62 @@ pre{
     const pre = document.createElement("pre");
     pre.textContent = JSON.stringify(c.raw ?? {}, null, 2);
     body.append(pre);
+  }
+
+  // ── גוף המסמך ─────────────────────────────────────────────────────────────
+  // הגוף אינו מגיע עם הפנייה — bkalot_clone_admin_case מחזירה מטא-דאטה בלבד
+  // במפורש (0060) — ולכן הוא נקרא לפי דרישה, בקריאה נפרדת מאחורי אותו שער.
+  //
+  // ⚠️ ה-HTML נכנס ל-iframe עם sandbox ריק ולא מוזרק ל-DOM של המסך. הגוף נבנה
+  //    בשרת מתבנית שיושבת במסד וניתנת לעריכה, ו-innerHTML כאן היה נותן לה את
+  //    ההרשאות של מסך הניהול — כולל הטוקן שחי בזיכרון הדף הזה.
+  async function showDocument(id, panel, btn) {
+    panel.innerHTML = "";
+    panel.hidden = false;
+    panel.classList.remove("err");
+    const was = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = "טוען…";
+    const out = await call("document", { id });
+    btn.disabled = false;
+    btn.textContent = was;
+    if (!out || out.ok !== true) {
+      if (out?.expired) return toLogin(out.error);
+      panel.classList.add("err");
+      showError(panel, out?.error || "bad_response");
+      return;
+    }
+    const d = out.document || {};
+    const h = document.createElement("h3");
+    h.textContent = d.title || "מסמך";
+    const meta = document.createElement("p");
+    meta.className = "note";
+    meta.textContent = [
+      `מסמך #${d.id}`,
+      d.kind,
+      `${d.text_chars ?? 0} תווי טקסט`,
+      `${d.html_chars ?? 0} תווי HTML`,
+      d.queued ? "בתור שליחה" : "לא נשלח — מצב טסט",
+    ].filter(Boolean).join(" · ");
+    panel.append(h, meta);
+    // המעוצב לפני הטקסט: זה המסמך שאדם עומד לשלוח, והגוף הטקסטואלי הוא
+    // הגרסה החלופית שלו. גוף של אלפי תווים מעל התצוגה היה דוחף אותה מחוץ למסך.
+    if (d.body_html) {
+      const frame = document.createElement("iframe");
+      frame.className = "doc-html";
+      frame.setAttribute("sandbox", "");
+      frame.title = "תצוגת המסמך המעוצב";
+      frame.srcdoc = '<!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8">'
+        + '<style>body{margin:0;padding:14px;font:16px/1.65 system-ui,"Segoe UI",sans-serif;color:#171d1a;background:#fff}</style>'
+        + "</head><body>" + d.body_html + "</body></html>";
+      panel.append(frame);
+    }
+    const sub = document.createElement("h3");
+    sub.textContent = "גרסת הטקסט";
+    const txt = document.createElement("pre");
+    txt.className = "doc-text";
+    txt.textContent = d.body_text || "— אין גוף טקסט —";
+    panel.append(sub, txt);
   }
 
   // רענון מנתק, כי הטוקן חי בזיכרון בלבד — וזו התנהגות שהמשתמש רואה מיד.
