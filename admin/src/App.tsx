@@ -541,7 +541,7 @@ export function App() {
           <div style={{ display: "grid", gap: 8, marginTop: 14 }}>
             <input placeholder="מייל" value={email} onChange={(e) => setEmail(e.target.value)}
               autoComplete="username" style={{ ...inp, padding: "8px 12px" }} />
-            <input placeholder="סיסמה" type="password" value={password}
+            <PwField id="admin-pass" placeholder="סיסמה" value={password}
               onChange={(e) => setPassword(e.target.value)} autoComplete="current-password"
               onKeyDown={(e) => { if (e.key === "Enter") signInWithPassword(); }}
               style={{ ...inp, padding: "8px 12px" }} />
@@ -604,7 +604,8 @@ export function App() {
           <details>
             <summary style={{ cursor: "pointer", color: "var(--accent-fg)" }}>שינוי סיסמה</summary>
             <div style={{ display: "flex", gap: 6, marginTop: 6 }}>
-              <input type="password" placeholder="סיסמה חדשה (8+)" value={newPassword} autoComplete="new-password"
+              <PwField id="admin-new-pass" placeholder="סיסמה חדשה (8+)" value={newPassword}
+                autoComplete="new-password"
                 onChange={(e) => setNewPassword(e.target.value)} style={inp} />
               <button onClick={setOwnPassword} style={btn}>קבע</button>
             </div>
@@ -1086,6 +1087,53 @@ function Badge({ on, label, color }: { on: boolean; label: string; color: string
     color: on ? `color-mix(in oklab, ${color}, var(--fg) 25%)` : "var(--muted-2)",
   }}>{label}</span>;
 }
+const EYE = (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false">
+    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z" /><circle cx="12" cy="12" r="3" />
+  </svg>
+);
+const EYE_OFF = (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false">
+    <path d="M17.9 17.9A10.1 10.1 0 0 1 12 20C5 20 1 12 1 12a18.5 18.5 0 0 1 5.1-5.9m3.8-1.9A9.1 9.1 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.2 3.2M9.9 9.9a3 3 0 1 0 4.2 4.2" />
+    <line x1="2" y1="2" x2="22" y2="22" />
+  </svg>
+);
+
+/**
+ * שדה סיסמה עם «הצג סיסמה» (§1א). שני שדות הסיסמה של מרכז השליטה היו בלי שום
+ * דרך לראות מה הוקלד, ובשדה «סיסמה חדשה» זה הכבד מהשניים: אין שם סיסמה קודמת
+ * שאפשר לנסות שוב איתה, ולכן שגיאת הקלדה נשמרת והאדמין ננעל מחוץ למרכז
+ * השליטה של עצמו עד לאיפוס דרך המייל.
+ *
+ * type="button" מפורש: אין כאן <form> היום, אבל שדה הכניסה כבר מגיב ל-Enter,
+ * וכפתור בלי type בתוך form עתידי הוא submit — כל לחיצה על «הצג» הייתה שולחת.
+ * הכפתור ב-insetInlineEnd, כלומר בצד שמאל בעמוד ה-RTL הזה, כדי שלא ישב על
+ * תחילת התווים; ה-paddingInlineEnd על הקלט הוא מה שמפנה לו את המקום.
+ * ה-state מקומי לכל שדה, ולכן גילוי אחד אינו חושף את השני.
+ */
+function PwField({ id, style, ...rest }: React.InputHTMLAttributes<HTMLInputElement> & { id: string }) {
+  const [shown, setShown] = useState(false);
+  const label = shown ? "הסתר סיסמה" : "הצג סיסמה";
+  return (
+    <div style={{ position: "relative", display: "grid" }}>
+      <input {...rest} id={id} type={shown ? "text" : "password"}
+        style={{ ...style, paddingInlineEnd: 36 }} />
+      <button type="button" onClick={() => setShown((v) => !v)}
+        aria-pressed={shown} aria-controls={id} aria-label={label} title={label}
+        style={{
+          position: "absolute", insetInlineEnd: 4, top: "50%", transform: "translateY(-50%)",
+          display: "grid", placeItems: "center", width: 28, height: 28, padding: 0,
+          border: "none", background: "transparent", color: "var(--muted)",
+          borderRadius: 6, cursor: "pointer",
+        }}>
+        {shown ? EYE_OFF : EYE}
+      </button>
+    </div>
+  );
+}
+
 /** המסגרת של כל המסך — גם מסך ההתחברות וגם הלוח, כדי ששניהם ייראו אותו דבר. */
 const shell: React.CSSProperties = {
   fontFamily: "Assistant, system-ui, sans-serif", direction: "rtl",
