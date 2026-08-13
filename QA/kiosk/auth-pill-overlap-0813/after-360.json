@@ -1,0 +1,14 @@
+{
+  "measured": "2026-08-13, live production, https://more30.com/kiosk/console (narrow viewport)",
+  "viewport": { "w": 360, "h": 640 },
+  "insetPublishedByAuthButton": "98px",
+  "topbarPaddingInlineEnd": "64px",
+  "pill": { "t": 8, "l": 10, "r": 86, "b": 44 },
+  "h1": { "t": 28, "l": 151, "r": 311, "b": 61, "note": "clears the pill by 65px on the inline axis" },
+  "buttons": [
+    { "txt": "רענון", "t": 73, "l": 259, "r": 311, "b": 102, "hitLeftEdge": "BUTTON", "hitCenter": "BUTTON" },
+    { "txt": "➕ הוספת מכשיר", "t": 71, "l": 135, "r": 255, "b": 102, "hitLeftEdge": "BUTTON", "hitCenter": "BUTTON" }
+  ],
+  "horizontalOverflow": false,
+  "note": "flex-wrap drops the button group to a second line (t=71) instead of squeezing it against the reserved padding; that line is below the pill (b=44) on both axes."
+}
