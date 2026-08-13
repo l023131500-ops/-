@@ -1,0 +1,64 @@
+﻿=== gateway and routing ===
+[01] OPTIONS /login, no auth at all (preflight)
+     HTTP 204  
+     allow-headers: authorization, apikey, content-type, x-admin-token
+     allow-origin : *
+[02] POST /login with NO Authorization header
+     HTTP 401  {"code":"UNAUTHORIZED_NO_AUTH_HEADER","message":"Missing authorization header"}
+[03] GET /cases (wrong method)
+     HTTP 405  {"ok":false,"error":"method_not_allowed","allowed":["POST"]}
+[04] POST /nope (unknown route)
+     HTTP 404  {"ok":false,"error":"route_not_found","allowed":["login","session","logout","cases","case"]}
+[05] POST /login with a body that is not JSON
+     HTTP 400  {"ok":false,"error":"body_not_json"}
+[06] POST /login with an array body
+     HTTP 400  {"ok":false,"error":"body_not_object"}
+[07] POST /login over 4KB
+     HTTP 413  {"ok":false,"error":"body_too_large","max_bytes":4096}
+
+=== login ===
+[08] login: no credentials
+     HTTP 200  {"ok":false,"error":"credentials_required"}
+[09] login: wrong password
+     HTTP 200  {"ok":false,"error":"invalid_credentials"}
+[10] login: correct (email padded + uppercased)
+     HTTP 200  {"ok":true,"admin":{"id":2,"email":"qa-admin-http@more30.com","full_name":"מנהל בדיקת HTTP"},"token":"g4Wy03lwCJjS3obp39LqizsxrwrRJV7FScaQq8GT0Gg","expires_at":"2026-08-14T08:06:58.852695+00:00"}
+     token length: 43
+
+=== the forced deviation: token in Authorization vs x-admin-token ===
+[11] cases: admin token placed in Authorization (as the source does)
+     HTTP 401  {"code":"UNAUTHORIZED_INVALID_JWT_FORMAT","message":"Invalid JWT"}
+
+=== the gate ===
+[12] cases: no x-admin-token
+     HTTP 401  {"ok":false,"error":"token_required"}
+[13] cases: one character changed in the token
+     HTTP 401  {"ok":false,"error":"invalid_session"}
+[14] session: valid token
+     HTTP 200  {"ok":true,"admin":{"id":2,"email":"qa-admin-http@more30.com","full_name":"מנהל בדיקת HTTP"},"expires_at":"2026-08-14T08:06:58.852695+00:00","session_id":5}
+[15] cases: valid token
+     HTTP 200  {"ok":true,"cases":[{"id":14,"kind":"treatment","note":"בדיקת HTTP של הניהול — 13/08","source":"form","status":"new","contact":{"id":20,"email":"qa-case-http@more30.com","phone":"0507776655","consent":true,"full_name":"ישראל בדיקה"},"topic_no":7,"situation":"disability","created_at":"2026-08-13T20:03:36.915446+00:00","chosen_count":0,"rights_count":59,"documents_count":0}],"limit":50,"total":1,"offset":0,"admin":{"id":2,"email":"qa-admin-http@more30.com","full_name":"מנהל בדיקת HTTP"}}
+     total=1  first_id=14  admin=qa-admin-http@more30.com
+[16] case: valid token, id 14
+     HTTP 200  {"ok":true,"case":{"id":14,"raw":{"kind":"treatment","note":"בדיקת HTTP של הניהול — 13/08","email":"qa-case-http@more30.com","phone":"050-777-6655","source":"form","consent":true,"topic_no":"7","full_name":"ישראל בדיקה","situation":"disability"},"kind":"treatment","note":"בדיקת HTTP של הניהול — 13/08","source":"form","status":"new","contact":{"id":20,"email":"qa-case-http@more30.com","phone":"0507776655","source":"form","consent":true,"extension":null,"full_name":"ישראל בדיקה","created_at":"2026-08-13T20:03:36.915446+00:00"},"topic_no":7,"situation":"disability","created_at":"2026-08-13T20:03:36.915446+00:00","updated_at":"2026-08-13T20:03:36.915446+00:00"},"rights":[{"no":101,"amt":"פטור ממ ...[15794 bytes]
+     rights=59  list_rights_count=59  contact=ישראל בדיקה
+     hebrew round trip clean: True
+     admin full_name bytes ok: True
+[17] case: no id
+     HTTP 200  {"ok":false,"error":"case_id_required"}
+[18] case: id that does not exist
+     HTTP 200  {"ok":false,"error":"case_not_found","case_id":99999,"admin":{"id":2,"email":"qa-admin-http@more30.com","full_name":"מנהל בדיקת HTTP"}}
+[19] case: id is a word
+     HTTP 200  {"ok":false,"error":"case_id_required"}
+
+=== logout ===
+[20] logout: valid token
+     HTTP 200  {"ok":true,"revoked":1}
+[21] cases: same token after logout
+     HTTP 401  {"ok":false,"error":"invalid_session"}
+[22] logout: again (idempotent)
+     HTTP 200  {"ok":true,"revoked":0}
+[23] logout: no token at all
+     HTTP 200  {"ok":false,"error":"token_required"}
+
+done: 23 requests
