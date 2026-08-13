@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState, type FormEvent } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
@@ -167,13 +167,13 @@ function ResetPasswordPage() {
             <form onSubmit={submit} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="password">{`סיסמה חדשה (${PW_MIN} תווים לפחות)`}</Label>
-                <Input id="password" name="password" type="password" required autoFocus dir="ltr"
-                       autoComplete="new-password" minLength={PW_MIN} />
+                <PasswordInput id="password" name="password" required autoFocus dir="ltr"
+                               autoComplete="new-password" minLength={PW_MIN} />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="confirm">שוב, לאימות</Label>
-                <Input id="confirm" name="confirm" type="password" required dir="ltr"
-                       autoComplete="new-password" minLength={PW_MIN} />
+                <PasswordInput id="confirm" name="confirm" required dir="ltr"
+                               autoComplete="new-password" minLength={PW_MIN} />
               </div>
               {error && <p className="text-sm text-destructive">{error}</p>}
               <Button type="submit" className="w-full" disabled={saving}>

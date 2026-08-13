@@ -1,0 +1,16 @@
+﻿{
+    "measured_at_utc":  "2026-08-13T15:13:50Z",
+    "deployment":  "dpl_EYCPmcFygJ2h7xVkJnK1tJGQDcoH",
+    "page_url":  "https://more30.com/gesher/reset-password",
+    "page_status":  200,
+    "page_bytes":  6191,
+    "chunk":  "/gesher/assets/reset-password-CpYDyvBB.js",
+    "chunk_status":  200,
+    "chunk_bytes":  4974,
+    "chunk_has_show_label":  true,
+    "chunk_has_hide_label":  true,
+    "chunk_has_aria_pressed":  true,
+    "chunk_has_toggled_type":  true,
+    "chunk_password_input_uses":  1,
+    "auth_page_status":  200
+}
