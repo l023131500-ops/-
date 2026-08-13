@@ -1,0 +1,62 @@
+﻿=== the route exists at all ===
+[00] OPTIONS /render, no headers at all -> HTTP 204
+     allow-headers: authorization, apikey, content-type, x-admin-token
+[01] POST /nope (route list must now contain render)
+     HTTP 404  {"ok":false,"error":"route_not_found","allowed":["login","session","logout","cases","case","render"]}
+[02] GET /render (wrong method)
+     HTTP 405  {"ok":false,"error":"method_not_allowed","allowed":["POST"]}
+[03] POST /render with NO Authorization (gateway)
+     HTTP 401  {"code":"UNAUTHORIZED_NO_AUTH_HEADER","message":"Missing authorization header"}
+
+=== the gate: render is the first route here that writes ===
+[04] render: no x-admin-token
+     HTTP 401  {"ok":false,"error":"token_required"}
+[05] render: a token that was never issued
+     HTTP 401  {"ok":false,"error":"invalid_session"}
+
+=== login ===
+[06] login: correct
+     HTTP 200  {"ok":true,"admin":{"id":4,"email":"l023131500@gmail.com","full_name":"מנהל־על"},"token":"XCxi-X-6XfxTzGjsIcXlnMcuzmZV4AsnEWEVMvIkidw","expires_at":"2026-08-14T09:53:23.967008+00:00"}
+     token length: 43
+
+=== a real case, through the real intake path (not injected into the db) ===
+[07] intake: treatment / disability
+     HTTP 200  {"ok": true, "kind": "treatment", "phone": "0501234567", "queued": false, "case_id": 19, "dropped": [], "situation": "disability", "contact_id": 25, "rights_linked": 59, "rights_unknown": []}
+     case_id=19  rights_linked=59  queued=False
+
+=== render ===
+[08] render: the case
+     HTTP 200  {"ok":true,"queued":false,"case_id":19,"subject":"בקלות — 59 זכויות שאותרו עבורך (פנייה 19)","fallback":false,"html_chars":5223,"text_chars":3415,"document_id":7,"rights_count":59,"template_key":"rights_treatment_reply","rights_source":"all","placeholders_unresolved":[],"admin":{"id":4,"email":"l023131500@gmail.com","full_name":"מנהל־על"}}
+     document_id=7 template=rights_treatment_reply fallback=False rights=59/all text=3415 html=5223 unresolved=
+     queued (test mode, must be False): False
+     admin echoed back: l023131500@gmail.com
+[09] render: the same case again (upsert, not accumulate)
+     HTTP 200  {"ok":true,"queued":false,"case_id":19,"subject":"בקלות — 59 זכויות שאותרו עבורך (פנייה 19)","fallback":false,"html_chars":5223,"text_chars":3415,"document_id":7,"rights_count":59,"template_key":"rights_treatment_reply","rights_source":"all","placeholders_unresolved":[],"admin":{"id":4,"email":"l023131500@gmail.com","full_name":"מנהל־על"}}
+     same document_id: True
+
+=== reader errors stay distinguishable from data faults ===
+[10] render: no case_id
+     HTTP 200  {"ok":false,"error":"case_id_required","admin":{"id":4,"email":"l023131500@gmail.com","full_name":"מנהל־על"}}
+[11] render: case_id is a word
+     HTTP 200  {"ok":false,"error":"case_id_required","admin":{"id":4,"email":"l023131500@gmail.com","full_name":"מנהל־על"}}
+[12] render: case_id that does not exist
+     HTTP 200  {"ok":false,"error":"case_not_found","case_id":99999,"admin":{"id":4,"email":"l023131500@gmail.com","full_name":"מנהל־על"}}
+[13] render: template_key that does not exist
+     HTTP 200  {"ok":false,"error":"template_unknown","allowed":["general_inquiry_reply","rights_treatment_reply"],"template_key":"no_such_template","admin":{"id":4,"email":"l023131500@gmail.com","full_name":"מנהל־על"}}
+[14] render: the other template, explicitly
+     HTTP 200  {"ok":true,"queued":false,"case_id":19,"subject":"בקלות — קיבלנו את פנייתך (פנייה 19)","fallback":false,"html_chars":379,"text_chars":185,"document_id":7,"rights_count":59,"template_key":"general_inquiry_reply","rights_source":"all","placeholders_unresolved":[],"admin":{"id":4,"email":"l023131500@gmail.com","full_name":"מנהל־על"}}
+
+=== site_url is pinned in the function and cannot be supplied ===
+[15] render: caller tries to set site_url
+     HTTP 200  {"ok":true,"queued":false,"case_id":19,"subject":"בקלות — 59 זכויות שאותרו עבורך (פנייה 19)","fallback":false,"html_chars":5223,"text_chars":3415,"document_id":7,"rights_count":59,"template_key":"rights_treatment_reply","rights_source":"all","placeholders_unresolved":[],"admin":{"id":4,"email":"l023131500@gmail.com","full_name":"מנהל־על"}}
+     still HTTP 200 and same document_id: True
+     template that wrote the surviving row: rights_treatment_reply
+     (the body itself is checked in sql after this run)
+
+=== logout ===
+[16] logout
+     HTTP 200  {"ok":true,"revoked":1}
+[17] render: same token after logout
+     HTTP 401  {"ok":false,"error":"invalid_session"}
+
+done: 17 requests   CASE_ID=19

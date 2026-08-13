@@ -22,8 +22,19 @@
 //    והזהות שלנו בכותרת נפרדת. הדפוס עצמו — טוקן אטום מ-state בזיכרון, בלי
 //    localStorage ובלי cookies — נשמר.
 //
-// 🚫 מצב טסט: אין כאן שום מסלול יוצא. הפונקציה קוראת ומאמתת בלבד, ואינה נוגעת
-//    ב-outbound_queue, ב-delivery_log ולא בשום ערוץ שליחה.
+// ── v2 (שכבה 3, לבנה 2) ──────────────────────────────────────────────────────
+// נוסף נתיב render. מיגרציה 0063 בנתה את bkalot_clone_render ומדדה אותה,
+// ול-EXECUTE שלה service_role בלבד — כלומר הרנדרר קיים ואין ולו כתובת אחת
+// שמסך הניהול יכול לפנות אליה. זו הכתובת.
+//
+// ⚠️ זהו הנתיב הראשון כאן שכותב. חמשת הקודמים קוראים ומאמתים בלבד, ולכן הוא
+//    יושב מאחורי אותו שער בדיוק ולא לפניו — ומעבר לזה אין לו הרשאה משלו:
+//    bkalot_clone_render היא service_role בלבד, והדרך היחידה להגיע אליה היא
+//    דרך הקוד הזה.
+//
+// 🚫 מצב טסט: אין כאן שום מסלול יוצא. render מפיק שורה ב-documents ותו לא —
+//    queue_id נשאר null, ואין נגיעה ב-outbound_queue, ב-delivery_log ולא בשום
+//    ערוץ שליחה. הכתיבה היחידה של הפונקציה הזו היא המסמך עצמו.
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL") ?? "";
 const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
@@ -31,6 +42,12 @@ const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
 // גופי הבקשה כאן קטנים (מייל+סיסמה, או מסננים) — אין payload שנשמר למסד כמו
 // cases.raw בקליטה, ולכן התקרה נמוכה יותר מזו של intake.
 const MAX_BODY = 4 * 1024;
+
+// כתובת האתר שנכנסת למסמך נקבעת כאן ואינה מתקבלת מהגוף, גם לא ממנהל מחובר.
+// {{siteUrl}} נשתל בתוך href בגוף ה-HTML; ה-escape של 0063 מונע יציאה מהמאפיין
+// אבל אינו מגביל סכימה, ולכן ערך שמגיע מבחוץ יכול לשתול קישור זר במסמך שאדם
+// יקרא — ובהמשך יישלח. מקור אחד, בקוד.
+const SITE_URL = "https://more30.com/bkalot-studio";
 
 // x-admin-token חייב להופיע כאן: preflight שאינו מכריז עליו יגרום לדפדפן
 // לחסום את הבקשה האמיתית — והבדיקה משורת הפקודה, שאינה שולחת preflight,
@@ -93,7 +110,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
     return json({ ok: false, error: "server_misconfigured" }, 500);
   }
 
-  const ROUTES = ["login", "session", "logout", "cases", "case"];
+  const ROUTES = ["login", "session", "logout", "cases", "case", "render"];
   const seg = new URL(req.url).pathname.split("/").filter(Boolean);
   const action = seg[seg.length - 1] ?? "";
   if (!ROUTES.includes(action)) {
@@ -154,6 +171,18 @@ Deno.serve(async (req: Request): Promise<Response> => {
     if (!out.ok) return out.res;
     // הזהות מוחזרת עם הרשימה כדי שמסך הניהול לא יידרש לקריאה שנייה רק כדי
     // לדעת מי מחובר.
+    return json({ ...(out.body as Record<string, unknown>), admin: g.admin });
+  }
+
+  if (action === "render") {
+    // case_id ו-template_key עוברים כפי שהם. כאן, בניגוד ל-case, אין סיבה
+    // לשכפל את הבדיקה: הארגומנט הוא jsonb ולא bigint, ולכן שום ערך אינו מפיל
+    // את PostgREST על casting — ו-0063 כבר מחזיר case_id_required על מה שאינו
+    // ספרות. עותק שני של הכלל כאן היה יכול להסתעף ממנו בשקט.
+    const out = await rpc("bkalot_clone_render", {
+      p: { ...payload, site_url: SITE_URL },
+    });
+    if (!out.ok) return out.res;
     return json({ ...(out.body as Record<string, unknown>), admin: g.admin });
   }
 
