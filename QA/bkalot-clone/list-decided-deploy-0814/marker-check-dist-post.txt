@@ -1,0 +1,3 @@
+﻿..\..\..\portal\dist\bkalot-studio\admin.html 66931 chars
+new: decidedBit=true | const decided = decidedBit(c)=true | Object.hasOwn(c, "decided_at")=true | לא הוכרע מהמסך=true | הטריגר קידם אותה בהפקת מסמך=true
+old: fillDecidedLine=true | לא נרשמה הכרעה ידנית מהמסך=true | מי הכריע אינו ידוע=true | החשבון אינו קיים עוד=true | מנהל #${c.decided_by} · החשבון אינו קיים עוד=true | <th>מכתב</th>=true | fillTemplateCell=true | tmpl-sel=true | שינוי סטטוס=true | עבד עכשיו=true | הכנס לתור=true

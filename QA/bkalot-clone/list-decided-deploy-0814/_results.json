@@ -1,0 +1,114 @@
+{
+  "pulse": "073f08b → פריסה: הסימן «מי הכריע» ברשימת העבודה מגיע לייצור",
+  "deployed_commit": "073f08b1d96aaaf1a3ea55c05b3a767275e12249",
+  "code_changed": false,
+  "migration": null,
+  "edge_function": "bkalot-clone-admin נשארה v7 — לא נפרסה",
+  "vercel_deployment": "more30-portal-cv0a3qmrb-l023131500-ops-projects.vercel.app",
+
+  "file": {
+    "source": "apps/37-bkalot-clone/admin.html",
+    "bytes": 85043,
+    "md5": "6FD618CDFB0C8A04924B1F88667A7B57",
+    "dist_before_staging": { "bytes": 80786, "md5": "FBD4962E4F1FC1A7507AE57BBB7A3203" },
+    "dist_after_staging": { "bytes": 85043, "md5": "6FD618CDFB0C8A04924B1F88667A7B57" }
+  },
+
+  "markers": {
+    "new_unique_to_073f08b": [
+      "decidedBit",
+      "const decided = decidedBit(c)",
+      "Object.hasOwn(c, \"decided_at\")",
+      "לא הוכרע מהמסך",
+      "הטריגר קידם אותה בהפקת מסמך"
+    ],
+    "moved_to_old_because_true_before": "מנהל #${c.decided_by} · החשבון אינו קיים עוד",
+    "prev_version_073f08b^": { "new": "כולם false", "old": "כולם true" },
+    "source": { "new": "כולם true", "old": "כולם true" },
+    "dist_before_staging": { "new": "כולם false", "old": "כולם true" },
+    "dist_after_staging": { "new": "כולם true", "old": "כולם true" },
+    "production_before": { "new": "כולם false", "old": "כולם true" },
+    "production_after": { "new": "כולם true", "old": "כולם true" }
+  },
+
+  "http": {
+    "/bkalot-studio/admin": { "before": 81022, "after": 85279 },
+    "/bkalot-studio/admin/": { "before": 81022, "after": 85279 },
+    "/bkalot-studio/": { "before": 21272, "after": 21272 },
+    "more30.com/": { "before": 3517, "after": 3517 },
+    "netfree_delta": 236,
+    "alef_admin": { "before": 777, "after": 845 },
+    "assets": { "before": "index-C2AHwa-z.js,index-B35ByRD-.css", "after": "index-C2AHwa-z.js,index-B35ByRD-.css" },
+    "encoding": { "replacement_chars": 0, "double_encoded": 0 }
+  },
+
+  "browser": {
+    "viewport": "1280x900",
+    "url": "https://more30.com/bkalot-studio/admin?cb=qa0080",
+    "admin": { "id": 35, "full_name": "QA 0080 פריסה" },
+    "cases_created_over_http_intake": { "human": 112, "trigger": 113 },
+    "console": { "total": 0, "errors": 0, "warnings": 0 },
+    "states": [
+      {
+        "shot": "01-live-list-both-new.png",
+        "state": "(1) שתיהן חדשות ואיש לא נגע — אפס סימנים",
+        "rows": 2
+      },
+      {
+        "shot": "02-live-decided-by-human.png",
+        "state": "(3) #112 נסגרה בלחיצה בדפדפן",
+        "line": "הוכרעה 14.08.2026, 09:04 · QA 0080 פריסה",
+        "title": "מזהה מנהל 35",
+        "db": { "status": "closed", "decided_by": 35, "decided_at": "2026-08-14 06:04:26.982576+00" }
+      },
+      {
+        "shot": "03-live-advanced-by-trigger.png",
+        "state": "(2) #113 קודמה ב«הפק מסמך» — הטריגר, לא אדם",
+        "line": "לא הוכרע מהמסך",
+        "color": "rgb(168, 99, 31)",
+        "title": "הפנייה אינה «חדשה» ולא נרשמה עליה לחיצה — הטריגר קידם אותה בהפקת מסמך",
+        "beside_it": "1 מסמכים",
+        "db": { "status": "in_progress", "decided_by": null, "decided_at": null, "updated_at": "2026-08-14 06:04:55.316095+00" }
+      }
+    ],
+    "screenshots": [
+      { "file": "01-live-list-both-new.png", "bytes": 36418, "md5": "4DCBB95660DCDD855AF5D3656DA701EA" },
+      { "file": "02-live-decided-by-human.png", "bytes": 38584, "md5": "147E0795F406953855FDF8705D08670E" },
+      { "file": "03-live-advanced-by-trigger.png", "bytes": 40718, "md5": "BED74ED2B28639D46CBB97DA8EC7079D" }
+    ]
+  },
+
+  "test_mode": {
+    "cases_in_sent": 0,
+    "outbound_queue": { "before": 8, "after_document": 8, "after_rollback": 8 },
+    "queue_rows_with_sent_at": 0,
+    "queue_rows_mode_live": 0,
+    "delivery_log": 3,
+    "queue_fingerprint": { "during": "8cf33788a36d5f9618858835c89e30c1", "after": "8cf33788a36d5f9618858835c89e30c1" }
+  },
+
+  "rollback": {
+    "deleted": { "documents": 1, "case_rights": 0, "cases": 2, "admin_sessions": 1, "admin_users": 1, "contacts": 2 },
+    "after": {
+      "cases": 0, "case_rights": 0, "documents": 0, "admin_users": 1, "admin_sessions": 5,
+      "templates": 2, "catalog": 888, "contacts": 4, "outbound_queue": 8, "delivery_log": 3
+    },
+    "identical_to_baseline": true
+  },
+
+  "protected_untouched": [
+    "apps/08-bkalut-app", "apps/09-bkalot-admin", "supabase/functions",
+    "bkalut-app", "bkalot-admin", "zr_*", "NEDARIM3873", "csj", "csj_src", "igud"
+  ],
+
+  "open": [
+    "«חזרה לרשימה» אינה מרעננת את הרשימה — אחרי «הפק מסמך» השורה עדיין אמרה «חדשה» עד לחיצת «סינון». נתפס במדידה הזו, לא תוקן בה.",
+    "מצב (2) של fillDecidedLine — «מי הכריע אינו ידוע» — עדיין ללא נתיב HTTP שיכול לייצר אותו",
+    "מצב (0) ומצב «החשבון אינו קיים עוד» נמדדו ב-073f08b מקומית; כאן המסומנים בלבד מוכיחים שהקוד נפרס",
+    "אין סינון «לא הוכרעה» ואין מיון לפי decided_at",
+    "אין היסטוריה: הכרעה קודמת נדרסת",
+    "«מי הפיק» על documents אינו נכתב לשום מקום",
+    "«1 מסמכים» — המונה אינו סופר עברית כמו «פנייה אחת» שברשימה",
+    "public_visible ו-show_in_showcase של #37 נשארים false"
+  ]
+}
