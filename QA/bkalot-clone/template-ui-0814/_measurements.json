@@ -1,0 +1,89 @@
+{
+  "pulse": "בורר המכתב ב-admin.html — הקצה של 0073",
+  "date": "2026-08-14",
+  "measured_against": {
+    "html": "שרת סטטי מקומי http://127.0.0.1:8138 (apps/37-bkalot-clone)",
+    "edge_and_db": "חיים — bkalot-clone-intake / bkalot-clone-admin v6, מסד uhnrgujbdxhhmoxcjria",
+    "caveat": "מדידה של הקוד ולא של המוצר: ה-rewrite ב-vercel.dist.json, ההעתקה ב-stage-portal.ps1 ו-236 הבייטים של NetFree לא נבדקו כאן. הפריסה היא הפעימה הבאה."
+  },
+  "seed": {
+    "path": "bkalot-clone-intake מעל HTTP עם מפתח anon של הטופס הציבורי — לא הזרקה למסד",
+    "cases": [
+      { "tag": "A", "id": 78, "kind": "treatment", "phone": "0500076001", "rights": 59 },
+      { "tag": "B", "id": 79, "kind": "info", "phone": "0500076002", "rights": 0 }
+    ],
+    "admin_user": "qa0076@more30.com (id=19), נוצר ב-bkalot_clone_admin_create ונמחק בגלגול אחורה"
+  },
+  "selector": {
+    "label": "מכתב",
+    "default_option": { "value": "", "text": "ברירת מחדל לפי סוג הפנייה", "selected_on_open": true },
+    "options_when_both_enabled": [
+      { "v": "", "t": "ברירת מחדל לפי סוג הפנייה", "disabled": false },
+      { "v": "general_inquiry_reply", "t": "מענה לפנייה כללית", "disabled": false },
+      { "v": "rights_treatment_reply", "t": "מענה לפניית טיפול — רשימת הזכויות", "disabled": false }
+    ],
+    "options_with_one_disabled": [
+      { "v": "", "t": "ברירת מחדל לפי סוג הפנייה", "disabled": false },
+      { "v": "rights_treatment_reply", "t": "מענה לפניית טיפול — רשימת הזכויות", "disabled": false },
+      { "v": "general_inquiry_reply", "t": "מענה לפנייה כללית — מנוטרלת, אינה מפיקה", "disabled": true }
+    ],
+    "note": "השורה המנוטרלת יורדת למקום האחרון — זהו המיון של admin_case (enabled desc, name_he) ולא מיון שני בלקוח"
+  },
+  "hint_follows_kind": {
+    "case_79_info_default": "נקבע לפי סוג הפנייה — «מידע» מקבל את המענה הכללי.",
+    "case_78_treatment_default": "נקבע לפי סוג הפנייה — «טיפול מלא» מקבל את המכתב עם רשימת הזכויות.",
+    "case_79_after_picking_rights_template": "נושא: בקלות — {{rightsCount}} זכויות שאותרו עבורך (פנייה {{caseId}}) · ערוץ התבנית: email",
+    "case_79_back_to_default": "נקבע לפי סוג הפנייה — «מידע» מקבל את המענה הכללי."
+  },
+  "the_measurement_that_buys_the_pulse": {
+    "case": 78,
+    "kind": "treatment",
+    "default_would_be": "rights_treatment_reply",
+    "picked": "general_inquiry_reply",
+    "note_on_screen": "מסמך #68 הופק · תבנית general_inquiry_reply · 215 תווי טקסט · 59 זכויות (כל הרשימה) · לא נשלח — מצב טסט",
+    "why": "215 תווים ולא 3,498 — מכתב אחר ולא תווית אחרת. זהו ערך שברירת המחדל אינה יכולה להפיק על הפנייה הזו בשום מצב"
+  },
+  "control_default_rule_unmoved": {
+    "case": 78,
+    "picked": "(ריק — לא נשלח template_key)",
+    "note_on_screen": "מסמך #68 הופק · תבנית rights_treatment_reply · 3498 תווי טקסט · 59 זכויות (כל הרשימה) · לא נשלח — מצב טסט",
+    "same_document_id": true,
+    "why": "הכלל של render (treatment → rights_treatment_reply) לא זז ולא שוכפל ללקוח; upsert על (case_id,kind) השאיר מסמך אחד"
+  },
+  "selection_survives_the_rebuild": {
+    "after_render_sel_value": "general_inquiry_reply",
+    "why": "openCase בונה את המסך מאפס; בלי keepTmpl הבורר היה חוזר ל«ברירת מחדל» מיד אחרי הפקה מתבנית שנבחרה"
+  },
+  "console": { "errors": 0, "warnings": 0, "total_messages": 0 },
+  "test_mode": {
+    "rows_with_sent_at": 0,
+    "rows_mode_live": 0,
+    "cases_status_sent": 0,
+    "outbound_queue": 8,
+    "delivery_log": 3,
+    "documents_queued": 0,
+    "note": "הנתיב הזה מפיק בלבד — לא הוכנס דבר לתור, לא נכתבה שורת יומן ולא יצאה ולו קריאה אחת"
+  },
+  "source_untouched": {
+    "rows_app_key_bkalot_before": 8,
+    "rows_app_key_bkalot_after": 8,
+    "fingerprint_before": "da28ec6315535ec0bfbebad4d57752a7",
+    "fingerprint_after": "da28ec6315535ec0bfbebad4d57752a7"
+  },
+  "template_row_restored": {
+    "key": "general_inquiry_reply",
+    "disabled_then_enabled": true,
+    "updated_at_frozen": "2026-08-13 23:00:26.664781+00",
+    "why": "updated_at=updated_at בשני הכיוונים — כדי לא לזייף חותמת עדכון על שורה שאיש לא ערך"
+  },
+  "rollback": {
+    "order": "מסמכים → case_rights → פניות → אנשי קשר → סשנים → משתמש ניהול",
+    "deleted": { "documents": 1, "case_rights": 59, "cases": 2, "contacts": 2, "sessions": 2, "admin_users": 1 },
+    "after": {
+      "cases": 0, "case_rights": 0, "documents": 0, "admin_users": 1, "admin_sessions": 5,
+      "templates": 2, "templates_enabled": 2, "catalog": 888, "contacts": 4,
+      "outbound_queue": 8, "delivery_log": 3
+    },
+    "identical_to_baseline": true
+  }
+}

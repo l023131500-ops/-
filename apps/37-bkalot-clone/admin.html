@@ -582,7 +582,12 @@ pre{
   // מקומות שונים במסך (מעל טבלת המסמכים ומתחת לכפתורי הסטטוס), ושליחת הודעת
   // סטטוס דרך note הייתה מציגה «הסטטוס שונה» בסרגל ההפקה — כלומר תחת כותרת
   // שאינה קשורה למה שנעשה.
-  async function openCase(id, note, statusNote) {
+  // keepTmpl הוא ערוץ שלישי מאותה סיבה בדיוק: אחרי הפקה המסך נבנה מאפס, ובורר
+  // המכתב היה חוזר ל«ברירת מחדל» מיד אחרי הפקה מתבנית שנבחרה — כלומר מסך
+  // שאומר «ברירת מחדל» על מסמך שלא הופק ממנה. הבחירה נשמרת דרך הרענון שההפקה
+  // עצמה גרמה לו, ולא מעבר לו: פתיחה מהרשימה מתחילה בברירת המחדל, כי documents
+  // אינה שומרת מאיזו תבנית הופק המסמך ואין למסך מאין לדעת.
+  async function openCase(id, note, statusNote, keepTmpl) {
     const data = await call("case", { id });
     if (!data || data.ok !== true) {
       if (data?.expired) return toLogin(data.error);
@@ -791,6 +796,70 @@ pre{
     const renderBtn = document.createElement("button");
     renderBtn.type = "button";
     renderBtn.textContent = docs.length ? "הפק מחדש" : "הפק מסמך";
+
+    // ── בורר המכתב ────────────────────────────────────────────────────────
+    // 0073 החזירה את templates בגוף התשובה של admin_case, ועד כאן איש לא קרא
+    // אותה: השרת מבחין בין «אין מכתב כזה» (template_unknown) לבין «המכתב הזה
+    // מכובה» (template_disabled), ושני הנוסחים ישבו כאן בעברית בלי שתהיה ולו
+    // לחיצה אחת שמגיעה אליהם.
+    //
+    // ארבע הכרעות:
+    // (1) הערך הריק אינו שולח template_key כלל, ואינו מחשב כאן את המפתח.
+    //     render גוזר treatment → rights_treatment_reply ואחרת
+    //     general_inquiry_reply (0063), והוא הבעלים היחיד. חישוב שני כאן היה
+    //     מקום שני שבו מוכרעת זהות המכתב, ושני מקומות כאלה מסתעפים בשקט.
+    // (2) שורה מנוטרלת מוצגת ואינה נבחרת: להשמיט אותה היה הופך מכתב מכובה
+    //     למכתב שאינו קיים — בדיוק ההבחנה שהשרת טרח לבנות; להשאיר אותה
+    //     לחיצה היה מבטיח הפקה שהשרת דוחה תמיד. הסיבה נאמרת בכיתוב עצמו,
+    //     שכן דפדפן אינו מציג title על <option> מנוטרלת.
+    // (3) הבורר קיים רק אם השרת החזיר רשימה: שרת ישן (לפני 0073) משאיר את
+    //     המסך בדיוק כפי שהיה, ואינו מציג בורר ריק שאי אפשר לבחור בו דבר.
+    // (4) הנושא והערוצים מוצגים מתחת לבורר ולא בתוך האפשרות: אלה שני נתונים
+    //     שהמנהל צריך לפני לחיצה, ו-<option> ארוכה נקטמת. הערוץ הוא נתון על
+    //     התבנית בלבד — הערוץ בפועל נגזר מסוג המסמך ב-queue (0067).
+    const templates = Array.isArray(data.templates) ? data.templates : [];
+    let tmplSel = null, tmplHint = null;
+    if (templates.length) {
+      const lbl = document.createElement("label");
+      lbl.setAttribute("for", "tmpl-sel");
+      lbl.textContent = "מכתב";
+      tmplSel = document.createElement("select");
+      tmplSel.id = "tmpl-sel";
+      const def = document.createElement("option");
+      def.value = "";
+      def.textContent = "ברירת מחדל לפי סוג הפנייה";
+      tmplSel.append(def);
+      for (const t of templates) {
+        const o = document.createElement("option");
+        o.value = t.key;
+        o.textContent = t.enabled
+          ? (t.name_he || t.key)
+          : `${t.name_he || t.key} — מנוטרלת, אינה מפיקה`;
+        o.disabled = !t.enabled;
+        tmplSel.append(o);
+      }
+      bar.append(lbl, tmplSel);
+      tmplHint = document.createElement("p");
+      tmplHint.className = "note";
+      const syncHint = () => {
+        const t = templates.find((x) => x.key === tmplSel.value);
+        if (!t) {
+          tmplHint.textContent =
+            `נקבע לפי סוג הפנייה — «${label(KIND_MAP, c.kind)}» מקבל ` +
+            (c.kind === "treatment" ? "את המכתב עם רשימת הזכויות." : "את המענה הכללי.");
+          return;
+        }
+        const ch = Array.isArray(t.channels) && t.channels.length ? t.channels.join(", ") : "לא הוגדר";
+        tmplHint.textContent = `נושא: ${t.subject || "—"} · ערוץ התבנית: ${ch}`;
+      };
+      tmplSel.addEventListener("change", syncHint);
+      // בחירה שנשמרה מהפקה קודמת מוחזרת רק אם היא עדיין ברת-בחירה: תבנית
+      // שנוטרלה בין שתי הלחיצות אינה חוזרת בשקט לבורר, כי אז הכפתור היה מבטיח
+      // הפקה שהשרת דוחה.
+      if (keepTmpl && templates.some((t) => t.key === keepTmpl && t.enabled)) tmplSel.value = keepTmpl;
+      syncHint();
+    }
+
     bar.append(renderBtn);
     const renderNote = document.createElement("p");
     renderNote.className = "note";
@@ -800,14 +869,19 @@ pre{
     renderErr.className = "err";
     renderErr.setAttribute("role", "alert");
     renderErr.hidden = true;
-    body.append(bar, renderNote, renderErr);
+    if (tmplHint) body.append(bar, tmplHint, renderNote, renderErr);
+    else body.append(bar, renderNote, renderErr);
 
     renderBtn.addEventListener("click", async () => {
       renderErr.hidden = true;
       const was = renderBtn.textContent;
       renderBtn.disabled = true;
       renderBtn.textContent = "מפיק…";
-      const out = await call("render", { case_id: c.id });
+      // ערך ריק = לא שולחים את המפתח כלל, ולא שולחים מחרוזת ריקה: 0063 קורא
+      // nullif(btrim(...)) ולכן שתיהן שקולות בשרת, אבל בקשה שאינה נושאת שדה
+      // היא גם מה שנמדד בכל הפעימות עד כאן, וזו התנהגות היום בדיוק.
+      const key = tmplSel ? tmplSel.value : "";
+      const out = await call("render", key ? { case_id: c.id, template_key: key } : { case_id: c.id });
       renderBtn.disabled = false;
       renderBtn.textContent = was;
       if (!out || out.ok !== true) {
@@ -827,7 +901,7 @@ pre{
       const un = out.placeholders_unresolved || [];
       if (un.length) bits.push(`מצייני מקום בלי ערך: ${un.join(", ")}`);
       bits.push(out.queued ? "נכנס לתור שליחה" : "לא נשלח — מצב טסט");
-      await openCase(c.id, bits.join(" · "));
+      await openCase(c.id, bits.join(" · "), undefined, key);
     });
 
     if (docs.length) {
