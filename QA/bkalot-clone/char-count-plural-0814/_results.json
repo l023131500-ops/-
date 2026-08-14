@@ -1,0 +1,85 @@
+{
+  "beat": "char-count-plural-0814",
+  "date": "2026-08-14",
+  "scope": "apps/37-bkalot-clone/admin.html בלבד — אין מיגרציה, אין פריסת edge function, אין פריסת פורטל",
+  "open_line_taken_verbatim": "${out.text_chars} ו-${d.html_chars} נשארו במספר",
+  "open_line_source": "heartbeat 610 (commit 3b94e5a)",
+
+  "defect": {
+    "what": "שלוש שורות הציגו ספירת תווים כמספר חשוף לפני שם עצם ברבים, בעוד שאותו מסך כבר מחזיק countHe ומשתמש בו בארבעה מקומות אחרים",
+    "lines_before": ["${out.text_chars} תווי טקסט", "${d.text_chars ?? 0} תווי טקסט", "${d.html_chars ?? 0} תווי HTML"],
+    "reachable_because": "0074 חוסמת גוף באורך 0 בלבד (length(coalesce(v_text,''))=0) — אורך 1 עובר את השער ונשמר",
+    "zero_is_not_the_bug": "«0 תווי HTML» הוא עברית תקינה; רק היחיד נשבר"
+  },
+
+  "measurement": {
+    "browser": "Playwright, 1280x900, התחברות אמיתית דרך המסך",
+    "fixed_served_from": "שרת סטטי מקומי 127.0.0.1:8137 על apps/37-bkalot-clone",
+    "live_served_from": "https://more30.com/bkalot-studio/admin?cb=chars0814 (cache-buster, לא הכתובת החשופה)",
+    "same_edge_same_db": true,
+    "seed": {
+      "case": "#198 דרך bkalot-clone-intake מעל HTTP עם מפתח anon, כמו מהטופס (kind=info, queued=false, contact 205)",
+      "admin": "id=53 דרך bkalot_clone_admin_create (crypt/bf12) ולא בהזרקת hash",
+      "template": "id=6 key=qa_one_char_0814, body_text='ש' ו-body_html='ש' — הדרך היחידה להביא את המסך לענף היחיד"
+    },
+
+    "control_plural_unchanged": {
+      "template": "general_inquiry_reply",
+      "render_line": "מסמך #111 הופק · תבנית general_inquiry_reply · 207 תווי טקסט · 0 זכויות (כל הרשימה) · לא נשלח — מצב טסט",
+      "docview_line": "מסמך #111 · email · 207 תווי טקסט · 401 תווי HTML · לא נשלח — מצב טסט",
+      "verdict": "רבים לא זז — רגרסיה ולא רק תוספת"
+    },
+
+    "fixed_singular": {
+      "template": "qa_one_char_0814",
+      "render_line": "מסמך #111 הופק · תבנית qa_one_char_0814 · תו טקסט אחד · 0 זכויות (כל הרשימה) · לא נשלח — מצב טסט",
+      "docview_line": "מסמך #111 · email · תו טקסט אחד · תו HTML אחד · לא נשלח — מצב טסט"
+    },
+
+    "live_before_same_document": {
+      "url": "https://more30.com/bkalot-studio/admin?cb=chars0814",
+      "docview_line": "מסמך #111 · email · 1 תווי טקסט · 1 תווי HTML · לא נשלח — מצב טסט",
+      "verdict": "הוכחה דו-צדדית על אותו מסמך בדיוק (#111), אותו edge ואותו מסד — ההבדל הוא הקובץ ולא הנתון"
+    },
+
+    "screenshots": [
+      { "f": "01-control-plural-207.png", "md5_8": "A8D75F86" },
+      { "f": "02-control-docview-207-401.png", "md5_8": "EF97F34D" },
+      { "f": "03-fixed-singular-render.png", "md5_8": "3C26E879" },
+      { "f": "04-fixed-singular-docview.png", "md5_8": "0FCED8AB" },
+      { "f": "05-live-before-1-tavey.png", "md5_8": "D5FBDE49" }
+    ],
+    "console": "אפס שגיאות ואפס אזהרות מלבד favicon.ico 404 של השרת המקומי, שאינו קיים בייצור"
+  },
+
+  "test_mode": {
+    "queued_on_intake": false,
+    "documents_after_rollback": 0,
+    "sent_cases": 0,
+    "outbound_queue": 8,
+    "outbound_queue_rows_with_sent_at": 0,
+    "outbound_queue_fingerprint_base_and_after": "681dde58ed67b2094d0cbbd7c68e0fb6",
+    "delivery_log": 3,
+    "verdict": "אין מייל, אין הודעה ואין מסמך שיצא החוצה"
+  },
+
+  "rollback": {
+    "method": "שבע פקודות נפרדות לפי id ולא CTE אחד — תקלת 124cfc2; איש הקשר לפי id (205) ולא לפי טלפון שנשמר מנורמל — תקלת ac6e523",
+    "counts": { "documents": 1, "case_rights": 0, "cases": 1, "contacts": 1, "admin_sessions": 2, "admin_users": 1, "templates": 1 },
+    "after": { "cases": 0, "case_rights": 0, "documents": 0, "contacts": 4, "admin_users": 1, "admin_sessions": 5, "templates": 2, "catalog": 888, "outbound_queue": 8, "delivery_log": 3 },
+    "verdict": "בסיס בדיוק"
+  },
+
+  "protected": "אין נגיעה ב-08/09/bkalut-app/bkalot-admin/zr_*/NEDARIM3873 ולא בסכמות csj/csj_src/igud; supabase/functions לא נגעה — bkalot-clone-intake נשארה v1 ו-bkalot-clone-admin v7",
+
+  "open": [
+    "הקובץ טרם נפרס — more30.com/bkalot-studio/admin עדיין מגיש «1 תווי טקסט», והמדידה של המתוקן רצה מול שרת סטטי מקומי, כלומר מדדה את הקוד ולא את המוצר; זו הפעימה הבאה",
+    "כותרות «זכויות (N)» ו«מסמכים (N)» לא נגעו — מספר בסוגריים הוא סימון ספירה ולא צירוף שמני, ושורת «זכות אחת (כל הרשימה)» שמתחתן כבר עוברת ב-countHe",
+    "אין היסטוריית הכרעות",
+    "הקליטה מחברת 42 זכויות ל-treatment ואפס ל-info/reminder על אותו situation",
+    "«מי הפיק» על documents אינו נכתב לשום מקום",
+    "ה-title של «הצג» נמדד כתכונה ב-DOM ולא כטולטיפ שנפתח בריחוף",
+    "sent בלתי-ניתן-להשגה בכוונה; bkalot_clone_admin_create אינה חשופה ב-HTTP; pdf/audio → channel_unsupported",
+    "public_visible ו-show_in_showcase של #37 נשארים false"
+  ]
+}
