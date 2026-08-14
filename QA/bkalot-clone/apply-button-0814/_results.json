@@ -1,0 +1,71 @@
+{
+  "step": "apply-button-0814",
+  "date": "2026-08-14",
+  "open_line_taken": "heartbeat 608 / commit 6557313: «כפתור הטופס נשאר «סינון» בעוד שהוא מחיל גם מיון»",
+  "scope": "apps/37-bkalot-clone/admin.html בלבד — אין מיגרציה, אין פריסת edge function, אין פריסת פורטל",
+  "change": {
+    "button": { "before": "סינון", "after": "הצג" },
+    "title_added": "מחיל את הסינון ואת המיון יחד, ומחזיר לעמוד הראשון",
+    "comments_updated": ["load(): «סינון» מאפס את offset → «הצג»", "back handler: רק «סינון» הביא → «הצג»"]
+  },
+  "seed": {
+    "path": "bkalot-clone-intake over HTTP with anon key, kind=info, three different phones",
+    "cases": [192, 193, 194],
+    "contacts": [199, 200, 201],
+    "decisions": [
+      { "case_id": 193, "decided_at": "2026-08-14T14:18:41.04015+00:00", "decided_by": 51 },
+      { "case_id": 192, "decided_at": "2026-08-14T14:18:47.122458+00:00", "decided_by": 51 }
+    ],
+    "undecided": 194,
+    "note": "שתי קריאות נפרדות ל-set_status, כי now() קפוא בתוך עסקה. created_at desc = 194,193,192 ו-decided_at desc = 192,193,194 — היפוך מלא, ו-194 עוברת מהראש לזנב"
+  },
+  "admin_created_via": "public.bkalot_clone_admin_create → id 51 (crypt/bf12), לא הזרקת hash",
+  "live_before": {
+    "url": "https://more30.com/bkalot-studio/admin?cb=0814apply1",
+    "button": { "text": "סינון", "title": "" },
+    "default_order": [194, 193, 192],
+    "count": "3 פניות",
+    "sort_changed_without_click": { "requests": 0, "order": [194, 193, 192] },
+    "after_click": {
+      "requests": [{ "path": "cases", "body": { "status": "", "kind": "", "decided": "", "sort": "decided_at", "q": "", "limit": 20, "offset": 0 } }],
+      "order": [192, 193, 194],
+      "count": "3 פניות"
+    },
+    "reading": "על המוצר החי: תיבת «מיון» אינה מחילה דבר מעצמה (אפס בקשות, הסדר לא זז), והכפתור היחיד שמחיל אותה נקרא «סינון» — שם של פעולה שהמנהל לא ביקש"
+  },
+  "fixed_local": {
+    "url": "http://127.0.0.1:8156/admin.html (שרת סטטי מקומי מול אותו edge ואותו מסד)",
+    "button": { "text": "הצג", "title": "מחיל את הסינון ואת המיון יחד, ומחזיר לעמוד הראשון" },
+    "default_order": [194, 193, 192],
+    "sort_changed_without_click": { "requests": 0, "order": [194, 193, 192] },
+    "sorted": { "body_sort": "decided_at", "order": [192, 193, 194], "count": "3 פניות" },
+    "filter_regression": { "body_decided": "no", "body_sort": "decided_at", "order": [194], "count": "פנייה אחת" },
+    "back_to_defaults": { "body": { "decided": "", "sort": "" }, "order": [194, 193, 192], "count": "3 פניות" }
+  },
+  "what_was_not_measured": [
+    "הכפתור טרם נפרס — more30.com/bkalot-studio/admin עדיין מגיש «סינון». המדידה של המתוקן רצה מול שרת סטטי מקומי, כלומר מדדה את הקוד ולא את המוצר",
+    "לא נמדד שינוי בהתנהגות: הכפתור עשה ועושה בדיוק אותו דבר — זו החלפת נוסח בלבד, וההוכחה לכך היא שגוף הבקשה זהה בייצור ובמתוקן, בייט-בייט"
+  ],
+  "screenshots": {
+    "01-live-before-filter-label.png": "78F4DC81",
+    "02-fixed-apply-label.png": "E7E7D8DD",
+    "03-fixed-sorted-by-decided.png": "25535C3B"
+  },
+  "console": "אפס הודעות מלבד favicon.ico 404 של השרת המקומי, שאינו קיים בייצור",
+  "test_mode": {
+    "documents": 0,
+    "queue_sent": 0,
+    "outbound_queue": 8,
+    "delivery_log": 3,
+    "queue_fingerprint_before_and_after": "681dde58ed67b2094d0cbbd7c68e0fb6",
+    "intake_queued": false,
+    "reading": "אין מייל, אין הודעה ואין מסמך שיצא החוצה"
+  },
+  "rollback": {
+    "order": ["case_rights (0)", "cases 192-194 (3)", "contacts 199-201 (3)", "admin_sessions admin_id=51 (2)", "admin_users 51 (1)"],
+    "style": "חמש פקודות נפרדות לפי id ולא CTE אחד (תקלת 124cfc2); אנשי הקשר לפי id ולא לפי טלפון מנורמל (תקלת ac6e523)",
+    "after": { "cases": 0, "case_rights": 0, "documents": 0, "admin_users": 1, "admin_sessions": 5, "templates": 2, "contacts": 4, "outbound_queue": 8, "delivery_log": 3, "catalog": 888 },
+    "verdict": "בסיס בדיוק"
+  },
+  "protected": "אין נגיעה ב-08/09/bkalut-app/bkalot-admin/zr_*/NEDARIM3873 ולא בסכמות csj/csj_src/igud; supabase/functions לא נגעה — intake v1, admin v7"
+}
