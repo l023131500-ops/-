@@ -1,0 +1,146 @@
+{
+  "measurements": [
+    {
+      "id": "01-prev-goes-to-the-server",
+      "server": 8154,
+      "topic_no_typed": "999999999999",
+      "native_before_submit": {
+        "value": "999999999999",
+        "badInput": false,
+        "field_checkValidity": true,
+        "form_checkValidity": true
+      },
+      "intake_requests": 1,
+      "request_left_the_page": true,
+      "ms_to_answer": 2528,
+      "title": "הפנייה לא נשלחה",
+      "result_class": "result bad",
+      "lines": [
+        "מספר הנושא אינו תקין. תקנו ושלחו שוב.",
+        "מספר הנושא גדול מכל מספר נושא שקיים במערכת."
+      ],
+      "case_row": [],
+      "focused_id": "topic_no",
+      "focused_tag": "INPUT",
+      "topic_value": "999999999999",
+      "topic_aria_invalid": "true",
+      "aria_invalid_count": 1,
+      "kind": "treatment",
+      "full_name": "בדיקת גבול מספר נושא",
+      "phone": "050-1234567",
+      "situation": "single_parent",
+      "consent": true,
+      "result_top_px": 705,
+      "field_top_px": 272,
+      "screenshot": "01-prev-goes-to-the-server.png",
+      "screenshot_md5": "5B1187E3110C9FD2618198A99316016D"
+    },
+    {
+      "id": "02-fixed-stopped-in-the-screen",
+      "server": 8155,
+      "topic_no_typed": "999999999999",
+      "native_before_submit": {
+        "value": "999999999999",
+        "badInput": false,
+        "field_checkValidity": true,
+        "form_checkValidity": true
+      },
+      "intake_requests": 0,
+      "request_left_the_page": false,
+      "ms_to_answer": 72,
+      "title": "הפנייה לא נשלחה",
+      "result_class": "result bad",
+      "lines": [
+        "מספר נושא — גדול מכל מספר נושא שקיים במערכת. תקנו ושלחו שוב."
+      ],
+      "case_row": [],
+      "focused_id": "topic_no",
+      "focused_tag": "INPUT",
+      "topic_value": "999999999999",
+      "topic_aria_invalid": "true",
+      "aria_invalid_count": 1,
+      "kind": "treatment",
+      "full_name": "בדיקת גבול מספר נושא",
+      "phone": "050-1234567",
+      "situation": "single_parent",
+      "consent": true,
+      "result_top_px": 705,
+      "field_top_px": 272,
+      "screenshot": "02-fixed-stopped-in-the-screen.png",
+      "screenshot_md5": "53077F8E1E13273F27E7DDB7ADBE7F14"
+    },
+    {
+      "id": "03-fixed-control-boundary-accepted",
+      "server": 8155,
+      "topic_no_typed": "2147483647",
+      "native_before_submit": {
+        "value": "2147483647",
+        "badInput": false,
+        "field_checkValidity": true,
+        "form_checkValidity": true
+      },
+      "intake_requests": 1,
+      "request_left_the_page": true,
+      "ms_to_answer": 916,
+      "title": "הפנייה נקלטה",
+      "result_class": "result ok",
+      "lines": [
+        "קיבלנו את הפנייה ונחזור אליכם.",
+        "🚫 מצב טסט: הפנייה נשמרה, ולא יצאה ממנה שום הודעה."
+      ],
+      "case_row": [
+        "מספר פנייה=164",
+        "זכויות שאותרו עבורכם=42"
+      ],
+      "focused_id": "",
+      "focused_tag": "BODY",
+      "topic_value": "",
+      "topic_aria_invalid": null,
+      "aria_invalid_count": 0,
+      "kind": "info",
+      "full_name": "",
+      "phone": "",
+      "situation": "",
+      "consent": false,
+      "result_top_px": 493,
+      "field_top_px": null,
+      "screenshot": "03-fixed-control-boundary-accepted.png",
+      "screenshot_md5": "E411DB8F9FB5E60AFC661ACD6333EDDC"
+    },
+    {
+      "id": "04-fixed-control-preflight-unchanged",
+      "server": 8155,
+      "topic_no_typed": "1-5",
+      "native_before_submit": {
+        "value": "",
+        "badInput": true,
+        "field_checkValidity": false,
+        "form_checkValidity": false
+      },
+      "intake_requests": 0,
+      "request_left_the_page": false,
+      "ms_to_answer": 60,
+      "title": "הפנייה לא נשלחה",
+      "result_class": "result bad",
+      "lines": [
+        "מספר נושא — צריך מספר שלם. תקנו ושלחו שוב."
+      ],
+      "case_row": [],
+      "focused_id": "topic_no",
+      "focused_tag": "INPUT",
+      "topic_value": "",
+      "topic_aria_invalid": "true",
+      "aria_invalid_count": 1,
+      "kind": "treatment",
+      "full_name": "בדיקת גבול מספר נושא",
+      "phone": "050-1234567",
+      "situation": "single_parent",
+      "consent": true,
+      "result_top_px": 705,
+      "field_top_px": 272,
+      "screenshot": "04-fixed-control-preflight-unchanged.png",
+      "screenshot_md5": "0677E4618B4B58B4C9F5299D02211E0E"
+    }
+  ],
+  "console_messages": []
+}

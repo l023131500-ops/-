@@ -1,3 +1,8 @@
+-- APPLIED 2026-08-14 11:25:31Z as core.run_progress id=598, once the Supabase
+-- MCP server was connected again. The note below records why it could not be
+-- applied in the run that wrote it; it is kept as written rather than deleted,
+-- so the gap between the commit and the row is visible instead of implied.
+--
 -- Heartbeat 598 for this step. NOT applied: the Supabase MCP server is not
 -- connected in this session, and the anon key in `portal/.env.local` cannot
 -- substitute — PostgREST answers 406 for the `core` schema (not exposed), on

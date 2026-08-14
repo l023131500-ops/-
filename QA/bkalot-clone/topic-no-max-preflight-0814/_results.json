@@ -1,0 +1,133 @@
+{
+  "step": "topic-no-max-preflight-0814",
+  "system": "37-bkalot-clone",
+  "priority_section": "§5ב — שכפול בקלות שכבה 1",
+  "what_changed": {
+    "files": ["apps/37-bkalot-clone/index.html"],
+    "function": "preflight()",
+    "lines_added": 11,
+    "lines_removed": 0,
+    "migration": null,
+    "edge_function_deployed": null,
+    "edge_function_versions_unchanged": {
+      "bkalot-clone-intake": "v1",
+      "bkalot-clone-admin": "v7"
+    }
+  },
+  "versions_measured": {
+    "prev_bytes": 31164,
+    "prev_md5": "4F7257379E3D1C88D86EB4CEEA96CDA8",
+    "prev_is_what_is_live": "heartbeat 598 recorded the deployed source as 31,164 / 4F725737 — identical, so 8154 served production and not a stale file",
+    "fixed_bytes": 32322,
+    "fixed_md5": "E6E39BF0F0D5FFD03F8A0ADC95F81078",
+    "delta_bytes": 1158
+  },
+  "server_bound_this_mirrors": {
+    "migration": "0080",
+    "statement": "if v_topic_raw::numeric > 2147483647 then",
+    "client_constant": "TOPIC_NO_MAX = 2147483647",
+    "client_statement": "if (value && Number(value.trim()) > TOPIC_NO_MAX)",
+    "same_operator": true,
+    "note": "server compares in numeric, client in Number (double). They cannot diverge: divergence would need a digit string above 2^53, and every such value is orders of magnitude above 2147483647 either way."
+  },
+  "decisive_measurement": {
+    "claim": "the wording was already Hebrew and correct since 1bd2ff5; what changes here is that the value no longer leaves the browser",
+    "metric": "intake_requests",
+    "prev": 1,
+    "fixed": 0,
+    "ms_to_answer_prev": 2528,
+    "ms_to_answer_fixed": 72
+  },
+  "measurements": [
+    {
+      "id": "01-prev-goes-to-the-server",
+      "version": "production (HEAD)",
+      "typed": "999999999999",
+      "intake_requests": 1,
+      "ms_to_answer": 2528,
+      "title": "הפנייה לא נשלחה",
+      "lines": [
+        "מספר הנושא אינו תקין. תקנו ושלחו שוב.",
+        "מספר הנושא גדול מכל מספר נושא שקיים במערכת."
+      ],
+      "focused_id": "topic_no",
+      "aria_invalid_count": 1,
+      "case_created": false
+    },
+    {
+      "id": "02-fixed-stopped-in-the-screen",
+      "version": "fixed",
+      "typed": "999999999999",
+      "intake_requests": 0,
+      "ms_to_answer": 72,
+      "title": "הפנייה לא נשלחה",
+      "lines": ["מספר נושא — גדול מכל מספר נושא שקיים במערכת. תקנו ושלחו שוב."],
+      "focused_id": "topic_no",
+      "aria_invalid_count": 1,
+      "case_created": false
+    },
+    {
+      "id": "03-fixed-control-boundary-accepted",
+      "version": "fixed",
+      "typed": "2147483647",
+      "why_this_value": "the largest value 0080 still accepts; a client bound written as >= or resting on an imprecise float would have stopped a valid intake here",
+      "intake_requests": 1,
+      "ms_to_answer": 916,
+      "title": "הפנייה נקלטה",
+      "case_id": 164,
+      "rights_linked": 42,
+      "topic_no_stored_in_db": 2147483647,
+      "aria_invalid_count": 0,
+      "form_reset": true,
+      "case_created": true
+    },
+    {
+      "id": "04-fixed-control-preflight-unchanged",
+      "version": "fixed",
+      "typed": "1-5",
+      "native_badInput": true,
+      "intake_requests": 0,
+      "ms_to_answer": 60,
+      "lines": ["מספר נושא — צריך מספר שלם. תקנו ושלחו שוב."],
+      "focused_id": "topic_no",
+      "aria_invalid_count": 1,
+      "case_created": false
+    }
+  ],
+  "evidence_integrity": {
+    "screenshots": 4,
+    "distinct_md5": 4,
+    "md5": {
+      "01-prev-goes-to-the-server.png": "5B1187E3110C9FD2618198A99316016D",
+      "02-fixed-stopped-in-the-screen.png": "53077F8E1E13273F27E7DDB7ADBE7F14",
+      "03-fixed-control-boundary-accepted.png": "E411DB8F9FB5E60AFC661ACD6333EDDC",
+      "04-fixed-control-preflight-unchanged.png": "0677E4618B4B58B4C9F5299D02211E0E"
+    },
+    "viewport": "1280x900",
+    "result_top_px": 705,
+    "field_top_px": 272,
+    "both_above_the_fold": true,
+    "console_messages": 0
+  },
+  "test_mode": {
+    "documents": 0,
+    "outbound_queue_rows_with_sent_at": 0,
+    "outbound_queue": 8,
+    "delivery_log": 3,
+    "banner_shown_on_the_accepted_control": "🚫 מצב טסט: הפנייה נשמרה, ולא יצאה ממנה שום הודעה."
+  },
+  "rollback": {
+    "method": "three separate statements by id, never one CTE — a single CTE reads the pre-statement snapshot and the child rows survive",
+    "statements": [
+      "delete from bkalot_clone.case_rights where case_id = 164",
+      "delete from bkalot_clone.cases where id = 164",
+      "delete from bkalot_auto.contacts where id = 170"
+    ],
+    "contact_deleted_by_id_not_by_phone": true,
+    "baseline_before": {"cases": 0, "case_rights": 0, "documents": 0, "admin_users": 1, "templates": 2, "contacts": 4, "outbound_queue": 8, "sent": 0, "delivery_log": 3, "catalog": 888},
+    "after_rollback": {"cases": 0, "case_rights": 0, "documents": 0, "admin_users": 1, "templates": 2, "contacts": 4, "outbound_queue": 8, "sent": 0, "delivery_log": 3, "catalog": 888},
+    "identical": true
+  },
+  "protected_untouched": ["apps/08-bkalut-app", "apps/09-bkalot-admin", "bkalut-app", "bkalot-admin", "zr_*", "NEDARIM3873", "csj", "csj_src", "igud"],
+  "open": "measured against local static servers on 8154/8155 against the live edge and DB — this is a measurement of the code, not of the product. more30.com/bkalot-studio still ships 31,164 bytes and still sends 999999999999 over the network. Deployment is the next heartbeat."
+}
