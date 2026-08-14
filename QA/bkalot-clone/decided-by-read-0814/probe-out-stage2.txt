@@ -1,0 +1,38 @@
+﻿── login (מנהל ראשון)
+{
+  "status": 200,
+  "ok": true,
+  "admin": {
+    "id": 26,
+    "email": "qa0077@more30.test",
+    "full_name": "QA 0077"
+  }
+}
+── case A אחרי מחיקת החשבון שהכריע — הזהות נשארת, השם null
+{
+  "has_decided_by": true,
+  "has_decided_at": true,
+  "has_decided_by_name": true,
+  "decided_by": 27,
+  "decided_at": "2026-08-14T04:57:33.266842+00:00",
+  "decided_by_name": null,
+  "status": "rejected",
+  "updated_at": "2026-08-14T04:57:33.266842+00:00"
+}
+── בלי רגרסיה — INNER JOIN היה מעלים את הפנייה
+{
+  "ok": true,
+  "case_present": true,
+  "rights": 42
+}
+── case B (בקרה) — לא זזה
+{
+  "has_decided_by": true,
+  "has_decided_at": true,
+  "has_decided_by_name": true,
+  "decided_by": null,
+  "decided_at": null,
+  "decided_by_name": null,
+  "status": "new",
+  "updated_at": "2026-08-14T04:57:28.575459+00:00"
+}
