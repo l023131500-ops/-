@@ -1,0 +1,50 @@
+[
+  {
+    "phone": "0504440011",
+    "status": 200,
+    "body": {
+      "ok": true,
+      "kind": "info",
+      "phone": "0504440011",
+      "queued": false,
+      "case_id": 195,
+      "dropped": [],
+      "situation": null,
+      "contact_id": 202,
+      "rights_linked": 0,
+      "rights_unknown": []
+    }
+  },
+  {
+    "phone": "0504440022",
+    "status": 200,
+    "body": {
+      "ok": true,
+      "kind": "info",
+      "phone": "0504440022",
+      "queued": false,
+      "case_id": 196,
+      "dropped": [],
+      "situation": null,
+      "contact_id": 203,
+      "rights_linked": 0,
+      "rights_unknown": []
+    }
+  },
+  {
+    "phone": "0504440033",
+    "status": 200,
+    "body": {
+      "ok": true,
+      "kind": "info",
+      "phone": "0504440033",
+      "queued": false,
+      "case_id": 197,
+      "dropped": [],
+      "situation": null,
+      "contact_id": 204,
+      "rights_linked": 0,
+      "rights_unknown": []
+    }
+  }
+]
