@@ -1,0 +1,28 @@
+{
+  "url": "https://more30.com/bkalot-studio/admin?cachebust=statusrefresh0814",
+  "case_clicked": 169,
+  "case_control": 170,
+  "console_messages": [],
+  "served_version": {
+    "has_new_comment": true,
+    "html_bytes": 95626
+  },
+  "on_status_click": {
+    "total": 2,
+    "by_action": {
+      "set-status": 1,
+      "case": 1
+    },
+    "ms": 5462
+  },
+  "note": "הסטטוס שונה מ«חדשה» ל«בטיפול» · לא נשלחה שום הודעה",
+  "case_screen_top_px": 0,
+  "on_back": {
+    "total": 1,
+    "by_action": {
+      "cases": 1
+    }
+  },
+  "row_clicked": "בדיקה פריסה Aטיפול מלאבטיפול#16914.08.2026, 15:04טלפון 0501230201הורה יחיד / חד-הורי42 זכויותהוכרעה 14.08.2026, 15:05 · QA רענון פריסה",
+  "row_control": "בדיקה פריסה Bטיפול מלאחדשה#17014.08.2026, 15:04טלפון 0501230202הורה יחיד / חד-הורי42 זכויות"
+}
