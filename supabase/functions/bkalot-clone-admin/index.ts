@@ -129,6 +129,21 @@
 //    null אומר «איננו יודעים מי», וזה מצב שהסכמה יודעת לתאר (0076 הכרעה 2);
 //    מזהה שגוי אומר שקר שאי אפשר להבחין בו.
 
+// ── v8 (שכבה 3, הזהות עוברת מהשער אל ההפקה) ──────────────────────────────────
+// 0083 בנתה את produced_by על documents ונתנה ל-render ארגומנט שני, p_admin_id.
+// v7 קוראת עם ארגומנט אחד, ולכן כל לחיצה על «הפק» בייצור כותבת גוף מלא
+// ו-produced_by null — «מסמך הופק ואיננו יודעים מי הפיק אותו». אותו פיצול בדיוק
+// כמו 0076 → v7, ואותה העברה: הזהות כבר יושבת כאן, ב-g.admin שחזר מהשער.
+//
+// ⚠️ שלוש השורות של v7 מועתקות כפי שהן ולא מופשטות לפונקציה משותפת. הן זהות
+//    היום, אבל שני הנתיבים אינם חייבים להישאר זהים — set_status רושם מי הכריע
+//    ו-render רושם מי הפיק — והפשטה משותפת הופכת שינוי באחד לשינוי שקט בשני.
+//
+// ⚠️ אין כאן coalesce, וזו סטייה מכוונת מ-0076: הפקה חוזרת דורסת את
+//    produced_by בערך שהתקבל, כולל null, מפני ש-render כותבת גוף חדש בכל
+//    קריאה — וייחוס הגוף של מנהל שני למנהל הראשון גרוע מ-null. ההכרעה יושבת
+//    ב-0083 (הכרעה 5), לא כאן; הקוד הזה מעביר ואינו מחליט.
+
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL") ?? "";
 const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
 
@@ -272,10 +287,22 @@ Deno.serve(async (req: Request): Promise<Response> => {
     // לשכפל את הבדיקה: הארגומנט הוא jsonb ולא bigint, ולכן שום ערך אינו מפיל
     // את PostgREST על casting — ו-0063 כבר מחזיר case_id_required על מה שאינו
     // ספרות. עותק שני של הכלל כאן היה יכול להסתעף ממנו בשקט.
+    //
+    // הזהות אינה נוסעת בתוך p — ראה ⚠️ של v7 ו-v8. site_url כבר מוכיח שהגוף
+    // הזה אינו נאמן לדפדפן, ולכן דווקא כאן היה מתקבל על הדעת להוסיף לו עוד
+    // מפתח; אבל site_url נכתב מעל מה שהגיע ו-produced_by היה נקרא ממנו.
+    const adminId = (g.admin as { id?: unknown } | null | undefined)?.id;
+    const p_admin_id = typeof adminId === "number" && Number.isSafeInteger(adminId)
+      ? adminId
+      : null;
     const out = await rpc("bkalot_clone_render", {
       p: { ...payload, site_url: SITE_URL },
+      p_admin_id,
     });
     if (!out.ok) return out.res;
+    // הזהות מוחזרת עם התשובה כמו בכל נתיב שמאחורי השער. מ-v8, כמו ב-set-status
+    // מ-v7, היא אינה רק מי שביקש: produced_by נכתב בשורה עצמה, וה-admin שחוזר
+    // כאן הוא מי שנכתב לתוכה זה עתה — אותו ערך בדיוק, משני צידי הקריאה.
     return json({ ...(out.body as Record<string, unknown>), admin: g.admin });
   }
 

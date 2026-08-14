@@ -1,0 +1,83 @@
+[
+  {
+    "label": "cases reused (no new intake)",
+    "value": {
+      "caseA": 201,
+      "caseB": 202
+    }
+  },
+  {
+    "label": "login (מנהל 56)",
+    "value": {
+      "status": 200,
+      "ok": true,
+      "admin": {
+        "id": 56,
+        "email": "qa0083@more30.test",
+        "full_name": "QA 0083 א"
+      }
+    }
+  },
+  {
+    "label": "render #1 — produced_by אמור להיות 56",
+    "value": {
+      "status": 200,
+      "document_id": 118,
+      "produced_by": 56,
+      "queued": false,
+      "admin_echo": 56
+    }
+  },
+  {
+    "label": "render #2 (זיוף בגוף) — חייב לחזור 56",
+    "value": {
+      "status": 200,
+      "document_id": 118,
+      "produced_by": 56,
+      "same_document": true
+    }
+  },
+  {
+    "label": "login (מנהל 57)",
+    "value": {
+      "status": 200,
+      "ok": true,
+      "admin": {
+        "id": 57,
+        "email": "qa0083b@more30.test",
+        "full_name": "QA 0083 ב"
+      }
+    }
+  },
+  {
+    "label": "render #3 (מנהל שני) — הזהות מתחלפת ל-57",
+    "value": {
+      "status": 200,
+      "document_id": 118,
+      "produced_by": 57,
+      "same_document": true
+    }
+  },
+  {
+    "label": "render בלי x-admin-token",
+    "value": {
+      "status": 401,
+      "error": "token_required"
+    }
+  },
+  {
+    "label": "case B (בקרה)",
+    "value": {
+      "status": "new",
+      "documents": 0
+    }
+  },
+  {
+    "label": "case ids",
+    "value": {
+      "caseA": 201,
+      "caseB": 202,
+      "run": "v8-after"
+    }
+  }
+]
