@@ -1,0 +1,25 @@
+{
+  "beat": "שכפול בקלות שכבה 3 — «1 זכויות» ו«1 מסמכים» ברשימת העבודה",
+  "file": "apps/37-bkalot-clone/admin.html",
+  "measured_from": "browser 1280x900, two local static servers over the live edge + DB",
+  "prev_served_on": "http://127.0.0.1:8142 (git show HEAD:apps/37-bkalot-clone/admin.html, 86588 bytes)",
+  "next_served_on": "http://127.0.0.1:8143 (working tree, 88067 bytes)",
+  "seed": { "case_one": 118, "case_many": 119, "admin_id": 38, "path": "bkalot-clone-intake over HTTP, anon key" },
+  "rights_trim": "case 118 cut from 42 case_rights to 1 by direct DELETE — intake attaches every catalog row that matches the situation, and no HTTP path yields exactly one",
+  "document": "produced in the browser on case 118 via «הפק מסמך» (documents=1, queue_id null)",
+  "row_118_prev": ["#118", "14.08.2026, 09:45", "טלפון 0501230095", "הורה יחיד / חד-הורי", "1 זכויות", "1 מסמכים", "לא הוכרע מהמסך"],
+  "row_118_next": ["#118", "14.08.2026, 09:45", "טלפון 0501230095", "הורה יחיד / חד-הורי", "זכות אחת", "מסמך אחד", "לא הוכרע מהמסך"],
+  "row_119_control_both": ["#119", "14.08.2026, 09:45", "טלפון 0501230096", "הורה יחיד / חד-הורי", "42 זכויות"],
+  "zero_rights_boundary": ["#118", "…", "0 זכויות", "מסמך אחד", "לא הוכרע מהמסך"],
+  "counter_states_after_hoist": { "two": "2 פניות", "one": "פנייה אחת", "none": "אין פניות" },
+  "console": "1 message across the whole flow — favicon.ico 404 of the local static server, not of the screen",
+  "screenshots": {
+    "01-prev-list-one-right.png": "6A60B27BC02BBB7CDA1AEDDBBFAD5B0C",
+    "02-prev-one-doc.png": "2EF9FCED8717A0E82DE661A8ADC4DD1D",
+    "03-next-one-doc.png": "589CD9CDE04D80F13811F0873FB9C22D",
+    "04-next-zero-rights.png": "D10AE239E47657A8C1B429F0A577B372"
+  },
+  "test_mode": { "sent_cases": 0, "queue_rows": 8, "queue_sent_at_rows": 0, "queue_mode_live": 0, "queue_fingerprint": "382e71aa4bd555ec4186a5e242527591 before and after", "delivery_log": 3, "documents_with_queue_id": 0 },
+  "rollback": { "cases": 0, "case_rights": 0, "documents": 0, "admin_users": 1, "admin_sessions": 5, "contacts": 4, "templates": 2, "outbound_queue": 8, "delivery_log": 3, "catalog": 888 },
+  "not_deployed": "more30.com/bkalot-studio/admin still serves the version that says «1 מסמכים» — the next beat"
+}
