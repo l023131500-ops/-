@@ -61,6 +61,26 @@
 //
 // 🚫 מצב טסט: הנתיב הזה מכניס לתור ואינו שולח. אין כאן קריאה יוצאת אחת — לא
 //    מייל, לא webhook ולא ערוץ. השורה נכנסת ל-outbound_queue ונשארת שם.
+//
+// ── v5 (שכבה 3, לבנת המעבד) ──────────────────────────────────────────────────
+// נוסף נתיב dispatch. 0070 בנתה את bkalot_clone_dispatch ומדדה אותה במסד —
+// מסלול מלא, לחיצה שנייה, שורה חסומה, mode=live, יעד שהוסר, וקלט פגום — ושוב
+// service_role בלבד. כלומר לשכפול יש מעבד ואין ולו כתובת אחת שמסך הניהול יכול
+// לפנות אליה, בדיוק כמו queue לפני v4. זו הכתובת, וזה #234 סעיף 2.
+//
+// ⚠️ זהו הנתיב השלישי כאן שכותב, והראשון שמשנה מצב של שורה שכבר בתור. לכן הוא
+//    יושב מאחורי אותו שער בדיוק כמו render ו-queue, ואין לו הרשאה משלו:
+//    bkalot_clone_dispatch היא service_role בלבד, והדרך היחידה להגיע אליה היא
+//    דרך הקוד הזה.
+//
+// ⚠️ אין כאן ולו ארגומנט אחד שנוגע ב-mode, ב-status או ב-to_address — אותה
+//    הכרעה כמו ב-queue ומאותה סיבה. שלושת השומרים של 0070 (app_key, mode=test,
+//    היעד ברשימת הבדיקה ברגע העיבוד) יושבים במסד בלבד; עותק שני שלהם כאן היה
+//    כלל בטיחות שיכול להסתעף בשקט, וההסתעפות הזו היא מייל שיוצא לאדם אמיתי.
+//
+// 🚫 מצב טסט: הנתיב הזה מעבד ואינו שולח. 0070 מסמנת skipped ולא sent, sent_at
+//    נשאר null, ואין בה net.http, pg_net, Resend ולא קריאה יוצאת אחת. שליחה
+//    אמיתית תדרוש מיגרציה, לא פרמטר — וגם לא כתובת HTTP.
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL") ?? "";
 const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
@@ -136,7 +156,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
     return json({ ok: false, error: "server_misconfigured" }, 500);
   }
 
-  const ROUTES = ["login", "session", "logout", "cases", "case", "render", "document", "queue"];
+  const ROUTES = ["login", "session", "logout", "cases", "case", "render", "document", "queue", "dispatch"];
   const seg = new URL(req.url).pathname.split("/").filter(Boolean);
   const action = seg[seg.length - 1] ?? "";
   if (!ROUTES.includes(action)) {
@@ -231,6 +251,19 @@ Deno.serve(async (req: Request): Promise<Response> => {
     // מלבד document_id/id, וכל השאר נופל שם. סינון כאן היה נראה כמו הגנה
     // ומוסיף מקום שני שצריך לעדכן כשהפונקציה תקבל מפתח נוסף.
     const out = await rpc("bkalot_clone_queue", { p: payload });
+    if (!out.ok) return out.res;
+    return json({ ...(out.body as Record<string, unknown>), admin: g.admin });
+  }
+
+  if (action === "dispatch") {
+    // queue_id עובר כפי שהוא, מאותה סיבה בדיוק כמו ב-queue ולא מהעדפה:
+    // הארגומנט jsonb ולא bigint, ולכן שום ערך אינו מפיל את PostgREST על
+    // casting — ו-0070 כבר מחזיר queue_id_required על מה שאינו ספרות
+    // ו-queue_row_not_found על 25 ספרות שאינן נכנסות ל-bigint.
+    //
+    // הגוף מועבר כפי שהוא ובכוונה בלי סינון מפתחות, כמו ב-queue: ל-0070 אין
+    // שום מפתח קלט מלבד queue_id/id, וכל השאר נופל שם.
+    const out = await rpc("bkalot_clone_dispatch", { p: payload });
     if (!out.ok) return out.res;
     return json({ ...(out.body as Record<string, unknown>), admin: g.admin });
   }
