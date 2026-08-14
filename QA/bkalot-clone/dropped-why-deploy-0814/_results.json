@@ -1,0 +1,123 @@
+{
+  "beat": "«מספר נושא — צריך מספר שלם» והמיקוד שחוזר לשדה נמדדו מדפדפן ולא היו בייצור",
+  "date": "2026-08-14",
+  "kind": "פריסה בלבד — אין שינוי קוד, אין מיגרציה, אין פריסת edge function",
+  "file": "apps/37-bkalot-clone/index.html",
+  "open_line_taken_from": "193da4a (heartbeat 589)",
+  "file_identity": {
+    "src": { "bytes": 25483, "md5": "B24A10595849FA24B1795F23C3F2A9F6" },
+    "identical_to_193da4a": true,
+    "prev_in_production": { "bytes": 22105, "md5": "66CA2D677A9DA86E79C716426499D771" },
+    "prev_equals_dist_on_disk": true,
+    "prev_md5_equals_what_cd5340e_deployed": true
+  },
+  "markers": {
+    "new": [
+      "function whyDropped(key, sent) {",
+      "return \"צריך מספר שלם\";",
+      "function focusDropped(dropped, sent, sentKind) {",
+      "el.setAttribute(\"aria-invalid\", \"true\");",
+      "}).join(\"; \"));"
+    ],
+    "removed": ["body.dropped.map((k) => DROPPED[k] || k).join(\", \")"],
+    "each_marker_occurs_exactly_once": true,
+    "six_versions_split_cleanly": {
+      "src": "new=5/5 removed=0/1",
+      "prev": "new=0/5 removed=1/1",
+      "dist_pre_staging": "new=0/5 removed=1/1",
+      "dist_post_staging": "new=5/5 removed=0/1",
+      "http_pre": "new=0/5 removed=1/1",
+      "http_post": "new=5/5 removed=0/1"
+    },
+    "old_regression_markers_true_in_all_six": true
+  },
+  "http": {
+    "form_bytes_pre": 22341,
+    "form_bytes_post": 25719,
+    "netfree_delta_vs_source": 236,
+    "alef_pre": 151,
+    "alef_post": 211,
+    "admin_bytes_pre": 90056,
+    "admin_bytes_post": 90056,
+    "home_bytes_pre": 3517,
+    "home_bytes_post": 3517,
+    "hashed_assets_unchanged": ["assets/index-C2AHwa-z.js", "assets/index-B35ByRD-.css"],
+    "both_paths_measured": ["with trailing slash", "without trailing slash"],
+    "replacement_chars": 0,
+    "double_encoding_marks": 0
+  },
+  "browser": {
+    "url": "https://more30.com/bkalot-studio/?cb=live0814b1",
+    "viewport": "1280x900",
+    "console_messages": 0,
+    "typed_by": "pressSequentially (הקשות מקלדת, לא השמה ל-value)"
+  },
+  "measurements": [
+    {
+      "id": "live-1e3",
+      "case_id": 141,
+      "kind": "treatment",
+      "situation": "single_parent",
+      "topic_no_typed": "1e3",
+      "field_checkValidity": true,
+      "line_on_screen": "שדות שלא נשמרו: מספר נושא — צריך מספר שלם",
+      "line_top_px": 822,
+      "line_bottom_px": 851,
+      "field_top_px": 272,
+      "both_above_the_fold": true,
+      "focused_id_after": "topic_no",
+      "topic_value_after_reset": "1e3",
+      "topic_aria_invalid": "true",
+      "aria_invalid_elements_on_page": 1,
+      "kind_after": "treatment",
+      "full_name_after": "",
+      "phone_after": "",
+      "situation_after": "",
+      "heading": "הפנייה נקלטה",
+      "screenshots": ["01-live-typed-1e3.png", "02-live-reason-and-focus.png"]
+    },
+    {
+      "id": "live-control-7",
+      "case_id": 142,
+      "kind": "treatment",
+      "situation": "single_parent",
+      "topic_no_typed": "7",
+      "has_dropped_line": false,
+      "aria_invalid_elements_on_page": 0,
+      "focused_tag_after": "BODY",
+      "topic_value_after_reset": "",
+      "kind_after": "info",
+      "treatment_fieldset_hidden_after": true,
+      "heading": "הפנייה נקלטה",
+      "screenshots": ["03-live-control-no-line.png"]
+    }
+  ],
+  "db_says": [
+    { "case_id": 141, "topic_no": null, "raw_topic_no": "1e3", "rights": 42 },
+    { "case_id": 142, "topic_no": 7, "raw_topic_no": "7", "rights": 42 }
+  ],
+  "test_mode": {
+    "documents": 0,
+    "outbound_queue": 8,
+    "outbound_queue_rows_with_sent_at": 0,
+    "delivery_log": 3,
+    "outbound_queue_fingerprint_baseline": "050e54ab59235d105af3a10c785dbaea",
+    "outbound_queue_fingerprint_during": "050e54ab59235d105af3a10c785dbaea",
+    "outbound_queue_fingerprint_after": "050e54ab59235d105af3a10c785dbaea",
+    "nothing_left_the_system": true
+  },
+  "rollback": {
+    "case_rights_deleted": 84,
+    "cases_deleted": 2,
+    "contacts_deleted": 2,
+    "after": { "cases": 0, "case_rights": 0, "documents": 0, "contacts": 4, "outbound_queue": 8, "delivery_log": 3, "catalog": 888 },
+    "identical_to_baseline": true
+  },
+  "screenshot_md5": {
+    "01-live-typed-1e3.png": "CEC4F228859921857E6EAE1203ACD8C2",
+    "02-live-reason-and-focus.png": "18D0546261094466675A18899D04DB0C",
+    "03-live-control-no-line.png": "EA2DB97761AEF21FDE869DB2533ECCE3"
+  },
+  "protected_untouched": ["08-bkalut-app", "09-bkalot-admin", "bkalut-app", "bkalot-admin", "zr_*", "NEDARIM3873", "csj", "csj_src", "igud"],
+  "deployed": true
+}
