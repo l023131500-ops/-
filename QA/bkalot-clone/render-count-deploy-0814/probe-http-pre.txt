@@ -1,0 +1,12 @@
+﻿https://more30.com/bkalot-studio/admin?cb=qa0084pre 200 88303
+  new: countHe(out.rights_count, "זכות אחת", "זכויות")=false | // אותו countHe של שורת הרשימה ולא ניסוח שני על אותו נתון=false | הסוגריים נשארות כפי שהן: הן אומרות מאיפה בא המספר=false
+  removed: ${out.rights_count} זכויות (=true
+  old: const countHe = (n, one, plural) =>=true | countHe(c.rights_count ?? 0, "זכות אחת", "זכויות")=true | countHe(n, "פנייה אחת", "פניות")=true | זכות אחת=true | מסמך אחד=true | כל הרשימה=true | נבחרו=true | תווי טקסט=true | נוסח נפילה=true | לא הוכרע מהמסך=true | <th>מכתב</th>=true | הכנס לתור=true | עבד עכשיו=true
+  alef=909 replacement=0 doubleenc=0
+https://more30.com/bkalot-studio/admin/?cb=qa0084pre 200 88303
+  alef=909 replacement=0 doubleenc=0
+https://more30.com/bkalot-studio/?cb=qa0084pre 200 21272
+  alef=134 replacement=0 doubleenc=0
+https://more30.com/?cb=qa0084pre 200 3517
+  assets: assets/index-C2AHwa-z.js,assets/index-B35ByRD-.css
+  alef=23 replacement=0 doubleenc=0

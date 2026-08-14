@@ -1,0 +1,4 @@
+﻿..\..\..\portal\dist\bkalot-studio\admin.html 69123 chars 88696 bytes
+new: countHe(out.rights_count, "זכות אחת", "זכויות")=true | // אותו countHe של שורת הרשימה ולא ניסוח שני על אותו נתון=true | הסוגריים נשארות כפי שהן: הן אומרות מאיפה בא המספר=true
+removed: ${out.rights_count} זכויות (=false
+old: const countHe = (n, one, plural) =>=true | countHe(c.rights_count ?? 0, "זכות אחת", "זכויות")=true | countHe(n, "פנייה אחת", "פניות")=true | זכות אחת=true | מסמך אחד=true | כל הרשימה=true | נבחרו=true | תווי טקסט=true | נוסח נפילה=true | לא הוכרע מהמסך=true | <th>מכתב</th>=true | הכנס לתור=true | עבד עכשיו=true
