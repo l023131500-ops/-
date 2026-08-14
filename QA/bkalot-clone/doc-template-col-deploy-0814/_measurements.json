@@ -1,0 +1,103 @@
+{
+  "pulse": "deploy of e9e949c (document row: letter column + overwritten marker) to production",
+  "code_change": "none — admin.html identical to the file that entered e9e949c",
+  "file": {
+    "source_bytes": 76528,
+    "source_md5": "02F0FF9742BEA68AEE6F4AB0F224E116",
+    "dist_before": { "bytes": 70064, "md5": "3E943EE55F788BC4550DF18AC349160E" },
+    "dist_after": { "bytes": 76528, "md5": "02F0FF9742BEA68AEE6F4AB0F224E116" }
+  },
+  "http": {
+    "admin_before_bytes": 70300,
+    "admin_after_bytes": 76764,
+    "netfree_delta": 236,
+    "admin_slash_after_bytes": 76764,
+    "form_before_bytes": 21272,
+    "form_after_bytes": 21272,
+    "home_before_bytes": 3517,
+    "home_after_bytes": 3517,
+    "assets_before": ["assets/index-C2AHwa-z.js", "assets/index-B35ByRD-.css"],
+    "assets_after": ["assets/index-C2AHwa-z.js", "assets/index-B35ByRD-.css"],
+    "alef_before": 614,
+    "alef_after": 718,
+    "replacement_chars": 0,
+    "double_encoded": 0
+  },
+  "markers": {
+    "new_false_before_true_after": [
+      "<th>מכתב</th>", "fillTemplateCell", "fillCreatedCell",
+      "התבנית אינה קיימת", "נדרס ${fmtDate", "אינו ידוע"
+    ],
+    "regression_true_both": [
+      "ברירת מחדל לפי סוג הפנייה", "tmpl-sel", "שינוי סטטוס",
+      "עבד עכשיו", "כתובת המכתב", "הכנס לתור"
+    ],
+    "disqualified": {
+      "marker": "נוסח נפילה",
+      "true_before_deploy": true,
+      "reason": "predates e9e949c — sits in the render-result line since 0063; verified with git show e9e949c^"
+    }
+  },
+  "browser": {
+    "viewport": "1280x900",
+    "url": "https://more30.com/bkalot-studio/admin",
+    "seeded_via": "bkalot-clone-intake over HTTP with the public anon key",
+    "case_treatment": 92,
+    "case_control": 93,
+    "doc_table_headers": ["#", "סוג", "כותרת", "מכתב", "נוצר", "תור", ""],
+    "render_1_default": {
+      "doc_id": 87,
+      "letter_cell": "מענה לפניית טיפול — רשימת הזכויות",
+      "letter_cell_title": "מפתח rights_treatment_reply",
+      "created_cell": "14.08.2026, 07:14",
+      "overwritten_marked": false,
+      "text_chars": 3506
+    },
+    "render_2_picked": {
+      "doc_id": 87,
+      "template_key": "general_inquiry_reply",
+      "letter_cell": "מענה לפנייה כללית",
+      "letter_cell_title": "מפתח general_inquiry_reply",
+      "created_cell": "14.08.2026, 07:14",
+      "overwritten_marked": "נדרס 14.08.2026, 07:15",
+      "text_chars": 223
+    },
+    "db_timestamps": {
+      "created_at": "2026-08-14T04:14:51.718016+00:00",
+      "updated_at": "2026-08-14T04:15:26.767098+00:00",
+      "delta_seconds": 35.049
+    },
+    "panel_behind_show": {
+      "letter_line": "מכתב: מענה לפנייה כללית",
+      "created_line": "נוצר: 14.08.2026, 07:14 / נדרס 14.08.2026, 07:15",
+      "same_helper_functions": true
+    },
+    "console_errors": 0,
+    "console_warnings": 0
+  },
+  "screenshots": [
+    { "file": "01-live-default-letter-row.png", "bytes": 85375, "md5": "188E7A681D13E9891A7870981072439F" },
+    { "file": "02-live-other-letter-overwritten.png", "bytes": 87409, "md5": "40845C7D235CD835BD1F5661AC2F2473" },
+    { "file": "03-live-panel-same-two-facts.png", "bytes": 50785, "md5": "921F1F4BB96DDC50129AAA1604DF5CE5" }
+  ],
+  "test_mode": {
+    "documents_with_queue_id": 0,
+    "cases_sent": 0,
+    "rows_with_sent_at": 0,
+    "rows_mode_live": 0,
+    "outbound_queue": 8,
+    "delivery_log": 3,
+    "source_rows_app_key_bkalot": 8,
+    "source_fingerprint_before": "da28ec6315535ec0bfbebad4d57752a7",
+    "source_fingerprint_after": "da28ec6315535ec0bfbebad4d57752a7"
+  },
+  "control_case_93": { "status": "new", "updated_at_equals_created_at": true, "documents": 0 },
+  "rollback_verified": {
+    "cases": 0, "case_rights": 0, "documents": 0,
+    "admin_users": 1, "admin_sessions": 5,
+    "templates": 2, "templates_all_enabled": true,
+    "catalog": 888, "contacts": 4,
+    "outbound_queue": 8, "delivery_log": 3,
+    "identical_to_baseline": true
+  }
+}
