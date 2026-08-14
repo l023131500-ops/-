@@ -1,0 +1,25 @@
+﻿[
+  {
+    "label": "QA\\bkalot-clone\\topic-no-max-deploy-0814/prev/index.html",
+    "bytes": 31164,
+    "new": {
+      "if (value && Number(value.trim()) > TOPIC_NO_MAX) {": 0,
+      "why: \"גדול מכל מספר נושא שקיים במערכת\" };": 0,
+      "// הגבול השני, ומאותו טעם:": 0,
+      "// Number ולא parseInt: parseInt(\"12ab\") מחזיר 12": 0
+    },
+    "gap_lines_after_previous_block": 2,
+    "old": {
+      "function preflight(kind) {": 1,
+      "const stop = preflight(kind);": 1,
+      "const TOPIC_NO_MAX = 2147483647;": 1,
+      "function whyTopicNoInvalid(sent) {": 1,
+      "function markInvalid(el) {": 1,
+      "bkalot-clone-intake": 2,
+      "הפנייה לא נשלחה": 2,
+      "צריך מספר שלם": 5,
+      "validity.badInput": 2,
+      "גדול מכל מספר נושא שקיים במערכת": 1
+    }
+  }
+]

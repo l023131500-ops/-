@@ -1,0 +1,121 @@
+[
+  {
+    "url": "https://more30.com/bkalot-studio",
+    "status": 200,
+    "label": "https://more30.com/bkalot-studio",
+    "bytes": 31400,
+    "new": {
+      "if (value && Number(value.trim()) > TOPIC_NO_MAX) {": 0,
+      "why: \"גדול מכל מספר נושא שקיים במערכת\" };": 0,
+      "// הגבול השני, ומאותו טעם:": 0,
+      "// Number ולא parseInt: parseInt(\"12ab\") מחזיר 12": 0
+    },
+    "gap_lines_after_previous_block": 2,
+    "old": {
+      "function preflight(kind) {": 1,
+      "const stop = preflight(kind);": 1,
+      "const TOPIC_NO_MAX = 2147483647;": 1,
+      "function whyTopicNoInvalid(sent) {": 1,
+      "function markInvalid(el) {": 1,
+      "bkalot-clone-intake": 2,
+      "הפנייה לא נשלחה": 2,
+      "צריך מספר שלם": 5,
+      "validity.badInput": 2,
+      "גדול מכל מספר נושא שקיים במערכת": 1
+    },
+    "alefs": 304,
+    "replacement_chars": 0,
+    "double_encoded": 0,
+    "assets": []
+  },
+  {
+    "url": "https://more30.com/bkalot-studio/",
+    "status": 200,
+    "label": "https://more30.com/bkalot-studio/",
+    "bytes": 31400,
+    "new": {
+      "if (value && Number(value.trim()) > TOPIC_NO_MAX) {": 0,
+      "why: \"גדול מכל מספר נושא שקיים במערכת\" };": 0,
+      "// הגבול השני, ומאותו טעם:": 0,
+      "// Number ולא parseInt: parseInt(\"12ab\") מחזיר 12": 0
+    },
+    "gap_lines_after_previous_block": 2,
+    "old": {
+      "function preflight(kind) {": 1,
+      "const stop = preflight(kind);": 1,
+      "const TOPIC_NO_MAX = 2147483647;": 1,
+      "function whyTopicNoInvalid(sent) {": 1,
+      "function markInvalid(el) {": 1,
+      "bkalot-clone-intake": 2,
+      "הפנייה לא נשלחה": 2,
+      "צריך מספר שלם": 5,
+      "validity.badInput": 2,
+      "גדול מכל מספר נושא שקיים במערכת": 1
+    },
+    "alefs": 304,
+    "replacement_chars": 0,
+    "double_encoded": 0,
+    "assets": []
+  },
+  {
+    "url": "https://more30.com/bkalot-studio/admin",
+    "status": 200,
+    "label": "https://more30.com/bkalot-studio/admin",
+    "bytes": 90056,
+    "new": {
+      "if (value && Number(value.trim()) > TOPIC_NO_MAX) {": 0,
+      "why: \"גדול מכל מספר נושא שקיים במערכת\" };": 0,
+      "// הגבול השני, ומאותו טעם:": 0,
+      "// Number ולא parseInt: parseInt(\"12ab\") מחזיר 12": 0
+    },
+    "gap_lines_after_previous_block": null,
+    "old": {
+      "function preflight(kind) {": 0,
+      "const stop = preflight(kind);": 0,
+      "const TOPIC_NO_MAX = 2147483647;": 0,
+      "function whyTopicNoInvalid(sent) {": 0,
+      "function markInvalid(el) {": 0,
+      "bkalot-clone-intake": 0,
+      "הפנייה לא נשלחה": 0,
+      "צריך מספר שלם": 0,
+      "validity.badInput": 0,
+      "גדול מכל מספר נושא שקיים במערכת": 0
+    },
+    "alefs": 956,
+    "replacement_chars": 0,
+    "double_encoded": 0,
+    "assets": []
+  },
+  {
+    "url": "https://more30.com/",
+    "status": 200,
+    "label": "https://more30.com/",
+    "bytes": 3517,
+    "new": {
+      "if (value && Number(value.trim()) > TOPIC_NO_MAX) {": 0,
+      "why: \"גדול מכל מספר נושא שקיים במערכת\" };": 0,
+      "// הגבול השני, ומאותו טעם:": 0,
+      "// Number ולא parseInt: parseInt(\"12ab\") מחזיר 12": 0
+    },
+    "gap_lines_after_previous_block": null,
+    "old": {
+      "function preflight(kind) {": 0,
+      "const stop = preflight(kind);": 0,
+      "const TOPIC_NO_MAX = 2147483647;": 0,
+      "function whyTopicNoInvalid(sent) {": 0,
+      "function markInvalid(el) {": 0,
+      "bkalot-clone-intake": 0,
+      "הפנייה לא נשלחה": 0,
+      "צריך מספר שלם": 0,
+      "validity.badInput": 0,
+      "גדול מכל מספר נושא שקיים במערכת": 0
+    },
+    "alefs": 23,
+    "replacement_chars": 0,
+    "double_encoded": 0,
+    "assets": [
+      "/assets/index-C2AHwa-z.js",
+      "/assets/index-B35ByRD-.css"
+    ]
+  }
+]

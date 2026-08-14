@@ -1,0 +1,138 @@
+{
+  "run": "topic-no-max-deploy-0814",
+  "beat": "פריסה בלבד של 67555e3 — אין שינוי קוד, אין מיגרציה, אין פריסת edge function",
+  "commit_deployed": "67555e327dca4a2f3be0721afd316b9ddae28bab",
+  "edge_functions_unchanged": { "bkalot-clone-intake": "v1", "bkalot-clone-admin": "v7" },
+  "deployment": {
+    "id": "dpl_EQuttzcSUmrVFJ7sE2eTdGHDZaAm",
+    "readyState": "READY",
+    "target": "production",
+    "aliased": "https://more30.com",
+    "files_staged": 38,
+    "how": "powershell -File scripts/stage-portal.ps1 ; cd portal/dist ; npx vercel deploy --prod --yes --scope l023131500-ops-projects",
+    "why_not_prebuilt": "--prebuilt מפיל את vercel.json כלומר את מפת ה-rewrites של כל המערכות; ובלי .vercel/project.json ה-CLI יוצר פרויקט בשם dist ו-more30.com לא מתעדכן"
+  },
+  "file": {
+    "prev_bytes": 31164,
+    "prev_md5": "4F7257379E3D1C88D86EB4CEEA96CDA8",
+    "prev_matches_heartbeat_599": true,
+    "fixed_bytes": 32322,
+    "fixed_md5": "E6E39BF0F0D5FFD03F8A0ADC95F81078",
+    "dist_after_staging_md5": "E6E39BF0F0D5FFD03F8A0ADC95F81078"
+  },
+  "markers": {
+    "new_markers_prev": 0,
+    "new_markers_fixed": 4,
+    "gap_lines_prev": 2,
+    "gap_lines_fixed": 14,
+    "note": "REMOVED נמדד כסמיכות ולא כמחרוזת — 67555e3 היא תוספת טהורה (12 שורות נוספו, 0 נמחקו)"
+  },
+  "http": {
+    "form_bytes_before": 31400,
+    "form_bytes_after": 32558,
+    "delta_vs_source": 236,
+    "delta_is_netfree": true,
+    "both_rewrites_measured": ["https://more30.com/bkalot-studio", "https://more30.com/bkalot-studio/"],
+    "new_marker_hits_before": 0,
+    "new_marker_hits_after": 4,
+    "gap_before": 2,
+    "gap_after": 14,
+    "alefs_before": 304,
+    "alefs_after": 327,
+    "replacement_chars": 0,
+    "double_encoded": 0,
+    "regression_admin_bytes": { "before": 90056, "after": 90056 },
+    "regression_home_bytes": { "before": 3517, "after": 3517 },
+    "regression_home_assets": ["/assets/index-C2AHwa-z.js", "/assets/index-B35ByRD-.css"]
+  },
+  "browser_live": {
+    "url": "https://more30.com/bkalot-studio/",
+    "viewport": "1280x900",
+    "console_messages": 0,
+    "flows": [
+      {
+        "typed": "999999999999",
+        "intake_requests": 0,
+        "ms_to_answer": 88,
+        "badInput": false,
+        "value_stood": "999999999999",
+        "title": "הפנייה לא נשלחה",
+        "line": "מספר נושא — גדול מכל מספר נושא שקיים במערכת. תקנו ושלחו שוב.",
+        "focus": "topic_no",
+        "aria_invalid_count": 1,
+        "form_kept_state": true,
+        "result_top_px": 705,
+        "field_top_px": 272,
+        "screenshot": "01-live-stopped-in-the-screen.png",
+        "md5_8": "957027F4"
+      },
+      {
+        "typed": "2147483647",
+        "note": "הגבול שהשרת עדיין מקבל — בקרה נגד חסימה ב->= או בעיגול",
+        "intake_requests": 1,
+        "ms_to_answer": 2973,
+        "http_status": 200,
+        "case_id": 165,
+        "rights_linked": 42,
+        "topic_no_in_db": 2147483647,
+        "raw_topic_no": "2147483647",
+        "focus": "BODY",
+        "aria_invalid_count": 0,
+        "form_reset": true,
+        "screenshot": "02-live-control-boundary-accepted.png",
+        "md5_8": "F7161AC2"
+      },
+      {
+        "typed": "1-5",
+        "note": "החסימה המוקדמת הקודמת — לא זזה",
+        "intake_requests": 0,
+        "ms_to_answer": 60,
+        "badInput": true,
+        "title": "הפנייה לא נשלחה",
+        "line": "מספר נושא — צריך מספר שלם. תקנו ושלחו שוב.",
+        "focus": "topic_no",
+        "aria_invalid_count": 1,
+        "result_top_px": 705,
+        "field_top_px": 272,
+        "screenshot": "03-live-control-preflight-unchanged.png",
+        "md5_8": "80136F68"
+      }
+    ],
+    "cases_in_db_during_run": [165],
+    "blocked_attempts_left_no_row": true
+  },
+  "test_mode": {
+    "documents": 0,
+    "cases_sent": 0,
+    "outbound_queue": 8,
+    "outbound_queue_with_sent_at": 0,
+    "delivery_log": 3,
+    "queue_fingerprint": "050e54ab59235d105af3a10c785dbaea",
+    "fingerprint_identical_baseline_and_after": true,
+    "screen_declared_test_mode": "🚫 מצב טסט: הפנייה נשמרה, ולא יצאה ממנה שום הודעה."
+  },
+  "rollback": {
+    "how": "שלוש פקודות נפרדות לפי id ולא CTE אחד",
+    "order": ["case_rights where case_id=165", "cases where id=165", "contacts where id=171"],
+    "contact_deleted_by_id_not_phone": true,
+    "phone_stored_normalized": "0501234567",
+    "after": {
+      "cases": 0,
+      "case_rights": 0,
+      "documents": 0,
+      "catalog": 888,
+      "admin_users": 1,
+      "templates": 2,
+      "contacts": 4,
+      "outbound_queue": 8,
+      "delivery_log": 3
+    },
+    "identical_to_baseline": true
+  },
+  "protected_paths_clean": [
+    "apps/08-bkalut-app",
+    "apps/09-bkalot-admin",
+    "apps/37-bkalot-clone",
+    "supabase/functions"
+  ]
+}

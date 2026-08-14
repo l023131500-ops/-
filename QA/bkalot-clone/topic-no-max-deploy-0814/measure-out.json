@@ -1,0 +1,117 @@
+{
+  "url": "https://more30.com/bkalot-studio/",
+  "measurements": [
+    {
+      "id": "01-live-stopped-in-the-screen",
+      "topic_no_typed": "999999999999",
+      "native_before_submit": {
+        "value": "999999999999",
+        "badInput": false,
+        "field_checkValidity": true,
+        "form_checkValidity": true,
+        "form_has_novalidate": true
+      },
+      "intake_requests": 0,
+      "request_left_the_page": false,
+      "ms_to_answer": 88,
+      "server_responses": [],
+      "title": "הפנייה לא נשלחה",
+      "result_class": "result bad",
+      "lines": [
+        "מספר נושא — גדול מכל מספר נושא שקיים במערכת. תקנו ושלחו שוב."
+      ],
+      "case_row": [],
+      "focused_id": "topic_no",
+      "focused_tag": "INPUT",
+      "topic_value": "999999999999",
+      "topic_aria_invalid": "true",
+      "aria_invalid_count": 1,
+      "kind": "treatment",
+      "full_name": "בדיקת גבול העמודה בייצור",
+      "phone": "050-1234567",
+      "situation": "single_parent",
+      "consent": true,
+      "result_top_px": 705,
+      "field_top_px": 272,
+      "screenshot": "01-live-stopped-in-the-screen.png"
+    },
+    {
+      "id": "02-live-control-boundary-accepted",
+      "topic_no_typed": "2147483647",
+      "native_before_submit": {
+        "value": "2147483647",
+        "badInput": false,
+        "field_checkValidity": true,
+        "form_checkValidity": true,
+        "form_has_novalidate": true
+      },
+      "intake_requests": 1,
+      "request_left_the_page": true,
+      "ms_to_answer": 2973,
+      "server_responses": [
+        {
+          "status": 200,
+          "body": "{\"ok\": true, \"kind\": \"treatment\", \"phone\": \"0501234567\", \"queued\": false, \"case_id\": 165, \"dropped\": [], \"situation\": \"single_parent\", \"contact_id\": 171, \"rights_linked\": 42, \"rights_unknown\": []}"
+        }
+      ],
+      "title": "הפנייה נקלטה",
+      "result_class": "result ok",
+      "lines": [
+        "קיבלנו את הפנייה ונחזור אליכם.",
+        "🚫 מצב טסט: הפנייה נשמרה, ולא יצאה ממנה שום הודעה."
+      ],
+      "case_row": [
+        "מספר פנייה=165",
+        "זכויות שאותרו עבורכם=42"
+      ],
+      "focused_id": "",
+      "focused_tag": "BODY",
+      "topic_value": "",
+      "topic_aria_invalid": null,
+      "aria_invalid_count": 0,
+      "kind": "info",
+      "full_name": "",
+      "phone": "",
+      "situation": "",
+      "consent": false,
+      "result_top_px": 493,
+      "field_top_px": null,
+      "screenshot": "02-live-control-boundary-accepted.png"
+    },
+    {
+      "id": "03-live-control-preflight-unchanged",
+      "topic_no_typed": "1-5",
+      "native_before_submit": {
+        "value": "",
+        "badInput": true,
+        "field_checkValidity": false,
+        "form_checkValidity": false,
+        "form_has_novalidate": true
+      },
+      "intake_requests": 0,
+      "request_left_the_page": false,
+      "ms_to_answer": 60,
+      "server_responses": [],
+      "title": "הפנייה לא נשלחה",
+      "result_class": "result bad",
+      "lines": [
+        "מספר נושא — צריך מספר שלם. תקנו ושלחו שוב."
+      ],
+      "case_row": [],
+      "focused_id": "topic_no",
+      "focused_tag": "INPUT",
+      "topic_value": "",
+      "topic_aria_invalid": "true",
+      "aria_invalid_count": 1,
+      "kind": "treatment",
+      "full_name": "בקרת חסימה מוקדמת בייצור",
+      "phone": "050-1234567",
+      "situation": "single_parent",
+      "consent": true,
+      "result_top_px": 705,
+      "field_top_px": 272,
+      "screenshot": "03-live-control-preflight-unchanged.png"
+    }
+  ],
+  "console_messages": []
+}
