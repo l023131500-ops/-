@@ -318,6 +318,12 @@ pre{
     target_not_allowed:   "היעד אינו ברשימת יעדי הבדיקה ברגע העיבוד. לא נשלח דבר, והשורה סומנה חסומה.",
     queue_body_empty:     "הגוף בשורת התור ריק. אין מה לעבד, והשורה סומנה כנכשלה.",
     status_unknown:       "הסטטוס שנבחר אינו מוכר. רעננו את הדף.",
+    // 0072 — הכרעת האדם. status_unknown ו-status_not_settable הם שני נוסחים
+    // שונים במכוון, כפי שהמסד מבחין ביניהם: הראשון הוא ערך שאינו בסכמה כלל,
+    // כלומר באג במסך; השני הוא ערך קיים שהמסד מסרב לכתוב, כלומר הכרעה. נוסח
+    // אחד לשניהם היה שולח מנהל לרענן דף על מצב שרענון אינו משנה בו דבר.
+    status_required:      "לא נבחר סטטוס.",
+    status_not_settable:  "הסטטוס הזה אינו נקבע ידנית מהמסך.",
     kind_unknown:         "הסוג שנבחר אינו מוכר. רעננו את הדף.",
     route_not_found:      "הכתובת שאליה פנינו אינה קיימת.",
     method_not_allowed:   "הבקשה נשלחה בצורה שאינה נתמכת.",
@@ -571,7 +577,12 @@ pre{
 
   // note נמסר רק בחזרה מהפקה: openCase בונה את המסך מאפס בכל קריאה, ולכן
   // הודעת ההפקה חייבת לעבור דרכה — אחרת היא נמחקת ברענון שהיא עצמה גרמה לו.
-  async function openCase(id, note) {
+  //
+  // statusNote הוא ערוץ שני ולא שימוש חוזר ב-note: שתי ההודעות נכתבות בשני
+  // מקומות שונים במסך (מעל טבלת המסמכים ומתחת לכפתורי הסטטוס), ושליחת הודעת
+  // סטטוס דרך note הייתה מציגה «הסטטוס שונה» בסרגל ההפקה — כלומר תחת כותרת
+  // שאינה קשורה למה שנעשה.
+  async function openCase(id, note, statusNote) {
     const data = await call("case", { id });
     if (!data || data.ok !== true) {
       if (data?.expired) return toLogin(data.error);
@@ -614,6 +625,95 @@ pre{
       ["כתובת המכתב", c.to_email],
       ["הסכמה בפנייה", c.consent == null ? null : (c.consent ? "כן" : "לא")],
     ]));
+
+    // ── הכרעת האדם ────────────────────────────────────────────────────────────
+    // v6 נתנה ל-bkalot_clone_admin_set_status כתובת HTTP מאחורי שער הסשן, ואיש
+    // לא יכול היה ללחוץ עליה. עד כאן, מנהל שטיפל בפנייה מחוץ למערכת ראה אותה
+    // «בטיפול» לנצח, והרשימה גדלה ולא התרוקנה לעולם.
+    //
+    // ארבע הכרעות:
+    //
+    // (1) שלושה כפתורים ולא רשימה נפתחת עם «שמור». סגירת פנייה היא הכרעה, ולחיצה
+    //     היא ההכרעה עצמה; רשימה נפתחת יוצרת מצב ביניים שבו המסך מציג ערך שהמסד
+    //     אינו מחזיק בו, ומנהל שיוצא מהמסך בלי «שמור» משאיר אחריו פנייה שהוא
+    //     בטוח שסגר.
+    //
+    // (2) הכפתור של הסטטוס הנוכחי כבוי, והסיבה נאמרת ב-title ואינה נבלעת —
+    //     אותה הכרעה כמו הכפתור «עבד עכשיו» על שורה שאינה בתור. 0072 מחזירה
+    //     ok:true עם changed:false על לחיצה חוזרת, כלומר זו אינה שגיאה; היא גם
+    //     אינה פעולה, וכפתור שנראה לחיץ ואינו עושה דבר מזמין ללחוץ שוב.
+    //
+    // (3) שלושת היעדים כתובים כאן כתצוגה ולא כאכיפה. אין כאן ולו בדיקה אחת על
+    //     הערך לפני השליחה: רשימת ההיתר, הסירוב ל-sent ול-new וההבחנה בין
+    //     status_unknown ל-status_not_settable יושבות במסד בלבד, בדיוק כפי ש-v6
+    //     סירבה להעתיק אותן. מסך שמסרב לבד לערך שהמסד כבר מקבל היה נשאר מאחור
+    //     בשקט — ולכן אם המסד יסרב, השגיאה שלו מוצגת כפי שהיא, עם רשימת
+    //     ה-settable שהוא עצמו החזיר.
+    //
+    // (4) אחרי שינוי מוצלח המסך נבנה מחדש מהשרת (openCase) ולא מתעדכן במקום —
+    //     בניגוד לתא התור, שם syncQueue מעדכן ערך אחד. כאן זזים שני שדות:
+    //     «סטטוס» ו«עודכנה», והשני אינו חוזר בתשובה של 0072 כלל. עדכון במקום
+    //     היה משאיר את «עודכנה» על הזמן שנקרא בטעינה — כלומר מסך שאומר שהפנייה
+    //     שונתה ומראה שלא נגעו בה. load() מרענן גם את הרשימה שמאחור, אחרת התג
+    //     בשורה היה ממשיך לומר את הסטטוס הקודם.
+    //
+    // 🚫 מצב טסט: הנתיב הזה נוגע בעמודה status ותו לא. אין בו הפקה, אין כניסה
+    //    לתור ואין עיבוד, ו-0072 דוחה 'sent' במפורש — אין דרך לסמן פנייה
+    //    כנשלחה בלי שנשלחה.
+    body.append(h3("שינוי סטטוס"));
+    const statusBar = document.createElement("div");
+    statusBar.className = "docbar";
+    const statusNoteEl = document.createElement("p");
+    statusNoteEl.className = "note";
+    statusNoteEl.setAttribute("role", "status");
+    if (statusNote) statusNoteEl.textContent = statusNote; else statusNoteEl.hidden = true;
+    const statusErr = document.createElement("div");
+    statusErr.className = "err";
+    statusErr.setAttribute("role", "alert");
+    statusErr.hidden = true;
+    const statusBtns = new Map();
+    const syncStatusButtons = () => {
+      for (const [target, b] of statusBtns) {
+        b.disabled = c.status === target;
+        b.title = c.status === target
+          ? `הפנייה כבר ב«${label(STATUS_MAP, target)}», ולכן אין מה לשנות`
+          : `מסמן את הפנייה כ«${label(STATUS_MAP, target)}». אינו שולח דבר.`;
+      }
+    };
+    for (const target of ["in_progress", "closed", "rejected"]) {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "ghost";
+      b.textContent = label(STATUS_MAP, target);
+      statusBtns.set(target, b);
+      b.addEventListener("click", async () => {
+        statusErr.hidden = true;
+        const was = b.textContent;
+        for (const x of statusBtns.values()) x.disabled = true;
+        b.textContent = "משנה…";
+        const out = await call("set-status", { case_id: c.id, status: target });
+        b.textContent = was;
+        if (!out || out.ok !== true) {
+          if (out?.expired) return toLogin(out.error);
+          syncStatusButtons();
+          // settable מגיע מהמסד על status_not_settable, ולכן הוא מוצג כפי שהוא:
+          // מנהל שרואה «אינו נקבע ידנית» בלי לדעת מה כן ניתן לקבוע ילחץ שוב.
+          showError(statusErr, out?.error || "bad_response",
+            Array.isArray(out?.settable) ? out.settable.map((s) => label(STATUS_MAP, s)).join(", ") : out?.status);
+          return;
+        }
+        // changed:false אינו כשל ואינו הצלחה שקטה — הוא נאמר במפורש, אחרת
+        // לחיצה שלא שינתה דבר נראית זהה ללחיצה ששינתה.
+        const msg = out.changed
+          ? `הסטטוס שונה מ«${label(STATUS_MAP, out.previous)}» ל«${label(STATUS_MAP, out.status)}» · לא נשלחה שום הודעה`
+          : `הפנייה כבר הייתה ב«${label(STATUS_MAP, out.status)}» — לא שונה דבר`;
+        await openCase(c.id, undefined, msg);
+        await load();
+      });
+      statusBar.append(b);
+    }
+    syncStatusButtons();
+    body.append(statusBar, statusNoteEl, statusErr);
 
     body.append(h3("איש הקשר"));
     if (c.contact) {
