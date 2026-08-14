@@ -1,0 +1,180 @@
+{
+  "beat": "שכפול בקלות שכבה 1 — פריסה בלבד",
+  "open_line_taken_verbatim_from": "ac6e523 / heartbeat 591",
+  "open_line": "הקובץ טרם נפרס — more30.com/bkalot-studio עדיין שולח ומאבד, והמדידה כאן רצה מול שרתים סטטיים מקומיים; זו הפעימה הבאה",
+  "scope": {
+    "code_changed": false,
+    "migration": false,
+    "edge_function_deployed": false,
+    "intake_version": "v1 (ללא שינוי)",
+    "admin_version": "v7 (ללא שינוי)",
+    "files_touched": ["QA/bkalot-clone/preflight-topic-no-deploy-0814/*"]
+  },
+
+  "file_identity": {
+    "source": { "bytes": 27637, "md5": "2A1B545C8CA50CDD1191A17C8D24EE31" },
+    "prev_from_portal_dist": { "bytes": 25483, "md5": "B24A10595849FA24B1795F23C3F2A9F6" },
+    "prev_matches_heartbeat_590_deployed_file": true,
+    "note": "ה-dist שעל הדיסק היה הקובץ שבייצור ולא קובץ ישן יותר",
+    "dist_after_staging": { "bytes": 27637, "md5": "2A1B545C8CA50CDD1191A17C8D24EE31" },
+    "files_staged": 38
+  },
+
+  "markers": {
+    "new_rejected_before_use": {
+      "marker": "הפנייה לא נשלחה",
+      "why": "כבר יושב בייצור בשורה 368 — נתיב השגיאה הקיים של show(\"bad\"). כמסומן NEW היה מחזיר true על הגרסה שבייצור. ירד ל-OLD.",
+      "count_prev": 1,
+      "count_source": 2
+    },
+    "new_used": {
+      "function preflight(kind) {": { "prev": 0, "source": 1 },
+      "const stop = preflight(kind);": { "prev": 0, "source": 1 },
+      "if (kind !== \"treatment\") return null;": { "prev": 0, "source": 1 },
+      "תקנו ושלחו שוב.": { "prev": 0, "source": 1 }
+    },
+    "removed_is_adjacency_not_string": {
+      "why": "ac6e523 היא תוספת טהורה — 32 שורות נוספו ואפס נמחקו — ולכן אין מחרוזת שנעלמה",
+      "anchor": "const kind = form.elements.kind.value;",
+      "anchor_occurs_twice_in_file": true,
+      "correction": "נלקח המופע האחרון; המופע הראשון החזיר מרחק 74 שורות שאינו הסמיכות הנמדדת",
+      "lines_between_prev": 1,
+      "lines_between_source": 11
+    },
+    "old_present_both_sides": 8
+  },
+
+  "http": {
+    "form_before": 25719,
+    "form_after": 27873,
+    "delta_vs_source": 236,
+    "delta_is_known_netfree_injection": true,
+    "alefs_before": 211,
+    "alefs_after": 244,
+    "new_markers_before": 0,
+    "new_markers_after": 4,
+    "adjacency_before": 1,
+    "adjacency_after": 11,
+    "both_rewrites_measured": ["/bkalot-studio", "/bkalot-studio/"],
+    "regression_admin": { "before": 90056, "after": 90056 },
+    "regression_home": { "before": 3517, "after": 3517 },
+    "home_assets_unchanged": ["/assets/index-C2AHwa-z.js", "/assets/index-B35ByRD-.css"],
+    "replacement_chars": 0,
+    "double_encoded": 0
+  },
+
+  "deployment": {
+    "id": "dpl_2ae38LQ3tApePk2MVsBSixm64PYM",
+    "readyState": "READY",
+    "aliased_to": "more30.com",
+    "from": "portal/dist",
+    "prebuilt": false,
+    "why_not_prebuilt": "--prebuilt מפיל את vercel.json כלומר את מפת ה-rewrites של כל המערכות; ובלי .vercel/project.json ה-CLI יוצר פרויקט בשם dist ו-more30.com לא מתעדכן"
+  },
+
+  "browser": {
+    "viewport": "1280x900",
+    "url": "https://more30.com/bkalot-studio",
+    "served_markers_all_four": true,
+    "endpoint_absolute": "https://uhnrgujbdxhhmoxcjria.supabase.co/functions/v1/bkalot-clone-intake",
+    "typed_not_injected": true,
+
+    "why_a_person_reaches_this": {
+      "field": "type=number min=1 step=1",
+      "topic_no_checkValidity": true,
+      "form_checkValidity": true,
+      "form_novalidate": true,
+      "meaning": "האימות הילידי אינו חוסם, ולכן זו אינה יכולה להיות הסיבה לאפס בקשות"
+    },
+    "trap_caught_mid_run": "בסבב הראשון form.checkValidity() החזיר false — לא בגלל topic_no אלא כי email (required) נשאר ריק. אילו נשלח כך, אפס הבקשות היה יכול להיות אימות ילידי ולא ה-preflight. השדה מולא והמדידה חזרה.",
+
+    "blocked": {
+      "typed": "1e3",
+      "requests_to_endpoint": 0,
+      "title": "הפנייה לא נשלחה",
+      "line": "מספר נושא — צריך מספר שלם. תקנו ושלחו שוב.",
+      "aria_invalid_count": 1,
+      "aria_invalid_ids": ["topic_no"],
+      "focused": "topic_no",
+      "topic_no_still_in_field": "1e3",
+      "nothing_reset": {
+        "full_name": "בדיקת חסימה בייצור",
+        "phone": "050-1234567",
+        "email": "test@more30.com",
+        "situation": "single_parent",
+        "consent": true,
+        "kind": "treatment"
+      },
+      "result_y": 728,
+      "field_y": 295,
+      "both_above_the_fold_simultaneously": true,
+      "db_after_blocked_attempt": { "cases": 0, "max_case_id": 0 }
+    },
+
+    "control": {
+      "typed": "7",
+      "requests_to_endpoint": 1,
+      "http_status": 200,
+      "case_id": 145,
+      "topic_no": 7,
+      "raw_topic_no": "7",
+      "rights": 42,
+      "error_line": null,
+      "aria_invalid_count": 0,
+      "focused": "BODY",
+      "form_fully_reset": true,
+      "kind_back_to": "info",
+      "result_y": 493,
+      "meaning": "החסימה אינה נדבקת למסלול התקין"
+    },
+
+    "two_sided_proof": "אפס בקשות בניסיון החסום, ובמסד פנייה אחת בלבד — #145, הבקרה. לניסיון החסום אין שורה באמצע.",
+
+    "console": {
+      "errors": 0,
+      "warnings": 0,
+      "info": 4,
+      "info_source": "כל ארבע מ-netfree.link/card/ — טעינת גופנים מוזרקת, אף לא אחת מהדף"
+    },
+
+    "screenshots": [
+      { "file": "01-live-1e3-blocked.png", "bytes": 42657, "md5": "420A076D5B778E6A7B5EFBB7B794FE89" },
+      { "file": "02-live-control-7.png", "bytes": 42120, "md5": "0DD6142D9A82A3CE80F0C3E508EE9F3C" }
+    ],
+    "screenshots_distinct": true
+  },
+
+  "test_mode_measured_not_declared": {
+    "documents": 0,
+    "cases_sent": 0,
+    "outbound_queue": 8,
+    "queue_sent_at_rows": 0,
+    "delivery_log": 3,
+    "queue_fingerprint_baseline": "27c95e2485df7c8f2c34c47aae60ae42",
+    "queue_fingerprint_during": "27c95e2485df7c8f2c34c47aae60ae42",
+    "queue_fingerprint_after": "27c95e2485df7c8f2c34c47aae60ae42",
+    "screen_declares_test_mode": "🚫 מצב טסט: הפנייה נשמרה, ולא יצאה ממנה שום הודעה.",
+    "conclusion": "אין מייל, אין הודעה ואין מסמך שיצא החוצה"
+  },
+
+  "rollback": {
+    "deleted_in_fk_order": { "case_rights": 42, "cases": 1, "contacts": 1 },
+    "contact_deleted_by_id_not_phone": "הטלפון נשמר מנורמל לספרות (0501234567) — מחיקה לפי '050-1234567' הייתה מחזירה 0, התקלה שנתפסה ב-ac6e523",
+    "baseline": { "cases": 0, "case_rights": 0, "documents": 0, "admin_users": 1, "templates": 2, "contacts": 4, "outbound_queue": 8, "delivery_log": 3, "catalog": 888 },
+    "after": { "cases": 0, "case_rights": 0, "documents": 0, "admin_users": 1, "templates": 2, "contacts": 4, "outbound_queue": 8, "delivery_log": 3, "catalog": 888 },
+    "identical": true
+  },
+
+  "protected_paths_clean": ["apps/08-bkalut-app", "apps/09-bkalot-admin", "apps/37-bkalot-clone", "supabase/functions"],
+
+  "still_open": [
+    "type=number עם קלט שאינו מספר כלל מותיר value ריק, ואז הטופס אינו שולח את השדה והשרת אינו מדווח עליו ב-dropped[] — הערך נעלם בלי ולו שורה אחת על המסך; טרם נבדק",
+    "הקליטה מחברת 42 זכויות ל-treatment ואפס ל-info על אותו situation",
+    "await load() שאחרי «שינוי סטטוס» מיותר ולא הוסר",
+    "אין סינון «לא הוכרעה» ואין מיון לפי decided_at; אין היסטוריית הכרעות",
+    "«מי הפיק» על documents אינו נכתב לשום מקום",
+    "${out.text_chars} ו-${d.html_chars} נשארו במספר",
+    "כותרות «זכויות (N)» ו«מסמכים (N)» לא נגעו",
+    "public_visible ו-show_in_showcase של #37 נשארים false"
+  ]
+}
