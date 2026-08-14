@@ -1,0 +1,3 @@
+﻿C:\Users\USER\Downloads\more30\QA\bkalot-clone\back-refresh-deploy-0814\prev-admin.html 66931 chars 85043 bytes
+new: show("screen-list"); load();=false | חזרה לרשימה מרעננת אותה, ולא רק מחליפה מסך=false | ורשימת מה-שעלול-לשנות אינה ידועה ללקוח מראש=false | show לפני load ולא אחריה=false
+old: show("screen-list")=true | decidedBit=true | לא הוכרע מהמסך=true | fillDecidedLine=true | לא נרשמה הכרעה ידנית מהמסך=true | החשבון אינו קיים עוד=true | <th>מכתב</th>=true | fillTemplateCell=true | tmpl-sel=true | שינוי סטטוס=true | עבד עכשיו=true | הכנס לתור=true

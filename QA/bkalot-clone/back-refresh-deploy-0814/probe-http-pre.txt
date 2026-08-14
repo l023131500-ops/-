@@ -1,0 +1,11 @@
+﻿https://more30.com/bkalot-studio/admin?cb=qa0081pre 200 85279
+  new: show("screen-list"); load();=false | חזרה לרשימה מרעננת אותה, ולא רק מחליפה מסך=false | ורשימת מה-שעלול-לשנות אינה ידועה ללקוח מראש=false | show לפני load ולא אחריה=false
+  old: show("screen-list")=true | decidedBit=true | לא הוכרע מהמסך=true | fillDecidedLine=true | לא נרשמה הכרעה ידנית מהמסך=true | החשבון אינו קיים עוד=true | <th>מכתב</th>=true | fillTemplateCell=true | tmpl-sel=true | שינוי סטטוס=true | עבד עכשיו=true | הכנס לתור=true
+  alef=845 replacement=0 doubleenc=0
+https://more30.com/bkalot-studio/admin/?cb=qa0081pre 200 85279
+  alef=845 replacement=0 doubleenc=0
+https://more30.com/bkalot-studio/?cb=qa0081pre 200 21272
+  alef=134 replacement=0 doubleenc=0
+https://more30.com/?cb=qa0081pre 200 3517
+  assets: assets/index-C2AHwa-z.js,assets/index-B35ByRD-.css
+  alef=23 replacement=0 doubleenc=0
