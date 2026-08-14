@@ -1,0 +1,139 @@
+{
+  "measurements": [
+    {
+      "id": "01-prev-code-topic-no-invalid",
+      "server": 8154,
+      "topic_no_typed": "999999999999",
+      "native_before_submit": {
+        "value": "999999999999",
+        "badInput": false,
+        "field_checkValidity": true,
+        "form_checkValidity": true
+      },
+      "intake_requests": 1,
+      "request_left_the_page": true,
+      "title": "הפנייה לא נשלחה",
+      "result_class": "result bad",
+      "lines": [
+        "אירעה תקלה. נסו שוב בעוד רגע.",
+        "קוד: topic_no_invalid"
+      ],
+      "case_row": [],
+      "focused_id": "",
+      "focused_tag": "BODY",
+      "topic_value": "999999999999",
+      "topic_aria_invalid": null,
+      "aria_invalid_count": 0,
+      "kind": "treatment",
+      "full_name": "בדיקת מספר נושא חורג",
+      "phone": "050-1234567",
+      "situation": "single_parent",
+      "consent": true,
+      "result_top_px": 705,
+      "field_top_px": 272,
+      "screenshot": "01-prev-code-topic-no-invalid.png"
+    },
+    {
+      "id": "02-fixed-hebrew-reason-and-focus",
+      "server": 8155,
+      "topic_no_typed": "999999999999",
+      "native_before_submit": {
+        "value": "999999999999",
+        "badInput": false,
+        "field_checkValidity": true,
+        "form_checkValidity": true
+      },
+      "intake_requests": 1,
+      "request_left_the_page": true,
+      "title": "הפנייה לא נשלחה",
+      "result_class": "result bad",
+      "lines": [
+        "מספר הנושא אינו תקין. תקנו ושלחו שוב.",
+        "מספר הנושא גדול מכל מספר נושא שקיים במערכת."
+      ],
+      "case_row": [],
+      "focused_id": "topic_no",
+      "focused_tag": "INPUT",
+      "topic_value": "999999999999",
+      "topic_aria_invalid": "true",
+      "aria_invalid_count": 1,
+      "kind": "treatment",
+      "full_name": "בדיקת מספר נושא חורג",
+      "phone": "050-1234567",
+      "situation": "single_parent",
+      "consent": true,
+      "result_top_px": 705,
+      "field_top_px": 272,
+      "screenshot": "02-fixed-hebrew-reason-and-focus.png"
+    },
+    {
+      "id": "03-fixed-control-7",
+      "server": 8155,
+      "topic_no_typed": "7",
+      "native_before_submit": {
+        "value": "7",
+        "badInput": false,
+        "field_checkValidity": true,
+        "form_checkValidity": true
+      },
+      "intake_requests": 1,
+      "request_left_the_page": true,
+      "title": "הפנייה נקלטה",
+      "result_class": "result ok",
+      "lines": [
+        "קיבלנו את הפנייה ונחזור אליכם.",
+        "🚫 מצב טסט: הפנייה נשמרה, ולא יצאה ממנה שום הודעה."
+      ],
+      "case_row": [
+        "מספר פנייה=162",
+        "זכויות שאותרו עבורכם=42"
+      ],
+      "focused_id": "",
+      "focused_tag": "BODY",
+      "topic_value": "",
+      "topic_aria_invalid": null,
+      "aria_invalid_count": 0,
+      "kind": "info",
+      "full_name": "",
+      "phone": "",
+      "situation": "",
+      "consent": false,
+      "result_top_px": 493,
+      "field_top_px": null,
+      "screenshot": "03-fixed-control-7.png"
+    },
+    {
+      "id": "04-fixed-control-preflight-unchanged",
+      "server": 8155,
+      "topic_no_typed": "1-5",
+      "native_before_submit": {
+        "value": "",
+        "badInput": true,
+        "field_checkValidity": false,
+        "form_checkValidity": false
+      },
+      "intake_requests": 0,
+      "request_left_the_page": false,
+      "title": "הפנייה לא נשלחה",
+      "result_class": "result bad",
+      "lines": [
+        "מספר נושא — צריך מספר שלם. תקנו ושלחו שוב."
+      ],
+      "case_row": [],
+      "focused_id": "topic_no",
+      "focused_tag": "INPUT",
+      "topic_value": "",
+      "topic_aria_invalid": "true",
+      "aria_invalid_count": 1,
+      "kind": "treatment",
+      "full_name": "בדיקת מספר נושא חורג",
+      "phone": "050-1234567",
+      "situation": "single_parent",
+      "consent": true,
+      "result_top_px": 705,
+      "field_top_px": 272,
+      "screenshot": "04-fixed-control-preflight-unchanged.png"
+    }
+  ],
+  "console_messages": []
+}

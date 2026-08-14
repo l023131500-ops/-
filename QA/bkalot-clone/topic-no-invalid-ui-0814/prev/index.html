@@ -272,7 +272,6 @@ footer a{color:var(--brand)}
     email_required_for_treatment:    "לטיפול מלא צריך דוא״ל — לשם נשלחים המסמכים.",
     situation_required_for_treatment:"בחרו מצב, כדי שנוכל להתאים את רשימת הזכויות.",
     situation_unknown:               "המצב שנבחר אינו מוכר למערכת. רעננו את הדף ובחרו מחדש.",
-    topic_no_invalid:                "מספר הנושא אינו תקין. תקנו ושלחו שוב.",
     // bkalot-clone-intake — תעבורה
     method_not_allowed:              "הפנייה נשלחה בצורה שאינה נתמכת.",
     server_misconfigured:            "השירות אינו מוגדר כראוי כרגע. נסו שוב מאוחר יותר.",
@@ -309,22 +308,6 @@ footer a{color:var(--brand)}
         !/^[0-9]+$/.test(sent.topic_no.trim())) {
       return "צריך מספר שלם";
     }
-    return null;
-  }
-
-  // ── ולמה מספר הנושא נפסל ───────────────────────────────────────────────────
-  // 0079 ו-0080 מחזירות קוד אחד, topic_no_invalid, לשתי סיבות שונות: ערך שאינו
-  // מספר שלם, וערך שהוא ספרות בלבד אך גדול ממה שעמודת מספר הנושא מחזיקה. ההבחנה
-  // ביניהן היא פרט מימוש של טיפוס העמודה, ולכן הקוד אחד — והניסוח, כמו כל ניסוח
-  // אחר במסך הזה (#223 סעיף 3), נקבע כאן מהערך שהטופס באמת שלח, באותן שתי
-  // בדיקות ובאותו סדר של 0080. ערך שאינו נופל תחת אף אחת מהן מוצג בלי סיבה —
-  // עדיף חצי הסבר על הסבר שהומצא, בדיוק כמו ב-whyDropped.
-  const TOPIC_NO_MAX = 2147483647;   // גבול העמודה, כפי ש-0080 בודקת אותו
-  function whyTopicNoInvalid(sent) {
-    const value = typeof sent.topic_no === "string" ? sent.topic_no.trim() : "";
-    if (!value) return null;
-    if (!/^[0-9]+$/.test(value)) return "צריך מספר שלם";
-    if (Number(value) > TOPIC_NO_MAX) return "מספר הנושא גדול מכל מספר נושא שקיים במערכת.";
     return null;
   }
 
@@ -397,14 +380,6 @@ footer a{color:var(--brand)}
   //
   // שאר הטופס נשאר ריק, ולכן שליחה חוזרת מיידית אינה מייצרת פנייה כפולה: היא
   // נופלת על full_name_required. זו הסיבה שהערך מוחזר אחרי ה-reset ולא במקומו.
-  // שדה שנפסל מסומן ומקבל מיקוד, ורק הוא: סימון קודם מוסר, אחרת שתי שליחות
-  // עוקבות משאירות שני שדות מסומנים ומי שקורא מסך אינו יודע מה נפל עכשיו.
-  function markInvalid(el) {
-    for (const other of form.querySelectorAll("[aria-invalid]")) other.removeAttribute("aria-invalid");
-    el.setAttribute("aria-invalid", "true");
-    el.focus();
-  }
-
   function focusDropped(dropped, sent, sentKind) {
     for (const el of form.querySelectorAll("[aria-invalid]")) el.removeAttribute("aria-invalid");
     for (const key of dropped) {
@@ -465,8 +440,10 @@ footer a{color:var(--brand)}
     // לפני כל היתר: מה שממילא ייפול אינו נשלח, ולכן אין פנייה שנשמרה חסרה.
     const stop = preflight(kind);
     if (stop) {
+      for (const el of form.querySelectorAll("[aria-invalid]")) el.removeAttribute("aria-invalid");
+      stop.el.setAttribute("aria-invalid", "true");
       show("bad", "הפנייה לא נשלחה", [stop.name + " — " + stop.why + ". תקנו ושלחו שוב."]);
-      markInvalid(stop.el);
+      stop.el.focus();
       return;
     }
 
@@ -519,14 +496,6 @@ footer a{color:var(--brand)}
       let extra = null;
       if (code === "situation_unknown" && Array.isArray(body.allowed)) {
         extra = "המערכת מכירה כרגע " + body.allowed.length + " מצבים.";
-      }
-      // הפנייה לא נשמרה — 0080 פוסלת לפני שנוצרת שורה — ולכן שום שדה לא מתאפס
-      // וכל מה שהוקלד עומד. מה שחסר הוא לאן ללכת: השדה שנפסל מסומן ומקבל מיקוד,
-      // כמו בחסימה המוקדמת ובנתיב dropped[].
-      if (code === "topic_no_invalid" && "topic_no" in payload) {
-        fail(code, whyTopicNoInvalid(payload));
-        markInvalid($("topic_no"));
-        return;
       }
       return fail(code, extra);
     }
