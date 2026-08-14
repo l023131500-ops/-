@@ -1,0 +1,93 @@
+{
+  "beat": "שכפול בקלות שכבה 1 — הפריסה: «שדות שלא נשמרו: מספר נושא» נמדד על הכתובת החיה",
+  "date": "2026-08-14",
+  "section": "§5ב",
+  "parent_commit": "a6eb793",
+  "code_change": "אין — פריסה בלבד. אין מיגרציה ואין פריסת edge function.",
+  "deployment": {
+    "id": "dpl_ELw9cUAeWXhVvfz1qR7AuVxFp4Fd",
+    "url": "https://more30-portal-iq9ozl9rp-l023131500-ops-projects.vercel.app",
+    "readyState": "READY",
+    "target": "production",
+    "aliased": "https://more30.com",
+    "command": "powershell -File scripts/stage-portal.ps1 ; cd portal/dist ; npx vercel deploy --prod --yes --scope l023131500-ops-projects",
+    "prebuilt": false,
+    "files_staged": 38
+  },
+  "file_identity": {
+    "prev_production": { "source": "git show a6eb793^:apps/37-bkalot-clone/index.html", "bytes": 21036, "md5": "2535CA364F7AA18E7E74835FB3BA0BE4" },
+    "src": { "path": "apps/37-bkalot-clone/index.html", "bytes": 22105, "md5": "66CA2D677A9DA86E79C716426499D771" },
+    "dist_pre_staging": { "bytes": 21036, "md5": "2535CA364F7AA18E7E74835FB3BA0BE4", "note": "זהה בדיוק ל-prev — ה-dist שעל הדיסק היה הקובץ שבייצור ולא קובץ ישן יותר" },
+    "dist_post_staging": { "bytes": 22105, "md5": "66CA2D677A9DA86E79C716426499D771" }
+  },
+  "markers": {
+    "new": ["const DROPPED = {", "topic_no:  \"מספר נושא\",", "body.dropped.map((k) => DROPPED[k] || k).join(\", \")"],
+    "removed": ["lines.push(\"שדות שלא נשמרו: \" + body.dropped.join(\", \"));"],
+    "each_new_marker_occurrences_in_src": 1,
+    "matrix": {
+      "prev_production":   { "new": "all false", "removed": "all true",  "old": "all true" },
+      "src":               { "new": "all true",  "removed": "all false", "old": "all true" },
+      "dist_pre_staging":  { "new": "all false", "removed": "all true",  "old": "all true" },
+      "dist_post_staging": { "new": "all true",  "removed": "all false", "old": "all true" },
+      "http_pre":          { "new": "all false", "removed": "all true",  "old": "all true" },
+      "http_post":         { "new": "all true",  "removed": "all false", "old": "all true" }
+    }
+  },
+  "http": {
+    "/bkalot-studio/":      { "pre": 21272, "post": 22341, "status": 200 },
+    "/bkalot-studio":       { "pre": 21272, "post": 22341, "status": 200 },
+    "/bkalot-studio/admin": { "pre": 90056, "post": 90056, "status": 200, "role": "בקרת רגרסיה — לא זז" },
+    "more30.com/":          { "pre": 3517,  "post": 3517,  "status": 200, "role": "בקרת רגרסיה — לא זז" },
+    "alef_in_form":         { "pre": 134, "post": 151 },
+    "netfree_delta":        { "expected": 236, "measured": 236, "calc": "22341 − 22105" },
+    "assets": { "pre": "index-C2AHwa-z.js,index-B35ByRD-.css", "post": "index-C2AHwa-z.js,index-B35ByRD-.css", "role": "הפריסה אינה מחזירה את הפורטל אחורה" },
+    "encoding": { "replacement_chars": 0, "double_encoding_marks": 0, "note": "בארבע הכתובות, לפני ואחרי" }
+  },
+  "browser": {
+    "viewport": "1280x900",
+    "url": "https://more30.com/bkalot-studio/?cb=qa0087live",
+    "typed_by_keystroke": "1e3",
+    "field_checkValidity": true,
+    "form_checkValidity": true,
+    "measured_line": "שדות שלא נשמרו: מספר נושא",
+    "topic_no_english_on_screen": false,
+    "line_rect": { "x": 335, "y": 574, "w": 596, "h": 29 },
+    "inViewport": true,
+    "console_messages": 0,
+    "control": {
+      "url": "https://more30.com/bkalot-studio/?cb=qa0087ctl",
+      "topic_no": "7",
+      "dropped_line_present": false,
+      "heading": "הפנייה נקלטה",
+      "console_messages": 0
+    }
+  },
+  "database": {
+    "case_136": { "kind": "treatment", "topic_no": null, "raw_topic_no": "1e3", "rights": 42, "status": "new",
+                  "meaning": "מה שהאזרח הקליד יושב ב-raw ולא בעמודה — התקלה עצמה, בייצור" },
+    "case_137": { "kind": "treatment", "topic_no": 7, "raw_topic_no": "7", "rights": 42, "status": "new",
+                  "meaning": "בקרה — התיקון אינו ממציא שורה, והמספר התקין נשמר בעמודה" }
+  },
+  "test_mode": {
+    "declared": false,
+    "measured": true,
+    "cases_sent": 0,
+    "documents": 0,
+    "outbound_queue_rows_with_sent_at": 0,
+    "outbound_queue": 8,
+    "delivery_log": 3,
+    "queue_fingerprint": { "baseline": "050e54ab59235d105af3a10c785dbaea", "during": "050e54ab59235d105af3a10c785dbaea", "after": "050e54ab59235d105af3a10c785dbaea" }
+  },
+  "screenshots": [
+    { "file": "01-live-form-typed.png",      "md5": "FCC8F1758D221E719A7FE86493173C90" },
+    { "file": "02-live-dropped-hebrew.png",  "md5": "E22856C7C21A6BDF19859257257512F9" },
+    { "file": "03-live-control-no-line.png", "md5": "17C2EF6DDD0C52002827E7A98F8AD827" }
+  ],
+  "rollback": {
+    "seeded": { "cases": 2, "case_rights": 84, "contacts": 2 },
+    "deleted": { "case_rights": 84, "cases": 2, "contacts": 2 },
+    "after": { "cases": 0, "case_rights": 0, "documents": 0, "contacts": 4, "outbound_queue": 8, "delivery_log": 3, "catalog": 888 },
+    "identical_to_baseline": true
+  },
+  "protected_paths_untouched": true
+}

@@ -1,0 +1,12 @@
+﻿https://more30.com/bkalot-studio/?cb=qa0087post 200 22341
+  new: "const DROPPED = {"=true | "topic_no:  \"מספר נושא\","=true | "body.dropped.map((k) => DROPPED[k] || k).join(\", \")"=true
+  removed: "lines.push(\"שדות שלא נשמרו: \" + body.dropped.join(\", \"));"=false
+  old: "שדות שלא נשמרו: "=true | "הפנייה נקלטה"=true | "הודעת אישור נשלחה אליכם."=true | "🚫 מצב טסט: הפנייה נשמרה, ולא יצאה ממנה שום הודעה."=true | "bad_response:"=true | "שליחת הפנייה"=true
+  alef=151 replacement=0 doubleenc=0
+https://more30.com/bkalot-studio?cb=qa0087post 200 22341
+  alef=151 replacement=0 doubleenc=0
+https://more30.com/bkalot-studio/admin?cb=qa0087post 200 90056
+  alef=956 replacement=0 doubleenc=0
+https://more30.com/?cb=qa0087post 200 3517
+  assets: assets/index-C2AHwa-z.js,assets/index-B35ByRD-.css
+  alef=23 replacement=0 doubleenc=0

@@ -1,0 +1,5 @@
+﻿C:\Users\USER\Downloads\more30\portal\dist\bkalot-studio\index.html
+bytes=22105 md5=66CA2D677A9DA86E79C716426499D771
+new: "const DROPPED = {"=true | "topic_no:  \"מספר נושא\","=true | "body.dropped.map((k) => DROPPED[k] || k).join(\", \")"=true
+removed: "lines.push(\"שדות שלא נשמרו: \" + body.dropped.join(\", \"));"=false
+old: "שדות שלא נשמרו: "=true | "הפנייה נקלטה"=true | "הודעת אישור נשלחה אליכם."=true | "🚫 מצב טסט: הפנייה נשמרה, ולא יצאה ממנה שום הודעה."=true | "bad_response:"=true | "שליחת הפנייה"=true
