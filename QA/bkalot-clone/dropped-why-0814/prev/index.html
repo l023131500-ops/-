@@ -296,21 +296,6 @@ footer a{color:var(--brand)}
     documents: "מסמכים מצורפים",
   };
 
-  // ── ולמה הוא לא נשמר ───────────────────────────────────────────────────────
-  // dropped[] מחזיר מפתח ולא סיבה, ואותו מפתח נופל ב-0058 משתי סיבות שונות:
-  // בטיפול מלא topic_no נופל אך ורק כשאינו '^[0-9]+$', ובסוגים האחרים הוא נופל
-  // מפני שהסוג אינו שואל אותו כלל. לכן אי אפשר לגזור סיבה מהמפתח לבדו, והיא
-  // נקבעת כאן מהערך שהטופס באמת שלח — אותה בדיקה, מילה במילה, על אותו ערך.
-  // מה שאינו נופל תחת כלל ידוע מוצג בלי סיבה: שם השדה לבדו, כמו קודם. עדיף
-  // חצי הסבר על הסבר שהומצא כדי למלא את השורה.
-  function whyDropped(key, sent) {
-    if (key === "topic_no" && typeof sent.topic_no === "string" &&
-        !/^[0-9]+$/.test(sent.topic_no.trim())) {
-      return "צריך מספר שלם";
-    }
-    return null;
-  }
-
   const $  = (id) => document.getElementById(id);
   const form      = $("intake");
   const submit    = $("submit");
@@ -366,34 +351,6 @@ footer a{color:var(--brand)}
     if (!MESSAGES[code]) lines.push("קוד: " + code);
     if (extra) lines.push(extra);
     show("bad", "הפנייה לא נשלחה", lines);
-  }
-
-  // ── והמיקוד חוזר לשדה שנפל ─────────────────────────────────────────────────
-  // הפנייה כבר נשמרה, ולכן ה-reset נשאר על כנו: הטופס חוזר להיות ריק. מה שאינו
-  // מתאפס הוא השדה שנפל — הוא לבדו מקבל בחזרה את הערך שנשלח, מסומן
-  // aria-invalid ומקבל את המיקוד. בלעדיו מי שקורא «מספר נושא — צריך מספר שלם»
-  // אינו רואה מה הוא הקליד ואינו יודע לאן ללכת, ובמסך של שלושה fieldset-ים גם
-  // אינו יודע איפה השדה יושב.
-  //
-  // גם הסוג שנשלח מוחזר, אחרת השדה יושב בתוך fieldset מוסתר — ברירת המחדל של
-  // kind היא info — ו-focus() על אלמנט ב-display:none אינו עושה דבר ונכשל בשקט.
-  //
-  // שאר הטופס נשאר ריק, ולכן שליחה חוזרת מיידית אינה מייצרת פנייה כפולה: היא
-  // נופלת על full_name_required. זו הסיבה שהערך מוחזר אחרי ה-reset ולא במקומו.
-  function focusDropped(dropped, sent, sentKind) {
-    for (const el of form.querySelectorAll("[aria-invalid]")) el.removeAttribute("aria-invalid");
-    for (const key of dropped) {
-      const el = $(key);
-      // מפתח שאין לו שדה בטופס, או שדה שהטופס לא שלח, אינו מקבל מיקוד — אין
-      // לאן להחזיר.
-      if (!el || !(key in sent)) continue;
-      form.elements.kind.value = sentKind;
-      applyKind();
-      el.value = sent[key];
-      el.setAttribute("aria-invalid", "true");
-      el.focus();
-      return;
-    }
   }
 
   form.addEventListener("submit", async (ev) => {
@@ -467,18 +424,12 @@ footer a{color:var(--brand)}
       // מגיע לכאן הוא «מספר נושא» שאינו מספר שלם (type=number מקבל 1e3), ולכן
       // זו שורה שאדם באמת קורא. מפתח שאינו במפה מוצג כפי שהוא ואינו נבלע,
       // בדיוק כמו קוד שגיאה שאינו ב-MESSAGES.
-      // המפריד הוא '; ' ולא ', ' מפני שהסיבה עצמה עלולה להכיל פסיק, ואז שדה
-      // אחד עם סיבה נקרא כשני שדות.
-      lines.push("שדות שלא נשמרו: " + body.dropped.map((k) => {
-        const name = DROPPED[k] || k;
-        const why  = whyDropped(k, payload);
-        return why ? name + " — " + why : name;
-      }).join("; "));
+      lines.push("שדות שלא נשמרו: " +
+                 body.dropped.map((k) => DROPPED[k] || k).join(", "));
     }
     show("ok", "הפנייה נקלטה", lines, rows);
     form.reset();
     applyKind();
-    focusDropped(Array.isArray(body.dropped) ? body.dropped : [], payload, kind);
   });
 })();
 </script>

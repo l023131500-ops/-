@@ -1,0 +1,102 @@
+{
+  "beat": "השורה אמרה איזה שדה לא נשמר ולא למה, והמיקוד לא חזר אליו",
+  "date": "2026-08-14",
+  "file": "apps/37-bkalot-clone/index.html",
+  "open_line_taken_from": "cd5340e (heartbeat 588)",
+  "harness": {
+    "note": "שני שרתים סטטיים מול אותו edge חי ואותו מסד; ההבדל יכול להיות רק בין שתי גרסאות של המסך",
+    "8148_prev": { "bytes": 22105, "md5": "66CA2D677A9DA86E79C716426499D771", "source": "git show HEAD:apps/37-bkalot-clone/index.html" },
+    "8149_fixed": { "bytes": 25483, "md5": "B24A10595849FA24B1795F23C3F2A9F6" },
+    "prev_md5_equals_deployed": true,
+    "viewport": "1280x900",
+    "console_messages": 0
+  },
+  "measurements": [
+    {
+      "id": "fixed-1e3",
+      "server": 8149,
+      "kind": "treatment",
+      "situation": "single_parent",
+      "topic_no_typed": "1e3",
+      "typed_by": "pressSequentially (שלוש הקשות מקלדת, לא השמה ל-value)",
+      "field_checkValidity": true,
+      "form_checkValidity": true,
+      "case_id": 138,
+      "line_on_screen": "שדות שלא נשמרו: מספר נושא — צריך מספר שלם",
+      "line_top_px": 822,
+      "line_bottom_px": 851,
+      "field_top_px": 272,
+      "both_above_the_fold": true,
+      "focused_id_after": "topic_no",
+      "topic_value_after_reset": "1e3",
+      "topic_aria_invalid": "true",
+      "kind_after": "treatment",
+      "full_name_after": "",
+      "phone_after": "",
+      "situation_after": "",
+      "screenshots": ["01-typed-1e3.png", "02-fixed-reason-and-focus.png"]
+    },
+    {
+      "id": "prev-1e3",
+      "server": 8148,
+      "kind": "treatment",
+      "situation": "single_parent",
+      "topic_no_typed": "1e3",
+      "case_id": 139,
+      "line_on_screen": "שדות שלא נשמרו: מספר נושא",
+      "reason_on_screen": null,
+      "focused_id_after": "",
+      "focused_tag_after": "BODY",
+      "topic_value_after_reset": "",
+      "topic_aria_invalid": null,
+      "kind_after": "info",
+      "treatment_fieldset_hidden_after": true,
+      "screenshots": ["03-prev-no-reason-no-focus.png"]
+    },
+    {
+      "id": "fixed-control-7",
+      "server": 8149,
+      "kind": "treatment",
+      "situation": "single_parent",
+      "topic_no_typed": "7",
+      "case_id": 140,
+      "has_dropped_line": false,
+      "aria_invalid_elements_on_page": 0,
+      "focused_tag_after": "BODY",
+      "topic_value_after_reset": "",
+      "kind_after": "info",
+      "treatment_fieldset_hidden_after": true,
+      "screenshots": ["04-control-valid-no-line.png"]
+    }
+  ],
+  "db_says": [
+    { "case_id": 138, "topic_no": null, "raw_topic_no": "1e3", "rights": 42 },
+    { "case_id": 139, "topic_no": null, "raw_topic_no": "1e3", "rights": 42 },
+    { "case_id": 140, "topic_no": 7, "raw_topic_no": "7", "rights": 42 }
+  ],
+  "test_mode": {
+    "documents": 0,
+    "outbound_queue": 8,
+    "outbound_queue_rows_with_sent_at": 0,
+    "delivery_log": 3,
+    "outbound_queue_fingerprint_baseline": "681dde58ed67b2094d0cbbd7c68e0fb6",
+    "outbound_queue_fingerprint_during": "681dde58ed67b2094d0cbbd7c68e0fb6",
+    "outbound_queue_fingerprint_after": "681dde58ed67b2094d0cbbd7c68e0fb6",
+    "nothing_left_the_system": true
+  },
+  "rollback": {
+    "case_rights_deleted": 126,
+    "cases_deleted": 3,
+    "contacts_deleted": 2,
+    "after": { "cases": 0, "case_rights": 0, "documents": 0, "contacts": 4, "outbound_queue": 8, "delivery_log": 3, "catalog": 888 },
+    "identical_to_baseline": true
+  },
+  "screenshot_md5": {
+    "01-typed-1e3.png": "894BE83309B4210C7DAC0A4F4C0337EE",
+    "02-fixed-reason-and-focus.png": "7D90CD1C3DF03AFAB08CD4D30871265D",
+    "03-prev-no-reason-no-focus.png": "A56591417114BDBD744954C0671F5BF7",
+    "04-control-valid-no-line.png": "37D0EFD5FFA02E9E2F0D5F932E341D8C"
+  },
+  "protected_untouched": ["08-bkalut-app", "09-bkalot-admin", "bkalut-app", "bkalot-admin", "zr_*", "NEDARIM3873", "csj", "csj_src", "igud"],
+  "not_deployed_yet": true
+}
