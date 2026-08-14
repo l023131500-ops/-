@@ -1,0 +1,10 @@
+﻿https://more30.com/bkalot-studio/admin?cb=pre0814a 200 64944
+  markers: ברירת מחדל לפי סוג הפנייה=false | tmpl-sel=false | מנוטרלת, אינה מפיקה=false | ערוץ התבנית=false | נקבע לפי סוג הפנייה=false | template_key=true | שינוי סטטוס=true | עבד עכשיו=true | <th>תור</th>=true | כתובת המכתב=true | עובד בבדיקה — לא נשלח=true | הכנס לתור=true
+  alef=546 replacement=0 doubleenc=0
+https://more30.com/bkalot-studio/admin/?cb=pre0814a 200 64944
+  alef=546 replacement=0 doubleenc=0
+https://more30.com/bkalot-studio/?cb=pre0814a 200 21272
+  alef=134 replacement=0 doubleenc=0
+https://more30.com/?cb=pre0814a 200 3517
+  assets: assets/index-C2AHwa-z.js,assets/index-B35ByRD-.css
+  alef=23 replacement=0 doubleenc=0

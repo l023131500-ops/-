@@ -1,0 +1,132 @@
+{
+  "beat": "פריסת בורר המכתב לייצור — הקצה של 978ab68",
+  "date": "2026-08-14",
+  "code_change": "none",
+  "admin_html_diff_vs_978ab68": "empty (byte-identical)",
+  "edge_function": "bkalot-clone-admin נשארה v6 — לא נפרסה",
+  "migration": "none",
+
+  "stale_dist_guard": {
+    "why": "portal/dist יושב על הדיסק, ופריסה מ-dist ישן מחזירה את כל הפורטל אחורה בלי ששום דבר ידווח שגיאה",
+    "dist_assets": ["assets/index-C2AHwa-z.js", "assets/index-B35ByRD-.css"],
+    "production_assets": ["assets/index-C2AHwa-z.js", "assets/index-B35ByRD-.css"],
+    "identical": true,
+    "dist_admin_before_staging_bytes": 64708,
+    "src_admin_bytes": 70064,
+    "dist_admin_after_staging_bytes": 70064,
+    "md5_src": "3E943EE55F788BC4550DF18AC349160E",
+    "md5_dist_after_staging": "3E943EE55F788BC4550DF18AC349160E"
+  },
+
+  "deploy": {
+    "project": "more30-portal",
+    "from": "portal/dist after scripts/stage-portal.ps1",
+    "deployment_id": "dpl_7jCHXYtyTZaZXtMBfz2hGc3MvmBC",
+    "readyState": "READY",
+    "target": "production",
+    "aliased": "https://more30.com"
+  },
+
+  "http": {
+    "admin_before_bytes": 64944,
+    "admin_after_bytes": 70300,
+    "netfree_delta_vs_source": 236,
+    "netfree_delta_expected": 236,
+    "trailing_slash_after_bytes": 70300,
+    "form_before_bytes": 21272,
+    "form_after_bytes": 21272,
+    "root_before_bytes": 3517,
+    "root_after_bytes": 3517,
+    "markers_before": {
+      "ברירת מחדל לפי סוג הפנייה": false,
+      "tmpl-sel": false,
+      "מנוטרלת, אינה מפיקה": false,
+      "ערוץ התבנית": false,
+      "נקבע לפי סוג הפנייה": false,
+      "template_key": true,
+      "שינוי סטטוס": true,
+      "עבד עכשיו": true,
+      "<th>תור</th>": true,
+      "כתובת המכתב": true,
+      "עובד בבדיקה — לא נשלח": true,
+      "הכנס לתור": true
+    },
+    "markers_after": "כל שנים-עשר true",
+    "template_key_note": "היה true גם לפני הפריסה — טבלת ERRORS כבר נשאה את הנוסחים מאז 0063. אינו מסומן של הפעימה הזו, ונרשם כדי שלא ייקרא ככזה.",
+    "encoding": { "alef_before": 546, "alef_after": 614, "replacement": 0, "double_encoded": 0 }
+  },
+
+  "seed": {
+    "path": "bkalot-clone-intake מעל HTTP, מפתח anon מהטופס הציבורי — לא הזרקה למסד",
+    "A": { "case": 80, "kind": "treatment", "contact": 86, "rights": 59, "phone": "0500078001" },
+    "B": { "case": 81, "kind": "info", "contact": 87, "phone": "0500078002" },
+    "admin_user": "qa0078dep@more30.com (id 20) — נוצר ב-bkalot_clone_admin_create, שאינה חשופה ב-HTTP"
+  },
+
+  "browser": {
+    "viewport": "1280x900",
+    "url": "https://more30.com/bkalot-studio/admin",
+    "login": "עבר מהמסך החי; «הצג סיסמה» קיים (#226 נשאר סגור)",
+    "selector_present": true,
+    "selector_outer_html": "<select id=\"tmpl-sel\"><option value=\"\">ברירת מחדל לפי סוג הפנייה</option><option value=\"general_inquiry_reply\">מענה לפנייה כללית</option><option value=\"rights_treatment_reply\">מענה לפניית טיפול — רשימת הזכויות</option></select>",
+
+    "the_measurement": {
+      "case": 80,
+      "kind": "treatment",
+      "default_would_be": "rights_treatment_reply",
+      "picked": "general_inquiry_reply",
+      "result": "מסמך #70 הופק · תבנית general_inquiry_reply · 222 תווי טקסט · 59 זכויות (כל הרשימה) · לא נשלח — מצב טסט",
+      "why_it_buys_the_beat": "222 ולא 3,505 — מכתב אחר ולא תווית אחרת, וזהו ערך שברירת המחדל אינה יכולה להפיק על הפנייה הזו בשום מצב. הבחירה עברה מהדפדפן החי דרך ה-rewrite אל ה-edge."
+    },
+
+    "the_control": {
+      "case": 80,
+      "picked": "(ערך ריק)",
+      "result": "מסמך #70 הופק · תבנית rights_treatment_reply · 3505 תווי טקסט",
+      "why": "אותו מזהה מסמך (upsert על case_id,kind), והכלל של render לא זז ולא שוכפל. בלי זה הפעימה הייתה מוכיחה רק ש-<select> נפרס."
+    },
+
+    "keep_tmpl_survives_render": { "sel_value_after_render": "general_inquiry_reply", "expected": "general_inquiry_reply" },
+    "keep_tmpl_does_not_leak_across_cases": { "case": 81, "sel_value_on_open": "", "hint": "נקבע לפי סוג הפנייה — «מידע» מקבל את המענה הכללי." },
+    "hint_tracks_kind": {
+      "case80_treatment_empty": "נקבע לפי סוג הפנייה — «טיפול מלא» מקבל את המכתב עם רשימת הזכויות.",
+      "case80_picked_general": "נושא: בקלות — קיבלנו את פנייתך (פנייה {{caseId}}) · ערוץ התבנית: email",
+      "case81_info_empty": "נקבע לפי סוג הפנייה — «מידע» מקבל את המענה הכללי."
+    },
+    "console": { "total": 0, "errors": 0, "warnings": 0 }
+  },
+
+  "test_mode_measured_not_declared": {
+    "rows_with_sent_at": 0,
+    "rows_mode_live": 0,
+    "cases_status_sent": 0,
+    "outbound_queue": 8,
+    "delivery_log": 3,
+    "note": "הנתיב מפיק בלבד — לא נכנס דבר לתור, לא נכתבה שורת יומן ולא יצאה ולו קריאה אחת"
+  },
+
+  "source_untouched": {
+    "app_key_bkalot_rows_before": 8,
+    "app_key_bkalot_rows_after": 8,
+    "fingerprint_before": "da28ec6315535ec0bfbebad4d57752a7",
+    "fingerprint_after": "da28ec6315535ec0bfbebad4d57752a7"
+  },
+
+  "protected_paths": {
+    "git_status_apps_08": "empty",
+    "git_status_apps_09": "empty",
+    "git_status_supabase_functions": "empty",
+    "schemas_csj_csj_src_igud": "not touched"
+  },
+
+  "rollback": {
+    "order": "מסמכים, case_rights, פניות, אנשי קשר, סשנים, משתמש ניהול",
+    "deleted": { "documents": 1, "case_rights": 59, "cases": 2, "contacts": 2, "admin_sessions": 1, "admin_users": 1 },
+    "after": {
+      "cases": 0, "case_rights": 0, "documents": 0, "contacts": 4, "admin_users": 1,
+      "admin_sessions": 5, "templates": 2, "templates_enabled": 2, "catalog": 888,
+      "outbound_queue": 8, "delivery_log": 3, "src_fp": "da28ec6315535ec0bfbebad4d57752a7"
+    },
+    "identical_to_baseline": true
+  }
+}
