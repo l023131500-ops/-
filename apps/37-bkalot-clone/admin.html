@@ -173,7 +173,7 @@ pre{
 <main class="wrap narrow" id="screen-login">
   <span class="eyebrow">בקלות — עותק עבודה</span>
   <h1>כניסה לניהול</h1>
-  <p class="lede">המסך מציג פניות שנקלטו בטופס, מפיק מהן את מכתב התשובה ומכניס אותו לתור. אין ממנו שום שליחה.</p>
+  <p class="lede">המסך מציג פניות שנקלטו בטופס, מפיק מהן את מכתב התשובה, מכניס אותו לתור ומעבד אותו בבדיקה. אין ממנו שום שליחה.</p>
   <div class="card">
     <form id="login-form" novalidate>
       <div class="field">
@@ -207,9 +207,10 @@ pre{
     </form>
     <div class="err" id="login-error" role="alert" hidden></div>
   </div>
-  <!-- הנוסח השתנה כי המשפט הקודם («המסמך נשמר ואינו נכנס לתור») חדל להיות נכון
-       בדיוק בצעד הזה. הכניסה לתור קיימת מהמסך; מה שאין הוא שולח. -->
-  <p class="testmode">מצב טסט: המסמך נשמר, ואפשר להכניס אותו לתור — התור נעצר שם. אין במסך הזה שום מסלול יוצא: לא מייל, לא ואטסאפ ולא הקלטה.</p>
+  <!-- הנוסח משתנה בכל פעם שהוא חדל להיות נכון, ולא פעם אחת בסוף: קודם «המסמך
+       נשמר ואינו נכנס לתור», אחר כך «התור נעצר שם», ועכשיו יש גם מעבד. מה
+       שלא השתנה ולא ישתנה בלי אישור מפורש: אין מסלול יוצא. -->
+  <p class="testmode">מצב טסט: המסמך נשמר, נכנס לתור, ו«עבד עכשיו» מאמת את התוכן ואת היעד — ואינו שולח. אין במסך הזה שום מסלול יוצא: לא מייל, לא ואטסאפ ולא הקלטה.</p>
 </main>
 
 <!-- ── רשימת הפניות ──────────────────────────────────────────────────────── -->
@@ -305,6 +306,17 @@ pre{
     channel_unsupported:  "לסוג המסמך הזה אין עדיין ערוץ שליחה.",
     document_empty:       "למסמך אין גוף שמור, ולכן אין מה להכניס לתור.",
     queue_row_missing:    "המסמך מסומן כמי שבתור, ושורת התור עצמה חסרה. דווחו על כך.",
+    // 0070 — שומרי העיבוד. שלושה מהם (target_not_allowed, queue_body_empty,
+    // not_queued על שורה שכבר עובדה) אינם «לא הצליח» אלא «נבדק ונעצר», ולכן
+    // הנוסח אומר גם מה נעשה ולא רק מה לא. שניים מהם משנים את מצב השורה
+    // בדרך — ראו dispatch.
+    queue_id_required:    "מספר שורת התור אינו תקין.",
+    queue_row_not_found:  "שורת התור לא נמצאה. רעננו את הפנייה.",
+    not_a_clone_row:      "השורה אינה של השכפול. המעבד הזה אינו נוגע בשורות של מערכת אחרת.",
+    live_not_supported:   "אין בשכפול מסלול שליחה אמיתי. שורה שאינה במצב בדיקה אינה מעובדת.",
+    not_queued:           "השורה אינה ממתינה בתור, ולכן לא עובדה.",
+    target_not_allowed:   "היעד אינו ברשימת יעדי הבדיקה ברגע העיבוד. לא נשלח דבר, והשורה סומנה חסומה.",
+    queue_body_empty:     "הגוף בשורת התור ריק. אין מה לעבד, והשורה סומנה כנכשלה.",
     status_unknown:       "הסטטוס שנבחר אינו מוכר. רעננו את הדף.",
     kind_unknown:         "הסוג שנבחר אינו מוכר. רעננו את הדף.",
     route_not_found:      "הכתובת שאליה פנינו אינה קיימת.",
@@ -343,11 +355,15 @@ pre{
   const STATUS_MAP = fromPairs(STATUSES);
   const KIND_MAP = fromPairs(KINDS);
   // ששת הערכים ש-outbound_queue_status_check מתיר. «בתור» לבדו נקרא כמו מכתב
-  // שבדרך, ואין עדיין שולח (#234 סעיף 2) — שורת השכפול נכנסת עם max_attempts=0
-  // ונשארת במקומה. לכן הנוסח אומר גם מה שלא קרה.
+  // שבדרך, ושורת השכפול נכנסת עם max_attempts=0 ואינה נעה עד שאדם לוחץ «עבד
+  // עכשיו». לכן הנוסח אומר גם מה שלא קרה.
+  //
+  // skipped אינו «דולג» כאן: זה המצב הסופי שאליו 0070 מביאה שורה שעובדה
+  // בהצלחה — התוכן אומת, היעד אושר ושום הודעה לא יצאה. «דולג» היה נקרא כמו
+  // שורה שאיש לא נגע בה, וזה ההפך הגמור ממה שקרה לה.
   const QUEUE_STATUS = {
     queued:"בתור — טרם נשלח", sending:"בשליחה", sent:"נשלח",
-    failed:"נכשל", skipped:"דולג", blocked:"חסום — לא יישלח",
+    failed:"נכשל", skipped:"עובד בבדיקה — לא נשלח", blocked:"חסום — לא יישלח",
   };
   // מצב שאין ממנו דרך חזרה בלי אדם: הוא נצבע ואינו נבלע בשורה.
   const QUEUE_BAD = new Set(["blocked", "failed"]);
@@ -731,6 +747,17 @@ pre{
       queueErr.className = "err";
       queueErr.setAttribute("role", "alert");
       queueErr.hidden = true;
+      // לעיבוד שורה משלו ולא שיתוף עם הכניסה לתור: אלה שתי פעולות שונות על
+      // שני נתונים שונים, ומי שלוחץ «עבד עכשיו» צריך לראות מה נעשה בלי
+      // שהשורה הקודמת תימחק מתחתיו.
+      const dispatchNote = document.createElement("p");
+      dispatchNote.className = "note";
+      dispatchNote.setAttribute("role", "status");
+      dispatchNote.hidden = true;
+      const dispatchErr = document.createElement("div");
+      dispatchErr.className = "err";
+      dispatchErr.setAttribute("role", "alert");
+      dispatchErr.hidden = true;
       for (const d of docs) {
         const tr = document.createElement("tr");
         for (const v of [String(d.id), d.kind || "", d.title || "", fmtDate(d.created_at)]) {
@@ -740,7 +767,6 @@ pre{
         // הדרך היחידה לדעת אילו מסמכים כבר בתור — ואילו מהם נחסמו — הייתה
         // ללחוץ «הצג» מסמך-מסמך.
         const qtd = document.createElement("td");
-        fillQueueCell(qtd, { queue_id: d.queue_id, status: d.queue_status, mode: d.queue_mode, missing: d.queue_missing });
         tr.append(qtd);
 
         const td = document.createElement("td");
@@ -800,16 +826,90 @@ pre{
           // והיה מוחק את שורת המדידה שזה עתה נכתבה. עד 0069 גם לא היה מה לכתוב
           // בתא — admin_case החזירה queue_id בלי מצב — ולכן שורה חסומה נראתה
           // כאן בדיוק כמו שורה שנכנסה לתור.
-          fillQueueCell(qtd, { queue_id: out.queue_id, status: out.status, mode: out.mode, missing: false });
+          syncQueue({ queue_id: out.queue_id, status: out.status, mode: out.mode, missing: false });
           qBtn.textContent = "הכנס לתור שוב";
         });
         td.append(qBtn);
+
+        // ── עבד עכשיו ──────────────────────────────────────────────────────
+        // מפעיל את המעבד של 0070 על שורת התור. הוא מאמת את התוכן, בודק שוב
+        // שהיעד ברשימת הבדיקה ומסמן skipped — ואינו שולח: אין בו net.http,
+        // אין pg_net ואין Resend. שליחה אמיתית תדרוש מיגרציה, לא לחיצה.
+        //
+        // הכפתור שולח queue_id ולא document_id: המעבד פועל על שורת התור, וזו
+        // גם הסיבה שהוא כבוי כל עוד אין שורה. הוא כבוי גם כשהשורה אינה
+        // ממתינה — 0070 דוחה כל מצב אחר, וכפתור פעיל שתמיד מחזיר שגיאה הוא
+        // הבטחה שאיש אינו עומד מאחוריה.
+        const dBtn = document.createElement("button");
+        dBtn.type = "button";
+        dBtn.className = "ghost";
+        dBtn.textContent = "עבד עכשיו";
+        dBtn.addEventListener("click", async () => {
+          if (qstate.queue_id == null) return;
+          dispatchErr.hidden = true;
+          const was = dBtn.textContent;
+          dBtn.disabled = true;
+          dBtn.textContent = "מעבד…";
+          const out = await call("dispatch", { queue_id: qstate.queue_id });
+          dBtn.textContent = was;
+          if (!out || out.ok !== true) {
+            if (out?.expired) return toLogin(out.error);
+            dispatchNote.hidden = true;
+            showError(dispatchErr, out?.error || "bad_response", out?.status_detail || out?.message);
+            // ⚠️ שני מסלולי שגיאה של 0070 משנים את מצב השורה בדרך החוצה:
+            //    target_not_allowed מסמן blocked ו-queue_body_empty מסמן
+            //    failed. בלי העדכון הזה התא היה ממשיך לומר «בתור» על שורה
+            //    שהמסד כבר סגר — פער שאין לו סימפטום עד שמישהו מרענן.
+            if (out?.status) syncQueue({ ...qstate, status: out.status, missing: false });
+            else syncQueue(qstate);
+            return;
+          }
+          // מה שנמדד ולא «בוצע»: איזו שורה, לאיזו כתובת, כמה בתים אומתו וכמה
+          // הודעות יצאו בפועל. sent_for_real מוצג תמיד ובמפורש — «עובד» לבדו
+          // נקרא כמו מכתב שיצא, וזה בדיוק מה שלא קרה.
+          const bits = [
+            `שורת תור #${out.queue_id}`,
+            "עובד במצב בדיקה — לא נשלחה שום הודעה",
+            `יעד ${out.to_address || "—"}`,
+            `מצב ${out.mode}`,
+          ];
+          if (out.document_id != null) bits.push(`מסמך #${out.document_id}`);
+          if (out.content_bytes != null) bits.push(`${out.content_bytes} בתים אומתו`);
+          bits.push(`נשלח בפועל: ${out.sent_for_real ?? "—"}`);
+          // נמדד בשרת ואינו חוסם (0070): render עושה upsert על case_id+kind,
+          // ולכן הפקה חוזרת אחרי ההכנסה לתור משאירה בשורה את הגוף הישן. מה
+          // שהמנהל אישר הוא מה שעובד — אבל ההפרש לא נשאר שקט.
+          if (out.body_matches_document === false) {
+            bits.push("⚠ הגוף שעובד אינו הגוף של המסמך הנוכחי — המסמך הופק מחדש אחרי ההכנסה לתור");
+          }
+          dispatchNote.textContent = bits.join(" · ");
+          dispatchNote.hidden = false;
+          syncQueue({ queue_id: out.queue_id, status: out.status, mode: out.mode, missing: false });
+        });
+        td.append(dBtn);
+
+        // מצב אחד לשורה, ושני צרכנים לו: התא והכפתור. עד כאן התא התעדכן
+        // במקום אחד והכפתור לא היה קיים; מצב כפול היה נותן תא שאומר «עובד»
+        // וכפתור שעדיין מזמין ללחוץ.
+        let qstate = { queue_id: d.queue_id, status: d.queue_status, mode: d.queue_mode, missing: d.queue_missing };
+        function syncQueue(q) {
+          qstate = q;
+          fillQueueCell(qtd, q);
+          const ready = q.queue_id != null && q.status === "queued" && q.missing !== true;
+          dBtn.disabled = !ready;
+          dBtn.title = ready ? "מאמת את התוכן ואת היעד. אינו שולח."
+            : q.queue_id == null ? "המסמך לא הוכנס לתור, ולכן אין מה לעבד"
+            : q.missing === true ? "שורת התור חסרה"
+            : q.status === "skipped" ? "השורה כבר עובדה"
+            : "השורה אינה ממתינה בתור, ולכן אינה מעובדת";
+        }
+        syncQueue(qstate);
 
         tr.append(td);
         tb.append(tr);
       }
       t.append(tb);
-      body.append(t, queueNote, queueErr, panel);
+      body.append(t, queueNote, queueErr, dispatchNote, dispatchErr, panel);
     } else {
       const p = document.createElement("p"); p.className = "empty";
       p.textContent = "אין מסמכים. «הפק מסמך» מייצר את מכתב התשובה מהתבנית — ואינו שולח אותו.";
