@@ -1,0 +1,87 @@
+{
+  "step": "רענון שנכשל השאיר את השורות הישנות על המסך (§5ב, UI)",
+  "date": "2026-08-14",
+  "file_changed": "apps/37-bkalot-clone/admin.html",
+  "migration": null,
+  "edge_function": null,
+  "deploy": null,
+  "servers": {
+    "prev_8146": { "root": "QA/bkalot-clone/stale-rows-0814/prev", "bytes": 88696, "source": "git show HEAD:apps/37-bkalot-clone/admin.html" },
+    "next_8147": { "root": "apps/37-bkalot-clone", "bytes": 89820 }
+  },
+  "seed": {
+    "path": "bkalot-clone-intake over HTTP with the anon key, exactly as the public form",
+    "case_treatment": 129,
+    "case_info": 130,
+    "rejected_kind": { "sent": "eligibility", "http_status": 200, "body": { "ok": false, "error": "kind_invalid", "allowed": ["info", "reminder", "treatment"] }, "note": "200 על פנייה שלא נוצרה; נתפס בזריקה על case_id ריק" },
+    "orphan_case_128": "נוצרה בריצה שנכשלה על caseB ונמחקה לפני המדידה",
+    "admin_user": { "id": 43, "full_name": "QA 0085 רענון שנכשל", "created_via": "bkalot_clone_admin_create RPC (אינה חשופה ב-HTTP)", "login": "במסך עצמו" }
+  },
+  "measurements": {
+    "prev_loaded": { "count": "2 פניות", "rows": 2, "err_hidden": true, "screenshot": "01-prev-loaded.png" },
+    "prev_failed_filter": {
+      "filter_kind_on_screen": "מידע",
+      "count": "—",
+      "rows": 2,
+      "row_texts": [
+        "בדיקה 0085 מידע · מידע · חדשה · #130",
+        "בדיקה 0085 טיפול · טיפול מלא · חדשה · #129"
+      ],
+      "err_hidden": false,
+      "err_text": "אין חיבור לשירות. בדקו את האינטרנט ונסו שוב. network",
+      "empty_hidden": true,
+      "pager_hidden": true,
+      "screenshot": "02-prev-failed-filter.png",
+      "note": "שורת «טיפול מלא» נשארה על המסך תחת סינון «מידע» שהמסך עצמו מציג"
+    },
+    "next_filter_ok": { "filter_kind_on_screen": "מידע", "count": "פנייה אחת", "rows": 1, "err_hidden": true, "screenshot": "03-next-filter-ok.png" },
+    "next_failed_filter": {
+      "state_before": { "count": "2 פניות", "rows": 2 },
+      "filter_kind_on_screen": "מידע",
+      "count": "—",
+      "rows": 0,
+      "err_hidden": false,
+      "err_text": "אין חיבור לשירות. בדקו את האינטרנט ונסו שוב. network",
+      "empty_hidden": true,
+      "pager_hidden": true,
+      "err_y": 302,
+      "err_in_viewport": true,
+      "screenshot": "04-next-failed-filter.png"
+    },
+    "next_recovery": { "rows_before_failure": 2, "rows_after_failure": 0, "rows_after_next_success": 2, "count_after_next_success": "2 פניות", "err_hidden_after": true }
+  },
+  "failure_injection": {
+    "how": "window.fetch עטוף בדף וזורק TypeError על /cases בלבד",
+    "why": "call() תופסת ומחזירה {ok:false,error:\"network\"} — נתיב הכשל האמיתי ולא אובייקט מוזרק",
+    "stub_calls_during_failed_filter": ["https://uhnrgujbdxhhmoxcjria.supabase.co/functions/v1/bkalot-clone-admin/cases"],
+    "not_reachable_over_http": "אין נתיב HTTP שיכול להפיל את /cases בבקשה אחת, ולכן זו הדרך היחידה למדוד את המצב"
+  },
+  "console": { "total": 1, "errors": 1, "warnings": 0, "detail": "favicon.ico 404 של השרת הסטטי המקומי, לא של המסך" },
+  "screenshots": [
+    { "file": "01-prev-loaded.png", "bytes": 37266, "md5": "BAC51A9CD96030C1BE0F90210C08C7B1" },
+    { "file": "02-prev-failed-filter.png", "bytes": 40935, "md5": "19EE634609F711567F214341743334B0" },
+    { "file": "03-next-filter-ok.png", "bytes": 28541, "md5": "82C6939C58D132F30E8B7BF23137758E" },
+    { "file": "04-next-failed-filter.png", "bytes": 23856, "md5": "0257CEB544EAD7D5ADD0FBCF5BEAD688" }
+  ],
+  "test_mode": {
+    "sent_cases": 0,
+    "documents": 0,
+    "outbound_queue": 8,
+    "outbound_queue_with_sent_at": 0,
+    "delivery_log": 3,
+    "queue_fingerprint_before_and_after": "51f64bdd93798e8f15a26581f1dea677",
+    "note": "לא נלחץ «הפק מסמך», לא «הכנס לתור» ולא «עבד עכשיו»; אין מייל, אין הודעה ואין מסמך שיצא החוצה"
+  },
+  "baseline_before": { "cases": 0, "case_rights": 0, "documents": 0, "admin_users": 1, "admin_sessions": 5, "contacts": 4, "templates": 2, "catalog": 888, "outbound_queue": 8, "delivery_log": 3 },
+  "baseline_after": { "cases": 0, "case_rights": 0, "documents": 0, "admin_users": 1, "admin_sessions": 5, "contacts": 4, "templates": 2, "catalog": 888, "outbound_queue": 8, "delivery_log": 3 },
+  "protected_untouched": ["apps/08-bkalut-app", "apps/09-bkalot-admin", "supabase/functions", "bkalut-app", "bkalot-admin", "zr_*", "NEDARIM3873", "csj/csj_src/igud"],
+  "open_after_this_step": [
+    "הקובץ טרם נפרס — more30.com/bkalot-studio/admin עדיין משאיר את השורות הישנות אחרי רענון שנכשל; המדידה כאן רצה מול שרתים סטטיים מקומיים, כלומר מדדה את הקוד ולא את המוצר",
+    "await load() שרץ אחרי «שינוי סטטוס» הפך למיותר ולא הוסר",
+    "אין סינון «לא הוכרעה» ואין מיון לפי decided_at; אין היסטוריית הכרעות",
+    "«מי הפיק» על documents אינו נכתב לשום מקום",
+    "${out.text_chars} תווי טקסט ו-${d.html_chars} תווי HTML נשארו במספר",
+    "כותרות «זכויות (N)» ו«מסמכים (N)» במסך הפנייה לא נגעו",
+    "public_visible ו-show_in_showcase של #37 נשארים false"
+  ]
+}
