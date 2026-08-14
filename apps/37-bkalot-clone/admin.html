@@ -342,6 +342,15 @@ pre{
   const fromPairs = (pairs) => Object.fromEntries(pairs);
   const STATUS_MAP = fromPairs(STATUSES);
   const KIND_MAP = fromPairs(KINDS);
+  // ששת הערכים ש-outbound_queue_status_check מתיר. «בתור» לבדו נקרא כמו מכתב
+  // שבדרך, ואין עדיין שולח (#234 סעיף 2) — שורת השכפול נכנסת עם max_attempts=0
+  // ונשארת במקומה. לכן הנוסח אומר גם מה שלא קרה.
+  const QUEUE_STATUS = {
+    queued:"בתור — טרם נשלח", sending:"בשליחה", sent:"נשלח",
+    failed:"נכשל", skipped:"דולג", blocked:"חסום — לא יישלח",
+  };
+  // מצב שאין ממנו דרך חזרה בלי אדם: הוא נצבע ואינו נבלע בשורה.
+  const QUEUE_BAD = new Set(["blocked", "failed"]);
 
   const $ = (id) => document.getElementById(id);
   const PAGE = 20;
@@ -582,6 +591,12 @@ pre{
       ["מצב", c.situation ? label(SITUATIONS, c.situation) : null],
       ["מספר נושא", c.topic_no],
       ["הערה", c.note],
+      // 0068 הכריעה שכתובת היעד וההסכמה הן נתון של הפנייה — צילום של מה שנמסר
+      // בהגשה — ושהתור קורא את הצילום ולא את איש הקשר. עד עכשיו המסך הציג את
+      // contact.email בלבד, כלומר את הכתובת שנדרסה אחרונה: מנהל קרא כתובת אחת
+      // בזמן שהמכתב היה הולך לאחרת, בלי שום סימן לכך.
+      ["כתובת המכתב", c.to_email],
+      ["הסכמה בפנייה", c.consent == null ? null : (c.consent ? "כן" : "לא")],
     ]));
 
     body.append(h3("איש הקשר"));
@@ -594,6 +609,19 @@ pre{
         ["הסכמה", c.contact.consent ? "כן" : "לא"],
         ["מקור", c.contact.source],
       ]));
+      // רק true הוא אזהרה. null פירושו «אין מה להשוות» ו-false פירושו «נמדד והן
+      // זהות» (0069) — הצגת אחד מהם כאן הייתה הופכת את הסימן לרעש שמפסיקים
+      // לראות. ההשוואה נעשתה בשרת ולא בעין: איש הקשר משוכפל לפי טלפון בלבד,
+      // ושתי פניות מאותו טלפון דורסות את המייל שלו.
+      if (c.contact_email_differs === true) {
+        const w = document.createElement("p");
+        w.className = "note";
+        const s = document.createElement("span");
+        s.className = "stale";
+        s.textContent = `⚠ המייל של איש הקשר אינו הכתובת של הפנייה הזו. המכתב ילך אל ${c.to_email || "—"}.`;
+        w.append(s);
+        body.append(w);
+      }
     } else {
       const p = document.createElement("p");
       p.className = "empty";
@@ -688,7 +716,7 @@ pre{
 
     if (docs.length) {
       const t = document.createElement("table");
-      t.innerHTML = "<thead><tr><th>#</th><th>סוג</th><th>כותרת</th><th>נוצר</th><th></th></tr></thead>";
+      t.innerHTML = "<thead><tr><th>#</th><th>סוג</th><th>כותרת</th><th>נוצר</th><th>תור</th><th></th></tr></thead>";
       const tb = document.createElement("tbody");
       const panel = document.createElement("div");
       panel.className = "docview";
@@ -708,6 +736,13 @@ pre{
         for (const v of [String(d.id), d.kind || "", d.title || "", fmtDate(d.created_at)]) {
           const td = document.createElement("td"); td.textContent = v; tr.append(td);
         }
+        // מצב התור נקרא עכשיו בטעינת הפנייה (0069) ולא רק אחרי לחיצה. עד כאן
+        // הדרך היחידה לדעת אילו מסמכים כבר בתור — ואילו מהם נחסמו — הייתה
+        // ללחוץ «הצג» מסמך-מסמך.
+        const qtd = document.createElement("td");
+        fillQueueCell(qtd, { queue_id: d.queue_id, status: d.queue_status, mode: d.queue_mode, missing: d.queue_missing });
+        tr.append(qtd);
+
         const td = document.createElement("td");
         const openBtn = document.createElement("button");
         openBtn.type = "button";
@@ -761,9 +796,11 @@ pre{
           if (out.message) bits.push(out.message);
           queueNote.textContent = bits.join(" · ");
           queueNote.hidden = false;
-          // אין רענון של הפנייה: bkalot_clone_admin_case מחזירה מטא-דאטה של
-          // מסמכים בלי queue_id (0060), ולכן טעינה מחדש הייתה מוחקת את השורה
-          // הזו ולא מציגה דבר במקומה. «הצג» הוא מה שקורא את המצב מהשרת.
+          // התא מתעדכן במקום, ואין רענון של הפנייה: openCase בונה את המסך מאפס
+          // והיה מוחק את שורת המדידה שזה עתה נכתבה. עד 0069 גם לא היה מה לכתוב
+          // בתא — admin_case החזירה queue_id בלי מצב — ולכן שורה חסומה נראתה
+          // כאן בדיוק כמו שורה שנכנסה לתור.
+          fillQueueCell(qtd, { queue_id: out.queue_id, status: out.status, mode: out.mode, missing: false });
           qBtn.textContent = "הכנס לתור שוב";
         });
         td.append(qBtn);
@@ -783,6 +820,30 @@ pre{
     const pre = document.createElement("pre");
     pre.textContent = JSON.stringify(c.raw ?? {}, null, 2);
     body.append(pre);
+  }
+
+  // ── מצב שורת התור בשורת המסמך ─────────────────────────────────────────────
+  // queue_id לבדו אינו מוצג לעולם בלי המצב שלצידו: שורה חסומה נושאת מזהה תור
+  // בדיוק כמו שורה שנכנסה, ו«בתור #22» על מכתב שלא יישלח לעולם הוא בדיוק סוג
+  // הפער שאין לו סימפטום. queue_missing מגיע מהשרת במפורש (0069) ואינו נגזר
+  // כאן מ-status שהוא null — «#14 · —» נקרא כמו תקלה של המסך ולא כמו נתון חסר.
+  function fillQueueCell(td, q) {
+    td.textContent = "";
+    td.removeAttribute("title");
+    if (q.queue_id == null) {
+      td.textContent = "—";
+      td.title = "המסמך לא הוכנס לתור";
+      return;
+    }
+    const bad = q.missing === true || QUEUE_BAD.has(q.status);
+    const text = q.missing === true
+      ? `#${q.queue_id} · שורת התור חסרה`
+      : `#${q.queue_id} · ${QUEUE_STATUS[q.status] ?? (q.status || "—")}${q.mode ? ` · מצב ${q.mode}` : ""}`;
+    if (!bad) { td.textContent = text; return; }
+    const s = document.createElement("span");
+    s.className = "stale";
+    s.textContent = text;
+    td.append(s);
   }
 
   // ── גוף המסמך ─────────────────────────────────────────────────────────────

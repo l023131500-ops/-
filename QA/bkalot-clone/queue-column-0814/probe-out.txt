@@ -1,0 +1,12 @@
+A intake 200 {"ok":true,"kind":"treatment","phone":"0500070001","queued":false,"case_id":48,"dropped":[],"situation":"disability","contact_id":54,"rights_linked":59,"rights_unknown":[]}
+B intake 200 {"ok":true,"kind":"treatment","phone":"0500070001","queued":false,"case_id":49,"dropped":[],"situation":"disability","contact_id":54,"rights_linked":59,"rights_unknown":[]}
+C intake 200 {"ok":true,"kind":"info","phone":"0500070003","queued":false,"case_id":50,"dropped":[],"situation":null,"contact_id":56,"rights_linked":0,"rights_unknown":[]}
+login 200 ok=true admin={"id":10,"email":"qa0070@more30.com","full_name":"בודק תור"}
+A render case=48 200 doc=46 chars=3486 rights=59
+A queue doc=46 200 {"ok":true,"mode":"test","status":"queued","blocked":false,"case_id":48,"channel":"email","message":"נכנס לתור במצב בדיקה. אין שולח — לא נשלח דבר.","subject":"בקלות — 59 זכויות שאותרו עבורך (פנייה 48)","queue_id":23,"to_address":"qa.bkalot@more30.com","document_id":46,"content_bytes":7597,"address_source":"case","already_queued":false,"contact_email_differs":true,"admin":{"id":10,"email":"qa0070@more30.com","full_name":"בודק תור"}}
+B render case=49 200 doc=47 chars=3494 rights=59
+B queue doc=47 200 {"ok":true,"mode":"test","status":"blocked","blocked":true,"case_id":49,"channel":"email","message":"נרשם בתור כ-blocked: היעד אינו יעד בדיקה מאושר. לא יישלח.","subject":"בקלות — 59 זכויות שאותרו עבורך (פנייה 49)","queue_id":24,"to_address":"later.overwrite.0070@more30.com","document_id":47,"content_bytes":7612,"address_source":"case","already_queued":false,"contact_email_differs":false,"admin":{"id":10,"email":"qa0070@more30.com","full_name":"בודק תור"}}
+A case=48 to_email=qa.bkalot@more30.com consent=true contact_email=later.overwrite.0070@more30.com differs=true docs=[[46,23,"queued","test",false]]
+B case=49 to_email=later.overwrite.0070@more30.com consent=true contact_email=later.overwrite.0070@more30.com differs=false docs=[[47,24,"blocked","test",false]]
+C case=50 to_email=null consent=true contact_email=null differs=null docs=[]
+CASE_IDS 48,49,50
