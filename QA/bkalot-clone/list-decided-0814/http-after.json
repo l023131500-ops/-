@@ -1,0 +1,143 @@
+{
+  "case_closed": 107,
+  "case_control": 108,
+  "steps": [
+    {
+      "label": "login (מנהל א)",
+      "value": {
+        "status": 200,
+        "ok": true,
+        "admin": {
+          "id": 31,
+          "email": "qa0078a@more30.test",
+          "full_name": "QA 0078 רשימה א"
+        }
+      }
+    },
+    {
+      "label": "intake (שתי פניות)",
+      "value": {
+        "case_closed": 107,
+        "case_control": 108
+      }
+    },
+    {
+      "label": "רשימה — לפני כל הכרעה",
+      "value": {
+        "status": 200,
+        "ok": true,
+        "total": 2,
+        "rows_returned": 2,
+        "row_closed": {
+          "id": 107,
+          "status": "new",
+          "has_decided_by_key": true,
+          "has_decided_at_key": true,
+          "has_decided_by_name_key": true,
+          "decided_by": null,
+          "decided_at": null,
+          "decided_by_name": null
+        },
+        "row_control": {
+          "id": 108,
+          "status": "new",
+          "has_decided_by_key": true,
+          "has_decided_at_key": true,
+          "has_decided_by_name_key": true,
+          "decided_by": null,
+          "decided_at": null,
+          "decided_by_name": null
+        }
+      }
+    },
+    {
+      "label": "set-status (סגירה על ידי מנהל א)",
+      "value": {
+        "status": 200,
+        "changed": true
+      }
+    },
+    {
+      "label": "רשימה — אחרי הסגירה",
+      "value": {
+        "status": 200,
+        "total": 2,
+        "rows_returned": 2,
+        "row_closed": {
+          "id": 107,
+          "status": "closed",
+          "has_decided_by_key": true,
+          "has_decided_at_key": true,
+          "has_decided_by_name_key": true,
+          "decided_by": 31,
+          "decided_at": "2026-08-14T05:37:50.954839+00:00",
+          "decided_by_name": "QA 0078 רשימה א"
+        },
+        "row_control": {
+          "id": 108,
+          "status": "new",
+          "has_decided_by_key": true,
+          "has_decided_at_key": true,
+          "has_decided_by_name_key": true,
+          "decided_by": null,
+          "decided_at": null,
+          "decided_by_name": null
+        }
+      }
+    },
+    {
+      "label": "רשימה — אחרי הכרעה שנייה, מנהל ב",
+      "value": {
+        "total": 2,
+        "rows_returned": 2,
+        "row_closed": {
+          "id": 107,
+          "status": "rejected",
+          "has_decided_by_key": true,
+          "has_decided_at_key": true,
+          "has_decided_by_name_key": true,
+          "decided_by": 32,
+          "decided_at": "2026-08-14T05:37:53.685632+00:00",
+          "decided_by_name": "QA 0078 רשימה ב"
+        }
+      }
+    },
+    {
+      "label": "הכרעה (3) — ה-JOIN אינו כופל שורות",
+      "value": {
+        "total": 2,
+        "rows_returned": 2,
+        "distinct_ids": 2,
+        "no_duplicate_rows": true,
+        "total_equals_rows": true
+      }
+    },
+    {
+      "label": "הכרעה (5) — מפתחות השורה מלבד השלושה",
+      "value": {
+        "keys_without_decided": [
+          "chosen_count",
+          "contact",
+          "created_at",
+          "documents_count",
+          "id",
+          "kind",
+          "note",
+          "rights_count",
+          "situation",
+          "source",
+          "status",
+          "topic_no"
+        ],
+        "top_level_keys": [
+          "admin",
+          "cases",
+          "limit",
+          "offset",
+          "ok",
+          "total"
+        ]
+      }
+    }
+  ]
+}

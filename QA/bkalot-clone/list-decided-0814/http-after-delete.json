@@ -1,0 +1,12 @@
+{
+  "status": 200,
+  "total": 2,
+  "rows_returned": 2,
+  "case_107_still_in_list": true,
+  "decided_by": 32,
+  "decided_by_name_key_present": true,
+  "decided_by_name": null,
+  "decided_at": "2026-08-14T05:37:53.685632+00:00",
+  "status_of_107": "rejected",
+  "control_108_still_in_list": true
+}
