@@ -1,0 +1,45 @@
+﻿node.exe : <claude-code-hint v="1" type="plugin" value="vercel@claude-plugins-official" />
+At C:\Users\USER\AppData\Roaming\npm\vercel.ps1:24 char:5
++     & "node$exe"  "$basedir/node_modules/vercel/dist/vc.js" $args
++     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (<claude-code-hi...ns-official" />:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+Vercel CLI 56.4.0 (Node.js 24.18.0)
+Retrieving project…
+Deploying l023131500-ops-projects/more30-portal
+Uploading [--------------------] (0.0B/87.7KB)
+Uploading [=======-------------] (32.0KB/87.7KB)
+Uploading [==========----------] (48.0KB/87.7KB)
+Uploading [==================--] (80.0KB/87.7KB)
+Uploading [====================] (87.7KB/87.7KB)
+  Inspect         https://vercel.com/l023131500-ops-projects/more30-portal/DvK519zBEJo97wtn9Z8FLg1Rk77m
+  Production      https://more30-portal-2tgg8was4-l023131500-ops-projects.vercel.app
+Building…
+Building…
+[2K[1A[2K[G  Production      https://more30-portal-2tgg8was4-l023131500-ops-projects.vercel.app
+Completing…
+▲ Aliased         https://more30.com
+{
+  "status": "ok",
+  "deployment": {
+    "id": "dpl_DvK519zBEJo97wtn9Z8FLg1Rk77m",
+    "url": "https://more30-portal-2tgg8was4-l023131500-ops-projects.vercel.app",
+    "inspectorUrl": "https://vercel.com/l023131500-ops-projects/more30-portal/DvK519zBEJo97wtn9Z8FLg1Rk77m",
+    "readyState": "READY",
+    "target": "production",
+    "deploymentApiUrl": "https://api.vercel.com/v13/deployments/dpl_DvK519zBEJo97wtn9Z8FLg1Rk77m"
+  },
+  "message": "Deployment more30-portal-2tgg8was4-l023131500-ops-projects.vercel.app ready.",
+  "next": [
+    {
+      "command": "vercel inspect more30-portal-2tgg8was4-l023131500-ops-projects.vercel.app",
+      "when": "Inspect deployment"
+    },
+    {
+      "command": "vercel deploy --prod",
+      "when": "Promote to production"
+    }
+  ]
+}
+

@@ -1,0 +1,4 @@
+﻿C:\Users\USER\Downloads\more30\apps\37-bkalot-clone\admin.html 89820 bytes md5 B9AF28E5286362FD84EBC8DDDBE2110B
+new: "$(\"rows\").innerHTML = \"\";"=true | "$(\"empty\").hidden = true;"=true | "$(\"pager\").hidden = true;"=true | "«לא ידוע» אינו «אין»"=true
+removed: "toLogin(data.error);\n      $(\"count\").textContent = \"—\";"=false
+old: "if (data?.expired) return toLogin(data.error);"=true | "$(\"count\").textContent = \"—\";"=true | "showError($(\"list-error\"), data?.error || \"bad_response\");"=true | "$(\"empty\").hidden = cases.length > 0;"=true | "$(\"pager\").hidden = total <= PAGE;"=true | "אין פניות שתואמות את הסינון"=true | "זכות אחת"=true | "מסמך אחד"=true | "כל הרשימה"=true | "נוסח נפילה"=true | "לא הוכרע מהמסך"=true | "<th>מכתב</th>"=true | "הכנס לתור"=true | "עבד עכשיו"=true
