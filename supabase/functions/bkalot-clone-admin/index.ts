@@ -81,6 +81,33 @@
 // 🚫 מצב טסט: הנתיב הזה מעבד ואינו שולח. 0070 מסמנת skipped ולא sent, sent_at
 //    נשאר null, ואין בה net.http, pg_net, Resend ולא קריאה יוצאת אחת. שליחה
 //    אמיתית תדרוש מיגרציה, לא פרמטר — וגם לא כתובת HTTP.
+//
+// ── v6 (שכבה 3, לבנת הכרעת האדם) ─────────────────────────────────────────────
+// נוסף נתיב set-status. 0072 בנתה את bkalot_clone_admin_set_status ומדדה אותה
+// במסד — תשע דחיות, ארבעה מסלולים, updated_at שזז על שינוי וקפוא על לחיצה
+// חוזרת — ושוב service_role בלבד. כלומר סגירת פנייה קיימת כפונקציה ואין ולו
+// כתובת אחת שמסך הניהול יכול לפנות אליה, בדיוק כמו queue לפני v4 ו-dispatch
+// לפני v5. זו הכתובת.
+//
+// ⚠️ שם הנתיב במקף — set-status — ולא setStatus ולא status. הראשון היה הסגנון
+//    היחיד כאן שאינו kebab, והשני היה נקרא כמו קריאת קריאה ("מה הסטטוס") בעוד
+//    שזה נתיב שכותב. שם שנקרא כמו קריאה על נתיב שכותב הוא בדיוק הטעות שגורמת
+//    למישהו לקרוא לו כדי «לבדוק».
+//
+// ⚠️ זהו הנתיב הרביעי כאן שכותב, והראשון שכותב הכרעה של אדם ולא תוצאה של
+//    מכונה. לכן הוא יושב מאחורי אותו שער בדיוק כמו render/queue/dispatch, ואין
+//    לו הרשאה משלו: bkalot_clone_admin_set_status היא service_role בלבד.
+//
+// ⚠️ אין כאן ולו בדיקה אחת על ערך ה-status. רשימת ההיתר (in_progress/closed/
+//    rejected), הסירוב ל-sent ול-new וההבחנה בין status_unknown ל-
+//    status_not_settable יושבות במסד בלבד. עותק שני של הרשימה כאן היה נשאר
+//    מאחור ברגע ש-'sent' יהפוך לניתן־להשגה — כלומר מסך שמסרב לערך שהמסד כבר
+//    מקבל, או גרוע מזה, מעביר ערך שהמסד כבר אינו מקבל.
+//
+// 🚫 מצב טסט: הנתיב הזה נוגע בעמודה status של bkalot_clone.cases ותו לא. אין
+//    בו נגיעה ב-outbound_queue, ב-delivery_log ולא בשום ערוץ שליחה, ואין ולו
+//    קריאה יוצאת אחת. 0072 דוחה 'sent' במפורש, ולכן גם אין דרך לסמן פנייה
+//    כנשלחה בלי שנשלחה.
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL") ?? "";
 const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
@@ -156,7 +183,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
     return json({ ok: false, error: "server_misconfigured" }, 500);
   }
 
-  const ROUTES = ["login", "session", "logout", "cases", "case", "render", "document", "queue", "dispatch"];
+  const ROUTES = ["login", "session", "logout", "cases", "case", "render", "document", "queue", "dispatch", "set-status"];
   const seg = new URL(req.url).pathname.split("/").filter(Boolean);
   const action = seg[seg.length - 1] ?? "";
   if (!ROUTES.includes(action)) {
@@ -265,6 +292,22 @@ Deno.serve(async (req: Request): Promise<Response> => {
     // שום מפתח קלט מלבד queue_id/id, וכל השאר נופל שם.
     const out = await rpc("bkalot_clone_dispatch", { p: payload });
     if (!out.ok) return out.res;
+    return json({ ...(out.body as Record<string, unknown>), admin: g.admin });
+  }
+
+  if (action === "set-status") {
+    // case_id ו-status עוברים כפי שהם, מאותה סיבה בדיוק כמו ב-queue וב-dispatch:
+    // הארגומנט jsonb ולא bigint, ולכן שום ערך אינו מפיל את PostgREST על casting
+    // — ו-0072 כבר מחזירה case_id_required על מה שאינו ספרות ו-case_not_found
+    // על 25 ספרות שאינן נכנסות ל-bigint.
+    //
+    // הגוף מועבר כפי שהוא ובכוונה בלי סינון מפתחות, כמו בשני הנתיבים שלפניו:
+    // ל-0072 אין שום מפתח קלט מלבד case_id/id ו-status, וכל השאר נופל שם.
+    const out = await rpc("bkalot_clone_admin_set_status", { p: payload });
+    if (!out.ok) return out.res;
+    // הזהות מוחזרת עם התשובה כמו בכל נתיב שמאחורי השער — כאן היא גם התיעוד
+    // היחיד שיש: 0072 אינה כותבת «מי שינה» לשום מקום (קו פתוח מוצהר שם), ולכן
+    // ה-admin שחוזר כאן הוא לקוח בלבד ואינו נשמר.
     return json({ ...(out.body as Record<string, unknown>), admin: g.admin });
   }
 

@@ -1,0 +1,24 @@
+[00] OPTIONS /set-status => 204 allow-headers=authorization, apikey, content-type, x-admin-token
+[01] set-status בלי x-admin-token => http=401 ok=false error=token_required
+[--] login => http=200 ok=true admin={"id":16,"email":"qa0073@more30.com","full_name":"QA v6 set-status"}
+[02] set-status עם טוקן פגום => http=401 ok=false error=invalid_session
+[--] intake A => http=200 case=71 contact=77 rights=undefined
+[--] intake B => http=200 case=72 contact=78 rights=undefined
+[--] מצב לידה של A לפי /case => status=new
+[03] סגירה => http=200 ok=true previous=new status=closed changed=true admin=qa0073@more30.com
+[04] אותה סגירה שוב => http=200 ok=true previous=closed status=closed changed=false admin=qa0073@more30.com
+[05] דחייה אחרי סגירה => http=200 ok=true previous=closed status=rejected changed=true admin=qa0073@more30.com
+[06] פתיחה מחדש, בכינוי id וכמחרוזת => http=200 ok=true previous=rejected status=in_progress changed=true admin=qa0073@more30.com
+[07] /case A => status=in_progress | /cases?status=in_progress => total=1 מכיל_את_A=true מכיל_את_B=false
+[08] הבקרה B => status=new
+[09] גוף ריק => http=200 ok=false error=case_id_required
+[09] case_id לא מספרי => http=200 ok=false error=case_id_required
+[09] 25 ספרות => http=200 ok=false error=case_not_found
+[09] מזהה שאינו קיים => http=200 ok=false error=case_not_found
+[09] בלי status => http=200 ok=false error=status_required
+[09] status ברווחים => http=200 ok=false error=status_required
+[09] status שאינו בסכמה => http=200 ok=false error=status_unknown
+[09] sent => http=200 ok=false error=status_not_settable settable=["in_progress","closed","rejected"]
+[09] new => http=200 ok=false error=status_not_settable settable=["in_progress","closed","rejected"]
+[10] נתיב שאינו קיים => http=404 error=route_not_found allowed=["login","session","logout","cases","case","render","document","queue","dispatch","set-status"]
+SEEDED {"case_a":71,"case_b":72,"contact_a":77,"contact_b":78}
