@@ -1,0 +1,54 @@
+{
+  "issue": "0079 — bkalot-clone: a non-numeric topic_no was silently dropped for every caller that is not the browser",
+  "date": "2026-08-14",
+  "endpoint": "https://uhnrgujbdxhhmoxcjria.supabase.co/functions/v1/bkalot-clone-intake",
+  "caller": "PowerShell Invoke-WebRequest (not a browser — carries none of the four client-side layers)",
+  "mode": "test",
+  "baseline_before_migration": {
+    "request": { "kind": "treatment", "situation": "young_single", "topic_no": "שבע" },
+    "http": 200,
+    "body": { "ok": true, "case_id": 154, "dropped": ["topic_no"], "rights_linked": 36 },
+    "row_in_db": { "id": 154, "topic_no": null, "raw.topic_no": "שבע", "case_rights": 36 },
+    "verdict": "case created, topic number lost, caller told ok:true"
+  },
+  "after_migration": [
+    {
+      "probe": "A — treatment + non-numeric topic_no",
+      "request": { "kind": "treatment", "situation": "young_single", "topic_no": "שבע" },
+      "http": 200,
+      "body": { "ok": false, "error": "topic_no_invalid", "detail": "מספר הנושא הוא מספר שלם — הפנייה מנותבת לפיו" },
+      "cases_created": 0,
+      "verdict": "rejected — this is the fix"
+    },
+    {
+      "probe": "B — treatment + numeric topic_no (no regression)",
+      "request": { "kind": "treatment", "situation": "young_single", "topic_no": "7" },
+      "http": 200,
+      "body": { "ok": true, "case_id": 155, "dropped": [], "rights_linked": 36 },
+      "verdict": "unchanged"
+    },
+    {
+      "probe": "C — info + topic_no + situation (the drop path that must stay)",
+      "request": { "kind": "info", "topic_no": "שבע", "situation": "young_single" },
+      "http": 200,
+      "body": { "ok": true, "case_id": 156, "dropped": ["situation", "topic_no"], "rights_linked": 0 },
+      "verdict": "unchanged — the kind does not ask for these fields, so dropping is correct"
+    },
+    {
+      "probe": "D — treatment + \" 12 \" (btrim, unchanged)",
+      "request": { "kind": "treatment", "situation": "young_single", "topic_no": " 12 " },
+      "http": 200,
+      "body": { "ok": true, "case_id": 157, "dropped": [], "rights_linked": 36 },
+      "verdict": "unchanged"
+    }
+  ],
+  "grants_unchanged": { "anon": false, "authenticated": false, "service_role": true },
+  "test_mode_untouched": { "documents": 0, "outbound_queue": 8, "sent_at_not_null": 0, "delivery_log": 3, "rights_catalog": 888 },
+  "rollback": {
+    "method": "three separate statements by id (case_rights → cases → contacts), never one CTE",
+    "deleted": { "case_rights_of": [154, 155, 156, 157], "cases": [154, 155, 156, 157], "contacts": [160] },
+    "after": { "bkalot_clone.cases": 0, "leftover_case_rights": 0, "bkalot_auto.contacts": 4 },
+    "verdict": "identical to the state recorded by heartbeat 594"
+  },
+  "not_covered_here": "'^[0-9]+$' accepts a string too long for integer ('9' x 12); the ::integer cast then raises 22003 uncaught and the caller gets rpc_failed 502 instead of a field error. Separate line, untouched."
+}
