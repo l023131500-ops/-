@@ -1,0 +1,10 @@
+﻿https://more30.com/bkalot-studio/admin?cb=post0814 200 57872
+  markers: עבד עכשיו=true | queue_id_required=true | queue_row_not_found=true | not_a_clone_row=true | live_not_supported=true | not_queued=true | target_not_allowed=true | queue_body_empty=true | עובד בבדיקה — לא נשלח=true | הכנס לתור=true | כתובת המכתב=true | <th>תור</th>=true
+  alef=456 replacement=0 doubleenc=0
+https://more30.com/bkalot-studio/admin/?cb=post0814 200 57872
+  alef=456 replacement=0 doubleenc=0
+https://more30.com/bkalot-studio/?cb=post0814 200 21272
+  alef=134 replacement=0 doubleenc=0
+https://more30.com/?cb=post0814 200 3517
+  assets: assets/index-C2AHwa-z.js,assets/index-B35ByRD-.css
+  alef=23 replacement=0 doubleenc=0
