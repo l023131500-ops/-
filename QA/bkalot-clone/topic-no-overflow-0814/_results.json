@@ -1,0 +1,79 @@
+{
+  "issue": "0080 — bkalot-clone: a topic_no too long for the integer column answered the caller with HTTP 502 and the engine's own error text",
+  "date": "2026-08-14",
+  "endpoint": "https://uhnrgujbdxhhmoxcjria.supabase.co/functions/v1/bkalot-clone-intake",
+  "caller": "PowerShell Invoke-WebRequest (not a browser)",
+  "mode": "test",
+  "opened_by": "41ccad1 (0079), last paragraph",
+  "baseline_before_migration": {
+    "request": { "kind": "treatment", "situation": "young_single", "topic_no": "999999999999" },
+    "http": 502,
+    "body": {
+      "ok": false,
+      "error": "rpc_failed",
+      "status": 400,
+      "detail": "{\"code\":\"22003\",\"details\":null,\"hint\":null,\"message\":\"value \\\"999999999999\\\" is out of range for type integer\"}"
+    },
+    "cases_created": 0,
+    "verdict": "two defects in one response: a 502 for a field the caller supplied, and the engine's internal SQLSTATE text leaked to a public caller"
+  },
+  "after_migration": [
+    {
+      "probe": "A — treatment + topic_no over the integer range",
+      "request": { "kind": "treatment", "situation": "young_single", "topic_no": "999999999999" },
+      "http": 200,
+      "body": { "ok": false, "error": "topic_no_invalid", "detail": "מספר הנושא גדול מכל מספר נושא שקיים במערכת" },
+      "cases_created": 0,
+      "verdict": "rejected as a field error — this is the fix"
+    },
+    {
+      "probe": "B — treatment + the boundary itself (int max)",
+      "request": { "kind": "treatment", "situation": "young_single", "topic_no": "2147483647" },
+      "http": 200,
+      "body": { "ok": true, "case_id": 158, "dropped": [], "rights_linked": 36 },
+      "row_in_db": { "id": 158, "topic_no": 2147483647 },
+      "verdict": "accepted and stored — the bound is the column's, not an invented one"
+    },
+    {
+      "probe": "C — treatment + one over the boundary",
+      "request": { "kind": "treatment", "situation": "young_single", "topic_no": "2147483648" },
+      "http": 200,
+      "body": { "ok": false, "error": "topic_no_invalid", "detail": "מספר הנושא גדול מכל מספר נושא שקיים במערכת" },
+      "cases_created": 0,
+      "verdict": "rejected — boundary is exact"
+    },
+    {
+      "probe": "D — treatment + non-numeric (0079, must not move)",
+      "request": { "kind": "treatment", "situation": "young_single", "topic_no": "שבע" },
+      "http": 200,
+      "body": { "ok": false, "error": "topic_no_invalid", "detail": "מספר הנושא הוא מספר שלם — הפנייה מנותבת לפיו" },
+      "verdict": "unchanged"
+    },
+    {
+      "probe": "E — treatment + numeric topic_no (no regression)",
+      "request": { "kind": "treatment", "situation": "young_single", "topic_no": "7" },
+      "http": 200,
+      "body": { "ok": true, "case_id": 159, "dropped": [], "rights_linked": 36 },
+      "row_in_db": { "id": 159, "topic_no": 7 },
+      "verdict": "unchanged"
+    },
+    {
+      "probe": "F — info + an over-range topic_no (the drop path that must stay)",
+      "request": { "kind": "info", "topic_no": "999999999999" },
+      "http": 200,
+      "body": { "ok": true, "case_id": 160, "dropped": ["topic_no"], "rights_linked": 0 },
+      "row_in_db": { "id": 160, "topic_no": null, "raw.topic_no": "999999999999" },
+      "verdict": "unchanged — the kind does not ask for the field, so dropping is correct"
+    }
+  ],
+  "grants_unchanged": { "anon": false, "authenticated": false, "service_role": true },
+  "test_mode_untouched": { "documents": 0, "outbound_queue": 8, "sent_at_not_null": 0, "delivery_log": 3, "rights_catalog": 888 },
+  "schema_change": "none — create or replace on public.bkalot_clone_intake only; edge function and apps/37 untouched",
+  "rollback": {
+    "method": "three separate statements by id (case_rights → cases → contacts), never one CTE",
+    "deleted": { "case_rights_of": [158, 159, 160], "cases": [158, 159, 160], "contacts": [164] },
+    "after": { "bkalot_clone.cases": 0, "leftover_case_rights": 0, "bkalot_auto.contacts": 4 },
+    "verdict": "identical to the state recorded by heartbeat 595"
+  },
+  "still_open": "MESSAGES in apps/37-bkalot-clone does not know topic_no_invalid (open since 0079). A browser sending '999999999999' passes the client-side early block — its regex accepts any digit string — and now sees «קוד: topic_no_invalid» instead of an opaque 502. A screen step, not a database one."
+}
