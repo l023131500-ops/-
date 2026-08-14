@@ -1,0 +1,93 @@
+{
+  "run": "sort-decided-0082-0814",
+  "at": "2026-08-14T13:41Z",
+  "migration": "0082_the_work_list_cannot_be_ordered_by_when_a_person_decided.sql",
+  "applied": "apply_migration success — create or replace public.bkalot_clone_admin_cases",
+  "scope": "DB only. No schema change, no write, no edge deploy (intake v1, admin v7), apps/37 untouched, no portal deploy.",
+
+  "before_was_measured_not_declared": {
+    "how": "pg_get_functiondef of the live 0081 body, re-created as public.zz_prev0081_admin_cases, revoked from public/anon/authenticated, run in the SAME transaction on the SAME rows",
+    "comparison": "n = o on the FULL jsonb, not on a chosen field",
+    "dropped_after": "zz_prev0081_admin_cases — 0 rows in pg_proc"
+  },
+
+  "fixture": {
+    "path": "bkalot-clone-intake over HTTP with the anon key, as from the form — 4 intakes, 4 distinct phones (intake matches a contact by phone)",
+    "created_ascending": [180, 181, 182, 183],
+    "decided_descending": [182, 181, 180],
+    "never_decided": 183,
+    "decided_at": {
+      "182": "13:41:27.556944+00",
+      "181": "13:41:33.959948+00",
+      "180": "13:41:40.883116+00",
+      "183": null
+    },
+    "why_this_fixture": "a complete inversion — created_at desc is 183,182,181,180 and decided_at desc is 180,181,182,183. No shared prefix, so no ordering bug can hide behind a partial match, and 183 moves head-to-tail which is the only way to see NULLS LAST.",
+    "decided_by": 4,
+    "decisions_made_via": "bkalot_clone_admin_set_status in three SEPARATE transactions — now() is transaction-fixed, so one call would have stamped all three with the same decided_at"
+  },
+
+  "measurements": [
+    {"label": "no-key",         "new_ids": [183,182,181,180], "old_ids": [183,182,181,180], "identical_full_jsonb": true,  "note": "regression, not only addition"},
+    {"label": "sort-empty",     "new_ids": [183,182,181,180], "old_ids": [183,182,181,180], "identical_full_jsonb": true,  "note": "empty select = default order, not a bad value"},
+    {"label": "sort-created",   "new_ids": [183,182,181,180], "old_ids": [183,182,181,180], "identical_full_jsonb": true,  "note": "explicit == default, byte for byte"},
+    {"label": "sort-decided",   "new_ids": [180,181,182,183], "old_ids": [183,182,181,180], "identical_full_jsonb": false, "note": "full reversal; 183 (never decided) last = NULLS LAST, decision (2)"},
+    {"label": "dec-limit2",     "new_ids": [180,181],         "old_ids": [183,182],         "identical_full_jsonb": false, "note": "THE measurement that buys the beat — decision (1). The page is cut by decided_at AND delivered by decided_at. Had only the inner order by changed, the same two rows would have come back as [181,180]: right rows, wrong order, no error anywhere."},
+    {"label": "dec-l2-off2",    "new_ids": [182,183],         "old_ids": [181,180],         "identical_full_jsonb": false, "note": "page 2 continues page 1 — union is all four exactly once, no overlap, no gap"},
+    {"label": "dec-yes",        "new_ids": [180,181,182],     "old_ids": [182,181,180],     "identical_full_jsonb": false, "total": 3, "note": "same set, reversed — sort does not move the counted group"},
+    {"label": "dec-no",         "new_ids": [183],             "old_ids": [183],             "identical_full_jsonb": true,  "total": 1, "note": "identical because one row cannot be out of order — said, not swallowed"},
+    {"label": "sort-banana",    "new": {"ok": false, "error": "sort_unknown", "allowed": ["created_at","decided_at"]}, "old_ids": [183,182,181,180], "note": "0081 silently returned the whole list in default order — a list that looks sorted and is not"},
+    {"label": "sort-bool",      "new": {"ok": false, "error": "sort_unknown", "allowed": ["created_at","decided_at"]}, "old_ids": [183,182,181,180], "note": "a real JSON boolean arrives as 'true' from ->> and now falls explicitly"},
+    {"label": "created-limit2", "new_ids": [183,182],         "old_ids": [183,182],         "identical_full_jsonb": true}
+  ],
+
+  "totals_unchanged_across_sorts": {"no-key": 4, "sort-created": 4, "sort-decided": 4, "dec-limit2": 4, "dec-l2-off2": 4},
+
+  "signature_and_grants": {
+    "no_arg_call_ok": true,
+    "comment": "DEFAULT '{}'::jsonb kept — the live path calls the list with no body at all",
+    "anon": false,
+    "authenticated": false,
+    "service_role": true,
+    "comment_grants": "identical to baseline; create or replace preserves ACL and the function is SECURITY DEFINER"
+  },
+
+  "test_mode_measured_not_declared": {
+    "outbound_queue": 8,
+    "outbound_queue_with_sent_at": 0,
+    "delivery_log": 3,
+    "cases_in_sent": 0,
+    "documents": 0,
+    "outbound_queue_fingerprint": "b5ca3ba695d8ec8ce47bf6e7a2b579d0",
+    "queued_on_every_intake": false,
+    "comment": "the changed function is read-only — no UPDATE, no INSERT. No mail, no message, no document left the system."
+  },
+
+  "rollback": {
+    "how": "three separate DELETEs by id, not one CTE (the 124cfc2 fault); contacts by id, not by a phone stored normalised (the ac6e523 fault); every delete returned a count and the count was checked",
+    "deleted": {"case_rights": 0, "cases": 4, "contacts": 4},
+    "after": {"cases": 0, "case_rights": 0, "documents": 0, "admin_users": 1, "contacts": 4, "outbound_queue": 8, "delivery_log": 3, "rights_catalog": 888},
+    "baseline_exactly": true
+  },
+
+  "protected": "no touch to 08 / 09 / bkalut-app / bkalot-admin / zr_* / NEDARIM3873, nor to schemas csj / csj_src / igud. supabase/functions untouched; apps/37-bkalot-clone untouched.",
+
+  "not_measured_said_plainly": [
+    "not measured in a browser: nobody sends the key yet — apps/37-bkalot-clone/admin.html builds the request body from four fields (status, kind, q, decided). This is the DB layer, the same split as 0078 -> 1abad72 -> f2001e0.",
+    "ascending direction not measured because it does not exist — decision (5), one direction only, no dir key.",
+    "two rows sharing one decided_at were not measured; the id desc tiebreaker is decision (3) and is reasoned from uniqueness, not from a run."
+  ],
+
+  "open": [
+    "UI: admin.html sends no sort key — next brick, then the portal deploy.",
+    "no ascending direction and no dir key (decision 5).",
+    "no sort by status, by name or by rights count — not asked for.",
+    "no decision history: a previous decision is overwritten, so the sort orders by the last one only.",
+    "intake links 42 rights to treatment and zero to info/reminder on the same situation.",
+    "'who produced it' on documents is written nowhere.",
+    "${out.text_chars} and ${d.html_chars} still render as a number.",
+    "headings 'rights (N)' and 'documents (N)' checked, not changed.",
+    "sent unreachable on purpose; bkalot_clone_admin_create not exposed over HTTP; pdf/audio -> channel_unsupported.",
+    "public_visible and show_in_showcase of #37 stay false."
+  ]
+}
