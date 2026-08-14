@@ -396,41 +396,9 @@ footer a{color:var(--brand)}
     }
   }
 
-  // ── ומה שייפול — נעצר לפני השליחה ──────────────────────────────────────────
-  // עד כאן הטופס שלח, השרת הפיל, והמסך הסביר בדיעבד. הפנייה כבר נשמרה בלי
-  // מספר הנושא, והדרך היחידה לתקן אותה היא להגיש פנייה שנייה — ההסבר הגיע
-  // אחרי שהנתון כבר אבד. כאן הוא נעצר לפני: לא נוצרת פנייה, שום שדה לא מתאפס,
-  // ומי שהקליד מתקן ושולח.
-  //
-  // זו אותה בדיקה מילה במילה שמפילה ב-0058 ובאותו סדר — trim ואז ^[0-9]+$ —
-  // ולכן היא אינה פוסלת ערך שהשרת מקבל ואינה מקבלת ערך שהוא פוסל. היא אינה
-  // נוגעת בחוזה של 0058 ואינה מחליפה אותו: מי שפונה לנתיב הקליטה ישירות עדיין
-  // מקבל dropped[], ו-whyDropped ו-focusDropped נשארות במקומן כרשת שמתחת.
-  //
-  // רק בטיפול מלא — זה הסוג היחיד שהטופס שולח בו את השדה בכלל, וחסימה בסוג
-  // שאינו שולח אותו הייתה עוצרת פנייה תקינה על שדה שאינו נשאל.
-  function preflight(kind) {
-    if (kind !== "treatment") return null;
-    const value = $("topic_no").value;
-    if (value && !/^[0-9]+$/.test(value.trim())) {
-      return { el: $("topic_no"), name: DROPPED.topic_no, why: "צריך מספר שלם" };
-    }
-    return null;
-  }
-
   form.addEventListener("submit", async (ev) => {
     ev.preventDefault();
     const kind = form.elements.kind.value;
-
-    // לפני כל היתר: מה שממילא ייפול אינו נשלח, ולכן אין פנייה שנשמרה חסרה.
-    const stop = preflight(kind);
-    if (stop) {
-      for (const el of form.querySelectorAll("[aria-invalid]")) el.removeAttribute("aria-invalid");
-      stop.el.setAttribute("aria-invalid", "true");
-      show("bad", "הפנייה לא נשלחה", [stop.name + " — " + stop.why + ". תקנו ושלחו שוב."]);
-      stop.el.focus();
-      return;
-    }
 
     const payload = {
       kind,
