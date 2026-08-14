@@ -560,6 +560,8 @@ pre{
         (c.documents_count ?? 0) > 0 ? `${c.documents_count} מסמכים` : null,
       ].filter(Boolean);
       for (const b of bits) { const s = document.createElement("span"); s.textContent = b; meta.append(s); }
+      const decided = decidedBit(c);
+      if (decided) meta.append(decided);
       btn.append(top, meta);
       btn.addEventListener("click", () => openCase(c.id));
       rows.append(btn);
@@ -570,6 +572,65 @@ pre{
     $("page-label").textContent = `עמוד ${page} מתוך ${pages}`;
     $("prev").disabled = offset <= 0;
     $("next").disabled = offset + PAGE >= total;
+  }
+
+  // ── «מי הכריע» ברשימה ─────────────────────────────────────────────────────
+  // 0078 החזירה את שלושת השדות מ-bkalot_clone_admin_cases בדיוק בשביל השורה
+  // הזו. הפער שהיא נכתבה עליו: פנייה מגיעה ל«בטיפול» בשתי דרכים שונות לחלוטין
+  // — אדם לחץ, או שהטריגר documents_advance_case קידם אותה מפני שהופק מסמך —
+  // וברשימה, המסך שממנו בוחרים במה לטפל, שתיהן נראו אות באות אותו הדבר.
+  //
+  // ארבעה מצבים, ולא שלושה כמו ב-fillDecidedLine: לרשימה יש מצב חמישי משלה.
+  //
+  // (0) המפתח אינו קיים בתשובה כלל — שרת ישן מ-0078. אז אין ולו שורה אחת
+  //     שנושאת סימן, בדיוק כמו לפני הפעימה הזו. Object.hasOwn ולא ?? null:
+  //     שדה חסר ושדה שנושא null נראים זהים בקריאה רגילה, וכאן הם שני דברים
+  //     הפוכים — «המסך אינו יכול לדעת» מול «איש לא הכריע». סימן שקרי כאן היה
+  //     גרוע מאין־סימן, שכן הוא נקרא כמו נתון שנמדד.
+  //
+  // (1) אין חותמת ו-status=new — אין סימן. פנייה חדשה שאיש לא נגע בה אינה
+  //     צריכה לומר זאת בעשרים שורות; שורה בלי סימן היא הרוב, וסימן על כל אחת
+  //     מהן היה הופך את הנתון היחיד שכן נחוץ לרעש.
+  //
+  // (2) אין חותמת ו-status אינו new — זו הפנייה שבשבילה הכול נבנה: היא זזה
+  //     ממקומה ואיש לא לחץ, כלומר הטריגר קידם אותה. היא נצבעת. הנוסח מדבר על
+  //     הלחיצה ולא על הפנייה — «לא טופלה» היה נתון אחר לגמרי.
+  //
+  // (3) יש חותמת — היא נאמרת עם השם, ובשני מצבי החוסר בנוסח מילה במילה של
+  //     fillDecidedLine (1abad72): «מי הכריע אינו ידוע» כשהזהות חסרה (לחיצה
+  //     מלפני v7), ו«החשבון אינו קיים עוד» כשהזהות מלאה והשם ריק — full_name
+  //     הוא NOT NULL, ולכן שם ריק אומר דבר אחד בדיוק. נוסח שני על אותו נתון
+  //     היה מפצל את הרשימה מהפרטים על מה שהוא בדיוק אותו דבר.
+  function decidedBit(c) {
+    if (!Object.hasOwn(c, "decided_at")) return null;
+    const s = document.createElement("span");
+    if (c.decided_at == null) {
+      if (c.status === "new") return null;
+      s.className = "stale";
+      s.textContent = "לא הוכרע מהמסך";
+      s.title = "הפנייה אינה «חדשה» ולא נרשמה עליה לחיצה — הטריגר קידם אותה בהפקת מסמך";
+      return s;
+    }
+    s.append(document.createTextNode(`הוכרעה ${fmtDate(c.decided_at)}`));
+    if (c.decided_by == null) {
+      const x = document.createElement("span");
+      x.className = "stale";
+      x.textContent = "מי הכריע אינו ידוע";
+      x.title = "הלחיצה נרשמה לפני שהשער העביר את זהות המנהל, ולכן נשמרה החותמת בלבד";
+      s.append(document.createTextNode(" · "), x);
+      return s;
+    }
+    if (c.decided_by_name) {
+      s.append(document.createTextNode(` · ${c.decided_by_name}`));
+      s.title = `מזהה מנהל ${c.decided_by}`;
+      return s;
+    }
+    const x = document.createElement("span");
+    x.className = "stale";
+    x.textContent = `מנהל #${c.decided_by} · החשבון אינו קיים עוד`;
+    x.title = "הזהות נשמרה על הפנייה בזמן ההכרעה, וחשבון הניהול שהיא מצביעה עליו כבר אינו במסד";
+    s.append(document.createTextNode(" · "), x);
+    return s;
   }
 
   // ── פנייה בודדת ───────────────────────────────────────────────────────────
