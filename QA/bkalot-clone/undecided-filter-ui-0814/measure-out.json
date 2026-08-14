@@ -1,0 +1,153 @@
+{
+  "cases": {
+    "A": 174,
+    "B": 175,
+    "C": 176
+  },
+  "decided": {
+    "case_id": 175,
+    "note": "הסטטוס שונה מ«חדשה» ל«בטיפול» · לא נשלחה שום הודעה"
+  },
+  "prev": {
+    "tag": "prev",
+    "port": 8170,
+    "control": {
+      "present": false
+    },
+    "steps": [
+      {
+        "step": "default",
+        "sent": {
+          "status": "",
+          "kind": "",
+          "q": "",
+          "limit": 20,
+          "offset": 0
+        },
+        "got": {
+          "ids": [
+            176,
+            175,
+            174
+          ],
+          "count": "3 פניות",
+          "empty_hidden": true,
+          "error_hidden": true,
+          "pager_hidden": true
+        }
+      }
+    ],
+    "console": []
+  },
+  "next": {
+    "tag": "next",
+    "port": 8171,
+    "control": {
+      "present": true,
+      "label": "הכרעה ידנית",
+      "options": [
+        [
+          "",
+          "הכול"
+        ],
+        [
+          "no",
+          "לא נרשמה"
+        ],
+        [
+          "yes",
+          "נרשמה"
+        ]
+      ],
+      "value": ""
+    },
+    "steps": [
+      {
+        "step": "default",
+        "sent": {
+          "status": "",
+          "kind": "",
+          "decided": "",
+          "q": "",
+          "limit": 20,
+          "offset": 0
+        },
+        "got": {
+          "ids": [
+            176,
+            175,
+            174
+          ],
+          "count": "3 פניות",
+          "empty_hidden": true,
+          "error_hidden": true,
+          "pager_hidden": true
+        }
+      },
+      {
+        "step": "02-decided-no",
+        "sent": {
+          "status": "",
+          "kind": "",
+          "decided": "no",
+          "q": "",
+          "limit": 20,
+          "offset": 0
+        },
+        "got": {
+          "ids": [
+            176,
+            174
+          ],
+          "count": "2 פניות",
+          "empty_hidden": true,
+          "error_hidden": true,
+          "pager_hidden": true
+        }
+      },
+      {
+        "step": "03-decided-yes",
+        "sent": {
+          "status": "",
+          "kind": "",
+          "decided": "yes",
+          "q": "",
+          "limit": 20,
+          "offset": 0
+        },
+        "got": {
+          "ids": [
+            175
+          ],
+          "count": "פנייה אחת",
+          "empty_hidden": true,
+          "error_hidden": true,
+          "pager_hidden": true
+        }
+      },
+      {
+        "step": "04-back-to-all",
+        "sent": {
+          "status": "",
+          "kind": "",
+          "decided": "",
+          "q": "",
+          "limit": 20,
+          "offset": 0
+        },
+        "got": {
+          "ids": [
+            176,
+            175,
+            174
+          ],
+          "count": "3 פניות",
+          "empty_hidden": true,
+          "error_hidden": true,
+          "pager_hidden": true
+        }
+      }
+    ],
+    "console": []
+  }
+}

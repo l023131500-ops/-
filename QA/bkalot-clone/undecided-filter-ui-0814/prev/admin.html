@@ -101,7 +101,7 @@ button.ghost{background:transparent; color:var(--brand); border:1.5px solid var(
 .who{font-size:14.5px; color:var(--text-soft)}
 .who b{color:var(--text)}
 /* ── מסננים ── */
-.filters{display:grid; gap:var(--sp); grid-template-columns:1fr 1fr 1fr 2fr auto; align-items:end; margin-bottom:calc(var(--sp)*2.5)}
+.filters{display:grid; gap:var(--sp); grid-template-columns:1fr 1fr 2fr auto; align-items:end; margin-bottom:calc(var(--sp)*2.5)}
 .filters .field{margin:0}
 @media (max-width:720px){ .filters{grid-template-columns:1fr 1fr} .filters .search{grid-column:1/-1} }
 .count{font-size:14.5px; color:var(--text-soft); margin:0 0 var(--sp)}
@@ -232,10 +232,6 @@ pre{
       <label for="f-kind">סוג</label>
       <select id="f-kind"><option value="">הכול</option></select>
     </div>
-    <div class="field">
-      <label for="f-decided">הכרעה ידנית</label>
-      <select id="f-decided" title="«לא נרשמה» הוא בדיוק מה שאין לו סימפטום ברשימה: פנייה יכולה לשבת ב«בטיפול» מפני שהטריגר קידם אותה בהפקת מסמך, בלי שאיש לחץ עליה"><option value="">הכול</option></select>
-    </div>
     <div class="field search">
       <label for="f-q">חיפוש — שם, טלפון, דוא״ל או מספר פנייה</label>
       <input id="f-q" type="text" autocomplete="off">
@@ -329,9 +325,6 @@ pre{
     status_required:      "לא נבחר סטטוס.",
     status_not_settable:  "הסטטוס הזה אינו נקבע ידנית מהמסך.",
     kind_unknown:         "הסוג שנבחר אינו מוכר. רעננו את הדף.",
-    // 0081. אותו מעמד של status_unknown ו-kind_unknown: המסך שולח ערך מתוך
-    // תיבה סגורה, ולכן ערך שהמסד אינו מכיר הוא באג במסך ולא הכרעה של אדם.
-    decided_unknown:      "מצב ההכרעה שנבחר אינו מוכר. רעננו את הדף.",
     route_not_found:      "הכתובת שאליה פנינו אינה קיימת.",
     method_not_allowed:   "הבקשה נשלחה בצורה שאינה נתמכת.",
     body_not_json:        "הבקשה נשלחה בפורמט שגוי.",
@@ -348,13 +341,6 @@ pre{
   // אותו כאן כפי שהוא ולא יוצג ריק.
   const STATUSES = [["new","חדשה"],["in_progress","בטיפול"],["sent","נשלחה"],["closed","נסגרה"],["rejected","נדחתה"]];
   const KINDS = [["info","מידע"],["reminder","תזכורת"],["treatment","טיפול מלא"]];
-  // שני הערכים ש-0081 מתירה, ובאותם שמות בדיוק ('no'/'yes' — לא true/false ולא
-  // 'undecided'). «לא נרשמה» ראשון מפני שזו השאלה שבגללה הסינון נבנה: מי לא
-  // נלקח. הנוסח אינו «לא הוכרעה» — הכרעה של הצגת השורה עצמה, שהמסך כבר עשה
-  // בשני מקומות אחרים: פנייה שהטריגר קידם בהפקת מסמך אינה «לא טופלה», והיא
-  // בדיוק מה שנופל תחת 'no'. הסינון הוא על decided_at ולכן על הלחיצה, לא על
-  // הסטטוס.
-  const DECIDED = [["no","לא נרשמה"],["yes","נרשמה"]];
   // אותן תוויות של הטופס הציבורי ושל מערכת 10 — אותו אדם רואה את אותו שם.
   const SITUATIONS = {
     young_single:"צעיר/רווק עצמאי", student:"סטודנט/ית", engaged:"מאורסים / לפני חתונה",
@@ -485,7 +471,6 @@ pre{
   // ── כניסה ─────────────────────────────────────────────────────────────────
   for (const [v, t] of STATUSES) $("f-status").append(new Option(t, v));
   for (const [v, t] of KINDS) $("f-kind").append(new Option(t, v));
-  for (const [v, t] of DECIDED) $("f-decided").append(new Option(t, v));
 
   $("login-form").addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -530,11 +515,7 @@ pre{
   async function load() {
     $("list-error").hidden = true;
     $("count").textContent = "טוען…";
-    // decided נשלח כמפתח רביעי ולא כערך שנדחס לתוך status: 0081 מסננת על
-    // decided_at, ו-status הוא שאלה אחרת — פנייה ב«בטיפול» יכולה להיות משני
-    // הצדדים של הסינון הזה. השרת מתעלם ממחרוזת ריקה (nullif), ולכן «הכול»
-    // נשלח כפי שהוא ואינו נדרש לתנאי כאן.
-    lastFilters = { status: $("f-status").value, kind: $("f-kind").value, decided: $("f-decided").value, q: $("f-q").value.trim() };
+    lastFilters = { status: $("f-status").value, kind: $("f-kind").value, q: $("f-q").value.trim() };
     const data = await call("cases", { ...lastFilters, limit: PAGE, offset });
     if (!data || data.ok !== true) {
       if (data?.expired) return toLogin(data.error);

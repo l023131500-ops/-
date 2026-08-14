@@ -1,0 +1,39 @@
+{
+  "run": "undecided-filter-ui-0814",
+  "section": "priority §5ב — שכפול בקלות שכבה 3 (UI)",
+  "open_line_taken_from": "a0e6a39 / heartbeat 603",
+  "scope": { "files_changed": ["apps/37-bkalot-clone/admin.html"], "migration": null, "edge_functions": { "bkalot-clone-intake": "v1 — לא נגעה", "bkalot-clone-admin": "v7 — לא נגעה" }, "deployed": false },
+  "file": { "prev_bytes": 90920, "prev_md5": "BFB19E3E15688423A0FEB54644D958E7", "fixed_bytes": 92899, "fixed_md5": "AF35D4991BA6E2B8756D0CF00A8ADE2A" },
+  "db_state_at_measure": [
+    { "case": 174, "status": "new", "decided_at": null, "how": "איש לא נגע בה" },
+    { "case": 175, "status": "in_progress", "decided_at": "2026-08-14T12:32:22.68528+00:00", "decided_by": 47, "how": "אדם לחץ «בטיפול» מהמסך" },
+    { "case": 176, "status": "in_progress", "decided_at": null, "how": "הטריגר documents_advance_case קידם אותה בהפקת מסמך" }
+  ],
+  "prev": { "control_present": false, "sent_keys": ["status", "kind", "q", "limit", "offset"], "default_ids": [176, 175, 174], "default_count": "3 פניות", "console": 0 },
+  "next": {
+    "control_present": true,
+    "label": "הכרעה ידנית",
+    "options": [["", "הכול"], ["no", "לא נרשמה"], ["yes", "נרשמה"]],
+    "steps": [
+      { "step": "default", "decided_sent": "", "ids": [176, 175, 174], "count": "3 פניות" },
+      { "step": "decided=no", "decided_sent": "no", "ids": [176, 174], "count": "2 פניות" },
+      { "step": "decided=yes", "decided_sent": "yes", "ids": [175], "count": "פנייה אחת" },
+      { "step": "back-to-all", "decided_sent": "", "ids": [176, 175, 174], "count": "3 פניות" }
+    ],
+    "console": 0
+  },
+  "partition_complete_non_overlapping": "2 + 1 = 3",
+  "regression": "ברירת המחדל זהה בשתי הגרסאות — אותן שלוש שורות ובאותו סדר",
+  "markers": { "new_all_0_in_prev": true, "new_all_1_in_fixed": true, "removed_1_prev_0_fixed": true, "old_all_present_both": true, "traps_counted_in_prev": { "לא נרשמה": 3, "הכרעה ידנית": 1 } },
+  "screenshots": [
+    { "file": "prev-01-default.png", "md5_8": "49F52572" },
+    { "file": "next-01-default.png", "md5_8": "C63E0C26" },
+    { "file": "next-02-decided-no.png", "md5_8": "CBAD945C" },
+    { "file": "next-03-decided-yes.png", "md5_8": "CAC0F0FF" },
+    { "file": "next-04-back-to-all.png", "md5_8": "EC5E17DD" }
+  ],
+  "test_mode": { "documents": 0, "cases_in_sent": 0, "outbound_queue": 8, "outbound_queue_sent_at": 0, "delivery_log": 3, "fingerprint_before_and_after": "681dde58ed67b2094d0cbbd7c68e0fb6", "render_queued": false },
+  "rollback": { "documents": 1, "case_rights": 84, "cases": 3, "contacts": 3, "admin_sessions": 5, "admin_users": 1, "baseline_after": { "cases": 0, "case_rights": 0, "documents": 0, "contacts": 4, "outbound_queue": 8, "delivery_log": 3, "admin_users": 1, "admin_sessions": 5, "templates": 2, "catalog": 888 } },
+  "protected_untouched": ["apps/08-bkalut-app", "apps/09-bkalot-admin", "supabase/functions", "zr_*", "NEDARIM3873", "csj", "csj_src", "igud"],
+  "next_beat": "פריסת פורטל — more30.com/bkalot-studio/admin עדיין מגיש מסך בלי התיבה"
+}
