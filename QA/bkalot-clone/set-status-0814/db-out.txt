@@ -1,0 +1,60 @@
+bkalot-clone 0072 — bkalot_clone_admin_set_status
+נמדד במסד (MCP execute_sql, service_role) ב-2026-08-14 02:00–02:02 UTC.
+הפניות נוצרו דרך public.bkalot_clone_intake (נתיב הקליטה של הטופס) ולא בהזרקה
+ישירה ל-bkalot_clone.cases.
+
+── בסיס לפני ────────────────────────────────────────────────────────────────
+cases=0 documents=0 case_rights=0 contacts=4 outbound_queue=8 delivery_log=3
+live_fingerprint(app_key='bkalot', id:status:attempts) = da28ec6315535ec0bfbebad4d57752a7
+
+── הקלט ─────────────────────────────────────────────────────────────────────
+intake A -> {"ok":true,"kind":"info","phone":"0500720001","queued":false,"case_id":69,
+             "dropped":["situation","topic_no"],"contact_id":75,"rights_linked":0}
+intake B -> {"ok":true,"kind":"info","phone":"0500720002","queued":false,"case_id":70,
+             "dropped":["situation","topic_no"],"contact_id":76,"rights_linked":0}
+#70 היא הבקרה: לא נגעו בה לאורך כל המדידה.
+
+── תשע דחיות ────────────────────────────────────────────────────────────────
+T1 no id         {"status":"closed"}                                  -> {"ok":false,"error":"case_id_required"}
+T2 not numeric   {"case_id":"abc","status":"closed"}                  -> {"ok":false,"error":"case_id_required"}
+T3 25 digits     {"case_id":"9999999999999999999999999",...}          -> {"ok":false,"error":"case_not_found","case_id":"9999999999999999999999999"}
+T4 no status     {"case_id":69}                                       -> {"ok":false,"error":"status_required"}
+T5 unknown       {"case_id":69,"status":"archived"}                   -> {"ok":false,"error":"status_unknown","status":"archived"}
+T6 sent          {"case_id":69,"status":"sent"}                       -> {"ok":false,"error":"status_not_settable","status":"sent","settable":["in_progress","closed","rejected"]}
+T7 new           {"case_id":69,"status":"new"}                        -> {"ok":false,"error":"status_not_settable","status":"new","settable":["in_progress","closed","rejected"]}
+T8 missing row   {"case_id":999999,"status":"closed"}                 -> {"ok":false,"error":"case_not_found","case_id":999999}
+T9 blank status  {"case_id":69,"status":"   "}                        -> {"ok":false,"error":"status_required"}
+אחרי כל התשע: #69 עדיין status='new' — אף אחת מהן לא כתבה.
+
+── ארבעת המסלולים ───────────────────────────────────────────────────────────
+T10 {"case_id":69,"status":"closed"}       -> {"ok":true,"case_id":69,"status":"closed","previous":"new","changed":true}
+T11 {"case_id":69,"status":"closed"}       -> {"ok":true,"case_id":69,"status":"closed","previous":"closed","changed":false}
+T12 {"case_id":69,"status":"rejected"}     -> {"ok":true,"case_id":69,"status":"rejected","previous":"closed","changed":true}
+T13 {"id":"69","status":"in_progress"}     -> {"ok":true,"case_id":69,"status":"in_progress","previous":"rejected","changed":true}
+T13 שולחת id ולא case_id, ומחרוזת ולא מספר — שני הכינויים ושני הטיפוסים נמדדו.
+
+── updated_at ───────────────────────────────────────────────────────────────
+המדידה הראשונה נעשתה בשאילתה אחת עם CTE-ים והוחזרה כ-false/true; היא נפסלה
+ולא נשמרה כאן — כל ה-CTE-ים רואים את אותו snapshot, ולכן היא לא מדדה דבר.
+נמדד מחדש בשלוש טרנזקציות נפרדות (קריאות MCP נפרדות):
+  u0 = 2026-08-14 02:01:00.265138+00   (status=in_progress)
+  set_status closed  ->  u1 = 2026-08-14 02:01:23.390726+00   זז
+  set_status closed  ->  u2 = 2026-08-14 02:01:23.390726+00   u2 = u1, קפוא
+כלומר לחיצה חוזרת אינה אירוע ואינה מזיזה את השורה.
+
+── הרשאות ───────────────────────────────────────────────────────────────────
+has_function_privilege('anon',          'public.bkalot_clone_admin_set_status(jsonb)','execute') = false
+has_function_privilege('authenticated', ... ) = false
+has_function_privilege('service_role',  ... ) = true
+
+── מצב טסט ──────────────────────────────────────────────────────────────────
+outbound_queue=8 (ללא שינוי)  delivery_log=3 (ללא שינוי)  documents=0
+cases where status='sent' = 0
+live_fingerprint אחרי = da28ec6315535ec0bfbebad4d57752a7 (זהה)
+
+── גלגול אחורה ──────────────────────────────────────────────────────────────
+delete case_rights (69,70) -> 0 | delete cases (69,70) -> 2 | delete contacts (75,76) -> 2
+אחרי: cases=0 documents=0 case_rights=0 contacts=4 admin_users=1 templates=2
+      catalog=888 outbound_queue=8 delivery_log=3
+      live_fingerprint = da28ec6315535ec0bfbebad4d57752a7
+זהה בדיוק לבסיס. הפונקציה נשארה.
