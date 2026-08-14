@@ -1,0 +1,94 @@
+{
+  "beat": "produced-by-0083-0814",
+  "line_taken_verbatim": "«מי הפיק» על documents אינו נכתב לשום מקום",
+  "line_source": "heartbeat 612 (bb14ca0), סעיף פתוח — ומאז 0076 בכל פעימה",
+  "layer": "מסד בלבד — מיגרציה 0083. apps/37 לא נגעה, bkalot-clone-admin נשארת v7, אין פריסת פורטל ואין פריסת edge function.",
+  "migration": "0083_the_document_row_does_not_say_who_produced_it",
+  "applied": true,
+
+  "schema_after": {
+    "column": "bkalot_clone.documents.produced_by bigint null",
+    "comment": "מזהה משתמש הניהול שהפיק את הגוף שיושב בשורה עכשיו. null = ההפקה נעשתה בלי שהשער העביר זהות (מצב bkalot-clone-admin v7). נדרס בכל הפקה חוזרת, כמו הגוף עצמו. אינו FK: רישום ולא מצביע (0083 הכרעות 4, 5).",
+    "render_overloads": 1,
+    "render_nargs": 2,
+    "render_acl": "{postgres=X/postgres,service_role=X/postgres}"
+  },
+
+  "seed": {
+    "path": "bkalot-clone-intake מעל HTTP עם מפתח anon, כמו מהטופס הציבורי",
+    "http_status": 200,
+    "case_id": 200,
+    "contact_id": 207,
+    "queued": false,
+    "rights_linked": 0,
+    "admin": { "created_via": "bkalot_clone_admin_create", "id": 55, "note": "לא הוזרק hash" }
+  },
+
+  "measurements": [
+    {
+      "n": 1,
+      "what": "קריאה עם ארגומנט אחד בדיוק — בדיוק מה ש-bkalot-clone-admin v7 עושה היום בייצור",
+      "call": "bkalot_clone_render(jsonb)",
+      "returned_produced_by": null,
+      "row_produced_by": null,
+      "document_id": 115,
+      "why": "ה-DROP לא שבר את הנתיב החי: אין overload שני, אין function is not unique, והקריאה הקיימת עוברת. null אומר «הופק ואיננו יודעים מי» — הכרעה (3)."
+    },
+    {
+      "n": 2,
+      "what": "קריאה עם הזהות בארגומנט השני",
+      "call": "bkalot_clone_render(jsonb, 55)",
+      "returned_produced_by": 55,
+      "row_produced_by": 55,
+      "document_id": 115,
+      "reproduced_same_row": true,
+      "updated_at_moved": "2026-08-14 15:16:43.576301+00 → 2026-08-14 15:16:57.499194+00",
+      "why": "אותה שורה בדיוק (on conflict), גוף חדש, ומי שכתב אותו נרשם."
+    },
+    {
+      "n": 3,
+      "what": "ניסיון זיוף: admin_id, produced_by ו-p_admin_id בתוך גוף הבקשה, בלי ארגומנט שני",
+      "call": "bkalot_clone_render(jsonb עם שלושת המפתחות)",
+      "returned_produced_by": null,
+      "row_produced_by": null,
+      "why": "הכרעה (1): הזהות אינה יכולה לנסוע ב-p. הגוף מגיע מהדפדפן ו-/render מעביר אותו כפי שהוא. ובאותה מדידה — הכרעה (5): 55 נדרס ל-null ולא שרד ב-coalesce, כי הגוף שבשורה הוא של הקריאה האחרונה."
+    },
+    {
+      "n": 4,
+      "what": "מפתח anon מול הפונקציה מעל HTTP, בשתי החתימות",
+      "one_arg": { "http": 401, "code": "42501", "message": "permission denied for function bkalot_clone_render" },
+      "two_args": { "http": 401, "code": "42501", "message": "permission denied for function bkalot_clone_render" },
+      "why": "ה-DROP מוחק את ה-ACL. בלי ה-revoke כל מחזיק anon היה מפיק מסמך על כל פנייה ומקבל בתשובה שם, טלפון ומייל של פונה אמיתי."
+    }
+  ],
+
+  "test_mode_measured_not_declared": {
+    "render_returned_queued": false,
+    "documents_with_queue_id": 0,
+    "outbound_queue_rows": 8,
+    "outbound_queue_fingerprint_baseline": "681dde58ed67b2094d0cbbd7c68e0fb6",
+    "outbound_queue_fingerprint_after": "681dde58ed67b2094d0cbbd7c68e0fb6",
+    "outbound_queue_rows_with_sent_at": 0,
+    "delivery_log": 3,
+    "cases_with_status_sent": 0
+  },
+
+  "rollback": {
+    "style": "פקודות נפרדות לפי id ולא CTE אחד (תקלת 124cfc2); איש הקשר לפי id ולא לפי טלפון מנורמל (תקלת ac6e523)",
+    "deleted": { "documents": 1, "case_rights": 0, "cases": 1, "contacts": 1, "admin_sessions": 0, "admin_users": 1 },
+    "after": {
+      "cases": 0, "case_rights": 0, "documents": 0, "admin_users": 1, "admin_sessions": 5,
+      "templates": 2, "contacts": 4, "outbound_queue": 8, "delivery_log": 3, "catalog": 888
+    },
+    "equals_baseline": true
+  },
+
+  "protected": "אין נגיעה ב-08/09/bkalut-app/bkalot-admin/zr_*/NEDARIM3873 ולא בסכמות csj/csj_src/igud. apps/37 ו-supabase/functions לא נגעו בפעימה הזו.",
+
+  "open": [
+    "bkalot-clone-admin נשארת v7 וקוראת ל-render עם ארגומנט אחד, ולכן כל לחיצה על «הפק» בייצור כותבת produced_by null — הזהות יושבת ב-g.admin ואיש אינו מעביר אותה. זו הפעימה הבאה (v8), אותו פיצול כמו 0076 → v7.",
+    "אף קורא אינו מחזיר את produced_by: bkalot_clone_admin_document ו-bkalot_clone_admin_cases אינן יודעות עליו, והמסך אינו יכול לשאול מי הפיק — כמו 0076 → 0077.",
+    "אין היסטוריית הפקות: העמודה אומרת את ההפקה האחרונה בלבד (הכרעה 6).",
+    "אין produced_at (הכרעה 2): «מתי הופק» נשען על updated_at, שהיום נכתב על ידי render בלבד. ביום שבו כותב נוסף ייגע בשורה — הנתון הזה יסתעף."
+  ]
+}
