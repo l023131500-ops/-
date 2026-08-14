@@ -1,0 +1,40 @@
+{
+  "run": "sort-ui-0814",
+  "what": "מסך הניהול של שכפול בקלות שולח sort — הקו הפתוח של 0082 (heartbeat 606)",
+  "scope": "apps/37-bkalot-clone/admin.html בלבד — אין מיגרציה, אין פריסת edge function, אין פריסת פורטל",
+  "server_versions": { "bkalot-clone-intake": "v1", "bkalot-clone-admin": "v7" },
+  "measured_on": "http://127.0.0.1:8161/admin — שרת סטטי מקומי מול ה-edge והמסד החיים; דפדפן אמיתי 1280x900",
+  "baseline_db": { "cases": 0, "case_rights": 0, "documents": 0, "contacts": 4, "admin_users": 1, "admin_sessions": 5, "outbound_queue": 8, "outbound_queue_sent": 0, "delivery_log": 3, "catalog": 888 },
+  "seed": {
+    "admin_id": 49,
+    "cases": [184, 185, 186, 187],
+    "created_at_order_desc": [187, 186, 185, 184],
+    "decided": [
+      { "case": 186, "decided_at": "2026-08-14T13:51:24.018468+00:00" },
+      { "case": 185, "decided_at": "2026-08-14T13:51:29.821059+00:00" },
+      { "case": 184, "decided_at": "2026-08-14T13:51:35.797808+00:00" }
+    ],
+    "undecided": [187],
+    "why": "הכרעה בסדר הפוך לסדר הקליטה, ובשלוש קריאות נפרדות כי now() קפוא בתוך עסקה. אין תחילית משותפת בין שני הסדרים, ו-#187 עוברת מהראש לזנב — הדרך היחידה לראות nulls last"
+  },
+  "select_options": [["", "מועד פנייה — חדשה קודם"], ["decided_at", "מועד הכרעה — אחרונה קודם"]],
+  "measurements": [
+    { "step": "התחברות (ברירת מחדל)", "body": "{\"status\":\"\",\"kind\":\"\",\"decided\":\"\",\"sort\":\"\",\"q\":\"\",\"limit\":20,\"offset\":0}", "ids": [187, 186, 185, 184], "count": "4 פניות", "shot": "01-default-created.png" },
+    { "step": "בחירת «מועד הכרעה» בלי «סינון»", "ids": [187, 186, 185, 184], "note": "הבחירה לבדה אינה טוענת מחדש — בדיוק כמו שאר תיבות הסינון; מה שמחיל הוא «סינון»" },
+    { "step": "«סינון» עם sort=decided_at", "body": "{\"status\":\"\",\"kind\":\"\",\"decided\":\"\",\"sort\":\"decided_at\",\"q\":\"\",\"limit\":20,\"offset\":0}", "ids": [184, 185, 186, 187], "count": "4 פניות", "shot": "02-sorted-decided.png", "note": "היפוך מלא; המונה לא זז — מיון אינו מזיז את הקבוצה הנמנית" },
+    { "step": "בקרה — decided=no עם sort=decided_at", "body": "{\"status\":\"\",\"kind\":\"\",\"decided\":\"no\",\"sort\":\"decided_at\",\"q\":\"\",\"limit\":20,\"offset\":0}", "ids": [187], "count": "פנייה אחת", "note": "מי שאיש לא הכריע יורד לסוף הרשימה ואינו נעלם ממנה" },
+    { "step": "בקרה — decided=yes עם sort=decided_at", "body": "{\"status\":\"\",\"kind\":\"\",\"decided\":\"yes\",\"sort\":\"decided_at\",\"q\":\"\",\"limit\":20,\"offset\":0}", "ids": [184, 185, 186], "count": "3 פניות" },
+    { "step": "רגרסיה — חזרה לברירת המחדל", "body": "{\"status\":\"\",\"kind\":\"\",\"decided\":\"\",\"sort\":\"\",\"q\":\"\",\"limit\":20,\"offset\":0}", "ids": [187, 186, 185, 184], "count": "4 פניות", "shot": "03-back-to-default.png", "note": "המיון אינו נדבק" }
+  ],
+  "screenshots_md5_prefix": { "01-default-created.png": "628392DB", "02-sorted-decided.png": "13D2E36C", "03-back-to-default.png": "784D1C8B" },
+  "console": "אפס הודעות מלבד favicon.ico 404 של השרת הסטטי המקומי (אינו קיים בייצור)",
+  "test_mode": { "documents": 0, "cases_sent": 0, "outbound_queue": 8, "outbound_queue_sent": 0, "delivery_log": 3, "outbound_queue_fingerprint": "b97746aef67df57d104d583a40a926ee", "note": "אין מייל, אין הודעה ואין מסמך שיצא החוצה" },
+  "rollback": { "order": "case_rights → cases → contacts → admin_sessions → admin_users, בפקודות נפרדות לפי id ולא CTE אחד", "after": { "cases": 0, "case_rights": 0, "documents": 0, "contacts": 4, "admin_users": 1, "admin_sessions": 5, "outbound_queue": 8, "delivery_log": 3, "catalog": 888 } },
+  "protected": "git status ריק על apps/08-bkalut-app, apps/09-bkalot-admin ו-supabase/functions; אין נגיעה ב-bkalut-app/bkalot-admin/zr_*/NEDARIM3873 ולא בסכמות csj/csj_src/igud",
+  "open": [
+    "הקובץ טרם נפרס — more30.com/bkalot-studio/admin עדיין מגיש מסך בלי תיבת «מיון». זו הפעימה הבאה (פריסה), אותו פיצול כמו 0081 → a0e6a39 → 98dbef1",
+    "אין כיוון עולה ואין מפתח dir — לא קיים בשרת ולכן אינו מוצע במסך",
+    "כפתור הטופס נשאר «סינון» בעוד שהוא מחיל גם מיון — לא שונה כדי לא לגעת בנוסח שכבר נמדד",
+    "שתי שורות עם אותו decided_at לא נמדדו; שובר השוויון id desc הוא של 0082 ולא של המסך"
+  ]
+}

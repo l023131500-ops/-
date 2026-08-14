@@ -236,6 +236,10 @@ pre{
       <label for="f-decided">הכרעה ידנית</label>
       <select id="f-decided" title="«לא נרשמה» הוא בדיוק מה שאין לו סימפטום ברשימה: פנייה יכולה לשבת ב«בטיפול» מפני שהטריגר קידם אותה בהפקת מסמך, בלי שאיש לחץ עליה"><option value="">הכול</option></select>
     </div>
+    <div class="field">
+      <label for="f-sort">מיון</label>
+      <select id="f-sort" title="«מועד הכרעה» מסדר לפי הלחיצה האחרונה על הפנייה, ומי שאיש לא הכריע יורד לסוף הרשימה ואינו נעלם ממנה"><option value="">מועד פנייה — חדשה קודם</option></select>
+    </div>
     <div class="field search">
       <label for="f-q">חיפוש — שם, טלפון, דוא״ל או מספר פנייה</label>
       <input id="f-q" type="text" autocomplete="off">
@@ -332,6 +336,10 @@ pre{
     // 0081. אותו מעמד של status_unknown ו-kind_unknown: המסך שולח ערך מתוך
     // תיבה סגורה, ולכן ערך שהמסד אינו מכיר הוא באג במסך ולא הכרעה של אדם.
     decided_unknown:      "מצב ההכרעה שנבחר אינו מוכר. רעננו את הדף.",
+    // 0082. אותו מעמד בדיוק: המסך שולח מפתח מיון מתוך תיבה סגורה, ולכן ערך
+    // שהמסד אינו מכיר הוא באג במסך. הנוסח אינו מבטיח שהרשימה מוצגת ממוינת
+    // אחרת — הקריאה נכשלה כולה, ואין שורות על המסך.
+    sort_unknown:         "סדר המיון שנבחר אינו מוכר. רעננו את הדף.",
     route_not_found:      "הכתובת שאליה פנינו אינה קיימת.",
     method_not_allowed:   "הבקשה נשלחה בצורה שאינה נתמכת.",
     body_not_json:        "הבקשה נשלחה בפורמט שגוי.",
@@ -355,6 +363,13 @@ pre{
   // בדיוק מה שנופל תחת 'no'. הסינון הוא על decided_at ולכן על הלחיצה, לא על
   // הסטטוס.
   const DECIDED = [["no","לא נרשמה"],["yes","נרשמה"]];
+  // 0082 מתירה שני ערכים, 'created_at' ו-'decided_at', ומחרוזת ריקה היא סדר
+  // ברירת המחדל — שהוא created_at עצמו. לכן התיבה מציעה מפתח אחד בלבד:
+  // אופציה שנייה בשם «מועד פנייה» שהייתה שולחת 'created_at' במפורש מציגה
+  // לאדם שתי בחירות שאין ביניהן הבדל, ומחרוזת ריקה כבר אומרת בדיוק את זה.
+  // «חדשה קודם» ו«אחרונה קודם» נכתבים בתווית מפני ששני המיונים יורדים, ואין
+  // מפתח כיוון — סדר עולה אינו קיים בשרת ולכן אינו מוצע כאן.
+  const SORTS = [["decided_at","מועד הכרעה — אחרונה קודם"]];
   // אותן תוויות של הטופס הציבורי ושל מערכת 10 — אותו אדם רואה את אותו שם.
   const SITUATIONS = {
     young_single:"צעיר/רווק עצמאי", student:"סטודנט/ית", engaged:"מאורסים / לפני חתונה",
@@ -486,6 +501,7 @@ pre{
   for (const [v, t] of STATUSES) $("f-status").append(new Option(t, v));
   for (const [v, t] of KINDS) $("f-kind").append(new Option(t, v));
   for (const [v, t] of DECIDED) $("f-decided").append(new Option(t, v));
+  for (const [v, t] of SORTS) $("f-sort").append(new Option(t, v));
 
   $("login-form").addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -534,7 +550,11 @@ pre{
     // decided_at, ו-status הוא שאלה אחרת — פנייה ב«בטיפול» יכולה להיות משני
     // הצדדים של הסינון הזה. השרת מתעלם ממחרוזת ריקה (nullif), ולכן «הכול»
     // נשלח כפי שהוא ואינו נדרש לתנאי כאן.
-    lastFilters = { status: $("f-status").value, kind: $("f-kind").value, decided: $("f-decided").value, q: $("f-q").value.trim() };
+    // sort יושב באותו אובייקט אבל אינו סינון: הוא אינו מוציא ולו שורה אחת
+    // מהרשימה, רק מסדר אותה. הוא נשלח מכאן ולא מתוך מטפל נפרד מפני שהעמוד
+    // נחתך בשרת — 0082 ממיינת לפני ה-limit, ולכן שינוי מיון חייב לעבור באותה
+    // קריאה שמביאה את העמוד, ומאותה סיבה «סינון» מאפס את offset גם עבורו.
+    lastFilters = { status: $("f-status").value, kind: $("f-kind").value, decided: $("f-decided").value, sort: $("f-sort").value, q: $("f-q").value.trim() };
     const data = await call("cases", { ...lastFilters, limit: PAGE, offset });
     if (!data || data.ok !== true) {
       if (data?.expired) return toLogin(data.error);
