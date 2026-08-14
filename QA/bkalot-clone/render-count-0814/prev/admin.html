@@ -995,12 +995,7 @@ pre{
         `מסמך #${out.document_id} הופק`,
         `תבנית ${out.template_key}${out.fallback ? " (נוסח נפילה)" : ""}`,
         `${out.text_chars} תווי טקסט`,
-        // אותו countHe של שורת הרשימה ולא ניסוח שני על אותו נתון. שני המצבים
-        // שמייצרים «1 זכויות» הם שורות אמיתיות ב-case_rights ולא קצה נדיר:
-        // פנייה שיש לה זכות אחת (rights_source=all), וזכות אחת שסומנה chosen
-        // מתוך רבות — 0063 סופרת את הנבחרות אם יש, ואת כולן אם אין.
-        // הסוגריים נשארות כפי שהן: הן אומרות מאיפה בא המספר, וזו אינה צורת ריבוי.
-        `${countHe(out.rights_count, "זכות אחת", "זכויות")} (${out.rights_source === "chosen" ? "נבחרו" : "כל הרשימה"})`,
+        `${out.rights_count} זכויות (${out.rights_source === "chosen" ? "נבחרו" : "כל הרשימה"})`,
       ];
       const un = out.placeholders_unresolved || [];
       if (un.length) bits.push(`מצייני מקום בלי ערך: ${un.join(", ")}`);
