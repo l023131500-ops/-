@@ -1,0 +1,92 @@
+{
+  "pulse": "שכפול בקלות שכבה 3 — שלושת השדות של 0075 מגיעים למסך (UI)",
+  "date": "2026-08-14",
+  "scope": "apps/37-bkalot-clone/admin.html בלבד — אין מיגרציה, אין פריסת edge function, אין פריסת פורטל",
+  "measured_against": "edge + DB חיים, דרך שרת סטטי מקומי 127.0.0.1:8139 (קוד, לא מוצר — הפריסה היא הפעימה הבאה)",
+  "browser": "Playwright 1280x900, אפס שגיאות ואפס אזהרות בקונסולה (0 מתוך 0 הודעות)",
+
+  "seed": {
+    "path": "bkalot-clone-intake מעל HTTP, מפתח anon מהטופס הציבורי — לא הזרקה למסד",
+    "final_run": { "A": { "case": 90, "kind": "treatment", "rights": 59 }, "B": { "case": 91, "kind": "info", "note": "בקרה — לא נגעו בה, נשארה בלי מסמך" } },
+    "earlier_runs": { "ids": "86/87 ואז 88/89", "note": "86/87 רץ לפני תיקון הענף (ב); 88/89 רץ על הקוד הסופי אך צילומיו לא הראו את הטבלה. שתי הריצות התגלגלו אחורה במלואן, וכל ששת הצילומים כאן הם מריצת 90/91" }
+  },
+
+  "screenshots_note": "שלושת הצילומים הראשונים בניסיון הראשון יצאו זהים בבתים (57015, אותו MD5 ל-01 ול-04): טבלת המסמכים יושבת מתחת לקפל, והצילומים תיעדו את ראש המסך ולא את העמודה. נמדד ב-Get-FileHash ולא בעין. הצילומים הוחלפו בסדרה שבה הטבלה מוגללת למרכז לפני כל צילום — שישה קבצים, שישה MD5 שונים.",
+
+  "the_measurement": {
+    "why_it_buys_the_pulse": "אותו מסמך #84 בדיוק, שתי הפקות, שתי שורות שונות במסך. עד כאן השורה הייתה זהה לחלוטין בשני המקרים.",
+    "render_1_default": {
+      "template_key_sent": null,
+      "document_id": 84,
+      "row_letter_cell": "מענה לפניית טיפול — רשימת הזכויות",
+      "row_letter_title": "מפתח rights_treatment_reply",
+      "row_created_cell": "14.08.2026, 07:01",
+      "overwritten_marker": null,
+      "text_chars": 3513
+    },
+    "render_2_explicit_other_letter": {
+      "template_key_sent": "general_inquiry_reply",
+      "document_id": 84,
+      "row_letter_cell": "מענה לפנייה כללית",
+      "row_letter_title": "מפתח general_inquiry_reply",
+      "row_created_cell": "14.08.2026, 07:01 / נדרס 14.08.2026, 07:01",
+      "overwritten_marker": "נדרס 14.08.2026, 07:01 (class=stale)",
+      "text_chars": 230,
+      "note": "230 ולא 3,513 — מכתב אחר ולא תווית אחרת. #90 היא treatment, כלומר ברירת המחדל שלה אינה יכולה להפיק את השורה הזו בשום מצב"
+    },
+    "docview_panel": {
+      "meta": "מסמך #84 · email · 230 תווי טקסט · 424 תווי HTML · לא נשלח — מצב טסט",
+      "letter_line": "מכתב: מענה לפנייה כללית",
+      "created_line": "נוצר: 14.08.2026, 07:01 / נדרס 14.08.2026, 07:01"
+    }
+  },
+
+  "controls": [
+    {
+      "id": "ג — נוסח נפילה",
+      "setup": "rights_treatment_reply נוטרלה במסד (updated_at=updated_at), אז הפקה בלי מפתח",
+      "row_letter_cell": "מענה לפניית טיפול — רשימת הזכויות / נוסח נפילה (class=stale)",
+      "text_chars": 98,
+      "why": "השורה נושאת שם מכתב אמיתי והגוף אינו בא ממנו — 98 תווים ולא 3,513 — ורק הסימון מבדיל",
+      "restored": "enabled=true עם updated_at=updated_at בשני הכיוונים"
+    },
+    {
+      "id": "ב — התבנית נמחקה",
+      "setup": "template_key הוחלף ל-deleted_letter_0076 (0 שורות ב-templates), template_fallback נשאר true",
+      "row_letter_cell": "deleted_letter_0076 · התבנית אינה קיימת (class=stale) / נוסח נפילה (class=stale)",
+      "why": "שתי העובדות מופיעות יחד ולא אחת בולעת את השנייה — זה התיקון שנעשה באמצע המדידה"
+    },
+    {
+      "id": "א — מסמך מלפני 0074",
+      "setup": "template_key=null, template_fallback=null, updated_at=null בעדכון ישיר — צורת שורה מלפני 0074",
+      "row_letter_cell": "—",
+      "row_letter_title": "המסמך הופק לפני שהשדה נשמר, ואיזה מכתב יושב בו אינו ידוע",
+      "overwritten_marker": null,
+      "why": "אין coalesce ואין המצאה: «null» הולך ל«לא ידוע» ולא ל«ברירת מחדל», ו-overwritten=null אינו מצייר סימון"
+    }
+  ],
+
+  "test_mode": {
+    "docs_with_queue_id": 0,
+    "cases_sent": 0,
+    "queue_rows_with_sent_at": 0,
+    "queue_rows_mode_live": 0,
+    "outbound_queue": 8,
+    "delivery_log": 3,
+    "note": "הנתיב מפיק וקורא בלבד — לא נכנס דבר לתור, לא נכתבה שורת יומן ולא יצאה ולו קריאה אחת. אין מייל, אין הודעה ואין מסמך שיצא החוצה"
+  },
+
+  "source_untouched": {
+    "bkalot_rows_before": 8, "bkalot_rows_after": 8,
+    "fingerprint_before": "da28ec6315535ec0bfbebad4d57752a7",
+    "fingerprint_after": "da28ec6315535ec0bfbebad4d57752a7"
+  },
+
+  "rollback": {
+    "run_1_86_87": { "documents": 1, "case_rights": 59, "cases": 2, "contacts": 2, "sessions": 2, "admin_users": 1 },
+    "run_2_88_89": { "documents": 1, "case_rights": 59, "cases": 2, "contacts": 2, "sessions": 1, "admin_users": 1 },
+    "run_3_90_91": { "documents": 1, "case_rights": 59, "cases": 2, "contacts": 2, "sessions": 1, "admin_users": 1 },
+    "after": { "cases": 0, "case_rights": 0, "documents": 0, "admin_users": 1, "admin_sessions": 5, "templates": 2, "templates_enabled": 2, "catalog": 888, "contacts": 4, "outbound_queue": 8, "delivery_log": 3 },
+    "identical_to_baseline": true
+  }
+}

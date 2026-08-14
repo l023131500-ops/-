@@ -906,7 +906,7 @@ pre{
 
     if (docs.length) {
       const t = document.createElement("table");
-      t.innerHTML = "<thead><tr><th>#</th><th>סוג</th><th>כותרת</th><th>נוצר</th><th>תור</th><th></th></tr></thead>";
+      t.innerHTML = "<thead><tr><th>#</th><th>סוג</th><th>כותרת</th><th>מכתב</th><th>נוצר</th><th>תור</th><th></th></tr></thead>";
       const tb = document.createElement("tbody");
       const panel = document.createElement("div");
       panel.className = "docview";
@@ -934,9 +934,18 @@ pre{
       dispatchErr.hidden = true;
       for (const d of docs) {
         const tr = document.createElement("tr");
-        for (const v of [String(d.id), d.kind || "", d.title || "", fmtDate(d.created_at)]) {
+        for (const v of [String(d.id), d.kind || "", d.title || ""]) {
           const td = document.createElement("td"); td.textContent = v; tr.append(td);
         }
+        // שלוש העמודות של 0074 הגיעו לתשובה ב-0075, וכאן נקראות. עד כאן השורה
+        // אמרה «מסמך #75» וחותמת יצירה בלבד, ומאז fb607a0 שתי הפקות מאותה פנייה
+        // בשני מכתבים שונים הציגו שורה זהה לחלוטין.
+        const ttd = document.createElement("td");
+        fillTemplateCell(ttd, d);
+        tr.append(ttd);
+        const ctd = document.createElement("td");
+        fillCreatedCell(ctd, d);
+        tr.append(ctd);
         // מצב התור נקרא עכשיו בטעינת הפנייה (0069) ולא רק אחרי לחיצה. עד כאן
         // הדרך היחידה לדעת אילו מסמכים כבר בתור — ואילו מהם נחסמו — הייתה
         // ללחוץ «הצג» מסמך-מסמך.
@@ -1120,6 +1129,76 @@ pre{
     td.append(s);
   }
 
+  // ── איזה מכתב יושב במסמך ──────────────────────────────────────────────────
+  // שלושה מצבים, ואינם אותו מצב — ולכן אין כאן ולו coalesce אחד:
+  //
+  // (א) template_key הוא null — מסמך שהופק לפני 0074. «לא ידוע», ולא «ברירת
+  //     מחדל»: הכרעה (5) של 0074 סירבה במפורש לכתוב false על שורות כאלה, ומסך
+  //     שימציא כאן ערך יחזיר בדיוק את הקביעה חסרת-המקור שהמסד סירב לשמור.
+  // (ב) יש מפתח ואין שם — template_key הוא text ואינו FK (הכרעה 1 של 0074),
+  //     כלומר מפתח שאין לו שורה הוא מצב חוקי וצפוי: התבנית נמחקה מאז ההפקה.
+  //     המפתח הטכני מוצג כפי שהוא, כי הוא כל מה שידוע.
+  // (ג) template_fallback=true — וזו השורה שבגללה העמודה נצבעת: השורה נושאת שם
+  //     מכתב אמיתי, והגוף אינו בא ממנו אלא מנוסח הנפילה הקבוע שבתוך render.
+  //     בלי הסימון אין שום דרך במסך להבדיל בינה לבין הפקה תקינה.
+  //
+  // השם מגיע מהשרת (template_name_he) ואינו ממופה כאן מרשימת templates: מיפוי
+  // בלקוח נכשל בשקט בדיוק במקרה (ב), שהוא המקרה היחיד שבשבילו הוא נדרש.
+  function fillTemplateCell(td, d) {
+    td.textContent = "";
+    td.removeAttribute("title");
+    if (d.template_key == null) {
+      td.textContent = "—";
+      td.title = "המסמך הופק לפני שהשדה נשמר, ואיזה מכתב יושב בו אינו ידוע";
+      return;
+    }
+    const name = d.template_name_he || null;
+    if (name) {
+      td.append(document.createTextNode(name));
+      td.title = `מפתח ${d.template_key}`;
+    } else {
+      const s = document.createElement("span");
+      s.className = "stale";
+      s.textContent = `${d.template_key} · התבנית אינה קיימת`;
+      s.title = "המפתח נשמר על המסמך בזמן ההפקה, ושורת התבנית שהוא מצביע עליה כבר אינה במסד";
+      td.append(s);
+    }
+    // (ב) ו-(ג) יכולים לחול יחד, ולכן זה אינו else: מסמך שהופק בנוסח נפילה
+    // ושהתבנית שלו נמחקה מאז נושא שתי עובדות נפרדות — «אין שורה כזו» ו«הגוף
+    // לא בא ממנה». בליעת השנייה לתוך הראשונה הייתה משאירה את המנהל עם השאלה
+    // הלא נכונה: הוא היה מחפש תבנית שנמחקה במקום לדעת שגם אילו הייתה, לא היא
+    // זו שכתבה את המכתב.
+    if (d.template_fallback === true) {
+      const s = document.createElement("span");
+      s.className = "stale";
+      s.textContent = "נוסח נפילה";
+      s.title = "שורת התבנית הייתה חסרה או מנוטרלת בזמן ההפקה, והגוף בא מנוסח קבוע ולא ממנה";
+      td.append(document.createElement("br"), s);
+    } else if (d.template_fallback == null && name) {
+      // null ולא false: הכרעה (2) של 0075 מחזירה את השדה כפי שהוא, ולכן «לא
+      // ידוע» מגיע לכאן ואינו נבלע לתוך «הופק מהתבנית».
+      td.title += " · אם הגוף בא מהתבנית עצמה אינו ידוע";
+    }
+  }
+
+  // ── מתי נכתב מה שכתוב שם ───────────────────────────────────────────────────
+  // created_at של upsert אינו זז לעולם (0074), ולכן על מסמך שנדרס הוא אומר
+  // למנהל שהמכתב שהוא קורא נכתב בזמן שאינו נכון. overwritten נגזר בשרת
+  // (הכרעה 3 של 0075) — השוואת timestamptz ולא השוואת שתי מחרוזות אחרי
+  // סריאליזציה — וכאן רק נקרא. false ו-null אינם מוסיפים דבר: השני הוא מסמך
+  // מלפני 0074 ואין ממנו מה לומר.
+  function fillCreatedCell(td, d) {
+    td.textContent = "";
+    td.removeAttribute("title");
+    td.append(document.createTextNode(fmtDate(d.created_at)));
+    if (d.overwritten !== true) return;
+    const s = document.createElement("span");
+    s.className = "stale";
+    s.textContent = `נדרס ${fmtDate(d.updated_at)}`;
+    s.title = "«הפק מחדש» כותב על אותה שורה (upsert על case_id ו-kind), ולכן חותמת היצירה נשארה של ההפקה הראשונה";
+    td.append(document.createElement("br"), s);
+  }
+
   // ── גוף המסמך ─────────────────────────────────────────────────────────────
   // הגוף אינו מגיע עם הפנייה — bkalot_clone_admin_case מחזירה מטא-דאטה בלבד
   // במפורש (0060) — ולכן הוא נקרא לפי דרישה, בקריאה נפרדת מאחורי אותו שער.
@@ -1160,7 +1239,23 @@ pre{
         ? `בתור #${d.queue_id} · ${d.queue_status === "blocked" ? "חסום — לא יישלח" : d.queue_status} · מצב ${d.queue_mode}`
         : "לא נשלח — מצב טסט",
     ].filter(Boolean).join(" · ");
-    panel.append(h, meta);
+    // הכרעה (4) של 0075 החזירה את אותם שלושה שדות גם כאן, וזה המסך היחיד שבו
+    // המנהל קורא בפועל את מה שייצא — ולכן «איזה מכתב זה» ו«מתי נכתב» שייכים
+    // דווקא כאן, ולא רק בשורה שברשימה. אותן שתי פונקציות בדיוק, כדי ששני
+    // המסכים לא ייפרדו זה מזה בשקט על אותו נתון.
+    const tmplLine = document.createElement("p");
+    tmplLine.className = "note";
+    tmplLine.append("מכתב: ");
+    const tspan = document.createElement("span");
+    fillTemplateCell(tspan, d);
+    tmplLine.append(tspan);
+    const dateLine = document.createElement("p");
+    dateLine.className = "note";
+    dateLine.append("נוצר: ");
+    const cspan = document.createElement("span");
+    fillCreatedCell(cspan, d);
+    dateLine.append(cspan);
+    panel.append(h, meta, tmplLine, dateLine);
     // המעוצב לפני הטקסט: זה המסמך שאדם עומד לשלוח, והגוף הטקסטואלי הוא
     // הגרסה החלופית שלו. גוף של אלפי תווים מעל התצוגה היה דוחף אותה מחוץ למסך.
     if (d.body_html) {
