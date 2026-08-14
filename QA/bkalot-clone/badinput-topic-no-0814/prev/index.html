@@ -409,26 +409,11 @@ footer a{color:var(--brand)}
   //
   // רק בטיפול מלא — זה הסוג היחיד שהטופס שולח בו את השדה בכלל, וחסימה בסוג
   // שאינו שולח אותו הייתה עוצרת פנייה תקינה על שדה שאינו נשאל.
-  //
-  // נתיב שני, ושקט מהראשון: ב-type=number קלט שהדפדפן אינו יודע לפרש כמספר
-  // (למשל "אבג") אינו מגיע ל-value כלל — value נשאר "" בעוד שמה שהוקלד עומד
-  // על המסך. אז payload.topic_no אינו נשלח (התנאי הוא if (value)), 0058 אינו
-  // רואה מפתח ואינו מדווח עליו ב-dropped[], והפנייה נשמרת בלי מספר הנושא בלי
-  // ולו שורה אחת שאומרת שמשהו נפל — גם raw אינו מחזיק אותו. הבדיקה הראשונה
-  // חומקת מזה בדיוק מפני שהיא if (value && ...) וערך ריק אינו נכנס אליה.
-  //
-  // הסימן שמבדיל בין "לא הוקלד כלום" (שדה רשות, ולכן מותר) לבין "הוקלד ולא
-  // נקלט" הוא validity.badInput — הדפדפן מסמן אותו רק כשיש קלט שאינו ניתן
-  // לפירוש. שדה ריק באמת מחזיר false ואינו נחסם.
   function preflight(kind) {
     if (kind !== "treatment") return null;
-    const el = $("topic_no");
-    if (el.validity && el.validity.badInput) {
-      return { el, name: DROPPED.topic_no, why: "צריך מספר שלם" };
-    }
-    const value = el.value;
+    const value = $("topic_no").value;
     if (value && !/^[0-9]+$/.test(value.trim())) {
-      return { el, name: DROPPED.topic_no, why: "צריך מספר שלם" };
+      return { el: $("topic_no"), name: DROPPED.topic_no, why: "צריך מספר שלם" };
     }
     return null;
   }
