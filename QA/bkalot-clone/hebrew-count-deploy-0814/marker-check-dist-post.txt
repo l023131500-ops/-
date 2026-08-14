@@ -1,0 +1,4 @@
+﻿portal\dist\bkalot-studio\admin.html 68715 chars 88067 bytes
+new: const countHe = (n, one, plural) =>=true | countHe(n, "פנייה אחת", "פניות")=true | "זכות אחת"=true | "מסמך אחד"=true | צורת זוגי הייתה מחייבת גם מין דקדוקי=true
+removed: const many = (n) => (n === 1 ? "פנייה אחת" : =false | ${c.rights_count ?? 0} זכויות=false | ריח של AI. עברית סופרת אחרת.=false
+old: פנייה אחת=true | show("screen-list"); load();=true | decidedBit=true | לא הוכרע מהמסך=true | fillDecidedLine=true | החשבון אינו קיים עוד=true | <th>מכתב</th>=true | fillTemplateCell=true | tmpl-sel=true | שינוי סטטוס=true | עבד עכשיו=true | הכנס לתור=true

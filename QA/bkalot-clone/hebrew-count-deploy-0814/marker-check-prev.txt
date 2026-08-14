@@ -1,0 +1,4 @@
+﻿QA\bkalot-clone\hebrew-count-deploy-0814\prev\admin.html 67852 chars 86588 bytes
+new: const countHe = (n, one, plural) =>=false | countHe(n, "פנייה אחת", "פניות")=false | "זכות אחת"=false | "מסמך אחד"=false | צורת זוגי הייתה מחייבת גם מין דקדוקי=false
+removed: const many = (n) => (n === 1 ? "פנייה אחת" : =true | ${c.rights_count ?? 0} זכויות=true | ריח של AI. עברית סופרת אחרת.=true
+old: פנייה אחת=true | show("screen-list"); load();=true | decidedBit=true | לא הוכרע מהמסך=true | fillDecidedLine=true | החשבון אינו קיים עוד=true | <th>מכתב</th>=true | fillTemplateCell=true | tmpl-sel=true | שינוי סטטוס=true | עבד עכשיו=true | הכנס לתור=true
