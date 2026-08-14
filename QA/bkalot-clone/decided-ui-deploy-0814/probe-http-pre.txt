@@ -1,0 +1,11 @@
+﻿https://more30.com/bkalot-studio/admin?cb=pre0814decided 200 76764
+  new: fillDecidedLine=false | לא נרשמה הכרעה ידנית מהמסך=false | מי הכריע אינו ידוע=false | החשבון אינו קיים עוד=false | הוכרעה ${fmtDate=false | מזהה מנהל $=false
+  old: <th>מכתב</th>=true | fillTemplateCell=true | fillCreatedCell=true | ברירת מחדל לפי סוג הפנייה=true | tmpl-sel=true | שינוי סטטוס=true | עבד עכשיו=true | הכנס לתור=true
+  alef=718 replacement=0 doubleenc=0
+https://more30.com/bkalot-studio/admin/?cb=pre0814decided 200 76764
+  alef=718 replacement=0 doubleenc=0
+https://more30.com/bkalot-studio/?cb=pre0814decided 200 21272
+  alef=134 replacement=0 doubleenc=0
+https://more30.com/?cb=pre0814decided 200 3517
+  assets: assets/index-C2AHwa-z.js,assets/index-B35ByRD-.css
+  alef=23 replacement=0 doubleenc=0
