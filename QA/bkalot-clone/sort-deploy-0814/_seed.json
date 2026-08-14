@@ -1,0 +1,66 @@
+[
+  {
+    "phone": "0501110001",
+    "status": 200,
+    "body": {
+      "ok": true,
+      "kind": "info",
+      "phone": "0501110001",
+      "queued": false,
+      "case_id": 188,
+      "dropped": [],
+      "situation": null,
+      "contact_id": 195,
+      "rights_linked": 0,
+      "rights_unknown": []
+    }
+  },
+  {
+    "phone": "0501110002",
+    "status": 200,
+    "body": {
+      "ok": true,
+      "kind": "info",
+      "phone": "0501110002",
+      "queued": false,
+      "case_id": 189,
+      "dropped": [],
+      "situation": null,
+      "contact_id": 196,
+      "rights_linked": 0,
+      "rights_unknown": []
+    }
+  },
+  {
+    "phone": "0501110003",
+    "status": 200,
+    "body": {
+      "ok": true,
+      "kind": "info",
+      "phone": "0501110003",
+      "queued": false,
+      "case_id": 190,
+      "dropped": [],
+      "situation": null,
+      "contact_id": 197,
+      "rights_linked": 0,
+      "rights_unknown": []
+    }
+  },
+  {
+    "phone": "0501110004",
+    "status": 200,
+    "body": {
+      "ok": true,
+      "kind": "info",
+      "phone": "0501110004",
+      "queued": false,
+      "case_id": 191,
+      "dropped": [],
+      "situation": null,
+      "contact_id": 198,
+      "rights_linked": 0,
+      "rights_unknown": []
+    }
+  }
+]

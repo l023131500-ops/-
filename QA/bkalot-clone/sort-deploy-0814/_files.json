@@ -1,0 +1,35 @@
+{
+  "prod": {
+    "bytes": 92899,
+    "new": {
+      "select_id": 0,
+      "label": 0,
+      "sorts_const": 0,
+      "message": 0,
+      "body_key": 0
+    },
+    "old": {
+      "decided_id": 1,
+      "decided_message": 1,
+      "filter_button": 12,
+      "cases_call": 1
+    }
+  },
+  "src": {
+    "bytes": 95108,
+    "new": {
+      "select_id": 1,
+      "label": 1,
+      "sorts_const": 1,
+      "message": 1,
+      "body_key": 1
+    },
+    "old": {
+      "decided_id": 1,
+      "decided_message": 1,
+      "filter_button": 14,
+      "cases_call": 1
+    }
+  },
+  "markers_valid": true
+}
