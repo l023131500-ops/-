@@ -1,0 +1,81 @@
+{
+  "phase": "after",
+  "at": "2026-08-15T23:08:04.910Z",
+  "source_bytes": 101368,
+  "source": {
+    "<th>הופק על ידי</th>": 1,
+    "<th>נוצר</th><th>הופק על ידי</th><th>תור</th>": 1,
+    "fillProducedCell(ptd, d)": 1,
+    "const ptd = document.createElement": 1,
+    "fillProducedCell": 4,
+    "הופק על ידי": 3,
+    "fillCreatedCell": 4,
+    "fillTemplateCell": 4,
+    "fillDecidedLine": 5,
+    "הופק על ידי: ": 1,
+    "תווי טקסט": 4,
+    "fillQueueCell": 2
+  },
+  "live": {
+    "https://more30.com/bkalot-studio/admin": {
+      "status": 200,
+      "bytes": 101604,
+      "markers": {
+        "<th>הופק על ידי</th>": 1,
+        "<th>נוצר</th><th>הופק על ידי</th><th>תור</th>": 1,
+        "fillProducedCell(ptd, d)": 1,
+        "const ptd = document.createElement": 1,
+        "fillProducedCell": 4,
+        "הופק על ידי": 3,
+        "fillCreatedCell": 4,
+        "fillTemplateCell": 4,
+        "fillDecidedLine": 5,
+        "הופק על ידי: ": 1,
+        "תווי טקסט": 4,
+        "fillQueueCell": 2
+      },
+      "replacement_chars": 0,
+      "double_encoded": 0,
+      "new_zero_live": false,
+      "new_equals_source": true,
+      "diff_below_source": false,
+      "diff_equals_source": true,
+      "old_equal": true
+    },
+    "https://more30.com/bkalot-studio/admin/": {
+      "status": 200,
+      "bytes": 101604,
+      "markers": {
+        "<th>הופק על ידי</th>": 1,
+        "<th>נוצר</th><th>הופק על ידי</th><th>תור</th>": 1,
+        "fillProducedCell(ptd, d)": 1,
+        "const ptd = document.createElement": 1,
+        "fillProducedCell": 4,
+        "הופק על ידי": 3,
+        "fillCreatedCell": 4,
+        "fillTemplateCell": 4,
+        "fillDecidedLine": 5,
+        "הופק על ידי: ": 1,
+        "תווי טקסט": 4,
+        "fillQueueCell": 2
+      },
+      "replacement_chars": 0,
+      "double_encoded": 0,
+      "new_zero_live": false,
+      "new_equals_source": true,
+      "diff_below_source": false,
+      "diff_equals_source": true,
+      "old_equal": true
+    }
+  },
+  "control": {
+    "https://more30.com/bkalot-studio/": {
+      "status": 200,
+      "bytes": 32558
+    },
+    "https://more30.com/": {
+      "status": 200,
+      "bytes": 3517
+    }
+  }
+}
