@@ -1,0 +1,65 @@
+שכפול בקלות שכבה 3: מסך המסמך אינו יכול לשאול מי הפיק אותו (§5ב, 0084)
+
+הקו הפתוח נכתב ב-f1c2a18 (heartbeat 614), מילה במילה: «אף קורא אינו מחזיר את
+produced_by (bkalot_clone_admin_document ו-bkalot_clone_admin_cases אינן יודעות
+עליו), כמו 0076 → 0077». נלקח מסך המסמך ורק הוא — אותו פיצול שבו 0077 לקחה את
+מסך הפנייה והשאירה את רשימת העבודה פתוחה.
+
+מיגרציה 0084 הוחלה בפועל (apply_migration success), create or replace על
+public.bkalot_clone_admin_document. אין שינוי סכמה, אין כתיבה, אין נגיעה
+ב-render, ב-edge, ב-apps/37 ואין פריסת פורטל. bkalot-clone-intake נשארת v1
+ו-bkalot-clone-admin v8.
+
+מה שקונה את הפעימה הוא אותו מסמך בדיוק, פעמיים, מעל HTTP. #203 נזרעה דרך
+bkalot-clone-intake עם מפתח anon כמו מהטופס (queued=false, contact 210), המנהל
+נוצר דרך bkalot_clone_admin_create (id=58, «QA 0084 מפיק», crypt/bf12) ולא
+בהזרקת hash, והמסמך הופק בלחיצת «הפק» מעל HTTP דרך v8 — מסמך 124, produced_by
+58 בשורה. לפני המיגרציה, על אותו מסמך: מסך המסמך אינו מחזיר את שני המפתחות
+כלל — לא null, אלא היעדר (19 מפתחות). אחרי: 58 ו«QA 0084 מפיק» (21 מפתחות).
+אותו שרת, אותה שורה, ההבדל הוא הפונקציה בלבד.
+
+רגרסיה בייט-בייט ולא בעין: גוף 0075/0064 הועלה כפונקציה זמנית נפרדת
+(zz_prev0075_admin_document, revoke מ-public/anon/authenticated) ורץ באותה
+עסקה על אותה שורה; החדשה פחות שני המפתחות שווה לישנה על ה-jsonb המלא. שלושת
+השערים זהים בשתיהן (document_id_required, ו-document_not_found ל-19 ספרות
+ולמזהה שאינו קיים), ובלי x-admin-token — 401 token_required לפני ואחרי.
+
+שלושת המצבים נמדדו ולא הונחו, ולא רק זה שנוח למדוד. (1) זהות שעברה בשער:
+58 והשם. (2) צורת v7 — bkalot_clone_render בארגומנט אחד על אותה פנייה: שניהם
+null, ok=true, ושאר השדות במקומם. (3) חשבון שאינו קיים עוד — הפקה חוזרת עם 58
+ואז מחיקת שורת המנהל: produced_by 58 ו-produced_by_name null, המסמך עדיין
+חוזר וגופו שלם. המצב השלישי הוא מה שקונה את הכרעות (1)+(2): INNER JOIN היה
+מחזיר document_not_found ומעלים מהמסך גוף שנכתב אל אזרח, מפני שעובד עזב;
+ו-full_name הוא NOT NULL (נמדד על הסכמה החיה), ולכן השם הריק אומר דבר אחד
+בדיוק ולא שניים.
+
+ההרשאות לא ניתנו מחדש: anon=false, authenticated=false, service_role=true —
+זהה לבסיס. הפונקציה הזמנית נמחקה (0 שורות ב-pg_proc).
+
+מצב טסט נמדד ולא הוצהר: הפונקציה שהשתנתה היא קריאה בלבד — אין בה UPDATE ואין
+INSERT. הקליטה וה-render החזירו queued=false, אפס מסמכים עם queue_id,
+outbound_queue נשאר 8 (טביעת אצבע b97746aef67df57d104d583a40a926ee זהה
+לבסיס), אפס שורות עם sent_at, delivery_log נשאר 3, אפס פניות ב-sent. אין
+מייל, אין הודעה ואין מסמך שיצא החוצה.
+
+התגלגל אחורה בפקודות נפרדות לפי id ולא CTE אחד — תקלת 124cfc2 — ואיש הקשר לפי
+id (210) ולא לפי טלפון שנשמר מנורמל — תקלת ac6e523; כל מחיקה החזירה מספר
+והמספר נבדק (documents 1, case_rights 42, cases 1, contacts 1, admin_users 1).
+אחרי: cases=0, case_rights=0, documents=0, admin_users=1, admin_sessions=5,
+templates=2, contacts=4, outbound_queue=8, delivery_log=3, catalog=888 — בסיס
+בדיוק.
+
+מוגן: git status ריק על apps/08-bkalut-app, apps/09-bkalot-admin,
+apps/37-bkalot-clone ו-supabase/functions; אין נגיעה
+ב-bkalut-app/bkalot-admin/zr_*/NEDARIM3873 ולא בסכמות csj/csj_src/igud.
+
+פתוח: לא נמדד בדפדפן, כי אין מי שמציג — apps/37-bkalot-clone/admin.html אינו
+קורא את שני השדות; זו הלבנה הבאה (UI), ואחריה פריסת פורטל. bkalot_clone_admin_case
+(בלוק documents) ו-bkalot_clone_admin_cases אינן יודעות על produced_by ולא נגעו,
+בדיוק כפי ש-0077 השאירה את הרשימה פתוחה. אין היסטוריית מפיקים — העמודה אומרת
+את האחרון בלבד, ואין produced_at. קווים שממשיכים ולא נגעו: אין היסטוריית
+הכרעות; הקליטה מחברת 42 זכויות ל-treatment ואפס ל-info/reminder על אותו
+situation; ה-title של «הצג» נמדד כתכונה ב-DOM ולא כטולטיפ שנפתח בריחוף. sent
+בלתי-ניתן-להשגה בכוונה; bkalot_clone_admin_create אינה חשופה ב-HTTP;
+pdf/audio → channel_unsupported. public_visible ו-show_in_showcase של #37
+נשארים false.

@@ -1,0 +1,104 @@
+{
+  "brick": "produced-by-read-0084-0814",
+  "migration": "0084_the_document_screen_cannot_ask_who_produced_it",
+  "applied": "apply_migration success",
+  "scope": "supabase/migrations/0084 בלבד — קריאה בלבד. אין שינוי סכמה, אין נגיעה ב-render/edge/apps-37, אין פריסת פורטל, אין פריסת edge function (bkalot-clone-intake v1, bkalot-clone-admin v8).",
+  "line_taken_verbatim": "אף קורא אינו מחזיר את produced_by (bkalot_clone_admin_document ו-bkalot_clone_admin_cases אינן יודעות עליו), כמו 0076 → 0077",
+  "line_written_by": "f1c2a18 (heartbeat 614)",
+
+  "seed_real_path": {
+    "admin": "bkalot_clone_admin_create → id 58, «QA 0084 מפיק» (crypt/bf12) — לא הזרקת hash",
+    "case": "bkalot-clone-intake מעל HTTP עם מפתח anon, כמו מהטופס → פנייה 203, contact 210, queued=false",
+    "document": "«הפק» מעל HTTP דרך bkalot-clone-admin v8 → מסמך 124, produced_by 58",
+    "login": "bkalot-clone-admin/login מעל HTTP → 200, admin 58"
+  },
+
+  "two_sided_http": {
+    "same_case": 203,
+    "same_document": 124,
+    "note": "אותו probe רץ פעמיים על אותו מסמך, לפני החלת המיגרציה ואחריה. ההבדל היחיד הוא הפונקציה בצד השני.",
+    "before": {
+      "has_key_produced_by": false,
+      "has_key_produced_by_name": false,
+      "keys": 19,
+      "row_in_db": "produced_by = 58 (נכתב ב-render באותה ריצה)"
+    },
+    "after": {
+      "has_key_produced_by": true,
+      "has_key_produced_by_name": true,
+      "produced_by": 58,
+      "produced_by_name": "QA 0084 מפיק",
+      "keys": 21
+    }
+  },
+
+  "regression_byte_for_byte": {
+    "method": "גוף 0075/0064 הועלה כפונקציה זמנית נפרדת (zz_prev0075_admin_document, revoke מ-public/anon/authenticated) ורץ באותה עסקה על אותה שורה בדיוק",
+    "new_minus_two_new_keys_equals_prev": true,
+    "new_keys": 21,
+    "prev_keys": 19,
+    "prev_has_produced_by_key": false,
+    "temp_function_dropped": true
+  },
+
+  "three_states": {
+    "1_gate_passed_identity": { "produced_by": 58, "produced_by_name": "QA 0084 מפיק" },
+    "2_v7_shape_no_identity": {
+      "how": "bkalot_clone_render(p) בארגומנט אחד — צורת הקריאה של v7 — על אותה פנייה",
+      "produced_by": null,
+      "produced_by_name": null,
+      "ok": true,
+      "other_fields_intact": "text_chars 2491, html_chars 3854, template_key rights_treatment_reply, overwritten עבר ל-true (הפקה חוזרת דורסת — הכרעה 5 של 0083)"
+    },
+    "3_account_gone": {
+      "how": "הפקה חוזרת עם 58, ואז מחיקת שורת המנהל מ-admin_users",
+      "before_delete": { "produced_by": 58, "produced_by_name": "QA 0084 מפיק" },
+      "after_delete": { "produced_by": 58, "produced_by_name": null },
+      "ok_after_delete": true,
+      "text_chars_after_delete": 2491,
+      "row_produced_by_after_delete": 58,
+      "buys": "הכרעות (1)+(2): LEFT JOIN ולא INNER — INNER היה מחזיר document_not_found ומעלים מהמסך גוף שנכתב אל אזרח, מפני שעובד עזב. full_name הוא NOT NULL, ולכן השם הריק אומר דבר אחד בדיוק."
+    }
+  },
+
+  "gates_unchanged": {
+    "no_id":            { "new": "document_id_required", "prev": "document_id_required" },
+    "nineteen_digits":  { "new": "document_not_found",   "prev": "document_not_found" },
+    "missing_id":       { "new": "document_not_found",   "prev": "document_not_found" },
+    "no_admin_token_http": { "status": 401, "error": "token_required", "before_and_after": "זהה" }
+  },
+
+  "acl_unchanged": { "anon": false, "authenticated": false, "service_role": true },
+
+  "test_mode_measured_not_declared": {
+    "function_is_read_only": "אין בה UPDATE ואין INSERT",
+    "intake_queued": false,
+    "render_queued": false,
+    "documents_with_queue_id": 0,
+    "outbound_queue": 8,
+    "outbound_queue_fingerprint": "b97746aef67df57d104d583a40a926ee",
+    "outbound_queue_sent_at_rows": 0,
+    "delivery_log": 3,
+    "cases_in_sent": 0,
+    "conclusion": "אין מייל, אין הודעה ואין מסמך שיצא החוצה."
+  },
+
+  "rollback": {
+    "method": "פקודות נפרדות לפי id ולא CTE אחד (תקלת 124cfc2), ואיש הקשר לפי id (210) ולא לפי טלפון שנשמר מנורמל (תקלת ac6e523); כל מחיקה החזירה מספר והמספר נבדק",
+    "deleted": { "documents": 1, "case_rights": 42, "cases": 1, "contacts": 1, "admin_users": 1, "admin_sessions": "נמחקו לפני שורת המנהל" },
+    "after": {
+      "cases": 0, "case_rights": 0, "documents": 0,
+      "admin_users": 1, "admin_sessions": 5, "templates": 2,
+      "contacts": 4, "outbound_queue": 8, "delivery_log": 3, "rights_catalog": 888
+    },
+    "baseline_match": "בסיס בדיוק"
+  },
+
+  "protected": "אין נגיעה ב-08/09/bkalut-app/bkalot-admin/zr_*/NEDARIM3873 ולא בסכמות csj/csj_src/igud. apps/37-bkalot-clone ו-supabase/functions לא נגעו.",
+
+  "not_measured_said_plainly": [
+    "לא נמדד בדפדפן — apps/37-bkalot-clone/admin.html אינו מציג את שני השדות, ואין מה לצלם. זו הלבנה הבאה (UI), ואחריה פריסת פורטל — אותו פיצול כמו 0076 → 0077 → f1ba90c.",
+    "מצב (3) הושג במחיקת שורת המנהל ולא בנתיב מוצר — אין במוצר מסך שמוחק מנהל. המצב עצמו חוקי לפי הכרעה (4) של 0083 (produced_by אינו FK), והמחיקה היא הדרך היחידה להגיע אליו מכאן.",
+    "שני מסמכים על אותה פנייה לא נמדדו — הפקה חוזרת דורסת את אותה שורה (on conflict do update), ולכן היסטוריית מפיקים אינה קיימת ואינה נמדדת."
+  ]
+}

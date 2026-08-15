@@ -1,0 +1,102 @@
+[
+  {
+    "label": "login (מנהל 58)",
+    "value": {
+      "status": 200,
+      "ok": true,
+      "admin": {
+        "id": 58,
+        "email": "qa0084@more30.test",
+        "full_name": "QA 0084 מפיק"
+      }
+    }
+  },
+  {
+    "label": "case/document reused (no new intake, no new render)",
+    "value": {
+      "caseA": 203,
+      "docId": 124
+    }
+  },
+  {
+    "label": "document — «מי הפיק»",
+    "value": {
+      "status": 200,
+      "ok": true,
+      "id": 124,
+      "has_key_produced_by": true,
+      "has_key_produced_by_name": true,
+      "produced_by": 58,
+      "produced_by_name": "QA 0084 מפיק"
+    }
+  },
+  {
+    "label": "document — שדות קיימים (רגרסיה)",
+    "value": {
+      "case_id": 203,
+      "kind": "email",
+      "title": "בקלות — 42 זכויות שאותרו עבורך (פנייה 203)",
+      "text_chars": 2491,
+      "html_chars": 3854,
+      "template_key": "rights_treatment_reply",
+      "template_name_he": "מענה לפניית טיפול — רשימת הזכויות",
+      "template_fallback": false,
+      "queue_id": null,
+      "queued": false,
+      "queue_status": null,
+      "overwritten": false,
+      "keys": [
+        "body_html",
+        "body_text",
+        "case_id",
+        "created_at",
+        "html_chars",
+        "id",
+        "kind",
+        "overwritten",
+        "produced_by",
+        "produced_by_name",
+        "queue_id",
+        "queue_mode",
+        "queue_status",
+        "queued",
+        "storage_path",
+        "template_fallback",
+        "template_key",
+        "template_name_he",
+        "text_chars",
+        "title",
+        "updated_at"
+      ]
+    }
+  },
+  {
+    "label": "שערי הקלט",
+    "value": {
+      "no_id": {
+        "status": 200,
+        "error": "document_id_required"
+      },
+      "nineteen_digits": {
+        "status": 200,
+        "error": "document_not_found"
+      },
+      "not_found": {
+        "status": 200,
+        "error": "document_not_found"
+      },
+      "no_token": {
+        "status": 401,
+        "error": "token_required"
+      }
+    }
+  },
+  {
+    "label": "ids",
+    "value": {
+      "caseA": 203,
+      "docId": 124,
+      "run": "after"
+    }
+  }
+]
