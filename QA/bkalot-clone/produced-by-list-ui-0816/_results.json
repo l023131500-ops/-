@@ -1,0 +1,77 @@
+{
+  "step": "UI — שורת הרשימה אומרת מי הפיק את המסמך האחרון",
+  "file_changed": "apps/37-bkalot-clone/admin.html",
+  "server_side_already_shipped": "0086 (147c39d) — last_produced_by / last_produced_by_name ב-public.bkalot_clone_admin_cases, מאומת חי לפני המדידה",
+  "measured_at": "2026-08-16T02:41+03:00",
+  "seed": {
+    "cases": { "A": 213, "B": 214, "C": 215, "D": 216 },
+    "contacts": [220, 221, 222, 223],
+    "documents": { "A": 148, "C": 149, "B": 150 },
+    "admins": { "main": 72, "gone": 73 },
+    "how": {
+      "intake": "bkalot-clone-intake מעל HTTP עם מפתח anon, כמו מהטופס",
+      "A": "bkalot-clone-admin/render עם x-admin-token — השער v8, כלומר «הפק» כפי שמנהל לוחץ",
+      "C": "אותו נתיב בדיוק בחשבון 73, ואז delete admin_users 73",
+      "B": "public.bkalot_clone_render(jsonb) בארגומנט אחד — צורת v7",
+      "D": "נקלטה ולא הופק עליה דבר"
+    }
+  },
+  "server_rows": [
+    { "id": 216, "documents_count": 0, "last_produced_by": null, "last_produced_by_name": null },
+    { "id": 215, "documents_count": 1, "last_produced_by": 73, "last_produced_by_name": null },
+    { "id": 214, "documents_count": 1, "last_produced_by": null, "last_produced_by_name": null },
+    { "id": 213, "documents_count": 1, "last_produced_by": 72, "last_produced_by_name": "QA 0087 מפיק ראשי" }
+  ],
+  "screen_rows": [
+    { "id": 216, "state": "(1) בלי מסמך", "bit": null, "class": null },
+    { "id": 215, "state": "(4) זהות בלי שם", "bit": "הופק בידי מנהל #73 · החשבון אינו קיים עוד", "class": "stale", "title": "הזהות נשמרה על המסמך בזמן ההפקה, וחשבון הניהול שהיא מצביעה עליו כבר אינו במסד" },
+    { "id": 214, "state": "(2) יש מסמך ואין זהות", "bit": "מי הפיק אינו ידוע", "class": "stale", "title": "ההפקה נרשמה לפני שהשער העביר את זהות המנהל, ולכן נשמר הגוף בלבד" },
+    { "id": 213, "state": "(3) זהות עם שם", "bit": "הופק על ידי QA 0087 מפיק ראשי", "class": "", "title": "מזהה מנהל 72 · ההפקה האחרונה בלבד — «הפק מחדש» דורס את הקודמת ואין היסטוריה" }
+  ],
+  "state_0_old_server": {
+    "how": "window.fetch עוטף את תשובת /bkalot-clone-admin/cases ומוחק את שני המפתחות — שרת מלפני 0086 בדיוק",
+    "produced_bits": 0,
+    "rows": 4,
+    "count_label": "4 פניות",
+    "decided_bits_unchanged": 3,
+    "verdict": "אין ולו סימן אחד, ושאר השורה זהה — Object.hasOwn ולא ?? null"
+  },
+  "regression_on_screen": {
+    "rows": 4,
+    "count_label": "4 פניות",
+    "meta_bits_per_row_before_new_bit": ["#id", "תאריך", "טלפון", "מצב", "זכויות", "מסמכים (כשיש)", "לא הוכרע מהמסך"],
+    "decided_bits": 3,
+    "verdict": "כל מה שהשורה כבר אמרה חזר זהה, ונוסף סימן אחד"
+  },
+  "http_probe": {
+    "urls": ["https://more30.com/bkalot-studio/admin", "https://more30.com/bkalot-studio/admin/"],
+    "status": 200,
+    "new_zero_live": true,
+    "new_present_source": true,
+    "diff_grew": true,
+    "old_equal": true,
+    "replacement_chars": 0,
+    "double_encoded": 0,
+    "note": "המסך שנמדד כאן הוא הקוד שבמקור מול ה-DB החי. בייצור השורה עדיין שותקת — הפריסה היא הפעימה הבאה."
+  },
+  "test_mode": {
+    "intake_queued": [false, false, false, false],
+    "render_queued": [false, false, false],
+    "documents_with_queue_id": 0,
+    "outbound_queue": 8,
+    "outbound_queue_sent_at_not_null": 0,
+    "outbound_queue_fingerprint_before": "050e54ab59235d105af3a10c785dbaea",
+    "outbound_queue_fingerprint_after": "050e54ab59235d105af3a10c785dbaea",
+    "delivery_log": 3,
+    "verdict": "לא יצא מייל, לא יצאה הודעה ולא יצא מסמך החוצה"
+  },
+  "baseline_before": { "cases": 0, "documents": 0, "case_rights": 0, "contacts": 4, "admins": 1, "sessions": 5, "queue": 8, "dlog": 3, "catalog": 888 },
+  "peak_during": { "cases": 4, "documents": 3, "case_rights": 168, "contacts": 8, "admins": 2, "sessions": 7, "queue": 8, "dlog": 3, "catalog": 888 },
+  "rollback": {
+    "per_table_deleted": { "documents": 3, "case_rights": 168, "cases": 4, "contacts": 4, "admin_sessions": 2, "admin_users": 1 },
+    "admin_users_note": "1 ולא 2 — חשבון 73 נמחק כבר בזמן המדידה, והמחיקה הזו היא המצב שנמדד",
+    "after": { "cases": 0, "documents": 0, "case_rights": 0, "contacts": 4, "admins": 1, "sessions": 5, "templates": 2, "queue": 8, "dlog": 3, "catalog": 888, "queue_fp": "050e54ab59235d105af3a10c785dbaea" },
+    "verdict": "בסיס בדיוק, כולל טביעת האצבע של התור"
+  },
+  "open": "בייצור השורה עדיין שותקת — 0 מסומני NEW בשני ה-URL. הלבנה הבאה: פריסת פורטל, אותו פיצול כמו 3da9647 → a6e8844."
+}

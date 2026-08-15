@@ -628,6 +628,8 @@ pre{
       for (const b of bits) { const s = document.createElement("span"); s.textContent = b; meta.append(s); }
       const decided = decidedBit(c);
       if (decided) meta.append(decided);
+      const produced = producedBit(c);
+      if (produced) meta.append(produced);
       btn.append(top, meta);
       btn.addEventListener("click", () => openCase(c.id));
       rows.append(btn);
@@ -696,6 +698,57 @@ pre{
     x.textContent = `מנהל #${c.decided_by} · החשבון אינו קיים עוד`;
     x.title = "הזהות נשמרה על הפנייה בזמן ההכרעה, וחשבון הניהול שהיא מצביעה עליו כבר אינו במסד";
     s.append(document.createTextNode(" · "), x);
+    return s;
+  }
+
+  // ── «מי הפיק» ברשימה ──────────────────────────────────────────────────────
+  // 0086 החזירה את last_produced_by ואת השם בדיוק בשביל השורה הזו. הפער:
+  // documents_count שכבר יושב בשורה אומר «יש מסמך» ולא «של מי», ומנהל שסורק את
+  // רשימת העבודה בלי לפתוח פנייה אחת אחת לא ראה מי כבר ענה על מה. זה ההבדל בין
+  // רשימה שאפשר לסרוק לרשימה שאפשר רק לספור.
+  //
+  // ארבעה מצבים, ולא שלושה כמו ב-fillProducedCell: שם השורה היא מסמך, וכאן היא
+  // פנייה — שיכולה גם לא להחזיק מסמך כלל.
+  //
+  // (0) המפתח אינו קיים בתשובה כלל — שרת מלפני 0086. אז אין ולו שורה אחת
+  //     שנושאת סימן, בדיוק כמו לפני הפעימה הזו. Object.hasOwn ולא ?? null:
+  //     «המסך אינו יכול לדעת» ו«אין מפיק» נראים זהים בקריאה רגילה והם שני
+  //     דברים הפוכים, וסימן שקרי כאן היה נקרא כמו נתון שנמדד.
+  //
+  // (1) documents_count = 0 — לא הופק מסמך, ואין על מה לומר מי. השורה שותקת,
+  //     כפי ששתקה עד היום; היא כבר אינה מציגה מונה מסמכים במצב הזה.
+  //
+  // (2) יש מסמך ואין זהות — הפקה שנרשמה לפני v8, כשהשער העביר ארגומנט אחד.
+  //     מה שמפריד את המצב הזה מ-(1) הוא documents_count שכבר בשורה, ולא שדה
+  //     נגזר שלישי: שניהם מחזירים null/null, והמונה הוא ההפרש.
+  //
+  // (3) זהות עם שם — המקרה הרגיל.
+  //
+  // (4) זהות בלי שם — full_name הוא NOT NULL, ולכן שם ריק כשהזהות מלאה אומר
+  //     דבר אחד בדיוק: חשבון הניהול נמחק.
+  //
+  // הנוסח של (2) ו-(4) הוא מילה במילה זה של fillProducedCell במסך הפנייה
+  // (042e60f): אותו נתון בשני מסכים אינו זכאי לשני ניסוחים. הנוסח מדבר על
+  // ההפקה האחרונה ולא על «ההפקה» — «הפק מחדש» דורס גוף ומפיק יחד ואין
+  // היסטוריה, וגם אין last_produced_at שיאמר מתי.
+  function producedBit(c) {
+    if (!Object.hasOwn(c, "last_produced_by")) return null;
+    if ((c.documents_count ?? 0) === 0) return null;
+    const s = document.createElement("span");
+    if (c.last_produced_by == null) {
+      s.className = "stale";
+      s.textContent = "מי הפיק אינו ידוע";
+      s.title = "ההפקה נרשמה לפני שהשער העביר את זהות המנהל, ולכן נשמר הגוף בלבד";
+      return s;
+    }
+    if (c.last_produced_by_name) {
+      s.textContent = `הופק על ידי ${c.last_produced_by_name}`;
+      s.title = `מזהה מנהל ${c.last_produced_by} · ההפקה האחרונה בלבד — «הפק מחדש» דורס את הקודמת ואין היסטוריה`;
+      return s;
+    }
+    s.className = "stale";
+    s.textContent = `הופק בידי מנהל #${c.last_produced_by} · החשבון אינו קיים עוד`;
+    s.title = "הזהות נשמרה על המסמך בזמן ההפקה, וחשבון הניהול שהיא מצביעה עליו כבר אינו במסד";
     return s;
   }
 

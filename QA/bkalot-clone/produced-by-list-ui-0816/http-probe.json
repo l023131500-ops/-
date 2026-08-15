@@ -1,0 +1,68 @@
+{
+  "at": "2026-08-15T23:44:13.422Z",
+  "source_bytes": 105128,
+  "source": {
+    "function producedBit(c)": 1,
+    "const produced = producedBit(c);": 1,
+    "last_produced_by_name": 2,
+    "מי הפיק אינו ידוע": 1,
+    "הופק על ידי": 4,
+    "fillProducedCell": 6,
+    "Object.hasOwn": 4,
+    "documents_count": 6,
+    "fillDecidedLine": 5,
+    "fillQueueCell": 2,
+    "fillTemplateCell": 4,
+    "decidedBit(c)": 2
+  },
+  "live": {
+    "https://more30.com/bkalot-studio/admin": {
+      "status": 200,
+      "bytes": 101604,
+      "markers": {
+        "function producedBit(c)": 0,
+        "const produced = producedBit(c);": 0,
+        "last_produced_by_name": 0,
+        "מי הפיק אינו ידוע": 0,
+        "הופק על ידי": 3,
+        "fillProducedCell": 4,
+        "Object.hasOwn": 2,
+        "documents_count": 2,
+        "fillDecidedLine": 5,
+        "fillQueueCell": 2,
+        "fillTemplateCell": 4,
+        "decidedBit(c)": 2
+      },
+      "replacement_chars": 0,
+      "double_encoded": 0,
+      "new_zero_live": true,
+      "new_present_source": true,
+      "diff_grew": true,
+      "old_equal": true
+    },
+    "https://more30.com/bkalot-studio/admin/": {
+      "status": 200,
+      "bytes": 101604,
+      "markers": {
+        "function producedBit(c)": 0,
+        "const produced = producedBit(c);": 0,
+        "last_produced_by_name": 0,
+        "מי הפיק אינו ידוע": 0,
+        "הופק על ידי": 3,
+        "fillProducedCell": 4,
+        "Object.hasOwn": 2,
+        "documents_count": 2,
+        "fillDecidedLine": 5,
+        "fillQueueCell": 2,
+        "fillTemplateCell": 4,
+        "decidedBit(c)": 2
+      },
+      "replacement_chars": 0,
+      "double_encoded": 0,
+      "new_zero_live": true,
+      "new_present_source": true,
+      "diff_grew": true,
+      "old_equal": true
+    }
+  }
+}
