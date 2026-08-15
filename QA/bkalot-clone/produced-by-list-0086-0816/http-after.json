@@ -1,0 +1,235 @@
+[
+  {
+    "label": "login (מנהל 69)",
+    "value": {
+      "status": 200,
+      "ok": true,
+      "admin": {
+        "id": 69,
+        "email": "qa0086main@more30.test",
+        "full_name": "QA 0086 מפיק ראשי"
+      }
+    }
+  },
+  {
+    "label": "cases — ארבעת המצבים ברשימה אחת",
+    "value": {
+      "status": 200,
+      "ok": true,
+      "total": 4,
+      "A_מהמסך": {
+        "case_id": 209,
+        "has_key_last_produced_by": true,
+        "has_key_last_produced_by_name": true,
+        "last_produced_by": 69,
+        "last_produced_by_name": "QA 0086 מפיק ראשי",
+        "documents_count": 1
+      },
+      "B_צורת_v7": {
+        "case_id": 210,
+        "has_key_last_produced_by": true,
+        "has_key_last_produced_by_name": true,
+        "last_produced_by": null,
+        "last_produced_by_name": null,
+        "documents_count": 1
+      },
+      "C_מפיק_שנמחק": {
+        "case_id": 211,
+        "has_key_last_produced_by": true,
+        "has_key_last_produced_by_name": true,
+        "last_produced_by": 70,
+        "last_produced_by_name": null,
+        "documents_count": 1
+      },
+      "D_בלי_מסמך": {
+        "case_id": 212,
+        "has_key_last_produced_by": true,
+        "has_key_last_produced_by_name": true,
+        "last_produced_by": null,
+        "last_produced_by_name": null,
+        "documents_count": 0
+      }
+    }
+  },
+  {
+    "label": "cases — שדות קיימים בשורה (רגרסיה)",
+    "value": {
+      "keys": [
+        "chosen_count",
+        "contact",
+        "created_at",
+        "decided_at",
+        "decided_by",
+        "decided_by_name",
+        "documents_count",
+        "id",
+        "kind",
+        "last_produced_by",
+        "last_produced_by_name",
+        "note",
+        "rights_count",
+        "situation",
+        "source",
+        "status",
+        "topic_no"
+      ],
+      "kind": "treatment",
+      "status": "in_progress",
+      "source": "form",
+      "situation": "single_parent",
+      "topic_no": null,
+      "note_chars": 42,
+      "decided_by": null,
+      "decided_at": null,
+      "decided_by_name": null,
+      "contact_keys": [
+        "consent",
+        "email",
+        "full_name",
+        "id",
+        "phone"
+      ],
+      "rights_count": 42,
+      "chosen_count": 0,
+      "documents_count": 1,
+      "page": {
+        "total": 4,
+        "limit": 50,
+        "offset": 0,
+        "rows": 4
+      },
+      "order_ids": [
+        212,
+        211,
+        210,
+        209
+      ]
+    }
+  },
+  {
+    "label": "cases — מיון, סינון, חיפוש ושערים (רגרסיה)",
+    "value": {
+      "sort_decided_at": {
+        "status": 200,
+        "ok": true,
+        "total": 4,
+        "ids": [
+          212,
+          211,
+          210,
+          209
+        ]
+      },
+      "filter_decided_no_treatment": {
+        "status": 200,
+        "total": 4,
+        "ids": [
+          212,
+          211,
+          210,
+          209
+        ]
+      },
+      "q_case_id": {
+        "status": 200,
+        "total": 1,
+        "ids": [
+          211
+        ]
+      },
+      "sort_unknown": {
+        "status": 200,
+        "error": "sort_unknown",
+        "allowed": [
+          "created_at",
+          "decided_at"
+        ]
+      },
+      "status_unknown": {
+        "status": 200,
+        "error": "status_unknown"
+      },
+      "no_token": {
+        "status": 401,
+        "error": "token_required"
+      }
+    }
+  },
+  {
+    "label": "0085 מול 0086 — שורת הרשימה והמסמך האחרון שבמסך הפנייה",
+    "value": [
+      {
+        "key": "A",
+        "case_id": 209,
+        "docs": [
+          142
+        ],
+        "case_screen_last": {
+          "id": 142,
+          "produced_by": 69,
+          "produced_by_name": "QA 0086 מפיק ראשי"
+        },
+        "list_row": {
+          "last_produced_by": 69,
+          "last_produced_by_name": "QA 0086 מפיק ראשי"
+        },
+        "agrees": true
+      },
+      {
+        "key": "B",
+        "case_id": 210,
+        "docs": [
+          143
+        ],
+        "case_screen_last": {
+          "id": 143,
+          "produced_by": null,
+          "produced_by_name": null
+        },
+        "list_row": {
+          "last_produced_by": null,
+          "last_produced_by_name": null
+        },
+        "agrees": true
+      },
+      {
+        "key": "C",
+        "case_id": 211,
+        "docs": [
+          144
+        ],
+        "case_screen_last": {
+          "id": 144,
+          "produced_by": 70,
+          "produced_by_name": null
+        },
+        "list_row": {
+          "last_produced_by": 70,
+          "last_produced_by_name": null
+        },
+        "agrees": true
+      },
+      {
+        "key": "D",
+        "case_id": 212,
+        "docs": [],
+        "case_screen_last": null,
+        "list_row": {
+          "last_produced_by": null,
+          "last_produced_by_name": null
+        },
+        "agrees": true
+      }
+    ]
+  },
+  {
+    "label": "ids",
+    "value": {
+      "A": 209,
+      "B": 210,
+      "C": 211,
+      "D": 212,
+      "run": "after"
+    }
+  }
+]

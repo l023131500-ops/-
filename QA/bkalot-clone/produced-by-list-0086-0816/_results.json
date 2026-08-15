@@ -1,0 +1,89 @@
+{
+  "beat": "0086 — רשימת העבודה אומרת מי הפיק את המסמך האחרון",
+  "phase": "priority §5ב — שכפול בקלות, שכבה 3",
+  "date": "2026-08-16",
+  "project": "uhnrgujbdxhhmoxcjria",
+  "migration": {
+    "file": "supabase/migrations/0086_the_work_list_cannot_say_who_produced_the_last_document.sql",
+    "applied_as": "0086_the_work_list_cannot_say_who_produced_the_last_document",
+    "function": "public.bkalot_clone_admin_cases(p jsonb)",
+    "before": { "prosrc_md5": "d0a4c38f6a849cccc590503eb9cdbc32", "prosrc_len": 5394, "position_of_produced_by": 0 },
+    "adds": ["last_produced_by", "last_produced_by_name"],
+    "read_only": true
+  },
+  "seed": {
+    "path": "דרך המוצר: bkalot-clone-intake מעל HTTP עם מפתח anon, כמו מהטופס",
+    "cases": { "A": 209, "B": 210, "C": 211, "D": 212 },
+    "contacts": [216, 217, 218, 219],
+    "rights_per_case": 42,
+    "admins_created_via_rpc": {
+      "69": "QA 0086 מפיק ראשי (נכנס למערכת והפיק מהמסך)",
+      "70": "QA 0086 מפיק שיימחק (הפיק ואז חשבונו נמחק)",
+      "71": "QA 0086 מפיק שני (הפיק את המסמך המאוחר)"
+    },
+    "documents": { "142": "A — מהמסך, v8, produced_by=69", "143": "B — render בארגומנט אחד, v7, produced_by=null", "144": "C — produced_by=70, והחשבון נמחק אחריו", "146": "A — pdf, מאוחר בשנייה, produced_by=71", "147": "A — audio, אותה חותמת בדיוק כמו 146, produced_by=69" }
+  },
+  "measurement": {
+    "before_migration": {
+      "has_key_last_produced_by": false,
+      "has_key_last_produced_by_name": false,
+      "note": "היעדר מפתח, לא null — נמדד ב-hasOwnProperty על השורה שחזרה מ-HTTP",
+      "case_screen_already_answers": { "209": { "produced_by": 69, "produced_by_name": "QA 0086 מפיק ראשי" } },
+      "file": "http-before.json"
+    },
+    "after_migration_four_states_one_response": {
+      "A_209_produced_from_screen": { "last_produced_by": 69, "last_produced_by_name": "QA 0086 מפיק ראשי", "documents_count": 1 },
+      "B_210_v7_shape": { "last_produced_by": null, "last_produced_by_name": null, "documents_count": 1 },
+      "C_211_producer_account_deleted": { "last_produced_by": 70, "last_produced_by_name": null, "documents_count": 1 },
+      "D_212_no_document_at_all": { "last_produced_by": null, "last_produced_by_name": null, "documents_count": 0 },
+      "two_nulls_separated_by": "documents_count — 1 מול 0, ולא שדה נגזר (הכרעה 4)",
+      "left_join_lateral_bought_by": "C ו-D נשארו ברשימה; ב-INNER שתי השורות היו נעלמות ממנה כליל",
+      "file": "http-after.json"
+    },
+    "latest_of_several": {
+      "seeded": "מסמך 146 (pdf) על פנייה 209, מאוחר בשנייה מ-142, produced_by=71",
+      "row_after": { "last_produced_by": 71, "last_produced_by_name": "QA 0086 מפיק שני", "documents_count": 2 },
+      "agrees_with_case_screen": true,
+      "file": "http-after-two-docs.json"
+    },
+    "tie_break": {
+      "seeded": "מסמך 147 (audio) על פנייה 209, created_at זהה בדיוק ל-146 (2026-08-15 23:27:34.722932+00), produced_by=69",
+      "documents_desc": "147:69 | 146:71 | 142:69",
+      "row": { "last_produced_by": 69, "last_produced_by_name": "QA 0086 מפיק ראשי", "documents_count": 3 },
+      "ten_consecutive_calls_distinct_values": ["69"],
+      "means": "id desc הוא ששובר; בלי שובר שוויון שתי השורות היו חוקיות והשם היה מתחלף מרענון לרענון"
+    },
+    "regression": {
+      "row_keys_before": ["chosen_count","contact","created_at","decided_at","decided_by","decided_by_name","documents_count","id","kind","note","rights_count","situation","source","status","topic_no"],
+      "row_keys_after": "אותם 15 ועוד last_produced_by ו-last_produced_by_name בלבד",
+      "total_limit_offset": { "total": 4, "limit": 50, "offset": 0, "rows": 4 },
+      "order_ids": [212, 211, 210, 209],
+      "sort_decided_at": { "ok": true, "total": 4 },
+      "filter_decided_no_kind_treatment": { "total": 4 },
+      "q_by_case_id": { "total": 1, "ids": [211] },
+      "sort_unknown": { "error": "sort_unknown", "allowed": ["created_at", "decided_at"] },
+      "status_unknown": { "error": "status_unknown" },
+      "no_token": { "http": 401, "error": "token_required" },
+      "cross_reader_agreement": "0085 (שורת המסמך במסך הפנייה) ו-0086 (שורת הרשימה) מסכימים בארבע הפניות"
+    }
+  },
+  "test_mode": {
+    "intake_queued": false,
+    "render_queued": false,
+    "documents_with_queue_id": 0,
+    "outbound_queue_rows": 8,
+    "outbound_queue_sent_at_rows": 0,
+    "outbound_queue_fingerprint": "bf57d69edaf6725ff7f52ad3007c4170 — זהה לפני ואחרי",
+    "delivery_log_rows": 3,
+    "means": "לא יצא מייל, לא יצאה הודעה ולא יצא מסמך אחד החוצה"
+  },
+  "rollback": {
+    "method": "פקודה נפרדת לכל טבלה, כל אחת סופרת את מה שהיא עצמה מחקה — ולא משפט אחד שגם מוחק וגם סופר (תקלת cte-delete-sees-prestatement-snapshot; נראתה שוב כאן: count באותו statement של ה-insert דיווח 1 בזמן שהשורה כבר נכתבה)",
+    "deleted": { "documents": 5, "case_rights": 168, "cases": 4, "contacts": 4, "admin_sessions": 5, "admin_users": 2 },
+    "note": "מנהל 70 נמחק כבר בזמן המדידה — הוא המצב הנמדד עצמו",
+    "after": { "cases": 0, "case_rights": 0, "documents": 0, "contacts": 4, "admin_users": 1, "admin_sessions": 5, "templates": 2, "outbound_queue": 8, "delivery_log": 3, "rights_catalog": 888, "list_total": 0 },
+    "baseline_match": true
+  },
+  "protected": "אין נגיעה ב-08/09/bkalut-app/bkalot-admin/zr_*/NEDARIM3873 ובסכמות csj/csj_src/igud",
+  "open": "אין מי שמציג את שני השדות — admin.html מצייר את שורת הרשימה בלי «הופק על ידי»; זו הלבנה הבאה (UI), ואחריה פריסת פורטל"
+}
