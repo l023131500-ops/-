@@ -1076,7 +1076,7 @@ pre{
 
     if (docs.length) {
       const t = document.createElement("table");
-      t.innerHTML = "<thead><tr><th>#</th><th>סוג</th><th>כותרת</th><th>מכתב</th><th>נוצר</th><th>תור</th><th></th></tr></thead>";
+      t.innerHTML = "<thead><tr><th>#</th><th>סוג</th><th>כותרת</th><th>מכתב</th><th>נוצר</th><th>הופק על ידי</th><th>תור</th><th></th></tr></thead>";
       const tb = document.createElement("tbody");
       const panel = document.createElement("div");
       panel.className = "docview";
@@ -1116,6 +1116,23 @@ pre{
         const ctd = document.createElement("td");
         fillCreatedCell(ctd, d);
         tr.append(ctd);
+        // 0085 החזירה את produced_by ואת השם גם בבלוק documents של הפנייה, וכאן
+        // הם נקראים. אותה fillProducedCell של מסך המסמך בדיוק, ולא ניסוח שני על
+        // אותו נתון: שני המסכים אמורים לומר את אותו דבר על אותו מסמך, ושתי
+        // פונקציות היו נפרדות בשקט — בדיוק כפי ש-fillTemplateCell ו-fillCreatedCell
+        // משותפות לשניהם מאותו טעם.
+        //
+        // מימין ל«נוצר» ולא בסוף השורה, ובאותו סדר של מסך המסמך (מכתב · נוצר ·
+        // הופק על ידי): «נדרס» ו«מי הפיק» מדברים על אותה הפקה אחרונה, וסמיכות
+        // התאים היא מה שקורא אותם כמשפט אחד. עמודת «תור» מדברת על מה שיקרה
+        // אחר כך, ולכן היא נשארת אחריהם.
+        //
+        // עד כאן שורת המסמך ברשימה שתקה גם כשהנתון היה קיים ומדויק — מנהל שפתח
+        // פנייה נדרש ללחוץ «הצג» מסמך-מסמך רק כדי לדעת מי כתב את מה שהוא עומד
+        // לשלוח.
+        const ptd = document.createElement("td");
+        fillProducedCell(ptd, d);
+        tr.append(ptd);
         // מצב התור נקרא עכשיו בטעינת הפנייה (0069) ולא רק אחרי לחיצה. עד כאן
         // הדרך היחידה לדעת אילו מסמכים כבר בתור — ואילו מהם נחסמו — הייתה
         // ללחוץ «הצג» מסמך-מסמך.
