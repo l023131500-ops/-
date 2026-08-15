@@ -1,0 +1,115 @@
+{
+  "step": "produced-by-case-0085-0816",
+  "phase": "priority §5ב — שכפול בקלות שכבה 3: שורת המסמך ברשימת הפנייה אינה יכולה לשאול מי הפיק (0085)",
+  "date": "2026-08-16",
+  "scope": "מיגרציה בלבד — קריאה. אין שינוי סכמה, אין שינוי כתיבה, אין פריסת edge function ואין פריסת פורטל.",
+  "migration": {
+    "file": "supabase/migrations/0085_the_document_row_in_the_case_cannot_ask_who_produced_it.sql",
+    "version_in_db": "20260815224447",
+    "name_in_db": "0085_the_document_row_in_the_case_cannot_ask_who_produced_it",
+    "function": "public.bkalot_clone_admin_case(p_id bigint)",
+    "overloads_after": 1,
+    "note_on_apply": "הוחלה פעמיים בכוונה: הפעם הראשונה רשמה את שורת המיגרציה עם גוף שההערות הפנימיות הוסרו ממנו, והשנייה החליפה את הפונקציה בגוף המדויק שבקובץ. pg_proc נמדד אחרי ומכיל את ההערה — כלומר הפונקציה שבמסד היא זו שבקובץ ולא וריאנט שלה. הטקסט השמור ב-supabase_migrations הוא אותה הגדרה בלי ההערות הפנימיות; לא נגעה, וההפרש מוצהר ולא נבלע."
+  },
+  "acl_unchanged": { "anon": false, "authenticated": false, "service_role": true },
+  "schema_measured_not_assumed": { "bkalot_clone.admin_users.full_name is_nullable": "NO" },
+  "measurement": {
+    "how": "אותה פנייה (#206) ואותו מסמך (#133) בדיוק, מעל HTTP דרך bkalot-clone-admin/case עם מפתח anon ובהתחברות אמיתית דרך /login. ההבדל בין before ל-after הוא הפונקציה שרצה בצד השני, ולא הקלט.",
+    "before": {
+      "file": "http-before.json",
+      "has_key_produced_by": false,
+      "has_key_produced_by_name": false,
+      "note": "היעדר המפתח, לא null — הקורא לא ידע לשאול. באותו רגע bkalot_clone_admin_document (0084) כבר החזירה produced_by=63 ואת השם על אותו מסמך עצמו: הנתון היה קיים ומדויק, ושורת המסמך שתקה.",
+      "document_row_keys": ["created_at","has_body","id","kind","overwritten","queue_id","queue_missing","queue_mode","queue_status","storage_path","template_fallback","template_key","template_name_he","title","updated_at"]
+    },
+    "after_three_states": [
+      {
+        "state": "(1) הפקה דרך המסך",
+        "file": "http-after.json",
+        "how_seeded": "לחיצת /render מהמסך עם x-admin-token של מנהל 63 — v8 מעבירה את הזהות מהשער אל הארגומנט השני",
+        "produced_by": 63,
+        "produced_by_name": "QA 0085 מפיק בשורה",
+        "matches_document_screen_0084": true
+      },
+      {
+        "state": "(2) צורת v7 — ארגומנט אחד",
+        "file": "http-after-v7.json",
+        "how_seeded": "bkalot_clone_render(jsonb) בארגומנט אחד — בדיוק מה שהפיק מסמכים לפני השער",
+        "produced_by": null,
+        "produced_by_name": null,
+        "overwritten_flipped_to": true,
+        "note": "אותה שורה (#133) נדרסה, וגם המפיק — הכרעה (5) של 0083 נמדדת כאן ולא מוצהרת. ולכן דווקא בשורה הזו «נדרס» ו«מי הפיק» הם משפט אחד.",
+        "matches_document_screen_0084": true
+      },
+      {
+        "state": "(3) המפיק נמחק",
+        "file": "http-after-gone.json",
+        "how_seeded": "render עם p_admin_id=64 ואז מחיקת חשבון 64 — ולא UPDATE ידני על העמודה",
+        "produced_by": 64,
+        "produced_by_name": null,
+        "account_64_rows_after_delete": 0,
+        "document_survived": true,
+        "body_text_len_after_delete": 2507,
+        "note": "זו המדידה שקונה את ה-LEFT JOIN: השורה נשארה ברשימה והגוף נשאר שלם אחרי שהמפיק עזב. ב-INNER JOIN היא הייתה נעלמת מהרשימה כולה — כלומר ראיה שמסמך נכתב אל אזרח הייתה נמחקת מפני שעובד התפטר. מחיקת החשבון נמדדה בפקודה נפרדת משלה ולא באותו משפט שמחק אותו — תקלת cte-delete-sees-prestatement-snapshot.",
+        "matches_document_screen_0084": true
+      }
+    ],
+    "cross_reader_check": "בשלושת המצבים bkalot_clone_admin_document (0084) ו-bkalot_clone_admin_case (0085) החזירו את אותם שני ערכים בדיוק על אותו מסמך — matches_case_row=true. שני מסכים שקוראים את אותו נתון ומפרשים אותו אחרת הם תקלה בפני עצמה.",
+    "before_vs_after_is_a_real_delta": "בריצת before אותה השוואה החזירה matches_case_row=false — לא מפני שהערכים נבדלו, אלא מפני שבצד אחד לא היה מה להשוות. אפס מול אפס אינו מדידה; כאן ההפרש אמיתי משני הצדדים."
+  },
+  "regression": {
+    "document_row_existing_fields": "15 השדות שקדמו נשארו בשמם ובערכם; הבלוק גדל ל-17. סדר השורות (created_at, id) לא השתנה.",
+    "other_blocks_untouched": {
+      "case_keys": 17,
+      "decided_by": null,
+      "decided_by_name": null,
+      "rights_count": 42,
+      "templates_count": 2,
+      "templates_keys": ["general_inquiry_reply", "rights_treatment_reply"]
+    },
+    "input_gates_unchanged": {
+      "no_id": { "status": 200, "error": "case_id_required" },
+      "not_numeric": { "status": 200, "error": "case_id_required" },
+      "not_found": { "status": 200, "error": "case_not_found" },
+      "no_token": { "status": 401, "error": "token_required" }
+    },
+    "alias_check": "pau ולא au — au מחובר על c.decided_by (מי שהכריע על הפנייה) ו-pau על d.produced_by (מי שהפיק את המסמך הזה). decided_by_name נשאר null בכל שלוש המדידות בעוד produced_by_name התמלא, כלומר שני ה-JOIN נפרדים בפועל ולא רק בכתיב."
+  },
+  "test_mode_measured_not_declared": {
+    "intake_queued": false,
+    "render_queued": false,
+    "document_queue_id": null,
+    "cases_with_status_sent": 0,
+    "outbound_queue_before": 8,
+    "outbound_queue_after": 8,
+    "outbound_queue_rows_with_sent_at": 0,
+    "outbound_queue_fingerprint_before": "b4318d89eac1a47be75ab8769f320683",
+    "outbound_queue_fingerprint_after": "b4318d89eac1a47be75ab8769f320683",
+    "delivery_log_before": 3,
+    "delivery_log_after": 3,
+    "note": "הפונקציה שהשתנתה היא קריאה בלבד — אין בה UPDATE ואין INSERT. אין מייל, אין הודעה ואין מסמך שיצא החוצה."
+  },
+  "rollback": {
+    "how": "שש פקודות נפרדות לפי id ולא CTE אחד — תקלת 124cfc2 — ואיש הקשר לפי id (213) ולא לפי טלפון שנשמר מנורמל — תקלת ac6e523. כל מחיקה החזירה מספר והמספר נבדק.",
+    "documents": 1,
+    "case_rights": 42,
+    "cases": 1,
+    "contacts": 1,
+    "admin_sessions": 5,
+    "admin_users": 2,
+    "after": {
+      "cases": 0, "case_rights": 0, "documents": 0, "contacts": 4,
+      "admin_users": 1, "admin_sessions": 5, "templates": 2,
+      "outbound_queue": 8, "delivery_log": 3, "catalog": 888
+    },
+    "baseline_exact": true
+  },
+  "protected": "אין נגיעה ב-08/09/bkalut-app/bkalot-admin/zr_*/NEDARIM3873 ולא בסכמות csj/csj_src/igud. apps/37-bkalot-clone ו-supabase/functions לא נגעו.",
+  "open": [
+    "bkalot_clone_admin_cases — רשימת העבודה — עדיין אינה יודעת על produced_by. לא נגעה.",
+    "apps/37-bkalot-clone/admin.html אינו קורא produced_by בשורת המסמך של מסך הפנייה: התשובה כוללת מעכשיו את שני השדות ואין מי שמציג אותם — זו הלבנה הבאה (UI), ואחריה פריסת פורטל. אותו פיצול כמו 0084 → 042e60f → 7d7dcf2.",
+    "לא נמדד בדפדפן, ומאותה סיבה: אין מי שמציג.",
+    "שלושת המצבים נמדדו על שורה אחת ברצף ולא על שלוש שורות באותה תשובה, ונאמר ולא נבלע: bkalot_clone_render עושה on conflict (case_id, kind), ו-kind של שתי התבניות הוא email — כלומר לפנייה יש לכל היותר מסמך אימייל אחד, ואין דרך להעמיד שלוש שורות זו לצד זו דרך המוצר. ההשוואה בין שני מסמכים של אותה פנייה, שהיא הנימוק לפעימה, אינה ניתנת להדגמה היום.",
+    "אין היסטוריית מפיקים — העמודה אומרת את האחרון בלבד — ואין produced_at."
+  ]
+}
