@@ -1369,6 +1369,50 @@ pre{
     td.append(document.createElement("br"), s);
   }
 
+  // ── מי הפיק את המסמך ──────────────────────────────────────────────────────
+  // 0083 בנתה את העמודה, v8 העבירה את הזהות בשער, ו-0084 החזירה אותה ולצידה
+  // את השם. כאן היא נאמרת. מסמך הוא הדבר היחיד בשכפול שנועד לצאת אל אדם
+  // אמיתי, ו«הפק מחדש» דורס את הגוף הקודם — ולכן «מי כתב את מה שאני עומד
+  // לשלוח» אינו נגזר משום מקום אחר במסך.
+  //
+  // שלושה מצבים ולא שניים, ובמקביל מדויק ל-fillDecidedLine — ובכל זאת לא אותם
+  // שלושה: על פנייה יש מצב «איש לא הכריע», וכאן אין לו מקבילה. שורת documents
+  // קיימת רק מפני ש-render יצרה אותה, כלומר כל מסמך הופק בהגדרה.
+  //
+  // (1) אין זהות — הפקה שנרשמה לפני v8, כשהשער העביר ארגומנט אחד. «הופק ואיננו
+  //     יודעים על ידי מי», ולא «לא הופק».
+  //
+  // (2) זהות עם שם — המקרה הרגיל.
+  //
+  // (3) זהות בלי שם — full_name הוא NOT NULL, ולכן שם ריק כשהזהות מלאה אומר
+  //     דבר אחד בדיוק: חשבון הניהול נמחק. produced_by אינו FK והצירוף הוא
+  //     LEFT JOIN, ולכן ההפקה שורדת את מחיקת המפיק.
+  //
+  // העמודה אומרת את ההפקה האחרונה בלבד ואין היסטוריה — ולכן ה-title מדבר על
+  // «ההפקה האחרונה» ולא על «ההפקה», ומצטרף ל«נדרס» שמעליו ולא סותר אותו.
+  function fillProducedCell(td, d) {
+    td.textContent = "";
+    td.removeAttribute("title");
+    if (d.produced_by == null) {
+      const s = document.createElement("span");
+      s.className = "stale";
+      s.textContent = "אינו ידוע";
+      s.title = "ההפקה נרשמה לפני שהשער העביר את זהות המנהל, ולכן נשמר הגוף בלבד";
+      td.append(s);
+      return;
+    }
+    if (d.produced_by_name) {
+      td.append(document.createTextNode(d.produced_by_name));
+      td.title = `מזהה מנהל ${d.produced_by} · ההפקה האחרונה בלבד — «הפק מחדש» דורס את הקודמת ואין היסטוריה`;
+      return;
+    }
+    const s = document.createElement("span");
+    s.className = "stale";
+    s.textContent = `מנהל #${d.produced_by} · החשבון אינו קיים עוד`;
+    s.title = "הזהות נשמרה על המסמך בזמן ההפקה, וחשבון הניהול שהיא מצביעה עליו כבר אינו במסד";
+    td.append(s);
+  }
+
   // ── מי הכריע ומתי ─────────────────────────────────────────────────────────
   // 0076 בנתה שתי עמודות ולא אחת בדיוק כדי להפריד בין שלושה מצבים שנראו במסך
   // זהים, ו-0077 החזירה אותן ולצידן את השם. כאן הם נאמרים.
@@ -1478,7 +1522,15 @@ pre{
     const cspan = document.createElement("span");
     fillCreatedCell(cspan, d);
     dateLine.append(cspan);
-    panel.append(h, meta, tmplLine, dateLine);
+    // מתחת ל«נוצר» ולא מעליו: «נדרס» ו«מי הפיק» מדברים על אותה הפקה אחרונה,
+    // והסדר הזה קורא אותם כמשפט אחד.
+    const prodLine = document.createElement("p");
+    prodLine.className = "note";
+    prodLine.append("הופק על ידי: ");
+    const pspan = document.createElement("span");
+    fillProducedCell(pspan, d);
+    prodLine.append(pspan);
+    panel.append(h, meta, tmplLine, dateLine, prodLine);
     // המעוצב לפני הטקסט: זה המסמך שאדם עומד לשלוח, והגוף הטקסטואלי הוא
     // הגרסה החלופית שלו. גוף של אלפי תווים מעל התצוגה היה דוחף אותה מחוץ למסך.
     if (d.body_html) {

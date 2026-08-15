@@ -1,0 +1,87 @@
+{
+  "brick": "produced-by-ui-0816",
+  "phase": "priority §5ב — שכפול בקלות שכבה 3: מסך המסמך אינו אומר מי הפיק אותו (UI)",
+  "open_line_taken_from": "heartbeat 615 / commit e0a8f6c",
+  "scope": {
+    "changed_files": ["apps/37-bkalot-clone/admin.html"],
+    "migration": null,
+    "edge_functions": "לא נגעו — bkalot-clone-intake v1, bkalot-clone-admin v8",
+    "portal_deploy": false
+  },
+  "seed": {
+    "case_id": 204,
+    "contact_id": 211,
+    "via": "bkalot-clone-intake over HTTP, anon key, כמו מהטופס",
+    "queued": false,
+    "admin_logged_in": { "id": 59, "full_name": "QA 0816 מפיק המסמך", "created_via": "bkalot_clone_admin_create" },
+    "admin_deleted_for_state_3": { "id": 60, "full_name": "QA 0816 מפיק שנמחק" }
+  },
+  "document": 127,
+  "states_measured_in_browser": {
+    "2_identity_with_name": {
+      "reached_by": "לחיצת «הפק מסמך» על המסך, דרך השער v8",
+      "db": { "produced_by": 59 },
+      "screen": "הופק על ידי: QA 0816 מפיק המסמך",
+      "screenshot": "next-01-name.png"
+    },
+    "1_no_identity": {
+      "reached_by": "bkalot_clone_render בארגומנט אחד — צורת v7, בדיוק מה שהפיק מסמכים לפני השער",
+      "db": { "produced_by": null },
+      "screen": "הופק על ידי: אינו ידוע (stale)",
+      "screenshot": "next-02-unknown.png"
+    },
+    "3_identity_without_name": {
+      "reached_by": "render עם p_admin_id=60 ואז מחיקת חשבון 60 — ולא UPDATE ידני",
+      "db": { "produced_by": 60, "admin_60_rows_after_delete": 0, "body_text_chars": 2503 },
+      "screen": "הופק על ידי: מנהל #60 · החשבון אינו קיים עוד (stale)",
+      "screenshot": "next-03-account-gone.png"
+    }
+  },
+  "screenshots_md5_prefix": {
+    "next-01-name.png": "68DBD21A",
+    "next-02-unknown.png": "D9720395",
+    "next-03-account-gone.png": "699D40DA"
+  },
+  "console": "הודעה אחת בלבד — favicon.ico 404 של השרת הסטטי המקומי, שאינו קיים בייצור",
+  "production_side": {
+    "urls": ["https://more30.com/bkalot-studio/admin", "https://more30.com/bkalot-studio/admin/"],
+    "status": 200,
+    "bytes": 96802,
+    "new_markers_live_vs_source": {
+      "הופק על ידי: ": [0, 1],
+      "fillProducedCell": [0, 2],
+      "produced_by_name": [0, 2],
+      "הזהות נשמרה על המסמך בזמן ההפקה": [0, 1],
+      "prodLine": [0, 5]
+    },
+    "old_markers_live_vs_source": {
+      "fillCreatedCell": [3, 3],
+      "fillDecidedLine": [4, 5],
+      "תווי טקסט": [4, 4],
+      "החשבון אינו קיים עוד": [3, 4]
+    },
+    "replacement_chars": 0,
+    "double_encoded": 0
+  },
+  "test_mode": {
+    "renders_queued": false,
+    "documents_with_queue_id": 0,
+    "outbound_queue": 8,
+    "outbound_queue_sent_at_not_null": 0,
+    "outbound_queue_fingerprint": "8cf33788a36d5f9618858835c89e30c1",
+    "delivery_log": 3,
+    "cases_in_sent": 0,
+    "statement": "אין מייל, אין הודעה ואין מסמך שיצא החוצה"
+  },
+  "rollback": {
+    "method": "פקודות נפרדות לפי id ולא CTE אחד (תקלת 124cfc2); איש הקשר לפי id ולא לפי טלפון מנורמל (תקלת ac6e523)",
+    "counts": { "documents": 1, "case_rights": 42, "cases": 1, "contacts": 1, "admin_sessions": 1, "admin_users": 2 },
+    "baseline_after": {
+      "cases": 0, "case_rights": 0, "documents": 0, "contacts": 4,
+      "admin_users": 1, "admin_sessions": 5, "templates": 2,
+      "outbound_queue": 8, "outbound_queue_sent": 0, "delivery_log": 3, "catalog": 888
+    }
+  },
+  "protected": "git status ריק על apps/08-bkalut-app, apps/09-bkalot-admin, supabase/functions; אין נגיעה ב-bkalut-app/bkalot-admin/zr_*/NEDARIM3873 ולא בסכמות csj/csj_src/igud",
+  "open": "הקובץ טרם נפרס — more30.com/bkalot-studio/admin עדיין אינו מציג את השורה, והמדידה כאן רצה מול שרת סטטי מקומי; זו הפעימה הבאה"
+}
