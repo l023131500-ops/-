@@ -1,0 +1,144 @@
+{
+  "beat": "produced-by-deploy-0816",
+  "date": "2026-08-16",
+  "scope": "פריסה בלבד — אין שינוי קוד, אין מיגרציה ואין פריסת edge function",
+  "open_line_taken_verbatim": "הקובץ טרם נפרס — more30.com/bkalot-studio/admin עדיין אינו מציג את השורה, והמדידה כאן רצה מול שרת סטטי מקומי, כלומר מדדה את הקוד ולא את המוצר; זו הפעימה הבאה, אותו פיצול כמו 0083 → v8 → 0084",
+  "open_line_source": "heartbeat 616 (commit 042e60f)",
+
+  "file": {
+    "source": "apps/37-bkalot-clone/admin.html",
+    "bytes": 99924,
+    "md5": "85124B6E12E131421C596E31E67D90A9",
+    "identical_to_commit": "042e60f — git status ריק על apps/37-bkalot-clone",
+    "staged_md5": "85124B6E12E131421C596E31E67D90A9",
+    "staged_note": "stage-portal.ps1 מעתיק את admin.html מהמקור בכל staging; ה-MD5 של הקובץ ב-portal/dist זהה למקור בייט-בייט, כלומר לא נפרס עותק שני שנפרד מהראשון",
+    "prev_dist_bytes": 96566,
+    "prev_dist_note": "הקובץ שישב ב-portal/dist לפני ה-staging — בדיוק מה ש-heartbeat 612 רשם כנפרס"
+  },
+
+  "markers": {
+    "method": "אותם חמישה מסומני NEW ואותם ארבעה מסומני OLD של http-probe.mjs מ-616, במכוון: שם הם החזירו 0 בייצור ו-≥1 במקור, וכאן הם צריכים להתהפך. מסומן שמחזיר true על שתי הגרסאות אינו מודד דבר (המלכודת של 530fb44, 29d6ac6, e12acf9)",
+    "NEW_0_to_source_count": {
+      "הופק על ידי: ": "0 → 1",
+      "fillProducedCell": "0 → 2",
+      "produced_by_name": "0 → 2",
+      "הזהות נשמרה על המסמך בזמן ההפקה": "0 → 1",
+      "prodLine": "0 → 5"
+    },
+    "OLD_control_unchanged": { "fillCreatedCell": "3 = 3", "תווי טקסט": "4 = 4" },
+    "OLD_differential": { "fillDecidedLine": "4 → 5", "החשבון אינו קיים עוד": "3 → 4" },
+    "verdict": "כל חמשת ה-NEW זהים לספירת המקור אחרי הפריסה, בשתי הכתובות; שני ה-OLD הקבועים לא זזו ושני ההפרשיים זזו בדיוק כצפוי"
+  },
+
+  "http": {
+    "admin_slash": "96802 → 100160",
+    "admin_noslash": "96802 → 100160",
+    "source_bytes": 99924,
+    "delta_vs_source": 236,
+    "delta_note": "דלתת NetFree הידועה — 99,924 + 236 = 100,160, אותו הפרש בדיוק כמו ב-612",
+    "control_form_unchanged": 32558,
+    "control_home_unchanged": 3517,
+    "replacement_chars": 0,
+    "double_encoded_geresh": 0,
+    "written_in": "node ולא PowerShell בכוונה (ps1 בלי BOM נקרא כ-cp1255)"
+  },
+
+  "deploy": {
+    "id": "dpl_3g9SuzEuSGef7w9NT46RixnaWRVq",
+    "readyState": "READY",
+    "target": "production",
+    "aliased": "https://more30.com",
+    "from": "portal/dist",
+    "prebuilt": false,
+    "prebuilt_note": "--prebuilt מפיל את vercel.json ואיתו את כל מפת ה-rewrites",
+    "files": 38
+  },
+
+  "measurement": {
+    "browser": "Playwright, 1280x900, התחברות אמיתית דרך המסך",
+    "url": "https://more30.com/bkalot-studio/admin?cb=proddeploy0816 (cache-buster, לא הכתובת החשופה — תקלת f2001e0)",
+    "served_version_read_from_dom": {
+      "fillProducedCell": true,
+      "prodLine": true,
+      "הופק על ידי: ": true,
+      "produced_by_name": true,
+      "note": "נקרא מתוך ה-DOM החי ולא רק ב-HTTP"
+    },
+    "seed": {
+      "case": "#205 דרך bkalot-clone-intake מעל HTTP עם מפתח anon, כמו מהטופס (kind=treatment, situation=single_parent, queued=false, contact 212, 42 זכויות)",
+      "admins": "61 («QA 0816 מפיק בייצור») ו-62 («QA 0816 מנהל שיימחק») דרך bkalot_clone_admin_create ולא בהזרקת hash"
+    },
+    "document": 130,
+
+    "state_1_name": {
+      "path": "לחיצת «הפק מסמך» על המסך החי, לא SQL",
+      "render_line": "מסמך #130 הופק · תבנית rights_treatment_reply · 2520 תווי טקסט · 42 זכויות (כל הרשימה) · לא נשלח — מצב טסט",
+      "screen": "הופק על ידי: QA 0816 מפיק בייצור",
+      "title": "מזהה מנהל 61 · ההפקה האחרונה בלבד — «הפק מחדש» דורס את הקודמת ואין היסטוריה",
+      "db_produced_by": 61,
+      "verdict": "הזהות שיושבת ב-g.admin נסעה בשער v8 אל העמודה ומשם אל המסך, בייצור"
+    },
+    "state_2_unknown": {
+      "path": "bkalot_clone_render בארגומנט אחד — צורת v7, בדיוק מה שהפיק מסמכים לפני השער",
+      "screen": "הופק על ידי: אינו ידוע",
+      "span_class": "stale",
+      "title": "ההפקה נרשמה לפני שהשער העביר את זהות המנהל, ולכן נשמר הגוף בלבד",
+      "db_produced_by": null,
+      "verdict": "«אינו ידוע» ולא «לא הופק» — שורת documents קיימת רק מפני ש-render יצרה אותה"
+    },
+    "state_3_account_gone": {
+      "path": "render עם p_admin_id=62 ואז מחיקת חשבון 62, ולא UPDATE ידני",
+      "screen": "הופק על ידי: מנהל #62 · החשבון אינו קיים עוד",
+      "span_class": "stale",
+      "title": "הזהות נשמרה על המסמך בזמן ההפקה, וחשבון הניהול שהיא מצביעה עליו כבר אינו במסד",
+      "db_produced_by": 62,
+      "db_admin62_rows": 0,
+      "db_text_len_after_delete": 2520,
+      "verdict": "זו המדידה שקונה את ה-LEFT JOIN בייצור: המסמך שרד את מחיקת המפיק (produced_by אינו FK) והגוף נשאר שלם"
+    },
+
+    "span_structure_note": "⚠️ הקריאה הראשונה של המצב השני החזירה span_class ריק ו-title null, ונראתה כמו כישלון. היא לא: fillProducedCell מקבלת את pspan ומוסיפה לתוכו span פנימי, ולכן querySelector(\"span\") מחזיר את החיצוני. במצב השם ה-title יושב על pspan עצמו (td.title), ובשני המצבים ה«ישנים» על הפנימי. נמדד שוב עם querySelectorAll ונרשם, ולא נבלע",
+    "below_the_fold_checked": "השורה נמדדה ב-top=681 בחלון של 900 — בתוך המסך אך בקצהו; גוללה למרכז (top=438) לפני כל צילום (תקלת e12acf9)",
+    "screenshots": [
+      { "f": "live-01-name.png", "md5_8": "0F14B902" },
+      { "f": "live-02-unknown.png", "md5_8": "7579E06B" },
+      { "f": "live-03-account-gone.png", "md5_8": "567B104A" }
+    ],
+    "screenshots_note": "שלושה MD5 שונים — נבדקו ולא הונחו (תקלת screenshot-evidence-below-the-fold)",
+    "console": "אפס הודעות, אפס שגיאות ואפס אזהרות על הכתובת החיה"
+  },
+
+  "test_mode": {
+    "queued_on_intake": false,
+    "queued_on_every_render": false,
+    "document_queue_id": null,
+    "sent_cases": 0,
+    "outbound_queue": 8,
+    "outbound_queue_rows_with_sent_at": 0,
+    "outbound_queue_fingerprint_base_and_after": "8cf33788a36d5f9618858835c89e30c1",
+    "delivery_log": 3,
+    "verdict": "אין מייל, אין הודעה ואין מסמך שיצא החוצה"
+  },
+
+  "rollback": {
+    "method": "שש פקודות נפרדות לפי id ולא CTE אחד — תקלת 124cfc2; איש הקשר לפי id (212) ולא לפי טלפון שנשמר מנורמל — תקלת ac6e523; כל מחיקה החזירה מספר והמספר נבדק",
+    "counts": { "documents": 1, "case_rights": 42, "cases": 1, "contacts": 1, "admin_sessions": 1, "admin_users": 2 },
+    "admin_62_note": "נמחק בפקודה נפרדת לפני המדידה השלישית, ואי-קיומו נמדד בפקודה נפרדת משלו (0 שורות) ולא באותו משפט שמחק — תקלת cte-delete-sees-prestatement-snapshot",
+    "after": { "cases": 0, "case_rights": 0, "documents": 0, "contacts": 4, "admin_users": 1, "admin_sessions": 5, "templates": 2, "outbound_queue": 8, "delivery_log": 3, "catalog": 888 },
+    "qa_admins_left": 0,
+    "verdict": "בסיס בדיוק"
+  },
+
+  "protected": "git status ריק על apps/08-bkalut-app, apps/09-bkalot-admin, apps/37-bkalot-clone ו-supabase/functions; אין נגיעה ב-bkalut-app/bkalot-admin/zr_*/NEDARIM3873 ולא בסכמות csj/csj_src/igud. bkalot-clone-intake נשארה v1 ו-bkalot-clone-admin v8",
+
+  "open": [
+    "נתיב «מי הפיק» סגור מארבעה צדדים — עמודה (0083), שער (v8), קורא (0084), מסך (042e60f) ופריסה (כאן) — ואין בו קו פתוח שנשאר",
+    "bkalot_clone_admin_case (בלוק documents) ו-bkalot_clone_admin_cases אינן יודעות על produced_by, ולכן שורת המסמך ברשימה עדיין שותקת — רק מסך המסמך מדבר",
+    "אין היסטוריית מפיקים — העמודה אומרת את ההפקה האחרונה בלבד — ואין produced_at",
+    "ה-title נמדד כתכונה ב-DOM ולא כטולטיפ שנפתח בריחוף",
+    "אין היסטוריית הכרעות",
+    "הקליטה מחברת 42 זכויות ל-treatment ואפס ל-info/reminder על אותו situation",
+    "sent בלתי-ניתן-להשגה בכוונה; bkalot_clone_admin_create אינה חשופה ב-HTTP; pdf/audio → channel_unsupported",
+    "public_visible ו-show_in_showcase של #37 נשארים false"
+  ]
+}

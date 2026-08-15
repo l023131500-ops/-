@@ -1,0 +1,62 @@
+{
+  "phase": "after",
+  "at": "2026-08-15T22:29:36.171Z",
+  "source_bytes": 99924,
+  "source": {
+    "הופק על ידי: ": 1,
+    "fillProducedCell": 2,
+    "produced_by_name": 2,
+    "הזהות נשמרה על המסמך בזמן ההפקה": 1,
+    "prodLine": 5,
+    "fillCreatedCell": 3,
+    "fillDecidedLine": 5,
+    "תווי טקסט": 4,
+    "החשבון אינו קיים עוד": 4
+  },
+  "live": {
+    "https://more30.com/bkalot-studio/admin": {
+      "status": 200,
+      "bytes": 100160,
+      "markers": {
+        "הופק על ידי: ": 1,
+        "fillProducedCell": 2,
+        "produced_by_name": 2,
+        "הזהות נשמרה על המסמך בזמן ההפקה": 1,
+        "prodLine": 5,
+        "fillCreatedCell": 3,
+        "fillDecidedLine": 5,
+        "תווי טקסט": 4,
+        "החשבון אינו קיים עוד": 4
+      },
+      "replacement_chars": 0,
+      "double_encoded": 0
+    },
+    "https://more30.com/bkalot-studio/admin/": {
+      "status": 200,
+      "bytes": 100160,
+      "markers": {
+        "הופק על ידי: ": 1,
+        "fillProducedCell": 2,
+        "produced_by_name": 2,
+        "הזהות נשמרה על המסמך בזמן ההפקה": 1,
+        "prodLine": 5,
+        "fillCreatedCell": 3,
+        "fillDecidedLine": 5,
+        "תווי טקסט": 4,
+        "החשבון אינו קיים עוד": 4
+      },
+      "replacement_chars": 0,
+      "double_encoded": 0
+    }
+  },
+  "control": {
+    "https://more30.com/bkalot-studio/": {
+      "status": 200,
+      "bytes": 32558
+    },
+    "https://more30.com/": {
+      "status": 200,
+      "bytes": 3517
+    }
+  }
+}
