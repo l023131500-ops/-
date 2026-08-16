@@ -935,6 +935,80 @@ pre{
     syncStatusButtons();
     body.append(statusBar, statusNoteEl, statusErr);
 
+    // ── רצף ההכרעות ───────────────────────────────────────────────────────────
+    // 0087 בנתה את case_status_log ונתנה ל-set_status לכתוב אליו שורה בכל מעבר,
+    // ו-0088 החזירה את הרצף כבלוק top-level. כאן הוא נאמר. השורה שמעל הכפתורים
+    // (fillDecidedLine) מחזיקה את ההכרעה האחרונה בלבד — decided_by ו-decided_at
+    // נדרסים בכל UPDATE — ולכן מנהל שפותח פנייה שנדחתה ראה את מי שדחה ולא את מי
+    // שלקח אותה קודם.
+    //
+    // הטבלה יושבת מתחת לכפתורים ולא מעליהם: מה שצריך לראות לפני לחיצה הוא ההכרעה
+    // האחרונה, והיא כבר שם; הרצף הוא הרישום של מה שנעשה, והוא נקרא אחרי.
+    //
+    // ארבע הכרעות:
+    //
+    // (1) שלושה מצבי ריקנות ולא אחד. «אין רצף» ו«לא הוכרעה» אינם אותו דבר: ליומן
+    //     אין backfill ולא יהיה (0087), ולכן פנייה שהוכרעה לפני שהיומן קם מחזירה
+    //     מערך ריק בעוד decided_at שלה מלא — ו«לא נרשם ולו מעבר אחד» עליה היה
+    //     שקר שנראה כמו עובדה. המצב השלישי הוא היעדר המפתח עצמו: קורא ישן שאינו
+    //     יודע על היומן מחזיר תשובה בלי הבלוק, ו-Object.hasOwn מפריד בינו לבין
+    //     יומן ריק — בדיוק ההבחנה שנמדדה ב-0088 לפני המיגרציה ואחריה.
+    //
+    // (2) הרצף מוצג כפי שהשרת החזיר אותו — עולה — ואינו הפוך כאן. הכרעה (4) של
+    //     0087 היא שכל שורה היא משפט שלם: to_status של כל שורה שווה ל-from_status
+    //     של הבאה, והקריאה הזו נכונה בכיוון אחד בלבד. היפוך בלקוח היה שובר את
+    //     השרשרת ומשאיר טבלה שנראית תקינה.
+    //
+    // (3) אין עמודת «#». id של השורה חוזר מהשרת והוא מפתח ולא מונה — 0087 שרפה
+    //     שניים מהמזהים בשתי הכנסות שנדחו, ולכן המספרים אינם רצף (הכרעה (5) של
+    //     0088). עמודה כזו הייתה מזמינה לקרוא מהמספר «כמה הכרעות היו». הוא נשמר
+    //     ב-title של תא הזמן, שם הוא מזהה שורה ולא סדרה.
+    //
+    // (4) הכותרת סופרת מעברים ואומרת זאת. לחיצה חוזרת על אותו סטטוס אינה כותבת
+    //     שורה (האילוץ case_status_log_is_a_change), ולכן ארבע לחיצות יכולות
+    //     להיות שלושה מעברים — מספר שנקרא כ«כמה פעמים לחצו» היה שגוי.
+    const hist = data.status_history;
+    if (!Object.hasOwn(data, "status_history")) {
+      body.append(h3("רצף ההכרעות"));
+      const p = document.createElement("p");
+      p.className = "note";
+      const s = document.createElement("span");
+      s.className = "stale";
+      s.textContent = "השרת אינו מחזיר את יומן ההכרעות";
+      s.title = "התשובה הגיעה מקורא שאינו יודע על היומן — זה אינו יומן ריק אלא היעדר הבלוק כולו";
+      p.append(s);
+      body.append(p);
+    } else if (Array.isArray(hist) && hist.length) {
+      body.append(h3(`רצף ההכרעות (${countHe(hist.length, "מעבר אחד", "מעברים")})`));
+      const t = document.createElement("table");
+      t.innerHTML = "<thead><tr><th>מ־</th><th>אל</th><th>מי הכריע</th><th>מתי</th></tr></thead>";
+      const tb = document.createElement("tbody");
+      for (const r of hist) {
+        const tr = document.createElement("tr");
+        const from = document.createElement("td");
+        from.textContent = label(STATUS_MAP, r.from_status);
+        const to = document.createElement("td");
+        to.textContent = label(STATUS_MAP, r.to_status);
+        const who = document.createElement("td");
+        fillHistoryWhoCell(who, r);
+        const when = document.createElement("td");
+        when.textContent = fmtDate(r.at);
+        when.title = `שורת יומן #${r.id} — מפתח שורה ולא מונה; מספרי היומן אינם רצף`;
+        tr.append(from, to, who, when);
+        tb.append(tr);
+      }
+      t.append(tb);
+      body.append(t);
+    } else {
+      body.append(h3("רצף ההכרעות"));
+      const p = document.createElement("p");
+      p.className = "empty";
+      p.textContent = c.decided_at == null
+        ? "לא נרשם ולו מעבר אחד מהמסך."
+        : "הפנייה הוכרעה לפני שיומן ההכרעות קם, ולכן הרצף שלה אינו קיים — אין השלמה למפרע.";
+      body.append(p);
+    }
+
     body.append(h3("איש הקשר"));
     if (c.contact) {
       body.append(kv([
@@ -1529,6 +1603,47 @@ pre{
     s.textContent = `מנהל #${c.decided_by} · החשבון אינו קיים עוד`;
     s.title = "הזהות נשמרה על הפנייה בזמן ההכרעה, וחשבון הניהול שהיא מצביעה עליו כבר אינו במסד";
     p.append(document.createTextNode(" · "), s);
+  }
+
+  // ── מי הכריע במעבר הזה ────────────────────────────────────────────────────
+  // אותם שלושה מצבים של fillProducedCell ובאותו סדר, ובכל זאת לא היא: שם
+  // מדובר בהפקה וכאן בהכרעה, וה-title הוא כל מה שהתא הזה אומר מעבר לשם. שימוש
+  // חוזר היה מספר על שורת יומן שהיא «הפקה שנרשמה לפני שהשער העביר את הזהות»,
+  // כלומר משפט נכון בצורתו ושקר בתוכנו.
+  //
+  // (1) אין זהות — מעבר שנכתב בלי מי שכתב אותו. הכותב היחיד ליומן הוא הנתיב
+  //     שמאחורי השער, ולכן המצב הזה אינו קיים היום בשום שורה (הכרעה (4) של
+  //     0088); הוא נצבע ואינו נבלע, כי היום שבו יופיע הוא בדיוק היום שבו צריך
+  //     לראות אותו.
+  //
+  // (2) זהות עם שם — המקרה הרגיל.
+  //
+  // (3) זהות בלי שם — full_name הוא NOT NULL, ולכן שם ריק כשהזהות מלאה אומר
+  //     דבר אחד: החשבון נמחק. admin_id אינו FK (הכרעה (2) של 0087) והצירוף הוא
+  //     LEFT JOIN (הכרעה (3) של 0088), ולכן המעבר עצמו שורד את מחיקת המכריע —
+  //     ו-INNER היה מוחק כאן מעבר שלם ולא שדה, כלומר מעלים מהרצף את הדחייה
+  //     מפני שמי שדחה עזב.
+  function fillHistoryWhoCell(td, r) {
+    td.textContent = "";
+    td.removeAttribute("title");
+    if (r.admin_id == null) {
+      const s = document.createElement("span");
+      s.className = "stale";
+      s.textContent = "אינו ידוע";
+      s.title = "המעבר נרשם ביומן בלי זהות המנהל, ולכן נשמרו הסטטוסים והזמן בלבד";
+      td.append(s);
+      return;
+    }
+    if (r.admin_name) {
+      td.append(document.createTextNode(r.admin_name));
+      td.title = `מזהה מנהל ${r.admin_id}`;
+      return;
+    }
+    const s = document.createElement("span");
+    s.className = "stale";
+    s.textContent = `מנהל #${r.admin_id} · החשבון אינו קיים עוד`;
+    s.title = "הזהות נשמרה על המעבר בזמן ההכרעה, וחשבון הניהול שהיא מצביעה עליו כבר אינו במסד";
+    td.append(s);
   }
 
   // ── גוף המסמך ─────────────────────────────────────────────────────────────

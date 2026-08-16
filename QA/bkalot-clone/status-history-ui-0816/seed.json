@@ -1,0 +1,76 @@
+{
+  "admins": {
+    "main": {
+      "id": 80,
+      "email": "qa0089main@more30.test",
+      "full_name": "QA 0089 מכריע ראשי"
+    },
+    "gone": {
+      "id": 81,
+      "email": "qa0089gone@more30.test",
+      "full_name": "QA 0089 מכריע שיימחק"
+    }
+  },
+  "login_token_main": "88mFysCPzpBZmQBJ2X0q6NVCsGlYDFz9Y2lhCrJEKrQ",
+  "cases": {
+    "X": {
+      "case_id": 226,
+      "contact_id": 233,
+      "rights": null,
+      "queued": false,
+      "clicks": [
+        {
+          "who": "main",
+          "status": "in_progress",
+          "http": 200,
+          "ok": true,
+          "changed": true,
+          "log_id": 12
+        },
+        {
+          "who": "main",
+          "status": "in_progress",
+          "http": 200,
+          "ok": true,
+          "changed": false,
+          "log_id": null
+        },
+        {
+          "who": "gone",
+          "status": "closed",
+          "http": 200,
+          "ok": true,
+          "changed": true,
+          "log_id": 13
+        },
+        {
+          "who": "gone",
+          "status": "rejected",
+          "http": 200,
+          "ok": true,
+          "changed": true,
+          "log_id": 14
+        }
+      ]
+    },
+    "Y": {
+      "case_id": 227,
+      "contact_id": 234,
+      "rights": null,
+      "queued": false,
+      "click": {
+        "status": "closed",
+        "http": 200,
+        "ok": true,
+        "changed": true,
+        "log_id": 15
+      }
+    },
+    "Z": {
+      "case_id": 228,
+      "contact_id": 235,
+      "rights": null,
+      "queued": false
+    }
+  }
+}
