@@ -1,0 +1,206 @@
+{
+  "src_bytes": 139737,
+  "live_bytes": 136783,
+  "rows": [
+    {
+      "marker": "clamp-note",
+      "src": 3,
+      "live": 0
+    },
+    {
+      "marker": "clampNote",
+      "src": 9,
+      "live": 0
+    },
+    {
+      "marker": "הרשימה התקצרה בזמן העבודה",
+      "src": 1,
+      "live": 0
+    },
+    {
+      "marker": "האחרון שיש בו פניות",
+      "src": 1,
+      "live": 0
+    },
+    {
+      "marker": "cnote",
+      "src": 3,
+      "live": 0
+    },
+    {
+      "marker": "const from = Math.floor(offset / PAGE) + 1",
+      "src": 1,
+      "live": 0
+    },
+    {
+      "marker": "clampNote === null",
+      "src": 2,
+      "live": 0
+    },
+    {
+      "marker": "מספר העמוד קפץ בלי שנאמר למה",
+      "src": 1,
+      "live": 0
+    },
+    {
+      "marker": "reclamped",
+      "src": 4,
+      "live": 3
+    },
+    {
+      "marker": "Math.floor(offset / PAGE)",
+      "src": 3,
+      "live": 1
+    },
+    {
+      "marker": "hidden = true",
+      "src": 22,
+      "live": 21
+    },
+    {
+      "marker": "role=\"status\"",
+      "src": 3,
+      "live": 2
+    },
+    {
+      "marker": "load(true)",
+      "src": 3,
+      "live": 1
+    },
+    {
+      "marker": "הרשימה מתקצרת בשרת",
+      "src": 1,
+      "live": 1
+    },
+    {
+      "marker": "ואינו רודף אחריו",
+      "src": 1,
+      "live": 1
+    },
+    {
+      "marker": "מעבר לסוף הרשימה",
+      "src": 1,
+      "live": 1
+    },
+    {
+      "marker": "const cases = data.cases",
+      "src": 1,
+      "live": 1
+    },
+    {
+      "marker": "ראה הכרעה (4) למטה",
+      "src": 1,
+      "live": 1
+    },
+    {
+      "marker": "offset > 0",
+      "src": 1,
+      "live": 1
+    },
+    {
+      "marker": "Math.ceil(total / PAGE)",
+      "src": 2,
+      "live": 2
+    },
+    {
+      "marker": "render(cases)",
+      "src": 2,
+      "live": 2
+    },
+    {
+      "marker": "q-phone",
+      "src": 3,
+      "live": 3
+    },
+    {
+      "marker": "qPhone",
+      "src": 7,
+      "live": 6
+    },
+    {
+      "marker": "חופש לפי",
+      "src": 1,
+      "live": 1
+    },
+    {
+      "marker": "q_phone",
+      "src": 1,
+      "live": 1
+    },
+    {
+      "marker": "0093",
+      "src": 2,
+      "live": 2
+    },
+    {
+      "marker": "list-error",
+      "src": 4,
+      "live": 4
+    },
+    {
+      "marker": "decider_required",
+      "src": 1,
+      "live": 1
+    },
+    {
+      "marker": "note_too_long",
+      "src": 5,
+      "live": 5
+    },
+    {
+      "marker": "why-input",
+      "src": 2,
+      "live": 2
+    },
+    {
+      "marker": "syncNoteCount",
+      "src": 4,
+      "live": 4
+    },
+    {
+      "marker": "td.why",
+      "src": 1,
+      "live": 1
+    },
+    {
+      "marker": "רצף ההכרעות",
+      "src": 4,
+      "live": 4
+    },
+    {
+      "marker": "handsBit",
+      "src": 2,
+      "live": 2
+    },
+    {
+      "marker": "producedBit",
+      "src": 2,
+      "live": 2
+    },
+    {
+      "marker": "fillQueueCell",
+      "src": 2,
+      "live": 2
+    },
+    {
+      "marker": "fillTemplateCell",
+      "src": 4,
+      "live": 4
+    },
+    {
+      "marker": "fillCreatedCell",
+      "src": 4,
+      "live": 4
+    },
+    {
+      "marker": "מי הכריע",
+      "src": 13,
+      "live": 13
+    },
+    {
+      "marker": "fillHistoryNoteCell",
+      "src": 2,
+      "live": 2
+    }
+  ]
+}
