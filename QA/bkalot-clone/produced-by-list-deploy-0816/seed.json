@@ -1,0 +1,44 @@
+{
+  "admins": {
+    "main": {
+      "id": 74,
+      "email": "qa0088main@more30.test",
+      "full_name": "QA 0088 מפיק ברשימה בייצור"
+    },
+    "gone": {
+      "id": 75,
+      "email": "qa0088gone@more30.test",
+      "full_name": "QA 0088 מפיק שיימחק"
+    }
+  },
+  "login_token_main": "TjM_fuzvg4v-7PV-ELFF6dMPFR5yEXGDH7u6kM6D2Xk",
+  "cases": {
+    "A": {
+      "case_id": 217,
+      "contact_id": 224,
+      "rights": null,
+      "queued": false
+    },
+    "B": {
+      "case_id": 218,
+      "contact_id": 225,
+      "rights": null,
+      "queued": false
+    },
+    "C": {
+      "case_id": 219,
+      "contact_id": 226,
+      "rights": null,
+      "queued": false,
+      "document_id": 151,
+      "produced_by": 75,
+      "render_queued": false
+    },
+    "D": {
+      "case_id": 220,
+      "contact_id": 227,
+      "rights": null,
+      "queued": false
+    }
+  }
+}
