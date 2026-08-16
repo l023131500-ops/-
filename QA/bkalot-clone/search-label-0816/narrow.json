@@ -1,0 +1,46 @@
+[
+  {
+    "viewport": "900x900",
+    "port": 8138,
+    "label": "before_head",
+    "form_height": 136,
+    "label_lines": 1,
+    "label_overflows": false,
+    "input_overflows": false,
+    "doc_scroll_w": 900,
+    "shot": "03-before-900.png"
+  },
+  {
+    "viewport": "900x900",
+    "port": 8137,
+    "label": "after_worktree",
+    "form_height": 136,
+    "label_lines": 1,
+    "label_overflows": false,
+    "input_overflows": false,
+    "doc_scroll_w": 900,
+    "shot": "04-after-900.png"
+  },
+  {
+    "viewport": "390x844",
+    "port": 8138,
+    "label": "before_head",
+    "form_height": 303,
+    "label_lines": 1,
+    "label_overflows": false,
+    "input_overflows": false,
+    "doc_scroll_w": 390,
+    "shot": "03-before-390.png"
+  },
+  {
+    "viewport": "390x844",
+    "port": 8137,
+    "label": "after_worktree",
+    "form_height": 328,
+    "label_lines": 2,
+    "label_overflows": false,
+    "input_overflows": false,
+    "doc_scroll_w": 390,
+    "shot": "04-after-390.png"
+  }
+]
