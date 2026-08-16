@@ -1,0 +1,82 @@
+{
+  "task": "note-highlight-all-0816",
+  "claim": "מסך הפנייה מסמן כל הופעה של המונח בתוך הנימוק, מהמיקומים ש-0101 מדדה — ולא את הראשונה בלבד",
+  "servers": {
+    "8138": { "serves": "HEAD (65c1f01) apps/37-bkalot-clone/admin.html", "admin_html_bytes": 181758, "admin_html_md5": "6C7B27B3C9AFA8A532F58CA85DF0C7CC" },
+    "8137": { "serves": "working tree", "admin_html_bytes": 185393, "admin_html_md5": "4B887ECACE48441197DB36C10FDA10C7" },
+    "note": "עותק ה-HEAD הוצא ב-cmd ולא בהפניית PowerShell — הפניית PS מוסיפה BOM; הגודל וה-MD5 שיצאו זהים בדיוק למה שנרשם ב-6412e7f כקובץ שנפרס לייצור"
+  },
+  "seed": {
+    "case_id": 409, "contact_id": 416, "kind": "info", "source": "form", "queued": false, "rights_linked": 0,
+    "log": [
+      { "id": 141, "to": "in_progress", "note": "Email נשלח לפונה, ואחריו EMAIL נוסף בטעות", "chars": 41 },
+      { "id": 142, "to": "rejected", "note": "טופס, טופס ועוד טופס נשלחו בטעות", "chars": 32 },
+      { "id": 143, "to": "closed", "note": "המסמכים שצורפו שייכים לשנת המס הקודמת", "chars": 37 }
+    ],
+    "why_these_three": "אחת, שתיים ושלוש הופעות — 141 פעמיים ובשתי צורות אותיות, 142 שלוש פעמים, 143 פעם אחת (בקרה: מסך שמסמן «כולן» חייב להיבדק גם היכן שאין לו מה להוסיף). אותם שלושה טקסטים שעליהם נמדדה 0101",
+    "seeded_over": "SQL ולא HTTP — פיגום ולא הטענה",
+    "admin_account": { "id": 131, "created_by": "bkalot_clone_admin_create", "note": "נוצר בפונקציה ולא בהזרקת hash" }
+  },
+  "server_side_before_ui": {
+    "keys_per_log_row": 11,
+    "email": [{ "id": 141, "matched": true, "pos": 1, "len": 5, "pos_all": [1, 26] }, { "id": 142, "matched": false, "pos_all": null }, { "id": 143, "matched": false, "pos_all": null }],
+    "טופס": [{ "id": 141, "matched": false, "pos_all": null }, { "id": 142, "matched": true, "pos": 1, "len": 4, "pos_all": [1, 7, 17] }, { "id": 143, "matched": false, "pos_all": null }],
+    "המס הקודמת": [{ "id": 141, "matched": false, "pos_all": null }, { "id": 142, "matched": false, "pos_all": null }, { "id": 143, "matched": true, "pos": 28, "len": 10, "pos_all": [28] }]
+  },
+  "before_head_8138": {
+    "email": { "marks_total": 1, "marks": ["Email"], "nodes": ["T:", "MARK", "T: נשלח לפונה, ואחריו EMAIL נוסף בטעות", "BR", "SPAN"] },
+    "טופס": { "marks_total": 1, "marks": ["טופס"], "nodes": ["T:", "MARK", "T:, טופס ועוד טופס נשלחו בטעות", "BR", "SPAN"] },
+    "המס הקודמת": { "marks_total": 1, "marks": ["המס הקודמת"] },
+    "mark_title": "כאן נמצא מה שהוקלד בחיפוש — המיקום מגיע מהמסד ולא נמדד שוב במסך. אם המונח חוזר בטקסט הזה, מסומנת ההופעה הראשונה בלבד",
+    "reading": "הכשל: המסד מחזיר [1,26] ו-[1,7,17], והמסך מצייר סימן אחד. מנהל שהגיע בזכות מילה שיושבת שלוש פעמים רואה אחת ומניח שזה כל מה שיש"
+  },
+  "after_work_8137": {
+    "email": {
+      "marks_total": 2,
+      "marks": ["Email", "EMAIL"],
+      "nodes": ["T:", "MARK", "T: נשלח לפונה, ואחריו ", "MARK", "T: נוסף בטעות", "BR", "SPAN"],
+      "mark_title": "כאן נמצא מה שהוקלד בחיפוש — 2 הופעות בטקסט הזה, וכולן מסומנות. המיקומים מגיעים מהמסד ולא נמדדו שוב במסך",
+      "reading": "שתי צורות אותיות, ושתיהן מסומנות אות באות כפי שהוקלדו"
+    },
+    "טופס": {
+      "marks_total": 3,
+      "marks": ["טופס", "טופס", "טופס"],
+      "nodes": ["T:", "MARK", "T:, ", "MARK", "T: ועוד ", "MARK", "T: נשלחו בטעות", "BR", "SPAN"],
+      "mark_title": "כאן נמצא מה שהוקלד בחיפוש — 3 הופעות בטקסט הזה, וכולן מסומנות. המיקומים מגיעים מהמסד ולא נמדדו שוב במסך",
+      "reading": "ההופעה הראשונה פותחת את המחרוזת ולכן הצומת הראשון ריק; 2N+1 צמתי טקסט"
+    },
+    "המס הקודמת": {
+      "marks_total": 1,
+      "marks": ["המס הקודמת"],
+      "nodes": ["T:המסמכים שצורפו שייכים לשנת ", "MARK", "T:", "BR", "SPAN"],
+      "mark_title": "כאן נמצא מה שהוקלד בחיפוש — הופעה אחת בטקסט הזה, והיא מסומנת. המיקום מגיע מהמסד ולא נמדד שוב במסך",
+      "reading": "בקרה — התאמה אחת מקבלת ניסוח עברי משלה ולא «1 הופעות», והצורה זהה למה שצויר לפני השינוי"
+    },
+    "controls": {
+      "no_term": { "marks_total": 0, "rows": 3, "reading": "פתיחה רגילה של פנייה — אין ולו סימן אחד" },
+      "textContent_equals_stored_note": [
+        { "chars": 41, "equal": true }, { "chars": 32, "equal": true }, { "chars": 37, "equal": true }
+      ],
+      "childNodes_marked_cell": 9,
+      "childNodes_unmarked_cell": 1,
+      "td_title_unchanged": ["41 תווים, כפי שנשמרו", "32 תווים, כפי שנשמרו", "37 תווים, כפי שנשמרו"],
+      "matched_sign_unchanged": "«זה הנימוק שהתאים» נשאר במקומו על השורה שהתאימה בלבד",
+      "mark_class": "hit בכל אחד מששת הסימנים שנמדדו",
+      "h_overflow_1280x900": false,
+      "scrollWidth_clientWidth": [1265, 1265]
+    }
+  },
+  "console": { "messages_8137": 0, "non_2xx_from_app": 0, "note": "ב-8138 נרשמה שגיאה אחת — favicon.ico 404 משרת הבדיקה המקומי ולא מהאפליקציה" },
+  "screenshots": [
+    { "file": "before-head-email-one-mark.png", "bytes": 64237, "md5_8": "3E7B1070" },
+    { "file": "after-work-tofes-three-marks.png", "bytes": 64001, "md5_8": "F6273CB1" },
+    { "file": "after-work-email-two-marks.png", "bytes": 64468, "md5_8": "52272665" }
+  ],
+  "test_mode": { "queued": false, "documents": 0, "case_rights": 0, "outbound_queue": 8, "delivery_log": 3, "outgoing_calls": 0, "reading": "הנתיב שהשתנה מצייר טקסט — הוא אינו קורא ואינו כותב" },
+  "not_measured": [
+    "מסלול הנפילה חזרה (הכרעה (9)) — שרת שאינו מחזיר note_match_pos_all — נכתב ולא נמדד מדפדפן: אין שרת כזה להריץ מולו, ו-fillNoteText אינה גלויה בהיקף הגלובלי כדי לקרוא לה ישירות (typeof === undefined, נמדד)",
+    "מערך שמפר את שמירת הגבולות (הכרעה (10)) — מיקום מחוץ למחרוזת, סדר יורד או חפיפה — נכתב ולא נמדד; 0101 מבטיחה את שני התנאים ואין דרך לייצר הפרה מהשרת החי",
+    "390x844 לא נמדד",
+    "הפריסה לייצור לא נעשתה — מה שנמדד כאן הוא הקוד שבמקור"
+  ]
+}
