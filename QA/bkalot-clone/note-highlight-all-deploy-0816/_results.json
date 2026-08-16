@@ -1,0 +1,775 @@
+{
+  "verdict": "PASS",
+  "fails": [],
+  "counts": {
+    "NEW": 24,
+    "REMOVED": 10,
+    "DIFF": 2,
+    "CONTROL": 16,
+    "DEAD": 0
+  },
+  "files": {
+    "src": {
+      "path": "C:/Users/USER/Downloads/more30/apps/37-bkalot-clone/admin.html",
+      "bytes": 185393,
+      "md5": "4B887ECA"
+    },
+    "dist": {
+      "path": "C:/Users/USER/Downloads/more30/portal/dist/bkalot-studio/admin.html",
+      "bytes": 181758,
+      "md5": "6C7B27B3"
+    }
+  },
+  "live": {
+    "https://more30.com/bkalot-studio/admin": {
+      "before": {
+        "bytes": 181994,
+        "md5": "E5EFB523"
+      },
+      "after": {
+        "bytes": 185629,
+        "md5": "C4CFF382"
+      }
+    },
+    "https://more30.com/bkalot-studio/admin/": {
+      "before": {
+        "bytes": 181994,
+        "md5": "E5EFB523"
+      },
+      "after": {
+        "bytes": 185629,
+        "md5": "C4CFF382"
+      }
+    }
+  },
+  "rows": [
+    {
+      "key": "len_read",
+      "group": "NEW",
+      "dist": 0,
+      "src": 1,
+      "before": [
+        0,
+        0
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "pos_all_field",
+      "group": "NEW",
+      "dist": 0,
+      "src": 2,
+      "before": [
+        0,
+        0
+      ],
+      "after": [
+        2,
+        2
+      ]
+    },
+    {
+      "key": "pos_all_read",
+      "group": "NEW",
+      "dist": 0,
+      "src": 1,
+      "before": [
+        0,
+        0
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "lenOk",
+      "group": "NEW",
+      "dist": 0,
+      "src": 1,
+      "before": [
+        0,
+        0
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "inside_fn",
+      "group": "NEW",
+      "dist": 0,
+      "src": 1,
+      "before": [
+        0,
+        0
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "spots_decl",
+      "group": "NEW",
+      "dist": 0,
+      "src": 1,
+      "before": [
+        0,
+        0
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "ascending_guard",
+      "group": "NEW",
+      "dist": 0,
+      "src": 1,
+      "before": [
+        0,
+        0
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "spots_all",
+      "group": "NEW",
+      "dist": 0,
+      "src": 1,
+      "before": [
+        0,
+        0
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "spots_fallback",
+      "group": "NEW",
+      "dist": 0,
+      "src": 1,
+      "before": [
+        0,
+        0
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "no_spots",
+      "group": "NEW",
+      "dist": 0,
+      "src": 1,
+      "before": [
+        0,
+        0
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "title_branch",
+      "group": "NEW",
+      "dist": 0,
+      "src": 1,
+      "before": [
+        0,
+        0
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "title_one",
+      "group": "NEW",
+      "dist": 0,
+      "src": 1,
+      "before": [
+        0,
+        0
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "title_many",
+      "group": "NEW",
+      "dist": 0,
+      "src": 1,
+      "before": [
+        0,
+        0
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "loop",
+      "group": "NEW",
+      "dist": 0,
+      "src": 1,
+      "before": [
+        0,
+        0
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "cursor_advance",
+      "group": "NEW",
+      "dist": 0,
+      "src": 1,
+      "before": [
+        0,
+        0
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "tail_append",
+      "group": "NEW",
+      "dist": 0,
+      "src": 1,
+      "before": [
+        0,
+        0
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "title_shared",
+      "group": "NEW",
+      "dist": 0,
+      "src": 1,
+      "before": [
+        0,
+        0
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "cmt_d8",
+      "group": "NEW",
+      "dist": 0,
+      "src": 1,
+      "before": [
+        0,
+        0
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "cmt_d9",
+      "group": "NEW",
+      "dist": 0,
+      "src": 1,
+      "before": [
+        0,
+        0
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "cmt_d10",
+      "group": "NEW",
+      "dist": 0,
+      "src": 1,
+      "before": [
+        0,
+        0
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "cmt_d11",
+      "group": "NEW",
+      "dist": 0,
+      "src": 1,
+      "before": [
+        0,
+        0
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "cmt_refuted6",
+      "group": "NEW",
+      "dist": 0,
+      "src": 1,
+      "before": [
+        0,
+        0
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "cmt_many_nodes",
+      "group": "NEW",
+      "dist": 0,
+      "src": 1,
+      "before": [
+        0,
+        0
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "cmt_only_measured",
+      "group": "NEW",
+      "dist": 0,
+      "src": 1,
+      "before": [
+        0,
+        0
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "old_pos_read",
+      "group": "REMOVED",
+      "dist": 1,
+      "src": 0,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        0,
+        0
+      ]
+    },
+    {
+      "key": "old_fits_decl",
+      "group": "REMOVED",
+      "dist": 1,
+      "src": 0,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        0,
+        0
+      ]
+    },
+    {
+      "key": "old_fits_guard",
+      "group": "REMOVED",
+      "dist": 1,
+      "src": 0,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        0,
+        0
+      ]
+    },
+    {
+      "key": "old_fits_branch",
+      "group": "REMOVED",
+      "dist": 1,
+      "src": 0,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        0,
+        0
+      ]
+    },
+    {
+      "key": "old_i_from_pos",
+      "group": "REMOVED",
+      "dist": 1,
+      "src": 0,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        0,
+        0
+      ]
+    },
+    {
+      "key": "old_three_append",
+      "group": "REMOVED",
+      "dist": 1,
+      "src": 0,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        0,
+        0
+      ]
+    },
+    {
+      "key": "old_three_nodes",
+      "group": "REMOVED",
+      "dist": 1,
+      "src": 0,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        0,
+        0
+      ]
+    },
+    {
+      "key": "old_middle_node",
+      "group": "REMOVED",
+      "dist": 1,
+      "src": 0,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        0,
+        0
+      ]
+    },
+    {
+      "key": "old_cmt2_three",
+      "group": "REMOVED",
+      "dist": 1,
+      "src": 0,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        0,
+        0
+      ]
+    },
+    {
+      "key": "old_cmt6_first",
+      "group": "REMOVED",
+      "dist": 1,
+      "src": 0,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        0,
+        0
+      ]
+    },
+    {
+      "key": "phr_title_lead",
+      "group": "DIFF",
+      "dist": 1,
+      "src": 3,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        3,
+        3
+      ]
+    },
+    {
+      "key": "phr_note_match_pos",
+      "group": "DIFF",
+      "dist": 2,
+      "src": 6,
+      "before": [
+        2,
+        2
+      ],
+      "after": [
+        6,
+        6
+      ]
+    },
+    {
+      "key": "ctl_fn_decl",
+      "group": "CONTROL",
+      "dist": 1,
+      "src": 1,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "ctl_fn_call",
+      "group": "CONTROL",
+      "dist": 1,
+      "src": 1,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "ctl_mark_el",
+      "group": "CONTROL",
+      "dist": 1,
+      "src": 1,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "ctl_mark_cls",
+      "group": "CONTROL",
+      "dist": 1,
+      "src": 1,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "ctl_css_mark_hit",
+      "group": "CONTROL",
+      "dist": 1,
+      "src": 1,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "ctl_box_shadow",
+      "group": "CONTROL",
+      "dist": 1,
+      "src": 1,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "ctl_stale_span",
+      "group": "CONTROL",
+      "dist": 3,
+      "src": 3,
+      "before": [
+        3,
+        3
+      ],
+      "after": [
+        3,
+        3
+      ]
+    },
+    {
+      "key": "ctl_td_title",
+      "group": "CONTROL",
+      "dist": 1,
+      "src": 1,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "ctl_no_note",
+      "group": "CONTROL",
+      "dist": 1,
+      "src": 1,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "ctl_queue_phrase",
+      "group": "CONTROL",
+      "dist": 1,
+      "src": 1,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "ctl_noteTally",
+      "group": "CONTROL",
+      "dist": 3,
+      "src": 3,
+      "before": [
+        3,
+        3
+      ],
+      "after": [
+        3,
+        3
+      ]
+    },
+    {
+      "key": "ctl_clamp_note",
+      "group": "CONTROL",
+      "dist": 1,
+      "src": 1,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "ctl_empty_box",
+      "group": "CONTROL",
+      "dist": 1,
+      "src": 1,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "ctl_fillHistory",
+      "group": "CONTROL",
+      "dist": 5,
+      "src": 5,
+      "before": [
+        5,
+        5
+      ],
+      "after": [
+        5,
+        5
+      ]
+    },
+    {
+      "key": "kept_first_only",
+      "group": "CONTROL",
+      "dist": 1,
+      "src": 1,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "phr_createTextNode",
+      "group": "CONTROL",
+      "dist": 19,
+      "src": 19,
+      "before": [
+        19,
+        19
+      ],
+      "after": [
+        19,
+        19
+      ]
+    }
+  ]
+}

@@ -1,0 +1,283 @@
+{
+  "src": {
+    "path": "C:/Users/USER/Downloads/more30/apps/37-bkalot-clone/admin.html",
+    "bytes": 185393,
+    "md5": "4B887ECA"
+  },
+  "dist": {
+    "path": "C:/Users/USER/Downloads/more30/portal/dist/bkalot-studio/admin.html",
+    "bytes": 181758,
+    "md5": "6C7B27B3"
+  },
+  "groups": {
+    "NEW": [
+      {
+        "key": "len_read",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "pos_all_field",
+        "src": 2,
+        "dist": 0
+      },
+      {
+        "key": "pos_all_read",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "lenOk",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "inside_fn",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "spots_decl",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "ascending_guard",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "spots_all",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "spots_fallback",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "no_spots",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "title_branch",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "title_one",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "title_many",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "loop",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "cursor_advance",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "tail_append",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "title_shared",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "cmt_d8",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "cmt_d9",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "cmt_d10",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "cmt_d11",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "cmt_refuted6",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "cmt_many_nodes",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "cmt_only_measured",
+        "src": 1,
+        "dist": 0
+      }
+    ],
+    "REMOVED": [
+      {
+        "key": "old_pos_read",
+        "src": 0,
+        "dist": 1
+      },
+      {
+        "key": "old_fits_decl",
+        "src": 0,
+        "dist": 1
+      },
+      {
+        "key": "old_fits_guard",
+        "src": 0,
+        "dist": 1
+      },
+      {
+        "key": "old_fits_branch",
+        "src": 0,
+        "dist": 1
+      },
+      {
+        "key": "old_i_from_pos",
+        "src": 0,
+        "dist": 1
+      },
+      {
+        "key": "old_three_append",
+        "src": 0,
+        "dist": 1
+      },
+      {
+        "key": "old_three_nodes",
+        "src": 0,
+        "dist": 1
+      },
+      {
+        "key": "old_middle_node",
+        "src": 0,
+        "dist": 1
+      },
+      {
+        "key": "old_cmt2_three",
+        "src": 0,
+        "dist": 1
+      },
+      {
+        "key": "old_cmt6_first",
+        "src": 0,
+        "dist": 1
+      }
+    ],
+    "DIFF": [
+      {
+        "key": "phr_title_lead",
+        "src": 3,
+        "dist": 1
+      },
+      {
+        "key": "phr_note_match_pos",
+        "src": 6,
+        "dist": 2
+      }
+    ],
+    "CONTROL": [
+      {
+        "key": "ctl_fn_decl",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "ctl_fn_call",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "ctl_mark_el",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "ctl_mark_cls",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "ctl_css_mark_hit",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "ctl_box_shadow",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "ctl_stale_span",
+        "src": 3,
+        "dist": 3
+      },
+      {
+        "key": "ctl_td_title",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "ctl_no_note",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "ctl_queue_phrase",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "ctl_noteTally",
+        "src": 3,
+        "dist": 3
+      },
+      {
+        "key": "ctl_clamp_note",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "ctl_empty_box",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "ctl_fillHistory",
+        "src": 5,
+        "dist": 5
+      },
+      {
+        "key": "kept_first_only",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "phr_createTextNode",
+        "src": 19,
+        "dist": 19
+      }
+    ],
+    "DEAD": []
+  }
+}
