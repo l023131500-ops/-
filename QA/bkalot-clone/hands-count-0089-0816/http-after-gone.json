@@ -1,0 +1,56 @@
+[
+  {
+    "label": "login (יד ראשונה — 85 כבר נמחק)",
+    "value": {
+      "http_status": 200,
+      "ok": true,
+      "admin": {
+        "id": 84,
+        "email": "qa0089first@more30.test",
+        "full_name": "QA 0089 יד ראשונה"
+      }
+    }
+  },
+  {
+    "label": "A — המונה אחרי מחיקת החשבון שהכריע פעמיים",
+    "value": {
+      "case_id": 232,
+      "list_row": {
+        "status_changes_count": 3,
+        "status_deciders_count": 2,
+        "decided_by": 85,
+        "decided_by_name": null,
+        "row_still_in_list": true
+      },
+      "case_screen": {
+        "rows": 3,
+        "lines": [
+          {
+            "id": 21,
+            "from": "new",
+            "to": "in_progress",
+            "admin_id": 84,
+            "admin_name": "QA 0089 יד ראשונה"
+          },
+          {
+            "id": 22,
+            "from": "in_progress",
+            "to": "closed",
+            "admin_id": 85,
+            "admin_name": null
+          },
+          {
+            "id": 23,
+            "from": "closed",
+            "to": "rejected",
+            "admin_id": 85,
+            "admin_name": null
+          }
+        ],
+        "distinct_admins": 2
+      },
+      "agrees": true,
+      "total": 4
+    }
+  }
+]

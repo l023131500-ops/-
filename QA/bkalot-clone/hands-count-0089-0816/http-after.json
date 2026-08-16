@@ -1,0 +1,266 @@
+[
+  {
+    "label": "login (יד ראשונה)",
+    "value": {
+      "http_status": 200,
+      "ok": true,
+      "admin": {
+        "id": 84,
+        "email": "qa0089first@more30.test",
+        "full_name": "QA 0089 יד ראשונה"
+      }
+    }
+  },
+  {
+    "label": "cases — ארבעת המצבים ברשימה אחת",
+    "value": {
+      "http_status": 200,
+      "ok": true,
+      "total": 4,
+      "A_שלוש_ידיים": {
+        "case_id": 232,
+        "has_key_status_changes_count": true,
+        "has_key_status_deciders_count": true,
+        "status_changes_count": 3,
+        "status_deciders_count": 2,
+        "case_status": "rejected",
+        "decided_by": 85,
+        "decided_by_name": "QA 0089 יד שנייה",
+        "decided_at_set": true
+      },
+      "B_לחיצה_חוזרת": {
+        "case_id": 233,
+        "has_key_status_changes_count": true,
+        "has_key_status_deciders_count": true,
+        "status_changes_count": 1,
+        "status_deciders_count": 1,
+        "case_status": "in_progress",
+        "decided_by": 84,
+        "decided_by_name": "QA 0089 יד ראשונה",
+        "decided_at_set": true
+      },
+      "C_בלי_זהות": {
+        "case_id": 234,
+        "has_key_status_changes_count": true,
+        "has_key_status_deciders_count": true,
+        "status_changes_count": 1,
+        "status_deciders_count": 0,
+        "case_status": "in_progress",
+        "decided_by": null,
+        "decided_by_name": null,
+        "decided_at_set": true
+      },
+      "D_בלי_מעבר": {
+        "case_id": 235,
+        "has_key_status_changes_count": true,
+        "has_key_status_deciders_count": true,
+        "status_changes_count": 0,
+        "status_deciders_count": 0,
+        "case_status": "new",
+        "decided_by": null,
+        "decided_by_name": null,
+        "decided_at_set": false
+      }
+    }
+  },
+  {
+    "label": "0088 מול 0089 — הרצף שבמסך הפנייה מול שני המונים שבשורה",
+    "value": [
+      {
+        "key": "A",
+        "case_id": 232,
+        "case_screen": {
+          "has_key_status_history": true,
+          "rows": 3,
+          "distinct_admins": 2,
+          "sequence": "new->in_progress#84 | in_progress->closed#85 | closed->rejected#85",
+          "log_ids": [
+            21,
+            22,
+            23
+          ],
+          "chain_is_whole": true
+        },
+        "list_row": {
+          "status_changes_count": 3,
+          "status_deciders_count": 2
+        },
+        "agrees": true
+      },
+      {
+        "key": "B",
+        "case_id": 233,
+        "case_screen": {
+          "has_key_status_history": true,
+          "rows": 1,
+          "distinct_admins": 1,
+          "sequence": "new->in_progress#84",
+          "log_ids": [
+            24
+          ],
+          "chain_is_whole": true
+        },
+        "list_row": {
+          "status_changes_count": 1,
+          "status_deciders_count": 1
+        },
+        "agrees": true
+      },
+      {
+        "key": "C",
+        "case_id": 234,
+        "case_screen": {
+          "has_key_status_history": true,
+          "rows": 1,
+          "distinct_admins": 0,
+          "sequence": "new->in_progress#—",
+          "log_ids": [
+            25
+          ],
+          "chain_is_whole": true
+        },
+        "list_row": {
+          "status_changes_count": 1,
+          "status_deciders_count": 0
+        },
+        "agrees": true
+      },
+      {
+        "key": "D",
+        "case_id": 235,
+        "case_screen": {
+          "has_key_status_history": true,
+          "rows": 0,
+          "distinct_admins": 0,
+          "sequence": "",
+          "log_ids": [],
+          "chain_is_whole": true
+        },
+        "list_row": {
+          "status_changes_count": 0,
+          "status_deciders_count": 0
+        },
+        "agrees": true
+      }
+    ]
+  },
+  {
+    "label": "cases — שדות קיימים בשורה (רגרסיה)",
+    "value": {
+      "keys": [
+        "chosen_count",
+        "contact",
+        "created_at",
+        "decided_at",
+        "decided_by",
+        "decided_by_name",
+        "documents_count",
+        "id",
+        "kind",
+        "last_produced_by",
+        "last_produced_by_name",
+        "note",
+        "rights_count",
+        "situation",
+        "source",
+        "status",
+        "status_changes_count",
+        "status_deciders_count",
+        "topic_no"
+      ],
+      "key_count": 19,
+      "kind": "treatment",
+      "status": "rejected",
+      "source": "form",
+      "situation": "single_parent",
+      "topic_no": null,
+      "note_chars": 35,
+      "decided_by": 85,
+      "decided_by_name": "QA 0089 יד שנייה",
+      "contact_keys": [
+        "consent",
+        "email",
+        "full_name",
+        "id",
+        "phone"
+      ],
+      "rights_count": 42,
+      "chosen_count": 0,
+      "documents_count": 0,
+      "last_produced_by": null,
+      "last_produced_by_name": null,
+      "page": {
+        "total": 4,
+        "limit": 50,
+        "offset": 0,
+        "rows": 4
+      },
+      "order_ids": [
+        235,
+        234,
+        233,
+        232
+      ]
+    }
+  },
+  {
+    "label": "cases — מיון, סינון, חיפוש ושערים (רגרסיה)",
+    "value": {
+      "sort_decided_at": {
+        "http_status": 200,
+        "ok": true,
+        "total": 4,
+        "ids": [
+          234,
+          233,
+          232,
+          235
+        ]
+      },
+      "filter_decided_no_treatment": {
+        "http_status": 200,
+        "total": 1,
+        "ids": [
+          235
+        ]
+      },
+      "q_case_id": {
+        "http_status": 200,
+        "total": 1,
+        "ids": [
+          234
+        ]
+      },
+      "sort_unknown": {
+        "http_status": 200,
+        "error": "sort_unknown",
+        "allowed": [
+          "created_at",
+          "decided_at"
+        ]
+      },
+      "status_unknown": {
+        "http_status": 200,
+        "error": "status_unknown"
+      },
+      "decided_unknown": {
+        "http_status": 200,
+        "error": "decided_unknown"
+      },
+      "no_token": {
+        "http_status": 401,
+        "error": "token_required"
+      }
+    }
+  },
+  {
+    "label": "ids",
+    "value": {
+      "A": 232,
+      "B": 233,
+      "C": 234,
+      "D": 235,
+      "run": "after"
+    }
+  }
+]

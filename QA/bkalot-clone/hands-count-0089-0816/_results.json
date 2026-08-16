@@ -1,0 +1,154 @@
+{
+  "beat": "0089 — רשימת העבודה אינה יודעת לומר כמה ידיים עברו על הפנייה",
+  "date": "2026-08-16",
+  "scope": "מיגרציה בלבד — bkalot_clone_admin_cases, קריאה בלבד. apps/37 לא נגעה, supabase/functions לא נגעה, אין פריסת edge function ואין פריסת פורטל.",
+  "line_taken": {
+    "written_by": "c3b7c45 (heartbeat 627), בסופה",
+    "verbatim": "רשימת העבודה (bkalot_clone_admin_cases) אינה יודעת על היומן, ולכן מנהל שסורק את הרשימה בלי לפתוח פנייה אינו רואה כמה ידיים עברו עליה",
+    "also_written_by": ["8a577bc", "86cf183"]
+  },
+  "migration": {
+    "file": "supabase/migrations/0089_the_work_list_cannot_say_how_many_hands_touched_a_case.sql",
+    "bytes": 17281,
+    "md5": "F0B75E06323A3BC1BE577EB985AFD3D3",
+    "applied_version": "20260816011750",
+    "applied_once": true,
+    "internal_comment_in_pg_proc": true,
+    "distinct_count_in_pg_proc": true,
+    "overloads": 1
+  },
+  "grants_not_regranted": {
+    "anon": false,
+    "authenticated": false,
+    "service_role": true,
+    "measured": "לפני ואחרי — create or replace שומר ACL"
+  },
+
+  "seed": {
+    "how": "קליטה דרך bkalot-clone-intake מעל HTTP עם מפתח anon כמו מהטופס; שני מנהלים דרך bkalot_clone_admin_create (84, 85) ולא בהזרקת hash; כל מעבר של A ו-B דרך נתיב set-status שמאחורי השער עם טוקן אמיתי ולא בהזרקת שורה ליומן",
+    "cases": { "A": 232, "B": 233, "C": 234, "D": 235 },
+    "contacts": [239, 240, 241, 242],
+    "admins": { "first": 84, "second": 85 },
+    "log_ids_written": [21, 22, 23, 24, 25],
+    "C_seeded_in_sql": "bkalot_clone_admin_set_status בארגומנט אחד — צורת v7, p_admin_id null. אין דרך לקבל את הצורה הזו מעל HTTP: השער ממלא את מזהה המנהל מהטוקן תמיד."
+  },
+
+  "before": {
+    "has_key_status_changes_count": false,
+    "has_key_status_deciders_count": false,
+    "note": "היעדר מפתח ולא 0 — בשתי הרמות, בכל ארבע השורות",
+    "row_key_count": 17,
+    "case_screen_already_knew": "status_history החזירה 3/1/1/0 שורות על A/B/C/D בריצת ה-before עצמה — הנתון היה קיים ומדויק והשורה שתקה"
+  },
+
+  "after": {
+    "A_שלוש_ידיים":   { "case_id": 232, "status_changes_count": 3, "status_deciders_count": 2, "status": "rejected",    "decided_by": 85,   "sequence": "new->in_progress#84 | in_progress->closed#85 | closed->rejected#85" },
+    "B_לחיצה_חוזרת":  { "case_id": 233, "status_changes_count": 1, "status_deciders_count": 1, "status": "in_progress", "decided_by": 84,   "sequence": "new->in_progress#84", "clicks": 2, "note": "לחיצה שנייה החזירה changed=false ו-log_id null ולא כתבה שורה — האילוץ case_status_log_is_a_change. מעברים ולא לחיצות." },
+    "C_בלי_זהות":     { "case_id": 234, "status_changes_count": 1, "status_deciders_count": 0, "status": "in_progress", "decided_by": null, "sequence": "new->in_progress#—", "note": "הכרעה (3): מעבר בלי זהות נספר כשינוי ולא כיד. 1/0 הוא מצב מדיד ולא סתירה." },
+    "D_בלי_מעבר":     { "case_id": 235, "status_changes_count": 0, "status_deciders_count": 0, "status": "new",         "decided_by": null, "sequence": "", "note": "D הוא מה שקונה את שני המונים: 1/0 של C ו-0/0 של D היו שניהם «אין ידיים» אילו היה מונה אחד." }
+  },
+
+  "cross_0088_vs_0089": {
+    "agrees_on_all_four": true,
+    "what_it_means": "המסך אומר מי, הרשימה אומרת כמה, ושני המספרים נגזרים מאותן שורות בדיוק — count ו-count(distinct) מול אורך המערך ומול Set של admin_id בצד הלקוח",
+    "chain_is_whole_on_all_four": true
+  },
+
+  "decision_4_account_deleted": {
+    "how": "מחיקת חשבון 85 בפקודה על admin_users עצמה — ולא UPDATE ידני על היומן",
+    "deleted_admin_rows": 1,
+    "status_changes_count": 3,
+    "status_deciders_count": 2,
+    "row_still_in_list": true,
+    "decided_by": 85,
+    "decided_by_name": null,
+    "case_screen_lines": [
+      { "id": 21, "admin_id": 84, "admin_name": "QA 0089 יד ראשונה" },
+      { "id": 22, "admin_id": 85, "admin_name": null },
+      { "id": 23, "admin_id": 85, "admin_name": null }
+    ],
+    "what_it_buys": "INNER JOIN או ספירה שפותרת שם היו מחזירים 1 במקום 3 — מוחקים מההיסטוריה את הדחייה עצמה מפני שעובד התפטר. המונה אינו נוגע ב-admin_users כלל, ולכן הראיה נשארת והשם הוא שנעלם."
+  },
+
+  "regression": {
+    "row_keys_before": 17,
+    "row_keys_after": 19,
+    "unchanged_fields": "kind, status, source, situation, topic_no, note, decided_by, decided_at, decided_by_name, contact (5 מפתחות), rights_count=42, chosen_count=0, documents_count=0, last_produced_by=null, last_produced_by_name=null",
+    "page": { "total": 4, "limit": 50, "offset": 0, "rows": 4 },
+    "order_ids_before": [235, 234, 233, 232],
+    "order_ids_after":  [235, 234, 233, 232],
+    "sort_decided_at_ids_before": [234, 233, 232, 235],
+    "sort_decided_at_ids_after":  [234, 233, 232, 235],
+    "filter_decided_no_treatment": { "total": 1, "ids": [235] },
+    "q_case_id": { "total": 1, "ids": [234] },
+    "gates": {
+      "sort_unknown": { "error": "sort_unknown", "allowed": ["created_at", "decided_at"] },
+      "status_unknown": { "error": "status_unknown" },
+      "decided_unknown": { "error": "decided_unknown" },
+      "no_token": { "http_status": 401, "error": "token_required" }
+    },
+    "note": "כל אלה נמדדו זהים בשתי הריצות — שאילתת ה-count והשערים לא נגעו"
+  },
+
+  "test_mode": {
+    "declared": false,
+    "measured": true,
+    "intake_queued": [false, false, false, false],
+    "documents": 0,
+    "docs_with_queue_id": 0,
+    "cases_sent": 0,
+    "outbound_queue": 8,
+    "outbound_queue_sent_at_rows": 0,
+    "queue_fingerprint_base": "b4318d89eac1a47be75ab8769f320683",
+    "queue_fingerprint_after": "b4318d89eac1a47be75ab8769f320683",
+    "delivery_log": 3,
+    "note": "הפונקציה שהשתנתה היא קריאה בלבד — אין בה UPDATE ואין INSERT. אין מייל, אין הודעה ואין מסמך שיצא החוצה."
+  },
+
+  "rollback": {
+    "how": "פקודות נפרדות לפי id, כל אחת מחזירה מספר — תקלת cte-delete-sees-prestatement-snapshot; אנשי הקשר לפי id ולא לפי טלפון מנורמל — תקלת ac6e523",
+    "case_status_log": 5,
+    "case_rights": 168,
+    "cases": 4,
+    "contacts": 4,
+    "admin_users": 2,
+    "admin_sessions": "ירדו ב-cascade עם שני החשבונות וחזרו ל-5 בדיוק, לא נמחקו ידנית",
+    "baseline_after": {
+      "cases": 0, "case_rights": 0, "case_status_log": 0, "documents": 0,
+      "contacts": 4, "admin_users": 1, "admin_sessions": 5, "templates": 2,
+      "outbound_queue": 8, "delivery_log": 3, "catalog": 888
+    },
+    "baseline_exact": true
+  },
+
+  "warnings": [
+    "⚠️ מזהי היומן כאן הם 21–25 — רצף. ב-c3b7c45 הם היו 17–19 וב-8a577bc 12, 13, 14, 16, ושם הפער הוא שהראה שהמזהה אינו מונה. הכרעה (5) של 0088 עומדת כטענה כללית על יומן גלובלי, ובריצה הזו המזהים במקרה כן רצופים.",
+    "⚠️ C מחזירה decided_at מלא ו-decided_by null — set_status כותב את שניהם באותו UPDATE גם כשהזהות null. לכן מסנן decided=yes סופר אותה, והשורה נראית «הוכרעה» בלי מכריע. זה קו קיים של 0076 ולא של הפעימה הזו; נרשם ולא תוקן כאן.",
+    "⚠️ הכרעה (4) נמדדה על מחיקת חשבון ולא על מעבר בלי זהות בפנייה שיש בה גם מעבר עם זהות — צירוף שלא נזרע. שני המצבים נמדדו בנפרד (A ו-C) ולא באותה שורה.",
+    "⚠️ לא נמדד בדפדפן, ובכוונה: אין מי שמצייר את שני המונים. apps/37-bkalot-clone/admin.html מצייר את שורת הרשימה בלי «מעברים» — זו הלבנה הבאה (UI), ואחריה פריסה."
+  ],
+
+  "protected": {
+    "git_status_clean_on": ["apps/08-bkalut-app", "apps/09-bkalot-admin", "apps/37-bkalot-clone", "supabase/functions"],
+    "untouched": ["bkalut-app", "bkalot-admin", "zr_*", "NEDARIM3873", "csj", "csj_src", "igud"],
+    "git_add": "שני נתיבים מפורשים ולא נקודה"
+  },
+
+  "open": {
+    "next_brick": "apps/37-bkalot-clone/admin.html אינו מצייר את שני המונים בשורת הרשימה — התשובה כוללת אותם מעכשיו ואין מי שמציג אותם; זו הלבנה הבאה (UI), ואחריה פריסת פורטל, אותו פיצול כמו 0086 → 4b7293d → 839386a.",
+    "not_built": [
+      "אין note/reason ביומן — למה הוכרע ולא רק מה",
+      "אין סינון ואין מיון לפי מספר מעברים (הכרעה 5)",
+      "אין status_last_change_at (הכרעה 5)",
+      "אין שמות ברשימה (הכרעה 4) — מי שרוצה אותם פותח את הפנייה",
+      "אין היסטוריה על kind/topic_no/situation ואין על documents",
+      "אין backfill ולא יהיה"
+    ],
+    "lines_that_continue": [
+      "טעינה מחדש של הכתובת בייצור מנתקת את הסשן ומחזירה למסך הכניסה (נרשם ב-heartbeat 627)",
+      "הקליטה מחברת 42 זכויות ל-treatment ואפס ל-info/reminder על אותו situation",
+      "sent בלתי-ניתן-להשגה בכוונה; bkalot_clone_admin_create אינה חשופה ב-HTTP; pdf/audio → channel_unsupported",
+      "public_visible ו-show_in_showcase של #37 נשארים false"
+    ]
+  }
+}
