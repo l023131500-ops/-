@@ -81,12 +81,12 @@
     ],
     "DIFF": [
       {
-        "key": "ctl_none_phrase",
+        "key": "phr_none_phrase",
         "src": 7,
         "dist": 5
       },
       {
-        "key": "ctl_moatzot",
+        "key": "phr_moatzot",
         "src": 3,
         "dist": 2
       }

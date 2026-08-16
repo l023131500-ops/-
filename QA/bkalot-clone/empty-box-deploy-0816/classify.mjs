@@ -1,6 +1,11 @@
 // classify.mjs — src מול dist, לפני שהכתובת החיה נפגשת. מסווג כל סימן ל-
 // NEW (0 ב-dist, ≥1 ב-src) / REMOVED (≥1 ב-dist, 0 ב-src) / DIFF / CONTROL,
 // ומוציא dead — סימן שאינו קיים באף אחד מהשניים ולכן אינו יכול להכריע דבר.
+//
+// ⚠️ יש להריץ **לפני** stage-portal.ps1 ולא אחריו. ה-staging מעתיק את המקור
+// אל dist, ומאותו רגע שני הקבצים זהים והסיווג נמחק: הרצה חוזרת אחרי staging
+// מחזירה 18 CONTROL ו-2 DEAD — תוצאה שנראית תקינה ואינה מודדת דבר. הקובץ
+// classify.json שב-commit הוא ההרצה שלפני ה-staging, וזו היחידה שמכריעה.
 import { readFileSync, writeFileSync } from "node:fs";
 import { createHash } from "node:crypto";
 import { MARKERS, tally } from "./markers.mjs";
