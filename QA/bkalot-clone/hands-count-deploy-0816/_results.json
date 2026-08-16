@@ -1,0 +1,142 @@
+{
+  "step": "hands-count-deploy-0816",
+  "line_taken": "פתוח: הפריסה. מה שנמדד כאן הוא הקוד שבמקור מול ה-DB החי, ובייצור שורת הרשימה עדיין אינה אומרת כמה ידיים עברו; זו הלבנה הבאה, אותו פיצול כמו 0086 → 4b7293d → 839386a",
+  "line_source_commit": "74dbf7d",
+  "line_source_heartbeat": 629,
+  "scope": "פריסה בלבד — אין שינוי קוד, אין מיגרציה. bkalot-clone-admin נשארת v8, bkalot-clone-intake נשארת v1, supabase/functions ו-supabase/migrations לא נגעו.",
+
+  "staged_file_is_the_source": {
+    "source_path": "apps/37-bkalot-clone/admin.html",
+    "source_bytes": 117620,
+    "source_md5": "2A360EB350F10F37D21BFD3418B80885",
+    "dist_after_stage_bytes": 117620,
+    "dist_after_stage_md5": "2A360EB350F10F37D21BFD3418B80885",
+    "identical": true,
+    "dist_before_stage_bytes": 112911,
+    "dist_before_stage_md5": "2EFC96E653B51A2FAEAE3198BF92B0E9",
+    "dist_before_stage_note": "בדיוק מה ש-c3b7c45 פרס — שרשרת הפריסות נמדדה ולא הונחה"
+  },
+
+  "deployment": {
+    "id": "dpl_DHb6XHAbzmqX43rTprr9wnfrv9qd",
+    "url": "https://more30-portal-ndxcrk1rv-l023131500-ops-projects.vercel.app",
+    "readyState": "READY",
+    "target": "production",
+    "aliased": ["https://more30.com", "https://www.more30.com", "https://more30-portal.vercel.app"],
+    "staged_files": 38,
+    "prebuilt": false,
+    "prebuilt_note": "בלי --prebuilt: הדגל מפיל את vercel.json ואיתו את כל מפת ה-rewrites (prebuilt-deploy-drops-vercel-json)"
+  },
+
+  "markers_flipped": {
+    "method": "אותם מסומנים משני צדי אותה מדידה — 0 בייצור לפני, שווים למקור אחרי",
+    "addresses": ["https://more30.com/bkalot-studio/admin", "https://more30.com/bkalot-studio/admin/"],
+    "both_addresses_identical": true,
+    "NEW": {
+      "handsBit": "0 → 2",
+      "status_changes_count": "0 → 4",
+      "status_deciders_count": "0 → 2",
+      "מנהל אחד": "0 → 1",
+      "מעברים ולא לחיצות": "0 → 1"
+    },
+    "new_zero_in_live_before": true,
+    "new_equals_source_after": true,
+    "DIFF": {
+      "Object.hasOwn": "6 → 8",
+      "countHe": "11 → 13",
+      "מי הכריע אינו ידוע": "3 → 4",
+      "case_status_log_is_a_change": "1 → 2",
+      "מעבר אחד": "3 → 4",
+      "fillHistoryWhoCell": "2 → 3"
+    },
+    "diff_below_source_before": true,
+    "diff_equals_source_after": true,
+    "OLD_control": {
+      "fillQueueCell": "2 = 2",
+      "fillTemplateCell": "4 = 4",
+      "תווי טקסט": "4 = 4",
+      "fillCreatedCell": "4 = 4",
+      "producedBit": "2 = 2"
+    },
+    "old_unchanged_before_and_after": true,
+    "bytes": { "before": 113147, "after": 117856, "source": 117620, "netfree_delta": 236 },
+    "replacement_chars": 0,
+    "double_encoded": 0,
+    "control_urls_unmoved": { "https://more30.com/bkalot-studio/": 32558, "https://more30.com/": 3517 }
+  },
+
+  "reclassified_in_writing": [
+    "«מעבר אחד» תוכנן NEW ונמדד 3 בייצור בריצת before הראשונה — countHe במסך הפנייה כבר אומר אותו מאז 8a577bc. הועבר ל-DIFF (3→4) ולא נמחק בשקט: מסומן שאינו נולד בפריסה אינו קונה אותה.",
+    "fillHistoryWhoCell תוכנן OLD (בקרה) ונמדד 2 מול 3 — ההערה החדשה של handsBit מזכירה אותו בשמו. הועבר ל-DIFF (2→3); אותה תקלה בדיוק שנרשמה ב-heartbeat 619 וב-8a577bc.",
+    "producedBit תוכנן DIFF ונמדד 2=2 — הוא בייצור מאז 839386a וההערה החדשה אינה נוגעת בו. הועבר ל-OLD כבקרה. שתי הריצות (before/after) רצו מאותו קובץ probe.mjs בדיוק אחרי הסיווג מחדש — תקלת 0087, שבה שתי ריצות רצו משתי גרסאות של אותו כלי."
+  ],
+
+  "measured_in_production_browser": {
+    "viewport": "1280x900",
+    "url": "https://more30.com/bkalot-studio/admin (עם cache-buster)",
+    "login": "דרך המסך, חשבון 88 (qa0090dep-first@more30.test)",
+    "console_messages": 1,
+    "console_note": "netfree.link/api/card/data.js ERR_TIMED_OUT — שגיאת ה-proxy של NetFree ולא של המוצר; אפס שגיאות מ-more30.com",
+    "page_scrolls": false,
+    "rows_within_fold": "342 → 701 בחלון של 900 — ארבע השורות בפריים אחד",
+    "four_states_in_one_load": {
+      "A_three_hands": { "case_id": 240, "row": "3 מעברים · 2 מנהלים", "db": "3 מעברים, 2 מנהלים (log 31, 32, 33)" },
+      "B_repeat_click": { "case_id": 241, "row": "מעבר אחד · מנהל אחד", "db": "2 לחיצות, שורה אחת — השנייה החזירה changed=false ו-log_id null (log 34)" },
+      "C_no_identity": { "case_id": 242, "row": "מעבר אחד · מי הכריע אינו ידוע", "db": "מעבר אחד, admin_id null (log 35)" },
+      "D_untouched": { "case_id": 243, "row": null, "row_note": "שותקת — 5 בני-מטא, האחרון «42 זכויות»; אין סימן ידיים כלל", "db": "אפס מעברים" }
+    },
+    "titles": {
+      "hands": "מעברים ולא לחיצות — לחיצה חוזרת על אותו סטטוס אינה נרשמת; המנהלים נספרים לפי זהות ולא לפי שם, ולכן מעבר שנכתב בלי זהות אינו נספר בהם. מי הכריע במה — במסך הפנייה",
+      "hands_on_C": null,
+      "hands_on_C_note": "ב-C ה-title יושב על ה-span הפנימי «מי הכריע אינו ידוע» ולא על השורה כולה, כפי שנכתב ב-74dbf7d"
+    },
+    "account_deleted_state": {
+      "deleted": "admin_users.id = 89 בפקודה על הטבלה עצמה, ולא UPDATE ידני על היומן",
+      "rows_pointing_at_89": 2,
+      "log_rows_240_after": 3,
+      "row_stayed_in_list": true,
+      "list_row_count_after": 4,
+      "handsBit_after": "3 מעברים · 2 מנהלים — לא זז",
+      "decidedBit_after": "הוכרעה 16.08.2026, 04:51 · מנהל #89 · החשבון אינו קיים עוד",
+      "verdict": "המונה אינו נוגע ב-admin_users ואינו פותר שם, ולכן שרד את מחיקת החשבון בייצור — הכרעה (4) של 0089, הפעם מהכתובת החיה"
+    },
+    "screenshots_md5": {
+      "live-01-four-states.png": "ED42BB316500DC3EB4FD84533ACC5D8A",
+      "live-02-account-deleted.png": "F70898BE218B2C83CE3627EC6D8A1EA4"
+    },
+    "screenshots_distinct": true
+  },
+
+  "declared_gaps": [
+    "המצב החמישי של ה-UI — שרת מלפני 0089, שבו שני המפתחות אינם קיימים בתשובה — לא נמדד בייצור: הוא מחייב תשובת cases בלי המפתחות, ואין דרך לקבל אותה בלי לגעת בפונקציה החיה. נמדד ב-74dbf7d בעטיפת fetch בצד הלקוח.",
+    "«3 מעברים · 2 מנהלים» אינו אומר שכל שלושת המעברים נושאים זהות: count(distinct) מתעלם מ-null, ולכן פנייה מעורבת תיראה כמו פנייה שכל מעבריה מזוהים. ה-title אומר זאת ומפנה למסך הפנייה; הצירוף לא נזרע, ושני המצבים נמדדו בנפרד (A ו-C), כמו ב-0089 וב-74dbf7d.",
+    "#242 מחזירה decided_at מלא ו-decided_by null ולכן נראית «הוכרעה» בלי מכריע — קו קיים של 0076, לא של הפעימה הזו.",
+    "מזהי היומן כאן 31–35 — רצף. הכרעה (5) של 0088 עומדת כטענה כללית על יומן גלובלי, ובריצה הזו הם במקרה כן רצופים."
+  ],
+
+  "test_mode": {
+    "intakes_queued": [false, false, false, false],
+    "documents": 0,
+    "documents_with_queue_id": 0,
+    "cases_in_sent": 0,
+    "outbound_queue": 8,
+    "outbound_queue_sent_at_rows": 0,
+    "queue_fingerprint_baseline": "f456823b99d500895093d168012a78ad",
+    "queue_fingerprint_after": "f456823b99d500895093d168012a78ad",
+    "fingerprint_identical": true,
+    "delivery_log": 3,
+    "verdict": "אין מייל, אין הודעה ואין מסמך שיצא החוצה. הפריסה היא HTML — אין בה קריאת כתיבה חדשה."
+  },
+
+  "seeding_and_rollback": {
+    "intake_path": "bkalot-clone-intake מעל HTTP עם מפתח anon, כמו מהטופס (240–243; contacts 247–250)",
+    "admins_created_via": "bkalot_clone_admin_create (88, 89) ולא בהזרקת hash",
+    "transitions_written_via": "נתיב set-status שמאחורי השער עם טוקן אמיתי (A ו-B), ולא בהזרקת שורה ל-case_status_log. המעבר של C הוא הקריאה בארגומנט אחד בצד ה-SQL — השער ממלא את מזהה המנהל מהטוקן תמיד.",
+    "rollback_style": "פקודות נפרדות לפי טבלה, כל אחת סופרת את מה שהיא עצמה מחקה — תקלת cte-delete-sees-prestatement-snapshot; אנשי הקשר לפי id (247–250) ולא לפי טלפון מנורמל — תקלת ac6e523",
+    "deleted": { "case_status_log": 5, "case_rights": 168, "cases": 4, "contacts": 4, "admin_users_88": 1, "admin_users_89": "נמחק כבר בזמן המדידה כחלק ממצב מחיקת החשבון" },
+    "baseline_after": { "cases": 0, "case_rights": 0, "case_status_log": 0, "documents": 0, "contacts": 4, "admin_users": 1, "admin_sessions": 5, "templates": 2, "outbound_queue": 8, "delivery_log": 3, "catalog": 888 },
+    "baseline_exact": true
+  },
+
+  "protected": "git status ריק על apps/08-bkalut-app, apps/09-bkalot-admin, apps/37-bkalot-clone, supabase/functions ו-supabase/migrations; אין נגיעה ב-bkalut-app/bkalot-admin/zr_*/NEDARIM3873 ולא בסכמות csj/csj_src/igud"
+}
