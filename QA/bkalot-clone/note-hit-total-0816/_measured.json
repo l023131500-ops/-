@@ -1,0 +1,94 @@
+{
+  "slug": "note-hit-total-0816",
+  "migration": "0102_the_work_list_counts_the_reasons_and_not_the_matches_inside_them",
+  "scope": "db-only — no screen change, no edge function deploy, no production deploy",
+  "baseline_before": {
+    "cases": 0, "case_status_log": 0, "case_rights": 0, "documents": 0,
+    "admin_users": 1, "admin_sessions": 5, "templates": 2,
+    "contacts": 4, "outbound_queue": 8, "delivery_log": 3, "rights_catalog": 888,
+    "schema_migrations_max": "20260816192140",
+    "note": "measured, not assumed — matches heartbeat 680 row for row"
+  },
+  "seed": {
+    "case_id": 411, "contact_id": 418, "kind": "info", "source": "form",
+    "queued": false, "rights_linked": 0,
+    "via": "public.bkalot_clone_intake (SQL, not over HTTP — scaffolding, not the claim)",
+    "log_rows": [
+      { "id": 147, "to_status": "in_progress", "note": "Email נשלח לפונה, ואחריו EMAIL נוסף בטעות", "chars": 41 },
+      { "id": 148, "to_status": "rejected",    "note": "טופס, טופס ועוד טופס נשלחו בטעות",        "chars": 32 },
+      { "id": 149, "to_status": "closed",      "note": "המסמכים שצורפו שייכים לשנת המס הקודמת",   "chars": 37 }
+    ],
+    "admin_id": 4,
+    "why_these_texts": "three occurrences in one reason, two in another, one in a third, and one term that sits once in each of two reasons — so that 'how many reasons' and 'how many matches' can be told apart"
+  },
+  "failure_before": {
+    "measured_via": "public.bkalot_clone_admin_cases({q}) — read, not quoted from code",
+    "rows": [
+      { "q": "טופס",       "total": 1, "notes_count": 3, "note_match_count": 1, "note_hit_total_key_present": false, "real_occurrences": 3 },
+      { "q": "email",      "total": 1, "notes_count": 3, "note_match_count": 1, "note_hit_total_key_present": false, "real_occurrences": 2 },
+      { "q": "נשלח",       "total": 1, "notes_count": 3, "note_match_count": 2, "note_hit_total_key_present": false, "real_occurrences": 2 },
+      { "q": "המס הקודמת", "total": 1, "notes_count": 3, "note_match_count": 1, "note_hit_total_key_present": false, "real_occurrences": 1 },
+      { "q": "zzzz",       "total": 0, "notes_count": null, "note_match_count": null, "note_hit_total_key_present": null, "real_occurrences": 0 }
+    ],
+    "reading": "every answer is true and none of them says how many times the word was written. 'טופס' answers 1 over three matches; 'נשלח' answers 2 over two. from one number the two cannot be separated. the key note_hit_total did not exist at all — measured with jsonb ?, not assumed."
+  },
+  "after": {
+    "rows": [
+      { "q": "טופס",       "total": 1, "notes_count": 3, "note_match_count": 1, "note_hit_total": 3,    "matched_in_note": true,  "status_changes_count": 3, "queue_total": 1 },
+      { "q": "email",      "total": 1, "notes_count": 3, "note_match_count": 1, "note_hit_total": 2,    "matched_in_note": true,  "status_changes_count": 3, "queue_total": 1 },
+      { "q": "נשלח",       "total": 1, "notes_count": 3, "note_match_count": 2, "note_hit_total": 2,    "matched_in_note": true,  "status_changes_count": 3, "queue_total": 1 },
+      { "q": "המס הקודמת", "total": 1, "notes_count": 3, "note_match_count": 1, "note_hit_total": 1,    "matched_in_note": true,  "status_changes_count": 3, "queue_total": 1 },
+      { "q": "אברהם",      "total": 1, "notes_count": 3, "note_match_count": 0, "note_hit_total": 0,    "matched_in_note": false, "status_changes_count": 3, "queue_total": 1 },
+      { "q": "%",          "total": 0, "notes_count": null, "note_match_count": null, "note_hit_total": null, "matched_in_note": null, "status_changes_count": null, "queue_total": 1 },
+      { "q": "zzzz",       "total": 0, "notes_count": null, "note_match_count": null, "note_hit_total": null, "matched_in_note": null, "status_changes_count": null, "queue_total": 1 },
+      { "q": null,         "total": 1, "notes_count": null, "note_match_count": null, "note_hit_total": null, "key_present": true, "matched_in_note": false, "status_changes_count": 3, "queue_total": null }
+    ],
+    "readings": {
+      "the_failure_closed": "טופס → 1 reason and 3 matches; email → 1 and 2. the two numbers now differ where reality differs.",
+      "the_control_where_they_agree": "נשלח → 2 and 2. a screen holding one number cannot tell this apart from 1-of-3; it can now.",
+      "found_by_a_visible_field": "אברהם → 0 and 0, matched_in_note false. a term was asked and the answer is zero, not null.",
+      "no_term_asked": "no q → note_hit_total null and the key present. 'no question asked' is not 'zero matches', and a pre-0102 server (missing key) is a third state.",
+      "escape_still_holds": "% → total 0, the term is a literal per 0094; no row, hence no counters."
+    }
+  },
+  "controls_that_did_not_move": {
+    "total": "identical before and after on all five terms measured both times (1/1/1/1/0)",
+    "notes_count": "3 on every matched read, before and after — the denominator of 0098 untouched",
+    "note_match_count": "unchanged on every term — the new key describes, it does not replace",
+    "matched_in_note": "unchanged (0096/0098 semantics untouched)",
+    "status_changes_count": "3 — the same lateral now carries five aggregates and the four old ones did not move",
+    "queue_total": "1 while filtered, null unfiltered (0099 behaviour untouched)",
+    "proacl": "{postgres=X/postgres,service_role=X/postgres} — anon false, authenticated false, service_role true. create or replace, not drop+create; measured, not assumed.",
+    "pg_proc_signatures": 1
+  },
+  "recorded_in_db": {
+    "version": "20260816200600",
+    "name": "0102_the_work_list_counts_the_reasons_and_not_the_matches_inside_them",
+    "md5_of_stored_statement": "d1e2393b3a01160f5603bbc4a93f39d7",
+    "md5_of_file_on_disk_without_trailing_LF": "d1e2393b3a01160f5603bbc4a93f39d7",
+    "length_note": "postgres 18929 vs .NET 18930 — the 🚫 is outside the BMP and .NET counts it as two UTF-16 units; the MD5 is the identity, not the length"
+  },
+  "test_mode": {
+    "queued": false, "documents": 0, "case_rights": 0,
+    "outbound_queue": "8 before and after", "delivery_log": "3 before and after",
+    "outbound_calls": 0,
+    "note": "the path that changed reads and does not write"
+  },
+  "rollback": {
+    "order": "case_status_log → cases → contacts, separate statements per table (cte-delete-sees-prestatement-snapshot)",
+    "children_measured_first": { "case_status_log": 3, "case_rights": 0, "documents": 0 },
+    "deleted": { "case_status_log": 3, "cases": 1, "contacts": 1, "admin_users": 0 },
+    "no_admin_created": "admin 4 already existed; no bkalot_clone_admin_create call in this run",
+    "after": {
+      "cases": 0, "case_status_log": 0, "case_rights": 0, "documents": 0,
+      "admin_users": 1, "admin_sessions": 5, "templates": 2,
+      "contacts": 4, "outbound_queue": 8, "delivery_log": 3, "rights_catalog": 888,
+      "admin_cases_empty_params": { "total": 0, "queue_total": null }
+    }
+  },
+  "not_measured": [
+    "the disagreement branch (decision 4) — no input was found on which ilike says true and bkalot_clone_note_match_positions returns null; it is written and not exercised",
+    "the missing-key state (a pre-0102 server) — there is no old server here to run against",
+    "nothing was measured from a browser: admin.html does not draw this key yet"
+  ]
+}
