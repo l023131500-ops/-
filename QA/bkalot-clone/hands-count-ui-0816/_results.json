@@ -1,0 +1,130 @@
+{
+  "what": "שורת רשימת העבודה אומרת כמה מעברים היו על הפנייה וכמה מנהלים שונים עשו אותם (handsBit ב-apps/37-bkalot-clone/admin.html)",
+  "when": "2026-08-16",
+  "line_taken_from": "heartbeat 628 / commit 9ea1991, מילה במילה: «apps/37-bkalot-clone/admin.html אינו מצייר את שני המונים בשורת הרשימה — התשובה כוללת אותם מעכשיו ואין מי שמציג אותם; זו הלבנה הבאה (UI), ואחריה פריסת פורטל»",
+  "scope": {
+    "files_changed": ["apps/37-bkalot-clone/admin.html"],
+    "no_migration": true,
+    "no_edge_function_change": true,
+    "no_new_server_call": true,
+    "no_portal_deploy": true
+  },
+  "measured_from": "דפדפן מול ה-DB החי — serve.mjs מגיש את apps/37-bkalot-clone ב-127.0.0.1:8139, ו-BASE ב-admin.html הוא כתובת מוחלטת אל ה-edge החי",
+  "seed": {
+    "path": "bkalot-clone-intake מעל HTTP עם מפתח anon כמו מהטופס",
+    "cases": { "A": 236, "B": 237, "C": 238, "D": 239 },
+    "contacts": [243, 244, 245, 246],
+    "admins": { "first": 86, "second": 87 },
+    "admins_created_via": "bkalot_clone_admin_create — לא הזרקת hash",
+    "transitions_written_via": "bkalot-clone-admin/set-status מאחורי השער עם טוקן אמיתי (A ו-B); המעבר של C הוא הקריאה בארגומנט אחד בצד ה-SQL — השער ממלא את מזהה המנהל מהטוקן תמיד ואין דרך לקבל את הצורה הזו מעל HTTP",
+    "log_ids": [26, 27, 28, 29, 30],
+    "B_second_click": { "changed": false, "log_id": null, "http_status": 200 }
+  },
+  "states": [
+    {
+      "state": "(3) המקרה הרגיל — שלושה מעברים בידי שני מנהלים",
+      "case": 236,
+      "server": { "status_changes_count": 3, "status_deciders_count": 2 },
+      "row_text": "3 מעברים · 2 מנהלים",
+      "title": "מעברים ולא לחיצות — לחיצה חוזרת על אותו סטטוס אינה נרשמת; המנהלים נספרים לפי זהות ולא לפי שם, ולכן מעבר שנכתב בלי זהות אינו נספר בהם. מי הכריע במה — במסך הפנייה"
+    },
+    {
+      "state": "(3) מעבר אחד, מנהל אחד — לחיצה חוזרת אינה מעבר",
+      "case": 237,
+      "server": { "status_changes_count": 1, "status_deciders_count": 1 },
+      "row_text": "מעבר אחד · מנהל אחד",
+      "buys": "שתי לחיצות על in_progress, מעבר אחד. מונה שסופר לחיצות היה אומר «2 מעברים»"
+    },
+    {
+      "state": "(2) יש מעבר ואין זהות — צורת v7",
+      "case": 238,
+      "server": { "status_changes_count": 1, "status_deciders_count": 0 },
+      "row_text": "מעבר אחד · מי הכריע אינו ידוע",
+      "stale_span": true,
+      "wording_shared_with": ["decidedBit", "fillHistoryWhoCell"]
+    },
+    {
+      "state": "(1) אפס מעברים — השורה שותקת",
+      "case": 239,
+      "server": { "status_changes_count": 0, "status_deciders_count": 0 },
+      "row_text": null,
+      "buys": "C ו-D יחד קונים שני מונים ולא אחד: מונה יחיד היה מחזיר 0 בשתיהן, ו«איש לא נגע» ו«מישהו נגע ואיננו יודעים מי» היו נראים זהים"
+    },
+    {
+      "state": "(0) שרת מלפני 0089 — שני המפתחות אינם קיימים בתשובה",
+      "how": "fetch נעטף כך שימחק את status_changes_count ואת status_deciders_count מכל שורה; delete ולא null, מפני שהסימן נשען על Object.hasOwn",
+      "hands_signs_found": 0,
+      "rows_rendered": 4,
+      "decided_signs_unchanged": 3,
+      "screenshot": "next-02-old-server-silent.png"
+    }
+  ],
+  "decision_4_of_0089_measured_in_the_browser": {
+    "what": "המספר שורד את מחיקת החשבון — המונה אינו נוגע ב-admin_users כלל",
+    "how": "delete from bkalot_clone.admin_users where id = 87 — פקודה על הטבלה עצמה, ולא UPDATE ידני על היומן. 87 עשה שניים משלושת המעברים של 236",
+    "after": {
+      "row_hands_bit": "3 מעברים · 2 מנהלים — לא זז",
+      "row_decided_bit": "הוכרעה 16.08.2026, 04:32 · מנהל #87 · החשבון אינו קיים עוד — כן קרס",
+      "case_screen_header": "רצף ההכרעות (3 מעברים)",
+      "case_screen_rows": 3
+    },
+    "reads": "אותו נתון בדיוק: הסימן שנשען על השם קורס, והסימן שסופר זהויות אינו. INNER JOIN או ספירה שפותרת שם היו מחזירים 1 במקום 3 — כלומר מוחקים מההיסטוריה את הדחייה מפני שעובד התפטר",
+    "screenshot": "next-03-account-deleted.png"
+  },
+  "0088_vs_0089_agreement_from_the_browser": {
+    "case": 236,
+    "case_screen_says": "רצף ההכרעות (3 מעברים) — שלוש שורות, שתי זהויות (86, 87)",
+    "row_says": "3 מעברים · 2 מנהלים",
+    "same_word": "«מעברים» בשני המסכים — countHe(n, \"מעבר אחד\", \"מעברים\") באותו נוסח בדיוק"
+  },
+  "regression": {
+    "rows_rendered": 4,
+    "existing_bits_unmoved": ["#id", "מועד", "טלפון", "מצב", "42 זכויות", "decidedBit"],
+    "documents_count_bit": "לא הופק מסמך באף פנייה, ולכן אינו מוצג — כפי שהיה",
+    "producedBit": "null בכל ארבע (documents_count=0) — לא זז",
+    "console_errors": ["favicon.ico 404 מהשרת הסטטי המקומי בלבד — אין שגיאת מוצר"]
+  },
+  "test_mode": {
+    "intake_queued": [false, false, false, false],
+    "documents": 0,
+    "documents_with_queue_id": 0,
+    "outbound_queue_before": 8,
+    "outbound_queue_after": 8,
+    "outbound_queue_fingerprint_before": "f456823b99d500895093d168012a78ad",
+    "outbound_queue_fingerprint_after": "f456823b99d500895093d168012a78ad",
+    "rows_with_sent_at": 0,
+    "delivery_log_before": 3,
+    "delivery_log_after": 3,
+    "note": "אין מייל, אין הודעה ואין מסמך שיצא החוצה. הקובץ שהשתנה הוא HTML בלבד — אין בו קריאת כתיבה חדשה"
+  },
+  "rollback": {
+    "separate_statements_per_table": true,
+    "why": "cte-delete-sees-prestatement-snapshot — CTE אחד קורא את התצלום שלפני הפקודה, והמחיקה של הילדים מדווחת הצלחה בלי למחוק",
+    "counted": { "case_status_log": 5, "case_rights": 168, "cases": 4, "contacts": 4, "admin_users": 2 },
+    "contacts_deleted_by_id_not_by_phone": "תקלת ac6e523",
+    "admin_sessions": "ירדו ב-cascade עם שני החשבונות וחזרו ל-5 בדיוק",
+    "after": { "cases": 0, "case_rights": 0, "case_status_log": 0, "documents": 0, "contacts": 4, "admin_users": 1, "admin_sessions": 5, "templates": 2, "outbound_queue": 8, "delivery_log": 3, "catalog": 888 },
+    "baseline_exact": true
+  },
+  "screenshots": {
+    "next-01-four-states.png": "DFDA86B3BC5BA812C1B6DF7159DDAC86",
+    "next-02-old-server-silent.png": "607BCE4E8D763587DB63554D34FFA247",
+    "next-03-account-deleted.png": "00437E7862B95A201997C9395827E22F",
+    "three_distinct_md5": true,
+    "why_hashed": "screenshot-evidence-below-the-fold — שלושה מצבים שונים יכולים לתת שלושה PNG זהים"
+  },
+  "protected": {
+    "git_status_clean_on": ["apps/08-bkalut-app", "apps/09-bkalot-admin", "supabase/functions", "supabase/migrations"],
+    "untouched": ["bkalut-app", "bkalot-admin", "zr_*", "NEDARIM3873", "csj", "csj_src", "igud"],
+    "git_add": "שני נתיבים מפורשים ולא נקודה"
+  },
+  "open": "הפריסה. מה שנמדד כאן הוא הקוד שבמקור מול ה-DB החי, ובייצור שורת הרשימה עדיין אינה אומרת כמה ידיים עברו; זו הלבנה הבאה, אותו פיצול כמו 0086 → 4b7293d → 839386a",
+  "not_built": [
+    "אין note/reason ביומן — למה הוכרע ולא רק מה",
+    "אין סינון ואין מיון לפי מספר מעברים",
+    "אין status_last_change_at",
+    "אין שמות ברשימה — מי שרוצה אותם פותח את הפנייה",
+    "אפס מעברים שותק, ולכן «איש לא הכריע» ו«הוכרעה לפני שהיומן קם» אינם ניתנים להפרדה מהשורה — רק ממסך הפנייה",
+    "אין backfill ולא יהיה"
+  ]
+}
