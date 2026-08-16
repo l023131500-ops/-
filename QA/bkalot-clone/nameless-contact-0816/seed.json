@@ -1,0 +1,13 @@
+{
+  "intake_without_a_name_is_refused": {
+    "status": 200,
+    "ok": false,
+    "error": "full_name_required"
+  },
+  "intake": {
+    "status": 200,
+    "case_id": 377,
+    "contact_id": 384,
+    "queued": false
+  }
+}

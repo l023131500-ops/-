@@ -1,0 +1,92 @@
+{
+  "step": "nameless-contact-0816",
+  "line_taken_from": "bf6e895 (heartbeat 657), מילה במילה: «⚠️ לא נמדד: coalesce של הכרעה (7) של 0096 על איש קשר בלי שם — לא נבנתה פנייה כזו גם כאן»",
+  "why_this_line": "הקו נרשם ולא נלקח בשש לבנים רצופות (heartbeats 651–657) ותמיד באותה מילה. הענף נשען על קריאה בלבד מאז 0096, ומדידה שנדחית שש פעמים נקראת בסוף כמו מדידה שנעשתה.",
+  "scope": "מדידה בלבד — אין שינוי קוד, אין מיגרציה, אין פריסת edge function, אין פריסה לייצור",
+  "unchanged": {
+    "bkalot-clone-admin": "v9",
+    "bkalot-clone-intake": "v1",
+    "schema_migrations_head": "20260816131352 (0097)",
+    "apps/37-bkalot-clone": "לא נגעה",
+    "supabase/": "לא נגעה",
+    "why_0096_comment_not_edited": "שורה 90 ב-0096 עדיין אומרת «מה שלא נמדד». הקובץ הוחל, והטקסט השמור ב-supabase_migrations.schema_migrations סונכרן אליו ב-8bfee99 — עריכת הערה בקובץ מוחל הייתה מפרידה בין השניים בלי להוסיף ולו מדידה אחת. המדידה נרשמת כאן."
+  },
+  "reachability": {
+    "question": "האם הענף בכלל קיים בייצור, או שהוא הגנה על מצב שאינו יכול לקרות?",
+    "public_path_cannot_create_it": {
+      "measured": "POST /bkalot-clone-intake עם full_name='   ' → 200, ok=false, error='full_name_required'",
+      "source": "v_name := nullif(btrim(p->>'full_name'), '') ואחריו «if v_name is null then return full_name_required»",
+      "upsert": "on conflict (app_key, phone) do update set full_name = coalesce(excluded.full_name, contacts.full_name) — ו-app_key קבוע 'bkalot-clone', ולכן שורה של אפליקציה אחרת אינה נוגעת"
+    },
+    "but_the_fk_does": {
+      "constraint": "cases_contact_id_fkey FOREIGN KEY (contact_id) REFERENCES bkalot_auto.contacts(id) ON DELETE SET NULL",
+      "contact_id_nullable": true,
+      "meaning": "מחיקת איש קשר — פעולה אמיתית, לא היפותטית — משאירה את כל פניותיו חיות עם contact_id null. ה-left join מחזיר אז את כל שדות ct כ-null, וזה בדיוק הענף. הוא אינו מגיע משם ריק אלא מאיש קשר שאיננו.",
+      "measured": "delete from bkalot_auto.contacts where id=384 → הפנייה 377 שרדה, contact_id null, status rejected, decided_by 4"
+    }
+  },
+  "seed": {
+    "path": "נתיב הציבור מעל HTTP עם מפתח anon, כמו מהטופס — ולא הזרקת שורה",
+    "case": "#377 (contact 384) «אברהם ישראלי» 0501230011, kind=info, queued=false",
+    "transition": "bkalot_clone_admin_set_status(rejected, «המסמכים שצורפו שייכים לשנת המס הקודמת») במנהל 4 → log 99. הנימוק הוא מילה במילה זה של 0096, של 0097 ושל bf6e895.",
+    "why_sql_for_the_transition": "המדידה כאן היא של פונקציית המסד עצמה ולא של המסך; המעבר הוא פיגום ולא הטענה. נאמר ולא נבלע."
+  },
+  "measured": {
+    "before_the_contact_was_deleted": {
+      "note|המס הקודמת": { "total": 1, "ids": [377], "matched_in_note": true, "typeof": "boolean" },
+      "name|אברהם": { "total": 1, "ids": [377], "matched_in_note": false, "typeof": "boolean" },
+      "phone|0501230011": { "total": 1, "ids": [377], "matched_in_note": false, "typeof": "boolean" },
+      "case_id|377": { "total": 1, "ids": [377], "matched_in_note": false, "typeof": "boolean" },
+      "miss|zzzz": { "total": 0 },
+      "contact_on_every_row": { "id": 384, "full_name": "אברהם ישראלי", "phone": "0501230011", "email": "test@more30.com" }
+    },
+    "after_the_contact_was_deleted": {
+      "note|המס הקודמת": { "total": 1, "ids": [377], "matched_in_note": true, "typeof": "boolean", "contact": null },
+      "name|אברהם": { "total": 0, "note": "הזהות איננה — אין עוד שם לחפש בו" },
+      "phone|0501230011": { "total": 0, "note": "וגם לא טלפון" },
+      "case_id|377": { "total": 1, "ids": [377], "matched_in_note": false, "typeof": "boolean", "contact": null },
+      "miss|zzzz": { "total": 0 }
+    },
+    "verdict": "הענף מחזיק. matched_in_note חזר true ו-jsonb_typeof='boolean' — לא null ולא מפתח חסר — על שורה שכל שדות ct שלה null."
+  },
+  "counterfactual": {
+    "why": "«הענף מחזיק» לבדו אינו אומר שה-coalesce הוא שמחזיק אותו. הביטוי נמדד על אותה שורה בדיוק, פעם בלעדיו ופעם איתו.",
+    "visible_chain": null,
+    "without_coalesce": null,
+    "with_coalesce": true,
+    "control_on_the_id_term": false,
+    "reading": "שרשרת השדות הנראים מחזירה null ולא false, ולכן «not» בלעדיו היה מחזיר null — כלומר matched_in_note היה מגיע אל המסך כ-null במקום true. הבקרה על מונח שכן מתאים לשדה נראה (מספר הפנייה) מחזירה false ולא null באותו ביטוי בדיוק, ולכן ה-null אינו תכונה של צורת הביטוי אלא של השורה הזו. ההכרעה (7) של 0096 היא נושאת משקל ואינה קישוט."
+  },
+  "the_case_screen_too": {
+    "why": "אותה שורה נלחצת ונפתחת, ולכן 0097 יושבת על אותו מצב בדיוק — ומדידה של הרשימה לבדה הייתה משאירה חצי נתיב.",
+    "call": "bkalot_clone_admin_case(377, 'המס הקודמת') על פנייה בלי איש קשר",
+    "ok": true,
+    "contact": null,
+    "status_history": [{ "id": 99, "note_matched": true, "typeof": "boolean" }],
+    "verdict": "המסך אינו נופל ואינו משתתק: הסימן של 0097 נדלק על השורה הנכונה גם כשהזהות איננה."
+  },
+  "found_and_not_fixed": {
+    "what": "פנייה בלי איש קשר מוצגת בלי שם, בלי טלפון ובלי מייל — contact הוא null גם ברשימה וגם במסך הפנייה — ואין ולו מילה אחת שאומרת «איש הקשר נמחק».",
+    "why_it_matters": "מנהל שרואה שורה בלי זהות אינו יכול להבחין בין פנייה שהפונה שלה נמחק לבין תקלה בטעינה. זו לבנה משלה — נוסח במסך, לא שינוי במסד — ולא הורחבה לתוך הצעד הזה.",
+    "not_measured_here": "מה המסך מצייר בפועל במקום השם. הטענה כאן היא על מה שהמסד מחזיר, ונמדדה עליו."
+  },
+  "test_mode": {
+    "queued": false,
+    "documents": 0,
+    "outbound_queue": "8 לפני ואחרי",
+    "sent_at_rows": 0,
+    "delivery_log": "3 לפני ואחרי",
+    "cases_in_sent": 0,
+    "case_rights": 0,
+    "outgoing_calls": 0,
+    "note": "kind=info ולא treatment, ולכן case_rights 0 לאורך כל הריצה"
+  },
+  "baseline": {
+    "before": { "cases": 0, "case_status_log": 0, "case_rights": 0, "documents": 0, "admin_users": 1, "admin_sessions": 5, "templates": 2, "contacts": 4, "outbound_queue": 8, "delivery_log": 3, "rights_catalog": 888 },
+    "after_rollback": { "cases": 0, "case_status_log": 0, "case_rights": 0, "documents": 0, "admin_users": 1, "admin_sessions": 5, "templates": 2, "contacts": 4, "outbound_queue": 8, "delivery_log": 3, "rights_catalog": 888, "sent_rows": 0, "admin_cases_total_on_empty_params": 0 },
+    "rollback_method": "פקודות נפרדות לפי טבלה — cte-delete-sees-prestatement-snapshot. ⚠️ contacts יושבת ב-bkalot_auto ולא ב-bkalot_clone; ואיש הקשר 384 נמחק כחלק מהמדידה עצמה ולא בגלגול אחורה.",
+    "deleted": { "contacts": [384], "case_status_log": [99], "cases": [377] },
+    "admin_users": "לא נוצר מנהל חדש — המדידה היא ב-SQL ואינה עוברת בהתחברות, ולכן נעשה שימוש במנהל 4 הקיים ולא בחשבון חדש שהיה צריך למחוק"
+  },
+  "protected": "אין נגיעה ב-08/09/bkalut-app/bkalot-admin/zr_*/NEDARIM3873 ולא בסכמות csj/csj_src/igud; ל-git add נמסר נתיב מפורש אחד ולא נקודה"
+}
