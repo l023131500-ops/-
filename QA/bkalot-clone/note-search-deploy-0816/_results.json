@@ -1,0 +1,113 @@
+{
+  "brick": "note-search-deploy-0816",
+  "line": "הקו נלקח כפי שנוסח ב-e73fc63 (heartbeat 652), מילה במילה: «פתוח: הפריסה. מה שנמדד כאן הוא הקוד שבמקור; בייצור השורה עדיין שותקת. זו הלבנה הבאה»",
+  "scope": "פריסה בלבד — אין שינוי קוד, אין מיגרציה, אין פריסת edge function. bkalot-clone-admin נשארת v8, bkalot-clone-intake v1, supabase/ ו-apps/37 לא נגעו",
+  "deploy": {
+    "staged_from": "apps/37-bkalot-clone/admin.html",
+    "src_bytes": 146451,
+    "src_md5": "4A284AEC27BD671CC57023D9A263E705",
+    "dist_before": { "bytes": 142683, "md5": "8EFCF2498D1AB451F2509E3A7325D436", "means": "בדיוק מה ש-2840dd7 פרס — שרשרת הפריסות נמדדה ולא הונחה" },
+    "dist_after": { "bytes": 146451, "md5": "4A284AEC27BD671CC57023D9A263E705", "means": "הקובץ שנפרס הוא הקובץ שבמקור ולא עותק שלו" },
+    "files": 38,
+    "prebuilt": false,
+    "prebuilt_note": "--prebuilt מפיל את vercel.json ואיתו את מפת ה-rewrites — נפרס מ-portal/dist ובלי הדגל",
+    "deployment_id": "dpl_AumkLDohktt9dHZa6FbkcTu3dSNu",
+    "state": "READY",
+    "target": "production",
+    "aliased": "more30.com"
+  },
+  "classification": {
+    "decided_in": "classify.mjs, לפני ש-probe.mjs נכתב — תקלת 0087",
+    "NEW": 7,
+    "DIFF": 6,
+    "OLD": 46,
+    "rejected_candidate": {
+      "marker": "והמסך אינו רשאי להמציא אותו",
+      "src": 0,
+      "live": 0,
+      "why": "שבור על פני שתי שורות הערה במקור. מסומן שמחזיר 0 בשני הצדדים אינו בקרה — הוא מדידה שלא נעשתה, ולכן נפסל ולא נשאר ברשימה"
+    }
+  },
+  "http": {
+    "urls": ["https://more30.com/bkalot-studio/admin", "https://more30.com/bkalot-studio/admin/"],
+    "before": {
+      "bytes": 142919,
+      "new_zero_in_live": true,
+      "new_equals_source": false,
+      "diff_below_source": true,
+      "old_unchanged": true
+    },
+    "after": {
+      "bytes": 146687,
+      "new_zero_in_live": false,
+      "new_equals_source": true,
+      "diff_equals_source": true,
+      "old_unchanged": true
+    },
+    "bytes_math": "146,451 + 236 = 146,687 — דלתת NetFree הידועה, אותה תוספת בדיוק שהייתה ב-142,683 + 236 = 142,919 לפני",
+    "new_markers": ["noteMatchBit 0→2", "נמצאה לפי הנימוק 0→2", "matched_in_note 0→3", "הוא נמצא בנימוק שנכתב ביומן ההכרעות 0→1", "פתחו את הפנייה כדי לקרוא אותו 0→1", "ראשון מבין הסימנים ולא אחרון 0→1", "0096 0→3"],
+    "diff_markers": {
+      "code": ["Object.hasOwn 10→12 (הכרעה (0))", "meta.append 4→5 (השורה שמוסיפה את הסימן)", "s.className = \"stale\" 17→18 (הסימן עצמו)"],
+      "text_only": ["0091 4→5", "q-phone 3→5", "0093 2→3 — גדלו מפני שהתיעוד החדש מזכיר אותם בשמם, ואינם קוד חדש"]
+    },
+    "control_markers": "46 לא זזו לפני ולא אחרי. תשעת הראשונים הם מסומני ה-NEW של 2840dd7 — מה שהלבנה הקודמת פרסה הוא הבקרה של זו. decidedBit נשאר 4 אף שהוא הסימן שהחדש נדחף מיד לפניו, ולכן הוא הבקרה הצמודה ביותר שיש",
+    "control_urls": { "https://more30.com/bkalot-studio/": 32558, "https://more30.com/": 3517 },
+    "encoding": { "replacement_chars": 0, "double_encoded": 0 }
+  },
+  "browser": {
+    "measured_from": "https://more30.com/bkalot-studio/admin, 1280x900, התחברות אמיתית דרך המסך",
+    "admin": { "id": 110, "email": "qa-note-search-deploy-0816@more30.com", "created_by": "bkalot_clone_admin_create ולא הזרקת hash" },
+    "seed": {
+      "path": "bkalot-clone-intake מעל HTTP עם מפתח anon, כמו מהטופס",
+      "kind": "info",
+      "cases": [
+        { "id": 371, "contact_id": 378, "full_name": "אברהם ישראלי", "phone": "0501230011", "status": "rejected", "log_id": 84, "note": "המסמכים שצורפו שייכים לשנת המס הקודמת" },
+        { "id": 372, "contact_id": 379, "full_name": "מרים כהן", "phone": "0502230022", "status": "closed", "log_id": 85, "note": "הטופס נשלח בדואר רשום על ידי הפונה" }
+      ],
+      "statuses_set_where": "דרך המסך בייצור — תיבת «למה» ולחיצה על «נדחתה»/«נסגרה», ולא ב-SQL",
+      "same_text_as": "0096 ו-e73fc63 — אותן שתי פניות ואותם שני נימוקים מילה במילה"
+    },
+    "steps": [
+      { "n": 1, "q": "", "count": "2 פניות", "rows": 2, "sign_count": 0, "means": "רשימה בלי מונח חיפוש שותקת — השרת מחזיר false לכל השורות", "png": "01-live-no-search-no-sign.png" },
+      { "n": 2, "q": "המס הקודמת", "count": "פנייה אחת", "rows": 1, "sign_count": 1, "row": "אברהם ישראלי · מידע · נדחתה · #371 · 16.08.2026, 15:56 · טלפון 0501230011 · 0 זכויות · נמצאה לפי הנימוק · הוכרעה 16.08.2026, 15:57 · QA פריסה נימוק · מעבר אחד · מנהל אחד", "sign_top_px": 388, "viewport_px": 900, "sign_class": "stale", "sign_title": "מה שהוקלד בחיפוש אינו בשם, בטלפון, במייל ובמספר הפנייה — הוא נמצא בנימוק שנכתב ביומן ההכרעות. הנימוק עצמו אינו מוצג ברשימה; פתחו את הפנייה כדי לקרוא אותו", "png": "02-live-row-says-found-by-note.png" },
+      { "n": 3, "q": "כהן", "count": "פנייה אחת", "rows": 1, "sign_count": 0, "row": "מרים כהן · מידע · נסגרה · #372 · … · 0 זכויות · הוכרעה … · מעבר אחד · מנהל אחד", "means": "נמצאה בזכות השם — הסימן אינו דולק, כלומר השדה מפריד ואינו דולק תמיד", "png": "03-live-control-found-by-name-no-sign.png" }
+    ],
+    "position_in_dom": {
+      "meta_children": ["#371", "16.08.2026, 15:56", "טלפון 0501230011", "0 זכויות", "נמצאה לפי הנימוק", "הוכרעה … · QA פריסה נימוק", "מעבר אחד · מנהל אחד"],
+      "means": "ראשון מבין הסימנים ולא אחרון — אחרי המונים הקבועים ולפני «הוכרעה» ו«מעבר אחד», בדיוק כפי שנמדד ב-e73fc63 מול שרת מקומי"
+    },
+    "same_as_local": "sign_top 388 בחלון 900 — אותו מספר בדיוק שנמדד ב-8137 ב-e73fc63",
+    "console": "אפס הודעות — לא שגיאה, לא אזהרה ולא הודעה אחת מהאפליקציה",
+    "screenshots": [
+      { "file": "01-live-no-search-no-sign.png", "bytes": 43371, "md5": "E7184AAE" },
+      { "file": "02-live-row-says-found-by-note.png", "bytes": 36045, "md5": "7BC7121C" },
+      { "file": "03-live-control-found-by-name-no-sign.png", "bytes": 33495, "md5": "ECFEE31E" }
+    ],
+    "screenshot_note": "שלושה MD5 שונים — תקלת screenshot-evidence-below-the-fold; המיקום נמדד מה-DOM אחרי הציור ולא הונח. החלון שונה פעם אחת לפני הצילום הראשון — תקלת playwright-blank-screenshot-until-resize"
+  },
+  "test_mode": { "documents": 0, "outbound_queue": 8, "sent_at_rows": 0, "delivery_log": 3, "cases_in_sent": 0, "case_rights": 0, "queued_on_intake": false, "outbound_calls": 0 },
+  "rollback": {
+    "method": "פקודות נפרדות לפי טבלה ולא CTE אחד — תקלת cte-delete-sees-prestatement-snapshot; ואנשי הקשר לפי id ולא לפי טלפון מנורמל",
+    "order": ["case_status_log", "cases", "contacts", "admin_sessions", "admin_users"],
+    "schema_note": "contacts, outbound_queue ו-delivery_log יושבות ב-bkalot_auto ולא ב-bkalot_clone",
+    "before_run": { "cases": 0, "case_status_log": 0, "case_rights": 0, "documents": 0, "admin_users": 1, "admin_sessions": 5, "templates": 2, "contacts": 4, "outbound_queue": 8, "delivery_log": 3, "rights_catalog": 888 },
+    "after": { "cases": 0, "case_status_log": 0, "case_rights": 0, "documents": 0, "admin_users": 1, "admin_sessions": 5, "templates": 2, "contacts": 4, "outbound_queue": 8, "delivery_log": 3, "rights_catalog": 888 },
+    "verdict": "בסיס בדיוק"
+  },
+  "protected": "אין נגיעה ב-08/09/bkalut-app/bkalot-admin/zr_*/NEDARIM3873 ולא בסכמות csj/csj_src/igud. ל-git add נמסר נתיב מפורש אחד ולא נקודה",
+  "open": "נתיב «למה השורה הזו נמצאה» סגור מקצה לקצה — המסד (0096/f0d09b4), המסך (e73fc63) והפריסה כאן",
+  "not_built": [
+    "אין הדגשת המילה שנמצאה בתוך הנימוק ואין ציטוט שלו בשורה — 0096 אינה מחזירה את הטקסט",
+    "אין חיפוש ב-cases.note ולא בשמות המכריעים",
+    "אין סינון «יש נימוק / אין»",
+    "אין אינדקס ואין חיפוש טקסט מלא",
+    "אין סימן מקביל במסך הפנייה",
+    "אין סינון ומיון לפי מספר מעברים",
+    "אין עריכה ומחיקה ביומן",
+    "אין שמירת מיקום הפנייה בעמוד החדש",
+    "אין אינדקס על ct.phone",
+    "pager.hidden = total <= PAGE נשאר כפי שהוא"
+  ],
+  "not_measured": "coalesce של הכרעה (7) של 0096 על איש קשר בלי שם — לא נבנתה פנייה כזו גם כאן, והענף נשען על קריאה בלבד",
+  "continuing_lines": "טעינה מחדש של הכתובת מנתקת את הסשן (הכרעה מוצהרת ב-admin.html:296); sent בלתי-ניתן-להשגה בכוונה; bkalot_clone_admin_create אינה חשופה ב-HTTP; pdf/audio → channel_unsupported; public_visible ו-show_in_showcase של #37 נשארים false"
+}

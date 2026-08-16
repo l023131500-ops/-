@@ -1,0 +1,306 @@
+{
+  "src_bytes": 146451,
+  "live_bytes": 142919,
+  "rows": [
+    {
+      "marker": "noteMatchBit",
+      "src": 2,
+      "live": 0
+    },
+    {
+      "marker": "נמצאה לפי הנימוק",
+      "src": 2,
+      "live": 0
+    },
+    {
+      "marker": "matched_in_note",
+      "src": 3,
+      "live": 0
+    },
+    {
+      "marker": "Object.hasOwn",
+      "src": 12,
+      "live": 10
+    },
+    {
+      "marker": "הוא נמצא בנימוק שנכתב ביומן ההכרעות",
+      "src": 1,
+      "live": 0
+    },
+    {
+      "marker": "פתחו את הפנייה כדי לקרוא אותו",
+      "src": 1,
+      "live": 0
+    },
+    {
+      "marker": "ראשון מבין הסימנים ולא אחרון",
+      "src": 1,
+      "live": 0
+    },
+    {
+      "marker": "0096",
+      "src": 3,
+      "live": 0
+    },
+    {
+      "marker": "והמסך אינו רשאי להמציא אותו",
+      "src": 0,
+      "live": 0
+    },
+    {
+      "marker": "decidedBit",
+      "src": 4,
+      "live": 4
+    },
+    {
+      "marker": "meta.append",
+      "src": 5,
+      "live": 4
+    },
+    {
+      "marker": "s.className = \"stale\"",
+      "src": 18,
+      "live": 17
+    },
+    {
+      "marker": "0091",
+      "src": 5,
+      "live": 4
+    },
+    {
+      "marker": "note_required",
+      "src": 3,
+      "live": 3
+    },
+    {
+      "marker": "דחייה חייבת נימוק",
+      "src": 1,
+      "live": 1
+    },
+    {
+      "marker": "חובה לדחייה בלבד",
+      "src": 2,
+      "live": 2
+    },
+    {
+      "marker": "אפשר להשאיר ריק, למעט דחייה",
+      "src": 1,
+      "live": 1
+    },
+    {
+      "marker": "אחיו של note_too_long",
+      "src": 1,
+      "live": 1
+    },
+    {
+      "marker": "והפך לשקר בשלישו",
+      "src": 1,
+      "live": 1
+    },
+    {
+      "marker": "השני מבין השניים שהמנהל מתקן בעצמו",
+      "src": 1,
+      "live": 1
+    },
+    {
+      "marker": "מלמדת לא להקליד",
+      "src": 1,
+      "live": 1
+    },
+    {
+      "marker": "0095",
+      "src": 4,
+      "live": 4
+    },
+    {
+      "marker": "noteInput.focus()",
+      "src": 2,
+      "live": 2
+    },
+    {
+      "marker": "לא נרשמה שורת יומן",
+      "src": 4,
+      "live": 4
+    },
+    {
+      "marker": "note_too_long",
+      "src": 6,
+      "live": 6
+    },
+    {
+      "marker": "syncNoteCount",
+      "src": 5,
+      "live": 5
+    },
+    {
+      "marker": "out?.error",
+      "src": 7,
+      "live": 7
+    },
+    {
+      "marker": "decider_required",
+      "src": 2,
+      "live": 2
+    },
+    {
+      "marker": "clamp-note",
+      "src": 3,
+      "live": 3
+    },
+    {
+      "marker": "clampNote",
+      "src": 9,
+      "live": 9
+    },
+    {
+      "marker": "הרשימה התקצרה בזמן העבודה",
+      "src": 1,
+      "live": 1
+    },
+    {
+      "marker": "האחרון שיש בו פניות",
+      "src": 1,
+      "live": 1
+    },
+    {
+      "marker": "cnote",
+      "src": 3,
+      "live": 3
+    },
+    {
+      "marker": "const from = Math.floor(offset / PAGE) + 1",
+      "src": 1,
+      "live": 1
+    },
+    {
+      "marker": "clampNote === null",
+      "src": 2,
+      "live": 2
+    },
+    {
+      "marker": "מספר העמוד קפץ בלי שנאמר למה",
+      "src": 1,
+      "live": 1
+    },
+    {
+      "marker": "reclamped",
+      "src": 4,
+      "live": 4
+    },
+    {
+      "marker": "load(true)",
+      "src": 3,
+      "live": 3
+    },
+    {
+      "marker": "הרשימה מתקצרת בשרת",
+      "src": 1,
+      "live": 1
+    },
+    {
+      "marker": "ואינו רודף אחריו",
+      "src": 1,
+      "live": 1
+    },
+    {
+      "marker": "מעבר לסוף הרשימה",
+      "src": 1,
+      "live": 1
+    },
+    {
+      "marker": "const cases = data.cases",
+      "src": 1,
+      "live": 1
+    },
+    {
+      "marker": "offset > 0",
+      "src": 1,
+      "live": 1
+    },
+    {
+      "marker": "Math.ceil(total / PAGE)",
+      "src": 2,
+      "live": 2
+    },
+    {
+      "marker": "q-phone",
+      "src": 5,
+      "live": 3
+    },
+    {
+      "marker": "qPhone",
+      "src": 7,
+      "live": 7
+    },
+    {
+      "marker": "חופש לפי",
+      "src": 1,
+      "live": 1
+    },
+    {
+      "marker": "q_phone",
+      "src": 1,
+      "live": 1
+    },
+    {
+      "marker": "0093",
+      "src": 3,
+      "live": 2
+    },
+    {
+      "marker": "list-error",
+      "src": 4,
+      "live": 4
+    },
+    {
+      "marker": "why-input",
+      "src": 2,
+      "live": 2
+    },
+    {
+      "marker": "td.why",
+      "src": 1,
+      "live": 1
+    },
+    {
+      "marker": "רצף ההכרעות",
+      "src": 4,
+      "live": 4
+    },
+    {
+      "marker": "handsBit",
+      "src": 2,
+      "live": 2
+    },
+    {
+      "marker": "producedBit",
+      "src": 2,
+      "live": 2
+    },
+    {
+      "marker": "fillQueueCell",
+      "src": 2,
+      "live": 2
+    },
+    {
+      "marker": "fillTemplateCell",
+      "src": 4,
+      "live": 4
+    },
+    {
+      "marker": "fillCreatedCell",
+      "src": 4,
+      "live": 4
+    },
+    {
+      "marker": "מי הכריע",
+      "src": 13,
+      "live": 13
+    },
+    {
+      "marker": "fillHistoryNoteCell",
+      "src": 2,
+      "live": 2
+    }
+  ]
+}
