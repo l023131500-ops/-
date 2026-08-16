@@ -412,24 +412,7 @@ footer a{color:var(--brand)}
     result.hidden = false;
   }
 
-  // ── ונפילה חדשה מוחקת את הסימן של הקודמת ───────────────────────────────────
-  // ‏markInvalid מסירה סימון קודם לפני שהיא מסמנת, ולכן כל עוד יש שדה לסמן
-  // הסימן נכון. מה שלא כוסה הוא נפילה **בלי** שדה: network ו-bad_response
-  // חוזרות מכאן ב-return לפני שהבדיקה על CODE_FIELD בכלל מגיעה, ו-rpc_failed,
-  // body_too_large, kind_invalid, source_invalid וכל קוד שאינו במפה מגיעים
-  // אליה ויוצאים ריקים. בכל אחת מהן markInvalid אינה נקראת, ואין מי שיסיר —
-  // ולכן הסימן של השליחה **הקודמת** נשאר עומד: מי שנפסל על הטלפון, תיקן אותו,
-  // ונפל בשליחה הבאה על משהו אחר לגמרי, ראה את הטלפון המתוקן מסומן כשגוי ליד
-  // הודעה שאינה מדברת עליו. מאז שהכלל שב-8ef394c צובע את התכונה זה גם נראה
-  // לעין ולא רק לקורא מסך — שדה אדום שאינו הבעיה.
-  // ההסרה יושבת כאן, ב-fail, ולא בכל ענף בנפרד: fail היא הנקודה היחידה שכל
-  // נפילה עוברת בה, והסימון החדש — היכן שיש כזה — נקבע תמיד **אחריה**.
-  function clearInvalid() {
-    for (const el of form.querySelectorAll("[aria-invalid]")) el.removeAttribute("aria-invalid");
-  }
-
   function fail(code, extra) {
-    clearInvalid();
     const text = MESSAGES[code] || "אירעה תקלה. נסו שוב בעוד רגע.";
     const lines = [text];
     // קוד לא מוכר לא נבלע: אם השרת יגדל בקוד חדש, הוא ייראה על המסך במקום
@@ -454,13 +437,13 @@ footer a{color:var(--brand)}
   // שדה שנפסל מסומן ומקבל מיקוד, ורק הוא: סימון קודם מוסר, אחרת שתי שליחות
   // עוקבות משאירות שני שדות מסומנים ומי שקורא מסך אינו יודע מה נפל עכשיו.
   function markInvalid(el) {
-    clearInvalid();
+    for (const other of form.querySelectorAll("[aria-invalid]")) other.removeAttribute("aria-invalid");
     el.setAttribute("aria-invalid", "true");
     el.focus();
   }
 
   function focusDropped(dropped, sent, sentKind) {
-    clearInvalid();
+    for (const el of form.querySelectorAll("[aria-invalid]")) el.removeAttribute("aria-invalid");
     for (const key of dropped) {
       const el = $(key);
       // מפתח שאין לו שדה בטופס, או שדה שהטופס לא שלח, אינו מקבל מיקוד — אין

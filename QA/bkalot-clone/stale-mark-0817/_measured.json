@@ -1,0 +1,378 @@
+{
+  "head_file": {
+    "path": "head/index.html",
+    "md5": "30B03F39"
+  },
+  "work_file": {
+    "path": "apps/37-bkalot-clone/index.html",
+    "md5": "BB48BD92"
+  },
+  "before": {
+    "A": {
+      "step1": {
+        "marked": [
+          "phone"
+        ],
+        "focused": "phone",
+        "result_hidden": false,
+        "result_text": "הפנייה לא נשלחהמספר הטלפון אינו תקין. הטלפון הוא מפתח הזהות שלכם אצלנו — נדרש מספר ישראלי (למשל 0501234567).",
+        "phone_value": "123",
+        "phone_border": "rgb(155, 28, 28)",
+        "phone_bg": "rgb(251, 234, 234)"
+      },
+      "step2": {
+        "marked": [
+          "phone"
+        ],
+        "focused": "",
+        "result_hidden": false,
+        "result_text": "הפנייה לא נשלחההפנייה ארוכה מדי. קצרו את ההערה ונסו שוב.",
+        "phone_value": "0500000000",
+        "phone_border": "rgb(155, 28, 28)",
+        "phone_bg": "rgb(251, 234, 234)"
+      }
+    },
+    "B": {
+      "step1": {
+        "marked": [
+          "phone"
+        ],
+        "focused": "phone",
+        "result_hidden": false,
+        "result_text": "הפנייה לא נשלחהמספר הטלפון אינו תקין. הטלפון הוא מפתח הזהות שלכם אצלנו — נדרש מספר ישראלי (למשל 0501234567).",
+        "phone_value": "123",
+        "phone_border": "rgb(155, 28, 28)",
+        "phone_bg": "rgb(251, 234, 234)"
+      },
+      "step2": {
+        "marked": [
+          "full_name"
+        ],
+        "focused": "full_name",
+        "result_hidden": false,
+        "result_text": "הפנייה לא נשלחהצריך שם מלא.",
+        "phone_value": "0500000000",
+        "phone_border": "rgb(220, 218, 209)",
+        "phone_bg": "rgb(240, 239, 233)"
+      }
+    },
+    "C": {
+      "step1": {
+        "marked": [
+          "phone"
+        ],
+        "focused": "phone",
+        "result_hidden": false,
+        "result_text": "הפנייה לא נשלחהמספר הטלפון אינו תקין. הטלפון הוא מפתח הזהות שלכם אצלנו — נדרש מספר ישראלי (למשל 0501234567).",
+        "phone_value": "123",
+        "phone_border": "rgb(155, 28, 28)",
+        "phone_bg": "rgb(251, 234, 234)"
+      },
+      "step2": {
+        "marked": [
+          "phone"
+        ],
+        "focused": "",
+        "result_hidden": false,
+        "result_text": "הפנייה לא נשלחהאין חיבור לשירות. בדקו את האינטרנט ונסו שוב.",
+        "phone_value": "0500000000",
+        "phone_border": "rgb(155, 28, 28)",
+        "phone_bg": "rgb(251, 234, 234)"
+      }
+    }
+  },
+  "after": {
+    "A": {
+      "step1": {
+        "marked": [
+          "phone"
+        ],
+        "focused": "phone",
+        "result_hidden": false,
+        "result_text": "הפנייה לא נשלחהמספר הטלפון אינו תקין. הטלפון הוא מפתח הזהות שלכם אצלנו — נדרש מספר ישראלי (למשל 0501234567).",
+        "phone_value": "123",
+        "phone_border": "rgb(155, 28, 28)",
+        "phone_bg": "rgb(251, 234, 234)"
+      },
+      "step2": {
+        "marked": [],
+        "focused": "",
+        "result_hidden": false,
+        "result_text": "הפנייה לא נשלחההפנייה ארוכה מדי. קצרו את ההערה ונסו שוב.",
+        "phone_value": "0500000000",
+        "phone_border": "rgb(220, 218, 209)",
+        "phone_bg": "rgb(240, 239, 233)"
+      }
+    },
+    "B": {
+      "step1": {
+        "marked": [
+          "phone"
+        ],
+        "focused": "phone",
+        "result_hidden": false,
+        "result_text": "הפנייה לא נשלחהמספר הטלפון אינו תקין. הטלפון הוא מפתח הזהות שלכם אצלנו — נדרש מספר ישראלי (למשל 0501234567).",
+        "phone_value": "123",
+        "phone_border": "rgb(155, 28, 28)",
+        "phone_bg": "rgb(251, 234, 234)"
+      },
+      "step2": {
+        "marked": [
+          "full_name"
+        ],
+        "focused": "full_name",
+        "result_hidden": false,
+        "result_text": "הפנייה לא נשלחהצריך שם מלא.",
+        "phone_value": "0500000000",
+        "phone_border": "rgb(220, 218, 209)",
+        "phone_bg": "rgb(240, 239, 233)"
+      }
+    },
+    "C": {
+      "step1": {
+        "marked": [
+          "phone"
+        ],
+        "focused": "phone",
+        "result_hidden": false,
+        "result_text": "הפנייה לא נשלחהמספר הטלפון אינו תקין. הטלפון הוא מפתח הזהות שלכם אצלנו — נדרש מספר ישראלי (למשל 0501234567).",
+        "phone_value": "123",
+        "phone_border": "rgb(155, 28, 28)",
+        "phone_bg": "rgb(251, 234, 234)"
+      },
+      "step2": {
+        "marked": [],
+        "focused": "",
+        "result_hidden": false,
+        "result_text": "הפנייה לא נשלחהאין חיבור לשירות. בדקו את האינטרנט ונסו שוב.",
+        "phone_value": "0500000000",
+        "phone_border": "rgb(220, 218, 209)",
+        "phone_bg": "rgb(240, 239, 233)"
+      }
+    }
+  },
+  "bodies": [
+    {
+      "scenario": "A",
+      "status": 200,
+      "body": {
+        "ok": false,
+        "error": "phone_invalid",
+        "detail": "הטלפון הוא מפתח הזהות של הפונה — נדרש מספר ישראלי תקין"
+      }
+    },
+    {
+      "scenario": "A",
+      "status": 413,
+      "body": {
+        "ok": false,
+        "error": "body_too_large",
+        "max_bytes": 16384
+      }
+    },
+    {
+      "scenario": "B",
+      "status": 200,
+      "body": {
+        "ok": false,
+        "error": "phone_invalid",
+        "detail": "הטלפון הוא מפתח הזהות של הפונה — נדרש מספר ישראלי תקין"
+      }
+    },
+    {
+      "scenario": "B",
+      "status": 200,
+      "body": {
+        "ok": false,
+        "error": "full_name_required"
+      }
+    },
+    {
+      "scenario": "C",
+      "status": 200,
+      "body": {
+        "ok": false,
+        "error": "phone_invalid",
+        "detail": "הטלפון הוא מפתח הזהות של הפונה — נדרש מספר ישראלי תקין"
+      }
+    },
+    {
+      "scenario": "A",
+      "status": 200,
+      "body": {
+        "ok": false,
+        "error": "phone_invalid",
+        "detail": "הטלפון הוא מפתח הזהות של הפונה — נדרש מספר ישראלי תקין"
+      }
+    },
+    {
+      "scenario": "A",
+      "status": 413,
+      "body": {
+        "ok": false,
+        "error": "body_too_large",
+        "max_bytes": 16384
+      }
+    },
+    {
+      "scenario": "B",
+      "status": 200,
+      "body": {
+        "ok": false,
+        "error": "phone_invalid",
+        "detail": "הטלפון הוא מפתח הזהות של הפונה — נדרש מספר ישראלי תקין"
+      }
+    },
+    {
+      "scenario": "B",
+      "status": 200,
+      "body": {
+        "ok": false,
+        "error": "full_name_required"
+      }
+    },
+    {
+      "scenario": "C",
+      "status": 200,
+      "body": {
+        "ok": false,
+        "error": "phone_invalid",
+        "detail": "הטלפון הוא מפתח הזהות של הפונה — נדרש מספר ישראלי תקין"
+      }
+    }
+  ],
+  "checks": [
+    {
+      "name": "step1_same_A",
+      "pass": true,
+      "detail": "phone | phone"
+    },
+    {
+      "name": "step1_phone_red_A",
+      "pass": true,
+      "detail": "rgb(155, 28, 28)"
+    },
+    {
+      "name": "step1_same_B",
+      "pass": true,
+      "detail": "phone | phone"
+    },
+    {
+      "name": "step1_phone_red_B",
+      "pass": true,
+      "detail": "rgb(155, 28, 28)"
+    },
+    {
+      "name": "step1_same_C",
+      "pass": true,
+      "detail": "phone | phone"
+    },
+    {
+      "name": "step1_phone_red_C",
+      "pass": true,
+      "detail": "rgb(155, 28, 28)"
+    },
+    {
+      "name": "bug_present_before_A",
+      "pass": true,
+      "detail": "marked=phone border=rgb(155, 28, 28)"
+    },
+    {
+      "name": "bug_gone_after_A",
+      "pass": true,
+      "detail": "marked="
+    },
+    {
+      "name": "stale_field_was_valid_A",
+      "pass": true,
+      "detail": "0500000000"
+    },
+    {
+      "name": "after_phone_not_red_A",
+      "pass": true,
+      "detail": "rgb(155, 28, 28) -> rgb(220, 218, 209)"
+    },
+    {
+      "name": "message_same_A",
+      "pass": true,
+      "detail": "הפנייה לא נשלחההפנייה ארוכה מדי. קצרו את ההערה ונסו שוב."
+    },
+    {
+      "name": "bug_present_before_C",
+      "pass": true,
+      "detail": "marked=phone border=rgb(155, 28, 28)"
+    },
+    {
+      "name": "bug_gone_after_C",
+      "pass": true,
+      "detail": "marked="
+    },
+    {
+      "name": "stale_field_was_valid_C",
+      "pass": true,
+      "detail": "0500000000"
+    },
+    {
+      "name": "after_phone_not_red_C",
+      "pass": true,
+      "detail": "rgb(155, 28, 28) -> rgb(220, 218, 209)"
+    },
+    {
+      "name": "message_same_C",
+      "pass": true,
+      "detail": "הפנייה לא נשלחהאין חיבור לשירות. בדקו את האינטרנט ונסו שוב."
+    },
+    {
+      "name": "control_B_before",
+      "pass": true,
+      "detail": "full_name"
+    },
+    {
+      "name": "control_B_after",
+      "pass": true,
+      "detail": "full_name"
+    },
+    {
+      "name": "control_B_focus_same",
+      "pass": true,
+      "detail": "full_name | full_name"
+    },
+    {
+      "name": "control_B_message_same",
+      "pass": true,
+      "detail": "הפנייה לא נשלחהצריך שם מלא."
+    },
+    {
+      "name": "any_ok_false",
+      "pass": true,
+      "detail": "10 responses"
+    },
+    {
+      "name": "any_case_id_false",
+      "pass": true,
+      "detail": "no case_id in any body"
+    },
+    {
+      "name": "codes_expected",
+      "pass": true,
+      "detail": "200:phone_invalid 413:body_too_large 200:full_name_required"
+    },
+    {
+      "name": "no_uncaught_js",
+      "pass": true,
+      "detail": "none"
+    },
+    {
+      "name": "console_only_induced",
+      "pass": true,
+      "detail": "all induced"
+    },
+    {
+      "name": "console_same",
+      "pass": true,
+      "detail": "2 | 2"
+    }
+  ],
+  "verdict": "PASS",
+  "fails": 0
+}
