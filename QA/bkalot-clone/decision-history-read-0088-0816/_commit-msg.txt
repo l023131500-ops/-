@@ -1,0 +1,88 @@
+שכפול בקלות שכבה 3: מסך הפנייה אינו יכול לשאול מה קרה לפניו (§5ב, 0088)
+
+הקו נכתב ב-0602701 בסופה, מילה במילה: «אף קורא אינו מחזיר את היומן.
+bkalot_clone_admin_case אינה יודעת עליו — has_history=false ו-has_decisions=false
+נמדדו גם אחרי המיגרציה, ובמכוון... ההיסטוריה נכתבת ואיש אינו רואה אותה — זו
+הלבנה הבאה». נלקח כפי שנוסח ולא הורחב: מיגרציה בלבד — apps/37 לא נגעה,
+supabase/functions לא נגעה, אין פריסת edge function ואין פריסת פורטל.
+bkalot_clone_admin_cases, bkalot_clone_admin_document ו-bkalot_clone_render לא נגעו.
+
+0087 בנתה את case_status_log ונתנה ל-set_status לכתוב אליו שורה בכל מעבר. מאז כל
+הכרעה נשמרת ואף מסך אינו יודע לשאול עליה: cases.decided_by ו-decided_at ממשיכים
+להיות ערך אחרון, ומנהל שפותח פנייה שנדחתה רואה את מי שדחה ולא את מי שלקח אותה
+קודם. זה ההבדל בין נתון ששמור לבין נתון שניתן לשאול עליו.
+
+נמדד לפני ולא הונח, על פנייה #224, בארבע קריאות דרך נתיב set-status שמאחורי השער
+— p_admin_id נסע בטוקן ולא נמסר ביד: new→in_progress (78), אותה הכרעה שוב
+(changed=false), in_progress→closed (79), closed→rejected (79). היומן קלט את
+שלושת המעברים (log_id 6, null, 7, 8) והמסך לא ידע לשאול עליהם: status_history
+אינו קיים בתשובה ולא כמערך ריק — Object.hasOwn מחזיר false בשתי הרמות, ב-top-level
+ובתוך case.
+
+אחרי, אותן ארבע קריאות בדיוק על #225, ההיסטוריה קוראת
+new->in_progress#78 | in_progress->closed#79 | closed->rejected#79 — שלוש שורות
+ולא ארבע: הקריאה החוזרת לא כתבה שורה, וההיסטוריה מונה מעברים ולא קליקים.
+to_status של כל שורה שווה ל-from_status של הבאה, נמדד ולא הונח. at של השורה
+האחרונה שווה בדיוק ל-cases.decided_at ושל שתי הראשונות לא, וזה הצפוי — השורה
+מחזיקה את האחרון והיומן את כולם; אילו שלושתן היו שוות, היה זה סימן שההיסטוריה
+נקראת מהשורה ולא מהיומן.
+
+הכרעה (1): הבלוק הוא top-level ליד rights/documents/templates ולא שדה בתוך case.
+נמדד ולא הוצהר — case_keys_count נשאר 17 בדיוק לפני ואחרי, ו-
+has_status_history_in_case נשאר false; בתוך case יושבת עובדה אחת לכל מפתח, ומערך
+בתוכו היה הופך את הבלוק למה שהוא אינו. status_history ולא history או decisions,
+מפני שהיומן מדבר על status ורק עליו: ל-kind, ל-topic_no ול-situation אין
+היסטוריה, ושם רחב היה מבטיח אותה.
+
+הכרעה (3) — זו שקנתה מדידה ולא הסבר: LEFT JOIN ולא INNER. חשבון 79 נמחק בפקודה
+שלה על admin_users עצמה, ולא UPDATE ידני על היומן, ואז נקראה אותה פנייה בדיוק —
+שלוש שורות חזרו, admin_id 79 נשמר, admin_name התרוקן והרצף נשאר משפט שלם. INNER
+היה מחזיר שורה אחת מתוך שלוש, כלומר מוחק מההיסטוריה את הדחייה עצמה מפני שהעובד
+שדחה עזב, ומשאיר רצף קטוע שנראה תקין. 0087 הכרעה (2) השאירה את admin_id בלי FK
+בדיוק כדי שהראיה תשרוד את מחיקת החשבון; INNER בקריאה היה זורק את מה שנשמר
+בכתיבה. באותה קריאה decided_by_name של הפנייה התרוקן אף הוא בעוד decided_by
+נשאר 79 — אותה הבחנה, שתי רמות.
+
+הכרעה (2): הסדר at asc, id asc — סדר מלא ולא at לבדו, שאינו ייחודי (הכרעה (3)
+של 0082 והכרעה (2) של 0086). עולה ולא יורד, מפני שקריאת הרצף כמשפט נכונה בכיוון
+אחד בלבד.
+
+⚠️ הכרעה (5): id חזר 9, 10, 11 ולא 1, 2, 3 — היומן גלובלי ולא לכל פנייה, ובנוסף
+0087 שרפה את 4 ו-5 בשתי הכנסות שנדחו. לקוח שיסיק ממספרי השורות «כמה הכרעות היו»
+יטעה; id הוא מפתח יציב לשורה ברשימה שתצויר, ולא מונה.
+
+רגרסיה: case 17 מפתחות לפני ואחרי באותם ערכים, rights 42, documents 0,
+templates 2 זהים בשתי הריצות, ושערי הקלט לא זזו — case_not_found על מזהה ריק ועל
+מזהה שאינו קיים, ובלי x-admin-token 401 token_required. ההרשאות לא ניתנו מחדש
+(create or replace שומר ACL) ונמדדו אחרי: anon=false, authenticated=false,
+service_role=true, overload אחד. שלא כמו 0085, די היה בהחלה אחת: pg_proc נמדד
+אחרי ומכיל את ההערה הפנימית.
+
+מצב טסט נמדד ולא הוצהר: הקליטות queued=false, אפס מסמכים עם queue_id, אפס פניות
+ב-sent, outbound_queue נשאר 8 ואפס שורות עם sent_at (טביעת אצבע
+f456823b99d500895093d168012a78ad זהה בבסיס ואחרי), delivery_log נשאר 3. אין מייל,
+אין הודעה ואין מסמך שיצא החוצה; הפונקציה שהשתנתה היא קריאה בלבד.
+
+הפניות נזרעו דרך bkalot-clone-intake מעל HTTP עם מפתח anon כמו מהטופס (224, 225;
+contacts 231, 232), ושני המנהלים נוצרו דרך bkalot_clone_admin_create (78, 79) ולא
+בהזרקת hash. התגלגל אחורה בחמש פקודות נפרדות לפי id — תקלת
+cte-delete-sees-prestatement-snapshot; ואנשי הקשר לפי id ולא לפי טלפון מנורמל.
+admin_sessions ירדו ב-cascade עם שני החשבונות ולכן חזרו ל-5 בדיוק. אחרי: cases=0,
+case_rights=0, case_status_log=0, documents=0, contacts=4, admin_users=1,
+admin_sessions=5, templates=2, outbound_queue=8, delivery_log=3, catalog=888 —
+בסיס בדיוק.
+
+מוגן: git status ריק על apps/08-bkalut-app, apps/09-bkalot-admin,
+apps/37-bkalot-clone ו-supabase/functions; אין נגיעה ב-bkalut-app/bkalot-admin/
+zr_*/NEDARIM3873 ולא בסכמות csj/csj_src/igud. ל-git add נמסרו שני נתיבים מפורשים
+ולא נקודה.
+
+פתוח: apps/37-bkalot-clone/admin.html אינו קורא את status_history — התשובה כוללת
+מעכשיו את הבלוק ואין מי שמצייר אותו; זו הלבנה הבאה (UI), ואחריה פריסת פורטל,
+אותו פיצול כמו 0084 → 042e60f → 7d7dcf2. לא נמדד בדפדפן מאותה סיבה. מה שלא נבנה:
+אין note/reason ביומן — למה הוכרע ולא רק מה; אין היסטוריה על kind/topic_no/
+situation; אין היסטוריה על documents; רשימת העבודה אינה יודעת על היומן; ואין
+backfill ולא יהיה. קווים שממשיכים ולא נגעו: הקליטה מחברת 42 זכויות ל-treatment
+ואפס ל-info/reminder על אותו situation. sent בלתי-ניתן-להשגה בכוונה;
+bkalot_clone_admin_create אינה חשופה ב-HTTP; pdf/audio → channel_unsupported.
+public_visible ו-show_in_showcase של #37 נשארים false.

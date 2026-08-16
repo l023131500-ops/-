@@ -1,0 +1,56 @@
+{
+  "when": "reread",
+  "steps": {
+    "case_reread": {
+      "http_status": 200,
+      "top_keys": [
+        "admin",
+        "case",
+        "documents",
+        "ok",
+        "rights",
+        "status_history",
+        "templates"
+      ],
+      "has_status_history_top": true,
+      "has_status_history_in_case": false,
+      "case_keys_count": 17,
+      "case_status": "rejected",
+      "decided_by": 79,
+      "decided_by_name": null,
+      "decided_at": "2026-08-16T00:28:26.354403+00:00",
+      "rights_count": 42,
+      "documents_count": 0,
+      "templates_count": 2,
+      "history_count": 3,
+      "history": [
+        {
+          "at": "2026-08-16T00:28:24.191858+00:00",
+          "id": 9,
+          "admin_id": 78,
+          "to_status": "in_progress",
+          "admin_name": "QA 0090 מכריע ראשון",
+          "from_status": "new"
+        },
+        {
+          "at": "2026-08-16T00:28:25.635507+00:00",
+          "id": 10,
+          "admin_id": 79,
+          "to_status": "closed",
+          "admin_name": null,
+          "from_status": "in_progress"
+        },
+        {
+          "at": "2026-08-16T00:28:26.354403+00:00",
+          "id": 11,
+          "admin_id": 79,
+          "to_status": "rejected",
+          "admin_name": null,
+          "from_status": "closed"
+        }
+      ],
+      "history_chain": "new->in_progress#78/QA 0090 מכריע ראשון | in_progress->closed#79/- | closed->rejected#79/-",
+      "history_is_continuous": true
+    }
+  }
+}
