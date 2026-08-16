@@ -1,5 +1,26 @@
 # SYSTEMS_STATUS.md — מצב כל המערכות, נמדד
 
+> ## 🟢 17/08/2026 — **שכפול בקלות (§5ב): ענף situation_unknown מהשרת נמדד בייצור (מדידה בלבד).**
+>
+> המשך ישיר לרשומה שמתחת (topic_no_invalid): אחרי שנסגר הפער שם, נקראו שאר
+> ענפי האימות ב-0058 שורה-שורה מול MESSAGES/CODE_FIELD בלקוח.
+> `situation_unknown` (0058 שורות 118-121) מעולם לא נמדד מול הפונקציה
+> הפרוסה בייצור.
+>
+> בקשת POST ישירה אל bkalot-clone-intake (עוקפת את ה-`<select>` של הטופס),
+> `situation="not_a_real_situation_xyz"`: HTTP 200, `error=situation_unknown`,
+> `allowed` עם 24 ערכים — זהים מילה-במילה ל-24 האפשרויות ב-`<select
+> id="situation">` בלקוח (index.html:252-277), ולכן הענף אינו נגיש מהטופס
+> הגלוי, בדיוק כמו topic_no_invalid.
+>
+> בשונה מ-topic_no_invalid: `MESSAGES.situation_unknown` ו-`CODE_FIELD.situation_unknown`
+> כבר קיימים ונכונים בלקוח — לא נדרש שינוי קוד, רק מדידה. אין שינוי קוד, אין
+> מיגרציה, אין פריסה. ראיות:
+> `QA/bkalot-clone/situation-unknown-live-0817/probe-live.txt`.
+>
+> ⚠️ ה-MCP של Supabase אינו מחובר לסשן הזה — heartbeat נכתב כקובץ
+> `_heartbeat-pending.sql` (מצטרף לתור הקיים; ראו הקבצים לסדר ההרצה המלא).
+
 > ## 🟢 17/08/2026 — **שכפול בקלות (§5ב): ענף topic_no_invalid מהשרת נמדד בייצור (מדידה בלבד).**
 >
 > הפעימה הקודמת (8e8bce4, 17/08) השאירה פתוח: ענף topic_no_invalid מהשרת עדיין
