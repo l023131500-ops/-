@@ -1,0 +1,377 @@
+{
+  "phase": "after",
+  "src": {
+    "bytes": 164141,
+    "md5": "A135478A760B2CE51A10F86F0A9EE392"
+  },
+  "dist": {
+    "bytes": 164141,
+    "md5": "A135478A760B2CE51A10F86F0A9EE392"
+  },
+  "live": [
+    {
+      "url": "https://more30.com/bkalot-studio/admin?cachebust=count-filtered-after",
+      "status": 200,
+      "bytes": 164377,
+      "md5": "DE2EC89A1441032CE084EA53BF403E99"
+    },
+    {
+      "url": "https://more30.com/bkalot-studio/admin/?cachebust=count-filtered-after",
+      "status": 200,
+      "bytes": 164377,
+      "md5": "DE2EC89A1441032CE084EA53BF403E99"
+    }
+  ],
+  "markers": {
+    "new": [
+      {
+        "marker": "המונה מדבר על התור כולו בזמן שהוא סופר את הסינון",
+        "src": 1,
+        "dist": 1,
+        "live": [
+          1,
+          1
+        ]
+      },
+      {
+        "marker": "המספר הוא של הפניות שעונות על הסינון ולא של התור כולו",
+        "src": 1,
+        "dist": 1,
+        "live": [
+          1,
+          1
+        ]
+      },
+      {
+        "marker": "המיון אינו סינון ואינו נספר כאן",
+        "src": 1,
+        "dist": 1,
+        "live": [
+          1,
+          1
+        ]
+      },
+      {
+        "marker": "const filtered = !!(lastFilters.status",
+        "src": 1,
+        "dist": 1,
+        "live": [
+          1,
+          1
+        ]
+      },
+      {
+        "marker": "const head = total === 0",
+        "src": 1,
+        "dist": 1,
+        "live": [
+          1,
+          1
+        ]
+      },
+      {
+        "marker": "השרת מחזיר את המניין שאחרי הסינון",
+        "src": 1,
+        "dist": 1,
+        "live": [
+          1,
+          1
+        ]
+      },
+      {
+        "marker": "המיון אינו מוציא שורות ואינו משפיע על המספר",
+        "src": 1,
+        "dist": 1,
+        "live": [
+          1,
+          1
+        ]
+      },
+      {
+        "marker": "היה מייחס למספר",
+        "src": 1,
+        "dist": 1,
+        "live": [
+          1,
+          1
+        ]
+      },
+      {
+        "marker": "היה מספר מומצא",
+        "src": 1,
+        "dist": 1,
+        "live": [
+          1,
+          1
+        ]
+      },
+      {
+        "marker": "ותיבת ה-empty אינה אזור סטטוס ואינה מוקראת כלל",
+        "src": 1,
+        "dist": 1,
+        "live": [
+          1,
+          1
+        ]
+      },
+      {
+        "marker": "הוא מתאר את חיתוך העמוד",
+        "src": 1,
+        "dist": 1,
+        "live": [
+          1,
+          1
+        ]
+      }
+    ],
+    "removed": [
+      {
+        "marker": "$(\"count\").textContent = total === 0",
+        "src": 0,
+        "dist": 0,
+        "live": [
+          0,
+          0
+        ]
+      },
+      {
+        "marker": "(total === cases.length ? many(total)",
+        "src": 0,
+        "dist": 0,
+        "live": [
+          0,
+          0
+        ]
+      }
+    ],
+    "diff": [
+      {
+        "marker": "אין פניות שתואמות את הסינון",
+        "src": 5,
+        "dist": 5,
+        "live": [
+          5,
+          5
+        ]
+      },
+      {
+        "marker": "removeAttribute(\"title\")",
+        "src": 8,
+        "dist": 8,
+        "live": [
+          8,
+          8
+        ]
+      },
+      {
+        "marker": "את הסינון",
+        "src": 10,
+        "dist": 10,
+        "live": [
+          10,
+          10
+        ]
+      },
+      {
+        "marker": "אין פניות",
+        "src": 9,
+        "dist": 9,
+        "live": [
+          9,
+          9
+        ]
+      },
+      {
+        "marker": "מוצגות ",
+        "src": 3,
+        "dist": 3,
+        "live": [
+          3,
+          3
+        ]
+      },
+      {
+        "marker": "lastFilters",
+        "src": 11,
+        "dist": 11,
+        "live": [
+          11,
+          11
+        ]
+      },
+      {
+        "marker": "role=\"status\"",
+        "src": 4,
+        "dist": 4,
+        "live": [
+          4,
+          4
+        ]
+      },
+      {
+        "marker": "a795108",
+        "src": 4,
+        "dist": 4,
+        "live": [
+          4,
+          4
+        ]
+      },
+      {
+        "marker": "0081",
+        "src": 4,
+        "dist": 4,
+        "live": [
+          4,
+          4
+        ]
+      },
+      {
+        "marker": "מיון",
+        "src": 10,
+        "dist": 10,
+        "live": [
+          10,
+          10
+        ]
+      }
+    ],
+    "control": [
+      {
+        "marker": "מספר פנייה או נימוק ביומן ההכרעות",
+        "src": 1,
+        "dist": 1,
+        "live": [
+          1,
+          1
+        ]
+      },
+      {
+        "marker": "id=\"count\"",
+        "src": 1,
+        "dist": 1,
+        "live": [
+          1,
+          1
+        ]
+      },
+      {
+        "marker": "id=\"empty\"",
+        "src": 1,
+        "dist": 1,
+        "live": [
+          1,
+          1
+        ]
+      },
+      {
+        "marker": "פנייה אחת",
+        "src": 3,
+        "dist": 3,
+        "live": [
+          3,
+          3
+        ]
+      },
+      {
+        "marker": "countHe",
+        "src": 13,
+        "dist": 13,
+        "live": [
+          13,
+          13
+        ]
+      },
+      {
+        "marker": "bkalot_clone_admin_cases",
+        "src": 1,
+        "dist": 1,
+        "live": [
+          1,
+          1
+        ]
+      },
+      {
+        "marker": "פנייה #",
+        "src": 1,
+        "dist": 1,
+        "live": [
+          1,
+          1
+        ]
+      },
+      {
+        "marker": "matched_in_note",
+        "src": 3,
+        "dist": 3,
+        "live": [
+          3,
+          3
+        ]
+      },
+      {
+        "marker": "איש הקשר נמחק",
+        "src": 2,
+        "dist": 2,
+        "live": [
+          2,
+          2
+        ]
+      },
+      {
+        "marker": "רצף ההכרעות",
+        "src": 5,
+        "dist": 5,
+        "live": [
+          5,
+          5
+        ]
+      },
+      {
+        "marker": "<th>למה</th>",
+        "src": 1,
+        "dist": 1,
+        "live": [
+          1,
+          1
+        ]
+      },
+      {
+        "marker": "מי הכריע",
+        "src": 14,
+        "dist": 14,
+        "live": [
+          14,
+          14
+        ]
+      }
+    ]
+  },
+  "encoding": [
+    {
+      "url": "https://more30.com/bkalot-studio/admin?cachebust=count-filtered-after",
+      "replacement_chars": 0,
+      "double_encoded": 0
+    },
+    {
+      "url": "https://more30.com/bkalot-studio/admin/?cachebust=count-filtered-after",
+      "replacement_chars": 0,
+      "double_encoded": 0
+    }
+  ],
+  "verdicts": {
+    "new_zero_in_live": false,
+    "new_equals_src_in_live": true,
+    "removed_present_in_live": false,
+    "removed_gone_from_live": true,
+    "control_unchanged": true,
+    "diff_matches_src": true,
+    "clean_encoding": true,
+    "all_markers_live_equals_src": true,
+    "dist_equals_live": true,
+    "dead_markers": [
+      "$(\"count\").textContent = total === 0",
+      "(total === cases.length ? many(total)"
+    ]
+  }
+}
