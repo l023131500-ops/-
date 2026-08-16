@@ -1,0 +1,915 @@
+{
+  "verdict": "PASS",
+  "fails": [],
+  "counts": {
+    "NEW": 25,
+    "REMOVED": 10,
+    "DIFF": 4,
+    "CONTROL": 23,
+    "DEAD": 0
+  },
+  "files": {
+    "src": {
+      "path": "C:/Users/USER/Downloads/more30/apps/37-bkalot-clone/admin.html",
+      "bytes": 193914,
+      "md5": "36AFA137"
+    },
+    "dist": {
+      "path": "C:/Users/USER/Downloads/more30/portal/dist/bkalot-studio/admin.html",
+      "bytes": 188257,
+      "md5": "47C25DBD"
+    }
+  },
+  "live": {
+    "https://more30.com/bkalot-studio/admin": {
+      "before": {
+        "bytes": 188493,
+        "md5": "7B86D885"
+      },
+      "after": {
+        "bytes": 194150,
+        "md5": "26321A2D"
+      }
+    },
+    "https://more30.com/bkalot-studio/admin/": {
+      "before": {
+        "bytes": 188493,
+        "md5": "7B86D885"
+      },
+      "after": {
+        "bytes": 194150,
+        "md5": "26321A2D"
+      }
+    }
+  },
+  "rows": [
+    {
+      "key": "fn_noteSpots_decl",
+      "group": "NEW",
+      "dist": 0,
+      "src": 1,
+      "before": [
+        0,
+        0
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "spots_destructure",
+      "group": "NEW",
+      "dist": 0,
+      "src": 2,
+      "before": [
+        0,
+        0
+      ],
+      "after": [
+        2,
+        2
+      ]
+    },
+    {
+      "key": "ret_all_complete",
+      "group": "NEW",
+      "dist": 0,
+      "src": 1,
+      "before": [
+        0,
+        0
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "ret_first_only",
+      "group": "NEW",
+      "dist": 0,
+      "src": 1,
+      "before": [
+        0,
+        0
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "ret_null",
+      "group": "NEW",
+      "dist": 0,
+      "src": 1,
+      "before": [
+        0,
+        0
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "lenOk_text_guard",
+      "group": "NEW",
+      "dist": 0,
+      "src": 1,
+      "before": [
+        0,
+        0
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "matched_extract",
+      "group": "NEW",
+      "dist": 0,
+      "src": 1,
+      "before": [
+        0,
+        0
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "hit_from_matched",
+      "group": "NEW",
+      "dist": 0,
+      "src": 1,
+      "before": [
+        0,
+        0
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "loop_matched",
+      "group": "NEW",
+      "dist": 0,
+      "src": 1,
+      "before": [
+        0,
+        0
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "all_or_nothing",
+      "group": "NEW",
+      "dist": 0,
+      "src": 1,
+      "before": [
+        0,
+        0
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "total_add_spots",
+      "group": "NEW",
+      "dist": 0,
+      "src": 1,
+      "before": [
+        0,
+        0
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "hits_guard",
+      "group": "NEW",
+      "dist": 0,
+      "src": 1,
+      "before": [
+        0,
+        0
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "hits_expr",
+      "group": "NEW",
+      "dist": 0,
+      "src": 1,
+      "before": [
+        0,
+        0
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "sentence_single",
+      "group": "NEW",
+      "dist": 0,
+      "src": 1,
+      "before": [
+        0,
+        0
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "sentence_many",
+      "group": "NEW",
+      "dist": 0,
+      "src": 1,
+      "before": [
+        0,
+        0
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "title_new_clause",
+      "group": "NEW",
+      "dist": 0,
+      "src": 1,
+      "before": [
+        0,
+        0
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "cmt_extract_why",
+      "group": "NEW",
+      "dist": 0,
+      "src": 1,
+      "before": [
+        0,
+        0
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "cmt_complete_kept",
+      "group": "NEW",
+      "dist": 0,
+      "src": 1,
+      "before": [
+        0,
+        0
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "cmt_head",
+      "group": "NEW",
+      "dist": 0,
+      "src": 1,
+      "before": [
+        0,
+        0
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "cmt_d6",
+      "group": "NEW",
+      "dist": 0,
+      "src": 1,
+      "before": [
+        0,
+        0
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "cmt_d7",
+      "group": "NEW",
+      "dist": 0,
+      "src": 1,
+      "before": [
+        0,
+        0
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "cmt_d8",
+      "group": "NEW",
+      "dist": 0,
+      "src": 1,
+      "before": [
+        0,
+        0
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "cmt_d9",
+      "group": "NEW",
+      "dist": 0,
+      "src": 1,
+      "before": [
+        0,
+        0
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "cmt_note_fixed",
+      "group": "NEW",
+      "dist": 0,
+      "src": 1,
+      "before": [
+        0,
+        0
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "phr_noteSpots",
+      "group": "NEW",
+      "dist": 0,
+      "src": 5,
+      "before": [
+        0,
+        0
+      ],
+      "after": [
+        5,
+        5
+      ]
+    },
+    {
+      "key": "old_lenOk",
+      "group": "REMOVED",
+      "dist": 1,
+      "src": 0,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        0,
+        0
+      ]
+    },
+    {
+      "key": "old_let_spots",
+      "group": "REMOVED",
+      "dist": 1,
+      "src": 0,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        0,
+        0
+      ]
+    },
+    {
+      "key": "old_every_brace",
+      "group": "REMOVED",
+      "dist": 1,
+      "src": 0,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        0,
+        0
+      ]
+    },
+    {
+      "key": "old_assign_all",
+      "group": "REMOVED",
+      "dist": 1,
+      "src": 0,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        0,
+        0
+      ]
+    },
+    {
+      "key": "old_else_if",
+      "group": "REMOVED",
+      "dist": 1,
+      "src": 0,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        0,
+        0
+      ]
+    },
+    {
+      "key": "old_assign_first",
+      "group": "REMOVED",
+      "dist": 1,
+      "src": 0,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        0,
+        0
+      ]
+    },
+    {
+      "key": "old_hit_inline",
+      "group": "REMOVED",
+      "dist": 1,
+      "src": 0,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        0,
+        0
+      ]
+    },
+    {
+      "key": "old_title_end",
+      "group": "REMOVED",
+      "dist": 1,
+      "src": 0,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        0,
+        0
+      ]
+    },
+    {
+      "key": "old_sentence_single",
+      "group": "REMOVED",
+      "dist": 1,
+      "src": 0,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        0,
+        0
+      ]
+    },
+    {
+      "key": "old_sentence_many",
+      "group": "REMOVED",
+      "dist": 1,
+      "src": 0,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        0,
+        0
+      ]
+    },
+    {
+      "key": "cmt_four_more",
+      "group": "DIFF",
+      "dist": 2,
+      "src": 3,
+      "before": [
+        2,
+        2
+      ],
+      "after": [
+        3,
+        3
+      ]
+    },
+    {
+      "key": "phr_complete",
+      "group": "DIFF",
+      "dist": 6,
+      "src": 12,
+      "before": [
+        6,
+        6
+      ],
+      "after": [
+        12,
+        12
+      ]
+    },
+    {
+      "key": "phr_countHe",
+      "group": "DIFF",
+      "dist": 11,
+      "src": 12,
+      "before": [
+        11,
+        11
+      ],
+      "after": [
+        12,
+        12
+      ]
+    },
+    {
+      "key": "phr_note_hit_total",
+      "group": "DIFF",
+      "dist": 2,
+      "src": 3,
+      "before": [
+        2,
+        2
+      ],
+      "after": [
+        3,
+        3
+      ]
+    },
+    {
+      "key": "ctl_fillNoteText",
+      "group": "CONTROL",
+      "dist": 1,
+      "src": 1,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "ctl_no_spots",
+      "group": "CONTROL",
+      "dist": 1,
+      "src": 1,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "ctl_cmt_d11",
+      "group": "CONTROL",
+      "dist": 1,
+      "src": 1,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "ctl_title_many",
+      "group": "CONTROL",
+      "dist": 1,
+      "src": 1,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "ctl_title_first",
+      "group": "CONTROL",
+      "dist": 1,
+      "src": 1,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "ctl_fn_tally",
+      "group": "CONTROL",
+      "dist": 1,
+      "src": 1,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "ctl_notes_filter",
+      "group": "CONTROL",
+      "dist": 1,
+      "src": 1,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "ctl_hasown_guard",
+      "group": "CONTROL",
+      "dist": 1,
+      "src": 1,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "ctl_zero_sentence",
+      "group": "CONTROL",
+      "dist": 1,
+      "src": 1,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "ctl_no_notes",
+      "group": "CONTROL",
+      "dist": 1,
+      "src": 1,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "ctl_single_zero",
+      "group": "CONTROL",
+      "dist": 1,
+      "src": 1,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "ctl_p_class",
+      "group": "CONTROL",
+      "dist": 2,
+      "src": 2,
+      "before": [
+        2,
+        2
+      ],
+      "after": [
+        2,
+        2
+      ]
+    },
+    {
+      "key": "ctl_title_head",
+      "group": "CONTROL",
+      "dist": 1,
+      "src": 1,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "ctl_denominator",
+      "group": "CONTROL",
+      "dist": 2,
+      "src": 2,
+      "before": [
+        2,
+        2
+      ],
+      "after": [
+        2,
+        2
+      ]
+    },
+    {
+      "key": "ctl_stale_span",
+      "group": "CONTROL",
+      "dist": 3,
+      "src": 3,
+      "before": [
+        3,
+        3
+      ],
+      "after": [
+        3,
+        3
+      ]
+    },
+    {
+      "key": "ctl_mark_hit_css",
+      "group": "CONTROL",
+      "dist": 1,
+      "src": 1,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "ctl_noteTallyBit",
+      "group": "CONTROL",
+      "dist": 1,
+      "src": 1,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "ctl_list_hits",
+      "group": "CONTROL",
+      "dist": 1,
+      "src": 1,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "ctl_empty_box",
+      "group": "CONTROL",
+      "dist": 1,
+      "src": 1,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "ctl_clamp_note",
+      "group": "CONTROL",
+      "dist": 1,
+      "src": 1,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "phr_note_match_pos_all",
+      "group": "CONTROL",
+      "dist": 2,
+      "src": 2,
+      "before": [
+        2,
+        2
+      ],
+      "after": [
+        2,
+        2
+      ]
+    },
+    {
+      "key": "phr_createTextNode",
+      "group": "CONTROL",
+      "dist": 19,
+      "src": 19,
+      "before": [
+        19,
+        19
+      ],
+      "after": [
+        19,
+        19
+      ]
+    },
+    {
+      "key": "phr_hasOwn",
+      "group": "CONTROL",
+      "dist": 25,
+      "src": 25,
+      "before": [
+        25,
+        25
+      ],
+      "after": [
+        25,
+        25
+      ]
+    }
+  ]
+}

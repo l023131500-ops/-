@@ -1,0 +1,333 @@
+{
+  "src": {
+    "path": "C:/Users/USER/Downloads/more30/apps/37-bkalot-clone/admin.html",
+    "bytes": 193914,
+    "md5": "36AFA137"
+  },
+  "dist": {
+    "path": "C:/Users/USER/Downloads/more30/portal/dist/bkalot-studio/admin.html",
+    "bytes": 188257,
+    "md5": "47C25DBD"
+  },
+  "groups": {
+    "NEW": [
+      {
+        "key": "fn_noteSpots_decl",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "spots_destructure",
+        "src": 2,
+        "dist": 0
+      },
+      {
+        "key": "ret_all_complete",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "ret_first_only",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "ret_null",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "lenOk_text_guard",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "matched_extract",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "hit_from_matched",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "loop_matched",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "all_or_nothing",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "total_add_spots",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "hits_guard",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "hits_expr",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "sentence_single",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "sentence_many",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "title_new_clause",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "cmt_extract_why",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "cmt_complete_kept",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "cmt_head",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "cmt_d6",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "cmt_d7",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "cmt_d8",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "cmt_d9",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "cmt_note_fixed",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "phr_noteSpots",
+        "src": 5,
+        "dist": 0
+      }
+    ],
+    "REMOVED": [
+      {
+        "key": "old_lenOk",
+        "src": 0,
+        "dist": 1
+      },
+      {
+        "key": "old_let_spots",
+        "src": 0,
+        "dist": 1
+      },
+      {
+        "key": "old_every_brace",
+        "src": 0,
+        "dist": 1
+      },
+      {
+        "key": "old_assign_all",
+        "src": 0,
+        "dist": 1
+      },
+      {
+        "key": "old_else_if",
+        "src": 0,
+        "dist": 1
+      },
+      {
+        "key": "old_assign_first",
+        "src": 0,
+        "dist": 1
+      },
+      {
+        "key": "old_hit_inline",
+        "src": 0,
+        "dist": 1
+      },
+      {
+        "key": "old_title_end",
+        "src": 0,
+        "dist": 1
+      },
+      {
+        "key": "old_sentence_single",
+        "src": 0,
+        "dist": 1
+      },
+      {
+        "key": "old_sentence_many",
+        "src": 0,
+        "dist": 1
+      }
+    ],
+    "DIFF": [
+      {
+        "key": "cmt_four_more",
+        "src": 3,
+        "dist": 2
+      },
+      {
+        "key": "phr_complete",
+        "src": 12,
+        "dist": 6
+      },
+      {
+        "key": "phr_countHe",
+        "src": 12,
+        "dist": 11
+      },
+      {
+        "key": "phr_note_hit_total",
+        "src": 3,
+        "dist": 2
+      }
+    ],
+    "CONTROL": [
+      {
+        "key": "ctl_fillNoteText",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "ctl_no_spots",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "ctl_cmt_d11",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "ctl_title_many",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "ctl_title_first",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "ctl_fn_tally",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "ctl_notes_filter",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "ctl_hasown_guard",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "ctl_zero_sentence",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "ctl_no_notes",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "ctl_single_zero",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "ctl_p_class",
+        "src": 2,
+        "dist": 2
+      },
+      {
+        "key": "ctl_title_head",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "ctl_denominator",
+        "src": 2,
+        "dist": 2
+      },
+      {
+        "key": "ctl_stale_span",
+        "src": 3,
+        "dist": 3
+      },
+      {
+        "key": "ctl_mark_hit_css",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "ctl_noteTallyBit",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "ctl_list_hits",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "ctl_empty_box",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "ctl_clamp_note",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "phr_note_match_pos_all",
+        "src": 2,
+        "dist": 2
+      },
+      {
+        "key": "phr_createTextNode",
+        "src": 19,
+        "dist": 19
+      },
+      {
+        "key": "phr_hasOwn",
+        "src": 25,
+        "dist": 25
+      }
+    ],
+    "DEAD": []
+  }
+}
