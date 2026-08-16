@@ -1,0 +1,69 @@
+{
+  "when": "before",
+  "urls": {
+    "https://more30.com/bkalot-studio/admin": {
+      "status": 200,
+      "bytes": 172532,
+      "md5": "F74CF824",
+      "replacement_chars": 0,
+      "times_char": 0,
+      "markers": {
+        "queueTotal_decl": 0,
+        "queueTotal_read": 0,
+        "queueTotal_all": 0,
+        "queue_total_all": 0,
+        "queueBit_decl": 0,
+        "queueBit_all": 0,
+        "queue_phrase": 0,
+        "title_new": 0,
+        "title_branch": 0,
+        "comment_two_msgs": 0,
+        "comment_stale": 0,
+        "comment_betor": 0,
+        "old_count_line": 1,
+        "old_title_if": 1,
+        "ctl_filtered": 1,
+        "ctl_noneText": 1,
+        "ctl_emptyBox": 1,
+        "ctl_noteTally": 3,
+        "ctl_clamp_note": 1,
+        "ctl_qPhone": 1,
+        "ctl_box_literal": 1,
+        "phr_count_title": 1,
+        "phr_sort_clause": 1
+      }
+    },
+    "https://more30.com/bkalot-studio/admin/": {
+      "status": 200,
+      "bytes": 172532,
+      "md5": "F74CF824",
+      "replacement_chars": 0,
+      "times_char": 0,
+      "markers": {
+        "queueTotal_decl": 0,
+        "queueTotal_read": 0,
+        "queueTotal_all": 0,
+        "queue_total_all": 0,
+        "queueBit_decl": 0,
+        "queueBit_all": 0,
+        "queue_phrase": 0,
+        "title_new": 0,
+        "title_branch": 0,
+        "comment_two_msgs": 0,
+        "comment_stale": 0,
+        "comment_betor": 0,
+        "old_count_line": 1,
+        "old_title_if": 1,
+        "ctl_filtered": 1,
+        "ctl_noneText": 1,
+        "ctl_emptyBox": 1,
+        "ctl_noteTally": 3,
+        "ctl_clamp_note": 1,
+        "ctl_qPhone": 1,
+        "ctl_box_literal": 1,
+        "phr_count_title": 1,
+        "phr_sort_clause": 1
+      }
+    }
+  }
+}

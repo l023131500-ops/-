@@ -1,0 +1,68 @@
+{
+  "step": "queue-total-deploy-0816",
+  "line_taken_from": "f9df2e2 (heartbeat 673) — «פתוח: הפריסה. בייצור (more30.com/bkalot-studio/admin) המונה עדיין אינו אומר «בתור N» ולו בתו אחד, וה-title שם עדיין אומר שהמספר אינו ידוע. זו הלבנה הבאה»",
+  "scope": "פריסה בלבד — אין שינוי קוד, אין מיגרציה, אין פריסת edge function",
+  "baseline_before_anything": {
+    "cases": 0, "case_status_log": 0, "case_rights": 0, "documents": 0,
+    "admin_users": 1, "admin_sessions": 5, "templates": 2, "contacts": 4,
+    "outbound_queue": 8, "delivery_log": 3, "rights_catalog": 888,
+    "schema_migrations": "20260816174554",
+    "head": "f9df2e2", "origin": "f9df2e2", "ahead_behind": "0/0"
+  },
+  "staging": {
+    "src_bytes": 176004, "src_md5": "282DF8EC",
+    "dist_before_staging_bytes": 172296, "dist_before_staging_md5": "4D03D58B",
+    "dist_after_staging_bytes": 176004, "dist_after_staging_md5": "282DF8EC",
+    "note": "4D03D58B הוא בדיוק מה ש-d4ce4ed פרסה (heartbeat 671) — שרשרת הפריסות נמדדה ולא הונחה",
+    "files": 38, "vercel_json_present": true, "vercel_project_json_present": true
+  },
+  "deploy": {
+    "id": "dpl_6XQMtuBfG3hZQmAHjDrLJXpRANSY",
+    "url": "https://more30-portal-78rf5qj0h-l023131500-ops-projects.vercel.app",
+    "target": "production", "status": "Ready",
+    "from": "portal/dist", "prebuilt": false
+  },
+  "classify_src_vs_dist_before_staging": {
+    "NEW": 12, "REMOVED": 2, "DIFF": 2, "CONTROL": 7, "DEAD": 0,
+    "file": "classify.json"
+  },
+  "live_markers": {
+    "dist_equals_live_before": "כל 23 הסימנים החזירו מהכתובת החיה בדיוק את ספירת ה-dist שנפרס בפעם הקודמת",
+    "before": { "bytes": 172532, "md5": "F74CF824", "replacement_chars": 0, "times_char": 0 },
+    "after":  { "bytes": 176240, "md5": "CE45D422", "replacement_chars": 0, "times_char": 0 },
+    "both_urls_identical": true,
+    "injection_delta_bytes": 236,
+    "NEW_flipped_0_to_src": ["queueTotal_decl 0→1", "queueTotal_read 0→1", "queueTotal_all 0→4", "queue_total_all 0→3", "queueBit_decl 0→1", "queueBit_all 0→3", "queue_phrase 0→1", "title_new 0→1", "title_branch 0→1", "comment_two_msgs 0→1", "comment_stale 0→1", "comment_betor 0→1"],
+    "REMOVED_fell_to_zero": ["old_count_line 1→0", "old_title_if 1→0"],
+    "DIFF_reached_src": ["phr_count_title 1→2", "phr_sort_clause 1→2"],
+    "CONTROL_unmoved": ["ctl_filtered 1", "ctl_noneText 1", "ctl_emptyBox 1", "ctl_noteTally 3", "ctl_clamp_note 1", "ctl_qPhone 1", "ctl_box_literal 1"]
+  },
+  "seed": {
+    "cases": [400, 401, 402, 403],
+    "contacts": [407, 408, 409, 410],
+    "detail": "400 info אברהם ישראלי 0501230041, 401 reminder שרה כהן 0501230042, 402 info יוסף לוי 0501230043, 403 reminder רבקה מזרחי 0501230044",
+    "via": "public.bkalot_clone_intake ב-SQL — פיגום ולא הטענה",
+    "source": "form", "queued": false, "rights_linked": 0,
+    "admin": 128
+  },
+  "browser_on_live": {
+    "A_no_filter":   { "count": "4 פניות", "title": null, "rows": 4, "note": "בקרה — queue_total null אינו מצויר, ואין title" },
+    "B_kind_info":   { "count": "2 פניות תואמות את הסינון · בתור 4 פניות", "rows": 2 },
+    "C_status_sent": { "count": "אין פניות שתואמות את הסינון · בתור 4 פניות", "rows": 0, "note": "הכשל שנסגר — אפס שורות על תור מלא אומר מעכשיו את שני הדברים" },
+    "empty_box_lit_in_C_only": true,
+    "overflow_1280x900": 0,
+    "console_messages": 0,
+    "non_2xx_responses": 0,
+    "screenshots_md5": { "live-A-no-filter.png": "24300357", "live-B-kind-info.png": "9513314C", "live-C-status-sent.png": "2B82DDED" }
+  },
+  "test_mode": {
+    "queued": false, "documents": 0, "case_rights": 0,
+    "outbound_queue": 8, "delivery_log": 3, "sent_rows": 0, "outbound_calls": 0
+  },
+  "not_measured": [
+    "מצב D (מיון בלבד) ומצב F (decided=no) נמדדו מקומית ב-f9df2e2 ואינם חוזרים כאן",
+    "הענף total>0 עם אפס שורות («בעמוד הזה לא נשארו פניות.») נפרס ולא נמדד מדפדפן",
+    "לא נמדד ב-390x844",
+    "מצב «שרת מלפני 0099» (מפתח חסר) — אין שער ישן להריץ מולו"
+  ]
+}
