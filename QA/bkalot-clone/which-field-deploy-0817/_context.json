@@ -1,0 +1,34 @@
+{
+  "step": "which-field-deploy-0817",
+  "what": "פריסת 309c995 — סימון השדה שנפסל בטופס הפנייה של שכפול בקלות",
+  "deploy_only": true,
+  "code_changed_this_step": false,
+  "files": {
+    "src": { "path": "apps/37-bkalot-clone/index.html", "bytes": 34622, "md5": "183921EE" },
+    "dist_before_staging": { "path": "portal/dist/bkalot-studio/index.html", "bytes": 32322, "md5": "E6E39BF0" },
+    "dist_after_staging": { "bytes": 34622, "md5": "183921EE" },
+    "admin_untouched": { "src_and_dist_bytes": 197514, "md5": "0343B025" },
+    "vercel_json": { "bytes": 9254, "md5": "2CDA4F21" },
+    "vercel_project_json": { "bytes": 118, "md5": "EE7AFD40" }
+  },
+  "staging": { "script": "scripts/stage-portal.ps1", "files_listed": 38, "prebuilt": false },
+  "deployment": {
+    "id": "dpl_HYneK9rFMFat2efa3dSbwQAkpFjq",
+    "url": "https://more30-portal-f6pm7v671-l023131500-ops-projects.vercel.app",
+    "readyState": "READY",
+    "target": "production",
+    "aliased": "https://more30.com",
+    "cli": "Vercel CLI 56.4.0"
+  },
+  "live": {
+    "urls": ["https://more30.com/bkalot-studio", "https://more30.com/bkalot-studio/"],
+    "before": { "bytes": 32558, "md5": "B8FFD83A" },
+    "after": { "bytes": 34858, "md5": "1473D798" },
+    "injection_bytes": 236
+  },
+  "markers": { "total": 39, "NEW": 18, "REMOVED": 1, "DIFF": 3, "CONTROL": 17, "DEAD": 0 },
+  "verdict": { "_verify": "PASS", "fails": 0 },
+  "dom_live": { "cases": 6, "marks_and_focuses": 6, "reached_server": 5, "client_early_block": 1 },
+  "test_mode": { "responses": 7, "any_ok": false, "any_case_id": false, "rows_written": 0 },
+  "heartbeat": { "written_to_db": false, "queued_as_file": "_heartbeat-pending.sql", "queue_position": 4 }
+}

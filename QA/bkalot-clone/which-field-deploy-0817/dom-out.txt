@@ -1,0 +1,26 @@
+﻿full_name_required  →  full_name
+  invalid=["full_name"] visible=[true] focused=full_name
+  marks=true focuses=true
+  says : ["צריך שם מלא."]
+phone_invalid  →  phone
+  invalid=["phone"] visible=[true] focused=phone
+  marks=true focuses=true
+  says : ["מספר הטלפון אינו תקין. הטלפון הוא מפתח הזהות שלכם אצלנו — נדרש מספר ישראלי (למשל 0501234567)."]
+email_invalid  →  email
+  invalid=["email"] visible=[true] focused=email
+  marks=true focuses=true
+  says : ["כתובת הדוא״ל אינה תקינה."]
+email_required_for_treatment  →  email
+  invalid=["email"] visible=[true] focused=email
+  marks=true focuses=true
+  says : ["לטיפול מלא צריך דוא״ל — לשם נשלחים המסמכים."]
+situation_required_for_treatment  →  situation
+  invalid=["situation"] visible=[true] focused=situation
+  marks=true focuses=true
+  says : ["בחרו מצב, כדי שנוכל להתאים את רשימת הזכויות."]
+topic_no_invalid  →  topic_no
+  invalid=["topic_no"] visible=[true] focused=topic_no
+  marks=true focuses=true
+  says : ["מספר נושא — צריך מספר שלם. תקנו ושלחו שוב."]
+test_mode: {"responses":7,"any_ok":false,"any_case_id":false,"codes":["full_name_required","phone_invalid","email_invalid","email_required_for_treatment","situation_required_for_treatment"]}
+console=0 overflow_px=0
