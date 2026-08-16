@@ -1,0 +1,338 @@
+{
+  "phase": "after",
+  "src": {
+    "bytes": 169253,
+    "md5": "84442C698D94F7934F715D89DB611CAE"
+  },
+  "dist": {
+    "bytes": 169253,
+    "md5": "84442C698D94F7934F715D89DB611CAE"
+  },
+  "live": [
+    {
+      "url": "https://more30.com/bkalot-studio/admin?cachebust=note-tally-after",
+      "status": 200,
+      "bytes": 169489,
+      "md5": "BFF891EFA321408C4DBC165F21DE3D52"
+    },
+    {
+      "url": "https://more30.com/bkalot-studio/admin/?cachebust=note-tally-after",
+      "status": 200,
+      "bytes": 169489,
+      "md5": "BFF891EFA321408C4DBC165F21DE3D52"
+    }
+  ],
+  "markers": {
+    "new": [
+      {
+        "marker": "noteTallyBit",
+        "src": 3,
+        "dist": 3,
+        "live": [
+          3,
+          3
+        ]
+      },
+      {
+        "marker": "const noteTally = noteTallyBit(c);",
+        "src": 1,
+        "dist": 1,
+        "live": [
+          1,
+          1
+        ]
+      },
+      {
+        "marker": "Object.hasOwn(c, \"note_match_count\")",
+        "src": 1,
+        "dist": 1,
+        "live": [
+          1,
+          1
+        ]
+      },
+      {
+        "marker": "note_match_count",
+        "src": 3,
+        "dist": 3,
+        "live": [
+          3,
+          3
+        ]
+      },
+      {
+        "marker": "notes_count",
+        "src": 3,
+        "dist": 3,
+        "live": [
+          3,
+          3
+        ]
+      },
+      {
+        "marker": "המונח בנימוק היחיד",
+        "src": 1,
+        "dist": 1,
+        "live": [
+          1,
+          1
+        ]
+      },
+      {
+        "marker": "המונח ב-${hit} מתוך ${notes} הנימוקים",
+        "src": 1,
+        "dist": 1,
+        "live": [
+          1,
+          1
+        ]
+      },
+      {
+        "marker": "כמה מהנימוקים שנכתבו ביומן ההכרעות של הפנייה נושאים את מונח החיפוש",
+        "src": 1,
+        "dist": 1,
+        "live": [
+          1,
+          1
+        ]
+      },
+      {
+        "marker": "המספר נספר ביומן עצמו ולא נגזר",
+        "src": 1,
+        "dist": 1,
+        "live": [
+          1,
+          1
+        ]
+      },
+      {
+        "marker": "«כמה מהנימוקים התאימו» ברשימה",
+        "src": 1,
+        "dist": 1,
+        "live": [
+          1,
+          1
+        ]
+      },
+      {
+        "marker": "אפס שותק כאן, בניגוד להכרעה (4) של noteMatchTally",
+        "src": 1,
+        "dist": 1,
+        "live": [
+          1,
+          1
+        ]
+      },
+      {
+        "marker": "שני מספרים ולא אחד",
+        "src": 1,
+        "dist": 1,
+        "live": [
+          1,
+          1
+        ]
+      },
+      {
+        "marker": "מיזוגם היה מוריש את העיוורון לשניהם",
+        "src": 1,
+        "dist": 1,
+        "live": [
+          1,
+          1
+        ]
+      }
+    ],
+    "removed": [],
+    "diff": [
+      {
+        "marker": "noteMatchBit",
+        "src": 5,
+        "dist": 5,
+        "live": [
+          5,
+          5
+        ]
+      },
+      {
+        "marker": "noteMatchTally",
+        "src": 5,
+        "dist": 5,
+        "live": [
+          5,
+          5
+        ]
+      },
+      {
+        "marker": "matched_in_note",
+        "src": 5,
+        "dist": 5,
+        "live": [
+          5,
+          5
+        ]
+      },
+      {
+        "marker": "נמצאה לפי הנימוק",
+        "src": 6,
+        "dist": 6,
+        "live": [
+          6,
+          6
+        ]
+      },
+      {
+        "marker": "המכנה הוא הנימוקים שנכתבו ולא המעברים",
+        "src": 2,
+        "dist": 2,
+        "live": [
+          2,
+          2
+        ]
+      }
+    ],
+    "control": [
+      {
+        "marker": "id=\"count\"",
+        "src": 1,
+        "dist": 1,
+        "live": [
+          1,
+          1
+        ]
+      },
+      {
+        "marker": "id=\"empty\"",
+        "src": 1,
+        "dist": 1,
+        "live": [
+          1,
+          1
+        ]
+      },
+      {
+        "marker": "row-meta",
+        "src": 2,
+        "dist": 2,
+        "live": [
+          2,
+          2
+        ]
+      },
+      {
+        "marker": "decidedBit",
+        "src": 4,
+        "dist": 4,
+        "live": [
+          4,
+          4
+        ]
+      },
+      {
+        "marker": "אין פניות שתואמות את הסינון",
+        "src": 5,
+        "dist": 5,
+        "live": [
+          5,
+          5
+        ]
+      },
+      {
+        "marker": "פנייה אחת",
+        "src": 3,
+        "dist": 3,
+        "live": [
+          3,
+          3
+        ]
+      },
+      {
+        "marker": "countHe",
+        "src": 13,
+        "dist": 13,
+        "live": [
+          13,
+          13
+        ]
+      },
+      {
+        "marker": "bkalot_clone_admin_cases",
+        "src": 1,
+        "dist": 1,
+        "live": [
+          1,
+          1
+        ]
+      },
+      {
+        "marker": "מספר פנייה או נימוק ביומן ההכרעות",
+        "src": 1,
+        "dist": 1,
+        "live": [
+          1,
+          1
+        ]
+      },
+      {
+        "marker": "רצף ההכרעות",
+        "src": 5,
+        "dist": 5,
+        "live": [
+          5,
+          5
+        ]
+      },
+      {
+        "marker": "מי הכריע",
+        "src": 14,
+        "dist": 14,
+        "live": [
+          14,
+          14
+        ]
+      },
+      {
+        "marker": "איש הקשר נמחק",
+        "src": 2,
+        "dist": 2,
+        "live": [
+          2,
+          2
+        ]
+      },
+      {
+        "marker": "מיון",
+        "src": 10,
+        "dist": 10,
+        "live": [
+          10,
+          10
+        ]
+      }
+    ]
+  },
+  "encoding": [
+    {
+      "url": "https://more30.com/bkalot-studio/admin?cachebust=note-tally-after",
+      "replacement_chars": 0,
+      "double_encoded": 0
+    },
+    {
+      "url": "https://more30.com/bkalot-studio/admin/?cachebust=note-tally-after",
+      "replacement_chars": 0,
+      "double_encoded": 0
+    }
+  ],
+  "verdicts": {
+    "new_zero_in_live": false,
+    "new_equals_src_in_live": true,
+    "removed_present_in_live": null,
+    "removed_gone_from_live": null,
+    "control_unchanged": true,
+    "diff_matches_src": true,
+    "diff_matches_dist": true,
+    "clean_encoding": true,
+    "all_markers_live_equals_src": true,
+    "dist_equals_live": true,
+    "dead_markers": []
+  }
+}
