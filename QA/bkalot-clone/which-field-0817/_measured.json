@@ -1,0 +1,334 @@
+{
+  "step": "which-field-0817",
+  "servers": {
+    "8147": {
+      "serves": "עץ העבודה",
+      "bytes": 34622,
+      "md5": "183921EE"
+    },
+    "8148": {
+      "serves": "HEAD 93ad034",
+      "bytes": 32322,
+      "md5": "E6E39BF0"
+    }
+  },
+  "before": {
+    "full_name_required": {
+      "invalid": [],
+      "focused": "BODY",
+      "title": "הפנייה לא נשלחה",
+      "lines": [
+        "צריך שם מלא."
+      ],
+      "hidden": false,
+      "reached_server": true
+    },
+    "phone_invalid": {
+      "invalid": [],
+      "focused": "BODY",
+      "title": "הפנייה לא נשלחה",
+      "lines": [
+        "מספר הטלפון אינו תקין. הטלפון הוא מפתח הזהות שלכם אצלנו — נדרש מספר ישראלי (למשל 0501234567)."
+      ],
+      "hidden": false,
+      "reached_server": true
+    },
+    "email_invalid": {
+      "invalid": [],
+      "focused": "BODY",
+      "title": "הפנייה לא נשלחה",
+      "lines": [
+        "כתובת הדוא״ל אינה תקינה."
+      ],
+      "hidden": false,
+      "reached_server": true
+    },
+    "email_required_for_treatment": {
+      "invalid": [],
+      "focused": "BODY",
+      "title": "הפנייה לא נשלחה",
+      "lines": [
+        "לטיפול מלא צריך דוא״ל — לשם נשלחים המסמכים."
+      ],
+      "hidden": false,
+      "reached_server": true
+    },
+    "situation_required_for_treatment": {
+      "invalid": [],
+      "focused": "BODY",
+      "title": "הפנייה לא נשלחה",
+      "lines": [
+        "בחרו מצב, כדי שנוכל להתאים את רשימת הזכויות."
+      ],
+      "hidden": false,
+      "reached_server": true
+    },
+    "topic_no_invalid": {
+      "invalid": [
+        "topic_no"
+      ],
+      "focused": "topic_no",
+      "title": "הפנייה לא נשלחה",
+      "lines": [
+        "מספר נושא — צריך מספר שלם. תקנו ושלחו שוב."
+      ],
+      "hidden": false,
+      "reached_server": false
+    }
+  },
+  "before_console": [],
+  "before_server": [
+    {
+      "status": 200,
+      "body": {
+        "ok": false,
+        "error": "full_name_required"
+      }
+    },
+    {
+      "status": 200,
+      "body": {
+        "ok": false,
+        "error": "phone_invalid",
+        "detail": "הטלפון הוא מפתח הזהות של הפונה — נדרש מספר ישראלי תקין"
+      }
+    },
+    {
+      "status": 200,
+      "body": {
+        "ok": false,
+        "error": "email_invalid"
+      }
+    },
+    {
+      "status": 200,
+      "body": {
+        "ok": false,
+        "error": "email_required_for_treatment"
+      }
+    },
+    {
+      "status": 200,
+      "body": {
+        "ok": false,
+        "error": "situation_required_for_treatment"
+      }
+    }
+  ],
+  "after": {
+    "full_name_required": {
+      "invalid": [
+        "full_name"
+      ],
+      "focused": "full_name",
+      "title": "הפנייה לא נשלחה",
+      "lines": [
+        "צריך שם מלא."
+      ],
+      "hidden": false,
+      "reached_server": true
+    },
+    "phone_invalid": {
+      "invalid": [
+        "phone"
+      ],
+      "focused": "phone",
+      "title": "הפנייה לא נשלחה",
+      "lines": [
+        "מספר הטלפון אינו תקין. הטלפון הוא מפתח הזהות שלכם אצלנו — נדרש מספר ישראלי (למשל 0501234567)."
+      ],
+      "hidden": false,
+      "reached_server": true
+    },
+    "email_invalid": {
+      "invalid": [
+        "email"
+      ],
+      "focused": "email",
+      "title": "הפנייה לא נשלחה",
+      "lines": [
+        "כתובת הדוא״ל אינה תקינה."
+      ],
+      "hidden": false,
+      "reached_server": true
+    },
+    "email_required_for_treatment": {
+      "invalid": [
+        "email"
+      ],
+      "focused": "email",
+      "title": "הפנייה לא נשלחה",
+      "lines": [
+        "לטיפול מלא צריך דוא״ל — לשם נשלחים המסמכים."
+      ],
+      "hidden": false,
+      "reached_server": true
+    },
+    "situation_required_for_treatment": {
+      "invalid": [
+        "situation"
+      ],
+      "focused": "situation",
+      "title": "הפנייה לא נשלחה",
+      "lines": [
+        "בחרו מצב, כדי שנוכל להתאים את רשימת הזכויות."
+      ],
+      "hidden": false,
+      "reached_server": true
+    },
+    "topic_no_invalid": {
+      "invalid": [
+        "topic_no"
+      ],
+      "focused": "topic_no",
+      "title": "הפנייה לא נשלחה",
+      "lines": [
+        "מספר נושא — צריך מספר שלם. תקנו ושלחו שוב."
+      ],
+      "hidden": false,
+      "reached_server": false
+    }
+  },
+  "after_console": [],
+  "after_server": [
+    {
+      "status": 200,
+      "body": {
+        "ok": false,
+        "error": "full_name_required"
+      }
+    },
+    {
+      "status": 200,
+      "body": {
+        "ok": false,
+        "error": "phone_invalid",
+        "detail": "הטלפון הוא מפתח הזהות של הפונה — נדרש מספר ישראלי תקין"
+      }
+    },
+    {
+      "status": 200,
+      "body": {
+        "ok": false,
+        "error": "email_invalid"
+      }
+    },
+    {
+      "status": 200,
+      "body": {
+        "ok": false,
+        "error": "email_required_for_treatment"
+      }
+    },
+    {
+      "status": 200,
+      "body": {
+        "ok": false,
+        "error": "situation_required_for_treatment"
+      }
+    },
+    {
+      "status": 200,
+      "body": {
+        "ok": false,
+        "error": "phone_invalid",
+        "detail": "הטלפון הוא מפתח הזהות של הפונה — נדרש מספר ישראלי תקין"
+      }
+    },
+    {
+      "status": 200,
+      "body": {
+        "ok": false,
+        "error": "situation_required_for_treatment"
+      }
+    }
+  ],
+  "claims": {
+    "full_name_required": {
+      "field": "full_name",
+      "before_invalid": [],
+      "before_focused": "BODY",
+      "after_invalid": [
+        "full_name"
+      ],
+      "after_focused": "full_name",
+      "after_marks_the_field": true,
+      "after_focuses_the_field": true,
+      "same_message": true
+    },
+    "phone_invalid": {
+      "field": "phone",
+      "before_invalid": [],
+      "before_focused": "BODY",
+      "after_invalid": [
+        "phone"
+      ],
+      "after_focused": "phone",
+      "after_marks_the_field": true,
+      "after_focuses_the_field": true,
+      "same_message": true
+    },
+    "email_invalid": {
+      "field": "email",
+      "before_invalid": [],
+      "before_focused": "BODY",
+      "after_invalid": [
+        "email"
+      ],
+      "after_focused": "email",
+      "after_marks_the_field": true,
+      "after_focuses_the_field": true,
+      "same_message": true
+    },
+    "email_required_for_treatment": {
+      "field": "email",
+      "before_invalid": [],
+      "before_focused": "BODY",
+      "after_invalid": [
+        "email"
+      ],
+      "after_focused": "email",
+      "after_marks_the_field": true,
+      "after_focuses_the_field": true,
+      "same_message": true
+    },
+    "situation_required_for_treatment": {
+      "field": "situation",
+      "before_invalid": [],
+      "before_focused": "BODY",
+      "after_invalid": [
+        "situation"
+      ],
+      "after_focused": "situation",
+      "after_marks_the_field": true,
+      "after_focuses_the_field": true,
+      "same_message": true
+    },
+    "topic_no_invalid": {
+      "field": "topic_no",
+      "before_invalid": [
+        "topic_no"
+      ],
+      "before_focused": "topic_no",
+      "after_invalid": [
+        "topic_no"
+      ],
+      "after_focused": "topic_no",
+      "after_marks_the_field": true,
+      "after_focuses_the_field": true,
+      "same_message": true
+    }
+  },
+  "test_mode": {
+    "responses": 12,
+    "any_ok": false,
+    "any_case_id": false,
+    "codes": [
+      "full_name_required",
+      "phone_invalid",
+      "email_invalid",
+      "email_required_for_treatment",
+      "situation_required_for_treatment"
+    ]
+  }
+}

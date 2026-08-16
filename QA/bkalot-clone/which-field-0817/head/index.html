@@ -312,26 +312,6 @@ footer a{color:var(--brand)}
     return null;
   }
 
-  // ── ואיזה שדה נפל ──────────────────────────────────────────────────────────
-  // ‏0058 מחזירה קוד ולא שדה, אבל שישה מהקודים שלה נופלים כל אחד על שדה אחד
-  // ידוע — אותו שדה שהבדיקה שמעל ה-return קוראת. עד כאן רק topic_no_invalid
-  // סימן אותו; שאר הקודים אמרו **מה** לא בסדר ולא **היכן**. מי שקיבל «מספר
-  // הטלפון אינו תקין» חיפש בעצמו בטופס בן שלושה fieldset-ים, ומי שקורא מסך לא
-  // קיבל aria-invalid על שום שדה ולכן לא היה לו סימן בכלל שיש שדה שנפסל.
-  //
-  // המיפוי נגזר מ-0058 שורה-בשורה ואינו נבחר: כל קוד כאן הוא ה-return שיושב
-  // מיד אחרי הבדיקה של אותו שדה בדיוק. ‏kind_invalid ו-source_invalid אינם
-  // כאן — הטופס שולח בהם ערך קבוע מתוך רשימה סגורה, ואין להם שדה שמקלידים בו.
-  const CODE_FIELD = {
-    full_name_required:               "full_name",
-    phone_invalid:                    "phone",
-    email_invalid:                    "email",
-    email_required_for_treatment:     "email",
-    situation_required_for_treatment: "situation",
-    situation_unknown:                "situation",
-    topic_no_invalid:                 "topic_no",
-  };
-
   // ── ולמה מספר הנושא נפסל ───────────────────────────────────────────────────
   // 0079 ו-0080 מחזירות קוד אחד, topic_no_invalid, לשתי סיבות שונות: ערך שאינו
   // מספר שלם, וערך שהוא ספרות בלבד אך גדול ממה שעמודת מספר הנושא מחזיקה. ההבחנה
@@ -560,15 +540,7 @@ footer a{color:var(--brand)}
         markInvalid($("topic_no"));
         return;
       }
-      fail(code, extra);
-      // ואותו סימון גם לשאר הקודים, ולא רק ל-topic_no. מסומן אך ורק שדה שנראה
-      // על המסך: שדות «טיפול מלא» יושבים ב-fieldset מוסתר בסוגים האחרים,
-      // ו-focus() על אלמנט ב-display:none נכשל בשקט ומשאיר aria-invalid על שדה
-      // שאיש אינו רואה. הקודים האלה ממילא מוחזרים רק בטיפול מלא, ולכן התנאי
-      // אינו מבטל אף מקרה אמיתי — הוא רק מונע סימון שאין לו מסך.
-      const bad = CODE_FIELD[code] ? $(CODE_FIELD[code]) : null;
-      if (bad && bad.offsetParent !== null) markInvalid(bad);
-      return;
+      return fail(code, extra);
     }
 
     const rows = [["מספר פנייה", String(body.case_id)]];
