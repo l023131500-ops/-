@@ -1,0 +1,234 @@
+[
+  {
+    "label": "login",
+    "value": {
+      "http_status": 200,
+      "ok": true,
+      "admin": {
+        "id": 91,
+        "email": "qa0091read@more30.test",
+        "full_name": "בודק 0091 קורא"
+      }
+    }
+  },
+  {
+    "label": "A — שני מעברים ושני נימוקים שונים",
+    "value": {
+      "case_id": 252,
+      "http_status": 200,
+      "ok": true,
+      "top_level_keys": [
+        "admin",
+        "case",
+        "documents",
+        "ok",
+        "rights",
+        "status_history",
+        "templates"
+      ],
+      "case_key_count": 17,
+      "case_status": "rejected",
+      "citizen_note_chars": 56,
+      "decided_by": 91,
+      "decided_by_name": "בודק 0091 קורא",
+      "history_rows": 2,
+      "history_all_have_note_key": true,
+      "history_none_have_note_key": false,
+      "history_row_key_count": 7,
+      "sequence": "new->in_progress#91 | in_progress->rejected#91",
+      "chain_is_whole": true,
+      "rows": [
+        {
+          "id": 48,
+          "transition": "new->in_progress",
+          "admin_id": 91,
+          "admin_name": "בודק 0091 קורא",
+          "has_note_key": true,
+          "note_is_null": false,
+          "note_chars": 52,
+          "note_head": "לקחתי לטיפול — חסרים תלושי שכר, ביקשתי מ"
+        },
+        {
+          "id": 49,
+          "transition": "in_progress->rejected",
+          "admin_id": 91,
+          "admin_name": "בודק 0091 קורא",
+          "has_note_key": true,
+          "note_is_null": false,
+          "note_chars": 59,
+          "note_head": "נדחתה — ההכנסה מעל התקרה שנקבעה לשנת 202"
+        }
+      ],
+      "rights_count": 42,
+      "documents_count": 0,
+      "templates_count": 2,
+      "two_distinct_notes": true,
+      "notes_in_order": [
+        52,
+        59
+      ]
+    }
+  },
+  {
+    "label": "B — מעבר שנכתב בלי נימוק",
+    "value": {
+      "case_id": 253,
+      "http_status": 200,
+      "ok": true,
+      "top_level_keys": [
+        "admin",
+        "case",
+        "documents",
+        "ok",
+        "rights",
+        "status_history",
+        "templates"
+      ],
+      "case_key_count": 17,
+      "case_status": "in_progress",
+      "citizen_note_chars": 56,
+      "decided_by": 91,
+      "decided_by_name": "בודק 0091 קורא",
+      "history_rows": 1,
+      "history_all_have_note_key": true,
+      "history_none_have_note_key": false,
+      "history_row_key_count": 7,
+      "sequence": "new->in_progress#91",
+      "chain_is_whole": true,
+      "rows": [
+        {
+          "id": 50,
+          "transition": "new->in_progress",
+          "admin_id": 91,
+          "admin_name": "בודק 0091 קורא",
+          "has_note_key": true,
+          "note_is_null": true,
+          "note_chars": null,
+          "note_head": null
+        }
+      ],
+      "rights_count": 42,
+      "documents_count": 0,
+      "templates_count": 2
+    }
+  },
+  {
+    "label": "C — נימוק במלוא התקרה",
+    "value": {
+      "case_id": 254,
+      "http_status": 200,
+      "ok": true,
+      "top_level_keys": [
+        "admin",
+        "case",
+        "documents",
+        "ok",
+        "rights",
+        "status_history",
+        "templates"
+      ],
+      "case_key_count": 17,
+      "case_status": "in_progress",
+      "citizen_note_chars": 56,
+      "decided_by": 91,
+      "decided_by_name": "בודק 0091 קורא",
+      "history_rows": 1,
+      "history_all_have_note_key": true,
+      "history_none_have_note_key": false,
+      "history_row_key_count": 7,
+      "sequence": "new->in_progress#91",
+      "chain_is_whole": true,
+      "rows": [
+        {
+          "id": 51,
+          "transition": "new->in_progress",
+          "admin_id": 91,
+          "admin_name": "בודק 0091 קורא",
+          "has_note_key": true,
+          "note_is_null": false,
+          "note_chars": 500,
+          "note_head": "ממממממממממממממממממממממממממממממממממממממממ"
+        }
+      ],
+      "rights_count": 42,
+      "documents_count": 0,
+      "templates_count": 2,
+      "round_trip_whole": true
+    }
+  },
+  {
+    "label": "D — המכריע עזב, והנימוק נשאר",
+    "value": {
+      "case_id": 255,
+      "http_status": 200,
+      "ok": true,
+      "top_level_keys": [
+        "admin",
+        "case",
+        "documents",
+        "ok",
+        "rights",
+        "status_history",
+        "templates"
+      ],
+      "case_key_count": 17,
+      "case_status": "rejected",
+      "citizen_note_chars": 56,
+      "decided_by": 92,
+      "decided_by_name": null,
+      "history_rows": 1,
+      "history_all_have_note_key": true,
+      "history_none_have_note_key": false,
+      "history_row_key_count": 7,
+      "sequence": "new->rejected#92",
+      "chain_is_whole": true,
+      "rows": [
+        {
+          "id": 52,
+          "transition": "new->rejected",
+          "admin_id": 92,
+          "admin_name": null,
+          "has_note_key": true,
+          "note_is_null": false,
+          "note_chars": 57,
+          "note_head": "נדחתה בהחלטתי — אין זכאות בסניף הזה, הפנ"
+        }
+      ],
+      "rights_count": 42,
+      "documents_count": 0,
+      "templates_count": 2,
+      "row_survived": true,
+      "admin_id_kept": true,
+      "admin_name_empty": true,
+      "reason_survived": true
+    }
+  },
+  {
+    "label": "רגרסיה — השערים",
+    "value": {
+      "no_id": {
+        "http_status": 200,
+        "error": "case_id_required"
+      },
+      "case_not_found": {
+        "http_status": 200,
+        "error": "case_not_found",
+        "case_id": 999999999
+      },
+      "no_token": {
+        "http_status": 401,
+        "error": "token_required"
+      }
+    }
+  },
+  {
+    "label": "ids",
+    "value": {
+      "A": 252,
+      "B": 253,
+      "C": 254,
+      "D": 255,
+      "run": "after"
+    }
+  }
+]
