@@ -1,0 +1,120 @@
+{
+  "brick": "phone-search-0093-0816",
+  "migration": "0093_the_work_list_cannot_find_a_phone_as_it_is_written",
+  "applied_to": "uhnrgujbdxhhmoxcjria",
+  "layer": "priority §5ב — שכפול בקלות שכבה 3 (קורא רשימת העבודה)",
+  "what_changed": "public.bkalot_clone_admin_cases בלבד — נרמול מונח החיפוש להשוואה מול ct.phone, ומפתח תשובה q_phone",
+  "what_did_not_change": [
+    "bkalot_clone_intake",
+    "bkalot_clone_admin_case",
+    "bkalot_clone_admin_set_status",
+    "bkalot_clone_admin_document",
+    "bkalot_clone_render",
+    "bkalot_clone_queue",
+    "bkalot_clone_dispatch",
+    "supabase/functions/bkalot-clone-admin (נשארת v8)",
+    "supabase/functions/bkalot-clone-intake (נשארת v1)",
+    "apps/37-bkalot-clone/admin.html",
+    "apps/37-bkalot-clone/index.html"
+  ],
+
+  "seed": {
+    "how": "שתי פניות נקלטו דרך הכתובת החיה של bkalot-clone-intake מעל HTTP עם מפתח anon, בדיוק כמו מהטופס",
+    "endpoint": "https://uhnrgujbdxhhmoxcjria.supabase.co/functions/v1/bkalot-clone-intake",
+    "cases": [
+      { "case_id": 270, "contact_id": 277, "kind": "info", "phone_sent": "054-812-3491",     "phone_stored": "0548123491", "queued": false, "rights_linked": 0 },
+      { "case_id": 271, "contact_id": 278, "kind": "info", "phone_sent": "+972 52 771 4408", "phone_stored": "0527714408", "queued": false, "rights_linked": 0 }
+    ],
+    "note": "הקליטה קיבלה את שתי הצורות ונרמלה אותן בעצמה — כלומר הצורה שנכשלה בחיפוש היא צורה שהמערכת מקבלת"
+  },
+
+  "measured": {
+    "how": "public.bkalot_clone_admin_cases נקראה ב-SQL. הנתיב החי /cases מעביר את הגוף אל אותה פונקציה בלי לגעת בו — supabase/functions/bkalot-clone-admin/index.ts:278 קורא rpc(\"bkalot_clone_admin_cases\", { p: payload }) — ולכן ההפרש בין המדידה כאן לנתיב החי הוא התעבורה בלבד. נאמר ולא נעקף: לא נמדד כאן מהדפדפן.",
+    "same_cases_before_and_after": true,
+    "why_same_cases_are_legitimate": "הפונקציה קריאה בלבד — אין בה INSERT/UPDATE/DELETE — ולכן קריאה חוזרת אינה משנה דבר, בשונה מ-0087/0088/0090 שנאלצו לפצל לשתי קבוצות",
+    "terms": [
+      { "label": "stored-form-A",       "q": "0548123491",         "before_total": 1, "after_total": 1, "after_q_phone": null,         "after_ids": [270], "class": "OLD"  },
+      { "label": "as-typed-dashes-A",   "q": "054-812-3491",       "before_total": 0, "after_total": 1, "after_q_phone": "0548123491", "after_ids": [270], "class": "FIX"  },
+      { "label": "as-typed-spaces-A",   "q": "054 812 3491",       "before_total": 0, "after_total": 1, "after_q_phone": "0548123491", "after_ids": [270], "class": "FIX"  },
+      { "label": "stored-form-B",       "q": "0527714408",         "before_total": 1, "after_total": 1, "after_q_phone": null,         "after_ids": [271], "class": "OLD"  },
+      { "label": "intl-plus-B",         "q": "+972 52 771 4408",   "before_total": 0, "after_total": 1, "after_q_phone": "0527714408", "after_ids": [271], "class": "FIX"  },
+      { "label": "intl-digits-B",       "q": "972527714408",       "before_total": 0, "after_total": 1, "after_q_phone": "0527714408", "after_ids": [271], "class": "FIX"  },
+      { "label": "intl-00-B",           "q": "00972527714408",     "before_total": 0, "after_total": 1, "after_q_phone": "0527714408", "after_ids": [271], "class": "FIX"  },
+      { "label": "case-id-A",           "q": "270",                "before_total": 1, "after_total": 1, "after_q_phone": null,         "after_ids": [270], "class": "OLD"  },
+      { "label": "email-none",          "q": "nobody@example.com", "before_total": 0, "after_total": 0, "after_q_phone": null,         "after_ids": [],    "class": "OLD"  },
+      { "label": "last4-A",             "q": "3491",               "before_total": null, "after_total": 1, "after_q_phone": null,       "after_ids": [270], "class": "RULE-4" },
+      { "label": "three-digits-only",   "q": "491",                "before_total": null, "after_total": 1, "after_q_phone": null,       "after_ids": [270], "class": "RULE-4" },
+      { "label": "name-with-one-digit", "q": "3",                  "before_total": null, "after_total": 1, "after_q_phone": null,       "after_ids": [270], "class": "RULE-4" },
+      { "label": "no-digits",           "q": "xyz",                "before_total": null, "after_total": 0, "after_q_phone": null,       "after_ids": [],    "class": "RULE-4" }
+    ],
+    "stored-form-A_note": "⚠️ '0548123491' נמדד 1 לפני ואחרי. במדידת ה-before הוא הוחזר עם total 1 — הצורה השמורה עבדה תמיד, וזו בדיוק העדות שהתקלה אינה בטלפון אלא בצורה שבה הוא נשאל.",
+    "rows_agree_with_total": "בכל שלוש-עשרה השורות jsonb_array_length(cases) שווה ל-total — הכרעה (6), שני עותקי ה-where תוקנו יחד"
+  },
+
+  "regression": {
+    "status_unknown": "status_unknown",
+    "kind_unknown": "kind_unknown",
+    "decided_unknown": "decided_unknown",
+    "sort_unknown": "sort_unknown",
+    "q_normalized_plus_status_rejected": 0,
+    "q_normalized_plus_kind_info": 1,
+    "q_normalized_plus_sort_decided_at": 1,
+    "q_by_hebrew_name": 1,
+    "no_filter_total": 2,
+    "response_keys": ["cases", "limit", "offset", "ok", "q_phone", "total"],
+    "response_keys_note": "מפתח אחד נולד (q_phone); חמשת הישנים לא זזו בשמם",
+    "acl": "anon=false authenticated=false service_role=true",
+    "acl_note": "create or replace שומר ACL ואינו נותן הרשאה מחדש — נמדד אחרי",
+    "new_branch_does_not_bypass_filters": "q='054-812-3491' עם status='rejected' מחזיר 0 — הענף החדש הוא עוד תנאי בתוך סוגריי ה-q ואינו יוצא מהם"
+  },
+
+  "test_mode": {
+    "queued_on_both_intakes": false,
+    "documents": 0,
+    "outbound_queue": 8,
+    "outbound_queue_sent_at_rows": 0,
+    "delivery_log": 3,
+    "outgoing_calls": 0,
+    "note": "הפונקציה שהשתנתה היא קריאה בלבד. שתי הקליטות הן שתי הכתיבות היחידות בריצה, ושתיהן התגלגלו אחורה."
+  },
+
+  "rollback": {
+    "how": "בפקודות נפרדות לפי טבלה — תקלת cte-delete-sees-prestatement-snapshot; ואנשי הקשר לפי id ולא לפי טלפון מנורמל — תקלת ac6e523",
+    "deleted": { "case_status_log": 0, "case_rights": 0, "cases": 2, "contacts": 2 },
+    "after": {
+      "cases": 0, "case_rights": 0, "case_status_log": 0, "documents": 0,
+      "admin_users": 1, "admin_sessions": 5, "templates": 2, "contacts": 4,
+      "outbound_queue": 8, "outbound_queue_sent_at_rows": 0, "delivery_log": 3,
+      "rights_catalog": 888
+    },
+    "baseline_exact": true
+  },
+
+  "protected": {
+    "checked": ["apps/08-bkalut-app", "apps/09-bkalot-admin", "apps/37-bkalot-clone", "supabase/functions"],
+    "git_status_empty": true,
+    "not_touched": ["bkalut-app", "bkalot-admin", "zr_*", "NEDARIM3873", "csj", "csj_src", "igud"],
+    "git_add": "שני נתיבים מפורשים ולא נקודה"
+  },
+
+  "open": {
+    "next_brick_ui": "apps/37-bkalot-clone/admin.html שולח את המונח כפי שהוקלד ואינו אומר דבר על q_phone. התיקון עובד מהשרת כבר עכשיו — הצורה עם המקפים מוצאת את הפנייה — אבל המנהל אינו רואה למה נמצאה שורה שהטלפון בה נראה אחרת ממה שהקליד. זו הלבנה הבאה (UI), ואחריה פריסת פורטל — אותו פיצול כמו 0090 → 0091 → aff6455 → 9c96135.",
+    "wildcards_in_q": "⚠️ קו חדש שנרשם ולא נלקח: v_q נכנס ל-ilike בלי escape, ולכן % ו-_ במונח החיפוש הם תווי הצבה ולא תווים. לא נגעה כאן — היא אינה חלק מהטלפון, והלבנה הזו היא הטלפון.",
+    "not_built": [
+      "אין אינדקס על ct.phone — הענף החדש הוא like '%…%' ואינו יכול להשתמש באינדקס רגיל; בהיקף הנוכחי (cases 0, contacts 4) זו החלטה ולא הזנחה",
+      "אין נרמול לצורה בינלאומית בכיוון ההפוך (חיפוש '0548123491' אינו מוצא טלפון ששמור כ-'+972…') — אין טלפון כזה במסד, הקליטה מנרמלת בכתיבה",
+      "אין חיפוש בטקסט הנימוקים",
+      "אין סינון ואין מיון לפי מספר מעברים",
+      "אין status_last_change_at",
+      "אין שמות ברשימה"
+    ],
+    "lines_that_continue": [
+      "טעינה מחדש של הכתובת בייצור מנתקת את הסשן — הכרעה מוצהרת ב-admin.html:296 (הטוקן חי בזיכרון בלבד), לא תקלה",
+      "הקליטה מחברת זכויות ל-treatment ואפס ל-info/reminder על אותו situation — הכרעה מוצהרת ב-intake (v_dropped)",
+      "sent בלתי-ניתן-להשגה בכוונה",
+      "bkalot_clone_admin_create אינה חשופה ב-HTTP ונקראת ב-SQL בארגומנט jsonb יחיד",
+      "pdf/audio → channel_unsupported",
+      "public_visible ו-show_in_showcase של #37 נשארים false"
+    ]
+  }
+}
