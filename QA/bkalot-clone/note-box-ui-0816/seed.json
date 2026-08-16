@@ -1,0 +1,23 @@
+{
+  "admin": {
+    "id": 95,
+    "email": "qa-note-box@more30.test"
+  },
+  "citizen_chars": 56,
+  "cases": {
+    "A": {
+      "case_id": 262,
+      "contact_id": 269,
+      "rights": null,
+      "queued": false,
+      "status": null
+    },
+    "B": {
+      "case_id": 263,
+      "contact_id": 270,
+      "rights": null,
+      "queued": false,
+      "status": null
+    }
+  }
+}

@@ -54,12 +54,12 @@ h1{font-size:clamp(24px,4vw,32px); font-weight:700}
 }
 .field{margin-bottom:calc(var(--sp)*2)}
 label{display:block; font-weight:600; margin-bottom:6px; font-size:15px}
-input,select{
+input,select,textarea{
   width:100%; font:inherit; color:inherit; background:var(--surface-2);
   border:1.5px solid var(--line); border-radius:var(--r-sm);
   padding:10px 12px; transition:border-color .18s, box-shadow .18s;
 }
-input:focus,select:focus{outline:none; border-color:var(--brand); box-shadow:var(--ring)}
+input:focus,select:focus,textarea:focus{outline:none; border-color:var(--brand); box-shadow:var(--ring)}
 /* ── הצג סיסמה (§1א) ──
    מאפיינים לוגיים ולא right/left: הדף כולו RTL, והכפתור צריך לשבת בקצה שאליו
    הטקסט *אינו* מתחיל. הריפוד שומר שהתווים לא ייכנסו מתחתיו. */
@@ -139,6 +139,11 @@ td.num{direction:ltr; text-align:start; font-family:ui-monospace,"Consolas",mono
    של 500 תווים בלי רווח אחד — כזו נמדדה ב-0091 — במקום למתוח את הטבלה. אין
    חיתוך: התקרה נאכפת בכתיבה (0090) ולא כאן. */
 td.why{white-space:pre-wrap; overflow-wrap:anywhere; max-width:34ch}
+/* תיבת הנימוק. resize אנכי בלבד: אופקי היה מותח אותה מעבר לרוחב הכרטיס ב-RTL.
+   המונה יושב מתחתיה ולא בתוכה, ונצבע רק כשהמסד יסרב — ראו הכרעה (7). */
+.why-input{min-height:74px; resize:vertical; line-height:1.6}
+.why-count{font-size:13.5px; color:var(--text-soft); margin:6px 0 var(--sp)}
+.why-count.over{color:var(--danger); font-weight:700}
 .stale{color:var(--accent); font-size:12.5px; font-weight:700}
 pre{
   background:var(--surface-2); border:1px solid var(--line); border-radius:var(--r-sm);
@@ -339,6 +344,10 @@ pre{
     // אחד לשניהם היה שולח מנהל לרענן דף על מצב שרענון אינו משנה בו דבר.
     status_required:      "לא נבחר סטטוס.",
     status_not_settable:  "הסטטוס הזה אינו נקבע ידנית מהמסך.",
+    // 0090 הכרעה (5): המסד סופר, דוחה ואינו חותך — והדחייה קודמת לכתיבה, כלומר
+    // הסטטוס נשאר בדיוק כפי שהיה. לכן הנוסח אומר את שניהם: מה לא נשמר וגם מה לא
+    // השתנה. «קצרו» ולא «נחתך» — החיתוך הוא בדיוק מה שלא קרה, והטקסט עומד בתיבה.
+    note_too_long:        "הנימוק ארוך מהמותר. הסטטוס לא שונה והנימוק לא נשמר — קצרו אותו ונסו שוב.",
     kind_unknown:         "הסוג שנבחר אינו מוכר. רעננו את הדף.",
     // 0081. אותו מעמד של status_unknown ו-kind_unknown: המסך שולח ערך מתוך
     // תיבה סגורה, ולכן ערך שהמסד אינו מכיר הוא באג במסך ולא הכרעה של אדם.
@@ -932,6 +941,73 @@ pre{
     decidedLine.className = "note";
     fillDecidedLine(decidedLine, c);
     body.append(decidedLine);
+    // ── תיבת הנימוק ───────────────────────────────────────────────────────────
+    // 0090 בנתה את case_status_log.note ואת הכתיבה אליה, ו-0091 והתצוגה שאחריה
+    // הביאו אותה עד המסך. הצד שנשאר פתוח הוא הצד שממנו כותבים: הכתיבה קיימת
+    // בשער מאז 0090 ופתוחה לכל מי שיודע לשלוח בקשה, ולא למנהל שיושב מול המסך —
+    // כלומר כל מעבר שנלחץ כאן נרשם ביומן בלי «למה», והתא שנבנה כדי לשאת אותו
+    // מצייר «—» לנצח.
+    //
+    // ארבע הכרעות:
+    //
+    // (1) תיבה אחת מעל שלושת הכפתורים ולא תיבה לכל אחד. הנימוק שייך למעבר ולא
+    //     ליעד, ומי שמקליד «חסרים תלושי שכר» ואז מחליט לדחות במקום לקחת לטיפול
+    //     אינו צריך להקליד שוב.
+    //
+    // (2) אין maxlength. הוא היה חותך הדבקה של נימוק ארוך בשקט — בדיוק מה שהמסד
+    //     מסרב לעשות (0090 הכרעה (5): נדחה ואינו נחתך) — ומנהל היה מגלה נימוק
+    //     קטוע רק בקריאה חוזרת, אם בכלל. אותה הכרעה כמו (3) שמעל: אין כאן אכיפה
+    //     שנייה, יש מונה שאומר מה יקרה.
+    //
+    // (3) המונה סופר בדיוק כפי שהמסד סופר, ולא «בערך». שניים במכוון:
+    //     • נקודות קוד ולא יחידות UTF-16 — length() של postgres סופר תווים,
+    //       ו-".length" של JS סופר יחידות, כלומר אימוג'י אחד נספר 2 במסך ו-1
+    //       במסד. מונה שמזהיר על מה שיעבור הוא בדיוק מונה שלא ניתן לסמוך עליו.
+    //     • btrim ולא trim() — btrim של postgres מסיר רווחים בלבד, ואילו trim()
+    //       מסיר גם שורה חדשה וטאב. תיבה שיש בה שורה ריקה בלבד היא null במסד לפי
+    //       trim() ואינה null לפי btrim; הפונקציה כאן מסירה U+0020 בלבד, ולכן
+    //       ההחלטה «לשלוח או לא» כאן היא בדיוק ההחלטה «null או לא» שם.
+    //
+    // (4) מפתח שנשלח רק כשיש מה לשלוח. ריק ורווחים בלבד אינם נשלחים כמחרוזת
+    //     ריקה — 0090 הכרעה (4) הופכת את שלושתם ל-null אחד ממילא, ולכן גוף שאין
+    //     בו note אומר את מה שקרה ולא צריך את המסד כדי לתרגם אותו.
+    //
+    // 🚫 מצב טסט: התיבה הזו כותבת שורה ביומן ותו לא. הנימוק אינו נכנס לשום מכתב,
+    //    לשום תור ולשום ערוץ — הוא נקרא בידי מי שפותח את הפנייה במסך הזה בלבד.
+    const NOTE_MAX = 500;
+    const btrim = (s) => s.replace(/^ +/, "").replace(/ +$/, "");
+    const noteWrap = document.createElement("div");
+    noteWrap.className = "field";
+    const noteLabel = document.createElement("label");
+    noteLabel.setAttribute("for", "status-note");
+    noteLabel.textContent = "למה (לא חובה)";
+    const noteInput = document.createElement("textarea");
+    noteInput.id = "status-note";
+    noteInput.className = "why-input";
+    noteInput.rows = 3;
+    noteInput.placeholder = "מה הביא להכרעה הזו. נשמר ביומן ליד המעבר, ואינו נשלח לאיש.";
+    const noteCount = document.createElement("p");
+    noteCount.className = "why-count";
+    noteCount.setAttribute("role", "status");
+    // aria-describedby ולא טקסט בתוך התווית: המונה משתנה בכל הקלדה, ותווית
+    // שמשתנה תוך כדי הקלדה נקראת מחדש בקורא מסך בכל תו.
+    noteInput.setAttribute("aria-describedby", "status-note-count");
+    noteCount.id = "status-note-count";
+    // ⚠️ המונה נכתב מערך אחד — מה שיישלח — ולא משני מקורות. אחרי note_too_long
+    //    הוא נכתב מהספירה של המסד עצמו (ראו למטה), כדי ששתי הספירות לא יוכלו
+    //    לומר שני דברים על אותה מחרוזת.
+    const syncNoteCount = (chars) => {
+      const n = chars ?? [...btrim(noteInput.value)].length;
+      noteCount.textContent = n === 0
+        ? `אפשר להשאיר ריק · עד ${NOTE_MAX} תווים`
+        : `${n} מתוך ${NOTE_MAX} תווים`;
+      noteCount.classList.toggle("over", n > NOTE_MAX);
+    };
+    syncNoteCount();
+    noteInput.addEventListener("input", () => syncNoteCount());
+    noteWrap.append(noteLabel, noteInput, noteCount);
+    body.append(noteWrap);
+
     const statusBar = document.createElement("div");
     statusBar.className = "docbar";
     const statusNoteEl = document.createElement("p");
@@ -962,11 +1038,26 @@ pre{
         const was = b.textContent;
         for (const x of statusBtns.values()) x.disabled = true;
         b.textContent = "משנה…";
-        const out = await call("set-status", { case_id: c.id, status: target });
+        // הכרעה (4): המפתח נשלח רק כשיש מה לשלוח.
+        // ⚠️ typed ולא note, ו-payload ולא body: openCase מקבלת פרמטר בשם note
+        //    ובונה אלמנט בשם body, ושני שמות כאלה בתוך המאזין היו מסתירים אותם.
+        const typed = btrim(noteInput.value);
+        const payload = { case_id: c.id, status: target };
+        if (typed !== "") payload.note = typed;
+        const out = await call("set-status", payload);
         b.textContent = was;
         if (!out || out.ok !== true) {
           if (out?.expired) return toLogin(out.error);
           syncStatusButtons();
+          // note_too_long הוא הכישלון היחיד כאן שהמנהל יכול לתקן בעצמו, ולכן הוא
+          // היחיד שמחזיר אותו אל התיבה. הספירה נכתבת מ-chars של המסד ולא נספרת
+          // כאן שוב: לו שתי הספירות היו נחלקות, זו שבמסך הייתה מנצחת על המסך
+          // ומפסידה בכל לחיצה. הטקסט נשאר בתיבה כפי שהוקלד — 0090 דוחה לפני
+          // הכתיבה, כלומר אין מה לשחזר ואין ממה לפחד.
+          if (out?.error === "note_too_long") {
+            if (typeof out.chars === "number") syncNoteCount(out.chars);
+            noteInput.focus();
+          }
           // settable מגיע מהמסד על status_not_settable, ולכן הוא מוצג כפי שהוא:
           // מנהל שרואה «אינו נקבע ידנית» בלי לדעת מה כן ניתן לקבוע ילחץ שוב.
           showError(statusErr, out?.error || "bad_response",
@@ -975,9 +1066,16 @@ pre{
         }
         // changed:false אינו כשל ואינו הצלחה שקטה — הוא נאמר במפורש, אחרת
         // לחיצה שלא שינתה דבר נראית זהה ללחיצה ששינתה.
+        //
+        // גורלו של הנימוק נאמר בשורה הזו ולא נלמד מהטבלה שמתחת, ומ-note שחזר
+        // ולא ממה שהוקלד: 0090 מחזירה note:null גם על לחיצה חוזרת (changed:false)
+        // — שם היציאה המוקדמת קודמת ליומן — ומנהל שהקליד נימוק, לחץ על הסטטוס
+        // שכבר היה, וקיבל «הנימוק נשמר», היה מאבד אותו בלי לדעת.
+        const kept = typeof out.note === "string" && out.note !== "" ? " · הנימוק נשמר ביומן" : "";
+        const dropped = typed !== "" && !kept ? " · הנימוק לא נשמר" : "";
         const msg = out.changed
-          ? `הסטטוס שונה מ«${label(STATUS_MAP, out.previous)}» ל«${label(STATUS_MAP, out.status)}» · לא נשלחה שום הודעה`
-          : `הפנייה כבר הייתה ב«${label(STATUS_MAP, out.status)}» — לא שונה דבר`;
+          ? `הסטטוס שונה מ«${label(STATUS_MAP, out.previous)}» ל«${label(STATUS_MAP, out.status)}»${kept}${dropped} · לא נשלחה שום הודעה`
+          : `הפנייה כבר הייתה ב«${label(STATUS_MAP, out.status)}» — לא שונה דבר${dropped}`;
         // ── הרשימה מתרעננת בחזרה ולא כאן ────────────────────────────────────
         // כאן ישבה עד עכשיו load() נוספת. היא פונה לשרת בזמן שהרשימה מוסתרת,
         // כותבת את התשובה לתוך מסך שאיש אינו רואה, ו«חזרה» (675) טוענת אותה

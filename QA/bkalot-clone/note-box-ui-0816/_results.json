@@ -1,0 +1,94 @@
+{
+  "brick": "note-box-ui-0816 — תיבת הנימוק במסך «שינוי סטטוס»",
+  "line_taken": "aff6455 (heartbeat 633) «פתוח» סעיף 1: «אין ב-admin.html שדה להקליד נימוק לפני «שינוי סטטוס» ... זו הלבנה הבאה (UI), והיא כוללת את מה שהתצוגה לא צריכה: ספירת תווים מול תקרת 500, ומה קורה כש-note_too_long חוזר»",
+  "scope": {
+    "files_changed": ["apps/37-bkalot-clone/admin.html"],
+    "migrations": 0,
+    "edge_functions_deployed": 0,
+    "portal_deploy": false,
+    "bkalot-clone-admin": "v8 ללא שינוי",
+    "bkalot-clone-intake": "v1 ללא שינוי",
+    "server_side_change_needed": "אין — 0090 כבר מקבלת note, סופרת, דוחה מעל 500 ומחזירה chars; והשער מעביר את הגוף כפי שהוא"
+  },
+  "measured_how": {
+    "browser": "דפדפן אמיתי 1280x900",
+    "server": "שרת סטטי מקומי (../status-history-ui-0816/serve.mjs) על 8141 מול apps/37-bkalot-clone",
+    "against": "אותו edge ואותו מסד חי — הקוד שבמקור מול המוצר, ולא הפריסה",
+    "login": "דרך המסך, חשבון 95 (qa-note-box@more30.test)",
+    "seed": "שתי פניות דרך bkalot-clone-intake מעל HTTP עם מפתח anon כמו מהטופס",
+    "transitions": "כל ארבע הלחיצות נלחצו בדפדפן. אין ולו קריאת set-status אחת מסקריפט"
+  },
+  "empty_box": {
+    "label": "למה (לא חובה)",
+    "counter": "אפשר להשאיר ריק · עד 500 תווים",
+    "over_class": false,
+    "maxlength_attr": null,
+    "rows": 3,
+    "resize": "vertical",
+    "width_px": 950,
+    "height_px": 99,
+    "aria_describedby": "status-note-count",
+    "screenshot": "01-empty-box.png"
+  },
+  "typed_and_saved": {
+    "case_id": 262,
+    "typed_raw_chars": 76,
+    "typed_btrim_chars": 72,
+    "counter_before_click": "72 מתוך 500 תווים",
+    "message": "הסטטוס שונה מ«חדשה» ל«בטיפול» · הנימוק נשמר ביומן · לא נשלחה שום הודעה",
+    "history_cell": "לקחתי לטיפול — הפונה שלח תלושים חלקיים, ביקשתי את שלושת החודשים האחרונים",
+    "history_cell_title": "72 תווים, כפי שנשמרו",
+    "db_row": { "log_id": 61, "note_chars": 72 },
+    "box_after": { "value": "", "counter": "אפשר להשאיר ריק · עד 500 תווים" },
+    "screenshot": "02-saved.png",
+    "note": "76 הוקלדו ו-72 נשמרו — ארבעת הרווחים בקצוות ירדו במסך ולא במסד, ובדיוק כפי ש-btrim היה מוריד אותם"
+  },
+  "empty_click": {
+    "case_id": 262,
+    "typed": "",
+    "message": "הסטטוס שונה מ«בטיפול» ל«נסגרה» · לא נשלחה שום הודעה",
+    "message_says_nothing_about_note": true,
+    "history_cell": "—",
+    "history_cell_title": "לא נכתב נימוק על המעבר הזה",
+    "stale_span": false,
+    "db_row": { "log_id": 62, "note_null": true }
+  },
+  "too_long": {
+    "case_id": 263,
+    "typed_chars": 501,
+    "counter_before_click": "501 מתוך 500 תווים",
+    "counter_over_class": true,
+    "counter_color": "rgb(155, 28, 28)",
+    "error_shown": "הנימוק ארוך מהמותר. הסטטוס לא שונה והנימוק לא נשמר — קצרו אותו ונסו שוב. note_too_long",
+    "status_after": "חדשה",
+    "log_rows_after": 0,
+    "text_kept_in_box_chars": 501,
+    "focus_returned_to_box": true,
+    "counter_rewritten_from_server_chars": 501,
+    "screenshot": "03-too-long.png"
+  },
+  "boundary": {
+    "501": "נדחה — note_too_long, הסטטוס לא זז, אפס שורות יומן",
+    "500": "התקבל — log_id 63, note_chars 500, «הנימוק נשמר ביומן»",
+    "cell_title_at_500": "500 תווים, כפי שנשמרו",
+    "horizontal_scroll": "אפס — scrollWidth 1265 = clientWidth 1265"
+  },
+  "db_after_measurement": {
+    "case_status_log": [
+      { "id": 61, "case_id": 262, "from": "new", "to": "in_progress", "admin_id": 95, "note_chars": 72 },
+      { "id": 62, "case_id": 262, "from": "in_progress", "to": "closed", "admin_id": 95, "note_chars": null },
+      { "id": 63, "case_id": 263, "from": "new", "to": "in_progress", "admin_id": 95, "note_chars": 500 }
+    ],
+    "no_row_for_the_rejected_501": true
+  },
+  "test_mode": {
+    "intakes_queued": [false, false],
+    "documents": 0,
+    "cases_in_sent": 0,
+    "outbound_queue": 8,
+    "outbound_queue_with_sent_at": 0,
+    "delivery_log": 3
+  },
+  "console": { "errors": 1, "detail": "favicon.ico 404 מהשרת הסטטי המקומי בלבד — אין שגיאה מהקוד" },
+  "baseline_before": { "cases": 0, "case_status_log": 0, "case_rights": 0, "documents": 0, "admin_users": 1, "admin_sessions": 5, "templates": 2, "rights_catalog": 888, "contacts": 4, "outbound_queue": 8, "delivery_log": 3 }
+}
