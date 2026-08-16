@@ -1,0 +1,91 @@
+{
+  "src_bytes": 121442,
+  "live_bytes": 117856,
+  "rows": [
+    {
+      "marker": "fillHistoryNoteCell",
+      "src": 2,
+      "live": 0
+    },
+    {
+      "marker": "td.why",
+      "src": 1,
+      "live": 0
+    },
+    {
+      "marker": "השרת אינו מחזיר את הנימוק",
+      "src": 1,
+      "live": 0
+    },
+    {
+      "marker": "לא נכתב נימוק על המעבר הזה",
+      "src": 1,
+      "live": 0
+    },
+    {
+      "marker": "<th>למה</th>",
+      "src": 1,
+      "live": 0
+    },
+    {
+      "marker": "תווים, כפי שנשמרו",
+      "src": 1,
+      "live": 0
+    },
+    {
+      "marker": "note_too_long",
+      "src": 1,
+      "live": 0
+    },
+    {
+      "marker": "overflow-wrap",
+      "src": 2,
+      "live": 0
+    },
+    {
+      "marker": "fillHistoryWhoCell",
+      "src": 4,
+      "live": 3
+    },
+    {
+      "marker": "Object.hasOwn",
+      "src": 10,
+      "live": 8
+    },
+    {
+      "marker": "מי הכריע",
+      "src": 13,
+      "live": 12
+    },
+    {
+      "marker": "רצף ההכרעות",
+      "src": 4,
+      "live": 4
+    },
+    {
+      "marker": "handsBit",
+      "src": 2,
+      "live": 2
+    },
+    {
+      "marker": "producedBit",
+      "src": 2,
+      "live": 2
+    },
+    {
+      "marker": "fillQueueCell",
+      "src": 2,
+      "live": 2
+    },
+    {
+      "marker": "fillTemplateCell",
+      "src": 4,
+      "live": 4
+    },
+    {
+      "marker": "fillCreatedCell",
+      "src": 4,
+      "live": 4
+    }
+  ]
+}

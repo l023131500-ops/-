@@ -1,0 +1,72 @@
+{
+  "admin": {
+    "id": 94,
+    "email": "qa-note-deploy@more30.test"
+  },
+  "notes": {
+    "A_ONE_chars": 52,
+    "A_TWO_chars": 59,
+    "C_MAX_chars": 500,
+    "citizen_chars": 56
+  },
+  "cases": {
+    "A": {
+      "case_id": 259,
+      "contact_id": 266,
+      "rights": null,
+      "queued": false
+    },
+    "B": {
+      "case_id": 260,
+      "contact_id": 267,
+      "rights": null,
+      "queued": false
+    },
+    "C": {
+      "case_id": 261,
+      "contact_id": 268,
+      "rights": null,
+      "queued": false
+    }
+  },
+  "writes": {
+    "A": {
+      "one": {
+        "http_status": 200,
+        "ok": true,
+        "error": null,
+        "changed": true,
+        "log_id": 57,
+        "note_chars": 52
+      },
+      "two": {
+        "http_status": 200,
+        "ok": true,
+        "error": null,
+        "changed": true,
+        "log_id": 58,
+        "note_chars": 59
+      }
+    },
+    "B": {
+      "one": {
+        "http_status": 200,
+        "ok": true,
+        "error": null,
+        "changed": true,
+        "log_id": 59,
+        "note_chars": null
+      }
+    },
+    "C": {
+      "one": {
+        "http_status": 200,
+        "ok": true,
+        "error": null,
+        "changed": true,
+        "log_id": 60,
+        "note_chars": 500
+      }
+    }
+  }
+}
