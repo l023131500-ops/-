@@ -1,0 +1,60 @@
+{
+  "admin": {
+    "id": 90,
+    "email": "qa0090why@more30.test"
+  },
+  "runs": {
+    "before": {
+      "A": {
+        "case_id": 244,
+        "contact_id": 251,
+        "rights": null,
+        "queued": false
+      },
+      "B": {
+        "case_id": 245,
+        "contact_id": 252,
+        "rights": null,
+        "queued": false
+      },
+      "C": {
+        "case_id": 246,
+        "contact_id": 253,
+        "rights": null,
+        "queued": false
+      },
+      "D": {
+        "case_id": 247,
+        "contact_id": 254,
+        "rights": null,
+        "queued": false
+      }
+    },
+    "after": {
+      "A": {
+        "case_id": 248,
+        "contact_id": 255,
+        "rights": null,
+        "queued": false
+      },
+      "B": {
+        "case_id": 249,
+        "contact_id": 256,
+        "rights": null,
+        "queued": false
+      },
+      "C": {
+        "case_id": 250,
+        "contact_id": 257,
+        "rights": null,
+        "queued": false
+      },
+      "D": {
+        "case_id": 251,
+        "contact_id": 258,
+        "rights": null,
+        "queued": false
+      }
+    }
+  }
+}

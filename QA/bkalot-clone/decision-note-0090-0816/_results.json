@@ -1,0 +1,171 @@
+{
+  "run": "decision-note-0090-0816",
+  "date": "2026-08-16",
+  "priority": "§5ב — שכפול בקלות שכבה 3",
+  "line_taken": {
+    "written_by": "0602701, 86cf183, 8a577bc, c3b7c45, 9ea1991, 74dbf7d, 24f8a7d",
+    "verbatim": "מה שלא נבנה: אין note/reason ביומן — למה הוכרע ולא רק מה",
+    "runs_that_recorded_it_and_did_not_take_it": 7
+  },
+  "scope": {
+    "migration_only": true,
+    "files_touched": ["supabase/migrations/0090_the_decision_log_says_what_was_decided_and_not_why.sql"],
+    "apps_37_touched": false,
+    "supabase_functions_touched": false,
+    "edge_function_deployed": false,
+    "portal_deployed": false,
+    "edge_version_in_production": "bkalot-clone-admin v8, bkalot-clone-intake v1 — לא נגעו",
+    "readers_touched": []
+  },
+  "migration": {
+    "file": "0090_the_decision_log_says_what_was_decided_and_not_why.sql",
+    "applied_version": "20260816020950",
+    "applied_once": true,
+    "objects": [
+      "bkalot_clone.case_status_log.note (text, nullable, no default)",
+      "constraint case_status_log_note_not_blank",
+      "constraint case_status_log_note_len (<= 500)",
+      "public.bkalot_clone_admin_set_status(jsonb, bigint) — create or replace"
+    ]
+  },
+  "baseline_before": {
+    "cases": 0, "case_rights": 0, "case_status_log": 0, "documents": 0,
+    "contacts": 4, "admin_users": 1, "admin_sessions": 5, "templates": 2,
+    "outbound_queue": 8, "delivery_log": 3, "catalog": 888,
+    "queue_fingerprint": "4264ab9a3ee90a647aa9e183ddbb0f04", "queue_sent": 0,
+    "case_status_log_columns": "id,case_id,from_status,to_status,admin_id,at"
+  },
+  "seed": {
+    "path": "intake מעל HTTP עם מפתח anon, כמו מהטופס",
+    "cases_before": { "A": 244, "B": 245, "C": 246, "D": 247 },
+    "cases_after":  { "A": 248, "B": 249, "C": 250, "D": 251 },
+    "contacts": "251–258",
+    "admin": { "id": 90, "email": "qa0090why@more30.test", "created_via": "bkalot_clone_admin_create ולא הזרקת hash" },
+    "all_transitions_via": "נתיב set-status שמאחורי השער עם טוקן אמיתי — הגוף עבר דרך bkalot-clone-admin v8 כפי שהוא פרוס, בלי שינוי ובלי פריסה"
+  },
+  "measured_http": {
+    "A_two_notes_two_transitions": {
+      "before": { "has_note_key": false, "note_1": null, "note_2": null, "log_ids": [36, 37] },
+      "after":  { "has_note_key": true,
+                  "note_1": "לקחתי לטיפול — חסרים תלושי שכר, ביקשתי מהפונה בטלפון",
+                  "note_2": "נדחתה — ההכנסה מעל התקרה שנקבעה לשנת 2026, לא לפי שיקול דעת",
+                  "log_ids": [41, 42],
+                  "both_survive_in_db": true },
+      "buys": "הכרעה (1) — הנימוק על שורת היומן ולא על cases. אילו ישב על cases, השני היה דורס את הראשון בדיוק כמו decided_by."
+    },
+    "B_whitespace_note": {
+      "sent": "     (חמישה רווחים)",
+      "before": { "has_note_key": false },
+      "after":  { "has_note_key": true, "note": null, "stored_note_is_null": true, "stored_empty_string": false },
+      "buys": "הכרעה (4) — '' ו-' ' אינם מצב שלישי."
+    },
+    "C_repeat_click_with_note": {
+      "before": { "changed": false, "log_id": null, "has_note_key": false },
+      "after":  { "changed": false, "log_id": null, "has_note_key": true, "note": null, "rows_in_log": 1 },
+      "buys": "הכרעה (6) — נימוק בלי מעבר אינו נשמר; «שלוש שורות» נשאר מספר המעברים."
+    },
+    "D_ceiling_from_both_sides": {
+      "note_501_chars": {
+        "sent_body_bytes": 1052,
+        "before": { "ok": true, "changed": true, "log_id": 40, "case_status_after": "in_progress",
+                    "note_vanished_silently": true },
+        "after":  { "ok": false, "error": "note_too_long", "max_chars": 500, "chars": 501,
+                    "case_status_after": "new", "history_rows": 0 }
+      },
+      "note_500_chars": {
+        "after": { "ok": true, "changed": true, "log_id": 45, "note_chars": 500 }
+      },
+      "buys": "הכרעה (5) — נדחה ואינו נחתך, ולפני שהסטטוס משתנה. לפני המיגרציה נימוק ארוך נעלם בשקט והסטטוס השתנה בכל זאת.",
+      "which_ceiling_answered": "המסד. 1,052 בייט מול MAX_BODY=4096 בפונקציית הקצה — הדחייה היא note_too_long ולא body_too_large."
+    }
+  },
+  "measured_sql": {
+    "log_rows_before_migration": [
+      { "id": 36, "case_id": 244, "note_column_exists": false },
+      { "id": 37, "case_id": 244, "note_column_exists": false },
+      { "id": 38, "case_id": 245, "note_column_exists": false },
+      { "id": 39, "case_id": 246, "note_column_exists": false },
+      { "id": 40, "case_id": 247, "note_column_exists": false }
+    ],
+    "log_rows_after_migration": [
+      { "id": 41, "case_id": 248, "note_is_null": false, "note_chars": 52 },
+      { "id": 42, "case_id": 248, "note_is_null": false, "note_chars": 59 },
+      { "id": 43, "case_id": 249, "note_is_null": true,  "note_chars": null },
+      { "id": 44, "case_id": 250, "note_is_null": false, "note_chars": 21 },
+      { "id": 45, "case_id": 251, "note_is_null": false, "note_chars": 500 }
+    ],
+    "constraints_measured_by_direct_insert": {
+      "blank_note": { "sqlstate": "23514", "constraint": "case_status_log_note_not_blank", "burned_identity_id": 46 },
+      "long_note":  { "sqlstate": "23514", "constraint": "case_status_log_note_len",       "burned_identity_id": 47 }
+    },
+    "column": { "columns": "id,case_id,from_status,to_status,admin_id,at,note", "is_nullable": "YES", "default": null },
+    "table_grants": { "postgres": "DELETE,INSERT,REFERENCES,SELECT,TRIGGER,TRUNCATE,UPDATE", "anon": "—", "authenticated": "—", "service_role": "—" },
+    "rls": true, "policies": 0,
+    "function_acl": { "anon": false, "authenticated": false, "service_role": true, "overloads": 1 },
+    "source_in_pg_proc_has_note_too_long": true
+  },
+  "regression": {
+    "identical_before_and_after": {
+      "no_case_id": "case_id_required",
+      "no_status": "status_required",
+      "status_unknown": "status_unknown",
+      "status_not_settable_sent": "status_not_settable (settable: in_progress, closed, rejected)",
+      "case_not_found": "case_not_found",
+      "no_token": "401 token_required"
+    },
+    "changed_on_purpose": {
+      "long_note_on_a_case_that_does_not_exist": { "before": "case_not_found", "after": "note_too_long" },
+      "why": "שער הנימוק יושב עם שערי הקלט ולפני החיפוש אחר הפנייה — מה שאינו תקין בצורתו נדחה לפני שנוגעים בנתונים. נמדד ולא נבלע."
+    },
+    "readers_untouched": {
+      "bkalot_clone_admin_case_status_history_has_note_key": false,
+      "note": "נמדד גם אחרי המיגרציה, ובמכוון — 0088 אינה מחזירה את note. זו הלבנה הבאה."
+    },
+    "citizen_note_untouched": { "cases_note_chars": 56, "before": 56, "after": 56 }
+  },
+  "test_mode": {
+    "intake_queued": [false, false, false, false, false, false, false, false],
+    "documents": 0, "documents_with_queue_id": 0,
+    "outbound_queue": 8, "queue_rows_with_sent_at": 0,
+    "queue_fingerprint_before": "4264ab9a3ee90a647aa9e183ddbb0f04",
+    "queue_fingerprint_after":  "4264ab9a3ee90a647aa9e183ddbb0f04",
+    "delivery_log": 3,
+    "function_touches": "status של cases ושורת היומן בלבד — אין בה net.http, אין pg_net, אין Resend"
+  },
+  "rollback": {
+    "per_table_separate_statements": "תקלת cte-delete-sees-prestatement-snapshot",
+    "contacts_by_id_not_by_normalized_phone": "תקלת ac6e523",
+    "deleted": { "case_status_log": 10, "case_rights": 336, "cases": 8, "contacts": 8, "admin_users": 1 },
+    "admin_sessions": "ירדו ב-cascade עם חשבון 90 וחזרו ל-5",
+    "baseline_after": {
+      "cases": 0, "case_rights": 0, "case_status_log": 0, "documents": 0,
+      "contacts": 4, "admin_users": 1, "admin_sessions": 5, "templates": 2,
+      "outbound_queue": 8, "delivery_log": 3, "catalog": 888,
+      "queue_fingerprint": "4264ab9a3ee90a647aa9e183ddbb0f04", "queue_sent": 0
+    },
+    "identical_to_baseline_before": true
+  },
+  "protected": {
+    "clean_git_status_on": ["apps/08-bkalut-app", "apps/09-bkalot-admin", "apps/37-bkalot-clone", "supabase/functions"],
+    "not_touched": ["bkalut-app", "bkalot-admin", "zr_*", "NEDARIM3873", "csj", "csj_src", "igud"],
+    "git_add": "שני נתיבים מפורשים ולא נקודה"
+  },
+  "open": {
+    "next_brick": "אף קורא אינו מחזיר את note. bkalot_clone_admin_case מחזירה את status_history מאז 0088 בלי השדה (has_note_key=false, נמדד אחרי), bkalot_clone_admin_cases אינה יודעת עליו, ו-apps/37-bkalot-clone/admin.html אינו מציג אותו ואין בו תיבה להקליד אותו. הנימוק ניתן לכתיבה מהכתובת החיה ואינו ניתן לקריאה משום מסך — זו הלבנה הבאה, אותו פיצול כמו 0087 → 0088 → UI → פריסה.",
+    "not_built": [
+      "אין תיבת נימוק במסך — נכתב היום רק מי שקורא ל-API ישירות",
+      "אין חובת נימוק על rejected — נימוק הוא רשות בכל מעבר",
+      "אין עריכה ואין מחיקה של נימוק (היומן insert-only)",
+      "אין חיפוש בטקסט הנימוקים ואין סינון «יש נימוק / אין»",
+      "אין backfill ולא יהיה",
+      "אין סינון ואין מיון לפי מספר מעברים; אין status_last_change_at; אין שמות ברשימה; אפס מעברים שותק"
+    ],
+    "continuing_lines": [
+      "טעינה מחדש של הכתובת בייצור מנתקת את הסשן",
+      "הקליטה מחברת 42 זכויות ל-treatment ואפס ל-info/reminder על אותו situation",
+      "decided_at מלא עם decided_by null אפשרי — קו של 0076",
+      "sent בלתי-ניתן-להשגה בכוונה; bkalot_clone_admin_create אינה חשופה ב-HTTP; pdf/audio → channel_unsupported",
+      "public_visible ו-show_in_showcase של #37 נשארים false"
+    ]
+  }
+}

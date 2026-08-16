@@ -1,0 +1,247 @@
+[
+  {
+    "label": "login",
+    "value": {
+      "http_status": 200,
+      "ok": true,
+      "admin": {
+        "id": 90,
+        "email": "qa0090why@more30.test",
+        "full_name": "QA 0090 מכריע עם נימוק"
+      }
+    }
+  },
+  {
+    "label": "A — שני מעברים ושני נימוקים שונים",
+    "value": {
+      "case_id": 248,
+      "transition_1": {
+        "sent_note_chars": 52,
+        "sent_body_bytes": 146,
+        "http_status": 200,
+        "ok": true,
+        "error": null,
+        "previous": "new",
+        "case_status": "in_progress",
+        "changed": true,
+        "log_id": 41,
+        "has_note_key": true,
+        "note": "לקחתי לטיפול — חסרים תלושי שכר, ביקשתי מהפונה בטלפון",
+        "note_chars": 52,
+        "max_chars": null,
+        "chars": null,
+        "decided_by": 90
+      },
+      "transition_2": {
+        "sent_note_chars": 59,
+        "sent_body_bytes": 150,
+        "http_status": 200,
+        "ok": true,
+        "error": null,
+        "previous": "in_progress",
+        "case_status": "rejected",
+        "changed": true,
+        "log_id": 42,
+        "has_note_key": true,
+        "note": "נדחתה — ההכנסה מעל התקרה שנקבעה לשנת 2026, לא לפי שיקול דעת",
+        "note_chars": 59,
+        "max_chars": null,
+        "chars": null,
+        "decided_by": 90
+      },
+      "after": {
+        "case_status": "rejected",
+        "citizen_note_chars": 56,
+        "history_rows": 2,
+        "history_has_note_key": false,
+        "sequence": "new->in_progress#90 | in_progress->rejected#90"
+      }
+    }
+  },
+  {
+    "label": "B — נימוק שכולו רווחים",
+    "value": {
+      "case_id": 249,
+      "transition": {
+        "sent_note_chars": 5,
+        "sent_body_bytes": 55,
+        "http_status": 200,
+        "ok": true,
+        "error": null,
+        "previous": "new",
+        "case_status": "in_progress",
+        "changed": true,
+        "log_id": 43,
+        "has_note_key": true,
+        "note": null,
+        "note_chars": null,
+        "max_chars": null,
+        "chars": null,
+        "decided_by": 90
+      },
+      "after": {
+        "case_status": "in_progress",
+        "citizen_note_chars": 56,
+        "history_rows": 1,
+        "history_has_note_key": false,
+        "sequence": "new->in_progress#90"
+      }
+    }
+  },
+  {
+    "label": "C — לחיצה חוזרת, נימוק שני שאינו אמור להישמר",
+    "value": {
+      "case_id": 250,
+      "transition_1": {
+        "sent_note_chars": 21,
+        "sent_body_bytes": 90,
+        "http_status": 200,
+        "ok": true,
+        "error": null,
+        "previous": "new",
+        "case_status": "in_progress",
+        "changed": true,
+        "log_id": 44,
+        "has_note_key": true,
+        "note": "ראשונה — נלקחה לטיפול",
+        "note_chars": 21,
+        "max_chars": null,
+        "chars": null,
+        "decided_by": 90
+      },
+      "transition_2_same_status": {
+        "sent_note_chars": 35,
+        "sent_body_bytes": 114,
+        "http_status": 200,
+        "ok": true,
+        "error": null,
+        "previous": "in_progress",
+        "case_status": "in_progress",
+        "changed": false,
+        "log_id": null,
+        "has_note_key": true,
+        "note": null,
+        "note_chars": null,
+        "max_chars": null,
+        "chars": null,
+        "decided_by": 90
+      },
+      "after": {
+        "case_status": "in_progress",
+        "citizen_note_chars": 56,
+        "history_rows": 1,
+        "history_has_note_key": false,
+        "sequence": "new->in_progress#90"
+      }
+    }
+  },
+  {
+    "label": "D — 501 תווים נדחים, והסטטוס אינו זז",
+    "value": {
+      "case_id": 251,
+      "rejected": {
+        "sent_note_chars": 501,
+        "sent_body_bytes": 1052,
+        "http_status": 200,
+        "ok": false,
+        "error": "note_too_long",
+        "previous": null,
+        "case_status": null,
+        "changed": null,
+        "log_id": null,
+        "has_note_key": false,
+        "note": null,
+        "note_chars": null,
+        "max_chars": 500,
+        "chars": 501,
+        "decided_by": null
+      },
+      "state_after_rejection": {
+        "case_status": "new",
+        "citizen_note_chars": 56,
+        "history_rows": 0,
+        "history_has_note_key": false,
+        "sequence": ""
+      },
+      "status_is_still_new": true
+    }
+  },
+  {
+    "label": "D — 500 תווים בדיוק מתקבלים",
+    "value": {
+      "case_id": 251,
+      "accepted": {
+        "sent_note_chars": 500,
+        "sent_body_bytes": 1050,
+        "http_status": 200,
+        "ok": true,
+        "error": null,
+        "previous": "new",
+        "case_status": "in_progress",
+        "changed": true,
+        "log_id": 45,
+        "has_note_key": true,
+        "note": "ממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממממ",
+        "note_chars": 500,
+        "max_chars": null,
+        "chars": null,
+        "decided_by": 90
+      },
+      "after": {
+        "case_status": "in_progress",
+        "citizen_note_chars": 56,
+        "history_rows": 1,
+        "history_has_note_key": false,
+        "sequence": "new->in_progress#90"
+      }
+    }
+  },
+  {
+    "label": "רגרסיה — שערי הקלט",
+    "value": {
+      "no_case_id": {
+        "http_status": 200,
+        "error": "case_id_required"
+      },
+      "no_status": {
+        "http_status": 200,
+        "error": "status_required"
+      },
+      "status_unknown": {
+        "http_status": 200,
+        "error": "status_unknown"
+      },
+      "status_not_settable": {
+        "http_status": 200,
+        "error": "status_not_settable",
+        "settable": [
+          "in_progress",
+          "closed",
+          "rejected"
+        ]
+      },
+      "case_not_found": {
+        "http_status": 200,
+        "error": "case_not_found"
+      },
+      "long_note_beats_missing_case": {
+        "http_status": 200,
+        "error": "note_too_long"
+      },
+      "no_token": {
+        "http_status": 401,
+        "error": "token_required"
+      }
+    }
+  },
+  {
+    "label": "ids",
+    "value": {
+      "A": 248,
+      "B": 249,
+      "C": 250,
+      "D": 251,
+      "run": "after"
+    }
+  }
+]
