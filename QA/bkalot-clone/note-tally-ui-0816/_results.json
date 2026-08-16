@@ -1,0 +1,80 @@
+{
+  "step": "note-tally-ui-0816",
+  "claim": "מסך הפנייה מסמן איזה נימוק התאים ואינו אומר כמה מהם התאימו",
+  "layer": "UI בלבד — אין מיגרציה, אין פריסת edge function, אין פריסה לייצור",
+  "unchanged": {
+    "edge_bkalot_clone_admin": "v9",
+    "edge_bkalot_clone_intake": "v1",
+    "schema_migrations": "20260816131352 (0097)",
+    "files_touched": ["apps/37-bkalot-clone/admin.html"]
+  },
+  "baseline_before": {
+    "cases": 0, "case_status_log": 0, "case_rights": 0, "documents": 0,
+    "admin_users": 1, "admin_sessions": 5, "templates": 2,
+    "contacts": 4, "outbound_queue": 8, "delivery_log": 3, "rights_catalog": 888
+  },
+  "seed": {
+    "path": "נתיב הציבור מעל HTTP עם מפתח anon, כמו מהטופס",
+    "case_id": 382, "contact_id": 389, "kind": "info", "queued": false,
+    "admin": { "id": 117, "created_by": "bkalot_clone_admin_create", "note": "לא הזרקת hash" },
+    "transitions_via_sql": [
+      { "log_id": 100, "from": "new", "to": "in_progress", "note": "הפונה ביקש לצרף מסמכים נוספים בשבוע הבא" },
+      { "log_id": 101, "from": "in_progress", "to": "rejected", "note": "המסמכים שצורפו שייכים לשנת המס הקודמת" },
+      { "log_id": 102, "from": "rejected", "to": "in_progress", "note": "הטופס נשלח בדואר רשום על ידי הפונה" },
+      { "log_id": 103, "from": "in_progress", "to": "closed", "note": null }
+    ],
+    "why_four": "שלושה נימוקים וארבעה מעברים — ההפרש הוא בדיוק מה שהמכנה אמור לומר"
+  },
+  "servers": {
+    "8138": { "serves": "HEAD", "bytes": 153395, "md5": "F3FBD776683A3C784517F6B43AF0137C", "note": "אותם בייטים בדיוק שנפרסו לייצור ב-6f0a95e" },
+    "8137": { "serves": "עץ העבודה", "md5": "9499888E90E134E4CF5702E791C8DEDB" }
+  },
+  "measured": {
+    "before_head": [
+      { "q": "מסמכים", "count": "פנייה אחת", "heading": "רצף ההכרעות (4 מעברים)", "next_tag": "TABLE", "tally": null, "row_marks": 2, "rows": 4, "heading_top_px": 439 },
+      { "q": "אברהם", "count": "פנייה אחת", "heading": "רצף ההכרעות (4 מעברים)", "next_tag": "TABLE", "tally": null, "row_marks": 0, "rows": 4, "heading_top_px": 439 },
+      { "q": "", "count": "פנייה אחת", "heading": "רצף ההכרעות (4 מעברים)", "next_tag": "TABLE", "tally": null, "row_marks": 0, "rows": 4, "heading_top_px": 439 }
+    ],
+    "after_worktree": [
+      { "q": "מסמכים", "count": "פנייה אחת", "heading": "רצף ההכרעות (4 מעברים)", "next_tag": "P", "tally": "מונח החיפוש «מסמכים» נמצא ב-2 מתוך 3 הנימוקים שנכתבו כאן.", "row_marks": 2, "rows": 4, "heading_top_px": 439 },
+      { "q": "אברהם", "count": "פנייה אחת", "heading": "רצף ההכרעות (4 מעברים)", "next_tag": "P", "tally": "מונח החיפוש «אברהם» אינו נמצא באף אחד מ-3 הנימוקים שנכתבו כאן.", "row_marks": 0, "rows": 4, "heading_top_px": 439 },
+      { "q": "", "count": "פנייה אחת", "heading": "רצף ההכרעות (4 מעברים)", "next_tag": "TABLE", "tally": null, "row_marks": 0, "rows": 4, "heading_top_px": 439 }
+    ]
+  },
+  "controls": {
+    "heading_is_4_in_all_six": "המכנה 3 אינו שווה למספר המעברים 4 — הבקרה הצמודה ביותר, ולא זזה באף מדידה",
+    "rows_4_in_all_six": true,
+    "heading_top_px_439_in_all_six": true,
+    "row_marks_unchanged": "2/0/0 לפני ו-2/0/0 אחרי — הסימן שעל השורות לא זז, והשורה החדשה אינה נגזרת ממנו אלא מאותם booleanים",
+    "no_q_draws_nothing": "next_tag נשאר TABLE אחרי, ו-02-after-noq.png זהה בייט-בייט ל-01-before-noq.png ול-01-before-name.png (CC737BFE)"
+  },
+  "screenshots": {
+    "01-before-docs.png": "9520C32B",
+    "01-before-name.png": "CC737BFE",
+    "01-before-noq.png": "CC737BFE",
+    "02-after-docs.png": "B1DE9C64",
+    "02-after-name.png": "589A05CF",
+    "02-after-noq.png": "CC737BFE",
+    "note": "שישה צילומים בחמישה hash שונים. שלושת ה-CC737BFE הם אותו מצב מצויר בדיוק — בלי שורה ובלי סימנים — ולכן הזהות ביניהם היא בקרה ולא תקלת screenshot-evidence-below-the-fold. הכותרת נגללה למרכז לפני כל צילום; החלון שונה פעם אחת לפני הראשון (playwright-blank-screenshot-until-resize)."
+  },
+  "test_mode": {
+    "queued": false, "documents": 0, "outbound_queue": 8, "rows_with_sent_at": 0,
+    "delivery_log": 3, "cases_in_sent": 0, "case_rights": 0,
+    "note": "הנתיב שהשתנה קורא ואינו כותב; kind=info ולא treatment"
+  },
+  "console": {
+    "captured": false,
+    "note": "⚠️ לא נלכדה קונסולה בריצה הזו, ונאמר ולא נבלע. מה שכן נמדד: הטבלה מצוירת אחרי השורה החדשה באותה פונקציה, ובכל שש המדידות חזרו rows=4 ו-row_marks כצפוי — כלומר openCase סיימה את הציור ולא נעצרה באמצע."
+  },
+  "rollback": {
+    "method": "פקודות נפרדות לפי טבלה — תקלת cte-delete-sees-prestatement-snapshot; ואיש הקשר לפי id ולא לפי טלפון מנורמל",
+    "deleted": { "case_status_log": 4, "cases": 1, "contacts": 1, "admin_sessions": 2, "admin_users": 1 },
+    "baseline_after": {
+      "cases": 0, "case_status_log": 0, "case_rights": 0, "documents": 0,
+      "admin_users": 1, "admin_sessions": 5, "templates": 2,
+      "contacts": 4, "outbound_queue": 8, "delivery_log": 3, "rights_catalog": 888,
+      "admin_cases_total_on_empty_params": 0
+    }
+  },
+  "open": "הפריסה. מה שנמדד כאן הוא הקוד שבמקור; בייצור (more30.com/bkalot-studio/admin) הרצף עדיין נקרא בלי הספירה. זו הלבנה הבאה."
+}
