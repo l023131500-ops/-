@@ -1,0 +1,123 @@
+{
+  "src": {
+    "path": "C:/Users/USER/Downloads/more30/apps/37-bkalot-clone/admin.html",
+    "bytes": 172296,
+    "md5": "4D03D58B"
+  },
+  "dist": {
+    "path": "C:/Users/USER/Downloads/more30/portal/dist/bkalot-studio/admin.html",
+    "bytes": 169253,
+    "md5": "84442C69"
+  },
+  "groups": {
+    "NEW": [
+      {
+        "key": "noneText_decl",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "noneText_all",
+        "src": 4,
+        "dist": 0
+      },
+      {
+        "key": "emptyBox_decl",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "emptyBox_hidden",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "emptyBox_text",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "emptyBox_all",
+        "src": 4,
+        "dist": 0
+      },
+      {
+        "key": "page_empty_str",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "comment_head",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "comment_clean",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "comment_single",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "comment_echo",
+        "src": 1,
+        "dist": 0
+      }
+    ],
+    "REMOVED": [
+      {
+        "key": "old_empty_line",
+        "src": 0,
+        "dist": 1
+      },
+      {
+        "key": "old_ternary",
+        "src": 0,
+        "dist": 1
+      }
+    ],
+    "DIFF": [
+      {
+        "key": "ctl_none_phrase",
+        "src": 7,
+        "dist": 5
+      },
+      {
+        "key": "ctl_moatzot",
+        "src": 3,
+        "dist": 2
+      }
+    ],
+    "CONTROL": [
+      {
+        "key": "ctl_box_literal",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "ctl_count_title",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "ctl_noteTally",
+        "src": 3,
+        "dist": 3
+      },
+      {
+        "key": "ctl_clamp_note",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "ctl_filtered",
+        "src": 1,
+        "dist": 1
+      }
+    ],
+    "DEAD": []
+  }
+}

@@ -1,0 +1,128 @@
+{
+  "step": "empty-box-deploy-0816",
+  "kind": "פריסה בלבד — אין שינוי קוד, אין מיגרציה, אין פריסת edge function",
+  "deploys": "847ae58 (UI) אל הייצור",
+
+  "baseline_before": {
+    "cases": 0, "case_status_log": 0, "case_rights": 0, "documents": 0,
+    "admin_users": 1, "admin_sessions": 5, "templates": 2, "contacts": 4,
+    "outbound_queue": 8, "delivery_log": 3, "rights_catalog": 888,
+    "schema_migrations": "20260816162924",
+    "head": "847ae58", "origin": "847ae58", "ahead_behind": "0/0"
+  },
+
+  "file_chain": {
+    "src": { "path": "apps/37-bkalot-clone/admin.html", "bytes": 172296, "md5": "4D03D58B" },
+    "dist_before_staging": { "bytes": 169253, "md5": "84442C69", "note": "מה ש-4dd30e2 פרסה" },
+    "dist_after_staging": { "bytes": 172296, "md5": "4D03D58B", "note": "זהה למקור בייט-בבייט" },
+    "staged_files": 38,
+    "vercel_json_present": true,
+    "vercel_project_json_present": true,
+    "prebuilt": false
+  },
+
+  "deployment": {
+    "id": "dpl_AWUGzYRLcSUHAPuNWiet1nJFKPSP",
+    "readyState": "READY",
+    "target": "production",
+    "aliased": "more30.com"
+  },
+
+  "markers": {
+    "classified_from": "src מול dist בלבד, לפני שהכתובת החיה נפגשה — 0087",
+    "dead": 0,
+    "NEW": {
+      "count": 11,
+      "live_before": 0,
+      "live_after_equals_src": true,
+      "keys": ["noneText_decl", "noneText_all", "emptyBox_decl", "emptyBox_hidden",
+               "emptyBox_text", "emptyBox_all", "page_empty_str", "comment_head",
+               "comment_clean", "comment_single", "comment_echo"]
+    },
+    "REMOVED": {
+      "count": 2,
+      "keys": ["old_empty_line", "old_ternary"],
+      "live_before": 1,
+      "live_after": 0
+    },
+    "DIFF": {
+      "count": 2,
+      "phr_none_phrase": { "live_before": 5, "live_after": 7, "src": 7, "dist_before": 5 },
+      "phr_moatzot": { "live_before": 2, "live_after": 3, "src": 3, "dist_before": 2 }
+    },
+    "CONTROL": {
+      "count": 5,
+      "moved": 0,
+      "keys": ["ctl_box_literal", "ctl_count_title", "ctl_noteTally", "ctl_clamp_note", "ctl_filtered"]
+    },
+    "dist_equals_live_before": "כל 20 הסימנים החזירו מהכתובת החיה בדיוק את ספירת ה-dist שנפרס בפעם הקודמת"
+  },
+
+  "live_bodies": {
+    "urls": ["https://more30.com/bkalot-studio/admin", "https://more30.com/bkalot-studio/admin/"],
+    "before": { "status": 200, "bytes": 169489, "md5": "BFF891EF" },
+    "after":  { "status": 200, "bytes": 172532, "md5": "F74CF824" },
+    "same_in_both_urls": true,
+    "injection_offset_bytes": 236,
+    "injection_offset_constant": "169489-169253 = 236 ו-172532-172296 = 236",
+    "replacement_chars": 0,
+    "times_char": 0
+  },
+
+  "browser_live": {
+    "url": "https://more30.com/bkalot-studio/admin",
+    "login": "דרך הטופס, חשבון 126 שנוצר ב-bkalot_clone_admin_create ולא בהזרקת hash",
+    "queue": "תור ריק — cases 0 בבסיס עצמו, ולכן לא נזרעה ולו פנייה אחת",
+    "A_empty_noquery": {
+      "count": "אין פניות",
+      "empty_text": "אין פניות.",
+      "empty_hidden": false,
+      "count_title": null,
+      "rows": 0, "pager_hidden": true, "overflow": 0,
+      "claim": "שני המשפטים מסכימים. עד הפריסה הזו התיבה אמרה «אין פניות שתואמות את הסינון.»"
+    },
+    "B_empty_query": {
+      "q": "zzzz",
+      "count": "אין פניות שתואמות את הסינון",
+      "empty_text": "אין פניות שתואמות את הסינון.",
+      "empty_hidden": false,
+      "rows": 0, "pager_hidden": true, "overflow": 0,
+      "claim": "בקרה — המשפט המסנן לא נעלם כשהוא נכון"
+    },
+    "console_messages": 0,
+    "non_2xx_responses": 0,
+    "screenshots": [
+      { "file": "live-A-empty-noquery.png", "bytes": 25534, "md5": "B406C038" },
+      { "file": "live-B-empty-query.png",   "bytes": 28363, "md5": "D64402CF" }
+    ]
+  },
+
+  "not_measured": [
+    "מצב A לפני הפריסה לא צולם מהייצור — הפריסה כבר קרתה. שהייצור הריץ את הקוד הישן נמדד מהסימנים (old_ternary 1, old_empty_line 1, ואפס מכל 11 החדשים), ולא מקריאת DOM.",
+    "מצבים C ו-D (תור עם פנייה) לא נמדדו כאן — הם נמדדו מקומית ב-847ae58 ודורשים זריעה; כאן לא נזרע דבר.",
+    "הענף total>0 עם אפס שורות («בעמוד הזה לא נשארו פניות.») נפרס ולא נמדד מדפדפן — הוא דורש שהרשימה תתקצר פעמיים בין שתי טעינות."
+  ],
+
+  "test_mode": {
+    "cases_seeded": 0, "contacts_seeded": 0, "case_status_log_rows": 0,
+    "outbound_queue": "נשאר 8", "delivery_log": "נשאר 3",
+    "sent_at_rows": 0, "outgoing_calls": 0,
+    "note": "מה שנפרס הוא HTML; הנתיב שהשתנה מצייר טקסט ואינו קורא ואינו כותב"
+  },
+
+  "rollback": {
+    "method": "פקודות נפרדות לפי טבלה — cte-delete-sees-prestatement-snapshot",
+    "deleted": ["admin_sessions של 126", "admin_users 1 (126)"],
+    "nothing_else_created": true
+  },
+
+  "baseline_after": {
+    "cases": 0, "case_status_log": 0, "case_rights": 0, "documents": 0,
+    "admin_users": 1, "admin_sessions": 5, "templates": 2, "contacts": 4,
+    "outbound_queue": 8, "delivery_log": 3, "rights_catalog": 888,
+    "schema_migrations": "20260816162924",
+    "sent_rows": 0,
+    "admin_cases_total_on_empty_params": 0,
+    "identical_to_before": true
+  }
+}

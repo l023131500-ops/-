@@ -1,0 +1,63 @@
+{
+  "when": "before",
+  "urls": {
+    "https://more30.com/bkalot-studio/admin": {
+      "status": 200,
+      "bytes": 169489,
+      "md5": "BFF891EF",
+      "replacement_chars": 0,
+      "times_char": 0,
+      "markers": {
+        "noneText_decl": 0,
+        "noneText_all": 0,
+        "emptyBox_decl": 0,
+        "emptyBox_hidden": 0,
+        "emptyBox_text": 0,
+        "emptyBox_all": 0,
+        "page_empty_str": 0,
+        "comment_head": 0,
+        "comment_clean": 0,
+        "comment_single": 0,
+        "comment_echo": 0,
+        "old_empty_line": 1,
+        "old_ternary": 1,
+        "ctl_box_literal": 1,
+        "ctl_count_title": 1,
+        "ctl_noteTally": 3,
+        "ctl_clamp_note": 1,
+        "ctl_filtered": 1,
+        "phr_none_phrase": 5,
+        "phr_moatzot": 2
+      }
+    },
+    "https://more30.com/bkalot-studio/admin/": {
+      "status": 200,
+      "bytes": 169489,
+      "md5": "BFF891EF",
+      "replacement_chars": 0,
+      "times_char": 0,
+      "markers": {
+        "noneText_decl": 0,
+        "noneText_all": 0,
+        "emptyBox_decl": 0,
+        "emptyBox_hidden": 0,
+        "emptyBox_text": 0,
+        "emptyBox_all": 0,
+        "page_empty_str": 0,
+        "comment_head": 0,
+        "comment_clean": 0,
+        "comment_single": 0,
+        "comment_echo": 0,
+        "old_empty_line": 1,
+        "old_ternary": 1,
+        "ctl_box_literal": 1,
+        "ctl_count_title": 1,
+        "ctl_noteTally": 3,
+        "ctl_clamp_note": 1,
+        "ctl_filtered": 1,
+        "phr_none_phrase": 5,
+        "phr_moatzot": 2
+      }
+    }
+  }
+}
