@@ -1,0 +1,176 @@
+{
+  "step": "note-box-deploy-0816",
+  "line_taken_verbatim": "הפריסה. מה שנמדד כאן הוא הקוד שבמקור; בייצור אין עדיין תיבה במסך הפנייה. אותו פיצול כמו 0088 → 8a577bc → c3b7c45 וכמו aff6455 → 9c96135",
+  "kind": "deploy-only",
+  "code_change": false,
+  "migration": false,
+  "edge_functions_touched": false,
+  "edge_versions_unchanged": { "bkalot-clone-admin": "v8", "bkalot-clone-intake": "v1" },
+
+  "file_deployed_is_the_file_in_source": {
+    "source": { "path": "apps/37-bkalot-clone/admin.html", "bytes": 129476, "md5": "7106F46C039C592AC305A76ED5E2E24E" },
+    "dist_after_stage": { "path": "portal/dist/bkalot-studio/admin.html", "bytes": 129476, "md5": "7106F46C039C592AC305A76ED5E2E24E" },
+    "dist_before_stage": { "bytes": 121442, "md5": "4B991239ED01763A02D723F50986DFBF", "deployed_by": "9c96135" },
+    "identical": true
+  },
+
+  "deployment": {
+    "id": "dpl_EqMqQ5kDivbeESmX2Gc3iweY8KEs",
+    "url": "https://more30-portal-8l15fglqf-l023131500-ops-projects.vercel.app",
+    "target": "production",
+    "state": "READY",
+    "files": 38,
+    "from": "portal/dist",
+    "prebuilt_flag": false,
+    "aliased_to": "more30.com"
+  },
+
+  "markers": {
+    "classified_before_first_run_in": "classify.mjs",
+    "NEW": {
+      "why-input": "0 → 2",
+      "why-count": "0 → 3",
+      "status-note-count": "0 → 2",
+      "syncNoteCount": "0 → 4",
+      "NOTE_MAX": "0 → 4",
+      "אפשר להשאיר ריק": "0 → 1",
+      "למה (לא חובה)": "0 → 1",
+      "הנימוק נשמר ביומן": "0 → 1",
+      "הנימוק לא נשמר": "0 → 2",
+      "resize:vertical": "0 → 1",
+      "aria-describedby": "0 → 2",
+      "textarea": "0 → 3"
+    },
+    "DIFF": {
+      "btrim": "1 → 7",
+      "note_too_long": "1 → 5"
+    },
+    "OLD_control_unmoved": {
+      "td.why": 1,
+      "fillHistoryNoteCell": 2,
+      "רצף ההכרעות": 4,
+      "handsBit": 2,
+      "producedBit": 2,
+      "fillQueueCell": 2,
+      "fillTemplateCell": 4,
+      "fillCreatedCell": 4,
+      "מי הכריע": 13
+    },
+    "reclassified_after_measurement": null,
+    "reclassification_note": "אף מסומן לא סווג מחדש בריצה הזו — תשעת מסומני הבקרה נמדדו שווים בדיוק במקור ובייצור, בשונה מ-8a577bc, מ-24f8a7d ומ-9c96135 שבהם בקרה נפלה ל-DIFF",
+    "both_addresses": ["https://more30.com/bkalot-studio/admin", "https://more30.com/bkalot-studio/admin/"],
+    "new_zero_in_live_before": true,
+    "new_equals_source_after": true,
+    "diff_below_source_before": true,
+    "diff_equals_source_after": true,
+    "old_unchanged_before_and_after": true,
+    "replacement_chars": 0,
+    "double_encoded": 0,
+    "bytes": { "before": 121678, "after": 129712, "source": 129476, "netfree_delta": 236 },
+    "control_urls_unmoved": { "https://more30.com/bkalot-studio/": 32558, "https://more30.com/": 3517 }
+  },
+
+  "browser_in_production": {
+    "viewport": "1280x900",
+    "url": "https://more30.com/bkalot-studio/admin",
+    "login": "דרך המסך, חשבון 96 (qa-note-box-deploy@more30.test)",
+    "cases_seeded_via": "bkalot-clone-intake מעל HTTP עם מפתח anon כמו מהטופס",
+    "set_status_calls_from_script": 0,
+
+    "state_1_empty_box": {
+      "case_id": 264,
+      "screenshot": "live-01-empty-box.png",
+      "tag": "TEXTAREA",
+      "label": "למה (לא חובה)",
+      "placeholder": "מה הביא להכרעה הזו. נשמר ביומן ליד המעבר, ואינו נשלח לאיש.",
+      "count_text": "אפשר להשאיר ריק · עד 500 תווים",
+      "count_has_over": false,
+      "has_maxlength": false,
+      "aria_describedby": "status-note-count",
+      "role_of_count": "status",
+      "computed_resize_in_production": "vertical",
+      "rect": { "height": 99, "width": 950 }
+    },
+
+    "state_2_typed_and_saved": {
+      "case_id": 264,
+      "screenshot": "live-02-saved.png",
+      "typed_chars": 62,
+      "counter_before_click": "58 מתוך 500 תווים",
+      "saved_chars_in_db": 58,
+      "log_id": 64,
+      "from_status": "new",
+      "to_status": "in_progress",
+      "admin_id": 96,
+      "message_line": "הסטטוס שונה מ«חדשה» ל«בטיפול» · הנימוק נשמר ביומן · לא נשלחה שום הודעה",
+      "history_cell_text": "לקוח צירף תלושי שכר חלקיים — נלקח לטיפול עד להשלמת המסמכים",
+      "history_cell_title": "58 תווים, כפי שנשמרו",
+      "table_headers": ["מ־", "אל", "מי הכריע", "מתי", "למה"],
+      "note": "62 הוקלדו ו-58 נשמרו — ארבעת הרווחים בקצוות ירדו במסך לפני הלחיצה, והמונה הראה בדיוק את מה שהמסד עמד לספור"
+    },
+
+    "state_3_over_the_ceiling": {
+      "case_id": 265,
+      "screenshot": "live-03-too-long.png",
+      "chars_entered": 501,
+      "entered_via": "ה-setter המקורי של HTMLTextAreaElement עם אירוע input אמיתי — נאמר ולא נעקף; הלחיצה שאחריו אמיתית",
+      "button_clicked": "נדחתה",
+      "error_text": "הנימוק ארוך מהמותר. הסטטוס לא שונה והנימוק לא נשמר — קצרו אותו ונסו שוב.",
+      "error_code": "note_too_long",
+      "count_text": "501 מתוך 500 תווים",
+      "count_has_over": true,
+      "text_still_in_box_chars": 501,
+      "focus_returned_to_box": true,
+      "status_after": "חדשה",
+      "log_rows_written": 0,
+      "history_says": "לא נרשם ולו מעבר אחד מהמסך."
+    },
+
+    "console_messages": 0,
+    "console_errors": 0,
+    "screenshot_md5_prefixes": {
+      "live-01-empty-box.png": "5085E90B",
+      "live-02-saved.png": "FB5F4F3E",
+      "live-03-too-long.png": "AA64D8D9"
+    },
+    "screenshots_all_distinct": true
+  },
+
+  "not_measured_in_production_declared": [
+    "500 תווים בדיוק — הגבול נמדד כאן מצד אחד בלבד (501 נדחה). שני הצדדים נמדדו על אותה פנייה ב-b1fcca7 (log_id 63), ותקרת המסד עצמה נמדדה משני צדדיה ב-0090",
+    "לחיצה חוזרת עם נימוק (changed:false → «הנימוק לא נשמר») — נמדדה ב-b1fcca7 ובקוד; היא דורשת מעבר שני על אותה פנייה ולא נזרעה כאן"
+  ],
+
+  "test_mode": {
+    "intakes_queued": false,
+    "documents": 0,
+    "documents_with_queue_id": 0,
+    "cases_in_sent": 0,
+    "outbound_queue": 8,
+    "outbound_queue_rows_with_sent_at": 0,
+    "queue_fingerprint_before_and_after": "050e54ab59235d105af3a10c785dbaea",
+    "delivery_log": 3,
+    "note": "התיבה כותבת שורה ביומן ותו לא — הנימוק אינו נכנס לשום מכתב, לשום תור ולשום ערוץ"
+  },
+
+  "rollback": {
+    "method": "פקודות נפרדות לפי טבלה, כל אחת סופרת את מה שהיא עצמה מחקה (cte-delete-sees-prestatement-snapshot); אנשי הקשר לפי id ולא לפי טלפון מנורמל (ac6e523)",
+    "deleted": { "case_status_log": 1, "case_rights": 84, "cases": 2, "contacts": 2, "admin_users": 1 },
+    "after": {
+      "cases": 0, "case_status_log": 0, "case_rights": 0, "documents": 0,
+      "admin_users": 1, "admin_sessions": 5, "templates": 2, "catalog": 888,
+      "contacts": 4, "outbound_queue": 8, "delivery_log": 3
+    },
+    "baseline_exact": true
+  },
+
+  "protected": {
+    "apps/08-bkalut-app": "לא נגעה",
+    "apps/09-bkalot-admin": "לא נגעה",
+    "apps/37-bkalot-clone": "לא נגעה — פריסה בלבד",
+    "supabase/functions": "לא נגעה",
+    "supabase/migrations": "לא נגעה",
+    "schemas_csj_csj_src_igud": "לא נגעו",
+    "git_add": "נתיב מפורש אחד ולא נקודה"
+  }
+}
