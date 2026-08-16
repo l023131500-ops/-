@@ -105,6 +105,11 @@ button.ghost{background:transparent; color:var(--brand); border:1.5px solid var(
 .filters .field{margin:0}
 @media (max-width:720px){ .filters{grid-template-columns:1fr 1fr} .filters .search{grid-column:1/-1} }
 .count{font-size:14.5px; color:var(--text-soft); margin:0 0 var(--sp)}
+/* אינה .err ואינה נצבעת באדום: לא קרתה תקלה, והחיפוש עשה בדיוק את מה שהתבקש. */
+.qnote{
+  font-size:14px; color:var(--text-soft); margin:0 0 var(--sp);
+  border-inline-start:3px solid var(--line); padding-inline-start:calc(var(--sp)*1.5);
+}
 /* ── רשימה ── */
 .rows{display:grid; gap:var(--sp)}
 .row{
@@ -260,6 +265,12 @@ pre{
   </form>
 
   <p class="count" id="count" role="status">—</p>
+  <!-- 0093 מנרמלת מונח חיפוש שנראה כמו טלפון אל ספרות בלבד, מפני שכך הטלפון
+       שמור. השורה הזו אומרת זאת: היא מופיעה רק כשהנרמול באמת שינה משהו, ואז
+       היא נוקבת במספר שלפיו חופש בפועל. בלעדיה שני מצבים נראים כמו תקלה —
+       שורה שנמצאה והטלפון בה כתוב אחרת ממה שהוקלד, ורשימה ריקה שאי-אפשר לדעת
+       אם היא «אין פנייה כזו» או «הקלדתי עם מקפים». -->
+  <p class="qnote" id="q-phone" role="status" hidden></p>
   <div class="rows" id="rows"></div>
   <div class="empty" id="empty" hidden>אין פניות שתואמות את הסינון.</div>
   <div class="err" id="list-error" role="alert" hidden></div>
@@ -437,6 +448,9 @@ pre{
   const $ = (id) => document.getElementById(id);
   const PAGE = 20;
   let offset = 0, total = 0, lastFilters = {};
+  // המספר שלפיו השרת חיפש בפועל (0093), או null כשהמונח לא נורמל. הוא יושב כאן
+  // ולא נקרא מתוך render מפני ש-render מקבלת שורות בלבד — כמו total ו-offset.
+  let qPhone = null;
 
   function say(code, extra) {
     const text = MESSAGES[code] ?? null;
@@ -601,6 +615,10 @@ pre{
       // שנלחץ על מספרים ישנים מקדם את offset אל מעבר לרשימה שלא נטענה.
       $("pager").hidden = true;
       $("count").textContent = "—";
+      // שורת הטלפון נסגרת עם השורות: היא מתארת חיפוש שתוצאתו אינה על המסך עוד,
+      // ומעל שורת שגיאה היא נקראת כאילו החיפוש הזה כן רץ והחזיר את מה שרואים.
+      qPhone = null;
+      $("q-phone").hidden = true;
       showError($("list-error"), data?.error || "bad_response");
       return;
     }
@@ -611,6 +629,9 @@ pre{
     }
     total = data.total ?? 0;
     offset = data.offset ?? offset;
+    // ?? null ולא ||: השרת מחזיר מחרוזת או null, ומחרוזת ריקה אינה ערך שהוא
+    // מחזיר — הבדיקה בהמשך היא על מה שיש, ולא על מה שאולי יגיע.
+    qPhone = data.q_phone ?? null;
     render(data.cases || []);
   }
 
@@ -622,6 +643,21 @@ pre{
       ? "אין פניות"
       : (total === cases.length ? many(total) : `${many(total)} · מוצגות ${cases.length}`);
     $("empty").hidden = cases.length > 0;
+    // השורה נשארת גם כשהרשימה ריקה, ושם היא שווה יותר מאשר מעל שורות: «אין
+    // פנייה כזו» ו«הקלדתי עם מקפים» נראים על המסך אותו הדבר בדיוק, והמספר הזה
+    // הוא הדבר היחיד שמכריע ביניהם. המספר מוצג ולא מתואר — «נורמלנו את המונח»
+    // אינו אומר למנהל לפי מה חופש, והוא זה שצריך להחליט אם זה הטלפון שהתכוון.
+    const qn = $("q-phone");
+    qn.textContent = "";
+    qn.hidden = qPhone === null;
+    if (qPhone !== null) {
+      const num = document.createElement("span");
+      num.className = "code";
+      num.textContent = qPhone;
+      // המספר בסוף המשפט ובלי סימן פיסוק אחריו: הוא רץ משמאל לימין בתוך שורה
+      // עברית, ונקודה אחריו נוחתת בצד שאינו הצד שבו המשפט נגמר.
+      qn.append("חיפוש הטלפון רץ על הספרות בלבד — כך המספר שמור, ולכן הטלפון בשורה יכול להיראות אחרת ממה שהוקלד. חופש לפי ", num);
+    }
     for (const c of cases) {
       const btn = document.createElement("button");
       btn.type = "button";
