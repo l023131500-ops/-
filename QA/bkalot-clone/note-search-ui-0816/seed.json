@@ -1,0 +1,18 @@
+[
+  {
+    "full_name": "אברהם ישראלי",
+    "phone": "0501230011",
+    "case_id": 369,
+    "contact_id": 376,
+    "queued": false,
+    "intake_http": 200
+  },
+  {
+    "full_name": "מרים כהן",
+    "phone": "0502230022",
+    "case_id": 370,
+    "contact_id": 377,
+    "queued": false,
+    "intake_http": 200
+  }
+]
