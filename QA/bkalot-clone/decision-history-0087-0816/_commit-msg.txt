@@ -1,0 +1,84 @@
+שכפול בקלות שכבה 3: הכרעה על פנייה דורסת את זו שלפניה (§5ב, 0087)
+
+הקו נכתב בכל פעימה מאז 0076 ולא נלקח באף אחת מהן, וב-839386a בסופה מילה במילה:
+«קווים שממשיכים ולא נגעו: אין היסטוריית הכרעות». לפניה כתבו אותו a6e8844, 7d7dcf2,
+e28a004 ו-147c39d, באותן מילים ובאותו מקום. כאן הוא נלקח ורק הוא: מיגרציה בלבד —
+apps/37 לא נגעה, supabase/functions לא נגעה, אין פריסת edge function ואין פריסת
+פורטל. bkalot_clone_admin_case, bkalot_clone_admin_cases ו-bkalot_clone_render לא
+נגעו.
+
+0076 בנתה על cases את decided_by ואת decided_at ונתנה ל-set_status ארגומנט שני
+שהשער ממלא מהטוקן. מאז כל הכרעה נרשמת — אבל אל אותן שתי עמודות ב-UPDATE, כלומר
+דורסת. status הוא השדה היחיד בשכפול שאדם משנה ידנית על פניית אדם אחר, ו-rejected
+פירושו שאזרח לא יקבל את מה שביקש; אם מי שדחה נדרס בידי מי שנגע אחריו, לשאלה «מי
+דחה ומתי» אין תשובה במערכת. זה ההבדל בין מצב לבין תיעוד.
+
+נמדד לפני ולא הונח, על פנייה #222, בארבע קריאות דרך נתיב set-status שמאחורי השער
+— p_admin_id נסע בטוקן ולא נמסר ביד: new→in_progress (76), אותה הכרעה שוב
+(changed=false), in_progress→closed (77), closed→rejected (77). אחרי הרצף השורה
+החזיקה decided_by=77 ו-decided_at אחד, וההכרעה של 76 — זו שלקחה את הפנייה — לא
+הייתה קיימת בשום מקום במסד; לא כשדה ריק אלא כהיעדר גמור.
+
+אחרי, אותן ארבע קריאות בדיוק על #223, היומן קורא
+new->in_progress#76 | in_progress->closed#77 | closed->rejected#77 —
+שלוש שורות ולא ארבע. הקריאה החוזרת לא כתבה דבר והחזירה log_id: null ולא השמיטה
+את המפתח (Object.hasOwn true בכל ארבע התשובות), וזו הכרעה (5) כהתנהגות וגם
+כאילוץ. to_status של כל שורה שווה ל-from_status של הבאה — הכרעה (4): כל שורה היא
+משפט שלם, וגם פער היה נראה לעין. at של השורה האחרונה שווה בדיוק ל-cases.decided_at
+ושל שתי הראשונות לא, וזה הצפוי — השורה מחזיקה את האחרון והיומן את כולם; אילו
+שלושתן היו שוות, היה זה סימן שהיומן נכתב מהשורה ולא מהמעבר.
+
+שתי ההכרעות שקנו מדידה ולא הסבר: (2) admin_id בלי FK — חשבון 77 נמחק, ושתי שורות
+היומן שנושאות אותו נשארו במקומן עם 77 בתוכן; המחיקה על החשבון עצמו ולא UPDATE ידני
+על היומן. FK עם cascade היה מוחק בדיוק את הראיה שפנייה נדחתה בידי מי שכבר עזב, וזו
+אותה הכרעה של documents.produced_by ב-0083. (3) case_id דווקא עם CASCADE — מחיקת
+#223 בפקודה אחת, בלי מחיקה מפורשת של היומן, הורידה case_status_log 3→0 ו-case_rights
+42→0; עובד יוצא מהארגון ופנייה נמחקת מהמערכת, ואלה אינם אותו דבר.
+
+האילוצים נמדדו בשתי הכנסות שנדחו: (223,closed,closed,76) → 23514
+case_status_log_is_a_change, ו-(223,closed,archived,76) → 23514
+case_status_log_to_known. ⚠️ שתיהן שרפו את מזהי 4 ו-5 של ה-identity — אותו מנגנון
+של תקלת core-issues-failed-insert-burns-the-id; נרשם, ומספרי שורות ביומן אינם רצף.
+
+הרשאות, הכרעה (7): הטבלה נותנת ל-postgres בלבד — אפס ל-anon, ל-authenticated
+ול-service_role, בשונה מ-cases/case_rights/documents ובדומה ל-admin_users. RLS
+מופעל, אפס policies, ולכן הדרך היחידה לכתוב ליומן עוברת בפונקציה שמחליטה מה נכתב.
+ה-ACL של הפונקציה לא ניתן מחדש (create or replace שומר אותו) ונמדד אחרי:
+anon=false, authenticated=false, service_role=true, overload אחד. שלא כמו 0085,
+די היה בהחלה אחת: pg_proc נמדד אחרי ומכיל את ההערות הפנימיות.
+
+⚠️ תקלה בכלי המדידה עצמו: בגרסה הראשונה של probe.mjs שני מפתחות ב-case_after
+נקראו status והשני דרס את הראשון בשקט — קוד ה-HTTP לא נמדד כלל. השמות הופרדו
+ל-http_status ול-case_status, וריצת ה-before הראשונה (פנייה #221) נזרקה והורצה
+מחדש, כדי ששתי הריצות ירוצו מאותו קובץ בדיוק ולא משתי גרסאות שלו.
+
+מצב טסט נמדד ולא הוצהר: הקליטות queued=false, אפס מסמכים עם queue_id, אפס פניות
+ב-sent, outbound_queue נשאר 8 ואפס שורות עם sent_at (טביעת אצבע
+b4318d89eac1a47be75ab8769f320683 זהה בבסיס ואחרי), delivery_log נשאר 3. אין מייל,
+אין הודעה ואין מסמך שיצא החוצה.
+
+הפניות נזרעו דרך bkalot-clone-intake מעל HTTP עם מפתח anon כמו מהטופס (221–223,
+contacts 228–230), ושני המנהלים נוצרו דרך bkalot_clone_admin_create (76, 77) ולא
+בהזרקת hash. התגלגל אחורה בפקודות נפרדות לפי id, כל אחת סופרת את מה שהיא עצמה מחקה
+— תקלת cte-delete-sees-prestatement-snapshot; ואנשי הקשר לפי id ולא לפי טלפון
+מנורמל — תקלת ac6e523. admin_sessions ירדו ב-cascade עם שני החשבונות ולכן חזרו ל-5
+בדיוק ולא נמחקו ידנית. אחרי: cases=0, case_rights=0, case_status_log=0, documents=0,
+contacts=4, admin_users=1, admin_sessions=5, templates=2, outbound_queue=8,
+delivery_log=3, catalog=888 — בסיס בדיוק.
+
+מוגן: git status ריק על apps/08-bkalut-app, apps/09-bkalot-admin, apps/37-bkalot-clone
+ו-supabase/functions; אין נגיעה ב-bkalut-app/bkalot-admin/zr_*/NEDARIM3873 ולא
+בסכמות csj/csj_src/igud. ל-git add נמסרו שני נתיבים מפורשים ולא נקודה.
+
+פתוח: אף קורא אינו מחזיר את היומן. bkalot_clone_admin_case אינה יודעת עליו —
+has_history=false ו-has_decisions=false נמדדו גם אחרי המיגרציה, ובמכוון, ואותם 17
+מפתחות בדיוק; bkalot_clone_admin_cases אינה יודעת עליו; ו-apps/37-bkalot-clone/
+admin.html אינו מציג דבר. ההיסטוריה נכתבת ואיש אינו רואה אותה — זו הלבנה הבאה,
+אותו פיצול כמו 0083 → 0084 → UI → פריסה. אין backfill ולא יהיה: לפנייה שיושבת עם
+decided_by יש עובדה אחת ואין ידיעה כמה הכרעות היו לפניה, ושורה שהייתה נוצרת ממנה
+הייתה טוענת מעבר שאיש לא מדד. מה שלא נבנה: אין ביומן note/reason — למה הוכרע ולא
+רק מה; אין היסטוריה על kind/topic_no/situation; ואין היסטוריה על documents. קווים
+שממשיכים ולא נגעו: הקליטה מחברת 42 זכויות ל-treatment ואפס ל-info/reminder על אותו
+situation. sent בלתי-ניתן-להשגה בכוונה; bkalot_clone_admin_create אינה חשופה
+ב-HTTP; pdf/audio → channel_unsupported. public_visible ו-show_in_showcase של #37
+נשארים false.

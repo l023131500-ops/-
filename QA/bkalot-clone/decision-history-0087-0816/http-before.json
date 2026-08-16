@@ -1,0 +1,124 @@
+{
+  "when": "before",
+  "steps": {
+    "intake": {
+      "status": 200,
+      "case_id": 222,
+      "contact_id": 229,
+      "rights_linked": 42,
+      "queued": false
+    },
+    "login_first": {
+      "status": 200,
+      "admin": {
+        "id": 76,
+        "email": "qa0089first@more30.test",
+        "full_name": "QA 0089 מכריע ראשון"
+      }
+    },
+    "login_gone": {
+      "status": 200,
+      "admin": {
+        "id": 77,
+        "email": "qa0089gone@more30.test",
+        "full_name": "QA 0089 מכריע שנמחק"
+      }
+    },
+    "d1_new_to_in_progress": {
+      "status": 200,
+      "body": {
+        "ok": true,
+        "status": "in_progress",
+        "case_id": 222,
+        "changed": true,
+        "previous": "new",
+        "decided_at": "2026-08-16T00:10:19.695091+00:00",
+        "decided_by": 76,
+        "admin": {
+          "id": 76,
+          "email": "qa0089first@more30.test",
+          "full_name": "QA 0089 מכריע ראשון"
+        }
+      }
+    },
+    "d2_same_again": {
+      "status": 200,
+      "body": {
+        "ok": true,
+        "status": "in_progress",
+        "case_id": 222,
+        "changed": false,
+        "previous": "in_progress",
+        "decided_at": "2026-08-16T00:10:19.695091+00:00",
+        "decided_by": 76,
+        "admin": {
+          "id": 76,
+          "email": "qa0089first@more30.test",
+          "full_name": "QA 0089 מכריע ראשון"
+        }
+      }
+    },
+    "d3_to_closed": {
+      "status": 200,
+      "body": {
+        "ok": true,
+        "status": "closed",
+        "case_id": 222,
+        "changed": true,
+        "previous": "in_progress",
+        "decided_at": "2026-08-16T00:10:21.19214+00:00",
+        "decided_by": 77,
+        "admin": {
+          "id": 77,
+          "email": "qa0089gone@more30.test",
+          "full_name": "QA 0089 מכריע שנמחק"
+        }
+      }
+    },
+    "d4_to_rejected": {
+      "status": 200,
+      "body": {
+        "ok": true,
+        "status": "rejected",
+        "case_id": 222,
+        "changed": true,
+        "previous": "closed",
+        "decided_at": "2026-08-16T00:10:22.406679+00:00",
+        "decided_by": 77,
+        "admin": {
+          "id": 77,
+          "email": "qa0089gone@more30.test",
+          "full_name": "QA 0089 מכריע שנמחק"
+        }
+      }
+    },
+    "case_after": {
+      "http_status": 200,
+      "case_keys": [
+        "consent",
+        "contact",
+        "contact_email_differs",
+        "created_at",
+        "decided_at",
+        "decided_by",
+        "decided_by_name",
+        "id",
+        "kind",
+        "note",
+        "raw",
+        "situation",
+        "source",
+        "status",
+        "to_email",
+        "topic_no",
+        "updated_at"
+      ],
+      "has_history": false,
+      "has_decisions": false,
+      "case_status": "rejected",
+      "decided_by": 77,
+      "decided_by_name": "QA 0089 מכריע שנמחק",
+      "decided_at": "2026-08-16T00:10:22.406679+00:00"
+    }
+  }
+}
