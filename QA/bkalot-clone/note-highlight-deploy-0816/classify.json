@@ -1,0 +1,173 @@
+{
+  "src": {
+    "path": "C:/Users/USER/Downloads/more30/apps/37-bkalot-clone/admin.html",
+    "bytes": 181758,
+    "md5": "6C7B27B3"
+  },
+  "dist": {
+    "path": "C:/Users/USER/Downloads/more30/portal/dist/bkalot-studio/admin.html",
+    "bytes": 176004,
+    "md5": "282DF8EC"
+  },
+  "groups": {
+    "NEW": [
+      {
+        "key": "css_mark_hit",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "css_box_shadow",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "fn_decl",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "fn_all",
+        "src": 5,
+        "dist": 0
+      },
+      {
+        "key": "fn_call",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "pos_read",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "note_match_pos",
+        "src": 2,
+        "dist": 0
+      },
+      {
+        "key": "note_match_len",
+        "src": 2,
+        "dist": 0
+      },
+      {
+        "key": "guard_fits",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "mark_el",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "mark_cls",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "mark_title",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "comment_3nodes",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "comment_1to0",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "comment_refuted",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "comment_not_true",
+        "src": 1,
+        "dist": 0
+      }
+    ],
+    "REMOVED": [
+      {
+        "key": "old_text_content",
+        "src": 0,
+        "dist": 1
+      },
+      {
+        "key": "old_as_textcontent",
+        "src": 0,
+        "dist": 1
+      },
+      {
+        "key": "old_no_highlight",
+        "src": 0,
+        "dist": 1
+      }
+    ],
+    "DIFF": [
+      {
+        "key": "createTextNode",
+        "src": 19,
+        "dist": 15
+      },
+      {
+        "key": "phr_fillHistory",
+        "src": 5,
+        "dist": 4
+      }
+    ],
+    "CONTROL": [
+      {
+        "key": "ctl_stale_span",
+        "src": 3,
+        "dist": 3
+      },
+      {
+        "key": "ctl_td_title",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "ctl_no_note",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "ctl_queue_phrase",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "ctl_queueTotal",
+        "src": 4,
+        "dist": 4
+      },
+      {
+        "key": "ctl_noteTally",
+        "src": 3,
+        "dist": 3
+      },
+      {
+        "key": "ctl_clamp_note",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "ctl_filtered",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "ctl_box_literal",
+        "src": 1,
+        "dist": 1
+      }
+    ],
+    "DEAD": []
+  }
+}

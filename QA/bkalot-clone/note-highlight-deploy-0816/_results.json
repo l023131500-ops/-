@@ -1,0 +1,109 @@
+{
+  "task": "note-highlight-deploy-0816",
+  "claim": "מסך הפנייה בייצור מדגיש את המילה שהתאימה בתוך הנימוק, מהמיקום שהמסד מדד ב-0100",
+  "kind": "פריסה בלבד — אין שינוי קוד, אין מיגרציה, אין פריסת edge function",
+  "head_before": "c1598aa",
+  "unchanged": {
+    "edge_function": "bkalot-clone-admin נשארת v9",
+    "schema_migrations": "20260816182726 לפני ואחרי",
+    "git_status_clean_before_add": ["apps/08-bkalut-app", "apps/09-bkalot-admin", "apps/37-bkalot-clone", "supabase"]
+  },
+  "baseline_db": {
+    "cases": 0, "case_status_log": 0, "case_rights": 0, "documents": 0,
+    "admin_users": 1, "admin_sessions": 5, "contacts": 4,
+    "outbound_queue": 8, "delivery_log": 3, "rights_catalog": 888,
+    "schema_migrations": "20260816182726"
+  },
+  "staging": {
+    "src": { "path": "apps/37-bkalot-clone/admin.html", "bytes": 181758, "md5_8": "6C7B27B3" },
+    "dist_before_staging": { "bytes": 176004, "md5_8": "282DF8EC", "note": "מה ש-06a5707 פרסה" },
+    "dist_after_staging": { "bytes": 181758, "md5_8": "6C7B27B3", "equals_src": true },
+    "files_deployed": 38,
+    "vercel_json_present": true,
+    "vercel_project_json_present": true,
+    "prebuilt": false,
+    "why_not_prebuilt": "prebuilt-deploy-drops-vercel-json"
+  },
+  "deployment": {
+    "uid": "dpl_EkDNrQSgwxHPKzRbHsTvF16bccmo",
+    "state": "READY",
+    "target": "production",
+    "created": "2026-08-16T18:56:40Z",
+    "url": "more30-portal-mqe89evii-l023131500-ops-projects.vercel.app"
+  },
+  "classify_before_staging": {
+    "note": "הסיווג נקבע מהשוואת שני קבצים מקומיים בלבד, בלי שהכתובת החיה נפגשה — 0087. הסקריפט יוצא בקוד 2 אם ה-staging כבר רץ (6849803).",
+    "NEW": 16, "REMOVED": 3, "DIFF": 2, "CONTROL": 9, "DEAD": 0,
+    "measured_not_planned": "createTextNode נכתב כסימן NEW ונמדד כ-DIFF (15 שימושים כבר ב-dist, 19 במקור); phr_fillHistory נשקל כבקרה ונמדד כ-DIFF (4→5) — שם הפונקציה מצוטט בהערות החדשות"
+  },
+  "live_markers": {
+    "urls": ["https://more30.com/bkalot-studio/admin", "https://more30.com/bkalot-studio/admin/"],
+    "dist_equals_live_control": "לפני הפריסה החזירו שתי הכתובות בדיוק את ספירת ה-dist שנפרס בפעם הקודמת — 30 מתוך 30",
+    "before": { "bytes": 176240, "md5_8": "CE45D422", "new_markers": 0, "old_markers": [1, 1, 1] },
+    "after":  { "bytes": 181994, "md5_8": "E5EFB523", "mismatches_vs_src": 0 },
+    "injection_delta_bytes": 236,
+    "note": "236 בייט מעל הקובץ שנפרס בשתי המדידות — הפרש קבוע של הזרקה ולא של תוכן",
+    "replacement_chars": 0,
+    "times_char": 0,
+    "why": "deployed-html-double-encoded-cp1255"
+  },
+  "seed": {
+    "case_id": 407, "contact_id": 414, "kind": "info", "source": "form",
+    "queued": false, "rights_linked": 0,
+    "admin_used_for_log": 4,
+    "admin_created_for_login": { "id": 130, "how": "bkalot_clone_admin_create ולא הזרקת hash" },
+    "log": [
+      { "id": 135, "to": "in_progress", "note": "המסמכים שצורפו שייכים לשנת המס הקודמת", "chars": 37 },
+      { "id": 136, "to": "rejected", "note": "Email נשלח לפונה, ואחריו EMAIL נוסף בטעות", "chars": 41 },
+      { "id": 137, "to": "closed", "note": "הטופס נשלח בדואר רשום על ידי הפונה", "chars": 34 }
+    ],
+    "why_136": "המונח יושב בה פעמיים (1 ו-26) ובשתי צורות אותיות, והראשונה פותחת את השורה",
+    "note": "הקליטה נעשתה ב-SQL ולא מעל HTTP — פיגום ולא הטענה"
+  },
+  "server_side_before_screen": {
+    "how": "public.bkalot_clone_admin_case(407, q) — substr(note, pos, len) מוחזר כבקרה",
+    "המס הקודמת": { "id": 135, "pos": 28, "len": 10, "substr": "המס הקודמת" },
+    "email": { "id": 136, "pos": 1, "len": 5, "substr": "Email", "note": "מונח שהוקלד קטן על «Email»" },
+    "בדואר רשום": { "id": 137, "pos": 12, "len": 10, "substr": "בדואר רשום" },
+    "controls": { "no_term": "שלוש שורות null", "zzzz": "שלוש שורות null" },
+    "measurement_error_corrected": "שאילתת הסיכום הראשונה כוונה ל-'case'->'status_history' והחזירה [] — status_history יושבת ברמה העליונה; תוקן ונמדד שוב"
+  },
+  "live_dom": {
+    "read_from": "https://more30.com/bkalot-studio/admin — DOM חי ולא קובץ",
+    "term1_end":   { "marks": 1, "mark": "המס הקודמת", "nodes": ["T:המסמכים שצורפו שייכים לשנת ", "MARK", "T:", "BR", "SPAN"], "reading": "ההתאמה בסוף המחרוזת — הצומת השלישי ריק" },
+    "term2_start": { "marks": 1, "mark": "Email", "nodes": ["T:", "MARK", "T: נשלח לפונה, ואחריו EMAIL נוסף בטעות", "BR", "SPAN"], "reading": "ההתאמה פותחת את המחרוזת, וה-EMAIL השני (מיקום 26) אינו מסומן — 0100 הכרעה (4) נראית ואינה נטענת" },
+    "term3_mid":   { "marks": 1, "mark": "בדואר רשום", "nodes": ["T:הטופס נשלח ", "MARK", "T: על ידי הפונה", "BR", "SPAN"], "reading": "באמצע" },
+    "controls": {
+      "no_term": { "cells": 3, "marks": 0, "reading": "פתיחה רגילה של פנייה — אין ולו סימן אחד" },
+      "zzzz": { "rows_in_list": 0, "reading": "אין שורה כלל, ולכן אין מסך פנייה" },
+      "marks_per_case_screen": 1,
+      "mark_equals_db_substr": true,
+      "mark_class": "hit",
+      "mark_title_as_written": true,
+      "text_reassembles_to_stored_note": "12 מתוך 12 התאים שנקראו — הפיצול לשלושה צמתים אינו מוסיף ואינו גורע תו",
+      "td_title_unchanged": ["37 תווים, כפי שנשמרו", "41 תווים, כפי שנשמרו", "34 תווים, כפי שנשמרו"],
+      "stale_span_on_matched_row_only": true,
+      "h_overflow_1280x900": 0
+    }
+  },
+  "console": { "messages": 0, "non_2xx": 0, "note": "נלכדה ולא נרשמה כחסרה" },
+  "screenshots": [
+    { "file": "live-term1-end.png", "bytes": 67557, "md5_8": "321890B7" },
+    { "file": "live-term2-start-first-only.png", "bytes": 66643, "md5_8": "A2A2669C" },
+    { "file": "live-term3-mid.png", "bytes": 66731, "md5_8": "0EE58F85" },
+    { "file": "live-ctl-no-term.png", "bytes": 61432, "md5_8": "046B473D" }
+  ],
+  "screenshot_discipline": "ארבעה MD5 שונים — screenshot-evidence-below-the-fold; החלון שונה פעם אחת לפני הכל, playwright-blank-screenshot-until-resize, והגלילה אל התא עצמו",
+  "test_mode": {
+    "queued": false, "documents": 0, "case_rights": 0,
+    "outbound_queue": 8, "delivery_log": 3, "outgoing_calls": 0,
+    "note": "מה שנפרס הוא HTML ואין בו כתיבה חדשה"
+  },
+  "not_measured": [
+    "מצבי המסך לפני הפריסה לא צולמו מהייצור — הפריסה כבר קרתה. שהייצור הריץ את הקוד הישן נמדד מהסימנים (שלושה ישנים 1, ואפס מכל 16 החדשים) ולא מקריאת DOM",
+    "הענף שבו pos/len אינם נכנסים למחרוזת (הכרעה (4)) נפרס ולא נמדד מדפדפן — אין שרת כזה להריץ מולו",
+    "שורה שבה note_matched true ו-pos null (0100 הכרעה (2)) נפרסה ולא נמדדה",
+    "לא נמדד ב-390x844",
+    "מראה ה-mark (רקע, משקל, קו תחתון) נמצא בצילומים ולא נמדד כערכי CSS מחושבים"
+  ]
+}
