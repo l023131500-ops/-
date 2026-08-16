@@ -1,0 +1,344 @@
+{
+  "measured_at": "2026-08-16T22:01:16.505Z",
+  "method": "GET /auth/v1/verify עם טוקן לא-תקף, redirect: manual. הכרעת ה-redirect של GoTrue חושפת אם היעד ברשימת ההרשאות. בלי apikey, בלי Authorization, בלי כתיבה.",
+  "negative_control": "https://example.com/_probe",
+  "projects": [
+    {
+      "ref": "uhnrgujbdxhhmoxcjria",
+      "label": "ההאב — הפורטל ו-16 מערכות (כולל 16 חצור)",
+      "systems": "00 פורטל · 16 chatzor · +14",
+      "reset": "https://more30.com/auth/reset",
+      "mount": "https://more30.com/",
+      "probes": {
+        "negative_control": {
+          "status": 303,
+          "location": "https://more30.com#error=access_denied&error_code=otp_expired&error_description=Email+link+is+invalid+or+has+expired&sb="
+        },
+        "positive_control": {
+          "status": 303,
+          "location": "https://more30.com#error=access_denied&error_code=otp_expired&error_description=Email+link+is+invalid+or+has+expired&sb="
+        },
+        "reset": {
+          "status": 303,
+          "location": "https://more30.com/auth/reset#error=access_denied&error_code=otp_expired&error_description=Email+link+is+invalid+or+has+expired&sb="
+        },
+        "mount": {
+          "status": 303,
+          "location": "https://more30.com/#error=access_denied&error_code=otp_expired&error_description=Email+link+is+invalid+or+has+expired&sb="
+        },
+        "root": {
+          "status": 303,
+          "location": "https://more30.com/#error=access_denied&error_code=otp_expired&error_description=Email+link+is+invalid+or+has+expired&sb="
+        }
+      },
+      "site_url": "https://more30.com",
+      "negative_control_ok": true,
+      "positive_control_ok": true,
+      "reset_allowed": true,
+      "mount_allowed": true,
+      "root_allowed": true,
+      "measurement_valid": true,
+      "verdict": "תקין — הקישור מהמייל ינחת על more30.com"
+    },
+    {
+      "ref": "bieebmnmkffwbqlsfozh",
+      "label": "01 איגוד השיעורים",
+      "systems": "01 torah",
+      "reset": "https://more30.com/torah/auth/reset",
+      "mount": "https://more30.com/torah/",
+      "probes": {
+        "negative_control": {
+          "status": 303,
+          "location": "https://more30.com#error=access_denied&error_code=otp_expired&error_description=Email+link+is+invalid+or+has+expired&sb="
+        },
+        "positive_control": {
+          "status": 303,
+          "location": "https://more30.com#error=access_denied&error_code=otp_expired&error_description=Email+link+is+invalid+or+has+expired&sb="
+        },
+        "reset": {
+          "status": 303,
+          "location": "https://more30.com/torah/auth/reset#error=access_denied&error_code=otp_expired&error_description=Email+link+is+invalid+or+has+expired&sb="
+        },
+        "mount": {
+          "status": 303,
+          "location": "https://more30.com/torah/#error=access_denied&error_code=otp_expired&error_description=Email+link+is+invalid+or+has+expired&sb="
+        },
+        "root": {
+          "status": 303,
+          "location": "https://more30.com/#error=access_denied&error_code=otp_expired&error_description=Email+link+is+invalid+or+has+expired&sb="
+        }
+      },
+      "site_url": "https://more30.com",
+      "negative_control_ok": true,
+      "positive_control_ok": true,
+      "reset_allowed": true,
+      "mount_allowed": true,
+      "root_allowed": true,
+      "measurement_valid": true,
+      "verdict": "תקין — הקישור מהמייל ינחת על more30.com"
+    },
+    {
+      "ref": "csjekrvukbdznetsrodj",
+      "label": "06 בריאות · 12 סמל · 17 חיזוקים",
+      "systems": "06 briut · 12 smel · 17 chizukim",
+      "reset": "https://more30.com/briut/",
+      "mount": "https://more30.com/briut/",
+      "probes": {
+        "negative_control": {
+          "status": 303,
+          "location": "https://more30.com#error=access_denied&error_code=otp_expired&error_description=Email+link+is+invalid+or+has+expired&sb="
+        },
+        "positive_control": {
+          "status": 303,
+          "location": "https://more30.com#error=access_denied&error_code=otp_expired&error_description=Email+link+is+invalid+or+has+expired&sb="
+        },
+        "reset": {
+          "status": 303,
+          "location": "https://more30.com/briut/#error=access_denied&error_code=otp_expired&error_description=Email+link+is+invalid+or+has+expired&sb="
+        },
+        "mount": {
+          "status": 303,
+          "location": "https://more30.com/briut/#error=access_denied&error_code=otp_expired&error_description=Email+link+is+invalid+or+has+expired&sb="
+        },
+        "root": {
+          "status": 303,
+          "location": "https://more30.com/#error=access_denied&error_code=otp_expired&error_description=Email+link+is+invalid+or+has+expired&sb="
+        }
+      },
+      "site_url": "https://more30.com",
+      "negative_control_ok": true,
+      "positive_control_ok": true,
+      "reset_allowed": true,
+      "mount_allowed": true,
+      "root_allowed": true,
+      "measurement_valid": true,
+      "verdict": "תקין — הקישור מהמייל ינחת על more30.com"
+    },
+    {
+      "ref": "hkkkynyoigzlttpynoeo",
+      "label": "15 עגוד",
+      "systems": "15 egod",
+      "reset": "https://more30.com/egod/auth/reset",
+      "mount": "https://more30.com/egod/",
+      "probes": {
+        "negative_control": {
+          "status": 303,
+          "location": "https://egod.lovable.app#error=access_denied&error_code=otp_expired&error_description=Email+link+is+invalid+or+has+expired&sb="
+        },
+        "positive_control": {
+          "status": 303,
+          "location": "https://egod.lovable.app#error=access_denied&error_code=otp_expired&error_description=Email+link+is+invalid+or+has+expired&sb="
+        },
+        "reset": {
+          "status": 303,
+          "location": "https://egod.lovable.app#error=access_denied&error_code=otp_expired&error_description=Email+link+is+invalid+or+has+expired&sb="
+        },
+        "mount": {
+          "status": 303,
+          "location": "https://egod.lovable.app#error=access_denied&error_code=otp_expired&error_description=Email+link+is+invalid+or+has+expired&sb="
+        },
+        "root": {
+          "status": 303,
+          "location": "https://egod.lovable.app#error=access_denied&error_code=otp_expired&error_description=Email+link+is+invalid+or+has+expired&sb="
+        }
+      },
+      "site_url": "https://egod.lovable.app",
+      "negative_control_ok": true,
+      "positive_control_ok": true,
+      "reset_allowed": false,
+      "mount_allowed": false,
+      "root_allowed": false,
+      "measurement_valid": true,
+      "verdict": "חסר — more30.com אינו ברשימה כלל"
+    },
+    {
+      "ref": "aypsqqvfohekxxuqsmrw",
+      "label": "21 מתחברים",
+      "systems": "21 mthbram",
+      "reset": "https://more30.com/mthbram/auth/reset",
+      "mount": "https://more30.com/mthbram/",
+      "issue": 207,
+      "probes": {
+        "negative_control": {
+          "status": 303,
+          "location": "https://mthbram.lovable.app#error=access_denied&error_code=otp_expired&error_description=Email+link+is+invalid+or+has+expired&sb="
+        },
+        "positive_control": {
+          "status": 303,
+          "location": "https://mthbram.lovable.app#error=access_denied&error_code=otp_expired&error_description=Email+link+is+invalid+or+has+expired&sb="
+        },
+        "reset": {
+          "status": 303,
+          "location": "https://mthbram.lovable.app#error=access_denied&error_code=otp_expired&error_description=Email+link+is+invalid+or+has+expired&sb="
+        },
+        "mount": {
+          "status": 303,
+          "location": "https://mthbram.lovable.app#error=access_denied&error_code=otp_expired&error_description=Email+link+is+invalid+or+has+expired&sb="
+        },
+        "root": {
+          "status": 303,
+          "location": "https://mthbram.lovable.app#error=access_denied&error_code=otp_expired&error_description=Email+link+is+invalid+or+has+expired&sb="
+        }
+      },
+      "site_url": "https://mthbram.lovable.app",
+      "negative_control_ok": true,
+      "positive_control_ok": true,
+      "reset_allowed": false,
+      "mount_allowed": false,
+      "root_allowed": false,
+      "measurement_valid": true,
+      "verdict": "חסר — more30.com אינו ברשימה כלל"
+    },
+    {
+      "ref": "trerolyveytzgksawrme",
+      "label": "22 מימוש זכויות",
+      "systems": "22 zchuyot",
+      "reset": "https://more30.com/zchuyot/auth/reset",
+      "mount": "https://more30.com/zchuyot/",
+      "issue": 206,
+      "probes": {
+        "negative_control": {
+          "status": 303,
+          "location": "https://get-your-rights.lovable.app#error=access_denied&error_code=otp_expired&error_description=Email+link+is+invalid+or+has+expired&sb="
+        },
+        "positive_control": {
+          "status": 303,
+          "location": "https://get-your-rights.lovable.app#error=access_denied&error_code=otp_expired&error_description=Email+link+is+invalid+or+has+expired&sb="
+        },
+        "reset": {
+          "status": 303,
+          "location": "https://get-your-rights.lovable.app#error=access_denied&error_code=otp_expired&error_description=Email+link+is+invalid+or+has+expired&sb="
+        },
+        "mount": {
+          "status": 303,
+          "location": "https://get-your-rights.lovable.app#error=access_denied&error_code=otp_expired&error_description=Email+link+is+invalid+or+has+expired&sb="
+        },
+        "root": {
+          "status": 303,
+          "location": "https://get-your-rights.lovable.app#error=access_denied&error_code=otp_expired&error_description=Email+link+is+invalid+or+has+expired&sb="
+        }
+      },
+      "site_url": "https://get-your-rights.lovable.app",
+      "negative_control_ok": true,
+      "positive_control_ok": true,
+      "reset_allowed": false,
+      "mount_allowed": false,
+      "root_allowed": false,
+      "measurement_valid": true,
+      "verdict": "חסר — more30.com אינו ברשימה כלל"
+    },
+    {
+      "ref": "mwljkonwdeuaahsigjdp",
+      "label": "24 גליל קונקט",
+      "systems": "24 galil",
+      "reset": "https://more30.com/galil/",
+      "mount": "https://more30.com/galil/",
+      "probes": {
+        "negative_control": {
+          "status": 303,
+          "location": "https://galilee-connect-hub.lovable.app#error=access_denied&error_code=otp_expired&error_description=Email+link+is+invalid+or+has+expired&sb="
+        },
+        "positive_control": {
+          "status": 303,
+          "location": "https://galilee-connect-hub.lovable.app#error=access_denied&error_code=otp_expired&error_description=Email+link+is+invalid+or+has+expired&sb="
+        },
+        "reset": {
+          "status": 303,
+          "location": "https://galilee-connect-hub.lovable.app#error=access_denied&error_code=otp_expired&error_description=Email+link+is+invalid+or+has+expired&sb="
+        },
+        "mount": {
+          "status": 303,
+          "location": "https://galilee-connect-hub.lovable.app#error=access_denied&error_code=otp_expired&error_description=Email+link+is+invalid+or+has+expired&sb="
+        },
+        "root": {
+          "status": 303,
+          "location": "https://galilee-connect-hub.lovable.app#error=access_denied&error_code=otp_expired&error_description=Email+link+is+invalid+or+has+expired&sb="
+        }
+      },
+      "site_url": "https://galilee-connect-hub.lovable.app",
+      "negative_control_ok": true,
+      "positive_control_ok": true,
+      "reset_allowed": false,
+      "mount_allowed": false,
+      "root_allowed": false,
+      "measurement_valid": true,
+      "verdict": "חסר — more30.com אינו ברשימה כלל"
+    },
+    {
+      "ref": "jhbeelzvjvhnkxldqvxx",
+      "label": "30 CRM זכויות",
+      "systems": "30 crm",
+      "reset": "https://more30.com/crm/reset-password",
+      "mount": "https://more30.com/crm/",
+      "issue": 202,
+      "probes": {
+        "negative_control": {
+          "status": 303,
+          "location": "https://zchuyot-care-hub.lovable.app#error=access_denied&error_code=otp_expired&error_description=Email+link+is+invalid+or+has+expired&sb="
+        },
+        "positive_control": {
+          "status": 303,
+          "location": "https://zchuyot-care-hub.lovable.app#error=access_denied&error_code=otp_expired&error_description=Email+link+is+invalid+or+has+expired&sb="
+        },
+        "reset": {
+          "status": 303,
+          "location": "https://zchuyot-care-hub.lovable.app#error=access_denied&error_code=otp_expired&error_description=Email+link+is+invalid+or+has+expired&sb="
+        },
+        "mount": {
+          "status": 303,
+          "location": "https://zchuyot-care-hub.lovable.app#error=access_denied&error_code=otp_expired&error_description=Email+link+is+invalid+or+has+expired&sb="
+        },
+        "root": {
+          "status": 303,
+          "location": "https://zchuyot-care-hub.lovable.app#error=access_denied&error_code=otp_expired&error_description=Email+link+is+invalid+or+has+expired&sb="
+        }
+      },
+      "site_url": "https://zchuyot-care-hub.lovable.app",
+      "negative_control_ok": true,
+      "positive_control_ok": true,
+      "reset_allowed": false,
+      "mount_allowed": false,
+      "root_allowed": false,
+      "measurement_valid": true,
+      "verdict": "חסר — more30.com אינו ברשימה כלל"
+    },
+    {
+      "ref": "ygaqqnuyfnumezxxmtbh",
+      "label": "31 גשר",
+      "systems": "31 gesher",
+      "reset": "https://more30.com/gesher/reset-password",
+      "mount": "https://more30.com/gesher/",
+      "issue": 205,
+      "probes": {
+        "negative_control": {
+          "status": 303,
+          "location": "https://heb-connect-hub.lovable.app#error=access_denied&error_code=otp_expired&error_description=Email+link+is+invalid+or+has+expired&sb="
+        },
+        "positive_control": {
+          "status": 303,
+          "location": "https://heb-connect-hub.lovable.app#error=access_denied&error_code=otp_expired&error_description=Email+link+is+invalid+or+has+expired&sb="
+        },
+        "reset": {
+          "status": 303,
+          "location": "https://heb-connect-hub.lovable.app#error=access_denied&error_code=otp_expired&error_description=Email+link+is+invalid+or+has+expired&sb="
+        },
+        "mount": {
+          "status": 303,
+          "location": "https://heb-connect-hub.lovable.app#error=access_denied&error_code=otp_expired&error_description=Email+link+is+invalid+or+has+expired&sb="
+        },
+        "root": {
+          "status": 303,
+          "location": "https://heb-connect-hub.lovable.app#error=access_denied&error_code=otp_expired&error_description=Email+link+is+invalid+or+has+expired&sb="
+        }
+      },
+      "site_url": "https://heb-connect-hub.lovable.app",
+      "negative_control_ok": true,
+      "positive_control_ok": true,
+      "reset_allowed": false,
+      "mount_allowed": false,
+      "root_allowed": false,
+      "measurement_valid": true,
+      "verdict": "חסר — more30.com אינו ברשימה כלל"
+    }
+  ]
+}

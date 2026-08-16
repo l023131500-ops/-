@@ -31,13 +31,21 @@
 // מייל, לא נכתבת שורה, לא משתנה שום הגדרה. מערכות מוגנות (08, 09, zr_*, NEDARIM3873)
 // אינן ברשימה כלל.
 //
-// שימוש:  node scripts/qa/allowlist-sweep.mjs
-// פלט:    QA/platform/allowlist-sweep-0813/_results.json
+// שימוש:  node scripts/qa/allowlist-sweep.mjs [תיקיית-פלט]
+// פלט:    QA/platform/allowlist-sweep-0813/_results.json — או הנתיב שנמסר בארגומנט.
+//
+// ⚠️ הארגומנט נוסף כדי שהרצה חוזרת לא תדרוס את המדידה של 13/08. הסקריפט הזה
+// נכתב כדי שיריצו אותו שוב ושוב (השורה הופכת ל-✅ ברגע שהמשתמש משנה את ההגדרה),
+// אבל הוא כתב לנתיב קבוע — כלומר כל בדיקה חוזרת מחקה את הבסיס שאליו משווים.
+// בלי ברירת המחדל אין תאימות לאחור, ולכן היא נשמרה כפי שהייתה.
 
 import { writeFileSync, mkdirSync } from 'node:fs';
-import { join } from 'node:path';
+import { isAbsolute, join } from 'node:path';
 
-const OUT = join(process.cwd(), 'QA', 'platform', 'allowlist-sweep-0813');
+const ARG = process.argv[2];
+const OUT = ARG
+  ? (isAbsolute(ARG) ? ARG : join(process.cwd(), ARG))
+  : join(process.cwd(), 'QA', 'platform', 'allowlist-sweep-0813');
 
 // הרפים ציבוריים (הם חלק מכתובת ה-API שכל דפדפן רואה) ולכן אין כאן שום סוד.
 // reset = הנתיב שהקישור במייל אמור לנחות עליו, כפי שנבנה בפועל בקומיטים
