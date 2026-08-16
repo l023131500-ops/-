@@ -738,7 +738,30 @@ pre{
       name.className = "row-name";
       // contact:null אינו היעלמות — הוא פנייה שאיש הקשר שלה נמחק
       // (cases_contact_id_fkey הוא ON DELETE SET NULL), והיא חייבת להופיע.
-      name.textContent = c.contact?.full_name || "— ללא איש קשר —";
+      //
+      // «— ללא איש קשר —» אמר שאין שם, ולא למה אין. שורה בלי זהות נקראת גם
+      // כמו תקלה בטעינה, והשתיים דורשות ממי שקורא אותה שני דברים הפוכים —
+      // האחת «המשך לטפל», השנייה «רענן». הנוסח כאן אומר את הסיבה, ולכן הוא
+      // טענה שנמדדה ולא הנחה: bkalot_clone_intake היא הפונקציה היחידה שמכניסה
+      // שורה ל-cases, וה-contact_id שלה הוא returning id של ה-upsert
+      // ב-bkalot_auto.contacts — כלומר לעולם אינו null בלידה. פנייה קיימת עם
+      // contact_id ריק היא אפוא פנייה שאיש הקשר שלה נמחק אחריה, ולא פנייה
+      // שנולדה בלעדיו.
+      //
+      // שלושה מצבים ולא שניים, כמו ב«מי הכריע»: מפתח contact שאינו קיים בתשובה
+      // כלל הוא שרת ישן מלפני 0088 ולא איש קשר שנמחק, ועליו המסך ממשיך לומר
+      // את הנוסח הישן. סימן שקרי כאן היה נקרא כמו נתון שנמדד.
+      if (c.contact?.full_name) {
+        name.textContent = c.contact.full_name;
+      } else if (Object.hasOwn(c, "contact") && c.contact === null) {
+        const s = document.createElement("span");
+        s.className = "stale";
+        s.textContent = "איש הקשר נמחק";
+        s.title = "הפנייה עצמה נשמרה במלואה; רק הזהות שלה הוסרה מהמאגר.";
+        name.append(s);
+      } else {
+        name.textContent = "— ללא איש קשר —";
+      }
       const kind = document.createElement("span");
       kind.className = "tag kind";
       kind.textContent = label(KIND_MAP, c.kind);
@@ -1049,7 +1072,12 @@ pre{
     show("screen-case");
     window.scrollTo(0, 0);
     const c = data.case;
-    $("case-title").textContent = `פנייה #${c.id} — ${c.contact?.full_name || "ללא איש קשר"}`;
+    // אותו הפרש בדיוק כמו בשורת הרשימה: «ללא איש קשר» אמר שאין שם ולא למה אין,
+    // וגוף המסך כבר אומר «איש הקשר של הפנייה נמחק» — הכותרת היא זו שנשארה
+    // מאחור. שלושה מצבים, ומפתח contact חסר נשאר בנוסח הישן.
+    const who = c.contact?.full_name
+      || (Object.hasOwn(c, "contact") && c.contact === null ? "איש הקשר נמחק" : "ללא איש קשר");
+    $("case-title").textContent = `פנייה #${c.id} — ${who}`;
     const body = $("case-body");
     body.innerHTML = "";
 

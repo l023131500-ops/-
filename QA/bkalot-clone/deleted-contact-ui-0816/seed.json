@@ -1,0 +1,18 @@
+{
+  "intakes": [
+    {
+      "who": "אברהם ישראלי",
+      "status": 200,
+      "case_id": 378,
+      "contact_id": 385,
+      "queued": false
+    },
+    {
+      "who": "שרה כהן",
+      "status": 200,
+      "case_id": 379,
+      "contact_id": 386,
+      "queued": false
+    }
+  ]
+}
