@@ -1,0 +1,118 @@
+{
+  "step": "case-note-deploy-0816",
+  "line_taken_from": "a49f7b4 (heartbeat 656): «פתוח: הפריסה. more30.com/bkalot-studio עדיין מגיש את admin.html של bad0f93, זו הלבנה הבאה והיא פריסה בלבד»",
+  "scope": "פריסה בלבד — אין שינוי קוד, אין מיגרציה, אין פריסת edge function",
+  "unchanged": {
+    "bkalot-clone-admin": "v9",
+    "bkalot-clone-intake": "v1",
+    "schema_migrations_head": "20260816131352 (0097)",
+    "apps/37-bkalot-clone": "לא נגעה",
+    "supabase/": "לא נגעה"
+  },
+  "file_deployed_is_the_source": {
+    "source_bytes": 151261,
+    "source_md5": "27E6230C869D63CE8477D8896B4A976C",
+    "dist_before_staging_bytes": 146451,
+    "dist_before_staging_md5": "4A284AEC27BD671CC57023D9A263E705",
+    "dist_after_staging_bytes": 151261,
+    "dist_after_staging_md5": "27E6230C869D63CE8477D8896B4A976C",
+    "note": "ה-MD5 שישב ב-dist לפני ה-staging הוא בדיוק מה ש-4da7665 פרס — שרשרת הפריסות נמדדה ולא הונחה"
+  },
+  "deployment": {
+    "id": "dpl_HqHDZCy4NReyFyK9ZLVcdfXBkwU8",
+    "readyState": "READY",
+    "target": "production",
+    "aliased": "https://more30.com",
+    "files": 38,
+    "from": "portal/dist",
+    "prebuilt": false,
+    "why_not_prebuilt": "הדגל מפיל את vercel.json ואיתו את מפת ה-rewrites"
+  },
+  "markers": {
+    "classified_before_probe_was_written": true,
+    "new_flipped_0_to_source": {
+      "note_matched": "0 → 3",
+      "זה הנימוק שהתאים": "0 → 2",
+      "מונח החיפוש נוסע פנימה": "0 → 1",
+      "const q = lastFilters.q;": "0 → 1",
+      "call(\"case\", q ? { id, q } : { id })": "0 → 1",
+      "מה שהוקלד בחיפוש נמצא בטקסט הזה": "0 → 1",
+      "הסימן מתאר ואינו מסנן": "0 → 1",
+      "0097": "0 → 5",
+      "p_q null בכל פתיחה": "0 → 1"
+    },
+    "rejected_candidate": {
+      "marker": "והשורה שנלחצה אינה תשובה לה",
+      "src": 0,
+      "live": 0,
+      "why": "שבור על פני שתי שורות הערה במקור — מסומן שמחזיר 0 בשני הצדדים אינו בקרה אלא מדידה שלא נעשתה"
+    },
+    "reclassified": {
+      "marker": "נמצאה לפי הנימוק",
+      "from": "מועמד בקרה (מסומן NEW של 4da7665)",
+      "to": "DIFF",
+      "measured": "2 → 3",
+      "why": "התיעוד החדש מזכיר אותו בשמו; מסומן שגדל ונספר כבקרה היה מפיל את old_unchanged"
+    },
+    "diff_grew_to_source": {
+      "Object.hasOwn": "12 → 14",
+      "s.className = \"stale\"": "18 → 19",
+      "lastFilters": "3 → 7",
+      "td.append": "17 → 18",
+      "0096": "3 → 4",
+      "q-phone": "5 → 6",
+      "נמצאה לפי הנימוק": "2 → 3"
+    },
+    "old_control_count": 54,
+    "old_unchanged_before_and_after": true,
+    "closest_control": "matched_in_note נשאר 3 — השדה המקביל בדיוק בשורת הרשימה"
+  },
+  "http": {
+    "before": {
+      "https://more30.com/bkalot-studio/admin": { "status": 200, "bytes": 146687, "new_zero_in_live": true, "new_equals_source": false, "diff_below_source": true, "old_unchanged": true },
+      "https://more30.com/bkalot-studio/admin/": { "status": 200, "bytes": 146687, "new_zero_in_live": true, "new_equals_source": false, "diff_below_source": true, "old_unchanged": true }
+    },
+    "after": {
+      "https://more30.com/bkalot-studio/admin": { "status": 200, "bytes": 151497, "new_equals_source": true, "diff_equals_source": true, "old_unchanged": true },
+      "https://more30.com/bkalot-studio/admin/": { "status": 200, "bytes": 151497, "new_equals_source": true, "diff_equals_source": true, "old_unchanged": true }
+    },
+    "bytes_math": "146,687 → 151,497 = 151,261 + 236, דלתת NetFree הידועה",
+    "replacement_chars": 0,
+    "double_encoded": 0,
+    "control_urls_unchanged": { "https://more30.com/bkalot-studio/": 32558, "https://more30.com/": 3517 }
+  },
+  "browser_on_production": {
+    "url": "https://more30.com/bkalot-studio/admin",
+    "viewport": "1280x900",
+    "login": "דרך המסך, חשבון 114 שנוצר ב-bkalot_clone_admin_create ולא בהזרקת hash",
+    "search": "הקלדה תו-תו ולחיצה על «הצג» — לא קריאה מסקריפט",
+    "case": "#376 (contact 383) «אברהם ישראלי» 0501230011, kind=info, queued=false",
+    "runs": [
+      { "q": "המס הקודמת", "signs": 1, "on_row": "המסמכים שצורפו שייכים לשנת המס הקודמת", "sign_top_px": 142, "shot": "01-live-one-sign.png", "md5": "A1CDC606" },
+      { "q": "מסמכים", "signs": 2, "on_rows": ["הפונה ביקש לצרף מסמכים נוספים בשבוע הבא", "המסמכים שצורפו שייכים לשנת המס הקודמת"], "sign_top_px": 103, "shot": "02-live-two-signs.png", "md5": "1B95EA22" },
+      { "q": "", "signs": 0, "control": "בלי מונח חיפוש — המסך שותק", "shot": "03-live-control-no-q.png", "md5": "8606C22D" },
+      { "q": "אברהם", "signs": 0, "control": "נמצאה בזכות השם ולא הנימוק — הסימן אינו מופיע", "shot": "04-live-control-by-name.png", "md5": "8606C22D" }
+    ],
+    "sign_title": "מה שהוקלד בחיפוש נמצא בטקסט הזה, ובזכותו הפנייה עלתה ברשימה. הסימן מתאר ואינו מסנן — יותר משורה אחת יכולה לשאת אותו",
+    "heading_scrolled_to": "רצף ההכרעות (3 מעברים)",
+    "png_md5_note": "שלושה MD5 שונים על ארבעה קבצים; שני הזהים הם שתי הבקרות, שבשתיהן אין סימן — screenshot-evidence-below-the-fold נמדד ולא הונח",
+    "console_messages": 0
+  },
+  "test_mode": {
+    "queued": false,
+    "documents": 0,
+    "outbound_queue": "8 לפני ואחרי",
+    "sent_at_rows": 0,
+    "delivery_log": "3 לפני ואחרי",
+    "cases_in_sent": 0,
+    "case_rights": 0,
+    "outgoing_calls": 0
+  },
+  "baseline": {
+    "before": { "cases": 0, "case_status_log": 0, "case_rights": 0, "documents": 0, "admin_users": 1, "admin_sessions": 5, "templates": 2, "contacts": 4, "outbound_queue": 8, "delivery_log": 3, "rights_catalog": 888 },
+    "after_rollback": { "cases": 0, "case_status_log": 0, "case_rights": 0, "documents": 0, "admin_users": 1, "admin_sessions": 5, "templates": 2, "contacts": 4, "outbound_queue": 8, "delivery_log": 3, "rights_catalog": 888, "admin_cases_total_on_empty_params": 0 },
+    "rollback_method": "פקודות נפרדות לפי טבלה — cte-delete-sees-prestatement-snapshot; ואיש הקשר לפי id ולא לפי טלפון מנורמל. ⚠️ contacts יושבת ב-bkalot_auto ולא ב-bkalot_clone",
+    "deleted": { "case_status_log": 3, "cases": [376], "contacts": [383], "admin_sessions_of": 114, "admin_users": [114] }
+  },
+  "protected": "אין נגיעה ב-08/09/bkalut-app/bkalot-admin/zr_*/NEDARIM3873 ולא בסכמות csj/csj_src/igud; ל-git add נמסר נתיב מפורש אחד ולא נקודה"
+}
