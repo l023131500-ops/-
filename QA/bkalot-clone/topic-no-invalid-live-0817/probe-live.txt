@@ -1,0 +1,61 @@
+QA 0817 — bkalot-clone: topic_no_invalid, both server reasons, measured live in production.
+
+Endpoint: https://uhnrgujbdxhhmoxcjria.supabase.co/functions/v1/bkalot-clone-intake
+Method: POST, PowerShell (Invoke-WebRequest), anon key — not the browser, so the
+client-side preflight() bound check in apps/37-bkalot-clone/index.html cannot
+intercept either request. This is exactly the gap the last commit (8e8bce4)
+left open: "topic_no_invalid branch from the server still not measured in
+production" — because the browser's own preflight (which mirrors 0080's SQL
+check) never lets an out-of-range or non-numeric topic_no reach the server
+through the visible form.
+
+--- Request 1: numeric, out of range (int4 overflow) ---
+Body: {"kind":"treatment","source":"form","full_name":"QA Topic No",
+"phone":"0500000000","email":"qa.topicno.0817@more30.com",
+"note":"QA 0817 topic_no_invalid live production check","consent":"true",
+"situation":"young_single","topic_no":"9999999999"}
+
+Response: HTTP 200
+{"ok": false, "error": "topic_no_invalid", "detail": "מספר הנושא גדול מכל מספר נושא שקיים במערכת"}
+
+--- Request 2: non-numeric ---
+Body: {"kind":"treatment","source":"form","full_name":"QA Topic No",
+"phone":"0500000000","email":"qa.topicno.0817@more30.com",
+"note":"QA 0817 topic_no_invalid non-numeric branch live check","consent":"true",
+"situation":"young_single","topic_no":"12ab"}
+
+Response: HTTP 200
+{"ok": false, "error": "topic_no_invalid", "detail": "מספר הנושא הוא מספר שלם — הפנייה מנותבת לפיו"}
+
+--- What this confirms ---
+1. 0080's fix is live: both requests return 200 with error=topic_no_invalid,
+   not the old 502 rpc_failed with a leaked Postgres SQLSTATE (22003) that
+   0080's own migration comment measured before the fix.
+2. Both "detail" strings returned by the server match whyTopicNoInvalid()
+   in apps/37-bkalot-clone/index.html:360-366 verbatim — the two client-side
+   reasons and the two server-side reasons (0080 lines 132-145) say the exact
+   same sentence for the exact same input, by construction (0079's decision
+   that both checks must agree).
+3. MESSAGES.topic_no_invalid (index.html:292, "מספר הנושא אינו תקין. תקנו
+   ושלחו שוב.") is already present — the gap flagged in 0080's own trailing
+   comment ("MESSAGES still doesn't know topic_no_invalid") was closed by a
+   later commit before this one; not re-opened here.
+4. CODE_FIELD.topic_no_invalid -> "topic_no" (index.html:349) plus the
+   dedicated branch at index.html:592-596 (calls whyTopicNoInvalid(payload)
+   and markInvalid($("topic_no"))) is the code path that would run if a
+   browser ever received this exact response body — same fail()/markInvalid()
+   mechanism already measured live for phone/full_name in QA/bkalot-clone/
+   stale-mark-deploy-0817/. Not re-measured with a screenshot here because the
+   browser's own preflight makes this server branch unreachable from the
+   visible form — there is nothing a screenshot of the form would show beyond
+   what stale-mark-deploy-0817 already measured for the same fail()/
+   markInvalid() call.
+
+Not written: both topic_no_invalid checks in 0080 (lines 131-146) return
+before the insert into bkalot_auto.contacts (line 162) and
+bkalot_clone.cases (line 171) — read directly from the deployed migration
+source, not assumed. Neither request created a contact or a case row.
+
+Protected: no read or write to apps/08-bkalut-app, apps/09-bkalot-admin,
+apps/37-bkalot-clone, zr_*, NEDARIM3873. Test mode — no outbound message,
+no queue row (topic_no_invalid returns before any row exists to queue).
