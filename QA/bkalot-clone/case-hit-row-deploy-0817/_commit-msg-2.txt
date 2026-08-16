@@ -1,0 +1,36 @@
+שכפול בקלות שכבה 3: ה-heartbeat של הפריסה לא נכתב — ה-MCP נפל אחרי הגלגול-אחורה (§5ב, ראיות)
+
+531ba5a הושלמה במלואה — נפרסה, אומתה, גולגלה אחורה ונדחפה. מה שלא הצליח הוא
+הרישום בלבד: ה-insert ל-core.run_progress החזיר permission_error «Unable to
+verify organization membership» מה-MCP של Supabase, וכך גם כל קריאה שאחריו —
+כולל `select max(id)` — לאורך כשבע דקות של ניסיונות חוזרים בארבעה מרווחים.
+
+⚠️ התקלה היא בשער ולא בהרשאה, ונאמר ולא הונח: אותו חיבור בדיוק הריץ דקות ספורות
+קודם את מדידת הבסיס, את הזריעה (bkalot_clone_intake ושלוש קריאות
+bkalot_clone_admin_set_status), את מדידת המיקומים מהמסד ואת חמש פקודות המחיקה של
+הגלגול-אחורה. מה שנשבר נשבר בין הגלגול-אחורה ל-insert.
+
+⚠️ ואין דרך שנייה: core.run_progress אינה נגישה מכאן בשום מסלול אחר. המפתח שעל
+הדיסק הוא anon ומקבל 406 על core — heartbeat-needs-mcp-anon-key-cannot — וה-PAT
+של ה-Management API יושב ב-core.secrets עצמה ולא בקובץ
+(supabase-pat-covers-ten-projects), כלומר הדרך היחידה לקרוא אותו היא בדיוק הדרך
+שנפלה. ⚠️ נמדד ולא הונח: .supabase/access-token אינו קיים בשלושת המיקומים,
+$env:SUPABASE_ACCESS_TOKEN אינו מוגדר, ושלושת קובצי ה-.env.local שנבדקו מחזיקים
+VITE_SUPABASE_URL ומפתח anon בלבד.
+
+לכן השורה נכתבה כקובץ ולא נזרקה: _heartbeat-pending.sql מחזיק את ה-insert
+המלא — אותו phase, אותו task ואותו note שהיו נכתבים — ובראשו הוראה לריצה הבאה
+להריץ אותו **לפני** שהיא מסיקה מה כבר נעשה. בלי זה heartbeat 686 ייקרא כאחרון,
+והפריסה שכבר הונחה תיראה כלבנה הבאה — heartbeat-lags-a-crashed-run בכיוון
+ההפוך: הפעם היומן מפגר אחרי ריצה שהצליחה, לא אחרי ריצה שקרסה.
+
+⚠️ ומה שנרשם ב-task עצמו אומר על עצמו שנכתב באיחור ומקובץ, ושהתאריך ב-at אינו
+זמן הריצה — כדי שקורא עתידי לא יסיק מהחותמת סדר שלא היה.
+
+מוגן: git status ריק על apps/08-bkalut-app, apps/09-bkalot-admin,
+apps/37-bkalot-clone ו-supabase; אין נגיעה ב-zr_*/NEDARIM3873 ולא בסכמות
+csj/csj_src/igud. ל-git add נמסרו שני נתיבים מפורשים ולא נקודה. ההודעה נמסרה
+ב-commit -F — here-string-commit-fails-silently.
+
+מצב המסד ללא שינוי מ-531ba5a: בסיס בדיוק, ו-admin_cases על פרמטרים ריקים
+מחזירה total 0. אין כאן פריסה, אין שינוי קוד ואין מיגרציה.
