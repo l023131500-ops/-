@@ -135,6 +135,10 @@ table{width:100%; border-collapse:collapse; font-size:14.5px}
 th,td{text-align:start; padding:7px 10px; border-bottom:1px solid var(--line)}
 th{color:var(--text-soft); font-weight:600; font-size:13.5px}
 td.num{direction:ltr; text-align:start; font-family:ui-monospace,"Consolas",monospace; font-size:13px}
+/* הנימוק של המכריע. pre-wrap שומר שורות שהוא הקליד; overflow-wrap שובר מחרוזת
+   של 500 תווים בלי רווח אחד — כזו נמדדה ב-0091 — במקום למתוח את הטבלה. אין
+   חיתוך: התקרה נאכפת בכתיבה (0090) ולא כאן. */
+td.why{white-space:pre-wrap; overflow-wrap:anywhere; max-width:34ch}
 .stale{color:var(--accent); font-size:12.5px; font-weight:700}
 pre{
   background:var(--surface-2); border:1px solid var(--line); border-radius:var(--r-sm);
@@ -1024,6 +1028,11 @@ pre{
     // (4) הכותרת סופרת מעברים ואומרת זאת. לחיצה חוזרת על אותו סטטוס אינה כותבת
     //     שורה (האילוץ case_status_log_is_a_change), ולכן ארבע לחיצות יכולות
     //     להיות שלושה מעברים — מספר שנקרא כ«כמה פעמים לחצו» היה שגוי.
+    //
+    // (5) «למה» היא העמודה האחרונה ולא השנייה. היא היחידה שנושאת טקסט חופשי של
+    //     עד 500 תווים, ועמודה כזו באמצע הייתה דוחקת את ארבע העמודות הקצרות
+    //     שלפיהן קוראים את השורה. הרצף נקרא קודם — מ־, אל, מי, מתי — והנימוק
+    //     נקרא אחריו, כמו שהטבלה עצמה נקראת אחרי הכפתורים.
     const hist = data.status_history;
     if (!Object.hasOwn(data, "status_history")) {
       body.append(h3("רצף ההכרעות"));
@@ -1038,7 +1047,7 @@ pre{
     } else if (Array.isArray(hist) && hist.length) {
       body.append(h3(`רצף ההכרעות (${countHe(hist.length, "מעבר אחד", "מעברים")})`));
       const t = document.createElement("table");
-      t.innerHTML = "<thead><tr><th>מ־</th><th>אל</th><th>מי הכריע</th><th>מתי</th></tr></thead>";
+      t.innerHTML = "<thead><tr><th>מ־</th><th>אל</th><th>מי הכריע</th><th>מתי</th><th>למה</th></tr></thead>";
       const tb = document.createElement("tbody");
       for (const r of hist) {
         const tr = document.createElement("tr");
@@ -1051,7 +1060,10 @@ pre{
         const when = document.createElement("td");
         when.textContent = fmtDate(r.at);
         when.title = `שורת יומן #${r.id} — מפתח שורה ולא מונה; מספרי היומן אינם רצף`;
-        tr.append(from, to, who, when);
+        const why = document.createElement("td");
+        why.className = "why";
+        fillHistoryNoteCell(why, r);
+        tr.append(from, to, who, when, why);
         tb.append(tr);
       }
       t.append(tb);
@@ -1701,6 +1713,47 @@ pre{
     s.textContent = `מנהל #${r.admin_id} · החשבון אינו קיים עוד`;
     s.title = "הזהות נשמרה על המעבר בזמן ההכרעה, וחשבון הניהול שהיא מצביעה עליו כבר אינו במסד";
     td.append(s);
+  }
+
+  // ── «למה» של שורת היומן ───────────────────────────────────────────────────
+  // 0090 בנתה את case_status_log.note ו-0091 החזירה את המפתח בשורת היומן; כאן
+  // הוא נאמר. עד עכשיו הנימוק נאסף, נשמר, ולא היה מסך אחד שמוציא אותו — מנהל
+  // שפתח פנייה שנדחתה ראה מי הכריע, מה הוכרע ומתי, ולא את המשפט שהמכריע טרח
+  // להקליד. שלושה מצבים ולא שניים, אותו כלל של fillHistoryWhoCell:
+  //
+  // (1) המפתח אינו קיים — תשובה מקורא שקדם ל-0091. «לא נומק» עליה הוא שקר:
+  //     הנימוק יכול לשבת במסד ולא לחזור, וזה בדיוק מה שנמדד שם — has_note_key
+  //     false בכל חמש שורות היומן בעוד במסד יושבים 52, 59, 500 ו-57 תווים.
+  //     Object.hasOwn ולא בדיקת ערך, כמו בבלוק כולו למעלה.
+  //
+  // (2) null — המכריע לא נימק. ריק, רווחים בלבד והיעדר מפתח בגוף הבקשה הם
+  //     כולם null אחד במסד (0090 הכרעה (4) והאילוץ note_not_blank), ולכן אין
+  //     כאן מצב רביעי של «נימוק ריק»; «—» ולא span של stale, מפני שזה מצב
+  //     תקין ולא נתון חסר.
+  //
+  // (3) הטקסט כפי שנשמר, שלם. אין חיתוך ואין «…»: תקרת 500 התווים נאכפת
+  //     בכתיבה ומחזירה note_too_long לפני שהסטטוס משתנה (0090 הכרעה (5)),
+  //     וקורא שחותך היה מסתיר בשקט את סופו של נימוק ארוך — כלומר בדיוק את מה
+  //     שנכתב בזהירות. הטקסט נכנס כ-textContent ולא כ-HTML: הוא הוקלד בידי
+  //     אדם ונשמר כפי שהוא.
+  function fillHistoryNoteCell(td, r) {
+    td.textContent = "";
+    td.removeAttribute("title");
+    if (!Object.hasOwn(r, "note")) {
+      const s = document.createElement("span");
+      s.className = "stale";
+      s.textContent = "השרת אינו מחזיר את הנימוק";
+      s.title = "התשובה הגיעה מקורא שאינו יודע על שדה הנימוק — זה אינו «לא נומק» אלא היעדר השדה עצמו";
+      td.append(s);
+      return;
+    }
+    if (r.note == null) {
+      td.textContent = "—";
+      td.title = "לא נכתב נימוק על המעבר הזה";
+      return;
+    }
+    td.textContent = r.note;
+    td.title = `${r.note.length} תווים, כפי שנשמרו`;
   }
 
   // ── גוף המסמך ─────────────────────────────────────────────────────────────

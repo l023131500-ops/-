@@ -1,0 +1,100 @@
+{
+  "brick": "UI — מסך הפנייה מצייר את הנימוק ששמור",
+  "line_taken_from": "c6e4a81 (heartbeat 632): «apps/37-bkalot-clone/admin.html אינו מצייר את הנימוק בטבלת «רצף ההכרעות» ואין בו תיבה להקליד אותו. התשובה כוללת אותו מעכשיו ואין מי שמציג אותו — זו הלבנה הבאה (UI)»",
+  "scope": {
+    "files_changed": ["apps/37-bkalot-clone/admin.html"],
+    "migration": false,
+    "edge_function_deploy": false,
+    "portal_deploy": false,
+    "intake_version": "v1 — לא נגעה",
+    "admin_version": "v8 — לא נגעה",
+    "half_taken": "התצוגה בלבד. תיבת ההקלדה היא הלבנה הבאה ואינה כאן — הכתיבה קיימת בשער מאז 0090 ואינה חסומה"
+  },
+  "seed": {
+    "admin": { "id": 93, "name": "קורא הנימוק" },
+    "cases": { "A": 256, "B": 257, "C": 258 },
+    "log_rows": [
+      { "id": 53, "case": 256, "note_chars": 52 },
+      { "id": 54, "case": 256, "note_chars": 59 },
+      { "id": 55, "case": 257, "note_chars": null },
+      { "id": 56, "case": 258, "note_chars": 500 }
+    ],
+    "path": "intake מעל HTTP עם מפתח anon; כל מעבר דרך /set-status שמאחורי השער עם טוקן אמיתי אחרי כניסה דרך המסך"
+  },
+  "browser": {
+    "viewport": "1280x900",
+    "served_from": "QA/bkalot-clone/status-history-ui-0816/serve.mjs מול apps/37-bkalot-clone, פורט 8139",
+    "edge_and_db": "החיים — הקוד שבמקור מול המוצר",
+    "header": ["מ־", "אל", "מי הכריע", "מתי", "למה"],
+    "states": {
+      "A_two_notes": {
+        "screenshot": "01-two-notes.png",
+        "row_53": { "note_chars": 52, "title": "52 תווים, כפי שנשמרו", "cell_class": "why" },
+        "row_54": { "note_chars": 59, "title": "59 תווים, כפי שנשמרו", "cell_class": "why" },
+        "measured": "שני הנימוקים חוזרים, כל אחד על שורתו ובסדר — «לקחתי לטיפול» לפני «נדחתה». השורה שמעל הכפתורים אומרת «הוכרעה 16.08.2026, 05:42 · קורא הנימוק» בלבד, כלומר את ההכרעה האחרונה"
+      },
+      "B_no_note": {
+        "screenshot": "02-no-note.png",
+        "cell_text": "—",
+        "cell_html": "—",
+        "title": "לא נכתב נימוק על המעבר הזה",
+        "measured": "אין span של stale ואין טקסט שגיאה — «המכריע לא נימק» הוא מצב תקין ולא נתון חסר"
+      },
+      "C_500_chars": {
+        "screenshot": "03-500-chars.png",
+        "chars_in_cell": 500,
+        "title": "500 תווים, כפי שנשמרו",
+        "truncated": false,
+        "cell_width_px": 412,
+        "table_width_px": 950,
+        "document_scroll_width": 1265,
+        "document_client_width": 1265,
+        "horizontal_overflow": false,
+        "measured": "500 תווים בלי רווח אחד — נכנסים שלמים, נשברים לשתים-עשרה שורות בתוך התא, והטבלה אינה נמתחת"
+      },
+      "D_key_absent": {
+        "screenshot": null,
+        "why_not_photographed": "הקורא החי מחזיר את המפתח בכל שורה מאז c6e4a81, ולכן המצב הזה אינו ניתן לזריעה מול המוצר. צילום מול stub היה מצלם את ה-stub. הענף קיים בקוד (Object.hasOwn) ונמדד ב-0091 בצד השרת — has_note_key=false בכל חמש השורות לפני המיגרציה"
+      }
+    },
+    "screenshot_md5": {
+      "01-two-notes.png": "9BBE523B9466E09106368EC4A4B4D138",
+      "02-no-note.png": "55D757F00EDBD2D193246FC7592A0E9A",
+      "03-500-chars.png": "9818E97714729215B3C534D31F5133CE"
+    }
+  },
+  "source_vs_production": {
+    "url": "https://more30.com/bkalot-studio/admin.html (עם לוכסן ובלעדיו, cachebust)",
+    "http_status": 200,
+    "bytes": 88911,
+    "new_markers_production": { "th_why": 0, "css_td_why": 0, "fn_note_cell": 0 },
+    "new_markers_source": { "th_why": 1, "css_td_why": 1, "fn_note_cell": 2 },
+    "old_markers_both": { "th_who": "1=1", "h3_sequence": "4=4" },
+    "control_moved_to_diff": { "fn_who_cell": "3 בייצור, 4 במקור — ההערה החדשה של fillHistoryNoteCell מזכירה את fillHistoryWhoCell בשמה. זזה בטקסט ולא בקוד, ונרשמת ולא מתוקנת בשקט" },
+    "replacement_chars": 0,
+    "meaning": "בייצור מסך הפנייה עדיין אינו מצייר את הנימוק — הפריסה היא הלבנה הבאה"
+  },
+  "test_mode": {
+    "queued_on_intake": false,
+    "documents": 0,
+    "cases_in_sent": 0,
+    "outbound_queue": 8,
+    "outbound_queue_rows_with_sent_at": 0,
+    "delivery_log": 3,
+    "measured": "אין מייל, אין הודעה ואין מסמך שיצא החוצה"
+  },
+  "rollback": {
+    "method": "פקודות נפרדות לפי טבלה, כל אחת סופרת את מה שהיא עצמה מחקה — תקלת cte-delete-sees-prestatement-snapshot; ואנשי הקשר לפי id ולא לפי טלפון מנורמל — תקלת ac6e523",
+    "deleted": { "case_status_log": 4, "case_rights": 126, "cases": 3, "contacts": 3, "admin_users": 1 },
+    "after": {
+      "cases": 0, "case_status_log": 0, "case_rights": 0, "documents": 0,
+      "admin_users": 1, "admin_sessions": 5, "templates": 2, "rights_catalog": 888,
+      "contacts": 4, "outbound_queue": 8, "outbound_queue_sent": 0, "delivery_log": 3
+    },
+    "verdict": "בסיס בדיוק"
+  },
+  "protected": {
+    "untouched": ["apps/08-bkalut-app", "apps/09-bkalot-admin", "supabase/functions", "bkalut-app", "bkalot-admin", "zr_*", "NEDARIM3873", "csj", "csj_src", "igud"],
+    "note": "שינוי הקוד הוא בקובץ אחד — apps/37-bkalot-clone/admin.html. אין מיגרציה, אין פריסה"
+  }
+}

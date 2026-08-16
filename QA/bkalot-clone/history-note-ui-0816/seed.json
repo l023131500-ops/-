@@ -1,0 +1,72 @@
+{
+  "admin": {
+    "id": 93,
+    "email": "qa-note-ui@more30.test"
+  },
+  "notes": {
+    "A_ONE_chars": 52,
+    "A_TWO_chars": 59,
+    "C_MAX_chars": 500,
+    "citizen_chars": 56
+  },
+  "cases": {
+    "A": {
+      "case_id": 256,
+      "contact_id": 263,
+      "rights": null,
+      "queued": false
+    },
+    "B": {
+      "case_id": 257,
+      "contact_id": 264,
+      "rights": null,
+      "queued": false
+    },
+    "C": {
+      "case_id": 258,
+      "contact_id": 265,
+      "rights": null,
+      "queued": false
+    }
+  },
+  "writes": {
+    "A": {
+      "one": {
+        "http_status": 200,
+        "ok": true,
+        "error": null,
+        "changed": true,
+        "log_id": 53,
+        "note_chars": 52
+      },
+      "two": {
+        "http_status": 200,
+        "ok": true,
+        "error": null,
+        "changed": true,
+        "log_id": 54,
+        "note_chars": 59
+      }
+    },
+    "B": {
+      "one": {
+        "http_status": 200,
+        "ok": true,
+        "error": null,
+        "changed": true,
+        "log_id": 55,
+        "note_chars": null
+      }
+    },
+    "C": {
+      "one": {
+        "http_status": 200,
+        "ok": true,
+        "error": null,
+        "changed": true,
+        "log_id": 56,
+        "note_chars": 500
+      }
+    }
+  }
+}
