@@ -1,0 +1,218 @@
+{
+  "phase": "before",
+  "src_bytes": 153395,
+  "urls": {
+    "https://more30.com/bkalot-studio/admin": {
+      "status": 200,
+      "bytes": 151497,
+      "new_zero_in_live": true,
+      "new_equals_source": false,
+      "diff_below_source": true,
+      "diff_equals_source": false,
+      "old_unchanged": true,
+      "replacement_chars": 0,
+      "double_encoded": 0,
+      "new": [
+        {
+          "m": "איש הקשר נמחק",
+          "src": 2,
+          "live": 0
+        },
+        {
+          "m": "רק הזהות שלה הוסרה מהמאגר",
+          "src": 1,
+          "live": 0
+        },
+        {
+          "m": "Object.hasOwn(c, \"contact\")",
+          "src": 2,
+          "live": 0
+        },
+        {
+          "m": "const who = c.contact?.full_name",
+          "src": 1,
+          "live": 0
+        },
+        {
+          "m": "אמר שאין שם, ולא למה אין",
+          "src": 1,
+          "live": 0
+        },
+        {
+          "m": "שרת ישן מלפני 0088",
+          "src": 1,
+          "live": 0
+        },
+        {
+          "m": "הכותרת היא זו שנשארה",
+          "src": 1,
+          "live": 0
+        },
+        {
+          "m": "האחת «המשך לטפל», השנייה «רענן»",
+          "src": 1,
+          "live": 0
+        },
+        {
+          "m": "returning id של ה-upsert",
+          "src": 1,
+          "live": 0
+        },
+        {
+          "m": "שנולדה בלעדיו",
+          "src": 1,
+          "live": 0
+        }
+      ],
+      "diff": [
+        {
+          "m": "Object.hasOwn",
+          "src": 16,
+          "live": 14
+        },
+        {
+          "m": "— ללא איש קשר —",
+          "src": 2,
+          "live": 1
+        },
+        {
+          "m": "ללא איש קשר",
+          "src": 4,
+          "live": 2
+        },
+        {
+          "m": "s.className = \"stale\"",
+          "src": 20,
+          "live": 19
+        },
+        {
+          "m": "הפנייה עצמה נשמרה במלואה",
+          "src": 2,
+          "live": 1
+        },
+        {
+          "m": "0088",
+          "src": 7,
+          "live": 6
+        },
+        {
+          "m": "מי הכריע",
+          "src": 14,
+          "live": 13
+        }
+      ],
+      "control_mismatches": []
+    },
+    "https://more30.com/bkalot-studio/admin/": {
+      "status": 200,
+      "bytes": 151497,
+      "new_zero_in_live": true,
+      "new_equals_source": false,
+      "diff_below_source": true,
+      "diff_equals_source": false,
+      "old_unchanged": true,
+      "replacement_chars": 0,
+      "double_encoded": 0,
+      "new": [
+        {
+          "m": "איש הקשר נמחק",
+          "src": 2,
+          "live": 0
+        },
+        {
+          "m": "רק הזהות שלה הוסרה מהמאגר",
+          "src": 1,
+          "live": 0
+        },
+        {
+          "m": "Object.hasOwn(c, \"contact\")",
+          "src": 2,
+          "live": 0
+        },
+        {
+          "m": "const who = c.contact?.full_name",
+          "src": 1,
+          "live": 0
+        },
+        {
+          "m": "אמר שאין שם, ולא למה אין",
+          "src": 1,
+          "live": 0
+        },
+        {
+          "m": "שרת ישן מלפני 0088",
+          "src": 1,
+          "live": 0
+        },
+        {
+          "m": "הכותרת היא זו שנשארה",
+          "src": 1,
+          "live": 0
+        },
+        {
+          "m": "האחת «המשך לטפל», השנייה «רענן»",
+          "src": 1,
+          "live": 0
+        },
+        {
+          "m": "returning id של ה-upsert",
+          "src": 1,
+          "live": 0
+        },
+        {
+          "m": "שנולדה בלעדיו",
+          "src": 1,
+          "live": 0
+        }
+      ],
+      "diff": [
+        {
+          "m": "Object.hasOwn",
+          "src": 16,
+          "live": 14
+        },
+        {
+          "m": "— ללא איש קשר —",
+          "src": 2,
+          "live": 1
+        },
+        {
+          "m": "ללא איש קשר",
+          "src": 4,
+          "live": 2
+        },
+        {
+          "m": "s.className = \"stale\"",
+          "src": 20,
+          "live": 19
+        },
+        {
+          "m": "הפנייה עצמה נשמרה במלואה",
+          "src": 2,
+          "live": 1
+        },
+        {
+          "m": "0088",
+          "src": 7,
+          "live": 6
+        },
+        {
+          "m": "מי הכריע",
+          "src": 14,
+          "live": 13
+        }
+      ],
+      "control_mismatches": []
+    }
+  },
+  "control_urls": {
+    "https://more30.com/bkalot-studio/": {
+      "status": 200,
+      "bytes": 32558
+    },
+    "https://more30.com/": {
+      "status": 200,
+      "bytes": 3517
+    }
+  }
+}

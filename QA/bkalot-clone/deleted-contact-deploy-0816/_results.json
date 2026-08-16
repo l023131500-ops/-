@@ -1,0 +1,134 @@
+{
+  "step": "deleted-contact-deploy-0816",
+  "line_taken_from": "263ad14 (heartbeat 659): «פתוח: הלבנה הבאה היא הפריסה — בייצור (more30.com/bkalot-studio/admin) השורה עדיין אומרת «— ללא איש קשר —»»",
+  "scope": "פריסה בלבד — אין שינוי קוד, אין מיגרציה, אין פריסת edge function",
+  "unchanged": {
+    "bkalot-clone-admin": "v9",
+    "bkalot-clone-intake": "v1",
+    "schema_migrations_head": "20260816131352 (0097)",
+    "apps/37-bkalot-clone": "לא נגעה",
+    "supabase/": "לא נגעה"
+  },
+  "file_deployed_is_the_source": {
+    "source_bytes": 153395,
+    "source_md5": "F3FBD776683A3C784517F6B43AF0137C",
+    "dist_before_staging_bytes": 151261,
+    "dist_before_staging_md5": "27E6230C869D63CE8477D8896B4A976C",
+    "dist_after_staging_bytes": 153395,
+    "dist_after_staging_md5": "F3FBD776683A3C784517F6B43AF0137C",
+    "note": "ה-MD5 שישב ב-dist לפני ה-staging הוא בדיוק מה ש-bf6e895 פרס — שרשרת הפריסות נמדדה ולא הונחה"
+  },
+  "deployment": {
+    "id": "dpl_4eNtNtpDk63NRZNnM5GZHv28wvf3",
+    "readyState": "READY",
+    "target": "production",
+    "aliased": "https://more30.com",
+    "files": 38,
+    "from": "portal/dist",
+    "prebuilt": false,
+    "why_not_prebuilt": "הדגל מפיל את vercel.json ואיתו את מפת ה-rewrites"
+  },
+  "markers": {
+    "classified_before_probe_was_written": true,
+    "new_flipped_0_to_source": {
+      "איש הקשר נמחק": "0 → 2",
+      "רק הזהות שלה הוסרה מהמאגר": "0 → 1",
+      "Object.hasOwn(c, \"contact\")": "0 → 2",
+      "const who = c.contact?.full_name": "0 → 1",
+      "אמר שאין שם, ולא למה אין": "0 → 1",
+      "שרת ישן מלפני 0088": "0 → 1",
+      "הכותרת היא זו שנשארה": "0 → 1",
+      "האחת «המשך לטפל», השנייה «רענן»": "0 → 1",
+      "returning id של ה-upsert": "0 → 1",
+      "שנולדה בלעדיו": "0 → 1"
+    },
+    "diff_grew_to_source": {
+      "Object.hasOwn": "14 → 16",
+      "— ללא איש קשר —": "1 → 2",
+      "ללא איש קשר": "2 → 4",
+      "s.className = \"stale\"": "19 → 20",
+      "הפנייה עצמה נשמרה במלואה": "1 → 2",
+      "0088": "6 → 7",
+      "מי הכריע": "13 → 14"
+    },
+    "reclassified": {
+      "marker": "מי הכריע",
+      "from": "מועמד בקרה",
+      "to": "DIFF",
+      "measured": "13 → 14",
+      "why": "התיעוד החדש מזכיר אותו בשמו («שלושה מצבים ולא שניים, כמו ב«מי הכריע»»); מסומן שגדל ונספר כבקרה היה מפיל את old_unchanged. הועבר לפני הריצה הראשונה ולא אחריה"
+    },
+    "old_control_count": 71,
+    "old_unchanged_before_and_after": true,
+    "closest_controls": "row-name נשאר 2 ו-case-title נשאר 2 — שני המקומות שבדיוק מה שבתוכם השתנה, ושמם לא זז. case-body נשאר 2",
+    "not_measured": "«הפנייה עצמה נשמרה במלואה» סווג DIFF ולא NEW מפני שגוף מסך הפנייה כבר אמר אותו לפני הפעימה — מסומן שנספר כ-NEW כאן היה מחזיר ≥1 בייצור ומפיל את new_zero_in_live בלי שדבר יהיה שבור"
+  },
+  "http": {
+    "before": {
+      "https://more30.com/bkalot-studio/admin": { "status": 200, "bytes": 151497, "new_zero_in_live": true, "new_equals_source": false, "diff_below_source": true, "old_unchanged": true },
+      "https://more30.com/bkalot-studio/admin/": { "status": 200, "bytes": 151497, "new_zero_in_live": true, "new_equals_source": false, "diff_below_source": true, "old_unchanged": true }
+    },
+    "after": {
+      "https://more30.com/bkalot-studio/admin": { "status": 200, "bytes": 153631, "new_equals_source": true, "diff_equals_source": true, "old_unchanged": true },
+      "https://more30.com/bkalot-studio/admin/": { "status": 200, "bytes": 153631, "new_equals_source": true, "diff_equals_source": true, "old_unchanged": true }
+    },
+    "bytes_math": "151,497 → 153,631 = 153,395 + 236, דלתת NetFree הידועה",
+    "replacement_chars": 0,
+    "double_encoded": 0,
+    "control_urls_unchanged": { "https://more30.com/bkalot-studio/": 32558, "https://more30.com/": 3517 }
+  },
+  "browser_on_production": {
+    "url": "https://more30.com/bkalot-studio/admin",
+    "viewport": "1280x900",
+    "login": "דרך המסך, חשבון 116 שנוצר ב-bkalot_clone_admin_create ולא בהזרקת hash",
+    "cachebuster": "כן — מיד אחרי פריסה הכתובת החשופה מגישה את הישן לדפדפן חדש",
+    "seed": "#380 (contact 387) «אברהם ישראלי» 0501230011 ו-#381 (contact 388) «שרה כהן» 0501230022, שתיהן kind=info queued=false, דרך נתיב הציבור מעל HTTP עם מפתח anon",
+    "scaffold": "⚠️ מחיקת contact 387 נעשתה ב-SQL ולא מהמסך — אין לה נתיב HTTP. פיגום ולא הטענה. אחרי המחיקה: 380 שרדה עם contact_id null, 381 לא זזה",
+    "count": "2 פניות",
+    "rows": [
+      { "id": "#381", "name": "שרה כהן", "sign": null, "control": "איש הקשר קיים — הסימן אינו מופיע" },
+      { "id": "#380", "name": "איש הקשר נמחק", "sign": "איש הקשר נמחק", "sign_title": "הפנייה עצמה נשמרה במלואה; רק הזהות שלה הוסרה מהמאגר.", "sign_top_px": 454 }
+    ],
+    "case_gone_screen": {
+      "title": "פנייה #380 — איש הקשר נמחק",
+      "title_top_px": 119,
+      "contact_section": "איש הקשר של הפנייה נמחק. הפנייה עצמה נשמרה במלואה.",
+      "why_both_read": "הכותרת והגוף אומרים עכשיו את אותו הדבר; הפער שנסגר ב-263ad14 היה שהם אמרו שני דברים שונים על אותה פנייה"
+    },
+    "case_kept_screen": {
+      "title": "פנייה #381 — שרה כהן",
+      "title_top_px": 119,
+      "contact_section": "שם·שרה כהן·טלפון·0501230022·דוא״ל·test@more30.com·שלוחה·—·הסכמה·כן·מקור·form",
+      "control": "אותה כותרת בדיוק בנוסח הישן — הנוסח החדש אינו דולק תמיד"
+    },
+    "screenshots": [
+      { "file": "01-live-list.png", "bytes": 37396, "md5": "EDAAD211" },
+      { "file": "02-live-case-gone.png", "bytes": 56772, "md5": "A0081356" },
+      { "file": "03-live-case-kept.png", "bytes": 54802, "md5": "F568C510" }
+    ],
+    "png_md5_note": "שלושה MD5 שונים על שלושה קבצים — screenshot-evidence-below-the-fold נמדד ולא הונח; הצילום נשאר בראש הדף מפני שהכותרת היא מה שהשתנה",
+    "console": {
+      "app_messages": 0,
+      "one_message": "500 על netfree.link/api/user/payment/payment-status",
+      "why_not_the_app": "⚠️ ההודעה נרשמה בתחילה בלי כתובת, ו-500 בלי מקור אינו ראיה אלא חשד. console-url.mjs חזר על אותו מסלול ורשם את כתובת כל תגובה שאינה 2xx/3xx — היחידה היא הזרקת NetFree, ואפס הודעות מהאפליקציה עצמה"
+    }
+  },
+  "test_mode": {
+    "queued": false,
+    "documents": 0,
+    "outbound_queue": "8 לפני ואחרי",
+    "sent_at_rows": 0,
+    "delivery_log": "3 לפני ואחרי",
+    "cases_in_sent": 0,
+    "case_rights": 0,
+    "outgoing_calls": 0,
+    "note": "kind=info ולא treatment, ולכן case_rights 0 לאורך כל הריצה; מה שנפרס הוא HTML ואין בו ולו כתיבה חדשה אחת"
+  },
+  "baseline": {
+    "before": { "cases": 0, "case_status_log": 0, "case_rights": 0, "documents": 0, "admin_users": 1, "admin_sessions": 5, "templates": 2, "contacts": 4, "outbound_queue": 8, "delivery_log": 3, "rights_catalog": 888, "schema_migrations_head": "20260816131352" },
+    "after_rollback": { "cases": 0, "case_status_log": 0, "case_rights": 0, "documents": 0, "admin_users": 1, "admin_sessions": 5, "templates": 2, "contacts": 4, "outbound_queue": 8, "delivery_log": 3, "rights_catalog": 888, "admin_cases_total_on_empty_params": 0 },
+    "rollback_method": "פקודות נפרדות לפי טבלה — cte-delete-sees-prestatement-snapshot; ואיש הקשר לפי id ולא לפי טלפון מנורמל. ⚠️ contacts יושבת ב-bkalot_auto ולא ב-bkalot_clone",
+    "deleted": { "case_status_log": 0, "cases": [380, 381], "contacts": [388], "admin_sessions_of": 116, "admin_users": [116], "note": "contact 387 נמחק כחלק מהמדידה עצמה ולא בגלגול אחורה" }
+  },
+  "protected": "אין נגיעה ב-08/09/bkalut-app/bkalot-admin/zr_*/NEDARIM3873 ולא בסכמות csj/csj_src/igud; ל-git add נמסר נתיב מפורש אחד ולא נקודה"
+}

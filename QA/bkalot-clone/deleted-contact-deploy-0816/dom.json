@@ -1,0 +1,35 @@
+{
+  "url": "https://more30.com/bkalot-studio/admin",
+  "case_gone": 380,
+  "case_kept": 381,
+  "console": [
+    "error: Failed to load resource: the server responded with a status of 500 ()"
+  ],
+  "count": "2 פניות",
+  "rows": [
+    {
+      "id": "#381",
+      "name": "שרה כהן",
+      "sign": null,
+      "sign_title": null,
+      "sign_top_px": null
+    },
+    {
+      "id": "#380",
+      "name": "איש הקשר נמחק",
+      "sign": "איש הקשר נמחק",
+      "sign_title": "הפנייה עצמה נשמרה במלואה; רק הזהות שלה הוסרה מהמאגר.",
+      "sign_top_px": 454
+    }
+  ],
+  "case_gone_screen": {
+    "title": "פנייה #380 — איש הקשר נמחק",
+    "title_top_px": 119,
+    "contact_section": "איש הקשר של הפנייה נמחק. הפנייה עצמה נשמרה במלואה."
+  },
+  "case_kept_screen": {
+    "title": "פנייה #381 — שרה כהן",
+    "title_top_px": 119,
+    "contact_section": "שםשרה כהןטלפון0501230022דוא״לtest@more30.comשלוחה—הסכמהכןמקורform"
+  }
+}
