@@ -1,0 +1,215 @@
+{
+  "live": {
+    "tag": "live",
+    "target": 298,
+    "steps": {
+      "filtered": {
+        "ids": [
+          318,
+          317,
+          316,
+          315,
+          314,
+          313,
+          312,
+          311,
+          310,
+          309,
+          308,
+          307,
+          306,
+          305,
+          304,
+          303,
+          302,
+          301,
+          300,
+          299
+        ],
+        "count": "21 פניות · מוצגות 20",
+        "page_label": "עמוד 1 מתוך 2",
+        "empty": {
+          "hidden": true,
+          "top": 0,
+          "height": 0
+        },
+        "pager": {
+          "hidden": false,
+          "top": 2188,
+          "height": 46
+        },
+        "list_error": {
+          "hidden": true,
+          "top": 0,
+          "height": 0
+        },
+        "prev_disabled": true,
+        "next_disabled": false
+      },
+      "page2": {
+        "ids": [
+          298
+        ],
+        "count": "21 פניות · מוצגות 1",
+        "page_label": "עמוד 2 מתוך 2",
+        "empty": {
+          "hidden": true,
+          "top": 0,
+          "height": 0
+        },
+        "pager": {
+          "hidden": false,
+          "top": 446,
+          "height": 46
+        },
+        "list_error": {
+          "hidden": true,
+          "top": 0,
+          "height": 0
+        },
+        "prev_disabled": false,
+        "next_disabled": true
+      },
+      "back": {
+        "ids": [
+          318,
+          317,
+          316,
+          315,
+          314,
+          313,
+          312,
+          311,
+          310,
+          309,
+          308,
+          307,
+          306,
+          305,
+          304,
+          303,
+          302,
+          301,
+          300,
+          299
+        ],
+        "count": "20 פניות",
+        "page_label": "עמוד 1 מתוך 1",
+        "empty": {
+          "hidden": true,
+          "top": 0,
+          "height": 0
+        },
+        "pager": {
+          "hidden": true,
+          "top": 0,
+          "height": 0
+        },
+        "list_error": {
+          "hidden": true,
+          "top": 0,
+          "height": 0
+        },
+        "prev_disabled": true,
+        "next_disabled": true
+      }
+    },
+    "cases_sent": [
+      {
+        "status": "",
+        "kind": "",
+        "decided": "",
+        "sort": "",
+        "q": "",
+        "limit": 20,
+        "offset": 0
+      },
+      {
+        "status": "new",
+        "kind": "",
+        "decided": "",
+        "sort": "",
+        "q": "",
+        "limit": 20,
+        "offset": 0
+      },
+      {
+        "status": "new",
+        "kind": "",
+        "decided": "",
+        "sort": "",
+        "q": "",
+        "limit": 20,
+        "offset": 20
+      },
+      {
+        "status": "new",
+        "kind": "",
+        "decided": "",
+        "sort": "",
+        "q": "",
+        "limit": 20,
+        "offset": 20
+      },
+      {
+        "status": "new",
+        "kind": "",
+        "decided": "",
+        "sort": "",
+        "q": "",
+        "limit": 20,
+        "offset": 0
+      }
+    ],
+    "console": []
+  },
+  "ctl": {
+    "tag": "ctl",
+    "target": null,
+    "steps": {
+      "filtered": {
+        "ids": [],
+        "count": "אין פניות",
+        "page_label": "עמוד 1 מתוך 1",
+        "empty": {
+          "hidden": false,
+          "top": 342,
+          "height": 76
+        },
+        "pager": {
+          "hidden": true,
+          "top": 0,
+          "height": 0
+        },
+        "list_error": {
+          "hidden": true,
+          "top": 0,
+          "height": 0
+        },
+        "prev_disabled": true,
+        "next_disabled": true
+      }
+    },
+    "cases_sent": [
+      {
+        "status": "",
+        "kind": "",
+        "decided": "",
+        "sort": "",
+        "q": "",
+        "limit": 20,
+        "offset": 0
+      },
+      {
+        "status": "sent",
+        "kind": "",
+        "decided": "",
+        "sort": "",
+        "q": "",
+        "limit": 20,
+        "offset": 0
+      }
+    ],
+    "console": []
+  }
+}
