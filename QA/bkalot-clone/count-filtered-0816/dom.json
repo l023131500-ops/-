@@ -1,0 +1,78 @@
+{
+  "runs": [
+    {
+      "port": 8138,
+      "label": "before_head",
+      "queue": {
+        "count": "פנייה אחת",
+        "count_title": null,
+        "empty_hidden": true,
+        "empty_text": "אין פניות שתואמות את הסינון.",
+        "rows": 1,
+        "status_value": ""
+      },
+      "match": {
+        "count": "פנייה אחת",
+        "count_title": null,
+        "empty_hidden": true,
+        "empty_text": "אין פניות שתואמות את הסינון.",
+        "rows": 1,
+        "status_value": "new"
+      },
+      "nomatch": {
+        "count": "אין פניות",
+        "count_title": null,
+        "empty_hidden": false,
+        "empty_text": "אין פניות שתואמות את הסינון.",
+        "rows": 0,
+        "status_value": "sent"
+      },
+      "back": {
+        "count": "פנייה אחת",
+        "count_title": null,
+        "empty_hidden": true,
+        "empty_text": "אין פניות שתואמות את הסינון.",
+        "rows": 1,
+        "status_value": "new"
+      }
+    },
+    {
+      "port": 8137,
+      "label": "after_worktree",
+      "queue": {
+        "count": "פנייה אחת",
+        "count_title": null,
+        "empty_hidden": true,
+        "empty_text": "אין פניות שתואמות את הסינון.",
+        "rows": 1,
+        "status_value": ""
+      },
+      "match": {
+        "count": "פנייה אחת תואמת את הסינון",
+        "count_title": "המספר הוא של הפניות שעונות על הסינון ולא של התור כולו. כמה פניות יש בסך הכול אינו ידוע למסך — השרת מחזיר את המניין שאחרי הסינון. המיון אינו מוציא שורות ואינו משפיע על המספר",
+        "empty_hidden": true,
+        "empty_text": "אין פניות שתואמות את הסינון.",
+        "rows": 1,
+        "status_value": "new"
+      },
+      "nomatch": {
+        "count": "אין פניות שתואמות את הסינון",
+        "count_title": "המספר הוא של הפניות שעונות על הסינון ולא של התור כולו. כמה פניות יש בסך הכול אינו ידוע למסך — השרת מחזיר את המניין שאחרי הסינון. המיון אינו מוציא שורות ואינו משפיע על המספר",
+        "empty_hidden": false,
+        "empty_text": "אין פניות שתואמות את הסינון.",
+        "rows": 0,
+        "status_value": "sent"
+      },
+      "back": {
+        "count": "פנייה אחת תואמת את הסינון",
+        "count_title": "המספר הוא של הפניות שעונות על הסינון ולא של התור כולו. כמה פניות יש בסך הכול אינו ידוע למסך — השרת מחזיר את המניין שאחרי הסינון. המיון אינו מוציא שורות ואינו משפיע על המספר",
+        "empty_hidden": true,
+        "empty_text": "אין פניות שתואמות את הסינון.",
+        "rows": 1,
+        "status_value": "new"
+      }
+    }
+  ],
+  "console": [],
+  "bad_responses": []
+}
