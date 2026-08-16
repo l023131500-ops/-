@@ -1,0 +1,15 @@
+תחזוקה: אימות והבאה של שינוי סגנוני ב-lux-manage leads-api שנשאר בעץ העבודה
+
+commit e46d543/97d51de (הקודם) בדק שלושה מסמכי תכנון ומצא שנותר בעץ העבודה גם
+apps/_archive/lux-manage/supabase/functions/leads-api/index.ts, ואפיין אותו
+כ"שכפור סגנוני בלבד, לא פעיל" בלי לקמט אותו. בסבב הזה קראתי את הקובץ המלא
+לפני ולאחר: readerGate() הוחלף ב-checkReaderAuth() (שם בלבד), עיצוב ה-JSON.
+stringify+Response פוצל לשורות, הערת הבלוק שהסבירה את שער הקריאה הוחלפה
+בהערה חד-שורתית קצרה יותר, וסדר הכותרות ב-corsHeaders זז (x-api-key קודם).
+שום תנאי לוגי לא השתנה: provided !== expected שקול ל-presented !== expected
+כש-presented = provided ?? "" (expected כבר אומת שאינו ריק בשלב הקודם).
+
+התיקייה apps/_archive/lux-manage אינה פרויקט פרוס — אין build/dev-server/URL
+חי לצלם, ולכן אין מה לאמת מעבר לקריאת ההבדל עצמו. זו הסיבה שלא צורף צילום מסך.
+
+מוגן: לא נגעתי ב-08/09/bkalut-app/bkalot-admin/zr_*/NEDARIM3873.

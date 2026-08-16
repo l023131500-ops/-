@@ -2,7 +2,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.99.3";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-api-key, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
+  "Access-Control-Allow-Headers": "authorization, x-api-key, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
 Deno.serve(async (req) => {
@@ -16,36 +16,30 @@ Deno.serve(async (req) => {
 
   const url = new URL(req.url);
 
-  // Reader gate. GET returns every column of every lead (name, email, phone,
-  // message) and PUT bulk-inserts, so both are machine-to-machine only and are
-  // gated on a shared secret. POST is deliberately left open: it is the public
-  // contact form (ContactSection.tsx / PublicConciergeBot.tsx) and only writes.
-  // Fails closed — with no LEADS_API_KEY in the environment the reader is off,
-  // which is the correct resting state for a service_role endpoint.
-  const readerGate = (): Response | null => {
+  function checkReaderAuth(): Response | null {
     if (req.method !== "GET" && req.method !== "PUT") return null;
     const expected = Deno.env.get("LEADS_API_KEY");
     if (!expected) {
-      return new Response(JSON.stringify({ error: "leads-api reader disabled: LEADS_API_KEY is not configured" }), {
-        status: 403,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return new Response(
+        JSON.stringify({ error: "leads-api reader disabled: LEADS_API_KEY is not configured" }),
+        { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
-    const presented = req.headers.get("x-api-key") ?? "";
-    if (presented !== expected) {
-      return new Response(JSON.stringify({ error: "Missing or invalid API key" }), {
-        status: 401,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+    const provided = req.headers.get("x-api-key");
+    if (provided !== expected) {
+      return new Response(
+        JSON.stringify({ error: "Missing or invalid API key" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
     return null;
-  };
+  }
 
-  const denied = readerGate();
-  if (denied) return denied;
+  const authError = checkReaderAuth();
+  if (authError) return authError;
 
   try {
-    // GET — list leads (x-api-key required, see readerGate above)
+    // GET — list leads (requires x-api-key header matching LEADS_API_KEY)
     if (req.method === "GET") {
       const limit = parseInt(url.searchParams.get("limit") || "100");
       const offset = parseInt(url.searchParams.get("offset") || "0");
