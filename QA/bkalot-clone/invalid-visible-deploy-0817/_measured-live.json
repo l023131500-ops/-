@@ -1,0 +1,431 @@
+{
+  "step": "invalid-visible-deploy-0817",
+  "url": "https://more30.com/bkalot-studio/",
+  "live_light": {
+    "phone_invalid": {
+      "invalid": [
+        "phone"
+      ],
+      "focused": "phone",
+      "lines": [
+        "מספר הטלפון אינו תקין. הטלפון הוא מפתח הזהות שלכם אצלנו — נדרש מספר ישראלי (למשל 0501234567)."
+      ],
+      "style": {
+        "border_color": "rgb(155, 28, 28)",
+        "border_width": "1px",
+        "background": "rgb(251, 234, 234)",
+        "box_shadow": "rgba(155, 28, 28, 0.28) 0px 0px 0px 3px"
+      },
+      "behind": "rgb(255, 255, 255)",
+      "overflow_x": false,
+      "reached_server": true,
+      "contrast": {
+        "border_vs_behind": 8.15,
+        "border_vs_fill": 7.01
+      }
+    },
+    "situation_required_for_treatment": {
+      "invalid": [
+        "situation"
+      ],
+      "focused": "situation",
+      "lines": [
+        "בחרו מצב, כדי שנוכל להתאים את רשימת הזכויות."
+      ],
+      "style": {
+        "border_color": "rgb(155, 28, 28)",
+        "border_width": "1px",
+        "background": "rgb(251, 234, 234)",
+        "box_shadow": "rgba(155, 28, 28, 0.28) 0px 0px 0px 3px"
+      },
+      "behind": "rgb(255, 255, 255)",
+      "overflow_x": false,
+      "reached_server": true,
+      "contrast": {
+        "border_vs_behind": 8.15,
+        "border_vs_fill": 7.01
+      }
+    },
+    "preflight_topic_no": {
+      "invalid": [
+        "topic_no"
+      ],
+      "focused": "topic_no",
+      "lines": [
+        "מספר נושא — צריך מספר שלם. תקנו ושלחו שוב."
+      ],
+      "style": {
+        "border_color": "rgb(155, 28, 28)",
+        "border_width": "1px",
+        "background": "rgb(251, 234, 234)",
+        "box_shadow": "rgba(155, 28, 28, 0.28) 0px 0px 0px 3px"
+      },
+      "behind": "rgb(255, 255, 255)",
+      "overflow_x": false,
+      "reached_server": false,
+      "contrast": {
+        "border_vs_behind": 8.15,
+        "border_vs_fill": 7.01
+      }
+    }
+  },
+  "live_light_console": [],
+  "live_light_server": [
+    {
+      "status": 200,
+      "body": {
+        "ok": false,
+        "error": "phone_invalid",
+        "detail": "הטלפון הוא מפתח הזהות של הפונה — נדרש מספר ישראלי תקין"
+      }
+    },
+    {
+      "status": 200,
+      "body": {
+        "ok": false,
+        "error": "situation_required_for_treatment"
+      }
+    },
+    {
+      "status": 200,
+      "body": {
+        "ok": false,
+        "error": "phone_invalid",
+        "detail": "הטלפון הוא מפתח הזהות של הפונה — נדרש מספר ישראלי תקין"
+      }
+    }
+  ],
+  "live_light_shots": {
+    "live-light-phone": {
+      "viewport": "1280x901",
+      "invalid": [
+        "phone"
+      ],
+      "focused": "phone",
+      "lines": [
+        "מספר הטלפון אינו תקין. הטלפון הוא מפתח הזהות שלכם אצלנו — נדרש מספר ישראלי (למשל 0501234567)."
+      ],
+      "style": {
+        "border_color": "rgb(155, 28, 28)",
+        "border_width": "1px",
+        "background": "rgb(251, 234, 234)",
+        "box_shadow": "rgba(155, 28, 28, 0.28) 0px 0px 0px 3px"
+      },
+      "behind": "rgb(255, 255, 255)",
+      "overflow_x": false,
+      "contrast": {
+        "border_vs_behind": 8.15,
+        "border_vs_fill": 7.01
+      }
+    }
+  },
+  "live_dark": {
+    "phone_invalid": {
+      "invalid": [
+        "phone"
+      ],
+      "focused": "phone",
+      "lines": [
+        "מספר הטלפון אינו תקין. הטלפון הוא מפתח הזהות שלכם אצלנו — נדרש מספר ישראלי (למשל 0501234567)."
+      ],
+      "style": {
+        "border_color": "rgb(240, 138, 138)",
+        "border_width": "1px",
+        "background": "rgb(51, 25, 26)",
+        "box_shadow": "rgba(240, 138, 138, 0.32) 0px 0px 0px 3px"
+      },
+      "behind": "rgb(21, 29, 26)",
+      "overflow_x": false,
+      "reached_server": true,
+      "contrast": {
+        "border_vs_behind": 7.12,
+        "border_vs_fill": 6.73
+      }
+    },
+    "situation_required_for_treatment": {
+      "invalid": [
+        "situation"
+      ],
+      "focused": "situation",
+      "lines": [
+        "בחרו מצב, כדי שנוכל להתאים את רשימת הזכויות."
+      ],
+      "style": {
+        "border_color": "rgb(240, 138, 138)",
+        "border_width": "1px",
+        "background": "rgb(51, 25, 26)",
+        "box_shadow": "rgba(240, 138, 138, 0.32) 0px 0px 0px 3px"
+      },
+      "behind": "rgb(21, 29, 26)",
+      "overflow_x": false,
+      "reached_server": true,
+      "contrast": {
+        "border_vs_behind": 7.12,
+        "border_vs_fill": 6.73
+      }
+    },
+    "preflight_topic_no": {
+      "invalid": [
+        "topic_no"
+      ],
+      "focused": "topic_no",
+      "lines": [
+        "מספר נושא — צריך מספר שלם. תקנו ושלחו שוב."
+      ],
+      "style": {
+        "border_color": "rgb(240, 138, 138)",
+        "border_width": "1px",
+        "background": "rgb(51, 25, 26)",
+        "box_shadow": "rgba(240, 138, 138, 0.32) 0px 0px 0px 3px"
+      },
+      "behind": "rgb(21, 29, 26)",
+      "overflow_x": false,
+      "reached_server": false,
+      "contrast": {
+        "border_vs_behind": 7.12,
+        "border_vs_fill": 6.73
+      }
+    }
+  },
+  "live_dark_console": [],
+  "live_dark_server": [
+    {
+      "status": 200,
+      "body": {
+        "ok": false,
+        "error": "phone_invalid",
+        "detail": "הטלפון הוא מפתח הזהות של הפונה — נדרש מספר ישראלי תקין"
+      }
+    },
+    {
+      "status": 200,
+      "body": {
+        "ok": false,
+        "error": "situation_required_for_treatment"
+      }
+    },
+    {
+      "status": 200,
+      "body": {
+        "ok": false,
+        "error": "situation_required_for_treatment"
+      }
+    }
+  ],
+  "live_dark_shots": {
+    "live-dark-situation": {
+      "viewport": "1280x901",
+      "invalid": [
+        "situation"
+      ],
+      "focused": "situation",
+      "lines": [
+        "בחרו מצב, כדי שנוכל להתאים את רשימת הזכויות."
+      ],
+      "style": {
+        "border_color": "rgb(240, 138, 138)",
+        "border_width": "1px",
+        "background": "rgb(51, 25, 26)",
+        "box_shadow": "rgba(240, 138, 138, 0.32) 0px 0px 0px 3px"
+      },
+      "behind": "rgb(21, 29, 26)",
+      "overflow_x": false,
+      "contrast": {
+        "border_vs_behind": 7.12,
+        "border_vs_fill": 6.73
+      }
+    },
+    "live-mobile-topic-390": {
+      "viewport": "390x844",
+      "invalid": [
+        "topic_no"
+      ],
+      "focused": "topic_no",
+      "lines": [
+        "מספר נושא — צריך מספר שלם. תקנו ושלחו שוב."
+      ],
+      "style": {
+        "border_color": "rgb(240, 138, 138)",
+        "border_width": "1px",
+        "background": "rgb(51, 25, 26)",
+        "box_shadow": "rgba(240, 138, 138, 0.32) 0px 0px 0px 3px"
+      },
+      "behind": "rgb(21, 29, 26)",
+      "overflow_x": false,
+      "contrast": {
+        "border_vs_behind": 7.12,
+        "border_vs_fill": 6.73
+      }
+    }
+  },
+  "claims": {
+    "phone_invalid__light": {
+      "field": "phone",
+      "live_border": "rgb(155, 28, 28)",
+      "local_after_border": "rgb(155, 28, 28)",
+      "live_fill": "rgb(251, 234, 234)",
+      "local_after_fill": "rgb(251, 234, 234)",
+      "live_shadow": "rgba(155, 28, 28, 0.28) 0px 0px 0px 3px",
+      "local_after_shadow": "rgba(155, 28, 28, 0.28) 0px 0px 0px 3px",
+      "live_equals_local_after": true,
+      "prev_live_border": "rgb(15, 95, 76)",
+      "live_differs_from_old": true,
+      "marks_same_field": true,
+      "same_message": true,
+      "contrast": {
+        "border_vs_behind": 8.15,
+        "border_vs_fill": 7.01
+      },
+      "meets_3to1": true,
+      "overflow_x": false,
+      "reached_server": true
+    },
+    "situation_required_for_treatment__light": {
+      "field": "situation",
+      "live_border": "rgb(155, 28, 28)",
+      "local_after_border": "rgb(155, 28, 28)",
+      "live_fill": "rgb(251, 234, 234)",
+      "local_after_fill": "rgb(251, 234, 234)",
+      "live_shadow": "rgba(155, 28, 28, 0.28) 0px 0px 0px 3px",
+      "local_after_shadow": "rgba(155, 28, 28, 0.28) 0px 0px 0px 3px",
+      "live_equals_local_after": true,
+      "prev_live_border": "rgb(15, 95, 76)",
+      "live_differs_from_old": true,
+      "marks_same_field": true,
+      "same_message": true,
+      "contrast": {
+        "border_vs_behind": 8.15,
+        "border_vs_fill": 7.01
+      },
+      "meets_3to1": true,
+      "overflow_x": false,
+      "reached_server": true
+    },
+    "preflight_topic_no__light": {
+      "field": "topic_no",
+      "live_border": "rgb(155, 28, 28)",
+      "local_after_border": "rgb(155, 28, 28)",
+      "live_fill": "rgb(251, 234, 234)",
+      "local_after_fill": "rgb(251, 234, 234)",
+      "live_shadow": "rgba(155, 28, 28, 0.28) 0px 0px 0px 3px",
+      "local_after_shadow": "rgba(155, 28, 28, 0.28) 0px 0px 0px 3px",
+      "live_equals_local_after": true,
+      "prev_live_border": "rgb(15, 95, 76)",
+      "live_differs_from_old": true,
+      "marks_same_field": true,
+      "same_message": true,
+      "contrast": {
+        "border_vs_behind": 8.15,
+        "border_vs_fill": 7.01
+      },
+      "meets_3to1": true,
+      "overflow_x": false,
+      "reached_server": false
+    },
+    "phone_invalid__dark": {
+      "field": "phone",
+      "live_border": "rgb(240, 138, 138)",
+      "local_after_border": "rgb(240, 138, 138)",
+      "live_fill": "rgb(51, 25, 26)",
+      "local_after_fill": "rgb(51, 25, 26)",
+      "live_shadow": "rgba(240, 138, 138, 0.32) 0px 0px 0px 3px",
+      "local_after_shadow": "rgba(240, 138, 138, 0.32) 0px 0px 0px 3px",
+      "live_equals_local_after": true,
+      "prev_live_border": "rgb(75, 191, 159)",
+      "live_differs_from_old": true,
+      "marks_same_field": true,
+      "same_message": true,
+      "contrast": {
+        "border_vs_behind": 7.12,
+        "border_vs_fill": 6.73
+      },
+      "meets_3to1": true,
+      "overflow_x": false,
+      "reached_server": true
+    },
+    "situation_required_for_treatment__dark": {
+      "field": "situation",
+      "live_border": "rgb(240, 138, 138)",
+      "local_after_border": "rgb(240, 138, 138)",
+      "live_fill": "rgb(51, 25, 26)",
+      "local_after_fill": "rgb(51, 25, 26)",
+      "live_shadow": "rgba(240, 138, 138, 0.32) 0px 0px 0px 3px",
+      "local_after_shadow": "rgba(240, 138, 138, 0.32) 0px 0px 0px 3px",
+      "live_equals_local_after": true,
+      "prev_live_border": "rgb(75, 191, 159)",
+      "live_differs_from_old": true,
+      "marks_same_field": true,
+      "same_message": true,
+      "contrast": {
+        "border_vs_behind": 7.12,
+        "border_vs_fill": 6.73
+      },
+      "meets_3to1": true,
+      "overflow_x": false,
+      "reached_server": true
+    },
+    "preflight_topic_no__dark": {
+      "field": "topic_no",
+      "live_border": "rgb(240, 138, 138)",
+      "local_after_border": "rgb(240, 138, 138)",
+      "live_fill": "rgb(51, 25, 26)",
+      "local_after_fill": "rgb(51, 25, 26)",
+      "live_shadow": "rgba(240, 138, 138, 0.32) 0px 0px 0px 3px",
+      "local_after_shadow": "rgba(240, 138, 138, 0.32) 0px 0px 0px 3px",
+      "live_equals_local_after": true,
+      "prev_live_border": "rgb(75, 191, 159)",
+      "live_differs_from_old": true,
+      "marks_same_field": true,
+      "same_message": true,
+      "contrast": {
+        "border_vs_behind": 7.12,
+        "border_vs_fill": 6.73
+      },
+      "meets_3to1": true,
+      "overflow_x": false,
+      "reached_server": false
+    }
+  },
+  "test_mode": {
+    "responses": 6,
+    "any_ok": false,
+    "any_case_id": false,
+    "codes": [
+      "phone_invalid",
+      "situation_required_for_treatment"
+    ],
+    "statuses": [
+      200
+    ]
+  },
+  "shots": {
+    "live-light-phone": {
+      "bytes": 50364,
+      "md5": "555E84E4"
+    },
+    "live-dark-situation": {
+      "bytes": 42753,
+      "md5": "B0B3EBC6"
+    },
+    "live-mobile-topic-390": {
+      "bytes": 35913,
+      "md5": "B2359BD1"
+    }
+  },
+  "shots_distinct": true,
+  "mobile_390": {
+    "viewport": "390x844",
+    "invalid": [
+      "topic_no"
+    ],
+    "focused": "topic_no",
+    "border": "rgb(240, 138, 138)",
+    "fill": "rgb(51, 25, 26)",
+    "contrast": {
+      "border_vs_behind": 7.12,
+      "border_vs_fill": 6.73
+    },
+    "overflow_x": false
+  },
+  "verdict": "PASS"
+}

@@ -1,0 +1,41 @@
+{
+  "step": "invalid-visible-deploy-0817",
+  "deploys": "8ef394c — הכלל שנותן לשדה שנפסל צבע (CSS בלבד)",
+  "chain": {
+    "prev_deploy": "3cff166 — which-field-deploy-0817",
+    "prev_deploy_dist_md5": "183921EE",
+    "prev_deploy_live_md5": "1473D798",
+    "note": "‏dist שנמצא כאן לפני ה-staging הוא בדיוק הקובץ ש-3cff166 פרס, וה-live שנמדד לפני הפריסה הוא בדיוק ה-live שהוא רשם. השרשרת רציפה ולא נטענה — נמדדה."
+  },
+  "files": {
+    "src_index":  { "path": "apps/37-bkalot-clone/index.html",              "bytes": 36127, "md5": "30B03F39" },
+    "dist_index_before_staging": { "path": "portal/dist/bkalot-studio/index.html", "bytes": 34622, "md5": "183921EE" },
+    "dist_index_after_staging":  { "path": "portal/dist/bkalot-studio/index.html", "bytes": 36127, "md5": "30B03F39" },
+    "src_admin":   { "path": "apps/37-bkalot-clone/admin.html", "bytes": 197514, "md5": "0343B025" },
+    "dist_admin_before_staging": { "bytes": 197514, "md5": "0343B025" },
+    "dist_admin_after_staging":  { "bytes": 197514, "md5": "0343B025" },
+    "vercel_json":   { "path": "portal/dist/vercel.json",          "bytes": 9254, "md5": "2CDA4F21" },
+    "project_json":  { "path": "portal/dist/.vercel/project.json", "bytes": 118,  "md5": "EE7AFD40" }
+  },
+  "staging": { "script": "scripts/stage-portal.ps1", "files_in_dist": 38, "prebuilt": false },
+  "deployment": {
+    "id": "dpl_7iy7vLhgpNN2PCFP1FUNqXjokkjs",
+    "url": "https://more30-portal-qumckfm8o-l023131500-ops-projects.vercel.app",
+    "readyState": "READY",
+    "target": "production",
+    "aliased": "https://more30.com",
+    "scope": "l023131500-ops-projects"
+  },
+  "live": {
+    "urls": ["https://more30.com/bkalot-studio", "https://more30.com/bkalot-studio/"],
+    "before": { "bytes": 34858, "md5": "1473D798" },
+    "after":  { "bytes": 36363, "md5": "76D43A6F" },
+    "injection_delta_bytes": 236,
+    "note": "236 בייט מעל הקובץ שנפרס, בשתי המדידות ובשתי הכתובות — אותו הפרש קבוע שנמדד ב-680, 683, 685, 687 ובפריסה הקודמת."
+  },
+  "markers": { "total": 33, "NEW": 12, "REMOVED": 0, "DIFF": 2, "CONTROL": 19, "DEAD": 0 },
+  "verify": { "verdict": "PASS", "fails": 0 },
+  "measure_live": { "verdict": "PASS", "cases": 6, "console_messages": 0 },
+  "test_mode": { "responses": 6, "any_ok": false, "any_case_id": false, "statuses": [200], "codes": ["phone_invalid", "situation_required_for_treatment"] },
+  "protected_untouched": ["apps/08-bkalut-app", "apps/09-bkalot-admin", "supabase", "zr_*", "NEDARIM3873", "csj", "csj_src", "igud"]
+}
