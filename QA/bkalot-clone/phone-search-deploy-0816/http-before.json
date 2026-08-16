@@ -1,0 +1,161 @@
+{
+  "phase": "before",
+  "source": {
+    "bytes": 134160,
+    "markers": {
+      "q-phone": 3,
+      "qnote": 2,
+      "qPhone": 6,
+      "חיפוש הטלפון רץ על הספרות בלבד": 1,
+      "חופש לפי": 1,
+      "הקלדתי עם מקפים": 2,
+      "אין פנייה כזו": 1,
+      "q_phone": 1,
+      "0093": 2,
+      "border-inline-start": 2,
+      "role=\"status\"": 2,
+      "list-error": 4,
+      "decider_required": 1,
+      "note_too_long": 5,
+      "why-input": 2,
+      "syncNoteCount": 4,
+      "td.why": 1,
+      "רצף ההכרעות": 4,
+      "handsBit": 2,
+      "producedBit": 2,
+      "fillQueueCell": 2,
+      "fillTemplateCell": 4,
+      "fillCreatedCell": 4,
+      "מי הכריע": 13,
+      "fillHistoryNoteCell": 2
+    }
+  },
+  "live": {
+    "https://more30.com/bkalot-studio/admin": {
+      "status": 200,
+      "bytes": 131344,
+      "replacement_chars": 0,
+      "double_encoded": 0,
+      "markers": {
+        "q-phone": 0,
+        "qnote": 0,
+        "qPhone": 0,
+        "חיפוש הטלפון רץ על הספרות בלבד": 0,
+        "חופש לפי": 0,
+        "הקלדתי עם מקפים": 0,
+        "אין פנייה כזו": 0,
+        "q_phone": 0,
+        "0093": 0,
+        "border-inline-start": 1,
+        "role=\"status\"": 1,
+        "list-error": 4,
+        "decider_required": 1,
+        "note_too_long": 5,
+        "why-input": 2,
+        "syncNoteCount": 4,
+        "td.why": 1,
+        "רצף ההכרעות": 4,
+        "handsBit": 2,
+        "producedBit": 2,
+        "fillQueueCell": 2,
+        "fillTemplateCell": 4,
+        "fillCreatedCell": 4,
+        "מי הכריע": 13,
+        "fillHistoryNoteCell": 2
+      },
+      "new_zero_in_live": true,
+      "new_equals_source": false,
+      "diff_below_source": true,
+      "diff_equals_source": false,
+      "diff_values": {
+        "border-inline-start": "1 → 2",
+        "role=\"status\"": "1 → 2"
+      },
+      "old_unchanged": true,
+      "old_values": {
+        "list-error": "4 = 4",
+        "decider_required": "1 = 1",
+        "note_too_long": "5 = 5",
+        "why-input": "2 = 2",
+        "syncNoteCount": "4 = 4",
+        "td.why": "1 = 1",
+        "רצף ההכרעות": "4 = 4",
+        "handsBit": "2 = 2",
+        "producedBit": "2 = 2",
+        "fillQueueCell": "2 = 2",
+        "fillTemplateCell": "4 = 4",
+        "fillCreatedCell": "4 = 4",
+        "מי הכריע": "13 = 13",
+        "fillHistoryNoteCell": "2 = 2"
+      }
+    },
+    "https://more30.com/bkalot-studio/admin/": {
+      "status": 200,
+      "bytes": 131344,
+      "replacement_chars": 0,
+      "double_encoded": 0,
+      "markers": {
+        "q-phone": 0,
+        "qnote": 0,
+        "qPhone": 0,
+        "חיפוש הטלפון רץ על הספרות בלבד": 0,
+        "חופש לפי": 0,
+        "הקלדתי עם מקפים": 0,
+        "אין פנייה כזו": 0,
+        "q_phone": 0,
+        "0093": 0,
+        "border-inline-start": 1,
+        "role=\"status\"": 1,
+        "list-error": 4,
+        "decider_required": 1,
+        "note_too_long": 5,
+        "why-input": 2,
+        "syncNoteCount": 4,
+        "td.why": 1,
+        "רצף ההכרעות": 4,
+        "handsBit": 2,
+        "producedBit": 2,
+        "fillQueueCell": 2,
+        "fillTemplateCell": 4,
+        "fillCreatedCell": 4,
+        "מי הכריע": 13,
+        "fillHistoryNoteCell": 2
+      },
+      "new_zero_in_live": true,
+      "new_equals_source": false,
+      "diff_below_source": true,
+      "diff_equals_source": false,
+      "diff_values": {
+        "border-inline-start": "1 → 2",
+        "role=\"status\"": "1 → 2"
+      },
+      "old_unchanged": true,
+      "old_values": {
+        "list-error": "4 = 4",
+        "decider_required": "1 = 1",
+        "note_too_long": "5 = 5",
+        "why-input": "2 = 2",
+        "syncNoteCount": "4 = 4",
+        "td.why": "1 = 1",
+        "רצף ההכרעות": "4 = 4",
+        "handsBit": "2 = 2",
+        "producedBit": "2 = 2",
+        "fillQueueCell": "2 = 2",
+        "fillTemplateCell": "4 = 4",
+        "fillCreatedCell": "4 = 4",
+        "מי הכריע": "13 = 13",
+        "fillHistoryNoteCell": "2 = 2"
+      }
+    }
+  },
+  "control": {
+    "https://more30.com/bkalot-studio/": {
+      "status": 200,
+      "bytes": 32558
+    },
+    "https://more30.com/": {
+      "status": 200,
+      "bytes": 3517
+    }
+  }
+}

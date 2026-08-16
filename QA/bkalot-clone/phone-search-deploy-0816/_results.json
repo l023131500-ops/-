@@ -1,0 +1,83 @@
+{
+  "step": "phone-search-deploy-0816",
+  "kind": "deploy-only",
+  "line_taken_from": "02fc51c (heartbeat 641)",
+  "no_code_change": true,
+  "no_migration": true,
+  "edge_functions": { "bkalot-clone-admin": "v8 (unchanged)", "bkalot-clone-intake": "v1 (unchanged)" },
+
+  "file_deployed_is_file_in_source": {
+    "source_admin_html": { "bytes": 134160, "md5": "9D4E4787511AD70FAA99017F660E7175" },
+    "portal_dist_after_staging": { "bytes": 134160, "md5": "9D4E4787511AD70FAA99017F660E7175" },
+    "portal_dist_before_staging": { "bytes": 131108, "md5": "3D4BEF6F58198CCD48247C617500C84D", "deployed_by": "c806151" },
+    "files_staged": 38,
+    "prebuilt_flag": false
+  },
+
+  "deployment": {
+    "id": "dpl_3EeK65ffyWFWWC9emipPmebhPk8f",
+    "url": "https://more30-portal-dx3ubotdh-l023131500-ops-projects.vercel.app",
+    "readyState": "READY",
+    "target": "production",
+    "aliased": "https://more30.com"
+  },
+
+  "markers": {
+    "classified_before_first_run": "classify.mjs",
+    "new_flipped_zero_to_source": {
+      "q-phone": "0 → 3",
+      "qnote": "0 → 2",
+      "qPhone": "0 → 6",
+      "חיפוש הטלפון רץ על הספרות בלבד": "0 → 1",
+      "חופש לפי": "0 → 1",
+      "הקלדתי עם מקפים": "0 → 2",
+      "אין פנייה כזו": "0 → 1",
+      "q_phone": "0 → 1",
+      "0093": "0 → 2"
+    },
+    "diff_grew_to_source": {
+      "border-inline-start": "1 → 2",
+      "role=\"status\"": "1 → 2"
+    },
+    "old_unchanged_count": 14,
+    "old_reclassified": 0,
+    "both_urls_agree": true,
+    "bytes": { "before": 131344, "after": 134396, "source": 134160, "netfree_delta": 236 },
+    "replacement_chars": 0,
+    "double_encoded": 0,
+    "control_urls_unchanged": { "https://more30.com/bkalot-studio/": 32558, "https://more30.com/": 3517 }
+  },
+
+  "browser_in_production": {
+    "viewport": "1280x900",
+    "login": "real, through the screen, admin 100",
+    "injection": "none — three real הצג clicks, every request to the live server",
+    "seeded_case": { "case_id": 273, "contact_id": 280, "typed_at_intake": "054-812-3491", "stored": "0548123491" },
+    "states": [
+      { "file": "live-01-dashed-note.png", "md5": "CBF45E34CE2D0123535CDF85CA470C9D", "q": "054-812-3491", "count": "פנייה אחת", "rows": 1, "q_phone_hidden": false, "q_phone_code": "0548123491", "q_phone_top": 342, "row_top": 373, "row_bottom": 457 },
+      { "file": "live-02-plain-no-note.png", "md5": "6B32151FA7950366CEE0ED8A64DF8789", "q": "0548123491", "count": "פנייה אחת", "rows": 1, "case_found": "#273", "q_phone_hidden": true, "q_phone_text": "" },
+      { "file": "live-03-empty-with-note.png", "md5": "5F6598718DC45682929C6D707DA4EE19", "q": "052-000-0000", "count": "אין פניות", "rows": 0, "empty_hidden": false, "empty_top": 373, "q_phone_hidden": false, "q_phone_code": "0520000000", "q_phone_top": 342 }
+    ],
+    "code_span_direction_measured_from_dom": "ltr",
+    "list_error_hidden_in_all_three": true,
+    "console": { "messages": 0, "errors": 0 },
+    "screenshot_hashes_distinct": true,
+    "positions_measured_not_assumed": true
+  },
+
+  "test_mode": {
+    "queued_at_intake": false,
+    "documents": 0,
+    "cases_in_sent": 0,
+    "outbound_queue": 8,
+    "outbound_queue_with_sent_at": 0,
+    "delivery_log": 3,
+    "outbound_calls": 0
+  },
+
+  "rollback": {
+    "method": "separate statement per table (cte-delete-sees-prestatement-snapshot); contact by id, not by normalised phone (ac6e523)",
+    "deleted": { "case_status_log": 0, "case_rights": 42, "cases": 1, "contacts": 1, "admin_sessions": 1, "admin_users": 1 },
+    "baseline_after": { "cases": 0, "case_status_log": 0, "case_rights": 0, "documents": 0, "admin_users": 1, "admin_sessions": 5, "templates": 2, "contacts": 4, "outbound_queue": 8, "delivery_log": 3, "rights_catalog": 888 }
+  }
+}
