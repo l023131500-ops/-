@@ -1,0 +1,24 @@
+{
+  "url": "http://127.0.0.1:8137/admin.html",
+  "mode": "seeded",
+  "console": [],
+  "bad_responses": [],
+  "C_seeded_query": {
+    "count": "אין פניות שתואמות את הסינון",
+    "count_title": "המספר הוא של הפניות שעונות על הסינון ולא של התור כולו. כמה פניות יש בסך הכול אינו ידוע למסך — השרת מחזיר את המניין שאחרי הסינון. המיון אינו מוציא שורות ואינו משפיע על המספר",
+    "empty_hidden": false,
+    "empty_text": "אין פניות שתואמות את הסינון.",
+    "rows": 0,
+    "pager_hidden": true,
+    "overflow": 0
+  },
+  "D_seeded_noquery": {
+    "count": "פנייה אחת",
+    "count_title": null,
+    "empty_hidden": true,
+    "empty_text": "אין פניות שתואמות את הסינון.",
+    "rows": 1,
+    "pager_hidden": true,
+    "overflow": 0
+  }
+}

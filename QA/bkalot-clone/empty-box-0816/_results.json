@@ -1,0 +1,59 @@
+{
+  "brick": "empty-box-0816",
+  "kind": "UI only — no migration, no edge-function deploy, no production deploy",
+  "file": "apps/37-bkalot-clone/admin.html",
+  "head_md5": "84442C698D94F7934F715D89DB611CAE",
+  "head_bytes": 169253,
+  "worktree_bytes": 172296,
+  "servers": { "8138": "HEAD copy", "8137": "working tree" },
+  "db_baseline_before_and_after": {
+    "cases": 0, "case_status_log": 0, "case_rights": 0, "documents": 0,
+    "admin_users": 1, "admin_sessions": 5, "templates": 2,
+    "contacts": 4, "outbound_queue": 8, "delivery_log": 3,
+    "rights_catalog": 888, "schema_migrations": "20260816162924",
+    "admin_cases_total_on_empty_params": 0
+  },
+  "seed": { "case_id": 391, "contact_id": 398, "queued": false, "kind": "info", "source": "form", "rolled_back": true },
+  "admin_account": { "id": 125, "email": "emptybox0816@more30.test", "rolled_back": true },
+  "states": {
+    "A_empty_noquery": {
+      "before": { "count": "אין פניות", "empty_text": "אין פניות שתואמות את הסינון.", "empty_hidden": false, "rows": 0 },
+      "after":  { "count": "אין פניות", "empty_text": "אין פניות.", "empty_hidden": false, "rows": 0 },
+      "claim": "זהו הכשל — לפני התיקון שני המשפטים סותרים זה את זה באותה טעינה ובאותו צילום"
+    },
+    "B_empty_query_zzzz": {
+      "before": { "count": "אין פניות שתואמות את הסינון", "empty_text": "אין פניות שתואמות את הסינון.", "rows": 0 },
+      "after":  { "count": "אין פניות שתואמות את הסינון", "empty_text": "אין פניות שתואמות את הסינון.", "rows": 0 },
+      "claim": "בקרה — המשפט המסנן לא נעלם כשהוא נכון"
+    },
+    "C_seeded_query_zzzz": {
+      "before": { "count": "אין פניות שתואמות את הסינון", "empty_text": "אין פניות שתואמות את הסינון.", "rows": 0 },
+      "after":  { "count": "אין פניות שתואמות את הסינון", "empty_text": "אין פניות שתואמות את הסינון.", "rows": 0 },
+      "claim": "בקרה — תור מלא ורשימה ריקה; זהה אות באות ל-B, וזו בדיוק הסיבה שהמשפט מדבר על הסינון ולא על התור"
+    },
+    "D_seeded_noquery": {
+      "before": { "count": "פנייה אחת", "empty_hidden": true, "rows": 1 },
+      "after":  { "count": "פנייה אחת", "empty_hidden": true, "rows": 1 },
+      "claim": "בקרה — התיבה עדיין נסגרת כשיש שורות; הטקסט שבתוכה נשאר המחרוזת שב-HTML ואינו נכתב מחדש כל עוד היא מוסתרת"
+    }
+  },
+  "screenshots_md5_8": {
+    "before-A-empty-noquery.png": "6144C95E",
+    "after-A-empty-noquery.png": "F8C5D677",
+    "before-B-empty-query.png": "45144201",
+    "after-B-empty-query.png": "45144201",
+    "before-C-seeded-query.png": "45144201",
+    "after-C-seeded-query.png": "45144201",
+    "before-D-seeded-noquery.png": "89D083B7",
+    "after-D-seeded-noquery.png": "2F693084",
+    "note": "ארבעת צילומי B/C חולקים MD5 אחד וזו הראיה עצמה ולא תקלת screenshot-evidence-below-the-fold: המסך בשני המצבים זהה, וההפרש היחיד ביניהם הוא מצב התור במסד. D נבדל ב-13 בייט בעוד קריאת ה-DOM זהה אות באות ואין הפרש נראה — ההפרש הוא בקידוד ה-PNG ולא בתוכן, והטענה היא קריאת ה-DOM"
+  },
+  "console": { "messages": 0, "non_2xx_responses": 0 },
+  "test_mode": {
+    "queued": false, "documents": 0, "case_rights": 0,
+    "outbound_queue_unchanged": 8, "delivery_log_unchanged": 3, "sent_at_rows": 0, "outgoing_calls": 0
+  },
+  "not_measured": [
+    "הענף total>0 עם אפס שורות («בעמוד הזה לא נשארו פניות.») נכתב ולא נמדד מדפדפן — הוא דורש שהרשימה תתקצר פעמיים בין שתי טעינות"
+  ]
+}

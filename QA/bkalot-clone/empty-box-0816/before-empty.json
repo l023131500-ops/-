@@ -1,0 +1,24 @@
+{
+  "url": "http://127.0.0.1:8138/admin.html",
+  "mode": "empty",
+  "console": [],
+  "bad_responses": [],
+  "A_empty_noquery": {
+    "count": "אין פניות",
+    "count_title": null,
+    "empty_hidden": false,
+    "empty_text": "אין פניות שתואמות את הסינון.",
+    "rows": 0,
+    "pager_hidden": true,
+    "overflow": 0
+  },
+  "B_empty_query": {
+    "count": "אין פניות שתואמות את הסינון",
+    "count_title": "המספר הוא של הפניות שעונות על הסינון ולא של התור כולו. כמה פניות יש בסך הכול אינו ידוע למסך — השרת מחזיר את המניין שאחרי הסינון. המיון אינו מוציא שורות ואינו משפיע על המספר",
+    "empty_hidden": false,
+    "empty_text": "אין פניות שתואמות את הסינון.",
+    "rows": 0,
+    "pager_hidden": true,
+    "overflow": 0
+  }
+}
