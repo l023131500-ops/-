@@ -1,16 +1,12 @@
--- PENDING HEARTBEAT — Supabase MCP was not connected in this session (17/08/2026).
--- Insert this BEFORE inferring what is already done from core.run_progress —
--- otherwise the last row still in the table reads as the latest state and this
--- step reads as not-yet-started. `at` below is NOT the run time, it is a
--- placeholder — this was written from a file, not live.
--- Find the full queue with: git ls-files -- "*_heartbeat-pending.sql"
--- Run order = git log --oneline --reverse -- "*_heartbeat-pending.sql" (oldest commit first).
-
+-- PENDING HEARTBEAT — insert this row before inferring what's already done from other rows.
+-- Written late from a file because the Supabase MCP was not connected this session
+-- (checked via ToolSearch, no mcp__supabase__* tools available). `at` below is NOT the
+-- actual run time — insert it as close to real time as possible when the MCP is back.
 insert into core.run_progress (phase, task, status, note, at)
 values (
-  'anti-drift-sweep',
-  'repo hygiene — track more30-feature-expansion.md, referenced by more30-priority.md §9 but missing from git',
+  'platform',
+  'untracked-root-docs-triage',
   'done',
-  'RUN_INSTRUCTIONS smallest-next-step pass on fix/nadlan-a11y (17/08 late evening). The previous commit (8faffb5) already reconfirmed no new unblocked functional work exists this round: gannenet-incoming/ has no new ZIPs, POLISH_BACKLOG.md is 5/5 closed, the branch itself has 0 functional diff. Following up on f3069fd''s open note (~150 untracked root files need review before a blanket commit), cross-checked every file RUN_INSTRUCTIONS.md and more30-priority.md reference by exact filename against `git ls-files`: more30-priority.md, more30-fixes-and-features.txt, BKALOT_CLONE_BUILD.md, BKALOT_AUTOMATION_BUILD.md, MAATEFET_BUILD.md, MORE30_MASTER_BUILD.md were all already tracked. Found one real gap: more30-feature-expansion.md, named explicitly in more30-priority.md §9 ("read more30-feature-expansion.md and add the recommended features") as the required spec for the post-§1-8 feature-expansion phase, existed only on disk (3,243 bytes, last modified 05/08) — never committed. Same failure mode as BKALOT_CLONE_BUILD.md/BKALOT_AUTOMATION_BUILD.md before 9fc90aa fixed it: if the working tree were restored from a clean clone, this spec would silently vanish. Checked for secrets (grep eyJ/Bearer/service_role/password/api_key/sbp_/sk-/AIza — no matches) and committed it as-is (commit 06ec1b3), pushed to origin/fix/nadlan-a11y. The rest of the ~150 untracked root files (old docx/md planning drafts, run-loop .cmd scripts, historical QA screenshots) are not referenced by name anywhere in RUN_INSTRUCTIONS.md or more30-priority.md, so they are out of scope for this pass — left untouched, as before.',
+  'commit 91bc2f9: added 12 untracked root spec docs identified as genuinely unique (not duplicates) in NEEDS_USER 0תד (17/08 evening) — CRM_מתווכים, EVENTS_BUILD, EVENTS_CAPTURE, KIOSK_INSTALL_GUIDE, NADLAN_GTM, NADLAN_PRO research, NADLAN_V3_additions, more30-admin-build, ad_studio_master_spec, big_mission_phase1, more30_master_spec, תוכנית_אוטומציית_בקלות. Confirmed via hash/diff that KIOSK_BUILD.md.md and the no-dash more30fixesandfeatures.md/more30priority.md are exact or near duplicates of already-tracked files — left alone, no action needed. Still untracked (~140 items, not touched this step): binary .docx specs, old run-loop .cmd scripts (v3-v8, superseded by RUN_INSTRUCTIONS.md), historical QA evidence (_commit-msg.txt files, screenshots), vfix.mjs, gannenet-incoming/.',
   now()
 );

@@ -3628,3 +3628,27 @@ NADLAN_*, EVENTS_*, GAN_CLICK_MASTER_SPEC.docx וכו'), קבצי `.cmd` של
 Supabase MCP לא היה מחובר בסשן הזה (נבדק עם ToolSearch) — heartbeat נכתב
 כ-`QA/platform/untracked-specs-0817/_heartbeat-pending.sql`, לא כשורת
 `core.run_progress` אמיתית.
+
+---
+
+**עדכון 17/08/2026 (מאוחר יותר) — סבב המשך על אותו נושא.** נבדקו 12 מהמסמכים
+שנותרו untracked: כל אחד הושווה מול הריפו הקיים ונמצא ייחודי (לא כפילות) —
+נוספו לגיט (commit `91bc2f9`): `CRM_מתווכים_קובץ_בנייה.md`, `EVENTS_BUILD.md`,
+`EVENTS_CAPTURE.md`, `KIOSK_INSTALL_GUIDE.md`, `NADLAN_GTM_פריצה_לשוק_וגיוס.md`,
+`NADLAN_PRO_מחקר_ואפיון.md`, `NADLAN_V3_additions.md`, `more30-admin-build.md`,
+`more30_ad_studio_master_spec.md`, `more30_big_mission_phase1.md`,
+`more30_master_spec.md`, `תוכנית_אוטומציית_בקלות.md`.
+
+בו-זמנית נבדקו ונדחו במכוון שלוש כפילויות (hash/diff מדויק, אין תוכן ייחודי
+לאבד): `KIOSK_BUILD.md.md` (0 הבדלים מול `KIOSK_BUILD.md` הממוסמך),
+`more30fixesandfeatures.md` ו-`more30priority.md` (וריאציות ללא מקף של קבצים
+שכבר בגיט בשם עם מקף — `more30-fixes-and-features.txt` / `more30-priority.md`).
+נשארו על הדיסק כפי שהן — לא נמחקו (מחיקה דורשת סבב זהיר נפרד).
+
+עדיין untracked ולא טופל: קבצי `.docx` בינאריים (`nadlan_master_spec.docx`,
+`more30_keys_table.docx`, `NADLAN_PRO_מחקר_ואפיון.md.docx`), סקריפטי `.cmd`
+של לולאת-הרצה ישנה v3–v8 (מ-05–06/08, מוחלפים כבר על-ידי RUN_INSTRUCTIONS.md
+הנוכחי — מועמדים למחיקה בסבב עתידי, לא נמחקו כאן), ~120 פריטי ראיות QA
+היסטוריות (screenshots + `_commit-msg.txt`), `vfix.mjs`, `gannenet-incoming/`.
+Supabase MCP עדיין לא מחובר בסשן הזה — heartbeat נוסף כ-
+`QA/platform/untracked-specs-0817/_heartbeat-pending.sql`.
