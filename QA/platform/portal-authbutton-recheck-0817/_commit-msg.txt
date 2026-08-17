@@ -1,0 +1,20 @@
+אנטי-דריפט: פורטל הבית (33) — כפתור הכניסה שכיסה "ספרו לנו רעיון" נבדק מחדש, כבר פרוס וחי
+
+טבלת "חפיפת כפתור הכניסה" ב-SYSTEMS_STATUS.md סימנה `/ (33) | "ספרו לנו
+רעיון" | תוקן פעמיים`, עם פסקה שטענה במפורש ששני חלקי התיקון "תוקנו
+וממתינים לפריסה" — אותה תבנית סתירה כמו כל שאר שורות ה-⏳ שנבדקו היום
+בטבלאות הנגישות/מצב-כהה/חפיפת-כפתור.
+
+נמדד: production CSS (assets/index-B35ByRD-.css) זהה בייטים ל-
+portal/src/styles.css בשני חוקי התיקון (padding-inline-end על .nav-in +
+דריסת ה-media query ב-720px). node scripts/qa/authbutton-overlap.mjs home
+מול https://more30.com/ — אותו כלי גיאומטרי (elementFromPoint) שמצא את
+הפער במקור — מחזיר clear בכל חמשת הרוחבים (390/834/1100/1280/1440).
+
+אין שינוי קוד, אין פריסה — מדידה בלבד. שורת הטבלה והפסקה שמתחתיה תוקנו.
+
+ראיות: QA/platform/portal-authbutton-recheck-0817/probe-live.txt.
+
+⚠️ ה-MCP של Supabase אינו מחובר לסשן הזה — heartbeat נכתב כקובץ
+QA/platform/portal-authbutton-recheck-0817/_heartbeat-pending.sql
+(מצטרף לתור הקיים; הרץ לפי סדר הקומיטים ב-git log, לא לפי שם התיקייה).
