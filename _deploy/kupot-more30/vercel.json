@@ -7,7 +7,7 @@
   "functions": {
     "api/index.js": {
       "maxDuration": 30,
-      "includeFiles": "hf_data_export.json"
+      "includeFiles": "{hf_data_export.json,hf_fund_details.json}"
     }
   },
 
