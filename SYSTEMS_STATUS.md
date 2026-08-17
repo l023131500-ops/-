@@ -1,5 +1,27 @@
 # SYSTEMS_STATUS.md — מצב כל המערכות, נמדד
 
+> ## 🟢 17/08/2026 — **02 תמלול — נוסף פקד מצב-כהה ידני, פרוס וחי. 2/5 מ-POLISH_BACKLOG.**
+>
+> המשך ישיר ל-10-בקלות (למטה): `POLISH_BACKLOG.md` מסמן גם את 02/03/06
+> (Next.js) ו-35 (Vite) כדורשות אותו פקד. 02 היא הראשונה מבין השלוש
+> הבנויות-Next שנסגרה, כי היא כבר הייתה פתוחה בקונטקסט.
+>
+> נוסף `components/ThemeToggle.tsx` (client component, 🌙/☀️) בתוך
+> `SiteHeader.tsx`, ו-`THEME_BOOT` ב-`app/layout.tsx` עודכן לקרוא
+> `localStorage["tamlul-theme"]` לפני `matchMedia`, במקום לעקוב אחרי ה-OS
+> תמיד — בדיוק התבנית שכבר חיה ב-`/bkalot`. `next build` עבר,
+> Playwright מקומי (`next start`, basePath `/tamlul`) אימת: קליק→
+> `classList.contains('dark')`, רקע `rgb(20,22,28)`; רענון שומר בלי הבזק;
+> קליק נוסף חוזר לבהיר. נפרס `vercel deploy --prod` מתוך
+> `apps/02-igud-transcribe` (יש לו קישור Vercel עצמאי, `tamlul-more30`,
+> `dpl_yWB9XZBxQn5JKW8kyWWTZEg4fboE`) ואומת חי ב-
+> `https://more30.com/tamlul/?cachebust=0817tamlul` (אותה בדיקה, אותה
+> תוצאה). ראיות: `QA/platform/theme-toggle-tamlul-0817/`. 03/06/35 נשארים
+> ברשימה.
+>
+> ⚠️ ה-MCP של Supabase אינו מחובר לסשן הזה — heartbeat נכתב כקובץ
+> `_heartbeat-pending.sql` (מצטרף לתור הקיים; הרץ לפי סדר הקומיטים ב-git log).
+
 > ## 🟢 17/08/2026 — **10 בקלות-תצוגה — נוסף פקד מצב-כהה ידני, פרוס וחי. 1/5 מ-POLISH_BACKLOG.**
 >
 > `POLISH_BACKLOG.md` סימן 5 מערכות (02/03/06/10/35) שעוקבות אחרי

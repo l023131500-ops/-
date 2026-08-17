@@ -4,7 +4,7 @@
 > שנדחו מ"פונקציה עכשיו" (`more30-priority.md`, כלל-העל א). אחרי סבב מלא על כל
 > המערכות — עברו על הרשימה הזאת והשלימו.
 
-## מצב כהה — פקד ידני חסר (5 מערכות, 1 הושלמה 17/08)
+## מצב כהה — פקד ידני חסר (5 מערכות, 2 הושלמו 17/08)
 
 **מה חסר.** ל-02 (תמלול), 03 (מודעות), 06 (בריאות), ~~10 (בקלות-תצוגה)~~,
 35 (קיוסק) אין פקד גלוי בעמוד שמאפשר למי שה-OS שלו **בהיר** לבחור כהה בכל
@@ -15,8 +15,17 @@
 ✅ **10 בקלות-תצוגה — הושלם 17/08.** נוסף כפתור `#themeToggle` (🌙/☀️) בניווט,
 עם שמירה ל-`localStorage`. זו הייתה היחידה מבין החמש שהיא אתר סטטי (בלי
 build), ולכן הראשונה שנסגרה. נפרס ואומת בייצור. ראה
-`QA/platform/theme-toggle-bkalot-0817/`. 02/03/06 (Next.js) ו-35 (Vite,
-kioskfleet) דורשים build ונשארים ברשימה.
+`QA/platform/theme-toggle-bkalot-0817/`.
+
+✅ **02 תמלול — הושלם 17/08.** נוסף רכיב לקוח `ThemeToggle.tsx` (כפתור
+🌙/☀️ ב-`SiteHeader.tsx`), ו-`THEME_BOOT` ב-`app/layout.tsx` עודכן לקרוא
+`localStorage["tamlul-theme"]` לפני נפילה ל-`prefers-color-scheme` — אותה
+תבנית בדיוק שכבר חיה ב-`/bkalot`. נבנה (`next build`), נבדק מקומית
+(Playwright: קליק→כהה, רענון שומר, קליק נוסף→בהיר), נפרס
+(`tamlul-more30`, `dpl_yWB9XZBxQn5JKW8kyWWTZEg4fboE`) ואומת חי מול
+`https://more30.com/tamlul/?cachebust=0817tamlul`. ראיות:
+`QA/platform/theme-toggle-tamlul-0817/`. 03/06 (Next.js) ו-35 (Vite,
+kioskfleet) דורשים אותו טיפול ונשארים ברשימה.
 
 ```
 /tamlul      os-dark:follows  toggle:none    => reachable

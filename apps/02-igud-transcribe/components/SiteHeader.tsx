@@ -1,4 +1,5 @@
 import Link from "next/link";
+import ThemeToggle from "./ThemeToggle";
 
 export default function SiteHeader() {
   return (
@@ -14,6 +15,7 @@ export default function SiteHeader() {
         <nav className="flex items-center gap-2">
           <Link href="/upload" className="btn-primary text-sm">העלאת שיעור</Link>
           <Link href="/login" className="btn-outline text-sm">כניסת ניהול</Link>
+          <ThemeToggle />
         </nav>
       </div>
     </header>
