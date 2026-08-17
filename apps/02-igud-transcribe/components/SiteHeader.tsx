@@ -4,7 +4,7 @@ import ThemeToggle from "./ThemeToggle";
 export default function SiteHeader() {
   return (
     <header className="border-b border-stone-200 bg-white/80 backdrop-blur">
-      <div className="container-rtl more30-auth-clear flex items-center justify-between py-4">
+      <div className="container-rtl more30-auth-clear flex flex-wrap items-center justify-between gap-y-2 py-4">
         <Link href="/" className="flex items-center gap-3">
           <Logo className="h-9 w-9 text-brand" />
           <div className="leading-tight">
