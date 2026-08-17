@@ -1,5 +1,30 @@
 # SYSTEMS_STATUS.md — מצב כל המערכות, נמדד
 
+> ## 🟢 17/08/2026 — **שכפול בקלות (§5ב): #37 פרוסה וחיה, ורישום `core.projects` פיגר אחריה — תוקן מקומית, ה-UPDATE ל-DB מוכן וממתין.**
+>
+> הפעימה הקודמת (source-untouched-verify-0817) סגרה את סבב האימות של שכבה 1.
+> הצעד הזה בדק סעיף אחר שנשאר פתוח מ-`BKALOT_CLONE_BUILD.md`: "פרויקט חדש
+> ב-core.projects... live אחרי אימות". `apps/37-bkalot-clone/app.json` עדיין
+> אמר `live: false, isDeployed: false` מקומיט `7a7e377` (13/08) — למרות
+> שהמערכת פרוסה וחיה ונמדדה עשרות פעמים מאז.
+>
+> **נמדד:** `more30.com/bkalot-studio` ו-`/admin` שניהם 200 בדפדפן (Playwright,
+> cachebust, 1280x900). דף הבית לא מציג אף כרטיס "bkalot" — הכרטיס "בקלות"
+> היחיד שם שייך למערכת #10 (rights.catalog), לא לעותק התפעולי. `grep` על
+> migrations 0001-0102 מאשר: `core.projects` #37 קיימת מלפני `0057` (13/08),
+> אבל אף מיגרציה לא הזיזה `live`/`is_deployed`/`public_visible`/`live_url`/
+> `admin_url` מאז — פיגור ברישום, לא בפריסה.
+>
+> **מה תוקן כאן:** `app.json` עודכן לשקף מציאות (`live: true, isDeployed: true,
+> stage: "beta"`, כתובות). ה-`UPDATE` ל-`core.projects` (5 עמודות, שורה אחת)
+> מוכן ב-`QA/bkalot-clone/registry-row-0817/_project-flip-live.sql` — **לא
+> הורץ**: אין חיבור Supabase (MCP/PAT) בסשן הזה. heartbeat נכתב כקובץ
+> `_heartbeat-pending.sql`, מצטרף לתור הקיים.
+>
+> **מה זה משאיר פתוח:** עד שה-`UPDATE` ירוץ, המערכת עובדת ופרוסה אבל לא
+> מופיעה בדף הבית — פער תצוגה בלבד, לא פונקציונלי. ראיות:
+> `QA/bkalot-clone/registry-row-0817/probe.txt` + שני צילומי מסך.
+
 > ## 🟢 17/08/2026 — **שכפול בקלות (§5ב): אימות עצמאי — המקור המוגן 08/09 לא נגע, ו-888 הנושאים כבר נמדדו (סוגר את סבב האימות של שכבה 1).**
 >
 > הפעימות הקודמות (0058-scan + email/situation-treatment-live) סגרו את כל ענפי

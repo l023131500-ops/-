@@ -1,0 +1,45 @@
+registry-row-0817 — bkalot-clone (#37) is live and verified, but its core.projects
+row was never flipped after the fact. Read-only checks, no DB access this session
+(Supabase MCP not connected — ToolSearch for mcp__supabase__* and for
+SUPABASE_ACCESS_TOKEN/SB_PAT in process/user/machine env all came back empty).
+
+1. apps/37-bkalot-clone/app.json was last touched by commit 7a7e377 (13/08,
+   mount-0813 era) and still read:
+     "stage": "alpha", "live": false, "isDeployed": false, "liveUrl": null
+   with a note saying "אינו פרוס עדיין" (not deployed yet). That was true on
+   13/08 and has been false since — dozens of commits after 7a7e377 deployed
+   and measured the form and the admin panel in production (form-0813,
+   admin-auth-0813, dispatch-0814, ... through source-untouched-verify-0817).
+
+2. Confirmed live right now, Playwright, 1280x900, cachebust query on each:
+   - https://more30.com/bkalot-studio/  -> title "בקלות — פתיחת פנייה", 200.
+     screenshot: intake-live.png
+   - https://more30.com/bkalot-studio/admin -> title "בקלות — ניהול פניות", 200.
+     screenshot: admin-live.png
+
+3. Homepage (https://more30.com/, cachebust) renders zero occurrences of
+   "bkalot" in a Playwright `find` sweep and zero in a raw HTTP body match.
+   The one "בקלות" card present is system #10 (rights.catalog display,
+   "מימוש זכויות בקלות") — a different, already-live system. There is no card
+   for the operational clone (#37).
+
+4. portal/src/App.tsx confirms the home page has no hardcoded system list — it
+   reads `public.more30_public_systems`, gated on
+   `enterable && live && public_visible && !is_protected`. So a missing card
+   is a data fact about core.projects, not a portal bug.
+
+5. supabase/migrations/0057_the_clone_had_a_project_row_and_nowhere_to_put_a_case.sql
+   comment (line 3) records that core.projects ALREADY held #37 bkalot-clone
+   before 0057 ran (13/08), with stage='idea' at the time; 0057 itself only
+   updates supabase_schema and bumps stage to 'wip'. Grepped every migration
+   0001-0102 for "'37'" and for "bkalot-studio" (the path) — no later
+   migration ever set live/is_deployed/public_visible/live_url/admin_url for
+   this row. So the row's flip-to-live never happened, even though the build
+   checklist in BKALOT_CLONE_BUILD.md §אימות is now satisfied (form up, 888
+   rights, admin auth, test-mode dispatch, source untouched — all closed per
+   SYSTEMS_STATUS.md 17/08 entries).
+
+Net: this is a bookkeeping gap, not a functional one. Fixed app.json to match
+reality and prepared the exact UPDATE for core.projects
+(_project-flip-live.sql) so the next session with Supabase access can run it
+in one step instead of re-deriving it.

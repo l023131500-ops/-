@@ -4,9 +4,9 @@
   "name": "בקלות (שכפול תפעולי) — פתיחת פנייה",
   "department": "rights",
   "category": "service",
-  "stage": "alpha",
-  "live": false,
-  "isDeployed": false,
+  "stage": "beta",
+  "live": true,
+  "isDeployed": true,
   "repo": "l023131500-ops/more30",
   "repoRoot": "apps/37-bkalot-clone",
   "basePath": "/bkalot-studio",
@@ -15,8 +15,9 @@
     "schema": "bkalot_clone"
   },
   "deployTarget": "vercel",
-  "liveUrl": null,
+  "liveUrl": "https://more30.com/bkalot-studio",
+  "adminUrl": "https://more30.com/bkalot-studio/admin",
   "protected": false,
   "source": "authored-here",
-  "note": "שכבה 1 של שכפול בקלות התפעולית (BKALOT_CLONE_BUILD.md, core.issues #223). דף סטטי אחד בלי build: הטופס מכווץ לפי kind ושולח ל-edge function bkalot-clone-intake, שקוראת ל-public.bkalot_clone_intake. אינו פרוס עדיין — נמדד מדפדפן מול הכתובת החיה (QA/bkalot-clone/form-0813). מצב טסט: התשובה מחזירה queued:false ואין שליחה יוצאת."
+  "note": "שכבה 1+2 של שכפול בקלות התפעולית (BKALOT_CLONE_BUILD.md, core.issues #223), פרוס וחי מ-13/08. הטופס (kind=info/reminder/treatment) שולח ל-edge function bkalot-clone-intake → public.bkalot_clone_intake; הניהול (bkalot-clone-admin, כניסה+תור+היסטוריית החלטות+הערות) נבדק בייצור (QA/bkalot-clone/admin-auth-0813 ואילך). כל ענפי הוולידציה של הקליטה נמדדו בייצור עד 17/08 (ראה SYSTEMS_STATUS.md 17/08). מצב טסט: אין שליחה יוצאת אמיתית. ⚠️ הפער שנשאר: core.projects #37 כבר קיימת (0057, 13/08) אבל נשארה live=false/is_deployed=false/stage='wip' מאז — מעולם לא עודכנה אחרי שהמערכת עלתה וחיה, ולכן אינה מופיעה בדף הבית. ה-UPDATE הדרוש מוכן ב-QA/bkalot-clone/registry-row-0817/_heartbeat-pending.sql, ממתין לחיבור MCP/PAT של Supabase כדי לרוץ."
 }
