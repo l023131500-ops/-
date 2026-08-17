@@ -1,0 +1,33 @@
+﻿26 mounts
+
+mount        old brand (html)       old (rendered)  new brand  credit
+admin        no                     false           false      true
+bkalot       no                     false           false      true
+briut        no                     false           false      true
+chatzor      no                     false           false      true
+chizukim     no                     false           false      true
+crm          no                     false           false      true
+egod         no                     false           false      true
+galil        no                     false           false      true
+gannenet     no                     false           true       true
+gesher       no                     false           false      true
+imud         no                     false           false      true
+kesef        no                     false           true       true
+kiosk        no                     false           false      true
+kupot        no                     false           false      true
+mechiron     no                     false           false      true
+modaot       no                     false           false      true
+mthbram      no                     false           false      true
+nadlan       no                     false           true       true
+orech        no                     false           false      true
+smachot      no                     false           false      true
+smel         no                     false           false      true
+studio       no                     false           false      true
+tamlul       no                     false           false      true
+tivuch       no                     false           true       true
+torah        no                     false           false      true
+zchuyot      no                     false           false      true
+
+0 mount(s) still serving "מור מערכות תוכנה":
+
+0 mount(s) without the footer credit:
