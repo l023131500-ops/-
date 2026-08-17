@@ -1,6 +1,17 @@
 # SYSTEMS_STATUS.md — מצב כל המערכות, נמדד
 
-> ## 🟢 17/08/2026 (לילה, טז) — **16 חצור קונקט (אפליקציה, `/chatzor/`) — Lighthouse נמדד לראשונה (perf 49, a11y כבר 100, SEO 100)**
+> ## 🟢 17/08/2026 (לילה, יז) — **דף הבית (`/`) — Lighthouse נמדד לראשונה (perf 86, a11y 100, SEO 100)**
+>
+> `node scripts/qa/lighthouse-run.mjs QA/platform/home-lh-0817 home` — ציון ראשון אי-פעם
+> לנתיב `home` (`/`), שהיה חסר מסבב המדידות של 0817 (כל מסלולי המערכות נמדדו,
+> אבל הנתיב המשותף `home`/`login`/`me`/`subscribe` שברשימת `ROUTES` לא). **פרפורמנס 86 ·
+> נגישות 100 · Best Practices 77 · SEO 100**. בדומה ל-28/26/22/14/03/16 — הנגישות
+> כבר מלאה, אין `failedAudits` נגיש לתקן, אין שינוי קוד בסבב הזה. `bootupTime`
+> מראה `netfree.link/card/card-injection.js` רץ בפועל בטרייס — אותו דפוס NetFree
+> שכבר מתועד ומוסבר ב-32/02/04/06/10/14/28/31/16 ותורם ל-Best Practices (77);
+> לא נחקר מחדש כאן. `login`/`me`/`subscribe` נשארו לא נמדדים — מסלול הבא.
+> ראיות: `QA/platform/home-lh-0817/_lighthouse.json`.
+> Supabase MCP אינו מחובר לסשן הזה — heartbeat נכתב כקובץ `_heartbeat-pending.sql`.
 >
 > `node scripts/qa/lighthouse-run.mjs QA/platform/chatzor-app-lh-0817 chatzor-app` — ציון ראשון
 > אי-פעם למסלול `chatzor-app` (`/chatzor/`, ה-SPA בפועל — שונה מ-`chatzor` הנחיתה `/chatzor`
