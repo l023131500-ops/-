@@ -3418,3 +3418,25 @@ node scripts/qa/allowlist-sweep.mjs QA/platform/allowlist-recheck-<תאריך>
   והפער נשאר תיאורטי.
 
 עדות: `QA/platform/public-default-privileges-0814/_results.json`.
+
+---
+
+## 🟢 0תד. תחזוקה — קבצים untracked בשורש (לא חוסם, לא דורש אותך) — 17/08/2026 (ערב)
+
+סבב הסריקה המלא הקודם (17/08 אחה"צ) לא מצא עבודה פונקציונלית פתוחה, ו-
+POLISH_BACKLOG.md גם הוא סגור (5/5 מצב-כהה). בסבב הזה נמצא ונסגר פער קטן:
+`BKALOT_CLONE_BUILD.md` ו-`BKALOT_AUTOMATION_BUILD.md` — שני מפרטים
+שאליהם RUN_INSTRUCTIONS.md ו-more30-priority.md §5ב מפנים כקריאת-חובה —
+היו untracked בגיט (קיימים רק על הדיסק). נוספו לגיט (commit `9fc90aa`).
+
+עדיין untracked בשורש (~150 פריטים): מסמכי .docx/.md ישנים (MASTER_PLAN,
+NADLAN_*, EVENTS_*, GAN_CLICK_MASTER_SPEC.docx וכו'), קבצי `.cmd` של
+לולאת ההרצה (v4–v8), וערימת ראיות QA היסטוריות (screenshots/`_commit-msg.txt`)
+שמסבבים קודמים כתבו אך מעולם לא הוסיפו לגיט. לא נגעתי בהם עכשיו — נדרש
+סבב נפרד לבדוק כל אחד (חלקם ייתכן ומיושנים/כפולים, למשל
+`more30-fixes-and-features.md` מול `.txt` הקיים כבר בגיט) לפני commit
+גורף. לא חוסם, לא דורש החלטה שלך — רק רישום כדי שהסבב הבא ידע.
+
+Supabase MCP לא היה מחובר בסשן הזה (נבדק עם ToolSearch) — heartbeat נכתב
+כ-`QA/platform/untracked-specs-0817/_heartbeat-pending.sql`, לא כשורת
+`core.run_progress` אמיתית.
