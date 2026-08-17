@@ -50,7 +50,7 @@ const config: Config = {
         },
       },
       fontFamily: {
-        heebo: ['Heebo', 'Assistant', 'Arial', 'sans-serif'],
+        heebo: ['var(--font-heebo)', 'var(--font-assistant)', 'Arial', 'sans-serif'],
       },
       boxShadow: {
         card: '0 2px 12px rgba(13,27,62,0.06)',
