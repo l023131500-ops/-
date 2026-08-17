@@ -3802,7 +3802,7 @@
 | 17 | תמלול חיזוקים | [/chizukim](https://more30.com/chizukim) | ✅ עובדת | 1,947 | ✅ | **תוקן: הכתובת הקנונית הגישה עמוד "בהכנה"** · **נמדד 17/08: Lighthouse perf 67/78, a11y כבר 100** (פרפורמנס מתחת לסף 90, לא נחקר עדיין) |
 | 18 | עורך תורני | [/orech](https://more30.com/orech) | ✅ עובדת | 471 | ✅ | **נמדד 17/08: Lighthouse perf 97 · a11y 100 · SEO 100 · BP 77** (חסימת NetFree, לא ניתן לתיקון בקוד) — עבר בסבב הזה ללא תיקון |
 | 22 | מימוש זכויות | [/zchuyot](https://more30.com/zchuyot) | ✅ עובדת | 2,511 | ✅ | **תוקן: 3 מספרים מומצאים הוסרו מרצועת הנתונים** · **נמדד 17/08: Lighthouse perf 65, a11y כבר 100, SEO 100** (פרפורמנס מתחת לסף 90, לא נחקר עדיין) |
-| 26 | סטודיו מודעות | [/studio](https://more30.com/studio) | ✅ עובדת | 892 | ✅ | |
+| 26 | סטודיו מודעות | [/studio](https://more30.com/studio) | ✅ עובדת | 892 | ✅ | **נמדד 17/08: Lighthouse perf 65, a11y כבר 100, SEO 100, BP 77** (פרפורמנס מתחת לסף 90, לא נחקר עדיין) |
 | 28 | השוואת קופות | [/kupot](https://more30.com/kupot) | ✅ עובדת | 3,132 | ✅ | |
 | 32 | נדל"ן ברגע | [/nadlan](https://more30.com/nadlan) | ✅ עובדת | 6,413 | ✅ | **תוקן: נגישות 95→100 · Google Fonts render-blocking (perf 60→72, FCP 5.0s→2.4s, LCP 5.0s→3.1s)** · **נמדד 17/08: Lighthouse perf 72 · a11y 100 · SEO 100** — שני תת-המדדים הנותרים (`server-response-time`, `mainthread-work-breakdown`) נחקרו ונסגרו כעיוות מדידה מקומי (NetFree), לא ניתן לתיקון בקוד, ראה NEEDS_USER |
 | 34 | כסף | [/kesef](https://more30.com/kesef) | ✅ עובדת | 2,381 | ✅ | **תוקן: כניסה מגיעה למערכת** |
