@@ -1,5 +1,26 @@
 # SYSTEMS_STATUS.md — מצב כל המערכות, נמדד
 
+> ## 🟢 17/08/2026 — **03 מודעות — נוסף פקד מצב-כהה ידני, פרוס וחי. 3/5 מ-POLISH_BACKLOG.**
+>
+> המשך ישיר ל-02-תמלול (למטה): גם 03 בנויה Next.js, וגם לה נדרש `ThemeToggle`.
+> ההבדל היחיד — דף הבית של 03 לא משתמש ב-`SiteHeader.tsx` המשותף אלא בכותרת
+> `inline` משלו (`app/(public)/page.tsx`), אז הפקד נוסף בשני מקומות: גם
+> ל-`SiteHeader.tsx` (עמודי תמלול), גם ישירות לדף הבית עם עיצוב מותאם לרקע
+> הכהה-גרדיאנט שלו (במקום `btn-outline` הבהיר שלא היה נראה שם — `ThemeToggle`
+> עודכן לקבל `className` כדי לתמוך בשני ההקשרים).
+>
+> `THEME_BOOT` ב-`app/layout.tsx` עודכן לקרוא `localStorage["modaot-theme"]`
+> לפני `matchMedia`, אותה תבנית כמו 02/10. `next build` עבר, Playwright מקומי
+> (`next start`, basePath `/modaot`) אימת בדף הבית ובעמוד ההעלאה: קליק→
+> `classList.contains('dark')`, רקע `rgb(15,18,24)`; רענון שומר בלי הבזק; קליק
+> נוסף חוזר לבהיר. נפרס `vercel deploy --prod` מתוך `apps/03-igud-ads`
+> (`modaot-more30`, `dpl_7kpTybzinumhjbwUeGDaErsk2D5f`) ואומת חי ב-
+> `https://more30.com/modaot/?cachebust=0817modaot` (אותה בדיקה, אותה תוצאה).
+> ראיות: `QA/platform/theme-toggle-modaot-0817/`. 06/35 נשארים ברשימה.
+>
+> ⚠️ ה-MCP של Supabase אינו מחובר לסשן הזה — heartbeat נכתב כקובץ
+> `_heartbeat-pending.sql` (מצטרף לתור הקיים; הרץ לפי סדר הקומיטים ב-git log).
+
 > ## 🟢 17/08/2026 — **02 תמלול — נוסף פקד מצב-כהה ידני, פרוס וחי. 2/5 מ-POLISH_BACKLOG.**
 >
 > המשך ישיר ל-10-בקלות (למטה): `POLISH_BACKLOG.md` מסמן גם את 02/03/06

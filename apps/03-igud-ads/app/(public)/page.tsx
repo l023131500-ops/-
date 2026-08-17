@@ -1,4 +1,5 @@
 import Link from "next/link";
+import ThemeToggle from "@/components/ThemeToggle";
 
 export default function HomePage() {
   return (
@@ -32,6 +33,7 @@ export default function HomePage() {
           <Link href="/create" className="inline-block py-1 hover:text-brand-gold transition">צור מודעה</Link>
           <Link href="/transcribe/upload" className="inline-block py-1 hover:text-brand-gold transition">תמלול שיעור</Link>
           <Link href="/login" className="inline-block py-1 hover:text-brand-gold transition">התחברות</Link>
+          <ThemeToggle className="inline-flex items-center rounded-md border border-white/30 px-2 py-1 hover:text-brand-gold hover:border-brand-gold transition" />
         </nav>
       </header>
 

@@ -4,9 +4,9 @@
 > שנדחו מ"פונקציה עכשיו" (`more30-priority.md`, כלל-העל א). אחרי סבב מלא על כל
 > המערכות — עברו על הרשימה הזאת והשלימו.
 
-## מצב כהה — פקד ידני חסר (5 מערכות, 2 הושלמו 17/08)
+## מצב כהה — פקד ידני חסר (5 מערכות, 3 הושלמו 17/08)
 
-**מה חסר.** ל-02 (תמלול), 03 (מודעות), 06 (בריאות), ~~10 (בקלות-תצוגה)~~,
+**מה חסר.** ל-02 (תמלול), ~~03 (מודעות)~~, 06 (בריאות), ~~10 (בקלות-תצוגה)~~,
 35 (קיוסק) אין פקד גלוי בעמוד שמאפשר למי שה-OS שלו **בהיר** לבחור כהה בכל
 זאת (ל-smel, chatzor, galil יש כזה פקד). **זו לא הייתה פונקציונליות חסרה** —
 כל חמש עוקבות אחרי `prefers-color-scheme: dark` בפועל, כלומר מי שה-OS שלו
@@ -26,6 +26,21 @@ build), ולכן הראשונה שנסגרה. נפרס ואומת בייצור. 
 `https://more30.com/tamlul/?cachebust=0817tamlul`. ראיות:
 `QA/platform/theme-toggle-tamlul-0817/`. 03/06 (Next.js) ו-35 (Vite,
 kioskfleet) דורשים אותו טיפול ונשארים ברשימה.
+
+✅ **03 מודעות — הושלם 17/08.** נוסף `ThemeToggle.tsx` (כפתור 🌙/☀️, מקבל
+`className` כדי להתאים לכל אחד מהשניים שצריכים אותו) — הודבק גם ב-
+`SiteHeader.tsx` (משמש רק ב-`/transcribe/upload` וב-`/transcribe/success`)
+וגם ישירות ב-`app/(public)/page.tsx`, כי דף הבית של המערכת הזו בנוי עם
+כותרת inline משלו ולא דרך `SiteHeader`. `THEME_BOOT` ב-`app/layout.tsx`
+עודכן לקרוא `localStorage["modaot-theme"]` לפני נפילה ל-
+`prefers-color-scheme`, אותה תבנית כמו 02/10. `next build` עבר, Playwright
+מקומי (`next start`, basePath `/modaot`) אימת בדף הבית ובעמוד ההעלאה: קליק→
+`classList.contains('dark')` + רקע `rgb(15,18,24)`, רענון שומר בלי הבזק,
+קליק נוסף חוזר לבהיר. נפרס `vercel deploy --prod` מתוך `apps/03-igud-ads`
+(`modaot-more30`, `dpl_7kpTybzinumhjbwUeGDaErsk2D5f`) ואומת חי ב-
+`https://more30.com/modaot/?cachebust=0817modaot` (אותה בדיקה, אותה
+תוצאה). ראיות: `QA/platform/theme-toggle-modaot-0817/`. 06 (Next.js) ו-35
+(Vite) נשארים ברשימה.
 
 ```
 /tamlul      os-dark:follows  toggle:none    => reachable

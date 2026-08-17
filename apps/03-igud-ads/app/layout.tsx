@@ -23,7 +23,7 @@ export const metadata: Metadata = {
  * את העמוד לבן. הוא כותב מחלקה על `<html>` בלבד, שאינו חלק מהעץ ש-React
  * מנהל, ולכן אינו יוצר אי-התאמת הידרציה.
  */
-const THEME_BOOT = `(function(){var m=window.matchMedia("(prefers-color-scheme: dark)");var a=function(d){document.documentElement.classList.toggle("dark",d)};a(m.matches);m.addEventListener?m.addEventListener("change",function(e){a(e.matches)}):m.addListener(function(e){a(e.matches)})})()`;
+const THEME_BOOT = `(function(){var KEY="modaot-theme";var m=window.matchMedia("(prefers-color-scheme: dark)");var a=function(d){document.documentElement.classList.toggle("dark",d)};var stored=null;try{stored=localStorage.getItem(KEY)}catch(e){}a(stored?stored==="dark":m.matches);var onChange=function(e){var current=null;try{current=localStorage.getItem(KEY)}catch(err){}if(!current)a(e.matches)};m.addEventListener?m.addEventListener("change",onChange):m.addListener(onChange)})()`;
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import NotificationBell from "@/components/NotificationBell";
+import ThemeToggle from "./ThemeToggle";
 
 export default function SiteHeader() {
   return (
@@ -23,6 +24,7 @@ export default function SiteHeader() {
           <Link href="/create" className="btn-primary text-sm">צור מודעה</Link>
           <NotificationBell />
           <Link href="/login" className="btn-outline text-sm">כניסת ניהול</Link>
+          <ThemeToggle />
         </nav>
       </div>
     </header>
