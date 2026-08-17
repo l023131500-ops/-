@@ -1,0 +1,107 @@
+{
+  "/tamlul": {
+    "route": "/tamlul",
+    "osDark": {
+      "effectiveBg": "rgb(20, 22, 28)",
+      "bodyImage": "",
+      "fg": "rgb(228, 230, 236)",
+      "rootClass": "dark",
+      "rootTheme": ""
+    },
+    "light": {
+      "effectiveBg": "rgb(251, 250, 246)",
+      "bodyImage": "",
+      "fg": "rgb(26, 26, 26)",
+      "rootClass": "",
+      "rootTheme": ""
+    },
+    "toggleCandidates": [],
+    "osDarkFollows": true,
+    "alwaysDark": false,
+    "reachable": true
+  },
+  "/modaot": {
+    "route": "/modaot",
+    "osDark": {
+      "effectiveBg": "rgb(15, 18, 24)",
+      "bodyImage": "",
+      "fg": "rgb(228, 230, 236)",
+      "rootClass": "dark",
+      "rootTheme": ""
+    },
+    "light": {
+      "effectiveBg": "rgb(248, 245, 236)",
+      "bodyImage": "",
+      "fg": "rgb(26, 26, 26)",
+      "rootClass": "",
+      "rootTheme": ""
+    },
+    "toggleCandidates": [],
+    "osDarkFollows": true,
+    "alwaysDark": false,
+    "reachable": true
+  },
+  "/briut": {
+    "route": "/briut",
+    "osDark": {
+      "effectiveBg": "rgb(14, 21, 25)",
+      "bodyImage": "",
+      "fg": "rgb(227, 233, 237)",
+      "rootClass": "dark",
+      "rootTheme": ""
+    },
+    "light": {
+      "effectiveBg": "rgb(246, 248, 249)",
+      "bodyImage": "",
+      "fg": "rgb(22, 35, 43)",
+      "rootClass": "",
+      "rootTheme": ""
+    },
+    "toggleCandidates": [],
+    "osDarkFollows": true,
+    "alwaysDark": false,
+    "reachable": true
+  },
+  "/bkalot": {
+    "route": "/bkalot",
+    "osDark": {
+      "effectiveBg": "rgb(18, 19, 15)",
+      "bodyImage": "",
+      "fg": "rgb(233, 231, 224)",
+      "rootClass": "dark",
+      "rootTheme": ""
+    },
+    "light": {
+      "effectiveBg": "rgb(247, 246, 242)",
+      "bodyImage": "",
+      "fg": "rgb(35, 33, 28)",
+      "rootClass": "",
+      "rootTheme": ""
+    },
+    "toggleCandidates": [],
+    "osDarkFollows": true,
+    "alwaysDark": false,
+    "reachable": true
+  },
+  "/kiosk": {
+    "route": "/kiosk",
+    "osDark": {
+      "effectiveBg": "rgb(11, 18, 32)",
+      "bodyImage": "",
+      "fg": "rgb(230, 235, 244)",
+      "rootClass": "dark",
+      "rootTheme": ""
+    },
+    "light": {
+      "effectiveBg": "rgb(245, 247, 251)",
+      "bodyImage": "",
+      "fg": "rgb(11, 18, 32)",
+      "rootClass": "",
+      "rootTheme": ""
+    },
+    "toggleCandidates": [],
+    "osDarkFollows": true,
+    "alwaysDark": false,
+    "reachable": true
+  }
+}
