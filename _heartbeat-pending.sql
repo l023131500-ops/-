@@ -113,3 +113,23 @@ image/svg+xml 32x32 (לא הוחלף ע"י NetFree), התג בעמוד החי מ
 מוגן, kesef source not-vendored — לא ניתן לתיקון מכאן). ראיות:
 QA/platform/gesher-favicon-0817/_results.md.$$
 );
+
+-- Commit: dc7fe1d "30 CRM זכויות: Lighthouse נמדד לראשונה + תוקן landmark-one-main אמיתי (a11y 98→100)"
+insert into core.run_progress (phase, task, status, note) values (
+  'a11y-sweep',
+  '30 CRM זכויות — Lighthouse + landmark-one-main',
+  'done',
+  $$המשך סבב Lighthouse על 26 המערכות החיות (fix/nadlan-a11y, 17/08). /crm
+מפנה ל-/crm/auth, טרם נמדדה. node scripts/qa/lighthouse-run.mjs crm מול
+הייצור: perf 85, a11y 98, bp 77, seo 100. הליקוי האמיתי היחיד: landmark-one-main
+— apps/30-zchuyotpro-crm/src/routes/auth.tsx עטף את כל מסך הכניסה ב-<div>
+יחיד; __root.tsx לא מוסיף <main> בשום מקום בעץ (Outlet ישיר). תוקן: ה-div
+החיצוני הוחלף ל-<main> (אותם attributes, בלי שינוי עיצוב). vite build מקומי
+נקי, פרוס ממקור (vercel deploy --prod --yes, לא --prebuilt — כפי שכבר תועד
+ב-crm-favicon-0817: ה-preset של TanStack Start לא כולל rewrites מ-vercel.json
+ב-config, --prebuilt שובר את rewrite ה-assets הקיים). dpl_7TzQnaeBF9WJyjXU51VgsCAfULQj,
+READY. אומת: GET /crm/auth?cachebust=0817main מכיל <main> בייצור. הרצה חוזרת
+של Lighthouse: perf 85->89, a11y 98->100, seo 100. שאר הליקויים (mainthread-
+work-breakdown, redirects /crm->/crm/auth, unused-javascript) הם ביצועים
+בלבד, לא נחקרו כעת. ראיות: QA/platform/crm-lh-0817/_results.md.$$
+);
