@@ -38,3 +38,11 @@ insert into core.run_progress (phase, task, status, note) values (
   'done',
   'אותה שורת טבלה בעייתית כמו 04/27 ו-32: 15 egod · 24 galil סומנו ⏳ נבנה, ממתין לפריסה, בסתירה לסיכום "13/13. הושלם.". node scripts/qa/dark-probe.mjs QA/platform/egod-galil-a11y-recheck-0817 /egod /galil מול הייצור: egod 2 חוקי .dark, rgb(245,246,250) -> rgb(15,21,36) CHANGED; galil 2 חוקי .dark, רקע-גרדיאנט rgb(245,247,249)... -> rgb(14,24,32)... CHANGED (via gradient). ניגודיות אחרי ההיפוך: egod rgb(235,237,244) על rgb(15,21,36), galil rgb(236,240,244) על rgb(14,24,32) — שתיהן AA תקין. אין שינוי קוד, אין פריסה — מדידה בלבד. ראיות: QA/platform/egod-galil-a11y-recheck-0817/_dark-probe.json.'
 );
+
+-- Commit: <this step> "30 CRM · 31 גשר: אנטי-דריפט — מצב כהה 'ממתין לפריסה' נבדק מחדש, כבר פרוס וחי"
+insert into core.run_progress (phase, task, status, note) values (
+  'anti-drift',
+  '30 CRM · 31 גשר — recheck מצב כהה',
+  'done',
+  'אותה שורת טבלה בעייתית כמו 04/27, 15/24 ו-32: 30 crm · 31 gesher סומנו ⏳ ממתין לפריסה, בסתירה לסיכום "13/13. הושלם.". node scripts/qa/dark-probe.mjs QA/platform/crm-gesher-a11y-recheck-0817 /crm /gesher מול הייצור: crm 1 חוק .dark (--background:#050f14 / --foreground:#f1f6f6), lab(98.9,-1.6,-0.7) -> lab(3.7,-2.1,-4.0) CHANGED; gesher 1 חוק .dark (--background:#0b121a / --foreground:#f0f2f4), lab(98.1,-0.3,-0.7) -> lab(5.2,-1.2,-6.2) CHANGED. שני הזוגות כמעט שחור-על-כמעט-לבן — AA תקין בבירור. אין שינוי קוד, אין פריסה — מדידה בלבד, ותוקנה שורת הטבלה שסתרה את סיכום 13/13. ראיות: QA/platform/crm-gesher-a11y-recheck-0817/_dark-probe.json.'
+);
