@@ -22,7 +22,7 @@ const BenefitsSection = () => {
       <div className="container mx-auto px-4">
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-14">
           <h2 className="font-heading text-3xl md:text-4xl font-bold text-foreground mb-4">
-            למה להצטרף ל<span className="text-secondary">איגוד השיעורים</span>?
+            למה להצטרף ל<span className="text-[hsl(var(--gold-dark))]">איגוד השיעורים</span>?
           </h2>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">בלי התקנה, בלי ידע טכני, וללא תשלום.</p>
         </motion.div>

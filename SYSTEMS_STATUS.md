@@ -1,5 +1,29 @@
 # SYSTEMS_STATUS.md — מצב כל המערכות, נמדד
 
+> ## 🟢 17/08/2026 (לילה, יג) — **15 איגוד (egod) — Lighthouse נמדד לראשונה (perf 43, a11y 96) + תוקנו 2 מתוך 3 ליקויי נגישות אמיתיים**
+>
+> `node scripts/qa/lighthouse-run.mjs QA/platform/egod-lh-0817 egod` — ציון ראשון אי-פעם
+> ל-`egod`(15): **פרפורמנס 43 · נגישות 96 · Best Practices 77 · SEO 100**. `lh-detail.mjs`
+> על `color-contrast` חשף 3 אלמנטים כושלים: (1) `BenefitsSection.tsx` — כותרת `<h2>`
+> עם `<span className="text-secondary">` בזהב `hsl(42 50% 54%)` על רקע בהיר נתן 2.27:1
+> (דרוש 3:1, טקסט גדול ומודגש) — **לא** תוקן ע"י הכהיית טוקן `--secondary` המשותף
+> (ניסיון ראשון עשה זאת וגם תיקן את הכותרת וגם שבר ניגודיות של כפתור אחר שמשתמש
+> ב-`bg-secondary` עם טקסט נייבי, ל-3.8:1 — הוחזר), אלא ע"י הפניית ה-`span` הספציפי
+> הזה בלבד לטוקן `--gold-dark` שכבר קיים בקובץ (`hsl(42 55% 42%)`, 3.30:1 מחושב).
+> (2) אותו קובץ — `<p className="text-muted-foreground">` נתן 4.29:1 (דרוש 4.5:1) —
+> `--muted-foreground` הוכהה ל-47% בהירות (4.77:1 מחושב; טוקן טקסט-בלבד, לא משמש
+> כרקע באפליקציה הזו, אין השפעת-צד). (3) `body > a.more30-credit` ב-4.37:1 — זה
+> `auth-button.js` המשותף ל-24 מערכות, **לא תוקן כאן** — מחוץ לתחום צעד על מערכת
+> בודדת, ראה NEEDS_USER. `vite build` → robocopy ל-`_deploy/egod-more30/egod` (אומת
+> זהה byte-for-byte) → `vercel deploy --prod` (`dpl_6ks5rPKvnndVbXqfM9E1cKoVLWLA`,
+> READY). אומת חי עם cache-buster + `lh-detail.mjs` חוזר מול הייצור: רק הליקוי
+> המשותף נשאר. מדידה מלאה אחרי: **נגישות נשארה 96** (הליקוי המשותף הפתוח מחזיק
+> את הקטגוריה מתחת ל-100), פרפורמנס 43→53 (רעש, לא קשור לשינוי הזה). פרפורמנס
+> (53, נמוך משמעותית מ-90) ו-Best Practices (77) לא נחקרו בסבב הזה — מסומן להמשך,
+> לא הונח כדפוס NetFree ללא בדיקה. ראיות: `QA/platform/egod-lh-0817/_lighthouse.json`
+> (לפני) · `QA/platform/egod-lh-a11yfix-0817/_lighthouse.json` (אחרי).
+> Supabase MCP אינו מחובר לסשן הזה — heartbeat נכתב כקובץ `_heartbeat-pending.sql`.
+
 > ## 🟢 17/08/2026 (לילה, יב) — **14 שמחות פלוס — Lighthouse נמדד לראשונה (perf 76, a11y כבר 100, SEO 100)**
 >
 > `node scripts/qa/lighthouse-run.mjs QA/platform/smachot-lh-0817 smachot` — ציון ראשון אי-פעם
@@ -3773,7 +3797,7 @@
 | 10 | מימוש זכויות בקלות | [/bkalot](https://more30.com/bkalot) | ✅ עובדת | 3,041 | ✅ | **תוקן: meta description חסר** · **נמדד 17/08: Lighthouse perf 82 · a11y 100** (מתחת לסף 90, לא נחקר עדיין) |
 | 12 | נדל"ן Smel | [/smel](https://more30.com/smel) | ✅ עובדת | 1,149 | ✅ | **תוקן: 2 ליקויי נגישות אמיתיים** (ניגודיות `.gold-text`, קישור "פרימיום" חסר שם נגיש במובייל) · **נמדד 17/08: Lighthouse perf 73→80, a11y 92→100** (פרפורמנס מתחת לסף 90, לא נחקר עדיין) |
 | 14 | שמחות פלוס | [/smachot](https://more30.com/smachot) | ✅ עובדת | 1,445 | ✅ | **נמדד 17/08: Lighthouse perf 76, a11y כבר 100** (פרפורמנס מתחת לסף 90, לא נחקר עדיין) |
-| 15 | איגוד | [/egod](https://more30.com/egod) | ✅ עובדת | 2,459 | ✅ | **תוקן: 18 → 0 יעדי מגע קטנים** |
+| 15 | איגוד | [/egod](https://more30.com/egod) | ✅ עובדת | 2,459 | ✅ | **תוקן: 18 → 0 יעדי מגע קטנים** · **תוקנו 2/3 ליקויי ניגודיות** · **נמדד 17/08: Lighthouse perf 43, a11y 96** (הליקוי השלישי ב-auth-button.js המשותף, פרפורמנס לא נחקר) |
 | 16 | חצור קונקט | [/chatzor](https://more30.com/chatzor) | ✅ עובדת | 2,076 | ✅ | **תוקן: הכתובת הקנונית הגישה עמוד "בהכנה"** |
 | 17 | תמלול חיזוקים | [/chizukim](https://more30.com/chizukim) | ✅ עובדת | 1,947 | ✅ | **תוקן: הכתובת הקנונית הגישה עמוד "בהכנה"** |
 | 18 | עורך תורני | [/orech](https://more30.com/orech) | ✅ עובדת | 471 | ✅ | |
