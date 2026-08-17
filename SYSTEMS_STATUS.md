@@ -1,6 +1,19 @@
 # SYSTEMS_STATUS.md — מצב כל המערכות, נמדד
 
-> ## 🟢 17/08/2026 (לילה, ז) — **32 נדל"ן ברגע — `mainthread-work-breakdown`/`server-response-time` נסגרים: ראיה קונקרטית (לא היקש) שהגורם הוא NetFree, לא קוד**
+> ## 🟢 17/08/2026 (לילה, ח) — **02 תמלול איגוד — Lighthouse נמדד לראשונה (perf 64, a11y 98) + תוקן `heading-order` (h1→h3 דילג על h2)**
+>
+> `node scripts/qa/lighthouse-run.mjs QA/platform/tamlul-lh-0817 tamlul` (אותו כלי, פרופיל מובייל, מול הייצור החי) —
+> ציון ראשון אי-פעם ל-`tamlul`(02): **פרפורמנס 64 · נגישות 98 · Best Practices 77 · SEO 100**.
+> ה-`failedAudits` כללו פער נגישות אמיתי (לא סביבתי): `heading-order` score 0 —
+> `apps/02-igud-transcribe/app/page.tsx:34` היה `<h3>מה תקבל בסוף?</h3>` מיד אחרי
+> ה-`<h1>` היחיד בדף, מדלג על h2. תוקן ל-`<h2>` (התאמה סמנטית תקינה — התוכן במקביל
+> ל"איך זה עובד"/"שלושה מסלולי סגנון" שכבר h2). `next build` מקומי עבר, נפרס
+> `vercel deploy --prod` (`tamlul-more30`, `dpl_7Kp7kpUsc2Y4tKg4ep9WcUYUCq5c`), אומת
+> חי עם cache-buster: סדר הכותרות עכשיו h1→h2→h2→h3×3→h2→h2 (רציף, בלי דילוג).
+> פערי הפרפורמנס (64, מתחת לסף 90 — FCP/LCP 4.0s, `server-response-time` 930ms,
+> `mainthread-work-breakdown` 3.7s) נשארים פתוחים לסבב הבא; לפי הדפוס שנמצא ב-32
+> נדל"ן (`netfree.link/card/card-injection.js` בטרייס) חלקם עשויים להיות אותה
+> תלות ברשת המקומית — לא נבדק עדיין כאן. ראיות: `QA/platform/tamlul-lh-0817/_lighthouse.json`.
 >
 > `scripts/qa/lighthouse-run.mjs` הורחב לשמור פילוח בפועל (`mainthread-work-breakdown`
 > לפי קבוצה + `bootup-time` לכל סקריפט), לא רק ציון מסוכם. תוצאה מול נדל"ן החי:
@@ -3691,7 +3704,7 @@
 | 33 | אתר התדמית | [more30.com](https://more30.com) | ✅ עובדת | 4,473 | ✅ | 30 קישורים |
 | — | כניסה אחידה | [/login](https://more30.com/login) | ✅ עובדת | 326 | ✅ | Google SSO + סיסמה |
 | 01 | איגוד השיעורים | [/torah](https://more30.com/torah) | ✅ עובדת | 1,211 | ✅ | **נבדק מחדש 17/08: Lighthouse perf 88 · a11y 100 · SEO 100 · BP 77** (חסימת NetFree, לא ניתן לתיקון בקוד) — היה 74 ב-07/08, ראה §חסמים |
-| 02 | תמלול איגוד | [/tamlul](https://more30.com/tamlul) | ✅ עובדת | 1,372 | ✅ | עוקב אחרי מצב כהה, אין מתג |
+| 02 | תמלול איגוד | [/tamlul](https://more30.com/tamlul) | ✅ עובדת | 1,372 | ✅ | **תוקן: `heading-order` (h1→h3 דילג על h2)** · **נמדד 17/08: Lighthouse perf 64** (מתחת לסף 90, לא נחקר עדיין) · עוקב אחרי מצב כהה, אין מתג |
 | 03 | מודעות איגוד | [/modaot](https://more30.com/modaot) | ✅ עובדת | 661 | ✅ | ✅ נבדק מחדש 17/08 — אינו פער פעיל (`smallTargets: []`) |
 | 04 | עימוד תורני | [/imud](https://more30.com/imud) | ✅ עובדת | 612 | ✅ | עוקב אחרי מצב כהה, אין מתג |
 | 06 | לידים קופות חולים | [/briut](https://more30.com/briut) | ✅ עובדת | 4,832 | ✅ | 108 קישורים |

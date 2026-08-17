@@ -1,0 +1,18 @@
+02 תמלול איגוד: נמדד Lighthouse לראשונה (perf 64, a11y 98) + תוקן heading-order
+
+node scripts/qa/lighthouse-run.mjs QA/platform/tamlul-lh-0817 tamlul מול
+https://more30.com/tamlul החי - ציון ראשון אי-פעם למערכת הזו: פרפורמנס 64,
+נגישות 98, Best Practices 77, SEO 100.
+
+failedAudits כלל פער נגישות אמיתי: heading-order score 0.
+apps/02-igud-transcribe/app/page.tsx:34 - <h3>מה תקבל בסוף?</h3> ישר אחרי
+ה-h1 היחיד בדף, מדלג על h2. תוקן ל-<h2> (תואם סמנטית לשתי הכותרות המקבילות
+"איך זה עובד"/"שלושה מסלולי סגנון" שכבר h2).
+
+next build עבר, נפרס vercel deploy --prod (tamlul-more30,
+dpl_7Kp7kpUsc2Y4tKg4ep9WcUYUCq5c), אומת חי עם cache-buster: סדר הכותרות
+h1->h2->h2->h3x3->h2->h2 (רציף, בלי דילוג).
+
+פערי הפרפורמנס (FCP/LCP 4.0s, server-response-time 930ms,
+mainthread-work-breakdown 3.7s) נשארים פתוחים לסבב הבא - לא נחקרו עדיין
+אם הם אותה תלות ברשת (NetFree) שנמצאה ב-32 נדל"ן.

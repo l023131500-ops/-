@@ -31,7 +31,7 @@ export default function HomePage() {
             </div>
 
             <div className="rounded-2xl bg-gradient-to-br from-brandsurface to-brandsurface-dark p-8 text-white shadow-card">
-              <h3 className="font-display text-2xl">מה תקבל בסוף?</h3>
+              <h2 className="font-display text-2xl">מה תקבל בסוף?</h2>
               <ul className="mt-5 space-y-3 text-sm leading-relaxed">
                 <li className="flex gap-3"><Dot /> <span><b>original.docx</b> — תמלול נאמן למקור 100%, ללא שום עריכה</span></li>
                 <li className="flex gap-3"><Dot /> <span><b>edited.docx</b> — טקסט ערוך עם פיסוק, כותרות משנה והערות שוליים</span></li>

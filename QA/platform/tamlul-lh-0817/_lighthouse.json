@@ -1,0 +1,225 @@
+{
+  "tamlul": {
+    "url": "https://more30.com/tamlul",
+    "measuredAt": "2026-08-17T11:26:17.762Z",
+    "performance": 64,
+    "accessibility": 98,
+    "bestPractices": 77,
+    "seo": 100,
+    "metrics": {
+      "fcp": "4.0 s",
+      "lcp": "4.0 s",
+      "tbt": "340 ms",
+      "cls": "0.026",
+      "si": "8.3 s"
+    },
+    "failedAudits": [
+      {
+        "id": "first-contentful-paint",
+        "title": "First Contentful Paint",
+        "score": 0.23,
+        "display": "4.0 s"
+      },
+      {
+        "id": "largest-contentful-paint",
+        "title": "Largest Contentful Paint",
+        "score": 0.5,
+        "display": "4.0 s"
+      },
+      {
+        "id": "speed-index",
+        "title": "Speed Index",
+        "score": 0.19,
+        "display": "8.3 s"
+      },
+      {
+        "id": "total-blocking-time",
+        "title": "Total Blocking Time",
+        "score": 0.74,
+        "display": "340 ms"
+      },
+      {
+        "id": "max-potential-fid",
+        "title": "Max Potential First Input Delay",
+        "score": 0.37,
+        "display": "290 ms"
+      },
+      {
+        "id": "server-response-time",
+        "title": "Reduce initial server response time",
+        "score": 0,
+        "display": "Root document took 930 ms"
+      },
+      {
+        "id": "interactive",
+        "title": "Time to Interactive",
+        "score": 0.62,
+        "display": "6.2 s"
+      },
+      {
+        "id": "third-party-cookies",
+        "title": "Uses third-party cookies",
+        "score": 0,
+        "display": "1 cookie found"
+      },
+      {
+        "id": "mainthread-work-breakdown",
+        "title": "Minimize main-thread work",
+        "score": 0,
+        "display": "3.7 s"
+      },
+      {
+        "id": "heading-order",
+        "title": "Heading elements are not in a sequentially-descending order",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "unminified-javascript",
+        "title": "Minify JavaScript",
+        "score": 0.5,
+        "display": "Est savings of 6 KiB"
+      },
+      {
+        "id": "unused-javascript",
+        "title": "Reduce unused JavaScript",
+        "score": 0.5,
+        "display": "Est savings of 49 KiB"
+      },
+      {
+        "id": "inspector-issues",
+        "title": "Issues were logged in the `Issues` panel in Chrome Devtools",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "bf-cache",
+        "title": "Page prevented back/forward cache restoration",
+        "score": 0,
+        "display": "1 failure reason"
+      },
+      {
+        "id": "cache-insight",
+        "title": "Use efficient cache lifetimes",
+        "score": 0.5,
+        "display": "Est savings of 43 KiB"
+      },
+      {
+        "id": "document-latency-insight",
+        "title": "Document request latency",
+        "score": 0,
+        "display": "Est savings of 18 KiB"
+      },
+      {
+        "id": "forced-reflow-insight",
+        "title": "Forced reflow",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "lcp-breakdown-insight",
+        "title": "LCP breakdown",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "legacy-javascript-insight",
+        "title": "Legacy JavaScript",
+        "score": 0.5,
+        "display": "Est savings of 12 KiB"
+      },
+      {
+        "id": "modern-http-insight",
+        "title": "Modern HTTP",
+        "score": 0.5,
+        "display": ""
+      },
+      {
+        "id": "network-dependency-tree-insight",
+        "title": "Network dependency tree",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "render-blocking-insight",
+        "title": "Render-blocking requests",
+        "score": 0,
+        "display": "Est savings of 1,510 ms"
+      }
+    ],
+    "mainThreadBreakdown": [
+      {
+        "group": "Style & Layout",
+        "duration": 1300
+      },
+      {
+        "group": "Other",
+        "duration": 1007
+      },
+      {
+        "group": "Script Evaluation",
+        "duration": 997
+      },
+      {
+        "group": "Script Parsing & Compilation",
+        "duration": 211
+      },
+      {
+        "group": "Rendering",
+        "duration": 113
+      },
+      {
+        "group": "Parse HTML & CSS",
+        "duration": 74
+      },
+      {
+        "group": "Garbage Collection",
+        "duration": 34
+      }
+    ],
+    "bootupTime": [
+      {
+        "url": "https://more30.com/tamlul",
+        "total": 1569,
+        "scripting": 66,
+        "scriptParseCompile": 26
+      },
+      {
+        "url": "Unattributable",
+        "total": 786,
+        "scripting": 23,
+        "scriptParseCompile": 0
+      },
+      {
+        "url": "https://more30.com/tamlul/_next/static/chunks/117-af5809025826cbf7.js?dpl=dpl_9vvZDdvybJNVoG5jcFxDfuWyEEqA",
+        "total": 447,
+        "scripting": 346,
+        "scriptParseCompile": 86
+      },
+      {
+        "url": "https://more30.com/tamlul/_next/static/chunks/fd9d1056-9f91b5e418130764.js?dpl=dpl_9vvZDdvybJNVoG5jcFxDfuWyEEqA",
+        "total": 306,
+        "scripting": 279,
+        "scriptParseCompile": 26
+      },
+      {
+        "url": "https://more30.com/auth-button.js",
+        "total": 187,
+        "scripting": 50,
+        "scriptParseCompile": 6
+      },
+      {
+        "url": "https://netfree.link/card/card-injection.js",
+        "total": 107,
+        "scripting": 60,
+        "scriptParseCompile": 6
+      },
+      {
+        "url": "https://more30.com/tamlul/_next/static/chunks/webpack-89c4cccf320c83e5.js?dpl=dpl_9vvZDdvybJNVoG5jcFxDfuWyEEqA",
+        "total": 85,
+        "scripting": 65,
+        "scriptParseCompile": 8
+      }
+    ]
+  }
+}
