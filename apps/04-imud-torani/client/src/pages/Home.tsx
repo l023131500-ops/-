@@ -33,6 +33,7 @@ export default function Home() {
     <div className="min-h-screen bg-background">
       <SiteHeader />
 
+      <main>
       {/* Hero */}
       <section className="border-b border-border bg-gradient-to-b from-accent/40 to-transparent">
         <div className="mx-auto max-w-6xl px-5 py-16 text-center">
@@ -80,7 +81,7 @@ export default function Home() {
                   {i + 1}
                 </div>
               </div>
-              <h3 className="font-serif text-lg font-bold text-foreground">{s.title}</h3>
+              <h2 className="font-serif text-lg font-bold text-foreground">{s.title}</h2>
               <p className="mt-1 text-sm text-muted-foreground">{s.desc}</p>
             </div>
           ))}
@@ -90,7 +91,7 @@ export default function Home() {
       {/* My books */}
       <section className="mx-auto max-w-6xl px-5 pb-20">
         <div className="mb-5 flex items-center justify-between">
-          <h2 className="font-serif text-xl font-bold text-foreground">הספרים שלי</h2>
+          <h3 className="font-serif text-xl font-bold text-foreground">הספרים שלי</h3>
           <Button asChild variant="outline" size="sm" data-testid="button-new-book">
             <Link href="/templates">ספר חדש</Link>
           </Button>
@@ -130,6 +131,7 @@ export default function Home() {
                   <Button
                     variant="ghost"
                     size="icon"
+                    aria-label={`מחק את "${b.title}"`}
                     onClick={() => {
                       if (confirm(`למחוק את "${b.title}"?`)) del.mutate(b.id);
                     }}
@@ -151,6 +153,7 @@ export default function Home() {
           </div>
         )}
       </section>
+      </main>
     </div>
   );
 }

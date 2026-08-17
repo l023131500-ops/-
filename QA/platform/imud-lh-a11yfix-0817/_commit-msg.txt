@@ -1,0 +1,25 @@
+04 עימוד תורני: Lighthouse נמדד לראשונה (perf 64, a11y 90→100) + תוקנו 3 ליקויי נגישות אמיתיים
+
+node scripts/qa/lighthouse-run.mjs QA/platform/imud-lh-0817 imud — ציון ראשון אי-פעם ל-imud(04):
+perf 64 · a11y 90 · bp 77 · seo 100. failedAudits חשף שלושה ליקויי נגישות אמיתיים (לא סביבתיים)
+ב-apps/04-imud-torani/client/src/pages/Home.tsx:
+
+- heading-order: h1 (הירו) → h3 (כרטיסי "Steps") דילג על h2. הוסבו כרטיסי ה-Steps ל-h2
+  וכותרת "הספרים שלי" ל-h3, כך שהסדר רציף h1→h2→h3→h3 בלי דילוג.
+- landmark-one-main: לעמוד לא היה landmark <main>. נוסף <main> העוטף את כל תוכן העמוד
+  מתחת ל-<SiteHeader>.
+- button-name: כפתור המחיקה (Trash2, size="icon") בכרטיס ספר היה ללא שם נגיש —
+  זה כפתור האייקון-בלבד היחיד בכל קוד המקור של האפליקציה (אומת עם
+  Select-String על client/src, ש-Grep הרגיל לא רואה כי apps/ נבנה כ-untracked
+  בחלק מהמצבים). נוסף aria-label דינמי (`מחק את "<שם הספר>"`).
+
+`vite build` מקומי → robocopy ל-_deploy/imud-more30/public/imud → `vercel deploy --prod`
+(imud-more30, dpl_21mvKutWjXykY5AZ2NQqYpN1qLdi, READY). נמדד שוב אחרי: a11y 90→100,
+perf 62 (ללא שינוי, כפי שצפוי — לא נגעתי בביצועים). ראיות:
+QA/platform/imud-lh-0817/_lighthouse.json (לפני) ·
+QA/platform/imud-lh-a11yfix-0817/_lighthouse.json (אחרי).
+
+פרפורמנס (62-64, מתחת לסף 90) נשאר פתוח לסבב הבא — לפי הדפוס שנמצא ב-32 נדל"ן/02 תמלול
+(netfree.link/card/card-injection.js בטרייס) כנראה אותה תלות ברשת המקומית, לא נבדק כאן.
+
+Supabase MCP לא היה מחובר לסשן הזה — heartbeat נכתב כקובץ pending, יתווסף לתור.
