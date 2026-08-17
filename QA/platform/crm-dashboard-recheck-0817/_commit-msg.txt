@@ -1,0 +1,22 @@
+אנטי-דריפט: 30 CRM זכויות — "dashboard אחרי כניסה לא נבדק" נבדק עכשיו, מסך מלא ותקין
+
+הרשומה מ-17/08 (index-route recheck) בדקה רק את /crm ו-/crm/auth והשאירה
+במפורש: "dashboard אחרי כניסה לא נבדק". הפער המקורי שהיא עקבה אחריו טען
+React #418 (hydration mismatch) ספציפית על הדשבורד, לא על מסך הכניסה.
+
+נבדק עכשיו עם Playwright, 1280x900, נגד הייצור, עם משתמש הבדיקה האמיתי
+(test@more30.com / More30Test2026, מפרויקט jhbeelzvjvhnkxldqvxx לפי
+LOGINS.md): התחברות -> ניתוב אמיתי ל-/crm/dashboard, כותרת "לוח בקרה |
+זכויות פרו", ניווט צד עם 10 מסלולים אמיתיים, כרטיסי סטטיסטיקה עם נתוני
+אמת, לוח קנבן הפניות עם 5 עמודות אמיתיות, ו-0 שגיאות/אזהרות קונסולה
+מתחילת הניווט.
+
+אין שינוי קוד, אין פריסה — מדידה בלבד. SYSTEMS_STATUS.md עודכן: רשומה
+מתוארכת חדשה בראש הקובץ + שורת הטבלה "מה נשאר לתקן" תוקנה.
+
+ראיות: QA/platform/crm-dashboard-recheck-0817/README.md +
+crm-dashboard-recheck-0817.png.
+
+⚠️ ה-MCP של Supabase אינו מחובר לסשן הזה — heartbeat נכתב כ-
+QA/platform/crm-dashboard-recheck-0817/_heartbeat-pending.sql, מצטרף לתור
+הקיים (הרץ לפי סדר הקומיטים ב-git log).
