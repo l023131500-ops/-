@@ -32,14 +32,21 @@
      בתוך ה-‎<head>‎ ולפני הציור הראשון, ולכן אין הבזק לבן. -->
 <script>
   (function () {
+    var KEY = "bkalot-theme";
     var mq = window.matchMedia("(prefers-color-scheme: dark)");
     var apply = function (dark) {
       document.documentElement.classList.toggle("dark", dark);
     };
-    apply(mq.matches);
-    mq.addEventListener
-      ? mq.addEventListener("change", function (e) { apply(e.matches); })
-      : mq.addListener(function (e) { apply(e.matches); });
+    var stored = null;
+    try { stored = localStorage.getItem(KEY); } catch (e) {}
+    apply(stored ? stored === "dark" : mq.matches);
+    /* משתמש שלא בחר ידנית ממשיך לעקוב אחרי ה-OS; מי שבחר — נשאר על הבחירה. */
+    var onChange = function (e) {
+      var current = null;
+      try { current = localStorage.getItem(KEY); } catch (err) {}
+      if (!current) apply(e.matches);
+    };
+    mq.addEventListener ? mq.addEventListener("change", onChange) : mq.addListener(onChange);
   })();
 </script>
 <title>בדיקה מקיפה על כל הזכויות וההטבות שניתן לקבל</title>
@@ -68,6 +75,7 @@
       <a href="#funds">קופות חולים</a>
       <a href="#prices">השוואות מחירים</a>
       <a href="#" id="adminLink" class="nav-admin">ניהול</a>
+      <button type="button" id="themeToggle" class="theme-toggle" aria-label="החלף מצב כהה/בהיר">🌙</button>
     </nav>
   </div>
 </header>

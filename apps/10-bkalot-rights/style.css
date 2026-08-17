@@ -290,6 +290,8 @@ section h2{font-size:clamp(1.7rem,3.5vw,2.4rem);font-weight:700;margin-bottom:10
 /* Admin nav link */
 .nav-admin{font-weight:600;color:var(--teal-d);border:1px solid var(--border);padding:7px 16px;border-radius:999px;transition:.2s}
 .nav-admin:hover{border-color:var(--teal);color:var(--teal);background:var(--surface)}
+.theme-toggle{width:36px;height:36px;border:1px solid var(--border);border-radius:999px;background:var(--surface);font-size:1rem;line-height:1;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:.2s}
+.theme-toggle:hover{border-color:var(--teal)}
 
 /* Modal extra sections */
 .modal-sec{margin:14px 0;border-top:1px solid var(--border);padding-top:12px}

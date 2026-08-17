@@ -1,0 +1,28 @@
+ליטוש: 10 בקלות-תצוגה — פקד מצב-כהה ידני נוסף ופרוס (POLISH_BACKLOG, 1/5)
+
+POLISH_BACKLOG.md סימן 5 מערכות (02/03/06/10/35) שעוקבות אחרי
+prefers-color-scheme אבל בלי פקד גלוי בעמוד. 10-בקלות-תצוגה הוא אתר סטטי
+(index.html/app.js/style.css, בלי build) - היחיד מהחמש בלי שלב בנייה, ולכן
+הפריט הקטן ביותר לסגור ראשון.
+
+נוסף: כפתור #themeToggle (עם emoji ירח/שמש) ליד #adminLink בניווט; סקריפט
+ה-head קורא קודם localStorage['bkalot-theme'] לפני נפילה חזרה ל-matchMedia
+(מוחל לפני הציור, בלי הבזק); מאזין קליק ב-app.js שהופך .dark ושומר את
+הבחירה; עיצוב .theme-toggle תואם לטוקנים הקיימים.
+
+אומת עם Playwright מקומית (שרת סטטי על נתיב /bkalot/ כדי ש-<base
+href="/bkalot/"> יפתור נכון) ומול הייצור: קליק הופך isDark ל-true,
+localStorage ל-'dark', רקע ל-rgb(18,19,15); רענון שומר את הבחירה בלי הבזק
+לבן; קליק נוסף חוזר לבהיר. אותה רצף שוחזר חי ב-
+https://more30.com/bkalot/?cachebust=0817b. צילומי מסך ב-
+QA/platform/theme-toggle-bkalot-0817/.
+
+פריסה: הושווה _deploy/bkalot-more30/bkalot/* מול המקור המחויב לפני העתקה -
+הפרש יחיד היה BOM, אין סחף - ואז vercel deploy --prod
+(dpl_AXcBDcJmUAG3ya6b635B5wqPkhK9).
+
+מוגן: לא נגעתי ב-08/09/bkalut-app/bkalot-admin/zr_*/NEDARIM3873. שינוי
+תצוגה בלבד, אין כתיבה למסד. 02/03/06/35 נשארים ברשימה (דורשים build).
+
+⚠️ ה-MCP של Supabase אינו מחובר לסשן הזה - heartbeat נכתב כקובץ
+_heartbeat-pending.sql (מצטרף לתור הקיים).

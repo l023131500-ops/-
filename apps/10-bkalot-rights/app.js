@@ -494,6 +494,23 @@ async function init() {
   const adminLink = document.getElementById('adminLink');
   if (adminLink) adminLink.href = ADMIN_URL;
 
+  // Theme toggle (mode is already applied pre-paint in <head>; this just adds a manual override)
+  const themeToggle = document.getElementById('themeToggle');
+  if (themeToggle) {
+    const THEME_KEY = 'bkalot-theme';
+    const syncLabel = () => {
+      const isDark = document.documentElement.classList.contains('dark');
+      themeToggle.textContent = isDark ? '☀️' : '🌙';
+    };
+    syncLabel();
+    themeToggle.onclick = () => {
+      const isDark = !document.documentElement.classList.contains('dark');
+      document.documentElement.classList.toggle('dark', isDark);
+      try { localStorage.setItem(THEME_KEY, isDark ? 'dark' : 'light'); } catch (e) {}
+      syncLabel();
+    };
+  }
+
   // Prices teaser button
   const pricesBtn = document.getElementById('pricesBtn');
   if (pricesBtn) {
