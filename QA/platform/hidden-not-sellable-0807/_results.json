@@ -1,8 +1,8 @@
 {
-  "measured_at": "2026-08-07T05:52:02.727Z",
+  "measured_at": "2026-08-08T20:16:35.531Z",
   "supabase": "https://uhnrgujbdxhhmoxcjria.supabase.co",
-  "qa_account": "qa.offer+1786081920916896@more30.com",
-  "subscription_written": 195,
+  "qa_account": "qa.offer+1786220194204908@more30.com",
+  "subscription_written": 196,
   "pass": 83,
   "fail": 0,
   "results": [
@@ -414,7 +414,7 @@
     {
       "name": "more30_subscribe(kupot, basic) still works",
       "pass": true,
-      "detail": "HTTP 200 {\"id\": 195, \"ok\": true, \"plan\": \"basic\", \"status\": \"requested\", \"already\": false, \"app_key\": \"kupot\", \"charged\": false, \"message\": \"הבקשה נרשמה (2 ₪). הסליקה עדיין לא נפתחה, ולכן לא בוצע חיוב.\", \"plan"
+      "detail": "HTTP 200 {\"id\": 196, \"ok\": true, \"plan\": \"basic\", \"status\": \"requested\", \"already\": false, \"app_key\": \"kupot\", \"charged\": false, \"message\": \"הבקשה נרשמה (2 ₪). הסליקה עדיין לא נפתחה, ולכן לא בוצע חיוב.\", \"plan"
     },
     {
       "name": "and it charged nothing",
