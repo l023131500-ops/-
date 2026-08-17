@@ -978,11 +978,22 @@ AA תקין. נכתב `favicon.svg` (עותק נאמן של האייקון), נ�
 0 שגיאות קונסולה אחרי הפריסה. **אין צורך יותר בקובץ ממך עבורה.** ראיות:
 `QA/platform/crm-favicon-0817/_results.md`.
 
-> **נשארו שלוש:** ‏`bkalot` (מוגן, לא ייסגר) · `gesher` · `kesef`. ל-`gesher`
-> יש אותו תבנית תג בדיוק (`RoleLayout.tsx`: אריח `bg-sidebar-primary/20` עם
-> אייקון `Shield`) — לא נמדד/נבנה עדיין. `kesef` (34) שונה: `app.json` שלה
-> מסומן `source: "not-vendored"` — קוד המקור לא אותר בריפו הזה, כך שאי אפשר
-> לתקן אותה מכאן בכלל, לא רק את הלשונית.
+**עדכון 17/08 (שני) — עכשיו גם `gesher`.** אותו תבנית תג בדיוק כמו `crm`:
+`RoleLayout.tsx` מצייר תג מעוגל `bg-sidebar-primary/20` עם אייקון lucide
+`Shield` (לא `ShieldCheck`) ב-`text-sidebar-primary-foreground`, ו-`__root.tsx`
+לא הצהיר `rel="icon"` כלל. נמדד מהעמוד החי (`getComputedStyle`, מחובר כ-
+`test@more30.com`, `/gesher/client/status`): אייקון `#fcfcfc`, רקע-בסיס
+`--sidebar-primary` (ללא ה-`/20`, לצורך רקע דגל מוצק) `#59758d`, ניגודיות
+≈4.7:1. נכתב `favicon.svg`, נוסף `<link rel="icon" href="/gesher/favicon.svg">`
+ו-rewrite ב-`vercel.json` (כמו crm — ממקור, לא `--prebuilt`).
+`dpl_H5CDPazhtmVA8BEeqJ6VAVnTcRft`, READY. אומת: `/gesher/favicon.svg` מחזיר
+`image/svg+xml` 32×32 (לא הוחלף ע"י NetFree), התג בעמוד החי מצביע על הנתיב
+הנכון, 0 שגיאות אפליקציה בקונסולה. **אין צורך יותר בקובץ ממך עבורה.** ראיות:
+`QA/platform/gesher-favicon-0817/_results.md`.
+
+> **נשארו שתיים:** ‏`bkalot` (מוגן, לא ייסגר) · `kesef`. `kesef` (34) שונה:
+> `app.json` שלה מסומן `source: "not-vendored"` — קוד המקור לא אותר בריפו הזה,
+> כך שאי אפשר לתקן אותה מכאן בכלל, לא רק את הלשונית.
 
 ---
 

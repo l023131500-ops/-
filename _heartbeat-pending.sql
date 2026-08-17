@@ -91,3 +91,25 @@ preset מייצר לא כולל rewrites מ-vercel.json בכלל — --prebuilt 
 kesef source not-vendored — לא ניתן לתיקון מכאן). ראיות:
 QA/platform/crm-favicon-0817/_results.md.$$
 );
+
+-- Commit: <this step> "31 גשר: favicon.svg נכתב מהסימן החי (Shield) ופרוס, NEEDS_USER §0פ: שלוש נותרו -> שתיים"
+insert into core.run_progress (phase, task, status, note) values (
+  'polish',
+  '31 גשר — favicon.svg',
+  'done',
+  $$NEEDS_USER §0פ: gesher הייתה אחת משלוש שנשארו אחרי סגירת crm (17/08). אותו
+דפוס בדיוק: RoleLayout.tsx מצייר בכל עמוד תג מעוגל bg-sidebar-primary/20 עם
+אייקון lucide Shield ב-text-sidebar-primary-foreground; __root.tsx הקודם לא
+הצהיר rel="icon" כלל. נמדדו הצבעים מהעמוד החי (Playwright getComputedStyle,
+מחובר כ-test@more30.com, /gesher/client/status): אייקון #fcfcfc, רקע-בסיס
+--sidebar-primary (ללא ה-/20, לצורך רקע דגל מוצק) #59758d, ניגודיות כ-4.7:1.
+נכתב apps/31-hebrew-bridge-crm/public/favicon.svg (עותק נאמן של Shield, לא
+ShieldCheck), נוסף <link rel="icon" href="/gesher/favicon.svg"> ו-rewrite תואם
+ב-vercel.json (/gesher/favicon.svg -> /favicon.svg), לצד ה-rewrite הקיים
+ל-/gesher/assets/*. פרוס ממקור (לא --prebuilt, אותה סיבה כמו crm).
+dpl_H5CDPazhtmVA8BEeqJ6VAVnTcRft, READY. אומת: /gesher/favicon.svg מחזיר
+image/svg+xml 32x32 (לא הוחלף ע"י NetFree), התג בעמוד החי מצביע על הנתיב
+הנכון, 0 שגיאות אפליקציה בקונסולה. NEEDS_USER §0פ: שלוש -> שתיים (bkalot
+מוגן, kesef source not-vendored — לא ניתן לתיקון מכאן). ראיות:
+QA/platform/gesher-favicon-0817/_results.md.$$
+);

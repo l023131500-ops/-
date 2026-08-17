@@ -1,5 +1,22 @@
 # SYSTEMS_STATUS.md — מצב כל המערכות, נמדד
 
+> ## 🟢 17/08/2026 — **31 גשר — לשונית הדפדפן: `favicon.svg` חדש (אייקון ה-Shield שכבר חי בסיידבר), פרוס וחי. `NEEDS_USER.md` §0פ: שלוש נותרו → שתיים.**
+>
+> אותו דפוס בדיוק כמו `crm` (רשומה למטה): `RoleLayout.tsx` מצייר בכל עמוד תג
+> מעוגל `bg-sidebar-primary/20` עם אייקון lucide `Shield`, ו-`__root.tsx` לא
+> הצהיר `rel="icon"` כלל. נמדדו הצבעים מהעמוד החי (Playwright getComputedStyle,
+> מחובר כ-`test@more30.com`, `/gesher/client/status`): אייקון `#fcfcfc`, רקע
+> `--sidebar-primary` המוצק `#59758d`, ניגודיות ≈4.7:1. נכתב `favicon.svg`
+> (עותק נאמן של `Shield`, לא `ShieldCheck`), נוסף `<link rel="icon">` מונט-יחסי
+> ו-rewrite תואם ב-`vercel.json`. פרוס ממקור (לא `--prebuilt`, אותה סיבה כמו
+> crm — ה-preset לא כולל את ה-rewrites), `dpl_H5CDPazhtmVA8BEeqJ6VAVnTcRft`,
+> READY. אומת: `/gesher/favicon.svg` מחזיר `image/svg+xml` 32×32, התג בעמוד
+> החי מצביע על הנתיב הנכון, 0 שגיאות אפליקציה בקונסולה. ראיות:
+> `QA/platform/gesher-favicon-0817/_results.md`.
+>
+> ⚠️ ה-MCP של Supabase אינו מחובר לסשן הזה — heartbeat נכתב כקובץ
+> `_heartbeat-pending.sql` (מצטרף לתור הקיים; הרץ לפי סדר הקומיטים ב-git log).
+
 > ## 🟢 17/08/2026 — **26 סטודיו מודעות — לשונית הדפדפן: `favicon.svg` חדש (סימן ה-Crown הזהב שכבר חי בנווט), פרוס וחי. `NEEDS_USER.md` §0פ: שש נותרו → חמש.**
 >
 > אחרי תיקון באג הבנייה (רשומה שמתחת), נבדקה שאלת הסימן הגרפי של סטודיו: תג
