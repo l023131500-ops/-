@@ -1,0 +1,23 @@
+32 נדל"ן ברגע: הרחבת lighthouse-run.mjs לפילוח בפועל, סוגר mainthread-work-breakdown ו-server-response-time בראיה
+
+scripts/qa/lighthouse-run.mjs שמר עד עכשיו רק ציונים מסוכמים, ולכן שלושה סבבים
+קודמים ("mainthread-work-breakdown 3.9s, לא נחקר עדיין") נתקעו בהשערה בלבד.
+הוספתי שמירה של mainThreadBreakdown (mainthread-work-breakdown.details.items,
+לפי קבוצה) ו-bootupTime (bootup-time.details.items, לכל סקריפט בנפרד) - שינוי
+בכלי QA בלבד, אין נגיעה בקוד ייצור של אף מערכת.
+
+הרצתי מחדש מול https://more30.com/nadlan החי:
+- פילוח לפי קבוצה (6.9s בריצה הזו): Other 3.6s, Style & Layout 2.1s,
+  Script Evaluation רק 660ms, Script Parsing & Compilation רק 105ms.
+- פילוח לכל סקריפט: auth-button.js (משותף ל-24 מערכות, נחשד כתורם ל-
+  unminified-javascript) - רק 357ms bootup / 33ms scripting בפועל. באנדלי
+  Next יחד - 522ms. זניחים מול 3.9-6.9s הנמדדים - לא שווה למזער/לגעת בקובץ
+  המשותף (24 מערכות תלויות בו) עבור רווח כזה.
+- הטרייס עצמו מכיל https://netfree.link/card/card-injection.js מוזרק בפועל -
+  ראיה קונקרטית לגורם המקומי (NetFree) שהיה עד עכשיו רק היקש.
+
+מסקנה: אין עוד תיקון קוד לבצע על נדל"ן עבור שני הפריטים הפתוחים
+(mainthread-work-breakdown, server-response-time) - שניהם תלויי-רשת מדידה,
+לא תקלת שרת/קוד. עודכנו NEEDS_USER.md ו-SYSTEMS_STATUS.md. הכלי המורחב נשאר
+שימושי לכל מדידה עתידית על כל מערכת. ראיות:
+QA/platform/nadlan-mainthread-0817/_lighthouse.json.
