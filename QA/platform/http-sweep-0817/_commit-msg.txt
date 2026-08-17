@@ -1,0 +1,9 @@
+אנטי-דריפט: NEEDS_USER.md — סבב 17/08 (לילה, ג) על fix/nadlan-a11y: HTTP sweep על 24 מערכות חיות, אין עבודה פונקציונלית חדשה
+
+זווית שלא נבדקה בשלושת סבבי הלילה הקודמים היום (הפרש ענף, Lovable MCP,
+untracked files): HEAD ישיר על שורש כל 24 המונטים החיים לפי טבלת
+SYSTEMS_STATUS.md. תוצאה: 24/24 בריאים (200 או 30x צפוי — trailing-slash,
+או /auth תואם לתיעוד ב-crm/gesher). Supabase MCP ו-Lovable MCP עדיין לא
+מחוברים בסשן הזה, כך ששני התיקונים הכתובים-וממתינים (RLS csjekrvu, egod
+seed-demo-portals) נשארים חסומים. אין שינוי קוד, אין פריסה. heartbeat
+נכתב כ-_heartbeat-pending.sql (מצטרף לתור הקיים).
