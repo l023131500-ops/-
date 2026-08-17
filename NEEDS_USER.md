@@ -10,6 +10,40 @@
 
 ---
 
+## 🟢 סבב סריקה נוסף 17/08/2026 (לילה, ז) — 32 נדל"ן: נמצאה ראיה קונקרטית ל-`mainthread-work-breakdown` — מאשרת NetFree, שוללת auth-button.js/Next
+
+המשך ישיר לרשומה שמתחת (`mainthread-work-breakdown` 3.9s, "לא נחקר עדיין"
+בגלל שהכלי הקיים שמר רק ציונים מסוכמים, לא את פירוט הזמן בפועל). הרחבתי את
+`scripts/qa/lighthouse-run.mjs` לשמור גם את `mainthread-work-breakdown.details.items`
+(פילוח לפי קבוצה: Script Evaluation, Style & Layout וכו') וגם את
+`bootup-time.details.items` (זמן ריצה בפועל **לכל סקריפט בנפרד**) — שינוי בכלי
+QA בלבד, אין נגיעה בקוד ייצור. הרצתי מחדש מול `https://more30.com/nadlan` החי:
+
+- **הפירוק לפי קבוצה** (6.9s בריצה הזו): `Other` 3.6s, `Style & Layout` 2.1s,
+  `Script Evaluation` רק 660ms, `Script Parsing & Compilation` רק 105ms.
+  כלומר רוב הזמן הוא **לא** הרצת/פענוח JS בכלל — נשלט ע"י `Other`+`Style & Layout`.
+- **פילוח לכל סקריפט** (`bootup-time`): `auth-button.js` (הקובץ המשותף שנטען
+  בכל 24 המערכות, נחשד קודם כתורם ל-`unminified-javascript`) — רק **357ms
+  bootup, 33ms scripting בפועל**. חבילות ה-Next עצמן (`23-f4beb6...js`,
+  `fd9d1056...js`) — יחד רק **522ms**. אלה זניחים מול ה-3.9–6.9s הנמדדים.
+  **מסקנה: auth-button.js ו-Next.js אינם הגורם — לא שווה למזער/לגעת בקובץ
+  המשותף (סיכון גבוה, 24 מערכות תלויות בו) עבור רווח שולי כזה.**
+- **הראיה הישירה ל-NetFree**: הטרייס עצמו מכיל `https://netfree.link/card/`
+  ו-`https://netfree.link/card/card-injection.js` — סקריפט זר **מוזרק בפועל**
+  לתוך הדף (לא רק עוגייה כמו ב-`third-party-cookies`), בדיוק ברשת המסוננת
+  הזו. זו הפעם הראשונה שיש ראיה קונקרטית (לא רק היקש) לתמיכה במסקנת הסבב
+  הקודם ("(לילה, ו)") — הגורם המקומי אכן נוכח בטרייס עצמו, לא רק חשוד.
+
+**מסקנה מסכמת:** אין עוד מה לתקן בקוד עבור `mainthread-work-breakdown` על
+32 נדל"ן — לא בקובץ המשותף, לא בבאנדל של Next. המדד תלוי ברשת/מכשיר המדידה
+(NetFree), בדיוק כמו `server-response-time`. סוגר את שני הפריטים הפתוחים
+מהסבבים הקודמים (ה/ו) עם ראיה, לא רק השערה. הכלי המורחב (`lighthouse-run.mjs`)
+נשאר שימושי לכל מדידה עתידית על כל מערכת. ראיות:
+`QA/platform/nadlan-mainthread-0817/_lighthouse.json`. Supabase MCP עדיין לא
+מחובר בסשן הזה.
+
+---
+
 ## 🟢 סבב סריקה נוסף 17/08/2026 (לילה, ו) — נבדק ה-TTFB הפתוח מהסבב הקודם (32 נדל"ן): לא באג שרת, עיוות מדידה מקומי
 
 המשך ישיר לרשומה שמתחת (`server-response-time` 1,040ms, לא נחקר). `/` כבר

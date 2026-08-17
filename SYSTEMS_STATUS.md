@@ -1,5 +1,15 @@
 # SYSTEMS_STATUS.md — מצב כל המערכות, נמדד
 
+> ## 🟢 17/08/2026 (לילה, ז) — **32 נדל"ן ברגע — `mainthread-work-breakdown`/`server-response-time` נסגרים: ראיה קונקרטית (לא היקש) שהגורם הוא NetFree, לא קוד**
+>
+> `scripts/qa/lighthouse-run.mjs` הורחב לשמור פילוח בפועל (`mainthread-work-breakdown`
+> לפי קבוצה + `bootup-time` לכל סקריפט), לא רק ציון מסוכם. תוצאה מול נדל"ן החי:
+> `Script Evaluation` רק 660ms מתוך 6.9s (`Other`+`Style & Layout` = 5.7s);
+> `auth-button.js` (משותף ל-24 מערכות) — 357ms bootup/33ms scripting בלבד,
+> באנדלי Next — 522ms יחד. הטרייס מכיל `netfree.link/card/card-injection.js`
+> מוזרק בפועל. **מסקנה: אין תיקון קוד נוסף לבצע — התלות ברשת (NetFree)
+> מאושרת בראיה, לא רק בהשערה.** ראיות: `QA/platform/nadlan-mainthread-0817/`.
+
 > ## 🟢 17/08/2026 (לילה, ה) — **32 נדל"ן ברגע — תוקן שורש הפרפורמנס: `@import` חוסם של Google Fonts הוחלף ב-`next/font/google` (עצמי-מתארח). פרפורמנס 60→72.**
 >
 > החקירה מהרשומה הקודמת (למטה) מצאה סיבה קונקרטית: `app/globals.css:1` טען
