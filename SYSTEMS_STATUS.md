@@ -1,5 +1,34 @@
 # SYSTEMS_STATUS.md — מצב כל המערכות, נמדד
 
+> ## 🟢 17/08/2026 (לילה, ה) — **32 נדל"ן ברגע — תוקן שורש הפרפורמנס: `@import` חוסם של Google Fonts הוחלף ב-`next/font/google` (עצמי-מתארח). פרפורמנס 60→72.**
+>
+> החקירה מהרשומה הקודמת (למטה) מצאה סיבה קונקרטית: `app/globals.css:1` טען
+> Heebo+Assistant (10 משקלים) דרך `@import url(fonts.googleapis.com/...)` —
+> שרשרת רשת טורית (HTML→CSS מבודל→CSS של גוגל→WOFF2 של gstatic) בלי שום
+> `preconnect`, שגררה FCP=LCP=5.0s בדיוק (הציור הראשון נחסם על השרשרת כולה).
+> לא הייתה תקלת פריסה כמו ב-torah — זו הייתה בעיית מקור אמיתית.
+>
+> **התיקון:** `next/font/google` בשני הריפואים (`app/layout.tsx` +
+> `apps/32-nadlan-berega/app/layout.tsx` — הריפו הנפרד `nadlan-berega` הוא
+> מקור האמת לפי `scripts/sync-nadlan.ps1`, וההעתק ב-`apps/32` הוא מה שנפרס
+> בפועל דרך פרויקט Vercel `nadlan-more30`, אז שניהם עודכנו כדי שהתיקון לא
+> יימחק בסינכרון הבא). הוסר ה-`@import`, `tailwind.config.ts` מצביע עכשיו על
+> `var(--font-heebo)`/`var(--font-assistant)`. `next build` מקומי אימת: אפס
+> הפניות ל-`fonts.googleapis.com`, כל הגופנים ב-`/_next/static/media/*.woff2`.
+> נפרס: `vercel deploy --prod` מתוך `apps/32-nadlan-berega`,
+> `dpl_GVKytw1SwRXDz5ZzfTwu7TQ3AZzQ`, READY.
+>
+> **נמדד אחרי (Lighthouse חי, אותו כלי):** פרפורמנס **60→72**, FCP **5.0s→2.4s**,
+> LCP **5.0s→3.1s**, `render-blocking-insight` חיסכון משוער **2,490ms→300ms**.
+> עדיין מתחת לסף 90 — `server-response-time` (TTFB 1,040ms, צד-שרת) ו-
+> `mainthread-work-breakdown` (3.9s) נשארים פתוחים לסבב הבא. TBT עלה
+> 190ms→590ms (כנראה רעש בין-ריצות, לא קשור לתיקון הזה — הציון הכולל עדיין
+> עלה כי FCP/LCP/SI השתפרו הרבה יותר). ראיות:
+> `QA/platform/nadlan-lh-fontfix-0817/_lighthouse.json`.
+>
+> ⚠️ ה-MCP של Supabase אינו מחובר לסשן הזה — heartbeat נכתב כקובץ
+> `_heartbeat-pending.sql` (מצטרף לתור הקיים; הרץ לפי סדר הקומיטים ב-git log).
+
 > ## 🟡 17/08/2026 (לילה, ד) — **32 נדל"ן ברגע — Lighthouse נמדד לראשונה: פרפורמנס 60, מתחת לסף 90 של DESIGN_STANDARD. לא היה שום ציון קודם בטבלה.**
 >
 > זווית שלא נבדקה היום עדיין: לא כל מערכת חיה עברה Lighthouse בכלל — הטבלה

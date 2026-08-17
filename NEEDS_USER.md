@@ -10,6 +10,25 @@
 
 ---
 
+## 🟢 סבב סריקה נוסף 17/08/2026 (לילה, ה) — 32 נדל"ן: תוקן שורש הפרפורמנס (Google Fonts render-blocking), 60→72
+
+המשך ישיר לרשומה שמתחת: שורש ה-60 היה `app/globals.css:1` — `@import
+url(fonts.googleapis.com/...)` בלי `preconnect`, שיצר שרשרת רשת טורית לפני
+הציור הראשון (FCP=LCP=5.0s בדיוק). הוחלף ב-`next/font/google` (עצמי-מתארח,
+מוטמע בבנייה) בשני הריפואים — הריפו הנפרד `C:\Users\USER\Downloads\nadlan-berega`
+(מקור האמת לפי `scripts/sync-nadlan.ps1`) וההעתק `apps/32-nadlan-berega`
+(מה שבפועל נפרס). `next build` אימת אפס הפניות ל-`fonts.googleapis.com`.
+נפרס `vercel deploy --prod`, `dpl_GVKytw1SwRXDz5ZzfTwu7TQ3AZzQ`, READY.
+Lighthouse אחרי: פרפורמנס **60→72**, FCP 5.0s→2.4s, LCP 5.0s→3.1s.
+
+**נשאר פתוח לסבב הבא (לא נחקר עדיין):** `server-response-time` — TTFB
+1,040ms על מסמך השורש, כנראה זמן תגובה של הפונקציה השרתית של Next עצמה
+(SSR/data fetching ב-`/`), לא קשור לגופנים. גם `mainthread-work-breakdown`
+(3.9s) נשאר. ראיות: `QA/platform/nadlan-lh-fontfix-0817/_lighthouse.json`.
+Supabase MCP עדיין לא מחובר בסשן הזה.
+
+---
+
 ## 🟡 סבב סריקה נוסף 17/08/2026 (לילה, ד) — נמצא ממצא אמיתי חדש: 32 נדל"ן, Lighthouse perf 60
 
 זווית חדשה: לא כל מערכת חיה עברה Lighthouse בכלל עד עכשיו — רק `torah`(01)
