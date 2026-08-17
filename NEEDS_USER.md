@@ -10,6 +10,37 @@
 
 ---
 
+## 🟢 סבב סריקה נוסף 17/08/2026 (לילה, ח) — 02 תמלול איגוד: תוקן שורש הפרפורמנס (Google Fonts render-blocking), 64→95
+
+המשך סבב-2 (פרפורמנס) בסדר המערכות — אחרי torah(01) עבר ל-02 tamlul.
+`app/layout.tsx` טען Noto Serif Hebrew + Rubik דרך `<link rel="stylesheet"
+href="fonts.googleapis.com/css2?...">` ישירות ב-`<head>` (אותה משפחת תקלה
+שנמצאה ותוקנה קודם ב-32 נדל"ן, מנגנון אחר — `<link>` ולא `@import` ב-CSS).
+שרשרת רשת טורית לפני הציור הראשון: `render-blocking-insight` מדד חיסכון
+משוער 1,510ms.
+
+**התיקון:** `next/font/google` (`Noto_Serif_Hebrew`, `Rubik`, subset
+`hebrew`, `display: swap`) ב-`apps/02-igud-transcribe/app/layout.tsx`,
+עם משתני CSS (`--font-noto-serif-hebrew`, `--font-rubik`) שהוזרקו ל-
+`tailwind.config.ts` במקום שמות הגופנים המילוליים. `next build` מקומי אימת
+אפס הפניות ל-`fonts.googleapis.com` ב-HTML המורנדר; קבצי ה-woff2 עצמם
+מוגשים עכשיו מ-`/tamlul/_next/static/media/`.
+
+נפרס: `vercel deploy --prod` מתוך `apps/02-igud-transcribe` (`tamlul-more30`),
+`dpl_Dt7kPw5DwwGkgSW6YGVtkQT7oV5m`, READY. אומת חי ב-`more30.com/tamlul`
+(עם cache-buster, אחרי 308 redirect) — `<link rel="preload" as="font">`
+מצביע ל-woff2 עצמי, אין `fonts.googleapis.com` בעמוד.
+
+**נמדד אחרי (Lighthouse חי):** פרפורמנס **64→95**, נגישות **98→100** (גם
+`heading-order` שתוקן קודם היום נכלל), FCP 4.0s→1.7s, LCP 4.0s→2.2s,
+SI 8.3s→3.2s. עבר את סף ה-90. ראיות:
+`QA/platform/tamlul-lh-fontfix-0817/_lighthouse.json`.
+
+⚠️ Supabase MCP אינו מחובר לסשן הזה — heartbeat נכתב כקובץ
+`_heartbeat-pending.sql` (מצטרף לתור הקיים; הרץ לפי סדר הקומיטים ב-git log).
+
+---
+
 ## 🟢 סבב סריקה נוסף 17/08/2026 (לילה, ז) — 32 נדל"ן: נמצאה ראיה קונקרטית ל-`mainthread-work-breakdown` — מאשרת NetFree, שוללת auth-button.js/Next
 
 המשך ישיר לרשומה שמתחת (`mainthread-work-breakdown` 3.9s, "לא נחקר עדיין"

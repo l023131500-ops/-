@@ -59,8 +59,8 @@ export default {
         }
       },
       fontFamily: {
-        serif: ['"Noto Serif Hebrew"', "Frank Ruhl Libre", "serif"],
-        sans: ["Rubik", "Heebo", "system-ui", "sans-serif"]
+        serif: ["var(--font-noto-serif-hebrew)", "Frank Ruhl Libre", "serif"],
+        sans: ["var(--font-rubik)", "Heebo", "system-ui", "sans-serif"]
       },
       boxShadow: {
         card: "0 1px 2px rgba(20,30,60,0.04), 0 4px 16px rgba(20,30,60,0.06)"
