@@ -1,0 +1,17 @@
+שכפול בקלות: שער החריגה המספרית של /case נמדד בייצור (§5ב, אימות)
+
+POST ל-bkalot-clone-admin/case עם id בן 25 ספרות: HTTP 200,
+{"ok":false,"error":"case_id_required"} — הבדיקה ברמת פונקציית הקצה
+(index.ts:403-409) פועלת כפי שהערת הקוד טוענת, וקוד שונה מ-case_not_found
+שחוזר על id:99999 (הבקר).
+
+סריקת 0814 מדדה את שער החריגה המספרית ברמת המסד (::bigint) על
+document/queue/dispatch/set-status; /case שונה בכוונה — הבדיקה בפונקציית
+הקצה, לא במסד — וזה מעולם לא נמדד מול הייצור. עכשיו כל חמשת נתיבי ה-id
+נמדדו.
+
+מדידה בלבד. אין שינוי קוד, אין מיגרציה, אין פריסה.
+
+⚠️ ה-MCP של Supabase אינו מחובר לסשן הזה — heartbeat נכתב כקובץ _heartbeat-pending.sql.
+
+ראיות: QA/bkalot-clone/case-id-overflow-0817/probe-live.txt
