@@ -1,5 +1,16 @@
 # SYSTEMS_STATUS.md — מצב כל המערכות, נמדד
 
+> ## 🟢 17/08/2026 (לילה, יד) — **28 השוואת קופות — Lighthouse נמדד לראשונה (perf 65, a11y כבר 100, SEO 100)**
+>
+> `node scripts/qa/lighthouse-run.mjs QA/platform/kupot-lh-0817 kupot` — ציון ראשון אי-פעם
+> ל-`kupot`(28): **פרפורמנס 65 · נגישות 100 · Best Practices 77 · SEO 100**. בדומה ל-14
+> שמחות/10 בקלות — הנגישות כבר מלאה, אין `failedAudits` נגיש לתקן. פרפורמנס (65, מתחת
+> ל-90) ו-Best Practices (77) לא נחקרו — אותו דפוס NetFree שכבר מתועד ב-32/02/04/06/10/14
+> (`netfree.link/card/card-injection.js` מופיע ב-`bootupTime` בפועל, ו-`third-party-cookies`
+> נכשל). אין שינוי קוד/פריסה בסבב הזה — מדידה בלבד, אין פער לתקן. ראיות:
+> `QA/platform/kupot-lh-0817/_lighthouse.json`.
+> Supabase MCP אינו מחובר לסשן הזה — heartbeat נכתב כקובץ `_heartbeat-pending.sql`.
+
 > ## 🟢 17/08/2026 (לילה, יג) — **15 איגוד (egod) — Lighthouse נמדד לראשונה (perf 43, a11y 96) + תוקנו 2 מתוך 3 ליקויי נגישות אמיתיים**
 >
 > `node scripts/qa/lighthouse-run.mjs QA/platform/egod-lh-0817 egod` — ציון ראשון אי-פעם
@@ -3803,7 +3814,7 @@
 | 18 | עורך תורני | [/orech](https://more30.com/orech) | ✅ עובדת | 471 | ✅ | **נמדד 17/08: Lighthouse perf 97 · a11y 100 · SEO 100 · BP 77** (חסימת NetFree, לא ניתן לתיקון בקוד) — עבר בסבב הזה ללא תיקון |
 | 22 | מימוש זכויות | [/zchuyot](https://more30.com/zchuyot) | ✅ עובדת | 2,511 | ✅ | **תוקן: 3 מספרים מומצאים הוסרו מרצועת הנתונים** · **נמדד 17/08: Lighthouse perf 65, a11y כבר 100, SEO 100** (פרפורמנס מתחת לסף 90, לא נחקר עדיין) |
 | 26 | סטודיו מודעות | [/studio](https://more30.com/studio) | ✅ עובדת | 892 | ✅ | **נמדד 17/08: Lighthouse perf 65, a11y כבר 100, SEO 100, BP 77** (פרפורמנס מתחת לסף 90, לא נחקר עדיין) |
-| 28 | השוואת קופות | [/kupot](https://more30.com/kupot) | ✅ עובדת | 3,132 | ✅ | |
+| 28 | השוואת קופות | [/kupot](https://more30.com/kupot) | ✅ עובדת | 3,132 | ✅ | **נמדד 17/08: Lighthouse perf 65, a11y כבר 100, SEO 100** (פרפורמנס מתחת לסף 90, דפוס NetFree/third-party-cookies כבר מתועד, לא נחקר עדיין) |
 | 32 | נדל"ן ברגע | [/nadlan](https://more30.com/nadlan) | ✅ עובדת | 6,413 | ✅ | **תוקן: נגישות 95→100 · Google Fonts render-blocking (perf 60→72, FCP 5.0s→2.4s, LCP 5.0s→3.1s)** · **נמדד 17/08: Lighthouse perf 72 · a11y 100 · SEO 100** — שני תת-המדדים הנותרים (`server-response-time`, `mainthread-work-breakdown`) נחקרו ונסגרו כעיוות מדידה מקומי (NetFree), לא ניתן לתיקון בקוד, ראה NEEDS_USER |
 | 34 | כסף | [/kesef](https://more30.com/kesef) | ✅ עובדת | 2,381 | ✅ | **תוקן: כניסה מגיעה למערכת** |
 | 35 | KioskFleet | [/kiosk/](https://more30.com/kiosk/) | ✅ עובדת | 2,534 | ✅ | |

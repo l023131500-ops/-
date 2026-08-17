@@ -1,0 +1,11 @@
+28 השוואת קופות: Lighthouse נמדד לראשונה (perf 65, a11y כבר 100, SEO 100)
+
+המשך ישיר לסבב 17/08 (fix/nadlan-a11y, אחרי 02/04/06/10/12/14/15/16/17/18/22/26).
+node scripts/qa/lighthouse-run.mjs QA/platform/kupot-lh-0817 kupot מול
+https://more30.com/kupot החי - ציון ראשון אי-פעם למערכת הזו.
+
+perf 65, a11y 100, bp 77, seo 100. נגישות כבר מלאה - אין ליקוי לתקן.
+פרפורמנס מתחת לסף 90 תואם דפוס NetFree/third-party-cookies שכבר מתועד,
+לא נחקר כעבודה חדשה כאן. אין קוד לתקן - עדכון SYSTEMS_STATUS.md בלבד.
+
+QA/platform/kupot-lh-0817/
