@@ -164,3 +164,30 @@ MCP אינו מחובר לסשן הזה — heartbeat נכתב כקובץ _heart
 
 הבא בסבב-2 (פרפורמנס, בסדר המערכות): smachot (הבא ברשימת ROUTES אחרי smel).$$
 );
+
+-- Commit: 11008f7 "14 שמחות פלוס: מיזוג base.css לתוך style.css - הסרת בקשה חוסמת-רינדור אחת (perf 54->64)"
+insert into core.run_progress (phase, task, status, note) values (
+  'perf-sweep',
+  '14 שמחות פלוס — מיזוג base.css/style.css',
+  'done',
+  $$המשך סבב-2 (פרפורמנס, בסדר המערכות) — הבא אחרי smel. apps/14-bsmachot-plus/website
+כבר עבר את דפוס ה-loadCSS preload/swap לפונטים, אז baseline (node scripts/qa/lighthouse-run.mjs
+QA/platform/smachot-lh-0817 smachot) חשף בקשה חוסמת-רינדור שונה: שני קבצי CSS בטור
+(base.css 782 בייטים + style.css 16KB), perf 54 (a11y/bp/seo מושלמים).
+
+התיקון: תוכן base.css הועתק לראש style.css, ה-<link> הוסר, הקובץ נמחק — קובץ CSS חוסם
+אחד במקום שניים. הוחל גם ב-apps/14-bsmachot-plus/website (מקור) וגם ב-
+_deploy/smachot-more30/smachot (עותק הפריסה, לא במעקב git). נפרס vercel deploy --prod
+--yes --scope l023131500-ops-projects מתוך _deploy/smachot-more30
+(dpl_7KVyQk2t6amiN1aQSavqM6vVUhX6), READY. אומת חי עם cache-buster
+(more30.com/smachot/?cachebust=0817smachotcss): <link rel="stylesheet"> יחיד ל-style.css.
+
+נמדד אחרי: perf 54->64, LCP 5.8s->4.3s, render-blocking-insight savings 750ms->730ms
+(עדיין קיים — נותר ה-CSS/פונט עצמם, לא תוקן כעת). ירידת bp 100->77 היא רעש NetFree
+(third-party-cookies + inspector-issues מ-card-injection.js המוזרק, לא קשור לשינוי).
+a11y/seo ללא שינוי. ראיות: QA/platform/smachot-lh-0817/_lighthouse.json (לפני) ·
+QA/platform/smachot-lh-cssmerge-0817/_lighthouse.json (אחרי). Supabase MCP אינו מחובר
+לסשן הזה — heartbeat נכתב כקובץ _heartbeat-pending.sql.
+
+הבא בסבב-2 (פרפורמנס, בסדר המערכות): egod (הבא ברשימת ROUTES אחרי smachot).$$
+);
