@@ -35,6 +35,37 @@ function toast(msg, ok = true) {
   setTimeout(() => t.remove(), 2600);
 }
 
+// The .pw-wrap/.pw-toggle markup and CSS already live in console.html for the
+// login field. This reproduces the same markup for password fields rendered
+// dynamically here, so every password input gets the same "הצג סיסמה" toggle.
+function pwField(id, labelText, autocomplete) {
+  return `<div class="field">
+      <label for="${id}">${esc(labelText)}</label>
+      <div class="pw-wrap">
+        <input id="${id}" type="password"${autocomplete ? ` autocomplete="${autocomplete}"` : ''} />
+        <button type="button" class="pw-toggle" id="${id}-toggle" aria-pressed="false" aria-controls="${id}" aria-label="הצג סיסמה" title="הצג סיסמה">
+          <svg data-icon="eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+          <svg data-icon="eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.9 5.2A9.8 9.8 0 0 1 12 5c6.5 0 10 7 10 7a17.6 17.6 0 0 1-3.2 4.2M6.6 6.6A17.6 17.6 0 0 0 2 12s3.5 7 10 7a9.8 9.8 0 0 0 4.1-.9"/><path d="M10.6 10.6a2 2 0 0 0 2.8 2.8"/><path d="m2 2 20 20"/></svg>
+        </button>
+      </div>
+    </div>`;
+}
+
+function wirePwToggle(id) {
+  const input = $('#' + id);
+  const btn = $('#' + id + '-toggle');
+  if (!input || !btn) return;
+  btn.onclick = () => {
+    const reveal = input.type === 'password';
+    input.type = reveal ? 'text' : 'password';
+    btn.setAttribute('aria-pressed', reveal ? 'true' : 'false');
+    const label = reveal ? 'הסתר סיסמה' : 'הצג סיסמה';
+    btn.setAttribute('aria-label', label);
+    btn.setAttribute('title', label);
+    input.focus();
+  };
+}
+
 // ── allowed-domain list editor ──────────────────────────────────
 //
 // The allow-list is the product: it is the line between a locked device and
@@ -1290,9 +1321,10 @@ function confirmDeleteClient(c) {
 function viewSettings() {
   $('#content').innerHTML = `<div class="topbar"><h1>הגדרות</h1></div>
     <div class="card" style="max-width:520px"><h3>שינוי סיסמה</h3>
-      <div class="field"><label>סיסמה נוכחית</label><input id="cp" type="password" /></div>
-      <div class="field"><label>סיסמה חדשה (8 תווים לפחות)</label><input id="np" type="password" /></div>
+      ${pwField('cp', 'סיסמה נוכחית', 'current-password')}
+      ${pwField('np', 'סיסמה חדשה (8 תווים לפחות)', 'new-password')}
       <button class="btn btn-primary" id="chp">עדכן סיסמה</button></div>`;
+  wirePwToggle('cp'); wirePwToggle('np');
   $('#chp').onclick = async () => {
     try { await api('/auth/change-password', { method: 'POST', body: JSON.stringify({ currentPassword: $('#cp').value, newPassword: $('#np').value }) });
       toast('הסיסמה עודכנה'); $('#cp').value = ''; $('#np').value = ''; }
