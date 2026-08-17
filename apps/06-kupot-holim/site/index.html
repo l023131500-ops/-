@@ -15,14 +15,21 @@
        הבזק לבן בדרך מדף הבית הכהה של more30. -->
   <script>
     (function () {
+      var KEY = "briut-theme";
       var mq = window.matchMedia("(prefers-color-scheme: dark)");
       var apply = function (dark) {
         document.documentElement.classList.toggle("dark", dark);
       };
-      apply(mq.matches);
-      mq.addEventListener
-        ? mq.addEventListener("change", function (e) { apply(e.matches); })
-        : mq.addListener(function (e) { apply(e.matches); });
+      var stored = null;
+      try { stored = localStorage.getItem(KEY); } catch (e) {}
+      apply(stored ? stored === "dark" : mq.matches);
+      /* משתמש שלא בחר ידנית ממשיך לעקוב אחרי ה-OS; מי שבחר — נשאר על הבחירה. */
+      var onChange = function (e) {
+        var current = null;
+        try { current = localStorage.getItem(KEY); } catch (err) {}
+        if (!current) apply(e.matches);
+      };
+      mq.addEventListener ? mq.addEventListener("change", onChange) : mq.addListener(onChange);
     })();
   </script>
   <title>בקלות — השוואת קופות חולים והמלצות מעבר</title>
@@ -51,6 +58,7 @@
         <a href="#recommend">המלצה לפי מצב</a>
         <a href="#compare">השוואה</a>
         <a href="#how-to-switch">איך עוברים</a>
+        <button type="button" id="themeToggle" class="theme-toggle" aria-label="החלף מצב כהה/בהיר">🌙</button>
       </nav>
     </div>
   </header>

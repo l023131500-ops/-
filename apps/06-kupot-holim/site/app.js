@@ -269,4 +269,20 @@
   document.addEventListener("keydown", function (e) {
     if (e.key === "Escape") { closeContact(); closeDrawer(); }
   });
+
+  var themeToggle = document.getElementById("themeToggle");
+  if (themeToggle) {
+    var THEME_KEY = "briut-theme";
+    var syncLabel = function () {
+      var isDark = document.documentElement.classList.contains("dark");
+      themeToggle.textContent = isDark ? "☀️" : "🌙";
+    };
+    syncLabel();
+    themeToggle.onclick = function () {
+      var isDark = !document.documentElement.classList.contains("dark");
+      document.documentElement.classList.toggle("dark", isDark);
+      try { localStorage.setItem(THEME_KEY, isDark ? "dark" : "light"); } catch (e) {}
+      syncLabel();
+    };
+  }
 })();
