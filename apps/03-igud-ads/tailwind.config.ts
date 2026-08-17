@@ -56,8 +56,8 @@ const config: Config = {
         },
       },
       fontFamily: {
-        serif: ['"Noto Serif Hebrew"', "serif"],
-        sans: ['"Rubik"', "system-ui", "sans-serif"],
+        serif: ["var(--font-noto-serif-hebrew)", "serif"],
+        sans: ["var(--font-rubik)", "system-ui", "sans-serif"],
       },
     },
   },

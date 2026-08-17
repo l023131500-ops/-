@@ -1,0 +1,12 @@
+03 מודעות איגוד: תוקן שורש הפרפורמנס - Google Fonts render-blocking -> next/font/google (perf 86->91)
+
+- app/layout.tsx: <link rel=stylesheet href=fonts.googleapis.com/css2...> in <head> replaced with next/font/google (Noto_Serif_Hebrew + Rubik, hebrew subset, display swap), same fix family as 01 torah / 02 tamlul / 32 nadlan.
+- app/globals.css + tailwind.config.ts: literal font-family strings swapped for the --font-noto-serif-hebrew/--font-rubik CSS variables next/font exposes.
+- Verified locally: next build succeeds, zero fonts.googleapis.com/css2 references anywhere under .next/, real woff2 files self-hosted under .next/static/media.
+- Deployed: vercel deploy --prod --yes --scope l023131500-ops-projects from apps/03-igud-ads (modaot-more30, dpl_6cEhpRGFgvXCrV1xzoqNjZphUjz7), READY.
+- Verified live on more30.com/modaot with a cache-buster: no fonts.googleapis.com in served HTML, .woff2 present.
+- Lighthouse re-measured live: performance 86->91 (crosses the >=90 threshold), FCP 2.4s->2.1s, LCP 2.4s->2.1s, TBT 330ms->170ms. a11y 100 / SEO 100 / BP 77 unchanged.
+- SYSTEMS_STATUS.md updated (new dated entry + 03 row in the systems table).
+- Supabase MCP not connected this session - heartbeat written as QA/platform/modaot-lh-fontfix-0817/_heartbeat-pending.sql, queued after the existing pending rows.
+
+Evidence: QA/platform/modaot-lh-0817/_lighthouse.json (before), QA/platform/modaot-lh-fontfix-0817/_lighthouse.json (after).

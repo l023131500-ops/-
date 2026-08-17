@@ -1,5 +1,23 @@
 import "./globals.css";
 import type { Metadata } from "next";
+import { Noto_Serif_Hebrew, Rubik } from "next/font/google";
+
+// היה <link rel="stylesheet" href="fonts.googleapis.com/..."> ב-<head> — שרשרת
+// חסימה (HTML → CSS של Google → WOFF2 של gstatic) לפני הציור הראשון
+// (render-blocking-insight מדד חיסכון של 880ms, כמו ב-02 תמלול/32 נדל"ן).
+// next/font מטמיע את הגופנים בבנייה עצמה: אין בקשת רשת לגוגל בזמן ריצה.
+const notoSerifHebrew = Noto_Serif_Hebrew({
+  subsets: ["hebrew"],
+  weight: ["500", "700", "900"],
+  variable: "--font-noto-serif-hebrew",
+  display: "swap",
+});
+const rubik = Rubik({
+  subsets: ["hebrew"],
+  weight: ["300", "400", "500", "700"],
+  variable: "--font-rubik",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "יוצר מודעות לשיעורי תורה — מבית איגוד השיעורים",
@@ -27,16 +45,10 @@ const THEME_BOOT = `(function(){var KEY="modaot-theme";var m=window.matchMedia("
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="he" dir="rtl">
+    <html lang="he" dir="rtl" className={`${notoSerifHebrew.variable} ${rubik.variable}`}>
       <head>
         <meta name="color-scheme" content="light dark" />
         <script dangerouslySetInnerHTML={{ __html: THEME_BOOT }} />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Noto+Serif+Hebrew:wght@500;700;900&family=Rubik:wght@300;400;500;700&display=swap"
-        />
       </head>
       <body>
         {children}

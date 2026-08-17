@@ -82,12 +82,12 @@
 
 html, body { height: 100%; }
 body {
-  font-family: 'Rubik', system-ui, sans-serif;
+  font-family: var(--font-rubik), system-ui, sans-serif;
   background: rgb(var(--c-cream));
   color: rgb(var(--c-ink));
 }
 h1, h2, h3, .font-serif {
-  font-family: 'Noto Serif Hebrew', serif;
+  font-family: var(--font-noto-serif-hebrew), serif;
 }
 
 @layer components {

@@ -1,5 +1,37 @@
 # SYSTEMS_STATUS.md — מצב כל המערכות, נמדד
 
+> ## 🟢 17/08/2026 (לילה, כב) — **03 מודעות איגוד: תוקן שורש הפרפורמנס (Google Fonts render-blocking), 86→91**
+
+> המשך סבב-2 (פרפורמנס) בסדר המערכות — אחרי torah(01) ותמלול(02), עבר ל-03 מודעות.
+> `app/layout.tsx` טען Noto Serif Hebrew + Rubik דרך `<link rel="stylesheet"
+> href="fonts.googleapis.com/css2?...">` ישירות ב-`<head>` — אותה משפחת תקלה
+> שכבר נמצאה ותוקנה ב-01 torah/02 tamlul/32 נדל"ן. `render-blocking-insight`
+> ב-`QA/platform/modaot-lh-0817/_lighthouse.json` (מדידה קודמת, פרפורמנס 86)
+> מדד חיסכון משוער 880ms — הראיה שהובילה לבדיקה הזו.
+>
+> **התיקון:** `next/font/google` (`Noto_Serif_Hebrew`, `Rubik`, subset
+> `hebrew`, `display: swap`) ב-`apps/03-igud-ads/app/layout.tsx`, עם משתני CSS
+> (`--font-noto-serif-hebrew`, `--font-rubik`) שהוזרקו ל-`app/globals.css`
+> ול-`tailwind.config.ts` במקום שמות הגופנים המילוליים. `next build` מקומי
+> אימת אפס הפניות ל-`fonts.googleapis.com` בכל קבצי ה-`.next` (חיפוש רחב על
+> `fonts.googleapis.com/css2` — אפס תוצאות); קבצי ה-woff2 עצמם מופיעים ב-
+> `.next/static/media/`.
+>
+> נפרס: `vercel deploy --prod --yes --scope l023131500-ops-projects` מתוך
+> `apps/03-igud-ads` (`modaot-more30`), `dpl_6cEhpRGFgvXCrV1xzoqNjZphUjz7`,
+> READY. אומת חי ב-`more30.com/modaot` (עם cache-buster) — `fonts.googleapis.com`
+> לא מופיע ב-HTML המוגש, `.woff2` כן מופיע (preload עצמי).
+>
+> **נמדד אחרי (Lighthouse חי):** פרפורמנס **86→91** (עבר את סף ה-90), FCP
+> 2.4s→2.1s, LCP 2.4s→2.1s, TBT 330ms→170ms. נגישות 100/SEO 100/BP 77 ללא
+> שינוי (BP נשלט ע"י דפוס NetFree `card-injection.js` שכבר מתועד בעשרות
+> נתיבים). ראיות: `QA/platform/modaot-lh-0817/_lighthouse.json` (לפני, perf 86) ·
+> `QA/platform/modaot-lh-fontfix-0817/_lighthouse.json` (אחרי, perf 91).
+> Supabase MCP אינו מחובר לסשן הזה — heartbeat נכתב כקובץ `_heartbeat-pending.sql`.
+>
+> הבא בסבב-2 (פרפורמנס, בסדר המערכות): 04 עימוד תורני (`apps/04-imud-torani`,
+> perf 64 לפי `SYSTEMS_STATUS.md` שורה 3912, "לא נחקר עדיין").
+
 > ## 🟢 17/08/2026 (לילה, כא) — **01 torah: נמצא ותוקן CLS 0.578 (הרגרסיה המתועדת ב-`prerender-all.mjs`) — 0.001 אחרי**
 >
 > `node scripts/qa/lighthouse-run.mjs QA/platform/torah-lh-0817 torah` — המדידה הראשונה
@@ -3908,7 +3940,7 @@
 | — | כניסה אחידה | [/login](https://more30.com/login) | ✅ עובדת | 326 | ✅ | Google SSO + סיסמה · **נמדד 17/08: Lighthouse perf 85, a11y 100, BP 77, SEO 63** (SEO תקין-בכוונה: `noindex` על עמוד חשבון, ראה `robots.txt` · CLS 0.272 ופרפורמנס לא נחקרו עדיין) |
 | 01 | איגוד השיעורים | [/torah](https://more30.com/torah) | ✅ עובדת | 1,211 | ✅ | **נבדק מחדש 17/08: Lighthouse perf 88 · a11y 100 · SEO 100 · BP 77** (חסימת NetFree, לא ניתן לתיקון בקוד) — היה 74 ב-07/08, ראה §חסמים |
 | 02 | תמלול איגוד | [/tamlul](https://more30.com/tamlul) | ✅ עובדת | 1,372 | ✅ | **תוקן: `heading-order`** + **תוקן שורש הפרפורמנס: Google Fonts render-blocking `<link>` בתוך `<head>` → `next/font/google`** · **נמדד 17/08 אחרי: Lighthouse perf 64→95 · a11y 98→100** (FCP 4.0s→1.7s, LCP 4.0s→2.2s, SI 8.3s→3.2s, `render-blocking-insight` חיסכון משוער 1,510ms→220ms) — עבר בסבב הזה, מעל הסף · עוקב אחרי מצב כהה, אין מתג |
-| 03 | מודעות איגוד | [/modaot](https://more30.com/modaot) | ✅ עובדת | 661 | ✅ | ✅ נבדק מחדש 17/08 — אינו פער פעיל (`smallTargets: []`) · **נמדד 17/08: Lighthouse perf 86 · a11y כבר 100 · SEO 100** (מתחת לסף 90 בפרפורמנס בלבד, `server-response-time`+NetFree `card-injection.js` — דפוס עיוות מדידה כבר מתועד, לא נחקר עדיין) — עבר בסבב הזה ללא תיקון |
+| 03 | מודעות איגוד | [/modaot](https://more30.com/modaot) | ✅ עובדת | 661 | ✅ | ✅ נבדק מחדש 17/08 — אינו פער פעיל (`smallTargets: []`) · **תוקן: Google Fonts render-blocking → `next/font/google`** · **נמדד 17/08: Lighthouse perf 86→91 · a11y כבר 100 · SEO 100** (עבר את סף ה-90; BP 77 נשלט ע"י NetFree `card-injection.js`, כבר מתועד) |
 | 04 | עימוד תורני | [/imud](https://more30.com/imud) | ✅ עובדת | 612 | ✅ | **תוקן: נגישות 90→100** (heading-order, landmark, button-name) · **נמדד 17/08: Lighthouse perf 64** (מתחת לסף 90, לא נחקר עדיין) · עוקב אחרי מצב כהה, אין מתג |
 | 06 | לידים קופות חולים | [/briut](https://more30.com/briut) | ✅ עובדת | 4,832 | ✅ | **תוקן: 2 ליקויי נגישות אמיתיים** (`aria-label` כפתורי סגירה/קישורי כרטיס, `role="tab"` לצ'יפים) · **נמדד 17/08: Lighthouse perf 84, a11y 91→97** (פרפורמנס תנודתי, לא נחקר עדיין) · 108 קישורים |
 | 10 | מימוש זכויות בקלות | [/bkalot](https://more30.com/bkalot) | ✅ עובדת | 3,041 | ✅ | **תוקן: meta description חסר** · **נמדד 17/08: Lighthouse perf 82 · a11y 100** (מתחת לסף 90, לא נחקר עדיין) |
