@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Link2, Phone, Mail, Send, Check, ExternalLink, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
-import agudLogo from "@/assets/agud-logo.png";
+import agudLogo from "@/assets/agud-logo-mark.jpg";
 import BulkLessonForm from "@/components/bulk/BulkLessonForm";
 import BulkLessonTable from "@/components/bulk/BulkLessonTable";
 import ExcelImportExport from "@/components/bulk/ExcelImportExport";

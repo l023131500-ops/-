@@ -3819,7 +3819,7 @@
 | 34 | כסף | [/kesef](https://more30.com/kesef) | ✅ עובדת | 2,381 | ✅ | **תוקן: כניסה מגיעה למערכת** · **נמדד 17/08: Lighthouse perf 97 · a11y 100 · SEO 100** (מעל הסף, אין ליקוי לתקן) |
 | 35 | KioskFleet | [/kiosk/](https://more30.com/kiosk/) | ✅ עובדת | 2,534 | ✅ | |
 | 36 | נדל"ן פרו | [/tivuch](https://more30.com/tivuch) | ✅ עובדת | 2,781 | ✅ | Lighthouse perf 98 · a11y 100 · SEO 100 · BP 77 (חסימת NetFree, לא ניתן לתיקון בקוד) |
-| 21 | Mthbram | [/mthbram](https://more30.com/mthbram) | ✅ עובדת | 873 | ✅ | **תוקן: 39 → 873** |
+| 21 | Mthbram | [/mthbram](https://more30.com/mthbram) | ✅ עובדת | 873 | ✅ | **תוקן: 39 → 873** · **נמדד 17/08: Lighthouse perf 45, a11y 90→100** (תוקנו 2 ליקויים אמיתיים: `text-gold-cream` היה מחסיר לגמרי מ-tailwind.config — כל הטקסט בפוטר נצבע כמו הרקע; `<main>` חסר) · תוקן גם ייבוא תמונה שבור (`agud-logo.png` לא קיים) שחסם כל build מחדש ב-3 עמודים · פרפורמנס מתחת לסף 90, לא נחקר עדיין |
 | 24 | גליל קונקט | [/galil](https://more30.com/galil) | ✅ עובדת | 1,624 | ✅ | **תוקן: 121 → 1,624** |
 | 27 | השוואת מחירים | [/mechiron](https://more30.com/mechiron) | ✅ עובדת | 915 | ✅ | **נבדק מחדש 17/08: chatbot/config מחזיר 200**, לא 404 (ראה §17/08 למעלה) |
 | 30 | CRM זכויות | [/crm](https://more30.com/crm) | ✅ עובדת | 135 | ✅ | **תוקן פעמיים** — נכסים + הפניה. מפנה ל-`/crm/auth` |

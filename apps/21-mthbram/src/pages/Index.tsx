@@ -15,10 +15,12 @@ const Index = () => {
         זקוקים ל-h1 שקיים תמיד, גם כשהמאגר ריק.
       */}
       <h1 className="sr-only">מתחברים — מאגר שיעורי התורה</h1>
-      <UpcomingLessonsCarousel />
-      <LessonsDashboard />
-      <ShareDistributionBar />
-      <JoinTeachersCTA />
+      <main>
+        <UpcomingLessonsCarousel />
+        <LessonsDashboard />
+        <ShareDistributionBar />
+        <JoinTeachersCTA />
+      </main>
       <Footer />
     </div>
   );
