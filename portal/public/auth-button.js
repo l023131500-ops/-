@@ -495,6 +495,9 @@
     link.textContent = 'פותח ע״י עולם הסטארטאפים';
     link.rel = 'noopener';
     link.setAttribute('dir', 'rtl');
+    // opacity .65 measured 4.37:1 on egod's inherited color (below the 4.5:1
+    // AA floor for 12px text) — .8 leaves headroom across the other systems
+    // that inherit this same link without a per-site override.
     link.style.cssText = [
       'display:block',
       'text-align:center',
@@ -503,11 +506,11 @@
       'line-height:1.6',
       'padding:10px 12px',
       'color:inherit',
-      'opacity:.65',
+      'opacity:.8',
       'text-decoration:none',
     ].join(';');
     link.addEventListener('mouseenter', function () { link.style.opacity = '1'; });
-    link.addEventListener('mouseleave', function () { link.style.opacity = '.65'; });
+    link.addEventListener('mouseleave', function () { link.style.opacity = '.8'; });
 
     var box = document.createElement('div');
     box.setAttribute('data-more30-credit', '');

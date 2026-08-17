@@ -1,0 +1,15 @@
+auth-button.js: fix footer credit contrast 4.37:1 -> 6.88:1 (shared, 24 systems)
+
+portal/public/auth-button.js's injected body > a.more30-credit link used
+color:inherit; opacity:.65, measured on egod 17/08 at 4.37:1 - below the
+4.5:1 AA floor for 12px text. Left open at the time as out of scope for a
+per-system step (shared file, no NEEDS_USER blocker actually existed).
+
+Bumped resting opacity .65 -> .8 (hover still goes to 1). Copied to
+portal/dist/auth-button.js (hash-verified identical), staged via
+scripts/stage-portal.ps1, deployed dpl_6LGwbNoRk6J4k4RR5dKjkcyBfFba (READY).
+
+Verified live: more30.com/auth-button.js has opacity:.8, not .65. Playwright
+against production https://more30.com/egod recomputed the actual composited
+contrast: 6.88:1. No per-system code touched. Evidence:
+QA/platform/auth-button-credit-contrast-0818/_results.md.
