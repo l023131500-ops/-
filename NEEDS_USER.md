@@ -964,6 +964,26 @@ password required"}` — זו הודעת האימות של הפונקציה עצ
 > **נשארו חמש:** ‏`studio` (באג בנייה) · `bkalot` (מוגן) · `crm` · `gesher` ·
 > ‏`kesef`.
 
+**עדכון 17/08 — ‏`studio` נסגר (favicon + באג ה-`base`), ועכשיו גם `crm`.**
+גם כאן התשובה היא **סימן גרפי חי**: הנווט של `crm` (`app-sidebar.tsx`) מצייר
+בכל עמוד תג מעוגל `bg-primary` עם אייקון lucide `ShieldCheck` ב-
+`text-primary-foreground`. הצבעים נמדדו מהעמוד החי (`getComputedStyle`,
+מחובר כ-`test@more30.com`): רקע `#006D6D`, אייקון `#F8FDFD`, ניגודיות 6.0:1 —
+AA תקין. נכתב `favicon.svg` (עותק נאמן של האייקון), נוסף `<link rel="icon">`
+מונט-יחסי (`/crm/favicon.svg`) ו-rewrite תואם ב-`vercel.json` (כמו ה-rewrite
+הקיים ל-`/crm/assets/*` — בלעדיו הנתיב לא נפתר). נפרס **ממקור, לא
+`--prebuilt`**: ה-`config.json` שה-nitro/vercel preset של TanStack Start
+מייצר לא כולל את ה-rewrites מ-`vercel.json`, ופריסת `--prebuilt` הייתה שוברת
+גם את ה-rewrite הקיים של האסטים. `dpl_4jBUsuzs9d8ytUixZbJJ1SYPUsrC`, READY.
+0 שגיאות קונסולה אחרי הפריסה. **אין צורך יותר בקובץ ממך עבורה.** ראיות:
+`QA/platform/crm-favicon-0817/_results.md`.
+
+> **נשארו שלוש:** ‏`bkalot` (מוגן, לא ייסגר) · `gesher` · `kesef`. ל-`gesher`
+> יש אותו תבנית תג בדיוק (`RoleLayout.tsx`: אריח `bg-sidebar-primary/20` עם
+> אייקון `Shield`) — לא נמדד/נבנה עדיין. `kesef` (34) שונה: `app.json` שלה
+> מסומן `source: "not-vendored"` — קוד המקור לא אותר בריפו הזה, כך שאי אפשר
+> לתקן אותה מכאן בכלל, לא רק את הלשונית.
+
 ---
 
 ## 🟡 0ע. חצור (16) — לארבעת בתי הכנסת אין כתובת במסד (10/08/2026)
