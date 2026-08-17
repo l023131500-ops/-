@@ -1,0 +1,19 @@
+21 mthbram: anti-drift — dark-mode "waiting for deploy" row re-checked, already live
+
+SYSTEMS_STATUS.md's dark-mode table had one row left open: 21 mthbram
+"waiting for deploy". Unlike the other four rows already closed this
+session (04/27, 15/24, 30/31, 32), mthbram was never missing a dark
+theme - its :root IS a dark theme. The row covered two other fixes
+from commit 98faa28: declaring color-scheme:dark (so native browser
+controls stop rendering light on a dark page) and adding the shared
+login button, since mthbram was one of two systems missing it.
+
+Checked both directly against production:
+- GET /mthbram/assets/index-Y-yk4Tud.css -> 200, contains color-scheme:dark
+- GET /mthbram/ -> 200, contains the shared auth-button.js script tag
+
+Both are already live. Updated the table row and added a dated entry.
+No code change, no deploy.
+
+Supabase MCP unavailable this session - heartbeat written as a pending
+.sql file, joins the existing queue.

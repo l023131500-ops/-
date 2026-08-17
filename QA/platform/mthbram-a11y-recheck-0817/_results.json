@@ -1,0 +1,19 @@
+{
+  "measured_at": "2026-08-17T00:00:00Z",
+  "target": "https://more30.com/mthbram/",
+  "checks": [
+    {
+      "name": "production CSS declares color-scheme: dark",
+      "asset": "/mthbram/assets/index-Y-yk4Tud.css",
+      "pass": true,
+      "detail": "GET returned 200; body contains 'color-scheme:dark'"
+    },
+    {
+      "name": "shared login control (auth-button.js) present in production HTML",
+      "asset": "/mthbram/ (root document)",
+      "pass": true,
+      "detail": "GET returned 200; body contains <script src=\"https://more30.com/auth-button.js\" defer>"
+    }
+  ],
+  "conclusion": "Both parts of the SYSTEMS_STATUS.md '21 mthbram' dark-mode row (color-scheme:dark declaration, and the missing login button) are already live in production. The row's '⏳ ממתין לפריסה' status was stale — same pattern as the four prior anti-drift rechecks in this file (04/27, 15/24, 30/31, 32). No code change, no deploy. Source: commit 98faa28 (apps/21-mthbram/index.html) already shipped both fixes."
+}
