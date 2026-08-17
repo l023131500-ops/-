@@ -1,0 +1,14 @@
+26 סטודיו מודעות: תוקן base שגוי ב-vite.config.ts (/modaot/ -> /studio/)
+
+apps/26-modaot-studio/vite.config.ts הצהיר base: "/modaot/" (הנתיב של
+מערכת 03) בזמן שסטודיו מוגש תחת /studio/. פרוד לא נשבר כי הוא מוגש
+מעותק בנוי-ידנית תחת _deploy/studio-more30 עם נתיבים נכונים כבר, אבל כל
+build רגיל מהמקור הזה היה מפיל כל נכס ל-404. נרשם ב-NEEDS_USER.md מ-10/08
+(2291abb) כבאג פתוח וטרם טופל.
+
+תוקן שורה אחת, אומת עם vite build מקומי: index.html כותב עכשיו
+/studio/assets/... . לא נפרס בצעד הזה. עודכנו NEEDS_USER.md ו-
+SYSTEMS_STATUS.md.
+
+Supabase MCP לא מחובר בסשן הזה — heartbeat נכתב כ-
+QA/platform/studio-base-fix-0817/_heartbeat-pending.sql, מצטרף לתור הקיים.
