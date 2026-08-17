@@ -1,22 +1,27 @@
+import { Suspense, lazy } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Index from "./pages/Index";
-import GabaiPortal from "./pages/GabaiPortal";
-import ContactPage from "./pages/ContactPage";
-import ReligiousInfoPage from "./pages/ReligiousInfoPage";
-import SynagoguePage from "./pages/SynagoguePage";
-import AllSynagoguesPage from "./pages/AllSynagoguesPage";
-import KashrutPage from "./pages/KashrutPage";
-import MikvaotPage from "./pages/MikvaotPage";
-import HalachaPage from "./pages/HalachaPage";
-import NewsletterPage from "./pages/NewsletterPage";
-import MourningGuidePage from "./pages/MourningGuidePage";
-import NotFound from "./pages/NotFound";
 import ChatBot from "./components/ChatBot";
 import Navbar from "./components/Navbar";
+
+// Route-level code splitting: these pages were all bundled eagerly into a
+// single 981KB chunk (Lighthouse: 1.7s scripting / 1.26s TBT on /galil,
+// QA/platform/galil-perf-trace-0817), even though a visit only ever needs one.
+const Index = lazy(() => import("./pages/Index"));
+const GabaiPortal = lazy(() => import("./pages/GabaiPortal"));
+const ContactPage = lazy(() => import("./pages/ContactPage"));
+const ReligiousInfoPage = lazy(() => import("./pages/ReligiousInfoPage"));
+const SynagoguePage = lazy(() => import("./pages/SynagoguePage"));
+const AllSynagoguesPage = lazy(() => import("./pages/AllSynagoguesPage"));
+const KashrutPage = lazy(() => import("./pages/KashrutPage"));
+const MikvaotPage = lazy(() => import("./pages/MikvaotPage"));
+const HalachaPage = lazy(() => import("./pages/HalachaPage"));
+const NewsletterPage = lazy(() => import("./pages/NewsletterPage"));
+const MourningGuidePage = lazy(() => import("./pages/MourningGuidePage"));
+const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
 
@@ -32,21 +37,23 @@ const App = () => (
           the page showed "non-existent route: /galil". */}
       <BrowserRouter basename="/galil">
         <Navbar />
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/synagogue/:id" element={<SynagoguePage />} />
-          <Route path="/synagogues" element={<AllSynagoguesPage />} />
-          <Route path="/kashrut" element={<KashrutPage />} />
-          <Route path="/mikvaot" element={<MikvaotPage />} />
-          <Route path="/halacha" element={<HalachaPage />} />
-          <Route path="/newsletter" element={<NewsletterPage />} />
-          <Route path="/mourning" element={<MourningGuidePage />} />
-          <Route path="/gabai" element={<GabaiPortal />} />
-          <Route path="/gabai/form/:token" element={<GabaiPortal />} />
-          <Route path="/contact" element={<ContactPage />} />
-          <Route path="/info" element={<ReligiousInfoPage />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <Suspense fallback={null}>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/synagogue/:id" element={<SynagoguePage />} />
+            <Route path="/synagogues" element={<AllSynagoguesPage />} />
+            <Route path="/kashrut" element={<KashrutPage />} />
+            <Route path="/mikvaot" element={<MikvaotPage />} />
+            <Route path="/halacha" element={<HalachaPage />} />
+            <Route path="/newsletter" element={<NewsletterPage />} />
+            <Route path="/mourning" element={<MourningGuidePage />} />
+            <Route path="/gabai" element={<GabaiPortal />} />
+            <Route path="/gabai/form/:token" element={<GabaiPortal />} />
+            <Route path="/contact" element={<ContactPage />} />
+            <Route path="/info" element={<ReligiousInfoPage />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </Suspense>
         <ChatBot />
       </BrowserRouter>
     </TooltipProvider>
