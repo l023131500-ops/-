@@ -1,5 +1,35 @@
 # SYSTEMS_STATUS.md — מצב כל המערכות, נמדד
 
+> ## 🟢 17/08/2026 (לילה, כח) — **16 חצור קונקט (chatzor): נמדד `/chatzor` לראשונה (פרפורמנס 41) — עבודת רינדור/אנימציה (framer-motion) על ה-thread הראשי, לא Google Fonts ולא bundle; דורש lazy-mount, לא תוקן בצעד הזה**
+
+> המשך סבב-2 (פרפורמנס, בסדר המערכות) — הבא אחרי `egod` לפי `ROUTES` ב-
+> `scripts/qa/lighthouse-run.mjs`. `node scripts/qa/lighthouse-run.mjs
+> QA/platform/chatzor-lh-0817 chatzor` — ציון ראשון אי-פעם למסלול `chatzor`
+> (`/chatzor`, הנחיתה — שונה מ-`chatzor-app` = `/chatzor/`, שכבר נמדד בסבב 32).
+> **פרפורמנס 41 · נגישות 100 · Best Practices 77 · SEO 100**.
+>
+> **למה זה לא דפוס Google Fonts:** `apps/16-chatzor-connect/index.html` כבר
+> נושא את תבנית ה-loadCSS (`media="print" onload`) — תוקן בעבר, אין תיקון חדש
+> כאן.
+>
+> **הממצא:** `bootupTime` מראה שהפריט הגדול ביותר הוא המסמך עצמו (13114ms,
+> scripting זניח — 21ms), לא סקריפט. `mainThreadBreakdown`: Other 7394ms,
+> Rendering 4307ms, Style & Layout 3200ms מול Script Evaluation 1177ms בלבד —
+> עבודת רינדור/layout כבדה, לא JS כבד ולא NetFree חוסם (`forced-reflow-insight`
+> מסומן). תואם את מה שכבר תועד ב-02/08 על chatzor: `framer-motion`+
+> `@hebcal/core` בטעינה ראשונית.
+>
+> **מסקנה:** דורש דחיית טעינת האנימציות (`framer-motion`) ל-lazy/lazy-mount
+> אחרי האינטראקטיביות הראשונית — עבודת קוד נפרדת וגדולה מ"צעד אחד" על
+> `apps/16-chatzor-connect`, לא בוצעה כאן. אין שינוי קוד/פריסה בצעד הזה —
+> מדידה/חקירה/תיעוד בלבד. ראיות: `QA/platform/chatzor-lh-0817/_lighthouse.json`,
+> `QA/platform/chatzor-perf-investigate-0817/_analysis.md`.
+> Supabase MCP אינו מחובר לסשן הזה — heartbeat נכתב כקובץ
+> `_heartbeat-pending.sql`.
+>
+> הבא בסבב-2 (פרפורמנס, בסדר המערכות): `chizukim` (הבא ברשימת `ROUTES` אחרי
+> `chatzor`/`chatzor-app`, ששניהם כבר נמדדו).
+
 > ## 🟢 17/08/2026 (לילה, כז) — **15 איגוד (egod): נחקר פרפורמנס 53 — הפעם זה ה-bundle העצמי, לא רעש רשת/פונטים; דורש code-splitting, לא תוקן בצעד הזה**
 
 > המשך סבב-2 (פרפורמנס, בסדר המערכות) — הבא אחרי smachot(14) לפי `ROUTES` ב-
