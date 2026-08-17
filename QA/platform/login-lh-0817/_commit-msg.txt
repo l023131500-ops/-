@@ -1,0 +1,1 @@
+— כניסה אחידה (/login): Lighthouse נמדד לראשונה (perf 85, a11y 100, BP 77, SEO 63 — noindex מכוון, לא באג)
