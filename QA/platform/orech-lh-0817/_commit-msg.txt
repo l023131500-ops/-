@@ -1,0 +1,9 @@
+18 עורך תורני: Lighthouse נמדד לראשונה (perf 97, a11y 100, SEO 100, BP 77)
+
+המשך סבב הלילה 17/08 (fix/nadlan-a11y) אחרי 10 (bkalot). מדד ראשון ל-orech
+דרך scripts/qa/lighthouse-run.mjs מול https://more30.com/orech. נגישות
+כבר מלאה, פרפורמנס מעל סף 90 — אין ליקוי אמיתי לתקן. BP 77 הוא דפוס
+third-party-cookies (NetFree) שכבר מתועד במערכות אחרות. שורת SYSTEMS_STATUS.md
+עודכנה. Supabase MCP לא מחובר לסשן — heartbeat כ-QA/platform/orech-lh-0817/_heartbeat-pending.sql.
+
+QA/platform/orech-lh-0817/README.md
