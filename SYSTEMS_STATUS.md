@@ -1,5 +1,43 @@
 # SYSTEMS_STATUS.md — מצב כל המערכות, נמדד
 
+> ## 🟢 18/08/2026 (לילה) — **01 torah: כל הכותרת/היירו/הפוטר/הניווט היו בלתי-קריאים במצב כהה — תוקן (סבב-3 נגישות)**
+
+> המשך סבב-3 (בדיקת ניגודיות מצב-כהה, `contrast-probe.mjs`) אחרי tamlul
+> (02, `93c8032`). מול `https://more30.com/torah` במצב כהה: **21 כשלים**,
+> כולם `rgb(17,30,60)` על `rgb(26,47,91)` (1.2–1.26:1, נדרש 4.5) — עיגול
+> האווטאר בניווט, "התחבר"/"הרשמה", כותרת ה-h1 והתת-כותרת ביירו, וכל
+> כותרת/קישור/שורת-זכויות בפוטר.
+>
+> **השורש** ב-`apps/01-torah-platform/src/hooks/useTenant.tsx`: ה-effect
+> שמיישם מיתוג-שוכר כותב `--primary`/`--secondary`/`--accent` כ-inline style
+> על `document.documentElement` — וזה גובר על בורר המחלקה `.dark` ב-
+> `index.css`. כך הרקע נשאר נעוץ לצבע המותג של השוכר (כחול-נייבי, זהה למצב
+> בהיר) בשני המצבים, בעוד `--primary-foreground` נשאר תלוי רק ב-`.dark`
+> והמשיך להתהפך לגוון נייבי-כהה שיועד לשבת על רקע זהב שמעולם לא הגיע —
+> טקסט נייבי-כהה על רקע נייבי-כהה = 1.2:1.
+>
+> **התיקון:** בכל מקום שמוגדר צבע-מותג inline, לנעוץ גם את ה-token
+> המתאים לו `-foreground` (מחושב לפי luminance יחסי לפי WCAG) במקום
+> להשאיר אותו תלוי ב-`.dark` — כך הוא תמיד עוקב אחרי הרקע בפועל, לא אחרי
+> המצב. הוחל באופן עקבי על primary/secondary/accent (אותה תבנית כשל
+> בשלושתם).
+>
+> אומת: `vite build` נקי, `node scripts/prerender-all.mjs torah` אפה מחדש
+> את `_deploy/torah-more30/torah/index.html` עם ה-seed של השוכר (חובה
+> ל-torah — ראו `scripts/prerender-all.mjs`, אחרת רגרסיית CLS). נפרס
+> `vercel deploy --prod`, `dpl_BRQQkRDHYvRTKqVrMGAkJpabG4Fm`, READY,
+> aliased. אומת חי עם cache-buster: `contrast-probe.mjs` במצב כהה — 21
+> כשלים ← 1 (לא קשור, ראו למטה). מצב בהיר: אותו כשל יחיד, ללא שינוי —
+> מצב בהיר לא נגע.
+>
+> **לא תוקן בצעד הזה:** כפתור ה-CTA הזהוב "אתר לי שיעור" (`variant="gold"`
+> ב-`Button`, `Home.tsx`) — טקסט לבן על זהב ב-2.31:1, נדרש 4.5 — פער קטן
+> וקיים-מראש, בשני המצבים כאחד, לא קשור לבאג הזה. לצעד המשך.
+>
+> ראיות: `QA/platform/torah-primary-dark-0818/` (`_shot.mjs`,
+> `torah-dark.png`, `torah-light.png`). Supabase MCP אינו מחובר לסשן הזה —
+> heartbeat נכתב כקובץ `_heartbeat-pending.sql`.
+
 > ## 🟢 18/08/2026 (לילה, אחרי סבב-2) — **תחזוקה: עוד 6 תמונות מתות (~1.05MB) הוסרו — torah/mthbram**
 
 > אחרי שסבב-2 (פרפורמנס) וליטוש "מצב כהה" (POLISH_BACKLOG) נסגרו, וארבעה
