@@ -1,0 +1,42 @@
+QA 0817 — bkalot-clone: source_invalid, measured live in production.
+
+Endpoint: https://uhnrgujbdxhhmoxcjria.supabase.co/functions/v1/bkalot-clone-intake
+Method: POST, PowerShell (Invoke-WebRequest), anon key — not the browser. The client
+always sends a hardcoded source: "form" (apps/37-bkalot-clone/index.html:541) — there
+is no form control that lets a visitor choose the source, same structural gap as
+kind_invalid (QA/bkalot-clone/kind-invalid-live-0817/). Found by reading 0058's
+branches line-by-line: source_invalid (0058 lines 84-87) was the item left open by
+the previous step (SYSTEMS_STATUS.md, topic_no_invalid entry, 17/08).
+
+--- Request: source not in the allowed list ---
+Body: {"kind":"treatment","source":"not_a_real_source_xyz","full_name":"QA Source",
+"phone":"0500000000","email":"qa.source.0817@more30.com",
+"note":"QA 0817 source_invalid live production check","consent":"true",
+"situation":"young_single"}
+
+Response: HTTP 200
+{"ok": false, "error": "source_invalid", "allowed": ["form", "yemot", "nedarim", "ai", "admin"]}
+
+--- What this confirms ---
+1. No 502 / leaked SQLSTATE — clean HTTP 200 with a structured error, same shape as
+   every other 0058 validation branch (kind_invalid, situation_unknown, topic_no_invalid).
+2. The "allowed" list matches 0058 line 84 verbatim: form, yemot, nedarim, ai, admin.
+3. MESSAGES.source_invalid (index.html:285, "מקור הפנייה אינו מוכר למערכת.") is already
+   present and correct. CODE_FIELD does not — and per the client's own comment
+   (index.html:340-341) must not — map source_invalid to a field: the client sends a
+   fixed value from a closed set, not a typed field, so there is nothing for the user
+   to correct and no field to mark invalid. This branch is structurally unreachable
+   from the visible form, exactly like kind_invalid. Measurement-only, no client change
+   needed.
+4. Not written: the source_invalid check (0058 lines 84-87) returns before the insert
+   into bkalot_auto.contacts (line 146) and bkalot_clone.cases (line 154) — read
+   directly from the deployed migration source, not assumed. The request created no
+   contact and no case row.
+
+This closes the last branch flagged open in 0058's server-side validation sweep
+(kind_invalid, source_invalid, situation_unknown, topic_no_invalid — all four now
+measured live in production across the last four steps).
+
+Protected: no read or write to apps/08-bkalut-app, apps/09-bkalot-admin,
+apps/37-bkalot-clone, zr_*, NEDARIM3873. Test mode — no outbound message, no queue
+row (source_invalid returns before any row exists to queue).

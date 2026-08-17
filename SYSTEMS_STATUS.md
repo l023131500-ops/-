@@ -1,5 +1,31 @@
 # SYSTEMS_STATUS.md — מצב כל המערכות, נמדד
 
+> ## 🟢 17/08/2026 — **שכפול בקלות (§5ב): ענף source_invalid מהשרת נמדד בייצור — סוגר את סריקת 0058 (מדידה בלבד).**
+>
+> המשך ישיר לשלוש הרשומות שמתחת (kind_invalid, situation_unknown, topic_no_invalid) —
+> אותה סריקה שורה-שורה של 0058 מול MESSAGES/CODE_FIELD בלקוח. `source_invalid`
+> (0058 שורות 84-87), הבדיקה השנייה בפונקציה, הייתה הפריט האחרון שנשאר פתוח
+> מאותה סריקה (סומן כ"לצעד הבא" ברשומת topic_no_invalid).
+>
+> בקשת POST ישירה אל bkalot-clone-intake, `source="not_a_real_source_xyz"`:
+> HTTP 200, `error=source_invalid`, `allowed` עם 5 ערכים (form/yemot/nedarim/ai/admin)
+> — זהים מילה-במילה ל-0058 שורה 84. הענף חסום מבנית מהטופס הגלוי: הלקוח שולח
+> תמיד `source: "form"` קבוע (index.html:541), אין שדה או בחירה שמאפשרים ערך
+> אחר — בדיוק כמו kind_invalid.
+>
+> ל-source_invalid אין ערך ב-CODE_FIELD בכוונה (index.html:340-341: הערת
+> הלקוח עצמה כבר אומרת ש-kind_invalid ו-source_invalid אין להם שדה מוקלד).
+> MESSAGES.source_invalid כבר קיים ונכון. אין שינוי קוד, אין מיגרציה, אין
+> פריסה. ראיות: `QA/bkalot-clone/source-invalid-live-0817/probe-live.txt`.
+>
+> ⚠️ ה-MCP של Supabase אינו מחובר לסשן הזה — heartbeat נכתב כקובץ
+> `_heartbeat-pending.sql` (מצטרף לתור הקיים).
+>
+> **זה סוגר את ארבעת הבדיקות שנסרקו ב-0058** (kind_invalid, source_invalid,
+> situation_unknown, topic_no_invalid) — כולן נמדדו כעת מול הייצור, כולן
+> HTTP 200 עם קוד שגיאה מובנה תואם ללקוח. אין פער פתוח נוסף מסריקת הוולידציה
+> הזאת.
+
 > ## 🟢 17/08/2026 — **שכפול בקלות (§5ב): ענף kind_invalid מהשרת נמדד בייצור (מדידה בלבד).**
 >
 > המשך ישיר לשתי הרשומות שמתחת (topic_no_invalid, situation_unknown) — אותה
