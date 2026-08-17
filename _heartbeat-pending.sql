@@ -217,3 +217,36 @@ Supabase MCP אינו מחובר לסשן הזה — heartbeat נכתב כקוב
 
 הבא בסבב-2 (פרפורמנס, בסדר המערכות): zchuyot (הבא ברשימת ROUTES אחרי mthbram).$$
 );
+
+-- Commit: <this step> "22 זכויות (zchuyot): נחקר פרפורמנס 65->43 - framer-motion על ה-thread הראשי, אותו דפוס כמו chatzor, לא תוקן בצעד הזה"
+insert into core.run_progress (phase, task, status, note) values (
+  'perf-sweep',
+  '22 זכויות (zchuyot) — investigate perf (framer-motion main-thread)',
+  'done',
+  $$המשך סבב-2 (פרפורמנס, בסדר המערכות) — הבא אחרי mthbram לפי ROUTES ב-
+scripts/qa/lighthouse-run.mjs. node scripts/qa/lighthouse-run.mjs
+QA/platform/zchuyot-perf-investigate-0817 zchuyot — perf 43 (baseline קודם
+65, מדידת a11y מוקדמת יותר היום, לא נחקר פרפורמנס עד כה).
+
+למה זה לא דפוס Google Fonts: apps/22-get-your-rights/index.html כבר נושא
+את תבנית ה-loadCSS (media="print"+onload) ל-Rubik — תוקן בעבר, אין תיקון
+חדש כאן. render-blocking-insight Est savings רק 290ms — לא הגורם הדומיננטי.
+
+הממצא: bootupTime חושף assets/motion-B5vKfmr5.js — 3,930ms total (878ms
+scripting, השאר רינדור) — chunk נפרד של framer-motion, אותה ספרייה ואותו
+דפוס בדיוק כמו 16 חצור קונקט (chatzor). mainThreadBreakdown: Other 4779ms,
+Style & Layout 3669ms, Script Evaluation 2133ms — פיזור דומה ל-chatzor
+(רינדור/layout דומיננטי, לא bundle-JS יחיד). forced-reflow-insight נכשל
+(score 0) — תואם עבודת layout כבדה.
+
+מסקנה: דורש דחיית טעינת framer-motion ל-lazy/lazy-mount אחרי
+האינטראקטיביות הראשונית — אותו תיקון בדיוק שנדרש ל-16 חצור קונקט, עבודת
+קוד נפרדת וגדולה מ"צעד אחד". אין שינוי קוד/פריסה בצעד הזה —
+מדידה/חקירה/תיעוד בלבד. ראיות:
+QA/platform/zchuyot-perf-investigate-0817/_lighthouse.json, _analysis.md.
+Supabase MCP אינו מחובר לסשן הזה — heartbeat נכתב כקובץ זה.
+
+הבא בסבב-2 (פרפורמנס, בסדר המערכות): galil כבר טופל קודם (code splitting,
+לא חלק מרצף האותיות של סבב-2). הבא בפועל: studio (הבא ברשימת ROUTES שטרם
+נמדד/נחקר).$$
+);
