@@ -1,5 +1,28 @@
 # SYSTEMS_STATUS.md — מצב כל המערכות, נמדד
 
+> ## 🟢 17/08/2026 — **שכפול בקלות (§5ב): ארבעת ענפי הוולידציה של סינון `/cases` נמדדו בייצור (מדידה בלבד).**
+>
+> `bkalot_clone_admin_cases` דוחה ערך לא-מוכר בכל אחד מארבעת שדות הסינון
+> (`kind`/`status`/`decided`/`sort`) עם קוד שגיאה מפורש — נבנה במיגרציות
+> 0060/0081/0082 ונבדק במסד. עד עכשיו הבדיקה היחידה שלהם הייתה קריאת SQL ישירה
+> (`QA/bkalot-clone/queue-total-0816`, לא committed — פיגום, לא הטענה) או קריאת
+> `/cases` בלי סינון בכלל (`admin-http-0813`). אף ענף לא נמדד דרך הכתובת
+> שדפדפן באמת פונה אליה, עם סשן ניהול אמיתי.
+>
+> כניסה אמיתית ל-`bkalot-clone-admin` עם `l023131500@gmail.com` +
+> `STD_ADMIN_PASSWORD`, ואז ארבע קריאות `/cases`: `kind:"bogus"` → HTTP 200
+> `kind_unknown` (allowed: info/reminder/treatment); `status:"bogus"` →
+> `status_unknown` (allowed: new/in_progress/sent/closed/rejected);
+> `decided:"bogus"` → `decided_unknown` (allowed: yes/no); `sort:"bogus"` →
+> `sort_unknown` (allowed: created_at/decided_at) — כולן זהות מילה-במילה למסד.
+> ארבעת הערכים התקינים המקבילים עברו `ok:true` באותה בקשה (בקרה), ו-`queue_total`
+> תואם ל-0099: `null` כשאין סינון או כש-`sort` הוא היחיד, `0` כשקיים סינון על
+> מסד ריק. אין שינוי קוד, אין מיגרציה, אין פריסה. ראיות:
+> `QA/bkalot-clone/cases-filter-validation-0817/`.
+>
+> ⚠️ ה-MCP של Supabase אינו מחובר לסשן הזה — heartbeat נכתב כקובץ
+> `_heartbeat-pending.sql` (מצטרף לתור הקיים).
+
 > ## 🟢 17/08/2026 — **שכפול בקלות (§5ב): שער החריגה המספרית של `/case` נמדד בייצור (מדידה בלבד).**
 >
 > המשך לסריקת 0814 שמדדה את שער החריגה המספרית (id בן 25 ספרות) על ארבעת

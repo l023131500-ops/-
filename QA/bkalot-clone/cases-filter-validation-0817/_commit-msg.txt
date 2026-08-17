@@ -1,0 +1,21 @@
+שכפול בקלות: ארבעת ענפי הוולידציה של סינון /cases נמדדו בייצור (§5ב, אימות)
+
+POST אמיתי ל-bkalot-clone-admin/cases עם סשן ניהול חי (l023131500@gmail.com):
+kind:"bogus" -> HTTP 200 kind_unknown; status:"bogus" -> status_unknown;
+decided:"bogus" -> decided_unknown; sort:"bogus" -> sort_unknown. כל ארבעתן
+זהות מילה-במילה למה שהמסד מחזיר (0060/0081/0082).
+
+עד עכשיו הבדיקה היחידה שלהן הייתה קריאת SQL ישירה (queue-total-0816, לא
+committed - פיגום) או /cases בלי סינון כלל (admin-http-0813). אף ענף לא נמדד
+דרך הכתובת שדפדפן באמת פונה אליה. ארבעת הערכים התקינים המקבילים עברו
+ok:true באותה בקשה - בקרה. queue_total תואם ל-0099.
+
+מדידה בלבד. אין שינוי קוד, אין מיגרציה, אין פריסה.
+
+מוגן: לא נגעתי ב-08/09/bkalut-app/bkalot-admin/zr_*/NEDARIM3873. מצב טסט -
+כל 11 הבקשות קריאה בלבד, logout בסוף.
+
+⚠️ ה-MCP של Supabase אינו מחובר לסשן הזה - heartbeat נכתב כקובץ
+_heartbeat-pending.sql.
+
+ראיות: QA/bkalot-clone/cases-filter-validation-0817/
