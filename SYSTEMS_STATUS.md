@@ -1,5 +1,24 @@
 # SYSTEMS_STATUS.md — מצב כל המערכות, נמדד
 
+> ## 🟢 17/08/2026 (לילה, י) — **06 בריאות (קופות חולים) — Lighthouse נמדד לראשונה (perf 84, a11y 91→97) + תוקנו 2 ליקויי נגישות אמיתיים**
+>
+> `node scripts/qa/lighthouse-run.mjs QA/platform/briut-lh-0817 briut` — ציון ראשון אי-פעם ל-`briut`(06):
+> **פרפורמנס 84 · נגישות 91 · Best Practices 77 · SEO 100**. ה-`failedAudits` חשף שני ליקויי
+> נגישות אמיתיים ב-`apps/06-kupot-holim/site`: `label-content-name-mismatch` (כפתורי סגירה
+> עם `aria-label="סגור"` בלי התו הנראה "×", וקישור מותג/כרטיס-פרופיל עם `aria-label` שלא
+> תואם לטקסט הנראה — תוקן ל-`aria-label="סגור ×"` בכפתורים, והוסרו שני ה-`aria-label`
+> המיותרים כך שהשם הנגיש נופל לטקסט הנראה, לפי WCAG 2.5.3) ו-`aria-required-children`
+> (chips של סינון קטגוריות בלי מבנה tab תקין — נוסף `role="tab"`/`aria-selected`).
+> נפרס מ-`_deploy/briut-more30` (אומת זהה byte-for-byte לעותק במאגר). נמדד שוב שלוש פעמים
+> אחרי: **נגישות 91→97**, יציבה בשלוש מדידות חוזרות. `color-contrast` נשאר פתוח — לא זוהה
+> האלמנט הספציפי בסבב הזה. פרפורמנס (84/93/91/87, תנודתי) לא נחקר, תואם דפוס NetFree
+> שכבר מתועד ב-32/02/04. ראיות: `QA/platform/briut-lh-0817/_lighthouse.json` (לפני) ·
+> `QA/platform/briut-lh-a11yfix-0817`, `-a11yfix2-0817`, `-a11yfix3-0817` (אחרי).
+>
+> ⚠️ העבודה נעשתה בסשן קודם שקרס לפני commit — הקוד היה כבר פרוס וחי, רק לא מחויב
+> במאגר. הסשן הזה רק תפס את השינוי במאגר, בלי שינוי קוד נוסף. Supabase MCP אינו
+> מחובר לסשן הזה — heartbeat נכתב כקובץ `_heartbeat-pending.sql`.
+
 > ## 🟢 17/08/2026 (לילה, ט) — **04 עימוד תורני — Lighthouse נמדד לראשונה (perf 64, a11y 90→100) + תוקנו 3 ליקויי נגישות אמיתיים**
 >
 > `node scripts/qa/lighthouse-run.mjs QA/platform/imud-lh-0817 imud` — ציון ראשון אי-פעם ל-`imud`(04):
