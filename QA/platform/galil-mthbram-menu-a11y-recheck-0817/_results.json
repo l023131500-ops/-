@@ -1,0 +1,27 @@
+{
+  "measured_at": "2026-08-17T04:09:41.842Z",
+  "note": "Anti-drift recheck: SYSTEMS_STATUS.md a11y table row '24 galil · 21 mthbram | mobile menu button has no accessible name | pending deploy (+aria-expanded)' checked against production with Playwright.",
+  "results": [
+    {
+      "system": "24 galil",
+      "url": "https://more30.com/galil/",
+      "check": "mobile menu button aria-label + aria-expanded present and toggling",
+      "before_click": { "label": "פתיחת התפריט", "expanded": "false" },
+      "after_click": { "label": "סגירת התפריט", "expanded": true, "note": "confirmed via accessibility snapshot: button relabeled and nav links became visible" },
+      "js_bundle": "https://more30.com/galil/assets/index-KFiwjeZS.js",
+      "aria_expanded_in_bundle": true,
+      "pass": true
+    },
+    {
+      "system": "21 mthbram",
+      "url": "https://more30.com/mthbram/",
+      "check": "mobile menu button aria-label + aria-expanded present and toggling",
+      "before_click": { "label": "פתיחת התפריט", "expanded": "false" },
+      "after_click": { "label": "סגירת התפריט", "expanded": "true" },
+      "js_bundle": "https://more30.com/mthbram/assets/index-DO5Yp880.js",
+      "aria_expanded_in_bundle": true,
+      "pass": true
+    }
+  ],
+  "conclusion": "Both fixes are live in production. The accessible name changes on toggle (פתיחת התפריט -> סגירת התפריט) and aria-expanded flips false->true on click for both apps. No code change, no deploy needed — the SYSTEMS_STATUS.md table row was stale."
+}
