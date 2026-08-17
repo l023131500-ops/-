@@ -1,0 +1,27 @@
+bkalot-clone (§5ב) — verify protected source 08/09 untouched, end of layer-1 validation sweep
+Measured: 2026-08-17
+
+Command: git diff -- apps/08-bkalut-app apps/09-bkalot-admin
+Result: empty (0 lines changed) — no working-tree modification to protected paths.
+
+Command: git log -1 --format="%H %ad %s" --date=short -- apps/08-bkalut-app apps/09-bkalot-admin
+Result: d2ed6ce7494e9abe3d959c434d92688fb0606527 2026-07-17 "Apply core schema live; verify igud-transcribe connection"
+-> last commit touching either path predates the bkalot-clone build effort (started ~13/08). No
+   commit in the 13/08-17/08 window (mount-0813 through email-situation-treatment-live-0817) touched
+   apps/08-bkalut-app or apps/09-bkalot-admin.
+
+Command: git ls-files apps/08-bkalut-app apps/09-bkalot-admin
+Result: 2 files tracked (apps/08-bkalut-app/app.json, apps/09-bkalot-admin/app.json) — these are the
+   core.projects registry stubs, not the live application source (08/09 run from their own external
+   deploy, read-only access to that source was via Management API, not this repo).
+
+Conclusion: BKALOT_CLONE_BUILD.md acceptance line "המקור החי 08/09 לא נגעו בו — ודא (git diff ריק על
+נתיבי המקור)" is satisfied and now has a dated, standalone verification artifact instead of only the
+inline per-commit assertions each prior QA note carried.
+
+Also confirms rights.catalog count (888) was already measured standalone on 13/08:
+QA/platform/anon-write-on-public-views-0813/_results.json (public.rights_catalog live count 888,
+unchanged before/after the 0059 permission fix) — BUILD.md's "מאגר הזכויות מציג 888 נושאים" line is
+covered by that artifact, not re-measured here.
+
+No code change, no migration, no deploy — verification only.
