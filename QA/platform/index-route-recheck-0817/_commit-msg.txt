@@ -1,0 +1,14 @@
+heartbeat: reconcile 6 more queued _heartbeat-pending.sql files (0817)
+
+3 already had rows in core.run_progress (ids 695-697, design-standard-merge /
+commit-msg-0817-docs / leads-api-cleanup) but the source files were never
+deleted after a prior run inserted them — verified by phase-text lookup
+before touching anything, no re-insert. The other 3 (dark-toggle-recheck,
+touch-target-recheck, index-route-recheck) were genuinely new, inserted as
+ids 731-733. All 6 source files deleted.
+
+No app code changed, no protected system touched (08/09/bkalut-app/
+bkalot-admin/zr_*/NEDARIM3873 untouched). Remaining: ~85 QA/platform/*-0817
+pending files still queued — check task text against core.run_progress
+before running in a future step, do not run blind (this step found 3 that
+were already reconciled but not cleaned up).
