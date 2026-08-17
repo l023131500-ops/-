@@ -1,0 +1,12 @@
+22 מימוש זכויות (zchuyot): Lighthouse נמדד לראשונה (perf 65, a11y כבר 100, SEO 100)
+
+נמדד /zchuyot לראשונה עם lighthouse-run.mjs (מובייל, headless chrome):
+perf 65 · a11y 100 · best-practices 77 · SEO 100.
+
+נגישות כבר 100 — אין ליקוי לתקן. פרפורמנס מתחת לסף 90 (FCP 2.5s, LCP 3.2s,
+TBT 830ms, main-thread breakdown: Other 3.0s, Style&Layout 2.8s, Script Eval
+1.5s) — לא נחקר עדיין, כמו שאר המערכות בסבב הזה. תוצאה גולמית:
+QA/platform/zchuyot-lh-0817/_lighthouse.json.
+
+עדכון SYSTEMS_STATUS.md שורה 22 עם התוצאה, בלי לגעת בהערה הקיימת על תיקון
+המספרים המומצאים.
