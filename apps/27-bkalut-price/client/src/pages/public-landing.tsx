@@ -512,7 +512,7 @@ export default function PublicLanding() {
         <div className="max-w-[1100px] mx-auto px-4 sm:px-6 py-6 flex flex-col md:flex-row items-center justify-between gap-3 text-xs text-muted-foreground">
           <div className="text-center md:text-right">
             ארגון בקלות · {CONTACT_PHONE} · {CONTACT_EMAIL}
-            <div className="opacity-70 mt-1">להבחין תמיד בין זכות לפי חוק לבין אפשרות לפנייה לסיוע התנדבותי.</div>
+            <div className="mt-1">להבחין תמיד בין זכות לפי חוק לבין אפשרות לפנייה לסיוע התנדבותי.</div>
           </div>
           <div className="flex items-center gap-2">
             <Link
