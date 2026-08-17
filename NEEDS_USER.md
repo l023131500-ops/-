@@ -1884,11 +1884,13 @@ Resource is limited - try again in 24 hours
 | `apps/24-galilee-connect-hub/src/App.tsx` | `basename="/galil"` + הוסר וידאו מת |
 | `apps/15-egod/src/components/home/TipsSection.tsx` | אזור מגע 24px + `aria-label` ל-8 נקודות |
 | `apps/15-egod/src/components/Footer.tsx` | `py-1` ל-11 קישורי פוטר |
-| `apps/03-igud-ads/app/(public)/page.tsx` | `py-1` ל-3 קישורי נווט ⏳ **טרם נפרס** |
-| `apps/02-igud-transcribe/app/page.tsx` | `py-1` לקישור המייל ⏳ **טרם נפרס** |
-| `apps/21-mthbram/src/pages/NotFound.tsx` | `py-1` לקישור חזרה ⏳ **טרם נפרס** |
+| `apps/03-igud-ads/app/(public)/page.tsx` | `py-1` ל-3 קישורי נווט ~~⏳ טרם נפרס~~ ✅ **נבדק מחדש 17/08 — כבר פרוס** |
+| `apps/02-igud-transcribe/app/page.tsx` | `py-1` לקישור המייל ~~⏳ טרם נפרס~~ ✅ **נבדק מחדש 17/08 — כבר פרוס** |
+| `apps/21-mthbram/src/pages/NotFound.tsx` | `py-1` לקישור חזרה ~~⏳ טרם נפרס~~ ✅ **נבדק מחדש 17/08 — כבר פרוס** |
 
 **עודכן 03/08: כל 21 הקבצים נשמרו ב-`git add -f` ונדחפו.** סכנת האובדן המיידית הוסרה. אבל הם עדיין מוחרגים ב-`.gitignore`, ולכן שינוי עתידי בהם לא ייתפס אוטומטית, ובנייה מהריפו הנפרד של כל מערכת עדיין תתעלם מהם.
+
+**עודכן 17/08: שלוש השורות המתויגות "טרם נפרס" נבדקו מחדש מול הייצור ואינן פער פעיל.** `more30.com/modaot`, `more30.com/tamlul` (HTML) ו-`more30.com/mthbram` (חבילת ה-JS של מסך 404) מגישים היום את מחלקת ה-`py-1` המדויקת משלושת התיקונים. אין שינוי קוד, אין פריסה — מדידה בלבד. ראיות: `QA/platform/source-fixes-deploy-recheck-0817/_results.txt`. **ההכרעה הארכיטקטונית עצמה (איפה הקוד חי לטווח ארוך) עדיין פתוחה ולא נגעתי בה.**
 
 **מה צריך ממך:** להחליט אחד משניים —
 1. לדחוף את השינויים לריפו של כל מערכת (`l023131500-ops/nadlan-berega` וכו'), או

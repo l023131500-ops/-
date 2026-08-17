@@ -1,0 +1,30 @@
+source-fixes-deploy-recheck-0817 — recheck of NEEDS_USER.md §0א, three rows marked "⏳ טרם נפרס" since 03/08
+
+Claim under test: three py-1 tap-target fixes committed 03/08 (git add -f, still in
+.gitignore-excluded apps/**) were recorded as "not yet deployed" pending an
+architecture decision (push to per-app repos vs. manage in monorepo).
+
+Measured live production (cache-busted GET, no code change, no deploy):
+
+1) apps/03-igud-ads/app/(public)/page.tsx -> https://more30.com/modaot
+   HTML contains: class="inline-block py-1 hover:text-brand-gold transition"
+   on all 3 nav links (/modaot/create, /modaot/transcribe/upload, /modaot/login).
+   PASS - live.
+
+2) apps/02-igud-transcribe/app/page.tsx -> https://more30.com/tamlul
+   HTML contains: <a href="mailto:a023131600@gmail.com" class="inline-block py-1
+   hover:text-accent">
+   PASS - live.
+
+3) apps/21-mthbram/src/pages/NotFound.tsx -> https://more30.com/mthbram/<unknown-route>
+   Server returns 200 (SPA catch-all), client-rendered. Fetched the referenced
+   bundle /mthbram/assets/index-DO5Yp880.js and found:
+   <a href="/" className="inline-block py-1 text-primary underline hover:text-primary/90">Return to Home</a>
+   PASS - live.
+
+Conclusion: all three "טרם נפרס" tags are stale. The fixes shipped at some point
+after 03/08 (same builds that fixed basename routing etc. per commit history) even
+though the §0א architecture question itself (per-app repo vs monorepo) is still open
+and untouched here.
+
+No code change, no deploy — measurement only.
