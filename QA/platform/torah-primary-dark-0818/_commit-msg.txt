@@ -1,0 +1,40 @@
+01 torah: fix header/hero/footer/nav all invisible in dark mode (round-3 a11y recheck)
+
+Continuing the round-3 dark-mode contrast recheck after tamlul (02, 93c8032).
+contrast-probe.mjs against https://more30.com/torah in dark mode found 21
+failing elements, all rgb(17,30,60) on rgb(26,47,91) (1.2-1.26:1, needs 4.5)
+- nav avatar circle, "התחבר"/"הרשמה" links, the hero h1/subtitle, and every
+footer heading/link/copyright line.
+
+Root cause in apps/01-torah-platform/src/hooks/useTenant.tsx: the tenant
+branding effect writes --primary/--secondary/--accent onto
+document.documentElement via root.style.setProperty(), an inline style that
+outranks the .dark class selector in index.css. So the background pinned to
+the tenant's (light-mode) brand navy in both themes, while
+--primary-foreground was left to the .dark class alone, which still flipped
+it to a dark-navy value meant to sit on a gold background that never
+materialized. Dark-navy text on dark-navy background = 1.2:1.
+
+Fix: when a brand color is set inline, also pin its paired -foreground token
+(computed by WCAG relative luminance) instead of leaving it to the .dark
+class, so it always tracks the actual background rather than the theme.
+Applied to primary/secondary/accent consistently - same bug shape for all
+three tokens.
+
+Verified: vite build clean. node scripts/prerender-all.mjs torah re-baked
+_deploy/torah-more30/torah/index.html with the tenant seed (required for
+this app - see scripts/prerender-all.mjs header, CLS regression otherwise).
+vercel deploy --prod, dpl_BRQQkRDHYvRTKqVrMGAkJpabG4Fm, READY, aliased.
+Live re-check with a cache-buster: contrast-probe.mjs dark - 21 findings ->
+1 (unrelated, see below). Light mode probe: same single finding, unchanged -
+light mode untouched.
+
+Not fixed this step: "אתר לי שיעור" gold CTA button (variant="gold" in
+Button, Home.tsx) is white text on gold at 2.31:1, needs 4.5 - a
+pre-existing, unrelated, smaller gap in both light and dark mode. Left for a
+follow-up step.
+
+Evidence: QA/platform/torah-primary-dark-0818/ (_shot.mjs, torah-dark.png,
+torah-light.png).
+
+Protected systems untouched (08/09/bkalut-app/bkalot-admin/zr_*/NEDARIM3873).

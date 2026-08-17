@@ -100,9 +100,37 @@ export function TenantProvider({ children }: { children: ReactNode }) {
       return `${Math.round(h * 360)} ${Math.round(s * 100)}% ${Math.round(l * 100)}%`;
     };
 
-    if (b.primary_color) root.style.setProperty("--primary", toHsl(b.primary_color));
-    if (b.secondary_color) root.style.setProperty("--secondary", toHsl(b.secondary_color));
-    if (b.accent_color) root.style.setProperty("--accent", toHsl(b.accent_color));
+    // Relative luminance (WCAG), used to pick a foreground that stays
+    // readable against this brand color.
+    const luminance = (hex: string): number => {
+      const c = [1, 3, 5]
+        .map((i) => parseInt(hex.slice(i, i + 2), 16) / 255)
+        .map((v) => (v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4));
+      return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
+    };
+    // `--primary`/`--secondary`/`--accent` are set here via inline style,
+    // which outranks the `.dark` class selector in index.css and so pins the
+    // background to this tenant's brand color in both themes. Their paired
+    // `-foreground` tokens were left to the `.dark` class alone, which still
+    // flips them — assuming the background flipped too. It didn't, so dark
+    // mode paired e.g. a dark-mode-only foreground with a background that
+    // never left light mode (measured 1.2:1 on the torah hero/nav/footer).
+    // Pin a matching foreground here too, so it always tracks the actual
+    // (branding-controlled) background instead of the theme.
+    const darkInk = "222 56% 15%";
+    const lightInk = "0 0% 100%";
+    if (b.primary_color) {
+      root.style.setProperty("--primary", toHsl(b.primary_color));
+      root.style.setProperty("--primary-foreground", luminance(b.primary_color) > 0.5 ? darkInk : lightInk);
+    }
+    if (b.secondary_color) {
+      root.style.setProperty("--secondary", toHsl(b.secondary_color));
+      root.style.setProperty("--secondary-foreground", luminance(b.secondary_color) > 0.5 ? darkInk : lightInk);
+    }
+    if (b.accent_color) {
+      root.style.setProperty("--accent", toHsl(b.accent_color));
+      root.style.setProperty("--accent-foreground", luminance(b.accent_color) > 0.5 ? darkInk : lightInk);
+    }
     if (b.font_heading) root.style.setProperty("--font-heading", `"${b.font_heading}", serif`);
     if (b.font_body) root.style.setProperty("--font-body", `"${b.font_body}", sans-serif`);
 
