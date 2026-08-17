@@ -1,5 +1,36 @@
 # SYSTEMS_STATUS.md — מצב כל המערכות, נמדד
 
+> ## 🟢 17/08/2026 (לילה, כד) — **06 בריאות (briut): תוקן שורש הפרפורמנס (Google Fonts render-blocking), 84/93/91/87 (תנודתי) → 89**
+
+> המשך סבב-2 (פרפורמנס, בסדר המערכות) — הבא אחרי 04 imud לפי `ROUTES` ב-
+> `scripts/qa/lighthouse-run.mjs`. `apps/06-kupot-holim/site/index.html`
+> (אתר סטטי בלי build, כמו 10-בקלות) טען Heebo + Frank Ruhl Libre דרך
+> `<link rel="stylesheet" href="fonts.googleapis.com/css2?...">` סינכרוני
+> ב-`<head>` — אותו דפוס בדיוק שכבר תוקן ב-01/02/03/04/32. הנגישות (91→97)
+> כבר תוקנה בסבב קודם (§י למעלה); זה תיקון פרפורמנס נפרד.
+>
+> **התיקון:** תבנית `loadCSS` הסטנדרטית — `<link rel="preload" as="style">`
+> + `<link rel="stylesheet" media="print" onload="this.media='all'">` +
+> `<noscript>` גיבוי, זהה לתיקון ב-04 imud (גם הוא סטטי/לא-Next.js). הוחל
+> גם ב-`apps/06-kupot-holim/site/index.html` (מקור) וגם ב-
+> `_deploy/briut-more30/briut/index.html` (עותק הפריסה) — `Compare-Object`
+> אישר שהשניים זהים אחרי העריכה (ההבדל היחיד ביניהם היה `<base href>`,
+> וזה כבר קיים בשניהם).
+>
+> נפרס `vercel deploy --prod --yes --scope l023131500-ops-projects` מתוך
+> `_deploy/briut-more30` (`dpl_BfqtJtZv6hVNLA3YZk2a4EVDCiiD`), READY. אומת
+> חי עם cache-buster (`more30.com/briut/?cachebust=0817briutfont`) —
+> `media="print" onload="this.media='all'"` מופיע ב-HTML המוגש.
+>
+> **נמדד אחרי:** פרפורמנס **89** (בטווח הרעש הקודם 84–93, אך `render-blocking-
+> insight` כבר לא מופיע ברשימת ה-`failedAudits`). נגישות 97/BP 77/SEO 100
+> ללא שינוי. ראיות: `QA/platform/briut-lh-0817/_lighthouse.json` (בסיס
+> קודם) · `QA/platform/briut-lh-fontfix-0817/_lighthouse.json` (אחרי).
+> Supabase MCP אינו מחובר לסשן הזה — heartbeat נכתב כקובץ `_heartbeat-pending.sql`.
+>
+> הבא בסבב-2 (פרפורמנס, בסדר המערכות): `bkalot` (הבא ברשימת `ROUTES` אחרי
+> `briut`).
+
 > ## 🟢 17/08/2026 (לילה, כג) — **04 עימוד תורני (imud): פונטים לא-חוסמים, פרפורמנס 53→60 (עדיין מתחת ל-90)**
 
 > המשך סבב-2 (פרפורמנס, בסדר המערכות) — אחרי torah(01)/tamlul(02)/modaot(03).
