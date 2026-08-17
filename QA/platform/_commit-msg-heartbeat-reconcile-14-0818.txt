@@ -1,0 +1,10 @@
+heartbeat: reconcile 5 more queued _heartbeat-pending.sql files (0818, batch 14)
+
+Reconciled 5 more of the remaining queued _heartbeat-pending.sql files
+(dead-assets-cleanup-0817, hidden-not-sellable-0807, needs-user-recheck-0817b,
+gannenet-untracked-source-0817, untracked-specs-0817b). Checked each task text
+against core.run_progress before insert (none pre-existed). Inserted all 5
+rows live via the Supabase MCP, then deleted the 5 pending files.
+
+No app code changed, no protected system touched
+(08/09/bkalut-app/bkalot-admin/zr_*/NEDARIM3873 untouched).
