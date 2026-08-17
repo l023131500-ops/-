@@ -1,0 +1,225 @@
+{
+  "galil": {
+    "url": "https://more30.com/galil",
+    "measuredAt": "2026-08-17T14:25:59.432Z",
+    "performance": 36,
+    "accessibility": 100,
+    "bestPractices": 77,
+    "seo": 100,
+    "metrics": {
+      "fcp": "4.2 s",
+      "lcp": "8.1 s",
+      "tbt": "1,030 ms",
+      "cls": "0.08",
+      "si": "8.2 s"
+    },
+    "failedAudits": [
+      {
+        "id": "first-contentful-paint",
+        "title": "First Contentful Paint",
+        "score": 0.19,
+        "display": "4.2 s"
+      },
+      {
+        "id": "largest-contentful-paint",
+        "title": "Largest Contentful Paint",
+        "score": 0.02,
+        "display": "8.1 s"
+      },
+      {
+        "id": "speed-index",
+        "title": "Speed Index",
+        "score": 0.2,
+        "display": "8.2 s"
+      },
+      {
+        "id": "total-blocking-time",
+        "title": "Total Blocking Time",
+        "score": 0.26,
+        "display": "1,030 ms"
+      },
+      {
+        "id": "max-potential-fid",
+        "title": "Max Potential First Input Delay",
+        "score": 0.08,
+        "display": "500 ms"
+      },
+      {
+        "id": "interactive",
+        "title": "Time to Interactive",
+        "score": 0.34,
+        "display": "9.0 s"
+      },
+      {
+        "id": "third-party-cookies",
+        "title": "Uses third-party cookies",
+        "score": 0,
+        "display": "2 cookies found"
+      },
+      {
+        "id": "mainthread-work-breakdown",
+        "title": "Minimize main-thread work",
+        "score": 0,
+        "display": "8.7 s"
+      },
+      {
+        "id": "bootup-time",
+        "title": "Reduce JavaScript execution time",
+        "score": 0,
+        "display": "2.0 s"
+      },
+      {
+        "id": "unsized-images",
+        "title": "Image elements do not have explicit `width` and `height`",
+        "score": 0.5,
+        "display": ""
+      },
+      {
+        "id": "valid-source-maps",
+        "title": "Missing source maps for large first-party JavaScript",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "unminified-javascript",
+        "title": "Minify JavaScript",
+        "score": 0,
+        "display": "Est savings of 6 KiB"
+      },
+      {
+        "id": "unused-css-rules",
+        "title": "Reduce unused CSS",
+        "score": 0,
+        "display": "Est savings of 12 KiB"
+      },
+      {
+        "id": "unused-javascript",
+        "title": "Reduce unused JavaScript",
+        "score": 0,
+        "display": "Est savings of 171 KiB"
+      },
+      {
+        "id": "inspector-issues",
+        "title": "Issues were logged in the `Issues` panel in Chrome Devtools",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "cache-insight",
+        "title": "Use efficient cache lifetimes",
+        "score": 0.5,
+        "display": "Est savings of 43 KiB"
+      },
+      {
+        "id": "document-latency-insight",
+        "title": "Document request latency",
+        "score": 0.5,
+        "display": "Est savings of 4 KiB"
+      },
+      {
+        "id": "forced-reflow-insight",
+        "title": "Forced reflow",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "image-delivery-insight",
+        "title": "Improve image delivery",
+        "score": 0,
+        "display": "Est savings of 139 KiB"
+      },
+      {
+        "id": "lcp-breakdown-insight",
+        "title": "LCP breakdown",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "lcp-discovery-insight",
+        "title": "LCP request discovery",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "modern-http-insight",
+        "title": "Modern HTTP",
+        "score": 0,
+        "display": "Est savings of 570 ms"
+      },
+      {
+        "id": "network-dependency-tree-insight",
+        "title": "Network dependency tree",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "render-blocking-insight",
+        "title": "Render-blocking requests",
+        "score": 0,
+        "display": "Est savings of 770 ms"
+      }
+    ],
+    "mainThreadBreakdown": [
+      {
+        "group": "Other",
+        "duration": 3393
+      },
+      {
+        "group": "Style & Layout",
+        "duration": 2365
+      },
+      {
+        "group": "Script Evaluation",
+        "duration": 1958
+      },
+      {
+        "group": "Rendering",
+        "duration": 841
+      },
+      {
+        "group": "Garbage Collection",
+        "duration": 79
+      },
+      {
+        "group": "Parse HTML & CSS",
+        "duration": 41
+      },
+      {
+        "group": "Script Parsing & Compilation",
+        "duration": 34
+      }
+    ],
+    "bootupTime": [
+      {
+        "url": "https://more30.com/galil/assets/index-DrBv5nkx.js",
+        "total": 4988,
+        "scripting": 1551,
+        "scriptParseCompile": 15
+      },
+      {
+        "url": "https://more30.com/galil",
+        "total": 2391,
+        "scripting": 184,
+        "scriptParseCompile": 6
+      },
+      {
+        "url": "Unattributable",
+        "total": 974,
+        "scripting": 31,
+        "scriptParseCompile": 0
+      },
+      {
+        "url": "https://netfree.link/card/card-injection.js",
+        "total": 168,
+        "scripting": 140,
+        "scriptParseCompile": 4
+      },
+      {
+        "url": "https://more30.com/auth-button.js",
+        "total": 112,
+        "scripting": 18,
+        "scriptParseCompile": 5
+      }
+    ]
+  }
+}

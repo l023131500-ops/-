@@ -12,7 +12,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
-import logoHazor from '@/assets/logo-hazor.png';
+import logoHazor from '@/assets/logo-mechubarim.png';
 import logoMechubarim from '@/assets/logo-mechubarim.png';
 import type { KnowledgeItem } from '@/lib/knowledgeStore';
 import type { RabbiQuestion } from '@/lib/rabbiQuestionsStore';

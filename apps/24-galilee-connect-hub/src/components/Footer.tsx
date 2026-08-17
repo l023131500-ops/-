@@ -107,7 +107,7 @@ const Footer = () => {
           </a>
         </div>
 
-        <p className="text-muted-foreground/60 text-xs text-center">
+        <p className="text-muted-foreground text-xs text-center">
           © {new Date().getFullYear()} כל הזכויות שמורות | מחוברים — יהדות וקהילה
         </p>
       </div>

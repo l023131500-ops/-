@@ -8,7 +8,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
-import logoHazor from '@/assets/logo-hazor.png';
+import logoHazor from '@/assets/logo-mechubarim.png';
 import logoMechubarim from '@/assets/logo-mechubarim.png';
 import Footer from '@/components/Footer';
 

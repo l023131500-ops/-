@@ -7,7 +7,7 @@ import {
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import type { KnowledgeItem } from '@/lib/knowledgeStore';
-import logoHazor from '@/assets/logo-hazor.png';
+import logoHazor from '@/assets/logo-mechubarim.png';
 import logoMechubarim from '@/assets/logo-mechubarim.png';
 import Footer from '@/components/Footer';
 

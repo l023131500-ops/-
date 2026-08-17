@@ -138,7 +138,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen relative">
-      <div className="relative z-[2]">
+      <main className="relative z-[2]">
         <HeroSection />
 
         {/* Synagogues section - compact */}
@@ -212,7 +212,7 @@ const Index = () => {
         <GallerySection />
 
         <Footer />
-      </div>
+      </main>
     </div>
   );
 };
