@@ -1,5 +1,26 @@
 # SYSTEMS_STATUS.md — מצב כל המערכות, נמדד
 
+> ## 🟢 17/08/2026 (לילה, כ) — **24 גליל קונקט: ה-code splitting מ-`ba36ea0` נפרס לייצור ואומת חי**
+>
+> ההמשך הישיר ל-`ba36ea0` ("השלמת route-level code splitting... לא פרוס עדיין").
+> `_deploy/galil-more30/galil/` כבר החזיק את אותם 36 קבצי `assets` שנבנו מקומית
+> (נבדק לפני הפריסה: השוואת שמות-קבצים מול `apps/24-galilee-connect-hub/dist/assets`
+> — זהים, אותו hash לכל chunk) — כלומר ה-`robocopy` לשלב הכנה כבר בוצע בסבב קודם,
+> רק `vercel deploy` חסר. הרצתי `vercel deploy --prod --yes --scope
+> l023131500-ops-projects` מתוך `_deploy/galil-more30` — פרויקט זה לא Git-מקושר
+> (מ-38 הפרויקטים רק `more30-portal`/`more30-admin` מקושרים), אז זו דרך הפריסה
+> הנכונה היחידה. `readyState: READY`.
+>
+> אומת בייצור עם cache-buster (`?cachebust=...` — הדף החי נכשל בעבר בלי זה):
+> `more30.com/galil/` מגיש `index-BzyDhrTf.js` (801KB, ירד מ-981KB חד-קובצי לפני
+> התיקון) **וגם** `KashrutPage-CDPfIuur.js` (5997 בייט) בנפרד — שני הקבצים
+> מחזירים 200 ישירות מ-`more30.com/galil/assets/`. זו הראיה שה-lazy loading
+> בפועל בייצור, לא רק בבנייה מקומית.
+>
+> לא נמדד Lighthouse מחדש בסבב הזה (perf 43 לפני התיקון, ב-
+> `QA/platform/galil-perf-trace-0817`) — זה הצעד הבא הטבעי כשה-MCP/זמן יאפשרו.
+> Supabase MCP אינו מחובר לסשן הזה — heartbeat נכתב כקובץ `_heartbeat-pending.sql`.
+
 > ## 🟢 17/08/2026 (לילה, יט) — **`/me` — Lighthouse נמדד לראשונה (perf 98, a11y 100, BP 77, SEO 63) — כל ה-ROUTES נמדדו**
 >
 > `node scripts/qa/lighthouse-run.mjs QA/platform/me-lh-0817 me` — ציון ראשון אי-פעם לנתיב
