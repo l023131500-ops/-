@@ -21,7 +21,7 @@ const HeroSection = () => {
       {[...Array(8)].map((_, i) => (
         <motion.div
           key={i}
-          className="absolute w-1 h-1 rounded-full bg-primary-foreground/15"
+          className="absolute w-1 h-1 rounded-full bg-hero-foreground/15"
           style={{ top: `${15 + i * 9}%`, right: `${8 + i * 10}%` }}
           animate={{
             y: [0, -30, 0],
@@ -54,7 +54,7 @@ const HeroSection = () => {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4 }}
-          className="text-5xl md:text-7xl font-display font-black text-primary-foreground mb-4 tracking-tight"
+          className="text-5xl md:text-7xl font-display font-black text-hero-foreground mb-4 tracking-tight"
         >
           מחוברים — יהדות וקהילה
         </motion.h1>
@@ -72,7 +72,7 @@ const HeroSection = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8, delay: 0.8 }}
-          className="text-primary-foreground/60 text-lg md:text-xl max-w-2xl mx-auto mt-6 font-body leading-relaxed"
+          className="text-hero-foreground/60 text-lg md:text-xl max-w-2xl mx-auto mt-6 font-body leading-relaxed"
         >
           מרכזים את כל המידע התורני, בתי הכנסת, זמני התפילות והשיעורים במקום אחד
         </motion.p>
@@ -90,7 +90,7 @@ const HeroSection = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1, y: [0, 10, 0] }}
           transition={{ opacity: { delay: 1.5 }, y: { duration: 2, repeat: Infinity } }}
-          className="mt-14 text-primary-foreground/25"
+          className="mt-14 text-hero-foreground/25"
         >
           <ChevronDown className="w-7 h-7 mx-auto" />
         </motion.div>

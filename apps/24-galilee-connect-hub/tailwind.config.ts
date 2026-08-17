@@ -67,6 +67,7 @@ export default {
         warm: "hsl(var(--warm))",
         peach: "hsl(var(--peach))",
         "amber-glow": "hsl(var(--amber-glow))",
+        "hero-foreground": "hsl(var(--hero-foreground))",
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
