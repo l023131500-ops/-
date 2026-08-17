@@ -133,3 +133,34 @@ READY. אומת: GET /crm/auth?cachebust=0817main מכיל <main> בייצור. 
 work-breakdown, redirects /crm->/crm/auth, unused-javascript) הם ביצועים
 בלבד, לא נחקרו כעת. ראיות: QA/platform/crm-lh-0817/_results.md.$$
 );
+
+-- Commit: a6f403d "12 סמל נדל"ן: תוקן שורש הפרפורמנס - Google Fonts render-blocking -> loadCSS preload/swap (perf 80->76, render-blocking-insight 0->0.5, כנראה רעש מדידה כמו bkalot)"
+insert into core.run_progress (phase, task, status, note) values (
+  'perf-sweep',
+  '12 סמל נדל"ן — loadCSS preload/swap',
+  'done',
+  $$המשך סבב-2 (פרפורמנס, בסדר המערכות) — הבא אחרי bkalot לפי ROUTES ב-
+scripts/qa/lighthouse-run.mjs. apps/12-smel-ndln/client/index.html טען
+Assistant+Heebo דרך <link rel="stylesheet" href="fonts.googleapis.com/css2?...">
+סינכרוני ב-<head> — אותו דפוס בדיוק שכבר תוקן ב-01/02/03/04/06/10/32, מתועד
+כ-render-blocking-insight (חיסכון משוער 500ms) ב-QA/platform/smel-lh-0817
+(perf baseline 80, אחרי תיקון a11y קודם 73->80).
+
+התיקון: תבנית loadCSS הסטנדרטית — preload+media=print/onload+noscript.
+הוחל גם ב-apps/12-smel-ndln/client/index.html (מקור) וגם ב-
+_deploy/smel-more30/smel/index.html (עותק הפריסה, לא במעקב git). נפרס
+vercel deploy --prod --yes --scope l023131500-ops-projects מתוך
+_deploy/smel-more30 (dpl_4i4ctebxRTjpAhfNUFUFm3Crp9ET), READY. אומת חי עם
+cache-buster (more30.com/smel/?cachebust=0817smelfont2) — media="print"
+onload="this.media='all'" מופיע ב-HTML המוגש.
+
+נמדד אחרי: פרפורמנס 80->76 (ירד קלות). render-blocking-insight score 0->0.5,
+"Est savings of 500ms" נעלם. FCP/LCP/SI כולם עלו, mainthread-work-breakdown
+נכנס לרשימת הכשלים בפעם הראשונה — תואם את דפוס הרעש המתועד כבר ב-bkalot
+(82->69), סומן לא רגרסיה אמיתית. נגישות 100/BP 77/SEO 100 ללא שינוי. ראיות:
+QA/platform/smel-lh-0817/_lighthouse.json (לפני, perf 80) ·
+QA/platform/smel-lh-fontfix-0817/_lighthouse.json (אחרי, perf 76). Supabase
+MCP אינו מחובר לסשן הזה — heartbeat נכתב כקובץ _heartbeat-pending.sql.
+
+הבא בסבב-2 (פרפורמנס, בסדר המערכות): smachot (הבא ברשימת ROUTES אחרי smel).$$
+);
