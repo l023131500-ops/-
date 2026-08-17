@@ -1,5 +1,42 @@
 # SYSTEMS_STATUS.md — מצב כל המערכות, נמדד
 
+> ## 🟢 17/08/2026 — **שכפול בקלות (§5ב): `email_invalid` + `email_required_for_treatment` + `situation_required_for_treatment` נמדדו בייצור (מדידה בלבד).**
+>
+> סריקת 0058 מ-17/08 (kind_invalid/source_invalid/situation_unknown/topic_no_invalid,
+> הרשומה שמתחת) הצהירה "אין פער פתוח נוסף מסריקת הוולידציה הזאת" — הצהרה
+> שהייתה נכונה רק לארבעת הענפים שנבחרו שם, לא לכל הענפים בפונקציה.
+> phone_invalid/full_name_required כבר נמדדו בנפרד (stale-mark-deploy-0817,
+> which-field-mobile-390-0817). שלושה ענפים נשארו בלי מדידה חיה כלל:
+> `email_invalid` (0058:105-106), `email_required_for_treatment` (0058:112-113),
+> `situation_required_for_treatment` (0058:115-116).
+>
+> שלוש בקשות POST ישירות אל bkalot-clone-intake (PowerShell, לא דפדפן — כדי
+> לעקוף גם preflight() וגם את `type="email"`/`required` בטופס, ששניהם היו
+> חוסמים דפדפן אמיתי מלהגיע לענפים האלה):
+>
+> **A.** `kind=info`, `email="not-an-email"` → HTTP 200
+> `{"ok":false,"error":"email_invalid"}`.
+> **B.** `kind=treatment`, בלי שדה `email` כלל → HTTP 200
+> `{"ok":false,"error":"email_required_for_treatment"}` — מאשר בייצור שהבדיקה
+> ב-0058:105 (`if v_email is not null and ...`) יורה רק כשיש מחרוזת שגויה;
+> `email` חסר לגמרי מדלג עליה ישר לחסימת הטיפול.
+> **C.** `kind=treatment`, `email` תקין, בלי `situation` → HTTP 200
+> `{"ok":false,"error":"situation_required_for_treatment"}`.
+>
+> שלושתן HTTP 200 עם קוד שגיאה מובנה, לא `rpc_failed`/שגיאת Postgres גולמית,
+> ותואמות מילה-במילה ל-MESSAGES/CODE_FIELD בלקוח (index.html:288-290, 345-347)
+> — מחרוזות שכבר קיימות ונכונות, למרות שאף דפדפן לא מגיע כרגע לענפים האלה.
+>
+> **מצב טסט, נמדד ולא הוצהר:** כל שלושת התנאים חוזרים לפני `insert into
+> bkalot_auto.contacts` (שורה 146) ו-`bkalot_clone.cases` (שורה 154) — נקרא
+> ישירות מהמיגרציה הפרוסה, אפס שורות נכתבו.
+>
+> אין שינוי קוד, אין מיגרציה, אין פריסה — מדידה בלבד. ראיות:
+> `QA/bkalot-clone/email-situation-treatment-live-0817/probe-live.txt`.
+>
+> ⚠️ ה-MCP של Supabase אינו מחובר לסשן הזה — heartbeat נכתב כקובץ
+> `_heartbeat-pending.sql` (מצטרף לתור הקיים; הרץ לפי סדר הקומיטים ב-git log).
+
 > ## 🟢 17/08/2026 — **שכפול בקלות (§5ב): «איזה שדה נפסל» + ניקוי הסימן הישן נמדדו במובייל (390x844) בייצור, לא רק בדסקטופ.**
 >
 > שתי פעימות קודמות רשמו במפורש שהתכונה לא נמדדה במובייל: which-field-deploy-0817
