@@ -1,0 +1,12 @@
+18 orech: פרוס כפתור סיבוב/היפוך + תצוגה מקדימה להעלאת כתב יד (היה כתוב מ-05/08, מעולם לא פרוס)
+
+more30-fixes-and-features.md ביקש כפתור סיבוב/היפוך + preview לפני שליחת
+תמונת כתב יד. הקוד (bakeTransform, preview חי) כבר היה קיים ב-
+apps/18-torah-editor-mvp/app/htr/page.tsx (commit 6dca79f, 05/08), אבל
+הפריסה האחרונה של orech-more30 קדמה לו בשלוש דקות ולכן לא הכילה אותו.
+npm run build + vercel deploy --prod, dpl_E3ZzrZGmYsfDmx92roqZwEnwGvnk,
+READY. אומת: החבילה החיה גדלה 4,070->10,753 בתים ומכילה "סיבוב"/"היפוך"/
+"איפוס", Playwright מציג עמוד תקין בלי רגרסיה. chizukim (17) נבדק ואין לו
+זרימת תמונה מקבילה (תמלול שמע בלבד). אין שינוי קוד, אין קובץ אמיתי שהועלה.
+
+ראיות: QA/orech/htr-rotate-deploy-0817/_results.md
