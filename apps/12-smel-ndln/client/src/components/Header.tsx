@@ -29,8 +29,12 @@ export function Header() {
           <Logo />
         </Link>
         <div className="flex items-center gap-2">
-          <Link href="/premium" data-testid="link-premium-header">
-            <Button variant="ghost" className="hidden sm:inline-flex">
+          {/* ⚠️ `hidden sm:inline-flex` belongs on the Link, not the Button: Link
+              renders its own <a> around the Button (see Logo link above), so
+              hiding only the Button left an empty, focusable, nameless anchor
+              in the mobile tab order — Lighthouse `link-name` failure. */}
+          <Link href="/premium" data-testid="link-premium-header" className="hidden sm:inline-flex">
+            <Button variant="ghost">
               פרימיום
             </Button>
           </Link>
