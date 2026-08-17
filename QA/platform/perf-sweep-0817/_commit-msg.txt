@@ -1,0 +1,16 @@
+14 שמחות פלוס: תוקן שורש חלקי של הפרפורמנס - Google Fonts render-blocking <link> -> loadCSS preload/swap
+
+הבעיה: apps/14-bsmachot-plus/website/index.html טען את גיליון Google Fonts
+דרך <link rel="stylesheet"> חוסם רגיל, בזמן שכל שאר המערכות בסבב הזה (02/03/04/22/17)
+כבר תוקנו לתבנית loadCSS (media="print" + onload="this.media='all'" + noscript fallback).
+
+התיקון הוחל גם במקור (apps/14-bsmachot-plus/website/index.html) וגם בעותק הפרוס
+(_deploy/smachot-more30/smachot/index.html) ונפרס ל-production דרך
+vercel deploy --prod מ-_deploy/smachot-more30 (פרויקט smachot-more30, מקושר מראש).
+
+אומת: תוכן חי ב-https://more30.com/smachot מציג את התבנית החדשה (cache-busted).
+Lighthouse (scripts/qa/lighthouse-run.mjs) לפני/אחרי: render-blocking-insight
+חיסכון משוער ירד 1,190ms -> 840ms. הציון הכולל תנודתי (79 לפני, 76 אחרי) -
+נשאר מתחת לסף 90; base.css/style.css המקומיים עדיין חוסמים ולא נגעתי בהם בצעד הזה.
+
+עדכן SYSTEMS_STATUS.md שורה 14.
