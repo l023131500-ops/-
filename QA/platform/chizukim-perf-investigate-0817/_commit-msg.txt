@@ -1,0 +1,17 @@
+17 תמלול חיזוקים (chizukim): נחקר פרפורמנס 55/67/78 - ה-CSS העצמי הוא הגורם (כמו egod), לא גופנים - נרשם לסבב הבא, לא תוקן כאן
+
+המשך סבב-2 (פרפורמנס, בסדר המערכות) - הבא אחרי egod/chatzor לפי ROUTES ב-
+scripts/qa/lighthouse-run.mjs. apps/17-chizukim-transcribe/client/index.html
+כבר נושא את תבנית ה-loadCSS - אין גופנים חוסמים לתקן.
+
+render-blocking-insight מצביע על ה-CSS המובנה של Vite
+(index-CGr9WgHf.css) - אותה קטגוריה כמו bkalot-theme.css/smachot/egod,
+שהוחלט להשאיר סינכרוני כדי לא לסכן FOUC. bootupTime לא מראה bundle-JS
+דומיננטי יחיד כמו ב-egod (unused-javascript רק 60 KiB מול 179 KiB) - אין גם
+מקרה לcode-splitting דחוף. הציון הרועש (55-78) תואם דפוס רעש-מדידה/NetFree
+שכבר מתועד ב-32/10/06/04/02/12/14/15.
+
+אין שינוי קוד/פריסה בצעד הזה - חקירה ותיעוד בלבד. ראיות:
+QA/platform/chizukim-perf-investigate-0817/_lighthouse.json, _analysis.md.
+Supabase MCP אינו מחובר לסשן הזה - heartbeat נכתב כקובץ
+_heartbeat-pending.sql.

@@ -1,5 +1,34 @@
 # SYSTEMS_STATUS.md — מצב כל המערכות, נמדד
 
+> ## 🟢 17/08/2026 (לילה, כט) — **17 תמלול חיזוקים (chizukim): נחקר פרפורמנס 55/67/78 — ה-CSS העצמי הוא הגורם (כמו egod), לא גופנים; לא תוקן בצעד הזה**
+
+> המשך סבב-2 (פרפורמנס, בסדר המערכות) — הבא אחרי `chatzor`/`chatzor-app` לפי
+> `ROUTES` ב-`scripts/qa/lighthouse-run.mjs`. `apps/17-chizukim-transcribe/client/index.html`
+> כבר נושא את תבנית ה-loadCSS (`media="print" onload`) — תוקן בעבר, אין תיקון
+> חדש כאן.
+>
+> **הממצא:** `render-blocking-insight` (score 0.5) מצביע על המשאב החוסם היחיד:
+> `<link rel="stylesheet" ... href="/chizukim/assets/index-CGr9WgHf.css">` —
+> ה-CSS המובנה של Vite לכל האפליקציה. אותה קטגוריה בדיוק כמו `bkalot-theme.css`,
+> `style.css`/`base.css` של smachot, וה-CSS העצמי של egod — בכולם הוחלט
+> במפורש להשאיר סינכרוני כדי לא לסכן הבזק-לא-מעוצב (FOUC) בעמוד חי. לא נגעתי
+> בזה כאן.
+>
+> **בניגוד ל-egod:** אין bundle-JS דומיננטי יחיד. `bootupTime` — "Unattributable"
+> 789ms קרוב ל-bundle העצמי (503ms total). `unused-javascript` רק 60 KiB (מול
+> 179 KiB ב-egod) — אין גם מקרה לcode-splitting דחוף.
+>
+> **מסקנה:** אין ממצא חדש לתקן — הגופנים כבר מתוקנים, ה-CSS מוגן מסיבת FOUC
+> (החלטה קיימת), וה-bundle לא דומיננטי מספיק. הציון הרועש (55-78, מתחת לסף 90)
+> תואם דפוס רעש-מדידה/NetFree שכבר מתועד ב-32/10/06/04/02/12/14/15. אין
+> שינוי קוד/פריסה בצעד הזה — חקירה/תיעוד בלבד. ראיות:
+> `QA/platform/chizukim-perf-investigate-0817/_lighthouse.json`,
+> `_analysis.md`. Supabase MCP אינו מחובר לסשן הזה — heartbeat נכתב כקובץ
+> `_heartbeat-pending.sql`.
+>
+> הבא בסבב-2 (פרפורמנס, בסדר המערכות): `orech` (הבא ברשימת `ROUTES` אחרי
+> `chizukim`/`chizukim-app`, ששניהם כבר נמדדו/נחקרו).
+
 > ## 🟢 17/08/2026 (לילה, כח) — **16 חצור קונקט (chatzor): נמדד `/chatzor` לראשונה (פרפורמנס 41) — עבודת רינדור/אנימציה (framer-motion) על ה-thread הראשי, לא Google Fonts ולא bundle; דורש lazy-mount, לא תוקן בצעד הזה**
 
 > המשך סבב-2 (פרפורמנס, בסדר המערכות) — הבא אחרי `egod` לפי `ROUTES` ב-
