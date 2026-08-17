@@ -28,6 +28,11 @@
   --popover-border: 40 18% 87%;
   --primary: 218 55% 17%;
   --primary-foreground: 40 40% 96%;
+  /* Fixed navy, not overridden in .dark: the premium-tier card is always
+     designed as a dark card with gold accents, unlike --primary/--accent
+     which intentionally converge in dark mode for buttons/badges. */
+  --tier-premium: 218 55% 17%;
+  --tier-premium-foreground: 40 40% 96%;
   --secondary: 40 24% 93%;
   --secondary-foreground: 218 45% 17%;
   --muted: 40 20% 94%;

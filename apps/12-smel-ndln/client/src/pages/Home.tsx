@@ -290,7 +290,7 @@ export default function Home() {
 
             {/* Premium */}
             <Card
-              className="relative flex flex-col overflow-hidden border-accent/50 bg-primary p-7 text-right text-white shadow-xl"
+              className="relative flex flex-col overflow-hidden border-accent/50 bg-tier-premium p-7 text-right text-tier-premium-foreground shadow-xl"
               data-testid="card-tier-premium"
             >
               <div className="absolute left-5 top-5 rounded-full bg-accent px-3 py-1 text-xs font-bold text-accent-foreground">
@@ -298,7 +298,7 @@ export default function Home() {
               </div>
               <div className="mb-1 text-sm font-semibold text-accent">פרימיום</div>
               <div className="text-2xl font-extrabold">דוח כדאיות מלא</div>
-              <p className="mt-1 text-sm text-white/70">
+              <p className="mt-1 text-sm text-tier-premium-foreground/70">
                 תמונה מלאה + התאמה אישית לצרכים שלכם.
               </p>
               <ul className="mt-6 space-y-3">

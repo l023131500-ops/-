@@ -31,6 +31,10 @@ export default {
           foreground: "hsl(var(--primary-foreground) / <alpha-value>)",
           border: "var(--primary-border)",
         },
+        "tier-premium": {
+          DEFAULT: "hsl(var(--tier-premium) / <alpha-value>)",
+          foreground: "hsl(var(--tier-premium-foreground) / <alpha-value>)",
+        },
         secondary: {
           DEFAULT: "hsl(var(--secondary) / <alpha-value>)",
           foreground: "hsl(var(--secondary-foreground) / <alpha-value>)",

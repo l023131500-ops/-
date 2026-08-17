@@ -1,0 +1,40 @@
+12 smel: fix premium-tier card invisible in dark mode (round-3 a11y recheck)
+
+Continuing the round-3 dark-mode contrast recheck after galil (24, bc06fb8).
+contrast-probe.mjs against https://more30.com/smel in dark mode found the
+"premium" tier card ("card-tier-premium" in Home.tsx) had its label text
+literally the same color as its own background (1:1 ratio) plus every other
+text in the card under the 4.5:1 floor (2.1:1).
+
+Root cause: .dark sets --primary and --accent to the identical gold
+(43 58% 58%) for buttons/badges elsewhere in the app, but this card was
+built assuming --primary is always the light-mode navy: bg-primary for the
+card, text-accent (gold) for the "premium" label. In dark mode the card
+background flips to the same gold as the label, and white body text loses
+contrast against the now-light card.
+
+Fix, same pattern as the galil hero-foreground fix: added a dedicated
+--tier-premium / --tier-premium-foreground token (index.css, set to the old
+light-mode --primary values, not present in .dark so it never flips) instead
+of touching the shared --primary variable used elsewhere. Registered as a
+tier-premium Tailwind color token; swapped the card's bg-primary/text-white
+to bg-tier-premium/text-tier-premium-foreground.
+
+Verified: vite build clean, --tier-premium present in built CSS. Deployed
+_deploy/smel-more30/smel (robocopy /MIR), vercel deploy --prod,
+dpl_EWrZhWiJxmrycvAKH3ZkCSq6FRe3 READY, aliased smel-more30.vercel.app.
+Live re-check with a cache-buster: contrast-probe.mjs dark shows the two
+premium-card findings gone (only the pre-existing decorative watermark
+numbers remain, not a real defect); direct measurement shows label
+rgb(210,175,86) on card background rgb(20,37,67), visibly distinct; light
+mode probe shows zero findings in the card (unchanged, as expected).
+
+The span.text-3xl "1/2/3" step-number findings (1.08:1) are a large
+decorative watermark behind each step icon, redundant with the step
+heading text next to it - not fixed, matches the probe's own documented
+incidental/decorative-text exception.
+
+Evidence: QA/platform/smel-dark-tier-0818/ (_results.md, _shot.mjs,
+smel-dark-tier-after.png).
+
+Protected systems untouched (08/09/bkalut-app/bkalot-admin/zr_*/NEDARIM3873).
