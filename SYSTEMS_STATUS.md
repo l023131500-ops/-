@@ -1,5 +1,39 @@
 # SYSTEMS_STATUS.md — מצב כל המערכות, נמדד
 
+> ## 🟡 17/08/2026 (לילה, כו) — **12 סמל נדל"ן (smel): תוקן שורש הפרפורמנס (Google Fonts render-blocking), אך הציון ירד 80→76 — כנראה רעש מדידה כמו bkalot**
+
+> המשך סבב-2 (פרפורמנס, בסדר המערכות) — הבא אחרי `bkalot` לפי `ROUTES` ב-
+> `scripts/qa/lighthouse-run.mjs`. `apps/12-smel-ndln/client/index.html` טען
+> Assistant + Heebo דרך `<link rel="stylesheet" href="fonts.googleapis.com/css2?...">`
+> סינכרוני ב-`<head>` — אותו דפוס בדיוק שכבר תוקן ב-01/02/03/04/06/10/32,
+> כבר זוהה כ-`render-blocking-insight` (חיסכון משוער 500ms) ב-`smel-lh-0817`
+> (baseline פרפורמנס 80, אחרי תיקון נגישות קודם 73→80).
+>
+> **התיקון:** תבנית `loadCSS` הסטנדרטית — זהה ל-04/06/10. הוחל גם ב-
+> `apps/12-smel-ndln/client/index.html` (מקור) וגם ב-
+> `_deploy/smel-more30/smel/index.html` (עותק הפריסה) — `Compare-Object`
+> אישר שההבדל היחיד בין השניים הוא favicon path ותגי asset מובנים, כבר קיים
+> לפני התיקון.
+>
+> נפרס `vercel deploy --prod --yes --scope l023131500-ops-projects` מתוך
+> `_deploy/smel-more30` (`dpl_4i4ctebxRTjpAhfNUFUFm3Crp9ET`), READY. אומת חי
+> עם cache-buster (`more30.com/smel/?cachebust=0817smelfont2`) —
+> `media="print" onload="this.media='all'"` מופיע ב-HTML המוגש.
+>
+> **נמדד אחרי:** פרפורמנס **80→76** (ירד קלות). `render-blocking-insight`
+> score 0→0.5, תצוגת "Est savings of 500ms" נעלמה. FCP/LCP/SI כולם עלו
+> (3.1s→3.5s / 3.2s→3.5s / 3.9s→5.8s), `mainthread-work-breakdown` נכנס
+> לרשימת הכשלים בפעם הראשונה. תואם את דפוס הרעש המתועד כבר ב-06 בריאות
+> ("84-93 noisy") ו-10 בקלות (82→69) — סומן 🟡 (לא רגרסיה אמיתית ולא הצלחה
+> נקייה), לא נחקר כרגרסיה חדשה בסבב הזה. נגישות 100/BP 77/SEO 100 ללא שינוי.
+> ראיות: `QA/platform/smel-lh-0817/_lighthouse.json` (לפני, perf 80) ·
+> `QA/platform/smel-lh-fontfix-0817/_lighthouse.json` (אחרי, perf 76).
+> Supabase MCP אינו מחובר לסשן הזה — heartbeat נכתב כקובץ
+> `_heartbeat-pending.sql`.
+>
+> הבא בסבב-2 (פרפורמנס, בסדר המערכות): `smachot` (הבא ברשימת `ROUTES` אחרי
+> `smel`).
+
 > ## 🟡 17/08/2026 (לילה, כה) — **10 בקלות (bkalot): תוקן שורש הפרפורמנס (Google Fonts render-blocking), אך הציון הכולל ירד 82→69 — כנראה רעש מדידה**
 
 > המשך סבב-2 (פרפורמנס, בסדר המערכות) — הבא אחרי 06 briut לפי `ROUTES` ב-
