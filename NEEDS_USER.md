@@ -1802,16 +1802,26 @@ Resource is limited - try again in 24 hours
 **מה זה חוסם:** אי אפשר לפרוס ולכן אי אפשר **לאמת** שום תיקון נוסף. אני לא
 מסמן תיקון כ"עובד" בלי למדוד אותו חי.
 
-**שני תיקונים כתובים בקוד וממתינים לפריסה** (לא נפרסו, לא אומתו):
+~~**שני תיקונים כתובים בקוד וממתינים לפריסה** (לא נפרסו, לא אומתו):~~
 
 | קובץ | תיקון |
 |---|---|
 | `sites/36-nadlan-pro/tivuch/index.html` | `.footer a` → אזור מגע 24px+ |
 | `sites/34-kesef/kesef/index.html` | זהה |
 
-**מה צריך ממך:** או להמתין לאיפוס המכסה, או לשדרג את התוכנית ב-Vercel.
+~~**מה צריך ממך:** או להמתין לאיפוס המכסה, או לשדרג את התוכנית ב-Vercel.
 אחרי האיפוס — `vercel deploy --prod` בשתי התיקיות, ואז
-`node scripts/qa/small-targets.mjs` לאימות.
+`node scripts/qa/small-targets.mjs` לאימות.~~
+
+✅ **נבדק מחדש 17/08/2026 — כבר פרוס וחי, אינו פער פעיל.** מכסת ה-Vercel
+נפתרה ב-12/08 (§0ג למעלה) והשני התיקונים כבר בייצור. נמדד עם
+`node scripts/qa/platform-audit.mjs` (desktop/mobile/dark) מול
+`https://more30.com/tivuch` ו-`https://more30.com/kesef`: שני האתרים מגישים
+`.footer a{text-decoration:underline;display:inline-block;padding:3px 0}`
+בדיוק כמו המקור, ו-`smallTargets: 0` בכל שלושת המצבים בשתיהן. אין שינוי קוד,
+אין פריסה — מדידה בלבד. ראיות: `QA/platform/nadlan-kesef-footer-recheck-0817/`.
+⚠️ MCP של Supabase אינו מחובר לסשן הזה — heartbeat נכתב כקובץ
+`_heartbeat-pending.sql`.
 
 ---
 
