@@ -1,0 +1,27 @@
+02 תמלול איגוד: תוקן שורש הפרפורמנס - Google Fonts render-blocking -> next/font/google (perf 64->95)
+
+המשך סבב-2 (פרפורמנס) בסדר המערכות אחרי torah(01). tamlul-lh-0817 (קודם
+היום) מדד performance=64 וסימן "לא נחקר עדיין". שורש נמצא בקריאת המקור
+ישירות (app/layout.tsx): <link rel="stylesheet"
+href="fonts.googleapis.com/css2?family=Noto+Serif+Hebrew...&family=Rubik...">
+בתוך <head> - אותה משפחת תקלה שכבר תוקנה ב-32 נדל"ן (שם @import ב-CSS, כאן
+<link> ב-layout). render-blocking-insight מדד חיסכון משוער 1,510ms.
+
+התיקון: next/font/google (Noto_Serif_Hebrew + Rubik, subset hebrew, display
+swap) ב-apps/02-igud-transcribe/app/layout.tsx, עם משתני CSS
+(--font-noto-serif-hebrew, --font-rubik) שהוזרקו ל-tailwind.config.ts במקום
+שמות הגופנים המילוליים. next build מקומי אימת אפס הפניות ל-
+fonts.googleapis.com ב-HTML המורנדר, וקבצי woff2 אמיתיים תחת .next/static/media.
+
+נפרס: vercel deploy --prod מתוך apps/02-igud-transcribe (tamlul-more30),
+dpl_Dt7kPw5DwwGkgSW6YGVtkQT7oV5m, READY. אומת חי ב-more30.com/tamlul
+(cache-buster, אחרי מעקב ידני אחרי 308) - head עם <link preload as=font>
+עצמי, אפס fonts.googleapis.com בעמוד.
+
+נמדד אחרי: Lighthouse perf 64->95 (עבר את סף ה-90), a11y 98->100 (כולל
+heading-order שתוקן קודם היום), FCP 4.0s->1.7s, LCP 4.0s->2.2s, SI
+8.3s->3.2s. שאר הליקויים (mainthread-work-breakdown 2.3s,
+third-party-cookies) לא נחקרו בצעד הזה - לסבב הבא.
+
+עדכון SYSTEMS_STATUS.md + NEEDS_USER.md. Supabase MCP לא מחובר בסשן הזה -
+heartbeat נכתב כקובץ _heartbeat-pending.sql.
