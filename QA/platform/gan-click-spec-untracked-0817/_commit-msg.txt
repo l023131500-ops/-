@@ -1,0 +1,11 @@
+40 גננט: הוסף לגיט GAN_CLICK_MASTER_SPEC.docx — מקור אמת מלא שהוזכר ב-GANNENET_BUILD.md §7 אך היה untracked
+
+בדיקה עצמאית של כל קבצי השורש ה-untracked מול הפניות מקבצים tracked. נמצא
+זיווג אמיתי אחד: GANNENET_BUILD.md (tracked) מצהיר על GAN_CLICK_MASTER_SPEC.docx
+כ"מקור אמת מלא" ל-§7 (הרחבת מודולים/פאזות), אבל הקובץ עצמו מעולם לא נוסף לגיט.
+נוסף כעת (21KB, מפרט טקסט, אין קוד/סוד). שאר קבצי ה-untracked בשורש נבדקו ולא
+נמצאה עבורם הפניה מקובץ tracked (הפניה-עצמית בלבד) או שכבר נשללו בסבב הקודם
+(032e50c) — אין שינוי נוסף. NEEDS_USER.md עודכן עם תיעוד הבדיקה.
+
+Supabase MCP לא היה מחובר בסשן הזה — heartbeat ל-core.run_progress נכתב
+כ-_heartbeat-pending.sql להרצה בסבב הבא שבו ה-MCP מחובר.
