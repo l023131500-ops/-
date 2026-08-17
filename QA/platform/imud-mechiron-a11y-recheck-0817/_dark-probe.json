@@ -1,0 +1,144 @@
+{
+  "/imud": {
+    "hasDarkRules": true,
+    "darkRuleSample": [
+      {
+        "sel": ".dark",
+        "decl": "--button-outline: rgba(255, 255, 255, .1); --badge-outline: rgba(255, 255, 255, .05); --opaque-button-border-intensity: 9; --elevate-1: rgba(255, 255, 255, .04)"
+      },
+      {
+        "sel": ".dark\\:border-destructive:is(.dark *)",
+        "decl": "--tw-border-opacity: 1; border-color: hsl(var(--destructive) / var(--tw-border-opacity, 1));"
+      },
+      {
+        "sel": ".dark\\:after\\:border-white\\/10:is(.dark *)::after",
+        "decl": "content: var(--tw-content); border-color: rgba(255, 255, 255, 0.1);"
+      }
+    ],
+    "sheetsUnreadable": 1,
+    "before": {
+      "effectiveBg": "rgb(250, 248, 245)",
+      "bodyImage": "",
+      "bodyBg": "rgb(250, 248, 245)",
+      "htmlBg": "rgba(0, 0, 0, 0)",
+      "fg": "rgb(46, 34, 25)",
+      "surfaces": [
+        "rgba(250, 248, 245, 0.85)",
+        "rgba(0, 0, 0, 0)",
+        "rgba(0, 0, 0, 0)",
+        "rgba(0, 0, 0, 0)",
+        "rgb(253, 253, 251)",
+        "rgb(253, 253, 251)",
+        "rgb(253, 253, 251)",
+        "rgb(253, 253, 251)"
+      ]
+    },
+    "after": {
+      "effectiveBg": "rgb(27, 22, 19)",
+      "bodyImage": "",
+      "bodyBg": "rgb(27, 22, 19)",
+      "htmlBg": "rgba(0, 0, 0, 0)",
+      "fg": "rgb(241, 237, 228)",
+      "surfaces": [
+        "rgba(27, 22, 19, 0.85)",
+        "rgba(0, 0, 0, 0)",
+        "rgba(0, 0, 0, 0)",
+        "rgba(0, 0, 0, 0)",
+        "rgb(35, 30, 26)",
+        "rgb(35, 30, 26)",
+        "rgb(35, 30, 26)",
+        "rgb(35, 30, 26)"
+      ]
+    },
+    "changed": true
+  },
+  "/mechiron": {
+    "hasDarkRules": true,
+    "darkRuleSample": [
+      {
+        "sel": ".dark",
+        "decl": "--button-outline: rgba(255, 255, 255, .08); --badge-outline: rgba(255, 255, 255, .05); --opaque-button-border-intensity: 9; --elevate-1: rgba(255, 255, 255, .04"
+      },
+      {
+        "sel": ".dark\\:border-amber-800:is(.dark *)",
+        "decl": "--tw-border-opacity: 1; border-color: rgb(146 64 14 / var(--tw-border-opacity, 1));"
+      },
+      {
+        "sel": ".dark\\:border-destructive:is(.dark *)",
+        "decl": "--tw-border-opacity: 1; border-color: hsl(var(--destructive) / var(--tw-border-opacity, 1));"
+      },
+      {
+        "sel": ".dark\\:border-emerald-800:is(.dark *)",
+        "decl": "--tw-border-opacity: 1; border-color: rgb(6 95 70 / var(--tw-border-opacity, 1));"
+      },
+      {
+        "sel": ".dark\\:border-slate-700:is(.dark *)",
+        "decl": "--tw-border-opacity: 1; border-color: rgb(51 65 85 / var(--tw-border-opacity, 1));"
+      },
+      {
+        "sel": ".dark\\:bg-amber-900\\/30:is(.dark *)",
+        "decl": "background-color: rgba(120, 53, 15, 0.3);"
+      },
+      {
+        "sel": ".dark\\:bg-amber-950\\/30:is(.dark *)",
+        "decl": "background-color: rgba(69, 26, 3, 0.3);"
+      },
+      {
+        "sel": ".dark\\:bg-emerald-900\\/30:is(.dark *)",
+        "decl": "background-color: rgba(6, 78, 59, 0.3);"
+      },
+      {
+        "sel": ".dark\\:bg-slate-800\\/40:is(.dark *)",
+        "decl": "background-color: rgba(30, 41, 59, 0.4);"
+      },
+      {
+        "sel": ".dark\\:text-amber-200:is(.dark *)",
+        "decl": "--tw-text-opacity: 1; color: rgb(253 230 138 / var(--tw-text-opacity, 1));"
+      },
+      {
+        "sel": ".dark\\:text-amber-400:is(.dark *)",
+        "decl": "--tw-text-opacity: 1; color: rgb(251 191 36 / var(--tw-text-opacity, 1));"
+      },
+      {
+        "sel": ".dark\\:text-amber-500:is(.dark *)",
+        "decl": "--tw-text-opacity: 1; color: rgb(245 158 11 / var(--tw-text-opacity, 1));"
+      }
+    ],
+    "sheetsUnreadable": 2,
+    "before": {
+      "effectiveBg": "rgb(248, 246, 242)",
+      "bodyImage": "",
+      "bodyBg": "rgb(248, 246, 242)",
+      "htmlBg": "rgba(0, 0, 0, 0)",
+      "fg": "rgb(23, 33, 38)",
+      "surfaces": [
+        "rgb(27, 48, 55)",
+        "rgba(0, 0, 0, 0)",
+        "rgba(0, 0, 0, 0)",
+        "rgba(0, 0, 0, 0)",
+        "rgba(0, 0, 0, 0)",
+        "rgb(251, 250, 248)",
+        "rgb(251, 250, 248)",
+        "rgb(251, 250, 248)"
+      ]
+    },
+    "after": {
+      "effectiveBg": "rgb(18, 25, 28)",
+      "bodyImage": "",
+      "bodyBg": "rgb(18, 25, 28)",
+      "htmlBg": "rgba(0, 0, 0, 0)",
+      "fg": "rgb(240, 236, 230)",
+      "surfaces": [
+        "rgb(13, 20, 23)",
+        "rgba(0, 0, 0, 0)",
+        "rgba(0, 0, 0, 0)",
+        "rgba(0, 0, 0, 0)",
+        "rgba(0, 0, 0, 0)",
+        "rgb(22, 30, 34)",
+        "rgb(22, 30, 34)",
+        "rgb(22, 30, 34)"
+      ]
+    },
+    "changed": true
+  }
+}

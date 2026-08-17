@@ -22,3 +22,11 @@ insert into core.run_progress (phase, task, status, note) values (
   'done',
   'טבלת "מצב כהה" ב-SYSTEMS_STATUS.md סימנה 32 nadlan כ-⏳ נבנה, ממתין לפריסה, בסתירה לשורת הסיכום מתחתיה "מצב כהה — 13/13. הושלם.". node scripts/qa/dark-probe.mjs QA/platform/nadlan-a11y-recheck-0817 /nadlan מול הייצור: 3 חוקי .dark פעילים, רקע rgb(246,248,252) -> rgb(12,18,32), CHANGED. ניגודיות אחרי ההיפוך rgb(221,227,238) על rgb(12,18,32) — AA תקין. אין שינוי קוד, אין פריסה — מדידה בלבד, ותוקנה שורת הטבלה שסתרה את סיכום 13/13. ראיות: QA/platform/nadlan-a11y-recheck-0817/_dark-probe.json.'
 );
+
+-- Commit: <this step> "04 עימוד · 27 מחירון: אנטי-דריפט — מצב כהה 'נבנה, ממתין לפריסה' נבדק מחדש, כבר פרוס וחי"
+insert into core.run_progress (phase, task, status, note) values (
+  'anti-drift',
+  '04 עימוד · 27 מחירון — recheck מצב כהה',
+  'done',
+  'אותה שורת טבלה בעייתית כמו 32 נדל"ן, שני תאים נוספים: 04 imud · 27 mechiron סומנו ⏳ נבנה, ממתין לפריסה, בסתירה לסיכום "13/13. הושלם.". node scripts/qa/dark-probe.mjs QA/platform/imud-mechiron-a11y-recheck-0817 /imud /mechiron מול הייצור: imud 3 חוקי .dark, rgb(250,248,245) -> rgb(27,22,19) CHANGED; mechiron 12 חוקי .dark, rgb(248,246,242) -> rgb(18,25,28) CHANGED — אותם צבעים בדיוק שכבר תועדו בטבלה. ניגודיות אחרי ההיפוך: imud rgb(241,237,228) על rgb(27,22,19), mechiron rgb(240,236,230) על rgb(18,25,28) — שתיהן AA תקין. אין שינוי קוד, אין פריסה — מדידה בלבד. ראיות: QA/platform/imud-mechiron-a11y-recheck-0817/_dark-probe.json.'
+);
