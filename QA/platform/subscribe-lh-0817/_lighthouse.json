@@ -1,0 +1,167 @@
+{
+  "subscribe": {
+    "url": "https://more30.com/subscribe",
+    "measuredAt": "2026-08-17T15:54:18.211Z",
+    "performance": 88,
+    "accessibility": 100,
+    "bestPractices": 77,
+    "seo": 63,
+    "metrics": {
+      "fcp": "1.2 s",
+      "lcp": "1.2 s",
+      "tbt": "130 ms",
+      "cls": "0.167",
+      "si": "4.6 s"
+    },
+    "failedAudits": [
+      {
+        "id": "speed-index",
+        "title": "Speed Index",
+        "score": 0.7,
+        "display": "4.6 s"
+      },
+      {
+        "id": "cumulative-layout-shift",
+        "title": "Cumulative Layout Shift",
+        "score": 0.71,
+        "display": "0.167"
+      },
+      {
+        "id": "interactive",
+        "title": "Time to Interactive",
+        "score": 0.77,
+        "display": "4.9 s"
+      },
+      {
+        "id": "third-party-cookies",
+        "title": "Uses third-party cookies",
+        "score": 0,
+        "display": "2 cookies found"
+      },
+      {
+        "id": "layout-shifts",
+        "title": "Avoid large layout shifts",
+        "score": 0,
+        "display": "3 layout shifts found"
+      },
+      {
+        "id": "unminified-javascript",
+        "title": "Minify JavaScript",
+        "score": 0.5,
+        "display": "Est savings of 11 KiB"
+      },
+      {
+        "id": "unused-javascript",
+        "title": "Reduce unused JavaScript",
+        "score": 0.5,
+        "display": "Est savings of 27 KiB"
+      },
+      {
+        "id": "inspector-issues",
+        "title": "Issues were logged in the `Issues` panel in Chrome Devtools",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "is-crawlable",
+        "title": "Page is blocked from indexing",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "cache-insight",
+        "title": "Use efficient cache lifetimes",
+        "score": 0.5,
+        "display": "Est savings of 1,237 KiB"
+      },
+      {
+        "id": "cls-culprits-insight",
+        "title": "Layout shift culprits",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "document-latency-insight",
+        "title": "Document request latency",
+        "score": 0.5,
+        "display": "Est savings of 13 KiB"
+      },
+      {
+        "id": "font-display-insight",
+        "title": "Font display",
+        "score": 0,
+        "display": "Est savings of 400 ms"
+      },
+      {
+        "id": "modern-http-insight",
+        "title": "Modern HTTP",
+        "score": 0.5,
+        "display": ""
+      },
+      {
+        "id": "network-dependency-tree-insight",
+        "title": "Network dependency tree",
+        "score": 0,
+        "display": ""
+      }
+    ],
+    "mainThreadBreakdown": [
+      {
+        "group": "Other",
+        "duration": 768
+      },
+      {
+        "group": "Style & Layout",
+        "duration": 516
+      },
+      {
+        "group": "Script Evaluation",
+        "duration": 243
+      },
+      {
+        "group": "Rendering",
+        "duration": 69
+      },
+      {
+        "group": "Parse HTML & CSS",
+        "duration": 29
+      },
+      {
+        "group": "Script Parsing & Compilation",
+        "duration": 21
+      }
+    ],
+    "bootupTime": [
+      {
+        "url": "https://more30.com/subscribe",
+        "total": 635,
+        "scripting": 16,
+        "scriptParseCompile": 5
+      },
+      {
+        "url": "Unattributable",
+        "total": 587,
+        "scripting": 17,
+        "scriptParseCompile": 0
+      },
+      {
+        "url": "https://netfree.link/card/card-injection.js",
+        "total": 106,
+        "scripting": 68,
+        "scriptParseCompile": 4
+      },
+      {
+        "url": "https://esm.sh/@supabase/postgrest-js@2.112.3/es2022/postgrest-js.mjs",
+        "total": 105,
+        "scripting": 89,
+        "scriptParseCompile": 0
+      },
+      {
+        "url": "https://more30.com/auth-button.js",
+        "total": 87,
+        "scripting": 25,
+        "scriptParseCompile": 6
+      }
+    ]
+  }
+}
