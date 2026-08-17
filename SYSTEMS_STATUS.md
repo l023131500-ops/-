@@ -1,5 +1,27 @@
 # SYSTEMS_STATUS.md — מצב כל המערכות, נמדד
 
+> ## 🟢 17/08/2026 — **26 סטודיו מודעות — לשונית הדפדפן: `favicon.svg` חדש (סימן ה-Crown הזהב שכבר חי בנווט), פרוס וחי. `NEEDS_USER.md` §0פ: שש נותרו → חמש.**
+>
+> אחרי תיקון באג הבנייה (רשומה שמתחת), נבדקה שאלת הסימן הגרפי של סטודיו: תג
+> ‏`<link rel="icon">` הצהיר `/favicon.png` שמעולם לא היה קיים בעץ — אותו דפוס
+> בדיוק כמו `torah`. הסימן החי בפועל (לא `Logo.tsx`, שקיים בקוד אך אינו
+> בשימוש בשום מקום) הוא אייקון `Crown` בזהב `#C9A227` על נייבי `#0B1220`
+> (‏`Home.tsx:130`), ניגודיות 7.74:1. נכתב `favicon.svg` — עותק נאמן של נתיבי
+> ה-SVG של lucide `Crown` — ותוקן התג לנתיב מוחלט-**למונט**
+> (‏`/studio/favicon.svg`), לא לשורש. הועלה לפרודקשן:
+> ‏`vercel deploy --prod` מתוך `_deploy/studio-more30`,
+> ‏`dpl_8ZLdru79o9pVHfmThHd7JjnEhX95`, `READY`.
+>
+> **אימות:** ה-HTML החי (`more30.com/studio/?cachebust=…`) כותב את התג המתוקן
+> מילה-במילה. קריאת `GET .../studio/favicon.svg` ישירות חזרה `200` עם
+> ‏`image/webp`/EXIF במקום ה-SVG — זו החלפת NetFree ברמת הפרוקסי המקומי, לא
+> תקלת ייצור; אומת עצמאית מול ה-Vercel API (`GET /v13/deployments/{id}/files`,
+> לא עובר דרך NetFree) שהקובץ שהועלה קיים בעץ הפריסה בנתיב הנכון. ראיות:
+> `QA/platform/studio-favicon-0817/_results.md`.
+>
+> ⚠️ ה-MCP של Supabase אינו מחובר לסשן הזה — heartbeat נכתב כקובץ
+> `_heartbeat-pending.sql` (מצטרף לתור הקיים; הרץ לפי סדר הקומיטים ב-git log).
+
 > ## 🟢 17/08/2026 — **26 סטודיו מודעות — תוקן ה-`base` השגוי ב-`vite.config.ts` (`/modaot/` → `/studio/`), הבאג שנרשם ב-`NEEDS_USER.md` תחת 2291abb וטרם טופל.**
 >
 > `apps/26-modaot-studio/vite.config.ts` הצהיר `base: "/modaot/"` — נתיב הבסיס
