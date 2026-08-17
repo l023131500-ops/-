@@ -1,0 +1,15 @@
+heartbeat: reconcile 5 more queued _heartbeat-pending.sql files (0818, batch 15)
+
+reconciled 5 more of the remaining queued _heartbeat-pending.sql files
+(gan-click-spec-untracked-0817, no-new-work-recheck-0817c,
+http-sweep-0817, nadlan-lh-0817, nadlan-lh-fontfix-0817), checked each
+task text against core.run_progress before insert (none pre-existed).
+All 5 inserted live via the Supabase MCP this session (connected).
+
+No app code changed, no protected system touched
+(08/09/bkalut-app/bkalot-admin/zr_*/NEDARIM3873 untouched).
+
+Remaining: ~40 pending files still queued in commit order -- next batch
+starts at QA/platform/no-new-work-recheck-0817c's follow-ons per
+git log --diff-filter=A --name-only --reverse on the pending-sql glob,
+filtered to files still on disk.
