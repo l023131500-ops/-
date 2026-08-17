@@ -1,0 +1,14 @@
+heartbeat: reconcile 3 more queued _heartbeat-pending.sql files (root, authbutton-full-recheck-0817, home-lh-0817)
+
+16 insert rows across 3 queued files were checked by exact task text against
+core.run_progress before insert (none pre-existed) and inserted in git-commit
+order: 06 briut theme toggle, 32 nadlan authbutton/dark rechecks, 04+27/15+24/
+30+31 dark-mode rechecks, SYSTEMS_STATUS.md drift fix, 30 crm + 31 gesher
+favicons, 30 crm Lighthouse/landmark fix, 12 smel + 14 smachot perf fixes,
+21 mthbram + 22 zchuyot perf investigations, 26-route authbutton recheck,
+home-lh-0817. New ids 714-729 in core.run_progress. Source files deleted.
+
+No app code changed, no protected system touched (08/09/bkalut-app/
+bkalot-admin/zr_*/NEDARIM3873 untouched). ~70 QA/platform/*-0817 pending
+files remain queued for future steps — check task text against
+core.run_progress before running, do not assume unreconciled.
