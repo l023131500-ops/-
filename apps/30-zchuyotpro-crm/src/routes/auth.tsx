@@ -48,7 +48,7 @@ function AuthPage() {
   }, [navigate]);
 
   return (
-    <div dir="rtl" className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-secondary/40 to-accent/30 p-4">
+    <main dir="rtl" className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-secondary/40 to-accent/30 p-4">
       <div className="w-full max-w-md">
         <div className="flex flex-col items-center mb-6 text-center">
           <div className="flex items-center gap-2 mb-3">
@@ -83,7 +83,7 @@ function AuthPage() {
           </CardContent>
         </Card>
       </div>
-    </div>
+    </main>
   );
 }
 
