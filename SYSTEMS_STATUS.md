@@ -1,5 +1,24 @@
 # SYSTEMS_STATUS.md — מצב כל המערכות, נמדד
 
+> ## 🟢 17/08/2026 (לילה, ט) — **04 עימוד תורני — Lighthouse נמדד לראשונה (perf 64, a11y 90→100) + תוקנו 3 ליקויי נגישות אמיתיים**
+>
+> `node scripts/qa/lighthouse-run.mjs QA/platform/imud-lh-0817 imud` — ציון ראשון אי-פעם ל-`imud`(04):
+> **פרפורמנס 64 · נגישות 90 · Best Practices 77 · SEO 100**. ה-`failedAudits` חשף שלושה ליקויי
+> נגישות אמיתיים (לא סביבתיים) ב-`apps/04-imud-torani/client/src/pages/Home.tsx`:
+> `heading-order` (h1→h3 בכרטיסי "Steps" דילג על h2, תוקן ל-h2 + הועברה "הספרים שלי" ל-h3
+> כדי שהסדר יישאר רציף), `landmark-one-main` (לעמוד לא היה `<main>`, נוסף), ו-`button-name`
+> (כפתור מחיקת ספר — אייקון `Trash2` בלבד, יחיד מסוגו בכל קוד המקור, אומת עם
+> `Select-String` כי Grep הרגיל לא רואה קבצים תחת `apps/` — נוסף `aria-label` דינמי).
+> `vite build` מקומי → robocopy ל-`_deploy/imud-more30/public/imud` → `vercel deploy --prod`
+> (`imud-more30`, `dpl_21mvKutWjXykY5AZ2NQqYpN1qLdi`, READY). נמדד שוב אחרי: **נגישות 90→100**.
+> פרפורמנס (62, מתחת לסף 90) נשאר פתוח — לפי הדפוס שנמצא ב-32 נדל"ן/02 תמלול
+> (`netfree.link/card/card-injection.js` בטרייס) כנראה אותה תלות ברשת המקומית, לא נבדק כאן.
+> ראיות: `QA/platform/imud-lh-0817/_lighthouse.json` (לפני) ·
+> `QA/platform/imud-lh-a11yfix-0817/_lighthouse.json` (אחרי).
+>
+> ⚠️ ה-MCP של Supabase אינו מחובר לסשן הזה — heartbeat נכתב כקובץ
+> `_heartbeat-pending.sql` (מצטרף לתור הקיים; הרץ לפי סדר הקומיטים ב-git log).
+
 > ## 🟢 17/08/2026 (לילה, ח) — **02 תמלול איגוד — Lighthouse נמדד לראשונה (perf 64, a11y 98) + תוקן `heading-order` (h1→h3 דילג על h2)**
 >
 > `node scripts/qa/lighthouse-run.mjs QA/platform/tamlul-lh-0817 tamlul` (אותו כלי, פרופיל מובייל, מול הייצור החי) —
@@ -3706,7 +3725,7 @@
 | 01 | איגוד השיעורים | [/torah](https://more30.com/torah) | ✅ עובדת | 1,211 | ✅ | **נבדק מחדש 17/08: Lighthouse perf 88 · a11y 100 · SEO 100 · BP 77** (חסימת NetFree, לא ניתן לתיקון בקוד) — היה 74 ב-07/08, ראה §חסמים |
 | 02 | תמלול איגוד | [/tamlul](https://more30.com/tamlul) | ✅ עובדת | 1,372 | ✅ | **תוקן: `heading-order` (h1→h3 דילג על h2)** · **נמדד 17/08: Lighthouse perf 64** (מתחת לסף 90, לא נחקר עדיין) · עוקב אחרי מצב כהה, אין מתג |
 | 03 | מודעות איגוד | [/modaot](https://more30.com/modaot) | ✅ עובדת | 661 | ✅ | ✅ נבדק מחדש 17/08 — אינו פער פעיל (`smallTargets: []`) |
-| 04 | עימוד תורני | [/imud](https://more30.com/imud) | ✅ עובדת | 612 | ✅ | עוקב אחרי מצב כהה, אין מתג |
+| 04 | עימוד תורני | [/imud](https://more30.com/imud) | ✅ עובדת | 612 | ✅ | **תוקן: נגישות 90→100** (heading-order, landmark, button-name) · **נמדד 17/08: Lighthouse perf 64** (מתחת לסף 90, לא נחקר עדיין) · עוקב אחרי מצב כהה, אין מתג |
 | 06 | לידים קופות חולים | [/briut](https://more30.com/briut) | ✅ עובדת | 4,832 | ✅ | 108 קישורים |
 | 10 | מימוש זכויות בקלות | [/bkalot](https://more30.com/bkalot) | ✅ עובדת | 3,041 | ✅ | |
 | 12 | נדל"ן Smel | [/smel](https://more30.com/smel) | ✅ עובדת | 1,149 | ✅ | |
