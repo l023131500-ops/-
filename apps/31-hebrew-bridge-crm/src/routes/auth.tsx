@@ -116,7 +116,7 @@ function AuthPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-12"
+    <main className="min-h-screen flex items-center justify-center px-4 py-12"
          style={{ background: "var(--gradient-primary)" }}>
       <div className="w-full max-w-md">
         <div className="text-center mb-8 text-primary-foreground">
@@ -231,6 +231,6 @@ function AuthPage() {
           </Button>
         </Card>
       </div>
-    </div>
+    </main>
   );
 }

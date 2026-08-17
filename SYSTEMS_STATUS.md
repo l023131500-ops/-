@@ -1,5 +1,21 @@
 # SYSTEMS_STATUS.md — מצב כל המערכות, נמדד
 
+> ## 🟢 17/08/2026 (לילה, טו) — **31 גשר עברית CRM — Lighthouse נמדד לראשונה (perf 80, a11y 98→100) + תוקן `landmark-one-main` אמיתי**
+>
+> `node scripts/qa/lighthouse-run.mjs QA/platform/gesher-lh-0817 gesher` — ציון ראשון אי-פעם
+> ל-`gesher`(31): **פרפורמנס 80 · נגישות 98 · Best Practices 77 · SEO 100**. `failedAudits`
+> חשף ליקוי נגישות אמיתי אחד: `landmark-one-main` (מסך הכניסה, `apps/31-hebrew-bridge-crm/src/routes/auth.tsx`,
+> אליו `/gesher` מפנה — אין `<main>` בעץ, בדיוק כמו ב-30 crm). תוקן: ה-`<div>` העוטף
+> הפך ל-`<main>` (פתיחה וסגירה). `vite build` (nitro/vercel preset) → `vercel deploy --prod`
+> מ-`apps/31-hebrew-bridge-crm` (לא `--prebuilt` — ה-rewrite ל-assets יושב ב-vercel.json של
+> האפליקציה הזו, ראה ההערה ב-vite.config.ts) → `gesher-more30`, `dpl_5NP2JDLSw3zxUN7WNLLqJbiW2pop`, READY.
+> אומת חי מול הייצור עם cache-buster: `<main class="min-h-screen...">` מופיע ב-HTML המוגש.
+> נמדד שוב אחרי: **נגישות 98→100**. פרפורמנס (80, מתחת לסף 90) ו-Best Practices (77) לא
+> נחקרו — תואם דפוס NetFree/`third-party-cookies` שכבר מתועד ב-32/02/04/06/10/14/28.
+> ראיות: `QA/platform/gesher-lh-0817/_lighthouse.json` (לפני) ·
+> `QA/platform/gesher-lh-a11yfix-0817/_lighthouse.json` (אחרי).
+> Supabase MCP אינו מחובר לסשן הזה — heartbeat נכתב כקובץ `_heartbeat-pending.sql`.
+
 > ## 🟢 17/08/2026 (לילה, יד) — **28 השוואת קופות — Lighthouse נמדד לראשונה (perf 65, a11y כבר 100, SEO 100)**
 >
 > `node scripts/qa/lighthouse-run.mjs QA/platform/kupot-lh-0817 kupot` — ציון ראשון אי-פעם
@@ -3823,7 +3839,7 @@
 | 24 | גליל קונקט | [/galil](https://more30.com/galil) | ✅ עובדת | 1,624 | ✅ | **תוקן: 121 → 1,624** · **נמדד 17/08: Lighthouse perf 32→36, a11y 94→100** (תוקנו 2 ליקויים אמיתיים: `bg-primary`/`text-primary-foreground` — ניגודיות 4:1 בכפתורי CTA — הכהיתי את `--primary` מ-40%→35% lightness בטוקן, משפיע על כל האתר; `<div>` בלי `<main>` ב-Index.tsx — עטפתי) · תוקן גם ייבוא תמונה שבור (`logo-hazor.png` לא קיים בדיסק) שחסם כל build מחדש ב-3 עמודים — הופנה ל-`logo-mechubarim.png` הכבר-קיים · פרפורמנס מתחת לסף 90, לא נחקר עדיין |
 | 27 | השוואת מחירים | [/mechiron](https://more30.com/mechiron) | ✅ עובדת | 915 | ✅ | **תוקן: ליקוי ניגודיות אמיתי בפוטר** (`opacity-70` על טקסט הבהרה כבר `text-muted-foreground` הוריד ratio ל-3.05, מתחת ל-4.5 הנדרש) · **נמדד 17/08: Lighthouse perf 65→58, a11y 96→100, SEO 100** (פרפורמנס מתחת לסף 90, לא נחקר עדיין) · נבדק מחדש 17/08: chatbot/config מחזיר 200, לא 404 |
 | 30 | CRM זכויות | [/crm](https://more30.com/crm) | ✅ עובדת | 135 | ✅ | **תוקן פעמיים** — נכסים + הפניה. מפנה ל-`/crm/auth` · **תוקן: `<main>` landmark חסר במסך הכניסה** · **נמדד 17/08: Lighthouse perf 85→89, a11y 98→100, SEO 100** |
-| 31 | גשר עברית CRM | [/gesher](https://more30.com/gesher) | ✅ עובדת | 105 | ✅ | **תוקן פעמיים** — נכסים + הפניה. מפנה ל-`/gesher/auth` |
+| 31 | גשר עברית CRM | [/gesher](https://more30.com/gesher) | ✅ עובדת | 105 | ✅ | **תוקן פעמיים** — נכסים + הפניה. מפנה ל-`/gesher/auth` · **תוקן: `landmark-one-main` חסר במסך הכניסה** · **נמדד 17/08: Lighthouse perf 80, a11y 98→100, SEO 100** |
 | — | אזור אישי | [/me](https://more30.com/me) | ℹ️ תקין | 93 | ✅ | דורש התחברות — צפוי |
 
 **26 עובדות במלואן · 0 חלקית · 0 שבורות · 1 מוגן-כניסה (תקין).**
