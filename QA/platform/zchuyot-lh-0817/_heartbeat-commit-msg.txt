@@ -1,0 +1,11 @@
+heartbeat: pending row for zchuyot-lh-0817 (14df1d9) - Supabase MCP not connected this session
+
+phase=lighthouse-sweep task=22-zchuyot status=done
+note=Lighthouse perf 65, a11y already 100, SEO 100, BP 77 on /zchuyot;
+performance below-90 not investigated yet (same as other systems this round).
+core.run_progress insert deferred - no Supabase MCP tool available this
+session (see 5c04e53, 1efa71a, c545628, 384b5c9, 70fe5a7 for the same gap on
+prior steps). Insert when MCP is available:
+insert into core.run_progress (phase, task, status, note) values
+('lighthouse-sweep', '22-zchuyot', 'done',
+ 'Lighthouse perf 65, a11y 100, SEO 100, BP 77 on /zchuyot; perf not investigated yet; commit 14df1d9');
