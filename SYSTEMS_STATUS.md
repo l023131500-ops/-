@@ -1,5 +1,28 @@
 # SYSTEMS_STATUS.md — מצב כל המערכות, נמדד
 
+> ## 🟢 18/08/2026 (לילה) — **35 kiosk: נמדד פרפורמנס 93 (מעל הסף), סבב-2 (ROUTES) הושלם על כל המסלולים**
+
+> המשך סבב-2 (פרפורמנס, בסדר `ROUTES` ב-`scripts/qa/lighthouse-run.mjs`) —
+> הבא אחרי `gesher`(31)→`nadlan`(32, כבר נחקר/תוקן ב-17/08 בנפרד)→`kesef`(33,
+> נמדד 17/08, 97, אין תיקון נדרש): **`kiosk`(35, `/kiosk/`), האחרון ברשימת
+> `ROUTES`.**
+>
+> `node scripts/qa/lighthouse-run.mjs QA/platform/kiosk-perf-investigate-0818
+> kiosk` → perf **93**, a11y 100, bp 77, seo 100 — מעל סף ה-90, אין צורך
+> בתיקון. baseline קודם (02/08) היה 95 — אותו רעש-מדידה שתועד שוב ושוב
+> בסבב הזה. `mainThreadBreakdown`: Style & Layout (1732ms) דומיננטי, לא
+> סקריפט יחיד — אותו דפוס כמו zchuyot/chatzor. `bootupTime` מראה שוב את
+> `netfree.link/card/card-injection.js` מוזרק לעקבה — עדות חוזרת לעיוות
+> מדידה מקומי (NetFree), לא באג שרת/קוד. אין שינוי קוד/פריסה. ראיות:
+> `QA/platform/kiosk-perf-investigate-0818/_lighthouse.json`, `_analysis.md`.
+>
+> **`kiosk` הוא הרשומה האחרונה ב-`ROUTES`** — סבב-2 (פרפורמנס, בסדר המערכות)
+> נסגר על כל 29 המסלולים. שיפורים פתוחים שנשארו (לא תוקנו כי הם עבודת קוד
+> גדולה מ"צעד אחד"): lazy-load ל-`framer-motion` על zchuyot(22)/chatzor(16),
+> code-splitting ברמת מסלול על mthbram(21) — רשומים למעלה ובמקומם. הבא: סבב
+> ליטוש נוסף לפי POLISH_BACKLOG.md, או פתיחת סבב-3 אם יתגלה עוד עבודה
+> פונקציונלית לא-סגורה.
+
 > ## 🟡 17/08/2026 (לילה, לג) — **27 מחירון (mechiron): תוקן שורש הפרפורמנס (Google Fonts render-blocking → loadCSS preload/swap), 55→53 — רעש מדידה, כמו bkalot/smel**
 
 > המשך סבב-2 (פרפורמנס, בסדר `ROUTES`) — הבא אחרי `studio` (שלא תועד כאן

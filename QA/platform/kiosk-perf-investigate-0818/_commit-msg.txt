@@ -1,0 +1,18 @@
+perf-sweep-round2: 35 kiosk - measured, perf 93 (above threshold), ROUTES sweep complete
+
+Continuing round-2 perf sweep (ROUTES order) after kesef(33): kiosk(35, /kiosk/),
+the last entry in ROUTES. perf 93, a11y 100, bp 77, seo 100 - above the 90
+threshold, no fix needed (baseline 02/08 was 95, same measurement-noise band
+seen across this round). mainThreadBreakdown dominated by Style & Layout
+(1732ms), not a single script - same pattern as zchuyot/chatzor. bootupTime
+shows netfree.link/card/card-injection.js injected again, confirming the
+local NetFree proxy artifact already documented on other systems this round.
+No code or deploy change - measurement only.
+
+kiosk is the last route in ROUTES, so round-2 perf sweep (ROUTES order) is
+now closed on all 29 routes. Remaining sub-90 systems need larger code work
+(framer-motion lazy-load on zchuyot/chatzor, code-splitting on mthbram) and
+stay logged, not fixed, per the smallest-step rule.
+
+Evidence: QA/platform/kiosk-perf-investigate-0818/_lighthouse.json, _analysis.md.
+SYSTEMS_STATUS.md updated.
