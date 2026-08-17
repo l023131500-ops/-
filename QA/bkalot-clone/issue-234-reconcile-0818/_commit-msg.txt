@@ -1,0 +1,18 @@
+שכפול בקלות: #234 (queue+dispatch HTTP+UI) היה כבר בנוי+פרוס — רק הרישום פיגר (§5ב, ניקוי)
+
+core.issues #234 נשאר open אחרי שהעבודה בו נסגרה בפועל בקומיטים ab63177/3e8b1fd/
+37235a3 (queue+dispatch routes ב-bkalot-clone-admin v5, כפתורי "הכנס לתור"/"עבד
+עכשיו" ב-admin.html) וסבב פריסות שכבה-3 שאחריהם.
+
+נבדק מול הייצור החי (לא קובץ מקומי): Invoke-WebRequest על
+https://more30.com/bkalot-studio/admin עם cachebust מחזירה 140,815 תווים
+המכילים גם "הכנס לתור" וגם "עבד עכשיו" — שני הכפתורים שהכרטיס רשם כ"נשאר פתוח".
+
+השאר שנשאר open מתועד ככוונה, לא כבאג: cases.status נשאר 'new' (החלטת מוצר
+מפורשת בכרטיס), pdf/audio → channel_unsupported (אין ערוץ לסוגים אלה).
+
+אין שינוי קוד/פריסה בצעד הזה — בדיקת-רישום בלבד, אותו דפוס כמו #237 (17/08).
+core.issues #234 עודכן ל-status=fixed, resolved_at, עם הסבר מלא ב-detail.
+ראיות: QA/bkalot-clone/issue-234-reconcile-0818/_results.md.
+
+Protected systems untouched (08/09/bkalut-app/bkalot-admin/zr_*/NEDARIM3873).
