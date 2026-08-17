@@ -46,3 +46,25 @@ insert into core.run_progress (phase, task, status, note) values (
   'done',
   'אותה שורת טבלה בעייתית כמו 04/27, 15/24 ו-32: 30 crm · 31 gesher סומנו ⏳ ממתין לפריסה, בסתירה לסיכום "13/13. הושלם.". node scripts/qa/dark-probe.mjs QA/platform/crm-gesher-a11y-recheck-0817 /crm /gesher מול הייצור: crm 1 חוק .dark (--background:#050f14 / --foreground:#f1f6f6), lab(98.9,-1.6,-0.7) -> lab(3.7,-2.1,-4.0) CHANGED; gesher 1 חוק .dark (--background:#0b121a / --foreground:#f0f2f4), lab(98.1,-0.3,-0.7) -> lab(5.2,-1.2,-6.2) CHANGED. שני הזוגות כמעט שחור-על-כמעט-לבן — AA תקין בבירור. אין שינוי קוד, אין פריסה — מדידה בלבד, ותוקנה שורת הטבלה שסתרה את סיכום 13/13. ראיות: QA/platform/crm-gesher-a11y-recheck-0817/_dark-probe.json.'
 );
+
+-- Commit: <this step> "SYSTEMS_STATUS.md: תוקן דריפט תיעודי — §8ב 30 CRM/31 גשר כבר נסגרו, הרשומה העליונה עוד אמרה 'עדיין לא נבדקו'"
+insert into core.run_progress (phase, task, status, note) values (
+  'docs',
+  'SYSTEMS_STATUS.md — תיקון דריפט תיעודי §8ב (30 CRM · 31 גשר)',
+  'done',
+  $$קריאת git log מול ראש SYSTEMS_STATUS.md חשפה סתירה: הרשומה העליונה בקובץ
+("§8ב — 21 מתחברים", מ-commit 3a6a74a) מסתיימת ב"30 CRM זכויות ו-31 גשר עדיין
+לא נבדקו באותה שיטה — נשארים בפער". אבל שני הקומיטים הבאים מיד אחריה
+(65cfd40, b2ad348) כבר סגרו את שניהם באותה שיטה בדיוק (Playwright מול
+הייצור, test@more30.com): 30 נוחת ב-/crm/dashboard (מסך כניסה עצמאי,
+jhbeelzvjvhnkxldqvxx), 31 נוחת ב-/gesher/client/status (מסך כניסה עצמאי,
+ygaqqnuyfnumezxxmtbh), 0 שגיאות קונסולה בשתיהן. NEEDS_USER.md §0א″ כבר
+מעודכן נכון (שורה "עודכן 17/08/2026 — ... שלושתן (21/30/31) נמדדו וסוגרות")
+— רק SYSTEMS_STATUS.md, בזכות סדר הרשומות (חדש למעלה), עדיין הציג את הפער
+כפתוח למי שקורא רק את החלק העליון של הקובץ.
+
+תוקן: נוספה רשומה חדשה בראש SYSTEMS_STATUS.md שמפנה במפורש לשני הקומיטים
+הסוגרים ומסירה את הרושם שהפער עדיין פתוח, כדי שסבב אנטי-דריפט עתידי לא
+יבזבז צעד על למדוד את זה שוב. אין שינוי קוד, אין פריסה — עדכון תיעוד בלבד,
+מבוסס על מה שכבר נמדד ונכתב בשני הקומיטים הקיימים (לא נמדד מחדש כאן).$$
+);
