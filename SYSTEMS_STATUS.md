@@ -3816,7 +3816,7 @@
 | 26 | סטודיו מודעות | [/studio](https://more30.com/studio) | ✅ עובדת | 892 | ✅ | **נמדד 17/08: Lighthouse perf 65, a11y כבר 100, SEO 100, BP 77** (פרפורמנס מתחת לסף 90, לא נחקר עדיין) |
 | 28 | השוואת קופות | [/kupot](https://more30.com/kupot) | ✅ עובדת | 3,132 | ✅ | **נמדד 17/08: Lighthouse perf 65, a11y כבר 100, SEO 100** (פרפורמנס מתחת לסף 90, דפוס NetFree/third-party-cookies כבר מתועד, לא נחקר עדיין) |
 | 32 | נדל"ן ברגע | [/nadlan](https://more30.com/nadlan) | ✅ עובדת | 6,413 | ✅ | **תוקן: נגישות 95→100 · Google Fonts render-blocking (perf 60→72, FCP 5.0s→2.4s, LCP 5.0s→3.1s)** · **נמדד 17/08: Lighthouse perf 72 · a11y 100 · SEO 100** — שני תת-המדדים הנותרים (`server-response-time`, `mainthread-work-breakdown`) נחקרו ונסגרו כעיוות מדידה מקומי (NetFree), לא ניתן לתיקון בקוד, ראה NEEDS_USER |
-| 34 | כסף | [/kesef](https://more30.com/kesef) | ✅ עובדת | 2,381 | ✅ | **תוקן: כניסה מגיעה למערכת** |
+| 34 | כסף | [/kesef](https://more30.com/kesef) | ✅ עובדת | 2,381 | ✅ | **תוקן: כניסה מגיעה למערכת** · **נמדד 17/08: Lighthouse perf 97 · a11y 100 · SEO 100** (מעל הסף, אין ליקוי לתקן) |
 | 35 | KioskFleet | [/kiosk/](https://more30.com/kiosk/) | ✅ עובדת | 2,534 | ✅ | |
 | 36 | נדל"ן פרו | [/tivuch](https://more30.com/tivuch) | ✅ עובדת | 2,781 | ✅ | Lighthouse perf 98 · a11y 100 · SEO 100 · BP 77 (חסימת NetFree, לא ניתן לתיקון בקוד) |
 | 21 | Mthbram | [/mthbram](https://more30.com/mthbram) | ✅ עובדת | 873 | ✅ | **תוקן: 39 → 873** |

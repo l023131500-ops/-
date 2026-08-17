@@ -1,0 +1,10 @@
+34 כסף: Lighthouse נמדד לראשונה (perf 97, a11y 100, SEO 100)
+
+המשך ישיר לסבב 17/08 (fix/nadlan-a11y, אחרי 02/04/06/10/12/14/15/16/17/18/22/26/28).
+node scripts/qa/lighthouse-run.mjs QA/platform/kesef-lh-0817 kesef מול
+https://more30.com/kesef החי - ציון ראשון אי-פעם למערכת הזו.
+
+perf 97, a11y 100, bp 77, seo 100. מעל סף 90 בפרפורמנס ובנגישות - אין ליקוי
+לתקן. אין קוד לתקן - עדכון SYSTEMS_STATUS.md בלבד.
+
+QA/platform/kesef-lh-0817/
