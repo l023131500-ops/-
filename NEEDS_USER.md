@@ -348,6 +348,11 @@ Settings → Environment Variables → להסתכל בערך של `SUPABASE_URL`
 
 ## 🟢 0ש′. `lux-manage` (מאורכב) — `leads-api` החזיר את כל טבלת הלידים לכל אחד — **נסגר בייצור 12/08/2026**
 
+> **נבדק מחדש 17/08/2026 — עדיין סגור.** אותה `GET` בלי `apikey`/`Authorization`
+> חוזרת היום `403 leads-api reader disabled: LEADS_API_KEY is not configured` —
+> 5 ימים אחרי הפריסה, אין רגרסיה. אין שינוי קוד, אין פריסה — מדידה בלבד.
+> ראיות: `QA/platform/leads-api-gate-recheck-0817/_results.json`.
+
 > **עדכון 12/08 ערב — הדליפה סגורה, ואין כאן יותר חסם.** החסם למטה ("צריך Supabase
 > CLI ו-`SUPABASE_ACCESS_TOKEN`") היה מיותר: `supabase/config.toml` בפרויקט Lovable
 > `lux-manage` מצביע על `project_id = "zwxwteebcoejrjdufzsv"` — כלומר יש לפרויקט הזה
