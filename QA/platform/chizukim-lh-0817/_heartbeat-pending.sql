@@ -16,6 +16,6 @@ values (
   'needed this round. Performance (67/78, below 90 threshold) and best-practices (77) ' ||
   'left open - matches the already-documented NetFree/third-party-cookies pattern from ' ||
   '32/10/06/04/02/12/14/15, not new work. Evidence: ' ||
-  'QA/platform/chizukim-lh-0817/_lighthouse.json, README.md. Commit pending.',
+  'QA/platform/chizukim-lh-0817/_lighthouse.json, README.md. Commit 764b509.',
   now()
 );
