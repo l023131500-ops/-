@@ -3802,7 +3802,7 @@
 | — | כניסה אחידה | [/login](https://more30.com/login) | ✅ עובדת | 326 | ✅ | Google SSO + סיסמה |
 | 01 | איגוד השיעורים | [/torah](https://more30.com/torah) | ✅ עובדת | 1,211 | ✅ | **נבדק מחדש 17/08: Lighthouse perf 88 · a11y 100 · SEO 100 · BP 77** (חסימת NetFree, לא ניתן לתיקון בקוד) — היה 74 ב-07/08, ראה §חסמים |
 | 02 | תמלול איגוד | [/tamlul](https://more30.com/tamlul) | ✅ עובדת | 1,372 | ✅ | **תוקן: `heading-order` (h1→h3 דילג על h2)** · **נמדד 17/08: Lighthouse perf 64** (מתחת לסף 90, לא נחקר עדיין) · עוקב אחרי מצב כהה, אין מתג |
-| 03 | מודעות איגוד | [/modaot](https://more30.com/modaot) | ✅ עובדת | 661 | ✅ | ✅ נבדק מחדש 17/08 — אינו פער פעיל (`smallTargets: []`) |
+| 03 | מודעות איגוד | [/modaot](https://more30.com/modaot) | ✅ עובדת | 661 | ✅ | ✅ נבדק מחדש 17/08 — אינו פער פעיל (`smallTargets: []`) · **נמדד 17/08: Lighthouse perf 86 · a11y כבר 100 · SEO 100** (מתחת לסף 90 בפרפורמנס בלבד, `server-response-time`+NetFree `card-injection.js` — דפוס עיוות מדידה כבר מתועד, לא נחקר עדיין) — עבר בסבב הזה ללא תיקון |
 | 04 | עימוד תורני | [/imud](https://more30.com/imud) | ✅ עובדת | 612 | ✅ | **תוקן: נגישות 90→100** (heading-order, landmark, button-name) · **נמדד 17/08: Lighthouse perf 64** (מתחת לסף 90, לא נחקר עדיין) · עוקב אחרי מצב כהה, אין מתג |
 | 06 | לידים קופות חולים | [/briut](https://more30.com/briut) | ✅ עובדת | 4,832 | ✅ | **תוקן: 2 ליקויי נגישות אמיתיים** (`aria-label` כפתורי סגירה/קישורי כרטיס, `role="tab"` לצ'יפים) · **נמדד 17/08: Lighthouse perf 84, a11y 91→97** (פרפורמנס תנודתי, לא נחקר עדיין) · 108 קישורים |
 | 10 | מימוש זכויות בקלות | [/bkalot](https://more30.com/bkalot) | ✅ עובדת | 3,041 | ✅ | **תוקן: meta description חסר** · **נמדד 17/08: Lighthouse perf 82 · a11y 100** (מתחת לסף 90, לא נחקר עדיין) |
