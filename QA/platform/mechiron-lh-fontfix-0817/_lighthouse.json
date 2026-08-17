@@ -1,0 +1,189 @@
+{
+  "mechiron": {
+    "url": "https://more30.com/mechiron",
+    "measuredAt": "2026-08-17T20:01:33.834Z",
+    "performance": 53,
+    "accessibility": 100,
+    "bestPractices": 77,
+    "seo": 100,
+    "metrics": {
+      "fcp": "6.3 s",
+      "lcp": "7.1 s",
+      "tbt": "180 ms",
+      "cls": "0.082",
+      "si": "13.2 s"
+    },
+    "failedAudits": [
+      {
+        "id": "first-contentful-paint",
+        "title": "First Contentful Paint",
+        "score": 0.03,
+        "display": "6.3 s"
+      },
+      {
+        "id": "largest-contentful-paint",
+        "title": "Largest Contentful Paint",
+        "score": 0.05,
+        "display": "7.1 s"
+      },
+      {
+        "id": "speed-index",
+        "title": "Speed Index",
+        "score": 0.02,
+        "display": "13.2 s"
+      },
+      {
+        "id": "max-potential-fid",
+        "title": "Max Potential First Input Delay",
+        "score": 0.62,
+        "display": "210 ms"
+      },
+      {
+        "id": "interactive",
+        "title": "Time to Interactive",
+        "score": 0.38,
+        "display": "8.5 s"
+      },
+      {
+        "id": "third-party-cookies",
+        "title": "Uses third-party cookies",
+        "score": 0,
+        "display": "1 cookie found"
+      },
+      {
+        "id": "mainthread-work-breakdown",
+        "title": "Minimize main-thread work",
+        "score": 0,
+        "display": "3.1 s"
+      },
+      {
+        "id": "valid-source-maps",
+        "title": "Missing source maps for large first-party JavaScript",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "unminified-javascript",
+        "title": "Minify JavaScript",
+        "score": 0.5,
+        "display": "Est savings of 6 KiB"
+      },
+      {
+        "id": "unused-css-rules",
+        "title": "Reduce unused CSS",
+        "score": 0.5,
+        "display": "Est savings of 16 KiB"
+      },
+      {
+        "id": "unused-javascript",
+        "title": "Reduce unused JavaScript",
+        "score": 0,
+        "display": "Est savings of 275 KiB"
+      },
+      {
+        "id": "inspector-issues",
+        "title": "Issues were logged in the `Issues` panel in Chrome Devtools",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "bf-cache",
+        "title": "Page prevented back/forward cache restoration",
+        "score": 0,
+        "display": "1 failure reason"
+      },
+      {
+        "id": "cache-insight",
+        "title": "Use efficient cache lifetimes",
+        "score": 0,
+        "display": "Est savings of 43 KiB"
+      },
+      {
+        "id": "document-latency-insight",
+        "title": "Document request latency",
+        "score": 0.5,
+        "display": "Est savings of 3 KiB"
+      },
+      {
+        "id": "lcp-breakdown-insight",
+        "title": "LCP breakdown",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "network-dependency-tree-insight",
+        "title": "Network dependency tree",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "render-blocking-insight",
+        "title": "Render-blocking requests",
+        "score": 0,
+        "display": "Est savings of 1,050 ms"
+      }
+    ],
+    "mainThreadBreakdown": [
+      {
+        "group": "Other",
+        "duration": 1138
+      },
+      {
+        "group": "Style & Layout",
+        "duration": 1083
+      },
+      {
+        "group": "Script Evaluation",
+        "duration": 555
+      },
+      {
+        "group": "Rendering",
+        "duration": 174
+      },
+      {
+        "group": "Parse HTML & CSS",
+        "duration": 55
+      },
+      {
+        "group": "Script Parsing & Compilation",
+        "duration": 45
+      },
+      {
+        "group": "Garbage Collection",
+        "duration": 32
+      }
+    ],
+    "bootupTime": [
+      {
+        "url": "https://more30.com/mechiron",
+        "total": 1460,
+        "scripting": 14,
+        "scriptParseCompile": 4
+      },
+      {
+        "url": "Unattributable",
+        "total": 987,
+        "scripting": 168,
+        "scriptParseCompile": 0
+      },
+      {
+        "url": "https://more30.com/mechiron/assets/index-BklrIJk7.js",
+        "total": 260,
+        "scripting": 230,
+        "scriptParseCompile": 12
+      },
+      {
+        "url": "https://more30.com/auth-button.js",
+        "total": 159,
+        "scripting": 30,
+        "scriptParseCompile": 12
+      },
+      {
+        "url": "https://netfree.link/card/card-injection.js",
+        "total": 115,
+        "scripting": 79,
+        "scriptParseCompile": 14
+      }
+    ]
+  }
+}

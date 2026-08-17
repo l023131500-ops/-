@@ -1,5 +1,30 @@
 # SYSTEMS_STATUS.md — מצב כל המערכות, נמדד
 
+> ## 🟡 17/08/2026 (לילה, לג) — **27 מחירון (mechiron): תוקן שורש הפרפורמנס (Google Fonts render-blocking → loadCSS preload/swap), 55→53 — רעש מדידה, כמו bkalot/smel**
+
+> המשך סבב-2 (פרפורמנס, בסדר `ROUTES`) — הבא אחרי `studio` (שלא תועד כאן
+> בזמן אמת, ראה commit `20f9bd2`). `apps/27-bkalut-price/client/index.html`
+> טען Google Fonts (Heebo + Frank Ruhl Libre) דרך `<link rel="stylesheet">`
+> סינכרוני — אותה תקלה שכבר תוקנה ב-01/02/03/04/06/10/12/32.
+> `render-blocking-insight` מדד חיסכון משוער 640ms. `bootupTime` שלל JS
+> כבד: הבאנדל העצמי רק 339ms total, `auth-button.js` רק 253ms — לא הגורם.
+>
+> **התיקון:** תבנית loadCSS (`rel="preload" as="style"` +
+> `media="print" onload="this.media='all'"` + `<noscript>`), זהה ל-12 smel.
+> `vite build` → robocopy ל-`_deploy/mechiron-more30/public/mechiron` →
+> `vercel deploy --prod` (`dpl_E32no47ap7Jam5781GrRy4hn9Dgf`, READY). אומת
+> חי עם cache-buster.
+>
+> **נמדד אחרי:** perf 55→53 (רעש מדידה, אותו דפוס בדיוק כמו 10 bkalot/12
+> smel — שורש תוקן, ציון כולל לא עלה). `render-blocking-insight` עדיין
+> נכשל נגד `bkalot-theme.css` (Supabase Storage, משותף למערכות אחרות —
+> לא תוקן בצעד הזה). ראיות:
+> `QA/platform/mechiron-perf-investigate-0817/_analysis.md`,
+> `QA/platform/mechiron-lh-fontfix-0817/_lighthouse.json`. Supabase MCP אינו
+> מחובר לסשן הזה — heartbeat נכתב כקובץ `_heartbeat-pending.sql`.
+>
+> הבא בסבב-2 (ROUTES): `kupot`.
+
 > ## 🟢 17/08/2026 (לילה, לא) — **22 זכויות (zchuyot): נחקר פרפורמנס 65→43 — framer-motion על ה-thread הראשי, אותו דפוס כמו chatzor, לא תוקן בצעד הזה**
 
 > המשך סבב-2 (פרפורמנס, בסדר המערכות) — הבא אחרי `mthbram` לפי `ROUTES` ב-
@@ -4244,7 +4269,7 @@
 | 36 | נדל"ן פרו | [/tivuch](https://more30.com/tivuch) | ✅ עובדת | 2,781 | ✅ | Lighthouse perf 98 · a11y 100 · SEO 100 · BP 77 (חסימת NetFree, לא ניתן לתיקון בקוד) |
 | 21 | Mthbram | [/mthbram](https://more30.com/mthbram) | ✅ עובדת | 873 | ✅ | **תוקן: 39 → 873** · **נמדד 17/08: Lighthouse perf 45→36, a11y 90→100** (תוקנו 2 ליקויים אמיתיים: `text-gold-cream` היה מחסיר לגמרי מ-tailwind.config — כל הטקסט בפוטר נצבע כמו הרקע; `<main>` חסר) · תוקן גם ייבוא תמונה שבור (`agud-logo.png` לא קיים) שחסם כל build מחדש ב-3 עמודים · **נחקר 17/08: bundle יחיד 1.6MB לא-מפוצל, לא Google Fonts** — דורש code splitting כמו galil, לא תוקן בצעד הזה |
 | 24 | גליל קונקט | [/galil](https://more30.com/galil) | ✅ עובדת | 1,624 | ✅ | **תוקן: 121 → 1,624** · **נמדד 17/08: Lighthouse perf 32→36→40, a11y 94→100** (תוקנו 2 ליקויים אמיתיים: `bg-primary`/`text-primary-foreground` — ניגודיות 4:1 בכפתורי CTA — הכהיתי את `--primary` מ-40%→35% lightness בטוקן, משפיע על כל האתר; `<div>` בלי `<main>` ב-Index.tsx — עטפתי) · תוקן גם ייבוא תמונה שבור (`logo-hazor.png` לא קיים בדיסק) שחסם כל build מחדש ב-3 עמודים — הופנה ל-`logo-mechubarim.png` הכבר-קיים · **route-level code splitting נפרס (`index.js` 981KB→801KB + `KashrutPage` בנפרד), נמדד מחדש 17/08: 36→40** — שיפור חלקי בלבד; ה-40 עדיין מתחת לסף 90, הצוואר-בקבוק המוביל עכשיו `mainthread-work-breakdown` (10.9s) ו-`server-response-time` (760ms), לא נחקר לעומק בצעד הזה |
-| 27 | השוואת מחירים | [/mechiron](https://more30.com/mechiron) | ✅ עובדת | 915 | ✅ | **תוקן: ליקוי ניגודיות אמיתי בפוטר** (`opacity-70` על טקסט הבהרה כבר `text-muted-foreground` הוריד ratio ל-3.05, מתחת ל-4.5 הנדרש) · **נמדד 17/08: Lighthouse perf 65→58, a11y 96→100, SEO 100** (פרפורמנס מתחת לסף 90, לא נחקר עדיין) · נבדק מחדש 17/08: chatbot/config מחזיר 200, לא 404 |
+| 27 | השוואת מחירים | [/mechiron](https://more30.com/mechiron) | ✅ עובדת | 915 | ✅ | **תוקן: ליקוי ניגודיות אמיתי בפוטר** (`opacity-70` על טקסט הבהרה כבר `text-muted-foreground` הוריד ratio ל-3.05, מתחת ל-4.5 הנדרש) · **תוקן שורש הפרפורמנס: Google Fonts render-blocking → loadCSS preload/swap** · **נמדד 17/08: Lighthouse perf 55→53 (רעש מדידה, כמו bkalot/smel), a11y 100, SEO 100** (עדיין מתחת לסף 90 — `bkalot-theme.css` המשותף עדיין חוסם, לא תוקן בצעד הזה) · נבדק מחדש 17/08: chatbot/config מחזיר 200, לא 404 |
 | 30 | CRM זכויות | [/crm](https://more30.com/crm) | ✅ עובדת | 135 | ✅ | **תוקן פעמיים** — נכסים + הפניה. מפנה ל-`/crm/auth` · **תוקן: `<main>` landmark חסר במסך הכניסה** · **נמדד 17/08: Lighthouse perf 85→89, a11y 98→100, SEO 100** |
 | 31 | גשר עברית CRM | [/gesher](https://more30.com/gesher) | ✅ עובדת | 105 | ✅ | **תוקן פעמיים** — נכסים + הפניה. מפנה ל-`/gesher/auth` · **תוקן: `landmark-one-main` חסר במסך הכניסה** · **נמדד 17/08: Lighthouse perf 80, a11y 98→100, SEO 100** |
 | — | אזור אישי | [/me](https://more30.com/me) | ℹ️ תקין | 93 | ✅ | דורש התחברות — צפוי |
