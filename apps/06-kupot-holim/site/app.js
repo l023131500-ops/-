@@ -42,7 +42,7 @@
     var g = document.getElementById("profileGrid");
     g.innerHTML = DATA.profiles.map(function (p, i) {
       var rk = fundKey(p.recommended);
-      return '<article class="profile-card" tabindex="0" role="button" data-profile="' + i + '" aria-label="' + esc(p.title) + ' — הצג המלצה">' +
+      return '<article class="profile-card" tabindex="0" role="button" data-profile="' + i + '">' +
         '<div class="profile-icon">' + (ICONS[p.icon] || ICONS.shield) + '</div>' +
         '<h3>' + esc(p.title) + '</h3>' +
         '<p class="p-desc">' + esc(p.desc) + '</p>' +
@@ -109,15 +109,16 @@
   /* ---------- Category filter ---------- */
   function renderCatFilter() {
     var el = document.getElementById("catFilter");
-    var chips = ['<button class="chip active" data-cat="all">הכול</button>'];
+    var chips = ['<button class="chip active" data-cat="all" role="tab" aria-selected="true">הכול</button>'];
     DATA.categories.forEach(function (c) {
-      chips.push('<button class="chip" data-cat="' + esc(c.name) + '">' + esc(c.name) + '</button>');
+      chips.push('<button class="chip" data-cat="' + esc(c.name) + '" role="tab" aria-selected="false">' + esc(c.name) + '</button>');
     });
     el.innerHTML = chips.join("");
     Array.prototype.forEach.call(el.querySelectorAll(".chip"), function (chip) {
       chip.addEventListener("click", function () {
-        Array.prototype.forEach.call(el.querySelectorAll(".chip"), function (c) { c.classList.remove("active"); });
+        Array.prototype.forEach.call(el.querySelectorAll(".chip"), function (c) { c.classList.remove("active"); c.setAttribute("aria-selected", "false"); });
         chip.classList.add("active");
+        chip.setAttribute("aria-selected", "true");
         activeCat = chip.getAttribute("data-cat");
         applyFilter();
       });
