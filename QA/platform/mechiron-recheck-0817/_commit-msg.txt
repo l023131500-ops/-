@@ -1,0 +1,14 @@
+אנטי-דריפט: SYSTEMS_STATUS.md — 27 מחירון "צ'אטבוט 404, לא תוקן" נבדק מחדש, אינו פער פעיל (§5ב מחוץ לתור)
+
+הטבלה "מה נשאר לתקן" קבעה /mechiron/api/public/chatbot/config -> 404 ו"לא
+תיקנתי, דורש אימות מקור נתונים". git log על _deploy/mechiron-more30/api/index.ts
+מראה שהמסלול נוסף ונפרס כבר ב-8a8d8db (03/08). נבדק מחדש מול הייצור עם
+cache-buster: 200, לא 404. enabled:false הוא הערך התקין המתועד בקוד (אין
+שורת automation_configs קריאה) — לא תקלה. אין שינוי קוד, אין פריסה — מדידה
+ותיעוד בלבד.
+
+עודכן SYSTEMS_STATUS.md (רשומה חדשה בראש + קו חוצה על שורת 27 מחירון בטבלה).
+ראיות: QA/platform/mechiron-recheck-0817/.
+
+MCP של Supabase אינו מחובר לסשן הזה — heartbeat נכתב כקובץ
+_heartbeat-pending.sql, מצטרף לתור הקיים.

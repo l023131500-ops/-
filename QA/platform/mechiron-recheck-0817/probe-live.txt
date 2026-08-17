@@ -1,0 +1,33 @@
+mechiron chatbot config recheck — 17/08/2026
+
+Table row (SYSTEMS_STATUS.md "מה נשאר לתקן") claimed:
+  /mechiron/api/public/chatbot/config -> 404 own function response, route never ported
+  from server/routes.ts:1822 to the serverless api/index.ts. Marked "not fixed —
+  couldn't verify the config's data source."
+
+git log on the deployed file shows the route WAS already ported and committed:
+  commit 8a8d8db (2026-08-03) "zchuyot: drop the hydration that was failing, and
+  answer mechiron's chatbot honestly" — _deploy/mechiron-more30/api/index.ts now
+  has a `path === "public/chatbot/config"` handler (lines 201-250) that reads
+  automation_configs.key='public_chatbot' through the same anon Supabase client
+  the settings route already uses, with documented fallback defaults and an
+  explicit note that /answer and /lead are deliberately NOT implemented.
+
+NEEDS_USER.md:1686 independently corroborates this was already verified once:
+  "console-probe /mechiron | 404 של הצ'אטבוט → 0"
+
+Live recheck, 17/08/2026, cache-busted:
+
+GET https://more30.com/mechiron/api/public/chatbot/config?cachebust=<unix-ts>
+-> HTTP 200
+{"enabled":false,"intro":"שלום! אני העוזר של ארגון בקלות. איך אפשר לעזור?", ...
+ "contact":{"phone":"02-3131500","email":"l023131500@gmail.com","whatsapp":"https://wa.me/972237131500"}}
+
+Not 404. `enabled:false` is the honest/expected value documented in the code comment —
+the automation_configs row for 'public_chatbot' is absent or unreadable by anon, so the
+widget stays hidden rather than opening and failing to answer. That is the deployment's
+designed behavior, not a bug.
+
+Conclusion: this is a sixth stale entry in the "מה נשאר לתקן" table (same class as the
+five already rechecked today — CLS 0.578, CRM/gesher index, modaot touch targets, dark
+toggle, Vercel quota). No code change, no migration, no deploy — measurement only.
