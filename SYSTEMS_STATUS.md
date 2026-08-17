@@ -1,5 +1,40 @@
 # SYSTEMS_STATUS.md — מצב כל המערכות, נמדד
 
+> ## 🟡 17/08/2026 (לילה, כה) — **10 בקלות (bkalot): תוקן שורש הפרפורמנס (Google Fonts render-blocking), אך הציון הכולל ירד 82→69 — כנראה רעש מדידה**
+
+> המשך סבב-2 (פרפורמנס, בסדר המערכות) — הבא אחרי 06 briut לפי `ROUTES` ב-
+> `scripts/qa/lighthouse-run.mjs`. `apps/10-bkalot-rights/index.html` (אתר סטטי
+> בלי build, כמו 04/06) טען Heebo + Frank Ruhl Libre דרך `<link rel="stylesheet"
+> href="fonts.googleapis.com/css2?...">` סינכרוני ב-`<head>` — אותו דפוס בדיוק
+> שכבר תוקן ב-01/02/03/04/06/32, כבר זוהה כ-`render-blocking-insight` (חיסכון
+> משוער 1,210ms) ב-`bkalot-lh-0817` (dbb7a57, הריצה הראשונה).
+>
+> **התיקון:** תבנית `loadCSS` הסטנדרטית — זהה ל-04/06. הוחל גם ב-
+> `apps/10-bkalot-rights/index.html` (מקור) וגם ב-
+> `_deploy/bkalot-more30/bkalot/index.html` (עותק הפריסה) — `Compare-Object`
+> אישר שהשניים זהים אחרי העריכה. גיליון סגנון שני (`bkalot-theme.css`,
+> אחסון Supabase) נשאר סינכרוני — מחוץ לדפוס המתועד, לא נגעתי בו.
+>
+> נפרס `vercel deploy --prod --yes --scope l023131500-ops-projects` מתוך
+> `_deploy/bkalot-more30` (`dpl_HEiYsuhoK6GLeigmURmQFUf8ff6w`), READY. אומת
+> חי עם cache-buster (`more30.com/bkalot/?cachebust=0817bkalotfont`) —
+> `media="print" onload="this.media='all'"` מופיע ב-HTML המוגש.
+>
+> **נמדד אחרי:** פרפורמנס **82→69** (ירד, למרות שהתיקון תואם דפוס מוכח).
+> `render-blocking-insight` השתפר (1,210ms→330ms חיסכון משוער, לא נעלם —
+> הגיליון השני). FCP/LCP/SI כולם השתפרו (3.1s→2.7s / 3.1s→2.9s / 7.2s→4.2s),
+> אבל `mainthread-work-breakdown` עלה (5.9s→7.6s) ו-TBT (770ms) נכנס לרשימת
+> הכשלים בפעם הראשונה. נגישות 100/BP 77 ללא שינוי. תואם את דפוס הרעש המתועד
+> כבר ב-06 בריאות ("84-93 noisy") ו-32 נדל"ן (`mainthread-work-breakdown`
+> תלוי-רשת/NetFree) — סומן 🟡 (לא רגרסיה אמיתית ולא הצלחה נקייה), לא נחקר
+> כרגרסיה חדשה בסבב הזה. ראיות: `QA/platform/bkalot-lh-0817/_lighthouse.json`
+> (לפני, perf 82) · `QA/platform/bkalot-lh-fontfix-0817/_lighthouse.json`
+> (אחרי, perf 69). Supabase MCP אינו מחובר לסשן הזה — heartbeat נכתב כקובץ
+> `_heartbeat-pending.sql`.
+>
+> הבא בסבב-2 (פרפורמנס, בסדר המערכות): `smel` (הבא ברשימת `ROUTES` אחרי
+> `bkalot`).
+
 > ## 🟢 17/08/2026 (לילה, כד) — **06 בריאות (briut): תוקן שורש הפרפורמנס (Google Fonts render-blocking), 84/93/91/87 (תנודתי) → 89**
 
 > המשך סבב-2 (פרפורמנס, בסדר המערכות) — הבא אחרי 04 imud לפי `ROUTES` ב-
