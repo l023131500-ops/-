@@ -191,3 +191,29 @@ QA/platform/smachot-lh-cssmerge-0817/_lighthouse.json (אחרי). Supabase MCP �
 
 הבא בסבב-2 (פרפורמנס, בסדר המערכות): egod (הבא ברשימת ROUTES אחרי smachot).$$
 );
+
+-- Commit: <this step> "21 mthbram: נחקר פרפורמנס 45->36 - bundle יחיד לא-מפוצל (1.6MB), לא תוקן בצעד הזה"
+-- (egod/chatzor/chizukim כבר נחקרו ותועדו בקומיטים 94255b4/c6cda0d/45922df; orech עבר ללא תיקון, perf 97 — אין heartbeat חדש להם כאן)
+insert into core.run_progress (phase, task, status, note) values (
+  'perf-sweep',
+  '21 mthbram — investigate perf (bundle size)',
+  'done',
+  $$המשך סבב-2 (פרפורמנס, בסדר המערכות) — הבא אחרי orech (עבר בעצמו ללא
+תיקון, perf 97) לפי ROUTES ב-scripts/qa/lighthouse-run.mjs. node
+scripts/qa/lighthouse-run.mjs QA/platform/mthbram-perf-investigate-0817
+mthbram — perf 36 (baseline קודם 45, אותו רעש-מדידה מתועד).
+
+למה זה לא דפוס Google Fonts: apps/21-mthbram/index.html לא נושא שום link
+לגופנים חיצוניים, ואין @import ב-src/. הממצא: dist/assets/index-ikOh19CR.js
+הוא bundle יחיד 1.6MB (לא-דחוס), ללא code splitting — גדול מ-galil לפני
+הפיצול (981KB). unused-javascript Est savings 341 KiB. mainThreadBreakdown
+מפוזר על כל הקטגוריות בלי script יחיד דומיננטי — תואם bundle גדול לא-מפוצל.
+
+מסקנה: דורש route-level code splitting (כמו galil) — עבודת קוד נפרדת וגדולה
+מ"צעד אחד", ובגליל שיפור דומה נתן רק שיפור חלקי (36->40). אין שינוי
+קוד/פריסה בצעד הזה — מדידה/חקירה/תיעוד בלבד. ראיות:
+QA/platform/mthbram-perf-investigate-0817/_lighthouse.json, _analysis.md.
+Supabase MCP אינו מחובר לסשן הזה — heartbeat נכתב כקובץ זה.
+
+הבא בסבב-2 (פרפורמנס, בסדר המערכות): zchuyot (הבא ברשימת ROUTES אחרי mthbram).$$
+);

@@ -1,5 +1,32 @@
 # SYSTEMS_STATUS.md — מצב כל המערכות, נמדד
 
+> ## 🟢 17/08/2026 (לילה, ל) — **21 mthbram: נחקר פרפורמנס 45→36 — bundle יחיד לא-מפוצל (1.6MB), לא תוקן בצעד הזה**
+
+> המשך סבב-2 (פרפורמנס, בסדר המערכות) — הבא אחרי `orech` (עבר בעצמו ללא
+> תיקון, perf 97) לפי `ROUTES` ב-`scripts/qa/lighthouse-run.mjs`.
+> `node scripts/qa/lighthouse-run.mjs QA/platform/mthbram-perf-investigate-0817
+> mthbram` — perf 36 (baseline קודם 45, אותו רעש-מדידה מתועד).
+>
+> **למה זה לא דפוס Google Fonts:** `apps/21-mthbram/index.html` לא נושא שום
+> `<link>` לגופנים חיצוניים, ואין `@import` ב-`src/` — הדפוס הרגיל (loadCSS)
+> לא רלוונטי.
+>
+> **הממצא:** `apps/21-mthbram/dist/assets/index-ikOh19CR.js` הוא bundle יחיד
+> **1.6MB** (לא-דחוס), ללא code splitting — גדול מ-galil לפני הפיצול (981KB).
+> `unused-javascript` Est savings 341 KiB. `mainThreadBreakdown` מפוזר על כל
+> הקטגוריות (Other 1998ms, Style&Layout 1220ms, Script Eval 990ms) בלי script
+> יחיד דומיננטי — תואם bundle גדול לא-מפוצל, לא רכיב בעייתי נקודתי.
+>
+> **מסקנה:** דורש route-level code splitting (כמו galil) — עבודת קוד נפרדת
+> וגדולה מ"צעד אחד", ובגליל שיפור דומה נתן רק שיפור חלקי (36→40). אין שינוי
+> קוד/פריסה בצעד הזה — מדידה/חקירה/תיעוד בלבד. ראיות:
+> `QA/platform/mthbram-perf-investigate-0817/_lighthouse.json`, `_analysis.md`.
+> Supabase MCP אינו מחובר לסשן הזה — heartbeat נכתב כקובץ
+> `_heartbeat-pending.sql`.
+>
+> הבא בסבב-2 (פרפורמנס, בסדר המערכות): `zchuyot` (הבא ברשימת `ROUTES` אחרי
+> `mthbram`).
+
 > ## 🟢 17/08/2026 (לילה, כט) — **17 תמלול חיזוקים (chizukim): נחקר פרפורמנס 55/67/78 — ה-CSS העצמי הוא הגורם (כמו egod), לא גופנים; לא תוקן בצעד הזה**
 
 > המשך סבב-2 (פרפורמנס, בסדר המערכות) — הבא אחרי `chatzor`/`chatzor-app` לפי
@@ -4183,7 +4210,7 @@
 | 34 | כסף | [/kesef](https://more30.com/kesef) | ✅ עובדת | 2,381 | ✅ | **תוקן: כניסה מגיעה למערכת** · **נמדד 17/08: Lighthouse perf 97 · a11y 100 · SEO 100** (מעל הסף, אין ליקוי לתקן) |
 | 35 | KioskFleet | [/kiosk/](https://more30.com/kiosk/) | ✅ עובדת | 2,534 | ✅ | |
 | 36 | נדל"ן פרו | [/tivuch](https://more30.com/tivuch) | ✅ עובדת | 2,781 | ✅ | Lighthouse perf 98 · a11y 100 · SEO 100 · BP 77 (חסימת NetFree, לא ניתן לתיקון בקוד) |
-| 21 | Mthbram | [/mthbram](https://more30.com/mthbram) | ✅ עובדת | 873 | ✅ | **תוקן: 39 → 873** · **נמדד 17/08: Lighthouse perf 45, a11y 90→100** (תוקנו 2 ליקויים אמיתיים: `text-gold-cream` היה מחסיר לגמרי מ-tailwind.config — כל הטקסט בפוטר נצבע כמו הרקע; `<main>` חסר) · תוקן גם ייבוא תמונה שבור (`agud-logo.png` לא קיים) שחסם כל build מחדש ב-3 עמודים · פרפורמנס מתחת לסף 90, לא נחקר עדיין |
+| 21 | Mthbram | [/mthbram](https://more30.com/mthbram) | ✅ עובדת | 873 | ✅ | **תוקן: 39 → 873** · **נמדד 17/08: Lighthouse perf 45→36, a11y 90→100** (תוקנו 2 ליקויים אמיתיים: `text-gold-cream` היה מחסיר לגמרי מ-tailwind.config — כל הטקסט בפוטר נצבע כמו הרקע; `<main>` חסר) · תוקן גם ייבוא תמונה שבור (`agud-logo.png` לא קיים) שחסם כל build מחדש ב-3 עמודים · **נחקר 17/08: bundle יחיד 1.6MB לא-מפוצל, לא Google Fonts** — דורש code splitting כמו galil, לא תוקן בצעד הזה |
 | 24 | גליל קונקט | [/galil](https://more30.com/galil) | ✅ עובדת | 1,624 | ✅ | **תוקן: 121 → 1,624** · **נמדד 17/08: Lighthouse perf 32→36→40, a11y 94→100** (תוקנו 2 ליקויים אמיתיים: `bg-primary`/`text-primary-foreground` — ניגודיות 4:1 בכפתורי CTA — הכהיתי את `--primary` מ-40%→35% lightness בטוקן, משפיע על כל האתר; `<div>` בלי `<main>` ב-Index.tsx — עטפתי) · תוקן גם ייבוא תמונה שבור (`logo-hazor.png` לא קיים בדיסק) שחסם כל build מחדש ב-3 עמודים — הופנה ל-`logo-mechubarim.png` הכבר-קיים · **route-level code splitting נפרס (`index.js` 981KB→801KB + `KashrutPage` בנפרד), נמדד מחדש 17/08: 36→40** — שיפור חלקי בלבד; ה-40 עדיין מתחת לסף 90, הצוואר-בקבוק המוביל עכשיו `mainthread-work-breakdown` (10.9s) ו-`server-response-time` (760ms), לא נחקר לעומק בצעד הזה |
 | 27 | השוואת מחירים | [/mechiron](https://more30.com/mechiron) | ✅ עובדת | 915 | ✅ | **תוקן: ליקוי ניגודיות אמיתי בפוטר** (`opacity-70` על טקסט הבהרה כבר `text-muted-foreground` הוריד ratio ל-3.05, מתחת ל-4.5 הנדרש) · **נמדד 17/08: Lighthouse perf 65→58, a11y 96→100, SEO 100** (פרפורמנס מתחת לסף 90, לא נחקר עדיין) · נבדק מחדש 17/08: chatbot/config מחזיר 200, לא 404 |
 | 30 | CRM זכויות | [/crm](https://more30.com/crm) | ✅ עובדת | 135 | ✅ | **תוקן פעמיים** — נכסים + הפניה. מפנה ל-`/crm/auth` · **תוקן: `<main>` landmark חסר במסך הכניסה** · **נמדד 17/08: Lighthouse perf 85→89, a11y 98→100, SEO 100** |
