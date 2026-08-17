@@ -1,5 +1,20 @@
 # SYSTEMS_STATUS.md — מצב כל המערכות, נמדד
 
+> ## 🟢 18/08/2026 (לילה, אחרי סבב-2) — **תחזוקה: עוד 6 תמונות מתות (~1.05MB) הוסרו — torah/mthbram**
+
+> אחרי שסבב-2 (פרפורמנס) וליטוש "מצב כהה" (POLISH_BACKLOG) נסגרו, וארבעה
+> צעדים קטנים נוספים כבר קרו בלי תיעוד כאן (#219 קיוסק show-password,
+> #234/#237 שכפול-בקלות reconcile, ניגודיות קרדיט הפוטר ב-auth-button.js —
+> ראו git log, לכולם יש QA/_results.md משלהם), Supabase MCP עדיין לא מחובר
+> לסשן הזה (נבדק שוב) אז אי אפשר לשאול core.issues מה עוד open. המשך ישיר
+> לניקוי `dead-assets-cleanup-0817`: Explore agent סרק apps/02–37 עבור
+> תמונות >200KB לא-מוזכרות בעץ האפליקציה שלהן; אומת פעמיים (agent + grep
+> עצמאי). הוסרו: `hero-pattern.jpg`, `hero-stage.jpg`, `logo-mitchabrim.png`
+> — כל אחד פעמיים (01-torah-platform ו-21-mthbram, אותו קוד מזוקק). לא
+> נבנית, אין פריסה נדרשת. ראיות: `QA/platform/dead-assets-cleanup-0818/`.
+>
+> ⚠️ heartbeat נכתב כקובץ `_heartbeat-pending.sql` (Supabase MCP לא מחובר).
+
 > ## 🟢 18/08/2026 (לילה) — **35 kiosk: נמדד פרפורמנס 93 (מעל הסף), סבב-2 (ROUTES) הושלם על כל המסלולים**
 
 > המשך סבב-2 (פרפורמנס, בסדר `ROUTES` ב-`scripts/qa/lighthouse-run.mjs`) —
