@@ -1,0 +1,207 @@
+{
+  "torah": {
+    "url": "https://more30.com/torah",
+    "measuredAt": "2026-08-17T16:44:26.143Z",
+    "performance": 42,
+    "accessibility": 100,
+    "bestPractices": 77,
+    "seo": 100,
+    "metrics": {
+      "fcp": "5.0 s",
+      "lcp": "5.0 s",
+      "tbt": "890 ms",
+      "cls": "0.001",
+      "si": "14.2 s"
+    },
+    "failedAudits": [
+      {
+        "id": "first-contentful-paint",
+        "title": "First Contentful Paint",
+        "score": 0.1,
+        "display": "5.0 s"
+      },
+      {
+        "id": "largest-contentful-paint",
+        "title": "Largest Contentful Paint",
+        "score": 0.27,
+        "display": "5.0 s"
+      },
+      {
+        "id": "speed-index",
+        "title": "Speed Index",
+        "score": 0.01,
+        "display": "14.2 s"
+      },
+      {
+        "id": "total-blocking-time",
+        "title": "Total Blocking Time",
+        "score": 0.32,
+        "display": "890 ms"
+      },
+      {
+        "id": "max-potential-fid",
+        "title": "Max Potential First Input Delay",
+        "score": 0.15,
+        "display": "420 ms"
+      },
+      {
+        "id": "server-response-time",
+        "title": "Reduce initial server response time",
+        "score": 0,
+        "display": "Root document took 1,160 ms"
+      },
+      {
+        "id": "interactive",
+        "title": "Time to Interactive",
+        "score": 0.12,
+        "display": "13.2 s"
+      },
+      {
+        "id": "third-party-cookies",
+        "title": "Uses third-party cookies",
+        "score": 0,
+        "display": "2 cookies found"
+      },
+      {
+        "id": "mainthread-work-breakdown",
+        "title": "Minimize main-thread work",
+        "score": 0,
+        "display": "4.6 s"
+      },
+      {
+        "id": "valid-source-maps",
+        "title": "Missing source maps for large first-party JavaScript",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "unminified-javascript",
+        "title": "Minify JavaScript",
+        "score": 0.5,
+        "display": "Est savings of 6 KiB"
+      },
+      {
+        "id": "unused-css-rules",
+        "title": "Reduce unused CSS",
+        "score": 0.5,
+        "display": "Est savings of 15 KiB"
+      },
+      {
+        "id": "unused-javascript",
+        "title": "Reduce unused JavaScript",
+        "score": 0.5,
+        "display": "Est savings of 107 KiB"
+      },
+      {
+        "id": "inspector-issues",
+        "title": "Issues were logged in the `Issues` panel in Chrome Devtools",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "cache-insight",
+        "title": "Use efficient cache lifetimes",
+        "score": 0.5,
+        "display": "Est savings of 43 KiB"
+      },
+      {
+        "id": "document-latency-insight",
+        "title": "Document request latency",
+        "score": 0,
+        "display": "Est savings of 19 KiB"
+      },
+      {
+        "id": "forced-reflow-insight",
+        "title": "Forced reflow",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "lcp-breakdown-insight",
+        "title": "LCP breakdown",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "network-dependency-tree-insight",
+        "title": "Network dependency tree",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "render-blocking-insight",
+        "title": "Render-blocking requests",
+        "score": 0,
+        "display": "Est savings of 550 ms"
+      }
+    ],
+    "mainThreadBreakdown": [
+      {
+        "group": "Style & Layout",
+        "duration": 1595
+      },
+      {
+        "group": "Other",
+        "duration": 1434
+      },
+      {
+        "group": "Script Evaluation",
+        "duration": 1082
+      },
+      {
+        "group": "Rendering",
+        "duration": 194
+      },
+      {
+        "group": "Garbage Collection",
+        "duration": 184
+      },
+      {
+        "group": "Parse HTML & CSS",
+        "duration": 93
+      },
+      {
+        "group": "Script Parsing & Compilation",
+        "duration": 33
+      }
+    ],
+    "bootupTime": [
+      {
+        "url": "https://more30.com/torah",
+        "total": 1986,
+        "scripting": 56,
+        "scriptParseCompile": 9
+      },
+      {
+        "url": "Unattributable",
+        "total": 1433,
+        "scripting": 277,
+        "scriptParseCompile": 0
+      },
+      {
+        "url": "https://more30.com/torah/assets/index-Bm965Ubl.js",
+        "total": 661,
+        "scripting": 604,
+        "scriptParseCompile": 5
+      },
+      {
+        "url": "https://more30.com/auth-button.js",
+        "total": 256,
+        "scripting": 46,
+        "scriptParseCompile": 8
+      },
+      {
+        "url": "https://netfree.link/card/card-injection.js",
+        "total": 114,
+        "scripting": 59,
+        "scriptParseCompile": 9
+      },
+      {
+        "url": "https://netfree.link/card/",
+        "total": 78,
+        "scripting": 0,
+        "scriptParseCompile": 0
+      }
+    ]
+  }
+}

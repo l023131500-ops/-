@@ -1,5 +1,23 @@
 # SYSTEMS_STATUS.md — מצב כל המערכות, נמדד
 
+> ## 🟢 17/08/2026 (לילה, כא) — **01 torah: נמצא ותוקן CLS 0.578 (הרגרסיה המתועדת ב-`prerender-all.mjs`) — 0.001 אחרי**
+>
+> `node scripts/qa/lighthouse-run.mjs QA/platform/torah-lh-0817 torah` — המדידה הראשונה
+> ל-`torah`(01) תחת סבב 0817 עם הכלי הנוכחי. **פרפורמנס 37 · נגישות 100 · Best Practices
+> 77 · SEO 100**, אבל `cls: "0.578"` — בדיוק הרגרסיה שהתיעוד ב-`scripts/prerender-all.mjs`
+> מזהיר מפניה בשמה (ראה ה-header שם: "`03/08` a rebuild re-ran `prerender-spa.mjs`
+> without `--seed-url`... CLS 0.001 -> 0.578"). אימתתי ישירות: הבאת `https://more30.com/torah`
+> עם cache-buster — `window.__TENANT__` לא נמצא ב-HTML החי, כלומר הרגרסיה חזרה.
+> **תוקן:** `node scripts/prerender-all.mjs torah` (אופה מחדש את `_deploy/torah-more30/torah/index.html`
+> עם שורת ה-tenant הנשלפת מ-Supabase לפי `apps/01-torah-platform/.env.local`) → `vercel deploy
+> --prod --yes` מ-`_deploy/torah-more30` (פרויקט Vercel מקושר עצמאי, `prj_0JWao5UJpiQD80dX7jkypgKaA8Et`),
+> READY. אומת חי עם cache-buster: `__TENANT__` מופיע כעת ב-HTML המוגש. נמדד שוב:
+> **CLS 0.578→0.001**. נגישות 100/SEO 100 ללא שינוי; פרפורמנס 37→42 (עדיין מתחת ל-90,
+> לא נחקר בסבב הזה — `mainthread-work-breakdown`/FCP/LCP דומיננטיים, אותו דפוס
+> NetFree-adjacent שמתועד במסלולים אחרים). ראיות: `QA/platform/torah-lh-0817/_lighthouse.json`
+> (לפני, CLS 0.578) · `QA/platform/torah-lh-clsfix-0817/_lighthouse.json` (אחרי, CLS 0.001).
+> Supabase MCP אינו מחובר לסשן הזה — heartbeat נכתב כקובץ `_heartbeat-pending.sql`.
+
 > ## 🟢 17/08/2026 (לילה, כ) — **24 גליל קונקט: ה-code splitting מ-`ba36ea0` נפרס לייצור ואומת חי**
 >
 > ההמשך הישיר ל-`ba36ea0` ("השלמת route-level code splitting... לא פרוס עדיין").
