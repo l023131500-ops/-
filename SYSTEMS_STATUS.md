@@ -1,5 +1,28 @@
 # SYSTEMS_STATUS.md — מצב כל המערכות, נמדד
 
+> ## 🟢 17/08/2026 — **06 בריאות — נוסף פקד מצב-כהה ידני, פרוס וחי. 4/5 מ-POLISH_BACKLOG.**
+>
+> המשך ישיר ל-03 מודעות (למטה): 06-בריאות (`apps/06-kupot-holim`, מוגש תחת
+> `/briut`) הוא אתר סטטי בלי שלב build — כמו 10-בקלות-תצוגה, לא כמו
+> 02/03 שהם Next.js. `THEME_BOOT` שכבר ישב ב-`<head>` (עוקב רק אחרי
+> `prefers-color-scheme`) עודכן לקרוא `localStorage["briut-theme"]` קודם,
+> אותה תבנית בדיוק כמו 02/03/10. נוסף `#themeToggle` (🌙/☀️) ל-`.main-nav`
+> ב-`index.html`, מקש הקליק ב-`app.js`, עיצוב הכפתור ב-`styles.css`.
+>
+> `/briut` מוגש עם `<base href="/briut/">` (ראה ההערה בראש `index.html` —
+> בלעדיו כל נכס נפתר מהשורש ומחזיר HTML של הפורטל, כמו שקרה כאן פעם), אז
+> האימות המקומי רץ משרת סטטי ששורשו תיקיית `_deploy/briut-more30` (כדי
+> שהנתיב `/briut/` ייפתר נכון), לא ישירות על `apps/06-kupot-holim/site`.
+> Playwright מקומית ואז מול הייצור: קליק→`classList.contains('dark')` + רקע
+> `rgb(14,21,25)`; רענון (`?cachebust`) שומר בלי הבזק; קליק נוסף חוזר לבהיר.
+> נפרס `vercel deploy --prod` מתוך `_deploy/briut-more30`
+> (`briut-more30`, `dpl_9kmftqAHANeWjCcoJwuuYSN4uYuM`) ואומת חי ב-
+> `https://more30.com/briut/?cachebust=0817briut`. ראיות:
+> `QA/platform/theme-toggle-briut-0817/`. 35 (קיוסק, Vite) נשאר ברשימה.
+>
+> ⚠️ ה-MCP של Supabase אינו מחובר לסשן הזה — heartbeat נכתב כקובץ
+> `_heartbeat-pending.sql` (מצטרף לתור הקיים; הרץ לפי סדר הקומיטים ב-git log).
+
 > ## 🟢 17/08/2026 — **03 מודעות — נוסף פקד מצב-כהה ידני, פרוס וחי. 3/5 מ-POLISH_BACKLOG.**
 >
 > המשך ישיר ל-02-תמלול (למטה): גם 03 בנויה Next.js, וגם לה נדרש `ThemeToggle`.
