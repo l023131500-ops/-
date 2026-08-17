@@ -1,5 +1,39 @@
 # SYSTEMS_STATUS.md — מצב כל המערכות, נמדד
 
+> ## 🟢 17/08/2026 (לילה, כג) — **04 עימוד תורני (imud): פונטים לא-חוסמים, פרפורמנס 53→60 (עדיין מתחת ל-90)**
+
+> המשך סבב-2 (פרפורמנס, בסדר המערכות) — אחרי torah(01)/tamlul(02)/modaot(03).
+> `node scripts/qa/lighthouse-run.mjs QA/platform/imud-lh-0817 imud` — ציון בסיס
+> ראשון לסבב הזה: **פרפורמנס 53 · נגישות 100 · Best Practices 77 · SEO 100**.
+> `render-blocking-insight` (חיסכון משוער 300ms) הצביע על אותו דפוס שכבר תוקן
+> ב-01/02/03: `<link rel="stylesheet" href="fonts.googleapis.com/css2?...">`
+> סינכרוני ב-`<head>`. **הבדל מ-01/02/03:** `apps/04-imud-torani` הוא Vite+Express
+> (client/server), לא Next.js — אין `next/font/google`. התיקון המקביל: תבנית
+> `loadCSS` הסטנדרטית — `<link rel="preload" as="style">` + `<link rel="stylesheet"
+> media="print" onload="this.media='all'">` + `<noscript>` גיבוי, ב-
+> `apps/04-imud-torani/client/index.html`. 11 משפחות הגופנים (Assistant/Heebo/
+> Frank Ruhl Libre/David Libre/Noto Serif Hebrew/Noto Rashi Hebrew/Suez One/
+> Cardo/Rubik/Alef/Miriam Libre/Bellefair) נשארו כפי שהן — לא הוחלט לצמצם רשימה
+> שהעיצוב תלוי בה בלי בדיקה.
+>
+> `vite build` (`apps/04-imud-torani`, `base: "/imud/"`) → `robocopy dist/public
+> _deploy/imud-more30/public/imud /MIR` → `vercel deploy --prod --yes --scope
+> l023131500-ops-projects` מ-`_deploy/imud-more30` (סטטי, `vercel.json` עם
+> `buildCommand: echo no-build` — הבנייה מקומית, הפריסה רק מעתיקה), `dpl_8PJ63Z2Th9YYEtQE4VFVRGC47ck1`,
+> READY. אומת חי עם cache-buster: תבנית ה-`media="print"`/`onload` מופיעה ב-HTML
+> המוגש ב-`more30.com/imud`.
+>
+> **נמדד אחרי:** פרפורמנס **53→60**, FCP/LCP/TBT ללא שיפור מובהק (bundle ראשי
+> 1.09MB — עדיין הגורם הדומיננטי, לא נחקר בסבב הזה). נגישות 100 ו-BP 77 ללא
+> שינוי. SEO ירד 100→91 בין שתי המדידות — לא נחקר, ייתכן רעש מדידה (NetFree/
+> תזמון), לא קשור לשינוי הקוד (שום דבר ב-`<head>` הרלוונטי ל-SEO לא נגע).
+> ראיות: `QA/platform/imud-lh-0817/_lighthouse.json` (לפני) ·
+> `QA/platform/imud-lh-fontfix-0817/_lighthouse.json` (אחרי).
+> Supabase MCP אינו מחובר לסשן הזה — heartbeat נכתב כקובץ `_heartbeat-pending.sql`.
+>
+> הבא בסבב-2 (פרפורמנס, בסדר המערכות): `briut` (הבא ברשימת `ROUTES` אחרי `imud`
+> ב-`scripts/qa/lighthouse-run.mjs`).
+
 > ## 🟢 17/08/2026 (לילה, כב) — **03 מודעות איגוד: תוקן שורש הפרפורמנס (Google Fonts render-blocking), 86→91**
 
 > המשך סבב-2 (פרפורמנס) בסדר המערכות — אחרי torah(01) ותמלול(02), עבר ל-03 מודעות.

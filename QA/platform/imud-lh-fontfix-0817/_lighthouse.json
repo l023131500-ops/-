@@ -1,17 +1,17 @@
 {
   "imud": {
     "url": "https://more30.com/imud",
-    "measuredAt": "2026-08-17T17:25:39.897Z",
-    "performance": 53,
+    "measuredAt": "2026-08-17T17:29:22.608Z",
+    "performance": 60,
     "accessibility": 100,
     "bestPractices": 77,
-    "seo": 100,
+    "seo": 91,
     "metrics": {
       "fcp": "4.8 s",
-      "lcp": "5.9 s",
+      "lcp": "4.8 s",
       "tbt": "280 ms",
-      "cls": "0.081",
-      "si": "9.8 s"
+      "cls": "0.002",
+      "si": "8.5 s"
     },
     "failedAudits": [
       {
@@ -23,14 +23,14 @@
       {
         "id": "largest-contentful-paint",
         "title": "Largest Contentful Paint",
-        "score": 0.14,
-        "display": "5.9 s"
+        "score": 0.3,
+        "display": "4.8 s"
       },
       {
         "id": "speed-index",
         "title": "Speed Index",
-        "score": 0.1,
-        "display": "9.8 s"
+        "score": 0.18,
+        "display": "8.5 s"
       },
       {
         "id": "total-blocking-time",
@@ -41,14 +41,14 @@
       {
         "id": "max-potential-fid",
         "title": "Max Potential First Input Delay",
-        "score": 0.31,
-        "display": "320 ms"
+        "score": 0.46,
+        "display": "260 ms"
       },
       {
         "id": "interactive",
         "title": "Time to Interactive",
-        "score": 0.47,
-        "display": "7.5 s"
+        "score": 0.49,
+        "display": "7.3 s"
       },
       {
         "id": "third-party-cookies",
@@ -93,6 +93,18 @@
         "display": ""
       },
       {
+        "id": "robots-txt",
+        "title": "robots.txt is not valid",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "bf-cache",
+        "title": "Page prevented back/forward cache restoration",
+        "score": 0,
+        "display": "1 failure reason"
+      },
+      {
         "id": "cache-insight",
         "title": "Use efficient cache lifetimes",
         "score": 0,
@@ -102,7 +114,7 @@
         "id": "document-latency-insight",
         "title": "Document request latency",
         "score": 0.5,
-        "display": "Est savings of 3 KiB"
+        "display": "Est savings of 4 KiB"
       },
       {
         "id": "forced-reflow-insight",
@@ -126,69 +138,75 @@
         "id": "render-blocking-insight",
         "title": "Render-blocking requests",
         "score": 0,
-        "display": "Est savings of 300 ms"
+        "display": "Est savings of 150 ms"
       }
     ],
     "mainThreadBreakdown": [
       {
         "group": "Style & Layout",
-        "duration": 1224
+        "duration": 1044
       },
       {
         "group": "Other",
-        "duration": 926
+        "duration": 1036
       },
       {
         "group": "Script Evaluation",
-        "duration": 887
+        "duration": 907
       },
       {
         "group": "Rendering",
-        "duration": 82
-      },
-      {
-        "group": "Garbage Collection",
-        "duration": 35
+        "duration": 91
       },
       {
         "group": "Parse HTML & CSS",
-        "duration": 33
+        "duration": 53
       },
       {
         "group": "Script Parsing & Compilation",
-        "duration": 31
+        "duration": 28
+      },
+      {
+        "group": "Garbage Collection",
+        "duration": 16
       }
     ],
     "bootupTime": [
       {
         "url": "Unattributable",
-        "total": 1146,
-        "scripting": 378,
+        "total": 1128,
+        "scripting": 371,
         "scriptParseCompile": 0
       },
       {
         "url": "https://more30.com/imud",
-        "total": 926,
-        "scripting": 18,
-        "scriptParseCompile": 6
-      },
-      {
-        "url": "https://more30.com/auth-button.js",
-        "total": 548,
-        "scripting": 37,
-        "scriptParseCompile": 9
+        "total": 1005,
+        "scripting": 47,
+        "scriptParseCompile": 5
       },
       {
         "url": "https://more30.com/imud/assets/index-B5lbboGZ.js",
-        "total": 451,
-        "scripting": 374,
-        "scriptParseCompile": 11
+        "total": 425,
+        "scripting": 311,
+        "scriptParseCompile": 9
+      },
+      {
+        "url": "https://more30.com/auth-button.js",
+        "total": 337,
+        "scripting": 72,
+        "scriptParseCompile": 7
       },
       {
         "url": "https://netfree.link/card/card-injection.js",
-        "total": 85,
-        "scripting": 52,
+        "total": 125,
+        "scripting": 64,
         "scriptParseCompile": 4
+      },
+      {
+        "url": "https://netfree.link/card/",
+        "total": 79,
+        "scripting": 0,
+        "scriptParseCompile": 0
       }
     ]
   }

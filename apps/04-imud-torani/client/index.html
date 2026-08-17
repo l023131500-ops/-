@@ -35,10 +35,26 @@
     <link rel="icon" type="image/svg+xml" href="/imud/favicon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- טעינה לא-חוסמת: preload + מעבר ל-stylesheet רק אחרי טעינה (loadCSS
+         pattern). המשקל המקורי (11 משפחות גופנים ב-<link rel="stylesheet">
+         סינכרוני) היה render-blocking-insight, ~300ms חיסכון אפשרי. -->
+    <link
+      rel="preload"
+      as="style"
+      href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700;800&family=Heebo:wght@300;400;500;700&family=Frank+Ruhl+Libre:wght@300;400;500;700;900&family=David+Libre:wght@400;500;700&family=Noto+Serif+Hebrew:wght@300;400;500;700&family=Noto+Rashi+Hebrew:wght@400;500;700&family=Suez+One&family=Cardo:ital,wght@0,400;0,700;1,400&family=Rubik:wght@300;400;500;700&family=Alef:wght@400;700&family=Miriam+Libre:wght@400;700&family=Bellefair&display=swap"
+    />
     <link
       href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700;800&family=Heebo:wght@300;400;500;700&family=Frank+Ruhl+Libre:wght@300;400;500;700;900&family=David+Libre:wght@400;500;700&family=Noto+Serif+Hebrew:wght@300;400;500;700&family=Noto+Rashi+Hebrew:wght@400;500;700&family=Suez+One&family=Cardo:ital,wght@0,400;0,700;1,400&family=Rubik:wght@300;400;500;700&family=Alef:wght@400;700&family=Miriam+Libre:wght@400;700&family=Bellefair&display=swap"
       rel="stylesheet"
+      media="print"
+      onload="this.media='all'"
     />
+    <noscript>
+      <link
+        href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700;800&family=Heebo:wght@300;400;500;700&family=Frank+Ruhl+Libre:wght@300;400;500;700;900&family=David+Libre:wght@400;500;700&family=Noto+Serif+Hebrew:wght@300;400;500;700&family=Noto+Rashi+Hebrew:wght@400;500;700&family=Suez+One&family=Cardo:ital,wght@0,400;0,700;1,400&family=Rubik:wght@300;400;500;700&family=Alef:wght@400;700&family=Miriam+Libre:wght@400;700&family=Bellefair&display=swap"
+        rel="stylesheet"
+      />
+    </noscript>
   </head>
   <body>
     <div id="root"></div>

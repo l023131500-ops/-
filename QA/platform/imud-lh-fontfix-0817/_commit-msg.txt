@@ -1,0 +1,16 @@
+04 עימוד תורני (imud): תוקן שורש הפרפורמנס - Google Fonts render-blocking -> loadCSS preload/swap (perf 53->60)
+
+המשך סבב-2 (פרפורמנס) בסדר המערכות, אחרי torah(01)/tamlul(02)/modaot(03).
+apps/04-imud-torani הוא Vite+Express, לא Next.js, ולכן התיקון המקביל ל-
+next/font/google הוא תבנית loadCSS: preload as=style + stylesheet
+media=print onload=this.media='all' + noscript גיבוי, ב-client/index.html.
+
+vite build -> robocopy dist/public -> _deploy/imud-more30/public/imud/MIR
+-> vercel deploy --prod (dpl_8PJ63Z2Th9YYEtQE4VFVRGC47ck1, READY). אומת
+חי עם cache-buster.
+
+נמדד: פרפורמנס 53->60 (עדיין מתחת ל-90; bundle ראשי 1.09MB הוא הגורם
+הדומיננטי הבא, לא נחקר בסבב הזה). נגישות 100/BP 77 ללא שינוי. SEO 100->91
+לא נחקר (כנראה רעש מדידה).
+
+Supabase MCP לא היה מחובר; heartbeat נכתב כ-_heartbeat-pending.sql.
