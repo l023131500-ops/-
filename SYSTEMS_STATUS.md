@@ -1,5 +1,17 @@
 # SYSTEMS_STATUS.md — מצב כל המערכות, נמדד
 
+> ## 🟢 17/08/2026 (לילה, טז) — **16 חצור קונקט (אפליקציה, `/chatzor/`) — Lighthouse נמדד לראשונה (perf 49, a11y כבר 100, SEO 100)**
+>
+> `node scripts/qa/lighthouse-run.mjs QA/platform/chatzor-app-lh-0817 chatzor-app` — ציון ראשון
+> אי-פעם למסלול `chatzor-app` (`/chatzor/`, ה-SPA בפועל — שונה מ-`chatzor` הנחיתה `/chatzor`
+> שכבר נמדדה ב-02/08). **נגישות 100 · SEO 100 · Best Practices 77 · פרפורמנס 49**. בדומה
+> ל-28/26/22/14/03 — הנגישות כבר מלאה, אין `failedAudits` נגיש לתקן, אין שינוי קוד בסבב
+> הזה. `bootupTime` מראה `netfree.link/card/card-injection.js` ו-`netfree.link/injection-script/go-payment.js`
+> רצים בפועל בטרייס — אותו דפוס NetFree שכבר מתועד ב-32/02/04/06/10/14/28/31 ומסביר את
+> ה-Best Practices (77) ותורם לפרפורמנס (49); לא נחקר מחדש כאן, לפי אותה מסקנה שכבר
+> אושרה עם ראיה ישירה בסבב 32 (לילה, ז/ו). ראיות: `QA/platform/chatzor-app-lh-0817/_lighthouse.json`.
+> Supabase MCP אינו מחובר לסשן הזה — heartbeat נכתב כקובץ `_heartbeat-pending.sql`.
+
 > ## 🟢 17/08/2026 (לילה, טו) — **31 גשר עברית CRM — Lighthouse נמדד לראשונה (perf 80, a11y 98→100) + תוקן `landmark-one-main` אמיתי**
 >
 > `node scripts/qa/lighthouse-run.mjs QA/platform/gesher-lh-0817 gesher` — ציון ראשון אי-פעם
