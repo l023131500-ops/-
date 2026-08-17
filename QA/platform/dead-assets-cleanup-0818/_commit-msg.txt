@@ -1,25 +1,4 @@
-תחזוקה: הסרת 6 תמונות מתות נוספות (~1.05MB) שלא נקראות משום קוד — torah/mthbram
+heartbeat: reconcile dead-assets-cleanup-0818 pending file (Supabase MCP now connected)
 
-Explore agent סרק apps/02-37 עבור תמונות >200KB תחת src/assets ו-public שלא
-מוזכרות בשום מקום בעץ האפליקציה שלהן (grep רקורסיבי, לא כולל node_modules/dist).
-6 קבצים נמצאו, כולם ב-01-torah-platform ו-21-mthbram (אותה תבנית, קוד מזוקק):
-
-- apps/01-torah-platform/src/assets/hero-pattern.jpg (286,677 בייט)
-- apps/21-mthbram/src/assets/hero-pattern.jpg (286,677 בייט)
-- apps/01-torah-platform/src/assets/hero-stage.jpg (140,765 בייט)
-- apps/21-mthbram/src/assets/hero-stage.jpg (140,765 בייט)
-- apps/01-torah-platform/src/assets/logo-mitchabrim.png (94,158 בייט)
-- apps/21-mthbram/src/assets/logo-mitchabrim.png (94,158 בייט)
-
-אומת פעמיים: פעם אחת ע"י ה-agent, ופעם נוספת עצמאית כאן עם PowerShell
-Select-String רקורסיבי על כל עץ כל אפליקציה (לא node_modules/dist/.git) —
-0 התאמות לכל שם קובץ מלבד הקובץ עצמו. hero-microphone.png (322KB) נבדק
-ונמצא בשימוש (HeroSection.tsx) — לא נמחק. תמונות ה-slide ב-14-bsmachot-plus
-נבדקו ונמצאו בשימוש דרך template literal דינמי (./assets/slides/slide-${n}.png)
-ב-app.js — לא נמחקו.
-
-לא נבנית ולא נגעתי בשום נתיב ייצור — קבצים בלתי-מושגים על ידי שום build.
-אין פריסה נדרשת. המשך ישיר לניקוי הקודם (dead-assets-cleanup-0817, 17/08).
-
-Supabase MCP לא מחובר לסשן הזה (נבדק שוב) - heartbeat כ-_heartbeat-pending.sql.
-מוגן: לא נגעתי ב-08/09/bkalut-app/bkalot-admin/zr_*/NEDARIM3873.
+Inserted the queued row into core.run_progress (id 846) and deleted the
+_heartbeat-pending.sql file it was written from. No code or deploy change.
