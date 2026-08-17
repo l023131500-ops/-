@@ -1,5 +1,38 @@
 # SYSTEMS_STATUS.md — מצב כל המערכות, נמדד
 
+> ## 🟢 17/08/2026 (לילה, כז) — **15 איגוד (egod): נחקר פרפורמנס 53 — הפעם זה ה-bundle העצמי, לא רעש רשת/פונטים; דורש code-splitting, לא תוקן בצעד הזה**
+
+> המשך סבב-2 (פרפורמנס, בסדר המערכות) — הבא אחרי smachot(14) לפי `ROUTES` ב-
+> `scripts/qa/lighthouse-run.mjs`. השתמשתי בנתונים שכבר נמדדו היום
+> (`QA/platform/egod-lh-a11yfix-0817/_lighthouse.json`, אחרי תיקון הנגישות) —
+> אין צורך במדידה חדשה.
+>
+> **למה זה לא אותו דפוס:** ל-`apps/15-egod/index.html`/`dist/index.html` אין
+> בכלל קישור ל-`fonts.googleapis.com` — אין גופנים חוסמים לתקן. `render-
+> blocking-insight` (חיסכון משוער 750ms) מצביע על ה-CSS המובנה של Vite
+> (`index-Crke-OnG.css`, עיצוב מלא של האפליקציה) — אותה קטגוריה כמו
+> `bkalot-theme.css` ו-`base.css`/`style.css` של smachot, ששניהם הושארו
+> סינכרוניים בסבבים קודמים כדי לא לסכן הבזק-לא-מעוצב (FOUC) בעמוד חי. הושאר
+> כך גם כאן, מאותה סיבה.
+>
+> **הממצא האמיתי:** בניגוד לחקירת 32 נדל"ן (`nadlan-mainthread-0817`, שם
+> NetFree היה הגורם הדומיננטי וה-JS העצמי זניח) — כאן זה הפוך: `bootupTime`
+> מראה ש-`index-DtGWwuYa.js` (ה-bundle העצמי של egod) לוקח **1786ms total,
+> 724ms scripting** — פי ~13 מ-`auth-button.js` (138ms) ופי ~19 מהזרקת
+> NetFree (94ms). `unused-javascript` (חיסכון משוער 179 KiB), `unminified-
+> javascript`, ו-`unused-css-rules` תומכים: זה bundle גדול/לא-מפוצל, לא רעש
+> מדידה.
+>
+> **מסקנה:** דורש עבודת code-splitting/tree-shaking אמיתית על `apps/15-egod`
+> (Vite+React, `recharts` בין התלויות) — לא תיקון חד-קובצי כמו loadCSS. עבודה
+> נפרדת וגדולה מ"צעד אחד", לא בוצעה כאן. אין שינוי קוד/פריסה בצעד הזה — חקירה
+> ותיעוד בלבד. ראיות: `QA/platform/egod-perf-investigate-0817/_analysis.md`.
+> Supabase MCP אינו מחובר לסשן הזה — heartbeat נכתב כקובץ
+> `_heartbeat-pending.sql`.
+>
+> הבא בסבב-2 (פרפורמנס, בסדר המערכות): `chatzor` (הבא ברשימת `ROUTES` אחרי
+> `egod`).
+
 > ## 🟡 17/08/2026 (לילה, כו) — **12 סמל נדל"ן (smel): תוקן שורש הפרפורמנס (Google Fonts render-blocking), אך הציון ירד 80→76 — כנראה רעש מדידה כמו bkalot**
 
 > המשך סבב-2 (פרפורמנס, בסדר המערכות) — הבא אחרי `bkalot` לפי `ROUTES` ב-
