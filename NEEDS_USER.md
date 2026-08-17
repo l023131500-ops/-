@@ -21,6 +21,23 @@ touch-target סגורות למעט `bkalot` (מוגן) ו-`kesef` (34) — או�
 ראה `SYSTEMS_STATUS.md`) כבר כתוב וממתין רק לחיבור מחדש של ה-Supabase MCP כדי
 להיפרס — Supabase MCP לא היה מחובר לכל אורך הסשן הזה. לא בוצע שינוי מומצא.
 
+**עוד סבב, 17/08/2026 (ערב) — אותה מסקנה, בדיקה עצמאית.** `gannenet-incoming/`
+מכיל רק תיקיית `done/` (0 ZIP חדשים, §0.3 נבדק). `POLISH_BACKLOG.md` — 5/5
+מצב-כהה סגור, אין פריט פתוח. הענף `fix/nadlan-a11y` עצמו: שתי הבדיקות
+שבשמו (מצב כהה + חפיפת כפתור-כניסה ב-32 נדל"ן) כבר נמדדו ונסגרו כ"לא פער
+פעיל" בסבב הקודם היום — אין דיף בעץ העבודה. Supabase MCP עדיין לא מחובר
+(אומת שוב דרך ToolSearch: 0 כלי `mcp__supabase__*`).
+
+ניסיון נוסף לאתר עבודה קטנה אמיתית: חיפוש נכסי תמונה גדולים שאינם
+בשימוש (באותה שיטה שסגרה 4 קבצים מתים בסבב `dead-assets-cleanup-0817`) —
+`apps/01-torah-platform/src/assets/hero-microphone.png` ו-
+`apps/21-mthbram/src/assets/hero-microphone.png` (322KB כל אחד) נראו
+כלא-מאוזכרים ב-Grep, אך `apps/**` ב-`.gitignore` וה-Grep מדלג עליו בשקט
+([[app-sources-are-gitignored]]) — `Select-String` מצא מיד `import heroMic
+from "@/assets/hero-microphone.png"` בשני `HeroSection.tsx`. **שני הקבצים
+בשימוש בפועל, לא נמחקו.** תיעוד ההפרכה הזו נשמר כדי שהסבב הבא לא יבזבז
+עליה זמן שוב. לא בוצע שינוי קוד/פריסה בסבב הזה — מדידה + תיעוד בלבד.
+
 ---
 
 ## 📋 הקובץ הזה יושב עכשיו גם על המסך — `more30.com/admin/issues`

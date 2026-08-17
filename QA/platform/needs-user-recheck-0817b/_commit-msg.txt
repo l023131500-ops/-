@@ -1,0 +1,19 @@
+אנטי-דריפט: NEEDS_USER.md — סבב 17/08 (ערב) על fix/nadlan-a11y: אין עבודה פונקציונלית חדשה, ותועדה הפרכת "נכס מת" שגויה
+
+gannenet-incoming/ ריק (0 ZIP חדשים, §0.3). POLISH_BACKLOG 5/5 סגור. הענף
+fix/nadlan-a11y עצמו נקי (0 דיף) — שני הבדיקות בשמו כבר נסגרו כ"לא פער
+פעיל" קודם היום. Supabase MCP עדיין לא מחובר (0 כלי mcp__supabase__*).
+
+ניסיון לאתר נכסי תמונה מתים (כמו בסבב dead-assets-cleanup-0817) העלה
+שתי מועמדות: apps/01-torah-platform/src/assets/hero-microphone.png ו-
+apps/21-mthbram/src/assets/hero-microphone.png. Grep לא מצא אזכור, אבל
+apps/** ב-.gitignore וה-Grep מדלג עליו בשקט. Select-String מצא מיד
+import בשני HeroSection.tsx — שני הקבצים בשימוש, לא נמחקו. תועד ב-
+NEEDS_USER.md כדי שהסבב הבא לא יחזור על אותה טעות.
+
+אין שינוי קוד, אין פריסה — מדידה + תיעוד בלבד. ראיות: התיעוד עצמו.
+
+מוגן: לא נגעתי ב-08/09/bkalut-app/bkalot-admin/zr_*/NEDARIM3873.
+
+ה-MCP של Supabase אינו מחובר לסשן הזה — heartbeat נכתב כקובץ
+_heartbeat-pending.sql (מצטרף לתור הקיים; הרץ לפי סדר הקומיטים ב-git log).
