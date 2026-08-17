@@ -1,0 +1,189 @@
+{
+  "bkalot": {
+    "url": "https://more30.com/bkalot",
+    "measuredAt": "2026-08-17T12:11:20.322Z",
+    "performance": 82,
+    "accessibility": 100,
+    "bestPractices": 77,
+    "seo": 91,
+    "metrics": {
+      "fcp": "3.1 s",
+      "lcp": "3.1 s",
+      "tbt": "40 ms",
+      "cls": "0.001",
+      "si": "7.2 s"
+    },
+    "failedAudits": [
+      {
+        "id": "first-contentful-paint",
+        "title": "First Contentful Paint",
+        "score": 0.47,
+        "display": "3.1 s"
+      },
+      {
+        "id": "largest-contentful-paint",
+        "title": "Largest Contentful Paint",
+        "score": 0.76,
+        "display": "3.1 s"
+      },
+      {
+        "id": "speed-index",
+        "title": "Speed Index",
+        "score": 0.3,
+        "display": "7.2 s"
+      },
+      {
+        "id": "server-response-time",
+        "title": "Reduce initial server response time",
+        "score": 0,
+        "display": "Root document took 690 ms"
+      },
+      {
+        "id": "third-party-cookies",
+        "title": "Uses third-party cookies",
+        "score": 0,
+        "display": "2 cookies found"
+      },
+      {
+        "id": "mainthread-work-breakdown",
+        "title": "Minimize main-thread work",
+        "score": 0,
+        "display": "5.9 s"
+      },
+      {
+        "id": "total-byte-weight",
+        "title": "Avoid enormous network payloads",
+        "score": 0.5,
+        "display": "Total size was 2,709 KiB"
+      },
+      {
+        "id": "unminified-javascript",
+        "title": "Minify JavaScript",
+        "score": 0.5,
+        "display": "Est savings of 8 KiB"
+      },
+      {
+        "id": "inspector-issues",
+        "title": "Issues were logged in the `Issues` panel in Chrome Devtools",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "meta-description",
+        "title": "Document does not have a meta description",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "cache-insight",
+        "title": "Use efficient cache lifetimes",
+        "score": 0.5,
+        "display": "Est savings of 1,227 KiB"
+      },
+      {
+        "id": "document-latency-insight",
+        "title": "Document request latency",
+        "score": 0,
+        "display": "Est savings of 16 KiB"
+      },
+      {
+        "id": "font-display-insight",
+        "title": "Font display",
+        "score": 0,
+        "display": "Est savings of 1,490 ms"
+      },
+      {
+        "id": "forced-reflow-insight",
+        "title": "Forced reflow",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "lcp-breakdown-insight",
+        "title": "LCP breakdown",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "modern-http-insight",
+        "title": "Modern HTTP",
+        "score": 0.5,
+        "display": ""
+      },
+      {
+        "id": "network-dependency-tree-insight",
+        "title": "Network dependency tree",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "render-blocking-insight",
+        "title": "Render-blocking requests",
+        "score": 0,
+        "display": "Est savings of 1,210 ms"
+      }
+    ],
+    "mainThreadBreakdown": [
+      {
+        "group": "Style & Layout",
+        "duration": 2226
+      },
+      {
+        "group": "Other",
+        "duration": 2085
+      },
+      {
+        "group": "Rendering",
+        "duration": 755
+      },
+      {
+        "group": "Script Evaluation",
+        "duration": 712
+      },
+      {
+        "group": "Parse HTML & CSS",
+        "duration": 72
+      },
+      {
+        "group": "Script Parsing & Compilation",
+        "duration": 38
+      },
+      {
+        "group": "Garbage Collection",
+        "duration": 24
+      }
+    ],
+    "bootupTime": [
+      {
+        "url": "https://more30.com/bkalot",
+        "total": 3136,
+        "scripting": 50,
+        "scriptParseCompile": 11
+      },
+      {
+        "url": "Unattributable",
+        "total": 1242,
+        "scripting": 29,
+        "scriptParseCompile": 0
+      },
+      {
+        "url": "https://more30.com/bkalot/app.js",
+        "total": 992,
+        "scripting": 428,
+        "scriptParseCompile": 7
+      },
+      {
+        "url": "https://netfree.link/card/card-injection.js",
+        "total": 317,
+        "scripting": 140,
+        "scriptParseCompile": 3
+      },
+      {
+        "url": "https://more30.com/auth-button.js",
+        "total": 149,
+        "scripting": 27,
+        "scriptParseCompile": 9
+      }
+    ]
+  }
+}

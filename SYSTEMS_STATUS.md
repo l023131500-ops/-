@@ -1,5 +1,18 @@
 # SYSTEMS_STATUS.md — מצב כל המערכות, נמדד
 
+> ## 🟢 17/08/2026 (לילה, יא) — **10 בקלות (זכויות) — Lighthouse נמדד לראשונה (perf 82, a11y כבר 100, SEO 91→ תוקן meta description)**
+>
+> `node scripts/qa/lighthouse-run.mjs QA/platform/bkalot-lh-0817 bkalot` — ציון ראשון אי-פעם
+> ל-`bkalot`(10): **פרפורמנס 82 · נגישות 100 · Best Practices 77 · SEO 91**. שלא כמו 02/04/06 —
+> הנגישות כבר מלאה, אין ליקוי לתקן שם. ה-`failedAudits` חשף פער אמיתי אחד קל: `meta-description`
+> (score 0, "Document does not have a meta description") ב-`apps/10-bkalot-rights/index.html`.
+> נוסף `<meta name="description">` תיאורי אחרי ה-`<title>`. פרפורמנס (82, מתחת ל-90) ו-Best
+> Practices (77) לא נחקרו — תואם דפוס NetFree/`third-party-cookies` שכבר מתועד ב-32/02/04/06,
+> לא עבודה חדשה כרגע.
+> נפרס מ-`_deploy/bkalot-more30` (אומת זהה byte-for-byte לעותק במאגר לפני הפריסה, `dpl_FtnA4fmg9yFn76Mc1frPd5aopoSt`)
+> ואומת חי מול הייצור עם cache-buster: התג מופיע ב-HTML המוגש. ראיות: `QA/platform/bkalot-lh-0817/_lighthouse.json`.
+> Supabase MCP אינו מחובר לסשן הזה — heartbeat נכתב כקובץ `_heartbeat-pending.sql`.
+
 > ## 🟢 17/08/2026 (לילה, י) — **06 בריאות (קופות חולים) — Lighthouse נמדד לראשונה (perf 84, a11y 91→97) + תוקנו 2 ליקויי נגישות אמיתיים**
 >
 > `node scripts/qa/lighthouse-run.mjs QA/platform/briut-lh-0817 briut` — ציון ראשון אי-פעם ל-`briut`(06):
@@ -3746,7 +3759,7 @@
 | 03 | מודעות איגוד | [/modaot](https://more30.com/modaot) | ✅ עובדת | 661 | ✅ | ✅ נבדק מחדש 17/08 — אינו פער פעיל (`smallTargets: []`) |
 | 04 | עימוד תורני | [/imud](https://more30.com/imud) | ✅ עובדת | 612 | ✅ | **תוקן: נגישות 90→100** (heading-order, landmark, button-name) · **נמדד 17/08: Lighthouse perf 64** (מתחת לסף 90, לא נחקר עדיין) · עוקב אחרי מצב כהה, אין מתג |
 | 06 | לידים קופות חולים | [/briut](https://more30.com/briut) | ✅ עובדת | 4,832 | ✅ | 108 קישורים |
-| 10 | מימוש זכויות בקלות | [/bkalot](https://more30.com/bkalot) | ✅ עובדת | 3,041 | ✅ | |
+| 10 | מימוש זכויות בקלות | [/bkalot](https://more30.com/bkalot) | ✅ עובדת | 3,041 | ✅ | **תוקן: meta description חסר** · **נמדד 17/08: Lighthouse perf 82 · a11y 100** (מתחת לסף 90, לא נחקר עדיין) |
 | 12 | נדל"ן Smel | [/smel](https://more30.com/smel) | ✅ עובדת | 1,149 | ✅ | |
 | 14 | שמחות פלוס | [/smachot](https://more30.com/smachot) | ✅ עובדת | 1,445 | ✅ | |
 | 15 | איגוד | [/egod](https://more30.com/egod) | ✅ עובדת | 2,459 | ✅ | **תוקן: 18 → 0 יעדי מגע קטנים** |
