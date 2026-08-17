@@ -1,0 +1,55 @@
+{
+  "/nadlan": {
+    "hasDarkRules": true,
+    "darkRuleSample": [
+      {
+        "sel": ".dark",
+        "decl": "color-scheme: dark; --c-navy: 232 237 247; --c-ink: 221 227 238; --c-muted: 154 165 187; --c-line: 42 53 80; --c-bgsoft: 12 18 32; --c-surface: 21 29 49; --c-sl"
+      },
+      {
+        "sel": ".dark .skeleton",
+        "decl": "background: linear-gradient(90deg, rgb(27, 36, 64) 25%, rgb(36, 48, 79) 37%, rgb(27, 36, 64) 63%) 0% 0% / 200% 100%;"
+      },
+      {
+        "sel": ".dark\\:text-goldL:is(.dark *)",
+        "decl": "--tw-text-opacity: 1; color: rgb(230 201 136/var(--tw-text-opacity));"
+      }
+    ],
+    "sheetsUnreadable": 0,
+    "before": {
+      "effectiveBg": "rgb(246, 248, 252)",
+      "bodyImage": "",
+      "bodyBg": "rgb(246, 248, 252)",
+      "htmlBg": "rgba(0, 0, 0, 0)",
+      "fg": "rgb(26, 34, 51)",
+      "surfaces": [
+        "rgba(255, 255, 255, 0.9)",
+        "rgba(0, 0, 0, 0)",
+        "rgba(0, 0, 0, 0)",
+        "rgba(0, 0, 0, 0)",
+        "rgba(0, 0, 0, 0)",
+        "rgba(11, 125, 124, 0.1)",
+        "rgba(0, 0, 0, 0)",
+        "rgba(11, 125, 124, 0.1)"
+      ]
+    },
+    "after": {
+      "effectiveBg": "rgb(12, 18, 32)",
+      "bodyImage": "",
+      "bodyBg": "rgb(12, 18, 32)",
+      "htmlBg": "rgba(0, 0, 0, 0)",
+      "fg": "rgb(221, 227, 238)",
+      "surfaces": [
+        "rgba(21, 29, 49, 0.9)",
+        "rgba(0, 0, 0, 0)",
+        "rgba(0, 0, 0, 0)",
+        "rgba(0, 0, 0, 0)",
+        "rgba(0, 0, 0, 0)",
+        "rgba(11, 125, 124, 0.1)",
+        "rgba(0, 0, 0, 0)",
+        "rgba(11, 125, 124, 0.1)"
+      ]
+    },
+    "changed": true
+  }
+}

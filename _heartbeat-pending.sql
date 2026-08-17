@@ -14,3 +14,11 @@ insert into core.run_progress (phase, task, status, note) values (
   'done',
   'הרשומה הישנה בטבלת "חפיפת כפתור הכניסה" ב-SYSTEMS_STATUS.md סימנה /nadlan "מקורות ותמחור" כ-⏳ ממתין לפריסה. node scripts/qa/authbutton-overlap.mjs nadlan מול הייצור החזיר 0 חפיפות בכל חמשת הרוחבים (390/834/1100/1280/1440) — clear @ 390,834,1100,1280,1440. אין שינוי קוד, אין פריסה — מדידה בלבד, פער ישן תשיעי שאינו פעיל. ראיות: QA/platform/nadlan-authbutton-recheck-0817/_results.txt.'
 );
+
+-- Commit: <this step> "32 נדל"ן: אנטי-דריפט — מצב כהה 'נבנה, ממתין לפריסה' נבדק מחדש, כבר פרוס וחי"
+insert into core.run_progress (phase, task, status, note) values (
+  'anti-drift',
+  '32 נדל"ן — recheck מצב כהה',
+  'done',
+  'טבלת "מצב כהה" ב-SYSTEMS_STATUS.md סימנה 32 nadlan כ-⏳ נבנה, ממתין לפריסה, בסתירה לשורת הסיכום מתחתיה "מצב כהה — 13/13. הושלם.". node scripts/qa/dark-probe.mjs QA/platform/nadlan-a11y-recheck-0817 /nadlan מול הייצור: 3 חוקי .dark פעילים, רקע rgb(246,248,252) -> rgb(12,18,32), CHANGED. ניגודיות אחרי ההיפוך rgb(221,227,238) על rgb(12,18,32) — AA תקין. אין שינוי קוד, אין פריסה — מדידה בלבד, ותוקנה שורת הטבלה שסתרה את סיכום 13/13. ראיות: QA/platform/nadlan-a11y-recheck-0817/_dark-probe.json.'
+);
