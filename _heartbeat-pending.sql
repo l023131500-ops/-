@@ -6,3 +6,11 @@ insert into core.run_progress (phase, task, status, note) values (
   'done',
   'נוסף #themeToggle ל-.main-nav (apps/06-kupot-holim/site), localStorage["briut-theme"] לפני prefers-color-scheme. אומת מקומית תחת /briut/ ובייצור (Playwright): קליק->dark rgb(14,21,25), רענון שומר בלי הבזק, קליק נוסף->בהיר. נפרס vercel deploy --prod מ-_deploy/briut-more30 (dpl_9kmftqAHANeWjCcoJwuuYSN4uYuM), אומת חי ב-https://more30.com/briut/?cachebust=0817briut. ראיות: QA/platform/theme-toggle-briut-0817/. POLISH_BACKLOG.md 4/5 (35 קיוסק נשאר).'
 );
+
+-- Commit: <this step> "32 נדל"ן: אנטי-דריפט — חפיפת כפתור הכניסה על 'מקורות ותמחור' נבדקה מחדש, אינה פעילה"
+insert into core.run_progress (phase, task, status, note) values (
+  'anti-drift',
+  '32 נדל"ן — recheck חפיפת כפתור כניסה',
+  'done',
+  'הרשומה הישנה בטבלת "חפיפת כפתור הכניסה" ב-SYSTEMS_STATUS.md סימנה /nadlan "מקורות ותמחור" כ-⏳ ממתין לפריסה. node scripts/qa/authbutton-overlap.mjs nadlan מול הייצור החזיר 0 חפיפות בכל חמשת הרוחבים (390/834/1100/1280/1440) — clear @ 390,834,1100,1280,1440. אין שינוי קוד, אין פריסה — מדידה בלבד, פער ישן תשיעי שאינו פעיל. ראיות: QA/platform/nadlan-authbutton-recheck-0817/_results.txt.'
+);
