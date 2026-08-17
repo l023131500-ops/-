@@ -3575,7 +3575,7 @@
 | 32 | נדל"ן ברגע | [/nadlan](https://more30.com/nadlan) | ✅ עובדת | 6,413 | ✅ | **תוקן: נגישות 95→100** |
 | 34 | כסף | [/kesef](https://more30.com/kesef) | ✅ עובדת | 2,381 | ✅ | **תוקן: כניסה מגיעה למערכת** |
 | 35 | KioskFleet | [/kiosk/](https://more30.com/kiosk/) | ✅ עובדת | 2,534 | ✅ | |
-| 36 | נדל"ן פרו | [/tivuch](https://more30.com/tivuch) | ✅ עובדת | 2,781 | ✅ | **חדשה. Lighthouse 95/100/100** (נמדד 07/08) |
+| 36 | נדל"ן פרו | [/tivuch](https://more30.com/tivuch) | ✅ עובדת | 2,781 | ✅ | Lighthouse perf 98 · a11y 100 · SEO 100 · BP 77 (חסימת NetFree, לא ניתן לתיקון בקוד) |
 | 21 | Mthbram | [/mthbram](https://more30.com/mthbram) | ✅ עובדת | 873 | ✅ | **תוקן: 39 → 873** |
 | 24 | גליל קונקט | [/galil](https://more30.com/galil) | ✅ עובדת | 1,624 | ✅ | **תוקן: 121 → 1,624** |
 | 27 | השוואת מחירים | [/mechiron](https://more30.com/mechiron) | ✅ עובדת | 915 | ✅ | **נבדק מחדש 17/08: chatbot/config מחזיר 200**, לא 404 (ראה §17/08 למעלה) |
