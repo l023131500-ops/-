@@ -1,5 +1,16 @@
 # SYSTEMS_STATUS.md — מצב כל המערכות, נמדד
 
+> ## 🟢 17/08/2026 (לילה, יב) — **14 שמחות פלוס — Lighthouse נמדד לראשונה (perf 76, a11y כבר 100, SEO 100)**
+>
+> `node scripts/qa/lighthouse-run.mjs QA/platform/smachot-lh-0817 smachot` — ציון ראשון אי-פעם
+> ל-`smachot`(14): **פרפורמנס 76 · נגישות 100 · Best Practices 77 · SEO 100**. בדומה ל-10
+> בקלות — הנגישות כבר מלאה, אין `failedAudits` נגיש לתקן. פרפורמנס (76, מתחת ל-90) ו-
+> Best Practices (77) לא נחקרו — אותו דפוס NetFree שכבר מתועד ב-32/02/04/06/10
+> (`netfree.link/card/card-injection.js` מופיע ב-`bootupTime` בפועל, ו-`third-party-cookies`
+> נכשל). אין שינוי קוד/פריסה בסבב הזה — מדידה בלבד, אין פער לתקן. ראיות:
+> `QA/platform/smachot-lh-0817/_lighthouse.json`.
+> Supabase MCP אינו מחובר לסשן הזה — heartbeat נכתב כקובץ `_heartbeat-pending.sql`.
+
 > ## 🟢 17/08/2026 (לילה, יא) — **10 בקלות (זכויות) — Lighthouse נמדד לראשונה (perf 82, a11y כבר 100, SEO 91→ תוקן meta description)**
 >
 > `node scripts/qa/lighthouse-run.mjs QA/platform/bkalot-lh-0817 bkalot` — ציון ראשון אי-פעם
@@ -3761,7 +3772,7 @@
 | 06 | לידים קופות חולים | [/briut](https://more30.com/briut) | ✅ עובדת | 4,832 | ✅ | **תוקן: 2 ליקויי נגישות אמיתיים** (`aria-label` כפתורי סגירה/קישורי כרטיס, `role="tab"` לצ'יפים) · **נמדד 17/08: Lighthouse perf 84, a11y 91→97** (פרפורמנס תנודתי, לא נחקר עדיין) · 108 קישורים |
 | 10 | מימוש זכויות בקלות | [/bkalot](https://more30.com/bkalot) | ✅ עובדת | 3,041 | ✅ | **תוקן: meta description חסר** · **נמדד 17/08: Lighthouse perf 82 · a11y 100** (מתחת לסף 90, לא נחקר עדיין) |
 | 12 | נדל"ן Smel | [/smel](https://more30.com/smel) | ✅ עובדת | 1,149 | ✅ | **תוקן: 2 ליקויי נגישות אמיתיים** (ניגודיות `.gold-text`, קישור "פרימיום" חסר שם נגיש במובייל) · **נמדד 17/08: Lighthouse perf 73→80, a11y 92→100** (פרפורמנס מתחת לסף 90, לא נחקר עדיין) |
-| 14 | שמחות פלוס | [/smachot](https://more30.com/smachot) | ✅ עובדת | 1,445 | ✅ | |
+| 14 | שמחות פלוס | [/smachot](https://more30.com/smachot) | ✅ עובדת | 1,445 | ✅ | **נמדד 17/08: Lighthouse perf 76, a11y כבר 100** (פרפורמנס מתחת לסף 90, לא נחקר עדיין) |
 | 15 | איגוד | [/egod](https://more30.com/egod) | ✅ עובדת | 2,459 | ✅ | **תוקן: 18 → 0 יעדי מגע קטנים** |
 | 16 | חצור קונקט | [/chatzor](https://more30.com/chatzor) | ✅ עובדת | 2,076 | ✅ | **תוקן: הכתובת הקנונית הגישה עמוד "בהכנה"** |
 | 17 | תמלול חיזוקים | [/chizukim](https://more30.com/chizukim) | ✅ עובדת | 1,947 | ✅ | **תוקן: הכתובת הקנונית הגישה עמוד "בהכנה"** |

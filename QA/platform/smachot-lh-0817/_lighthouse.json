@@ -1,0 +1,183 @@
+{
+  "smachot": {
+    "url": "https://more30.com/smachot",
+    "measuredAt": "2026-08-17T12:44:06.409Z",
+    "performance": 76,
+    "accessibility": 100,
+    "bestPractices": 77,
+    "seo": 100,
+    "metrics": {
+      "fcp": "2.4 s",
+      "lcp": "3.9 s",
+      "tbt": "250 ms",
+      "cls": "0.001",
+      "si": "5.7 s"
+    },
+    "failedAudits": [
+      {
+        "id": "first-contentful-paint",
+        "title": "First Contentful Paint",
+        "score": 0.7,
+        "display": "2.4 s"
+      },
+      {
+        "id": "largest-contentful-paint",
+        "title": "Largest Contentful Paint",
+        "score": 0.53,
+        "display": "3.9 s"
+      },
+      {
+        "id": "speed-index",
+        "title": "Speed Index",
+        "score": 0.51,
+        "display": "5.7 s"
+      },
+      {
+        "id": "total-blocking-time",
+        "title": "Total Blocking Time",
+        "score": 0.84,
+        "display": "250 ms"
+      },
+      {
+        "id": "max-potential-fid",
+        "title": "Max Potential First Input Delay",
+        "score": 0.19,
+        "display": "390 ms"
+      },
+      {
+        "id": "interactive",
+        "title": "Time to Interactive",
+        "score": 0.89,
+        "display": "3.9 s"
+      },
+      {
+        "id": "third-party-cookies",
+        "title": "Uses third-party cookies",
+        "score": 0,
+        "display": "1 cookie found"
+      },
+      {
+        "id": "mainthread-work-breakdown",
+        "title": "Minimize main-thread work",
+        "score": 0,
+        "display": "2.6 s"
+      },
+      {
+        "id": "unminified-javascript",
+        "title": "Minify JavaScript",
+        "score": 0.5,
+        "display": "Est savings of 6 KiB"
+      },
+      {
+        "id": "inspector-issues",
+        "title": "Issues were logged in the `Issues` panel in Chrome Devtools",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "cache-insight",
+        "title": "Use efficient cache lifetimes",
+        "score": 0.5,
+        "display": "Est savings of 43 KiB"
+      },
+      {
+        "id": "document-latency-insight",
+        "title": "Document request latency",
+        "score": 0.5,
+        "display": "Est savings of 3 KiB"
+      },
+      {
+        "id": "forced-reflow-insight",
+        "title": "Forced reflow",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "lcp-breakdown-insight",
+        "title": "LCP breakdown",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "network-dependency-tree-insight",
+        "title": "Network dependency tree",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "render-blocking-insight",
+        "title": "Render-blocking requests",
+        "score": 0,
+        "display": "Est savings of 930 ms"
+      }
+    ],
+    "mainThreadBreakdown": [
+      {
+        "group": "Style & Layout",
+        "duration": 1438
+      },
+      {
+        "group": "Other",
+        "duration": 792
+      },
+      {
+        "group": "Script Evaluation",
+        "duration": 216
+      },
+      {
+        "group": "Rendering",
+        "duration": 91
+      },
+      {
+        "group": "Parse HTML & CSS",
+        "duration": 76
+      },
+      {
+        "group": "Script Parsing & Compilation",
+        "duration": 23
+      },
+      {
+        "group": "Garbage Collection",
+        "duration": 12
+      }
+    ],
+    "bootupTime": [
+      {
+        "url": "https://more30.com/smachot",
+        "total": 1009,
+        "scripting": 15,
+        "scriptParseCompile": 4
+      },
+      {
+        "url": "https://more30.com/smachot/app.js",
+        "total": 788,
+        "scripting": 69,
+        "scriptParseCompile": 4
+      },
+      {
+        "url": "Unattributable",
+        "total": 553,
+        "scripting": 12,
+        "scriptParseCompile": 0
+      },
+      {
+        "url": "https://more30.com/auth-button.js",
+        "total": 109,
+        "scripting": 38,
+        "scriptParseCompile": 8
+      },
+      {
+        "url": "https://netfree.link/card/card-injection.js",
+        "total": 73,
+        "scripting": 49,
+        "scriptParseCompile": 5
+      },
+      {
+        "url": "https://netfree.link/card/",
+        "total": 57,
+        "scripting": 0,
+        "scriptParseCompile": 0
+      }
+    ]
+  }
+}
