@@ -1,0 +1,8 @@
+אנטי-דריפט: NEEDS_USER.md — סבב סריקה מלא 17/08 (אחה"צ מאוחר): לא נמצאה עבודה פונקציונלית לא-חסומה
+
+סבב מלא על NEEDS_USER.md + SYSTEMS_STATUS.md + POLISH_BACKLOG.md (באמצעות
+Explore agent) לא מצא שום פריט פתוח שאינו הכרעת/פרטי-משתמש או חסום MCP.
+אומת מחדש: apps/34-kesef מכיל רק app.json, אין קוד מקור בריפו הזה (בניגוד
+לחשד ש-Grep מפספס בגלל gitignore — נבדק עם Get-ChildItem ישירות). נוסף
+עדכון ל-NEEDS_USER.md כדי שהסבב הבא לא יחזור על אותה סריקה. Supabase MCP
+לא היה מחובר לכל אורך הסשן — heartbeat נכתב כ-_heartbeat-pending.sql.
