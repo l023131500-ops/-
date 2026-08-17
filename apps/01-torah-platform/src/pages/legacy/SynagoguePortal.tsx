@@ -14,7 +14,7 @@ import SynagogueShowcaseCarousel from "@/components/synagogue/SynagogueShowcaseC
 import SynagogueExcelImportExport from "@/components/synagogue/SynagogueExcelImportExport";
 import SynagogueFullAccessRequest, { FEATURE_OPTIONS } from "@/components/synagogue/SynagogueFullAccessRequest";
 import PrayerTimesTab from "@/components/portal/PrayerTimesTab";
-import agudLogo from "@/assets/agud-logo.png";
+import agudLogo from "@/assets/agud-logo.webp";
 
 const teal = "hsl(180 45% 30%)";
 

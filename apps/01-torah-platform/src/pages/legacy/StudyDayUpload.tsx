@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import agudLogo from "@/assets/agud-logo.png";
+import agudLogo from "@/assets/agud-logo.webp";
 
 const teal = "hsl(180 45% 30%)";
 
