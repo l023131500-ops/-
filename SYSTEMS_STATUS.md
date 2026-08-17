@@ -1,5 +1,19 @@
 # SYSTEMS_STATUS.md — מצב כל המערכות, נמדד
 
+> ## 🟢 17/08/2026 (לילה, יט) — **`/me` — Lighthouse נמדד לראשונה (perf 98, a11y 100, BP 77, SEO 63) — כל ה-ROUTES נמדדו**
+>
+> `node scripts/qa/lighthouse-run.mjs QA/platform/me-lh-0817 me` — ציון ראשון אי-פעם לנתיב
+> `me` (`/me`), הנתיב האחרון שנשאר לא-נמדוד ברשימת `ROUTES` (`scripts/qa/lighthouse-run.mjs`) —
+> מוגן-כניסה, נמדד כפי שהוא מוגש בפועל ללא אימות (זה מה שהיצרן חושף בפרודקשן).
+> **פרפורמנס 98 · נגישות 100 · Best Practices 77 · SEO 63**. הנגישות כבר מלאה —
+> אין `failedAudits` נגיש לתקן, אין שינוי קוד בסבב הזה. ה-SEO (63) מוסבר על ידי
+> `is-crawlable` (חסום מאינדוקס) — אותו `noindex` מכוון על עמודי חשבון שכבר תועד
+> ב-`/login` וב-`/subscribe`. Best Practices (77) — אותו דפוס NetFree
+> (`netfree.link/card/card-injection.js` ב-`bootupTime`) שכבר מתועד בעשרות נתיבים
+> אחרים. **כל הנתיבים ב-`ROUTES` נמדדו לפחות פעם אחת נכון ל-17/08.**
+> ראיות: `QA/platform/me-lh-0817/_lighthouse.json`.
+> Supabase MCP אינו מחובר לסשן הזה — heartbeat נכתב כקובץ `_heartbeat-pending.sql`.
+
 > ## 🟢 17/08/2026 (לילה, יח) — **`/subscribe` — Lighthouse נמדד לראשונה (perf 88, a11y 100, BP 77, SEO 63)**
 >
 > `node scripts/qa/lighthouse-run.mjs QA/platform/subscribe-lh-0817 subscribe` — ציון ראשון

@@ -1,0 +1,125 @@
+{
+  "me": {
+    "url": "https://more30.com/me",
+    "measuredAt": "2026-08-17T16:01:10.376Z",
+    "performance": 98,
+    "accessibility": 100,
+    "bestPractices": 77,
+    "seo": 63,
+    "metrics": {
+      "fcp": "1.5 s",
+      "lcp": "1.5 s",
+      "tbt": "130 ms",
+      "cls": "0.008",
+      "si": "2.9 s"
+    },
+    "failedAudits": [
+      {
+        "id": "interactive",
+        "title": "Time to Interactive",
+        "score": 0.79,
+        "display": "4.8 s"
+      },
+      {
+        "id": "third-party-cookies",
+        "title": "Uses third-party cookies",
+        "score": 0,
+        "display": "1 cookie found"
+      },
+      {
+        "id": "unminified-javascript",
+        "title": "Minify JavaScript",
+        "score": 0.5,
+        "display": "Est savings of 4 KiB"
+      },
+      {
+        "id": "unused-javascript",
+        "title": "Reduce unused JavaScript",
+        "score": 0.5,
+        "display": "Est savings of 27 KiB"
+      },
+      {
+        "id": "inspector-issues",
+        "title": "Issues were logged in the `Issues` panel in Chrome Devtools",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "is-crawlable",
+        "title": "Page is blocked from indexing",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "cache-insight",
+        "title": "Use efficient cache lifetimes",
+        "score": 0.5,
+        "display": "Est savings of 53 KiB"
+      },
+      {
+        "id": "document-latency-insight",
+        "title": "Document request latency",
+        "score": 0.5,
+        "display": "Est savings of 13 KiB"
+      },
+      {
+        "id": "modern-http-insight",
+        "title": "Modern HTTP",
+        "score": 0.5,
+        "display": ""
+      },
+      {
+        "id": "network-dependency-tree-insight",
+        "title": "Network dependency tree",
+        "score": 0,
+        "display": ""
+      }
+    ],
+    "mainThreadBreakdown": [
+      {
+        "group": "Other",
+        "duration": 632
+      },
+      {
+        "group": "Style & Layout",
+        "duration": 420
+      },
+      {
+        "group": "Script Evaluation",
+        "duration": 190
+      },
+      {
+        "group": "Parse HTML & CSS",
+        "duration": 37
+      },
+      {
+        "group": "Rendering",
+        "duration": 22
+      },
+      {
+        "group": "Script Parsing & Compilation",
+        "duration": 16
+      }
+    ],
+    "bootupTime": [
+      {
+        "url": "https://more30.com/me",
+        "total": 614,
+        "scripting": 103,
+        "scriptParseCompile": 7
+      },
+      {
+        "url": "Unattributable",
+        "total": 479,
+        "scripting": 16,
+        "scriptParseCompile": 0
+      },
+      {
+        "url": "https://netfree.link/card/card-injection.js",
+        "total": 71,
+        "scripting": 42,
+        "scriptParseCompile": 3
+      }
+    ]
+  }
+}
