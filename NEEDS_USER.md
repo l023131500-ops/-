@@ -3983,3 +3983,28 @@ mechiron-live-0813, tivuch-app-open-office), `vfix.mjs`,
 
 **אגב אורחא (לא נגעתי):** `app.json` של 18 סותר את המציאות
 (`live: false` מול מאונט שמחזיר 200). שווה תיקון בצעד נפרד.
+
+
+---
+
+## 19/08/2026 — נדל"ן (32): הרשמה להתראות אזוריות נבנתה, המשלוח בפועל הוא הצעד הבא
+
+בהמשך ל-more30-feature-expansion.md § נדל"ן ("התראות על עסקאות חדשות באזור/רחוב"):
+הצעד הזה בנה ואימת חי רק את **שלב הקליטה** — פאנל הרשמה בדוח (`AreaAlertSignup.tsx`),
+טבלת `nadlan.area_alerts` (RLS insert-only לאנונימי, כמו `document_requests` הקיימת),
+ו-`POST /api/area-alert`. אומת מקצה-לקצה בפרודקשן: מילוי הטופס בדף `/nadlan/report`
+עבור דיזנגוף 100 ת"א → מסך הצלחה אמיתי → שורה אמיתית ב-`nadlan.area_alerts` עם
+כתובת/גוש/חלקה/עיר נכונים (נמחקה אחרי האימות). קומיט 01a45fa, פרוס
+`dpl_Gs8wmokKAk9q1VEKG6Jt8JFXFkYw`.
+
+**לא בנוי עדיין, ואינו חוסם:** המשלוח בפועל — בדיקה תקופתית של עסקאות חדשות מול
+`nadlan.transactions`/מטמון והתראה במייל דרך Resend. זה דורש מנגנון תזמון (Vercel
+Cron או `pg_cron`) וחיבור Resend, שלב גדול יותר משלב אחד — הצעד הבא הטבעי בקו הזה.
+
+**אגב אורחא (לא נגעתי, לא חוסם):** בשורש הריפו הופיעו קבצים לא-tracked חדשים —
+`BUILD-graphics-then-video.cmd`, `DESIGN_SYSTEM_BUILD_v2.md`, `VIDEO_SYSTEM_BUILD_v2.md`,
+כמה `nadlan-loading*.png`. אלה שייכים ללולאת אוטומציה עצמאית ונפרדת (מריצה
+`claude -p` משלה על branch `feat/graphics-upgrade`/`feat/video` לבניית גרפיקה/וידאו
+תחת `more30.com/design` / `more30.com/studio`) — לא ה-RUN_INSTRUCTIONS/more30-priority
+הרגילים של הסבב הזה. אין עדיין `CHECKLIST/graphics.md` או `HANDOFF_graphics.md`, כלומר
+הלולאה הזו טרם רצה בפועל. לא נגעתי בהם — הם ככל הנראה מיועדים להרצה נפרדת של המשתמש.
