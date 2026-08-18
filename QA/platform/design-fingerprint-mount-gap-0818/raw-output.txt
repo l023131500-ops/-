@@ -1,0 +1,68 @@
+﻿bkalot-cloneFrank Ruhl Libre body=Assistant      r=null   accent=null                 scale=2.4
+gannenet  Heebo            body=Heebo          r=16px   accent=rgb(43, 74, 139)     scale=3.3
+
+=== systems sharing a font + radius + shadow signature ===
+   2  Suez One / Heebo, radius 
+      kesef, tivuch
+   1  Noto Serif Hebrew / Rubik, radius 16px
+      torah
+   1  Noto Serif Hebrew / Rubik, radius 12px
+      tamlul
+   1  Noto Serif Hebrew / Rubik, radius 16px
+      modaot
+   1  Frank Ruhl Libre / Assistant, radius 12px
+      imud
+   1  Frank Ruhl Libre / Heebo, radius 16px
+      briut
+   1  Frank Ruhl Libre / Heebo, radius 14px
+      bkalot
+   1  Heebo / Heebo, radius 12px
+      smel
+   1  Frank Ruhl Libre / Heebo, radius 18px
+      smachot
+   1  Noto Serif Hebrew / Rubik, radius 16px
+      egod
+   1  Frank Ruhl Libre / Assistant, radius 13.6px
+      chatzor
+   1  Assistant / Assistant, radius 
+      chizukim
+   1  Frank Ruhl Libre / Frank Ruhl Libre, radius 
+      orech
+   1  Rubik / Rubik, radius 16px
+      zchuyot
+   1  Secular One / Assistant, radius 24px
+      mthbram
+   1  Suez One / Heebo, radius 
+      galil
+   1  Heebo / Heebo, radius 12px
+      studio
+   1  Frank Ruhl Libre / Heebo, radius 12px
+      mechiron
+   1  Assistant / Assistant, radius 12px
+      kupot
+   1  Heebo / Heebo, radius 24px
+      nadlan
+   1  Heebo / Heebo, radius 14px
+      crm
+   1  Heebo / Assistant, radius 14px
+      gesher
+   1  Rubik / Rubik, radius 16px
+      kiosk
+   1  Suez One / Heebo, radius 
+      portal
+   1  Frank Ruhl Libre / Assistant, radius 
+      bkalot-clone
+   1  Heebo / Heebo, radius 16px
+      gannenet
+
+27 measured · 26 distinct signatures · 7 distinct display fonts
+
+=== the shared kit ===
+  shadcn token names (3+):  13/27
+  lucide icons:             14/27
+  rounded-xl/2xl/3xl:       15/27
+  backdrop-blur surfaces:   13/27
+
+=== icon-chip rainbows (3+ distinct hues) — 1 systems ===
+   4  gannenet
+-> QA/platform/_design.json (27 systems)

@@ -448,5 +448,41 @@
     "roundedXl": 0,
     "backdropBlur": 0,
     "iconChipColours": 0
+  },
+  "bkalot-clone": {
+    "displayFont": "Frank Ruhl Libre",
+    "bodyFont": "Assistant",
+    "bg": "rgb(246, 245, 241)",
+    "ink": "rgb(23, 29, 26)",
+    "accent": null,
+    "btnRadius": null,
+    "surfaceRadius": null,
+    "surfaceShadow": null,
+    "headingScale": 2.4,
+    "centredHero": false,
+    "heroButtons": 0,
+    "shadcnTokens": 0,
+    "lucideIcons": 0,
+    "roundedXl": 0,
+    "backdropBlur": 0,
+    "iconChipColours": 0
+  },
+  "gannenet": {
+    "displayFont": "Heebo",
+    "bodyFont": "Heebo",
+    "bg": "rgb(250, 248, 244)",
+    "ink": "rgb(42, 44, 66)",
+    "accent": "rgb(43, 74, 139)",
+    "btnRadius": "13.6px",
+    "surfaceRadius": "16px",
+    "surfaceShadow": "yes",
+    "headingScale": 3.3,
+    "centredHero": true,
+    "heroButtons": 4,
+    "shadcnTokens": 0,
+    "lucideIcons": 0,
+    "roundedXl": 0,
+    "backdropBlur": 0,
+    "iconChipColours": 4
   }
 }

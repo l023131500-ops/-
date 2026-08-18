@@ -37,6 +37,7 @@ const ROUTES = {
   studio: '/studio', mechiron: '/mechiron', kupot: '/kupot',
   nadlan: '/nadlan/', crm: '/crm', gesher: '/gesher', kesef: '/kesef',
   kiosk: '/kiosk/', tivuch: '/tivuch', portal: '/',
+  'bkalot-clone': '/bkalot-studio', gannenet: '/gannenet',
 };
 
 const only = process.argv.slice(2).map((s) => s.replace(/^\//, '').replace(/\/$/, ''));
