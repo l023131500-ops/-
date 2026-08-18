@@ -4,8 +4,12 @@ import { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
 import type { HtrJob, HtrLine } from '@/lib/htr-types';
 import {
-  STATUS_LABELS, MATERIAL_LABELS, TIER_LABELS, LOW_CONFIDENCE_THRESHOLD
+  STATUS_LABELS, MATERIAL_LABELS, TIER_LABELS, LOW_CONFIDENCE_THRESHOLD,
+  HTR_MAX_UPLOAD_BYTES
 } from '@/lib/htr-types';
+
+/** גודל קובץ בשפה של אדם, לא בבייטים. */
+const mb = (bytes: number) => (bytes / (1024 * 1024)).toFixed(1);
 
 type JobSummary = Pick<HtrJob,
   'id' | 'created_at' | 'page_label' | 'material' | 'tier' | 'status' | 'engine' | 'corrector' | 'mean_confidence' | 'approved_at'>;
@@ -73,6 +77,18 @@ export default function HtrPage() {
  *
  * כשאין שינוי (0° בלי היפוך) הקובץ המקורי נשלח כמו שהוא — בלי קידוד מחדש
  * ובלי אובדן איכות. קידוד מחדש מיותר של סריקה הוא נזק שקט.
+ *
+ * ⚠️ הבאג שנמצא כאן (18/08): PNG הוא פורמט ללא-אובדן, ולכן צילום טלפון רגיל
+ * של עמוד — 12 מגה-פיקסל, בערך 3MB כ-JPEG — יוצא מהקנבס בתור PNG של עשרות
+ * מגה-בייט. השרת חוסם ב-15MB, ולכן **סיבוב** התמונה היה מפיל את ההעלאה ב-413
+ * בזמן שאותה תמונה בדיוק, בלי סיבוב, עלתה בהצלחה (בגלל היציאה המוקדמת למעלה).
+ * כלומר המשתמש עשה בדיוק מה שהממשק ביקש ממנו — "סובבו עד שהשורות ישרות" —
+ * וזה מה ששבר לו את הפעולה.
+ *
+ * התיקון שומר על ההעדפה המקורית ולא מוותר עליה: PNG הוא עדיין הניסיון הראשון,
+ * וכל סריקה שנכנסת בתקרה נשלחת כ-PNG בדיוק כמו קודם. רק כשה-PNG חורג מהתקרה
+ * יורדים ל-JPEG באיכות גבוהה — 0.95 הוא כמעט חסר-אובדן לעין ולמנוע זיהוי,
+ * והוא לאין ערוך עדיף על העלאה שנכשלת.
  */
 async function bakeTransform(file: File, rotation: number, flipped: boolean): Promise<File> {
   if (rotation === 0 && !flipped) return file;
@@ -91,11 +107,30 @@ async function bakeTransform(file: File, rotation: number, flipped: boolean): Pr
   ctx.drawImage(bitmap, -bitmap.width / 2, -bitmap.height / 2);
   bitmap.close();
 
+  const encode = (type: string, quality?: number) =>
+    new Promise<Blob | null>((res) => canvas.toBlob(res, type, quality));
+  const named = (blob: Blob, ext: string) =>
+    new File([blob], file.name.replace(/\.\w+$/, '') + '.' + ext, { type: blob.type });
+
   // PNG ולא JPEG: כתב יד סרוק הוא בדיוק התוכן שארטיפקטים של JPEG פוגעים בו,
-  // וזיהוי אותיות הוא המשימה שהכי רגישה לזה.
-  const blob: Blob | null = await new Promise((res) => canvas.toBlob(res, 'image/png'));
-  if (!blob) return file;
-  return new File([blob], file.name.replace(/\.\w+$/, '') + '.png', { type: 'image/png' });
+  // וזיהוי אותיות הוא המשימה שהכי רגישה לזה. זו עדיין הבחירה הראשונה.
+  const png = await encode('image/png');
+  if (!png) return file; // בלי קידוד עדיף לשלוח את המקור מאשר להיכשל
+  if (png.size <= HTR_MAX_UPLOAD_BYTES) return named(png, 'png');
+
+  // ה-PNG חרג מהתקרה. סולם איכות יורד, ועוצרים על הראשון שנכנס.
+  let smallest: Blob = png;
+  let smallestExt = 'png';
+  for (const q of [0.95, 0.9, 0.8]) {
+    const jpeg = await encode('image/jpeg', q);
+    if (!jpeg) continue;
+    if (jpeg.size <= HTR_MAX_UPLOAD_BYTES) return named(jpeg, 'jpg');
+    if (jpeg.size < smallest.size) { smallest = jpeg; smallestExt = 'jpg'; }
+  }
+
+  // גם 0.8 לא נכנס — מחזירים את הקטן ביותר שהצלחנו לייצר, ו-submit חוסם לפני
+  // הרשת עם הגודל האמיתי במקום להעלות עשרות מגה-בייט אל תוך 413.
+  return named(smallest, smallestExt);
 }
 
 function UploadForm({ onDone }: { onDone: () => void }) {
@@ -131,6 +166,18 @@ function UploadForm({ onDone }: { onDone: () => void }) {
     setBusy(true); setMsg(null);
     try {
       const toSend = await bakeTransform(file, rotation, flipped);
+
+      // חסימה לפני הרשת, עם הגודל האמיתי. קודם התקרה הייתה ידועה רק לשרת,
+      // ולכן קובץ חורג היה נשלח במלואו ורק אז נדחה ב-413 — המתנה ארוכה
+      // שנגמרת בשגיאה, על חיבור סלולרי בפרט.
+      if (toSend.size > HTR_MAX_UPLOAD_BYTES) {
+        setMsg({
+          type: 'err',
+          text: `התמונה גדולה מדי לשליחה (${mb(toSend.size)}MB, המקסימום הוא ${mb(HTR_MAX_UPLOAD_BYTES)}MB). צלמו או סרקו ברזולוציה נמוכה יותר.`,
+        });
+        return;
+      }
+
       const fd = new FormData();
       fd.append('file', toSend);
       fd.append('material', material);

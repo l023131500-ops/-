@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAdminClient, HTR_BUCKET } from '@/lib/supabase';
+import { HTR_MAX_UPLOAD_BYTES } from '@/lib/htr-types';
 import type { HtrMaterial, HtrTier } from '@/lib/htr-types';
 
 export const runtime = 'nodejs';
@@ -12,7 +13,8 @@ export const dynamic = 'force-dynamic';
 // לא מבצע HTR — זה נעשה ב-/api/htr/process (הפרדת אחריות).
 // ============================================================
 
-const MAX_BYTES = 15 * 1024 * 1024; // 15MB
+// אותה תקרה שהלקוח בודק לפני השליחה — lib/htr-types.ts.
+const MAX_BYTES = HTR_MAX_UPLOAD_BYTES; // 15MB
 const ALLOWED = ['image/jpeg', 'image/png', 'image/webp', 'image/tiff'];
 
 const VALID_MATERIAL: HtrMaterial[] = [
