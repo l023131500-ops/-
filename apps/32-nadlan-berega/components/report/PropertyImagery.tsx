@@ -85,7 +85,13 @@ export default function PropertyImagery({
         <figcaption className="border-b border-line px-4 py-3 font-black text-navy">
           מפה אינטראקטיבית — מיקום הנכס, הגדלה, הזזה ותצלום לוויין
         </figcaption>
-        <InteractiveMap lat={lat} lng={lng} label={mapLabel} places={pool.slice(0, 40)} />
+        <InteractiveMap
+          lat={lat}
+          lng={lng}
+          label={mapLabel}
+          places={pool.slice(0, 40)}
+          plans={report.nearbyPlans}
+        />
       </figure>
 
       {/* ===== §2 · צילום ומפה אזורית — VIP בלבד ===== */}

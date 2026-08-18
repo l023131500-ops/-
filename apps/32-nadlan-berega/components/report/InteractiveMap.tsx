@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from 'react';
 // כמודול, ובלי הקובץ הזה האריחים נערמים זה על זה ובורר השכבות בלתי קריא.
 import 'leaflet/dist/leaflet.css';
 import type { Place } from '@/lib/googlemaps';
+import type { NearbyPlan } from '@/lib/nearbyplans';
 import { distanceText } from '@/lib/report';
 
 /**
@@ -42,6 +43,7 @@ export default function InteractiveMap({
   lng,
   label,
   places,
+  plans,
   height = 460,
 }: {
   lat: number;
@@ -49,6 +51,8 @@ export default function InteractiveMap({
   /** מה כתוב בבועה של הנכס — הכתובת או הגוש/חלקה. */
   label: string;
   places: Place[];
+  /** §12 · תוכניות בנייה ברדיוס — מוצג רק כשקיים (פרימיום ומעלה). */
+  plans?: NearbyPlan[] | null;
   height?: number;
 }) {
   const boxRef = useRef<HTMLDivElement | null>(null);
@@ -135,6 +139,35 @@ export default function InteractiveMap({
             );
         }
 
+        // ===== §12 · תוכניות בנייה ברדיוס — ריבועים זהובים =====
+        //
+        // צורה וצבע שונים מהעיגולים הטורקיז (נקודות עניין) ומהסיכה (הנכס),
+        // כדי שאפשר יהיה להבחין בסוג הסימון במבט חטוף. `plans` הוא `null`/
+        // `undefined` בדוח החינמי (השכבה לא נשאלת כלל) — אז הלולאה פשוט לא
+        // מוסיפה כלום, בלי צורך לבדוק את הרמה כאן שוב.
+        if (plans && plans.length > 0) {
+          const planIcon = L.divIcon({
+            className: '',
+            html:
+              '<div style="width:11px;height:11px;background:#c8a24a;' +
+              'border:1.5px solid #fff;border-radius:2px;' +
+              'box-shadow:0 1px 2px rgba(0,0,0,.35)"></div>',
+            iconSize: [11, 11],
+            iconAnchor: [5.5, 5.5],
+          });
+          for (const p of plans) {
+            if (!Number.isFinite(p.lat) || !Number.isFinite(p.lng)) continue;
+            L.marker([p.lat, p.lng], { icon: planIcon, zIndexOffset: 500 })
+              .addTo(map)
+              .bindPopup(
+                `<b>${escapeHtml(p.planNumber ?? 'תוכנית ללא מספר')}</b>` +
+                  (p.planName ? `<br>${escapeHtml(p.planName)}` : '') +
+                  (p.status ? `<br>מצב: ${escapeHtml(p.status)}` : '') +
+                  `<br>${p.distanceM} מ' מהנכס`,
+              );
+          }
+        }
+
         // גודל המפה נמדד אחרי שהיא נכנסה לפריסה — בלי זה חצי מהאריחים
         // נשארים אפורים כשהיא מרונדרת בתוך רשת שעדיין לא התייצבה.
         setTimeout(() => map && map.invalidateSize(), 200);
@@ -150,7 +183,7 @@ export default function InteractiveMap({
         mapRef.current = null;
       }
     };
-  }, [lat, lng, label, places]);
+  }, [lat, lng, label, places, plans]);
 
   if (failed) {
     return (
@@ -173,6 +206,13 @@ export default function InteractiveMap({
         הסימון הגדול הוא מיקום הנכס. הנקודות הקטנות הן מוסדות ותחנות בסביבה — לחיצה מציגה שם
         ומרחק. אפשר להגדיל ולהקטין, לגרור לצדדים, ולעבור לתצלום לוויין בבורר השכבות שמימין למעלה.
         גלגלת העכבר מזיזה את המפה רק אחרי לחיצה עליה, כדי שלא תקפוץ בזמן קריאה.
+        {plans && plans.length > 0 && (
+          <>
+            {' '}
+            הריבועים הזהובים הם תוכניות בנייה ברדיוס מהנכס (פירוט מלא בסעיף &quot;פוטנציאל&quot;
+            למטה) — לחיצה מציגה מספר תוכנית ומרחק.
+          </>
+        )}
       </p>
     </>
   );
