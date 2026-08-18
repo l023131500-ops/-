@@ -1,0 +1,6 @@
+heartbeat: reconcile chatzor-badge-dark-0818 pending file (Supabase MCP now connected)
+
+Applied the queued core.run_progress insert from commit f5c4b19
+(row id 858) now that the Supabase MCP is connected this session,
+then removed the now-applied _heartbeat-pending.sql and
+_heartbeat-commit-msg.txt files.
