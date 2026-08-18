@@ -1,4 +1,6 @@
 import { Link } from "wouter";
+import { Moon, Sun } from "lucide-react";
+import { useTheme } from "@/hooks/use-theme";
 
 export function Logo({ size = 34 }: { size?: number }) {
   return (
@@ -32,6 +34,7 @@ export function Logo({ size = 34 }: { size?: number }) {
 }
 
 export function SiteHeader() {
+  const { theme, toggle } = useTheme();
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background/85 backdrop-blur">
       {/* כפתור הכניסה המשותף של more30 יושב `fixed` בפינה השמאלית העליונה
@@ -74,6 +77,15 @@ export function SiteHeader() {
           >
             שאלון חכם
           </Link>
+          <button
+            type="button"
+            onClick={toggle}
+            className="grid h-9 w-9 place-items-center rounded-md text-muted-foreground hover-elevate"
+            aria-label={theme === "dark" ? "מעבר למצב בהיר" : "מעבר למצב כהה"}
+            data-testid="button-theme-toggle"
+          >
+            {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+          </button>
         </nav>
       </div>
     </header>
