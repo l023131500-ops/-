@@ -73,6 +73,21 @@ interface PcPublicMeta {
 
 const fmt = (n: number) => `₪${n.toFixed(2)}`;
 
+const SAVINGS_STORAGE_KEY = "mechiron-savings-total";
+
+function loadSavedTotal(): number {
+  if (typeof window === "undefined") return 0;
+  const raw = window.localStorage.getItem(SAVINGS_STORAGE_KEY);
+  const n = raw ? Number(raw) : 0;
+  return Number.isFinite(n) && n > 0 ? n : 0;
+}
+
+function addToSavedTotal(amount: number): number {
+  const next = loadSavedTotal() + amount;
+  window.localStorage.setItem(SAVINGS_STORAGE_KEY, String(next));
+  return next;
+}
+
 function formatUpdatedAt(iso: string | null): string | null {
   if (!iso) return null;
   const d = new Date(iso);
@@ -118,6 +133,7 @@ export default function PublicPriceComparison() {
   const [recLoading, setRecLoading] = useState(false);
   const [showSubmit, setShowSubmit] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [savedTotal, setSavedTotal] = useState(() => loadSavedTotal());
   const emptySubmission = { merchantName: "", merchantContact: "", storeName: "", city: "", productName: "", brand: "", unit: "", barcode: "", price: "", note: "" };
   const [submission, setSubmission] = useState({ ...emptySubmission });
 
@@ -196,7 +212,11 @@ export default function PublicPriceComparison() {
     setRecLoading(true);
     try {
       const res = await fetch(`${API_BASE}/api/pc/public/recommend?${buildParams(filters).toString()}`);
-      setRecommendation(await res.json());
+      const data: PcRecommendation = await res.json();
+      setRecommendation(data);
+      if (data.hasData && typeof data.savings === "number" && data.savings > 0) {
+        setSavedTotal(addToSavedTotal(data.savings));
+      }
     } catch {
       setRecommendation({ hasData: false, message: "אירעה שגיאה. נסו שוב מאוחר יותר." });
     } finally {
@@ -300,6 +320,15 @@ export default function PublicPriceComparison() {
           <p className="text-[11px] text-muted-foreground/80">
             הנתונים מבוססים על קובצי שקיפות מחירים שמפרסמות הרשתות לפי חוק. המחירים נכונים למועד העדכון האחרון.
           </p>
+
+          {savedTotal > 0 && (
+            <div
+              className="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-full bg-primary/10 text-primary border border-primary/20"
+              data-testid="pc-savings-tracker"
+            >
+              <Sparkles className="w-3.5 h-3.5" /> חסכת {fmt(savedTotal)} עד כה בהשוואות שלך במכשיר הזה
+            </div>
+          )}
         </section>
 
         {/* Search bar + actions */}
