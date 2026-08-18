@@ -15,7 +15,10 @@ const KNOWN_PROJECT = {
   "02": "bieebmnmkffwbqlsfozh", // VERIFIED (igud-transcribe's own project)
 };
 
-// number, slug, repo, name, category, stage, live, schema, deploy, protected, note
+// number, slug, repo, name, category, stage, live, schema, deploy, protected, note,
+// [overrides] — optional 12th element, merged last. Use it only for a system whose
+// deploy provenance has actually been MEASURED (see "18" below); the defaults in
+// this table describe the public-repo baseline, not verified reality.
 const R = [
   ["01","torah-platform","torah-platform","Torah Platform (HUB, +egod)","hub","live",true,"public","lovable",false,"Main hub; billing via Nedarim."],
   ["02","igud-transcribe","igud-transcribe","Igud Transcribe","transcription","beta",true,"public","vercel",false,"VERIFIED: Next.js 14 + OpenAI Whisper-1/GPT-4 on own project. MISSING token = OPENAI_API_KEY."],
@@ -34,7 +37,12 @@ const R = [
   ["15","egod","egod","egod (HUB pair with 01)","hub","live",true,"public","lovable",false,"Born in Lovable; shares Supabase with torah-platform."],
   ["16","chatzor-connect","chatzor-connect","Chatzor Connect","other","wip",false,null,"unknown",false,null],
   ["17","chizukim-transcribe","chizukim-transcribe","Chizukim Transcribe","transcription","wip",false,null,"unknown",false,"Verify transcription token."],
-  ["18","torah-editor-mvp","torah-editor-mvp","Torah Editor MVP","torah","wip",false,null,"unknown",false,null],
+  ["18","torah-editor-mvp","torah-editor-mvp","Torah Editor MVP","torah","live",true,null,"vercel",false,
+    "Live at more30.com/orech. Deploy source MEASURED 18/08/2026, not assumed - see overrides.",
+    { isDeployed: true, liveUrl: "https://more30.com/orech", vercelProject: "orech-more30",
+      source: "vendored", deploySource: "apps/18-torah-editor-mvp",
+      deployCommand: "vercel deploy --prod --yes --scope l023131500-ops-projects (from the app dir; never --prebuilt - it drops next.config.js basePath '/orech')",
+      provenanceNote: "The 'repo' field is NOT the deploy path: all 16 orech-more30 deployments were created by the CLI with no git metadata. Proof this tree is the source: the string 'more30-auth', introduced by monorepo commit c32dd84, is present in the live /orech/documents chunk." }],
   ["19","igud-shiurim-portal","igud-shiurim-portal","Igud Shiurim Portal","torah","wip",false,null,"unknown",false,null],
   ["20","igud-portal","igud-portal","Igud Portal","torah","wip",false,null,"unknown",false,null],
   ["21","mthbram","mthbram","Mthbram","other","wip",false,null,"unknown",false,null],
@@ -50,7 +58,7 @@ const R = [
   ["31","hebrew-bridge-crm","hebrew-bridge-crm","Hebrew Bridge CRM","crm","wip",false,null,"unknown",false,null],
 ];
 
-for (const [number, slug, repo, name, category, stage, live, schema, deploy, prot, note] of R) {
+for (const [number, slug, repo, name, category, stage, live, schema, deploy, prot, note, over] of R) {
   const dir = resolve(ROOT, "apps", `${number}-${slug}`);
   mkdirSync(dir, { recursive: true });
   const manifest = {
@@ -62,6 +70,7 @@ for (const [number, slug, repo, name, category, stage, live, schema, deploy, pro
     protected: prot,
     source: "not-vendored", // see CONNECTIONS.md — private source not copied into public repo yet
     note: note ?? undefined,
+    ...(over ?? {}),
   };
   writeFileSync(resolve(dir, "app.json"), JSON.stringify(manifest, null, 2) + "\n");
 }

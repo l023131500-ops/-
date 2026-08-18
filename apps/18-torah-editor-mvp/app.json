@@ -3,15 +3,22 @@
   "slug": "torah-editor-mvp",
   "name": "Torah Editor MVP",
   "category": "torah",
-  "stage": "wip",
-  "live": false,
+  "stage": "live",
+  "live": true,
   "repo": "l023131500-ops/torah-editor-mvp",
   "basePath": "/18",
   "supabase": {
     "project": null,
     "schema": null
   },
-  "deployTarget": "unknown",
+  "deployTarget": "vercel",
   "protected": false,
-  "source": "not-vendored"
+  "source": "vendored",
+  "note": "Live at more30.com/orech. Deploy source MEASURED 18/08/2026, not assumed - see overrides.",
+  "isDeployed": true,
+  "liveUrl": "https://more30.com/orech",
+  "vercelProject": "orech-more30",
+  "deploySource": "apps/18-torah-editor-mvp",
+  "deployCommand": "vercel deploy --prod --yes --scope l023131500-ops-projects (from the app dir; never --prebuilt - it drops next.config.js basePath '/orech')",
+  "provenanceNote": "The 'repo' field is NOT the deploy path: all 16 orech-more30 deployments were created by the CLI with no git metadata. Proof this tree is the source: the string 'more30-auth', introduced by monorepo commit c32dd84, is present in the live /orech/documents chunk."
 }
