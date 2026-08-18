@@ -1,22 +1,27 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
-import { Search, MapPin, Clock, BookOpen } from "lucide-react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { Search, MapPin, Clock, BookOpen, Star } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { useTenant } from "@/hooks/useTenant";
+import { useAuth } from "@/hooks/useAuth";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const DAY_NAMES = ["ראשון", "שני", "שלישי", "רביעי", "חמישי", "שישי", "שבת"];
 
 export default function LessonsDirectory() {
   const { tenant } = useTenant();
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
   const [q, setQ] = useState("");
   const [topic, setTopic] = useState<string>("all");
   const [day, setDay] = useState<string>("all");
+  const [savedOnly, setSavedOnly] = useState(false);
 
   const { data: topics } = useQuery({
     queryKey: ["lesson_topics"],
@@ -59,6 +64,31 @@ export default function LessonsDirectory() {
     },
   });
 
+  const { data: bookmarks } = useQuery({
+    queryKey: ["lesson-bookmarks", user?.id],
+    enabled: !!user?.id,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("lesson_bookmarks")
+        .select("lesson_id")
+        .eq("user_id", user!.id);
+      return data || [];
+    },
+  });
+  const bookmarkedIds = new Set((bookmarks || []).map((b: any) => b.lesson_id));
+
+  const toggleBookmark = async (lessonId: string, isSaved: boolean) => {
+    if (!user?.id) return;
+    if (isSaved) {
+      await supabase.from("lesson_bookmarks").delete().eq("user_id", user.id).eq("lesson_id", lessonId);
+    } else {
+      await supabase.from("lesson_bookmarks").insert({ user_id: user.id, lesson_id: lessonId });
+    }
+    queryClient.invalidateQueries({ queryKey: ["lesson-bookmarks", user.id] });
+  };
+
+  const visibleLessons = savedOnly ? (lessons || []).filter((l: any) => bookmarkedIds.has(l.id)) : lessons;
+
   return (
     <div className="container mx-auto px-4 py-10">
       <div className="mb-8">
@@ -89,20 +119,49 @@ export default function LessonsDirectory() {
         </Select>
       </div>
 
+      {user && (
+        <div className="mb-6">
+          <Button
+            type="button"
+            variant={savedOnly ? "default" : "outline"}
+            size="sm"
+            onClick={() => setSavedOnly((v) => !v)}
+            className="gap-2"
+          >
+            <Star className={`h-4 w-4 ${savedOnly ? "fill-current" : ""}`} />
+            {savedOnly ? "מציג רק שיעורים שמורים" : "הצג רק שיעורים שמורים"}
+          </Button>
+        </div>
+      )}
+
       {isLoading ? (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-40" />)}
         </div>
-      ) : (lessons?.length || 0) === 0 ? (
-        <Card><CardContent className="py-16 text-center text-muted-foreground">אין שיעורים תואמים לחיפוש</CardContent></Card>
+      ) : (visibleLessons?.length || 0) === 0 ? (
+        <Card><CardContent className="py-16 text-center text-muted-foreground">{savedOnly ? "עדיין לא שמרת שיעורים" : "אין שיעורים תואמים לחיפוש"}</CardContent></Card>
       ) : (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {lessons!.map((l: any) => (
+          {visibleLessons!.map((l: any) => {
+            const isSaved = bookmarkedIds.has(l.id);
+            return (
             <Link key={l.id} to={`/lessons/${l.id}`}>
               <Card className="h-full hover:shadow-md transition-shadow">
                 <CardHeader>
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
-                    <BookOpen className="h-3 w-3" /> {l.audience || "פתוח לכולם"}
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
+                      <BookOpen className="h-3 w-3" /> {l.audience || "פתוח לכולם"}
+                    </div>
+                    {user && (
+                      <button
+                        type="button"
+                        aria-label={isSaved ? "הסר משיעורים שמורים" : "שמור שיעור"}
+                        onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleBookmark(l.id, isSaved); }}
+                        className="text-muted-foreground hover:text-primary transition-colors"
+                      >
+                        <Star className={`h-4 w-4 ${isSaved ? "fill-primary text-primary" : ""}`} />
+                      </button>
+                    )}
                   </div>
                   <CardTitle className="text-lg line-clamp-1">{l.title}</CardTitle>
                   <CardDescription>{l.rabbi_name}</CardDescription>
@@ -127,7 +186,8 @@ export default function LessonsDirectory() {
                 </CardContent>
               </Card>
             </Link>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>
