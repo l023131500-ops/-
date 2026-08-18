@@ -1,5 +1,14 @@
 # SYSTEMS_STATUS.md — מצב כל המערכות, נמדד
 
+> ## 🟢 18/08/2026 (לילה) — **26 סטודיו (studio): 0 כשלי ניגודיות — נבדק ותקין (סבב-3 נגישות)**
+
+> המשך סבב-3 (`contrast-probe.mjs`, בסדר ה-ROUTES) — הבא אחרי zchuyot(22).
+> מול `https://more30.com/studio`, שני מצבים (כהה/בהיר), שני רוחבים
+> (1440/390): **0 כשלים** בכל הארבעה שילובים.
+>
+> אין שינוי קוד, אין פריסה נדרשת. ראיות: `QA/platform/studio-dark-recheck-0818/_results.md`.
+> תור סבב-3 ב-ROUTES ממשיך: mechiron, kupot, crm, gesher, nadlan, kesef.
+
 > ## 🟢 18/08/2026 (לילה) — **22 זכויות (zchuyot): 0 כשלי ניגודיות — נבדק ותקין (סבב-3 נגישות)**
 
 > המשך סבב-3 (`contrast-probe.mjs`, בסדר `ROUTES`) — הבא אחרי mthbram(21).
