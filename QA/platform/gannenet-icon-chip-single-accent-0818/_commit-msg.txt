@@ -1,0 +1,22 @@
+measure: confirm gannenet icon-chip fix landed (design-fingerprint 4 -> 1 hue)
+
+Follow-up to 81c94eb (round-5 design pass, more30-priority.md §6): that
+commit collapsed gannenet's six homepage icon chips from four pastel
+hues to the site's own accent, verified only by eye (screenshot +
+"chips share one computed colour"). This step closes it with the
+purpose-built measurement tool instead.
+
+Ran scripts/qa/design-fingerprint.mjs filtered to /gannenet against
+live production. iconChipColours: 4 -> 1 in QA/platform/_design.json.
+gannenet no longer appears in the "icon-chip rainbows (3+ distinct
+hues)" list (now 0 systems platform-wide, was flagging gannenet as the
+last one per run_progress#937/#943).
+
+Diffed the merge-not-replace write before committing: exactly one
+field in one system's entry changed (per the script's own documented
+one-system-run trap), confirming no other system's data was disturbed
+by the filtered run.
+
+No app code changed, no protected system touched (08/09/bkalut-app/
+bkalot-admin/zr_*/NEDARIM3873 untouched). Read-only measurement against
+the already-live production site, no deploy.
