@@ -1,0 +1,1 @@
+round-4 functional pass: 14 smachot - login+core action (venue search/filter, 342 real rows)+real data verified, no bug, no deploy needed
