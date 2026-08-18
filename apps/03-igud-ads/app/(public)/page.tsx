@@ -63,7 +63,7 @@ export default function HomePage() {
               { n: "3", t: "מורידים PNG / PDF / WhatsApp", d: "ברזולוציה גבוהה להדפסה ולשליחה ברשת." },
             ].map((s) => (
               <div key={s.n} className="card">
-                <div className="w-12 h-12 rounded-full bg-brand-goldsurface text-brand-dark font-bold text-xl flex items-center justify-center mb-4">{s.n}</div>
+                <div className="w-12 h-12 rounded-full bg-brand-goldsurface text-brand-darksurface font-bold text-xl flex items-center justify-center mb-4">{s.n}</div>
                 <h3 className="font-serif text-xl font-bold mb-2">{s.t}</h3>
                 <p className="text-gray-700 leading-relaxed">{s.d}</p>
               </div>

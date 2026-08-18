@@ -1,5 +1,30 @@
 # SYSTEMS_STATUS.md — מצב כל המערכות, נמדד
 
+> ## 🟢 18/08/2026 (לילה) — **03 מודעות: תג "1/2/3" בלתי-קריא במצב כהה — תוקן (סבב-3 נגישות)**
+
+> המשך סבב-3 (`contrast-probe.mjs`) אחרי torah(01) — modaot(03), הבא לפי
+> `ROUTES`. מול `https://more30.com/modaot` במצב כהה: 3 כשלים — עיגולי
+> המספרים "1"/"2"/"3" בסקציית "איך זה עובד", 1.56:1 (נדרש 3), בהיר על זהב.
+>
+> **השורש** ב-`apps/03-igud-ads/app/(public)/page.tsx:66`: `text-brand-dark`
+> (טוקן-דיו שמתהפך בין מצבים) על `bg-brand-goldsurface` (משטח זהב **קבוע**,
+> לא מתהפך) — אותה מלכודת שכבר תועדה ותוקנה ב-`.btn-gold` באותו קובץ
+> (`globals.css:98-101`), אבל התג המספרי לא עקב אחריה. **התיקון:**
+> `text-brand-dark` → `text-brand-darksurface` (משטח-דיו קבוע) על שלושת התגים.
+>
+> **תגלית לוואי:** בדיקת מצב-בהיר על אותו עמוד החזירה רשימת "כשלים" ארוכה
+> (טקסט לבן על קרם) — **false positive של `contrast-probe.mjs`**, לא באג:
+> ל-`<main>` יש `bg-gradient-to-b from-brand-blue to-brand-dark` אמיתי
+> (אומת: `getComputedStyle().backgroundImage` = נייבי-כהה), אבל הכלי קורא רק
+> `background-color` ומדלג על גרדיאנטים, ולכן "רואה" את רקע ה-`<body>` (קרם)
+> מתחתיו. לא תוקן קוד ייצור — מגבלת כלי-QA, יש לזכור אותה אם עוד מערכות
+> משתמשות ב-`bg-gradient-*` על אלמנט-עטיפה.
+>
+> אומת: `next build` נקי, נפרס `vercel deploy --prod` (`modaot-more30`,
+> `dpl_9TPLrFZFFXds5yfS3zcGZTSSD7Gp`, READY). אומת חי עם cache-buster:
+> כשלים 3←0. ראיות: `QA/platform/modaot-badge-dark-0818/`. Supabase MCP
+> אינו מחובר לסשן הזה — heartbeat נכתב כקובץ `_heartbeat-pending.sql`.
+
 > ## 🟢 18/08/2026 (לילה) — **01 torah: כל הכותרת/היירו/הפוטר/הניווט היו בלתי-קריאים במצב כהה — תוקן (סבב-3 נגישות)**
 
 > המשך סבב-3 (בדיקת ניגודיות מצב-כהה, `contrast-probe.mjs`) אחרי tamlul
