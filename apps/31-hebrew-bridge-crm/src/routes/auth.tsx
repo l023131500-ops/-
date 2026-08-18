@@ -119,7 +119,7 @@ function AuthPage() {
     <main className="min-h-screen flex items-center justify-center px-4 py-12"
          style={{ background: "var(--gradient-primary)" }}>
       <div className="w-full max-w-md">
-        <div className="text-center mb-8 text-primary-foreground">
+        <div className="text-center mb-8 text-hero-foreground">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-white/10 backdrop-blur mb-4">
             <Shield className="w-8 h-8" />
           </div>
