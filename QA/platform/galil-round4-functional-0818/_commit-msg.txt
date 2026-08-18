@@ -1,0 +1,30 @@
+round-4 functional pass: 24 galil - login ok, core action bug found (contact form "other" lead silently fails, fake success shown), core.issues #240 opened, no deploy this step
+
+Session start: read RUN_INSTRUCTIONS.md, checked core.run_progress (last id 893,
+zchuyot-round4-functional-0818, which queued the next system after zchuyot (22)
+per scripts/qa/platform-audit.mjs ROUTES order - resolved to galil (24)) and
+git log (HEAD 0ba7040 on fix/nadlan-a11y).
+
+Ran the round-4 functional pass on 24 galilee-connect-hub (more30.com/galil):
+verified live via Playwright. Shared auth pill already reads logged in. Home
+page's synagogue list and /galil/kashrut are genuine, friendly empty states
+(no gabai has registered data for this hub yet) - not a bug.
+
+Tested the /galil/contact lead form's "פנייה אחרת" (other) category with
+clearly-marked test data instead. Found a real bug: POST .../community_leads
+returns 400 (check constraint community_leads_lead_type_check rejects
+lead_type="other"), but the UI shows the success screen anyway because the
+submit handler doesn't check the response status - every real visitor who
+picks that category loses their message silently. Logged core.issues #240
+(severity high).
+
+The live /galil (and /chatzor, same shared Supabase project mwljkonwdeuaahsigjdp)
+app is not built from apps/16-chatzor-connect in this monorepo - confirmed via
+PowerShell Select-String (ripgrep skips gitignored source per memory
+app-sources-are-gitignored) against apps/16-chatzor-connect/src: no match for
+lead_type/community_leads/the live category labels. Locating the real deployed
+source is next step's work, not done here (time-boxed).
+
+Evidence: QA/platform/galil-round4-functional-0818/_results.md +
+fake-success-other-lead.png. No code change, no deploy this step. Protected
+systems untouched (08/09/bkalut-app/bkalot-admin/zr_*/NEDARIM3873).
