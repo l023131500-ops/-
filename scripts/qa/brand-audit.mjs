@@ -36,11 +36,20 @@ const table = JSON.parse(
   fs.readFileSync(path.resolve(here, "../../portal/vercel.dist.json"), "utf8"),
 );
 
-const mounts = [
-  ...new Set(
-    table.rewrites.map((r) => /^\/([a-z0-9-]+)\/:path\*$/.exec(r.source)?.[1]).filter(Boolean),
-  ),
-].sort();
+// Most mounts are proxied via a `/x/:path*` wildcard rewrite, but a few
+// (e.g. /bkalot-studio) are served as static files through exact-match
+// rewrites instead (see stage-portal.ps1) and never match that pattern —
+// the wildcard-only version of this list silently skipped them. Catch both
+// shapes and dedupe; exclude the handful of exact-match routes that are
+// portal pages, not mounts.
+const EXACT_MATCH_EXCLUDE = new Set(["login", "me", "subscribe", "showcase"]);
+const wildcardMounts = table.rewrites
+  .map((r) => /^\/([a-z0-9-]+)\/:path\*$/.exec(r.source)?.[1])
+  .filter(Boolean);
+const exactMounts = table.rewrites
+  .map((r) => /^\/([a-z0-9-]+)\/?$/.exec(r.source)?.[1])
+  .filter((m) => m && !EXACT_MATCH_EXCLUDE.has(m));
+const mounts = [...new Set([...wildcardMounts, ...exactMounts])].sort();
 
 // The old brand, plus the spacing/quoting variants that turn up in practice.
 const OLD_BRAND = /מור\s+מערכות\s+תוכנה/;

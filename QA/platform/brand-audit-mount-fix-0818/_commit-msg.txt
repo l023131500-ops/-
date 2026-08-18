@@ -1,0 +1,24 @@
+fix: brand-audit.mjs missed exact-match-rewrite mounts (bkalot-studio)
+
+Gap flagged in core.run_progress#935 (bkalot-studio-auth-button-fix-0818):
+brand-audit.mjs (more30-priority.md §7) built its mount list only from
+`/x/:path*` wildcard rewrites in portal/vercel.dist.json. /bkalot-studio (37,
+bkalot-clone) is served through exact-match rewrites instead (stage-portal.ps1
+copies it straight into portal/dist/bkalot-studio/), so it was never in the
+26-mount list and the last full run (17/08, 0 offenders) never actually
+checked it - even though its own auth-button.js gap was fixed and deployed
+earlier today (23161fd).
+
+Fix: also derive mounts from exact-match rewrite sources (`/x` or `/x/`),
+excluding the handful of exact-match routes that are portal pages, not
+mounts (login, me, subscribe, showcase). Wildcard and exact lists are
+deduped through the same Set.
+
+Re-ran the full script: 27 mounts now enumerated (was 26), bkalot-studio
+included and clean (no old brand, has credit) - confirms today's earlier fix
+really is live and this enumeration gap is closed. 0 offenders, 0
+credit-missing across all 27 mounts.
+
+No app code changed (script only), no protected system touched
+(08/09/bkalut-app/bkalot-admin/zr_*/NEDARIM3873 untouched), no deploy needed.
+Evidence: QA/platform/brand-audit-mount-fix-0818/raw-output.txt.
