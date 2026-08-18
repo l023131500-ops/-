@@ -1,0 +1,11 @@
+אנטי-דריפט: SYSTEMS_STATUS.md — 01 torah "CLS 0.578 חי כרגע" נבדק מחדש, אינו פער פעיל (§5ב מחוץ לתור)
+
+scripts/qa/lighthouse-run.mjs נגד https://more30.com/torah הראתה cls: "0.001",
+לא ה-0.578 שהרשומה בטבלת "מה נשאר לתקן" טענה שעדיין חי וממתין לפריסה. אין
+שינוי קוד — מדידה בלבד. LCP 5.3s ו-TBT 510ms נשארים בעיה פתוחה (ארכיטקטונית).
+עודכן SYSTEMS_STATUS.md: רשומה חדשה בראש הקובץ + קו חוצה על חלק שורת הטבלה.
+
+heartbeat: MCP של Supabase אינו מחובר לסשן הזה — נכתב כקובץ
+QA/torah/cls-recheck-0817/_heartbeat-pending.sql, מצטרף לתור הקיים.
+
+ראיות: QA/torah/cls-recheck-0817/_lighthouse.json

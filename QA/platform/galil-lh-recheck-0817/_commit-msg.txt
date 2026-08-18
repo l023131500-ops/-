@@ -1,0 +1,15 @@
+24 גליל קונקט: Lighthouse נמדד מחדש אחרי code splitting (36→40) - שיפור חלקי
+
+הצעד שקודמו (b83e599) סימן במפורש: "Lighthouse מחדש = הצעד הבא". הרצתי
+scripts/qa/lighthouse-run.mjs מול https://more30.com/galil אחרי שה-route-level
+code splitting נפרס לייצור (index.js 981KB→801KB + KashrutPage-CDPfIuur.js
+בנפרד). התוצאה: פרפורמנס 36→40 - שיפור אמיתי אך חלקי, עדיין רחוק מסף 90.
+נגישות 100, SEO 100 ללא שינוי.
+
+הצוואר-בקבוק המוביל עכשיו (מה-JSON הגולמי): mainthread-work-breakdown 10.9s,
+LCP 9.0s, server-response-time 760ms, unused-javascript ~142KiB. לא נחקר
+לעומק בצעד הזה - מדידה ותיעוד בלבד, כדי לא לחרוג מצעד קטן אחד. אין שינוי
+קוד נוסף, אין פריסה.
+
+ראיות: QA/platform/galil-lh-recheck-0817/_lighthouse.json
+Supabase MCP לא מחובר לסשן הזה - heartbeat כ-_heartbeat-pending.sql.

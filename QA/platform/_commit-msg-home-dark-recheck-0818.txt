@@ -1,0 +1,13 @@
+37 home: round-3 dark-mode recheck - 0 contrast failures (clean)
+
+contrast-probe.mjs against https://more30.com/ in both color schemes
+(dark/light) and both widths (1440/390) found 0 contrast failures in all
+four combinations. No code change, no deploy needed. Evidence:
+QA/platform/home-dark-recheck-0818/_results.md.
+
+Round-3 ROUTES queue (per platform-audit.mjs ROUTES list): all 26
+per-system routes (torah..kiosk) plus tivuch and home are now
+dark-rechecked. Still unchecked: login, me, subscribe (portal-level
+pages, only Lighthouse sweeps exist for them so far).
+
+Protected systems untouched (08/09/bkalut-app/bkalot-admin/zr_*/NEDARIM3873).

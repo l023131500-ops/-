@@ -1,0 +1,8 @@
+28 kupot: round-3 a11y recheck - 0 dark-mode contrast failures (clean)
+
+contrast-probe.mjs against https://more30.com/kupot, both color schemes
+(light/dark), both widths (1440/390): 0 contrast failures in all four
+combinations. No code change, no deploy needed.
+
+Round-3 ROUTES queue (studio, mechiron, kupot, crm, gesher, nadlan, kesef)
+continues with crm next.

@@ -1,0 +1,16 @@
+תחזוקה: הסרת 4 תמונות מתות (~5.29MB) שלא נקראות משום קוד — mthbram/torah/galil
+
+grep על כל עץ ה-app של כל אחת מהן (src+public+config) החזיר 0 התאמות לשם
+הקובץ, לפני המחיקה:
+- apps/21-mthbram/src/assets/agud-logo.png (1,356,654 בייט)
+- apps/21-mthbram/src/assets/logo-igud.png (1,199,848 בייט)
+- apps/01-torah-platform/src/assets/logo-igud.png (1,199,848 בייט)
+- apps/24-galilee-connect-hub/src/assets/logo-hazor.png (1,537,729 בייט)
+
+לא נבנית ולא נגעת בשום נתיב ייצור — קבצים בלתי-מושגים על ידי שום build.
+אין פריסה נדרשת. הסבב המלא של 17/08 (אחה"צ) כבר קבע שאין עבודה פונקציונלית
+לא-חסומה חדשה (Supabase MCP עדיין לא מחובר בסשן הזה, אומת שוב); זו הפעולה
+המשמעותית הקטנה ביותר שנמצאה בלי להמציא עבודת מילוי.
+
+heartbeat: core.run_progress דרך
+QA/platform/dead-assets-cleanup-0817/_heartbeat-pending.sql (MCP לא מחובר).

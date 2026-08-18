@@ -1,0 +1,26 @@
+30 CRM זכויות: favicon.svg נכתב מהסימן החי (ShieldCheck) ופרוס, NEEDS_USER §0פ: חמש נותרו -> שלוש
+
+app-sidebar.tsx מצייר בכל עמוד תג מעוגל bg-primary עם אייקון lucide
+ShieldCheck ב-text-primary-foreground. __root.tsx הקודם לא הצהיר rel="icon"
+כלל, ולכן הלשונית נפלה ל-favicon של more30.com עצמו.
+
+נמדדו הצבעים מהעמוד החי (Playwright, getComputedStyle, test@more30.com):
+רקע #006D6D, אייקון #F8FDFD, ניגודיות 6.0:1 - AA תקין.
+
+נכתב apps/30-zchuyotpro-crm/public/favicon.svg (32x32, rx=7, אותו פורמט כמו
+studio), נוסף <link rel="icon" href="/crm/favicon.svg"> ל-__root.tsx, ונוסף
+rewrite תואם ב-vercel.json (/crm/favicon.svg -> /favicon.svg) לצד ה-rewrite
+הקיים ל-/crm/assets/*.
+
+פרוס ממקור (vercel deploy --prod, לא --prebuilt): config.json שה-nitro/vercel
+preset של TanStack Start מייצר לא כולל rewrites מ-vercel.json בכלל -
+--prebuilt היה שובר גם את ה-rewrite הקיים של האסטים. dpl_4jBUsuzs9d8ytUixZbJJ1SYPUsrC, READY.
+
+אומת: /crm/favicon.svg ו-crm-more30.vercel.app/favicon.svg שניהם 200; קובץ
+public/favicon.svg קיים בעץ שהועלה (Vercel API, לא דרך NetFree); התג החי כותב
+את ה-link הנכון; 0 שגיאות קונסולה בדשבורד אחרי הפריסה - ה-rewrite הקיים לא נשבר.
+
+עדכן NEEDS_USER.md §0פ: crm ירד, נשארו שלוש (bkalot מוגן, gesher, kesef -
+האחרונה source not-vendored, לא ניתנת לתיקון מכאן בכלל).
+
+ראיות: QA/platform/crm-favicon-0817/_results.md

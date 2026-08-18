@@ -1,0 +1,53 @@
+gannenet (40): the one live system with no way to sign in at all
+
+Swept the 26 live addresses for the shared login pill, on the HTML production
+actually serves rather than on the source tree. 25 serve auth-button.js.
+gannenet served none — so a visitor there had nothing to click, and could not
+become a customer of that system. components/Nav.tsx already carried the
+admission in a comment — "The app has no sign-up at all" — and the one
+prominent button on every page went to /pricing.
+
+The database agreed: core.app_memberships held a single row for gannenet
+against 4-15 for every other system, and that row was written at 02:37 by a
+script calling more30_join_app directly, never by a browser.
+
+Two lines of fix. layout.tsx loads https://more30.com/auth-button.js — the
+absolute URL, because the app is served under basePath /gannenet and a
+relative path would break. Nav.tsx reserves room through
+--more30-auth-inset, the variable the pill publishes from its real width;
+without it the pill sits on top of "כניסה למאגר", the nav's last control,
+which is exactly the overlap already measured on 11 routes. The container is
+centred at 1180, so the gutter is subtracted.
+
+Verified live on more30.com after unregistering 1 service worker and clearing
+2 caches — a stale SW has hidden a gannenet change before, and a clean
+console is what that failure looks like. Logged out: pill at x 16-92, the CTA
+starts at 97, elementFromPoint at the CTA centre returns the CTA itself.
+Signed in: the pill shrinks to 71px and the inset to 99px, and the CTA is
+still clickable — two states, not one, because the pill's width follows its
+label. Then the loop itself: /gannenet, /login?from=..., sessionStorage
+holding /gannenet, callback, and back to /gannenet — inside the product and
+not on a landing page, 0 console errors, and core.app_memberships took
+gannenet at 08:38:18, the first browser-sourced join this system has ever
+had.
+
+Ran the same loop on kupot first, to know the shared mechanism works and not
+that one system works: landed at /kupot#/, membership written at 08:28:04
+against a sign-in at 08:28:02, and a real filter still worked while signed in
+— dentistry, 36 cards to 35.
+
+Build passes and 180 /lesson/[id] pages still generate, which is §0.3's own
+acceptance test. Deployed from source, not --prebuilt, since --prebuilt drops
+vercel.json and the mount rewrite with it: dpl_B5NK8txSJXzWJdNgqdaWmGiMEDoD,
+production, READY. The sweep re-run against production now reads 26/26.
+
+Not claimed: the instant-signup path was not exercised, because it creates a
+real new user; and the other 25 systems were measured only as "the script is
+served", not in a browser.
+
+Evidence QA/gannenet/auth-entry-0812/ and QA/platform/auth-entry-0812/;
+scripts/qa/auth-entry-sweep.mjs is re-runnable.
+
+Protected systems untouched: 08, 09, bkalut-app, bkalot-admin, zr_*,
+NEDARIM3873 not read or written; no csj/csj_src/igud; no billing, no send,
+test mode.

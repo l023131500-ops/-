@@ -1,0 +1,36 @@
+platform (#154): the last two mounts were candidates, not bugs — read in the bundle and then in a browser
+
+#154 was down to two: imud (04) on /api/books and /api/meta, kupot (28) on
+/api/agent and /api/switch-lead. Both carried the candidate verdicts the script
+refuses to call proof — the route answers under the mount, and that says nothing
+about whether the shipped client gets there, because the prefix is applied at the
+call and never written into the literal. Exactly studio's standing until 8537099
+read its call site.
+
+Both bundles have studio's shape with one wrapper: v2 = z1 && z1.trim() ? … : Nx,
+where Nx is "/imud/" stripped of its trailing slash (Vite's BASE_URL, inlined by
+8507410 for imud and 6551b75 for kupot) and z1 is Cx?.VITE_API_BASE off an empty
+object literal. readCallSite had no rule for a property read off an object, so
+the override was unknown, and an unknown condition leaves the base undecided.
+
+Two symbols, kept apart from null on purpose: EMPTY_OBJECT for a bare {} and
+ABSENT for a property read off one. null still means "could not read this" and is
+never allowed to act like "provably empty" — the override grants the base only
+when it resolves to ABSENT, because a build that did set VITE_API_BASE would take
+the other branch and the base would be its value. Negative controls in the same
+run: mechiron and smel still resolve "" and get no grant, and /studio/api/brands
+still answers JSON.
+
+Confirmed in Chromium through more30.com rather than only in the bundle:
+/imud/ sends https://more30.com/imud/api/books 200, /kupot/ sends
+/kupot/api/hf/meta and /kupot/api/hf/topics 200. Nothing asks more30.com for a
+root-relative /api. The two POSTs were not fired — a real switch-lead body writes
+a live lead — and are stated as a reading, not a measurement.
+
+The run also stopped overwriting its own history: QA_OUT_DIR names the output
+folder, default unchanged, because 0810 is the evidence #154 is compared against.
+14 passed / 2 failed on the same tree before, 16 / 0 after; 4 / 12 when #154 was
+opened. /api/wizard/infer stays reached_mount_function and nothing here claims
+otherwise.
+
+Evidence: QA/platform/mounted-api-base-0812/

@@ -1,0 +1,9 @@
+round-3 a11y recheck: orech - 0 contrast failures (clean, OS-follows dark mode)
+
+contrast-probe.mjs against https://more30.com/orech, both color schemes
+(light/dark), both widths (1440/390): zero failures in all four combinations.
+orech follows prefers-color-scheme on its own (no manual toggle); confirms the
+06/08 correction that the earlier wont_fix "no dark mode" closure was itself
+wrong. No code change, no deploy required.
+
+Evidence: QA/platform/orech-dark-recheck-0818/_results.md

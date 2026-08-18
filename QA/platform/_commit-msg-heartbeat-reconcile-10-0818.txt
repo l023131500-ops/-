@@ -1,0 +1,11 @@
+heartbeat: reconcile 5 more queued _heartbeat-pending.sql files (0818)
+
+heartbeat-backlog-reconcile-10-0818 -- reconciled 5 more of the ~71
+remaining queued _heartbeat-pending.sql files (mechiron-admin-gate-recheck-0817,
+vercel-quota-recheck-0817, nadlan-kesef-footer-recheck-0817,
+source-fixes-deploy-recheck-0817, brand-audit-recheck-0817), checked each
+task text against core.run_progress before insert (none pre-existed).
+
+No app code changed, no protected system touched
+(08/09/bkalut-app/bkalot-admin/zr_*/NEDARIM3873 untouched). Remaining:
+~66 pending files still queued in commit order.

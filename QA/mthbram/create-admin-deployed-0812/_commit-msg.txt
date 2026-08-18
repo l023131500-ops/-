@@ -1,0 +1,44 @@
+21 mthbram (#160): the account-takeover endpoint is closed in production — the blocker that held it was half true
+
+POST to functions/v1/create-admin on aypsqqvfohekxxuqsmrw answered with no
+apikey and no Authorization header at all. It runs with
+SUPABASE_SERVICE_ROLE_KEY and, when the email already exists, overwrites that
+user's password — takeover of any account in the project, by email. The fix has
+been sitting in this repo since commit 3f23763, undeployed, behind "no
+credentials from here."
+
+That blocker was checked instead of honoured. core.secrets holds a live
+SUPABASE_ACCESS_TOKEN (sbp_, scope=global): api.supabase.com/v1/projects
+returns 200 with ten projects, and aypsqqvfohekxxuqsmrw is not one of them — so
+the CLI half of the blocker was real. What nobody had checked is that the
+project is Lovable's. Reading supabase/functions/create-admin/index.ts through
+Lovable returned the old ungated source, which is the proof that Lovable is
+what deploys here. One file replaced with the version already committed
+locally, one credit, Lovable commit b73203cf. Lovable also generated and stored
+ADMIN_BOOTSTRAP_SECRET (64 chars); the value is write-only from here, so it is
+deliberately not in core.secrets.
+
+Measured against production, before: 400 "Email and password required" — the
+function's own validation message, so the request reached the handler body
+uncredentialed. After: 404 "Not found" for the bare POST, for the POST carrying
+a password, and for a wrong secret. 404 and not 503 is itself the proof the
+secret is configured, since the unset branch returns 503. Not verified: the
+correct-secret branch, which needs the secret value.
+
+Nothing broke. Searching all of apps/21-mthbram for "create-admin" finds only a
+comment line inside the function; no screen calls it, and per #160 the old
+version never produced an admin who could log in anyway.
+
+#161 (the api function leaking every lead) stays undeployed on purpose, not for
+lack of access: its guard is requireAdmin(has_role) and no account passes
+has_role today, so shipping it before a real admin exists would lock the admin
+panel out of its own data. #167 (egod) is the same shape on another Lovable
+project and now has a known deploy path. Both re-annotated in core.issues.
+
+No probe created an account or changed a password — the emails were .invalid
+and the gate returns before auth.admin. Test mode: no billing, nothing sent.
+Protected systems untouched (08, 09, bkalut-app, bkalot-admin, zr_,
+NEDARIM3873); csj/csj_src/igud not used.
+
+core.issues #160 fixed · evidence
+QA/mthbram/create-admin-deployed-0812/_results.json

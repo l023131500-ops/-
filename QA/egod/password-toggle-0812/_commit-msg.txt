@@ -1,0 +1,32 @@
+egod (15): the portal's only password field could not be read back, and its one rule was never stated
+
+/egod/login is the whole of system 15's auth -- the same form is both sign-in
+and sign-up -- and its password field was a bare masked input. §1א asks for the
+eye on every password field and for the password rules to be shown beside the
+field while typing; neither was there.
+
+The 6 is measured, not assumed: a signup POST to the project's auth endpoint
+with a 4-character password answers 422 weak_password, "Password should be at
+least 6 characters". PASSWORD_MIN_LENGTH now feeds the label, the minLength and
+the submit guard, so the three cannot drift apart. The rule renders only in
+signup mode -- an existing password has no rule to meet -- and turns gold with a
+check at 6.
+
+components/ui/password-input.tsx mirrors torah's: type, aria-pressed, aria-label
+and icon all derive from one state, so the button cannot say "show" while the
+password is already visible. type="button" is explicit -- the field sits in a
+<form>, and a button with no type submits. The toggle sits on the LEFT because
+the page is RTL and the right side already carries the Lock icon.
+
+That Lock is also the trap torah hit: PasswordInput's relative wrapper comes
+after the absolutely-positioned icon in the DOM, so at z-index auto the wrapper
+paints over it. z-10 on the icon, verified with elementFromPoint rather than by
+eye, against the untouched Mail icon as the control.
+
+Deployed to production and verified on the domain: 3 characters now stops at the
+browser's own Hebrew length message with zero auth requests, and no test user was
+created. The live bundle hash matched neither the _deploy copy nor a fresh build,
+so before overwriting it the live JS was downloaded and its strings compared --
+nothing existed live that the new build lacks.
+
+Evidence: QA/egod/password-toggle-0812/

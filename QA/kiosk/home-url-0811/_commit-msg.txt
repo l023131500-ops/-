@@ -1,0 +1,60 @@
+kiosk (35): the link that only shows was checked, the link that locks was not
+
+§2★א has two fields. The second one, the link shown on the device, has refused
+non-http(s) since it landed: the value is loaded in the kiosk webview, so a
+`javascript:` or `data:` URL there is script running inside the one browser on
+the device that is supposed to run nothing.
+
+The first one, the main site, is the stronger of the two — it is what the device
+locks onto, where idle-return and a reboot land, and what the enrollment
+response hands a device that has nothing else yet. It was checked less.
+`PATCH /devices/:id` stored it raw: no parse, no scheme test, nothing.
+`POST /enrollments` asked only that `new URL()` not throw, and
+`new URL('javascript:alert(1)')` does not throw.
+
+Added `normalizeHomeUrl()` to src/displayurl.js — the module that is already
+'the two fields of §2★א' — sharing one `checkWebUrl()` with
+`normalizeDisplayUrl()`.
+
+Empty is neither an error nor a clear. Absent means leave the main site alone,
+which is what the PATCH's COALESCE already did; a device with no main site was
+never configured rather than having had its lock removed. That is deliberately
+the opposite of field 2, where empty is a real value meaning follow the main
+site.
+
+The library path is validated too, and gets its own message. A `links` row
+predates this validation, so picked-from-the-library is not the same as
+already-known-good — and the owner did not type that address and cannot edit it
+from the device screen, so naming the main site would send them to correct a
+field that is not the problem.
+
+Host derivation moved after the check and stayed on the manual path only. A
+library link carries its own host set, and deriving one here would edit the
+device's allow-list on a save where the owner picked a link whose row has none.
+
+The same funnel closed the other three doors onto the webview. `set_url` checked
+only that the host was non-empty, so `ftp://` on an allowed domain passed; it
+now checks the scheme and sends the checked value rather than the raw one, or a
+trailing newline in a pasted address reaches the device. `POST /links` and
+`PATCH /links/:id` are the source both device routes copy from, and the edit
+validated nothing at all — it was the one door that could put `javascript:` into
+the library.
+
+Verified in QA/kiosk/home-url-0811: 19 assertions replaying all three routes'
+own sequence against the production DDL on node:sqlite, asserting the stored
+column rather than the validator's return value, plus a before row showing the
+old PATCH storing `javascript:` and a section that reads both route files off
+disk so the replay cannot drift from what they do. 125/126 on node --test — 122
+before, the four new cases are in displayurl.test.mjs, and the one failure is
+routing.test.mjs, which imports express and cannot run in this checkout.
+
+Corrected by the run: the first version also refused a hostless URL, on the
+reasoning that the device matches its allow-list by host. That case does not
+exist — http is a WHATWG special scheme, so `http:///lobby` normalises to host
+`lobby`, and anything that parses as http(s) has a host.
+
+Existing rows are not swept. Rewriting an owner's stored address on a boot
+migration would change what a live device shows without anyone asking; the
+refusal is at the door.
+
+Not deployed.

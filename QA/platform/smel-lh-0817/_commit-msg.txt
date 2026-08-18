@@ -1,0 +1,26 @@
+12 נדל"ן Smel: Lighthouse נמדד לראשונה (perf 73->80, a11y 92->100) + תוקנו 2 ליקויי נגישות אמיתיים
+
+המשך ישיר לסבב 17/08 (fix/nadlan-a11y, אחרי 02/04/06/10). node
+scripts/qa/lighthouse-run.mjs QA/platform/smel-lh-0817 smel מול
+https://more30.com/smel החי - ציון ראשון אי-פעם למערכת הזו.
+
+failedAudits חשף שני ליקויים אמיתיים (lh-detail.mjs לפי audit):
+1. color-contrast - apps/12-smel-ndln/client/src/index.css: .gold-text
+   ב-hsl(43 62% 45%) נתן 2.78:1 מול הרקע הבהיר. הועבר ל-32% בהירות
+   (אותו גוון, 5.06:1 מחושב).
+2. link-name - apps/12-smel-ndln/client/src/components/Header.tsx: הקישור
+   "פרימיום" עטף Button עם hidden sm:inline-flex, אבל wouter מרנדר <a>
+   נפרד סביב הילד (ה-Link, לא ה-Button) - כך שבמובייל ה-<a> נשאר גלוי
+   וב-tab order בלי שם נגיש. הועבר ה-hidden ל-Link עצמו.
+
+npm run build, הועתק ל-_deploy/smel-more30/smel (hash קבצים ישנים
+נמחקו בשם מפורש), vercel deploy --prod מ-_deploy/smel-more30 -
+dpl_F2oruq6kdtoxTBNMAoRZ8q3KZqQE READY. אומת חי עם cache-buster: בנדל
+חדש מוגש, lh-detail.mjs חוזר על שני האודיטים מול הכתובת החיה - שניהם
+score 1. מדידה מלאה חוזרת: נגישות 92->100.
+
+פרפורמנס 80 (מתחת לסף 90) ו-Best Practices 77 נשארים פתוחים - תואם
+דפוס NetFree/third-party-cookies שכבר מתועד ב-32/10/06/04/02, לא
+עבודה חדשה כאן.
+
+QA/platform/smel-lh-0817/

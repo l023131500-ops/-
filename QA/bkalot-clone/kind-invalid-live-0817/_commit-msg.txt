@@ -1,0 +1,15 @@
+שכפול בקלות שכבה 1: ענף kind_invalid מהשרת נמדד בייצור (§5ב, אימות)
+
+המשך ישיר ל-topic_no_invalid/situation_unknown (0817) — אותה סריקה שורה-שורה
+של 0058 מול MESSAGES/CODE_FIELD בלקוח. kind_invalid (0058 שורות 79-82), הבדיקה
+הראשונה בפונקציה, מעולם לא נמדדה מול הפונקציה הפרוסה בייצור.
+
+בקשת POST ישירה אל bkalot-clone-intake (עוקפת את קבוצת ה-radio של הטופס),
+kind="not_a_real_kind_xyz": HTTP 200, error=kind_invalid, allowed עם 3 ערכים —
+זהים מילה-במילה לשלוש אפשרויות ה-radio בלקוח (index.html:154,158,162).
+הענף חסום מבנית מהטופס הגלוי, כפי שהערת הלקוח עצמה כבר מתעדת
+(index.html:340-341). אין שינוי קוד, אין מיגרציה, אין פריסה.
+
+עדיין פתוח מאותה סריקה: source_invalid (0058 שורות 84-87) — לצעד הבא.
+
+ראיות: QA/bkalot-clone/kind-invalid-live-0817/probe-live.txt.

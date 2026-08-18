@@ -1,0 +1,20 @@
+hardening (core.issues #239): strip leading BOM from SUPABASE_SERVICE_ROLE_KEY before use
+
+apps/02-igud-transcribe/lib/supabase/server.ts: createSupabaseService() and
+createSupabaseServiceRaw() now strip a leading U+FEFF from
+SUPABASE_SERVICE_ROLE_KEY before passing it into the Supabase client, so a
+BOM-corrupted env var (memory powershell-pipe-adds-bom) cannot again crash
+every fetch call with a ByteString TypeError - the exact failure mode fixed
+at the env-var level in cac3db1. No-op against the current (already
+BOM-free) key value.
+
+Verified: next build clean (13/13 pages). Deployed via vercel deploy --prod
+from apps/02-igud-transcribe (tamlul-more30, dpl_BhfvJvAyaVinXfXxHUvpQBeDxLsM,
+READY). Live POST to more30.com/tamlul/api/coupons (cache-busted) still
+returns {"error":"Invalid API key"} - same as before this step, confirming
+no regression; the underlying stale service_role key against Supabase
+project bieebmnmkffwbqlsfozh (separate, already-tracked half of #239)
+remains open and needs a current key from Supabase Settings, larger than
+one step. Evidence: QA/platform/tamlul-service-key-bom-hardening-0818/_results.md
+
+Protected systems untouched (08/09/bkalut-app/bkalot-admin/zr_*/NEDARIM3873).

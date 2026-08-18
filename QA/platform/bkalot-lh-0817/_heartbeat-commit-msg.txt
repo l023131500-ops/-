@@ -1,0 +1,1 @@
+heartbeat: pending row for bkalot-lh-0817 (dbb7a57) - Supabase MCP not connected this session
