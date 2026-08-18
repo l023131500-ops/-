@@ -17,6 +17,7 @@
         var mq = window.matchMedia("(prefers-color-scheme: dark)");
         var apply = function (dark) {
           document.documentElement.classList.toggle("dark", dark);
+          document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
         };
         apply(mq.matches);
         mq.addEventListener

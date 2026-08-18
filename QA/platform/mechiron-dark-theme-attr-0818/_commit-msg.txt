@@ -1,0 +1,22 @@
+27 mechiron: round-3 dark recheck - headings invisible (data-theme bridge missing)
+
+contrast-probe.mjs dark mode found 21 heading failures (h1/h2/h3, rgb(27,71,77)
+on near-black, 1.27-1.74:1, needs 3-4.5:1), identical at both widths.
+
+Root cause: shared bkalot-theme.css (Supabase Storage, additive brand tokens)
+sets h1-h4 color via --teal-d and keys its dark palette off [data-theme=dark],
+but this app's own dark-mode bootstrap script only toggled the .dark class -
+never set data-theme - so the shared file's dark override never applied.
+
+Fix: index.html bootstrap script now also sets data-theme alongside .dark.
+Does not touch the shared theme file or any protected system.
+
+Deployed mechiron-more30 (dpl_A41odZYmD2vsxQ8voPmkpw2CYXRB, READY). Verified
+live with a cache-buster: dark 21 findings -> 0 (both widths); light mode
+unchanged (regression guard).
+
+Left open: decorative step-number watermark (theme-independent, accepted
+exception class) and a text-destructive asterisk near-miss (3.31:1 dark-only) -
+flagged for a future recheck, not this defect.
+
+Evidence: QA/platform/mechiron-dark-theme-attr-0818/_results.md
