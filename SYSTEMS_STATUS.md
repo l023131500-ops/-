@@ -4754,6 +4754,12 @@ Lighthouse **95 / 100 / 100** (נמדד 07/08; 98 היה המדידה של 02/08
 הוסר שער הספינר שחסם את כל האתר הציבורי מאחורי round-trip; הטננט מוזרק ל-HTML.
 FCP 3.2s → 2.0s.
 
+### 04 — מתג מצב כהה ידני (19/08)
+עד עכשיו רק OS `prefers-color-scheme` (בלי כפתור, בלי שמירה). נוסף `use-theme.ts`
++ כפתור Sun/Moon ב-`SiteHeader.tsx`, ו-`<head>` boot script קורא `localStorage`
+לפני OS. אומת חי ב-`more30.com/imud`: החלפה + שמירה + אין הבזק. `dpl_4FDm3fQCLJTmvENaUWfVorU4yU9Y`.
+ראיות: `QA/platform/imud-dark-toggle-0819/`.
+
 ---
 
 ## חפיפת כפתור הכניסה — נמדד על כל 26 הנתיבים
