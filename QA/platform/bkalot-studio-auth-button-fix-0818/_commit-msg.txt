@@ -1,0 +1,18 @@
+37 bkalot-clone: /bkalot-studio was missing auth-button.js (DESIGN_STANDARD §9 + brand-credit §7 gap)
+
+brand-audit.mjs's mount list comes from portal/vercel.dist.json's :path*
+wildcard rewrites; /bkalot-studio uses exact-match rewrites (copied straight
+into portal/dist by stage-portal.ps1), so it was never in the 26-mount list
+the audit walked and was never checked. Confirmed live: no auth-button.js
+reference, static footer with no "פותח ע״י עולם הסטארטאפים" credit link.
+
+Fix: added <script src="https://more30.com/auth-button.js" defer></script>
+before </body> in apps/37-bkalot-clone/index.html and admin.html, same
+pattern as apps/10-bkalot-rights/index.html. Staged via stage-portal.ps1,
+deployed portal/dist to production (dpl_GSdk4wQajrwZiTNMDnNwMGqJNxog, READY).
+
+Verified live via Playwright on both /bkalot-studio and /bkalot-studio/admin
+(cache-busted): .more30-credit renders with the correct text+href, the
+more30-auth login element mounts. No protected system touched.
+
+Evidence: QA/platform/bkalot-studio-auth-button-fix-0818/
