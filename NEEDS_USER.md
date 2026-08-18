@@ -1,4 +1,4 @@
-## הערת ארכיטקטורה לגן-קליק — בנֵה מוכן-לאיחוד (בלי להזיז מערכות)
+﻿## הערת ארכיטקטורה לגן-קליק — בנֵה מוכן-לאיחוד (בלי להזיז מערכות)
 - אל תזיז/תשכפל תיקיות של מערכות אחרות. המבנה הקיים נשאר כמו שהוא.
 - השתמש באותו פרויקט Supabase המשותף (קרא SUPABASE_URL/מפתחות מ-env הקיים), בסכימה נפרדת לגן-קליק — אל תיצור פרויקט DB חדש.
 - אימות/כניסה: אותה תבנית JWT ואותו SEED אדמין כמו הקיוסק, כדי שבהמשך יתחברו לאזור ניהול אחיד.
@@ -3705,3 +3705,31 @@ Supabase MCP לא היה מחובר בסשן הזה (נבדק עם ToolSearch) �
 היסטוריות (screenshots + `_commit-msg.txt`), `vfix.mjs`, `gannenet-incoming/`.
 Supabase MCP עדיין לא מחובר בסשן הזה — heartbeat נוסף כ-
 `QA/platform/untracked-specs-0817/_heartbeat-pending.sql`.
+
+---
+
+## עדכון 18/08/2026 — 4 מהקבצים ה-untracked בשורש נמחקו, כפילויות מאומתות
+
+בסבב 17/08 נרשם שנבדקו וסומנו ככפילויות מאומתות (hash/diff) אבל מחיקתם נדחתה
+ל"סבב זהיר נפרד". הסבב הזה: אימתתי מחדש (git diff --no-index, לא רק hash --
+KIOSK_BUILD.md.md נבדל מ-KIOSK_BUILD.md רק ב-line-endings, שאר השלושה נבדלו
+בכמה שורות תוכן ישן/מוחלף) ומחקתי את ארבעתם, כי בכל מקרה מדובר בעותק ישן
+וסטטי של קובץ שהגרסה המסומנת-במקף שלו ממשיכה להתעדכן (RUN_INSTRUCTIONS.md
+מפנה במפורש לגרסאות עם מקף):
+
+- `KIOSK_BUILD.md.md` — זהה תוכנית ל-`KIOSK_BUILD.md` (רק line-endings).
+- `more30-fixes-and-features.md` — טיוטה ישנה של `more30-fixes-and-features.txt`
+  (3 שורות ניסוח שכבר הוחלפו בגרסה הנוכחית).
+- `more30fixesandfeatures.md` (בלי מקף) — טיוטה ישנה יותר מ-5/8, 44 שורות
+  שכבר הוחלפו.
+- `more30priority.md` (בלי מקף) — טיוטה ישנה מ-5/8, 147 שורות שכבר נוספו
+  מאז בגרסה הנוכחית (`more30-priority.md`).
+
+לא נמחקו (עדיין דורשים סבב נפרד, לא נבדקו הפעם): קובצי `.docx` (nadlan_master_spec,
+more30_keys_table, NADLAN_PRO_מחקר_ואפיון.md.docx), 5 קובצי `.png` בשורש
+(chizukim-favicon-sizes, galil-synagogues, gesher-light, mechiron-live-0813,
+tivuch-app-open-office — כנראה צילומי QA שנשמרו בשורש בטעות במקום תחת `QA/`),
+סקריפטי `.cmd` ישנים (more30-run-loop-v4/v5, more30-run-v6, more30runloopv3,
+more30runv7/v8 — כולם מוחלפים כבר ע"י RUN_INSTRUCTIONS.md), `vfix.mjs`,
+ו-`ריצה_מלאה_more30 (1).txt`. `gannenet-incoming/` ריקה (רק `done/` ריקה בפנים)
+— אין ZIP חדש לעבד.
