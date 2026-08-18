@@ -1,0 +1,41 @@
+round-4 functional pass: 34 kesef - honest pre-launch state confirmed, no core action to test yet, no bug, no deploy needed
+
+Session start: read RUN_INSTRUCTIONS.md, checked core.run_progress (last id 929,
+heartbeat-queue-recheck-0818, which found round-4 functional sweep believed
+closed at tivuch/36 - id 903) and git log on fix/nadlan-a11y (HEAD e168906).
+Cross-checked core.projects (number, live) against every "round-4 functional
+pass" commit message and found 4 live systems the sweep actually skipped:
+33 (more30-spec-loop, the home/router site itself - not a discrete system),
+34 (kesef), 37 (bkalot-clone), 40 (gannenet, tracked separately under
+RUN_INSTRUCTIONS §0.3). Picked 34 kesef as the smallest well-scoped next
+step: single system, round-3 dark-recheck already done (68b165d), never
+had a round-4 login+core-action check.
+
+Loaded https://more30.com/kesef live. The page is an honest pre-launch
+landing/waitlist screen, not yet a working app: "המערכת בהקמה... טעינת
+הנתונים הראשונית טרם הושלמה, ולכן המסכים עדיין אינם פתוחים לציבור" (system
+under construction, initial data load not complete, screens not open to
+the public yet). Only action offered is "כניסה עם חשבון more30" to get
+notified when the user's locality loads - no dashboard/report screens are
+linked or reachable.
+
+Verified this claim against real data instead of trusting the copy:
+kesef.authority = 259 rows (reference list loaded), but kesef.fact_financial
+= 0, kesef.metric_value = 0, kesef.source_document = 0, kesef.app_user = 0,
+kesef.watch = 0, kesef.grant_call = 0. The "not open yet" message is
+accurate - there is genuinely no financial data or user data to gate a
+core action behind. No drift between the landing copy and the database.
+
+Clicked "כניסה למערכת" -> routes correctly to
+https://more30.com/login?from=https%3A%2F%2Fmore30.com%2Fkesef. Login
+plumbing is wired correctly for when the data load finishes.
+
+Conclusion: no bug, no deploy needed. Kesef (34) is correctly gated behind
+its own real data pipeline, not a broken screen. Nothing to fix here until
+the financial-data sync (referenced in prior commits 830ccc2/e65328d) is
+run. Logged as "round-4 functional pass" for tracking parity with the rest
+of the sweep, with this caveat noted so a future session does not re-open
+it expecting a login+core-action flow that does not exist by design yet.
+
+No app code changed. No protected system touched
+(08/09/bkalut-app/bkalot-admin/zr_*/NEDARIM3873 untouched).
