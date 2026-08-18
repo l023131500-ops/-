@@ -1,0 +1,21 @@
+heartbeat: reconcile zchuyot/imud/smachot pending files (Supabase MCP now connected)
+
+Session start: read RUN_INSTRUCTIONS.md, checked core.run_progress (last
+row id 861, mthbram-dark-recheck-0818) and git log (HEAD d3dc4d4,
+fix/nadlan-a11y, "22 zchuyot" round-3 a11y recheck on top of "21 mthbram").
+
+Found three queued QA/**/_heartbeat-pending.sql files left from earlier
+sessions where the Supabase MCP was not connected: imud-badge-dark-0818
+(work commit 4e87468), smachot-dark-recheck-0818 (work commit 8e41649),
+zchuyot-dark-recheck-0818 (work commit d3dc4d4). MCP is connected this
+session, so per the standing reconcile pattern (see prior heartbeats id
+846/847/853) applied all three queued inserts in commit order -- imud
+(id 862), smachot (id 863), zchuyot (id 864) -- verified via select,
+then deleted all three now-applied pending files.
+
+No app code or deploys touched -- bookkeeping only, smallest meaningful
+step for this run. Protected systems untouched
+(08/09/bkalut-app/bkalot-admin/zr_*/NEDARIM3873).
+
+Next: continue round-3 dark-mode contrast recheck (contrast-probe.mjs)
+in ROUTES order -- studio, mechiron, kupot, crm, gesher, nadlan, kesef.

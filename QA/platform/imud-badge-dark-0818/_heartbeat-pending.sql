@@ -1,8 +1,0 @@
--- Supabase MCP not connected this session. Run this once MCP/access is available.
-insert into core.run_progress (phase, task, status, note)
-values (
-  'a11y-sweep-3',
-  'imud-badge-dark-0818',
-  'done',
-  '04 imud round-3 dark-mode contrast recheck: 9 contrast-probe.mjs failures on /imud dark mode (hero badge + book-card label text-primary vs card backdrop, bg-primary CTA button vs white text, step-number ghost badges at /25 opacity). Also found the ghost-number failure is theme-independent (1.39:1 in light mode too, never checked before). Fixed 7/9: badge+label got dark:text-[#da6c80] (computed ~5:1, added alongside text-primary rather than touching --primary itself to avoid regressing unaudited bg-primary usages elsewhere in the app); step numbers /25 -> /80 (uniform both themes, ~3.4:1 light / 4.7:1 dark). Left open: bg-primary/text-primary-foreground CTA button stays 4.07:1 in dark mode only (needs 4.5) -- primary token cannot satisfy both text-use and button-bg-use directions at once, same class of gap as torah gold CTA left open in prior round-3 step; deferred to a follow-up step. Deployed: vite build -> robocopy dist/public -> _deploy/imud-more30/public/imud -> vercel deploy --prod (imud-more30), READY. Verified live with cache-buster: dark 9->2 (known gap), light 4->0. Evidence: QA/platform/imud-badge-dark-0818/_results.md. Next in round-3 dark-mode sweep (ROUTES order after torah/tamlul/modaot/imud): briut/bkalot/smel/galil/kiosk already done in a prior session -- remaining unchecked: home/login/me/subscribe/egod/chatzor/chizukim/orech/mthbram/zchuyot/studio/mechiron/kupot/crm/gesher/nadlan/kesef.'
-);
