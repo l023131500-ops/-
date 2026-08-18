@@ -41,6 +41,23 @@ export default function UploadsPage() {
   const [uploads, setUploads] = useState<Upload[]>([]);
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState<UploadDetail | null>(null);
+  const [copied, setCopied] = useState(false);
+
+  const copyTranscript = async (text: string) => {
+    await navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const downloadTranscriptTxt = (text: string, filename: string | null) => {
+    const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${(filename || "תמלול").replace(/\.[^/.]+$/, "")}.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
 
   const load = async () => {
     const res = await fetch("/tamlul/api/admin/uploads", { cache: "no-store" });
@@ -160,6 +177,26 @@ export default function UploadsPage() {
                       <a href={selected.transcript.docx_sources_url} className="btn-accent text-sm" target="_blank" rel="noopener">
                         הורד מקורות
                       </a>
+                    )}
+                    {selected.transcript.edited_text && (
+                      <>
+                        <button
+                          onClick={() => copyTranscript(selected.transcript!.edited_text!)}
+                          className="btn-outline text-sm"
+                          type="button"
+                        >
+                          {copied ? "הועתק ✓" : "העתק ללוח"}
+                        </button>
+                        <button
+                          onClick={() =>
+                            downloadTranscriptTxt(selected.transcript!.edited_text!, selected.original_filename)
+                          }
+                          className="btn-outline text-sm"
+                          type="button"
+                        >
+                          הורד כטקסט (.txt)
+                        </button>
+                      </>
                     )}
                   </div>
 
