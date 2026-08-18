@@ -3,8 +3,8 @@
 -- _heartbeat-pending.sql / _heartbeat.sql files in the queue) once the MCP
 -- is available again.
 --
--- Work commit: <fill in after commit> — "34 kesef: round-3 dark-mode
--- recheck - 0 contrast failures (clean)"
+-- Work commit: 68b165d — "34 kesef: round-3 dark-mode recheck - 0 contrast
+-- failures (clean)"
 
 insert into core.run_progress (phase, task, status, note)
 values (
