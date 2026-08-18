@@ -376,18 +376,24 @@
    של ה-JS הזה מול ה-CSS החי הייתה מציירת את תגיות "בתהליך"/"בעריכה"/"מוכן"
    בלי רקע ובלי צבע בכלל — רגרסיה גלויה בעמוד חי. CSS מפורש לא תלוי בסורק,
    ולכן הוא נמצא בפלט תמיד. הערכים זהים לאלה שנמדדו ל-4.5:1 ומעלה, ושלושת
-   הגוונים נשמרים; המילה כתובה בתגית ממילא, כך שהמשמעות לא נשענת על הצבע. */
-@layer components {
-  .status-chip-progress {
-    background-color: hsl(var(--status-progress) / 0.2);
-    color: hsl(var(--status-progress));
-  }
-  .status-chip-edit {
-    background-color: hsl(var(--status-edit) / 0.2);
-    color: hsl(var(--status-edit));
-  }
-  .status-chip-ready {
-    background-color: hsl(var(--status-ready) / 0.2);
-    color: hsl(var(--status-ready));
-  }
+   הגוונים נשמרים; המילה כתובה בתגית ממילא, כך שהמשמעות לא נשענת על הצבע.
+
+   ובלי ‎@layer components‎: ה-Badge מקבל את מחלקות הווריאנט שלו,
+   ‎bg-primary text-primary-foreground‎, ואת מחלקת הסטטוס יחד — אותה
+   ספציפיות בדיוק, כך שמכריע מי מופיע אחרון בקובץ. שכבת components נפלטת
+   לפני utilities, ולכן בגרסה הקודמת התגית נצבעה בכחול הראשי ולא בצבע
+   הסטטוס — נמדד חי: ‎.status-chip-ready‎ בהיסט 5,539 מול ‎.bg-primary‎
+   ב-19,650. כללים שנכתבים כאן בלי ‎@layer‎ נפלטים אחרי ה-utilities
+   ולכן מנצחים. */
+.status-chip-progress {
+  background-color: hsl(var(--status-progress) / 0.2);
+  color: hsl(var(--status-progress));
+}
+.status-chip-edit {
+  background-color: hsl(var(--status-edit) / 0.2);
+  color: hsl(var(--status-edit));
+}
+.status-chip-ready {
+  background-color: hsl(var(--status-ready) / 0.2);
+  color: hsl(var(--status-ready));
 }
