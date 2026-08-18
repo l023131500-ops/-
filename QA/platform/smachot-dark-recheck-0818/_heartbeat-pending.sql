@@ -1,0 +1,8 @@
+-- Supabase MCP not connected this session. Run this once MCP/access is available.
+insert into core.run_progress (phase, task, status, note)
+values (
+  'a11y-sweep-3',
+  'smachot-dark-recheck-0818',
+  'done',
+  '14 smachot (bsmachot-plus, static site at /smachot) round-3 dark-mode contrast recheck: contrast-probe.mjs against https://more30.com/smachot, dark mode, 1440+390 widths -- 0 failures, clean. This system drives its own theme via data-theme="dark" set from matchMedia(prefers-color-scheme:dark) in app.js, not the shared .dark class pattern; both theme variable sets have adequate contrast. Also investigated the ~40 apparent failures the same probe reports in light mode: verified by reading style.css that all are contrast-probe.mjs false positives, not real bugs -- (1) .sidebar/.view-hero use gradient backgrounds (always dark teal by design in both themes) which the tool backdrop-walker cannot see (only reads background-color, documented gap from the galil round-3 step), so it wrongly measures pale-on-dark-gradient text against the light page bg instead; (2) newly found: .topbar/table-row backgrounds use color-mix(in srgb, ...) which the tool bare-regex color parser misreads, producing garbage backdrops like rgb(35,35,35)/rgb(115,115,115). No code changed, no deploy (nothing to fix). Evidence: QA/platform/smachot-dark-recheck-0818/_results.md. Next in round-3 dark-mode sweep (ROUTES order after torah/tamlul/modaot/imud/briut/bkalot/smel/smachot; galil/kiosk already done out of order in a prior session): remaining unchecked -- home/login/me/subscribe/egod/chatzor/chizukim/orech/mthbram/zchuyot/studio/mechiron/kupot/crm/gesher/nadlan/kesef.'
+);

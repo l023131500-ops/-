@@ -1,0 +1,26 @@
+14 smachot: round-3 dark-mode a11y recheck - clean, plus a new tool-limitation finding
+
+contrast-probe.mjs against https://more30.com/smachot (dark mode, 1440+390):
+0 failures. Next system in ROUTES order after smel. This is a standalone
+static site (apps/14-bsmachot-plus/website) that manages its own dark mode
+via data-theme="dark" from matchMedia(prefers-color-scheme:dark), not the
+shared .dark class -- both its theme variable sets are contrast-clean.
+
+Also checked the ~40 apparent failures the same probe reports in light mode.
+Read style.css and confirmed all are contrast-probe.mjs false positives:
+- .sidebar/.view-hero use linear-gradient backgrounds (always dark by
+  design, both themes) which the tool's backdrop-walker can't see (only
+  reads background-color) -- same gap already documented from the galil
+  round-3 step.
+- New: .topbar and some table cells use color-mix(in srgb, ...), which the
+  tool's bare-regex color parser misreads, producing garbage backdrops like
+  rgb(35,35,35)/rgb(115,115,115).
+
+No production code changed (nothing to fix), no deploy needed. Documented
+in SYSTEMS_STATUS.md so the tool limitation isn't rediscovered on the next
+gradient/color-mix() system in the sweep.
+
+Evidence: QA/platform/smachot-dark-recheck-0818/_results.md
+Protected systems untouched (08/09/bkalut-app/bkalot-admin/zr_*/NEDARIM3873).
+Supabase MCP not connected this session -- heartbeat queued as
+QA/platform/smachot-dark-recheck-0818/_heartbeat-pending.sql.
