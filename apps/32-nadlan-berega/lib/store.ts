@@ -242,6 +242,21 @@ export async function submitDocumentRequest(payload: DocRequest): Promise<void> 
   if (error) throw new Error(error.message);
 }
 
+export interface AreaAlert {
+  email: string;
+  address?: string | null;
+  gush?: string | null;
+  helka?: string | null;
+  city?: string | null;
+}
+
+export async function submitAreaAlert(payload: AreaAlert): Promise<void> {
+  const db = getPublicStore();
+  if (!db) throw new Error('Supabase לא מוגדר (SUPABASE_URL / SUPABASE_ANON_KEY).');
+  const { error } = await db.from('area_alerts').insert(payload);
+  if (error) throw new Error(error.message);
+}
+
 export async function logExport(
   propertyKey: string,
   reportType: string,

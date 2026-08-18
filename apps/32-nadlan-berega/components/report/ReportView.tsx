@@ -33,6 +33,7 @@ import VipPanel from './VipPanel';
 import PriceTrend from './PriceTrend';
 import PropertyImagery from './PropertyImagery';
 import TransitLines from './TransitLines';
+import AreaAlertSignup from './AreaAlertSignup';
 
 /** שלושת הכפתורים, בשפה של הלקוח. */
 const BUTTONS: { tier: ReportTier; title: string; sub: string }[] = [
@@ -618,6 +619,14 @@ export default function ReportView({
         ))}
 
         {tier === 'vip' && <VipPanel report={data} />}
+
+        {/* more30-feature-expansion.md · נדל"ן: התראות על עסקאות חדשות באזור/רחוב */}
+        <AreaAlertSignup
+          address={data.title.streetDisplay ? `${data.title.streetDisplay} ${data.title.houseNumber ?? ''}`.trim() : null}
+          city={data.title.city}
+          gush={data.title.gush}
+          helka={data.title.helka}
+        />
 
         {/* ===== §8 · הקישור הקבוע של הנכס ===== */}
         {permalink && (
