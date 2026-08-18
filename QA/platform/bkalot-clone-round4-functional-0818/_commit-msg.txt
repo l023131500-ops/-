@@ -1,0 +1,11 @@
+round-4 functional pass: 37 bkalot-clone - core action (public case intake form, real bkalot_clone.cases insert) + real data verified, no bug, no deploy needed
+
+Loaded https://more30.com/bkalot-studio live via Playwright. Public intake form ("פתיחת פנייה") renders with 3 request-type radios (info/reminder/full-service), contact fields (name/phone/email required-ish), free-text note, consent checkbox, and a clear test-mode disclaimer ("מצב טסט. הפנייה נשמרת במערכת, ואף הודעה - מייל, SMS או שיחה - אינה יוצאת החוצה").
+
+Filled real test data (name "בדיקת מערכת רואה4", phone 050-1234567, email test@more30.com, note tagging this pass), checked consent, submitted. UI responded with "הפנייה נקלטה" and case number 418.
+
+Verified against the live DB instead of trusting the UI: bkalot_clone.cases id=418 exists with app_key='bkalot-clone', kind='info', status='new', consent=true, and raw payload matching the submitted name/phone/email/note byte-for-byte. Confirms the public case-intake core action is real and wired to bkalot_clone (not a stub).
+
+Not covered this pass (time-boxed step): admin login at /bkalot-studio/admin, and the "טיפול מלא" (full-service) request-type branch which may ask follow-up questions. Left for a future round if a gap turns up.
+
+No app code changed, no protected system touched (08/09/bkalut-app/bkalot-admin untouched - this is the independent clone). Closes the round-4 sweep item for 37; only 40 (gannenet) remains, tracked separately per prior heartbeat (id 930) due to its own PDF-fetch/NetFree caveats.
