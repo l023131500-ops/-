@@ -1,0 +1,29 @@
+gannenet: collapse the homepage icon-chip rainbow to the site's own accent
+
+Follows the note left in run_progress#937/#942: the design-fingerprint round-5
+pass (15067b4) flagged gannenet with 4 distinct icon-chip hues, the same
+"rainbow nobody chose" shape already fixed on galil (8b43d36) and zchuyot
+(3043589) earlier in this design pass.
+
+Found it: apps/40-gannenet/app/page.tsx's six-card "what's in the system"
+feature grid assigned each icon a different pastel background/foreground pair
+- blue #eef2fb, gold #f7efd8 (x2), teal #e2f3f0 (x2), pink #f8e8ee - none of
+them derived from the site's own tokens. globals.css's .chip class (the
+default chip used elsewhere with no override) already uses #eef2fb/#2b4a8b,
+the site's real primary at low opacity - so all six feature icons now use
+that same pair instead of the per-card assignment, matching the galil/zchuyot
+"one colour, told apart by name and description" fix.
+
+Verified: next build succeeds (180 pages), next start on :4177 serves
+/gannenet 200, Playwright screenshot at 1280x900 shows all six icon chips
+sharing one computed colour, 0 console errors. Screenshot:
+QA/gannenet/icon-chip-single-accent-0818/home-after.png.
+
+Left the CTA section's decorative gradient (line 67, linear-gradient using
+two of the same removed shades) alone - it's a background wash, not an icon
+chip, out of this step's scope. Not deployed yet: gannenet ships from its own
+Vercel project (gannenet-more30), not the portal mount - deploy is the next
+step, separate from this source fix per the ~20min step budget.
+
+No protected system touched (08/09/bkalut-app/bkalot-admin/zr_*/NEDARIM3873
+untouched).
