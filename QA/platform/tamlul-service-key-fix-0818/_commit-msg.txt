@@ -1,0 +1,18 @@
+follow-up (core.issues #239): tamlul BOM fix confirmed, new invalid-key blocker found
+
+Continuation of 8618198. Re-setting SUPABASE_SERVICE_ROLE_KEY via
+scripts/Set-VercelEnv.ps1 + redeploy did NOT clear the ByteString/BOM
+TypeError (tried twice, incl. a 30s propagation wait). Setting the same
+value via raw Vercel REST API (delete + POST, no CLI/stdin involved) and
+redeploying DID clear it - error changed to a clean "Invalid API key".
+Verified independently against Supabase's REST API directly with the same
+key -> 401. So: the BOM bug is real and now fixed by the REST-API method;
+the CLI script apparently does not avoid it despite being written to.
+Separately, the cached SUPABASE_SERVICE_ROLE_KEY value itself (shared by
+apps 01/02/03 .env.local) is invalid/stale against Supabase project
+bieebmnmkffwbqlsfozh - unrelated to Vercel, needs a current key from
+Supabase (Management API/dashboard; MCP not connected this session).
+
+Coupon redemption on /tamlul remains broken (different failure now).
+
+No code changes. Evidence: QA/platform/tamlul-service-key-fix-0818/_results.md
