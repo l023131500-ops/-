@@ -1,0 +1,38 @@
+round-4 functional pass: 28 kupot - core action (health-fund benefit comparison + fund-switch lead capture, 435 real topics)+real data verified, no bug, no deploy needed
+
+Session start: read RUN_INSTRUCTIONS.md, checked core.run_progress (last id
+897, mechiron-round4-functional-0818, which queued kupot (28) next in
+round-4 ROUTES order per scripts/qa/platform-audit.mjs) and git log (HEAD
+c1c4a04 on fix/nadlan-a11y). Ran the round-4 functional pass on 28 kupot
+(Kupot Health Funds, more30.com/kupot): verified live via Playwright.
+
+This is a public comparison tool (no login gate needed for the core
+action, same class as mechiron/zchuyot's public-facing core features).
+Home page shows real data: 435 health-fund (shab"n) topics, 65 government
+rights, 15 non-profit aid entries, with a live "which fund excels" board
+computed from the 435-row set. Searched "shinayim" (teeth) -> filtered to
+24 real dental topics (#565-#588) with real fund badges. Opened topic
+#565 -> full real per-fund coverage text sourced from actual shab"n
+takanonim (Clalit, Maccabi, Meuhedet, Leumit plans), with real
+percentages, shekel amounts and waiting periods - not placeholder copy.
+
+Tested the core action: "mit'anyen/et be-ma'avar kupa" (interested in
+switching funds) lead-capture dialog on topic #565, filled with
+clearly-marked test data (name "test system - do not contact QA", phone
+0500000000), submitted. Network trace: POST
+https://more30.com/kupot/api/switch-lead -> 201 Created, UI showed real
+success toast. Verified directly in the DB: select from
+public.hf_switch_leads (Supabase project uhnrgujbdxhhmoxcjria) returns
+the new row - a real insert, not a fake-success UI.
+
+No bug found, no code change, no deploy needed - clears the round-4 bar
+(core action + real data + real DB write + deployed 200) via the
+system's actual named feature. Evidence: QA/platform/kupot-round4-functional-0818/_results.md
++ lead-success.png.
+
+Protected systems untouched (08/09/bkalut-app/bkalot-admin/zr_*/
+NEDARIM3873). Noted but did not touch csj/csj_src/csj_src_kupot/
+csj_kupot schemas, which hold similarly-named lead tables belonging to
+another organization per RUN_INSTRUCTIONS - only public.hf_switch_leads
+(this app's own live table) was read. Next in round-4 ROUTES order per
+scripts/qa/platform-audit.mjs: crm (30).
