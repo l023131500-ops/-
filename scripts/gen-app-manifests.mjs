@@ -35,8 +35,19 @@ const R = [
   ["13","property-identity","property-identity","Property Identity","realestate","wip",false,null,"unknown",false,null],
   ["14","bsmachot-plus","bsmachot-plus","Bsmachot Plus","events","wip",false,null,"unknown",false,null],
   ["15","egod","egod","egod (HUB pair with 01)","hub","live",true,"public","lovable",false,"Born in Lovable; shares Supabase with torah-platform."],
+  // WARNING (measured 18/08/2026): apps/16-chatzor-connect/app.json in the repo is
+  // HAND-MAINTAINED and richer than this row - it carries description, unifies,
+  // category "community", repo "l023131500-ops/-", a real supabase project+schema and
+  // source "in-progress". Running this generator against the real tree WOULD SILENTLY
+  // CLOBBER all of that. Generate into a throwaway root and copy only the row you
+  // changed, or promote 16's fields into an overrides object here first.
   ["16","chatzor-connect","chatzor-connect","Chatzor Connect","other","wip",false,null,"unknown",false,null],
-  ["17","chizukim-transcribe","chizukim-transcribe","Chizukim Transcribe","transcription","wip",false,null,"unknown",false,"Verify transcription token."],
+  ["17","chizukim-transcribe","chizukim-transcribe","Chizukim Transcribe","transcription","live",true,null,"vercel",false,
+    "Live at more30.com/chizukim. Verify transcription token. Deploy source MEASURED 18/08/2026, not assumed - see overrides.",
+    { isDeployed: true, liveUrl: "https://more30.com/chizukim", vercelProject: "chizukim2-more30",
+      source: "vendored", deploySource: "apps/17-chizukim-transcribe",
+      deployCommand: "vercel deploy --prod --yes --scope l023131500-ops-projects (from the app dir; vite.config.ts already defaults base to '/chizukim/', so no VITE_BASE is needed)",
+      provenanceNote: "The 'repo' field is NOT the deploy path: all 15 chizukim2-more30 deployments were created by the CLI with no git metadata. Proof this tree is the source: dist/public/assets/index-CGr9WgHf.css is byte-identical (SHA256 F5026FB4...29A9) to the live https://more30.com/chizukim/assets/index-CGr9WgHf.css. Control on the same probe: the local dist JS index-D7kweJQx.js is NOT the live one (index-B3-SjNVo.js), so the probe distinguishes deployed from not-deployed. That JS delta means the local build of 10/08 was never deployed; the last production deploy is 06/08 02:13 UTC." }],
   ["18","torah-editor-mvp","torah-editor-mvp","Torah Editor MVP","torah","live",true,null,"vercel",false,
     "Live at more30.com/orech. Deploy source MEASURED 18/08/2026, not assumed - see overrides.",
     { isDeployed: true, liveUrl: "https://more30.com/orech", vercelProject: "orech-more30",

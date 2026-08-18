@@ -3,16 +3,22 @@
   "slug": "chizukim-transcribe",
   "name": "Chizukim Transcribe",
   "category": "transcription",
-  "stage": "wip",
-  "live": false,
+  "stage": "live",
+  "live": true,
   "repo": "l023131500-ops/chizukim-transcribe",
   "basePath": "/17",
   "supabase": {
     "project": null,
     "schema": null
   },
-  "deployTarget": "unknown",
+  "deployTarget": "vercel",
   "protected": false,
-  "source": "not-vendored",
-  "note": "Verify transcription token."
+  "source": "vendored",
+  "note": "Live at more30.com/chizukim. Verify transcription token. Deploy source MEASURED 18/08/2026, not assumed - see overrides.",
+  "isDeployed": true,
+  "liveUrl": "https://more30.com/chizukim",
+  "vercelProject": "chizukim2-more30",
+  "deploySource": "apps/17-chizukim-transcribe",
+  "deployCommand": "vercel deploy --prod --yes --scope l023131500-ops-projects (from the app dir; vite.config.ts already defaults base to '/chizukim/', so no VITE_BASE is needed)",
+  "provenanceNote": "The 'repo' field is NOT the deploy path: all 15 chizukim2-more30 deployments were created by the CLI with no git metadata. Proof this tree is the source: dist/public/assets/index-CGr9WgHf.css is byte-identical (SHA256 F5026FB4...29A9) to the live https://more30.com/chizukim/assets/index-CGr9WgHf.css. Control on the same probe: the local dist JS index-D7kweJQx.js is NOT the live one (index-B3-SjNVo.js), so the probe distinguishes deployed from not-deployed. That JS delta means the local build of 10/08 was never deployed; the last production deploy is 06/08 02:13 UTC."
 }
