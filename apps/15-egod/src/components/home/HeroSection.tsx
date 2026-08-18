@@ -19,8 +19,8 @@ const HeroSection = () => {
             transition={{ duration: 0.8 }}
           >
             <div className="inline-flex items-center gap-2 bg-secondary/20 border border-secondary/30 rounded-full px-5 py-2 mb-8">
-              <BookOpen className="w-4 h-4 text-secondary" />
-              <span className="text-sm font-medium text-secondary">בסיוע איגוד השיעורים</span>
+              <BookOpen className="w-4 h-4 text-secondary dark:text-[hsl(var(--gold-light))]" />
+              <span className="text-sm font-medium text-secondary dark:text-[hsl(var(--gold-light))]">בסיוע איגוד השיעורים</span>
             </div>
             {/* ⚠️ הכותרת אמרה "תחת קורת גג אחת", הפסקה שמתחתיה "הכל בפלטפורמה
                 אחת", וכותרת המשנה בהמשך העמוד "במקום אחד" — שלוש דרכים לומר
