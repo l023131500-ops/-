@@ -1,0 +1,617 @@
+{
+  "base": "https://more30.com/nadlan",
+  "results": [
+    {
+      "address": "הדקל 22, חצור הגלילית",
+      "expects": "כל השכבות מלאות ומדויקות",
+      "tier": "basic",
+      "url": "https://more30.com/nadlan/api/report?q=%D7%94%D7%93%D7%A7%D7%9C%2022%20%D7%97%D7%A6%D7%95%D7%A8%20%D7%94%D7%92%D7%9C%D7%99%D7%9C%D7%99%D7%AA&tier=basic&cachebust=spec0818",
+      "status": 200,
+      "ms": 8369,
+      "bytes": 39185,
+      "rawHead": "{\"query\":\"הדקל 22 חצור הגלילית\",\"tier\":\"basic\",\"assetType\":\"residential\",\"permits\":{\"landUse\":null,\"landUseDeferred\":false,\"overlays\":[\"שטח עתיקות/הסטורי לשימור\",\"אתר עתיקות/אתר הסטורי\"],\"approved\":[]",
+      "layers": [
+        {
+          "layer": "4.1 כותרת/כתובת",
+          "state": "PRESENT",
+          "detail": "הדקל 22, חצור הגלילית · גוש 14068 חלקה 57"
+        },
+        {
+          "layer": "4.1 שני שמות הרחוב",
+          "state": "EMPTY",
+          "detail": "מערך ריק"
+        },
+        {
+          "layer": "4.1 גוש/חלקה",
+          "state": "PRESENT",
+          "detail": "12/14 שדות מלאים: gush,helka,parcelSource,parcelVerified,subParcelCount,street"
+        },
+        {
+          "layer": "4.2 אופי אוכלוסייה",
+          "state": "PRESENT",
+          "detail": "7/9 שדות מלאים: level,headline,breakdown,basis,stationsUsed,nearestMeters"
+        },
+        {
+          "layer": "4.2 אופי בנייה",
+          "state": "PRESENT",
+          "detail": "3/3 שדות מלאים: headline,breakdown,sampleSize"
+        },
+        {
+          "layer": "4.3 גיל הבניין",
+          "state": "NULL",
+          "detail": "null — שכבה חסומה לרמה זו או שאין נתון"
+        },
+        {
+          "layer": "4.4 עסקאות שנמכרו",
+          "state": "PRESENT",
+          "detail": "17 פריטים"
+        },
+        {
+          "layer": "4.4 עסקאות בבניין",
+          "state": "PRESENT",
+          "detail": "0"
+        },
+        {
+          "layer": "4.5 דירות מוצעות",
+          "state": "EMPTY",
+          "detail": "מערך ריק"
+        },
+        {
+          "layer": "4.6 מוסדות + מרחק",
+          "state": "PRESENT",
+          "detail": "8/8 שדות מלאים: education,preschool,religion,commerce,health,leisure"
+        },
+        {
+          "layer": "4.6 מקוואות",
+          "state": "PRESENT",
+          "detail": "1 פריטים"
+        },
+        {
+          "layer": "4.7 תחבורה",
+          "state": "PRESENT",
+          "detail": "3 פריטים"
+        },
+        {
+          "layer": "4.8 צילום בניין",
+          "state": "NULL",
+          "detail": "null — שכבה חסומה לרמה זו או שאין נתון"
+        },
+        {
+          "layer": "4.9 מגמת מחירים",
+          "state": "PRESENT",
+          "detail": "24 פריטים"
+        },
+        {
+          "layer": "4.9 הערכת שווי",
+          "state": "PRESENT",
+          "detail": "2/2 שדות מלאים: notEnoughData,regional"
+        },
+        {
+          "layer": "4.9 תב״ע/זכויות בנייה",
+          "state": "PRESENT",
+          "detail": "13/14 שדות מלאים: landUseDeferred,overlays,approved,inProcess,policy,committee"
+        },
+        {
+          "layer": "4.9 היתכנות",
+          "state": "PRESENT",
+          "detail": "8/9 שדות מלאים: headline,additivePlans,pendingPlans,buildingLines,restrictions,unknowns"
+        },
+        {
+          "layer": "§12 בנייה בסביבה",
+          "state": "NULL",
+          "detail": "null — שכבה חסומה לרמה זו או שאין נתון"
+        }
+      ]
+    },
+    {
+      "address": "הדקל 22, חצור הגלילית",
+      "expects": "כל השכבות מלאות ומדויקות",
+      "tier": "premium",
+      "url": "https://more30.com/nadlan/api/report?q=%D7%94%D7%93%D7%A7%D7%9C%2022%20%D7%97%D7%A6%D7%95%D7%A8%20%D7%94%D7%92%D7%9C%D7%99%D7%9C%D7%99%D7%AA&tier=premium&cachebust=spec0818",
+      "status": 200,
+      "ms": 29144,
+      "bytes": 89840,
+      "rawHead": "{\"query\":\"הדקל 22 חצור הגלילית\",\"tier\":\"premium\",\"assetType\":\"residential\",\"permits\":{\"landUse\":null,\"landUseDeferred\":false,\"overlays\":[\"שטח עתיקות/הסטורי לשימור\",\"אתר עתיקות/אתר הסטורי\"],\"approved\":",
+      "layers": [
+        {
+          "layer": "4.1 כותרת/כתובת",
+          "state": "PRESENT",
+          "detail": "הדקל 22, חצור הגלילית · גוש 14068 חלקה 60"
+        },
+        {
+          "layer": "4.1 שני שמות הרחוב",
+          "state": "EMPTY",
+          "detail": "מערך ריק"
+        },
+        {
+          "layer": "4.1 גוש/חלקה",
+          "state": "PRESENT",
+          "detail": "12/14 שדות מלאים: gush,helka,parcelSource,parcelVerified,subParcelCount,street"
+        },
+        {
+          "layer": "4.2 אופי אוכלוסייה",
+          "state": "PRESENT",
+          "detail": "7/9 שדות מלאים: level,headline,breakdown,basis,stationsUsed,nearestMeters"
+        },
+        {
+          "layer": "4.2 אופי בנייה",
+          "state": "PRESENT",
+          "detail": "3/3 שדות מלאים: headline,breakdown,sampleSize"
+        },
+        {
+          "layer": "4.3 גיל הבניין",
+          "state": "NULL",
+          "detail": "null — שכבה חסומה לרמה זו או שאין נתון"
+        },
+        {
+          "layer": "4.4 עסקאות שנמכרו",
+          "state": "PRESENT",
+          "detail": "17 פריטים"
+        },
+        {
+          "layer": "4.4 עסקאות בבניין",
+          "state": "PRESENT",
+          "detail": "0"
+        },
+        {
+          "layer": "4.5 דירות מוצעות",
+          "state": "PRESENT",
+          "detail": "13 פריטים"
+        },
+        {
+          "layer": "4.6 מוסדות + מרחק",
+          "state": "PRESENT",
+          "detail": "8/8 שדות מלאים: education,preschool,religion,commerce,health,leisure"
+        },
+        {
+          "layer": "4.6 מקוואות",
+          "state": "PRESENT",
+          "detail": "1 פריטים"
+        },
+        {
+          "layer": "4.7 תחבורה",
+          "state": "PRESENT",
+          "detail": "6 פריטים"
+        },
+        {
+          "layer": "4.8 צילום בניין",
+          "state": "NULL",
+          "detail": "null — שכבה חסומה לרמה זו או שאין נתון"
+        },
+        {
+          "layer": "4.9 מגמת מחירים",
+          "state": "PRESENT",
+          "detail": "24 פריטים"
+        },
+        {
+          "layer": "4.9 הערכת שווי",
+          "state": "PRESENT",
+          "detail": "2/2 שדות מלאים: notEnoughData,regional"
+        },
+        {
+          "layer": "4.9 תב״ע/זכויות בנייה",
+          "state": "PRESENT",
+          "detail": "13/14 שדות מלאים: landUseDeferred,overlays,approved,inProcess,policy,committee"
+        },
+        {
+          "layer": "4.9 היתכנות",
+          "state": "PRESENT",
+          "detail": "8/9 שדות מלאים: headline,additivePlans,pendingPlans,buildingLines,restrictions,unknowns"
+        },
+        {
+          "layer": "§12 בנייה בסביבה",
+          "state": "PRESENT",
+          "detail": "7 פריטים"
+        }
+      ]
+    },
+    {
+      "address": "הדקל 22, חצור הגלילית",
+      "expects": "כל השכבות מלאות ומדויקות",
+      "tier": "vip",
+      "url": "https://more30.com/nadlan/api/report?q=%D7%94%D7%93%D7%A7%D7%9C%2022%20%D7%97%D7%A6%D7%95%D7%A8%20%D7%94%D7%92%D7%9C%D7%99%D7%9C%D7%99%D7%AA&tier=vip&cachebust=spec0818",
+      "status": 200,
+      "ms": 32879,
+      "bytes": 89092,
+      "rawHead": "{\"query\":\"הדקל 22 חצור הגלילית\",\"tier\":\"vip\",\"assetType\":\"residential\",\"permits\":{\"landUse\":null,\"landUseDeferred\":false,\"overlays\":[\"שטח עתיקות/הסטורי לשימור\",\"אתר עתיקות/אתר הסטורי\"],\"approved\":[],\"",
+      "layers": [
+        {
+          "layer": "4.1 כותרת/כתובת",
+          "state": "PRESENT",
+          "detail": "הדקל 22, חצור הגלילית · גוש 14068 חלקה 59"
+        },
+        {
+          "layer": "4.1 שני שמות הרחוב",
+          "state": "EMPTY",
+          "detail": "מערך ריק"
+        },
+        {
+          "layer": "4.1 גוש/חלקה",
+          "state": "PRESENT",
+          "detail": "12/14 שדות מלאים: gush,helka,parcelSource,parcelVerified,subParcelCount,street"
+        },
+        {
+          "layer": "4.2 אופי אוכלוסייה",
+          "state": "PRESENT",
+          "detail": "7/9 שדות מלאים: level,headline,breakdown,basis,stationsUsed,nearestMeters"
+        },
+        {
+          "layer": "4.2 אופי בנייה",
+          "state": "PRESENT",
+          "detail": "3/3 שדות מלאים: headline,breakdown,sampleSize"
+        },
+        {
+          "layer": "4.3 גיל הבניין",
+          "state": "NULL",
+          "detail": "null — שכבה חסומה לרמה זו או שאין נתון"
+        },
+        {
+          "layer": "4.4 עסקאות שנמכרו",
+          "state": "PRESENT",
+          "detail": "17 פריטים"
+        },
+        {
+          "layer": "4.4 עסקאות בבניין",
+          "state": "PRESENT",
+          "detail": "0"
+        },
+        {
+          "layer": "4.5 דירות מוצעות",
+          "state": "PRESENT",
+          "detail": "13 פריטים"
+        },
+        {
+          "layer": "4.6 מוסדות + מרחק",
+          "state": "PRESENT",
+          "detail": "8/8 שדות מלאים: education,preschool,religion,commerce,health,leisure"
+        },
+        {
+          "layer": "4.6 מקוואות",
+          "state": "PRESENT",
+          "detail": "1 פריטים"
+        },
+        {
+          "layer": "4.7 תחבורה",
+          "state": "PRESENT",
+          "detail": "6 פריטים"
+        },
+        {
+          "layer": "4.8 צילום בניין",
+          "state": "PRESENT",
+          "detail": "6/7 שדות מלאים: available,date,copyright,lat,lng,precise"
+        },
+        {
+          "layer": "4.9 מגמת מחירים",
+          "state": "PRESENT",
+          "detail": "24 פריטים"
+        },
+        {
+          "layer": "4.9 הערכת שווי",
+          "state": "PRESENT",
+          "detail": "2/2 שדות מלאים: notEnoughData,regional"
+        },
+        {
+          "layer": "4.9 תב״ע/זכויות בנייה",
+          "state": "PRESENT",
+          "detail": "13/14 שדות מלאים: landUseDeferred,overlays,approved,inProcess,policy,committee"
+        },
+        {
+          "layer": "4.9 היתכנות",
+          "state": "PRESENT",
+          "detail": "8/9 שדות מלאים: headline,additivePlans,pendingPlans,buildingLines,restrictions,unknowns"
+        },
+        {
+          "layer": "§12 בנייה בסביבה",
+          "state": "PRESENT",
+          "detail": "7 פריטים"
+        }
+      ]
+    },
+    {
+      "address": "הבעל שם טוב 9, רחובות",
+      "expects": "אוכלוסייה חרדית · בניין חדש (בן שנים בודדות) · דירות רבות שנמכרו לאחרונה",
+      "tier": "basic",
+      "url": "https://more30.com/nadlan/api/report?q=%D7%94%D7%91%D7%A2%D7%9C%20%D7%A9%D7%9D%20%D7%98%D7%95%D7%91%209%20%D7%A8%D7%97%D7%95%D7%91%D7%95%D7%AA&tier=basic&cachebust=spec0818",
+      "status": 200,
+      "ms": 9334,
+      "bytes": 461336,
+      "rawHead": "{\"query\":\"הבעל שם טוב 9 רחובות\",\"tier\":\"basic\",\"assetType\":\"residential\",\"permits\":{\"landUse\":null,\"landUseDeferred\":true,\"overlays\":[\"גבול מתחם\"],\"approved\":[{\"planNumber\":\"414-0201608\",\"planName\":\"ר",
+      "layers": [
+        {
+          "layer": "4.1 כותרת/כתובת",
+          "state": "PRESENT",
+          "detail": "הבעשט (מוכר גם כרחוב הבעל שם טוב) 9, רחובות · גוש 3704 חלקה 331"
+        },
+        {
+          "layer": "4.1 שני שמות הרחוב",
+          "state": "PRESENT",
+          "detail": "1 פריטים"
+        },
+        {
+          "layer": "4.1 גוש/חלקה",
+          "state": "PRESENT",
+          "detail": "11/14 שדות מלאים: gush,helka,parcelSource,parcelVerified,subParcelCount,street"
+        },
+        {
+          "layer": "4.2 אופי אוכלוסייה",
+          "state": "PRESENT",
+          "detail": "7/9 שדות מלאים: level,headline,breakdown,basis,stationsUsed,nearestMeters"
+        },
+        {
+          "layer": "4.2 אופי בנייה",
+          "state": "PRESENT",
+          "detail": "3/3 שדות מלאים: headline,breakdown,sampleSize"
+        },
+        {
+          "layer": "4.3 גיל הבניין",
+          "state": "PRESENT",
+          "detail": "12/12 שדות מלאים: buildYear,ageYears,isLowerBound,isNew,basis,headline"
+        },
+        {
+          "layer": "4.4 עסקאות שנמכרו",
+          "state": "PRESENT",
+          "detail": "1009 פריטים"
+        },
+        {
+          "layer": "4.4 עסקאות בבניין",
+          "state": "PRESENT",
+          "detail": "6"
+        },
+        {
+          "layer": "4.5 דירות מוצעות",
+          "state": "EMPTY",
+          "detail": "מערך ריק"
+        },
+        {
+          "layer": "4.6 מוסדות + מרחק",
+          "state": "PRESENT",
+          "detail": "8/8 שדות מלאים: education,preschool,religion,commerce,health,leisure"
+        },
+        {
+          "layer": "4.6 מקוואות",
+          "state": "PRESENT",
+          "detail": "8 פריטים"
+        },
+        {
+          "layer": "4.7 תחבורה",
+          "state": "PRESENT",
+          "detail": "3 פריטים"
+        },
+        {
+          "layer": "4.8 צילום בניין",
+          "state": "NULL",
+          "detail": "null — שכבה חסומה לרמה זו או שאין נתון"
+        },
+        {
+          "layer": "4.9 מגמת מחירים",
+          "state": "PRESENT",
+          "detail": "24 פריטים"
+        },
+        {
+          "layer": "4.9 הערכת שווי",
+          "state": "PRESENT",
+          "detail": "10/12 שדות מלאים: low,high,mid,medianPerSqm,areaSqm,areaSource"
+        },
+        {
+          "layer": "4.9 תב״ע/זכויות בנייה",
+          "state": "PRESENT",
+          "detail": "12/14 שדות מלאים: landUseDeferred,overlays,approved,inProcess,policy,committee"
+        },
+        {
+          "layer": "4.9 היתכנות",
+          "state": "PRESENT",
+          "detail": "8/9 שדות מלאים: headline,additivePlans,pendingPlans,buildingLines,restrictions,unknowns"
+        },
+        {
+          "layer": "§12 בנייה בסביבה",
+          "state": "NULL",
+          "detail": "null — שכבה חסומה לרמה זו או שאין נתון"
+        }
+      ]
+    },
+    {
+      "address": "הבעל שם טוב 9, רחובות",
+      "expects": "אוכלוסייה חרדית · בניין חדש (בן שנים בודדות) · דירות רבות שנמכרו לאחרונה",
+      "tier": "premium",
+      "url": "https://more30.com/nadlan/api/report?q=%D7%94%D7%91%D7%A2%D7%9C%20%D7%A9%D7%9D%20%D7%98%D7%95%D7%91%209%20%D7%A8%D7%97%D7%95%D7%91%D7%95%D7%AA&tier=premium&cachebust=spec0818",
+      "status": 200,
+      "ms": 44326,
+      "bytes": 624160,
+      "rawHead": "{\"query\":\"הבעל שם טוב 9 רחובות\",\"tier\":\"premium\",\"assetType\":\"residential\",\"permits\":{\"landUse\":null,\"landUseDeferred\":true,\"overlays\":[\"גבול מתחם\"],\"approved\":[{\"planNumber\":\"414-0201608\",\"planName\":",
+      "layers": [
+        {
+          "layer": "4.1 כותרת/כתובת",
+          "state": "PRESENT",
+          "detail": "הבעשט (מוכר גם כרחוב הבעל שם טוב) 9, רחובות · גוש 3704 חלקה 331"
+        },
+        {
+          "layer": "4.1 שני שמות הרחוב",
+          "state": "PRESENT",
+          "detail": "1 פריטים"
+        },
+        {
+          "layer": "4.1 גוש/חלקה",
+          "state": "PRESENT",
+          "detail": "11/14 שדות מלאים: gush,helka,parcelSource,parcelVerified,subParcelCount,street"
+        },
+        {
+          "layer": "4.2 אופי אוכלוסייה",
+          "state": "PRESENT",
+          "detail": "7/9 שדות מלאים: level,headline,breakdown,basis,stationsUsed,nearestMeters"
+        },
+        {
+          "layer": "4.2 אופי בנייה",
+          "state": "PRESENT",
+          "detail": "3/3 שדות מלאים: headline,breakdown,sampleSize"
+        },
+        {
+          "layer": "4.3 גיל הבניין",
+          "state": "PRESENT",
+          "detail": "12/12 שדות מלאים: buildYear,ageYears,isLowerBound,isNew,basis,headline"
+        },
+        {
+          "layer": "4.4 עסקאות שנמכרו",
+          "state": "PRESENT",
+          "detail": "1053 פריטים"
+        },
+        {
+          "layer": "4.4 עסקאות בבניין",
+          "state": "PRESENT",
+          "detail": "6"
+        },
+        {
+          "layer": "4.5 דירות מוצעות",
+          "state": "PRESENT",
+          "detail": "13 פריטים"
+        },
+        {
+          "layer": "4.6 מוסדות + מרחק",
+          "state": "PRESENT",
+          "detail": "8/8 שדות מלאים: education,preschool,religion,commerce,health,leisure"
+        },
+        {
+          "layer": "4.6 מקוואות",
+          "state": "PRESENT",
+          "detail": "8 פריטים"
+        },
+        {
+          "layer": "4.7 תחבורה",
+          "state": "PRESENT",
+          "detail": "6 פריטים"
+        },
+        {
+          "layer": "4.8 צילום בניין",
+          "state": "NULL",
+          "detail": "null — שכבה חסומה לרמה זו או שאין נתון"
+        },
+        {
+          "layer": "4.9 מגמת מחירים",
+          "state": "PRESENT",
+          "detail": "24 פריטים"
+        },
+        {
+          "layer": "4.9 הערכת שווי",
+          "state": "PRESENT",
+          "detail": "10/12 שדות מלאים: low,high,mid,medianPerSqm,areaSqm,areaSource"
+        },
+        {
+          "layer": "4.9 תב״ע/זכויות בנייה",
+          "state": "PRESENT",
+          "detail": "12/14 שדות מלאים: landUseDeferred,overlays,approved,inProcess,policy,committee"
+        },
+        {
+          "layer": "4.9 היתכנות",
+          "state": "PRESENT",
+          "detail": "8/9 שדות מלאים: headline,additivePlans,pendingPlans,buildingLines,restrictions,unknowns"
+        },
+        {
+          "layer": "§12 בנייה בסביבה",
+          "state": "PRESENT",
+          "detail": "23 פריטים"
+        }
+      ]
+    },
+    {
+      "address": "הבעל שם טוב 9, רחובות",
+      "expects": "אוכלוסייה חרדית · בניין חדש (בן שנים בודדות) · דירות רבות שנמכרו לאחרונה",
+      "tier": "vip",
+      "url": "https://more30.com/nadlan/api/report?q=%D7%94%D7%91%D7%A2%D7%9C%20%D7%A9%D7%9D%20%D7%98%D7%95%D7%91%209%20%D7%A8%D7%97%D7%95%D7%91%D7%95%D7%AA&tier=vip&cachebust=spec0818",
+      "status": 200,
+      "ms": 49687,
+      "bytes": 624416,
+      "rawHead": "{\"query\":\"הבעל שם טוב 9 רחובות\",\"tier\":\"vip\",\"assetType\":\"residential\",\"permits\":{\"landUse\":null,\"landUseDeferred\":true,\"overlays\":[\"גבול מתחם\"],\"approved\":[{\"planNumber\":\"414-0201608\",\"planName\":\"רח/",
+      "layers": [
+        {
+          "layer": "4.1 כותרת/כתובת",
+          "state": "PRESENT",
+          "detail": "הבעשט (מוכר גם כרחוב הבעל שם טוב) 9, רחובות · גוש 3704 חלקה 331"
+        },
+        {
+          "layer": "4.1 שני שמות הרחוב",
+          "state": "PRESENT",
+          "detail": "1 פריטים"
+        },
+        {
+          "layer": "4.1 גוש/חלקה",
+          "state": "PRESENT",
+          "detail": "11/14 שדות מלאים: gush,helka,parcelSource,parcelVerified,subParcelCount,street"
+        },
+        {
+          "layer": "4.2 אופי אוכלוסייה",
+          "state": "PRESENT",
+          "detail": "7/9 שדות מלאים: level,headline,breakdown,basis,stationsUsed,nearestMeters"
+        },
+        {
+          "layer": "4.2 אופי בנייה",
+          "state": "PRESENT",
+          "detail": "3/3 שדות מלאים: headline,breakdown,sampleSize"
+        },
+        {
+          "layer": "4.3 גיל הבניין",
+          "state": "PRESENT",
+          "detail": "12/12 שדות מלאים: buildYear,ageYears,isLowerBound,isNew,basis,headline"
+        },
+        {
+          "layer": "4.4 עסקאות שנמכרו",
+          "state": "PRESENT",
+          "detail": "1053 פריטים"
+        },
+        {
+          "layer": "4.4 עסקאות בבניין",
+          "state": "PRESENT",
+          "detail": "6"
+        },
+        {
+          "layer": "4.5 דירות מוצעות",
+          "state": "PRESENT",
+          "detail": "13 פריטים"
+        },
+        {
+          "layer": "4.6 מוסדות + מרחק",
+          "state": "PRESENT",
+          "detail": "8/8 שדות מלאים: education,preschool,religion,commerce,health,leisure"
+        },
+        {
+          "layer": "4.6 מקוואות",
+          "state": "PRESENT",
+          "detail": "8 פריטים"
+        },
+        {
+          "layer": "4.7 תחבורה",
+          "state": "PRESENT",
+          "detail": "6 פריטים"
+        },
+        {
+          "layer": "4.8 צילום בניין",
+          "state": "PRESENT",
+          "detail": "6/7 שדות מלאים: available,date,copyright,lat,lng,precise"
+        },
+        {
+          "layer": "4.9 מגמת מחירים",
+          "state": "PRESENT",
+          "detail": "24 פריטים"
+        },
+        {
+          "layer": "4.9 הערכת שווי",
+          "state": "PRESENT",
+          "detail": "10/12 שדות מלאים: low,high,mid,medianPerSqm,areaSqm,areaSource"
+        },
+        {
+          "layer": "4.9 תב״ע/זכויות בנייה",
+          "state": "PRESENT",
+          "detail": "12/14 שדות מלאים: landUseDeferred,overlays,approved,inProcess,policy,committee"
+        },
+        {
+          "layer": "4.9 היתכנות",
+          "state": "PRESENT",
+          "detail": "8/9 שדות מלאים: headline,additivePlans,pendingPlans,buildingLines,restrictions,unknowns"
+        },
+        {
+          "layer": "§12 בנייה בסביבה",
+          "state": "PRESENT",
+          "detail": "23 פריטים"
+        }
+      ]
+    }
+  ]
+}
