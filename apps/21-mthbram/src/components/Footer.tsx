@@ -44,7 +44,7 @@ const Footer = () => {
         {/* Bottom bar */}
         <div className="border-t border-gold/15 pt-6 flex flex-col md:flex-row items-center justify-between gap-4">
           <BrandLogo size="sm" />
-          <p className="font-body text-xs text-primary-foreground/40 text-center">
+          <p className="font-body text-xs text-gold-cream/70 text-center">
             © {new Date().getFullYear()} איגוד השיעורים — מחברים בין לומדים ומלמדים
           </p>
           <a href="tel:0231330600" className="inline-block py-1 font-body text-xs text-gold-cream hover:text-gold transition-colors">

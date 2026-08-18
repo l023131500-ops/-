@@ -1,0 +1,23 @@
+21 mthbram: round-3 dark recheck - footer copyright text was invisible (theme-independent, not dark-specific)
+
+contrast-probe.mjs found 4 identical failures across light/dark and both widths (mthbram is
+dark-by-design, no toggle - identical-across-schemes confirms this isn't a dark-mode regression).
+2 are the known gradient bg-clip-text tool-limitation already documented for torah/modaot/smachot/egod.
+The 3rd/real one: Footer.tsx copyright line used text-primary-foreground/40, and this app's
+--primary-foreground token is the same dark navy as the footer background (button-text color, not a
+muted-text token) - at 40% opacity the text composited to ~1:1 contrast against its own background,
+effectively invisible on every load regardless of theme. Fixed to text-gold-cream/70, matching the
+sibling elements in the same footer.
+
+Deploy note: apps/21-mthbram's Vercel project (mthbram-more30) has no vercel.json and is configured
+Framework=Other / Build=echo no-build / Output=. - it expects a pre-built upload with the vite dist
+output nested under a physical mthbram/ folder (vite base is /mthbram/, and the portal rewrite proxies
+to mthbram-more30.vercel.app/mthbram/:path*). A plain `vercel --prod` from apps/21-mthbram uploads the
+raw source as-is under those settings and does not rebuild - this briefly 404'd more30.com/mthbram/
+before being caught and fixed by staging dist/* under a mthbram/ subfolder with an SPA-fallback
+vercel.json and deploying that instead. Verified live: index/asset/SPA-route all 200, and the contrast
+probe is clean of the real failure in all four scheme/width combinations. Evidence:
+QA/platform/mthbram-dark-recheck-0818/_results.md.
+
+Also added .vercel and .env* to apps/21-mthbram/.gitignore (created locally by `vercel link`, should
+not be committed). Protected systems untouched (08/09/bkalut-app/bkalot-admin/zr_*/NEDARIM3873).
