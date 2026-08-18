@@ -98,6 +98,22 @@ body {
     linear-gradient(135deg, #0d1b3e 0%, #122a5e 55%, #1e3a8a 100%);
 }
 
+/* The request-form card floats on .hero-gradient as a fixed-white surface
+   (bg-white/95) so it reads against the hero's always-dark background — it
+   never flips with the theme. But its contents use the surface tokens
+   (text-navy, bg-surface, …), which DO flip in .dark to near-white values
+   meant for a dark backdrop, so headings went near-invisible on the still-white
+   card. Pin the tokens back to their :root values for this subtree; same
+   fixed-surface pattern as .hero-gradient itself, just the light side of it. */
+.card-on-hero {
+  --c-navy: 13 27 62;
+  --c-ink: 26 34 51;
+  --c-muted: 91 101 119;
+  --c-line: 227 232 240;
+  --c-bgsoft: 246 248 252;
+  --c-surface: 255 255 255;
+}
+
 /* ===== PDF מעוצב להדפסה ===== */
 @media print {
   @page {

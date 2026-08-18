@@ -85,7 +85,7 @@ export default function HomePage() {
             הכול ממקורות רשמיים, כל נתון עם המקור שלו — ומה שאין, כתוב שאין.
           </p>
 
-          <div className="mx-auto mt-8 max-w-4xl rounded-3xl border border-white/15 bg-white/95 p-5 text-right shadow-2xl sm:p-7">
+          <div className="card-on-hero mx-auto mt-8 max-w-4xl rounded-3xl border border-white/15 bg-white/95 p-5 text-right shadow-2xl sm:p-7">
             <ReportRequestForm />
           </div>
 
