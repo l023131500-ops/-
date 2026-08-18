@@ -54,6 +54,8 @@ import { buildFeasibility } from './feasibility';
 import type { Feasibility } from './feasibility';
 import { fetchAgriculturalRezoningPolicy } from './rami';
 import type { RamiPolicy } from './rami';
+import { nearbyConstructionPlans } from './nearbyplans';
+import type { NearbyPlan } from './nearbyplans';
 import {
   ASSET_CATEGORY,
   ASSET_DEAL_TYPE,
@@ -148,6 +150,11 @@ export interface PropertyReport {
   ramiPolicy: RamiPolicy | null;
   /** מדד שכר הדירה של הלמ"ס — נמשך רק בדוח שכירות. */
   rentIndex: HousingIndex | null;
+  /**
+   * §12 · תוכניות בנייה ברדיוס סביב הנכס, כל אחת עם מיקום ממוקם. פרימיום
+   * ומעלה בלבד (`null` בדוח החינמי — לא נשאל כלל, לא רק מוסתר).
+   */
+  nearbyPlans: NearbyPlan[] | null;
   title: ReportTitle;
   background: ReportBackground;
   categories: ReportCategory[];
@@ -980,8 +987,18 @@ export async function buildReport(
   // שסעיף ההיתרים יקבל את **אותה** תשובת ייעוד קרקע שכל שאר הדוח מסתמך עליה.
   // שתי שאילתות נפרדות לאותה נקודה יכולות לחזור שונות, ואז אותו דוח מציג שני
   // ייעודים לאותו מגרש.
-  const [dealsRes, cbsRes, planningRes, renewalRes, popRes, svRes, plansRes, rentRes, ramiRes] =
-    await Promise.allSettled([
+  const [
+    dealsRes,
+    cbsRes,
+    planningRes,
+    renewalRes,
+    popRes,
+    svRes,
+    plansRes,
+    rentRes,
+    ramiRes,
+    nearbyPlansRes,
+  ] = await Promise.allSettled([
     lat != null && lng != null
       ? fetchDealsAtPoint(lat, lng, {
           street: parsed.street,
@@ -1007,6 +1024,12 @@ export async function buildReport(
     itmX != null && itmY != null ? queryPlansAtPoint(itmX, itmY) : Promise.resolve([] as PlanRecord[]),
     assetType === 'rental' ? fetchRentIndex(24) : Promise.resolve(null),
     assetType === 'land' ? fetchAgriculturalRezoningPolicy(true) : Promise.resolve(null),
+    // §12 · פרימיום ומעלה בלבד — כמו צילום הבניין (tierMayUseImagery), הבדיקה
+    // עצמה נשאלת רק ברמה שמציגה אותה, כדי שלא תוכל להתקיים "יש תוכניות
+    // בסביבה" ברמה שלא מציגה את הסעיף.
+    itmX != null && itmY != null && tierMayUsePaidSources(tier)
+      ? nearbyConstructionPlans(itmX, itmY)
+      : Promise.resolve(null),
   ]);
 
   const deals = dealsRes.status === 'fulfilled' ? dealsRes.value : null;
@@ -1035,6 +1058,7 @@ export async function buildReport(
   const plans: PlanRecord[] = plansRes.status === 'fulfilled' ? plansRes.value : [];
   const rentIndex = rentRes.status === 'fulfilled' ? rentRes.value : null;
   const ramiPolicy = ramiRes.status === 'fulfilled' ? ramiRes.value : null;
+  const nearbyPlans = nearbyPlansRes.status === 'fulfilled' ? nearbyPlansRes.value : null;
 
   // סעיף ההיתרים נבנה מאותה משיכה — בלי שאילתה נוספת.
   //
@@ -3196,6 +3220,7 @@ export async function buildReport(
     feasibility,
     ramiPolicy,
     rentIndex,
+    nearbyPlans,
     title: {
       streetOfficial: streetResolved?.official ?? parsed.street ?? null,
       streetAliases: streetResolved?.aliases ?? [],

@@ -28,6 +28,7 @@ import MikvePanel from './MikvePanel';
 import PopulationPanel from './PopulationPanel';
 import NeighborhoodProfile from './NeighborhoodProfile';
 import StreetPanel from './StreetPanel';
+import NearbyPlansPanel from './NearbyPlansPanel';
 import VipPanel from './VipPanel';
 import PriceTrend from './PriceTrend';
 import PropertyImagery from './PropertyImagery';
@@ -603,6 +604,8 @@ export default function ReportView({
               </>
             )}
             {cat.key === 'land' && <RamiPolicyPanel policy={data.ramiPolicy} />}
+            {/* §12 · תוכניות בנייה ברדיוס סביב הנכס. */}
+            {cat.key === 'potential' && <NearbyPlansPanel plans={data.nearbyPlans} tier={tier} />}
             {(cat.key === 'rental' || cat.key === 'commercial') && (
               <Listings
                 listings={data.listings}

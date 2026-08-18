@@ -7,9 +7,11 @@
 // (הן צריכות רק את התכנית שחלה על הנכס עצמו). כאן צריך גם את המיקום של כל
 // תכנית שכנה, ולכן `returnGeometry=true` + חישוב מרכז-שטח מ-geometry.ts.
 //
-// ⚠️ עדיין לא מחובר ל-API route/UI/שער פרימיום — זה רק שכבת הנתונים, נבדקת
-// בנפרד (ר' scripts/qa/nearby-plans-geometry.mjs). החיבור לדוח ולתצוגה על
-// המפה הוא הצעד הבא.
+// מחובר ל-`buildReport` (lib/buildreport.ts, שדה `nearbyPlans`) ומוצג ב-
+// `components/report/NearbyPlansPanel.tsx`, בקטגוריית "פוטנציאל". פרימיום
+// ומעלה בלבד — ברמה חינמית השכבה כלל לא נשאלת (אין עלות, אבל זו אבן-דרך
+// בתשלום לפי המפרט). נבדק גם ישירות: scripts/qa/nearby-plans-geometry.mjs
+// (גאומטריה) ו-scripts/qa/nearby-plans-live.mjs (4 כתובות המפרט, חי).
 
 import { fetchJson } from './http';
 import { itmToWgs84 } from './itm';
@@ -74,9 +76,16 @@ export async function nearbyConstructionPlans(
     const centroid = polygonCentroid(f?.geometry?.rings);
     if (!centroid) continue; // אין מיקום אמין → לא ממציאים אחד
 
+    // השרת מחזיר כל תכנית שה-**גיאומטריה** שלה חותכת מעגל ברדיוס סביב הנכס —
+    // גם אם רק קצה שלה נוגע בו. תכנית משוכה (רצועת דרך, מתחם מוארך) יכולה
+    // לחתוך את המעגל בקצה אחד כשמרכז-השטח שלה רחוק ממנו בהרבה. הפאנל מציג
+    // "רדיוס 400 מ'" לפי מרחק מרכז-השטח, אז מסננים כאן לפי אותו מרחק בפועל —
+    // אחרת מוצגת תכנית "ברדיוס 400 מ'" שבפועל מרחקה כמה אלפי מטרים.
+    const distanceM = Math.round(planarDistanceM(origin, centroid));
+    if (distanceM > radiusM) continue;
+
     const planNumber = a.pl_number ? String(a.pl_number) : null;
     // אותה תכנית חוזרת פעמים רבות (multipart) — שומרים את המופע הקרוב ביותר.
-    const distanceM = Math.round(planarDistanceM(origin, centroid));
     const key = planNumber ?? `${centroid.x.toFixed(1)},${centroid.y.toFixed(1)}`;
     const existing = byPlanNumber.get(key);
     if (existing && existing.distanceM <= distanceM) continue;
