@@ -1,0 +1,33 @@
+04 imud: fix 7/9 dark-mode contrast failures (round-3 a11y recheck)
+
+contrast-probe.mjs against https://more30.com/imud (dark mode): 9 failures --
+hero badge + book-card label text-primary vs card backdrop (3.93/3.76:1,
+needs 4.5), step-number ghost badges at text-muted-foreground/25 (1.59:1,
+needs 3, and theme-independent -- also 1.39:1 in light mode, never checked
+before). bg-primary CTA button vs white text (4.07:1) also fails but is a
+token-level conflict (--primary used both as text, needing lighter, and as
+button background, needing darker) that a single-line fix can't resolve
+without risking other unaudited bg-primary usages in the app.
+
+Fixed:
+- Home.tsx badge pill + book-card template label: added dark:text-[#da6c80]
+  alongside the existing text-primary (computed ~5:1 against both
+  backdrops via the WCAG relative-luminance formula), without touching
+  --primary itself.
+- Home.tsx step numbers: text-muted-foreground/25 -> /80 (uniform across
+  both themes, ~3.4:1 light / 4.7:1 dark).
+
+Left open (documented in SYSTEMS_STATUS.md, same precedent as torah's gold
+CTA gap from the prior round-3 step): the bg-primary/text-primary-foreground
+CTA button stays at 4.07:1 in dark mode only -- needs a dedicated
+button-background token or larger CTA text to hit the 3:1 large-text
+threshold, deferred to a follow-up step.
+
+Deployed: vite build -> robocopy dist/public -> _deploy/imud-more30/public/imud
+-> vercel deploy --prod (imud-more30), READY. Verified live with
+cache-buster: dark 9 failures -> 2 (known gap), light 4 failures -> 0.
+
+Evidence: QA/platform/imud-badge-dark-0818/_results.md
+Protected systems untouched (08/09/bkalut-app/bkalot-admin/zr_*/NEDARIM3873).
+Supabase MCP not connected this session -- heartbeat queued as
+QA/platform/imud-badge-dark-0818/_heartbeat-pending.sql.

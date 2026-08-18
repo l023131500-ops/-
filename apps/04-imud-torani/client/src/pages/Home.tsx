@@ -37,7 +37,7 @@ export default function Home() {
       {/* Hero */}
       <section className="border-b border-border bg-gradient-to-b from-accent/40 to-transparent">
         <div className="mx-auto max-w-6xl px-5 py-16 text-center">
-          <div className="mb-3 inline-block rounded-full border border-primary/30 bg-primary/5 px-4 py-1 text-xs font-semibold text-primary">
+          <div className="mb-3 inline-block rounded-full border border-primary/30 bg-primary/5 px-4 py-1 text-xs font-semibold text-primary dark:text-[#da6c80]">
             מנוע עימוד לספרי קודש
           </div>
           <h1 className="mx-auto max-w-3xl font-serif text-xl font-black leading-tight text-foreground sm:text-[2.1rem]">
@@ -77,7 +77,7 @@ export default function Home() {
                 <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
                   <s.icon className="h-5 w-5" />
                 </div>
-                <div className="font-serif text-2xl font-bold leading-none text-muted-foreground/25">
+                <div className="font-serif text-2xl font-bold leading-none text-muted-foreground/80">
                   {i + 1}
                 </div>
               </div>
@@ -116,7 +116,7 @@ export default function Home() {
                   onClick={() => navigate(`/editor/${b.id}`)}
                   data-testid={`button-open-book-${b.id}`}
                 >
-                  <div className="mb-2 text-xs font-semibold text-primary">
+                  <div className="mb-2 text-xs font-semibold text-primary dark:text-[#da6c80]">
                     {getTemplate(b.templateKey).name}
                   </div>
                   <h3 className="font-serif text-lg font-bold text-foreground">{b.title}</h3>
