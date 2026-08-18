@@ -1,0 +1,14 @@
+import { chromium } from 'playwright-core';
+const EXE = 'C:\\Users\\USER\\AppData\\Local\\ms-playwright\\chromium-1234\\chrome-win64\\chrome.exe';
+const browser = await chromium.launch({ executablePath: EXE, headless: true });
+const ctx = await browser.newContext({ viewport: { width: 1440, height: 1000 }, locale: 'he-IL', colorScheme: 'dark' });
+const page = await ctx.newPage();
+await page.goto('https://more30.com/kiosk/console?cachebust=' + Date.now(), { waitUntil: 'domcontentloaded', timeout: 90000 });
+await page.waitForTimeout(2500);
+await page.screenshot({ path: 'QA/platform/kiosk-dark-recheck-0818/kiosk-dark-after.png', fullPage: false });
+const ctx2 = await browser.newContext({ viewport: { width: 1440, height: 1000 }, locale: 'he-IL', colorScheme: 'light' });
+const page2 = await ctx2.newPage();
+await page2.goto('https://more30.com/kiosk/console?cachebust=' + Date.now(), { waitUntil: 'domcontentloaded', timeout: 90000 });
+await page2.waitForTimeout(2500);
+await page2.screenshot({ path: 'QA/platform/kiosk-dark-recheck-0818/kiosk-light-after.png', fullPage: false });
+await browser.close();
