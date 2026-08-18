@@ -34,6 +34,7 @@ export default function EditorPage() {
   const [nikudText, setNikudText] = useState('');
   const [loading, setLoading] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
 
   // ===== המסמך שנערך, אם נפתח מ"המסמכים שלי" =====
   const [docId, setDocId] = useState<string | null>(null);
@@ -167,6 +168,22 @@ export default function EditorPage() {
     setNikudText('');
   }
 
+  async function copyText() {
+    await navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }
+
+  function downloadTxt() {
+    const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${(docTitle || titleFrom(text, 'מסמך')).trim()}.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
   return (
     <div className="container">
       <h1>העורך התורני</h1>
@@ -233,6 +250,12 @@ export default function EditorPage() {
         </button>
         <button className="action" onClick={runNikud} disabled={!text || loading !== null}>
           {loading === 'nikud' ? 'מנקד...' : 'הוסף ניקוד רבני'}
+        </button>
+        <button className="action" onClick={copyText} disabled={!text} type="button">
+          {copied ? 'הועתק ✓' : 'העתק ללוח'}
+        </button>
+        <button className="action" onClick={downloadTxt} disabled={!text} type="button">
+          הורד כטקסט (.txt)
         </button>
       </div>
 
