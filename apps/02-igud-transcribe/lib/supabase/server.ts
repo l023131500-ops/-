@@ -4,6 +4,13 @@ import { cookies } from "next/headers";
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
+// Vercel env values set through a piped PowerShell `vercel env add` can pick up a
+// leading UTF-8 BOM (U+FEFF), which is not a valid ByteString header char and
+// makes every fetch using this key as a header value throw.
+function stripBom(value: string): string {
+  return value.charCodeAt(0) === 0xfeff ? value.slice(1) : value;
+}
+
 // SSR client — לקריאת session ועבודה כמשתמש המחובר
 export function createSupabaseServer() {
   const cookieStore = cookies();
@@ -24,7 +31,7 @@ export function createSupabaseServer() {
 // Service-role client — bypass RLS, לעבודה בשרת בלבד
 import { createClient } from "@supabase/supabase-js";
 export function createSupabaseService() {
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+  const key = stripBom(process.env.SUPABASE_SERVICE_ROLE_KEY!);
   return createClient(SUPABASE_URL, key, {
     auth: { autoRefreshToken: false, persistSession: false },
     db: { schema: "transcribe" }
@@ -33,7 +40,7 @@ export function createSupabaseService() {
 
 // Service client על schema אחר (לדוגמה Storage או auth.users)
 export function createSupabaseServiceRaw() {
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+  const key = stripBom(process.env.SUPABASE_SERVICE_ROLE_KEY!);
   return createClient(SUPABASE_URL, key, {
     auth: { autoRefreshToken: false, persistSession: false }
   });
