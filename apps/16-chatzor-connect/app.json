@@ -8,7 +8,9 @@
   "live": false,
   "repo": "l023131500-ops/-",
   "basePath": "/16",
-  "unifies": ["24-galilee-connect-hub"],
+  "unifies": [
+    "24-galilee-connect-hub"
+  ],
   "supabase": {
     "project": "uhnrgujbdxhhmoxcjria",
     "schema": "chatzor"

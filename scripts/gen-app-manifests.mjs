@@ -13,6 +13,7 @@ const KNOWN_PROJECT = {
   "01": "uhnrgujbdxhhmoxcjria", // inferred (shared hub DB)
   "15": "uhnrgujbdxhhmoxcjria", // inferred (shared hub DB)
   "02": "bieebmnmkffwbqlsfozh", // VERIFIED (igud-transcribe's own project)
+  "16": "uhnrgujbdxhhmoxcjria", // promoted 18/08/2026 from the hand-maintained app.json
 };
 
 // number, slug, repo, name, category, stage, live, schema, deploy, protected, note,
@@ -35,13 +36,15 @@ const R = [
   ["13","property-identity","property-identity","Property Identity","realestate","wip",false,null,"unknown",false,null],
   ["14","bsmachot-plus","bsmachot-plus","Bsmachot Plus","events","wip",false,null,"unknown",false,null],
   ["15","egod","egod","egod (HUB pair with 01)","hub","live",true,"public","lovable",false,"Born in Lovable; shares Supabase with torah-platform."],
-  // WARNING (measured 18/08/2026): apps/16-chatzor-connect/app.json in the repo is
-  // HAND-MAINTAINED and richer than this row - it carries description, unifies,
-  // category "community", repo "l023131500-ops/-", a real supabase project+schema and
-  // source "in-progress". Running this generator against the real tree WOULD SILENTLY
-  // CLOBBER all of that. Generate into a throwaway root and copy only the row you
-  // changed, or promote 16's fields into an overrides object here first.
-  ["16","chatzor-connect","chatzor-connect","Chatzor Connect","other","wip",false,null,"unknown",false,null],
+  // PROMOTED 18/08/2026: this row previously read ["16",...,"chatzor-connect","Chatzor
+  // Connect","other",...,null,"unknown",false,null] while apps/16-chatzor-connect/app.json
+  // was HAND-MAINTAINED and much richer, so running the generator would have silently
+  // CLOBBERED it. Every hand-written field now lives here (repo "-", category "community",
+  // schema "chatzor", project via KNOWN_PROJECT, description/unifies/source via overrides)
+  // and the generator reproduces that file byte-for-byte. Keep them in sync.
+  ["16","chatzor-connect","-","Chatzor Connect — מחוברים","community","wip",false,"chatzor","unknown",false,null,
+    { description: "פלטפורמת מועצה דתית וקהילות לחצור הגלילית. מאחדת את more30 (רב-דיירי) ואת galilee-connect-hub למערכת אחת. ראה README.md.",
+      unifies: ["24-galilee-connect-hub"], source: "in-progress" }],
   ["17","chizukim-transcribe","chizukim-transcribe","Chizukim Transcribe","transcription","live",true,null,"vercel",false,
     "Live at more30.com/chizukim. Verify transcription token. Deploy source MEASURED 18/08/2026, not assumed - see overrides.",
     { isDeployed: true, liveUrl: "https://more30.com/chizukim", vercelProject: "chizukim2-more30",
@@ -73,9 +76,14 @@ for (const [number, slug, repo, name, category, stage, live, schema, deploy, pro
   const dir = resolve(ROOT, "apps", `${number}-${slug}`);
   mkdirSync(dir, { recursive: true });
   const manifest = {
-    number, slug, name, category, stage, live,
+    number, slug, name,
+    // Declared here (not only in `over`) so the optional keys keep their documented
+    // position in the JSON; absent ones are dropped by JSON.stringify.
+    ...(over?.description ? { description: over.description } : {}),
+    category, stage, live,
     repo: `l023131500-ops/${repo}`,
     basePath: `/${number}`,
+    ...(over?.unifies ? { unifies: over.unifies } : {}),
     supabase: { project: KNOWN_PROJECT[number] ?? null, schema },
     deployTarget: deploy,
     protected: prot,
