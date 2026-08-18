@@ -361,3 +361,33 @@
     inset: -1px;
   }
 }
+
+/* תגיות הסטטוס בארכיון — כתובות כאן ולא כמחלקות של Tailwind.
+
+   הצבעים ‎--status-*‎ למעלה מוגדרים גם ב-‎tailwind.config.ts‎ תחת
+   ‎theme.extend.colors.status‎, אבל Tailwind 3.4.19 פשוט לא פולט מהם שום
+   utility: ‎text-status-progress‎ ו-‎bg-status-progress/20‎ אינם ב-CSS הבנוי,
+   בעוד ששכניהם באותו אובייקט — ‎chart‎ ו-‎sidebar‎ — כן נפלטים. נמדד ישירות
+   מול ה-CLI עם הקלאס בקובץ תוכן מפורש: ‎text-chart-4‎ ו-‎text-sidebar-ring‎
+   קיבלו כלל, שלושת ה-‎status-*‎ קיבלו אפס. הקובץ UTF-8 תקין, אין safelist,
+   textColor או plugin שדורס. הסיבה עדיין לא ידועה.
+
+   למה זה מסוכן ולא רק מעצבן: ‎status.ts‎ כבר הופנה למחלקות האלה, כך שפריסה
+   של ה-JS הזה מול ה-CSS החי הייתה מציירת את תגיות "בתהליך"/"בעריכה"/"מוכן"
+   בלי רקע ובלי צבע בכלל — רגרסיה גלויה בעמוד חי. CSS מפורש לא תלוי בסורק,
+   ולכן הוא נמצא בפלט תמיד. הערכים זהים לאלה שנמדדו ל-4.5:1 ומעלה, ושלושת
+   הגוונים נשמרים; המילה כתובה בתגית ממילא, כך שהמשמעות לא נשענת על הצבע. */
+@layer components {
+  .status-chip-progress {
+    background-color: hsl(var(--status-progress) / 0.2);
+    color: hsl(var(--status-progress));
+  }
+  .status-chip-edit {
+    background-color: hsl(var(--status-edit) / 0.2);
+    color: hsl(var(--status-edit));
+  }
+  .status-chip-ready {
+    background-color: hsl(var(--status-ready) / 0.2);
+    color: hsl(var(--status-ready));
+  }
+}

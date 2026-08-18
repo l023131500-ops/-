@@ -7,12 +7,16 @@ import type { RecordingStatus } from "./supabase";
 // כדי להיקרא ב-12px על גרסה שקופה של עצמו: "מוכן" נמדד ב-3.64:1 ו"בתהליך"
 // הצהוב גרוע ממנו, מול 4.5:1 שתקן 5568 דורש. ‎--status-*‎ הם אותם שלושה
 // גוונים בבהירות שנקראת, ומוגדרים בנפרד לערכה הבהירה ולכהה.
+//
+// ‎status-chip-*‎ ולא ‎text-status-progress‎: המחלקות של Tailwind נראו נכון
+// לגמרי ופשוט לא נפלטו ל-CSS (ראה ההסבר המלא ב-‎index.css‎, ליד הגדרתן).
+// בגרסה הקודמת של השורות האלה זו הייתה תגית בלי רקע ובלי צבע.
 const STATUS_STYLES: Record<RecordingStatus, string> = {
   uploaded: "bg-muted text-muted-foreground",
-  transcribing: "bg-status-progress/20 text-status-progress",
-  transcribed: "bg-status-progress/20 text-status-progress",
-  editing: "bg-status-edit/20 text-status-edit",
-  ready: "bg-status-ready/20 text-status-ready",
+  transcribing: "status-chip-progress",
+  transcribed: "status-chip-progress",
+  editing: "status-chip-edit",
+  ready: "status-chip-ready",
   error: "bg-destructive/15 text-destructive",
 };
 
