@@ -10,6 +10,31 @@
 
 ---
 
+## 🔴 חדש 18/08/2026 (מאוחר) — core.issues #239: תמלול/קופונים — נותר חסם קונפיג יחיד בפרויקט מוגן
+
+**התקדמות:** שכבת ה-BOM/מפתח-מיושן שדיווחה "Invalid API key" **תוקנה בפועל**
+הצעד הזה — נשלף מפתח `service_role` עדכני ל-`bieebmnmkffwbqlsfozh` דרך
+Management API, הוגדר ב-Vercel של `tamlul-more30` דרך ה-REST API הגולמי
+(לא CLI — נמנע מבאג ה-BOM), ונפרס. `POST https://more30.com/tamlul/api/coupons`
+כבר לא מחזיר "Invalid API key" — Supabase מקבל את המפתח.
+
+**מה נשאר:** התשובה החדשה היא `{"error":"Invalid schema: transcribe"}` —
+הסכמה `transcribe` קיימת בפועל בפרויקט (אומת ב-`information_schema.schemata`),
+אבל היא לא ברשימת ה-"Exposed schemas" של ה-Data API (PostgREST) של הפרויקט.
+
+**למה זה חסום מכאן:** `bieebmnmkffwbqlsfozh` הוא הפרויקט **המוגן**
+(`bkalut-production`, נושא 08/09). התיקון הנדרש (הוספת `transcribe` לרשימת
+ה-exposed schemas, Settings → API → Data API) הוא אדיטיבי בלבד ולא נוגע
+בשום סכמה/נתון של 08/09 — אבל הוא כתיבה להגדרות פרויקט מוגן, ואסור לי
+לבצע אותה בלי אישור מפורש.
+
+**מה צריך ממך:** אישור להוסיף `transcribe` לרשימת ה-exposed schemas ב-
+`bieebmnmkffwbqlsfozh`, **או** הפניה של תמלול לפרויקט Supabase נפרד שאינו מוגן.
+
+פרטים מלאים: `core.issues` #239, `QA/platform/tamlul-service-key-refresh-0818/_results.md`.
+
+---
+
 ## 🔴 חדש 18/08/2026 — core.issues #240: galil/chatzor "פנייה אחרת" — ליד אמיתי נשמט בשקט, הלקוח רואה הצלחה מזויפת
 
 **מה קורה:** בטופס יצירת הקשר ב-more30.com/galil (ומשותף גם ל-/chatzor), בחירת
