@@ -1,0 +1,43 @@
+06 briut: fix fund-badge white-on-brand-color contrast (round-3 recheck, theme-independent finding)
+
+Continuing the round-3 dark-mode contrast recheck (torah/modaot/tamlul/smel/
+galil done) — next queued POLISH_BACKLOG toggle system was briut.
+contrast-probe.mjs against https://more30.com/briut in dark mode found 30
+failing elements, all white text on a fund brand-color pill: clalit
+rgb(0,160,175) 3.16:1, meuhedet rgb(91,168,41) 2.97:1, leumit rgb(245,127,32)
+2.65:1, plus a neutral "needs comparison" badge rgb(123,139,149) 3.52:1 — all
+need 4.5:1 (13-15px, not "large text" by the 18.66px/700 threshold).
+
+Re-ran in light mode: identical colors, identical failures. Root cause read
+in apps/06-kupot-holim/site/styles.css: the fund brand colors are
+intentionally the same value in both themes (documented at the .dark block,
+"קופות אינן מתהפכות — הם זהות מסחרית"), so this isn't a dark-mode regression
+— it's a pre-existing contrast defect present in both themes, just first
+caught by this sweep.
+
+Fix: added --clalit-badge/--meuhedet-badge/--leumit-badge/--neutral-badge —
+same hue, darkened via HSL until white text clears 4.5:1 (computed, not
+guessed: 0.5% lightness steps checked against the WCAG formula) — and pointed
+the five badge-fill selector groups (.fund-chip/.reco-badge/.br-fund/
+.rank-fill/.t-best) at them. The original --clalit/--meuhedet/--leumit vars
+are untouched everywhere else they're used as text color or a border
+(.fb-name, .fund-block), so brand identity elsewhere on the page is
+unaffected. maccabi (0,91,171) already cleared 4.5:1, left as-is.
+
+Static site (no build step, apps/06-kupot-holim/site). Copied styles.css to
+_deploy/briut-more30/briut/ (hash-verified byte-identical), deployed
+vercel deploy --prod --yes --scope l023131500-ops-projects from
+_deploy/briut-more30 -> dpl_8SKEjXSYd99it1PqyfeHNppHTBP2, READY, aliased.
+
+Verified live with a cache-buster: contrast-probe.mjs dark mode - 30
+findings -> 0. Light mode - same 30 badge findings -> 0 (three unrelated
+pre-existing near-miss findings remain in both themes: a CTA paragraph at
+4.39:1 on --primary-surface, and the footer copyright text at 3.72:1 — not
+part of this fix, not dark-mode-specific either, flagged for a future
+recheck same as the other documented near-misses on galil/smel/tamlul).
+Screenshot confirms all four fund badges stay visually distinct and legible.
+
+Evidence: QA/platform/briut-badge-contrast-0818/ (_compute.mjs,
+briut-badges-light.png).
+
+Protected systems untouched (08/09/bkalut-app/bkalot-admin/zr_*/NEDARIM3873).

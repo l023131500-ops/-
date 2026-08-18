@@ -5,6 +5,17 @@
   --meuhedet:#5BA829;
   --leumit:#F57F20;
 
+  /* Same hue as the brand var above, darkened until white text on it clears
+     4.5:1 (measured: clalit 3.16, meuhedet 2.97, leumit 2.65). Only for the
+     badge/pill fills below — the plain brand vars stay as-is where they're
+     used as text color or a border. Fixed in both themes: fund identity
+     colors don't flip (see the .dark comment), so neither should their
+     accessible variant. maccabi (0,91,171) already clears 4.5:1, no var needed. */
+  --clalit-badge:#00828E;
+  --meuhedet-badge:#488520;
+  --leumit-badge:#BD5908;
+  --neutral-badge:#697983;
+
   /* Neutral surface + text */
   --bg:#F6F8F9;
   --surface:#FFFFFF;
@@ -160,10 +171,10 @@ img,svg{display:block}
 .hero-cta{display:flex;gap:14px;flex-wrap:wrap}
 .fund-chips{display:flex;gap:10px;margin-top:34px;flex-wrap:wrap}
 .fund-chip{font-weight:700;font-size:15px;padding:8px 18px;border-radius:999px;color:#fff}
-.fund-chip[data-fund=clalit]{background:var(--clalit)}
+.fund-chip[data-fund=clalit]{background:var(--clalit-badge)}
 .fund-chip[data-fund=maccabi]{background:var(--maccabi)}
-.fund-chip[data-fund=meuhedet]{background:var(--meuhedet)}
-.fund-chip[data-fund=leumit]{background:var(--leumit)}
+.fund-chip[data-fund=meuhedet]{background:var(--meuhedet-badge)}
+.fund-chip[data-fund=leumit]{background:var(--leumit-badge)}
 
 /* Sections */
 .section{padding:clamp(48px,7vw,88px) 0}
@@ -187,10 +198,10 @@ img,svg{display:block}
 .reco-line{display:flex;align-items:center;gap:8px;margin-top:18px;padding-top:16px;border-top:1px dashed var(--border);flex-wrap:wrap}
 .reco-label{font-size:14px;color:var(--text-muted)}
 .reco-badge{font-weight:700;font-size:15px;padding:5px 14px;border-radius:999px;color:#fff}
-.reco-badge[data-fund=clalit]{background:var(--clalit)}
+.reco-badge[data-fund=clalit]{background:var(--clalit-badge)}
 .reco-badge[data-fund=maccabi]{background:var(--maccabi)}
-.reco-badge[data-fund=meuhedet]{background:var(--meuhedet)}
-.reco-badge[data-fund=leumit]{background:var(--leumit)}
+.reco-badge[data-fund=meuhedet]{background:var(--meuhedet-badge)}
+.reco-badge[data-fund=leumit]{background:var(--leumit-badge)}
 .reco-more{font-size:13px;color:var(--primary);font-weight:600;margin-inline-start:auto}
 
 /* Drawer */
@@ -206,10 +217,10 @@ img,svg{display:block}
 .big-reco{background:var(--bigreco-grad);border:1px solid var(--border);border-radius:var(--radius);padding:22px;margin-bottom:24px;text-align:center}
 .big-reco .br-label{font-size:15px;color:var(--text-muted)}
 .big-reco .br-fund{font-family:var(--font-head);font-weight:900;font-size:38px;margin:6px 0;display:inline-block;padding:4px 20px;border-radius:12px;color:#fff}
-.br-fund[data-fund=clalit]{background:var(--clalit)}
+.br-fund[data-fund=clalit]{background:var(--clalit-badge)}
 .br-fund[data-fund=maccabi]{background:var(--maccabi)}
-.br-fund[data-fund=meuhedet]{background:var(--meuhedet)}
-.br-fund[data-fund=leumit]{background:var(--leumit)}
+.br-fund[data-fund=meuhedet]{background:var(--meuhedet-badge)}
+.br-fund[data-fund=leumit]{background:var(--leumit-badge)}
 .br-runner{font-size:14px;color:var(--text-muted);margin-top:6px}
 
 .rank-bars{margin:0 0 24px}
@@ -217,10 +228,10 @@ img,svg{display:block}
 .rank-name{width:64px;font-weight:600;font-size:14px;flex-shrink:0}
 .rank-track{flex:1;background:var(--surface-alt);border-radius:999px;height:22px;overflow:hidden}
 .rank-fill{height:100%;border-radius:999px;transition:width .5s ease;display:flex;align-items:center;justify-content:flex-start;padding-inline-start:10px;color:#fff;font-size:12px;font-weight:700}
-.rank-fill[data-fund=clalit]{background:var(--clalit)}
+.rank-fill[data-fund=clalit]{background:var(--clalit-badge)}
 .rank-fill[data-fund=maccabi]{background:var(--maccabi)}
-.rank-fill[data-fund=meuhedet]{background:var(--meuhedet)}
-.rank-fill[data-fund=leumit]{background:var(--leumit)}
+.rank-fill[data-fund=meuhedet]{background:var(--meuhedet-badge)}
+.rank-fill[data-fund=leumit]{background:var(--leumit-badge)}
 
 .drawer h4{font-family:var(--font-body);font-weight:700;font-size:17px;margin:22px 0 10px}
 .cat-breakdown{display:flex;flex-direction:column;gap:8px;margin-bottom:8px}
@@ -254,11 +265,11 @@ img,svg{display:block}
 .t-topic{font-weight:700;font-size:17px}
 .t-meta{font-size:13px;color:var(--text-muted);margin-top:2px}
 .t-best{font-size:13px;font-weight:700;padding:5px 12px;border-radius:999px;color:#fff;white-space:nowrap;flex-shrink:0}
-.t-best[data-fund=clalit]{background:var(--clalit)}
+.t-best[data-fund=clalit]{background:var(--clalit-badge)}
 .t-best[data-fund=maccabi]{background:var(--maccabi)}
-.t-best[data-fund=meuhedet]{background:var(--meuhedet)}
-.t-best[data-fund=leumit]{background:var(--leumit)}
-.t-best[data-fund=none]{background:var(--text-faint)}
+.t-best[data-fund=meuhedet]{background:var(--meuhedet-badge)}
+.t-best[data-fund=leumit]{background:var(--leumit-badge)}
+.t-best[data-fund=none]{background:var(--neutral-badge)}
 .t-arrow{color:var(--text-faint);transition:transform .2s;flex-shrink:0}
 .topic-item.open .t-arrow{transform:rotate(180deg)}
 .topic-body{display:none;padding:0 20px 20px;border-top:1px solid var(--border)}
