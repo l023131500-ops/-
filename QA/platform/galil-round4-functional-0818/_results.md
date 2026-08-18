@@ -55,3 +55,26 @@ No code change, no deploy this step — bug logged to core.issues #240 for a
 follow-up step. Protected systems untouched (08/09/bkalut-app/bkalot-admin/
 zr_*/NEDARIM3873) — mwljkonwdeuaahsigjdp is this app's own shared project,
 reached only via its own public contact-form API.
+
+## Follow-up (0818, later step): confirmed genuinely external, moved to NEEDS_USER
+
+Traced the deploy chain to close out #240's "find the source" open question:
+- `portal/vercel.dist.json` routes `/galil/*` → `https://galil-more30.vercel.app/galil/*`
+  (a separate Vercel project, not a rewrite into apps/16-chatzor-connect).
+- `core.projects` (number=24, slug `galilee-connect-hub`) has `repo` =
+  **`galilee-connect-hub`** — a distinct repo name, not this monorepo
+  (`l023131500-ops/-`). No `apps/24-*` directory exists here either.
+- Vercel API (`GET /v9/projects/galil-more30`) confirms the project has no git
+  link at all: `buildCommand: "echo no-build"`, `outputDirectory: "."`, no
+  `link` field — it was deployed prebuilt (CLI upload of an already-built
+  `dist`), so even a full repo clone wouldn't reveal *which* source tree
+  produced it beyond the `galilee-connect-hub` name in `core.projects`.
+- `mcp__supabase__list_projects` (the Management-API PAT) does not list
+  `mwljkonwdeuaahsigjdp` among its 10 reachable projects, and `core.secrets`
+  has no key for it — so the `community_leads_lead_type_check` constraint
+  can't be read or altered from here either, blocking even a DB-only fix
+  (allow `"other"`, or remap it to an already-allowed value).
+
+Both fix paths (client code, DB constraint) are genuinely out of reach this
+session. Logged to `core.issues.blocked_on` and `NEEDS_USER.md`. Moving on to
+the next round-4 system per the anti-drift rule (blocked → skip, don't stall).

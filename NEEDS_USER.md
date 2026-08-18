@@ -10,6 +10,34 @@
 
 ---
 
+## 🔴 חדש 18/08/2026 — core.issues #240: galil/chatzor "פנייה אחרת" — ליד אמיתי נשמט בשקט, הלקוח רואה הצלחה מזויפת
+
+**מה קורה:** בטופס יצירת הקשר ב-more30.com/galil (ומשותף גם ל-/chatzor), בחירת
+הקטגוריה "פנייה אחרת" שולחת `lead_type: "other"` שה-DB דוחה (constraint
+`community_leads_lead_type_check`, 400). הקוד לא בודק את סטטוס התשובה ומציג
+מסך הצלחה מזויף — כל מי שבוחר בקטגוריה הזו חושב שהפנייה נשלחה, והיא לא נשמרת.
+
+**למה זה חסום מכאן (בדקתי את שתי דרכי התיקון):**
+1. **קוד הצד-לקוח:** מערכת 24 (galilee-connect-hub) **אינה** נבנית מ-
+   `apps/16-chatzor-connect` במונו-רפו — `core.projects` מציין `repo` =
+   `galilee-connect-hub`, ריפו נפרד שלא קיים כאן. גם ה-Vercel project
+   `galil-more30` מאומת כפריסת CLI ללא קישור git (`buildCommand: echo
+   no-build`, אין `link`) — כלומר גם לא ניתן לשחזר מאיזה מקור הוא נבנה.
+2. **תיקון ב-DB בלבד (הוספת "other" ל-constraint, או מיפוי מחדש):** פרויקט
+   ה-Supabase המשותף `mwljkonwdeuaahsigjdp` **אינו** ברשימת 10 הפרויקטים
+   שה-SUPABASE_ACCESS_TOKEN מגיע אליהם (`mcp__supabase__list_projects`), ואין
+   מפתח שמור עבורו ב-`core.secrets`.
+
+**מה צריך ממך:** אחת מהשתיים —
+- גישה לריפו `galilee-connect-hub` (מקור אמיתי של galil/chatzor החי), **או**
+- מפתח service_role / גישת Dashboard לפרויקט Supabase `mwljkonwdeuaahsigjdp`
+  (כדי לראות/לתקן את `community_leads_lead_type_check` ולבדוק אם קטגוריות
+  אחרות נתקלות באותה תקלה).
+
+פרטים מלאים: `core.issues` #240, `QA/platform/galil-round4-functional-0818/_results.md`.
+
+---
+
 ## 🟢 סבב סריקה נוסף 17/08/2026 (לילה, ח) — 02 תמלול איגוד: תוקן שורש הפרפורמנס (Google Fonts render-blocking), 64→95
 
 המשך סבב-2 (פרפורמנס) בסדר המערכות — אחרי torah(01) עבר ל-02 tamlul.

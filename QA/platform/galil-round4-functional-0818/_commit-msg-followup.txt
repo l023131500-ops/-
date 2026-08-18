@@ -1,0 +1,23 @@
+round-4 follow-up: 24 galil core.issues #240 confirmed genuinely external, moved to NEEDS_USER
+
+Traced both fix paths for #240 (galil/chatzor "other" contact-lead fake-success bug):
+- client code: core.projects confirms 24 galilee-connect-hub repo="galilee-connect-hub",
+  a repo not present in this monorepo; Vercel project galil-more30 has no git link
+  (buildCommand="echo no-build", no link field) - deployed prebuilt, source tree
+  not recoverable from here.
+- DB-only fix (allow "other" in community_leads_lead_type_check, or remap it):
+  Supabase project mwljkonwdeuaahsigjdp is not among the 10 projects the
+  SUPABASE_ACCESS_TOKEN/Management-API PAT reaches, and no key for it is stored
+  in core.secrets.
+
+Updated core.issues #240.blocked_on with the full trace, added a NEEDS_USER.md
+entry (what's needed: either the galilee-connect-hub repo or Supabase
+dashboard/service-role access to mwljkonwdeuaahsigjdp), and appended the
+follow-up to QA/platform/galil-round4-functional-0818/_results.md.
+
+No code change, no deploy this step - both fix paths are genuinely out of
+reach this session. Per RUN_INSTRUCTIONS anti-drift rule (blocked -> skip,
+don't stall), round-4 functional pass will continue at the next system
+(studio, 26) in a following step.
+
+Protected systems untouched (08/09/bkalut-app/bkalot-admin/zr_*/NEDARIM3873).
