@@ -1,0 +1,29 @@
+10 bkalot: fix white-on-teal badges/buttons invisible in dark mode (round-3 a11y recheck)
+
+contrast-probe.mjs dark scheme on /bkalot found 39 failures: white text on
+--teal/--teal-d backgrounds (.btn-primary, .how-card .hn, .dl-badge,
+.dl-pptx-ico, footer) at 1.35-2.46:1, needs 4.5:1/3:1. Light mode: 0 failures
+in these elements - theme-independent regression.
+
+Root cause: --teal/--teal-d are dual-purpose (text color AND background under
+fixed white text). :root.dark lightens them for legibility as text on the dark
+surface, which breaks every place they're used as a background instead. Same
+defect class already fixed on smel/galil (shared token flipped for one role,
+broke a second role).
+
+Fix: added --teal-solid/--teal-d-solid to :root only (original values, never
+redefined in :root.dark), repointed every background-with-white-text usage
+(.btn-primary, .how-card .hn, .sit-chip, .src-bklot/.src-gov, .site-footer,
+.pt-card gradient, .dl-badge/.dl-badge-alt, .dl-pptx-ico) to the solid tokens.
+Text-color usages left on var(--teal)/var(--teal-d) so they keep lightening
+correctly in dark mode.
+
+Static site, no build step. Verified _deploy copy was byte-identical to live
+before editing. Deployed vercel deploy --prod from _deploy/bkalot-more30 ->
+dpl_72Ve7ZPKDeGFEHFHyTxeAeV1LEmv, READY. Live re-check with a cache-buster:
+contrast-probe.mjs dark - 39 findings -> 0; light mode unchanged (3 pre-existing
+unrelated findings on .pt-card, confirmed a probe false-positive on a gradient
+background, not a real defect).
+
+Evidence: QA/platform/bkalot-badge-dark-0818/_results.md
+Protected systems untouched (08/09/bkalut-app/bkalot-admin/zr_*/NEDARIM3873).
