@@ -32,6 +32,23 @@ function sb(): SupabaseClient {
 
 const now = () => Math.floor(Date.now() / 1000);
 
+/**
+ * מזהה משתמש אופציונלי מתוך כותרת Authorization, אם יש ותקפה.
+ * בלי כותרת / כותרת לא תקפה → undefined, וזה בדיוק "המשך אנונימי כמו היום"
+ * (studio_projects/studio_brands.user_id נשאר NULL, אין סינון).
+ */
+export async function getUserIdFromToken(authHeader: string | undefined): Promise<string | undefined> {
+  const token = authHeader?.replace(/^Bearer\s+/i, "").trim();
+  if (!token) return undefined;
+  try {
+    const { data, error } = await sb().auth.getUser(token);
+    if (error || !data?.user) return undefined;
+    return data.user.id;
+  } catch {
+    return undefined;
+  }
+}
+
 // ---------------------------------------------------------------------------
 // Row <-> domain mappers. Postgres gives snake_case columns; the app's types
 // are camelCase, exactly as drizzle produced them from the SQLite schema.
@@ -44,12 +61,13 @@ const toTemplate = (r: any): Template => ({
 const toProject = (r: any): Project => ({
   id: r.id, name: r.name, category: r.category, style: r.style, format: r.format,
   width: r.width, height: r.height, layersJson: r.layers_json,
-  thumbnail: r.thumbnail ?? null,
+  thumbnail: r.thumbnail ?? null, userId: r.user_id ?? null,
   createdAt: Number(r.created_at), updatedAt: Number(r.updated_at),
 });
 const toBrand = (r: any): Brand => ({
   id: r.id, brandName: r.brand_name, briefJson: r.brief_json,
   kitJson: r.kit_json ?? null, logoPng: r.logo_png ?? null, logoSvg: r.logo_svg ?? null,
+  userId: r.user_id ?? null,
   createdAt: Number(r.created_at), updatedAt: Number(r.updated_at),
 });
 
@@ -87,14 +105,14 @@ export interface IStorage {
   getTemplate(id: number): Promise<Template | undefined>;
   createTemplate(t: InsertTemplate): Promise<Template>;
   clearBuiltinTemplates(): Promise<void>;
-  listProjects(limit?: number): Promise<Project[]>;
+  listProjects(limit?: number, userId?: string): Promise<Project[]>;
   getProject(id: number): Promise<Project | undefined>;
-  createProject(p: InsertProject): Promise<Project>;
+  createProject(p: InsertProject, userId?: string): Promise<Project>;
   updateProject(id: number, patch: Partial<InsertProject>): Promise<Project | undefined>;
   deleteProject(id: number): Promise<void>;
-  listBrands(limit?: number): Promise<Brand[]>;
+  listBrands(limit?: number, userId?: string): Promise<Brand[]>;
   getBrand(id: number): Promise<Brand | undefined>;
-  createBrand(b: InsertBrand): Promise<Brand>;
+  createBrand(b: InsertBrand, userId?: string): Promise<Brand>;
   updateBrand(id: number, patch: Partial<InsertBrand>): Promise<Brand | undefined>;
   deleteBrand(id: number): Promise<void>;
 }
@@ -129,18 +147,22 @@ export class SupabaseStorage implements IStorage {
     if (error) throw new Error(`supabase: ${error.message}`);
   }
 
-  async listProjects(limit = 50) {
-    const r = unwrap(
-      await sb().from("studio_projects").select("*").order("updated_at", { ascending: false }).limit(limit),
-    );
+  async listProjects(limit = 50, userId?: string) {
+    // בלי userId (לא מחובר / JWT לא תקף) → כל השורות, בדיוק כמו לפני התיוג —
+    // אין רגרסיה לזרימה האנונימית הקיימת. עם userId → רק העבודות של המשתמש.
+    let q = sb().from("studio_projects").select("*");
+    if (userId) q = q.eq("user_id", userId);
+    const r = unwrap(await q.order("updated_at", { ascending: false }).limit(limit));
     return (r as any[]).map(toProject);
   }
   async getProject(id: number) {
     const r = unwrap(await sb().from("studio_projects").select("*").eq("id", id).maybeSingle());
     return r ? toProject(r) : undefined;
   }
-  async createProject(p: InsertProject) {
-    const r = unwrap(await sb().from("studio_projects").insert(projectRow(p)).select().single());
+  async createProject(p: InsertProject, userId?: string) {
+    const r = unwrap(
+      await sb().from("studio_projects").insert({ ...projectRow(p), user_id: userId ?? null }).select().single(),
+    );
     return toProject(r);
   }
   async updateProject(id: number, patch: Partial<InsertProject>) {
@@ -156,18 +178,20 @@ export class SupabaseStorage implements IStorage {
     if (error) throw new Error(`supabase: ${error.message}`);
   }
 
-  async listBrands(limit = 50) {
-    const r = unwrap(
-      await sb().from("studio_brands").select("*").order("updated_at", { ascending: false }).limit(limit),
-    );
+  async listBrands(limit = 50, userId?: string) {
+    let q = sb().from("studio_brands").select("*");
+    if (userId) q = q.eq("user_id", userId);
+    const r = unwrap(await q.order("updated_at", { ascending: false }).limit(limit));
     return (r as any[]).map(toBrand);
   }
   async getBrand(id: number) {
     const r = unwrap(await sb().from("studio_brands").select("*").eq("id", id).maybeSingle());
     return r ? toBrand(r) : undefined;
   }
-  async createBrand(b: InsertBrand) {
-    const r = unwrap(await sb().from("studio_brands").insert(brandRow(b)).select().single());
+  async createBrand(b: InsertBrand, userId?: string) {
+    const r = unwrap(
+      await sb().from("studio_brands").insert({ ...brandRow(b), user_id: userId ?? null }).select().single(),
+    );
     return toBrand(r);
   }
   async updateBrand(id: number, patch: Partial<InsertBrand>) {

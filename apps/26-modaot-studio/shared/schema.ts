@@ -41,12 +41,15 @@ export const projects = sqliteTable("projects", {
   height: integer("height").notNull(),
   layersJson: text("layers_json").notNull(), // מצב ערוך
   thumbnail: text("thumbnail"),
+  // בעלים אופציונלי (auth.users.id). NULL = עבודה אנונימית, בדיוק כמו היום.
+  userId: text("user_id"),
   createdAt: integer("created_at").notNull().default(sql`(unixepoch())`),
   updatedAt: integer("updated_at").notNull().default(sql`(unixepoch())`),
 });
 
 export const insertProjectSchema = createInsertSchema(projects).omit({
   id: true,
+  userId: true, // מתויג בשרת מה-JWT, לא מגוף הבקשה
   createdAt: true,
   updatedAt: true,
 });
@@ -65,12 +68,15 @@ export const brands = sqliteTable("brands", {
   kitJson: text("kit_json"), // BrandKit כ-JSON
   logoPng: text("logo_png"), // data URL של ה-PNG שנוצר
   logoSvg: text("logo_svg"), // תוכן ה-SVG הווקטורי
+  // בעלים אופציונלי (auth.users.id). NULL = עבודה אנונימית, בדיוק כמו היום.
+  userId: text("user_id"),
   createdAt: integer("created_at").notNull().default(sql`(unixepoch())`),
   updatedAt: integer("updated_at").notNull().default(sql`(unixepoch())`),
 });
 
 export const insertBrandSchema = createInsertSchema(brands).omit({
   id: true,
+  userId: true, // מתויג בשרת מה-JWT, לא מגוף הבקשה
   createdAt: true,
   updatedAt: true,
 });

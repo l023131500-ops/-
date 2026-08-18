@@ -1,6 +1,6 @@
 import type { Express, Request, Response } from "express";
 import type { Server } from "node:http";
-import { storage } from "./storage";
+import { storage, getUserIdFromToken } from "./storage";
 import { insertProjectSchema } from "../shared/schema";
 import { generateBackground, editImage, enhanceBackgroundPrompt } from "./gemini";
 import { generateCopy, generateConcepts } from "./ai";
@@ -150,7 +150,13 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
   });
 
   // ---- פרויקטים ----
-  app.get("/api/projects", async (_req, res) => res.json(await storage.listProjects()));
+  // userId מגיע רק אם יש כותרת Authorization עם JWT תקף (auth-button.js
+  // שולח אותו מ-localStorage['more30-auth'] כשמשתמש מחובר). בלי זה — כל
+  // הרשימה, בדיוק כמו לפני התיוג. עם זה — רק העבודות של אותו משתמש.
+  app.get("/api/projects", async (req, res) => {
+    const userId = await getUserIdFromToken(req.headers.authorization);
+    res.json(await storage.listProjects(50, userId));
+  });
   app.get("/api/projects/:id", async (req, res) => {
     const p = await storage.getProject(Number(req.params.id));
     if (!p) return res.status(404).json({ error: "לא נמצא פרויקט" });
@@ -159,7 +165,8 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
   app.post("/api/projects", async (req, res) => {
     const parsed = insertProjectSchema.safeParse(req.body);
     if (!parsed.success) return res.status(400).json({ error: parsed.error.flatten() });
-    res.json(await storage.createProject(parsed.data));
+    const userId = await getUserIdFromToken(req.headers.authorization);
+    res.json(await storage.createProject(parsed.data, userId));
   });
   app.patch("/api/projects/:id", async (req, res) => {
     const p = await storage.updateProject(Number(req.params.id), req.body);
@@ -210,9 +217,10 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
     });
   });
 
-  // רשימת מותגים שמורים
-  app.get("/api/brands", async (_req, res) => {
-    const list = await storage.listBrands();
+  // רשימת מותגים שמורים (userId אופציונלי — ראה הערה מעל /api/projects)
+  app.get("/api/brands", async (req, res) => {
+    const userId = await getUserIdFromToken(req.headers.authorization);
+    const list = await storage.listBrands(50, userId);
     res.json(list);
   });
 
@@ -227,7 +235,8 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
   app.post("/api/brands", async (req, res) => {
     const parsed = insertBrandSchema.safeParse(req.body);
     if (!parsed.success) return res.status(400).json({ error: "נתונים לא תקינים", detail: parsed.error.message });
-    const b = await storage.createBrand(parsed.data);
+    const userId = await getUserIdFromToken(req.headers.authorization);
+    const b = await storage.createBrand(parsed.data, userId);
     res.json(b);
   });
 

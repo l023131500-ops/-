@@ -9,6 +9,10 @@ import { drizzle } from "drizzle-orm/better-sqlite3";
 import Database from "better-sqlite3";
 import { eq, desc } from "drizzle-orm";
 
+// dev בלבד: אין כאן חיבור ל-Supabase auth, ולכן userId תמיד undefined בפועל
+// (הלקוח שולח Authorization רק כשה-session חי ב-more30.com, לא ב-localhost).
+// הפרמטר קיים כדי שהחתימה תואמת את ה-storage הפרוס (‎_deploy/studio-more30‎).
+
 const sqlite = new Database("data.db");
 sqlite.pragma("journal_mode = WAL");
 
@@ -24,15 +28,15 @@ export interface IStorage {
   createTemplate(t: InsertTemplate): Promise<Template>;
   clearBuiltinTemplates(): Promise<void>;
   // פרויקטים
-  listProjects(limit?: number): Promise<Project[]>;
+  listProjects(limit?: number, userId?: string): Promise<Project[]>;
   getProject(id: number): Promise<Project | undefined>;
-  createProject(p: InsertProject): Promise<Project>;
+  createProject(p: InsertProject, userId?: string): Promise<Project>;
   updateProject(id: number, patch: Partial<InsertProject>): Promise<Project | undefined>;
   deleteProject(id: number): Promise<void>;
   // מותגים (מחלקת מיתוג)
-  listBrands(limit?: number): Promise<Brand[]>;
+  listBrands(limit?: number, userId?: string): Promise<Brand[]>;
   getBrand(id: number): Promise<Brand | undefined>;
-  createBrand(b: InsertBrand): Promise<Brand>;
+  createBrand(b: InsertBrand, userId?: string): Promise<Brand>;
   updateBrand(id: number, patch: Partial<InsertBrand>): Promise<Brand | undefined>;
   deleteBrand(id: number): Promise<void>;
 }
@@ -47,17 +51,29 @@ export class DatabaseStorage implements IStorage {
   async createTemplate(t: InsertTemplate) { return db.insert(templates).values(t).returning().get(); }
   async clearBuiltinTemplates() { db.delete(templates).where(eq(templates.builtin, 1)).run(); }
 
-  async listProjects(limit = 50) { return db.select().from(projects).orderBy(desc(projects.updatedAt)).limit(limit).all(); }
+  async listProjects(limit = 50, userId?: string) {
+    return userId
+      ? db.select().from(projects).where(eq(projects.userId, userId)).orderBy(desc(projects.updatedAt)).limit(limit).all()
+      : db.select().from(projects).orderBy(desc(projects.updatedAt)).limit(limit).all();
+  }
   async getProject(id: number) { return db.select().from(projects).where(eq(projects.id, id)).get(); }
-  async createProject(p: InsertProject) { return db.insert(projects).values(p).returning().get(); }
+  async createProject(p: InsertProject, userId?: string) {
+    return db.insert(projects).values({ ...p, userId: userId ?? null }).returning().get();
+  }
   async updateProject(id: number, patch: Partial<InsertProject>) {
     return db.update(projects).set({ ...patch, updatedAt: Math.floor(Date.now() / 1000) }).where(eq(projects.id, id)).returning().get();
   }
   async deleteProject(id: number) { db.delete(projects).where(eq(projects.id, id)).run(); }
 
-  async listBrands(limit = 50) { return db.select().from(brands).orderBy(desc(brands.updatedAt)).limit(limit).all(); }
+  async listBrands(limit = 50, userId?: string) {
+    return userId
+      ? db.select().from(brands).where(eq(brands.userId, userId)).orderBy(desc(brands.updatedAt)).limit(limit).all()
+      : db.select().from(brands).orderBy(desc(brands.updatedAt)).limit(limit).all();
+  }
   async getBrand(id: number) { return db.select().from(brands).where(eq(brands.id, id)).get(); }
-  async createBrand(b: InsertBrand) { return db.insert(brands).values(b).returning().get(); }
+  async createBrand(b: InsertBrand, userId?: string) {
+    return db.insert(brands).values({ ...b, userId: userId ?? null }).returning().get();
+  }
   async updateBrand(id: number, patch: Partial<InsertBrand>) {
     return db.update(brands).set({ ...patch, updatedAt: Math.floor(Date.now() / 1000) }).where(eq(brands.id, id)).returning().get();
   }
