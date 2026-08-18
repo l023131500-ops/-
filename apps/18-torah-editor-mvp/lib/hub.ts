@@ -1,4 +1,4 @@
-import { createBrowserClient } from '@supabase/ssr';
+import { createClient } from '@supabase/supabase-js';
 
 /**
  * הלקוח של **ההאב** — שם יושבת הזהות המאוחדת של הפלטפורמה, ושם נשמרים
@@ -10,9 +10,12 @@ import { createBrowserClient } from '@supabase/ssr';
  * דרך `more30.com/login` מזוהה מול ההאב — ורק לקוח של ההאב יראה את הסשן שלו.
  * שימוש בלקוח של bieebmnm כאן היה מחזיר "לא מחובר" למשתמש שכן מחובר.
  *
- * ⚠️ שתי המערכות חולקות origin אחד (`more30.com`), ו-supabase-js שומר את הסשן
- * תחת מפתח שנגזר ממזהה הפרויקט. לכן שני הלקוחות חיים זה לצד זה בלי לדרוס
- * זה את הסשן של זה.
+ * ⚠️ `storageKey: 'more30-auth'` הוא חובה, לא קוסמטיקה: כל 30+ המערכות
+ * מוגשות מ-more30.com — אותו origin — וה-pill המשותף (auth-button.js) כותב
+ * את הסשן ל-localStorage תחת המפתח הקבוע הזה. ברירת המחדל של supabase-js
+ * (מפתח שנגזר ממזהה הפרויקט) הייתה יוצרת סשן נפרד לאפליקציה הזו, כך
+ * שמשתמש מחובר לפי ה-pill עדיין רואה "צריך להתחבר" כאן. אותה סיבה בדיוק
+ * שבגללה chatzor/lib/supabase.ts מגדיר את אותו storageKey.
  */
 
 const clean = (v: string | undefined) => (v || '').replace(/^﻿+/, '').trim();
@@ -24,13 +27,22 @@ export function hubConfigured(): boolean {
   return !!HUB_URL && !!HUB_ANON;
 }
 
-let _client: ReturnType<typeof createBrowserClient> | null = null;
+let _client: ReturnType<typeof createClient<any>> | null = null;
 
 export function getHubClient() {
   if (!hubConfigured()) {
     throw new Error('חסרים NEXT_PUBLIC_HUB_SUPABASE_URL / NEXT_PUBLIC_HUB_SUPABASE_ANON_KEY');
   }
-  if (!_client) _client = createBrowserClient(HUB_URL, HUB_ANON);
+  if (!_client) {
+    _client = createClient<any>(HUB_URL, HUB_ANON, {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: true,
+        storageKey: 'more30-auth',
+      },
+    });
+  }
   return _client;
 }
 
