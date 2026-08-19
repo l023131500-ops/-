@@ -85,9 +85,16 @@
 - [ ] **7. וקטוריזציה + הסרת-רקע (Recraft)** — כבר יש חוט מקשר חלקי
       ב-`BrandKitPage.tsx`/`branding.ts` (וקטוריזציה ללוגו); להרחיב לשכבות
       תמונה כלליות בעורך הראשי.
-- [ ] **8. Gemini Nano-Banana קומפוזיציה** — קיים כ"רקע AI" בסיסי ב-`gemini.ts`,
-      חסום היום בחיוב (429/403 בבדיקות קודמות). לוודא מפתח פעיל, לשפר את
-      איכות ה-fallback הידידותי (כבר קיים חלקית — ראה `UI_BUILD_SUMMARY_HE.md`).
+- [x] **8. Gemini Nano-Banana קומפוזיציה** — נבדק מול הקוד: המימוש כבר שלם
+      (`gemini.ts`, מודל ראשי `gemini-3-pro-image` + נפילה אוטומטית ל-
+      `gemini-2.5-flash-image`, שיפור פרומפט, הודעות שגיאה ידידותיות ל-429/403
+      ב-`routes.ts` `aiErr()`) — הפער היחיד היה האם המפתח פעיל בפועל. אומת חי
+      ב-`more30.com/studio` (Playwright): תבנית קיימת → "רקע AI" → "צור רקע" →
+      `POST /api/ai/background` **200 OK**, הרקע השתנה בפועל לתמונת AI אמיתית
+      (לא placeholder, לא הודעת שגיאה), 0 שגיאות קונסולה. אין שינוי קוד — המפתח
+      פעיל, אין צורך בגיבוי/שיפור fallback עכשיו. ראיות:
+      `QA/studio-26/gemini-ai-background-0819/_results.md`,
+      `studio-gemini-bg-live-0819.png`.
 - [x] **9. Iconify (חינם) — ספריית אייקונים** — נבדק מול הקוד: `DecorationLayer`
       (`shared/layers.ts`) הוא kind-enum בלי שדה `src`, אז הוספת Iconify דרכו
       הייתה דורשת שינוי סכמה + ענף רינדור חדש ב-`CanvasStage.tsx`/`exporter.ts`
