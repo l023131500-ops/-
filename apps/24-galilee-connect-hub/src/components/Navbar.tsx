@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Home, BookOpen, Phone, Settings, Menu, X, Landmark, HelpCircle, ShieldCheck, Download } from 'lucide-react';
+import { Home, BookOpen, Phone, Settings, Menu, X, Landmark, HelpCircle, ShieldCheck, Download, Tag } from 'lucide-react';
 import logoMechubarim from '@/assets/logo-mechubarim.png';
 
 // במגירת המובייל הגליף הוא מה שמזהה את היעד, ולכן שני יעדים שונים לא יכולים
@@ -107,6 +107,16 @@ const Navbar = () => {
                 </Link>
               );
             })}
+            <a
+              href="https://more30.com/subscribe?app=galil"
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all duration-200 ${
+                scrolled
+                  ? 'text-foreground/80 hover:text-foreground hover:bg-primary/10'
+                  : 'text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/10'
+              }`}
+            >
+              מחירון
+            </a>
           </div>
 
           {/* Mobile hamburger */}
@@ -156,6 +166,14 @@ const Navbar = () => {
                     {item.label}
                   </Link>
                 ))}
+                <a
+                  href="https://more30.com/subscribe?app=galil"
+                  onClick={() => setMobileOpen(false)}
+                  className="flex items-center gap-3 px-4 py-3 rounded-xl text-foreground font-bold text-sm hover:bg-primary/10 transition-colors"
+                >
+                  <Tag className="w-4 h-4 text-primary" />
+                  מחירון
+                </a>
               </div>
             </motion.div>
           </>
