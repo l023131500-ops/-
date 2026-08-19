@@ -41,6 +41,7 @@ async function apiPost(path, body) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
   });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
   return res.json();
 }
 
@@ -207,14 +208,19 @@ function renderTenant(data, token) {
     const payload = Object.fromEntries(fd.entries());
     const notice = el("div", { class: "notice" }, "שולח…");
     form.parentNode.insertBefore(notice, form);
-    const res = await apiPost("/api/public/tenant/" + encodeURIComponent(token) + "/message", payload);
-    if (res.success) {
-      notice.className = "notice success";
-      notice.textContent = "הפנייה נשלחה בהצלחה. ניצור קשר בהקדם.";
-      form.reset();
-    } else {
+    try {
+      const res = await apiPost("/api/public/tenant/" + encodeURIComponent(token) + "/message", payload);
+      if (res.success) {
+        notice.className = "notice success";
+        notice.textContent = "הפנייה נשלחה בהצלחה. ניצור קשר בהקדם.";
+        form.reset();
+      } else {
+        notice.className = "notice error";
+        notice.textContent = "שגיאה בשליחה: " + (res.error || "נסה שוב");
+      }
+    } catch (e) {
       notice.className = "notice error";
-      notice.textContent = "שגיאה בשליחה: " + (res.error || "נסה שוב");
+      notice.textContent = "שגיאה בשליחה: נסה שוב מאוחר יותר";
     }
   }},
     el("label", {}, "שם מלא", el("input", { name: "name", required: true })),
