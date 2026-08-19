@@ -75,11 +75,29 @@
       בפועל את המרווח בין האותיות בקנבס, 0 שגיאות קונסולה, שאר הבקרות ללא
       שינוי — אפס רגרסיה. ראיות: `QA/studio-26/tracking-control-0819/_results.md`,
       `studio-tracking-slider-max-0819.png`.
-- [ ] **4b-iii..vi. בקרות `blend`/`leading`/`kerning`/`corner-radius`** —
-      `leading` (lineHeight) ו-`corner-radius` כבר קיימים בסכמה ומחווטים
-      ברינדור (כמו `opacity`/`tracking`) — חסרה רק בקרת UI, לסבב הבא.
-      `blend`/`kerning` דורשים שדה סכימה חדש + חיווט Konva אמיתי. נדחה
-      לסבבים נפרדים, פיצ'ר אחד בכל פעם.
+- [x] **4b-iii. בקרת `leading` (lineHeight)** — נבדק מול הקוד לפני הבנייה:
+      בדיוק כמו `opacity`/`tracking`, השדה `lineHeight` **כבר קיים**
+      ב-`TextLayer` וכבר מחווט במלואו ברינדור Konva (`CanvasStage.tsx` —
+      `wrapText`, deps, `<Text lineHeight=...>`). חסרה רק בקרת UI. נוסף
+      סליידר "מרווח שורות" עם תג `<code>lineHeight</code>` בפאנל הטקסט
+      (`Editor.tsx`, אחרי "מרווח אותיות" ולפני "יישור"), טווח 0.8..2.5.
+      אין שינוי סכמה/רינדור. אומת חי ב-`more30.com/studio` (Playwright):
+      מאחר שהכותרת המקורית שורה אחת (אין הבדל פיקסלים ב-lineHeight לבד),
+      הוקלד זמנית טקסט ארוך יותר לאותה שכבה (מצב קנבס בצד הלקוח בלבד,
+      לא נשמר — לא נלחץ "שמור פרויקט") כדי לגלוש לשתי שורות: lineHeight=2.5
+      → מרווח רחב וגלוי בין השורות; lineHeight=0.8 (מינימום) → אותו טקסט
+      נגלש ל-3 שורות צפופות. מוכיח חיווט Konva אמיתי, לא רק עדכון מספר.
+      0 שגיאות קונסולה, שאר הבקרות (פונט/עובי/גודל/tracking/יישור/fill/
+      stroke/shadow/opacity) ושאר הפאנלים ללא שינוי — אפס רגרסיה. ראיות:
+      `QA/studio-26/leading-control-0819/_results.md`,
+      `studio-leading-wrap-max-0819.png`, `studio-leading-wrap-min-0819.png`.
+      פריסה: `vite build` → `_deploy/studio-more30` (public + adapter) →
+      `vercel deploy --prod`, READY (`dpl_7ZwFzWWdEhWmwcb6MrGsNohf7sav`).
+- [ ] **4b-iv..vi. בקרות `blend`/`kerning`/`corner-radius`** —
+      `corner-radius` כבר קיים בסכמה (`ImageLayer`/`DecorationLayer`) ומחווט
+      ברינדור (כמו `opacity`/`tracking`/`leading` שנעשו) — חסרה רק בקרת UI,
+      לסבב הבא. `blend`/`kerning` דורשים שדה סכימה חדש + חיווט Konva אמיתי.
+      נדחה לסבבים נפרדים, פיצ'ר אחד בכל פעם.
 - [x] **5. גלריית תבניות — קטגוריה מובילה אחת בכל אחת מ-4 הקבוצות** —
       `shared/knowledge.ts`/`categoryTemplates.ts` כבר החזיקו קטלוג-תבניות
       אמיתי (מנוע `composeTemplate`) לכל 4 הקבוצות; הפער האמיתי היה ש-

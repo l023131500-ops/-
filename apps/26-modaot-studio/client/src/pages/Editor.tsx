@@ -1087,6 +1087,20 @@ function TextLayerControls({
       </div>
 
       <div>
+        <Label className="mb-1 block text-xs text-[#F5EEDD]/70">
+          מרווח שורות <code className="font-mono text-[10px] text-[#C9A227]/70">lineHeight</code>: {layer.lineHeight ?? 1.15}
+        </Label>
+        <Slider
+          value={[layer.lineHeight ?? 1.15]}
+          min={0.8}
+          max={2.5}
+          step={0.05}
+          onValueChange={([v]) => onChange({ lineHeight: v })}
+          data-testid="slider-layer-leading"
+        />
+      </div>
+
+      <div>
         <Label className="mb-1 block text-xs text-[#F5EEDD]/70">יישור</Label>
         <div className="flex gap-1.5">
           <Button

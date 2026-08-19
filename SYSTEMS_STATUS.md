@@ -1,5 +1,30 @@
 # SYSTEMS_STATUS.md — מצב כל המערכות, נמדד
 
+> ## 🟢 19/08/2026 (+29) — **41 design-system / 26 studio: checklist item 4b-iii — בקרת `leading` (lineHeight)**
+
+> בדיוק כמו 4b-i/4b-ii: `lineHeight` **כבר קיים** ב-`TextLayer` וכבר מחווט
+> במלואו ברינדור Konva (`CanvasStage.tsx` — `wrapText`, deps, `<Text
+> lineHeight=...>`). חסרה רק בקרת UI. נוסף סליידר "מרווח שורות" עם תג
+> `<code>lineHeight</code>` בפאנל הטקסט (`Editor.tsx`, אחרי "מרווח אותיות"
+> ולפני "יישור"), טווח 0.8..2.5. אין שינוי סכמה/רינדור/exporter. `tsc
+> --noEmit` + `vite build` נקיים.
+>
+> אומת חי ב-`more30.com/studio` (Playwright, cache-buster): מאחר שהכותרת
+> המקורית שורה אחת (אין הבדל פיקסלים ב-lineHeight לבד), הוקלד זמנית טקסט
+> ארוך יותר לאותה שכבה (מצב קנבס בצד הלקוח בלבד, לא נשמר) כדי לגלוש לשתי
+> שורות: lineHeight=2.5 → מרווח רחב וגלוי; lineHeight=0.8 (מינימום) → אותו
+> טקסט נגלש ל-3 שורות צפופות — מוכיח חיווט Konva אמיתי. 0 שגיאות קונסולה,
+> שאר הבקרות/פאנלים ללא שינוי — אפס רגרסיה. צילומים:
+> `studio-leading-wrap-max-0819.png`, `studio-leading-wrap-min-0819.png`.
+> ראיות: `QA/studio-26/leading-control-0819/_results.md`.
+>
+> פריסה: `vite build --base=/studio/` → `_deploy/studio-more30` (public +
+> עותק vercel-adapter) → `vercel deploy --prod`,
+> `dpl_7ZwFzWWdEhWmwcb6MrGsNohf7sav`, READY.
+> נשאר: 4b-iv..vi (`kerning`/`blend`/`corner-radius` — corner-radius כבר
+> בסכמה+רינדור, רק UI חסר, כמו leading; kerning/blend דורשים סכמה+רינדור
+> חדשים), שלב 3-4 (מתאמים/סטודיו רב-סוכני).
+
 > ## 🟢 19/08/2026 (+28) — **41 design-system / 26 studio: checklist item 4b-ii — בקרת `tracking` (letterSpacing)**
 
 > `CHECKLIST/graphics.md` פריט 4b-ii..vi תיאר את `tracking` כדורש שדה סכימה
