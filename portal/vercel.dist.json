@@ -25,6 +25,7 @@
     { "source": "/admin/kesef", "destination": "/admin-kesef.html" },
     { "source": "/admin/imud", "destination": "/admin-imud.html" },
     { "source": "/admin/studio", "destination": "/admin-studio.html" },
+    { "source": "/admin/smel", "destination": "/admin-smel.html" },
     { "source": "/showcase", "destination": "/showcase.html" },
     { "source": "/bkalot-studio/admin", "destination": "/bkalot-studio/admin.html" },
     { "source": "/bkalot-studio/admin/", "destination": "/bkalot-studio/admin.html" },

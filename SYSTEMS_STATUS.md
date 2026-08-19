@@ -1,5 +1,34 @@
 # SYSTEMS_STATUS.md — מצב כל המערכות, נמדד
 
+> ## 🟢 19/08/2026 (+37) — **core.issues #86: 12 smel קיבלה קורא+מסך ניהול (`/admin/smel`) — הדפוס של kesef/imud/studio, לא של chizukim**
+>
+> #86 ("שש מערכות ציבוריות חיות בלי מסך ניהול") נסגר אתמול (a212af4) על chizukim
+> (17) בתבנית שרת-Express+עוגייה, כמו `apps/28-kupot-health-funds`. smel (12) יושבת
+> באותו פרויקט Supabase זר בדיוק (`csjekrvukbdznetsrodj`) — אבל נמדד לפני שנכתב קוד
+> ש-`apps/12-smel-ndln` נפרסת כ-SPA סטטי טהור בלבד (`_deploy/smel-more30`,
+> `buildCommand:"echo no-build"`): `more30.com/smel/api/health` מחזיר את ה-`index.html`
+> של האתר, לא JSON — אין שרת בייצור. הלקוח כותב ישירות ל-Supabase
+> (`client/src/lib/nadlanApi.ts`). לכן תבנית chizukim לא ישימה כאן; הדפוס הנכון הוא
+> זה של kesef/imud/studio — קורא ב-core דרך FDW + מסך סטטי בפורטל.
+>
+> מיגרציה 0103: `public.more30_admin_smel_report()` (security definer, super-admin
+> בלבד) קוראת דרך `csj_src_nadlan.research_leads` — טבלת FDW שכבר הייתה קיימת ב-core
+> (`csjekrvu_fdw_link`, 30/07) — בלי צורך בגישה חדשה. נמדד חי: 10 לידים אמיתיים, 9 עם
+> שאלון מלא, **0 עם דוח שהופק אי-פעם** — כולם `status='new'`, כלומר הלידים נקלטים
+> אבל שום תהליך לא ממשיך אחריהם. עמוד חדש `portal/public/admin-smel.html`, רשום
+> ב-`/admin/smel`, `core.projects` עודכן (`admin_url`, `admin_auth=super_admin`).
+> כל 12 מסכי הניהול הקיימים עודכנו לקשר גם אליו וההפך — `scripts/qa/admin-nav-siblings.mjs`
+> עבר 13/13 אחרי (היה 12/12 לפני, אפס רגרסיה).
+>
+> אומת: קריאת ה-RPC כ-super-admin (`request.jwt.claims`, SQL ישיר) מחזירה את 10
+> הלידים בפועל; קריאה כלא-אדמין מחזירה 42501. Playwright בפרודקשן (בלי סשן תקף
+> בפרופיל הזה) מציג את כל 13 הכפתורים בסרגל, כותרת נכונה, הודעת "החשבון הזה אינו
+> סופר-אדמין" נכונה, 0 שגיאות קונסולה בלתי-צפויות — לא ניתן היה לצלם את מצב הנתונים
+> המלא (כניסת Google אמיתית ל-l023131500@gmail.com אינה זמינה מכאן), אותה מגבלה
+> כמו מסכי super-admin אחרים. `/admin/kesef` ו-`/smel` נותרו 200 — אפס רגרסיה.
+> נשאר מתוך השש המקוריות: `orech` (18) — עדיין החלטת-משתמש על פרויקט זר, לא נבדק
+> בסבב הזה.
+
 > ## 🟢 19/08/2026 (+36) — **core.issues #5 (עיצוב ייחודי): smel נקראה — אפס ליקויי §6 — אין קוד חדש**
 >
 > `core.issues` #5 תיעד סדר עבודה zchuyot→egod→galil→mthbram, וסבב 10/08 (chatzor)
