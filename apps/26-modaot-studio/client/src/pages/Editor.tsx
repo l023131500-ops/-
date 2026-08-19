@@ -1504,6 +1504,12 @@ export default function Editor() {
               {" "}הערה עם כפתור "החל תיקון" משנה, בלחיצה מפורשת בלבד, רק את השכבה שצוינה בה.
             </DialogDescription>
           </DialogHeader>
+          {clientNotes.trim() && (
+            <div className="rounded-md border border-[#C9A227]/30 bg-[#101B32] p-2 text-sm" data-testid="text-critique-client-notes">
+              <p className="mb-1 text-xs font-semibold text-[#C9A227]">הערת הלקוח שנלקחה בחשבון</p>
+              <p className="whitespace-pre-wrap text-[#F5EEDD]/90">{clientNotes}</p>
+            </div>
+          )}
           {critiqueResult && (
             <div className="max-h-[60vh] space-y-4 overflow-y-auto">
               {critiqueResult.strengths.length > 0 && (
