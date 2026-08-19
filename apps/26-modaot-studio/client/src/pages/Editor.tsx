@@ -29,6 +29,8 @@ import {
   ArrowUp,
   ArrowDown,
   Search,
+  Blocks,
+  Figma,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -97,6 +99,9 @@ export default function Editor() {
   const [iconQuery, setIconQuery] = useState("crown");
   const [iconResults, setIconResults] = useState<string[]>([]);
   const [iconLoading, setIconLoading] = useState(false);
+
+  // מתאמים (Figma/Canva/InDesign) — שלב 3 בצ'קליסט, פאנל תצוגת-מצב בלבד כרגע
+  const [adaptersDialogOpen, setAdaptersDialogOpen] = useState(false);
 
   // וקטוריזציה של שכבת תמונה קיימת ל-SVG אמיתי (Recraft — מנוע קיים בכלי המותג)
   const [vectorizing, setVectorizing] = useState(false);
@@ -537,6 +542,15 @@ export default function Editor() {
           </Button>
           <Button variant="outline" size="sm" className="gap-1.5 border-[#C9A227]/40 text-[#C9A227]" onClick={handleDownloadPDF}>
             <FileText className="h-4 w-4" /> הורד PDF
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            className="gap-1.5 border-[#C9A227]/40 text-[#C9A227]"
+            onClick={() => setAdaptersDialogOpen(true)}
+            data-testid="button-open-adapters"
+          >
+            <Blocks className="h-4 w-4" /> מתאמים
           </Button>
           <Button size="sm" className="gap-1.5 bg-[#C9A227] text-[#0B1220] hover:bg-[#C9A227]/90" onClick={handleSaveProject} disabled={saving}>
             <Save className="h-4 w-4" /> {saving ? "שומר..." : "שמור פרויקט"}
@@ -1087,6 +1101,61 @@ export default function Editor() {
                 />
               </button>
             ))}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={adaptersDialogOpen} onOpenChange={setAdaptersDialogOpen}>
+        <DialogContent className="max-w-lg border-[#C9A227]/30 bg-[#0E1830] text-[#F5EEDD]" dir="rtl">
+          <DialogHeader>
+            <DialogTitle className="text-[#F5EEDD]">ייצוא למתאמים (Adapters)</DialogTitle>
+            <DialogDescription>
+              ציור פרוגרמטי של התבנית ליעדי עריכה חיצוניים — לצד ייצוא PNG/PDF הרגיל שלא משתנה.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3">
+            <div className="flex items-center justify-between rounded-lg border border-[#C9A227]/20 bg-[#101B32] p-3">
+              <div className="flex items-center gap-2">
+                <Figma className="h-4 w-4 shrink-0 text-[#C9A227]" />
+                <div>
+                  <p className="text-sm font-medium">Figma</p>
+                  <p className="text-[11px] text-[#F5EEDD]/50">עריכה נוספת של התבנית באתרים/ממשקים</p>
+                </div>
+              </div>
+              <Badge variant="outline" className="shrink-0 border-[#F5EEDD]/30 text-[11px] text-[#F5EEDD]/60">
+                בבנייה
+              </Badge>
+            </div>
+
+            <div className="flex items-center justify-between rounded-lg border border-[#C9A227]/20 bg-[#101B32] p-3">
+              <div className="flex items-center gap-2">
+                <ImageIcon className="h-4 w-4 shrink-0 text-[#C9A227]" />
+                <div>
+                  <p className="text-sm font-medium">Canva Autofill</p>
+                  <p className="text-[11px] text-[#F5EEDD]/50">מילוי אוטומטי של תבנית Canva (דורש חשבון Enterprise)</p>
+                </div>
+              </div>
+              <Badge
+                variant="outline"
+                className="shrink-0 border-red-400/40 text-[11px] text-red-300"
+                data-testid="badge-canva-blocked"
+              >
+                חסום — מפתח חסר
+              </Badge>
+            </div>
+
+            <div className="flex items-center justify-between rounded-lg border border-[#C9A227]/20 bg-[#101B32] p-3">
+              <div className="flex items-center gap-2">
+                <FileText className="h-4 w-4 shrink-0 text-[#C9A227]" />
+                <div>
+                  <p className="text-sm font-medium">Adobe InDesign (IDML)</p>
+                  <p className="text-[11px] text-[#F5EEDD]/50">דפוס-כמות — עלוני A3/עיתונות</p>
+                </div>
+              </div>
+              <Badge variant="outline" className="shrink-0 border-[#F5EEDD]/30 text-[11px] text-[#F5EEDD]/60">
+                בבנייה
+              </Badge>
+            </div>
           </div>
         </DialogContent>
       </Dialog>
