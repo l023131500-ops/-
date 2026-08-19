@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Search, Heart, X, SlidersHorizontal } from "lucide-react";
+import { Search, Heart, X, SlidersHorizontal, FileDown } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/select";
 import { TopicCard } from "@/components/TopicCard";
 import { BrandLogo } from "@/components/BrandLogo";
+import { API_BASE } from "@/lib/queryClient";
 import {
   type HfTopic,
   type HfMeta,
@@ -131,6 +132,19 @@ export default function Home() {
     setKind(k);
     setCategory("");
     setFund("");
+  }
+
+  // דוח מודפס/PDF של הנושאים המסוננים כרגע — אותה שיטה כמו מחירון
+  // (window.print() בדפדפן, בלי ספריית PDF). API_BASE מוסיף את קידומת
+  // ה-mount בפרודקשן (/kupot) כדי שהבקשה לא תחמוק לפורטל.
+  function openReport() {
+    const p = new URLSearchParams();
+    p.set("kind", kind);
+    if (category) p.set("category", category);
+    if (fund) p.set("fund", fund);
+    if (search) p.set("search", search);
+    p.set("print", "1");
+    window.open(`${API_BASE}/api/hf/report?${p.toString()}`, "_blank");
   }
 
   return (
@@ -362,21 +376,32 @@ export default function Home() {
                 ? `מוצגים ${visible.length} מתוך ${filtered.length} תוצאות`
                 : `${filtered.length} תוצאות`}
           </p>
-          {(search || category || fund) && (
+          <div className="flex items-center gap-3">
             <button
               type="button"
-              onClick={() => {
-                setSearch("");
-                setCategory("");
-                setFund("");
-              }}
+              onClick={openReport}
               className="flex items-center gap-1 text-xs text-primary hover:underline"
-              data-testid="button-clear-filters"
+              data-testid="button-report"
             >
-              <X className="h-3.5 w-3.5" />
-              ניקוי סינון
+              <FileDown className="h-3.5 w-3.5" />
+              הורדת דוח PDF
             </button>
-          )}
+            {(search || category || fund) && (
+              <button
+                type="button"
+                onClick={() => {
+                  setSearch("");
+                  setCategory("");
+                  setFund("");
+                }}
+                className="flex items-center gap-1 text-xs text-primary hover:underline"
+                data-testid="button-clear-filters"
+              >
+                <X className="h-3.5 w-3.5" />
+                ניקוי סינון
+              </button>
+            )}
+          </div>
         </div>
 
         <div className="space-y-3">

@@ -42557,6 +42557,125 @@ function renderAdminPage() {
 </html>`;
 }
 
+// server/hf-report.ts
+function esc(s) {
+  return String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+var FUND_BY_NAME = {
+  \u05DB\u05DC\u05DC\u05D9\u05EA: "clalit",
+  \u05DE\u05DB\u05D1\u05D9: "maccabi",
+  \u05DE\u05D0\u05D5\u05D7\u05D3\u05EA: "meuhedet",
+  \u05DC\u05D0\u05D5\u05DE\u05D9\u05EA: "leumit"
+};
+function bestFundKey(bestFund) {
+  if (!bestFund) return null;
+  for (const [name, key] of Object.entries(FUND_BY_NAME)) {
+    if (bestFund.includes(name)) return key;
+  }
+  return null;
+}
+var KIND_LABELS = {
+  fund: "\u05E7\u05D5\u05E4\u05D5\u05EA \u05D7\u05D5\u05DC\u05D9\u05DD",
+  gov: "\u05D6\u05DB\u05D5\u05D9\u05D5\u05EA \u05DE\u05DE\u05E9\u05DC\u05D4",
+  ngo: "\u05E2\u05DE\u05D5\u05EA\u05D5\u05EA \u05D5\u05E1\u05D9\u05D5\u05E2"
+};
+function filterTopicsForReport(topics, opts) {
+  const q = (opts.search || "").trim();
+  return topics.filter((t) => {
+    if (t.kind !== opts.kind) return false;
+    if (opts.category && t.category !== opts.category) return false;
+    if (opts.fund) {
+      const winner = bestFundKey(t.bestFund);
+      if (opts.fund === "undecided" ? winner !== null : winner !== opts.fund) return false;
+    }
+    if (q) {
+      const hay = `${t.topic} ${t.audience} ${t.benefitSummary} ${t.rangeText} ${t.category}`;
+      if (!hay.includes(q)) return false;
+    }
+    return true;
+  });
+}
+function renderHfReportHtml(opts) {
+  const generatedAt = (/* @__PURE__ */ new Date()).toLocaleString("he-IL");
+  const rowsHtml = opts.rows.length === 0 ? `<tr><td colspan="4" class="empty">\u05DC\u05D0 \u05E0\u05DE\u05E6\u05D0\u05D5 \u05E0\u05D5\u05E9\u05D0\u05D9\u05DD \u05DE\u05EA\u05D0\u05D9\u05DE\u05D9\u05DD \u05DC\u05E1\u05D9\u05E0\u05D5\u05DF \u05D4\u05E0\u05D5\u05DB\u05D7\u05D9.</td></tr>` : opts.rows.map((t) => {
+    const bestLabel = t.bestFund ? esc(t.bestFund) : "\u05D8\u05E2\u05D5\u05DF \u05D4\u05E9\u05D5\u05D5\u05D0\u05D4 \u05E4\u05E8\u05D8\u05E0\u05D9\u05EA";
+    return `<tr>
+          <td class="name">${esc(t.topic)}<div class="muted">${esc([t.category, t.audience].filter(Boolean).join(" \xB7 "))}</div></td>
+          <td>${esc(t.rangeText || "\u2014")}</td>
+          <td class="best">${bestLabel}</td>
+          <td class="muted small">${esc(t.benefitSummary || "\u2014")}</td>
+        </tr>`;
+  }).join("\n");
+  return `<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>\u05D3\u05D5\u05D7 \u05D4\u05E9\u05D5\u05D5\u05D0\u05EA \u05E7\u05D5\u05E4\u05D5\u05EA \u05D7\u05D5\u05DC\u05D9\u05DD \u2014 \u05D1\u05E7\u05DC\u05D5\u05EA</title>
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: "Segoe UI", Arial, "Noto Sans Hebrew", sans-serif; color: #1a2b2b; margin: 0; padding: 24px; background: #fff; }
+  .head { display: flex; align-items: center; justify-content: space-between; border-bottom: 3px solid #12938F; padding-bottom: 12px; margin-bottom: 16px; }
+  .brand { display: flex; align-items: center; gap: 10px; }
+  .brand .logo { width: 40px; height: 40px; border-radius: 10px; background: #12938F; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 20px; }
+  .brand .t { font-size: 20px; font-weight: 800; }
+  .brand .s { font-size: 12px; color: #666; }
+  h1 { font-size: 18px; margin: 8px 0 2px; }
+  .meta { color: #888; font-size: 11px; margin-bottom: 16px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { text-align: right; padding: 8px 10px; border-bottom: 1px solid #e5e7eb; vertical-align: top; }
+  th { background: #f1f5f9; font-weight: 700; font-size: 12px; }
+  td.best { color: #12938F; font-weight: 800; white-space: nowrap; }
+  td.name { font-weight: 600; }
+  .muted { color: #777; font-weight: 400; font-size: 11px; margin-top: 2px; }
+  .muted.small { line-height: 1.5; }
+  .empty { text-align: center; color: #999; padding: 32px; }
+  .foot { margin-top: 20px; border-top: 1px solid #e5e7eb; padding-top: 10px; color: #888; font-size: 11px; display: flex; justify-content: space-between; }
+  @media print { body { padding: 0; } .noprint { display: none; } }
+</style>
+</head>
+<body>
+  <div class="head">
+    <div class="brand">
+      <div class="logo">\u05E7</div>
+      <div>
+        <div class="t">\u05D4\u05E9\u05D5\u05D5\u05D0\u05EA \u05E7\u05D5\u05E4\u05D5\u05EA \u05D7\u05D5\u05DC\u05D9\u05DD</div>
+        <div class="s">\u05DE\u05D1\u05D9\u05EA \u05D1\u05E7\u05DC\u05D5\u05EA</div>
+      </div>
+    </div>
+    <div style="text-align:left">
+      <div class="meta">\u05D4\u05D5\u05E4\u05E7: ${esc(generatedAt)}</div>
+    </div>
+  </div>
+
+  <h1>\u05D3\u05D5\u05D7 \u05D4\u05E9\u05D5\u05D5\u05D0\u05D4 \u2014 ${esc(KIND_LABELS[opts.kind] || opts.kind)}</h1>
+  ${opts.filtersLabel ? `<div class="meta">\u05E1\u05D9\u05E0\u05D5\u05DF: ${esc(opts.filtersLabel)}</div>` : ""}
+  <div class="meta">\u05E1\u05D4\u05F4\u05DB \u05E0\u05D5\u05E9\u05D0\u05D9\u05DD \u05D1\u05D3\u05D5\u05D7: ${esc(opts.rows.length)}</div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>\u05E0\u05D5\u05E9\u05D0</th>
+        <th>\u05DE\u05D4 \u05E0\u05D9\u05EA\u05DF \u05DC\u05E7\u05D1\u05DC</th>
+        <th>\u05D4\u05DE\u05E1\u05DC\u05D5\u05DC \u05D4\u05D1\u05D5\u05DC\u05D8</th>
+        <th>\u05E4\u05D9\u05E8\u05D5\u05D8 \u05D4\u05D4\u05D8\u05D1\u05D4</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${rowsHtml}
+    </tbody>
+  </table>
+
+  <div class="foot">
+    <span>\u05D4\u05E9\u05D5\u05D5\u05D0\u05EA \u05E7\u05D5\u05E4\u05D5\u05EA \u05D7\u05D5\u05DC\u05D9\u05DD \u2014 \u05DE\u05D1\u05D9\u05EA \u05D1\u05E7\u05DC\u05D5\u05EA. \u05D4\u05DE\u05D9\u05D3\u05E2 \u05DB\u05DC\u05DC\u05D9 \u05D5\u05DE\u05D1\u05D5\u05E1\u05E1 \u05E2\u05DC \u05DE\u05E7\u05D5\u05E8\u05D5\u05EA \u05E6\u05D9\u05D1\u05D5\u05E8\u05D9\u05D9\u05DD; \u05DC\u05E4\u05E8\u05D8\u05D9\u05DD \u05DE\u05D3\u05D5\u05D9\u05E7\u05D9\u05DD \u05D9\u05E9 \u05DC\u05E4\u05E0\u05D5\u05EA \u05DC\u05E7\u05D5\u05E4\u05D4.</span>
+    <span>\xA9 \u05D1\u05E7\u05DC\u05D5\u05EA</span>
+  </div>
+
+  ${opts.autoPrint ? `<script>window.addEventListener('load',function(){setTimeout(function(){window.print();},300);});</script>` : ""}
+</body>
+</html>`;
+}
+
 // server/routes.ts
 async function readTopics() {
   return useSupabaseStore() ? fetchTopicsFromSupabase() : storage.listTopics();
@@ -42585,6 +42704,32 @@ async function registerRoutes(httpServer, app) {
     } catch (e) {
       console.error("[topic] error", e?.message || e);
       res.status(502).json({ error: "\u05E9\u05D2\u05D9\u05D0\u05D4 \u05D1\u05D8\u05E2\u05D9\u05E0\u05EA \u05E0\u05D5\u05E9\u05D0" });
+    }
+  });
+  app.get("/api/hf/report", async (req2, res) => {
+    try {
+      const kindRaw = String(req2.query.kind || "fund");
+      const kind = ["fund", "gov", "ngo"].includes(kindRaw) ? kindRaw : "fund";
+      const category = req2.query.category ? String(req2.query.category) : void 0;
+      const fund = req2.query.fund ? String(req2.query.fund) : void 0;
+      const search = req2.query.search ? String(req2.query.search) : void 0;
+      const topics = await readTopics();
+      const rows = filterTopicsForReport(topics, { kind, category, fund, search });
+      const parts = [];
+      if (category) parts.push(`\u05E7\u05D8\u05D2\u05D5\u05E8\u05D9\u05D4: ${category}`);
+      if (fund) parts.push(fund === "undecided" ? "\u05D8\u05E2\u05D5\u05DF \u05D4\u05E9\u05D5\u05D5\u05D0\u05D4 \u05E4\u05E8\u05D8\u05E0\u05D9\u05EA" : `\u05D4\u05E7\u05D5\u05E4\u05D4 \u05D4\u05D1\u05D5\u05DC\u05D8\u05EA: ${fund}`);
+      if (search) parts.push(`\u05D7\u05D9\u05E4\u05D5\u05E9: ${search}`);
+      const html = renderHfReportHtml({
+        kind,
+        rows,
+        filtersLabel: parts.join(" \xB7 ") || "\u05DB\u05DC \u05D4\u05E0\u05D5\u05E9\u05D0\u05D9\u05DD",
+        autoPrint: String(req2.query.print || "") === "1"
+      });
+      res.setHeader("content-type", "text/html; charset=utf-8");
+      res.send(html);
+    } catch (e) {
+      console.error("[report] error", e?.message || e);
+      res.status(502).send("\u05E9\u05D2\u05D9\u05D0\u05D4 \u05D1\u05D4\u05E4\u05E7\u05EA \u05D4\u05D3\u05D5\u05D7");
     }
   });
   app.post("/api/switch-lead", async (req2, res) => {

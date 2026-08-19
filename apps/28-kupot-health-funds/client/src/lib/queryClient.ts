@@ -9,7 +9,7 @@ import { QueryClient, QueryFunction } from "@tanstack/react-query";
 // VITE_API_BASE עדיין גובר, למקרה שה-API יושב במקום אחר לגמרי.
 const MOUNT = (import.meta.env.BASE_URL || "/").replace(/\/+$/, "");
 const ENV_BASE = (import.meta as any).env?.VITE_API_BASE as string | undefined;
-const API_BASE = ENV_BASE && ENV_BASE.trim()
+export const API_BASE = ENV_BASE && ENV_BASE.trim()
   ? ENV_BASE.trim().replace(/\/$/, "")
   : "__PORT_5000__".startsWith("__") ? MOUNT : "__PORT_5000__";
 

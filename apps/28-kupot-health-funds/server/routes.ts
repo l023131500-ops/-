@@ -16,6 +16,7 @@ import type { HfTopic } from "@shared/schema";
 import { fundDetailsFor } from "./fund-details";
 import { isAdminRequest, handleAdminLogin, handleAdminLogout } from "./auth";
 import { renderAdminPage } from "./admin-page";
+import { filterTopicsForReport, renderHfReportHtml } from "./hf-report";
 
 // קריאת נושאים — מ-Supabase בפרודקשן, אחרת מ-SQLite המקומי.
 async function readTopics(): Promise<HfTopic[]> {
@@ -56,6 +57,36 @@ export async function registerRoutes(
     } catch (e: any) {
       console.error("[topic] error", e?.message || e);
       res.status(502).json({ error: "שגיאה בטעינת נושא" });
+    }
+  });
+
+  // ---- דוח מודפס/PDF של הנושאים המסוננים — אותם פילטרים כמו מסך הבית ----
+  // אותה שיטה כמו מחירון (apps/27-bkalut-price): HTML עצמאי, window.print()
+  // בדפדפן, בלי תלות כבדה בספריית PDF.
+  app.get("/api/hf/report", async (req, res) => {
+    try {
+      const kindRaw = String(req.query.kind || "fund");
+      const kind = ["fund", "gov", "ngo"].includes(kindRaw) ? kindRaw : "fund";
+      const category = req.query.category ? String(req.query.category) : undefined;
+      const fund = req.query.fund ? String(req.query.fund) : undefined;
+      const search = req.query.search ? String(req.query.search) : undefined;
+      const topics = await readTopics();
+      const rows = filterTopicsForReport(topics, { kind, category, fund, search });
+      const parts: string[] = [];
+      if (category) parts.push(`קטגוריה: ${category}`);
+      if (fund) parts.push(fund === "undecided" ? "טעון השוואה פרטנית" : `הקופה הבולטת: ${fund}`);
+      if (search) parts.push(`חיפוש: ${search}`);
+      const html = renderHfReportHtml({
+        kind,
+        rows,
+        filtersLabel: parts.join(" · ") || "כל הנושאים",
+        autoPrint: String(req.query.print || "") === "1",
+      });
+      res.setHeader("content-type", "text/html; charset=utf-8");
+      res.send(html);
+    } catch (e: any) {
+      console.error("[report] error", e?.message || e);
+      res.status(502).send("שגיאה בהפקת הדוח");
     }
   });
 
