@@ -2069,3 +2069,72 @@
      `Reservation`/`QuotaView`, כל קוראי `reserveGeneration`/`listToday` בריפו)
      ולא בהרצת build/דפדפן. ענף `fix/a-gannenet-quota-check-mark-race-0819`,
      נדחף.
+
+## 19/08/2026 (LOOP A — סבב 25) — 16-chatzor-connect: מרוץ יצירת-מורה כפול ב-resolveTeacherId, בלי אילוץ ייחוד במסד
+
+179. **בדקתי מחדש `core.run_progress`/`core.issues`/`core.project_tasks` לפני
+     שהתחלתי.** כל הפריטים הפתוחים בתחום Loop A עדיין חסומים באותו אופן כמו
+     בסבבים הקודמים — #167/#201 (15-egod, מדיניות תוכן Lovable), #196 (01-torah,
+     ממתין לאישור פריסה מפורש על נתיב סליקה חי), #120 (מסלולי מחיר, הכרעת
+     משתמש מפורשת ב-NEEDS_USER §0נ, לא נגעתי). `core.project_tasks` todo
+     (02/04/12/13) עדיין חסומים על סוד חיצוני/פריסה ידנית/הכרעת מיזוג. שני
+     סוכני Explore במקביל: אחד על תשתית login/admin/pricing המשותפת (auth
+     כניסה/הרשמה, super-admin entry, `/admin` יתרות API, פלטרום מחירים) ואחד
+     על 04-07/12-13. שני הסוכנים חזרו עם ממצא-שווא אחד (`more30_is_super_admin()`
+     "לא מוגדרת" — הסוכן קרא רק קבצי מיגרציה מקומיים; אימתתי ישירות מול
+     `uhnrgujbdxhhmoxcjria` דרך `pg_proc`: הפונקציה קיימת חיה עם
+     `p_user uuid DEFAULT auth.uid()`, כך שקריאה בלי ארגומנטים תקינה — בדיוק
+     המלכודת שכבר תועדה ב-#168/#172) ובלי שום ממצא נוסף אחרי בדיקה ידנית
+     נרחבת (portal/api/credits.ts, portal/public/{login,me,subscribe}.html,
+     auth/callback.html, `more30_subscribe`/`more30_checkout` החיות, gannenet
+     admin-auth/upload-limits/upload route) — כל האזורים האלה כבר עברו הקשחה
+     יסודית בסבבים קודמים ולא נמצא בהם פער חדש.
+180. **סוכן Explore שלישי על 16-chatzor-connect + נתיבי admin/lib נוספים
+     ב-40-gannenet מצא ממצא אמיתי: `apps/16-chatzor-connect/src/data/
+     repositories.ts` שורות 73-85 (לפני התיקון), `resolveTeacherId()`.**
+     הפונקציה שממירה שם-מורה חופשי מהטופס ל-`teacher_id` (core.issues #247,
+     כבר מוזכרת בהערת הקוד) עשתה SELECT-ואז-INSERT קלאסי: אם לא נמצאה שורת
+     מורה בשם הזה בארגון — יוצרים אחת. `chatzor.teachers` לא נשא שום אילוץ
+     ייחוד על `(organization_id, name)` — לא במיגרציה 0001 ולא בשום מיגרציה
+     מאוחרת יותר, ואימתתי ישירות מול `uhnrgujbdxhhmoxcjria` דרך
+     `pg_constraint`: רק `teachers_pkey` ו-`teachers_organization_id_fkey`,
+     שום `unique`. שתי בקשות `createLesson()` עם אותו שם מורה חדש (שני
+     אדמינים/גבאים שמזינים שיעורים באותו זמן, או קליק כפול) עוברות שתיהן את
+     ה-SELECT לפני שאף אחת הספיקה ל-INSERT, ושתיהן יוצרות שורת מורה נפרדת
+     לאותו שם — שתי `id` שונות לאותו "מגיד שיעור" בפועל, ששיעורים מתפצלים
+     ביניהן וה-view (`toLesson`, `r.teachers?.name`) מציג את אותו שם משתי
+     שורות שונות בטבלת המורים.
+181. **למה זה שונה משאר תיקוני המרוץ היום: כאן היה אפשר לתקן במסד עצמו, לא
+     רק ב-CAS באפליקציה.** ל-02/03-igud ול-40-gannenet אין גישת MCP
+     (`bieebmnmkffwbqlsfozh`) או אין compare-and-set ב-Storage — שם ה-CAS/
+     כתיבה-לפני-בדיקה היה המקסימום האפשרי. `chatzor` יושב על
+     `uhnrgujbdxhhmoxcjria` (נגיש מה-MCP הזה), ול-Postgres יש אילוץ ייחוד
+     אמיתי. בדקתי קודם שאין כפילויות קיימות (`select ... group by
+     organization_id, name having count(*) > 1` — אפס שורות), ואז הוספתי
+     `unique (organization_id, name)` על `chatzor.teachers` דרך
+     `apply_migration` (יושם חי, מיגרציה `chatzor_teachers_unique_org_name`).
+     בדקתי גם את מדיניות ה-RLS על הטבלה: "teachers admin write" (ALL,
+     `is_org_admin`) ו-"teachers gabai insert" (INSERT בלבד,
+     `manages_org_synagogue`, נוספה בסבב קודם למרות שהתיעוד קורא לה
+     "core.issues #247") — אין מדיניות UPDATE לגבאי, ולכן הפתרון חייב
+     להיות כזה שלא דורש UPDATE במקרה של התנגשות.
+182. **התיקון באפליקציה:** `resolveTeacherId` עברה מ-SELECT-ואז-INSERT ל-
+     `upsert({organization_id, name}, {onConflict: "organization_id,name",
+     ignoreDuplicates: true})` (מתורגם ל-`INSERT ... ON CONFLICT DO NOTHING`
+     ב-PostgREST — לא דורש הרשאת UPDATE, תואם למדיניות הגבאי) ואחריו SELECT
+     יחיד לפי `(organization_id, name)`. כעת מי שמפסידה במרוץ פשוט מקבלת את
+     ה-`id` של השורה שהמנצחת יצרה, במקום ליצור כפילות. טיפוס ההחזרה
+     (`Promise<string | null>`) והקורא היחיד (`createLesson`, שורה 325)
+     נשארו זהים לגמרי — אפס שינוי בחוזה. הוספתי גם קובץ מיגרציה
+     `0003_teachers_unique_org_name.sql` בריפו (עם `git add -f`, כמו
+     שקובץ 0002 הקודם כבר תועד ככה — `apps/**` מוחרג מגיט חוץ מהחרגות
+     מפורשות, ותיקון קוד מקור ב-16 שכבר במעקב git דרש את אותו דגל) לתיעוד
+     השינוי החי, ומסומן בפירוש כ"כבר יושם חי" לפי הדפוס הקיים בקובץ הקודם.
+183. **אפס רגרסיה:** אין כפילויות קיימות שהאילוץ היה שובר (0 שורות בבדיקה
+     המקדימה), אין שינוי בממשק/בחוזה של `resolveTeacherId`, אין שינוי
+     במדיניות RLS קיימת (רק אילוץ עמודה חדש). אין `node_modules`/build זמין
+     בהרצה הזו — אימות בקריאת קוד מלאה (הקורא היחיד, שתי מדיניות ה-RLS על
+     הטבלה, גרסת `@supabase/supabase-js` בפרויקט תומכת ב-`ignoreDuplicates`)
+     ובקריאת מסד ישירה (`pg_constraint`/`pg_policies` על `uhnrgujbdxhhmoxcjria`
+     לפני ואחרי), לא בהרצת build/דפדפן. ענף
+     `fix/a-chatzor-connect-teacher-race-0819`, נדחף.

@@ -69,19 +69,27 @@ const getOrgId = (): Promise<string> => {
  * `chatzor.teachers`), אבל הטופס (AdminLessons.tsx/GabaiLessons.tsx) אוסף
  * שם חופשי. פותרים שם -> id: אם כבר יש מורה בשם הזה בארגון — משתמשים בו,
  * אחרת יוצרים שורה חדשה. `core.issues #247`.
+ *
+ * לא SELECT-ואז-INSERT: שני אדמינים/גבאים שמזינים שיעור עם אותו שם מורה
+ * חדש באותו רגע עוברים שניהם את ה-SELECT לפני שאף אחד הספיק ל-INSERT,
+ * ושניהם יוצרים שורת מורה נפרדת לאותו שם — כפילות שנתפסה כי `chatzor.
+ * teachers` לא נשא אילוץ ייחוד. מיגרציה 0003 הוסיפה `unique
+ * (organization_id, name)`, וכאן ה-INSERT הוא `ON CONFLICT DO NOTHING`
+ * (`ignoreDuplicates`) ואחריו SELECT — כך שמי שמפסידה במרוץ מקבלת את
+ * השורה של המנצחת במקום שגיאת ייחוד או שורה כפולה.
  */
 const resolveTeacherId = async (name: string | null | undefined): Promise<string | null> => {
   const trimmed = name?.trim();
   if (!supabase || !trimmed) return null;
   const orgId = await getOrgId();
-  const { data: existing, error: selectError } = await supabase
-    .from("teachers").select("id").eq("organization_id", orgId).eq("name", trimmed).maybeSingle();
-  if (selectError) throw new Error(selectError.message);
-  if (existing) return existing.id as string;
-  const { data: created, error: insertError } = await supabase
-    .from("teachers").insert({ organization_id: orgId, name: trimmed }).select("id").single();
+  const { error: insertError } = await supabase
+    .from("teachers")
+    .upsert({ organization_id: orgId, name: trimmed }, { onConflict: "organization_id,name", ignoreDuplicates: true });
   if (insertError) throw new Error(insertError.message);
-  return created.id as string;
+  const { data: row, error: selectError } = await supabase
+    .from("teachers").select("id").eq("organization_id", orgId).eq("name", trimmed).single();
+  if (selectError) throw new Error(selectError.message);
+  return row.id as string;
 };
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
