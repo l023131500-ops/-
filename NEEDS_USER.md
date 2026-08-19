@@ -4586,3 +4586,43 @@ Cron או `pg_cron`) וחיבור Resend, שלב גדול יותר משלב אח
 
 תיקיית עבודה זמנית _tmp_smel_deploy/ בשורש הריפו — untracked בכוונה, לא נמחקה
 (נעולה ע"י תהליך), אפשר למחוק בבטחה בסבב הבא.
+
+---
+
+## 19/08/2026 (בוקר +4) — 12 smel: קישור מחירון נפרס בהצלחה — נמצא שורש הבעיה של שני הניסיונות הקודמים
+
+המשך ישיר של הרשומה הקודמת. במקום לנחש שוב את מבנה הפריסה, קראתי אותו ישירות
+מה-API של Vercel על ה-deployment החי (`dpl_EWrZhWiJxmrycvAKH3ZkCSq6FRe3`, זה
+שאליו בוצע rollback): `GET /v6/deployments/{id}/files` החזיר את עץ הקבצים
+המדויק (`vercel.json` + `smel/{index.html,favicon.svg,assets/*}`) ואת תוכן
+`vercel.json` המפוענח (buildCommand/outputDirectory/framework/rewrites). זו
+לא הייתה עוד ניחוש — זו הייתה קריאה ישירה של מה שכבר עובד בפועל.
+
+בניתי מקומית (`vite build`, `base: "/smel/"` כבר מוגדר נכון ב-vite.config.ts),
+שיחזרתי בדיוק את אותו מבנה, פרסתי קודם כ-**preview** (לא production) ואימתתי
+דרך ה-API (לא בדפדפן — Vercel SSO חוסם preview) שעץ הקבצים ותוכן ה-vercel.json
+זהים ל-deployment החי. רק אז פרסתי ל-production (`vercel deploy --prod`,
+`dpl_Dv9yECp5VQYdZEXKQQR43CC2Duvw`, READY).
+
+**זה עדיין לא עבד מיד — ומצאתי למה, שזה כנראה גם שורש הכישלון של הניסיון הקודם:**
+`vercel deploy --prod` הצמיד alias רק ל-`smel-more30-l023131500-ops-projects.vercel.app`,
+אבל הדומיין שאליו `portal/vercel.dist.json` מפנה בפועל את `/smel/*` הוא
+`smel-more30.vercel.app` (בלי הסיומת) — ונמצא (`GET /v4/aliases/smel-more30.vercel.app`)
+שהוא נשאר "נעוץ" ל-deployment הישן (זה שאליו בוצע ה-rollback הקודם) ולא עקב
+אוטומטית אחרי הפריסה החדשה. תיקנתי עם `vercel alias set <new-deployment-url>
+smel-more30.vercel.app` — פעולת alias בלבד, הפיכה מיידית, לא פריסה חדשה.
+
+**אומת חי (Playwright, 1280×900, cache-buster):** `more30.com/smel` מחזיר 200,
+bundle hash חדש (`index-DNmUL47e.js`), 0 שגיאות קונסולה, קישור "פרימיום" הקיים
+עדיין נוכח (`link-premium-header`), הקישור החדש "מחירון" נוכח ותקין
+(`link-pricing-header`, href=`/subscribe?app=smel`), הניווט אליו נוחת בהצלחה על
+`/subscribe?app=smel` עם מסלולי core.plans אמיתיים. אפס רגרסיה.
+
+**למי שיפרוס smel-more30 בפעם הבאה:** אחרי `vercel deploy --prod`, בדוק תמיד
+גם `GET /v4/aliases/smel-more30.vercel.app` (לא רק את פלט ה-CLI) — אם ה-deploymentId
+לא זהה לפריסה החדשה, צריך `vercel alias set` ידני. זה כנראה קרה גם בניסיון
+הקודם וגרם ל"404" (או שהוא בדק כתובת alias אחרת/preview שנחסמה ב-SSO ופירש
+לא נכון — לא ברור באיזו כתובת בדיוק הוא בדק).
+
+תיקיות עבודה זמניות `_tmp_smel_pull/`, `_tmp_smel_deploy2/` בשורש הריפו —
+untracked בכוונה, ימחקו בסוף הצעד הזה.
