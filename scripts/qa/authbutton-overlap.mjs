@@ -36,6 +36,7 @@ const ROUTES = [
   ['smachot', '/smachot'], ['egod', '/egod'], ['chatzor', '/chatzor'], ['chatzor-app', '/chatzor/'],
   ['chizukim', '/chizukim'], ['chizukim-app', '/chizukim/'], ['orech', '/orech'],
   ['mthbram', '/mthbram'], ['zchuyot', '/zchuyot'], ['galil', '/galil'], ['studio', '/studio'],
+  ['design', '/design'],
   ['mechiron', '/mechiron'], ['kupot', '/kupot'], ['crm', '/crm'], ['gesher', '/gesher'],
   ['nadlan', '/nadlan'],
 ];

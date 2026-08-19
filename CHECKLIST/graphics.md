@@ -25,10 +25,12 @@
       `/studio` ו-`more30.com/` עדיין 200 אחרי הפריסה (אפס רגרסיה).
       צילומים: `design-desktop.png`, `design-mobile.png`,
       `studio-regression-check.png` (בתיקיית העבודה, לא ב-git — ארטיפקט QA).
-- [ ] **2. כפתור כניסה משותף מלא + פוטר "חלק מ-more30"** — `auth-button.js`
-      כבר טעון (סעיף 1), אבל צריך לוודא רשמית לפי `scripts/qa/authbutton-overlap.mjs`
-      (הסקריפט הפלטפורמי הרשמי, לא רק מדידת Playwright ידנית) ולתעד את
-      `/design` ברשימת ה-24+ המסלולים שהוא בודק.
+- [x] **2. כפתור כניסה משותף מלא + פוטר "חלק מ-more30"** — `auth-button.js`
+      טעון ב-`/design` (`index.html` שורה 203), והפוטר "חלק מ-more30" קיים
+      ומקושר ל-`more30.com/` (שורה 198). נוסף `['design', '/design']` ל-`ROUTES`
+      ב-`scripts/qa/authbutton-overlap.mjs` (הסקריפט הפלטפורמי הרשמי) והורץ:
+      `design clear @ 390,834,1100,1280,1440` וגם `studio clear @ 390,834,1100,1280,1440`
+      (אפס רגרסיה — `/studio` עדיין נקי אחרי ההוספה).
 - [ ] **3. ספריית פונטים עברית עשירה בשכבת הרינדור** — הרחבת 4 הפונטים
       הבסיסיים של `/design` (Suez One/Secular One/Frank Ruhl/Heebo) לספרייה
       מלאה שזמינה **בעורך של `/studio`**: לאחד את 3 אסטרטגיות הטעינה הקיימות
