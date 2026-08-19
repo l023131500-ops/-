@@ -14,6 +14,8 @@ import {
 } from "./supabase";
 import type { HfTopic } from "@shared/schema";
 import { fundDetailsFor } from "./fund-details";
+import { isAdminRequest, handleAdminLogin, handleAdminLogout } from "./auth";
+import { renderAdminPage } from "./admin-page";
 
 // קריאת נושאים — מ-Supabase בפרודקשן, אחרת מ-SQLite המקומי.
 async function readTopics(): Promise<HfTopic[]> {
@@ -83,14 +85,21 @@ export async function registerRoutes(
   });
 
   // ---- (לניהול) רשימת פניות — מוגן בטוקן ניהול, אסור לחשוף ציבורית ----
+  // מקבל גם כותרת x-admin-token (כפי שהיה) וגם עוגיית כניסה מ-/api/admin/login.
   app.get("/api/switch-leads", (req, res) => {
-    const adminToken = process.env.ADMIN_TOKEN;
-    const provided = req.header("x-admin-token");
-    if (!adminToken || provided !== adminToken) {
+    if (!isAdminRequest(req)) {
       return res.status(403).json({ error: "גישה נדחתה" });
     }
     res.json(storage.listSwitchLeads());
   });
+
+  // ---- עמוד ניהול — כניסה בסיסמה (אותו ADMIN_TOKEN) במקום קריאת API ידנית ----
+  app.get("/api/admin", (_req, res) => {
+    res.setHeader("Content-Type", "text/html; charset=utf-8");
+    res.send(renderAdminPage());
+  });
+  app.post("/api/admin/login", handleAdminLogin);
+  app.post("/api/admin/logout", handleAdminLogout);
 
   // ---- היועץ החכם — מבוסס אך ורק על מידע ציבורי בסיסי ----
   app.post("/api/agent", async (req, res) => {

@@ -16,3 +16,4 @@ data.db-journal
 .DS_Store
 .vercel
 api/index.js
+.env*
