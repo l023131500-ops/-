@@ -1,5 +1,23 @@
 # SYSTEMS_STATUS.md — מצב כל המערכות, נמדד
 
+> ## 🟢 19/08/2026 (בוקר) — **18 עורך תורני (orech): סיים עבודה שנמצאה לא-מחויבת — כפתור "הורד כ-PDF" בעורך — פרוס וחי**
+
+> תחילת הריצה נמצא קובץ אחד לא-מחויב מסשן קודם: `apps/18-torah-editor-mvp/app/editor/page.tsx`
+> עם `downloadPdf()`/`esc()` חדשים וכפתור "הורד כ-PDF" ליד "הורד כטקסט (.txt)"
+> הקיים — אותה שיטת `window.print()` בחלון מעוצב שכבר חיה ב-27
+> מחירון/28 קופות/17 חיזוקים, בלי תלות חדשה. הוספה בלבד: שמירה אוטומטית,
+> זיהוי ציטוטים, אימות מול ספריא וניקוד רבני לא נגעו.
+>
+> `next build` נקי (11 עמודים). מחויב `7e67cf3` על `feat/graphics-upgrade`,
+> נדחף. פרוס: `vercel deploy --prod --yes --scope l023131500-ops-projects`
+> מ-`apps/18-torah-editor-mvp` → `dpl_3vVx9ut34wtigqkqsu8X8m3U1wXP`, alias
+> `orech-more30.vercel.app`. אומת חי: `GET more30.com/orech/editor`
+> (cache-buster) → חבילת `page-4f8871c817130591.js` מכילה את טקסט הכפתור,
+> `Frank+Ruhl+Libre` ו-`window.print` — הקוד החדש אכן בייצור. דפדפן ה-MCP של
+> Playwright היה תפוס ע"י סשן מקביל אחר, אז האימות היה בשליפת ה-bundle
+> החי ולא צילום מסך. Supabase MCP לא היה מחובר בסשן הזה — heartbeat נכתב
+> ל-`QA/orech/pdf-export-0819/_heartbeat-pending.sql` להזרקה מאוחרת.
+
 > ## 🟢 19/08/2026 (לילה, מאוחרת ביותר +1) — **22 מיצוי זכויות (zchuyot): "אשף התאמה אישית" — פרוס וחי**
 
 > הרחבת פיצ'ר (`more30-feature-expansion.md`, "אשף זכויות לפי מצב אישי") על
