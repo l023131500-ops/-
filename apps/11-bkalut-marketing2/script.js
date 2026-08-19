@@ -76,11 +76,16 @@
         requiredDocuments: {},
         legalAccepted: data.legal_accepted ? { terms: "1.0", privacy: "1.0" } : null,
       };
-      Object.assign(data, enriched);
+      // Build the outgoing payload as a NEW object — do not merge `enriched` back
+      // into `data`, since `enriched.questionnaireAnswers` already references
+      // `data`. Mutating `data` in place made `data.questionnaireAnswers === data`,
+      // a circular reference that threw "Converting circular structure to JSON"
+      // on every submit and silently fell to the WhatsApp/phone fallback below.
+      const payload = Object.assign({}, data, enriched);
       const res = await fetch(form.action, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        body: JSON.stringify(payload),
         mode: "cors",
       });
       if (!res.ok) throw new Error(String(res.status));
