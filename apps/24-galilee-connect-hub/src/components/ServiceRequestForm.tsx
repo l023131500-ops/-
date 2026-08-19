@@ -29,17 +29,29 @@ const ServiceRequestForm = ({ defaultType, compact }: ServiceRequestFormProps) =
   const [leadType, setLeadType] = useState(defaultType || 'other');
   const [sent, setSent] = useState(false);
   const [sending, setSending] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
 
   const handleSubmit = async () => {
     if (!name.trim() || !phone.trim()) return;
+    setErrorMsg('');
     setSending(true);
-    await supabase.from('community_leads').insert({
+    // ‏community_leads.lead_type מוגבל במסד ל-('general','synagogue','rabbi_question','gabbai_support').
+    // מזהי השירות כאן (shiur_kavua/chazan/azkara/other וכו') אינם ברשימה, ולכן כל
+    // פנייה נדחתה בשקט ב-check (23514) בעוד הטופס הציג "נשלח" בלי לבדוק (core.issues #240).
+    // שולחים lead_type='general' ושומרים את סוג הבקשה בגוף ההודעה כדי שלא יאבד מידע.
+    const category = serviceTypes.find(s => s.id === leadType)?.label || 'פנייה';
+    const body = message.trim();
+    const { error } = await supabase.from('community_leads').insert({
       name: name.trim(),
       phone: phone.trim(),
-      lead_type: leadType,
-      message: message.trim() || serviceTypes.find(s => s.id === leadType)?.label || '',
+      lead_type: 'general',
+      message: body ? `[${category}] ${body}` : category,
     });
     setSending(false);
+    if (error) {
+      setErrorMsg('הבקשה לא נשלחה עקב תקלה. נסו שוב.');
+      return;
+    }
     setSent(true);
     setName(''); setPhone(''); setMessage('');
     setTimeout(() => setSent(false), 4000);
@@ -69,6 +81,7 @@ const ServiceRequestForm = ({ defaultType, compact }: ServiceRequestFormProps) =
                     <Send className="w-3.5 h-3.5" /> שלח פנייה
                   </Button>
                 )}
+                {errorMsg && <p role="alert" className="text-center text-destructive font-bold text-xs py-1">{errorMsg}</p>}
               </div>
             </motion.div>
           )}
@@ -120,6 +133,7 @@ const ServiceRequestForm = ({ defaultType, compact }: ServiceRequestFormProps) =
           <Send className="w-5 h-5" /> שלח בקשה
         </Button>
       )}
+      {errorMsg && <p role="alert" className="text-center text-destructive font-bold text-sm py-2">{errorMsg}</p>}
     </div>
   );
 };
