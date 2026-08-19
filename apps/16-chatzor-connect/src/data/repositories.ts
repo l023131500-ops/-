@@ -40,11 +40,9 @@ const readFailed = (what: string, message: string) =>
   new Error(`טעינת ${what} נכשלה: ${message}`);
 
 /**
- * `organization_id` הוא `not null` על synagogues/community_services (וגם
- * תנאי `is_org_admin(organization_id)` ב-RLS לכתיבה), אבל האפליקציה הזו
+ * `organization_id` הוא `not null` על synagogues/community_services/lessons
+ * (וגם תנאי `is_org_admin(organization_id)` ב-RLS לכתיבה), אבל האפליקציה הזו
  * משרתת ארגון יחיד — אז פותרים את ה-UUID שלו פעם אחת מ-`ORG_SLUG` ומטמינים.
- * (lessons דורשת גם `organization_id` אבל שולחת עמודת `teacher` שאינה קיימת
- * בסכימה החיה — תקלה נפרדת, לא נגעתי בה כאן; ראה core.issues.)
  */
 let orgIdCache: Promise<string> | null = null;
 const getOrgId = (): Promise<string> => {
@@ -66,6 +64,26 @@ const getOrgId = (): Promise<string> => {
   return orgIdCache;
 };
 
+/**
+ * `chatzor.lessons` מפנה למגיד השיעור דרך `teacher_id uuid` (FK ל-
+ * `chatzor.teachers`), אבל הטופס (AdminLessons.tsx/GabaiLessons.tsx) אוסף
+ * שם חופשי. פותרים שם -> id: אם כבר יש מורה בשם הזה בארגון — משתמשים בו,
+ * אחרת יוצרים שורה חדשה. `core.issues #247`.
+ */
+const resolveTeacherId = async (name: string | null | undefined): Promise<string | null> => {
+  const trimmed = name?.trim();
+  if (!supabase || !trimmed) return null;
+  const orgId = await getOrgId();
+  const { data: existing, error: selectError } = await supabase
+    .from("teachers").select("id").eq("organization_id", orgId).eq("name", trimmed).maybeSingle();
+  if (selectError) throw new Error(selectError.message);
+  if (existing) return existing.id as string;
+  const { data: created, error: insertError } = await supabase
+    .from("teachers").insert({ organization_id: orgId, name: trimmed }).select("id").single();
+  if (insertError) throw new Error(insertError.message);
+  return created.id as string;
+};
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const toSynagogue = (r: any): Synagogue => ({
   id: r.id,
@@ -85,7 +103,7 @@ const toPrayerTime = (r: any): PrayerTime => ({
   id: r.id, synagogueId: r.synagogue_id, type: r.prayer_type, label: r.label, time: r.time, note: r.note ?? null,
 });
 const toLesson = (r: any): Lesson => ({
-  id: r.id, synagogueId: r.synagogue_id ?? null, title: r.title, teacher: r.teacher ?? null,
+  id: r.id, synagogueId: r.synagogue_id ?? null, title: r.title, teacher: r.teachers?.name ?? null,
   day: r.day ?? "", time: r.time ?? "", location: r.location ?? null, audience: r.audience ?? null,
 });
 const toService = (r: any): CommunityService => ({
@@ -148,7 +166,7 @@ export async function listPrayerTimes(synagogueId: string): Promise<PrayerTime[]
 
 export async function listLessons(synagogueId?: string): Promise<Lesson[]> {
   if (!supabase) return synagogueId ? db.lessons.filter((l) => l.synagogueId === synagogueId) : db.lessons;
-  let q = supabase.from("lessons").select("*").eq("is_published", true);
+  let q = supabase.from("lessons").select("*, teachers(name)").eq("is_published", true);
   if (synagogueId) q = q.eq("synagogue_id", synagogueId);
   const { data, error } = await q;
   if (error) throw readFailed("השיעורים", error.message);
@@ -293,7 +311,8 @@ export async function createLesson(input: LessonInput): Promise<void> {
     return;
   }
   const { error } = await supabase.from("lessons").insert({
-    synagogue_id: input.synagogueId, title: input.title, teacher: input.teacher || null,
+    organization_id: await getOrgId(),
+    synagogue_id: input.synagogueId, title: input.title, teacher_id: await resolveTeacherId(input.teacher),
     day: input.day || null, time: input.time || null, location: input.location || null, audience: input.audience || null,
   });
   if (error) throw new Error(error.message);

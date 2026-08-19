@@ -1565,3 +1565,62 @@
      כבר עוקב תחת git ונפרס אוטומטית. ענף חדש `fix/a-chatzor-connect-org-id-0819`.
      **הבא בתור בפועל:** לתקוף את `core.issues #247` (teacher_id ב-16) כשלם,
      או לסרוק מחדש `core.issues`/`core.project_tasks` לאיתור פריט חדש/לא-חסום.
+
+## 19/08/2026 (LOOP A — סבב 15) — 16 chatzor-connect: `core.issues #247` — יצירת שיעור עם שם מרצה נכשלה תמיד
+
+140. **בדקתי מחדש `core.run_progress`/`core.issues`/`core.project_tasks` לפני
+     שהתחלתי** — התור בפועל שנרשם בסוף סבב 14 היה `core.issues #247`
+     (owner=agent, לא חסום, בתחום Loop A), ואין פריט חדש/לא-חסום אחר שעקף
+     אותו בעדיפות.
+141. **`createLesson` ב-`apps/16-chatzor-connect/src/data/repositories.ts`
+     הייתה שבורה משתי סיבות בו-זמנית** (אומתי גם ב-#136-138 בסבב הקודם):
+     חסרה `organization_id` (עמודה `not null`, כמו שתוקן כבר ב-createSynagogue/
+     createService), וגם שולחת עמודת טקסט `teacher` שלא קיימת בסכימה החיה —
+     יש רק `teacher_id uuid` (FK ל-`chatzor.teachers`). כלומר תיקון
+     `organization_id` בלבד עדיין היה נכשל על העמודה הלא-קיימת.
+142. **פתרון: resolve-or-create בין השם החופשי בטופס לבין `teacher_id`.**
+     הוספתי `resolveTeacherId(name)`: מחפש שורת מורה קיימת לפי
+     `organization_id`+`name` מדויק (אחרי trim), ואם אין — יוצר שורה חדשה
+     ומחזיר את ה-`id` שלה. `createLesson` עכשיו שולחת גם `organization_id`
+     (דרך `getOrgId()` הקיימת) וגם `teacher_id: await resolveTeacherId(input.teacher)`
+     במקום `teacher: input.teacher`. הטופס (`AdminLessons.tsx`/`GabaiLessons.tsx`)
+     לא שונה — עדיין שדה טקסט חופשי "מגיד השיעור", אין שינוי בממשק המשתמש.
+143. **הקריאה תוקנה גם היא, לא רק הכתיבה:** `listLessons` עכשיו שולפת
+     `*, teachers(name)` (embed לפי ה-FK הקיים) ו-`toLesson` ממפה
+     `teacher: r.teachers?.name ?? null` במקום `r.teacher` שלא היה קיים
+     בסכימה — בלי זה, שם המרצה שנשמר בהצלחה היה נעלם מהתצוגה.
+144. **חסם RLS אמיתי שהתגלה תוך כדי, ותוקן בנפרד מהקוד:** מדיניות הכתיבה
+     היחידה על `chatzor.teachers` הייתה `"teachers admin write"` — מוגבלת
+     ל-`is_org_admin`. גבאי (מנהל בית כנסת) שאינו מנהל-ארגון היה נחסם RLS
+     בניסיון ליצור שורת מורה חדשה דרך `resolveTeacherId`, אף שמסך הגבאי
+     (`GabaiLessons.tsx`) מציג בדיוק את אותו שדה "מגיד השיעור" למסך האדמין.
+     הוספתי מיגרציה תוספתית בלבד (לא נגעתי במדיניות קיימת): פונקציה
+     `chatzor.manages_org_synagogue(org)` (מקבילה ל-`manages_synagogue`
+     הקיימת, אבל בודקת "מנהל איזשהו בית כנסת בארגון הזה" במקום בית כנסת
+     ספציפי) + מדיניות חדשה `"teachers gabai insert"` (INSERT בלבד) על
+     `chatzor.teachers`. הופעל חי דרך MCP `apply_migration` על
+     `uhnrgujbdxhhmoxcjria` ואומת מול `pg_policies` (3 מדיניות על הטבלה:
+     admin/gabai-insert/public-read, כצפוי). קובץ המיגרציה נשמר גם בריפו —
+     `apps/16-chatzor-connect/supabase/migrations/0002_teachers_gabai_insert.sql`
+     ומראה תואם ב-`db/apps/16-chatzor-connect/0002_teachers_gabai_insert.sql`
+     (אותה תבנית כפולה כמו `0001` הקיים).
+145. **לא נבחרה גישת upsert אטומית עם unique constraint על `(organization_id,
+     name)`** — בדקתי, הטבלה ריקה כרגע (0 שורות) כך שהוספת אילוץ הייתה
+     בטוחה, אבל upsert עם `ON CONFLICT DO UPDATE` דורש RLS גם על מדיניות
+     UPDATE (לא רק INSERT) לפי סמנטיקת Postgres, מה שהיה מצריך להרחיב את
+     מדיניות הגבאי גם לעדכון שורות מורה קיימות — משקל-יתר מול הבאג הנוכחי.
+     select-then-insert (לא אטומי, חלון מרוץ זעיר בין שני גבאים שמזינים
+     בו-זמנית אותו שם מרצה חדש) הוא הפתרון המינימלי התואם לתקלה שנמצאה;
+     התוצאה הגרועה ביותר היא שורת מורה כפולה, לא כשל פונקציונלי.
+146. **אפס שינוי בממשק/טפסים/מדיניות קיימת** — כל שינוי הקוד ב-`repositories.ts`
+     בלבד (הוספת `resolveTeacherId` + שני עדכוני שורה ב-`createLesson`/
+     `listLessons`/`toLesson`), המיגרציה תוספתית בלבד. אימות בקריאה בלבד
+     (אין dev server/build זמין בהרצה הזו, כרגיל): קראתי את הקובץ המלא אחרי
+     העריכה, וידאתי מול `information_schema` שכל שדה שנשלח/נקרא תואם לעמודה
+     חיה (כולל `teachers.id`/`teachers.name`/`lessons.teacher_id`/
+     `lessons.organization_id`), ומול `pg_policies` שהמדיניות החדשה קיימת
+     ותקינה. עדכנתי `core.issues #247` ל-`fixed` עם evidence. `core.issues
+     #247` היה הפריט היחיד הפתוח/לא-חסום בתחום Loop A נכון לסבב הזה — סבב
+     הבא צריך לסרוק מחדש `core.issues`/`core.project_tasks` מאפס כדי לאתר
+     את הפריט הבא (לא נותר מועמד ברור מוכן-מראש בסוף הסבב הזה).
+     ענף חדש `fix/a-chatzor-connect-lesson-teacher-0819`.
