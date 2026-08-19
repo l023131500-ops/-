@@ -34,6 +34,7 @@ import {
   Figma,
   Palette,
   ClipboardCheck,
+  MessageSquare,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -143,6 +144,11 @@ export default function Editor() {
     suggestions: string[];
   };
   const [critiqueResult, setCritiqueResult] = useState<Critique | null>(null);
+
+  // הערות לקוח (צ'קליסט #14, שלב השמירה) — נשמר לצד הטיוטה בתוך layersJson;
+  // ליישום התיקון האוטומטי לפי ההערות בסבב הבא, זהו רק שלב שמירת ההערה עצמה.
+  const [notesDialogOpen, setNotesDialogOpen] = useState(false);
+  const [clientNotes, setClientNotes] = useState(selected?.clientNotes ?? "");
 
   // וקטוריזציה של שכבת תמונה קיימת ל-SVG אמיתי (Recraft — מנוע קיים בכלי המותג)
   const [vectorizing, setVectorizing] = useState(false);
@@ -580,7 +586,7 @@ export default function Editor() {
         format: selected!.format,
         width: doc!.width,
         height: doc!.height,
-        layersJson: JSON.stringify({ background: doc!.background, layers: doc!.layers }),
+        layersJson: JSON.stringify({ background: doc!.background, layers: doc!.layers, clientNotes }),
         thumbnail: null as string | null,
       };
       // עבודה שנפתחה מ-/projects נושאת מזהה, ולכן היא מתעדכנת במקום.
@@ -731,6 +737,15 @@ export default function Editor() {
             data-testid="button-ai-critique"
           >
             <ClipboardCheck className="h-4 w-4" /> {critiquing ? "בודק..." : "ביקורת AI"}
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            className={"gap-1.5 border-[#C9A227]/40 text-[#C9A227]" + (clientNotes.trim() ? " bg-[#C9A227]/10" : "")}
+            onClick={() => setNotesDialogOpen(true)}
+            data-testid="button-client-notes"
+          >
+            <MessageSquare className="h-4 w-4" /> הערות לקוח
           </Button>
           <Button size="sm" className="gap-1.5 bg-[#C9A227] text-[#0B1220] hover:bg-[#C9A227]/90" onClick={handleSaveProject} disabled={saving}>
             <Save className="h-4 w-4" /> {saving ? "שומר..." : "שמור פרויקט"}
@@ -1490,6 +1505,36 @@ export default function Editor() {
               )}
             </div>
           )}
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={notesDialogOpen} onOpenChange={setNotesDialogOpen}>
+        <DialogContent className="max-w-lg border-[#C9A227]/30 bg-[#0E1830] text-[#F5EEDD]" dir="rtl">
+          <DialogHeader>
+            <DialogTitle className="text-[#F5EEDD]">הערות לקוח</DialogTitle>
+            <DialogDescription>
+              נשמר עם הפרויקט — לקריאה על ידי המעצב, שום שכבה לא משתנה אוטומטית לפי הכתוב כאן.
+            </DialogDescription>
+          </DialogHeader>
+          <Textarea
+            value={clientNotes}
+            onChange={(e) => setClientNotes(e.target.value)}
+            placeholder="למשל: להגדיל את הכותרת, להחליף את הרקע לגוון חם יותר…"
+            className="min-h-[140px] border-[#C9A227]/30 bg-[#101B32] text-[#F5EEDD]"
+            data-testid="textarea-client-notes"
+          />
+          <Button
+            size="sm"
+            className="gap-1.5 self-start bg-[#C9A227] text-[#0B1220] hover:bg-[#C9A227]/90"
+            onClick={async () => {
+              await handleSaveProject();
+              setNotesDialogOpen(false);
+            }}
+            disabled={saving}
+            data-testid="button-save-client-notes"
+          >
+            <Save className="h-4 w-4" /> {saving ? "שומר..." : "שמור הערה ופרויקט"}
+          </Button>
         </DialogContent>
       </Dialog>
     </div>

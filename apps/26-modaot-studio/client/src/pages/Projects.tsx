@@ -54,6 +54,16 @@ function docOf(p: ProjectRow): TemplateDoc | null {
   }
 }
 
+/** ‎clientNotes‎ יושב באותו ‎layersJson‎, כשדה אח ל-‎background‎/‎layers‎ — לא חלק מ-‎TemplateDoc‎. */
+function clientNotesOf(p: ProjectRow): string {
+  try {
+    const parsed = JSON.parse(p.layersJson);
+    return typeof parsed?.clientNotes === "string" ? parsed.clientNotes : "";
+  } catch {
+    return "";
+  }
+}
+
 const dateLabel = (seconds: number) =>
   new Date(seconds * 1000).toLocaleDateString("he-IL", { day: "numeric", month: "long", year: "numeric" });
 
@@ -73,6 +83,7 @@ export default function Projects() {
       format: p.format,
       name: p.name,
       projectId: p.id,
+      clientNotes: clientNotesOf(p),
     });
     navigate("/editor");
   }

@@ -11,6 +11,8 @@ export interface SelectedTemplate {
   templateId?: number;
   /** מזהה פרויקט שמור שנפתח מ-/projects — קיים ⇒ "שמור" מעדכן אותו ולא יוצר עותק. */
   projectId?: number;
+  /** הערות לקוח על הטיוטה הנוכחית (צ'קליסט #14, שלב השמירה) — נשמר בתוך layersJson, לקריאה בלבד עד סבב עתידי שיבנה תיקון אוטומטי לפיו. */
+  clientNotes?: string;
 }
 
 interface TemplateContextValue {
