@@ -88,6 +88,38 @@ Deno.serve(async (req) => {
       return json({ ok: false, error: "missing required fields (tenant_id, amount, donor.name, donor.phone)" }, 400);
     }
 
+    // 1a. This endpoint is public (anon, no auth check) by design -- both callers
+    // (DonationPage.tsx, Checkout.tsx) insert their own donation/order row with
+    // payment_status="pending" and call this immediately after with the exact
+    // same tenant_id/amount. Without this check, anyone could pass ANY existing
+    // donation_id/order_id (their own from a prior visit, or one seen in a URL)
+    // together with a smaller amount of their choosing, pay that lesser amount
+    // via the real Nedarim iframe, and have nedarim-webhook mark the referenced
+    // donation/order "paid" in full once its ourPaymentId comes back. Requiring
+    // the referenced row to belong to this tenant, still be pending, and match
+    // the requested amount closes that without touching the legitimate flow,
+    // which always satisfies all three already.
+    if (body.donation_id) {
+      const { data: don } = await supabase
+        .from("donations")
+        .select("id, tenant_id, amount_ils, payment_status")
+        .eq("id", body.donation_id)
+        .maybeSingle();
+      if (!don || don.tenant_id !== body.tenant_id || don.payment_status !== "pending" || Number(don.amount_ils) !== Number(body.amount)) {
+        return json({ ok: false, error: "donation_id does not match a pending donation for this tenant/amount" }, 400);
+      }
+    }
+    if (body.order_id) {
+      const { data: ord } = await supabase
+        .from("orders")
+        .select("id, tenant_id, total_ils, payment_status")
+        .eq("id", body.order_id)
+        .maybeSingle();
+      if (!ord || ord.tenant_id !== body.tenant_id || ord.payment_status !== "pending" || Number(ord.total_ils) !== Number(body.amount)) {
+        return json({ ok: false, error: "order_id does not match a pending order for this tenant/amount" }, 400);
+      }
+    }
+
     // 1. Load tenant's Nedarim config (mosad_id + api_valid per tenant)
     const { data: cfg } = await supabase
       .from("nedarim_configs")
