@@ -7,7 +7,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Logo } from "@/components/logo";
 import { useToast } from "@/hooks/use-toast";
 import { API_BASE } from "@/lib/queryClient";
-import { Search, Tag, Store, ArrowRight, FileDown, Share2, Sparkles, SlidersHorizontal, X, Send, ShoppingCart, Plus, Trash2 } from "lucide-react";
+import { Search, Tag, Store, ArrowRight, FileDown, Share2, Sparkles, SlidersHorizontal, X, Send, ShoppingCart, Plus, Trash2, ScanBarcode } from "lucide-react";
+import { BarcodeScannerDialog, isBarcodeScanSupported } from "@/components/barcode-scanner-dialog";
 
 // The published pplx.app sandbox auto-pauses when idle; the first requests after
 // it resumes return 503 for a few seconds. Retry a few times so the page loads
@@ -189,6 +190,8 @@ export default function PublicPriceComparison() {
   const [savedTotal, setSavedTotal] = useState(() => loadSavedTotal());
   const [shoppingList, setShoppingList] = useState<ListItem[]>(() => loadShoppingList());
   const [showList, setShowList] = useState(false);
+  const [showScanner, setShowScanner] = useState(false);
+  const [scanSupported] = useState(() => isBarcodeScanSupported());
   const emptySubmission = { merchantName: "", merchantContact: "", storeName: "", city: "", productName: "", brand: "", unit: "", barcode: "", price: "", note: "" };
   const [submission, setSubmission] = useState({ ...emptySubmission });
 
@@ -316,6 +319,12 @@ export default function PublicPriceComparison() {
     }
   }
 
+  function onBarcodeDetected(code: string) {
+    const n = update({ q: code });
+    runSearch(n);
+    toast({ title: "ברקוד נסרק", description: code });
+  }
+
   function update(patch: Partial<FilterState>) {
     const next = { ...filters, ...patch };
     setFilters(next);
@@ -423,6 +432,11 @@ export default function PublicPriceComparison() {
               <Button variant="outline" onClick={() => setShowFilters((v) => !v)} data-testid="button-pc-toggle-filters">
                 <SlidersHorizontal className="w-4 h-4 ml-1" /> סינון{activeFilterCount > 0 ? ` (${activeFilterCount})` : ""}
               </Button>
+              {scanSupported && (
+                <Button variant="outline" onClick={() => setShowScanner(true)} data-testid="button-pc-scan-barcode">
+                  <ScanBarcode className="w-4 h-4 ml-1" /> סריקת ברקוד
+                </Button>
+              )}
             </div>
           </div>
 
@@ -744,6 +758,10 @@ export default function PublicPriceComparison() {
           </Link>
         </div>
       </main>
+
+      {scanSupported && (
+        <BarcodeScannerDialog open={showScanner} onOpenChange={setShowScanner} onDetected={onBarcodeDetected} />
+      )}
     </div>
   );
 }
