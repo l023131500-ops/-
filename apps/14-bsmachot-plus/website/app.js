@@ -380,10 +380,17 @@
     $('#scrim').addEventListener('click', closeSidebar);
     try {
       const res = await fetch('./assets/data.json');
+      if (!res.ok) throw new Error('HTTP ' + res.status);
       DATA = await res.json();
       SHEETS = DATA.sheets || [];
     } catch (e) {
+      $('#pageTitle').textContent = 'שגיאה';
       $('#view').innerHTML = '<p class="empty">שגיאה בטעינת הנתונים.</p>';
+      return;
+    }
+    if (!SHEETS.length) {
+      $('#pageTitle').textContent = 'שגיאה';
+      $('#view').innerHTML = '<p class="empty">אין תוכן זמין.</p>';
       return;
     }
     buildNav();
