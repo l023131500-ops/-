@@ -4,6 +4,8 @@ import type { Server } from "node:http";
 import multer from "multer";
 import { transcribe, type TranscribeResult } from "./transcribe";
 import { editTranscript } from "./edit";
+import { isAdminRequest, handleAdminLogin, handleAdminLogout } from "./auth";
+import { renderAdminPage } from "./admin-page";
 
 // המנוע שנבחר לתמלול. ברירת המחדל נקבעה במדידה על הקלטות אמיתיות מהארכיון
 // (ראה /api/lab/transcribe למטה), ולא לפי מוניטין. על 217.wav, אותו אודיו בדיוק:
@@ -541,6 +543,37 @@ export async function registerRoutes(
       res.json({ seq: rec.seq, name, size_mb: +(buf.length / 1048576).toFixed(2), prompt: withPrompt, results });
     } catch (e: any) {
       res.status(500).json({ error: e?.message || "השוואה נכשלה" });
+    }
+  });
+
+  // ---- עמוד ניהול — רשימת הקלטות לצפייה תפעולית (מס' סידורי/סטטוס/משך) ----
+  // מוגן בעוגיית כניסה (STD_ADMIN_USER/STD_ADMIN_PASSWORD), אותה תבנית בדיוק
+  // כמו apps/28-kupot-health-funds/server/routes.ts. תוספת בלבד — לא נוגע
+  // בשום מסלול ציבורי קיים (upload/recordings/transcribe).
+  app.get("/api/admin", (_req: Request, res: Response) => {
+    res.setHeader("Content-Type", "text/html; charset=utf-8");
+    res.send(renderAdminPage());
+  });
+  app.post("/api/admin/login", handleAdminLogin);
+  app.post("/api/admin/logout", handleAdminLogout);
+  app.get("/api/admin/recordings", async (req: Request, res: Response) => {
+    if (!isAdminRequest(req)) {
+      return res.status(403).json({ error: "גישה נדחתה" });
+    }
+    try {
+      const fields =
+        "id,seq,original_name,topic,parsha_or_date,status,duration_seconds,created_at";
+      const r = await fetch(
+        `${SUPABASE_URL}/rest/v1/recordings?select=${fields}&order=seq.desc&limit=1000`,
+        { headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` } },
+      );
+      if (!r.ok) {
+        const t = await r.text();
+        return res.status(500).json({ error: `שגיאה בטעינת ההקלטות: ${t}` });
+      }
+      res.json(await r.json());
+    } catch (e: any) {
+      res.status(500).json({ error: e.message || "שגיאה בטעינת ההקלטות" });
     }
   });
 
