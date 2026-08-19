@@ -42392,6 +42392,11 @@ function renderAdminPage() {
   #login-box { max-width:320px; margin:4rem auto; background:#fff; border-radius:12px; padding:2rem; box-shadow:0 2px 10px rgba(0,0,0,.08); }
   #login-box label { display:block; font-size:.9rem; margin-bottom:.4rem; }
   #login-box input { width:100%; box-sizing:border-box; padding:.6rem .7rem; border:1px solid #ccd3da; border-radius:8px; font-size:1rem; }
+  .pw-wrap { position:relative; }
+  .pw-wrap input { padding-left:2.4rem; }
+  .pw-toggle { position:absolute; left:.3rem; top:50%; transform:translateY(-50%); width:2rem; height:2rem; padding:0; margin:0; border:0; background:transparent; color:#5a6672; cursor:pointer; display:flex; align-items:center; justify-content:center; border-radius:6px; }
+  .pw-toggle:hover { background:#eef1f4; }
+  .pw-toggle svg { width:1.15rem; height:1.15rem; }
   #login-box button, #logout-btn { margin-top:1rem; width:100%; padding:.6rem; border:0; border-radius:8px; background:#1b6fd1; color:#fff; font-size:1rem; cursor:pointer; }
   #logout-btn { width:auto; padding:.4rem 1rem; font-size:.85rem; }
   #error { color:#c0392b; font-size:.85rem; margin-top:.6rem; min-height:1.1em; }
@@ -42409,7 +42414,23 @@ function renderAdminPage() {
 <div id="login-box">
   <h1>\u05E0\u05D9\u05D4\u05D5\u05DC \u2014 \u05E4\u05E0\u05D9\u05D5\u05EA \u05DE\u05E2\u05D1\u05E8 \u05E7\u05D5\u05E4\u05D4</h1>
   <label for="pw">\u05E1\u05D9\u05E1\u05DE\u05EA \u05E0\u05D9\u05D4\u05D5\u05DC</label>
-  <input id="pw" type="password" autocomplete="current-password" />
+  <div class="pw-wrap">
+    <input id="pw" type="password" autocomplete="current-password" />
+    <button id="pwToggle" class="pw-toggle" type="button"
+            aria-pressed="false" aria-controls="pw" aria-label="\u05D4\u05E6\u05D2 \u05E1\u05D9\u05E1\u05DE\u05D4" title="\u05D4\u05E6\u05D2 \u05E1\u05D9\u05E1\u05DE\u05D4">
+      <svg id="pwEye" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+           stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M2 12s3.6-6.5 10-6.5S22 12 22 12s-3.6 6.5-10 6.5S2 12 2 12z" />
+        <circle cx="12" cy="12" r="2.8" />
+      </svg>
+      <svg id="pwEyeOff" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+           stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" hidden>
+        <path d="M2 12s3.6-6.5 10-6.5c1.7 0 3.2.5 4.5 1.1M22 12s-1.3 2.4-3.9 4.2M12 18.5C5.6 18.5 2 12 2 12" />
+        <path d="M9.9 9.9a3 3 0 0 0 4.2 4.2" />
+        <path d="M3.5 3.5l17 17" />
+      </svg>
+    </button>
+  </div>
   <button id="login-btn" type="button">\u05DB\u05E0\u05D9\u05E1\u05D4</button>
   <div id="error"></div>
 </div>
@@ -42505,6 +42526,20 @@ function renderAdminPage() {
 
   pwInput.addEventListener("keydown", function (e) {
     if (e.key === "Enter") document.getElementById("login-btn").click();
+  });
+
+  // \u05D4\u05E6\u05D2\u05EA \u05E1\u05D9\u05E1\u05DE\u05D4: type/aria/\u05D0\u05D9\u05D9\u05E7\u05D5\u05DF \u05D7\u05D9\u05D9\u05D1\u05D9\u05DD \u05DC\u05D4\u05E1\u05DB\u05D9\u05DD \u05EA\u05DE\u05D9\u05D3, \u05D0\u05D5\u05EA\u05D4 \u05EA\u05D1\u05E0\u05D9\u05EA \u05DB\u05DE\u05D5 /login.
+  document.getElementById("pwToggle").addEventListener("click", function () {
+    var btn = this;
+    var on = pwInput.type === "password";
+    pwInput.type = on ? "text" : "password";
+    btn.setAttribute("aria-pressed", on ? "true" : "false");
+    var label = on ? "\u05D4\u05E1\u05EA\u05E8 \u05E1\u05D9\u05E1\u05DE\u05D4" : "\u05D4\u05E6\u05D2 \u05E1\u05D9\u05E1\u05DE\u05D4";
+    btn.setAttribute("aria-label", label);
+    btn.title = label;
+    document.getElementById("pwEye").toggleAttribute("hidden", on);
+    document.getElementById("pwEyeOff").toggleAttribute("hidden", !on);
+    pwInput.focus();
   });
 
   document.getElementById("logout-btn").addEventListener("click", function () {
