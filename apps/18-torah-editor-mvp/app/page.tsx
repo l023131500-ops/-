@@ -3,8 +3,13 @@ import Link from 'next/link';
 export default function Home() {
   return (
     <main className="container">
-      <h1>העורך התורני</h1>
-      <p className="subtitle">עוזר AI לעריכה, הגהה, ניקוד ואימות מקורות בספרים תורניים</p>
+      <div className="page-head">
+        <div>
+          <h1>העורך התורני</h1>
+          <p className="subtitle">עוזר AI לעריכה, הגהה, ניקוד ואימות מקורות בספרים תורניים</p>
+        </div>
+        <a className="pricing-link" href="https://more30.com/subscribe?app=orech">מחירון</a>
+      </div>
 
       <div className="module-grid">
         {/*

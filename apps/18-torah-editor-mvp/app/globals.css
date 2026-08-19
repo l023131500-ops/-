@@ -109,6 +109,15 @@ h1 {
   margin-bottom: 4px;
 }
 
+.page-head {
+  display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap;
+}
+.pricing-link {
+  color: var(--accent); text-decoration: none; font-size: 14px; font-weight: 600;
+  white-space: nowrap; padding-top: 6px;
+}
+.pricing-link:hover { text-decoration: underline; }
+
 .subtitle {
   color: var(--ink-2);
   margin-bottom: 24px;
