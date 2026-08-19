@@ -152,17 +152,26 @@ export default function Home() {
       {/* Hero */}
       <header className="border-b border-border bg-gradient-to-l from-primary/10 via-primary/[0.04] to-transparent">
         <div className="mx-auto max-w-5xl px-4 py-10 sm:py-14">
-          <div className="flex items-center gap-3">
-            <BrandLogo className="h-11 w-11 text-primary" />
-            <div>
-              <h1
-                className="text-xl font-extrabold text-foreground sm:text-2xl"
-                data-testid="text-site-title"
-              >
-                השוואת קופות חולים
-              </h1>
-              <p className="text-sm text-muted-foreground">מבית בקלות</p>
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <BrandLogo className="h-11 w-11 text-primary" />
+              <div>
+                <h1
+                  className="text-xl font-extrabold text-foreground sm:text-2xl"
+                  data-testid="text-site-title"
+                >
+                  השוואת קופות חולים
+                </h1>
+                <p className="text-sm text-muted-foreground">מבית בקלות</p>
+              </div>
             </div>
+            <a
+              href="/subscribe?app=kupot"
+              className="shrink-0 rounded-lg border border-border bg-card px-3 py-1.5 text-xs font-semibold text-foreground hover-elevate"
+              data-testid="link-pricing"
+            >
+              מחירון
+            </a>
           </div>
           <p className="mt-4 max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base">
             מידע ברור ומכובד על זכויות והטבות בקופות החולים בישראל, לצד זכויות
