@@ -1,6 +1,7 @@
 // עמוד העורך — הלב של המערכת. קנבאס חי במרכז, פאנל שדות+שכבות מימין, סרגל עליון.
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useLocation } from "wouter";
+import { useQuery } from "@tanstack/react-query";
 import type Konva from "konva";
 import {
   Crown,
@@ -31,6 +32,7 @@ import {
   Search,
   Blocks,
   Figma,
+  Palette,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -67,9 +69,32 @@ import { getStyle } from "@shared/styles";
 import { FORMATS, getFormat } from "@shared/formats";
 import { downloadPNG, downloadPDF, downloadSVG } from "@/lib/exporter";
 import { downloadIDML } from "@/lib/idmlExporter";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, hasAuthSession } from "@/lib/queryClient";
 import { nextId } from "@shared/layers";
 import type { TemplateDoc, TextLayer, ImageLayer, ShapeLayer, AnyLayer, TemplateBackground } from "@shared/layers";
+
+// שורת מותג כפי שהשרת מחזיר מ-/api/brands (ר' shared/schema.ts) — קריאה בלבד כאן
+interface BrandRow {
+  id: number;
+  brandName: string;
+  logoPng: string | null;
+  kitJson: string | null;
+  updatedAt: number;
+}
+
+// שולף עד 4 צבעי פלטה (ראשי+משני) מ-kitJson לתצוגת נקודות-צבע קטנה בכרטיס
+function brandSwatches(kitJson: string | null): string[] {
+  if (!kitJson) return [];
+  try {
+    const kit = JSON.parse(kitJson);
+    const hexes = [...(kit?.colors?.primary ?? []), ...(kit?.colors?.secondary ?? [])]
+      .map((c: any) => c?.hex)
+      .filter((h: unknown): h is string => typeof h === "string");
+    return hexes.slice(0, 4);
+  } catch {
+    return [];
+  }
+}
 
 export default function Editor() {
   const [, navigate] = useLocation();
@@ -110,6 +135,18 @@ export default function Editor() {
   // וקטוריזציה של שכבת תמונה קיימת ל-SVG אמיתי (Recraft — מנוע קיים בכלי המותג)
   const [vectorizing, setVectorizing] = useState(false);
   const [removingBg, setRemovingBg] = useState(false);
+
+  // "המותגים שלי" — פאנל תצוגה בלבד, מוצג רק למי שמחובר (auth-button.js, נוסף 19/08).
+  // בלי כניסה: אין שינוי ויזואלי כלל לעורך (אנונימי כמו היום) — הפאנל לא נטען ולא מוצג.
+  const loggedIn = hasAuthSession();
+  const { data: myBrands } = useQuery<BrandRow[]>({
+    queryKey: ["/api/brands"],
+    enabled: loggedIn,
+  });
+  function openBrandInNewTab(id: number) {
+    const url = `${window.location.origin}${window.location.pathname}#/branding/${id}`;
+    window.open(url, "_blank", "noopener,noreferrer");
+  }
 
   // אם נכנסים ישירות ל-/editor בלי בחירה (רענון) — חזרה לבית
   useEffect(() => {
@@ -960,6 +997,48 @@ export default function Editor() {
               />
             </CardContent>
           </Card>
+
+          {/* המותגים שלי — רק למחוברים (auth-button.js); תצוגה בלבד, פתיחה בכרטיסייה חדשה */}
+          {loggedIn && myBrands && myBrands.length > 0 && (
+            <Card className="mb-4 border-[#C9A227]/15 bg-[#101B32]">
+              <CardContent className="p-4">
+                <h2 className="mb-3 flex items-center gap-2 text-sm font-bold text-[#F5EEDD]">
+                  <Palette className="h-4 w-4 text-[#C9A227]" /> המותגים שלי
+                </h2>
+                <div className="space-y-2">
+                  {myBrands.map((b) => {
+                    const swatches = brandSwatches(b.kitJson);
+                    return (
+                      <button
+                        key={b.id}
+                        type="button"
+                        onClick={() => openBrandInNewTab(b.id)}
+                        className="flex w-full items-center gap-2 rounded-lg border border-[#C9A227]/15 bg-[#0B1220] p-2 text-right transition hover:border-[#C9A227]/50"
+                        title="פתיחה במחלקת המיתוג (כרטיסייה חדשה)"
+                        data-testid={`button-open-brand-${b.id}`}
+                      >
+                        {b.logoPng ? (
+                          <img src={b.logoPng} alt={b.brandName} className="h-8 w-8 shrink-0 rounded bg-white/95 object-contain p-0.5" />
+                        ) : (
+                          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded bg-[#C9A227]/10">
+                            <Palette className="h-3.5 w-3.5 text-[#C9A227]/60" />
+                          </div>
+                        )}
+                        <span className="min-w-0 flex-1 truncate text-xs text-[#F5EEDD]/80">{b.brandName}</span>
+                        {swatches.length > 0 && (
+                          <div className="flex shrink-0 gap-0.5">
+                            {swatches.map((hex, i) => (
+                              <span key={i} className="h-3 w-3 rounded-full border border-white/10" style={{ background: hex }} />
+                            ))}
+                          </div>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
           {/* טיפים מהקטגוריה */}
           {category && (

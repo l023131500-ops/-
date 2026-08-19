@@ -42,6 +42,11 @@ function authHeaders(): Record<string, string> {
   return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
+/** האם יש session תקף כרגע — לגילוי UI (לדוגמה: הצגת "המותגים שלי"), לא לאבטחה (השרת הוא זה שאוכף). */
+export function hasAuthSession(): boolean {
+  return !!authToken();
+}
+
 export async function apiRequest(
   method: string,
   url: string,
