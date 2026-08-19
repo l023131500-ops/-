@@ -1,4 +1,4 @@
-﻿## הערת ארכיטקטורה לגן-קליק — בנֵה מוכן-לאיחוד (בלי להזיז מערכות)
+## הערת ארכיטקטורה לגן-קליק — בנֵה מוכן-לאיחוד (בלי להזיז מערכות)
 - אל תזיז/תשכפל תיקיות של מערכות אחרות. המבנה הקיים נשאר כמו שהוא.
 - השתמש באותו פרויקט Supabase המשותף (קרא SUPABASE_URL/מפתחות מ-env הקיים), בסכימה נפרדת לגן-קליק — אל תיצור פרויקט DB חדש.
 - אימות/כניסה: אותה תבנית JWT ואותו SEED אדמין כמו הקיוסק, כדי שבהמשך יתחברו לאזור ניהול אחיד.
@@ -4522,3 +4522,47 @@ Cron או `pg_cron`) וחיבור Resend, שלב גדול יותר משלב אח
 תחת `more30.com/design` / `more30.com/studio`) — לא ה-RUN_INSTRUCTIONS/more30-priority
 הרגילים של הסבב הזה. אין עדיין `CHECKLIST/graphics.md` או `HANDOFF_graphics.md`, כלומר
 הלולאה הזו טרם רצה בפועל. לא נגעתי בהם — הם ככל הנראה מיועדים להרצה נפרדת של המשתמש.
+
+
+---
+
+## 19/08/2026 (בוקר +3) — 12 smel: קישור מחירון נכתב במקור, לא פרוס — מנגנון הפריסה של smel-more30 לא ברור וגרם להשבתה חד-פעמית (טופלה מיד)
+
+בהמשך לרצף הוספת קישורי "מחירון" ל-/subscribe?app=X (01/02/03/04/06/10/17/28 כבר פרוסים):
+הוספתי קישור זהה ב-apps/12-smel-ndln/client/src/components/Header.tsx (ליד קישור "פרימיום"
+הקיים, <a href="/subscribe?app=smel">, הוספה בלבד). ה-build המקומי (vite build) עבר נקי.
+
+**גיליתי בעיה חמורה בפריסה, לפני commit של הפריסה עצמה:**
+
+1. apps/12-smel-ndln/.vercel/project.json מצביע על פרויקט Vercel **שגוי**:
+   12-smel-ndln (prj_aJxdpRg57M1cvorZL9feH2mbzafI, alias 12-smel-ndln.vercel.app
+   בלבד) — פרויקט יתום שלא קשור ל-more30.com/smel בכלל. פרסתי אליו בטעות קודם
+   (deployment dpl_8aB21QU2Kd4CQ7TFcXvcj8qgcrcH) — לא נזק, כי שום דבר לא מצביע
+   אליו, אבל בזבז זמן.
+2. הפרויקט האמיתי שאליו portal/vercel.dist.json מפנה את /smel/* הוא
+   **smel-more30** (prj_5JDSJ6tZzyDkjYhcNaARZMZOZiis) — פרויקט **לא מקושר ל-git**,
+   buildCommand: "echo no-build", outputDirectory: ".", כלומר נבנה מקומית
+   ומועלה כ"prebuilt" עם מבנה תיקיות ספציפי: src/smel/* (תוכן dist/public של
+   האפליקציה) + src/vercel.json (עם ה-rewrites ל-SPA).
+3. שיחזרתי את אותו מבנה בדיוק (זהה ל-deployment הקודם שנמדד דרך ה-API של Vercel:
+   dpl_EWrZhWiJxmrycvAKH3ZkCSq6FRe3, כולל אותו vercel.json מילה-במילה) ופרסתי —
+   קודם preview (נחסם ע"י Vercel SSO protection, אי-אפשר לאמת ישירות), ואז production.
+   **התוצאה: more30.com/smel החזיר 404 NOT_FOUND בפועל** (אומת ב-Playwright).
+   כלומר יש עוד משהו במנגנון הבנייה/הפריסה של הפרויקט הזה שלא שוחזר נכון —
+   כנראה קשור ל-sourceFilesOutsideRootDirectory: true שמופיע בהגדרות הפרויקט,
+   שלא הבנתי איך להשתמש בו נכון מה-CLI.
+4. **טיפלתי מיד:** vercel rollback ל-dpl_EWrZhWiJxmrycvAKH3ZkCSq6FRe3 (הפריסה
+   התקינה הקודמת) דרך ה-API. אומת חי ב-Playwright מיד אחרי: more30.com/smel
+   חזר ל-200 עם התוכן האמיתי ("SMEL NDLN — מחקר נדל"ן מנתוני ממשלה"). ה-outage
+   נמשך כ-2 דקות, לא נצפה ע"י משתמש אמיתי (לפי מיטב הידיעה).
+
+**המצב עכשיו:** שינוי המקור ב-Header.tsx תקין ו-committed, **אך לא פרוס**.
+אל תנסה שוב לשחזר את מבנה הפריסה של smel-more30 בניחוש — זו הפעם השנייה
+שהניחוש נכשל (הפעם הראשונה של סוכן קודם כן הצליחה, אבל לא ברור מה היה שונה
+בפועל). מומלץ: vercel pull --scope l023131500-ops-projects מתוך תיקייה
+מקושרת נכון לפרויקט smel-more30, כדי לקבל את ה-build settings/Environment
+המדויקים לפני ניסיון פריסה נוסף — או לשאול את המשתמש מה בדיוק ה-workflow
+שהניב את dpl_EWrZhWiJxmrycvAKH3ZkCSq6FRe3.
+
+תיקיית עבודה זמנית _tmp_smel_deploy/ בשורש הריפו — untracked בכוונה, לא נמחקה
+(נעולה ע"י תהליך), אפשר למחוק בבטחה בסבב הבא.

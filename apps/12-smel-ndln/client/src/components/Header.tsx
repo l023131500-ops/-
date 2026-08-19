@@ -38,6 +38,13 @@ export function Header() {
               פרימיום
             </Button>
           </Link>
+          {/* דף מחירון more30 חי מחוץ ל-app הזה (`/subscribe`), לכן <a> רגיל
+              ולא wouter Link — ראה ההערה למעלה על הבעיה עם <a> כילד של Link. */}
+          <a href="/subscribe?app=smel" data-testid="link-pricing-header" className="hidden sm:inline-flex">
+            <Button variant="ghost">
+              מחירון
+            </Button>
+          </a>
           <Button
             variant="outline"
             size="icon"
