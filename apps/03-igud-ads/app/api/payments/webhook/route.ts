@@ -49,6 +49,24 @@ export async function POST(req: Request) {
 
   const svc = createSupabaseService();
 
+  // Idempotency: payment gateways commonly retry a webhook call for the same
+  // transaction (timeout, no fast 200 received, etc). Without this check a
+  // retry would insert a second ad_payments row and grant a second free-
+  // designs coupon for the same real-world payment. Only guards when Nedarim
+  // sends a transaction id (it always does on a real payment); matches the
+  // column already written below (provider_transaction_id).
+  if (transactionId) {
+    const { data: existingPayment } = await svc
+      .from("ad_payments")
+      .select("id")
+      .eq("provider_transaction_id", transactionId)
+      .eq("project_id", project_id)
+      .maybeSingle();
+    if (existingPayment) {
+      return NextResponse.json({ ok: true, note: "duplicate transaction, already processed" });
+    }
+  }
+
   // 1. Read current project parameters, then MERGE (not overwrite)
   const { data: project } = await svc
     .from("ad_projects")
