@@ -406,3 +406,36 @@
     install`/`build` (כלל הסשן) — אימות היה קריאת קוד + hash, לא הרצה.
     ענף `feat/orech-admin-screen-0819` (אותו ענף עבודה מתמשך), 22 קבצים
     נוספו ל-git עם `git add -f`.
+
+## 19/08/2026 (לילה) — 40 גננת בקליק: `/api/admin/delete` נבנה — לא ניחוש הפעם, יש מקור מדויק (עדיפות #0, core.issues #244)
+
+40. **מה השתנה מאז #39:** בסבב הקודם נמנעתי מלכתוב את `app/api/admin/delete`
+    כי חשבתי שאין לו עותק מקור נגיש. קריאה מדוקדקת יותר של `lib/supabase.ts`
+    (כן שוחזר ב-#38) גילתה שזה לא מדויק: `deleteUpload()` — כל לוגיקת ה-
+    `service_role` (מחיקת blobs מהדלי `gannenet-shelf`, ואז הרשומה, עם
+    idempotency על 404-בגוף-400) — **כבר קיימת ומתועדת שם במלואה**, כולל
+    ה-exports `deleteReady`/`supabaseReady` שנועדו במפורש לצריכה מ-route
+    שעדיין לא קיים. וב-`STATUS.md` (שורות 349-380) יש תיעוד מדויק של אותו
+    route שאבד: קוד סטטוס (401/400/404/503), תבנית ה-id המצומצמת
+    (`^up_[a-z0-9]+_[a-z0-9]+$`, בכוונה צרה יותר מזו של `/api/admin/override`
+    כדי שאף Drive/seed id לא יגיע לנתיב ההרסני היחיד), וסדר הפעולות
+    (blobs קודם, רשומה אחרונה). זה לא "כתיבת קוד service_role בלי מקור
+    אמין" — זה חיבור endpoint דק מעל לוגיקה קיימת, לפי מפרט מתועד במדויק.
+41. **הקובץ שנכתב:** `app/api/admin/delete/route.ts` (חדש) — אימות זהה
+    בדיוק לתבנית של `/api/admin/list` ו-`/api/admin/override` (הדדר
+    `x-admin-key` מול `ADMIN_PASSWORD`), אימות `fileId` מול ה-regex
+    המצומצם, קריאה ל-`deleteUpload()` הקיימת, ומיפוי `reason` להודעות
+    שגיאה בעברית בסגנון שאר האפליקציה (`error:` בגוף ה-JSON, אותו סגנון
+    שקורא `app/shelf/admin/page.tsx` בפועל ב-`remove()`). אומת בקריאת קוד
+    בלבד (לא הותקן `node_modules`, לא הורץ build — כלל הסשן): ה-imports
+    (`deleteUpload`, `deleteReady`, `supabaseReady`) קיימים ומיוצאים
+    ב-`lib/supabase.ts`; צורת הבקשה (`POST { fileId }` + `x-admin-key`)
+    וקריאת השגיאה (`d.error`) תואמות בדיוק את מה ש-`remove()` ב-
+    `shelf/admin/page.tsx` שולח וקורא; דפוס ה-regex נבדק ידנית מול הפורמט
+    ש-`uploadItem()` מייצר (`up_<base36 ms>_<base36 rand>`, בלי סיומת —
+    ה-id ולא ה-`storage_path`).
+42. **אפס רגרסיה:** קובץ חדש בלבד, לא נגעתי באף קובץ קיים. שאר שני
+    הפערים התיעודיים מ-#39 (`lib/season.ts` לא מחובר, `/shelf` לא קורא
+    `cat`/`q` מה-URL) נשארים פתוחים — לא באותו סטטוס חסימה: פשוט לא היו
+    חלק מהצעד הזה, וירשמו לסבב הבא. ענף `feat/orech-admin-screen-0819`
+    (אותו ענף עבודה מתמשך).
