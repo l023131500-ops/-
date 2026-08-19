@@ -839,7 +839,9 @@ function TextLayerControls({
 
       {/* צבע טקסט — בורר מלא עם מפת צבעים */}
       <div>
-        <Label className="mb-1 block text-xs text-[#F5EEDD]/70">צבע טקסט</Label>
+        <Label className="mb-1 block text-xs text-[#F5EEDD]/70">
+          צבע טקסט <code className="font-mono text-[10px] text-[#C9A227]/70">fill</code>
+        </Label>
         <ColorPicker
           value={layer.fill}
           onChange={(c) => onChange({ fill: c })}
@@ -851,7 +853,9 @@ function TextLayerControls({
       {/* מתאר (קו מתאר) */}
       <div className="grid grid-cols-2 gap-2">
         <div>
-          <Label className="mb-1 block text-xs text-[#F5EEDD]/70">צבע מתאר</Label>
+          <Label className="mb-1 block text-xs text-[#F5EEDD]/70">
+            צבע מתאר <code className="font-mono text-[10px] text-[#C9A227]/70">stroke</code>
+          </Label>
           <ColorPicker
             value={layer.stroke ?? "#000000"}
             onChange={(c) => onChange({ stroke: c })}
@@ -861,7 +865,9 @@ function TextLayerControls({
           />
         </div>
         <div>
-          <Label className="mb-1 block text-xs text-[#F5EEDD]/70">עובי מתאר: {layer.strokeWidth ?? 0}</Label>
+          <Label className="mb-1 block text-xs text-[#F5EEDD]/70">
+            עובי מתאר <code className="font-mono text-[10px] text-[#C9A227]/70">stroke</code>: {layer.strokeWidth ?? 0}
+          </Label>
           <Slider
             value={[layer.strokeWidth ?? 0]}
             min={0}
@@ -875,7 +881,9 @@ function TextLayerControls({
       {/* צל טקסט */}
       <div className="grid grid-cols-2 gap-2">
         <div>
-          <Label className="mb-1 block text-xs text-[#F5EEDD]/70">צבע צל</Label>
+          <Label className="mb-1 block text-xs text-[#F5EEDD]/70">
+            צבע צל <code className="font-mono text-[10px] text-[#C9A227]/70">shadow</code>
+          </Label>
           <ColorPicker
             value={layer.shadowColor ?? "rgba(0, 0, 0, 0.5)"}
             onChange={(c) => onChange({ shadowColor: c })}
@@ -884,7 +892,9 @@ function TextLayerControls({
           />
         </div>
         <div>
-          <Label className="mb-1 block text-xs text-[#F5EEDD]/70">טשטוש צל: {layer.shadowBlur ?? 0}</Label>
+          <Label className="mb-1 block text-xs text-[#F5EEDD]/70">
+            טשטוש צל <code className="font-mono text-[10px] text-[#C9A227]/70">blur</code>: {layer.shadowBlur ?? 0}
+          </Label>
           <Slider
             value={[layer.shadowBlur ?? 0]}
             min={0}
@@ -937,7 +947,9 @@ function BackgroundControls({
       {/* צבע מלא */}
       {type === "solid" && (
         <div>
-          <Label className="mb-1 block text-xs text-[#F5EEDD]/70">צבע הרקע</Label>
+          <Label className="mb-1 block text-xs text-[#F5EEDD]/70">
+            צבע הרקע <code className="font-mono text-[10px] text-[#C9A227]/70">fill</code>
+          </Label>
           <ColorPicker
             value={background.color ?? "#0B1220"}
             onChange={(c) => onChange({ type: "solid", color: c })}
