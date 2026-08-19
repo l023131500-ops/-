@@ -61,6 +61,12 @@ export function Header() {
               {item.label}
             </Link>
           ))}
+          <a
+            href="https://more30.com/subscribe?app=chatzor"
+            className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+          >
+            מחירון
+          </a>
         </nav>
 
         <div className="flex items-center gap-2">
@@ -107,6 +113,14 @@ export function Header() {
                 </Link>
               </li>
             ))}
+            <li>
+              <a
+                href="https://more30.com/subscribe?app=chatzor"
+                className="block rounded-md px-3 py-3 text-sm font-medium text-foreground hover:bg-secondary"
+              >
+                מחירון
+              </a>
+            </li>
           </ul>
         </nav>
       </div>
