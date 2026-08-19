@@ -1,5 +1,39 @@
 # SYSTEMS_STATUS.md — מצב כל המערכות, נמדד
 
+> ## 🟢 19/08/2026 (בוקר +11) — **40 גננת בקליק (gannenet): עמוד מחירים מעודכן לנתוני אמת — פרוס וחי**
+
+> #40 היא היחידה בסבב הזה שכבר יש לה עמוד `/pricing` משלה בתוך האפליקציה
+> (Next.js, `apps/40-gannenet/app/pricing/page.tsx`, מקושר מ-`Nav.tsx`) —
+> כך שהפער כאן לא היה "אין קישור" אלא תוכן שקרן: הכרטיס השני בעמוד אמר
+> "בהכנה… טרם נקבע" בזמן ש-`core.plans` כבר מחזיק שורות אמיתיות
+> `customer_visible` ל-`app_key='gannenet'` (חינמי / בסיסי ₪2 / מורחב ₪5),
+> ו-`more30.com/subscribe?app=gannenet` כבר מרנדר אותן (אומת ב-Playwright
+> לפני הנגיעה). תוקן: הכרטיס מציג עכשיו את שני המסלולים האמיתיים (₪2/₪5,
+> מהמספרים ב-DB, לא מומצאים) וכפתור "לצפייה במסלולים" ל-`/subscribe?app=gannenet`.
+> הוספה/תיקון בלבד — הכרטיס החינמי (180 המערכים, רשימת הפיצ'רים הפתוחים,
+> "למאגר המערכים"), הניווט, הפוטר וכל שאר האתר נשארו במקומם.
+>
+> `npm run build` נקי (195 עמודים, כולל 180 `/lesson/[id]`). #40 אין לה
+> `_deploy/gannenet-more30` מקומי ואין `.vercel/` שמור בריפו — הפריסה
+> דרך פרויקט Vercel נפרד `gannenet-more30` (הפורטל עושה rewrite
+> `/gannenet/:path* -> https://gannenet-more30.vercel.app/gannenet/:path*`,
+> ראה `GANNENET_BUILD.md`). קושר עם `vercel link --project gannenet-more30`
+> ואז `vercel deploy --prod --yes` ישירות מ-`apps/40-gannenet` (מקור, לא
+> prebuilt — לפרויקט יש API routes אמיתיים) → `dpl_EYM8ifYhsJBTJSsgCYbW3nFMhQwX`,
+> READY, aliased `gannenet-more30.vercel.app`.
+>
+> אומת חי ב-Playwright עם cache-buster: `more30.com/gannenet/pricing` מציג
+> את שני המסלולים (2/5 ₪) וקישור אמיתי ל-`/subscribe?app=gannenet`, 0 שגיאות
+> קונסולה (אזהרה אחת לא-קשורה, אותה רעש NetFree ידוע); `more30.com/gannenet`
+> (דף הבית) עולה נקי, 0 שגיאות קונסולה — אין רגרסיה. מצב טסט בלבד, אין חיוב
+> אמיתי.
+>
+> הבא: 34 kesef (מקור לא אותר), 35 kiosk / 36 tivuch (נפרסים מריפו נפרד,
+> commit כאן לא משנה כלום), 18 orech (דורש רכיב ניווט משותף חדש — נדחה,
+> ראה heartbeat 1007), 12 smel (needs_user, מנגנון פריסה לא ברור) — כל
+> המערכות החיות/ציבוריות הנותרות בסבב "מחירון" חסומות או דורשות עבודה
+> גדולה יותר משלב אחד.
+
 > ## 🟢 19/08/2026 (בוקר +10) — **26 סטודיו מודעות (studio): קישור "מחירון" בניווט — פרוס וחי**
 
 > המשך אותו דפוס (01/02/03/04/06/10/16/17/22/24/28): `core.plans` כבר מכיל
