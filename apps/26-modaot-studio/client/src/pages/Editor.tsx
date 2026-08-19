@@ -86,6 +86,9 @@ export default function Editor() {
   const [aiLoading, setAiLoading] = useState(false);
   // מנוע רקע ה-AI: gemini (ברירת מחדל, קיים) או recraft (חדש — פוטוריאליסטי, פריט 6)
   const [aiEngine, setAiEngine] = useState<"gemini" | "recraft">("gemini");
+  // כשלא ברור איזה סגנון מתאים — 2 אפשרויות (Gemini + Recraft במקביל) לבחירה, במקום שהמערכת תחליט לבד (פריט 15)
+  const [aiVariants, setAiVariants] = useState<{ engine: "gemini" | "recraft"; label: string; dataUrl: string }[]>([]);
+  const [aiVariantsLoading, setAiVariantsLoading] = useState(false);
   const [saving, setSaving] = useState(false);
 
   // קופי חכם (Claude)
@@ -467,6 +470,55 @@ export default function Editor() {
     } finally {
       setAiLoading(false);
     }
+  }
+
+  // כשהסגנון המתאים לא ברור — מייצר 2 אפשרויות במקביל (Gemini + Recraft) ומציג לבחירה,
+  // במקום להחיל רקע אחד באופן אוטומטי כמו handleAiBackground (פריט 15, אינו מחליף אותה)
+  async function handleAiBackgroundVariants() {
+    setAiVariantsLoading(true);
+    setAiVariants([]);
+    try {
+      const aspectRatio = format.width >= format.height ? "16:9" : "4:5";
+      const engines: { engine: "gemini" | "recraft"; label: string }[] = [
+        { engine: "gemini", label: "אפשרות א׳ — Gemini" },
+        { engine: "recraft", label: "אפשרות ב׳ — Recraft V4" },
+      ];
+      const results = await Promise.allSettled(
+        engines.map(({ engine }) =>
+          apiRequest("POST", "/api/ai/background", {
+            prompt: aiPrompt,
+            aspectRatio,
+            enhance: true,
+            engine,
+          }).then((r) => r.json()),
+        ),
+      );
+      const variants: { engine: "gemini" | "recraft"; label: string; dataUrl: string }[] = [];
+      results.forEach((res, i) => {
+        if (res.status === "fulfilled" && res.value?.dataUrl && !res.value?.fallback) {
+          variants.push({ engine: engines[i].engine, label: engines[i].label, dataUrl: res.value.dataUrl });
+        }
+      });
+      if (!variants.length) {
+        toast({ title: "לא התקבלו אפשרויות רקע — נסה תיאור אחר", variant: "destructive" });
+      }
+      setAiVariants(variants);
+    } catch (err: any) {
+      toast({
+        title: "יצירת האפשרויות נכשלה",
+        description: String(err?.message ?? err).slice(0, 150),
+        variant: "destructive",
+      });
+    } finally {
+      setAiVariantsLoading(false);
+    }
+  }
+
+  function applyAiBackgroundVariant(v: { dataUrl: string }) {
+    updateDoc({ ...doc!, background: { type: "image", src: v.dataUrl } });
+    toast({ title: "הרקע הנבחר הוחל" });
+    setAiVariants([]);
+    setAiDialogOpen(false);
   }
 
   async function handleSaveProject() {
@@ -1057,10 +1109,37 @@ export default function Editor() {
           <Button
             className="w-full gap-1.5 bg-[#C9A227] text-[#0B1220] hover:bg-[#C9A227]/90"
             onClick={handleAiBackground}
-            disabled={aiLoading}
+            disabled={aiLoading || aiVariantsLoading}
           >
             <Wand2 className="h-4 w-4" /> {aiLoading ? "יוצר רקע..." : "צור רקע"}
           </Button>
+          {/* לא בטוחים באיזה סגנון? — 2 אפשרויות (Gemini + Recraft) לבחירה, במקום שהמערכת תחליט לבד */}
+          <Button
+            variant="outline"
+            className="w-full gap-1.5 border-[#C9A227]/30 text-[#F5EEDD]/80"
+            onClick={handleAiBackgroundVariants}
+            disabled={aiLoading || aiVariantsLoading}
+            data-testid="button-ai-background-variants"
+          >
+            <Wand2 className="h-4 w-4" />
+            {aiVariantsLoading ? "יוצר 2 אפשרויות..." : "לא בטוחים? הצע 2 אפשרויות לבחירה"}
+          </Button>
+          {aiVariants.length > 0 && (
+            <div className="grid grid-cols-2 gap-2" data-testid="grid-ai-background-variants">
+              {aiVariants.map((v) => (
+                <button
+                  key={v.engine}
+                  type="button"
+                  onClick={() => applyAiBackgroundVariant(v)}
+                  className="overflow-hidden rounded-md border border-[#C9A227]/30 text-right hover:border-[#C9A227]"
+                  data-testid={`button-ai-variant-${v.engine}`}
+                >
+                  <img src={v.dataUrl} alt={v.label} className="h-24 w-full object-cover" />
+                  <span className="block px-2 py-1 text-xs text-[#F5EEDD]/80">{v.label}</span>
+                </button>
+              ))}
+            </div>
+          )}
         </DialogContent>
       </Dialog>
 
