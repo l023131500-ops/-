@@ -377,7 +377,12 @@ const AdminDashboard = () => {
     };
     const { error } = await supabase.from("lessons").insert(lessonData);
     if (error) { toast.error("שגיאה ביצירת השיעור"); return; }
-    await supabase.from("nedarim_submissions").update({ status: "published" }).eq("id", sub.id);
+    const { error: statusError } = await supabase.from("nedarim_submissions").update({ status: "published" }).eq("id", sub.id);
+    if (statusError) {
+      toast.error("השיעור נוצר אך עדכון הסטטוס נכשל: " + statusError.message);
+      fetchAll();
+      return;
+    }
     toast.success("השיעור נוצר ופורסם!");
     fetchAll();
   };
