@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { createSupabaseBrowser } from "@/lib/supabase/client";
+import ThemeToggle from "./ThemeToggle";
 
 const NAV = [
   { href: "/admin", label: "דשבורד" },
@@ -44,6 +45,7 @@ export default function AdminNav() {
               </Link>
             );
           })}
+          <ThemeToggle />
           <button
             onClick={signOut}
             className="ms-4 px-3 py-2 text-sm text-white/70 hover:text-white"

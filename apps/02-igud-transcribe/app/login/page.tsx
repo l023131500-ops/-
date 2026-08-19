@@ -6,6 +6,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createSupabaseBrowser } from "@/lib/supabase/client";
+import ThemeToggle from "@/components/ThemeToggle";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -179,10 +180,11 @@ export default function LoginPage() {
           </form>
         </div>
 
-        <div className="text-center mt-6">
+        <div className="mt-6 flex items-center justify-center gap-4">
           <Link href="/" className="text-sm text-slate-500 hover:text-brand-blue">
             ← חזרה לדף הבית
           </Link>
+          <ThemeToggle />
         </div>
       </div>
     </div>

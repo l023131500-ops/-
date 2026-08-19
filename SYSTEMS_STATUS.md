@@ -5677,6 +5677,38 @@ Lighthouse **95 / 100 / 100** (נמדד 07/08; 98 היה המדידה של 02/08
 ב-NEEDS_USER.md (לטובת מי שיפרוס את הפרויקט הזה בפעם הבאה).
 במייל דרך Edge Function. 76/76 בסמוק-טסט.
 
+---
+
+## 19/08/2026 (בוקר +6) — 02 tamlul: מתג מצב-כהה נוסף למסך הכניסה ולניהול
+
+תשתית מצב-כהה מלאה כבר קיימת ב-tamlul (משתני CSS ב-`app/globals.css`,
+`darkMode:"class"` ב-tailwind.config, בוט-סקריפט ב-`layout.tsx` שקורא
+`prefers-color-scheme`+`localStorage["tamlul-theme"]`) ורכיב `ThemeToggle`
+כבר קיים ומחובר ל-`SiteHeader` (דף הבית/העלאה/הצלחה). אבל שני מסכים לא
+כללו `SiteHeader` כלל ולכן לא היה בהם שום דרך להחליף ידנית: `/tamlul/login`
+(מסך הכניסה, מוצג ללקוח בלי OS בהעדפת חושך) ו-5 מסכי `/tamlul/admin/*`
+(דרך `AdminNav.tsx` המשותף לכולם).
+
+**תוקן:** הוספת `<ThemeToggle />` ל-`app/login/page.tsx` (ליד "חזרה לדף
+הבית") ול-`components/AdminNav.tsx` (בסרגל הניהול, לפני "יציאה") — אותו
+רכיב קיים בדיוק, בלי שינוי ל-`ThemeToggle.tsx` עצמו. `tsc --noEmit` נקי,
+`next build` נקי (13/13 עמודים, אין שגיאות).
+
+**אומת חי (Playwright, cache-buster):** `/tamlul/login` — הכפתור מופיע,
+לחיצה עליו הופכת מצב-כהה↔בהיר בפועל (צילומי מסך: כהה עם 🌙→☀️, בהיר עם
+☀️→🌙, כרטיס הכניסה/הרקע/הטקסט מתהפכים נכון), 0 שגיאות קונסולה בשני
+המצבים. `/tamlul` (דף הבית, ה-`SiteHeader` הקיים) ו-`/tamlul/admin`
+(הפניה נכונה ל-login עם `redirect=/admin` למי שלא מחובר) — ללא רגרסיה.
+`/tamlul/admin/*` עצמם דורשים סשן Supabase אמיתי (Google/מייל+סיסמה) —
+לא זמין מכאן לאימות ויזואלי מלא; הרכיב זהה-בייט לזה שכבר אומת ב-login,
+סיכון נמוך.
+
+פריסה: `vercel deploy --prod` מ-`apps/02-igud-transcribe` (הפרויקט כבר
+מקושר דרך `.vercel/project.json`, `tamlul-more30`) → `dpl_4AjwX198GL2Rkj7a6DW4iHWYRC2x`,
+READY, aliased `tamlul-more30.vercel.app`. אפס רגרסיה: שאר הכפתורים/
+הטפסים/הניווט/כפתור "הצג סיסמה" הקיים ב-login — ללא שינוי. לא נגעתי
+במערכת מוגנת.
+
 ### 01 — 62 → 69
 הוסר שער הספינר שחסם את כל האתר הציבורי מאחורי round-trip; הטננט מוזרק ל-HTML.
 FCP 3.2s → 2.0s.
