@@ -28,7 +28,7 @@
          אותו קובץ בדיוק, ‎SHA256 dd821076…‎, ב-‎egod‎, ‎mthbram‎, ‎zchuyot‎
          ו-‎galil‎. הוסר. במקומו שני הסמלים שה-‎manifest‎ כבר מכריז עליהם. -->
     <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
-    <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png">
+    <link rel="icon" type="image/jpeg" sizes="512x512" href="/icon-512.jpg">
     <meta name="author" content="איגוד השיעורים" />
 
     <meta property="og:type" content="website" />
@@ -36,12 +36,20 @@
          המקדימה של Lovable**, ‎id-preview-…lovable.app-1772990456848.png‎
          מ-08/03/2026, על דלי ‎r2.dev‎ שאינו שלנו — כלומר לא ניתן להחליפה
          ולא לרענן אותה, וכל שינוי קופי שנעשה כאן מאז אינו מגיע אליה.
-         במקומה ‎icon-512.png‎ מ-‎public/‎, אותו סמל שה-‎manifest‎ כבר מכריז
-         עליו. ריבועי ולכן ‎twitter:card=summary‎ ולא ‎summary_large_image‎. -->
-    <meta property="og:image" content="https://more30.com/mthbram/icon-512.png">
+         במקומה ‎icon-512.jpg‎ מ-‎public/‎, אותו סמל שה-‎manifest‎ כבר מכריז
+         עליו. ריבועי ולכן ‎twitter:card=summary‎ ולא ‎summary_large_image‎.
+         סיומת (§6, 19/08): הקובץ ישב תחת ‎icon-512.png‎ אך בתיו הם JPEG
+         אמיתי (‎FF D8 FF‎, לא ‎89 50 4E 47‎) — ‎type="image/png"‎ כאן
+         וב-‎manifest.json‎ היה שקר על תוכן הקובץ. שמאי-קישור נוקשים
+         (Facebook/Twitter card debuggers) מאמתים את סוג-התוכן בפועל מול
+         המוצהר ודוחים אי-התאמה; זו בדיוק המשפחה של הבאג ש-‎og:image‎ הזה
+         הוחלף כדי לתקן. שונה השם בפועל ל-‎icon-512.jpg‎ עם
+         ‎type="image/jpeg"‎ בשלושת המקומות — אין המרת פורמט (אין כלי המרה
+         זמין בלי התקנה), רק תיוג נכון של מה שכבר קיים. -->
+    <meta property="og:image" content="https://more30.com/mthbram/icon-512.jpg">
 
     <meta name="twitter:card" content="summary" />
-    <meta name="twitter:image" content="https://more30.com/mthbram/icon-512.png">
+    <meta name="twitter:image" content="https://more30.com/mthbram/icon-512.jpg">
     <meta property="og:title" content="איגוד השיעורים — שיעורי תורה, חברותות והרצאות">
     <meta name="twitter:title" content="איגוד השיעורים — שיעורי תורה, חברותות והרצאות">
     <meta property="og:description" content="מחברים בין מגידי שיעור ללומדים: שיעורי תורה, חברותות והרצאות. חיפוש לפי נושא, עיר, קהל יעד ושפה.">
