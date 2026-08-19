@@ -47,8 +47,8 @@ const IvrBuilder = () => {
     },
     {
       name: "ivr-agent",
-      label: "סוכן חכם",
-      desc: "חיפוש חכם בטקסט חופשי — מחזיר תוצאות בפורמט להקראה",
+      label: "חיפוש בטקסט חופשי",
+      desc: "חילוץ מילות מפתח מטקסט חופשי — מחזיר תוצאות בפורמט להקראה",
       method: "POST",
       url: `${baseUrl}/ivr-agent`,
       example: `curl -X POST "${baseUrl}/ivr-agent" -H "Content-Type: application/json" -d '{"text":"אני מחפש שיעור הלכה בבני ברק","caller_phone":"0501234567"}'`,
@@ -151,7 +151,7 @@ const IvrBuilder = () => {
                     <p><strong className="text-foreground">שלב 1:</strong> הגדירו Webhook בימות המשיח לשלוח POST לכתובת <code className="text-gold">ivr-submit</code></p>
                     <p><strong className="text-foreground">שלב 2:</strong> הגדירו HTTP Request ב-Make/n8n לקרוא ל-<code className="text-gold">ivr-search</code> עם הפרמטרים</p>
                     <p><strong className="text-foreground">שלב 3:</strong> השתמשו בתגובה (<code className="text-gold">text_for_speech</code>) להקראה במערכת הקולית</p>
-                    <p><strong className="text-foreground">שלב 4:</strong> לחיפוש חכם בטקסט חופשי, השתמשו ב-<code className="text-gold">ivr-agent</code></p>
+                    <p><strong className="text-foreground">שלב 4:</strong> לחיפוש בטקסט חופשי, השתמשו ב-<code className="text-gold">ivr-agent</code></p>
                   </div>
                 </div>
               </div>

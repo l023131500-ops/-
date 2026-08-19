@@ -176,7 +176,7 @@ const FindLesson = () => {
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-8">
             <div className="inline-flex items-center gap-2 mb-4">
               <AIIcon size={28} variant="primary" />
-              <span className="font-body text-sm font-bold text-gold">חיפוש חכם בזמן אמת</span>
+              <span className="font-body text-sm font-bold text-gold">סינון מתקדם בזמן אמת</span>
             </div>
             <h1 className="font-display text-3xl md:text-5xl font-black text-foreground mb-2">
               סינון שיעורים <span className="text-gradient-gold">מתוך המאגר</span>

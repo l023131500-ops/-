@@ -114,7 +114,7 @@ const LessonDirectory = () => {
                 <Input
                   value={searchQuery}
                   onChange={(e) => { setSearchQuery(e.target.value); setVisibleCount(INITIAL_VISIBLE); }}
-                  placeholder="חיפוש חכם — נושא, רב, עיר, סגנון..."
+                  placeholder="חיפוש שיעורים — נושא, רב, עיר, סגנון..."
                   className="pr-11 py-6 text-lg"
                 />
               </div>
@@ -131,7 +131,7 @@ const LessonDirectory = () => {
               <Link to="/find-lesson">
                 <Button className="bg-gradient-teal text-background font-body font-bold hover:opacity-90 py-6 px-6 whitespace-nowrap gap-2">
                   <Search className="w-4 h-4" />
-                  חיפוש חכם
+                  חיפוש מתקדם
                 </Button>
               </Link>
             </div>

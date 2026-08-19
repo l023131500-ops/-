@@ -247,7 +247,7 @@ const FeaturedLessons = () => {
                     <input
                       value={searchQuery}
                       onChange={(e) => { setSearchQuery(e.target.value); setVisibleCount(INITIAL_VISIBLE); }}
-                      placeholder="🔍 חיפוש חכם — נושא, רב, עיר, בית כנסת..."
+                      placeholder="🔍 חיפוש שיעורים — נושא, רב, עיר, בית כנסת..."
                       className="w-full bg-card rounded-2xl pr-14 pl-4 py-4 font-body text-base font-semibold border-2 border-gold/40 focus:border-gold focus:ring-4 focus:ring-gold/20 outline-none transition-all placeholder:text-muted-foreground/70 placeholder:font-medium"
                     />
                   </div>

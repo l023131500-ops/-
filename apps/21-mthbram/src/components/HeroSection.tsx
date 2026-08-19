@@ -17,7 +17,7 @@ const HeroSection = () => {
     {
       icon: Search,
       title: "מחפשים שיעור שמתאים לכם?",
-      desc: "חיפוש חכם מתוך מאגר שיעורי התורה",
+      desc: "חיפוש מתוך מאגר שיעורי התורה",
       link: "/find-lesson",
       gradient: "bg-gradient-teal",
       glow: "glow-teal",

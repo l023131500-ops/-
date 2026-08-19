@@ -965,7 +965,7 @@ const AdminDashboard = () => {
                       <Phone className="w-7 h-7 text-primary-foreground" />
                     </div>
                     <h3 className="font-display text-xl font-bold text-card-foreground mb-2">ימות המשיח</h3>
-                    <p className="font-body text-sm text-muted-foreground mb-4">מערכת קולית אוטומטית: תיעוד API, תפריט IVR, חיפוש שיעורים וסוכן חכם.</p>
+                    <p className="font-body text-sm text-muted-foreground mb-4">מערכת קולית אוטומטית: תיעוד API, תפריט IVR, חיפוש שיעורים וחיפוש בטקסט חופשי.</p>
                     <span className="font-body text-sm text-primary font-bold">כניסה לניהול ←</span>
                   </motion.div>
                 </Link>
