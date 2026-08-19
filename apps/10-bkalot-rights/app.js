@@ -125,8 +125,8 @@ function recCard(r) {
   }
   return `<div class="rec-card ${prioClass}" data-uid="${r.uid}">
     <div class="rec-head">
-      <span class="rec-src src-${r.source}">${SRC_LABEL[r.source] || r.source}</span>
-      <span class="rec-like like-${r.likelihood}">סיכוי ${LIKE_LABEL[r.likelihood] || ''}</span>
+      <span class="rec-src src-${esc(r.source)}">${SRC_LABEL[r.source] || esc(r.source)}</span>
+      <span class="rec-like like-${esc(r.likelihood)}">סיכוי ${LIKE_LABEL[r.likelihood] || ''}</span>
     </div>
     <h4 class="rec-name">${esc(r.name)}</h4>
     ${r.amount ? `<div class="rec-amt">${esc(r.amount)}</div>` : ''}
@@ -172,7 +172,7 @@ function renderResults(out) {
   if (out.rule_notes && out.rule_notes.length) {
     html += `<div class="rule-notes"><h3>מותאם בדיוק לתשובות שלכם</h3><div class="rn-grid">` +
       out.rule_notes.map(n => `<div class="rn-card rn-${n.priority}">
-        <div class="rn-head"><span class="rn-topic">${esc(n.topic)}</span><span class="rec-like like-${n.likelihood}">סיכוי ${LIKE_LABEL[n.likelihood] || ''}</span></div>
+        <div class="rn-head"><span class="rn-topic">${esc(n.topic)}</span><span class="rec-like like-${esc(n.likelihood)}">סיכוי ${LIKE_LABEL[n.likelihood] || ''}</span></div>
         <p>${esc(n.text)}</p>
         ${n.source ? `<a href="${esc(n.source)}" target="_blank" rel="noopener" class="rn-src">למקור הרשמי ←</a>` : ''}
       </div>`).join('') + `</div></div>`;
@@ -332,8 +332,8 @@ function openModal(uid) {
   }
   const sec = (label, val) => val ? `<div class="modal-sec"><h4>${label}</h4><p>${esc(val).replace(/\n/g, '<br>')}</p></div>` : '';
   document.getElementById('modalContent').innerHTML = `
-    <div class="modal-head"><span class="rec-src src-${t.src}">${SRC_LABEL[t.src] || t.src}</span>
-      <span class="rec-like like-${t.like}">סיכוי ${LIKE_LABEL[t.like] || ''}</span></div>
+    <div class="modal-head"><span class="rec-src src-${esc(t.src)}">${SRC_LABEL[t.src] || esc(t.src)}</span>
+      <span class="rec-like like-${esc(t.like)}">סיכוי ${LIKE_LABEL[t.like] || ''}</span></div>
     <h3>${esc(t.name)}</h3>
     ${t.amt ? `<div class="rec-amt big">${esc(t.amt)}</div>` : ''}
     ${t.why ? `<p class="modal-lead">${esc(t.why)}</p>` : ''}
@@ -376,7 +376,7 @@ function renderCatalog(reset = true) {
   const slice = filtered.slice(catShown, catShown + 30);
   list.insertAdjacentHTML('beforeend', slice.map(t => `
     <div class="cat-row" data-uid="${t.uid}">
-      <span class="cat-src src-${t.src}">${SRC_LABEL[t.src] || t.src}</span>
+      <span class="cat-src src-${esc(t.src)}">${SRC_LABEL[t.src] || esc(t.src)}</span>
       <span class="cat-name">${esc(t.name)}</span>
       <span class="cat-prov">${esc(t.prov)}</span>
       <span class="cat-amt">${esc(t.amt)}</span>
