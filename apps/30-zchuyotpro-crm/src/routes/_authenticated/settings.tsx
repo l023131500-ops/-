@@ -70,8 +70,28 @@ function UsersTab() {
 
   const updateRole = useMutation({
     mutationFn: async ({ id, role }: { id: string; role: string }) => {
-      const { error } = await supabase.from("profiles").update({ role: role as "admin" | "agent" | "viewer" }).eq("id", id);
-      if (error) throw error;
+      const { error } = await supabase.rpc("admin_update_member_role", { p_profile_id: id, p_role: role });
+      if (error) {
+        // Falls back to the pre-existing direct update until migration
+        // 20260819235500_admin_update_member_role.sql is deployed to the
+        // live project (this session cannot deploy it -- see DECISIONS.md).
+        // PGRST202 = "function not found in schema cache", PostgREST's code
+        // for calling an RPC that does not exist yet on the target DB. The
+        // message check is a second, code-independent net for the same
+        // condition, since misclassifying this as a real error would silently
+        // break the currently-working "admin edits own role" path in prod.
+        const isMissingFunction =
+          error.code === "PGRST202" || /find the function|schema cache/i.test(error.message || "");
+        if (isMissingFunction) {
+          const { error: fallbackError } = await supabase
+            .from("profiles")
+            .update({ role: role as "admin" | "agent" | "viewer" })
+            .eq("id", id);
+          if (fallbackError) throw fallbackError;
+          return;
+        }
+        throw error;
+      }
     },
     onSuccess: () => {
       toast.success("התפקיד עודכן");

@@ -1038,6 +1038,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_update_member_role: { Args: { p_profile_id: string; p_role: string }; Returns: undefined }
       current_client_id: { Args: never; Returns: string }
       current_partner_id: { Args: never; Returns: string }
       get_my_role: { Args: never; Returns: string }
