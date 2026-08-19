@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRoute, Link } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { apiRequest, queryClient, API_BASE } from "@/lib/queryClient";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Logo } from "@/components/SiteHeader";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
@@ -135,12 +135,23 @@ export default function Editor() {
       return;
     }
     toast({ title: "מייצא Word…", description: "ההורדה תתחיל בעוד רגע." });
-    const a = document.createElement("a");
-    a.href = `${API_BASE}/api/books/${id}/docx`;
-    a.download = `${title || "ספר"}.docx`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+    // הורדה ניווטית רגילה (a.click) לא נושאת כותרות מותאמות, ולכן החיפוש
+    // בשרת היה נופל תמיד ל-"anon" — עם בידוד לפי מבקר זה כבר לא מוצא את
+    // הספר. מביאים את הקובץ דרך apiRequest (עם X-Visitor-Id) ומורידים Blob.
+    try {
+      const res = await apiRequest("GET", `/api/books/${id}/docx`);
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${title || "ספר"}.docx`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch {
+      toast({ title: "שגיאה בייצוא Word", variant: "destructive" });
+    }
   }
 
   function exportPdf() {

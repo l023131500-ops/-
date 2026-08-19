@@ -1,4 +1,5 @@
 import { QueryClient, QueryFunction } from "@tanstack/react-query";
+import { getVisitorId } from "./visitorId";
 
 // בפריסה תחת more30.com/imud ה-API יושב תחת אותה קידומת נתיב. הקידומת נקבעה
 // בזמן build ב-VITE_API_BASE — משתנה שצריך להיעשות בכל בנייה, ובבנייה שהגיעה
@@ -30,7 +31,10 @@ export async function apiRequest(
 ): Promise<Response> {
   const res = await fetch(`${API_BASE}${url}`, {
     method,
-    headers: data ? { "Content-Type": "application/json" } : {},
+    headers: {
+      ...(data ? { "Content-Type": "application/json" } : {}),
+      "X-Visitor-Id": getVisitorId(),
+    },
     body: data ? JSON.stringify(data) : undefined,
   });
 
@@ -44,7 +48,9 @@ export const getQueryFn: <T>(options: {
 }) => QueryFunction<T> =
   ({ on401: unauthorizedBehavior }) =>
   async ({ queryKey }) => {
-    const res = await fetch(`${API_BASE}${queryKey.join("/")}`);
+    const res = await fetch(`${API_BASE}${queryKey.join("/")}`, {
+      headers: { "X-Visitor-Id": getVisitorId() },
+    });
 
     if (unauthorizedBehavior === "returnNull" && res.status === 401) {
       return null;
