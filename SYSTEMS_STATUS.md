@@ -1,5 +1,32 @@
 # SYSTEMS_STATUS.md — מצב כל המערכות, נמדד
 
+> ## 🟢 19/08/2026 (+25) — **41 design-system / 26 studio: checklist item 7a — וקטוריזציה (Recraft) הורחבה לכל שכבת תמונה בעורך**
+
+> `CHECKLIST/graphics.md` שלב 2 פריט 7 ("וקטוריזציה + הסרת-רקע") היה הבא בתור.
+> נבדק מול הקוד לפני מימוש (Explore agent): `POST /api/branding/vectorize`
+> (Recraft) כבר קיים ופרוס במלואו — גם ב-`server/branding.ts` וגם ב-
+> `vercel-adapter` החי (מראה byte-identical) — אבל נקרא רק מ-`BrandKitPage.tsx`
+> (וקטוריזציה של לוגו במותג). הפער האמיתי היה חשיפה בעורך הראשי, לא endpoint
+> חדש. פוצל ל-7a (וקטוריזציה — בוצע) / 7b (הסרת-רקע — לא קיימת בכלל, נדחה).
+>
+> נוסף פאנל "שכבת תמונה" חדש ב-`Editor.tsx` (לא היה קיים קודם — בחירת שכבת
+> תמונה לא הציגה שום מאפיינים) עם כפתור "המר לוקטור SVG (Recraft)" שקורא
+> ל-endpoint הקיים ומחליף את `src` בתוצאת ה-SVG. אפס שינוי ב-server/API/סכמה/
+> רינדור/ייצוא — שימוש חוזר מלא.
+>
+> אומת חי ב-`more30.com/studio` (Playwright, 1280×900, cache-buster): תמונה
+> רסטרית אמיתית שהועלתה ("תמונת הרב") הומרה בפועל (200 OK) לאיור וקטורי
+> מסוגנן, מוצג נכון בקנבס, נשמר בייצוא PNG מלא-רזולוציה. קלט וקטורי (אייקון
+> Iconify) קיבל 502 תקין מ-Recraft (לא רלוונטי להמרה) — טופל בהודעת שגיאה,
+> לא קריסה. 1 שגיאת קונסולה בסה"כ (מה-502 הצפוי), 0 בזרימה המיועדת. כל שאר
+> הפאנלים/שכבות/גלריה/רקע ללא שינוי — אפס רגרסיה. ראיות:
+> `QA/studio-26/vectorize-image-layer-0819/_results.md`.
+>
+> פריסה: `vite build --base=/studio/` → `_deploy/studio-more30/public/studio`
+> (api/ ללא שינוי) → `dpl_BwSUk8gh9HtbLd3xxmdCNLTnWYJS`, READY. commit ראה
+> git log. נשאר: פריט 7b (הסרת-רקע, endpoint חדש) ופריט 6 (Recraft V4
+> backgrounds) — סבבים נפרדים.
+
 > ## 🟢 19/08/2026 (+24) — **06 briut / 12 smel / 15 egod: מילוי audit_gaps חסר (כפילות ישנות מ-29/07)**
 
 > שלושת אלה היו live+public_visible עם `audit_status` שתיעד "כפילה של מערכת אחרת"
