@@ -369,7 +369,6 @@ const FloatingBot = () => {
       details: `${contactForm.details}\n\n--- תשובות הבדיקה ---\n${details}`,
       gender: compAnswers.gender || null,
       marital_status: compAnswers.marital || null,
-      children: compAnswers.children_count || null,
       health_status: compAnswers.health || null,
       economic_status: compAnswers.economic || null,
     });
@@ -434,7 +433,7 @@ const FloatingBot = () => {
       id_number: familyData.id_number || null,
       date_of_birth: familyData.date_of_birth || null,
       gender: familyData.gender, marital_status: familyData.marital,
-      children: familyData.children_count, health_status: familyData.health,
+      health_status: familyData.health,
       economic_status: familyData.economic,
       children_count: parseInt(familyData.children_count) || 0,
       children_ages: familyData.children_ages || null,
