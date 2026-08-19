@@ -66,6 +66,7 @@ import { getCategory } from "@shared/knowledge";
 import { getStyle } from "@shared/styles";
 import { FORMATS, getFormat } from "@shared/formats";
 import { downloadPNG, downloadPDF, downloadSVG } from "@/lib/exporter";
+import { downloadIDML } from "@/lib/idmlExporter";
 import { apiRequest } from "@/lib/queryClient";
 import { nextId } from "@shared/layers";
 import type { TemplateDoc, TextLayer, ImageLayer, ShapeLayer, AnyLayer, TemplateBackground } from "@shared/layers";
@@ -511,6 +512,11 @@ export default function Editor() {
   function handleExportFigmaSVG() {
     if (!doc) return;
     downloadSVG(doc, `${selected?.name ?? "modaa"}.svg`);
+  }
+
+  function handleExportIDML() {
+    if (!doc) return;
+    downloadIDML(doc, `${selected?.name ?? "modaa"}.idml`);
   }
 
   return (
@@ -1162,12 +1168,20 @@ export default function Editor() {
                 <FileText className="h-4 w-4 shrink-0 text-[#C9A227]" />
                 <div>
                   <p className="text-sm font-medium">Adobe InDesign (IDML)</p>
-                  <p className="text-[11px] text-[#F5EEDD]/50">דפוס-כמות — עלוני A3/עיתונות</p>
+                  <p className="text-[11px] text-[#F5EEDD]/50">
+                    דפוס-כמות — עלוני A3/עיתונות. טקסט = שכבות אמיתיות בנות-עריכה
+                  </p>
                 </div>
               </div>
-              <Badge variant="outline" className="shrink-0 border-[#F5EEDD]/30 text-[11px] text-[#F5EEDD]/60">
-                בבנייה
-              </Badge>
+              <Button
+                size="sm"
+                variant="outline"
+                className="shrink-0 border-[#C9A227]/40 text-[11px] text-[#F5EEDD]"
+                data-testid="button-export-idml"
+                onClick={handleExportIDML}
+              >
+                הורד IDML
+              </Button>
             </div>
           </div>
         </DialogContent>

@@ -5992,3 +5992,29 @@ DECISIONS.md סבב 5 (#14-17).
 בעורך תקינה במלואה (שכבות + טיפים לקטגוריה), 0 שגיאות/אזהרות קונסולה
 בכל מסך. שיעורי-תורה (4 התבניות המקוריות) ללא שינוי. `dpl_7ULdq7RPSBMmWGpaBq2KWUpgYwsa`
 · `READY` · `studio-more30.vercel.app`.
+
+
+---
+
+## 19/08/2026 (בוקר +5) — 41 design-system / 26 studio checklist item 12: מתאם Adobe IDML/InDesign, נבנה מהיסוד, פרוס
+
+CHECKLIST/graphics.md פריט 12 — הפריט האחרון בשלב 3 (מתאמים). נבנה כותב-IDML אמיתי
+(client/src/lib/idmlExporter.ts, ~350 שורות): zip תקני שנכתב ביד (אין jszip בפרויקט)
++ XML לפי סכמת idPkg הרשמית של אדובי (designmap/Resources/MasterSpreads/Spreads/Stories).
+שכבות טקסט = TextFrame+Story אמיתיים ובני-עריכה (פונט/גודל/צבע/יישור/RTL); שכבות
+image/shape/decoration = מלבן-מיקום מתויג, אותה מגבלה מתועדת כמו עיטורים במתאם Figma
+(#10). כפתור InDesign בדיאלוג מתאמים הוחלף מ-Badge בבנייה לכפתור הורד IDML עובד.
+
+אין InDesign מותקן בסביבה — אומת מבנית: קובץ שהורד חי (21,097 בתים) פורק דרך
+Expand-Archive ל-14 חלקים תקינים, כל ה-XML נטען ללא שגיאה (System.Xml.XmlDocument),
+תוכן עברי תואם בדיוק (נבדק דרך .NET XML API, לא pipeline טקסט של PowerShell),
+StoryDirection=RightToLeftDirection נכון, 6 TextFrame + 7 Rectangle תואמים ל-7 שכבות
+התבנית (כולל עיטורים שמסוננים מפאנל השכבות ב-UI). 0 שגיאות קונסולה לאורך כל הזרימה
+(Playwright, 1280x900, cache-buster). אפס רגרסיה — Figma/Canva/PNG/PDF/שכבות/עורך
+ללא שינוי. צילום: studio-idml-dialog-0819.png.
+
+פריסה: vite build -> _deploy/studio-more30/public/studio (build חדש, api/ ללא שינוי)
+-> vercel deploy --prod, dpl_DHxcpWejKA2sqnKjnbNSWWNZJGEM, READY, studio-more30.vercel.app.
+
+שלב 3 (מתאמים) הושלם במלואו (10/11/12 בנויים, מאומתים, פרוסים). הבא: שלב 4 (סטודיו
+רב-סוכני מלא — לולאת סוכנים/עורך-לומד/2-3 אפשרויות עיצוב), פריטים גדולים יותר.

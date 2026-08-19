@@ -326,8 +326,42 @@
       אפס רגרסיה. פריסה: `vite build` → `_deploy/studio-more30/public/studio`
       (build חדש, `api/` ללא שינוי) → `vercel deploy --prod`,
       `dpl_EdbJpa5mrPCbX8fmHrzL8jGsuq2e`, READY.
-- [ ] **12. מתאם Adobe IDML/InDesign** — לדפוס-כמות (עלוני A3/עיתונות). מוצג
-      בפאנל "מתאמים" (11) בתור "בבנייה" — עדיין לא נבנה בפועל.
+- [x] **12. מתאם Adobe IDML/InDesign** — לדפוס-כמות (עלוני A3/עיתונות). נבנה
+      מהיסוד (בניגוד ל-10 שהיה SVG טקסטואלי פשוט): מודול חדש
+      `client/src/lib/idmlExporter.ts` בונה חבילת IDML **אמיתית** (zip תקני
+      method=store + XML לפי סכמת `idPkg` הרשמית של אדובי — designmap/
+      Resources(Graphic/Fonts/Styles/Preferences)/MasterSpreads/Spreads/Stories)
+      ישירות מ-`TemplateDoc`, כמו `stageToSVG` (מתאם Figma, #10) — לא ריצוף
+      פיקסלים. אין ספריית zip בפרויקט (לא jszip וכו') — נכתב כותב-zip תקני
+      (CRC32 + local/central-directory records) ביד, ~90 שורות. שכבות **טקסט**
+      = `TextFrame` אמיתי עם `Story` נפרד לכל שכבה (פונט/גודל/צבע/יישור/
+      tracking/leading/כיוון RTL אמיתיים, בר-עריכה מלאה ב-InDesign) — הליבה
+      האמיתית של המתאם, במקביל לזרימת דפוס-כמות. שכבות image/shape/decoration
+      = מלבן-מיקום מתויג בהערת XML (`<!-- placeholder layer: ... -->`) — **אותה
+      מגבלה מתועדת בדיוק כמו עיטורים במתאם Figma #10**, לעיצוב-מחדש ידני
+      ב-InDesign. כפתור "מתאמים" > InDesign הוחלף מ-Badge "בבנייה" לכפתור עובד
+      "הורד IDML" (`data-testid="button-export-idml"`) — Figma/Canva ללא שינוי.
+      `tsc --noEmit` נקי (אחרי תיקון 3 שגיאות `--downlevelIteration` —
+      הוחלפו ל-`Array.from`), `vite build --base=/studio/` נקי (2169 מודולים).
+      **אומת חי** ב-`more30.com/studio` (Playwright, cache-buster, 1280×900):
+      נפתחה "שיעור — חסידי מלכותי" → מתאמים → "הורד IDML" הוריד קובץ `.idml`
+      אמיתי (21,097 בתים) — 0 שגיאות קונסולה לאורך כל הזרימה (פתיחת עורך +
+      דיאלוג + הורדה). **אי-אפשר לפתוח בפועל ב-Adobe InDesign בסביבה הזו** (אין
+      InDesign מותקן) — לכן האימות נעשה מבנית, באותה רמת קפדנות כמו קבצים
+      שהורדו בפריטים קודמים: `Expand-Archive` פירק את ה-zip ל-14 קבצים
+      (mimetype + designmap + 4 Resources + MasterSpread + Spread + 6 Stories,
+      תואם ל-6 שכבות טקסט בתבנית), כל 14 קבצי ה-XML נטענו ללא שגיאה דרך
+      `System.Xml.XmlDocument` (well-formed), תוכן `Story_u2` תואם בדיוק
+      ל"שיעור בפנימיות התורה" (עברית תקינה, לא מקודדת-כפולה — נבדק דרך .NET
+      XML API, לא pipeline טקסט של PowerShell), `StoryDirection="RightToLeftDirection"`
+      נכון, ו-`Spread_u1.xml` מכיל 6 `TextFrame` (=6 שכבות טקסט) ו-7 `Rectangle`
+      (רקע + 6 שכבות image/shape/decoration שאינן טקסט, כולל עיטורים שמסוננים
+      מפאנל השכבות ב-UI לפי #4b-iv — המתאם מייצא את **כל** `doc.layers`, לא רק
+      את מה שגלוי בפאנל). כל שאר הכפתורים/הפאנלים/השכבות בעורך ואדפטרי
+      Figma/Canva ללא שינוי — אפס רגרסיה. צילום: `studio-idml-dialog-0819.png`.
+      פריסה: `vite build` → `_deploy/studio-more30/public/studio` (build חדש,
+      `api/` ללא שינוי) → `vercel deploy --prod`, `dpl_DHxcpWejKA2sqnKjnbNSWWNZJGEM`,
+      READY.
 
 ## שלב 4 — סטודיו רב-סוכני מלא
 
