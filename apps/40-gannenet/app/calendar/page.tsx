@@ -1,4 +1,6 @@
 import { HDate, HebrewCalendar, Location, Sedra } from "@hebcal/core";
+import Link from "next/link";
+import { weekTopics, inDaysLabel } from "@/lib/season";
 
 export const dynamic = "force-dynamic";
 
@@ -25,6 +27,9 @@ export default function CalendarPage() {
       .map((e: any) => e.render("he"));
   } catch { holidays = []; }
 
+  let topics: ReturnType<typeof weekTopics> = [];
+  try { topics = weekTopics(now); } catch { topics = []; }
+
   return (
     <div className="container-r" style={{ padding: "34px 20px 50px", maxWidth: 820 }}>
       <div style={{ textAlign: "center", marginBottom: 20 }}>
@@ -40,8 +45,30 @@ export default function CalendarPage() {
             <ul style={{ paddingInlineStart: 22, marginTop: 6 }}>{holidays.map((h, i) => <li key={i} style={{ marginBottom: 4 }}>{h}</li>)}</ul>
           </div>
         )}
-        <p style={{ marginTop: 16, color: "#6d6f88", fontSize: 14 }}>מבוסס על ספריית @hebcal/core (חישוב מקומי, ללא תלות ברשת) · בהמשך יחובר לנושאים המומלצים לכל שבוע.</p>
+        <p style={{ marginTop: 16, color: "#6d6f88", fontSize: 14 }}>מבוסס על ספריית @hebcal/core (חישוב מקומי, ללא תלות ברשת).</p>
       </div>
+
+      {topics.length > 0 && (
+        <div className="card" style={{ padding: 26, marginTop: 18 }}>
+          <b style={{ fontSize: 18 }}>נושאים מומלצים למדף — 45 הימים הקרובים</b>
+          <div style={{ display: "grid", gap: 10, marginTop: 14 }}>
+            {topics.map((t) => (
+              <Link
+                key={t.category}
+                href={`/shelf?cat=${encodeURIComponent(t.category)}`}
+                className="card"
+                style={{ padding: 14, display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10, textDecoration: "none", flexWrap: "wrap" }}
+              >
+                <span>
+                  <span style={{ fontWeight: 700, color: "#2b4a8b" }}>{t.category}</span>
+                  <span style={{ color: "#6d6f88", fontSize: 13.5, marginInlineStart: 8 }}>{t.reason} · {t.civilDate}</span>
+                </span>
+                <span className="chip" style={{ background: "#eef2fb", color: "#2b4a8b", whiteSpace: "nowrap" }}>{inDaysLabel(t.inDays)}</span>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

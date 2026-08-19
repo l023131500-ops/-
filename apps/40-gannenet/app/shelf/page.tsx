@@ -64,6 +64,18 @@ export default function ShelfPage() {
     };
   }, []);
 
+  // Read cat/q from the URL once on mount — links from the calendar page
+  // ("נושאים מומלצים") and elsewhere land here pre-filtered. Read via
+  // window.location rather than next/navigation's useSearchParams so this
+  // client page doesn't need a Suspense boundary to build.
+  useEffect(() => {
+    const sp = new URLSearchParams(window.location.search);
+    const urlCat = sp.get("cat");
+    const urlQ = sp.get("q");
+    if (urlCat) setCat(urlCat);
+    if (urlQ) setQ(urlQ);
+  }, []);
+
   // Merge sources; seed (in-repo) wins over drive for the same id; uploads added last.
   const all = useMemo(() => {
     const map = new Map<string, ShelfItem>();
