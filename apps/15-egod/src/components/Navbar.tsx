@@ -61,6 +61,12 @@ const Navbar = () => {
         </div>
 
         <div className="hidden lg:flex items-center gap-3">
+          <a
+            href="/subscribe?app=egod"
+            className="px-4 py-2 rounded-lg text-sm font-medium text-primary-foreground/80 hover:text-primary-foreground hover:bg-white/10 transition-colors"
+          >
+            מחירון
+          </a>
           <Button variant="outline" asChild className="border-secondary text-secondary hover:bg-secondary hover:text-secondary-foreground">
             <Link to="/login">התחברות</Link>
           </Button>
@@ -98,6 +104,13 @@ const Navbar = () => {
                 </Link>
               ))}
               <div className="flex flex-col gap-2 mt-2 pt-2 border-t border-sidebar-border">
+                <a
+                  href="/subscribe?app=egod"
+                  onClick={() => setMobileOpen(false)}
+                  className="px-4 py-3 rounded-lg text-sm font-medium text-primary-foreground/80 hover:bg-white/10 transition-colors"
+                >
+                  מחירון
+                </a>
                 <Button variant="outline" asChild className="border-secondary text-secondary">
                   <Link to="/login" onClick={() => setMobileOpen(false)}>התחברות</Link>
                 </Button>
