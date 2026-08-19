@@ -80,8 +80,27 @@
 
 ## שלב 2 — שכבת AI-נכסים
 
-- [ ] **6. Recraft V4** — רקעים פוטוריאליסטיים איכותיים בעורך (מעבר לרקעים
-      המובנים הקיימים).
+- [x] **6. Recraft V4** — רקעים פוטוריאליסטיים איכותיים בעורך, כמנוע שני
+      לצד Gemini (בורר UI, לא תחליף) — נבנה `generateBackgroundRecraft`
+      חדש ב-`server/branding.ts` (וגם ב-`vercel-adapter/api/_lib/server/branding.ts`,
+      שהוא הקוד שרץ בפועל בפרודקשן): `POST /v1/images/generations`
+      (`model: "recraftv4"`). שני מוקשים אמיתיים של V4 (שונה מ-V3 שהיה כבר
+      בשימוש ל-vectorize) נמצאו ותוקנו רק אחרי כישלון חי מאומת, לא בניחוש:
+      (1) V4 דוחה ב-400 את `style`/`style_id`/`negative_prompt` לגמרי — לא
+      כמו V3; (2) V4 מקבל רשימת `size` סגורה בלבד (למשל `896x1152` ל-4:5),
+      לא כל מחרוזת WxH. `routes.ts` (+ עותק ה-adapter) קיבל `engine` חדש
+      בגוף `POST /api/ai/background` (`"gemini"` ברירת מחדל, קיים ללא שינוי
+      התנהגות; `"recraft"` חדש). ב-`Editor.tsx` נוסף בורר מנוע (2 כפתורים)
+      בדיאלוג "רקע AI" הקיים — לא דיאלוג חדש. אומת חי ב-`more30.com/studio`
+      (Playwright): נבחר Recraft V4, "צור רקע" → `POST .../ai/background`
+      **200 OK** (עד ~100 שניות — שרשרת enhance+generate+הורדת-תמונה על
+      cold start), הרקע הוחלף בפועל לתמונה פוטוריאליסטית אמיתית (לא
+      placeholder), פאנל "רקע" מציג "רקע תמונה פעיל". 0 שגיאות קונסולה.
+      נתיב Gemini הקיים לא נגע — ברירת המחדל (`engine` לא נשלח/"gemini")
+      עדיין אותו קוד בדיוק. כל שאר הפאנלים/שכבות/שדות ללא שינוי — אפס
+      רגרסיה. פריסה: `vite build` (`base:"/studio/"` כבר ב-`vite.config.ts`)
+      → `_deploy/studio-more30/public/studio` + `api/` מ-`vercel-adapter/`
+      → `vercel deploy --prod`, READY.
 - [x] **7a. וקטוריזציה — הורחבה משכבת-לוגו לכל שכבת תמונה בעורך הראשי** —
       נבדק מול הקוד: `POST /api/branding/vectorize` (Recraft) כבר היה קיים
       ומוטמע במלואו (`server/branding.ts` + מראה זהה ב-`vercel-adapter`,

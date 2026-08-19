@@ -4,7 +4,7 @@ import { storage } from "./storage";
 import { insertProjectSchema } from "@shared/schema";
 import { generateBackground, editImage, enhanceBackgroundPrompt } from "./gemini";
 import { generateCopy, generateConcepts } from "./ai";
-import { generateStrategy, generateLogoConcepts, vectorizeLogo, deriveVisuals } from "./branding";
+import { generateStrategy, generateLogoConcepts, vectorizeLogo, deriveVisuals, generateBackgroundRecraft } from "./branding";
 import { ARCHETYPES, ARCHETYPE_GROUPS, AAKER_DIMENSIONS, BRIEF_CATEGORIES, ALL_QUESTIONS, CORE_QUESTIONS, TOTAL_QUESTIONS, BRAND_BOOK_SECTIONS, HEBREW_FONTS, VISUAL_STYLE_TO_ARCHETYPE, getArchetype } from "@shared/branding";
 import { insertBrandSchema } from "@shared/schema";
 import { STYLES } from "@shared/styles";
@@ -173,16 +173,29 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
 
   /**
    * רקע AI — מייצר רק רקע/עיטור דקורטיבי (ללא טקסט/אנשים). הטקסט מולבש בצד הלקוח כשכבה.
-   * מנוע ראשי: Gemini ישיר (Nano Banana Pro / gemini-3-pro-image) דרך המפתח בתשלום של המשתמש.
-   *   זהו הנתיב היחיד שממשיך לעבוד גם לאחר פרסום (custom-cred נשמר; פרוקסי הפלטפורמה לא).
-   * גיבוי: LLM API של הפלטפורמה (עובד ב-dev; לא לאחר פרסום). מחזיר data URL.
+   * שני מנועים לבחירת המשתמש (engine בגוף הבקשה, ברירת מחדל "gemini"):
+   *   - gemini: Nano Banana Pro / gemini-3-pro-image — קומפוזיציה, תומך גם עריכת תמונה קיימת.
+   *   - recraft: Recraft V4 — רקעים פוטוריאליסטיים (text-to-image בלבד, אין imageBase64).
+   * שני המנועים ממשיכים לעבוד גם לאחר פרסום (custom-cred נשמר). מחזיר data URL.
    */
   app.post("/api/ai/background", async (req: Request, res: Response) => {
-    const { prompt, aspectRatio, enhance, model, imageBase64, imageMediaType } = req.body || {};
+    const { prompt, aspectRatio, enhance, engine, imageBase64, imageMediaType } = req.body || {};
     if (!prompt) return res.status(400).json({ error: "חסר תיאור לרקע" });
 
-    // מנוע יחיד — Gemini ישיר (Nano Banana Pro / gemini-3-pro-image) דרך המפתח בתשלום.
-    // נשמר גם לאחר פרסום (custom-cred). ללא גיבוי לפלטפורמה — מונע התנגשות פרוקסי.
+    if (engine === "recraft") {
+      try {
+        const finalPrompt = enhance !== false ? await enhanceBackgroundPrompt(prompt) : prompt;
+        const result = await generateBackgroundRecraft(finalPrompt, aspectRatio || "4:5");
+        if (!result.ok || !result.dataUrl) {
+          return res.status(502).json({ error: result.error || "שגיאת Recraft", detail: result.detail });
+        }
+        return res.json({ dataUrl: result.dataUrl, prompt: finalPrompt, engine: "recraft" });
+      } catch (recErr: any) {
+        return res.status(502).json({ error: aiErr(recErr), detail: String(recErr?.message || recErr).slice(0, 300) });
+      }
+    }
+
+    // ברירת מחדל — Gemini ישיר (Nano Banana Pro / gemini-3-pro-image) דרך המפתח בתשלום.
     try {
       const finalPrompt = enhance !== false ? await enhanceBackgroundPrompt(prompt) : prompt;
       const img = imageBase64

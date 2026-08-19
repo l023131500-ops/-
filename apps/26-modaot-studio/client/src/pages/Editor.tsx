@@ -80,6 +80,8 @@ export default function Editor() {
   const [aiDialogOpen, setAiDialogOpen] = useState(false);
   const [aiPrompt, setAiPrompt] = useState("");
   const [aiLoading, setAiLoading] = useState(false);
+  // מנוע רקע ה-AI: gemini (ברירת מחדל, קיים) או recraft (חדש — פוטוריאליסטי, פריט 6)
+  const [aiEngine, setAiEngine] = useState<"gemini" | "recraft">("gemini");
   const [saving, setSaving] = useState(false);
 
   // קופי חכם (Claude)
@@ -398,6 +400,7 @@ export default function Editor() {
         prompt: aiPrompt,
         aspectRatio: format.width >= format.height ? "16:9" : "4:5",
         enhance: true,
+        engine: aiEngine,
       });
       const data = await res.json();
       if (data.fallback) {
@@ -881,6 +884,27 @@ export default function Editor() {
             <DialogTitle className="text-[#F5EEDD]">רקע AI</DialogTitle>
             <DialogDescription>תיאור הרקע הרצוי (ללא טקסט, דקורטיבי בלבד)</DialogDescription>
           </DialogHeader>
+          {/* בורר מנוע: Gemini (קיים) / Recraft V4 (חדש — פוטוריאליסטי, פריט 6) */}
+          <div className="flex gap-1.5">
+            <Button
+              size="sm"
+              variant={aiEngine === "gemini" ? "default" : "outline"}
+              className={aiEngine === "gemini" ? "flex-1 bg-[#C9A227] text-[#0B1220]" : "flex-1 border-[#C9A227]/30 text-[#F5EEDD]/70"}
+              onClick={() => setAiEngine("gemini")}
+              data-testid="button-ai-engine-gemini"
+            >
+              Gemini
+            </Button>
+            <Button
+              size="sm"
+              variant={aiEngine === "recraft" ? "default" : "outline"}
+              className={aiEngine === "recraft" ? "flex-1 bg-[#C9A227] text-[#0B1220]" : "flex-1 border-[#C9A227]/30 text-[#F5EEDD]/70"}
+              onClick={() => setAiEngine("recraft")}
+              data-testid="button-ai-engine-recraft"
+            >
+              Recraft V4 (פוטוריאליסטי)
+            </Button>
+          </div>
           <Textarea
             value={aiPrompt}
             onChange={(e) => setAiPrompt(e.target.value)}

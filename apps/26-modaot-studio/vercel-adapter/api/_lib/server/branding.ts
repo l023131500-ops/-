@@ -18,6 +18,7 @@ import {
 const ANTHROPIC_URL = "https://api.anthropic.com/v1/messages";
 const CLAUDE_MODEL = process.env.ANTHROPIC_TEXT_MODEL || "claude-sonnet-4-5-20250929";
 const RECRAFT_VECTORIZE = "https://external.api.recraft.ai/v1/images/vectorize";
+const RECRAFT_GENERATE = "https://external.api.recraft.ai/v1/images/generations";
 
 // Claude Opus 5 runs adaptive thinking by default, and max_tokens caps thinking
 // PLUS response text. The origin app's 1500/2500 budgets were sized for a
@@ -275,4 +276,65 @@ export async function vectorizeLogo(base64Png: string, mimeType = "image/png"): 
   } catch (e: any) {
     return { ok: false, error: "כשל בוקטוריזציה", detail: String(e?.message || e) };
   }
+}
+
+// ═══════════════════ רקעים פוטוריאליסטיים (Recraft V4) ═══════════════════
+
+/**
+ * מייצר תמונת רקע פוטוריאליסטית מטקסט דרך Recraft V4 (מנוע חלופי ל-Gemini).
+ * מחזיר data URL מוכן להצבה כרקע — אותה צורת פלט בדיוק כמו generateBackground של Gemini.
+ */
+export async function generateBackgroundRecraft(
+  prompt: string,
+  aspectRatio: string = "4:5"
+): Promise<{ ok: boolean; dataUrl?: string; error?: string; detail?: string }> {
+  try {
+    const size = aspectRatioToRecraftSize(aspectRatio);
+    const headers: Record<string, string> = { "Content-Type": "application/json" };
+    if (process.env.RECRAFT_API_KEY) headers["Authorization"] = `Bearer ${process.env.RECRAFT_API_KEY}`;
+
+    const res = await proxyFetch(RECRAFT_GENERATE, {
+      method: "POST",
+      headers,
+      body: JSON.stringify({
+        prompt,
+        model: "recraftv4",
+        // Recraft V4 (בשונה מ-V3) דוחה עם 400 את הפרמטרים style/style_id/negative_prompt לגמרי — אין להעביר אותם.
+        size,
+        n: 1,
+      }),
+    });
+    if (!res.ok) {
+      const txt = await res.text();
+      return { ok: false, error: `Recraft ${res.status}`, detail: txt.slice(0, 300) };
+    }
+    const json: any = await res.json();
+    const imageUrl: string | undefined = json?.data?.[0]?.url;
+    if (!imageUrl) return { ok: false, error: "Recraft: לא הוחזר URL של תמונה", detail: JSON.stringify(json).slice(0, 200) };
+
+    const imgRes = await proxyFetch(imageUrl, { method: "GET" }).catch(() => fetch(imageUrl));
+    if (!imgRes.ok) return { ok: false, error: `הורדת התמונה נכשלה ${imgRes.status}` };
+    const buf = Buffer.from(await imgRes.arrayBuffer());
+    const mimeType = imgRes.headers.get("content-type") || "image/webp";
+    return { ok: true, dataUrl: `data:${mimeType};base64,${buf.toString("base64")}` };
+  } catch (e: any) {
+    return { ok: false, error: "כשל ביצירת רקע (Recraft)", detail: String(e?.message || e) };
+  }
+}
+
+/**
+ * ממפה יחס-גובה-רוחב חופשי (למשל "4:5"/"16:9") לגודל הקרוב ביותר מתוך רשימת
+ * הגדלים הסגורה שה-API של Recraft V4 (standard, לא Pro) מקבל — כל גודל אחר נדחה ב-400.
+ */
+function aspectRatioToRecraftSize(aspectRatio: string): string {
+  const supported: Record<string, string> = {
+    "1:1": "1024x1024",
+    "4:5": "896x1152",
+    "5:4": "1152x896",
+    "3:4": "896x1216",
+    "4:3": "1216x896",
+    "9:16": "768x1344",
+    "16:9": "1344x768",
+  };
+  return supported[aspectRatio] || "896x1152";
 }
