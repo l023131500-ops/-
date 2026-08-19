@@ -6,6 +6,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Stage, Layer, Rect, Text, Group, Path, Image as KImage, Circle, Line } from "react-konva";
 import useImage from "use-image";
 import type Konva from "konva";
+import { Text as KonvaTextShape } from "konva/lib/shapes/Text";
 import type { TemplateDoc, AnyLayer, TextLayer, ImageLayer, ShapeLayer, DecorationLayer } from "@shared/layers";
 import { fitText, wrapText } from "@/lib/autofit";
 import { ORNAMENTS, CORNER_ORNAMENT_PATH } from "@/lib/ornaments";
@@ -94,6 +95,12 @@ function TextNode({ layer, onSelect, onChange, onEdit, selected, interactive }: 
       verticalAlign={layer.verticalAlign ?? "top"}
       lineHeight={layer.lineHeight ?? 1.15}
       letterSpacing={layer.letterSpacing ?? 0}
+      sceneFunc={(context, shape) => {
+        // kerning=false מבטל זיווג-אותיות (fontKerning) של הדפדפן, בלי לשנות שום היגיון-שכבות אחר —
+        // מריץ את ה-sceneFunc המקורי של Konva.Text במלואו (עטיפה, יישור, קווים), רק עם context attr נוסף.
+        context.setAttr("fontKerning", layer.kerning === false ? "none" : "normal");
+        (KonvaTextShape.prototype as any)._sceneFunc.call(shape, context);
+      }}
       opacity={layer.opacity ?? 1}
       globalCompositeOperation={(layer.blend ?? "source-over") as any}
       rotation={layer.rotation ?? 0}

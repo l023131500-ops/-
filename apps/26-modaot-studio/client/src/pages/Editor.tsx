@@ -44,6 +44,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
+import { Switch } from "@/components/ui/switch";
 import {
   Dialog,
   DialogContent,
@@ -1148,6 +1149,17 @@ function TextLayerControls({
           step={0.05}
           onValueChange={([v]) => onChange({ lineHeight: v })}
           data-testid="slider-layer-leading"
+        />
+      </div>
+
+      <div className="flex items-center justify-between">
+        <Label className="text-xs text-[#F5EEDD]/70">
+          זיווג אותיות <code className="font-mono text-[10px] text-[#C9A227]/70">kerning</code>
+        </Label>
+        <Switch
+          checked={layer.kerning !== false}
+          onCheckedChange={(v) => onChange({ kerning: v })}
+          data-testid="switch-layer-kerning"
         />
       </div>
 

@@ -137,8 +137,30 @@
       stroke/shadow/opacity) ושאר הפאנלים ללא שינוי — אפס רגרסיה. פריסה:
       `_deploy/studio-more30/public/studio` (build חדש, `api/` ללא שינוי) →
       `vercel deploy --prod`, `dpl_2XeokCRKmjyHj41GFZqrjVCbtdXk`, READY.
-- [ ] **4b-vi. בקרת `kerning`** — דורש שדה סכימה חדש + חיווט Konva אמיתי;
-      נדחה לסבב נפרד, פיצ'ר אחד בכל פעם.
+- [x] **4b-vi. בקרת `kerning`** — נבנה מהיסוד (בניגוד ל-4b-i..iv שהשדה כבר היה
+      קיים): שדה `kerning?: boolean` חדש ב-`TextLayer` (`shared/layers.ts`
+      + עותק `vercel-adapter/api/_lib/shared/layers.ts`, ברירת מחדל `true` =
+      זהה להתנהגות הקיימת). מנוע Konva לא חושף `fontKerning` כבקרה מובנית —
+      נעטף ה-`sceneFunc` של `<Text>` ב-`CanvasStage.tsx`: `context.setAttr(
+      "fontKerning", kerning===false ? "none" : "normal")` ואז קריאה מלאה
+      ל-`KonvaTextShape.prototype._sceneFunc` המקורי (import ממוקד
+      `konva/lib/shapes/Text`, לא נגעתי בייבוא `Konva` הגנרי הקיים ל-טיפוסים
+      כדי לא לשבור טיפוסי `Konva.Stage` בקובץ) — כל היגיון העטיפה/יישור/קווים
+      המקורי רץ ללא שינוי, רק מאפיין context אחד נוסף. נוסף `<Switch>` בפאנל
+      הטקסט (`Editor.tsx`, אחרי lineHeight) עם תג `<code>kerning</code>`.
+      `tsc --noEmit` נקי, `vite build --base=/studio/` נקי (2168 מודולים).
+      **אומת חי** ב-`more30.com/studio` (Playwright, cache-buster, 1280×1400):
+      הוקלד זמנית טקסט לטינית עם זוגות-קרנינג מובהקים ("AVATAR WAVE TOY") לאותה
+      שכבת כותרת (מצב קנבס בצד לקוח בלבד, לא נשמר — לא נלחץ "שמור פרויקט",
+      אותה שיטת בדיקה כמו 4b-iii); המתג עבד (checked↔unchecked) ו-0 שגיאות
+      קונסולה. מדידה כמותית ישירה בדפדפן (`measureText` על אותו פונט/משקל/גודל
+      בדיוק) הוכיחה הבדל רוחב אמיתי בין `fontKerning:"normal"` ל-`"none"` —
+      1027px מול 1057px (כ-2.9%) — כלומר החיווט אכן משנה רינדור אמיתי של
+      הדפדפן, לא רק ערך מספרי. שאר הבקרות (fontSize/letterSpacing/lineHeight/
+      יישור/fill/stroke/shadow/opacity/blend) ושאר הפאנלים ללא שינוי — אפס
+      רגרסיה. פריסה: `_deploy/studio-more30/public/studio` (build חדש, `api/`
+      ללא שינוי) → `vercel deploy --prod`, `dpl_E6P17kT8rnddCjvUus7SYSmCcoG7`,
+      READY.
 - [x] **5. גלריית תבניות — קטגוריה מובילה אחת בכל אחת מ-4 הקבוצות** —
       `shared/knowledge.ts`/`categoryTemplates.ts` כבר החזיקו קטלוג-תבניות
       אמיתי (מנוע `composeTemplate`) לכל 4 הקבוצות; הפער האמיתי היה ש-
