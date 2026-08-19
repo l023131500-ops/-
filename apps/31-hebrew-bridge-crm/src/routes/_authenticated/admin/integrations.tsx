@@ -66,6 +66,20 @@ function IntegrationsPage() {
     if (settingsQuery.data?.outbound_url) setUrl(settingsQuery.data.outbound_url);
   }, [settingsQuery.data?.outbound_url]);
 
+  // כתובת מוחלטת אמיתית של המערכת החיה (window.location.origin + BASE_URL),
+  // לא ה-URL של תצוגה מקדימה ב-Lovable שהיה כאן קבוע בקוד — אותו באג
+  // שתועד ב-auth.tsx (appUrl) עבור מייל האיפוס. מחושב ב-effect כדי ש-window
+  // לא יירוק ב-SSR.
+  const [incomingUrl, setIncomingUrl] = useState("");
+  useEffect(() => {
+    setIncomingUrl(
+      `${window.location.origin}${import.meta.env.BASE_URL}api/public/webhooks/incoming`.replace(
+        /([^:]\/)\/+/g,
+        "$1",
+      ),
+    );
+  }, []);
+
   const saveMutation = useMutation({
     mutationFn: (outbound_url: string) => updateSettings({ data: { outbound_url } }),
     onSuccess: () => {
@@ -83,9 +97,6 @@ function IntegrationsPage() {
     },
     onError: (e: any) => toast.error(e?.message ?? "שגיאה בנסיון חוזר"),
   });
-
-  const incomingUrl =
-    "https://project--a27fd5fd-3de2-432b-b267-f05f58afad50.lovable.app/api/public/webhooks/incoming";
 
   return (
     <div className="space-y-6" dir="rtl">
