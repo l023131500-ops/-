@@ -38,6 +38,7 @@ export interface TextLayer extends BaseLayer {
   verticalAlign?: "top" | "middle" | "bottom";
   lineHeight?: number;
   letterSpacing?: number;
+  kerning?: boolean; // false = מבטל זיווג-אותיות (kerning pairs) של הדפדפן — ברירת מחדל true (זהה להתנהגות הקיימת)
   autoFit?: boolean; // shrink-to-fit לתוך width/height
   minFontSize?: number;
   maxFontSize?: number;
