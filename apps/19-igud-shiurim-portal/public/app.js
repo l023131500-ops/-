@@ -1130,6 +1130,8 @@ async function renderAdmin(token) {
   const data = await api(`/api/admin/tenant/${encodeURIComponent(token)}`);
   if (!data) return renderNotFound();
   let tab = 'lessons';
+  let editingLesson = null;
+  let editingAd = null;
 
   function draw() {
     const t = data.tenant;
@@ -1151,7 +1153,7 @@ async function renderAdmin(token) {
         <div id="tab-content"></div>
       </div>
     `;
-    document.querySelectorAll('.tab-btn').forEach(b => b.onclick = () => { tab = b.dataset.tab; draw(); });
+    document.querySelectorAll('.tab-btn').forEach(b => b.onclick = () => { tab = b.dataset.tab; editingLesson = null; editingAd = null; draw(); });
     const content = document.getElementById('tab-content');
     if (tab === 'lessons') drawLessons(content);
     else if (tab === 'services') drawServices(content);
@@ -1164,34 +1166,42 @@ async function renderAdmin(token) {
   async function refresh() { Object.assign(data, await api(`/api/admin/tenant/${encodeURIComponent(token)}`)); }
 
   function drawLessons(content) {
+    const l = editingLesson;
     content.innerHTML = `
       <div id="lessons-alert"></div>
       <div class="card" style="margin-bottom:16px;">
-        <h3>הוספת שיעור</h3>
+        <h3>${l ? 'עריכת שיעור' : 'הוספת שיעור'}</h3>
         <form id="lesson-form">
           <div class="form-row">
-            <div class="form-field"><label>כותרת *</label><input name="title" required /></div>
-            <div class="form-field"><label>נושא</label><input name="topic" /></div>
+            <div class="form-field"><label>כותרת *</label><input name="title" required value="${esc(l?.title || '')}" /></div>
+            <div class="form-field"><label>נושא</label><input name="topic" value="${esc(l?.topic || '')}" /></div>
           </div>
           <div class="form-row">
             <div class="form-field"><label>יום</label>
-              <select name="day_of_week">${DAYS_HE.map((d,i)=>`<option value="${i}">${d}</option>`).join('')}</select>
+              <select name="day_of_week">${DAYS_HE.map((d,i)=>`<option value="${i}" ${l && l.day_of_week === i ? 'selected' : ''}>${d}</option>`).join('')}</select>
             </div>
-            <div class="form-field"><label>שעה</label><input name="start_time" type="time" /></div>
-            <div class="form-field"><label>משך (דקות)</label><input name="duration_minutes" type="number" value="45" /></div>
+            <div class="form-field"><label>שעה</label><input name="start_time" type="time" value="${esc(l?.start_time || '')}" /></div>
+            <div class="form-field"><label>משך (דקות)</label><input name="duration_minutes" type="number" value="${l?.duration_minutes || 45}" /></div>
           </div>
           <div class="form-row">
             <div class="form-field"><label>קהל יעד</label>
-              <select name="audience"><option value="men">גברים</option><option value="women">נשים</option><option value="mixed">מעורב</option></select>
+              <select name="audience">
+                <option value="men" ${(l?.audience || 'men') === 'men' ? 'selected' : ''}>גברים</option>
+                <option value="women" ${l?.audience === 'women' ? 'selected' : ''}>נשים</option>
+                <option value="mixed" ${l?.audience === 'mixed' ? 'selected' : ''}>מעורב</option>
+              </select>
             </div>
           </div>
-          <div class="form-field"><label>תיאור</label><textarea name="description"></textarea></div>
-          ${uploadFieldHtml({ id: 'lesson-logo', label: 'לוגו השיעור (אופציונלי)', name: 'logo_url', currentUrl: '' })}
+          <div class="form-field"><label>תיאור</label><textarea name="description">${esc(l?.description || '')}</textarea></div>
+          ${uploadFieldHtml({ id: 'lesson-logo', label: 'לוגו השיעור (אופציונלי)', name: 'logo_url', currentUrl: l?.logo_url || '' })}
           <label style="display:flex;gap:16px;">
-            <span><input type="checkbox" name="is_live" style="width:auto;" /> משודר LIVE</span>
-            <span><input type="checkbox" name="is_recorded" style="width:auto;" /> מוקלט</span>
+            <span><input type="checkbox" name="is_live" style="width:auto;" ${l?.is_live ? 'checked' : ''} /> משודר LIVE</span>
+            <span><input type="checkbox" name="is_recorded" style="width:auto;" ${l?.is_recorded ? 'checked' : ''} /> מוקלט</span>
           </label>
-          <button class="btn btn-primary" type="submit" style="margin-top:12px;">הוספת שיעור</button>
+          <div style="display:flex;gap:10px;margin-top:12px;">
+            <button class="btn btn-primary" type="submit">${l ? 'עדכון שיעור' : 'הוספת שיעור'}</button>
+            ${l ? '<button class="btn btn-outline" type="button" id="lesson-cancel-edit">ביטול עריכה</button>' : ''}
+          </div>
         </form>
       </div>
       <div>
@@ -1200,6 +1210,7 @@ async function renderAdmin(token) {
             ${logoCircle(l.title, l.logo_url, true)}
             <div class="time-badge">${esc(DAYS_HE[l.day_of_week] ?? '')}<br/>${esc(formatTime(l.start_time))}</div>
             <div style="flex:1;">${esc(l.title)} <span class="muted">${esc(l.topic || '')}</span></div>
+            <button class="btn btn-outline btn-sm" data-edit="${l.id}">עריכה</button>
             <button class="btn btn-danger btn-sm" data-del="${l.id}">מחיקה</button>
           </div>`).join('') || '<p class="muted">אין שיעורים עדיין.</p>'}
       </div>
@@ -1212,16 +1223,26 @@ async function renderAdmin(token) {
       f.duration_minutes = Number(f.duration_minutes) || 45;
       f.is_live = e.target.is_live.checked;
       f.is_recorded = e.target.is_recorded.checked;
+      if (editingLesson) f.lesson_id = editingLesson.id;
       try {
         await api(`/api/admin/tenant/${encodeURIComponent(token)}/lessons`, { method: 'POST', body: JSON.stringify(f) });
+        editingLesson = null;
         await refresh(); draw();
       } catch (err) {
         document.getElementById('lessons-alert').innerHTML = `<div class="alert alert-error">${esc(err.message)}</div>`;
       }
     });
+    const cancelBtn = document.getElementById('lesson-cancel-edit');
+    if (cancelBtn) cancelBtn.onclick = () => { editingLesson = null; drawLessons(content); };
+    content.querySelectorAll('[data-edit]').forEach(btn => btn.onclick = () => {
+      editingLesson = data.lessons.find(x => String(x.id) === btn.dataset.edit) || null;
+      drawLessons(content);
+      document.getElementById('lesson-form')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
     content.querySelectorAll('[data-del]').forEach(btn => btn.onclick = async () => {
       if (!confirm('למחוק את השיעור?')) return;
       await api(`/api/admin/tenant/${encodeURIComponent(token)}/lessons/${btn.dataset.del}`, { method: 'DELETE' });
+      if (editingLesson && String(editingLesson.id) === btn.dataset.del) editingLesson = null;
       await refresh(); draw();
     });
   }
@@ -1284,23 +1305,32 @@ async function renderAdmin(token) {
   }
 
   function drawAds(content) {
+    const a = editingAd;
     content.innerHTML = `
       <div id="ads-alert"></div>
       <div class="card" style="margin-bottom:16px;">
-        <h3>מודעה חדשה</h3>
+        <h3>${a ? 'עריכת מודעה' : 'מודעה חדשה'}</h3>
         <form id="ad-form">
-          <div class="form-field"><label>כותרת *</label><input name="title" required /></div>
-          <div class="form-field"><label>תוכן</label><textarea name="body"></textarea></div>
-          ${uploadFieldHtml({ id: 'ad-image', label: 'תמונת הפרסום (אופציונלי)', name: 'image_url', currentUrl: '' })}
-          <div class="form-field"><label>קישור (אופציונלי)</label><input name="link_url" placeholder="https://" /></div>
-          <button class="btn btn-primary" type="submit">פרסום מודעה</button>
+          <div class="form-field"><label>כותרת *</label><input name="title" required value="${esc(a?.title || '')}" /></div>
+          <div class="form-field"><label>תוכן</label><textarea name="body">${esc(a?.body || '')}</textarea></div>
+          ${uploadFieldHtml({ id: 'ad-image', label: 'תמונת הפרסום (אופציונלי)', name: 'image_url', currentUrl: a?.image_url || '' })}
+          <div class="form-field"><label>קישור (אופציונלי)</label><input name="link_url" placeholder="https://" value="${esc(a?.link_url || '')}" /></div>
+          <div style="display:flex;gap:10px;">
+            <button class="btn btn-primary" type="submit">${a ? 'עדכון מודעה' : 'פרסום מודעה'}</button>
+            ${a ? '<button class="btn btn-outline" type="button" id="ad-cancel-edit">ביטול עריכה</button>' : ''}
+          </div>
         </form>
       </div>
       <div class="grid">
         ${data.ads.map(a => `
           <div class="card">
             ${a.image_url ? `<img src="${esc(a.image_url)}" alt="" style="width:100%;border-radius:10px;margin-bottom:10px;max-height:160px;object-fit:cover;" />` : ''}
-            <div class="row-between"><h3>${esc(a.title)}</h3><button class="btn btn-danger btn-sm" data-del-ad="${a.id}">מחיקה</button></div>
+            <div class="row-between"><h3>${esc(a.title)}</h3>
+              <div style="display:flex;gap:6px;">
+                <button class="btn btn-outline btn-sm" data-edit-ad="${a.id}">עריכה</button>
+                <button class="btn btn-danger btn-sm" data-del-ad="${a.id}">מחיקה</button>
+              </div>
+            </div>
             <p class="muted">${esc(a.body || '')}</p>
           </div>`).join('') || '<p class="muted">אין מודעות עדיין.</p>'}
       </div>
@@ -1309,16 +1339,26 @@ async function renderAdmin(token) {
     document.getElementById('ad-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const f = Object.fromEntries(new FormData(e.target));
+      if (editingAd) f.ad_id = editingAd.id;
       try {
         await api(`/api/admin/tenant/${encodeURIComponent(token)}/ads`, { method: 'POST', body: JSON.stringify(f) });
+        editingAd = null;
         await refresh(); draw();
       } catch (err) {
         document.getElementById('ads-alert').innerHTML = `<div class="alert alert-error">${esc(err.message)}</div>`;
       }
     });
+    const cancelBtn = document.getElementById('ad-cancel-edit');
+    if (cancelBtn) cancelBtn.onclick = () => { editingAd = null; drawAds(content); };
+    content.querySelectorAll('[data-edit-ad]').forEach(btn => btn.onclick = () => {
+      editingAd = data.ads.find(x => String(x.id) === btn.dataset.editAd) || null;
+      drawAds(content);
+      document.getElementById('ad-form')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
     content.querySelectorAll('[data-del-ad]').forEach(btn => btn.onclick = async () => {
       if (!confirm('למחוק את המודעה?')) return;
       await api(`/api/admin/tenant/${encodeURIComponent(token)}/ads/${btn.dataset.delAd}`, { method: 'DELETE' });
+      if (editingAd && String(editingAd.id) === btn.dataset.delAd) editingAd = null;
       await refresh(); draw();
     });
   }
@@ -1780,6 +1820,8 @@ async function renderTeacherAdmin(token) {
   const data = await api(`/api/admin/teacher/${encodeURIComponent(token)}`);
   if (!data) return renderNotFound();
   let tab = 'profile';
+  let editingLesson = null;
+  let editingAd = null;
 
   async function refresh() { Object.assign(data, await api(`/api/admin/teacher/${encodeURIComponent(token)}`)); }
 
@@ -1801,7 +1843,7 @@ async function renderTeacherAdmin(token) {
         <div id="tab-content"></div>
       </div>
     `;
-    document.querySelectorAll('.tab-btn').forEach(b => b.onclick = () => { tab = b.dataset.tab; draw(); });
+    document.querySelectorAll('.tab-btn').forEach(b => b.onclick = () => { tab = b.dataset.tab; editingLesson = null; editingAd = null; draw(); });
     const content = document.getElementById('tab-content');
     if (tab === 'lessons') drawLessons(content);
     else if (tab === 'ads') drawAds(content);
@@ -1856,32 +1898,40 @@ async function renderTeacherAdmin(token) {
   }
 
   function drawLessons(content) {
+    const l = editingLesson;
     content.innerHTML = `
       <div id="te-lessons-alert"></div>
       <div class="card" style="margin-bottom:16px;">
-        <h3>הוספת שיעור</h3>
+        <h3>${l ? 'עריכת שיעור' : 'הוספת שיעור'}</h3>
         <form id="te-lesson-form">
           <div class="form-row">
-            <div class="form-field"><label>כותרת *</label><input name="title" required /></div>
-            <div class="form-field"><label>נושא</label><input name="topic" /></div>
+            <div class="form-field"><label>כותרת *</label><input name="title" required value="${esc(l?.title || '')}" /></div>
+            <div class="form-field"><label>נושא</label><input name="topic" value="${esc(l?.topic || '')}" /></div>
           </div>
           <div class="form-row">
             <div class="form-field"><label>יום</label>
-              <select name="day_of_week">${DAYS_HE.map((d,i)=>`<option value="${i}">${d}</option>`).join('')}</select>
+              <select name="day_of_week">${DAYS_HE.map((d,i)=>`<option value="${i}" ${l && l.day_of_week === i ? 'selected' : ''}>${d}</option>`).join('')}</select>
             </div>
-            <div class="form-field"><label>שעה</label><input name="start_time" type="time" /></div>
-            <div class="form-field"><label>משך (דקות)</label><input name="duration_minutes" type="number" value="45" /></div>
+            <div class="form-field"><label>שעה</label><input name="start_time" type="time" value="${esc(l?.start_time || '')}" /></div>
+            <div class="form-field"><label>משך (דקות)</label><input name="duration_minutes" type="number" value="${l?.duration_minutes || 45}" /></div>
           </div>
           <div class="form-field"><label>קהל יעד</label>
-            <select name="audience"><option value="men">גברים</option><option value="women">נשים</option><option value="mixed">מעורב</option></select>
+            <select name="audience">
+              <option value="men" ${(l?.audience || 'men') === 'men' ? 'selected' : ''}>גברים</option>
+              <option value="women" ${l?.audience === 'women' ? 'selected' : ''}>נשים</option>
+              <option value="mixed" ${l?.audience === 'mixed' ? 'selected' : ''}>מעורב</option>
+            </select>
           </div>
-          <div class="form-field"><label>תיאור / מהלך השיעור</label><textarea name="description"></textarea></div>
-          ${uploadFieldHtml({ id: 'te-lesson-logo', label: 'תמונת השיעור (אופציונלי)', name: 'logo_url', currentUrl: '' })}
+          <div class="form-field"><label>תיאור / מהלך השיעור</label><textarea name="description">${esc(l?.description || '')}</textarea></div>
+          ${uploadFieldHtml({ id: 'te-lesson-logo', label: 'תמונת השיעור (אופציונלי)', name: 'logo_url', currentUrl: l?.logo_url || '' })}
           <label style="display:flex;gap:16px;">
-            <span><input type="checkbox" name="is_live" style="width:auto;" /> משודר LIVE</span>
-            <span><input type="checkbox" name="is_recorded" style="width:auto;" /> מוקלט</span>
+            <span><input type="checkbox" name="is_live" style="width:auto;" ${l?.is_live ? 'checked' : ''} /> משודר LIVE</span>
+            <span><input type="checkbox" name="is_recorded" style="width:auto;" ${l?.is_recorded ? 'checked' : ''} /> מוקלט</span>
           </label>
-          <button class="btn btn-primary" type="submit" style="margin-top:12px;">הוספת שיעור</button>
+          <div style="display:flex;gap:10px;margin-top:12px;">
+            <button class="btn btn-primary" type="submit">${l ? 'עדכון שיעור' : 'הוספת שיעור'}</button>
+            ${l ? '<button class="btn btn-outline" type="button" id="te-lesson-cancel-edit">ביטול עריכה</button>' : ''}
+          </div>
         </form>
       </div>
       <div>
@@ -1890,6 +1940,7 @@ async function renderTeacherAdmin(token) {
             ${logoCircle(l.title, l.logo_url, true)}
             <div class="time-badge">${esc(DAYS_HE[l.day_of_week] ?? '')}<br/>${esc(formatTime(l.start_time))}</div>
             <div style="flex:1;">${esc(l.title)} <span class="muted">${esc(l.topic || '')}</span></div>
+            <button class="btn btn-outline btn-sm" data-edit="${l.id}">עריכה</button>
             <button class="btn btn-danger btn-sm" data-del="${l.id}">מחיקה</button>
           </div>`).join('') || '<p class="muted">אין שיעורים עדיין.</p>'}
       </div>
@@ -1902,39 +1953,58 @@ async function renderTeacherAdmin(token) {
       f.duration_minutes = Number(f.duration_minutes) || 45;
       f.is_live = e.target.is_live.checked;
       f.is_recorded = e.target.is_recorded.checked;
+      if (editingLesson) f.id = editingLesson.id;
       try {
         await api(`/api/admin/teacher/${encodeURIComponent(token)}/lessons`, { method: 'POST', body: JSON.stringify(f) });
+        editingLesson = null;
         await refresh(); draw();
       } catch (err) {
         document.getElementById('te-lessons-alert').innerHTML = `<div class="alert alert-error">${esc(err.message)}</div>`;
       }
     });
+    const cancelBtn = document.getElementById('te-lesson-cancel-edit');
+    if (cancelBtn) cancelBtn.onclick = () => { editingLesson = null; drawLessons(content); };
+    content.querySelectorAll('[data-edit]').forEach(btn => btn.onclick = () => {
+      editingLesson = data.lessons.find(x => String(x.id) === btn.dataset.edit) || null;
+      drawLessons(content);
+      document.getElementById('te-lesson-form')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
     content.querySelectorAll('[data-del]').forEach(btn => btn.onclick = async () => {
       if (!confirm('למחוק את השיעור?')) return;
       await api(`/api/admin/teacher/${encodeURIComponent(token)}/lessons/${btn.dataset.del}`, { method: 'DELETE' });
+      if (editingLesson && String(editingLesson.id) === btn.dataset.del) editingLesson = null;
       await refresh(); draw();
     });
   }
 
   function drawAds(content) {
+    const a = editingAd;
     content.innerHTML = `
       <div id="te-ads-alert"></div>
       <div class="card" style="margin-bottom:16px;">
-        <h3>מודעה חדשה</h3>
+        <h3>${a ? 'עריכת מודעה' : 'מודעה חדשה'}</h3>
         <p class="muted">מודעות מוצגות בדף הציבורי שלך — טוב לפרסום שיעור מיוחד, ספר חדש, אירוע וכו'.</p>
         <form id="te-ad-form">
-          <div class="form-field"><label>כותרת *</label><input name="title" required /></div>
-          <div class="form-field"><label>תוכן</label><textarea name="body"></textarea></div>
-          ${uploadFieldHtml({ id: 'te-ad-image', label: 'תמונת המודעה (אופציונלי)', name: 'image_url', currentUrl: '' })}
-          <div class="form-field"><label>קישור (אופציונלי)</label><input name="link_url" placeholder="https://" /></div>
-          <button class="btn btn-primary" type="submit">פרסום מודעה</button>
+          <div class="form-field"><label>כותרת *</label><input name="title" required value="${esc(a?.title || '')}" /></div>
+          <div class="form-field"><label>תוכן</label><textarea name="body">${esc(a?.body || '')}</textarea></div>
+          ${uploadFieldHtml({ id: 'te-ad-image', label: 'תמונת המודעה (אופציונלי)', name: 'image_url', currentUrl: a?.image_url || '' })}
+          <div class="form-field"><label>קישור (אופציונלי)</label><input name="link_url" placeholder="https://" value="${esc(a?.link_url || '')}" /></div>
+          <div style="display:flex;gap:10px;">
+            <button class="btn btn-primary" type="submit">${a ? 'עדכון מודעה' : 'פרסום מודעה'}</button>
+            ${a ? '<button class="btn btn-outline" type="button" id="te-ad-cancel-edit">ביטול עריכה</button>' : ''}
+          </div>
         </form>
       </div>
       <div class="grid">
         ${data.ads.map(a => `
           <div class="card">
             ${a.image_url ? `<img src="${esc(a.image_url)}" alt="" style="width:100%;border-radius:10px;margin-bottom:10px;max-height:160px;object-fit:cover;" />` : ''}
-            <div class="row-between"><h3>${esc(a.title)}</h3><button class="btn btn-danger btn-sm" data-del-ad="${a.id}">מחיקה</button></div>
+            <div class="row-between"><h3>${esc(a.title)}</h3>
+              <div style="display:flex;gap:6px;">
+                <button class="btn btn-outline btn-sm" data-edit-ad="${a.id}">עריכה</button>
+                <button class="btn btn-danger btn-sm" data-del-ad="${a.id}">מחיקה</button>
+              </div>
+            </div>
             <p class="muted">${esc(a.body || '')}</p>
           </div>`).join('') || '<p class="muted">אין מודעות עדיין.</p>'}
       </div>
@@ -1943,16 +2013,26 @@ async function renderTeacherAdmin(token) {
     document.getElementById('te-ad-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const f = Object.fromEntries(new FormData(e.target));
+      if (editingAd) f.id = editingAd.id;
       try {
         await api(`/api/admin/teacher/${encodeURIComponent(token)}/ads`, { method: 'POST', body: JSON.stringify(f) });
+        editingAd = null;
         await refresh(); draw();
       } catch (err) {
         document.getElementById('te-ads-alert').innerHTML = `<div class="alert alert-error">${esc(err.message)}</div>`;
       }
     });
+    const cancelBtn = document.getElementById('te-ad-cancel-edit');
+    if (cancelBtn) cancelBtn.onclick = () => { editingAd = null; drawAds(content); };
+    content.querySelectorAll('[data-edit-ad]').forEach(btn => btn.onclick = () => {
+      editingAd = data.ads.find(x => String(x.id) === btn.dataset.editAd) || null;
+      drawAds(content);
+      document.getElementById('te-ad-form')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
     content.querySelectorAll('[data-del-ad]').forEach(btn => btn.onclick = async () => {
       if (!confirm('למחוק את המודעה?')) return;
       await api(`/api/admin/teacher/${encodeURIComponent(token)}/ads/${btn.dataset.delAd}`, { method: 'DELETE' });
+      if (editingAd && String(editingAd.id) === btn.dataset.delAd) editingAd = null;
       await refresh(); draw();
     });
   }
