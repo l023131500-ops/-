@@ -75,6 +75,16 @@ const Navbar = () => {
             </a>
           ))}
           <a
+            href="/subscribe?app=zchuyot"
+            className={`font-medium transition-colors ${
+              scrolled
+                ? "text-muted-foreground hover:text-foreground"
+                : "text-white/90 hover:text-white"
+            }`}
+          >
+            מחירון
+          </a>
+          <a
             href="https://nedar.im/F4064"
             target="_blank"
             rel="noopener noreferrer"
@@ -121,6 +131,13 @@ const Navbar = () => {
                   {item.label}
                 </a>
               ))}
+              <a
+                href="/subscribe?app=zchuyot"
+                onClick={() => setMobileOpen(false)}
+                className="block py-2 font-medium text-foreground hover:text-primary transition-colors"
+              >
+                מחירון
+              </a>
               <a
                 href="https://nedar.im/F4064"
                 target="_blank"
