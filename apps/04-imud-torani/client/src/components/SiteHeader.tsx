@@ -77,6 +77,13 @@ export function SiteHeader() {
           >
             שאלון חכם
           </Link>
+          <a
+            href="/subscribe?app=imud"
+            className="rounded-md px-3 py-2 text-muted-foreground hover-elevate"
+            data-testid="link-nav-pricing"
+          >
+            מחירון
+          </a>
           <button
             type="button"
             onClick={toggle}
