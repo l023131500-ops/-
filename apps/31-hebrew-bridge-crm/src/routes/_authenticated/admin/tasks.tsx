@@ -37,7 +37,7 @@ function TasksPage() {
     <div dir="rtl" className="space-y-6 animate-fade-in">
       <header className="flex items-start justify-between flex-wrap gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">יומן משימות חכם</h1>
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">יומן משימות</h1>
           <p className="text-muted-foreground mt-1">ניהול ושיוך משימות ללקוחות ולשותפים מטפלים</p>
         </div>
         <div className="flex gap-2">
