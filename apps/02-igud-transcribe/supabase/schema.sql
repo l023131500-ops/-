@@ -8,6 +8,15 @@ create schema if not exists transcribe;
 
 -- אפשר ל-PostgREST/Supabase לחשוף את ה-schema:
 -- אחרי הריצה: Dashboard → Settings → API → Exposed schemas → הוסף "transcribe"
+--
+-- ✅ הוחל בייצור 19/08/2026 (core.issues #239): הפרויקט bieebmnmkffwbqlsfozh
+-- חשף רק public,graphql_public — ולכן כל נתיב שרת שקורא ל-transcribe
+-- (coupons/uploads/jobs/admin) החזיר 500 "Invalid schema: transcribe".
+-- db_schema עודכן ל-"public,graphql_public,otvedaf,transcribe" גם ב-Management API
+-- (PATCH /v1/projects/<ref>/postgrest) וגם ב-ALTER ROLE authenticator SET pgrst.db_schemas,
+-- ואז NOTIFY pgrst,'reload config'. ⚠️ otvedaf שייך למערכת אחרת על אותו פרויקט —
+-- חובה לשמר אותו ברשימה, לא למחוק. אימות: POST /tamlul/api/coupons עבר מ-500 ל-404
+-- ("קופון לא קיים") לקוד בדיקה שאינו קיים.
 
 -- =========================================================
 -- 1. Profiles

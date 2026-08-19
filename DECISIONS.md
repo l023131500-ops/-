@@ -249,3 +249,27 @@
     החוסם האמיתי כעת: אין טוקן Vercel ב-core.secrets לפריסת `chizukim2-more30`
     עם מפתח סודי לפני נעילת ה-RLS — נרשם ב-core.issues. **לא הורצה שום SQL על
     הפרודקשן** (אפס סיכון לנתונים החיים).
+
+## 19/08/2026 — 02 תמלול: חשיפת schema `transcribe` ב-PostgREST (core.issues #239)
+
+27. **הפעולה המרכזית של תמלול (02) הייתה שבורה לגמרי בייצור, וזו הייתה תקלת
+    תצורה ולא באג קוד.** `POST /tamlul/api/coupons` (וכל נתיב שרת אחר שקורא
+    ל-schema `transcribe`: uploads/jobs/admin) החזיר `500 {"error":"Invalid
+    schema: transcribe"}`. הקוד תקין — `lib/supabase/server.ts` בונה client עם
+    `db: { schema: "transcribe" }` והתיקון הקודם של ה-BOM (e4fa8956) אכן נפרס
+    (שגיאת ה-ByteString נעלמה). הסיבה האמיתית: בפרויקט
+    `bieebmnmkffwbqlsfozh` רשימת ה-Exposed Schemas של PostgREST הכילה רק
+    `public,graphql_public` — בדיוק צעד ההתקנה שמתועד ב-`schema.sql:9-10` ולא
+    בוצע. שמונה טבלאות ה-`transcribe` קיימות, אך PostgREST דחה את ה-schema.
+
+28. **התיקון (אדיטיבי, אפס רגרסיה):** `db_schema` עודכן ל-
+    `public,graphql_public,otvedaf,transcribe` — גם דרך ה-Management API
+    (`PATCH /v1/projects/bieebmnmkffwbqlsfozh/postgrest`) לעמידוּת, וגם ישירות
+    `ALTER ROLE authenticator SET pgrst.db_schemas=...` + `NOTIFY pgrst,'reload
+    config'` כדי שה-instance החי יקלוט מיד. **⚠️ `otvedaf` הוא schema של מערכת
+    אחרת על אותו פרויקט (2 טבלאות) — נשמר במפורש; PATCH ראשוני שהשמיט אותו תוקן
+    מיד.** אימות בייצור: `POST /tamlul/api/coupons` עבר מ-`500 Invalid schema`
+    ל-`404 "קופון לא קיים"` לקוד בדיקה שאינו קיים (הנתיב רץ מקצה-לקצה), ו-schema
+    `otvedaf` נותר חשוף (401 ל-anon, לא 406) — בלי רגרסיה. הטוקן: `SUPABASE_ACCESS_TOKEN`
+    מ-`core.secrets`. הערה: ה-MCP של Supabase כן מגיע ל-`bieebmnm` — הערת "❌ other
+    account" ב-CONNECTIONS.md מיושנת.
