@@ -115,6 +115,10 @@ export interface DesignCritiqueIssue {
   severity: "low" | "medium" | "high";
   area: string;
   note: string;
+  // תיקון קונקרטי אופציונלי לשכבה אחת — רק כשיש שדה/ערך חד-משמעי ובטוח (ראה
+  // האלוקיישן ב-critiqueDesign). הלקוח מחליט אם ללחוץ "החל תיקון"; שום שכבה לא
+  // משתנה בלי לחיצה מפורשת. חלק מ-CHECKLIST/graphics.md #13 (המשך).
+  fix?: { layerId: string; field: string; value: number | string };
 }
 
 export interface DesignCritique {
@@ -158,11 +162,13 @@ export async function critiqueDesign(input: {
     "\nבחן את הטיוטה הזו כמבקר QA בכיר לפני שהיא יוצאת ללקוח. החזר JSON: " +
     '{"score": מספר 0-100 (איכות עיצובית כוללת),' +
     '"strengths": ["חוזקה קונקרטית אחת או יותר"],' +
-    '"issues": [{"severity":"low|medium|high","area":"שם/סוג השכבה או תחום","note":"הבעיה הקונקרטית"}],' +
+    '"issues": [{"severity":"low|medium|high","area":"שם/סוג השכבה או תחום","note":"הבעיה הקונקרטית",' +
+    '"fix":{"layerId":"מזהה מדויק מתוך שדה id של אחת השכבות למעלה","field":"אחד בלבד מתוך: opacity|letterSpacing|lineHeight|cornerRadius|fontSize|x|y|fill|stroke","value":"ערך מספרי, או צבע hex עבור fill/stroke"}}],' +
     '"suggestions": ["הצעת שיפור קונקרטית וניתנת-לביצוע"]}. ' +
+    'fix הוא אופציונלי לכל issue — הוסף אותו רק כשיש תיקון חד-משמעי, בטוח וממוקד לשכבה אחת קיימת (layerId מתוך הרשימה בדיוק); אם התיקון דורש טקסט/שכבה חדשה/כמה שכבות — השמט fix לגמרי מאותו issue. ' +
     "אם הטיוטה טובה — score גבוה ו-issues מעטים/ריקים, לא לחפש בעיות מלאכותיות.";
   try {
-    const out = await claude(system, user, 2000);
+    const out = await claude(system, user, 2400);
     const data = extractJson(out);
     const critique: DesignCritique = {
       score: typeof data.score === "number" ? Math.max(0, Math.min(100, data.score)) : 70,

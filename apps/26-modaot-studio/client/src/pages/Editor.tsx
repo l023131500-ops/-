@@ -137,13 +137,16 @@ export default function Editor() {
   // ביקורת AI (מבקר QA) — שלב "הביקורת" בלולאת טיוטה→ביקורת→ליטוש (צ'קליסט #13)
   const [critiqueDialogOpen, setCritiqueDialogOpen] = useState(false);
   const [critiquing, setCritiquing] = useState(false);
+  type CritiqueFix = { layerId: string; field: string; value: number | string };
   type Critique = {
     score: number;
     strengths: string[];
-    issues: { severity: "low" | "medium" | "high"; area: string; note: string }[];
+    issues: { severity: "low" | "medium" | "high"; area: string; note: string; fix?: CritiqueFix }[];
     suggestions: string[];
   };
   const [critiqueResult, setCritiqueResult] = useState<Critique | null>(null);
+  // תיקונים שהוחלו בפועל בסבב הביקורת הנוכחי — מתאפס בכל ביקורת AI חדשה
+  const [appliedCritiqueFixes, setAppliedCritiqueFixes] = useState<Set<number>>(new Set());
 
   // הערות לקוח (צ'קליסט #14, שלב השמירה) — נשמר לצד הטיוטה בתוך layersJson;
   // ליישום התיקון האוטומטי לפי ההערות בסבב הבא, זהו רק שלב שמירת ההערה עצמה.
@@ -673,6 +676,7 @@ export default function Editor() {
         return;
       }
       setCritiqueResult(data);
+      setAppliedCritiqueFixes(new Set());
       setCritiqueDialogOpen(true);
     } catch (err: any) {
       toast({
@@ -683,6 +687,51 @@ export default function Editor() {
     } finally {
       setCritiquing(false);
     }
+  }
+
+  // תיקון-בקליק לפי הצעת ביקורת ה-AI (המשך צ'קליסט #13) — שכבה יחידה,
+  // שדה מתוך רשימת-הרשאה סגורה (אותם שדות שכבר חשופים כבקרות ידניות בפאנל),
+  // ערך תמיד עובר clamp/בדיקה לפני החלה. שום שכבה לא משתנה בלי לחיצה מפורשת.
+  const CRITIQUE_FIX_RANGES: Record<string, [number, number]> = {
+    opacity: [0, 1],
+    letterSpacing: [-5, 30],
+    lineHeight: [0.8, 2.5],
+    cornerRadius: [0, 100],
+    fontSize: [8, 300],
+  };
+  const CRITIQUE_FIX_COLOR_FIELDS = new Set(["fill", "stroke"]);
+
+  function resolveCritiqueFix(fix: CritiqueFix | undefined): CritiqueFix | null {
+    if (!fix || !doc) return null;
+    const layer = doc.layers.find((l) => l.id === fix.layerId);
+    if (!layer) return null;
+    if (fix.field === "x" || fix.field === "y") {
+      const raw = Number(fix.value);
+      if (!Number.isFinite(raw)) return null;
+      const max = fix.field === "x" ? doc.width : doc.height;
+      return { layerId: fix.layerId, field: fix.field, value: Math.max(0, Math.min(max, raw)) };
+    }
+    if (fix.field in CRITIQUE_FIX_RANGES) {
+      const raw = Number(fix.value);
+      if (!Number.isFinite(raw)) return null;
+      const [min, max] = CRITIQUE_FIX_RANGES[fix.field];
+      return { layerId: fix.layerId, field: fix.field, value: Math.max(min, Math.min(max, raw)) };
+    }
+    if (CRITIQUE_FIX_COLOR_FIELDS.has(fix.field)) {
+      const raw = String(fix.value ?? "");
+      if (!/^#[0-9a-fA-F]{3,8}$/.test(raw)) return null;
+      return { layerId: fix.layerId, field: fix.field, value: raw };
+    }
+    return null;
+  }
+
+  function handleApplyCritiqueFix(index: number, fix: CritiqueFix | undefined) {
+    const resolved = resolveCritiqueFix(fix);
+    if (!resolved) return;
+    handleChangeLayer(resolved.layerId, { [resolved.field]: resolved.value } as Partial<AnyLayer>);
+    setSelectedId(resolved.layerId);
+    setAppliedCritiqueFixes((prev) => new Set(prev).add(index));
+    toast({ title: "התיקון הוחל", description: `השכבה עודכנה (${resolved.field})` });
   }
 
   return (
@@ -1450,6 +1499,7 @@ export default function Editor() {
             <DialogDescription>
               משוב מבקר QA על הטיוטה הנוכחית — לקריאה בלבד, שום שכבה לא משתנה אוטומטית.
               {clientNotes.trim() && " הביקורת הביאה בחשבון את הערת הלקוח השמורה."}
+              {" "}הערה עם כפתור "החל תיקון" משנה, בלחיצה מפורשת בלבד, רק את השכבה שצוינה בה.
             </DialogDescription>
           </DialogHeader>
           {critiqueResult && (
@@ -1487,6 +1537,23 @@ export default function Editor() {
                           <span className="text-[11px] text-[#F5EEDD]/60">{issue.area}</span>
                         </div>
                         <p className="text-[#F5EEDD]/90">{issue.note}</p>
+                        {(() => {
+                          const resolved = resolveCritiqueFix(issue.fix);
+                          if (!resolved) return null;
+                          const applied = appliedCritiqueFixes.has(i);
+                          return (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="mt-1.5 h-6 gap-1 border-[#C9A227]/40 px-2 text-[10px] text-[#C9A227] disabled:opacity-60"
+                              disabled={applied}
+                              onClick={() => handleApplyCritiqueFix(i, issue.fix)}
+                              data-testid={`button-apply-critique-fix-${i}`}
+                            >
+                              {applied ? "הוחל ✓" : `החל תיקון (${resolved.field})`}
+                            </Button>
+                          );
+                        })()}
                       </li>
                     ))}
                   </ul>
