@@ -36,6 +36,7 @@ import {
   ClipboardCheck,
   MessageSquare,
   RefreshCw,
+  CheckCheck,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -734,6 +735,27 @@ export default function Editor() {
     setSelectedId(resolved.layerId);
     setAppliedCritiqueFixes((prev) => new Set(prev).add(index));
     toast({ title: "התיקון הוחל", description: `השכבה עודכנה (${resolved.field})` });
+  }
+
+  // מחיל בבת אחת את כל התיקונים הממתינים, ניתנים-לפתרון — עדיין לחיצה יזומה
+  // אחת של אדם על "החל את כל התיקונים", לא לולאה אוטומטית: כל fix עובר קודם
+  // אותו resolveCritiqueFix (אימות שכבה קיימת + clamp טווח) כמו החלה בודדת.
+  function handleApplyAllCritiqueFixes() {
+    if (!critiqueResult) return;
+    const pending = critiqueResult.issues
+      .map((issue, index) => ({ index, resolved: resolveCritiqueFix(issue.fix) }))
+      .filter((p): p is { index: number; resolved: CritiqueFix } => !!p.resolved && !appliedCritiqueFixes.has(p.index));
+    if (pending.length === 0) return;
+    pending.forEach(({ resolved }) => {
+      handleChangeLayer(resolved.layerId, { [resolved.field]: resolved.value } as Partial<AnyLayer>);
+    });
+    setSelectedId(pending[pending.length - 1].resolved.layerId);
+    setAppliedCritiqueFixes((prev) => {
+      const next = new Set(prev);
+      pending.forEach(({ index }) => next.add(index));
+      return next;
+    });
+    toast({ title: "כל התיקונים הוחלו", description: `${pending.length} שכבות עודכנו` });
   }
 
   return (
@@ -1502,6 +1524,7 @@ export default function Editor() {
               משוב מבקר QA על הטיוטה הנוכחית — לקריאה בלבד, שום שכבה לא משתנה אוטומטית.
               {clientNotes.trim() && " הביקורת הביאה בחשבון את הערת הלקוח השמורה."}
               {" "}הערה עם כפתור "החל תיקון" משנה, בלחיצה מפורשת בלבד, רק את השכבה שצוינה בה.
+              {" "}"החל את כל התיקונים" מריץ את אותה פעולה על כל ההערות הממתינות בבת אחת — עדיין לחיצה יזומה אחת, לא לולאה אוטומטית.
             </DialogDescription>
           </DialogHeader>
           {critiqueResult && (
@@ -1518,7 +1541,27 @@ export default function Editor() {
               )}
               {critiqueResult.issues.length > 0 && (
                 <div>
-                  <p className="mb-1.5 text-xs font-semibold text-[#C9A227]">הערות</p>
+                  <div className="mb-1.5 flex items-center justify-between gap-2">
+                    <p className="text-xs font-semibold text-[#C9A227]">הערות</p>
+                    {(() => {
+                      const pendingCount = critiqueResult.issues.filter(
+                        (issue, i) => !appliedCritiqueFixes.has(i) && resolveCritiqueFix(issue.fix)
+                      ).length;
+                      if (pendingCount === 0) return null;
+                      return (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="h-6 gap-1 border-[#C9A227]/40 px-2 text-[10px] text-[#C9A227]"
+                          onClick={handleApplyAllCritiqueFixes}
+                          data-testid="button-apply-all-critique-fixes"
+                        >
+                          <CheckCheck className="h-3 w-3" />
+                          {`החל את כל התיקונים (${pendingCount})`}
+                        </Button>
+                      );
+                    })()}
+                  </div>
                   <ul className="space-y-1.5 text-sm" data-testid="list-critique-issues">
                     {critiqueResult.issues.map((issue, i) => (
                       <li key={i} className="rounded-md border border-[#C9A227]/20 bg-[#101B32] p-2">
