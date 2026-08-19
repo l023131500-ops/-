@@ -49,6 +49,26 @@ export async function getUserIdFromToken(authHeader: string | undefined): Promis
   }
 }
 
+/**
+ * מכסת AI יומית לפי כתובת IP (לא לפי משתמש מחובר) — כל נתיבי היצירה
+ * (רקע/לוגו/וקטוריזציה/אסטרטגיה/קופי/ביקורת) עולים כסף אמיתי לכל קריאה
+ * ואין להם היום שום גבול (audit_gaps #2). מכסה לפי משתמש בלבד הייתה
+ * מכסה רק תעבורה מחוברת — רוב התעבורה עדיין אנונימית — ולכן זו לפי IP,
+ * שחל גם על אנונימי וגם על מחובר. עולה על עודכן אטומית ב-Postgres כדי
+ * שקריאות מקבילות לא "יחמקו" בין קריאה לכתיבה (race).
+ * כשל ברשת/DB בבדיקת המכסה עצמה → "פתוח" (allowed=true): תקלת תשתית
+ * במכסה לא אמורה לחסום משתמש אמיתי שעדיין בתוך הגבול.
+ */
+export async function bumpAiRateLimit(ipHash: string, dailyLimit: number): Promise<{ allowed: boolean; count: number }> {
+  try {
+    const { data, error } = await sb().rpc("studio_bump_ai_rate_limit", { p_ip_hash: ipHash, p_limit: dailyLimit });
+    if (error || !data) return { allowed: true, count: 0 };
+    return data as { allowed: boolean; count: number };
+  } catch {
+    return { allowed: true, count: 0 };
+  }
+}
+
 // ---------------------------------------------------------------------------
 // Row <-> domain mappers. Postgres gives snake_case columns; the app's types
 // are camelCase, exactly as drizzle produced them from the SQLite schema.

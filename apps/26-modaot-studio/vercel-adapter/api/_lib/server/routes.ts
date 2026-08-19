@@ -1,6 +1,7 @@
 import type { Express, Request, Response } from "express";
 import type { Server } from "node:http";
-import { storage, getUserIdFromToken } from "./storage";
+import { createHash } from "node:crypto";
+import { storage, getUserIdFromToken, bumpAiRateLimit } from "./storage";
 import { insertProjectSchema } from "../shared/schema";
 import { generateBackground, editImage, enhanceBackgroundPrompt } from "./gemini";
 import { generateCopy, generateConcepts, critiqueDesign } from "./ai";
@@ -13,6 +14,36 @@ import { KNOWLEDGE_BASE, GROUPS } from "../shared/knowledge";
 import { PRESETS, STUDIOS, MOODS, getPreset, renderPreset } from "../shared/presetCatalog";
 import { matchPresets, conceptUnderstanding, AUDIENCES, type Brief } from "../shared/brief";
 import { getCategoryTemplates, listCategoryTemplateKeys, renderCategoryTemplate } from "../shared/categoryTemplates";
+
+// מכסת AI יומית לפי IP — audit_gaps #2 ("אין מכסת יצירות AI, כל יצירה עולה כסף
+// אמיתי"). ראה supabase/migrations/0105_studio_ai_generation_had_no_daily_ceiling.sql
+// ו-DECISIONS.md #84 להסבר למה זו לפי IP ולא לפי משתמש מחובר: רוב התעבורה
+// עדיין אנונימית, ומכסה לפי משתמש הייתה מכסה רק חלק קטן מהחשיפה הכספית.
+const AI_DAILY_LIMIT_PER_IP = 40;
+
+function clientIp(req: Request): string {
+  const fwd = req.headers["x-forwarded-for"];
+  const first = Array.isArray(fwd) ? fwd[0] : fwd?.split(",")[0];
+  return first?.trim() || req.socket?.remoteAddress || "unknown";
+}
+
+/**
+ * true = מותר להמשיך. false = כבר החזיר 429 ללקוח (הקורא לא צריך לעשות כלום נוסף).
+ * כשל בבדיקת המכסה עצמה (רשת/DB) → "פתוח" בכוונה בתוך bumpAiRateLimit —
+ * תקלת תשתית במכסה לא אמורה לחסום יצירה אמיתית של משתמש בתוך הגבול.
+ */
+async function enforceAiQuota(req: Request, res: Response): Promise<boolean> {
+  const ipHash = createHash("sha256").update(clientIp(req)).digest("hex");
+  const { allowed, count } = await bumpAiRateLimit(ipHash, AI_DAILY_LIMIT_PER_IP);
+  if (!allowed) {
+    res.status(429).json({
+      error: `הגעת למכסת השימוש היומית ביצירות AI (${AI_DAILY_LIMIT_PER_IP} ליום מכתובת זו). נסה שוב מחר.`,
+      count, limit: AI_DAILY_LIMIT_PER_IP,
+    });
+    return false;
+  }
+  return true;
+}
 
 export async function registerRoutes(httpServer: Server, app: Express): Promise<Server> {
   app.use((req, res, next) => { if (req.path.startsWith("/api")) res.setHeader("Cache-Control", "no-store"); next(); });
@@ -79,6 +110,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
   // ═══════════════════ מנוע הבריף החכם ═══════════════════
   // מקבל בריף → מדרג פריסטים → מנסח הבנה. אם AI זמין, מעשיר בקונספטים מ-Claude.
   app.post("/api/brief/concepts", async (req: Request, res: Response) => {
+    if (!(await enforceAiQuota(req, res))) return;
     const brief = (req.body || {}) as Brief;
     if (!brief.category && !brief.message && !(brief.mood && brief.mood.length))
       return res.status(400).json({ error: "בריף ריק — נדרש לפחות קטגוריה, מסר או אווירה" });
@@ -132,6 +164,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
 
   // ═══════════════════ קופי חכם (Claude) ═══════════════════
   app.post("/api/ai/copy", async (req: Request, res: Response) => {
+    if (!(await enforceAiQuota(req, res))) return;
     const { category, message, audience, mood, fields, variants } = req.body || {};
     const ai = await generateCopy({ category, message, audience, mood, fields, variants });
     if (ai.ok && ai.data) return res.json(ai.data);
@@ -141,6 +174,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
   // ═══════════════════ ביקורת AI (מבקר QA) — CHECKLIST/graphics.md #13 ═══════════════════
   // בודק את הטיוטה הנוכחית בעורך (שכבות+רקע, בלי base64 תמונות) ומחזיר משוב מובנה.
   app.post("/api/ai/critique", async (req: Request, res: Response) => {
+    if (!(await enforceAiQuota(req, res))) return;
     const { category, style, width, height, background, layers, clientNotes } = req.body || {};
     if (!Array.isArray(layers) || !width || !height) {
       return res.status(400).json({ error: "חסרים נתוני התבנית לביקורת" });
@@ -198,6 +232,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
    * שני המנועים ממשיכים לעבוד גם לאחר פרסום (custom-cred נשמר). מחזיר data URL.
    */
   app.post("/api/ai/background", async (req: Request, res: Response) => {
+    if (!(await enforceAiQuota(req, res))) return;
     const { prompt, aspectRatio, enhance, engine, imageBase64, imageMediaType } = req.body || {};
     if (!prompt) return res.status(400).json({ error: "חסר תיאור לרקע" });
 
@@ -280,6 +315,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
 
   // יצירת אסטרטגיית מותג + פלטה + טיפוגרפיה (Claude, עם גיבוי מקומי)
   app.post("/api/branding/strategy", async (req: Request, res: Response) => {
+    if (!(await enforceAiQuota(req, res))) return;
     const { brandName, brief, preferredArchetype } = req.body || {};
     if (!brandName) return res.status(400).json({ error: "חסר שם מותג" });
     try {
@@ -299,6 +335,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
 
   // יצירת קונספטי לוגו (Nano Banana Pro) — מחזיר data URLs
   app.post("/api/branding/logo", async (req: Request, res: Response) => {
+    if (!(await enforceAiQuota(req, res))) return;
     const { brandName, archetypeKey, palette, style, count } = req.body || {};
     if (!brandName) return res.status(400).json({ error: "חסר שם מותג" });
     if (!Array.isArray(palette) || palette.length === 0) return res.status(400).json({ error: "חסרה פלטת צבעים" });
@@ -320,6 +357,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
 
   // וקטוריזציה של לוגו נבחר (Recraft) — מחזיר תוכן SVG
   app.post("/api/branding/vectorize", async (req: Request, res: Response) => {
+    if (!(await enforceAiQuota(req, res))) return;
     const { base64, mimeType } = req.body || {};
     if (!base64) return res.status(400).json({ error: "חסרה תמונה" });
     try {
@@ -333,6 +371,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
 
   // הסרת רקע משכבת תמונה נבחרת (Recraft) — מחזיר data URL של PNG עם שקיפות
   app.post("/api/branding/remove-background", async (req: Request, res: Response) => {
+    if (!(await enforceAiQuota(req, res))) return;
     const { base64, mimeType } = req.body || {};
     if (!base64) return res.status(400).json({ error: "חסרה תמונה" });
     try {
