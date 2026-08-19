@@ -1,0 +1,17 @@
+{
+  "number": "41",
+  "slug": "design-system",
+  "name": "Design System Hub",
+  "category": "internal-platform",
+  "stage": "wip",
+  "live": true,
+  "repo": "l023131500-ops/-",
+  "basePath": "/design",
+  "supabase": {
+    "project": null,
+    "schema": null
+  },
+  "deployTarget": "design-more30 (Vercel, path-mounted at more30.com/design via portal rewrite)",
+  "protected": false,
+  "source": "apps/41-design-system"
+}

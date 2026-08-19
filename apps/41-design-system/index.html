@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<base href="/design/">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>מערכת העיצוב של more30 — Brand Kit, טיפוגרפיה ומנוע המודעות</title>
+<meta name="description" content="Brand Kit חי של more30: הפלטה, ארבעת הפונטים, מילון הפרמטרים, ומנוע ה-HTML/CSS/SVG→PDF שנותן עברית מושלמת — הבסיס המשותף ל-33 המערכות.">
+<link rel="canonical" href="https://more30.com/design">
+<meta property="og:url" content="https://more30.com/design">
+<meta property="og:title" content="מערכת העיצוב של more30">
+<meta property="og:description" content="Brand Kit חי, טיפוגרפיה עברית עשירה, מילון פרמטרים, ומנוע העיצוב הקיים — שפה חזותית אחת ל-33 המערכות.">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Suez+One&family=Secular+One&family=Frank+Ruhl+Libre:wght@300;500&family=Heebo:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+</head>
+<body>
+<a class="skip-link" href="#main">דלג לתוכן</a>
+
+<header class="nav">
+  <div class="nav__wrap">
+    <a class="nav__brand" href="https://more30.com/">more30</a>
+    <nav aria-label="ניווט ראשי">
+      <ul class="nav__links">
+        <li><a href="#brand">Brand Kit</a></li>
+        <li><a href="#type">טיפוגרפיה</a></li>
+        <li><a href="#params">מילון פרמטרים</a></li>
+        <li><a href="#engine">המנוע</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+  <section class="hero">
+    <div class="hero__bg" aria-hidden="true">
+      <div class="grad"></div>
+      <svg viewBox="0 0 400 400" preserveAspectRatio="xMidYMid slice">
+        <defs>
+          <pattern id="lattice" width="80" height="80" patternUnits="userSpaceOnUse">
+            <path d="M40 0 L80 40 L40 80 L0 40 Z" fill="none" stroke="#C9A227" stroke-width="1"/>
+            <circle cx="40" cy="40" r="3" fill="#C9A227"/>
+          </pattern>
+        </defs>
+        <rect width="400" height="400" fill="url(#lattice)"/>
+      </svg>
+    </div>
+    <div class="wrap hero__content">
+      <p class="eyebrow">מערכת עיצוב · more30</p>
+      <h1>שפה חזותית אחת. 33 מערכות. אפס פשרות.</h1>
+      <p class="lede">הבסיס המשותף לכל מה שיוצא מ-more30: פלטת jewel-tone, ארבעה
+        פונטים עם תפקיד ברור לכל אחד, מילון פרמטרים אחיד בין בוט למעצב, ומנוע
+        עיצוב קיים שכבר יודע להוציא עברית מושלמת ל-PDF.</p>
+      <div class="hero__cta">
+        <a class="btn btn-primary" href="https://more30.com/studio">פתח את סטודיו המודעות ←</a>
+        <a class="btn btn-quiet" href="#brand">גלה את ה-Brand Kit</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="brand" class="section">
+    <div class="wrap">
+      <p class="eyebrow">01 · Brand Kit</p>
+      <h2>הפלטה</h2>
+      <p class="section-lede">כחול מלכותי עמוק עם זהב מדויק. אין גרדיאנטים
+        דקורטיביים ואין צללים כבדים — ההיררכיה נבנית מצבע, מגודל וממרווח בלבד.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch__chip" style="background:#0B0D2E"></div>
+          <div class="swatch__meta"><div class="swatch__name">Royal</div><div class="swatch__hex num">#0B0D2E</div><div class="swatch__role">בסיס — הרקע הראשי בכל מערכת</div></div></div>
+        <div class="swatch"><div class="swatch__chip" style="background:#12153F"></div>
+          <div class="swatch__meta"><div class="swatch__name">Royal-2</div><div class="swatch__hex num">#12153F</div><div class="swatch__role">משטח מוגבה — כרטיסים, אזורים חלופיים</div></div></div>
+        <div class="swatch"><div class="swatch__chip" style="background:#1A1E55"></div>
+          <div class="swatch__meta"><div class="swatch__name">Royal-3</div><div class="swatch__hex num">#1A1E55</div><div class="swatch__role">משטח פעיל / ריחוף</div></div></div>
+        <div class="swatch"><div class="swatch__chip" style="background:#241B54"></div>
+          <div class="swatch__meta"><div class="swatch__name">Violet</div><div class="swatch__hex num">#241B54</div><div class="swatch__role">מקטע משני עמוק</div></div></div>
+        <div class="swatch"><div class="swatch__chip" style="background:#C9A227"></div>
+          <div class="swatch__meta"><div class="swatch__name">Gold</div><div class="swatch__hex num">#C9A227</div><div class="swatch__role">הדגשה, קווי הפרדה, כפתור ראשי — אחד למסך</div></div></div>
+        <div class="swatch"><div class="swatch__chip" style="background:#E3C765"></div>
+          <div class="swatch__meta"><div class="swatch__name">Gold-soft</div><div class="swatch__hex num">#E3C765</div><div class="swatch__role">מצב hover של הזהב</div></div></div>
+        <div class="swatch"><div class="swatch__chip" style="background:#14B88A"></div>
+          <div class="swatch__meta"><div class="swatch__name">Emerald</div><div class="swatch__hex num">#14B88A</div><div class="swatch__role">סימון "חי" / הצלחה — תמיד עם מילה, לא רק נקודה</div></div></div>
+        <div class="swatch"><div class="swatch__chip" style="background:#ECE9F5"></div>
+          <div class="swatch__meta"><div class="swatch__name">Ink</div><div class="swatch__hex num">#ECE9F5</div><div class="swatch__role">טקסט ראשי</div></div></div>
+        <div class="swatch"><div class="swatch__chip" style="background:#8E8BB2"></div>
+          <div class="swatch__meta"><div class="swatch__name">Muted</div><div class="swatch__hex num">#8E8BB2</div><div class="swatch__role">טקסט שלישוני — על Royal/Violet בלבד, לא על Royal-3</div></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="type" class="section section--alt">
+    <div class="wrap">
+      <p class="eyebrow">02 · טיפוגרפיה</p>
+      <h2>ארבעה פונטים, לכל אחד תפקיד אחד</h2>
+      <p class="section-lede">גודל גוף מינימלי 16px, ותמיד עם נפילה בטוחה
+        ל-<code class="num">system-ui</code> — כשגוגל פונטס נחסם (וזה קורה כאן), העמוד נשאר קריא.</p>
+      <div class="type-specimens">
+        <div class="specimen specimen--display">
+          <p class="specimen__role">כותרת ראשית · כותרות מקטע</p>
+          <p class="specimen__sample">שיעור בדף היומי</p>
+          <p class="specimen__name">Suez One</p>
+        </div>
+        <div class="specimen specimen--names">
+          <p class="specimen__role">שמות מערכות · מספרים גדולים</p>
+          <p class="specimen__sample num">גליל · 1,138</p>
+          <p class="specimen__name">Secular One</p>
+        </div>
+        <div class="specimen specimen--serif">
+          <p class="specimen__role">משפטי הטבה · פסקאות לקריאה</p>
+          <p class="specimen__sample">כל מערכת מדברת אל הלקוח באותו קול — ברור, מכובד, בלי רעש.</p>
+          <p class="specimen__name">Frank Ruhl Libre 300</p>
+        </div>
+        <div class="specimen specimen--ui">
+          <p class="specimen__role">ממשק: כפתורים, שדות, ניווט</p>
+          <p class="specimen__sample">כניסה למערכת</p>
+          <p class="specimen__name">Heebo</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="params" class="section">
+    <div class="wrap">
+      <p class="eyebrow">03 · מילון הפרמטרים</p>
+      <h2>שפה אחת בין בוט למנוע</h2>
+      <p class="section-lede">כל כפתור עיצוב מקבל שם טכני אחד — כדי שהוראה
+        בעברית ("תעלה את השקיפות", "תרכך את הצל") תתורגם תמיד לאותו פרמטר, בכל
+        כלי לאורך המערכת.</p>
+      <div class="table__wrap">
+        <table class="params-table">
+          <caption>מילון בסיס — ימשיך לגדול עם כל שכבה חדשה</caption>
+          <thead>
+            <tr><th scope="col">מונח בעברית</th><th scope="col">שם טכני</th><th scope="col">שימוש</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>מילוי</td><td><code>fill</code></td><td>צבע פנים של צורה/טקסט</td></tr>
+            <tr><td>קו מתאר</td><td><code>stroke</code></td><td>מסגרת של צורה</td></tr>
+            <tr><td>שקיפות</td><td><code>opacity</code></td><td>0–1, שקיפות כללית של שכבה</td></tr>
+            <tr><td>מיזוג</td><td><code>blend</code></td><td>אופן מיזוג שכבה עם מה שמתחתיה</td></tr>
+            <tr><td>ריווח אותיות</td><td><code>tracking / letter-spacing</code></td><td>מרווח אחיד בין תווים</td></tr>
+            <tr><td>גובה שורה</td><td><code>leading / line-height</code></td><td>מרווח אנכי בין שורות טקסט</td></tr>
+            <tr><td>קרנינג</td><td><code>kerning</code></td><td>מרווח בין זוגות תווים ספציפיים</td></tr>
+            <tr><td>פריסה אוטומטית</td><td><code>auto-layout</code></td><td>סידור שכבות שמגיב לשינוי תוכן</td></tr>
+            <tr><td>מסכה</td><td><code>mask</code></td><td>חיתוך שכבה לפי צורה</td></tr>
+            <tr><td>פעולות בוליאניות</td><td><code>boolean-ops</code></td><td>איחוד/חיתוך/הפרש בין צורות</td></tr>
+            <tr><td>רדיוס פינה</td><td><code>corner-radius</code></td><td>עיגול פינות מלבן</td></tr>
+            <tr><td>צל</td><td><code>shadow</code></td><td>צל נפילה — לשימוש חסכני בלבד</td></tr>
+            <tr><td>טשטוש</td><td><code>blur</code></td><td>טשטוש רקע/שכבה</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section id="engine" class="section section--alt">
+    <div class="wrap">
+      <p class="eyebrow">04 · המנוע</p>
+      <h2>HTML/CSS/SVG → PDF, עברית מושלמת</h2>
+      <div class="engine-card">
+        <div class="engine-card__text">
+          <p>הליבה כבר בנויה ופועלת: קנבס שכבתי חי (React-Konva) עם טקסט
+            עברי אמיתי בשכבת קוד — לא תמונת AI עם כיתוב — כולל התאמת-גודל
+            אוטומטית (autofit) שמונעת חריגת טקסט, עיטורי יודאיקה וקטוריים
+            (SVG), ויצוא PNG ברזולוציה מלאה ו-PDF. זו נקודת ההתחלה שעליה
+            נבנות שכבות ה-AI, המתאמים והסטודיו הרב-סוכני.</p>
+          <ul>
+            <li>שכבות טקסט/תמונה/צורה/עיטור, עם autofit לעברית RTL</li>
+            <li>4 סגנונות מוכנים: מלכות, חסידי-מלכותי, מודרני-תורני, קלאסי</li>
+            <li>ייצוא PNG מלא-רזולוציה ו-PDF ישירות מהדפדפן</li>
+            <li>ספר מותג (Brand Kit) הנבנה כ-HTML ומיוצא כ-PDF עם גופנים מוטבעים</li>
+          </ul>
+        </div>
+        <div class="engine-card__cta">
+          <a class="btn btn-primary" href="https://more30.com/studio">כניסה לסטודיו ←</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <p class="eyebrow">מה בדרך</p>
+      <h2>הצעדים הבאים</h2>
+      <ul class="roadmap-list">
+        <li><span>רקעי AI באיכות גבוהה — Recraft V4 · Gemini Nano-Banana</span><span class="tag">בקרוב</span></li>
+        <li><span>ספריית אייקונים — Iconify</span><span class="tag">בקרוב</span></li>
+        <li><span>מתאמים — Figma · Canva · Adobe InDesign</span><span class="tag">בקרוב</span></li>
+        <li><span>סטודיו רב-סוכני — מנהל-אמנותי ← מעצב ← מבקר QA</span><span class="tag">בקרוב</span></li>
+      </ul>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="wrap footer__wrap">
+    <p>חלק מ־<a href="https://more30.com/">more30</a></p>
+    <p>מערכת העיצוב · עודכן לאחרונה 19/08/2026</p>
+  </div>
+</footer>
+
+<script src="https://more30.com/auth-button.js" defer></script>
+</body>
+</html>
