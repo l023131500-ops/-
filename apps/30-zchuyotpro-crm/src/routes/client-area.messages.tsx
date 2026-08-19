@@ -68,9 +68,9 @@ function MessagesPage() {
             <p className="text-sm text-muted-foreground text-center py-6">אין הודעות עדיין</p>
           ) : (
             (messages ?? []).map((m) => (
-              <div key={m.id} className={`flex ${m.direction === "inbound" ? "justify-start" : "justify-end"}`}>
+              <div key={m.id} className={`flex ${m.direction === "inbound" ? "justify-end" : "justify-start"}`}>
                 <div className={`max-w-[80%] p-2 rounded-lg text-sm ${
-                  m.direction === "inbound" ? "bg-muted" : "bg-primary text-primary-foreground"
+                  m.direction === "inbound" ? "bg-primary text-primary-foreground" : "bg-muted"
                 }`}>
                   <div>{m.content}</div>
                   <div className="text-[10px] opacity-70 mt-1">{new Date(m.created_at).toLocaleString("he-IL")}</div>
