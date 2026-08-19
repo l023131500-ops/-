@@ -17,6 +17,10 @@ import { fundDetailsFor } from "./fund-details";
 import { isAdminRequest, handleAdminLogin, handleAdminLogout } from "./auth";
 import { renderAdminPage } from "./admin-page";
 import { filterTopicsForReport, renderHfReportHtml } from "./hf-report";
+import { hitRateLimit, clientIp } from "./rate-limit";
+
+// בקשות לשעה, לכל כתובת IP, ל-/api/agent (קריאת Anthropic בתשלום, ר' rate-limit.ts).
+const AGENT_RATE_LIMIT_PER_HOUR = 20;
 
 // קריאת נושאים — מ-Supabase בפרודקשן, אחרת מ-SQLite המקומי.
 async function readTopics(): Promise<HfTopic[]> {
@@ -134,6 +138,12 @@ export async function registerRoutes(
 
   // ---- היועץ החכם — מבוסס אך ורק על מידע ציבורי בסיסי ----
   app.post("/api/agent", async (req, res) => {
+    // פתוח לציבור בלי אימות, וכל קריאה מוציאה קרדיט Anthropic אמיתי (#190/#192).
+    if (hitRateLimit(`agent:${clientIp(req)}`, AGENT_RATE_LIMIT_PER_HOUR)) {
+      return res
+        .status(429)
+        .json({ error: "יותר מדי בקשות מהכתובת הזו. נא לנסות שוב בעוד שעה." });
+    }
     const parsed = agentRequestSchema.safeParse(req.body);
     if (!parsed.success) {
       return res
