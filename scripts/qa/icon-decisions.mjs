@@ -92,7 +92,9 @@ import { chromium } from 'playwright-core';
 import fs from 'node:fs';
 import { settle } from './lib/settle.mjs';
 
-const EXE = 'C:\\Users\\USER\\AppData\\Local\\ms-playwright\\chromium-1234\\chrome-win64\\chrome.exe';
+const EXE_WIN = 'C:\\Users\\USER\\AppData\\Local\\ms-playwright\\chromium-1234\\chrome-win64\\chrome.exe';
+const EXE_LINUX = process.env.HOME + '/.cache/ms-playwright/chromium-1234/chrome-linux64/chrome';
+const EXE = process.platform === 'linux' && fs.existsSync(EXE_LINUX) ? EXE_LINUX : EXE_WIN;
 
 const ROUTES = {
   torah: '/torah', tamlul: '/tamlul', modaot: '/modaot', imud: '/imud',
