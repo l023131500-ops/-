@@ -1,9 +1,13 @@
 import { NextResponse } from "next/server";
 import { createSupabaseService, createSupabaseServiceRaw } from "@/lib/supabase/server";
+import { requireAdmin } from "@/lib/auth-helpers";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(req: Request) {
+  const denied = await requireAdmin();
+  if (denied) return denied;
+
   const id = new URL(req.url).searchParams.get("id");
   const svc = createSupabaseService();
   const raw = createSupabaseServiceRaw();
@@ -24,6 +28,9 @@ export async function GET(req: Request) {
 }
 
 export async function DELETE(req: Request) {
+  const denied = await requireAdmin();
+  if (denied) return denied;
+
   const id = new URL(req.url).searchParams.get("id");
   if (!id) return NextResponse.json({ error: "missing id" }, { status: 400 });
   const svc = createSupabaseService();

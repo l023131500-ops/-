@@ -1,9 +1,13 @@
 import { NextResponse } from "next/server";
 import { createTranscribeService } from "@/lib/supabase/transcribe-server";
+import { requireAdmin } from "@/lib/auth-helpers";
 
 export const dynamic = "force-dynamic";
 
 export async function GET() {
+  const denied = await requireAdmin();
+  if (denied) return denied;
+
   const sb = createTranscribeService();
   const [uploadsRes, jobsRes, couponsRes] = await Promise.all([
     sb.from("uploads").select("id, status"),

@@ -1,9 +1,13 @@
 import { NextResponse } from "next/server";
 import { createTranscribeService } from "@/lib/supabase/transcribe-server";
+import { requireAdmin } from "@/lib/auth-helpers";
 
 export const dynamic = "force-dynamic";
 
 export async function GET() {
+  const denied = await requireAdmin();
+  if (denied) return denied;
+
   const sb = createTranscribeService();
   const { data, error } = await sb
     .from("coupon_codes")
@@ -14,6 +18,9 @@ export async function GET() {
 }
 
 export async function POST(req: Request) {
+  const denied = await requireAdmin();
+  if (denied) return denied;
+
   const body = await req.json();
   const { code, max_uploads, expires_at, is_active = true } = body || {};
   if (!code || !max_uploads) return NextResponse.json({ error: "code+max_uploads נדרשים" }, { status: 400 });
@@ -33,6 +40,9 @@ export async function POST(req: Request) {
 }
 
 export async function PATCH(req: Request) {
+  const denied = await requireAdmin();
+  if (denied) return denied;
+
   const body = await req.json();
   const { id, ...updates } = body || {};
   if (!id) return NextResponse.json({ error: "id חסר" }, { status: 400 });
@@ -47,6 +57,9 @@ export async function PATCH(req: Request) {
 }
 
 export async function DELETE(req: Request) {
+  const denied = await requireAdmin();
+  if (denied) return denied;
+
   const url = new URL(req.url);
   const id = url.searchParams.get("id") || (await req.json().catch(() => ({}))).id;
   if (!id) return NextResponse.json({ error: "id חסר" }, { status: 400 });

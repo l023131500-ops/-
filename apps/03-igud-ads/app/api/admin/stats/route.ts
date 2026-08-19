@@ -1,10 +1,14 @@
 import { NextResponse } from "next/server";
 import { createSupabaseService } from "@/lib/supabase/server";
 import { createTranscribeService } from "@/lib/supabase/transcribe-server";
+import { requireAdmin } from "@/lib/auth-helpers";
 
 export const dynamic = "force-dynamic";
 
 export async function GET() {
+  const denied = await requireAdmin();
+  if (denied) return denied;
+
   const svc = createSupabaseService();
   const tsvc = createTranscribeService();
 

@@ -1,9 +1,13 @@
 import { NextResponse } from "next/server";
 import { createTranscribeService, createSupabaseServiceRaw } from "@/lib/supabase/transcribe-server";
+import { requireAdmin } from "@/lib/auth-helpers";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(req: Request) {
+  const denied = await requireAdmin();
+  if (denied) return denied;
+
   const sb = createTranscribeService();
   const url = new URL(req.url);
   const id = url.searchParams.get("id");
@@ -38,6 +42,9 @@ export async function GET(req: Request) {
 }
 
 export async function DELETE(req: Request) {
+  const denied = await requireAdmin();
+  if (denied) return denied;
+
   const url = new URL(req.url);
   const id = url.searchParams.get("id") || (await req.json().catch(() => ({}))).id;
   if (!id) return NextResponse.json({ error: "id חסר" }, { status: 400 });

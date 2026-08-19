@@ -1,9 +1,13 @@
 import { NextResponse } from "next/server";
 import { createTranscribeService } from "@/lib/supabase/transcribe-server";
+import { requireAdmin } from "@/lib/auth-helpers";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(req: Request) {
+  const denied = await requireAdmin();
+  if (denied) return denied;
+
   const url = new URL(req.url);
   const style = url.searchParams.get("style");
   const sb = createTranscribeService();
@@ -15,6 +19,9 @@ export async function GET(req: Request) {
 }
 
 export async function POST(req: Request) {
+  const denied = await requireAdmin();
+  if (denied) return denied;
+
   const { style, term, replacement, notes } = await req.json();
   if (!style || !term) return NextResponse.json({ error: "style+term נדרשים" }, { status: 400 });
   const sb = createTranscribeService();
@@ -28,6 +35,9 @@ export async function POST(req: Request) {
 }
 
 export async function PATCH(req: Request) {
+  const denied = await requireAdmin();
+  if (denied) return denied;
+
   const { id, ...updates } = await req.json();
   if (!id) return NextResponse.json({ error: "id חסר" }, { status: 400 });
   const sb = createTranscribeService();
@@ -37,6 +47,9 @@ export async function PATCH(req: Request) {
 }
 
 export async function DELETE(req: Request) {
+  const denied = await requireAdmin();
+  if (denied) return denied;
+
   const url = new URL(req.url);
   const id = url.searchParams.get("id") || (await req.json().catch(() => ({}))).id;
   if (!id) return NextResponse.json({ error: "id חסר" }, { status: 400 });
