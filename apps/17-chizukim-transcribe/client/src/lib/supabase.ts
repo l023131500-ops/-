@@ -213,6 +213,9 @@ export async function fetchRecording(id: string): Promise<Recording> {
 }
 
 // Save edits to a recording (transcripts, topic, date, status).
+// Goes through OUR backend (PATCH /api/recordings/:id), not directly to
+// PostgREST: public.recordings has no browser write access (core.issues
+// #243), so the server applies the edit with its own secret key.
 export async function updateRecording(
   id: string,
   patch: Partial<
@@ -226,19 +229,8 @@ export async function updateRecording(
     >
   >,
 ): Promise<Recording> {
-  const url = `${REST}/recordings?id=eq.${id}`;
-  const res = await fetch(url, {
-    method: "PATCH",
-    headers: {
-      ...baseHeaders,
-      "Content-Type": "application/json",
-      Prefer: "return=representation",
-    },
-    body: JSON.stringify(patch),
-  });
-  if (!res.ok) throw new Error(`שגיאה בשמירה: ${res.status}`);
-  const rows = (await res.json()) as Recording[];
-  return rows[0];
+  const res = await apiRequest("PATCH", `/api/recordings/${id}`, patch);
+  return (await res.json()) as Recording;
 }
 
 // Kick off on-demand transcription via our backend. Long-running (server polls

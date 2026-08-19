@@ -20,7 +20,18 @@ import { renderAdminPage } from "./admin-page";
 const TRANSCRIBE_MODEL = process.env.TRANSCRIBE_MODEL || "gpt-transcribe";
 
 const SUPABASE_URL = "https://csjekrvukbdznetsrodj.supabase.co";
-const SUPABASE_KEY = "sb_publishable_Bv6ysG9LfUZ2lUPgZVZO6g_l1wEZIlX";
+// Server-side writes use the secret key (bypasses RLS) so that closing the
+// public write hole on public.recordings (core.issues #243) does not also
+// block the server's own inserts/updates. Falls back to the publishable key
+// if the secret hasn't been configured yet, so this deploy is never a
+// regression on its own — it only stops being RLS-bypassing until the env
+// var is set.
+const SUPABASE_KEY =
+  process.env.SUPABASE_SECRET_KEY || "sb_publishable_Bv6ysG9LfUZ2lUPgZVZO6g_l1wEZIlX";
+// Still used for the direct-to-storage upload URL returned to the browser —
+// that path (recordings-audio bucket) is public-write by design and out of
+// scope for #243, which is about the public.recordings table only.
+const SUPABASE_UPLOAD_KEY = "sb_publishable_Bv6ysG9LfUZ2lUPgZVZO6g_l1wEZIlX";
 const BUCKET = "recordings-audio";
 
 const ALLOWED_AUDIO = [
@@ -191,7 +202,7 @@ export async function registerRoutes(
       // Public bucket + open RLS: the browser can PUT directly with the anon key.
       const uploadUrl = `${SUPABASE_URL}/storage/v1/object/${BUCKET}/${objectPath}`;
       const publicUrl = `${SUPABASE_URL}/storage/v1/object/public/${BUCKET}/${objectPath}`;
-      res.json({ seq, objectPath, uploadUrl, publicUrl, apikey: SUPABASE_KEY });
+      res.json({ seq, objectPath, uploadUrl, publicUrl, apikey: SUPABASE_UPLOAD_KEY });
     } catch (e: any) {
       res.status(500).json({ error: e.message || "שגיאה באתחול ההעלאה" });
     }
@@ -331,6 +342,35 @@ export async function registerRoutes(
       res.json(rows[0]);
     } catch (e: any) {
       res.status(500).json({ error: e.message || "שגיאה בטעינת ההקלטה" });
+    }
+  });
+
+  // ---- Save edits: server writes with the secret key so the browser never
+  // needs write access to public.recordings (core.issues #243). ----
+  const EDITABLE_FIELDS = [
+    "raw_transcript",
+    "edited_transcript",
+    "topic",
+    "parsha_or_date",
+    "status",
+  ] as const;
+  app.patch("/api/recordings/:id", async (req: Request, res: Response) => {
+    try {
+      const id = String(req.params.id);
+      const body = (req.body || {}) as Record<string, unknown>;
+      const patch: Record<string, unknown> = {};
+      for (const field of EDITABLE_FIELDS) {
+        if (field in body) patch[field] = body[field];
+      }
+      if (!Object.keys(patch).length) {
+        return res.status(400).json({ error: "אין שדות לעדכון" });
+      }
+      const existing = await fetchRecordingRow(id);
+      if (!existing) return res.status(404).json({ error: "ההקלטה לא נמצאה" });
+      const updated = await patchRecording(id, patch);
+      res.json(updated);
+    } catch (e: any) {
+      res.status(500).json({ error: e.message || "שגיאה בשמירה" });
     }
   });
 

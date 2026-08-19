@@ -1,7 +1,9 @@
 -- 17 · תמלול חיזוקים — סגירת הכתיבה הציבורית על `public.recordings`
 --
--- ⚠️ להריץ ב-SQL Editor של פרויקט csjekrvukbdznetsrodj. אין לנו אליו
---    service_role ולכן אי אפשר להריץ אותו מכאן — ראה BLOCKED.md §0.
+-- ✅ הורץ ואומת בפרודקשן 19/08/2026 (core.issues #243, BLOCKED.md §0).
+--    server/routes.ts כותב עם SUPABASE_SECRET_KEY (Vercel env, chizukim2-more30)
+--    ו-client/src/lib/supabase.ts עורך תמלילים דרך PATCH /api/recordings/:id
+--    בשרת, לא ישירות מול PostgREST. הקובץ נשאר לתיעוד/הרצה חוזרת (idempotent).
 --
 -- ══════════════════════════════════════════════════════════════════════════
 -- מה נמדד (02/08/2026), מול הפרודקשן, עם המפתח שמופיע בקוד הצד-לקוח

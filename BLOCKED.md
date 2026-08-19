@@ -12,52 +12,30 @@
 
 ---
 
-## 🚨 0 · תמלול חיזוקים (17) — הארכיון פתוח למחיקה מהדפדפן
+## ✅ 0 · תמלול חיזוקים (17) — הארכיון היה פתוח למחיקה מהדפדפן — תוקן וסגור 19/08/2026
 
-| | |
-|---|---|
-| **מה נחסם** | הרצת התיקון (כתוב ומוכן) — לא דורשת עוד ממך, דורשת חיבור MCP של Supabase בסשן |
-| **מי חוסם** | ⚠️ מעודכן 17/08: לא "חשבון אחר" — ה-`SUPABASE_ACCESS_TOKEN` (core.secrets) כן מגיע ל-`csjekrvukbdznetsrodj` (ראה `NEEDS_USER.md` §2, זיכרון `supabase-pat-covers-ten-projects`). החוסם היחיד: קריאת ה-PAT דורשת MCP של Supabase מחובר, ולא היה מחובר באף אחד מהסבבים האחרונים |
-| **הסיכון** | 1,138 הקלטות · 1,112 תמלילים · ניתנים למחיקה או לשכתוב בידי כל אדם |
-| **סטטוס** | **פתוח כרגע בפרודקשן, נמדד שוב 17/08 (ללא שינוי).** התיקון כתוב ומוכן — ברגע שה-MCP מחובר, אני מריץ אותו לבד דרך ה-Management API, לא דורש ממך כלום |
+**סגור לגמרי.** בוצע ואומת מקצה לקצה בפרודקשן, בלי צד שלישי:
 
-**זה לא חשד — זה נמדד היום, מול הפרודקשן**, עם המפתח שמופיע גלוי בקוד
-הצד-לקוח (`sb_publishable_Bv6ys…`, נמצא ב-`client/src/lib/supabase.ts`):
+1. נמשך `secret key` (`sb_secret_…`) עבור `csjekrvukbdznetsrodj` דרך ה-Management
+   API (`SUPABASE_ACCESS_TOKEN`).
+2. הוגדר `SUPABASE_SECRET_KEY` בסביבת הייצור של Vercel (`chizukim2-more30`) דרך
+   ה-REST API של Vercel (לא CLI — נמנע ממלכודת ה-BOM של PowerShell).
+3. `server/routes.ts` עודכן: כתיבות השרת (יצירת הקלטה, שמירת תמלול) עוברות כעת
+   עם `process.env.SUPABASE_SECRET_KEY` (נפילה למפתח הציבורי אם חסר — כדי שהפריסה
+   עצמה לעולם לא רגרסיה). נוסף `PATCH /api/recordings/:id` בצד השרת.
+4. `client/src/lib/supabase.ts` — `updateRecording` עבר מ-PATCH ישיר ל-PostgREST
+   (עם המפתח הציבורי) לקריאה ל-`PATCH /api/recordings/:id` דרך השרת. פיצ'ר
+   עריכת התמלילים ממשיך לעבוד באותה צורה בדיוק מבחינת המשתמש.
+5. נפרס ואומת: `POST/GET/PATCH` דרך השרת עובדים (נבדק כתיבה+שחזור על רשומה
+   אמיתית, `116.wav [Drive]`), הקריאה הציבורית לארכיון עדיין 200.
+6. הורץ שלב 1 (`db/apps/17-chizukim-transcribe/0001_close_public_write_on_recordings.sql`)
+   מול `csjekrvukbdznetsrodj`: RLS פעיל, מדיניות קריאה-בלבד ל-anon/authenticated,
+   `revoke insert/update/delete from anon`.
+7. **אומת אחרי הנעילה:** `PATCH`/`DELETE` ישירים מהדפדפן עם המפתח הציבורי
+   מוחזרים כעת `401` (היו `204` — כלומר בוצעו בפועל). קריאה ציבורית (`SELECT`)
+   עדיין `200`. `more30.com/chizukim` עדיין `200`. כתיבת השרת עדיין `200`.
 
-```
-DELETE /rest/v1/recordings?id=eq.<uuid>   ->  204
-PATCH  /rest/v1/recordings?id=eq.<uuid>   ->  204
-POST   /rest/v1/recordings                ->  400   (עבר RLS, נפל על הסכימה)
-```
-
-שתי הבדיקות רצו בכוונה עם מסנן שמתאים ל**אפס שורות**. **204 פירושו שהפעולה
-הותרה ובוצעה** — עם מזהה אמיתי, השורה הייתה נמחקת. אין כאן פריצה: המפתח
-הציבורי פשוט מורשה לכתוב.
-
-**עדכון 17/08 — זו כבר לא נכונה:** "אין לי גישה ל-`csjekrvu`". ה-PAT הגלובלי
-(`SUPABASE_ACCESS_TOKEN`, `core.secrets`) כן מגיע לפרויקט הזה דרך ה-Management
-API — אומת 12/08 מול אותו ref בדיוק (`mailer_autoconfirm` + פריסת `geo.ts`).
-**שלב 1 לא ממתין יותר לך** — הוא ממתין לכך שה-MCP של Supabase יהיה מחובר
-בסשן, כדי שאפשר יהיה לקרוא את ה-PAT מ-`core.secrets` ולהריץ איתו את
-**[`db/apps/17-chizukim-transcribe/0001_close_public_write_on_recordings.sql`](db/apps/17-chizukim-transcribe/0001_close_public_write_on_recordings.sql)**
-(שלב 1) דרך `POST /v1/projects/csjekrvukbdznetsrodj/database/query`. הוא מפעיל
-RLS, משאיר את הארכיון פתוח לקריאה (החיפוש ימשיך לעבוד לכולם), ומבטל כתיבה.
-
-> ⚠️ **תיקון 19/08/2026 — שלב 1 אינו בטוח להרצה לבד.** נמדד מול המקור:
-> `apps/17-chizukim-transcribe/server/routes.ts:23` קובע
-> `SUPABASE_KEY = "sb_publishable_…"` — גם השרת עצמו כותב עם המפתח **הציבורי**,
-> לא עם `service_role`. מפתח publishable כפוף ל-RLS כמו anon, ולכן הרצת שלב 1
-> תחסום גם את כתיבות השרת (יצירת הקלטה, שמירת תמלול) — הפלת נתיב הליבה החי,
-> לא רק סגירת התוקף. הסדר הבטוח הוא שלב 2 → פריסה → אימות → שלב 1. הקובץ עצמו
-> עודכן עם שער-בטיחות שעוצר הרצה מוקדמת (`raise exception` אלא אם
-> `more30.chizukim_server_on_secret_key='yes'`). החוסם האמיתי כעת אינו ה-MCP
-> אלא **יכולת פריסה ל-Vercel של `chizukim2-more30`** (אין טוקן Vercel ב-core.secrets)
-> כדי להחליף את מפתח השרת ולפרוס לפני נעילת ה-RLS. ראה core.issues.
-
-**שלב 2** בקובץ עדיין דורש אותך: הוא מחזיר את עריכת התמלילים דרך השרת, וצריך
-שתיצור מפתח `secret key` חדש בלוח הבקרה של `csjekrvukbdznetsrodj` — גם השרת
-עצמו (`server/routes.ts`) משתמש כרגע רק במפתח הציבורי, ואין בפרויקט מפתח סודי
-משלו. שלב 1 אינו תלוי בזה.
+תיעוד מלא: `core.issues #243` (סטטוס `fixed`).
 
 ---
 
