@@ -1444,8 +1444,11 @@ const GabaiPortal = () => {
         setError('סיסמת מנהל שגויה');
       }
     } else {
-      // Check gabai from gabai_accounts table
-      const { data, error: dbError } = await supabase.from('gabai_accounts').select('*, synagogues(name)').eq('username', username.trim()).eq('is_active', true);
+      // Check gabai from gabai_accounts table. Excludes is_admin accounts so an
+      // admin's own credentials cannot also authenticate through the gabai tab
+      // (mirrors the is_admin=false filter already used in
+      // SynagogueDetailsManager.tsx for the same table).
+      const { data, error: dbError } = await supabase.from('gabai_accounts').select('*, synagogues(name)').eq('username', username.trim()).eq('is_active', true).eq('is_admin', false);
       if (dbError) {
         setError('שגיאת חיבור למסד הנתונים. נסה שוב.');
         return;
