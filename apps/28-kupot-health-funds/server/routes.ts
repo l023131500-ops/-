@@ -207,9 +207,10 @@ export async function registerRoutes(
 - סיים/י בהמלצה עדינה: ניתן להשאיר פרטים לבדיקת מעבר/התאמת קופה דרך הטופס באתר.`;
 
     try {
-      // מודל ומפתח נקבעים לפי הסביבה: בסנדבוקס — proxy (claude_sonnet_4_6);
-      // בפרודקשן (Vercel) — מפתח Anthropic אמיתי + שם מודל אמיתי.
-      const model = process.env.ANTHROPIC_MODEL || "claude_sonnet_4_6";
+      // מודל ומפתח נקבעים לפי הסביבה: ANTHROPIC_MODEL אם הוגדר בפרודקשן (Vercel);
+      // אחרת נופל לשם מודל Anthropic אמיתי (לא לכינוי סנדבוקס עם קו-תחתון,
+      // שה-API האמיתי דוחה — ר' DECISIONS.md).
+      const model = process.env.ANTHROPIC_MODEL || "claude-sonnet-4-5-20250929";
       const client = new Anthropic();
       const message = await client.messages.create({
         model,
