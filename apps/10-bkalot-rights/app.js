@@ -44,6 +44,17 @@ const SRC_LABEL = { bklot: 'בקלות', fund: 'קופה', gov: 'ממשלה', ng
 const LIKE_LABEL = { high: 'גבוה', medium: 'בינוני', low: 'נמוך' };
 const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
+/* ---------- "מה כבר מימשתי" — מעקב מקומי בדפדפן (אין חשבון משתמש באתר הזה,
+   ולכן אין back-end לשמור בו; audit_gaps #10 סעיף 4) ---------- */
+const DONE_KEY = 'bkalot-done';
+function getDoneSet() {
+  try { return new Set(JSON.parse(localStorage.getItem(DONE_KEY) || '[]')); }
+  catch (e) { return new Set(); }
+}
+function saveDoneSet(set) {
+  try { localStorage.setItem(DONE_KEY, JSON.stringify([...set])); } catch (e) {}
+}
+
 /* ---------- Questionnaire render (from data.json) ---------- */
 function questionnaire() {
   return (MASTER && MASTER.questionnaire) ? MASTER.questionnaire : { sections: [] };
@@ -117,13 +128,14 @@ function updateConditional() {
 /* ---------- Results render ---------- */
 function recCard(r) {
   const prioClass = { must: 'p-must', recommended: 'p-rec', tip: 'p-tip' }[r.priority] || '';
+  const done = getDoneSet().has(r.uid);
   let tiers = '';
   if (r.source === 'fund' && r.your_fund_tiers && r.your_fund_tiers.length) {
     tiers = `<div class="rec-tiers"><strong>בקופה שלכם:</strong> ${r.your_fund_tiers.map(t => `<span class="tier-chip">${esc(t.t)}</span>`).join(' ')}</div>`;
   } else if (r.source === 'fund' && r.best_fund) {
     tiers = `<div class="rec-tiers"><strong>הקופה המשתלמת:</strong> ${esc(r.best_fund)}</div>`;
   }
-  return `<div class="rec-card ${prioClass}" data-uid="${r.uid}">
+  return `<div class="rec-card ${prioClass}${done ? ' rec-done' : ''}" data-uid="${r.uid}">
     <div class="rec-head">
       <span class="rec-src src-${r.source}">${SRC_LABEL[r.source] || r.source}</span>
       <span class="rec-like like-${r.likelihood}">סיכוי ${LIKE_LABEL[r.likelihood] || ''}</span>
@@ -134,6 +146,7 @@ function recCard(r) {
     <div class="rec-prov">ממי מקבלים: ${esc(r.provider) || '—'}</div>
     ${tiers}
     <button class="rec-detail" data-uid="${r.uid}">פרטים מלאים ←</button>
+    <button class="rec-done-btn${done ? ' active' : ''}" data-uid="${r.uid}">${done ? '✓ מומש' : 'סמן כמומש'}</button>
   </div>`;
 }
 
@@ -212,6 +225,7 @@ function renderResults(out) {
     html += `<div class="referral-note">💡 ${esc(out.referral_note)}</div>`;
   }
 
+  html += `<div class="done-summary" id="doneSummary"></div>`;
   html += `<div class="res-actions"><button id="printRes" class="btn-ghost">הדפסה / שמירה כ-PDF</button> <button id="jsonRes" class="btn-ghost">הצג JSON (לסוכן ה-API)</button></div>`;
   html += `<pre id="jsonOut" class="json-out hidden"></pre>`;
 
@@ -227,6 +241,28 @@ function renderResults(out) {
   };
   wrap.querySelectorAll('.rec-detail').forEach(b => b.onclick = () => openModal(b.dataset.uid));
   wrap.querySelectorAll('.lead-cta-btn').forEach(b => b.onclick = () => openLeadForm(b.dataset.ctx));
+  wrap.querySelectorAll('.rec-done-btn').forEach(b => b.onclick = () => {
+    const uid = b.dataset.uid;
+    const set = getDoneSet();
+    const nowDone = !set.has(uid);
+    if (nowDone) set.add(uid); else set.delete(uid);
+    saveDoneSet(set);
+    const card = b.closest('.rec-card');
+    if (card) card.classList.toggle('rec-done', nowDone);
+    b.classList.toggle('active', nowDone);
+    b.textContent = nowDone ? '✓ מומש' : 'סמן כמומש';
+    updateDoneSummary();
+  });
+  updateDoneSummary();
+}
+
+function updateDoneSummary() {
+  const wrap = document.getElementById('resultsInner');
+  const el = document.getElementById('doneSummary');
+  if (!wrap || !el) return;
+  const total = wrap.querySelectorAll('.rec-card').length;
+  const done = wrap.querySelectorAll('.rec-card.rec-done').length;
+  el.textContent = total ? `סימנתם ${done} מתוך ${total} נושאים כ"מומש" — הסימון נשמר בדפדפן שלכם לביקור הבא` : '';
 }
 
 /* ---------- Lead capture ---------- */

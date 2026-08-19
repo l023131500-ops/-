@@ -163,6 +163,11 @@ section h2{font-size:clamp(1.7rem,3.5vw,2.4rem);font-weight:700;margin-bottom:10
 .tier-chip{display:inline-block;background:var(--gold);color:#fff;font-size:.72rem;font-weight:600;padding:1px 8px;border-radius:999px;margin:1px}
 .rec-detail{align-self:flex-start;background:none;border:none;color:var(--teal);font-weight:600;cursor:pointer;font-size:.9rem;padding:4px 0;margin-top:auto}
 .rec-detail:hover{text-decoration:underline}
+.rec-done-btn{align-self:flex-start;margin-top:6px;background:var(--surface);border:1px solid var(--border);color:var(--muted);font-weight:600;font-size:.78rem;padding:4px 12px;border-radius:999px;cursor:pointer;transition:.2s}
+.rec-done-btn:hover{border-color:var(--tip);color:var(--tip)}
+.rec-done-btn.active{background:var(--tip);border-color:var(--tip);color:#fff}
+.rec-card.rec-done{box-shadow:inset 4px 0 0 var(--tip)}
+.done-summary{font-size:.9rem;color:var(--muted);margin-top:4px}
 .res-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:10px}
 .json-out{background:#1b1f1f;color:#b8e6d8;padding:20px;border-radius:var(--radius);overflow:auto;direction:ltr;text-align:left;font-size:.8rem;max-height:400px;margin-top:16px}
 
