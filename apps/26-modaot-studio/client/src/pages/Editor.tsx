@@ -813,6 +813,40 @@ export default function Editor() {
                 </div>
               )}
 
+              {selectedLayer && (
+                <div className="mb-3">
+                  <Label className="mb-1 block text-xs text-[#F5EEDD]/70">
+                    מיזוג <code className="font-mono text-[10px] text-[#C9A227]/70">blend</code>
+                  </Label>
+                  <Select
+                    value={selectedLayer.blend ?? "source-over"}
+                    onValueChange={(v) => handleChangeLayer(selectedLayer.id, { blend: v === "source-over" ? undefined : v })}
+                  >
+                    <SelectTrigger className="h-8 border-[#C9A227]/30 bg-[#0B1526] text-xs" data-testid="select-layer-blend">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="source-over">רגיל</SelectItem>
+                      <SelectItem value="multiply">הכפלה (multiply)</SelectItem>
+                      <SelectItem value="screen">מסך (screen)</SelectItem>
+                      <SelectItem value="overlay">שכבת-על (overlay)</SelectItem>
+                      <SelectItem value="darken">הכהיה (darken)</SelectItem>
+                      <SelectItem value="lighten">הבהרה (lighten)</SelectItem>
+                      <SelectItem value="color-dodge">הבהקה (color-dodge)</SelectItem>
+                      <SelectItem value="color-burn">צריבה (color-burn)</SelectItem>
+                      <SelectItem value="hard-light">אור חד (hard-light)</SelectItem>
+                      <SelectItem value="soft-light">אור רך (soft-light)</SelectItem>
+                      <SelectItem value="difference">הבדל (difference)</SelectItem>
+                      <SelectItem value="exclusion">החרגה (exclusion)</SelectItem>
+                      <SelectItem value="hue">גוון (hue)</SelectItem>
+                      <SelectItem value="saturation">רוויה (saturation)</SelectItem>
+                      <SelectItem value="color">צבע (color)</SelectItem>
+                      <SelectItem value="luminosity">בהירות (luminosity)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+
               {selectedLayer && (selectedLayer.type === "image" || selectedLayer.type === "shape") && (
                 <div className="mb-3">
                   <Label className="mb-1 block text-xs text-[#F5EEDD]/70">

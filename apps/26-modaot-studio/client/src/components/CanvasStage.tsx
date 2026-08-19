@@ -95,6 +95,7 @@ function TextNode({ layer, onSelect, onChange, onEdit, selected, interactive }: 
       lineHeight={layer.lineHeight ?? 1.15}
       letterSpacing={layer.letterSpacing ?? 0}
       opacity={layer.opacity ?? 1}
+      globalCompositeOperation={(layer.blend ?? "source-over") as any}
       rotation={layer.rotation ?? 0}
       stroke={layer.stroke}
       strokeWidth={layer.strokeWidth ?? 0}
@@ -122,7 +123,7 @@ function ImageNode({ layer, onSelect, onChange, interactive }: {
   if (!layer.src || !img) {
     // placeholder — מסגרת מקווקוות "העלה תמונה"
     return (
-      <Group onClick={onSelect} onTap={onSelect} listening={interactive} opacity={layer.opacity ?? 1}>
+      <Group onClick={onSelect} onTap={onSelect} listening={interactive} opacity={layer.opacity ?? 1} globalCompositeOperation={(layer.blend ?? "source-over") as any}>
         {layer.circle ? (
           <Circle x={cx} y={cy} radius={w / 2} fill="rgba(255,255,255,0.06)" stroke="#C9A227" strokeWidth={2} dash={[10, 8]} />
         ) : (
@@ -152,6 +153,7 @@ function ImageNode({ layer, onSelect, onChange, interactive }: {
       clipFunc={layer.circle ? clipFn : undefined}
       clipX={!layer.circle && layer.cornerRadius ? layer.x : undefined}
       opacity={layer.opacity ?? 1}
+      globalCompositeOperation={(layer.blend ?? "source-over") as any}
     >
       <KImage image={img} x={dx} y={dy} width={dw} height={dh} cornerRadius={!layer.circle ? layer.cornerRadius : undefined} />
       {layer.circle && <Circle x={cx} y={cy} radius={Math.min(w, h) / 2} stroke="#C9A227" strokeWidth={4} />}
@@ -160,7 +162,7 @@ function ImageNode({ layer, onSelect, onChange, interactive }: {
 }
 
 function ShapeNode({ layer }: { layer: ShapeLayer }) {
-  const common = { fill: layer.fill, stroke: layer.stroke, strokeWidth: layer.strokeWidth ?? 0, opacity: layer.opacity ?? 1, listening: false };
+  const common = { fill: layer.fill, stroke: layer.stroke, strokeWidth: layer.strokeWidth ?? 0, opacity: layer.opacity ?? 1, globalCompositeOperation: (layer.blend ?? "source-over") as any, listening: false };
   if (layer.shape === "rect")
     return <Rect x={layer.x} y={layer.y} width={layer.width} height={layer.height ?? layer.width} cornerRadius={layer.cornerRadius ?? 0} dash={layer.dash} {...common} />;
   if (layer.shape === "circle")
@@ -177,7 +179,7 @@ function DecorationNode({ layer }: { layer: DecorationLayer }) {
   if (kind === "frame_double" || kind === "frame_ornate" || kind === "frame_mourning") {
     const thick = kind === "frame_mourning" ? 18 : strokeWidth;
     return (
-      <Group listening={false} opacity={layer.opacity ?? 1}>
+      <Group listening={false} opacity={layer.opacity ?? 1} globalCompositeOperation={(layer.blend ?? "source-over") as any}>
         <Rect x={x} y={y} width={width} height={height} stroke={fill} strokeWidth={thick} />
         {(kind === "frame_double" || kind === "frame_ornate") && (
           <Rect x={x + 12} y={y + 12} width={width - 24} height={height - 24} stroke={fill} strokeWidth={Math.max(1, strokeWidth - 1)} />
@@ -193,7 +195,7 @@ function DecorationNode({ layer }: { layer: DecorationLayer }) {
   if (kind === "corner_ornament") {
     const sc = width / 42;
     return (
-      <Group x={x} y={y} rotation={layer.rotation ?? 0} listening={false} opacity={layer.opacity ?? 1}>
+      <Group x={x} y={y} rotation={layer.rotation ?? 0} listening={false} opacity={layer.opacity ?? 1} globalCompositeOperation={(layer.blend ?? "source-over") as any}>
         <Path data={CORNER_ORNAMENT_PATH} scaleX={sc} scaleY={sc} stroke={fill} strokeWidth={2} fill={fill} />
       </Group>
     );
@@ -204,7 +206,7 @@ function DecorationNode({ layer }: { layer: DecorationLayer }) {
   const sc = width / def.viewBox;
   const scY = height / def.viewBox;
   return (
-    <Group x={x} y={y} rotation={layer.rotation ?? 0} listening={false} opacity={layer.opacity ?? 1}>
+    <Group x={x} y={y} rotation={layer.rotation ?? 0} listening={false} opacity={layer.opacity ?? 1} globalCompositeOperation={(layer.blend ?? "source-over") as any}>
       {def.paths.map((p, i) => (
         <Path key={i} data={p.d} scaleX={sc} scaleY={scY}
           fill={p.strokeOnly ? undefined : fill}

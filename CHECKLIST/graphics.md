@@ -115,9 +115,30 @@
       מסוננות מפאנל השכבות (`text`/`image` בלבד) ו-`listening: false`
       בקנבס — לא ניתנות לבחירה כלל היום. הוכחה חזותית מלאה תדרוש תמונה
       לא-עגולה או חשיפת שכבות `shape` לבחירה — לסבב נפרד אם רלוונטי.
-- [ ] **4b-v..vi. בקרות `blend`/`kerning`** — דורשים שדה סכימה חדש + חיווט
-      Konva אמיתי (לא כמו `corner-radius`/`opacity`/`tracking`/`leading`
-      שכבר היו קיימים). נדחה לסבב נפרד, פיצ'ר אחד בכל פעם.
+- [x] **4b-v. בקרת `blend`** — בניגוד ל-`opacity`/`tracking`/`leading`/
+      `cornerRadius`, השדה `blend` **לא היה קיים** — נבנה מהיסוד: שדה
+      `blend?: string` חדש ב-`BaseLayer` (`shared/layers.ts`, חל על כל 4 סוגי
+      השכבות), וחיווט Konva אמיתי (`globalCompositeOperation`) בכל נתיבי
+      הרינדור ב-`CanvasStage.tsx` — `TextNode`, שני ה-`Group` של `ImageNode`
+      (פלייסהולדר + תמונה טעונה), `common` של `ShapeNode` (rect/circle/line),
+      ושלושת ה-`Group` של `DecorationNode` (מסגרות, עיטור פינה, עיטורים
+      כלליים). נוסף `<Select>` גנרי ב-`Editor.tsx` (אחרי סליידר השקיפות, לפני
+      `cornerRadius`) עם 16 מצבי מיזוג (Canvas composite modes סטנדרטיים:
+      multiply/screen/overlay/darken/lighten/color-dodge/color-burn/
+      hard-light/soft-light/difference/exclusion/hue/saturation/color/
+      luminosity + "רגיל") ותג `<code>blend</code>`, תואם למונח בטבלת
+      `/design#params` ("מיזוג"). `tsc --noEmit` נקי, `vite build --base=/studio/`
+      נקי (2165 מודולים). אומת חי ב-`more30.com/studio` (Playwright,
+      cache-buster, 1280×900): נבחרה שכבת הכותרת "הרב יואל שפיגליץ שליט\"א",
+      בורר המיזוג הופיע עם 16 אפשרויות, בחירת "הבדל (difference)" שינתה
+      בפועל את הצבע הנראה של הטקסט על הקנבס (מנווי כהה לגוון בהיר-זהוב,
+      תוצאת difference-blend אמיתית מול הרקע הלבן) — לא רק עדכון ערך. 0
+      שגיאות קונסולה. שאר הבקרות (letterSpacing/lineHeight/יישור/fill/
+      stroke/shadow/opacity) ושאר הפאנלים ללא שינוי — אפס רגרסיה. פריסה:
+      `_deploy/studio-more30/public/studio` (build חדש, `api/` ללא שינוי) →
+      `vercel deploy --prod`, `dpl_2XeokCRKmjyHj41GFZqrjVCbtdXk`, READY.
+- [ ] **4b-vi. בקרת `kerning`** — דורש שדה סכימה חדש + חיווט Konva אמיתי;
+      נדחה לסבב נפרד, פיצ'ר אחד בכל פעם.
 - [x] **5. גלריית תבניות — קטגוריה מובילה אחת בכל אחת מ-4 הקבוצות** —
       `shared/knowledge.ts`/`categoryTemplates.ts` כבר החזיקו קטלוג-תבניות
       אמיתי (מנוע `composeTemplate`) לכל 4 הקבוצות; הפער האמיתי היה ש-

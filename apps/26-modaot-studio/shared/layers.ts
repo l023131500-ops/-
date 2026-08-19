@@ -21,6 +21,7 @@ export interface BaseLayer {
   height?: number;
   rotation?: number;
   opacity?: number;
+  blend?: string; // מצב מיזוג (Konva/Canvas globalCompositeOperation) — "source-over" = רגיל
   visible?: boolean;
   locked?: boolean; // לא ניתן לגרירה/מחיקה ע"י המשתמש
   z?: number;
