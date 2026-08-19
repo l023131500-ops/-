@@ -149,6 +149,13 @@ export default function Home() {
             >
               <ScrollText className="h-4 w-4" /> מחלקת מיתוג
             </Button>
+            <a
+              href="https://more30.com/subscribe?app=studio"
+              className="inline-flex h-9 items-center gap-2 rounded-md border border-[#C9A227]/40 px-3 text-sm font-medium text-[#C9A227] transition hover:bg-[#C9A227]/10"
+              data-testid="link-pricing"
+            >
+              <Crown className="h-4 w-4" /> מחירון
+            </a>
             <Badge variant="outline" className="border-[#C9A227]/40 text-[#C9A227]">
               גרסת POC
             </Badge>

@@ -1,5 +1,37 @@
 # SYSTEMS_STATUS.md — מצב כל המערכות, נמדד
 
+> ## 🟢 19/08/2026 (בוקר +10) — **26 סטודיו מודעות (studio): קישור "מחירון" בניווט — פרוס וחי**
+
+> המשך אותו דפוס (01/02/03/04/06/10/16/17/22/24/28): `core.plans` כבר מכיל
+> מסלולים אמיתיים ל-`app_key='studio'` (חינמי / בסיסי ₪2 / מורחב ₪5), ו-
+> `more30.com/subscribe?app=studio` כבר עובד — רק אין קישור מהאפליקציה עצמה.
+> #26 היא אפליקציית React (wouter, `useHashLocation`, אין `Header`/`Navbar`
+> משותף נפרד — מסך `Home.tsx` הוא נקודת הכניסה היחידה שמרנדרת את סרגל
+> הכותרת). הוספת `<a href="https://more30.com/subscribe?app=studio">מחירון</a>`
+> (לא ניווט פנימי — הדף חי מחוץ ל-`/studio` שמעליו האפליקציה מורכבת) לצד
+> הכפתורים הקיימים "העבודות שלי"/"מחלקת מיתוג" בכותרת. הוספה בלבד — שלוש
+> נקודות הכניסה, גלריית התבניות, הכותרת והפוטר נשארו במקומם.
+>
+> נבנה עם `vite build --base=/studio/` (לא `vite build` רגיל — `vite.config.ts`
+> עדיין מצהיר `base:"/modaot/"`, ראה זיכרון `studio-build-base-override`).
+> פרוס: `_deploy/studio-more30/public/studio/index.html` הושווה לייצור לפני
+> הנגיעה (זהה, פערי ה-diff היחידים היו הזרקת NetFree + ניקוד קידוד PowerShell,
+> לא תוכן) → מחיקת `assets/` הישן (שמות קבצים מגובבים) → `robocopy dist/public
+> -> _deploy/studio-more30/public/studio /E` → `vercel deploy --prod --yes` מ-
+> `_deploy/studio-more30` (פרויקט Vercel מקושר) → `dpl_XNYic6dpXqMhov6pwDLRU5J766rk`.
+> אומת חי ב-Playwright (`more30.com/studio/?cachebust=pricinglink0819`): קישור
+> "מחירון" מופיע בכותרת ומצביע ל-`https://more30.com/subscribe?app=studio`,
+> לחיצה מובילה לעמוד מסלולים אמיתי (`מסלולים · סטודיו מודעות`, ₪2/₪5, "המסלול
+> שלך" = חינמי), חזרה לאחור מציגה את דף הבית ללא שינוי (שלוש נקודות הכניסה +
+> גלריית התבניות), 0 שגיאות קונסולה בשני הדפים. Service worker ישן שנמצא
+> בהקשר הדפדפן היה בהיקף `/galil/` בלבד — לא נגע ב-`/studio/`.
+>
+> הבא: 18 עורך תורני (orech — Next.js App Router, אין `Header`/`Navbar`
+> משותף, דורש רכיב חדש או קישור אד-הוק; פרוס כפרויקט Vercel נפרד `orech-more30`
+> ישירות מ-`apps/18-torah-editor-mvp`, לא דרך `_deploy`), 34 kesef, 35 kiosk,
+> 36 tivuch (nadlan-pro), 40 gannenet עדיין חסרים את אותו קישור. 12 סמל נשאר
+> needs_user (מנגנון הפריסה לא ברור).
+
 > ## 🟢 19/08/2026 (בוקר +9) — **24 גליל קונקט (galil): קישור "מחירון" בניווט — פרוס וחי**
 
 > המשך אותו דפוס (01/02/03/04/06/10/16/17/22/28): `core.plans` כבר מכיל
