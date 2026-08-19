@@ -82,6 +82,12 @@ export function Navbar() {
               {l.label}
             </Link>
           ))}
+          <a
+            href="/subscribe?app=torah"
+            className="rounded-md px-3 py-2 text-sm font-medium text-foreground/80 hover:bg-accent hover:text-foreground"
+          >
+            מחירון
+          </a>
         </nav>
 
         <div className="flex items-center gap-2">
@@ -153,6 +159,9 @@ export function Navbar() {
               {l.label}
             </Link>
           ))}
+          <a href="/subscribe?app=torah" className="rounded-md px-3 py-2 text-sm hover:bg-accent">
+            מחירון
+          </a>
         </div>
       </div>
     </header>
