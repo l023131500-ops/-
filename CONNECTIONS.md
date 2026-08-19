@@ -13,7 +13,7 @@
 |---|---|---|
 | `uhnrgujbdxhhmoxcjria` | 32 נדל"ן (schema `nadlan`) + `public` hub + `core` registry | ✅ yes |
 | `bieebmnmkffwbqlsfozh` | 01 torah-platform, 02 igud-transcribe, 03 igud-ads, 10 bkalot-rights, 18 torah-editor-mvp | ❌ other account |
-| `csjekrvukbdznetsrodj` | 06 kupot-holim, 12 smel-ndln, 17 chizukim-transcribe, 27 bkalut-price | ❌ |
+| `csjekrvukbdznetsrodj` | 06 kupot-holim, 12 smel-ndln, 17 chizukim-transcribe, 27 bkalut-price (+ unlisted `fin_*`/`pc_*`/`hf_*` apps, 36 tables, not mapped to any `core.projects` row) | ✅ yes (verified 19/08/2026 — stale mark, this project *is* reachable via `execute_sql`/`list_tables`; do not re-assume "❌" without re-checking) |
 | `mwljkonwdeuaahsigjdp` | 16 chatzor-connect, 24 galilee-connect-hub | ❌ |
 | `pwcswdfgorvlpdflzylm` | 08 bkalut-app 🔒 | ❌ |
 | `trerolyveytzgksawrme` | 22 get-your-rights | ❌ |
@@ -98,6 +98,33 @@ its **own** project `hkkky…` (not shared with 01). Departments: עורך תו�
   `synagogue_payment_settings`.
 - Transport webhook `NEDARIM3873` (n8n) is **protected** — `@more30/billing`
   only shapes payloads, it does not re-point the webhook.
+
+## 🚨 Security finding — `csjekrvukbdznetsrodj`: 15 tables with RLS disabled, incl. plaintext-looking credentials (19/08/2026)
+
+Found while re-verifying the "❌ unreachable" mark above (now corrected — the
+project *is* reachable). `list_tables` on this project's `public` schema flags
+its own `rls_disabled` advisory (critical) for 15 tables, including
+`public.tr_users` (`username`, `password`, `minutes_quota`/`minutes_used` — 1
+live row) and `public.tr_sessions` (`token`, `user_id`, `expires_at` — 50 live
+rows), plus `users`, `clients`, `service_submissions`, `automation_configs`
+(14 rows), `delivery_queue`, and six `property_*`/`address_search_*` tables.
+**Anyone holding this project's anon key can read or write every row in these
+tables today** — that includes session tokens and whatever `tr_users.password`
+actually stores.
+
+**Not fixed this round, on purpose:** `tr_users`/`tr_sessions` are not
+referenced anywhere in this repo's vendored source (grepped all of `apps/` —
+zero hits), meaning whatever reads/writes them is a **non-vendored backend**
+this session cannot see. Supabase's own advisory explicitly warns not to
+auto-apply `ENABLE ROW LEVEL SECURITY` without matching policies — doing so
+blind would silently deny **all** access (anon and authenticated) the moment
+it runs, which is exactly the kind of "break a live connection" regression
+the sacred rules forbid. This project also serves `06 kupot-holim` and
+`12 smel-ndln` (loop-A-owned, outside this session's edit scope) alongside
+`17 chizukim-transcribe`/`27 bkalut-price` — another reason not to touch it
+unilaterally. Logged as `core.issues #245`, owner=user: needs a
+per-table policy decision (who should read/write each table) before RLS can
+be turned on safely.
 
 ## ❗ Missing / unverified
 
