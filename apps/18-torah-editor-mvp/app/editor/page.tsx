@@ -184,6 +184,37 @@ export default function EditorPage() {
     URL.revokeObjectURL(url);
   }
 
+  // Word export via the standard "Word HTML" MIME trick (application/msword
+  // Blob with an mso xml preamble) — Word/LibreOffice/Google Docs all open
+  // this natively. No new dependency: same Blob-download pattern as
+  // downloadTxt() above, just a different content-type/extension.
+  function downloadDocx() {
+    const title = (docTitle || titleFrom(text, 'מסמך')).trim();
+    const paragraphs = text
+      .split(/\n+/)
+      .filter(Boolean)
+      .map((p) => `<p>${esc(p)}</p>`)
+      .join('');
+
+    const html = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
+    <head><meta charset="utf-8"><title>${esc(title)}</title>
+    <!--[if gte mso 9]><xml><w:WordDocument><w:View>Print</w:View></w:WordDocument></xml><![endif]-->
+    <style>
+      body { font-family:'David',serif; direction:rtl; }
+      h1 { font-size:22pt; margin:0 0 16pt; }
+      p { font-size:12.5pt; margin:0 0 10pt; text-align:justify; line-height:1.9; }
+    </style></head>
+    <body dir="rtl"><h1>${esc(title)}</h1>${paragraphs}</body></html>`;
+
+    const blob = new Blob(['﻿', html], { type: 'application/msword' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${title || 'מסמך'}.doc`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
   // PDF export via a styled print window — same pattern already live in
   // 27-mechiron/28-kupot/17-chizukim (window.print(), no extra dependency).
   function downloadPdf() {
@@ -296,6 +327,9 @@ export default function EditorPage() {
         </button>
         <button className="action" onClick={downloadPdf} disabled={!text} type="button">
           הורד כ-PDF
+        </button>
+        <button className="action" onClick={downloadDocx} disabled={!text} type="button">
+          הורד כ-Word
         </button>
       </div>
 
