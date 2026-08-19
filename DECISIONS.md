@@ -767,3 +767,40 @@
     ב-`FindLesson.tsx`/`FeaturedLessons.tsx` — לא טופל בסבב הזה (סימן
     ויזואלי, לא טקסט; שינוי אייקון מחוץ לתחום ה"מינוח" שהתבקש), אבל
     זו אותה אי-דיוק בצורה גרפית ולא מילולית, וראוי למדידה בסבב הבא.
+
+## 19/08/2026 (סבב אוטונומי 3) — `mthbram`: תוקן האי-דיוק הגרפי המקביל — `AIIcon` (מוח+הילה, "AI-grade") הוחלף באייקון פשוט בשלושה מקומות לא-LLM
+
+70. **המשכתי בדיוק מהפריט שהעדכון הקודם (#69) סימן כ"הבא בתור בפועל":**
+    ‏`AIIcon` (מוגדר ב-`components/ui/AIIcon.tsx` כ-`BrainCircuit` + הילה
+    מסתובבת + glow, המתועד במפורש כ"Premium AI icon... 'AI-grade' feel")
+    מוצג ליד `FindLesson.tsx`/`FeaturedLessons.tsx` — שני העמודים שתוקן
+    בהם הטקסט ב-#66-69 מ-"חכם" ל"חיפוש שיעורים"/"סינון מתקדם" כי הם
+    סינון `.filter()`/`.includes()` בצד לקוח, **ללא** קריאת LLM. אותו
+    אייקון מסמל AI בדיוק באותם מקומות שהטקסט כבר תוקן — אי-דיוק זהה,
+    בצורה גרפית ולא מילולית.
+71. **חיפוש שלישי, לא מנוי ב-#69, נמצא ותוקן גם הוא:** ב-`HeroSection.tsx`
+    כרטיס הפעולה `featured: true` (הראשון מתוך ארבעה, מפנה ל-`/find-lesson`)
+    מציג `<AIIcon variant="navy" />` במקום `action.icon` (=`Search`) שמוצג
+    בשלושת הכרטיסים האחרים — אותה טעות בדיוק: אייקון AI על קישור לעמוד
+    סינון רגיל.
+72. **תוקנו שלושת המקומות, `AIIcon` נשאר בלי שינוי בכל מקום אחר.**
+    ‏`FindLesson.tsx:178` ו-`FeaturedLessons.tsx:246` → אייקוני `Filter`/
+    `Search` מ-`lucide-react` שכבר מיובאים ומשמשים באותם קבצים לשימושים
+    דומים (`text-gold`, אותו גודל בקירוב). `HeroSection.tsx:171` → הוסרה
+    ההסתעפות `action.featured ? <AIIcon/> : <action.icon/>` ובמקומה
+    תמיד `<action.icon/>` (=`Search` עבור הכרטיס הזה), עם `text-navy`
+    כש-`featured` כדי לשמר את אותה בחירת צבע שהיתה ל-`AIIcon variant=
+    "navy"` (ניגודיות זהה לרקע `bg-gradient-teal`). לא נגעתי ב-`AIIcon`
+    ב-`HeroSection.tsx:121` (תגית עליונה כללית ליד "שיעורי תורה ·
+    חברותות · הרצאות" — קישוט מותג, לא תלוי בטענה על עמוד/תכונה ספציפיים),
+    ב-`FloatingChatBot.tsx` (ה-LLM האמיתי, #67) או ב-`questionnaire/
+    AIChatBot.tsx` (צ'אטבוט שאלון — לא נבדק בסבב הזה, לא נטען שהוא
+    לא-LLM, מחוץ לתחום ששסומן ב-#69).
+73. **אפס רגרסיה, אומת בקריאה:** שלושה קבצים, כל שינוי הוא JSX
+    דקורטיבי (`aria-hidden` ב-`AIIcon` המקורי) — אין state, handler,
+    route או endpoint שנגע בו; ה-`import AIIcon` הוסר מ-`FindLesson.tsx`
+    ו-`FeaturedLessons.tsx` בלבד (איפה שהפך לבלתי-מנוצל), נשאר ב-
+    `HeroSection.tsx` (עדיין בשימוש בשורה 121). **הבא בתור בפועל:**
+    שרשור `icon-decisions` המקורי (`mthbram`/`egod`/`galil` מול הגלאים
+    `doubleMark`/`splitGlyph`/`repeatInBand`/`floatingTwice`, #69) עדיין
+    פתוח ולא נגע בו הסבב הזה.

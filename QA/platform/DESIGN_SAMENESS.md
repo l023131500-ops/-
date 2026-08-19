@@ -1797,3 +1797,17 @@ LLM אמיתי — `search-lessons/index.ts` מזרים תשובה מ-`google/ge
 `doubleMark`/`splitGlyph`/`repeatInBand`/`floatingTwice` שנבנו בעדכונים
 (ה)–(ט). ובנפרד: `AIIcon` מוצג ליד תיבות החיפוש הלא-LLM ב-`FindLesson.tsx`/
 `FeaturedLessons.tsx` — אי-דיוק גרפי מקביל למה שתוקן כאן במילים, טרם נמדד.
+
+## 19/08/2026 (סבב אוטונומי 3) — האי-דיוק הגרפי (`AIIcon`) שסומן למעלה תוקן
+
+שלושה מקומות ב-`mthbram` הציגו את `AIIcon` (מוח+הילה, מתועד כ-"Premium
+AI icon"/"AI-grade feel") ליד תכונות סינון רגילות בצד לקוח: תיבת החיפוש
+ב-`FindLesson.tsx`, תיבת החיפוש ב-`FeaturedLessons.tsx`, וכרטיס הפעולה
+הראשון ב-`HeroSection.tsx` (המפנה ל-`/find-lesson`, החליף אייקון `Search`
+רגיל ב-`AIIcon` רק בגלל `featured: true`). שלושתם הוחלפו באייקון פשוט
+(`Filter`/`Search` מ-`lucide-react`, שכבר מיובאים באותם קבצים) — אפס
+שינוי התנהגות, רק החלפת גרפיקה דקורטיבית. `AIIcon` נשאר ללא שינוי בכל
+מקום שבו הוא באמת סמוך ל-LLM אמיתי (`FloatingChatBot.tsx`) או קישוט
+מותג כללי לא תלוי-תכונה (`HeroSection.tsx:121`). פרטים מלאים:
+`DECISIONS.md` #70-73. **הבא בתור בפועל:** שרשור `icon-decisions`
+המקורי (`mthbram`/`egod`/`galil` מול ארבעת הגלאים) — עדיין פתוח.

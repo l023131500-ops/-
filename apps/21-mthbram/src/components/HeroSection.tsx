@@ -168,11 +168,7 @@ const HeroSection = () => {
                     transition={{ duration: 0.5 }}
                     className={`w-14 h-14 md:w-16 md:h-16 rounded-2xl ${action.gradient} flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform shadow-lg`}
                   >
-                    {action.featured ? (
-                      <AIIcon size={42} variant="navy" />
-                    ) : (
-                      <action.icon className="w-7 h-7 md:w-8 md:h-8 text-primary-foreground" />
-                    )}
+                    <action.icon className={`w-7 h-7 md:w-8 md:h-8 ${action.featured ? "text-navy" : "text-primary-foreground"}`} />
                   </motion.div>
                   <div className="flex-1">
                     <h3 className={`font-display font-black mb-1.5 transition-colors leading-tight ${

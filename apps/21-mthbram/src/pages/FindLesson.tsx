@@ -4,7 +4,6 @@ import { Search, X, MapPin, BookOpen, Clock, Radio, Video, Filter } from "lucide
 import Navbar from "@/components/Navbar";
 import { supabase } from "@/integrations/supabase/client";
 import LessonDetailModal from "@/components/LessonDetailModal";
-import AIIcon from "@/components/ui/AIIcon";
 
 const SUBJECTS = [
   "גמרא עיון", "גמרא בקיאות", "משניות", "דף יומי", "עמוד היומי", "עין יעקב",
@@ -175,7 +174,7 @@ const FindLesson = () => {
           {/* Header */}
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-8">
             <div className="inline-flex items-center gap-2 mb-4">
-              <AIIcon size={28} variant="primary" />
+              <Filter className="w-6 h-6 text-gold" strokeWidth={2.2} />
               <span className="font-body text-sm font-bold text-gold">סינון מתקדם בזמן אמת</span>
             </div>
             <h1 className="font-display text-3xl md:text-5xl font-black text-foreground mb-2">

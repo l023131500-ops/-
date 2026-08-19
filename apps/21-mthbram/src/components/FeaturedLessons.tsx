@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Clock, MapPin, BookOpen, ArrowLeft, Video, Radio, RefreshCw, ChevronDown, Search, Filter } from "lucide-react";
-import AIIcon from "@/components/ui/AIIcon";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import LessonDetailModal from "./LessonDetailModal";
@@ -243,7 +242,7 @@ const FeaturedLessons = () => {
                 <div className="mb-6 space-y-3">
                   <div className="relative shadow-elegant rounded-2xl">
                     <div className="absolute inset-0 rounded-2xl bg-gradient-to-l from-gold/20 via-teal/15 to-gold/20 blur-md -z-10" />
-                    <div className="absolute right-3 top-1/2 -translate-y-1/2"><AIIcon size={28} variant="primary" /></div>
+                    <div className="absolute right-3 top-1/2 -translate-y-1/2"><Search className="w-5 h-5 text-gold" strokeWidth={2.2} /></div>
                     <input
                       value={searchQuery}
                       onChange={(e) => { setSearchQuery(e.target.value); setVisibleCount(INITIAL_VISIBLE); }}
