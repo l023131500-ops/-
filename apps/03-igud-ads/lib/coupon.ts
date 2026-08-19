@@ -29,10 +29,20 @@ export async function validateAndConsumeCoupon(code: string) {
 
 export async function incrementCouponUsage(id: string) {
   const svc = createSupabaseService();
-  const { data } = await svc.from("ad_coupons").select("used_designs").eq("id", id).maybeSingle();
-  if (!data) return;
-  await svc
-    .from("ad_coupons")
-    .update({ used_designs: (data.used_designs || 0) + 1 })
-    .eq("id", id);
+  // Read-modify-write race: concurrent requests for the same coupon can read
+  // the same used_designs value and overwrite each other's increment. Retry
+  // with a compare-and-swap (update only if used_designs is still what we read)
+  // so concurrent increments don't get lost.
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const { data } = await svc.from("ad_coupons").select("used_designs").eq("id", id).maybeSingle();
+    if (!data) return;
+    const current = data.used_designs || 0;
+    const { data: updated } = await svc
+      .from("ad_coupons")
+      .update({ used_designs: current + 1 })
+      .eq("id", id)
+      .eq("used_designs", current)
+      .select("id");
+    if (updated && updated.length > 0) return;
+  }
 }
