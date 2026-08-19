@@ -87,18 +87,22 @@ interface BrandRow {
   updatedAt: number;
 }
 
-// שולף עד 4 צבעי פלטה (ראשי+משני) מ-kitJson לתצוגת נקודות-צבע קטנה בכרטיס
-function brandSwatches(kitJson: string | null): string[] {
+// שולף את כל צבעי הפלטה (ראשי+משני) מ-kitJson, ללא הגבלה — לשימוש בהחלת הפלטה על העורך
+function brandPaletteColors(kitJson: string | null): string[] {
   if (!kitJson) return [];
   try {
     const kit = JSON.parse(kitJson);
-    const hexes = [...(kit?.colors?.primary ?? []), ...(kit?.colors?.secondary ?? [])]
+    return [...(kit?.colors?.primary ?? []), ...(kit?.colors?.secondary ?? [])]
       .map((c: any) => c?.hex)
       .filter((h: unknown): h is string => typeof h === "string");
-    return hexes.slice(0, 4);
   } catch {
     return [];
   }
+}
+
+// עד 4 צבעי פלטה לתצוגת נקודות-צבע קטנה בכרטיס
+function brandSwatches(kitJson: string | null): string[] {
+  return brandPaletteColors(kitJson).slice(0, 4);
 }
 
 export default function Editor() {
@@ -170,6 +174,16 @@ export default function Editor() {
   function openBrandInNewTab(id: number) {
     const url = `${window.location.origin}${window.location.pathname}#/branding/${id}`;
     window.open(url, "_blank", "noopener,noreferrer");
+  }
+
+  // פלטת מותג פעילה בעורך — מצטרפת כדגימות נוספות בבוררי צבע הטקסט/הרקע.
+  // לא נוגעת בשום שכבה קיימת: תוספת דגימות בלבד, אף פעם לא צביעה אוטומטית.
+  const [activeBrandPalette, setActiveBrandPalette] = useState<{ brandId: number; brandName: string; colors: string[] } | null>(null);
+  function handleApplyBrandPalette(b: BrandRow) {
+    const colors = brandPaletteColors(b.kitJson);
+    if (colors.length === 0) return;
+    setActiveBrandPalette({ brandId: b.id, brandName: b.brandName, colors });
+    toast({ title: `פלטת "${b.brandName}" זמינה עכשיו כדגימות צבע בעריכת טקסט ורקע` });
   }
 
   // אם נכנסים ישירות ל-/editor בלי בחירה (רענון) — חזרה לבית
@@ -1045,6 +1059,7 @@ export default function Editor() {
                   <TextLayerControls
                     layer={selectedLayer as TextLayer}
                     stylePalette={style.palette}
+                    brandPalette={activeBrandPalette?.colors ?? []}
                     onChange={(patch) => handleChangeLayer(selectedLayer.id, patch)}
                   />
                 </>
@@ -1162,38 +1177,56 @@ export default function Editor() {
               </h2>
               <BackgroundControls
                 background={doc.background}
+                brandPalette={activeBrandPalette?.colors ?? []}
                 onChange={(bg) => updateDoc({ ...doc, background: bg })}
               />
             </CardContent>
           </Card>
 
-          {/* המותגים שלי — רק למחוברים (auth-button.js); תצוגה בלבד, פתיחה בכרטיסייה חדשה */}
+          {/* המותגים שלי — רק למחוברים (auth-button.js); פתיחה בכרטיסייה חדשה, והחלת פלטה על העורך */}
           {loggedIn && myBrands && myBrands.length > 0 && (
             <Card className="mb-4 border-[#C9A227]/15 bg-[#101B32]">
               <CardContent className="p-4">
-                <h2 className="mb-3 flex items-center gap-2 text-sm font-bold text-[#F5EEDD]">
+                <h2 className="mb-1 flex items-center gap-2 text-sm font-bold text-[#F5EEDD]">
                   <Palette className="h-4 w-4 text-[#C9A227]" /> המותגים שלי
                 </h2>
+                {activeBrandPalette && (
+                  <p className="mb-2 flex items-center justify-between text-[11px] text-[#C9A227]/80">
+                    <span>פלטת "{activeBrandPalette.brandName}" פעילה בבורר הצבעים</span>
+                    <button
+                      type="button"
+                      onClick={() => setActiveBrandPalette(null)}
+                      className="text-[#F5EEDD]/40 hover:text-[#F5EEDD]/80"
+                      data-testid="button-clear-brand-palette"
+                    >
+                      נקה
+                    </button>
+                  </p>
+                )}
                 <div className="space-y-2">
                   {myBrands.map((b) => {
                     const swatches = brandSwatches(b.kitJson);
                     return (
-                      <button
+                      <div
                         key={b.id}
-                        type="button"
-                        onClick={() => openBrandInNewTab(b.id)}
-                        className="flex w-full items-center gap-2 rounded-lg border border-[#C9A227]/15 bg-[#0B1220] p-2 text-right transition hover:border-[#C9A227]/50"
-                        title="פתיחה במחלקת המיתוג (כרטיסייה חדשה)"
-                        data-testid={`button-open-brand-${b.id}`}
+                        className="flex w-full items-center gap-2 rounded-lg border border-[#C9A227]/15 bg-[#0B1220] p-2 transition hover:border-[#C9A227]/50"
                       >
-                        {b.logoPng ? (
-                          <img src={b.logoPng} alt={b.brandName} className="h-8 w-8 shrink-0 rounded bg-white/95 object-contain p-0.5" />
-                        ) : (
-                          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded bg-[#C9A227]/10">
-                            <Palette className="h-3.5 w-3.5 text-[#C9A227]/60" />
-                          </div>
-                        )}
-                        <span className="min-w-0 flex-1 truncate text-xs text-[#F5EEDD]/80">{b.brandName}</span>
+                        <button
+                          type="button"
+                          onClick={() => openBrandInNewTab(b.id)}
+                          className="flex min-w-0 flex-1 items-center gap-2 text-right"
+                          title="פתיחה במחלקת המיתוג (כרטיסייה חדשה)"
+                          data-testid={`button-open-brand-${b.id}`}
+                        >
+                          {b.logoPng ? (
+                            <img src={b.logoPng} alt={b.brandName} className="h-8 w-8 shrink-0 rounded bg-white/95 object-contain p-0.5" />
+                          ) : (
+                            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded bg-[#C9A227]/10">
+                              <Palette className="h-3.5 w-3.5 text-[#C9A227]/60" />
+                            </div>
+                          )}
+                          <span className="min-w-0 flex-1 truncate text-xs text-[#F5EEDD]/80">{b.brandName}</span>
+                        </button>
                         {swatches.length > 0 && (
                           <div className="flex shrink-0 gap-0.5">
                             {swatches.map((hex, i) => (
@@ -1201,7 +1234,18 @@ export default function Editor() {
                             ))}
                           </div>
                         )}
-                      </button>
+                        {swatches.length > 0 && (
+                          <button
+                            type="button"
+                            onClick={() => handleApplyBrandPalette(b)}
+                            className="shrink-0 rounded p-1 text-[#F5EEDD]/50 transition hover:bg-[#C9A227]/20 hover:text-[#C9A227]"
+                            title="החל את פלטת המותג כדגימות צבע בעורך (טקסט ורקע)"
+                            data-testid={`button-apply-brand-palette-${b.id}`}
+                          >
+                            <Wand2 className="h-3.5 w-3.5" />
+                          </button>
+                        )}
+                      </div>
                     );
                   })}
                 </div>
@@ -1673,13 +1717,15 @@ export default function Editor() {
 function TextLayerControls({
   layer,
   stylePalette,
+  brandPalette = [],
   onChange,
 }: {
   layer: TextLayer;
   stylePalette: { primary: string; secondary: string; accent: string; text: string; textLight: string; cream: string };
+  brandPalette?: string[]; // דגימות פלטת המותג הפעילה (ר' "המותגים שלי"), מצטרפות לצבעי הסגנון
   onChange: (patch: Partial<TextLayer>) => void;
 }) {
-  const paletteColors = Array.from(new Set(Object.values(stylePalette)));
+  const paletteColors = Array.from(new Set([...Object.values(stylePalette), ...brandPalette]));
   return (
     <div className="space-y-3 border-t border-[#C9A227]/10 pt-3">
       {/* פונט + עובי חופשי */}
@@ -1843,14 +1889,18 @@ function TextLayerControls({
 // ---- פאנל רקע: צבע מלא / גרדיאנט (from/to/angle) / תמונת AI ----
 function BackgroundControls({
   background,
+  brandPalette = [],
   onChange,
 }: {
   background: TemplateBackground;
+  brandPalette?: string[]; // דגימות פלטת המותג הפעילה (ר' "המותגים שלי"), מצטרפות לצבעי הרקע הקבועים
   onChange: (bg: TemplateBackground) => void;
 }) {
   const type = background.type;
   const grad = background.gradient ?? { from: "#0B1220", to: "#1A2A4A", angle: 135 };
-  const bgPresets = ["#0B1220", "#101B32", "#1A2A4A", "#C9A227", "#E4C55A", "#F5EEDD", "#FFFFFF", "#000000", "#2E1A0B", "#4A1010"];
+  const bgPresets = Array.from(
+    new Set(["#0B1220", "#101B32", "#1A2A4A", "#C9A227", "#E4C55A", "#F5EEDD", "#FFFFFF", "#000000", "#2E1A0B", "#4A1010", ...brandPalette]),
+  );
 
   return (
     <div className="space-y-3">
