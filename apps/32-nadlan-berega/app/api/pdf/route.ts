@@ -7,6 +7,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { launchBrowser } from '@/lib/browser';
 import { BASE_PATH } from '@/lib/basepath';
+import { logExport } from '@/lib/store';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -61,6 +62,10 @@ export async function GET(req: NextRequest) {
         '<span class="pageNumber"></span>/<span class="totalPages"></span>' +
         '</div>',
     });
+
+    // לוג ההורדה — כדי ש-report_exports ישקף שימוש אמיתי בפיצ'ר, לא רק שהוא קיים.
+    // לא חוסם את התגובה: logExport בולעת שגיאות שלה.
+    await logExport(q, `pdf_${tier}`, []);
 
     return new NextResponse(Buffer.from(pdf), {
       headers: {

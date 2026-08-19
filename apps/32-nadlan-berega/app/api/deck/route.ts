@@ -10,6 +10,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { launchBrowser } from '@/lib/browser';
 import { BASE_PATH } from '@/lib/basepath';
+import { logExport } from '@/lib/store';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -71,6 +72,9 @@ export async function GET(req: NextRequest) {
       margin: { top: '0', bottom: '0', left: '0', right: '0' },
       preferCSSPageSize: true,
     });
+
+    // לוג ההורדה — כדי ש-report_exports ישקף שימוש אמיתי בפיצ'ר, לא רק שהוא קיים.
+    await logExport(q, 'deck', []);
 
     return new NextResponse(Buffer.from(pdf), {
       headers: {
