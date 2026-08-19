@@ -17,10 +17,13 @@ export async function POST(req: NextRequest) {
   const upstream = await fetch(url);
 
   if (!upstream.ok) {
-    return NextResponse.json(
-      { error: 'source not found on Sefaria', ref, status: upstream.status },
-      { status: 404 }
-    );
+    return NextResponse.json({
+      ref,
+      status: 'missing',
+      distance: null,
+      sourceText: '',
+      sourceUrl: 'https://www.sefaria.org/' + encodeURIComponent(ref).replace(/%20/g, '_')
+    });
   }
 
   const data = await upstream.json();
