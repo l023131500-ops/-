@@ -24,6 +24,7 @@
     { "source": "/admin/rights", "destination": "/admin-rights.html" },
     { "source": "/admin/kesef", "destination": "/admin-kesef.html" },
     { "source": "/admin/imud", "destination": "/admin-imud.html" },
+    { "source": "/admin/orech", "destination": "/admin-orech.html" },
     { "source": "/admin/studio", "destination": "/admin-studio.html" },
     { "source": "/admin/smel", "destination": "/admin-smel.html" },
     { "source": "/showcase", "destination": "/showcase.html" },

@@ -205,6 +205,7 @@ const CONSOLE_SCREENS: { href: string; label: string; hint: string }[] = [
   { href: "/admin/rights", label: "מאגר הזכויות · בקלות (10)", hint: "ניהול הקטלוג" },
   { href: "/admin/kesef", label: "כסף — קליטת נתונים (34)", hint: "רשויות, מקורות וסנכרון" },
   { href: "/admin/imud", label: "עימוד — ספרים ותבניות (04)", hint: "ספרים, בלוקים ותבניות בשימוש" },
+  { href: "/admin/orech", label: "העורך התורני — HTR ותיקונים (18)", hint: "משימות זיהוי כתב יד, סטטוסים וביטחון" },
   { href: "/admin/studio", label: "סטודיו — תבניות ועבודות (26)", hint: "תבניות, מותגים ועבודות שמורות" },
 ];
 
