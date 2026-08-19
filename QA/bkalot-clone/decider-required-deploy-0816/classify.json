@@ -1,0 +1,121 @@
+{
+  "src_bytes": 131108,
+  "live_bytes": 129712,
+  "rows": [
+    {
+      "marker": "decider_required",
+      "src": 1,
+      "live": 0
+    },
+    {
+      "marker": "הסשן לא מסר מי מכריע",
+      "src": 1,
+      "live": 0
+    },
+    {
+      "marker": "לא נרשמה שורת יומן",
+      "src": 2,
+      "live": 0
+    },
+    {
+      "marker": "צאו והתחברו מחדש ונסו שוב",
+      "src": 1,
+      "live": 0
+    },
+    {
+      "marker": "0092 הכרעות",
+      "src": 1,
+      "live": 0
+    },
+    {
+      "marker": "מספר שלם בטוח",
+      "src": 1,
+      "live": 0
+    },
+    {
+      "marker": "invalid_session",
+      "src": 3,
+      "live": 2
+    },
+    {
+      "marker": "token_required",
+      "src": 2,
+      "live": 1
+    },
+    {
+      "marker": "0076",
+      "src": 4,
+      "live": 3
+    },
+    {
+      "marker": "הסשן פג",
+      "src": 2,
+      "live": 1
+    },
+    {
+      "marker": "שערי הקלט",
+      "src": 1,
+      "live": 0
+    },
+    {
+      "marker": "note_too_long",
+      "src": 5,
+      "live": 5
+    },
+    {
+      "marker": "why-input",
+      "src": 2,
+      "live": 2
+    },
+    {
+      "marker": "syncNoteCount",
+      "src": 4,
+      "live": 4
+    },
+    {
+      "marker": "td.why",
+      "src": 1,
+      "live": 1
+    },
+    {
+      "marker": "רצף ההכרעות",
+      "src": 4,
+      "live": 4
+    },
+    {
+      "marker": "handsBit",
+      "src": 2,
+      "live": 2
+    },
+    {
+      "marker": "producedBit",
+      "src": 2,
+      "live": 2
+    },
+    {
+      "marker": "fillQueueCell",
+      "src": 2,
+      "live": 2
+    },
+    {
+      "marker": "fillTemplateCell",
+      "src": 4,
+      "live": 4
+    },
+    {
+      "marker": "fillCreatedCell",
+      "src": 4,
+      "live": 4
+    },
+    {
+      "marker": "מי הכריע",
+      "src": 13,
+      "live": 13
+    },
+    {
+      "marker": "fillHistoryNoteCell",
+      "src": 2,
+      "live": 2
+    }
+  ]
+}

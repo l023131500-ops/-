@@ -1,0 +1,17 @@
+﻿Five runs through /gannenet/api/ai-generate on next dev :3042, effort=low, thinking on.
+Dev-server log lines and client-side stopwatch agree.
+
+topic                        chars   seconds
+---------------------------  -----   -------
+סימני הסתיו                      -      37.1
+פרשת נח - תיבת נח (browser)      -      59.1
+האות א' - אתרוג               1349      32.7
+סימני הסתיו                   1405      33.1
+מידת הכנסת אורחים             2209      57.3
+
+Control: same three topics with thinking:{type:"disabled"} added on top of effort=low
+סימני הסתיו        41.2s  content=7 hints=7 angle_brackets=False
+פרשת נח            37.3s  content=6 hints=6 angle_brackets=False
+האות א'            32.8s  content=6 hints=6 angle_brackets=False
+
+Baseline before this change (generator-dead-model-0811): ~72 s at default effort.

@@ -1,0 +1,544 @@
+{
+  "prev": {
+    "tag": "prev",
+    "port": 8180,
+    "target": 319,
+    "steps": {
+      "filtered": {
+        "ids": [
+          339,
+          338,
+          337,
+          336,
+          335,
+          334,
+          333,
+          332,
+          331,
+          330,
+          329,
+          328,
+          327,
+          326,
+          325,
+          324,
+          323,
+          322,
+          321,
+          320
+        ],
+        "count": "21 פניות · מוצגות 20",
+        "page_label": "עמוד 1 מתוך 2",
+        "clamp_note": {
+          "missing": true
+        },
+        "empty": {
+          "hidden": true,
+          "top": 0,
+          "height": 0,
+          "text": "אין פניות שתואמות את הסינון."
+        },
+        "pager": {
+          "hidden": false,
+          "top": 2188,
+          "height": 46,
+          "text": "הקודם\n    עמוד 1 מתוך 2\n    הבא"
+        },
+        "list_error": {
+          "hidden": true,
+          "top": 0,
+          "height": 0,
+          "text": ""
+        },
+        "q_phone": {
+          "hidden": true,
+          "top": 0,
+          "height": 0,
+          "text": ""
+        },
+        "prev_disabled": true,
+        "next_disabled": false
+      },
+      "page2": {
+        "ids": [
+          319
+        ],
+        "count": "21 פניות · מוצגות 1",
+        "page_label": "עמוד 2 מתוך 2",
+        "clamp_note": {
+          "missing": true
+        },
+        "empty": {
+          "hidden": true,
+          "top": 0,
+          "height": 0,
+          "text": "אין פניות שתואמות את הסינון."
+        },
+        "pager": {
+          "hidden": false,
+          "top": 446,
+          "height": 46,
+          "text": "הקודם\n    עמוד 2 מתוך 2\n    הבא"
+        },
+        "list_error": {
+          "hidden": true,
+          "top": 0,
+          "height": 0,
+          "text": ""
+        },
+        "q_phone": {
+          "hidden": true,
+          "top": 0,
+          "height": 0,
+          "text": ""
+        },
+        "prev_disabled": false,
+        "next_disabled": true
+      },
+      "back": {
+        "ids": [
+          339,
+          338,
+          337,
+          336,
+          335,
+          334,
+          333,
+          332,
+          331,
+          330,
+          329,
+          328,
+          327,
+          326,
+          325,
+          324,
+          323,
+          322,
+          321,
+          320
+        ],
+        "count": "20 פניות",
+        "page_label": "עמוד 1 מתוך 1",
+        "clamp_note": {
+          "missing": true
+        },
+        "empty": {
+          "hidden": true,
+          "top": 0,
+          "height": 0,
+          "text": "אין פניות שתואמות את הסינון."
+        },
+        "pager": {
+          "hidden": true,
+          "top": 0,
+          "height": 0,
+          "text": "הקודם\n    עמוד 1 מתוך 1\n    הבא"
+        },
+        "list_error": {
+          "hidden": true,
+          "top": 0,
+          "height": 0,
+          "text": ""
+        },
+        "q_phone": {
+          "hidden": true,
+          "top": 0,
+          "height": 0,
+          "text": ""
+        },
+        "prev_disabled": true,
+        "next_disabled": true
+      },
+      "after_reload": {
+        "ids": [
+          339,
+          338,
+          337,
+          336,
+          335,
+          334,
+          333,
+          332,
+          331,
+          330,
+          329,
+          328,
+          327,
+          326,
+          325,
+          324,
+          323,
+          322,
+          321,
+          320
+        ],
+        "count": "20 פניות",
+        "page_label": "עמוד 1 מתוך 1",
+        "clamp_note": {
+          "missing": true
+        },
+        "empty": {
+          "hidden": true,
+          "top": 0,
+          "height": 0,
+          "text": "אין פניות שתואמות את הסינון."
+        },
+        "pager": {
+          "hidden": true,
+          "top": 0,
+          "height": 0,
+          "text": "הקודם\n    עמוד 1 מתוך 1\n    הבא"
+        },
+        "list_error": {
+          "hidden": true,
+          "top": 0,
+          "height": 0,
+          "text": ""
+        },
+        "q_phone": {
+          "hidden": true,
+          "top": 0,
+          "height": 0,
+          "text": ""
+        },
+        "prev_disabled": true,
+        "next_disabled": true
+      }
+    },
+    "cases_sent": [
+      {
+        "status": "",
+        "kind": "",
+        "decided": "",
+        "sort": "",
+        "q": "",
+        "limit": 20,
+        "offset": 0
+      },
+      {
+        "status": "new",
+        "kind": "",
+        "decided": "",
+        "sort": "",
+        "q": "",
+        "limit": 20,
+        "offset": 0
+      },
+      {
+        "status": "new",
+        "kind": "",
+        "decided": "",
+        "sort": "",
+        "q": "",
+        "limit": 20,
+        "offset": 20
+      },
+      {
+        "status": "new",
+        "kind": "",
+        "decided": "",
+        "sort": "",
+        "q": "",
+        "limit": 20,
+        "offset": 20
+      },
+      {
+        "status": "new",
+        "kind": "",
+        "decided": "",
+        "sort": "",
+        "q": "",
+        "limit": 20,
+        "offset": 0
+      },
+      {
+        "status": "new",
+        "kind": "",
+        "decided": "",
+        "sort": "",
+        "q": "",
+        "limit": 20,
+        "offset": 0
+      }
+    ],
+    "console": []
+  },
+  "next": {
+    "tag": "next",
+    "port": 8181,
+    "target": 320,
+    "steps": {
+      "filtered": {
+        "ids": [
+          340,
+          339,
+          338,
+          337,
+          336,
+          335,
+          334,
+          333,
+          332,
+          331,
+          330,
+          329,
+          328,
+          327,
+          326,
+          325,
+          324,
+          323,
+          322,
+          321
+        ],
+        "count": "21 פניות · מוצגות 20",
+        "page_label": "עמוד 1 מתוך 2",
+        "clamp_note": {
+          "hidden": true,
+          "top": 0,
+          "height": 0,
+          "text": ""
+        },
+        "empty": {
+          "hidden": true,
+          "top": 0,
+          "height": 0,
+          "text": "אין פניות שתואמות את הסינון."
+        },
+        "pager": {
+          "hidden": false,
+          "top": 2188,
+          "height": 46,
+          "text": "הקודם\n    עמוד 1 מתוך 2\n    הבא"
+        },
+        "list_error": {
+          "hidden": true,
+          "top": 0,
+          "height": 0,
+          "text": ""
+        },
+        "q_phone": {
+          "hidden": true,
+          "top": 0,
+          "height": 0,
+          "text": ""
+        },
+        "prev_disabled": true,
+        "next_disabled": false
+      },
+      "page2": {
+        "ids": [
+          320
+        ],
+        "count": "21 פניות · מוצגות 1",
+        "page_label": "עמוד 2 מתוך 2",
+        "clamp_note": {
+          "hidden": true,
+          "top": 0,
+          "height": 0,
+          "text": ""
+        },
+        "empty": {
+          "hidden": true,
+          "top": 0,
+          "height": 0,
+          "text": "אין פניות שתואמות את הסינון."
+        },
+        "pager": {
+          "hidden": false,
+          "top": 446,
+          "height": 46,
+          "text": "הקודם\n    עמוד 2 מתוך 2\n    הבא"
+        },
+        "list_error": {
+          "hidden": true,
+          "top": 0,
+          "height": 0,
+          "text": ""
+        },
+        "q_phone": {
+          "hidden": true,
+          "top": 0,
+          "height": 0,
+          "text": ""
+        },
+        "prev_disabled": false,
+        "next_disabled": true
+      },
+      "back": {
+        "ids": [
+          340,
+          339,
+          338,
+          337,
+          336,
+          335,
+          334,
+          333,
+          332,
+          331,
+          330,
+          329,
+          328,
+          327,
+          326,
+          325,
+          324,
+          323,
+          322,
+          321
+        ],
+        "count": "20 פניות",
+        "page_label": "עמוד 1 מתוך 1",
+        "clamp_note": {
+          "hidden": false,
+          "top": 342,
+          "height": 23,
+          "text": "הרשימה התקצרה בזמן העבודה, ובעמוד 2 לא נשארו פניות שתואמות את הסינון. המסך עבר לעמוד 1 — האחרון שיש בו פניות."
+        },
+        "empty": {
+          "hidden": true,
+          "top": 0,
+          "height": 0,
+          "text": "אין פניות שתואמות את הסינון."
+        },
+        "pager": {
+          "hidden": true,
+          "top": 0,
+          "height": 0,
+          "text": "הקודם\n    עמוד 1 מתוך 1\n    הבא"
+        },
+        "list_error": {
+          "hidden": true,
+          "top": 0,
+          "height": 0,
+          "text": ""
+        },
+        "q_phone": {
+          "hidden": true,
+          "top": 0,
+          "height": 0,
+          "text": ""
+        },
+        "prev_disabled": true,
+        "next_disabled": true
+      },
+      "after_reload": {
+        "ids": [
+          340,
+          339,
+          338,
+          337,
+          336,
+          335,
+          334,
+          333,
+          332,
+          331,
+          330,
+          329,
+          328,
+          327,
+          326,
+          325,
+          324,
+          323,
+          322,
+          321
+        ],
+        "count": "20 פניות",
+        "page_label": "עמוד 1 מתוך 1",
+        "clamp_note": {
+          "hidden": true,
+          "top": 0,
+          "height": 0,
+          "text": ""
+        },
+        "empty": {
+          "hidden": true,
+          "top": 0,
+          "height": 0,
+          "text": "אין פניות שתואמות את הסינון."
+        },
+        "pager": {
+          "hidden": true,
+          "top": 0,
+          "height": 0,
+          "text": "הקודם\n    עמוד 1 מתוך 1\n    הבא"
+        },
+        "list_error": {
+          "hidden": true,
+          "top": 0,
+          "height": 0,
+          "text": ""
+        },
+        "q_phone": {
+          "hidden": true,
+          "top": 0,
+          "height": 0,
+          "text": ""
+        },
+        "prev_disabled": true,
+        "next_disabled": true
+      }
+    },
+    "cases_sent": [
+      {
+        "status": "",
+        "kind": "",
+        "decided": "",
+        "sort": "",
+        "q": "",
+        "limit": 20,
+        "offset": 0
+      },
+      {
+        "status": "new",
+        "kind": "",
+        "decided": "",
+        "sort": "",
+        "q": "",
+        "limit": 20,
+        "offset": 0
+      },
+      {
+        "status": "new",
+        "kind": "",
+        "decided": "",
+        "sort": "",
+        "q": "",
+        "limit": 20,
+        "offset": 20
+      },
+      {
+        "status": "new",
+        "kind": "",
+        "decided": "",
+        "sort": "",
+        "q": "",
+        "limit": 20,
+        "offset": 20
+      },
+      {
+        "status": "new",
+        "kind": "",
+        "decided": "",
+        "sort": "",
+        "q": "",
+        "limit": 20,
+        "offset": 0
+      },
+      {
+        "status": "new",
+        "kind": "",
+        "decided": "",
+        "sort": "",
+        "q": "",
+        "limit": 20,
+        "offset": 0
+      }
+    ],
+    "console": []
+  }
+}

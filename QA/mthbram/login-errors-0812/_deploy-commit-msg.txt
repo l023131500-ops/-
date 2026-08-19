@@ -1,0 +1,40 @@
+mthbram (21): deployed - the admin login on more30.com stopped answering in English
+
+ea695c2 mapped the auth errors and then ended with "not deployed in this step".
+So for the last half hour the fix existed only on the branch: an admin at
+more30.com/mthbram/admin-login was still being told "שגיאה בכניסה: Email not
+confirmed" - a Hebrew prefix glued to GoTrue's English, the exact thing that
+commit was written to remove. This step ships it.
+
+Rebuilt from source (3049 modules, 48.6s), checked the artefact before staging
+rather than after: the new bundle carries "שם המשתמש או הסיסמה שגויים" and
+no longer carries "שגיאה בכניסה: ". robocopy /MIR into the deploy folder
+returned 3 - copies plus the removal of the stale index-BEupP8UO.js, which is
+what /MIR is there for. Deployed from source, not --prebuilt: --prebuilt drops
+vercel.json, and vercel.json is where the /mthbram rewrite lives, so a prebuilt
+deploy 404s every asset here.
+
+dpl_9QszT7S5eRpa3yCb3ZzFUjRdSDC4, production, READY.
+
+Verified on more30.com, not on a preview URL - netfree returns 418 for
+*.vercel.app from this machine, so a preview check would prove nothing. The
+served HTML points at index-DheqMcgT.js and the served JS (1,617,989 bytes)
+contains the new wording and not the old prefix.
+
+Then driven in a browser against the real auth server, both toasts read back
+from the DOM rather than off the image:
+
+  wrong password -> POST /auth/v1/token?grant_type=password 400
+                 -> "שם המשתמש או הסיסמה שגויים."
+  fetch rejected for /auth/v1/ only, i.e. a genuine AuthRetryableFetchError
+                 -> "לא הצלחנו להגיע לשרת. בדקו את החיבור לאינטרנט ונסו שוב."
+
+Both screenshots needed window.setTimeout patched to swallow timers >= 3000ms;
+sonner dismisses in about 4s, shorter than the click-to-screenshot round trip.
+
+email_not_confirmed was not exercised live: this project has no unconfirmed
+account, and creating one would mean sending a real confirmation mail. It stays
+covered by test only. No account was created and nothing was sent.
+
+Nothing under _deploy/ is in this commit - .gitignore:43 excludes it. What is
+here is the evidence.

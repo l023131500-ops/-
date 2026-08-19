@@ -1,0 +1,41 @@
+archive sweep (10 functions): "archived" did not mean "not deployed", and one endpoint hands out the whole lead table
+
+The previous step closed on an unverified assumption: apps/_archive/** was never
+swept because those functions were presumed undeployed. All 10 of them, across two
+Supabase projects, are deployed and answering right now.
+
+THE FINDING - core.issues #170, critical. GET functions/v1/leads-api on
+zwxwteebcoejrjdufzsv (lux-manage) returns 200 and the contents of the leads table -
+name, email, phone, message - to a caller sending no apikey and no Authorization at
+all. total=6: six real people's contact details. The function builds a service_role
+client and checks nothing; the comment above the handler claimed "requires auth
+header with service key or admin JWT" and that check was never written. The comment
+was the entire security model. Same class as #161 and #167.
+
+POST and PUT on the same endpoint insert with no gate either (PUT takes an array).
+Deliberately NOT tested - proving it means writing junk into a live table.
+
+THE FIX. readerGate(): GET and PUT require x-api-key == LEADS_API_KEY and fail
+closed with 403 when the secret is unset, which is the right resting state for a
+service_role endpoint on a project nobody owns. POST stays open on purpose - it is
+the public contact form (ContactSection.tsx / PublicConciergeBot.tsx), a visitor has
+no session, and it only writes. verify_jwt would not have closed the read: the anon
+key is a valid JWT shipped to every browser. config.toml now pins intent per function.
+The one GET caller is an archived admin screen with no deployment and no core.projects
+row, so nothing live regresses.
+
+THE PROTECTED HALF, MEASURED AND LEFT ALONE. pwcswdfgorvlpdflzylm - the project behind
+apps/_archive/bklotm - is system 08 bkalut-app, is_protected=true. Probes there were
+bodiless read-only GETs, the one approved exception; nothing was changed and nothing
+in this commit touches it. Its leads-api is correctly gated (401 Missing API key), but
+leads-webhook, n8n-notify and rights-agent all executed for a caller with no
+credential and only the empty body stopped them before any write or send. No data was
+returned, so it is not a disclosure - recorded as #171 for the user's decision, like
+164/169.
+
+NOT DEPLOYED: no Supabase CLI here, no SUPABASE_ACCESS_TOKEN, MCP lists only
+uhnrgujbdxhhmoxcjria. The open version stays live until someone runs the deploy in
+NEEDS_USER 0sh, whose acceptance check is the same curl returning 403 instead of 200.
+
+No rows inserted, nothing sent, no billing, test mode. csj/csj_src/igud untouched.
+Evidence QA/archive-edge-sweep-0812/.

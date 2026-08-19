@@ -1,0 +1,43 @@
+{
+  "measured_at": "2026-08-09",
+  "script": "scripts/qa/secret-scan.mjs",
+  "issue": 88,
+  "before": {
+    "exit": 1,
+    "findings": 29,
+    "real_passwords": 1,
+    "qa_fixture_noise": 28,
+    "noise_share": "97%",
+    "record_on_disk_said": "MORNING_REPORT.md:133 — secret-scan: 0 findings"
+  },
+  "after": {
+    "exit": 0,
+    "new_findings": 0,
+    "known_leaks_still_published": 1,
+    "anon_keys_skipped": 56,
+    "accepted": 3,
+    "stale_suppressions": 0,
+    "files_scanned": 3126
+  },
+  "stale_suppressions_deleted": [
+    "apps/01-torah-platform/supabase/functions/nedarim-admin/index.ts — [REDACTED], shadowed by BENIGN, never reached",
+    "scripts/qa/nadlan-pro-smoke.ps1 — not-a-real-token-just-a-string, shadowed by BENIGN, never reached"
+  ],
+  "forged_input_verified": {
+    "file": "scripts/qa/_forged-secret-probe.mjs (git add -N, removed after the run)",
+    "caught": [
+      "API_SECRET = \"Zk39xQpLm2vR\"  (ASSIGN)",
+      "api_password: process.env.X || \"Hunter2Hunter2\"  (FALLBACK)",
+      "ADMIN_TOKEN  plain token — preview only (default: swordfish99)  (DOC)"
+    ],
+    "correctly_skipped": [
+      "client_secret = \"not-a-real-one-shouldbe-benign\"  (BENIGN)",
+      "access_token = \"qa.fixture.token\"  (BENIGN, the new entry)"
+    ],
+    "exit": 1
+  },
+  "boundaries": [
+    "apps/27-bkalut-price/server/auth.ts was not edited: it deploys to /var/www/bkalut-app/ per its own CLAUDE.md, and bkalut-app is on the protected list. The password it publishes is unchanged and still needs a rotation decision — NEEDS_USER, core.issues #88.",
+    "That a DIFFERENT secret appearing in a KNOWN file is still reported as new follows from known() requiring value.startsWith(entry.value); it was read in the code, not measured, because measuring it means writing into a protected file."
+  ]
+}

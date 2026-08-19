@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Root>
+  <ChainId>7290027600007</ChainId>
+  <SubChainId>1</SubChainId>
+  <StoreId>1</StoreId>
+  <Promotions>
+    <Promotion>
+      <PromotionId>10001</PromotionId>
+      <PromotionDescription>2 ב-10 ש"ח</PromotionDescription>
+      <PromotionStartDate>2026-06-01</PromotionStartDate>
+      <PromotionEndDate>2026-06-30</PromotionEndDate>
+      <Remark>עד גמר המלאי</Remark>
+    </Promotion>
+    <Promotion>
+      <PromotionId>10002</PromotionId>
+      <PromotionDescription>מבצע חלב - 20% הנחה</PromotionDescription>
+      <PromotionStartDate>2026-06-05</PromotionStartDate>
+      <PromotionEndDate>2026-06-15</PromotionEndDate>
+    </Promotion>
+  </Promotions>
+</Root>

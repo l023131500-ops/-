@@ -1,0 +1,38 @@
+Route (app)                              Size     First Load JS
+┌ ○ /                                    183 B          96.2 kB
+├ ○ /_not-found                          873 B          88.2 kB
+├ ƒ /api/admin/delete                    0 B                0 B
+├ ƒ /api/admin/list                      0 B                0 B
+├ ƒ /api/admin/override                  0 B                0 B
+├ ƒ /api/ai-generate                     0 B                0 B
+├ ƒ /api/catalog                         0 B                0 B
+├ ƒ /api/drive-catalog                   0 B                0 B
+├ ƒ /api/drive/[id]                      0 B                0 B
+├ ○ /api/library-index                   0 B                0 B
+├ ƒ /api/shelf/[name]                    0 B                0 B
+├ ƒ /api/upload/[name]                   0 B                0 B
+├ ƒ /calendar                            183 B          96.2 kB
+├ ○ /generator                           1.86 kB        89.2 kB
+├ ● /lesson/[id]                         183 B          96.2 kB
+├   ├ /lesson/m3
+├   ├ /lesson/m1
+├   ├ /lesson/m2
+├   └ [+177 more paths]
+├ ○ /library                             2.04 kB          98 kB
+├ ○ /newsletter                          1.6 kB         88.9 kB
+├ ○ /pricing                             183 B          96.2 kB
+├ ○ /shelf                               3.1 kB          116 kB
+├ ƒ /shelf/[id]                          178 kB          274 kB
+├ ○ /shelf/admin                         3.15 kB        99.2 kB
+└ ○ /shelf/upload                        2.26 kB         115 kB
++ First Load JS shared by all            87.3 kB
+  ├ chunks/117-99c2382f8685ef7a.js       31.8 kB
+  ├ chunks/fd9d1056-e3d373074663785d.js  53.6 kB
+  └ other shared chunks (total)          1.9 kB
+
+○  (Static)   prerendered as static content
+●  (SSG)      prerendered as static HTML (uses getStaticProps)
+ƒ  (Dynamic)  server-rendered on demand
+
+-- ✓ Generating static pages (194/194); before: 193. The one added page is
+-- /api/library-index, listed ○ (Static): prerendered at build time.

@@ -1,0 +1,18 @@
+22 zchuyot: round-3 a11y recheck - 0 dark-mode contrast failures (clean)
+
+contrast-probe.mjs against https://more30.com/zchuyot, both color schemes
+(light/dark), both widths (1440/390): 0 failures in all four combinations.
+
+This is the system that previously exposed a false-positive in
+contrast-probe.mjs itself (whileInView fade-in sections at opacity:0
+pre-scroll), documented in the tool's own source. The guards added since
+then held up cleanly here.
+
+No code change, no deploy needed - measurement only.
+
+Evidence: QA/platform/zchuyot-dark-recheck-0818/_results.md
+Supabase MCP not connected this session - heartbeat written as
+QA/platform/zchuyot-dark-recheck-0818/_heartbeat-pending.sql
+
+Round-3 ROUTES queue continues: studio, mechiron, kupot, crm, gesher,
+nadlan, kesef.

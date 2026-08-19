@@ -1,0 +1,49 @@
+{
+  "system": "01 torah — פלטפורמת איגוד השיעורים",
+  "path": "https://more30.com/torah",
+  "supabase_project": "bieebmnmkffwbqlsfozh",
+  "date": "2026-08-12",
+  "priority": "§1א — הרשמה→התחברות \"סיסמה שגויה\"",
+  "measured_before_fixing": {
+    "auth_settings": {
+      "source": "GET https://bieebmnmkffwbqlsfozh.supabase.co/auth/v1/settings",
+      "mailer_autoconfirm": false,
+      "disable_signup": false,
+      "meaning": "אימות מייל נדרש בפרויקט הזה, כלומר signUp לא מחזיר session"
+    },
+    "the_bug": "SignUp.tsx הציג 'נרשמת בהצלחה' וניווט ל-/portal; PortalLayout.tsx:39 מחזיר Navigate ל-/auth/sign-in כשאין session. הנרשם חזר מיד למסך הכניסה, ושם ההתחברות נכשלה עם האנגלית הגולמית 'Email not confirmed' — זה מה שדווח כ'נרשמתי ואומרים לי סיסמה שגויה'."
+  },
+  "evidence": [
+    {
+      "file": "01-wrong-password-real-server.png",
+      "flow": "התחברות עם test@more30.com וסיסמה שגויה מול השרת האמיתי",
+      "server": "POST /auth/v1/token => 400 invalid_credentials (אמיתי, לא מדומה)",
+      "shown": "שגיאת התחברות / האימייל או הסיסמה שגויים."
+    },
+    {
+      "file": "02-email-not-confirmed.png",
+      "flow": "אותו טופס, window.fetch הוחלף כדי להחזיר את גוף ה-400 של GoTrue עבור email_not_confirmed",
+      "server": "מדומה — אין משתמש לא-מאומת שאפשר להתחבר אליו בלי ליצור אחד חדש",
+      "shown": "המייל עדיין לא אומת... הסיסמה עצמה תקינה.",
+      "before": "'שגיאת התחברות: Email not confirmed'"
+    },
+    {
+      "file": "03-signup-awaiting-confirmation.png",
+      "flow": "הרשמה מלאה בטופס עם test@more30.com מול השרת האמיתי",
+      "server": "POST /auth/v1/signup => 200 בלי session (התשובה המעורפלת של GoTrue למשתמש קיים). לא נוצר חשבון חדש.",
+      "shown": "מסך 'נשאר לאמת את המייל' במקום ניווט ל-/portal",
+      "before": "toast 'נרשמת בהצלחה' ואז /portal שהחזיר מיד ל-/auth/sign-in"
+    }
+  ],
+  "tests": {
+    "command": "npx vitest run src/lib/authErrors.test.ts",
+    "result": "5 passed (5)"
+  },
+  "build": "npm run build — עבר (vite 5, base /torah/)",
+  "not_covered": [
+    "email_not_confirmed לא נבדק מול שרת אמיתי — צריך משתמש לא-מאומת, ולא נוצרו משתמשי בדיקה נוספים",
+    "over_email_send_rate_limit / user_banned / weak_password — בדיקות יחידה בלבד",
+    "signInWithGoogle: רק המיפוי הוחלף, זרימת OAuth עצמה לא הורצה",
+    "לא נפרס בצעד הזה — האימות כולו על build מקומי (localhost:4183), לא על more30.com"
+  ]
+}

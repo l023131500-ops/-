@@ -1,0 +1,9 @@
+{
+  "buildCommand": "echo no-build",
+  "outputDirectory": ".",
+  "framework": null,
+  "rewrites": [
+    { "source": "/smel", "destination": "/smel/index.html" },
+    { "source": "/smel/:path*", "destination": "/smel/index.html" }
+  ]
+}

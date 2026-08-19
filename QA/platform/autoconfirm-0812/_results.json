@@ -1,0 +1,790 @@
+{
+  "at": "2026-08-12T09:34:22.438Z",
+  "targets": 26,
+  "by_project": {
+    "bieebmnmkffwbqlsfozh": {
+      "autoconfirm": false,
+      "disable_signup": false,
+      "systems": [
+        "01/torah"
+      ]
+    },
+    "uhnrgujbdxhhmoxcjria": {
+      "autoconfirm": true,
+      "disable_signup": false,
+      "systems": [
+        "02/tamlul",
+        "03/modaot",
+        "04/imud",
+        "10/bkalot",
+        "14/smachot",
+        "16/chatzor",
+        "18/orech",
+        "26/studio",
+        "27/mechiron",
+        "28/kupot",
+        "32/nadlan",
+        "33/portal",
+        "34/kesef",
+        "35/kiosk",
+        "36/tivuch",
+        "40/gannenet"
+      ]
+    },
+    "csjekrvukbdznetsrodj": {
+      "autoconfirm": false,
+      "disable_signup": false,
+      "systems": [
+        "06/briut",
+        "12/smel",
+        "17/chizukim"
+      ]
+    },
+    "hkkkynyoigzlttpynoeo": {
+      "autoconfirm": false,
+      "disable_signup": false,
+      "systems": [
+        "15/egod"
+      ]
+    },
+    "aypsqqvfohekxxuqsmrw": {
+      "autoconfirm": false,
+      "disable_signup": false,
+      "systems": [
+        "21/mthbram"
+      ]
+    },
+    "trerolyveytzgksawrme": {
+      "autoconfirm": true,
+      "disable_signup": true,
+      "systems": [
+        "22/zchuyot"
+      ]
+    },
+    "mwljkonwdeuaahsigjdp": {
+      "autoconfirm": false,
+      "disable_signup": false,
+      "systems": [
+        "24/galil"
+      ]
+    },
+    "jhbeelzvjvhnkxldqvxx": {
+      "autoconfirm": false,
+      "disable_signup": false,
+      "systems": [
+        "30/crm"
+      ]
+    },
+    "ygaqqnuyfnumezxxmtbh": {
+      "autoconfirm": false,
+      "disable_signup": false,
+      "systems": [
+        "31/gesher"
+      ]
+    }
+  },
+  "results": [
+    {
+      "number": "01",
+      "slug": "torah",
+      "live_url": "https://more30.com/torah/",
+      "project_in_core": "bieebmnmkffwbqlsfozh",
+      "creds": {
+        "supabase_url": "https://bieebmnmkffwbqlsfozh.supabase.co",
+        "project_served": "bieebmnmkffwbqlsfozh",
+        "matches_core_projects": true,
+        "key": {
+          "format": "publishable",
+          "role": "anon",
+          "ref": null
+        },
+        "found_in": "/torah/assets/index-Cg-YfQE5.js",
+        "from_shared_widget": false,
+        "pair_distance": 46,
+        "scripts_read": 4
+      },
+      "settings": {
+        "disable_signup": false,
+        "mailer_autoconfirm": false,
+        "external_google": true,
+        "external_email": true
+      },
+      "verdict": "REQUIRES EMAIL CONFIRMATION — reproduces §1א, breaks §8ב"
+    },
+    {
+      "number": "02",
+      "slug": "tamlul",
+      "live_url": "https://more30.com/tamlul/",
+      "project_in_core": "bieebmnmkffwbqlsfozh",
+      "creds": {
+        "supabase_url": "https://uhnrgujbdxhhmoxcjria.supabase.co",
+        "project_served": "uhnrgujbdxhhmoxcjria",
+        "matches_core_projects": false,
+        "key": {
+          "format": "jwt",
+          "role": "anon",
+          "ref": "uhnrgujbdxhhmoxcjria"
+        },
+        "found_in": "/auth-button.js",
+        "from_shared_widget": true,
+        "pair_distance": 72,
+        "scripts_read": 10
+      },
+      "settings": {
+        "disable_signup": false,
+        "mailer_autoconfirm": true,
+        "external_google": true,
+        "external_email": true
+      },
+      "verdict": "autoconfirm on — signup→login roundtrip can pass"
+    },
+    {
+      "number": "03",
+      "slug": "modaot",
+      "live_url": "https://more30.com/modaot/",
+      "project_in_core": "bieebmnmkffwbqlsfozh",
+      "creds": {
+        "supabase_url": "https://uhnrgujbdxhhmoxcjria.supabase.co",
+        "project_served": "uhnrgujbdxhhmoxcjria",
+        "matches_core_projects": false,
+        "key": {
+          "format": "jwt",
+          "role": "anon",
+          "ref": "uhnrgujbdxhhmoxcjria"
+        },
+        "found_in": "/auth-button.js",
+        "from_shared_widget": true,
+        "pair_distance": 72,
+        "scripts_read": 10
+      },
+      "settings": {
+        "disable_signup": false,
+        "mailer_autoconfirm": true,
+        "external_google": true,
+        "external_email": true
+      },
+      "verdict": "autoconfirm on — signup→login roundtrip can pass"
+    },
+    {
+      "number": "04",
+      "slug": "imud",
+      "live_url": "https://more30.com/imud/",
+      "project_in_core": "uhnrgujbdxhhmoxcjria",
+      "creds": {
+        "supabase_url": "https://uhnrgujbdxhhmoxcjria.supabase.co",
+        "project_served": "uhnrgujbdxhhmoxcjria",
+        "matches_core_projects": true,
+        "key": {
+          "format": "jwt",
+          "role": "anon",
+          "ref": "uhnrgujbdxhhmoxcjria"
+        },
+        "found_in": "/auth-button.js",
+        "from_shared_widget": true,
+        "pair_distance": 72,
+        "scripts_read": 4
+      },
+      "settings": {
+        "disable_signup": false,
+        "mailer_autoconfirm": true,
+        "external_google": true,
+        "external_email": true
+      },
+      "verdict": "autoconfirm on — signup→login roundtrip can pass"
+    },
+    {
+      "number": "06",
+      "slug": "briut",
+      "live_url": "https://more30.com/briut/",
+      "project_in_core": "csjekrvukbdznetsrodj",
+      "creds": {
+        "supabase_url": "https://csjekrvukbdznetsrodj.supabase.co",
+        "project_served": "csjekrvukbdznetsrodj",
+        "matches_core_projects": true,
+        "key": {
+          "format": "jwt",
+          "role": "anon",
+          "ref": "csjekrvukbdznetsrodj"
+        },
+        "found_in": "/briut/supabase-config.js",
+        "from_shared_widget": false,
+        "pair_distance": 56,
+        "scripts_read": 6
+      },
+      "settings": {
+        "disable_signup": false,
+        "mailer_autoconfirm": false,
+        "external_google": false,
+        "external_email": true
+      },
+      "verdict": "REQUIRES EMAIL CONFIRMATION — reproduces §1א, breaks §8ב"
+    },
+    {
+      "number": "10",
+      "slug": "bkalot",
+      "live_url": "https://more30.com/bkalot/",
+      "project_in_core": "bieebmnmkffwbqlsfozh",
+      "creds": {
+        "supabase_url": "https://uhnrgujbdxhhmoxcjria.supabase.co",
+        "project_served": "uhnrgujbdxhhmoxcjria",
+        "matches_core_projects": false,
+        "key": {
+          "format": "jwt",
+          "role": "anon",
+          "ref": "uhnrgujbdxhhmoxcjria"
+        },
+        "found_in": "/bkalot/repo.js",
+        "from_shared_widget": false,
+        "pair_distance": 63,
+        "scripts_read": 6
+      },
+      "settings": {
+        "disable_signup": false,
+        "mailer_autoconfirm": true,
+        "external_google": true,
+        "external_email": true
+      },
+      "verdict": "autoconfirm on — signup→login roundtrip can pass"
+    },
+    {
+      "number": "12",
+      "slug": "smel",
+      "live_url": "https://more30.com/smel/",
+      "project_in_core": "csjekrvukbdznetsrodj",
+      "creds": {
+        "supabase_url": "https://csjekrvukbdznetsrodj.supabase.co",
+        "project_served": "csjekrvukbdznetsrodj",
+        "matches_core_projects": true,
+        "key": {
+          "format": "publishable",
+          "role": "anon",
+          "ref": null
+        },
+        "found_in": "/smel/assets/index-BzxcokTm.js",
+        "from_shared_widget": false,
+        "pair_distance": 46,
+        "scripts_read": 4
+      },
+      "settings": {
+        "disable_signup": false,
+        "mailer_autoconfirm": false,
+        "external_google": false,
+        "external_email": true
+      },
+      "verdict": "REQUIRES EMAIL CONFIRMATION — reproduces §1א, breaks §8ב"
+    },
+    {
+      "number": "14",
+      "slug": "smachot",
+      "live_url": "https://more30.com/smachot/",
+      "project_in_core": null,
+      "creds": {
+        "supabase_url": "https://uhnrgujbdxhhmoxcjria.supabase.co",
+        "project_served": "uhnrgujbdxhhmoxcjria",
+        "matches_core_projects": null,
+        "key": {
+          "format": "jwt",
+          "role": "anon",
+          "ref": "uhnrgujbdxhhmoxcjria"
+        },
+        "found_in": "/auth-button.js",
+        "from_shared_widget": true,
+        "pair_distance": 72,
+        "scripts_read": 4
+      },
+      "settings": {
+        "disable_signup": false,
+        "mailer_autoconfirm": true,
+        "external_google": true,
+        "external_email": true
+      },
+      "verdict": "autoconfirm on — signup→login roundtrip can pass"
+    },
+    {
+      "number": "15",
+      "slug": "egod",
+      "live_url": "https://more30.com/egod/",
+      "project_in_core": "hkkkynyoigzlttpynoeo",
+      "creds": {
+        "supabase_url": "https://hkkkynyoigzlttpynoeo.supabase.co",
+        "project_served": "hkkkynyoigzlttpynoeo",
+        "matches_core_projects": true,
+        "key": {
+          "format": "jwt",
+          "role": "anon",
+          "ref": "hkkkynyoigzlttpynoeo"
+        },
+        "found_in": "/egod/assets/index-RNBwDqT2.js",
+        "from_shared_widget": false,
+        "pair_distance": 46,
+        "scripts_read": 4
+      },
+      "settings": {
+        "disable_signup": false,
+        "mailer_autoconfirm": false,
+        "external_google": true,
+        "external_email": true
+      },
+      "verdict": "REQUIRES EMAIL CONFIRMATION — reproduces §1א, breaks §8ב"
+    },
+    {
+      "number": "16",
+      "slug": "chatzor",
+      "live_url": "https://more30.com/chatzor/",
+      "project_in_core": "uhnrgujbdxhhmoxcjria",
+      "creds": {
+        "supabase_url": "https://uhnrgujbdxhhmoxcjria.supabase.co",
+        "project_served": "uhnrgujbdxhhmoxcjria",
+        "matches_core_projects": true,
+        "key": {
+          "format": "jwt",
+          "role": "anon",
+          "ref": "uhnrgujbdxhhmoxcjria"
+        },
+        "found_in": "/chatzor/assets/index-YX4TUtOq.js",
+        "from_shared_widget": false,
+        "pair_distance": 46,
+        "scripts_read": 4
+      },
+      "settings": {
+        "disable_signup": false,
+        "mailer_autoconfirm": true,
+        "external_google": true,
+        "external_email": true
+      },
+      "verdict": "autoconfirm on — signup→login roundtrip can pass"
+    },
+    {
+      "number": "17",
+      "slug": "chizukim",
+      "live_url": "https://more30.com/chizukim/",
+      "project_in_core": "csjekrvukbdznetsrodj",
+      "creds": {
+        "supabase_url": "https://csjekrvukbdznetsrodj.supabase.co",
+        "project_served": "csjekrvukbdznetsrodj",
+        "matches_core_projects": true,
+        "key": {
+          "format": "publishable",
+          "role": "anon",
+          "ref": null
+        },
+        "found_in": "/chizukim/assets/index-B3-SjNVo.js",
+        "from_shared_widget": false,
+        "pair_distance": 46,
+        "scripts_read": 4
+      },
+      "settings": {
+        "disable_signup": false,
+        "mailer_autoconfirm": false,
+        "external_google": false,
+        "external_email": true
+      },
+      "verdict": "REQUIRES EMAIL CONFIRMATION — reproduces §1א, breaks §8ב"
+    },
+    {
+      "number": "18",
+      "slug": "orech",
+      "live_url": "https://more30.com/orech/",
+      "project_in_core": "bieebmnmkffwbqlsfozh",
+      "creds": {
+        "supabase_url": "https://uhnrgujbdxhhmoxcjria.supabase.co",
+        "project_served": "uhnrgujbdxhhmoxcjria",
+        "matches_core_projects": false,
+        "key": {
+          "format": "jwt",
+          "role": "anon",
+          "ref": "uhnrgujbdxhhmoxcjria"
+        },
+        "found_in": "/auth-button.js",
+        "from_shared_widget": true,
+        "pair_distance": 72,
+        "scripts_read": 10
+      },
+      "settings": {
+        "disable_signup": false,
+        "mailer_autoconfirm": true,
+        "external_google": true,
+        "external_email": true
+      },
+      "verdict": "autoconfirm on — signup→login roundtrip can pass"
+    },
+    {
+      "number": "21",
+      "slug": "mthbram",
+      "live_url": "https://more30.com/mthbram/",
+      "project_in_core": "aypsqqvfohekxxuqsmrw",
+      "creds": {
+        "supabase_url": "https://aypsqqvfohekxxuqsmrw.supabase.co",
+        "project_served": "aypsqqvfohekxxuqsmrw",
+        "matches_core_projects": true,
+        "key": {
+          "format": "jwt",
+          "role": "anon",
+          "ref": "aypsqqvfohekxxuqsmrw"
+        },
+        "found_in": "/mthbram/assets/index-DheqMcgT.js",
+        "from_shared_widget": false,
+        "pair_distance": 46,
+        "scripts_read": 4
+      },
+      "settings": {
+        "disable_signup": false,
+        "mailer_autoconfirm": false,
+        "external_google": true,
+        "external_email": true
+      },
+      "verdict": "REQUIRES EMAIL CONFIRMATION — reproduces §1א, breaks §8ב"
+    },
+    {
+      "number": "22",
+      "slug": "zchuyot",
+      "live_url": "https://more30.com/zchuyot/",
+      "project_in_core": "trerolyveytzgksawrme",
+      "creds": {
+        "supabase_url": "https://trerolyveytzgksawrme.supabase.co",
+        "project_served": "trerolyveytzgksawrme",
+        "matches_core_projects": true,
+        "key": {
+          "format": "jwt",
+          "role": "anon",
+          "ref": "trerolyveytzgksawrme"
+        },
+        "found_in": "/zchuyot/assets/index-DL2aSDPt.js",
+        "from_shared_widget": false,
+        "pair_distance": 46,
+        "scripts_read": 4
+      },
+      "settings": {
+        "disable_signup": true,
+        "mailer_autoconfirm": true,
+        "external_google": false,
+        "external_email": true
+      },
+      "verdict": "signup-closed — §8ב cannot run here at all"
+    },
+    {
+      "number": "24",
+      "slug": "galil",
+      "live_url": "https://more30.com/galil/",
+      "project_in_core": "mwljkonwdeuaahsigjdp",
+      "creds": {
+        "supabase_url": "https://mwljkonwdeuaahsigjdp.supabase.co",
+        "project_served": "mwljkonwdeuaahsigjdp",
+        "matches_core_projects": true,
+        "key": {
+          "format": "jwt",
+          "role": "anon",
+          "ref": "mwljkonwdeuaahsigjdp"
+        },
+        "found_in": "/galil/assets/index-pSOB0569.js",
+        "from_shared_widget": false,
+        "pair_distance": 46,
+        "scripts_read": 5
+      },
+      "settings": {
+        "disable_signup": false,
+        "mailer_autoconfirm": false,
+        "external_google": false,
+        "external_email": true
+      },
+      "verdict": "REQUIRES EMAIL CONFIRMATION — reproduces §1א, breaks §8ב"
+    },
+    {
+      "number": "26",
+      "slug": "studio",
+      "live_url": "https://more30.com/studio/",
+      "project_in_core": "uhnrgujbdxhhmoxcjria",
+      "creds": {
+        "supabase_url": "https://uhnrgujbdxhhmoxcjria.supabase.co",
+        "project_served": "uhnrgujbdxhhmoxcjria",
+        "matches_core_projects": true,
+        "key": {
+          "format": "jwt",
+          "role": "anon",
+          "ref": "uhnrgujbdxhhmoxcjria"
+        },
+        "found_in": "/auth-button.js",
+        "from_shared_widget": true,
+        "pair_distance": 72,
+        "scripts_read": 4
+      },
+      "settings": {
+        "disable_signup": false,
+        "mailer_autoconfirm": true,
+        "external_google": true,
+        "external_email": true
+      },
+      "verdict": "autoconfirm on — signup→login roundtrip can pass"
+    },
+    {
+      "number": "27",
+      "slug": "mechiron",
+      "live_url": "https://more30.com/mechiron/",
+      "project_in_core": "csjekrvukbdznetsrodj",
+      "creds": {
+        "supabase_url": "https://uhnrgujbdxhhmoxcjria.supabase.co",
+        "project_served": "uhnrgujbdxhhmoxcjria",
+        "matches_core_projects": false,
+        "key": {
+          "format": "jwt",
+          "role": "anon",
+          "ref": "uhnrgujbdxhhmoxcjria"
+        },
+        "found_in": "/auth-button.js",
+        "from_shared_widget": true,
+        "pair_distance": 72,
+        "scripts_read": 4
+      },
+      "settings": {
+        "disable_signup": false,
+        "mailer_autoconfirm": true,
+        "external_google": true,
+        "external_email": true
+      },
+      "verdict": "autoconfirm on — signup→login roundtrip can pass"
+    },
+    {
+      "number": "28",
+      "slug": "kupot",
+      "live_url": "https://more30.com/kupot/",
+      "project_in_core": "uhnrgujbdxhhmoxcjria",
+      "creds": {
+        "supabase_url": "https://uhnrgujbdxhhmoxcjria.supabase.co",
+        "project_served": "uhnrgujbdxhhmoxcjria",
+        "matches_core_projects": true,
+        "key": {
+          "format": "jwt",
+          "role": "anon",
+          "ref": "uhnrgujbdxhhmoxcjria"
+        },
+        "found_in": "/auth-button.js",
+        "from_shared_widget": true,
+        "pair_distance": 72,
+        "scripts_read": 4
+      },
+      "settings": {
+        "disable_signup": false,
+        "mailer_autoconfirm": true,
+        "external_google": true,
+        "external_email": true
+      },
+      "verdict": "autoconfirm on — signup→login roundtrip can pass"
+    },
+    {
+      "number": "30",
+      "slug": "crm",
+      "live_url": "https://more30.com/crm/",
+      "project_in_core": "jhbeelzvjvhnkxldqvxx",
+      "creds": {
+        "supabase_url": "https://jhbeelzvjvhnkxldqvxx.supabase.co",
+        "project_served": "jhbeelzvjvhnkxldqvxx",
+        "matches_core_projects": true,
+        "key": {
+          "format": "jwt",
+          "role": "anon",
+          "ref": "jhbeelzvjvhnkxldqvxx"
+        },
+        "found_in": "/crm/assets/index-4fFBrOet.js",
+        "from_shared_widget": false,
+        "pair_distance": 43,
+        "scripts_read": 4
+      },
+      "settings": {
+        "disable_signup": false,
+        "mailer_autoconfirm": false,
+        "external_google": false,
+        "external_email": true
+      },
+      "verdict": "REQUIRES EMAIL CONFIRMATION — reproduces §1א, breaks §8ב"
+    },
+    {
+      "number": "31",
+      "slug": "gesher",
+      "live_url": "https://more30.com/gesher/",
+      "project_in_core": "ygaqqnuyfnumezxxmtbh",
+      "creds": {
+        "supabase_url": "https://ygaqqnuyfnumezxxmtbh.supabase.co",
+        "project_served": "ygaqqnuyfnumezxxmtbh",
+        "matches_core_projects": true,
+        "key": {
+          "format": "jwt",
+          "role": "anon",
+          "ref": "ygaqqnuyfnumezxxmtbh"
+        },
+        "found_in": "/gesher/assets/index-CJt2krVs.js",
+        "from_shared_widget": false,
+        "pair_distance": 43,
+        "scripts_read": 4
+      },
+      "settings": {
+        "disable_signup": false,
+        "mailer_autoconfirm": false,
+        "external_google": true,
+        "external_email": true
+      },
+      "verdict": "REQUIRES EMAIL CONFIRMATION — reproduces §1א, breaks §8ב"
+    },
+    {
+      "number": "32",
+      "slug": "nadlan",
+      "live_url": "https://more30.com/nadlan/",
+      "project_in_core": "uhnrgujbdxhhmoxcjria",
+      "creds": {
+        "supabase_url": "https://uhnrgujbdxhhmoxcjria.supabase.co",
+        "project_served": "uhnrgujbdxhhmoxcjria",
+        "matches_core_projects": true,
+        "key": {
+          "format": "jwt",
+          "role": "anon",
+          "ref": "uhnrgujbdxhhmoxcjria"
+        },
+        "found_in": "/auth-button.js",
+        "from_shared_widget": true,
+        "pair_distance": 72,
+        "scripts_read": 10
+      },
+      "settings": {
+        "disable_signup": false,
+        "mailer_autoconfirm": true,
+        "external_google": true,
+        "external_email": true
+      },
+      "verdict": "autoconfirm on — signup→login roundtrip can pass"
+    },
+    {
+      "number": "33",
+      "slug": "portal",
+      "live_url": "https://more30.com/",
+      "project_in_core": "uhnrgujbdxhhmoxcjria",
+      "creds": {
+        "supabase_url": "https://uhnrgujbdxhhmoxcjria.supabase.co",
+        "project_served": "uhnrgujbdxhhmoxcjria",
+        "matches_core_projects": true,
+        "key": {
+          "format": "jwt",
+          "role": "anon",
+          "ref": "uhnrgujbdxhhmoxcjria"
+        },
+        "found_in": "/assets/index-C2AHwa-z.js",
+        "from_shared_widget": false,
+        "pair_distance": 229,
+        "scripts_read": 4
+      },
+      "settings": {
+        "disable_signup": false,
+        "mailer_autoconfirm": true,
+        "external_google": true,
+        "external_email": true
+      },
+      "verdict": "autoconfirm on — signup→login roundtrip can pass"
+    },
+    {
+      "number": "34",
+      "slug": "kesef",
+      "live_url": "https://more30.com/kesef/",
+      "project_in_core": "uhnrgujbdxhhmoxcjria",
+      "creds": {
+        "supabase_url": "https://uhnrgujbdxhhmoxcjria.supabase.co",
+        "project_served": "uhnrgujbdxhhmoxcjria",
+        "matches_core_projects": true,
+        "key": {
+          "format": "jwt",
+          "role": "anon",
+          "ref": "uhnrgujbdxhhmoxcjria"
+        },
+        "found_in": "/auth-button.js",
+        "from_shared_widget": true,
+        "pair_distance": 72,
+        "scripts_read": 3
+      },
+      "settings": {
+        "disable_signup": false,
+        "mailer_autoconfirm": true,
+        "external_google": true,
+        "external_email": true
+      },
+      "verdict": "autoconfirm on — signup→login roundtrip can pass"
+    },
+    {
+      "number": "35",
+      "slug": "kiosk",
+      "live_url": "https://more30.com/kiosk/",
+      "project_in_core": null,
+      "creds": {
+        "supabase_url": "https://uhnrgujbdxhhmoxcjria.supabase.co",
+        "project_served": "uhnrgujbdxhhmoxcjria",
+        "matches_core_projects": null,
+        "key": {
+          "format": "jwt",
+          "role": "anon",
+          "ref": "uhnrgujbdxhhmoxcjria"
+        },
+        "found_in": "/auth-button.js",
+        "from_shared_widget": true,
+        "pair_distance": 72,
+        "scripts_read": 3
+      },
+      "settings": {
+        "disable_signup": false,
+        "mailer_autoconfirm": true,
+        "external_google": true,
+        "external_email": true
+      },
+      "verdict": "autoconfirm on — signup→login roundtrip can pass"
+    },
+    {
+      "number": "36",
+      "slug": "tivuch",
+      "live_url": "https://more30.com/tivuch/",
+      "project_in_core": "uhnrgujbdxhhmoxcjria",
+      "creds": {
+        "supabase_url": "https://uhnrgujbdxhhmoxcjria.supabase.co",
+        "project_served": "uhnrgujbdxhhmoxcjria",
+        "matches_core_projects": true,
+        "key": {
+          "format": "jwt",
+          "role": "anon",
+          "ref": "uhnrgujbdxhhmoxcjria"
+        },
+        "found_in": "/auth-button.js",
+        "from_shared_widget": true,
+        "pair_distance": 72,
+        "scripts_read": 3
+      },
+      "settings": {
+        "disable_signup": false,
+        "mailer_autoconfirm": true,
+        "external_google": true,
+        "external_email": true
+      },
+      "verdict": "autoconfirm on — signup→login roundtrip can pass"
+    },
+    {
+      "number": "40",
+      "slug": "gannenet",
+      "live_url": "https://more30.com/gannenet/",
+      "project_in_core": null,
+      "creds": {
+        "supabase_url": "https://uhnrgujbdxhhmoxcjria.supabase.co",
+        "project_served": "uhnrgujbdxhhmoxcjria",
+        "matches_core_projects": null,
+        "key": {
+          "format": "jwt",
+          "role": "anon",
+          "ref": "uhnrgujbdxhhmoxcjria"
+        },
+        "found_in": "/auth-button.js",
+        "from_shared_widget": true,
+        "pair_distance": 72,
+        "scripts_read": 11
+      },
+      "settings": {
+        "disable_signup": false,
+        "mailer_autoconfirm": true,
+        "external_google": true,
+        "external_email": true
+      },
+      "verdict": "autoconfirm on — signup→login roundtrip can pass"
+    }
+  ]
+}

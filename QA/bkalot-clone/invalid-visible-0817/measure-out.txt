@@ -1,0 +1,37 @@
+﻿phone_invalid__light
+  aria : marks_same_field=true same_msg=true reached_server=true
+  before: border=rgb(15, 95, 76) fill=rgb(240, 239, 233) shadow=rgba(15, 95, 76, 0.28) 0px 0px 0px 3px
+  after : border=rgb(155, 28, 28) fill=rgb(251, 234, 234) shadow=rgba(155, 28, 28, 0.28) 0px 0px 0px 3px
+  contrast before={"border_vs_behind":7.6,"border_vs_fill":6.6} after={"border_vs_behind":8.15,"border_vs_fill":7.01} meets3=true overflow_x=false
+situation_required_for_treatment__light
+  aria : marks_same_field=true same_msg=true reached_server=true
+  before: border=rgb(15, 95, 76) fill=rgb(240, 239, 233) shadow=rgba(15, 95, 76, 0.28) 0px 0px 0px 3px
+  after : border=rgb(155, 28, 28) fill=rgb(251, 234, 234) shadow=rgba(155, 28, 28, 0.28) 0px 0px 0px 3px
+  contrast before={"border_vs_behind":7.6,"border_vs_fill":6.6} after={"border_vs_behind":8.15,"border_vs_fill":7.01} meets3=true overflow_x=false
+preflight_topic_no__light
+  aria : marks_same_field=true same_msg=true reached_server=false
+  before: border=rgb(15, 95, 76) fill=rgb(240, 239, 233) shadow=rgba(15, 95, 76, 0.28) 0px 0px 0px 3px
+  after : border=rgb(155, 28, 28) fill=rgb(251, 234, 234) shadow=rgba(155, 28, 28, 0.28) 0px 0px 0px 3px
+  contrast before={"border_vs_behind":7.6,"border_vs_fill":6.6} after={"border_vs_behind":8.15,"border_vs_fill":7.01} meets3=true overflow_x=false
+phone_invalid__dark
+  aria : marks_same_field=true same_msg=true reached_server=true
+  before: border=rgb(75, 191, 159) fill=rgb(28, 38, 34) shadow=rgba(75, 191, 159, 0.32) 0px 0px 0px 3px
+  after : border=rgb(240, 138, 138) fill=rgb(51, 25, 26) shadow=rgba(240, 138, 138, 0.32) 0px 0px 0px 3px
+  contrast before={"border_vs_behind":7.57,"border_vs_fill":6.85} after={"border_vs_behind":7.12,"border_vs_fill":6.73} meets3=true overflow_x=false
+situation_required_for_treatment__dark
+  aria : marks_same_field=true same_msg=true reached_server=true
+  before: border=rgb(75, 191, 159) fill=rgb(28, 38, 34) shadow=rgba(75, 191, 159, 0.32) 0px 0px 0px 3px
+  after : border=rgb(240, 138, 138) fill=rgb(51, 25, 26) shadow=rgba(240, 138, 138, 0.32) 0px 0px 0px 3px
+  contrast before={"border_vs_behind":7.57,"border_vs_fill":6.85} after={"border_vs_behind":7.12,"border_vs_fill":6.73} meets3=true overflow_x=false
+preflight_topic_no__dark
+  aria : marks_same_field=true same_msg=true reached_server=false
+  before: border=rgb(75, 191, 159) fill=rgb(28, 38, 34) shadow=rgba(75, 191, 159, 0.32) 0px 0px 0px 3px
+  after : border=rgb(240, 138, 138) fill=rgb(51, 25, 26) shadow=rgba(240, 138, 138, 0.32) 0px 0px 0px 3px
+  contrast before={"border_vs_behind":7.57,"border_vs_fill":6.85} after={"border_vs_behind":7.12,"border_vs_fill":6.73} meets3=true overflow_x=false
+mobile_390: {"viewport":"390x844","invalid":["topic_no"],"focused":"topic_no","border":"rgb(240, 138, 138)","fill":"rgb(51, 25, 26)","contrast":{"border_vs_behind":7.12,"border_vs_fill":6.73},"overflow_x":false}
+shots: {"before-light-phone":{"bytes":49746,"md5":"D6C63584"},"after-light-phone":{"bytes":49733,"md5":"4BFC8692"},"after-dark-situation":{"bytes":42205,"md5":"09BA0096"},"after-mobile-topic-390":{"bytes":35356,"md5":"CA754634"}} distinct=true
+test_mode: {"responses":11,"any_ok":false,"any_case_id":false,"codes":["phone_invalid","situation_required_for_treatment"],"statuses":[200]}
+console before_light=0
+console before_dark=0
+console after_light=0
+console after_dark=0

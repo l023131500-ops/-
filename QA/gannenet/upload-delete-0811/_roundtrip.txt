@@ -1,0 +1,35 @@
+root  before: ["index.json","overrides.json"]
+uploads before: []
+source: 200 image/jpeg 29278 B
+upload: 200 {"ok":true,"item":{"id":"up_msp0pyli_gyq8","title":"QA מחיקה לצמיתות","category":"כללי","sender":"QA","date":"2026-08-11","mime":"image/jpeg","file":"/api/upload/up_msp0pyli_gyq8.jpg","sizeKB":29,"kind":"image","source":"upload"}}
+catalog after upload: 1 item(s), ids=["up_msp0pyli_gyq8"]
+file serves: 200 image/jpeg 28781 B
+root  with upload: ["index.json","overrides.json","up_msp0pyli_gyq8.jpg"]
+DELETE up_msp0pyli_gyq8: 200 {"ok":true,"removed":["up_msp0pyli_gyq8.jpg","uploads/up_msp0pyli_gyq8.json"]}
+catalog after delete: 0 item(s), ids=[]
+file after delete: 200
+DELETE again (idempotent?): 404 {"error":"החומר כבר אינו קיים באחסון."}
+DELETE leftover up_msp02sp4_cr56: 404 {"error":"החומר כבר אינו קיים באחסון."}
+DELETE leftover up_msp01lno_a1kw: 404 {"error":"החומר כבר אינו קיים באחסון."}
+DELETE leftover up_msoxh0q3_hx4s: 404 {"error":"החומר כבר אינו קיים באחסון."}
+root  after: ["index.json","overrides.json"]
+uploads after: []
+catalog final: 0 item(s)
+
+--- notes on two lines above ---
+
+"file after delete: 200" is measured milliseconds after the object is dropped,
+and it is Storage's own CDN, not our route: re-read a minute later the same URL
+answers 502 through /api/upload (upstream gone) while a direct hit on
+supabase.co was still 200 from the edge. That short window is what the route's
+`s-maxage=300` now bounds; before this step it was `s-maxage=86400`.
+
+The three "DELETE leftover … 404" lines are 404 because the FIRST run of this
+harness had already removed them, through this same route:
+  DELETE leftover up_msp02sp4_cr56: 200 {"ok":true,"removed":["up_msp02sp4_cr56.jpg","uploads/up_msp02sp4_cr56.json"]}
+  DELETE leftover up_msp01lno_a1kw: 200 {"ok":true,"removed":["up_msp01lno_a1kw.pdf","uploads/up_msp01lno_a1kw.json"]}
+  DELETE leftover up_msoxh0q3_hx4s: 200 {"ok":true,"removed":["up_msoxh0q3_hx4s.png"]}
+The last of those is the upload-race orphan — a blob with no entry at all, the
+case only the by-object-name lookup reaches. In that first run the retry answered
+502 instead of 404 and `file after delete` came back 200 with the full body;
+both were real defects and both are fixed (see README.md).

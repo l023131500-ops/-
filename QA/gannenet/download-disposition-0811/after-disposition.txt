@@ -1,0 +1,5 @@
+﻿http://localhost:3042/gannenet/api/shelf/1lfiQT79XaO-05RO7Qj8sVeXaoEbnLI6f.pdf -> ERR השרת המרוחק החזיר שגיאה: (502) שער שגוי.
+http://localhost:3042/gannenet/api/shelf/1lfiQT79XaO-05RO7Qj8sVeXaoEbnLI6f.pdf?dl=1 -> ERR השרת המרוחק החזיר שגיאה: (502) שער שגוי.
+drive sample id=1xBLOKC5Yje5p6E9xl-YOGNYw57g2Ro1Y file=/api/drive/1xBLOKC5Yje5p6E9xl-YOGNYw57g2Ro1Y
+  drive page href: /gannenet/api/drive/1xBLOKC5Yje5p6E9xl-YOGNYw57g2Ro1Y?dl=1
+  drive page href: /gannenet/api/drive/1xBLOKC5Yje5p6E9xl-YOGNYw57g2Ro1Y

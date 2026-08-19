@@ -1,0 +1,70 @@
+galil (24): the one password field could not be read back, and three fixes from 10/08 had never left the shelf
+
+Priority §1א asks for a "הצג סיסמה" control on every password field. The
+previous step left it open on nine systems. galil takes it because a grep of
+all of them showed 21 and 24 each have exactly one type="password" input in
+source, and of those two only 24 is public_visible -- so one field closes a
+system the user can actually reach. It is mounted on both login tabs
+(כניסת גבאי and כניסת מנהל render the same field), so one edit covers both.
+
+The side is derived, not copied, and it is the opposite of the last two
+systems for a reason. Measured on the live page before writing anything: the
+page is RTL but the field carries dir="ltr" -- computed direction ltr,
+text-align start -- so characters begin at the LEFT edge, which is where the
+toggle would normally be wrong. But the right edge is already taken by the
+Lock icon at right-3 with pr-10 reserving 40px. So the eye takes the left and
+pl-10 moves the first character clear of it: padding goes 12px -> 40px on the
+left only. Measured again after deploy: button rect (298,456,32x32) contained
+in field rect (294,452,432x40), and elementFromPoint at its centre returns the
+svg the button owns. The Lock has not moved (x=698).
+
+type="button" is explicit and was verified rather than assumed. The field
+carries onKeyDown Enter -> handleLogin, so a stray activation would fire a real
+login attempt. After two toggles a wrapped window.fetch counted 0 calls and
+location.href was unchanged -- nothing reached Supabase. Round trip both ways:
+password->text->password, false->true->false, "הצג סיסמה"->"הסתר סיסמה",
+lucide-eye->eye-off->eye, value More30Test2026 preserved. showPassword is also
+reset alongside the two existing setPassword('') calls on logout, so a revealed
+field does not come back revealed.
+
+Two password strings on this system deliberately get no eye: the admin's
+"set gabai password" input in SynagogueDetailsManager and the password_hash
+readout in AdminPasswordManager are both already plain text.
+
+The deploy carried more than the toggle, and that is the point of the second
+half of this commit. The staged build in _deploy was baked 10/08 03:35 and
+three galil commits landed after it, all blocked on the Vercel quota (#83) and
+never live: 757260f (one nav glyph led to three destinations), e4a55b1
+(og:image was a screenshot on a bucket we do not own), ac733c8 (the tab showed
+the builder's icon). This is the "other _deploy copies are behind their source"
+line the chatzor step opened, confirmed on a second system. Verified live now:
+og:image is https://more30.com/galil/pwa-512.png on our own domain, and the two
+<link rel="icon"> tags are in the served HTML. ac733c8 also deleted
+public/favicon.ico, but the staged copy still carried the 20,373-byte builder
+icon from 22/07, so it was removed from staging too -- /galil/favicon.ico now
+returns index.html through the rewrite and the declared icon wins.
+
+Deploy safety, the standing trap: compared live against the staged copy BEFORE
+overwriting -- identical script/link tag sets, the only live-only lines being
+NetFree's two injected scripts, zero live-only content. auth-button.js is
+present in the fresh index.html. Old hashes index-CN7M8vyl.js /
+index-amMzjW3O.css dropped, new index-DE3Q6Zkw.js / index-MzAykEnS.css answer
+200 on the domain. Verified on more30.com with cache-busters, not the
+vercel.app alias.
+
+Two traps hit and worth recording. `tsc --noEmit -p tsconfig.json` exits 0
+here while checking ZERO files -- the root tsconfig has "files": [] -- so it
+was re-run against tsconfig.app.json with --listFiles to confirm
+GabaiPortal.tsx is actually in the file list. And the domain had 2 live
+service worker registrations serving the old bundle; they were unregistered
+and all caches cleared before verifying, after which the page loaded
+index-DE3Q6Zkw.js.
+
+apps/ is gitignored (root .gitignore /apps/**) so the edited page needed
+git add -f. _deploy is gitignored too and stays out, as in every prior step.
+
+Not verified: no login was completed against the real gabai_accounts table,
+and 757260f's nav fix was not re-measured at the breakpoints it targets.
+
+Evidence: QA/galil/password-toggle-0812/ (_results.json,
+galil-password-hidden.png, galil-password-revealed.png).

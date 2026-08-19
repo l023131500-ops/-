@@ -1,0 +1,155 @@
+{
+  "phase": "before",
+  "source": {
+    "bytes": 131108,
+    "markers": {
+      "decider_required": 1,
+      "הסשן לא מסר מי מכריע": 1,
+      "לא נרשמה שורת יומן": 2,
+      "צאו והתחברו מחדש ונסו שוב": 1,
+      "0092 הכרעות": 1,
+      "מספר שלם בטוח": 1,
+      "שערי הקלט": 1,
+      "invalid_session": 3,
+      "token_required": 2,
+      "0076": 4,
+      "הסשן פג": 2,
+      "note_too_long": 5,
+      "why-input": 2,
+      "syncNoteCount": 4,
+      "td.why": 1,
+      "רצף ההכרעות": 4,
+      "handsBit": 2,
+      "producedBit": 2,
+      "fillQueueCell": 2,
+      "fillTemplateCell": 4,
+      "fillCreatedCell": 4,
+      "מי הכריע": 13,
+      "fillHistoryNoteCell": 2
+    }
+  },
+  "live": {
+    "https://more30.com/bkalot-studio/admin": {
+      "status": 200,
+      "bytes": 129712,
+      "replacement_chars": 0,
+      "double_encoded": 0,
+      "markers": {
+        "decider_required": 0,
+        "הסשן לא מסר מי מכריע": 0,
+        "לא נרשמה שורת יומן": 0,
+        "צאו והתחברו מחדש ונסו שוב": 0,
+        "0092 הכרעות": 0,
+        "מספר שלם בטוח": 0,
+        "שערי הקלט": 0,
+        "invalid_session": 2,
+        "token_required": 1,
+        "0076": 3,
+        "הסשן פג": 1,
+        "note_too_long": 5,
+        "why-input": 2,
+        "syncNoteCount": 4,
+        "td.why": 1,
+        "רצף ההכרעות": 4,
+        "handsBit": 2,
+        "producedBit": 2,
+        "fillQueueCell": 2,
+        "fillTemplateCell": 4,
+        "fillCreatedCell": 4,
+        "מי הכריע": 13,
+        "fillHistoryNoteCell": 2
+      },
+      "new_zero_in_live": true,
+      "new_equals_source": false,
+      "diff_below_source": true,
+      "diff_equals_source": false,
+      "diff_values": {
+        "invalid_session": "2 → 3",
+        "token_required": "1 → 2",
+        "0076": "3 → 4",
+        "הסשן פג": "1 → 2"
+      },
+      "old_unchanged": true,
+      "old_values": {
+        "note_too_long": "5 = 5",
+        "why-input": "2 = 2",
+        "syncNoteCount": "4 = 4",
+        "td.why": "1 = 1",
+        "רצף ההכרעות": "4 = 4",
+        "handsBit": "2 = 2",
+        "producedBit": "2 = 2",
+        "fillQueueCell": "2 = 2",
+        "fillTemplateCell": "4 = 4",
+        "fillCreatedCell": "4 = 4",
+        "מי הכריע": "13 = 13",
+        "fillHistoryNoteCell": "2 = 2"
+      }
+    },
+    "https://more30.com/bkalot-studio/admin/": {
+      "status": 200,
+      "bytes": 129712,
+      "replacement_chars": 0,
+      "double_encoded": 0,
+      "markers": {
+        "decider_required": 0,
+        "הסשן לא מסר מי מכריע": 0,
+        "לא נרשמה שורת יומן": 0,
+        "צאו והתחברו מחדש ונסו שוב": 0,
+        "0092 הכרעות": 0,
+        "מספר שלם בטוח": 0,
+        "שערי הקלט": 0,
+        "invalid_session": 2,
+        "token_required": 1,
+        "0076": 3,
+        "הסשן פג": 1,
+        "note_too_long": 5,
+        "why-input": 2,
+        "syncNoteCount": 4,
+        "td.why": 1,
+        "רצף ההכרעות": 4,
+        "handsBit": 2,
+        "producedBit": 2,
+        "fillQueueCell": 2,
+        "fillTemplateCell": 4,
+        "fillCreatedCell": 4,
+        "מי הכריע": 13,
+        "fillHistoryNoteCell": 2
+      },
+      "new_zero_in_live": true,
+      "new_equals_source": false,
+      "diff_below_source": true,
+      "diff_equals_source": false,
+      "diff_values": {
+        "invalid_session": "2 → 3",
+        "token_required": "1 → 2",
+        "0076": "3 → 4",
+        "הסשן פג": "1 → 2"
+      },
+      "old_unchanged": true,
+      "old_values": {
+        "note_too_long": "5 = 5",
+        "why-input": "2 = 2",
+        "syncNoteCount": "4 = 4",
+        "td.why": "1 = 1",
+        "רצף ההכרעות": "4 = 4",
+        "handsBit": "2 = 2",
+        "producedBit": "2 = 2",
+        "fillQueueCell": "2 = 2",
+        "fillTemplateCell": "4 = 4",
+        "fillCreatedCell": "4 = 4",
+        "מי הכריע": "13 = 13",
+        "fillHistoryNoteCell": "2 = 2"
+      }
+    }
+  },
+  "control": {
+    "https://more30.com/bkalot-studio/": {
+      "status": 200,
+      "bytes": 32558
+    },
+    "https://more30.com/": {
+      "status": 200,
+      "bytes": 3517
+    }
+  }
+}

@@ -1,0 +1,42 @@
+node scripts/qa/authbutton-overlap.mjs home
+against https://more30.com/ (portal root, system 33)
+
+home          clear @ 390,834,1100,1280,1440
+
+1/1 routes clear at 390/834/1100/1280/1440
+
+---
+
+Context: SYSTEMS_STATUS.md "חפיפת כפתור הכניסה" table, row
+`/ (33) | "ספרו לנו רעיון" | ⏳ תוקן פעמיים — ראה למטה` — the narrative
+directly below the table (line ~3413-3417) says both parts of the fix
+"תוקנו וממתינים לפריסה" (fixed, awaiting deployment):
+  1. the 720px media query wrote `padding-inline` on both sides of
+     `.nav-in`, erasing the auth-button clearance right at the width
+     where it's most needed.
+  2. below `--wrap`, the margin term went negative and its subtraction
+     *added* padding (124px -> 519px) instead of removing it.
+
+Confirmed both fixes are already live in production CSS
+(https://more30.com/assets/index-B35ByRD-.css, pulled 17/08):
+
+  .nav-in{...padding-inline-end:max(32px,calc(var(--more30-auth-inset, 124px)
+    - max(0px,(100vw - var(--wrap)) / 2)))}
+
+  @media (max-width: 720px){.wrap,.nav-in,.hero{padding-inline:20px}
+    .nav-in{padding-inline-end:max(20px,var(--more30-auth-inset, 124px))}...}
+
+Both match portal/src/styles.css lines 91-112 and 379-383 exactly (source
+and production identical). The `max(0px, ...)` term already clamps the
+negative-margin case described in fix (2), so there is no live gap.
+
+Then ran the actual geometric overlap probe (authbutton-overlap.mjs,
+Playwright + elementFromPoint, same tool used to find the original gap)
+against the live root at all five measured widths (390/834/1100/1280/1440):
+zero overlaps at every width. This is a real production measurement, not
+a source-code read.
+
+Conclusion: the row is stale, same pattern as every other recheck done
+today (17/08) in this table and in the accessibility/dark-mode tables —
+already fixed and deployed, table just wasn't updated after the deploy.
+No code change, no deploy — measurement only.

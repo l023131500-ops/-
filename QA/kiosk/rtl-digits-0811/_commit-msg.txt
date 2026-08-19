@@ -1,0 +1,62 @@
+kiosk (35): the two installer pages had never been read for painted order
+
+STATUS.md item 7 ended on a class rather than a defect: a correct string in an
+RTL paragraph is not a correct line, computed-value harnesses are structurally
+blind to it, and `install.html` / `kiosk-launcher.html` had never been read this
+way. Three times the same bug has shipped — `06:00-04:00` in `setupsteps.js`,
+`4:40:00 ,11.8.2026` on the device card, the `(hafel).` bracket pair before them
+— and a screenshot caught each one and nothing else did.
+
+A screenshot only catches it if a person looks at the right line, so this is a
+probe rather than a spot check. It walks every visible text node on both pages
+and grades the painted order of every adjacent token pair, read from a `Range`
+over the live node, in two groups:
+
+- Hebrew between the tokens: they are separate bidi runs at the base level, so
+  in an RTL element the later one is painted further left.
+- neutrals only (`.` `:` `/` `,` `-`): on these pages that is always one logical
+  left-to-right value — a time, a date, a host, a `host:port`, a path — so the
+  painted order must increase.
+
+Both pages are clean. 179/179, 172 real token pairs across eight views
+(light/dark x 390px/1200px x four screens), none out of order. The Hebrew-between
+group matched nothing at all: every multi-token line on both pages is an address
+or a filename.
+
+The line most likely to be wrong was the venue row's `.choice small`, the one
+address rendered without `dir="ltr"` on the claim that a host has no neutral to
+reorder around. Fed a host **with a port** — two digit runs around a colon,
+inside an RTL element — it paints in order. The colon is a CS between two EN, so
+W4 folds it into the number run before the paragraph direction can reach it. The
+comment is right, for a reason it does not give.
+
+Two corrections the run forced, both of them method the next harness would
+otherwise pay for again:
+
+- `getBoundingClientRect()` is the wrong read. Both pages set
+  `word-break: break-all` on the boxes holding a URL, so a token is routinely
+  split across a line break, and the bounding box of a two-line range starts at
+  the left edge of the *second* line. The first version reported the server URL
+  as painted 132px backwards because of it. It now compares a token's last
+  `getClientRects()` entry to the next token's first and skips pairs that landed
+  on different lines.
+- `unicode-bidi: bidi-override` cannot build a negative control here: it
+  overrides to the element's own `direction`, which is `rtl`, so it paints the
+  control pair exactly as the correct case does and discriminates nothing.
+  U+202D in the text is what works — the element still computes `rtl` and the
+  pair paints left-to-right.
+
+Three controls on all eight views, because every row passing is otherwise
+indistinguishable from a probe that matched nothing — and the Hebrew-between
+group matched nothing on real content, so without them it would be an assertion
+that never ran. The device-card defect rebuilt in this page's RTL card is
+flagged at dx=-90.7; the positive Hebrew-between case is emitted and graded
+correct; the same string behind U+202D goes red.
+
+Left open, and recorded in STATUS.md: a `Range` cannot reach an `<input>`'s
+value, and `console.html` has never been swept this way — it is the page with
+the most numbers interpolated into Hebrew sentences, so it is the only place the
+Hebrew-between group is likely to have real matches.
+
+No app change: this step measured and found nothing to fix. Verified in
+QA/kiosk/rtl-digits-0811/ (verify.mjs, _results.md, _table.md, six screenshots).

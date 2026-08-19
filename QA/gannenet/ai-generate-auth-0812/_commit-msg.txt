@@ -1,0 +1,55 @@
+40 gannenet: the worksheet generator spent our Anthropic key for anyone who knew the URL (#185)
+
+The previous beat closed #184 and left the shelf's write path fully gated: POST
+/api/catalog asks /auth/v1/user who the caller is before it reads a byte. The
+generator is the system's other write path — not to storage but to the wallet —
+and nothing had ever asked the same question of it.
+
+Measured against production before touching anything. An empty body came back
+400 "חסר נושא" in 1.7s, which already says the body was parsed and validated
+before any authorization question, because there was none in the code. Then one
+real request with a topic, no Authorization header, no cookie, nothing:
+
+  POST /gannenet/api/ai-generate  → 200, 3228 bytes, 44770ms
+
+A full vowelised worksheet, written by claude-opus-5 at max_tokens 16000 on our
+ANTHROPIC_API_KEY, for a caller with no account and no name. No rate limit
+anywhere on the path. This is the same shape as #165 on 21 and the same shape
+#182 had here, one route over.
+
+The fix is the gate that already exists. callerFromRequest() runs first, before
+req.json(), for the same reason it runs before formData() in /api/catalog: a
+request from nobody should not cost us the bytes, let alone the upstream call.
+The generator page now sends the shared session like /shelf/upload does, shows
+the same sign-in card when there is none, and falls back to that card on a 401 —
+a session that expires between page load and click looks exactly like never
+having signed in.
+
+Verified against production after the deploy (QA/gannenet/ai-generate-auth-0812/,
+re-runnable, no secret in the repo — url and anon key from .env.local, the §1ב
+test user's password from GN_TEST_PASSWORD or the documented default):
+
+  anonymous   401  1155ms
+  signed-in   200 46522ms   "מכירים את האות א׳ — מסע חיפוש שמח"
+  junk-token  401  1013ms
+
+1.1s against 44.7s: the refusal returns before Anthropic is touched, not after.
+The junk-token leg is what separates "has a header" from "has an account" — the
+token is checked against /auth/v1/user, so an expired one and one minted by
+another project both land here. The signed-in leg matters just as much as the
+anonymous one: the gate did not close on the teacher it was built for.
+
+Screens: generator-signed-out.png (card, two buttons carrying `from`, primary
+button disabled and saying "יש להתחבר כדי ליצור") and generator-signed-in.png
+(card gone, form as before).
+
+Still open: a signed-in user can still click without limit — no per-account
+counter, no daily ceiling. A more30 account is free and instant (§8ב), so this
+raises the price of abuse from zero to "needs an account" rather than removing
+it. A rate limit is its own step.
+
+tsc --noEmit exit 0; next build exit 0 with 180 lesson pages.
+
+Test mode: no user created, no message sent, no charge. Protected systems (08,
+09, bkalut-app, bkalot-admin, zr_*, NEDARIM3873) untouched; csj/csj_src/igud
+unused.

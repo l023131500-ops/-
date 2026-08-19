@@ -1,0 +1,25 @@
+gannenet (40): twelve lessons carried their whole meta line where the month goes
+
+/library builds its month filter from the mashlima `month` field as it stands,
+and on 12 of the 47 lessons that field holds the entire meta line
+("אלול  |  גיל 3–6  |  משך: כ־45 דק׳  |  תחום: חברה והתנהגות") rather than the
+month. The dropdown therefore offered 19 options where eleven months exist,
+twelve of them long strings clipped inside the select; twelve cards printed
+that line as their month chip; and picking אלול returned 4 of the 6 Elul
+lessons -- the other two reachable only through the garbage entry each had
+become. Every lesson was reachable through some option (the counts summed to
+52); none through the name of its month.
+
+One monthOf() now serves both audiences -- cut at the first | or ·, drop a
+leading חודש -- covering the two shapes the data has: a mashlima `month` field,
+and the meta line that is the only month a regular lesson carries
+("חודש תשרי · יום א׳ מתוך 5  |  …"). That path had its own
+meta.split("·")[0].replace("חודש",""), correct against today's five rows and
+breakable the same way by one meta line written with | instead. allMonths()
+reads through it too.
+
+No content file was touched: the data stands, only the reading of it changed.
+Measured in the browser both ways -- 19 -> 11 options in year order, 12 -> 0
+over-long chips, אלול 4 -> 6, and the eleven month counts still sum to 52, so
+nothing was dropped or double-counted. tsc --noEmit 0, 0 console errors.
+Evidence in QA/gannenet/library-month-0811/.

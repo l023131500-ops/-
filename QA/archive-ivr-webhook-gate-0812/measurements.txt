@@ -1,0 +1,76 @@
+lux-manage (archived) — Supabase project zwxwteebcoejrjdufzsv
+Continuation of the #170 sweep: the remaining archived edge functions.
+All requests below were sent with NO apikey, NO Authorization and no other
+header unless stated. Base: https://zwxwteebcoejrjdufzsv.supabase.co/functions/v1/
+
+Functions present on this project (OPTIONS probe):
+  admin-set-password   200
+  admin-create-user    200
+  admin-delete-user    404  (not deployed)
+  admin-list-users     404  (not deployed)
+  leads-api            200  (gated in the previous step, #170)
+  ivr-api              200
+  inbound-webhook      200
+
+────────────────────────── BEFORE (2026-08-12, ~17:0x UTC) ──────────────────────────
+GET  /ivr-api?action=menu
+     -> 200, 1669 bytes, full IVR menu tree
+
+GET  /ivr-api?action=get_summary&user_id=00000000-0000-4000-8000-000000000001
+     -> 200, 345 bytes
+     {"summary":{"total_fixed_income":0,"total_fixed_expenses":0,
+      "total_one_time_expenses":0,"monthly_balance":0,"net_balance":0},
+      "pending_tasks":0,"tts_text":"..."}
+     The uuid is invented, so the totals are zeros — the point is that the
+     service_role query RAN for an anonymous caller. With a real user_id the
+     same call returns that person's finances.
+
+POST /ivr-api?action=login   {"id_number":"000000000","pin":"000000"}
+     -> 401 {"error":"פרטי ההזדהות שגויים"}
+     i.e. the profiles table was queried unauthenticated. This is a PIN oracle:
+     6 digits, no rate limit, and a hit returns the user_id that unlocks every
+     other action.
+
+POST /inbound-webhook   {}
+     -> 400 {"error":"Missing user_id or type"}
+     i.e. reached the insert branch; a body naming a real user_id would have
+     written transactions / chat_messages on the service role.
+
+No response body containing a real person's data was ever requested or stored:
+every probe used an invented uuid or deliberately wrong credentials.
+
+────────────────────────── AFTER (Lovable commit 1efe66d8) ──────────────────────────
+GET  /ivr-api?action=get_summary&user_id=<invented uuid>
+     -> 403 {"error":"ivr-api disabled: IVR_API_KEY is not configured"}
+GET  /ivr-api?action=get_profile&user_id=<invented uuid>
+     -> 403 (same)
+POST /ivr-api?action=login  (wrong credentials)
+     -> 403 (same)  — the PIN oracle no longer reaches profiles
+POST /ivr-api?action=update_profile  {"user_id":...,"field":"name","value":"x"}
+     -> 403 (same)  — the write path stops before req.json()
+GET  /ivr-api?action=menu&key=wrong
+     -> 403 (same)  — 403 precedes the 401 branch while the var is unset
+
+POST /inbound-webhook  {"type":"STRUCTURED_DATA","user_id":...,"amount":1}
+     -> 403 {"error":"inbound-webhook disabled: INBOUND_WEBHOOK_SECRET is not configured"}
+POST /inbound-webhook  with x-webhook-secret: wrong
+     -> 403 (same)
+
+No regression on the public contact form:
+POST /leads-api  {}
+     -> 400 {"error":"At least one of name, email, or phone is required"}
+
+Preflight:
+OPTIONS /ivr-api          -> 200, allow-headers: authorization, x-api-key, x-client-info, apikey, content-type
+OPTIONS /inbound-webhook  -> 200, allow-headers: authorization, x-webhook-secret, x-api-key, x-client-info, apikey, content-type
+
+────────────────────────── ALREADY SAFE (measured, not changed) ──────────────────────────
+POST /admin-set-password  {}  (no Authorization) -> 401 {"error":"Missing authorization"}
+POST /admin-create-user   {}  (no Authorization) -> 401 {"error":"Missing authorization"}
+Both read the caller's JWT with the anon key and then check has_role; a null
+result from the rpc is falsy, so they fail closed. No change needed.
+
+────────────────────────── REST STATE ──────────────────────────
+IVR_API_KEY and INBOUND_WEBHOOK_SECRET were deliberately NOT set. This app is
+archived and has no deployed site, so both endpoints stay off until an owner
+turns them on. Setting either variable is what re-enables that endpoint.

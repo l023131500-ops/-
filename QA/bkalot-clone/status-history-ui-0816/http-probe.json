@@ -1,0 +1,111 @@
+{
+  "source": {
+    "bytes": 112911,
+    "markers": {
+      "רצף ההכרעות": 4,
+      "fillHistoryWhoCell": 2,
+      "status_history": 2,
+      "מפתח שורה ולא מונה": 1,
+      "אין השלמה למפרע": 1,
+      "השרת אינו מחזיר את יומן ההכרעות": 1,
+      "Object.hasOwn": 6,
+      "מעברים": 3,
+      "מי הכריע": 8,
+      "fillProducedCell": 7,
+      "fillDecidedLine": 6,
+      "החשבון אינו קיים עוד": 6,
+      "fillQueueCell": 2,
+      "fillTemplateCell": 4,
+      "תווי טקסט": 4,
+      "fillCreatedCell": 4
+    }
+  },
+  "live": {
+    "https://more30.com/bkalot-studio/admin": {
+      "status": 200,
+      "bytes": 105364,
+      "replacement_chars": 0,
+      "double_encoded": 0,
+      "markers": {
+        "רצף ההכרעות": 0,
+        "fillHistoryWhoCell": 0,
+        "status_history": 0,
+        "מפתח שורה ולא מונה": 0,
+        "אין השלמה למפרע": 0,
+        "השרת אינו מחזיר את יומן ההכרעות": 0,
+        "Object.hasOwn": 4,
+        "מעברים": 0,
+        "מי הכריע": 6,
+        "fillProducedCell": 6,
+        "fillDecidedLine": 5,
+        "החשבון אינו קיים עוד": 5,
+        "fillQueueCell": 2,
+        "fillTemplateCell": 4,
+        "תווי טקסט": 4,
+        "fillCreatedCell": 4
+      }
+    },
+    "https://more30.com/bkalot-studio/admin/": {
+      "status": 200,
+      "bytes": 105364,
+      "replacement_chars": 0,
+      "double_encoded": 0,
+      "markers": {
+        "רצף ההכרעות": 0,
+        "fillHistoryWhoCell": 0,
+        "status_history": 0,
+        "מפתח שורה ולא מונה": 0,
+        "אין השלמה למפרע": 0,
+        "השרת אינו מחזיר את יומן ההכרעות": 0,
+        "Object.hasOwn": 4,
+        "מעברים": 0,
+        "מי הכריע": 6,
+        "fillProducedCell": 6,
+        "fillDecidedLine": 5,
+        "החשבון אינו קיים עוד": 5,
+        "fillQueueCell": 2,
+        "fillTemplateCell": 4,
+        "תווי טקסט": 4,
+        "fillCreatedCell": 4
+      }
+    }
+  },
+  "verdict": {
+    "https://more30.com/bkalot-studio/admin": {
+      "new_zero_in_live": true,
+      "diff_moved": {
+        "Object.hasOwn": "4 → 6",
+        "מעברים": "0 → 3",
+        "מי הכריע": "6 → 8",
+        "fillProducedCell": "6 → 7",
+        "fillDecidedLine": "5 → 6",
+        "החשבון אינו קיים עוד": "5 → 6"
+      },
+      "old_unchanged": true,
+      "old_values": {
+        "fillQueueCell": "2 = 2",
+        "fillTemplateCell": "4 = 4",
+        "תווי טקסט": "4 = 4",
+        "fillCreatedCell": "4 = 4"
+      }
+    },
+    "https://more30.com/bkalot-studio/admin/": {
+      "new_zero_in_live": true,
+      "diff_moved": {
+        "Object.hasOwn": "4 → 6",
+        "מעברים": "0 → 3",
+        "מי הכריע": "6 → 8",
+        "fillProducedCell": "6 → 7",
+        "fillDecidedLine": "5 → 6",
+        "החשבון אינו קיים עוד": "5 → 6"
+      },
+      "old_unchanged": true,
+      "old_values": {
+        "fillQueueCell": "2 = 2",
+        "fillTemplateCell": "4 = 4",
+        "תווי טקסט": "4 = 4",
+        "fillCreatedCell": "4 = 4"
+      }
+    }
+  }
+}

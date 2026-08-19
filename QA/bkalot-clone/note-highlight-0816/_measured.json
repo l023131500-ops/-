@@ -1,0 +1,68 @@
+{
+  "task": "note-highlight-0816",
+  "claim": "מסך הפנייה מדגיש את המילה שהתאימה בתוך הנימוק, מהמיקום שהמסד מדד ב-0100",
+  "servers": {
+    "8138": { "serves": "HEAD (de00ed6) apps/37-bkalot-clone", "admin_html_bytes": 176004, "admin_html_md5": "282DF8EC645C621FE8DC3B311E71B625" },
+    "8137": { "serves": "working tree", "admin_html_bytes": 181758, "admin_html_md5": "6C7B27B3C9AFA8A532F58CA85DF0C7CC" }
+  },
+  "seed": {
+    "case_id": 406, "contact_id": 413, "kind": "info", "source": "form", "queued": false, "rights_linked": 0,
+    "log": [
+      { "id": 132, "to": "in_progress", "note": "המסמכים שצורפו שייכים לשנת המס הקודמת", "chars": 37 },
+      { "id": 133, "to": "rejected", "note": "Email נשלח לפונה, ואחריו EMAIL נוסף בטעות", "chars": 41 },
+      { "id": 134, "to": "closed", "note": "הטופס נשלח בדואר רשום על ידי הפונה", "chars": 34 }
+    ],
+    "note": "שתי קריאות set_status ראשונות נדחו על שמות סטטוס שאינם קיימים (in_review/approved) והשלישית נכנסה; הפנייה ההיא (405) ואיש הקשר (412) נמחקו והזריעה נעשתה מחדש על 406 בסטטוסים החוקיים",
+    "settable_statuses": ["in_progress", "closed", "rejected"]
+  },
+  "server_side_before_ui": {
+    "המס הקודמת": [{ "id": 132, "matched": true, "pos": 28, "len": 10, "substr": "המס הקודמת" }, { "id": 133, "matched": false, "pos": null }, { "id": 134, "matched": false, "pos": null }],
+    "email": [{ "id": 132, "matched": false, "pos": null }, { "id": 133, "matched": true, "pos": 1, "len": 5, "substr": "Email" }, { "id": 134, "matched": false, "pos": null }],
+    "בדואר רשום": [{ "id": 132, "matched": false, "pos": null }, { "id": 133, "matched": false, "pos": null }, { "id": 134, "matched": true, "pos": 12, "len": 10, "substr": "בדואר רשום" }]
+  },
+  "before_head_8138": {
+    "marks_total_over_9_cells": 0,
+    "המס הקודמת": [{ "childNodes": 3, "html_head": "המסמכים שצורפו שייכים לשנת המס הקודמת<br><span class=\"stale\">זה הנימוק שהתאים</span>", "mark": null }, { "childNodes": 1, "mark": null }, { "childNodes": 1, "mark": null }],
+    "email": [{ "childNodes": 1, "mark": null }, { "childNodes": 3, "mark": null }, { "childNodes": 1, "mark": null }],
+    "בדואר רשום": [{ "childNodes": 1, "mark": null }, { "childNodes": 1, "mark": null }, { "childNodes": 3, "mark": null }],
+    "reading": "הנימוק מצויר כמחרוזת אחת. הסימן «זה הנימוק שהתאים» אומר איזו שורה, ואף לא תו אחד אומר היכן בתוכה"
+  },
+  "after_work_8137": {
+    "המס הקודמת": [
+      { "mark": "המס הקודמת", "markCls": "hit", "nodes": ["T:המסמכים שצורפו שייכים לשנת ", "MARK", "T:", "BR", "SPAN"], "td_title": "37 תווים, כפי שנשמרו" },
+      { "mark": null, "nodes": ["T:Email נשלח לפונה, ואחריו EMAIL נוסף בטעות"], "td_title": "41 תווים, כפי שנשמרו" },
+      { "mark": null, "nodes": ["T:הטופס נשלח בדואר רשום על ידי הפונה"], "td_title": "34 תווים, כפי שנשמרו" }
+    ],
+    "email": [
+      { "mark": null, "nodes": ["T:המסמכים שצורפו שייכים לשנת המס הקודמת"] },
+      { "mark": "Email", "markCls": "hit", "nodes": ["T:", "MARK", "T: נשלח לפונה, ואחריו EMAIL נוסף בטעות"], "td_title": "41 תווים, כפי שנשמרו" },
+      { "mark": null, "nodes": ["T:הטופס נשלח בדואר רשום על ידי הפונה"] }
+    ],
+    "בדואר רשום": [
+      { "mark": null, "nodes": ["T:המסמכים שצורפו שייכים לשנת המס הקודמת"] },
+      { "mark": null, "nodes": ["T:Email נשלח לפונה, ואחריו EMAIL נוסף בטעות"] },
+      { "mark": "בדואר רשום", "markCls": "hit", "nodes": ["T:הטופס נשלח ", "MARK", "T: על ידי הפונה"], "td_title": "34 תווים, כפי שנשמרו" }
+    ],
+    "controls": {
+      "no_term": { "marks": 0, "rows": 3, "td_titles": ["37 תווים, כפי שנשמרו", "41 תווים, כפי שנשמרו", "34 תווים, כפי שנשמרו"], "reading": "פתיחה רגילה של פנייה — אין ולו סימן אחד" },
+      "zzzz": { "rows_in_list": 0, "reading": "אין שורה כלל, ולכן אין מסך פנייה" },
+      "textContent_equals_stored_note": true,
+      "first_occurrence_only": "ב-133 המונח יושב פעמיים (1 ו-26) ומסומן אחד בלבד — 0100 הכרעה (4)",
+      "marks_on_page_per_case": 1,
+      "h_overflow_1280x900": false
+    }
+  },
+  "console": { "messages": 1, "detail": "favicon.ico 404 משרת הבדיקה המקומי בלבד", "non_2xx_from_app": 0 },
+  "screenshots": [
+    { "file": "before-head-term1.png", "bytes": 62432, "md5_8": "350F8FDE" },
+    { "file": "after-work-term1.png", "bytes": 63224, "md5_8": "CECC7356" },
+    { "file": "after-work-term2-first-only.png", "bytes": 62841, "md5_8": "B8F39E04" }
+  ],
+  "test_mode": { "queued": false, "documents": 0, "case_rights": 0, "outbound_queue": 8, "delivery_log": 3, "outgoing_calls": 0 },
+  "not_measured": [
+    "390x844 לא נמדד",
+    "מסך שמקבל pos/len שאינם נכנסים למחרוזת (הכרעה (4)) נכתב ולא נמדד — אין שרת כזה להריץ מולו",
+    "שורה שבה note_matched true ו-pos null (0100 הכרעה (2)) נכתבה ולא נמדדה — 18 הצירופים ב-0100 לא הראו ולו מחלוקת אחת",
+    "הפריסה לייצור לא נעשתה — מה שנמדד כאן הוא הקוד שבמקור"
+  ]
+}

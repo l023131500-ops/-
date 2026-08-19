@@ -1,0 +1,8 @@
+round-4 functional pass: 27 mechiron - core action (price comparison search, 117,450 real products/1,213 stores) verified live, real data confirmed, no bug, no deploy needed
+
+Homepage-vs-name ambiguity (root serves rights/eligibility catalog, not price
+comparison; #/eligibility 404s on its own rights API) is not a new finding -
+re-confirmed already-open core.issues #94, no code change made here.
+
+Evidence: QA/platform/mechiron-round4-functional-0818/_results.md + search-milk.png
+Next in round-4 ROUTES order: kupot (28)

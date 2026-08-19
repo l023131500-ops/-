@@ -1,0 +1,20 @@
+{
+  "case_a": {
+    "id": 177,
+    "http": 200,
+    "rights": null,
+    "queued": false
+  },
+  "case_b": {
+    "id": 178,
+    "http": 200,
+    "rights": null,
+    "queued": false
+  },
+  "case_c": {
+    "id": 179,
+    "http": 200,
+    "rights": null,
+    "queued": false
+  }
+}

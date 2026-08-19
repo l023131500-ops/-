@@ -1,0 +1,6 @@
+heartbeat: pending row for gesher-lh-0817 - Supabase MCP not connected this session
+
+ToolSearch for mcp__supabase__* returned no matches. Queued
+QA/platform/gesher-lh-0817/_heartbeat-pending.sql per the established
+pattern (heartbeats-queued-as-files) for a later run to insert in commit
+order.

@@ -1,0 +1,124 @@
+{
+  "phase": "before",
+  "source": {
+    "bytes": 117620,
+    "markers": {
+      "handsBit": 2,
+      "status_changes_count": 4,
+      "status_deciders_count": 2,
+      "מנהל אחד": 1,
+      "מעברים ולא לחיצות": 1,
+      "Object.hasOwn": 8,
+      "countHe": 13,
+      "מי הכריע אינו ידוע": 4,
+      "case_status_log_is_a_change": 2,
+      "מעבר אחד": 4,
+      "fillHistoryWhoCell": 3,
+      "fillQueueCell": 2,
+      "fillTemplateCell": 4,
+      "תווי טקסט": 4,
+      "fillCreatedCell": 4,
+      "producedBit": 2
+    }
+  },
+  "live": {
+    "https://more30.com/bkalot-studio/admin": {
+      "status": 200,
+      "bytes": 113147,
+      "replacement_chars": 0,
+      "double_encoded": 0,
+      "markers": {
+        "handsBit": 0,
+        "status_changes_count": 0,
+        "status_deciders_count": 0,
+        "מנהל אחד": 0,
+        "מעברים ולא לחיצות": 0,
+        "Object.hasOwn": 6,
+        "countHe": 11,
+        "מי הכריע אינו ידוע": 3,
+        "case_status_log_is_a_change": 1,
+        "מעבר אחד": 3,
+        "fillHistoryWhoCell": 2,
+        "fillQueueCell": 2,
+        "fillTemplateCell": 4,
+        "תווי טקסט": 4,
+        "fillCreatedCell": 4,
+        "producedBit": 2
+      },
+      "new_zero_in_live": true,
+      "new_equals_source": false,
+      "diff_below_source": true,
+      "diff_equals_source": false,
+      "diff_values": {
+        "Object.hasOwn": "6 → 8",
+        "countHe": "11 → 13",
+        "מי הכריע אינו ידוע": "3 → 4",
+        "case_status_log_is_a_change": "1 → 2",
+        "מעבר אחד": "3 → 4",
+        "fillHistoryWhoCell": "2 → 3"
+      },
+      "old_unchanged": true,
+      "old_values": {
+        "fillQueueCell": "2 = 2",
+        "fillTemplateCell": "4 = 4",
+        "תווי טקסט": "4 = 4",
+        "fillCreatedCell": "4 = 4",
+        "producedBit": "2 = 2"
+      }
+    },
+    "https://more30.com/bkalot-studio/admin/": {
+      "status": 200,
+      "bytes": 113147,
+      "replacement_chars": 0,
+      "double_encoded": 0,
+      "markers": {
+        "handsBit": 0,
+        "status_changes_count": 0,
+        "status_deciders_count": 0,
+        "מנהל אחד": 0,
+        "מעברים ולא לחיצות": 0,
+        "Object.hasOwn": 6,
+        "countHe": 11,
+        "מי הכריע אינו ידוע": 3,
+        "case_status_log_is_a_change": 1,
+        "מעבר אחד": 3,
+        "fillHistoryWhoCell": 2,
+        "fillQueueCell": 2,
+        "fillTemplateCell": 4,
+        "תווי טקסט": 4,
+        "fillCreatedCell": 4,
+        "producedBit": 2
+      },
+      "new_zero_in_live": true,
+      "new_equals_source": false,
+      "diff_below_source": true,
+      "diff_equals_source": false,
+      "diff_values": {
+        "Object.hasOwn": "6 → 8",
+        "countHe": "11 → 13",
+        "מי הכריע אינו ידוע": "3 → 4",
+        "case_status_log_is_a_change": "1 → 2",
+        "מעבר אחד": "3 → 4",
+        "fillHistoryWhoCell": "2 → 3"
+      },
+      "old_unchanged": true,
+      "old_values": {
+        "fillQueueCell": "2 = 2",
+        "fillTemplateCell": "4 = 4",
+        "תווי טקסט": "4 = 4",
+        "fillCreatedCell": "4 = 4",
+        "producedBit": "2 = 2"
+      }
+    }
+  },
+  "control": {
+    "https://more30.com/bkalot-studio/": {
+      "status": 200,
+      "bytes": 32558
+    },
+    "https://more30.com/": {
+      "status": 200,
+      "bytes": 3517
+    }
+  }
+}

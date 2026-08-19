@@ -1,0 +1,38 @@
+{
+  "probed_at_utc": "2026-08-12T09:07:11.768Z",
+  "site": "https://more30.com/galil/",
+  "steps": [
+    {
+      "step": "site",
+      "status": 200,
+      "final_url": "https://more30.com/galil/",
+      "bytes": 4694
+    },
+    {
+      "step": "bundle-credentials",
+      "found": true,
+      "project_ref": "mwljkonwdeuaahsigjdp"
+    },
+    {
+      "step": "anon-select-count",
+      "status": 401,
+      "content_range": null
+    },
+    {
+      "step": "anon-select-password-column",
+      "status": 401,
+      "readable": false,
+      "rows_returned": 0,
+      "shapes": null,
+      "error": {
+        "code": "42501",
+        "details": null,
+        "hint": null,
+        "message": "permission denied for table gabai_accounts"
+      }
+    }
+  ],
+  "assets_found": 5,
+  "bundle": "https://more30.com/galil/assets/index-pSOB0569.js",
+  "verdict": "anon cannot read gabai_accounts — the open policy is not reachable from the public key"
+}

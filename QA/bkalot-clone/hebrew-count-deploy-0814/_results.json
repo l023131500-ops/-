@@ -1,0 +1,131 @@
+{
+  "pulse": "e3e1af1 → פריסה: «זכות אחת» ו«מסמך אחד» בייצור",
+  "deployed_commit": "e3e1af18708210625c90ef4c9565820f375a4f18",
+  "code_changed": false,
+  "migration": null,
+  "edge_function": "bkalot-clone-admin נשארה v7 — לא נפרסה",
+  "vercel_deployment": "more30-portal-3nk1gcq9q-l023131500-ops-projects.vercel.app",
+
+  "file": {
+    "source": "apps/37-bkalot-clone/admin.html",
+    "bytes": 88067,
+    "md5": "9055A63E89E3004D84D8B464B3C7F5BE",
+    "prev_in_production_e3e1af1^": { "bytes": 86588, "md5": "0F72749FA8162820B5F86E3AAB1937A4" },
+    "dist_before_staging": { "bytes": 86588, "md5": "0F72749FA8162820B5F86E3AAB1937A4" },
+    "dist_after_staging": { "bytes": 88067, "md5": "9055A63E89E3004D84D8B464B3C7F5BE" },
+    "staged_files": 38
+  },
+
+  "markers": {
+    "new_unique_to_e3e1af1": [
+      "const countHe = (n, one, plural) =>",
+      "countHe(n, \"פנייה אחת\", \"פניות\")",
+      "\"זכות אחת\"",
+      "\"מסמך אחד\"",
+      "צורת זוגי הייתה מחייבת גם מין דקדוקי"
+    ],
+    "removed_by_e3e1af1": [
+      "const many = (n) => (n === 1 ? \"פנייה אחת\" : ",
+      "${c.rights_count ?? 0} זכויות",
+      "ריח של AI. עברית סופרת אחרת."
+    ],
+    "moved_to_old_because_true_before": "«פנייה אחת» — במסך מאז שהמונה נכתב; ההבדל הוא בשתי השורות שמתחתיו",
+    "prev_version_e3e1af1^": { "new": "כולם false", "removed": "כולם true", "old": "כולם true" },
+    "source": { "new": "כולם true", "removed": "כולם false", "old": "כולם true" },
+    "dist_before_staging": { "new": "כולם false", "removed": "כולם true", "old": "כולם true" },
+    "dist_after_staging": { "new": "כולם true", "removed": "כולם false", "old": "כולם true" },
+    "production_before": { "new": "כולם false", "removed": "כולם true", "old": "כולם true" },
+    "production_after": { "new": "כולם true", "removed": "כולם false", "old": "כולם true" }
+  },
+
+  "http": {
+    "/bkalot-studio/admin": { "before": 86824, "after": 88303 },
+    "/bkalot-studio/admin/": { "before": 86824, "after": 88303 },
+    "/bkalot-studio/": { "before": 21272, "after": 21272 },
+    "more30.com/": { "before": 3517, "after": 3517 },
+    "netfree_delta": 236,
+    "alef_admin": { "before": 881, "after": 909 },
+    "assets": { "before": "index-C2AHwa-z.js,index-B35ByRD-.css", "after": "index-C2AHwa-z.js,index-B35ByRD-.css" },
+    "encoding": { "replacement_chars": 0, "double_encoded": 0 }
+  },
+
+  "browser": {
+    "viewport": "1280x900",
+    "url": "https://more30.com/bkalot-studio/admin?cb=qa0083",
+    "admin": { "id": 39, "full_name": "QA 0083 פריסה" },
+    "cases_created_over_http_intake": { "touched": 120, "control": 121 },
+    "console": { "total": 4, "errors": 0, "warnings": 0, "note": "ארבע הודעות INFO של NetFree על טעינת גופנים (netfree.link) — לא של המסך" },
+    "states": [
+      {
+        "shot": "01-live-one-right.png",
+        "state": "שתיהן חדשות ואיש לא נגע",
+        "count": "2 פניות",
+        "rows": {
+          "120": { "spans": 8, "status": "חדשה", "rights_bit": "זכות אחת" },
+          "121": { "spans": 8, "status": "חדשה", "rights_bit": "42 זכויות" }
+        }
+      },
+      {
+        "shot": "02-live-one-doc.png",
+        "state": "אחרי «הפק מסמך» על #120 ו«חזרה לרשימה»",
+        "count": "2 פניות",
+        "screen_list": "block", "screen_case": "none",
+        "rows": {
+          "120": {
+            "spans": 10, "status": "בטיפול",
+            "rights_bit": "זכות אחת", "documents_bit": "מסמך אחד",
+            "mark": "לא הוכרע מהמסך"
+          },
+          "121": { "spans": 8, "status": "חדשה", "rights_bit": "42 זכויות" }
+        },
+        "db_at_that_moment": {
+          "120": { "status": "in_progress", "decided_by": null, "decided_at": null, "docs": 1 },
+          "121": { "status": "new", "docs": 0 }
+        }
+      }
+    ],
+    "screenshots": [
+      { "file": "01-live-one-right.png", "bytes": 38012, "md5": "BAC41C844A2B574CECA9B289A88A2FD8" },
+      { "file": "02-live-one-doc.png", "bytes": 40050, "md5": "6F3D02EBFC6180A506BAB9E5099E9187" }
+    ]
+  },
+
+  "test_mode": {
+    "cases_in_sent": 0,
+    "outbound_queue": { "baseline": 8, "after_document": 8, "after_rollback": 8 },
+    "queue_rows_with_sent_at": 0,
+    "queue_rows_mode_live": 0,
+    "documents_with_queue_id": 0,
+    "delivery_log": 3,
+    "queue_fingerprint": {
+      "baseline": "51f64bdd93798e8f15a26581f1dea677",
+      "during": "51f64bdd93798e8f15a26581f1dea677",
+      "after": "51f64bdd93798e8f15a26581f1dea677"
+    }
+  },
+
+  "rollback": {
+    "deleted": { "documents": 1, "case_rights": 43, "cases": 2, "admin_sessions": 1, "admin_users": 1, "contacts": 2 },
+    "after": {
+      "cases": 0, "case_rights": 0, "documents": 0, "admin_users": 1, "admin_sessions": 5,
+      "templates": 2, "catalog": 888, "contacts": 4, "outbound_queue": 8, "delivery_log": 3
+    },
+    "identical_to_baseline": true
+  },
+
+  "protected_untouched": [
+    "apps/08-bkalut-app", "apps/09-bkalot-admin", "apps/37-bkalot-clone", "supabase/functions",
+    "bkalut-app", "bkalot-admin", "zr_*", "NEDARIM3873", "csj", "csj_src", "igud"
+  ],
+
+  "open": [
+    "«${out.rights_count} זכויות» ו«${out.text_chars} תווי טקסט» בשורת אישור הפקת המסמך נשארו במספר",
+    "כותרות «זכויות (N)» ו«מסמכים (N)» במסך הפנייה — מספר בסוגריים אינו צורת ריבוי",
+    "רענון שנכשל משאיר את השורות הישנות על המסך; אין נתיב HTTP שיכול להפיל את /cases בבקשה אחת",
+    "await load() שרץ אחרי «שינוי סטטוס» הפך למיותר ולא הוסר",
+    "אין סינון «לא הוכרעה» ואין מיון לפי decided_at; אין היסטוריית הכרעות",
+    "«מי הפיק» על documents אינו נכתב לשום מקום",
+    "«0 זכויות» לא נמדד בייצור — נתיב הקליטה אינו יכול לייצר פנייה בלי זכויות",
+    "public_visible ו-show_in_showcase של #37 נשארים false"
+  ]
+}

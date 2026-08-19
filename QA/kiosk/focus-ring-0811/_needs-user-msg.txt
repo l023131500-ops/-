@@ -1,0 +1,8 @@
+NEEDS_USER 0tz: the undeployed count moved to forty-four, forty-two with source
+
+`focus-ring-0811` is the forty-fourth paragraph in apps/35-kioskfleet/STATUS.md
+ending in "Not deployed", and it does change source (two tokens and two rules in
+css/style.css), so forty-two of the forty-four now carry an actual change. The
+count is re-anchored to the run it was taken after rather than left reading
+"forty-three, counted after visited-link-0811", which was true and is now one
+behind. Nothing else in the item moves: the decision it asks for is unchanged.

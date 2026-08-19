@@ -1,0 +1,45 @@
+{
+  "step": "priority §1א — show-password toggle, system 02 (tamlul)",
+  "date": "2026-08-12",
+  "system": { "number": "02", "slug": "igud-transcribe", "path": "tamlul", "live_url": "https://more30.com/tamlul", "is_deployed": true, "public_visible": true },
+  "source_edited": "apps/02-igud-transcribe/app/login/page.tsx",
+  "password_fields_in_app": 1,
+  "side_choice": {
+    "measured_before_writing": true,
+    "computed_direction": "ltr",
+    "computed_text_align": "right",
+    "reason": "characters end at the RIGHT edge (dir=ltr + .input's text-right), so the eye takes the LEFT and pl-10 clears it",
+    "padding_before": { "left": "12px", "right": "12px" },
+    "padding_after": { "left": "40px", "right": "12px" }
+  },
+  "build": { "command": "npm run build", "result": "ok", "route_login": "2.27 kB / 164 kB first load" },
+  "deploy": {
+    "project": "tamlul-more30",
+    "project_id": "prj_i8KRFIs4jtqPuEf4mt5b11RHjRQN",
+    "deployment_id": "dpl_5ZrKCZFJ6TLWYmNDRG6QVwbShhjZ",
+    "target": "production",
+    "readyState": "READY"
+  },
+  "verified_live_on": "https://more30.com/tamlul/login?v=pwtoggle0812",
+  "geometry": {
+    "field_rect": [307, 390, 406, 42],
+    "button_rect": [315, 395, 32, 32],
+    "button_contained_in_field": true,
+    "elementFromPoint_at_button_centre": "svg owned by the toggle button"
+  },
+  "behaviour": {
+    "button_type": "button",
+    "round_trip": "password -> text -> password",
+    "aria_label": "הצג סיסמה -> הסתר סיסמה -> הצג סיסמה",
+    "icon": "eye -> eye-off -> eye",
+    "value_preserved": "More30Test2026",
+    "fetch_calls_during_two_toggles": 0,
+    "url_unchanged": true
+  },
+  "console_errors": 0,
+  "console_note": "only a Chrome verbose autocomplete hint and NetFree font-loading INFO lines",
+  "not_verified": [
+    "no real Supabase login was completed against the admin account — only the toggle was exercised",
+    "the Google OAuth path was not touched or retested"
+  ]
+}

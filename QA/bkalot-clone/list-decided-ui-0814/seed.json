@@ -1,0 +1,15 @@
+{
+  "case_human": 109,
+  "case_trigger": 110,
+  "case_gone": 111,
+  "decider_b": {
+    "id": 34,
+    "email": "qa0079b@more30.test",
+    "full_name": "QA 0079 שורה ב"
+  },
+  "set_status": {
+    "status": 200,
+    "changed": true,
+    "new_status": "closed"
+  }
+}

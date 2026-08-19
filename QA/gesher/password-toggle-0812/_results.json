@@ -1,0 +1,67 @@
+{
+  "system": "31 gesher (hebrew-bridge-crm)",
+  "priority": "§1א — הצג סיסמה (eye) on every password field",
+  "date": "2026-08-12",
+  "url": "https://more30.com/gesher/auth?cb=0812gesher2",
+  "file_changed": "apps/31-hebrew-bridge-crm/src/routes/auth.tsx",
+  "fields": {
+    "login-password": {
+      "type_default": "password",
+      "dir": "ltr",
+      "computed_text_align": "start",
+      "padding_left": "12px",
+      "padding_right": "40px",
+      "field_rect": [311, 409, 398, 36],
+      "button_rect": [673, 413, 28, 28],
+      "button_contained_in_field": true,
+      "element_from_point_at_button_centre": "svg",
+      "button_type": "button",
+      "round_trip": {
+        "type": "password -> text -> password",
+        "aria_label": "הצג סיסמה -> הסתר סיסמה -> הצג סיסמה",
+        "icon": "eye -> eye-off -> eye",
+        "value_preserved": "More30Test2026"
+      }
+    },
+    "signup-password": {
+      "type_default": "password",
+      "minLength": 6,
+      "aria_describedby": "signup-password-rule",
+      "rule_text_rendered": "לפחות 6 תווים",
+      "padding_right": "40px",
+      "button_contained_in_field": true,
+      "element_from_point_at_button_centre": "svg",
+      "button_type": "button",
+      "toggle": "password -> text, aria-label הצג סיסמה -> הסתר סיסמה, icon eye -> eye-off"
+    }
+  },
+  "no_auth_performed": {
+    "method": "window.fetch wrapped before the first toggle, counter read after every toggle",
+    "fetch_calls": 0,
+    "location_href_unchanged": true,
+    "note": "both fields sit inside <form onSubmit={handleLogin/handleSignup}>; type=\"button\" is what stops the toggle from submitting"
+  },
+  "console": {
+    "errors_after_fix": 0,
+    "pre_existing_verbose": "[DOM] Input elements should have autocomplete attributes — predates this change"
+  },
+  "deploy": {
+    "project": "gesher-more30 (prj_6ratAuaY3DPvXoVvLusFoPYlA62U)",
+    "prebuilt_attempt": {
+      "deployment": "dpl_DFbNpvGf66TLyCobf2ct9L2d3D4Q",
+      "outcome": "broken — 17 x 404 on /gesher/assets/*, page served with no CSS and no JS",
+      "cause": "vercel deploy --prebuilt ignores vercel.json, and the /gesher/assets/:path* -> /assets/:path* rewrite lives only there; the nitro-generated .vercel/output/config.json does not carry it"
+    },
+    "source_deploy": {
+      "deployment": "dpl_2NFVtX4eR6KZ1gvBhPBoL9g8XWxY",
+      "state": "READY",
+      "target": "production",
+      "outcome": "assets resolve, 0 console errors"
+    }
+  },
+  "not_verified": [
+    "no real Supabase login or signup was performed (test mode — nothing was sent)",
+    "neither field has an autocomplete attribute",
+    "login and signup share one showPassword state (they also already share one password state)"
+  ]
+}

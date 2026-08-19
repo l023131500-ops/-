@@ -1,0 +1,67 @@
+{
+  "brick": "clamp-note-ui-0816",
+  "layer": "שכפול בקלות שכבה 3 — ניהול (§5ב)",
+  "what": "החיתוך שנפרס ב-3322ca5 מזיז את המסך בין שני עמודים בשקט. הלבנה הזו אומרת שזה מה שקרה.",
+  "kind": "UI בלבד",
+  "changed_files": ["apps/37-bkalot-clone/admin.html"],
+  "not_changed": {
+    "supabase/migrations": "לא נגעה — אין מיגרציה חדשה",
+    "edge_functions": "bkalot-clone-admin נשארת v8, bkalot-clone-intake v1 — לא נפרסה",
+    "production": "לא נפרס דבר. מה שנמדד כאן הוא הקוד שבמקור מול ה-edge וה-DB החיים"
+  },
+  "admin_html_bytes": { "head": 136547, "after": 139737 },
+  "admin_html_md5": {
+    "head": "96D642E37D6ABA06509CD06017558119",
+    "after": "003F455616FECFE46D033E9BFEA516CB"
+  },
+  "measured": {
+    "how": "שני שרתים סטטיים באותה ריצה מול אותו edge ואותו מסד: 8180 מגיש את admin.html של HEAD, 8181 את המתוקן. BASE הוא כתובת מוחלטת, ולכן ההבדל היחיד בין הריצות הוא הקובץ.",
+    "viewport": "1280x900",
+    "login": "התחברות אמיתית דרך המסך, חשבון 103",
+    "injections": 0,
+    "sequence": "סינון «חדשה» (21) → «הבא» (עמוד 2, שורה אחת) → פתיחת אותה פנייה → «בטיפול» → «חזרה» → «הצג» נוספת",
+    "prev": {
+      "filtered":     { "page_label": "עמוד 1 מתוך 2", "count": "21 פניות · מוצגות 20", "rows": 20, "clamp_note": "missing" },
+      "page2":        { "page_label": "עמוד 2 מתוך 2", "count": "21 פניות · מוצגות 1",  "rows": 1,  "clamp_note": "missing" },
+      "back":         { "page_label": "עמוד 1 מתוך 1", "count": "20 פניות",             "rows": 20, "clamp_note": "missing" },
+      "after_reload": { "page_label": "עמוד 1 מתוך 1", "count": "20 פניות",             "rows": 20, "clamp_note": "missing" }
+    },
+    "next": {
+      "filtered":     { "page_label": "עמוד 1 מתוך 2", "count": "21 פניות · מוצגות 20", "rows": 20, "clamp_note": { "hidden": true } },
+      "page2":        { "page_label": "עמוד 2 מתוך 2", "count": "21 פניות · מוצגות 1",  "rows": 1,  "clamp_note": { "hidden": true } },
+      "back":         { "page_label": "עמוד 1 מתוך 1", "count": "20 פניות",             "rows": 20, "clamp_note": { "hidden": false, "top": 342, "height": 23, "text": "הרשימה התקצרה בזמן העבודה, ובעמוד 2 לא נשארו פניות שתואמות את הסינון. המסך עבר לעמוד 1 — האחרון שיש בו פניות." } },
+      "after_reload": { "page_label": "עמוד 1 מתוך 1", "count": "20 פניות",             "rows": 20, "clamp_note": { "hidden": true } }
+    },
+    "cases_offsets": { "prev": [0, 0, 20, 20, 0, 0], "next": [0, 0, 20, 20, 0, 0] },
+    "console_messages": { "prev": 0, "next": 0 },
+    "screenshot_md5_prefixes": {
+      "next-01-filtered": "B67A71F9", "next-02-page2": "78576CDF",
+      "next-03-back": "547BC821", "next-04-after-reload": "4E7C0664",
+      "prev-01-filtered": "BC7CA320", "prev-02-page2": "42348F7F",
+      "prev-03-back": "BACAF514", "prev-04-after-reload": "8234FC31"
+    }
+  },
+  "test_mode": {
+    "queued": false,
+    "documents": 0,
+    "case_rights": 0,
+    "cases_in_sent": 0,
+    "outbound_queue": 8,
+    "outbound_queue_with_sent_at": 0,
+    "delivery_log": 3,
+    "outbound_calls": 0
+  },
+  "rollback": {
+    "method": "פקודה נפרדת לכל טבלה (תקלת cte-delete-sees-prestatement-snapshot); contacts לפי id ולא לפי טלפון מנורמל (תקלת ac6e523)",
+    "deleted": { "case_status_log": 2, "cases": 22, "contacts": 22, "admin_sessions": 2, "admin_users": 1 },
+    "after": { "cases": 0, "case_status_log": 0, "case_rights": 0, "documents": 0, "admin_users": 1, "admin_sessions": 5, "templates": 2, "contacts": 4, "outbound_queue": 8, "delivery_log": 3, "rights_catalog": 888 },
+    "matches_base": true
+  },
+  "protected": {
+    "apps/08-bkalut-app": "clean",
+    "apps/09-bkalot-admin": "clean",
+    "supabase": "clean",
+    "schemas_untouched": ["csj", "csj_src", "igud"],
+    "systems_untouched": ["bkalut-app", "bkalot-admin", "zr_*", "NEDARIM3873"]
+  }
+}

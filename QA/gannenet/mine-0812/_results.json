@@ -1,0 +1,41 @@
+{
+  "at": "2026-08-12T13:09:37.835Z",
+  "base": "https://more30.com/gannenet",
+  "checks": [
+    {
+      "name": "GET /shelf/mine",
+      "status": 200,
+      "detail": "title present: true"
+    },
+    {
+      "name": "GET /api/catalog?mine=1 (no auth)",
+      "status": 401,
+      "detail": "{\"error\":\"כדי לראות את החומרים שהעליתם יש להתחבר לחשבון more30.\"}"
+    },
+    {
+      "name": "GET /api/catalog?mine=1 (bogus token)",
+      "status": 401,
+      "detail": "{\"error\":\"כדי לראות את החומרים שהעליתם יש להתחבר לחשבון more30.\"}"
+    },
+    {
+      "name": "GET /api/catalog (public)",
+      "status": 200,
+      "detail": "{\"ready\":true,\"items\":[]}"
+    },
+    {
+      "name": "sign-in test@more30.com",
+      "status": 200,
+      "detail": "user 78600fbc-3fd3-4f02-8552-e93ab6559649"
+    },
+    {
+      "name": "GET /api/catalog?mine=1 (real token)",
+      "status": 200,
+      "detail": "{\"ready\":true,\"items\":[]}"
+    },
+    {
+      "name": "uploader_email absent from response",
+      "status": 200,
+      "detail": "true"
+    }
+  ]
+}

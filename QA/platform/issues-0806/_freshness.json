@@ -1,0 +1,41 @@
+{
+  "measured_at": "2026-08-06T12:10:00Z",
+  "what": "core.issues vs core.run_progress — is the /admin/issues board keeping up with the work?",
+
+  "before_this_step": {
+    "last_board_write_at": "2026-08-05T22:06:28.341557+00:00",
+    "last_heartbeat_at": "2026-08-06T11:43:58.58695+00:00",
+    "heartbeats_since_board_write": 14,
+    "stale_hours": 13.6,
+    "drifting": true,
+    "note": "Computed from the real rows, not a simulation: issue #45 was the last board write, and 14 heartbeats landed after it."
+  },
+
+  "after_this_step": {
+    "heartbeats_since_board_write": 0,
+    "stale_hours": 0,
+    "drifting": false
+  },
+
+  "totals_before": { "needs_user": 12, "mine": 2, "critical_open": 2, "fixed": 26 },
+  "totals_after":  { "needs_user": 16, "mine": 8, "critical_open": 3, "fixed": 43 },
+
+  "threshold": 3,
+  "why_three": "A single step may legitimately produce no issue row. An alarm that is always lit is one nobody reads — the same failure as the brand-audit credit column that answered 'no' on 25 of 25 mounts while the credit was present on all 25.",
+
+  "dark_toggle_recheck": {
+    "script": "scripts/qa/dark-toggle-probe.mjs",
+    "out": "QA/platform/dark-verify-0806/_dark-toggle.json",
+    "/orech": "os-dark:follows  toggle:none  => reachable — retires the 04/08 wont_fix row that said orech has no dark mode at all",
+    "/admin": "os-dark:ignores  toggle:none  => UNREACHABLE — the one real remaining gap, now its own board row"
+  },
+
+  "deploy": {
+    "target": "more30-portal (prod), aliased to more30.com",
+    "pre_edit_check": "scripts/qa/admin-issues-drift.mjs — production was byte-identical to the committed source before editing (only delta: this network's NetFree injection)",
+    "post_deploy_check": "identical, 10723 chars",
+    "console_probe": "clean — no console errors, failed requests or 4xx/5xx"
+  },
+
+  "not_verified": "The board's contents are gated to super-admin and this session does not hold that login, so only the sign-in state was screenshotted. The data behind it was verified by calling more30_admin_issues() with a real super-admin claim."
+}

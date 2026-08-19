@@ -1,0 +1,36 @@
+הרשאות public: כל אובייקט חדש נולד עם TRUNCATE ל-anon, ו-RLS אינו בודק TRUNCATE (§1א, 0060, #228 נסגר)
+
+הפריט שהמיגרציה הקודמת השאירה פתוח במפורש: alter default privileges על public
+לא שונה, ובצידו הערכה — "לטבלה רגילה זה בלתי-מזיק כי RLS חוסם; ל-view זה חור".
+ההערכה נבדקה וחציה לא נכון.
+
+נמדד על טבלה שנוצרה בדיוק כמו כל טבלה חדשה, עם RLS דלוק ואפס policies — מצב
+ההגנה המקסימלי שטבלה יכולה להיות בו:
+
+  anon DELETE   -> עבר, rows_deleted=0   (RLS חסם, ההגנה עבדה)
+  anon TRUNCATE -> הצליח, rows_left=0    (RLS לא נבדק כלל)
+
+ב-Postgres, RLS חל על SELECT/INSERT/UPDATE/DELETE ואינו חל על TRUNCATE. לכן
+מפתח ה-anon, שיושב גלוי בקוד המקור של כל עמוד פורטל, החזיק את היכולת לרוקן כל
+טבלה עתידית ב-public בלי תלות בשום policy. החור לא היה מוגבל ל-views; הם רק
+הצד שנתפס קודם. view חדש נמדד עם אותן שבע ההרשאות בדיוק שחמשת ה-views של 0059
+החזיקו — כלומר 0059 תיקן תוצאה ולא מקור.
+
+0060: revoke delete, truncate, references, trigger מ-anon, ו-revoke truncate
+מ-authenticated. SELECT/INSERT/UPDATE נשמרו כי הם ה-RLS-gated האמיתיים ושלילתם
+הייתה שוברת כל טבלה עתידית שנשענת על policy; DELETE ל-authenticated נשמר כי
+"משתמש מוחק שורה של עצמו" הוא דפוס לגיטימי ש-policy חוסמת; service_role ללא
+שינוי.
+
+אחרי: שתי הפעולות מחזירות 42501, שלוש השורות נשארו, וטבלה ו-view חדשים נולדים
+עם INSERT,SELECT,UPDATE בלבד ל-anon.
+
+pg_default_acl אינו רטרואקטיבי — אף טבלה ואף view קיימים לא השתנו, ולכן שום
+מערכת חיה לא שינתה התנהגות. זו הסיבה שאפשר היה להריץ בלי סקירה של כל מערכת.
+
+נשאר פתוח (#229): ל-pg_default_acl על public יש grantor שני, supabase_admin,
+והוא ללא שינוי. ה-alter עליו מחזיר 42501 permission denied to change default
+privileges, כי postgres כאן אינו superuser. נרשם ל-NEEDS_USER §0תג.
+
+אין נגיעה במוגן (08/09/bkalut-app/bkalot-admin/zr_*/NEDARIM3873, csj/csj_src/igud).
+עדות: QA/platform/public-default-privileges-0814/_results.json

@@ -1,0 +1,47 @@
+{
+  "step": "case-hit-row-deploy-0817",
+  "what": "פריסה בלבד של 9699a3d — הסימן על השורה אומר כמה הופעות בה. אין שינוי קוד, אין מיגרציה, אין פריסת edge function.",
+  "head_before": "9699a3d",
+  "baseline_db": {
+    "cases": 0, "case_status_log": 0, "case_rights": 0, "documents": 0,
+    "admin_users": 1, "admin_sessions": 5, "templates": 2, "contacts": 4,
+    "outbound_queue": 8, "delivery_log": 3, "rights_catalog": 888,
+    "schema_migrations": "20260816200600"
+  },
+  "file": {
+    "src": { "bytes": 197514, "md5": "0343B025" },
+    "dist_before_staging": { "bytes": 193914, "md5": "36AFA137", "deployed_by": "063501a" },
+    "dist_after_staging": { "bytes": 197514, "md5": "0343B025" }
+  },
+  "deploy": {
+    "from": "portal/dist", "files": 38, "prebuilt": false,
+    "target": "production", "state": "READY", "aliased": "more30.com"
+  },
+  "seed": {
+    "case_id": 417, "contact_id": 424, "admin_id": 138,
+    "log_ids": [165, 166, 167],
+    "queued": false, "rights_linked": 0,
+    "note": "⚠️ הקליטה נעשתה ב-SQL ולא מעל HTTP — פיגום ולא הטענה.",
+    "db_positions": {
+      "טופס": { "167": [1, 7, 17] },
+      "email": { "165": [1, 26] },
+      "נשלח": { "165": [7], "167": [22] },
+      "המס הקודמת": { "166": [28] },
+      "אברהם": null
+    }
+  },
+  "rollback": {
+    "order": ["case_status_log(3)", "cases(1)", "admin_sessions(1)", "admin_users(1)", "contacts(1)"],
+    "measured_children_before_delete": { "log": 3, "case_rights": 0, "documents": 0, "sessions": 1, "contact": 1 },
+    "after": "בסיס בדיוק, ו-admin_cases על פרמטרים ריקים מחזירה total 0"
+  },
+  "test_mode": {
+    "queued": false, "documents": 0, "case_rights": 0,
+    "outbound_queue": "נשאר 8", "delivery_log": "נשאר 3", "outbound_calls": 0
+  },
+  "screenshots": {
+    "live-tofes-row-3.png": "1C80A4B7",
+    "live-nishlach-two-rows-one-each.png": "6D25A2E1",
+    "live-avraham-no-badge.png": "E8CEAA19"
+  }
+}

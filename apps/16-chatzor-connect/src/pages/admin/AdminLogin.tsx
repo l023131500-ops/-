@@ -1,15 +1,28 @@
-import { useState, type FormEvent } from "react";
+import { useRef, useState, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowRight, LogIn, ShieldCheck } from "lucide-react";
 import { useAuth } from "@/lib/auth";
+import { supabase } from "@/lib/supabase";
 import { Field, Input } from "@/components/ui/Field";
+import { PasswordInput } from "@/components/ui/PasswordInput";
 import { Button } from "@/components/ui/Button";
+
+/**
+ * המסך שאליו קישור האיפוס במייל חוזר. ‎BASE_URL‎ הוא "/chatzor/" בייצור, כלומר
+ * הכתובת המלאה היא https://more30.com/chatzor/auth/reset — והיא נכללת
+ * ב-uri_allow_list של הפרויקט (https://more30.com/**), שנבדק ולא הונח.
+ */
+const resetUrl = (next: string) =>
+  `${location.origin}${import.meta.env.BASE_URL}auth/reset?next=${encodeURIComponent(next)}`;
 
 export function AdminLogin({ target = "/admin", title = "כניסת מנהל" }: { target?: string; title?: string }) {
   const { signIn, isDemo, user } = useAuth();
   const navigate = useNavigate();
   const [error, setError] = useState<string>();
   const [submitting, setSubmitting] = useState(false);
+  const [sent, setSent] = useState<string>();
+  const [sending, setSending] = useState(false);
+  const emailRef = useRef<HTMLInputElement>(null);
 
   if (user) {
     navigate(target, { replace: true });
@@ -24,6 +37,40 @@ export function AdminLogin({ target = "/admin", title = "כניסת מנהל" }:
     setSubmitting(false);
     if (error) setError(error);
     else navigate(target, { replace: true });
+  }
+
+  /**
+   * "שכחתי סיסמה" — עד היום לא הייתה כאן נקודת כניסה כזאת בכלל, וגם מי שקיבל
+   * קישור נחת על עמוד שלא קורא אותו (core.issues #201).
+   *
+   * התשובה זהה בין כתובת קיימת לשאינה קיימת, כדי שהטופס לא יהפוך לכלי שבודק
+   * אילו כתובות רשומות אצלנו. חסימת קצב היא היוצאת מן הכלל, כי היא זו שמסבירה
+   * למה כלום לא קרה.
+   */
+  async function onForgot() {
+    const email = emailRef.current?.value.trim() ?? "";
+    setError(undefined);
+    setSent(undefined);
+    if (!email) {
+      emailRef.current?.focus();
+      setError("הזינו קודם את כתובת המייל, ונשלח אליה קישור לאיפוס.");
+      return;
+    }
+    if (!supabase) {
+      setError("מצב הדגמה — אין שרת שישלח קישור איפוס.");
+      return;
+    }
+
+    setSending(true);
+    const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: resetUrl(target),
+    });
+    setSending(false);
+    if (resetError && /rate|too many|seconds/i.test(resetError.message)) {
+      setError("נשלחה כבר בקשה. המתינו דקה ונסו שוב.");
+      return;
+    }
+    setSent("אם קיים חשבון עם הכתובת הזו, שלחנו אליה קישור לבחירת סיסמה חדשה. הקישור תקף לשעה.");
   }
 
   return (
@@ -47,12 +94,23 @@ export function AdminLogin({ target = "/admin", title = "כניסת מנהל" }:
 
           <form onSubmit={onSubmit} className="mt-6 space-y-4 [&_label]:text-white/80">
             <Field label="אימייל" htmlFor="email" required>
-              <Input id="email" name="email" type="email" required autoComplete="email" className="bg-white/10 text-white placeholder:text-white/40" placeholder="admin@chatzor" />
+              <Input ref={emailRef} id="email" name="email" type="email" required autoComplete="email" className="bg-white/10 text-white placeholder:text-white/40" placeholder="admin@chatzor" />
             </Field>
             <Field label="סיסמה" htmlFor="password" required>
-              <Input id="password" name="password" type="password" required={!isDemo} autoComplete="current-password" className="bg-white/10 text-white placeholder:text-white/40" placeholder="••••••••" />
+              <PasswordInput id="password" name="password" required={!isDemo} autoComplete="current-password" className="bg-white/10 text-white placeholder:text-white/40" placeholder="••••••••" />
             </Field>
+            {/* קישור טקסט ולא כפתור מלא, כדי שלא יתחרה על העין עם כפתור הכניסה.
+                הוא <button> ולא <a> כי הוא מפעיל פעולה בעמוד ואין לו כתובת יעד. */}
+            <button
+              type="button"
+              onClick={onForgot}
+              disabled={sending}
+              className="-my-2 inline-flex min-h-[44px] items-center text-xs font-semibold text-white/60 underline hover:text-white disabled:opacity-60"
+            >
+              {sending ? "שולחים…" : "שכחתי סיסמה"}
+            </button>
             {error && <p className="text-sm text-red-300">{error}</p>}
+            {sent && <p className="text-sm text-emerald-300">{sent}</p>}
             <Button type="submit" variant="gold" size="lg" disabled={submitting} className="w-full">
               <LogIn className="h-4 w-4" aria-hidden />
               {submitting ? "מתחבר…" : "כניסה"}

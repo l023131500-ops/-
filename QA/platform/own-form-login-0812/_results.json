@@ -1,0 +1,144 @@
+{
+  "at": "2026-08-12T09:20:48.959Z",
+  "targets": 3,
+  "results": [
+    {
+      "number": "01",
+      "slug": "torah",
+      "live_url": "https://more30.com/torah/",
+      "project_in_core": "bieebmnmkffwbqlsfozh",
+      "creds": {
+        "supabase_url": "https://bieebmnmkffwbqlsfozh.supabase.co",
+        "project_served": "bieebmnmkffwbqlsfozh",
+        "matches_core_projects": true,
+        "key": {
+          "format": "publishable",
+          "role": "anon",
+          "ref": null
+        },
+        "found_in": "/torah/assets/index-Cg-YfQE5.js",
+        "pair_distance": 46,
+        "scripts_read": 4
+      },
+      "settings": {
+        "disable_signup": false,
+        "mailer_autoconfirm": false,
+        "external_google": true,
+        "external_email": true
+      },
+      "test_user_login": {
+        "ok": true,
+        "verdict": "session-issued",
+        "user_confirmed": true
+      },
+      "roundtrip": {
+        "email": "qa-roundtrip-torah-0812-pnea@more30.com",
+        "signup": {
+          "status": 200,
+          "session_returned": false,
+          "user_created": true,
+          "email_confirmed_at": null,
+          "error": null
+        },
+        "login_after_signup": {
+          "ok": false,
+          "verdict": "email_not_confirmed",
+          "message": "Email not confirmed"
+        }
+      },
+      "verdict": "REPRODUCES §1א — email confirmation required, login after signup fails"
+    },
+    {
+      "number": "15",
+      "slug": "egod",
+      "live_url": "https://more30.com/egod/",
+      "project_in_core": "hkkkynyoigzlttpynoeo",
+      "creds": {
+        "supabase_url": "https://hkkkynyoigzlttpynoeo.supabase.co",
+        "project_served": "hkkkynyoigzlttpynoeo",
+        "matches_core_projects": true,
+        "key": {
+          "format": "jwt",
+          "role": "anon",
+          "ref": "hkkkynyoigzlttpynoeo"
+        },
+        "found_in": "/egod/assets/index-RNBwDqT2.js",
+        "pair_distance": 46,
+        "scripts_read": 4
+      },
+      "settings": {
+        "disable_signup": false,
+        "mailer_autoconfirm": false,
+        "external_google": true,
+        "external_email": true
+      },
+      "test_user_login": {
+        "ok": true,
+        "verdict": "session-issued",
+        "user_confirmed": true
+      },
+      "roundtrip": {
+        "email": "qa-roundtrip-egod-0812-pnea@more30.com",
+        "signup": {
+          "status": 200,
+          "session_returned": false,
+          "user_created": true,
+          "email_confirmed_at": null,
+          "error": null
+        },
+        "login_after_signup": {
+          "ok": false,
+          "verdict": "email_not_confirmed",
+          "message": "Email not confirmed"
+        }
+      },
+      "verdict": "REPRODUCES §1א — email confirmation required, login after signup fails"
+    },
+    {
+      "number": "16",
+      "slug": "chatzor",
+      "live_url": "https://more30.com/chatzor/",
+      "project_in_core": "uhnrgujbdxhhmoxcjria",
+      "creds": {
+        "supabase_url": "https://uhnrgujbdxhhmoxcjria.supabase.co",
+        "project_served": "uhnrgujbdxhhmoxcjria",
+        "matches_core_projects": true,
+        "key": {
+          "format": "jwt",
+          "role": "anon",
+          "ref": "uhnrgujbdxhhmoxcjria"
+        },
+        "found_in": "/chatzor/assets/index-YX4TUtOq.js",
+        "pair_distance": 46,
+        "scripts_read": 4
+      },
+      "settings": {
+        "disable_signup": false,
+        "mailer_autoconfirm": true,
+        "external_google": true,
+        "external_email": true
+      },
+      "test_user_login": {
+        "ok": true,
+        "verdict": "session-issued",
+        "user_confirmed": true
+      },
+      "roundtrip": {
+        "email": "qa-roundtrip-chatzor-0812-pnea@more30.com",
+        "signup": {
+          "status": 200,
+          "session_returned": true,
+          "user_created": true,
+          "email_confirmed_at": "2026-08-12T09:20:48.325068959Z",
+          "error": null
+        },
+        "login_after_signup": {
+          "ok": true,
+          "verdict": "session-issued",
+          "user_confirmed": true
+        }
+      },
+      "verdict": "roundtrip-passes"
+    }
+  ]
+}

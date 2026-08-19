@@ -1,0 +1,152 @@
+{
+  "torah": {
+    "route": "/torah",
+    "dead": [],
+    "anchors": 38,
+    "error": null
+  },
+  "tamlul": {
+    "route": "/tamlul",
+    "dead": [],
+    "anchors": 9,
+    "error": null
+  },
+  "modaot": {
+    "route": "/modaot",
+    "dead": [],
+    "anchors": 8,
+    "error": null
+  },
+  "imud": {
+    "route": "/imud",
+    "dead": [],
+    "anchors": 9,
+    "error": null
+  },
+  "briut": {
+    "route": "/briut",
+    "dead": [],
+    "anchors": 8,
+    "error": null
+  },
+  "bkalot": {
+    "route": "/bkalot",
+    "dead": [],
+    "anchors": 40,
+    "error": null
+  },
+  "smel": {
+    "route": "/smel",
+    "dead": [],
+    "anchors": 3,
+    "error": null
+  },
+  "smachot": {
+    "route": "/smachot",
+    "dead": [],
+    "anchors": 3,
+    "error": null
+  },
+  "egod": {
+    "route": "/egod",
+    "dead": [],
+    "anchors": 23,
+    "error": null
+  },
+  "chatzor": {
+    "route": "/chatzor/",
+    "dead": [],
+    "anchors": 33,
+    "error": null
+  },
+  "chizukim": {
+    "route": "/chizukim/",
+    "dead": [],
+    "anchors": 27,
+    "error": null
+  },
+  "orech": {
+    "route": "/orech",
+    "dead": [],
+    "anchors": 4,
+    "error": null
+  },
+  "zchuyot": {
+    "route": "/zchuyot",
+    "dead": [],
+    "anchors": 19,
+    "error": null
+  },
+  "mthbram": {
+    "route": "/mthbram",
+    "dead": [],
+    "anchors": 12,
+    "error": null
+  },
+  "galil": {
+    "route": "/galil",
+    "dead": [],
+    "anchors": 22,
+    "error": null
+  },
+  "studio": {
+    "route": "/studio",
+    "dead": [],
+    "anchors": 1,
+    "error": null
+  },
+  "mechiron": {
+    "route": "/mechiron",
+    "dead": [],
+    "anchors": 11,
+    "error": null
+  },
+  "kupot": {
+    "route": "/kupot",
+    "dead": [],
+    "anchors": 1,
+    "error": null
+  },
+  "nadlan": {
+    "route": "/nadlan/",
+    "dead": [],
+    "anchors": 7,
+    "error": null
+  },
+  "crm": {
+    "route": "/crm",
+    "dead": [],
+    "anchors": 1,
+    "error": null
+  },
+  "gesher": {
+    "route": "/gesher",
+    "dead": [],
+    "anchors": 1,
+    "error": null
+  },
+  "kesef": {
+    "route": "/kesef",
+    "dead": [],
+    "anchors": 12,
+    "error": null
+  },
+  "kiosk": {
+    "route": "/kiosk/",
+    "dead": [],
+    "anchors": 14,
+    "error": null
+  },
+  "tivuch": {
+    "route": "/tivuch",
+    "dead": [],
+    "anchors": 12,
+    "error": null
+  },
+  "portal": {
+    "route": "/",
+    "dead": [],
+    "anchors": 28,
+    "error": null
+  }
+}

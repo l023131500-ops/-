@@ -1,0 +1,92 @@
+{
+  "step": "apply-button-deploy-0814",
+  "section": "§5ב — שכפול בקלות, שכבה 3 (פריסה)",
+  "open_line_taken_from": "d7c5757",
+  "what_shipped": {
+    "files_changed_in_repo": "none — deploy only; apps/37-bkalot-clone/admin.html identical to d7c5757",
+    "src_bytes": 95580,
+    "prev_dist_bytes": 95108,
+    "prev_dist_md5": "141DB33FB933617057104C6B25D3ACBD",
+    "new_dist_md5": "CCD3D20C7FE0310D685D5CDA8DFACD4C",
+    "files_deployed": 38,
+    "prebuilt": false,
+    "deployment_id": "dpl_A3gCfuqy4hLahcPEat3Axi9AE86M",
+    "aliased": "https://more30.com",
+    "migrations": "none",
+    "edge_functions": "none — bkalot-clone-intake v1, bkalot-clone-admin v7 untouched"
+  },
+  "markers_validated_before_use": {
+    "source": "probe-files.mjs",
+    "markers_valid": true,
+    "note": "כל חמשת מסומני NEW = 0 בקובץ שבייצור ו-1 במקור"
+  },
+  "http": {
+    "admin_bytes_before": 95344,
+    "admin_bytes_after": 95816,
+    "delta": 472,
+    "netfree_delta_vs_disk": 236,
+    "new_markers_before": 0,
+    "new_markers_after": 1,
+    "old_button_before": 1,
+    "old_button_after": 0,
+    "filter_word_before": 14,
+    "filter_word_after": 14,
+    "empty_text_before": 2,
+    "empty_text_after": 2,
+    "form_bytes_unchanged": 32558,
+    "home_bytes_unchanged": 3517,
+    "replacement_chars_all_urls": 0,
+    "both_rewrites_measured": ["/bkalot-studio/admin", "/bkalot-studio/admin/"]
+  },
+  "browser_live": {
+    "url": "https://more30.com/bkalot-studio/admin?cb=applydeploy0814a",
+    "viewport": "1280x900",
+    "login": "real, through the screen (bkalot-clone-admin/login)",
+    "button_text": "הצג",
+    "button_title": "מחיל את הסינון ואת המיון יחד, ומחזיר לעמוד הראשון",
+    "sort_options_read_from_live_select": [["", "מועד פנייה — חדשה קודם"], ["decided_at", "מועד הכרעה — אחרונה קודם"]],
+    "requests": [
+      { "step": "initial load", "body": "{\"status\":\"\",\"kind\":\"\",\"decided\":\"\",\"sort\":\"\",\"q\":\"\",\"limit\":20,\"offset\":0}", "ids": ["#197", "#196", "#195"], "count": "3 פניות" },
+      { "step": "sort changed, button NOT clicked", "requests_sent": 0, "ids": ["#197", "#196", "#195"], "count": "3 פניות" },
+      { "step": "clicked הצג", "body": "{\"status\":\"\",\"kind\":\"\",\"decided\":\"\",\"sort\":\"decided_at\",\"q\":\"\",\"limit\":20,\"offset\":0}", "ids": ["#195", "#196", "#197"], "count": "3 פניות" },
+      { "step": "decided=no + sort=decided_at via same button", "body": "{\"status\":\"\",\"kind\":\"\",\"decided\":\"no\",\"sort\":\"decided_at\",\"q\":\"\",\"limit\":20,\"offset\":0}", "ids": ["#197"], "count": "פנייה אחת" },
+      { "step": "back to defaults", "body": "{\"status\":\"\",\"kind\":\"\",\"decided\":\"\",\"sort\":\"\",\"q\":\"\",\"limit\":20,\"offset\":0}", "ids": ["#197", "#196", "#195"], "count": "3 פניות" }
+    ],
+    "total_fetches_captured": 5,
+    "console": { "errors": 0, "warnings": 0, "info": 4, "info_source": "NetFree font loading on netfree.link, not the app" },
+    "screenshots": [
+      { "file": "01-live-apply-label.png", "bytes": 50986, "md5_8": "DB806DAE" },
+      { "file": "02-live-applied-sort.png", "bytes": 51141, "md5_8": "921A402E" },
+      { "file": "03-live-back-to-default.png", "bytes": 51027, "md5_8": "F6D10BE5" }
+    ]
+  },
+  "seed": {
+    "path": "bkalot-clone-intake over HTTP with the anon key, as from the form",
+    "cases": [195, 196, 197],
+    "contacts": [202, 203, 204],
+    "phones": ["0504440011", "0504440022", "0504440033"],
+    "queued": false,
+    "decided_via": "public.bkalot_clone_admin_set_status (the product's own decision path), two separate calls",
+    "decided_order": [196, 195],
+    "decided_at": ["2026-08-14T14:31:20.906465+00:00", "2026-08-14T14:31:26.492808+00:00"],
+    "undecided": 197,
+    "admin_created_via": "public.bkalot_clone_admin_create → id 52 (crypt/bf12), not a hash injection"
+  },
+  "test_mode_measured": {
+    "documents": 0,
+    "cases_sent": 0,
+    "intake_queued": false,
+    "outbound_queue": 8,
+    "outbound_rows_with_sent_at": 0,
+    "queue_fingerprint_baseline": "bf57d69edaf6725ff7f52ad3007c4170",
+    "queue_fingerprint_after": "bf57d69edaf6725ff7f52ad3007c4170",
+    "delivery_log": 3
+  },
+  "rollback": {
+    "method": "five separate statements by id, not one CTE (the 124cfc2 trap); contacts by id, not by a normalised phone (the ac6e523 trap)",
+    "deleted": { "case_rights": 0, "cases": 3, "contacts": 3, "admin_sessions": 1, "admin_users": 1 },
+    "after": { "cases": 0, "case_rights": 0, "documents": 0, "admin_users": 1, "admin_sessions": 5, "templates": 2, "contacts": 4, "outbound_queue": 8, "delivery_log": 3, "catalog": 888 },
+    "matches_baseline": true
+  },
+  "protected_untouched": ["08", "09", "bkalut-app", "bkalot-admin", "zr_*", "NEDARIM3873", "csj", "csj_src", "igud"]
+}

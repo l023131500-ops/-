@@ -1,0 +1,155 @@
+{
+  "login": {
+    "url": "https://more30.com/login",
+    "measuredAt": "2026-08-17T15:49:28.650Z",
+    "performance": 85,
+    "accessibility": 100,
+    "bestPractices": 77,
+    "seo": 63,
+    "metrics": {
+      "fcp": "1.4 s",
+      "lcp": "1.4 s",
+      "tbt": "100 ms",
+      "cls": "0.272",
+      "si": "2.8 s"
+    },
+    "failedAudits": [
+      {
+        "id": "max-potential-fid",
+        "title": "Max Potential First Input Delay",
+        "score": 0.89,
+        "display": "130 ms"
+      },
+      {
+        "id": "cumulative-layout-shift",
+        "title": "Cumulative Layout Shift",
+        "score": 0.45,
+        "display": "0.272"
+      },
+      {
+        "id": "interactive",
+        "title": "Time to Interactive",
+        "score": 0.75,
+        "display": "5.1 s"
+      },
+      {
+        "id": "third-party-cookies",
+        "title": "Uses third-party cookies",
+        "score": 0,
+        "display": "2 cookies found"
+      },
+      {
+        "id": "layout-shifts",
+        "title": "Avoid large layout shifts",
+        "score": 0,
+        "display": "4 layout shifts found"
+      },
+      {
+        "id": "unminified-css",
+        "title": "Minify CSS",
+        "score": 0.5,
+        "display": "Est savings of 2 KiB"
+      },
+      {
+        "id": "unminified-javascript",
+        "title": "Minify JavaScript",
+        "score": 0.5,
+        "display": "Est savings of 6 KiB"
+      },
+      {
+        "id": "unused-javascript",
+        "title": "Reduce unused JavaScript",
+        "score": 0.5,
+        "display": "Est savings of 27 KiB"
+      },
+      {
+        "id": "inspector-issues",
+        "title": "Issues were logged in the `Issues` panel in Chrome Devtools",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "is-crawlable",
+        "title": "Page is blocked from indexing",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "cache-insight",
+        "title": "Use efficient cache lifetimes",
+        "score": 0.5,
+        "display": "Est savings of 53 KiB"
+      },
+      {
+        "id": "cls-culprits-insight",
+        "title": "Layout shift culprits",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "document-latency-insight",
+        "title": "Document request latency",
+        "score": 0.5,
+        "display": "Est savings of 20 KiB"
+      },
+      {
+        "id": "modern-http-insight",
+        "title": "Modern HTTP",
+        "score": 0.5,
+        "display": ""
+      },
+      {
+        "id": "network-dependency-tree-insight",
+        "title": "Network dependency tree",
+        "score": 0,
+        "display": ""
+      }
+    ],
+    "mainThreadBreakdown": [
+      {
+        "group": "Other",
+        "duration": 672
+      },
+      {
+        "group": "Style & Layout",
+        "duration": 465
+      },
+      {
+        "group": "Script Evaluation",
+        "duration": 188
+      },
+      {
+        "group": "Rendering",
+        "duration": 71
+      },
+      {
+        "group": "Parse HTML & CSS",
+        "duration": 35
+      },
+      {
+        "group": "Script Parsing & Compilation",
+        "duration": 16
+      }
+    ],
+    "bootupTime": [
+      {
+        "url": "https://more30.com/login",
+        "total": 648,
+        "scripting": 22,
+        "scriptParseCompile": 8
+      },
+      {
+        "url": "Unattributable",
+        "total": 496,
+        "scripting": 17,
+        "scriptParseCompile": 0
+      },
+      {
+        "url": "https://netfree.link/card/card-injection.js",
+        "total": 164,
+        "scripting": 119,
+        "scriptParseCompile": 4
+      }
+    ]
+  }
+}

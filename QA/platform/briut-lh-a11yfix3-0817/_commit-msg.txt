@@ -1,0 +1,34 @@
+06 בריאות (קופות חולים): Lighthouse נמדד לראשונה (perf 84, a11y 91) + תוקנו 2 ליקויי נגישות אמיתיים, נגישות 91→97
+
+node scripts/qa/lighthouse-run.mjs QA/platform/briut-lh-0817 briut — ציון ראשון אי-פעם ל-briut(06):
+perf 84 · a11y 91 · bp 77 · seo 100. failedAudits חשף שלושה ליקויי נגישות אמיתיים (לא סביבתיים)
+ב-apps/06-kupot-holim/site:
+
+- label-content-name-mismatch: שלושה אלמנטים עם aria-label שאינו מכיל את הטקסט הנראה שלהם —
+  כפתורי הסגירה (drawer/modal) עם aria-label="סגור" בלי התו הנראה "×", קישור המותג בכותרת
+  עם aria-label שאינו תואם לתוכן הנראה, וכרטיס הפרופיל (article role="button") עם aria-label
+  ארוך יותר מהכותרת הנראית. תוקן: aria-label="סגור ×" בשני הכפתורים (index.html), והוסרו
+  שני ה-aria-label המיותרים (brand link, profile-card) כך שהשם הנגיש נופל חזרה לטקסט הנראה
+  בפועל (app.js, index.html) — מתאם ל-WCAG 2.5.3 Label in Name.
+- aria-required-children: chips של סינון הקטגוריות (role="button" מרומז דרך <button>, בלי
+  מבנה tablist/tab תקין) — נוסף role="tab"/aria-selected לכל chip ב-renderCatFilter (app.js).
+
+color-contrast נשאר פתוח — ללא ראיית פרט (Lighthouse לא סיפק selector בפורמט הזה), לא זוהה
+האלמנט הספציפי בסבב הזה; לא נגעתי בפלטת הצבעים בלי לדעת מי.
+
+נפרס בעבר מ-_deploy/briut-more30 (עותק חי אומת זהה byte-for-byte לעותק במאגר — fc.exe
+_deploy\briut-more30\briut\{app.js,index.html} apps\06-kupot-holim\site\{app.js,index.html},
+"no differences encountered"). שלוש מדידות חוזרות אחרי הפריסה (fix/fix2/fix3, כולן a11y 97,
+perf 93/91/87 — תנודה שתואמת את דפוס NetFree שכבר מתועד ב-32 נדל"ן/02 תמלול/04 עימוד, לא
+נבדק כאן שוב) מאשרות יציבות: אין עוד שיפור נגישות מלבד color-contrast הפתוח.
+
+ראיות: QA/platform/briut-lh-0817/_lighthouse.json (לפני) ·
+QA/platform/briut-lh-a11yfix-0817/_lighthouse.json ·
+QA/platform/briut-lh-a11yfix2-0817/_lighthouse.json ·
+QA/platform/briut-lh-a11yfix3-0817/_lighthouse.json (אחרי, שלוש מדידות חוזרות).
+
+הערה: העבודה הזו (קוד + פריסה + מדידות) נעשתה בסשן קודם שקרס לפני commit — עץ העבודה
+היה עדיין מכיל את השינויים הלא-מחויבים, זהים byte-for-byte לעותק החי. הקומיט הזה רק
+תופס אותם במאגר, בלי שינוי קוד נוסף.
+
+Supabase MCP לא היה מחובר לסשן הזה — heartbeat נכתב כקובץ pending, יתווסף לתור.

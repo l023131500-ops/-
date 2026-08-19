@@ -5,14 +5,18 @@ import { markInquiryRead } from "@/data/repositories";
 import { useInquiries, useRabbiQuestions } from "@/hooks/useAdminData";
 import { cn } from "@/lib/cn";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { ErrorState } from "@/components/ui/ErrorState";
+import { ListSkeleton } from "@/components/ui/Skeleton";
 
 type Tab = "inquiries" | "questions";
 
 export function AdminInbox() {
   const qc = useQueryClient();
   const [tab, setTab] = useState<Tab>("inquiries");
-  const { data: inquiries } = useInquiries();
-  const { data: questions } = useRabbiQuestions();
+  const inquiriesQuery = useInquiries();
+  const questionsQuery = useRabbiQuestions();
+  const { data: inquiries } = inquiriesQuery;
+  const { data: questions } = questionsQuery;
 
   const markRead = useMutation({
     mutationFn: (id: string) => markInquiryRead(id),
@@ -28,7 +32,15 @@ export function AdminInbox() {
 
       <div className="mt-6 inline-flex rounded-lg border border-border bg-card p-1">
         <button onClick={() => setTab("inquiries")} className={cn("rounded-md px-4 py-2 text-sm font-medium", tab === "inquiries" ? "bg-primary text-primary-foreground" : "text-muted-foreground")}>
-          פניות {unread > 0 && <span className="mr-1 rounded-full bg-gold px-1.5 text-xs text-gold-foreground">{unread}</span>}
+          פניות{" "}
+          {/* ‏מונה שנעלם בכשל אומר "אין פניות שלא נקראו" — הוא נשאר, ומודה שהוא לא יודע. */}
+          {inquiriesQuery.isError ? (
+            <span className="mr-1 rounded-full bg-red-500/15 px-1.5 text-xs text-red-500" title="מספר הפניות שלא נקראו אינו זמין">
+              ?
+            </span>
+          ) : (
+            unread > 0 && <span className="mr-1 rounded-full bg-gold px-1.5 text-xs text-gold-foreground">{unread}</span>
+          )}
         </button>
         <button onClick={() => setTab("questions")} className={cn("rounded-md px-4 py-2 text-sm font-medium", tab === "questions" ? "bg-primary text-primary-foreground" : "text-muted-foreground")}>
           שאלות לרב
@@ -37,7 +49,17 @@ export function AdminInbox() {
 
       <div className="mt-6 space-y-3">
         {tab === "inquiries" &&
-          ((inquiries ?? []).length === 0 ? (
+          (inquiriesQuery.isLoading ? (
+            <ListSkeleton />
+          ) : inquiriesQuery.isError ? (
+            /* ‏"אין פניות" על קריאה שנכשלה גורם למנהל לסגור את התיבה
+               ‏בזמן שפניות ציבור אמיתיות ממתינות בה. */
+            <ErrorState
+              title="לא הצלחנו לטעון את הפניות"
+              description="התיבה אינה מוצגת כי הקריאה נכשלה — ייתכן שממתינות פניות שלא נקראו."
+              onRetry={() => inquiriesQuery.refetch()}
+            />
+          ) : (inquiries ?? []).length === 0 ? (
             <EmptyState icon={Inbox} title="אין פניות" description="פניות מהאתר יופיעו כאן." />
           ) : (
             inquiries!.map((i) => (
@@ -62,7 +84,15 @@ export function AdminInbox() {
           ))}
 
         {tab === "questions" &&
-          ((questions ?? []).length === 0 ? (
+          (questionsQuery.isLoading ? (
+            <ListSkeleton />
+          ) : questionsQuery.isError ? (
+            <ErrorState
+              title="לא הצלחנו לטעון את השאלות לרב"
+              description="הרשימה אינה מוצגת כי הקריאה נכשלה — ייתכן שממתינות שאלות ללא מענה."
+              onRetry={() => questionsQuery.refetch()}
+            />
+          ) : (questions ?? []).length === 0 ? (
             <EmptyState icon={MessageCircleQuestion} title="אין שאלות" description="שאלות לרב יופיעו כאן." />
           ) : (
             questions!.map((q) => (

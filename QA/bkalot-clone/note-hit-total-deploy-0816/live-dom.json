@@ -1,0 +1,61 @@
+{
+  "what": "note_hit_total — נמדד מהכתובת החיה אחרי הפריסה, ולא ממקור ולא משרת מקומי",
+  "url": "https://more30.com/bkalot-studio/admin?cachebust=0816hitdom",
+  "viewport": "1280x900",
+  "admin": { "id": 134, "email": "qa-hittotal-0816@more30.test", "how": "bkalot_clone_admin_create + התחברות אמיתית דרך הטופס" },
+  "case": { "id": 413, "contact_id": 420, "logs": [153, 154, 155] },
+
+  "db_before_screen": {
+    "comment": "השדה שהמסך צריך, נמדד מ-bkalot_clone_admin_cases בייצור לפני שנקרא ולו DOM אחד",
+    "טופס":        { "note_match_count": 1, "notes_count": 3, "note_hit_total": 3, "matched_in_note": true },
+    "email":       { "note_match_count": 1, "notes_count": 3, "note_hit_total": 2, "matched_in_note": true },
+    "נשלח":        { "note_match_count": 2, "notes_count": 3, "note_hit_total": 2, "matched_in_note": true },
+    "המס הקודמת":  { "note_match_count": 1, "notes_count": 3, "note_hit_total": 1, "matched_in_note": true },
+    "אברהם":       { "note_match_count": 0, "notes_count": 3, "note_hit_total": 0, "matched_in_note": false },
+    "(no term)":   { "note_match_count": null, "notes_count": null, "note_hit_total": null, "key_present": true }
+  },
+
+  "dom_after_deploy": [
+    { "term": "טופס",       "rowCount": 1, "tally": "המונח ב-1 מתוך 3 הנימוקים · 3 פעמים",  "stale": ["נמצאה לפי הנימוק", "המונח ב-1 מתוך 3 הנימוקים · 3 פעמים"],  "counter": "פנייה אחת תואמת את הסינון · בתור פנייה אחת", "overflow": "1280/1280" },
+    { "term": "email",      "rowCount": 1, "tally": "המונח ב-1 מתוך 3 הנימוקים · 2 פעמים",  "stale": ["נמצאה לפי הנימוק", "המונח ב-1 מתוך 3 הנימוקים · 2 פעמים"],  "counter": "פנייה אחת תואמת את הסינון · בתור פנייה אחת", "overflow": "1280/1280" },
+    { "term": "נשלח",       "rowCount": 1, "tally": "המונח ב-2 מתוך 3 הנימוקים · 2 פעמים",  "stale": ["נמצאה לפי הנימוק", "המונח ב-2 מתוך 3 הנימוקים · 2 פעמים"],  "counter": "פנייה אחת תואמת את הסינון · בתור פנייה אחת", "overflow": "1280/1280",
+      "note": "⚠️ הבקרה שבה שני המספרים שווים — הכרעה (9). בלעדיה «1 מתוך 3 · 3 פעמים» ו«2 מתוך 3 · 2 פעמים» לא היו נבדלים זה מזה בהתנהגות." },
+    { "term": "המס הקודמת", "rowCount": 1, "tally": "המונח ב-1 מתוך 3 הנימוקים · פעם אחת",  "stale": ["נמצאה לפי הנימוק", "המונח ב-1 מתוך 3 הנימוקים · פעם אחת"],  "counter": "פנייה אחת תואמת את הסינון · בתור פנייה אחת", "overflow": "1280/1280",
+      "note": "«פעם אחת» ולא «1 פעמים» — countHe של השורה עצמה." },
+    { "term": "אברהם",      "rowCount": 1, "tally": null, "stale": [], "counter": "פנייה אחת תואמת את הסינון · בתור פנייה אחת", "overflow": "1280/1280",
+      "note": "hit 0 — הכרעה (3) לא זזה, ואין תוספת כי אין תיבה בכלל." },
+    { "term": "(no term)",  "rowCount": 1, "tally": null, "stale": [], "counter": "פנייה אחת", "overflow": "1280/1280" }
+  ],
+
+  "title_after": "כמה מהנימוקים שנכתבו ביומן ההכרעות של הפנייה נושאים את מונח החיפוש, ואחרי הנקודה — כמה פעמים המונח נכתב בתוכם בסך הכול. …",
+
+  "controls_that_did_not_move": [
+    "«נמצאה לפי הנימוק» נדלק על אותם ארבעה מונחים בדיוק שבהם matched_in_note=true",
+    "המונה «ב-N מתוך M הנימוקים» זהה אות באות למה שהיה לפני הפריסה — התוספת מתארת ואינה מחליפה",
+    "שורת המונה («פנייה אחת תואמת את הסינון · בתור פנייה אחת») זהה בכל חמש הקריאות המסוננות",
+    "שורה אחת בכל קריאה, בכל שישה המצבים",
+    "אפס גלישה אופקית ב-1280x900 — scrollWidth 1280 = clientWidth"
+  ],
+
+  "console": {
+    "errors": 0,
+    "warnings": 0,
+    "info": 4,
+    "note": "ארבע הודעות INFO, כולן טוען הגופנים של netfree.link ולא האפליקציה. נלכדו ולא נרשמו כחסרות."
+  },
+
+  "screenshots": [
+    { "file": "live-tofes-3-times.png",          "md5": "9B1E8ACE", "bytes": 39515 },
+    { "file": "live-nishlach-2-of-3-twice.png",  "md5": "DC5BC108", "bytes": 39280 },
+    { "file": "live-hamas-once.png",             "md5": "21BFA966", "bytes": 40262 }
+  ],
+
+  "said_and_not_swallowed": [
+    "⚠️ הזריעה נעשתה ב-SQL ולא מעל HTTP — פיגום ולא הטענה.",
+    "⚠️ מצבי הדפדפן שלפני הפריסה לא צולמו מהייצור — הפריסה כבר קרתה. שהייצור הריץ את הקוד הישן נמדד מ-41 הסימנים (live-before.json) ולא מקריאת DOM.",
+    "⚠️ ענף המפתח החסר (הכרעה 7) וענף המחלוקת (הכרעה 8) נכתבו ולא נמדדו — אין כאן שרת מלפני 0102, ו-0102 מחזירה null בדיוק במקרה של מחלוקת.",
+    "⚠️ לא נמדד ב-390x844.",
+    "⚠️ הקריאה הראשונה אחרי הרינדור מחדש חזרה ריקה ב-1600ms ונמדדה שוב ב-3000ms — מרוץ תזמון של הבדיקה, ולא מצב של המסך. נרשם ולא נבלע.",
+    "gannenet-dev-served-by-stale-sw — כל קריאה נעשתה עם cachebust."
+  ]
+}

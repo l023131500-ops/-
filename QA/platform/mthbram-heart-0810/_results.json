@@ -1,0 +1,80 @@
+{
+  "before": {
+    "found": true,
+    "heading": "מעוניינים להיות שותפים בהפצת התורה?",
+    "chipText": "שותפים בהפצת התורה",
+    "heartsInBanner": 2,
+    "heartsOnDonateLink": 1,
+    "heartsOnPage": 2,
+    "donateLabel": "תרומה דרך נדרים פלוס",
+    "externalLinkOnDonate": 1
+  },
+  "after": {
+    "found": true,
+    "heading": "מעוניינים להיות שותפים בהפצת התורה?",
+    "chipText": "שותפים בהפצת התורה",
+    "heartsInBanner": 1,
+    "heartsOnDonateLink": 1,
+    "heartsOnPage": 1,
+    "donateLabel": "תרומה דרך נדרים פלוס",
+    "externalLinkOnDonate": 1
+  },
+  "checks": [
+    {
+      "check": "production banner located",
+      "ok": true
+    },
+    {
+      "check": "production drew the mark twice",
+      "ok": true
+    },
+    {
+      "check": "production heart also on the donate link",
+      "ok": true
+    },
+    {
+      "check": "built banner located",
+      "ok": true
+    },
+    {
+      "check": "built banner draws one heart",
+      "ok": true
+    },
+    {
+      "check": "the surviving heart is the donate link",
+      "ok": true
+    },
+    {
+      "check": "chip kept its words",
+      "ok": true
+    },
+    {
+      "check": "chip words unchanged from production",
+      "ok": true
+    },
+    {
+      "check": "heading unchanged",
+      "ok": true
+    },
+    {
+      "check": "donate label unchanged",
+      "ok": true
+    },
+    {
+      "check": "external-link mark kept (opens a new tab)",
+      "ok": true
+    },
+    {
+      "check": "no heart anywhere else, before",
+      "ok": true
+    },
+    {
+      "check": "no heart anywhere else, after",
+      "ok": true
+    },
+    {
+      "check": "exactly one mark removed",
+      "ok": true
+    }
+  ]
+}

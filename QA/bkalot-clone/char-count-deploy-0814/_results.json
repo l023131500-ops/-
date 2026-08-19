@@ -1,0 +1,147 @@
+{
+  "beat": "char-count-deploy-0814",
+  "date": "2026-08-14",
+  "scope": "פריסה בלבד — אין שינוי קוד, אין מיגרציה ואין פריסת edge function",
+  "open_line_taken_verbatim": "הקובץ טרם נפרס — more30.com/bkalot-studio/admin עדיין מגיש «1 תווי טקסט», והמדידה של המתוקן רצה מול שרת סטטי מקומי, כלומר מדדה את הקוד ולא את המוצר; זו הפעימה הבאה",
+  "open_line_source": "heartbeat 611 (commit 1ab3b94)",
+
+  "file": {
+    "source": "apps/37-bkalot-clone/admin.html",
+    "bytes": 96566,
+    "md5": "FFDFDE5BA0659A347B40D29B8387264D",
+    "identical_to_commit": "1ab3b94 — git status ריק",
+    "prev_dist_bytes": 95580,
+    "prev_dist_note": "הועתק מ-portal/dist לפני ה-staging — בדיוק מה ש-heartbeat 610 רשם כנפרס, כלומר ה-dist שעל הדיסק היה הגרסה שבייצור ולא קובץ ישן יותר"
+  },
+
+  "markers": {
+    "method": "כל מסומן NEW נפסל מול הקובץ שבייצור לפני שנקבע — מסומן שמחזיר true על שתי הגרסאות אינו מודד דבר (המלכודת של 530fb44, 29d6ac6, e12acf9)",
+    "NEW_0_to_1": [
+      "countHe(out.text_chars, \"תו טקסט אחד\", \"תווי טקסט\")",
+      "countHe(d.text_chars ?? 0, \"תו טקסט אחד\", \"תווי טקסט\")",
+      "countHe(d.html_chars ?? 0, \"תו HTML אחד\", \"תווי HTML\")",
+      "אלא נוסח תבנית קצר שעבר את השער של 0074",
+      "מכתב טקסט בלבד מגיע"
+    ],
+    "REMOVED_1_to_0": [
+      "`${out.text_chars} תווי טקסט`",
+      "`${d.text_chars ?? 0} תווי טקסט`",
+      "`${d.html_chars ?? 0} תווי HTML`"
+    ],
+    "OLD_counted_not_probed": {
+      "countHe(": "4 → 7",
+      "זכות אחת": "4 → 5",
+      "תווי טקסט": "2 → 4",
+      "תווי HTML": "1 → 1",
+      "לא נשלח — מצב טסט": "2 → 2",
+      "queue_status": "5 → 5"
+    }
+  },
+
+  "http": {
+    "admin_slash": "95816 → 96802",
+    "admin_noslash": "95816 → 96802",
+    "delta_vs_source": 236,
+    "delta_note": "דלתת NetFree הידועה — 96,566 + 236",
+    "form_unchanged": 32558,
+    "home_unchanged": 3517,
+    "replacement_chars": 0,
+    "double_encoded_geresh": 0,
+    "written_in": "node ולא PowerShell בכוונה"
+  },
+
+  "deploy": {
+    "id": "dpl_9CQKCzzHFB9jKKqX6aTkP3Hro6fw",
+    "readyState": "READY",
+    "target": "production",
+    "aliased": "https://more30.com",
+    "from": "portal/dist",
+    "prebuilt": false,
+    "files": 38
+  },
+
+  "measurement": {
+    "browser": "Playwright, 1280x900, התחברות אמיתית דרך המסך",
+    "url": "https://more30.com/bkalot-studio/admin?cb=chardeploy0814 (cache-buster, לא הכתובת החשופה — תקלת f2001e0)",
+    "served_version_read_from_browser": {
+      "has_new_render": true,
+      "has_new_docview": true,
+      "has_old": false,
+      "note": "נמדד מתוך ה-DOM החי ולא רק ב-HTTP"
+    },
+    "seed": {
+      "case": "#199 דרך bkalot-clone-intake מעל HTTP עם מפתח anon, כמו מהטופס (kind=info, queued=false, contact 206)",
+      "admin": "id=54 דרך bkalot_clone_admin_create (crypt/bf12) ולא בהזרקת hash",
+      "template": "id=7 key=qa_one_char_deploy_0814, body_text='ש' ו-body_html='ש' — הדרך היחידה להביא את המסך לענף היחיד; שתי התבניות שבמסד ארוכות ואין מה למדוד בלעדיה"
+    },
+
+    "control_plural_unchanged": {
+      "template": "general_inquiry_reply",
+      "render_line": "מסמך #113 הופק · תבנית general_inquiry_reply · 207 תווי טקסט · 0 זכויות (כל הרשימה) · לא נשלח — מצב טסט",
+      "docview_line": "מסמך #113 · email · 207 תווי טקסט · 401 תווי HTML · לא נשלח — מצב טסט",
+      "verdict": "רבים לא זז בייצור — רגרסיה ולא רק תוספת"
+    },
+
+    "fixed_singular_live": {
+      "template": "qa_one_char_deploy_0814",
+      "render_line": "מסמך #113 הופק · תבנית qa_one_char_deploy_0814 · תו טקסט אחד · 0 זכויות (כל הרשימה) · לא נשלח — מצב טסט",
+      "docview_line": "מסמך #113 · email · תו טקסט אחד · תו HTML אחד · לא נשלח — מצב טסט",
+      "verdict": "אותו מסמך #113 בדיוק — «207 תווי טקסט» לפני ההפקה מחדש ו«תו טקסט אחד» אחריה, על אותו מסך ואותו שרת; ההבדל הוא אורך הגוף ולא הקובץ"
+    },
+
+    "two_sided_db": {
+      "document_id": 113,
+      "text_len": 1,
+      "html_len": 1,
+      "queue_id": null,
+      "verdict": "המסד אומר 1 ו-1, המסך אומר «תו טקסט אחד · תו HTML אחד»"
+    },
+
+    "live_before_from_heartbeat_611": {
+      "docview_line": "מסמך #111 · email · 1 תווי טקסט · 1 תווי HTML · לא נשלח — מצב טסט",
+      "verdict": "אותה כתובת חיה, אותו edge ואותו מסד, מסמך בן תו אחד — ההבדל בין «1 תווי טקסט» לבין «תו טקסט אחד» הוא הקובץ בלבד"
+    },
+
+    "below_the_fold_checked": "שורת ההפקה נמדדה ב-top=1196 בחלון של 900 — מתחת לקו; גוללה למרכז לפני כל צילום (תקלת e12acf9)",
+    "screenshots": [
+      { "f": "01-live-control-plural-207.png", "md5_8": "CFAB18D6" },
+      { "f": "02-live-control-docview-207-401.png", "md5_8": "AE02CA2A" },
+      { "f": "03-live-fixed-singular-render.png", "md5_8": "FD8D6B43" },
+      { "f": "04-live-fixed-singular-docview.png", "md5_8": "5C9A60B2" }
+    ],
+    "console": "אפס הודעות, אפס שגיאות ואפס אזהרות על הכתובת החיה (favicon 404 של השרת המקומי אינו קיים בייצור)"
+  },
+
+  "test_mode": {
+    "queued_on_intake": false,
+    "document_queue_id": null,
+    "sent_cases": 0,
+    "outbound_queue": 8,
+    "outbound_queue_rows_with_sent_at": 0,
+    "outbound_queue_fingerprint_base_and_after": "0351e200e27b25ec5466f94169a55805",
+    "delivery_log": 3,
+    "verdict": "אין מייל, אין הודעה ואין מסמך שיצא החוצה"
+  },
+
+  "rollback": {
+    "method": "שבע פקודות נפרדות לפי id ולא CTE אחד — תקלת 124cfc2; איש הקשר לפי id (206) ולא לפי טלפון שנשמר מנורמל — תקלת ac6e523",
+    "counts": { "documents": 1, "case_rights": 0, "cases": 1, "contacts": 1, "admin_sessions": 1, "admin_users": 1, "templates": 1 },
+    "after": { "cases": 0, "case_rights": 0, "documents": 0, "contacts": 4, "admin_users": 1, "admin_sessions": 5, "templates": 2, "catalog": 888, "outbound_queue": 8, "delivery_log": 3 },
+    "templates_after": "1:general_inquiry_reply, 2:rights_treatment_reply — התבנית הזמנית אינה במסד",
+    "verdict": "בסיס בדיוק"
+  },
+
+  "protected": "אין נגיעה ב-08/09/bkalut-app/bkalot-admin/zr_*/NEDARIM3873 ולא בסכמות csj/csj_src/igud; supabase/functions לא נגעה — bkalot-clone-intake נשארה v1 ו-bkalot-clone-admin v7",
+
+  "open": [
+    "נתיב ספירת התווים סגור משני צדדיו — מסך (1ab3b94) ופריסה (כאן) — ואין בו קו פתוח שנשאר",
+    "אפס נשאר «0 תווי טקסט» ולא שונה — ריבוי הוא הצורה הנכונה לאפס בעברית; לא נמדד בדפדפן כי 0074 חוסמת גוף באורך אפס ואין דרך להגיע אליו מהמוצר",
+    "כותרות «זכויות (N)» ו«מסמכים (N)» לא נגעו — מספר בסוגריים הוא סימון ספירה ולא צירוף שמני",
+    "אין היסטוריית הכרעות",
+    "הקליטה מחברת 42 זכויות ל-treatment ואפס ל-info/reminder על אותו situation",
+    "«מי הפיק» על documents אינו נכתב לשום מקום",
+    "ה-title של «הצג» נמדד כתכונה ב-DOM ולא כטולטיפ שנפתח בריחוף",
+    "sent בלתי-ניתן-להשגה בכוונה; bkalot_clone_admin_create אינה חשופה ב-HTTP; pdf/audio → channel_unsupported",
+    "public_visible ו-show_in_showcase של #37 נשארים false"
+  ]
+}

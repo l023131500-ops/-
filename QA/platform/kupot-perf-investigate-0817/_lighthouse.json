@@ -1,0 +1,207 @@
+{
+  "kupot": {
+    "url": "https://more30.com/kupot",
+    "measuredAt": "2026-08-17T20:51:30.888Z",
+    "performance": 54,
+    "accessibility": 100,
+    "bestPractices": 77,
+    "seo": 100,
+    "metrics": {
+      "fcp": "4.4 s",
+      "lcp": "4.5 s",
+      "tbt": "470 ms",
+      "cls": "0.079",
+      "si": "8.7 s"
+    },
+    "failedAudits": [
+      {
+        "id": "first-contentful-paint",
+        "title": "First Contentful Paint",
+        "score": 0.17,
+        "display": "4.4 s"
+      },
+      {
+        "id": "largest-contentful-paint",
+        "title": "Largest Contentful Paint",
+        "score": 0.36,
+        "display": "4.5 s"
+      },
+      {
+        "id": "speed-index",
+        "title": "Speed Index",
+        "score": 0.16,
+        "display": "8.7 s"
+      },
+      {
+        "id": "total-blocking-time",
+        "title": "Total Blocking Time",
+        "score": 0.61,
+        "display": "470 ms"
+      },
+      {
+        "id": "max-potential-fid",
+        "title": "Max Potential First Input Delay",
+        "score": 0.39,
+        "display": "290 ms"
+      },
+      {
+        "id": "interactive",
+        "title": "Time to Interactive",
+        "score": 0.43,
+        "display": "7.9 s"
+      },
+      {
+        "id": "third-party-cookies",
+        "title": "Uses third-party cookies",
+        "score": 0,
+        "display": "1 cookie found"
+      },
+      {
+        "id": "mainthread-work-breakdown",
+        "title": "Minimize main-thread work",
+        "score": 0,
+        "display": "5.9 s"
+      },
+      {
+        "id": "bootup-time",
+        "title": "Reduce JavaScript execution time",
+        "score": 0,
+        "display": "1.3 s"
+      },
+      {
+        "id": "valid-source-maps",
+        "title": "Missing source maps for large first-party JavaScript",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "unminified-javascript",
+        "title": "Minify JavaScript",
+        "score": 0.5,
+        "display": "Est savings of 6 KiB"
+      },
+      {
+        "id": "unused-css-rules",
+        "title": "Reduce unused CSS",
+        "score": 0.5,
+        "display": "Est savings of 10 KiB"
+      },
+      {
+        "id": "unused-javascript",
+        "title": "Reduce unused JavaScript",
+        "score": 0,
+        "display": "Est savings of 106 KiB"
+      },
+      {
+        "id": "inspector-issues",
+        "title": "Issues were logged in the `Issues` panel in Chrome Devtools",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "cache-insight",
+        "title": "Use efficient cache lifetimes",
+        "score": 0,
+        "display": "Est savings of 43 KiB"
+      },
+      {
+        "id": "document-latency-insight",
+        "title": "Document request latency",
+        "score": 0.5,
+        "display": "Est savings of 3 KiB"
+      },
+      {
+        "id": "forced-reflow-insight",
+        "title": "Forced reflow",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "lcp-breakdown-insight",
+        "title": "LCP breakdown",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "network-dependency-tree-insight",
+        "title": "Network dependency tree",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "render-blocking-insight",
+        "title": "Render-blocking requests",
+        "score": 0,
+        "display": "Est savings of 180 ms"
+      }
+    ],
+    "mainThreadBreakdown": [
+      {
+        "group": "Other",
+        "duration": 2296
+      },
+      {
+        "group": "Style & Layout",
+        "duration": 1814
+      },
+      {
+        "group": "Script Evaluation",
+        "duration": 1314
+      },
+      {
+        "group": "Rendering",
+        "duration": 250
+      },
+      {
+        "group": "Parse HTML & CSS",
+        "duration": 75
+      },
+      {
+        "group": "Garbage Collection",
+        "duration": 64
+      },
+      {
+        "group": "Script Parsing & Compilation",
+        "duration": 37
+      }
+    ],
+    "bootupTime": [
+      {
+        "url": "https://more30.com/kupot",
+        "total": 2402,
+        "scripting": 86,
+        "scriptParseCompile": 7
+      },
+      {
+        "url": "Unattributable",
+        "total": 1529,
+        "scripting": 180,
+        "scriptParseCompile": 0
+      },
+      {
+        "url": "https://more30.com/kupot/assets/index-DbBm6hnF.js",
+        "total": 1024,
+        "scripting": 803,
+        "scriptParseCompile": 8
+      },
+      {
+        "url": "https://more30.com/auth-button.js",
+        "total": 440,
+        "scripting": 53,
+        "scriptParseCompile": 8
+      },
+      {
+        "url": "https://netfree.link/card/card-injection.js",
+        "total": 235,
+        "scripting": 128,
+        "scriptParseCompile": 13
+      },
+      {
+        "url": "https://netfree.link/card/",
+        "total": 102,
+        "scripting": 0,
+        "scriptParseCompile": 0
+      }
+    ]
+  }
+}

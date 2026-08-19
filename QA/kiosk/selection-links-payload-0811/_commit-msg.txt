@@ -1,0 +1,60 @@
+kiosk (35): the console could approve a link, and nothing could read it
+
+§2★ה gives the person at the device two things to choose: another מזהה לקוח,
+and another קישור. The link half landed this morning — the device_links table,
+linkapprovals.js, the picker on the device card — so an owner could tick "this
+tablet may also open the evening menu" and the row was written.
+
+Nothing could then read it. identify(), which is the device's own selection
+screen, and launcherProfile(), which is the page a hall code opens, both
+answered with clients alone. An approved link was write-only.
+
+Worse than the missing list was the allow-list. identify() built it as
+configHostCsv(effectiveHostCsv(dev, clients), shown) — three widenings exist and
+it composed two. deviceConfigHostCsv() was introduced precisely because that
+expression was written out at four call sites and a push that drops one widening
+fails nowhere a developer can see it: it fails as a blocked page on a tablet in
+a hall. This was the fifth call site, and it was already the stale copy. Both
+payloads now wrap withLinkHosts() in the same order, so a link offered on the
+screen is one the device can actually open.
+
+Empty is still left exactly alone. hostAllowed() reads an unset list as "no lock
+configured", so seeding it from the approvals would create a lock on a device
+that had none and cut it off from the page it is showing right now.
+
+A link is picked, never typed. typedCode still resolves against clients only,
+and must: links has no code column, and matching a typed string against a name
+or an id would turn a list whose addresses are on the screen into a credential.
+
+POST /api/launcher/open takes linkId beside clientId and refuses a body naming
+both rather than resolving by precedence — the two are separate approvals, and
+picking one silently would make which page opens depend on an order nobody
+stated. Neither id is the same 400; 404 would say "not approved", which is a
+different and wrong answer.
+
+approvedLinkTarget() now requires the row to carry a url. Ids are unique per
+table, so client 1 and link 1 both exist, and handed the clients list it found a
+row by id and read url off something that stores site_url — a target with no
+address, which reaches the device as a lock onto nothing. It only fires on a
+mixed list, and now it fires closed. launcherTarget() was already safe the other
+way round: it requires active, and a link row has no such column.
+
+Both new arguments are last and optional, so every existing caller and test
+keeps the old shape — the widening is a no-op on undefined, which is what
+"nothing approved" already meant.
+
+Verified in QA/kiosk/selection-links-payload-0811: 16 cases replaying all three
+routes' own sequence against the production DDL on node:sqlite, with the express
+glue rewritten and every decision taken by the real module, over two devices
+(one locked, one with no allowed_host), an active client, a disabled client, an
+approved link, an un-approved link of the same owner and one belonging to
+someone else — plus three cases that read routes/agent.js and routes/launcher.js
+off disk so the replay cannot drift from what they do. 145/146 on node --test:
+138 before, the 8 new cases are in identify.test.mjs and launcher.test.mjs, and
+the one failure is routing.test.mjs, which imports express and cannot run in
+this checkout.
+
+public/kiosk-launcher.html still draws one list, so links arrives in its payload
+undrawn. That is the next step and it is public/ only.
+
+Not deployed.

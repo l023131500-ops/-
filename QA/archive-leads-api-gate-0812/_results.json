@@ -1,0 +1,55 @@
+{
+  "issue": 170,
+  "date": "2026-08-12",
+  "supabase_project": "zwxwteebcoejrjdufzsv",
+  "lovable_project": "b095c3d6-c6b0-425c-8d0c-06020933b981",
+  "lovable_project_name": "lux-manage",
+  "lovable_commit": "b230a60ef2bf8debbcbd9ae4b9e02308db87b81b",
+  "lovable_cost_credits": 0,
+  "endpoint": "https://zwxwteebcoejrjdufzsv.supabase.co/functions/v1/leads-api",
+  "before": {
+    "GET_no_headers": {
+      "status": 200,
+      "content_length": 1444,
+      "body_keys": ["leads", "total", "limit", "offset"],
+      "total": 6,
+      "body_saved": false,
+      "body_saved_reason": "real names, emails and phone numbers of real people"
+    }
+  },
+  "after": {
+    "GET_no_headers": {
+      "status": 403,
+      "body": "{\"error\":\"leads-api reader disabled: LEADS_API_KEY is not configured\"}",
+      "repeats": 3
+    },
+    "GET_wrong_x_api_key": {
+      "status": 403,
+      "body": "{\"error\":\"leads-api reader disabled: LEADS_API_KEY is not configured\"}"
+    },
+    "PUT_empty_leads_array": {
+      "status": 403,
+      "body": "{\"error\":\"leads-api reader disabled: LEADS_API_KEY is not configured\"}",
+      "note": "gate returns before req.json(), so no insert path is reached"
+    },
+    "POST_empty_object": {
+      "status": 400,
+      "body": "{\"error\":\"At least one of name, email, or phone is required\"}",
+      "note": "public contact form still reachable; no row written"
+    },
+    "OPTIONS_preflight": {
+      "status": 200,
+      "access_control_allow_headers": "authorization, x-api-key, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version"
+    }
+  },
+  "not_measured": {
+    "401_branch": "requires LEADS_API_KEY to be set in the function environment; deliberately left unset so the service_role reader stays off (403 precedes 401)",
+    "admin_leads_screen": "AdminLeads.tsx falls back to supabase.from('leads') when the function is not ok; read in source, not run in a browser — the archived app has no deployed site",
+    "other_archived_functions": "9 other deployed functions across the two archived apps were not probed one by one in this step"
+  },
+  "writes_performed": {
+    "live_tables": "none",
+    "leads_rows_created": 0,
+    "test_mode": true
+  }
+}

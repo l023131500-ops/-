@@ -4,7 +4,7 @@ import { createBrowserClient } from "@more30/db";
 import { SpecWizard } from "./SpecWizard";
 
 /**
- * more30 — אתר התדמית של מור מערכות תוכנה (מערכת 33).
+ * more30 — אתר התדמית של עולם הסטארטאפים (מערכת 33).
  *
  * כל מערכת נגישה תחת more30.com/<נושא>; נטפרי חוסמת ‎*.vercel.app‎, ולכן הפורטל
  * מנתב את הנתיב לפריסה שמאחוריו ואף פעם לא חושף את הכתובת האמיתית.
@@ -95,6 +95,12 @@ const blurb = (r: System) => {
 /** שם התחום לתצוגה. מפתח שאין לו תרגום מוצג כמו שהוא ולא נעלם מהעמוד. */
 const deptLabel = (key: string) => (DEPARTMENTS as Record<string, string>)[key] ?? key;
 
+type RightsStats = {
+  total: number;
+  by_source: Record<string, number>;
+  labels: Record<string, string>;
+};
+
 export function App() {
   const [load, setLoad] = useState<Load>({ state: "loading" });
 
@@ -123,14 +129,72 @@ export function App() {
   const topicRow = seg ? rows.find((r) => r.path === seg) : undefined;
   if (topicRow && !enterable(topicRow)) return <ComingSoon row={topicRow} />;
 
+  /**
+   * כתובת שאין מאחוריה מערכת (באג #119).
+   *
+   * ⚠️ בייצור הענף הזה כבר אינו נדרש: ה-catch-all `/(.*) → /index.html` הוסר
+   * מ-portal/vercel.dist.json, וכתובת שלא נתפסה באף rewrite מקבלת את
+   * portal/public/404.html — אותו עמוד בדיוק, בסטטוס 404 אמיתי ולא 200.
+   * הוא נשאר כאן בשביל שני מצבים שבהם אין vercel.json: `vite preview` המקומי,
+   * ורגרסיה שתחזיר catch-all. עדיף שיאמר "לא נמצא" מאשר שיצייר את דף הבית.
+   *
+   * ⚠️ רק אחרי `ready`. ב-loading הרשימה ריקה, וב-failed היא ריקה מטעות רשת —
+   * לומר "לא נמצא" באחד מהשניים היה הופך תקלה זמנית לעמוד שגיאה על מערכת חיה.
+   */
+  if (load.state === "ready" && seg && !topicRow && !PORTAL_PATHS.has(seg)) {
+    return <NotFound seg={seg} />;
+  }
+
   return <Portal load={load} retry={fetchSystems} />;
+}
+
+/**
+ * נתיבים שהפורטל מגיש בעצמו — יש להם rewrite משלהם ב-portal/vercel.dist.json,
+ * ולכן ה-SPA לעולם אינו רואה אותם בייצור. הרשימה כאן היא חגורת ביטחון בלבד:
+ * אם rewrite אחד ייפול, עדיף שהמבקר יקבל את דף הבית ולא הכרזה ש-/login אינו קיים.
+ */
+const PORTAL_PATHS = new Set([
+  "login", "me", "subscribe", "showcase", "admin", "nihul", "auth", "api", "assets",
+]);
+
+/**
+ * הכתובת אינה קיימת. התאום הסטטי שלו — portal/public/404.html — הוא מה שמוגש
+ * בייצור, ובסטטוס 404. שניהם מסומנים `noindex`: הסטטוס מספיק לגוגל, אבל לא כל
+ * סורק קורא אותו, ובתצוגה המקומית (בלי vercel.json) הסטטוס עדיין 200.
+ */
+function NotFound({ seg }: { seg: string }) {
+  useEffect(() => {
+    const prevTitle = document.title;
+    document.title = "הכתובת לא נמצאה · עולם הסטארטאפים";
+    const meta = document.createElement("meta");
+    meta.name = "robots";
+    meta.content = "noindex";
+    document.head.appendChild(meta);
+    return () => { document.title = prevTitle; meta.remove(); };
+  }, []);
+
+  return (
+    <main className="soon" dir="rtl">
+      <div className="soon-in">
+        <div className="eyebrow">עולם הסטארטאפים</div>
+        <h1 className="display soon-title">הכתובת הזו לא נמצאה</h1>
+        <p className="serif soon-desc">
+          אין מערכת שיושבת תחת more30.com/{seg}. ייתכן שהכתובת הוקלדה אחרת, או שהיא הובילה
+          למשהו שכבר אינו באוויר. כל המערכות הפעילות מרוכזות בדף אחד.
+        </p>
+        <div className="rule" />
+        <p className="soon-note">404 · more30.com/{seg}</p>
+        <a className="btn" href="/">לרשימת המערכות</a>
+      </div>
+    </main>
+  );
 }
 
 function ComingSoon({ row }: { row: System }) {
   return (
     <main className="soon" dir="rtl">
       <div className="soon-in">
-        <div className="eyebrow">מור מערכות תוכנה</div>
+        <div className="eyebrow">עולם הסטארטאפים</div>
         <h1 className="display soon-title">{row.title}</h1>
         <p className="serif soon-desc">{row.what_it_does || "המערכת בהקמה ותעלה לאוויר תחת more30.com."}</p>
         <div className="rule" />
@@ -152,6 +216,21 @@ function Portal({ load, retry }: { load: Load; retry: () => void }) {
   const rows = load.state === "ready" ? load.rows : [];
   useReveal(load.state === "ready" ? rows.length : load.state);
 
+  /**
+   * מאגר הזכויות בדף הבית (§5).
+   *
+   * ספירות בלבד — הקטלוג עצמו חי ב-/bkalot, ושכפול 888 שורות לעמוד שיווקי
+   * היה מאט אותו בלי להוסיף מידע. אם הקריאה נכשלת המקטע פשוט לא מוצג:
+   * מספר שגוי על מאגר זכויות גרוע ממקטע חסר, ו-0 היה שקר.
+   */
+  const [rights, setRights] = useState<RightsStats | null>(null);
+  useEffect(() => {
+    if (!supa) return;
+    supa.rpc("more30_rights_stats").then(({ data, error }) => {
+      if (!error && data) setRights(data as RightsStats);
+    });
+  }, []);
+
   // התחומים נגזרים מהשורות עצמן, לפי סדר ההופעה — תחום חדש במסד מופיע כאן
   // מעצמו, ותחום שהתרוקן נעלם מעצמו.
   // ⚠️ מערכת בלי תחום מקבלת תחום "אחר" ולא נופלת מהרשימה. העמוד מציג את כל
@@ -167,7 +246,7 @@ function Portal({ load, retry }: { load: Load; retry: () => void }) {
     <div dir="rtl">
       <nav className="nav">
         <div className="nav-in">
-          <a className="wordmark" href="#top">מור מערכות תוכנה</a>
+          <a className="wordmark" href="#top">עולם הסטארטאפים</a>
           <div className="nav-links">
             <a href="#systems">המערכות</a>
             <a href="#about">מה אנחנו עושים</a>
@@ -183,7 +262,7 @@ function Portal({ load, retry }: { load: Load; retry: () => void }) {
       {/* פתיחה — השם הראשי, הרבה אוויר, שום דבר מעבר */}
       <header className="hero" id="top">
         <div className="hero-in">
-          <div className="eyebrow">מור מערכות תוכנה</div>
+          <div className="eyebrow">עולם הסטארטאפים</div>
           <h1 className="display hero-title">עולם הסטארטאפים</h1>
           <p className="serif hero-lead">
             עשרות מערכות נבנו כאן, עובדות היום בשטח, וחיות כולן תחת כתובת אחת.
@@ -197,7 +276,8 @@ function Portal({ load, retry }: { load: Load; retry: () => void }) {
           <div><b>{load.state === "ready" ? rows.length : "—"}</b><span>מערכות</span></div>
           <div><b>{load.state === "ready" ? liveCount : "—"}</b><span>חיות בשטח</span></div>
           <div><b>{load.state === "ready" ? depts.length : "—"}</b><span>תחומים</span></div>
-          <div><b>more30.com</b><span>כתובת אחת</span></div>
+          {/* נתון אמת מ-rights.catalog. אין נתון → לא מוצג, ולא 0. */}
+          <div><b>{rights ? rights.total.toLocaleString("he-IL") : "—"}</b><span>זכויות במאגר</span></div>
         </div>
       </header>
 
@@ -218,6 +298,40 @@ function Portal({ load, retry }: { load: Load; retry: () => void }) {
           </div>
         </div>
       </section>
+
+      {/*
+        מאגר הזכויות (§5). מוצג רק כשיש נתון אמיתי — מקטע שמכריז על מאגר
+        זכויות ומראה 0 גרוע ממקטע שלא קיים.
+      */}
+      {rights && rights.total > 0 && (
+        <section id="rights" className="section">
+          <div className="wrap">
+            <div className="sec-head reveal">
+              <div className="eyebrow">מאגר הזכויות</div>
+              <h2 className="display sec-title">
+                {rights.total.toLocaleString("he-IL")} זכויות והטבות, במקום אחד
+              </h2>
+              <p className="serif">
+                מה שמגיע לך מהמדינה, מקופת החולים ומהעמותות — נאסף, נבדק ומוצג
+                בשפה אנושית. החיפוש והסינון המלאים נמצאים במערכת עצמה.
+              </p>
+            </div>
+            <div className="pillars">
+              {Object.entries(rights.by_source)
+                .sort((a, b) => b[1] - a[1])
+                .map(([src, n]) => (
+                  <div className="pillar reveal" key={src}>
+                    <h3>{n.toLocaleString("he-IL")}</h3>
+                    <p className="serif">{rights.labels[src] ?? src}</p>
+                  </div>
+                ))}
+            </div>
+            <div className="hero-actions" style={{ marginTop: 22 }}>
+              <a className="btn" href="/bkalot">למאגר המלא</a>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* המערכות */}
       <section id="systems" className="section section-systems">
@@ -271,7 +385,7 @@ function Portal({ load, retry }: { load: Load; retry: () => void }) {
       <footer className="footer">
         <div className="wrap footer-in">
           <div className="display footer-mark">עולם הסטארטאפים</div>
-          <div className="footer-note">מור מערכות תוכנה · more30.com</div>
+          <div className="footer-note">עולם הסטארטאפים · more30.com</div>
           <div className="footer-note muted">© 2026 כל המערכות תחת קורת גג אחת.</div>
         </div>
       </footer>
@@ -303,13 +417,29 @@ function SystemsUnavailable({ onRetry }: { onRetry: () => void }) {
 }
 
 /**
+ * עמוד המסלולים של מערכת אחת — `portal/public/system.html`.
+ *
+ * ⚠️ העמוד גוזר את מזהה המערכת מ-`location.pathname`, אבל `vercel.dist.json`
+ * מרכיב את `/<נתיב>` על הפריסה של המערכת עצמה, ולכן אין לו כתובת נקייה משלו.
+ * `?app=` הוא הדרך היחידה להגיע אליו בלי להזיז את הכתובת של מערכת חיה.
+ * מזהה המערכת ב-`core.plans.app_key` זהה ל-`path` בכל 19 המערכות המנותבות.
+ */
+const plansHref = (r: System): string | null =>
+  r.path ? `/system.html?app=${encodeURIComponent(r.path)}` : null;
+
+/**
  * כרטיס מערכת: תיאור קצר בסריף מעל, השם העברי בגדול, וכפתור כניסה.
  * הקישור נבנה מהנתיב — כלומר more30.com/<נתיב> — ולעולם לא מכתובת הפריסה,
  * כדי שלא תדלוף כתובת vercel.app שנטפרי חוסמת.
+ *
+ * לצד הכניסה יושב קישור שקט אל המסלולים (באג #120). עד עכשיו עמוד המסלולים
+ * היה יתום: הוא נבנה, הוא מוגש בייצור, ואף עמוד שלקוח פוגש לא הוביל אליו —
+ * כלומר הצינור של §8 היה שלם חוץ מהדלת.
  */
 function SystemCard({ r }: { r: System }) {
   const open = openToPublic(r);
   const desc = blurb(r);
+  const plans = plansHref(r);
 
   return (
     <div className={`card reveal ${open ? "" : "card-soon"}`}>
@@ -319,7 +449,12 @@ function SystemCard({ r }: { r: System }) {
       {!open && <p className="card-stage">{stageNote(r)}</p>}
       <div className="card-foot">
         {open
-          ? <a className="btn btn-card" href={entryHref(r) ?? "/"}>כניסה למערכת</a>
+          ? (
+            <span className="card-actions">
+              <a className="btn btn-card" href={entryHref(r) ?? "/"}>כניסה למערכת</a>
+              {plans && <a className="card-plans" href={plans}>מסלולים ומחירים</a>}
+            </span>
+          )
           : <span className="card-soon-tag">{r.is_protected ? "פנימית" : "בקרוב"}</span>}
         {open && <span className="card-live">● פעילה</span>}
       </div>

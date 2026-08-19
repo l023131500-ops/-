@@ -1,0 +1,45 @@
+kiosk (35): every other control in the console had no focus ring
+
+Five runs closed the rest of the keyboard heading and between them gave an
+explicit :focus-visible to exactly three things: .field input, .side nav
+button, .topbar h1. Everything else fell back to the browser's ring - every
+edit button, every delete, every save in every dialog, the guide's in-text
+link, the wizard's twelve checkboxes.
+
+That is not the same as fine. outline-style: auto is not a colour you can
+read: getComputedStyle returns the style, and the ring Chromium paints for
+auto is its own two-tone construction - so every harness under items 6 and 7,
+all of which graded colours off computed style, was structurally unable to see
+this one. And the UA ring follows color-scheme, which this console sets on
+:root, so its colour is the browser's answer to a question --focus-ring
+already answers.
+
+One rule, scoped to #content and .modal: outline 2px solid var(--focus-ring)
+at offset 2px, on .btn / a / checkbox / radio. outline and not box-shadow -
+the button's existing edge is already an inset shadow and a second one
+overwrites it, outline takes no space in the packed btn-sm row inside a device
+card, and it is the one thing painted in Windows high-contrast mode.
+--focus-ring and not --focus-ring-navy because the ring lands outside the
+control, on a surface that inverts. The scope stops at the console on purpose:
+.btn also exists on the marketing page, where .btn-ghost sits on a navy bar -
+the case --focus-ring-navy exists for, and its own measurement.
+
+QA/kiosk/content-focus-0811: five controls x both colorScheme values, each
+reached by Tab so :focus-visible matches the way it does for a person. 40/40,
+with ten control rows (outline: revert, i.e. the shipped UA auto) confirming
+there was a defect. 152 tests / 151 pass - the documented baseline, unchanged;
+no server code here.
+
+Two corrections the run forced: the first version failed all six button rows
+reporting solid 0px, because .btn carries transition .15s on all properties
+and a computed read in the tick focus lands returns where the transition
+started. And the surface probe started at the control itself, so it returned
+the button's own fill and graded the ring against the thing it is drawn
+outside of.
+
+Found and not fixed: the pixel sample is a max over an 8px band, so a dark
+neighbouring element can satisfy the 3:1 in place of the ring - it did on two
+rows. The strong claim rests on the computed solid 2px in --focus-ring's
+value.
+
+Not deployed.

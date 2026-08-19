@@ -32,6 +32,12 @@ service-account*.json
 !/apps/*/
 !/apps/*/app.json
 !/apps/*/STATUS.md
+# Exception: 37-bkalot-clone is AUTHORED here, not vendored — the ignore above
+# exists to keep private imported source out of a public repo, and none of that
+# applies to a file written in this tree. It holds no secret: the only key in it
+# is the Supabase anon key, which every Supabase site ships to the browser, and
+# which is explicitly denied EXECUTE on public.bkalot_clone_intake (0058).
+!/apps/37-bkalot-clone/**
 # belt-and-suspenders: never leak any vendored env file (incl. .env.example)
 /apps/**/.env*
 
@@ -41,6 +47,10 @@ service-account*.json
 # reproducible from the sources in apps/, and some of it embeds build-time env —
 # so it stays local, exactly like apps/.
 /_deploy/**
+# admin/deploy/ is the same thing for the control centre: scripts/stage-admin.ps1
+# rebuilds it from admin/dist on every run, so tracking it would only ever mean
+# a stale copy competing with the real build output.
+/admin/deploy/**
 
 # logs / os
 *.log
@@ -54,3 +64,10 @@ coverage/
 .playwright-mcp/
 sv4-body.json
 deck-print-full.png
+# A `_probe-*` script is a one-off sweep written to answer a single question in a
+# single round (scripts/qa/_probe-footer-brand.mjs, _probe-egod.mjs). The leading
+# underscore is the convention that says "scratch"; naming it here is what lets
+# scripts/qa/untracked-imports.mjs tell scratch apart from a script that was
+# written, used, and then left out of its own commit.
+_probe-*.mjs
+_probe-*.js

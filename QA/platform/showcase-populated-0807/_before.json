@@ -1,0 +1,90 @@
+{
+  "ran": "scripts/qa/showcase-populated.mjs",
+  "page": "portal/public/showcase.html (working tree, live RPC)",
+  "read_as": "anon",
+  "measured": {
+    "home_page_systems": 20,
+    "showcase_systems": 0,
+    "home_only": [
+      "#01 torah",
+      "#02 tamlul",
+      "#03 modaot",
+      "#04 imud",
+      "#06 briut",
+      "#10 bkalot",
+      "#12 smel",
+      "#15 egod",
+      "#16 chatzor",
+      "#17 chizukim",
+      "#18 orech",
+      "#22 zchuyot",
+      "#24 galil",
+      "#26 studio",
+      "#28 kupot",
+      "#32 nadlan",
+      "#33 (no path)",
+      "#34 kesef",
+      "#35 kiosk",
+      "#36 tivuch"
+    ],
+    "showcase_only": []
+  },
+  "drawn": {
+    "light": {
+      "count": "",
+      "empty": "עדיין לא נבחרו מערכות להצגה הקטלוג מציג רק מערכות שסומנו במפורש במרכז השליטה.",
+      "cards": []
+    },
+    "dark": {
+      "count": "",
+      "empty": "עדיין לא נבחרו מערכות להצגה הקטלוג מציג רק מערכות שסומנו במפורש במרכז השליטה.",
+      "cards": []
+    }
+  },
+  "summary": {
+    "pass": 5,
+    "fail": 3
+  },
+  "checks": [
+    {
+      "check": "the catalogue is not empty",
+      "pass": false,
+      "detail": "0 cards, empty-state=עדיין לא נבחרו מערכות להצגה הקטלוג מציג רק מערכות שסומנו במפורש במרכז השליטה."
+    },
+    {
+      "check": "every card carries a name",
+      "pass": true,
+      "detail": "0 without one"
+    },
+    {
+      "check": "every card links somewhere real, not the \"/\" fallback",
+      "pass": true,
+      "detail": "none"
+    },
+    {
+      "check": "every card says what the system is, not \"לא זמין\"",
+      "pass": true,
+      "detail": "none"
+    },
+    {
+      "check": "no card is a system the home page hides — showcase ⊆ home",
+      "pass": true,
+      "detail": "none"
+    },
+    {
+      "check": "the count line agrees with the cards under it",
+      "pass": false,
+      "detail": "\"\" vs \"0 מערכות מוצגות\""
+    },
+    {
+      "check": "the empty state is not drawn",
+      "pass": false,
+      "detail": "עדיין לא נבחרו מערכות להצגה הקטלוג מציג רק מערכות שסומנו במפורש במרכז השליטה."
+    },
+    {
+      "check": "dark mode draws the same catalogue",
+      "pass": true,
+      "detail": "0 cards · \"\""
+    }
+  ]
+}

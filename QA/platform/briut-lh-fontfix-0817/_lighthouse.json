@@ -1,0 +1,171 @@
+{
+  "briut": {
+    "url": "https://more30.com/briut",
+    "measuredAt": "2026-08-17T17:51:12.619Z",
+    "performance": 89,
+    "accessibility": 97,
+    "bestPractices": 77,
+    "seo": 100,
+    "metrics": {
+      "fcp": "2.7 s",
+      "lcp": "2.7 s",
+      "tbt": "130 ms",
+      "cls": "0.02",
+      "si": "3.8 s"
+    },
+    "failedAudits": [
+      {
+        "id": "first-contentful-paint",
+        "title": "First Contentful Paint",
+        "score": 0.59,
+        "display": "2.7 s"
+      },
+      {
+        "id": "largest-contentful-paint",
+        "title": "Largest Contentful Paint",
+        "score": 0.85,
+        "display": "2.7 s"
+      },
+      {
+        "id": "speed-index",
+        "title": "Speed Index",
+        "score": 0.84,
+        "display": "3.8 s"
+      },
+      {
+        "id": "interactive",
+        "title": "Time to Interactive",
+        "score": 0.89,
+        "display": "3.8 s"
+      },
+      {
+        "id": "third-party-cookies",
+        "title": "Uses third-party cookies",
+        "score": 0,
+        "display": "1 cookie found"
+      },
+      {
+        "id": "mainthread-work-breakdown",
+        "title": "Minimize main-thread work",
+        "score": 0,
+        "display": "3.4 s"
+      },
+      {
+        "id": "color-contrast",
+        "title": "Background and foreground colors do not have a sufficient contrast ratio.",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "unminified-javascript",
+        "title": "Minify JavaScript",
+        "score": 0.5,
+        "display": "Est savings of 6 KiB"
+      },
+      {
+        "id": "inspector-issues",
+        "title": "Issues were logged in the `Issues` panel in Chrome Devtools",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "bf-cache",
+        "title": "Page prevented back/forward cache restoration",
+        "score": 0,
+        "display": "1 failure reason"
+      },
+      {
+        "id": "cache-insight",
+        "title": "Use efficient cache lifetimes",
+        "score": 0.5,
+        "display": "Est savings of 43 KiB"
+      },
+      {
+        "id": "document-latency-insight",
+        "title": "Document request latency",
+        "score": 0.5,
+        "display": "Est savings of 10 KiB"
+      },
+      {
+        "id": "forced-reflow-insight",
+        "title": "Forced reflow",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "network-dependency-tree-insight",
+        "title": "Network dependency tree",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "render-blocking-insight",
+        "title": "Render-blocking requests",
+        "score": 0,
+        "display": "Est savings of 550 ms"
+      }
+    ],
+    "mainThreadBreakdown": [
+      {
+        "group": "Style & Layout",
+        "duration": 1548
+      },
+      {
+        "group": "Other",
+        "duration": 1214
+      },
+      {
+        "group": "Script Evaluation",
+        "duration": 337
+      },
+      {
+        "group": "Rendering",
+        "duration": 138
+      },
+      {
+        "group": "Parse HTML & CSS",
+        "duration": 92
+      },
+      {
+        "group": "Script Parsing & Compilation",
+        "duration": 37
+      },
+      {
+        "group": "Garbage Collection",
+        "duration": 26
+      }
+    ],
+    "bootupTime": [
+      {
+        "url": "https://more30.com/briut",
+        "total": 1991,
+        "scripting": 63,
+        "scriptParseCompile": 8
+      },
+      {
+        "url": "Unattributable",
+        "total": 938,
+        "scripting": 31,
+        "scriptParseCompile": 0
+      },
+      {
+        "url": "https://netfree.link/card/card-injection.js",
+        "total": 168,
+        "scripting": 116,
+        "scriptParseCompile": 14
+      },
+      {
+        "url": "https://more30.com/auth-button.js",
+        "total": 155,
+        "scripting": 41,
+        "scriptParseCompile": 8
+      },
+      {
+        "url": "https://more30.com/briut/app.js",
+        "total": 78,
+        "scripting": 50,
+        "scriptParseCompile": 3
+      }
+    ]
+  }
+}

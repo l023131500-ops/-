@@ -1,0 +1,51 @@
+kiosk (35): the links reached the selection screen and were never drawn
+
+The previous step put `links` into `/resolve`'s answer and taught `/open` to
+accept a `linkId`. `public/kiosk-launcher.html` drew clients only, so the field
+arrived on every response and was rendered nowhere: the person standing in the
+hall could not pick one, and half of what KIOSK_BUILD §2★ה says the selection
+screen offers was unreachable from the screen that exists to offer it.
+
+The approved links now follow the businesses on one list — the person is making
+one choice — but the two ids are carried in different attributes. Ids are unique
+only within a table, so client 1 and link 1 both exist; a single `data-id` would
+send whichever the handler guessed and the server would resolve it against the
+wrong set of approvals. The QA fixture approves exactly that pair, and clicking
+link 1 is asserted to land on the link's address rather than the same-numbered
+client's.
+
+Exactly one id is sent, built from which attribute the button carries rather
+than setting both and leaving one undefined: `/open` refuses a body naming both
+rather than resolving by precedence, and `JSON.stringify` drops an undefined
+value, so the other shape would make that refusal depend on a serialisation
+detail. Asserted on the wire in both directions.
+
+A link row shows host **and** path. `hostOf()` is right for a client — a
+business is its domain — and wrong here: `links.url` is the specific event
+sub-link, so a library routinely holds several under one host and every row
+would print the same line under a different name. Query and fragment are
+dropped, the tail is elided rather than wrapped, and it is `dir="ltr"` because a
+`/` is directionally neutral and inside the RTL card the segments of `host/a/b`
+can be laid out in an order that is not the address.
+
+The "nothing approved" sentence now counts both lists. A device with links and
+no clients is not an unconfigured device, and saying so under a list of links
+reads as a fault.
+
+Verified in QA/kiosk/launcher-page-links-0811 — 12 cases in a real browser at
+both mounts, against a stub that rewrites only the express glue and imports the
+real accesscode.js / approvals.js / linkapprovals.js / launcher.js /
+ratelimit.js over the production DDL on node:sqlite. Three screenshots. 146
+tests, 145 pass — the documented baseline, unchanged, since this step adds no
+server code.
+
+Two things the run found and fixed: the two-links-under-one-domain collision
+above, and a harness bug inherited from launcher-page-0811 — its stub read the
+page into a constant at boot, so a stub outliving an edit reports on the
+previous version of the thing under test. The first driven pass here did exactly
+that. This stub reads the file per request.
+
+The page itself is under apps/, which is gitignored here, so the change is
+recorded in apps/35-kioskfleet/STATUS.md. Not deployed:
+more30.com/kiosk/kiosk-launcher is still a 404 until the Railway service is
+rebuilt from l023131500-ops/zol.

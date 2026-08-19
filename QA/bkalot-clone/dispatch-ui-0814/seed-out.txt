@@ -1,0 +1,8 @@
+A intake http=200 ok=true case=59 contact=65 rights=undefined
+B intake http=200 ok=true case=60 contact=66 rights=undefined
+C intake http=200 ok=true case=61 contact=67 rights=undefined
+login 200 ok=true
+A render doc=58 chars=3488 | queue=32 status=queued mode=test to=qa.bkalot@more30.com
+B render doc=59 chars=3486 | queue=33 status=blocked mode=test to=qa.blocked.0073@more30.com
+C render doc=60 chars=3487 | לא הוכנס לתור בכוונה
+CASE_IDS A=59 B=60 C=61

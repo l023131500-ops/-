@@ -1,0 +1,89 @@
+{
+  "beat": "שכפול בקלות שכבה 1 — badInput נפרס ונמדד בייצור",
+  "open_line_taken_from": "124cfc2 (heartbeat 593)",
+  "scope": "פריסה בלבד — אין שינוי קוד, אין מיגרציה, אין פריסת edge function",
+  "deploy": {
+    "staged_by": "scripts/stage-portal.ps1",
+    "command": "npx vercel deploy --prod --yes  (מ-portal/dist, בלי --prebuilt)",
+    "deployment_id": "dpl_7sY3sQSex88KUKZA3qMMD5tL7dYn",
+    "ready_state": "READY",
+    "target": "production"
+  },
+  "files": {
+    "prev_from_dist_before_staging": { "bytes": 27637, "md5": "2A1B545C8CA50CDD1191A17C8D24EE31" },
+    "prev_matches_heartbeat_592": true,
+    "staged": { "bytes": 28825, "md5": "432A2D93D21581DACC5E835324D44091" },
+    "source": "apps/37-bkalot-clone/index.html"
+  },
+  "markers_local": {
+    "new_in_prod_before": [0, 0, 0, 0],
+    "new_in_source": [1, 1, 1, 2],
+    "removed_in_prod_before": [1, 1],
+    "removed_in_source": [0, 0]
+  },
+  "http": {
+    "https://more30.com/bkalot-studio":  { "before_bytes": 27873, "after_bytes": 29061, "new_hits_before": 0, "new_hits_after": 4, "alefs": "244 → 272" },
+    "https://more30.com/bkalot-studio/": { "before_bytes": 27873, "after_bytes": 29061, "new_hits_before": 0, "new_hits_after": 4, "alefs": "244 → 272" },
+    "https://more30.com/bkalot-studio/admin": { "before_bytes": 90056, "after_bytes": 90056, "regression": "none" },
+    "https://more30.com/": { "before_bytes": 3517, "after_bytes": 3517, "regression": "none" },
+    "source_delta": 1188,
+    "http_delta": 1188,
+    "netfree_delta_after": 236,
+    "replacement_chars": 0,
+    "double_encoded": 0
+  },
+  "browser": {
+    "url": "https://more30.com/bkalot-studio/",
+    "viewport": "1280x900",
+    "blocked": {
+      "typed": "1-5",
+      "native_before_submit": { "value": "", "badInput": true, "form_has_novalidate": true },
+      "intake_requests": 0,
+      "title": "הפנייה לא נשלחה",
+      "line": "מספר נושא — צריך מספר שלם. תקנו ושלחו שוב.",
+      "aria_invalid_count": 1,
+      "focused_id": "topic_no",
+      "form_stands_as_typed": true,
+      "result_top_px": 705,
+      "field_top_px": 272,
+      "screenshot_md5": "80136F6802A968C551E574146716FBDD"
+    },
+    "control_7": {
+      "typed": "7",
+      "intake_requests": 1,
+      "title": "הפנייה נקלטה",
+      "case": 153,
+      "topic_no_in_db": 7,
+      "raw_has_topic_no": true,
+      "rights": 42,
+      "aria_invalid_count": 0,
+      "focused_tag": "BODY",
+      "form_reset_to_info": true,
+      "screenshot_md5": "3DA06DFA552AF821E97C3B20D99AF8C3"
+    },
+    "console_messages": 0
+  },
+  "two_sided_proof": {
+    "requests_in_blocked_attempt": 0,
+    "cases_in_db_after_both_flows": 1,
+    "the_one_case_is": "153 — הבקרה",
+    "blocked_attempt_left_a_row": false
+  },
+  "test_mode": {
+    "documents": 0,
+    "cases_sent": 0,
+    "outbound_queue": 8,
+    "queue_rows_with_sent_at": 0,
+    "delivery_log": 3,
+    "queue_fingerprint": "bf57d69edaf6725ff7f52ad3007c4170",
+    "fingerprint_identical_base_during_after": true
+  },
+  "rollback": {
+    "order": "case_rights → cases → contacts, פקודות נפרדות",
+    "deleted": { "case_rights": 42, "cases": 1, "contacts": 1 },
+    "contact_deleted_by": "id=159 (לא לפי טלפון — נשמר מנורמל לספרות)",
+    "after": { "cases": 0, "case_rights": 0, "documents": 0, "admin_users": 1, "templates": 2, "contacts": 4, "outbound_queue": 8, "delivery_log": 3, "catalog": 888 },
+    "identical_to_base": true
+  },
+  "protected_paths_clean": ["apps/08-bkalut-app", "apps/09-bkalot-admin", "apps/37-bkalot-clone", "supabase/functions"]
+}

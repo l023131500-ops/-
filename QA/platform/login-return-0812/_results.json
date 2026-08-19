@@ -1,0 +1,51 @@
+{
+  "what": "priority §1א, first bug — 'logging in dumps the user back on the brochure page with their name on top instead of into the product'. Driven through a real browser as the test customer for the first time; until now the account was proven only at the auth API layer.",
+  "who": "test@more30.com / More30Test2026 (the credentials §1ב documents)",
+  "when": "2026-08-12T02:51Z .. 02:53Z",
+  "how": "Playwright against more30.com production, each URL with ?cachebust= so the answer is not a CDN copy from before the last deploy.",
+
+  "flow_under_test": {
+    "1_start_inside_a_product": "https://more30.com/bkalot/ — the shared login pill (portal/public/auth-button.js) renders 'כניסה' and its menu item carries the current address: /login?from=https%3A%2F%2Fmore30.com%2Fbkalot%2F%3Fcachebust%3D0812a",
+    "2_login_page_keeps_it": "on /login, sessionStorage['more30-return-to'] === '/bkalot/?cachebust=0812a' — safeReturnPath() accepted the absolute more30.com URL and stored it as a path",
+    "3_submit": "#ident + #password, submit → /auth/callback",
+    "4_landing": "https://more30.com/bkalot/?cachebust=0812a — the page the user started on, NOT /me and NOT the portal home",
+    "5_signed_in_state": "pill label 'לקוח', menu head 'מחובר כ־לקוח בדיקה', items = האזור האישי · שדרוג לפרימיום · יציאה"
+  },
+
+  "verdict": "PASS for the shared-pill flow. §1א's first bug does not reproduce on the platform login. This covers every static system that ships auth-button.js, not only bkalot.",
+
+  "also_measured": [
+    {
+      "check": "does a plain customer reach the super-admin screens?",
+      "url": "https://more30.com/admin/rights",
+      "result": "REFUSED — 'החשבון הזה אינו סופר-אדמין / super admin only'. No admin data rendered.",
+      "evidence": "03-admin-rights-as-customer.png"
+    },
+    {
+      "check": "personal area, and the way back out of it",
+      "url": "https://more30.com/me?from=https%3A%2F%2Fmore30.com%2Fgalil%2F",
+      "result": "shows שם מלא 'לקוח בדיקה', כתובת אימייל test@more30.com, סוג חשבון 'משתמש', and the 'חזרה למערכת' button is present — the from= value is honoured here too, which is what §1 asks for.",
+      "evidence": "04-me-as-customer.png"
+    },
+    {
+      "check": "does the hub session carry across sites?",
+      "url": "https://more30.com/galil/",
+      "result": "yes — the pill reads 'לקוח' on galil without logging in again"
+    }
+  ],
+
+  "findings_not_fixed_here": [
+    {
+      "where": "more30.com/bkalot/ navbar, a.nav-admin → https://more30.com/admin/rights",
+      "what": "the 'ניהול' link is rendered for every visitor, including a signed-in customer who is not a super-admin. It is not a leak — the target refuses correctly (above) — but it is a dead end: the customer clicks a management link and is told the account is not allowed.",
+      "why_not_fixed_now": "§5א explicitly wants system 10's management reachable from the home page, so hiding the link is a product decision, not a cleanup. Fixing it properly means auth-button.js publishing the admin verdict the page can read, and that is its own step."
+    },
+    {
+      "where": "22 zchuyot (trerolyveytzgksawrme)",
+      "what": "re-checked this run as the previous step asked. POST /auth/v1/resend answered 200 again and the Resend inbox still holds nothing newer than 02:40:06Z — i.e. no confirmation mail was delivered on either attempt. The account exists (signup → user_already_exists) and login still answers 400.",
+      "conclusion": "not a matter of waiting longer; it needs the user's Supabase console. Stays the NEEDS_USER item it already is."
+    }
+  ],
+
+  "still_open_for_the_next_step": "the per-system logins (24 galil, 30 crm, 31 gesher, 21 mthbram, 15 egod, 06/12/17/27, 01/02/03/10/18) are proven at the auth API only. Systems with their own login screen — galil's פורטל גבאים at /galil/gabai is the clearest — have not been driven through a browser as this user."
+}

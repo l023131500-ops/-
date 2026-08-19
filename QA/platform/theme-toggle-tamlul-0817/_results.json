@@ -1,0 +1,17 @@
+{
+  "measured_at": "2026-08-17T02:47:38.757Z",
+  "target": "https://more30.com/tamlul/?cachebust=0817tamlul",
+  "project": "tamlul-more30 (prj_i8KRFIs4jtqPuEf4mt5b11RHjRQN)",
+  "deployment": "dpl_yWB9XZBxQn5JKW8kyWWTZEg4fboE",
+  "change": "Added a manual #themeToggle button (SiteHeader nav) that toggles .dark on <html> and persists to localStorage key tamlul-theme. THEME_BOOT script in app/layout.tsx now reads localStorage before falling back to prefers-color-scheme, matching the pattern already shipped on /bkalot (10-bkalot-rights).",
+  "results": [
+    { "name": "build succeeds (next build)", "pass": true },
+    { "name": "local dev server /tamlul returns 200", "pass": true },
+    { "name": "click toggle -> classList contains dark, localStorage=dark", "pass": true, "detail": "bg rgb(20,22,28)" },
+    { "name": "reload preserves stored choice, no flash (pre-paint boot script)", "pass": true },
+    { "name": "click again -> back to light, label reverts to 🌙", "pass": true },
+    { "name": "live production, cache-busted: click toggle -> dark applied, localStorage set", "pass": true }
+  ],
+  "pass": 6,
+  "fail": 0
+}

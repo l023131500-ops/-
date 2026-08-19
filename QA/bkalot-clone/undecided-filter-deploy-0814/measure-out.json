@@ -1,0 +1,49 @@
+{
+  "url": "https://more30.com/bkalot-studio/admin?cachebust=undecidedfilter0814",
+  "console_messages": [],
+  "failed_requests": [],
+  "http_status": 200,
+  "served_version": {
+    "has_new_control": true,
+    "has_removed_lastfilters": false,
+    "html_bytes": 97687
+  },
+  "dom_control": {
+    "present": true,
+    "tag": "SELECT",
+    "label": "הכרעה ידנית",
+    "options": [
+      [
+        "",
+        "הכול"
+      ],
+      [
+        "no",
+        "לא נרשמה"
+      ],
+      [
+        "yes",
+        "נרשמה"
+      ]
+    ],
+    "value": "",
+    "disabled": false,
+    "index_in_filters": 2,
+    "controls_in_order": [
+      "f-status",
+      "f-kind",
+      "f-decided",
+      "f-q"
+    ]
+  },
+  "dom_grid": {
+    "columns_raw": "1fr 1fr 1fr 2fr auto",
+    "column_count": 5
+  },
+  "screen_state": {
+    "login_visible": true,
+    "list_hidden": true,
+    "case_hidden": true,
+    "title": "בקלות — ניהול פניות"
+  }
+}

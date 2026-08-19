@@ -1,0 +1,558 @@
+﻿{
+    "mounts":  [
+                   {
+                       "mount":  "torah",
+                       "index_status":  200,
+                       "assets":  [
+                                      {
+                                          "bytes":  624494,
+                                          "url":  "https://more30.com/torah/assets/index-Cg-YfQE5.js"
+                                      }
+                                  ],
+                       "hits":  [
+                                    {
+                                        "sample":  ".pathname=\"/api/broadcast\":t.pathname=t.pathname+\"/api/broadcast\",t.hr ג‹¯ .pathname+\"/api/broadcast\",t.href};var bi=e=\u003etypeof e==\"function\"?e:fu",
+                                        "pattern":  "bare \"/api/\"",
+                                        "asset":  "https://more30.com/torah/assets/index-Cg-YfQE5.js",
+                                        "count":  2
+                                    }
+                                ],
+                       "error":  null
+                   },
+                   {
+                       "mount":  "tamlul",
+                       "index_status":  200,
+                       "assets":  [
+                                      {
+                                          "bytes":  172834,
+                                          "url":  "https://more30.com/tamlul/_next/static/chunks/fd9d1056-9f91b5e418130764.js?dpl=dpl_5ZrKCZFJ6TLWYmNDRG6QVwbShhjZ"
+                                      },
+                                      {
+                                          "bytes":  124891,
+                                          "url":  "https://more30.com/tamlul/_next/static/chunks/117-5f651a5b67caa2de.js?dpl=dpl_5ZrKCZFJ6TLWYmNDRG6QVwbShhjZ"
+                                      },
+                                      {
+                                          "bytes":  461,
+                                          "url":  "https://more30.com/tamlul/_next/static/chunks/main-app-2dcde4753ea0d175.js?dpl=dpl_5ZrKCZFJ6TLWYmNDRG6QVwbShhjZ"
+                                      },
+                                      {
+                                          "bytes":  26066,
+                                          "url":  "https://more30.com/tamlul/_next/static/chunks/972-9f7bec2de9d6f07c.js?dpl=dpl_5ZrKCZFJ6TLWYmNDRG6QVwbShhjZ"
+                                      },
+                                      {
+                                          "bytes":  216,
+                                          "url":  "https://more30.com/tamlul/_next/static/chunks/app/page-121123fcd84bbf7b.js?dpl=dpl_5ZrKCZFJ6TLWYmNDRG6QVwbShhjZ"
+                                      },
+                                      {
+                                          "bytes":  112541,
+                                          "url":  "https://more30.com/tamlul/_next/static/chunks/polyfills-42372ed130431b0a.js?dpl=dpl_5ZrKCZFJ6TLWYmNDRG6QVwbShhjZ"
+                                      },
+                                      {
+                                          "bytes":  4164,
+                                          "url":  "https://more30.com/tamlul/_next/static/chunks/webpack-89c4cccf320c83e5.js?dpl=dpl_5ZrKCZFJ6TLWYmNDRG6QVwbShhjZ"
+                                      }
+                                  ],
+                       "hits":  [
+
+                                ],
+                       "error":  null
+                   },
+                   {
+                       "mount":  "modaot",
+                       "index_status":  200,
+                       "assets":  [
+                                      {
+                                          "bytes":  172834,
+                                          "url":  "https://more30.com/modaot/_next/static/chunks/fd9d1056-0a73e5988bda9cb2.js?dpl=dpl_J4spsTGuHTbgHjzrcTtci3aBDvTv"
+                                      },
+                                      {
+                                          "bytes":  124891,
+                                          "url":  "https://more30.com/modaot/_next/static/chunks/117-7dba21293e9a13c8.js?dpl=dpl_J4spsTGuHTbgHjzrcTtci3aBDvTv"
+                                      },
+                                      {
+                                          "bytes":  461,
+                                          "url":  "https://more30.com/modaot/_next/static/chunks/main-app-2dcde4753ea0d175.js?dpl=dpl_J4spsTGuHTbgHjzrcTtci3aBDvTv"
+                                      },
+                                      {
+                                          "bytes":  26066,
+                                          "url":  "https://more30.com/modaot/_next/static/chunks/972-ac35283b8a67e07e.js?dpl=dpl_J4spsTGuHTbgHjzrcTtci3aBDvTv"
+                                      },
+                                      {
+                                          "bytes":  220,
+                                          "url":  "https://more30.com/modaot/_next/static/chunks/app/(public)/page-d9dcd20740af41d3.js?dpl=dpl_J4spsTGuHTbgHjzrcTtci3aBDvTv"
+                                      },
+                                      {
+                                          "bytes":  112541,
+                                          "url":  "https://more30.com/modaot/_next/static/chunks/polyfills-42372ed130431b0a.js?dpl=dpl_J4spsTGuHTbgHjzrcTtci3aBDvTv"
+                                      },
+                                      {
+                                          "bytes":  4164,
+                                          "url":  "https://more30.com/modaot/_next/static/chunks/webpack-f3a7b00e864e4fb6.js?dpl=dpl_J4spsTGuHTbgHjzrcTtci3aBDvTv"
+                                      }
+                                  ],
+                       "hits":  [
+
+                                ],
+                       "error":  null
+                   },
+                   {
+                       "mount":  "imud",
+                       "index_status":  200,
+                       "assets":  [
+                                      {
+                                          "bytes":  1085521,
+                                          "url":  "https://more30.com/imud/assets/index-DbqCalt6.js"
+                                      }
+                                  ],
+                       "hits":  [
+                                    {
+                                        "sample":  "queryKey:[\"/api/books\"]}),a=ih({mutationFn:async s=\u003eRd(\"DELETE\",`/api/ ג‹¯ (\"DELETE\",`/api/books/${s}`),onSuccess:()=\u003e{Td.invalidateQueries({quer ג‹¯ queryKey:[\"/api/books\"]}),t({title:\"הספר נמחק\"})}});return R.jsxs(\"div",
+                                        "pattern":  "bare \"/api/\"",
+                                        "asset":  "https://more30.com/imud/assets/index-DbqCalt6.js",
+                                        "count":  15
+                                    }
+                                ],
+                       "error":  null
+                   },
+                   {
+                       "mount":  "briut",
+                       "index_status":  200,
+                       "assets":  [
+                                      {
+                                          "bytes":  548,
+                                          "url":  "https://more30.com/briut/supabase-config.js"
+                                      },
+                                      {
+                                          "bytes":  4614,
+                                          "url":  "https://more30.com/briut/leads-store.js"
+                                      },
+                                      {
+                                          "bytes":  15859,
+                                          "url":  "https://more30.com/briut/app.js"
+                                      }
+                                  ],
+                       "hits":  [
+
+                                ],
+                       "error":  null
+                   },
+                   {
+                       "mount":  "bkalot",
+                       "index_status":  200,
+                       "assets":  [
+                                      {
+                                          "bytes":  12604,
+                                          "url":  "https://more30.com/bkalot/engine.js"
+                                      },
+                                      {
+                                          "bytes":  3599,
+                                          "url":  "https://more30.com/bkalot/repo.js"
+                                      },
+                                      {
+                                          "bytes":  25541,
+                                          "url":  "https://more30.com/bkalot/app.js"
+                                      }
+                                  ],
+                       "hits":  [
+
+                                ],
+                       "error":  null
+                   },
+                   {
+                       "mount":  "smel",
+                       "index_status":  200,
+                       "assets":  [
+                                      {
+                                          "bytes":  444264,
+                                          "url":  "https://more30.com/smel/assets/index-BzxcokTm.js"
+                                      }
+                                  ],
+                       "hits":  [
+                                    {
+                                        "sample":  "queryKey:[\"/api/questionnaire\"],queryFn:()=\u003eeC()}),y=zC({resolver:HC(q",
+                                        "pattern":  "bare \"/api/\"",
+                                        "asset":  "https://more30.com/smel/assets/index-BzxcokTm.js",
+                                        "count":  1
+                                    }
+                                ],
+                       "error":  null
+                   },
+                   {
+                       "mount":  "smachot",
+                       "index_status":  200,
+                       "assets":  [
+                                      {
+                                          "bytes":  17731,
+                                          "url":  "https://more30.com/smachot/./app.js"
+                                      }
+                                  ],
+                       "hits":  [
+
+                                ],
+                       "error":  null
+                   },
+                   {
+                       "mount":  "egod",
+                       "index_status":  200,
+                       "assets":  [
+                                      {
+                                          "bytes":  969455,
+                                          "url":  "https://more30.com/egod/assets/index-RNBwDqT2.js"
+                                      }
+                                  ],
+                       "hits":  [
+                                    {
+                                        "sample":  ".pathname=\"/api/broadcast\":t.pathname=t.pathname+\"/api/broadcast\",t.hr ג‹¯ .pathname+\"/api/broadcast\",t.href};var Ha=e=\u003etypeof e==\"function\"?e:fu",
+                                        "pattern":  "bare \"/api/\"",
+                                        "asset":  "https://more30.com/egod/assets/index-RNBwDqT2.js",
+                                        "count":  2
+                                    }
+                                ],
+                       "error":  null
+                   },
+                   {
+                       "mount":  "chatzor",
+                       "index_status":  200,
+                       "assets":  [
+                                      {
+                                          "bytes":  369688,
+                                          "url":  "https://more30.com/chatzor/assets/index-YX4TUtOq.js"
+                                      }
+                                  ],
+                       "hits":  [
+                                    {
+                                        "sample":  ".pathname=\"/api/broadcast\":e.pathname=e.pathname+\"/api/broadcast\",e.hr ג‹¯ .pathname+\"/api/broadcast\",e.href};var rt=t=\u003etypeof t==\"function\"?t:fu",
+                                        "pattern":  "bare \"/api/\"",
+                                        "asset":  "https://more30.com/chatzor/assets/index-YX4TUtOq.js",
+                                        "count":  2
+                                    }
+                                ],
+                       "error":  null
+                   },
+                   {
+                       "mount":  "chizukim",
+                       "index_status":  200,
+                       "assets":  [
+                                      {
+                                          "bytes":  358542,
+                                          "url":  "https://more30.com/chizukim/assets/index-B3-SjNVo.js"
+                                      }
+                                  ],
+                       "hits":  [
+                                    {
+                                        "sample":  "Gw(\"POST\",`/api/transcribe/${n}`)).json()).recording}const mc={uploade",
+                                        "pattern":  "bare \"/api/\"",
+                                        "asset":  "https://more30.com/chizukim/assets/index-B3-SjNVo.js",
+                                        "count":  1
+                                    }
+                                ],
+                       "error":  null
+                   },
+                   {
+                       "mount":  "orech",
+                       "index_status":  200,
+                       "assets":  [
+                                      {
+                                          "bytes":  172834,
+                                          "url":  "https://more30.com/orech/_next/static/chunks/fd9d1056-42a1c2df9c4a85a8.js"
+                                      },
+                                      {
+                                          "bytes":  124454,
+                                          "url":  "https://more30.com/orech/_next/static/chunks/117-d92d9ca3c141f121.js"
+                                      },
+                                      {
+                                          "bytes":  461,
+                                          "url":  "https://more30.com/orech/_next/static/chunks/main-app-2dcde4753ea0d175.js"
+                                      },
+                                      {
+                                          "bytes":  26066,
+                                          "url":  "https://more30.com/orech/_next/static/chunks/972-d8104d9ab1af2576.js"
+                                      },
+                                      {
+                                          "bytes":  212,
+                                          "url":  "https://more30.com/orech/_next/static/chunks/app/page-6944579fc101b43d.js"
+                                      },
+                                      {
+                                          "bytes":  112541,
+                                          "url":  "https://more30.com/orech/_next/static/chunks/polyfills-42372ed130431b0a.js"
+                                      },
+                                      {
+                                          "bytes":  4163,
+                                          "url":  "https://more30.com/orech/_next/static/chunks/webpack-a42aac6b82fb44bd.js"
+                                      }
+                                  ],
+                       "hits":  [
+
+                                ],
+                       "error":  null
+                   },
+                   {
+                       "mount":  "mthbram",
+                       "index_status":  200,
+                       "assets":  [
+                                      {
+                                          "bytes":  1617989,
+                                          "url":  "https://more30.com/mthbram/assets/index-DheqMcgT.js"
+                                      }
+                                  ],
+                       "hits":  [
+                                    {
+                                        "sample":  ".pathname=\"/api/broadcast\":t.pathname=t.pathname+\"/api/broadcast\",t.hr ג‹¯ .pathname+\"/api/broadcast\",t.href};var Yd=e=\u003etypeof e==\"function\"?e:fu",
+                                        "pattern":  "bare \"/api/\"",
+                                        "asset":  "https://more30.com/mthbram/assets/index-DheqMcgT.js",
+                                        "count":  2
+                                    }
+                                ],
+                       "error":  null
+                   },
+                   {
+                       "mount":  "zchuyot",
+                       "index_status":  200,
+                       "assets":  [
+                                      {
+                                          "bytes":  114163,
+                                          "url":  "https://more30.com/zchuyot/assets/index-DL2aSDPt.js"
+                                      }
+                                  ],
+                       "hits":  [
+
+                                ],
+                       "error":  null
+                   },
+                   {
+                       "mount":  "galil",
+                       "index_status":  200,
+                       "assets":  [
+                                      {
+                                          "bytes":  969559,
+                                          "url":  "https://more30.com/galil/assets/index-pSOB0569.js"
+                                      },
+                                      {
+                                          "bytes":  146,
+                                          "url":  "https://more30.com/galil/registerSW.js"
+                                      }
+                                  ],
+                       "hits":  [
+                                    {
+                                        "sample":  ".pathname=\"/api/broadcast\":t.pathname=t.pathname+\"/api/broadcast\",t.hr ג‹¯ .pathname+\"/api/broadcast\",t.href};var Da=e=\u003etypeof e==\"function\"?e:fu",
+                                        "pattern":  "bare \"/api/\"",
+                                        "asset":  "https://more30.com/galil/assets/index-pSOB0569.js",
+                                        "count":  2
+                                    }
+                                ],
+                       "error":  null
+                   },
+                   {
+                       "mount":  "studio",
+                       "index_status":  200,
+                       "assets":  [
+                                      {
+                                          "bytes":  613209,
+                                          "url":  "https://more30.com/studio/assets/index-DN36X7rm.js"
+                                      }
+                                  ],
+                       "hits":  [
+                                    {
+                                        "sample":  "queryKey:[\"/api/templates\"]}),c=Y.useMemo(()=\u003eh?h.map(y=\u003e{let v=null;t",
+                                        "pattern":  "bare \"/api/\"",
+                                        "asset":  "https://more30.com/studio/assets/index-DN36X7rm.js",
+                                        "count":  1
+                                    }
+                                ],
+                       "error":  null
+                   },
+                   {
+                       "mount":  "mechiron",
+                       "index_status":  200,
+                       "assets":  [
+                                      {
+                                          "bytes":  1372961,
+                                          "url":  "https://more30.com/mechiron/assets/index-ur-RA18k.js"
+                                      }
+                                  ],
+                       "hits":  [
+                                    {
+                                        "sample":  "queryKey:[\"/api/meta\"]}),{data:n}=Te({queryKey:[\"/api/rights\"]}),{data ג‹¯ queryKey:[\"/api/rights\"]}),{data:a}=Te({queryKey:[\"/api/orgs\"]}),{toas ג‹¯ queryKey:[\"/api/orgs\"]}),{toast:s}=Ct(),[i,l]=v.useState(null),c=Is(),",
+                                        "pattern":  "bare \"/api/\"",
+                                        "asset":  "https://more30.com/mechiron/assets/index-ur-RA18k.js",
+                                        "count":  294
+                                    }
+                                ],
+                       "error":  null
+                   },
+                   {
+                       "mount":  "kupot",
+                       "index_status":  200,
+                       "assets":  [
+                                      {
+                                          "bytes":  541627,
+                                          "url":  "https://more30.com/kupot/assets/index-DbBm6hnF.js"
+                                      }
+                                  ],
+                       "hits":  [
+                                    {
+                                        "sample":  "nw(\"POST\",\"/api/switch-lead\",{...f,topicId:e,topic:t}),o({title:\"פניית ג‹¯ nw(\"POST\",\"/api/agent\",{topicId:e,question:_})).json();d(b.answer||\"\") ג‹¯ queryKey:[`/api/hf/topics/${e.id}`],enabled:n\u0026\u0026e.kind===\"fund\",staleTi",
+                                        "pattern":  "bare \"/api/\"",
+                                        "asset":  "https://more30.com/kupot/assets/index-DbBm6hnF.js",
+                                        "count":  5
+                                    }
+                                ],
+                       "error":  null
+                   },
+                   {
+                       "mount":  "crm",
+                       "index_status":  200,
+                       "assets":  [
+                                      {
+                                          "bytes":  616120,
+                                          "url":  "https://more30.com/crm/assets/index-4fFBrOet.js"
+                                      }
+                                  ],
+                       "hits":  [
+                                    {
+                                        "sample":  ".pathname=\"/api/broadcast\":e.pathname=e.pathname+\"/api/broadcast\",e.hr ג‹¯ .pathname+\"/api/broadcast\",e.href};var Xa=t=\u003etypeof t==\"function\"?t:fu",
+                                        "pattern":  "bare \"/api/\"",
+                                        "asset":  "https://more30.com/crm/assets/index-4fFBrOet.js",
+                                        "count":  2
+                                    }
+                                ],
+                       "error":  null
+                   },
+                   {
+                       "mount":  "gesher",
+                       "index_status":  200,
+                       "assets":  [
+                                      {
+                                          "bytes":  611549,
+                                          "url":  "https://more30.com/gesher/assets/index-CJt2krVs.js"
+                                      }
+                                  ],
+                       "hits":  [
+                                    {
+                                        "sample":  ".pathname=\"/api/broadcast\":t.pathname=t.pathname+\"/api/broadcast\",t.hr ג‹¯ .pathname+\"/api/broadcast\",t.href};var io=e=\u003etypeof e==\"function\"?e:fu",
+                                        "pattern":  "bare \"/api/\"",
+                                        "asset":  "https://more30.com/gesher/assets/index-CJt2krVs.js",
+                                        "count":  2
+                                    }
+                                ],
+                       "error":  null
+                   },
+                   {
+                       "mount":  "nadlan",
+                       "index_status":  200,
+                       "assets":  [
+                                      {
+                                          "bytes":  172833,
+                                          "url":  "https://more30.com/nadlan/_next/static/chunks/fd9d1056-43988edb66d8a852.js"
+                                      },
+                                      {
+                                          "bytes":  123820,
+                                          "url":  "https://more30.com/nadlan/_next/static/chunks/23-40856efa509a7bb5.js"
+                                      },
+                                      {
+                                          "bytes":  471,
+                                          "url":  "https://more30.com/nadlan/_next/static/chunks/main-app-693d2cd1d3938aa5.js"
+                                      },
+                                      {
+                                          "bytes":  20596,
+                                          "url":  "https://more30.com/nadlan/_next/static/chunks/231-3a92852a3fa4fd34.js"
+                                      },
+                                      {
+                                          "bytes":  17425,
+                                          "url":  "https://more30.com/nadlan/_next/static/chunks/app/page-b2eb8b7d7ea90793.js"
+                                      },
+                                      {
+                                          "bytes":  91334,
+                                          "url":  "https://more30.com/nadlan/_next/static/chunks/polyfills-78c92fac7aa8fdd8.js"
+                                      },
+                                      {
+                                          "bytes":  5466,
+                                          "url":  "https://more30.com/nadlan/_next/static/chunks/webpack-b8b237b7607b6fe9.js"
+                                      }
+                                  ],
+                       "hits":  [
+
+                                ],
+                       "error":  null
+                   },
+                   {
+                       "mount":  "kesef",
+                       "index_status":  200,
+                       "assets":  [
+
+                                  ],
+                       "hits":  [
+
+                                ],
+                       "error":  null
+                   },
+                   {
+                       "mount":  "kiosk",
+                       "index_status":  200,
+                       "assets":  [
+
+                                  ],
+                       "hits":  [
+
+                                ],
+                       "error":  null
+                   },
+                   {
+                       "mount":  "tivuch",
+                       "index_status":  200,
+                       "assets":  [
+
+                                  ],
+                       "hits":  [
+
+                                ],
+                       "error":  null
+                   },
+                   {
+                       "mount":  "gannenet",
+                       "index_status":  200,
+                       "assets":  [
+                                      {
+                                          "bytes":  172834,
+                                          "url":  "https://more30.com/gannenet/_next/static/chunks/fd9d1056-e3d373074663785d.js?dpl=dpl_6Yutj5wVER6RYinL7CLdDgDSy9Ks"
+                                      },
+                                      {
+                                          "bytes":  124897,
+                                          "url":  "https://more30.com/gannenet/_next/static/chunks/117-54b3eabf4fee3ff2.js?dpl=dpl_6Yutj5wVER6RYinL7CLdDgDSy9Ks"
+                                      },
+                                      {
+                                          "bytes":  461,
+                                          "url":  "https://more30.com/gannenet/_next/static/chunks/main-app-2dcde4753ea0d175.js?dpl=dpl_6Yutj5wVER6RYinL7CLdDgDSy9Ks"
+                                      },
+                                      {
+                                          "bytes":  26066,
+                                          "url":  "https://more30.com/gannenet/_next/static/chunks/972-1a6a35b95e2837ad.js?dpl=dpl_6Yutj5wVER6RYinL7CLdDgDSy9Ks"
+                                      },
+                                      {
+                                          "bytes":  224,
+                                          "url":  "https://more30.com/gannenet/_next/static/chunks/app/page-ab5a0e34999b28ea.js?dpl=dpl_6Yutj5wVER6RYinL7CLdDgDSy9Ks"
+                                      },
+                                      {
+                                          "bytes":  883,
+                                          "url":  "https://more30.com/gannenet/_next/static/chunks/app/layout-54cf89b5c5515436.js?dpl=dpl_6Yutj5wVER6RYinL7CLdDgDSy9Ks"
+                                      },
+                                      {
+                                          "bytes":  112541,
+                                          "url":  "https://more30.com/gannenet/_next/static/chunks/polyfills-42372ed130431b0a.js?dpl=dpl_6Yutj5wVER6RYinL7CLdDgDSy9Ks"
+                                      },
+                                      {
+                                          "bytes":  4052,
+                                          "url":  "https://more30.com/gannenet/_next/static/chunks/webpack-0aeb90c6c5d648e4.js?dpl=dpl_6Yutj5wVER6RYinL7CLdDgDSy9Ks"
+                                      }
+                                  ],
+                       "hits":  [
+
+                                ],
+                       "error":  null
+                   }
+               ],
+    "note":  "a hit is a candidate: the call site still has to be reached at runtime",
+    "when":  "2026-08-12T10:59:53Z",
+    "what":  "root-relative /api literals in the JavaScript production actually serves, per mount",
+    "how":  "GET more30.com/\u003cmount\u003e/ then GET each same-origin \u003cscript src\u003e; regex the emitted bundle"
+}

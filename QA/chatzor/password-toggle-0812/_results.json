@@ -1,0 +1,69 @@
+{
+  "system": "16 — chatzor-connect / מחוברים חצור הגלילית (more30.com/chatzor)",
+  "priority": "§1א — כפתור \"הצג סיסמה\" בכל שדות הסיסמה",
+  "date": "2026-08-12",
+  "surface": "AdminLogin.tsx — הקומפוננטה היחידה עם שדה סיסמה במערכת, ומשרתת שני נתיבים: /chatzor/admin/login (כניסת מנהל המועצה) ו-/chatzor/gabai/login (כניסת גבאי)",
+  "deployment": {
+    "project": "chatzor-more30",
+    "deployment_id": "dpl_9Yk6spfzyQouDEsRxdShZu3r6fCj",
+    "target": "production",
+    "readyState": "READY"
+  },
+  "pre_deploy_safety": {
+    "why": "העותק ב-_deploy עלול להיות מאחורי מה שחי (ראה deploy-copy-can-break-live-sites)",
+    "live_vs_deploy_index_html": "58 שורות חיות מול 53 מקומיות; ההפרש כולו שלוש שורות ההזרקה של נטפרי + שורה ריקה. אין ולו שורה אחת של תוכן שקיימת רק בחי — כלומר החי אינו מקדים את העותק",
+    "more30_login_marker": "מספר האזכורים של more30 ב-index.html האפוי זהה לזה שהיה פרוס (5), כולל ה---more30-auth-inset — כלומר כפתור הכניסה המשותף לא נמחק בפריסה"
+  },
+  "scope_note": {
+    "what_else_shipped": "העותק ב-_deploy היה מ-03/08 והמקור מ-10/08, כך שהפריסה הזאת נשאה איתה גם חמישה תיקוני מקור שנחסמו על מכסת Vercel (#83) ומעולם לא נפרסו: core.issues #146, #148, #149, #150, #151 (מצבי שגיאה במסכי גבאי, תג «דוגמה» בשישה מסכים, ענף שגיאה שהחזיר זרעים, והרשאת גבאי שהתרחבה לכל בתי הכנסת בכישלון שאילתה). §0.2 מבקשת בדיוק את זה — לפרוס מחדש את מה שנחסם על #83.",
+    "evidence_they_are_live": "שלושת ה-chunks שקיימים רק בבנייה החדשה מחזירים 200 מהדומיין: SynagogueGate-Bcm5YVgF.js (726), sampleRow-BwG5ZUhQ.js (2,536), AdminLogin-vth8GQ-_.js (5,260)",
+    "not_verified": "המסכים הפנימיים של אותם חמישה תיקונים לא נבדקו בריצה הזאת — הם מאחורי התחברות אמיתית, ולא בוצעה התחברות. נבדק רק שהבנייה עוברת (tsc --noEmit + vite build), שדף הנחיתה לא נשבר, ושהקונסולה נקייה."
+  },
+  "checks": [
+    {
+      "name": "הכפתור חי על הדומיין",
+      "measured": "button[type=button] aria-label=\"הצג סיסמה\" aria-pressed=\"false\" קיים ב-/chatzor/admin/login; לשדה padding-left 40px",
+      "pass": true
+    },
+    {
+      "name": "הצד נגזר מכיוון השדה ולא הועתק ממערכת אחרת",
+      "measured": "לשדה אין dir משלו והוא יורש rtl מ-<html dir=rtl>; computed direction=rtl, text-align=start — התווים מתחילים מהקצה הימני, ולכן הכפתור משמאל. (ב-22 zchuyot היה הפוך: שם השדה נושא dir=ltr)",
+      "pass": true
+    },
+    {
+      "name": "הכפתור יושב בתוך המסגרת ואינו מכוסה",
+      "measured": "rect הכפתור (355,353,32x32) מוכל ברקט השדה (351,348,318x42); elementFromPoint במרכזו מחזיר svg.lucide-eye שהכפתור מכיל",
+      "pass": true
+    },
+    {
+      "name": "הלחיצה הופכת type, aria-pressed, aria-label ואייקון יחד",
+      "measured": "password→text · false→true · \"הצג סיסמה\"→\"הסתר סיסמה\" · lucide-eye→lucide-eye-off. הערך נשמר: More30Admin2026",
+      "pass": true
+    },
+    {
+      "name": "הלחיצה אינה שולחת את הטופס",
+      "measured": "השדה יושב בתוך <form onSubmit>; אחרי הלחיצה location.href לא השתנה ומונה ה-fetch עומד על 0 — לא נורה ניסיון התחברות ולא נכתב דבר ל-Supabase",
+      "pass": true
+    },
+    {
+      "name": "החזרה למצב מוסתר",
+      "measured": "לחיצה שנייה: text→password · true→false · \"הסתר סיסמה\"→\"הצג סיסמה\" · lucide-eye-off→lucide-eye; fetch עדיין 0",
+      "pass": true
+    },
+    {
+      "name": "הנתיב השני שמשתמש באותה קומפוננטה",
+      "measured": "/chatzor/gabai/login — h1=\"כניסת גבאי\", אותו כפתור aria-label=\"הצג סיסמה\" type=button, השדה password",
+      "pass": true
+    },
+    {
+      "name": "דף הנחיתה לא נשבר מהבנייה מחדש ומה-prerender",
+      "measured": "/chatzor/ מחזיר 200, h1=\"מחוברים — כל התורה והקהילה של חצור הגלילית במקום אחד\", 2 ילדים ל-#root, 33 קישורים, 4 כפתורים, 4 כותרות h2, 0 שגיאות קונסולה",
+      "pass": true
+    }
+  ],
+  "not_checked": "אין כאן מסלול הרשמה — הטופס הוא כניסה בלבד, ולכן אין דרישת סיסמה להציג לצד השדה (אותו נימוק כמו ב-22). לא נוצר משתמש ולא בוצעה התחברות אמיתית.",
+  "screenshots": [
+    "chatzor-password-hidden.png — 15 תווים מוקלדים, מוסתרים, אייקון עין",
+    "chatzor-password-revealed.png — אותו ערך גלוי, אייקון עין-חצויה משמאל, מרוחק מהתווים"
+  ]
+}

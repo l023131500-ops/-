@@ -1,0 +1,121 @@
+{
+  "src_bytes": 129476,
+  "live_bytes": 121678,
+  "rows": [
+    {
+      "marker": "why-input",
+      "src": 2,
+      "live": 0
+    },
+    {
+      "marker": "why-count",
+      "src": 3,
+      "live": 0
+    },
+    {
+      "marker": "status-note-count",
+      "src": 2,
+      "live": 0
+    },
+    {
+      "marker": "syncNoteCount",
+      "src": 4,
+      "live": 0
+    },
+    {
+      "marker": "NOTE_MAX",
+      "src": 4,
+      "live": 0
+    },
+    {
+      "marker": "אפשר להשאיר ריק",
+      "src": 1,
+      "live": 0
+    },
+    {
+      "marker": "למה (לא חובה)",
+      "src": 1,
+      "live": 0
+    },
+    {
+      "marker": "הנימוק נשמר ביומן",
+      "src": 1,
+      "live": 0
+    },
+    {
+      "marker": "הנימוק לא נשמר",
+      "src": 2,
+      "live": 0
+    },
+    {
+      "marker": "resize:vertical",
+      "src": 1,
+      "live": 0
+    },
+    {
+      "marker": "aria-describedby",
+      "src": 2,
+      "live": 0
+    },
+    {
+      "marker": "textarea",
+      "src": 3,
+      "live": 0
+    },
+    {
+      "marker": "btrim",
+      "src": 7,
+      "live": 1
+    },
+    {
+      "marker": "note_too_long",
+      "src": 5,
+      "live": 1
+    },
+    {
+      "marker": "td.why",
+      "src": 1,
+      "live": 1
+    },
+    {
+      "marker": "fillHistoryNoteCell",
+      "src": 2,
+      "live": 2
+    },
+    {
+      "marker": "רצף ההכרעות",
+      "src": 4,
+      "live": 4
+    },
+    {
+      "marker": "handsBit",
+      "src": 2,
+      "live": 2
+    },
+    {
+      "marker": "producedBit",
+      "src": 2,
+      "live": 2
+    },
+    {
+      "marker": "fillQueueCell",
+      "src": 2,
+      "live": 2
+    },
+    {
+      "marker": "fillTemplateCell",
+      "src": 4,
+      "live": 4
+    },
+    {
+      "marker": "fillCreatedCell",
+      "src": 4,
+      "live": 4
+    },
+    {
+      "marker": "מי הכריע",
+      "src": 13,
+      "live": 13
+    }
+  ]
+}

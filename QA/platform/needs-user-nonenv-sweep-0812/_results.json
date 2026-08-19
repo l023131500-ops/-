@@ -1,0 +1,37 @@
+{
+  "when": "2026-08-12",
+  "purpose": "Re-measure the two NON-env NEEDS_USER entries that had never been re-checked since they were written, exactly as the previous step's open line (5) named: §2 (anon-write on recordings) and §0כ (one kupot_leads row the user must delete).",
+  "target_project": "csjekrvukbdznetsrodj (live backend of systems 02/06/12/27; a different Supabase account than the hub, so it cannot be fixed via my MCP — list_projects still returns only the hub uhnrgujbdxhhmoxcjria)",
+  "anon_key_source": "apps/06-kupot-holim/site/supabase-config.js (role=anon, embedded in the public bundle)",
+  "section_2_recordings_vulnerability": {
+    "status_after_measurement": "STILL OPEN on 12/08 — not stale. Unchanged from the 03/08 write-up.",
+    "measurements": [
+      { "op": "GET /rest/v1/recordings (count=exact)", "result": "206, Content-Range 0-0/1138", "meaning": "public SELECT works (expected)" },
+      { "op": "DELETE /rest/v1/recordings?id=eq.<impossible-uuid>", "result": "200 []", "meaning": "anon holds DELETE grant and no RLS blocks it; no row matched so nothing was deleted" },
+      { "op": "PATCH /rest/v1/recordings?id=eq.<impossible-uuid>", "result": "200 []", "meaning": "anon holds UPDATE grant; no row matched" },
+      { "op": "POST /rest/v1/recordings {}", "result": "201 Created", "meaning": "anon can INSERT" }
+    ],
+    "cleanup": "The 201 created one all-null row id=941d6319-8337-483d-a469-5c63fa847751 (created_at 2026-08-12T06:09:38Z). Deleted it immediately by exact id (DELETE 200, representation returned that exact row). Re-count = 0-0/1138 — back to baseline, nothing else touched.",
+    "still_cannot_fix_from_here": "csjekrvu sits in another Supabase account; my PAT/MCP see only the hub. Needs the RLS toggle done in that project's dashboard, or a PAT for that account."
+  },
+  "section_0kaf_kupot_leads_probe_row": {
+    "status_after_measurement": "The user's one-row deletion is STILL needed — anon still cannot clean it up. Consistent with the insert-only key described 07/08.",
+    "measurements": [
+      { "op": "GET /rest/v1/kupot_leads?select=id", "result": "401 42501 — permission denied (hint: GRANT SELECT ON public.kupot_leads TO anon)", "meaning": "anon cannot even read the table, so the probe row cannot be confirmed or removed from here" },
+      { "op": "DELETE /rest/v1/kupot_leads?source=eq.qa-anon-probe-0807", "result": "401 42501 — permission denied (hint: GRANT SELECT, DELETE ON public.kupot_leads TO anon)", "meaning": "anon has no DELETE grant on kupot_leads; the marked probe row still needs one manual deletion in the Table Editor" }
+    ],
+    "note": "This is table-level GRANT (not RLS): kupot_leads is insert-only for anon, which is why briut's admin screen cannot read its own leads. Unchanged from §0כ / core.issues #86."
+  },
+  "protected_systems": "untouched — no write to any hub schema, no deploy, no account created, nothing sent, no billing touched. The only writes were one insert into recordings and its immediate delete, restoring the exact 1138 count.",
+  "evidence_files": [
+    "get-recordings.json / get-recordings.headers.txt",
+    "get-kupot_leads.json",
+    "delete-recordings-nomatch.json",
+    "patch-recordings-nomatch.json",
+    "post-recordings.json",
+    "recordings-recent.json",
+    "delete-my-row.json",
+    "count-after.txt",
+    "delete-kupot-probe.json"
+  ]
+}

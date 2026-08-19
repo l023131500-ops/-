@@ -1,0 +1,36 @@
+heartbeat: reconcile 6 queued _heartbeat.sql files (0811-0818) - queue now empty
+
+Session start: read RUN_INSTRUCTIONS.md, checked core.run_progress (last id
+937, design-fingerprint-gap-0818, HEAD 15067b4 at that point) and git log on
+fix/nadlan-a11y, which showed 3 newer unreconciled commits: 4ca4770
+(nadlan-nearby-plans-geometry-0818), 0bff45e (its queued heartbeat commit),
+3803d83 (nadlan-nearby-plans-live-0818, also queued - MCP was not connected
+either of those sessions).
+
+Ran `git ls-files -- "*_heartbeat*.sql"` per the standing reconcile method
+(heartbeats-queued-as-files.md) instead of only handling the 2 nadlan files
+named in the most recent commits, and found 4 more still on disk:
+topic-no-invalid-deploy-0814 and undecided-filter-deploy-0814 (bkalot-clone),
+claims-truth-0811 (gannenet), dialogs-rtl-0811 (kiosk). Checked
+core.run_progress by task text first: the two 0814 bkalot-clone files were
+already inserted in a prior session (ids 598, 604) and simply never deleted
+after - re-running them would have double-counted that work. The two 0811
+files (claims-truth-0811, dialogs-rtl-0811) had no matching row - genuinely
+still queued, from before this reconcile pattern existed.
+
+Determined true commit order for the 4 real inserts via
+`git log --oneline --reverse -- "*_heartbeat*.sql"`: dialogs-rtl-0811 and
+claims-truth-0811 (08/11) predate nearby-plans-geometry-0818 and
+nearby-plans-live-0818 (08/18). Inserted all 4 into core.run_progress in that
+order, verbatim from each file's insert statement (ids 938-941). Deleted all
+6 _heartbeat.sql files (the 4 real inserts plus the 2 already-reconciled
+stale leftovers) so `git ls-files -- "*_heartbeat*.sql"` returns empty.
+
+No app code changed, no protected system touched (08/09/bkalut-app/
+bkalot-admin/zr_*/NEDARIM3873 untouched) - pure heartbeat bookkeeping.
+Committed+pushed on fix/nadlan-a11y.
+
+Next: nearby-plans-live-0818's own note names the real next step - wire
+lib/nearbyplans.ts into an API route + UI panel + premium-tier gate for
+spec #12 (construction near the property), same scope the prior two steps
+explicitly deferred.

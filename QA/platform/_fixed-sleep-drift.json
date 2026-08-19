@@ -1,0 +1,744 @@
+{
+  "sampleMs": 1000,
+  "samples": 18,
+  "results": [
+    {
+      "script": "chatzor-flow.mjs",
+      "sleepMs": 4500,
+      "url": "https://more30.com/chatzor/",
+      "atSleep": 2101,
+      "settled": 2101,
+      "settledAtMs": 2031,
+      "series": [
+        {
+          "atMs": 1022,
+          "chars": 1839
+        },
+        {
+          "atMs": 2031,
+          "chars": 2101
+        },
+        {
+          "atMs": 3046,
+          "chars": 2101
+        },
+        {
+          "atMs": 4062,
+          "chars": 2101
+        },
+        {
+          "atMs": 5074,
+          "chars": 2101
+        },
+        {
+          "atMs": 6080,
+          "chars": 2101
+        },
+        {
+          "atMs": 7102,
+          "chars": 2101
+        },
+        {
+          "atMs": 8113,
+          "chars": 2101
+        },
+        {
+          "atMs": 9124,
+          "chars": 2101
+        },
+        {
+          "atMs": 10134,
+          "chars": 2101
+        },
+        {
+          "atMs": 11148,
+          "chars": 2101
+        },
+        {
+          "atMs": 12154,
+          "chars": 2101
+        },
+        {
+          "atMs": 13169,
+          "chars": 2101
+        },
+        {
+          "atMs": 14188,
+          "chars": 2101
+        },
+        {
+          "atMs": 15197,
+          "chars": 2101
+        },
+        {
+          "atMs": 16207,
+          "chars": 2101
+        },
+        {
+          "atMs": 17221,
+          "chars": 2101
+        },
+        {
+          "atMs": 18235,
+          "chars": 2101
+        }
+      ]
+    },
+    {
+      "script": "chizukim-flow.mjs",
+      "sleepMs": 4000,
+      "url": "https://more30.com/chizukim/",
+      "atSleep": 1951,
+      "settled": 1951,
+      "settledAtMs": 3044,
+      "series": [
+        {
+          "atMs": 1018,
+          "chars": 158
+        },
+        {
+          "atMs": 2035,
+          "chars": 1937
+        },
+        {
+          "atMs": 3044,
+          "chars": 1951
+        },
+        {
+          "atMs": 4052,
+          "chars": 1951
+        },
+        {
+          "atMs": 5063,
+          "chars": 1951
+        },
+        {
+          "atMs": 6078,
+          "chars": 1951
+        },
+        {
+          "atMs": 7107,
+          "chars": 1951
+        },
+        {
+          "atMs": 8126,
+          "chars": 1951
+        },
+        {
+          "atMs": 9146,
+          "chars": 1951
+        },
+        {
+          "atMs": 10163,
+          "chars": 1951
+        },
+        {
+          "atMs": 11177,
+          "chars": 1951
+        },
+        {
+          "atMs": 12192,
+          "chars": 1951
+        },
+        {
+          "atMs": 13209,
+          "chars": 1951
+        },
+        {
+          "atMs": 14224,
+          "chars": 1951
+        },
+        {
+          "atMs": 15240,
+          "chars": 1951
+        },
+        {
+          "atMs": 16254,
+          "chars": 1951
+        },
+        {
+          "atMs": 17274,
+          "chars": 1951
+        },
+        {
+          "atMs": 18289,
+          "chars": 1951
+        }
+      ]
+    },
+    {
+      "script": "customer-login-flow.mjs",
+      "sleepMs": 3000,
+      "url": "https://more30.com/login?from=%2F",
+      "atSleep": 331,
+      "settled": 331,
+      "settledAtMs": 1019,
+      "series": [
+        {
+          "atMs": 1019,
+          "chars": 331
+        },
+        {
+          "atMs": 2033,
+          "chars": 331
+        },
+        {
+          "atMs": 3051,
+          "chars": 331
+        },
+        {
+          "atMs": 4066,
+          "chars": 331
+        },
+        {
+          "atMs": 5082,
+          "chars": 331
+        },
+        {
+          "atMs": 6097,
+          "chars": 331
+        },
+        {
+          "atMs": 7113,
+          "chars": 331
+        },
+        {
+          "atMs": 8129,
+          "chars": 331
+        },
+        {
+          "atMs": 9144,
+          "chars": 331
+        },
+        {
+          "atMs": 10160,
+          "chars": 331
+        },
+        {
+          "atMs": 11180,
+          "chars": 331
+        },
+        {
+          "atMs": 12195,
+          "chars": 331
+        },
+        {
+          "atMs": 13210,
+          "chars": 331
+        },
+        {
+          "atMs": 14225,
+          "chars": 331
+        },
+        {
+          "atMs": 15241,
+          "chars": 331
+        },
+        {
+          "atMs": 16257,
+          "chars": 331
+        },
+        {
+          "atMs": 17272,
+          "chars": 331
+        },
+        {
+          "atMs": 18288,
+          "chars": 331
+        }
+      ]
+    },
+    {
+      "script": "kupot-flow.mjs",
+      "sleepMs": 1500,
+      "url": "https://more30.com/kupot",
+      "atSleep": 908,
+      "settled": 3164,
+      "settledAtMs": 4070,
+      "series": [
+        {
+          "atMs": 1023,
+          "chars": 908
+        },
+        {
+          "atMs": 2041,
+          "chars": 908
+        },
+        {
+          "atMs": 3056,
+          "chars": 908
+        },
+        {
+          "atMs": 4070,
+          "chars": 3164
+        },
+        {
+          "atMs": 5083,
+          "chars": 3164
+        },
+        {
+          "atMs": 6099,
+          "chars": 3164
+        },
+        {
+          "atMs": 7115,
+          "chars": 3164
+        },
+        {
+          "atMs": 8131,
+          "chars": 3164
+        },
+        {
+          "atMs": 9148,
+          "chars": 3164
+        },
+        {
+          "atMs": 10162,
+          "chars": 3164
+        },
+        {
+          "atMs": 11178,
+          "chars": 3164
+        },
+        {
+          "atMs": 12193,
+          "chars": 3164
+        },
+        {
+          "atMs": 13209,
+          "chars": 3164
+        },
+        {
+          "atMs": 14224,
+          "chars": 3164
+        },
+        {
+          "atMs": 15240,
+          "chars": 3164
+        },
+        {
+          "atMs": 16255,
+          "chars": 3164
+        },
+        {
+          "atMs": 17271,
+          "chars": 3164
+        },
+        {
+          "atMs": 18287,
+          "chars": 3164
+        }
+      ]
+    },
+    {
+      "script": "orech-flow.mjs",
+      "sleepMs": 3500,
+      "url": "https://more30.com/orech",
+      "atSleep": 504,
+      "settled": 504,
+      "settledAtMs": 1036,
+      "series": [
+        {
+          "atMs": 1036,
+          "chars": 504
+        },
+        {
+          "atMs": 2050,
+          "chars": 504
+        },
+        {
+          "atMs": 3058,
+          "chars": 504
+        },
+        {
+          "atMs": 4082,
+          "chars": 504
+        },
+        {
+          "atMs": 5103,
+          "chars": 504
+        },
+        {
+          "atMs": 6112,
+          "chars": 504
+        },
+        {
+          "atMs": 7123,
+          "chars": 504
+        },
+        {
+          "atMs": 8136,
+          "chars": 504
+        },
+        {
+          "atMs": 9151,
+          "chars": 504
+        },
+        {
+          "atMs": 10163,
+          "chars": 504
+        },
+        {
+          "atMs": 11170,
+          "chars": 504
+        },
+        {
+          "atMs": 12189,
+          "chars": 504
+        },
+        {
+          "atMs": 13203,
+          "chars": 504
+        },
+        {
+          "atMs": 14221,
+          "chars": 504
+        },
+        {
+          "atMs": 15231,
+          "chars": 504
+        },
+        {
+          "atMs": 16238,
+          "chars": 504
+        },
+        {
+          "atMs": 17258,
+          "chars": 504
+        },
+        {
+          "atMs": 18272,
+          "chars": 504
+        }
+      ]
+    },
+    {
+      "script": "platform-audit.mjs",
+      "sleepMs": 3500,
+      "url": "https://more30.com/kupot",
+      "atSleep": 3164,
+      "settled": 3164,
+      "settledAtMs": 3039,
+      "series": [
+        {
+          "atMs": 1022,
+          "chars": 908
+        },
+        {
+          "atMs": 2030,
+          "chars": 908
+        },
+        {
+          "atMs": 3039,
+          "chars": 3164
+        },
+        {
+          "atMs": 4057,
+          "chars": 3164
+        },
+        {
+          "atMs": 5072,
+          "chars": 3164
+        },
+        {
+          "atMs": 6088,
+          "chars": 3164
+        },
+        {
+          "atMs": 7103,
+          "chars": 3164
+        },
+        {
+          "atMs": 8113,
+          "chars": 3164
+        },
+        {
+          "atMs": 9132,
+          "chars": 3164
+        },
+        {
+          "atMs": 10137,
+          "chars": 3164
+        },
+        {
+          "atMs": 11143,
+          "chars": 3164
+        },
+        {
+          "atMs": 12148,
+          "chars": 3164
+        },
+        {
+          "atMs": 13155,
+          "chars": 3164
+        },
+        {
+          "atMs": 14169,
+          "chars": 3164
+        },
+        {
+          "atMs": 15182,
+          "chars": 3164
+        },
+        {
+          "atMs": 16191,
+          "chars": 3164
+        },
+        {
+          "atMs": 17198,
+          "chars": 3164
+        },
+        {
+          "atMs": 18207,
+          "chars": 3164
+        }
+      ]
+    },
+    {
+      "script": "probe-redirect.mjs",
+      "sleepMs": 6000,
+      "url": "https://more30.com/bkalot",
+      "atSleep": 3104,
+      "settled": 8446,
+      "settledAtMs": 7395,
+      "series": [
+        {
+          "atMs": 1021,
+          "chars": 3104
+        },
+        {
+          "atMs": 2034,
+          "chars": 3104
+        },
+        {
+          "atMs": 3047,
+          "chars": 3104
+        },
+        {
+          "atMs": 4060,
+          "chars": 3104
+        },
+        {
+          "atMs": 5087,
+          "chars": 3104
+        },
+        {
+          "atMs": 6380,
+          "chars": 8439
+        },
+        {
+          "atMs": 7395,
+          "chars": 8446
+        },
+        {
+          "atMs": 8409,
+          "chars": 8446
+        },
+        {
+          "atMs": 9430,
+          "chars": 8446
+        },
+        {
+          "atMs": 10444,
+          "chars": 8446
+        },
+        {
+          "atMs": 11464,
+          "chars": 8446
+        },
+        {
+          "atMs": 12485,
+          "chars": 8446
+        },
+        {
+          "atMs": 13505,
+          "chars": 8446
+        },
+        {
+          "atMs": 14526,
+          "chars": 8446
+        },
+        {
+          "atMs": 15544,
+          "chars": 8446
+        },
+        {
+          "atMs": 16558,
+          "chars": 8446
+        },
+        {
+          "atMs": 17577,
+          "chars": 8446
+        },
+        {
+          "atMs": 18599,
+          "chars": 8446
+        }
+      ]
+    },
+    {
+      "script": "studio-flow.mjs",
+      "sleepMs": 5000,
+      "url": "https://more30.com/studio",
+      "atSleep": 927,
+      "settled": 927,
+      "settledAtMs": 3662,
+      "series": [
+        {
+          "atMs": 1007,
+          "chars": 753
+        },
+        {
+          "atMs": 2025,
+          "chars": 753
+        },
+        {
+          "atMs": 3662,
+          "chars": 927
+        },
+        {
+          "atMs": 4677,
+          "chars": 927
+        },
+        {
+          "atMs": 5699,
+          "chars": 927
+        },
+        {
+          "atMs": 6716,
+          "chars": 927
+        },
+        {
+          "atMs": 7734,
+          "chars": 927
+        },
+        {
+          "atMs": 8750,
+          "chars": 927
+        },
+        {
+          "atMs": 9767,
+          "chars": 927
+        },
+        {
+          "atMs": 10787,
+          "chars": 927
+        },
+        {
+          "atMs": 11798,
+          "chars": 927
+        },
+        {
+          "atMs": 12814,
+          "chars": 927
+        },
+        {
+          "atMs": 13827,
+          "chars": 927
+        },
+        {
+          "atMs": 14843,
+          "chars": 927
+        },
+        {
+          "atMs": 15858,
+          "chars": 927
+        },
+        {
+          "atMs": 16864,
+          "chars": 927
+        },
+        {
+          "atMs": 17873,
+          "chars": 927
+        },
+        {
+          "atMs": 18884,
+          "chars": 927
+        }
+      ]
+    },
+    {
+      "script": "zchuyot-flow.mjs",
+      "sleepMs": 4000,
+      "url": "https://more30.com/zchuyot",
+      "atSleep": 2511,
+      "settled": 2511,
+      "settledAtMs": 1007,
+      "series": [
+        {
+          "atMs": 1007,
+          "chars": 2511
+        },
+        {
+          "atMs": 2023,
+          "chars": 2511
+        },
+        {
+          "atMs": 3030,
+          "chars": 2511
+        },
+        {
+          "atMs": 4039,
+          "chars": 2511
+        },
+        {
+          "atMs": 5045,
+          "chars": 2511
+        },
+        {
+          "atMs": 6054,
+          "chars": 2511
+        },
+        {
+          "atMs": 7063,
+          "chars": 2511
+        },
+        {
+          "atMs": 8080,
+          "chars": 2511
+        },
+        {
+          "atMs": 9094,
+          "chars": 2511
+        },
+        {
+          "atMs": 10114,
+          "chars": 2511
+        },
+        {
+          "atMs": 11139,
+          "chars": 2511
+        },
+        {
+          "atMs": 12153,
+          "chars": 2511
+        },
+        {
+          "atMs": 13163,
+          "chars": 2511
+        },
+        {
+          "atMs": 14177,
+          "chars": 2511
+        },
+        {
+          "atMs": 15194,
+          "chars": 2511
+        },
+        {
+          "atMs": 16204,
+          "chars": 2511
+        },
+        {
+          "atMs": 17219,
+          "chars": 2511
+        },
+        {
+          "atMs": 18227,
+          "chars": 2511
+        }
+      ]
+    }
+  ]
+}

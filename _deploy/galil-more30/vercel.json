@@ -1,0 +1,3 @@
+{ "buildCommand":"echo no-build","outputDirectory":".","framework":null,"rewrites":[
+ {"source":"/galil","destination":"/galil/index.html"},
+ {"source":"/galil/:path*","destination":"/galil/index.html"}]}

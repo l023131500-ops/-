@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>העורך התורני — ארכיטקטורה ותוכנית בנייה</title>
+<meta name="description" content="מסמך ארכיטקטורה ותוכנית מימוש למערכת AI לעריכה, הגהה, ניקוד ואימות מקורות בספרים תורניים — מבוסס Sefaria, DICTA ו-RAG על Supabase." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;500;700;900&family=Suez+One&family=Heebo:wght@300;400;500;700;800&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #F7F5F0;
+    --surface: #FCFBF8;
+    --surface-alt: #F1EEE6;
+    --border: #DED9CD;
+    --ink: #241F17;
+    --ink-muted: #6E685C;
+    --ink-faint: #A89F8E;
+    --accent: #7A2E2E;      /* יין תורני עמוק */
+    --accent-soft: #9A4A3F;
+    --gold: #B58B2E;
+    --teal: #2C5F5A;
+    --radius: 14px;
+    --maxw: 1080px;
+    --serif: 'Frank Ruhl Libre', Georgia, serif;
+    --display: 'Suez One', 'Frank Ruhl Libre', serif;
+    --sans: 'Heebo', system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--serif);
+    line-height: 1.75;
+    font-size: 18px;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  ::selection { background: var(--accent); color: #fff; }
+
+  /* ── Layout ── */
+  .wrap { max-width: var(--maxw); margin-inline: auto; padding-inline: 24px; }
+  section { padding-block: 72px; }
+  section + section { border-top: 1px solid var(--border); }
+
+  /* ── Header / nav ── */
+  header.site {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(247,245,240,.88);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border);
+  }
+  .navbar { display: flex; align-items: center; justify-content: space-between; padding-block: 14px; }
+  .brand { display: flex; align-items: center; gap: 12px; font-family: var(--display); font-size: 22px; color: var(--accent); }
+  .brand svg { width: 30px; height: 30px; }
+  nav.links { display: flex; gap: 26px; font-family: var(--sans); font-size: 15px; }
+  nav.links a { color: var(--ink-muted); text-decoration: none; transition: color .2s; font-weight: 500; }
+  nav.links a:hover { color: var(--accent); }
+  @media (max-width: 860px) { nav.links { display: none; } }
+
+  /* ── Hero ── */
+  .hero { text-align: center; padding-block: 96px 80px; background:
+      radial-gradient(120% 80% at 50% 0%, #F1EBDD 0%, var(--bg) 60%); }
+  .hero .kicker {
+    display: inline-block; font-family: var(--sans); font-weight: 600; font-size: 13px;
+    letter-spacing: .04em; color: var(--accent); background: #F0E4E0;
+    border: 1px solid #E4CFC9; padding: 6px 16px; border-radius: 999px; margin-bottom: 26px;
+  }
+  .hero h1 { font-family: var(--display); font-size: clamp(38px, 6vw, 68px); line-height: 1.1; color: var(--ink); letter-spacing: -0.01em; }
+  .hero .lead { max-width: 720px; margin: 26px auto 0; font-size: clamp(19px,2.4vw,23px); color: var(--ink-muted); line-height: 1.7; }
+  .hero .meta { margin-top: 34px; font-family: var(--sans); font-size: 14px; color: var(--ink-faint); }
+  .hero .meta strong { color: var(--ink-muted); font-weight: 600; }
+
+  /* ── Section headings ── */
+  .sec-head { margin-bottom: 46px; }
+  .sec-head .num { font-family: var(--sans); font-weight: 700; font-size: 14px; color: var(--gold); letter-spacing: .1em; }
+  .sec-head h2 { font-family: var(--display); font-size: clamp(28px,4vw,40px); color: var(--ink); margin-top: 8px; line-height: 1.2; }
+  .sec-head p { margin-top: 14px; font-size: 19px; color: var(--ink-muted); max-width: 760px; }
+
+  /* ── Function cards ── */
+  .grid { display: grid; gap: 20px; }
+  .grid.cols-2 { grid-template-columns: repeat(2, 1fr); }
+  .grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
+  @media (max-width: 780px) { .grid.cols-2, .grid.cols-3 { grid-template-columns: 1fr; } }
+
+  .card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 28px 26px; position: relative;
+    transition: transform .2s, box-shadow .2s, border-color .2s;
+  }
+  .card:hover { transform: translateY(-3px); box-shadow: 0 12px 30px -14px rgba(60,40,20,.22); border-color: var(--accent-soft); }
+  .card .idx {
+    position: absolute; inset-inline-start: 22px; top: 22px;
+    font-family: var(--display); font-size: 30px; color: var(--surface-alt);
+    -webkit-text-stroke: 1px var(--border); line-height: 1;
+  }
+  .card h3 { font-family: var(--display); font-size: 22px; color: var(--accent); margin-bottom: 10px; padding-inline-end: 44px; }
+  .card p { font-size: 16.5px; color: var(--ink-muted); line-height: 1.7; }
+  .card .how { margin-top: 14px; font-family: var(--sans); font-size: 14px; color: var(--teal); background: #E8F0EE; border-radius: 8px; padding: 9px 12px; }
+  .card .how b { color: var(--teal); }
+
+  /* ── Pipeline / flow ── */
+  .flow { display: flex; flex-direction: column; gap: 0; }
+  .flow-step { display: flex; gap: 20px; align-items: flex-start; position: relative; padding-bottom: 30px; }
+  .flow-step:last-child { padding-bottom: 0; }
+  .flow-step::before { content: ""; position: absolute; inset-inline-start: 21px; top: 46px; bottom: -4px; width: 2px; background: var(--border); }
+  .flow-step:last-child::before { display: none; }
+  .flow-dot { flex: 0 0 44px; height: 44px; border-radius: 50%; background: var(--accent); color: #fff; display: grid; place-items: center; font-family: var(--display); font-size: 20px; z-index: 1; }
+  .flow-body h4 { font-family: var(--display); font-size: 20px; color: var(--ink); margin-bottom: 5px; }
+  .flow-body p { font-size: 16.5px; color: var(--ink-muted); }
+  .flow-body code { font-family: ui-monospace, monospace; background: var(--surface-alt); padding: 1px 7px; border-radius: 5px; font-size: 14px; color: var(--accent); direction: ltr; display: inline-block; }
+
+  /* ── Tables ── */
+  .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); }
+  table { width: 100%; border-collapse: collapse; font-size: 16px; }
+  th, td { text-align: right; padding: 14px 18px; border-bottom: 1px solid var(--border); }
+  thead th { background: var(--surface-alt); font-family: var(--sans); font-weight: 700; font-size: 14.5px; color: var(--ink); }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: #FAF7F1; }
+  td b { color: var(--accent); }
+  td a { color: var(--teal); text-decoration: none; border-bottom: 1px dotted var(--teal); }
+  td code { font-family: ui-monospace, monospace; font-size: 13.5px; direction: ltr; display: inline-block; background: var(--surface-alt); padding: 1px 6px; border-radius: 4px; }
+
+  /* ── Stack / layers ── */
+  .stack { display: flex; flex-direction: column; gap: 14px; }
+  .layer { background: var(--surface); border: 1px solid var(--border); border-inline-start: 5px solid var(--accent); border-radius: 10px; padding: 20px 22px; }
+  .layer.l-teal { border-inline-start-color: var(--teal); }
+  .layer.l-gold { border-inline-start-color: var(--gold); }
+  .layer h4 { font-family: var(--display); font-size: 19px; color: var(--ink); margin-bottom: 6px; }
+  .layer p { font-size: 16px; color: var(--ink-muted); }
+  .layer .tags { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 7px; }
+  .tag { font-family: var(--sans); font-size: 12.5px; font-weight: 500; background: var(--surface-alt); color: var(--ink-muted); padding: 4px 11px; border-radius: 999px; border: 1px solid var(--border); }
+
+  /* ── Callout ── */
+  .callout { background: #F5EBE9; border: 1px solid #E4CFC9; border-radius: var(--radius); padding: 26px 28px; }
+  .callout h4 { font-family: var(--display); font-size: 21px; color: var(--accent); margin-bottom: 10px; }
+  .callout p { color: #5A3B36; font-size: 17px; }
+
+  /* ── Checklist for Claude ── */
+  .checklist { display: grid; gap: 12px; }
+  .check-item { display: flex; gap: 14px; align-items: flex-start; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; }
+  .check-item .mark { flex: 0 0 26px; height: 26px; border-radius: 7px; background: var(--teal); color: #fff; display: grid; place-items: center; font-family: var(--sans); font-weight: 700; font-size: 14px; }
+  .check-item div p { font-size: 16.5px; }
+  .check-item .lbl { font-family: var(--display); font-size: 17px; color: var(--ink); }
+
+  /* ── Footer ── */
+  footer.site { background: var(--ink); color: #D9D2C4; padding-block: 46px; text-align: center; }
+  footer.site .brand-f { font-family: var(--display); font-size: 24px; color: #F1E6D0; }
+  footer.site p { font-family: var(--sans); font-size: 14px; color: #A89F8E; margin-top: 12px; max-width: 620px; margin-inline: auto; line-height: 1.7; }
+  footer.site .sources { margin-top: 20px; font-size: 13px; }
+  footer.site .sources a { color: var(--gold); text-decoration: none; margin-inline: 8px; }
+
+  /* ── Utility ── */
+  .note-src { font-family: var(--sans); font-size: 13px; color: var(--ink-faint); margin-top: 8px; }
+  .note-src a { color: var(--teal); text-decoration: none; border-bottom: 1px dotted; }
+  .fade { opacity: 0; transform: translateY(20px); transition: opacity .7s ease, transform .7s ease; }
+  .fade.in { opacity: 1; transform: none; }
+  @media (prefers-reduced-motion: reduce) { .fade { opacity: 1; transform: none; transition: none; } html { scroll-behavior: auto; } }
+</style>
+</head>
+<body>
+
+<header class="site">
+  <div class="wrap navbar">
+    <div class="brand">
+      <svg viewBox="0 0 32 32" fill="none" aria-label="לוגו העורך התורני">
+        <rect x="3" y="4" width="26" height="24" rx="3" stroke="currentColor" stroke-width="2"/>
+        <line x1="16" y1="4" x2="16" y2="28" stroke="currentColor" stroke-width="2"/>
+        <line x1="7" y1="11" x2="13" y2="11" stroke="currentColor" stroke-width="1.6"/>
+        <line x1="7" y1="16" x2="13" y2="16" stroke="currentColor" stroke-width="1.6"/>
+        <line x1="19" y1="11" x2="25" y2="11" stroke="currentColor" stroke-width="1.6"/>
+        <line x1="19" y1="16" x2="25" y2="16" stroke="currentColor" stroke-width="1.6"/>
+      </svg>
+      <span>העורך התורני</span>
+    </div>
+    <nav class="links">
+      <a href="#functions">הפונקציות</a>
+      <a href="#pipeline">שכבות העיבוד</a>
+      <a href="#data">מקורות ומאגרים</a>
+      <a href="#arch">ארכיטקטורה</a>
+      <a href="#models">מודלים</a>
+      <a href="#plan">תוכנית לקלוד</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <span class="kicker">מסמך ארכיטקטורה ותוכנית מימוש · יולי 2026</span>
+    <h1>מערכת AI לעריכה תורנית —<br/>הגהה, ניקוד ואימות מקורות</h1>
+    <p class="lead">
+      עוזר עריכה חכם לספרים תורניים: מזהה ומאמת ציטוטים מול המקור, מנקד טקסט רבני,
+      מציע כותרות ומראי-מקום בפורמט המקובל — הכל בעקרון של <strong>אפס הזיות</strong>:
+      כל מקור נשלף ממאגר אמין, לא מ״זיכרון״ המודל.
+    </p>
+    <p class="meta"><strong>סטאק:</strong> Next.js · Supabase (pgvector) · Vercel &nbsp;·&nbsp; <strong>מקורות:</strong> Sefaria · DICTA · אוצריא</p>
+  </div>
+</section>
+
+<!-- ── הפונקציות ── -->
+<section id="functions">
+  <div class="wrap">
+    <div class="sec-head fade">
+      <span class="num">01 · הפונקציות</span>
+      <h2>שבע הפונקציות של העורך התורני</h2>
+      <p>לכל פונקציה — התיאור המקצועי ואופן הביצוע הטכני המומלץ, על בסיס המפרט המקורי והמחקר שנעשה על כלים ומאגרים קיימים.</p>
+    </div>
+    <div class="grid cols-2">
+      <div class="card fade"><span class="idx">1</span>
+        <h3>זיהוי ציטוטים אוטומטי</h3>
+        <p>איתור מראי-מקום מקראיים, תלמודיים והלכתיים בתוך טקסט חופשי — כולל ציטוטי ״שם״ ומקרים אמביגואליים.</p>
+        <div class="how"><b>ביצוע:</b> Sefaria Linker API (<code>POST /api/find-refs</code>, מנוע BERT עברי) + DICTA Citation Finder כשכבה משלימה.</div>
+      </div>
+      <div class="card fade"><span class="idx">2</span>
+        <h3>אימות מקורות מול הטקסט</h3>
+        <p>שליפת הטקסט המקורי לפי ה-Ref שזוהה והשוואתו לציטוט — התאמה מדויקת או מקורבת, עם הצגת ההבדל.</p>
+        <div class="how"><b>ביצוע:</b> Texts API (<code>with_text=1</code>) + השוואת diff/Levenshtein + embeddings סמנטיים; פלט: תואם / סטייה / לא נמצא.</div>
+      </div>
+      <div class="card fade"><span class="idx">3</span>
+        <h3>ניקוד אוטומטי לטקסט רבני</h3>
+        <p>ניקוד מותאם לעברית רבנית וארמית תלמודית — לא רק עברית מודרנית — עם טיפול בשמות קודש וכתיב מלא/חסר.</p>
+        <div class="how"><b>ביצוע:</b> DICTA Nakdan רבני (Genre=rabbinic) כברירת מחדל; D-Nikud/MenakBERT כגיבוי קוד-פתוח.</div>
+      </div>
+      <div class="card fade"><span class="idx">4</span>
+        <h3>הגהה תורנית</h3>
+        <p>שגיאות כתיב ונוסח, פענוח ראשי-תיבות, שמירה על מוסכמות הכתיבה התורנית — בלי לתקן טקסט מצוטט אלא לסמן חשד לשיבוש.</p>
+        <div class="how"><b>ביצוע:</b> DICTA Abbreviation Expander + Hspell; סטיות מהמקור מסומנות בסוגריים, לא נמחקות.</div>
+      </div>
+      <div class="card fade"><span class="idx">5</span>
+        <h3>פורמט מראי-מקום מקובל</h3>
+        <p>המרת מ״מ קנוני (אנגלי) לפורמט התורני המסורתי: ״סנהדרין כ״ו ע״ב״, ״שו״ע או״ח סי׳...״, ״רמב״ם הל׳ שבת פכ״ב״.</p>
+        <div class="how"><b>ביצוע:</b> שכבת נרמול דו-כיוונית בין Ref של ספריא לתבניות הפורמט התורני (טבלת Regex/NER ממופה).</div>
+      </div>
+      <div class="card fade"><span class="idx">6</span>
+        <h3>המלצת כותרות ותתי-כותרות</h3>
+        <p>סיכום מונחה-מבנה: זיהוי חלוקה טבעית של הטקסט (נושא, סוגיה, פרשה) והצעת כותרת בסגנון הסוגה (״בענין...״, ״בביאור שיטת...״).</p>
+        <div class="how"><b>ביצוע:</b> LLM עם system-prompt מכוון-סגנון + אימות NER הלכתי מול DictaBERT/BEREL.</div>
+      </div>
+      <div class="card fade" style="grid-column: 1 / -1;"><span class="idx">7</span>
+        <h3>בקרת אדם (Review &amp; Approve) בכל שלב</h3>
+        <p>אף מודל אינו מגיע ל-100% דיוק — ובטקסט תורני קדוש טעות היא כישלון חמור. לכן כל פעולה (ניקוד, ציטוט, כותרת) עוברת אישור אנושי עם הצגת חלופות מדורגות לפי סבירות. זה גם המודל שדיקטה עצמה נוקטת ב-Nakdan Pro.</p>
+        <div class="how"><b>עיקרון-על:</b> אוטומציה מלווה, לא אוטומציה עיוורת — הטקסט המקורי לעולם אינו משתנה ללא אישור מפורש.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── שכבות העיבוד ── -->
+<section id="pipeline" style="background: var(--surface-alt);">
+  <div class="wrap">
+    <div class="sec-head fade">
+      <span class="num">02 · שכבות העיבוד</span>
+      <h2>מסלול הטקסט במערכת</h2>
+      <p>כל קטע טקסט עובר שרשרת עיבוד דטרמיניסטית שבה שכבת השליפה (אמינה) מופרדת משכבת הניסוח (יצירתית) — עיקרון-הליבה נגד הזיות.</p>
+    </div>
+    <div class="flow fade">
+      <div class="flow-step"><div class="flow-dot">1</div><div class="flow-body">
+        <h4>טעינת טקסט</h4><p>הזנת הטקסט (הדבקה / העלאת קובץ / OCR דרך DICTA Maivin לדפים סרוקים). זיהוי גבולות פסקאות ויחידות טבעיות.</p>
+      </div></div>
+      <div class="flow-step"><div class="flow-dot">2</div><div class="flow-body">
+        <h4>זיהוי ציטוטים</h4><p>הרצת <code>find-refs</code> על הטקסט — קבלת רשימת מ״מ מזוהים עם טווחי-תווים ורשימת Refs אפשריים לכל אחד.</p>
+      </div></div>
+      <div class="flow-step"><div class="flow-dot">3</div><div class="flow-body">
+        <h4>אימות מול המקור</h4><p>לכל Ref — <code>tool call</code> חובה לשליפת הטקסט האמיתי, השוואה מדויקת+מקורבת, וקביעת סטטוס אמון.</p>
+      </div></div>
+      <div class="flow-step"><div class="flow-dot">4</div><div class="flow-body">
+        <h4>ניקוד והגהה</h4><p>ניקוד רבני (Nakdan) + פענוח ראשי-תיבות + בדיקת כתיב — הכול כהצעות הניתנות לעריכה, לא כשינוי סופי.</p>
+      </div></div>
+      <div class="flow-step"><div class="flow-dot">5</div><div class="flow-body">
+        <h4>נרמול פורמט</h4><p>המרת ה-Refs לפורמט המראה-מקום התורני המקובל, והכנת הערות/סוגריים לפי מוסכמות ההגהה.</p>
+      </div></div>
+      <div class="flow-step"><div class="flow-dot">6</div><div class="flow-body">
+        <h4>בקרת אדם ואישור</h4><p>העורך רואה כל שינוי מוצע לצד המקור, מאשר/דוחה/מתקן — ורק אז השינוי נכתב. הטקסט הקדוש נשמר תמיד.</p>
+      </div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── מקורות ומאגרים ── -->
+<section id="data">
+  <div class="wrap">
+    <div class="sec-head fade">
+      <span class="num">03 · מקורות ומאגרים</span>
+      <h2>המאגרים התורניים הדיגיטליים</h2>
+      <p>ספריא היא היחידה עם API פתוח מלא, מתועד ומודרני וברישיון ברור לרוב הטקסטים — ולכן עמוד השדרה. השאר משלימים בטקסטים וכלי NLP.</p>
+    </div>
+    <div class="table-wrap fade">
+      <table>
+        <thead><tr><th>מאגר</th><th>כיסוי</th><th>גישה / API</th><th>רישוי</th></tr></thead>
+        <tbody>
+          <tr><td><b>Sefaria</b></td><td>תנ״ך, ש״ס בבלי+ירושלמי, רמב״ם, שו״ע, מדרשים — 100M+ מילים</td><td>API v3 פתוח + Linker + MCP + Export מלא</td><td>קוד AGPLv3; טקסטים — רישיון פרטני לכל ספר</td></tr>
+          <tr><td><b>DICTA</b></td><td>ש״ס מנוקד, כלי ניקוד/פענוח/ציטוט</td><td>Nakdan API, Citation/Parallel Finder, Maivin OCR</td><td>קוד פתוח ברובו; ש״ס מנוקד CC BY-SA</td></tr>
+          <tr><td><b>אוצריא</b></td><td>6,000+ ספרי קודש (חלופה פתוחה)</td><td>ריצה מקומית + Otzaria MCP Server</td><td>קוד Unlicense; טקסטים — רישיון פרטני</td></tr>
+          <tr><td>HebrewBooks</td><td>אלפי ספרים סרוקים (בעיקר ישנים)</td><td>PDF + חיפוש dtSearch; ללא API רשמי</td><td>חינם לשימוש אישי</td></tr>
+          <tr><td>שו״ת בר-אילן</td><td>~700M מילים, 150K+ שו״ת</td><td>תוכנת שולחן-עבודה; ללא API</td><td>מסחרי סגור</td></tr>
+          <tr><td>ויקיטקסט עברי</td><td>טקסטים בנחלת הכלל</td><td>MediaWiki API + dumps</td><td>פתוח (CC BY-SA)</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note-src fade">מקורות: <a href="https://developers.sefaria.org/reference/getting-started">Sefaria Developers</a> · <a href="https://dicta.org.il/tools?lang=en">DICTA Tools</a> · <a href="https://github.com/Sivan22/otzaria">Otzaria (GitHub)</a> · <a href="https://www.hamichlol.org.il/HebrewBooks">HebrewBooks</a> · <a href="https://www.responsa.org.il/">שו״ת בר-אילן</a></p>
+  </div>
+</section>
+
+<!-- ── ארכיטקטורה ── -->
+<section id="arch" style="background: var(--surface-alt);">
+  <div class="wrap">
+    <div class="sec-head fade">
+      <span class="num">04 · ארכיטקטורה</span>
+      <h2>RAG לתורה — ושכבת ה-anti-hallucination</h2>
+      <p>RAG על טקסט תורני שונה מ-RAG כללי: החלוקה (chunking) היא לפי יחידת מ״מ טבעית (פסוק, דף, הלכה) ולא לפי גודל טוקנים קבוע.</p>
+    </div>
+    <div class="stack fade">
+      <div class="layer l-teal">
+        <h4>שכבת נתונים — Supabase + pgvector</h4>
+        <p>טעינת Sefaria-Export ל-Postgres מקומי (לא תלוי ב-rate limits חיצוני). טבלה עם <code>ref</code>, <code>text_he</code>, <code>category_path</code>, <code>embedding vector(N)</code> ואינדקס HNSW.</p>
+        <div class="tags"><span class="tag">pgvector</span><span class="tag">HNSW index</span><span class="tag">Hybrid search (BM25 + vector)</span></div>
+      </div>
+      <div class="layer">
+        <h4>שכבת שליפה (Retrieval) — דטרמיניסטית ואמינה</h4>
+        <p>Chunking לפי Ref, מטא-דאטה עשירה, retrieval דו-שכבתי: חיפוש סמנטי (embeddings) + חיפוש גרפי לפי הקישורים של ספריא (Links API). כאן — ורק כאן — מגיעה כל ״עובדה״.</p>
+        <div class="tags"><span class="tag">Chunking לפי מ״מ</span><span class="tag">Links graph</span><span class="tag">Re-ranking (cross-encoder)</span></div>
+      </div>
+      <div class="layer l-gold">
+        <h4>שכבת ניסוח (Generation) — LLM עם tool-use בלבד</h4>
+        <p>ה-LLM אסור לצטט מ״זיכרון״; חובה עליו לבצע tool call ולצטט רק את מה שהתקבל. פלט מובנה (JSON: <code>{claim, ref, exact_quote, confidence}</code>) לאימות מכני, ואימות second-pass לאחר ההפקה.</p>
+        <div class="tags"><span class="tag">Function calling חובה</span><span class="tag">Structured output</span><span class="tag">Post-hoc verification</span></div>
+      </div>
+    </div>
+    <div class="callout fade" style="margin-top: 26px;">
+      <h4>העיקרון הקריטי: ״הספר פתוח לפניו״</h4>
+      <p>הזיית מקור בטקסט תורני — ציטוט לא-קיים או שגיאה בשם חכם — היא כישלון חמור, לא רק טכני. לכן המערכת מבוססת על שליפה אמינה ולא על ידע פנימי של המודל, בדיוק כפי ש-Sefaria MCP מנסח: ה-AI אינו ״ממציא״ את הציטוט אלא ״שותף שהספר פתוח לפניו״.</p>
+    </div>
+    <p class="note-src fade">מקורות: <a href="https://supabase.com/docs/guides/database/extensions/pgvector">Supabase pgvector</a> · <a href="https://developers.sefaria.org/docs/the-sefaria-mcp">Sefaria MCP</a> · <a href="https://developers.sefaria.org/docs/linker-api">Sefaria Linker API</a></p>
+  </div>
+</section>
+
+<!-- ── מודלים ── -->
+<section id="models">
+  <div class="wrap">
+    <div class="sec-head fade">
+      <span class="num">05 · המודלים</span>
+      <h2>בחירת מודלים לפי שכבה</h2>
+      <p>לטקסט תורני יש חשיבות מכרעת למודלים שהותאמו לעברית רבנית/מקראית — לא רק עברית מודרנית.</p>
+    </div>
+    <div class="table-wrap fade">
+      <table>
+        <thead><tr><th>שכבה</th><th>מומלץ</th><th>הערה</th></tr></thead>
+        <tbody>
+          <tr><td>ניתוח וניסוח (LLM)</td><td><b>Claude Opus / Sonnet</b> עם tool-use</td><td>חשיבה תורנית מורכבת, נתמך ע״י Sefaria MCP ישירות</td></tr>
+          <tr><td>ניקוד</td><td><b>DICTA Nakdan רבני</b> (API)</td><td>מכוון ספציפית לעברית רבנית/תלמודית; D-Nikud/MenakBERT כגיבוי</td></tr>
+          <tr><td>זיהוי ציטוטים / NER</td><td><b>Sefaria Linker</b> + DICTA Citation Finder</td><td>שני מנועים משלימים לכיסוי מקסימלי</td></tr>
+          <tr><td>Embeddings ייעודיים</td><td><b>DictaBERT / BEREL / MiqraBERT</b></td><td>הוכשרו על עברית מקראית-רבנית; זיהוי מקבילות סמנטי</td></tr>
+          <tr><td>Embeddings כלליים</td><td>multilingual-e5-large / OpenAI text-embedding-3</td><td>״רשת ביטחון״ כללית, תמיכה גם באנגלית</td></tr>
+          <tr><td>מודל עברי מקומי (fallback)</td><td>DictaLM 3.0 (1.7B–24B)</td><td>אלטרנטיבה עברית-נייטיבית לעצמאות ממודלים חוצי-לאום</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note-src fade">מקורות: <a href="https://huggingface.co/dicta-il/dictabert">DictaBERT</a> · <a href="https://github.com/danielrosehill/Hebrew-AI-Models">Hebrew AI Models</a> · <a href="https://www.sefaria.org/ai">AI on Sefaria</a></p>
+  </div>
+</section>
+
+<!-- ── תוכנית לקלוד ── -->
+<section id="plan" style="background: var(--surface-alt);">
+  <div class="wrap">
+    <div class="sec-head fade">
+      <span class="num">06 · תוכנית המימוש</span>
+      <h2>מה למסור לקלוד — לפי שלבים</h2>
+      <p>תוכנית בנייה מדורגת: תשתית קודם, יכולות אחר-כך. שכבת החינם (Sefaria+DICTA) מספקת 5 מתוך 7 הפונקציות כמעט ללא עלות; שכבת ה-AI המלאה נבנית מעליה.</p>
+    </div>
+    <div class="checklist fade">
+      <div class="check-item"><span class="mark">א</span><div>
+        <p class="lbl">תשתית ופרויקט</p>
+        <p>Next.js + Supabase (schema, pgvector) → Vercel. מפתחות ה-API כ-Environment Variables של המשתמש (כדי שיישמרו וימשיכו לעבוד עם קלוד), דומיין אמיתי ללא proxy — תאימות ל-NetFree.</p>
+      </div></div>
+      <div class="check-item"><span class="mark">ב</span><div>
+        <p class="lbl">טעינת מאגר טקסטואלי</p>
+        <p>ייבוא Sefaria-Export ל-Postgres, בניית אינדקס Refs וקישורים, יצירת embeddings לכל chunk. בדיקת שדה <code>license</code> לכל ספר לפני שילוב.</p>
+      </div></div>
+      <div class="check-item"><span class="mark">ג</span><div>
+        <p class="lbl">שכבת חינם — 5 פונקציות</p>
+        <p>זיהוי ציטוטים (Linker), אימות מקורות, ניקוד (Nakdan), פענוח ראשי-תיבות, נרמול פורמט מ״מ — כולן על בסיס Sefaria+DICTA כמעט ללא עלות.</p>
+      </div></div>
+      <div class="check-item"><span class="mark">ד</span><div>
+        <p class="lbl">שכבת פרימיום — AI מלא</p>
+        <p>המלצת כותרות, RAG סמנטי מלא, סיוע חכם — עם Claude/Gemini/BEREL ו-tool-use מחייב. בקרת עלויות לפי שכבת מנוי.</p>
+      </div></div>
+      <div class="check-item"><span class="mark">ה</span><div>
+        <p class="lbl">עורך דו-תצוגה + בקרת אדם</p>
+        <p>ממשק Review-and-Approve: מקור מול הצעה, חלופות מדורגות, אישור/דחייה לכל שינוי. עיקרון-על — הטקסט הקדוש לעולם אינו משתנה ללא אישור.</p>
+      </div></div>
+    </div>
+  </div>
+</section>
+
+<footer class="site">
+  <div class="wrap">
+    <div class="brand-f">העורך התורני</div>
+    <p>מסמך ארכיטקטורה ותוכנית מימוש למערכת AI לעריכה, הגהה, ניקוד ואימות מקורות בספרים תורניים. מבוסס מחקר מעמיק על מאגרים תורניים דיגיטליים, כלי NLP עבריים וארכיטקטורות RAG.</p>
+    <div class="sources">
+      <a href="https://developers.sefaria.org/">Sefaria</a>·
+      <a href="https://dicta.org.il/">DICTA</a>·
+      <a href="https://github.com/Sivan22/otzaria">Otzaria</a>·
+      <a href="https://supabase.com/docs/guides/database/extensions/pgvector">pgvector</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.fade').forEach(el => io.observe(el));
+</script>
+</body>
+</html>

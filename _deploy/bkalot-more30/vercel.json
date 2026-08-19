@@ -1,0 +1,9 @@
+{
+  "buildCommand": "echo no-build",
+  "outputDirectory": ".",
+  "framework": null,
+  "rewrites": [
+    { "source": "/bkalot", "destination": "/bkalot/index.html" },
+    { "source": "/bkalot/:path*", "destination": "/bkalot/index.html" }
+  ]
+}

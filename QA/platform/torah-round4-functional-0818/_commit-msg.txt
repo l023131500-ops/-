@@ -1,0 +1,14 @@
+round-4 functional pass opens: 01 torah - login+core action+real data verified, deployed 200
+
+Round-3 dark-mode contrast recheck queue closed last session. This starts
+round-4 (functional pass per MORE30_MASTER_BUILD 2, ROUTES order): torah (01)
+checked live at more30.com/torah - home loads, lessons directory shows 5 real
+rows, login via the shared auth pill round-trips back into /torah/lessons
+itself (not a thank-you screen) with the "customer" pill, lesson-detail page
+loads. No code change, no deploy needed - torah clears the round-4 bar.
+
+Noted but not fixed: lesson-detail phone number looks like a placeholder
+(050-1234567) - flagged for a follow-up, not investigated this step.
+
+Evidence: QA/platform/torah-round4-functional-0818/_results.md
+Next in round-4 ROUTES order: tamlul (02).

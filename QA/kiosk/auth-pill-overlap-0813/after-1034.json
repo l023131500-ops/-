@@ -1,0 +1,31 @@
+{
+  "measured": "2026-08-13, live production, https://more30.com/kiosk/console?cb=after1034",
+  "deployment": { "repo": "l023131500-ops/zol", "branch": "claude/what-do-you-see-gxo5tc", "commit": "30f5e1d40df6c1f0ad2189e1f8662182dc898e8b", "railway": "b280d866-c5de-4c88-b1e6-6c95cc69cfcb", "status": "SUCCESS" },
+  "viewport": { "w": 1034, "h": 557 },
+  "insetPublishedByAuthButton": "104px",
+  "topbarPaddingInlineEnd": "70px",
+  "topbarFlexWrap": "wrap",
+  "pill": { "t": 12, "l": 16, "r": 92, "b": 48 },
+  "h1": { "t": 28, "l": 575, "r": 735, "note": "unchanged from the before-measurement — no desktop layout shift" },
+  "buttons": [
+    { "txt": "רענון", "t": 31, "l": 228, "r": 280, "b": 60, "hitLeftEdge": "BUTTON", "hitCenter": "BUTTON" },
+    { "txt": "➕ הוספת מכשיר", "t": 29, "l": 104, "r": 225, "b": 60, "hitLeftEdge": "BUTTON", "hitCenter": "BUTTON" }
+  ],
+  "before": {
+    "pill": { "t": 12, "l": 16, "r": 92, "b": 48 },
+    "addButton": { "t": 29, "l": 34, "r": 155, "b": 60 },
+    "elementFromPoint_60_40": "MORE30-AUTH",
+    "elementFromPoint_94_44": "BUTTON"
+  },
+  "endToEnd": {
+    "clickedPoint": { "x": 108, "y": 44 },
+    "elementAtThatPoint": "BUTTON",
+    "h1AfterClick": "הוספת מכשיר",
+    "note": "a click on the leading edge that used to land on the pill now routes to the enroll view"
+  },
+  "noRegression": {
+    "horizontalOverflow": false,
+    "navButtonsTabbable": 6,
+    "enterOnGuideItem": { "h1": "הוראות הפעלת מכשיר", "activeItems": ["guide"] }
+  }
+}

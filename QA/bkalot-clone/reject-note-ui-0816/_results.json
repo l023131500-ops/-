@@ -1,0 +1,63 @@
+{
+  "brick": "reject-note-ui-0816",
+  "what": "המסך אומר «דחייה חייבת נימוק» בעברית במקום קוד באנגלית, ומחזיר את המנהל אל התיבה",
+  "measured_from": "browser",
+  "viewport": "1280x900",
+  "admin_id": 107,
+  "case_id": 365,
+  "contact_id": 372,
+  "two_servers_same_edge_same_db": {
+    "8138": "git show HEAD:apps/37-bkalot-clone/admin.html — הגרסה שבייצור",
+    "8137": "apps/37-bkalot-clone — המתוקן"
+  },
+  "head_8138": {
+    "label": "למה (לא חובה)",
+    "count_empty": "אפשר להשאיר ריק · עד 500 תווים",
+    "reject_empty_error": "שגיאה שאינה מוכרת למסך הזה: note_required · rejected",
+    "focus_after": "BODY",
+    "err_top": 798
+  },
+  "fixed_8137": {
+    "label": "למה (חובה לדחייה בלבד)",
+    "label_top": 553,
+    "count_empty": "אפשר להשאיר ריק, למעט דחייה · עד 500 תווים",
+    "count_top": 697,
+    "reject_empty_error": "דחייה חייבת נימוק. הסטטוס לא שונה ולא נרשמה שורת יומן — כתבו ב«למה» מה הביא לדחייה ונסו שוב. note_required",
+    "focus_after": "status-note",
+    "err_top": 798,
+    "note_kept_in_box": ""
+  },
+  "success_path": {
+    "typed_chars": 48,
+    "count_while_typed": "48 מתוך 500 תווים",
+    "err_visible": false,
+    "screen_says": "הסטטוס שונה מ«חדשה» ל«נדחתה» · הנימוק נשמר ביומן · לא נשלחה שום הודעה",
+    "reject_button_disabled_after": true,
+    "db_after": {
+      "status": "rejected",
+      "decided_by": 107,
+      "decided_at": "2026-08-16 11:58:24.041559+00",
+      "log_rows": 1,
+      "transition": "new->rejected",
+      "note": "חסרים אישורי הכנסה, והפונה הופנה למוקד שמטפל בכך"
+    }
+  },
+  "blocked_click_wrote_nothing": {
+    "note": "שתי הלחיצות הריקות (8137 ו-8138) קדמו לזו שעברה, והפנייה נשארה 'new' עם 0 שורות יומן עד הלחיצה עם הנימוק — log_rows=1 בסוף, כלומר אין שורה משתי הראשונות"
+  },
+  "test_mode": {
+    "documents": 0,
+    "outbound_queue": 8,
+    "outbound_sent": 0,
+    "delivery_log": 3,
+    "cases_sent": 0
+  },
+  "console": { "errors": 0, "warnings": 0 },
+  "screenshots_md5": {
+    "00-head-unknown-code.png": "72521FBB",
+    "01-before-label-and-count.png": "E5FC78E9",
+    "02-blocked-note-required.png": "0B03A7BA",
+    "03-rejected-with-note.png": "6091F7D7"
+  },
+  "not_deployed": "פריסה לייצור היא הלבנה הבאה — מה שנמדד כאן הוא הקוד שבמקור מול ה-edge וה-DB החיים"
+}

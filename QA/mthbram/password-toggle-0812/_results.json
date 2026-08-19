@@ -1,0 +1,70 @@
+{
+  "system": "21 mthbram (איגוד השיעורים)",
+  "priority": "§1א — הצגת סיסמה (eye toggle) on every password field",
+  "date": "2026-08-12",
+  "file_changed": "apps/21-mthbram/src/pages/AdminLogin.tsx",
+  "password_fields_in_source": {
+    "search": "recursive grep for type=\"password\" over apps/21-mthbram, excluding node_modules/dist",
+    "hits": 1,
+    "files": ["src/pages/AdminLogin.tsx"]
+  },
+  "side_measured_live_before_writing": {
+    "url": "https://more30.com/mthbram/admin-login",
+    "dir_attribute_on_field": null,
+    "computed_direction": "rtl (inherited from <html dir=\"rtl\">)",
+    "computed_text_align": "start",
+    "padding_before": { "left": "12px", "right": "40px" },
+    "conclusion": "characters sit flush against the RIGHT edge, where KeyRound already sits behind pr-10; the free side is the LEFT one. Eye placed left-2, pl-10 reserves 40px."
+  },
+  "verified_after_deploy": {
+    "url": "https://more30.com/mthbram/admin-login?cb=0812mthbram",
+    "bundle_served": "https://more30.com/mthbram/assets/index-BEupP8UO.js",
+    "padding_left": "40px",
+    "padding_right": "40px",
+    "field_rect": [319, 423, 382, 40],
+    "button_rect": [327, 429, 28, 28],
+    "button_contained_in_field": true,
+    "elementFromPoint_at_button_centre": "svg owned by the button",
+    "button_type": "button",
+    "field_is_inside_form": true,
+    "console_errors": 0
+  },
+  "round_trip": [
+    { "step": "initial", "type": "password", "aria_label": "הצג סיסמה", "icon": "lucide-eye" },
+    { "step": "after click 1", "type": "text", "aria_label": "הסתר סיסמה", "icon": "lucide-eye-off", "value": "More30Admin2026" },
+    { "step": "after click 2", "type": "password", "aria_label": "הצג סיסמה", "icon": "lucide-eye", "value": "More30Admin2026" }
+  ],
+  "no_side_effects": {
+    "why_it_matters": "the field IS inside <form onSubmit={handleLogin}>, so a button without type=\"button\" would submit the login form on every toggle",
+    "wrapped_window_fetch_calls_across_both_toggles": 0,
+    "location_href_unchanged": true,
+    "supabase_auth_signInWithPassword_called": false,
+    "credentials_written_anywhere": false
+  },
+  "deploy": {
+    "build": "vite build, 3048 modules, index-BEupP8UO.js 1617.50 kB, index-CsFZVJhK.css 129.69 kB",
+    "staging": "robocopy apps/21-mthbram/dist -> _deploy/mthbram-more30/mthbram /MIR",
+    "project": "mthbram-more30 (prj_AoHThgdR29uNHsaIxnzQlrarx2bN)",
+    "deployment": "dpl_J5qvnV8ReKGBU2njUpcEFmC6puNy, READY, production",
+    "verified_through": "more30.com with a cache-buster, not the vercel.app alias (NetFree blocks *.vercel.app from this machine)"
+  },
+  "shipped_alongside_unreleased_source": {
+    "note": "production was still serving index-y-Q5UqSS.js / index-CIaqlLS4.css, built before the 10/08 source edits. This deploy therefore also released those un-shipped index.html changes.",
+    "diff_staged_vs_new_index_html": [
+      "meta description replaced: «הפלטפורמה המובילה…» -> the filters that actually exist in LessonDirectory",
+      "og:image + twitter:image moved off the Lovable preview screenshot on pub-*.r2.dev to /mthbram/icon-512.png",
+      "twitter:card summary_large_image -> summary",
+      "added <link rel=icon> 192/512, so the browser stops falling back to the portal's /favicon.ico",
+      "public/favicon.ico (the Lovable builder default, shared byte-for-byte with egod/zchuyot/galil) removed — /MIR deleted it from staging too"
+    ]
+  },
+  "not_verified": [
+    "no real admin login was performed — no credentials were submitted to Supabase",
+    "dark mode is the only mode here (color-scheme: dark), so there is no light-mode photograph to take",
+    "the field still has no autocomplete attribute — Chrome's VERBOSE line predates this change and is untouched"
+  ],
+  "evidence": [
+    "mthbram-password-hidden.png",
+    "mthbram-password-revealed.png"
+  ]
+}

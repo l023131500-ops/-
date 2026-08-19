@@ -1,0 +1,15 @@
+﻿  PASS  the first boot adds the column
+  PASS  every existing row keeps every value it had
+  PASS  the migrated value is NULL, which reads as the generic track
+  PASS  the new table exists and is empty
+  PASS  a tick stores, reads back, and is idempotent
+  PASS  the primary key refuses a duplicate at the database, not only in code
+  PASS  an unknown device id cannot hold progress
+  PASS  a track set on one device does not move the other
+  PASS  deleting a device cascades its progress away
+  PASS  a removed user leaves the tick, without an owner
+  PASS  a second boot adds nothing
+  PASS  a second boot loses no progress
+  PASS  the raw ALTER would fail twice, which is why ensureColumn guards it
+
+13/13 assertions

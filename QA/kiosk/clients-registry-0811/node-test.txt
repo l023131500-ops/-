@@ -1,0 +1,14 @@
+﻿✔ the same code typed four ways is one code (3.488ms)
+✔ input that holds no enterable code is rejected, not stored (0.8229ms)
+✔ a single character is a legitimate code (0.741ms)
+✔ an over-long code is cut to what is stored, so lookups still match (0.7666ms)
+✔ normalising is idempotent — storing a stored code changes nothing (0.6563ms)
+✔ generated codes cannot be mistyped into each other (0.577ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 294.6423

@@ -1,0 +1,338 @@
+{
+  "phase": "before",
+  "src": {
+    "bytes": 160897,
+    "md5": "3CEDD39DB182ED7BDA5BF3F2CFC80348"
+  },
+  "dist": {
+    "bytes": 158095,
+    "md5": "9499888E90E134E4CF5702E791C8DEDB"
+  },
+  "live": [
+    {
+      "url": "https://more30.com/bkalot-studio/admin?cachebust=search-label-before",
+      "status": 200,
+      "bytes": 158331,
+      "md5": "A353C0ACC93282D5FCF4B107FD87AAB6"
+    },
+    {
+      "url": "https://more30.com/bkalot-studio/admin/?cachebust=search-label-before",
+      "status": 200,
+      "bytes": 158331,
+      "md5": "A353C0ACC93282D5FCF4B107FD87AAB6"
+    }
+  ],
+  "markers": {
+    "new": [
+      {
+        "marker": "מה התיבה הזו מחפשת",
+        "src": 1,
+        "dist": 0,
+        "live": [
+          0,
+          0
+        ]
+      },
+      {
+        "marker": "מספר פנייה או נימוק ביומן ההכרעות",
+        "src": 1,
+        "dist": 0,
+        "live": [
+          0,
+          0
+        ]
+      },
+      {
+        "marker": "החיפוש רץ גם על טקסט הנימוקים שנכתבו ביומן ההכרעות",
+        "src": 1,
+        "dist": 0,
+        "live": [
+          0,
+          0
+        ]
+      },
+      {
+        "marker": "אינו רץ על גוף הפנייה עצמה ולא על שמות המכריעים",
+        "src": 1,
+        "dist": 0,
+        "live": [
+          0,
+          0
+        ]
+      },
+      {
+        "marker": "והנימוק עצמו נקרא בתוך הפנייה",
+        "src": 1,
+        "dist": 0,
+        "live": [
+          0,
+          0
+        ]
+      },
+      {
+        "marker": "התווית מנתה ארבעה שדות מאז שהתיבה נבנתה",
+        "src": 1,
+        "dist": 0,
+        "live": [
+          0,
+          0
+        ]
+      },
+      {
+        "marker": "ותווית רחבה הייתה שקר בכיוון השני",
+        "src": 1,
+        "dist": 0,
+        "live": [
+          0,
+          0
+        ]
+      },
+      {
+        "marker": "הריחוף הטבעי הוא מעל התיבה שאל",
+        "src": 1,
+        "dist": 0,
+        "live": [
+          0,
+          0
+        ]
+      },
+      {
+        "marker": "התווית היא המקום היחיד שעונה על כך לפני ההקלדה",
+        "src": 1,
+        "dist": 0,
+        "live": [
+          0,
+          0
+        ]
+      },
+      {
+        "marker": "רשימה שחסר בה אחד היא טענה שגויה",
+        "src": 1,
+        "dist": 0,
+        "live": [
+          0,
+          0
+        ]
+      },
+      {
+        "marker": "cases.note",
+        "src": 1,
+        "dist": 0,
+        "live": [
+          0,
+          0
+        ]
+      }
+    ],
+    "removed": [
+      {
+        "marker": "או מספר פנייה",
+        "src": 0,
+        "dist": 1,
+        "live": [
+          1,
+          1
+        ]
+      },
+      {
+        "marker": "דוא״ל או מספר",
+        "src": 0,
+        "dist": 1,
+        "live": [
+          1,
+          1
+        ]
+      }
+    ],
+    "diff": [
+      {
+        "marker": "נימוק",
+        "src": 68,
+        "dist": 58,
+        "live": [
+          58,
+          58
+        ]
+      },
+      {
+        "marker": "נמצאה לפי הנימוק",
+        "src": 5,
+        "dist": 3,
+        "live": [
+          3,
+          3
+        ]
+      },
+      {
+        "marker": "0096",
+        "src": 7,
+        "dist": 4,
+        "live": [
+          4,
+          4
+        ]
+      },
+      {
+        "marker": "יומן ההכרעות",
+        "src": 8,
+        "dist": 4,
+        "live": [
+          4,
+          4
+        ]
+      }
+    ],
+    "control": [
+      {
+        "marker": "חיפוש — שם, טלפון, דוא״ל",
+        "src": 1,
+        "dist": 1,
+        "live": [
+          1,
+          1
+        ]
+      },
+      {
+        "marker": "id=\"f-q\"",
+        "src": 1,
+        "dist": 1,
+        "live": [
+          1,
+          1
+        ]
+      },
+      {
+        "marker": "for=\"f-q\"",
+        "src": 1,
+        "dist": 1,
+        "live": [
+          1,
+          1
+        ]
+      },
+      {
+        "marker": "autocomplete=\"off\"",
+        "src": 1,
+        "dist": 1,
+        "live": [
+          1,
+          1
+        ]
+      },
+      {
+        "marker": "מיון",
+        "src": 7,
+        "dist": 7,
+        "live": [
+          7,
+          7
+        ]
+      },
+      {
+        "marker": "רצף ההכרעות",
+        "src": 5,
+        "dist": 5,
+        "live": [
+          5,
+          5
+        ]
+      },
+      {
+        "marker": "bkalot_clone_admin_cases",
+        "src": 1,
+        "dist": 1,
+        "live": [
+          1,
+          1
+        ]
+      },
+      {
+        "marker": "פנייה #",
+        "src": 1,
+        "dist": 1,
+        "live": [
+          1,
+          1
+        ]
+      },
+      {
+        "marker": "countHe",
+        "src": 13,
+        "dist": 13,
+        "live": [
+          13,
+          13
+        ]
+      },
+      {
+        "marker": "matched_in_note",
+        "src": 3,
+        "dist": 3,
+        "live": [
+          3,
+          3
+        ]
+      },
+      {
+        "marker": "note_matched",
+        "src": 5,
+        "dist": 5,
+        "live": [
+          5,
+          5
+        ]
+      },
+      {
+        "marker": "<th>למה</th>",
+        "src": 1,
+        "dist": 1,
+        "live": [
+          1,
+          1
+        ]
+      },
+      {
+        "marker": "מי הכריע",
+        "src": 14,
+        "dist": 14,
+        "live": [
+          14,
+          14
+        ]
+      },
+      {
+        "marker": "איש הקשר נמחק",
+        "src": 2,
+        "dist": 2,
+        "live": [
+          2,
+          2
+        ]
+      }
+    ]
+  },
+  "encoding": [
+    {
+      "url": "https://more30.com/bkalot-studio/admin?cachebust=search-label-before",
+      "replacement_chars": 0,
+      "double_encoded": 0
+    },
+    {
+      "url": "https://more30.com/bkalot-studio/admin/?cachebust=search-label-before",
+      "replacement_chars": 0,
+      "double_encoded": 0
+    }
+  ],
+  "verdicts": {
+    "new_zero_in_live": true,
+    "new_equals_src_in_live": false,
+    "removed_present_in_live": true,
+    "removed_gone_from_live": false,
+    "control_unchanged": true,
+    "diff_matches_src": false,
+    "clean_encoding": true,
+    "all_markers_live_equals_src": false,
+    "dist_equals_live": true,
+    "dead_markers": []
+  }
+}

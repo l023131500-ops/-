@@ -1,0 +1,25 @@
+kiosk (35): the gesture out of the kiosk asks for a code nothing ever set
+
+KioskActivity already counts five taps in the corner and then asks for
+Prefs.ADMIN_CODE. That pref has two references in the whole Android tree —
+declared in Prefs.kt, read in showAdminDialog() — and nothing writes it. So the
+dialog answers "קוד תחזוקה לא הוגדר" on every device that exists, and the only
+remaining way out of a locked tablet is the remote unlock command, which needs
+the network. A device in a hall with no internet, the case §0 requires the lock
+to survive, had no way out at all.
+
+Server half: devices.exit_code, src/exitcode.js, PATCH by presence ('' clears),
+and the value pushed as adminCode in all three places the agent learns config —
+enrollment, heartbeat, update_config. Unset is sent as '' rather than null,
+because the agent writes config straight into SharedPreferences where a missing
+key and '' read alike and "null" would become a code nobody set.
+
+Refused: runs and repeats by shape rather than by a deny list, and reuse of the
+launcher access code, which is printed on a card taped beside the tablet.
+Readable in the console on purpose — the case this exists for is an offline
+device, where reading the code off that screen is the only way anyone gets in.
+
+QA/kiosk/exit-code-0811: 11 unit cases, 121/122 across the suite (routing.test
+imports express and still cannot run here; 110/111 before). Not deployed, no
+console UI, and AgentClient.kt does not read the field yet — that is a Kotlin
+change and it waits for the compiler item in STATUS.

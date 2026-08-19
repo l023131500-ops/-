@@ -1,0 +1,36 @@
+gesher (31): two password fields could not be read back, and a prebuilt deploy served the page without CSS
+
+apps/31-hebrew-bridge-crm/src/routes/auth.tsx is the whole login surface of
+system 31 -- one page, a login tab and a signup tab, and both password fields
+were write-only. Added the eye toggle to both, per priority §1א.
+
+The side was measured, not copied. Unlike 02/03/04/21 these fields carry
+dir="ltr" of their own, so text-align:start puts the characters flush against
+the LEFT edge and the free side is the RIGHT one -- the mirror of every system
+before it. right-2 for the button, pr-10 to reserve 40px for it.
+
+type="button" is load-bearing here: both fields sit inside a form with an
+onSubmit handler, so a bare button would have attempted a real login or signup
+on every toggle. Verified rather than assumed -- window.fetch was wrapped before
+the first toggle and counted 0 calls across all four toggles, with
+location.href unchanged. Nothing reached Supabase.
+
+signup-password enforces minLength=6 and never said so. Added the rule beside
+the field and wired it with aria-describedby, per §1א's second sentence.
+
+The first deploy went out with --prebuilt and broke the page: 17 assets 404ed
+under /gesher/assets/* and it rendered with no CSS and no JS (the field measured
+21px tall with 2px of padding). The /gesher/assets/:path* -> /assets/:path*
+rewrite exists only in vercel.json, and --prebuilt skips vercel.json entirely --
+nitro's generated .vercel/output/config.json has no such route. Redeployed from
+source (dpl_2NFVtX4eR6KZ1gvBhPBoL9g8XWxY, READY): assets resolve, 0 console
+errors. This app must not be deployed with --prebuilt.
+
+Measured live on more30.com/gesher/auth with a cache-buster: padding-right 40px,
+button rect (673,413,28x28) contained in field rect (311,409,398x36),
+elementFromPoint at its centre returns the svg the button owns. Round trip both
+ways on both fields, value preserved.
+
+apps/ is gitignored, so the edited page needed git add -f.
+
+Evidence: QA/gesher/password-toggle-0812/

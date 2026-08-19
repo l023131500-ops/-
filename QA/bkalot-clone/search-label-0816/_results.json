@@ -1,0 +1,73 @@
+{
+  "brick": "search-label-0816",
+  "claim": "התווית שמעל תיבת החיפוש מנתה ארבעה שדות; מאז 0096 החיפוש רץ גם על נימוקי יומן ההכרעות, ולכן היא טענה שגויה על מה שהמסך עושה ולא ניסוח שהתיישן.",
+  "scope": "UI בלבד — קובץ אחד, תווית אחת ו-title אחד. אין מיגרציה, אין פריסת edge function ואין פריסה לייצור.",
+  "baseline_before": {
+    "cases": 0, "case_status_log": 0, "case_rights": 0, "documents": 0,
+    "admin_users": 1, "admin_sessions": 5, "templates": 2,
+    "contacts": 4, "outbound_queue": 8, "delivery_log": 3,
+    "rights_catalog": 888, "schema_migrations": "20260816131352",
+    "head": "bfb5573", "head_vs_origin": "0/0"
+  },
+  "files_served": {
+    "8138_head": { "bytes": 158095, "md5_8": "9499888E", "note": "אותם בייטים בדיוק שנפרסו לייצור ב-bfb5573 (heartbeat 662) — כלומר 8138 מגיש את מה שמנהל רואה עכשיו ב-more30.com/bkalot-studio/admin" },
+    "8137_worktree": { "bytes": 160897, "md5_8": "3CEDD39D" }
+  },
+  "premise_measured_in_db": {
+    "term": "בדואר רשום",
+    "four_fields_of_case_384": "384 | אברהם ישראלי | 0501230011 | test@more30.com",
+    "term_in_four_fields": false,
+    "admin_cases_q_total": 1,
+    "admin_cases_q_first_id": 384,
+    "matched_in_note": true,
+    "reading": "המונח אינו באף אחד מארבעת השדות שהתווית מונה, והשורה חוזרת בכל זאת — הסתירה נמדדה במסד לפני שנמדדה במסך"
+  },
+  "browser_1280x900": {
+    "before_head": {
+      "q_label": "חיפוש — שם, טלפון, דוא״ל או מספר פנייה",
+      "q_title": null,
+      "count": "פנייה אחת",
+      "row_marks": ["נמצאה לפי הנימוק"],
+      "label_top_px": 154,
+      "shot": "01-before-head.png",
+      "md5_8": "77A7747D"
+    },
+    "after_worktree": {
+      "q_label": "חיפוש — שם, טלפון, דוא״ל, מספר פנייה או נימוק ביומן ההכרעות",
+      "q_title": "החיפוש רץ גם על טקסט הנימוקים שנכתבו ביומן ההכרעות, ולא רק על פרטי הפונה. הוא אינו רץ על גוף הפנייה עצמה ולא על שמות המכריעים. שורה שעלתה בזכות נימוק מסומנת «נמצאה לפי הנימוק», והנימוק עצמו נקרא בתוך הפנייה",
+      "count": "פנייה אחת",
+      "row_marks": ["נמצאה לפי הנימוק"],
+      "label_top_px": 154,
+      "shot": "02-after-worktree.png",
+      "md5_8": "6F66FEEA"
+    },
+    "controls_unchanged": {
+      "filter_labels": ["סטטוס", "סוג", "הכרעה ידנית", "מיון"],
+      "row_meta": ["#384", "16.08.2026, 18:29", "טלפון 0501230011", "0 זכויות", "נמצאה לפי הנימוק", "הוכרעה 16.08.2026, 18:30 · בודק תווית", "2 מעברים · מנהל אחד"],
+      "reading": "ארבע התוויות שלצדה, שורת המניין ושבעת פרטי השורה זהים אות באות בשתי הריצות — מה שהשתנה הוא התווית בלבד. label_top_px 154 בשתיהן: השורה לא נשברה ושום דבר לא נדחף למטה."
+    }
+  },
+  "layout_cost_measured": {
+    "900x900": { "before": { "form_height": 136, "label_lines": 1 }, "after": { "form_height": 136, "label_lines": 1 } },
+    "390x844": { "before": { "form_height": 303, "label_lines": 1 }, "after": { "form_height": 328, "label_lines": 2 } },
+    "overflow": "label_overflows=false ו-input_overflows=false בכל ארבע המדידות; document.scrollWidth שווה לרוחב החלון בכולן",
+    "reading": "⚠️ תווית ארוכה יותר היא שינוי בפריסה ולא רק בטקסט, ונאמר ולא נבלע: בנייד היא נשברת לשתי שורות והטופס גבוה ב-25 פיקסלים. אין גלישה, אין פס גלילה אופקי, ובטאבלט אין הפרש כלל."
+  },
+  "test_mode": {
+    "queued": false, "documents": 0, "outbound_queue": 8, "delivery_log": 3,
+    "rows_with_sent_at": 0, "outbound_calls": 0,
+    "reading": "הנתיב שהשתנה הוא תווית ב-HTML — הוא אינו קורא ואינו כותב. kind=info ולא treatment, ולכן case_rights 0 לאורך כל הריצה."
+  },
+  "rollback": {
+    "method": "פקודות נפרדות לפי טבלה — תקלת cte-delete-sees-prestatement-snapshot; ואיש הקשר לפי id ולא לפי טלפון מנורמל",
+    "deleted": { "case_status_log": [110, 111], "cases": [384], "contacts": [391], "admin_sessions_of": 119, "admin_users": [119] },
+    "after": {
+      "cases": 0, "case_status_log": 0, "case_rights": 0, "documents": 0,
+      "admin_users": 1, "admin_sessions": 5, "templates": 2,
+      "contacts": 4, "outbound_queue": 8, "delivery_log": 3,
+      "rights_catalog": 888, "schema_migrations": "20260816131352",
+      "admin_cases_empty_total": 0
+    }
+  },
+  "open": "הפריסה. מה שנמדד כאן הוא הקוד שבמקור; בייצור התווית עדיין מונה ארבעה שדות. זו הלבנה הבאה."
+}

@@ -1,0 +1,12 @@
+﻿https://more30.com/bkalot-studio/?cb=pre0814b 200 22341
+  new: "function whyDropped(key, sent) {"=false | "return \"צריך מספר שלם\";"=false | "function focusDropped(dropped, sent, sentKind) {"=false | "el.setAttribute(\"aria-invalid\", \"true\");"=false | "}).join(\"; \"));"=false
+  removed: "body.dropped.map((k) => DROPPED[k] || k).join(\", \")"=true
+  old: "const DROPPED = {"=true | "topic_no:  \"מספר נושא\","=true | "שדות שלא נשמרו: "=true | "הפנייה נקלטה"=true | "הודעת אישור נשלחה אליכם."=true | "🚫 מצב טסט: הפנייה נשמרה, ולא יצאה ממנה שום הודעה."=true | "שליחת הפנייה"=true
+  alef=151 replacement=0 doubleenc=0
+https://more30.com/bkalot-studio?cb=pre0814b 200 22341
+  alef=151 replacement=0 doubleenc=0
+https://more30.com/bkalot-studio/admin?cb=pre0814b 200 90056
+  alef=956 replacement=0 doubleenc=0
+https://more30.com/?cb=pre0814b 200 3517
+  assets: assets/index-C2AHwa-z.js,assets/index-B35ByRD-.css
+  alef=23 replacement=0 doubleenc=0

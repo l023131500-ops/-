@@ -149,6 +149,33 @@
     '<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/>' +
     '<line x1="21" y1="12" x2="9" y2="12"/></svg>';
 
+  // ── המשתנה --more30-auth-inset ─────────────────────────────────────────
+  // הכדור הוא `position: fixed` בקצה האינליין-סופי, ובעברית זו הפינה
+  // השמאלית העליונה — בדיוק המקום שבו נווט עם `justify-between` מניח את
+  // הפקד האחרון שלו. נמדד על 24 הנתיבים החיים: ב-11 מהם הלחיצה הגיעה
+  // **לכדור** ולא לפקד, כלומר הפקד לא היה ניתן ללחיצה כלל.
+  //
+  // הפתרון אינו מספר קשיח בכל מערכת — הרוחב של הכדור משתנה לפי שם
+  // המשתמש ("כניסה" לעומת "אברהם"), לפי הפונט שנטען ולפי רוחב המסך. לכן
+  // הרכיב מפרסם את המקום שהוא **באמת** תופס, וכל נווט מפנה לו מקום דרך
+  // `padding-inline-end: var(--more30-auth-inset)`.
+  //
+  // ערך התחלתי נכתב מיד, לפני המדידה, כדי שהנווט לא יקפוץ בין שני מצבים.
+  var GAP = 12;
+  function edgeInset() {
+    return window.innerWidth <= 480 ? 10 : 16;
+  }
+  function setVars(pillWidth, pillHeight) {
+    var d = document.documentElement;
+    d.style.setProperty('--more30-auth-inset', Math.round(edgeInset() + pillWidth + GAP) + 'px');
+    d.style.setProperty('--more30-auth-height', Math.round(pillHeight) + 'px');
+    d.style.setProperty(
+      '--more30-auth-block',
+      Math.round((window.innerWidth <= 480 ? 8 : 12) + pillHeight + GAP) + 'px',
+    );
+  }
+  setVars(96, 36);
+
   // שם המשתמש מגיע ממאגר המשתמשים ונשתל ב-HTML, ולכן הוא עובר בריחה.
   function escapeText(s) {
     return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
@@ -212,31 +239,76 @@
         }
 
         var label = (ctx && ctx.full_name) || session.label;
-        // בסרגל מוצג השם הפרטי בלבד — "מור מערכות תוכנה" נחתך באמצע מילה
+        // בסרגל מוצג השם הפרטי בלבד — "עולם הסטארטאפים" נחתך באמצע מילה
         // ונראה כמו תקלה. השם המלא מופיע בכותרת התפריט.
         btn.querySelector('span:last-child').textContent = String(label).split(/\s+/)[0];
 
+        // ‏`back` נוסע גם לאזור האישי, ולא רק לכניסה. בלעדיו לקוח שנמצא בתוך
+        // ‎/bkalot‎ ופותח את "האזור האישי" מגיע ל-‎/me‎ בלי שום דרך חזרה: כפתור
+        // "חזרה למערכת" קיים שם ומחכה לערך שאיש לא שולח, ולכן לעולם אינו מוצג.
+        // זו בדיוק התלונה של §1 — הלקוח נשפך מהמוצר חזרה אל התדמית.
         var html =
           '<div class="head">מחובר כ־' + escapeText(label) + '</div>' +
-          item(ME_URL, USER_ICON, 'האזור האישי', 'החשבון, התוכנית והאתרים שלך');
+          item(ME_URL + '?from=' + back, USER_ICON, 'האזור האישי',
+               'החשבון, התוכנית והאתרים שלך');
 
         // "ניהול" מוצג רק למי שהשרת אישר שהוא מנהל של האתר הזה — סופר-אדמין
         // גלובלי או אדמין מקומי. עד שהתשובה מגיעה, אין פריט.
-        if (ctx && ctx.is_admin) {
+        //
+        // ‏ctx.admin_href הוא מסך הניהול של **המערכת הזו**, ומ-0037 הוא null
+        // כשאין כזה. הנפילה החזרה אל ADMIN_URL שהייתה כאן הפכה את ההיעדר
+        // לפריט שני אל מרכז השליטה — עם שם המערכת מתחתיו — בשבע מערכות
+        // ציבוריות חיות (briut · chizukim · imud · kesef · orech · smel ·
+        // studio), ובדיוק מתחתיו כבר יושב "מרכז השליטה" אל אותה כתובת.
+        // ב-kupot היא הרכיבה href מהערה בעברית עם רווחים. אין כתובת → אין פריט.
+        if (ctx && ctx.is_admin && ctx.admin_href) {
           html += item(
-            ctx.admin_href || ADMIN_URL, ADMIN_ICON, 'ניהול',
+            ctx.admin_href, ADMIN_ICON, 'ניהול',
             ctx.is_super_admin && ctx.app_name
               ? 'ניהול ' + escapeText(ctx.app_name)
               : 'ניהול המערכת',
           );
         }
+        // מסכי הניהול החדשים מוגשים מהפורטל ולא מאפליקציית ‎/admin‎, ולכן
+        // אין להם שום קישור נכנס משם — ‎/admin‎ הוא מעטפת SPA שמצייר את
+        // התוכן שלה ב-JS. בלי הפריטים האלה הם פשוט לא ניתנים למציאה.
+        // הכפתור הזה נטען בכל 24 המערכות, ולכן זה גם הופך אותם לנגישים
+        // מכל מקום בלי לגעת באפליקציית הניהול החיה.
         if (ctx && ctx.is_super_admin) {
           html += item(ADMIN_URL, ADMIN_ICON, 'מרכז השליטה', 'כל המערכות במקום אחד');
+          html += item(HOME + '/admin/systems', ADMIN_ICON, 'דוח מערכות',
+                       'סטטוס, משתמשים, מנויים והכנסה');
+          // ‏§3 מבקש מהלוח שלושה מספרים: הכנסות · מנויים · כניסות. שני
+          // הראשונים יושבים ב"דוח מערכות" שמעל; את השלישי עונה רק
+          // ‎/admin/activity‎, והוא היחיד מתשעת מסכי הלוח שנעדר מהרשימה הזו.
+          // הרשימה הזו היא הדרך הנכנסת היחידה אליהם (‎/admin‎ אינו מקשר לאף
+          // אחד), ולכן היעדרות ממנה פירושה שהמסך נמצא רק דרך חמישה מבין
+          // אחיו — כלומר רק אחרי שכבר נכנסת ללוח דרך מסך אחר.
+          html += item(HOME + '/admin/activity', ADMIN_ICON, 'משתמשים פעילים',
+                       'מי נכנס בפועל — 24 שעות, 7 ימים ו-30 יום');
+          html += item(HOME + '/admin/pricing', STAR_ICON, 'מחירים ותצוגה',
+                       'מחיר לכל מערכת · הצגה בעולם הסטארטאפים', 'gold');
+          html += item(HOME + '/admin/customers', ADD_ICON, 'לקוחות',
+                       'צירוף לקוח למערכת וצפייה ברשומים');
+          html += item(HOME + '/admin/automation', STAR_ICON, 'אוטומציית תוכן',
+                       'נושאים, תצוגה מקדימה ותור שליחה — מצב בדיקה');
+          html += item(HOME + '/admin/credits', STAR_ICON, 'יתרות וחיבורים',
+                       'האם כל ספק פועל, כמה נשאר, ואיפה מוסיפים');
+          html += item(HOME + '/admin/leads', ADD_ICON, 'לידים',
+                       'כל הפניות מכל המערכות במקום אחד');
+          html += item(HOME + '/admin/issues', ADMIN_ICON, 'תקלות ומה דורש אותך',
+                       'פתוח, בטיפול ותוקן — מופרד לפי מי יכול לסגור');
+          html += item(HOME + '/admin/rights', STAR_ICON, 'מאגר הזכויות',
+                       'ניהול התוכן של מערכת 10 — מה יש ואיפה חסר');
         }
 
         // שדרוג מוצג למשתמש רגיל בתוכנית החינמית. למנהל אין מה לשדרג.
+        // ‏ctx.plan מגיע מ-more30_join_app, וממיגרציה 0031 הוא המנוי של המערכת
+        // הזו (או של הפלטפורמה) מ-core.subscriptions. עד אז הוא הגיע מעמודת
+        // ‏more30_profiles.plan שאיש אינו כותב אליה, ולכן ההצעה לשדרג הוצגה גם
+        // למי שכבר נרשם למסלול בתשלום.
         if (ctx && ctx.plan === 'free' && !ctx.is_super_admin) {
-          html += item(ME_URL + '?upgrade=1', STAR_ICON, 'שדרוג לפרימיום',
+          html += item(ME_URL + '?upgrade=1&from=' + back, STAR_ICON, 'שדרוג לפרימיום',
                        'פתיחת כל היכולות בכל המערכות', 'gold');
         }
 
@@ -258,13 +330,28 @@
         }
       }
 
+      // המדידה נעשית על הכדור עצמו ולא על מספר משוער, כי רוחבו נקבע משם
+      // המשתמש ומהפונט שנטען — שניהם לא ידועים בזמן כתיבת הקוד.
+      function measure() {
+        var r = btn.getBoundingClientRect();
+        if (r.width) setVars(r.width, r.height);
+      }
+
       render(null);
+      measure();
+
+      // שני הרגעים שבהם הרוחב משתנה אחרי הציור הראשון: הפונט מסיים לרדת,
+      // והשרת עונה מי המשתמש ("כניסה" → שם פרטי).
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(measure).catch(function () {});
+      }
+      addEventListener('resize', measure);
 
       // רישום החברות באתר הנוכחי + שאלת ההרשאה, בקריאה אחת. נכשלת בשקט:
       // תקלת רשת לא אמורה להשאיר את המשתמש בלי כפתור.
       if (session && session.token) {
         rpc('more30_join_app', { p_app: location.href }, session.token)
-          .then(function (ctx) { if (ctx && ctx.ok) render(ctx); })
+          .then(function (ctx) { if (ctx && ctx.ok) { render(ctx); measure(); } })
           .catch(function () {});
       }
 
@@ -291,14 +378,223 @@
 
   if (!customElements.get(TAG)) customElements.define(TAG, More30AuthElement);
 
+  /**
+   * קרדיט הפוטר — "פותח ע״י עולם הסטארטאפים", בכל מערכת.
+   *
+   * למה כאן ולא ב-24 קודקודים נפרדים: זה בדיוק אותו שיקול שבגללו הכפתור
+   * עצמו יושב בקובץ הזה. שורה שצריכה להופיע בכל אתר ולהיראות אותו דבר בכולם
+   * חייבת לחיות במקום אחד, אחרת היא תהיה 24 גרסאות שמתפצלות.
+   *
+   * ── למה **לא** בתוך ה-<footer> הקיים, אף שזה נראה הטבעי יותר
+   * הגרסה הראשונה הכניסה את השורה לתוך ה-`<footer>` של האתר, כדי שתיראה חלק
+   * מהעיצוב. זה עבד — ושבר את ההידרציה. ב-`/modaot` קפצו שלוש שגיאות React
+   * (#425, #418, #423) שלא היו שם לפני כן: ה-`<footer>` הוא חלק מהעץ ש-React
+   * מרנדר, והוספת צומת לתוכו לפני ההידרציה גורמת ל-HTML מהשרת ולרינדור
+   * בדפדפן לא להסכים. התוצאה אינה קוסמטית — React זורק את כל העץ ומרנדר מחדש
+   * בצד הלקוח, כלומר האתר מאבד את ה-SSR שלו בגלל שורת קרדיט.
+   *
+   * לכן הכלל: **לא נוגעים בעץ של המסגרת.** הקרדיט נוסף כבלוק משלו בסוף
+   * ה-`<body>`, בדיוק כמו הכפתור — ושם הוא מעולם לא הפריע לאף אתר, כי הוא
+   * מחוץ לשורש שהמסגרת מרנדרת. ויזואלית הוא יושב מתחת לפוטר במקום בתוכו;
+   * זה מחיר קטן לעומת שבירת ההידרציה של מערכת עם סליקה חיה.
+   *
+   * שני כללים נוספים:
+   *  · יורש `color` ו-`font` מהסביבה ומורד לשקיפות חלקית, ולכן הוא מתאים
+   *    את עצמו למצב כהה ולפלטה של כל אתר בלי שנצטרך לדעת מה הם.
+   *  · אם כבר קיים קרדיט כזה בדף (למשל בפורטל עצמו) — לא מוסיף שני.
+   *
+   * ── ה-body שאינו מיכל בלוקי (נמדד 06/08/2026)
+   * `document.body.appendChild` מניח ש-body מסדר את ילדיו לאורך העמוד, כלומר
+   * שילד אחרון נופל לתחתית. באתר שה-body שלו הוא עצמו `display:flex` —
+   * מעטפת אפליקציה של סרגל צד + אזור תוכן — ההנחה נשברת: הקרדיט הופך לפריט
+   * flex נוסף **בשורה**. ב-`/smachot` נמדד שהוא גזל עמודה של 167px מהפריסה,
+   * נמתח לגובה 900px, ונחת בפינה העליונה מתחת לכדור הכניסה — בכל חמשת רוחבי
+   * הבדיקה. שתי בדיקות עברו מעליו: `brand-audit` שואלת רק אם הקרדיט קיים
+   * ב-DOM, ו-`authbutton-overlap` מדדה עד אותו יום שני רוחבים בלבד.
+   *
+   * במעטפת כזו אין "תחתית עמוד" להיתלות בה — התוכן גולל בתוך מיכל פנימי,
+   * וה-body גבוה בדיוק כגובה החלון. לכן במקרה הזה הקרדיט יוצא מהזרימה ונצמד
+   * לפינה התחתונה בקצה האינליין-סופי. הכלל "לא נוגעים בעץ של המסגרת" נשמר:
+   * הצומת עדיין נוסף ל-body בלבד, רק בלי להשתתף בפריסה שלו.
+   */
+  var CREDIT_CLASS = 'more30-credit';
+
+  /**
+   * לאן הקרדיט מוביל — `/showcase`, ולא דף הבית.
+   *
+   * §7 מנסח את זה בדיוק: קישור בפוטר של כל אתר, "פותח ע״י עולם הסטארטאפים",
+   * **שמוביל לאתר התדמית שלנו**. שני עמודים ציבוריים נושאים את השם הזה,
+   * והם אינם אותו דבר: `more30.com/` הוא קטלוג המערכות — מי שנוחת בו רואה
+   * רשת של 19 מוצרים למכירה; `more30.com/showcase` הוא אתר התדמית — ה-title,
+   * ה-h1 והפוטר שלו הם "עולם הסטארטאפים" (זו הזהות ש-`core.issues #117`
+   * קבע שאליה §7 מקשר, והעמוד מלא מאז `bbc64b1`).
+   *
+   * הקישור הצביע על דף הבית מאז שנכתב, כלומר משפט על **מי בנה** את האתר
+   * הוביל לחנות ולא למי שבנה. נמדד 09/08/2026 על 21 הרכבות בייצור: אפס
+   * מהן מקשרות ל-/showcase.
+   *
+   * ובאתר התדמית עצמו אין קרדיט — כמו בדף הבית, "פותח ע״י" שמוביל לעצמו
+   * אינו אמירה.
+   */
+  var CREDIT_HREF = HOME + '/showcase';
+  var CREDIT_SKIP = { '/': 1, '/showcase': 1, '/showcase/': 1, '/showcase.html': 1 };
+
+  // ה-body מסדר את ילדיו כזרימה רגילה (בלוק), ולא כשורת flex/grid.
+  function bodyIsBlockFlow() {
+    try {
+      var d = getComputedStyle(document.body).display;
+      return d.indexOf('flex') === -1 && d.indexOf('grid') === -1;
+    } catch (e) {
+      return true;
+    }
+  }
+
+  function placeCredit(box) {
+    if (!box) return;
+    if (bodyIsBlockFlow()) {
+      box.style.cssText = 'padding:8px 0 18px;color:inherit';
+      return;
+    }
+    // מחוץ לזרימה. z-index נמוך מזה של הכדור כדי שאם השניים ייפגשו אי-פעם,
+    // הכדור — שהוא פקד ולא טקסט — יישאר העליון. pointer-events רק על
+    // הקישור עצמו, כדי שהפינה לא תבלע לחיצות על מה שמתחתיה.
+    box.style.cssText = [
+      'position:fixed',
+      'inset-block-end:0',
+      'inset-inline-end:0',
+      'padding:2px 8px',
+      'color:inherit',
+      'z-index:2147482000',
+      'pointer-events:none',
+    ].join(';');
+    var link = box.querySelector('.' + CREDIT_CLASS);
+    if (link) {
+      link.style.pointerEvents = 'auto';
+      link.style.padding = '6px 10px';
+    }
+  }
+
+  function mountCredit() {
+    var existing = document.querySelector('.' + CREDIT_CLASS);
+    if (existing) {
+      // כבר קיים — אבל ה-display של ה-body יכול להשתנות אחרי הרינדור
+      // הראשון (media query, או מסגרת שמחליפה מחלקה על ה-body), ולכן
+      // המיקום נבדק מחדש בכל קריאה ל-mount ולא רק פעם אחת.
+      placeCredit(existing.closest('[data-more30-credit]'));
+      return;
+    }
+
+    // בפורטל עצמו הקרדיט מיותר — הוא כבר הבית, וגם היעד של הקישור.
+    try {
+      if (location.hostname === 'more30.com' && CREDIT_SKIP[location.pathname]) return;
+    } catch (e) {}
+
+    var link = document.createElement('a');
+    link.className = CREDIT_CLASS;
+    link.href = CREDIT_HREF;
+    link.textContent = 'פותח ע״י עולם הסטארטאפים';
+    link.rel = 'noopener';
+    link.setAttribute('dir', 'rtl');
+    // opacity .65 measured 4.37:1 on egod's inherited color (below the 4.5:1
+    // AA floor for 12px text) — .8 leaves headroom across the other systems
+    // that inherit this same link without a per-site override.
+    link.style.cssText = [
+      'display:block',
+      'text-align:center',
+      'font:inherit',
+      'font-size:12px',
+      'line-height:1.6',
+      'padding:10px 12px',
+      'color:inherit',
+      'opacity:.8',
+      'text-decoration:none',
+    ].join(';');
+    link.addEventListener('mouseenter', function () { link.style.opacity = '1'; });
+    link.addEventListener('mouseleave', function () { link.style.opacity = '.8'; });
+
+    var box = document.createElement('div');
+    box.setAttribute('data-more30-credit', '');
+    box.appendChild(link);
+    document.body.appendChild(box);
+    // אחרי ה-append דווקא: getComputedStyle על ה-body מחזיר את הערך בפועל
+    // רק כשהצומת כבר בעץ ובגיליונות שנטענו.
+    placeCredit(box);
+  }
+
   function mount() {
-    if (document.querySelector(TAG)) return;
-    document.body.appendChild(document.createElement(TAG));
+    if (!document.querySelector(TAG)) {
+      document.body.appendChild(document.createElement(TAG));
+    }
+    mountCredit();
+  }
+
+  // ה-display של ה-body יכול להתחלף בשינוי רוחב (מעטפת שהופכת ל-flex רק
+  // בדסקטופ), ואז המיקום הנכון של הקרדיט מתחלף איתו.
+  addEventListener('resize', function () {
+    var link = document.querySelector('.' + CREDIT_CLASS);
+    if (link) placeCredit(link.closest('[data-more30-credit]'));
+  });
+
+  /**
+   * שמירה על הכפתור אחרי הידרציה — ולא רק הוספה שלו.
+   *
+   * ב-`/nadlan` (Next.js) הכפתור פשוט לא היה שם, ולא בגלל שגיאת טעינה: הקובץ
+   * חזר 200, הקוד רץ, `window.__more30AuthButton` היה `true` — ובכל זאת
+   * `<more30-auth>` לא היה ב-DOM. הסיבה היא React #418 ו-#423 שהופיעו באותו
+   * דף: כשההידרציה נכשלת React מרנדר את העץ מחדש מאפס, **ומוחק כל צומת
+   * שהוא לא יצר** — כולל מה שהזרקנו לפניה.
+   *
+   * מכאן ההבחנה: "להוסיף את הכפתור" ו"שהכפתור יישאר" הן שתי דרישות שונות,
+   * והקוד הכיר רק את הראשונה. מסגרת שמרנדרת מחדש היא התנהגות נורמלית ולא
+   * תקלה, ולכן התיקון אינו לתזמן טוב יותר — אין רגע שבטוח בכל 33 המערכות —
+   * אלא לשמור על הנוכחות: אם הצומת נעלם, הוא חוזר.
+   *
+   * מוגבל בזמן ובמספר ניסיונות כדי שלא ייווצר לולאה אינסופית מול מסגרת
+   * שמתעקשת למחוק — עדיף כפתור חסר מאשר דף שנלחם בעצמו לנצח.
+   */
+  function keepMounted() {
+    if (!window.MutationObserver) return;
+
+    var restores = 0;
+    var pending = false;
+
+    var observer = new MutationObserver(function () {
+      if (pending) return;
+      if (document.querySelector(TAG) && document.querySelector('.' + CREDIT_CLASS)) return;
+      if (restores >= 20) {
+        observer.disconnect();
+        return;
+      }
+      pending = true;
+      // אחרי ה-microtask הנוכחי: נותן למסגרת לסיים את מחזור הרינדור שלה
+      // במקום להתחרות איתה באמצע.
+      requestAnimationFrame(function () {
+        pending = false;
+        restores++;
+        mount();
+      });
+    });
+
+    observer.observe(document.body, { childList: true });
+
+    // ההידרציה של רוב המסגרות מסתיימת אחרי `load`; ניסיון אחד נוסף שם מכסה
+    // את המקרה שבו העץ הוחלף בלי שהתצפית תפסה את הסדר.
+    window.addEventListener('load', function () {
+      setTimeout(mount, 0);
+    });
+
+    // ‎`pageshow` מכסה חזרה מ-bfcache, שבה הדף חוזר בלי להריץ את הסקריפט שוב.
+    window.addEventListener('pageshow', function () { mount(); });
+  }
+
+  function boot() {
+    mount();
+    keepMounted();
   }
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', mount);
+    document.addEventListener('DOMContentLoaded', boot);
   } else {
-    mount();
+    boot();
   }
 })();

@@ -1,0 +1,42 @@
+40 gannenet: "my materials" seen with a material in it, and the count said "1 חומרים"
+
+The previous step built /shelf/mine, deployed it, and closed with one line open in
+its own words: the list had never been seen with an item inside it. The shelf holds
+zero uploads, so items=[] was the true reading rather than a failure — but it was
+also not evidence. Seeing an item meant writing a real file to a live shelf, and
+cleaning up after meant SUPABASE_SERVICE_ROLE_KEY being present in 40's Vercel
+environment, which had never been checked.
+
+It is present. `vercel env ls production` on gannenet-more30 returns six variables
+and it is one of them, Production and Preview both — so the delete route, which
+answers 503 without it, was ready to run all along.
+
+The round trip, twice, against production: sign in as test@more30.com, POST a real
+PNG to /api/catalog, see it in ?mine=1 and on the public shelf, fetch the file
+itself (200), then POST /api/admin/delete — 401 without x-admin-key, and with it
+{"ok":true,"removed":["<id>.png","uploads/<id>.json"]}, bytes and entry both. After:
+items=0 on both lists, the file 404s, and running the same delete again answers 404
+"already gone" rather than a fake success. First time that route has ever run
+against production. The shelf is back exactly as found; the 258 seed files under
+seed/ are unreachable from the route by its own regex.
+
+Two things the round trip found that no probe could:
+
+The per-user filter, proved by accident. The browser was still signed in to an old
+QA account while test@more30.com's upload was live on the shelf, and the screen said
+"you haven't added anything yet" — one user does not see another's material
+(01-other-user-sees-empty.png).
+
+And a real defect, in the case that matters most. The counter above the list read
+`{items.length} חומרים שהעליתן`, which on a list of one renders "1 חומרים שהעליתן"
+— precisely what a teacher sees right after her first upload. The public shelf
+counts thousands, where the plural is always right, and the wording was carried over
+from there. Now "חומר אחד שהעליתן", deployed and verified on a second round trip
+(03-mine-singular-copy.png), which was deleted after too.
+
+Test mode: no user created, no message sent, no charge. The only two storage objects
+written were removed in the same run. Protected systems untouched.
+
+Evidence: QA/gannenet/mine-roundtrip-0812/ (roundtrip.mjs is re-runnable; no secret
+stored — the session passes through %TEMP% and the admin key through GN_ADMIN_KEY).
+Deploy: gannenet-more30-8tzp8512q, production, Ready, from source.

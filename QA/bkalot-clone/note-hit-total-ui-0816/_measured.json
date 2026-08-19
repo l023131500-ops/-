@@ -1,0 +1,97 @@
+{
+  "step": "note-hit-total-ui-0816",
+  "line_taken_from": "31e3e11 (heartbeat 681) — «פתוח: המסך. admin.html אינו מצייר את המפתח הזה ולו בתו אחד»",
+  "scope": "UI בלבד — admin.html, פונקציה אחת ובלוק ההערות שמעליה. אין מיגרציה, אין פריסת edge function, אין פריסה לייצור",
+  "baseline_before_anything": {
+    "cases": 0, "case_status_log": 0, "case_rights": 0, "documents": 0,
+    "admin_users": 1, "admin_sessions": 5, "templates": 2, "contacts": 4,
+    "outbound_queue": 8, "delivery_log": 3, "rights_catalog": 888,
+    "schema_migrations": "20260816200600",
+    "head": "31e3e11"
+  },
+  "seed": {
+    "case_id": 412, "contact_id": 419, "phone": "0501230121",
+    "via": "public.bkalot_clone_intake (kind=info, source=form, queued=false, rights_linked 0) — SQL ולא HTTP, פיגום ולא הטענה",
+    "log_rows": [
+      { "id": 150, "note": "Email נשלח לפונה, ואחריו EMAIL נוסף בטעות", "chars": 41 },
+      { "id": 151, "note": "טופס, טופס ועוד טופס נשלחו בטעות", "chars": 32 },
+      { "id": 152, "note": "המסמכים שצורפו שייכים לשנת המס הקודמת", "chars": 37 }
+    ],
+    "admin_used_for_decisions": 4,
+    "admin_created_for_login": { "id": 133, "email": "qa-note-hit-ui-0816@more30.test", "via": "bkalot_clone_admin_create ולא הזרקת hash" }
+  },
+  "db_before_the_screen": {
+    "note": "המספרים שהמסך חייב לצייר — נמדדו מ-bkalot_clone_admin_cases ולא הוסקו",
+    "טופס": { "note_match_count": 1, "notes_count": 3, "note_hit_total": 3 },
+    "email": { "note_match_count": 1, "notes_count": 3, "note_hit_total": 2 },
+    "נשלח": { "note_match_count": 2, "notes_count": 3, "note_hit_total": 2 },
+    "המס הקודמת": { "note_match_count": 1, "notes_count": 3, "note_hit_total": 1 },
+    "אברהם": { "note_match_count": 0, "notes_count": 3, "note_hit_total": 0 },
+    "ללא מונח": { "note_match_count": null, "notes_count": null, "note_hit_total": null, "has_key": true }
+  },
+  "servers": {
+    "8138": { "serves": "HEAD 31e3e11", "admin.html": { "bytes": 185393, "md5": "4B887ECACE48441197DB36C10FDA10C7" }, "note": "אותם גודל ו-MD5 שנרשמו ב-heartbeat 680 כקובץ שנפרס לייצור; העותק הוצא ב-cmd ולא בהפניית PowerShell (BOM)" },
+    "8137": { "serves": "עץ העבודה", "admin.html": { "bytes": 188257, "md5": "47C25DBD2244DE316B6BEC00B4403239" } },
+    "diff_between_runs": "admin.html בלבד — אותו מסד ואותו edge function (v9)"
+  },
+  "before_head_8138": {
+    "measured_from": "DOM, span-ים של השורה — לא מקוד",
+    "טופס": "המונח ב-1 מתוך 3 הנימוקים",
+    "email": "המונח ב-1 מתוך 3 הנימוקים",
+    "נשלח": "המונח ב-2 מתוך 3 הנימוקים",
+    "המס הקודמת": "המונח ב-1 מתוך 3 הנימוקים",
+    "אברהם": "אין סימן כלל",
+    "ללא מונח": "אין סימן כלל",
+    "the_failure": "«טופס» (3 התאמות), «email» (2) ו«המס הקודמת» (1) מצוירים באותה מחרוזת אות באות; «נשלח» — שני נימוקים ושתי התאמות — נבדל מ«טופס» רק במונה, ומהמספר לבדו אי אפשר לדעת כמה פעמים המילה נכתבה"
+  },
+  "after_worktree_8137": {
+    "measured_from": "DOM, span-ים של השורה — לא מקוד",
+    "טופס": "המונח ב-1 מתוך 3 הנימוקים · 3 פעמים",
+    "email": "המונח ב-1 מתוך 3 הנימוקים · 2 פעמים",
+    "נשלח": "המונח ב-2 מתוך 3 הנימוקים · 2 פעמים",
+    "המס הקודמת": "המונח ב-1 מתוך 3 הנימוקים · פעם אחת",
+    "אברהם": "אין סימן כלל",
+    "ללא מונח": "אין סימן כלל",
+    "controls_note": "«נשלח» הוא הבקרה שבה שני המספרים שווים — הכרעה (9) נראית במסך ואינה נטענת; «המס הקודמת» הוא «פעם אחת» ולא «1 פעמים», countHe של השורה עצמה"
+  },
+  "controls_that_did_not_move": {
+    "other_row_spans": "כל יתר ה-span-ים בשורה זהים אות באות בין 8138 ל-8137 בכל שש הקריאות (שם, סוג, סטטוס, #412, תאריך, טלפון, זכויות, «נמצאה לפי הנימוק», «הוכרעה», «3 מעברים · מנהל אחד»)",
+    "count_line": "«פנייה אחת תואמת את הסינון · בתור פנייה אחת» בחמש הקריאות המסוננות ו«פנייה אחת» בלעדיהן — זהה בשני השרתים",
+    "rows": "שורה אחת בכל שש הקריאות בשני השרתים",
+    "note_match_count_bit": "המונה «ב-N מתוך M הנימוקים» לא זז ולו במונח אחד — התוספת מתארת ואינה מחליפה",
+    "matched_in_note_bit": "«נמצאה לפי הנימוק» נדלק על אותם ארבעה מונחים בדיוק ובשני השרתים",
+    "horizontal_overflow": "scrollWidth 1280 = clientWidth ב-1280x900, בכל שש הקריאות",
+    "console": "שגיאה אחת בלבד — favicon.ico 404 משרת הבדיקה המקומי ולא מהאפליקציה"
+  },
+  "screenshots": [
+    { "file": "after-tofes-3-times.png", "md5_8": "63E3EFB2", "bytes": 39324 },
+    { "file": "after-nishlach-2-of-3-twice.png", "md5_8": "24AC0C07", "bytes": 38938 },
+    { "file": "after-avraham-silent.png", "md5_8": "1617CFC8", "bytes": 35663 }
+  ],
+  "test_mode": {
+    "queued": false, "documents": 0, "case_rights": 0,
+    "outbound_queue": "נשאר 8", "delivery_log": "נשאר 3",
+    "outbound_calls": 0,
+    "note": "הנתיב שהשתנה מצייר טקסט — אינו קורא ואינו כותב"
+  },
+  "not_measured": [
+    "ענף המפתח החסר (הכרעה (7)) נכתב ולא נמדד — אין כאן שרת מלפני 0102 להריץ מולו",
+    "ענף המחלוקת (הכרעה (8), total < hit) נכתב ולא נמדד — 0102 מחזירה null בדיוק במקרה הזה ואין דרך לייצר אותו מהשרת החי",
+    "לא נמדד ב-390x844",
+    "לא נמדד מהייצור — הפריסה היא הלבנה הבאה"
+  ],
+  "not_built": [
+    "אין סינון ואין מיון לפי המספר החדש",
+    "אין ציטוט חתוך של הקטע",
+    "אין סימון על note של הפנייה עצמה",
+    "אין פירוק של מספר התור",
+    "אין חיפוש ב-cases.note",
+    "אין סימון על שמות המכריעים",
+    "אין סינון «יש נימוק / אין»",
+    "אין אינדקס על case_status_log(note) ואין חיפוש טקסט מלא",
+    "אין עריכה ומחיקה ביומן",
+    "אין סינון «איש קשר נמחק / קיים»",
+    "אין שמירת מיקום הפנייה",
+    "אין אינדקס על ct.phone"
+  ]
+}

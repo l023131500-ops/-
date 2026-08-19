@@ -1,0 +1,82 @@
+﻿[
+    {
+        "project":  "bieebmnmkffwbqlsfozh",
+        "systems":  "01 torah, 02 tamlul, 03 modaot, 10 bkalot, 18 orech",
+        "signup_status":  200,
+        "signup_note":  null,
+        "login_status":  400,
+        "user_id":  null,
+        "confirmed_at":  null,
+        "login_error":  null
+    },
+    {
+        "project":  "csjekrvukbdznetsrodj",
+        "systems":  "06 briut, 12 smel, 17 chizukim, 27 mechiron",
+        "signup_status":  200,
+        "signup_note":  null,
+        "login_status":  400,
+        "user_id":  null,
+        "confirmed_at":  null,
+        "login_error":  null
+    },
+    {
+        "project":  "hkkkynyoigzlttpynoeo",
+        "systems":  "15 egod",
+        "signup_status":  200,
+        "signup_note":  null,
+        "login_status":  400,
+        "user_id":  null,
+        "confirmed_at":  null,
+        "login_error":  null
+    },
+    {
+        "project":  "trerolyveytzgksawrme",
+        "systems":  "22 zchuyot",
+        "signup_status":  422,
+        "signup_note":  null,
+        "login_status":  400,
+        "user_id":  null,
+        "confirmed_at":  null,
+        "login_error":  null
+    },
+    {
+        "project":  "mwljkonwdeuaahsigjdp",
+        "systems":  "24 galil",
+        "signup_status":  200,
+        "signup_note":  null,
+        "login_status":  400,
+        "user_id":  null,
+        "confirmed_at":  null,
+        "login_error":  null
+    },
+    {
+        "project":  "jhbeelzvjvhnkxldqvxx",
+        "systems":  "30 crm",
+        "signup_status":  200,
+        "signup_note":  null,
+        "login_status":  400,
+        "user_id":  null,
+        "confirmed_at":  null,
+        "login_error":  null
+    },
+    {
+        "project":  "ygaqqnuyfnumezxxmtbh",
+        "systems":  "31 gesher",
+        "signup_status":  200,
+        "signup_note":  null,
+        "login_status":  400,
+        "user_id":  null,
+        "confirmed_at":  null,
+        "login_error":  null
+    },
+    {
+        "project":  "aypsqqvfohekxxuqsmrw",
+        "systems":  "21 mthbram",
+        "signup_status":  200,
+        "signup_note":  null,
+        "login_status":  400,
+        "user_id":  null,
+        "confirmed_at":  null,
+        "login_error":  null
+    }
+]

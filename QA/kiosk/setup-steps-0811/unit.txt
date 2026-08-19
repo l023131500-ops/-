@@ -1,0 +1,24 @@
+﻿✔ the adb line names the component the manifest declares (4.8081ms)
+✔ the step that runs it carries the command as data, not inside prose (1.5327ms)
+✔ an unknown track resolves to generic rather than throwing (2.9882ms)
+✔ both tracks are the same list of steps — only wording differs (1.2419ms)
+✔ the generic track warns about the USB driver and the GMS one does not (1.3752ms)
+✔ the two values the installer types reach the steps verbatim (0.982ms)
+✔ no code means an extra first step, not a checklist missing one (0.9045ms)
+✔ a missing server address falls back to the real one, never to a blank (0.6849ms)
+✔ the lock steps come after enrollment and end the list (0.9794ms)
+✔ every step says what to do and has a stable unique id (1.95ms)
+✔ no QR / afw#setup route is offered — no APK is hosted to download (0.9784ms)
+✔ progress counts only ids that are in the checklist handed to it (1.256ms)
+✔ progress is deduped and returned in checklist order (0.6731ms)
+✔ nextId is the first hole, not the step after the last tick (0.77ms)
+✔ complete requires every step, and an empty checklist is not complete (0.6966ms)
+✔ progress survives junk in place of the arguments (1.0397ms)
+ℹ tests 16
+ℹ suites 0
+ℹ pass 16
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 322.3813

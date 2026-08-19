@@ -1,0 +1,21 @@
+אבטחה: NEEDS_USER.md §2 — פרצת ה-anon/recordings ב-csjekrvu עדיין פתוחה (נמדד שוב), אבל "לא ניתן לתקן מכאן" מיושן
+
+נמדד שוב חי עם anon key, מסנן אפס-שורות (לא נגעתי באף שורה אמיתית):
+GET recordings -> 206 Content-Range 0-0/1138 (זהה בדיוק ל-12/08). DELETE עם
+id בלתי אפשרי -> 204 (ה-grant עדיין קיים, RLS עדיין לא חוסם). הפרצה פתוחה
+חמישה ימים נוספים, ללא סטייה.
+
+תוקן: NEEDS_USER.md #2 טען שאי אפשר לתקן מכאן כי csjekrvukbdznetsrodj הוא
+"חשבון Supabase אחר" שה-PAT לא רואה. זה סתר עדות שכבר הייתה רשומה באותו
+קובץ, מאותו יום (12/08): SUPABASE_ACCESS_TOKEN שימש דרך ה-Management API
+מול אותו פרויקט בדיוק כדי להחליף mailer_autoconfirm ולפרוס geo.ts (#158) —
+שתיהן אומתו כעובדות. ה-PAT כן רואה את הפרויקט הזה (זיכרון
+supabase-pat-covers-ten-projects, 16/08). החסם האמיתי צר יותר: קריאת ה-PAT
+מ-core.secrets דורשת חיבור MCP של Supabase, וזה לא היה מחובר בסשן הזה.
+
+עדכנתי את NEEDS_USER.md עם התיקון והצעד המדויק לסשן הבא עם MCP: להריץ את
+שלב 1 מ-db/apps/17-chizukim-transcribe/0001_close_public_write_on_recordings.sql
+דרך ה-Management API, ואז למדוד שוב את אותה בדיקת DELETE (יעד: 401/403
+במקום 204). אין שינוי קוד, אין פריסה, אין מגע במערכת מוגנת. ראיות:
+QA/platform/csjekrvu-rls-recheck-0817/. Supabase MCP לא מחובר בסשן זה —
+heartbeat נכתב כקובץ ממתין.

@@ -1,0 +1,17 @@
+29 crm: round-3 dark recheck - 0 real contrast failures (probe false positive, lab() colors)
+
+contrast-probe.mjs reported 11 identical failures across light/dark and both
+widths on more30.com/crm. Identical-across-scheme output was the tell: this
+app's computed colors are lab() (Tailwind/shadcn OKLCH theme), not rgb()/rgba().
+The probe's bare-regex color parser reads lab() L/a/b components as raw 0-255
+RGB channels, producing impossible negative "backdrop" values like
+rgb(4, -2, -4) and a fake near-1:1 ratio. Same class of tool limitation as the
+gradient/shorthand-background false positives (galil/smel/tamlul/modaot) and
+the color-mix() misparse (smachot) - documented, not a new probe fix this step.
+
+Verified with real Playwright screenshots in both schemes: light and dark are
+both clean and fully legible (dark h1 lab L=96.57 near-white on body lab
+L=3.73 near-black - genuinely high contrast). No code change, no deploy.
+
+Evidence: QA/platform/crm-dark-recheck-0818/_results.md
+Next in ROUTES order after crm(29): gesher, nadlan, kesef.

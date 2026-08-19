@@ -4,9 +4,10 @@ import { useSynagogues } from "@/hooks/useData";
 import { Section } from "@/components/ui/Section";
 import { SynagogueCard } from "@/components/SynagogueCard";
 import { CardGridSkeleton } from "@/components/ui/Skeleton";
+import { ErrorState } from "@/components/ui/ErrorState";
 
 export function SynagoguesPreview() {
-  const { data: synagogues, isLoading } = useSynagogues();
+  const { data: synagogues, isLoading, isError, refetch } = useSynagogues();
   const shown = (synagogues ?? []).slice(0, 6);
 
   return (
@@ -19,6 +20,11 @@ export function SynagoguesPreview() {
     >
       {isLoading ? (
         <CardGridSkeleton count={3} />
+      ) : isError ? (
+        <ErrorState
+          title="לא הצלחנו לטעון את בתי הכנסת"
+          onRetry={() => refetch()}
+        />
       ) : (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {shown.map((s, i) => (

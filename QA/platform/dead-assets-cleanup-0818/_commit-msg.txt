@@ -1,0 +1,4 @@
+heartbeat: reconcile dead-assets-cleanup-0818 pending file (Supabase MCP now connected)
+
+Inserted the queued row into core.run_progress (id 846) and deleted the
+_heartbeat-pending.sql file it was written from. No code or deploy change.

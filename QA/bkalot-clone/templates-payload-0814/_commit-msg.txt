@@ -1,0 +1,60 @@
+שכפול בקלות שכבה 3: למסך היו שני נוסחי שגיאה על תבנית שאינו יכול לבחור (§5ב, 0073, #237)
+
+bkalot_clone_render מקבל template_key מאז 0063 ומחזיר עליו שני פסקי דין
+נפרדים במכוון — template_unknown ו-template_disabled. apps/37-bkalot-clone/admin.html
+כבר נושא את שני הנוסחים בעברית, ואינו שולח template_key לעולם: שני מסלולי
+שגיאה שנבנו, תורגמו ונפרסו, ואין ולו לחיצה אחת בכל המוצר שיכולה להגיע אליהם.
+bkalot_clone.templates מחזיקה שתי שורות ואף אחת מהן לא הגיעה לדפדפן בשום נתיב.
+
+מיגרציה בלבד: bkalot_clone_admin_case מחזירה גם templates (key, name_he,
+subject, channels, enabled). apps/37 לא נגעה, bkalot-clone-admin נשארה v6,
+supabase/functions לא נגעה כלל ואין פריסת פורטל.
+
+שתי ההכרעות העיקריות מתוך חמש. (1) מנוטרלות כלולות: סינון ב-where t.enabled
+היה הופך תבנית מכובה לתבנית שאינה קיימת, בדיוק ההבחנה ששני נוסחי השגיאה של
+render טרחו לבנות. (2) אין כאן is_default — כלל ברירת המחדל (treatment →
+rights_treatment_reply, אחרת general_inquiry_reply) נשאר ב-render בלבד. עותק
+שני שלו כאן היה מקום שני שבו מוכרעת זהות המכתב, ושני מקומות כאלה מסתעפים
+בשקט; הבורר במסך יציע «ברירת מחדל לפי סוג הפנייה» כערך ריק, כלומר לא ישלח
+template_key כלל, וזו התנהגות היום בדיוק.
+
+נמדד על פנייה שנוצרה דרך נתיב הקליטה (bkalot_clone_intake) ולא בהזרקה
+ל-cases: #77, treatment, 59 זכויות. admin_case החזירה חמישה מפתחות עליונים
+במקום ארבעה ושתי תבניות. שורה שנוטרלה לצורך המדידה חזרה עם enabled=false
+ובמקום האחרון, ו-render עליה החזיר template_disabled בלי לכתוב מסמך; מפתח
+שאינו קיים החזיר template_unknown עם allowed. הבקרה שקונה את הכרעה (2):
+render בלי template_key החזיר rights_treatment_reply, fallback=false,
+3,503 תווים ו-placeholders_unresolved ריק — הכלל לא זז ולא שוכפל.
+
+סטייה שנרשמת ולא נבלעת: המדידה רצה ב-RPC ולא ב-edge function מעל HTTP, כפי
+שנמדד ב-0067–0072. השינוי הוא בגוף התשובה של ה-RPC ונתיב /case מעביר את הגוף
+כפי שהוא, אך המדידה הזאת אינה מוכיחה את המעבר — הוא ייסגר בפעימת ה-UI.
+
+הרשאות נמדדו ולא הונחו — create or replace שומר ACL, ולכן קל להניח:
+anon=false, authenticated=false, service_role=true, זהה לפני ואחרי.
+
+מצב טסט נמדד ולא הוצהר: אפס שורות עם sent_at, אפס שורות mode=live,
+outbound_queue נשאר 8 ו-delivery_log נשאר 3. הפונקציה קוראת בלבד — אין מייל,
+אין הודעה ואין מסמך שיצא החוצה.
+
+המקור לא נגע: 8 שורות app_key=bkalot נשארו 8, טביעת אצבע
+da28ec6315535ec0bfbebad4d57752a7 זהה לפני ואחרי. אין נגיעה ב-08/09/
+bkalut-app/bkalot-admin/zr_*/NEDARIM3873 ולא בסכמות csj/csj_src/igud.
+
+הבדיקה התגלגלה אחורה במלואה ובסדר הנכון (מסמך, 59 case_rights, פנייה, איש
+קשר), והשורה שנוטרלה הוחזרה ל-enabled=true עם updated_at=updated_at כדי לא
+לזייף חותמת עדכון. אחרי: cases=0, case_rights=0, documents=0, admin_users=1,
+admin_sessions=5, templates=2 (שתיהן enabled), catalog=888, contacts=4,
+outbound_queue=8, delivery_log=3 — זהה בדיוק לבסיס.
+
+הערת יושר על מספר הכרטיס: הודעת הקומיט של 2a067be הזכירה #237, אך אותה שורה
+מעולם לא נכנסה ל-core.issues (insert שנכשל שורף את המזהה). 237 שייך מהיום
+לכרטיס הזה בלבד.
+
+מה שנשאר פתוח ולא נבלע: אין בורר תבנית ב-admin.html — הרשימה חוזרת ואיש
+אינו קורא אותה, וזו הלבנה הבאה (UI + פריסת פורטל); documents אינה שומרת
+מאיזו תבנית הופק המסמך, והפקה חוזרת בתבנית אחרת דורסת (upsert על case_id,kind);
+«מי שינה ומתי» אינו נכתב לשום מקום; sent בלתי-ניתן-להשגה בכוונה;
+bkalot_clone_admin_create (יצירת משתמש ניהול) עדיין אינה חשופה ב-HTTP;
+pdf/audio → channel_unsupported. public_visible ו-show_in_showcase של #37
+נשארים false.

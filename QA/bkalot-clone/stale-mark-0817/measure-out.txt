@@ -1,0 +1,28 @@
+﻿PASS  step1_same_A  phone | phone
+PASS  step1_phone_red_A  rgb(155, 28, 28)
+PASS  step1_same_B  phone | phone
+PASS  step1_phone_red_B  rgb(155, 28, 28)
+PASS  step1_same_C  phone | phone
+PASS  step1_phone_red_C  rgb(155, 28, 28)
+PASS  bug_present_before_A  marked=phone border=rgb(155, 28, 28)
+PASS  bug_gone_after_A  marked=
+PASS  stale_field_was_valid_A  0500000000
+PASS  after_phone_not_red_A  rgb(155, 28, 28) -> rgb(220, 218, 209)
+PASS  message_same_A  הפנייה לא נשלחההפנייה ארוכה מדי. קצרו את ההערה ונסו שוב.
+PASS  bug_present_before_C  marked=phone border=rgb(155, 28, 28)
+PASS  bug_gone_after_C  marked=
+PASS  stale_field_was_valid_C  0500000000
+PASS  after_phone_not_red_C  rgb(155, 28, 28) -> rgb(220, 218, 209)
+PASS  message_same_C  הפנייה לא נשלחהאין חיבור לשירות. בדקו את האינטרנט ונסו שוב.
+PASS  control_B_before  full_name
+PASS  control_B_after  full_name
+PASS  control_B_focus_same  full_name | full_name
+PASS  control_B_message_same  הפנייה לא נשלחהצריך שם מלא.
+PASS  any_ok_false  10 responses
+PASS  any_case_id_false  no case_id in any body
+PASS  codes_expected  200:phone_invalid 413:body_too_large 200:full_name_required
+PASS  no_uncaught_js  none
+PASS  console_only_induced  all induced
+PASS  console_same  2 | 2
+--- PASS  checks=26  fails=0
+head md5=30B03F39  work md5=BB48BD92

@@ -1,0 +1,4 @@
+A intake http=200 ok=true case=54 contact=60 rights=undefined
+B intake http=200 ok=true case=55 contact=61 rights=undefined
+C intake http=200 ok=true case=56 contact=62 rights=undefined
+CASE_IDS A=54 B=55 C=56

@@ -3,8 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>מתחברים… · מור מערכות תוכנה</title>
-    <meta name="description" content="השלמת ההתחברות למערכות מור מערכות תוכנה." />
+    <title>מתחברים… · עולם הסטארטאפים</title>
+    <meta name="description" content="השלמת ההתחברות למערכות עולם הסטארטאפים." />
     <meta name="robots" content="noindex" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -123,10 +123,17 @@
       // הכתובת שממנה נכנסו. נשמרה ב-/login לפני הקפיצה לספק, ולכן היא שורדת
       // את כל הלולאה. מוגבלת ל-more30.com כדי שפרמטר `from` לא יהפוך את הדף
       // למפנה פתוח לאתר זר.
+      // ‎/login‎ שומר נתיב (`/bkalot`), ולא כתובת מלאה. הקריאה כאן דרשה
+      // `https://more30.com/` ולכן דחתה כל ערך אמיתי — אותו באג משני צדדיו,
+      // והתוצאה הייתה שכל לקוח שהתחבר מתוך מערכת נחת ב-`/me`.
+      // ההגנה מפני הפניה פתוחה נשמרת: נתיב יחיד בלבד, לא `//`.
       function returnTo() {
         try {
           const v = sessionStorage.getItem('more30-return-to');
-          return v && v.startsWith('https://more30.com/') ? v : null;
+          if (!v) return null;
+          if (v.startsWith('/') && !v.startsWith('//')) return v;
+          const u = new URL(v, location.origin);
+          return u.origin === 'https://more30.com' ? u.pathname + u.search + u.hash : null;
         } catch (e) {
           return null;
         }
@@ -203,11 +210,15 @@
         const editing = params.get('edit') === '1';
         const known = (session.user.user_metadata || {}).full_name;
 
-        // מי שכבר הקליד שם מלא בטופס ההרשמה לא יישאל עליו שוב שנייה אחרי —
-        // הוא נשמר לפרופיל ברקע והמשתמש ממשיך ישר ליעד.
+        // מי שכבר הקליד שם וטלפון בטופס ההרשמה לא יישאל עליהם שוב שנייה
+        // אחרי — הם נשמרים לפרופיל ברקע והמשתמש ממשיך ישר ליעד. זה בדיוק
+        // מה ש"הרשמה מיידית → מיד נכנס לתוך המוצר" אומר: ארבעת השדות
+        // נמסרו פעם אחת, ואין שלב ביניים שמבקש אותם שוב.
+        const knownPhone = (session.user.user_metadata || {}).phone;
         if (!profile.full_name && !editing && known && known.trim().length >= 2) {
-          const { data: saved, error } = await sb.rpc('more30_profile_set_name', {
+          const { data: saved, error } = await sb.rpc('more30_profile_set_contact', {
             p_full_name: known.trim(),
+            p_phone: knownPhone || null,
           });
           if (!error) return go(destination(saved));
         }

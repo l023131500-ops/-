@@ -1,0 +1,38 @@
+31 gesher: the consent screen was a declaration, and the tasks board already ignored it
+
+Open line (1) from the previous heartbeat, in its own words: "לא נבדק אם קוד כלשהו
+באמת אוכף את visibility_rules + client_consents כששותף קורא לקוח". It was measured,
+and on the one partner surface that loads real data it was not enforced.
+
+Three of the four partner routes render a PlaceholderPage, so they cannot leak. The
+fourth, /partner/tasks, calls listTasks() — and decorateTasks() resolved every
+client_id to profiles.full_name through supabaseAdmin, service role, RLS bypassed.
+listTasks correctly limits a partner to partner_id = userId, so the exposure is the
+assigned clients rather than all of them; but full_name is one of the eight fields
+the consent screen governs, and neither client_consents nor visibility_rules was read
+anywhere in the file. A client could switch "עורכי דין" off, watch the toggle stick,
+and the assigned lawyer would still read their name off the board.
+
+RLS cannot fix this: client_profiles has no partner policy at all and client_consents
+is client-or-admin only, so everything a partner sees is assembled as service_role.
+New src/lib/partner-visibility.ts states the rule once, server-side — a partner sees
+field F of client C only if the partner has a specialization_category, that category's
+visibility_rules row lists F, and C granted consent to it. decorateTasks now takes a
+viewer: admins unchanged, a client reading their own tasks still sees their own name,
+and anything else gets "לקוח (טרם אישר שיתוף)" in place of a name.
+
+Verified: 12/12 against the real module (esbuild bundle, not a copy) — consent granted,
+is_granted=false, no consent row, a field outside the rule, the seeded סוכני_פנסיה whose
+allowed_schema_fields is [] so consent alone must expose nothing, a partner with no
+category, and the empty board issuing no queries. tsc --noEmit clean, vite build clean,
+deployed dpl_5meKPFEwGsmtAEkwwg9hX8ffg2X7 production READY from source; on more30.com the
+client area still renders for test@more30.com and /gesher/partner/tasks requested as that
+client redirects to /client.
+
+Not verified and recorded as such: no partner account is reachable from here (needs the
+admin panel or a service-role key; ygaqqnuyfnumezxxmtbh is not reachable via MCP), so the
+partner-side render of the withheld label is untested, as is whether any assignments exist.
+
+Test mode: no user created, no message sent, no charge. Protected systems untouched.
+
+QA/gesher/consent-enforcement-0812/

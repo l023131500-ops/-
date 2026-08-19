@@ -1,0 +1,111 @@
+{
+  "measured_at": "2026-08-10T18:30Z",
+  "what": "מה מצויר בלשונית הדפדפן בכל אחד מששת המונטים של §6, ומאיפה הוא מגיע",
+  "follows": "_results.json באותה תיקייה — הסבב של 03:06 (קומיט 41bc299) בנה את סמל הפורטל עצמו, ורשם בסופו ש'המונטים תחת נתיב אינם מצהירים על סמל משלהם ואינם יורשים דבר מהשורש'. זה נמדד כאן, וההמשך שונה ממה שנרשם שם: הם כן נופלים אל השורש, ומאותו סבב יש שם מה לקחת",
+  "how": "כל שורת production נמדדה מול more30.com בייצור (Invoke-WebRequest, בלי מטמון); כל שורת built נמדדה ב-DOM חי של vite preview על dist, כולל fetch לכל href שהוצהר",
+
+  "production_before": {
+    "note": "ה-href-ים נקראו מתוך ה-HTML החי; ה-SHA256 הוא 16 התווים הראשונים של הבתים שחזרו בפועל",
+    "origin_root_favicon": {
+      "url": "https://more30.com/favicon.ico",
+      "status": 200,
+      "bytes": 805,
+      "sha256_16": "BB860CEA93576D42",
+      "content_type": "image/vnd.microsoft.icon",
+      "whose": "הפורטל — זה הסמל שכל מונט בלי <link rel=icon> נופל אליו"
+    },
+    "builder_default_ico": {
+      "sha256_16": "DD821076A9B03ADC",
+      "bytes": 20373,
+      "served_at": [
+        "/egod/favicon.ico",
+        "/mthbram/favicon.ico",
+        "/galil/favicon.ico",
+        "/zchuyot/favicon.ico"
+      ],
+      "whose": "ברירת המחדל של Lovable — קובץ אחד, ארבע מערכות"
+    },
+    "mounts": [
+      {
+        "mount": "egod",
+        "rel_icon_declared": "/egod/favicon.ico",
+        "tab_icon_actually_shown": "ברירת המחדל של הבנאי (DD821076)",
+        "verdict": "builder-default",
+        "own_asset_available": false,
+        "own_asset_probe": "https://more30.com/egod/icon-512.png -> 200 אבל text/html 3328b, כלומר קליפת ה-SPA ולא תמונה. public/ מחזיקה favicon.ico ו-placeholder.svg בלבד"
+      },
+      {
+        "mount": "mthbram",
+        "rel_icon_declared": null,
+        "tab_icon_actually_shown": "הסמל של הפורטל (BB860CEA) — נפילה ל-/favicon.ico על ה-origin",
+        "verdict": "fixed-this-round",
+        "own_asset_available": true,
+        "own_asset": ["/mthbram/icon-192.png 20797b", "/mthbram/icon-512.png 10662b 4EC7321EE5364C44"],
+        "own_asset_note": "שניהם כבר מוכרזים ב-manifest.json ואחד מהם גם כ-og:image; רק הלשונית לא הצביעה עליהם"
+      },
+      {
+        "mount": "galil",
+        "rel_icon_declared": null,
+        "tab_icon_actually_shown": "הסמל של הפורטל (BB860CEA) — נפילה ל-/favicon.ico על ה-origin",
+        "verdict": "fixed-this-round",
+        "own_asset_available": true,
+        "own_asset": ["/galil/pwa-512.png 97813b DB1959AFB5604F88"],
+        "own_asset_note": "אותו סמל שה-PWA כבר מתקין וש-og:image כבר מצביע עליו"
+      },
+      {
+        "mount": "zchuyot",
+        "rel_icon_declared": null,
+        "tab_icon_actually_shown": "הסמל של הפורטל (BB860CEA) — נפילה ל-/favicon.ico על ה-origin",
+        "verdict": "blocked-no-own-asset",
+        "own_asset_available": false,
+        "own_asset_note": "public/ מחזיקה favicon.ico (ברירת המחדל של הבנאי) בלבד. הצבעה עליה הייתה מחליפה סמל של הפורטל בסמל של הבנאי — כלומר מחמירה"
+      },
+      {
+        "mount": "chatzor",
+        "rel_icon_declared": "/chatzor/favicon.svg",
+        "tab_icon_actually_shown": "נכס משלה, 382b B4D08B1F5DE14396 image/svg+xml",
+        "verdict": "clean",
+        "own_asset_available": true
+      },
+      {
+        "mount": "smel",
+        "rel_icon_declared": "/smel/favicon.svg",
+        "tab_icon_actually_shown": "נכס משלה, 628b 56E80C0EE2AF7DE6 image/svg+xml",
+        "verdict": "clean",
+        "own_asset_available": true
+      }
+    ]
+  },
+
+  "built_after": {
+    "note": "DOM חי ב-vite preview על dist. ה-href-ים בקוד נכתבו מוחלטים-לשורש (/icon-512.png) וה-base של ההרכבה כתב אותם מחדש — זה מה שנמדד כאן, ולא מה שנכתב במקור",
+    "mthbram": {
+      "preview": "http://localhost:4321/mthbram/",
+      "rel_icon_links_in_dom": 2,
+      "resolved": [
+        {"href": "/mthbram/icon-192.png", "sizes": "192x192", "status": 200, "type": "image/png", "bytes": 20797},
+        {"href": "/mthbram/icon-512.png", "sizes": "512x512", "status": 200, "type": "image/png", "bytes": 10662}
+      ],
+      "browser_actually_requested": "/mthbram/icon-192.png (רשת חיה, לא רק DOM)",
+      "origin_root_favicon_in_preview": {"status": 404, "note": "זו בדיוק הנפילה שהייתה — כאן היא כבר לא נלקחת"},
+      "dist_root_favicon_ico": "absent",
+      "bundle": "assets/index-CFb-adav.js"
+    },
+    "galil": {
+      "preview": "http://localhost:4322/galil/",
+      "rel_icon_links_in_dom": 1,
+      "resolved": [
+        {"href": "/galil/pwa-512.png", "sizes": "512x512", "status": 200, "type": "image/png", "bytes": 97813}
+      ],
+      "mount_favicon_ico_now": {"status": 404},
+      "dist_root_favicon_ico": "absent",
+      "pwa_precache_entries": 15
+    }
+  },
+
+  "not_claimed": [
+    "לא נמדד מה שלוש התמונות מראות — רק שהן נטענות, מאיזה מארח, בכמה בתים ובאיזה טיפוס.",
+    "אין צילום מסך של לשונית: סמל הלשונית אינו חלק מה-viewport ואינו נלכד ב-screenshot. הראיה היא ה-href שנפתר ב-DOM חי, הבתים שחזרו, ובקשת הרשת שהדפדפן עצמו הוציא.",
+    "לא נפרס. הבנייה של שתי המערכות לא הועתקה אל _deploy."
+  ]
+}

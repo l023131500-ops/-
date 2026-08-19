@@ -1,0 +1,27 @@
+מאגר הזכויות: המיגרציה שסוגרת את מחיקת ה-888 נכתבה אתמול ולא הורצה, ומפתח ה-anon החזיק DELETE עד עכשיו (§1א, 0059)
+
+חמישה views ב-public — rights_catalog (888 נושאים), rights_public (67),
+rights_situation_map (24), rights_meta_public (12), more30_automations (3) —
+החזיקו INSERT/UPDATE/DELETE/TRUNCATE ל-anon ול-authenticated. הקובץ 0059
+שמתקן את זה נכתב ב-13/08 ומעולם לא הורץ, כך שהחור נשאר פתוח: role_table_grants
+עדיין החזיר arwdDxtm לשני התפקידים על כל החמישה.
+
+view אינו נושא RLS משל עצמו ורץ בהרשאות בעליו, ולכן ה-RLS שדולק על rights.*
+אינו רלוונטי לנתיב הזה — ההרשאה על ה-view היא הדבר היחיד שעמד בדרך.
+
+מדוד אחרי ההרצה, מול ה-REST החי ועם מפתח ה-anon הגלוי בקוד הפורטל:
+  DELETE /rest/v1/rights_catalog?code=eq.<לא קיים>  ->  401  (לפני: 204)
+  DELETE/POST על שאר ה-views                        ->  401 42501 permission denied for view
+  GET על כל החמישה                                  ->  200; הספירות 888/24/67/12/3 ללא שינוי
+בתוך המסד: set local role anon + delete/update -> insufficient_privilege.
+
+למה זה היה בטוח להריץ: n_tup_del=0 על כל rights.* ועל core.automations,
+בלוגים של היממה האחרונה הכתיבות היחידות ל-/rest/v1/rights_* הן הבדיקות של
+הריצה הקודמת עצמה, ושני המקומות בקוד שנוגעים ב-views האלה
+(apps/10-bkalot-rights/repo.js, apps/11-bkalut-marketing2/index.html)
+קוראים בלבד. הקריאה הציבורית של מערכת 10 נמדדה 200 אחרי השינוי.
+
+לא נגעתי ב-alter default privileges — כל view עתידי ב-public עדיין ייוולד
+פתוח לכתיבה ל-anon. נרשם כפריט המשך.
+
+ראיות: QA/platform/anon-write-on-public-views-0813/_results.json

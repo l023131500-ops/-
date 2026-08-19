@@ -1,0 +1,14 @@
+שכפול בקלות: #37 פרוסה וחיה, ורישום core.projects פיגר אחריה (§5ב, רישום)
+
+- apps/37-bkalot-clone/app.json עדכן live/isDeployed/stage/liveUrl/adminUrl
+  שנשארו מקומיט 7a7e377 (13/08), למרות שהמערכת פרוסה וחיה ונמדדה עשרות
+  פעמים מאז (form-0813 עד source-untouched-verify-0817).
+- אומת בדפדפן: more30.com/bkalot-studio ו-/admin שניהם 200 (Playwright,
+  cachebust, 1280x900). דף הבית לא מציג כרטיס "bkalot" — grep על migrations
+  0001-0102 מאשר ש-core.projects #37 קיימת מלפני 0057 אבל אף מיגרציה לא
+  הזיזה live/is_deployed/public_visible/live_url/admin_url.
+- ה-UPDATE המוכן (5 עמודות, שורה אחת) ב-
+  QA/bkalot-clone/registry-row-0817/_project-flip-live.sql, ממתין להרצה.
+- MCP לא מחובר: heartbeat נכתב כ-_heartbeat-pending.sql, מצטרף לתור הקיים.
+- SYSTEMS_STATUS.md עודכן.
+- מוגן: לא נגעתי ב-08/09/bkalut-app/bkalot-admin/zr_*/NEDARIM3873.

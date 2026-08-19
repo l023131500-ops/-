@@ -1,0 +1,53 @@
+§8ב walked in a browser on 21/30/31 — and 21 has no customer login at all
+
+The same open line stood in the last three heartbeats (465, 466, 467) in the
+same words: "§8ב after email confirmation has never been walked on 21/30/31".
+The previous step proved SIGNUP is clean on all three by talking to the auth
+server, and recorded in writing what it did not measure — what happens AFTER
+the customer gets in. That is §1א's literal complaint ("מי שמתחבר חוזר לדף
+התדמית עם שמו למעלה") and it needs a browser, not an API call.
+
+Walked with the official §1ב test user against more30.com only.
+
+  30 crm  — PASS. /crm/auth → /crm/dashboard. Real product surface: sidebar
+            (לקוחות, משימות, שותפים, זכאויות, מסמכים, אנליטיקה), action
+            buttons, "התחברת בהצלחה". Every counter 0 — an empty database,
+            reported as such.
+  31 gesher — PASS. /gesher/auth → /gesher/client/status. A personal client
+            area: "שלום, לקוח בדיקה", a three-stage progress tracker, a
+            document vault, logout. The test user has a real client record.
+  21 mthbram — N/A, and this is the finding.
+
+21 WAS CLASSIFIED WRONG, FOR THREE HEARTBEATS. It was counted among the five
+live systems that "carry a login form of their own over Supabase Auth" and
+§1א was measured against it as if that were a customer entry. The routes the
+served bundle actually defines say otherwise: the only password route is
+/admin-login. Every other portal route is token-based and has no password —
+/portal/rabbi/:token, /portal/org/:token, /shul/:accessToken,
+/study-days/:token, /bulk-upload/:token, /view/*/:publicToken. And the product
+itself needs no login: /mthbram/ IS the catalog search, with add/update/create
+lesson in the top nav. So the form those sweeps found is the ADMIN login, and
+§8ב as written does not apply to 21. No bug, and nothing to fix in its entry
+flow.
+
+A mistake made and kept in the record: the first pass here queried the DOM for
+a login control and reported "no login button on mthbram". The shared pill is
+a <more30-auth> CUSTOM ELEMENT WITH SHADOW DOM — invisible to
+document.querySelectorAll from the page. It is there, it sends the customer to
+more30.com/login?from=…/mthbram/ and back, and with a valid session it shows
+their name. Reporting the first reading would have been a fabricated bug on a
+live system.
+
+NOT MEASURED, and recorded as such: what happens right after a NEW signup —
+only an existing confirmed user was walked, because new signup on 30/31 still
+requires email confirmation (#172, the user's dashboard setting); no real
+business action was performed inside 30 or 31, so the tail of §8ב ("פעולה
+אמיתית עובדת") is still open; /mthbram/admin-login was not opened.
+
+Test mode: no user created, no message sent, nothing written to any business
+table — the only login is the §1ב test user that already exists. Protected
+systems (08, 09, bkalut-app, bkalot-admin, zr_*, NEDARIM3873) are not in the
+target list; csj/csj_src/igud were not used as a source. No deploy.
+
+Evidence QA/platform/post-login-landing-0812/ — README.md, _results.json and
+five screenshots.

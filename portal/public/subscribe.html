@@ -3,8 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>בחירת מסלול · מור מערכות תוכנה</title>
-    <meta name="description" content="בחירת מסלול לשירותי מור מערכות תוכנה." />
+    <title>בחירת מסלול · עולם הסטארטאפים</title>
+    <meta name="description" content="בחירת מסלול לשירותי עולם הסטארטאפים." />
     <meta name="robots" content="noindex" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -19,10 +19,12 @@
         --paper: #fdfdfc; --ink: #141619; --muted: #5f6470; --line: #e3e2de;
         --gold: #c9a227; --card: #ffffff;
         --ok-bg: #e9f7ef; --ok-ink: #15603a; --err-bg: #fdeaea; --err-ink: #8c1f1f;
+        --warn-bg: #fdf3e0; --warn-ink: #6b4605;
       }
       @media (prefers-color-scheme: dark) {
         :root { --paper: #0e0f12; --ink: #eceae4; --muted: #9aa0ad; --line: #26282e; --card: #15171b;
-                --ok-bg: #10301f; --ok-ink: #86e0ae; --err-bg: #3a1414; --err-ink: #ffb4b4; }
+                --ok-bg: #10301f; --ok-ink: #86e0ae; --err-bg: #3a1414; --err-ink: #ffb4b4;
+                --warn-bg: #33270c; --warn-ink: #f2d79a; }
       }
       *, *::before, *::after { box-sizing: border-box; }
       body { margin: 0; background: var(--paper); color: var(--ink);
@@ -49,6 +51,9 @@
       .plan ul { list-style: none; padding: 0; margin: 0 0 18px; font-size: 14px; color: var(--muted); }
       .plan ul li { padding-inline-start: 18px; position: relative; margin-bottom: 8px; }
       .plan ul li::before { content: '·'; position: absolute; inset-inline-start: 4px; color: var(--gold); font-weight: 700; }
+      /* משהיא נמסרת רק כשיש בה פריט, רשימת היתרונות אינה עוד בגובה קבוע בין
+         הכרטיסים; זה מיישר את הכפתורים לתחתית, כמו ב-system.html. */
+      .plan .btn { margin-top: auto; }
       .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px;
              min-height: 48px; padding: 12px 24px; border-radius: 2px; border: 1px solid var(--ink);
              background: var(--ink); color: var(--paper); text-decoration: none; width: 100%;
@@ -65,17 +70,23 @@
       .msg { margin: 24px 0 0; padding: 14px 16px; border-radius: 2px; font-size: 14px; line-height: 1.8; }
       .msg.ok { background: var(--ok-bg); color: var(--ok-ink); }
       .msg.err { background: var(--err-bg); color: var(--err-ink); }
+      .msg.warn { background: var(--warn-bg); color: var(--warn-ink); }
+      .msg b { display: block; }
+      .msg .sub { display: block; margin-top: 4px; font-size: 13px; opacity: .9; }
       .note { font-size: 13px; color: var(--muted); margin-top: 22px; }
       .back { margin-top: 30px; display: flex; gap: 12px; flex-wrap: wrap; }
       .back a { font-size: 14px; color: var(--ink); display: inline-flex; align-items: center; min-height: 24px; }
       [hidden] { display: none !important; }
     </style>
+      <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
   </head>
   <body>
     <header class="bar">
       <div class="wrap">
         <span class="dot" aria-hidden="true"></span>
-        <a class="home" href="/">מור מערכות תוכנה</a>
+        <a class="home" href="/">עולם הסטארטאפים</a>
       </div>
     </header>
 
@@ -86,10 +97,12 @@
       <div class="plans" id="planList"></div>
 
       <div id="msg" class="msg" hidden role="status" aria-live="polite"></div>
+      <div id="checkout" class="msg" hidden role="status" aria-live="polite"></div>
 
       <p class="note">
-        <b>אין כאן חיוב.</b> הסליקה (נדרים פלוס) עדיין לא נפתחה, ולכן בחירת מסלול
-        בתשלום רושמת בקשה בלבד — לא נמסרים פרטי אשראי ולא נגבה תשלום.
+        <b>אין כאן שדה אשראי ואין חיוב.</b> בחירת מסלול רושמת בקשה, ומיד אחריה
+        המסך אומר מה מצב הסליקה לאותו מסלול — כולל כשהיא סגורה וכולל כשהיא
+        פתוחה לבדיקה בלבד.
       </p>
 
       <div class="back">
@@ -130,23 +143,66 @@
         $('msg').className = 'msg ' + kind;
         $('msg').hidden = false;
       }
+      // הודעת הסליקה נבנית מהתשובה של השרת ולא מטקסט קבוע בעמוד, כי היא
+      // משתנה עם מצב הסליקה. שדה `sub` נכתב כטקסט ולא כ-HTML.
+      function showCheckout(head, sub, kind) {
+        const el = $('checkout');
+        el.innerHTML = '';
+        const b = document.createElement('b');
+        b.textContent = head;
+        el.appendChild(b);
+        if (sub) {
+          const s = document.createElement('span');
+          s.className = 'sub';
+          s.textContent = sub;
+          el.appendChild(s);
+        }
+        el.className = 'msg ' + kind;
+        el.hidden = false;
+      }
+      // למחיר שלושה מצבים, ולכל אחד ניסוח אחר — "₪0" אינו אחד מהם.
+      // ריק = טרם הוכרע · 0 = הוכרע שאין חיוב · מעל 0 = מחיר לגבייה.
       function priceText(p) {
         if (p.price_ils == null) {
           return p.is_default
             ? 'ללא עלות'
             : 'המחיר טרם נקבע <small>· נעדכן לפני שנפתחת הסליקה</small>';
         }
+        if (Number(p.price_ils) === 0) return 'ללא עלות';
         const per = { month: 'לחודש', year: 'לשנה', once: 'חד־פעמי' }[p.period] ?? '';
         return `₪${p.price_ils} <small>${per}</small>`;
       }
 
       let current = 'free';
 
+      // ה-RPC מחזיר את המסלולים כמערך תחת `plans`. הצורה המקוננת נשמרת כאן
+      // כנפילה-לאחור בלבד — ושני מקומות בעמוד קראו אותה אחרת, מה שהדפיס את
+      // הקוד האנגלי ("extended") במקום השם העברי בשורת הפתיחה.
+      const plansOf = (data) => data?.plans?.plans ?? data?.plans ?? [];
+
       function render(data) {
-        const plans = data.plans?.plans ?? data.plans ?? [];
+        const plans = plansOf(data);
+
+        // 0033 — מערכת שאינה מוצעת (מוסתרת מדף הבית או שאינה חיה) מקבלת מה-RPC
+        // מסלולים ריקים בכוונה. בלי השורה הזאת המסך היה שטח לבן מתחת לכותרת:
+        // "בחירת מסלול" בלי מסלול ובלי סיבה. הסיבה מגיעה מהמסד ולא נכתבת כאן.
+        if (data?.offered === false) {
+          $('planList').innerHTML = '';
+          $('lede').textContent =
+            data.offer_note ?? 'המערכת הזאת אינה מוצעת כרגע למנוי.';
+          return;
+        }
+
         $('planList').innerHTML = plans
           .map((p) => {
-            const feats = (p.features ?? []).map((f) => `<li>${esc(f)}</li>`).join('');
+            // אותו תיקון כמו ב-system.html: מסלול בלי features קיבל ‎<ul></ul>‎ —
+            // רשימה ריקה שקורא מסך מכריז עליה, ו-18px ריקים מתחת למחיר. זה מצבן
+            // של 57 מתוך 60 שורות המסלול הגלויות ללקוח. הרשימה נמסרת רק כשיש בה
+            // פריט; תוכן המסלולים עצמו הוא core.issues #92.
+            const items = Array.isArray(p.features) ? p.features : [];
+            const feats = items.length
+              ? `<ul>${items.map((f) => `<li>${esc(f)}</li>`).join('')}</ul>`
+              : '';
             const isCurrent = p.code === current;
             return `
               <article class="plan" data-current="${isCurrent ? 1 : 0}">
@@ -154,7 +210,7 @@
                 <h2>${esc(p.name_he)}</h2>
                 <p class="tag">${esc(p.tagline ?? '')}</p>
                 <p class="price">${priceText(p)}</p>
-                <ul>${feats}</ul>
+                ${feats}
                 <button class="btn ${p.is_default ? 'ghost' : ''}" data-plan="${esc(p.code)}"
                         ${isCurrent ? 'disabled' : ''}>
                   ${isCurrent ? 'זה המסלול הנוכחי' : p.is_default ? 'מעבר לחינמי' : 'בחירת המסלול'}
@@ -168,8 +224,65 @@
         });
       }
 
+      /**
+       * §8ג — המחיר חייב להגיע לזרימת הסליקה, לא להיעצר בבקשה רשומה.
+       *
+       * `more30_subscribe` רושם בחירה ותמיד מחזיר `charged:false`; הוא אינו יודע
+       * דבר על מצב הסליקה. `more30_checkout` הוא מי שמכריע, ועד עכשיו שום מסך
+       * לא קרא לו — כלומר המחירים שנקבעו ישבו בקטלוג בלי שום נתיב אליהם.
+       *
+       * הפונקציה מחזירה **הוראה** ולא מבצעת תשלום, ולכן אפשר להריץ את ההכרעה
+       * הזאת בפרודקשן בלי שכסף יזוז. אנחנו קוראים לה רק כש-`chargeable` אמת —
+       * זה הדגל היחיד שהמסד מתיר לפיו לפתוח מסלול תשלום, ומסלול בלי מחיר או
+       * מסלול ברירת מחדל לא אמור להגיע לכאן כלל.
+       */
+      async function runCheckout(code) {
+        const { data, error } = await sb.rpc('more30_checkout', { p_app: appKey, p_plan: code });
+        if (error) {
+          return showCheckout('לא הצלחנו לבדוק את מצב הסליקה.', error.message, 'err');
+        }
+
+        // אם השרת אי פעם יחזיר charged=true, זה המקום שבו נדע מיד — ולא נציג
+        // את זה כאילו התכוונו לכך.
+        if (data?.charged) {
+          return showCheckout(
+            'עצור — השרת מדווח על חיוב שבוצע.',
+            'זה אינו המצב המאושר של המערכת. אל תמסור פרטי תשלום ודווח על כך.',
+            'err',
+          );
+        }
+
+        const price = data?.price_ils != null ? `${data.price_ils} ₪` : null;
+
+        if (data?.action === 'test_payment') {
+          const provider = data.provider
+            ? `ספק הסליקה: ${data.provider} (סביבת בדיקה).`
+            : 'ספק סליקה עדיין לא מחובר, ולכן אין לאן להמשיך מכאן.';
+          return showCheckout(
+            `סליקה במצב בדיקה${price ? ` · ${price}` : ''} — לא בוצע חיוב.`,
+            `${data.message ?? ''} ${provider}`.trim(),
+            'warn',
+          );
+        }
+
+        if (data?.action === 'grant') {
+          return showCheckout(data.message ?? 'הגישה נפתחה ללא חיוב.', null, 'ok');
+        }
+
+        // action='none' — הסליקה סגורה או שהמסלול לא תומחר. שתי הסיבות שונות
+        // זו מזו, והשרת מנסח כל אחת בנפרד; אנחנו לא מאחדים אותן לניסוח אחד.
+        return showCheckout(
+          data?.message ?? 'אין מה לגבות על המסלול הזה.',
+          price && data?.reason === 'billing_off'
+            ? `המחיר הרשום למסלול הוא ${price}. הוא יישאר קטלוגי עד שהסליקה תיפתח.`
+            : null,
+          'ok',
+        );
+      }
+
       async function choose(btn, code) {
         $('msg').hidden = true;
+        $('checkout').hidden = true;
 
         const { data: s } = await sb.auth.getSession();
         if (!s?.session) {
@@ -190,6 +303,7 @@
 
         current = data?.plan ?? code;
         show(data?.message ?? 'הבחירה נרשמה.', 'ok');
+        if (data?.chargeable) await runCheckout(code);
         await load();
       }
 
@@ -200,7 +314,7 @@
           return;
         }
 
-        const name = data?.name_he || 'מור מערכות תוכנה';
+        const name = data?.name_he || 'עולם הסטארטאפים';
         $('title').textContent = `מסלולים · ${name}`;
         document.title = `מסלולים · ${name}`;
         if (data?.enter_url) $('toApp').href = data.enter_url;
@@ -209,8 +323,7 @@
         if (s?.session) {
           const { data: mine } = await sb.rpc('more30_my_subscription', { p_app: appKey });
           current = mine?.plan ?? 'free';
-          const planName =
-            (data?.plans?.plans ?? []).find((p) => p.code === current)?.name_he ?? current;
+          const planName = plansOf(data).find((p) => p.code === current)?.name_he ?? current;
           // מסלול הפלטפורמה חל על כל המערכות, ולכן אומרים את זה — אחרת נראה
           // כאילו נרשם מנוי נפרד לכל שירות.
           const scopeNote = mine?.platform_wide ? ' המסלול הזה חל על כל המערכות.' : '';

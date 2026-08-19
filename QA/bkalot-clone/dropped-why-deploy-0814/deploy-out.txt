@@ -1,0 +1,15 @@
+{
+  "status": "ok",
+  "deployment": {
+    "id": "dpl_Ef8qCdpWqnJWoV3yAcRG7uMEjSrM",
+    "url": "https://more30-portal-nwfpsdgrq-l023131500-ops-projects.vercel.app",
+    "inspectorUrl": "https://vercel.com/l023131500-ops-projects/more30-portal/Ef8qCdpWqnJWoV3yAcRG7uMEjSrM",
+    "readyState": "READY",
+    "target": "production",
+    "deploymentApiUrl": "https://api.vercel.com/v13/deployments/dpl_Ef8qCdpWqnJWoV3yAcRG7uMEjSrM"
+  },
+  "aliased": "https://more30.com",
+  "command": "cd portal/dist; vercel deploy --prod --yes --scope l023131500-ops-projects",
+  "uploaded": "24.9KB",
+  "files_staged": 38
+}

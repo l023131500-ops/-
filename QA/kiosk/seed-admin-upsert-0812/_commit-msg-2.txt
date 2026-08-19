@@ -1,0 +1,31 @@
+kiosk (35): shipped to the repo Railway actually builds from, and the evidence to re-run it
+
+The change itself went in one commit earlier; this is what it took to reach
+production and what proves it did.
+
+kioskfleet does not deploy from this monorepo. The Railway service builds from
+l023131500-ops/zol, branch claude/what-do-you-see-gxo5tc, rootDirectory
+kiosk/server — and only STATUS.md and app.json of this app are tracked here, so
+the source that runs in production had never been in this repository at all.
+The three files were written to that repo through the contents API, module
+before the file that imports it so no intermediate deploy boot-loops. Deploy
+7ea591a6 SUCCESS on commit 35099db; POST /kiosk/api/auth/login with
+admin / More30Admin2026 answers 200 with role admin, checked through more30.com
+rather than the Railway hostname (NetFree answers that one with 418 from here).
+
+The boot log carries no seed line, which is the honest result: the row already
+matched SEED_ADMIN_PASSWORD, so the reconcile returned unchanged and wrote
+nothing. This deployment was not in the broken state. The volume at /app/data is
+what made it possible to be in it without anyone noticing — the database
+survives every deploy, so under create-if-empty the environment variable had not
+been consulted since the file was created.
+
+Also here: the four stub packages the verification ran on, with the note that
+recreates it. server/node_modules is not installed in this checkout, so
+better-sqlite3 and bcryptjs cannot load and the real boot path — config.js →
+db.js → auth.js → seed.js — is reachable by nothing that exists in the tree.
+better-sqlite3 is forwarded to node:sqlite and bcryptjs to salted scrypt, which
+is the part that matters: without a real salt, "boot 2 left the hash
+byte-identical" would be a string comparison rather than a measurement of the
+compare-before-write path. They are kept here and NOT in node_modules — a stub
+sitting there looks installed until someone runs npm install over it.

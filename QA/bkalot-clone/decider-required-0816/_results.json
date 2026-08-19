@@ -1,0 +1,78 @@
+{
+  "step": "decider-required-0092-0816",
+  "line_taken": "decided_at מלא עם decided_by null אפשרי",
+  "line_written_by": "81e3307 (heartbeat 636), ולפניה b1fcca7 / 9c96135 / aff6455 / c6e4a81 / af752d9 — באותן מילים ובאותו מקום",
+  "migration": "0092_a_decided_case_can_say_when_and_not_who.sql",
+  "project_ref": "uhnrgujbdxhhmoxcjria",
+  "measured_from": "SQL בלבד — אין כאן מדידת דפדפן ואין פריסה. edge נשארת v8, apps/37 לא נגעה.",
+
+  "before": {
+    "note": "נמדד לפני שהאילוץ קיים, על פנייה אמיתית שנקלטה דרך bkalot_clone_intake",
+    "intake": { "case_id": 266, "contact_id": 274, "situation": "unemployed", "kind": "treatment", "rights_linked": 37, "queued": false },
+    "call": "bkalot_clone_admin_set_status(jsonb_build_object('case_id',266,'status','rejected','note','נדחתה בלי שנדע מי'), null)",
+    "response": { "ok": true, "changed": true, "log_id": 65, "status": "rejected", "previous": "new", "decided_at": "2026-08-16T03:38:24.429075+00:00", "decided_by": null },
+    "row_after_call": { "status": "rejected", "decided_at_is_not_null": true, "decided_by": null },
+    "log_row": { "log": 65, "from": "new", "to": "rejected", "admin_id": null },
+    "reader": { "bkalot_clone_admin_case(266).case.decided_by_name": null },
+    "verdict": "פניית אזרח נדחתה, המסד יודע לומר מתי, ואין ולו מקום אחד שיודע מי. ok=true — שום שער לא סירב.",
+    "rolled_back": "case_status_log 1, case_rights 37, cases 1, contacts 1 — בפקודות נפרדות לפי טבלה (תקלת cte-delete-sees-prestatement-snapshot)"
+  },
+
+  "after": {
+    "note": "אותה פנייה בדיוק נזרעה מחדש (#267, contact 274) אחרי החלת המיגרציה",
+    "a_null_admin": { "call": "set_status(case_id 267, status rejected, note …, p_admin_id => null)", "response": { "ok": false, "error": "decider_required" } },
+    "state_after_a": { "status": "new", "decided_at": null, "decided_by": null, "log_rows": 0, "verdict": "הסטטוס נשאר בדיוק כפי שהיה ולא נכתבה שורת יומן — השער לפני קריאת הפנייה" },
+    "b_status_gate_still_first": {
+      "set_status(267,'new',null)": { "ok": false, "error": "status_not_settable", "status": "new", "settable": ["in_progress", "closed", "rejected"] },
+      "set_status(267,'sent',null)": { "ok": false, "error": "status_not_settable", "status": "sent", "settable": ["in_progress", "closed", "rejected"] },
+      "verdict": "שער הסטטוס עדיין קודם לשער הזהות — 'sent' נדחה כמו קודם ולא הוחלף בשגיאת זהות"
+    },
+    "d_real_admin": {
+      "call": "set_status(case_id 267, status in_progress, note 'נלקח לטיפול, 0092', p_admin_id => 4)",
+      "response": { "ok": true, "changed": true, "log_id": 66, "status": "in_progress", "previous": "new", "decided_at": "2026-08-16T03:42:02.494166+00:00", "decided_by": 4 },
+      "row_measured_in_a_separate_statement": { "status": "in_progress", "decided_by": 4, "decided_at": "2026-08-16 03:42:02.494166+00", "log_rows": 1, "log_rows_without_admin": 0, "log_at_equals_decided_at": true, "log_note": "נלקח לטיפול, 0092" },
+      "verdict": "המסלול התקין לא נפגע: הזוג נכתב יחד, ואותה שנייה בדיוק בשורה וביומן"
+    },
+    "e_noop_null_admin": { "call": "set_status(267,'in_progress',null) על פנייה שכבר in_progress", "response": { "ok": false, "error": "decider_required" }, "verdict": "הכרעה (5): גם הלחיצה החוזרת שאינה כותבת דבר נדחית — קורא בלי זהות אינו מקבל תשובה על הפנייה" },
+    "f_noop_real_admin": { "response": { "ok": true, "changed": false, "log_id": null, "note": null, "decided_by": 4, "decided_at": "2026-08-16T03:42:02.494166+00:00" }, "verdict": "changed=false עדיין עובד כשיש זהות" },
+    "constraint_both_directions": {
+      "update cases set decided_by = null where id=267": "23514 cases_decided_pair — נדחה",
+      "update cases set decided_at = null where id=267": "23514 cases_decided_pair — נדחה",
+      "update cases set decided_at = null, decided_by = null where id=267": "עבר — הזוג הריק חוקי, זה אילוץ על הזוג ולא NOT NULL",
+      "intake חדשה אחרי האילוץ": "עברה (#267 נוצרה עם שתי העמודות ריקות)",
+      "convalidated": true
+    },
+    "acl_unchanged": { "anon": false, "authenticated": false, "service_role": true }
+  },
+
+  "test_mode": {
+    "queued": false,
+    "documents": 0,
+    "outbound_queue_rows": 8,
+    "outbound_queue_sent_at_rows": 0,
+    "delivery_log_rows": 3,
+    "outgoing_calls": 0,
+    "verdict": "המיגרציה נוגעת ב-status/decided_at/decided_by של bkalot_clone.cases ותו לא"
+  },
+
+  "baseline_restored": {
+    "cases": 0, "case_status_log": 0, "case_rights": 0, "documents": 0,
+    "admin_users": 1, "admin_sessions": 5, "templates": 2, "rights_catalog": 888,
+    "contacts": 4, "outbound_queue": 8, "delivery_log": 3,
+    "queue_fingerprint_md5": "b4318d89eac1a47be75ab8769f320683"
+  },
+
+  "protected": {
+    "git_status_clean_on": ["apps/08-bkalut-app", "apps/09-bkalot-admin", "apps/37-bkalot-clone", "supabase/functions"],
+    "untouched": ["bkalut-app", "bkalot-admin", "zr_*", "NEDARIM3873", "csj", "csj_src", "igud"],
+    "git_add": "נתיבים מפורשים בלבד, לא נקודה"
+  },
+
+  "not_built_here": [
+    "אין נוסח עברי ל-decider_required ב-apps/37-bkalot-clone/admin.html — MESSAGES מציג קוד שאין לו תרגום כפי שהוא; הנוסח הוא הלבנה הבאה",
+    "אין FK מ-cases.decided_by אל admin_users (הכרעה (2) של 0087 עומדת)",
+    "case_status_log.admin_id נשאר nullable ובלי אילוץ משלו",
+    "אין backfill — הטבלה ריקה",
+    "אין פריסה כאן: edge נשארת v8 ו-apps/37 לא נגעה"
+  ]
+}

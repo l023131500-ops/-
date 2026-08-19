@@ -1,0 +1,123 @@
+{
+  "pulse": "שכפול בקלות שכבה 3 — פריסת «זכות אחת» בשורת אישור ההפקה",
+  "kind": "deploy-only",
+  "source_commit": "9f9dbb8",
+  "code_change": false,
+  "migration": false,
+  "edge_function": "bkalot-clone-admin נשארה v7, לא נפרסה",
+
+  "files": {
+    "prev_admin_html": { "source": "git show 9f9dbb8^:apps/37-bkalot-clone/admin.html", "bytes": 88067, "md5": "9055A63E89E3004D84D8B464B3C7F5BE" },
+    "src_admin_html": { "path": "apps/37-bkalot-clone/admin.html", "bytes": 88696, "md5": "17DA929FDF9DD91A162AA15F5041473A" },
+    "dist_pre_staging": { "bytes": 88067, "md5": "9055A63E89E3004D84D8B464B3C7F5BE", "identical_to_prev": true },
+    "dist_post_staging": { "bytes": 88696, "md5": "17DA929FDF9DD91A162AA15F5041473A", "identical_to_src": true },
+    "staged_file_count": 38
+  },
+
+  "markers": {
+    "note": "«זכות אחת» לבדו הוא OLD ולא NEW — הוא נפרס כבר ב-2842cf4 בשורת הרשימה. ההבדל הוא מי מקבל אותו: out.rights_count ולא c.rights_count.",
+    "prev": { "new": "all false", "removed": "all true", "old": "all true" },
+    "src": { "new": "all true", "removed": "all false", "old": "all true" },
+    "dist_pre": { "new": "all false", "removed": "all true", "old": "all true" },
+    "dist_post": { "new": "all true", "removed": "all false", "old": "all true" },
+    "http_pre": { "new": "all false", "removed": "all true", "old": "all true" },
+    "http_post": { "new": "all true", "removed": "all false", "old": "all true" }
+  },
+
+  "http": {
+    "/bkalot-studio/admin": { "pre": 88303, "post": 88932 },
+    "/bkalot-studio/admin/": { "pre": 88303, "post": 88932 },
+    "/bkalot-studio/ (הטופס)": { "pre": 21272, "post": 21272 },
+    "more30.com/": { "pre": 3517, "post": 3517 },
+    "netfree_delta_vs_source": 236,
+    "alef_admin": { "pre": 909, "post": 927 },
+    "replacement_chars": 0,
+    "double_encoding_marks": 0,
+    "hashed_assets": ["assets/index-C2AHwa-z.js", "assets/index-B35ByRD-.css"],
+    "hashed_assets_changed": false
+  },
+
+  "deployment": {
+    "id": "dpl_2zhwi5mQdUDYuqeBDxx5pJE1c78m",
+    "project": "more30-portal",
+    "target": "production",
+    "readyState": "READY",
+    "aliased": "https://more30.com"
+  },
+
+  "browser": {
+    "viewport": "1280x900",
+    "url": "https://more30.com/bkalot-studio/admin?cb=qa0084b",
+    "admin_user": 42,
+    "login": "במסך עצמו",
+    "cases_created_via": "bkalot-clone-intake מעל HTTP, מפתח anon כמו מהטופס",
+    "measurements": [
+      {
+        "case": 126,
+        "rights": 1,
+        "screen": "אישור הפקת המסמך",
+        "text": "מסמך #105 הופק · תבנית rights_treatment_reply · 394 תווי טקסט · זכות אחת (כל הרשימה) · לא נשלח — מצב טסט",
+        "before_deploy_said": "1 זכויות (כל הרשימה)",
+        "shot": "01-live-one-right.png"
+      },
+      {
+        "case": 127,
+        "rights": 42,
+        "role": "בקרה",
+        "text": "מסמך #106 הופק · תבנית rights_treatment_reply · 2503 תווי טקסט · 42 זכויות (כל הרשימה) · לא נשלח — מצב טסט",
+        "shot": "02-live-control-42.png"
+      },
+      {
+        "case": 127,
+        "rights": 42,
+        "chosen": 1,
+        "text": "מסמך #106 הופק · תבנית rights_treatment_reply · 398 תווי טקסט · זכות אחת (נבחרו) · לא נשלח — מצב טסט",
+        "note": "אותה פנייה אמרה «42 זכויות» רגע לפני כן — היחיד נגזר מהמספר ולא מהמקור. אותו מסמך #106 (on conflict do update) ולא שניים.",
+        "shot": "03-live-chosen-one.png"
+      }
+    ],
+    "console": { "errors": 0, "warnings": 0, "info": 4, "info_source": "NetFree — טעינת גופנים מ-netfree.link" },
+    "status_line_in_viewport": true,
+    "status_line_y": 438
+  },
+
+  "screenshots": [
+    { "file": "01-live-one-right.png", "bytes": 59014, "md5": "C3C20CF6BBA806F3D8C36D6179421F51" },
+    { "file": "02-live-control-42.png", "bytes": 72684, "md5": "87F436376B63C5C5619C35EA4A12E224" },
+    { "file": "03-live-chosen-one.png", "bytes": 74391, "md5": "06E81305779875C5C157C588CBF243C0" }
+  ],
+
+  "evidence_failure_caught": {
+    "what": "הריצה הראשונה (פניות 124/125, מנהל 41) הפיקה שני צילומים זהים ב-MD5 — BF54F0B76B4887484E04A2F8C19C3706 פעמיים",
+    "why": "שורת האישור יושבת מתחת לקו הקיפול ב-1280x900; הצילום תיעד את החלק העליון של המסך, שאינו משתנה",
+    "fix": "scrollIntoView({block:'center'}) על שורת הסטטוס ואימות inViewport לפני כל צילום; הריצה חזרה מאפס על 126/127 ומנהל 42",
+    "note": "הצילומים של הריצה הראשונה נמחקו ולא נשמרו — אילו נשמרו הם היו נראים כמו ראיה"
+  },
+
+  "test_mode": {
+    "outbound_queue": 8,
+    "delivery_log": 3,
+    "rows_with_sent_at": 0,
+    "rows_mode_live": 0,
+    "cases_sent": 0,
+    "documents_with_queue_id": 0,
+    "queue_fingerprint": "b23dd82344fcd07a64e2a7037872869f",
+    "fingerprint_identical_before_during_after": true,
+    "buttons_present_not_clicked": ["הכנס לתור", "עבד עכשיו"],
+    "sent_outside": "אין מייל, אין הודעה ואין מסמך שיצא החוצה"
+  },
+
+  "rollback": {
+    "run_1": { "documents": 2, "case_rights": 43, "cases": 2, "contacts": 2, "sessions": 1, "admin_user": 41 },
+    "run_2": { "documents": 2, "case_rights": 43, "cases": 2, "contacts": 2, "sessions": 1, "admin_user": 42 },
+    "after": { "cases": 0, "case_rights": 0, "documents": 0, "admin_users": 1, "admin_sessions": 5, "contacts": 4, "templates": 2, "templates_enabled": 2, "catalog": 888, "outbound_queue": 8, "delivery_log": 3, "chosen": 0 },
+    "identical_to_baseline": true
+  },
+
+  "protected": {
+    "git_status_porcelain_lines": 0,
+    "paths": ["apps/08-bkalut-app", "apps/09-bkalot-admin", "apps/37-bkalot-clone", "supabase/functions"],
+    "schemas_untouched": ["csj", "csj_src", "igud"],
+    "systems_untouched": ["bkalut-app", "bkalot-admin", "zr_*", "NEDARIM3873"]
+  }
+}

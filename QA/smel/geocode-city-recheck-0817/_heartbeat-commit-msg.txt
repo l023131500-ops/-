@@ -1,0 +1,8 @@
+heartbeat: pending row for smel geocode-city recheck (2065d98) — Supabase MCP not connected this session
+
+Only the playwright MCP server was available this session; there was no
+route to core.run_progress (it is only reachable through the Supabase MCP,
+not PostgREST with the anon key). Staged the row as
+QA/smel/geocode-city-recheck-0817/_heartbeat-pending.sql for the next
+session with MCP access to insert, in git-commit order with any other
+pending heartbeat files.

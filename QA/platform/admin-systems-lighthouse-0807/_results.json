@@ -1,0 +1,304 @@
+{
+  "generated_at": "2026-08-07T04:30:41.285Z",
+  "source": "core.lighthouse_runs, read 07/08/2026 — no value here was written by hand",
+  "stale_after_hours": 48,
+  "fixture": [
+    {
+      "app": "torah",
+      "perf": 74,
+      "measured_at": "2026-08-07T03:22:34.489Z",
+      "age_hours": 1.1,
+      "stale": false
+    },
+    {
+      "app": "egod",
+      "perf": 51,
+      "measured_at": "2026-08-07T03:24:47.981Z",
+      "age_hours": 1.1,
+      "stale": false
+    },
+    {
+      "app": "nadlan",
+      "perf": 69,
+      "measured_at": "2026-08-07T03:23:25.313Z",
+      "age_hours": 1.1,
+      "stale": false
+    },
+    {
+      "app": "nadlan-old",
+      "perf": 79,
+      "measured_at": "2026-08-03T11:55:41.122Z",
+      "age_hours": 88.6,
+      "stale": true
+    },
+    {
+      "app": "kesef",
+      "perf": null,
+      "measured_at": null,
+      "age_hours": null,
+      "stale": null
+    },
+    {
+      "app": "tivuch",
+      "perf": 95,
+      "measured_at": "2026-08-07T03:23:00.737Z",
+      "age_hours": 1.1,
+      "stale": false
+    }
+  ],
+  "rows": [
+    {
+      "title": "איגוד השיעורים",
+      "has_row": true,
+      "text": "ביצועים 74 נגישות 100 שיטות 77 SEO 100 נמדד לפני 1 שע׳",
+      "bands": [
+        "m",
+        "g",
+        "m",
+        "g"
+      ],
+      "stale_marked": false
+    },
+    {
+      "title": "אגודת עגד",
+      "has_row": true,
+      "text": "ביצועים 51 נגישות 96 שיטות 77 SEO 100 נמדד לפני 1 שע׳",
+      "bands": [
+        "m",
+        "g",
+        "m",
+        "g"
+      ],
+      "stale_marked": false
+    },
+    {
+      "title": "נדל\"ן",
+      "has_row": true,
+      "text": "ביצועים 69 נגישות 100 שיטות 77 SEO 100 נמדד לפני 1 שע׳",
+      "bands": [
+        "m",
+        "g",
+        "m",
+        "g"
+      ],
+      "stale_marked": false
+    },
+    {
+      "title": "נדל\"ן — מדידת 03/08",
+      "has_row": true,
+      "text": "ביצועים 79 נגישות 100 שיטות 77 SEO 100 נמדד לפני 4 ימים · ישנה",
+      "bands": [
+        "m",
+        "g",
+        "m",
+        "g"
+      ],
+      "stale_marked": true
+    },
+    {
+      "title": "כסף",
+      "has_row": true,
+      "text": "לא נמדדה",
+      "bands": [],
+      "stale_marked": false
+    },
+    {
+      "title": "מתווכים",
+      "has_row": true,
+      "text": "ביצועים 95 נגישות 100 שיטות 77 SEO 100 נמדד לפני 1 שע׳",
+      "bands": [
+        "g",
+        "g",
+        "m",
+        "g"
+      ],
+      "stale_marked": false
+    }
+  ],
+  "kpis": [
+    "6 מערכות",
+    "6 חיות",
+    "20 משתמשים במאגר ההאב · 64 חשבונות בדיקה בנפרד",
+    "8 מתוכם נכנסו לתוך מערכת",
+    "6 מערכות שמשתמשיהן נספרים כאן · מתוך 6",
+    "0 מוצגות בעולם הסטארטאפים",
+    "0 עם כניסה לניהול",
+    "5 נמדדו ב-Lighthouse · 4 טריות"
+  ],
+  "dark_badges": [
+    {
+      "text": "ביצועים 74",
+      "color": "rgb(224, 189, 90)",
+      "bg": "color(srgb 0.878431 0.741176 0.352941 / 0.22)"
+    },
+    {
+      "text": "נגישות 100",
+      "color": "rgb(95, 211, 155)",
+      "bg": "color(srgb 0.372549 0.827451 0.607843 / 0.16)"
+    },
+    {
+      "text": "שיטות 77",
+      "color": "rgb(224, 189, 90)",
+      "bg": "color(srgb 0.878431 0.741176 0.352941 / 0.22)"
+    },
+    {
+      "text": "SEO 100",
+      "color": "rgb(95, 211, 155)",
+      "bg": "color(srgb 0.372549 0.827451 0.607843 / 0.16)"
+    },
+    {
+      "text": "ביצועים 51",
+      "color": "rgb(224, 189, 90)",
+      "bg": "color(srgb 0.878431 0.741176 0.352941 / 0.22)"
+    },
+    {
+      "text": "נגישות 96",
+      "color": "rgb(95, 211, 155)",
+      "bg": "color(srgb 0.372549 0.827451 0.607843 / 0.16)"
+    },
+    {
+      "text": "שיטות 77",
+      "color": "rgb(224, 189, 90)",
+      "bg": "color(srgb 0.878431 0.741176 0.352941 / 0.22)"
+    },
+    {
+      "text": "SEO 100",
+      "color": "rgb(95, 211, 155)",
+      "bg": "color(srgb 0.372549 0.827451 0.607843 / 0.16)"
+    },
+    {
+      "text": "ביצועים 69",
+      "color": "rgb(224, 189, 90)",
+      "bg": "color(srgb 0.878431 0.741176 0.352941 / 0.22)"
+    },
+    {
+      "text": "נגישות 100",
+      "color": "rgb(95, 211, 155)",
+      "bg": "color(srgb 0.372549 0.827451 0.607843 / 0.16)"
+    },
+    {
+      "text": "שיטות 77",
+      "color": "rgb(224, 189, 90)",
+      "bg": "color(srgb 0.878431 0.741176 0.352941 / 0.22)"
+    },
+    {
+      "text": "SEO 100",
+      "color": "rgb(95, 211, 155)",
+      "bg": "color(srgb 0.372549 0.827451 0.607843 / 0.16)"
+    },
+    {
+      "text": "ביצועים 79",
+      "color": "rgb(224, 189, 90)",
+      "bg": "color(srgb 0.878431 0.741176 0.352941 / 0.22)"
+    },
+    {
+      "text": "נגישות 100",
+      "color": "rgb(95, 211, 155)",
+      "bg": "color(srgb 0.372549 0.827451 0.607843 / 0.16)"
+    },
+    {
+      "text": "שיטות 77",
+      "color": "rgb(224, 189, 90)",
+      "bg": "color(srgb 0.878431 0.741176 0.352941 / 0.22)"
+    },
+    {
+      "text": "SEO 100",
+      "color": "rgb(95, 211, 155)",
+      "bg": "color(srgb 0.372549 0.827451 0.607843 / 0.16)"
+    },
+    {
+      "text": "ביצועים 95",
+      "color": "rgb(95, 211, 155)",
+      "bg": "color(srgb 0.372549 0.827451 0.607843 / 0.16)"
+    },
+    {
+      "text": "נגישות 100",
+      "color": "rgb(95, 211, 155)",
+      "bg": "color(srgb 0.372549 0.827451 0.607843 / 0.16)"
+    },
+    {
+      "text": "שיטות 77",
+      "color": "rgb(224, 189, 90)",
+      "bg": "color(srgb 0.878431 0.741176 0.352941 / 0.22)"
+    },
+    {
+      "text": "SEO 100",
+      "color": "rgb(95, 211, 155)",
+      "bg": "color(srgb 0.372549 0.827451 0.607843 / 0.16)"
+    }
+  ],
+  "results": [
+    {
+      "check": "the board renders instead of the access notice",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "all six cards are drawn",
+      "pass": true,
+      "detail": "6 cards"
+    },
+    {
+      "check": "every card carries a Lighthouse row — it was on none of them before",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "the four scores are drawn with their names, not colour alone",
+      "pass": true,
+      "detail": "ביצועים 95 נגישות 100 שיטות 77 SEO 100 נמדד לפני 1 שע׳"
+    },
+    {
+      "check": "a 95 lands in the green band and a 51 does not",
+      "pass": true,
+      "detail": "tivuch=g egod=m"
+    },
+    {
+      "check": "a non-100 accessibility score is printed as measured, not rounded up",
+      "pass": true,
+      "detail": "ביצועים 51 נגישות 96 שיטות 77 SEO 100 נמדד לפני 1 שע׳"
+    },
+    {
+      "check": "a fresh score says when it was measured",
+      "pass": true,
+      "detail": "ביצועים 74 נגישות 100 שיטות 77 SEO 100 נמדד לפני 1 שע׳"
+    },
+    {
+      "check": "a fresh score is NOT marked stale",
+      "pass": true,
+      "detail": "ביצועים 74 נגישות 100 שיטות 77 SEO 100 נמדד לפני 1 שע׳"
+    },
+    {
+      "check": "a measurement older than 48h is named ישנה in words",
+      "pass": true,
+      "detail": "ביצועים 79 נגישות 100 שיטות 77 SEO 100 נמדד לפני 4 ימים · ישנה"
+    },
+    {
+      "check": "the stale card reports its age in days, not in hours",
+      "pass": true,
+      "detail": "ביצועים 79 נגישות 100 שיטות 77 SEO 100 נמדד לפני 4 ימים · ישנה"
+    },
+    {
+      "check": "a system that was never measured reads לא נמדדה, not 0",
+      "pass": true,
+      "detail": "לא נמדדה"
+    },
+    {
+      "check": "no card invents a score for an unmeasured system",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "the KPI row states how many were measured and how many are fresh",
+      "pass": true,
+      "detail": "6 מערכות | 6 חיות | 20 משתמשים במאגר ההאב · 64 חשבונות בדיקה בנפרד | 8 מתוכם נכנסו לתוך מערכת | 6 מערכות שמשתמשיהן נספרים כאן · מתוך 6 | 0 מוצגות בעולם הסטארטאפים | 0 עם כניסה לניהול | 5 נמדדו ב-Lighthouse · 4 טריות"
+    },
+    {
+      "check": "the badges are drawn in dark mode too, with a colour of their own",
+      "pass": true,
+      "detail": "20 badges"
+    }
+  ],
+  "pass": 14,
+  "fail": 0
+}

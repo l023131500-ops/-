@@ -1,0 +1,48 @@
+{
+  "target": "https://csjekrvukbdznetsrodj.supabase.co/rest/v1/kupot_leads",
+  "key_role": "anon (shipped in apps/06-kupot-holim/site/supabase-config.js)",
+  "select": {
+    "status": 401,
+    "code": "42501",
+    "len": 192,
+    "range": null
+  },
+  "patch": {
+    "status": 401,
+    "code": "42501",
+    "len": 200,
+    "range": null
+  },
+  "delete": {
+    "status": 401,
+    "code": "42501",
+    "len": 200,
+    "range": null
+  },
+  "insert": null,
+  "insert_ran": false,
+  "checks": [
+    {
+      "name": "anon cannot read the leads",
+      "ok": true,
+      "detail": "HTTP 401"
+    },
+    {
+      "name": "…and no rows came back with the refusal",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "anon cannot change a lead",
+      "ok": true,
+      "detail": "HTTP 401"
+    },
+    {
+      "name": "anon cannot delete a lead",
+      "ok": true,
+      "detail": "HTTP 401"
+    }
+  ],
+  "pass": 4,
+  "fail": 0
+}

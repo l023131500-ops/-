@@ -3,8 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>האזור האישי · מור מערכות תוכנה</title>
-    <meta name="description" content="האזור האישי שלך במור מערכות תוכנה — הפרטים שלך, סוג החשבון, והמערכות הפתוחות לכניסה." />
+    <title>האזור האישי · עולם הסטארטאפים</title>
+    <meta name="description" content="האזור האישי שלך בעולם הסטארטאפים — הפרטים שלך, סוג החשבון, והמערכות הפתוחות לכניסה." />
     <meta name="robots" content="noindex" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -70,11 +70,14 @@
       footer{margin-top:28px;font-size:13px;color:var(--muted)}
       footer a{color:var(--ink);font-weight:600;display:inline-flex;align-items:center;min-height:24px}
     </style>
+      <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
   </head>
   <body>
     <div class="wrap">
       <header>
-        <div class="brand"><span class="dot"></span><span>מור מערכות תוכנה</span></div>
+        <div class="brand"><span class="dot"></span><span>עולם הסטארטאפים</span></div>
         <div class="actions" style="margin:0">
           <a class="btn ghost" href="/">כל המערכות</a>
           <button class="btn ghost" id="signout" type="button">יציאה</button>
@@ -142,9 +145,16 @@
             <p class="note" id="upgradeNote" hidden></p>
           </div>
 
+          <!-- מי שכבר נרשם למסלול. הבלוק מונה את המנויים שנרשמו בפועל ואומר
+               מה מצבם — הסליקה עדיין סגורה, ולכן "נרשם" אינו "שולם". -->
           <div id="premiumBlock" hidden>
-            <p style="margin:0;font-size:14px;color:var(--muted)">
-              החשבון שלך פרימיום. כל המערכות פתוחות בנפח המלא.
+            <p style="margin:0 0 12px;font-size:14px;color:var(--muted)">
+              המסלולים שנרשמת אליהם:
+            </p>
+            <dl class="rows" id="planRows" hidden></dl>
+            <p style="margin:12px 0 0;font-size:14px;color:var(--muted)">
+              הסליקה עדיין לא נפתחה, ולכן לא בוצע חיוב על אף אחד מהם.
+              נעדכן אותך לפני כל גבייה ראשונה.
             </p>
           </div>
         </section>
@@ -172,6 +182,13 @@
       });
 
       const $ = (id) => document.getElementById(id);
+
+      // אותה בריחה שהייתה כתובה בתוך רשימת האתרים, במקום אחד — כל שם שמגיע
+      // מהשרת ונכתב כ-HTML עובר דרכה.
+      const esc = (s) =>
+        String(s ?? '').replace(/[&<>"']/g, (c) =>
+          ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c],
+        );
 
       function note(el, text, kind) {
         el.textContent = text;
@@ -215,11 +232,37 @@
           $('vRole').innerHTML = '<span class="tag free">משתמש</span>';
         }
 
-        const premium = profile.plan === 'premium';
-        $('vPlan').textContent = premium ? 'פרימיום' : 'חינמי';
-        $('vPlan').className = 'tag ' + (premium ? 'premium' : 'free');
-        $('freeBlock').hidden = premium;
-        $('premiumBlock').hidden = !premium;
+        // ‏המסלול מגיע מ-more30_profile_get, וממיגרציה 0031 הוא נקרא
+        // מ-core.subscriptions — המקום שאליו more30_subscribe באמת כותב. עד
+        // אז נקרא כאן more30_profiles.plan, עמודה ששום הרשמה אינה כותבת אליה,
+        // ולכן כל מי שנרשם למסלול נקרא בעמוד הזה "חינמי" וקיבל מתחתיו הצעה
+        // לשדרג. שתי המסקנות מהתשובה, ולא מהשוואה למילה 'premium' אחת: מסלול
+        // בהיקף הפלטפורמה יש לו שם משלו (בסיסי/מורחב/פרימיום/VIP), ומנוי
+        // למערכת בודדת אינו מסלול פלטפורמה אבל גם אינו "חינמי בלבד".
+        const subs = Array.isArray(profile.subscriptions) ? profile.subscriptions : [];
+        const onFree = profile.plan === 'free' && subs.length === 0;
+        $('vPlan').textContent = profile.plan_name || (profile.plan === 'free' ? 'חינמי' : profile.plan);
+        $('vPlan').className = 'tag ' + (onFree ? 'free' : 'premium');
+        $('freeBlock').hidden = !onFree;
+        $('premiumBlock').hidden = onFree;
+
+        // ‏הבלוק של מי שכבר נרשם. הוא מונה את המנויים בפועל ואומר במפורש
+        // שלא בוצע חיוב — כל 87 השורות במסד הן 'requested', והסליקה סגורה
+        // (‏core.billing_settings.mode='off'). "מנוי פעיל" היה הבטחה ולא עובדה.
+        if (!onFree) {
+          const priceOf = (s) =>
+            s.price_ils == null || Number(s.price_ils) === 0
+              ? ''
+              : ` · ₪${s.price_ils}${{ month: ' לחודש', year: ' לשנה', once: ' חד־פעמי' }[s.period] ?? ''}`;
+          $('planRows').innerHTML = subs
+            .map(
+              (s) =>
+                `<div class="row"><dt>${esc(s.app_name || s.app_key)}</dt>` +
+                `<dd>${esc(s.plan_name || s.plan_code)}${esc(priceOf(s))}</dd></div>`,
+            )
+            .join('');
+          $('planRows').hidden = subs.length === 0;
+        }
 
         // האתרים שאני חבר בהם — נקרא מהשרת, לא נגזר מהדפדפן.
         const { data: apps } = await sb.rpc('more30_my_apps');
@@ -230,12 +273,10 @@
           const ROLE_HE = { member: 'משתמש', manager: 'מנהל תוכן', admin: 'מנהל' };
           $('apps').innerHTML = list
             .map((a) => {
-              const name = String(a.name_he || a.app_key).replace(/[&<>"]/g, (c) =>
-                ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c],
-              );
-              const role = ROLE_HE[a.role] || a.role;
+              const name = esc(a.name_he || a.app_key);
+              const role = esc(ROLE_HE[a.role] || a.role);
               const link = a.url
-                ? `<a href="${a.url}">${name}</a>`
+                ? `<a href="${esc(a.url)}">${name}</a>`
                 : name;
               return `<div class="row"><dt>${link}</dt><dd><span class="tag free">${role}</span></dd></div>`;
             })
@@ -243,15 +284,42 @@
         }
 
         // הגעת לכאן מכפתור "שדרוג לפרימיום" שבתפריט — פותחים ישר עליו.
-        if (new URLSearchParams(location.search).get('upgrade') === '1' && !premium) {
+        if (new URLSearchParams(location.search).get('upgrade') === '1' && onFree) {
           $('planCard').scrollIntoView({ behavior: 'smooth', block: 'center' });
           $('upgrade').focus({ preventScroll: true });
         }
 
         // אם הגעת לכאן מתוך מערכת — כפתור חזרה אליה.
+        //
+        // ⚠️ שני באגים חיו כאן יחד, ולכן הכפתור מעולם לא הופיע:
+        //
+        //  · ‏`?from=` לא נשלח בכלל. הכפתור המשותף העביר את הכתובת הנוכחית
+        //    לפריטי הכניסה, אבל לפריט "האזור האישי" שלח ‎/me‎ חשוף.
+        //  · ‏`more30-return-to` נכתב **כנתיב** (`/bkalot`) מאז שתוקנו
+        //    ‎/login‎ ו-‎/auth/callback‎, והתנאי כאן עדיין דרש קידומת
+        //    `https://more30.com/` — העותק השלישי של אותה השוואה, שנשכח.
+        //    ומעבר לזה ‎callback‎ מוחק את המפתח ברגע שהוא משתמש בו, ולכן
+        //    ‎sessionStorage‎ לבדו לא יכול היה להחזיק את התשובה.
+        //
+        // ההגנה מפני הפניה פתוחה נשמרת, ומנוסחת כמו בשני הקבצים האחרים:
+        // נתיב יחיד שמתחיל ב-`/` ואינו `//`, או כתובת מלאה על more30.com.
+        function safeReturnPath(value) {
+          if (!value) return null;
+          try {
+            if (value.startsWith('/') && !value.startsWith('//')) return value;
+            const u = new URL(value, location.origin);
+            if (u.origin === 'https://more30.com') return u.pathname + u.search + u.hash;
+          } catch {}
+          return null;
+        }
+
         try {
-          const back = sessionStorage.getItem('more30-return-to');
-          if (back && back.startsWith('https://more30.com/')) {
+          const fromParam = new URLSearchParams(location.search).get('from');
+          const back =
+            safeReturnPath(fromParam) ||
+            safeReturnPath(sessionStorage.getItem('more30-return-to'));
+          // ‎/me‎ עצמו אינו "מערכת" — כפתור שמחזיר לעמוד שאתה עומד בו הוא רעש.
+          if (back && !back.startsWith('/me')) {
             $('backTo').href = back;
             $('backTo').hidden = false;
           }

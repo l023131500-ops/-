@@ -1,0 +1,20 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "echo no-build",
+  "outputDirectory": ".",
+  "framework": null,
+
+  "functions": {
+    "api/index.js": {
+      "maxDuration": 30,
+      "includeFiles": "{hf_data_export.json,hf_fund_details.json}"
+    }
+  },
+
+  "rewrites": [
+    { "source": "/kupot/api/(.*)", "destination": "/api/index" },
+    { "source": "/api/(.*)", "destination": "/api/index" },
+    { "source": "/kupot", "destination": "/kupot/index.html" },
+    { "source": "/kupot/:path*", "destination": "/kupot/index.html" }
+  ]
+}

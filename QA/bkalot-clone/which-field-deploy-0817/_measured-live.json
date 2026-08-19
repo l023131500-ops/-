@@ -1,0 +1,243 @@
+{
+  "step": "which-field-deploy-0817",
+  "url": "https://more30.com/bkalot-studio/",
+  "live": {
+    "full_name_required": {
+      "invalid": [
+        "full_name"
+      ],
+      "invalid_visible": [
+        true
+      ],
+      "focused": "full_name",
+      "title": "הפנייה לא נשלחה",
+      "lines": [
+        "צריך שם מלא."
+      ],
+      "hidden": false,
+      "reached_server": true
+    },
+    "phone_invalid": {
+      "invalid": [
+        "phone"
+      ],
+      "invalid_visible": [
+        true
+      ],
+      "focused": "phone",
+      "title": "הפנייה לא נשלחה",
+      "lines": [
+        "מספר הטלפון אינו תקין. הטלפון הוא מפתח הזהות שלכם אצלנו — נדרש מספר ישראלי (למשל 0501234567)."
+      ],
+      "hidden": false,
+      "reached_server": true
+    },
+    "email_invalid": {
+      "invalid": [
+        "email"
+      ],
+      "invalid_visible": [
+        true
+      ],
+      "focused": "email",
+      "title": "הפנייה לא נשלחה",
+      "lines": [
+        "כתובת הדוא״ל אינה תקינה."
+      ],
+      "hidden": false,
+      "reached_server": true
+    },
+    "email_required_for_treatment": {
+      "invalid": [
+        "email"
+      ],
+      "invalid_visible": [
+        true
+      ],
+      "focused": "email",
+      "title": "הפנייה לא נשלחה",
+      "lines": [
+        "לטיפול מלא צריך דוא״ל — לשם נשלחים המסמכים."
+      ],
+      "hidden": false,
+      "reached_server": true
+    },
+    "situation_required_for_treatment": {
+      "invalid": [
+        "situation"
+      ],
+      "invalid_visible": [
+        true
+      ],
+      "focused": "situation",
+      "title": "הפנייה לא נשלחה",
+      "lines": [
+        "בחרו מצב, כדי שנוכל להתאים את רשימת הזכויות."
+      ],
+      "hidden": false,
+      "reached_server": true
+    },
+    "topic_no_invalid": {
+      "invalid": [
+        "topic_no"
+      ],
+      "invalid_visible": [
+        true
+      ],
+      "focused": "topic_no",
+      "title": "הפנייה לא נשלחה",
+      "lines": [
+        "מספר נושא — צריך מספר שלם. תקנו ושלחו שוב."
+      ],
+      "hidden": false,
+      "reached_server": false
+    }
+  },
+  "console": [],
+  "server": [
+    {
+      "status": 200,
+      "body": {
+        "ok": false,
+        "error": "full_name_required"
+      }
+    },
+    {
+      "status": 200,
+      "body": {
+        "ok": false,
+        "error": "phone_invalid",
+        "detail": "הטלפון הוא מפתח הזהות של הפונה — נדרש מספר ישראלי תקין"
+      }
+    },
+    {
+      "status": 200,
+      "body": {
+        "ok": false,
+        "error": "email_invalid"
+      }
+    },
+    {
+      "status": 200,
+      "body": {
+        "ok": false,
+        "error": "email_required_for_treatment"
+      }
+    },
+    {
+      "status": 200,
+      "body": {
+        "ok": false,
+        "error": "situation_required_for_treatment"
+      }
+    },
+    {
+      "status": 200,
+      "body": {
+        "ok": false,
+        "error": "phone_invalid",
+        "detail": "הטלפון הוא מפתח הזהות של הפונה — נדרש מספר ישראלי תקין"
+      }
+    },
+    {
+      "status": 200,
+      "body": {
+        "ok": false,
+        "error": "situation_required_for_treatment"
+      }
+    }
+  ],
+  "overflow_px": 0,
+  "claims": {
+    "full_name_required": {
+      "field": "full_name",
+      "invalid": [
+        "full_name"
+      ],
+      "focused": "full_name",
+      "invalid_visible": [
+        true
+      ],
+      "marks_the_field": true,
+      "focuses_the_field": true,
+      "only_visible_marked": true
+    },
+    "phone_invalid": {
+      "field": "phone",
+      "invalid": [
+        "phone"
+      ],
+      "focused": "phone",
+      "invalid_visible": [
+        true
+      ],
+      "marks_the_field": true,
+      "focuses_the_field": true,
+      "only_visible_marked": true
+    },
+    "email_invalid": {
+      "field": "email",
+      "invalid": [
+        "email"
+      ],
+      "focused": "email",
+      "invalid_visible": [
+        true
+      ],
+      "marks_the_field": true,
+      "focuses_the_field": true,
+      "only_visible_marked": true
+    },
+    "email_required_for_treatment": {
+      "field": "email",
+      "invalid": [
+        "email"
+      ],
+      "focused": "email",
+      "invalid_visible": [
+        true
+      ],
+      "marks_the_field": true,
+      "focuses_the_field": true,
+      "only_visible_marked": true
+    },
+    "situation_required_for_treatment": {
+      "field": "situation",
+      "invalid": [
+        "situation"
+      ],
+      "focused": "situation",
+      "invalid_visible": [
+        true
+      ],
+      "marks_the_field": true,
+      "focuses_the_field": true,
+      "only_visible_marked": true
+    },
+    "topic_no_invalid": {
+      "field": "topic_no",
+      "invalid": [
+        "topic_no"
+      ],
+      "focused": "topic_no",
+      "invalid_visible": [
+        true
+      ],
+      "marks_the_field": true,
+      "focuses_the_field": true,
+      "only_visible_marked": true
+    }
+  },
+  "test_mode": {
+    "responses": 7,
+    "any_ok": false,
+    "any_case_id": false,
+    "codes": [
+      "full_name_required",
+      "phone_invalid",
+      "email_invalid",
+      "email_required_for_treatment",
+      "situation_required_for_treatment"
+    ]
+  }
+}

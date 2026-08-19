@@ -1,0 +1,60 @@
+{
+  "measured": "2026-08-07",
+  "what": "§2 — גישה כללית ללידים של כל המערכות במקום אחד. נמדד מה /admin/leads באמת מכסה.",
+  "source_of_truth": [
+    "core.projects (public_visible + live + path is not null)",
+    "core.lead_sources (system_path)",
+    "core.lead_feed (system_path)"
+  ],
+  "before": {
+    "function": "public.more30_admin_leads",
+    "returned_blocks": ["generated_at", "totals", "sources", "leads"],
+    "note": "המערכות היחידות שהופיעו בפלט הן אלה שיש להן שורה ב-core.lead_sources. מערכת בלי מקור רשום לא הופיעה כלל — לא כאפס ולא כאזהרה."
+  },
+  "counts": {
+    "public_live_systems": 19,
+    "connected": 8,
+    "unconnected": 11,
+    "connected_with_zero_leads": 2,
+    "with_leads": 6,
+    "lead_feed_rows": 75,
+    "lead_feed_rows_without_path": 2,
+    "lead_feed_rows_attributed_to_public_live_systems": 72
+  },
+  "unconnected_systems": [
+    { "number": "02", "path": "tamlul", "name": "תמלול איגוד" },
+    { "number": "03", "path": "modaot", "name": "מודעות איגוד" },
+    { "number": "04", "path": "imud", "name": "עימוד תורני" },
+    { "number": "06", "path": "briut", "name": "לידים קופות חולים" },
+    { "number": "12", "path": "smel", "name": "נדל\"ן (Smel)" },
+    { "number": "17", "path": "chizukim", "name": "תמלול חיזוקים" },
+    { "number": "18", "path": "orech", "name": "עורך תורני" },
+    { "number": "24", "path": "galil", "name": "גליל קונקט" },
+    { "number": "26", "path": "studio", "name": "סטודיו מודעות" },
+    { "number": "34", "path": "kesef", "name": "כסף — שקיפות תקציבית" },
+    { "number": "35", "path": "kiosk", "name": "KioskFleet — נעילת מכשיר" }
+  ],
+  "connected_with_zero_leads": [
+    { "number": "16", "path": "chatzor", "sources": 2 },
+    { "number": "28", "path": "kupot", "sources": 3 }
+  ],
+  "with_leads": [
+    { "number": "32", "path": "nadlan", "sources": 3, "leads": 22, "last_at": "2026-07-30T03:19:11.578599+00:00" },
+    { "number": "01", "path": "torah", "sources": 6, "leads": 17, "last_at": "2026-06-25T07:11:11.349+00:00" },
+    { "number": "15", "path": "egod", "sources": 1, "leads": 13, "last_at": "2026-05-02T18:19:18.312842+00:00" },
+    { "number": "36", "path": "tivuch", "sources": 1, "leads": 8, "last_at": "2026-08-02T22:22:44.91625+00:00" },
+    { "number": "22", "path": "zchuyot", "sources": 1, "leads": 8, "last_at": "2026-03-02T22:15:23.683401+00:00" },
+    { "number": "10", "path": "bkalot", "sources": 1, "leads": 4, "last_at": "2026-08-04T21:40:05.095626+00:00" }
+  ],
+  "after": {
+    "migration": "0042_the_leads_board_promised_every_system_and_listed_only_the_connected_ones.sql",
+    "applied": true,
+    "added_only": true,
+    "new_totals_fields": ["systems_public", "systems_connected", "systems_unconnected"],
+    "new_block": "coverage — שורה לכל אחת מ-19 המערכות הציבוריות החיות, עם state אחד משלושה",
+    "states": ["unconnected", "connected_empty", "has_leads"],
+    "coverage_rows_returned": 19,
+    "removed_or_renamed_fields": [],
+    "note": "תוסף בלבד — ה-HTML שבייצור קורא את אותם שדות וממשיך לעבוד ללא שינוי. שינוי התצוגה (טבלת הכיסוי + שני אריחי KPI עם מכנה) ממתין לפריסת הפורטל, core.issues #83."
+  }
+}

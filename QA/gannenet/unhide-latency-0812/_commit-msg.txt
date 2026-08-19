@@ -1,0 +1,52 @@
+40 gannenet: hiding a material was reversible in the admin screen's words only (#184)
+
+The previous beat closed #183 and left one line open: hiding takes effect at
+once, un-hiding does not come back. The write landed — /api/admin/override
+returned {"ok":true,"override":{}} and the storage object read {} immediately
+after through a busted URL — and yet the public shelf did not return the item
+and "החומרים שלי" still marked it hidden. A re-check some minutes later found it
+back, so the window closed by itself; its length was never measured, and for its
+whole length the admin screen reports "נשמר" and promises hiding is reversible.
+
+The cause is one missing argument. lib/overrides.ts gives every reader a
+cache-buster because Supabase's CDN sits in front of the object and was seen
+serving x-cache: HIT with a superseded body (Next's cache: "no-store" says
+nothing to it, and a request-header Cache-Control: no-cache did not dislodge it —
+only a distinct URL did). setOverride() and isHiddenFile() pass it.
+readOverrides() — what the public shelf and "החומרים שלי" both run — did not, on
+the reasoning that public catalog reads should keep their edge caching.
+
+That also explains the asymmetry, which is the part that made the bug look
+mysterious: hiding writes an object that did not exist, so there is no stale body
+to serve; un-hiding writes {} over a body the CDN already holds, and it is
+swallowed.
+
+The fix: every per-file override read is now fresh. The legacy map stays
+cacheable and says why — no code path writes it any more, so its cached body
+cannot be superseded. The cost was measured rather than assumed: the LIST is
+scoped to the overrides/ prefix, so this is one uncached GET per file an admin
+has ever acted on — three in production — not per shelf item, and not the 258
+seeded materials.
+
+Verified against production after the deploy, both directions timed by polling
+the public shelf (QA/gannenet/unhide-latency-0812/, re-runnable, no secret in the
+repo — session from .env.local, admin key from core.secrets via GN_ADMIN_KEY):
+
+  public shelf drops it   — converged after 3169ms (1 reads)
+  mine while hidden       — has-it=true hidden-flag=true
+  override hidden=false   — {"ok":true,"override":{}}
+  public shelf returns it — converged after 1563ms (1 reads)
+  mine after unhide       — has-it=true hidden-flag=undefined
+  PASS RESULT             — hide=3169ms unhide=1563ms
+
+"1 reads" on both legs: the first read was already right, so what is timed is the
+request itself and not a wait. The leg that did not converge at all now converges
+immediately.
+
+tsc --noEmit exit 0; next build exit 0 with 180 lesson pages.
+
+Test mode: no user created, no message sent, no charge. The QA material was
+uploaded, hidden, unhidden and deleted in the same run; the public shelf returned
+to has-it=false and the 258 seed files were not touched. Protected systems (08,
+09, bkalut-app, bkalot-admin, zr_*, NEDARIM3873) untouched; csj/csj_src/igud
+unused.

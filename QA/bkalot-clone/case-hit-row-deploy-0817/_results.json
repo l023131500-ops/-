@@ -1,0 +1,635 @@
+{
+  "verdict": "PASS",
+  "fails": [],
+  "counts": {
+    "NEW": 11,
+    "REMOVED": 2,
+    "DIFF": 6,
+    "CONTROL": 23,
+    "DEAD": 0
+  },
+  "files": {
+    "src": {
+      "path": "C:/Users/USER/Downloads/more30/apps/37-bkalot-clone/admin.html",
+      "bytes": 197514,
+      "md5": "0343B025"
+    },
+    "dist": {
+      "path": "C:/Users/USER/Downloads/more30/portal/dist/bkalot-studio/admin.html",
+      "bytes": 193914,
+      "md5": "36AFA137"
+    }
+  },
+  "live": {
+    "https://more30.com/bkalot-studio/admin": {
+      "before": {
+        "bytes": 194150,
+        "md5": "26321A2D"
+      },
+      "after": {
+        "bytes": 197750,
+        "md5": "32F960ED"
+      }
+    },
+    "https://more30.com/bkalot-studio/admin/": {
+      "before": {
+        "bytes": 194150,
+        "md5": "26321A2D"
+      },
+      "after": {
+        "bytes": 197750,
+        "md5": "32F960ED"
+      }
+    }
+  },
+  "rows": [
+    {
+      "key": "here_const",
+      "group": "NEW",
+      "dist": 0,
+      "src": 1,
+      "before": [
+        0,
+        0
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "textcontent_plus",
+      "group": "NEW",
+      "dist": 0,
+      "src": 1,
+      "before": [
+        0,
+        0
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "title_new_clause",
+      "group": "NEW",
+      "dist": 0,
+      "src": 1,
+      "before": [
+        0,
+        0
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "cmt_inline_567",
+      "group": "NEW",
+      "dist": 0,
+      "src": 1,
+      "before": [
+        0,
+        0
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "cmt_head",
+      "group": "NEW",
+      "dist": 0,
+      "src": 1,
+      "before": [
+        0,
+        0
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "cmt_gap_measured",
+      "group": "NEW",
+      "dist": 0,
+      "src": 1,
+      "before": [
+        0,
+        0
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "cmt_title_hover",
+      "group": "NEW",
+      "dist": 0,
+      "src": 1,
+      "before": [
+        0,
+        0
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "cmt_d5",
+      "group": "NEW",
+      "dist": 0,
+      "src": 1,
+      "before": [
+        0,
+        0
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "cmt_d6",
+      "group": "NEW",
+      "dist": 0,
+      "src": 1,
+      "before": [
+        0,
+        0
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "cmt_d7",
+      "group": "NEW",
+      "dist": 0,
+      "src": 1,
+      "before": [
+        0,
+        0
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "cmt_d8",
+      "group": "NEW",
+      "dist": 0,
+      "src": 1,
+      "before": [
+        0,
+        0
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "old_textcontent",
+      "group": "REMOVED",
+      "dist": 1,
+      "src": 0,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        0,
+        0
+      ]
+    },
+    {
+      "key": "old_title_end",
+      "group": "REMOVED",
+      "dist": 1,
+      "src": 0,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        0,
+        0
+      ]
+    },
+    {
+      "key": "phr_spots_destructure",
+      "group": "DIFF",
+      "dist": 2,
+      "src": 3,
+      "before": [
+        2,
+        2
+      ],
+      "after": [
+        3,
+        3
+      ]
+    },
+    {
+      "key": "phr_countHe",
+      "group": "DIFF",
+      "dist": 12,
+      "src": 13,
+      "before": [
+        12,
+        12
+      ],
+      "after": [
+        13,
+        13
+      ]
+    },
+    {
+      "key": "phr_four_more",
+      "group": "DIFF",
+      "dist": 3,
+      "src": 4,
+      "before": [
+        3,
+        3
+      ],
+      "after": [
+        4,
+        4
+      ]
+    },
+    {
+      "key": "phr_stale_text",
+      "group": "DIFF",
+      "dist": 3,
+      "src": 5,
+      "before": [
+        3,
+        3
+      ],
+      "after": [
+        5,
+        5
+      ]
+    },
+    {
+      "key": "phr_noteSpots",
+      "group": "DIFF",
+      "dist": 5,
+      "src": 9,
+      "before": [
+        5,
+        5
+      ],
+      "after": [
+        9,
+        9
+      ]
+    },
+    {
+      "key": "phr_complete",
+      "group": "DIFF",
+      "dist": 12,
+      "src": 16,
+      "before": [
+        12,
+        12
+      ],
+      "after": [
+        16,
+        16
+      ]
+    },
+    {
+      "key": "phr_hasOwn",
+      "group": "CONTROL",
+      "dist": 25,
+      "src": 25,
+      "before": [
+        25,
+        25
+      ],
+      "after": [
+        25,
+        25
+      ]
+    },
+    {
+      "key": "phr_note_match_pos_all",
+      "group": "CONTROL",
+      "dist": 2,
+      "src": 2,
+      "before": [
+        2,
+        2
+      ],
+      "after": [
+        2,
+        2
+      ]
+    },
+    {
+      "key": "ctl_fn_noteSpots",
+      "group": "CONTROL",
+      "dist": 1,
+      "src": 1,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "ctl_fillNoteText",
+      "group": "CONTROL",
+      "dist": 1,
+      "src": 1,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "ctl_fn_hist_cell",
+      "group": "CONTROL",
+      "dist": 1,
+      "src": 1,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "ctl_no_spots",
+      "group": "CONTROL",
+      "dist": 1,
+      "src": 1,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "ctl_ret_all",
+      "group": "CONTROL",
+      "dist": 1,
+      "src": 1,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "ctl_ret_null",
+      "group": "CONTROL",
+      "dist": 1,
+      "src": 1,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "ctl_title_many",
+      "group": "CONTROL",
+      "dist": 1,
+      "src": 1,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "ctl_title_first",
+      "group": "CONTROL",
+      "dist": 1,
+      "src": 1,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "ctl_fn_tally",
+      "group": "CONTROL",
+      "dist": 1,
+      "src": 1,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "ctl_hits_guard",
+      "group": "CONTROL",
+      "dist": 1,
+      "src": 1,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "ctl_hits_expr",
+      "group": "CONTROL",
+      "dist": 1,
+      "src": 1,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "ctl_sentence_many",
+      "group": "CONTROL",
+      "dist": 1,
+      "src": 1,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "ctl_zero_sentence",
+      "group": "CONTROL",
+      "dist": 1,
+      "src": 1,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "ctl_all_or_nothing",
+      "group": "CONTROL",
+      "dist": 1,
+      "src": 1,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "ctl_stale_class",
+      "group": "CONTROL",
+      "dist": 22,
+      "src": 22,
+      "before": [
+        22,
+        22
+      ],
+      "after": [
+        22,
+        22
+      ]
+    },
+    {
+      "key": "ctl_mark_hit_css",
+      "group": "CONTROL",
+      "dist": 1,
+      "src": 1,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "ctl_noteTallyBit",
+      "group": "CONTROL",
+      "dist": 1,
+      "src": 1,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "ctl_list_hits",
+      "group": "CONTROL",
+      "dist": 1,
+      "src": 1,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "ctl_denominator",
+      "group": "CONTROL",
+      "dist": 2,
+      "src": 2,
+      "before": [
+        2,
+        2
+      ],
+      "after": [
+        2,
+        2
+      ]
+    },
+    {
+      "key": "ctl_empty_box",
+      "group": "CONTROL",
+      "dist": 1,
+      "src": 1,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "ctl_clamp_note",
+      "group": "CONTROL",
+      "dist": 1,
+      "src": 1,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        1,
+        1
+      ]
+    }
+  ]
+}

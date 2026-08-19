@@ -1,0 +1,171 @@
+{
+  "issue": "0091",
+  "title": "שכפול בקלות שכבה 3: מסך הפנייה אינו יכול לקרוא את הנימוק ששמור",
+  "date": "2026-08-16",
+  "scope": "migration only",
+  "touched": [
+    "supabase/migrations/0091_the_case_screen_cannot_read_the_reason_that_was_saved.sql",
+    "QA/bkalot-clone/history-note-0091-0816/"
+  ],
+  "not_touched": [
+    "apps/37-bkalot-clone",
+    "supabase/functions",
+    "bkalot_clone_admin_cases (0089)",
+    "bkalot_clone_set_status (0090)",
+    "bkalot_clone_admin_document",
+    "bkalot_clone_render"
+  ],
+  "no_edge_deploy": true,
+  "no_portal_deploy": true,
+  "edge_versions": { "bkalot-clone-admin": "v8", "bkalot-clone-intake": "v1" },
+
+  "measurement": {
+    "how": "אותו probe.mjs בדיוק בשתי הריצות (תקלת 0087), על אותן ארבע פניות ובאותם גופי בקשה מילה במילה. הקורא אינו כותב — אין בו UPDATE ואין INSERT — ולכן אין צורך בפיצול פניות כמו ב-0090, והריצה השנייה קוראת בדיוק את מה שקראה הראשונה. ההבדל היחיד הוא הפונקציה.",
+    "over": "הכתובת החיה של bkalot-clone-admin (v8) עם טוקן אמיתי אחרי כניסה אמיתית",
+    "before_file": "http-before.json",
+    "after_file": "http-after.json"
+  },
+
+  "cases": {
+    "A": {
+      "case_id": 252,
+      "what": "שני מעברים ושני נימוקים שונים",
+      "before": {
+        "history_rows": 2,
+        "history_all_have_note_key": false,
+        "history_none_have_note_key": true,
+        "history_row_key_count": 6,
+        "notes_in_order": [null, null],
+        "two_distinct_notes": false
+      },
+      "after": {
+        "history_rows": 2,
+        "history_all_have_note_key": true,
+        "history_none_have_note_key": false,
+        "history_row_key_count": 7,
+        "notes_in_order": [52, 59],
+        "two_distinct_notes": true,
+        "row_48": { "transition": "new->in_progress", "note_chars": 52, "note_head": "לקחתי לטיפול — חסרים תלושי שכר, ביקשתי מ" },
+        "row_49": { "transition": "in_progress->rejected", "note_chars": 59, "note_head": "נדחתה — ההכנסה מעל התקרה שנקבעה לשנת 202" }
+      },
+      "buys": "הכרעה (1) של 0090 נקראת סוף-סוף: שני הנימוקים חוזרים שניהם, כל אחד על שורתו ובסדר — «לקחתי לטיפול» לפני «נדחתה». עמודה על cases הייתה מחזירה אחד."
+    },
+    "B": {
+      "case_id": 253,
+      "what": "מעבר שנכתב בלי נימוק",
+      "before": { "history_rows": 1, "has_note_key": false, "note_is_null": null },
+      "after": { "history_rows": 1, "has_note_key": true, "note_is_null": true, "note_chars": null },
+      "buys": "הכרעה (2): «המכריע לא נימק» (מפתח קיים, ערך null) נבדל מ«השרת אינו יודע לומר» (מפתח חסר). B מול ריצת ה-before היא בדיוק שני המצבים האלה זה מול זה."
+    },
+    "C": {
+      "case_id": 254,
+      "what": "נימוק במלוא התקרה — 500 תווים",
+      "before": { "history_rows": 1, "has_note_key": false, "round_trip_whole": false },
+      "after": { "history_rows": 1, "has_note_key": true, "note_chars": 500, "round_trip_whole": true },
+      "buys": "הכרעה (3): אין limit, אין חיתוך ואין «…». 500 יוצאים 500. התקרה נאכפת בכתיבה (0090) ולא בקריאה; קורא שחותך היה מסתיר בשקט את סופו של נימוק ארוך."
+    },
+    "D": {
+      "case_id": 255,
+      "what": "המכריע עזב, והנימוק נשאר",
+      "before": {
+        "history_rows": 1,
+        "admin_id": 92,
+        "admin_name": null,
+        "has_note_key": false,
+        "reason_survived": false
+      },
+      "after": {
+        "history_rows": 1,
+        "admin_id": 92,
+        "admin_name": null,
+        "has_note_key": true,
+        "note_chars": 57,
+        "note_head": "נדחתה בהחלטתי — אין זכאות בסניף הזה, הפנ",
+        "row_survived": true,
+        "admin_id_kept": true,
+        "admin_name_empty": true,
+        "reason_survived": true
+      },
+      "buys": "הכרעה (4) בחומרה הגדולה מכולן: חשבון 92 דחה את הפנייה ואז נמחק בפקודה על admin_users עצמה. LEFT JOIN מחזיר שורה עם admin_id מלא, admin_name ריק, והנימוק במקומו. INNER היה מוחק מההיסטוריה את הדחייה ואת הסיבה לה מפני שעובד התפטר."
+    }
+  },
+
+  "regression": {
+    "gates_identical_before_after": true,
+    "no_id": { "http_status": 200, "error": "case_id_required" },
+    "case_not_found": { "http_status": 200, "error": "case_not_found", "case_id": 999999999 },
+    "no_token": { "http_status": 401, "error": "token_required" },
+    "top_level_keys": ["admin", "case", "documents", "ok", "rights", "status_history", "templates"],
+    "top_level_keys_unchanged": true,
+    "case_key_count": { "before": 17, "after": 17 },
+    "citizen_note_chars": { "before": 56, "after": 56, "note": "cases.note — מה שהאזרח כתב בטופס — לא זזה בכל ארבע הפניות" },
+    "history_row_key_count": { "before": 6, "after": 7 },
+    "chain_is_whole": { "before": true, "after": true },
+    "sequence_unchanged": true,
+    "rights_count": { "before": 42, "after": 42 },
+    "documents_count": { "before": 0, "after": 0 },
+    "templates_count": { "before": 2, "after": 2 },
+    "decided_by_and_name_unchanged": true
+  },
+
+  "post_migration_db": {
+    "overloads": 1,
+    "grants": { "anon": false, "authenticated": false, "service_role": true },
+    "grants_note": "ההרשאות לא ניתנו מחדש — create or replace שומר ACL",
+    "pg_proc_contains_note_key": true,
+    "one_apply_was_enough": true
+  },
+
+  "test_mode": {
+    "documents": 0,
+    "documents_with_queue_id": 0,
+    "cases_in_sent": 0,
+    "outbound_queue": 8,
+    "outbound_queue_with_sent_at": 0,
+    "outbound_queue_fingerprint_before": "681dde58ed67b2094d0cbbd7c68e0fb6",
+    "outbound_queue_fingerprint_after": "681dde58ed67b2094d0cbbd7c68e0fb6",
+    "delivery_log": 3,
+    "reader_is_read_only": "אין UPDATE ואין INSERT בפונקציה שהשתנתה"
+  },
+
+  "seed_and_rollback": {
+    "seeded_via": "bkalot-clone-intake מעל HTTP עם מפתח anon כמו מהטופס (cases 252–255; contacts 259–262)",
+    "admins_via": "bkalot_clone_admin_create (91 קורא, 92 שנמחק) ולא בהזרקת hash",
+    "transitions_via": "נתיב set-status שמאחורי השער עם טוקן אמיתי — הנימוקים נכתבו כפי שמנהל היה שולח אותם",
+    "log_ids": [48, 49, 50, 51, 52],
+    "rolled_back_per_table": {
+      "case_status_log": 5,
+      "case_rights": 168,
+      "cases": 4,
+      "contacts": 4,
+      "admin_users": 1
+    },
+    "rollback_note": "פקודות נפרדות לפי טבלה — תקלת cte-delete-sees-prestatement-snapshot; אנשי הקשר לפי id ולא לפי טלפון מנורמל — תקלת ac6e523",
+    "baseline_after": {
+      "cases": 0, "case_rights": 0, "case_status_log": 0, "documents": 0,
+      "contacts": 4, "admin_users": 1, "admin_sessions": 5, "templates": 2,
+      "outbound_queue": 8, "delivery_log": 3, "catalog": 888
+    },
+    "baseline_exact": true
+  },
+
+  "open": [
+    "apps/37-bkalot-clone/admin.html אינו מצייר את הנימוק בטבלת «רצף ההכרעות» — התשובה כוללת אותו מעכשיו ואין מי שמציג אותו. זו הלבנה הבאה (UI), ואחריה פריסת פורטל.",
+    "אין תיבת נימוק במסך — הנימוק ניתן לכתיבה רק מהגוף ולא מהדפדפן.",
+    "לא נמדד בדפדפן, מאותה סיבה."
+  ],
+
+  "not_built": [
+    "אין חובת נימוק על rejected",
+    "אין עריכה ואין מחיקה (היומן insert-only)",
+    "אין חיפוש בטקסט הנימוקים ואין סינון «יש נימוק / אין»",
+    "bkalot_clone_admin_cases אינה יודעת על השדה ולא תדע — שורת רשימה אינה מקום לטקסט חופשי של 500 תווים",
+    "אין backfill ולא יהיה — שורות מלפני 0090 נושאות note null לנצח",
+    "אין סינון ואין מיון לפי מספר מעברים; אין status_last_change_at; אין שמות ברשימה"
+  ],
+
+  "protected": {
+    "untouched": ["apps/08-bkalut-app", "apps/09-bkalot-admin", "apps/37-bkalot-clone", "supabase/functions", "zr_*", "NEDARIM3873", "csj", "csj_src", "igud"],
+    "git_add": "שני נתיבים מפורשים ולא נקודה"
+  }
+}

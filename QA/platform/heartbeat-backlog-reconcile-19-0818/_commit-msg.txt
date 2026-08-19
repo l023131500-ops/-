@@ -1,0 +1,15 @@
+heartbeat: reconcile 5 more queued _heartbeat-pending.sql files (0818, batch 19)
+
+Reconciled 5 more of the remaining queued _heartbeat-pending.sql files
+(kupot-lh-0817, kesef-lh-0817, mthbram-lh-0817, galil-lh-0817,
+mechiron-lh-0817), checked each task text against core.run_progress
+before insert (none pre-existed). All 5 rows written live via the
+connected Supabase MCP this session.
+
+No app code changed, no protected system touched
+(08/09/bkalut-app/bkalot-admin/zr_*/NEDARIM3873 untouched).
+
+Remaining: 21 pending _heartbeat-pending.sql files still queued -- next
+batch continues from gesher-lh-0817 onward per git log --diff-filter=A
+--name-only --reverse on the pending-sql glob, filtered to files still
+on disk.

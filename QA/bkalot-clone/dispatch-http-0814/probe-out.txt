@@ -1,0 +1,19 @@
+[00] OPTIONS /dispatch => 204 allow-headers=authorization, apikey, content-type, x-admin-token
+[01] dispatch בלי x-admin-token => http=401 ok=false error=token_required
+[--] login => http=200 ok=true admin={"id":12,"email":"qa0072@more30.com","full_name":"QA 0072"}
+[02] dispatch עם טוקן פגום => http=401 ok=false error=invalid_session
+[--] intake A => http=200 case=57 contact=63 rights=undefined
+[--] intake B => http=200 case=58 contact=64 rights=undefined
+[--] A render doc=56 | queue=30 status=queued mode=test to=qa.bkalot@more30.com
+[--] B render doc=57 | queue=31 status=blocked mode=test to=qa.blocked.0073@more30.com
+[03] dispatch A => http=200 ok=true status=skipped outcome=dry_run mode=test to=qa.bkalot@more30.com bytes=7609 doc=56 matches=true sent_for_real=0 admin=qa0072@more30.com
+[04] dispatch A שוב => http=200 ok=false error=not_queued status=skipped already=true
+[05] dispatch B (חסומה) => http=200 ok=false error=not_queued status=blocked already=false
+[06] dispatch על שורת מקור #6 => http=200 ok=false error=not_a_clone_row app_key=bkalot
+[07] גוף ריק => http=200 ok=false error=queue_id_required
+[07] queue_id לא מספרי => http=200 ok=false error=queue_id_required
+[07] 25 ספרות => http=200 ok=false error=queue_row_not_found
+[07] מזהה שאינו קיים => http=200 ok=false error=queue_row_not_found
+[07] הכינוי id => http=200 ok=false error=not_queued
+[08] נתיב שאינו קיים => http=404 error=route_not_found allowed=["login","session","logout","cases","case","render","document","queue","dispatch"]
+SEEDED {"A":{"case_id":57,"document_id":56,"queue_id":30},"B":{"case_id":58,"document_id":57,"queue_id":31}}

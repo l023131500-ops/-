@@ -1,0 +1,91 @@
+{
+  "at": "2026-08-09T02:49:16Z",
+  "issue": 86,
+  "what": "public.more30_admin_kesef_report() — the reader the kesef admin screen will draw from",
+  "migration": "0052_kesef_holds_283_rows_and_not_one_of_them_arrived_from_a_sync.sql",
+  "guard": {
+    "function": "public.more30_is_super_admin()",
+    "admin_caller": { "claims_sub": "c492d9c0-5477-4cbc-9847-d6b9bfcc24d1", "is_admin": true, "returned": "jsonb" },
+    "non_admin_caller": { "claims_sub": "00000000-0000-0000-0000-000000000000", "raised": "42501 super admin only" }
+  },
+  "report": {
+    "app_key": "kesef",
+    "schema": "kesef",
+    "totals": {
+      "rows": 283,
+      "tables": 36,
+      "empty_tables": 32,
+      "authorities": 259,
+      "sources": 12,
+      "sources_ok": 0,
+      "sync_runs": 0,
+      "facts": 0,
+      "users": 0
+    },
+    "catalog": {
+      "chart_of_accounts": 8,
+      "term_normalization": 4,
+      "authorities_by_status": { "municipality": 82, "local_council": 123, "regional_council": 54 },
+      "authorities_by_district": {
+        "הצפון": 93, "המרכז": 52, "הדרום": 40, "חיפה": 30,
+        "אזור יהודה והשומרון": 25, "תל אביב": 12, "ירושלים": 6, "—": 1
+      }
+    },
+    "coverage": {
+      "of": 259,
+      "fields": {
+        "population": 0,
+        "socio_economic_cluster": 0,
+        "peripherality_cluster": 0,
+        "pct_children": 0,
+        "pct_elderly": 0,
+        "website_url": 0,
+        "financial_status": 0,
+        "geom_center": 0
+      }
+    },
+    "product": {
+      "fact_financial": 0, "tabar": 0, "tender": 0, "support_grant": 0,
+      "source_document": 0, "sync_run": 0, "app_user": 0, "subscription": 0,
+      "review_open": 0, "alerts": 0
+    },
+    "row_counts": {
+      "authority": 259, "data_source": 12, "chart_of_accounts": 8, "term_normalization": 4,
+      "agent_log": 0, "alert": 0, "app_user": 0, "award": 0, "benefit_uptake": 0,
+      "correction_log": 0, "council_decision": 0, "council_meeting": 0, "council_vote": 0,
+      "cross_check": 0, "demographic_fact": 0, "doc_chunk": 0, "donation": 0,
+      "fact_financial": 0, "grant_call": 0, "grant_call_authority": 0, "metric_value": 0,
+      "moi_code_map": 0, "official": 0, "peer_group": 0, "report_cache": 0,
+      "review_queue": 0, "satellite_entity": 0, "source_document": 0, "subscription": 0,
+      "support_grant": 0, "sync_run": 0, "tabar": 0, "tabar_funding": 0, "tender": 0,
+      "vendor": 0, "watch": 0
+    },
+    "empty_tables": [
+      "agent_log", "alert", "app_user", "award", "benefit_uptake", "correction_log",
+      "council_decision", "council_meeting", "council_vote", "cross_check",
+      "demographic_fact", "doc_chunk", "donation", "fact_financial", "grant_call",
+      "grant_call_authority", "metric_value", "moi_code_map", "official", "peer_group",
+      "report_cache", "review_queue", "satellite_entity", "source_document",
+      "subscription", "support_grant", "sync_run", "tabar", "tabar_funding", "tender",
+      "vendor", "watch"
+    ],
+    "ingestion": [
+      { "slug": "btl", "display_name": "ביטוח לאומי — נתוני יישוב", "kind": "scrape", "sync_frequency": "monthly", "is_active": true, "ok": false, "last_ok_at": null, "last_error": null, "runs": 0, "last_run": null },
+      { "slug": "cbs", "display_name": "הלמ\"ס — פרופיל רשויות", "kind": "scrape", "sync_frequency": "quarterly", "is_active": true, "ok": false, "last_ok_at": null, "last_error": null, "runs": 0, "last_run": null },
+      { "slug": "data_gov_audit_cities", "display_name": "דוחות כספיים מבוקרים — עיריות 2014–2021 (data.gov.il)", "kind": "api", "sync_frequency": "monthly", "is_active": true, "ok": false, "last_ok_at": null, "last_error": null, "runs": 0, "last_run": null },
+      { "slug": "data_gov_local_authorities", "display_name": "דוחות כספיים מבוקרים — רשויות (data.gov.il)", "kind": "api", "sync_frequency": "monthly", "is_active": true, "ok": false, "last_ok_at": null, "last_error": null, "runs": 0, "last_run": null },
+      { "slug": "data_gov_local_council", "display_name": "מועצות אזוריות 2014–2021 (data.gov.il)", "kind": "api", "sync_frequency": "monthly", "is_active": true, "ok": false, "last_ok_at": null, "last_error": null, "runs": 0, "last_run": null },
+      { "slug": "data_gov_local_council_1", "display_name": "מועצות מקומיות 2014–2021 (data.gov.il)", "kind": "api", "sync_frequency": "monthly", "is_active": true, "ok": false, "last_ok_at": null, "last_error": null, "runs": 0, "last_run": null },
+      { "slug": "gc_education", "display_name": "קולות קוראים — משרד החינוך", "kind": "scrape", "sync_frequency": "daily", "is_active": true, "ok": false, "last_ok_at": null, "last_error": null, "runs": 0, "last_run": null },
+      { "slug": "gc_ministries", "display_name": "קולות קוראים — אתרי משרדים ב-gov.il", "kind": "scrape", "sync_frequency": "daily", "is_active": true, "ok": false, "last_ok_at": null, "last_error": null, "runs": 0, "last_run": null },
+      { "slug": "gc_moi", "display_name": "קולות קוראים — מאגר משרד הפנים", "kind": "scrape", "sync_frequency": "daily", "is_active": true, "ok": false, "last_ok_at": null, "last_error": null, "runs": 0, "last_run": null },
+      { "slug": "gc_pais", "display_name": "קולות קוראים והקצאות — מפעל הפיס", "kind": "scrape", "sync_frequency": "daily", "is_active": true, "ok": false, "last_ok_at": null, "last_error": null, "runs": 0, "last_run": null },
+      { "slug": "moi_chart_of_accounts", "display_name": "ספר הקידודים — משרד הפנים", "kind": "manual_upload", "sync_frequency": "once", "is_active": true, "ok": false, "last_ok_at": null, "last_error": null, "runs": 0, "last_run": null },
+      { "slug": "obudget", "display_name": "מפתח התקציב (obudget)", "kind": "api", "sync_frequency": "weekly", "is_active": true, "ok": false, "last_ok_at": null, "last_error": null, "runs": 0, "last_run": null }
+    ]
+  },
+  "notes_on_86": {
+    "empty_tables_34_vs_32": "‏#86 רשם 34 טבלאות ריקות ו-38 בסך הכל; הדוח סופר 36 טבלאות ו-32 ריקות. ההפרש הוא v_authority_year_summary ו-v_topic_spending — תצוגות ולא טבלאות. הדוח מסנן table_type='BASE TABLE' ולכן אינו מונה אותן, ואינו סופר שורות נגזרות פעמיים.",
+    "the_283": "‏מספר השורות זהה ל-#86 (283) — מה שהשתנה הוא מה שידוע עליהן: כולן קטלוג שנזרע ביד, ואף אחת מהן לא הגיעה מסנכרון."
+  }
+}

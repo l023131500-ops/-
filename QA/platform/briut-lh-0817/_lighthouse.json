@@ -1,0 +1,171 @@
+{
+  "briut": {
+    "url": "https://more30.com/briut",
+    "measuredAt": "2026-08-17T11:50:00.044Z",
+    "performance": 84,
+    "accessibility": 91,
+    "bestPractices": 77,
+    "seo": 100,
+    "metrics": {
+      "fcp": "3.0 s",
+      "lcp": "3.0 s",
+      "tbt": "190 ms",
+      "cls": "0.003",
+      "si": "4.4 s"
+    },
+    "failedAudits": [
+      {
+        "id": "first-contentful-paint",
+        "title": "First Contentful Paint",
+        "score": 0.51,
+        "display": "3.0 s"
+      },
+      {
+        "id": "largest-contentful-paint",
+        "title": "Largest Contentful Paint",
+        "score": 0.79,
+        "display": "3.0 s"
+      },
+      {
+        "id": "speed-index",
+        "title": "Speed Index",
+        "score": 0.74,
+        "display": "4.4 s"
+      },
+      {
+        "id": "third-party-cookies",
+        "title": "Uses third-party cookies",
+        "score": 0,
+        "display": "1 cookie found"
+      },
+      {
+        "id": "mainthread-work-breakdown",
+        "title": "Minimize main-thread work",
+        "score": 0,
+        "display": "3.6 s"
+      },
+      {
+        "id": "aria-required-children",
+        "title": "Elements with an ARIA `[role]` that require children to contain a specific `[role]` are missing some or all of those required children.",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "color-contrast",
+        "title": "Background and foreground colors do not have a sufficient contrast ratio.",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "label-content-name-mismatch",
+        "title": "Elements with visible text labels do not have matching accessible names.",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "unminified-javascript",
+        "title": "Minify JavaScript",
+        "score": 0.5,
+        "display": "Est savings of 6 KiB"
+      },
+      {
+        "id": "inspector-issues",
+        "title": "Issues were logged in the `Issues` panel in Chrome Devtools",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "bf-cache",
+        "title": "Page prevented back/forward cache restoration",
+        "score": 0,
+        "display": "1 failure reason"
+      },
+      {
+        "id": "cache-insight",
+        "title": "Use efficient cache lifetimes",
+        "score": 0.5,
+        "display": "Est savings of 43 KiB"
+      },
+      {
+        "id": "document-latency-insight",
+        "title": "Document request latency",
+        "score": 0.5,
+        "display": "Est savings of 10 KiB"
+      },
+      {
+        "id": "network-dependency-tree-insight",
+        "title": "Network dependency tree",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "render-blocking-insight",
+        "title": "Render-blocking requests",
+        "score": 0,
+        "display": "Est savings of 720 ms"
+      }
+    ],
+    "mainThreadBreakdown": [
+      {
+        "group": "Style & Layout",
+        "duration": 1447
+      },
+      {
+        "group": "Other",
+        "duration": 1370
+      },
+      {
+        "group": "Script Evaluation",
+        "duration": 412
+      },
+      {
+        "group": "Rendering",
+        "duration": 161
+      },
+      {
+        "group": "Parse HTML & CSS",
+        "duration": 158
+      },
+      {
+        "group": "Garbage Collection",
+        "duration": 33
+      },
+      {
+        "group": "Script Parsing & Compilation",
+        "duration": 31
+      }
+    ],
+    "bootupTime": [
+      {
+        "url": "https://more30.com/briut",
+        "total": 1876,
+        "scripting": 69,
+        "scriptParseCompile": 10
+      },
+      {
+        "url": "Unattributable",
+        "total": 1033,
+        "scripting": 23,
+        "scriptParseCompile": 0
+      },
+      {
+        "url": "https://more30.com/auth-button.js",
+        "total": 238,
+        "scripting": 60,
+        "scriptParseCompile": 8
+      },
+      {
+        "url": "https://netfree.link/card/card-injection.js",
+        "total": 236,
+        "scripting": 144,
+        "scriptParseCompile": 3
+      },
+      {
+        "url": "https://more30.com/briut/app.js",
+        "total": 95,
+        "scripting": 61,
+        "scriptParseCompile": 6
+      }
+    ]
+  }
+}

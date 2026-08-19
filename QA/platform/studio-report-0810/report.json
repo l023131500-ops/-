@@ -1,0 +1,62 @@
+{
+  "_measured_at": "2026-08-10",
+  "_source": "public.more30_admin_studio_report() on the live ops project (uhnrgujbdxhhmoxcjria), called as super-admin via set local request.jwt.claims. 'notes' and 'generated_at' stripped: prose and a clock are not evidence.",
+  "_gate": "a call with a non super-admin email raises 42501 (verified in the same session).",
+  "_cross_check": {
+    "live_endpoint": "https://more30.com/studio/api/templates -> 200, application/json, 18667 bytes, the same four templates by id and by name",
+    "client_bundle": "/studio/assets/index-CsiCgOfk.js, 612504 bytes: one occurrence of 'api/' in the whole bundle and it is '/api/templates'; 'projects' and 'brands' appear zero times",
+    "server_routes": "_deploy/studio-more30/api/_lib/server/routes.ts exposes GET/POST/PATCH/DELETE on /api/projects and /api/brands - ten routes the shipped client never calls",
+    "layers_by_sql": "13 + 12 + 11 + 26 = 62 layers; text 38, shape 13, decoration 8, image 3 - counted directly against the tables, not read back from the function"
+  },
+  "report": {
+    "app_key": "studio",
+    "tables": ["public.studio_templates", "public.studio_projects", "public.studio_brands", "public.studio_users"],
+    "totals": {
+      "templates": 4,
+      "templates_builtin": 4,
+      "templates_custom": 0,
+      "projects": 0,
+      "brands": 0,
+      "users": 0,
+      "layers": 62
+    },
+    "activity": {
+      "templates_first": "2026-07-26T01:55:46+00:00",
+      "templates_last": "2026-07-26T01:55:48+00:00",
+      "projects_first": null,
+      "projects_last": null,
+      "brands_first": null,
+      "brands_last": null,
+      "days_since_last_project": null,
+      "days_since_last_brand": null
+    },
+    "templates": [
+      { "id": 1, "name": "שיעור — מלכות", "category": "shiur_gemara", "style": "malchut", "format": "ig_feed_45", "width": 1080, "height": 1350, "builtin": true, "layers": 13, "background": "gradient", "layers_bytes": 2907, "has_thumbnail": false, "created_at": "2026-07-26T01:55:46+00:00" },
+      { "id": 2, "name": "שיעור — חסידי מלכותי", "category": "shiur_chasidut", "style": "chasidic_royal", "format": "ig_feed_45", "width": 1080, "height": 1350, "builtin": true, "layers": 12, "background": "gradient", "layers_bytes": 2826, "has_thumbnail": false, "created_at": "2026-07-26T01:55:46+00:00" },
+      { "id": 3, "name": "שיעור — מודרני", "category": "shiur_halacha", "style": "modern_torani", "format": "ig_feed_45", "width": 1080, "height": 1350, "builtin": true, "layers": 11, "background": "solid", "layers_bytes": 2498, "has_thumbnail": false, "created_at": "2026-07-26T01:55:47+00:00" },
+      { "id": 4, "name": "סדרת שיעורים — גריד ימים", "category": "shiur_series", "style": "modern_torani", "format": "ig_feed_45", "width": 1080, "height": 1350, "builtin": true, "layers": 26, "background": "gradient", "layers_bytes": 6846, "has_thumbnail": false, "created_at": "2026-07-26T01:55:48+00:00" }
+    ],
+    "projects": [],
+    "brands": [],
+    "by_category": [
+      { "key": "shiur_chasidut", "templates": 1, "projects": 0 },
+      { "key": "shiur_gemara", "templates": 1, "projects": 0 },
+      { "key": "shiur_halacha", "templates": 1, "projects": 0 },
+      { "key": "shiur_series", "templates": 1, "projects": 0 }
+    ],
+    "by_style": [
+      { "key": "modern_torani", "templates": 2, "projects": 0 },
+      { "key": "chasidic_royal", "templates": 1, "projects": 0 },
+      { "key": "malchut", "templates": 1, "projects": 0 }
+    ],
+    "by_format": [
+      { "key": "ig_feed_45", "width": 1080, "height": 1350, "templates": 4, "projects": 0 }
+    ],
+    "by_layer_type": [
+      { "type": "text", "layers": 38 },
+      { "type": "shape", "layers": 13 },
+      { "type": "decoration", "layers": 8 },
+      { "type": "image", "layers": 3 }
+    ]
+  }
+}

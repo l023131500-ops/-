@@ -1,0 +1,195 @@
+{
+  "nadlan": {
+    "url": "https://more30.com/nadlan",
+    "measuredAt": "2026-08-17T11:20:01.273Z",
+    "performance": 64,
+    "accessibility": 100,
+    "bestPractices": 77,
+    "seo": 100,
+    "metrics": {
+      "fcp": "2.1 s",
+      "lcp": "2.7 s",
+      "tbt": "2,490 ms",
+      "cls": "0.005",
+      "si": "4.2 s"
+    },
+    "failedAudits": [
+      {
+        "id": "first-contentful-paint",
+        "title": "First Contentful Paint",
+        "score": 0.82,
+        "display": "2.1 s"
+      },
+      {
+        "id": "largest-contentful-paint",
+        "title": "Largest Contentful Paint",
+        "score": 0.86,
+        "display": "2.7 s"
+      },
+      {
+        "id": "speed-index",
+        "title": "Speed Index",
+        "score": 0.77,
+        "display": "4.2 s"
+      },
+      {
+        "id": "total-blocking-time",
+        "title": "Total Blocking Time",
+        "score": 0.04,
+        "display": "2,490 ms"
+      },
+      {
+        "id": "max-potential-fid",
+        "title": "Max Potential First Input Delay",
+        "score": 0.02,
+        "display": "700 ms"
+      },
+      {
+        "id": "interactive",
+        "title": "Time to Interactive",
+        "score": 0.74,
+        "display": "5.2 s"
+      },
+      {
+        "id": "third-party-cookies",
+        "title": "Uses third-party cookies",
+        "score": 0,
+        "display": "1 cookie found"
+      },
+      {
+        "id": "mainthread-work-breakdown",
+        "title": "Minimize main-thread work",
+        "score": 0,
+        "display": "6.9 s"
+      },
+      {
+        "id": "unminified-javascript",
+        "title": "Minify JavaScript",
+        "score": 0.5,
+        "display": "Est savings of 6 KiB"
+      },
+      {
+        "id": "inspector-issues",
+        "title": "Issues were logged in the `Issues` panel in Chrome Devtools",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "cache-insight",
+        "title": "Use efficient cache lifetimes",
+        "score": 0.5,
+        "display": "Est savings of 43 KiB"
+      },
+      {
+        "id": "document-latency-insight",
+        "title": "Document request latency",
+        "score": 0.5,
+        "display": "Est savings of 50 KiB"
+      },
+      {
+        "id": "forced-reflow-insight",
+        "title": "Forced reflow",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "legacy-javascript-insight",
+        "title": "Legacy JavaScript",
+        "score": 0.5,
+        "display": "Est savings of 12 KiB"
+      },
+      {
+        "id": "modern-http-insight",
+        "title": "Modern HTTP",
+        "score": 0,
+        "display": "Est savings of 600 ms"
+      },
+      {
+        "id": "network-dependency-tree-insight",
+        "title": "Network dependency tree",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "render-blocking-insight",
+        "title": "Render-blocking requests",
+        "score": 0,
+        "display": "Est savings of 130 ms"
+      }
+    ],
+    "mainThreadBreakdown": [
+      {
+        "group": "Other",
+        "duration": 3595
+      },
+      {
+        "group": "Style & Layout",
+        "duration": 2142
+      },
+      {
+        "group": "Script Evaluation",
+        "duration": 660
+      },
+      {
+        "group": "Rendering",
+        "duration": 270
+      },
+      {
+        "group": "Script Parsing & Compilation",
+        "duration": 105
+      },
+      {
+        "group": "Parse HTML & CSS",
+        "duration": 77
+      },
+      {
+        "group": "Garbage Collection",
+        "duration": 18
+      }
+    ],
+    "bootupTime": [
+      {
+        "url": "https://more30.com/nadlan",
+        "total": 3879,
+        "scripting": 40,
+        "scriptParseCompile": 19
+      },
+      {
+        "url": "Unattributable",
+        "total": 1777,
+        "scripting": 29,
+        "scriptParseCompile": 0
+      },
+      {
+        "url": "https://more30.com/nadlan/_next/static/chunks/23-f4beb6d000d74539.js?dpl=dpl_GVKytw1SwRXDz5ZzfTwu7TQ3AZzQ",
+        "total": 468,
+        "scripting": 430,
+        "scriptParseCompile": 25
+      },
+      {
+        "url": "https://more30.com/auth-button.js",
+        "total": 357,
+        "scripting": 33,
+        "scriptParseCompile": 7
+      },
+      {
+        "url": "https://netfree.link/card/",
+        "total": 161,
+        "scripting": 0,
+        "scriptParseCompile": 0
+      },
+      {
+        "url": "https://netfree.link/card/card-injection.js",
+        "total": 69,
+        "scripting": 47,
+        "scriptParseCompile": 4
+      },
+      {
+        "url": "https://more30.com/nadlan/_next/static/chunks/fd9d1056-43988edb66d8a852.js?dpl=dpl_GVKytw1SwRXDz5ZzfTwu7TQ3AZzQ",
+        "total": 54,
+        "scripting": 18,
+        "scriptParseCompile": 34
+      }
+    ]
+  }
+}

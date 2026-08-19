@@ -1,0 +1,184 @@
+{
+  "when": "after",
+  "steps": {
+    "intake": {
+      "http_status": 200,
+      "case_id": 225,
+      "contact_id": 232,
+      "rights_linked": 42,
+      "queued": false
+    },
+    "login_first": {
+      "http_status": 200,
+      "admin": {
+        "id": 78,
+        "email": "qa0090first@more30.test",
+        "full_name": "QA 0090 מכריע ראשון"
+      }
+    },
+    "login_gone": {
+      "http_status": 200,
+      "admin": {
+        "id": 79,
+        "email": "qa0090gone@more30.test",
+        "full_name": "QA 0090 מכריע שיימחק"
+      }
+    },
+    "d1_new_to_in_progress": {
+      "http_status": 200,
+      "body": {
+        "ok": true,
+        "log_id": 9,
+        "status": "in_progress",
+        "case_id": 225,
+        "changed": true,
+        "previous": "new",
+        "decided_at": "2026-08-16T00:28:24.191858+00:00",
+        "decided_by": 78,
+        "admin": {
+          "id": 78,
+          "email": "qa0090first@more30.test",
+          "full_name": "QA 0090 מכריע ראשון"
+        }
+      }
+    },
+    "d2_same_again": {
+      "http_status": 200,
+      "body": {
+        "ok": true,
+        "log_id": null,
+        "status": "in_progress",
+        "case_id": 225,
+        "changed": false,
+        "previous": "in_progress",
+        "decided_at": "2026-08-16T00:28:24.191858+00:00",
+        "decided_by": 78,
+        "admin": {
+          "id": 78,
+          "email": "qa0090first@more30.test",
+          "full_name": "QA 0090 מכריע ראשון"
+        }
+      }
+    },
+    "d3_to_closed": {
+      "http_status": 200,
+      "body": {
+        "ok": true,
+        "log_id": 10,
+        "status": "closed",
+        "case_id": 225,
+        "changed": true,
+        "previous": "in_progress",
+        "decided_at": "2026-08-16T00:28:25.635507+00:00",
+        "decided_by": 79,
+        "admin": {
+          "id": 79,
+          "email": "qa0090gone@more30.test",
+          "full_name": "QA 0090 מכריע שיימחק"
+        }
+      }
+    },
+    "d4_to_rejected": {
+      "http_status": 200,
+      "body": {
+        "ok": true,
+        "log_id": 11,
+        "status": "rejected",
+        "case_id": 225,
+        "changed": true,
+        "previous": "closed",
+        "decided_at": "2026-08-16T00:28:26.354403+00:00",
+        "decided_by": 79,
+        "admin": {
+          "id": 79,
+          "email": "qa0090gone@more30.test",
+          "full_name": "QA 0090 מכריע שיימחק"
+        }
+      }
+    },
+    "case_after": {
+      "http_status": 200,
+      "top_keys": [
+        "admin",
+        "case",
+        "documents",
+        "ok",
+        "rights",
+        "status_history",
+        "templates"
+      ],
+      "has_status_history_top": true,
+      "has_status_history_in_case": false,
+      "case_keys_count": 17,
+      "case_status": "rejected",
+      "decided_by": 79,
+      "decided_by_name": "QA 0090 מכריע שיימחק",
+      "decided_at": "2026-08-16T00:28:26.354403+00:00",
+      "rights_count": 42,
+      "documents_count": 0,
+      "templates_count": 2,
+      "history_count": 3,
+      "history": [
+        {
+          "at": "2026-08-16T00:28:24.191858+00:00",
+          "id": 9,
+          "admin_id": 78,
+          "to_status": "in_progress",
+          "admin_name": "QA 0090 מכריע ראשון",
+          "from_status": "new"
+        },
+        {
+          "at": "2026-08-16T00:28:25.635507+00:00",
+          "id": 10,
+          "admin_id": 79,
+          "to_status": "closed",
+          "admin_name": "QA 0090 מכריע שיימחק",
+          "from_status": "in_progress"
+        },
+        {
+          "at": "2026-08-16T00:28:26.354403+00:00",
+          "id": 11,
+          "admin_id": 79,
+          "to_status": "rejected",
+          "admin_name": "QA 0090 מכריע שיימחק",
+          "from_status": "closed"
+        }
+      ],
+      "history_chain": "new->in_progress#78/QA 0090 מכריע ראשון | in_progress->closed#79/QA 0090 מכריע שיימחק | closed->rejected#79/QA 0090 מכריע שיימחק",
+      "history_is_continuous": true
+    },
+    "gate_no_id": {
+      "http_status": 200,
+      "body": {
+        "ok": false,
+        "error": "case_not_found",
+        "case_id": 0,
+        "admin": {
+          "id": 78,
+          "email": "qa0090first@more30.test",
+          "full_name": "QA 0090 מכריע ראשון"
+        }
+      }
+    },
+    "gate_not_found": {
+      "http_status": 200,
+      "body": {
+        "ok": false,
+        "error": "case_not_found",
+        "case_id": 9999999999,
+        "admin": {
+          "id": 78,
+          "email": "qa0090first@more30.test",
+          "full_name": "QA 0090 מכריע ראשון"
+        }
+      }
+    },
+    "gate_no_token": {
+      "http_status": 401,
+      "body": {
+        "ok": false,
+        "error": "token_required"
+      }
+    }
+  }
+}

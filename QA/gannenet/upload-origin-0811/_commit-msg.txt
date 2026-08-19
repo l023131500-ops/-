@@ -1,0 +1,22 @@
+gannenet (40): the one shelf source still served from someone else's domain
+
+Two of the three shelf sources are streamed through our own origin; uploaded
+material was not. entryToItem() returned the bucket's public supabase.co URL, so
+an upload had none of what same-origin buys: the download button could not
+download (no Content-Disposition to set, and download= is ignored cross-origin),
+the PDF viewer could not read it (it reads with fetch()), the service worker
+returned early on it, the offline prefetch filtered it out, and a file this app
+serves sat on an off-domain host -- which is what serving under more30.com
+exists to avoid.
+
+New /api/upload/[name]: /api/shelf/[name]'s shape minus the seed/ prefix, and a
+name pattern admitting only what uploadItem() writes. The extension is the one
+part of that object name that comes from the user, so uploadItem() now replaces
+anything that is not a plain short extension -- which makes the pattern total.
+
+Verified against the production build and the real bucket: a real seed file
+uploaded through the real POST /api/catalog came back as /api/upload/<id>.jpg,
+served 200 inline and attachment with ?dl=1, the item page renders it, 0 console
+errors; index.json, a double extension and a traversal all 400. Both QA uploads
+were then hidden through the real admin override -- catalog back to 0 items.
+tsc --noEmit 0. Evidence in QA/gannenet/upload-origin-0811/.

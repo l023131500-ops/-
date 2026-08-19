@@ -1,0 +1,13 @@
+node_modules/
+.next/
+out/
+build/
+.env
+.env*.local
+*.log
+.DS_Store
+.vercel
+.env*
+
+# תוצר של tsc, נוצר מחדש בכל בנייה — לא אמור להיות בגיט.
+*.tsbuildinfo

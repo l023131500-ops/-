@@ -1,7 +1,8 @@
-import { createContext, useCallback, useContext, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { CheckCircle2, Info, X, XCircle } from "lucide-react";
 import { cn } from "@/lib/cn";
+import { registerToast } from "@/lib/toastBus";
 
 type ToastKind = "success" | "error" | "info";
 interface Toast {
@@ -27,6 +28,12 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     },
     [remove],
   );
+
+  // מודולים שאינם רכיבים (למשל ה-QueryCache) מדווחים דרך toastBus.
+  useEffect(() => {
+    registerToast(toast);
+    return () => registerToast(null);
+  }, [toast]);
 
   return (
     <ToastContext.Provider value={{ toast }}>

@@ -1,0 +1,72 @@
+{
+  "checkedAt": "2026-08-07T01:30:17.168Z",
+  "base": "http://localhost:4173/torah",
+  "rows": [
+    {
+      "route": "/legacy/admin",
+      "url": "http://localhost:4173/torah/legacy/admin",
+      "landed": "/torah/auth/sign-in?redirect=%2Flegacy%2Fadmin",
+      "textLen": 137,
+      "password": true,
+      "heading": "",
+      "adminChrome": [],
+      "stayed": false,
+      "verdict": "gated — sign-in"
+    },
+    {
+      "route": "/legacy/ivr",
+      "url": "http://localhost:4173/torah/legacy/ivr",
+      "landed": "/torah/auth/sign-in?redirect=%2Flegacy%2Fivr",
+      "textLen": 137,
+      "password": true,
+      "heading": "",
+      "adminChrome": [],
+      "stayed": false,
+      "verdict": "gated — sign-in"
+    },
+    {
+      "route": "/legacy/nedarim",
+      "url": "http://localhost:4173/torah/legacy/nedarim",
+      "landed": "/torah/auth/sign-in?redirect=%2Flegacy%2Fnedarim",
+      "textLen": 137,
+      "password": true,
+      "heading": "",
+      "adminChrome": [],
+      "stayed": false,
+      "verdict": "gated — sign-in"
+    },
+    {
+      "route": "/admin",
+      "url": "http://localhost:4173/torah/admin",
+      "landed": "/torah/auth/sign-in?redirect=%2Fadmin",
+      "textLen": 137,
+      "password": true,
+      "heading": "",
+      "adminChrome": [],
+      "stayed": false,
+      "verdict": "gated — sign-in"
+    },
+    {
+      "route": "/legacy/admin-login",
+      "url": "http://localhost:4173/torah/legacy/admin-login",
+      "landed": "/torah/legacy/admin-login",
+      "textLen": 122,
+      "password": true,
+      "heading": "כניסת ניהול",
+      "adminChrome": [],
+      "stayed": true,
+      "verdict": "gated — sign-in"
+    },
+    {
+      "route": "/legacy/teacher-dashboard",
+      "url": "http://localhost:4173/torah/legacy/teacher-dashboard",
+      "landed": "/torah/legacy/teacher-dashboard",
+      "textLen": 815,
+      "password": false,
+      "heading": "האזור האישי שלי",
+      "adminChrome": [],
+      "stayed": true,
+      "verdict": "stayed, no console"
+    }
+  ]
+}

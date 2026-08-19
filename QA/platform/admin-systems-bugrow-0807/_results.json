@@ -1,0 +1,95 @@
+{
+  "generated_at": "2026-08-07T04:30:46.679Z",
+  "by_app": {
+    "torah": {
+      "open": 0,
+      "in_progress": 1,
+      "fixed": 1,
+      "needs_user": 0
+    },
+    "imud": {
+      "open": 0,
+      "in_progress": 0,
+      "fixed": 1,
+      "needs_user": 0
+    },
+    "kupot": {
+      "open": 1,
+      "in_progress": 0,
+      "fixed": 2,
+      "needs_user": 1
+    },
+    "mthbram": {
+      "open": 1,
+      "in_progress": 1,
+      "fixed": 1,
+      "needs_user": 1
+    }
+  },
+  "rows": [
+    {
+      "title": "איגוד השיעורים",
+      "bugs": "1 בטיפול · 1 תוקנו"
+    },
+    {
+      "title": "עימוד תורני",
+      "bugs": "1 תוקנו"
+    },
+    {
+      "title": "קופות חולים",
+      "bugs": "1 פתוחים · מתוכם 1 דורשים אותך · 2 תוקנו"
+    },
+    {
+      "title": "Mthbram",
+      "bugs": "1 פתוחים · 1 בטיפול · מתוכם 1 דורשים אותך · 1 תוקנו"
+    },
+    {
+      "title": "כסף",
+      "bugs": "לא נרשמו"
+    }
+  ],
+  "results": [
+    {
+      "check": "the board renders instead of the access notice",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "all five cards are drawn",
+      "pass": true,
+      "detail": "5 cards"
+    },
+    {
+      "check": "an issue being worked on is named בטיפול and is NOT counted as open",
+      "pass": true,
+      "detail": "1 בטיפול · 1 תוקנו"
+    },
+    {
+      "check": "a card with both states shows both numbers, not one covering two",
+      "pass": true,
+      "detail": "1 פתוחים · 1 בטיפול · מתוכם 1 דורשים אותך · 1 תוקנו"
+    },
+    {
+      "check": "a card with nothing in progress does not print a zero for it",
+      "pass": true,
+      "detail": "1 פתוחים · מתוכם 1 דורשים אותך · 2 תוקנו"
+    },
+    {
+      "check": "a card with only fixed issues says so and nothing else",
+      "pass": true,
+      "detail": "1 תוקנו"
+    },
+    {
+      "check": "a system with no row in core.issues reads לא נרשמו, not 0",
+      "pass": true,
+      "detail": "לא נרשמו"
+    },
+    {
+      "check": "no card counts an in_progress issue as open (the defect 0026 fixes)",
+      "pass": true,
+      "detail": "1 בטיפול · 1 תוקנו"
+    }
+  ],
+  "pass": 8,
+  "fail": 0
+}

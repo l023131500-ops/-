@@ -1,0 +1,17 @@
+gannenet (40): the letter home to parents could be written about nothing
+
+/newsletter is the page behind two of the claims the previous step deleted, and
+no step had read it. build() ran unconditionally, so with the topics box empty
+the page produced a complete letter to parents saying "בשבוע המבורך שחלף עסקנו
+יחד בנושאים חשובים ומרתקים:" and then listing nothing, signed by the gan. And
+its subtitle said "מוכן לשליחה" over a plain div — on the phone a gannenet
+writes this on, getting the text out is a long-press selection across a
+multi-line block.
+
+No topic now shows an inline alert and renders no letter. There is an "העתקת
+הטקסט" button beside the letter and the subtitle says what the page does. No
+send path was added — nothing here sends. All three clipboard paths verified in
+the real page: the API receives the exact rendered letter, an absent API falls
+back to execCommand, and a rejected write says so and leaves the text to select
+by hand. tsc 0, build 65 pages, 0 console errors. Evidence in
+QA/gannenet/newsletter-copy-0811/.

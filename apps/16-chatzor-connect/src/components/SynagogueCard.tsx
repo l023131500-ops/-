@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { ArrowLeft, MapPin, Navigation } from "lucide-react";
 import type { Synagogue } from "@/lib/types";
 import { formatDistance, navigationUrl } from "@/hooks/useNearby";
+import { SampleBadge } from "@/components/ui/SampleBadge";
 
 /** Shared synagogue card — used on the homepage preview and the directory page. */
 export function SynagogueCard({
@@ -26,11 +27,7 @@ export function SynagogueCard({
       className="group overflow-hidden rounded-lg border border-border bg-card shadow-soft transition-shadow hover:shadow-glow"
     >
       <div className="relative h-24" style={{ background: s.brandGradient }}>
-        {s.isSample && (
-          <span className="absolute right-3 top-3 rounded-full bg-black/30 px-2 py-0.5 text-[11px] text-white backdrop-blur">
-            דוגמה
-          </span>
-        )}
+        {s.isSample && <SampleBadge variant="overlay" className="absolute right-3 top-3" />}
         {s.logoUrl ? (
           <img
             src={s.logoUrl}
@@ -52,10 +49,14 @@ export function SynagogueCard({
           </span>
         )}
         {s.description && <p className="mt-3 text-sm text-muted-foreground">{s.description}</p>}
-        <p className="mt-3 inline-flex items-center gap-1.5 text-xs text-muted-foreground">
-          <MapPin className="h-3.5 w-3.5" aria-hidden />
-          {s.address ?? "כתובת לא זמינה"}
-        </p>
+        {/* כתובת רק כשיש כתובת — כמו בעמוד בית הכנסת (SynagogueSite). כשאין, «ניווט» למטה
+            הוא מה שעונה על «איפה זה», והסימון נשאר של הכתובת עצמה ולא של היעדרה. */}
+        {s.address && (
+          <p className="mt-3 inline-flex items-center gap-1.5 text-xs text-muted-foreground">
+            <MapPin className="h-3.5 w-3.5" aria-hidden />
+            {s.address}
+          </p>
+        )}
 
         {meters != null && (
           <p className="mt-2 text-xs font-semibold text-accent" data-testid="synagogue-distance">

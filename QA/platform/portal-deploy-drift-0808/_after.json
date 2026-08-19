@@ -1,0 +1,263 @@
+{
+  "ran": "scripts/qa/portal-deploy-drift.mjs",
+  "phase": "after",
+  "read_as": "anon, through more30.com",
+  "netfree_lines_stripped": 3,
+  "route_list": "derived from portal/vercel.dist.json + every file under portal/public/**",
+  "html_files": [
+    "404.html",
+    "admin-activity.html",
+    "admin-automation.html",
+    "admin-credits.html",
+    "admin-customers.html",
+    "admin-issues.html",
+    "admin-leads.html",
+    "admin-pricing.html",
+    "admin-rights.html",
+    "admin-systems.html",
+    "auth/callback.html",
+    "login.html",
+    "me.html",
+    "showcase.html",
+    "subscribe.html",
+    "system.html"
+  ],
+  "asset_files": [
+    "auth-button.js",
+    "robots.txt",
+    "sitemap.xml"
+  ],
+  "routes": [
+    {
+      "route": "/login",
+      "file": "login.html",
+      "status": 200,
+      "live_bytes": 21915,
+      "tree_bytes": 21915,
+      "live_sha": "c64b556d8872",
+      "tree_sha": "c64b556d8872",
+      "identical": true
+    },
+    {
+      "route": "/auth/callback",
+      "file": "auth/callback.html",
+      "status": 200,
+      "live_bytes": 13107,
+      "tree_bytes": 13107,
+      "live_sha": "c3a04996fb40",
+      "tree_sha": "c3a04996fb40",
+      "identical": true
+    },
+    {
+      "route": "/me",
+      "file": "me.html",
+      "status": 200,
+      "live_bytes": 19278,
+      "tree_bytes": 19278,
+      "live_sha": "2034ca7258a7",
+      "tree_sha": "2034ca7258a7",
+      "identical": true
+    },
+    {
+      "route": "/subscribe",
+      "file": "subscribe.html",
+      "status": 200,
+      "live_bytes": 19000,
+      "tree_bytes": 19000,
+      "live_sha": "aa3b7dc735e4",
+      "tree_sha": "aa3b7dc735e4",
+      "identical": true
+    },
+    {
+      "route": "/admin/activity",
+      "file": "admin-activity.html",
+      "status": 200,
+      "live_bytes": 14899,
+      "tree_bytes": 14899,
+      "live_sha": "45f871fd6817",
+      "tree_sha": "45f871fd6817",
+      "identical": true
+    },
+    {
+      "route": "/admin/pricing",
+      "file": "admin-pricing.html",
+      "status": 200,
+      "live_bytes": 21558,
+      "tree_bytes": 21558,
+      "live_sha": "4449bd47bd90",
+      "tree_sha": "4449bd47bd90",
+      "identical": true
+    },
+    {
+      "route": "/admin/systems",
+      "file": "admin-systems.html",
+      "status": 200,
+      "live_bytes": 24007,
+      "tree_bytes": 24007,
+      "live_sha": "c66abc088f73",
+      "tree_sha": "c66abc088f73",
+      "identical": true
+    },
+    {
+      "route": "/admin/customers",
+      "file": "admin-customers.html",
+      "status": 200,
+      "live_bytes": 14482,
+      "tree_bytes": 14482,
+      "live_sha": "4d24eb4be83d",
+      "tree_sha": "4d24eb4be83d",
+      "identical": true
+    },
+    {
+      "route": "/admin/automation",
+      "file": "admin-automation.html",
+      "status": 200,
+      "live_bytes": 15409,
+      "tree_bytes": 15409,
+      "live_sha": "f96115951547",
+      "tree_sha": "f96115951547",
+      "identical": true
+    },
+    {
+      "route": "/admin/credits",
+      "file": "admin-credits.html",
+      "status": 200,
+      "live_bytes": 12375,
+      "tree_bytes": 12375,
+      "live_sha": "d8768b18dc85",
+      "tree_sha": "d8768b18dc85",
+      "identical": true
+    },
+    {
+      "route": "/admin/issues",
+      "file": "admin-issues.html",
+      "status": 200,
+      "live_bytes": 14581,
+      "tree_bytes": 14581,
+      "live_sha": "d42107fbf629",
+      "tree_sha": "d42107fbf629",
+      "identical": true
+    },
+    {
+      "route": "/admin/leads",
+      "file": "admin-leads.html",
+      "status": 200,
+      "live_bytes": 17724,
+      "tree_bytes": 17724,
+      "live_sha": "0cb07dec0cfe",
+      "tree_sha": "0cb07dec0cfe",
+      "identical": true
+    },
+    {
+      "route": "/admin/rights",
+      "file": "admin-rights.html",
+      "status": 200,
+      "live_bytes": 11107,
+      "tree_bytes": 11107,
+      "live_sha": "ee509be7ce4d",
+      "tree_sha": "ee509be7ce4d",
+      "identical": true
+    },
+    {
+      "route": "/showcase",
+      "file": "showcase.html",
+      "status": 200,
+      "live_bytes": 7319,
+      "tree_bytes": 7319,
+      "live_sha": "ba41ea5acb2d",
+      "tree_sha": "ba41ea5acb2d",
+      "identical": true
+    },
+    {
+      "route": "/404.html",
+      "file": "404.html",
+      "status": 200,
+      "live_bytes": 4227,
+      "tree_bytes": 4227,
+      "live_sha": "3e5fe94d1c86",
+      "tree_sha": "3e5fe94d1c86",
+      "identical": true
+    },
+    {
+      "route": "/system.html",
+      "file": "system.html",
+      "status": 200,
+      "live_bytes": 18926,
+      "tree_bytes": 18926,
+      "live_sha": "1c9dc0abc1b4",
+      "tree_sha": "1c9dc0abc1b4",
+      "identical": true
+    },
+    {
+      "route": "/auth-button.js",
+      "file": "auth-button.js",
+      "status": 200,
+      "live_bytes": 32558,
+      "tree_bytes": 32558,
+      "live_sha": "99f4f0810025",
+      "tree_sha": "99f4f0810025",
+      "identical": true
+    },
+    {
+      "route": "/robots.txt",
+      "file": "robots.txt",
+      "status": 200,
+      "live_bytes": 1019,
+      "tree_bytes": 1019,
+      "live_sha": "14f983eba350",
+      "tree_sha": "14f983eba350",
+      "identical": true
+    },
+    {
+      "route": "/sitemap.xml",
+      "file": "sitemap.xml",
+      "status": 200,
+      "live_bytes": 2637,
+      "tree_bytes": 2637,
+      "live_sha": "d835ad24953a",
+      "tree_sha": "d835ad24953a",
+      "identical": true
+    }
+  ],
+  "stale": [],
+  "dangling_rewrites": [],
+  "not_200": [],
+  "unmeasured_files": [],
+  "missing_commits": [],
+  "summary": {
+    "pass": 5,
+    "fail": 0,
+    "stale": 0,
+    "served": 19,
+    "html_files": 16,
+    "asset_files": 3,
+    "public_files": 19
+  },
+  "checks": [
+    {
+      "check": "every page the portal serves matches the file in the tree",
+      "pass": true,
+      "detail": "none"
+    },
+    {
+      "check": "every rewrite destination in vercel.dist.json exists in the tree",
+      "pass": true,
+      "detail": "all 14"
+    },
+    {
+      "check": "every page the portal serves answers 200",
+      "pass": true,
+      "detail": "all 19"
+    },
+    {
+      "check": "every file under portal/public is measured by one of the routes above",
+      "pass": true,
+      "detail": "all 19"
+    },
+    {
+      "check": "every committed fix on those pages is the one production serves",
+      "pass": true,
+      "detail": "none"
+    }
+  ]
+}

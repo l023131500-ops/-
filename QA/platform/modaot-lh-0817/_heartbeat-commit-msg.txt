@@ -1,0 +1,1 @@
+heartbeat: pending row for modaot-lh-0817 (b800d85) - Supabase MCP not connected this session

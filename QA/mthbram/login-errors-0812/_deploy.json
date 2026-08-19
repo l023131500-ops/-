@@ -1,0 +1,78 @@
+{
+  "system": "21 — mthbram (איגוד השיעורים)",
+  "priority": "§1א — הודעת שגיאה בכניסה: הפריסה שהצעד הקודם לא ביצע",
+  "date": "2026-08-12",
+  "why_this_step": "ea695c2 תיקן את AdminLogin במקור אבל סיים ב'לא נפרס בצעד הזה' — כלומר מי שנכנס ל-more30.com/mthbram/admin-login עדיין קיבל 'שגיאה בכניסה: ' + אנגלית של GoTrue. זה הפריט הפתוח הקטן ביותר שנשאר בסעיף.",
+
+  "build": {
+    "command": "apps/21-mthbram> .\\node_modules\\.bin\\vite.cmd build",
+    "exit": 0,
+    "modules": 3049,
+    "duration": "48.64s",
+    "bundle": "assets/index-DheqMcgT.js (1,617.99 kB, gzip 473.35 kB)",
+    "base": "/mthbram/ (vite.config.ts:8)"
+  },
+
+  "bundle_check_before_deploy": {
+    "file": "apps/21-mthbram/dist/assets/index-DheqMcgT.js",
+    "contains_new_wording": true,
+    "contains_email_not_confirmed": true,
+    "contains_old_prefix_shgiaa_bknisa": false
+  },
+
+  "stage": {
+    "command": "robocopy apps\\21-mthbram\\dist _deploy\\mthbram-more30\\mthbram /MIR",
+    "exit": 3,
+    "meaning": "העתקות + הסרת קובץ עודף — התוצר הישן index-BEupP8UO.js נמחק מתיקיית הפריסה",
+    "note": "_deploy מוחרג בגיט (.gitignore:43 /_deploy/**), ולכן הקומיט הזה הוא ראיות QA בלבד"
+  },
+
+  "deploy": {
+    "project": "mthbram-more30",
+    "id": "dpl_9QszT7S5eRpa3yCb3ZzFUjRdSDC4",
+    "target": "production",
+    "readyState": "READY",
+    "from": "source (NOT --prebuilt — prebuilt משמיט את vercel.json ואז כל נכס מחזיר 404 כאן)",
+    "vercel_json_rewrites": "/mthbram ו-/mthbram/:path* → /mthbram/index.html"
+  },
+
+  "live_verification": {
+    "domain": "more30.com (לא preview URL — netfree חוסם *.vercel.app מהמכונה הזאת)",
+    "html": {
+      "url": "https://more30.com/mthbram/admin-login?cachebust=…",
+      "status": 200,
+      "script_tag": "/mthbram/assets/index-DheqMcgT.js — התוצר החדש"
+    },
+    "served_bundle": {
+      "url": "https://more30.com/mthbram/assets/index-DheqMcgT.js",
+      "length": 1617989,
+      "contains_new_wording": true,
+      "contains_over_request_rate_limit": true,
+      "contains_old_prefix_shgiaa_bknisa": false
+    },
+    "browser_branches": [
+      {
+        "branch": "invalid_credentials",
+        "input": "שם משתמש test@more30.com, סיסמה שגויה",
+        "request": "POST https://aypsqqvfohekxxuqsmrw.supabase.co/auth/v1/token?grant_type=password",
+        "response_status": 400,
+        "toast_text_read_from_dom": "שם המשתמש או הסיסמה שגויים.",
+        "screenshot": "02-invalid-credentials-live-more30.png"
+      },
+      {
+        "branch": "AuthRetryableFetchError (status 0, בלי code)",
+        "how": "fetch נדחה עבור /auth/v1/ בלבד — נפילת רשת אמיתית מבחינת supabase-js",
+        "toast_text_read_from_dom": "לא הצלחנו להגיע לשרת. בדקו את החיבור לאינטרנט ונסו שוב.",
+        "screenshot": "03-offline-live-more30.png"
+      }
+    ],
+    "method_note": "window.setTimeout תוקן לבלוע טיימרים ≥3000ms לפני הצילום — sonner סוגר את ההודעה בערך אחרי 4 שניות, קצר מסבב הלחיצה-עד-הצילום.",
+    "also_visible_live": "כפתור 'הצג סיסמה' (§1א, קומיט b10bd05) מופיע בסנאפשוט של אותו מסך — גם הוא חי."
+  },
+
+  "not_done": {
+    "email_not_confirmed_live": "לא הודגם על החי — אין בפרויקט הזה (aypsqqvfohekxxuqsmrw) חשבון עם מייל לא-מאומת. הענף מכוסה בטסט בלבד (vitest 5/5 בקומיט ea695c2).",
+    "no_account_created": "לא נוצר שום חשבון ולא נשלחה שום הודעה — מצב טסט נשמר.",
+    "shared_module": "עותק חמישי של authErrors עדיין עומד בעינו; שיתוף דורש חיווט ל-packages/."
+  }
+}

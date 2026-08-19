@@ -1,0 +1,35 @@
+torah (01): six password fields the user could not read back, and an icon that vanished behind one of them
+
+priority §1א asks for a "show password" eye on every password field. The
+previous step closed the portal (one field). System 01 is the largest live
+public system and holds six: sign-in, sign-up, the two on invite activation,
+the legacy admin login and the Nedarim API password in portal settings.
+
+One shared PasswordInput instead of six local toggles — the type, the
+aria-pressed, the aria-label and the icon all derive from a single state, so
+the button cannot say "show" while the password is already visible.
+type="button" is explicit: every one of these fields sits inside a <form>, and
+a button with no type is a submit button. The toggle sits on the LEFT of the
+field: the page is RTL, and the right side is where the existing Mail/KeyRound
+icons already live.
+
+Sign-up also states its rule beside the field while typing instead of only as
+an error after submit, and the 6 is now one constant read by the label, the
+minLength and the submit check — three separate numbers is how a form ends up
+demanding something its message does not say.
+
+Found and fixed mid-step: PasswordInput wraps the field in a position:relative
+div that comes after AdminLogin's absolutely-positioned KeyRound icon in the
+DOM. Both sit at z-index auto, so the wrapper painted over the icon and it
+disappeared behind the field background — measured, not guessed
+(elementFromPoint at the icon centre returned the input, while the untouched
+Mail icon on the username field above it was still topmost). z-10 on the icon.
+The wrong state is kept as before-fix-key-icon-hidden.png.
+
+Verified in a browser against the real production bundle (vite preview, base
+/torah/): masked → eye, 4 chars unmet → bullet, 8 chars met → green check,
+click → type=text, aria-pressed=true, eye-off icon, URL unchanged and no toast,
+so it does not submit. Hit-tested; the field keeps 40px of padding on the
+toggle side so the password never runs under it.
+
+Evidence: QA/torah/password-toggle-0812/.

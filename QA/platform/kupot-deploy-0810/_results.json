@@ -1,0 +1,62 @@
+{
+  "measured_at": "2026-08-10T13:26Z",
+  "system": "kupot",
+  "mount": "https://more30.com/kupot",
+  "vercel_project": "kupot-more30",
+  "purpose": "Ship the source fix of commit 6551b75 (core.issues #154) to production. Everything up to the deploy call succeeded; the deploy itself was refused by the account quota, so production is unchanged.",
+  "method": "anonymous GET with a ?cb=<epoch> cache-buster (a bare URL right after a deploy can answer from cache), plus scripts/qa/system-facts.mjs kupot before and after",
+
+  "before": {
+    "live_bundle": "index-BlT4DUpe.js",
+    "system_facts": { "status": 200, "textLen": 3157, "links": 1, "forms": 0, "dark": "class", "auth": true, "credit": true, "consoleErrors": 0 },
+    "probes": [
+      { "url": "/kupot/?cb", "status": 200, "content_type": "text/html", "bytes": 4497, "verdict": "ok — the SPA shell, as expected" },
+      { "url": "/kupot/api/hf/meta?cb", "status": 200, "content_type": "text/html", "bytes": 4497, "verdict": "SPA shell — swallowed by the catch-all, not the API" },
+      { "url": "/kupot/api/switch-lead?cb", "status": 200, "content_type": "text/html", "bytes": 4497, "verdict": "SPA shell — swallowed by the catch-all, not the API" },
+      { "url": "/api/hf/meta?cb", "status": 200, "content_type": "application/json", "bytes": 1875, "verdict": "answers — the portal carries a hand-written /api/hf/:path* rewrite for exactly this route" },
+      { "url": "/api/switch-lead?cb", "status": 404, "content_type": "text/plain", "verdict": "the portal owns the root and has no rewrite for it" }
+    ],
+    "reading": "The two writes the page makes (SwitchFundDialog, SmartAdvisor) fail on JSON.parse of an HTML shell, not on a status code — a 200 that is not the API is the harder failure to see. /api/hf/* survives only because of the hand-written portal rewrite."
+  },
+
+  "index_html_vs_production": {
+    "compared": "apps/28-kupot-health-funds/dist/public/index.html against the live https://more30.com/kupot/",
+    "differences": [
+      "script src: index-BlT4DUpe.js (live) vs index-DbBm6hnF.js (new build) — the intended change",
+      "two <script src=\"//netfree.link/injection-script/...\"> tags present only on the wire — injected by the NetFree proxy on this machine, not served by Vercel"
+    ],
+    "verdict": "content-identical otherwise. No hand-patch lives only in the deployed copy, so staging the build over _deploy does not drop anything production carries — the check that deploy-copy-can-break-live-sites requires."
+  },
+
+  "staged": {
+    "kupot/": "mirrored from apps/28-kupot-health-funds/dist/public (built 13:36 local, base=/kupot/, absolute /kupot/assets/... refs confirmed)",
+    "kupot/assets/index-DbBm6hnF.js": 543483,
+    "kupot/assets/index-CqpVarLR.css": 71833,
+    "kupot/index.html": 4261,
+    "api/index.js": { "bytes": 1820578, "was": "1820572, built 28/07", "source": "apps/28-kupot-health-funds/api/index.js — a build artifact of script/build-vercel-fn.ts, carrying the API_PATH_PREFIX ?? \"/kupot\" default" },
+    "vercel.json": "already committed in 6551b75 — /kupot/api/(.*) now precedes the SPA catch-all",
+    "note": "_deploy/** is gitignored (.gitignore:43), so the staged bytes are not in this commit; only this artifact and the READMEs are."
+  },
+
+  "deploy_attempt": {
+    "command": "vercel deploy --prod --yes --scope l023131500-ops-projects (from _deploy/kupot-more30)",
+    "upload": "succeeded, 2.3MB",
+    "result": "error",
+    "reason": "deploy_failed",
+    "message": "Resource is limited - try again in 24 hours (more than 100, code: \"api-deployments-free-per-day\")",
+    "issue": "core.issues #83"
+  },
+
+  "after": {
+    "live_bundle": "index-BlT4DUpe.js",
+    "system_facts": { "status": 200, "textLen": 3157, "consoleErrors": 0 },
+    "verdict": "unchanged. The refusal happens after the upload but before the release, so nothing was promoted and nothing needs rolling back."
+  },
+
+  "rollback_target_if_a_future_deploy_breaks_it": "https://kupot-more30-aiwtncgj7-l023131500-ops-projects.vercel.app (production for the last 5 days) — npx vercel promote <url> --scope l023131500-ops-projects --yes",
+
+  "not_claimed": [
+    "That the fix works in production. It has not run there. What is proven is that the artifact is staged, that it matches production everywhere except the intended change, and that the deploy was refused for a reason that has nothing to do with the code.",
+    "That switch-lead works under POST. The probes are GET; a GET reaching the SPA shell already proves the routing failure, and sending a blind POST to a lead endpoint on a live system would write a row."
+  ]
+}

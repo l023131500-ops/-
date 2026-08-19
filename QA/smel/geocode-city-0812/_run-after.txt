@@ -1,0 +1,102 @@
+﻿PASS  יפו 30 ירושלים  ->  יפו 30 ירושלים  [city: ירושלים · locality: ירושלים (3000) · coords: yes]
+PASS  דיזנגוף 100 תל אביב  ->  דיזנגוף 100 תל אביב  [city: תל אביב · locality: תל אביב-יפו (5000) · coords: yes]
+PASS  הרצל 10 חיפה  ->  הרצל 10 חיפה  [city: חיפה · locality: חיפה (4000) · coords: yes]
+PASS  ויצמן 5 באר שבע  ->  ויצמן 5 באר שבע  [city: באר שבע · locality: באר שבע (9000) · coords: yes]
+PASS  בן גוריון 20 רמת גן  ->  בן גוריון 20 רמת גן  [city: רמת גן · locality: רמת גן (8600) · coords: yes]
+
+5 passed · 0 failed
+{
+  "measured_against": "https://www.govmap.gov.il/api/search-service/autocomplete",
+  "results": [
+    {
+      "typed": "יפו 30 ירושלים",
+      "typed_city": "ירושלים",
+      "why": "#158's own case — יפו is a street in both cities",
+      "matched_text": "יפו 30 ירושלים",
+      "matched_city": "ירושלים",
+      "matched_street": "יפו",
+      "address_id": "53576669",
+      "lat": 31.78077930221237,
+      "lon": 35.22182097720743,
+      "has_coords": true,
+      "locality_code": "3000",
+      "locality_name": "ירושלים",
+      "locality_source": "nadlan deal-info",
+      "city_matches_typed": true,
+      "locality_matches_typed": true,
+      "error": null
+    },
+    {
+      "typed": "דיזנגוף 100 תל אביב",
+      "typed_city": "תל אביב",
+      "why": "the control: already correct before the change",
+      "matched_text": "דיזנגוף 100 תל אביב",
+      "matched_city": "תל אביב",
+      "matched_street": "דיזנגוף",
+      "address_id": "53921561",
+      "lat": 32.079237805674936,
+      "lon": 34.77411728737624,
+      "has_coords": true,
+      "locality_code": "5000",
+      "locality_name": "תל אביב-יפו",
+      "locality_source": "nadlan deal-info",
+      "city_matches_typed": true,
+      "locality_matches_typed": true,
+      "error": null
+    },
+    {
+      "typed": "הרצל 10 חיפה",
+      "typed_city": "חיפה",
+      "why": "הרצל exists in dozens of cities",
+      "matched_text": "הרצל 10 חיפה",
+      "matched_city": "חיפה",
+      "matched_street": "הרצל",
+      "address_id": "70100928",
+      "lat": 32.812403578607096,
+      "lon": 34.99651765122888,
+      "has_coords": true,
+      "locality_code": "4000",
+      "locality_name": "חיפה",
+      "locality_source": "nadlan deal-info",
+      "city_matches_typed": true,
+      "locality_matches_typed": true,
+      "error": null
+    },
+    {
+      "typed": "ויצמן 5 באר שבע",
+      "typed_city": "באר שבע",
+      "why": "a city deal-info has no neighbourhood record for",
+      "matched_text": "ויצמן 5 באר שבע",
+      "matched_city": "באר שבע",
+      "matched_street": "ויצמן",
+      "address_id": "74467711",
+      "lat": 31.24706824044912,
+      "lon": 34.79519323942629,
+      "has_coords": true,
+      "locality_code": "9000",
+      "locality_name": "באר שבע",
+      "locality_source": "nadlan deal-info",
+      "city_matches_typed": true,
+      "locality_matches_typed": true,
+      "error": null
+    },
+    {
+      "typed": "בן גוריון 20 רמת גן",
+      "typed_city": "רמת גן",
+      "why": "a name shared with a boulevard in תל אביב",
+      "matched_text": "בן גוריון 20 רמת גן",
+      "matched_city": "רמת גן",
+      "matched_street": "בן גוריון",
+      "address_id": "72891626",
+      "lat": 32.093828571284604,
+      "lon": 34.8219290987883,
+      "has_coords": true,
+      "locality_code": "8600",
+      "locality_name": "רמת גן",
+      "locality_source": "nadlan deal-info",
+      "city_matches_typed": true,
+      "locality_matches_typed": true,
+      "error": null
+    }
+  ]
+}

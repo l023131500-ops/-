@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- מצב כהה (DESIGN_STANDARD §3): המערכת הזו **כהה מלכתחילה**. ה-‎:root‎
+         ב-‎src/index.css‎ הוא ערכה כהה מלאה (רקע ‎hsl(195 55% 8%)‎, זהב עתיק
+         על טורקיז) — זו זהות המותג שנבנתה מהלוגו, לא ברירת מחדל בהירה
+         ששכחו להחליף. לכן אין כאן שתי ערכות ואין מה להדליק; ‎color-scheme‎
+         מצהיר על כך כדי שגם פקדי הדפדפן (סרגלי גלילה, שדות טופס) ייצבעו
+         כהה במקום להישאר לבנים בתוך עמוד כהה. -->
+    <meta name="color-scheme" content="dark" />
+    <title>איגוד השיעורים — שיעורי תורה, חברותות והרצאות</title>
+    <!-- קופי (§6): «הפלטפורמה המובילה» הוא דירוג שאיש לא מדד, והוא ישב על
+         ארבעה משטחים (שלוש מטא כאן + manifest). מה שנשאר כאן הוא מה שהמוצר
+         באמת עושה, והסינונים הנקובים הם אלה שקיימים ב-LessonDirectory. -->
+    <meta name="description" content="מחברים בין מגידי שיעור ללומדים: שיעורי תורה, חברותות והרצאות. חיפוש לפי נושא, עיר, קהל יעד ושפה.">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#1a2332">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon-192.png">
+    <!-- סמל הלשונית (§6). לא הייתה כאן שום ‎<link rel="icon">‎, ולכן הדפדפן
+         נפל לברירת המחדל שלו — ‎/favicon.ico‎ על ה-origin, כלומר
+         ‎more30.com/favicon.ico‎ שהוא הסמל של הפורטל (805 בתים) ולא של
+         המערכת. ‎public/favicon.ico‎ שישב כאן מעולם לא נתבקש (איש לא הצביע
+         עליו, והדפדפן מבקש את השורש) והיה ממילא ברירת המחדל של הבנאי —
+         אותו קובץ בדיוק, ‎SHA256 dd821076…‎, ב-‎egod‎, ‎mthbram‎, ‎zchuyot‎
+         ו-‎galil‎. הוסר. במקומו שני הסמלים שה-‎manifest‎ כבר מכריז עליהם. -->
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png">
+    <meta name="author" content="איגוד השיעורים" />
+
+    <meta property="og:type" content="website" />
+    <!-- כרטיס השיתוף (§6). מה שישב כאן היה צילום מסך של **סביבת התצוגה
+         המקדימה של Lovable**, ‎id-preview-…lovable.app-1772990456848.png‎
+         מ-08/03/2026, על דלי ‎r2.dev‎ שאינו שלנו — כלומר לא ניתן להחליפה
+         ולא לרענן אותה, וכל שינוי קופי שנעשה כאן מאז אינו מגיע אליה.
+         במקומה ‎icon-512.png‎ מ-‎public/‎, אותו סמל שה-‎manifest‎ כבר מכריז
+         עליו. ריבועי ולכן ‎twitter:card=summary‎ ולא ‎summary_large_image‎. -->
+    <meta property="og:image" content="https://more30.com/mthbram/icon-512.png">
+
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:image" content="https://more30.com/mthbram/icon-512.png">
+    <meta property="og:title" content="איגוד השיעורים — שיעורי תורה, חברותות והרצאות">
+    <meta name="twitter:title" content="איגוד השיעורים — שיעורי תורה, חברותות והרצאות">
+    <meta property="og:description" content="מחברים בין מגידי שיעור ללומדים: שיעורי תורה, חברותות והרצאות. חיפוש לפי נושא, עיר, קהל יעד ושפה.">
+    <meta name="twitter:description" content="מחברים בין מגידי שיעור ללומדים: שיעורי תורה, חברותות והרצאות. חיפוש לפי נושא, עיר, קהל יעד ושפה.">
+</head>
+
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+    <!-- כפתור הכניסה המשותף של more30 (DESIGN_STANDARD §9). היה חסר כאן:
+         `scripts/qa/authbutton-overlap.mjs` דיווח "no pill" על ‎/mthbram‎
+         בשני הרוחבים, כלומר המערכת הייתה היחידה מלבד ‎/modaot‎ בלי כניסה
+         אחידה. חייב לשבת במקור ולא רק בעותק הפרוס — כל בנייה מחדש דורסת את
+         ‎index.html‎ שב-‎_deploy‎. -->
+    <script src="https://more30.com/auth-button.js" defer></script>
+  </body>
+</html>

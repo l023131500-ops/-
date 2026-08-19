@@ -1,0 +1,27 @@
+chatzor (16): the login screen answered in English, so an unconfirmed mail read as a typo
+
+signIn returned Supabase's error.message verbatim and AdminLogin printed it.
+In a Hebrew admin panel that meant "Email not confirmed", "Request rate limit
+reached" and "Failed to fetch" — three failures that need three different
+actions from the person at the keyboard, and none of which is "check your
+password", all shown in a language the panel never uses elsewhere.
+
+src/lib/authErrors.ts maps the four codes GoTrue actually returns here
+(email_not_confirmed, invalid_credentials, user_banned,
+over_request_rate_limit) plus status 429 and the status-0 AuthRetryableFetchError
+that has no code at all. An unrecognised code still shows its original text
+behind a Hebrew prefix rather than being swallowed by a generic line.
+
+This is the fourth copy of this module (01, 15, 22, now 16). Sharing it needs
+the apps wired to packages/, which none of them are, so it stays a copy and the
+debt is recorded rather than paid here.
+
+Verified against the real auth server, not a mock: test@more30.com with a wrong
+password -> POST /auth/v1/token 400 -> "האימייל או הסיסמה שגויים." on
+localhost:4187 and again on more30.com/chatzor/admin/login after the deploy.
+tsc --noEmit clean.
+
+The deployed index.html is prerendered (33KB against dist's 3KB), so it was
+regenerated with scripts/prerender-spa.mjs after mirroring dist, rather than
+hash-swapped by hand. The landing page still renders on the domain with no
+console errors.

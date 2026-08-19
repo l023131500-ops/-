@@ -1,0 +1,52 @@
+{
+  "system": "15 — egod (איגוד מגידי השיעורים)",
+  "priority": "§1א — כפתור הצג-סיסמה + הצגת דרישות הסיסמה",
+  "date": "2026-08-12",
+  "page": "https://more30.com/egod/login",
+  "deployment": "egod-more30-nhtk216ay (production, dpl_5iMFpBBWmc53nVzht5MXDwWm9fTC)",
+  "asset_live": "/egod/assets/index-BCt1cfS2.js",
+  "password_minimum_measured": {
+    "how": "POST https://hkkkynyoigzlttpynoeo.supabase.co/auth/v1/signup with a 4-char password",
+    "status": 422,
+    "body": "weak_password — \"Password should be at least 6 characters. Password is known to be weak and easy to guess, please choose a different one.\"",
+    "conclusion": "6 is the real enforced minimum; it is now the single constant PASSWORD_MIN_LENGTH behind the label, the minLength and the submit guard"
+  },
+  "toggle": {
+    "initial": { "type": "password", "aria-pressed": "false", "aria-label": "הצג סיסמה", "icon": "lucide-eye" },
+    "after_click": { "type": "text", "aria-pressed": "true", "aria-label": "הסתר סיסמה", "icon": "lucide-eye-off" },
+    "after_second_click": { "type": "password", "aria-pressed": "false", "aria-label": "הצג סיסמה", "icon": "lucide-eye" },
+    "button_type": "button",
+    "form_submitted_by_toggle": false,
+    "url_unchanged": true
+  },
+  "rule_display": {
+    "sign_in_mode": "not rendered (no rule applies to an existing password)",
+    "signup_empty": { "text": "לפחות 6 תווים", "color": "rgb(102, 116, 153) — muted" },
+    "signup_3_chars": { "text": "לפחות 6 תווים", "color": "rgb(102, 116, 153) — muted" },
+    "signup_6_chars": { "text": "✓ לפחות 6 תווים", "color": "rgb(196, 161, 79) — secondary/gold" },
+    "aria-describedby": "password-rule"
+  },
+  "short_password_blocked": {
+    "typed": "abc (3 chars)",
+    "result": "browser blocked submit — \"צריך להאריך את הטקסט הזה ל-6 תווים או יותר (כרגע הוא באורך 3 תווים)\"",
+    "auth_requests_fired": 0,
+    "note": "no user was created — nothing was ever submitted to the auth API"
+  },
+  "lock_icon_not_hidden": {
+    "risk": "PasswordInput wraps the field in a position:relative div that comes after the absolutely-positioned Lock icon in the DOM — the same trap that hid torah's KeyRound icon",
+    "check": "elementFromPoint at the Lock centre, after scrollIntoView",
+    "result": "topmost = true (hit the <rect> inside svg.lucide-lock); z-10 added to the icon",
+    "control": "svg.lucide-mail on the untouched email field is topmost too"
+  },
+  "screenshots": [
+    "signup-short-password.png — the eye on the left, the Lock on the right, the rule under the field",
+    "signup-minlength-blocked.png — 3 chars, the browser's own Hebrew length message",
+    "signup-revealed.png — revealed password, eye-off icon, ✓ rule in gold"
+  ],
+  "deploy_safety_check": {
+    "why": "the live bundle hash (index-y8vBmSHh.js) matched neither _deploy nor a fresh build",
+    "how": "downloaded the live bundle and compared its Hebrew string set against the fresh build's",
+    "result": "0 strings live-only; the fresh build differs from live by exactly the 5 new strings of this change — nothing live was lost",
+    "html": "live /egod/ was byte-identical to the _deploy copy apart from the asset hash and NetFree's injected scripts"
+  }
+}

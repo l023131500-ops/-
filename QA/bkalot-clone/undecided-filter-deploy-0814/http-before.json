@@ -1,0 +1,153 @@
+[
+  {
+    "url": "https://more30.com/bkalot-studio/admin",
+    "status": 200,
+    "label": "https://more30.com/bkalot-studio/admin",
+    "bytes": 91156,
+    "NEW": {
+      "control_html": 0,
+      "const_decided": 0,
+      "options_loop": 0,
+      "key_sent": 0,
+      "message": 0,
+      "grid": 0
+    },
+    "REMOVED": {
+      "lastfilters_old": 1
+    },
+    "OLD": {
+      "f_status": 1,
+      "f_kind": 1,
+      "f_q": 1,
+      "status_unknown": 1,
+      "kind_unknown": 1,
+      "row_bit": 1,
+      "case_bit": 1,
+      "submit": 1,
+      "grid_mobile": 1,
+      "base": 1
+    },
+    "TRAP": {
+      "lo_nirshma": 3,
+      "hachraa_yadanit": 1
+    },
+    "alefs": 983,
+    "replacement_chars": 0,
+    "double_encoded": 0,
+    "assets": []
+  },
+  {
+    "url": "https://more30.com/bkalot-studio/admin/",
+    "status": 200,
+    "label": "https://more30.com/bkalot-studio/admin/",
+    "bytes": 91156,
+    "NEW": {
+      "control_html": 0,
+      "const_decided": 0,
+      "options_loop": 0,
+      "key_sent": 0,
+      "message": 0,
+      "grid": 0
+    },
+    "REMOVED": {
+      "lastfilters_old": 1
+    },
+    "OLD": {
+      "f_status": 1,
+      "f_kind": 1,
+      "f_q": 1,
+      "status_unknown": 1,
+      "kind_unknown": 1,
+      "row_bit": 1,
+      "case_bit": 1,
+      "submit": 1,
+      "grid_mobile": 1,
+      "base": 1
+    },
+    "TRAP": {
+      "lo_nirshma": 3,
+      "hachraa_yadanit": 1
+    },
+    "alefs": 983,
+    "replacement_chars": 0,
+    "double_encoded": 0,
+    "assets": []
+  },
+  {
+    "url": "https://more30.com/bkalot-studio",
+    "status": 200,
+    "label": "https://more30.com/bkalot-studio",
+    "bytes": 32558,
+    "NEW": {
+      "control_html": 0,
+      "const_decided": 0,
+      "options_loop": 0,
+      "key_sent": 0,
+      "message": 0,
+      "grid": 0
+    },
+    "REMOVED": {
+      "lastfilters_old": 0
+    },
+    "OLD": {
+      "f_status": 0,
+      "f_kind": 0,
+      "f_q": 0,
+      "status_unknown": 0,
+      "kind_unknown": 0,
+      "row_bit": 0,
+      "case_bit": 0,
+      "submit": 0,
+      "grid_mobile": 0,
+      "base": 0
+    },
+    "TRAP": {
+      "lo_nirshma": 0,
+      "hachraa_yadanit": 0
+    },
+    "alefs": 327,
+    "replacement_chars": 0,
+    "double_encoded": 0,
+    "assets": []
+  },
+  {
+    "url": "https://more30.com/",
+    "status": 200,
+    "label": "https://more30.com/",
+    "bytes": 3517,
+    "NEW": {
+      "control_html": 0,
+      "const_decided": 0,
+      "options_loop": 0,
+      "key_sent": 0,
+      "message": 0,
+      "grid": 0
+    },
+    "REMOVED": {
+      "lastfilters_old": 0
+    },
+    "OLD": {
+      "f_status": 0,
+      "f_kind": 0,
+      "f_q": 0,
+      "status_unknown": 0,
+      "kind_unknown": 0,
+      "row_bit": 0,
+      "case_bit": 0,
+      "submit": 0,
+      "grid_mobile": 0,
+      "base": 0
+    },
+    "TRAP": {
+      "lo_nirshma": 0,
+      "hachraa_yadanit": 0
+    },
+    "alefs": 23,
+    "replacement_chars": 0,
+    "double_encoded": 0,
+    "assets": [
+      "/assets/index-C2AHwa-z.js",
+      "/assets/index-B35ByRD-.css"
+    ]
+  }
+]

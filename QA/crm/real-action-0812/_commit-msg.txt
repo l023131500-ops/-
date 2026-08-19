@@ -1,0 +1,65 @@
+§8ב: a real business action performed inside 30 and 31 — and 31's vault loses the document in silence
+
+Open line (3) from the previous heartbeat, unchanged for four beats: the
+10:25 step measured where the customer LANDS after login on 21/30/31 and
+recorded in writing that it had not measured the rest of §8ב — "לא בוצעה
+פעולה עסקית אמיתית ... נמדדה הנחיתה, לא 'פעולה אמיתית עובדת'". One real
+action was performed in each of the two systems that have a customer
+login, as the §1ב test user, in a browser against more30.com.
+
+The result splits.
+
+30 crm PASSES end to end. /crm/clients/new → "צור לקוח" creates file
+2026-000001 with 11 live tabs, navigates to the client's own record,
+survives a fresh navigation, moves the list counters from 0 to
+1/0/1/1, and shows up on the dashboard as "לקוחות חדשים החודש 1" plus
+an activity-feed line "לקוח חדש נוסף · בדיקת QA 12/08 · עכשיו". The
+database was empty before it. §8ב closes on 30.
+
+31 gesher FAILS, and the failure is invisible from the screen. Of the
+three customer surfaces, /gesher/client/consents is a "בקרוב"
+placeholder with no action in it and /gesher/client/status is read-only,
+so the vault upload is the only real action. Uploading a 2188-byte PDF
+resets the description field and leaves "עדיין לא הועלו מסמכים" — no
+error, no toast, zero console errors, unchanged after a full reload.
+
+The network says the opposite of the screen. The storage POST returns
+200 and the file really is uploaded; appendUploadedDocument returns 200
+with ok:true and the complete record; and getClientDashboard, fetched
+in the same second, returns uploadedDocuments: [].
+
+Root cause, client.functions.ts:131 — the write goes to
+client_profiles.uploaded_documents AS THE CLIENT, and client_profiles
+has RLS with only "Clients read own client profile" (SELECT) and an
+admin-only FOR ALL policy. There is no policy letting a client UPDATE
+their own row, so RLS filters the UPDATE to zero rows — and an UPDATE
+affecting zero rows is not an error in PostgREST. `if (upErr) throw`
+never fires; the handler reports success for a write that did not
+happen. The column-level GRANT UPDATE (uploaded_documents) from
+migration 20260605003212 is what makes this look correct on inspection:
+a GRANT is not an RLS policy.
+
+The right table already exists and is unused. Migration 20260610185015
+created public.documents with `doc_all FOR ALL USING/WITH CHECK
+owner_client_id = auth.uid()` — which a client does pass — and even
+backfilled the old jsonb "kept for one release". All three server
+functions stayed on the old column.
+
+NOT FIXED IN THIS STEP, deliberately: moving the three functions onto
+public.documents plus a build and deploy of 31 does not fit one step.
+Logged as core.issues #173 (high, open) with the fix written out,
+including the .select() + zero-row check so a blocked write can never
+again report ok:true.
+
+Not measured, and recorded as such: public.documents was never queried
+directly — project ygaqqnuyfnumezxxmtbh is not reachable via MCP from
+here and there is no SUPABASE_ACCESS_TOKEN, so the root cause rests on
+source, migrations and three response bodies. The uploaded file is
+stuck in storage with no UI able to list or delete it. The QA client on
+30 was left in place, marked deletable in its own notes.
+
+Test mode: no user created, no message sent, no charge. Nothing
+deployed. The protected systems (08, 09, bkalut-app, bkalot-admin,
+zr_*, NEDARIM3873) were not targets, and csj/csj_src/igud were not used.
+
+Evidence: QA/crm/real-action-0812/ — README.md, _results.json, 9 screenshots.

@@ -1,0 +1,183 @@
+{
+  "tamlul": {
+    "url": "https://more30.com/tamlul",
+    "measuredAt": "2026-08-17T17:06:04.173Z",
+    "performance": 95,
+    "accessibility": 100,
+    "bestPractices": 77,
+    "seo": 100,
+    "metrics": {
+      "fcp": "1.7 s",
+      "lcp": "2.2 s",
+      "tbt": "180 ms",
+      "cls": "0",
+      "si": "3.2 s"
+    },
+    "failedAudits": [
+      {
+        "id": "max-potential-fid",
+        "title": "Max Potential First Input Delay",
+        "score": 0.83,
+        "display": "150 ms"
+      },
+      {
+        "id": "interactive",
+        "title": "Time to Interactive",
+        "score": 0.74,
+        "display": "5.2 s"
+      },
+      {
+        "id": "third-party-cookies",
+        "title": "Uses third-party cookies",
+        "score": 0,
+        "display": "2 cookies found"
+      },
+      {
+        "id": "mainthread-work-breakdown",
+        "title": "Minimize main-thread work",
+        "score": 0,
+        "display": "2.3 s"
+      },
+      {
+        "id": "unminified-javascript",
+        "title": "Minify JavaScript",
+        "score": 0.5,
+        "display": "Est savings of 6 KiB"
+      },
+      {
+        "id": "unused-javascript",
+        "title": "Reduce unused JavaScript",
+        "score": 0.5,
+        "display": "Est savings of 69 KiB"
+      },
+      {
+        "id": "inspector-issues",
+        "title": "Issues were logged in the `Issues` panel in Chrome Devtools",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "cache-insight",
+        "title": "Use efficient cache lifetimes",
+        "score": 0.5,
+        "display": "Est savings of 1,226 KiB"
+      },
+      {
+        "id": "document-latency-insight",
+        "title": "Document request latency",
+        "score": 0.5,
+        "display": "Est savings of 18 KiB"
+      },
+      {
+        "id": "font-display-insight",
+        "title": "Font display",
+        "score": 0,
+        "display": "Est savings of 1,880 ms"
+      },
+      {
+        "id": "legacy-javascript-insight",
+        "title": "Legacy JavaScript",
+        "score": 0.5,
+        "display": "Est savings of 12 KiB"
+      },
+      {
+        "id": "modern-http-insight",
+        "title": "Modern HTTP",
+        "score": 0,
+        "display": "Est savings of 680 ms"
+      },
+      {
+        "id": "network-dependency-tree-insight",
+        "title": "Network dependency tree",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "render-blocking-insight",
+        "title": "Render-blocking requests",
+        "score": 0,
+        "display": "Est savings of 220 ms"
+      }
+    ],
+    "mainThreadBreakdown": [
+      {
+        "group": "Other",
+        "duration": 706
+      },
+      {
+        "group": "Script Evaluation",
+        "duration": 667
+      },
+      {
+        "group": "Style & Layout",
+        "duration": 642
+      },
+      {
+        "group": "Script Parsing & Compilation",
+        "duration": 210
+      },
+      {
+        "group": "Parse HTML & CSS",
+        "duration": 53
+      },
+      {
+        "group": "Garbage Collection",
+        "duration": 31
+      },
+      {
+        "group": "Rendering",
+        "duration": 30
+      }
+    ],
+    "bootupTime": [
+      {
+        "url": "https://more30.com/tamlul",
+        "total": 744,
+        "scripting": 57,
+        "scriptParseCompile": 31
+      },
+      {
+        "url": "Unattributable",
+        "total": 592,
+        "scripting": 22,
+        "scriptParseCompile": 0
+      },
+      {
+        "url": "https://more30.com/tamlul/_next/static/chunks/117-ba4d5e303bc8bcbd.js?dpl=dpl_Dt7kPw5DwwGkgSW6YGVtkQT7oV5m",
+        "total": 215,
+        "scripting": 172,
+        "scriptParseCompile": 32
+      },
+      {
+        "url": "https://more30.com/tamlul/_next/static/chunks/fd9d1056-9f91b5e418130764.js?dpl=dpl_Dt7kPw5DwwGkgSW6YGVtkQT7oV5m",
+        "total": 164,
+        "scripting": 141,
+        "scriptParseCompile": 22
+      },
+      {
+        "url": "https://more30.com/auth-button.js",
+        "total": 141,
+        "scripting": 29,
+        "scriptParseCompile": 12
+      },
+      {
+        "url": "https://more30.com/tamlul/_next/static/chunks/209-929ec74a91e65680.js?dpl=dpl_Dt7kPw5DwwGkgSW6YGVtkQT7oV5m",
+        "total": 121,
+        "scripting": 51,
+        "scriptParseCompile": 69
+      },
+      {
+        "url": "https://more30.com/tamlul/_next/static/chunks/webpack-7699e8985cf58a63.js?dpl=dpl_Dt7kPw5DwwGkgSW6YGVtkQT7oV5m",
+        "total": 103,
+        "scripting": 80,
+        "scriptParseCompile": 4
+      },
+      {
+        "url": "https://netfree.link/card/card-injection.js",
+        "total": 82,
+        "scripting": 53,
+        "scriptParseCompile": 5
+      }
+    ]
+  }
+}

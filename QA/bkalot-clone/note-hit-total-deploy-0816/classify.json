@@ -1,0 +1,228 @@
+{
+  "src": {
+    "path": "C:/Users/USER/Downloads/more30/apps/37-bkalot-clone/admin.html",
+    "bytes": 188257,
+    "md5": "47C25DBD"
+  },
+  "dist": {
+    "path": "C:/Users/USER/Downloads/more30/portal/dist/bkalot-studio/admin.html",
+    "bytes": 185393,
+    "md5": "4B887ECA"
+  },
+  "groups": {
+    "NEW": [
+      {
+        "key": "total_read",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "hits_expr",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "guard_total_ge_hit",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "countHe_total",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "text_paren_open",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "text_plus_hits",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "title_new_clause",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "title_plural",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "cmt_head",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "cmt_gap",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "cmt_d6",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "cmt_d7",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "cmt_d8",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "cmt_d9",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "phr_note_hit_total",
+        "src": 2,
+        "dist": 0
+      }
+    ],
+    "REMOVED": [
+      {
+        "key": "old_textContent",
+        "src": 0,
+        "dist": 1
+      },
+      {
+        "key": "old_title_clause",
+        "src": 0,
+        "dist": 1
+      },
+      {
+        "key": "old_title_single",
+        "src": 0,
+        "dist": 1
+      }
+    ],
+    "DIFF": [
+      {
+        "key": "cmt_four_more",
+        "src": 2,
+        "dist": 1
+      },
+      {
+        "key": "phr_countHe",
+        "src": 11,
+        "dist": 10
+      },
+      {
+        "key": "phr_hasOwn",
+        "src": 25,
+        "dist": 23
+      }
+    ],
+    "CONTROL": [
+      {
+        "key": "ctl_fn_decl",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "ctl_hasown_guard",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "ctl_hit_read",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "ctl_notes_read",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "ctl_null_guard",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "ctl_zero_hit",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "ctl_stale_cls",
+        "src": 22,
+        "dist": 22
+      },
+      {
+        "key": "ctl_single_note",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "ctl_denominator",
+        "src": 2,
+        "dist": 2
+      },
+      {
+        "key": "ctl_open_case",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "ctl_matched_bit",
+        "src": 6,
+        "dist": 6
+      },
+      {
+        "key": "ctl_fillNoteText",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "ctl_title_many",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "ctl_mark_hit_css",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "ctl_queue_phrase",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "ctl_clamp_note",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "ctl_empty_box",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "ctl_stale_span",
+        "src": 3,
+        "dist": 3
+      },
+      {
+        "key": "phr_note_match_count",
+        "src": 3,
+        "dist": 3
+      },
+      {
+        "key": "phr_noteTallyBit",
+        "src": 3,
+        "dist": 3
+      }
+    ],
+    "DEAD": []
+  }
+}

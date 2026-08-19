@@ -1,0 +1,9 @@
+﻿signed in as test@more30.com (sub=78600fbc-3fd3-4f02-8552-e93ab6559649), day=2026-08-12
+marks before : user=0 all=0
+generate-1: status=200 ms=47699 body={"title":"סימני הסתיו — בואו נבדוק מה מתחדש בחוץ!","ageGroup":"טרום־חובה (3–5)","instructions":"מורה/גננת יקרה: פתחו את הפעילות בשיחה קצרה בגובה עיני הילד — 'הק
+marks after  : user=1 all=1
+seeding 19 marks to reach the per-account cap (20)
+marks at cap : user=20 all=20
+over-cap  : status=429 ms=1921 body={"error":"הגעת למכסת היצירה היומית (20 דפים ליום לחשבון). המכסה מתחדשת מדי יום — והדפים שכבר יצרת נשארים אצלך.","quotaExceeded":true}
+anonymous : status=401 ms=452 body={"error":"כדי ליצור דף משימה יש להתחבר לחשבון more30. הצפייה במדף ובמערכי השיעור נשארת פתוחה לכולן.","authRequired":true}
+marks end    : user=20 all=20   # סירוב אינו נספר

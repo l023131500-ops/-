@@ -1,0 +1,42 @@
+01 torah: the matcher spent our AI credit for anyone holding the anon key (#192)
+
+The remaining satellite Supabase projects had never been asked the question the
+mthbram / zchuyot / lux-manage sweeps asked. Only one of them still has edge
+functions in the repo — 01 torah-platform, on bieebmnmkffwbqlsfozh — and it has
+six. Five answer correctly. One did not.
+
+Measured before touching anything, no apikey and no Authorization at all:
+activate-invite 404 (not deployed), admin-users 401 from its own gate,
+nedarim-admin 401, nedarim-create-payment 400 from its own validation (it is the
+public donation form and is meant to be open), nedarim-webhook probed by OPTIONS
+only — a POST there with a non-Nedarim IP inserts a rejected_ip row into a live
+table, so it was never sent.
+
+ai-match-teacher answered 401 UNAUTHORIZED_NO_AUTH_HEADER, which looks closed and
+is not. Its only gate is verify_jwt, and the anon key is a valid JWT shipped to
+every browser: the same POST carrying the public anon key returned
+400 missing lead_id — the handler ran. From there any lead_id that exists sends a
+Lovable AI gateway call on LOVABLE_API_KEY, with no reader check and no ceiling.
+Gating it behind an account was not available: FindLesson.tsx is a public page.
+
+Same fix as #165/#190 — public.ai_rate_limit_hit and 20 requests per hour per IP,
+evaluated before the lead lookup so a blocked request costs nothing, failing open
+on a counter error so the live search cannot be taken down by it.
+
+Deployed and verified in production (version 2, verify_jwt preserved): requests 1
+through 20 returned 404 lead not found — the cap passed, the lead did not exist,
+the gateway was never reached — and 21 and 22 returned 429. A caller with no key
+still gets 401. The lead_id used throughout is a well-formed uuid that does not
+exist, so no AI credit was spent proving this.
+
+The deploy path is the finding that outlives this fix (#193). NEEDS_USER 0ת says
+csjekrvukbdznetsrodj is not reachable from here and asks you to decide, on the
+strength of MCP list_projects returning one project. The SUPABASE_ACCESS_TOKEN
+already in core.secrets returns ten, including that one and this one — and this
+commit is the proof it works end to end: migration applied and function deployed
+through the Management API. #158 (smel, geo.ts written and verified two days ago)
+therefore is not blocked either.
+
+Additive only, and deliberately so: bieebmnmkffwbqlsfozh also carries zr-loader
+and zr-admin-api. Nothing existing was altered — one new table, one new function,
+one function slug redeployed. Protected systems untouched, test mode, real data.

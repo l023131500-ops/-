@@ -1,0 +1,35 @@
+{
+  "step": "gannenet (40) — /newsletter said the letter was ready to send and offered no way to take it anywhere; and it would write one out of nothing",
+  "date": "2026-08-11",
+  "system": 40,
+  "files": ["apps/40-gannenet/app/newsletter/page.tsx"],
+  "why_this_surface": "The previous step (claims-truth-0811) closed everything it opened except a product decision, which is in NEEDS_USER.md. Its evidence named /newsletter as the page behind two removed claims: it 'has two text inputs and one button that sets state; it renders the draft into a <div> — no image field, no send, not even a copy button'. That is the surface no step had read.",
+  "defects": [
+    {
+      "what": "the letter could be built out of nothing",
+      "detail": "build() ran unconditionally. With the topics box empty, `list` is [] and `list.map(...).join('\\n')` is the empty string, so the page rendered a complete letter home to parents whose body reads 'בשבוע המבורך שחלף עסקנו יחד בנושאים חשובים ומרתקים:' followed by no topic at all, signed 'צוות הגן'.",
+      "measured": "the exact old expression evaluated in the page with list=[] produces a 177-character letter that still contains 'עסקנו יחד בנושאים חשובים ומרתקים:'",
+      "fix": "with no topic the page now shows an inline role=alert ('כתבי לפחות נושא אחד — שורה לכל נושא.') and renders no letter"
+    },
+    {
+      "what": "'מוכן לשליחה' with nothing that could send or even copy",
+      "detail": "the output was a plain <div> with white-space:pre-wrap. On a phone — where a gannenet writes this — getting the text out means a long-press selection across a multi-line block. The subtitle promised it was ready to send.",
+      "fix": "an 'העתקת הטקסט' button beside the letter, and the subtitle now says what the page does: 'מוכנה להעתקה ולשליחה בכל אמצעי'. No send path was added — nothing here sends, per test mode."
+    }
+  ],
+  "clipboard_paths_verified": {
+    "secure_context_api": "navigator.clipboard.writeText spied on in the real page: receives 222 chars, head 'להורים היקרים, שלום וברכה!', tail 'צוות גן אורות', 3 bullets, and === the rendered letter's innerText. Status: 'הועתק — אפשר להדביק בוואטסאפ, במייל או בכל מקום אחר'",
+    "no_api_fallback": "navigator.clipboard forced undefined (the plain-http LAN case, where the property is simply absent): document.execCommand('copy') is called and returns true; same success status",
+    "rejected": "writeText forced to throw NotAllowedError: status 'ההעתקה נחסמה בדפדפן — סמני את הטקסט והעתיקי ידנית' — the letter stays on screen to be selected by hand"
+  },
+  "verification": {
+    "typecheck": "npx tsc --noEmit → 0 errors",
+    "build": "APP_BASE_PATH=/gannenet npx next build → ✓ 65 pages, /newsletter 1.6 kB / 88.9 kB first load",
+    "server": "next start :3045, production build",
+    "browser": "empty-topics guard shows the alert and no letter; three topics + gan name render the letter with 3 bullets and 'צוות גן אורות'",
+    "console": "0 errors (1 pre-existing warning: apple-mobile-web-app-capable deprecation, from layout.tsx)",
+    "screenshots": ["after-letter.png", "after-empty-guard.png"]
+  },
+  "not_done": "navigator.clipboard.readText() was not used to read the clipboard back — called once in this run it hung the page for the full tool timeout waiting on a permission prompt that never appeared in headless Chromium. The write side is verified by capturing the exact argument instead, which is the same assertion without the prompt.",
+  "open": "The page still takes no image (the removed pricing claim named 'שילוב תמונות' beside WhatsApp) and has no template other than the one hardcoded paragraph — both are product decisions rather than defects, and §0 holds feature work until #40 is mounted."
+}

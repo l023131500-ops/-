@@ -1,0 +1,24 @@
+21 Mthbram: Lighthouse נמדד לראשונה (perf 45, a11y 90→100) + תוקנו 2 ליקויי נגישות אמיתיים + תוקן build שבור
+
+המשך ישיר לסבב 17/08 (fix/nadlan-a11y, אחרי 02/04/06/10/12/14/15/16/17/18/22/26/28/32/34).
+node scripts/qa/lighthouse-run.mjs QA/platform/mthbram-lh-0817 mthbram מול
+https://more30.com/mthbram החי - ציון ראשון אי-פעם למערכת הזו.
+
+ליקויים אמיתיים שתוקנו:
+- color-contrast (score 0, ratio 1.08): tailwind.config.ts לא הגדיר בכלל את
+  הצבע gold-cream בתוך extend.colors, כך שכל class בשם text-gold-cream* היה
+  no-op שקט - טקסט הפוטר (כולל טלפון) נצבע כמו הרקע שלו עצמו. הוספת cream
+  לקבוצת gold פתרה את זה לרוחב כל האתר, לא רק לשורה אחת.
+- landmark-one-main: ל-Index.tsx לא היה <main> - עטפתי את תוכן הגוף.
+
+בנוסף תוקן, כי הוא חסם כל build מחדש (לא קשור לנגישות): שלושה עמודים
+(StudyDayUpload.tsx, BulkUpload.tsx, SynagoguePortal.tsx) ייבאו
+src/assets/agud-logo.png שלא קיים בדיסק, מה שהפיל את vite build. הפניתי
+את שלושתם ל-agud-logo-mark.jpg הכבר-קיים (אותו קובץ ש-BrandLogo.tsx כבר
+משתמש בו).
+
+נבנה, robocopy ל-_deploy/mthbram-more30/mthbram, נפרס ל-production דרך
+vercel CLI, אומת עם cache-buster שה-bundle החדש חי, ונמדד מחדש - a11y 100.
+פרפורמנס (45) מתחת לסף 90, לא נחקר בצעד הזה.
+
+QA/platform/mthbram-lh-0817/

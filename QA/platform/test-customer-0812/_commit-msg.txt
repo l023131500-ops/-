@@ -1,0 +1,46 @@
+test customer (§1ב): the account the user is meant to test with did not exist anywhere
+
+§1ב names test@more30.com / More30Test2026 as the client account that must exist
+in every system, and LOGINS.md as the file that records every login. Neither
+existed: auth.users on the hub project held 94 rows and none of them was that
+address, and there is no LOGINS.md in the repository. The credentials had been
+written into core.secrets and never turned into an account.
+
+Created it the way a visitor creates one -- the public signup endpoint with the
+same anon key each site already ships to the browser, never a service key -- on
+all nine Supabase projects the live systems authenticate against. 08 is
+protected and is deliberately absent from the list.
+
+Eight of the nine now sign in with the documented password. That is also the
+§1א check ("register -> log out -> log in with the same details") on eight
+projects at once: the hub answered 200 immediately, and a wrong password on the
+same account is refused, so register and login are not disagreeing about the
+hash there.
+
+The eight needed their mail confirmed, and this is the part worth carrying:
+test@more30.com is a real mailbox routed to Resend. The seven confirmation mails
+were readable from here, and opening each verify link confirmed the account --
+no console, no webmail, nothing waiting on the user. Two of the redirect targets
+answer 418 (NetFree blocks *.lovable.app), but the token in the redirect proves
+the verification already happened server-side.
+
+22 (zchuyot) is the one that stayed shut, and the reason is specific: signup
+answered user_already_exists, so the account was created in an earlier run and
+never confirmed -- which means there is no fresh confirmation mail to open.
+/auth/v1/resend answered 200 and nothing arrived during the run. Written to
+NEEDS_USER as 0ש with both exits: the next run re-reads the inbox, and only if
+it is still empty does it need the user's Supabase console.
+
+Membership, not just an account. more30_join_app -- the same RPC auth-button.js
+calls on entering a site -- was run for all 26 systems, and each returned
+created=true with role=member. Plan is free on every one, which is correct:
+billing is in test mode and this user has no paid subscription.
+
+LOGINS.md is new and is the file §1ב asks for. It separates what was verified
+from what was not rather than presenting the standard as fact: admin /
+More30Admin2026 is confirmed live only on 35, and the file says so, alongside
+the systems that do not use it at all (40 uses a random key in a header, 28 is
+token-only, five route their admin through the hub).
+
+Evidence: QA/platform/test-customer-0812/ (_results.json, _projects.json,
+_logins.json, and the three scripts, which are idempotent and can be re-run).

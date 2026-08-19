@@ -1,0 +1,62 @@
+{
+  "step": "0095 — a case can be rejected and never say why",
+  "system": "37 bkalot-clone (שכפול בקלות) — שכבה 3",
+  "date": "2026-08-16",
+  "project_ref": "uhnrgujbdxhhmoxcjria",
+  "function": "public.bkalot_clone_admin_set_status(p jsonb, p_admin_id bigint)",
+  "measured_over": "SQL (המערכת עצמה, לא מהדפדפן — המסך עוד אינו מכיר note_required)",
+  "admin_id": 4,
+
+  "before": {
+    "case_id": 362,
+    "contact_id": 369,
+    "rights_linked": 42,
+    "call": "set_status({case_id:362, status:'rejected'}, 4)  — בלי מפתח note",
+    "result": {
+      "ok": true,
+      "changed": true,
+      "previous": "new",
+      "status": "rejected",
+      "log_id": 73,
+      "note": null,
+      "decided_by": 4,
+      "decided_at": "2026-08-16T11:34:29.992925+00:00"
+    },
+    "verdict": "פנייה נדחתה, שורת היומן נכתבה, והנימוק ריק — ואין מי ששואל"
+  },
+
+  "after": {
+    "cases_created": [
+      { "case_id": 363, "contact_id": 370, "rights_linked": 42 },
+      { "case_id": 364, "contact_id": 371, "rights_linked": 42 }
+    ],
+    "checks": [
+      { "n": 1, "call": "363 rejected, no note key", "result": { "ok": false, "error": "note_required", "status": "rejected" } },
+      { "n": 2, "call": "363 rejected, note '   '", "result": { "ok": false, "error": "note_required", "status": "rejected" } },
+      { "n": 3, "call": "read case 363 after 1+2", "result": { "status": "new", "decided_at": null, "decided_by": null, "log_rows": 0 }, "role": "השער לא נגע בפנייה" },
+      { "n": 4, "call": "363 rejected + נימוק אמיתי", "result": { "ok": true, "changed": true, "log_id": 74, "note": "הפונה אינו עומד בתנאי הסף — ההכנסה מעל התקרה.", "decided_by": 4 } },
+      { "n": 5, "call": "363 rejected שוב, בלי note", "result": { "ok": true, "changed": false, "log_id": null, "previous": "rejected" }, "role": "אין מעבר — אין דרישה" },
+      { "n": 6, "call": "364 closed, בלי note", "result": { "ok": true, "changed": true, "log_id": 75 }, "role": "בקרה" },
+      { "n": 7, "call": "364 in_progress, בלי note", "result": { "ok": true, "changed": true, "log_id": 76 }, "role": "בקרה" },
+      { "n": 8, "call": "364 rejected, p_admin_id null", "result": { "ok": false, "error": "decider_required" }, "role": "הזהות עונה לפני הנימוק" },
+      { "n": 9, "call": "999999999 rejected", "result": { "ok": false, "error": "case_not_found", "case_id": 999999999 }, "role": "הפנייה עונה לפני הנימוק" },
+      { "n": 10, "call": "364 rejected + note בן 501 תווים", "result": { "ok": false, "error": "note_too_long", "chars": 501, "max_chars": 500 }, "role": "פסול הערך עונה ראשון" },
+      { "n": 11, "call": "read case 364 after 8+9+10", "result": { "status": "in_progress", "log_rows": 2, "decided_at": "2026-08-16T11:38:18.293592+00:00" }, "role": "שלושת השערים לא נגעו בפנייה" }
+    ]
+  },
+
+  "rollback": {
+    "deleted": ["case_status_log 363,364", "case_rights 363,364", "documents 363,364", "cases 363,364", "contacts 370,371", "וכן case 362 / contact 369 של מדידת ה-before"],
+    "counts_after": {
+      "cases": 0, "case_status_log": 0, "case_rights": 0, "documents": 0,
+      "contacts": 4, "outbound_queue": 8, "delivery_log": 3,
+      "admin_users": 1, "rights_catalog": 888
+    },
+    "matches_baseline": true
+  },
+
+  "not_built": "המסך. תיבת «למה» ב-admin.html מסומנת «(לא חובה)» ומפת ההודעות שם אינה מכירה note_required — מי שילחץ «דחייה» בלי נימוק יראה קוד באנגלית. זה הקו הפתוח לצעד הבא.",
+
+  "protected_untouched": ["08 bkalut-app", "09 bkalot-admin", "zr_*", "NEDARIM3873", "csj", "csj_src", "igud"],
+  "deploy": "אין. אין שינוי ב-apps/37; bkalot-clone-admin נשארת v8, bkalot-clone-intake v1."
+}

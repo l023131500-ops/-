@@ -1,0 +1,8 @@
+﻿anonymous : status=401 ms=1921 body={"error":"כדי ליצור דף משימה יש להתחבר לחשבון more30. הצפייה במדף ובמערכי השיעור נשארת פתוחה לכולן.","authRequired":true}
+signed in as test@more30.com (sub=78600fbc-3fd3-4f02-8552-e93ab6559649), day=2026-08-12
+marks now    : user=20  seeded=19
+quota-full: status=200 ms=1442 body={"quota":{"capUser":20,"usedUser":20,"remainingUser":0,"capAll":200,"usedAll":20,"remainingAll":180}}
+deleted 19 seeded QA marks
+marks after  : user=1   # real generations only
+quota-real: status=200 ms=2042 body={"quota":{"capUser":20,"usedUser":1,"remainingUser":19,"capAll":200,"usedAll":1,"remainingAll":199}}
+token-for-browser=<scrubbed — access token, not committed>

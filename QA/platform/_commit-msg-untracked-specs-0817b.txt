@@ -1,0 +1,16 @@
+תחזוקה: הוסף לגיט 4 מסמכי מפרט שהיו קיימים רק בעץ העבודה
+
+MASTER_PLAN.md, NADLAN_EXPANSION_SPEC.md, GANNENET_BUILD.md, KIOSK_BUILD.md —
+כולם מסמכי מפרט אמיתיים המאוזכרים ממסמכים שכבר בגיט (NEEDS_USER.md §6
+מציין ש-MASTER_PLAN.md "יושב ב-Downloads בלבד"; NIGHT_PROGRESS.md מפנה ל-
+NADLAN_EXPANSION_SPEC.md; apps/40-gannenet/STATUS.md מפנה ל-GANNENET_BUILD.md
+§1ה; apps/35-kioskfleet/STATUS.md מפנה ל-KIOSK_BUILD.md §2). היו untracked
+עד עכשיו ולכן חשופים לאובדן.
+
+לא נכלל KIOSK_BUILD.md.md (עותק כפול בשם שגוי, אותו גודל בדיוק — 21016
+בייט — לא מאוזכר משום קובץ, נראה תוצר תקלת שמירה. לא נגעתי בו).
+לא נכלל KIOSK_INSTALL_GUIDE.md / EVENTS_BUILD.md — לא נמצא אזכור שלהם
+מקובץ אחר שכבר בגיט, ולכן לא אושרו כ"נדרשים" לפי אותו קריטריון.
+
+אין שינוי קוד, אין פריסה — תחזוקת גיט בלבד. מוגן: לא נגעתי ב-
+08/09/bkalut-app/bkalot-admin/zr_*/NEDARIM3873.

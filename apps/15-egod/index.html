@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light dark" />
+    <!-- מצב כהה (DESIGN_STANDARD §3). טוקני ‎.dark‎ נוספו ב-‎src/index.css‎;
+         השורות האלה הן מי שמדליק אותם. הן יושבות בתוך ה-‎<head>‎ ורצות לפני
+         הציור הראשון, ולכן אין הבזק לבן — בניגוד להחלה מתוך React, שרצה רק
+         אחרי שהעמוד כבר צויר בהיר. -->
+    <script>
+      (function () {
+        var mq = window.matchMedia("(prefers-color-scheme: dark)");
+        var apply = function (dark) {
+          document.documentElement.classList.toggle("dark", dark);
+        };
+        apply(mq.matches);
+        mq.addEventListener
+          ? mq.addEventListener("change", function (e) { apply(e.matches); })
+          : mq.addListener(function (e) { apply(e.matches); });
+      })();
+    </script>
+    <title>איגוד השיעורים — פורטל מגידי השיעורים</title>
+    <meta name="description" content="דף לכל שיעור עם נושא, זמנים ומיקום, ניהול משתתפים וחומרי עזר — למגידי שיעורים.">
+    <meta name="author" content="איגוד השיעורים" />
+
+    <meta property="og:type" content="website" />
+    <!-- כרטיס השיתוף (§6). ישב כאן צילום מסך של **סביבת התצוגה המקדימה של
+         Lovable**, ‎id-preview-…lovable.app-1777595828138.png‎ מ-01/05/2026,
+         על דלי ‎r2.dev‎ שאינו שלנו. הוסר ולא הוחלף: בניגוד ל-‎galil‎
+         ול-‎mthbram‎, ל-‎egod‎ **אין שום תמונה משלה** — ‎public/‎ מחזיקה
+         ‎favicon.ico‎ (ברירת המחדל של הבנאי, אותו SHA256 בארבע מערכות)
+         ו-‎placeholder.svg‎ בלבד. הצבעה על אחת מהן הייתה מחליפה חתימת-בנאי
+         בחתימת-בנאי. בלי ‎og:image‎ הקישור מוצג ככותרת ותיאור — אלה נכונים.
+         צריך נכס אמיתי; נרשם ב-NEEDS_USER. -->
+    <meta property="og:title" content="איגוד השיעורים — פורטל מגידי השיעורים">
+    <meta name="twitter:title" content="איגוד השיעורים — פורטל מגידי השיעורים">
+    <meta property="og:description" content="דף לכל שיעור עם נושא, זמנים ומיקום, ניהול משתתפים וחומרי עזר — למגידי שיעורים.">
+    <meta name="twitter:description" content="דף לכל שיעור עם נושא, זמנים ומיקום, ניהול משתתפים וחומרי עזר — למגידי שיעורים.">
+    <!-- 🚨 ההצהרה הזאת הייתה קיימת, וזה בדיוק מה שהסתיר את הבאג: ‎/favicon.ico‎
+         הוא נתיב מוחלט-לשורש, ולכן נפתר מול ה-**origin** ולא מול המונט. מי
+         שנענה היה ‎more30.com/favicon.ico‎ — הסמל של הפורטל. הקובץ שהשורה
+         כביכול הצביעה עליו, ‎public/favicon.ico‎, לא נטען אף פעם; והוא ממילא
+         ברירת המחדל של Lovable (‏DD821076A9B0, ‏20,373 בתים, זהה-לבית גם
+         ב-22-get-your-rights ובשני פרויקטים בארכיון), ולכן אינו מוצהר גם
+         עכשיו. הנתיב החדש נושא את קידומת המונט. -->
+    <link rel="icon" type="image/svg+xml" href="/egod/favicon.svg" />
+</head>
+
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+      <!-- כפתור הכניסה המשותף של more30 (חייב לשבת במקור, לא רק בעותק הפרוס) -->
+    <script src="https://more30.com/auth-button.js" defer></script>
+  </body>
+</html>

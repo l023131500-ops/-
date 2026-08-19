@@ -1,0 +1,41 @@
+kiosk (35): the wizard the spec asks for exists as four paragraphs with no tick boxes
+
+KIOSK_BUILD §2★ב wants an installation wizard behind the "הפעל" button: every
+step with a checkbox, and text saying exactly what to tap, which button to
+confirm and what should appear. What the console has is viewGuide() — four
+paragraphs, no boxes, not tied to any device, and it stops at enrollment, never
+reaching the part that actually locks the tablet.
+
+Added server/src/setupsteps.js: the ordered list plus the progress arithmetic.
+The screen is its own step; nothing imports this yet.
+
+No QR / afw#setup route is offered, and a test asserts it is not. Both provision
+by having the device download the DPC from a URL, and no APK of this agent is
+hosted anywhere — install.html already says the file arrives by USB. A wizard
+step that cannot complete is worse than a longer wizard when the reader is
+standing at a tablet in a hall. So the one Device Owner route offered is
+adb dpm set-device-owner, for both of §2★ו's tracks.
+
+The adb line is built from the component AndroidManifest.xml declares rather
+than quoted, and travels as a `command` field rather than inside the prose so
+the wizard can render a copy button: a retyped set-device-owner naming the wrong
+component fails after the device has already been factory reset for it.
+
+The two tracks are one list with a flag. They differ in three steps, and an
+unknown track resolves to generic — the safe default, since it assumes no Play
+Store and no Google account, so it is merely less specific on a GMS device,
+where the reverse sends someone hunting a menu their device does not have.
+
+No code means an extra first step, not a checklist missing one: the wizard opens
+from the device card, which is where someone lands when a code has expired. Same
+reason a missing server address falls back to the real one, since telling an
+installer to type an empty string is not an instruction.
+
+checklistProgress() filters ticked ids against the checklist that exists now.
+Progress outlives the list it was recorded against, and an unrecognised id must
+not count toward done, or the wizard shows 12/11 and a completed banner over an
+unfinished install. nextId is the first hole, not the step after the last tick.
+
+QA/kiosk/setup-steps-0811 — 16 unit cases, 94/95 across the suite
+(routing.test.mjs imports express and still cannot run here; the documented
+baseline was 78/79).

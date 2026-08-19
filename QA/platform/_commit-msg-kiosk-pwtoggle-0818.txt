@@ -1,0 +1,13 @@
+fix: #219 kiosk console change-password fields missing "show password" toggle
+
+apps/35-kioskfleet/server/public/js/app.js: added pwField()/wirePwToggle()
+helpers reproducing the existing .pw-wrap/.pw-toggle markup and behavior
+already used for login-pass in console.html, and applied them to the
+current-password (#cp) and new-password (#np) fields on the settings/
+change-password screen. Reuses the CSS already defined in console.html
+(applies to the whole document, including content rendered by app.js).
+
+node --check apps/35-kioskfleet/server/public/js/app.js passes. This is the
+monorepo source tree only (kiosk production deploys from a separate repo/
+Railway target per #215) - no deploy step for this change. core.issues #219
+marked fixed.

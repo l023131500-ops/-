@@ -1,0 +1,24 @@
+perf-sweep-round2: 30 crm — investigated, redirect is intentional auth-gating, no fix this step
+
+Continued round-2 perf sweep (ROUTES order) after kupot(28): crm(29 zchuyotpro).
+Fresh Lighthouse: perf 65 (noisy vs 89 from the earlier a11y-fix session, same
+pattern as bkalot/mechiron) - a11y 100, bp 77, seo 100 unchanged.
+
+Leading failedAudits: redirects (1,260ms est savings), mainthread-work-breakdown,
+render-blocking-insight/unused-javascript on the app's own bundle (no Google
+Fonts on this route, so the loadCSS pattern from 01-12/32 does not apply).
+
+Root cause of the redirect, read in apps/30-zchuyotpro-crm/src/routes/index.tsx:
+intentional. beforeLoad calls supabase.auth.getSession() (real network round-trip)
+before the server responds, then redirects to /auth or /dashboard - the comment
+already in that file documents this was added to fix a real bug where the
+redirect fired nowhere without it. Confirmed via a raw AllowAutoRedirect=false
+request: only one 307 hop (/crm -> /crm/auth), so the network wait, not extra
+hops, is the cost.
+
+Not fixed this step: touches core auth-gating shared by every CRM visitor,
+higher-risk than the font/CLS fixes elsewhere in this sweep, bigger than this
+step's budget. No code or deploy change - measurement/investigation only.
+
+Evidence: QA/platform/crm-perf-investigate-0818/_lighthouse.json, _analysis.md.
+Next in round-2 (ROUTES order): gesher.

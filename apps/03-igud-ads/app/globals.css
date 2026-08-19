@@ -1,0 +1,115 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ===== שכבת המשטחים והדיו =====
+   מצב כהה (DESIGN_STANDARD §3). `scripts/qa/dark-probe.mjs` מדד כאן אפס
+   חוקי `.dark` — הפלטה הייתה קבועה, ולכן לא היה מה להחליף.
+
+   שני כללים:
+   1. **צבעי המותג אינם מתהפכים.** הכחול והזהב של איגוד השיעורים נשארים.
+   2. **טוקן ששימש גם כדיו וגם כמשטח מפוצל.** `brand-blue` צובע 49 טקסטים
+      ו-16 רקעים; היפוך גורף היה הופך `bg-brand-blue text-white` ללבן על
+      לבן. לכן `brand-blue` הוא הדיו ומתבהר, ו-`brand-bluesurface` הוא
+      המשטח ונשאר קבוע. אותו דבר ל-`brand-dark`.
+
+   הערכים הם ערוצי RGB ולא hex, כי `tailwind.config` עוטף אותם ב-
+   `rgb(var(--x) / <alpha-value>)` — זו הצורה היחידה שבה מודיפייר שקיפות
+   (`bg-brand-blue/10`) עובד על צבע שמגיע ממשתנה.
+
+   ניגודיות שנמדדה מול המשטח הכהה: טקסט ראשי 14.1:1 · מושתק 6.8:1 ·
+   כחול כדיו 11.4:1 · זהב כדיו 9.2:1. */
+:root {
+  --c-brand-blue: 26 46 90;
+  --c-brand-dark: 14 27 54;
+  --c-brand-gold: 201 168 76;
+  --c-cream: 248 245 236;
+  --c-ink: 26 26 26;
+  --c-surface: 255 255 255;
+
+  --c-n-50: 249 250 251;
+  --c-n-100: 243 244 246;
+  --c-n-200: 229 231 235;
+  --c-n-300: 209 213 219;
+  --c-n-400: 156 163 175;
+  --c-n-500: 107 114 128;
+  --c-n-600: 75 85 99;
+  --c-n-700: 55 65 81;
+  --c-n-800: 31 41 55;
+  --c-n-900: 17 24 39;
+
+  /* גוונים סטטוסיים: 50–200 הם משטחי שבב, 600–800 הם הטקסט שעליהם. */
+  --c-red-50: 254 242 242;   --c-red-100: 254 226 226;  --c-red-200: 254 202 202;
+  --c-red-600: 220 38 38;    --c-red-700: 185 28 28;    --c-red-800: 153 27 27;
+  --c-green-50: 240 253 244; --c-green-100: 220 252 231;
+  --c-green-700: 21 128 61;  --c-green-800: 22 101 52;
+  --c-amber-50: 255 251 235; --c-amber-100: 254 243 199;
+  --c-amber-700: 180 83 9;   --c-amber-800: 146 64 14;
+  --c-blue-50: 239 246 255;  --c-blue-100: 219 234 254;
+  --c-blue-700: 29 78 216;   --c-blue-800: 30 64 175;
+}
+
+.dark {
+  --c-brand-blue: 173 192 226;
+  --c-brand-dark: 200 214 238;
+  --c-brand-gold: 223 190 104;
+  --c-cream: 15 18 24;
+  --c-ink: 228 230 236;
+  --c-surface: 26 30 38;
+
+  /* הסקאלה הנייטרלית משמשת לשני דברים הפוכים — 50–300 משטחים,
+     400–900 טקסט — ולכן היא מתהפכת בשני קצותיה. */
+  --c-n-50: 32 37 46;
+  --c-n-100: 38 44 54;
+  --c-n-200: 47 54 66;
+  --c-n-300: 62 71 86;
+  --c-n-400: 122 132 148;
+  --c-n-500: 148 158 174;
+  --c-n-600: 175 184 198;
+  --c-n-700: 199 206 218;
+  --c-n-800: 219 224 233;
+  --c-n-900: 235 238 244;
+
+  --c-red-50: 51 24 24;     --c-red-100: 66 28 28;     --c-red-200: 88 36 36;
+  --c-red-600: 248 130 130; --c-red-700: 252 165 165;  --c-red-800: 254 202 202;
+  --c-green-50: 20 43 30;   --c-green-100: 26 58 38;
+  --c-green-700: 134 224 165; --c-green-800: 187 247 208;
+  --c-amber-50: 48 36 15;   --c-amber-100: 62 46 18;
+  --c-amber-700: 246 191 100; --c-amber-800: 253 224 168;
+  --c-blue-50: 22 33 58;    --c-blue-100: 28 43 74;
+  --c-blue-700: 147 180 250; --c-blue-800: 191 214 254;
+}
+
+html, body { height: 100%; }
+body {
+  font-family: var(--font-rubik), system-ui, sans-serif;
+  background: rgb(var(--c-cream));
+  color: rgb(var(--c-ink));
+}
+h1, h2, h3, .font-serif {
+  font-family: var(--font-noto-serif-hebrew), serif;
+}
+
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center justify-center rounded-lg bg-brand-bluesurface px-5 py-3 text-white font-semibold shadow-sm transition hover:bg-brand-darksurface disabled:opacity-50;
+  }
+  .btn-gold {
+    /* ‎text-brand-darksurface‎ ולא ‎text-brand-dark‎: הכפתור יושב על זהב
+       קבוע בשתי הערכות, ולכן הטקסט עליו חייב להישאר כהה. הטוקן המתהפך
+       היה הופך אותו לבהיר על זהב בהיר. */
+    @apply inline-flex items-center justify-center rounded-lg bg-brand-goldsurface px-5 py-3 text-brand-darksurface font-semibold shadow-sm transition hover:brightness-95 disabled:opacity-50;
+  }
+  .btn-outline {
+    @apply inline-flex items-center justify-center rounded-lg border border-brand-blue text-brand-blue px-5 py-3 font-semibold transition hover:bg-brand-bluesurface hover:text-white;
+  }
+  .card {
+    @apply bg-surface rounded-2xl shadow-sm border border-brand-gold/20 p-6;
+  }
+  .input {
+    @apply block w-full rounded-lg border border-gray-300 bg-surface px-3 py-2 text-right focus:outline-none focus:ring-2 focus:ring-brand-blue/30;
+  }
+  .label {
+    @apply block text-sm font-semibold text-brand-dark mb-1 text-right;
+  }
+}

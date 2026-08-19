@@ -1,0 +1,195 @@
+{
+  "imud": {
+    "url": "https://more30.com/imud",
+    "measuredAt": "2026-08-17T17:25:39.897Z",
+    "performance": 53,
+    "accessibility": 100,
+    "bestPractices": 77,
+    "seo": 100,
+    "metrics": {
+      "fcp": "4.8 s",
+      "lcp": "5.9 s",
+      "tbt": "280 ms",
+      "cls": "0.081",
+      "si": "9.8 s"
+    },
+    "failedAudits": [
+      {
+        "id": "first-contentful-paint",
+        "title": "First Contentful Paint",
+        "score": 0.11,
+        "display": "4.8 s"
+      },
+      {
+        "id": "largest-contentful-paint",
+        "title": "Largest Contentful Paint",
+        "score": 0.14,
+        "display": "5.9 s"
+      },
+      {
+        "id": "speed-index",
+        "title": "Speed Index",
+        "score": 0.1,
+        "display": "9.8 s"
+      },
+      {
+        "id": "total-blocking-time",
+        "title": "Total Blocking Time",
+        "score": 0.81,
+        "display": "280 ms"
+      },
+      {
+        "id": "max-potential-fid",
+        "title": "Max Potential First Input Delay",
+        "score": 0.31,
+        "display": "320 ms"
+      },
+      {
+        "id": "interactive",
+        "title": "Time to Interactive",
+        "score": 0.47,
+        "display": "7.5 s"
+      },
+      {
+        "id": "third-party-cookies",
+        "title": "Uses third-party cookies",
+        "score": 0,
+        "display": "1 cookie found"
+      },
+      {
+        "id": "mainthread-work-breakdown",
+        "title": "Minimize main-thread work",
+        "score": 0,
+        "display": "3.2 s"
+      },
+      {
+        "id": "valid-source-maps",
+        "title": "Missing source maps for large first-party JavaScript",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "unminified-javascript",
+        "title": "Minify JavaScript",
+        "score": 0.5,
+        "display": "Est savings of 6 KiB"
+      },
+      {
+        "id": "unused-css-rules",
+        "title": "Reduce unused CSS",
+        "score": 0.5,
+        "display": "Est savings of 11 KiB"
+      },
+      {
+        "id": "unused-javascript",
+        "title": "Reduce unused JavaScript",
+        "score": 0,
+        "display": "Est savings of 248 KiB"
+      },
+      {
+        "id": "inspector-issues",
+        "title": "Issues were logged in the `Issues` panel in Chrome Devtools",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "cache-insight",
+        "title": "Use efficient cache lifetimes",
+        "score": 0,
+        "display": "Est savings of 43 KiB"
+      },
+      {
+        "id": "document-latency-insight",
+        "title": "Document request latency",
+        "score": 0.5,
+        "display": "Est savings of 3 KiB"
+      },
+      {
+        "id": "forced-reflow-insight",
+        "title": "Forced reflow",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "lcp-breakdown-insight",
+        "title": "LCP breakdown",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "network-dependency-tree-insight",
+        "title": "Network dependency tree",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "render-blocking-insight",
+        "title": "Render-blocking requests",
+        "score": 0,
+        "display": "Est savings of 300 ms"
+      }
+    ],
+    "mainThreadBreakdown": [
+      {
+        "group": "Style & Layout",
+        "duration": 1224
+      },
+      {
+        "group": "Other",
+        "duration": 926
+      },
+      {
+        "group": "Script Evaluation",
+        "duration": 887
+      },
+      {
+        "group": "Rendering",
+        "duration": 82
+      },
+      {
+        "group": "Garbage Collection",
+        "duration": 35
+      },
+      {
+        "group": "Parse HTML & CSS",
+        "duration": 33
+      },
+      {
+        "group": "Script Parsing & Compilation",
+        "duration": 31
+      }
+    ],
+    "bootupTime": [
+      {
+        "url": "Unattributable",
+        "total": 1146,
+        "scripting": 378,
+        "scriptParseCompile": 0
+      },
+      {
+        "url": "https://more30.com/imud",
+        "total": 926,
+        "scripting": 18,
+        "scriptParseCompile": 6
+      },
+      {
+        "url": "https://more30.com/auth-button.js",
+        "total": 548,
+        "scripting": 37,
+        "scriptParseCompile": 9
+      },
+      {
+        "url": "https://more30.com/imud/assets/index-B5lbboGZ.js",
+        "total": 451,
+        "scripting": 374,
+        "scriptParseCompile": 11
+      },
+      {
+        "url": "https://netfree.link/card/card-injection.js",
+        "total": 85,
+        "scripting": 52,
+        "scriptParseCompile": 4
+      }
+    ]
+  }
+}

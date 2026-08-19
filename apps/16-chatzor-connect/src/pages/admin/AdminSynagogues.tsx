@@ -8,12 +8,16 @@ import { useToast } from "@/components/ui/Toaster";
 import { Modal } from "@/components/ui/Modal";
 import { Button } from "@/components/ui/Button";
 import { CardGridSkeleton } from "@/components/ui/Skeleton";
+import { ErrorState } from "@/components/ui/ErrorState";
+import { SampleBadge } from "@/components/ui/SampleBadge";
+import { sampleRowProps } from "@/lib/sampleRow";
+import { cn } from "@/lib/cn";
 import { SynagogueForm } from "./SynagogueForm";
 
 export function AdminSynagogues() {
   const toast = useToast();
   const qc = useQueryClient();
-  const { data: synagogues, isLoading } = useAllSynagogues();
+  const { data: synagogues, isLoading, isError, refetch } = useAllSynagogues();
   const [modal, setModal] = useState<{ open: boolean; editing?: Synagogue }>({ open: false });
 
   const invalidate = () => {
@@ -69,6 +73,14 @@ export function AdminSynagogues() {
       <div className="mt-6">
         {isLoading ? (
           <CardGridSkeleton count={3} />
+        ) : isError ? (
+          /* ‏ברשימת ניהול הסיכון חמור מטענה לא נכונה: "אין בתי כנסת עדיין"
+             ‏על קריאה שנכשלה מזמין את המנהל להקים מחדש רשומות שכבר קיימות. */
+          <ErrorState
+            title="לא הצלחנו לטעון את רשימת בתי הכנסת"
+            description="הרשימה אינה מוצגת כי הקריאה נכשלה — ייתכן שיש בתי כנסת קיימים. נסו שוב לפני יצירת רשומה חדשה."
+            onRetry={() => refetch()}
+          />
         ) : (
           <div className="overflow-hidden rounded-xl border border-border bg-card shadow-soft">
             <ul className="divide-y divide-border">
@@ -79,11 +91,20 @@ export function AdminSynagogues() {
                     <div className="flex items-center gap-2">
                       <span className="font-semibold text-foreground">{s.name}</span>
                       {!s.isPublished && <span className="rounded bg-secondary px-1.5 py-0.5 text-[11px] text-muted-foreground">טיוטה</span>}
+                      {s.isSample && <SampleBadge />}
                     </div>
                     <div className="text-xs text-muted-foreground" dir="ltr">/k/{s.slug}{s.nusach ? ` · ${s.nusach}` : ""}</div>
                   </div>
                   <div className="flex flex-wrap items-center gap-1">
-                    <button onClick={() => togglePublish.mutate(s)} className="rounded-md px-2 py-1.5 text-xs font-medium text-muted-foreground hover:bg-secondary hover:text-foreground">
+                    <button
+                      onClick={() => togglePublish.mutate(s)}
+                      disabled={!!s.isSample}
+                      title={s.isSample ? "שורת דוגמה — אינה במסד" : undefined}
+                      className={cn(
+                        "rounded-md px-2 py-1.5 text-xs font-medium text-muted-foreground",
+                        s.isSample ? "cursor-not-allowed opacity-40" : "hover:bg-secondary hover:text-foreground",
+                      )}
+                    >
                       {s.isPublished ? "הסתר" : "פרסם"}
                     </button>
                     <button onClick={() => copyLink(s.slug)} title="העתק קישור למתפללים" className="grid h-9 w-9 place-items-center rounded-md text-muted-foreground hover:bg-secondary hover:text-foreground">
@@ -92,12 +113,21 @@ export function AdminSynagogues() {
                     <a href={`/k/${s.slug}`} target="_blank" rel="noreferrer" title="צפייה באתר" className="grid h-9 w-9 place-items-center rounded-md text-muted-foreground hover:bg-secondary hover:text-foreground">
                       <ExternalLink className="h-4 w-4" />
                     </a>
-                    <button onClick={() => setModal({ open: true, editing: s })} title="עריכה" className="grid h-9 w-9 place-items-center rounded-md text-muted-foreground hover:bg-secondary hover:text-foreground">
+                    <button
+                      onClick={() => setModal({ open: true, editing: s })}
+                      disabled={!!s.isSample}
+                      title={s.isSample ? "שורת דוגמה — אינה במסד" : "עריכה"}
+                      className={cn(
+                        "grid h-9 w-9 place-items-center rounded-md text-muted-foreground",
+                        s.isSample ? "cursor-not-allowed opacity-40" : "hover:bg-secondary hover:text-foreground",
+                      )}
+                    >
                       <Pencil className="h-4 w-4" />
                     </button>
                     <button
                       onClick={() => { if (window.confirm(`למחוק את "${s.name}"?`)) deleteMutation.mutate(s.id); }}
-                      title="מחיקה" className="grid h-9 w-9 place-items-center rounded-md text-muted-foreground hover:bg-red-500/10 hover:text-red-500">
+                      {...sampleRowProps(s.isSample)}
+                    >
                       <Trash2 className="h-4 w-4" />
                     </button>
                   </div>

@@ -1,0 +1,124 @@
+{
+  "ran": "scripts/qa/admin-pricing-showcase-settable.mjs",
+  "page": "portal/public/admin-pricing.html",
+  "rpc": "more30_admin_pricing_list (migration 0039)",
+  "served": "working tree",
+  "measured_on_live_db": {
+    "app_keys_with_plans": 29,
+    "unmatched_by_projects_path": [
+      "more30"
+    ],
+    "showcase_set_error": "no such project path: more30",
+    "rows_with_show_in_showcase_true": 0
+  },
+  "sections": {
+    "new": [
+      {
+        "app": "bkalot",
+        "head": "10 מימוש זכויות בקלות חי הצג בעולם הסטארטאפים",
+        "box": "bkalot",
+        "checked": false,
+        "reason": null
+      },
+      {
+        "app": "nadlan",
+        "head": "32 נדל״ן ברגע חי הצג בעולם הסטארטאפים",
+        "box": "nadlan",
+        "checked": true,
+        "reason": null
+      },
+      {
+        "app": "more30",
+        "head": "— more30 לא חי אינה מערכת בקטלוג — אין מה להציג",
+        "box": null,
+        "checked": null,
+        "reason": "אינה מערכת בקטלוג — אין מה להציג"
+      }
+    ],
+    "old": [
+      {
+        "app": "bkalot",
+        "head": "10 מימוש זכויות בקלות חי הצג בעולם הסטארטאפים",
+        "box": "bkalot",
+        "checked": false,
+        "reason": null
+      },
+      {
+        "app": "nadlan",
+        "head": "32 נדל״ן ברגע חי הצג בעולם הסטארטאפים",
+        "box": "nadlan",
+        "checked": true,
+        "reason": null
+      },
+      {
+        "app": "more30",
+        "head": "— more30 לא חי הצג בעולם הסטארטאפים",
+        "box": "more30",
+        "checked": false,
+        "reason": null
+      }
+    ],
+    "protected": [
+      {
+        "app": "bkalot",
+        "head": "10 מימוש זכויות בקלות חי הצג בעולם הסטארטאפים",
+        "box": "bkalot",
+        "checked": false,
+        "reason": null
+      },
+      {
+        "app": "bkalut",
+        "head": "32 בקלות (זכאות) חי מוגנת — אינה מתפרסמת",
+        "box": null,
+        "checked": null,
+        "reason": "מוגנת — אינה מתפרסמת"
+      }
+    ]
+  },
+  "summary": {
+    "pass": 8,
+    "fail": 0
+  },
+  "checks": [
+    {
+      "check": "a registered system still carries the switch, unchanged",
+      "pass": true,
+      "detail": "box=bkalot checked=false reason=null"
+    },
+    {
+      "check": "and one already showing is still drawn checked",
+      "pass": true,
+      "detail": "box=nadlan checked=true"
+    },
+    {
+      "check": "the row with no project behind it draws no switch at all",
+      "pass": true,
+      "detail": "box=null"
+    },
+    {
+      "check": "and says why, in words, instead of waiting to throw",
+      "pass": true,
+      "detail": "אינה מערכת בקטלוג — אין מה להציג"
+    },
+    {
+      "check": "its price rows are untouched — it is still a system you can price",
+      "pass": true,
+      "detail": "data-app=more30"
+    },
+    {
+      "check": "an old RPC without the fields draws every switch, exactly as before",
+      "pass": true,
+      "detail": "bkalot/nadlan/more30"
+    },
+    {
+      "check": "a protected row gets its own reason, not the unregistered one",
+      "pass": true,
+      "detail": "מוגנת — אינה מתפרסמת"
+    },
+    {
+      "check": "dark mode draws the same three rows and the same sentence",
+      "pass": true,
+      "detail": "אינה מערכת בקטלוג — אין מה להציג"
+    }
+  ]
+}

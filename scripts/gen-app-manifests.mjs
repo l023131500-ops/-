@@ -13,9 +13,13 @@ const KNOWN_PROJECT = {
   "01": "uhnrgujbdxhhmoxcjria", // inferred (shared hub DB)
   "15": "uhnrgujbdxhhmoxcjria", // inferred (shared hub DB)
   "02": "bieebmnmkffwbqlsfozh", // VERIFIED (igud-transcribe's own project)
+  "16": "uhnrgujbdxhhmoxcjria", // promoted 18/08/2026 from the hand-maintained app.json
 };
 
-// number, slug, repo, name, category, stage, live, schema, deploy, protected, note
+// number, slug, repo, name, category, stage, live, schema, deploy, protected, note,
+// [overrides] — optional 12th element, merged last. Use it only for a system whose
+// deploy provenance has actually been MEASURED (see "18" below); the defaults in
+// this table describe the public-repo baseline, not verified reality.
 const R = [
   ["01","torah-platform","torah-platform","Torah Platform (HUB, +egod)","hub","live",true,"public","lovable",false,"Main hub; billing via Nedarim."],
   ["02","igud-transcribe","igud-transcribe","Igud Transcribe","transcription","beta",true,"public","vercel",false,"VERIFIED: Next.js 14 + OpenAI Whisper-1/GPT-4 on own project. MISSING token = OPENAI_API_KEY."],
@@ -32,9 +36,27 @@ const R = [
   ["13","property-identity","property-identity","Property Identity","realestate","wip",false,null,"unknown",false,null],
   ["14","bsmachot-plus","bsmachot-plus","Bsmachot Plus","events","wip",false,null,"unknown",false,null],
   ["15","egod","egod","egod (HUB pair with 01)","hub","live",true,"public","lovable",false,"Born in Lovable; shares Supabase with torah-platform."],
-  ["16","chatzor-connect","chatzor-connect","Chatzor Connect","other","wip",false,null,"unknown",false,null],
-  ["17","chizukim-transcribe","chizukim-transcribe","Chizukim Transcribe","transcription","wip",false,null,"unknown",false,"Verify transcription token."],
-  ["18","torah-editor-mvp","torah-editor-mvp","Torah Editor MVP","torah","wip",false,null,"unknown",false,null],
+  // PROMOTED 18/08/2026: this row previously read ["16",...,"chatzor-connect","Chatzor
+  // Connect","other",...,null,"unknown",false,null] while apps/16-chatzor-connect/app.json
+  // was HAND-MAINTAINED and much richer, so running the generator would have silently
+  // CLOBBERED it. Every hand-written field now lives here (repo "-", category "community",
+  // schema "chatzor", project via KNOWN_PROJECT, description/unifies/source via overrides)
+  // and the generator reproduces that file byte-for-byte. Keep them in sync.
+  ["16","chatzor-connect","-","Chatzor Connect — מחוברים","community","wip",false,"chatzor","unknown",false,null,
+    { description: "פלטפורמת מועצה דתית וקהילות לחצור הגלילית. מאחדת את more30 (רב-דיירי) ואת galilee-connect-hub למערכת אחת. ראה README.md.",
+      unifies: ["24-galilee-connect-hub"], source: "in-progress" }],
+  ["17","chizukim-transcribe","chizukim-transcribe","Chizukim Transcribe","transcription","live",true,null,"vercel",false,
+    "Live at more30.com/chizukim. Verify transcription token. Deploy source MEASURED 18/08/2026, not assumed - see overrides.",
+    { isDeployed: true, liveUrl: "https://more30.com/chizukim", vercelProject: "chizukim2-more30",
+      source: "vendored", deploySource: "apps/17-chizukim-transcribe",
+      deployCommand: "vercel deploy --prod --yes --scope l023131500-ops-projects (from the app dir; vite.config.ts already defaults base to '/chizukim/', so no VITE_BASE is needed)",
+      provenanceNote: "The 'repo' field is NOT the deploy path: all 15 chizukim2-more30 deployments were created by the CLI with no git metadata. Proof this tree is the source: dist/public/assets/index-CGr9WgHf.css is byte-identical (SHA256 F5026FB4...29A9) to the live https://more30.com/chizukim/assets/index-CGr9WgHf.css. Control on the same probe: the local dist JS index-D7kweJQx.js is NOT the live one (index-B3-SjNVo.js), so the probe distinguishes deployed from not-deployed. That JS delta means the local build of 10/08 was never deployed; the last production deploy is 06/08 02:13 UTC." }],
+  ["18","torah-editor-mvp","torah-editor-mvp","Torah Editor MVP","torah","live",true,null,"vercel",false,
+    "Live at more30.com/orech. Deploy source MEASURED 18/08/2026, not assumed - see overrides.",
+    { isDeployed: true, liveUrl: "https://more30.com/orech", vercelProject: "orech-more30",
+      source: "vendored", deploySource: "apps/18-torah-editor-mvp",
+      deployCommand: "vercel deploy --prod --yes --scope l023131500-ops-projects (from the app dir; never --prebuilt - it drops next.config.js basePath '/orech')",
+      provenanceNote: "The 'repo' field is NOT the deploy path: all 16 orech-more30 deployments were created by the CLI with no git metadata. Proof this tree is the source: the string 'more30-auth', introduced by monorepo commit c32dd84, is present in the live /orech/documents chunk." }],
   ["19","igud-shiurim-portal","igud-shiurim-portal","Igud Shiurim Portal","torah","wip",false,null,"unknown",false,null],
   ["20","igud-portal","igud-portal","Igud Portal","torah","wip",false,null,"unknown",false,null],
   ["21","mthbram","mthbram","Mthbram","other","wip",false,null,"unknown",false,null],
@@ -50,18 +72,24 @@ const R = [
   ["31","hebrew-bridge-crm","hebrew-bridge-crm","Hebrew Bridge CRM","crm","wip",false,null,"unknown",false,null],
 ];
 
-for (const [number, slug, repo, name, category, stage, live, schema, deploy, prot, note] of R) {
+for (const [number, slug, repo, name, category, stage, live, schema, deploy, prot, note, over] of R) {
   const dir = resolve(ROOT, "apps", `${number}-${slug}`);
   mkdirSync(dir, { recursive: true });
   const manifest = {
-    number, slug, name, category, stage, live,
+    number, slug, name,
+    // Declared here (not only in `over`) so the optional keys keep their documented
+    // position in the JSON; absent ones are dropped by JSON.stringify.
+    ...(over?.description ? { description: over.description } : {}),
+    category, stage, live,
     repo: `l023131500-ops/${repo}`,
     basePath: `/${number}`,
+    ...(over?.unifies ? { unifies: over.unifies } : {}),
     supabase: { project: KNOWN_PROJECT[number] ?? null, schema },
     deployTarget: deploy,
     protected: prot,
     source: "not-vendored", // see CONNECTIONS.md — private source not copied into public repo yet
     note: note ?? undefined,
+    ...(over ?? {}),
   };
   writeFileSync(resolve(dir, "app.json"), JSON.stringify(manifest, null, 2) + "\n");
 }

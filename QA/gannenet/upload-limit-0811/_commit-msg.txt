@@ -1,0 +1,28 @@
+gannenet (40): the form invited a file four times larger than the platform accepts
+
+/shelf/upload said "PDF או תמונה, עד 25MB" and POST /api/catalog checked 25MB.
+The request body of a Vercel Function may not exceed 4.5 MB — past that the edge
+answers 413 FUNCTION_PAYLOAD_TOO_LARGE and the function is never invoked. So the
+route's own check could only ever run for files the edge had already let through,
+and everything between the two was uploaded in full over the teacher's connection
+before anything refused it.
+
+What she saw then was not a sentence. The edge answers HTML, the page did
+`await res.json()`, and that throws SyntaxError: Unexpected token '<',
+"<!DOCTYPE "... — which err.message printed into the middle of a Hebrew form.
+
+lib/upload-limits.ts holds the one number: 4 MB, leaving the multipart envelope
+room under the 4.5 MB the platform counts. Free against this shelf's material —
+the 258 seed files average 622 KB, the largest is 1,944 KB. The file is checked
+when it is picked, so an oversized one never leaves the browser and the message
+names its size; errors are read once as text and parsed only if they are JSON,
+with a 413/503/5xx fallback; a failed fetch gets its own sentence. The route
+answers 413 rather than 400, matching what the edge would have said.
+
+Verified on the production build against the real bucket: 5MB picked -> refused
+with no POST issued; 5MB straight at the route -> 413; 2KB png -> 200 through the
+real form; wrong type still 400; an HTML 413 fulfilled at the network layer ->
+Hebrew. Both QA uploads removed through /api/admin/delete, catalog back to 0,
+drive catalog 2,977, tsc --noEmit 0.
+
+Evidence in QA/gannenet/upload-limit-0811/.

@@ -1,0 +1,146 @@
+{
+  "ran": "scripts/qa/admin-pricing-offerable.mjs",
+  "page": "portal/public/admin-pricing.html",
+  "rpc": "more30_admin_pricing_list (migration 0036)",
+  "served": "working tree",
+  "measured_on_live_db": {
+    "chargeable_plans": 70,
+    "offerable_plans": 39,
+    "gap": 31,
+    "hidden_pro_rows": 29,
+    "blocked_system_rows": 2,
+    "blocked_systems": [
+      "crm",
+      "financial",
+      "gesher",
+      "igud",
+      "mechiron",
+      "mthbram",
+      "shiurim",
+      "smachot",
+      "zol"
+    ]
+  },
+  "banners": {
+    "new": "הסליקה סגורה. ‏core.billing_settings.mode=off ואין ספק מחובר, ולכן אף אחד אינו מחויב בפועל — אבל 70 מסלולים פעילים כבר נושאים מחיר גדול מאפס. מתוכם 39 ניתנים להצעה ללקוח, ו-31 אינם — מסלול נסתר, או מערכת שהקופה מסרבת למכור. אלה לא ייגבו גם אחרי שהמתג ייפתח. מסלול \"פרו (בדיקה)\" נקבע ל-1 ₪ בכל מערכת כדי לאפשר בדיקה בסכום זניח, והוא נסתר מהלקוח. נקבע לאחרונה 6.8.2026.",
+    "old": "הסליקה סגורה. ‏core.billing_settings.mode=off ואין ספק מחובר, ולכן אף אחד אינו מחויב בפועל — אבל 70 מסלולים פעילים כבר נושאים מחיר גדול מאפס. מסלול \"פרו (בדיקה)\" נקבע ל-1 ₪ בכל מערכת כדי לאפשר בדיקה בסכום זניח, והוא נסתר מהלקוח. נקבע לאחרונה 6.8.2026.",
+    "live": "הסליקה פעילה — test מול nedarim-plus. שמירה כאן משנה סכום שנגבה בפועל, ו-70 מסלולים פעילים כבר נושאים מחיר גדול מאפס. מתוכם 39 ניתנים להצעה ללקוח, ו-31 אינם — מסלול נסתר, או מערכת שהקופה מסרבת למכור. אלה לא ייגבו גם אחרי שהמתג ייפתח. נקבע לאחרונה 7.8.2026.",
+    "clean": "הסליקה סגורה. ‏core.billing_settings.mode=off ואין ספק מחובר, ולכן אף אחד אינו מחויב בפועל — אבל 39 מסלולים פעילים כבר נושאים מחיר גדול מאפס. וכולם ניתנים להצעה ללקוח. מסלול \"פרו (בדיקה)\" נקבע ל-1 ₪ בכל מערכת כדי לאפשר בדיקה בסכום זניח, והוא נסתר מהלקוח. נקבע לאחרונה 6.8.2026."
+  },
+  "sections": [
+    {
+      "head": "32 נדל״ן ברגע חי הצג בעולם הסטארטאפים",
+      "note": null,
+      "states": [
+        "טרם נקבע",
+        "לגבייה",
+        "לא נמכר · נסתר"
+      ],
+      "reach": [
+        "open",
+        "open",
+        "hidden"
+      ]
+    },
+    {
+      "head": "27 מחירון חי לא מוצע למכירה הצג בעולם הסטארטאפים",
+      "note": "המערכת הזאת אינה מוצעת כרגע למנוי. מחיר שנקבע כאן נשמר בקטלוג, ולא יוצג ללקוח כל עוד המערכת חסומה.",
+      "states": [
+        "לא נמכר · המערכת חסומה",
+        "לא נמכר · המערכת חסומה"
+      ],
+      "reach": [
+        "blocked",
+        "blocked"
+      ]
+    },
+    {
+      "head": "10 מימוש זכויות בקלות חי הצג בעולם הסטארטאפים",
+      "note": null,
+      "states": [
+        "לגבייה",
+        "לגבייה"
+      ],
+      "reach": [
+        "open",
+        "open"
+      ]
+    }
+  ],
+  "summary": {
+    "pass": 14,
+    "fail": 0
+  },
+  "checks": [
+    {
+      "check": "the banner still reports the 70 priced plans it always did",
+      "pass": true,
+      "detail": "הסליקה סגורה. ‏core.billing_settings.mode=off ואין ספק מחובר, ולכן אף אחד אינו מחויב בפועל — אבל 70 מסלולים פעילים כבר נושאים מחיר גדול מאפס. מתוכם 39"
+    },
+    {
+      "check": "and now says how many of them a customer can reach — 39, and 31 that cannot",
+      "pass": true,
+      "detail": "הסליקה סגורה. ‏core.billing_settings.mode=off ואין ספק מחובר, ולכן אף אחד אינו מחויב בפועל — אבל 70 מסלולים פעילים כבר נושאים מחיר גדול מאפס. מתוכם 39 ניתנים להצעה ללקוח, ו-31 אינם — מסלול נסתר, או מערכת שהקופה מסרבת למכור. אלה לא ייגבו גם אחרי שהמתג ייפתח. מס"
+    },
+    {
+      "check": "and it names why, instead of leaving the admin to guess",
+      "pass": true,
+      "detail": "הסליקה סגורה. ‏core.billing_settings.mode=off ואין ספק מחובר, ולכן אף אחד אינו מחויב בפועל — אבל 70 מסלולים פעילים כבר נושאים מחיר גדול מאפס. מתוכם 39 ניתנים להצעה ללקוח, ו-31 אינם — מסלול נסתר, או מערכת שהקופה מסרבת למכור. אלה לא ייגבו גם אחרי שהמתג ייפתח. מס"
+    },
+    {
+      "check": "a blocked system carries the tag on its own card",
+      "pass": true,
+      "detail": "mechiron: 27 מחירון חי לא מוצע למכירה הצג בעולם הסטארטאפים | bkalot: 10 מימוש זכויות בקלות חי הצג בעולם הסטארטאפים"
+    },
+    {
+      "check": "and quotes the same refusal the checkout raises, verbatim",
+      "pass": true,
+      "detail": "המערכת הזאת אינה מוצעת כרגע למנוי. מחיר שנקבע כאן נשמר בקטלוג, ולא יוצג ללקוח כל עוד המערכת חסומה."
+    },
+    {
+      "check": "its two priced rows stop reading \"לגבייה\"",
+      "pass": true,
+      "detail": "לא נמכר · המערכת חסומה / לא נמכר · המערכת חסומה"
+    },
+    {
+      "check": "the hidden pro tier is marked on a system that is otherwise sold",
+      "pass": true,
+      "detail": "טרם נקבע / לגבייה / לא נמכר · נסתר"
+    },
+    {
+      "check": "and the tiers next to it are untouched — 12 ₪ still reads \"לגבייה\"",
+      "pass": true,
+      "detail": "טרם נקבע / לגבייה / לא נמכר · נסתר"
+    },
+    {
+      "check": "a fully sellable system reads exactly as it did before",
+      "pass": true,
+      "detail": "לגבייה/לגבייה · open/open"
+    },
+    {
+      "check": "every save button knows which of the three it is",
+      "pass": true,
+      "detail": "blocked/blocked · open/open/hidden"
+    },
+    {
+      "check": "an old RPC with no offerable_plans makes the page say nothing, not guess",
+      "pass": true,
+      "detail": "הסליקה סגורה. ‏core.billing_settings.mode=off ואין ספק מחובר, ולכן אף אחד אינו מחויב בפועל — אבל 70 מסלולים פעילים כבר נושאים מחיר גדול מאפס. מסלול \"פרו (בדיקה)\" נקבע ל-1 ₪ בכל מערכת כדי לאפשר בדיקה ב"
+    },
+    {
+      "check": "the gap sentence survives the open-switch branch too",
+      "pass": true,
+      "detail": "הסליקה פעילה — test מול nedarim-plus. שמירה כאן משנה סכום שנגבה בפועל, ו-70 מסלולים פעילים כבר נושאים מחיר גדול מאפס. מתוכם 39 ניתנים להצעה ללקוח, ו-31 אינם — מסלול נסתר, או מערכת שהקופה מסרבת למכור. אלה לא ייגבו גם אחרי שהמתג ייפתח. נקבע ל"
+    },
+    {
+      "check": "a board with no gap is told so, and is not accused",
+      "pass": true,
+      "detail": "הסליקה סגורה. ‏core.billing_settings.mode=off ואין ספק מחובר, ולכן אף אחד אינו מחויב בפועל — אבל 39 מסלולים פעילים כבר נושאים מחיר גדול מאפס. וכולם ניתנים להצעה ללקוח. מסלול \"פרו (בדיקה)\" נקבע ל-1 ₪ ב"
+    },
+    {
+      "check": "dark mode draws the same words",
+      "pass": true,
+      "detail": "הסליקה סגורה. ‏core.billing_settings.mode=off ואין ספק מחובר, ולכן אף אחד אינו מחויב בפועל"
+    }
+  ]
+}

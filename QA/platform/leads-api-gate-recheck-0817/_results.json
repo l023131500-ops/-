@@ -1,0 +1,15 @@
+{
+  "measured_at": "2026-08-17T06:41:45.390Z",
+  "purpose": "re-verify NEEDS_USER.md #0ש′ / core.issues #170 — leads-api reader gate on the orphaned lux-manage project (zwxwteebcoejrjdufzsv) is still closed",
+  "request": {
+    "method": "GET",
+    "url": "https://zwxwteebcoejrjdufzsv.supabase.co/functions/v1/leads-api",
+    "headers": "none (no apikey, no Authorization) — same as the original 12/08 finding"
+  },
+  "response": {
+    "status": 403,
+    "body": "{\"error\":\"leads-api reader disabled: LEADS_API_KEY is not configured\"}"
+  },
+  "conclusion": "gate still closed, 5 days after deploy (12/08 -> 17/08). No regression. No code change, no deploy — measurement only.",
+  "note": "Supabase MCP not connected this session (ToolSearch for mcp__supabase__* returned no matches) — this check used a plain unauthenticated HTTPS GET, which needs no MCP/token, so it stayed possible."
+}

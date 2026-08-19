@@ -1,0 +1,9 @@
+round-4 functional pass: 02 tamlul - core action (coupon redemption) broken in production
+
+/tamlul/api/coupons returns 500 for every coupon submission. Root cause:
+SUPABASE_SERVICE_ROLE_KEY appears BOM-corrupted (U+FEFF as first header byte),
+matching the known PowerShell-pipe-into-vercel-env-add issue. Logged as
+core.issues id 239, severity critical. Fix (reset env var + redeploy + verify)
+deferred to next step. No code change, no deploy this step.
+
+Evidence: QA/platform/tamlul-round4-functional-0818/_results.md

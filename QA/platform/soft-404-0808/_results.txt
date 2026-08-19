@@ -1,0 +1,29 @@
+﻿=== §4 · מה מצויר בכתובת שאין מאחוריה מערכת ===
+    בסיס: http://localhost:4188
+
+  PASS  דף הבית מצייר את רשימת המערכות (20 כרטיסים)
+  PASS  /nadlan (מערכת חיה) אינו מוכרז כלא-נמצא
+
+— כתובת שאין מאחוריה מערכת —
+
+  PASS  /bkalot-studio (מוכרז, לא חי) אומר שאינו נמצא
+  PASS  /bkalot-studio מסומן noindex
+  PASS  /events (מוכרז, לא חי) אומר שאינו נמצא
+  PASS  /events מסומן noindex
+  PASS  /financial (מוכרז, לא חי) אומר שאינו נמצא
+  PASS  /financial מסומן noindex
+  PASS  /igud (מוכרז, לא חי) אומר שאינו נמצא
+  PASS  /igud מסומן noindex
+  PASS  /shiurim (מוכרז, לא חי) אומר שאינו נמצא
+  PASS  /shiurim מסומן noindex
+  PASS  /zol (מוכרז, לא חי) אומר שאינו נמצא
+  PASS  /zol מסומן noindex
+  PASS  /zmanim (בדוי) אומר שאינו נמצא
+  PASS  /zmanim מסומן noindex
+  PASS  /no-such-system-at-all (בדוי) אומר שאינו נמצא
+  PASS  /no-such-system-at-all מסומן noindex
+  PASS  /admin-pricing/ (בדוי) אומר שאינו נמצא
+  PASS  /admin-pricing/ מסומן noindex
+
+20 passed · 0 failed
+הסטטוס נשאר 200 לפי מגבלת rewrite של Vercel — ראו את ההערה בראש הקובץ.

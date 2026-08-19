@@ -5,9 +5,10 @@ import { PageHero } from "@/components/ui/PageHero";
 import { SynagogueCard } from "@/components/SynagogueCard";
 import { CardGridSkeleton } from "@/components/ui/Skeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { ErrorState } from "@/components/ui/ErrorState";
 
 export function SynagoguesDirectory() {
-  const { data: synagogues, isLoading } = useSynagogues();
+  const { data: synagogues, isLoading, isError, refetch } = useSynagogues();
   const { state, locate, withDistance } = useNearby();
 
   const list = withDistance(synagogues ?? []);
@@ -53,6 +54,12 @@ export function SynagoguesDirectory() {
 
         {isLoading ? (
           <CardGridSkeleton count={6} />
+        ) : isError ? (
+          <ErrorState
+            title="לא הצלחנו לטעון את בתי הכנסת"
+            description="הרשימה לא נקראה מהמסד. איננו יודעים אילו בתי כנסת קיימים, ולכן גם המיון לפי קרבה אינו זמין."
+            onRetry={() => refetch()}
+          />
         ) : list.length === 0 ? (
           <EmptyState
             icon={Building2}

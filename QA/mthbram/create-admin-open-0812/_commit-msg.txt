@@ -1,0 +1,43 @@
+mthbram (21): a question about an empty catalog, and the ungated endpoint the answer walked into
+
+core.issues #17 asked whether "0 שיעורים" was a display bug or the truth. It is
+the truth, and stronger than the issue claimed: the table is empty outright, not
+"lessons waiting for approval". api/stats in that same project runs with
+service_role — RLS hides nothing from it — and returned
+{"lessons":{"total":0,"approved":0},"teacher_leads":0,"seeker_leads":0,
+"contact_messages":0}. The live bundle index-DheqMcgT.js names exactly one
+supabase host, aypsqqvfohekxxuqsmrw, so this is the project production talks to.
+In a browser more30.com/mthbram prints "0 שיעורים" beside "עדיין אין שיעורים
+במאגר" — an honest empty state, nothing to fix. #17 closed.
+
+Checking whether RLS was hiding rows meant reading the project's policies and
+functions, and create-admin was sitting there. It runs with
+SUPABASE_SERVICE_ROLE_KEY, creates a user with a given password, and when the
+email already exists it looks the user up and overwrites that password — and it
+answered a POST carrying no apikey and no Authorization header at all. The 400
+it returned is its own validation message, so the request reached the handler
+body with no credentials. No account was created and no password was
+overwritten: the probe deliberately omitted the password field so the handler
+would return before touching auth.admin.
+
+Fixed at source: ADMIN_BOOTSTRAP_SECRET, read from the function environment and
+never sent to a browser, required in x-admin-bootstrap-secret — 503 when the
+secret is not configured, 404 when it does not match. verify_jwt alone would not
+have helped; the anon key is a valid JWT and ships in the page.
+
+Same commit closes the other half. create-admin never created an admin that
+could log in: /admin-login gates on has_role, which reads user_roles, which only
+service_role may write — and the function stopped after making the auth user. It
+now upserts the admin role. None of the accounts §1ב names passes that gate
+today: l023131500@gmail.com and admin@more30.com are rejected at sign-in, and
+test@more30.com signs in with has_role(uid,'admin') = false.
+
+NOT DEPLOYED — deploying to aypsqqvfohekxxuqsmrw needs credentials this
+environment does not have, so the open version is still the one running.
+core.issues #160 (critical) · NEEDS_USER §0צ carries the two steps and the
+acceptance check.
+
+Protected systems untouched: no write to 08/09/bkalut-app/bkalot-admin/zr_/
+NEDARIM3873, no csj/csj_src/igud, nothing sent, no billing touched, test mode.
+
+Evidence QA/mthbram/create-admin-open-0812/_results.json

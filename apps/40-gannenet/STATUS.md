@@ -1,0 +1,1073 @@
+# #40 גננת בקליק — mount status
+
+Served under `more30.com/gannenet` per `more30-priority.md` §0. Add-only: no
+feature work until the rest of the platform is done.
+
+The source under this directory is gitignored (`/apps/**`); only `app.json` and
+this file are committed. So changes to the app are recorded here.
+
+## Where it stands
+
+| | |
+|---|---|
+| Source | 49 files / 1.9MB, vendored from `l023131500-ops/-` @ `claude/ganenet-full-system-gdrive-fdflfc` (`f489e2c`) |
+| Build | Next.js 14.2.35, production build present, `basePath=/gannenet` via `APP_BASE_PATH` |
+| Shelf | 258 files / 157MB in the Supabase bucket `gannenet-shelf` under `seed/`, streamed through `/api/shelf/<name>` |
+| Secrets | `core.secrets` only — `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `ANTHROPIC_API_KEY`, `ADMIN_PASSWORD`, and `SUPABASE_SERVICE_ROLE_KEY` (server-side, `/api/admin/delete` alone). Never in git. |
+| Vercel project | `gannenet-more30` (`prj_T7jBm2fMQdIa4bDnnCNbUXlVQV2M`), production live at `https://gannenet-more30.vercel.app/gannenet` |
+| Portal rewrite | **not added yet** (`portal/vercel.dist.json`) |
+| `public_visible` | `false`, until it is verified live |
+
+## Never full-fetch the source branch
+
+`gannenet-app/` is 307 blobs / **166MB** there, because the 258 shelf PDFs and
+images are committed under `public/shelf/`. A full fetch ran 12 minutes without
+writing a byte. Use the GitHub tree API plus the per-blob API instead, and check
+each blob with `git hash-object` against the API's sha.
+
+`raw.githubusercontent.com` is blocked from this machine by NetFree and does not
+fail loudly — a `.jpg` came back `200` carrying an 18KB block page instead of
+817KB of image. `api.github.com` is not blocked, so blobs come through the blob
+API as base64. NetFree also re-compresses images in transit and returns `418` on
+PDF bodies from `supabase.co`; none of that applies to the production server.
+
+## Changes made to the vendored source
+
+- **`public/sw.js`** — `isFile()` matched only `/api/drive/`, so after the shelf
+  moved to `/api/shelf/` nothing read the `FILES` cache for shelf files, and
+  everything "שמירת התצוגה לאופליין" saved was unreachable. Now matches both;
+  `isCatalog()` likewise gained `/api/catalog` alongside `/api/drive-catalog`;
+  `VERSION` bumped to `gannenet-v3` to drop the caches built under the old
+  routing. Verified offline — evidence in `QA/gannenet/sw-shelf-offline-0811/`.
+
+- **`lib/catalog.ts`** — `CATEGORY_ORDER` named 11 categories; the shelf holds 21.
+  It is read twice: `/shelf` orders its category chips by it ("מסודרים לפי סדר
+  השנה"), and `/shelf/upload` *is* it — the category dropdown is
+  `CATEGORY_ORDER.map()`. So 937 of 2,977 files (31.5%) sat in ten rank-tied
+  categories ordered by the date of each one's oldest file — `ספירת העומר /
+  ל"ג בעומר`, a holiday belonging between פסח and שבועות, came 14th, after
+  `דפי צביעה` — and a teacher adding material could not file it under any of
+  those ten, including `כללי`, which holds 679 files. The list now carries all
+  21 in year order, and `sortItems`/`orderedCategories` tie-break equal ranks by
+  name so a category arriving later from the Drive catalog still groups together.
+  Evidence in `QA/gannenet/shelf-category-order-0811/`.
+
+- **`lib/season.ts` (new) + `app/calendar/page.tsx` + `app/shelf/page.tsx`** —
+  §1ה of `GANNENET_BUILD.md` asks the calendar to reach the shelf; the calendar
+  page instead ended on the sentence "בהמשך יחובר לנושאים המומלצים לכל שבוע",
+  and neither page linked to the other. `season.ts` maps a hebcal `basename()`
+  — stable English, unlike the Hebrew string the page renders — to a shelf
+  category, and `weekTopics()` returns the dates in the next 45 days that have
+  material behind them, one entry per category. `/calendar` now shows those, and
+  the week's parasha, as cards carrying the real count and linking to
+  `/shelf?cat=…`; `/shelf` reads `cat` and `q` off the URL on mount, which it
+  never did. The counts repeat the shelf's own merge (drive, then seed by id) so
+  they cannot drift: 19 and 202 on the cards, "מוצגים … מתוך 19 / 202" on the
+  shelf. A category with no material is dropped rather than linked. Walked over
+  all 53 weeks of 5787 it reaches 8 categories — every holiday category the
+  shelf holds except `סוף שנה / קיץ`, which no date triggers. Evidence in
+  `QA/gannenet/calendar-shelf-link-0811/`.
+
+- **`lib/season.ts` + `app/calendar/page.tsx`** — "מועדים בחודש זה" built its
+  list by scanning the whole Hebrew year, filtering to the current month and
+  cutting it at `.slice(0, 8)`. Three months hold more than eight dates and they
+  are the three a gan plans hardest for: תשרי (16) lost שמיני עצרת, כסלו (11)
+  stopped at the sixth candle, ניסן (14) lost פסח ז׳ and יום השואה. Worse,
+  standing in Elul the list showed ערב ראש השנה **twice** — the year scan for
+  year Y opens with 29 Elul of Y−1, whose month is also Elul — and since the
+  list printed bare names with no date, the two lines were identical a year
+  apart. The new `monthEvents()` bounds the query by the Gregorian dates of day
+  1 and the last day of that Hebrew month, so nothing needs cutting and the
+  previous year cannot leak in, and each line now carries the day in gematriya
+  and the civil date, mutes what has passed, marks today, and links to the shelf
+  category where there is material. Across 5786 and 5787 that is 183 dates
+  listed against 149 real ones before. Evidence in
+  `QA/gannenet/calendar-month-dates-0811/`.
+
+- **`app/api/ai-generate/route.ts` + `app/generator/page.tsx`** — the מחולל
+  asked for `claude-3-5-sonnet-latest`, which is retired, so every generation
+  came back `404 not_found_error`; the feature had never produced a page. It
+  read as silent rather than broken because the page did `setRes(await
+  r.json())` — an error body is valid JSON, so the result card rendered with an
+  undefined title and no reason on screen. Model → `claude-opus-5` with
+  `max_tokens` 1500 → 16000 (thinking is on by default there and `max_tokens`
+  bounds thinking + text together). The route now passes the upstream status
+  through and maps 429/401/5xx to an actionable sentence, strips a ```` ```json ````
+  fence before parsing (the old bare `JSON.parse` dumped the raw reply into
+  `instructions`), and coerces `contentElements`/`designHints` to arrays — the
+  page `.map()`s both, and a string would have passed the `?.length` guard and
+  crashed the render. The page checks `r.ok`/`data.error` and moved
+  `setLoading(false)` into `finally`. Evidence in
+  `QA/gannenet/generator-dead-model-0811/`.
+
+- **`app/api/ai-generate/route.ts`** — the same generation took ~72 s, longer
+  than any serverless function limit it would be deployed behind. The previous
+  entry recorded that `effort` and streaming "both need an SDK newer than the
+  vendored 0.27.3"; that is true of the *types* only — the SDK serialises the
+  params object as-is, so an untyped field still goes on the wire. Proven rather
+  than assumed: a deliberately invalid `output_config.effort` comes back **400
+  `Input should be 'low', 'medium', 'high', 'xhigh' or 'max'`**, so the API
+  received it. The request is now built as a plain object carrying
+  `output_config: {effort: "low"}` and cast to
+  `MessageCreateParamsNonStreaming` at the call, plus `export const maxDuration
+  = 60`. Five runs: 37.1 / 59.1 / 32.7 / 33.1 / 57.3 s — every one returns, none
+  is cut off. The spread is the finding: **time tracks the size of the answer
+  almost linearly** (1349 ch → 32.7 s, 2209 ch → 57.3 s). What the route pays
+  for is writing ~2 KB of menuqad Hebrew, not reasoning — adding
+  `thinking: {type:"disabled"}` on top ran the same three topics in 41.2 / 37.3
+  / 32.8 s, inside the noise, so thinking stays on rather than take the
+  documented XML-tag-leak risk for nothing. Evidence in
+  `QA/gannenet/generator-effort-0811/`. **Open:** a long answer still lands at
+  ~57 s against the 60 s ceiling. The remaining lever is the size of the page —
+  the system prompt bounds neither `contentElements`/`designHints` (the model
+  picked 6–7) nor `instructions` (376–572 chars) — and that is a product
+  decision, so it is in `NEEDS_USER.md`.
+
+- **`lib/overrides.ts` + `app/api/admin/override/route.ts` + `app/shelf/admin/page.tsx`**
+  — `setOverride()` threw away the boolean `writeOverrides()` returns, the route
+  answered `{ok:true}` unconditionally, and the page printed `נשמר: <title>` on
+  it. So a write that never happened was reported as a save, and the reachable
+  case is the ordinary one: with `SUPABASE_*` unset `writeOverrides` returns
+  `false` on its first line and the admin was still told the file was hidden.
+  The same lie ran the other way through the UI — the `הסתר קובץ` checkbox wrote
+  into `rows`, the state that mirrors storage, so a row dimmed to `opacity:.6`
+  *before* anything was sent and stayed that way when the save failed.
+  `setOverride` now returns `{ok, reason}`, the route maps that to **503**
+  (unconfigured) / **502** (write failed) with a Hebrew sentence and only says
+  `ok` after the object lands, and the page keeps pending edits in
+  `hiddenDrafts` beside the existing `drafts`, marks a row `· לא נשמר` while it
+  differs from storage, and shows the route's own message. It narrows with
+  `"reason" in res` rather than `!res.ok`: `tsconfig.json` sets `strict:false`,
+  which switches discriminated-union narrowing off — `/api/catalog` tests
+  `"error" in result` for the same reason. Verified both ways on `next dev`
+  :3042 with the real key: unconfigured → 503 and no `נשמר:` on screen;
+  configured → 200, `overrides.json` carries the entry and `/api/drive-catalog`
+  drops to 2,976 of 2,977 items. Both test overrides were reverted through the
+  same UI — `overrides.json` is back to `{}`. Evidence in
+  `QA/gannenet/admin-save-truth-0811/`. **Open:** the admin list is `driveItems`
+  only, so material added through `/shelf/upload` still cannot be hidden or
+  trimmed there.
+
+- **`app/shelf/page.tsx` + `app/api/catalog/route.ts` + `app/api/admin/list/route.ts`
+  + `app/shelf/admin/page.tsx`** — the line above ended on the admin list being
+  `driveItems` only. Following it found that the hide held for one of the shelf's
+  three sources. All 258 seed assets are in-repo copies of Drive files and carry
+  those files' ids (258/258 verified against `content/drive-catalog.json`), so the
+  seed loop on `/shelf` is meant to *upgrade* a drive row to the local copy — but
+  it was written `for (const i of seedItems) map.set(i.id, i)`, unconditional, so
+  hiding one of those 258 dropped it from `/api/drive-catalog` and this loop put
+  it straight back. Reproduced with the override in place and the old line
+  restored: API **2,976** without the file, page beside it **2,977** with the card.
+  Uploaded material could not be curated at all — no row in the admin list to
+  tick, and `/api/catalog` never applied the override map, so the hide
+  `/shelf/[id]` already honoured left the card and its download button on the
+  shelf. The seed loop now merges onto rows the catalog still lists and keeps the
+  `hiddenPages` it attached; a new `driveOk` flag separates "nothing is left"
+  from "the catalog never answered", because the second is the PWA's offline path
+  and must still show the 258. `/api/catalog` applies overrides;
+  `/api/admin/list` includes uploads, tagged `source` and placed **first** (the
+  list pages 40 at a time — nobody reaches the tail of 2,977); an upload row reads
+  `· הועלה כאן`. Verified on `next dev` :3042 against the real bucket both ways,
+  including the aborted-catalog offline path (258 shown) and a real upload through
+  the real form (`/api/catalog` 1 → 0 after the tick). `tsc --noEmit` 0; storage
+  and both catalog counts left as found. Evidence in
+  `QA/gannenet/hide-holds-0811/`. **Open:** the service worker holds
+  `catalog-gannenet-v3` and served a pre-hide catalog to a reloaded page twice in
+  this run, so a hide can lag for a returning teacher; and `setOverride()` is a
+  read-modify-write with no compare-and-set — two saves in the same second lost
+  one during this run's own cleanup.
+
+- **`public/sw.js`** — the line above ended on the service worker serving a
+  pre-hide catalog to a returning teacher. Following it into `activate()` found
+  something larger sitting beside it: `keys.filter(k => !k.endsWith(VERSION))`
+  deleted **every** cache the filter did not recognise, and Cache Storage is
+  keyed by *origin*, not by service-worker scope. Under `more30.com` this app
+  shares that origin with every other system mounted there — `/galil` (#24) is a
+  vite-plugin-pwa build whose Workbox precache is named
+  `workbox-precache-v2-https://more30.com/galil/` — so every gannenet activation
+  would have wiped them. Reproduced with the old line restored: four caches
+  seeded at the origin, reload, and galil's and a stubbed kiosk cache are both
+  gone (`caches.match('/galil/index.html')` → `null`). Nothing was lost in
+  production because `/gannenet` is not mounted yet; this fires on the first
+  activation after it is. The cleanup now only considers names this app itself
+  created, `/^(shell|files|catalog)-gannenet-v\d+$/`, and each cache carries its
+  own version so one can be dropped without taking the others — `FILES` is the
+  teacher's own "שמירת התצוגה לאופליין" downloads and must survive every bump.
+  With that separation the catalog cache could be bumped to `v4` and its strategy
+  changed from stale-while-revalidate (`hit || fetching` — the stale copy always
+  wins) to network-first with a 3 s budget, which is the other half of the open
+  line: the curation surface may not answer from a pre-hide copy. Measured both
+  ways: online, a primed `STALE-PRE-HIDE` body is ignored and the live one served
+  and re-cached; offline, the cached copy comes back in 8 ms and `/shelf` still
+  falls back to the 258 seeds. Online count unchanged at **2,977**. Also
+  corrected `p("/api/generate")` in the never-cache list to the route that
+  exists, `/api/ai-generate`. `tsc --noEmit` 0. Evidence in
+  `QA/gannenet/sw-origin-scope-0811/`. **Open:** `setOverride()` is still a
+  read-modify-write with no compare-and-set.
+
+- **`lib/overrides.ts` + `app/api/admin/override/route.ts`** — closes that line.
+  The whole override map lived in one `overrides.json`, so every save was a
+  read-modify-write of shared state and two admins saving **different** files at
+  once lost one of the two. Measured before touching anything, two concurrent
+  saves against the real bucket: **a save was lost in 4 of 4 runs**, and both
+  calls returned `ok`.
+
+  Storage offers no compare-and-set, and rather than assume that, both
+  candidates were probed against the real bucket. `If-Match` is *accepted and
+  ignored* on upload — a deliberately bogus ETag still returned 200 and still
+  overwrote. A lock object is unusable: create-if-absent on an existing key is a
+  real atomic **409 `KeyAlreadyExists`**, but DELETE with the anon key is
+  **403 `AccessDenied`**, so a lock could be taken and never released.
+
+  Write-then-verify was the obvious remaining fix and it was implemented, tested
+  and **thrown away**: re-reading after the write and retrying still lost a save
+  in 4 of 4 runs, because "it landed" is only true at the instant of the check —
+  one writer verified its own entry, returned `ok`, and a concurrent write
+  clobbered it a moment later. It is recorded here because it looks correct.
+
+  What ships removes the shared write instead of guarding it: **one object per
+  file**, `overrides/<fileId>.json`. Two files are two keys and cannot collide;
+  two saves of the same file are last-writer-wins on one field, which is what a
+  human expects. Same race, same harness: **0 of 4 lost**. Clearing an override
+  writes `{}` rather than deleting, since the anon key cannot delete, and
+  readers treat an empty entry as absent — so cleared override objects
+  accumulate, one per file ever curated, harmlessly. `readOverrides()` folds the
+  legacy `overrides.json` in underneath the per-file objects, which stay
+  authoritative, so a bucket written by the old code keeps its curation; it was
+  `{}` here, so nothing needed migrating.
+
+  Verified end to end on `next dev` :3042 with `APP_BASE_PATH=/gannenet` against
+  the real bucket: hide through the real admin route → 200 and
+  `/api/drive-catalog` 2,977 → **2,976** without that file; unhide → 200,
+  `{"override":{}}`, back to **2,977** with it; `/api/admin/list` 2,977 rows;
+  a wrong `x-admin-key` still 401. `/shelf` renders 2,977 items / 21 categories
+  with no console errors — the screenshot, since `readOverrides()` is now a list
+  plus N fetches and that page is what it could have broken. `tsc --noEmit` 0
+  (665 files — this app's tsconfig really does compile, unlike the repo root's).
+  The bucket was left exactly as found: all three probe objects deleted, root
+  back to `index.json, overrides.json, seed, up_msoxh0q3_hx4s.png`, and
+  `overrides.json` still `{}`. Evidence and the reusable race harness in
+  `QA/gannenet/overrides-cas-0811/`.
+
+  One note for whoever reads storage from this machine: NetFree rewrites the
+  upstream status of a Supabase error to **400** and carries the real one in the
+  body (`{"statusCode":"409",...}`). Every probe above reads the body, not the
+  status. It is a property of this network, not of production.
+
+- **`lib/supabase.ts`** — the upload store still held every uploaded item in one
+  `index.json` array and wrote it read-modify-write, the shape the entry above
+  moved overrides off. It is the worse of the two: the loser's **bytes are
+  already in the bucket**, so what is lost is the entry naming them and the file
+  becomes an orphan nothing can list, reach or clean up — the bucket was already
+  carrying one, `up_msoxh0q3_hx4s.png`, left by `hide-holds-0811`. Measured
+  first, two uploads at once through the real route against the real bucket:
+  eight uploads, all answering **200**, and **one** entry survived, beside eight
+  blobs. Reading the object directly explained why it was one and not the four a
+  pure race would cost — the authenticated read is fronted by Supabase's CDN and
+  the two disagreed at the same instant, `?t=<random>` returning the real array
+  and the plain URL `[]`. So `/api/catalog` showed nothing after a successful
+  upload and every read-modify-write started from a stale empty array and
+  overwrote the whole list. `lib/overrides.ts` documents that CDN behaviour and
+  busts its admin read-back; this file never did, and its comment claimed the
+  opposite ("avoids CDN staleness"). Now **one object per upload**,
+  `uploads/<id>.json`: two uploads are two keys, there is no shared array to
+  rewrite, and each object is written once and never mutated, so a cached copy
+  of it is the correct copy. `readEntries()` folds the legacy `index.json` in
+  underneath, per-upload objects authoritative. Per-object storage has no
+  insertion order and the array's order *was* the shelf's "newest first" — ids
+  are `up_<base36 ms>_<base36 rand>`, so creation time comes off the id, no
+  field added and legacy entries sort beside new ones. `uploadItem` no longer
+  swallows the metadata write: the bytes are in the bucket by then, so a failure
+  says so instead of leaving an orphan. Same harness after: **0 of 4 lost**, and
+  `/api/catalog` listed 9 — the 8 concurrent uploads plus the legacy entry
+  folded in, so the migration is verified against real data. `/shelf` 2,986
+  items / 21 categories, 0 console errors; `tsc --noEmit` 0. Bucket left exactly
+  as found: 24 probe objects deleted with the service-role key, `index.json`
+  back to `[]`, `/api/drive-catalog` 2,977. Evidence in
+  `QA/gannenet/upload-index-race-0811/`.
+
+- **`lib/base.ts` + `app/shelf/[id]/page.tsx` + `app/shelf/page.tsx`** — the
+  "הורדת הקובץ" button did not download. `/api/shelf/[name]` and `/api/drive/[id]`
+  both serve `Content-Disposition: inline` unless the request carries `?dl=1`,
+  and only drive items ever carried it: the helper read
+  `source === "drive" ? file + "?dl=1" : file`, under the comment "local assets
+  download directly". That was true while the seed assets were static files in
+  `public/shelf/`; they now live in the bucket behind `/api/shelf/<name>` — all
+  258 of them (`content/catalog.json`, 234 pdf + 24 image). So for every seed
+  file the download button's href was byte-identical to the "פתיחה בכרטיסייה
+  חדשה" beside it and opened the PDF instead of saving it, on the item page and
+  on the `/shelf` grid both. `public/sw.js`'s `isFile()` carried the same stale
+  assumption after that move and was fixed for the same reason; this was the
+  second site. One `downloadUrl(file)` now lives in `lib/base.ts`, keyed on the
+  URL (`/api/` → append `dl=1`) rather than on `source`, so it stays right for
+  whatever a later source streams through our origin — applied to the raw `file`,
+  since the prefixed `/gannenet/api/…` would not match. Verified in the browser
+  against the production build (`next build` ✓ 65 pages, `next start` :3043):
+  download → **attachment** 29,278 B, open → **inline**, same file; every
+  download button on `/shelf` carries `dl=1` across both sources (13 seed + 35
+  drive in dev, 2 + 46 in prod), 0 off-origin; counts unchanged at 2,977 / 21
+  categories; drive items untouched. Two things ruled out along the way: a dev
+  hydration warning (`Server: …?dl=1  Client: …pdf`) was HMR serving the old
+  chunk — the production build logs 0 console errors — and `/api/shelf/*.pdf`
+  502s on this machine only because NetFree answers **418** to PDF bodies from
+  `supabase.co` (the `.jpg` proves the same code path end to end). `tsc --noEmit`
+  0. Evidence in `QA/gannenet/download-disposition-0811/`. **Open:** uploaded
+  material is the one source not streamed through our own origin —
+  `entryToItem()` returns an absolute `supabase.co` URL, which cannot be made to
+  download (no `Content-Disposition`, and `download` is ignored cross-origin),
+  is `no-store` so never cached, is skipped by both the service worker and the
+  offline prefetch, and is off-domain against §0.
+
+- **`app/api/upload/[name]/route.ts` (new) + `lib/supabase.ts` + `public/sw.js` +
+  `app/shelf/page.tsx`** — closes the open line above: uploaded material was the
+  one shelf source not streamed through our own origin. `entryToItem()` returned
+  the bucket's public `supabase.co` URL, so an upload had none of what the other
+  two sources get from being same-origin — the download button could not download
+  (no `Content-Disposition` to set, and `download=` is ignored cross-origin), the
+  PDF viewer could not read it (it reads with `fetch()`), the service worker
+  returned early on it (`url.origin !== location.origin`), "שמירת התצוגה
+  לאופליין" filtered it out (`file.startsWith("/")`), and it put a file this app
+  serves back on an off-domain host — the thing serving under more30.com exists
+  to avoid. `/api/upload/[name]` is `/api/shelf/[name]`'s shape minus the `seed/`
+  prefix, admitting only the object names `uploadItem()` writes
+  (`^up_[a-z0-9]+_[a-z0-9]+\.[a-z0-9]{1,8}$`); the extension is the one part of
+  that name that comes from the user, so `uploadItem()` now replaces anything
+  that is not a plain short extension, which makes the pattern total. Verified
+  against the production build and the **real** bucket: a real seed file uploaded
+  through the real `POST /api/catalog` came back as
+  `/api/upload/up_msp02sp4_cr56.jpg`, served **200 `inline`** and **`attachment`**
+  with `?dl=1`, and the item page renders it with 0 console errors; `index.json`,
+  a double extension and a traversal all 400. Both QA uploads were then hidden
+  through the real admin override — the catalog is back to 0 items. Byte equality
+  on read-back and a PDF upload are the two things this machine cannot show
+  (NetFree recompresses images and answers 418 to PDF bodies from `supabase.co`);
+  sizes match at every hop we control. `tsc --noEmit` 0. Evidence in
+  `QA/gannenet/upload-origin-0811/`. **Open:** the anon key cannot DELETE from
+  Storage, so the two QA blobs and the earlier upload-race orphan stay in the
+  bucket, hidden but not removed — cleanup needs a service-role key.
+
+- **`app/api/admin/delete/route.ts` (new) + `lib/supabase.ts` + `app/shelf/admin/page.tsx`
+  + `app/api/upload/[name]/route.ts`** — uploaded material could be hidden and never
+  removed. `lib/overrides.ts` drops a file from every shelf, but the blob stays in
+  `gannenet-shelf` for ever; **no code path in this app deleted anything at all**,
+  because the anon key cannot DELETE from Storage (403 `AccessDenied`,
+  `QA/gannenet/overrides-cas-0811/`). So the bucket only grew, a file a teacher
+  uploaded by mistake stayed retrievable to anyone holding its URL, and the
+  orphans earlier failures left had no way out except a hand-run script — which is
+  what the previous step had to leave open. Deletion, and only deletion, uses
+  `SUPABASE_SERVICE_ROLE_KEY`; unset, everything else runs unchanged and the route
+  answers 503 rather than pretending. `deleteUpload()` takes the blobs first and
+  the entry last — the entry is the only thing that can name the blob, so dropping
+  it first strands the bytes exactly the way an orphan is made; in between, the
+  shelf shows an item whose file 404s, which is recoverable. The id pattern
+  `^up_[a-z0-9]+_[a-z0-9]+$` is deliberately narrower than
+  `/api/admin/override`'s, so no Drive or seed id can reach the one destructive
+  route. Verified against the production build and the real bucket: 401 without
+  the key, 400 for a Drive id / a traversal / `index.json` / `seed`, 404 for a
+  well-formed absent id; a real seed asset uploaded through the real
+  `POST /api/catalog` and deleted → catalog 0 items, blob gone, retry 404; and
+  through the real UI, the button (which asks first) removes the row and the count
+  goes 2,978 → 2,977, 0 console errors. Two defects the run itself found are fixed
+  here: an already-gone delete arrives as **400** with the 404 in the body, so the
+  retry used to be a permanent 502; and `/api/upload/[name]` kept returning **200
+  and the full body** for an object Storage had already dropped, because Next
+  caches `fetch()` in a route handler by default. The same run cleared, through
+  the product path, the two QA uploads and the `up_msoxh0q3_hx4s.png` orphan
+  earlier steps left — `seed/` still 258, `uploads/` empty. `tsc --noEmit` 0.
+  Evidence in `QA/gannenet/upload-delete-0811/`. **Open:** the deployed
+  environment needs `SUPABASE_SERVICE_ROLE_KEY` set or the button answers 503
+  (`NEEDS_USER.md`); and a copy already in a teacher's browser or service-worker
+  cache survives the delete — nothing server-side can reach it.
+
+- **`app/api/upload/[name]/route.ts` + `public/sw.js`** — half of that last line
+  was untrue: the copy on her disk is unreachable, the copy in her **service
+  worker** is not, because this app writes the service worker. Files are
+  cache-first in `FILES` with no expiry and no revalidation, which is simply
+  correct for Drive files and the 258 seed assets — they are immutable — and
+  wrong for the one source that can now be deleted. And nothing on the client
+  could have acted on it anyway: every non-ok upstream collapsed into `502`, so
+  a deleted file and a broken one were the same answer, and a service worker may
+  not drop a teacher's offline material on a maybe. The route now returns a real
+  **404** for gone (`502` kept for broken) and exports a `HEAD`, so the check
+  costs no bytes; `evictIfGone()` runs behind the response for `/api/upload/`
+  only and deletes with `ignoreSearch`, since `?dl=1` and the bare URL are two
+  keys for one file. Verified on the production build against the real bucket: a
+  real upload cached under both keys, deleted through the real
+  `/api/admin/delete`, then viewed again — the view is still served `200 29278B`
+  from the cache, both keys are gone after it, and the next view is **404** with
+  nothing put back. Offline (server stopped) the same file is served from `FILES`
+  and is **still cached** three seconds later; a rejected check is not "gone".
+  Three defects the run itself found, all fixed here: **(1)** the obvious HEAD —
+  reuse the GET upstream and `body.cancel()` it — *hangs*, returning 400 and 404
+  fine and never returning even a status line for the one id with bytes behind
+  it (two harness runs plus a raw `http.request` that timed out before the
+  headers); it asks Storage with HEAD now. **(2)** Storage's CDN and its origin
+  disagreed about whether the file exists — seconds after the delete an upstream
+  HEAD said gone and an upstream GET returned 200 and all 29,278 bytes, so the
+  route called a deleted file "broken" *and served it*; the upstream URL takes
+  the same cache-buster `lib/overrides.ts` uses. **(3)** the eviction worked and
+  the **browser** undid it: `max-age=86400` let the HTTP cache re-serve the
+  deleted bytes and `cacheFirst` put them straight back, so the network leg for
+  uploads is `cache:"no-store"` and the response `max-age` is 300, matching
+  `s-maxage`. `/shelf` 2,977 items, 0 console errors; `tsc --noEmit` 0; bucket
+  left as found (`uploads/` empty, `seed/` 258, drive catalog 2,977). Evidence in
+  `QA/gannenet/upload-gone-0811/`. **Open:** a file already downloaded to disk,
+  or cached in a browser that never comes back online, is reachable from nowhere;
+  and an upload now bypasses the Supabase CDN on every `FILES` miss — cheap at 0
+  uploaded items, the line to revisit if that grows.
+
+- **`lib/upload-limits.ts` (new) + `app/shelf/upload/page.tsx` + `app/api/catalog/route.ts`**
+  — the form promised "עד 25MB" and the route checked 25MB, but the request body
+  of a Vercel Function may not exceed **4.5 MB**: past that the platform answers
+  **413 `FUNCTION_PAYLOAD_TOO_LARGE`** and the function is never invoked, so the
+  route's own check could only ever run for files the edge had already let
+  through. Everything between the two — which the page invited — was uploaded in
+  full over the teacher's connection and then refused by something that does not
+  speak this app's language. What she saw was not a sentence: the edge answers
+  HTML, the page did `await res.json()`, and that throws
+  `SyntaxError: Unexpected token '<', "<!DOCTYPE "…`, which `err.message` printed
+  into the middle of a Hebrew form (reproduced in the same browser, not reasoned
+  about). One constant now, **4 MB** — room for the multipart envelope under the
+  4.5 MB the platform counts, and free against this shelf's own material: the 258
+  seed files average 622 KB and the largest is 1,944 KB, so nothing already on
+  the shelf would have been refused. The file is checked when it is *picked*, so
+  an oversized one never leaves the browser and the message names its size;
+  errors are read once as text and parsed only if they are JSON, with a
+  413/503/5xx fallback, and a failed `fetch` gets its own sentence. The route
+  answers **413** rather than 400, matching what the edge would have said.
+  Verified on the production build against the real bucket: 5MB picked → refused
+  with **no POST issued**; 5MB straight at the route → 413; 2KB png → 200 through
+  the real form; wrong type still 400; an HTML 413 fulfilled at the network layer
+  → Hebrew. Both QA uploads removed through `/api/admin/delete`, catalog back to
+  0, drive catalog 2,977. `tsc --noEmit` 0. Evidence in
+  `QA/gannenet/upload-limit-0811/`. **Open:** a scan over 4MB needs a signed
+  upload straight to Storage — a design decision, and nothing on the shelf today
+  needs it.
+
+- **`lib/download-name.ts` (new) + `app/api/drive/[id]/route.ts` + `app/api/shelf/[name]/route.ts`
+  + `app/api/upload/[name]/route.ts`** — every download was named after the URL
+  instead of the file. All three sources stream through one of our own routes and
+  all three answered a bare `Content-Disposition: attachment`, with no `filename`,
+  so the browser fell back to the last path segment — which is an id.
+  `/api/shelf/<id>.pdf` at least kept the extension; **`/api/drive/<id>` has none
+  at all**, so all 2,977 files on the shelf's dominant source saved as a
+  33-character Drive id that Windows will not open by double-click. The title was
+  in the catalog the whole time.
+
+  One `downloadFilename()` + `contentDisposition()` now serves all three, and every
+  rule in it comes from a count over the real catalogs rather than from caution
+  (`catalog-scan.mjs`): **1,648** drive titles and **70** seed titles carry a
+  character illegal in a filename (`Fwd: …`, `"דוידוני במקלט"…`, `…התפילה?`), so a
+  title cannot be used raw; **25** drive and **40** seed titles have no extension
+  of their own, so the mime supplies it; **20** carry `.pdf` *twice* — Google's own
+  data — so the strip repeats; the longest is 133 characters, so the stem is
+  bounded at 80. Every title here is Hebrew, which needs RFC 6266's two-parameter
+  form (ASCII `filename` fallback plus `filename*=UTF-8''…`, with `'()*` escaped on
+  top of `encodeURIComponent`, which leaves them). An unknown mime yields **no**
+  extension rather than a guessed one — one file, an `ms-tnef` attachment.
+
+  `name-check.mjs` runs the shipped source (annotations stripped, so it cannot
+  drift from a copy) over all **3,235** catalog rows: 0 failures against empty,
+  illegal character, leading/trailing dot, over-length, doubled extension, CR-LF
+  header injection, and malformed header. Verified live on the production build
+  against the real bucket — a seed image serves `inline` and, with `?dl=1`, the
+  full header decoding to `וואוו, איזה פתרון גאוני קיבלה הגננת תמר---- - מודעה
+  יוני גננות.jpg`; and **in the browser through the real UI**, "הורדת הקובץ" saved
+  `הופה, סוף שנה כבר כאן! - דוגמא לעמוד מתוך הקטלוג.png` where it used to save
+  `1E5LUC8aYmijfBR3zDYg3Gz222ft3s9nO.png`. The upload route reads the teacher's own
+  title back out of Storage, on the download path only — a view needs no filename
+  and the service worker's HEAD check must stay cheap — and that was exercised with
+  a real upload through the real form and removed through the real
+  `/api/admin/delete`. `tsc --noEmit` 0; bucket left as found (`uploads/` empty,
+  `seed/` 258, drive catalog 2,977). Evidence in
+  `QA/gannenet/download-filename-0811/`.
+
+  Two limits of this machine, both pre-existing: `/api/drive/[id]` answers 502 for
+  every id here because `drive.usercontent.google.com` returns NetFree's block page
+  (418, verified this run), and seed PDFs likewise; the image proves the identical
+  code path end to end.
+
+  **Open:** the first file tested kept saving as its id, and the cause is not this
+  change — `cacheFirst()` in `public/sw.js` returns a `FILES` hit *ignoring the
+  request's cache mode*, so a copy cached before an update keeps its old response
+  headers for ever and even `fetch(url, {cache:"reload"})` never reaches the
+  network (measured: same URL → old header, same URL + `&z=<random>` → new one).
+  The same cache also stores `?dl=1` and the bare URL as two entries for one file —
+  two full copies against her storage quota, differing in one header. Bumping the
+  `FILES` version would drop a teacher's offline material, which is the one thing
+  it exists to keep, so this needs its own step. → **closed below.**
+
+- **`public/sw.js`** — the download URL was cached as a second copy of the file,
+  and no copy could ever be updated. `downloadUrl()` appends `?dl=1`, and `dl`
+  changes exactly one response header: `/api/shelf`, `/api/drive` and
+  `/api/upload` answer `inline` without it and `attachment` with it. `isFile()`
+  matched that URL too, so `cacheFirst` filed it in `FILES` as a file of its own —
+  **a second full copy of every file a teacher downloaded**, differing from the
+  viewer's copy in one header. And because `cacheFirst` returned any hit before
+  looking at the request's cache mode, that copy's headers were frozen: once the
+  routes learned each file's real name (the entry above), a browser that had
+  already downloaded the file went on saving it under its Drive id, and
+  `fetch(url, {cache:"reload"})` could not get past the cache either — only a URL
+  that had never been seen could.
+
+  Three changes. `downloadVariant()`: a `?dl=1` request is never stored and always
+  goes to the network; offline it falls back to the bare copy in `FILES`, re-headed
+  to `attachment` so the button still saves rather than opens. `cacheFirst()` now
+  honours the request's cache mode — `reload`/`no-store`/`no-cache` skip the hit
+  and replace the entry, `force-cache`/`only-if-cached` stay cache-first, and a
+  reload that cannot reach the network still returns her copy.
+  `dropDownloadVariants()` on activate clears the `?dl=1` entries already out
+  there. That is deliberately **not** a `FILES` bump: what "שמירת התצוגה לאופליין"
+  saves is the bare URL (`app/shelf/page.tsx` prefetches `withBase(i.file)`, no
+  `dl`), so her offline material is untouched and only the duplicate is released.
+
+  Measured on the production build against the real bucket. A `FILES` seeded to
+  look like a pre-change browser — bare copy plus a stale `?dl=1` entry carrying
+  the old header — now answers the download with the live header
+  (`…filename*=UTF-8''…` → `הופה, סוף שנה כבר כאן! - דוגמא לעמוד מתוך הקטלוג.png`)
+  and the real 20,481 bytes. Through the real UI on a clean browser, view +
+  download leave **one** cache entry where they used to leave two. A seeded
+  17-byte stand-in is still returned to a plain `fetch` and replaced by
+  `{cache:"reload"}`. With the server stopped and the port confirmed closed, a
+  saved file still views (`inline`) and still downloads (`attachment`, from cache),
+  and a file she never saved fails as it did before. Three legacy `dl` entries were
+  dropped at activate with the bare copy kept — note that `unregister()` +
+  `register()` of a byte-identical script does *not* reinstall (the browser reuses
+  the running worker and `activate` never fires), so that reads as a false no-op; a
+  distinct script URL on the same scope is what forces a real install. `tsc
+  --noEmit` 0; bucket as found. Evidence in
+  `QA/gannenet/sw-download-variant-0811/`.
+
+  **Cost, stated plainly:** a file downloaded but never viewed and never saved for
+  offline loses its cached copy at activate; online it comes back on the next
+  click. **Open:** nothing from this change.
+
+- **`lib/content.ts` + `app/library/page.tsx`** — the previous change closed
+  everything it opened, so this followed the one lesson surface no step had read:
+  `/library`, "מאגר המערכים". Its month filter was built from `l.month` as it
+  stands, and on **12 of the 47** משלימה lessons that field does not hold the
+  month — it holds the whole meta line, `אלול  |  גיל 3–6  |  משך: כ־45 דק׳  |
+  תחום: חברה והתנהגות`. So the dropdown offered **19** options where eleven
+  months exist, twelve of them long strings clipped inside the `<select>`; the
+  chip on twelve cards printed that line; and picking `אלול` returned **4 of the
+  6** Elul lessons, the other two reachable only through the garbage entry each
+  had become. Every lesson was reachable through *some* option — the option
+  counts summed to 52 — just not through the name of its month.
+
+  One `monthOf()` now serves both audiences: cut at the first `|` or `·`, drop a
+  leading `חודש`. It is a single reading rule for the two shapes the data has —
+  a משלימה `month` field, and the `meta` line that is the only month a רגילה
+  lesson carries (`חודש תשרי · יום א׳ מתוך 5  |  …`). The רגילה path had its own
+  `meta.split("·")[0].replace("חודש","")`, correct against today's five rows and
+  breakable the same way by one meta line written with `|`. `allMonths()` reads
+  through it too. **No content file was touched** — the data stands, only the
+  reading of it changed. Measured in the browser both ways: 19 → **11** options
+  in year order (אלול→סיוון plus `כל השנה`), 12 → **0** over-long chips, `אלול`
+  4 → **6**, and the eleven month counts still sum to 52, so nothing was dropped
+  or double-counted. `tsc --noEmit` 0, 0 console errors. Evidence in
+  `QA/gannenet/library-month-0811/`. Note for the next run: the first
+  measurement after the edit returned the *old* numbers — `shell-gannenet-v3`
+  served the previous bundle until the worker was unregistered. **Open:** the
+  free-text box searches title + category + the one-line `sub` only, so a word
+  that appears in the lesson body itself finds nothing.
+
+- **`lib/content.ts` + `app/library/page.tsx`** — closes that line, and a second
+  defect sitting on top of it. The box matched
+  `(title + category + sub).includes(q)`: **75 characters of an average
+  3,020-character lesson, 2.5%** of what the lesson holds. A word in the body —
+  `כוורן`, `האבקה`, `צנצנת`, `ריקוד` — found nothing, and the material is on the
+  page one click later. The second defect is why fixing only the first would
+  still have missed the obvious searches: the text is matched **as stored**, and
+  **50 of the 52** lessons carry nikud somewhere (`בְּרִיאַת הָעוֹלָם`,
+  `מוֹדֶה אֲנִי`). Nobody types the points, so the word printed in the title was
+  itself unsearchable.
+
+  `normalizeSearch()` strips nikud (U+0591–U+05C7) and geresh/gershayim — the
+  same word appears with both the typographic and the ASCII form — collapses
+  whitespace and lowercases, and **both sides go through it**, term and text.
+  `searchTextOf()` walks every string a lesson holds, minus the `id` slug,
+  normalizes each field on its own and joins on newline, so a term must sit
+  inside one field rather than straddle the seam two concatenated fields make.
+  Neither content file was touched, and the page already imported both, so the
+  bundle is unchanged.
+
+  Measured in the browser against the real corpus, before → after:
+  `מודה אני` 0 → **5**, `צנצנת` 0 → **5**, `ריקוד` 0 → **3**, `האבקה` 0 → **2**,
+  `סוכה` 0 → **1**, `תפוח` 1 → **6**, `ראש השנה` 5 → **10**, `שופר` 3 → **5**.
+  No regression: empty query still 52, an exact title still 1, nonsense still 0,
+  a padded query equals the unpadded one, and search composes with both filters
+  (`אלול` + `ראש השנה` → 3; `ראש השנה` splits 5 רגילה / 5 משלימה). The
+  placeholder now says what it searches and the box got an `aria-label`.
+  `tsc --noEmit` 0, 0 console errors. Evidence in
+  `QA/gannenet/library-search-0811/`.
+
+- **`app/pricing/page.tsx` + `app/page.tsx` + `components/Nav.tsx` + `components/Footer.tsx`**
+  — the previous step closed everything it opened, so this read the surfaces that
+  make claims rather than the ones that do work. **Four features were being sold
+  and none of them exists.** `אשף הכנה לשבוע` — a home card, the hero sentence,
+  the footer paragraph on every page and a premium bullet — has no route, no
+  component and no handler; the build renders 65 pages and none is a wizard.
+  `שילוב תמונות ושליחה בוואטסאפ`: `/newsletter` has two inputs and one button
+  that sets state, renders the draft into a `<div>`, and offers no image field,
+  no send and not even a copy button (0 hits for whatsapp anywhere in the 45
+  source files). `מוכן להדפסה ו-PDF` on the מחולל card: `/generator` returns a
+  title, instructions and two lists — the only `print()` in the app is
+  `components/PdfViewer.tsx`, which is the shelf's file viewer. And the tier
+  split itself — `3 הפקות AI בחודש` against `ללא הגבלה` — described metering on
+  an app that **has no accounts at all** (the one `login()` is the admin-key
+  prompt on `/shelf/admin`) and no counter, so everything listed as paid was in
+  fact open to everyone reading the page.
+
+  The price was invented too: **49 ₪**, on a platform whose scale
+  `more30-priority.md` §8א fixes at 2/5/10/12/15 and in no `core.plans` row. And
+  every call to action landed somewhere else than it said — all three pricing
+  buttons, `דברו איתנו` included, were `href="/library"`, and the one prominent
+  button in the nav of every page read `הרשמה` and went to the price table,
+  asking for an account this app cannot create.
+
+  Copy now matches the product. `/pricing` states what is open (all of it,
+  counted from the content files rather than typed in) beside a `בהכנה` tier that
+  names the real 2–15 ₪ platform scale and says plainly that the mapping for #40
+  is undecided and nothing here charges; the שלישי tier — multi-gan management, a
+  supervisor dashboard, central billing, dedicated support — was fiction end to
+  end and is gone. The home shelf card said `עשרות חומרים` for 2,977. The footer
+  gained the §7 credit link `פותח ע״י עולם הסטארטאפים` → `more30.com`, which it
+  did not carry at all. Verified on the production build at :3044: 19 string
+  assertions (13 gone / 6 present) pass, 7 → 6 feature cards, `tsc --noEmit` 0,
+  `next build` ✓ 65 pages, 0 console errors on `/` and `/pricing`. Two apparent
+  assertion failures were run down rather than waved off — `49` matches
+  `lineHeight:49px` in Next's built-in 404 payload, and the interpolated count
+  renders as `כל <!-- -->52<!-- --> המערכים`. Evidence in
+  `QA/gannenet/claims-truth-0811/`. **Open:** which plan (2 ₪ or 5 ₪) #40 sells
+  and what sits behind it is the user's decision — `NEEDS_USER.md` — and neither
+  row exists in `core.plans` yet.
+
+- **`app/newsletter/page.tsx`** — the open line above is a product decision and is
+  in `NEEDS_USER.md`, so this took the surface that step's own evidence named and
+  no step had read: `/newsletter`, the page behind two of the claims it deleted.
+  Two defects. **The letter could be written out of nothing:** `build()` ran
+  unconditionally, and with the topics box empty `list.map().join("\n")` is the
+  empty string — so the page produced a complete 177-character letter home to
+  parents reading "בשבוע המבורך שחלף עסקנו יחד בנושאים חשובים ומרתקים:" followed
+  by no topic, signed "צוות הגן" (the old expression evaluated in the page to
+  confirm, rather than reasoned about). It now shows an inline `role="alert"` and
+  renders nothing. **And the subtitle said "מוכן לשליחה"** over a `<div>` with
+  `white-space:pre-wrap` — on the phone a gannenet writes this on, getting the
+  text out is a long-press selection across a multi-line block. There is now an
+  "העתקת הטקסט" button, and the subtitle says what the page does. No send path
+  was added: nothing here sends, and the pricing step removed that claim rather
+  than acquire it. All three clipboard paths verified in the real page against
+  the production build: the API receives the exact rendered letter (222 chars, 3
+  bullets, `===` the rendered `innerText`); with `navigator.clipboard` forced
+  absent — the plain-http LAN case — `execCommand("copy")` runs and returns true;
+  a rejected write says so and leaves the letter on screen to select by hand.
+  `tsc --noEmit` 0, `next build` ✓ 65 pages, 0 console errors. Evidence in
+  `QA/gannenet/newsletter-copy-0811/`. One note for the next run:
+  `navigator.clipboard.readText()` **hangs** the page in headless Chromium
+  waiting on a permission prompt that never appears — capture the argument to
+  `writeText` instead. **Open:** nothing from this change.
+
+- **`content/regular.json`, `content/mashlima.json`, `content/tags-taxonomy.json`,
+  `lib/content.ts`, `app/library/page.tsx`, `app/lesson/[id]/page.tsx`** — the
+  content package sitting in `gannenet-incoming/` since before this run, ingested
+  per priority §0.3. **The app had 52 of the 180 lessons it was built for**: 5
+  רגילה and 47 משלימה. The package brings 119 + 61. Ingested as data only — the
+  ZIP also ships `lib/content.ts`, `app/library/page.tsx` and `app/lesson/[id]/page.tsx`,
+  but those are the pre-`monthOf`/pre-`normalizeSearch` versions and copying them
+  in would have reverted the month and search fixes of the two steps before this
+  one. Verified safe first: all 52 existing ids survive in the new files and
+  every field of all 52 is byte-identical, so nothing was overwritten with a
+  rewrite; and every array the lesson page indexes unguarded is present on all
+  180, so the build could not crash on a missing field.
+
+  Three defects came with it, all found in the real pages. **175 of the 180
+  lesson pages were a not-found page served under a 200** — `params.id` arrives
+  percent-encoded and every id but the 61 משלימה ones is Hebrew (`p-פרשת-בא`),
+  so `l.id === params.id` never matched; the file `p-פרשת-בא.html` existed, was
+  15 KB, and its content was "המערך לא נמצא". This is not new — it was 5 of 52
+  before, on the only Hebrew ids the app then had — but the package turns it from
+  a corner into the site. `lessonIdOf()` now decodes and keeps the raw form as a
+  fallback. All 180 prerendered files were then re-checked for that string: 0.
+  **The month select offered "ספר בראשית".** 74 of the 119 רגילה lessons carry a
+  unit label where the month is read from — the five books for the 54 parasha
+  lessons, "נושא ליבה" for the 20 values lessons — so a select headed
+  "כל החודשים" listed six book names. `isMonthLabel()` keeps the select to real
+  months (and "כל השנה", which is an answer about time); those lessons are found
+  by domain instead. **And סיון and סיוון are the same month spelled two ways**,
+  one in each audience's files, which had made two entries that each hid half of
+  it; `monthOf` folds them.
+
+  The filter the package is for now exists: a **תחום** select off `tags.domain`,
+  the one axis filled on all 180 and free of the meta-line leakage the month
+  fields have. Ten values, every lesson in exactly one — measured in the page,
+  the ten filtered counts sum to 180 — and month × domain compose (תשרי 19 →
+  תשרי + חגי השנה 15). A parasha card had lost both its chips to the two fixes
+  above, so the unit chip ("פרשות השבוע — בְּרֵאשִׁית") is now shown beside the
+  domain. The header counts what is on screen (`aria-live="polite"`), and the
+  three selects that had no accessible name have one.
+
+  `tsc --noEmit` 0, `next build` ✓ 193 pages with 180 `/lesson/[id]` paths, all
+  180 probed over HTTP on the production build (180 × 200, 0 not-found), 0
+  console errors. Home and `/pricing` derive their counts from the data and read
+  180 with no edit. Evidence in `QA/gannenet/content-180-0812/`; the ZIP moved to
+  `gannenet-incoming/done/`. **Open:** `/library` is now 422 kB of route JS —
+  `searchTextOf` runs in the client over all 180 lessons, so the whole 3.6 MB of
+  content ships to the phone. It was the same shape at 52 lessons and 3½× smaller;
+  at 180 it wants a prebuilt index.
+
+- **`lib/search.ts` (new) + `lib/content.ts` + `app/api/library-index/route.ts` (new)
+  + `app/library/page.tsx` + `app/library/library-client.tsx` (new)** — closed the
+  open line above. `/library` was a client component importing `lib/content`, so
+  **all 180 lessons — 3.5 MB of JSON — were bundled into the route**: 422 kB of
+  route JS, 518 kB first load, downloaded and parsed before the first card
+  appeared. Measured what that mass actually is: the searchable text of the
+  corpus is 2,745 kB of it and the 180 cards are 79 kB. Only the free-text box
+  reads the first number, and only after someone types — so every visitor who
+  used the three dropdowns, or none, paid for a search they never ran.
+
+  The corpus now sits behind `/api/library-index`, a `force-static` route
+  prerendered into the build output (`○` in the build listing), and is fetched
+  once on the first keystroke — 342 kB gzipped, and only then. `/library` became
+  a server component that builds the cards and hands them to `library-client.tsx`;
+  the three string helpers moved to `lib/search.ts` so the client half can import
+  them without the corpus behind them (`lib/content.ts` re-exports, no caller
+  changed). **`/library`: 422 kB → 2.04 kB of route JS, 518 kB → 98 kB first
+  load**, and the 180 cards are now in the HTML itself rather than painted by JS.
+
+  Behaviour is unchanged, not approximately: all 180 served entries are
+  byte-identical to `searchTextOf(lesson)` as the page used to compute it (0
+  missing, 0 differing), and ten terms return the same lesson-id set both ways
+  (ציפור 12, מנורה 12, בראשית 28, שבת 93, פרשת 55, ריקוד 9, טבע 44, and three
+  terms in no lesson → 0). In the real page: a fresh `/library` renders 180 cards
+  with **0** requests to the index; typing ציפור fires exactly **1** and returns
+  12, including cards whose title and blurb do not contain the word. The gap
+  while it loads is not silent — with the fetch held open the line under the
+  heading reads "מחפש בכותרות בלבד — תוכן כל המערכים נטען…" and the term is
+  matched against the card, which is a subset of the answer and never a wrong
+  one; a failed fetch says so and a later keystroke retries. Filters unchanged
+  (180 / תשרי 19 / +חגי השנה 15 / that domain alone 45 / משלימה 61).
+  `public/sw.js` needs no change: the new route falls to its network-first rule,
+  which is the right one — the URL is stable across builds, so a cache-first copy
+  would outlive the content it indexes, and network-first still answers offline
+  from the last copy. `tsc --noEmit` 0, `next build` ✓ 194 pages, 180
+  `/lesson/[id]` paths unchanged, 0 console errors. Evidence in
+  `QA/gannenet/search-index-0812/`. **Open:** `/shelf/[id]` is 178 kB of route JS
+  (274 kB first load) — the one route still above 120 kB, and the page a teacher
+  reaches from every file card. → **closed below.**
+
+- **`components/PdfViewer.tsx`** — closes that line. `/shelf/[id]` is the page
+  behind every card on the shelf, and **176 kB of its 178 kB was `pdf-lib`**,
+  statically imported at the top of `PdfViewer`. Two things follow from where
+  that import sat. The route bundles what the module graph reaches, not what
+  renders, so **634 of the 3,235 items on the shelf** — every `image` (316),
+  `doc` (268), `media` (28) and `gapp` (22) row, counted from the two catalogs —
+  downloaded and parsed a PDF-writing library on a page that never mounts the
+  viewer. And for the 2,601 that are PDFs it was the wrong shape anyway: a static
+  import blocks hydration, where the tool it serves is not needed until the file
+  itself has arrived.
+
+  `import("pdf-lib")` behind a module-level `loadPdfLib()` (import() caches, so
+  the effect and `buildSelectedPdf` share one fetch of it). **178 kB → 2.77 kB of
+  route JS, 274 kB → 98.8 kB first load**; every other route byte-identical.
+
+  The same effect was also re-serialising the whole document to produce a copy of
+  it. `hiddenPages` is empty for everything on the shelf today — the trim is an
+  admin override and `overrides.json` is `{}` — yet the preview was always built
+  by `PDFDocument.create()` + `copyPages(all)` + `save()`, so the teacher waited
+  for the download **plus** a full parse and re-write before the first page
+  appeared. Untrimmed, the bytes just fetched *are* the preview, and they are now
+  shown as their own blob before pdf-lib is even requested; the copy still runs
+  when pages really are hidden. One consequence worth stating: the preview now
+  outlives a later failure — if the pdf-lib chunk never arrives, the file is
+  already on screen, so `status === "error"` only replaces it when there is no
+  preview at all.
+
+  Verified in the browser against the production build (`next start` :3045). On
+  an image item: 13 scripts, **no 459 kB chunk**, no `<object>`, the image
+  renders, 0 console errors. On a PDF item: the chunk appears (`659.*.js`,
+  459,570 B — lazily, and only here), the preview is a `blob:`, the grid builds
+  8 page buttons, the counter reads `8 עמ׳ · נבחרו 8` and `נבחרו 3` after `2-4`
+  through the real range box, and the real download button saves a **3-page**
+  PDF named `שבוע טוב וחודש טוב! - קטלוג ט''ו בשבט — עמודים 2-4.pdf`. 0 console
+  errors. `tsc --noEmit` 0, `next build` ✓ 194 pages. Evidence in
+  `QA/gannenet/pdf-viewer-weight-0812/`.
+
+  The PDF's bytes are supplied at Playwright's network layer, at the app's own
+  URL, because this machine cannot fetch a real seed PDF at all — NetFree answers
+  418 to PDF bodies from `supabase.co` (recorded twice above). Everything over
+  the wire is the shipped path; `make-sample.mjs` builds the 8-page file.
+  **Open:** the fetch still pulls the whole PDF into memory before anything
+  paints, where `<object data={fileUrl}>` would render progressively and let the
+  browser stream it — worth doing, but it costs a second request for the buffer
+  the page tool needs, so it wants its own measurement.
+
+- **`app/lesson/[id]/page.tsx` + `lib/content.ts` + `app/page.tsx`** — the line
+  above every רגילה lesson title printed its position in the unit as
+  `מפגש {day} מתוך 5`, with the total fixed in the JSX. The units are not all
+  five long. Counted off `content/regular.json`: the 13 holiday and value units
+  are (65 lessons), but the five פרשות השבוע books hold **12, 11, 10, 10 and 11**
+  — one lesson per parasha — so **54 of the 119 carried a false total**, and 34
+  of those were self-contradictory on their face: פרשת ויחי read "מפגש 12 מתוך 5"
+  directly above its own meta line, "ספר בראשית · פרשה י״ב". The claim had been
+  true of the 52-lesson app it was written for; the 180-lesson package brought
+  the parasha books with it.
+
+  `lib/content.ts` gains `unitSizeOf(topic)`, counted once from `regularLessons`,
+  and the page prints the total only when it is at least `day` — a future package
+  with a gap prints "מפגש 12" rather than a made-up total. `app/page.tsx`'s
+  library card carried the same claim in copy ("5 מפגשים לנושא") and now
+  describes both shapes.
+
+  Verified against every page rather than a sample: all 180 prerendered
+  `.next/server/app/lesson/*.html` were parsed, **119 carry a unit line and 61
+  (משלימה) carry none**, and for all 18 units the claimed total equals the number
+  of pages actually in that unit. In the browser on the production build
+  (`next start` :3046): פרשת ויחי reads "מפגש 12 מתוך 12" over "פרשה י״ב", and
+  חנוכה מפגש 2 still reads "מפגש 2 מתוך 5" over "יום ב׳ מתוך 5" — unchanged, as
+  it should be. `tsc --noEmit` 0, `next build` ✓ 194 pages, 180 `/lesson/[id]`
+  paths, `/lesson/[id]` 183 B of route JS unchanged and every other route
+  byte-identical, 0 console errors. Evidence in `QA/gannenet/unit-size-0812/`.
+
+- **`components/PdfViewer.tsx`** — the preview under every PDF on `/shelf/[id]`
+  could not paint until the *last* byte of the file had arrived. It fetched the
+  whole document into an `ArrayBuffer`, wrapped it in a `Blob`, and only then
+  handed a `blob:` URL to `<object>` — and a blob does not exist until the
+  download is complete, so the reader watched "טוען תצוגה…" for the whole
+  transfer before seeing page 1. 234 of the 258 shelf files are PDFs, the largest
+  ~1.9 MB. The blob was also a second full copy of the document in memory, and
+  the embedded viewer's title bar showed its UUID instead of the file's name.
+
+  When nothing is hidden — the overwhelming majority; `hiddenPages` is admin
+  curation — `<object data>` is now `fileUrl` itself, set as the effect runs, so
+  the native viewer paints page 1 while the rest is still arriving. The buffer
+  the page-selection tool needs is still fetched, from the same same-origin URL,
+  served `Cache-Control: public, max-age=86400`. Trimmed files are untouched:
+  their preview is a genuinely different document (visible pages only) and still
+  goes through pdf-lib and a blob. A failure *before* the bytes arrive takes the
+  optimistic preview back down and shows the notice — the `<object>` is reading
+  the same URL and would fail the same way — while a failure *after* them
+  (pdf-lib chunk, trimming) leaves the preview up, as before.
+
+  This machine cannot reach the `gannenet-shelf` bucket (`/api/shelf/…` answers
+  502; all 258 seed objects are present in Storage, checked over MCP), so the
+  component was exercised against a local 12-page PDF added to
+  `content/catalog.json` as two temporary entries for the run and removed after —
+  the catalog is back to its 258 items, byte-identical. Untrimmed: `<object
+  data>` is the file URL, not `blob:`, the viewer reads `1 / 12` and names the
+  file, the page tool reads `12 עמ׳`, and the `<object>` request came back
+  `transferSize 300, encodedBodySize 0` — a 304, no second copy of the body over
+  the wire. Trimmed (`hiddenPages: [1,2]`): still `blob:`, `10 עמ׳ (הוסתרו 2)`,
+  and the preview opens on page 3. `tsc --noEmit` 0, `next build` ✓ 194 pages,
+  `/shelf/[id]` 2.78 kB / 98.8 kB first load and every other route unchanged, 0
+  console errors. Evidence in `QA/gannenet/pdf-stream-0812/`.
+
+No other file was modified. The mount itself needs no code edit: `next.config.js`
+already reads `APP_BASE_PATH`, and `lib/base.ts` exports `withBase()` for the
+fetch calls, hrefs and service worker that Next's `basePath` does not prefix.
+
+## Deployed (12/08)
+
+`more30-priority.md` §0.2 — the free-tier deploy cap that blocked this (`core.issues`
+#83) is gone with the move to Vercel Pro, so the mount's first half is done:
+**`gannenet-more30` exists and its production deployment serves the whole app**
+(`dpl_3ymxAHwvxJy75v4Vuwdad9iaB6sy`, `READY`). `vercel link --yes` created it,
+auto-detected Next.js, and the six secrets went in for `production` and `preview`
+from `.env.local` — whose values are `core.secrets`, never git. A `.vercelignore`
+keeps `node_modules`, `.next`, `.env*`, `QA/` and the logs out of the 5.1 MB upload.
+
+Verified through the Vercel MCP's own fetch, because NetFree answers 418 to
+`*.vercel.app` from this machine: `/gannenet` → **200**, the real page — RTL Hebrew
+shell, nav, "180+ מערכים מוכנים", the §7 footer credit — with every asset and href
+already carrying the `/gannenet` prefix (`assetPrefix:"/gannenet"`,
+`/gannenet/_next/…`, `/gannenet/manifest.webmanifest`), so `basePath` took. And
+`/gannenet/api/catalog` → **200 `{"ready":true,"items":[]}`**, which is the server
+reaching Storage with the real key rather than the unconfigured path.
+
+**Two builds failed first, on one character.** `Error: Specified basePath has to
+start with a /, found "﻿/gannenet"` — a **U+FEFF** sat in front of the value. It
+was not in `.env.local`: PowerShell 5.1 encodes what it pipes into a native
+command's stdin with `[Console]::OutputEncoding`, which emits a UTF-8 **BOM**, so
+`$value | vercel env add NAME production` stores `﻿<value>` for *every*
+variable — `APP_BASE_PATH` is merely the one Next validates loudly. Setting
+`[Console]::OutputEncoding` to a BOM-less `UTF8Encoding($false)` before the pipe
+did **not** help (second failed build, identical error). What worked: delete all
+twelve entries and POST them to
+`https://api.vercel.com/v10/projects/gannenet-more30/env` as a UTF-8 JSON body,
+which never crosses a console encoder. Note the values cannot be read back for
+checking — `vercel env pull` prints `[SENSITIVE]` and the API returns `value: null`
+for `type: encrypted` — so the build is the only test.
+
+`ssoProtection` is `all_except_custom_domains`, byte-identical to `galil-more30`
+and every other mount project: the hashed *deployment* URL 302s to Vercel SSO, the
+project alias `gannenet-more30.vercel.app` is open. That is exactly what the portal
+rewrites proxy to, so the next step needs no protection change.
+
+## §0 closed on the domain, driven in a browser (12/08)
+
+Both steps the previous "Next" listed are done and were verified, for the first
+time, in a real browser against `more30.com` rather than through a fetch — which is
+what `more30-priority.md` §0.3 actually asks for. Evidence in
+`QA/gannenet/live-verify-0812/`.
+
+| Asked (§0 · §0.3) | Measured on `more30.com` |
+|---|---|
+| mount answers 200 | `/gannenet` 200 · `/library` · `/lesson/m1` · `/shelf` · `/calendar` · `/generator` · `/pricing` · `/newsletter` all 200 |
+| assets reach the app | five sampled `/gannenet/_next/static/…` → 200 `application/javascript`; `/gannenet/sw.js` 200 |
+| 180 `/lesson/[id]` pages | `/library` renders **180** distinct `a[href*="/lesson/"]`, and the header reads "180 מערכים" |
+| filter by domain | the third `<select>` carries 10 domains; choosing **עולם החי** narrows the grid to 7 and the header to "7 מתוך 180 מערכים" |
+| a lesson shows the full delivery format | `/lesson/m1` renders 11 sections — רקע וידע לגננת · מטרות המפגש · פתיחה · הסיפור לילדים · פעילות בקבוצה · רעיון למעבר · יצירה · דקלום בחרוזים · שיח וסיכום · הרחבות · דף עבודה מוצע |
+| card on the home page | `more30.com/` renders the גננות בקליק card, linking `/gannenet` and `/system.html?app=gannenet`; `core.projects` #40 already `public_visible=true`, `live=true`, `is_deployed=true` |
+| shelf | `/shelf` reads "2,977 פריטים · 21 קטגוריות" over 21 category tabs; `/api/catalog` → `{"ready":true,"items":[]}`, i.e. the env is configured and no *uploads* exist yet — the 2,977 are catalog-backed, not uploads |
+| `gannenet-incoming/` (§0.3) | no new ZIP; the only file is `done/gannenet-content-180.zip.zip`, already processed |
+
+0 console errors on `/`, `/library` and `/lesson/m1`.
+
+The 2,977 shelf items split two ways and both backends answer: 258 are seed
+objects in the bucket (`/api/shelf/<name>.pdf`) and 2,719 are proxied from Drive
+(`/api/drive/<id>`). Eight Drive ids sampled across the catalog (indices 0, 1,
+300, 700, 1200, 1800, 2400, 2976) all returned **200** with real byte counts
+(66 KB … 24 MB), so the proxy works in production.
+
+## Fixed: every Drive-backed shelf file left the origin as `application/octet-stream`
+
+`app/api/drive/[id]/route.ts` passed the upstream `Content-Type` straight through,
+and `drive.usercontent.google.com` answers **all 2,977** of these files as
+`application/octet-stream` — while the same route sends
+`Content-Disposition: inline` for viewing. A browser honours `inline` only for a
+type it can render, so "פתיחה בכרטיסייה חדשה" downloaded the file instead of
+showing it, for every Drive-backed item on the shelf. The catalog knew the real
+type all along (`mime: "application/pdf"`); only the download *filename* was
+reading it. The catalog's mime is now the Content-Type, with upstream kept as the
+fallback for anything unlisted. `/api/shelf/<name>.pdf`, whose upstream sets the
+type properly, was already correct — the two routes serve the same shelf and now
+agree.
+
+`next build` ✓, 180 `/lesson/[id]` paths, every route's JS byte-identical.
+Deployed `dpl_6Yutj5wVER6RYinL7CLdDgDSy9Ks`, `READY`, target production, and
+measured on `more30.com` after: the 66 KB PDF and the 24 MB PDF both now
+`application/pdf`, and a `.docx` in the catalog comes back
+`application/vnd.openxmlformats-officedocument.wordprocessingml.document` — it was
+`application/octet-stream` on all three before. Lengths unchanged (66552 /
+24288335 / 1742102), the four pages still 200 at the same sizes.
+
+**What this did not fix, stated plainly.** From this machine NetFree answers
+**418** to the PDF *body* on both routes, so the in-browser viewer shows
+"לא ניתן להציג את הקובץ" here — before the fix and, re-measured after it, still
+after. The two blocks differ (`warning-file-distorted` on `/api/drive`, a generic
+`error` on `/api/shelf`) and the correct Content-Type did not change either. This
+line 418s PDF bodies from `supabase.co` as a rule (see above), so whether a real
+NetFree client can read these files is **not established from here** — the fix
+above stands on the `inline` + octet-stream mismatch, which is measured, not on
+the filter.
+
+## Next
+
+- Whether the shelf viewer works for a NetFree client is unverifiable from this
+  machine; it needs one look from a line that is not blocked.
+- `core.projects` #40 is still `stage='wip'` while `live`, `is_deployed` and
+  `public_visible` are all true — part of the stage sweep in `core.issues` #156,
+  not touched here.
+
+## 12/08 — §1א: כפתור הצג-סיסמה על מפתח הניהול של המדף
+
+`/shelf/admin` היה שדה הסיסמה היחיד על מערכת חיה, ציבורית ובת-פריסה שעדיין לא
+היה בו כפתור "הצג סיסמה" (נמצא בסריקת `type="password"` על כל `apps/**` מחוץ
+ל-node_modules/dist/_deploy/.next/_archive ומחוץ ל-08/09 המוגנות: תשעה מופעים,
+שניים כבר עם כפתור). זה השדה ששומר על הסתרת קובץ, הסתרת עמודים ומחיקה לצמיתות,
+והמפתח משותף — בדיוק המקרה שבו הקלדה עיוורת עולה בניסיון.
+
+עין/עין-חצויה כ-SVG מוטבע (לאפליקציה אין ספריית אייקונים), `type="button"`,
+`aria-pressed` ו-`aria-label` עברי שמתחלף, ו-`padding-inline-end: 44px`
+בשדה כדי שמפתח ארוך לא ייכנס מתחת לכפתור.
+
+**דרישות סיסמה לא מוצגות, במכוון.** `ADMIN_PASSWORD` נבדק בשלמותו בשרת — אין
+כלל אורך או תווים להציג, והמצאת כלל הייתה נתון מומצא.
+
+אומת חי על more30.com אחרי ביטול רישום שני service workers וניקוי המטמון:
+password → text → password בשתי הקלקות, הערך נשמר, הכתובת לא זזה,
+`elementFromPoint` במרכז הכפתור מחזיר את הכפתור עצמו, ומפתח שגוי עדיין מגיע
+ל-`login()` ומציג "סיסמה שגויה.". ה-build עבר ו-180 עמודי `/lesson/[id]`
+נוצרו כרגיל. פריסה: `dpl_52dYVUPzFfYTPbKUpivUWSnVMhAN` (production, READY).
+ראיות: `QA/gannenet/password-toggle-0812/`.
+
+---
+
+## 12/08 — למערכת לא הייתה שום דרך להתחבר, וזו הייתה היחידה כזו
+
+`scripts/qa/auth-entry-sweep.mjs` מודד על ה-HTML שהייצור מגיש, לא על עץ המקור:
+מתוך **26 הכתובות החיות, 25 מגישות את `auth-button.js`** — הכפתור המשותף —
+ו-**גן-קליק הייתה היחידה בלעדיו**. כלומר לא "הכניסה שבורה" אלא שלא היה
+לאן ללחוץ. `components/Nav.tsx` כבר נשא את ההודאה בהערה: *"The app has no
+sign-up at all"*, והכפתור הבולט היחיד בכל עמוד הוביל ל-`/pricing`.
+
+הנתון שמאשר את זה במסד: `core.app_memberships` החזיקה ל-`gannenet` **שורה
+אחת**, מול 4–15 בכל שאר המערכות — והיא נכתבה ב-02:37 בסקריפט שקרא ישירות
+ל-`more30_join_app`, לא בדפדפן.
+
+**התיקון, שני קווים.** `app/layout.tsx` טוען את
+`https://more30.com/auth-button.js` (כתובת מלאה — האפליקציה מוגשת תחת
+`basePath` ‏`/gannenet`, ונתיב יחסי היה נשבר). `components/Nav.tsx` מפנה
+לכדור מקום דרך `--more30-auth-inset`, המשתנה שהרכיב מפרסם לפי רוחבו
+בפועל — אחרת הכדור יושב מעל "כניסה למאגר", הפקד האחרון בנווט, בדיוק
+הבאג שנמדד ב-11 נתיבים בעבר. המכל ממורכז ל-1180, ולכן מחסירים את השוליים:
+`max(20px, calc(var(--more30-auth-inset, 124px) - max(0px, (100vw - 1180px) / 2)))`.
+
+**אומת חי על more30.com** אחרי ביטול רישום service worker אחד וניקוי 2 caches.
+מנותק: הכדור ב-x 16–92, "כניסה למאגר" מתחיל ב-97, ו-`elementFromPoint` במרכז
+הכפתור מחזיר את הכפתור. מחובר: הכדור מצטמצם ל-71px, ה-inset ל-99px, והכפתור
+עדיין לחיץ — שני מצבים ולא אחד, כי רוחב הכדור משתנה עם התווית.
+הלולאה עצמה: `/gannenet` → `/login?from=…` → `sessionStorage` שומר `/gannenet`
+→ callback → **חזרה ל-`/gannenet`**, בתוך המוצר ולא בדף תדמית, 0 שגיאות
+קונסולה, ו-`core.app_memberships` קיבלה `gannenet` ב-08:38:18 — הכתיבה
+הראשונה אי פעם למערכת הזו שמקורה בדפדפן.
+
+הבנייה עוברת ו-180 עמודי `/lesson[id]` נוצרים כרגיל (תנאי הקבלה של §0.3).
+פריסה: `dpl_B5NK8txSJXzWJdNgqdaWmGiMEDoD` (production, READY), מהמקור ולא
+`--prebuilt`. אחרי הפריסה הסריקה חוזרת **26/26**. ראיות:
+`QA/gannenet/auth-entry-0812/` ו-`QA/platform/auth-entry-0812/`.
+
+לא נטען: מסלול ההרשמה המיידית לא נבדק (הוא יוצר משתמש אמיתי חדש), ו-25
+המערכות האחרות נמדדו רק ברמת "הסקריפט מוגש", לא בדפדפן.
+
+---
+
+## 12/08 — ההרשמה המיידית הורצה מקצה לקצה, וכפילות הקרדיט שהיא חשפה
+
+השורה שהצעד הקודם סגר בה — "מסלול ההרשמה המיידית לא נבדק" — הורצה כאן.
+זו דרישת הקבלה של §8ב במילים שלה: הרשמה קצרה (שם·טלפון·מייל·סיסמה) →
+הלקוח נכנס **לתוך** המוצר → פעולה אמיתית עובדת. היא מעולם לא נבדקה:
+ב-`auth.users` כל חשבונות ה-QA הקודמים נוצרו דרך ה-API ו-`full_name`/`phone`
+שלהם ריקים; רק שני חשבונות אנושיים מ-10/08 עברו בטופס, ואיש לא בדק מה קרה
+להם אחר כך.
+
+**קודם נמדד תנאי הסף:** אישור אימייל כבוי בפרויקט — 12 המשתמשים האחרונים
+כולם `email_confirmed_at` ברגע היצירה. בלי זה `signUp` לא מחזיר סשן,
+והטופס עצמו אומר את זה במפורש ("שלחנו אליך מייל אישור"). ההנחה נמדדה
+ולא הונחה.
+
+**הריצה** (`qa.signup0812a@more30.com`, מ-`/login?mode=signup&from=/gannenet`):
+החשבון נוצר עם סשן מיידי, ה-callback נחת ב-`/gannenet` — בתוך המוצר —
+0 שגיאות קונסולה. במסד: השם והטלפון שהוקלדו נכתבו לפרופיל, ו-
+`core.app_memberships` קיבלה `gannenet` ולא רק את הפלטפורמה.
+אחר כך **יציאה** דרך התפריט (`more30-auth` ריק, הכדור חזר ל"כניסה")
+ו**כניסה חוזרת עם אותה סיסמה** — הבאג של §1א ("נרשמת, ואז הסיסמה שגויה")
+אינו משחזר בכניסה המשותפת. הנחיתה: `/gannenet/library`, ושם סינון אמיתי
+לפי תחום «עולם החי» הצטמצם מ-180 ל-7 כרטיסים בזמן שהמשתמש מחובר.
+
+**מה שהריצה חשפה, ותוקן כאן.** בדף הופיעה שורת הקרדיט של §7 **פעמיים**:
+זו של הפוטר, שהצביעה על `more30.com` (קטלוג המערכות), ולצידה זו ש-
+`auth-button.js` מזריק אל `/showcase` (אתר התדמית). הסקריפט מדלג על ההזרקה
+רק כשקיים אלמנט עם המחלקה `more30-credit`, ולפוטר לא הייתה כזו.
+`scripts/qa/credit-duplicate-sweep.mjs` שאל את השאלה על כל 25 המערכות
+החיות ב-HTML שהייצור מגיש: **גן-קליק היחידה** שכותבת קרדיט משלה, ולכן
+היחידה שקיבלה שתיים. `components/Footer.tsx` מקשר עכשיו ל-`/showcase`
+ונושא את המחלקה — יעד נכון, והזרקה שנייה כבר לא מתרחשת.
+
+בנייה ✓, 180 עמודי `/lesson/[id]`. פריסה `dpl_F93i2usEEYQ8Eg2yAiCu1dGgtEvj`
+(production, READY), מהמקור. אומת חי אחרי ביטול רישום service worker וניקוי
+2 caches: **קרדיט אחד** בדף, בפוטר, אל `/showcase`; הסריקה חוזרת 0/25.
+ראיות: `QA/gannenet/signup-e2e-0812/`, `QA/platform/credit-dup-0812/`.
+
+לא נטען: הסריקה קוראת HTML מהשרת, ולכן מערכת שמציירת את הפוטר ב-JS לא
+נתפסת בה — 24 המערכות האחרות נקיות **ברמת ה-HTML** בלבד. מסלול Google לא
+הורץ, ומערכות עם טופס כניסה משלהן לא נבדקו — §1א עדיין יכול להתקיים בהן.

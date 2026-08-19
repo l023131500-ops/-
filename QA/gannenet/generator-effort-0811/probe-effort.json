@@ -1,0 +1,18 @@
+﻿{
+  "invalid_effort": {
+    "ok": false,
+    "ms": 1090,
+    "status": 400,
+    "message": "400 {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"output_config.effort: Input should be 'low', 'medium', 'high', 'xhigh' or 'max'\"},\"request_id\":\"req_011CdwJk4UurSsB5J7w8obv6\"}"
+  },
+  "valid_effort": {
+    "ok": true,
+    "ms": 1701,
+    "text": "OK"
+  },
+  "no_output_config": {
+    "ok": true,
+    "ms": 2441,
+    "text": "OK"
+  }
+}

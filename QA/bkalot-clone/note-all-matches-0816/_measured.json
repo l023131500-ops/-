@@ -1,0 +1,155 @@
+{
+  "step": "0101 — מסך הפנייה יכול לסמן את ההתאמה הראשונה בלבד",
+  "layer": "מסד (מיגרציה). המסך והפריסה הם הלבנים הבאות ולא נגעו.",
+  "project_ref": "uhnrgujbdxhhmoxcjria",
+
+  "baseline_before": {
+    "note": "נמדד לפני הכל ולא הונח — heartbeat-lags-a-crashed-run",
+    "cases": 0, "case_status_log": 0, "case_rights": 0, "documents": 0,
+    "admin_users": 1, "admin_sessions": 5, "templates": 2,
+    "contacts": 4, "outbound_queue": 8, "delivery_log": 3,
+    "rights_catalog": 888,
+    "schema_migrations_max": "20260816182726",
+    "git_head": "6412e7fd3dc7c2c5c8c28825bc62d23e88eb95a7",
+    "git_head_equals_origin": true
+  },
+
+  "seed": {
+    "path": "public.bkalot_clone_intake (SQL, לא מעל HTTP — פיגום ולא הטענה)",
+    "case_id": 408, "contact_id": 415,
+    "full_name": "אברהם ישראלי", "phone": "0501230081",
+    "kind": "info", "source": "form", "consent": true,
+    "rights_linked": 0, "queued": false,
+    "status_log": [
+      { "id": 138, "to_status": "in_progress", "chars": 41,
+        "note": "Email נשלח לפונה, ואחריו EMAIL נוסף בטעות",
+        "why": "המונח פעמיים ובשתי צורות אותיות, הראשונה פותחת את השורה (נשמר מ-0100)" },
+      { "id": 139, "to_status": "rejected", "chars": 32,
+        "note": "טופס, טופס ועוד טופס נשלחו בטעות",
+        "why": "החדשה כאן — שלוש התאמות, כדי ש«יש שנייה» ו«יש שלישית» לא יהיו אותה שאלה" },
+      { "id": 140, "to_status": "closed", "chars": 37,
+        "note": "המסמכים שצורפו שייכים לשנת המס הקודמת",
+        "why": "בקרה — התאמה אחת בלבד" }
+    ],
+    "admin_id": 4,
+    "admin_created_this_run": false
+  },
+
+  "ground_truth_from_db_not_from_the_function": {
+    "method": "generate_series על כל מיקום בטקסט + substr/lower — כלל התאמה נפרד לגמרי מזה של הפונקציה שנכתבה",
+    "138_email": [1, 26],
+    "139_tofes": [1, 7, 17],
+    "140_hamas": [28]
+  },
+
+  "failure_measured_before_the_migration": {
+    "keys_per_history_row": 10,
+    "keys": ["admin_id","admin_name","at","from_status","id","note",
+             "note_match_len","note_match_pos","note_matched","to_status"],
+    "admin_case_408_email": { "138": { "matched": true, "pos": 1, "len": 5 },
+                              "139": { "matched": false, "pos": null, "len": null },
+                              "140": { "matched": false, "pos": null, "len": null } },
+    "second_occurrence_at_26": "לא בתשובה"
+  },
+
+  "unit_measurements_of_the_new_function": {
+    "fn": "public.bkalot_clone_note_match_positions(text, text)",
+    "email_in_138": [1, 26],
+    "tofes_in_139": [1, 7, 17],
+    "hamas_in_140": [28],
+    "overlap_aa_in_aaaa": [1, 3],
+    "overlap_aa_in_aaa": [1],
+    "no_match": [],
+    "null_note": null,
+    "null_term": null,
+    "empty_term": null,
+    "guard_lower_moves_index_in_note": null,
+    "guard_lower_moves_index_in_term": null,
+    "guard_evidence": { "char_length('İ')": 1, "char_length(lower('İ'))": 2 },
+    "percent_sign_raw": [3, 6],
+    "percent_note": "position גולמי, בלי escape — אך admin_case קורא רק היכן ש-ilike אמר true, ו-0094 מחזירה false על '%'",
+    "ceiling_case": { "note": "repeat('ab',250) — 500 תווים", "term": "ab", "matches": 250, "terminated": true }
+  },
+
+  "after_the_migration": {
+    "keys_per_history_row": 11,
+    "new_key": "note_match_pos_all",
+    "admin_case_408_email":  { "138": { "matched": true,  "pos": 1,  "len": 5,  "all": [1, 26] },
+                               "139": { "matched": false, "pos": null, "len": null, "all": null },
+                               "140": { "matched": false, "pos": null, "len": null, "all": null } },
+    "admin_case_408_tofes":  { "138": { "matched": false, "pos": null, "len": null, "all": null },
+                               "139": { "matched": true,  "pos": 1,  "len": 4,  "all": [1, 7, 17] },
+                               "140": { "matched": false, "pos": null, "len": null, "all": null } },
+    "admin_case_408_hamas":  { "140": { "matched": true, "pos": 28, "len": 10, "all": [28] } },
+    "control_no_term":       "שלוש שורות false/null/null/null",
+    "control_btrim_spaces":  "«  טופס  » זהה אות באות ל«טופס» — 139 true/1/4/[1,7,17]",
+    "control_percent":       "שלוש שורות false/null/null/null (0094)",
+    "control_zzzz":          "שלוש שורות false/null/null/null"
+  },
+
+  "invariants_over_all_21_rows": {
+    "rows": 21,
+    "note": "7 מונחים × 3 שורות",
+    "distinct_key_counts": 1,
+    "keys_per_row": 11,
+    "rows_with_new_key_present": 21,
+    "rows_where_first_element_differs_from_note_match_pos": 0,
+    "rows_where_the_two_fields_disagree_on_lit_or_dark": 0,
+    "empty_arrays_reaching_the_client": 0
+  },
+
+  "acl": {
+    "measured_not_assumed": "פונקציית בדיקה public._acl_probe_0101 נוצרה, ה-ACL שלה נקרא, והיא נמחקה",
+    "default_acl_of_a_new_public_function": "{=X/postgres,postgres=X/postgres,anon=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+    "default_anon_execute": true,
+    "after_revoke": {
+      "bkalot_clone_note_match_positions": { "acl": "{postgres=X/postgres,service_role=X/postgres}", "anon": false, "authenticated": false, "service_role": true },
+      "bkalot_clone_admin_case":           { "acl": "{postgres=X/postgres,service_role=X/postgres}", "anon": false, "authenticated": false, "service_role": true }
+    },
+    "probe_leftover": 0
+  },
+
+  "gate": {
+    "version": "v9 — לא נפרסה",
+    "read_from_source_not_measured_over_http": "supabase/functions/bkalot-clone-admin/index.ts:417 — return json({ ...out.body, admin }) — הגוף נפרש כפי שהוא ואין רשימת מפתחות מותרים, ולכן המפתח החדש עובר בלי פריסה"
+  },
+
+  "test_mode_measured_not_declared": {
+    "queued": false, "documents": 0, "case_rights": 0,
+    "outbound_queue_before_and_after": 8,
+    "delivery_log_before_and_after": 3,
+    "outbound_calls": 0
+  },
+
+  "rollback": {
+    "method": "פקודות נפרדות לפי טבלה — cte-delete-sees-prestatement-snapshot",
+    "children_measured_before_delete": { "case_status_log": 3, "case_rights": 0, "documents": 0 },
+    "contacts_lives_in": "bkalot_auto ולא bkalot_clone",
+    "order": ["case_status_log (138–140)", "cases (408)", "contacts (415)"],
+    "admin_users_deleted": 0,
+    "admin_sessions_deleted": 0
+  },
+
+  "baseline_after": {
+    "cases": 0, "case_status_log": 0, "case_rights": 0, "documents": 0,
+    "admin_users": 1, "admin_sessions": 5, "templates": 2,
+    "contacts": 4, "outbound_queue": 8, "delivery_log": 3,
+    "rights_catalog": 888,
+    "admin_cases_total_on_empty_params": 0,
+    "schema_migrations_max": "20260816192140",
+    "identical_to_baseline_before": true
+  },
+
+  "not_built_and_said_out_loud": [
+    "המסך אינו מסמן את השנייה ואילך — admin.html לא נגעה, fillNoteText עדיין קוראת note_match_pos/note_match_len בלבד ומציירת mark אחד, וה-title שלה עדיין אומר «ההתאמה הראשונה». המסך הוא הלבנה הבאה ואחריו הפריסה.",
+    "הענף שבו lower מזיז אינדקס נכתב ונמדד ביחידה, ולא נמדד דרך admin_case — אין נימוק כזה במסד.",
+    "אי-ההסכמה שהכרעה (4) יוצרת מול 0100 (pos מספר, all null) לא נמדדה דרך admin_case מאותה סיבה.",
+    "אין ציטוט חתום של הקטע.",
+    "אין ספירת התאמות ברשימת העבודה — 0098 סופרת נימוקים, לא התאמות בתוכם.",
+    "אין סימון מקביל על note של הפנייה עצמה (0096 הכרעה (2) עומדת).",
+    "אין חיפוש ב-cases.note; אין סימון על שמות המכריעים; אין סינון «יש נימוק / אין»; אין סינון ומיון לפי מספר הנימוקים או המעברים; אין אינדקס על case_status_log(note) ואין חיפוש טקסט מלא; אין עריכה ומחיקה ביומן; אין סינון «איש קשר נמחק / קיים»; אין שמירת מיקום הפנייה; אין אינדקס על ct.phone.",
+    "שורה 90 ב-0096 עדיין אומרת «מה שלא נמדד»."
+  ],
+
+  "protected": "אפס נגיעה ב-08/09/bkalut-app/bkalot-admin/zr_*/NEDARIM3873 ובסכמות csj/csj_src/igud."
+}

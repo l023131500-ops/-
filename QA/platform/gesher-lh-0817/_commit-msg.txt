@@ -1,0 +1,21 @@
+31 גשר עברית CRM: Lighthouse נמדד לראשונה + תוקן landmark-one-main אמיתי (a11y 98->100)
+
+המשך ישיר לסבב 17/08 (fix/nadlan-a11y, אחרי 02/04/06/10/12/14/15/16/17/18/21/22/24/26/27/28/30).
+node scripts/qa/lighthouse-run.mjs QA/platform/gesher-lh-0817 gesher מול
+https://more30.com/gesher החי - ציון ראשון אי-פעם למערכת הזו.
+
+perf 80, a11y 98, bp 77, seo 100. failedAudits חשף landmark-one-main
+(מסך /gesher/auth, apps/31-hebrew-bridge-crm/src/routes/auth.tsx) - אין
+<main> בעץ, אותו דפוס בדיוק כמו 30 crm. תוקן: ה-div העוטף הפך ל-main.
+
+vite build (nitro/vercel preset) -> vercel deploy --prod מ-
+apps/31-hebrew-bridge-crm (לא --prebuilt, ראה ההערה ב-vite.config.ts
+על ה-rewrite ב-vercel.json) -> gesher-more30,
+dpl_5NP2JDLSw3zxUN7WNLLqJbiW2pop, READY.
+
+אומת חי מול הייצור עם cache-buster: <main class="min-h-screen..."> מופיע
+ב-HTML המוגש. נמדד שוב אחרי (gesher-lh-a11yfix-0817): נגישות 98->100.
+פרפורמנס (80) ו-BP (77) לא נחקרו - תואם דפוס NetFree/third-party-cookies
+שכבר מתועד.
+
+QA/platform/gesher-lh-0817/ , QA/platform/gesher-lh-a11yfix-0817/

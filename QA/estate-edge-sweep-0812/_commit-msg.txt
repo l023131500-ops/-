@@ -1,0 +1,44 @@
+egod (15): an endpoint anyone on the internet could call created approved portal accounts
+
+The estate-wide version of the sweep mthbram (21) left open. Every non-archived edge
+function in the repo -- 13 outside mthbram, across three Supabase projects -- got one
+unauthenticated bodiless GET. The gateway answers 401 UNAUTHORIZED_NO_AUTH_HEADER
+before the function runs when verify_jwt is on, so anything else means the body
+executed with no credential at all. A bodiless GET dies on req.json() before any write
+or outbound send, which is why nothing was POSTed to the webhook functions.
+
+seed-demo-portals on hkkkynyoigzlttpynoeo answered 200 with no apikey and no
+Authorization. It runs on SUPABASE_SERVICE_ROLE_KEY and, for any anonymous caller,
+creates three auth users with passwords hardcoded in the source, writes their profiles
+is_approved=true, and inserts a fake lead into the live leads table.
+
+What did not happen: the three profiles date from 01/05, read back over PostgREST with
+the public anon key, so createUser hit the already-exists branch and no account was
+created. The update branch rewrote three profiles with identical values -- that is the
+whole effect of the probe. The code does not reset an existing user's password. On the
+seeded lead I claim nothing: an anon read returns an empty array, and that is equally
+consistent with absence and with RLS hiding it.
+
+The gate is SEED_SECRET + POST + x-seed-secret and it fails closed -- with no secret in
+the environment the function answers 403 seeding disabled, which is the right resting
+state for a demo seeder aimed at a live project. verify_jwt alone would not have closed
+this, for the same reason as #160/#161: the anon key is a valid JWT in every browser.
+config.toml pins verify_jwt=true as a second layer. Breaks no caller -- the function
+appears nowhere in apps/15-egod/src.
+
+The sweep also found no #161-class hole anywhere else: leads-api gates on a hashed
+x-api-key, 01's admin-users checks super_admin/tenant_admin itself, nedarim-webhook
+answered forbidden. mthbram was the outlier, not the pattern.
+
+Recorded and deliberately not fixed: #168, egod activate-invite runs unauthenticated
+and returns initial_password in the body, so the invite code is the whole authentication
+and needs a rate-limit decision on a live flow. #169, zchuyot leads-webhook and
+n8n-notify run unauthenticated on service_role -- no lead data reaches the caller, but a
+forced outbound send and fake-lead injection are possible, and gating live integration
+endpoints is the user's call, like #164.
+
+NOT DEPLOYED -- hkkkynyoigzlttpynoeo needs its own deploy, separate from the one #160
+and #161 are waiting on. NEEDS_USER 0-resh-prime carries the command and an acceptance
+check that runs without me. Protected systems untouched, test mode, nothing sent.
+
+Evidence QA/estate-edge-sweep-0812/_results.md

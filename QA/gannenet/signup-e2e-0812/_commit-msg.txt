@@ -1,0 +1,47 @@
+§8ב: the instant-signup path run end to end for the first time, and the duplicate credit it walked into
+
+The previous step closed with "the instant-signup flow was not exercised —
+it creates a real new user". §8ב is written as an acceptance test in the
+user's own words: short form (name·phone·email·password) → the customer
+lands INSIDE the product → a real action works. auth.users says it had
+never been run: every prior QA account was created through the API with
+full_name and phone empty; only two human signups on 10/08 came through
+the form, and nobody checked what happened to them next.
+
+Measured the precondition first: email confirmation is off — the last 12
+users are all confirmed at creation. Without that signUp returns no
+session and the form says so ("we sent you a confirmation mail"), which
+would have made the rest of the test meaningless.
+
+The run (qa.signup0812a@more30.com, from /login?mode=signup&from=/gannenet):
+account created with an immediate session, callback landed on /gannenet —
+inside the product, not a thank-you page — 0 console errors. In the
+database the typed name and phone were written to the profile, and
+core.app_memberships took gannenet, not just the platform. Then signed
+out through the menu and signed back in with the SAME password: §1א's
+"you registered, now the password is wrong" does not reproduce on the
+shared login. Landed at /gannenet/library and filtered by domain
+«עולם החי» while signed in — 180 cards down to 7.
+
+What the run walked into. The page carried the §7 credit line twice: the
+footer's own, pointing at more30.com (the catalog), beside the one
+auth-button.js injects at /showcase (the brand site). The script skips
+injecting only when an element with class more30-credit already exists,
+and the footer had none. scripts/qa/credit-duplicate-sweep.mjs asked that
+of all 25 live systems in the HTML production serves: gannenet is the
+only one that writes its own credit, so the only one that got two.
+Footer.tsx now links /showcase and carries the class — right target, and
+no second copy.
+
+Build passes, 180 /lesson/[id] pages. Deployed dpl_F93i2usEEYQ8Eg2yAiCu1dGgtEvj
+(production, READY, from source). Verified live after unregistering the
+service worker and clearing 2 caches: one credit, in the footer, to
+/showcase; sweep re-runs 0/25.
+
+Not claimed: the sweep reads server HTML, so a system that draws its
+footer in JS is invisible to it — the other 24 are clean at the HTML
+level only. Google sign-in was not exercised, and systems with their own
+login form were not tested, so §1א can still live in those.
+
+Evidence QA/gannenet/signup-e2e-0812/, QA/platform/credit-dup-0812/.
+Protected systems untouched. Test mode; no billing, no real send.

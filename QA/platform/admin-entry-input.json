@@ -1,0 +1,23 @@
+[
+  { "number": "01", "slug": "torah-platform", "path": "torah", "live_url": "https://more30.com/torah", "admin_url": "/auth/sign-in", "admin_auth": "own" },
+  { "number": "02", "slug": "igud-transcribe", "path": "tamlul", "live_url": "https://more30.com/tamlul", "admin_url": "/admin", "admin_auth": "own" },
+  { "number": "03", "slug": "igud-ads", "path": "modaot", "live_url": "https://more30.com/modaot", "admin_url": "/admin", "admin_auth": "own" },
+  { "number": "04", "slug": "imud-torani", "path": "imud", "live_url": "https://more30.com/imud", "admin_url": null, "admin_auth": "none" },
+  { "number": "06", "slug": "kupot-holim", "path": "briut", "live_url": "https://more30.com/briut", "admin_url": null, "admin_auth": "none" },
+  { "number": "10", "slug": "bkalot-rights", "path": "bkalot", "live_url": "https://more30.com/bkalot", "admin_url": "https://more30.com/admin/rights", "admin_auth": "hub" },
+  { "number": "12", "slug": "smel-ndln", "path": "smel", "live_url": "https://more30.com/smel", "admin_url": null, "admin_auth": "none" },
+  { "number": "15", "slug": "egod", "path": "egod", "live_url": "https://more30.com/egod", "admin_url": "/admin", "admin_auth": "hub" },
+  { "number": "16", "slug": "chatzor-connect", "path": "chatzor", "live_url": "https://more30.com/chatzor", "admin_url": "/admin", "admin_auth": "hub" },
+  { "number": "17", "slug": "chizukim-transcribe", "path": "chizukim", "live_url": "https://more30.com/chizukim", "admin_url": null, "admin_auth": "none" },
+  { "number": "18", "slug": "torah-editor-mvp", "path": "orech", "live_url": "https://more30.com/orech", "admin_url": null, "admin_auth": "none" },
+  { "number": "22", "slug": "get-your-rights", "path": "zchuyot", "live_url": "https://more30.com/zchuyot", "admin_url": "/admin/login", "admin_auth": "own" },
+  { "number": "24", "slug": "galilee-connect-hub", "path": "galil", "live_url": "https://more30.com/galil", "admin_url": "/gabai", "admin_auth": "own" },
+  { "number": "26", "slug": "modaot-studio", "path": "studio", "live_url": "https://more30.com/studio", "admin_url": null, "admin_auth": "none" },
+  { "number": "27", "slug": "bkalut-price", "path": "mechiron", "live_url": "https://more30.com/mechiron", "admin_url": "/admin", "admin_auth": "own" },
+  { "number": "28", "slug": "kupot-health-funds", "path": "kupot", "live_url": "https://more30.com/kupot", "admin_url": "/api/switch-leads (כותרת x-admin-token)", "admin_auth": "token" },
+  { "number": "32", "slug": "nadlan-berega", "path": "nadlan", "live_url": "https://more30.com/nadlan", "admin_url": "/admin", "admin_auth": "hub" },
+  { "number": "33", "slug": "more30-spec-loop", "path": null, "live_url": "https://more30.com", "admin_url": "https://more30.com/admin", "admin_auth": "hub" },
+  { "number": "34", "slug": "kesef", "path": "kesef", "live_url": "https://more30.com/kesef", "admin_url": null, "admin_auth": null },
+  { "number": "35", "slug": "kioskfleet", "path": "kiosk", "live_url": "https://more30.com/kiosk", "admin_url": "https://more30.com/kiosk/console", "admin_auth": null },
+  { "number": "36", "slug": "nadlan-pro", "path": "tivuch", "live_url": "https://more30.com/tivuch", "admin_url": null, "admin_auth": null }
+]

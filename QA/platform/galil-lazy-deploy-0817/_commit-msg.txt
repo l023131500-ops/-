@@ -1,0 +1,8 @@
+24 גליל קונקט: code splitting מ-ba36ea0 נפרס לייצור ואומת חי
+
+vercel deploy --prod --yes --scope l023131500-ops-projects מתוך _deploy/galil-more30
+(dpl_2o3vdw1hT7vohXivkZSeaCav5xjM, readyState READY). אומת עם cache-buster: more30.com/galil/
+מגיש index-BzyDhrTf.js (801KB, ירד מ-981KB) וגם KashrutPage-CDPfIuur.js (5997B) בנפרד,
+שניהם 200 מ-more30.com/galil/assets/. Lighthouse מחדש = הצעד הבא.
+
+Supabase MCP לא מחובר לסשן הזה - heartbeat כ-_heartbeat-pending.sql.

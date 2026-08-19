@@ -1,0 +1,123 @@
+{
+  "brick": "0087 — הכרעה על פנייה דורסת את זו שלפניה",
+  "scope": "מיגרציה בלבד: טבלה חדשה + bkalot_clone_admin_set_status. אין שינוי קוד ב-apps/37, אין פריסת edge function, אין פריסת פורטל.",
+  "migration": {
+    "file": "supabase/migrations/0087_a_decision_on_a_case_overwrites_the_one_before_it.sql",
+    "applied_version": "20260816001337",
+    "applied_once": true,
+    "note": "יושמה פעם אחת. שלא כמו 0085, לא נדרשה הרצה שנייה: pg_proc נמדד אחרי והכיל את ההערות הפנימיות (הכרעה (6) נמצאה בגוף), כלומר הפונקציה שבמסד היא זו שבקובץ ולא וריאנט שלה."
+  },
+
+  "baseline_before": {
+    "cases": 0, "case_rights": 0, "documents": 0, "contacts_all": 4,
+    "admin_users": 1, "admin_sessions": 5, "templates": 2,
+    "outbound_queue": 8, "queue_sent": 0,
+    "queue_fingerprint": "b4318d89eac1a47be75ab8769f320683",
+    "delivery_log": 3, "catalog": 888,
+    "case_status_log_table": null
+  },
+
+  "before": {
+    "case_id": 222,
+    "what_happened": "שלושה מעברים אמיתיים דרך נתיב set-status שמאחורי השער: new→in_progress (מנהל 76), in_progress→closed (77), closed→rejected (77); ובנוסף קריאה חוזרת אחת (in_progress→in_progress) שהחזירה changed=false.",
+    "what_the_db_held_after": {
+      "cases.status": "rejected",
+      "cases.decided_by": 77,
+      "cases.decided_at": "2026-08-16T00:10:22.406679+00:00",
+      "rows_recording_the_first_decision": 0
+    },
+    "measured": "ההכרעה של מנהל 76 — הראשונה, זו שלקחה את הפנייה — אינה קיימת בשום מקום במסד. לא כשדה ריק אלא כהיעדר גמור. אין טבלה, אין שורה, ואין דרך לשחזר ממנה דבר.",
+    "log_id_key_present_in_response": false,
+    "case_screen_keys": 17
+  },
+
+  "after": {
+    "case_id": 223,
+    "same_four_calls": true,
+    "responses": [
+      { "step": "d1_new_to_in_progress", "previous": "new",         "status": "in_progress", "changed": true,  "log_id": 1 },
+      { "step": "d2_same_again",         "previous": "in_progress", "status": "in_progress", "changed": false, "log_id": null },
+      { "step": "d3_to_closed",          "previous": "in_progress", "status": "closed",      "changed": true,  "log_id": 2 },
+      { "step": "d4_to_rejected",        "previous": "closed",      "status": "rejected",    "changed": true,  "log_id": 3 }
+    ],
+    "log_rows": [
+      { "id": 1, "case_id": 223, "from_status": "new",         "to_status": "in_progress", "admin_id": 76, "at": "2026-08-16 00:13:57.746486+00" },
+      { "id": 2, "case_id": 223, "from_status": "in_progress", "to_status": "closed",      "admin_id": 77, "at": "2026-08-16 00:13:59.21705+00"  },
+      { "id": 3, "case_id": 223, "from_status": "closed",      "to_status": "rejected",    "admin_id": 77, "at": "2026-08-16 00:13:59.956327+00" }
+    ],
+    "chain_reads": "new->in_progress#76 | in_progress->closed#77 | closed->rejected#77",
+    "chain_is_continuous": "to_status של כל שורה שווה ל-from_status של הבאה — נמדד ולא הונח, וזו הכרעה (4): כל שורה היא משפט שלם וגם פער היה נראה לעין.",
+    "decision_5_no_row_when_nothing_changed": "ארבע קריאות, אחת מהן חוזרת, שלוש שורות ביומן — לא ארבע. על הקריאה החוזרת log_id חזר null, ולא הושמט: has_log_id=true בכל ארבע התשובות.",
+    "decision_6_at_equals_decided_at": {
+      "row_3": true,
+      "rows_1_2": false,
+      "reading": "רק השורה האחרונה שווה ל-cases.decided_at, וזה בדיוק הצפוי: השורה מחזיקה את ההכרעה האחרונה בלבד, והיומן מחזיק את כולן. אילו שלוש השורות היו שוות — היה זה סימן שהיומן נכתב מהשורה ולא מהמעבר."
+    }
+  },
+
+  "decision_2_admin_delete": {
+    "deleted_admin": 77,
+    "admin_rows_after": 0,
+    "log_rows_total_after": 3,
+    "log_rows_carrying_77_after": 2,
+    "reading": "המנהל נמחק ושתי שורות היומן שנושאות אותו נשארו במקומן עם 77 בתוכן. אין FK על admin_id, ולכן הראיה שפנייה נדחתה בידי מי שכבר אינו בארגון שורדת את עזיבתו. המחיקה נעשתה על החשבון עצמו ולא ב-UPDATE ידני על היומן."
+  },
+
+  "decision_3_case_cascade": {
+    "before_delete": { "case_rights": 42, "case_status_log": 3, "documents": 0 },
+    "deleted": "bkalot_clone.cases id=223 — פקודה אחת, בלי מחיקה מפורשת של היומן",
+    "after_delete": { "case_rights": 0, "case_status_log": 0 },
+    "reading": "ה-cascade נמדד ולא הונח: היומן ירד עם הפנייה בלי שנגעו בו. שלא כמו admin_id (הכרעה 2) — עובד יוצא מהארגון, פנייה נמחקת מהמערכת."
+  },
+
+  "constraints_measured": [
+    { "attempt": "insert (223, closed, closed, 76)",    "result": "23514 case_status_log_is_a_change" },
+    { "attempt": "insert (223, closed, archived, 76)",  "result": "23514 case_status_log_to_known" }
+  ],
+  "constraints_note": "⚠️ שתי ההכנסות שנכשלו שרפו את מזהי 4 ו-5 של ה-identity — אותו מנגנון בדיוק של תקלת core-issues-failed-insert-burns-the-id. נרשם ולא נבלע; אין לו נזק כאן (הטבלה נמחקה ב-cascade מיד אחרי), אבל הוא אומר שמספרי שורות ביומן אינם רצף.",
+
+  "permissions": {
+    "table_grants": "postgres בלבד — אפס ל-anon, ל-authenticated ול-service_role",
+    "rls_enabled": true,
+    "policies": 0,
+    "schema_usage": { "anon": false, "authenticated": false, "service_role": true },
+    "function_execute": { "anon": false, "authenticated": false, "service_role": true },
+    "function_overloads": 1,
+    "reading": "הכרעה (7): הדרך היחידה לכתוב ליומן עוברת בפונקציה שמחליטה מה נכתב. ה-ACL של הפונקציה לא ניתן מחדש — create or replace שומר אותו — והבסיס נמדד אחרי ולא הונח."
+  },
+
+  "test_mode": {
+    "intake_queued": false,
+    "documents_with_queue_id": 0,
+    "cases_in_sent": 0,
+    "outbound_queue_before": 8,
+    "outbound_queue_after": 8,
+    "queue_rows_with_sent_at": 0,
+    "queue_fingerprint_before": "b4318d89eac1a47be75ab8769f320683",
+    "queue_fingerprint_after": "b4318d89eac1a47be75ab8769f320683",
+    "delivery_log_before": 3,
+    "delivery_log_after": 3,
+    "reading": "אין מייל, אין הודעה ואין מסמך שיצא החוצה. הפעימה כולה אינה נוגעת בשום ערוץ שליחה — set_status נוגעת ב-status וביומן ותו לא."
+  },
+
+  "rollback": {
+    "seeded_cases": [221, 222, 223],
+    "seeded_contacts": [228, 229, 230],
+    "seeded_admins": [76, 77],
+    "method": "פקודות נפרדות לפי id, כל אחת סופרת את מה שהיא עצמה מחקה — תקלת cte-delete-sees-prestatement-snapshot; ואנשי הקשר לפי id ולא לפי טלפון מנורמל — תקלת ac6e523. admin_sessions ירדו ב-cascade עם שני החשבונות (admin_sessions_admin_id_fkey), ולכן חזרו ל-5 בדיוק ולא נמחקו ידנית.",
+    "baseline_after": {
+      "cases": 0, "case_rights": 0, "case_status_log": 0, "documents": 0,
+      "contacts_all": 4, "admin_users": 1, "admin_sessions": 5, "templates": 2,
+      "outbound_queue": 8, "queue_sent": 0,
+      "queue_fingerprint": "b4318d89eac1a47be75ab8769f320683",
+      "delivery_log": 3, "catalog": 888
+    },
+    "identical_to_baseline_before": true
+  },
+
+  "probe_note": "⚠️ בגרסה הראשונה של probe.mjs שני מפתחות ב-case_after נקראו status, והשני דרס את הראשון בשקט — קוד ה-HTTP פשוט לא נמדד. השם שונה ל-http_status/case_status, וריצת ה-before הראשונה נזרקה והורצה מחדש, כדי ששתי הריצות ירוצו מאותו קובץ בדיוק ולא משתי גרסאות שלו.",
+
+  "protected": "git status ריק על apps/08-bkalut-app, apps/09-bkalot-admin, apps/37-bkalot-clone ו-supabase/functions. אין נגיעה ב-bkalut-app/bkalot-admin/zr_*/NEDARIM3873 ולא בסכמות csj/csj_src/igud.",
+
+  "open": "אף קורא אינו מחזיר את היומן: bkalot_clone_admin_case אינה יודעת עליו (has_history=false ו-has_decisions=false נמדדו גם אחרי המיגרציה, ובמכוון — אותם 17 מפתחות בדיוק), bkalot_clone_admin_cases אינה יודעת עליו, ו-apps/37-bkalot-clone/admin.html אינו מציג דבר. ההיסטוריה נכתבת ואיש אינו רואה אותה — זו הלבנה הבאה, אותו פיצול כמו 0083 → 0084 → UI → פריסה. אין backfill ולא יהיה. אין ביומן note/reason — למה הוכרע ולא רק מה. אין היסטוריה על שדה אחר של הפנייה (kind, topic_no, situation), ואין היסטוריה על documents."
+}

@@ -1,0 +1,1 @@
+heartbeat: pending row for smel-lh-0817 (ae496f8) - Supabase MCP not connected this session

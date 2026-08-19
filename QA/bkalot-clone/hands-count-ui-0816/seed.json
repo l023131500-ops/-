@@ -1,0 +1,94 @@
+{
+  "admins": {
+    "first": {
+      "id": 86,
+      "email": "qa0089ui-first@more30.test",
+      "full_name": "QA 0089UI יד ראשונה"
+    },
+    "second": {
+      "id": 87,
+      "email": "qa0089ui-second@more30.test",
+      "full_name": "QA 0089UI יד שנייה"
+    }
+  },
+  "cases": {
+    "A": {
+      "case_id": 236,
+      "contact_id": 243,
+      "rights": null,
+      "queued": false,
+      "transitions": [
+        {
+          "http_status": 200,
+          "ok": true,
+          "previous": "new",
+          "to": "in_progress",
+          "changed": true,
+          "log_id": 26,
+          "has_log_id_key": true,
+          "admin": 86
+        },
+        {
+          "http_status": 200,
+          "ok": true,
+          "previous": "in_progress",
+          "to": "closed",
+          "changed": true,
+          "log_id": 27,
+          "has_log_id_key": true,
+          "admin": 87
+        },
+        {
+          "http_status": 200,
+          "ok": true,
+          "previous": "closed",
+          "to": "rejected",
+          "changed": true,
+          "log_id": 28,
+          "has_log_id_key": true,
+          "admin": 87
+        }
+      ]
+    },
+    "B": {
+      "case_id": 237,
+      "contact_id": 244,
+      "rights": null,
+      "queued": false,
+      "transitions": [
+        {
+          "http_status": 200,
+          "ok": true,
+          "previous": "new",
+          "to": "in_progress",
+          "changed": true,
+          "log_id": 29,
+          "has_log_id_key": true,
+          "admin": 86
+        },
+        {
+          "http_status": 200,
+          "ok": true,
+          "previous": "in_progress",
+          "to": "in_progress",
+          "changed": false,
+          "log_id": null,
+          "has_log_id_key": true,
+          "admin": 86
+        }
+      ]
+    },
+    "C": {
+      "case_id": 238,
+      "contact_id": 245,
+      "rights": null,
+      "queued": false
+    },
+    "D": {
+      "case_id": 239,
+      "contact_id": 246,
+      "rights": null,
+      "queued": false
+    }
+  }
+}

@@ -1,0 +1,6 @@
+﻿run 1: A=200 B=200 | in catalog: A=false B=false  <-- LOST before-r1-A, before-r1-B
+run 2: A=200 B=200 | in catalog: A=false B=false  <-- LOST before-r2-A, before-r2-B
+run 3: A=200 B=200 | in catalog: A=false B=false  <-- LOST before-r3-A, before-r3-B
+run 4: A=200 B=200 | in catalog: A=false B=false  <-- LOST before-r4-A, before-r4-B
+
+lost a save in 4 of 4 runs

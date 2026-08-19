@@ -1,0 +1,65 @@
+{
+  "brick": "note-search-ui-0816",
+  "line": "0096 החזירה matched_in_note והמסך אינו מצייר אותו — heartbeat 651, מילה במילה: «פתוח: המסך. matched_in_note מוחזר מהמסד ואינו מצויר … זו הלבנה הבאה»",
+  "scope": "admin.html בלבד — פונקציה אחת ושתי שורות ב-render. אין מיגרציה, אין פריסת edge function, אין פריסה לייצור",
+  "measured_from": "דפדפן אמיתי, 1280x900, התחברות דרך המסך והקלדה בתיבת החיפוש תו-תו",
+  "servers": {
+    "8138": { "serves": "git show HEAD:apps/37-bkalot-clone/admin.html", "bytes": 142683, "md5": "8EFCF249" },
+    "8137": { "serves": "apps/37-bkalot-clone/ בעץ העבודה", "bytes": 146451, "md5": "4A284AEC" },
+    "note": "BASE ב-admin.html הוא כתובת מוחלטת, ולכן שני השרתים מדברים אל אותו edge ואותו מסד — ההפרש היחיד בין הריצות הוא admin.html עצמו"
+  },
+  "seed": {
+    "path": "public.bkalot_clone_intake מעל HTTP עם מפתח anon, כמו מהטופס",
+    "kind": "info",
+    "cases": [
+      { "id": 369, "contact_id": 376, "full_name": "אברהם ישראלי", "phone": "0501230011", "status": "rejected", "log_id": 82, "note": "המסמכים שצורפו שייכים לשנת המס הקודמת" },
+      { "id": 370, "contact_id": 377, "full_name": "מרים כהן", "phone": "0502230022", "status": "closed", "log_id": 83, "note": "הטופס נשלח בדואר רשום על ידי הפונה" }
+    ],
+    "admin": { "id": 109, "email": "qa-note-search-0816@more30.com", "created_by": "bkalot_clone_admin_create ולא הזרקת hash" },
+    "same_as_0096": "שתי הפניות והנימוקים הם מילה במילה אלה שנמדדו במיגרציה עצמה"
+  },
+  "before_8138": {
+    "q": "המס הקודמת",
+    "count": "פנייה אחת",
+    "row": "#369 · אברהם ישראלי · 16.08.2026, 15:40 · טלפון 0501230011 · 0 זכויות · הוכרעה … · מעבר אחד · מנהל אחד",
+    "note_sign_in_dom": false,
+    "gap": "השורה חזרה ואין בה ולו תו אחד ממה שהוקלד — לא בשם, לא בטלפון ולא במספר הפנייה"
+  },
+  "after_8137": {
+    "q": "המס הקודמת",
+    "count": "פנייה אחת",
+    "row": "#369 · אברהם ישראלי · 16.08.2026, 15:40 · טלפון 0501230011 · 0 זכויות · נמצאה לפי הנימוק · הוכרעה … · מעבר אחד · מנהל אחד",
+    "sign_text": "נמצאה לפי הנימוק",
+    "sign_title": "מה שהוקלד בחיפוש אינו בשם, בטלפון, במייל ובמספר הפנייה — הוא נמצא בנימוק שנכתב ביומן ההכרעות. הנימוק עצמו אינו מוצג ברשימה; פתחו את הפנייה כדי לקרוא אותו",
+    "sign_top_px": 388,
+    "viewport_px": 900,
+    "sign_position": "ראשון מבין הסימנים, אחרי המונים הקבועים ולפני «הוכרעה» ו«מעבר אחד»"
+  },
+  "controls_8137": [
+    { "q": "כהן", "count": "פנייה אחת", "row_id": 370, "note_sign_in_dom": false, "means": "נמצאה בזכות השם — הסימן חייב לא להופיע, כלומר השדה מפריד ואינו דולק תמיד" },
+    { "q": "", "count": "2 פניות", "rows": 2, "note_sign_in_dom": false, "means": "רשימה בלי מונח חיפוש שותקת — השרת מחזיר false לכל השורות ואין תנאי נוסף בלקוח" }
+  ],
+  "screenshots": [
+    { "file": "01-head-row-says-nothing.png", "bytes": 34509, "md5": "2B91D741" },
+    { "file": "02-row-says-found-by-note.png", "bytes": 35878, "md5": "24DBF90C" },
+    { "file": "03-control-found-by-name-no-sign.png", "bytes": 33412, "md5": "4AB38EF3" }
+  ],
+  "console": "הודעה אחת ויחידה — 404 על /favicon.ico מהשרת הסטטי המקומי. אפס הודעות מהאפליקציה עצמה",
+  "test_mode": { "documents": 0, "outbound_queue": 8, "sent_at_rows": 0, "delivery_log": 3, "cases_in_sent": 0, "case_rights": 0, "outbound_calls": 0 },
+  "rollback": {
+    "method": "פקודות נפרדות לפי טבלה ולא CTE אחד — תקלת cte-delete-sees-prestatement-snapshot; ואיש הקשר לפי id ולא לפי טלפון מנורמל",
+    "order": ["case_status_log", "cases", "contacts", "admin_sessions", "admin_users"],
+    "after": { "cases": 0, "case_status_log": 0, "case_rights": 0, "documents": 0, "admin_users": 1, "admin_sessions": 5, "templates": 2, "contacts": 4, "outbound_queue": 8, "delivery_log": 3, "rights_catalog": 888 },
+    "verdict": "בסיס בדיוק"
+  },
+  "not_built": [
+    "אין הדגשת המילה שנמצאה בתוך הנימוק — 0096 אינה מחזירה את הטקסט עצמו בשורה",
+    "אין ציטוט של הנימוק בשורה",
+    "אין חיפוש ב-cases.note ולא בשמות המכריעים",
+    "אין סינון «יש נימוק / אין»",
+    "אין אינדקס ואין חיפוש טקסט מלא",
+    "אין סימן מקביל במסך הפנייה",
+    "pager.hidden = total <= PAGE נשאר כפי שהוא"
+  ],
+  "open": "הפריסה. מה שנמדד כאן הוא הקוד שבמקור; בייצור השורה עדיין שותקת. זו הלבנה הבאה"
+}

@@ -1,0 +1,508 @@
+{
+  "measured_at": "2026-08-08T21:30:30.147Z",
+  "source": {
+    "routes": "portal/vercel.dist.json",
+    "public": "portal/public"
+  },
+  "portal_routes": [
+    {
+      "url": "/",
+      "app_key": "more30"
+    },
+    {
+      "url": "/admin-activity.html",
+      "app_key": "more30"
+    },
+    {
+      "url": "/admin-automation.html",
+      "app_key": "more30"
+    },
+    {
+      "url": "/admin-credits.html",
+      "app_key": "more30"
+    },
+    {
+      "url": "/admin-customers.html",
+      "app_key": "more30"
+    },
+    {
+      "url": "/admin-issues.html",
+      "app_key": "more30"
+    },
+    {
+      "url": "/admin-leads.html",
+      "app_key": "more30"
+    },
+    {
+      "url": "/admin-pricing.html",
+      "app_key": "more30"
+    },
+    {
+      "url": "/admin-rights.html",
+      "app_key": "more30"
+    },
+    {
+      "url": "/admin-systems.html",
+      "app_key": "more30"
+    },
+    {
+      "url": "/admin/activity",
+      "app_key": "more30"
+    },
+    {
+      "url": "/admin/automation",
+      "app_key": "more30"
+    },
+    {
+      "url": "/admin/credits",
+      "app_key": "more30"
+    },
+    {
+      "url": "/admin/customers",
+      "app_key": "more30"
+    },
+    {
+      "url": "/admin/issues",
+      "app_key": "more30"
+    },
+    {
+      "url": "/admin/leads",
+      "app_key": "more30"
+    },
+    {
+      "url": "/admin/pricing",
+      "app_key": "more30"
+    },
+    {
+      "url": "/admin/rights",
+      "app_key": "more30"
+    },
+    {
+      "url": "/admin/systems",
+      "app_key": "more30"
+    },
+    {
+      "url": "/auth/callback",
+      "app_key": "more30"
+    },
+    {
+      "url": "/auth/callback.html",
+      "app_key": "more30"
+    },
+    {
+      "url": "/kiosk",
+      "app_key": "kiosk"
+    },
+    {
+      "url": "/login",
+      "app_key": "more30"
+    },
+    {
+      "url": "/login.html",
+      "app_key": "more30"
+    },
+    {
+      "url": "/me",
+      "app_key": "more30"
+    },
+    {
+      "url": "/me.html",
+      "app_key": "more30"
+    },
+    {
+      "url": "/nihul",
+      "app_key": "more30"
+    },
+    {
+      "url": "/showcase",
+      "app_key": "more30"
+    },
+    {
+      "url": "/showcase.html",
+      "app_key": "more30"
+    },
+    {
+      "url": "/subscribe",
+      "app_key": "more30"
+    },
+    {
+      "url": "/subscribe.html",
+      "app_key": "more30"
+    },
+    {
+      "url": "/system.html",
+      "app_key": "more30"
+    }
+  ],
+  "mounts": [
+    {
+      "mount": "torah",
+      "bare": "torah",
+      "slash": "torah",
+      "deep": "torah",
+      "full": "torah"
+    },
+    {
+      "mount": "tamlul",
+      "bare": "tamlul",
+      "slash": "tamlul",
+      "deep": "tamlul",
+      "full": "tamlul"
+    },
+    {
+      "mount": "modaot",
+      "bare": "modaot",
+      "slash": "modaot",
+      "deep": "modaot",
+      "full": "modaot"
+    },
+    {
+      "mount": "chizukim",
+      "bare": "chizukim",
+      "slash": "chizukim",
+      "deep": "chizukim",
+      "full": "chizukim"
+    },
+    {
+      "mount": "chatzor",
+      "bare": "chatzor",
+      "slash": "chatzor",
+      "deep": "chatzor",
+      "full": "chatzor"
+    },
+    {
+      "mount": "egod",
+      "bare": "egod",
+      "slash": "egod",
+      "deep": "egod",
+      "full": "egod"
+    },
+    {
+      "mount": "mthbram",
+      "bare": "mthbram",
+      "slash": "mthbram",
+      "deep": "mthbram",
+      "full": "mthbram"
+    },
+    {
+      "mount": "zchuyot",
+      "bare": "zchuyot",
+      "slash": "zchuyot",
+      "deep": "zchuyot",
+      "full": "zchuyot"
+    },
+    {
+      "mount": "galil",
+      "bare": "galil",
+      "slash": "galil",
+      "deep": "galil",
+      "full": "galil"
+    },
+    {
+      "mount": "bkalot",
+      "bare": "bkalot",
+      "slash": "bkalot",
+      "deep": "bkalot",
+      "full": "bkalot"
+    },
+    {
+      "mount": "smel",
+      "bare": "smel",
+      "slash": "smel",
+      "deep": "smel",
+      "full": "smel"
+    },
+    {
+      "mount": "kupot",
+      "bare": "kupot",
+      "slash": "kupot",
+      "deep": "kupot",
+      "full": "kupot"
+    },
+    {
+      "mount": "gesher",
+      "bare": "gesher",
+      "slash": "gesher",
+      "deep": "gesher",
+      "full": "gesher"
+    },
+    {
+      "mount": "smachot",
+      "bare": "smachot",
+      "slash": "smachot",
+      "deep": "smachot",
+      "full": "smachot"
+    },
+    {
+      "mount": "briut",
+      "bare": "briut",
+      "slash": "briut",
+      "deep": "briut",
+      "full": "briut"
+    },
+    {
+      "mount": "nadlan",
+      "bare": "nadlan",
+      "slash": "nadlan",
+      "deep": "nadlan",
+      "full": "nadlan"
+    },
+    {
+      "mount": "mechiron",
+      "bare": "mechiron",
+      "slash": "mechiron",
+      "deep": "mechiron",
+      "full": "mechiron"
+    },
+    {
+      "mount": "studio",
+      "bare": "studio",
+      "slash": "studio",
+      "deep": "studio",
+      "full": "studio"
+    },
+    {
+      "mount": "imud",
+      "bare": "imud",
+      "slash": "imud",
+      "deep": "imud",
+      "full": "imud"
+    },
+    {
+      "mount": "orech",
+      "bare": "orech",
+      "slash": "orech",
+      "deep": "orech",
+      "full": "orech"
+    },
+    {
+      "mount": "crm",
+      "bare": "crm",
+      "slash": "crm",
+      "deep": "crm",
+      "full": "crm"
+    },
+    {
+      "mount": "kesef",
+      "bare": "kesef",
+      "slash": "kesef",
+      "deep": "kesef",
+      "full": "kesef"
+    },
+    {
+      "mount": "tivuch",
+      "bare": "tivuch",
+      "slash": "tivuch",
+      "deep": "tivuch",
+      "full": "tivuch"
+    },
+    {
+      "mount": "kiosk",
+      "bare": "kiosk",
+      "slash": "kiosk",
+      "deep": "kiosk",
+      "full": "kiosk"
+    }
+  ],
+  "plans_page": [
+    {
+      "mount": "torah",
+      "plans": "torah",
+      "subscribe": "torah"
+    },
+    {
+      "mount": "tamlul",
+      "plans": "tamlul",
+      "subscribe": "tamlul"
+    },
+    {
+      "mount": "modaot",
+      "plans": "modaot",
+      "subscribe": "modaot"
+    },
+    {
+      "mount": "chizukim",
+      "plans": "chizukim",
+      "subscribe": "chizukim"
+    },
+    {
+      "mount": "chatzor",
+      "plans": "chatzor",
+      "subscribe": "chatzor"
+    },
+    {
+      "mount": "egod",
+      "plans": "egod",
+      "subscribe": "egod"
+    },
+    {
+      "mount": "mthbram",
+      "plans": "mthbram",
+      "subscribe": "mthbram"
+    },
+    {
+      "mount": "zchuyot",
+      "plans": "zchuyot",
+      "subscribe": "zchuyot"
+    },
+    {
+      "mount": "galil",
+      "plans": "galil",
+      "subscribe": "galil"
+    },
+    {
+      "mount": "bkalot",
+      "plans": "bkalot",
+      "subscribe": "bkalot"
+    },
+    {
+      "mount": "smel",
+      "plans": "smel",
+      "subscribe": "smel"
+    },
+    {
+      "mount": "kupot",
+      "plans": "kupot",
+      "subscribe": "kupot"
+    },
+    {
+      "mount": "gesher",
+      "plans": "gesher",
+      "subscribe": "gesher"
+    },
+    {
+      "mount": "smachot",
+      "plans": "smachot",
+      "subscribe": "smachot"
+    },
+    {
+      "mount": "briut",
+      "plans": "briut",
+      "subscribe": "briut"
+    },
+    {
+      "mount": "nadlan",
+      "plans": "nadlan",
+      "subscribe": "nadlan"
+    },
+    {
+      "mount": "mechiron",
+      "plans": "mechiron",
+      "subscribe": "mechiron"
+    },
+    {
+      "mount": "studio",
+      "plans": "studio",
+      "subscribe": "studio"
+    },
+    {
+      "mount": "imud",
+      "plans": "imud",
+      "subscribe": "imud"
+    },
+    {
+      "mount": "orech",
+      "plans": "orech",
+      "subscribe": "orech"
+    },
+    {
+      "mount": "crm",
+      "plans": "crm",
+      "subscribe": "crm"
+    },
+    {
+      "mount": "kesef",
+      "plans": "kesef",
+      "subscribe": "kesef"
+    },
+    {
+      "mount": "tivuch",
+      "plans": "tivuch",
+      "subscribe": "tivuch"
+    },
+    {
+      "mount": "kiosk",
+      "plans": "kiosk",
+      "subscribe": "kiosk"
+    }
+  ],
+  "wild": [
+    {
+      "input": "https://evil.com/bkalot",
+      "app_key": null
+    },
+    {
+      "input": "ftp://x/y/torah",
+      "app_key": null
+    },
+    {
+      "input": "?app=torah",
+      "app_key": "torah"
+    },
+    {
+      "input": "טקסט בעברית",
+      "app_key": "more30"
+    },
+    {
+      "input": "",
+      "app_key": "more30"
+    },
+    {
+      "input": "/BKALOT",
+      "app_key": "bkalot"
+    },
+    {
+      "input": "/bkalot#frag",
+      "app_key": "bkalot"
+    },
+    {
+      "input": "/torah?x=1&app=",
+      "app_key": "torah"
+    }
+  ],
+  "foreign_host": {
+    "issue": 122,
+    "input": "https://evil.com/bkalot",
+    "app_key": null,
+    "note": "נסגר ב-0049 — השער יושב ב-core.trusted_origins"
+  },
+  "passed": 7,
+  "failed": 0,
+  "checks": [
+    {
+      "check": "אין אף כתובת של הפורטל שממנה הרשמה אינה נרשמת לשום מקום",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "כל 24 ההרכבות מזוהות בארבע צורות הכתובת",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "כניסה מעמוד המסלולים נרשמת למערכת שהעמוד מציג, ולא לפלטפורמה",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "כתובת שאינה מערכת ואינה דף פורטל ממשיכה להחזיר null",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "כל ערך שיוצא מהנורמליזציה הוא מערכת רשומה או more30 — אף פעם מפתח מומצא",
+      "pass": true,
+      "detail": "[]"
+    },
+    {
+      "check": "מארח שאיננו מגישים ממנו אינו רושם חברות (#122)",
+      "pass": true,
+      "detail": "got=null"
+    },
+    {
+      "check": "?app= עם ערך שאינו מערכת רשומה נופל חזרה לנתיב ואינו מומצא",
+      "pass": true,
+      "detail": "got=more30"
+    }
+  ]
+}

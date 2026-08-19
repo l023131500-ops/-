@@ -1,0 +1,35 @@
+{
+  "system": "21 — mthbram (איגוד השיעורים / מתחברים)",
+  "priority": "§1א — הודעת שגיאה בכניסה",
+  "date": "2026-08-12",
+  "screen": "/mthbram/admin-login (AdminLogin.tsx)",
+  "before": {
+    "code": "toast.error(\"שגיאה בכניסה: \" + error.message)",
+    "effect": "קידומת עברית + הודעת GoTrue באנגלית. מייל שלא אומת, חסימת קצב ונפילת רשת הופיעו כולם באותה צורה, ואף אחד מהם לא אמר מה לעשות."
+  },
+  "after": {
+    "module": "src/lib/authErrors.ts",
+    "wired_in": "src/pages/AdminLogin.tsx — handleLogin",
+    "wording_note": "השדה הראשון כאן הוא 'שם משתמש' (handleLogin משלים @admin.local), ולכן invalid_credentials מנוסח 'שם המשתמש או הסיסמה שגויים' ולא 'האימייל'. זה ההבדל מהעתקים 01/15/16/22."
+  },
+  "verification": {
+    "kind": "דפדפן אמיתי מול שרת האימות האמיתי — לא mock",
+    "server": "https://aypsqqvfohekxxuqsmrw.supabase.co",
+    "request": "POST /auth/v1/token?grant_type=password",
+    "response_status": 400,
+    "input": "שם משתמש test@more30.com, סיסמה שגויה",
+    "toast_text_read_from_dom": "שם המשתמש או הסיסמה שגויים.",
+    "url": "http://localhost:4321/mthbram/admin-login (vite preview על תוצר ה-build)",
+    "screenshot": "01-invalid-credentials-real-server.png"
+  },
+  "checks": {
+    "vitest": "5/5 עוברים — src/lib/authErrors.test.ts",
+    "tsc": "tsc -p tsconfig.app.json --noEmit נקי",
+    "build": "npm run build עבר (35.19s)"
+  },
+  "not_done": {
+    "deploy": "לא נפרס בצעד הזה — כל הראיות הן מ-build מקומי ב-localhost:4321.",
+    "email_not_confirmed_live": "לא צולם על החי: אין בפרויקט הזה חשבון עם מייל לא-מאומת שאפשר להשתמש בו. הענף מכוסה בטסט בלבד.",
+    "shared_module": "עותק חמישי של authErrors (01, 15, 16, 22, 21). שיתוף דורש חיווט האפליקציות ל-packages/ — אף אחת מהן לא מחווטת, ולכן החוב נרשם ולא נפרע כאן."
+  }
+}

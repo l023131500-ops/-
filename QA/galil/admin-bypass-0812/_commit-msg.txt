@@ -1,0 +1,34 @@
+galil (24): the navbar had a link that opened the admin panel with no password
+
+/gabai?auto=admin seeded view='admin' in GabaiPortal, and the public Navbar
+carried that exact URL as "ניהול ⚡" on every page of the site. Anyone who
+loaded more30.com/galil and clicked it got the management UI — synagogue CRUD,
+CSV import, the real contact record — without ever seeing the login screen.
+Photographed against the bundle that is live, not against source:
+QA/galil/admin-bypass-0812/galil-BEFORE-deployed-bundle-admin-no-password.png.
+
+view now always initialises to 'login' and only handleLogin can move it. The
+query param survives as a tab preselect, and ?auto=admin is still read for that
+purpose so old bookmarks land on the admin tab rather than the gabai one; the
+navbar link is now ?login=admin.
+
+Measured against galil's own Supabase project while verifying: anon has no
+grant on gabai_accounts (401 42501), while synagogues, rabbi_questions,
+gallery_images and activity_slides all return 200. Two consequences. The
+password leak the login code implies — it selects * and compares
+password_hash client-side — is closed at the database, so nothing was exposed
+there. But no login can succeed either, which means this bypass was the only
+working way in, and closing it leaves the portal with no entrance until that
+grant is fixed. The content tables being readable is what made the bypassed
+panel a working one rather than an empty shell.
+
+That project (mwljkonwdeuaahsigjdp) is not in this account's organisation, so
+the grant cannot be fixed from here — NEEDS_USER. The anon key itself is valid;
+a deliberately bad key returns "Invalid API key" and this one does not, so this
+is a grant, not an expiry.
+
+Verified on the built bundle over a static server at :5131 with the /galil base
+and an index.html fallback, viewport resized once before screenshotting. 0
+console errors. Wrong password leaves view='login' and renders the connection
+error. _deploy/galil-more30/galil mirrored from dist; the old
+index-DE3Q6Zkw.js is gone.

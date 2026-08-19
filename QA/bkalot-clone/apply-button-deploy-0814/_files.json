@@ -1,0 +1,41 @@
+{
+  "prod": {
+    "bytes": 95108,
+    "new": {
+      "button_label": 0,
+      "title_attr": 0,
+      "comment_why": 0,
+      "comment_offset": 0,
+      "comment_stale": 0
+    },
+    "old": {
+      "go_id": 1,
+      "sort_id": 1,
+      "decided_id": 1,
+      "cases_call": 1,
+      "empty_text": 2,
+      "filter_word": 14,
+      "old_button": 1
+    }
+  },
+  "src": {
+    "bytes": 95580,
+    "new": {
+      "button_label": 1,
+      "title_attr": 1,
+      "comment_why": 1,
+      "comment_offset": 1,
+      "comment_stale": 1
+    },
+    "old": {
+      "go_id": 1,
+      "sort_id": 1,
+      "decided_id": 1,
+      "cases_call": 1,
+      "empty_text": 2,
+      "filter_word": 14,
+      "old_button": 0
+    }
+  },
+  "markers_valid": true
+}

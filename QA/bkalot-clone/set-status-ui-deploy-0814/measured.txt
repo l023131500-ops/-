@@ -1,0 +1,110 @@
+כל המדידות כאן נלקחו מהכתובת החיה more30.com/bkalot-studio/admin — מעל HTTP
+ומדפדפן אמיתי (1280x900) — מלבד ארבע שאילתות המסד שמסומנות ככאלה: בסיס, מנהל
+הבדיקה, מצב טסט ורולבק.
+
+== בסיס (מסד) ==
+cases=0 case_rights=0 documents=0 admin_users=1 admin_sessions=5 templates=2
+catalog=888 contacts=4 oq_all=8 oq_src=8 dlog=3 sent_cases=0
+oq_sent_at=0 oq_live=0
+src_fp(id:status:attempts, app_key='bkalot') = da28ec6315535ec0bfbebad4d57752a7
+— זהה בדיוק לבסיס של 2a067be.
+
+== לפני הפריסה (probe-http-pre.txt) ==
+/bkalot-studio/admin = 57,872 בתים  (= 57,636 של e95a0ef + 236 של NetFree)
+ששת המסומנים החדשים של 2a067be — כולם false:
+  שינוי סטטוס=false  status_required=false  status_not_settable=false
+  אין מה לשנות=false  משנה…=false  הפנייה כבר הייתה ב=false
+ששת המסומנים של הפעימות הקודמות — כולם true (הקובץ שבייצור הוא של e95a0ef).
+alef=456  replacement=0  doubleenc=0
+
+== הבדיקה שרצה לפני הפריסה ולא הונחה ==
+portal/dist יושב על הדיסק, ופריסה מ-dist ישן מחזירה את כל הפורטל אחורה בלי
+ששום דבר ידווח שגיאה. שמות הנכסים המגובבים הושוו לייצור לפני הפריסה —
+index-C2AHwa-z.js ו-index-B35ByRD-.css, זהים בשני הצדדים.
+dist/bkalot-studio/admin.html היה 57,636 (הקובץ של e95a0ef) והמקור 64,708;
+אחרי stage-portal.ps1 הוא 64,708.
+apps/37-bkalot-clone/admin.html זהה בדיוק לזה שנכנס ל-2a067be (git diff ריק).
+
+== הפריסה ==
+dpl_5HUM6CaXSrLBNZ8AjK3LtMtkqi3Q · more30-portal · production · ready
+
+== אחרי הפריסה (probe-http-post.txt) ==
+/bkalot-studio/admin = 64,944 בתים
+הדלתא מול המקור: 64,944 − 64,708 = 236 בדיוק — דלתת NetFree הידועה ולא מספר אחר.
+/bkalot-studio/admin/ מחזיר את אותם 64,944.
+שנים-עשר המסומנים — כולם true (ששת החדשים וששת הקודמים; אין רגרסיה).
+alef=546  replacement=0  doubleenc=0
+בלי רגרסיה: הטופס נשאר 21,272, more30.com/ נשאר 3,517 עם אותם שני נכסים.
+
+המדידה נכתבה ב-node ולא ב-PowerShell בכוונה — קובץ .ps1 בלי BOM נקרא כ-cp1255
+והעברית שבתבנית הייתה נהרסת בזמן הפירוק ומדווחת «לא נמצא» על טקסט קיים.
+
+== מנהל הבדיקה (קריאת SQL ישירה — bkalot_clone_admin_create אינה חשופה ב-HTTP) ==
+select public.bkalot_clone_admin_create(jsonb_build_object(
+  'email','qa0075dep@more30.com','full_name','QA set-status deploy',
+  'password','Qa0075dep!probe'));
+=> {"ok":true,"admin":{"id":18,...}}
+
+== הזרעה דרך נתיב הקליטה הציבורי מעל HTTP (seed-out.txt) ==
+A intake http=200 ok=true case=75 contact=81
+B intake http=200 ok=true case=76 contact=82   ← בקרה, לא נגעו בה כלל
+
+== 01 — הפנייה נפתחה בייצור, סטטוס «חדשה» ==
+h3 «שינוי סטטוס» קיים במסך החי, בין פרטי הפנייה ל«איש הקשר».
+שלושה כפתורים, שלושתם פעילים (new אינו אחד מהיעדים, ולכן אין מה לכבות):
+  בטיפול  disabled=false  title="מסמן את הפנייה כ«בטיפול». אינו שולח דבר."
+  נסגרה   disabled=false  title="מסמן את הפנייה כ«נסגרה». אינו שולח דבר."
+  נדחתה   disabled=false  title="מסמן את הפנייה כ«נדחתה». אינו שולח דבר."
+סטטוס=חדשה  עודכנה=14.08.2026, 05:32
+צילום: 01-live-new-three-enabled.png
+
+== 02 — לחיצה על «נסגרה» בייצור ==
+note: «הסטטוס שונה מ«חדשה» ל«נסגרה» · לא נשלחה שום הודעה»   hidden=false
+err:  hidden=true  (שינוי מוצלח אינו שגיאה)
+סטטוס=נסגרה   עודכנה=14.08.2026, 05:33  ← זז על המסך, לא רק במסד
+כפתורים: נסגרה disabled=true title="הפנייה כבר ב«נסגרה», ולכן אין מה לשנות"
+         בטיפול/נדחתה נשארו פעילים
+הרשימה שמאחור התרעננה בלי שנגעו בה: #75 «נסגרה», #76 «חדשה»
+צילום: 02-live-closed-after-click.png
+
+== 03 — המצב מגיע מהשרת ולא מהלחיצה ==
+«חזרה לרשימה» ואז פתיחה מחדש של #75 — openCase בונה את המסך מאפס וקורא
+ל-bkalot_clone_admin_case. אחרי הבנייה מחדש:
+  סטטוס=נסגרה, «נסגרה» עדיין disabled=true עם אותו נימוק בדיוק,
+  ה-note ריק ומוסתר (מסך חדש, לא זיכרון של הלחיצה הקודמת).
+בלי המדידה הזו הפעימה הייתה מוכיחה רק שהכפתור מכבה את עצמו.
+
+== 04 — המסנן, בייצור ==
+סטטוס=«נסגרה» + «סינון» → «פנייה אחת», #75 בלבד. הבקרה #76 אינה ברשימה.
+זהו ערך מסנן שעד 0071/0072 לא יכול היה להחזיר ולו שורה אחת בשום מצב —
+עכשיו הוא מחזיר, מהמסך החי.
+צילום: 03-live-filter-closed-one.png
+
+== קונסולה ==
+אפס שגיאות ואפס אזהרות לאורך כל הזרימה על הכתובת החיה (0 מתוך 0 הודעות).
+בניגוד למדידה המקומית של 2a067be, שם היה favicon.ico 404 של השרת הסטטי.
+
+== מצב טסט — נמדד ולא הוצהר (מסד, אחרי כל הלחיצות) ==
+documents=0  oq_all=8  dlog=3  sent_cases=0
+outbound_queue עם sent_at: 0     שורות mode=live: 0
+הנתיב נגע בעמודה status ותו לא: לא הופק מסמך, לא נכנסה שורה לתור, לא נכתבה
+שורת יומן ולא יצאה ולו קריאה אחת. אין מייל ואין הודעה.
+
+== הבקרה ==
+#76: status='new', updated_at = created_at בדיוק (2026-08-14T02:32:48.119032+00)
+— קפואה על מצב הלידה שלה. #75: created 02:32:47.503029 → updated 02:33:43.237990,
+כלומר 55.7 שניות, והלחיצה היחידה היא ההפרש כולו.
+
+== המקור לא נגע ==
+src_fp = da28ec6315535ec0bfbebad4d57752a7 — זהה לבסיס. 8 שורות app_key='bkalot'
+לפני ו-8 אחרי.
+
+== רולבק ==
+delete from bkalot_clone.case_rights where case_id in (75,76);   -- 118
+delete from bkalot_clone.cases        where id in (75,76);       -- 2
+delete from bkalot_auto.contacts      where id in (81,82);       -- 2
+delete from bkalot_clone.admin_sessions where admin_id = 18;     -- 1
+delete from bkalot_clone.admin_users    where id = 18;           -- 1
+אחרי: cases=0 case_rights=0 documents=0 admin_users=1 admin_sessions=5
+templates=2 catalog=888 contacts=4 oq_all=8 dlog=3
+src_fp=da28ec6315535ec0bfbebad4d57752a7 — זהה בדיוק לבסיס.

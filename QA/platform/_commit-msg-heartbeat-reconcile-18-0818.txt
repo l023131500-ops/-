@@ -1,0 +1,15 @@
+heartbeat: reconcile 5 more queued _heartbeat-pending.sql files (0818, batch 18)
+
+Reconciled 5 more of the remaining queued _heartbeat-pending.sql files, in
+git-log commit-add order: egod-a11y-commit-0817, chatzor-status-sync-0817,
+chizukim-lh-0817, orech-lh-0817, studio-lh-0817. Checked each task text
+against core.run_progress before insert (none pre-existed). Rows written
+live via Supabase MCP (ids 800-804), not queued. Files deleted after
+successful insert.
+
+Remaining: 26 pending _heartbeat-pending.sql files still queued in commit
+order -- next batch continues from tamlul-lh-fontfix-0817 onward per
+`git log --diff-filter=A --name-only --reverse` on the pending-sql glob.
+
+No app code changed, no protected system touched
+(08/09/bkalut-app/bkalot-admin/zr_*/NEDARIM3873 untouched).

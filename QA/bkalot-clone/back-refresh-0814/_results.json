@@ -1,0 +1,73 @@
+{
+  "beat": "«חזרה לרשימה» אינה מרעננת את הרשימה (§5ב, UI)",
+  "line_taken_from": "QA/bkalot-clone/list-decided-deploy-0814/README.md — «מה נשאר פתוח ולא נבלע», הקו הראשון",
+  "change": {
+    "file": "apps/37-bkalot-clone/admin.html",
+    "bytes_before": 85043,
+    "bytes_after": 86588,
+    "migration": null,
+    "edge_function": null,
+    "portal_deploy": null
+  },
+  "measured_against": "ה-edge וה-DB החיים (BASE ב-admin.html הוא כתובת מוחלטת); שני שרתים סטטיים מקומיים — 8138 מגיש את הקובץ מ-HEAD, 8139 את הקובץ המתוקן",
+  "seed": {
+    "path": "bkalot-clone-intake מעל HTTP, מפתח anon כמו מהטופס",
+    "case_prev": 114,
+    "case_next": 115,
+    "admin_user": 36,
+    "both_created_status": "new"
+  },
+  "prev_version_port_8138": {
+    "case": 114,
+    "list_before": { "status": "חדשה", "spans": 8, "docs": false, "not_decided_marker": false },
+    "action": "הפק מסמך → מסמך #92 הופק · תבנית rights_treatment_reply · 2494 תווי טקסט · 42 זכויות (כל הרשימה) · לא נשלח — מצב טסט",
+    "list_after_back": { "status": "חדשה", "spans": 8, "docs": false, "not_decided_marker": false },
+    "db_at_that_moment": { "status": "in_progress", "documents": 1, "decided_by": null },
+    "verdict": "השורה הציגה «חדשה» ואפס מסמכים בעוד שבמסד הפנייה כבר הייתה in_progress עם מסמך"
+  },
+  "next_version_port_8139": {
+    "case": 115,
+    "list_before": { "status": "חדשה", "spans": 8, "docs": false, "not_decided_marker": false },
+    "action": "הפק מסמך (אותה תבנית, אותו נתיב)",
+    "list_after_back": { "status": "בטיפול", "spans": 10, "docs": true, "not_decided_marker": true },
+    "db_at_that_moment": { "status": "in_progress", "documents": 1, "decided_by": null },
+    "verdict": "השורה הציגה את מה שבמסד"
+  },
+  "control_no_change": {
+    "case": 114,
+    "note": "על 8139 היא כבר הייתה in_progress בטעינה הראשונה ואיש לא נגע בה בעמוד הזה",
+    "before_back": { "spans": 10, "docs": true, "not_decided_marker": true },
+    "after_back": { "spans": 10, "docs": true, "not_decided_marker": true },
+    "verdict": "הרענון אינו ממציא שינוי בשורה שאיש לא נגע בה"
+  },
+  "no_regression": {
+    "count_text": "«2 פניות» לפני ואחרי בשני העמודים",
+    "screen_after_back": "screen-list בלבד",
+    "list_error_hidden": true,
+    "console": "הודעה אחת לאורך כל הריצה — favicon.ico 404 של השרת הסטטי המקומי"
+  },
+  "test_mode": {
+    "cases_sent": 0,
+    "outbound_queue": 8,
+    "outbound_queue_fingerprint_before": "b5ca3ba695d8ec8ce47bf6e7a2b579d0",
+    "outbound_queue_fingerprint_after": "b5ca3ba695d8ec8ce47bf6e7a2b579d0",
+    "queue_rows_with_sent_at": 0,
+    "delivery_log": 3
+  },
+  "rollback": {
+    "deleted": { "documents": 2, "case_rights": 84, "cases": 2, "contacts": 2, "admin_sessions": 2, "admin_users": 1 },
+    "after": { "cases": 0, "case_rights": 0, "documents": 0, "admin_users": 1, "admin_sessions": 5, "contacts": 4, "templates": 2, "catalog": 888, "outbound_queue": 8, "delivery_log": 3 },
+    "identical_to_baseline": true
+  },
+  "screenshots": {
+    "01-prev-list-both-new.png": { "bytes": 38036, "md5": "534F34DA0B6D503A1669907BB0ED508B" },
+    "02-prev-back-stale.png": { "bytes": 38036, "md5": "534F34DA0B6D503A1669907BB0ED508B" },
+    "03-next-list-before.png": { "bytes": 40276, "md5": "B73C2516A66A75B77FF4443D2606E4C3" },
+    "04-next-back-fresh.png": { "bytes": 42462, "md5": "6AC3F76082FE3311A7A00F9C4E09382E" }
+  },
+  "open": [
+    "הקובץ טרם נפרס — more30.com/bkalot-studio/admin עדיין מגיש את הגרסה שבה «חזרה לרשימה» אינה מרעננת; זו הפעימה הבאה",
+    "רענון שנכשל משאיר את השורות הישנות על המסך — count אומר «—» ויש שורת שגיאה, אבל השורות עצמן נשארות. זהה בדיוק לסינון ולדפדוף",
+    "load() אחרי set-status (השורה שרצה בזמן שמסך הפנייה פתוח) הפכה למיותרת — הרשימה נטענת שוב בחזרה אליה"
+  ]
+}

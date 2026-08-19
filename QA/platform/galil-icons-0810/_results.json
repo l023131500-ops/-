@@ -1,0 +1,62 @@
+{
+  "system": "galil (24-galilee-connect-hub)",
+  "section": "priority-1 §6 — עיצוב ייחודי, לא AI גנרי",
+  "measured_at": "2026-08-10T14:50Z",
+  "finding": "גליף אחד שמוביל לשני יעדים שונים — צורה שהמונה של icon-decisions.mjs עיוור אליה",
+  "why_the_tool_missed_it": [
+    "repeatInBand מזווג לפי כותרת הרצועה; שלושת הזוגות כאן חוצים רצועות (ניווט מול פוטר מול פקד צף).",
+    "מגירת המובייל מציירת את גליפי הניווט, והמדידה של icon-decisions.mjs רצה ברוחב דסקטופ שבו הניווט הוא טקסט בלבד — ולכן _icon-slots-galil.md מונה 14 סלוטים ואף אחד מהם אינו שורת ניווט."
+  ],
+  "rule_applied": "גליף רשאי לחזור כשהיעד חוזר (שורת ניווט והכרטיס שמוביל לאותו מקום), ואסור לו לחזור על שני יעדים שונים. כל סמל חלופי נלקח מהיעד עצמו ולא הומצא.",
+  "before": {
+    "source": "https://more30.com/galil/ (ייצור, לפני התיקון)",
+    "evidence": "before-mobile-drawer.png",
+    "nav_glyphs": "7 שורות · 5 גליפים",
+    "one_glyph_many_destinations": {
+      "lucide-message-circle": ["ניווט: שאל את הרב", "פוטר: התחברו אלינו בוואטסאפ", "פקד צף: פתח צ'אט"],
+      "lucide-settings": ["ניווט: פורטל גבאים", "ניווט: ניהול ⚡", "כרטיס: כניסה לפורטל גבאים"],
+      "lucide-book-open": ["ניווט: בתי כנסת", "ניווט: דת וקהילה", "כרטיס: מידע דת וקהילה"]
+    }
+  },
+  "after": {
+    "source": "http://localhost:4318/galil/ (בנייה מקומית של התיקון)",
+    "evidence": "after-mobile-drawer.png",
+    "nav_glyphs": "7 שורות · 7 גליפים",
+    "nav": [
+      { "label": "ראשי", "glyph": "lucide-house" },
+      { "label": "בתי כנסת", "glyph": "lucide-landmark" },
+      { "label": "דת וקהילה", "glyph": "lucide-book-open" },
+      { "label": "שאל את הרב", "glyph": "lucide-circle-help" },
+      { "label": "צור קשר", "glyph": "lucide-phone" },
+      { "label": "פורטל גבאים", "glyph": "lucide-settings" },
+      { "label": "ניהול ⚡", "glyph": "lucide-shield-check" }
+    ],
+    "floating_launcher": "lucide-bot (הסמל של הפאנל שהוא פותח, כותרת «מחוברים בוט»)",
+    "whatsapp_link": "lucide-message-circle (עכשיו המשמעות היחידה של הסמל בעמוד)",
+    "remaining_repeats_all_legitimate": {
+      "lucide-book-open": ["ניווט: דת וקהילה", "כרטיס: מידע דת וקהילה — אותו יעד /info"],
+      "lucide-circle-help": ["ניווט: שאל את הרב", "הרצועה שאל את הרב — אותו יעד #ask-rabbi"],
+      "lucide-phone": ["ניווט: צור קשר", "כרטיס: צור קשר — אותו יעד /contact"],
+      "lucide-settings": ["ניווט: פורטל גבאים", "כרטיס: כניסה לפורטל גבאים — אותו יעד /gabai"],
+      "lucide-chevron-down": ["שני אקורדיונים — אפורדנס של פתיחה, לא זהות של יעד"]
+    }
+  },
+  "files": [
+    "apps/24-galilee-connect-hub/src/components/Navbar.tsx",
+    "apps/24-galilee-connect-hub/src/components/ChatBot.tsx"
+  ],
+  "verified": [
+    "npm run build עבר (1m 55s, PWA precache 16 entries)",
+    "vite preview על הבנייה שנוצרה — נמדד בדפדפן, לא בקוד",
+    "צילום מסך לפני (ייצור) ואחרי (בנייה מקומית) באותו רוחב, 390×844"
+  ],
+  "not_deployed": {
+    "reason": "מכסת api-deployments-free-per-day מוצה (core.issues #83); המשבצת הפנויה הראשונה ~11/08 00:11Z",
+    "queue_when_it_opens": ["15-egod (מועתק אל _deploy/egod-more30/egod)", "21-mthbram", "galil (dist נבנה, טרם הועתק אל _deploy/galil-more30)"],
+    "note": "galil לא הועתק אל _deploy בכוונה — העתקה בלי לוודא קודם שהתיקייה החיה זהה לבנייה היא בדיוק הדפוס ששבר אתרים בעבר."
+  },
+  "not_claimed": [
+    "לא נטען שאלה כל ליקויי §6 ב-galil; נמדדה כאן צורה אחת — גליף אחד לשני יעדים.",
+    "לא נבדקו עמודי המשנה (/info, /contact, /gabai) באותה מדידה, רק דף הבית והניווט שמופיע בכולם."
+  ]
+}

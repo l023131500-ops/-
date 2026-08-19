@@ -1,0 +1,135 @@
+{
+  "kesef": {
+    "url": "https://more30.com/kesef",
+    "measuredAt": "2026-08-17T13:36:48.262Z",
+    "performance": 97,
+    "accessibility": 100,
+    "bestPractices": 77,
+    "seo": 100,
+    "metrics": {
+      "fcp": "1.4 s",
+      "lcp": "1.5 s",
+      "tbt": "190 ms",
+      "cls": "0.009",
+      "si": "2.4 s"
+    },
+    "failedAudits": [
+      {
+        "id": "max-potential-fid",
+        "title": "Max Potential First Input Delay",
+        "score": 0.83,
+        "display": "150 ms"
+      },
+      {
+        "id": "third-party-cookies",
+        "title": "Uses third-party cookies",
+        "score": 0,
+        "display": "1 cookie found"
+      },
+      {
+        "id": "mainthread-work-breakdown",
+        "title": "Minimize main-thread work",
+        "score": 0,
+        "display": "2.3 s"
+      },
+      {
+        "id": "unminified-javascript",
+        "title": "Minify JavaScript",
+        "score": 0.5,
+        "display": "Est savings of 6 KiB"
+      },
+      {
+        "id": "inspector-issues",
+        "title": "Issues were logged in the `Issues` panel in Chrome Devtools",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "bf-cache",
+        "title": "Page prevented back/forward cache restoration",
+        "score": 0,
+        "display": "1 failure reason"
+      },
+      {
+        "id": "cache-insight",
+        "title": "Use efficient cache lifetimes",
+        "score": 0.5,
+        "display": "Est savings of 43 KiB"
+      },
+      {
+        "id": "document-latency-insight",
+        "title": "Document request latency",
+        "score": 0.5,
+        "display": "Est savings of 12 KiB"
+      },
+      {
+        "id": "modern-http-insight",
+        "title": "Modern HTTP",
+        "score": 0.5,
+        "display": ""
+      }
+    ],
+    "mainThreadBreakdown": [
+      {
+        "group": "Style & Layout",
+        "duration": 1288
+      },
+      {
+        "group": "Other",
+        "duration": 675
+      },
+      {
+        "group": "Rendering",
+        "duration": 167
+      },
+      {
+        "group": "Script Evaluation",
+        "duration": 148
+      },
+      {
+        "group": "Parse HTML & CSS",
+        "duration": 30
+      },
+      {
+        "group": "Script Parsing & Compilation",
+        "duration": 17
+      },
+      {
+        "group": "Garbage Collection",
+        "duration": 12
+      }
+    ],
+    "bootupTime": [
+      {
+        "url": "https://more30.com/kesef",
+        "total": 1533,
+        "scripting": 31,
+        "scriptParseCompile": 4
+      },
+      {
+        "url": "Unattributable",
+        "total": 506,
+        "scripting": 18,
+        "scriptParseCompile": 0
+      },
+      {
+        "url": "https://more30.com/auth-button.js",
+        "total": 127,
+        "scripting": 27,
+        "scriptParseCompile": 7
+      },
+      {
+        "url": "https://netfree.link/card/card-injection.js",
+        "total": 66,
+        "scripting": 42,
+        "scriptParseCompile": 4
+      },
+      {
+        "url": "https://netfree.link/card/",
+        "total": 65,
+        "scripting": 0,
+        "scriptParseCompile": 0
+      }
+    ]
+  }
+}

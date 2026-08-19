@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<!-- 🚨 בלי השורה הזו האתר הזה רץ **בלי גיליון סגנון ובלי שום JavaScript**,
+     ובלי שדבר ייכשל בקול.
+
+     האתר מוגש מ-‎more30.com/bkalot‎ (בלי לוכסן בסוף), וכל הנכסים כאן
+     יחסיים. ‎"style.css"‎ נפתר מול כתובת המסמך ולכן הופך ל-
+     ‎more30.com/style.css‎ — שורש הפורטל — ושם ה-catch-all של הפורטל עונה
+     **200 עם index.html**. הגיליון נפרס כאפס חוקים, הסקריפטים נפרסים
+     כ-HTML ולא רצים, וכל 30 קישורי ההורדה מצביעים לשום מקום. שום דבר
+     אינו מחזיר 404, ולכן ‎probe-assets‎ עבר על זה בשלום.
+
+     נמדד ב-‎scripts/qa/relative-asset-probe.mjs‎: style.css, engine.js,
+     repo.js ו-app.js — כולם החזירו HTML במקום נכס. ‎css-origin.mjs‎ הראה
+     את אותו דבר מהצד השני: ‎.header-inner‎ עם אפס הצהרות תואמות, ו-‎.nav‎
+     מחושב ‎display:block‎ כי ‎.nav{display:flex}‎ מעולם לא נטען.
+
+     ‎/briut‎ סובל מאותה גיאומטריה בדיוק ויש לו ‎<base>‎ — ולכן הוא עובד. -->
+<base href="/bkalot/">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light dark">
+<!-- מצב כהה (DESIGN_STANDARD §3).
+     הערכה הכהה **כבר קיימת** — היא מגיעה מגיליון הטוקנים הגלובלי של בקלות
+     שנטען למטה. `scripts/qa/dark-probe.mjs` דיווח כאן "0 חוקי dark" רק כי
+     הגיליון ההוא חוצה-מקורות ולכן ‎cssRules‎ שלו אינו קריא לסקריפט
+     (‎sheetsUnreadable: 2‎) — אבל הכפייה של המחלקה כן העבירה את הרקע מ-
+     ‎rgb(247,246,242)‎ ל-‎rgb(20,19,15)‎ ואת הטקסט ללבן. כלומר לא חסרה כאן
+     ערכה, חסר היה מי שידליק אותה.
+
+     בתוך ה-‎<head>‎ ולפני הציור הראשון, ולכן אין הבזק לבן. -->
+<script>
+  (function () {
+    var KEY = "bkalot-theme";
+    var mq = window.matchMedia("(prefers-color-scheme: dark)");
+    var apply = function (dark) {
+      document.documentElement.classList.toggle("dark", dark);
+    };
+    var stored = null;
+    try { stored = localStorage.getItem(KEY); } catch (e) {}
+    apply(stored ? stored === "dark" : mq.matches);
+    /* משתמש שלא בחר ידנית ממשיך לעקוב אחרי ה-OS; מי שבחר — נשאר על הבחירה. */
+    var onChange = function (e) {
+      var current = null;
+      try { current = localStorage.getItem(KEY); } catch (err) {}
+      if (!current) apply(e.matches);
+    };
+    mq.addEventListener ? mq.addEventListener("change", onChange) : mq.addListener(onChange);
+  })();
+</script>
+<title>בדיקה מקיפה על כל הזכויות וההטבות שניתן לקבל</title>
+<meta name="description" content="בקלות — בדיקה מקיפה וחינמית של כל הזכויות וההטבות שמגיעות לך, כולל השוואת קופות חולים והורדת המסמכים הדרושים למימוש.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&family=Frank+Ruhl+Libre:wght@500;600;700;900&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&family=Frank+Ruhl+Libre:wght@500;600;700;900&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&family=Frank+Ruhl+Libre:wght@500;600;700;900&display=swap"></noscript>
+<!-- מערכת עיצוב גלובלית של בקלות (מקור-אמת יחיד ל-tokens) -->
+<link rel="stylesheet" href="https://bieebmnmkffwbqlsfozh.supabase.co/storage/v1/object/public/design/bkalot-theme.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="brand" href="#top" aria-label="בקלות">
+      <svg width="34" height="34" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+        <rect x="3" y="3" width="42" height="42" rx="11" stroke="currentColor" stroke-width="2.5"/>
+        <path d="M15 24 L21 30 L33 17" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span>בקלות</span>
+    </a>
+    <nav class="nav">
+      <a href="#check">הבדיקה</a>
+      <a href="#how">איך זה עובד</a>
+      <a href="#catalog">קטלוג מלא</a>
+      <a href="#downloads">להורדה</a>
+      <a href="#funds">קופות חולים</a>
+      <a href="#prices">השוואות מחירים</a>
+      <a href="#" id="adminLink" class="nav-admin">ניהול</a>
+      <button type="button" id="themeToggle" class="theme-toggle" aria-label="החלף מצב כהה/בהיר">🌙</button>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+  <!-- HERO -->
+  <section class="hero">
+    <div class="wrap">
+      <div class="kicker">מחקר מקיף · מעודכן 2026</div>
+      <h1>בדיקה מקיפה על כל הזכויות<br>וההטבות שניתן לקבל</h1>
+      <p class="lede">מלאו שאלון קצר — והמערכת תבנה עבורכם רשימת המלצות מותאמת אישית לפי המצב המשפחתי, ההכנסה והבריאות שלכם. כל זכות עם מספר הנושא ממאגר בקלות, הגוף המטפל, הסכום הצפוי ורמת הסיכוי.</p>
+      <!-- ארבעה מספרים על עמוד חי. עד עכשיו הם היו ליטרלים, ושניים מהם לא
+           הסכימו עם הנתונים שאותו עמוד עצמו טוען: 515 סופר את כל מרחב ה-H,
+           שממנו 435 הם קופות חולים ו-80 הם pool בריאות כללי (gov ו-ngo);
+           ו-25 סופר את meta.situations, שכולל את health_check — סינון בריאות
+           ולא מצב חיים ממופה, ו-engine.js עצמו מוציא אותו מרשימת מצבי הנושאים
+           (שורה 206). situation_map מכיל 24. עכשיו כל הארבעה נגזרים מ-MASTER
+           בטעינה (applyHeroStats ב-app.js) ולכן אינם יכולים לסטות שוב;
+           data-count נשאר עם הערך הנמדד כגיבוי למקרה שהמאגר אינו נטען.
+           core.issues #141. -->
+      <div class="hero-stats">
+        <div class="stat"><span class="num" data-stat="catalog" data-count="888">0</span><span class="lbl">נושאים מקוטלגים</span></div>
+        <div class="stat"><span class="num" data-stat="bklot" data-count="373">0</span><span class="lbl">זכויות מבקלות</span></div>
+        <div class="stat"><span class="num" data-stat="fund" data-count="435">0</span><span class="lbl">נושאי קופות חולים</span></div>
+        <div class="stat"><span class="num" data-stat="situations" data-count="24">0</span><span class="lbl">מצבי חיים ממופים</span></div>
+      </div>
+      <a href="#check" class="btn-primary">התחילו את הבדיקה ←</a>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section id="how" class="how">
+    <div class="wrap">
+      <h2>איך זה עובד</h2>
+      <div class="how-grid">
+        <div class="how-card"><div class="hn">1</div><h3>ממלאים שאלון</h3><p>מצב משפחתי, גיל, תעסוקה והכנסה, דיור, פנסיה, ביטוחים, ילדים — ובריאות (אופציונלי).</p></div>
+        <div class="how-card"><div class="hn">2</div><h3>המערכת מנתחת</h3><p>זיהוי המצבים הרלוונטיים + טריגרים לפי שכר (מענק עבודה, החזר מס, תיאום מס).</p></div>
+        <div class="how-card"><div class="hn">3</div><h3>מקבלים רשימה מדורגת</h3><p>חובה לבדוק · מומלץ לבדוק · טיפים — כל פריט עם מספר נושא, גוף מטפל וסכום.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- QUESTIONNAIRE -->
+  <section id="check" class="check">
+    <div class="wrap">
+      <h2>השאלון</h2>
+      <p class="section-sub">מלאו את הפרטים הרלוונטיים. שדות ריקים פשוט יידלגו.</p>
+      <form id="qform" class="qform"></form>
+      <button id="runBtn" class="btn-primary big" type="button">בנו לי את רשימת הזכויות ←</button>
+    </div>
+  </section>
+
+  <!-- RESULTS -->
+  <section id="results" class="results hidden">
+    <div class="wrap" id="resultsInner"></div>
+  </section>
+
+  <!-- ===== חומרים להורדה ===== -->
+  <section id="downloads" class="downloads">
+    <div class="wrap">
+      <h2>חומרים להורדה</h2>
+      <p class="section-sub">כל החומרים זמינים להורדה חופשית — מדריך מלא, שאלון אבחון להדפסה, ומצגת ייעודית לכל אחד מ-25 מצבי החיים.</p>
+
+      <div class="dl-main">
+        <div class="dl-card">
+          <div class="dl-card-head">
+            <span class="dl-badge">מדריך מלא</span>
+            <h3>מדריך זכויות והטבות לפי מצב חיים</h3>
+          </div>
+          <p class="dl-card-desc">כל הזכויות העיקריות ל-25 מצבי החיים, עם הגוף המטפל, הסכום הצפוי ורמת העדיפות. 27 עמודים.</p>
+          <div class="dl-btns">
+            <a class="btn-primary dl-btn" href="downloads/%D7%9E%D7%93%D7%A8%D7%99%D7%9A-%D7%96%D7%9B%D7%95%D7%99%D7%95%D7%AA-%D7%91%D7%A7%D7%9C%D7%95%D7%AA.pdf" download>הורדה PDF</a>
+            <a class="btn-ghost dl-btn" href="downloads/%D7%9E%D7%93%D7%A8%D7%99%D7%9A-%D7%96%D7%9B%D7%95%D7%99%D7%95%D7%AA-%D7%91%D7%A7%D7%9C%D7%95%D7%AA.docx" download>הורדה Word</a>
+          </div>
+        </div>
+
+        <div class="dl-card">
+          <div class="dl-card-head">
+            <span class="dl-badge dl-badge-alt">שאלון להדפסה</span>
+            <h3>שאלון אבחון זכויות והטבות</h3>
+          </div>
+          <p class="dl-card-desc">שאלון מקיף למילוי ידני — 10 חלקים, לזיהוי המצבים הרלוונטיים והזכויות שמגיעות לכם. מוכן להדפסה.</p>
+          <div class="dl-btns">
+            <a class="btn-primary dl-btn" href="downloads/%D7%A9%D7%90%D7%9C%D7%95%D7%9F-%D7%90%D7%91%D7%97%D7%95%D7%9F-%D7%96%D7%9B%D7%95%D7%99%D7%95%D7%AA.pdf" download>הורדה PDF</a>
+            <a class="btn-ghost dl-btn" href="downloads/%D7%A9%D7%90%D7%9C%D7%95%D7%9F-%D7%90%D7%91%D7%97%D7%95%D7%9F-%D7%96%D7%9B%D7%95%D7%99%D7%95%D7%AA.docx" download>הורדה Word</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="dl-pptx-wrap">
+        <h3 class="dl-sub-title">מצגות לפי מצב חיים <span class="dl-cat-n">(25 מצגות)</span></h3>
+        <p class="section-sub">מצגת נפרדת לכל מצב — לחצו כדי להוריד את המצגת הרלוונטית.</p>
+      <h3 class="dl-cat">מצבי חיים כלליים <span class="dl-cat-n">(14)</span></h3>
+      <div class="dl-grid">
+        <a class="dl-pptx" href="downloads/presentations/01-young_single.pptx" download>
+          <span class="dl-pptx-ico">PPTX</span>
+          <span class="dl-pptx-name">צעיר/רווק עצמאי</span>
+          <span class="dl-pptx-meta">8 זכויות עיקריות</span>
+        </a>
+        <a class="dl-pptx" href="downloads/presentations/02-student.pptx" download>
+          <span class="dl-pptx-ico">PPTX</span>
+          <span class="dl-pptx-name">סטודנט/ית</span>
+          <span class="dl-pptx-meta">8 זכויות עיקריות</span>
+        </a>
+        <a class="dl-pptx" href="downloads/presentations/03-engaged.pptx" download>
+          <span class="dl-pptx-ico">PPTX</span>
+          <span class="dl-pptx-name">מאורסים / לפני חתונה</span>
+          <span class="dl-pptx-meta">8 זכויות עיקריות</span>
+        </a>
+        <a class="dl-pptx" href="downloads/presentations/04-married_no_kids.pptx" download>
+          <span class="dl-pptx-ico">PPTX</span>
+          <span class="dl-pptx-name">זוג נשוי ללא ילדים</span>
+          <span class="dl-pptx-meta">8 זכויות עיקריות</span>
+        </a>
+        <a class="dl-pptx" href="downloads/presentations/05-family_1_3.pptx" download>
+          <span class="dl-pptx-ico">PPTX</span>
+          <span class="dl-pptx-name">משפחה עם 1–3 ילדים</span>
+          <span class="dl-pptx-meta">8 זכויות עיקריות</span>
+        </a>
+        <a class="dl-pptx" href="downloads/presentations/06-family_4plus.pptx" download>
+          <span class="dl-pptx-ico">PPTX</span>
+          <span class="dl-pptx-name">משפחה ברוכת ילדים (4+)</span>
+          <span class="dl-pptx-meta">8 זכויות עיקריות</span>
+        </a>
+        <a class="dl-pptx" href="downloads/presentations/07-family_grown_kids.pptx" download>
+          <span class="dl-pptx-ico">PPTX</span>
+          <span class="dl-pptx-name">משפחה עם ילדים בוגרים</span>
+          <span class="dl-pptx-meta">8 זכויות עיקריות</span>
+        </a>
+        <a class="dl-pptx" href="downloads/presentations/08-single_parent.pptx" download>
+          <span class="dl-pptx-ico">PPTX</span>
+          <span class="dl-pptx-name">הורה יחיד / חד-הורי</span>
+          <span class="dl-pptx-meta">8 זכויות עיקריות</span>
+        </a>
+        <a class="dl-pptx" href="downloads/presentations/09-pre_retirement.pptx" download>
+          <span class="dl-pptx-ico">PPTX</span>
+          <span class="dl-pptx-name">לקראת פרישה</span>
+          <span class="dl-pptx-meta">8 זכויות עיקריות</span>
+        </a>
+        <a class="dl-pptx" href="downloads/presentations/10-seniors.pptx" download>
+          <span class="dl-pptx-ico">PPTX</span>
+          <span class="dl-pptx-name">גיל הזהב / פנסיונרים</span>
+          <span class="dl-pptx-meta">8 זכויות עיקריות</span>
+        </a>
+        <a class="dl-pptx" href="downloads/presentations/11-unemployed.pptx" download>
+          <span class="dl-pptx-ico">PPTX</span>
+          <span class="dl-pptx-name">מובטל / מחפש עבודה</span>
+          <span class="dl-pptx-meta">8 זכויות עיקריות</span>
+        </a>
+        <a class="dl-pptx" href="downloads/presentations/12-low_income.pptx" download>
+          <span class="dl-pptx-ico">PPTX</span>
+          <span class="dl-pptx-name">הכנסה נמוכה / קושי כלכלי</span>
+          <span class="dl-pptx-meta">8 זכויות עיקריות</span>
+        </a>
+        <a class="dl-pptx" href="downloads/presentations/13-self_employed.pptx" download>
+          <span class="dl-pptx-ico">PPTX</span>
+          <span class="dl-pptx-name">עצמאי / בעל עסק</span>
+          <span class="dl-pptx-meta">8 זכויות עיקריות</span>
+        </a>
+        <a class="dl-pptx" href="downloads/presentations/14-property_owner.pptx" download>
+          <span class="dl-pptx-ico">PPTX</span>
+          <span class="dl-pptx-name">בעל דירה / משקיע נדל"ן</span>
+          <span class="dl-pptx-meta">8 זכויות עיקריות</span>
+        </a>
+      </div>
+      <h3 class="dl-cat">מצבים מיוחדים <span class="dl-cat-n">(10)</span></h3>
+      <div class="dl-grid">
+        <a class="dl-pptx" href="downloads/presentations/15-new_immigrant.pptx" download>
+          <span class="dl-pptx-ico">PPTX</span>
+          <span class="dl-pptx-name">עולה חדש / תושב חוזר ותיק</span>
+          <span class="dl-pptx-meta">8 זכויות עיקריות</span>
+        </a>
+        <a class="dl-pptx" href="downloads/presentations/16-reserves.pptx" download>
+          <span class="dl-pptx-ico">PPTX</span>
+          <span class="dl-pptx-name">לוחם/ת מילואים</span>
+          <span class="dl-pptx-meta">8 זכויות עיקריות</span>
+        </a>
+        <a class="dl-pptx" href="downloads/presentations/17-idf_disabled.pptx" download>
+          <span class="dl-pptx-ico">PPTX</span>
+          <span class="dl-pptx-name">נכה צה"ל / נפגע פעולות איבה</span>
+          <span class="dl-pptx-meta">8 זכויות עיקריות</span>
+        </a>
+        <a class="dl-pptx" href="downloads/presentations/18-disability.pptx" download>
+          <span class="dl-pptx-ico">PPTX</span>
+          <span class="dl-pptx-name">נכות כללית / מוגבלות</span>
+          <span class="dl-pptx-meta">8 זכויות עיקריות</span>
+        </a>
+        <a class="dl-pptx" href="downloads/presentations/19-special_needs_child.pptx" download>
+          <span class="dl-pptx-ico">PPTX</span>
+          <span class="dl-pptx-name">הורה לילד עם צרכים מיוחדים</span>
+          <span class="dl-pptx-meta">8 זכויות עיקריות</span>
+        </a>
+        <a class="dl-pptx" href="downloads/presentations/20-widow_survivor.pptx" download>
+          <span class="dl-pptx-ico">PPTX</span>
+          <span class="dl-pptx-name">אלמן/ה / משפחה שכולה / שאירים</span>
+          <span class="dl-pptx-meta">8 זכויות עיקריות</span>
+        </a>
+        <a class="dl-pptx" href="downloads/presentations/21-holocaust_survivor.pptx" download>
+          <span class="dl-pptx-ico">PPTX</span>
+          <span class="dl-pptx-name">ניצול/ת שואה</span>
+          <span class="dl-pptx-meta">8 זכויות עיקריות</span>
+        </a>
+        <a class="dl-pptx" href="downloads/presentations/22-work_injury.pptx" download>
+          <span class="dl-pptx-ico">PPTX</span>
+          <span class="dl-pptx-name">נפגע/ת עבודה / תאונת עבודה</span>
+          <span class="dl-pptx-meta">8 זכויות עיקריות</span>
+        </a>
+        <a class="dl-pptx" href="downloads/presentations/23-released_prisoner.pptx" download>
+          <span class="dl-pptx-ico">PPTX</span>
+          <span class="dl-pptx-name">אסיר משוחרר / שיקום</span>
+          <span class="dl-pptx-meta">7 זכויות עיקריות</span>
+        </a>
+        <a class="dl-pptx" href="downloads/presentations/24-conflict_zone.pptx" download>
+          <span class="dl-pptx-ico">PPTX</span>
+          <span class="dl-pptx-name">תושב עוטף עזה / קו עימות</span>
+          <span class="dl-pptx-meta">8 זכויות עיקריות</span>
+        </a>
+      </div>
+      <h3 class="dl-cat">בריאות <span class="dl-cat-n">(1)</span></h3>
+      <div class="dl-grid">
+        <a class="dl-pptx" href="downloads/presentations/25-health_check.pptx" download>
+          <span class="dl-pptx-ico">PPTX</span>
+          <span class="dl-pptx-name">מצב בריאותי</span>
+          <span class="dl-pptx-meta">8 זכויות עיקריות</span>
+        </a>
+      </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CATALOG -->
+  <section id="catalog" class="catalog">
+    <div class="wrap">
+      <h2>קטלוג מלא — כל הנושאים</h2>
+      <div class="cat-controls">
+        <!--
+          שלושת הפקדים האלה מזוהים חזותית לפי מיקומם מתחת לכותרת "קטלוג מלא",
+          ולקורא מסך הם לא נשמעו כלל: ל-select אין placeholder ואין טקסט משלו,
+          ולחיפוש היה רק placeholder — שם שנעלם ברגע שמתחילים להקליד.
+          aria-label ולא <label> גלוי, כדי לא לשנות את הפריסה של שורת הסינון.
+        -->
+        <input type="search" id="catSearch" aria-label="חיפוש בקטלוג הזכויות" placeholder="חיפוש לפי שם, גוף מטפל או מספר...">
+        <select id="catSrc" aria-label="סינון לפי מקור הזכות"><option value="">כל המקורות</option><option value="bklot">בקלות</option><option value="fund">קופה</option><option value="gov">ממשלה</option><option value="ngo">עמותה</option></select>
+        <select id="catPrio" aria-label="סינון לפי רמת עדיפות"><option value="">כל העדיפויות</option><option value="must">חובה לבדוק</option><option value="recommended">מומלץ לבדוק</option><option value="tip">טיפ לשיפור</option></select>
+      </div>
+      <div id="catCount" class="cat-count"></div>
+      <div id="catList" class="cat-list"></div>
+      <button id="catMore" class="btn-ghost">הצג עוד</button>
+    </div>
+  </section>
+
+  <!-- FUNDS -->
+  <section id="funds" class="funds">
+    <div class="wrap">
+      <h2>השוואת קופות חולים</h2>
+      <p class="section-sub">בחרו נושא כדי לראות מה מציעה כל קופה ובאיזו רמת ביטוח משלים.</p>
+      <!-- ה-‎<select>‎ היה בלי שם נגיש: הכותרת שמעליו היא ‎<h2>‎ של הסעיף
+           כולו, ולכן קורא מסך הכריז "תיבה משולבת" בלי לומר מה בוחרים בה.
+           נמדד ב-`platform-audit.mjs`. ‎<label>‎ ולא ‎aria-label‎ כי כאן יש
+           טקסט אמיתי שראוי שגם רואים אותו יראו. -->
+      <label for="fundTopic" class="fund-select-label">נושא להשוואה</label>
+      <select id="fundTopic" class="fund-select"></select>
+      <div id="fundCompare" class="fund-compare"></div>
+    </div>
+  </section>
+
+  <!-- ===== השוואות מחירים מבית בקלות · בקרוב ===== -->
+  <section id="prices" class="prices-teaser">
+    <div class="wrap">
+      <div class="pt-card">
+        <div class="pt-text">
+          <span class="pt-badge">בקרוב</span>
+          <h2>השוואות מחירים מבית בקלות</h2>
+          <p>בקרוב תוכלו להשוות מחירים על כל המוצרים בין רשתות המזון והחנויות בישראל — במקום אחד, בפשטות ובשקיפות מלאה. אותו מותג שאתם מכירים ממאגר הזכויות, עכשיו גם על המחירים.</p>
+          <a href="#" id="pricesBtn" class="btn-ghost pt-btn">כניסה לאתר השוואות המחירים ←</a>
+        </div>
+        <div class="pt-visual" aria-hidden="true">
+          <svg width="88" height="88" viewBox="0 0 48 48" fill="none">
+            <rect x="3" y="3" width="42" height="42" rx="11" stroke="currentColor" stroke-width="2.5"/>
+            <path d="M15 24 L21 30 L33 17" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <p><strong>בדיקה מקיפה על כל הזכויות וההטבות שניתן לקבל</strong></p>
+    <p>מקורות: מאגר הזכויות "בקלות" · מאגר קופות החולים · מקורות רשמיים 2026 (ביטוח לאומי · משרדי ממשלה · כל-זכות). המידע אינפורמטיבי בלבד ואינו מחליף ייעוץ מקצועי פרטני.</p>
+  </div>
+</footer>
+
+<div id="modal" class="modal hidden"><div class="modal-box"><button class="modal-close" id="modalClose">×</button><div id="modalContent"></div></div></div>
+
+<!-- Lead-capture modal -->
+<div id="leadModal" class="modal hidden">
+  <div class="modal-box lead-box">
+    <button class="modal-close" id="leadClose">×</button>
+    <div id="leadContent"></div>
+  </div>
+</div>
+
+<script src="engine.js"></script>
+<script src="repo.js"></script>
+<script src="app.js"></script>
+<!-- כפתור הכניסה המשותף של more30 (DESIGN_STANDARD §9).
+     🚨 הוא היה **בעותק הפרוס בלבד** ולא כאן. נמדד: העמוד החי מכיל
+     ‎auth-button.js‎ והמקור על הדיסק לא. כלומר כל העתקה מהמקור לתיקיית
+     הפריסה הייתה מוחקת את הכניסה מ-‎/bkalot‎ בשקט — בדיוק סוג הרגרסיה
+     שכבר קרה כאן פעמיים במערכות אחרות. -->
+<script src="https://more30.com/auth-button.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,67 @@
+{
+  "prev": {
+    "bytes": 90920,
+    "NEW": {
+      "control_html": 0,
+      "const_decided": 0,
+      "options_loop": 0,
+      "key_sent": 0,
+      "message": 0,
+      "grid": 0
+    },
+    "REMOVED": {
+      "lastfilters_old": 1
+    },
+    "OLD": {
+      "f_status": 1,
+      "f_kind": 1,
+      "f_q": 1,
+      "status_unknown": 1,
+      "kind_unknown": 1,
+      "row_bit": 1,
+      "case_bit": 1,
+      "submit": 1,
+      "grid_mobile": 1
+    },
+    "TRAP": {
+      "lo_nirshma": 3,
+      "hachraa_yadanit": 1
+    }
+  },
+  "fixed": {
+    "bytes": 92899,
+    "NEW": {
+      "control_html": 1,
+      "const_decided": 1,
+      "options_loop": 1,
+      "key_sent": 1,
+      "message": 1,
+      "grid": 1
+    },
+    "REMOVED": {
+      "lastfilters_old": 0
+    },
+    "OLD": {
+      "f_status": 1,
+      "f_kind": 1,
+      "f_q": 1,
+      "status_unknown": 1,
+      "kind_unknown": 2,
+      "row_bit": 1,
+      "case_bit": 1,
+      "submit": 1,
+      "grid_mobile": 1
+    },
+    "TRAP": {
+      "lo_nirshma": 6,
+      "hachraa_yadanit": 2
+    }
+  },
+  "verdict": {
+    "new_all_0_in_prev": true,
+    "new_all_1_in_fixed": true,
+    "removed_1_prev_0_fixed": true,
+    "old_all_present_both": true,
+    "traps_present_in_prev": true
+  }
+}

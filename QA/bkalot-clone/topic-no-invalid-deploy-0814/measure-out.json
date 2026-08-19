@@ -1,0 +1,120 @@
+{
+  "url": "https://more30.com/bkalot-studio/",
+  "measurements": [
+    {
+      "id": "01-live-topic-no-invalid",
+      "topic_no_typed": "999999999999",
+      "native_before_submit": {
+        "value": "999999999999",
+        "badInput": false,
+        "field_checkValidity": true,
+        "form_checkValidity": true,
+        "form_has_novalidate": true
+      },
+      "intake_requests": 1,
+      "request_left_the_page": true,
+      "server_responses": [
+        {
+          "status": 200,
+          "body": "{\"ok\": false, \"error\": \"topic_no_invalid\", \"detail\": \"מספר הנושא גדול מכל מספר נושא שקיים במערכת\"}"
+        }
+      ],
+      "title": "הפנייה לא נשלחה",
+      "result_class": "result bad",
+      "lines": [
+        "מספר הנושא אינו תקין. תקנו ושלחו שוב.",
+        "מספר הנושא גדול מכל מספר נושא שקיים במערכת."
+      ],
+      "case_row": [],
+      "focused_id": "topic_no",
+      "focused_tag": "INPUT",
+      "topic_value": "999999999999",
+      "topic_aria_invalid": "true",
+      "aria_invalid_count": 1,
+      "kind": "treatment",
+      "full_name": "בדיקת מספר נושא גדול בייצור",
+      "phone": "050-1234567",
+      "situation": "single_parent",
+      "consent": true,
+      "result_top_px": 705,
+      "field_top_px": 272,
+      "screenshot": "01-live-topic-no-invalid.png"
+    },
+    {
+      "id": "02-live-control-preflight",
+      "topic_no_typed": "1-5",
+      "native_before_submit": {
+        "value": "",
+        "badInput": true,
+        "field_checkValidity": false,
+        "form_checkValidity": false,
+        "form_has_novalidate": true
+      },
+      "intake_requests": 0,
+      "request_left_the_page": false,
+      "server_responses": [],
+      "title": "הפנייה לא נשלחה",
+      "result_class": "result bad",
+      "lines": [
+        "מספר נושא — צריך מספר שלם. תקנו ושלחו שוב."
+      ],
+      "case_row": [],
+      "focused_id": "topic_no",
+      "focused_tag": "INPUT",
+      "topic_value": "",
+      "topic_aria_invalid": "true",
+      "aria_invalid_count": 1,
+      "kind": "treatment",
+      "full_name": "בקרת חסימה מוקדמת בייצור",
+      "phone": "050-1234567",
+      "situation": "single_parent",
+      "consent": true,
+      "result_top_px": 705,
+      "field_top_px": 272,
+      "screenshot": "02-live-control-preflight.png"
+    },
+    {
+      "id": "03-live-control-7",
+      "topic_no_typed": "7",
+      "native_before_submit": {
+        "value": "7",
+        "badInput": false,
+        "field_checkValidity": true,
+        "form_checkValidity": true,
+        "form_has_novalidate": true
+      },
+      "intake_requests": 1,
+      "request_left_the_page": true,
+      "server_responses": [
+        {
+          "status": 200,
+          "body": "{\"ok\": true, \"kind\": \"treatment\", \"phone\": \"0501234567\", \"queued\": false, \"case_id\": 163, \"dropped\": [], \"situation\": \"single_parent\", \"contact_id\": 169, \"rights_linked\": 42, \"rights_unknown\": []}"
+        }
+      ],
+      "title": "הפנייה נקלטה",
+      "result_class": "result ok",
+      "lines": [
+        "קיבלנו את הפנייה ונחזור אליכם.",
+        "🚫 מצב טסט: הפנייה נשמרה, ולא יצאה ממנה שום הודעה."
+      ],
+      "case_row": [
+        "מספר פנייה=163",
+        "זכויות שאותרו עבורכם=42"
+      ],
+      "focused_id": "",
+      "focused_tag": "BODY",
+      "topic_value": "",
+      "topic_aria_invalid": null,
+      "aria_invalid_count": 0,
+      "kind": "info",
+      "full_name": "",
+      "phone": "",
+      "situation": "",
+      "consent": false,
+      "result_top_px": 493,
+      "field_top_px": null,
+      "screenshot": "03-live-control-7.png"
+    }
+  ],
+  "console_messages": []
+}

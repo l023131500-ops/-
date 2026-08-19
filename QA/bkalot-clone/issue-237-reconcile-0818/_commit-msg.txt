@@ -1,0 +1,8 @@
+שכפול בקלות: #237 (בורר תבנית) היה כבר קוד+פרוס — רק הרישום פיגר (§5ב, ניקוי)
+
+core.issues #237 עמד status=open אף שהתיקון (978ab68/3fd1524, 14/08) והפריסה
+(fb607a0, 14/08, מדידת דפדפן מלאה מול הייצור) כבר הושלמו באותו יום. נמדד שוב
+היום: GET https://more30.com/bkalot-studio/admin מכיל tmplSel ו"בורר המכתב".
+עודכן core.issues #237 ל-status='fixed', resolved_at=now(), עם detail שמסביר
+את הפער. אין שינוי קוד/פריסה בצעד הזה — QA/bkalot-clone/issue-237-reconcile-0818/
+מתעד את האימות. מוגן: לא נגעתי ב-08/09/bkalut-app/bkalot-admin/zr_*/NEDARIM3873.

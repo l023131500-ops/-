@@ -1,0 +1,15 @@
+Bucket gannenet-shelf, root listing before this step (anon key, 2026-08-11):
+
+name                 id
+----                 --
+index.json           9c72bd75-62f1-4577-9633-a5cece716691
+overrides.json       0f1982bc-8f06-4230-b71f-812784e0a7de
+seed                 (folder)
+up_msoxh0q3_hx4s.png 52de42a2-ff78-4e02-a23c-6ac3fc98f94c
+
+index.json     = []
+overrides.json = {}   (per the previous step, overrides-cas-0811)
+
+up_msoxh0q3_hx4s.png is an orphan blob left by the hide-holds-0811 upload probe:
+its bytes are in the bucket but no entry names it, so nothing lists it. That is
+itself a symptom of the write path fixed here — see _notes.md.

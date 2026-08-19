@@ -1,0 +1,66 @@
+{
+  "system": "22 — מימוש זכויות (zchuyot)",
+  "priority": "§1א — הרשמה→התחברות \"סיסמה שגויה\"",
+  "date": "2026-08-12",
+  "screen": "/zchuyot/admin/login (AdminLogin.tsx — מסך ההתחברות היחיד במערכת)",
+  "what_was_wrong": "כל שגיאת אימות הוצגה כ\"שם משתמש או סיסמה שגויים\" — גם מייל שלא אומת, גם חסימת קצב, גם נפילת רשת. שלוש תשובות שדורשות שלוש פעולות שונות, ורק אחת מהן היא 'נסו סיסמה אחרת'.",
+  "fix": "src/lib/authErrors.ts — מיפוי error.code לעברית; קוד לא מוכר מוצג עם ההודעה המקורית ולא נבלע.",
+  "server_probe": {
+    "endpoint": "POST https://trerolyveytzgksawrme.supabase.co/auth/v1/token?grant_type=password",
+    "email": "test@more30.com",
+    "password_sent": "definitely-not-the-password-0812",
+    "http": 400,
+    "body": {
+      "code": 400,
+      "error_code": "invalid_credentials",
+      "msg": "Invalid login credentials"
+    },
+    "why_it_matters": "מאשר ש-invalid_credentials הוא הקוד שהשרת הזה מחזיר בפועל — המיפוי אינו מנוחש"
+  },
+  "unit_tests": {
+    "command": "npm test (vitest run)",
+    "files": 2,
+    "tests_passed": 5,
+    "tests_failed": 0,
+    "new_file": "src/lib/authErrors.test.ts (4 tests)"
+  },
+  "browser_evidence": [
+    {
+      "file": "01-wrong-password.png",
+      "where": "preview build מקומי (vite preview :4322)",
+      "action": "סיסמה שגויה מול שרת האימות האמיתי",
+      "toast": "האימייל או הסיסמה שגויים."
+    },
+    {
+      "file": "02-network-down.png",
+      "where": "preview build מקומי",
+      "action": "window.fetch הוחלף כך שהבקשה ל-/auth/v1/token נכשלת — AuthRetryableFetchError אמיתי (status 0)",
+      "toast": "לא הצלחנו להגיע לשרת. בדקו את החיבור לאינטרנט ונסו שוב.",
+      "before": "אותו מצב בדיוק היה מוצג קודם כ\"שם משתמש או סיסמה שגויים\""
+    },
+    {
+      "file": "03-live-wrong-password.png",
+      "where": "https://more30.com/zchuyot/admin/login — ייצור, לא preview",
+      "action": "סיסמה שגויה",
+      "toast": "האימייל או הסיסמה שגויים."
+    }
+  ],
+  "deploy": {
+    "project": "zchuyot-more30",
+    "url": "zchuyot-more30-pa3rtsa4r-l023131500-ops-projects.vercel.app",
+    "target": "production",
+    "method": "החלפת hash של קובץ הכניסה ב-index.html המוגש, ולא העתקת dist/index.html מעליו",
+    "why": "ה-HTML החי מוגש מרונדר-מראש (62,796 תווים) בעוד dist/index.html הוא 7,355. העתקה הייתה מוחקת את הרינדור-מראש של דף הבית. נמדד לפני הפעולה, לא הונח.",
+    "changed_refs": ["assets/index-BvPPDgJw.js → assets/index-DL2aSDPt.js"],
+    "unchanged_refs": ["react", "radix", "icons", "query", "motion", "rights-data", "supabase", "index-EGLSZ9BH.css — כל ה-hash-ים זהים"],
+    "live_checks": {
+      "https://more30.com/zchuyot/assets/index-DL2aSDPt.js": "200 · 116852 bytes",
+      "https://more30.com/zchuyot/assets/AdminLogin-BSSDLINy.js": "200 · 3334 bytes"
+    }
+  },
+  "not_covered": {
+    "email_not_confirmed": "לא הופעל מול שרת אמיתי — יצירת מצב כזה דורשת הרשמה חדשה שלא אומתה, ולא נוצרו משתמשי בדיקה נוספים. מכוסה ביוניט-טסט בלבד.",
+    "over_request_rate_limit": "לא הופעל בכוונה — הפעלתו דורשת הצפת שרת האימות בניסיונות.",
+    "still_blocked": "החשבון test@more30.com בפרויקט הזה עונה invalid_credentials גם לסיסמה הנכונה. זה לא נפתר כאן וממתין לקונסולת Supabase של המשתמש (NEEDS_USER §0ש)."
+  }
+}

@@ -1,16 +1,17 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+﻿import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ExternalLink } from "lucide-react";
 import type { SynagogueInput } from "@/lib/types";
 import { updateSynagogue } from "@/data/repositories";
 import { useToast } from "@/components/ui/Toaster";
 import { SynagogueForm } from "@/pages/admin/SynagogueForm";
 import { useGabai } from "./GabaiLayout";
-import { NoSynagogue } from "./NoSynagogue";
+import { useSynagogueGate } from "./SynagogueGate";
 
 export function GabaiDetails() {
   const { synagogue } = useGabai();
   const toast = useToast();
   const qc = useQueryClient();
+  const gate = useSynagogueGate();
 
   const save = useMutation({
     mutationFn: (input: SynagogueInput) => updateSynagogue(synagogue!.id, input),
@@ -21,7 +22,7 @@ export function GabaiDetails() {
     onError: (e: Error) => toast(e.message, "error"),
   });
 
-  if (!synagogue) return <NoSynagogue />;
+  if (gate || !synagogue) return gate;
 
   return (
     <div className="mx-auto max-w-2xl">

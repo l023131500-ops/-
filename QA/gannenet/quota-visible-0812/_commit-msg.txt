@@ -1,0 +1,34 @@
+40 gannenet: the daily cap was enforced and never shown, so the only way to meet it was to be blocked (#187)
+
+The open line from the previous pulse, in its own words: "the cap is enforced and not
+displayed — the teacher only meets it when she is blocked, and 'you have N pages left
+today' is nowhere on the screen."
+
+What was added:
+- lib/rate-limit.ts: peekQuota() — the same LIST reserveGeneration() already does, without
+  writing a mark and without reserving. Returns null (not zeros) when the count fails, for
+  the same reason listToday() distinguishes empty from broken: a screen that says "20 left"
+  when nothing was counted is lying.
+- GET /api/ai-generate/quota — read-only, gated by the same account check as the generator
+  itself, and only ever answers about the caller's own usage.
+- POST /api/ai-generate now returns `quota` alongside the worksheet, so the counter on the
+  page updates from the count the server already paid for rather than a second LIST.
+- /generator shows the remaining line, and after an error re-asks (a refusal carries no
+  counter, and that is exactly when the number on screen is most stale). At zero the button
+  is disabled with "המכסה היומית מוצתה"; when the count is unknown the button stays live —
+  the server is what enforces, and the screen will not block a teacher over its own glitch.
+
+Measured against production after deploy (QA/gannenet/quota-visible-0812/):
+  anonymous   401  1921ms  the #185 gate still holds on the new route
+  quota-full  200  1442ms  usedUser 20/20, remainingUser 0   (the real exhausted state)
+  quota-real  200  2042ms  usedUser 1/20, remainingUser 19
+Between the two: the previous pulse's probe seeded 19 synthetic marks to measure the block,
+and it could not remove them (the anon key cannot DELETE). They were deleted here with the
+service-role key — they were a QA fixture, not usage — leaving the account's one real
+generation of today. Screenshot: the line as a teacher reads it on more30.com/gannenet/generator.
+
+tsc --noEmit exit 0; next build exit 0 with 180 lesson pages.
+
+Test mode: no user created, no message sent, no charge. No Anthropic call was spent in this
+step — the new route never reaches it. Protected systems (08, 09, bkalut-app, bkalot-admin,
+zr_*, NEDARIM3873) untouched; csj/csj_src/igud unused.

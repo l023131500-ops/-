@@ -5,9 +5,15 @@
 // list, so the record may be stale — and a stale STATUS is worse than a blank
 // one. This walks every page the module exposes and reports what is there.
 
+// ⚠️ This script exists to correct a stale STATUS record, so its own readings
+// have to be worth trusting: textLen and the button list are read straight off
+// the page, and a fixed sleep would let a half-drawn route report an empty
+// module — the exact failure it was written to disprove. settle() instead.
+
 import { chromium } from 'playwright-core';
 import fs from 'node:fs';
 import path from 'node:path';
+import { settle } from './lib/settle.mjs';
 
 const EXE = 'C:\\Users\\USER\\AppData\\Local\\ms-playwright\\chromium-1234\\chrome-win64\\chrome.exe';
 const OUT = 'C:\\Users\\USER\\Downloads\\more30\\QA\\orech';
@@ -36,7 +42,7 @@ for (const scheme of ['light', 'dark']) {
     try {
       const r = await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 90000 });
       status = r ? r.status() : 0;
-      await page.waitForTimeout(3500);
+      await settle(page, { minChars: 50 }).catch(() => {});
     } catch (e) {
       results[`${key}-${scheme}`] = { url, error: String(e).slice(0, 120) };
       await ctx.close();

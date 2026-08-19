@@ -1,0 +1,71 @@
+{
+  "step": "undecided-filter-live-0814",
+  "closes": "הבקרה היחידה ש-98dbef1 לא סגר: «הרשימה המסוננת בייצור — טעונה אישורי מנהל (bkalot_clone_admin_create דרך SQL). זו הפעימה הבאה אם יהיה MCP»",
+  "code_changed": false,
+  "migration": null,
+  "edge_functions": { "bkalot-clone-intake": "v1 (לא נפרסה)", "bkalot-clone-admin": "v7 (לא נפרסה)" },
+  "deploy": null,
+  "live_url": "https://more30.com/bkalot-studio/admin (עם cache-buster, לא הכתובת החשופה)",
+  "admin": { "id": 48, "email": "qa.undecided.live.0814@more30.com", "created_via": "bkalot_clone_admin_create דרך SQL — אינה חשופה ב-HTTP", "deleted_after": true },
+  "seed": {
+    "path": "bkalot-clone-intake מעל HTTP עם מפתח anon, כמו מהטופס",
+    "case_a": { "id": 177, "http": 200, "role": "איש לא נגע בה" },
+    "case_b": { "id": 178, "http": 200, "role": "תוכרע בלחיצה מהמסך החי" },
+    "case_c": { "id": 179, "http": 200, "role": "render → הטריגר מקדם ל-in_progress בלי הכרעת אדם" },
+    "render_c": { "document_id": 110, "queued": false, "rights_count": 0 }
+  },
+  "db_before_measure": [
+    { "id": 177, "status": "new", "decided_at": null, "decided_by": null },
+    { "id": 178, "status": "new", "decided_at": null, "decided_by": null },
+    { "id": 179, "status": "in_progress", "decided_at": null, "decided_by": null }
+  ],
+  "db_after_measure": [
+    { "id": 177, "status": "new", "decided_at": null, "decided_by": null },
+    { "id": 178, "status": "in_progress", "decided_at": "2026-08-14 13:24:58.739463+00", "decided_by": 48 },
+    { "id": 179, "status": "in_progress", "decided_at": null, "decided_by": null }
+  ],
+  "control_read_from_live_select": {
+    "present": true,
+    "label": "הכרעה ידנית",
+    "options": [["", "הכול"], ["no", "לא נרשמה"], ["yes", "נרשמה"]]
+  },
+  "decision_note_on_screen": "הסטטוס שונה מ«חדשה» ל«בטיפול» · לא נשלחה שום הודעה",
+  "steps": [
+    { "step": "default", "sent_decided": "", "ids": [179, 178, 177], "count": "3 פניות" },
+    { "step": "decided=no", "sent_decided": "no", "ids": [179, 177], "count": "2 פניות" },
+    { "step": "decided=yes", "sent_decided": "yes", "ids": [178], "count": "פנייה אחת" },
+    { "step": "back-to-all", "sent_decided": "", "ids": [179, 178, 177], "count": "3 פניות" }
+  ],
+  "partition": { "no": 2, "yes": 1, "sum": 3, "overlap": 0 },
+  "console_messages": 0,
+  "requests_failed": 0,
+  "screenshots_md5": {
+    "01-live-login.png": "49B5458E",
+    "02-default.png": "F4AA6303",
+    "03-decided-no.png": "06DB2FE0",
+    "04-decided-yes.png": "C114F29B",
+    "05-back-to-all.png": "871B70BA"
+  },
+  "test_mode": {
+    "outbound_queue": 8,
+    "outbound_queue_with_sent_at": 0,
+    "delivery_log": 3,
+    "cases_in_sent": 0,
+    "documents_produced": 1,
+    "documents_sent": 0
+  },
+  "rollback": {
+    "order": ["documents", "case_rights", "cases", "bkalot_auto.contacts", "admin_sessions", "admin_users"],
+    "separate_statements": true,
+    "deleted": { "documents": 1, "case_rights": 84, "cases": 3, "contacts": 3, "admin_sessions": 1, "admin_users": 1 },
+    "after": {
+      "cases": 0, "case_rights": 0, "documents": 0, "admin_users": 1, "admin_sessions": 5,
+      "templates": 2, "catalog": 888, "auto_contacts": 4, "outbound_queue": 8, "delivery_log": 3
+    },
+    "matches_baseline": true
+  },
+  "heartbeats_applied_retroactively": [
+    { "run_progress_id": 604, "source": "QA/bkalot-clone/undecided-filter-deploy-0814/_heartbeat.sql", "for_commit": "98dbef1" }
+  ],
+  "heartbeat_still_missing": { "for_commit": "ac527e0", "reason": "לא נכתב לו קובץ _heartbeat.sql באותו סשן — אין נוסח שנכתב בזמן אמת, ולכן לא הומצא כאן" }
+}

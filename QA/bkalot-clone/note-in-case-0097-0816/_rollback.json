@@ -1,0 +1,27 @@
+{
+  "why_separate_statements": "תקלת cte-delete-sees-prestatement-snapshot — כל CTE קורא את התצלום שלפני ההצהרה, ולכן מחיקה בהצהרה אחת עם תנאי not exists מוחקת 0 ומדווחת הצלחה",
+  "contacts_note": "contacts, outbound_queue ו-delivery_log יושבות ב-bkalot_auto ולא ב-bkalot_clone; איש הקשר נמחק לפי id ולא לפי טלפון מנורמל",
+
+  "deleted": [
+    { "table": "bkalot_clone.case_status_log", "rows": 4, "ids": [86, 87, 88, 89] },
+    { "table": "bkalot_clone.cases", "rows": 1, "ids": [373] },
+    { "table": "bkalot_auto.contacts", "rows": 1, "ids": [380] },
+    { "table": "bkalot_clone.admin_sessions", "of_admin": 111 },
+    { "table": "bkalot_clone.admin_users", "rows": 1, "ids": [111] }
+  ],
+
+  "after": {
+    "cases": 0, "case_status_log": 0, "case_rights": 0, "documents": 0,
+    "admin_users": 1, "admin_sessions": 5, "templates": 2, "rights_catalog": 888,
+    "contacts": 4, "outbound_queue": 8, "delivery_log": 3,
+    "admin_cases_empty_params_total": 0,
+    "verdict": "בסיס בדיוק — מספר במספר כמו הבסיס שנמדד לפני הריצה"
+  },
+
+  "kept": {
+    "schema_migrations": "20260816131352 / 0097_the_case_screen_does_not_say_which_reason_matched",
+    "function": "public.bkalot_clone_admin_case(bigint, text)",
+    "acl": "{postgres=X/postgres,service_role=X/postgres}",
+    "note": "המיגרציה נשארת מוחלת — היא המוצר של הצעד; מה שהתגלגל אחורה הוא נתוני המדידה בלבד"
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "what": "§3 מבקש לכל מערכת בלוח הניהול 'סטטוס, קישור, Lighthouse'. Lighthouse לא היה במסד כלל — אין טבלה, אין עמודה, ו-more30_admin_systems_report לא החזיר ציון אחד. המדידות היו קיימות ואמיתיות כקבצים ב-QA/shots/lh-*.json בלבד.",
+  "measured_at": "2026-08-07T06:35Z",
+  "migration": "supabase/migrations/0028_the_board_was_asked_for_lighthouse_and_had_nowhere_to_read_it_from.sql",
+  "importer": "scripts/qa/lh-import.mjs",
+
+  "before": {
+    "core.lighthouse_runs": "לא קיימת",
+    "more30_admin_systems_report.systems[].lighthouse": "לא קיים",
+    "אין_ציון_לאף_מערכת": 30
+  },
+
+  "verified_through_the_function_itself": {
+    "how": "set_config('request.jwt.claims', '{\"email\":\"l023131500@gmail.com\"}') ואז קריאה ל-public.more30_admin_systems_report(). הפונקציה מגודרת לסופר-אדמין, ולכן זו הקריאה שהלוח עצמו מבצע ולא שכפול שלה בשאילתה.",
+    "gate_still_holds": "אותה קריאה בלי ה-claim → 42501 super admin only (line 7)",
+    "totals": {
+      "systems": 30,
+      "live": 24,
+      "with_admin_url": 13,
+      "with_lighthouse": 8,
+      "lighthouse_fresh": 0
+    },
+    "systems_with_a_score": 8,
+    "systems_with_null": 22,
+    "estimated_or_filled_in_values": 0
+  },
+
+  "rows": [
+    { "number": "01", "app": "torah",    "perf": 82, "a11y": 100, "bp": 77, "seo": 100, "cls": 0.001, "lcp_ms": 3422.005, "measured_at": "2026-08-03T23:11:41.879Z", "age_hours": 76.1, "stale": true },
+    { "number": "15", "app": "egod",     "perf": 55, "a11y": 96,  "bp": 77, "seo": 100, "cls": 0.022, "lcp_ms": 6209.787, "measured_at": "2026-08-03T23:12:10.470Z", "age_hours": 76.1, "stale": true },
+    { "number": "16", "app": "chatzor",  "perf": 49, "a11y": 100, "bp": 77, "seo": 100, "cls": 0,     "lcp_ms": 4744.433, "measured_at": "2026-08-03T23:12:52.190Z", "age_hours": 76.1, "stale": true },
+    { "number": "22", "app": "zchuyot",  "perf": 48, "a11y": 100, "bp": 77, "seo": 100, "cls": 0,     "lcp_ms": 6251.388, "measured_at": "2026-08-03T23:13:22.352Z", "age_hours": 76.1, "stale": true },
+    { "number": "27", "app": "mechiron", "perf": 67, "a11y": 96,  "bp": 77, "seo": 100, "cls": 0.003, "lcp_ms": 4480.026, "measured_at": "2026-08-03T23:13:51.741Z", "age_hours": 76.0, "stale": true },
+    { "number": "28", "app": "kupot",    "perf": 72, "a11y": 100, "bp": 77, "seo": 100, "cls": 0.021, "lcp_ms": 2876.530, "measured_at": "2026-08-03T23:14:16.805Z", "age_hours": 76.0, "stale": true },
+    { "number": "32", "app": "nadlan",   "perf": 79, "a11y": 100, "bp": 77, "seo": 100, "cls": 0.008, "lcp_ms": 3001.580, "measured_at": "2026-08-03T11:55:41.122Z", "age_hours": 87.4, "stale": true },
+    { "number": "36", "app": "tivuch",   "perf": 98, "a11y": 100, "bp": 77, "seo": 100, "cls": 0.005, "lcp_ms": 840.976,  "measured_at": "2026-08-02T21:26:46.528Z", "age_hours": 101.8, "stale": true }
+  ],
+
+  "why_every_row_carries_its_own_timestamp": "כל שמונה המדידות בנות 76–102 שעות, ומאז נפרסו שינויים — בין השאר תיקון ה-CLS של torah. ציון בלי הזמן שבו נמדד היה נקרא כמצב הנוכחי, וזה לא נכון. לכן stale=true על כולן ו-lighthouse_fresh=0.",
+
+  "route_to_system_mapping": {
+    "matched": 8,
+    "unmatched_keys": null,
+    "note": "app_key נכתב כ-core.projects.path ואומת מול המסד: אפס מפתחות בלי מערכת. lh-nadlan2.json דולג כי הוא מדידה ישנה יותר של אותו מסלול — הבחירה היא לפי fetchTime ולא לפי סדר הקבצים."
+  },
+
+  "issues": { "opened": 90, "closed": 89 },
+  "next": "ריצה של scripts/qa/lh-batch.mjs על המערכות החיות ואז node scripts/qa/lh-import.mjs — core.issues #90. אינו חסום על המשתמש."
+}

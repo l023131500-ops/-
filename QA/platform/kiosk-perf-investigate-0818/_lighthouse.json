@@ -1,0 +1,155 @@
+{
+  "kiosk": {
+    "url": "https://more30.com/kiosk/",
+    "measuredAt": "2026-08-17T22:14:22.759Z",
+    "performance": 93,
+    "accessibility": 100,
+    "bestPractices": 77,
+    "seo": 100,
+    "metrics": {
+      "fcp": "1.8 s",
+      "lcp": "1.8 s",
+      "tbt": "180 ms",
+      "cls": "0.069",
+      "si": "3.9 s"
+    },
+    "failedAudits": [
+      {
+        "id": "first-contentful-paint",
+        "title": "First Contentful Paint",
+        "score": 0.89,
+        "display": "1.8 s"
+      },
+      {
+        "id": "speed-index",
+        "title": "Speed Index",
+        "score": 0.83,
+        "display": "3.9 s"
+      },
+      {
+        "id": "max-potential-fid",
+        "title": "Max Potential First Input Delay",
+        "score": 0.04,
+        "display": "600 ms"
+      },
+      {
+        "id": "server-response-time",
+        "title": "Reduce initial server response time",
+        "score": 0,
+        "display": "Root document took 630 ms"
+      },
+      {
+        "id": "third-party-cookies",
+        "title": "Uses third-party cookies",
+        "score": 0,
+        "display": "1 cookie found"
+      },
+      {
+        "id": "mainthread-work-breakdown",
+        "title": "Minimize main-thread work",
+        "score": 0,
+        "display": "2.7 s"
+      },
+      {
+        "id": "unminified-javascript",
+        "title": "Minify JavaScript",
+        "score": 0.5,
+        "display": "Est savings of 6 KiB"
+      },
+      {
+        "id": "inspector-issues",
+        "title": "Issues were logged in the `Issues` panel in Chrome Devtools",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "cache-insight",
+        "title": "Use efficient cache lifetimes",
+        "score": 0.5,
+        "display": "Est savings of 43 KiB"
+      },
+      {
+        "id": "document-latency-insight",
+        "title": "Document request latency",
+        "score": 0,
+        "display": "Est savings of 8 KiB"
+      },
+      {
+        "id": "forced-reflow-insight",
+        "title": "Forced reflow",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "network-dependency-tree-insight",
+        "title": "Network dependency tree",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "render-blocking-insight",
+        "title": "Render-blocking requests",
+        "score": 0.5,
+        "display": ""
+      }
+    ],
+    "mainThreadBreakdown": [
+      {
+        "group": "Style & Layout",
+        "duration": 1732
+      },
+      {
+        "group": "Other",
+        "duration": 593
+      },
+      {
+        "group": "Script Evaluation",
+        "duration": 220
+      },
+      {
+        "group": "Rendering",
+        "duration": 119
+      },
+      {
+        "group": "Parse HTML & CSS",
+        "duration": 41
+      },
+      {
+        "group": "Script Parsing & Compilation",
+        "duration": 23
+      }
+    ],
+    "bootupTime": [
+      {
+        "url": "https://more30.com/kiosk/",
+        "total": 1755,
+        "scripting": 49,
+        "scriptParseCompile": 7
+      },
+      {
+        "url": "Unattributable",
+        "total": 453,
+        "scripting": 24,
+        "scriptParseCompile": 0
+      },
+      {
+        "url": "https://more30.com/auth-button.js",
+        "total": 269,
+        "scripting": 49,
+        "scriptParseCompile": 6
+      },
+      {
+        "url": "https://netfree.link/card/card-injection.js",
+        "total": 111,
+        "scripting": 55,
+        "scriptParseCompile": 8
+      },
+      {
+        "url": "https://netfree.link/card/",
+        "total": 77,
+        "scripting": 0,
+        "scriptParseCompile": 0
+      }
+    ]
+  }
+}

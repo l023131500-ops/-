@@ -1,0 +1,13 @@
+שכפול בקלות שכבה 1: ענף source_invalid מהשרת נמדד בייצור — סוגר את סריקת 0058 (§5ב, אימות)
+
+בקשת POST ישירה אל bkalot-clone-intake, source="not_a_real_source_xyz": HTTP 200,
+error=source_invalid, allowed תואם מילה-במילה ל-0058 שורה 84 (form/yemot/nedarim/ai/admin).
+הענף חסום מבנית מהטופס הגלוי — הלקוח שולח תמיד source: "form" קבוע (index.html:541).
+MESSAGES.source_invalid כבר קיים ונכון; אין CODE_FIELD בכוונה (אין שדה מוקלד).
+
+מדידה בלבד. אין שינוי קוד, אין מיגרציה, אין פריסה. סוגר את ארבעת ענפי הוולידציה
+שנסרקו ב-0058 (kind_invalid, source_invalid, situation_unknown, topic_no_invalid).
+
+⚠️ ה-MCP של Supabase אינו מחובר לסשן הזה — heartbeat נכתב כקובץ _heartbeat-pending.sql.
+
+ראיות: QA/bkalot-clone/source-invalid-live-0817/probe-live.txt

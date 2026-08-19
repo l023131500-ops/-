@@ -1,0 +1,47 @@
+kiosk (35): every contrast run so far was blind to generated content
+
+`plan-ink-0811` fixed one `::before` and named what it could not close from one
+section of one page: "`getComputedStyle(el)` does not return a pseudo-element's
+colour, so **every** contrast harness under item 6 has been blind to `::before`
+and `::after` on every page it ever swept, not just this one." How many others
+there are was left unanswered.
+
+`pseudo-sweep-0811` answers it by enumeration rather than by grepping the
+stylesheet. `ENUM` walks every element on every page and asks the browser for
+`getComputedStyle(el, '::before').content` — a grep finds rules, not which rules
+paint, and it cannot see a rule that lives in `install.html`'s own `<style>`
+rather than in `css/style.css`. One of the three does.
+
+The set the browser paints is exactly three, and the two nobody had measured are
+readable:
+
+- `.step .n::before` — `#fff` on `--accent`, **5.28:1**, both modes
+- `install.html`'s `ol.steps > li::before` — the same pair, **5.28:1**
+- `.plan li::before` — the ✓ the last commit fixed, re-measured at 5.02 / 7.47
+
+Both counters are graded at 4.5:1 and not 3:1: 800 at 18px is under the 18.66px
+where bold becomes large text, the same half-pixel distinction the ✓ forced.
+
+42/42 measured rows, no defect. Four control rows, three of which must fail and
+do. The console paints **no generated content at all** — seven owner screens plus
+ניהול-על from a second stub instance with the `admin` flag — and that zero is
+recorded with a working-counter assertion beside it, because a sweep that reports
+nothing and a sweep whose selector missed look identical.
+
+What the run had to change is the harness, not the console, and it is the thing
+worth carrying: `plan-ink-0811`'s `PAINTED` walks the **originating element**
+upward for the background, reasoning that a `::before` has no box of its own.
+True of the ✓; false of both counter badges, which set
+`background: var(--accent)` on the pseudo itself. Reused unchanged it grades
+white on `--card` and reports **1.00:1** in light mode — a defect that is not
+there — and passes at 17.03:1 in dark, so the same error is invisible in one mode
+and loud in the other. The uncorrected read is kept as a control row in both
+modes rather than quietly replaced.
+
+No source file changes: this step measures. `install.html` is graded twice even
+though it declares `color-scheme: dark` and has a single `:root` — "this page
+does not invert" is a claim worth a second read, and the two screenshots are
+byte-identical in size.
+
+Verified in `QA/kiosk/pseudo-sweep-0811/` — 4 screenshots, `_table.md`,
+`_results.md`.

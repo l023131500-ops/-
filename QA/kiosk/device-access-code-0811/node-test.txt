@@ -1,0 +1,16 @@
+﻿✔ a code written down by hand still resolves to the code that was issued (4.2671ms)
+✔ anything that cannot be a code is rejected before it reaches the database (0.8586ms)
+✔ generated codes are the right length and hold no ambiguous glyphs (10.2735ms)
+✔ issuing a code stores it and makes the device reachable by it (3.0696ms)
+✔ a collision is retried rather than stored, so one code never means two devices (2.52ms)
+✔ re-issuing replaces the code, and the leaked one stops working at once (2.0161ms)
+✔ the backfill gives every existing device a code, and only once (4.7668ms)
+✔ codes are global, not per owner — the launcher has no owner to scope by (2.286ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 8
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 320.4118

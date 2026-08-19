@@ -1,0 +1,81 @@
+{
+  "at": "2026-08-12T10:22:00Z",
+  "step": "§8ב — where the customer lands after login, walked in a browser on 21/30/31",
+  "method": "real browser against more30.com only; routes extracted from the JS bundles production serves; login with the official §1ב test user",
+  "test_user": "test@more30.com",
+  "deployed": false,
+  "users_created": 0,
+  "results": [
+    {
+      "number": "30",
+      "slug": "crm",
+      "login_url": "https://more30.com/crm/auth",
+      "login_form": { "email_input": "#signin-email", "password_input": "#signin-password", "submit": "button[type=submit]" },
+      "landed_url": "https://more30.com/crm/dashboard",
+      "verdict": "PASS — lands inside the product",
+      "product_surface": {
+        "sidebar": ["לוח בקרה", "לקוחות", "משימות", "שותפים", "הפניות לשת\"פ", "זכאויות", "תיבת תקשורת", "מסמכים", "אנליטיקה", "הגדרות"],
+        "actions": ["לקוח חדש", "הפניות", "מסמכים"],
+        "toast": "התחברת בהצלחה",
+        "counters_all_zero": true
+      },
+      "screenshots": ["crm-01-login.png", "crm-02-after-login.png"]
+    },
+    {
+      "number": "31",
+      "slug": "gesher",
+      "login_url": "https://more30.com/gesher/auth",
+      "login_form": { "email_input": "#login-email", "password_input": "#login-password", "submit": "button[type=submit]", "also": "התחבר עם Google" },
+      "landed_url": "https://more30.com/gesher/client/status",
+      "verdict": "PASS — lands in a personal client area",
+      "product_surface": {
+        "greeting": "שלום, לקוח בדיקה",
+        "sidebar": ["מצב הטיפול שלי", "תיק מסמכים מאובטח", "ניהול שיתוף מידע"],
+        "tracker": ["נקלט במערכת", "בבדיקת מומחה", "הושלם - הופקו זכויות"],
+        "has_logout": true,
+        "test_user_has_client_record": true
+      },
+      "screenshots": ["gesher-02-after-login.png", "gesher-03-landed.png"]
+    },
+    {
+      "number": "21",
+      "slug": "mthbram",
+      "verdict": "N/A — no customer login exists on this system",
+      "correction": "the previous three heartbeats counted 21 among the five systems carrying an own login form for §1א customer purposes; the only password route in the served bundle is /admin-login, an ADMIN entry",
+      "password_routes": ["/admin-login"],
+      "token_only_portal_routes": [
+        "/portal/rabbi/:token",
+        "/portal/org/:token",
+        "/shul/:accessToken",
+        "/study-days/:token",
+        "/bulk-upload/:token",
+        "/view/rabbi/:publicToken",
+        "/view/org/:publicToken",
+        "/view/shul/:publicToken"
+      ],
+      "product_open_without_login": {
+        "home_is_the_product": true,
+        "surface": ["חיפוש חכם במאגר", "סינון נושא/עיר/יום", "הוספת שיעור למאגר", "עדכון שיעור", "הקמת שיעור"],
+        "catalog_count_shown": 0
+      },
+      "shared_portal_pill": {
+        "element": "more30-auth",
+        "shadow_dom": true,
+        "note": "a plain DOM query does not see it — the first measurement here wrongly reported 'no login button'",
+        "logged_out_targets": [
+          "https://more30.com/login?from=https%3A%2F%2Fmore30.com%2Fmthbram%2F",
+          "https://more30.com/login?mode=signup&from=https%3A%2F%2Fmore30.com%2Fmthbram%2F"
+        ],
+        "logged_in_targets": ["https://more30.com/me", "https://more30.com/me?upgrade=1"],
+        "returns_to": "https://more30.com/mthbram/",
+        "shows_customer_name_when_signed_in": true
+      },
+      "screenshots": ["mthbram-01-after-login.png"]
+    }
+  ],
+  "not_measured": [
+    "what happens immediately after a NEW signup — only an existing confirmed user was walked; new signup on 30/31 still requires email confirmation (#172, user-owned dashboard setting)",
+    "no real business action was performed inside 30 or 31 — the landing was measured, not §8ב's 'פעולה אמיתית עובדת'",
+    "/mthbram/admin-login was not opened or attempted (admin entry)"
+  ]
+}

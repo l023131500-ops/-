@@ -1,0 +1,6 @@
+﻿401  no token           {"error":"device token invalid"}
+401  bad token          {"error":"device token invalid"}
+200  selection screen   {"device":{"id":1,"name":"לובי","serial":"SER-1"},"context":{"kioskUrl":"https://hall.example.com/","displayUrl":"https://hall.example.com/","allowedHost":"hall.example.com,hadar.example.com,pay.example.com","idleReturnSeconds":90,"client":null},"clients":[{"id":1,"code":"1234","name":"אולם הדר","url":"https://hadar.example.com/"}]}
+200  code typed         {"device":{"id":1,"name":"לובי","serial":"SER-1"},"context":{"kioskUrl":"https://hall.example.com/","displayUrl":"https://hadar.example.com/","allowedHost":"hall.example.com,hadar.example.com,pay.example.com","idleReturnSeconds":90,"client":{"id":1,"code":"1234","name":"אולם הדר","url":"https://hadar.example.com/"}},"clients":[{"id":1,"code":"1234","name":"אולם הדר","url":"https://hadar.example.com/"}]}
+404  unapproved code    {"error":"מזהה לקוח לא מוכר במכשיר זה"}
+409  serial mismatch    {"error":"המכשיר אינו תואם לרישום"}

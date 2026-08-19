@@ -1,0 +1,42 @@
+שכפול בקלות שכבה 1: email_invalid + email/situation_required_for_treatment נמדדו בייצור (§5ב, אימות)
+
+סריקת 0058 מ-17/08 (kind_invalid/source_invalid/situation_unknown/topic_no_invalid)
+הצהירה "אין פער פתוח נוסף מסריקת הוולידציה הזאת" — הצהרה נכונה רק לארבעת
+הענפים שנבחרו, לא לכל 0058. phone_invalid/full_name_required כבר נמדדו בנפרד
+(stale-mark-deploy-0817, which-field-mobile-390-0817). שלושה ענפים נשארו בלי
+מדידה חיה: email_invalid (0058:105-106), email_required_for_treatment
+(0058:112-113), situation_required_for_treatment (0058:115-116).
+
+שלוש בקשות POST ישירות אל https://uhnrgujbdxhhmoxcjria.supabase.co/functions/
+v1/bkalot-clone-intake (PowerShell, לא דפדפן — כדי לעקוף גם את ה-preflight
+וגם את type="email"/required בטופס, ששניהם היו חוסמים דפדפן אמיתי מלהגיע
+לענפים האלה):
+
+A. kind=info, email="not-an-email" → HTTP 200 {"ok":false,"error":"email_invalid"}
+B. kind=treatment, בלי שדה email כלל → HTTP 200 {"ok":false,"error":"email_required_for_treatment"}
+   (מאשר בייצור: הבדיקה ב-0058:105 היא "if v_email is not null and ...", כלומר
+   יורה רק כשיש מחרוזת אימייל שגויה — email חסר לגמרי מדלג עליה ישר לחסימת
+   הטיפול).
+C. kind=treatment, email תקין, בלי situation → HTTP 200
+   {"ok":false,"error":"situation_required_for_treatment"}
+
+שלושתן HTTP 200 עם קוד שגיאה מובנה, לא rpc_failed/שגיאת Postgres גולמית.
+שלושתן תואמות מילה-במילה ל-MESSAGES/CODE_FIELD בלקוח (index.html:288-290,
+345-347) — מחרוזות שכבר קיימות ונכונות, למרות שאף דפדפן לא יכול להגיע לענפים
+האלה כרגע.
+
+נקרא במפורש: כל שלושת התנאים חוזרים לפני insert ל-bkalot_auto.contacts (שורה
+146) ול-bkalot_clone.cases (שורה 154) — אפס שורות נכתבו.
+
+אין שינוי קוד. אין מיגרציה. אין פריסה. מדידה בלבד, סוגרת פער שנפתח בטעות
+בהצהרת "אין פער" של סריקת 0817 הקודמת.
+
+מוגן: לא נגעתי ב-08/09/bkalut-app/bkalot-admin/zr_*/NEDARIM3873. מצב טסט —
+אפס שורות נכתבו, אפס הודעות יוצאות.
+
+⚠️ ה-heartbeat לא נכתב ל-core.run_progress. ה-MCP של Supabase אינו מחובר
+לסשן הזה (חיפוש כלים החזיר אפס התאמות). השורה נכתבה כקובץ:
+`_heartbeat-pending.sql`, מצטרפת לתור הקיים — הרץ לפי סדר הקומיטים ב-git log.
+
+ראיות: QA/bkalot-clone/email-situation-treatment-live-0817/probe-live.txt,
+probe.ps1, probe-live-out.txt.

@@ -75,6 +75,20 @@ for (const [key, p] of targets) {
         si: lhr.audits['speed-index']?.displayValue,
       },
       failedAudits: failed,
+      // The summary above ("mainthread-work-breakdown: 3.9s") never says WHICH
+      // script — every prior investigation stalled there without a raw trace.
+      // These two audits carry that breakdown already; we just weren't saving it.
+      mainThreadBreakdown: (lhr.audits['mainthread-work-breakdown']?.details?.items || [])
+        .map((i) => ({ group: i.groupLabel || i.group, duration: Math.round(i.duration) }))
+        .sort((a, b) => b.duration - a.duration),
+      bootupTime: (lhr.audits['bootup-time']?.details?.items || [])
+        .map((i) => ({
+          url: i.url,
+          total: Math.round(i.total),
+          scripting: Math.round(i.scripting || 0),
+          scriptParseCompile: Math.round(i.scriptParseCompile || 0),
+        }))
+        .sort((a, b) => b.total - a.total),
     };
     console.log(`perf ${all[key].performance} · a11y ${all[key].accessibility} · bp ${all[key].bestPractices} · seo ${all[key].seo}`);
   } catch (e) {

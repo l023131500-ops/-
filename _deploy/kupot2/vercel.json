@@ -1,0 +1,26 @@
+{
+  "framework": null,
+  "buildCommand": "echo no-build",
+  "outputDirectory": "public",
+  "functions": {
+    "api/index.js": {
+      "maxDuration": 60,
+      "includeFiles": "{hf_data_export.json,hf_fund_details.json}"
+    }
+  },
+  "headers": [
+    {
+      "source": "/kupot/assets/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+      ]
+    }
+  ],
+  "rewrites": [
+    { "source": "/kupot/api/(.*)", "destination": "/api/index" },
+    { "source": "/api/(.*)", "destination": "/api/index" },
+    { "source": "/kupot", "destination": "/kupot/index.html" },
+    { "source": "/kupot/", "destination": "/kupot/index.html" },
+    { "source": "/kupot/(.*)", "destination": "/kupot/index.html" }
+  ]
+}

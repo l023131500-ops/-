@@ -1,0 +1,76 @@
+{
+  "pulse": "queue-total-ui-0816",
+  "what": "המונה מצייר «· בתור N» מ-queue_total של 0099. UI בלבד — אין מיגרציה, אין פריסת edge function, אין פריסה לייצור.",
+  "baseline_before": {
+    "cases": 0, "case_status_log": 0, "case_rights": 0, "documents": 0,
+    "admin_users": 1, "admin_sessions": 5, "templates": 2,
+    "contacts": 4, "outbound_queue": 8, "delivery_log": 3,
+    "rights_catalog": 888, "schema_migrations": "20260816174554", "head": "a824669"
+  },
+  "servers": {
+    "note": "אותו מסד ואותו edge בשתי הריצות; ההפרש היחיד הוא admin.html",
+    "8138_head": { "bytes": 172296, "source": "git show HEAD:apps/37-bkalot-clone/admin.html", "extracted_with": "cmd redirection (לא PowerShell — BOM)" },
+    "8137_worktree": { "bytes": 176004 }
+  },
+  "seed": {
+    "via": "public.bkalot_clone_intake (SQL, לא מעל HTTP — פיגום ולא הטענה)",
+    "cases": [
+      { "id": 396, "contact": 403, "kind": "info", "name": "אברהם ישראלי", "phone": "0501230031" },
+      { "id": 397, "contact": 404, "kind": "reminder", "name": "שרה כהן", "phone": "0501230032" },
+      { "id": 398, "contact": 405, "kind": "info", "name": "יוסף לוי", "phone": "0501230033" },
+      { "id": 399, "contact": 406, "kind": "reminder", "name": "רבקה מזרחי", "phone": "0501230034" }
+    ],
+    "queued": false,
+    "rights_linked": 0,
+    "admin": { "id": 127, "email": "qa-queue-total-0816@more30.com", "created_by": "bkalot_clone_admin_create (לא הזרקת hash)" }
+  },
+  "dom": {
+    "note": "כל שורה נקראה מ-#count ב-DOM ולא הוסקה. התחברות אמיתית דרך הטופס בשתי היציאות.",
+    "before_8138": {
+      "A_no_filter":   { "count": "4 פניות", "title": null, "rows": 4 },
+      "B_kind_info":   { "count": "2 פניות תואמות את הסינון", "title": "…כמה פניות יש בסך הכול אינו ידוע למסך…", "rows": 2 },
+      "C_status_sent": { "count": "אין פניות שתואמות את הסינון", "title": "…כמה פניות יש בסך הכול אינו ידוע למסך…", "rows": 0, "empty_hidden": false },
+      "D_sort_only":   { "count": "4 פניות", "title": null, "rows": 4 },
+      "E_q_avraham":   { "count": "פנייה אחת תואמת את הסינון", "title": "…כמה פניות יש בסך הכול אינו ידוע למסך…", "rows": 1 }
+    },
+    "after_8137": {
+      "A_no_filter":   { "count": "4 פניות", "title": null, "rows": 4, "overflow": false },
+      "B_kind_info":   { "count": "2 פניות תואמות את הסינון · בתור 4 פניות", "title_new": true, "rows": 2, "overflow": false },
+      "C_status_sent": { "count": "אין פניות שתואמות את הסינון · בתור 4 פניות", "title_new": true, "rows": 0, "empty_hidden": false, "overflow": false },
+      "D_sort_only":   { "count": "4 פניות", "title": null, "rows": 4, "overflow": false },
+      "E_q_avraham":   { "count": "פנייה אחת תואמת את הסינון · בתור 4 פניות", "title_new": true, "rows": 1, "overflow": false },
+      "F_decided_no":  { "count": "4 פניות תואמות את הסינון · בתור 4 פניות", "title_new": true, "rows": 4, "overflow": false }
+    },
+    "title_new_text": "המספר הראשון הוא של הפניות שעונות על הסינון, ו«בתור» הוא כל הפניות שבמערכת — כולל אלה שהסינון הוציא. המיון אינו מוציא שורות ואינו משפיע על אף אחד מהשניים"
+  },
+  "claims": {
+    "C_is_the_failure_closed": "לפני: «אין פניות שתואמות את הסינון» על תור שיש בו ארבע. אחרי: «· בתור 4 פניות» — «התור ריק» ו«אף פנייה לא נשלחה» הם סוף סוף שתי הודעות שונות.",
+    "A_untouched": "בלי סינון המסך זהה אות באות לפני ואחרי, ובלי title — queue_total null אינו מצויר.",
+    "D_sort_is_not_a_filter": "מיון בלבד → אין «בתור» ואין title, בשתי הריצות. הכרעה (4) של 0099 נמדדת במסך.",
+    "F_zero_reduction_still_draws": "decided=no מצמצם אפס שורות ומצייר «4 · בתור 4» — «בתור» ולא «מתוך», והמשפט נשאר נכון.",
+    "not_measured": [
+      "הענף total>0 עם אפס שורות («בעמוד הזה לא נשארו פניות.») לא נמדד — דורש שהרשימה תתקצר פעמיים בין שתי טעינות.",
+      "מצב «שרת מלפני 0099» (מפתח חסר → undefined) נכתב ולא נמדד מדפדפן: אין כאן שער ישן להריץ מולו.",
+      "לא נמדד בנייד (390x844) — השינוי הוא טקסט על אותו אלמנט ולא אלמנט חדש; אפס גלישה נמדד ב-1280x900 בלבד."
+    ]
+  },
+  "console": "שגיאה אחת בלבד: favicon.ico 404 משרת הבדיקה המקומי (serve.mjs) ולא מהאפליקציה. אפס תגובות שאינן 2xx מהאפליקציה.",
+  "screenshots": {
+    "note": "החלון שונה פעם אחת לפני הכל; הגלילה אל #count עצמו",
+    "before-C-status-sent.png": { "bytes": 26325, "md5_8": "7FF2B3CD" },
+    "after-C-status-sent.png": { "bytes": 26846, "md5_8": "A7F037FE" },
+    "after-B-kind-info.png": { "bytes": 38819, "md5_8": "7D6FEF3E" }
+  },
+  "test_mode": {
+    "cases_in_sent": 0, "outbound_queue": "8 ללא שינוי", "delivery_log": "3 ללא שינוי",
+    "documents": 0, "case_rights": 0, "outgoing_calls": 0,
+    "note": "הנתיב שהשתנה מצייר טקסט — הוא אינו קורא ואינו כותב"
+  },
+  "rollback": {
+    "order": "פקודה נפרדת לכל טבלה — cte-delete-sees-prestatement-snapshot",
+    "deleted": ["cases 396-399", "bkalot_auto.contacts 403-406", "admin_sessions של 127", "admin_users 127"],
+    "no_children": "case_status_log 0, case_rights 0, documents 0 — נמדד לפני המחיקה",
+    "after": "בסיס בדיוק: cases 0, log 0, rights 0, docs 0, admins 1, sess 5, tmpl 2, contacts 4, outq 8, dlog 3, rc 888, mig 20260816174554; admin_cases({}) → total 0, queue_total null"
+  },
+  "open": "הפריסה. מה שנמדד כאן הוא הקוד שבמקור; בייצור (more30.com/bkalot-studio/admin) המונה עדיין אינו אומר «בתור N». זו הלבנה הבאה."
+}

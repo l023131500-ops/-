@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import { APP_KEY, hub, supabase } from "@/lib/supabase";
+import { authErrorMessage } from "@/lib/authErrors";
 
 interface AuthUser {
   id: string;
@@ -70,7 +71,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return {};
     }
     const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) return { error: error.message };
+    if (error) return { error: authErrorMessage(error) };
     return {};
   };
 

@@ -1,0 +1,233 @@
+﻿{
+  "src": {
+    "path": "C:/Users/USER/Downloads/more30/apps/37-bkalot-clone/admin.html",
+    "bytes": 197514,
+    "md5": "0343B025"
+  },
+  "dist": {
+    "path": "C:/Users/USER/Downloads/more30/portal/dist/bkalot-studio/admin.html",
+    "bytes": 193914,
+    "md5": "36AFA137"
+  },
+  "groups": {
+    "NEW": [
+      {
+        "key": "here_const",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "textcontent_plus",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "title_new_clause",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "cmt_inline_567",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "cmt_head",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "cmt_gap_measured",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "cmt_title_hover",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "cmt_d5",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "cmt_d6",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "cmt_d7",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "cmt_d8",
+        "src": 1,
+        "dist": 0
+      }
+    ],
+    "REMOVED": [
+      {
+        "key": "old_textcontent",
+        "src": 0,
+        "dist": 1
+      },
+      {
+        "key": "old_title_end",
+        "src": 0,
+        "dist": 1
+      }
+    ],
+    "DIFF": [
+      {
+        "key": "phr_spots_destructure",
+        "src": 3,
+        "dist": 2
+      },
+      {
+        "key": "phr_countHe",
+        "src": 13,
+        "dist": 12
+      },
+      {
+        "key": "phr_four_more",
+        "src": 4,
+        "dist": 3
+      },
+      {
+        "key": "phr_stale_text",
+        "src": 5,
+        "dist": 3
+      },
+      {
+        "key": "phr_noteSpots",
+        "src": 9,
+        "dist": 5
+      },
+      {
+        "key": "phr_complete",
+        "src": 16,
+        "dist": 12
+      }
+    ],
+    "CONTROL": [
+      {
+        "key": "phr_hasOwn",
+        "src": 25,
+        "dist": 25
+      },
+      {
+        "key": "phr_note_match_pos_all",
+        "src": 2,
+        "dist": 2
+      },
+      {
+        "key": "ctl_fn_noteSpots",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "ctl_fillNoteText",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "ctl_fn_hist_cell",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "ctl_no_spots",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "ctl_ret_all",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "ctl_ret_null",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "ctl_title_many",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "ctl_title_first",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "ctl_fn_tally",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "ctl_hits_guard",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "ctl_hits_expr",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "ctl_sentence_many",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "ctl_zero_sentence",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "ctl_all_or_nothing",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "ctl_stale_class",
+        "src": 22,
+        "dist": 22
+      },
+      {
+        "key": "ctl_mark_hit_css",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "ctl_noteTallyBit",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "ctl_list_hits",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "ctl_denominator",
+        "src": 2,
+        "dist": 2
+      },
+      {
+        "key": "ctl_empty_box",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "ctl_clamp_note",
+        "src": 1,
+        "dist": 1
+      }
+    ],
+    "DEAD": []
+  }
+}

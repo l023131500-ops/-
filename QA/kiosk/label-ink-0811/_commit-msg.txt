@@ -1,0 +1,50 @@
+kiosk (35): every field label in the console was 1.75:1 in dark mode
+
+`danger-text-0811` closed the hard-coded-colour-beside-an-inverting-token class
+in `console.html` and `js/app.js` and named those as the two files it swept.
+`css/style.css` itself had never been swept for it. The one literal there on a
+surface that does invert is `.field label` — `#33455f`, written between
+`--field-bg` and `--ink` — which is 1.75:1 on the dark card.
+
+That is every form label in the console: 33 `.field` blocks in `app.js` plus two
+in `console.html`. The two in `console.html` are `שם משתמש` and `סיסמה` on the
+login screen, the first thing that opens, where the label is the only thing
+saying which box is which and the password box's own text is masked.
+
+Third token in the shape of --danger / --danger-ink / --danger-text:
+--label-ink, `#33455f` light and `#c3cfe3` dark.
+
+- The light value is exactly the one it replaces, so the light console does not
+  move a byte, and the harness enforces that rather than leaving it as a claim.
+- The dark value holds the ratio rather than merely clearing the threshold. In
+  light the label is 9.73:1 between ink (18.7:1) and muted (5.49:1); `#c3cfe3`
+  is 10.83:1 against a dark ink of 14.23:1 and muted of 7.08:1. A value that
+  only passed 4.5:1 would flatten the label and the --muted hint under it into
+  one block of text, and the device edit dialog has exactly that pair under both
+  of §2★א's fields.
+- --label-ink is asserted to be neither --ink nor --muted in either mode.
+  Collapsing onto either is the failure this token exists to avoid.
+
+Verified in QA/kiosk/label-ink-0811 — a real Chromium at both colorScheme values
+against warn-ink-0811's stub, reused rather than copied. The background is read
+from the surface actually painted behind each label: they sit on `.auth-card`,
+`.card` and `.modal`, and one quoted value would be right for some and wrong for
+the rest. The login screen is driven on its own page with no `kf_token`, since
+the token is read once at load. 13/16 rows pass; the three failures are the
+before rows, re-injected into the same DOM in the same run and each asserted
+dark-only. Six screenshots. 152 tests, 151 pass — the documented baseline,
+unchanged, since this step adds no server code.
+
+Harness bug found and fixed mid-run: the check for whether the label is
+distinguishable from the hint under it first fell back to selecting another
+label, so it compared the token against itself and reported a defect that was
+not there. It now selects the hint div and fails loudly if that selector stops
+matching, rather than silently skipping.
+
+Found and not fixed, with numbers rather than silence: `.pill.off` is 4.38:1 at
+12px/600 — a light chip that deliberately does not invert, so it fails equally
+in both modes, and `.pill.on`/`.alert-ok`/`.hl-tag`/`.code-chip` are the same
+decision and have to move together. `.dot.off` is 1.55:1 on the light card and
+is a status dot beside a pill that says the same thing in words.
+
+Not deployed.

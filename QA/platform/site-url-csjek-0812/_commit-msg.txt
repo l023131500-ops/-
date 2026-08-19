@@ -1,0 +1,45 @@
+06 briut · 12 smel · 17 chizukim · 27 mechiron: every password-reset mail from their project pointed at the recipient's own machine (#198)
+
+The four systems share one Supabase project, csjekrvukbdznetsrodj, and its
+site_url was http://localhost:3000. Supabase builds the redirect of every
+confirmation, magic-link and password-reset mail on site_url, so each of those
+links led to a web server on the reader's own computer. The two other projects
+the token reaches were both already https://more30.com.
+
+Measured before touching anything, with the project's service_role key against
+admin/generate_link — which builds the real link and returns it without sending
+mail, so nothing left the system:
+
+  recovery_default        http://localhost:3000
+  recovery_asked_smel     http://localhost:3000
+  recovery_asked_foreign  http://localhost:3000
+
+The second line is the part the card did not know about. uri_allow_list was
+empty, so an app asking explicitly for its own path was refused as flatly as a
+stranger's host, and fell back to the same localhost. Fixing site_url alone
+would have left all four systems unable to send a reader to their own page.
+
+One PATCH to /config/auth set site_url=https://more30.com — the value the other
+two projects already carry, and the only honest default when four systems sit on
+four different paths under one project — and uri_allow_list to
+https://more30.com/**,https://more30.com. After:
+
+  recovery_default          https://more30.com
+  recovery_asked_briut      https://more30.com/briut
+  recovery_asked_smel       https://more30.com/smel
+  recovery_asked_chizukim   https://more30.com/chizukim
+  recovery_asked_mechiron   https://more30.com/mechiron
+  recovery_asked_foreign    https://more30.com   ← still refused, falls back
+
+mailer_autoconfirm and disable_signup were read back after the write and had not
+moved, so the signup fix from the previous step is intact.
+
+What this does not do, filed as #200: the link now lands on a page that exists,
+and that is all. Nothing in portal/, admin/, sites/ or the four app trees reads a
+PASSWORD_RECOVERY event or a #type=recovery fragment — the only occurrence of
+resetPasswordForEmail anywhere is inside the supabase-js copy bundled into the
+admin build, which is library code, not a call. So there is also no "forgot
+password" entry point for a reader to reach in the first place. Both halves are
+a build step of their own and were deliberately not started here.
+
+Evidence: QA/platform/site-url-csjek-0812/_results.json

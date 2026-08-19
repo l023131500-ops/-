@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>נדל"ן ברגע · מפת חיבורי API</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{--navy:#0d1b3e;--indigo:#1e3a8a;--teal:#0ea5a4;--tealD:#0b7d7c;--gold:#c8a24a;
+    --ink:#1a2233;--muted:#5b6577;--line:#e3e8f0;--bg:#f6f8fc;--green:#1a9e6a;--amber:#d99a1a;--red:#d6455b;}
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:'Heebo',Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.7;}
+  .wrap{max-width:1000px;margin:0 auto;padding:0 20px;}
+  .head{background:linear-gradient(135deg,#0d1b3e,#1e3a8a);color:#fff;padding:44px 0 34px;}
+  .head .k{color:#e6c988;font-weight:700;letter-spacing:2px;font-size:12px;}
+  h1{font-size:34px;margin:8px 0 6px;font-weight:900;}
+  .head p{opacity:.9;margin:0;max-width:720px;}
+  section{padding:30px 0;border-bottom:1px solid var(--line);}
+  h2{font-size:24px;color:var(--navy);font-weight:900;margin:0 0 4px;}
+  .lead{color:var(--muted);margin-top:0;}
+  .badge{display:inline-block;font-size:11px;font-weight:800;padding:3px 10px;border-radius:20px;}
+  .free{background:#e6f6ee;color:var(--green);}
+  .paid{background:#fbf1dc;color:var(--amber);}
+  .closed{background:#fce8ec;color:var(--red);}
+  table{width:100%;border-collapse:collapse;margin:14px 0;font-size:13.5px;background:#fff;border-radius:12px;overflow:hidden;}
+  th{background:var(--navy);color:#fff;padding:9px 11px;text-align:right;font-size:12.5px;}
+  td{padding:8px 11px;border-bottom:1px solid var(--line);vertical-align:top;}
+  tr:nth-child(even){background:#fafcfe;}
+  .card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin:14px 0;box-shadow:0 2px 10px rgba(13,27,62,.04);}
+  .card.g{border-top:4px solid var(--green);}
+  .card.p{border-top:4px solid var(--amber);}
+  .card.c{border-top:4px solid var(--red);}
+  .card h3{margin:0 0 4px;font-size:18px;color:var(--navy);}
+  .env{font-family:'Courier New',monospace;background:#eef2fa;color:var(--indigo);padding:1px 7px;border-radius:6px;font-size:12.5px;direction:ltr;display:inline-block;}
+  ol{margin:8px 0;padding-inline-start:22px;}
+  ol li{margin:5px 0;}
+  a{color:var(--tealD);}
+  .step{display:flex;gap:14px;margin:10px 0;}
+  .num{flex:0 0 auto;width:34px;height:34px;border-radius:50%;background:var(--gold);color:#3a2c07;font-weight:900;display:flex;align-items:center;justify-content:center;}
+  .note{background:#eef7f7;border-inline-start:4px solid var(--teal);border-radius:10px;padding:12px 15px;margin:12px 0;font-size:14px;}
+  .warn{background:#fdf3ec;border-inline-start:4px solid var(--amber);border-radius:10px;padding:12px 15px;margin:12px 0;font-size:14px;}
+  code{background:#f0f2f6;padding:1px 5px;border-radius:5px;direction:ltr;display:inline-block;}
+</style>
+</head>
+<body>
+<div class="head"><div class="wrap">
+  <div class="k">נדל"ן ברגע · מבית מור מערכות תוכנה</div>
+  <h1>מפת חיבורי API — מדריך צעד-אחר-צעד</h1>
+  <p>לכל מקור מידע: חינם או בתשלום, האם יש API, ובדיוק איך ולאן מתחברים. כל החיבורים נכנסים למערכת החדשה והמבודדת (<span class="env">nadlan-berega</span>) — בלי לגעת בשום שירות קיים.</p>
+</div></div>
+
+<div class="wrap">
+
+<section>
+  <h2>תמונת מצב בשורה אחת</h2>
+  <p class="lead">רוב הליבה חינמית ומתחברת מיד. "המידע המלא על הדירה" שביקשת — רישום בטאבו/רמ"י וחריגות בנייה — הם החלק היקר/הסגור, ונחבר אותם כתוספת פרימיום לפי דרישה.</p>
+  <table>
+    <thead><tr><th>מקור</th><th>סטטוס</th><th>API?</th><th>נדרש ממך</th><th>משתנה במערכת</th></tr></thead>
+    <tbody>
+      <tr><td>GovMap (גוש/חלקה/ITM)</td><td><span class="badge free">חינם</span></td><td>כן</td><td>שום דבר — מחובר</td><td><span class="env">—</span></td></tr>
+      <tr><td>כרמ"ן / נדל"ן.gov (עסקאות)</td><td><span class="badge free">חינם</span></td><td>כן (לא רשמי)</td><td>שום דבר — מחובר</td><td><span class="env">—</span></td></tr>
+      <tr><td>למ"ס (מדד מחירים)</td><td><span class="badge free">חינם</span></td><td>כן רשמי</td><td>אימות מזהה סדרה</td><td><span class="env">CBS_HOUSING_INDEX_ID</span></td></tr>
+      <tr><td>XPLAN (תכנון/זכויות)</td><td><span class="badge free">חינם</span></td><td>כן</td><td>שום דבר — מחובר</td><td><span class="env">XPLAN_BASE</span></td></tr>
+      <tr><td>data.gov.il (CKAN)</td><td><span class="badge free">חינם</span></td><td>כן</td><td>העתקת resource_id</td><td><span class="env">DATAGOV_*_RESOURCE</span></td></tr>
+      <tr><td>הרשות להתחדשות</td><td><span class="badge free">חינם</span></td><td>כן</td><td>העתקת resource_id</td><td><span class="env">DATAGOV_RENEWAL_RESOURCE</span></td></tr>
+      <tr><td>טאבו (בעלות/שעבודים)</td><td><span class="badge paid">בתשלום</span></td><td>לא רשמי</td><td>החלטה: ספק API בתשלום או ידני</td><td><span class="env">TABU_API_KEY</span></td></tr>
+      <tr><td>רמ"י (חכירה/זכויות)</td><td><span class="badge paid">בתשלום</span></td><td>לא</td><td>הזדהות "רמי שלי" / ידני</td><td><span class="env">—</span></td></tr>
+      <tr><td>רישוי זמין (חריגות בנייה)</td><td><span class="badge closed">סגור</span></td><td>אין</td><td>בדיקה ידנית מול העירייה</td><td><span class="env">—</span></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section>
+  <h2>שלב א' — חינמי, מתחבר מיד (עדיפות ראשונה)</h2>
+
+  <div class="card g">
+    <h3>1. GovMap · כרמ"ן · XPLAN <span class="badge free">חינם · ללא מפתח</span></h3>
+    <p>שלושתם כבר מחוברים בקוד (<span class="env">lib/govmap.ts</span>, <span class="env">lib/nadlan.ts</span>, <span class="env">lib/xplan.ts</span>). אין מה להשיג — צריך רק להריץ ולאמת שהפלט מגיע.</p>
+    <div class="step"><div class="num">1</div><div>הרץ מקומית: <code>npm install</code> ואז <code>npm run dev</code>.</div></div>
+    <div class="step"><div class="num">2</div><div>פתח <code>http://localhost:3000/api/profile?q=הרצל 42 תל אביב</code> ובדוק את שדה <code>warnings</code>.</div></div>
+    <div class="step"><div class="num">3</div><div>אם מקור מסוים ריק — שלח לי את הפלט, ואכייל את הפורמט (בקובץ ה-<span class="env">lib</span> המתאים בלבד).</div></div>
+  </div>
+
+  <div class="card g">
+    <h3>2. למ"ס — מדד מחירי דירות <span class="badge free">חינם · רשמי</span></h3>
+    <div class="step"><div class="num">1</div><div>היכנס ל-<a href="https://www.cbs.gov.il/he/Pages/Indices.aspx" target="_blank">אתר המדדים של למ"ס</a> → מדד מחירי הדירות.</div></div>
+    <div class="step"><div class="num">2</div><div>העתק את מזהה הסדרה (id) והדבק ב-<span class="env">.env.local</span> בשדה <span class="env">CBS_HOUSING_INDEX_ID</span> (ברירת מחדל 120010).</div></div>
+    <div class="step"><div class="num">3</div><div>אימות: <code>https://api.cbs.gov.il/index/data/price?id=120010&format=json</code> — אם מחזיר נתונים, מעולה.</div></div>
+  </div>
+
+  <div class="card g">
+    <h3>3. data.gov.il — התחדשות עירונית, בתי"ס, תחבורה <span class="badge free">חינם</span></h3>
+    <p>מנוע הבידול (פינוי-בינוי/תמ"א 38) ושכבת הסביבה צריכים מזהה משאב (resource_id) אחד לכל מאגר.</p>
+    <div class="step"><div class="num">1</div><div>היכנס ל-<a href="https://data.gov.il" target="_blank">data.gov.il</a> → חפש "התחדשות עירונית" (או "פינוי בינוי").</div></div>
+    <div class="step"><div class="num">2</div><div>פתח את המאגר → לשונית ה-API → העתק את ה-<code>resource_id</code>.</div></div>
+    <div class="step"><div class="num">3</div><div>הדבק ב-<span class="env">.env.local</span>: <span class="env">DATAGOV_RENEWAL_RESOURCE</span> (וכן <span class="env">DATAGOV_SCHOOLS_RESOURCE</span>, <span class="env">DATAGOV_TRANSPORT_RESOURCE</span> לבתי"ס/תחבורה).</div></div>
+    <div class="note">תרצה — אני יכול להיכנס בעצמי ל-data.gov.il בדפדפן ולמצוא לך את מזהי המשאבים (חינמי, ציבורי). רק אשר לי לפתוח את האתר.</div>
+  </div>
+</section>
+
+<section>
+  <h2>שלב ב' — פרימיום לפי דרישה (בתשלום)</h2>
+  <p class="lead">כאן נמצא "המידע המלא על הדירה": רישום בטאבו/רמ"י וחריגות בנייה. נחבר לפי דרישה — המשתמש משלם רק כשמזמין דוח משפטי מלא.</p>
+
+  <div class="card p">
+    <h3>4. טאבו — נסח (בעלות, שעבודים, עיקולים, הערות אזהרה) <span class="badge paid">בתשלום · פר-הפקה</span></h3>
+    <p><b>מי מוסמך לגשת:</b> <u>כל אדם</u> יכול להפיק נסח טאבו — אין צורך בבעלות או בהזדהות מיוחדת. תשלום אגרה פר-הפקה.</p>
+    <p><b>מה זה נותן לדירה:</b> האם הנכס רשום בטאבו, מיהו הבעל הרשום וחלקו, משכנתאות/שעבודים, עיקולים, הערות אזהרה, בית משותף, הצמדות (חניה/מחסן).</p>
+    <div class="step"><div class="num">A</div><div><b>דרך ידנית/רשמית (זול, מיידי — כבר בנוי):</b> היכנס ל-<a href="https://www.gov.il/he/service/land-registration-extract" target="_blank">רשות רישום והסדר מקרקעין — הפקת נסח</a> ← לחץ "לביצוע הפעולה" ← הזן גוש/חלקה ← שלם (~15–18₪ רגיל, 74₪ היסטורי, 131₪ מרוכז) ← הורד PDF. המערכת שלנו כבר מפנה לכאן אוטומטית.</div></div>
+    <div class="step"><div class="num">B</div><div><b>דרך אוטומטית (API בתשלום — פרימיום):</b> נרשמים לספק מסחרי שמפיק נסח ב-API. לבדיקה: <a href="https://www.tabu.co.il" target="_blank">tabu.co.il</a> / ספקי "טופס קל" / "טאבו ישראל" — <u>יש לוודא מולם אם קיים API למפתחים ומה עלותו</u>. מקבלים מפתח → מדביקים ב-<span class="env">TABU_API_KEY</span> → אני מוסיף קריאה אוטומטית ב-<span class="env">lib/tabu.ts</span>.</div></div>
+    <div class="warn"><b>נדרש ממך להתחלת חיבור אוטומטי:</b> (1) שם הספק; (2) קישור לתיעוד ה-API שלו; (3) מפתח/סיסמת API. אם כבר יש לך מנוי כזה (אולי באחד משירותי Railway) — שלח פרטים ואחבר מיד.</div>
+  </div>
+
+  <div class="card p">
+    <h3>5. רמ"י — חכירה, זכויות, אישור זכויות (קרקע מדינה) <span class="badge paid">בתשלום · ~81₪</span></h3>
+    <p><b>מי מוסמך לגשת:</b> <u>בעל הזכויות בנכס או מיופה כוח</u>, בהזדהות לאומית. אישור זכויות אינו פתוח לכל דורש כמו נסח טאבו.</p>
+    <p><b>רלוונטי כאשר:</b> הקרקע בבעלות המדינה (חכירה מרמ"י) ולא רשומה בטאבו — בדיוק ההבחנה "טאבו או מינהל" שביקשת.</p>
+    <div class="step"><div class="num">1</div><div>היכנס ל-<a href="https://www.gov.il/he/departments/land_authority" target="_blank">רשות מקרקעי ישראל</a> ← "רמ"י שלי" ← התחבר בהזדהות לאומית (<a href="https://govextra.gov.il/rami_gov/" target="_blank">פורטל רמ"י שלי</a>).</div></div>
+    <div class="step"><div class="num">2</div><div>הזמן "אישור זכויות" (~81₪). אין API ציבורי → במערכת מסומן "פרימיום/ידני".</div></div>
+    <div class="step"><div class="num">3</div><div>לזיהוי מהיר "טאבו או מינהל" ללא תשלום: המערכת מצליבה מול נתוני רמ"י הפתוחים ב-<a href="https://data.gov.il" target="_blank">data.gov.il</a> ומסמנת אם החלקה מופיעה כקרקע מדינה.</div></div>
+  </div>
+
+  <div class="card c">
+    <h3>6. חריגות בנייה / היתרים — רישוי זמין <span class="badge closed">סגור · אין API ציבורי</span></h3>
+    <p><b>מי מוסמך לגשת:</b> <u>עורכי בקשה מורשים</u> (אדריכל/מהנדס עם כרטיס חכם) או בעל הנכס מול הוועדה המקומית. אין גישה ציבורית פתוחה — זהו הפער הגדול בשוק.</p>
+    <div class="step"><div class="num">1</div><div><b>אוטומטי וחינם (כבר בנוי):</b> המערכת מצליבה שטח בנוי מדווח (מעסקה) מול זכויות/היתר ומרימה דגל "חשד לחריגה".</div></div>
+    <div class="step"><div class="num">2</div><div><b>אימות מלא (ידני):</b> המערכת מפנה את המשתמש ל<a href="https://www.gov.il/he/service/building_permit" target="_blank">פורטל רישוי זמין</a> ולמחלקת ההנדסה בעירייה הרלוונטית לעיון בתיק הבניין.</div></div>
+    <div class="step"><div class="num">3</div><div><b>פרימיום (אם קיים):</b> חלק מהעיריות מפרסמות היתרים ב-GIS עירוני פתוח, וישנם ספקי דאטה מסחריים. אם יש לך מנוי לספק כזה — שלח, ואחבר כפרימיום.</div></div>
+  </div>
+</section>
+
+<section>
+  <h2>שלב ג' — סוכן AI לניסוח הדוח</h2>
+  <p class="lead">אחרי איסוף הנתונים, סוכן AI ירכיב "תעודת זהות" מקיפה ומנוסחת. אם כבר יש לך מפתח מודל (OpenAI/Anthropic) באחד משירותי Railway — נשתמש בו.</p>
+  <div class="card g">
+    <div class="step"><div class="num">1</div><div>ספק לי מפתח מודל (או הפנה לשירות Railway שמחזיק אותו) → יוגדר כ-<span class="env">AI_API_KEY</span> במקום מבודד.</div></div>
+    <div class="step"><div class="num">2</div><div>אני מוסיף <span class="env">/api/agent</span> שמקבל כתובת, מתזמן את כל המקורות, ומחזיר דוח מנוסח + ציון ביטחון.</div></div>
+  </div>
+</section>
+
+<section>
+  <h2>מרשם חיבורים מרכזי + פריסה</h2>
+  <p class="lead">"המערכת ששומרת את כל ה-API" כבר קיימת: טבלת <span class="env">nadlan.sources_registry</span> ב-Supabase מכילה כל מקור עם endpoint, סוג הרשאה, עלות, משתנה סביבה וסטטוס חיבור. כל חיבור חדש נרשם שם, וכל המערכת קוראת ממנו.</p>
+  <div class="card g">
+    <h3>פריסה על הדומיין more30.com (תת-דומיין נפרד)</h3>
+    <div class="step"><div class="num">1</div><div><b>Supabase</b> — הבקאנד כבר עלה (סכימת <span class="env">nadlan</span> מבודדת). לא נגענו בשום דבר קיים.</div></div>
+    <div class="step"><div class="num">2</div><div><b>GitHub</b> — צור ריפו חדש ודחוף (ראה README). הקוד עצמאי, לא דורס אף קוד קיים.</div></div>
+    <div class="step"><div class="num">3</div><div><b>פריסה</b> — פרוס כשירות <u>חדש ונפרד</u> (Railway/Vercel), ואז חבר תת-דומיין כמו <span class="env">nadlan.more30.com</span>: בהגדרות ה-DNS של more30 הוסף רשומת CNAME לשירות החדש. <b>לא נוגעים ברשומות/שירותים הקיימים של more30.com</b> — רק מוסיפים תת-דומיין.</div></div>
+  </div>
+  <div class="warn">חשוב: הפריסה תהיה כשירות עצמאי משלה. לא דוחפים לתוך <span class="env">mor1-main-site</span> הקיים ולא משנים חיבורים/קוד קיימים — רק מוסיפים תת-דומיין שמצביע על השירות החדש.</div>
+</section>
+
+<section>
+  <h2>מה לעשות עכשיו — לפי הסדר</h2>
+  <div class="note">
+    <b>1.</b> הרץ מקומית ושלח לי פלט של <code>/api/profile</code> (שלב א'.1) — כדי לייצב את החינמיים.<br>
+    <b>2.</b> אשר לי לפתוח את <b>data.gov.il</b> ואמצא לך את מזהי המשאבים (שלב א'.3) — או תמצא ותדביק.<br>
+    <b>3.</b> החלט על טאבו: ידני (זול, מיידי) או ספק API בתשלום (שלב ב'.4). אם יש מנוי — שלח פרטים.<br>
+    <b>4.</b> אמור לי אם יש מפתח מודל AI לשימוש (שלב ג').
+  </div>
+  <p style="color:var(--muted);font-size:13px;">כל חיבור נכנס אך ורק למערכת <span class="env">nadlan-berega</span> החדשה. לא נגעתי ולא אגע בשירותי Railway הקיימים.</p>
+</section>
+
+</div>
+</body>
+</html>

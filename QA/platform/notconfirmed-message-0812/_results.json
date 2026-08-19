@@ -1,0 +1,246 @@
+{
+  "at": "2026-08-12T09:50:09.192Z",
+  "targets": 9,
+  "results": [
+    {
+      "number": "01",
+      "slug": "torah",
+      "live_url": "https://more30.com/torah/",
+      "control": "has Hebrew mapping (measured 12/08)",
+      "files_read": 171,
+      "files_discovered": 170,
+      "crawl_truncated": false,
+      "confirmation_branch": [
+        {
+          "file": "/torah/assets/authErrors-COw_Oh82.js",
+          "pattern": "email_not_confirmed",
+          "context": "const a=e=>{switch(e.code){case\"email_not_confirmed\":return\"המייל עדיין לא אומת. פתחו את קישור האימות שנשלח אליכם ואז התחברו — הסיסמה עצמה תקינה.\";case\"invalid_credentials\":return\"האימייל או הסיסמה שגויים.\";case\"user_banned\":return\"החשבון הזה חסום. פנו"
+        }
+      ],
+      "generic_failure_messages": [
+        {
+          "file": "/torah/assets/SignUp-BC7AXfRW.js",
+          "phrase": "סיסמה שגויה",
+          "context": ", ואז אפשר להתחבר עם אותה סיסמה בדיוק.\"]}),e.jsx(\"p\",{className:\"text-muted-foreground\",children:\"לא הגיע? בדקו בתיקיית הספאם. עד האימות ההתחברות תיכשל — זו לא סיסמה שגויה.\"}),e.jsx(f,{asChild:!0,className:\"w-full\",children:e.jsx(g,{to:\"/auth/sign-in\",children:\"למסך ההתחברות\"})})]})]})}):e.jsx(\"div\",{className:\"min-h-s"
+        },
+        {
+          "file": "/torah/assets/authErrors-COw_Oh82.js",
+          "phrase": "האימייל או הסיסמה שגויים",
+          "context": ".code){case\"email_not_confirmed\":return\"המייל עדיין לא אומת. פתחו את קישור האימות שנשלח אליכם ואז התחברו — הסיסמה עצמה תקינה.\";case\"invalid_credentials\":return\"האימייל או הסיסמה שגויים.\";case\"user_banned\":return\"החשבון הזה חסום. פנו למנהל המערכת.\";case\"user_already_exists\":case\"email_exists\":return\"כתובת המייל הזו כבר "
+        }
+      ],
+      "truthful_messages": [
+        {
+          "file": "/torah/assets/SignUp-BC7AXfRW.js",
+          "phrase": "לאמת את המייל",
+          "context": "en:[e.jsxs(x,{children:[e.jsxs(h,{className:\"text-2xl flex items-center gap-2\",children:[e.jsx(P,{className:\"h-6 w-6 text-primary\",\"aria-hidden\":\"true\"}),\"נשאר לאמת את המייל\"]}),e.jsx(p,{children:\"החשבון נוצר, אבל הכניסה נפתחת רק אחרי האימות\"})]}),e.jsxs(j,{className:\"space-y-3 text-sm\",children:[e.jsxs(\"p\",{children:["
+        },
+        {
+          "file": "/torah/assets/authErrors-COw_Oh82.js",
+          "phrase": "לא אומת",
+          "context": "const a=e=>{switch(e.code){case\"email_not_confirmed\":return\"המייל עדיין לא אומת. פתחו את קישור האימות שנשלח אליכם ואז התחברו — הסיסמה עצמה תקינה.\";case\"invalid_credentials\":return\"האימייל או הסיסמה שגויים.\";case\"user_banned\":return\""
+        },
+        {
+          "file": "/torah/assets/SynagogueFullAccessRequest-CHvWgPpY.js",
+          "phrase": "לא אושר",
+          "context": "bold text-[hsl(180_45%_25%)]\",children:[\"✅ אושרו: \",t.map(f=>{var u;return(u=y.find(j=>j.id===f))==null?void 0:u.label}).filter(Boolean).join(\" • \")||\"אף פיצ׳ר לא אושר\"]})]})}return e.jsxs(E.div,{initial:{opacity:0,y:12},animate:{opacity:1,y:0},className:\"rounded-2xl p-6 border-2 shadow-lg overflow-hidden relative\",sty"
+        }
+      ],
+      "password_fields_in_bundles": [],
+      "verdict": "OK — recognises email_not_confirmed and says so in Hebrew"
+    },
+    {
+      "number": "06",
+      "slug": "briut",
+      "live_url": "https://more30.com/briut/",
+      "control": null,
+      "files_read": 7,
+      "files_discovered": 6,
+      "crawl_truncated": false,
+      "confirmation_branch": [],
+      "generic_failure_messages": [],
+      "truthful_messages": [],
+      "password_fields_in_bundles": [],
+      "verdict": "no login form of its own — the customer enters through the shared portal widget"
+    },
+    {
+      "number": "12",
+      "slug": "smel",
+      "live_url": "https://more30.com/smel/",
+      "control": null,
+      "files_read": 5,
+      "files_discovered": 4,
+      "crawl_truncated": false,
+      "confirmation_branch": [],
+      "generic_failure_messages": [],
+      "truthful_messages": [],
+      "password_fields_in_bundles": [],
+      "verdict": "no login form of its own — the customer enters through the shared portal widget"
+    },
+    {
+      "number": "15",
+      "slug": "egod",
+      "live_url": "https://more30.com/egod/",
+      "control": "measured 12/08",
+      "files_read": 5,
+      "files_discovered": 4,
+      "crawl_truncated": false,
+      "confirmation_branch": [
+        {
+          "file": "/egod/assets/index-RNBwDqT2.js",
+          "pattern": "email_not_confirmed",
+          "context": "n.hash}`}catch{return Qn}}).replace(/https?:\\/\\/[^\\s\"')]*\\.lovableproject\\.com[^\\s\"')]*/gi,t=>{try{const n=new URL(t);return`${Qn}${n.pathname}${n.search}${n.hash}`}catch{return Qn}}),ti=6,mw=(e,t)=>{switch(e.code){case\"email_not_confirmed\":return\"המייל עדיין לא אומת. פתחו את קישור האימות שנשלח אליכם ואז התחברו — הסיסמה עצמה תקינה.\";case\"invalid_credentials\":return\"האימייל או הסיסמה שגויים.\";case\"user_already_exists\":case\"email_exists\":"
+        }
+      ],
+      "generic_failure_messages": [
+        {
+          "file": "/egod/assets/index-RNBwDqT2.js",
+          "phrase": "האימייל או הסיסמה שגויים",
+          "context": ".code){case\"email_not_confirmed\":return\"המייל עדיין לא אומת. פתחו את קישור האימות שנשלח אליכם ואז התחברו — הסיסמה עצמה תקינה.\";case\"invalid_credentials\":return\"האימייל או הסיסמה שגויים.\";case\"user_already_exists\":case\"email_exists\":return\"כתובת המייל הזו כבר רשומה. עברו להתחברות במקום להרשמה.\";case\"weak_password\":retur"
+        }
+      ],
+      "truthful_messages": [
+        {
+          "file": "/egod/assets/index-RNBwDqT2.js",
+          "phrase": "לא אומת",
+          "context": "onst n=new URL(t);return`${Qn}${n.pathname}${n.search}${n.hash}`}catch{return Qn}}),ti=6,mw=(e,t)=>{switch(e.code){case\"email_not_confirmed\":return\"המייל עדיין לא אומת. פתחו את קישור האימות שנשלח אליכם ואז התחברו — הסיסמה עצמה תקינה.\";case\"invalid_credentials\":return\"האימייל או הסיסמה שגויים.\";case\"user_already_exists\""
+        }
+      ],
+      "password_fields_in_bundles": [],
+      "verdict": "OK — recognises email_not_confirmed and says so in Hebrew"
+    },
+    {
+      "number": "17",
+      "slug": "chizukim",
+      "live_url": "https://more30.com/chizukim/",
+      "control": null,
+      "files_read": 6,
+      "files_discovered": 5,
+      "crawl_truncated": false,
+      "confirmation_branch": [],
+      "generic_failure_messages": [],
+      "truthful_messages": [],
+      "password_fields_in_bundles": [],
+      "verdict": "no login form of its own — the customer enters through the shared portal widget"
+    },
+    {
+      "number": "21",
+      "slug": "mthbram",
+      "live_url": "https://more30.com/mthbram/",
+      "control": null,
+      "files_read": 5,
+      "files_discovered": 4,
+      "crawl_truncated": false,
+      "confirmation_branch": [
+        {
+          "file": "/mthbram/assets/index-DheqMcgT.js",
+          "pattern": "email_not_confirmed",
+          "context": "arams:{...t==null?void 0:t.extraParams}});if(r.redirected||r.error)return r;try{await ue.auth.setSession(r.tokens)}catch(n){return{error:n instanceof Error?n:new Error(String(n))}}return r}}},Doe=e=>{switch(e.code){case\"email_not_confirmed\":return\"המייל עדיין לא אומת. פתחו את קישור האימות שנשלח אליכם ואז התחברו — הסיסמה עצמה תקינה.\";case\"invalid_credentials\":return\"שם המשתמש או הסיסמה שגויים.\";case\"user_banned\":return\"החשבון הזה חסום. פ"
+        }
+      ],
+      "generic_failure_messages": [],
+      "truthful_messages": [
+        {
+          "file": "/mthbram/assets/index-DheqMcgT.js",
+          "phrase": "לא אומת",
+          "context": "sion(r.tokens)}catch(n){return{error:n instanceof Error?n:new Error(String(n))}}return r}}},Doe=e=>{switch(e.code){case\"email_not_confirmed\":return\"המייל עדיין לא אומת. פתחו את קישור האימות שנשלח אליכם ואז התחברו — הסיסמה עצמה תקינה.\";case\"invalid_credentials\":return\"שם המשתמש או הסיסמה שגויים.\";case\"user_banned\":retur"
+        },
+        {
+          "file": "/mthbram/assets/index-DheqMcgT.js",
+          "phrase": "לא אושר",
+          "context": "old text-[hsl(180_45%_25%)]\",children:[\"✅ אושרו: \",E.map(R=>{var O;return(O=No.find(K=>K.id===R))==null?void 0:O.label}).filter(Boolean).join(\" • \")||\"אף פיצ׳ר לא אושר\"]})]})}return o.jsxs(fe.div,{initial:{opacity:0,y:12},animate:{opacity:1,y:0},className:\"rounded-2xl p-6 border-2 shadow-lg overflow-hidden relative\",st"
+        }
+      ],
+      "password_fields_in_bundles": [],
+      "verdict": "OK — recognises email_not_confirmed and says so in Hebrew"
+    },
+    {
+      "number": "24",
+      "slug": "galil",
+      "live_url": "https://more30.com/galil/",
+      "control": null,
+      "files_read": 6,
+      "files_discovered": 5,
+      "crawl_truncated": false,
+      "confirmation_branch": [],
+      "generic_failure_messages": [
+        {
+          "file": "/galil/assets/index-pSOB0569.js",
+          "phrase": "שם משתמש או סיסמה",
+          "context": "ull?void 0:w.find(k=>k.password_hash===c.trim());S?(g({name:((y=S.synagogues)==null?void 0:y.name)||S.display_name,id:S.synagogue_id||\"\"}),r(\"gabai\"),m(\"\")):m(\"שם משתמש או סיסמה שגויים\")}};return n===\"gabai\"&&p?l.jsxs(\"div\",{className:\"min-h-screen bg-background\",children:[l.jsx(\"header\",{className:\"bg-gradient-hero py"
+        }
+      ],
+      "truthful_messages": [],
+      "password_fields_in_bundles": [],
+      "verdict": "generic-only login failure message — check whether that screen is Supabase Auth at all"
+    },
+    {
+      "number": "30",
+      "slug": "crm",
+      "live_url": "https://more30.com/crm/",
+      "control": null,
+      "files_read": 90,
+      "files_discovered": 89,
+      "crawl_truncated": false,
+      "confirmation_branch": [
+        {
+          "file": "/crm/assets/authErrors-Dd1sj6BD.js",
+          "pattern": "email_not_confirmed",
+          "context": ",key:\"151rxh\"}],[\"path\",{d:\"M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143\",key:\"13bj9a\"}],[\"path\",{d:\"m2 2 20 20\",key:\"1ooewy\"}]],r=a(\"eye-off\",s),n=e=>{switch(e.code){case\"email_not_confirmed\":return\"המייל עדיין לא אומת. פתחו את קישור האימות שנשלח אליכם ואז התחברו — הסיסמה עצמה תקינה.\";case\"invalid_credentials\":return\"האימייל או הסיסמה שגויים.\";case\"user_banned\":return\"החשבון הזה חסום. פנו"
+        }
+      ],
+      "generic_failure_messages": [
+        {
+          "file": "/crm/assets/authErrors-Dd1sj6BD.js",
+          "phrase": "האימייל או הסיסמה שגויים",
+          "context": ".code){case\"email_not_confirmed\":return\"המייל עדיין לא אומת. פתחו את קישור האימות שנשלח אליכם ואז התחברו — הסיסמה עצמה תקינה.\";case\"invalid_credentials\":return\"האימייל או הסיסמה שגויים.\";case\"user_banned\":return\"החשבון הזה חסום. פנו למנהל המערכת.\";case\"user_already_exists\":case\"email_exists\":return\"כתובת המייל הזו כבר "
+        }
+      ],
+      "truthful_messages": [
+        {
+          "file": "/crm/assets/authErrors-Dd1sj6BD.js",
+          "phrase": "לא אומת",
+          "context": "75 0 0 1 4.446-5.143\",key:\"13bj9a\"}],[\"path\",{d:\"m2 2 20 20\",key:\"1ooewy\"}]],r=a(\"eye-off\",s),n=e=>{switch(e.code){case\"email_not_confirmed\":return\"המייל עדיין לא אומת. פתחו את קישור האימות שנשלח אליכם ואז התחברו — הסיסמה עצמה תקינה.\";case\"invalid_credentials\":return\"האימייל או הסיסמה שגויים.\";case\"user_banned\":return\""
+        }
+      ],
+      "password_fields_in_bundles": [
+        "/crm/"
+      ],
+      "verdict": "OK — recognises email_not_confirmed and says so in Hebrew"
+    },
+    {
+      "number": "31",
+      "slug": "gesher",
+      "live_url": "https://more30.com/gesher/",
+      "control": null,
+      "files_read": 81,
+      "files_discovered": 80,
+      "crawl_truncated": false,
+      "confirmation_branch": [
+        {
+          "file": "/gesher/assets/auth-D8YcZT4k.js",
+          "pattern": "email_not_confirmed",
+          "context": "direct_uri,extraParams:{...i?.extraParams}});if(s.redirected||s.error)return s;try{await N.auth.setSession(s.tokens)}catch(a){return{error:a instanceof Error?a:new Error(String(a))}}return s}}},U=r=>{switch(r.code){case\"email_not_confirmed\":return\"המייל עדיין לא אומת. פתחו את קישור האימות שנשלח אליכם ואז התחברו — הסיסמה עצמה תקינה.\";case\"invalid_credentials\":return\"האימייל או הסיסמה שגויים.\";case\"user_banned\":return\"החשבון הזה חסום. פנו"
+        }
+      ],
+      "generic_failure_messages": [
+        {
+          "file": "/gesher/assets/auth-D8YcZT4k.js",
+          "phrase": "האימייל או הסיסמה שגויים",
+          "context": ".code){case\"email_not_confirmed\":return\"המייל עדיין לא אומת. פתחו את קישור האימות שנשלח אליכם ואז התחברו — הסיסמה עצמה תקינה.\";case\"invalid_credentials\":return\"האימייל או הסיסמה שגויים.\";case\"user_banned\":return\"החשבון הזה חסום. פנו למנהל המערכת.\";case\"user_already_exists\":case\"email_exists\":return\"כתובת המייל הזו כבר "
+        }
+      ],
+      "truthful_messages": [
+        {
+          "file": "/gesher/assets/auth-D8YcZT4k.js",
+          "phrase": "לא אומת",
+          "context": "ession(s.tokens)}catch(a){return{error:a instanceof Error?a:new Error(String(a))}}return s}}},U=r=>{switch(r.code){case\"email_not_confirmed\":return\"המייל עדיין לא אומת. פתחו את קישור האימות שנשלח אליכם ואז התחברו — הסיסמה עצמה תקינה.\";case\"invalid_credentials\":return\"האימייל או הסיסמה שגויים.\";case\"user_banned\":return\""
+        }
+      ],
+      "password_fields_in_bundles": [
+        "/gesher/"
+      ],
+      "verdict": "OK — recognises email_not_confirmed and says so in Hebrew"
+    }
+  ]
+}

@@ -1,0 +1,185 @@
+{
+  "brand": "https://more30.com/showcase",
+  "mounts": 26,
+  "linked": 26,
+  "pass": 30,
+  "fail": 0,
+  "results": [
+    {
+      "label": "the brand site names the brand",
+      "ok": true,
+      "detail": "h1=\"עולם הסטארטאפים\""
+    },
+    {
+      "label": "the brand site is not empty",
+      "ok": true,
+      "detail": "19 links"
+    },
+    {
+      "label": "the brand site carries no credit to itself",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "the home page carries no credit to itself",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "route": "kesef",
+      "path": "/kesef",
+      "ok": true,
+      "line": "→ https://more30.com/showcase"
+    },
+    {
+      "route": "kiosk",
+      "path": "/kiosk/",
+      "ok": true,
+      "line": "→ https://more30.com/showcase"
+    },
+    {
+      "route": "torah",
+      "path": "/torah",
+      "ok": true,
+      "line": "→ https://more30.com/showcase"
+    },
+    {
+      "route": "tamlul",
+      "path": "/tamlul",
+      "ok": true,
+      "line": "→ https://more30.com/showcase"
+    },
+    {
+      "route": "modaot",
+      "path": "/modaot",
+      "ok": true,
+      "line": "→ https://more30.com/showcase"
+    },
+    {
+      "route": "imud",
+      "path": "/imud",
+      "ok": true,
+      "line": "→ https://more30.com/showcase"
+    },
+    {
+      "route": "briut",
+      "path": "/briut",
+      "ok": true,
+      "line": "→ https://more30.com/showcase"
+    },
+    {
+      "route": "bkalot",
+      "path": "/bkalot",
+      "ok": true,
+      "line": "→ https://more30.com/showcase"
+    },
+    {
+      "route": "smel",
+      "path": "/smel",
+      "ok": true,
+      "line": "→ https://more30.com/showcase"
+    },
+    {
+      "route": "smachot",
+      "path": "/smachot",
+      "ok": true,
+      "line": "→ https://more30.com/showcase"
+    },
+    {
+      "route": "egod",
+      "path": "/egod",
+      "ok": true,
+      "line": "→ https://more30.com/showcase"
+    },
+    {
+      "route": "chatzor",
+      "path": "/chatzor",
+      "ok": true,
+      "line": "→ https://more30.com/showcase"
+    },
+    {
+      "route": "chatzor-app",
+      "path": "/chatzor/",
+      "ok": true,
+      "line": "→ https://more30.com/showcase"
+    },
+    {
+      "route": "chizukim",
+      "path": "/chizukim",
+      "ok": true,
+      "line": "→ https://more30.com/showcase"
+    },
+    {
+      "route": "chizukim-app",
+      "path": "/chizukim/",
+      "ok": true,
+      "line": "→ https://more30.com/showcase"
+    },
+    {
+      "route": "orech",
+      "path": "/orech",
+      "ok": true,
+      "line": "→ https://more30.com/showcase"
+    },
+    {
+      "route": "mthbram",
+      "path": "/mthbram",
+      "ok": true,
+      "line": "→ https://more30.com/showcase"
+    },
+    {
+      "route": "zchuyot",
+      "path": "/zchuyot",
+      "ok": true,
+      "line": "→ https://more30.com/showcase"
+    },
+    {
+      "route": "galil",
+      "path": "/galil",
+      "ok": true,
+      "line": "→ https://more30.com/showcase"
+    },
+    {
+      "route": "studio",
+      "path": "/studio",
+      "ok": true,
+      "line": "→ https://more30.com/showcase"
+    },
+    {
+      "route": "mechiron",
+      "path": "/mechiron",
+      "ok": true,
+      "line": "→ https://more30.com/showcase"
+    },
+    {
+      "route": "kupot",
+      "path": "/kupot",
+      "ok": true,
+      "line": "→ https://more30.com/showcase"
+    },
+    {
+      "route": "crm",
+      "path": "/crm",
+      "ok": true,
+      "line": "→ https://more30.com/showcase"
+    },
+    {
+      "route": "gesher",
+      "path": "/gesher",
+      "ok": true,
+      "line": "→ https://more30.com/showcase"
+    },
+    {
+      "route": "nadlan",
+      "path": "/nadlan",
+      "ok": true,
+      "line": "→ https://more30.com/showcase"
+    },
+    {
+      "route": "tivuch",
+      "path": "/tivuch",
+      "ok": true,
+      "line": "→ https://more30.com/showcase"
+    }
+  ]
+}

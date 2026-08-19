@@ -1,0 +1,9 @@
+{
+  "buildCommand": "echo no-build",
+  "outputDirectory": ".",
+  "framework": null,
+  "rewrites": [
+    { "source": "/nihul", "destination": "/nihul/index.html" },
+    { "source": "/nihul/:path*", "destination": "/nihul/index.html" }
+  ]
+}

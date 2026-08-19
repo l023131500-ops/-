@@ -1,0 +1,259 @@
+{
+  "/tamlul": {
+    "hasDarkRules": true,
+    "darkRuleSample": [
+      {
+        "sel": ".dark",
+        "decl": "color-scheme: dark; --c-brand: 195 206 230; --c-accent: 223 190 104; --c-ink: 228 230 236; --c-ink-muted: 154 160 174; --c-paper: 20 22 28; --c-sand: 35 33 42; "
+      }
+    ],
+    "sheetsUnreadable": 1,
+    "before": {
+      "effectiveBg": "rgb(251, 250, 246)",
+      "bodyImage": "",
+      "bodyBg": "rgb(251, 250, 246)",
+      "htmlBg": "rgba(0, 0, 0, 0)",
+      "fg": "rgb(26, 26, 26)",
+      "surfaces": [
+        "rgba(255, 255, 255, 0.8)",
+        "rgba(0, 0, 0, 0)",
+        "rgba(0, 0, 0, 0)",
+        "rgba(0, 0, 0, 0)",
+        "rgba(0, 0, 0, 0)",
+        "rgb(255, 255, 255)",
+        "rgb(255, 255, 255)",
+        "rgb(255, 255, 255)"
+      ]
+    },
+    "after": {
+      "effectiveBg": "rgb(20, 22, 28)",
+      "bodyImage": "",
+      "bodyBg": "rgb(20, 22, 28)",
+      "htmlBg": "rgba(0, 0, 0, 0)",
+      "fg": "rgb(228, 230, 236)",
+      "surfaces": [
+        "rgba(255, 255, 255, 0.8)",
+        "rgba(0, 0, 0, 0)",
+        "rgba(0, 0, 0, 0)",
+        "rgba(0, 0, 0, 0)",
+        "rgba(0, 0, 0, 0)",
+        "rgb(28, 31, 39)",
+        "rgb(28, 31, 39)",
+        "rgb(28, 31, 39)"
+      ]
+    },
+    "changed": true
+  },
+  "/modaot": {
+    "hasDarkRules": true,
+    "darkRuleSample": [
+      {
+        "sel": ".dark",
+        "decl": "--c-brand-blue: 173 192 226; --c-brand-dark: 200 214 238; --c-brand-gold: 223 190 104; --c-cream: 15 18 24; --c-ink: 228 230 236; --c-surface: 26 30 38; --c-n-5"
+      }
+    ],
+    "sheetsUnreadable": 1,
+    "before": {
+      "effectiveBg": "rgb(248, 245, 236)",
+      "bodyImage": "",
+      "bodyBg": "rgb(248, 245, 236)",
+      "htmlBg": "rgba(0, 0, 0, 0)",
+      "fg": "rgb(26, 26, 26)",
+      "surfaces": [
+        "rgba(0, 0, 0, 0)",
+        "rgba(0, 0, 0, 0)",
+        "rgba(0, 0, 0, 0)",
+        "rgba(0, 0, 0, 0)",
+        "rgb(248, 245, 236)",
+        "rgb(255, 255, 255)",
+        "rgb(255, 255, 255)",
+        "rgb(255, 255, 255)"
+      ]
+    },
+    "after": {
+      "effectiveBg": "rgb(15, 18, 24)",
+      "bodyImage": "",
+      "bodyBg": "rgb(15, 18, 24)",
+      "htmlBg": "rgba(0, 0, 0, 0)",
+      "fg": "rgb(228, 230, 236)",
+      "surfaces": [
+        "rgba(0, 0, 0, 0)",
+        "rgba(0, 0, 0, 0)",
+        "rgba(0, 0, 0, 0)",
+        "rgba(0, 0, 0, 0)",
+        "rgb(15, 18, 24)",
+        "rgb(26, 30, 38)",
+        "rgb(26, 30, 38)",
+        "rgb(26, 30, 38)"
+      ]
+    },
+    "changed": true
+  },
+  "/briut": {
+    "hasDarkRules": true,
+    "darkRuleSample": [
+      {
+        "sel": ".dark",
+        "decl": "--bg: #0E1519; --surface: #161F25; --surface-alt: #1D272E; --border: #2A363E; --text: #E3E9ED; --text-muted: #A0AEB7; --text-faint: #7B8B95; --primary: #35C6D3;"
+      }
+    ],
+    "sheetsUnreadable": 1,
+    "before": {
+      "effectiveBg": "rgb(246, 248, 249)",
+      "bodyImage": "",
+      "bodyBg": "rgb(246, 248, 249)",
+      "htmlBg": "rgba(0, 0, 0, 0)",
+      "fg": "rgb(22, 35, 43)",
+      "surfaces": [
+        "rgba(255, 255, 255, 0.9)",
+        "rgba(0, 0, 0, 0)",
+        "rgba(0, 0, 0, 0)",
+        "rgba(0, 0, 0, 0)",
+        "rgba(0, 0, 0, 0)",
+        "rgb(255, 255, 255)",
+        "rgb(255, 255, 255)",
+        "rgb(255, 255, 255)"
+      ]
+    },
+    "after": {
+      "effectiveBg": "rgb(14, 21, 25)",
+      "bodyImage": "",
+      "bodyBg": "rgb(14, 21, 25)",
+      "htmlBg": "rgba(0, 0, 0, 0)",
+      "fg": "rgb(227, 233, 237)",
+      "surfaces": [
+        "rgba(14, 21, 25, 0.9)",
+        "rgba(0, 0, 0, 0)",
+        "rgba(0, 0, 0, 0)",
+        "rgba(0, 0, 0, 0)",
+        "rgba(0, 0, 0, 0)",
+        "rgb(22, 31, 37)",
+        "rgb(22, 31, 37)",
+        "rgb(22, 31, 37)"
+      ]
+    },
+    "changed": true
+  },
+  "/bkalot": {
+    "hasDarkRules": true,
+    "darkRuleSample": [
+      {
+        "sel": ":root.dark",
+        "decl": "--bg: #12130F; --surface: #1B1C18; --surface-2: #232420; --text: #E9E7E0; --muted: #A5A29A; --faint: #7A776F; --border: #2E2F2A; --teal: #4FB3C0; --teal-d: #7FC"
+      },
+      {
+        "sel": ":root.dark .hero",
+        "decl": "background: linear-gradient(160deg, rgb(23, 24, 20) 0%, rgb(18, 25, 26) 100%);"
+      },
+      {
+        "sel": ":root.dark .qfield input[type=\"text\"], :root.dark .qfield input[type=\"number\"], :root.dark",
+        "decl": "background: var(--surface); color: var(--text);"
+      },
+      {
+        "sel": ":root.dark .modal-box, :root.dark .lead-box",
+        "decl": "background: var(--surface); color: var(--text);"
+      },
+      {
+        "sel": ":root.dark .wage-notes",
+        "decl": "background: rgb(42, 36, 21); border-color: rgb(74, 63, 30);"
+      },
+      {
+        "sel": ":root.dark .switch .track::after",
+        "decl": "background: rgb(233, 231, 224);"
+      }
+    ],
+    "sheetsUnreadable": 2,
+    "before": {
+      "effectiveBg": "rgb(247, 246, 242)",
+      "bodyImage": "",
+      "bodyBg": "rgb(247, 246, 242)",
+      "htmlBg": "rgba(0, 0, 0, 0)",
+      "fg": "rgb(35, 33, 28)",
+      "surfaces": [
+        "rgba(247, 246, 242, 0.9)",
+        "rgba(0, 0, 0, 0)",
+        "rgba(0, 0, 0, 0)",
+        "rgba(0, 0, 0, 0)",
+        "rgb(255, 255, 255)",
+        "rgb(247, 246, 242)",
+        "rgb(247, 246, 242)",
+        "rgb(247, 246, 242)"
+      ]
+    },
+    "after": {
+      "effectiveBg": "rgb(18, 19, 15)",
+      "bodyImage": "",
+      "bodyBg": "rgb(18, 19, 15)",
+      "htmlBg": "rgba(0, 0, 0, 0)",
+      "fg": "rgb(233, 231, 224)",
+      "surfaces": [
+        "rgba(18, 19, 15, 0.9)",
+        "rgba(0, 0, 0, 0)",
+        "rgba(0, 0, 0, 0)",
+        "rgba(0, 0, 0, 0)",
+        "rgb(27, 28, 24)",
+        "rgb(18, 19, 15)",
+        "rgb(18, 19, 15)",
+        "rgb(18, 19, 15)"
+      ]
+    },
+    "changed": true
+  },
+  "/kiosk/": {
+    "hasDarkRules": true,
+    "darkRuleSample": [
+      {
+        "sel": ":root.dark",
+        "decl": "--ink: #e6ebf4; --muted: #9aa8bf; --line: #23304a; --bg: #0b1220; --card: #131c2e; --shadow: 0 10px 30px rgba(0, 0, 0, 0.5);"
+      },
+      {
+        "sel": ":root.dark .auth-card, :root.dark .modal",
+        "decl": "background: var(--card);"
+      },
+      {
+        "sel": ":root.dark .field input:focus, :root.dark .field select:focus",
+        "decl": "background: var(--card);"
+      },
+      {
+        "sel": ":root.dark .hl-empty",
+        "decl": "background: rgb(46, 37, 16); border-color: rgb(92, 74, 21);"
+      }
+    ],
+    "sheetsUnreadable": 1,
+    "before": {
+      "effectiveBg": "rgb(245, 247, 251)",
+      "bodyImage": "",
+      "bodyBg": "rgb(245, 247, 251)",
+      "htmlBg": "rgba(0, 0, 0, 0)",
+      "fg": "rgb(11, 18, 32)",
+      "surfaces": [
+        "rgba(7, 26, 51, 0.85)",
+        "rgba(0, 0, 0, 0)",
+        "rgba(0, 0, 0, 0)",
+        "rgb(7, 26, 51)",
+        "rgba(0, 0, 0, 0)",
+        "rgb(255, 255, 255)",
+        "rgba(0, 0, 0, 0)",
+        "rgb(255, 255, 255)"
+      ]
+    },
+    "after": {
+      "effectiveBg": "rgb(11, 18, 32)",
+      "bodyImage": "",
+      "bodyBg": "rgb(11, 18, 32)",
+      "htmlBg": "rgba(0, 0, 0, 0)",
+      "fg": "rgb(230, 235, 244)",
+      "surfaces": [
+        "rgba(7, 26, 51, 0.85)",
+        "rgba(0, 0, 0, 0)",
+        "rgba(0, 0, 0, 0)",
+        "rgb(7, 26, 51)",
+        "rgba(0, 0, 0, 0)",
+        "rgb(255, 255, 255)",
+        "rgba(0, 0, 0, 0)",
+        "rgb(255, 255, 255)"
+      ]
+    },
+    "changed": true
+  }
+}

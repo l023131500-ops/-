@@ -1,0 +1,277 @@
+{
+  "ran": "scripts/qa/credits-coverage.mjs",
+  "source": "portal/api/credits.ts",
+  "snapshot": "QA/platform/credits-coverage-0807/_secrets-services.json",
+  "specs": [
+    {
+      "key": "apify",
+      "env": "APIFY_TOKEN",
+      "alsoNeeds": [],
+      "covers": [],
+      "keyless": false,
+      "hasCheck": true
+    },
+    {
+      "key": "recraft",
+      "env": "RECRAFT_API_KEY",
+      "alsoNeeds": [],
+      "covers": [],
+      "keyless": false,
+      "hasCheck": true
+    },
+    {
+      "key": "elevenlabs",
+      "env": "ELEVENLABS_API_KEY",
+      "alsoNeeds": [],
+      "covers": [],
+      "keyless": false,
+      "hasCheck": true
+    },
+    {
+      "key": "openai",
+      "env": "OPENAI_API_KEY",
+      "alsoNeeds": [],
+      "covers": [],
+      "keyless": false,
+      "hasCheck": true
+    },
+    {
+      "key": "anthropic",
+      "env": "ANTHROPIC_API_KEY",
+      "alsoNeeds": [],
+      "covers": [],
+      "keyless": false,
+      "hasCheck": true
+    },
+    {
+      "key": "gemini",
+      "env": "GEMINI_API_KEY",
+      "alsoNeeds": [],
+      "covers": [],
+      "keyless": false,
+      "hasCheck": true
+    },
+    {
+      "key": "maps",
+      "env": "GOOGLE_MAPS_API_KEY",
+      "alsoNeeds": [],
+      "covers": [],
+      "keyless": false,
+      "hasCheck": true
+    },
+    {
+      "key": "google-oauth",
+      "env": "GOOGLE_OAUTH_CLIENT_ID",
+      "alsoNeeds": [
+        "GOOGLE_OAUTH_CLIENT_SECRET"
+      ],
+      "covers": [],
+      "keyless": false,
+      "hasCheck": true
+    },
+    {
+      "key": "gov-il",
+      "env": "DATAGOV_POLLING_STATIONS",
+      "alsoNeeds": [
+        "DATAGOV_ELECTIONS_BALLOTS",
+        "DATAGOV_ELECTIONS_CITIES",
+        "DATAGOV_TRANSPORT_RESOURCE",
+        "CBS_HOUSING_INDEX_ID",
+        "XPLAN_BASE"
+      ],
+      "covers": [],
+      "keyless": true,
+      "hasCheck": true
+    },
+    {
+      "key": "resend",
+      "env": "RESEND_API_KEY",
+      "alsoNeeds": [],
+      "covers": [],
+      "keyless": false,
+      "hasCheck": true
+    },
+    {
+      "key": "nedarim",
+      "env": "NEDARIM_MOSAD_ID",
+      "alsoNeeds": [],
+      "covers": [],
+      "keyless": false,
+      "hasCheck": false
+    },
+    {
+      "key": "nedarim-platform",
+      "env": "PLATFORM_NEDARIM_MOSAD",
+      "alsoNeeds": [
+        "PLATFORM_NEDARIM_API_VALID"
+      ],
+      "covers": [],
+      "keyless": false,
+      "hasCheck": false
+    },
+    {
+      "key": "greeninvoice",
+      "env": "GREENINVOICE_API_KEY",
+      "alsoNeeds": [
+        "GREENINVOICE_API_SECRET"
+      ],
+      "covers": [
+        "invoicing"
+      ],
+      "keyless": false,
+      "hasCheck": false
+    },
+    {
+      "key": "yemot",
+      "env": "YEMOT_TOKEN",
+      "alsoNeeds": [],
+      "covers": [],
+      "keyless": false,
+      "hasCheck": false
+    },
+    {
+      "key": "runpod",
+      "env": "RUNPOD_API_KEY",
+      "alsoNeeds": [],
+      "covers": [],
+      "keyless": false,
+      "hasCheck": false
+    },
+    {
+      "key": "vercel",
+      "env": "VERCEL_TOKEN",
+      "alsoNeeds": [],
+      "covers": [],
+      "keyless": false,
+      "hasCheck": true
+    },
+    {
+      "key": "supabase",
+      "env": "SUPABASE_ACCESS_TOKEN",
+      "alsoNeeds": [],
+      "covers": [
+        "supabase",
+        "supabase-management"
+      ],
+      "keyless": false,
+      "hasCheck": true
+    }
+  ],
+  "summary": {
+    "pass": 7,
+    "fail": 0,
+    "skip": 0
+  },
+  "checks": [
+    {
+      "check": "כל שורה במסך מצהירה env, שימוש ויעד להוספה",
+      "result": "pass",
+      "detail": ""
+    },
+    {
+      "check": "coverage:anthropic",
+      "result": "pass",
+      "detail": "מכוסה על ידי anthropic"
+    },
+    {
+      "check": "coverage:apify",
+      "result": "pass",
+      "detail": "מכוסה על ידי apify"
+    },
+    {
+      "check": "coverage:google-ai",
+      "result": "pass",
+      "detail": "מכוסה על ידי gemini"
+    },
+    {
+      "check": "coverage:google-maps",
+      "result": "pass",
+      "detail": "מכוסה על ידי maps"
+    },
+    {
+      "check": "coverage:google-oauth",
+      "result": "pass",
+      "detail": "מכוסה על ידי google-oauth"
+    },
+    {
+      "check": "coverage:gov-il",
+      "result": "pass",
+      "detail": "מכוסה על ידי gov-il"
+    },
+    {
+      "check": "coverage:invoicing",
+      "result": "pass",
+      "detail": "מכוסה על ידי greeninvoice"
+    },
+    {
+      "check": "coverage:nedarim",
+      "result": "pass",
+      "detail": "מכוסה על ידי nedarim"
+    },
+    {
+      "check": "coverage:nedarim-plus",
+      "result": "pass",
+      "detail": "מכוסה על ידי nedarim-platform"
+    },
+    {
+      "check": "coverage:openai",
+      "result": "pass",
+      "detail": "מכוסה על ידי openai"
+    },
+    {
+      "check": "coverage:recraft",
+      "result": "pass",
+      "detail": "מכוסה על ידי recraft"
+    },
+    {
+      "check": "coverage:resend",
+      "result": "pass",
+      "detail": "מכוסה על ידי resend"
+    },
+    {
+      "check": "coverage:supabase",
+      "result": "pass",
+      "detail": "מכוסה על ידי supabase"
+    },
+    {
+      "check": "coverage:supabase-management",
+      "result": "pass",
+      "detail": "מכוסה על ידי supabase"
+    },
+    {
+      "check": "כל שירות בכספת מקבל שורה במסך (14 שירותים)",
+      "result": "pass",
+      "detail": ""
+    },
+    {
+      "check": "אין הצהרת covers על שירות שאינו בכספת",
+      "result": "pass",
+      "detail": ""
+    },
+    {
+      "check": "Google OAuth — הזוג האמיתי מתקבל (400 invalid_grant)",
+      "result": "pass",
+      "detail": "400 invalid_grant"
+    },
+    {
+      "check": "Google OAuth — סוד שגוי נדחה (401 invalid_client)",
+      "result": "pass",
+      "detail": "401 invalid_client"
+    },
+    {
+      "check": "data.gov.il — מאגר הקלפיות עונה ומחזיר ספירה",
+      "result": "pass",
+      "detail": "total=10148"
+    },
+    {
+      "check": "data.gov.il — נפילה לספירת הקטלוג עובדת בלי מזהה",
+      "result": "pass",
+      "detail": "count=1198"
+    },
+    {
+      "check": "data.gov.il — status_show",
+      "result": "note",
+      "detail": "HTTP 403 — חסום, ומכאן הבחירה ב-package_search"
+    }
+  ]
+}

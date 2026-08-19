@@ -1,0 +1,34 @@
+mechiron admin-entry-resolves recheck — 17/08/2026
+
+Source claim (SYSTEMS_STATUS.md, "נהל מערכת זו" section, admin-entry-resolves.mjs
+table): mechiron is the one `same_render_no_gate` row — /mechiron/admin renders
+the exact same bytes as /mechiron/, and nobody is asked to authenticate. Tied to
+core.issues #94 / NEEDS_USER.md §0מ (open product decision, not a code bug).
+
+Rechecked live against production with a cache-buster (anonymous, no code change,
+no deploy):
+
+  GET https://more30.com/mechiron/?cachebust=0817gate1       -> 200, 34415 bytes
+  GET https://more30.com/mechiron/admin?cachebust=0817gate2  -> 200, 34415 bytes
+  content identical byte-for-byte: true
+  admin body contains "סיסמה" / "התחברות" / "password": false (no login gate)
+  <title>: "מאגר בקלות — כלי פנימי לצוות" (bkalot internal-tool page, not mechiron)
+
+Finding still accurate today. Not stale.
+
+Byte count changed since the original 07/08 measurement (31,585 -> 34,415, both
+root and admin). Diff matches the dark-mode boot script + comment block added to
+apps/27-bkalut-price today as part of the "04 imud · 27 mechiron dark mode"
+anti-drift recheck (unrelated commit, already logged elsewhere in
+SYSTEMS_STATUS.md) — confirmed by inspecting the fetched HTML <head>, which now
+contains the DESIGN_STANDARD §3 dark-mode IIFE comment block. Not a new
+regression, just size drift from already-logged work.
+
+No fix attempted here: apps/27-bkalut-price's own CLAUDE.md states it deploys to
+/var/www/bkalut-app/, which is on the protected list (bkalut-app). The actual
+open item is a product decision (build the real price-comparison tool / re-label
+what's really being served / retire #27), already correctly recorded at
+core.issues #94 and NEEDS_USER.md §0מ. This recheck only confirms the
+already-open finding is still true and updates the byte count; it does not close
+anything and does not require a new NEEDS_USER entry (the existing #0מ already
+covers it).

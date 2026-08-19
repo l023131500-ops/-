@@ -1,0 +1,141 @@
+{
+  "brick": "wildcard-search-0094-0816",
+  "migration": "0094_a_typed_character_in_the_search_box_is_a_wildcard",
+  "applied_to": "uhnrgujbdxhhmoxcjria",
+  "layer": "priority §5ב — שכפול בקלות שכבה 3 (קורא רשימת העבודה)",
+  "line_taken_from": "0093 / heartbeat 640, ונרשם שוב ב-641 וב-642 מילה במילה: «v_q נכנס ל-ilike בלי escape, ולכן % ו-_ במונח החיפוש הם תווי הצבה ולא תווים»",
+
+  "what_changed": "public.bkalot_clone_admin_cases בלבד — הימלטות של מונח החיפוש (v_q_like) ו-escape מפורש על שלוש השוואות ה-ilike, בשתי השאילתות",
+  "what_did_not_change": [
+    "bkalot_clone_intake",
+    "bkalot_clone_admin_case",
+    "bkalot_clone_admin_set_status",
+    "bkalot_clone_admin_document",
+    "bkalot_clone_render",
+    "bkalot_clone_queue",
+    "bkalot_clone_dispatch",
+    "supabase/functions/bkalot-clone-admin (נשארת v8)",
+    "supabase/functions/bkalot-clone-intake (נשארת v1)",
+    "apps/37-bkalot-clone/admin.html",
+    "apps/37-bkalot-clone/index.html"
+  ],
+
+  "seed": {
+    "how": "שתי פניות נקלטו דרך הכתובת החיה של bkalot-clone-intake מעל HTTP עם מפתח anon, בדיוק כמו מהטופס",
+    "endpoint": "https://uhnrgujbdxhhmoxcjria.supabase.co/functions/v1/bkalot-clone-intake",
+    "cases": [
+      { "case_id": 274, "contact_id": 281, "kind": "info", "full_name": "ישראל כהן",  "phone_stored": "0501110001", "email": "axb@example.co.il", "queued": false, "rights_linked": 0 },
+      { "case_id": 275, "contact_id": 282, "kind": "info", "full_name": "ישראלה לוי", "phone_stored": "0502220002", "email": "a_b@example.co.il", "queued": false, "rights_linked": 0 }
+    ],
+    "why_these_two": "שני הדוא\"לים נבדלים בתו אחד בלבד — axb מול a_b — ולכן הם מודדים בדיוק את הכשל: הקו התחתון של האחד הוא תו הצבה שתופס את השני. שני השמות חולקים תחילית ('ישראל'), ולכן חיפוש שם רגיל הוא בקרה שמחזירה שתיים לפני ואחרי."
+  },
+
+  "measured": {
+    "how": "public.bkalot_clone_admin_cases נקראה ב-SQL. הנתיב החי /cases מעביר את הגוף אל אותה פונקציה בלי לגעת בו — supabase/functions/bkalot-clone-admin/index.ts:278 קורא rpc(\"bkalot_clone_admin_cases\", { p: payload }) — ולכן ההפרש בין המדידה כאן לנתיב החי הוא התעבורה בלבד. נאמר ולא נעקף: לא נמדד כאן מהדפדפן, ולא נפרס פורטל.",
+    "same_cases_before_and_after": true,
+    "why_same_cases_are_legitimate": "הפונקציה קריאה בלבד — אין בה INSERT/UPDATE/DELETE — ולכן אותן שתי פניות שימשו לשתי המדידות",
+
+    "terms": [
+      { "label": "exact-email-with-underscore", "q": "a_b@example.co.il", "before_total": 2, "before_ids": [274,275], "after_total": 1, "after_ids": [275], "class": "FIX",
+        "why": "הכשל עצמו — הדוא\"ל המדויק של אדם אחד החזיר את הפנייה של אדם אחר לצידה" },
+      { "label": "wildcard-percent",            "q": "%",                 "before_total": 2, "before_ids": [274,275], "after_total": 0, "after_ids": [], "class": "FIX" },
+      { "label": "wildcard-underscore-name",    "q": "ישרא_",             "before_total": 2, "before_ids": [274,275], "after_total": 0, "after_ids": [], "class": "FIX" },
+      { "label": "percent-inside-name",         "q": "ישראל%כהן",         "before_total": 1, "before_ids": [274],     "after_total": 0, "after_ids": [], "class": "FIX" },
+      { "label": "underscore-in-phone",         "q": "050_110001",        "before_total": 1, "before_ids": [274],     "after_total": 0, "after_ids": [], "after_q_phone": "050110001", "class": "FIX" },
+      { "label": "backslash-term",              "q": "ישראל\\כהן",        "before_total": null, "after_total": 0, "after_ids": [], "class": "NEW",
+        "why": "לא נמדד לפני — נוסף אחרי כדי למדוד את הכרעה (2), שהלוכסן עצמו ממולט ואינו שובר את המונח" },
+
+      { "label": "ctl-name-plain",   "q": "ישראל",             "before_total": 2, "after_total": 2, "after_ids": [274,275], "class": "OLD" },
+      { "label": "ctl-phone-stored", "q": "0501110001",        "before_total": 1, "after_total": 1, "after_ids": [274], "class": "OLD" },
+      { "label": "ctl-phone-dashes", "q": "050-111-0001",      "before_total": 1, "after_total": 1, "after_ids": [274], "after_q_phone": "0501110001", "class": "OLD",
+        "why": "בקרת 0093 — נתיב הטלפון לא נשבר מההימלטות" },
+      { "label": "ctl-email-plain",  "q": "axb@example.co.il", "before_total": 1, "after_total": 1, "after_ids": [274], "class": "OLD" },
+      { "label": "ctl-case-id",      "q": "274",               "before_total": 1, "after_total": 1, "after_ids": [274], "class": "OLD" },
+      { "label": "ctl-miss",         "q": "zzzz",              "before_total": 0, "after_total": 0, "after_ids": [], "class": "OLD" }
+    ],
+
+    "total_equals_rows_on_every_term": true,
+    "note_on_total_equals_rows": "הכרעה (3) נמדדה ולא הונחה — בכל שנים-עשר המונחים jsonb_array_length(cases) שווה ל-total, כלומר ההימלטות נכנסה גם ל-count וגם ל-rows",
+
+    "gates_unchanged": {
+      "status_unknown": "status_unknown",
+      "kind_unknown": "kind_unknown",
+      "decided_unknown": "decided_unknown",
+      "sort_unknown": "sort_unknown"
+    },
+    "combos": {
+      "q=% + status=new":   0,
+      "q=% + kind=info":    0,
+      "q=ישרא_ + sort=decided_at": 0,
+      "no_filter_total": 2,
+      "no_filter_rows": 2,
+      "why": "ההימלטות יושבת בתוך סוגריי ה-q ואינה יוצאת מהם; נתיב «בלי חיפוש» לא נגע"
+    },
+    "response_keys": ["cases","limit","offset","ok","q_phone","total"],
+    "response_keys_note": "שישה כמו קודם — הכרעה (7): אין מפתח חדש, המונח פשוט מתחיל להיות מה שהוא",
+    "escape_clauses_in_body": 6,
+    "acl_after": { "anon": false, "authenticated": false, "service_role": true }
+  },
+
+  "corrections_during_the_run": [
+    {
+      "what": "ההערה של הכרעה (5) בכותרת המיגרציה אמרה בניסוחה הראשון ש-'050_110001' ימשיך למצוא את #274 דרך ענף הטלפון של 0093.",
+      "measured": "המדידה אחרי המיגרציה החזירה total 0 עם q_phone='050110001'. הענף אכן רץ, אבל '050110001' אינו תת-מחרוזת של '0501110001' השמור, ולכן אינו מתאים. לפני המיגרציה השורה נמצאה דרך ה-ilike הלא-ממולט בלבד.",
+      "fixed": "ההערה תוקנה בקובץ, והקובץ הוחל מחדש ממנו עצמו דרך Management API (‏/database/query).",
+      "residue": "⚠️ שורת ה-ledger של 0094 ב-supabase_migrations.schema_migrations (version 20260816045818) נכתבה לפני התיקון ומחזיקה את הניסוח השגוי. יש שורה אחת בלבד ולא שתיים. הקובץ ב-git והפונקציה החיה מחזיקים את הניסוח המתוקן.",
+      "why_the_function_body_was_never_wrong": "בלוק ההכרעות יושב בכותרת המיגרציה, מחוץ ל-$function$, ולכן מעולם לא היה חלק מ-pg_get_functiondef. ההחלה מחדש זהה בקוד הרץ ובהערות הפנימיות — נמדד: 0 מופעים של הניסוח הישן ו-6 סעיפי escape בגוף."
+    }
+  ],
+
+  "test_mode": {
+    "measured_not_declared": true,
+    "queued_on_both_intakes": false,
+    "documents": 0,
+    "outbound_queue": 8,
+    "outbound_queue_sent_at_rows": 0,
+    "delivery_log": 3,
+    "cases_in_sent": 0,
+    "outgoing_calls": 0,
+    "note": "הפונקציה שהשתנתה היא קריאה בלבד; שתי הקליטות הן שתי הכתיבות היחידות בריצה, ושתיהן התגלגלו אחורה"
+  },
+
+  "rollback": {
+    "how": "בפקודות נפרדות לפי טבלה — תקלת cte-delete-sees-prestatement-snapshot; ואנשי הקשר לפי id ולא לפי טלפון מנורמל — תקלת ac6e523",
+    "deleted": { "case_status_log": 0, "case_rights": 0, "cases": 2, "contacts": 2 },
+    "after": {
+      "cases": 0, "case_status_log": 0, "case_rights": 0, "documents": 0,
+      "admin_users": 1, "admin_sessions": 5, "templates": 2,
+      "contacts": 4, "outbound_queue": 8, "delivery_log": 3, "rights_catalog": 888
+    },
+    "baseline_exact": true
+  },
+
+  "protected": {
+    "untouched": ["apps/08-bkalut-app", "apps/09-bkalot-admin", "bkalut-app", "bkalot-admin", "zr_*", "NEDARIM3873", "csj", "csj_src", "igud"],
+    "git_add": "נתיבים מפורשים ולא נקודה"
+  },
+
+  "open": {
+    "closed_by_this_brick": "נתיב החיפוש של רשימת העבודה סגור עכשיו על שני צדדיו — הטלפון (0093 + 02fc51c + 2346adb) והתחביר (כאן). מונח שהוקלד בתיבה מתאר את עצמו.",
+    "next": "⚠️ לא נמדד מהדפדפן ולא נפרס פורטל — ואינו נדרש: השינוי הוא בפונקציה במסד, שהנתיב החי כבר קורא, ואין בו שינוי במסך. זו הסיבה שאין כאן לבנת פריסה בהמשך, בשונה מ-0093 → 02fc51c → 2346adb.",
+    "not_built": [
+      "אין אינדקס על ct.phone — like בשני הצדדים אינו יכול להשתמש באינדקס רגיל, ובהיקף הנוכחי זו החלטה ולא הזנחה",
+      "אין נרמול בכיוון ההפוך",
+      "אין חיפוש בטקסט הנימוקים ואין סינון «יש נימוק / אין»",
+      "אין סינון ואין מיון לפי מספר מעברים",
+      "אין status_last_change_at",
+      "אין שמות ברשימה",
+      "אין חובת נימוק על rejected",
+      "אין עריכה ואין מחיקה ביומן",
+      "אין backfill"
+    ],
+    "lines_that_continue_untouched": [
+      "טעינה מחדש של הכתובת בייצור מנתקת את הסשן — הכרעה מוצהרת ב-admin.html:296 ולא תקלה",
+      "הקליטה מחברת זכויות ל-treatment ואפס ל-info/reminder על אותו situation — הכרעה מוצהרת ב-intake (v_dropped)",
+      "sent בלתי-ניתן-להשגה בכוונה",
+      "bkalot_clone_admin_create אינה חשופה ב-HTTP ונקראת ב-SQL בארגומנט jsonb יחיד",
+      "pdf/audio → channel_unsupported",
+      "public_visible ו-show_in_showcase של #37 נשארים false"
+    ]
+  }
+}

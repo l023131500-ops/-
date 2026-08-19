@@ -1,0 +1,49 @@
+01 torah: the payment endpoint that lets a stranger mark someone else's order paid (#196)
+
+The four deployed functions on project bieebmnmkffwbqlsfozh that no sweep had
+ever measured: admin-users, nedarim-admin, nedarim-create-payment,
+nedarim-webhook. All four already had typed source in the repo — unlike #195,
+the gap here was not source control, it was that nobody had asked the gate a
+question. Read the deployed bundles anyway and diffed them against what is
+committed.
+
+admin-users (verify_jwt=false) is clean, and it is clean in the exact way
+create-admin was not. It requires an Authorization header, resolves it with
+admin.auth.getUser(token), then requires super_admin or tenant_admin in
+user_roles before reading the body. Measured: no headers gives 401 "אין הרשאה";
+the project anon key as bearer gives 401 "טוקן לא תקף". The anon key is a valid
+JWT but not a user token, which is the distinction #194 was missing.
+nedarim-admin has the same shape.
+
+nedarim-create-payment does not. verify_jwt=false, service_role, and no reader
+check of any kind — no Authorization, no apikey, no shared secret. POST {} with
+no headers returns its own 400 "missing required fields", so the handler runs.
+tenant_id is not a secret either: GET /rest/v1/tenants with the anon key that
+ships in every browser returns 200 with every tenant id. All three
+nedarim_configs rows carry mosad_id and api_valid, so the terminal is live.
+
+The body carries a caller-chosen donation_id/order_id, and two things follow.
+It updates that row's payment_method/payment_meta with service_role without
+checking who owns it. And the nedarim_transactions row it writes binds a fresh
+our_payment_id to that same donation_id/order_id — which is what
+nedarim-webhook matches an incoming IPN on (Param2) before setting
+payment_status='captured' / status='paid'. So a stranger can bind a 1 shekel
+payment of their own to someone else's real order, pay it through the
+legitimate Nedarim terminal, and have the real callback mark that order paid.
+
+Deliberately not fixed in this step, and not for lack of a patch. This is a
+live money path on three real tenants, and the right gate depends on something
+I cannot measure from here: whether the browser calls it with a logged-in
+user's token or anonymously from a public donation page. The wrong choice
+breaks donations instead of protecting them. Written up as core.issues #196 and
+NEEDS_USER §0יב with the two candidate fixes and the one question that picks
+between them.
+
+No request carrying a real tenant_id was ever sent — it would have written a
+pending row to the live payments table and overwritten payment_meta on an
+existing row. The finding rests on the deployed bundle plus four read-only
+probes. Nothing was deployed in this step.
+
+Test mode only: no charge, no message sent, no AI credit spent. Untouched: 08,
+09, bkalut-app, bkalot-admin, zr_* (zr-loader and zr-admin-api share this
+project and were not read, written or redeployed), NEDARIM3873.

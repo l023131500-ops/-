@@ -1,0 +1,34 @@
+﻿{
+  "a": {
+    "status": 200,
+    "case_id": 105,
+    "body": {
+      "ok": true,
+      "kind": "treatment",
+      "phone": "0501230092",
+      "queued": false,
+      "case_id": 105,
+      "dropped": [],
+      "situation": "single_parent",
+      "contact_id": 111,
+      "rights_linked": 42,
+      "rights_unknown": []
+    }
+  },
+  "b": {
+    "status": 200,
+    "case_id": 106,
+    "body": {
+      "ok": true,
+      "kind": "info",
+      "phone": "0501230093",
+      "queued": false,
+      "case_id": 106,
+      "dropped": [],
+      "situation": null,
+      "contact_id": 112,
+      "rights_linked": 0,
+      "rights_unknown": []
+    }
+  }
+}

@@ -1,0 +1,126 @@
+{
+  "brick": "0088 — מסך הפנייה אינו יכול לשאול מה קרה לפני ההכרעה האחרונה",
+  "scope": "מיגרציה בלבד: bkalot_clone_admin_case. אין שינוי סכמה, אין כתיבה, אין שינוי קוד ב-apps/37, אין פריסת edge function, אין פריסת פורטל.",
+
+  "migration": {
+    "file": "supabase/migrations/0088_the_case_screen_cannot_ask_what_happened_before.sql",
+    "file_bytes": 13195,
+    "file_md5": "5C69364BE8CDAA1D1FE0E0B02EB4C75C",
+    "applied_version": "20260816002804",
+    "applied_once": true,
+    "verified_in_pg_proc": {
+      "overloads": 1,
+      "body_has_status_history": true,
+      "body_has_internal_comment": true,
+      "note": "שלא כמו 0085, די היה בהחלה אחת: pg_proc נמדד אחרי ומכיל את ההערה הפנימית «hau ולא au ולא pau», כלומר הפונקציה שבמסד היא זו שבקובץ ולא וריאנט שלה. הטקסט השמור ב-supabase_migrations הוא אותה הגדרה עם כותרת מקוצרת שמפנה לקובץ; ההפרש מוצהר ולא נבלע."
+    }
+  },
+
+  "baseline_before": {
+    "cases": 0, "case_rights": 0, "case_status_log": 0, "documents": 0,
+    "contacts": 4, "admin_users": 1, "admin_sessions": 5, "templates": 2,
+    "outbound_queue": 8, "delivery_log": 3, "catalog": 888,
+    "queue_fingerprint": "f456823b99d500895093d168012a78ad"
+  },
+
+  "before": {
+    "case_id": 224,
+    "what_happened": "שלושה מעברים אמיתיים דרך נתיב set-status שמאחורי השער — new→in_progress (מנהל 78), in_progress→closed (79), closed→rejected (79) — ובנוסף קריאה חוזרת אחת שהחזירה changed=false. היומן קלט אותם: log_id 6, null, 7, 8.",
+    "what_the_case_screen_returned": {
+      "top_keys": ["admin", "case", "documents", "ok", "rights", "templates"],
+      "has_status_history_top": false,
+      "has_status_history_in_case": false,
+      "case_keys_count": 17,
+      "decided_by": 79,
+      "decided_by_name": "QA 0090 מכריע שיימחק"
+    },
+    "measured": "היומן החזיק את שלושת המעברים והמסך לא ידע לשאול עליהם — לא כמערך ריק אלא כהיעדר גמור של המפתח, בשתי הרמות. מנהל שפתח את הפנייה ראה את מי שדחה אותה, ולא את מנהל 78 שלקח אותה. זה בדיוק ההפרש בין נתון ששמור לבין נתון שניתן לשאול עליו, והוא מה שהמיגרציה קונה."
+  },
+
+  "after": {
+    "case_id": 225,
+    "same_four_calls": true,
+    "top_keys": ["admin", "case", "documents", "ok", "rights", "status_history", "templates"],
+    "has_status_history_top": true,
+    "has_status_history_in_case": false,
+    "case_keys_count": 17,
+    "history_count": 3,
+    "history": [
+      { "id": 9,  "from_status": "new",         "to_status": "in_progress", "admin_id": 78, "admin_name": "QA 0090 מכריע ראשון",  "at": "2026-08-16T00:28:24.191858+00:00" },
+      { "id": 10, "from_status": "in_progress", "to_status": "closed",      "admin_id": 79, "admin_name": "QA 0090 מכריע שיימחק", "at": "2026-08-16T00:28:25.635507+00:00" },
+      { "id": 11, "from_status": "closed",      "to_status": "rejected",    "admin_id": 79, "admin_name": "QA 0090 מכריע שיימחק", "at": "2026-08-16T00:28:26.354403+00:00" }
+    ],
+    "chain_reads": "new->in_progress#78/QA 0090 מכריע ראשון | in_progress->closed#79/QA 0090 מכריע שיימחק | closed->rejected#79/QA 0090 מכריע שיימחק",
+    "chain_is_continuous": true,
+    "decision_1_case_block_untouched": "case_keys_count נשאר 17 בדיוק, לפני ואחרי, ו-has_status_history_in_case נשאר false — הבלוק הוא top-level ולא שדה בתוך case. שאר הבלוקים לא זזו: rights 42, documents 0, templates 2 בשתי הריצות.",
+    "decision_5_ids_are_not_a_counter": "ids 9, 10, 11 — ולא 1, 2, 3. היומן גלובלי ולא לכל פנייה, ובנוסף 0087 שרפה את 4 ו-5 בשתי הכנסות שנדחו. לקוח שיסיק ממספרי השורות «כמה הכרעות היו» יטעה, וזו הסיבה ש-id חוזר כמפתח ולא כמונה.",
+    "decision_6_no_row_when_nothing_changed": "ארבע קריאות, אחת מהן חוזרת — שלוש שורות בהיסטוריה ולא ארבע. ההיסטוריה מונה מעברים ולא קליקים; log_id של הקריאה החוזרת חזר null בשתי הריצות.",
+    "at_vs_cases_decided_at": {
+      "row_11_last": true,
+      "rows_9_10": false,
+      "reading": "רק השורה האחרונה שווה ל-cases.decided_at, וזה הצפוי: השורה מחזיקה את ההכרעה האחרונה והיומן את כולן. אילו שלושתן היו שוות, היה זה סימן שההיסטוריה נקראת מהשורה ולא מהיומן."
+    }
+  },
+
+  "decision_3_left_join": {
+    "how": "חשבון 79 נמחק בפקודה שלה על admin_users עצמה, ולא UPDATE ידני על היומן.",
+    "admin_79_rows_after": 0,
+    "log_rows_still": 3,
+    "rows_carrying_79": 2,
+    "reread_history_count": 3,
+    "reread_chain": "new->in_progress#78/QA 0090 מכריע ראשון | in_progress->closed#79/- | closed->rejected#79/-",
+    "reread_chain_is_continuous": true,
+    "case_decided_by_name_after": null,
+    "measured": "שלוש השורות חזרו מהקורא גם אחרי המחיקה: admin_id 79 נשמר, admin_name התרוקן, והרצף נשאר משפט שלם. INNER JOIN היה מחזיר כאן שורה אחת מתוך שלוש — כלומר מוחק מההיסטוריה את הדחייה עצמה מפני שהעובד שדחה עזב, ומשאיר רצף קטוע שנראה תקין. זו הכרעה (3), והיא נמדדה ולא הונחה. באותה קריאה decided_by_name של הפנייה התרוקן אף הוא בעוד decided_by נשאר 79 — אותה הבחנה, שתי רמות."
+  },
+
+  "regression": {
+    "case_block": "17 מפתחות לפני ו-17 אחרי, אותם שמות ואותם ערכים; decided_by/decided_at/decided_by_name לא זזו.",
+    "other_blocks": "rights 42, documents 0, templates 2 — זהים בשתי הריצות.",
+    "gates": {
+      "empty_id": "case_not_found עם case_id=0 — זהה לפני ואחרי",
+      "unknown_id_9999999999": "case_not_found — זהה לפני ואחרי",
+      "no_x_admin_token": "401 token_required — זהה לפני ואחרי"
+    },
+    "grants": { "anon": false, "authenticated": false, "service_role": true, "note": "לא ניתנו מחדש — create or replace שומר ACL. נמדד אחרי ההחלה." }
+  },
+
+  "test_mode": {
+    "measured_not_declared": true,
+    "intake_queued": false,
+    "documents_with_queue_id": 0,
+    "cases_in_sent": 0,
+    "outbound_queue": 8,
+    "outbound_queue_sent_at_rows": 0,
+    "queue_fingerprint_before_and_after": "f456823b99d500895093d168012a78ad",
+    "delivery_log": 3,
+    "reading": "אין מייל, אין הודעה ואין מסמך שיצא החוצה. הפונקציה שהשתנתה היא קריאה בלבד — אין בה UPDATE ואין INSERT."
+  },
+
+  "seeding_and_rollback": {
+    "how_seeded": "הפניות נזרעו דרך bkalot-clone-intake מעל HTTP עם מפתח anon כמו מהטופס (224, 225; contacts 231, 232), ושני המנהלים נוצרו דרך bkalot_clone_admin_create (78, 79) ולא בהזרקת hash. ההכרעות רצו בנתיב set-status שמאחורי השער — p_admin_id נסע בטוקן ולא נמסר ביד.",
+    "how_rolled_back": "חמש פקודות נפרדות לפי id ולא CTE אחד — תקלת cte-delete-sees-prestatement-snapshot; ואנשי הקשר לפי id ולא לפי טלפון מנורמל — תקלת ac6e523. חשבון 79 נמחק כבר קודם כחלק ממדידת ה-LEFT JOIN. admin_sessions ירדו ב-cascade עם שני החשבונות ולכן חזרו ל-5 בדיוק ולא נמחקו ידנית.",
+    "after": {
+      "cases": 0, "case_rights": 0, "case_status_log": 0, "documents": 0,
+      "contacts": 4, "admin_users": 1, "admin_sessions": 5, "templates": 2,
+      "outbound_queue": 8, "delivery_log": 3, "catalog": 888,
+      "queue_fingerprint": "f456823b99d500895093d168012a78ad",
+      "identical_to_baseline": true
+    }
+  },
+
+  "protected": "git status ריק על apps/08-bkalut-app, apps/09-bkalot-admin, apps/37-bkalot-clone ו-supabase/functions; אין נגיעה ב-bkalut-app/bkalot-admin/zr_*/NEDARIM3873 ולא בסכמות csj/csj_src/igud. ל-git add נמסרו שני נתיבים מפורשים ולא נקודה.",
+
+  "open": {
+    "next_brick": "apps/37-bkalot-clone/admin.html אינו קורא את status_history — התשובה כוללת מעכשיו את הבלוק ואין מי שמצייר אותו; זו הלבנה הבאה (UI), ואחריה פריסת פורטל. אותו פיצול כמו 0084 → 042e60f → 7d7dcf2 ו-0085 → 3da9647 → a6e8844.",
+    "not_measured_in_browser": "מאותה סיבה בדיוק — אין מי שמציג.",
+    "not_built": [
+      "אין note/reason ביומן — למה הוכרע ולא רק מה",
+      "אין היסטוריה על kind/topic_no/situation",
+      "אין היסטוריה על documents",
+      "רשימת העבודה (bkalot_clone_admin_cases) אינה יודעת על היומן ולא נגעה",
+      "אין backfill ולא יהיה — לפנייה שיושבת עם decided_by יש עובדה אחת ואין ידיעה כמה הכרעות היו לפניה"
+    ],
+    "continuing_lines": "הקליטה מחברת 42 זכויות ל-treatment ואפס ל-info/reminder על אותו situation. sent בלתי-ניתן-להשגה בכוונה; bkalot_clone_admin_create אינה חשופה ב-HTTP; pdf/audio → channel_unsupported. public_visible ו-show_in_showcase של #37 נשארים false."
+  }
+}

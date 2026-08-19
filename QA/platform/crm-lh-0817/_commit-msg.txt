@@ -1,0 +1,12 @@
+30 CRM זכויות: Lighthouse נמדד לראשונה + תוקן landmark-one-main אמיתי (a11y 98→100)
+
+מסך הכניסה (/crm/auth) עטף את כל התוכן ב-div יחיד; __root.tsx לא מוסיף <main>
+בשום מקום בעץ. תוקן apps/30-zchuyotpro-crm/src/routes/auth.tsx: ה-div החיצוני
+הוחלף ל-main (אותם attributes).
+
+פרוס ממקור (vercel deploy --prod --yes, לא --prebuilt - כפי שכבר תועד
+ב-crm-favicon-0817: ה-preset של TanStack Start לא כולל rewrites מ-vercel.json
+ב-config, ו-prebuilt שובר את rewrite ה-assets). dpl_7TzQnaeBF9WJyjXU51VgsCAfULQj, READY.
+
+אומת: /crm/auth מכיל <main> בייצור. הרצה חוזרת: perf 85->89, a11y 98->100, seo 100.
+ראיות: QA/platform/crm-lh-0817/_results.md

@@ -1,0 +1,98 @@
+{
+  "admins": {
+    "first": {
+      "id": 88,
+      "email": "qa0090dep-first@more30.test",
+      "full_name": "QA 0090 מכריע ראשון בייצור"
+    },
+    "second": {
+      "id": 89,
+      "email": "qa0090dep-second@more30.test",
+      "full_name": "QA 0090 מכריע שני בייצור"
+    }
+  },
+  "tokens": {
+    "first": "BHlNJ3XjQOQM59r2Du5jdBAj5VavD1M5VmC-4aog9as",
+    "second": "2IbE7qDFq_OXlq_Vi-K5-VQAtz1wiYPHA939RtBFPFM"
+  },
+  "cases": {
+    "A": {
+      "case_id": 240,
+      "contact_id": 247,
+      "rights": null,
+      "queued": false,
+      "transitions": [
+        {
+          "http_status": 200,
+          "ok": true,
+          "previous": "new",
+          "to": "in_progress",
+          "changed": true,
+          "log_id": 31,
+          "has_log_id_key": true,
+          "admin": 88
+        },
+        {
+          "http_status": 200,
+          "ok": true,
+          "previous": "in_progress",
+          "to": "closed",
+          "changed": true,
+          "log_id": 32,
+          "has_log_id_key": true,
+          "admin": 89
+        },
+        {
+          "http_status": 200,
+          "ok": true,
+          "previous": "closed",
+          "to": "rejected",
+          "changed": true,
+          "log_id": 33,
+          "has_log_id_key": true,
+          "admin": 89
+        }
+      ]
+    },
+    "B": {
+      "case_id": 241,
+      "contact_id": 248,
+      "rights": null,
+      "queued": false,
+      "transitions": [
+        {
+          "http_status": 200,
+          "ok": true,
+          "previous": "new",
+          "to": "in_progress",
+          "changed": true,
+          "log_id": 34,
+          "has_log_id_key": true,
+          "admin": 88
+        },
+        {
+          "http_status": 200,
+          "ok": true,
+          "previous": "in_progress",
+          "to": "in_progress",
+          "changed": false,
+          "log_id": null,
+          "has_log_id_key": true,
+          "admin": 88
+        }
+      ]
+    },
+    "C": {
+      "case_id": 242,
+      "contact_id": 249,
+      "rights": null,
+      "queued": false
+    },
+    "D": {
+      "case_id": 243,
+      "contact_id": 250,
+      "rights": null,
+      "queued": false
+    }
+  }
+}

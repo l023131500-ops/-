@@ -1,0 +1,33 @@
+31 gesher: the partner area's own landing page was a "coming soon" screen
+
+/partner/ redirects to /partner/clients, so a six-line PlaceholderPage was the
+first thing any partner saw after logging in on a live system. It is also the
+first place partner-visibility.ts matters outside the tasks board: a clients
+list IS a list of client details shown to a partner.
+
+listMyClients() reads partner_assignments as the caller (RLS scopes it), then
+assembles each card as service_role, because client_profiles has no partner
+policy at all -- which is exactly why the consent check has to be in code. It
+only reads a table when the partner's category is allowed a field from it.
+updateTreatmentStatus() moves the assignment between sent/in_progress/completed;
+the UPDATE policy on partner_assignments is USING-only with no WITH CHECK, so it
+would also permit rewriting partner_id -- the handler owns that check itself and
+touches one column.
+
+uploaded_documents is deliberately not sourced: documents live behind their own
+RLS (the 11:21 fix), so ticking that box in the admin grid has no effect here.
+
+visibleFieldsFor() and partnerFacingName() moved into partner-visibility.ts so
+the card-building rule lives with the rest of the consent logic and stays
+testable against the real module.
+
+Verified: 13/13 against the esbuild-bundled real module (consent given, denied,
+never recorded; the seeded empty-rule category that must show nothing even with
+consent; partner with no category; missing value stays null). The previous
+step's 12/12 re-run green against the same refactor. tsc 0, build 0, deploy
+dpl_5DUcSzPq3a7n3qibF1SsDL3k9LRs READY, and the deployed clients-BeMnH9jR.js
+fetched from more30.com carries the new copy and no PlaceholderPage.
+
+Not measured: the partner's own view -- no partner account exists here.
+
+QA/gesher/partner-clients-0812/

@@ -1,0 +1,201 @@
+{
+  "modaot": {
+    "url": "https://more30.com/modaot",
+    "measuredAt": "2026-08-17T14:53:32.728Z",
+    "performance": 86,
+    "accessibility": 100,
+    "bestPractices": 77,
+    "seo": 100,
+    "metrics": {
+      "fcp": "2.4 s",
+      "lcp": "2.4 s",
+      "tbt": "330 ms",
+      "cls": "0.034",
+      "si": "3.8 s"
+    },
+    "failedAudits": [
+      {
+        "id": "first-contentful-paint",
+        "title": "First Contentful Paint",
+        "score": 0.71,
+        "display": "2.4 s"
+      },
+      {
+        "id": "speed-index",
+        "title": "Speed Index",
+        "score": 0.84,
+        "display": "3.8 s"
+      },
+      {
+        "id": "total-blocking-time",
+        "title": "Total Blocking Time",
+        "score": 0.75,
+        "display": "330 ms"
+      },
+      {
+        "id": "max-potential-fid",
+        "title": "Max Potential First Input Delay",
+        "score": 0.54,
+        "display": "240 ms"
+      },
+      {
+        "id": "server-response-time",
+        "title": "Reduce initial server response time",
+        "score": 0,
+        "display": "Root document took 810 ms"
+      },
+      {
+        "id": "interactive",
+        "title": "Time to Interactive",
+        "score": 0.68,
+        "display": "5.7 s"
+      },
+      {
+        "id": "third-party-cookies",
+        "title": "Uses third-party cookies",
+        "score": 0,
+        "display": "1 cookie found"
+      },
+      {
+        "id": "mainthread-work-breakdown",
+        "title": "Minimize main-thread work",
+        "score": 0,
+        "display": "2.5 s"
+      },
+      {
+        "id": "unminified-javascript",
+        "title": "Minify JavaScript",
+        "score": 0.5,
+        "display": "Est savings of 6 KiB"
+      },
+      {
+        "id": "unused-javascript",
+        "title": "Reduce unused JavaScript",
+        "score": 0.5,
+        "display": "Est savings of 49 KiB"
+      },
+      {
+        "id": "inspector-issues",
+        "title": "Issues were logged in the `Issues` panel in Chrome Devtools",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "cache-insight",
+        "title": "Use efficient cache lifetimes",
+        "score": 0.5,
+        "display": "Est savings of 43 KiB"
+      },
+      {
+        "id": "document-latency-insight",
+        "title": "Document request latency",
+        "score": 0,
+        "display": "Est savings of 13 KiB"
+      },
+      {
+        "id": "legacy-javascript-insight",
+        "title": "Legacy JavaScript",
+        "score": 0.5,
+        "display": "Est savings of 12 KiB"
+      },
+      {
+        "id": "modern-http-insight",
+        "title": "Modern HTTP",
+        "score": 0.5,
+        "display": ""
+      },
+      {
+        "id": "network-dependency-tree-insight",
+        "title": "Network dependency tree",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "render-blocking-insight",
+        "title": "Render-blocking requests",
+        "score": 0,
+        "display": "Est savings of 880 ms"
+      }
+    ],
+    "mainThreadBreakdown": [
+      {
+        "group": "Script Evaluation",
+        "duration": 764
+      },
+      {
+        "group": "Style & Layout",
+        "duration": 675
+      },
+      {
+        "group": "Other",
+        "duration": 672
+      },
+      {
+        "group": "Script Parsing & Compilation",
+        "duration": 234
+      },
+      {
+        "group": "Rendering",
+        "duration": 39
+      },
+      {
+        "group": "Parse HTML & CSS",
+        "duration": 38
+      },
+      {
+        "group": "Garbage Collection",
+        "duration": 31
+      }
+    ],
+    "bootupTime": [
+      {
+        "url": "https://more30.com/modaot",
+        "total": 808,
+        "scripting": 42,
+        "scriptParseCompile": 16
+      },
+      {
+        "url": "Unattributable",
+        "total": 563,
+        "scripting": 31,
+        "scriptParseCompile": 0
+      },
+      {
+        "url": "https://more30.com/modaot/_next/static/chunks/webpack-f3a7b00e864e4fb6.js?dpl=dpl_7kpTybzinumhjbwUeGDaErsk2D5f",
+        "total": 318,
+        "scripting": 286,
+        "scriptParseCompile": 4
+      },
+      {
+        "url": "https://more30.com/modaot/_next/static/chunks/117-8835bad35a9c3c89.js?dpl=dpl_7kpTybzinumhjbwUeGDaErsk2D5f",
+        "total": 258,
+        "scripting": 224,
+        "scriptParseCompile": 21
+      },
+      {
+        "url": "https://more30.com/modaot/_next/static/chunks/104-6cb15007a7232386.js?dpl=dpl_7kpTybzinumhjbwUeGDaErsk2D5f",
+        "total": 148,
+        "scripting": 65,
+        "scriptParseCompile": 82
+      },
+      {
+        "url": "https://more30.com/modaot/_next/static/chunks/fd9d1056-0a73e5988bda9cb2.js?dpl=dpl_7kpTybzinumhjbwUeGDaErsk2D5f",
+        "total": 93,
+        "scripting": 15,
+        "scriptParseCompile": 77
+      },
+      {
+        "url": "https://more30.com/auth-button.js",
+        "total": 85,
+        "scripting": 21,
+        "scriptParseCompile": 6
+      },
+      {
+        "url": "https://netfree.link/card/card-injection.js",
+        "total": 56,
+        "scripting": 33,
+        "scriptParseCompile": 3
+      }
+    ]
+  }
+}

@@ -1,0 +1,132 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Default branding — overridden by <BrandingProvider/> per tenant */
+    --background: 0 0% 100%;
+    --foreground: 220 40% 12%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 220 40% 12%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 40% 12%;
+
+    /* Primary = deep royal blue (איגוד השיעורים) */
+    --primary: 222 56% 23%;
+    --primary-foreground: 0 0% 100%;
+
+    /* Secondary = gold */
+    --secondary: 42 56% 54%;
+    --secondary-foreground: 222 56% 15%;
+
+    --accent: 42 80% 60%;
+    --accent-foreground: 222 56% 15%;
+
+    --muted: 220 14% 96%;
+    --muted-foreground: 220 12% 45%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 14% 90%;
+    --input: 220 14% 90%;
+    --ring: 222 56% 23%;
+
+    --radius: 1rem;
+
+    /* זהב לטקסט בלבד — ראה tailwind.config.ts. 4.8:1 על לבן. */
+    --gold-ink: 42 70% 32%;
+
+    --font-heading: "Noto Serif Hebrew", "Frank Ruhl Libre", serif;
+    --font-body: "Rubik", "Heebo", "Assistant", sans-serif;
+  }
+
+  .dark {
+    --background: 220 40% 8%;
+    --foreground: 0 0% 98%;
+    --card: 220 40% 10%;
+    --card-foreground: 0 0% 98%;
+    --popover: 220 40% 10%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 42 56% 54%;
+    --primary-foreground: 222 56% 15%;
+    --secondary: 222 56% 23%;
+    --secondary-foreground: 0 0% 98%;
+    --accent: 42 80% 60%;
+    --accent-foreground: 222 56% 15%;
+    --muted: 220 20% 18%;
+    --muted-foreground: 220 12% 65%;
+    --destructive: 0 70% 50%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 220 20% 18%;
+    --input: 220 20% 18%;
+    --ring: 42 56% 54%;
+    /* על הרקע הכהה זהב כהה נעלם — כאן הכיוון מתהפך. 10.5:1. */
+    --gold-ink: 42 80% 60%;
+  }
+
+  /* בלי ההצהרה הזו פסי הגלילה, שדות הטופס ותפריטי ה-select נשארים לבנים
+     בתוך עמוד כהה. DESIGN_STANDARD §3 דורש שגם פקדי הדפדפן יתהפכו. */
+  :root { color-scheme: light; }
+  .dark { color-scheme: dark; }
+
+  * { @apply border-border; }
+  html, body { direction: rtl; }
+  body {
+    @apply bg-background text-foreground font-body antialiased;
+    font-feature-settings: "kern", "liga", "calt", "ss01";
+  }
+  h1, h2, h3, h4, h5, h6 { @apply font-heading; }
+
+  /* עברית בלי אותיות עולות ויורדות זקוקה לאוויר שאנגלית לא זקוקה לו
+     (DESIGN_STANDARD §1), ומספרים וכתובות דוא"ל נשארים LTR בתוך משפט עברי
+     (§4) — בלי הבידוד סימן המטבע מוצג בצד הלא נכון. */
+  p { line-height: 1.75; }
+
+  /* DESIGN_STANDARD §6 — מי שביקש פחות תנועה מקבל פחות תנועה. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer utilities {
+  .ltr-num {
+    unicode-bidi: isolate;
+    direction: ltr;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+@layer utilities {
+  .text-gradient-gold {
+    background: linear-gradient(135deg, #d4af37, #f2d678, #c9a84c);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .glass {
+    @apply bg-white/60 backdrop-blur-md border border-white/40 shadow-sm;
+  }
+  .glass-dark {
+    @apply bg-black/40 backdrop-blur-md border border-white/10;
+  }
+  .premium-shadow {
+    box-shadow: 0 8px 32px -8px rgba(26, 46, 90, 0.18), 0 2px 8px -2px rgba(26, 46, 90, 0.1);
+  }
+  .gold-border {
+    background-image: linear-gradient(white, white), linear-gradient(135deg, #d4af37, #f2d678);
+    background-origin: border-box;
+    background-clip: padding-box, border-box;
+    border: 2px solid transparent;
+  }
+}

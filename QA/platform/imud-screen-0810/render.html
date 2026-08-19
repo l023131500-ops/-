@@ -1,0 +1,384 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light dark" />
+    <title>עימוד תורני (04) — ספרים ותבניות · מרכז השליטה — more30</title>
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        color-scheme: light dark;
+        --gold: #c9a227; --bg: #f6f7fb; --surface: #ffffff;
+        --ink: #0b0d2e; --ink-2: #5b6076; --line: #e4e6f0;
+        --ok: #157f4b; --warn: #8a6d10; --bad: #a4262c;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root { --bg: #0b0d18; --surface: #151827; --ink: #e9ebf5;
+                --ink-2: #a2a8c0; --line: #262b40;
+                --ok: #5fd39b; --warn: #e0bd5a; --bad: #f08a8f; }
+      }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body { font-family: 'Heebo', system-ui, sans-serif; background: var(--bg);
+             color: var(--ink); line-height: 1.6; padding: 28px 20px 80px; }
+      .wrap { max-width: 1080px; margin: 0 auto; }
+      .back { display: inline-flex; align-items: center; min-height: 24px;
+              font-size: 14px; color: var(--ink-2); text-decoration: none; }
+      .back:hover { color: var(--ink); }
+      h1 { font-size: clamp(24px, 4vw, 34px); font-weight: 800; margin-top: 10px; }
+      .sub { color: var(--ink-2); font-size: 15px; margin-top: 6px; max-width: 74ch; }
+      .nav { display: flex; gap: 8px; flex-wrap: wrap; margin: 18px 0 6px; }
+      .nav a { font-size: 13.5px; font-weight: 600; text-decoration: none;
+               border: 1px solid var(--line); border-radius: 999px;
+               padding: 6px 14px; min-height: 24px; display: inline-flex;
+               align-items: center; color: var(--ink); background: var(--surface); }
+      .nav a:hover { border-color: var(--gold); }
+
+      .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px,1fr));
+               gap: 12px; margin: 20px 0 8px; }
+      .kpi { background: var(--surface); border: 1px solid var(--line);
+             border-radius: 14px; padding: 14px 16px; }
+      .kpi .n { font-size: 27px; font-weight: 800; line-height: 1.1; }
+      .kpi .l { font-size: 12.5px; color: var(--ink-2); margin-top: 3px; }
+      .kpi.warn { border-color: color-mix(in srgb, var(--warn) 55%, var(--line)); }
+      .kpi.warn .n { color: var(--warn); }
+      .kpi.good .n { color: var(--ok); }
+
+      h2.sec { font-size: 19px; font-weight: 800; margin: 28px 0 4px; }
+      p.secsub { color: var(--ink-2); font-size: 13.5px; margin-bottom: 12px; max-width: 78ch; }
+
+      .note { border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px;
+              font-size: 14px; background: var(--surface); margin-top: 16px; }
+      .note.warn { border-color: color-mix(in srgb, var(--warn) 45%, var(--line)); }
+      .note b { font-weight: 700; }
+      .note p + p { margin-top: 8px; }
+
+      .panel { background: var(--surface); border: 1px solid var(--line);
+               border-radius: 14px; overflow-x: auto; }
+      table { border-collapse: collapse; width: 100%; font-size: 13.5px; }
+      th, td { text-align: right; padding: 9px 14px; border-bottom: 1px solid var(--line);
+               white-space: nowrap; }
+      th { font-size: 12px; font-weight: 700; color: var(--ink-2); }
+      tr:last-child td { border-bottom: 0; }
+      td.name { white-space: normal; min-width: 200px; }
+      code { font-family: ui-monospace, monospace; font-size: 12.5px; color: var(--ink-2); }
+
+      .tag { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px;
+             display: inline-block; }
+      .tag.anon { background: color-mix(in srgb, var(--warn) 16%, transparent); color: var(--warn); }
+      .tag.own  { background: color-mix(in srgb, var(--ok) 16%, transparent); color: var(--ok); }
+      .miss { color: var(--warn); }
+
+      .bar { display: block; height: 6px; border-radius: 999px; margin-top: 5px;
+             background: color-mix(in srgb, var(--ink-2) 18%, transparent); }
+      .bar i { display: block; height: 100%; border-radius: 999px; background: var(--ok); }
+
+      .chips { display: flex; gap: 8px; flex-wrap: wrap; }
+      .chip { background: var(--surface); border: 1px solid var(--line);
+              border-radius: 999px; padding: 5px 12px; font-size: 13px; }
+      .chip b { font-weight: 800; }
+      .chip.empty { color: var(--ink-2); font-size: 12.5px; }
+      .foot { margin-top: 24px; font-size: 12.5px; color: var(--ink-2); }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <a class="back" href="/admin">← חזרה למרכז השליטה</a>
+      <h1>עימוד תורני (04) — ספרים ותבניות</h1>
+      <p class="sub" id="tagline">טוען…</p>
+
+      <nav class="nav">
+        <a href="/admin/systems">דוח מערכות</a>
+        <a href="/admin/leads">לידים</a>
+        <a href="/admin/credits">יתרות וחיבורים</a>
+        <a href="/admin/pricing">מחירים ותצוגה</a>
+        <a href="/admin/activity">משתמשים פעילים</a>
+        <a href="/admin/automation">אוטומציית תוכן</a>
+        <a href="/admin/rights">מאגר הזכויות</a>
+        <a href="/admin/customers">לקוחות</a>
+        <a href="/admin/issues">תקלות ומה דורש אותך</a>
+        <a href="/admin/kesef">כסף — קליטת נתונים</a>
+        <a href="/imud">לאתר עצמו ↗</a>
+      </nav>
+
+      <div id="content" hidden>
+        <div class="cards" id="kpis"></div>
+        <div class="note warn" id="gap"></div>
+
+        <h2 class="sec">הספרים</h2>
+        <p class="secsub" id="bookssub"></p>
+        <div class="panel"><table id="books"></table></div>
+
+        <h2 class="sec">תבניות בשימוש</h2>
+        <p class="secsub" id="tplsub"></p>
+        <div class="panel"><table id="templates"></table></div>
+
+        <h2 class="sec">שכבות התוכן</h2>
+        <p class="secsub" id="laysub"></p>
+        <div class="panel"><table id="layers"></table></div>
+
+        <h2 class="sec">פעילות</h2>
+        <p class="secsub">
+          הזמנים נשמרים בטבלה כמילישניות. הדוח ממיר אותם, והמסך מציג אותם בשעון המקומי.
+        </p>
+        <div class="chips" id="activity"></div>
+
+        <div class="note" id="notes"></div>
+        <p class="foot" id="stamp"></p>
+      </div>
+      <div id="denied" class="note warn" hidden></div>
+    </div>
+
+    <script type="module">
+      const SUPABASE_URL = 'https://uhnrgujbdxhhmoxcjria.supabase.co';
+      const SUPABASE_ANON =
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVobnJndWpiZHhoaG1veGNqcmlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMzNjE3MjgsImV4cCI6MjA5ODkzNzcyOH0.nHuOhw-WQEU17lNa7XOlORnBhVAYbJBHudKafWkSHBw';
+            // ‏מוחלף לצורך הצילום בלבד. הדף עצמו קורא ל-more30_admin_imud_report
+      // ‏דרך Supabase; כאן הוא מקבל את אותה תשובה, כפי שנקראה מהמסד ב-10/08.
+      const REPORT = {
+        "generated_at": "2026-08-09T22:14:10.552742+00:00",
+        "app_key": "imud",
+        "table": "public.otvedaf_books",
+        "notes": {
+          "what": "מסך הקליטה של מערכת 04 (עימוד תורני). כל מה שהמערכת מחזיקה במסד הזה הוא טבלה אחת — public.otvedaf_books — לפי חוזה האחסון ב-apps/04-imud-torani/server/storage.ts. המספרים נספרים בזמן הקריאה, ואין בהם ולא ערך מוערך אחד.",
+          "zero": "0 כאן הוא מדידה ולא כשל בקריאה. ספר בלי בלוקי תוכן נספר ב-empty_books, ורשימה ריקה פירושה שאין שורות — לא שהשאילתה נכשלה.",
+          "anon": "בידוד הנתונים לפי משתמש קיים בקוד: storage.ts מסנן כל קריאה לפי user_id שמגיע מכותרת X-Visitor-Id, ונופל ל-'anon' כשאין כותרת. anon_books סופר כמה מהספרים נפלו על ברירת המחדל הזאת. כשהוא שווה ל-books — אין הפרדת משתמשים בפועל, וזה ממצא ולא פרט טכני.",
+          "templates": "קטלוג התבניות יושב בקוד (apps/04-imud-torani/shared/templates.ts), לא במסד. לכן templates סופר שימוש בפועל ולא כיסוי מתוך הקטלוג — מספר כיסוי שהיה נכתב כאן היה מתיישן בעריכת קובץ, בלי מיגרציה.",
+          "sizes": "content_bytes ו-settings_bytes הם אורך ייצוג הטקסט של ה-jsonb, כלומר סדר גודל של הספר — לא הנפח בדיסק ולא מספר העמודים המעומדות.",
+          "read_only": "הדוח קורא בלבד. אין כאן עריכה, מחיקה או שינוי בעלות: הכתיבה של המוצר עוברת דרך שרת שמחזיק service_role ומאמת בעלות לפני כל עדכון, וכתיבה ישירה מלוח הניהול הייתה עוקפת את האימות הזה."
+        },
+        "totals": {
+          "books": 2,
+          "users": 1,
+          "anon_books": 2,
+          "templates_used": 1,
+          "blocks": 5,
+          "empty_books": 0,
+          "books_no_author": 1
+        },
+        "activity": {
+          "first_created_ms": 1785271663025,
+          "first_created": "2026-07-28T20:47:43.025+00:00",
+          "last_updated_ms": 1785482416625,
+          "last_updated": "2026-07-31T07:20:16.625+00:00",
+          "span_days": 2.4,
+          "days_since_last": 9.6
+        },
+        "templates": [
+          {
+            "template_key": "iyun-two-col",
+            "books": 2,
+            "blocks": 5,
+            "last_updated": "2026-07-31T07:20:16.625+00:00"
+          }
+        ],
+        "layers": [
+          {
+            "layer": "heading",
+            "blocks": 2
+          },
+          {
+            "layer": "main",
+            "blocks": 2
+          },
+          {
+            "layer": "footnote",
+            "blocks": 1
+          }
+        ],
+        "books": [
+          {
+            "id": 5,
+            "user_id": "anon",
+            "is_anon": true,
+            "title": "ניסיון",
+            "author": "ניסיון ראשוני",
+            "template_key": "iyun-two-col",
+            "blocks": 3,
+            "content_bytes": 275,
+            "settings_bytes": 703,
+            "settings_keys": 30,
+            "page_size": "b5",
+            "columns": "2",
+            "created_at": "2026-07-31T07:20:16.625+00:00",
+            "updated_at": "2026-07-31T07:20:16.625+00:00",
+            "updated_at_ms": 1785482416625,
+            "edited_since_create": false
+          },
+          {
+            "id": 4,
+            "user_id": "anon",
+            "is_anon": true,
+            "title": "ספר חדש",
+            "author": null,
+            "template_key": "iyun-two-col",
+            "blocks": 2,
+            "content_bytes": 214,
+            "settings_bytes": 703,
+            "settings_keys": 30,
+            "page_size": "a4",
+            "columns": "2",
+            "created_at": "2026-07-28T20:47:43.025+00:00",
+            "updated_at": "2026-07-28T20:47:43.025+00:00",
+            "updated_at_ms": 1785271663025,
+            "edited_since_create": false
+          }
+        ]
+      };
+      const sb = {
+        auth: { getSession: async () => ({ data: { session: { stub: true } } }) },
+        rpc: async () => ({ data: REPORT, error: null }),
+      };
+      const $ = (id) => document.getElementById(id);
+      const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) =>
+        ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+      const num = (n) => (Number(n) || 0).toLocaleString('he-IL');
+      const when = (v) => (v ? new Date(v).toLocaleString('he-IL') : 'לא זמין');
+
+      (async function () {
+        const { data: s } = await sb.auth.getSession();
+        if (!s?.session) {
+          $('tagline').textContent = 'הדף פתוח לסופר-אדמין בלבד.';
+          $('denied').innerHTML =
+            `צריך להתחבר. <a href="/login?from=${encodeURIComponent(location.href)}">מעבר לכניסה</a>`;
+          $('denied').hidden = false;
+          return;
+        }
+        const { data, error } = await sb.rpc('more30_admin_imud_report');
+        if (error) {
+          $('tagline').textContent = 'הדף פתוח לסופר-אדמין בלבד.';
+          $('denied').innerHTML =
+            'החשבון הזה אינו סופר-אדמין.<br><span style="font-size:13px;color:var(--ink-2)">' +
+            esc(error.message) + '</span>';
+          $('denied').hidden = false;
+          return;
+        }
+
+        const t = data.totals || {};
+        const act = data.activity || {};
+        $('tagline').innerHTML =
+          'מה מערכת 04 מחזיקה במסד. כל מה שיש לה כאן הוא טבלה אחת — ' +
+          `<code>${esc(data.table)}</code> — וכל מספר בדף נספר עליה בזמן הקריאה.`;
+
+        // ‏אריח אפס אינו בהכרח אזהרה, ולכן הצבע נקבע לפי מה שהמספר אומר ולא
+        // ‏לפי היותו אפס: 0 ספרים ריקים הוא בשורה טובה, ו-2 ספרים אנונימיים
+        // ‏מתוך 2 הוא הממצא של המסך הזה. סימון גורף של אפסים היה הופך את
+        // ‏השניים לאותו צבע.
+        const anonAll = Number(t.books) > 0 && Number(t.anon_books) === Number(t.books);
+        $('kpis').innerHTML = [
+          [t.books, 'ספרים', Number(t.books) ? '' : 'warn'],
+          [t.users, 'משתמשים נבדלים', anonAll ? 'warn' : ''],
+          [t.anon_books, 'ספרים על משתמש אנונימי', Number(t.anon_books) ? 'warn' : 'good'],
+          [t.blocks, 'בלוקי תוכן', ''],
+          [t.templates_used, 'תבניות בשימוש', ''],
+          [t.empty_books, 'ספרים בלי תוכן', Number(t.empty_books) ? 'warn' : 'good'],
+          [t.books_no_author, 'ספרים בלי מחבר', Number(t.books_no_author) ? 'warn' : 'good'],
+          [act.days_since_last ?? '—', 'ימים מאז כתיבה אחרונה',
+            Number(act.days_since_last) >= 7 ? 'warn' : ''],
+        ].map(([n, l, tone]) =>
+          `<div class="kpi ${tone}"><div class="n">${typeof n === 'number' ? num(n) : esc(n)}</div>` +
+          `<div class="l">${esc(l)}</div></div>`).join('');
+
+        // ‏המשפט נגזר מהמספרים ולא מוקלד: היום שבו מבקר ראשון ייכנס עם מזהה
+        // ‏משלו ישנה גם אותו, בלי לגעת בקובץ.
+        $('gap').innerHTML = Number(t.books) === 0
+          ? `<b>אין ולו ספר אחד בטבלה.</b> ‏0 כאן הוא מדידה ולא כשל בקריאה.`
+          : anonAll
+            ? `<b>המערכת מחזיקה ${num(t.books)} ספרים, וכולם רשומים על אותו משתמש: ` +
+              `<code>anon</code>.</b>` +
+              `<p>הפרדת הנתונים לפי משתמש קיימת בקוד — כל קריאה מסוננת לפי המזהה שמגיע ` +
+              `מכותרת <code>X-Visitor-Id</code>, ובהיעדרה נופלת ל-<code>anon</code>. בפועל ` +
+              `אף שורה לא נכתבה עם מזהה מבקר, כלומר או שאיש לא הגיע עם מזהה משלו או ` +
+              `שהכותרת אינה מגיעה לשרת. שני המקרים נראים במסד בדיוק אותו דבר, ולכן ` +
+              `זה מסומן ולא מוכרע כאן.</p>`
+            : `${num(t.books)} ספרים · ${num(t.users)} משתמשים נבדלים · ` +
+              `${num(t.anon_books)} מהם על <code>anon</code>.`;
+
+        // ‏הטבלה מוצגת במלואה. היא קטנה, וחיתוך שקט של שורות היה הופך
+        // ‏"אלה כל הספרים" ל"אלה חלק מהם" בלי שאיש ידע.
+        const books = data.books || [];
+        $('bookssub').textContent =
+          `${books.length} ספרים, כולם. אין כאן חיתוך לעמודים ואין «מוצגים 10 הראשונים».`;
+        $('books').innerHTML =
+          '<tr><th>#</th><th>שם</th><th>מחבר</th><th>בעלים</th><th>תבנית</th><th>בלוקים</th>' +
+          '<th>גודל</th><th>עמוד</th><th>טורים</th><th>נוצר</th><th>עודכן</th></tr>' +
+          (books.length
+            ? books.map((b) => `<tr>
+                <td><code>${num(b.id)}</code></td>
+                <td class="name">${esc(b.title || '—')}</td>
+                <td class="name">${b.author ? esc(b.author) : '<span class="miss">ללא מחבר</span>'}</td>
+                <td><span class="tag ${b.is_anon ? 'anon' : 'own'}">${esc(b.user_id || 'anon')}</span></td>
+                <td><code>${esc(b.template_key ?? '—')}</code></td>
+                <td>${num(b.blocks)}</td>
+                <td>${num(b.content_bytes)} ת׳</td>
+                <td>${esc(b.page_size ?? '—')}</td>
+                <td>${esc(b.columns ?? '—')}</td>
+                <td>${esc(when(b.created_at))}</td>
+                <td>${b.edited_since_create ? esc(when(b.updated_at)) : 'לא נערך מאז'}</td>
+              </tr>`).join('')
+            : '<tr><td colspan="11">אין ספרים בטבלה.</td></tr>');
+
+        // ‏שימוש ולא כיסוי: קטלוג התבניות יושב בקוד (shared/templates.ts), ולכן
+        // ‏מכנה שנכתב כאן היה מתיישן בעריכת קובץ ולא במיגרציה.
+        const tpl = data.templates || [];
+        $('tplsub').textContent =
+          `${tpl.length} תבניות נעשה בהן שימוש בפועל. קטלוג התבניות עצמו יושב בקוד המערכת ` +
+          `ולא במסד, ולכן אין כאן «כמה מתוך כמה» — מספר כזה היה מתיישן בעריכת קובץ.`;
+        $('templates').innerHTML =
+          '<tr><th>תבנית</th><th>ספרים</th><th>בלוקים</th><th>עדכון אחרון</th></tr>' +
+          (tpl.length
+            ? tpl.map((x) => `<tr>
+                <td><code>${esc(x.template_key ?? '—')}</code></td>
+                <td>${num(x.books)}</td>
+                <td>${num(x.blocks)}</td>
+                <td>${esc(when(x.last_updated))}</td>
+              </tr>`).join('')
+            : '<tr><td colspan="4">אין תבניות בשימוש.</td></tr>');
+
+        // ‏ההיסטוגרמה נגזרת מהבלוקים עצמם. שכבה שאיש לא בחר אינה מופיעה כאן
+        // ‏כשורת אפס — רשימה מרופדת לקטלוג המלא הייתה מדווחת אחת-עשרה אפסים
+        // ‏שאף ספר לא ביקש.
+        const lay = data.layers || [];
+        const totalBlocks = lay.reduce((a, x) => a + Number(x.blocks || 0), 0);
+        $('laysub').textContent =
+          `${lay.length} שכבות מופיעות ב-${num(totalBlocks)} הבלוקים. שכבה שאף ספר לא בחר ` +
+          `אינה שורת אפס כאן — היא פשוט אינה נמדדת.`;
+        $('layers').innerHTML =
+          '<tr><th>שכבה</th><th>בלוקים</th><th style="width:50%">חלק</th></tr>' +
+          (lay.length
+            ? lay.map((x) => {
+                const pct = totalBlocks ? Math.round((Number(x.blocks) / totalBlocks) * 100) : 0;
+                return `<tr>
+                  <td><code>${esc(x.layer ?? '—')}</code></td>
+                  <td>${num(x.blocks)} מתוך ${num(totalBlocks)}</td>
+                  <td><span class="bar"><i style="width:${pct}%"></i></span>${pct}%</td>
+                </tr>`;
+              }).join('')
+            : '<tr><td colspan="3">אין בלוקי תוכן.</td></tr>');
+
+        $('activity').innerHTML = [
+          ['הספר הראשון', when(act.first_created)],
+          ['הכתיבה האחרונה', when(act.last_updated)],
+          ['טווח בין השניים', act.span_days == null ? 'לא זמין' : `${act.span_days} ימים`],
+          ['מאז הכתיבה האחרונה', act.days_since_last == null ? 'לא זמין' : `${act.days_since_last} ימים`],
+        ].map(([l, v]) => `<span class="chip">${esc(l)} <b>${esc(v)}</b></span>`).join('');
+
+        // ‏למה אין כאן כפתור. הכתיבה של המוצר עוברת דרך שרת שמאמת בעלות לפני
+        // ‏כל עדכון, ולוח שיכתוב לטבלה ישירות יעקוף את האימות הזה.
+        const n = data.notes || {};
+        $('notes').innerHTML = [n.read_only, n.templates, n.sizes, n.zero]
+          .filter(Boolean).map((x) => `<p>${esc(x)}</p>`).join('');
+
+        $('stamp').textContent = 'נוצר ' + when(data.generated_at);
+        $('content').hidden = false;
+      })();
+    </script>
+    <script src="https://more30.com/auth-button.js" defer></script>
+  </body>
+</html>

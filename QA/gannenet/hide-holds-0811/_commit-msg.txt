@@ -1,0 +1,36 @@
+gannenet (40): the hide held for the drive catalog and for nothing else
+
+The shelf serves three sources. Hiding a file worked for one of them.
+
+All 258 seed assets are in-repo copies of Drive files and carry those files'
+ids (258/258 verified against content/drive-catalog.json), so on /shelf the
+seed loop is meant to upgrade a drive row to the local copy. It was written
+`for (const i of seedItems) map.set(i.id, i)` — unconditional — so when the
+admin hid one of those 258, /api/drive-catalog dropped it and this loop put it
+straight back. Reproduced with the override in place and the old line restored:
+the API answers 2,976 without the file, the page beside it says 2,977 and still
+shows the card.
+
+Uploaded material could not be curated at all: /api/admin/list was driveItems
+only, so an upload had no row to tick, and /api/catalog never applied the
+override map, so the hide /shelf/[id] already honoured left the card and its
+download button on the shelf.
+
+The seed loop now merges onto rows the catalog still lists and keeps the
+hiddenPages it attached; a new driveOk flag separates "the catalog says nothing
+is left" from "the catalog never answered", because the second is the PWA's
+offline path and must still show the seeds. /api/catalog applies overrides.
+/api/admin/list includes uploads, tagged with source and placed first — the list
+pages 40 at a time and nobody reaches the tail of 2,977. The admin row for an
+upload reads · הועלה כאן.
+
+Verified on next dev :3042 against the real bucket and the real catalog, both
+directions, plus the aborted-catalog offline path and a real upload through the
+real form: admin row first, ticked, saved, /api/catalog 1 → 0. tsc --noEmit 0.
+overrides.json, index.json and both catalog counts left as found.
+
+Open, and named in the notes: the service worker can serve a pre-hide catalog to
+a returning teacher, and setOverride() is a read-modify-write with no CAS — two
+saves in the same second lost one during this run's own cleanup.
+
+Evidence in QA/gannenet/hide-holds-0811/.

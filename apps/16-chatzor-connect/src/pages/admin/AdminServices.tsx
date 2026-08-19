@@ -9,13 +9,17 @@ import { Modal } from "@/components/ui/Modal";
 import { Button } from "@/components/ui/Button";
 import { Field, Input, Select, Textarea } from "@/components/ui/Field";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { ErrorState } from "@/components/ui/ErrorState";
+import { CardGridSkeleton } from "@/components/ui/Skeleton";
+import { SampleBadge } from "@/components/ui/SampleBadge";
+import { sampleRowProps } from "@/lib/sampleRow";
 
 const CATEGORIES = ['גמ"ח', "שירות דת", "חסד", "בריאות", "חינוך"];
 
 export function AdminServices() {
   const toast = useToast();
   const qc = useQueryClient();
-  const { data: services } = useServices();
+  const { data: services, isLoading, isError, refetch } = useServices();
   const [open, setOpen] = useState(false);
 
   const create = useMutation({
@@ -53,7 +57,15 @@ export function AdminServices() {
       </div>
 
       <div className="mt-6">
-        {(services ?? []).length === 0 ? (
+        {isLoading ? (
+          <CardGridSkeleton count={3} />
+        ) : isError ? (
+          <ErrorState
+            title="לא הצלחנו לטעון את השירותים"
+            description="הרשימה אינה מוצגת כי הקריאה נכשלה — ייתכן שיש שירותים קיימים. נסו שוב לפני הוספת שירות."
+            onRetry={() => refetch()}
+          />
+        ) : (services ?? []).length === 0 ? (
           <EmptyState icon={HeartHandshake} title="אין שירותים" description="הוסיפו את השירות הראשון." />
         ) : (
           <div className="overflow-hidden rounded-xl border border-border bg-card shadow-soft">
@@ -62,10 +74,13 @@ export function AdminServices() {
                 <li key={s.id} className="flex items-center gap-3 p-4">
                   <span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-gold/15 text-gold"><HeartHandshake className="h-5 w-5" /></span>
                   <div className="min-w-0 flex-1">
-                    <div className="font-semibold text-foreground">{s.name} <span className="text-xs font-normal text-muted-foreground">· {s.category}</span></div>
+                    <div className="flex items-center gap-2">
+                      <span className="font-semibold text-foreground">{s.name} <span className="text-xs font-normal text-muted-foreground">· {s.category}</span></span>
+                      {s.isSample && <SampleBadge />}
+                    </div>
                     {s.description && <div className="truncate text-xs text-muted-foreground">{s.description}</div>}
                   </div>
-                  <button onClick={() => remove.mutate(s.id)} className="grid h-9 w-9 place-items-center rounded-md text-muted-foreground hover:bg-red-500/10 hover:text-red-500"><Trash2 className="h-4 w-4" /></button>
+                  <button onClick={() => remove.mutate(s.id)} {...sampleRowProps(s.isSample)}><Trash2 className="h-4 w-4" /></button>
                 </li>
               ))}
             </ul>

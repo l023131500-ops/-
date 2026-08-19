@@ -1,0 +1,28 @@
+gannenet (40): the page generator had been asking for a model that no longer exists
+
+app/api/ai-generate/route.ts asked for claude-3-5-sonnet-latest. That model is
+retired, so every generation came back 404 not_found_error -- the feature had
+never produced a single page. It read as silent rather than broken because the
+page did setRes(await r.json()) and an error body is valid JSON, so the result
+card opened with an undefined title, a bare age-group line with nothing after
+it, and no reason anywhere on screen.
+
+Model to claude-opus-5, max_tokens 1500 to 16000: thinking is on by default
+there and max_tokens bounds thinking and text together, so 1500 would have cut
+the page mid-sentence. The route now passes the upstream status through instead
+of flattening everything to 500 and maps 429/401/5xx to a sentence a teacher can
+act on, strips a json code fence before parsing (the old bare JSON.parse dumped
+the raw reply into instructions), and coerces contentElements/designHints to
+arrays -- the page maps over both, and a string would have passed the length
+guard and crashed the render. The page checks r.ok and data.error, and
+setLoading(false) moved into finally so an early exit cannot leave the button
+stuck on its loading label.
+
+Verified on next dev against the real key and against a bogus one: a full autumn
+worksheet with 8 content items and 8 design notes, and the 401 showing its own
+message with no result card. A NetFree 418 block landed mid-test and surfaced on
+screen too, which is the point.
+
+Open, in NEEDS_USER 0k: a generation takes ~72s and will exceed the function
+limit once deployed. Both levers, effort and streaming, need an SDK newer than
+the vendored 0.27.3, which is an install and its own step.

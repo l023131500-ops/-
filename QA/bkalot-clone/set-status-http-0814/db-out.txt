@@ -1,0 +1,34 @@
+-- כל השאילתות כאן הן מדידה בלבד ורולבק. אף אחת מהן אינה חלק מהמסלול הנבדק:
+-- כל 24 המדידות של הנתיב עצמו עברו דרך HTTP (probe-out.txt).
+
+== בסיס, לפני הפריסה ==
+cases=0 documents=0 case_rights=0 admin_users=1 admin_sessions=5 templates=2
+catalog=888 contacts=4 oq_all=8 oq_src=8 dlog=3 sent_cases=0
+src_fp(id:status:attempts, app_key='bkalot') = e491999e1492c0dcf1cf88288bdec60a
+
+== יצירת מנהל הבדיקה (קריאת SQL ישירה — bkalot_clone_admin_create אינה חשופה ב-HTTP בכוונה) ==
+select public.bkalot_clone_admin_create(jsonb_build_object(
+  'email','qa0073@more30.com','full_name','QA v6 set-status','password','Qa0073!probe'));
+=> {"ok":true,"admin":{"id":16,"email":"qa0073@more30.com","full_name":"QA v6 set-status"}}
+
+== אחרי הריצה, לפני הרולבק ==
+cases=2 documents=0 case_rights=118 contacts=6
+oq_all=8 dlog=3 sent_cases=0
+src_fp = e491999e1492c0dcf1cf88288bdec60a   (זהה)
+rows = [{"id":71,"status":"in_progress","updated_at":"2026-08-14T02:11:31.393861+00:00"},
+        {"id":72,"status":"new",        "updated_at":"2026-08-14T02:11:26.180586+00:00"}]
+
+  #71 עברה שלושה שינויים ו-updated_at שלה מאוחר ב-5.2 שניות מזה של #72,
+  שנוצרה אחריה ולא נגעו בה. הבקרה קפואה על מצב הלידה שלה.
+
+== רולבק ==
+delete from bkalot_clone.case_rights where case_id in (71,72);
+delete from bkalot_clone.cases        where id in (71,72);
+delete from bkalot_auto.contacts      where id in (77,78);
+delete from bkalot_clone.admin_sessions where admin_id = 16;
+delete from bkalot_clone.admin_users    where id = 16;
+
+== אחרי הרולבק ==
+cases=0 documents=0 case_rights=0 admin_users=1 admin_sessions=5 templates=2
+catalog=888 contacts=4 oq_all=8 dlog=3
+src_fp = e491999e1492c0dcf1cf88288bdec60a   (זהה לבסיס)

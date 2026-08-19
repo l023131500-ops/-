@@ -1,0 +1,94 @@
+{
+  "phase": "before",
+  "at": "2026-08-14T14:28:15.147Z",
+  "urls": {
+    "admin": {
+      "status": 200,
+      "bytes": 95344,
+      "replacement_chars": 0,
+      "geresh": 8,
+      "new": {
+        "button_label": 0,
+        "title_attr": 0,
+        "comment_why": 0,
+        "comment_offset": 0,
+        "comment_stale": 0
+      },
+      "old": {
+        "go_id": 1,
+        "sort_id": 1,
+        "decided_id": 1,
+        "cases_call": 1,
+        "empty_text": 2,
+        "filter_word": 14,
+        "old_button": 1
+      }
+    },
+    "adminSlash": {
+      "status": 200,
+      "bytes": 95344,
+      "replacement_chars": 0,
+      "geresh": 8,
+      "new": {
+        "button_label": 0,
+        "title_attr": 0,
+        "comment_why": 0,
+        "comment_offset": 0,
+        "comment_stale": 0
+      },
+      "old": {
+        "go_id": 1,
+        "sort_id": 1,
+        "decided_id": 1,
+        "cases_call": 1,
+        "empty_text": 2,
+        "filter_word": 14,
+        "old_button": 1
+      }
+    },
+    "form": {
+      "status": 200,
+      "bytes": 32558,
+      "replacement_chars": 0,
+      "geresh": 5,
+      "new": {
+        "button_label": 0,
+        "title_attr": 0,
+        "comment_why": 0,
+        "comment_offset": 0,
+        "comment_stale": 0
+      },
+      "old": {
+        "go_id": 0,
+        "sort_id": 0,
+        "decided_id": 0,
+        "cases_call": 0,
+        "empty_text": 0,
+        "filter_word": 0,
+        "old_button": 0
+      }
+    },
+    "home": {
+      "status": 200,
+      "bytes": 3517,
+      "replacement_chars": 0,
+      "geresh": 0,
+      "new": {
+        "button_label": 0,
+        "title_attr": 0,
+        "comment_why": 0,
+        "comment_offset": 0,
+        "comment_stale": 0
+      },
+      "old": {
+        "go_id": 0,
+        "sort_id": 0,
+        "decided_id": 0,
+        "cases_call": 0,
+        "empty_text": 0,
+        "filter_word": 0,
+        "old_button": 0
+      }
+    }
+  }
+}

@@ -1,0 +1,38 @@
+kiosk (35): the one colour in the console that no run could read
+
+`:visited` was the last open item under STATUS.md item 6, and it stayed open
+because `getComputedStyle` returns the unvisited style no matter what is on the
+screen — a privacy guarantee, not a bug. Nine screen-by-screen runs graded every
+link in the console; none of them measured what a person who has already clicked
+one actually sees. STATUS.md carried a reading in place of a number.
+
+Measured now, and the console is unchanged by it. Each link element is rendered
+to PNG and compared byte for byte in three states: U on a fresh profile before
+the href has ever been opened, V after genuinely following it and coming back,
+M again with `a:visited { color: #ff00ff }` injected. V === U is the finding;
+M !== V is the control, and it is the half that gives the finding meaning —
+without it, V === U is equally consistent with nothing ever being recorded in
+history. 12/12, exit 0; six control rows, six detected the visited state.
+
+The grade is on the hash of the whole element, not on a sampled pixel: the guide
+link opens with an emoji, so its extremal pixel is black in light and white in
+dark. That is reported as measured, with a note, rather than filtered.
+
+The side finding is worth the run on its own. Of five Chromium configurations —
+self-link, newContext, persistent profile, persistent with the partitioned
+visited-link store disabled, and headed — only the headed one paints `:visited`
+at all. A headless a11y suite cannot see this property. `_probe.mjs` is kept in
+the run directory as the evidence for that.
+
+Two harness corrections, both forced by a failing run. The shared stub never
+served `/docs`, which `src/index.js` mounts beside `public/` — invisible to a run
+that reads a link's colour and fatal to one that must follow it, since Chromium
+does not record an error page in history; added additively, with `.md` as
+`text/plain`, because a download is not a navigation. `link-underline-0811`
+re-run after: 22/24, the documented baseline, unchanged. And U was the only
+sample taken on a cold profile with an empty font cache, which failed all three
+dark rows for a reason that had nothing to do with `:visited`.
+
+152 tests / 151 pass — the documented baseline, unchanged. Not deployed; the
+Railway service builds from l023131500-ops/zol (NEEDS_USER 0tz), whose count is
+recounted here at 43, of which 41 still carry an actual source change.

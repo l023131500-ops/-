@@ -1,0 +1,25 @@
+
+=== hide @ 2026-08-12T13:31:09.806Z ===
+200   sign-in test@more30.com — user 78600fbc-3fd3-4f02-8552-e93ab6559649
+200   public shelf before — items=0
+200   mine before — items=0
+200   POST /api/catalog (real token) — {"ok":true,"item":{"id":"up_msq4o1qn_5aab","title":"בדיקת QA הסתרה — נמחק מיד","category":"כללי","sender":"QA more30","date":"2026-08-12","mime":"image/png","file":"/api/upload/up_msq4o1qn_5aab.png","
+200   mine while visible — has-it=true hidden-flag=undefined
+401   POST /api/admin/override (no key) — unauthorized
+200   POST /api/admin/override hidden=true — {"ok":true,"override":{"hidden":true}}
+200   overrides object in storage — {"hidden":true}
+200   mine while hidden — has-it=true hidden-flag=true
+200   public shelf while hidden — items=0 still-has-it=false
+200   /shelf/<id> while hidden — says-not-found=true
+200   raw file while hidden — image/png 2441B
+
+=== restore @ 2026-08-12T13:37:54.276Z ===
+200   POST /api/admin/override hidden=false — {"ok":true,"override":{}}
+200   overrides object after unhide — {}
+200   mine after unhide — has-it=true hidden-flag=true
+200   public shelf after unhide — items=0 has-it=false
+200   POST /api/admin/delete — {"ok":true,"removed":["up_msq4o1qn_5aab.png","uploads/up_msq4o1qn_5aab.json"]}
+200   mine after delete — items=0 still-has-it=false
+200   public shelf after delete — items=0
+404   raw file after delete — expect 404
+200   overrides object after delete — {}

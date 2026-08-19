@@ -1,0 +1,12 @@
+﻿https://more30.com/bkalot-studio/admin?cb=post0814hc 200 88303
+  new: const countHe = (n, one, plural) =>=true | countHe(n, "פנייה אחת", "פניות")=true | "זכות אחת"=true | "מסמך אחד"=true | צורת זוגי הייתה מחייבת גם מין דקדוקי=true
+  removed: const many = (n) => (n === 1 ? "פנייה אחת" : =false | ${c.rights_count ?? 0} זכויות=false | ריח של AI. עברית סופרת אחרת.=false
+  old: פנייה אחת=true | show("screen-list"); load();=true | decidedBit=true | לא הוכרע מהמסך=true | fillDecidedLine=true | החשבון אינו קיים עוד=true | <th>מכתב</th>=true | fillTemplateCell=true | tmpl-sel=true | שינוי סטטוס=true | עבד עכשיו=true | הכנס לתור=true
+  alef=909 replacement=0 doubleenc=0
+https://more30.com/bkalot-studio/admin/?cb=post0814hc 200 88303
+  alef=909 replacement=0 doubleenc=0
+https://more30.com/bkalot-studio/?cb=post0814hc 200 21272
+  alef=134 replacement=0 doubleenc=0
+https://more30.com/?cb=post0814hc 200 3517
+  assets: assets/index-C2AHwa-z.js,assets/index-B35ByRD-.css
+  alef=23 replacement=0 doubleenc=0

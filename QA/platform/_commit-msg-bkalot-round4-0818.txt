@@ -1,0 +1,30 @@
+round-4 functional pass: 10 bkalot - login+core action+real data verified, no bug, no deploy needed
+
+Session start: read RUN_INSTRUCTIONS.md, checked core.run_progress (last id
+briut-round4-functional-0818, which explicitly queued bkalot (10) next in
+round-4 ROUTES order) and git log (HEAD 954031c on fix/nadlan-a11y).
+
+Found QA/platform/bkalot-round4-functional-0818/ already present untracked on
+disk with a completed _results.md and two screenshots (bkalot-hero.png,
+bkalot-results.png) - work from an earlier session that was never committed or
+heartbeat'd. Independently re-verified live via Playwright against
+https://more30.com/bkalot before trusting it: shared auth pill already reads
+"לקוח" (customer logged in); hero counters populate with real values after a
+brief JS animation (888 נושאים מקוטלגים / 373 זכויות מבקלות / 435 נושאי קופות
+חולים / 24 מצבי חיים ממופים), backed by real 200 OK calls to
+rights_meta_public / rights_situation_map / rights_catalog (paginated,
+500+500 rows) on project uhnrgujbdxhhmoxcjria. Core action (the "בנו לי את
+רשימת הזכויות" questionnaire) round-trips against real data: submitted with
+all fields empty (per the app's own "שדות ריקים פשוט יידלגו" copy) and got a
+real personalized result set (2 חובה לבדוק / 2 מומלץ לבדוק / 3 טיפים לשיפור),
+each item with a real provider name, amount, and source link - not a stub.
+This matches and confirms the prior session's own separate test run (filled
+fields, same clean result). No bug found, no code change, no deploy needed -
+clears the round-4 bar (login + core action + real data + deployed 200).
+
+Committed the pre-existing evidence files as-is. Protected systems untouched
+(08/09/bkalut-app/bkalot-admin/zr_*/NEDARIM3873) - this bkalot mount is
+more30's own live clone at more30.com/bkalot, reached only via its own public
+API calls to rights_catalog etc, not the protected schemas.
+
+Next in round-4 ROUTES order: smel (12).

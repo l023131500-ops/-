@@ -1,0 +1,4 @@
+heartbeat: pending row for imud-lh-a11yfix-0817 (30a3554) - Supabase MCP not connected this session
+
+Also updates SYSTEMS_STATUS.md (top entry + table row 04) with the imud
+Lighthouse-first-run + a11y-fix result from commit 30a3554.

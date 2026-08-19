@@ -1,0 +1,227 @@
+{
+  "torah": {
+    "route": "/torah",
+    "sandbox": [],
+    "rawDeploy": [],
+    "local": [],
+    "dead": 0,
+    "outbound": 0,
+    "error": null
+  },
+  "tamlul": {
+    "route": "/tamlul",
+    "sandbox": [],
+    "rawDeploy": [],
+    "local": [],
+    "dead": 0,
+    "outbound": 2,
+    "error": null
+  },
+  "modaot": {
+    "route": "/modaot",
+    "sandbox": [],
+    "rawDeploy": [],
+    "local": [],
+    "dead": 0,
+    "outbound": 2,
+    "error": null
+  },
+  "imud": {
+    "route": "/imud",
+    "sandbox": [],
+    "rawDeploy": [],
+    "local": [],
+    "dead": 0,
+    "outbound": 0,
+    "error": null
+  },
+  "briut": {
+    "route": "/briut",
+    "sandbox": [],
+    "rawDeploy": [],
+    "local": [],
+    "dead": 0,
+    "outbound": 0,
+    "error": null
+  },
+  "bkalot": {
+    "route": "/bkalot",
+    "sandbox": [],
+    "rawDeploy": [],
+    "local": [],
+    "dead": 2,
+    "outbound": 0,
+    "error": null
+  },
+  "smel": {
+    "route": "/smel",
+    "sandbox": [],
+    "rawDeploy": [],
+    "local": [],
+    "dead": 1,
+    "outbound": 0,
+    "error": null
+  },
+  "smachot": {
+    "route": "/smachot",
+    "sandbox": [],
+    "rawDeploy": [],
+    "local": [],
+    "dead": 0,
+    "outbound": 1,
+    "error": null
+  },
+  "egod": {
+    "route": "/egod",
+    "sandbox": [],
+    "rawDeploy": [],
+    "local": [],
+    "dead": 0,
+    "outbound": 1,
+    "error": null
+  },
+  "chatzor": {
+    "route": "/chatzor/",
+    "sandbox": [],
+    "rawDeploy": [],
+    "local": [],
+    "dead": 0,
+    "outbound": 4,
+    "error": null
+  },
+  "chizukim": {
+    "route": "/chizukim/",
+    "sandbox": [],
+    "rawDeploy": [],
+    "local": [],
+    "dead": 0,
+    "outbound": 0,
+    "error": null
+  },
+  "orech": {
+    "route": "/orech",
+    "sandbox": [],
+    "rawDeploy": [],
+    "local": [],
+    "dead": 0,
+    "outbound": 0,
+    "error": null
+  },
+  "zchuyot": {
+    "route": "/zchuyot",
+    "sandbox": [],
+    "rawDeploy": [],
+    "local": [],
+    "dead": 1,
+    "outbound": 7,
+    "error": null
+  },
+  "mthbram": {
+    "route": "/mthbram",
+    "sandbox": [],
+    "rawDeploy": [],
+    "local": [],
+    "dead": 0,
+    "outbound": 1,
+    "error": null
+  },
+  "galil": {
+    "route": "/galil",
+    "sandbox": [],
+    "rawDeploy": [],
+    "local": [],
+    "dead": 0,
+    "outbound": 1,
+    "error": null
+  },
+  "studio": {
+    "route": "/studio",
+    "sandbox": [],
+    "rawDeploy": [],
+    "local": [],
+    "dead": 0,
+    "outbound": 0,
+    "error": null
+  },
+  "mechiron": {
+    "route": "/mechiron",
+    "sandbox": [],
+    "rawDeploy": [],
+    "local": [],
+    "dead": 0,
+    "outbound": 0,
+    "error": null
+  },
+  "kupot": {
+    "route": "/kupot",
+    "sandbox": [],
+    "rawDeploy": [],
+    "local": [],
+    "dead": 0,
+    "outbound": 0,
+    "error": null
+  },
+  "nadlan": {
+    "route": "/nadlan/",
+    "sandbox": [],
+    "rawDeploy": [],
+    "local": [],
+    "dead": 0,
+    "outbound": 0,
+    "error": null
+  },
+  "crm": {
+    "route": "/crm",
+    "sandbox": [],
+    "rawDeploy": [],
+    "local": [],
+    "dead": 0,
+    "outbound": 0,
+    "error": null
+  },
+  "gesher": {
+    "route": "/gesher",
+    "sandbox": [],
+    "rawDeploy": [],
+    "local": [],
+    "dead": 0,
+    "outbound": 0,
+    "error": null
+  },
+  "kesef": {
+    "route": "/kesef",
+    "sandbox": [],
+    "rawDeploy": [],
+    "local": [],
+    "dead": 0,
+    "outbound": 0,
+    "error": null
+  },
+  "kiosk": {
+    "route": "/kiosk/",
+    "sandbox": [],
+    "rawDeploy": [],
+    "local": [],
+    "dead": 0,
+    "outbound": 0,
+    "error": null
+  },
+  "tivuch": {
+    "route": "/tivuch",
+    "sandbox": [],
+    "rawDeploy": [],
+    "local": [],
+    "dead": 0,
+    "outbound": 0,
+    "error": null
+  },
+  "portal": {
+    "route": "/",
+    "sandbox": [],
+    "rawDeploy": [],
+    "local": [],
+    "dead": 0,
+    "outbound": 0,
+    "error": null
+  }
+}

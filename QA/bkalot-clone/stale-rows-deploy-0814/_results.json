@@ -1,0 +1,142 @@
+{
+  "pulse": "שכפול בקלות שכבה 3 — פריסת «רענון שנכשל השאיר את השורות הישנות על המסך»",
+  "kind": "deploy-only",
+  "source_commit": "a3a3405",
+  "code_change": false,
+  "migration": false,
+  "edge_function": "bkalot-clone-admin נשארה v7, לא נפרסה",
+
+  "files": {
+    "prev_admin_html": { "source": "git show a3a3405^:apps/37-bkalot-clone/admin.html", "bytes": 88696, "md5": "17DA929FDF9DD91A162AA15F5041473A" },
+    "src_admin_html": { "path": "apps/37-bkalot-clone/admin.html", "bytes": 89820, "md5": "B9AF28E5286362FD84EBC8DDDBE2110B" },
+    "dist_pre_staging": { "bytes": 88696, "md5": "17DA929FDF9DD91A162AA15F5041473A", "identical_to_prev": true },
+    "dist_post_staging": { "bytes": 89820, "md5": "B9AF28E5286362FD84EBC8DDDBE2110B", "identical_to_src": true },
+    "staged_file_count": 38
+  },
+
+  "markers": {
+    "note": "a3a3405 היא תוספת טהורה — לא נמחקה ולו שורה אחת — ולכן REMOVED אינו יכול להיות מחרוזת שנעלמה אלא סמיכות: לפני התוספת השורה שאחרי toLogin הייתה מיד המונה, ואחריה חוצצות ביניהן שתים-עשרה שורות.",
+    "new_markers_are_code_not_comment": true,
+    "single_occurrence_verified": "$(\"empty\").hidden = true מול = cases.length > 0, ו-$(\"pager\").hidden = true מול = total <= PAGE — מסומן שמופיע פעמיים היה מחזיר true על הגרסה שבייצור בזכות המופע האחר",
+    "prev": { "new": "all false", "removed": "all true", "old": "all true" },
+    "src": { "new": "all true", "removed": "all false", "old": "all true" },
+    "dist_pre": { "new": "all false", "removed": "all true", "old": "all true" },
+    "dist_post": { "new": "all true", "removed": "all false", "old": "all true" },
+    "http_pre": { "new": "all false", "removed": "all true", "old": "all true" },
+    "http_post": { "new": "all true", "removed": "all false", "old": "all true" }
+  },
+
+  "http": {
+    "/bkalot-studio/admin": { "pre": 88932, "post": 90056 },
+    "/bkalot-studio/admin/": { "pre": 88932, "post": 90056 },
+    "/bkalot-studio/ (הטופס)": { "pre": 21272, "post": 21272 },
+    "more30.com/": { "pre": 3517, "post": 3517 },
+    "netfree_delta_vs_source": 236,
+    "alef_admin": { "pre": 927, "post": 956 },
+    "replacement_chars": 0,
+    "double_encoding_marks": 0,
+    "hashed_assets": ["assets/index-C2AHwa-z.js", "assets/index-B35ByRD-.css"],
+    "hashed_assets_changed": false
+  },
+
+  "deployment": {
+    "id": "dpl_DvK519zBEJo97wtn9Z8FLg1Rk77m",
+    "project": "more30-portal",
+    "target": "production",
+    "readyState": "READY",
+    "url": "https://more30-portal-2tgg8was4-l023131500-ops-projects.vercel.app",
+    "aliased": "https://more30.com"
+  },
+
+  "browser": {
+    "viewport": "1280x900",
+    "url": "https://more30.com/bkalot-studio/admin?cb=qa0086live",
+    "admin_user": 44,
+    "login": "במסך עצמו",
+    "cases_created_via": "bkalot-clone-intake מעל HTTP, מפתח anon כמו מהטופס",
+    "cases": { "treatment": 131, "info": 132 },
+    "measurements": {
+      "loaded": {
+        "count": "2 פניות",
+        "rows": 2,
+        "row_texts": [
+          "בדיקה 0086 מידע · מידע · חדשה · #132 · 0 זכויות",
+          "בדיקה 0086 טיפול · טיפול מלא · חדשה · #131 · הורה יחיד / חד-הורי · 42 זכויות"
+        ],
+        "err_hidden": true,
+        "shot": "01-live-loaded.png"
+      },
+      "failed_filter": {
+        "filter_kind_on_screen": "מידע",
+        "count": "—",
+        "rows": 0,
+        "before_deploy_would_be": "2 שורות, ובהן שורת «טיפול מלא» שהסינון שעל המסך מוציא במפורש",
+        "err_hidden": false,
+        "err_text": "אין חיבור לשירות. בדקו את האינטרנט ונסו שוב. network",
+        "empty_hidden": true,
+        "pager_hidden": true,
+        "err_y": 302,
+        "err_in_viewport": true,
+        "shot": "02-live-failed-filter.png"
+      },
+      "recovery_and_filter_control": {
+        "note": "אותה לחיצה בדיוק בלי הכשל — גם הבקרה שהסינון לא נשבר וגם הבקרה שהמחיקה אינה קבועה",
+        "filter_kind_on_screen": "מידע",
+        "count": "פנייה אחת",
+        "rows": 1,
+        "row_texts": ["בדיקה 0086 מידע · מידע · חדשה · #132"],
+        "err_hidden": true,
+        "shot": "03-live-recovered.png"
+      }
+    },
+    "console": { "total": 0, "errors": 0, "warnings": 0 }
+  },
+
+  "failure_injection": {
+    "how": "window.fetch עטוף בדף וזורק TypeError על /cases בלבד",
+    "why": "call() תופסת ומחזירה {ok:false,error:\"network\"} — נתיב הכשל האמיתי של המסך ולא אובייקט שהוזרק ל-load()",
+    "blocked_calls": ["https://uhnrgujbdxhhmoxcjria.supabase.co/functions/v1/bkalot-clone-admin/cases"],
+    "blocked_count": 1,
+    "not_reachable_over_http": "אין נתיב HTTP שיכול להפיל את /cases בבקשה אחת — הקו נישא פתוח מ-29d6ac6 מהסיבה הזו — ולכן זו הדרך היחידה למדוד את המצב, גם בייצור"
+  },
+
+  "screenshots": [
+    { "file": "01-live-loaded.png", "bytes": 38937, "md5": "3BA169B67B5EDAF95C6105488916BF50" },
+    { "file": "02-live-failed-filter.png", "bytes": 25149, "md5": "E55539D0F8958C67B3B9EAC027143A56" },
+    { "file": "03-live-recovered.png", "bytes": 30213, "md5": "9E528D1A59B6981B60C10ACAD7EC2C7C" }
+  ],
+
+  "test_mode": {
+    "cases_sent": 0,
+    "documents": 0,
+    "outbound_queue": 8,
+    "outbound_queue_with_sent_at": 0,
+    "delivery_log": 3,
+    "queue_fingerprint": "bf57d69edaf6725ff7f52ad3007c4170",
+    "fingerprint_identical_before_during_after": true,
+    "buttons_present_not_clicked": ["הפק מסמך", "הכנס לתור", "עבד עכשיו"],
+    "sent_outside": "אין מייל, אין הודעה ואין מסמך שיצא החוצה"
+  },
+
+  "baseline_before": { "cases": 0, "case_rights": 0, "documents": 0, "admin_users": 1, "admin_sessions": 5, "contacts": 4, "templates": 2, "catalog": 888, "outbound_queue": 8, "delivery_log": 3 },
+  "rollback": { "case_rights": 42, "cases": 2, "sessions": 1, "admin_user": 44, "contacts": 2 },
+  "baseline_after": { "cases": 0, "case_rights": 0, "documents": 0, "admin_users": 1, "admin_sessions": 5, "contacts": 4, "templates": 2, "catalog": 888, "outbound_queue": 8, "delivery_log": 3 },
+  "identical_to_baseline": true,
+
+  "protected": {
+    "paths": ["apps/08-bkalut-app", "apps/09-bkalot-admin", "apps/37-bkalot-clone", "supabase/functions"],
+    "schemas_untouched": ["csj", "csj_src", "igud"],
+    "systems_untouched": ["bkalut-app", "bkalot-admin", "zr_*", "NEDARIM3873"]
+  },
+
+  "open_after_this_step": [
+    "נמדד כאן ולא היה מתועד: הקליטה מחברת 42 זכויות לפנייה מסוג treatment ואפס לפנייה מסוג info, על אותו situation בדיוק (single_parent). #132 הציגה «0 זכויות». לא נבדק אם זה מכוון",
+    "await load() שרץ אחרי «שינוי סטטוס» הפך למיותר ולא הוסר",
+    "אין סינון «לא הוכרעה» ואין מיון לפי decided_at; אין היסטוריית הכרעות",
+    "«מי הפיק» על documents אינו נכתב לשום מקום",
+    "${out.text_chars} תווי טקסט ו-${d.html_chars} תווי HTML נשארו במספר",
+    "כותרות «זכויות (N)» ו«מסמכים (N)» במסך הפנייה לא נגעו",
+    "sent בלתי-ניתן-להשגה בכוונה; bkalot_clone_admin_create אינה חשופה ב-HTTP; pdf/audio → channel_unsupported",
+    "public_visible ו-show_in_showcase של #37 נשארים false"
+  ]
+}

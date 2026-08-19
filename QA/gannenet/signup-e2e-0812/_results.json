@@ -1,0 +1,54 @@
+{
+  "what": "§8ב + §1א — ההרשמה המיידית (שם·טלפון·מייל·סיסמה) הורצה מקצה לקצה בדפדפן, בייצור, לראשונה",
+  "when": "2026-08-12T08:46Z",
+  "where": "https://more30.com/login?mode=signup&from=https%3A%2F%2Fmore30.com%2Fgannenet",
+  "why_it_had_never_been_run": "auth.users מראה שכל חשבונות ה-QA הקודמים נוצרו דרך ה-API (full_name ו-phone ריקים). רק שני חשבונות אנושיים מ-10/08 עברו בטופס עצמו, ואף אחד מהם לא נבדק כזרימה.",
+  "email_confirmation": "כבוי בפרויקט — כל 12 המשתמשים האחרונים מאושרים ברגע היצירה, ולכן ההרשמה מחזירה סשן מיד. זו ההנחה ש-§8ב תלוי בה, והיא נמדדה ולא הונחה.",
+  "steps": [
+    {
+      "step": "signup",
+      "input": { "full_name": "בדיקת הרשמה מיידית", "phone": "0501234567", "email": "qa.signup0812a@more30.com" },
+      "result": "session מיד, ללא מסך ביניים",
+      "landed_at": "https://more30.com/gannenet",
+      "console_errors": 0,
+      "evidence": "signup-form-filled.png"
+    },
+    {
+      "step": "db",
+      "auth_users": {
+        "created_at": "2026-08-12 08:46:12.938+00",
+        "email_confirmed": true,
+        "full_name": "בדיקת הרשמה מיידית",
+        "phone": "0501234567"
+      },
+      "app_memberships": { "count": 1, "apps": "gannenet" },
+      "note": "השם והטלפון שהוקלדו בטופס נכתבו לפרופיל, והחברות נרשמה למערכת שממנה הגיע — לא לפלטפורמה בלבד."
+    },
+    {
+      "step": "signout",
+      "via": "התפריט של auth-button (יציאה)",
+      "result": "localStorage['more30-auth'] = null, הכדור חזר ל\"כניסה\"",
+      "evidence": "signed-in-menu.png"
+    },
+    {
+      "step": "signin_again",
+      "input": { "email": "qa.signup0812a@more30.com", "password": "(אותה סיסמה מההרשמה)" },
+      "result": "נכנס. הבאג של §1א (\"נרשמת, ואז הסיסמה שגויה\") אינו משחזר בכניסה של הפלטפורמה.",
+      "landed_at": "https://more30.com/gannenet/library",
+      "console_errors": 0
+    },
+    {
+      "step": "real_product_action",
+      "action": "סינון מאגר המערכים לפי תחום «עולם החי»",
+      "result": "180 → 7 כרטיסים, הראשון /gannenet/lesson/m7",
+      "signed_in_during": true,
+      "evidence": "signed-in-library-filtered.png"
+    }
+  ],
+  "verdict": "§8ב מאומת מקצה לקצה: הרשמה קצרה → כניסה מיידית לתוך המוצר → פעולת מוצר אמיתית עובדת. §1א לא משחזר בכניסה המשותפת.",
+  "not_claimed": [
+    "רק הכניסה המשותפת (auth-button + /login) נבדקה. מערכות עם טופס כניסה משלהן לא נבדקו כאן, ובהן §1א עדיין יכול להתקיים.",
+    "מסלול Google לא הורץ — הוא דורש חשבון אמיתי בדפדפן.",
+    "הכניסה נבדקה על גן-קליק בלבד; שאר 24 המערכות נמדדו בצעד הקודם רק כ\"הסקריפט מוגש\"."
+  ]
+}

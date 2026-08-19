@@ -1,0 +1,17 @@
+﻿@390  inset=98px  pill 10..86
+   live   padding-inline-end=22px     covered: "החלף מצב תצוגה" 38x32
+   fixed  padding-inline-end=98px     covered: none   CLEAR
+@834  inset=104px  pill 16..92
+   live   padding-inline-end=22px     covered: "החלף מצב תצוגה" 38x36
+   fixed  padding-inline-end=104px    covered: none   CLEAR
+@1100  inset=104px  pill 16..92
+   live   padding-inline-end=22px     covered: "החלף מצב תצוגה" 38x36
+   fixed  padding-inline-end=104px    covered: none   CLEAR
+@1280  inset=104px  pill 16..92
+   live   padding-inline-end=22px     covered: "החלף מצב תצוגה" 38x36
+   fixed  padding-inline-end=104px    covered: none   CLEAR
+@1440  inset=104px  pill 16..92
+   live   padding-inline-end=22px     covered: "החלף מצב תצוגה" 38x36
+   fixed  padding-inline-end=104px    covered: none   CLEAR
+
+5/5 widths clear with padding-inline-end: max(22px, var(--more30-auth-inset, 124px))

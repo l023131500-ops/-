@@ -1,0 +1,99 @@
+{
+  "step": "galil (24) — priority §1א: show-password toggle on the one password field",
+  "date": "2026-08-12",
+  "system": { "number": "24", "slug": "galilee-connect-hub", "path": "galil", "url": "https://more30.com/galil", "is_deployed": true, "public_visible": true },
+
+  "why_this_system": "The previous step left §1א open on 02, 03, 04, 06, 21, 24, 27, 30, 31. A grep of every candidate for type=\"password\" showed 21 and 24 each have exactly one field in source; of those two only 24 is public_visible, so it closes a system the user can actually reach.",
+
+  "scope": {
+    "type_password_fields_in_source": 1,
+    "file": "src/pages/GabaiPortal.tsx:1538",
+    "covers": "both login tabs — כניסת גבאי and כניסת מנהל render the same field (loginType only changes the label and placeholder)",
+    "not_in_scope": [
+      "SynagogueDetailsManager.tsx:264 — the admin sets a gabai password in a plain Input (no type=password); it is already readable, so an eye would add nothing",
+      "GabaiPortal.tsx:484 — AdminPasswordManager prints password_hash as visible text for the same reason"
+    ]
+  },
+
+  "side_derivation": {
+    "method": "measured on the live page BEFORE writing anything",
+    "html_dir": "rtl",
+    "field_computed_direction": "ltr",
+    "field_text_align": "start",
+    "meaning": "characters begin at the LEFT edge, so a left-hand button would normally sit on the first character typed",
+    "right_edge_occupied_by": "the existing Lock icon at right-3, with pr-10 already reserving 40px",
+    "decision": "eye on the LEFT (left-1) + pl-10, so the first character starts at 40px and clears it; the Lock keeps the right",
+    "before": { "paddingLeft": "12px", "paddingRight": "40px" },
+    "after": { "paddingLeft": "40px", "paddingRight": "40px" }
+  },
+
+  "measured_live_after_deploy": {
+    "url": "https://more30.com/galil/gabai",
+    "bundle": "https://more30.com/galil/assets/index-DE3Q6Zkw.js",
+    "field_rect": { "x": 294, "y": 452, "w": 432, "h": 40 },
+    "button_rect": { "x": 298, "y": 456, "w": 32, "h": 32 },
+    "button_contained_in_field": true,
+    "elementFromPoint_at_button_centre": "svg owned by the toggle button",
+    "lock_icon_still_at_x": 698,
+    "console_errors": 0
+  },
+
+  "round_trip": {
+    "value_preserved": "More30Test2026 unchanged in both directions",
+    "type": ["password", "text", "password"],
+    "aria_pressed": ["false", "true", "false"],
+    "aria_label": ["הצג סיסמה", "הסתר סיסמה", "הצג סיסמה"],
+    "icon": ["lucide-eye", "lucide-eye-off", "lucide-eye"]
+  },
+
+  "no_side_effects": {
+    "why_checked": "type=\"button\" is explicit; the field also carries onKeyDown Enter -> handleLogin, so a stray activation would attempt a real login",
+    "fetch_calls_during_two_toggles": 0,
+    "location_href_unchanged": true,
+    "nothing_written_to_supabase": true
+  },
+
+  "both_tabs": {
+    "gabai_tab": "username field + password field, toggle present",
+    "admin_tab": "username field gone, same password field with placeholder הזן סיסמת מנהל, toggle present, paddingLeft 40px"
+  },
+
+  "deploy": {
+    "project": "galil-more30 (prj_aPpigaz95VHTVzoEkAopeYdXGOoo)",
+    "staging_dir": "_deploy/galil-more30/galil",
+    "safety_check_before_overwrite": "live /galil/index.html compared against the staged copy: identical script/link tag set, the only live-only lines being NetFree's two injected scripts. No live-only content.",
+    "assets_swapped": {
+      "removed": ["assets/index-CN7M8vyl.js", "assets/index-amMzjW3O.css"],
+      "added": ["assets/index-DE3Q6Zkw.js", "assets/index-MzAykEnS.css"],
+      "both_answer_200_on_more30_com": true
+    },
+    "favicon_ico_deleted_from_staging": "commit ac733c8 removed public/favicon.ico (it was the builder's icon) but the staged copy still carried the 20,373-byte file from 22/07. /galil/favicon.ico now returns index.html via the rewrite (content-type text/html), so the explicit <link rel=\"icon\" href=\"/galil/pwa-512.png\"> takes over.",
+    "auth_button_preserved": "https://more30.com/auth-button.js present in the fresh index.html"
+  },
+
+  "fixes_this_deploy_carried_that_were_never_live": {
+    "reason": "the staged build was baked 10/08 03:35 and three galil commits landed after it, blocked on the Vercel quota (#83). This is open line (2) from the previous step, confirmed on a second system.",
+    "commits": [
+      "757260f — one glyph led to three different destinations, and the counter runs at a width where the nav has no glyphs",
+      "e4a55b1 — og:image was a screenshot on a bucket we do not own",
+      "ac733c8 — the tab showed the builder's icon"
+    ],
+    "verified_live": {
+      "og_image": "https://more30.com/galil/pwa-512.png (our own domain)",
+      "icon_links": "<link rel=\"icon\" type=\"image/png\" sizes=\"512x512\" href=\"/galil/pwa-512.png\">",
+      "nav_fix": "shipped in index-DE3Q6Zkw.js; not exercised at every breakpoint this step"
+    }
+  },
+
+  "traps_hit": {
+    "tsc_files_empty": "npx tsc --noEmit -p tsconfig.json exits 0 while checking ZERO files — the root tsconfig has \"files\": []. Re-ran against tsconfig.app.json with --listFiles and confirmed GabaiPortal.tsx is in the file list. Exit 0.",
+    "stale_service_worker": "2 service worker registrations were live on the domain and served the old bundle. Unregistered them and cleared all caches before verifying; the page then loaded index-DE3Q6Zkw.js."
+  },
+
+  "build": { "command": "npm run build", "vite": "5.4.19", "modules": 2194, "result": "ok" },
+
+  "not_verified": [
+    "the login itself was not completed — no gabai/admin credentials were entered against the real table",
+    "the nav/counter fix from 757260f was not re-measured at the breakpoints it targets"
+  ]
+}

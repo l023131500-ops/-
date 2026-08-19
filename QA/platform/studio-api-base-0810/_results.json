@@ -1,0 +1,44 @@
+{
+  "issue": 131,
+  "title": "studio: every API call in the client was root-relative, so under the /studio mount they hit the portal and 404'd",
+  "at": "2026-08-10T00:00:00Z",
+  "fix": "client/src/lib/queryClient.ts derives API_BASE from import.meta.env.BASE_URL (the mount the bundle was built for) instead of defaulting to \"\"",
+  "build": "node node_modules/vite/bin/vite.js build --base=/studio/",
+  "deployment": "dpl_DmvFags2UpbuQK7hz9CGF3NEM81K",
+  "checks": [
+    {
+      "name": "the built bundle inlines the mount, not an empty prefix",
+      "expected": "\"/studio/\".replace(/\\/+$/,\"\")",
+      "actual": "const wv=\"/studio/\".replace(/\\/+$/,\"\"),em=\"__PORT_5000__\".startsWith(\"__\")?wv:\"__PORT_5000__\"",
+      "pass": true
+    },
+    {
+      "name": "production serves that bundle (measured through more30.com — NetFree blocks the vercel.app host from this machine)",
+      "url": "https://more30.com/studio/assets/index-DN36X7rm.js",
+      "status": 200,
+      "bytes": 613209,
+      "pass": true
+    },
+    {
+      "name": "the browser's project fetch now goes to the mounted route and answers",
+      "request": "GET https://more30.com/studio/api/projects",
+      "status": 200,
+      "pass": true
+    },
+    {
+      "name": "no request to a root-relative /api path remains",
+      "root_relative_api_requests": [],
+      "pass": true
+    },
+    {
+      "name": "the screen draws the real empty state instead of an error",
+      "screenshot": "projects-live.png",
+      "text": "עדיין אין עבודות שמורות",
+      "pass": true
+    }
+  ],
+  "still_open": [
+    "GET https://more30.com/favicon.png => 404 — a root-relative asset on the brand shell, unrelated to the API base and not part of #131"
+  ],
+  "regression": "scripts/qa/studio-client-calls-server.mjs 11/11 pass after the rebuild"
+}

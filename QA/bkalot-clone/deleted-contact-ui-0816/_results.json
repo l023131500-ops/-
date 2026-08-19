@@ -1,0 +1,75 @@
+{
+  "step": "deleted-contact-ui-0816",
+  "priority": "§5ב — שכפול בקלות שכבה 3",
+  "line_taken_verbatim": "פתוח: הלבנה הבאה היא «איש הקשר נמחק» במסך — שורה בלי זהות שאומרת למה אין בה שם, ברשימה ובמסך הפנייה",
+  "line_source": "2bb417a / heartbeat 658",
+  "scope": "UI בלבד — apps/37-bkalot-clone/admin.html. אין מיגרציה, אין פריסת edge function, אין פריסה לייצור.",
+  "claim_measured_not_assumed": {
+    "question": "האם contact ריק פירושו «נמחק», או שהוא גם «נולד בלי»?",
+    "insert_into_cases_functions": ["bkalot_clone_intake"],
+    "intake_contact_id_source": "returning id של upsert ב-bkalot_auto.contacts — לעולם אינו null בלידה",
+    "fk": "cases_contact_id_fkey = ON DELETE SET NULL, contact_id nullable",
+    "conclusion": "פנייה קיימת עם contact_id ריק היא פנייה שאיש הקשר שלה נמחק אחריה"
+  },
+  "seed": {
+    "path": "נתיב הציבור מעל HTTP עם מפתח anon, כמו מהטופס — ולא הזרקת שורה",
+    "case_gone": { "id": 378, "contact_id": 385, "who": "אברהם ישראלי", "phone": "0501230011", "queued": false },
+    "case_kept": { "id": 379, "contact_id": 386, "who": "שרה כהן", "phone": "0501230022", "queued": false },
+    "delete": "delete from bkalot_auto.contacts where id=385 — ב-SQL ולא מהמסך; אין לה נתיב HTTP. נאמר ולא נבלע.",
+    "after_delete": "פנייה 378 שרדה, contact_id null; פנייה 379 לא זזה, contact_id 386"
+  },
+  "measured": {
+    "before_head": {
+      "port": 8138,
+      "served": "worktree מנותק ב-HEAD (2bb417a)",
+      "row_378": { "name": "— ללא איש קשר —", "sign": null },
+      "row_379": { "name": "שרה כהן", "sign": null },
+      "case_378_title": "פנייה #378 — ללא איש קשר",
+      "case_378_contact_section": "איש הקשר של הפנייה נמחק. הפנייה עצמה נשמרה במלואה.",
+      "case_379_title": "פנייה #379 — שרה כהן"
+    },
+    "after_worktree": {
+      "port": 8137,
+      "served": "apps/37-bkalot-clone עץ העבודה",
+      "row_378": {
+        "name": "איש הקשר נמחק",
+        "sign": "איש הקשר נמחק",
+        "sign_title": "הפנייה עצמה נשמרה במלואה; רק הזהות שלה הוסרה מהמאגר."
+      },
+      "row_379": { "name": "שרה כהן", "sign": null },
+      "case_378_title": "פנייה #378 — איש הקשר נמחק",
+      "case_378_contact_section": "איש הקשר של הפנייה נמחק. הפנייה עצמה נשמרה במלואה.",
+      "case_379_title": "פנייה #379 — שרה כהן"
+    },
+    "control": "שורת 379 ומסך 379 זהים אות באות בשתי הריצות — השינוי נוגע בפנייה בלי זהות בלבד"
+  },
+  "screenshots": {
+    "01-before-list.png": "28343E81CE033FE2",
+    "02-after-list.png": "1B2E3C17888225C6",
+    "01-before-case-gone.png": "A19582E3980953CD",
+    "02-after-case-gone.png": "8EDEE142127D42D0",
+    "01-before-case-kept.png": "85356304512369E3",
+    "02-after-case-kept.png": "85356304512369E3",
+    "note": "sha256 חלקי. שני ה-case-kept זהים בכוונה — זו הבקרה. הריצה הראשונה החזירה גם את שני ה-case-gone זהים בייט-בייט, מפני שגללה אל מקטע «איש הקשר» והכותרת יצאה מהמסך (screenshot-evidence-below-the-fold); shot.mjs תוקן לצלם בראש הדף, ומיקום הכותרת נמדד — title_top_px 119 בשתי הריצות."
+  },
+  "test_mode": {
+    "queued": false,
+    "documents": 0,
+    "outbound_queue": "8 לפני ואחרי",
+    "sent_rows": 0,
+    "delivery_log": "3 לפני ואחרי",
+    "outbound_calls": 0
+  },
+  "baseline_before_and_after": {
+    "cases": 0, "case_status_log": 0, "case_rights": 0, "documents": 0,
+    "admin_users": 1, "admin_sessions": 5, "templates": 2, "contacts": 4,
+    "outbound_queue": 8, "delivery_log": 3, "rights_catalog": 888
+  },
+  "rollback": "בפקודות נפרדות לפי טבלה — cte-delete-sees-prestatement-snapshot. נמחקו: cases 378+379, contact 386 (385 נמחק כחלק מהמדידה עצמה), admin_sessions של 115, admin_users 115 (מנהל מדידה שנוצר ב-bkalot_clone_admin_create ואינו קיים עוד).",
+  "not_built": [
+    "אין פריסה לייצור — bkalot-studio/admin עדיין מגיש את הנוסח הישן",
+    "אין סינון «איש קשר נמחק / קיים» ואין ספירה שלהם",
+    "אין שחזור איש קשר ואין רישום מי מחק ומתי — cases אינה מחזיקה עותק של הזהות",
+    "השורה אינה אומרת מה היה השם שנמחק, מפני שהמסד אינו מחזיק אותו עוד"
+  ]
+}

@@ -1,0 +1,69 @@
+{
+  "at": "2026-08-08T22:05:55.467Z",
+  "page": "https://more30.com/admin/activity",
+  "join_rejects_rows_at_run": 0,
+  "pass": 12,
+  "fail": 0,
+  "results": [
+    {
+      "check": "הכתובת מגישה 200",
+      "pass": true,
+      "detail": "status=200"
+    },
+    {
+      "check": "ה-HTML קורא ל-more30_admin_join_rejects",
+      "pass": true,
+      "detail": "הקריאה אינה בעמוד שהייצור מגיש"
+    },
+    {
+      "check": "כותרת הטבלה: מארח",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "כותרת הטבלה: ניסיונות",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "כותרת הטבלה: דגימת נתיב",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "כותרת הטבלה: ב-trusted_origins",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "כותרת הטבלה: ראשון",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "כותרת הטבלה: אחרון",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "הבלוק סגור ב-HTML עצמו ונפתח רק אחרי תשובה תקינה",
+      "pass": true,
+      "detail": "ברירת המחדל אינה hidden"
+    },
+    {
+      "check": "הבלוק נוסף אחרי ציור העמוד ולא לפניו",
+      "pass": true,
+      "detail": "הקריאה קודמת לציור, ולכן נפילה שלה תשאיר עמוד ריק"
+    },
+    {
+      "check": "more30_admin_join_rejects עדיין חסום לאנונימי",
+      "pass": true,
+      "detail": "status=401 body={\"code\":\"42501\",\"details\":null,\"hint\":null,\"message\":\"forbidden\"}"
+    },
+    {
+      "check": "more30_admin_activity עדיין חסום לאנונימי",
+      "pass": true,
+      "detail": "status=401 body={\"code\":\"42501\",\"details\":null,\"hint\":null,\"message\":\"super admin only\"}"
+    }
+  ]
+}

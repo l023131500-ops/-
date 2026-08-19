@@ -1,0 +1,16 @@
+שכפול בקלות שכבה 1: ענף situation_unknown מהשרת נמדד בייצור (§5ב, אימות)
+
+המשך ישיר ל-f2bc4e6 (topic_no_invalid): קריאת שאר ענפי האימות ב-0058
+שורה-שורה מול MESSAGES/CODE_FIELD בלקוח מצאה ש-situation_unknown (שורות
+118-121) מעולם לא נמדד מול הפונקציה הפרוסה בייצור.
+
+POST ישיר אל bkalot-clone-intake, situation="not_a_real_situation_xyz":
+HTTP 200, error=situation_unknown, allowed=24 ערכים זהים מילה-במילה
+ל-<select id="situation"> בלקוח — הענף אינו נגיש מהטופס הגלוי, כמו
+topic_no_invalid. MESSAGES/CODE_FIELD כבר נכונים בלקוח — אין שינוי קוד,
+מדידה בלבד. הבדיקה חוזרת לפני ה-insert (0058) — אפס שורות נכתבו.
+
+מוגן: לא נגעתי ב-08/09/bkalut-app/bkalot-admin/zr_*/NEDARIM3873. מצב טסט.
+
+ראיות: QA/bkalot-clone/situation-unknown-live-0817/probe-live.txt.
+heartbeat: MCP לא מחובר לסשן — _heartbeat-pending.sql מצטרף לתור הקיים.

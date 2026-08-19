@@ -1,0 +1,22 @@
+﻿=== can the login pill reach the platform from each mount? ===
+  PASS  /  (HTTP 401)
+  PASS  /torah  (HTTP 401)
+  PASS  /tamlul  (HTTP 401)
+  PASS  /modaot  (HTTP 401)
+  PASS  /imud  (HTTP 401)
+  PASS  /briut  (HTTP 401)
+  PASS  /bkalot  (HTTP 401)
+  PASS  /smel  (HTTP 401)
+  PASS  /egod  (HTTP 401)
+  PASS  /chatzor  (HTTP 401)
+  PASS  /chizukim  (HTTP 401)
+  PASS  /orech  (HTTP 401)
+  PASS  /zchuyot  (HTTP 401)
+  PASS  /galil  (HTTP 401)
+  PASS  /studio  (HTTP 401)
+  PASS  /mechiron  (HTTP 401)
+  PASS  /kupot  (HTTP 401)
+  PASS  /nadlan  (HTTP 401)
+  PASS  /kesef  (HTTP 401)
+  FAIL  /kiosk/  << Failed to fetch
+        CSP: Connecting to 'https://uhnrgujbdxhhmoxcjria.supabase.co/rest/v1/rpc/more30_profile_get' violates the following Content Security Policy directive: "connect-src '

@@ -1,0 +1,46 @@
+kiosk (35): two of the four tables in the console were never wrapped
+
+Twice a run has found a console table dragging the whole page sideways at 390px
+while it was on that screen for another reason — clients-console-0811 on #c-list,
+dialogs-rtl-admin-0811 on #users. Neither asked the follow-up, which is a grep
+and not a rendering: app.js builds four tables and only two of them carried the
+overflow-x:auto wrapper.
+
+Both of the others are defects at 390px.
+
+  #e-list  הוספת מכשיר      table 548px in a 276px card → main 605px in 390px
+  #l-list  ספריית קישורים   table 408px in a 276px card → main 465px in 390px
+
+#l-list is the one worth naming: its URL column already carries max-width:220px
+with an ellipsis, so it looks like a table that was thought about at a narrow
+width. A per-cell cap cannot fix a table whose sum does not fit. #e-list is the
+worse of the two — its אתר cell has no cap at all, so how far it drags the
+console is a function of whatever URL the customer pasted.
+
+Wrapped both. main is 390px in 390px on all three tables, both modes.
+
+Graded as reflow (WCAG 1.4.10 — at 320 CSS px content must not require scrolling
+in two dimensions), not as an unreachable control, and the run is built so it
+could not pass for the wrong reason in any of the three ways earlier runs paid
+for:
+
+- documentElement.scrollWidth reads 950px in *both* states, because main.main is
+  overflow:auto and absorbs the drag. Kept as a `method` row, not an assertion.
+- "the last button is inside the viewport" fails *with* the fix — a scroll
+  container starts at the RTL origin. Not asserted.
+- the negative control removes the wrapper from the DOM rather than setting
+  overflow-x:visible, which computes back to auto beside an overflow-y that is
+  auto and rebuilds the fixed state (dialogs-rtl-admin-0811). Children are moved,
+  not re-created, so the onclick bindings survive.
+
+#c-list is graded alongside as a positive control: a harness that reports no
+defect on the unwrapped pair and was never shown passing on the pair that
+carries the fix proves nothing.
+
+QA/kiosk/narrow-tables-0811 — 60/60 in a real Chromium, both colorScheme values
+× 390px and 1200px, six screenshots. 151/152 on node --test, the documented
+baseline, unchanged: this step touches public/js/app.js only.
+
+Open after it is a copy decision and not an accessibility one — #e-list's אתר
+column is contained but not bounded, where the other two tables cap theirs at
+230px and 220px.

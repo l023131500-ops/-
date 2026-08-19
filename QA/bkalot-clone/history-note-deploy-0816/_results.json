@@ -1,0 +1,131 @@
+{
+  "step": "history-note-deploy-0816",
+  "line_taken_verbatim": "(2) הפריסה — בייצור שלושת המסומנים 0, אותו פיצול כמו 0088 → 8a577bc → c3b7c45",
+  "kind": "deploy-only",
+  "code_change": false,
+  "migration": false,
+  "edge_functions_touched": false,
+  "edge_versions_unchanged": { "bkalot-clone-admin": "v8", "bkalot-clone-intake": "v1" },
+
+  "file_deployed_is_the_file_in_source": {
+    "source": { "path": "apps/37-bkalot-clone/admin.html", "bytes": 121442, "md5": "4B991239ED01763A02D723F50986DFBF" },
+    "dist_after_stage": { "path": "portal/dist/bkalot-studio/admin.html", "bytes": 121442, "md5": "4B991239ED01763A02D723F50986DFBF" },
+    "dist_before_stage": { "bytes": 117620, "md5": "2A360EB350F10F37D21BFD3418B80885", "deployed_by": "24f8a7d" },
+    "identical": true
+  },
+
+  "deployment": {
+    "id": "dpl_GPL8tcxFdECyRgXYhrUbt5veZzb8",
+    "url": "more30-portal-dkdlnsdds-l023131500-ops-projects.vercel.app",
+    "target": "production",
+    "state": "READY",
+    "files": 38,
+    "from": "portal/dist",
+    "prebuilt_flag": false,
+    "aliased_to": "more30.com"
+  },
+
+  "markers": {
+    "classified_before_first_run_in": "classify.mjs",
+    "NEW": {
+      "fillHistoryNoteCell": "0 → 2",
+      "td.why": "0 → 1",
+      "<th>למה</th>": "0 → 1",
+      "השרת אינו מחזיר את הנימוק": "0 → 1",
+      "לא נכתב נימוק על המעבר הזה": "0 → 1",
+      "תווים, כפי שנשמרו": "0 → 1",
+      "note_too_long": "0 → 1",
+      "overflow-wrap": "0 → 2"
+    },
+    "DIFF": {
+      "fillHistoryWhoCell": "3 → 4",
+      "Object.hasOwn": "8 → 10",
+      "מי הכריע": "12 → 13"
+    },
+    "OLD_control_unmoved": {
+      "רצף ההכרעות": 4,
+      "handsBit": 2,
+      "producedBit": 2,
+      "fillQueueCell": 2,
+      "fillTemplateCell": 4,
+      "fillCreatedCell": 4
+    },
+    "reclassified_after_measurement": {
+      "מי הכריע": "תוכנן בקרה, נמדד 12 בייצור מול 13 במקור — ההערה החדשה מזכירה אותו בשמו, ולכן DIFF"
+    },
+    "both_addresses": ["https://more30.com/bkalot-studio/admin", "https://more30.com/bkalot-studio/admin/"],
+    "new_zero_in_live_before": true,
+    "new_equals_source_after": true,
+    "diff_below_source_before": true,
+    "diff_equals_source_after": true,
+    "old_unchanged_before_and_after": true,
+    "replacement_chars": 0,
+    "double_encoded": 0,
+    "bytes": { "before": 117856, "after": 121678, "source": 121442, "netfree_delta": 236 },
+    "control_urls_unmoved": { "https://more30.com/bkalot-studio/": 32558, "https://more30.com/": 3517 }
+  },
+
+  "live_browser": {
+    "viewport": "1280x900",
+    "address": "https://more30.com/bkalot-studio/admin?cb=deploy0816",
+    "login": "דרך המסך, חשבון 94 qa-note-deploy@more30.test",
+    "console_messages": 0,
+    "table_headers": ["מ־", "אל", "מי הכריע", "מתי", "למה"],
+    "states": {
+      "A_case_259_two_notes": {
+        "row_57": { "text_chars": 52, "title": "52 תווים, כפי שנשמרו" },
+        "row_58": { "text_chars": 59, "title": "59 תווים, כפי שנשמרו" },
+        "each_note_on_its_own_row": true,
+        "why_px": 394
+      },
+      "B_case_260_no_note": {
+        "text": "—",
+        "title": "לא נכתב נימוק על המעבר הזה",
+        "stale_span": false,
+        "child_elements": 0
+      },
+      "C_case_261_500_chars": {
+        "chars": 500,
+        "title": "500 תווים, כפי שנשמרו",
+        "truncated": false,
+        "ellipsis": false,
+        "why_px": 397,
+        "cell_height_px": 302,
+        "lines": 13,
+        "white_space": "pre-wrap",
+        "overflow_wrap": "anywhere"
+      }
+    },
+    "no_horizontal_scroll": { "doc_scrollWidth": 1265, "doc_clientWidth": 1265, "table_px": 950 },
+    "screenshots_md5": {
+      "live-01-two-notes.png": "0678BF566B3DBABEAB7E0EED3D1B53A5",
+      "live-02-no-note.png": "A09ABFC60917014A3D99A410471EAD7C",
+      "live-03-500-chars.png": "5240A371B434A2F8D7D3A9E5C13341B6"
+    }
+  },
+
+  "not_measured_in_production": {
+    "missing_key_state": "הקורא החי מחזיר את note בכל שורה מאז c6e4a81; היעדר המפתח אינו ניתן לזריעה מול המוצר. נמדד בצד השרת ב-0091 (has_note_key=false בכל חמש השורות) ובקוד ב-aff6455."
+  },
+
+  "test_mode": {
+    "queued": [false, false, false],
+    "documents": 0,
+    "documents_with_queue_id": 0,
+    "cases_in_sent": 0,
+    "outbound_queue": 8,
+    "outbound_queue_with_sent_at": 0,
+    "delivery_log": 3
+  },
+
+  "rollback": {
+    "per_table_separate_statements": true,
+    "reason": "cte-delete-sees-prestatement-snapshot",
+    "contacts_by_id_not_by_phone": [266, 267, 268],
+    "deleted": { "case_status_log": 4, "case_rights": 126, "cases": 3, "contacts": 3, "admin_sessions": 2, "admin_users": 1 },
+    "after": { "cases": 0, "case_status_log": 0, "case_rights": 0, "documents": 0, "admin_users": 1, "admin_sessions": 5, "templates": 2, "rights_catalog": 888, "contacts": 4, "outbound_queue": 8, "delivery_log": 3 },
+    "baseline_exact": true
+  },
+
+  "protected_untouched": ["apps/08-bkalut-app", "apps/09-bkalot-admin", "bkalut-app", "bkalot-admin", "zr_*", "NEDARIM3873", "csj", "csj_src", "igud"]
+}

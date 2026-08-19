@@ -1,0 +1,27 @@
+{
+  "measured_at": "2026-08-17T04:32:00.000Z",
+  "url": "https://more30.com/kiosk/console",
+  "issue": "#216 (SYSTEMS_STATUS.md line ~1615, logged 13/08 as open)",
+  "claim_being_rechecked": "shared auth pill (<more30-auth>) covers the enroll button, first-screen action, on /kiosk/console",
+  "method": "elementFromPoint at the enroll button's leading edge and centre, after real admin login, at both a mobile and a desktop width",
+  "widths": {
+    "390x844": {
+      "pillRect": { "l": 10, "r": 86, "t": 8, "b": 44 },
+      "enrollBtnRect": { "l": 165, "r": 285, "t": 71, "b": 102 },
+      "verticalGapPx": 27,
+      "elementFromPointAtLeadingEdge": "MAIN.main",
+      "overlap": false
+    },
+    "1440x900": {
+      "pillRect": { "l": 16, "r": 92, "t": 12, "b": 48 },
+      "enrollBtnRect": { "l": 104, "r": 225, "t": 29, "b": 60 },
+      "horizontalGapPx": 12,
+      "elementFromPointAtLeadingEdge": "BUTTON.btn btn-primary btn-sm",
+      "overlap": false
+    }
+  },
+  "authInsetVarPublished": "98px",
+  "conclusion": "not an active gap. The 13/08 fix (page-local padding-inline-end rule reading --more30-auth-inset, per memory auth-button-overlaps-navs.md) is live in production at both widths. #216 closes.",
+  "note": "a second element also matched the button-text query — a sidebar nav item with data-view=\"enroll\" and a 0x0 rect (collapsed/hidden at these widths, unrelated to the pill). The visible, clickable button is #add; that is the one measured above.",
+  "evidence": ["console-390-clear.png", "console-1440-clear.png"]
+}

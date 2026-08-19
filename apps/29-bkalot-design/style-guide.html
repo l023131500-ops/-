@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>בקלות — מדריך סגנון (Design System)</title>
+<link rel="stylesheet" href="bkalot-theme.css">
+<style>
+  .wrap{max-width:1080px;margin:0 auto;padding:40px 24px 80px}
+  header.sg{text-align:center;padding:48px 0 32px;border-bottom:1px solid var(--border);margin-bottom:40px}
+  .logo{display:inline-flex;align-items:center;gap:12px;font-family:var(--font-heading);font-weight:700;font-size:2rem;color:var(--teal-d)}
+  header.sg p{color:var(--muted);margin-top:10px}
+  section{margin-bottom:56px}
+  section > h2{font-size:1.6rem;margin-bottom:6px}
+  section > .desc{color:var(--muted);margin-bottom:22px;font-size:.95rem}
+  .swatches{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:16px}
+  .sw{border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;background:var(--surface)}
+  .sw .chip{height:76px}
+  .sw .meta{padding:10px 12px}
+  .sw .nm{font-weight:700;font-size:.9rem}
+  .sw .hex{color:var(--muted);font-size:.8rem;font-family:monospace;direction:ltr;text-align:right}
+  .sw .cap{color:var(--faint);font-size:.75rem;margin-top:2px}
+  .type-row{padding:12px 0;border-bottom:1px dashed var(--border)}
+  .type-row .lbl{color:var(--muted);font-size:.8rem}
+  .btn-row{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+  .badge-row{display:flex;gap:12px;flex-wrap:wrap}
+  .card-demo{max-width:420px}
+  .theme-toggle{position:fixed;top:16px;left:16px;z-index:9}
+  code{background:var(--surface-2);padding:2px 7px;border-radius:6px;font-size:.85rem;direction:ltr;display:inline-block}
+</style>
+</head>
+<body>
+<button class="bk-btn bk-btn--ghost theme-toggle" onclick="document.documentElement.dataset.theme = document.documentElement.dataset.theme==='dark'?'':'dark'">מצב כהה / בהיר</button>
+<div class="wrap">
+  <header class="sg">
+    <div class="logo">
+      <svg width="40" height="40" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+        <rect x="3" y="3" width="42" height="42" rx="11" stroke="currentColor" stroke-width="2.5"/>
+        <path d="M15 24 L21 30 L33 17" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span>בקלות</span>
+    </div>
+    <p>מדריך סגנון · מערכת עיצוב גלובלית לכל המערכות</p>
+    <p style="font-size:.85rem;margin-top:6px">כל הצבעים, הפונטים והרכיבים נטענים מקובץ אחד: <code>bkalot-theme.css</code></p>
+  </header>
+
+  <section>
+    <h2>צבעי מותג</h2>
+    <p class="desc">הצבעים המרכזיים של בקלות. שינוי מתבצע ב-<code>tokens.json</code> ומתעדכן בכל המערכות.</p>
+    <div class="swatches" id="brand"></div>
+  </section>
+
+  <section>
+    <h2>משטחים וטקסט</h2>
+    <div class="swatches" id="neutral"></div>
+  </section>
+
+  <section>
+    <h2>צבעים סמנטיים</h2>
+    <p class="desc">חובה לבדוק · מומלץ לבדוק · טיפ לשיפור · מידע</p>
+    <div class="swatches" id="semantic"></div>
+  </section>
+
+  <section>
+    <h2>טיפוגרפיה</h2>
+    <div class="type-row"><div class="lbl">כותרת ראשית · Frank Ruhl Libre 900</div><h1 style="font-size:2.6rem">בדיקה מקיפה על כל הזכויות</h1></div>
+    <div class="type-row"><div class="lbl">כותרת משנה · Frank Ruhl Libre 700</div><h2>מאגר הזכויות וההטבות</h2></div>
+    <div class="type-row"><div class="lbl">כותרת סעיף · Frank Ruhl Libre 600</div><h3>איך זה עובד</h3></div>
+    <div class="type-row"><div class="lbl">גוף הטקסט · Heebo 400</div><p>מלאו שאלון קצר — והמערכת תבנה עבורכם רשימת המלצות מותאמת אישית לפי המצב המשפחתי, ההכנסה והבריאות שלכם.</p></div>
+  </section>
+
+  <section>
+    <h2>כפתורים</h2>
+    <div class="btn-row">
+      <button class="bk-btn">כניסה למערכת</button>
+      <button class="bk-btn bk-btn--ghost">ביטול</button>
+      <button class="bk-btn bk-btn--danger">מחיקה</button>
+    </div>
+  </section>
+
+  <section>
+    <h2>תגיות עדיפות (Badges)</h2>
+    <div class="badge-row">
+      <span class="bk-badge bk-badge--must">חובה לבדוק</span>
+      <span class="bk-badge bk-badge--rec">מומלץ לבדוק</span>
+      <span class="bk-badge bk-badge--tip">טיפ לשיפור</span>
+    </div>
+  </section>
+
+  <section>
+    <h2>כרטיס</h2>
+    <div class="bk-card card-demo">
+      <span class="bk-badge bk-badge--must" style="margin-bottom:10px">חובה לבדוק</span>
+      <h3 style="margin-bottom:8px">מענק עבודה</h3>
+      <p style="color:var(--muted);font-size:.95rem">הטבה לעובדים בשכר נמוך. סיכוי זכאות: גבוה.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>טבלת נתונים</h2>
+    <p class="desc">רכיב טבלה משותף (<code>bk-table</code>) — אחיד בקטלוג, ניהול והשוואת מחירים. שורות זוגיות + הדגשה בריחוף. הוסיפו <code>bk-table--num</code> לעמודות מספריים.</p>
+    <div class="bk-table__wrap">
+      <table class="bk-table bk-table--num">
+        <thead><tr><th>נושא</th><th>ספק</th><th>מחיר חודשי</th><th>סיכוי זכאות</th></tr></thead>
+        <tbody>
+          <tr><td>ביטוח בריאות משלים</td><td>כללית</td><td>₪ 138.50</td><td><span class="bk-badge bk-badge--tip">גבוה</span></td></tr>
+          <tr><td>ביטוח שיניים</td><td>מכבי</td><td>₪ 89.00</td><td><span class="bk-badge bk-badge--rec">בינוני</span></td></tr>
+          <tr><td>מענק עבודה</td><td>מס הכנסה</td><td>—</td><td><span class="bk-badge bk-badge--tip">גבוה</span></td></tr>
+          <tr><td>הנחת ארנונה</td><td>עירייה</td><td>₪ 42.00</td><td><span class="bk-badge bk-badge--must">נמוך</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>טפסים ושדות קלט</h2>
+    <p class="desc">רכיבי טופס משותפים (<code>bk-field</code> / <code>bk-label</code> / <code>bk-input</code> / <code>bk-select</code> / <code>bk-textarea</code>) — עקביים בכל המערכות, כולל מצב פוקוס ושגיאה.</p>
+    <div style="max-width:520px">
+      <div class="bk-field">
+        <label class="bk-label" for="sg-name">שם מלא</label>
+        <input class="bk-input" id="sg-name" placeholder="ישראל ישראלי">
+      </div>
+      <div class="bk-field">
+        <label class="bk-label" for="sg-fund">קופת חולים</label>
+        <select class="bk-select" id="sg-fund">
+          <option>כללית</option><option>מכבי</option><option>מאוחדת</option><option>לאומית</option>
+        </select>
+      </div>
+      <div class="bk-field">
+        <label class="bk-label" for="sg-err">תעודת זהות (דוגמת שגיאה)</label>
+        <input class="bk-input bk-input--error" id="sg-err" value="123">
+        <span class="bk-help bk-help--error">מספר תעודת זהות חייב להכיל 9 ספרות.</span>
+      </div>
+      <div class="bk-field">
+        <label class="bk-label" for="sg-note">הערות</label>
+        <textarea class="bk-textarea" id="sg-note" placeholder="פרטים נוספים…"></textarea>
+      </div>
+      <button class="bk-btn">שליחה</button>
+    </div>
+  </section>
+</div>
+<script>
+const T = {
+  brand:   [["--navy","כחול-ירוק כהה"],["--teal","טורקיז ראשי"],["--teal-d","טורקיז כהה"],["--gold","זהב"]],
+  neutral: [["--bg","רקע"],["--surface","משטח"],["--surface-2","משטח משני"],["--text","טקסט"],["--muted","טקסט משני"],["--border","גבול"]],
+  semantic:[["--must","חובה"],["--rec","מומלץ"],["--tip","טיפ"],["--health","בריאות"]]
+};
+const cs = getComputedStyle(document.documentElement);
+for (const [id, list] of Object.entries(T)) {
+  document.getElementById(id).innerHTML = list.map(([v, cap]) => {
+    const hex = cs.getPropertyValue(v).trim();
+    return `<div class="sw"><div class="chip" style="background:${hex}"></div><div class="meta"><div class="nm" style="direction:ltr;text-align:right;font-family:monospace">${v}</div><div class="hex">${hex}</div><div class="cap">${cap}</div></div></div>`;
+  }).join("");
+}
+</script>
+</body>
+</html>

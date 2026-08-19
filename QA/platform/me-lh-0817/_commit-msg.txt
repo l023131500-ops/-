@@ -1,0 +1,15 @@
+/me: Lighthouse measured for the first time (perf 98, a11y already 100, SEO 63) - last ROUTES entry now covered
+
+node scripts/qa/lighthouse-run.mjs QA/platform/me-lh-0817 me - first-ever score for
+route key "me" (/me), the last entry left unmeasured in ROUTES after home/login/subscribe.
+Auth-gated route measured unauthenticated, since that is what production actually serves
+to an unauthenticated Lighthouse crawl - real data, not invented. Accessibility already
+full (100), no failedAudits to fix, no code change this round. SEO (63) explained by
+is-crawlable - same intentional noindex on account-flow pages already documented for
+/login and /subscribe. Best Practices (77) matches the documented NetFree
+card-injection.js pattern already covering dozens of other routes; not re-investigated
+here. Performance 98, above the 90 threshold. Every entry in ROUTES
+(scripts/qa/lighthouse-run.mjs) has now been measured at least once as of 17/08.
+Evidence: QA/platform/me-lh-0817/_lighthouse.json.
+Supabase MCP not connected this session - heartbeat written as
+QA/platform/me-lh-0817/_heartbeat-pending.sql, not a real core.run_progress row.

@@ -1,0 +1,103 @@
+{
+  "beat": "preflight: מה שממילא ייפול נעצר לפני השליחה — לא נוצרת פנייה ושום שדה לא מתאפס",
+  "date": "2026-08-14",
+  "file": "apps/37-bkalot-clone/index.html",
+  "open_line_taken_from": "c92d15e (heartbeat 590)",
+  "open_line_verbatim": "הטופס אומר מה נפל, למה, ומחזיר מיקוד — ואינו מונע את הנפילה מראש; חסימה לפני השליחה נוגעת בחוזה של 0058 ולכן נשקלת בנפרד; זו הפעימה הבאה",
+  "harness": {
+    "note": "שני שרתים סטטיים מול אותו edge חי ואותו מסד; ההבדל יכול להיות רק בין שתי גרסאות של המסך",
+    "8150_prev": { "bytes": 25483, "md5": "B24A10595849FA24B1795F23C3F2A9F6", "source": "git show HEAD:apps/37-bkalot-clone/index.html" },
+    "8151_fixed": { "bytes": 27637, "md5": "2A1B545C8CA50CDD1191A17C8D24EE31" },
+    "prev_md5_equals_deployed": true,
+    "prev_md5_source_of_truth": "heartbeat 590 רשם את אותו MD5 בדיוק כקובץ שנפרס ב-c92d15e",
+    "viewport": "1280x900",
+    "typed_by": "pressSequentially (הקשות מקלדת, לא השמה ל-value)",
+    "console_messages": 0
+  },
+  "what_buys_the_beat": "בקשה שלא יצאה, ולא טקסט על המסך: כל בקשה אל ENDPOINT נספרה ב-page.on(\"request\")",
+  "measurements": [
+    {
+      "id": "prev-1e3",
+      "server": 8150,
+      "topic_no_typed": "1e3",
+      "field_checkValidity": true,
+      "form_checkValidity": true,
+      "intake_requests": 1,
+      "case_created": 143,
+      "title": "הפנייה נקלטה",
+      "line_on_screen": "שדות שלא נשמרו: מספר נושא — צריך מספר שלם",
+      "form_after": { "full_name": "", "phone": "", "situation": "", "consent": false },
+      "result_top_px": 673,
+      "field_top_px": 240,
+      "screenshot": "01-prev-1e3-sent-and-lost.png"
+    },
+    {
+      "id": "fixed-1e3",
+      "server": 8151,
+      "topic_no_typed": "1e3",
+      "field_checkValidity": true,
+      "form_checkValidity": true,
+      "intake_requests": 0,
+      "case_created": null,
+      "title": "הפנייה לא נשלחה",
+      "line_on_screen": "מספר נושא — צריך מספר שלם. תקנו ושלחו שוב.",
+      "focused_id_after": "topic_no",
+      "topic_value_after": "1e3",
+      "topic_aria_invalid": "true",
+      "aria_invalid_elements_on_page": 1,
+      "form_after": { "full_name": "בדיקת חסימה מוקדמת", "phone": "050-1234567", "situation": "single_parent", "consent": true },
+      "nothing_was_reset": true,
+      "result_top_px": 705,
+      "field_top_px": 272,
+      "both_above_the_fold": true,
+      "screenshot": "02-fixed-1e3-blocked.png"
+    },
+    {
+      "id": "fixed-control-7",
+      "server": 8151,
+      "topic_no_typed": "7",
+      "intake_requests": 1,
+      "case_created": 144,
+      "title": "הפנייה נקלטה",
+      "has_error_line": false,
+      "aria_invalid_elements_on_page": 0,
+      "focused_tag_after": "BODY",
+      "kind_after": "info",
+      "form_reset": true,
+      "screenshot": "03-fixed-control-7.png"
+    }
+  ],
+  "db_says": [
+    { "case_id": 143, "topic_no": null, "raw_topic_no": "1e3", "rights": 42 },
+    { "case_id": 144, "topic_no": 7, "raw_topic_no": "7", "rights": 42 }
+  ],
+  "db_says_note": "שתי פניות בלבד — 143 ו-144, ובאמצע ניסיון השליחה החסום. הוא לא הותיר שורה, וזו אותה עובדה שנמדדה כ-intake_requests=0 משני צדדים.",
+  "test_mode": {
+    "documents": 0,
+    "outbound_queue": 8,
+    "outbound_queue_rows_with_sent_at": 0,
+    "delivery_log": 3,
+    "cases_in_sent": 0,
+    "outbound_queue_fingerprint_baseline": "050e54ab59235d105af3a10c785dbaea",
+    "outbound_queue_fingerprint_during": "050e54ab59235d105af3a10c785dbaea",
+    "outbound_queue_fingerprint_after": "050e54ab59235d105af3a10c785dbaea",
+    "nothing_left_the_system": true
+  },
+  "rollback": {
+    "case_rights_deleted": 84,
+    "cases_deleted": 2,
+    "contacts_deleted": 1,
+    "contacts_note": "הטלפון נשמר מנורמל לספרות (0501234567) ולא כפי שהוקלד; המחיקה לפי phone='050-1234567' החזירה 0 ונתפסה בספירה, ורק אחריה נמחקה שורה 149.",
+    "after": { "cases": 0, "case_rights": 0, "documents": 0, "contacts": 4, "outbound_queue": 8, "delivery_log": 3, "catalog": 888 },
+    "identical_to_baseline": true
+  },
+  "screenshot_md5": {
+    "01-prev-1e3-sent-and-lost.png": "655B8627D7DCFDD3EB33E92A6FA7E177",
+    "02-fixed-1e3-blocked.png": "692FCDB4854B6F22240BF119F3BC137A",
+    "03-fixed-control-7.png": "6E1E3A1D475DA4F522438D5D74FC87EC"
+  },
+  "protected_untouched": ["08-bkalut-app", "09-bkalot-admin", "supabase/functions", "bkalut-app", "bkalot-admin", "zr_*", "NEDARIM3873", "csj", "csj_src", "igud"],
+  "no_migration": true,
+  "edge_functions_untouched": { "bkalot-clone-intake": "v1", "bkalot-clone-admin": "v7" },
+  "not_deployed_yet": true
+}

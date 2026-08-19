@@ -1,0 +1,16 @@
+NEEDS_USER: the kupot deploy this file asks you for ran two days ago, and its own acceptance check passes
+
+The live block in the Vercel-quota section was still asking you to run one
+command against _deploy/kupot-more30. That deploy was accepted on 10/08 14:00Z
+(dpl_AyL2TUY2T2ycfkRoE3JhPgsDJkcD, READY) when the rolling window freed a slot,
+and production moved index-BlT4DUpe.js -> index-DbBm6hnF.js. Only the text was
+stale — the same shape as the imud entry that sat on two env vars for 17 days.
+
+Checked before rewriting rather than trusted: the acceptance criterion the block
+itself names — /kupot/api/hf/meta must answer application/json where it answered
+text/html — passes in a browser through more30.com. Loading /kupot/ sends
+/kupot/api/hf/meta and /kupot/api/hf/topics, both 200 from the function.
+
+The two writes stay unsent and are said so: a valid switch-lead body writes a
+real lead into a live system. #154 closed on the reading of the shared base
+constant, not on firing them.

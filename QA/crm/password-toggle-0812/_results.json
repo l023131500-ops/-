@@ -1,0 +1,60 @@
+{
+  "system": "30 / zchuyotpro-crm / CRM זכויות",
+  "priority_item": "§1א — הצג סיסמה בכל שדות הסיסמה",
+  "commit": "91679ff",
+  "deployment": "dpl_3FFRhFdRfgwMCUNMvPQf87ySYigH (production, READY, deployed from source — NOT --prebuilt)",
+  "measured_on": "https://more30.com/crm/auth?cb=0812crm1",
+  "fields": {
+    "signin-password": {
+      "rendered_live": true,
+      "paddingRight": "40px",
+      "paddingLeft": "12px",
+      "textAlign": "start",
+      "dir": "ltr",
+      "inputRect": [311, 396, 398, 36],
+      "buttonRect": [673, 400, 28, 28],
+      "button_contained_in_field": true,
+      "elementFromPoint_returns_button": true,
+      "round_trip": "password -> text -> password; הצג סיסמה -> הסתר סיסמה -> הצג סיסמה; eye -> eye-off -> eye",
+      "value_preserved": "More30Test2026",
+      "network_calls_during_toggles": 0,
+      "location_href_unchanged": true
+    },
+    "signup-password": {
+      "rendered_live": true,
+      "paddingRight": "40px",
+      "button_contained_in_field": true,
+      "elementFromPoint_returns_button": true,
+      "rule_text": "לפחות 6 תווים",
+      "aria_describedby": "signup-password-rule",
+      "minLength": 6,
+      "network_calls_during_toggles": 0
+    },
+    "new-password": {
+      "rendered_live": false,
+      "why": "/crm/reset-password gates its whole form on a recovery session (ready state set by PASSWORD_RECOVERY or SIGNED_IN); without one it renders only the 'מאמת את הקישור...' spinner",
+      "shipped_verified": "the route chunk reset-password-BncCdbhg.js, fetched live from the domain, contains new-password-rule, confirm-password and הסתר סיסמה"
+    },
+    "confirm-password": {
+      "rendered_live": false,
+      "why": "same gate as new-password",
+      "shipped_verified": "same chunk"
+    }
+  },
+  "css_cascade_check": {
+    "file": ".vercel/output/static/assets/styles-WejPaobM.css",
+    "px-3_index": 32828,
+    "pr-10_index": 34138,
+    "pr-10_wins_over_Input_own_px-3": true
+  },
+  "assets_ok_after_deploy": "3 stylesheets with 102/97/19 rules — the mount rewrite in vercel.json survived, no unstyled page",
+  "not_verified": [
+    "no real login succeeded: test@more30.com / More30Test2026 does not exist in system 30 — Supabase returned 'Invalid login credentials'. Not created, because SignUpForm also creates a tenant/organization row (real data).",
+    "the two reset-password fields were never rendered in a browser (see above)",
+    "no autocomplete attribute on any of the four fields (pre-existing)"
+  ],
+  "incidental_findings": [
+    "the wrong-password toast DOES render on system 30 ('שגיאת התחברות / Invalid login credentials') — unlike zchuyot (22) and egod (15)",
+    "vite dev cannot serve this app's CSS at all: src/styles.css fails with '[lightningcss] @import rules must precede all rules aside from @charset and @layer statements', so the dev page renders with 0 CSS rules and a 21px-tall input. Production build is unaffected. Pre-existing, not caused by this change."
+  ]
+}

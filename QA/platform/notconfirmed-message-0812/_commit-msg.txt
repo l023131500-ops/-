@@ -1,0 +1,43 @@
+§1א: the seven unmeasured screens measured — only five of the nine have a login at all, and all five already say the truth
+
+The previous step (QA/platform/autoconfirm-0812) measured nine live systems
+sitting on projects with mailer_autoconfirm=false, and left one line open in
+writing: "what each screen displays when confirmation is required was measured
+only on 01 and 15". Turning the setting off is the user's; the WORDING is mine,
+and §1א complains verbatim about the wording — "registered, then wrong password".
+
+The seven were measured. The open line closes, and there is no work in it:
+
+- Five of the nine carry a login form of their own — 01 torah, 15 egod,
+  21 mthbram, 30 crm, 31 gesher — and all five already map email_not_confirmed
+  to the Hebrew sentence, live in production, pulled today from the served
+  chunks themselves (authErrors-COw_Oh82.js, index-RNBwDqT2.js,
+  index-DheqMcgT.js, authErrors-Dd1sj6BD.js, auth-D8YcZT4k.js).
+- 06 briut, 12 smel, 17 chizukim serve no password field and no auth call at
+  all. Their csjekrvukbdznetsrodj key is for data; the customer signs in
+  through /auth-button.js, which sits on uhnrgujbdxhhmoxcjria where autoconfirm
+  is on. email_not_confirmed cannot surface there.
+- 24 galil does carry signInWithPassword — but that is the supabase-js library,
+  not app code. Its only password screen in source is GabaiPortal.tsx, matching
+  a raw string against gabai_accounts.password_hash. "wrong username or
+  password" is the correct message for that flow. (Cleartext storage there is a
+  separate open, user-owned bug; it is not §1א.)
+
+So option (2) in NEEDS_USER §0א״ — keep email verification and fix the messages
+— has no code left in it on any system. What remains on #172 is the Supabase
+dashboard setting, which is the user's.
+
+A trap driven over, recorded because it will come back: the first run capped the
+crawl at 90 files, missed torah's authErrors chunk, and declared "no branch" on
+a system whose branch is live — exactly the mistake NEEDS_USER had recorded
+about 01 before. 01 and 15 were in the sweep as CONTROLS for that reason: a
+result contradicting them fails the script, not the system. The first run did
+fail that way, and the cap was raised to 400 files with auth-named files read
+first.
+
+Read-only: GET on public addresses. No signup, no login, no user created,
+nothing written to any database. Test mode. Protected systems untouched.
+
+Evidence QA/platform/notconfirmed-message-0812/ (README.md + _results.json),
+scripts/qa/notconfirmed-message-sweep.mjs (re-runnable), core.issues #172
+appended, NEEDS_USER §0א״ rewritten.

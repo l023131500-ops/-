@@ -1,0 +1,55 @@
+{
+  "migration": "0059_five_public_views_let_the_anon_key_delete_the_rights_catalog.sql",
+  "project_ref": "uhnrgujbdxhhmoxcjria",
+  "applied_at": "2026-08-14",
+  "what_was_wrong": "המיגרציה נכתבה ב-13/08 ומעולם לא הורצה. חמשת ה-views ב-public המשיכו להחזיק INSERT/UPDATE/DELETE/TRUNCATE ל-anon ול-authenticated עד הרגע שבו הורצה כאן.",
+
+  "grants_before": {
+    "source": "information_schema.role_table_grants, 13/08",
+    "anon_and_authenticated_on_all_five": ["SELECT", "INSERT", "UPDATE", "DELETE", "TRUNCATE", "REFERENCES", "TRIGGER"]
+  },
+  "grants_after": {
+    "source": "information_schema.role_table_grants, אחרי ההרצה",
+    "rights_catalog": { "anon": "SELECT", "authenticated": "SELECT" },
+    "rights_public": { "anon": "SELECT", "authenticated": "SELECT" },
+    "rights_situation_map": { "anon": "SELECT", "authenticated": "SELECT" },
+    "rights_meta_public": { "anon": "SELECT", "authenticated": "SELECT" },
+    "more30_automations": { "anon": "SELECT", "authenticated": "SELECT" }
+  },
+
+  "http_probes_after": {
+    "note": "מפתח anon אמיתי (זה שגלוי בקוד המקור של הפורטל) מול /rest/v1 החי. הפילטר בכל בקשת כתיבה מכוון לערך שאינו קיים, כך שגם אילו ההרשאה נשארה — אפס שורות היו נוגעות.",
+    "DELETE /rest/v1/rights_catalog?code=eq.__probe_never_exists__": "401 (לפני: 204)",
+    "DELETE /rest/v1/rights_situation_map?situation=eq.__probe_never_exists__": "401 42501 permission denied for view rights_situation_map",
+    "PATCH /rest/v1/rights_catalog?code=eq.__probe_never_exists__": "401",
+    "POST /rest/v1/rights_meta_public": "401 42501 permission denied for view rights_meta_public",
+    "DELETE /rest/v1/more30_automations?key=eq.__probe_never_exists__": "401 42501 permission denied for view more30_automations"
+  },
+  "read_controls_after": {
+    "GET /rest/v1/rights_catalog?limit=1": "200 [{\"code\":\"B0\"}]",
+    "GET /rest/v1/rights_situation_map?limit=1": "200",
+    "GET /rest/v1/rights_public?limit=1": "200",
+    "GET /rest/v1/more30_automations?limit=1": "200",
+    "meaning": "הקריאה הציבורית של מערכת 10 לא נשברה — זו הייתה הסכנה היחידה בשינוי הזה."
+  },
+  "in_db_probes_after": {
+    "set local role anon; delete from public.rights_situation_map where false": "insufficient_privilege",
+    "set local role anon; update public.rights_catalog set code=code where false": "insufficient_privilege"
+  },
+
+  "row_counts_unchanged": {
+    "rights_catalog": 888,
+    "rights_situation_map": 24,
+    "rights_public": 67,
+    "rights_meta_public": 12,
+    "more30_automations": 3
+  },
+
+  "why_this_was_safe_to_apply": {
+    "pg_stat_user_tables": "n_tup_del=0 על כל טבלאות rights.* ועל core.automations — מעולם לא נמחקה שורה דרך הנתיב הזה.",
+    "edge_logs_24h": "הכתיבות היחידות ל-/rest/v1/rights_* ביממה האחרונה הן הבדיקות של הריצה הקודמת עצמה (PATCH×1, DELETE×2). אין תעבורת כתיבה של אפליקציה.",
+    "writers": "הכתיבה האמיתית לטבלאות מגיעה ממיגרציות ומ-service_role (בעלות postgres) — revoke מ-anon/authenticated אינו נוגע בה."
+  },
+
+  "still_open": "לא נגענו ב-alter default privileges על סכמת public. כל view עתידי ב-public ייוולד עם arwdDxtm ל-anon — ראה 0057 ו-0059. פריט המשך נפרד."
+}

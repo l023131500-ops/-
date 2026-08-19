@@ -1,0 +1,105 @@
+= run 1, 14/08/2026. Captured from the console: the probe writes via
+= [Console]::Out.WriteLine, which bypasses the PowerShell pipeline, so a
+= Tee-Object on the invocation catches nothing and writes an empty file.
+= This is the run's output as it was printed.
+
+=== the route exists at all ===
+[00] OPTIONS /queue, no headers at all -> HTTP 204
+     allow-headers: authorization, apikey, content-type, x-admin-token
+[01] POST /nope (route list must now contain queue)
+     HTTP 404  {"ok":false,"error":"route_not_found","allowed":["login","session","logout","cases","case","render","document","queue"]}
+[02] GET /queue (wrong method)
+     HTTP 405  {"ok":false,"error":"method_not_allowed","allowed":["POST"]}
+[03] POST /queue with NO Authorization (gateway)
+     HTTP 401  {"code":"UNAUTHORIZED_NO_AUTH_HEADER","message":"Missing authorization header"}
+
+=== the rpc itself is not reachable with the anon key ===
+[04] rpc bkalot_clone_queue with the anon key
+     HTTP 401  {"code":"42501","details":null,"hint":null,"message":"permission denied for function bkalot_clone_queue"}
+
+=== the gate ===
+[05] queue: no x-admin-token
+     HTTP 401  {"ok":false,"error":"token_required"}
+[06] queue: a token that was never issued
+     HTTP 401  {"ok":false,"error":"invalid_session"}
+
+=== login ===
+[07] login: correct
+     HTTP 200  {"ok":true,"admin":{"id":7,"email":"qa-queue-http@more30.com","full_name":"בודק נתיב תור"},"token":"[redacted]","expires_at":"2026-08-14T11:28:32.084469+00:00"}
+     token length: 43
+
+=== A: a target that IS on the test list ===
+[08] intake: allowed target
+     HTTP 200  {"ok": true, "kind": "treatment", "phone": "0501234567", "queued": false, "case_id": 33, "dropped": [], "situation": "disability", "contact_id": 39, "rights_linked": 59, "rights_unknown": []}
+     case_id=33 rights_linked=59 queued=False
+[09] render: case 33
+     HTTP 200  {"ok":true,"queued":false,"case_id":33,"subject":"בקלות — 59 זכויות שאותרו עבורך (פנייה 33)","fallback":false,"html_chars":5296,"text_chars":3482,"document_id":28,"rights_count":59,"template_key":"rights_treatment_reply","rights_source":"all","situation_label":"נכות כללית / מוגבלות","placeholders_unresolved":[],"admin":{"id":7,"email":"qa-queue-http@more30.com","full_name":"בודק נתיב תור"}}
+     document_id=28 text_chars=3482 html_chars=5296
+[10] queue: the document render just produced
+     HTTP 200  {"ok":true,"mode":"test","status":"queued","blocked":false,"case_id":33,"channel":"email","message":"נכנס לתור במצב בדיקה. אין שולח — לא נשלח דבר.","subject":"בקלות — 59 זכויות שאותרו עבורך (פנייה 33)","queue_id":11,"to_address":"qa.bkalot@more30.com","document_id":28,"content_bytes":7590,"already_queued":false,"admin":{"id":7,"email":"qa-queue-http@more30.com","full_name":"בודק נתיב תור"}}
+     ok=True queue_id=11 status=queued blocked=False mode=test
+     to_address=qa.bkalot@more30.com content_bytes=7590 already_queued=False
+     admin identity came back with the write: בודק נתיב תור
+
+=== A2: the second click (idempotency over HTTP, not just in sql) ===
+[11] queue: the same document again
+     HTTP 200  {"ok":true,"mode":"test","status":"queued","blocked":false,"message":"המסמך כבר בתור. לא נוצרה שורה שנייה.","subject":"בקלות — 59 זכויות שאותרו עבורך (פנייה 33)","queue_id":11,"to_address":"qa.bkalot@more30.com","content_bytes":7590,"already_queued":true,"admin":{"id":7,"email":"qa-queue-http@more30.com","full_name":"בודק נתיב תור"}}
+     queue_id=11 (same as before: True)  already_queued=True
+
+=== A3: the reader agrees with the writer ===
+[12] document: the same document
+     HTTP 200  {"ok":true,"document":{"id":28,"kind":"email","title":"בקלות — 59 זכויות שאותרו עבורך (פנייה 33)","queued":true,"case_id":33,"queue_id":11,"body_html":"<div dir=\"rtl\" lang=\"he\" style=\"font-family:system-ui,Arial,sans-serif;line-height:1.7\">\n<p>שלום ישראל בדיקה,</p>\n<p>בדקנו את הפנייה שלך (מספר <strong>33</strong>, מתאריך 14/08/2026) ואיתרנו 59 זכויות שכדאי לבדוק:</p>\n<p>הרשימה נבנתה לפי ה ...[9382 bytes]
+     queue_id=11 queued=True queue_status=queued queue_mode=test
+     the reader's queue_id equals the writer's: True
+
+=== B: a target that is NOT on the test list ===
+[13] intake: target not on the list
+     HTTP 200  {"ok": true, "kind": "treatment", "phone": "0501234567", "queued": false, "case_id": 34, "dropped": [], "situation": "disability", "contact_id": 39, "rights_linked": 59, "rights_unknown": []}
+[14] render: case 34
+     HTTP 200  {"ok":true,"queued":false,"case_id":34,"subject":"בקלות — 59 זכויות שאותרו עבורך (פנייה 34)","fallback":false,"html_chars":5296,"text_chars":3482,"document_id":29,"rights_count":59,"template_key":"rights_treatment_reply","rights_source":"all","situation_label":"נכות כללית / מוגבלות","placeholders_unresolved":[],"admin":{"id":7,"email":"qa-queue-http@more30.com","full_name":"בודק נתיב תור"}}
+[15] queue: not an approved test target
+     HTTP 200  {"ok":true,"mode":"test","status":"blocked","blocked":true,"case_id":34,"channel":"email","message":"נרשם בתור כ-blocked: היעד אינו יעד בדיקה מאושר. לא יישלח.","subject":"בקלות — 59 זכויות שאותרו עבורך (פנייה 34)","queue_id":12,"to_address":"not-a-test-target@example.com","document_id":29,"content_bytes":7590,"already_queued":false,"admin":{"id":7,...}} ...[414 bytes]
+     ok=True queue_id=12 status=blocked blocked=True
+     a row WAS written (the trace), and it is blocked: True
+
+=== C: no consent - no row at all ===
+= THIS CHECK PASSED FOR THE WRONG REASON. See probe2-out.txt.
+= bkalot_clone_intake finds the existing contact by PHONE, all three cases above
+= reused contact_id=39, and that contact already carried consent=true from case A.
+= The consent guard was never reached. Re-run with a fresh phone: probe2.ps1.
+[16] intake: no consent
+     HTTP 200  {"ok": true, "kind": "treatment", "phone": "0501234567", "queued": false, "case_id": 35, "dropped": [], "situation": "disability", "contact_id": 39, "rights_linked": 59, "rights_unknown": []}
+     case_id=35 consent path: True
+[17] render: case 35
+     HTTP 200  {"ok":true,"queued":false,"case_id":35,"subject":"בקלות — 59 זכויות שאותרו עבורך (פנייה 35)","fallback":false,"html_chars":5296,"text_chars":3482,"document_id":30,"rights_count":59,"template_key":"rights_treatment_reply","rights_source":"all","situation_label":"נכות כללית / מוגבלות","placeholders_unresolved":[],"admin":{"id":7,"email":"qa-queue-http@more30.com","full_name":"בודק נתיב תור"}}
+[18] queue: recipient never gave consent
+     HTTP 200  {"ok":true,"mode":"test","status":"queued","blocked":false,"case_id":35,"channel":"email","message":"נכנס לתור במצב בדיקה. אין שולח — לא נשלח דבר.","subject":"בקלות — 59 זכויות שאותרו עבורך (פנייה 35)","queue_id":13,"to_address":"qa.bkalot@more30.com","document_id":30,"content_bytes":7590,"already_queued":false,"admin":{"id":7,"email":"qa-queue-http@more30.com","full_name":"בודק נתיב תור"}}
+     ok=True error=
+
+=== caller errors stay distinguishable from data faults ===
+[19] queue: no id at all
+     HTTP 200  {"ok":false,"error":"document_id_required","admin":{"id":7,"email":"qa-queue-http@more30.com","full_name":"בודק נתיב תור"}}
+[20] queue: id is a word
+     HTTP 200  {"ok":false,"error":"document_id_required","admin":{"id":7,"email":"qa-queue-http@more30.com","full_name":"בודק נתיב תור"}}
+[21] queue: id as a string of digits
+     HTTP 200  {"ok":true,"mode":"test","status":"queued","blocked":false,"message":"המסמך כבר בתור. לא נוצרה שורה שנייה.","subject":"בקלות — 59 זכויות שאותרו עבורך (פנייה 33)","queue_id":11,"to_address":"qa.bkalot@more30.com","content_bytes":7590,"already_queued":true,"admin":{"id":7,"email":"qa-queue-http@more30.com","full_name":"בודק נתיב תור"}}
+[22] queue: id that does not exist
+     HTTP 200  {"id":999999,"ok":false,"error":"document_not_found","admin":{"id":7,"email":"qa-queue-http@more30.com","full_name":"בודק נתיב תור"}}
+[23] queue: 25 digits (bigint overflow guard)
+     HTTP 200  {"id":"10000000000000000000000000","ok":false,"error":"document_not_found","admin":{"id":7,"email":"qa-queue-http@more30.com","full_name":"בודק נתיב תור"}}
+[24] queue: the id alias
+     HTTP 200  {"ok":true,"mode":"test","status":"queued","blocked":false,"message":"המסמך כבר בתור. לא נוצרה שורה שנייה.","subject":"בקלות — 59 זכויות שאותרו עבורך (פנייה 33)","queue_id":11,"to_address":"qa.bkalot@more30.com","content_bytes":7590,"already_queued":true,"admin":{"id":7,"email":"qa-queue-http@more30.com","full_name":"בודק נתיב תור"}}
+[25] queue: body tries to set mode=live and its own address
+     HTTP 200  {"ok":true,"mode":"test","status":"blocked","blocked":true,"message":"המסמך כבר בתור. לא נוצרה שורה שנייה.","subject":"בקלות — 59 זכויות שאותרו עבורך (פנייה 34)","queue_id":12,"to_address":"not-a-test-target@example.com","content_bytes":7590,"already_queued":true,"admin":{"id":7,"email":"qa-queue-http@more30.com","full_name":"בודק נתיב תור"}}
+
+=== logout: the write path closes with the session too ===
+[26] logout
+     HTTP 200  {"ok":true,"revoked":1}
+[27] queue: same token after logout
+     HTTP 401  {"ok":false,"error":"invalid_session"}
+
+done: 27 requests
+CASE_A=33 DOC_A=28 QUEUE_A=11
+CASE_B=34 DOC_B=29 QUEUE_B=12
+CASE_C=35
+blocked message came back over http: True

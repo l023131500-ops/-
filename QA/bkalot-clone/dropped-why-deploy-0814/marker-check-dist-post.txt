@@ -1,0 +1,6 @@
+﻿portal\dist\bkalot-studio\index.html
+bytes=25483 md5=B24A10595849FA24B1795F23C3F2A9F6
+new: "function whyDropped(key, sent) {"=true | "return \"צריך מספר שלם\";"=true | "function focusDropped(dropped, sent, sentKind) {"=true | "el.setAttribute(\"aria-invalid\", \"true\");"=true | "}).join(\"; \"));"=true
+removed: "body.dropped.map((k) => DROPPED[k] || k).join(\", \")"=false
+old: "const DROPPED = {"=true | "topic_no:  \"מספר נושא\","=true | "שדות שלא נשמרו: "=true | "הפנייה נקלטה"=true | "הודעת אישור נשלחה אליכם."=true | "🚫 מצב טסט: הפנייה נשמרה, ולא יצאה ממנה שום הודעה."=true | "שליחת הפנייה"=true
+counts: "function whyDropped(key, sent) {"=1 | "return \"צריך מספר שלם\";"=1 | "function focusDropped(dropped, sent, sentKind) {"=1 | "el.setAttribute(\"aria-invalid\", \"true\");"=1 | "}).join(\"; \"));"=1 | "body.dropped.map((k) => DROPPED[k] || k).join(\", \")"=0 | "const DROPPED = {"=1 | "topic_no:  \"מספר נושא\","=1 | "שדות שלא נשמרו: "=1 | "הפנייה נקלטה"=1 | "הודעת אישור נשלחה אליכם."=1 | "🚫 מצב טסט: הפנייה נשמרה, ולא יצאה ממנה שום הודעה."=1 | "שליחת הפנייה"=1

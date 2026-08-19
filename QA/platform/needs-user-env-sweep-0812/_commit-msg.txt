@@ -1,0 +1,61 @@
+NEEDS_USER §3: half the keys it asked you for were already set, and two of the names were never read by anything
+
+§0ס closed this morning on the discovery that both env vars it had been
+blocking on were set 17 days earlier -- written up as missing without ever
+running `vercel env ls`. This applies that command to every remaining env-var
+ask in the file, and cross-checks each variable NAME against the code that
+actually reads it. apps/** is gitignored, so the readers were scanned off disk;
+git grep is blind to them.
+
+Ten rows reviewed. Five close.
+
+Already set, so nothing was waiting:
+  28 kupot   ADMIN_TOKEN         kupot-more30, production, 26/07 -- before the
+                                 row asking for it was written
+  27 mechiron ELEVENLABS_API_KEY mechiron-more30, 27/07
+  40 gannenet all six of §0ר's   gannenet-more30, production AND preview, 11/08
+              variables          -- including SUPABASE_SERVICE_ROLE_KEY, so the
+                                 delete button will not answer 503 on deploy
+
+Wrong name, and the real one is already set:
+  27 mechiron  asked YEMOT_TOKEN. Nothing reads that. The reader is
+               YEMOT_API_KEY (server/yemot.ts:208, server/routes.ts:1015),
+               set on mechiron-more30 since 27/07.
+
+Wrong name, and not a blocker either:
+  17 chizukim  asked RUNPOD_API_KEY. Nothing reads that. The reader is
+               CUSTOM_CRED_API_RUNPOD_AI_TOKEN (server/routes.ts:90,131).
+               It is unset -- but routes.ts branches on it and falls back to
+               OpenAI, and OPENAI_API_KEY IS set there since 26/07. So the
+               system has a working engine today; what the missing token buys
+               is price, 0.0004 $/min against 0.006 $/min in the file's own
+               cost constants. Filed as an outage, it is an optimisation.
+
+No consumer at all:
+  16 chatzor   asked GOOGLE_MAPS_API_KEY. There is no maps API call anywhere in
+               apps/16 -- the single Google reference is a google.com/maps/dir
+               deep link needing no key -- and GOOGLE_MAPS_API_KEY already
+               exists on nadlan-more30. The row asked you to obtain something
+               the account has, for code that does not exist. Noted in passing:
+               chatzor-more30 carries zero env vars of any kind, which is not a
+               fault -- it is a prebuilt Vite SPA whose Supabase values are
+               baked in at build time from the local .env.local.
+
+Three are real, and now verified rather than assumed:
+  17 chizukim  SUPABASE_SERVICE_ROLE_KEY -- absent from the 5 vars on the
+               project, and downstream of the §1 decision regardless
+  02 tamlul    GOOGLE_CLIENT_ID + GOOGLE_CLIENT_SECRET -- absent from the 5
+  18 orech     HTR credentials -- absent from the 8. Two details the old row
+               did not carry: TRANSKRIBUS_MODEL_DEFAULT belongs in the ask (a
+               model id, not a credential, and Transkribus cannot run without
+               it), and ANTHROPIC_API_KEY being present there does not help --
+               htr-corrector.ts reads it as the corrector, so pickEngine still
+               throws HtrEngineNotConfigured.
+
+Not measured, and said so in the file: the value of any variable. Vercel marks
+them all sensitive and returns names only, so "set" means the key exists on
+Production -- not that what is inside it is correct.
+
+Evidence QA/platform/needs-user-env-sweep-0812/_results.json. Nothing was
+deployed, no env var was written, no account created. Protected systems
+untouched.

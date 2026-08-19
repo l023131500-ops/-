@@ -1,0 +1,11 @@
+10 בקלות: Lighthouse נמדד לראשונה (perf 82, a11y כבר 100) + תוקן meta description חסר (SEO)
+
+Lighthouse ever-first for bkalot(10): perf 82, a11y 100, bp 77, seo 91.
+Unlike 02/04/06 accessibility was already full - the one real gap found
+was a missing <meta name="description"> (score 0). Added a descriptive
+one in apps/10-bkalot-rights/index.html after <title>. Deployed from
+_deploy/bkalot-more30 (byte-verified against repo copy first),
+dpl_FtnA4fmg9yFn76Mc1frPd5aopoSt, READY. Verified live with a
+cache-buster: tag present in served HTML. Perf 82 and bp 77 not
+investigated this round - matches the already-documented NetFree pattern
+from 32/02/04/06, not new work.

@@ -1,0 +1,21 @@
+﻿[
+  {
+    "name": "admin",
+    "url": "https://more30.com/admin/",
+    "ok": true,
+    "assets": [
+      {
+        "ref": "/admin/assets/index-CinF3ubK.js",
+        "ok": true,
+        "bytes": 404914,
+        "sha": "8dbf28ed3703"
+      }
+    ],
+    "env": [
+      "VITE_SUPABASE_URL",
+      "VITE_SUPABASE_ANON_KEY"
+    ],
+    "head": "7690819",
+    "html": true
+  }
+]

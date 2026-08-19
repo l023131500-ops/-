@@ -1,0 +1,32 @@
+{
+  "url": "https://more30.com/bkalot-studio/admin",
+  "console": [],
+  "bad_responses": [],
+  "A_no_filter": {
+    "count": "4 פניות",
+    "count_title": null,
+    "empty_hidden": true,
+    "empty_text": "אין פניות שתואמות את הסינון.",
+    "rows": 4,
+    "pager_hidden": true,
+    "overflow": 0
+  },
+  "B_kind_info": {
+    "count": "2 פניות תואמות את הסינון · בתור 4 פניות",
+    "count_title": "המספר הראשון הוא של הפניות שעונות על הסינון, ו«בתור» הוא כל הפניות שבמערכת — כולל אלה שהסינון הוציא. המיון אינו מוציא שורות ואינו משפיע על אף אחד מהשניים",
+    "empty_hidden": true,
+    "empty_text": "אין פניות שתואמות את הסינון.",
+    "rows": 2,
+    "pager_hidden": true,
+    "overflow": 0
+  },
+  "C_status_sent": {
+    "count": "אין פניות שתואמות את הסינון · בתור 4 פניות",
+    "count_title": "המספר הראשון הוא של הפניות שעונות על הסינון, ו«בתור» הוא כל הפניות שבמערכת — כולל אלה שהסינון הוציא. המיון אינו מוציא שורות ואינו משפיע על אף אחד מהשניים",
+    "empty_hidden": false,
+    "empty_text": "אין פניות שתואמות את הסינון.",
+    "rows": 0,
+    "pager_hidden": true,
+    "overflow": 0
+  }
+}

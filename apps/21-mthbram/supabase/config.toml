@@ -1,0 +1,32 @@
+project_id = "aypsqqvfohekxxuqsmrw"
+
+[functions.chat]
+verify_jwt = false
+
+[functions.api]
+verify_jwt = false
+
+[functions.search-lessons]
+verify_jwt = false
+
+[functions.nedarim-webhook]
+verify_jwt = false
+
+[functions.ivr-search]
+verify_jwt = false
+
+[functions.ivr-submit]
+verify_jwt = false
+
+[functions.ivr-menu]
+verify_jwt = false
+
+[functions.ivr-agent]
+verify_jwt = false
+
+# create-admin רצה עם SERVICE_ROLE ואינה פונקציה ציבורית. הגרסה שנפרסה ענתה
+# ל-POST בלי שום כותרת הרשאה, ולכן נרשמת כאן במפורש. verify_jwt לבדו אינו
+# הגנה — מפתח ה-anon הוא JWT תקין והוא נשלח לכל דפדפן — ההגנה בפועל היא
+# ADMIN_BOOTSTRAP_SECRET שבתוך הפונקציה.
+[functions.create-admin]
+verify_jwt = true

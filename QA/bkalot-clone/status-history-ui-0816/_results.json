@@ -1,0 +1,138 @@
+{
+  "pulse": "status-history-ui-0816",
+  "line_taken": "86cf183 / heartbeat 625: «apps/37-bkalot-clone/admin.html אינו קורא את status_history — התשובה כוללת מעכשיו את הבלוק ואין מי שמצייר אותו; זו הלבנה הבאה (UI)»",
+  "scope": {
+    "files_changed": ["apps/37-bkalot-clone/admin.html"],
+    "no_migration": true,
+    "no_edge_deploy": true,
+    "no_portal_deploy": true,
+    "edge_versions_unchanged": { "bkalot-clone-intake": "v1", "bkalot-clone-admin": "v8" }
+  },
+  "seed": {
+    "admins_via_rpc": [
+      { "id": 80, "full_name": "QA 0089 מכריע ראשי" },
+      { "id": 81, "full_name": "QA 0089 מכריע שיימחק", "deleted_after": true }
+    ],
+    "cases_via_intake_http_anon": { "X": 226, "Y": 227, "Z": 228 },
+    "contacts": [233, 234, 235],
+    "X_clicks": [
+      { "who": 80, "status": "in_progress", "changed": true, "log_id": 12 },
+      { "who": 80, "status": "in_progress", "changed": false, "log_id": null },
+      { "who": 81, "status": "closed", "changed": true, "log_id": 13 },
+      { "who": 81, "status": "rejected", "changed": true, "log_id": 14 },
+      { "who": null, "status": "in_progress", "changed": true, "log_id": 16, "note": "נקרא ישירות בצורה שקדמה לשער — p_admin_id null" }
+    ],
+    "Y": "לחיצה אחת (log_id 15) ואז מחיקת שורות היומן של הפנייה בלבד — הדמיה מוצהרת של מצב שקדם ל-0087",
+    "Z": "לא נגעו בה"
+  },
+  "browser": {
+    "url": "http://127.0.0.1:8137/admin.html",
+    "viewport": "1280x900",
+    "login": "דרך המסך, חשבון 80",
+    "console": "הודעה אחת בלבד — favicon.ico 404 של השרת המקומי, שאינו קיים בייצור",
+    "states": {
+      "01-full-sequence": {
+        "case": 226,
+        "heading": "רצף ההכרעות (4 מעברים)",
+        "headers": ["מ־", "אל", "מי הכריע", "מתי"],
+        "rows": [
+          { "from": "חדשה", "to": "בטיפול", "who": "QA 0089 מכריע ראשי", "who_title": "מזהה מנהל 80", "stale": false, "log_id": 12 },
+          { "from": "בטיפול", "to": "נסגרה", "who": "מנהל #81 · החשבון אינו קיים עוד", "stale": true, "log_id": 13 },
+          { "from": "נסגרה", "to": "נדחתה", "who": "מנהל #81 · החשבון אינו קיים עוד", "stale": true, "log_id": 14 },
+          { "from": "נדחתה", "to": "בטיפול", "who": "אינו ידוע", "stale": true, "log_id": 16 }
+        ],
+        "chain_reads_as_sentence": true,
+        "line_above_says": "הוכרעה 16.08.2026, 03:42 · מי הכריע אינו ידוע",
+        "log_ids_are_not_a_sequence": "12, 13, 14, 16 — 15 שייך לפנייה 227 ונמחק",
+        "four_clicks_three_transitions": "ארבע לחיצות מהמסך ייצרו שלוש שורות; החמישית נקראה בצורת הטרום-שער",
+        "md5": "E7F299A59215AB0784352DB9A4A0678C"
+      },
+      "02-decided-before-the-log": {
+        "case": 227,
+        "heading": "רצף ההכרעות",
+        "element": "p.empty",
+        "text": "הפנייה הוכרעה לפני שיומן ההכרעות קם, ולכן הרצף שלה אינו קיים — אין השלמה למפרע.",
+        "line_above_says": "הוכרעה 16.08.2026, 03:41 · QA 0089 מכריע ראשי",
+        "md5": "E2D0C6F369EC364EE4BC360F1FF7F744"
+      },
+      "03-never-decided": {
+        "case": 228,
+        "heading": "רצף ההכרעות",
+        "element": "p.empty",
+        "text": "לא נרשם ולו מעבר אחד מהמסך.",
+        "line_above_says": "לא נרשמה הכרעה ידנית מהמסך",
+        "md5": "0677E9203B7621E2DB620271FE736261"
+      },
+      "04-old-reader-no-block": {
+        "case": 226,
+        "heading": "רצף ההכרעות",
+        "element": "p.note > span.stale",
+        "text": "השרת אינו מחזיר את יומן ההכרעות",
+        "title": "התשובה הגיעה מקורא שאינו יודע על היומן — זה אינו יומן ריק אלא היעדר הבלוק כולו",
+        "how": "עטיפת fetch בצד הלקוח שמסירה את המפתח מתשובת /case בלבד — הזרקה מוצהרת; 0088 מוחלת על המסד ואין דרך אחרת לקבל את צורת התשובה שקדמה לה בלי לגעת בפונקציה החיה",
+        "same_case_as_state_01": "אותה פנייה 226 שהראתה ארבע שורות אומרת כאן «השרת אינו מחזיר» ולא «אין רצף» — זו ההבחנה עצמה",
+        "md5": "B2845118B6AF0FE7A386AA0BF65965F4"
+      }
+    },
+    "four_distinct_md5": true
+  },
+  "production_gap": {
+    "url": ["https://more30.com/bkalot-studio/admin", "https://more30.com/bkalot-studio/admin/"],
+    "status": 200,
+    "live_bytes": 105364,
+    "source_bytes": 112911,
+    "new_markers_zero_in_live": true,
+    "old_controls_unchanged": true,
+    "replacement_chars": 0,
+    "double_encoded": 0,
+    "controls_that_failed_and_were_moved_to_diff": {
+      "fillProducedCell": "6 → 7",
+      "fillDecidedLine": "5 → 6",
+      "החשבון אינו קיים עוד": "5 → 6",
+      "why": "לא זזו בקוד אלא בטקסט — ההערה החדשה מזכירה את שתי הפונקציות בשמן והנוסח חוזר בתא החדש; הועברו ל-DIFF ולא תוקנו בשקט"
+    },
+    "controls_that_held": { "fillQueueCell": "2 = 2", "fillTemplateCell": "4 = 4", "תווי טקסט": "4 = 4", "fillCreatedCell": "4 = 4" }
+  },
+  "test_mode": {
+    "intake_queued": false,
+    "documents": 0,
+    "documents_with_queue_id": 0,
+    "cases_in_sent": 0,
+    "outbound_queue": 8,
+    "outbound_queue_sent_at": 0,
+    "outbound_queue_fingerprint": "681dde58ed67b2094d0cbbd7c68e0fb6 — זהה בבסיס ואחרי",
+    "delivery_log": 3,
+    "verdict": "אין מייל, אין הודעה ואין מסמך שיצא החוצה"
+  },
+  "rollback": {
+    "per_id_separate_statements": true,
+    "why": "cte-delete-sees-prestatement-snapshot",
+    "contacts_by_id_not_phone": "ac6e523",
+    "deleted": { "case_status_log": 4, "case_rights": 126, "cases": 3, "contacts": 3, "admin_users": 1 },
+    "admin_81_deleted_during_measurement": true,
+    "admin_sessions_by_cascade": true,
+    "after": { "cases": 0, "case_status_log": 0, "case_rights": 0, "documents": 0, "contacts": 4, "admin_users": 1, "admin_sessions": 5, "templates": 2, "outbound_queue": 8, "delivery_log": 3, "catalog": 888 },
+    "matches_baseline": true
+  },
+  "protected": {
+    "git_status_empty_on": ["apps/08-bkalut-app", "apps/09-bkalot-admin", "supabase/functions"],
+    "untouched": ["bkalut-app", "bkalot-admin", "zr_*", "NEDARIM3873", "csj", "csj_src", "igud"],
+    "git_add_explicit_paths_not_dot": true
+  },
+  "open": {
+    "deploy": "הקובץ טרם נפרס — more30.com/bkalot-studio/admin עדיין אינו מצייר את הרצף, והמדידה כאן רצה מול שרת סטטי מקומי, כלומר מדדה את הקוד ולא את המוצר; זו הלבנה הבאה, אותו פיצול כמו 0085 → 3da9647 → a6e8844",
+    "not_built": [
+      "אין note/reason ביומן — למה הוכרע ולא רק מה",
+      "רשימת העבודה (bkalot_clone_admin_cases) אינה יודעת על היומן, ולכן מנהל שסורק את הרשימה אינו רואה כמה ידיים עברו על פנייה",
+      "אין היסטוריה על kind/topic_no/situation ואין היסטוריה על documents",
+      "אין backfill ולא יהיה"
+    ],
+    "continuing": [
+      "הקליטה מחברת 42 זכויות ל-treatment ואפס ל-info/reminder על אותו situation",
+      "sent בלתי-ניתן-להשגה בכוונה",
+      "bkalot_clone_admin_create אינה חשופה ב-HTTP",
+      "pdf/audio → channel_unsupported",
+      "public_visible ו-show_in_showcase של #37 נשארים false"
+    ]
+  }
+}

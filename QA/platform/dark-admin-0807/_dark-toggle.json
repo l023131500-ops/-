@@ -1,0 +1,40 @@
+{
+  "/admin": {
+    "route": "/admin",
+    "osDark": {
+      "effectiveBg": "rgb(11, 18, 32)",
+      "bodyImage": "",
+      "fg": "rgb(230, 237, 247)",
+      "rootClass": "",
+      "rootTheme": ""
+    },
+    "light": {
+      "effectiveBg": "rgb(248, 250, 252)",
+      "bodyImage": "",
+      "fg": "rgb(15, 23, 42)",
+      "rootClass": "",
+      "rootTheme": ""
+    },
+    "toggleCandidates": [
+      {
+        "tag": "button",
+        "hay": "מעבר למצב כהה מעבר למצב כהה 🌙 מצב כהה | ",
+        "visible": true,
+        "x": 1211.7109375,
+        "y": 867.5,
+        "repainted": true
+      }
+    ],
+    "afterClick": {
+      "effectiveBg": "rgb(11, 18, 32)",
+      "bodyImage": "",
+      "fg": "rgb(230, 237, 247)",
+      "rootClass": "",
+      "rootTheme": "dark"
+    },
+    "clickChanged": true,
+    "osDarkFollows": true,
+    "alwaysDark": false,
+    "reachable": true
+  }
+}

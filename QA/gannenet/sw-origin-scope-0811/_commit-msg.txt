@@ -1,0 +1,35 @@
+gannenet (40): the service worker deleted every other system's cache
+
+Cache Storage is keyed by origin, not by service-worker scope. `activate()` ran
+`keys.filter(k => !k.endsWith(VERSION)).map(caches.delete)` over `caches.keys()`,
+which under more30.com returns the caches of every system mounted there. /galil
+(#24) is a vite-plugin-pwa build registering /galil/sw.js at scope /galil/; its
+Workbox precache is named `workbox-precache-v2-https://more30.com/galil/` and
+does not end in `gannenet-v3`. Every gannenet activation would have wiped it.
+
+Reproduced with the old line restored: seed four caches at the origin, reload so
+the page re-registers, and galil's precache and a stubbed kiosk cache are both
+gone — `caches.match('/galil/index.html')` → null. Nothing was lost in
+production: /gannenet is not mounted yet, so this fires on the first activation
+after the mount.
+
+The cleanup now only considers names this app created,
+`/^(shell|files|catalog)-gannenet-v\d+$/`, and each cache carries its own
+version — FILES is what "שמירת התצוגה לאופליין" fills with a teacher's own
+downloads and must survive every other bump.
+
+That separation is what let the catalog cache be bumped to v4 and its strategy
+changed, which closes the other half of hide-holds-0811's open line: the catalog
+was stale-while-revalidate (`hit || fetching`), so the cached copy won whenever
+there was one and a file the admin hid stayed on a returning teacher's shelf for
+a whole visit. Network-first now, 3 s budget, cache behind it. Measured: online a
+primed STALE-PRE-HIDE body is ignored, the live one served and re-cached;
+offline the cached copy comes back in 8 ms and /shelf still falls back to the 258
+seeds. Online count unchanged at 2,977.
+
+Also `p("/api/generate")` in the never-cache list is not a route here — the
+generator posts to /api/ai-generate. Corrected.
+
+tsc --noEmit 0. No storage, override or catalog state touched.
+
+Evidence in QA/gannenet/sw-origin-scope-0811/.

@@ -1,0 +1,43 @@
+35 kioskfleet: the one system the binding sweep skipped has no Supabase at all
+
+Open line (3) from the previous heartbeat, verbatim: "35 kioskfleet לא נמדדה
+(Railway)". The server-side-binding sweep asked Vercel's production environment
+which Supabase project each keyless system talks to, and could only cover the 11
+that sit on Vercel. This closes the twelfth.
+
+THE RESULT. The kioskfleet service carries 10 environment variables of its own
+and zero of them are Supabase. Its data is SQLite at $DB_PATH on the Railway
+volume mounted at /app/data — it was never supposed to appear in a sweep of
+Supabase projects. core.projects had supabase_project=null and supabase_schema=
+null for it, which is correct; the change today is that this is measured rather
+than assumed. That is the mirror image of 34 kesef from the previous step, where
+the registry names a project and the connection is missing.
+
+Registry NOT changed on the binding fields. What was filled is the audit record,
+which was entirely NULL for 35: audit_status, audit_evidence, audit_live_ok,
+audit_deploy_ok, audit_real_data, audited_at.
+
+§1ב CHECKED IN PASSING, AND IT HOLDS. POST /kiosk/api/auth/login with
+admin / More30Admin2026 returns 200 with a JWT and role=admin. This is not free:
+the volume survives every deploy, so anything shaped like "seed on first run"
+ran once long ago and SEED_ADMIN_* quietly stopped meaning anything. The
+every-boot reconcile added on 12/08 is what is holding, and it is now measured.
+/api/health also reports basePath=/kiosk, so the mount prefix is right
+server-side and not only in the rewrite.
+
+The fleet is empty: GET /api/devices returns {"devices":[]}. Zero enrolled
+devices is the real datum, not a failure — the system is live and nothing has
+enrolled yet. /api/users and /api/groups are 404; they do not exist here.
+
+NOT MEASURED, and recorded as such: the VALUES of DB_PATH / SEED_ADMIN_* /
+JWT_SECRET (Railway returns names only to a connected OAuth app — the Vercel
+"[SENSITIVE]" wall again, but harmless here, since the store's identity follows
+from its type and not from the value); whether a device can actually enrol; and
+the zol server source, which was not re-read this step.
+
+Read-only. No deploy, no user created, no message sent, no charge. The protected
+systems (08, 09, bkalut-app, bkalot-admin, zr_*, NEDARIM3873) are not touched,
+and csj/csj_src/igud were not read.
+
+Evidence: QA/platform/kiosk-railway-binding-0812/ — README.md, _results.json
+Re-runnable: scripts/qa/kiosk-railway-binding.mjs (live half; Railway ids pinned)

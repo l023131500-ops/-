@@ -1,0 +1,10 @@
+﻿PASS  meta             expect 200 got 200 templates=32 fonts=13 features=15 questions=4
+PASS  wizard           expect 200 got 200
+PASS  unknown          expect 404 got 404 "not found"
+PASS  books-list       expect 500 got 500 "כשל בטעינת ספרים" :: Error: חסרים משתני סביבה בפרויקט הפריסה: SUPABASE_URL + SUPABASE_SERVICE_KEY (או SUPABASE_
+PASS  books-create-bad expect 400 got 400 "נתונים שגויים"
+PASS  book-get         expect 500 got 500 "כשל בשרת" :: Error: חסרים משתני סביבה בפרויקט הפריסה: SUPABASE_URL + SUPABASE_SERVICE_KEY (או SUPABASE_
+PASS  book-docx        expect 500 got 500 "כשל בשרת" :: Error: חסרים משתני סביבה בפרויקט הפריסה: SUPABASE_URL + SUPABASE_SERVICE_KEY (או SUPABASE_
+PASS  book-delete      expect 500 got 500 "כשל במחיקת ספר" :: Error: חסרים משתני סביבה בפרויקט הפריסה: SUPABASE_URL + SUPABASE_SERVICE_KEY (או SUPABASE_
+
+8 passed, 0 failed

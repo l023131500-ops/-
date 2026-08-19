@@ -1,0 +1,54 @@
+{
+  "beat": "status-refresh-0814",
+  "file": "apps/37-bkalot-clone/admin.html",
+  "prev_bytes": 89820,
+  "next_bytes": 90920,
+  "migration": null,
+  "edge_functions": { "bkalot-clone-intake": "v1 (לא נגעה)", "bkalot-clone-admin": "v7 (לא נגעה)" },
+  "seed": { "prev_case": 166, "next_case": 168, "control_case": 167, "admin_user": 45 },
+  "status_click_requests": {
+    "prev": { "total": 3, "by_action": { "set-status": 1, "case": 1, "cases": 1 } },
+    "next": { "total": 2, "by_action": { "set-status": 1, "case": 1 } }
+  },
+  "back_requests": {
+    "prev": { "total": 1, "by_action": { "cases": 1 } },
+    "next": { "total": 1, "by_action": { "cases": 1 } }
+  },
+  "note_text": {
+    "prev": "הסטטוס שונה מ«חדשה» ל«בטיפול» · לא נשלחה שום הודעה",
+    "next": "הסטטוס שונה מ«חדשה» ל«בטיפול» · לא נשלחה שום הודעה"
+  },
+  "row_after_back": {
+    "prev": "#166 · בטיפול · הוכרעה 14.08.2026, 14:54 · בדיקת רענון",
+    "next": "#168 · בטיפול · הוכרעה 14.08.2026, 14:54 · בדיקת רענון"
+  },
+  "control_row": {
+    "prev": "#167 · חדשה · בלי הוכרעה",
+    "next": "#167 · חדשה · בלי הוכרעה"
+  },
+  "db_after_clicks": [
+    { "id": 166, "status": "in_progress", "decided_by": 45 },
+    { "id": 167, "status": "new", "decided_by": null },
+    { "id": 168, "status": "in_progress", "decided_by": 45 }
+  ],
+  "console_messages": { "prev": 0, "next": 0 },
+  "screenshots": [
+    { "file": "prev-case-after-status.png", "bytes": 58678, "md5": "2FA6FD9BD4A535ECC7300E413C9A95CB" },
+    { "file": "prev-list-after-back.png", "bytes": 47601, "md5": "3FA6964F5936AC35BFB9883A5F00D87D" },
+    { "file": "next-case-after-status.png", "bytes": 57916, "md5": "0304C13E630350A2D89BE0A962D6FAC6" },
+    { "file": "next-list-after-back.png", "bytes": 49086, "md5": "00869A9F88F6C54D4A7374ADF4F58BF6" }
+  ],
+  "test_mode": {
+    "documents": 0,
+    "cases_sent": 0,
+    "outbound_queue": 8,
+    "outbound_queue_sent_at": 0,
+    "delivery_log": 3,
+    "fingerprint_base": "050e54ab59235d105af3a10c785dbaea",
+    "fingerprint_after": "050e54ab59235d105af3a10c785dbaea"
+  },
+  "rollback_after": {
+    "cases": 0, "case_rights": 0, "documents": 0, "admin_users": 1, "admin_sessions": 5,
+    "templates": 2, "catalog": 888, "contacts": 4, "outbound_queue": 8, "delivery_log": 3
+  }
+}

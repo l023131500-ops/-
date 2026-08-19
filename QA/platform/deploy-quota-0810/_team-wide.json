@@ -1,0 +1,67 @@
+{
+  "question": "Two things the previous round (_results.json) could not settle: (a) is the new root vercel.json even read by the Git integration, or is rootDirectory something other than the repo root, and (b) the 20-row page was a floor - what is the real 24h total across the whole team?",
+  "measured_at": "2026-08-10T14:35:00Z",
+  "source": "Vercel REST API with the CLI's own token (xdg.data/com.vercel.cli/auth.json), teamId team_NLONMgS3DlFsznzcrz0j3OMs. v9/projects?limit=100 for the link/rootDirectory table; v6/deployments paged by `until` for the counts.",
+  "why_this_was_the_step": "The deploy queue has been blocked for five rounds and the CLI slot was still refused, so nothing that ends in a deploy could finish. Both open questions are answerable by reading, not deploying.",
+
+  "a_is_the_fix_in_scope": {
+    "method": "GET /v9/projects?limit=100. For each project read `link` (the connected Git repo, absent if never linked) and `rootDirectory` (empty/null = the repo root).",
+    "projects_total": 38,
+    "linked_to_this_repo": [
+      { "name": "more30-portal", "id": "prj_zSjY9I1UIIvfGT3T4g9FWoqdptJt", "repo": "l023131500-ops/-", "rootDirectory": "", "productionBranch": "claude/build-monorepo-more30-peilok" },
+      { "name": "more30-admin",  "id": "prj_1h4GpTh0iEIvmhUXrvdXpJMpdbDI", "repo": "l023131500-ops/-", "rootDirectory": "", "productionBranch": "claude/build-monorepo-more30-peilok" }
+    ],
+    "verdict": "rootDirectory is empty on BOTH, i.e. both projects build from the repo root. The vercel.json added at the repo root in 92a0eef is therefore inside the build root of every project that Git-deploys this repo. The alternative hypothesis the previous round could not rule out - 'rootDirectory is not the repo root, so the flag is never read and the setting has to move to the dashboard' - is ruled out by measurement, without waiting for the cap to reset.",
+    "what_this_still_does_not_prove": "That deploymentEnabled:false works. It proves the file is in the right place for both projects. Whether the Git integration honours it is still only decidable after the cap resets - push one commit, re-read /v6/deployments. This narrows the failure modes from two to one; it does not close the issue.",
+    "correction_to_the_previous_round": "_results.json measured more30-portal alone and called it 'the largest single consumer'. more30-admin is a second Git-linked project on the same repo and was never sampled. Every push to this repo triggers a preview build in BOTH. The run's own cost per commit is 2 deployments, not 1.",
+    "not_linked_to_this_repo": {
+      "no_git_link_at_all": 30,
+      "note": "All 30 mount projects (egod-more30, kupot-more30, galil-more30, studio-more30, ... plus 12-smel-ndln, 32-nadlan-berega, igud-ads-v2, kupot-health-funds, more30-nadlan, nadlan-pro-more30, nihul-more30) have link=null. They deploy only when the CLI is pointed at them, so they contribute zero Git previews and are unaffected by the root vercel.json.",
+      "linked_to_other_repos": [
+        "bkalot, igud-ads, igud-ads-jcx6 -> l023131500-ops/igud-ads (main)",
+        "torah-platform -> l023131500-ops/torah-platform (main)",
+        "nadlan-berega -> l023131500-ops/nadlan-berega (main)",
+        "chizukim-transcribe -> l023131500-ops/chizukim-transcribe (master)"
+      ],
+      "note_on_those": "Six projects on four other repos. They push on their own schedule, not this run's, and none of them produced a deployment today (see the by-project table below). The root vercel.json in THIS repo does not affect them."
+    }
+  },
+
+  "b_the_real_daily_total": {
+    "method": "GET /v6/deployments?limit=100 with no projectId, paged backwards on `until` until a short page. Window 2026-08-10T00:00:00Z .. 14:35Z (14h35m elapsed of the day).",
+    "team_wide_total": 106,
+    "git_integration_previews": 95,
+    "cli_deployments": 11,
+    "target_production": 11,
+    "state_error": 12,
+    "statement": "106 deployments against a 100/day cap. 95 of them - 89.6% - are Git-integration previews that no visitor has ever opened. All 11 CLI deployments are target=production, i.e. every single CLI deploy shipped something real. The cap was not consumed by the work; it was consumed by the side effect of committing the work.",
+    "by_project": [
+      { "name": "more30-portal", "total": 49, "git": 47, "cli": 2, "production": 2 },
+      { "name": "more30-admin",  "total": 48, "git": 48, "cli": 0, "production": 0 },
+      { "name": "egod-more30",   "total": 3,  "git": 0,  "cli": 3, "production": 3 },
+      { "name": "mthbram-more30","total": 2,  "git": 0,  "cli": 2, "production": 2 },
+      { "name": "galil-more30",  "total": 1,  "git": 0,  "cli": 1, "production": 1 },
+      { "name": "zchuyot-more30","total": 1,  "git": 0,  "cli": 1, "production": 1 },
+      { "name": "kupot-more30",  "total": 1,  "git": 0,  "cli": 1, "production": 1 },
+      { "name": "torah-more30",  "total": 1,  "git": 0,  "cli": 1, "production": 1 }
+    ],
+    "by_branch_of_the_95": {
+      "fix/nadlan-a11y": 83,
+      "claude/ganenet-full-system-gdrive-fdflfc": 12,
+      "note_on_the_second_branch": "An unrelated branch whose builds fail. All 12 are ERROR. A failed build counts against the cap exactly like a successful one, so 12 slots went to builds that produced nothing at all.",
+      "note_on_the_first": "83 previews for this run's own commits, at roughly 2 per push. RUN_INSTRUCTIONS requires commit+push after every step, so the run was funding its own starvation: about 6 preview builds per hour, against a budget of ~4/hour if it wanted to spend the whole day deploying."
+    },
+    "arithmetic_that_explains_the_refusals": "95 previews + 11 production = 106 > 100. That is why the CLI was refused at 14:14Z fourteen minutes after succeeding at 14:00Z: the window is rolling, so it frees single slots, and a slot freed by an expiring preview was immediately spent by the next push's preview. Five rounds read this as 'roughly one deploy available per round'. It was not a budget - it was leakage."
+  },
+
+  "unexplained_and_left_unexplained": {
+    "observation": "In the 20 newest rows of each project the two lists are identical from 09:47:40 backwards (13 shared SHAs at identical timestamps) and completely disjoint above it - portal took 11:12, 11:31, 11:47, 12:04, 13:08, 13:41 while admin took 09:58, 10:17, 10:39, 10:57, 12:20, 12:49, 13:23. Same-day totals differ too: 43 vs 40 on fix/nadlan-a11y.",
+    "why_it_is_not_explained_here": "Both projects are linked to the same repo with no ignoreCommand measured, so a push should hit both. Plausible causes (build concurrency on the free plan, Vercel's skew when several pushes arrive close together, an ignored-build rule not visible in /v9/projects) were not tested and are not asserted. It does not change either conclusion above: the 95 total is a direct count, not an extrapolation from a per-push rate."
+  },
+
+  "not_claimed": [
+    "That the cap is exactly 100 rolling-24h rather than 100 per calendar day. The error string says 'more than 100' and 'try again in 24 hours'; the window boundary was not measured.",
+    "That 106 is the full 24h figure. It covers 00:00Z-14:35Z. Deployments from 2026-08-09 that are still inside a rolling window are not counted here and would only make the overshoot larger.",
+    "That any preview was broken or useless to look at - NetFree blocks *.vercel.app from this machine (NEEDS_USER 0), so none was opened. The claim is narrower and does not need that: production ships from the CLI, so a preview is by definition not what served a visitor."
+  ]
+}

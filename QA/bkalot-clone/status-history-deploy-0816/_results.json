@@ -1,0 +1,149 @@
+{
+  "step": "status-history-deploy-0816",
+  "line_taken": "פתוח: הפריסה. מה שנמדד כאן הוא הקוד שבמקור מול ה-DB החי, ובייצור מסך הפנייה עדיין אינו מצייר את הרצף; זו הלבנה הבאה, אותו פיצול כמו 0085 → 3da9647 → a6e8844",
+  "line_source_commit": "8a577bc",
+  "line_source_heartbeat": 626,
+  "scope": "פריסה בלבד — אין שינוי קוד, אין מיגרציה. bkalot-clone-admin נשארת v8, bkalot-clone-intake נשארת v1, supabase/functions לא נגעה.",
+
+  "staged_file_is_the_source": {
+    "source_path": "apps/37-bkalot-clone/admin.html",
+    "source_bytes": 112911,
+    "source_md5": "2EFC96E653B51A2FAEAE3198BF92B0E9",
+    "dist_after_stage_bytes": 112911,
+    "dist_after_stage_md5": "2EFC96E653B51A2FAEAE3198BF92B0E9",
+    "identical": true,
+    "dist_before_stage_bytes": 105128,
+    "dist_before_stage_md5": "DCE69974376E46B78F39ECC6B7825C1F",
+    "dist_before_stage_note": "בדיוק מה ש-839386a פרס — שרשרת הפריסות נמדדה ולא הונחה"
+  },
+
+  "deployment": {
+    "id": "dpl_EWVi5st97uuEDcLmW4NfyJUZssag",
+    "url": "https://more30-portal-mxojyiicm-l023131500-ops-projects.vercel.app",
+    "readyState": "READY",
+    "target": "production",
+    "aliased": "https://more30.com",
+    "staged_files": 38,
+    "prebuilt": false,
+    "prebuilt_note": "בלי --prebuilt: הדגל מפיל את vercel.json ואיתו את כל מפת ה-rewrites (prebuilt-deploy-drops-vercel-json)"
+  },
+
+  "markers_flipped": {
+    "method": "אותם 16 מסומנים של status-history-ui-0816/http-probe.mjs, מילה במילה — הצד השני של אותה מדידה",
+    "addresses": ["https://more30.com/bkalot-studio/admin", "https://more30.com/bkalot-studio/admin/"],
+    "both_addresses_identical": true,
+    "NEW": {
+      "רצף ההכרעות": "0 → 4",
+      "fillHistoryWhoCell": "0 → 2",
+      "status_history": "0 → 2",
+      "מפתח שורה ולא מונה": "0 → 1",
+      "אין השלמה למפרע": "0 → 1",
+      "השרת אינו מחזיר את יומן ההכרעות": "0 → 1"
+    },
+    "new_zero_in_live_before": true,
+    "new_equals_source_after": true,
+    "DIFF": {
+      "Object.hasOwn": "4 → 6",
+      "מעברים": "0 → 3",
+      "מי הכריע": "6 → 8",
+      "fillProducedCell": "6 → 7",
+      "fillDecidedLine": "5 → 6",
+      "החשבון אינו קיים עוד": "5 → 6"
+    },
+    "diff_equals_source_after": true,
+    "OLD_control": {
+      "fillQueueCell": "2 = 2",
+      "fillTemplateCell": "4 = 4",
+      "תווי טקסט": "4 = 4",
+      "fillCreatedCell": "4 = 4"
+    },
+    "old_unchanged_before_and_after": true,
+    "bytes": { "before": 105364, "after": 113147, "source": 112911, "netfree_delta": 236 },
+    "replacement_chars": 0,
+    "double_encoded": 0,
+    "control_urls_unmoved": { "https://more30.com/bkalot-studio/": 32558, "https://more30.com/": 3517 }
+  },
+
+  "measured_in_production_browser": {
+    "viewport": "1280x900",
+    "login": "דרך המסך, חשבון 82 (qa0090main@more30.test)",
+    "console_messages": 0,
+    "states": {
+      "X_full_sequence": {
+        "case_id": 229,
+        "heading": "רצף ההכרעות (3 מעברים)",
+        "clicks": 4,
+        "log_rows": 3,
+        "decided_line_above_buttons": "הוכרעה 16.08.2026, 03:58 · מנהל #83 · החשבון אינו קיים עוד",
+        "sequence_rows": [
+          { "from": "חדשה", "to": "בטיפול", "who": "QA 0090 מכריע ראשון", "who_title": "מזהה מנהל 82", "when_title": "שורת יומן #17 — מפתח שורה ולא מונה; מספרי היומן אינם רצף" },
+          { "from": "בטיפול", "to": "נסגרה", "who": "מנהל #83 · החשבון אינו קיים עוד", "who_cls": "stale", "when_title": "שורת יומן #18 — מפתח שורה ולא מונה; מספרי היומן אינם רצף" },
+          { "from": "נסגרה", "to": "נדחתה", "who": "מנהל #83 · החשבון אינו קיים עוד", "who_cls": "stale", "when_title": "שורת יומן #19 — מפתח שורה ולא מונה; מספרי היומן אינם רצף" }
+        ],
+        "chain_intact": "to_status של כל שורה שווה ל-from_status של הבאה — נמדד ולא הונח",
+        "screenshot": "live-01-full-sequence.png"
+      },
+      "Y_decided_before_the_log": {
+        "case_id": 230,
+        "heading": "רצף ההכרעות",
+        "heading_has_no_count": true,
+        "decided_line_above_buttons": "הוכרעה 16.08.2026, 03:58 · QA 0090 מכריע ראשון",
+        "empty_text": "הפנייה הוכרעה לפני שיומן ההכרעות קם, ולכן הרצף שלה אינו קיים — אין השלמה למפרע.",
+        "screenshot": "live-02-decided-before-the-log.png"
+      },
+      "Z_never_decided": {
+        "case_id": 231,
+        "heading": "רצף ההכרעות",
+        "decided_line_above_buttons": null,
+        "empty_text": "לא נרשם ולו מעבר אחד מהמסך.",
+        "screenshot": "live-03-never-decided.png"
+      }
+    },
+    "two_empty_states_are_distinct": true,
+    "title_texts_distinguish_row_from_transition": {
+      "on_the_case": "הזהות נשמרה על הפנייה בזמן ההכרעה, וחשבון הניהול שהיא מצביעה עליו כבר אינו במסד",
+      "on_the_transition": "הזהות נשמרה על המעבר בזמן ההכרעה, וחשבון הניהול שהיא מצביעה עליו כבר אינו במסד"
+    },
+    "screenshots_md5": {
+      "live-01-full-sequence.png": "E837AA6F2185DFBE6B90F97C6FE64490",
+      "live-02-decided-before-the-log.png": "8FBE7C6ED467B9356F8B897B7E289D0A",
+      "live-03-never-decided.png": "C97447FBB605AF066576A5875DED48E9"
+    },
+    "screenshots_distinct": true
+  },
+
+  "declared_gaps": [
+    "המצב הרביעי של ה-UI — «השרת אינו מחזיר את יומן ההכרעות» — לא נמדד בייצור: הוא מחייב תשובת /case בלי המפתח, ואין דרך לקבל אותה בלי לגעת בפונקציה החיה. נמדד ב-8a577bc בעטיפת fetch בצד הלקוח.",
+    "המצב השלישי של «מי הכריע» — «אינו ידוע» (p_admin_id null) — לא נמדד בייצור: השער ממלא את מזהה המנהל מהטוקן תמיד, ולכן הצורה הזו אינה ניתנת להשגה בנתיב האמיתי. שני המצבים האחרים כן נמדדו.",
+    "«מעברים» סווג DIFF ב-UI אך נמדד 0 בייצור לפני הפריסה, ולכן תנאי ה-DIFF שדורש ≥1 בייצור (diff_below_source) החזיר false ב-before. הערך אינו שגוי — המילה פשוט לא הייתה בייצור כלל; נרשם ולא סווג מחדש בשקט.",
+    "⚠️ טעינה מחדש של הכתובת מנתקת את הסשן ומחזירה למסך הכניסה. נמדד במקרה ולא בתכנון (המדידה השנייה נדרשה להתחברות חוזרת); «חזרה לרשימה» שומר על הסשן. אין לזה קשר לפעימה הזו והוא קו פתוח."
+  ],
+
+  "log_ids_note": "מזהי היומן כאן הם 17, 18, 19 — רצף. ב-8a577bc הם היו 12, 13, 14, 16, ושם הפער הוא שהראה שהמזהה אינו מונה. ה-title ממשיך לומר «מספרי היומן אינם רצף» כטענה כללית על היומן הגלובלי, ובריצה הזו הם במקרה כן רצופים; נרשם ולא נבלע.",
+
+  "test_mode": {
+    "intakes_queued": [false, false, false],
+    "documents": 0,
+    "documents_with_queue_id": 0,
+    "cases_in_sent": 0,
+    "outbound_queue": 8,
+    "outbound_queue_sent_at_rows": 0,
+    "queue_fingerprint_baseline": "b4318d89eac1a47be75ab8769f320683",
+    "queue_fingerprint_after": "b4318d89eac1a47be75ab8769f320683",
+    "fingerprint_identical": true,
+    "delivery_log": 3,
+    "verdict": "אין מייל, אין הודעה ואין מסמך שיצא החוצה"
+  },
+
+  "seeding_and_rollback": {
+    "intake_path": "bkalot-clone-intake מעל HTTP עם מפתח anon, כמו מהטופס",
+    "admins_created_via": "bkalot_clone_admin_create (82, 83) ולא בהזרקת hash",
+    "transitions_written_via": "נתיב set-status שמאחורי השער עם טוקן אמיתי, ולא בהזרקת שורה ל-case_status_log",
+    "rollback_style": "פקודות נפרדות לפי id, כל אחת סופרת את מה שהיא עצמה מחקה — תקלת cte-delete-sees-prestatement-snapshot; אנשי הקשר לפי id (236–238) ולא לפי טלפון מנורמל — תקלת ac6e523",
+    "deleted": { "case_status_log": 3, "case_rights": 126, "cases": 3, "contacts": 3, "admin_users_82": 1, "admin_users_83": "נמחק כבר בזמן המדידה כחלק ממצב X" },
+    "baseline_after": { "cases": 0, "case_rights": 0, "case_status_log": 0, "documents": 0, "contacts": 4, "admin_users": 1, "admin_sessions": 5, "templates": 2, "outbound_queue": 8, "delivery_log": 3, "catalog": 888 },
+    "baseline_exact": true
+  },
+
+  "protected": "git status ריק על apps/08-bkalut-app, apps/09-bkalot-admin, apps/37-bkalot-clone ו-supabase/functions; אין נגיעה ב-bkalut-app/bkalot-admin/zr_*/NEDARIM3873 ולא בסכמות csj/csj_src/igud"
+}

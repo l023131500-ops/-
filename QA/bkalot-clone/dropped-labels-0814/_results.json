@@ -1,0 +1,87 @@
+{
+  "step": "priority §5ב — שכפול בקלות: «שדות שלא נשמרו: topic_no» על מסך הפנייה הציבורי",
+  "file_changed": "apps/37-bkalot-clone/index.html",
+  "bytes": { "prev": 21036, "fixed": 22105 },
+  "reachable_over_http": {
+    "field": "#topic_no",
+    "attrs": "type=number min=1 step=1",
+    "typed": "1e3",
+    "value_after_typing": "1e3",
+    "input_checkValidity": true,
+    "form_checkValidity": true,
+    "server_regex": "^[0-9]+$ (0058) → נכשל → dropped:[\"topic_no\"]"
+  },
+  "measured": [
+    {
+      "n": "01",
+      "port": 8148,
+      "version": "git show HEAD (הגרסה שבייצור)",
+      "case_id": 133,
+      "line": "שדות שלא נשמרו: topic_no",
+      "png": "01-prev-topic-no-english.png",
+      "md5": "A3890AEE9DE34B9D00983761942BE029"
+    },
+    {
+      "n": "02",
+      "port": 8149,
+      "version": "הקובץ המתוקן",
+      "case_id": 134,
+      "line": "שדות שלא נשמרו: מספר נושא",
+      "png": "02-fixed-topic-no-hebrew.png",
+      "md5": "32C5E1442491EE5E3F12A428012C0D14"
+    },
+    {
+      "n": "03",
+      "port": 8149,
+      "control": "מספר נושא תקין (7)",
+      "case_id": 135,
+      "topic_no_in_db": 7,
+      "has_dropped_line": false,
+      "png": "03-fixed-control-no-line.png",
+      "md5": "E995033C5139EF436DE7D0EBAD79973F"
+    },
+    {
+      "n": "04",
+      "port": 8149,
+      "control": "מפתח שאינו במפה — התשובה הוזרקה בעטיפת fetch, לא נוצרה שורה",
+      "dropped_injected": ["situation", "topic_no", "documents", "future_field"],
+      "line": "שדות שלא נשמרו: מצב, מספר נושא, מסמכים מצורפים, future_field",
+      "png": "04-fixed-unknown-key-fallback.png",
+      "md5": "1845C818D3F6AC15015D2285B283A049"
+    }
+  ],
+  "db_proof_of_drop": [
+    { "case_id": 133, "topic_no": null, "raw_topic_no": "1e3", "rights": 42 },
+    { "case_id": 134, "topic_no": null, "raw_topic_no": "1e3", "rights": 42 },
+    { "case_id": 135, "topic_no": 7, "raw_topic_no": "7", "rights": 42 }
+  ],
+  "console_messages": { "total": 0, "errors": 0, "warnings": 0 },
+  "screenshot_evidence": {
+    "distinct_md5": 4,
+    "inViewport_before_shot": true,
+    "result_y": [458, 458, 493, 493]
+  },
+  "test_mode": {
+    "sent_cases": 0,
+    "documents": 0,
+    "queue_rows_with_sent_at": 0,
+    "outbound_queue": 8,
+    "delivery_log": 3,
+    "queue_fingerprint": "050e54ab59235d105af3a10c785dbaea",
+    "same_before_during_after": true,
+    "note": "אין מייל, אין הודעה ואין מסמך שיצא החוצה. queued:false מוצהר בתשובת 0058."
+  },
+  "rollback": {
+    "deleted": "case_rights של 133-135, cases 133-135, שלושה אנשי קשר (0501230081/82/83)",
+    "after": {
+      "cases": 0, "case_rights": 0, "documents": 0,
+      "admin_users": 1, "admin_sessions": 5, "contacts": 4,
+      "outbound_queue": 8, "delivery_log": 3, "catalog": 888
+    },
+    "identical_to_baseline": true
+  },
+  "protected_paths": {
+    "git_status_porcelain_empty_on": ["apps/08-bkalut-app", "apps/09-bkalot-admin", "supabase/functions"],
+    "untouched": ["bkalut-app", "bkalot-admin", "zr_*", "NEDARIM3873", "csj", "csj_src", "igud"]
+  }
+}

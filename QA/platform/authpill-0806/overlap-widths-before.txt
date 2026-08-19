@@ -1,0 +1,28 @@
+﻿kesef         clear @ 390,834,1100,1280,1440
+kiosk         1100: OVERLAP a"כניסת לקוחות" 72x32  |  1280: OVERLAP a"כניסת לקוחות" 22x32
+home          clear @ 390,834,1100,1280,1440
+torah         clear @ 390,834,1100,1280,1440
+tamlul        clear @ 390,834,1100,1280,1440
+modaot        clear @ 390,834,1100,1280,1440
+imud          clear @ 390,834,1100,1280,1440
+briut         834: OVERLAP a"איך עוברים" 60x34  |  1100: OVERLAP a"איך עוברים" 60x34
+bkalot        clear @ 390,834,1100,1280,1440
+smel          clear @ 390,834,1100,1280,1440
+smachot       390: OVERLAP a"פותח ע״י עולם הסטארטאפים" 76x36  |  834: OVERLAP a"פותח ע״י עולם הסטארטאפים" 76x35  |  1100: OVERLAP a"פותח ע״י עולם הסטארטאפים" 76x35  |  1280: OVERLAP a"פותח ע״י עולם הסטארטאפים" 76x35  |  1440: OVERLAP a"פותח ע״י עולם הסטארטאפים" 76x35
+egod          834: OVERLAP a"הצטרף כמגיד שיעור" 76x36
+chatzor       clear @ 390,834,1100,1280,1440
+chatzor-app   clear @ 390,834,1100,1280,1440
+chizukim      clear @ 390,834,1100,1280,1440
+chizukim-app  clear @ 390,834,1100,1280,1440
+orech         clear @ 390,834,1100,1280,1440
+mthbram       834: OVERLAP a"הצטרפות כרב" 9x35
+zchuyot       clear @ 390,834,1100,1280,1440
+galil         clear @ 390,834,1100,1280,1440
+studio        clear @ 390,834,1100,1280,1440
+mechiron      clear @ 390,834,1100,1280,1440
+kupot         clear @ 390,834,1100,1280,1440
+crm           clear @ 390,834,1100,1280,1440
+gesher        clear @ 390,834,1100,1280,1440
+nadlan        clear @ 390,834,1100,1280,1440
+
+21/26 routes clear at 390/834/1100/1280/1440

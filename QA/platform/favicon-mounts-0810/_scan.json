@@ -1,0 +1,439 @@
+{
+  "measured_at": "2026-08-10T18:54:39.229Z",
+  "read": "production only, anon, no cache",
+  "origin_root_favicon": {
+    "url": "https://more30.com/favicon.ico",
+    "status": 200,
+    "content_type": "image/vnd.microsoft.icon",
+    "content_length": 805,
+    "bytes_received": 805
+  },
+  "mounts": [
+    {
+      "mount": "torah",
+      "route": "/torah",
+      "page_status": 200,
+      "base_href": null,
+      "declared_icon_links": [
+        {
+          "rel": "icon",
+          "href": "/favicon.svg",
+          "sizes": null,
+          "type": "image/svg+xml",
+          "resolved": "https://more30.com/favicon.svg",
+          "probe": {
+            "status": 200,
+            "content_type": "image/svg+xml",
+            "content_length": 806,
+            "bytes_received": 806
+          }
+        }
+      ],
+      "tab_source": "a rel=icon is declared, but its href is root-absolute and resolves to the origin — still the portal mark",
+      "verdict": "declares-but-lands-on-origin"
+    },
+    {
+      "mount": "tamlul",
+      "route": "/tamlul",
+      "page_status": 200,
+      "base_href": null,
+      "declared_icon_links": [],
+      "tab_source": "no rel=icon — the browser falls back to /favicon.ico on the origin, which is the portal mark",
+      "verdict": "inherits-portal"
+    },
+    {
+      "mount": "modaot",
+      "route": "/modaot",
+      "page_status": 200,
+      "base_href": null,
+      "declared_icon_links": [
+        {
+          "rel": "icon",
+          "href": "/favicon.svg",
+          "sizes": null,
+          "type": null,
+          "resolved": "https://more30.com/favicon.svg",
+          "probe": {
+            "status": 200,
+            "content_type": "image/svg+xml",
+            "content_length": 806,
+            "bytes_received": 806
+          }
+        }
+      ],
+      "tab_source": "a rel=icon is declared, but its href is root-absolute and resolves to the origin — still the portal mark",
+      "verdict": "declares-but-lands-on-origin"
+    },
+    {
+      "mount": "imud",
+      "route": "/imud",
+      "page_status": 200,
+      "base_href": null,
+      "declared_icon_links": [
+        {
+          "rel": "icon",
+          "href": "/favicon.png",
+          "sizes": null,
+          "type": "image/png",
+          "resolved": "https://more30.com/favicon.png",
+          "probe": {
+            "status": 200,
+            "content_type": "image/png",
+            "content_length": 4477,
+            "bytes_received": 4477
+          }
+        }
+      ],
+      "tab_source": "a rel=icon is declared, but its href is root-absolute and resolves to the origin — still the portal mark",
+      "verdict": "declares-but-lands-on-origin"
+    },
+    {
+      "mount": "briut",
+      "route": "/briut",
+      "page_status": 200,
+      "base_href": "/briut/",
+      "declared_icon_links": [
+        {
+          "rel": "icon",
+          "href": "favicon.svg",
+          "sizes": null,
+          "type": "image/svg+xml",
+          "resolved": "https://more30.com/briut/favicon.svg",
+          "probe": {
+            "status": 200,
+            "content_type": "image/svg+xml",
+            "content_length": 229,
+            "bytes_received": 229
+          }
+        }
+      ],
+      "tab_source": "own asset under the mount",
+      "verdict": "declares-own"
+    },
+    {
+      "mount": "bkalot",
+      "route": "/bkalot",
+      "page_status": 200,
+      "base_href": "/bkalot/",
+      "declared_icon_links": [],
+      "tab_source": "no rel=icon — the browser falls back to /favicon.ico on the origin, which is the portal mark",
+      "verdict": "inherits-portal"
+    },
+    {
+      "mount": "smel",
+      "route": "/smel",
+      "page_status": 200,
+      "base_href": null,
+      "declared_icon_links": [
+        {
+          "rel": "icon",
+          "href": "/smel/favicon.svg",
+          "sizes": null,
+          "type": "image/svg+xml",
+          "resolved": "https://more30.com/smel/favicon.svg",
+          "probe": {
+            "status": 200,
+            "content_type": "image/svg+xml",
+            "content_length": 628,
+            "bytes_received": 628
+          }
+        }
+      ],
+      "tab_source": "own asset under the mount",
+      "verdict": "declares-own"
+    },
+    {
+      "mount": "smachot",
+      "route": "/smachot",
+      "page_status": 200,
+      "base_href": "/smachot/",
+      "declared_icon_links": [],
+      "tab_source": "no rel=icon — the browser falls back to /favicon.ico on the origin, which is the portal mark",
+      "verdict": "inherits-portal"
+    },
+    {
+      "mount": "egod",
+      "route": "/egod",
+      "page_status": 200,
+      "base_href": null,
+      "declared_icon_links": [
+        {
+          "rel": "icon",
+          "href": "/egod/favicon.ico",
+          "sizes": null,
+          "type": "image/x-icon",
+          "resolved": "https://more30.com/egod/favicon.ico",
+          "probe": {
+            "status": 200,
+            "content_type": "image/vnd.microsoft.icon",
+            "content_length": 20373,
+            "bytes_received": 20373
+          }
+        }
+      ],
+      "tab_source": "own asset under the mount",
+      "verdict": "declares-own"
+    },
+    {
+      "mount": "chatzor",
+      "route": "/chatzor/",
+      "page_status": 200,
+      "base_href": null,
+      "declared_icon_links": [
+        {
+          "rel": "icon",
+          "href": "/chatzor/favicon.svg",
+          "sizes": null,
+          "type": "image/svg+xml",
+          "resolved": "https://more30.com/chatzor/favicon.svg",
+          "probe": {
+            "status": 200,
+            "content_type": "image/svg+xml",
+            "content_length": 382,
+            "bytes_received": 382
+          }
+        }
+      ],
+      "tab_source": "own asset under the mount",
+      "verdict": "declares-own"
+    },
+    {
+      "mount": "chizukim",
+      "route": "/chizukim/",
+      "page_status": 200,
+      "base_href": null,
+      "declared_icon_links": [
+        {
+          "rel": "icon",
+          "href": "/favicon.png",
+          "sizes": null,
+          "type": "image/png",
+          "resolved": "https://more30.com/favicon.png",
+          "probe": {
+            "status": 200,
+            "content_type": "image/png",
+            "content_length": 4477,
+            "bytes_received": 4477
+          }
+        }
+      ],
+      "tab_source": "a rel=icon is declared, but its href is root-absolute and resolves to the origin — still the portal mark",
+      "verdict": "declares-but-lands-on-origin"
+    },
+    {
+      "mount": "orech",
+      "route": "/orech",
+      "page_status": 200,
+      "base_href": null,
+      "declared_icon_links": [],
+      "tab_source": "no rel=icon — the browser falls back to /favicon.ico on the origin, which is the portal mark",
+      "verdict": "inherits-portal"
+    },
+    {
+      "mount": "zchuyot",
+      "route": "/zchuyot",
+      "page_status": 200,
+      "base_href": null,
+      "declared_icon_links": [],
+      "tab_source": "no rel=icon — the browser falls back to /favicon.ico on the origin, which is the portal mark",
+      "verdict": "inherits-portal"
+    },
+    {
+      "mount": "mthbram",
+      "route": "/mthbram",
+      "page_status": 200,
+      "base_href": null,
+      "declared_icon_links": [
+        {
+          "rel": "apple-touch-icon",
+          "href": "/mthbram/icon-192.png",
+          "sizes": null,
+          "type": null,
+          "resolved": "https://more30.com/mthbram/icon-192.png",
+          "probe": {
+            "status": 200,
+            "content_type": "image/png",
+            "content_length": 20797,
+            "bytes_received": 20797
+          }
+        }
+      ],
+      "tab_source": "no rel=icon — the browser falls back to /favicon.ico on the origin, which is the portal mark",
+      "verdict": "inherits-portal"
+    },
+    {
+      "mount": "galil",
+      "route": "/galil",
+      "page_status": 200,
+      "base_href": null,
+      "declared_icon_links": [
+        {
+          "rel": "apple-touch-icon",
+          "href": "/galil/pwa-512.png",
+          "sizes": null,
+          "type": null,
+          "resolved": "https://more30.com/galil/pwa-512.png",
+          "probe": {
+            "status": 200,
+            "content_type": "image/png",
+            "content_length": 97813,
+            "bytes_received": 97813
+          }
+        }
+      ],
+      "tab_source": "no rel=icon — the browser falls back to /favicon.ico on the origin, which is the portal mark",
+      "verdict": "inherits-portal"
+    },
+    {
+      "mount": "studio",
+      "route": "/studio",
+      "page_status": 200,
+      "base_href": null,
+      "declared_icon_links": [
+        {
+          "rel": "icon",
+          "href": "/favicon.png",
+          "sizes": null,
+          "type": "image/png",
+          "resolved": "https://more30.com/favicon.png",
+          "probe": {
+            "status": 200,
+            "content_type": "image/png",
+            "content_length": 4477,
+            "bytes_received": 4477
+          }
+        }
+      ],
+      "tab_source": "a rel=icon is declared, but its href is root-absolute and resolves to the origin — still the portal mark",
+      "verdict": "declares-but-lands-on-origin"
+    },
+    {
+      "mount": "mechiron",
+      "route": "/mechiron",
+      "page_status": 200,
+      "base_href": null,
+      "declared_icon_links": [
+        {
+          "rel": "icon",
+          "href": "/mechiron/favicon.svg",
+          "sizes": null,
+          "type": "image/svg+xml",
+          "resolved": "https://more30.com/mechiron/favicon.svg",
+          "probe": {
+            "status": 200,
+            "content_type": "image/svg+xml",
+            "content_length": 348,
+            "bytes_received": 348
+          }
+        }
+      ],
+      "tab_source": "own asset under the mount",
+      "verdict": "declares-own"
+    },
+    {
+      "mount": "kupot",
+      "route": "/kupot",
+      "page_status": 200,
+      "base_href": null,
+      "declared_icon_links": [
+        {
+          "rel": "icon",
+          "href": "/kupot/favicon.svg",
+          "sizes": null,
+          "type": "image/svg+xml",
+          "resolved": "https://more30.com/kupot/favicon.svg",
+          "probe": {
+            "status": 200,
+            "content_type": "image/svg+xml",
+            "content_length": 506,
+            "bytes_received": 506
+          }
+        }
+      ],
+      "tab_source": "own asset under the mount",
+      "verdict": "declares-own"
+    },
+    {
+      "mount": "nadlan",
+      "route": "/nadlan/",
+      "page_status": 200,
+      "base_href": null,
+      "declared_icon_links": [
+        {
+          "rel": "icon",
+          "href": "/nadlan/icon.svg?afd788af8975d9cb",
+          "sizes": "any",
+          "type": "image/svg+xml",
+          "resolved": "https://more30.com/nadlan/icon.svg?afd788af8975d9cb",
+          "probe": {
+            "status": 200,
+            "content_type": "image/svg+xml",
+            "content_length": 321,
+            "bytes_received": 321
+          }
+        }
+      ],
+      "tab_source": "own asset under the mount",
+      "verdict": "declares-own"
+    },
+    {
+      "mount": "crm",
+      "route": "/crm",
+      "page_status": 200,
+      "base_href": null,
+      "declared_icon_links": [],
+      "tab_source": "no rel=icon — the browser falls back to /favicon.ico on the origin, which is the portal mark",
+      "verdict": "inherits-portal"
+    },
+    {
+      "mount": "gesher",
+      "route": "/gesher",
+      "page_status": 200,
+      "base_href": null,
+      "declared_icon_links": [],
+      "tab_source": "no rel=icon — the browser falls back to /favicon.ico on the origin, which is the portal mark",
+      "verdict": "inherits-portal"
+    },
+    {
+      "mount": "kesef",
+      "route": "/kesef",
+      "page_status": 200,
+      "base_href": null,
+      "declared_icon_links": [],
+      "tab_source": "no rel=icon — the browser falls back to /favicon.ico on the origin, which is the portal mark",
+      "verdict": "inherits-portal"
+    },
+    {
+      "mount": "kiosk",
+      "route": "/kiosk/",
+      "page_status": 200,
+      "base_href": null,
+      "declared_icon_links": [],
+      "tab_source": "no rel=icon — the browser falls back to /favicon.ico on the origin, which is the portal mark",
+      "verdict": "inherits-portal"
+    },
+    {
+      "mount": "tivuch",
+      "route": "/tivuch",
+      "page_status": 200,
+      "base_href": null,
+      "declared_icon_links": [
+        {
+          "rel": "icon",
+          "href": "/tivuch/icon.svg",
+          "sizes": null,
+          "type": "image/svg+xml",
+          "resolved": "https://more30.com/tivuch/icon.svg",
+          "probe": {
+            "status": 200,
+            "content_type": "image/svg+xml",
+            "content_length": 385,
+            "bytes_received": 385
+          }
+        }
+      ],
+      "tab_source": "own asset under the mount",
+      "verdict": "declares-own"
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+24 galil (מחוברים): fix hero heading invisible in dark mode
+
+While looking for round-3 functional work (core.issues has no genuinely
+unblocked normal/high items left this session - every open item is either
+a confirmed user-decision block or explicitly deferred as bigger-than-one-
+step, matching prior sessions' findings), ran contrast-probe.mjs against
+https://more30.com/galil under emulated dark colorScheme as a fresh check
+of the a11y work this branch is named for. It over-reported several false
+positives (its backdrop-walker doesn't see gradient/shorthand `background`,
+only `background-color`), but one finding held up under a direct
+screenshot: the hero h1 "מחוברים — יהדות וקהילה" was genuinely unreadable
+(near-black on the hero's dark backdrop).
+
+Root cause, read in apps/24-galilee-connect-hub: HeroSection.tsx paints its
+own background as a hardcoded-always-dark gradient (not the theme-aware
+--gradient-hero token), but its text used `text-primary-foreground`, a
+token whose whole purpose is to invert per theme so it stays readable on
+--primary-colored buttons. In .dark, --primary-foreground flips to `205
+55% 8%` (near-black, correct for text on the now-bright primary blue
+button) - which is exactly wrong for text sitting on a background that
+never changes. Light mode never showed the bug because --primary-foreground
+happened to start near-white there.
+
+Fix: added a dedicated `--hero-foreground` CSS var (index.css, 210 50% 98%,
+identical in :root and .dark - deliberately never flips, since the backdrop
+it sits on never flips either) and a matching `hero-foreground` Tailwind
+color token (tailwind.config.ts). Swapped all four `primary-foreground`
+usages in HeroSection.tsx (h1, subtitle paragraph, particle dots, scroll
+chevron) to `hero-foreground`.
+
+Verified: `vite build` clean, --hero-foreground present in the built CSS.
+Deployed (robocopy apps/24-galilee-connect-hub/dist -> _deploy/galil-more30/galil,
+vercel deploy --prod, dpl_CbVd3qi84RP13tJKCc56XUvj2BTi, READY, aliased to
+galil-more30.vercel.app). Verified live on https://more30.com/galil with a
+cache-buster, Playwright, both color schemes: dark h1 color now
+rgb(247,250,252) (was near-black), screenshot confirms the heading is
+clearly white and readable against the dark hero background; light mode h1
+color unchanged at rgb(247,250,252) (identical to the pre-fix value, since
+--hero-foreground reuses the same light-mode number --primary-foreground
+already had).
+
+Evidence: QA/platform/galil-dark-mixed-0818/ (before/after screenshots,
+probe output, verification script).
+
+Protected systems untouched (08/09/bkalut-app/bkalot-admin/zr_*/NEDARIM3873).

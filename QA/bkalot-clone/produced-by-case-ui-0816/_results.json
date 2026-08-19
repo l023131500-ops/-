@@ -1,0 +1,118 @@
+{
+  "step": "produced-by-case-ui-0816",
+  "title": "שורת המסמך ברשימת הפנייה אינה אומרת מי הפיק (UI)",
+  "open_line_taken_from": "heartbeat 618 / commit e28a004",
+  "scope": {
+    "changed": ["apps/37-bkalot-clone/admin.html"],
+    "not_touched": [
+      "supabase/migrations (אין מיגרציה)",
+      "supabase/functions (bkalot-clone-admin נשארת v8, bkalot-clone-intake v1)",
+      "portal (אין פריסה)",
+      "apps/08-bkalut-app, apps/09-bkalot-admin, zr_*, NEDARIM3873",
+      "סכמות csj / csj_src / igud"
+    ]
+  },
+  "seed": {
+    "path": "bkalot-clone-intake מעל HTTP עם מפתח anon, כמו מהטופס",
+    "case_id": 207,
+    "contact_id": 214,
+    "queued": false,
+    "rights": 42,
+    "admins_via_rpc": [
+      { "id": 65, "full_name": "QA 0085 מפיק בשורה", "role": "admin" },
+      { "id": 66, "full_name": "QA 0085 מפיק שיימחק", "role": "admin" }
+    ],
+    "note": "שני המנהלים נוצרו דרך bkalot_clone_admin_create ולא בהזרקת hash"
+  },
+  "measured": {
+    "document_id": 136,
+    "screen": "מסך הפנייה (בלוק «מסמכים»), שרת סטטי מקומי על 127.0.0.1:8141 מול ה-edge וה-DB החיים",
+    "viewport": "1400x1000",
+    "header_before": ["#", "סוג", "כותרת", "מכתב", "נוצר", "תור", ""],
+    "header_after": ["#", "סוג", "כותרת", "מכתב", "נוצר", "הופק על ידי", "תור", ""],
+    "states": [
+      {
+        "n": 1,
+        "how": "לחיצת «הפק מסמך» מהמסך, דרך השער v8, בחשבון 65",
+        "db": { "produced_by": 65 },
+        "cell_text": "QA 0085 מפיק בשורה",
+        "title": "מזהה מנהל 65 · ההפקה האחרונה בלבד — «הפק מחדש» דורס את הקודמת ואין היסטוריה",
+        "class": null,
+        "png": "next-01-name.png",
+        "md5": "7EC8032803A865753EEF0A5BE379FD38"
+      },
+      {
+        "n": 2,
+        "how": "bkalot_clone_render בארגומנט אחד — צורת v7",
+        "db": { "produced_by": null },
+        "cell_text": "אינו ידוע",
+        "title": "ההפקה נרשמה לפני שהשער העביר את זהות המנהל, ולכן נשמר הגוף בלבד",
+        "class": "stale",
+        "png": "next-02-unknown.png",
+        "md5": "DB55CD6A14385BB1C8B7ABAF03D88F96"
+      },
+      {
+        "n": 3,
+        "how": "render עם p_admin_id=66, ואז מחיקת חשבון 66 — ולא UPDATE ידני",
+        "db": { "produced_by": 66, "account_66_rows": 0, "document_rows": 1, "body_text_len": 2522 },
+        "cell_text": "מנהל #66 · החשבון אינו קיים עוד",
+        "title": "הזהות נשמרה על המסמך בזמן ההפקה, וחשבון הניהול שהיא מצביעה עליו כבר אינו במסד",
+        "class": "stale",
+        "png": "next-03-account-gone.png",
+        "md5": "CD0F20568C0F79A0073E2E8B3C4224EE"
+      }
+    ],
+    "three_distinct_md5": true,
+    "same_document_all_three": true,
+    "row_survived_producer_deletion": true,
+    "overwritten_marker_read_together": "«נוצר 16.08.2026, 01:57 / נדרס 16.08.2026, 01:58» בתא שמימין, ומיד לצידו מי שהפיק",
+    "console": "הודעה אחת בלבד — favicon.ico 404 של השרת המקומי, שאינו קיים בייצור"
+  },
+  "production_control": {
+    "urls": ["https://more30.com/bkalot-studio/admin", "https://more30.com/bkalot-studio/admin/"],
+    "status": 200,
+    "live_bytes": 100160,
+    "source_bytes": 101368,
+    "new_zero_live": true,
+    "new_present_source": true,
+    "old_equal": true,
+    "diff_grew": true,
+    "replacement_chars": 0,
+    "double_encoded": 0,
+    "diff_markers": {
+      "fillProducedCell": { "source": 4, "live": 2 },
+      "הופק על ידי": { "source": 3, "live": 1 },
+      "fillCreatedCell": { "source": 4, "live": 3 },
+      "fillTemplateCell": { "source": 4, "live": 3 }
+    },
+    "warning": "fillCreatedCell ו-fillTemplateCell היו תחילה בקרה ונכשלו (4 מול 3) — ההערה החדשה מזכירה אותן בשמן. הועברו ל-DIFF ולא תוקנו בשקט."
+  },
+  "test_mode": {
+    "intake_queued": false,
+    "render_queued": [false, false, false],
+    "outbound_queue_rows": 8,
+    "rows_with_sent_at": 0,
+    "queue_fingerprint": { "before": "681dde58ed67b2094d0cbbd7c68e0fb6", "after": "681dde58ed67b2094d0cbbd7c68e0fb6" },
+    "delivery_log": 3,
+    "cases_in_sent": 0
+  },
+  "rollback": {
+    "method": "שש פקודות נפרדות לפי id, כל אחת ספרה את מה שהיא עצמה מחקה; איש הקשר לפי id ולא לפי טלפון מנורמל",
+    "deleted": { "documents": 1, "case_rights": 42, "cases": 1, "contacts": 1, "admin_sessions": 1, "admin_users": 1 },
+    "account_66_deleted_earlier": true,
+    "after": {
+      "cases": 0, "case_rights": 0, "documents": 0, "contacts": 4,
+      "admin_users": 1, "admin_sessions": 5, "templates": 2,
+      "outbound_queue": 8, "delivery_log": 3, "catalog": 888,
+      "qa_accounts_65_66": 0
+    },
+    "matches_baseline": true
+  },
+  "open": [
+    "הקובץ טרם נפרס — more30.com/bkalot-studio/admin עדיין מציג שורת מסמך בלי «הופק על ידי», והמדידה כאן רצה מול שרת סטטי מקומי, כלומר מדדה את הקוד ולא את המוצר; זו הפעימה הבאה, אותו פיצול כמו 0084 → 042e60f → 7d7dcf2.",
+    "bkalot_clone_admin_cases — רשימת העבודה — עדיין אינה יודעת על produced_by, ולכן ברשימה החיצונית עדיין אין למי להציג.",
+    "אין היסטוריית מפיקים (העמודה אומרת את האחרון בלבד) ואין produced_at.",
+    "ה-title נמדד כתכונה ב-DOM ולא כטולטיפ שנפתח בריחוף.",
+    "on conflict (case_id, kind) ו-kind של שתי התבניות הוא email — לפנייה יש לכל היותר מסמך אימייל אחד, ולכן שורה אחת בטבלה ולא שתיים; שלושת המצבים נמדדו ברצף על אותה שורה ולא זו לצד זו."
+  ]
+}

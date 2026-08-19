@@ -1,0 +1,161 @@
+{
+  "src_bytes": 136547,
+  "live_bytes": 134396,
+  "rows": [
+    {
+      "marker": "reclamped",
+      "src": 3,
+      "live": 0
+    },
+    {
+      "marker": "load(true)",
+      "src": 1,
+      "live": 0
+    },
+    {
+      "marker": "הרשימה מתקצרת בשרת",
+      "src": 1,
+      "live": 0
+    },
+    {
+      "marker": "ואינו רודף אחריו",
+      "src": 1,
+      "live": 0
+    },
+    {
+      "marker": "מעבר לסוף הרשימה",
+      "src": 1,
+      "live": 0
+    },
+    {
+      "marker": "Math.ceil(total / PAGE)",
+      "src": 2,
+      "live": 1
+    },
+    {
+      "marker": "const cases = data.cases",
+      "src": 1,
+      "live": 0
+    },
+    {
+      "marker": "ראה הכרעה (4) למטה",
+      "src": 1,
+      "live": 0
+    },
+    {
+      "marker": "render(cases)",
+      "src": 2,
+      "live": 1
+    },
+    {
+      "marker": "data.cases",
+      "src": 1,
+      "live": 1
+    },
+    {
+      "marker": "function load",
+      "src": 1,
+      "live": 1
+    },
+    {
+      "marker": "offset > 0",
+      "src": 1,
+      "live": 0
+    },
+    {
+      "marker": "q-phone",
+      "src": 3,
+      "live": 3
+    },
+    {
+      "marker": "qPhone",
+      "src": 6,
+      "live": 6
+    },
+    {
+      "marker": "חופש לפי",
+      "src": 1,
+      "live": 1
+    },
+    {
+      "marker": "q_phone",
+      "src": 1,
+      "live": 1
+    },
+    {
+      "marker": "0093",
+      "src": 2,
+      "live": 2
+    },
+    {
+      "marker": "list-error",
+      "src": 4,
+      "live": 4
+    },
+    {
+      "marker": "decider_required",
+      "src": 1,
+      "live": 1
+    },
+    {
+      "marker": "note_too_long",
+      "src": 5,
+      "live": 5
+    },
+    {
+      "marker": "why-input",
+      "src": 2,
+      "live": 2
+    },
+    {
+      "marker": "syncNoteCount",
+      "src": 4,
+      "live": 4
+    },
+    {
+      "marker": "td.why",
+      "src": 1,
+      "live": 1
+    },
+    {
+      "marker": "רצף ההכרעות",
+      "src": 4,
+      "live": 4
+    },
+    {
+      "marker": "handsBit",
+      "src": 2,
+      "live": 2
+    },
+    {
+      "marker": "producedBit",
+      "src": 2,
+      "live": 2
+    },
+    {
+      "marker": "fillQueueCell",
+      "src": 2,
+      "live": 2
+    },
+    {
+      "marker": "fillTemplateCell",
+      "src": 4,
+      "live": 4
+    },
+    {
+      "marker": "fillCreatedCell",
+      "src": 4,
+      "live": 4
+    },
+    {
+      "marker": "מי הכריע",
+      "src": 13,
+      "live": 13
+    },
+    {
+      "marker": "fillHistoryNoteCell",
+      "src": 2,
+      "live": 2
+    }
+  ]
+}

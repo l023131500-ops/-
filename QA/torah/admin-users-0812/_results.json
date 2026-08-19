@@ -1,0 +1,56 @@
+{
+  "at": "2026-08-12T18:05:00Z",
+  "project": "bieebmnmkffwbqlsfozh",
+  "system": "01 torah-platform",
+  "scope": "The 4 deployed edge functions on project 01 that no sweep had ever measured or read: admin-users, nedarim-admin, nedarim-create-payment, nedarim-webhook. zr-loader and zr-admin-api are the protected zr_* system and were deliberately not touched.",
+  "method": "GET /v1/projects/{ref}/functions/{slug}/body with the management PAT returns the deployed ESZIP2.3 bundle; the transpiled handler sits at the front of it. Extractor committed as scripts/qa/read-deployed-function-source.mjs.",
+  "correction": "All four of these DO have typed source in the repo already, under apps/01-torah-platform/supabase/functions/ — unlike chat and search-lessons in #195, which had none. So the gap here was never source control, only that nobody had read the gate or asked it a question. The captures are kept as deployed-vs-committed evidence: the deployed bundle of nedarim-create-payment matches the committed source, so the hole below is in the repo too and the fix can be written against the real typed file.",
+  "read_only": "No function was deployed or modified in this step. No row was written to any nedarim table.",
+  "functions": [
+    {
+      "slug": "admin-users",
+      "verify_jwt": false,
+      "verdict": "clean",
+      "gate": "Requires an Authorization header, resolves it with admin.auth.getUser(token), then requires the caller to hold super_admin or tenant_admin in user_roles. tenant_admin is scoped: cannot create/grant super_admin, cannot touch a user outside its own tenant_id.",
+      "measured": [
+        { "request": "GET, no headers", "status": 405, "body": "{\"ok\":false,\"error\":\"method not allowed\"}" },
+        { "request": "POST {} , no apikey and no Authorization", "status": 401, "body": "{\"ok\":false,\"error\":\"אין הרשאה\"}" },
+        { "request": "POST {\"action\":\"list\"}, no apikey and no Authorization", "status": 401, "body": "{\"ok\":false,\"error\":\"אין הרשאה\"}" },
+        { "request": "POST {\"action\":\"list\"} with the project anon key as bearer", "status": 401, "body": "{\"ok\":false,\"error\":\"טוקן לא תקף\"}" }
+      ],
+      "note": "The anon key is a valid JWT but not a user token, so getUser rejects it. This is exactly the check create-admin (#194) was missing. Deployed bundle matches the committed source at apps/01-torah-platform/supabase/functions/admin-users/index.ts.",
+      "residual": "Narrow: in update_password, a tenant_admin may reset the password of a super_admin who also happens to hold a tenant_admin row on that same tenant, because the some() finds the tenant_admin row and passes. Not exploitable against the current data set. Recorded, not fixed."
+    },
+    {
+      "slug": "nedarim-admin",
+      "verify_jwt": true,
+      "verdict": "gated",
+      "gate": "Own Authorization check before anything else, then getUser, then a super_admin / tenant_admin role lookup — the same shape as admin-users.",
+      "measured": [
+        { "request": "POST {}, no apikey and no Authorization (earlier sweep, QA/torah/edge-sweep-0812)", "status": 401, "body": "missing auth token" }
+      ]
+    },
+    {
+      "slug": "nedarim-create-payment",
+      "verify_jwt": false,
+      "verdict": "OPEN — issue #196, critical",
+      "gate": "none. No Authorization check, no apikey check, no shared secret. Runs on SUPABASE_SERVICE_ROLE_KEY.",
+      "measured": [
+        { "request": "POST {}, no apikey and no Authorization (earlier sweep)", "status": 400, "body": "missing required fields (tenant_id, amount, donor.name, donor.phone)", "meaning": "the handler ran — this is its own field validation, not a platform gate" },
+        { "request": "GET /rest/v1/tenants?select=id,slug,name with the anon key", "status": 200, "body": "3+ rows including id, so tenant_id is public to anyone holding the browser bundle's anon key" },
+        { "request": "select count(*) from nedarim_configs (via management API)", "result": "3 rows, all 3 with mosad_id and api_valid set — the terminal is live, not a stub" },
+        { "request": "GET /rest/v1/nedarim_configs with the anon key", "status": 200, "body": "[] — RLS does protect the config table directly" }
+      ],
+      "not_measured": "A POST carrying a real tenant_id was deliberately NOT sent. It would insert a pending row into the live nedarim_transactions table and, worse, rewrite payment_meta on whatever donation_id/order_id the body named. The finding is established from the deployed bundle plus the four probes above.",
+      "finding": "Two things follow from the missing gate. (a) Any anonymous caller can name any donation_id or order_id in the body; the function updates that row's payment_method/payment_meta with service_role and never checks who owns it. (b) The row it writes to nedarim_transactions binds a fresh our_payment_id to that same donation_id/order_id. nedarim-webhook then matches an incoming IPN on our_payment_id (Param2) and sets payment_status='captured' / status='paid' on the bound row. So a stranger can bind a ₪1 payment of their own to somebody else's real order and have the legitimate Nedarim callback mark that order paid."
+    },
+    {
+      "slug": "nedarim-webhook",
+      "verify_jwt": false,
+      "verdict": "by design open, but it is the second half of #196",
+      "gate": "IP allowlist against Nedarim Plus's callers; a non-Nedarim IP is rejected — and the rejection itself writes a rejected_ip row, which is why no sweep has ever POSTed to it.",
+      "note": "Not the hole. It is the mechanism that turns the create-payment hole into a paid order: it trusts the our_payment_id -> donation_id/order_id binding that create-payment wrote without authentication."
+    }
+  ],
+  "protected_untouched": "08, 09, bkalut-app, bkalot-admin, zr_* (zr-loader and zr-admin-api share this project and were not read, written or redeployed), NEDARIM3873. The nedarim-* functions here belong to 01's own terminal, mosad 7016674; nothing was deployed to them in this step and the fix is written to NEEDS_USER rather than shipped, because it changes a live money path on three real tenants."
+}

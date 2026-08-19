@@ -1,0 +1,28 @@
+24 גליל קונקט: Lighthouse נמדד, תוקנו 2 ליקויי נגישות אמיתיים + build שבור
+
+המשך ישיר לסבב 17/08 (fix/nadlan-a11y, אחרי 02/04/06/10/12/14/15/16/17/18/22/26/28/32/34/21).
+node scripts/qa/lighthouse-run.mjs QA/platform/galil-lh-0817 galil מול
+https://more30.com/galil החי — a11y היה כבר 94, לא 100.
+
+ליקויים אמיתיים שתוקנו:
+- color-contrast (score 0, ratio 4:1 על שלושה כפתורי CTA: "הורדה מלאה" בנאב,
+  ושני מופעי "כניסה לפורטל גבאים"): `--primary` בטוקן ה-Tailwind (index.css)
+  היה 200 85% 40% — כהה מספיק שהטקסט הלבן (`--primary-foreground`) עליו לא
+  עמד ב-4.5:1 הנדרש. הכהתי ל-35% lightness (ratio חדש ~5:1), טוקן גלובלי כך
+  שהתיקון חל על כל כפתור עם bg-primary/text-primary-foreground באתר, לא רק
+  שלוש המופעים שנמדדו.
+- landmark-one-main: ל-Index.tsx לא היה <main> — עטפתי את תוכן הגוף (כמו
+  בתיקון 21 Mthbram).
+
+בנוסף תוקן, כי הוא חסם כל build מחדש (לא קשור לנגישות): שלושה עמודים
+(ContactPage.tsx, GabaiPortal.tsx, ReligiousInfoPage.tsx) ייבאו
+src/assets/logo-hazor.png שלא קיים בדיסק, מה שהפיל את vite build. הפניתי
+את שלושתם ל-logo-mechubarim.png הכבר-קיים (אותו קובץ שכל שאר האתר כבר
+משתמש בו) — אותו דפוס תיקון בדיוק כמו agud-logo.png ב-21 Mthbram.
+
+נבנה, robocopy ל-_deploy/galil-more30/galil, נפרס ל-production דרך vercel
+CLI, אומת עם cache-buster שה-bundle החדש חי, ונמדד מחדש פעמיים (אחרי
+color-contrast עדיין 96, אחרי הכהיית הטוקן — 100). פרפורמנס (32→36) מתחת
+לסף 90, לא נחקר בצעד הזה.
+
+QA/platform/galil-lh-0817/

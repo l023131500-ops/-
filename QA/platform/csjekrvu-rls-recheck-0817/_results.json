@@ -1,0 +1,31 @@
+{
+  "measured_at": "2026-08-17",
+  "project_ref": "csjekrvukbdznetsrodj",
+  "table": "public.recordings",
+  "anon_key_source": "apps/06-kupot-holim/site/supabase-config.js (role=anon)",
+  "checks": [
+    {
+      "name": "GET count",
+      "request": "GET /rest/v1/recordings?select=id&limit=1 (Prefer: count=exact)",
+      "status": 206,
+      "content_range": "0-0/1138"
+    },
+    {
+      "name": "DELETE impossible-id filter (0 rows matched, nothing deleted)",
+      "request": "DELETE /rest/v1/recordings?id=eq.00000000-0000-0000-0000-000000000000",
+      "status": 204,
+      "interpretation": "grant allowed the write; RLS did not block it"
+    },
+    {
+      "name": "PATCH impossible-id filter",
+      "request": "PATCH /rest/v1/recordings?id=eq.00000000-0000-0000-0000-000000000000 body={\"title\":\"x\"}",
+      "status": 400,
+      "body": "{\"code\":\"PGRST204\",\"message\":\"Could not find the 'title' column of 'recordings' in the schema cache\"}",
+      "interpretation": "schema error (no such column), not conclusive for RLS on PATCH specifically"
+    }
+  ],
+  "conclusion": "still open — anon DELETE grant unrestricted, row count unchanged at 1138 (matches 12/08 and 02/08 measurements)",
+  "prior_measurements": ["02/08/2026", "03/08/2026", "12/08/2026"],
+  "fix_ready_at": "db/apps/17-chizukim-transcribe/0001_close_public_write_on_recordings.sql",
+  "blocker": "reading SUPABASE_ACCESS_TOKEN from core.secrets requires the Supabase MCP connection, not connected this session"
+}

@@ -1,0 +1,92 @@
+{
+  "pulse": "«1 זכויות» בשורת אישור הפקת המסמך",
+  "open_line_taken_from": "e3e1af1 / heartbeat 581 — «${out.rights_count} זכויות (...) בשורת אישור הפקת המסמך ... נשארו במספר. הראשון מגיע ליחיד באותה קלות»",
+  "file": "apps/37-bkalot-clone/admin.html",
+  "no_migration": true,
+  "edge_function_version_unchanged": "bkalot-clone-admin v7",
+  "portal_deploy": false,
+
+  "servers": {
+    "8144": { "serves": "git show HEAD (הגרסה שבייצור)", "bytes": 88067 },
+    "8145": { "serves": "apps/37-bkalot-clone/admin.html (מתוקן)", "bytes": 88696 }
+  },
+  "viewport": "1280x900",
+  "seeded_over_http": { "intake": "bkalot-clone-intake, anon key", "case_one": 122, "case_many": 123 },
+  "admin_created": { "id": 40, "full_name": "QA 0083 הפקה", "login": "במסך עצמו, בשני המקורות" },
+
+  "measurement": [
+    {
+      "shot": "01-prev-one-right.png",
+      "server": 8144,
+      "case": 122,
+      "rights_rows": 1,
+      "chosen_rows": 0,
+      "banner": "מסמך #97 הופק · תבנית rights_treatment_reply · 410 תווי טקסט · 1 זכויות (כל הרשימה) · לא נשלח — מצב טסט"
+    },
+    {
+      "shot": "02-next-one-right.png",
+      "server": 8145,
+      "case": 122,
+      "rights_rows": 1,
+      "chosen_rows": 0,
+      "banner": "מסמך #97 הופק · תבנית rights_treatment_reply · 410 תווי טקסט · זכות אחת (כל הרשימה) · לא נשלח — מצב טסט",
+      "note": "אותו מסמך #97, אותם 410 תווים, אותה תבנית — ההבדל היחיד הוא צורת הריבוי"
+    },
+    {
+      "shot": "03-next-control-42.png",
+      "server": 8145,
+      "case": 123,
+      "rights_rows": 42,
+      "chosen_rows": 0,
+      "banner": "מסמך #100 הופק · תבנית rights_treatment_reply · 2519 תווי טקסט · 42 זכויות (כל הרשימה) · לא נשלח — מצב טסט",
+      "note": "בקרה — הרבים לא זז"
+    },
+    {
+      "shot": "04-next-chosen-one.png",
+      "server": 8145,
+      "case": 123,
+      "rights_rows": 42,
+      "chosen_rows": 1,
+      "banner": "מסמך #100 הופק · תבנית rights_treatment_reply · 414 תווי טקסט · זכות אחת (נבחרו) · לא נשלח — מצב טסט",
+      "note": "אותה פנייה שאמרה «42 זכויות» רגע לפני כן — היחיד נגזר מהמספר ולא מהמקור, ושני מצבי הסוגריים נמדדו"
+    }
+  ],
+
+  "screenshots_md5": {
+    "01-prev-one-right.png": { "bytes": 58367, "md5": "ECA45762E811E55CD0656D67C9A140F7" },
+    "02-next-one-right.png": { "bytes": 59658, "md5": "7C5319FBFE3A6F474A585D80FFC04A40" },
+    "03-next-control-42.png": { "bytes": 72295, "md5": "84EBC1941AA9FE11A4168AAF8EA2ADCD" },
+    "04-next-chosen-one.png": { "bytes": 73328, "md5": "D87034E742C3859749A2F2C224EDF37D" }
+  },
+
+  "console": "הודעה אחת לאורך כל הזרימה — favicon.ico 404 של השרת הסטטי המקומי ולא של המסך",
+
+  "test_mode_measured": {
+    "outbound_queue": 8,
+    "delivery_log": 3,
+    "queue_rows_with_sent_at": 0,
+    "queue_rows_mode_live": 0,
+    "cases_status_sent": 0,
+    "documents_with_queue_id": 0,
+    "queue_fingerprint_before_during_after": "31cde16bd812fcea8d688ff4585e98d8",
+    "buttons_not_clicked": ["הכנס לתור", "עבד עכשיו"]
+  },
+
+  "direct_sql_recorded_not_swallowed": [
+    "rights_count=1 אינו מצב שנתיב HTTP יכול לייצר — הקליטה מחברת כל שורת קטלוג שתואמת למצב (42 כאן), ולכן #122 קוצצה ל-case_rights אחת ב-DELETE ישיר",
+    "chosen=true אינו מצב שהמסך יכול לייצר — אין בו בורר זכויות — ולכן שורה אחת של #123 סומנה ב-UPDATE ישיר"
+  ],
+
+  "rollback": {
+    "deleted": { "documents": 2, "case_rights": 43, "cases": 2, "contacts": 2, "admin_sessions": 2, "admin_users": 1 },
+    "after": {
+      "cases": 0, "case_rights": 0, "documents": 0, "admin_users": 1, "admin_sessions": 5,
+      "contacts": 4, "templates": 2, "templates_enabled": 2, "catalog": 888,
+      "outbound_queue": 8, "delivery_log": 3, "chosen_rows_left": 0,
+      "queue_fingerprint": "31cde16bd812fcea8d688ff4585e98d8"
+    },
+    "identical_to_baseline": true
+  },
+
+  "protected_untouched": ["apps/08-bkalut-app", "apps/09-bkalot-admin", "supabase/functions", "bkalut-app", "bkalot-admin", "zr_*", "NEDARIM3873", "csj", "csj_src", "igud"]
+}

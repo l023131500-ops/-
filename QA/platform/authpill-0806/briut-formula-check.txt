@@ -1,0 +1,15 @@
+﻿@390  inset=98px
+   live   pad=82px   last-item x 268..374       edge-click→span
+   fixed  pad=98px   last-item x 268..374       edge-click→span   CLEAR
+@834  inset=104px
+   live   pad=72px   last-item x 72..145        edge-click→more30-auth
+   fixed  pad=104px  last-item x 104..177       edge-click→a   CLEAR
+@1100  inset=104px
+   live   pad=72px   last-item x 72..145        edge-click→more30-auth
+   fixed  pad=104px  last-item x 104..177       edge-click→a   CLEAR
+@1280  inset=104px
+   live   pad=0px    last-item x 80..153        edge-click→more30-auth
+   fixed  pad=32px   last-item x 112..185       edge-click→a   CLEAR
+@1440  inset=104px
+   live   pad=0px    last-item x 160..233       edge-click→a
+   fixed  pad=32px   last-item x 192..265       edge-click→a   CLEAR

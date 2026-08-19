@@ -1,0 +1,55 @@
+{
+  "when": "2026-08-11T00:10Z",
+  "system": "#40 gannenet — גננת בקליק",
+  "priority": "more30-priority.md §0",
+  "subject": "public/sw.js — offline routing after the shelf moved to /api/shelf/",
+  "server": "next start -p 3140, existing production build (.next BUILD_ID s2suEtPYtHjZZNcXpWMS4, basePath /gannenet)",
+
+  "defect": {
+    "introduced_by": "9df6c5e — the 258 seed files moved from public/shelf/ into the gannenet-shelf bucket, and their catalog `file` fields became /api/shelf/<id>.<ext>",
+    "measured": "all 258 of 258 catalog.json entries now start with /api/shelf/ ; the service worker's isFile() still matched only /api/drive/",
+    "consequence": "the PREFETCH handler behind \"שמירת התצוגה לאופליין\" writes every saved file into the FILES cache, but no fetch path read FILES for /api/shelf/* — so the button's entire output was unreachable. Images (24 items) fell to isStatic and were looked up cache-first in SHELL, where the prefetch never put them; PDFs (234 items) fell through to networkFirst in SHELL. The app's stated promise, \"עובד גם ללא אינטרנט\", did not hold for the shelf.",
+    "second_gap": "isCatalog() matched only /api/drive-catalog, while app/shelf/page.tsx also fetches /api/catalog — the shelf's own 2,977-item listing had no stale-while-revalidate path."
+  },
+
+  "fix": {
+    "file": "apps/40-gannenet/public/sw.js",
+    "isFile": "now also matches p(\"/api/shelf/\")",
+    "isCatalog": "now also matches p(\"/api/catalog\")",
+    "version": "gannenet-v2 -> gannenet-v3, so activate() drops the caches built under the old routing. Safe to drop: the app is not deployed yet, so no user has an offline copy to lose."
+  },
+
+  "verified": {
+    "sw_served": { "url": "/gannenet/sw.js", "status": 200, "contains_v3": true, "contains_api_shelf": true },
+    "sw_registration": { "scope": "http://localhost:3140/gannenet/", "active": true },
+    "shelf_page": { "url": "/gannenet/shelf", "status": 200, "bytes": 67708, "console_errors_on_load": 0, "items_rendered": 2977, "categories": 21 },
+    "cache_placement_after_one_request": {
+      "url": "/gannenet/api/shelf/16QLfhd7JsxdUZtVXgs33DhIXUZGT916_.jpg",
+      "status": 200,
+      "content_type": "image/jpeg",
+      "in_files_cache": true,
+      "in_shell_cache": false,
+      "note": "FILES is the cache the bulk-save writes to; before the fix this same request landed in SHELL"
+    },
+    "offline": {
+      "how": "playwright context.setOffline(true)",
+      "control_uncached_url": "network FAILED: Failed to fetch — the network really was down",
+      "shelf_file": { "status": 200, "content_type": "image/jpeg", "bytes": 29278 },
+      "conclusion": "served from cache with no network"
+    },
+    "screenshot": "shelf-page.png"
+  },
+
+  "not_a_defect": {
+    "byte_count_mismatch": "the bucket object seed/16QLfhd7JsxdUZtVXgs33DhIXUZGT916_.jpg is 204,568 bytes but arrives as 29,278. It is a complete, valid JPEG (ff d8 ff … ff d9), and the direct bucket URL returns the identical 29,278 bytes from this machine — so NetFree re-compresses images in transit here, the same network path that returns 418 on PDF bodies from supabase.co (see 9df6c5e). Our route is byte-faithful to what it receives; the production server is not behind NetFree."
+  },
+
+  "scope": {
+    "migration": "none — the database was read only (core.run_progress insert, storage.objects read)",
+    "deploy": "none. Vercel quota is still refused until ~2026-08-11T00:11Z (core.issues #83), and gannenet has no Vercel project yet.",
+    "protected": "08/09/bkalut-app/bkalot-admin/zr_*/NEDARIM3873 were neither read nor written",
+    "test_mode": "no message and no charge left the machine"
+  },
+
+  "next": "create the gannenet-more30 Vercel project and deploy with APP_BASE_PATH=/gannenet, then add the three /gannenet rewrites to portal/vercel.dist.json. public_visible stays false until it is verified live."
+}

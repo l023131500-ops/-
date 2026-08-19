@@ -1,0 +1,55 @@
+31 gesher: the partner's one business action wrote to the one column he may not write
+
+The previous step shipped /gesher/partner/clients with a "treatment status" dropdown —
+the only business action a partner has there. Reading the schema on the way to building
+the last placeholder screen showed why partner_feedback_notes was described as "already in
+the table": it is the ONLY column `authenticated` may write on partner_assignments.
+Migration 20260605003212 does REVOKE UPDATE ... GRANT UPDATE (partner_feedback_notes),
+and no later migration gives treatment_status back.
+
+The handler wrote it through the CALLER's client. Postgres checks column privileges before
+RLS, so this never depended on which row was picked. Measured against production, signed in
+as the §1ב test user, with an id matching no row:
+
+  treatment_status         HTTP 403  42501 permission denied for table partner_assignments
+  partner_feedback_notes   HTTP 204  allowed
+
+Every partner touching that dropdown got a permission error in the toast. The same trap was
+avoided on `tasks` — migration 20260610113503 granted UPDATE (status, priority, updated_at),
+and the tasks board is fine. partner_assignments simply never got its GRANT back.
+
+The revoke is deliberate: it stops a partner moving his own row through the funnel by hand,
+and stops him rewriting partner_id past the USING-only policy. So no GRANT was restored.
+Instead the ownership check stays with the caller ("Partners read own assignments" narrows
+it, so a foreign id and a missing id both answer Forbidden) and the one legitimate transition
+is made as service_role, on the single column, after that check.
+
+Verified: tsc --noEmit 0 (--listFiles = 1175 files including partner.functions.ts — the repo
+root tsconfig is "files": [] and inspects nothing); npm run build 0; the built chunk carries
+the dynamic client.server import. Deployed from source (not --prebuilt, so vercel.json ships):
+dpl_7rE8idUbbyMaAZQukAD8ER8QTKt8, production, READY. Then called the real server function on
+more30.com — the RPC body is seroval-encoded, not plain JSON, so the check uses the app's own
+serializer — and got HTTP 200 / "Forbidden": the handler runs, the gate holds, no 42501.
+
+Not verified, recorded as such: the service_role write itself was not executed. There is no
+partner account here and no real assignment, and partner_assignments has no INSERT policy
+outside "Admins manage assignments" — the same blocker recorded at 11:49 and 12:04.
+
+And underneath it, #180: before trusting supabaseAdmin, it was checked. `vercel env ls` on
+gesher-more30 returns exactly two variables across all three scopes — SUPABASE_URL and
+SUPABASE_PUBLISHABLE_KEY — and the built server bundle reads process.env.SUPABASE_SERVICE_ROLE_KEY
+at runtime (not inlined). So supabaseAdmin throws on first use in production, which kills the
+whole admin panel, the public lead form, listMyClients once a partner has an assignment,
+getClientDashboard for a client with a partner, and storage deletes. That is static evidence
+from two independent sources, not a runtime measurement: no production path reaches
+supabaseAdmin without writing — the two readable ones are gated on an assignment and
+test@more30.com has none (measured, 200 []) — and the lead route would have created a real
+lead plus an outbox new_lead row, so it was not run. Blocked on the user; the key is not
+reachable from here.
+
+core.issues #179 (fixed) and #180 (critical, open, user).
+Evidence: QA/gesher/partner-status-grant-0812/ — README.md and three re-runnable probes.
+
+Test mode: no user created, no message sent, no charge, and not one row written to any of
+31's tables — both PATCH probes targeted a non-existent id. Protected systems (08, 09,
+bkalut-app, bkalot-admin, zr_*, NEDARIM3873) untouched; csj/csj_src/igud unused.

@@ -1,0 +1,19 @@
+תחזוקה: הוסף לגיט את more30-feature-expansion.md — היה קיים רק בעץ העבודה
+
+more30-priority.md §9 מפנה במפורש לקובץ הזה כקריאת-חובה לפני שלב הרחבת
+הפיצ'רים ("קרא את more30-feature-expansion.md והוסף את הפיצ'רים
+המומלצים"), אבל בפועל הוא היה untracked — קיים רק על הדיסק המקומי, לא
+בגיט. אותה בעיה בדיוק כמו BKALOT_CLONE_BUILD.md/BKALOT_AUTOMATION_BUILD.md
+(תוקן ב-9fc90aa): אם עץ העבודה היה משוחזר מקלון נקי, המפרט הזה היה נעלם
+בלי סימן.
+
+נבדק שאין בו סודות/טוקנים לפני הקומיט (grep ל-eyJ/Bearer/service_role/
+password/api_key/sbp_/sk-/AIza — אין התאמות). קובץ קטן (3.2KB).
+
+המשך של f3069fd: שאר ~150 קבצי ה-untracked בשורש (docx/md ישנים, סקריפטי
+לולאת הרצה, ראיות QA היסטוריות) נבדקו מול הקבצים שמאוזכרים בשם ב-
+RUN_INSTRUCTIONS.md/more30-priority.md — זה היה הפער היחיד שנמצא. השאר
+אינם קריאת-חובה מפורשת ולא נגעתי בהם.
+
+Supabase MCP לא היה מחובר בסשן הזה (נבדק עם ToolSearch) — heartbeat נכתב
+כקובץ ממתין, לא כשורת core.run_progress אמיתית.

@@ -1,0 +1,6 @@
+﻿run 1: A=200 B=200 | in catalog: A=true B=true
+run 2: A=200 B=200 | in catalog: A=true B=true
+run 3: A=200 B=200 | in catalog: A=true B=true
+run 4: A=200 B=200 | in catalog: A=true B=true
+
+lost a save in 0 of 4 runs

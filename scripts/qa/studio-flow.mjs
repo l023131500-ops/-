@@ -7,9 +7,14 @@
 //
 // צילומים: QA/studio/.
 
+// ⚠️ שתי ההמתנות הקבועות הוחלפו ב-settle(). לעורך אין minChars בכוונה:
+// ‎stuckOnFallback‎ הוא ממצא לגיטימי, ועמוד שנתקע על "טוען…" חייב להימדד
+// כפי שהוא ולא להמתין 30 שניות לתוכן שלא יגיע.
+
 import { chromium } from 'playwright-core';
 import fs from 'node:fs';
 import path from 'node:path';
+import { settle } from './lib/settle.mjs';
 
 const EXE = 'C:\\Users\\USER\\AppData\\Local\\ms-playwright\\chromium-1234\\chrome-win64\\chrome.exe';
 const OUT = 'C:\\Users\\USER\\Downloads\\more30\\QA\\studio';
@@ -34,7 +39,7 @@ for (const mode of ['light', 'dark', 'mobile']) {
 
   const rec = { mode, errors: errs };
   await page.goto(URL, { waitUntil: 'domcontentloaded', timeout: 90000 });
-  await page.waitForTimeout(5000);
+  await settle(page, { minChars: 50 }).catch(() => {});
 
   // ⚠️ תצוגות הגלריה נצבעות רק כשמתקרבים אליהן (LazyPreview). בלי גלילה
   // הצילום מראה ארבע תיבות ריקות — וזו הייתה בדיוק הטעות בצילום הראשון.
@@ -78,7 +83,7 @@ for (const mode of ['light', 'dark', 'mobile']) {
 
   // הפעולה המרכזית: פתיחת העורך — הקטע שהופרד בסבב הזה
   await page.goto(`${URL}#/editor`, { waitUntil: 'domcontentloaded', timeout: 90000 });
-  await page.waitForTimeout(9000);
+  await settle(page).catch(() => {});
   rec.editor = await page.evaluate(() => {
     const canvas = document.querySelector('canvas, [data-canvas], #canvas-stage');
     const t = (document.body.innerText || '').replace(/\s+/g, ' ');

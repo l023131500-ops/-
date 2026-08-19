@@ -1,0 +1,27 @@
+heartbeat: backfill 24 queued core.run_progress rows (0818)
+
+Session start: read RUN_INSTRUCTIONS.md, checked core.run_progress (last row
+tivuch-round4-functional-0818, which closed the round-4 functional sweep) and
+git log on fix/nadlan-a11y (HEAD 4764057). Instead of starting a new round,
+looked for unfinished work first: found 44 "heartbeat: pending row for X
+(hash)" placeholder commits on this branch, written when the Supabase MCP was
+unreachable. 20 already had core.run_progress rows from earlier sessions; the
+remaining 24 did not.
+
+Inserted the 24 missing rows (core.run_progress ids 904-927), phase=backfill,
+status=done, at=each target commit's real committer timestamp (not now, so
+table order matches commit order), note citing the commit hash + a one-line
+summary. Two placeholder commits shared the literal task text
+"untracked-specs-0817" (06ec1b3, 91bc2f9) - inserted as untracked-specs-0817
+and untracked-specs-0817c to stay unique (untracked-specs-0817b, from a third
+commit 032e50c, was already present).
+
+No app code changed, no protected system touched
+(08/09/bkalut-app/bkalot-admin/zr_*/NEDARIM3873 untouched) - only read git
+history and wrote to core.run_progress (this project's own schema).
+
+Flagged for next step, not done here: a separate uncommitted reconciliation
+note (QA/platform/_commit-msg-heartbeat-reconcile-10-0818.txt) references a
+different ~66-71 item _heartbeat-pending.sql/.md queue that does not overlap
+these 24 task names and needs its own pass. Evidence:
+QA/platform/heartbeat-backfill-0818/_results.md.

@@ -1,0 +1,5 @@
+﻿smachot @390  "החלף מצב תצוגה"  y 12..50 x 98..136  click-lands-on:svg  reaches:true
+smachot @834  "החלף מצב תצוגה"  y 12..50 x 104..142  click-lands-on:svg  reaches:true
+smachot @1100  "החלף מצב תצוגה"  y 12..50 x 104..142  click-lands-on:svg  reaches:true
+smachot @1280  "החלף מצב תצוגה"  y 12..50 x 104..142  click-lands-on:svg  reaches:true
+smachot @1440  "החלף מצב תצוגה"  y 12..50 x 104..142  click-lands-on:svg  reaches:true

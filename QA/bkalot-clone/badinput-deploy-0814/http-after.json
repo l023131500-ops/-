@@ -1,0 +1,133 @@
+[
+  {
+    "url": "https://more30.com/bkalot-studio",
+    "status": 200,
+    "label": "https://more30.com/bkalot-studio",
+    "bytes": 29061,
+    "new": {
+      "if (el.validity && el.validity.badInput) {": 1,
+      "const el = $(\"topic_no\");": 1,
+      "נתיב שני, ושקט מהראשון": 1,
+      "validity.badInput": 2
+    },
+    "removed": {
+      "const value = $(\"topic_no\").value;": 0,
+      "{ el: $(\"topic_no\"), name: DROPPED.topic_no": 0
+    },
+    "old": {
+      "function preflight(kind) {": 1,
+      "const stop = preflight(kind);": 1,
+      "if (kind !== \"treatment\") return null;": 1,
+      "צריך מספר שלם": 4,
+      "הפנייה לא נשלחה": 2,
+      "שדות שלא נשמרו: ": 1,
+      "function whyDropped(": 1,
+      "function focusDropped(": 1,
+      "bkalot-clone-intake": 2,
+      "topic_no:  \"מספר נושא\"": 1
+    },
+    "alefs": 272,
+    "replacement_chars": 0,
+    "double_encoded": 0,
+    "assets": []
+  },
+  {
+    "url": "https://more30.com/bkalot-studio/",
+    "status": 200,
+    "label": "https://more30.com/bkalot-studio/",
+    "bytes": 29061,
+    "new": {
+      "if (el.validity && el.validity.badInput) {": 1,
+      "const el = $(\"topic_no\");": 1,
+      "נתיב שני, ושקט מהראשון": 1,
+      "validity.badInput": 2
+    },
+    "removed": {
+      "const value = $(\"topic_no\").value;": 0,
+      "{ el: $(\"topic_no\"), name: DROPPED.topic_no": 0
+    },
+    "old": {
+      "function preflight(kind) {": 1,
+      "const stop = preflight(kind);": 1,
+      "if (kind !== \"treatment\") return null;": 1,
+      "צריך מספר שלם": 4,
+      "הפנייה לא נשלחה": 2,
+      "שדות שלא נשמרו: ": 1,
+      "function whyDropped(": 1,
+      "function focusDropped(": 1,
+      "bkalot-clone-intake": 2,
+      "topic_no:  \"מספר נושא\"": 1
+    },
+    "alefs": 272,
+    "replacement_chars": 0,
+    "double_encoded": 0,
+    "assets": []
+  },
+  {
+    "url": "https://more30.com/bkalot-studio/admin",
+    "status": 200,
+    "label": "https://more30.com/bkalot-studio/admin",
+    "bytes": 90056,
+    "new": {
+      "if (el.validity && el.validity.badInput) {": 0,
+      "const el = $(\"topic_no\");": 0,
+      "נתיב שני, ושקט מהראשון": 0,
+      "validity.badInput": 0
+    },
+    "removed": {
+      "const value = $(\"topic_no\").value;": 0,
+      "{ el: $(\"topic_no\"), name: DROPPED.topic_no": 0
+    },
+    "old": {
+      "function preflight(kind) {": 0,
+      "const stop = preflight(kind);": 0,
+      "if (kind !== \"treatment\") return null;": 0,
+      "צריך מספר שלם": 0,
+      "הפנייה לא נשלחה": 0,
+      "שדות שלא נשמרו: ": 0,
+      "function whyDropped(": 0,
+      "function focusDropped(": 0,
+      "bkalot-clone-intake": 0,
+      "topic_no:  \"מספר נושא\"": 0
+    },
+    "alefs": 956,
+    "replacement_chars": 0,
+    "double_encoded": 0,
+    "assets": []
+  },
+  {
+    "url": "https://more30.com/",
+    "status": 200,
+    "label": "https://more30.com/",
+    "bytes": 3517,
+    "new": {
+      "if (el.validity && el.validity.badInput) {": 0,
+      "const el = $(\"topic_no\");": 0,
+      "נתיב שני, ושקט מהראשון": 0,
+      "validity.badInput": 0
+    },
+    "removed": {
+      "const value = $(\"topic_no\").value;": 0,
+      "{ el: $(\"topic_no\"), name: DROPPED.topic_no": 0
+    },
+    "old": {
+      "function preflight(kind) {": 0,
+      "const stop = preflight(kind);": 0,
+      "if (kind !== \"treatment\") return null;": 0,
+      "צריך מספר שלם": 0,
+      "הפנייה לא נשלחה": 0,
+      "שדות שלא נשמרו: ": 0,
+      "function whyDropped(": 0,
+      "function focusDropped(": 0,
+      "bkalot-clone-intake": 0,
+      "topic_no:  \"מספר נושא\"": 0
+    },
+    "alefs": 23,
+    "replacement_chars": 0,
+    "double_encoded": 0,
+    "assets": [
+      "/assets/index-C2AHwa-z.js",
+      "/assets/index-B35ByRD-.css"
+    ]
+  }
+]

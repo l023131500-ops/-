@@ -1,0 +1,47 @@
+gannenet (40): the save that looked atomic, and the fix for it that also wasn't
+
+The previous step left one open line: setOverride() is a read-modify-write with
+no compare-and-set. Measured first, two concurrent saves of two different files
+against the real bucket: a save was lost in 4 of 4 runs, and both calls returned
+ok. The whole override map lived in one overrides.json, so every save rewrote
+shared state.
+
+Both ways to close that were probed rather than assumed, and both are dead:
+If-Match is accepted and IGNORED on upload (a deliberately bogus ETag still
+returned 200 and still overwrote), and a lock object cannot be released, because
+the anon key may create and overwrite but not delete -- create-if-absent on an
+existing key is a real atomic 409 KeyAlreadyExists, DELETE is 403 AccessDenied.
+
+Write-then-verify was then implemented, measured, and thrown away: still 4 of 4
+lost. Re-reading after the write proves nothing, because "it landed" is only
+true at the instant of the check -- one writer verified its own entry, returned
+ok, and a concurrent write clobbered it a moment later. It is written up in
+STATUS.md because it looks correct and the next reader would try it.
+
+What ships removes the shared write instead of guarding it: one object per file,
+overrides/<fileId>.json. Two files are two keys and cannot collide; two saves of
+the same file are last-writer-wins on one field, which is what a human expects.
+Same race, same harness: 0 of 4 lost. Clearing an override writes {} instead of
+deleting, since anon cannot delete, and readers treat an empty entry as absent.
+readOverrides() folds the legacy overrides.json in underneath the per-file
+objects, which stay authoritative, so a bucket written by the old code keeps its
+curation.
+
+Verified end to end on next dev :3042 with APP_BASE_PATH=/gannenet against the
+real bucket: hide through the real admin route -> 200 and /api/drive-catalog
+2,977 -> 2,976 without that file; unhide -> 200 {"override":{}} and back to
+2,977 with it; /api/admin/list 2,977 rows; wrong x-admin-key still 401. /shelf
+renders 2,977 items / 21 categories, no console errors -- that is the
+screenshot, since readOverrides() is now a list plus N fetches and /shelf is
+what it could have broken. tsc --noEmit 0 over 665 files.
+
+Bucket left exactly as found: all three probe objects deleted, root back to
+index.json, overrides.json, seed, up_msoxh0q3_hx4s.png, and overrides.json still
+{}. Nothing outside apps/40-gannenet touched; no protected system read or
+written.
+
+Also recorded: NetFree rewrites the upstream status of a Supabase error to 400
+and carries the real one in the body, so every probe here reads the body rather
+than the status. That is this network, not production.
+
+Evidence and the reusable race harness in QA/gannenet/overrides-cas-0811/.

@@ -1,0 +1,57 @@
+﻿
+=== mthbram @ 834 ===
+{
+  "inset": "104px",
+  "pill": "16..92 y 12..48",
+  "hits": [
+    {
+      "tag": "a",
+      "label": "הצטרפות כרב",
+      "rect": "83..211 y 13..55",
+      "overlap": "9x35",
+      "coveredBy": "auth-pill",
+      "ancestors": [
+        {
+          "sel": "div.hidden.md:flex.items-center",
+          "rect": "83..580",
+          "pos": "static",
+          "padInlineEnd": "0px",
+          "maxWidth": "none",
+          "display": "flex"
+        },
+        {
+          "sel": "div.container.mx-auto.px-6",
+          "rect": "0..834",
+          "pos": "static",
+          "padInlineEnd": "24px",
+          "maxWidth": "none",
+          "display": "flex"
+        },
+        {
+          "sel": "nav.fixed.top-0.right-0",
+          "rect": "0..834",
+          "pos": "fixed",
+          "padInlineEnd": "0px",
+          "maxWidth": "none",
+          "display": "block"
+        },
+        {
+          "sel": "div.min-h-screen.bg-background",
+          "rect": "0..834",
+          "pos": "static",
+          "padInlineEnd": "0px",
+          "maxWidth": "none",
+          "display": "block"
+        },
+        {
+          "sel": "div#root",
+          "rect": "0..834",
+          "pos": "static",
+          "padInlineEnd": "0px",
+          "maxWidth": "none",
+          "display": "block"
+        }
+      ]
+    }
+  ]
+}

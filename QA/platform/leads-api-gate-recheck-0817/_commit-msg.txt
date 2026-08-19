@@ -1,0 +1,11 @@
+אנטי-דריפט: NEEDS_USER.md #0ש′ — שער הקריאה של leads-api (lux-manage, #170) נבדק מחדש, עדיין סגור
+
+GET בלי apikey/Authorization ל-zwxwteebcoejrjdufzsv.supabase.co/functions/v1/leads-api
+עדיין מחזיר 403 "leads-api reader disabled: LEADS_API_KEY is not configured" — 5 ימים
+אחרי הפריסה ב-12/08. אין רגרסיה. אין שינוי קוד, אין פריסה — מדידה בלבד.
+ראיות: QA/platform/leads-api-gate-recheck-0817/_results.json.
+
+מוגן: לא נגעתי ב-08/09/bkalut-app/bkalot-admin/zr_*/NEDARIM3873.
+
+ה-MCP של Supabase אינו מחובר לסשן הזה — heartbeat נכתב כקובץ
+_heartbeat-pending.sql (מצטרף לתור הקיים; הרץ לפי סדר הקומיטים ב-git log).

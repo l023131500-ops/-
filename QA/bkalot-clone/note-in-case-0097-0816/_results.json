@@ -1,0 +1,93 @@
+{
+  "step": "note-in-case-0097-0816",
+  "line_taken_from": "heartbeat 653 / commit 4da7665",
+  "what": "0097 — bkalot_clone_admin_case מסמנת איזו שורת יומן נשאה את מונח החיפוש",
+
+  "baseline_before": {
+    "cases": 0, "case_status_log": 0, "case_rights": 0, "documents": 0,
+    "admin_users": 1, "admin_sessions": 5, "templates": 2, "rights_catalog": 888,
+    "contacts": 4, "outbound_queue": 8, "delivery_log": 3,
+    "schema_migrations_max": "20260816123107 (0096)"
+  },
+
+  "fixture": {
+    "case_id": 373,
+    "contact_id": 380,
+    "full_name": "אברהם ישראלי",
+    "phone": "0501230011",
+    "kind": "info",
+    "queued": false,
+    "note": "פנייה אחת ולא שתיים — המדידה כאן היא בתוך הפנייה ולא בין פניות",
+    "log_rows": [
+      { "id": 86, "to": "in_progress", "note": "הפונה ביקש לצרף מסמכים נוספים בשבוע הבא" },
+      { "id": 87, "to": "rejected", "note": "המסמכים שצורפו שייכים לשנת המס הקודמת" },
+      { "id": 88, "to": "closed", "note": "הטופס נשלח בדואר רשום על ידי הפונה" },
+      { "id": 89, "to": "in_progress", "note": null, "why": "הכרעה (5) — שורה בלי נימוק" }
+    ]
+  },
+
+  "before": {
+    "admin_cases_q": { "q": "המס הקודמת", "total": 1, "ids": [373], "matched_in_note": true },
+    "admin_case_373": {
+      "status_history_rows": 3,
+      "has_note_matched_key": [false, false, false],
+      "failure": "הרשימה אומרת «נמצאה לפי הנימוק», והמסך מחזיר שלוש שורות בלי מפתח שאומר איזו"
+    }
+  },
+
+  "after": {
+    "note": "שבע הקריאות, על אותה פנייה ואותן שלוש שורות; המפתח note_matched קיים בכל שורה בכל אחת מהשבע",
+    "probes": [
+      { "q": "המס הקודמת", "log_86": false, "log_87": true, "log_88": false, "verdict": "נסגר" },
+      { "q": "בדואר רשום", "log_86": false, "log_87": false, "log_88": true, "verdict": "הפרדה" },
+      { "q": "מסמכים", "log_86": true, "log_87": true, "log_88": false, "verdict": "שתיים — השדה מתאר ואינו בוחר אחת" },
+      { "q": null, "log_86": false, "log_87": false, "log_88": false, "verdict": "בקרה — הכרעה (6)" },
+      { "q": "", "log_86": false, "log_87": false, "log_88": false, "verdict": "בקרה" },
+      { "q": "%", "log_86": false, "log_87": false, "log_88": false, "verdict": "בקרה — 0094 לא נפרץ מהדלת האחורית" },
+      { "q": "zzzz", "log_86": false, "log_87": false, "log_88": false, "verdict": "בקרה" }
+    ],
+    "rows_returned_every_probe": 3,
+    "decision_5_null_note": {
+      "log_id": 89,
+      "note": null,
+      "note_matched": false,
+      "jsonb_typeof": "boolean",
+      "verdict": "false ולא null — coalesce עובד; בלעדיו «לא היא» היה נקרא «איני יודע»"
+    },
+    "error_paths_unchanged": {
+      "admin_case(999999999)": "case_not_found",
+      "admin_case(null)": "case_id_required"
+    }
+  },
+
+  "decision_7_gate_not_broken": {
+    "why_measured_over_http": "postgres בוחר פונקציה בכללים שאינם כללי הבחירה של PostgREST לפי שמות ארגומנטים; פתרון שגוי היה מכבה כל מסך פנייה בייצור",
+    "pg_proc_candidates": 1,
+    "login_http": 200,
+    "case_without_q": { "http": 200, "ok": true, "rows": 4, "key_on_every_row": true },
+    "case_with_q": {
+      "http": 200, "ok": true, "rows": 4, "key_on_every_row": true,
+      "note_matched": "false בכל ארבע השורות",
+      "why": "v8 קורא {p_id: id} בלבד — המונח אינו מגיע אל המסד. נאמר ולא נבלע: הלבנה הבאה היא השער ואז המסך"
+    }
+  },
+
+  "acl": {
+    "measured_before": "{postgres=X/postgres,service_role=X/postgres}",
+    "after_first_apply": "{postgres=X/postgres,anon=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+    "why": "drop מוחק ACL, ו-alter default privileges של הפרויקט נותן execute ל-anon/authenticated על כל פונקציה חדשה בסכמת public; revoke from public אינו נוגע במענק מפורש על השם",
+    "exposure": "security definer — מפתח anon היה קורא כל פנייה עם שם הפונה, הטלפון והמייל, בעקיפת RLS",
+    "fixed_by": "revoke all ... from anon, authenticated, public",
+    "measured_after": "{postgres=X/postgres,service_role=X/postgres}",
+    "has_function_privilege": { "anon": false, "authenticated": false, "service_role": true },
+    "file_corrected": true
+  },
+
+  "test_mode": {
+    "documents": 0, "outbound_queue": 8, "delivery_log": 3,
+    "sent_at_rows": 0, "cases_in_sent": 0, "case_rights": 0,
+    "note": "המיגרציה נוגעת בפונקציית קריאה אחת; הכתיבות בריצה הן קליטה אחת וארבעה מעברי סטטוס"
+  },
+
+  "rollback_to_baseline": "ראה _rollback.json"
+}

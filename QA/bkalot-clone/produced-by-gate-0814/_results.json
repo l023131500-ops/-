@@ -1,0 +1,103 @@
+{
+  "beat": "produced-by-gate-0814",
+  "line_taken_verbatim": "bkalot-clone-admin נשארת v7 וקוראת ל-render עם ארגומנט אחד, ולכן כל לחיצה על «הפק» בייצור כותבת produced_by null — הזהות יושבת ב-g.admin ואיש אינו מעביר אותה. זו הפעימה הבאה (v8), אותו פיצול כמו 0076 → v7.",
+  "line_source": "QA/bkalot-clone/produced-by-0083-0814/_results.json → open[0] (commit 2abcad1, heartbeat 613)",
+  "layer": "שער בלבד — supabase/functions/bkalot-clone-admin/index.ts v7→v8. אין מיגרציה חדשה, apps/37 לא נגעה, אין פריסת פורטל.",
+
+  "deploy": {
+    "slug": "bkalot-clone-admin",
+    "http": 201,
+    "version_before": 7,
+    "version_after": 8,
+    "verify_jwt": true,
+    "verify_jwt_passed_explicitly": true,
+    "ezbr_sha256": "e9a41d80367c35d2e139e190a79854681d16bdbb011fc09fb2abce8481bf2235",
+    "source_bytes": 26329
+  },
+
+  "measured": "אותו probe.mjs רץ פעמיים על אותה פנייה בדיוק (201) ואותו מסמך (118) — פעם לפני הפריסה ופעם אחריה. ההבדל היחיד בין הריצות הוא הקוד שרץ בצד השני; הבקשות זהות בייט-בייט.",
+
+  "seed": {
+    "path": "bkalot-clone-intake מעל HTTP עם מפתח anon, כמו מהטופס הציבורי",
+    "case_a": { "id": 201, "kind": "treatment", "contact_id": 208, "rights_linked": 42, "queued": false },
+    "case_b": { "id": 202, "kind": "info", "contact_id": 209, "note": "בקרה — לא הופק עליה מסמך" },
+    "admins": {
+      "created_via": "bkalot_clone_admin_create (לא הוזרק hash)",
+      "a": 56,
+      "b": 57
+    }
+  },
+
+  "measurements": [
+    {
+      "n": 1,
+      "what": "לחיצה על «הפק», מנהל 56 מחובר",
+      "v7_before": { "document_id": 118, "produced_by": null, "admin_echoed": 56 },
+      "v8_after": { "document_id": 118, "produced_by": 56, "admin_echoed": 56 },
+      "why": "זה הפער עצמו, ולא תיאור שלו: ב-v7 אותה תשובה בדיוק נושאת admin.id=56 ו-produced_by null — הזהות הייתה בידי השער וחזרה ללקוח, ולא נכתבה לשורה."
+    },
+    {
+      "n": 2,
+      "what": "אותה קריאה כשהגוף נושא produced_by:1, admin_id:1 ו-p_admin_id:1 — שלושת השמות שמישהו היה מנסה",
+      "v7_before": { "produced_by": null },
+      "v8_after": { "produced_by": 56 },
+      "why": "הכרעה (1) של 0083: הגוף מגיע מהדפדפן ומועבר ל-p כפי שהוא בלי סינון מפתחות. p_admin_id נבנה ב-edge מ-g.admin, ולכן הזיוף אינו נכנס — 56 ולא 1."
+    },
+    {
+      "n": 3,
+      "what": "מנהל שני (57) מפיק את אותו מסמך",
+      "v7_before": { "produced_by": null, "same_document": true },
+      "v8_after": { "produced_by": 57, "same_document": true },
+      "why": "הזהות היא נתון ולא קבוע. ובאותה מדידה הכרעה (5) של 0083: הפקה חוזרת דורסת — 56 לא שרד, כי הגוף שבשורה הוא של הקריאה האחרונה."
+    },
+    {
+      "n": 4,
+      "what": "render בלי x-admin-token",
+      "v7_before": { "http": 401, "error": "token_required" },
+      "v8_after": { "http": 401, "error": "token_required" },
+      "why": "v8 נוגעת בנתיב שכותב, ולכן נמדד שהשער שלפניו לא זז."
+    },
+    {
+      "n": 5,
+      "what": "השורה במסד אחרי הריצה, לא רק התשובה",
+      "row": { "document_id": 118, "case_id": 201, "produced_by": 57, "queue_id": null },
+      "why": "אותו ערך משני צידי הקריאה: מה שחזר ב-render #3 הוא מה שיושב בעמודה."
+    },
+    {
+      "n": 6,
+      "what": "פנייה 202 — בקרה",
+      "result": { "status": "new", "documents": 0 },
+      "why": "רק מה שנגעו בו זז."
+    }
+  ],
+
+  "test_mode_measured_not_declared": {
+    "render_returned_queued": false,
+    "documents_with_queue_id": 0,
+    "outbound_queue_rows": 8,
+    "outbound_queue_fingerprint_baseline": "b97746aef67df57d104d583a40a926ee",
+    "outbound_queue_fingerprint_after": "b97746aef67df57d104d583a40a926ee",
+    "outbound_queue_rows_with_sent_at": 0,
+    "delivery_log": 3,
+    "cases_with_status_sent": 0
+  },
+
+  "rollback": {
+    "style": "פקודות נפרדות לפי id ולא CTE אחד (תקלת 124cfc2); איש הקשר לפי id ולא לפי טלפון מנורמל (תקלת ac6e523)",
+    "deleted": { "documents": 1, "case_rights": 42, "cases": 2, "contacts": 2, "admin_sessions": 2, "admin_users": 2 },
+    "after": {
+      "cases": 0, "case_rights": 0, "documents": 0, "admin_users": 1, "admin_sessions": 5,
+      "templates": 2, "contacts": 4, "outbound_queue": 8, "delivery_log": 3, "catalog": 888
+    },
+    "equals_baseline": true
+  },
+
+  "protected": "אין נגיעה ב-08/09/bkalut-app/bkalot-admin/zr_*/NEDARIM3873 ולא בסכמות csj/csj_src/igud. הפריסה היחידה היא slug bkalot-clone-admin בפרויקט uhnrgujbdxhhmoxcjria.",
+
+  "open": [
+    "אף קורא אינו מחזיר את produced_by: bkalot_clone_admin_document ו-bkalot_clone_admin_cases אינן יודעות עליו, והמסך אינו יכול לשאול מי הפיק — כמו 0076 → 0077. זו הפעימה הבאה.",
+    "אין היסטוריית הפקות: העמודה אומרת את ההפקה האחרונה בלבד (0083 הכרעה 6).",
+    "אין produced_at (0083 הכרעה 2): «מתי הופק» נשען על updated_at, שהיום נכתב על ידי render בלבד. ביום שבו כותב נוסף ייגע בשורה — הנתון הזה יסתעף.",
+    "מסך הניהול (apps/37) לא נגע בפעימה הזו: הוא קורא ל-/render דרך אותו טוקן, ולכן מקבל את ההתנהגות החדשה בלי שינוי — אבל אינו מציג את מי שהפיק, כי אין עדיין קורא שמחזיר אותו."
+  ]
+}

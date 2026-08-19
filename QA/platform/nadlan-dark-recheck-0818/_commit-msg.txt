@@ -1,0 +1,59 @@
+32 nadlan: round-3 dark-mode recheck - fix invisible wizard-card headings
+
+contrast-probe.mjs against https://more30.com/nadlan, dark scheme, both widths
+(1440/390): ~63 failures, mostly ratio 1.0-1.2:1, concentrated inside the
+request-form wizard card ("מה בודקים"/"איזה דוח"/"אילו נתונים לכלול"/
+"פרטי הנכס"/"או חיפוש חופשי" step headings and body copy).
+
+Two candidate findings, checked separately:
+
+1. Hero h1 ("כל מה שצריך לדעת על נכס — ברגע") - white text on a reported
+   light backdrop, identical across light AND dark scheme (the tell for a
+   false positive; a real dark-mode regression changes with scheme). Confirmed
+   via getComputedStyle: the containing <section class="hero-gradient
+   text-white"> has backgroundColor: transparent but a real dark-navy
+   background-image gradient that never changes with theme, invisible to
+   getComputedStyle().backgroundColor. Same class of tool limitation already
+   documented for galil/smel/tamlul/modaot (gradient/shorthand backgrounds).
+   Not a real bug - no fix.
+
+2. Wizard card headings - real bug. app/page.tsx wraps <ReportRequestForm />
+   in a div that is bg-white/95 - a fixed-white surface, intentionally always
+   white because it floats on the hero's always-dark gradient (same idea as
+   the hero itself, just the light side of it). But the headings inside use
+   the text-navy/text-ink/text-muted design tokens, which correctly flip to
+   near-white values under .dark for the rest of the page (which does
+   invert). Since this one card's background never inverted, dark-mode
+   near-white text landed on a background that stayed white - near 1:1
+   contrast, confirmed by the probe and by direct Playwright screenshots
+   (headings visually ghosted into the card).
+
+Fix: apps/32-nadlan-berega/app/globals.css adds a .card-on-hero class that
+pins --c-navy/--c-ink/--c-muted/--c-line/--c-bgsoft/--c-surface to their
+:root (light) values, so the tokens can't flip inside this specific
+always-white card regardless of an ancestor .dark. app/page.tsx adds the
+card-on-hero class to the wrapping div around <ReportRequestForm />.
+
+Deployed via `vercel deploy --prod` from apps/32-nadlan-berega (source
+deploy, not --prebuilt - see memory prebuilt-deploy-drops-vercel-json,
+the --prebuilt trap that broke gesher's deploy this same round).
+
+Verified live with a cache-buster, both schemes, both widths:
+- dark/1440 and dark/390: down from ~63 failures to 6, all unrelated to the
+  wizard card (pre-existing findings further down the page - a "|" divider
+  and teal/gold brand-accent text in the price-comparison and sources
+  sections, ratios 1.5-3.5:1). Not investigated this step - keeping this
+  step to a single, sized, committable fix; flagged as the next item.
+- light/1440: unchanged (7 hero false-positive lines, identical to before) -
+  confirms the fix is dark-mode-scoped and did not touch light mode.
+- Playwright screenshot (dark, cache-busted) confirms "מה בודקים"/"איזה דוח"
+  headings render dark-navy-on-white, clearly legible. getComputedStyle:
+  heading color rgb(13, 27, 62), card backgroundColor rgba(255, 255, 255, 0.95).
+
+Evidence: QA/platform/nadlan-dark-recheck-0818/ (before/after screenshots +
+_results.md).
+
+Protected systems untouched (08/09/bkalut-app/bkalot-admin/zr_*/NEDARIM3873).
+
+Round-3 ROUTES queue (studio, mechiron, kupot, crm, gesher, nadlan done)
+continues with kesef next.

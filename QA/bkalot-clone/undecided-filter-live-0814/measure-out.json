@@ -1,0 +1,120 @@
+{
+  "live": "https://more30.com/bkalot-studio/admin?qa=1786724675",
+  "cases": {
+    "A": 177,
+    "B": 178,
+    "C": 179
+  },
+  "served": {
+    "title": "בקלות — ניהול פניות",
+    "has_login": true
+  },
+  "control": {
+    "present": true,
+    "label": "הכרעה ידנית",
+    "options": [
+      [
+        "",
+        "הכול"
+      ],
+      [
+        "no",
+        "לא נרשמה"
+      ],
+      [
+        "yes",
+        "נרשמה"
+      ]
+    ],
+    "value": ""
+  },
+  "decided": {
+    "case_id": 178,
+    "note": "הסטטוס שונה מ«חדשה» ל«בטיפול» · לא נשלחה שום הודעה"
+  },
+  "steps": [
+    {
+      "step": "default",
+      "sent": {
+        "status": "",
+        "kind": "",
+        "decided": "",
+        "q": "",
+        "limit": 20,
+        "offset": 0
+      },
+      "got": {
+        "ids": [
+          179,
+          178,
+          177
+        ],
+        "count": "3 פניות",
+        "empty_hidden": true,
+        "error_hidden": true
+      }
+    },
+    {
+      "step": "03-decided-no",
+      "sent": {
+        "status": "",
+        "kind": "",
+        "decided": "no",
+        "q": "",
+        "limit": 20,
+        "offset": 0
+      },
+      "got": {
+        "ids": [
+          179,
+          177
+        ],
+        "count": "2 פניות",
+        "empty_hidden": true,
+        "error_hidden": true
+      }
+    },
+    {
+      "step": "04-decided-yes",
+      "sent": {
+        "status": "",
+        "kind": "",
+        "decided": "yes",
+        "q": "",
+        "limit": 20,
+        "offset": 0
+      },
+      "got": {
+        "ids": [
+          178
+        ],
+        "count": "פנייה אחת",
+        "empty_hidden": true,
+        "error_hidden": true
+      }
+    },
+    {
+      "step": "05-back-to-all",
+      "sent": {
+        "status": "",
+        "kind": "",
+        "decided": "",
+        "q": "",
+        "limit": 20,
+        "offset": 0
+      },
+      "got": {
+        "ids": [
+          179,
+          178,
+          177
+        ],
+        "count": "3 פניות",
+        "empty_hidden": true,
+        "error_hidden": true
+      }
+    }
+  ],
+  "console": [],
+  "requests_failed": []
+}

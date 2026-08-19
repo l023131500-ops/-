@@ -1,0 +1,425 @@
+{
+  "base": "https://more30.com",
+  "listed": [
+    "/",
+    "/torah",
+    "/tamlul",
+    "/modaot",
+    "/imud",
+    "/briut",
+    "/bkalot",
+    "/smel",
+    "/egod",
+    "/chatzor",
+    "/chizukim",
+    "/orech",
+    "/zchuyot",
+    "/galil",
+    "/studio",
+    "/kupot",
+    "/nadlan",
+    "/kesef",
+    "/kiosk",
+    "/tivuch",
+    "/showcase"
+  ],
+  "expected": [
+    "/",
+    "/torah",
+    "/tamlul",
+    "/modaot",
+    "/imud",
+    "/briut",
+    "/bkalot",
+    "/smel",
+    "/egod",
+    "/chatzor",
+    "/chizukim",
+    "/orech",
+    "/zchuyot",
+    "/galil",
+    "/studio",
+    "/kupot",
+    "/nadlan",
+    "/kesef",
+    "/kiosk",
+    "/tivuch",
+    "/showcase"
+  ],
+  "missing": [],
+  "extra": [],
+  "pages": [
+    {
+      "file": "404.html",
+      "route": null,
+      "noindex": true,
+      "canonical": null,
+      "canonicalRewrittenInJs": false
+    },
+    {
+      "file": "admin-activity.html",
+      "route": "/admin/activity",
+      "noindex": true,
+      "canonical": null,
+      "canonicalRewrittenInJs": false
+    },
+    {
+      "file": "admin-automation.html",
+      "route": "/admin/automation",
+      "noindex": true,
+      "canonical": null,
+      "canonicalRewrittenInJs": false
+    },
+    {
+      "file": "admin-credits.html",
+      "route": "/admin/credits",
+      "noindex": true,
+      "canonical": null,
+      "canonicalRewrittenInJs": false
+    },
+    {
+      "file": "admin-customers.html",
+      "route": "/admin/customers",
+      "noindex": true,
+      "canonical": null,
+      "canonicalRewrittenInJs": false
+    },
+    {
+      "file": "admin-issues.html",
+      "route": "/admin/issues",
+      "noindex": true,
+      "canonical": null,
+      "canonicalRewrittenInJs": false
+    },
+    {
+      "file": "admin-leads.html",
+      "route": "/admin/leads",
+      "noindex": true,
+      "canonical": null,
+      "canonicalRewrittenInJs": false
+    },
+    {
+      "file": "admin-pricing.html",
+      "route": "/admin/pricing",
+      "noindex": true,
+      "canonical": null,
+      "canonicalRewrittenInJs": false
+    },
+    {
+      "file": "admin-rights.html",
+      "route": "/admin/rights",
+      "noindex": true,
+      "canonical": null,
+      "canonicalRewrittenInJs": false
+    },
+    {
+      "file": "admin-systems.html",
+      "route": "/admin/systems",
+      "noindex": true,
+      "canonical": null,
+      "canonicalRewrittenInJs": false
+    },
+    {
+      "file": "login.html",
+      "route": "/login",
+      "noindex": true,
+      "canonical": null,
+      "canonicalRewrittenInJs": false
+    },
+    {
+      "file": "me.html",
+      "route": "/me",
+      "noindex": true,
+      "canonical": null,
+      "canonicalRewrittenInJs": false
+    },
+    {
+      "file": "showcase.html",
+      "route": "/showcase",
+      "noindex": false,
+      "canonical": "https://more30.com/showcase",
+      "canonicalRewrittenInJs": false
+    },
+    {
+      "file": "subscribe.html",
+      "route": "/subscribe",
+      "noindex": true,
+      "canonical": null,
+      "canonicalRewrittenInJs": false
+    },
+    {
+      "file": "system.html",
+      "route": null,
+      "noindex": false,
+      "canonical": "https://more30.com/",
+      "canonicalRewrittenInJs": true
+    }
+  ],
+  "probes": [
+    {
+      "url": "https://more30.com/",
+      "status": 200,
+      "bytes": 2955,
+      "soft404": false
+    },
+    {
+      "url": "https://more30.com/torah",
+      "status": 200,
+      "bytes": 27089,
+      "soft404": false
+    },
+    {
+      "url": "https://more30.com/tamlul",
+      "status": 200,
+      "bytes": 23224,
+      "soft404": false
+    },
+    {
+      "url": "https://more30.com/modaot",
+      "status": 200,
+      "bytes": 17732,
+      "soft404": false
+    },
+    {
+      "url": "https://more30.com/imud",
+      "status": 200,
+      "bytes": 2965,
+      "soft404": false
+    },
+    {
+      "url": "https://more30.com/briut",
+      "status": 200,
+      "bytes": 12344,
+      "soft404": false
+    },
+    {
+      "url": "https://more30.com/bkalot",
+      "status": 200,
+      "bytes": 19688,
+      "soft404": false
+    },
+    {
+      "url": "https://more30.com/smel",
+      "status": 200,
+      "bytes": 1754,
+      "soft404": false
+    },
+    {
+      "url": "https://more30.com/egod",
+      "status": 200,
+      "bytes": 2836,
+      "soft404": false
+    },
+    {
+      "url": "https://more30.com/chatzor",
+      "status": 200,
+      "bytes": 33282,
+      "soft404": false
+    },
+    {
+      "url": "https://more30.com/chizukim",
+      "status": 200,
+      "bytes": 3343,
+      "soft404": false
+    },
+    {
+      "url": "https://more30.com/orech",
+      "status": 200,
+      "bytes": 8240,
+      "soft404": false
+    },
+    {
+      "url": "https://more30.com/zchuyot",
+      "status": 200,
+      "bytes": 58466,
+      "soft404": false
+    },
+    {
+      "url": "https://more30.com/galil",
+      "status": 200,
+      "bytes": 3595,
+      "soft404": false
+    },
+    {
+      "url": "https://more30.com/studio",
+      "status": 200,
+      "bytes": 7298,
+      "soft404": false
+    },
+    {
+      "url": "https://more30.com/kupot",
+      "status": 200,
+      "bytes": 3693,
+      "soft404": false
+    },
+    {
+      "url": "https://more30.com/nadlan",
+      "status": 200,
+      "bytes": 64702,
+      "soft404": false
+    },
+    {
+      "url": "https://more30.com/kesef",
+      "status": 200,
+      "bytes": 15590,
+      "soft404": false
+    },
+    {
+      "url": "https://more30.com/kiosk",
+      "status": 200,
+      "bytes": 9931,
+      "soft404": false
+    },
+    {
+      "url": "https://more30.com/tivuch",
+      "status": 200,
+      "bytes": 15596,
+      "soft404": false
+    },
+    {
+      "url": "https://more30.com/showcase",
+      "status": 200,
+      "bytes": 7009,
+      "soft404": false
+    }
+  ],
+  "checks": [
+    {
+      "check": "there is at least one indexable page and one noindex page to test",
+      "result": "pass",
+      "detail": null
+    },
+    {
+      "check": "the registry returned systems to expect",
+      "result": "pass",
+      "detail": null
+    },
+    {
+      "check": "every expected URL is listed",
+      "result": "pass",
+      "detail": ""
+    },
+    {
+      "check": "nothing is listed that was not expected",
+      "result": "pass",
+      "detail": ""
+    },
+    {
+      "check": "showcase.html — served at /showcase, self-canonical, listed",
+      "result": "pass",
+      "detail": null
+    },
+    {
+      "check": "system.html — stays out (no clean route; canonical rewritten in the browser to another address (#120))",
+      "result": "pass",
+      "detail": null
+    },
+    {
+      "check": "/ — 200, 2955 bytes, not the 404 page",
+      "result": "pass",
+      "detail": "status 200"
+    },
+    {
+      "check": "/torah — 200, 27089 bytes, not the 404 page",
+      "result": "pass",
+      "detail": "status 200"
+    },
+    {
+      "check": "/tamlul — 200, 23224 bytes, not the 404 page",
+      "result": "pass",
+      "detail": "status 200"
+    },
+    {
+      "check": "/modaot — 200, 17732 bytes, not the 404 page",
+      "result": "pass",
+      "detail": "status 200"
+    },
+    {
+      "check": "/imud — 200, 2965 bytes, not the 404 page",
+      "result": "pass",
+      "detail": "status 200"
+    },
+    {
+      "check": "/briut — 200, 12344 bytes, not the 404 page",
+      "result": "pass",
+      "detail": "status 200"
+    },
+    {
+      "check": "/bkalot — 200, 19688 bytes, not the 404 page",
+      "result": "pass",
+      "detail": "status 200"
+    },
+    {
+      "check": "/smel — 200, 1754 bytes, not the 404 page",
+      "result": "pass",
+      "detail": "status 200"
+    },
+    {
+      "check": "/egod — 200, 2836 bytes, not the 404 page",
+      "result": "pass",
+      "detail": "status 200"
+    },
+    {
+      "check": "/chatzor — 200, 33282 bytes, not the 404 page",
+      "result": "pass",
+      "detail": "status 200"
+    },
+    {
+      "check": "/chizukim — 200, 3343 bytes, not the 404 page",
+      "result": "pass",
+      "detail": "status 200"
+    },
+    {
+      "check": "/orech — 200, 8240 bytes, not the 404 page",
+      "result": "pass",
+      "detail": "status 200"
+    },
+    {
+      "check": "/zchuyot — 200, 58466 bytes, not the 404 page",
+      "result": "pass",
+      "detail": "status 200"
+    },
+    {
+      "check": "/galil — 200, 3595 bytes, not the 404 page",
+      "result": "pass",
+      "detail": "status 200"
+    },
+    {
+      "check": "/studio — 200, 7298 bytes, not the 404 page",
+      "result": "pass",
+      "detail": "status 200"
+    },
+    {
+      "check": "/kupot — 200, 3693 bytes, not the 404 page",
+      "result": "pass",
+      "detail": "status 200"
+    },
+    {
+      "check": "/nadlan — 200, 64702 bytes, not the 404 page",
+      "result": "pass",
+      "detail": "status 200"
+    },
+    {
+      "check": "/kesef — 200, 15590 bytes, not the 404 page",
+      "result": "pass",
+      "detail": "status 200"
+    },
+    {
+      "check": "/kiosk — 200, 9931 bytes, not the 404 page",
+      "result": "pass",
+      "detail": "status 200"
+    },
+    {
+      "check": "/tivuch — 200, 15596 bytes, not the 404 page",
+      "result": "pass",
+      "detail": "status 200"
+    },
+    {
+      "check": "/showcase — 200, 7009 bytes, not the 404 page",
+      "result": "pass",
+      "detail": "status 200"
+    }
+  ],
+  "pass": 27,
+  "fail": 0
+}

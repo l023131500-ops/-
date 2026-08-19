@@ -1,0 +1,73 @@
+﻿<!doctype html>
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <!-- ⚠️ maximum-scale=1 מונע מהמשתמש להגדיל את העמוד. בארכיון שכולו טקסט
+         עברי רצוף זו בדיוק היכולת שמי שמתקשה לקרוא זקוק לה. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="ארכיון החיזוקים הקצרים — 1,138 הקלטות מתומללות, ניתנות לחיפוש בכל מילה שנאמרה בהן."
+    />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <title>מערכת תמלול — חיזוקים קצרים</title>
+    <link rel="canonical" href="https://more30.com/chizukim/" />
+    <meta property="og:url" content="https://more30.com/chizukim/" />
+    <meta property="og:title" content="מערכת תמלול — חיזוקים קצרים" />
+    <meta
+      property="og:description"
+      content="ארכיון החיזוקים הקצרים — 1,138 הקלטות מתומללות, ניתנות לחיפוש בכל מילה שנאמרה בהן."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="he_IL" />
+
+    <!-- ערכה כהה מלאה קיימת ב-‎index.css‎ כ-‎.dark‎ מהיום הראשון — חמישים
+         משתנים, כולם מוגדרים — אבל שום דבר מעולם לא הוסיף את המחלקה, ולכן
+         היא לא נראתה אף פעם. זה כל מה שהיה חסר.
+
+         כאן ולא ב-React: הסקריפט רץ לפני הציור הראשון, ולכן מי שמגיע מ-‎/‎
+         הכהה אל הארכיון לא מקבל הבזק לבן בדרך — וזה בדיוק מה
+         ש-DESIGN_STANDARD §3 בא למנוע. ‎colorScheme‎ נכתב יחד עם המחלקה כדי
+         שגם פסי הגלילה ושדות החיפוש יהיו כהים ולא ילבינו באמצע עמוד כהה. -->
+    <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        function apply(on) {
+          document.documentElement.classList.toggle('dark', on);
+          document.documentElement.style.colorScheme = on ? 'dark' : 'light';
+        }
+        apply(mq.matches);
+        mq.addEventListener('change', function (e) { apply(e.matches); });
+      })();
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- הגיליון יורד מנתיב הציור הראשון. נטפרי חוסמת כאן את
+         fonts.googleapis.com לסירוגין, ובקשה חוסמת שנכשלת מעכבת את כל
+         העמוד; החלופה ב-‎--font-sans‎ שומרת על קריאוּת בינתיים. -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@300..900&family=Assistant:wght@200..800&family=Heebo:wght@100..900&display=swap"
+      rel="stylesheet"
+      media="print"
+      onload="this.media='all'"
+    />
+    <noscript>
+      <link
+        href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@300..900&family=Assistant:wght@200..800&family=Heebo:wght@100..900&display=swap"
+        rel="stylesheet"
+      />
+    </noscript>
+    <script type="module" crossorigin src="/chizukim/assets/index-B3-SjNVo.js"></script>
+    <link rel="stylesheet" crossorigin href="/chizukim/assets/index-CGr9WgHf.css">
+  </head>
+  <body>
+    <div id="root"></div>
+      <script src="https://more30.com/auth-button.js" defer></script>
+  </body>
+</html>
+
+<!-- Injection By NetFree -->
+<script src="//netfree.link/injection-script/go-payment.js" type="text/javascript" async ></script>
+<script src="//netfree.link/injection-script/popup-card-init.js" type="text/javascript" async ></script>
+

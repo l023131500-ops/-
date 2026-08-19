@@ -1,0 +1,135 @@
+{
+  "step": "gate-note-q-0816",
+  "priority": "§5ב — שכפול בקלות שכבה 3",
+  "line_taken": "פתוח: השער. bkalot-clone-admin קורא {p_id} ותו לא, ולכן המונח שהוקלד ברשימה אינו מגיע אל 0097 והשדה נשאר false בייצור בכל שורה. זו הלבנה הבאה, אחריה המסך ואחריה הפריסה. (8bfee99, heartbeat 654, מילה במילה)",
+  "scope": "קובץ אחד — supabase/functions/bkalot-clone-admin/index.ts. אין מיגרציה, אין שינוי ב-apps/37-bkalot-clone/admin.html, אין פריסה ל-Vercel.",
+
+  "baseline_before": {
+    "cases": 0, "case_status_log": 0, "case_rights": 0, "documents": 0,
+    "admin_users": 1, "admin_sessions": 5, "templates": 2,
+    "contacts": 4, "outbound_queue": 8, "delivery_log": 3,
+    "rights_catalog": 888, "schema_migrations": "20260816131352",
+    "bkalot-clone-admin": "v8", "bkalot-clone-intake": "v1"
+  },
+
+  "fixture": {
+    "admin": { "id": 112, "email": "gate0098@more30.test", "full_name": "בודק שער 0098" },
+    "case": { "id": 374, "contact_id": 381, "full_name": "אברהם ישראלי", "phone": "0501230011", "kind": "info", "queued": false },
+    "status_log": [
+      { "id": 90, "from": "new", "to": "in_progress", "note": "הפונה ביקש לצרף מסמכים נוספים בשבוע הבא" },
+      { "id": 91, "from": "in_progress", "to": "rejected", "note": "המסמכים שצורפו שייכים לשנת המס הקודמת" },
+      { "id": 92, "from": "rejected", "to": "closed", "note": "הטופס נשלח בדואר רשום על ידי הפונה" }
+    ],
+    "why_three_rows": "המדידה כאן היא בתוך הפנייה ולא בין פניות — עם שורה אחת «איזו שורה» אינה שאלה. שלושת הנימוקים הם אלה של 0097 מילה במילה, כדי שההשוואה תהיה ישירה."
+  },
+
+  "before_v8_over_http": {
+    "file": "http-before-v8.json",
+    "login": { "status": 200, "ok": true, "admin_id": 112 },
+    "finding": "בכל שבע הקריאות — כולל q='המס הקודמת' שהוא מילה במילה מה שכתוב בשורה 91 — חזרו שלוש שורות ובכולן note_matched=false. המפתח קיים (0097 פרוסה), הערך שקרי: המונח אינו מגיע אל המסד.",
+    "note_matched_by_call": {
+      "no_q": [false, false, false],
+      "q=המס הקודמת": [false, false, false],
+      "q=בדואר רשום": [false, false, false],
+      "q=מסמכים": [false, false, false],
+      "q=''": [false, false, false],
+      "q=%": [false, false, false],
+      "q=zzzz": [false, false, false]
+    }
+  },
+
+  "change": {
+    "file": "supabase/functions/bkalot-clone-admin/index.ts",
+    "lines": "שלוש שורות בנתיב case, ובלוק v9 בראש הקובץ",
+    "code": "const qRaw = payload[\"q\"]; const p_q = typeof qRaw === \"string\" ? qRaw : null; rpc(\"bkalot_clone_admin_case\", { p_id: id, p_q })",
+    "decisions": [
+      "(1) המפתח הוא q — אותו שם ששולחת הרשימה — ולא שם שני לאותו דבר.",
+      "(2) p_q ארגומנט שני ולא מפתח בגוף: הפונקציה מקבלת סקלרים ולא p jsonb, בשונה מ-cases/render/document/queue/dispatch.",
+      "(3) רק string עובר, כל השאר null — אובייקט אל ארגומנט text היה 400 מ-PostgREST, בלתי-ניתן להבחנה מנפילת שער.",
+      "(4) אין כאן trim, nullif ולא escape — 0097 עושה את שלושתם, ועותק שני היה מכפיל את ההימלטות.",
+      "(סדר) המסד קודם והשער אחריו: {p_id,p_q} אל חתימה בת ארגומנט אחד מחזיר 404, ולכן v9 אינה יכולה להיפרס אחורה מעבר ל-0097."
+    ]
+  },
+
+  "deploy": {
+    "how": "Management API עם בייטי הקובץ עצמו (deploy.mjs), לא הדבקת טקסט",
+    "status": 201,
+    "version": "v8 → v9",
+    "bytes": 30192,
+    "sha256_source": "7b69bffb3d0c968dc3aa4965e8695eaa8d267ad93e63acd44b426541a19d842e",
+    "verify_jwt": true,
+    "verify_jwt_note": "נשאר true כפי שהיה ב-v8 ומאז v1 — הטוקן ב-x-admin-token והמפתח anon ב-Authorization.",
+    "bkalot-clone-intake": "לא נגעה, נשארת v1"
+  },
+
+  "after_v9_over_http": {
+    "file": "http-after-v9.json",
+    "note_matched_by_call": {
+      "no_q": [false, false, false],
+      "q=המס הקודמת": [false, true, false],
+      "q=בדואר רשום": [false, false, true],
+      "q=מסמכים": [true, true, false],
+      "q=''": [false, false, false],
+      "q=%": [false, false, false],
+      "q=zzzz": [false, false, false]
+    },
+    "invariants": "בכל שבע הקריאות status=200, ok=true, שלוש שורות באותו סדר (90,91,92), המפתח note_matched קיים בכולן וטיפוסו boolean — השדה מתאר ואינו מסנן.",
+    "controls": "'' ו-'%' ו-'zzzz' כבויות: 0094 מוחזק דרך השער, ותיבה ריקה אינה מדליקה הכל."
+  },
+
+  "edge_controls": {
+    "file": "http-edges-v9.json",
+    "non_string_q": "אובייקט, מערך, מספר, null ו-boolean בגוף — כולם 200, ok=true, שלוש שורות, שלושתן false. אין 400 ואין מסך שנכבה. זו הכרעה (3), נמדדה ולא הונחה.",
+    "list_still_finds": "cases עם q='המס הקודמת' → total 1, ids [374], matched_in_note [true] — הסימן שמפנה את הקורא פנימה ממשיך לדלוק, כלומר הנתיב שנמדד כאן הוא זה שאליו מגיעים."
+  },
+
+  "test_mode": {
+    "documents": 0,
+    "outbound_queue": "8 לפני ואחרי",
+    "delivery_log": "3 לפני ואחרי",
+    "sent_at_rows": 0,
+    "outgoing_calls": 0,
+    "note": "הנתיב שהשתנה קורא ואינו כותב; הכתיבות בריצה הן קליטה אחת ושלושה מעברי סטטוס, וכולן התגלגלו אחורה."
+  },
+
+  "rollback": {
+    "how": "פקודות נפרדות לפי טבלה, ולא CTE אחת (תקלת cte-delete-sees-prestatement-snapshot); איש הקשר לפי id ולא לפי טלפון מנורמל.",
+    "deleted": ["case_status_log 3 (90–92)", "cases 1 (374)", "bkalot_auto.contacts 1 (381)", "admin_sessions של 112", "admin_users 1 (112)"],
+    "after": {
+      "cases": 0, "case_status_log": 0, "case_rights": 0, "documents": 0,
+      "admin_users": 1, "admin_sessions": 5, "templates": 2,
+      "contacts": 4, "outbound_queue": 8, "delivery_log": 3,
+      "sent_at_rows": 0, "rights_catalog": 888,
+      "schema_migrations": "20260816131352",
+      "admin_cases({}).total": 0
+    },
+    "matches_baseline": true
+  },
+
+  "protected_untouched": "apps/08-bkalut-app, apps/09-bkalot-admin, zr_*, NEDARIM3873, וסכמות csj/csj_src/igud — לא נגעו. supabase/functions/bkalot-clone-intake לא נגעה.",
+
+  "open": {
+    "next_brick": "המסך. admin.html קורא call(\"case\", { id }) בשורה 1018 ותו לא — המונח יושב ב-state של הרשימה ואינו נוסע פנימה, ולכן בייצור השדה עדיין false בכל שורה אף שהשער כבר מעביר אותו. אחריו הפריסה של admin.html.",
+    "not_built": [
+      "אין ספירה ברמת הפנייה («1 מתוך 3»)",
+      "אין הדגשת המילה בתוך הנימוק ואין ציטוט",
+      "אין חיפוש ב-cases.note (הכרעה (2) של 0096 עומדת במקומה)",
+      "אין סימון מקביל על שמות המכריעים",
+      "אין סינון «יש נימוק / אין»",
+      "אין אינדקס ואין חיפוש טקסט מלא",
+      "אין סינון ומיון לפי מספר מעברים",
+      "אין עריכה ומחיקה ביומן",
+      "אין שמירת מיקום הפנייה בעמוד החדש",
+      "אין אינדקס על ct.phone",
+      "pager.hidden = total <= PAGE נשאר כפי שהוא"
+    ],
+    "not_measured": "coalesce של הכרעה (7) של 0096 על איש קשר בלי שם — לא נבנתה פנייה כזו גם כאן.",
+    "standing": [
+      "טעינה מחדש של הכתובת מנתקת את הסשן (admin.html:296)",
+      "sent בלתי-ניתן-להשגה בכוונה",
+      "bkalot_clone_admin_create אינה חשופה ב-HTTP",
+      "pdf/audio → channel_unsupported",
+      "public_visible ו-show_in_showcase של #37 נשארים false"
+    ]
+  }
+}

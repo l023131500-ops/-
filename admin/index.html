@@ -3,7 +3,107 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>more30 · אדמין</title>
+    <title>more30 · ניהול</title>
+    <!--
+      ערכת הצבעים של מרכז השליטה. עד 07/08 הצבעים היו מוטבעים ב-App.tsx כ-hex
+      קבועים, ולכן /admin היה המסך היחיד מתוך 25 שלא הגיב ל-prefers-color-scheme
+      ולא היה בו מתג (core.issues #68): מי שהמערכת שלו כהה קיבל דף לבן.
+
+      שלוש שכבות, בסדר הזה:
+        :root                          — בהיר, ברירת המחדל.
+        @media (prefers-color-scheme)  — כהה לפי מערכת ההפעלה, אלא אם המשתמש
+                                         בחר במפורש בהיר.
+        [data-theme="dark"]            — בחירה מפורשת של המשתמש (ThemeToggle),
+                                         גוברת על מערכת ההפעלה בשני הכיוונים.
+    -->
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f8fafc;
+        --surface: #ffffff;
+        --surface-2: #f1f5f9;
+        --border: #e2e8f0;
+        --border-2: #cbd5e1;
+
+        --fg: #0f172a;
+        --fg-2: #334155;
+        --fg-3: #475569;
+        --muted: #64748b;
+        --muted-2: #94a3b8;
+
+        --accent: #4f46e5;
+        --accent-fg: #4f46e5;
+        --accent-soft: #c7d2fe;
+
+        /* לוחות מודגשים — רקע, מסגרת והטקסט שיושב עליהם, כזוג. בלי הזוג
+           הזה טקסט כהה על לוח בהיר נשאר כהה גם כשהעמוד מתהפך. */
+        --t-yellow: #fef9c3;   --t-yellow-b: #fde68a;
+        --t-red: #fef2f2;      --t-red-2: #fee2e2;   --t-red-b: #fecaca;   --on-red: #b91c1c;
+        --t-green: #ecfdf5;                                                --on-green: #16a34a;
+        --t-blue: #eff6ff;                                                 --on-blue: #0369a1;
+        --t-violet: #f5f3ff;   --t-violet-b: #ddd6fe;                      --on-violet: #5b21b6;
+        --t-amber: #fff7ed;                                                --on-amber: #c2410c;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme="light"]) {
+          color-scheme: dark;
+          --bg: #0b1220;
+          --surface: #131c2e;
+          --surface-2: #1b2740;
+          --border: #29364f;
+          --border-2: #3a4a67;
+
+          --fg: #e6edf7;
+          --fg-2: #c3cfe1;
+          --fg-3: #aab8cc;
+          --muted: #94a3b8;
+          --muted-2: #7f8fa6;
+
+          --accent: #6366f1;
+          --accent-fg: #a5b4fc;
+          --accent-soft: #3b3f7a;
+
+          --t-yellow: #3b3410;   --t-yellow-b: #6b5a12;
+          --t-red: #351717;      --t-red-2: #401a1a;   --t-red-b: #6b2626;   --on-red: #fca5a5;
+          --t-green: #0d2b21;                                                --on-green: #4ade80;
+          --t-blue: #0e2338;                                                 --on-blue: #7cc4f0;
+          --t-violet: #1d1b3a;   --t-violet-b: #4c3f96;                      --on-violet: #c4b5fd;
+          --t-amber: #3a2410;                                                --on-amber: #fbbf24;
+        }
+      }
+
+      [data-theme="dark"] {
+        color-scheme: dark;
+        --bg: #0b1220;
+        --surface: #131c2e;
+        --surface-2: #1b2740;
+        --border: #29364f;
+        --border-2: #3a4a67;
+
+        --fg: #e6edf7;
+        --fg-2: #c3cfe1;
+        --fg-3: #aab8cc;
+        --muted: #94a3b8;
+        --muted-2: #7f8fa6;
+
+        --accent: #6366f1;
+        --accent-fg: #a5b4fc;
+        --accent-soft: #3b3f7a;
+
+        --t-yellow: #3b3410;   --t-yellow-b: #6b5a12;
+        --t-red: #351717;      --t-red-2: #401a1a;   --t-red-b: #6b2626;   --on-red: #fca5a5;
+        --t-green: #0d2b21;                                                --on-green: #4ade80;
+        --t-blue: #0e2338;                                                 --on-blue: #7cc4f0;
+        --t-violet: #1d1b3a;   --t-violet-b: #4c3f96;                      --on-violet: #c4b5fd;
+        --t-amber: #3a2410;                                                --on-amber: #fbbf24;
+      }
+
+      /* הצבע היורש. בלי זה טקסט בתוך לוח מודגש נשאר שחור גם במצב כהה. */
+      html, body { background: var(--bg); color: var(--fg); }
+      body { margin: 0; }
+      input, textarea, select { background: var(--surface); color: var(--fg); }
+    </style>
   </head>
   <body>
     <div id="root"></div>

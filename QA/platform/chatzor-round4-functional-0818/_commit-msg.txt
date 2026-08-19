@@ -1,0 +1,1 @@
+round-4 functional pass: 16 chatzor - login+core action (synagogue directory, 4 real rows + sub-site drill-in)+real data verified, no bug, no deploy needed

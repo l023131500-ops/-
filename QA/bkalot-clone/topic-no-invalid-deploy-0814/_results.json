@@ -1,0 +1,120 @@
+{
+  "run": "topic-no-invalid-deploy-0814",
+  "scope": "פריסה בלבד — אין שינוי קוד, אין מיגרציה, אין פריסת edge function",
+  "line_taken": "הקו הפתוח של 1bd2ff5 (heartbeat 597): «הקובץ טרם נפרס — more30.com/bkalot-studio עדיין מגיש «קוד: topic_no_invalid»; זו הפעימה הבאה»",
+  "deployment": {
+    "id": "dpl_6Gmiodb7CQJAhAgQ4FPD248UDqgW",
+    "target": "production",
+    "how": "scripts/stage-portal.ps1 ואז npx vercel deploy --prod --yes מ-portal/dist, בלי --prebuilt",
+    "url": "more30-portal-cpv5dlvhk-l023131500-ops-projects.vercel.app"
+  },
+  "file": {
+    "prev_bytes": 28825,
+    "prev_md5": "432A2D93D21581DACC5E835324D44091",
+    "prev_source": "portal/dist/bkalot-studio/index.html הועתק לפני ה-staging — זהה בדיוק למה ש-heartbeat 597 רשם כגרסה שבייצור",
+    "deployed_bytes": 31164,
+    "deployed_md5": "4F7257379E3D1C88D86EB4CEEA96CDA8",
+    "source_delta": 2339,
+    "admin_html_md5": "B9AF28E5286362FD84EBC8DDDBE2110B",
+    "admin_html_moved": false
+  },
+  "markers": {
+    "verified_against_both_versions_before_use": true,
+    "new_in_prev_file": 0,
+    "new_in_deployed_file": 6,
+    "removed_in_prev_file": 2,
+    "removed_in_deployed_file": 0,
+    "rejected_as_new": {
+      "צריך מספר שלם": "כבר בייצור מ-193da4a ומ-124cfc2 — ירד ל-OLD ונמדד כספירה: 4 בייצור, 5 במתוקן"
+    }
+  },
+  "http": {
+    "https://more30.com/bkalot-studio":       { "before_bytes": 29061, "after_bytes": 31400, "new_hits_before": 0, "new_hits_after": 6, "removed_hits_before": 2, "removed_hits_after": 0 },
+    "https://more30.com/bkalot-studio/":      { "before_bytes": 29061, "after_bytes": 31400, "new_hits_before": 0, "new_hits_after": 6, "removed_hits_before": 2, "removed_hits_after": 0 },
+    "https://more30.com/bkalot-studio/admin": { "before_bytes": 90056, "after_bytes": 90056, "note": "רגרסיה — לא זז" },
+    "https://more30.com/":                    { "before_bytes": 3517,  "after_bytes": 3517,  "note": "רגרסיה — לא זז, אותם שני נכסים מגובבים" },
+    "http_delta": 2339,
+    "http_delta_equals_source_delta": true,
+    "netfree_injection_bytes": 236,
+    "netfree_injection_unchanged": true,
+    "alefs": { "form_before": 272, "form_after": 304, "admin": 956, "home": 23 },
+    "replacement_chars": 0,
+    "double_encoded_marks": 0
+  },
+  "live_browser": {
+    "viewport": "1280x900",
+    "url": "https://more30.com/bkalot-studio/",
+    "console_messages": 0,
+    "flows": [
+      {
+        "id": "01-live-topic-no-invalid",
+        "typed": "999999999999",
+        "typed_by": "הקשות מקלדת, לא השמה ל-value",
+        "native_before_submit": { "value": "999999999999", "badInput": false, "field_checkValidity": true, "form_checkValidity": true },
+        "intake_requests": 1,
+        "server_response": { "status": 200, "ok": false, "error": "topic_no_invalid" },
+        "title": "הפנייה לא נשלחה",
+        "lines": ["מספר הנושא אינו תקין. תקנו ושלחו שוב.", "מספר הנושא גדול מכל מספר נושא שקיים במערכת."],
+        "focus": "topic_no",
+        "aria_invalid_count": 1,
+        "topic_value_after": "999999999999",
+        "case_created": false,
+        "result_top_px": 705,
+        "field_top_px": 272,
+        "screenshot_md5_prefix": "438C2D41"
+      },
+      {
+        "id": "02-live-control-preflight",
+        "typed": "1-5",
+        "native_before_submit": { "value": "", "badInput": true },
+        "intake_requests": 0,
+        "title": "הפנייה לא נשלחה",
+        "lines": ["מספר נושא — צריך מספר שלם. תקנו ושלחו שוב."],
+        "focus": "topic_no",
+        "aria_invalid_count": 1,
+        "case_created": false,
+        "result_top_px": 705,
+        "field_top_px": 272,
+        "screenshot_md5_prefix": "80136F68",
+        "note": "החסימה המוקדמת לא זזה בפריסה — markInvalid לא שינה את התנהגותה"
+      },
+      {
+        "id": "03-live-control-7",
+        "typed": "7",
+        "intake_requests": 1,
+        "server_response": { "status": 200, "ok": true, "case_id": 163, "contact_id": 169, "rights_linked": 42, "queued": false, "dropped": [] },
+        "title": "הפנייה נקלטה",
+        "lines": ["קיבלנו את הפנייה ונחזור אליכם.", "🚫 מצב טסט: הפנייה נשמרה, ולא יצאה ממנה שום הודעה."],
+        "case_row": ["מספר פנייה=163", "זכויות שאותרו עבורכם=42"],
+        "focus": "BODY",
+        "aria_invalid_count": 0,
+        "form_reset": true,
+        "screenshot_md5_prefix": "C20E12BD",
+        "note": "התיקון אינו נדבק למסלול התקין"
+      }
+    ],
+    "screenshots_distinct_md5": true
+  },
+  "db": {
+    "baseline":        { "cases": 0, "case_rights": 0, "documents": 0, "catalog": 888, "contacts": 4, "outbound_queue": 8, "queue_sent": 0, "delivery_log": 3, "queue_fingerprint": "681dde58ed67b2094d0cbbd7c68e0fb6" },
+    "after_measure":   { "cases": 1, "case_ids": "163:7", "case_rights": 42, "documents": 0, "catalog": 888, "contacts": 5, "outbound_queue": 8, "queue_sent": 0, "delivery_log": 3, "queue_fingerprint": "681dde58ed67b2094d0cbbd7c68e0fb6" },
+    "after_rollback":  { "cases": 0, "case_rights": 0, "documents": 0, "catalog": 888, "admin_users": 1, "templates": 2, "contacts": 4, "outbound_queue": 8, "queue_sent": 0, "delivery_log": 3, "queue_fingerprint": "681dde58ed67b2094d0cbbd7c68e0fb6" },
+    "back_to_baseline": true,
+    "rollback": "שלוש פקודות נפרדות לפי id ולא CTE אחד: case_rights(42) → cases(1) → contacts(1); איש הקשר לפי id ולא לפי טלפון",
+    "both_sided_proof": "פנייה אחת בלבד נוצרה — הבקרה. לשני הניסיונות שנפסלו אין שורה באמצע."
+  },
+  "test_mode": {
+    "measured_not_declared": true,
+    "documents": 0,
+    "queue_rows_with_sent_at": 0,
+    "outbound_queue_unchanged": true,
+    "delivery_log_unchanged": true,
+    "queue_fingerprint_identical_throughout": true,
+    "screen_declares": "🚫 מצב טסט: הפנייה נשמרה, ולא יצאה ממנה שום הודעה"
+  },
+  "protected": {
+    "git_status_clean": ["apps/08-bkalut-app", "apps/09-bkalot-admin", "apps/37-bkalot-clone", "supabase/functions"],
+    "untouched": ["bkalut-app", "bkalot-admin", "zr_*", "NEDARIM3873", "csj", "csj_src", "igud"],
+    "edge_functions": { "bkalot-clone-intake": "v1 — לא נפרסה", "bkalot-clone-admin": "v7 — לא נפרסה" }
+  }
+}

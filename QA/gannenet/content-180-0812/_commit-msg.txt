@@ -1,0 +1,29 @@
+gannenet (40): the app had 52 of the 180 lessons it was built for
+
+Priority §0.3 — the content package had been sitting in gannenet-incoming/
+since before this run. It brings 119 רגילה + 61 משלימה; the app had 5 + 47.
+
+Data only. The ZIP also ships lib/content.ts and the library and lesson
+pages, but those are the pre-monthOf / pre-normalizeSearch versions, and
+copying them in would have reverted the month fix (b3d43aa) and the search
+fix (d8ec075). Checked before overwriting: all 52 existing ids survive and
+every field of all 52 is byte-identical, and every array the lesson page
+indexes unguarded is present on all 180.
+
+Three defects came with it. 175 of the 180 lesson pages were a not-found
+page served under a 200 — params.id arrives percent-encoded and every id
+but the 61 משלימה ones is Hebrew, so the id comparison never matched;
+p-פרשת-בא.html existed, was 15 KB, and its body was the not-found page.
+Pre-existing, but 5 of 52 before and the whole site after. The month select
+offered ספר בראשית: 74 of the 119 רגילה lessons carry a unit label where the
+month is read from. And סיון and סיוון are one month spelled two ways, one
+per audience, which had made two entries that each hid half of it.
+
+And the filter the package is for: a תחום select off tags.domain, the one
+axis filled on all 180. The ten filtered counts sum to 180 in the page, and
+month × domain compose. A parasha card had lost both chips to the fixes
+above, so the unit chip is now shown beside the domain.
+
+tsc 0, build ✓ 193 pages / 180 lesson paths, all 180 probed over HTTP on the
+production build (180 × 200, 0 not-found), 0 console errors. Evidence in
+QA/gannenet/content-180-0812/; ZIP moved to gannenet-incoming/done/.

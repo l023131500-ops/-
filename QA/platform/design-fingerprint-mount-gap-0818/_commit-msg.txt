@@ -1,0 +1,16 @@
+fix: design-fingerprint.mjs missed bkalot-clone + gannenet mounts (round-5 measurement gap)
+
+Same class of gap as 2701108 (brand-audit.mjs): scripts/qa/design-fingerprint.mjs's
+ROUTES was built before /bkalot-studio (37) and /gannenet (40) went live, so neither
+was ever fingerprinted for more30-priority.md section 6 (design uniqueness).
+
+Added both mounts to ROUTES, ran filtered so the script's merge-not-replace path
+updated only the 2 new keys in QA/platform/_design.json (27 systems now, was 25;
+other 25 entries unchanged, diff is pure addition).
+
+Finding: gannenet has 4 distinct icon-chip hues - the same "rainbow nobody chose"
+class already fixed on galil and zchuyot. Flagged as the next round-5 step, not
+fixed here (scoped to the enumeration gap only).
+
+No app code changed, no protected system touched, no deploy (audit tooling only).
+Evidence: QA/platform/design-fingerprint-mount-gap-0818/.

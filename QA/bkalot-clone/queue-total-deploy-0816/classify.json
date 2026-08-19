@@ -1,0 +1,138 @@
+{
+  "src": {
+    "path": "C:/Users/USER/Downloads/more30/apps/37-bkalot-clone/admin.html",
+    "bytes": 176004,
+    "md5": "282DF8EC"
+  },
+  "dist": {
+    "path": "C:/Users/USER/Downloads/more30/portal/dist/bkalot-studio/admin.html",
+    "bytes": 172296,
+    "md5": "4D03D58B"
+  },
+  "groups": {
+    "NEW": [
+      {
+        "key": "queueTotal_decl",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "queueTotal_read",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "queueTotal_all",
+        "src": 4,
+        "dist": 0
+      },
+      {
+        "key": "queue_total_all",
+        "src": 3,
+        "dist": 0
+      },
+      {
+        "key": "queueBit_decl",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "queueBit_all",
+        "src": 3,
+        "dist": 0
+      },
+      {
+        "key": "queue_phrase",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "title_new",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "title_branch",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "comment_two_msgs",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "comment_stale",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "comment_betor",
+        "src": 1,
+        "dist": 0
+      }
+    ],
+    "REMOVED": [
+      {
+        "key": "old_count_line",
+        "src": 0,
+        "dist": 1
+      },
+      {
+        "key": "old_title_if",
+        "src": 0,
+        "dist": 1
+      }
+    ],
+    "DIFF": [
+      {
+        "key": "phr_count_title",
+        "src": 2,
+        "dist": 1
+      },
+      {
+        "key": "phr_sort_clause",
+        "src": 2,
+        "dist": 1
+      }
+    ],
+    "CONTROL": [
+      {
+        "key": "ctl_filtered",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "ctl_noneText",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "ctl_emptyBox",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "ctl_noteTally",
+        "src": 3,
+        "dist": 3
+      },
+      {
+        "key": "ctl_clamp_note",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "ctl_qPhone",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "ctl_box_literal",
+        "src": 1,
+        "dist": 1
+      }
+    ],
+    "DEAD": []
+  }
+}

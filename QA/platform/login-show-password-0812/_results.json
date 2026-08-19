@@ -1,0 +1,49 @@
+{
+  "what": "כפתור \"הצג סיסמה\" ודרישת הסיסמה החיה בשדה הסיסמה היחיד של הפלטפורמה (§1א)",
+  "file": "portal/public/login.html",
+  "measured_at": "2026-08-12T02:12+03:00",
+  "note": "שדה הסיסמה הזה הוא היחיד בכל הפורטל — נסרק על portal/**/*.{html,js}: מופע אחד, login.html:172.",
+  "deployment": {
+    "id": "dpl_8TEKo4tNP5fL6e9VcRvMpgsyCCxQ",
+    "project": "more30-portal",
+    "target": "production",
+    "aliased_to": "https://more30.com",
+    "staged_with": "scripts/stage-portal.ps1",
+    "dist_sync": "כל קובצי portal/public הושוו ל-portal/dist ב-SHA256 לפני הפריסה; רק login.html נבדל, והוא הועתק. אין build מחדש."
+  },
+  "live_html_probe": {
+    "url": "https://more30.com/login",
+    "status": 200,
+    "bytes": 27700,
+    "matches": { "id=\"pwToggle\"": 1, "pw-toggle": 4, "id=\"pwReq\"": 1, "toggleAttribute": 3 }
+  },
+  "live_dom_states": [
+    { "state": "initial (signup)", "type": "password", "aria-pressed": "false", "aria-label": "הצג סיסמה", "eye": "shown", "eye-off": "hidden", "requirement": "• לפחות 8 תווים (לא מתקיים)" },
+    { "state": "5 תווים", "type": "password", "requirement": "• לפחות 8 תווים (לא מתקיים)" },
+    { "state": "14 תווים", "type": "password", "requirement": "✓ לפחות 8 תווים (מתקיים)" },
+    { "state": "אחרי לחיצה", "type": "text", "aria-pressed": "true", "aria-label": "הסתר סיסמה", "eye": "hidden", "eye-off": "shown" },
+    { "state": "לשונית כניסה", "type": "password", "aria-pressed": "false", "requirement": "מוסתר (הדרישה שייכת להרשמה בלבד)" }
+  ],
+  "assertions": {
+    "click_does_not_submit_form": "URL ללא שינוי אחרי הלחיצה, #msg נשאר מוסתר (type=\"button\" מפורש)",
+    "button_is_hittable": "elementFromPoint במרכז הכפתור מחזיר pwToggle",
+    "tap_target": "36x36 px",
+    "sits_inside_field": true,
+    "does_not_cover_text": "padding-right של השדה 46px מול כפתור ברוחב 36 בהיסט 5",
+    "resets_on_mode_switch": "מעבר בין כניסה להרשמה מחזיר את השדה ל-type=password"
+  },
+  "bug_found_and_fixed_mid_step": {
+    "what": "‎element.hidden = x‎ על אלמנט SVG אינו משנה דבר — `hidden` מוגדר על HTMLElement בלבד ('hidden' in SVGElement.prototype === false), וההשמה יצרה שדה JS בלבד.",
+    "symptom": "הסיסמה נחשפה אבל האייקון נשאר \"עין\", והכפתור סתר את עצמו.",
+    "evidence": "before-fix-icon-did-not-change.png",
+    "fix": "toggleAttribute('hidden', …) בשני האייקונים"
+  },
+  "screenshots": {
+    "live-signup-revealed.png": "more30.com/login?mode=signup — סיסמה גלויה, אייקון עין-חצויה, ✓ ירוק ליד הדרישה",
+    "live-signin-masked.png": "more30.com/login — לשונית כניסה, סיסמה מוסתרת, הדרישה אינה מוצגת",
+    "local-signup-revealed.png": "אותו מסך מהמקור לפני הפריסה",
+    "_icon-off-zoom.png": "האייקון בהגדלה ×3 — עין חצויה",
+    "before-fix-icon-did-not-change.png": "לפני התיקון: הסיסמה גלויה והאייקון עדיין עין"
+  },
+  "not_done_here": "שדות סיסמה בתוך המערכות עצמן (apps/*) — §1א מבקש את הכפתור בכולם. הפורטל נסגר; המערכות ייבדקו בצעדים הבאים."
+}

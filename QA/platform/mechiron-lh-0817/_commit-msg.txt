@@ -1,0 +1,22 @@
+27 מחירון (mechiron): Lighthouse נמדד לראשונה + תוקן ליקוי ניגודיות אמיתי
+
+המשך ישיר לסבב 17/08 (fix/nadlan-a11y, אחרי 02/04/06/10/12/14/15/16/17/18/22/26/28/32/34/21/24).
+node scripts/qa/lighthouse-run.mjs QA/platform/mechiron-lh-0817 mechiron מול
+https://more30.com/mechiron החי — a11y היה 96, לא 100.
+
+ליקוי אמיתי שתוקן:
+- color-contrast (score 0, ratio 3.05 על שורת ההבהרה בפוטר "להבחין תמיד בין
+  זכות לפי חוק לבין אפשרות לפנייה לסיוע התנדבותי"): ה-div הזה הוסיף
+  `opacity-70` מעל אלמנט-אב שכבר `text-muted-foreground` — שני הקהיות ביחד
+  הורידו את היחס מתחת ל-4.5:1 הנדרש. שורת ההורה (טלפון/מייל, אותו צבע בלי
+  opacity) לא סומנה בכלל, כך שהתיקון הוא הסרת ה-opacity-70 העודף מה-div
+  הפנימי (apps/27-bkalut-price/client/src/pages/public-landing.tsx) —
+  משאיר את אותו צבע כמו שורת ההורה, בלי דהייה נוספת.
+
+נבנה (`vite build` תחת apps/27-bkalut-price, base כבר /mechiron/), robocopy
+ל-_deploy/mechiron-more30/public/mechiron, נפרס ל-production דרך vercel CLI
+(dpl_EhqY8wLJAwmoxFdyvzhMEP8Vo3FF, READY), אומת עם cache-buster שה-bundle
+החדש (index-BklrIJk7.js) חי, ונמדד מחדש: a11y 96→100. פרפורמנס (65→58, תנודה
+בין ריצות) מתחת לסף 90, לא נחקר בצעד הזה.
+
+QA/platform/mechiron-lh-0817/

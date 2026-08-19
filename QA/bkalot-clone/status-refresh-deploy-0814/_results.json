@@ -1,0 +1,76 @@
+{
+  "beat": "status-refresh-deploy-0814",
+  "kind": "פריסה בלבד — אין שינוי קוד, אין מיגרציה, אין פריסת edge function",
+  "open_line_taken_verbatim": "הקובץ טרם נפרס — more30.com/bkalot-studio/admin עדיין מגיש את הגרסה שפונה לשרת אל מסך מוסתר, והמדידה כאן רצה מול שרתים סטטיים מקומיים, כלומר מדדה את הקוד ולא את המוצר; זו הפעימה הבאה",
+  "source_commit_deployed": "643ccf2",
+  "edge_functions": { "bkalot-clone-intake": "v1 ללא שינוי", "bkalot-clone-admin": "v7 ללא שינוי" },
+
+  "files": {
+    "src_admin_html": { "bytes": 90920, "md5": "BFB19E3E15688423A0FEB54644D958E7" },
+    "prev_from_portal_dist_before_staging": { "bytes": 89820, "md5": "B9AF28E5286362FD84EBC8DDDBE2110B" },
+    "dist_after_staging": { "bytes": 90920, "md5": "BFB19E3E15688423A0FEB54644D958E7" },
+    "staged_files": 38
+  },
+
+  "deployment": {
+    "id": "dpl_GN5zvDdND1sPDXpS5PAW7ZrYRXDT",
+    "readyState": "READY",
+    "target": "production",
+    "aliased": "https://more30.com",
+    "from": "portal/dist, בלי --prebuilt"
+  },
+
+  "http": {
+    "https://more30.com/bkalot-studio/admin": { "before": 90056, "after": 91156, "new_hits": "0 → 4", "removed_hits": "1 → 0", "await_load_count": "2 → 1" },
+    "https://more30.com/bkalot-studio/admin/": { "before": 90056, "after": 91156, "new_hits": "0 → 4", "removed_hits": "1 → 0", "await_load_count": "2 → 1" },
+    "https://more30.com/bkalot-studio": { "before": 32558, "after": 32558, "note": "רגרסיה — לא זז" },
+    "https://more30.com/": { "before": 3517, "after": 3517, "assets": ["/assets/index-C2AHwa-z.js", "/assets/index-B35ByRD-.css"], "note": "רגרסיה — לא זז" },
+    "netfree_delta_vs_source": 236,
+    "replacement_chars": 0,
+    "double_encoded": 0
+  },
+
+  "live_browser": {
+    "url": "https://more30.com/bkalot-studio/admin?cachebust=statusrefresh0814",
+    "viewport": "1280x900",
+    "served_version_has_new_comment": true,
+    "on_status_click": { "total": 2, "by_action": { "set-status": 1, "case": 1 }, "cases": 0, "ms": 5462 },
+    "production_before_deploy_measured_in_643ccf2": { "total": 3, "by_action": { "set-status": 1, "case": 1, "cases": 1 } },
+    "note_line": "הסטטוס שונה מ«חדשה» ל«בטיפול» · לא נשלחה שום הודעה",
+    "on_back_control": { "total": 1, "by_action": { "cases": 1 } },
+    "row_clicked": "בדיקה פריסה A · בטיפול · #169 · 42 זכויות · הוכרעה 14.08.2026, 15:05 · QA רענון פריסה",
+    "row_control_untouched": "בדיקה פריסה B · חדשה · #170 · 42 זכויות · בלי «הוכרעה»",
+    "console_messages": 0,
+    "screenshots": {
+      "01-live-case-after-status.png": "69738139",
+      "02-live-list-after-back.png": "B69F8DF3"
+    }
+  },
+
+  "db_two_sided": [
+    { "id": 169, "status": "in_progress", "decided_by": 46, "rights": 42 },
+    { "id": 170, "status": "new", "decided_by": null, "rights": 42 }
+  ],
+
+  "test_mode_measured": {
+    "documents": 0,
+    "cases_sent": 0,
+    "outbound_queue": 8,
+    "outbound_queue_with_sent_at": 0,
+    "delivery_log": 3,
+    "queue_fingerprint_base_and_after": "bf57d69edaf6725ff7f52ad3007c4170"
+  },
+
+  "rollback_to_baseline": {
+    "order": ["case_rights", "cases", "contacts", "admin_sessions", "admin_users"],
+    "separate_statements_by_id": true,
+    "contact_ids_captured_before_deleting_cases": [175, 176],
+    "after": {
+      "cases": 0, "case_rights": 0, "documents": 0, "admin_users": 1, "admin_sessions": 5,
+      "templates": 2, "contacts": 4, "outbound_queue": 8, "delivery_log": 3, "catalog": 888
+    },
+    "identical_to_baseline": true
+  },
+
+  "protected": "git status ריק על apps/08-bkalut-app, apps/09-bkalot-admin, apps/37-bkalot-clone ו-supabase/functions; אין נגיעה ב-bkalut-app/bkalot-admin/zr_*/NEDARIM3873 ולא בסכמות csj/csj_src/igud"
+}

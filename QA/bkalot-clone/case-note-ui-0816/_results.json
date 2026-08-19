@@ -1,0 +1,75 @@
+{
+  "brick": "case-note-ui-0816",
+  "line": "פתוח: המסך — heartbeat 655 (commit bad0f93), מילה במילה: «admin.html קורא call(\"case\", { id }) בשורה 1018 ותו לא — המונח יושב ב-state של הרשימה ואינו נוסע פנימה, ולכן מנהל בייצור עדיין רואה את הרצף בלי סימן אף שהשער כבר מעביר את מה שיקבל. זו הלבנה הבאה, ואחריה הפריסה של admin.html»",
+  "scope": "apps/37-bkalot-clone/admin.html בלבד — שתי שורות ב-openCase ובלוק אחד ב-fillHistoryNoteCell. אין מיגרציה, אין פריסת edge function, אין פריסה לייצור",
+  "measured_from": "דפדפן אמיתי (playwright chromium), 1280x900, התחברות דרך המסך והקלדה בתיבת החיפוש תו-תו",
+  "servers": {
+    "8138": { "serves": "git show HEAD:apps/37-bkalot-clone/admin.html", "bytes": 146451, "md5": "4a284aec" },
+    "8137": { "serves": "apps/37-bkalot-clone/ בעץ העבודה", "bytes": 151261, "md5": "27e6230c" },
+    "note": "BASE ב-admin.html הוא כתובת מוחלטת, ולכן שני השרתים מדברים אל אותו edge (bkalot-clone-admin v9) ואל אותו מסד — ההפרש היחיד בין הריצות הוא admin.html עצמו"
+  },
+  "seed": {
+    "path": "קליטה דרך public.bkalot_clone_intake מעל HTTP עם מפתח anon כמו מהטופס; שלוש ההכרעות דרך /bkalot-clone-admin/set-status כמנהל מחובר",
+    "case_id": 375,
+    "contact_id": 382,
+    "kind": "info",
+    "queued": false,
+    "admin": { "id": 113, "email": "uicase0098@more30.test", "created_by": "bkalot_clone_admin_create ולא הזרקת hash" },
+    "log": [
+      { "id": 93, "to": "in_progress", "note": "הפונה ביקש לצרף מסמכים נוספים בשבוע הבא" },
+      { "id": 94, "to": "rejected", "note": "המסמכים שצורפו שייכים לשנת המס הקודמת" },
+      { "id": 95, "to": "in_progress", "note": "הטופס נשלח בדואר רשום על ידי הפונה" }
+    ],
+    "same_as_0097": "שלושת הנימוקים הם מילה במילה אלה שנמדדו במיגרציה 0097 ובשער v9, כדי שהמדידה מהדפדפן תרוץ על אותו טקסט ולא על מקרה אחר"
+  },
+  "before_8138": {
+    "q": "המס הקודמת",
+    "count": "פנייה אחת",
+    "heading": "רצף ההכרעות (3 מעברים)",
+    "signs_in_dom": 0,
+    "gap": "הרשימה אמרה «נמצאה לפי הנימוק» ומפנה פנימה, ובפנים שלושה נימוקים בלי ולו סימן אחד — הקורא נדרש לחפש בעיניים את מה שהמסד כבר מצא"
+  },
+  "after_8137": [
+    {
+      "q": "המס הקודמת",
+      "count": "פנייה אחת",
+      "signs_in_dom": 1,
+      "signed_row": { "id_in_seed": 94, "to": "נדחתה", "note": "המסמכים שצורפו שייכים לשנת המס הקודמת" },
+      "sign_text": "זה הנימוק שהתאים",
+      "sign_title": "מה שהוקלד בחיפוש נמצא בטקסט הזה, ובזכותו הפנייה עלתה ברשימה. הסימן מתאר ואינו מסנן — יותר משורה אחת יכולה לשאת אותו",
+      "shot": "02-after-marks-the-row.png"
+    },
+    {
+      "q": "מסמכים",
+      "count": "פנייה אחת",
+      "signs_in_dom": 2,
+      "signed_rows": [93, 94],
+      "means": "השדה מתאר ואינו בוחר: המילה יושבת בשני נימוקים ושניהם מסומנים, והשלישי לא. זו הסיבה שהסימן יושב על התא ולא בכותרת הטבלה",
+      "shot": "03-after-two-rows.png"
+    }
+  ],
+  "controls_8137": [
+    { "q": "", "signs_in_dom": 0, "means": "אותה פנייה בדיוק בלי מונח חיפוש — המפתח אינו נשלח כלל, 0097 מחזירה false בשלוש השורות והמסך שותק", "shot": "04-control-no-q.png" },
+    { "q": "אברהם", "signs_in_dom": 0, "means": "נמצאה בזכות השם — הסימן חייב לא להופיע, כלומר הוא מפריד ואינו דולק תמיד", "shot": "05-control-found-by-name.png" }
+  ],
+  "screenshots": {
+    "trap": "screenshot-evidence-below-the-fold — הריצה הראשונה החזירה חמישה קבצים, ארבעה מהם זהים בייט-בייט (79DDC879) על ארבעה מצבים שונים: הטבלה יושבת מתחת לקיפול ב-1280x900. הצילום גולל אל כותרת «רצף ההכרעות» בכל חמש הריצות",
+    "md5": {
+      "01-before-no-sign.png": "47dfe945",
+      "02-after-marks-the-row.png": "56158956",
+      "03-after-two-rows.png": "06bb0a52",
+      "04-control-no-q.png": "47dfe945",
+      "05-control-found-by-name.png": "47dfe945"
+    },
+    "identical_on_purpose": "01, 04 ו-05 זהים זה לזה — שלושה מצבים שבהם אין סימן נראים אותו הדבר, וזו בדיוק הטענה. 02 ו-03 נבדלים מהם ואחד מהשני"
+  },
+  "test_mode": {
+    "documents": 0,
+    "outbound_queue": "8 לפני ו-8 אחרי",
+    "delivery_log": "3 לפני ו-3 אחרי",
+    "sent_cases": 0,
+    "note": "הנתיב שהשתנה קורא ואינו כותב; הכתיבות בריצה הן קליטה אחת ושלושה מעברי סטטוס, וכולן גולגלו אחורה"
+  },
+  "baseline_before": { "cases": 0, "case_status_log": 0, "case_rights": 0, "documents": 0, "admin_users": 1, "admin_sessions": 5, "templates": 2, "contacts": 4, "outbound_queue": 8, "delivery_log": 3, "rights_catalog": 888, "schema_migrations": "20260816131352" },
+  "protected": "אין נגיעה ב-08/09/bkalut-app/bkalot-admin/zr_*/NEDARIM3873 ולא בסכמות csj/csj_src/igud"
+}

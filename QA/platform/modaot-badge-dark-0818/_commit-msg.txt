@@ -1,0 +1,22 @@
+03 modaot: fix 1/2/3 step badge invisible in dark mode (round-3 a11y recheck)
+
+contrast-probe.mjs dark mode against /modaot found 3 failures: the step
+badges "1"/"2"/"3" in the "how it works" section, light ink
+(rgb(200,214,238)) on fixed gold (rgb(201,168,76)), 1.56:1, needs 3:1.
+
+Root cause in app/(public)/page.tsx:66: text-brand-dark (a token that
+flips value between light/dark mode) used on bg-brand-goldsurface (a
+fixed gold surface that does not flip). The same trap was already
+documented and fixed for .btn-gold in globals.css - the homepage badge
+never got the same fix. Changed to text-brand-darksurface, a fixed dark
+ink token, matching the existing .btn-gold pattern.
+
+Side finding, not a bug: the same probe in light mode reported many
+false-positive failures because it does not account for background-image
+gradients (main uses bg-gradient-to-b, a real dark navy backdrop) -
+verified directly via getComputedStyle, no production code changed for
+that.
+
+Verified: next build clean, vercel deploy --prod (modaot-more30,
+dpl_9TPLrFZFFXds5yfS3zcGZTSSD7Gp, READY). Live re-check with a
+cache-buster: 3 failures -> 0. Evidence: QA/platform/modaot-badge-dark-0818/.

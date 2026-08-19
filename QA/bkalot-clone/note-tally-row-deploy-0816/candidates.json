@@ -1,0 +1,162 @@
+﻿[
+  {
+    "marker": "noteTallyBit",
+    "src": 3,
+    "dist": 0
+  },
+  {
+    "marker": "const noteTally = noteTallyBit(c);",
+    "src": 1,
+    "dist": 0
+  },
+  {
+    "marker": "Object.hasOwn(c, \"note_match_count\")",
+    "src": 1,
+    "dist": 0
+  },
+  {
+    "marker": "המונח בנימוק היחיד",
+    "src": 1,
+    "dist": 0
+  },
+  {
+    "marker": "המונח ב-${hit} מתוך ${notes} הנימוקים",
+    "src": 1,
+    "dist": 0
+  },
+  {
+    "marker": "כמה מהנימוקים שנכתבו ביומן ההכרעות של הפנייה נושאים את מונח החיפוש",
+    "src": 1,
+    "dist": 0
+  },
+  {
+    "marker": "המספר נספר ביומן עצמו ולא נגזר",
+    "src": 1,
+    "dist": 0
+  },
+  {
+    "marker": "המכנה הוא הנימוקים שנכתבו ולא המעברים",
+    "src": 2,
+    "dist": 1
+  },
+  {
+    "marker": "«כמה מהנימוקים התאימו» ברשימה",
+    "src": 1,
+    "dist": 0
+  },
+  {
+    "marker": "ככל שהמונח כללי יותר כך גדל בדיוק המספר שנבלע",
+    "src": 0,
+    "dist": 0
+  },
+  {
+    "marker": "אפס שותק כאן, בניגוד להכרעה (4) של noteMatchTally",
+    "src": 1,
+    "dist": 0
+  },
+  {
+    "marker": "שני מספרים ולא אחד",
+    "src": 1,
+    "dist": 0
+  },
+  {
+    "marker": "מיזוגם היה מוריש את העיוורון לשניהם",
+    "src": 1,
+    "dist": 0
+  },
+  {
+    "marker": "notes_count",
+    "src": 3,
+    "dist": 0
+  },
+  {
+    "marker": "note_match_count",
+    "src": 3,
+    "dist": 0
+  },
+  {
+    "marker": "noteMatchBit",
+    "src": 5,
+    "dist": 2
+  },
+  {
+    "marker": "נמצאה לפי הנימוק",
+    "src": 6,
+    "dist": 5
+  },
+  {
+    "marker": "matched_in_note",
+    "src": 5,
+    "dist": 3
+  },
+  {
+    "marker": "noteMatchTally",
+    "src": 5,
+    "dist": 2
+  },
+  {
+    "marker": "id=\"count\"",
+    "src": 1,
+    "dist": 1
+  },
+  {
+    "marker": "id=\"empty\"",
+    "src": 1,
+    "dist": 1
+  },
+  {
+    "marker": "אין פניות שתואמות את הסינון",
+    "src": 5,
+    "dist": 5
+  },
+  {
+    "marker": "פנייה אחת",
+    "src": 3,
+    "dist": 3
+  },
+  {
+    "marker": "countHe",
+    "src": 13,
+    "dist": 13
+  },
+  {
+    "marker": "bkalot_clone_admin_cases",
+    "src": 1,
+    "dist": 1
+  },
+  {
+    "marker": "מספר פנייה או נימוק ביומן ההכרעות",
+    "src": 1,
+    "dist": 1
+  },
+  {
+    "marker": "רצף ההכרעות",
+    "src": 5,
+    "dist": 5
+  },
+  {
+    "marker": "מי הכריע",
+    "src": 14,
+    "dist": 14
+  },
+  {
+    "marker": "איש הקשר נמחק",
+    "src": 2,
+    "dist": 2
+  },
+  {
+    "marker": "decidedBit",
+    "src": 4,
+    "dist": 4
+  },
+  {
+    "marker": "row-meta",
+    "src": 2,
+    "dist": 2
+  },
+  {
+    "marker": "מיון",
+    "src": 10,
+    "dist": 10
+  }
+]

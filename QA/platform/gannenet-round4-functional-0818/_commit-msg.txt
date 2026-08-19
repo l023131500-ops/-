@@ -1,0 +1,26 @@
+round-4 functional pass: 40 gannenet - core action (lesson library, 180 real lessons + full lesson-page render)+real data verified, no bug, no deploy needed, closes round-4 sweep
+
+Last remaining item in the round-4 functional sweep (per core.run_progress
+id 931). gannenet has no login gate - "free, no signup, no payment" - so
+verified the core action instead: the lesson library.
+
+Loaded https://more30.com/gannenet live via Playwright (viewport resized
+first). Homepage renders clean (200, 0 app console errors - the one console
+error present is NetFree's own widget script 502ing, not app code).
+/gannenet/library shows "180 מערכים" with working audience/month/domain
+filters and real lesson cards (title + excerpt), not placeholders.
+/gannenet/lesson/m3 ("הדבורה, הכוורת והדבש") loads full real content across
+all 11 delivery sections (background, goals, opening, story, group activity,
+discussion, extension, worksheet, etc.) - screenshotted in full.
+
+Did not attempt to fetch PDF shelf bodies (/api/shelf, /api/drive) - per
+prior memory this machine's egress gets 502/418'd on those regardless of
+server health, so it can't be used to judge them.
+
+No app code changed, no protected system touched. Evidence:
+QA/platform/gannenet-round4-functional-0818/lesson-m3.png.
+
+This closes the round-4 (end-to-end functional) sweep across every live
+system: torah through bkalot-clone(37) plus gannenet(40). Next session
+should move to POLISH_BACKLOG/NEEDS_USER per the anti-drift rule, not
+start a round-5 blind.

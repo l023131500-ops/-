@@ -1,0 +1,145 @@
+{
+  "phase": "before",
+  "source": {
+    "bytes": 129476,
+    "markers": {
+      "why-input": 2,
+      "why-count": 3,
+      "status-note-count": 2,
+      "syncNoteCount": 4,
+      "NOTE_MAX": 4,
+      "אפשר להשאיר ריק": 1,
+      "למה (לא חובה)": 1,
+      "הנימוק נשמר ביומן": 1,
+      "הנימוק לא נשמר": 2,
+      "resize:vertical": 1,
+      "aria-describedby": 2,
+      "textarea": 3,
+      "btrim": 7,
+      "note_too_long": 5,
+      "td.why": 1,
+      "fillHistoryNoteCell": 2,
+      "רצף ההכרעות": 4,
+      "handsBit": 2,
+      "producedBit": 2,
+      "fillQueueCell": 2,
+      "fillTemplateCell": 4,
+      "fillCreatedCell": 4,
+      "מי הכריע": 13
+    }
+  },
+  "live": {
+    "https://more30.com/bkalot-studio/admin": {
+      "status": 200,
+      "bytes": 121678,
+      "replacement_chars": 0,
+      "double_encoded": 0,
+      "markers": {
+        "why-input": 0,
+        "why-count": 0,
+        "status-note-count": 0,
+        "syncNoteCount": 0,
+        "NOTE_MAX": 0,
+        "אפשר להשאיר ריק": 0,
+        "למה (לא חובה)": 0,
+        "הנימוק נשמר ביומן": 0,
+        "הנימוק לא נשמר": 0,
+        "resize:vertical": 0,
+        "aria-describedby": 0,
+        "textarea": 0,
+        "btrim": 1,
+        "note_too_long": 1,
+        "td.why": 1,
+        "fillHistoryNoteCell": 2,
+        "רצף ההכרעות": 4,
+        "handsBit": 2,
+        "producedBit": 2,
+        "fillQueueCell": 2,
+        "fillTemplateCell": 4,
+        "fillCreatedCell": 4,
+        "מי הכריע": 13
+      },
+      "new_zero_in_live": true,
+      "new_equals_source": false,
+      "diff_below_source": true,
+      "diff_equals_source": false,
+      "diff_values": {
+        "btrim": "1 → 7",
+        "note_too_long": "1 → 5"
+      },
+      "old_unchanged": true,
+      "old_values": {
+        "td.why": "1 = 1",
+        "fillHistoryNoteCell": "2 = 2",
+        "רצף ההכרעות": "4 = 4",
+        "handsBit": "2 = 2",
+        "producedBit": "2 = 2",
+        "fillQueueCell": "2 = 2",
+        "fillTemplateCell": "4 = 4",
+        "fillCreatedCell": "4 = 4",
+        "מי הכריע": "13 = 13"
+      }
+    },
+    "https://more30.com/bkalot-studio/admin/": {
+      "status": 200,
+      "bytes": 121678,
+      "replacement_chars": 0,
+      "double_encoded": 0,
+      "markers": {
+        "why-input": 0,
+        "why-count": 0,
+        "status-note-count": 0,
+        "syncNoteCount": 0,
+        "NOTE_MAX": 0,
+        "אפשר להשאיר ריק": 0,
+        "למה (לא חובה)": 0,
+        "הנימוק נשמר ביומן": 0,
+        "הנימוק לא נשמר": 0,
+        "resize:vertical": 0,
+        "aria-describedby": 0,
+        "textarea": 0,
+        "btrim": 1,
+        "note_too_long": 1,
+        "td.why": 1,
+        "fillHistoryNoteCell": 2,
+        "רצף ההכרעות": 4,
+        "handsBit": 2,
+        "producedBit": 2,
+        "fillQueueCell": 2,
+        "fillTemplateCell": 4,
+        "fillCreatedCell": 4,
+        "מי הכריע": 13
+      },
+      "new_zero_in_live": true,
+      "new_equals_source": false,
+      "diff_below_source": true,
+      "diff_equals_source": false,
+      "diff_values": {
+        "btrim": "1 → 7",
+        "note_too_long": "1 → 5"
+      },
+      "old_unchanged": true,
+      "old_values": {
+        "td.why": "1 = 1",
+        "fillHistoryNoteCell": "2 = 2",
+        "רצף ההכרעות": "4 = 4",
+        "handsBit": "2 = 2",
+        "producedBit": "2 = 2",
+        "fillQueueCell": "2 = 2",
+        "fillTemplateCell": "4 = 4",
+        "fillCreatedCell": "4 = 4",
+        "מי הכריע": "13 = 13"
+      }
+    }
+  },
+  "control": {
+    "https://more30.com/bkalot-studio/": {
+      "status": 200,
+      "bytes": 32558
+    },
+    "https://more30.com/": {
+      "status": 200,
+      "bytes": 3517
+    }
+  }
+}

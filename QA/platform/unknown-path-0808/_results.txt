@@ -1,0 +1,75 @@
+﻿=== §4 · מה עונה כתובת שאינה מורכבת ===
+    דף הבית: 200, 2955 בייט — זה חתום ה-fallback
+
+— הצלבה: core.projects מול portal/vercel.dist.json —
+
+  PASS  /bkalot חי ב-core.projects ויש לו rewrite
+  PASS  /briut חי ב-core.projects ויש לו rewrite
+  PASS  /chatzor חי ב-core.projects ויש לו rewrite
+  PASS  /chizukim חי ב-core.projects ויש לו rewrite
+  PASS  /crm חי ב-core.projects ויש לו rewrite
+  PASS  /egod חי ב-core.projects ויש לו rewrite
+  PASS  /galil חי ב-core.projects ויש לו rewrite
+  PASS  /gesher חי ב-core.projects ויש לו rewrite
+  PASS  /imud חי ב-core.projects ויש לו rewrite
+  PASS  /kesef חי ב-core.projects ויש לו rewrite
+  PASS  /kiosk חי ב-core.projects ויש לו rewrite
+  PASS  /kupot חי ב-core.projects ויש לו rewrite
+  PASS  /mechiron חי ב-core.projects ויש לו rewrite
+  PASS  /modaot חי ב-core.projects ויש לו rewrite
+  PASS  /mthbram חי ב-core.projects ויש לו rewrite
+  PASS  /nadlan חי ב-core.projects ויש לו rewrite
+  PASS  /orech חי ב-core.projects ויש לו rewrite
+  PASS  /smachot חי ב-core.projects ויש לו rewrite
+  PASS  /smel חי ב-core.projects ויש לו rewrite
+  PASS  /studio חי ב-core.projects ויש לו rewrite
+  PASS  /tamlul חי ב-core.projects ויש לו rewrite
+  PASS  /tivuch חי ב-core.projects ויש לו rewrite
+  PASS  /torah חי ב-core.projects ויש לו rewrite
+  PASS  /zchuyot חי ב-core.projects ויש לו rewrite
+
+  6 נתיבים מוכרזים ולא חיים: bkalot-studio · events · financial · igud · shiurim · zol
+  מהם עם rewrite: אף אחד
+
+— מערכת חיה מגישה את עצמה —
+
+  PASS  /bkalot אינו דף הבית (200, 19688 בייט)
+  PASS  /briut אינו דף הבית (200, 12344 בייט)
+  PASS  /chatzor אינו דף הבית (200, 33282 בייט)
+  PASS  /chizukim אינו דף הבית (200, 3343 בייט)
+  PASS  /crm אינו דף הבית (200, 10559 בייט)
+  PASS  /egod אינו דף הבית (200, 2836 בייט)
+  PASS  /galil אינו דף הבית (200, 3595 בייט)
+  PASS  /gesher אינו דף הבית (200, 10760 בייט)
+  PASS  /imud אינו דף הבית (200, 2965 בייט)
+  PASS  /kesef אינו דף הבית (200, 15590 בייט)
+  PASS  /kiosk אינו דף הבית (200, 9931 בייט)
+  PASS  /kupot אינו דף הבית (200, 3693 בייט)
+  PASS  /mechiron אינו דף הבית (200, 31585 בייט)
+  PASS  /modaot אינו דף הבית (200, 17732 בייט)
+  PASS  /mthbram אינו דף הבית (200, 3120 בייט)
+  PASS  /nadlan אינו דף הבית (200, 64702 בייט)
+  PASS  /orech אינו דף הבית (200, 8240 בייט)
+  PASS  /smachot אינו דף הבית (200, 4205 בייט)
+  PASS  /smel אינו דף הבית (200, 1754 בייט)
+  PASS  /studio אינו דף הבית (200, 7298 בייט)
+  PASS  /tamlul אינו דף הבית (200, 23224 בייט)
+  PASS  /tivuch אינו דף הבית (200, 15596 בייט)
+  PASS  /torah אינו דף הבית (200, 27089 בייט)
+  PASS  /zchuyot אינו דף הבית (200, 58466 בייט)
+
+— כתובת שאין מאחוריה מערכת —
+
+  SOFT-404  /bkalot-studio  (מוכרז, לא חי)  200, 2955 בייט  << דף הבית, עם 200
+  SOFT-404  /events  (מוכרז, לא חי)  200, 2955 בייט  << דף הבית, עם 200
+  SOFT-404  /financial  (מוכרז, לא חי)  200, 2955 בייט  << דף הבית, עם 200
+  SOFT-404  /igud  (מוכרז, לא חי)  200, 2955 בייט  << דף הבית, עם 200
+  SOFT-404  /shiurim  (מוכרז, לא חי)  200, 2955 בייט  << דף הבית, עם 200
+  SOFT-404  /zol  (מוכרז, לא חי)  200, 2955 בייט  << דף הבית, עם 200
+  SOFT-404  /zmanim  (בדוי)  200, 2955 בייט  << דף הבית, עם 200
+  SOFT-404  /no-such-system-at-all  (בדוי)  200, 2955 בייט  << דף הבית, עם 200
+  SOFT-404  /admin-pricing  (בדוי)  200, 2955 בייט  << דף הבית, עם 200
+
+48 passed · 0 failed
+9 כתובות ללא מערכת החזירו את דף הבית עם 200 מתוך 9 שנבדקו.
+הסיבה: השורה האחרונה ב-portal/vercel.dist.json — { "source": "/(.*)", "destination": "/index.html" }.

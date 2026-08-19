@@ -1,0 +1,27 @@
+name: Deploy to Server
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: root
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            set -euo pipefail
+            cd /var/www/bkalut-app
+            # Hard-sync to origin/main so deploys never wedge on a divergent
+            # local tree (a plain `git pull` aborts on divergence, exit 128).
+            git fetch origin main
+            git reset --hard FETCH_HEAD
+            git clean -fd
+            npm install
+            npm run build
+            pm2 restart bkalut

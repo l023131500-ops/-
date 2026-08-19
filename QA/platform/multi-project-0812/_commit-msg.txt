@@ -1,0 +1,45 @@
+platform: "one Supabase project per system" was an assumption, and it made one wrong reading
+
+The 12/08 sweeps (autoconfirm-sweep, own-form-login-roundtrip) pulled ONE
+URL+key pair per live system -- the closest pair in the first file that had
+both -- and attributed one project to each system. bkalot (10) disproves it:
+/bkalot/repo.js points at the hub uhnrgujbdxhhmoxcjria, /bkalot/app.js and the
+HTML point at bieebmnmkffwbqlsfozh. repo.js loads first, so the sweep recorded
+the hub, flagged it as not matching core.projects, and asked GET
+/auth/v1/settings of the wrong project.
+
+The previous heartbeat's open line (2) -- "10 bkalot serves a key for a
+different project than core.projects records" -- closes here: core.projects
+was right; the measuring tool was wrong.
+
+Measured, read-only, on all 26 live addresses: every *.supabase.co reference
+in every file each page loads, the key nearest it IN THE SAME FILE, whether
+the reference is an API call or a Storage asset, and /auth/v1/settings for
+each project a system's own files talk to. No user created, no login, nothing
+written.
+
+  - 2 of 26 talk to more than one project: 10 bkalot and 15 egod, each its own
+    project plus the hub.
+  - bkalot has no auth of its own -- app.js never calls /auth/v1; its only
+    database call is POST /rest/v1/zr_leads. So bieebmn's "confirm email"
+    setting does not reach a bkalot customer, who signs in through the shared
+    portal widget on the hub. The verdict recorded for 10 on 12/08 stands; the
+    route to it did not.
+  - 12 of 26 serve no Supabase key of their own at all -- the only key on the
+    page belongs to /auth-button.js.
+  - Rejected before reporting: the first version called 27 mechiron a registry
+    MISMATCH. That reference is .../storage/v1/object/public/design/
+    bkalot-theme.css -- a stylesheet, not a database. The script now classifies
+    references by what follows the domain.
+
+Not measured, and recorded as such: server-side Supabase calls behind a
+system's own API are invisible to a browser-level sweep, so core.projects is
+neither confirmed nor contradicted for 04/27/28 by this.
+
+No deploy: nothing shipped to a site. Test mode; protected systems (08, 09,
+bkalut-app, bkalot-admin, zr_*, NEDARIM3873) are not in the target list, and
+csj/csj_src/igud were not used as a source.
+
+Evidence QA/platform/multi-project-0812/ (README.md + _results.json),
+scripts/qa/multi-project-sweep.mjs is re-runnable, NEEDS_USER 0-alef-2 gets a
+re-check note.

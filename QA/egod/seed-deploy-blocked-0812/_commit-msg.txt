@@ -1,0 +1,25 @@
+15 egod: the fix for #167 has been ready for two days, and its only deploy path is closed
+
+#160 found that egod sits on a Lovable project and concluded #167 finally had a
+way to ship, because the same method had worked on mthbram an hour earlier. It
+does not. Four messages to the egod project - detailed down to one plain
+sentence, entirely different wordings - all came back "I cannot process this
+request as it may violate Lovable's content policy" with no file touched.
+
+A control message decided it: "Which files in this project define the main site
+header navigation?", sent in plan mode, was refused in the same words. The block
+is on the egod project (or its main thread), not on what I asked for. mthbram, in
+the same workspace, answered normally an hour before, so it is not the account.
+
+Two alternative routes were checked and ruled out: MCP Supabase on
+hkkkynyoigzlttpynoeo returns "You do not have permission to perform this action",
+and get_project exposes no linked GitHub repo, so there is no push-to-deploy.
+
+Production is therefore still open, and that is proven without calling it:
+Lovable's own copy of seed-demo-portals/index.ts is the ungated version, and
+Lovable is what deploys this project. No probe was sent, so no user was created,
+no password changed, and no lead written.
+
+Recorded as NEEDS_USER.md 0-yod-alef with the three-minute browser action, and
+#167's blocked_on now carries the measurement so the next beat does not spend
+credits rediscovering it.

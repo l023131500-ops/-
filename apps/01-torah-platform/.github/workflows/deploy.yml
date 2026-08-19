@@ -1,0 +1,25 @@
+name: Deploy
+on:
+  push:
+    branches: [main]
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm install && npm run build
+      - uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: root
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /var/www/torah-platform
+            /usr/bin/git pull origin main
+            npm install
+            npm run build
+            cp -r /var/www/torah-platform/dist/* /www/wwwroot/torah-platform.more30.com/
+            echo "Deploy done!"

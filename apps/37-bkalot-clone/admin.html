@@ -1,0 +1,2689 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>בקלות — ניהול פניות</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700&family=Frank+Ruhl+Libre:wght@500;700&display=swap" rel="stylesheet">
+<style>
+/* אותם tokens של הטופס הציבורי (apps/37-bkalot-clone/index.html) — אותה מערכת,
+   אותה זהות. מה ששונה כאן הוא הצפיפות: מסך עבודה ולא עמוד נחיתה. */
+:root{
+  --bg:#f6f5f1; --surface:#ffffff; --surface-2:#f0efe9;
+  --text:#171d1a; --text-soft:#4e5a54; --line:#dcdad1;
+  --brand:#0f5f4c; --brand-ink:#ffffff; --brand-soft:#e4f0eb;
+  --accent:#a8631f; --danger:#9b1c1c; --danger-soft:#fbeaea;
+  --r-sm:8px; --r-md:12px; --r-lg:18px;
+  --ring:0 0 0 3px rgba(15,95,76,.28);
+  --shadow:0 1px 2px rgba(23,29,26,.05), 0 8px 24px -12px rgba(23,29,26,.18);
+  --sp:8px;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#0e1412; --surface:#151d1a; --surface-2:#1c2622;
+    --text:#eaefec; --text-soft:#a3b0aa; --line:#2b3733;
+    --brand:#4bbf9f; --brand-ink:#08120f; --brand-soft:#16302a;
+    --accent:#d69850; --danger:#f08a8a; --danger-soft:#33191a;
+    --ring:0 0 0 3px rgba(75,191,159,.32);
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.7);
+  }
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{
+  background:var(--bg); color:var(--text);
+  font-family:"Assistant",system-ui,"Segoe UI",sans-serif;
+  font-size:16px; line-height:1.65; -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3{font-family:"Frank Ruhl Libre",Georgia,serif; line-height:1.25; margin:0}
+.wrap{max-width:1040px; margin:0 auto; padding:calc(var(--sp)*4) calc(var(--sp)*2.5) calc(var(--sp)*8)}
+.wrap.narrow{max-width:460px}
+.eyebrow{
+  display:inline-block; font-size:13px; font-weight:700;
+  color:var(--brand); background:var(--brand-soft);
+  padding:4px 12px; border-radius:999px; margin-bottom:calc(var(--sp)*1.5);
+}
+h1{font-size:clamp(24px,4vw,32px); font-weight:700}
+.lede{color:var(--text-soft); margin:calc(var(--sp)*1) 0 calc(var(--sp)*3); max-width:56ch; font-size:15px}
+.card{
+  background:var(--surface); border:1px solid var(--line);
+  border-radius:var(--r-lg); box-shadow:var(--shadow); padding:calc(var(--sp)*3);
+}
+.field{margin-bottom:calc(var(--sp)*2)}
+label{display:block; font-weight:600; margin-bottom:6px; font-size:15px}
+input,select,textarea{
+  width:100%; font:inherit; color:inherit; background:var(--surface-2);
+  border:1.5px solid var(--line); border-radius:var(--r-sm);
+  padding:10px 12px; transition:border-color .18s, box-shadow .18s;
+}
+input:focus,select:focus,textarea:focus{outline:none; border-color:var(--brand); box-shadow:var(--ring)}
+/* ── הצג סיסמה (§1א) ──
+   מאפיינים לוגיים ולא right/left: הדף כולו RTL, והכפתור צריך לשבת בקצה שאליו
+   הטקסט *אינו* מתחיל. הריפוד שומר שהתווים לא ייכנסו מתחתיו. */
+.pw-wrap{position:relative}
+.pw-wrap input{padding-inline-end:44px}
+.pw-toggle{
+  position:absolute; inset-inline-end:4px; top:50%; transform:translateY(-50%);
+  width:36px; height:36px; padding:0; display:grid; place-items:center;
+  background:transparent; border:0; border-radius:var(--r-sm);
+  color:var(--text-soft); cursor:pointer;
+}
+.pw-toggle:hover:not(:disabled){color:var(--text); opacity:1}
+.pw-toggle:active:not(:disabled){transform:translateY(-50%)}
+.pw-toggle svg{width:20px; height:20px; display:block}
+button{
+  font:inherit; font-weight:700; cursor:pointer;
+  background:var(--brand); color:var(--brand-ink); border:0;
+  border-radius:var(--r-sm); padding:11px 24px;
+  transition:opacity .18s, transform .18s cubic-bezier(.2,.7,.3,1);
+}
+button:hover:not(:disabled){opacity:.92}
+button:active:not(:disabled){transform:translateY(1px)}
+button:focus-visible{outline:none; box-shadow:var(--ring)}
+button:disabled{opacity:.55; cursor:progress}
+button.ghost{background:transparent; color:var(--brand); border:1.5px solid var(--line); font-weight:600; padding:9px 16px}
+[hidden]{display:none !important}
+.err{
+  margin:calc(var(--sp)*2) 0 0; border:1.5px solid var(--danger);
+  background:var(--danger-soft); border-radius:var(--r-md);
+  padding:calc(var(--sp)*1.5) calc(var(--sp)*2); font-size:15px;
+}
+.err b{color:var(--danger)}
+.code{font-family:ui-monospace,"Consolas",monospace; font-size:12.5px; color:var(--text-soft); direction:ltr; display:inline-block}
+/* ── סרגל עליון ── */
+.topbar{
+  display:flex; flex-wrap:wrap; gap:var(--sp); align-items:center; justify-content:space-between;
+  border-bottom:1px solid var(--line); padding-bottom:calc(var(--sp)*2); margin-bottom:calc(var(--sp)*3);
+}
+.who{font-size:14.5px; color:var(--text-soft)}
+.who b{color:var(--text)}
+/* ── מסננים ── */
+.filters{display:grid; gap:var(--sp); grid-template-columns:1fr 1fr 1fr 2fr auto; align-items:end; margin-bottom:calc(var(--sp)*2.5)}
+.filters .field{margin:0}
+@media (max-width:720px){ .filters{grid-template-columns:1fr 1fr} .filters .search{grid-column:1/-1} }
+.count{font-size:14.5px; color:var(--text-soft); margin:0 0 var(--sp)}
+/* אינה .err ואינה נצבעת באדום: לא קרתה תקלה, והחיפוש עשה בדיוק את מה שהתבקש. */
+.qnote{
+  font-size:14px; color:var(--text-soft); margin:0 0 var(--sp);
+  border-inline-start:3px solid var(--line); padding-inline-start:calc(var(--sp)*1.5);
+}
+/* ── רשימה ── */
+.rows{display:grid; gap:var(--sp)}
+.row{
+  width:100%; text-align:start; font:inherit; color:inherit; cursor:pointer;
+  background:var(--surface); border:1px solid var(--line); border-radius:var(--r-md);
+  padding:calc(var(--sp)*1.75) calc(var(--sp)*2); display:grid; gap:4px;
+  transition:border-color .18s, background .18s;
+}
+.row:hover{border-color:var(--brand); background:var(--surface-2)}
+.row:focus-visible{outline:none; box-shadow:var(--ring)}
+.row-top{display:flex; flex-wrap:wrap; gap:10px; align-items:center}
+.row-name{font-weight:700}
+.row-meta{font-size:14px; color:var(--text-soft); display:flex; flex-wrap:wrap; gap:12px}
+.tag{
+  font-size:12.5px; font-weight:700; border-radius:999px; padding:2px 10px;
+  background:var(--surface-2); border:1px solid var(--line); color:var(--text-soft);
+}
+.tag.kind{background:var(--brand-soft); border-color:transparent; color:var(--brand)}
+.empty{color:var(--text-soft); border:1px dashed var(--line); border-radius:var(--r-md); padding:calc(var(--sp)*3); text-align:center}
+.pager{display:flex; gap:var(--sp); align-items:center; justify-content:center; margin-top:calc(var(--sp)*2.5)}
+.pager span{font-size:14px; color:var(--text-soft)}
+/* ── פנייה בודדת ── */
+dl.kv{display:grid; grid-template-columns:auto 1fr; gap:4px 14px; margin:0 0 calc(var(--sp)*2.5); font-size:15px}
+dl.kv dt{color:var(--text-soft)}
+dl.kv dd{margin:0; font-weight:600}
+h3{font-size:18px; margin:calc(var(--sp)*3) 0 var(--sp)}
+table{width:100%; border-collapse:collapse; font-size:14.5px}
+th,td{text-align:start; padding:7px 10px; border-bottom:1px solid var(--line)}
+th{color:var(--text-soft); font-weight:600; font-size:13.5px}
+td.num{direction:ltr; text-align:start; font-family:ui-monospace,"Consolas",monospace; font-size:13px}
+/* הנימוק של המכריע. pre-wrap שומר שורות שהוא הקליד; overflow-wrap שובר מחרוזת
+   של 500 תווים בלי רווח אחד — כזו נמדדה ב-0091 — במקום למתוח את הטבלה. אין
+   חיתוך: התקרה נאכפת בכתיבה (0090) ולא כאן. */
+td.why{white-space:pre-wrap; overflow-wrap:anywhere; max-width:34ch}
+/* תיבת הנימוק. resize אנכי בלבד: אופקי היה מותח אותה מעבר לרוחב הכרטיס ב-RTL.
+   המונה יושב מתחתיה ולא בתוכה, ונצבע רק כשהמסד יסרב — ראו הכרעה (7). */
+.why-input{min-height:74px; resize:vertical; line-height:1.6}
+.why-count{font-size:13.5px; color:var(--text-soft); margin:6px 0 var(--sp)}
+.why-count.over{color:var(--danger); font-weight:700}
+.stale{color:var(--accent); font-size:12.5px; font-weight:700}
+/* המילה שהתאימה בתוך הנימוק. הצהוב של ברירת המחדל אינו של הערכה הזו, ולכן
+   mark נצבע מחדש; ולא בצבע בלבד — משקל ומתחת — כדי שגם מי שאינו מבחין בגוון
+   יראה שהקטע מסומן. הרקע לא מרחיב את השורה: padding אופקי בלבד. */
+mark.hit{
+  background:var(--brand-soft); color:var(--text); font-weight:700;
+  border-radius:4px; padding:0 2px; box-shadow:inset 0 -2px 0 var(--brand);
+}
+pre{
+  background:var(--surface-2); border:1px solid var(--line); border-radius:var(--r-sm);
+  padding:calc(var(--sp)*1.5); overflow:auto; direction:ltr; text-align:start;
+  font-size:12.5px; max-height:280px; margin:0;
+}
+.testmode{
+  margin-top:calc(var(--sp)*4); font-size:14px; color:var(--text-soft);
+  border-inline-start:3px solid var(--accent); padding-inline-start:12px;
+}
+/* ── הפקה והצגה של מסמך (שכבה 3) ── */
+.docbar{display:flex; flex-wrap:wrap; gap:var(--sp); align-items:center; margin-bottom:var(--sp)}
+.note{font-size:14px; color:var(--text-soft); margin:0 0 var(--sp)}
+.docview{
+  margin-top:calc(var(--sp)*2); background:var(--surface-2);
+  border:1px solid var(--line); border-radius:var(--r-md); padding:calc(var(--sp)*2);
+}
+.docview h3{margin-top:0}
+/* pre כללי כאן הוא ltr ומונוספייס — נכון ל-raw של הקליטה, שגוי לגוף מכתב בעברית. */
+.doc-text{
+  direction:rtl; text-align:start; white-space:pre-wrap; overflow:visible;
+  font-family:inherit; font-size:15px; line-height:1.7;
+  background:var(--surface); max-height:none;
+}
+.doc-html{
+  width:100%; height:420px; margin-top:var(--sp); background:#fff;
+  border:1px solid var(--line); border-radius:var(--r-sm);
+}
+.docview .doc-text{max-height:320px; overflow:auto}
+@media (prefers-reduced-motion:reduce){ *{transition:none !important} }
+</style>
+</head>
+<body>
+
+<!-- ── מסך הכניסה ─────────────────────────────────────────────────────────── -->
+<main class="wrap narrow" id="screen-login">
+  <span class="eyebrow">בקלות — עותק עבודה</span>
+  <h1>כניסה לניהול</h1>
+  <p class="lede">המסך מציג פניות שנקלטו בטופס, מפיק מהן את מכתב התשובה, מכניס אותו לתור ומעבד אותו בבדיקה. אין ממנו שום שליחה.</p>
+  <div class="card">
+    <form id="login-form" novalidate>
+      <div class="field">
+        <label for="email">דוא״ל</label>
+        <input id="email" name="email" type="email" autocomplete="username" dir="ltr" required>
+      </div>
+      <div class="field">
+        <label for="password">סיסמה</label>
+        <div class="pw-wrap">
+          <input id="password" name="password" type="password" autocomplete="current-password" required>
+          <!-- type="button" מפורש: בתוך <form> כפתור בלי type הוא submit, וכל
+               לחיצה על «הצג» הייתה שולחת את הטופס ומייצרת ניסיון כניסה. -->
+          <button id="pw-toggle" class="pw-toggle" type="button"
+                  aria-pressed="false" aria-controls="password"
+                  aria-label="הצג סיסמה" title="הצג סיסמה">
+            <svg id="pw-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M2 12s3.6-6.5 10-6.5S22 12 22 12s-3.6 6.5-10 6.5S2 12 2 12z" />
+              <circle cx="12" cy="12" r="2.8" />
+            </svg>
+            <svg id="pw-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" hidden>
+              <path d="M2 12s3.6-6.5 10-6.5c1.7 0 3.2.5 4.5 1.1M22 12s-1.3 2.4-3.9 4.2M12 18.5C5.6 18.5 2 12 2 12" />
+              <path d="M9.9 9.9a3 3 0 0 0 4.2 4.2" />
+              <path d="M3.5 3.5l17 17" />
+            </svg>
+          </button>
+        </div>
+      </div>
+      <button id="login-submit" type="submit">כניסה</button>
+    </form>
+    <div class="err" id="login-error" role="alert" hidden></div>
+  </div>
+  <!-- הנוסח משתנה בכל פעם שהוא חדל להיות נכון, ולא פעם אחת בסוף: קודם «המסמך
+       נשמר ואינו נכנס לתור», אחר כך «התור נעצר שם», ועכשיו יש גם מעבד. מה
+       שלא השתנה ולא ישתנה בלי אישור מפורש: אין מסלול יוצא. -->
+  <p class="testmode">מצב טסט: המסמך נשמר, נכנס לתור, ו«עבד עכשיו» מאמת את התוכן ואת היעד — ואינו שולח. אין במסך הזה שום מסלול יוצא: לא מייל, לא ואטסאפ ולא הקלטה.</p>
+</main>
+
+<!-- ── רשימת הפניות ──────────────────────────────────────────────────────── -->
+<main class="wrap" id="screen-list" hidden>
+  <div class="topbar">
+    <div>
+      <span class="eyebrow">בקלות — עותק עבודה</span>
+      <h1>פניות</h1>
+    </div>
+    <div class="who">מחובר: <b id="who-name">—</b> <button class="ghost" id="logout" type="button">יציאה</button></div>
+  </div>
+
+  <form class="filters" id="filters">
+    <div class="field">
+      <label for="f-status">סטטוס</label>
+      <select id="f-status"><option value="">הכול</option></select>
+    </div>
+    <div class="field">
+      <label for="f-kind">סוג</label>
+      <select id="f-kind"><option value="">הכול</option></select>
+    </div>
+    <div class="field">
+      <label for="f-decided">הכרעה ידנית</label>
+      <select id="f-decided" title="«לא נרשמה» הוא בדיוק מה שאין לו סימפטום ברשימה: פנייה יכולה לשבת ב«בטיפול» מפני שהטריגר קידם אותה בהפקת מסמך, בלי שאיש לחץ עליה"><option value="">הכול</option></select>
+    </div>
+    <div class="field">
+      <label for="f-sort">מיון</label>
+      <select id="f-sort" title="«מועד הכרעה» מסדר לפי הלחיצה האחרונה על הפנייה, ומי שאיש לא הכריע יורד לסוף הרשימה ואינו נעלם ממנה"><option value="">מועד פנייה — חדשה קודם</option></select>
+    </div>
+    <!-- ── מה התיבה הזו מחפשת ────────────────────────────────────────────────
+         התווית מנתה ארבעה שדות מאז שהתיבה נבנתה, ומאז 0096 החיפוש רץ על חמישה:
+         גם על טקסט הנימוקים שנכתבו ביומן ההכרעות. תווית שמונה שדות אינה תיאור
+         כללי אלא רשימה, ורשימה שחסר בה אחד היא טענה שגויה על מה שהמסך עושה —
+         לא ניסוח שהתיישן. שני קוראים נפגעים ממנה בשני כיוונים הפוכים: מי שזוכר
+         מילה מנימוק ולא את שם הפונה אינו מנסה כלל, ומי שכן הקליד וקיבל שורה
+         שהשם, הטלפון, המייל והמספר שלה אינם מכילים את מה שהקליד קורא תווית
+         שאומרת שהתאמה כזו אינה אפשרית — ואז השורה נראית כמו תקלה בסינון.
+         הסימן «נמצאה לפי הנימוק» (0096) עונה על כך בדיעבד ועל השורה עצמה;
+         התווית היא המקום היחיד שעונה על כך לפני ההקלדה.
+
+         שלוש הכרעות:
+
+         (1) «נימוק ביומן ההכרעות» ולא «טקסט» ולא «הכול». החיפוש אינו רץ על
+             cases.note ואינו רץ על שמות המכריעים — הכרעה (2) של 0096 עומדת
+             במקומה — ותווית רחבה הייתה שקר בכיוון השני, שגם אותו אי-אפשר לגלות
+             אלא בניסיון שנכשל בשקט.
+
+         (2) המשפט הארוך יושב ב-title של התיבה ולא בתווית. התווית נקראת בכל
+             טעינה של המסך והיא רשימה של שדות; הסייג — שהנימוק עצמו אינו מוצג
+             ברשימה ושהשורה שנמצאה כך מסומנת — נחוץ פעם אחת ולמי ששואל.
+
+         (3) ה-title על ה-input ולא על ה-label: הריחוף הטבעי הוא מעל התיבה שאל
+             תוכה מקלידים, והתווית מפנה אליה בלחיצה ממילא. -->
+    <div class="field search">
+      <label for="f-q">חיפוש — שם, טלפון, דוא״ל, מספר פנייה או נימוק ביומן ההכרעות</label>
+      <input id="f-q" type="text" autocomplete="off" title="החיפוש רץ גם על טקסט הנימוקים שנכתבו ביומן ההכרעות, ולא רק על פרטי הפונה. הוא אינו רץ על גוף הפנייה עצמה ולא על שמות המכריעים. שורה שעלתה בזכות נימוק מסומנת «נמצאה לפי הנימוק», והנימוק עצמו נקרא בתוך הפנייה">
+    </div>
+    <!-- הכפתור נקרא «הצג» ולא «סינון»: הוא מחיל גם את תיבת «מיון», שאינה מוציאה
+         ולו שורה אחת מהרשימה. מנהל ששינה מיון בלבד קרא «סינון» כשם של פעולה
+         שאינו ביקש, והמסך לא הציע לו שום דרך אחרת להחיל את הבחירה. -->
+    <div class="field"><button type="submit" id="f-go" title="מחיל את הסינון ואת המיון יחד, ומחזיר לעמוד הראשון">הצג</button></div>
+  </form>
+
+  <p class="count" id="count" role="status">—</p>
+  <!-- 0093 מנרמלת מונח חיפוש שנראה כמו טלפון אל ספרות בלבד, מפני שכך הטלפון
+       שמור. השורה הזו אומרת זאת: היא מופיעה רק כשהנרמול באמת שינה משהו, ואז
+       היא נוקבת במספר שלפיו חופש בפועל. בלעדיה שני מצבים נראים כמו תקלה —
+       שורה שנמצאה והטלפון בה כתוב אחרת ממה שהוקלד, ורשימה ריקה שאי-אפשר לדעת
+       אם היא «אין פנייה כזו» או «הקלדתי עם מקפים». -->
+  <p class="qnote" id="q-phone" role="status" hidden></p>
+  <!-- a795108 חתכה את העמוד שאין בו עוד שורות אל העמוד האחרון הקיים. השורה
+       הזו אומרת שזה מה שקרה: בלעדיה מספר העמוד משתנה לבד בין שתי טעינות, ומי
+       שראה «עמוד 2 מתוך 2» ופתאום רואה «עמוד 1 מתוך 1» אינו יודע אם הרשימה
+       התקצרה או שהמסך שכח היכן היה. היא מופיעה רק כשהחיתוך באמת קרה. -->
+  <p class="qnote" id="clamp-note" role="status" hidden></p>
+  <div class="rows" id="rows"></div>
+  <div class="empty" id="empty" hidden>אין פניות שתואמות את הסינון.</div>
+  <div class="err" id="list-error" role="alert" hidden></div>
+  <div class="pager" id="pager" hidden>
+    <button class="ghost" type="button" id="prev">הקודם</button>
+    <span id="page-label"></span>
+    <button class="ghost" type="button" id="next">הבא</button>
+  </div>
+</main>
+
+<!-- ── פנייה בודדת ───────────────────────────────────────────────────────── -->
+<main class="wrap" id="screen-case" hidden>
+  <div class="topbar">
+    <div>
+      <button class="ghost" type="button" id="back">חזרה לרשימה</button>
+    </div>
+    <div class="who">מחובר: <b id="who-name-2">—</b> <button class="ghost" id="logout-2" type="button">יציאה</button></div>
+  </div>
+  <h1 id="case-title">פנייה</h1>
+  <div class="card" id="case-body"></div>
+</main>
+
+<script>
+(() => {
+  "use strict";
+
+  // ── הכתובת והמפתח ─────────────────────────────────────────────────────────
+  // מפתח ה-anon ציבורי מעצם הגדרתו (verify_jwt=true מחייב אותו מהדפדפן) ואינו
+  // פותח דבר: ל-anon נשלל EXECUTE על שש הפונקציות, ו-bkalot_clone אינה חשופה
+  // ל-PostgREST כלל. הזהות האמיתית היא הטוקן, והוא בכותרת נפרדת.
+  const BASE = "https://uhnrgujbdxhhmoxcjria.supabase.co/functions/v1/bkalot-clone-admin";
+  const ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVobnJndWpiZHhoaG1veGNqcmlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMzNjE3MjgsImV4cCI6MjA5ODkzNzcyOH0.nHuOhw-WQEU17lNa7XOlORnBhVAYbJBHudKafWkSHBw";
+
+  // ⚠️ הטוקן חי כאן בלבד — לא localStorage, לא sessionStorage ולא cookie. זה
+  //    הדפוס שהועתק מהמקור (BKALOT_METHOD §6.2), ומשמעותו המעשית: רענון הדף
+  //    מנתק. זו הכרעה ולא חוסר — טוקן שיושב באחסון הדפדפן שורד סגירת לשונית
+  //    ונקרא בידי כל סקריפט שרץ באותו origin.
+  let token = null;
+  let admin = null;
+
+  // ── ניסוח ─────────────────────────────────────────────────────────────────
+  // כל העברית כאן ואין ולו מילה אחת ממנה בשרת. קוד שאין לו תרגום מוצג כפי
+  // שהוא ואינו נבלע מאחורי נוסח כללי, אחרת קוד חדש בשרת היה נעלם מהמסך.
+  const MESSAGES = {
+    credentials_required: "צריך דוא״ל וסיסמה.",
+    invalid_credentials:  "הדוא״ל או הסיסמה שגויים.",
+    account_locked:       "החשבון נעול זמנית אחרי חמישה ניסיונות שגויים. נסו שוב בעוד כמה דקות.",
+    account_disabled:     "החשבון הושבת. פנו למי שמנהל את המערכת.",
+    payload_invalid:      "הבקשה נשלחה בפורמט שגוי.",
+    token_required:       "הסשן הסתיים. התחברו מחדש.",
+    invalid_session:      "הסשן פג או בוטל. התחברו מחדש.",
+    case_not_found:       "הפנייה לא נמצאה. ייתכן שנמחקה.",
+    case_id_required:     "מספר הפנייה אינו תקין.",
+    template_unknown:     "התבנית שהתבקשה אינה קיימת במסד.",
+    template_disabled:    "התבנית שהתבקשה מנוטרלת ואינה מפיקה.",
+    render_empty:         "התבנית הפיקה מסמך ריק, ולכן לא נשמר דבר.",
+    document_id_required: "מזהה המסמך אינו תקין.",
+    document_not_found:   "המסמך לא נמצא. רעננו את הפנייה.",
+    // 0067 — שומרי הכניסה לתור. כל אחד מהם הוא סיבה אחרת, ולכן נוסח אחר:
+    // «לא נכנס» בלי לומר למה הוא בדיוק מה שמחזיר מנהל ללחוץ שוב ושוב.
+    no_consent:           "הנמען לא נתן הסכמה לקבלת דיוור. המסמך לא נכנס לתור.",
+    no_contact:           "לפנייה הזו אין איש קשר, ולכן אין למי לשלוח.",
+    no_address:           "אין לנמען כתובת דוא״ל. המסמך לא נכנס לתור.",
+    channel_unsupported:  "לסוג המסמך הזה אין עדיין ערוץ שליחה.",
+    document_empty:       "למסמך אין גוף שמור, ולכן אין מה להכניס לתור.",
+    queue_row_missing:    "המסמך מסומן כמי שבתור, ושורת התור עצמה חסרה. דווחו על כך.",
+    // 0070 — שומרי העיבוד. שלושה מהם (target_not_allowed, queue_body_empty,
+    // not_queued על שורה שכבר עובדה) אינם «לא הצליח» אלא «נבדק ונעצר», ולכן
+    // הנוסח אומר גם מה נעשה ולא רק מה לא. שניים מהם משנים את מצב השורה
+    // בדרך — ראו dispatch.
+    queue_id_required:    "מספר שורת התור אינו תקין.",
+    queue_row_not_found:  "שורת התור לא נמצאה. רעננו את הפנייה.",
+    not_a_clone_row:      "השורה אינה של השכפול. המעבד הזה אינו נוגע בשורות של מערכת אחרת.",
+    live_not_supported:   "אין בשכפול מסלול שליחה אמיתי. שורה שאינה במצב בדיקה אינה מעובדת.",
+    not_queued:           "השורה אינה ממתינה בתור, ולכן לא עובדה.",
+    target_not_allowed:   "היעד אינו ברשימת יעדי הבדיקה ברגע העיבוד. לא נשלח דבר, והשורה סומנה חסומה.",
+    queue_body_empty:     "הגוף בשורת התור ריק. אין מה לעבד, והשורה סומנה כנכשלה.",
+    status_unknown:       "הסטטוס שנבחר אינו מוכר. רעננו את הדף.",
+    // 0072 — הכרעת האדם. status_unknown ו-status_not_settable הם שני נוסחים
+    // שונים במכוון, כפי שהמסד מבחין ביניהם: הראשון הוא ערך שאינו בסכמה כלל,
+    // כלומר באג במסך; השני הוא ערך קיים שהמסד מסרב לכתוב, כלומר הכרעה. נוסח
+    // אחד לשניהם היה שולח מנהל לרענן דף על מצב שרענון אינו משנה בו דבר.
+    status_required:      "לא נבחר סטטוס.",
+    status_not_settable:  "הסטטוס הזה אינו נקבע ידנית מהמסך.",
+    // 0090 הכרעה (5): המסד סופר, דוחה ואינו חותך — והדחייה קודמת לכתיבה, כלומר
+    // הסטטוס נשאר בדיוק כפי שהיה. לכן הנוסח אומר את שניהם: מה לא נשמר וגם מה לא
+    // השתנה. «קצרו» ולא «נחתך» — החיתוך הוא בדיוק מה שלא קרה, והטקסט עומד בתיבה.
+    note_too_long:        "הנימוק ארוך מהמותר. הסטטוס לא שונה והנימוק לא נשמר — קצרו אותו ונסו שוב.",
+    // 0095. אחיו של note_too_long ולא אותו נוסח: שם יש נימוק והוא ארוך מדי, כאן
+    // אין נימוק כלל. שניהם דוחים לפני הכתיבה, ולכן שניהם אומרים «הסטטוס לא שונה»
+    // — וזה מה שמנהל שלחץ «דחייה» שואל ראשון.
+    //
+    // «דחייה בלבד» נאמר במפורש: התיבה משרתת שלושה כפתורים, ומנהל שיקרא «צריך
+    // נימוק» בלי המילה הזו ילמד שגם «בטיפול» ו«נסגרה» דורשים אחד — כלומר יקליד
+    // נימוק במקום שבו המסד אינו מבקש אותו, או יימנע מלחיצה.
+    //
+    // «לא נרשמה שורת יומן» נאמר כאן מאותה סיבה שהוא נאמר ב-decider_required, אבל
+    // הוא נכון כאן מסיבה אחרת: השער יושב אחרי היציאה המוקדמת של v_prev=v_status,
+    // כלומר הוא חל על מעבר אמיתי בלבד — ובמעבר אמיתי שנעצר, לא נכתבה שורה ולא
+    // השתנה סטטוס. דחייה חוזרת על פנייה שכבר נדחתה אינה מגיעה לכאן כלל.
+    note_required:        "דחייה חייבת נימוק. הסטטוס לא שונה ולא נרשמה שורת יומן — כתבו ב«למה» מה הביא לדחייה ונסו שוב.",
+    // 0092 הכרעות (4)(5). זהו הקוד היחיד כאן שהלוחץ עצמו אינו יכול לגרום לו
+    // ואינו יכול לתקן בגוף הבקשה: הזהות אינה נוסעת בגוף אלא נקבעת בשער (0076
+    // הכרעה (1)), והשער שולח null רק כשמה שחזר ממנו אינו מספר שלם בטוח. לכן
+    // הנוסח אומר מה חסר — «מי מכריע» ולא «תקלה» — ומפנה לדבר היחיד שבידי מי
+    // שמול המסך: כניסה מחדש, שמביאה זהות חדשה מהשער.
+    //
+    // ואינו נבלע ב-invalid_session ולא ב-token_required, אף ששלושתם נפתרים
+    // באותה פעולה: שם הסשן נגמר והבקשה לא נכנסה כלל, וכאן הבקשה עברה את השער
+    // והוחזרה מהמסד. מי שרואה «הסשן פג» על בקשה שהתקבלה אינו יודע אם הלחיצה
+    // תפסה, וזו בדיוק השאלה שהוא שואל.
+    //
+    // «לא נרשמה שורת יומן» נאמר ולא נלמד מהטבלה שמתחת: השער יושב עם שערי הקלט
+    // ולפני שנקראת הפנייה, ולכן הוא חל גם על ההכרעה החוזרת שאינה כותבת דבר —
+    // כלומר גם «כלום לא השתנה» וגם «כלום לא נרשם», ושניהם נכונים תמיד.
+    decider_required:     "הסשן לא מסר מי מכריע, ולכן הסטטוס לא שונה ולא נרשמה שורת יומן. צאו והתחברו מחדש ונסו שוב.",
+    kind_unknown:         "הסוג שנבחר אינו מוכר. רעננו את הדף.",
+    // 0081. אותו מעמד של status_unknown ו-kind_unknown: המסך שולח ערך מתוך
+    // תיבה סגורה, ולכן ערך שהמסד אינו מכיר הוא באג במסך ולא הכרעה של אדם.
+    decided_unknown:      "מצב ההכרעה שנבחר אינו מוכר. רעננו את הדף.",
+    // 0082. אותו מעמד בדיוק: המסך שולח מפתח מיון מתוך תיבה סגורה, ולכן ערך
+    // שהמסד אינו מכיר הוא באג במסך. הנוסח אינו מבטיח שהרשימה מוצגת ממוינת
+    // אחרת — הקריאה נכשלה כולה, ואין שורות על המסך.
+    sort_unknown:         "סדר המיון שנבחר אינו מוכר. רעננו את הדף.",
+    route_not_found:      "הכתובת שאליה פנינו אינה קיימת.",
+    method_not_allowed:   "הבקשה נשלחה בצורה שאינה נתמכת.",
+    body_not_json:        "הבקשה נשלחה בפורמט שגוי.",
+    body_not_object:      "הבקשה נשלחה בפורמט שגוי.",
+    body_too_large:       "הבקשה ארוכה מדי.",
+    server_misconfigured: "השירות אינו מוגדר כראוי כרגע.",
+    rpc_unreachable:      "לא הצלחנו להגיע לשירות. בדקו את החיבור ונסו שוב.",
+    rpc_failed:           "אירעה תקלה בשירות. נסו שוב בעוד רגע.",
+    rpc_bad_json:         "התקבלה תשובה שלא ניתן לקרוא.",
+    network:              "אין חיבור לשירות. בדקו את האינטרנט ונסו שוב.",
+    bad_response:         "התקבלה תשובה שלא ניתן לקרוא. נסו שוב בעוד רגע.",
+  };
+  // הערכים הם אלה שנאכפים ב-0060 (c_statuses / c_kinds); שרת שיוסיף ערך יחזיר
+  // אותו כאן כפי שהוא ולא יוצג ריק.
+  const STATUSES = [["new","חדשה"],["in_progress","בטיפול"],["sent","נשלחה"],["closed","נסגרה"],["rejected","נדחתה"]];
+  const KINDS = [["info","מידע"],["reminder","תזכורת"],["treatment","טיפול מלא"]];
+  // שני הערכים ש-0081 מתירה, ובאותם שמות בדיוק ('no'/'yes' — לא true/false ולא
+  // 'undecided'). «לא נרשמה» ראשון מפני שזו השאלה שבגללה הסינון נבנה: מי לא
+  // נלקח. הנוסח אינו «לא הוכרעה» — הכרעה של הצגת השורה עצמה, שהמסך כבר עשה
+  // בשני מקומות אחרים: פנייה שהטריגר קידם בהפקת מסמך אינה «לא טופלה», והיא
+  // בדיוק מה שנופל תחת 'no'. הסינון הוא על decided_at ולכן על הלחיצה, לא על
+  // הסטטוס.
+  const DECIDED = [["no","לא נרשמה"],["yes","נרשמה"]];
+  // 0082 מתירה שני ערכים, 'created_at' ו-'decided_at', ומחרוזת ריקה היא סדר
+  // ברירת המחדל — שהוא created_at עצמו. לכן התיבה מציעה מפתח אחד בלבד:
+  // אופציה שנייה בשם «מועד פנייה» שהייתה שולחת 'created_at' במפורש מציגה
+  // לאדם שתי בחירות שאין ביניהן הבדל, ומחרוזת ריקה כבר אומרת בדיוק את זה.
+  // «חדשה קודם» ו«אחרונה קודם» נכתבים בתווית מפני ששני המיונים יורדים, ואין
+  // מפתח כיוון — סדר עולה אינו קיים בשרת ולכן אינו מוצע כאן.
+  const SORTS = [["decided_at","מועד הכרעה — אחרונה קודם"]];
+  // אותן תוויות של הטופס הציבורי ושל מערכת 10 — אותו אדם רואה את אותו שם.
+  const SITUATIONS = {
+    young_single:"צעיר/רווק עצמאי", student:"סטודנט/ית", engaged:"מאורסים / לפני חתונה",
+    married_no_kids:"זוג נשוי ללא ילדים", family_1_3:"משפחה עם 1–3 ילדים",
+    family_4plus:"משפחה ברוכת ילדים (4+)", family_grown_kids:"משפחה עם ילדים בוגרים",
+    single_parent:"הורה יחיד / חד-הורי", pre_retirement:"לקראת פרישה",
+    seniors:"גיל הזהב / פנסיונרים", unemployed:"מובטל / מחפש עבודה",
+    low_income:"הכנסה נמוכה / קושי כלכלי", self_employed:"עצמאי / בעל עסק",
+    property_owner:"בעל דירה / משקיע נדל״ן", new_immigrant:"עולה חדש / תושב חוזר ותיק",
+    reserves:"לוחם/ת מילואים", idf_disabled:"נכה צה״ל / נפגע פעולות איבה",
+    disability:"נכות כללית / מוגבלות", special_needs_child:"הורה לילד עם צרכים מיוחדים",
+    widow_survivor:"אלמן/ה / משפחה שכולה / שאירים", holocaust_survivor:"ניצול/ת שואה",
+    work_injury:"נפגע/ת עבודה / תאונת עבודה", released_prisoner:"אסיר משוחרר / שיקום",
+    conflict_zone:"תושב עוטף עזה / קו עימות",
+  };
+  const label = (map, v) => (v == null || v === "" ? "—" : (map[v] ?? v));
+  const fromPairs = (pairs) => Object.fromEntries(pairs);
+  const STATUS_MAP = fromPairs(STATUSES);
+  const KIND_MAP = fromPairs(KINDS);
+  // ששת הערכים ש-outbound_queue_status_check מתיר. «בתור» לבדו נקרא כמו מכתב
+  // שבדרך, ושורת השכפול נכנסת עם max_attempts=0 ואינה נעה עד שאדם לוחץ «עבד
+  // עכשיו». לכן הנוסח אומר גם מה שלא קרה.
+  //
+  // skipped אינו «דולג» כאן: זה המצב הסופי שאליו 0070 מביאה שורה שעובדה
+  // בהצלחה — התוכן אומת, היעד אושר ושום הודעה לא יצאה. «דולג» היה נקרא כמו
+  // שורה שאיש לא נגע בה, וזה ההפך הגמור ממה שקרה לה.
+  const QUEUE_STATUS = {
+    queued:"בתור — טרם נשלח", sending:"בשליחה", sent:"נשלח",
+    failed:"נכשל", skipped:"עובד בבדיקה — לא נשלח", blocked:"חסום — לא יישלח",
+  };
+  // מצב שאין ממנו דרך חזרה בלי אדם: הוא נצבע ואינו נבלע בשורה.
+  const QUEUE_BAD = new Set(["blocked", "failed"]);
+
+  const $ = (id) => document.getElementById(id);
+  const PAGE = 20;
+  let offset = 0, total = 0, lastFilters = {};
+  // המספר שלפיו השרת חיפש בפועל (0093), או null כשהמונח לא נורמל. הוא יושב כאן
+  // ולא נקרא מתוך render מפני ש-render מקבלת שורות בלבד — כמו total ו-offset.
+  let qPhone = null;
+  // כמה פניות יש בתור כולו (0099), או null כשלא נשאלה שאלה — כלומר כשאין ולו
+  // סינון אחד, ואז total הוא כבר המספר הזה. undefined הוא מצב שלישי: שרת מלפני
+  // 0099, שאינו מחזיר את המפתח כלל. הוא יושב כאן ליד qPhone ומאותה סיבה בדיוק:
+  // render מקבלת שורות בלבד. אין לו איפוס במסלול השגיאה — שם המונה כולו נמחק
+  // ל«—», ולכן אין ערך ישן שאפשר לצייר.
+  let queueTotal;
+  // a795108 החזירה את מי שסיים לעבוד את התור אל העמוד האחרון הקיים, ועשתה זאת
+  // בשקט: מספר העמוד קפץ בלי שנאמר למה. clampNote מחזיק את מה שיש לומר על
+  // הקפיצה — {from,to} — ו-null כשלא הייתה קפיצה. הוא יושב כאן ליד qPhone
+  // ומאותה סיבה: render מקבלת שורות בלבד, והציור כולו במקום אחד.
+  let clampNote = null;
+
+  function say(code, extra) {
+    const text = MESSAGES[code] ?? null;
+    return text ? text : `שגיאה שאינה מוכרת למסך הזה: ${code || "—"}${extra ? " · " + extra : ""}`;
+  }
+  function showError(el, code, extra) {
+    el.innerHTML = "";
+    const b = document.createElement("b");
+    b.textContent = say(code, extra);
+    el.append(b);
+    if (MESSAGES[code]) {
+      const c = document.createElement("span");
+      c.className = "code";
+      c.textContent = " " + code;
+      el.append(document.createElement("br"), c);
+    }
+    el.hidden = false;
+  }
+  const fmtDate = (iso) => {
+    if (!iso) return "—";
+    const d = new Date(iso);
+    return Number.isNaN(d.getTime()) ? iso
+      : d.toLocaleString("he-IL", { day:"2-digit", month:"2-digit", year:"numeric", hour:"2-digit", minute:"2-digit" });
+  };
+
+  // ── ספירה בעברית ──────────────────────────────────────────────────────────
+  // «1 פניות» הוא בדיוק הניסוח שהמשתמש קורא לו ריח של AI, ומונה הרשימה סופר
+  // נכון מאז שנכתב. השורות שמתחתיו לא — «1 זכויות» ו«1 מסמכים» יושבות באותו
+  // מסך, שתי שורות מתחת למונה שכן סופר, וזו אינה הערת ניסוח: פנייה עם זכות
+  // אחת היא בדיוק הפנייה שכדאי להסתכל בה פעמיים, ומסמך אחד הוא המצב הרגיל.
+  //
+  // צורה אחת ליחיד ומספר לכל השאר — בדיוק כמו many() שהיה כאן, ולא צורת זוגי
+  // («שני מסמכים»). צורת זוגי הייתה מחייבת גם מין דקדוקי לכל שם עצם, ומונה
+  // הפניות שמעל היה נשאר בצורה אחרת מהשורות שמתחתיו; נוסח אחד לכל המסך.
+  const countHe = (n, one, plural) => (n === 1 ? one : `${n} ${plural}`);
+
+  // ── קריאה אחת אל השרת ─────────────────────────────────────────────────────
+  // 401 אינו שגיאה שמוצגת ברשימה אלא מצב: הסשן נגמר, ולכן המסך חוזר לכניסה.
+  // זו בדיוק ההבחנה ש-#224 קנה כשהחזיר 401 ולא 200 על נפילת שער.
+  async function call(action, body) {
+    const headers = { "content-type": "application/json", apikey: ANON_KEY, authorization: `Bearer ${ANON_KEY}` };
+    if (token) headers["x-admin-token"] = token;
+    let res;
+    try {
+      res = await fetch(`${BASE}/${action}`, { method: "POST", headers, body: JSON.stringify(body || {}) });
+    } catch {
+      return { ok: false, error: "network" };
+    }
+    let data;
+    try { data = await res.json(); } catch { return { ok: false, error: "bad_response" }; }
+    if (res.status === 401 && action !== "login") {
+      token = null; admin = null;
+      return { ok: false, error: data?.error || "invalid_session", expired: true };
+    }
+    return data;
+  }
+
+  function show(which) {
+    for (const id of ["screen-login", "screen-list", "screen-case"]) $(id).hidden = (id !== which);
+  }
+  // ── הצג סיסמה (§1א) ──
+  function showPassword(on) {
+    $("password").type = on ? "text" : "password";
+    $("pw-toggle").setAttribute("aria-pressed", on ? "true" : "false");
+    const text = on ? "הסתר סיסמה" : "הצג סיסמה";
+    $("pw-toggle").setAttribute("aria-label", text);
+    $("pw-toggle").title = text;
+    // toggleAttribute ולא .hidden: המאפיין hidden מוגדר על HTMLElement בלבד,
+    // ועל אלמנט SVG ההשמה יוצרת שדה JS שאינו משפיע על התצוגה — האייקון היה
+    // נשאר «עין» גם כשהסיסמה גלויה.
+    $("pw-eye").toggleAttribute("hidden", on);
+    $("pw-eye-off").toggleAttribute("hidden", !on);
+  }
+  $("pw-toggle").addEventListener("click", () => {
+    showPassword($("pw-toggle").getAttribute("aria-pressed") !== "true");
+    $("password").focus();
+  });
+  // ניקוי השדה מחזיר גם את המצב: סשן שנגמר בזמן שהסיסמה גלויה היה משאיר את
+  // הסיסמה *הבאה* על המסך בלי שאיש ביקש זאת.
+  function clearPassword() {
+    $("password").value = "";
+    showPassword(false);
+  }
+
+  function toLogin(code) {
+    show("screen-login");
+    clearPassword();
+    if (code) showError($("login-error"), code);
+    $("email").focus();
+  }
+
+  // ── כניסה ─────────────────────────────────────────────────────────────────
+  for (const [v, t] of STATUSES) $("f-status").append(new Option(t, v));
+  for (const [v, t] of KINDS) $("f-kind").append(new Option(t, v));
+  for (const [v, t] of DECIDED) $("f-decided").append(new Option(t, v));
+  for (const [v, t] of SORTS) $("f-sort").append(new Option(t, v));
+
+  $("login-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    $("login-error").hidden = true;
+    $("login-submit").disabled = true;
+    $("login-submit").textContent = "בודק…";
+    const data = await call("login", { email: $("email").value, password: $("password").value });
+    $("login-submit").disabled = false;
+    $("login-submit").textContent = "כניסה";
+    if (!data || data.ok !== true) {
+      showError($("login-error"), data?.error || "bad_response");
+      clearPassword();
+      return;
+    }
+    token = data.token;
+    admin = data.admin || null;
+    clearPassword();
+    $("who-name").textContent = admin?.full_name || admin?.email || "—";
+    $("who-name-2").textContent = $("who-name").textContent;
+    offset = 0;
+    show("screen-list");
+    await load();
+  });
+
+  async function doLogout() {
+    // אידמפוטנטי בשרת, ולכן המסך אינו ממתין לתוצאה כדי לשחרר את הטוקן: יציאה
+    // שנתקעת על שגיאת רשת היא בדיוק המסך שהמשתמש אינו יכול לצאת ממנו.
+    const t = token;
+    token = null; admin = null;
+    toLogin(null);
+    $("login-error").hidden = true;
+    if (t) { try { await fetch(`${BASE}/logout`, { method: "POST", headers: { "content-type": "application/json", apikey: ANON_KEY, authorization: `Bearer ${ANON_KEY}`, "x-admin-token": t }, body: "{}" }); } catch { /* המסך כבר יצא */ } }
+  }
+  $("logout").addEventListener("click", doLogout);
+  $("logout-2").addEventListener("click", doLogout);
+
+  // ── הרשימה ────────────────────────────────────────────────────────────────
+  $("filters").addEventListener("submit", (e) => { e.preventDefault(); offset = 0; load(); });
+  $("prev").addEventListener("click", () => { offset = Math.max(0, offset - PAGE); load(); });
+  $("next").addEventListener("click", () => { offset += PAGE; load(); });
+
+  // reclamped: קריאה שנייה ויחידה אחרי שהעמוד שנתבקש התברר כמעבר לסוף הרשימה.
+  // ראה הכרעה (4) למטה — היא זו שמונעת לולאה.
+  async function load(reclamped) {
+    $("list-error").hidden = true;
+    $("count").textContent = "טוען…";
+    // הניקוי על הטעינה שאדם ביקש בלבד, ולא על load(true): טעינת החיתוך היא
+    // ההמשך של אותה לחיצה, וניקוי בה היה מוחק את ההודעה באותו רגע שנכתבה.
+    // כל טעינה אחרת — סינון, «הבא», «הקודם», חזרה מפנייה — מוחקת אותה, מפני
+    // שהיא מתארת קפיצה שקרתה בטעינה הקודמת ולא במה שעל המסך עכשיו.
+    if (!reclamped) clampNote = null;
+    // decided נשלח כמפתח רביעי ולא כערך שנדחס לתוך status: 0081 מסננת על
+    // decided_at, ו-status הוא שאלה אחרת — פנייה ב«בטיפול» יכולה להיות משני
+    // הצדדים של הסינון הזה. השרת מתעלם ממחרוזת ריקה (nullif), ולכן «הכול»
+    // נשלח כפי שהוא ואינו נדרש לתנאי כאן.
+    // sort יושב באותו אובייקט אבל אינו סינון: הוא אינו מוציא ולו שורה אחת
+    // מהרשימה, רק מסדר אותה. הוא נשלח מכאן ולא מתוך מטפל נפרד מפני שהעמוד
+    // נחתך בשרת — 0082 ממיינת לפני ה-limit, ולכן שינוי מיון חייב לעבור באותה
+    // קריאה שמביאה את העמוד, ומאותה סיבה «הצג» מאפס את offset גם עבורו.
+    lastFilters = { status: $("f-status").value, kind: $("f-kind").value, decided: $("f-decided").value, sort: $("f-sort").value, q: $("f-q").value.trim() };
+    const data = await call("cases", { ...lastFilters, limit: PAGE, offset });
+    if (!data || data.ok !== true) {
+      if (data?.expired) return toLogin(data.error);
+      // רענון שנכשל השאיר עד כה את השורות הישנות על המסך: המונה אמר «—» והייתה
+      // שורת שגיאה, אבל השורות עצמן נשארו — ושורה על המסך נקראת כנתון שהמסך
+      // בדיוק הביא. החמור מכולם הוא סינון שנכשל: השורות עונות על הסינון הקודם
+      // בעוד שתיבות הסינון כבר מציגות את החדש, כלומר הן מציגות עצמן כתשובה
+      // לשאלה שלא נשאלה. הן נמחקות, ומה שנשאר על המסך הוא שורת השגיאה בלבד.
+      $("rows").innerHTML = "";
+      // «אין פניות שתואמות את הסינון» נשארת מוסתרת: «לא ידוע» אינו «אין».
+      $("empty").hidden = true;
+      // הדפדוף נסגר — total ו-offset מתארים טעינה שאינה על המסך עוד, ו«הבא»
+      // שנלחץ על מספרים ישנים מקדם את offset אל מעבר לרשימה שלא נטענה.
+      $("pager").hidden = true;
+      $("count").textContent = "—";
+      // שורת הטלפון נסגרת עם השורות: היא מתארת חיפוש שתוצאתו אינה על המסך עוד,
+      // ומעל שורת שגיאה היא נקראת כאילו החיפוש הזה כן רץ והחזיר את מה שרואים.
+      qPhone = null;
+      $("q-phone").hidden = true;
+      // אותו נימוק בדיוק, ולכן אותו טיפול: ההודעה מתארת קפיצה בין שני עמודים
+      // שאינם על המסך עוד. מעל שורת שגיאה היא נקראת כאילו החיתוך הוא הסיבה.
+      clampNote = null;
+      $("clamp-note").hidden = true;
+      showError($("list-error"), data?.error || "bad_response");
+      return;
+    }
+    if (data.admin) {
+      admin = data.admin;
+      $("who-name").textContent = admin.full_name || admin.email || "—";
+      $("who-name-2").textContent = $("who-name").textContent;
+    }
+    total = data.total ?? 0;
+    offset = data.offset ?? offset;
+    // ?? null ולא ||: השרת מחזיר מחרוזת או null, ומחרוזת ריקה אינה ערך שהוא
+    // מחזיר — הבדיקה בהמשך היא על מה שיש, ולא על מה שאולי יגיע.
+    qPhone = data.q_phone ?? null;
+    // Object.hasOwn ולא ?? null: null הוא ערך שהשרת מחזיר במפורש («לא סוננה»),
+    // ומפתח חסר הוא שרת שאינו יודע לענות. שניהם היו נבלעים ל-null באותה שורה.
+    queueTotal = Object.hasOwn(data, "queue_total") ? data.queue_total : undefined;
+    const cases = data.cases || [];
+    // הרשימה מתקצרת בשרת בין שתי טעינות, ו-offset נשאר על העמוד שכבר אין לו
+    // שורות. הדרך שבה זה קורה היא הדרך הרגילה לעבוד: סינון לפי סטטוס, «הבא»
+    // אל העמוד האחרון, טיפול בפנייה האחרונה שבו — ובחזרה מהפנייה (load עם אותו
+    // offset, ראה «חזרה לרשימה מרעננת אותה») היא כבר אינה עונה על הסינון,
+    // ה-total ירד מתחת ל-offset והשרת מחזיר אפס שורות. אז המסך אמר בעת ובעונה
+    // אחת «‎N פניות · מוצגות 0», «אין פניות שתואמות את הסינון» ו«עמוד 2 מתוך 1»
+    // — כלומר מי שסיים לעבוד את התור ראה שהוא ריק בזמן ש-N פניות ממתינות בו.
+    //
+    // חמש הכרעות: (1) על התשובה ולא על הלחיצה — הלקוח אינו יכול לדעת מתי
+    // הרשימה התקצרה בשרת, והרגע היחיד שבו הוא יודע ש-offset מעבר לסוף הוא
+    // תשובה עם total>0 ואפס שורות. (2) אל העמוד האחרון הקיים ולא אל הראשון —
+    // מי שהגיע לסוף התור עבד שם, והעמוד הסמוך לו הוא המקום שאליו הוא חוזר.
+    // (3) רק כש-total>0: total=0 עם אפס שורות הוא «אין פניות שתואמות את
+    // הסינון» עצמו, וזו תשובה נכונה שאין לגעת בה. (4) פעם אחת בלבד — אם גם
+    // הטעינה השנייה חוזרת ריקה (הרשימה התקצרה שוב בין השתיים), המסך מציג את
+    // המצב כפי שהוא ואינו רודף אחריו. (5) לא במסלול השגיאה: שם הדפדוף נסגר
+    // ו-total ו-offset מתארים טעינה שאינה על המסך עוד.
+    if (cases.length === 0 && total > 0 && offset > 0 && !reclamped) {
+      // שני המספרים נלקחים משני צדי ההשמה ולא מחושבים מחדש ב-render: אחרי
+      // load(true) ה-total עשוי לרדת שוב, ו«מעמוד N» היה נקרא אז מרשימה
+      // שאינה זו שממנה קפצנו.
+      const from = Math.floor(offset / PAGE) + 1;
+      offset = (Math.ceil(total / PAGE) - 1) * PAGE;
+      clampNote = { from, to: Math.floor(offset / PAGE) + 1 };
+      return load(true);
+    }
+    render(cases);
+  }
+
+  function render(cases) {
+    const rows = $("rows");
+    rows.innerHTML = "";
+    const many = (n) => countHe(n, "פנייה אחת", "פניות");
+    // ── המונה מדבר על התור כולו בזמן שהוא סופר את הסינון ────────────────────
+    // total חוזר מהשרת אחרי הסינון — 0081 סופרת את מה שעונה על התנאים ולא את
+    // הטבלה — והשורה הזו ציירה אותו כמשפט על התור: «אין פניות» ו«20 פניות».
+    // שני המשפטים נכונים על הסינון ושגויים על התור, ואין על המסך דבר שמבחין
+    // ביניהם: תיבות הסינון מציגות את הבחירה אבל אינן אומרות שהמספר שמתחתן הוא
+    // תוצאה שלה. a795108 סגרה את המצב שבו המסך אומר «אין» על תור מלא בגלל
+    // offset שנשאר מאחור; זה אותו משפט בדיוק מסיבה שנייה — סינון פעיל — והוא
+    // נשאר שם. הבקרה של a795108 מדדה אותו במפורש: סינון «נשלחה» על תור שיש
+    // בו פניות החזיר «אין פניות», והשורה נרשמה כמצב תקין.
+    //
+    // ארבע הכרעות:
+    //
+    // (1) המיון אינו סינון ואינו נספר כאן. הוא אינו מוציא ולו שורה אחת
+    //     מהרשימה — אותה הבחנה שבגללה הכפתור נקרא «הצג» ולא «סינון» — ומונה
+    //     שהיה אומר «תואמות את הסינון» אחרי שינוי מיון בלבד היה מייחס למספר
+    //     צמצום שלא קרה.
+    //
+    // (2) הנוסח אינו נוקב במספר התור. השרת מחזיר total אחד — של הסינון — ואין
+    //     למסך מאין לדעת כמה פניות יש בסך הכול. «מתוך N» כאן היה מספר מומצא,
+    //     ולכן נאמר שהמספר הוא של הסינון ולא כמה נשארו מחוץ לו.
+    //     ⚠️ ההכרעה הזו נכתבה כשהיא הייתה נכונה ואינה נכונה עוד: 0099 מחזירה
+    //     queue_total, והמסך שסירב לצייר מספר שאין לו — מצייר אותו מעכשיו.
+    //     היא נשארת כתובה כאן מפני שהיא הסיבה שהמספר לא היה כאן עד היום.
+    //
+    // (3) גם על אפס וגם על מספר. «אין פניות שתואמות את הסינון» חוזר על מה
+    //     שכתוב בתיבה שמתחת, ובכוונה: המונה הוא role="status" — הוא זה שמוקרא
+    //     בקול אחרי «הצג» — ותיבת ה-empty אינה אזור סטטוס ואינה מוקראת כלל.
+    //
+    // (4) «מוצגות N» נשאר צמוד ואינו נכפל: הוא מתאר את חיתוך העמוד, שאינו
+    //     תלוי בשאלה אם יש סינון.
+    const filtered = !!(lastFilters.status || lastFilters.kind || lastFilters.decided || lastFilters.q);
+    // המקור היחיד למשפט הריק — המונה כאן והתיבה שמתחת לרשימה. ההערה שמעל
+    // התיבה מסבירה למה שתי המחרוזות אינן רשאיות להיכתב פעמיים.
+    const noneText = filtered ? "אין פניות שתואמות את הסינון" : "אין פניות";
+    const head = total === 0
+      ? noneText
+      : (filtered ? `${many(total)} ${total === 1 ? "תואמת" : "תואמות"} את הסינון` : many(total));
+    // ── «2 תואמות את הסינון» ו«2 מתוך 4» הן שתי הודעות שונות ────────────────
+    // המונה למד לומר «תואמות את הסינון» (68785e9) ועדיין לא ידע מתוך מה: 2 מתוך
+    // 4 ו-2 מתוך 900 נראים על המסך אותו הדבר בדיוק. הקצה החמור הוא אפס — סינון
+    // «נשלחה» על תור שיש בו ארבע החזיר «אין פניות שתואמות את הסינון», משפט
+    // שנכון על הסינון ואינו מבחין בין «יש תור ואף פנייה בו אינה נשלחה» ל«התור
+    // ריק». 0099 נתנה את המספר, וזו השורה שמציירת אותו.
+    //
+    // ארבע הכרעות:
+    //
+    // (1) רק כשיש מספר. typeof ולא ערך אמיתי: undefined הוא שרת מלפני 0099
+    //     ו-null הוא «לא סוננה», ובשניהם המסך נשאר מילה במילה מה שהיה. אפס
+    //     כן מצויר — «בתור אין פניות» מול «אין פניות שתואמות את הסינון» הוא
+    //     בדיוק ההפרש שהמספר הזה קיים בשבילו.
+    //
+    // (2) אחרון ואינו נכנס לתוך head: «מוצגות N» נשאר צמוד למספר שהוא מתאר —
+    //     הכרעה (4) שמעל — וסדר הקריאה הולך מהצר אל הרחב: הסינון, העמוד, התור.
+    //
+    // (3) «בתור» ולא «מתוך»: המונה מדבר על התור כולו, וגם כשהסינון לא הוציא
+    //     ולו שורה אחת («4 · בתור 4») המשפט נשאר נכון. «מתוך» היה נקרא כאילו
+    //     המספר השני תמיד גדול מהראשון.
+    //
+    // (4) אותו many() של השורה שמעל — «פנייה אחת» ולא «1 פניות», ובאותו נוסח.
+    const queueBit = typeof queueTotal === "number" ? ` · בתור ${many(queueTotal)}` : "";
+    $("count").textContent = (total === cases.length ? head : `${head} · מוצגות ${cases.length}`) + queueBit;
+    if (queueBit) $("count").title = "המספר הראשון הוא של הפניות שעונות על הסינון, ו«בתור» הוא כל הפניות שבמערכת — כולל אלה שהסינון הוציא. המיון אינו מוציא שורות ואינו משפיע על אף אחד מהשניים";
+    else if (filtered) $("count").title = "המספר הוא של הפניות שעונות על הסינון ולא של התור כולו. כמה פניות יש בסך הכול אינו ידוע למסך — השרת מחזיר את המניין שאחרי הסינון. המיון אינו מוציא שורות ואינו משפיע על המספר";
+    else $("count").removeAttribute("title");
+    // ── התיבה הריקה אומרת «תואמות את הסינון» גם כשאין סינון ─────────────────
+    // הטקסט של התיבה נכתב פעם אחת ב-HTML (admin.html:304) ומאז לא זז: השורה
+    // שמעליה מחשבת אותו מחדש בכל טעינה, והתיבה מדפיסה מחרוזת קבועה. 68785e9
+    // תיקנה את המונה כך שיבחין בין «אין פניות» ל«אין פניות שתואמות את הסינון»,
+    // והכרעה (3) שלה אמרה במפורש שהמונה חוזר על מה שכתוב בתיבה שמתחת — אבל
+    // התיבה נשארה במשפט אחד. התוצאה היא שעל תור ריק בלי סינון כלל, שני
+    // המשפטים יושבים זה מעל זה וסותרים: המונה אומר «אין פניות» והתיבה אומרת
+    // «אין פניות שתואמות את הסינון.» — כלומר המסך מייחס את הריקנות לבחירה
+    // שהמנהל לא עשה, ומי שקורא את התיבה מחפש סינון לנקות שאינו קיים.
+    //
+    // שלוש הכרעות:
+    //
+    // (1) מחושב פעם אחת ונקרא בשני המקומות. שתי מחרוזות באותו נוסח בשני קבצים
+    //     — אחת ב-HTML ואחת ב-JS — הן בדיוק מה שהוליד את הסתירה הזו, ותיקון
+    //     שהיה מעתיק את התנאי במקום לחלוק אותו היה מוליד אותה שוב בפעימה
+    //     הבאה. noneText הוא המקור היחיד לשני המשפטים.
+    //
+    // (2) מצב שלישי ולא שניים. התיבה נדלקת על אפס שורות בעמוד, ולא על תור
+    //     ריק: total>0 עם אפס שורות הוא מסלול החיתוך של a795108 אחרי שגם
+    //     הטעינה השנייה חזרה ריקה, ושם «אין פניות» הוא שקר מול המונה שאומר
+    //     באותו רגע «N פניות · מוצגות 0». הענף הזה נכתב ולא נמדד מדפדפן —
+    //     הוא דורש שהרשימה תתקצר פעמיים בין שתי טעינות.
+    //
+    // (3) הטקסט נכתב ב-textContent ובנקודה בסוף, כמו שהיה. התיבה אינה
+    //     role="status" ואינה מוקראת (הכרעה (3) של 68785e9), ולכן היא נשארת
+    //     מה שהייתה — הד נראה — ורק מפסיקה לומר דבר שאינו נכון.
+    const emptyBox = $("empty");
+    emptyBox.hidden = cases.length > 0;
+    if (!emptyBox.hidden) {
+      emptyBox.textContent = total === 0 ? `${noneText}.` : "בעמוד הזה לא נשארו פניות.";
+    }
+    // השורה נשארת גם כשהרשימה ריקה, ושם היא שווה יותר מאשר מעל שורות: «אין
+    // פנייה כזו» ו«הקלדתי עם מקפים» נראים על המסך אותו הדבר בדיוק, והמספר הזה
+    // הוא הדבר היחיד שמכריע ביניהם. המספר מוצג ולא מתואר — «נורמלנו את המונח»
+    // אינו אומר למנהל לפי מה חופש, והוא זה שצריך להחליט אם זה הטלפון שהתכוון.
+    const qn = $("q-phone");
+    qn.textContent = "";
+    qn.hidden = qPhone === null;
+    if (qPhone !== null) {
+      const num = document.createElement("span");
+      num.className = "code";
+      num.textContent = qPhone;
+      // המספר בסוף המשפט ובלי סימן פיסוק אחריו: הוא רץ משמאל לימין בתוך שורה
+      // עברית, ונקודה אחריו נוחתת בצד שאינו הצד שבו המשפט נגמר.
+      qn.append("חיפוש הטלפון רץ על הספרות בלבד — כך המספר שמור, ולכן הטלפון בשורה יכול להיראות אחרת ממה שהוקלד. חופש לפי ", num);
+    }
+    // ההודעה על החיתוך. «התקצרה» ו«לא נשארו» ולא «נמחקו»: הפניות לא ירדו
+    // מהמסד — הן יצאו מהסינון, ובדרך כלל מפני שמי שקורא את השורה הזו הוא זה
+    // שהכריע בהן. הניסוח אומר גם מה קרה וגם היכן המסך נמצא עכשיו, מפני
+    // שהמספר בשורת «עמוד N מתוך M» כבר השתנה והשורה הזו היא ההסבר היחיד לו.
+    const cnote = $("clamp-note");
+    cnote.hidden = clampNote === null;
+    cnote.textContent = clampNote === null
+      ? ""
+      : `הרשימה התקצרה בזמן העבודה, ובעמוד ${clampNote.from} לא נשארו פניות שתואמות את הסינון. המסך עבר לעמוד ${clampNote.to} — האחרון שיש בו פניות.`;
+    for (const c of cases) {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "row";
+      const top = document.createElement("div");
+      top.className = "row-top";
+      const name = document.createElement("span");
+      name.className = "row-name";
+      // contact:null אינו היעלמות — הוא פנייה שאיש הקשר שלה נמחק
+      // (cases_contact_id_fkey הוא ON DELETE SET NULL), והיא חייבת להופיע.
+      //
+      // «— ללא איש קשר —» אמר שאין שם, ולא למה אין. שורה בלי זהות נקראת גם
+      // כמו תקלה בטעינה, והשתיים דורשות ממי שקורא אותה שני דברים הפוכים —
+      // האחת «המשך לטפל», השנייה «רענן». הנוסח כאן אומר את הסיבה, ולכן הוא
+      // טענה שנמדדה ולא הנחה: bkalot_clone_intake היא הפונקציה היחידה שמכניסה
+      // שורה ל-cases, וה-contact_id שלה הוא returning id של ה-upsert
+      // ב-bkalot_auto.contacts — כלומר לעולם אינו null בלידה. פנייה קיימת עם
+      // contact_id ריק היא אפוא פנייה שאיש הקשר שלה נמחק אחריה, ולא פנייה
+      // שנולדה בלעדיו.
+      //
+      // שלושה מצבים ולא שניים, כמו ב«מי הכריע»: מפתח contact שאינו קיים בתשובה
+      // כלל הוא שרת ישן מלפני 0088 ולא איש קשר שנמחק, ועליו המסך ממשיך לומר
+      // את הנוסח הישן. סימן שקרי כאן היה נקרא כמו נתון שנמדד.
+      if (c.contact?.full_name) {
+        name.textContent = c.contact.full_name;
+      } else if (Object.hasOwn(c, "contact") && c.contact === null) {
+        const s = document.createElement("span");
+        s.className = "stale";
+        s.textContent = "איש הקשר נמחק";
+        s.title = "הפנייה עצמה נשמרה במלואה; רק הזהות שלה הוסרה מהמאגר.";
+        name.append(s);
+      } else {
+        name.textContent = "— ללא איש קשר —";
+      }
+      const kind = document.createElement("span");
+      kind.className = "tag kind";
+      kind.textContent = label(KIND_MAP, c.kind);
+      const status = document.createElement("span");
+      status.className = "tag";
+      status.textContent = label(STATUS_MAP, c.status);
+      top.append(name, kind, status);
+      const meta = document.createElement("div");
+      meta.className = "row-meta";
+      const bits = [
+        `#${c.id}`,
+        fmtDate(c.created_at),
+        c.contact?.phone ? `טלפון ${c.contact.phone}` : null,
+        c.situation ? label(SITUATIONS, c.situation) : null,
+        // 0 נשאר «0 זכויות» ואינו הופך ל«אין זכויות»: זו שורה במניין ולא
+        // הודעה, ומסך הפנייה הוא זה שאומר למה אין. מסמכים אינם מוצגים כשאין —
+        // כך היה לפני הפעימה הזו, והשינוי כאן הוא הניסוח בלבד.
+        countHe(c.rights_count ?? 0, "זכות אחת", "זכויות"),
+        (c.documents_count ?? 0) > 0 ? countHe(c.documents_count, "מסמך אחד", "מסמכים") : null,
+      ].filter(Boolean);
+      for (const b of bits) { const s = document.createElement("span"); s.textContent = b; meta.append(s); }
+      // ראשון מבין הסימנים ולא אחרון: שלושת הבאים אחריו מתארים את מצב הפנייה,
+      // וזה מתאר למה השורה נמצאת ברשימה בכלל — שאלה שקודמת להם בקריאה.
+      const noteMatch = noteMatchBit(c);
+      if (noteMatch) meta.append(noteMatch);
+      // מיד אחרי «נמצאה לפי הנימוק» ולפני השלושה שמתארים את מצב הפנייה: השניים
+      // מדברים על אותו נתון ועל אותה שאלה — «למה השורה כאן» ו«כמה» — ושורה
+      // יכולה לשאת את השני לבדו (כשל (ב) בהערה שמעל noteTallyBit).
+      const noteTally = noteTallyBit(c);
+      if (noteTally) meta.append(noteTally);
+      const decided = decidedBit(c);
+      if (decided) meta.append(decided);
+      const produced = producedBit(c);
+      if (produced) meta.append(produced);
+      const hands = handsBit(c);
+      if (hands) meta.append(hands);
+      btn.append(top, meta);
+      btn.addEventListener("click", () => openCase(c.id));
+      rows.append(btn);
+    }
+    const pages = Math.ceil(total / PAGE) || 1;
+    const page = Math.floor(offset / PAGE) + 1;
+    $("pager").hidden = total <= PAGE;
+    $("page-label").textContent = `עמוד ${page} מתוך ${pages}`;
+    $("prev").disabled = offset <= 0;
+    $("next").disabled = offset + PAGE >= total;
+  }
+
+  // ── «מי הכריע» ברשימה ─────────────────────────────────────────────────────
+  // 0078 החזירה את שלושת השדות מ-bkalot_clone_admin_cases בדיוק בשביל השורה
+  // הזו. הפער שהיא נכתבה עליו: פנייה מגיעה ל«בטיפול» בשתי דרכים שונות לחלוטין
+  // — אדם לחץ, או שהטריגר documents_advance_case קידם אותה מפני שהופק מסמך —
+  // וברשימה, המסך שממנו בוחרים במה לטפל, שתיהן נראו אות באות אותו הדבר.
+  //
+  // ארבעה מצבים, ולא שלושה כמו ב-fillDecidedLine: לרשימה יש מצב חמישי משלה.
+  //
+  // (0) המפתח אינו קיים בתשובה כלל — שרת ישן מ-0078. אז אין ולו שורה אחת
+  //     שנושאת סימן, בדיוק כמו לפני הפעימה הזו. Object.hasOwn ולא ?? null:
+  //     שדה חסר ושדה שנושא null נראים זהים בקריאה רגילה, וכאן הם שני דברים
+  //     הפוכים — «המסך אינו יכול לדעת» מול «איש לא הכריע». סימן שקרי כאן היה
+  //     גרוע מאין־סימן, שכן הוא נקרא כמו נתון שנמדד.
+  //
+  // (1) אין חותמת ו-status=new — אין סימן. פנייה חדשה שאיש לא נגע בה אינה
+  //     צריכה לומר זאת בעשרים שורות; שורה בלי סימן היא הרוב, וסימן על כל אחת
+  //     מהן היה הופך את הנתון היחיד שכן נחוץ לרעש.
+  //
+  // (2) אין חותמת ו-status אינו new — זו הפנייה שבשבילה הכול נבנה: היא זזה
+  //     ממקומה ואיש לא לחץ, כלומר הטריגר קידם אותה. היא נצבעת. הנוסח מדבר על
+  //     הלחיצה ולא על הפנייה — «לא טופלה» היה נתון אחר לגמרי.
+  //
+  // (3) יש חותמת — היא נאמרת עם השם, ובשני מצבי החוסר בנוסח מילה במילה של
+  //     fillDecidedLine (1abad72): «מי הכריע אינו ידוע» כשהזהות חסרה (לחיצה
+  //     מלפני v7), ו«החשבון אינו קיים עוד» כשהזהות מלאה והשם ריק — full_name
+  //     הוא NOT NULL, ולכן שם ריק אומר דבר אחד בדיוק. נוסח שני על אותו נתון
+  //     היה מפצל את הרשימה מהפרטים על מה שהוא בדיוק אותו דבר.
+  function decidedBit(c) {
+    if (!Object.hasOwn(c, "decided_at")) return null;
+    const s = document.createElement("span");
+    if (c.decided_at == null) {
+      if (c.status === "new") return null;
+      s.className = "stale";
+      s.textContent = "לא הוכרע מהמסך";
+      s.title = "הפנייה אינה «חדשה» ולא נרשמה עליה לחיצה — הטריגר קידם אותה בהפקת מסמך";
+      return s;
+    }
+    s.append(document.createTextNode(`הוכרעה ${fmtDate(c.decided_at)}`));
+    if (c.decided_by == null) {
+      const x = document.createElement("span");
+      x.className = "stale";
+      x.textContent = "מי הכריע אינו ידוע";
+      x.title = "הלחיצה נרשמה לפני שהשער העביר את זהות המנהל, ולכן נשמרה החותמת בלבד";
+      s.append(document.createTextNode(" · "), x);
+      return s;
+    }
+    if (c.decided_by_name) {
+      s.append(document.createTextNode(` · ${c.decided_by_name}`));
+      s.title = `מזהה מנהל ${c.decided_by}`;
+      return s;
+    }
+    const x = document.createElement("span");
+    x.className = "stale";
+    x.textContent = `מנהל #${c.decided_by} · החשבון אינו קיים עוד`;
+    x.title = "הזהות נשמרה על הפנייה בזמן ההכרעה, וחשבון הניהול שהיא מצביעה עליו כבר אינו במסד";
+    s.append(document.createTextNode(" · "), x);
+    return s;
+  }
+
+  // ── «מי הפיק» ברשימה ──────────────────────────────────────────────────────
+  // 0086 החזירה את last_produced_by ואת השם בדיוק בשביל השורה הזו. הפער:
+  // documents_count שכבר יושב בשורה אומר «יש מסמך» ולא «של מי», ומנהל שסורק את
+  // רשימת העבודה בלי לפתוח פנייה אחת אחת לא ראה מי כבר ענה על מה. זה ההבדל בין
+  // רשימה שאפשר לסרוק לרשימה שאפשר רק לספור.
+  //
+  // ארבעה מצבים, ולא שלושה כמו ב-fillProducedCell: שם השורה היא מסמך, וכאן היא
+  // פנייה — שיכולה גם לא להחזיק מסמך כלל.
+  //
+  // (0) המפתח אינו קיים בתשובה כלל — שרת מלפני 0086. אז אין ולו שורה אחת
+  //     שנושאת סימן, בדיוק כמו לפני הפעימה הזו. Object.hasOwn ולא ?? null:
+  //     «המסך אינו יכול לדעת» ו«אין מפיק» נראים זהים בקריאה רגילה והם שני
+  //     דברים הפוכים, וסימן שקרי כאן היה נקרא כמו נתון שנמדד.
+  //
+  // (1) documents_count = 0 — לא הופק מסמך, ואין על מה לומר מי. השורה שותקת,
+  //     כפי ששתקה עד היום; היא כבר אינה מציגה מונה מסמכים במצב הזה.
+  //
+  // (2) יש מסמך ואין זהות — הפקה שנרשמה לפני v8, כשהשער העביר ארגומנט אחד.
+  //     מה שמפריד את המצב הזה מ-(1) הוא documents_count שכבר בשורה, ולא שדה
+  //     נגזר שלישי: שניהם מחזירים null/null, והמונה הוא ההפרש.
+  //
+  // (3) זהות עם שם — המקרה הרגיל.
+  //
+  // (4) זהות בלי שם — full_name הוא NOT NULL, ולכן שם ריק כשהזהות מלאה אומר
+  //     דבר אחד בדיוק: חשבון הניהול נמחק.
+  //
+  // הנוסח של (2) ו-(4) הוא מילה במילה זה של fillProducedCell במסך הפנייה
+  // (042e60f): אותו נתון בשני מסכים אינו זכאי לשני ניסוחים. הנוסח מדבר על
+  // ההפקה האחרונה ולא על «ההפקה» — «הפק מחדש» דורס גוף ומפיק יחד ואין
+  // היסטוריה, וגם אין last_produced_at שיאמר מתי.
+  function producedBit(c) {
+    if (!Object.hasOwn(c, "last_produced_by")) return null;
+    if ((c.documents_count ?? 0) === 0) return null;
+    const s = document.createElement("span");
+    if (c.last_produced_by == null) {
+      s.className = "stale";
+      s.textContent = "מי הפיק אינו ידוע";
+      s.title = "ההפקה נרשמה לפני שהשער העביר את זהות המנהל, ולכן נשמר הגוף בלבד";
+      return s;
+    }
+    if (c.last_produced_by_name) {
+      s.textContent = `הופק על ידי ${c.last_produced_by_name}`;
+      s.title = `מזהה מנהל ${c.last_produced_by} · ההפקה האחרונה בלבד — «הפק מחדש» דורס את הקודמת ואין היסטוריה`;
+      return s;
+    }
+    s.className = "stale";
+    s.textContent = `הופק בידי מנהל #${c.last_produced_by} · החשבון אינו קיים עוד`;
+    s.title = "הזהות נשמרה על המסמך בזמן ההפקה, וחשבון הניהול שהיא מצביעה עליו כבר אינו במסד";
+    return s;
+  }
+
+  // ── «כמה ידיים עברו» ברשימה ───────────────────────────────────────────────
+  // 0089 החזירה את status_changes_count ואת status_deciders_count בדיוק בשביל
+  // השורה הזו. הפער שהיא נכתבה עליו: decidedBit אומרת מי הכריע **אחרון** ומתי —
+  // decided_by ו-decided_at נדרסים בכל UPDATE — ולכן פנייה שעברה בין שלושה
+  // אנשים ופנייה שאדם אחד נגע בה פעם אחת נראו בשורה זהות לחלוטין. מסך הפנייה
+  // (8a577bc) אומר את הרצף מאז 0088, ורשימת העבודה — המסך שבו מנהל מתחיל את
+  // היום — שתקה.
+  //
+  // הסימן נשען על status_changes_count בלבד גם כשהוא בודק את השני: שניהם באים
+  // מאותו LEFT JOIN LATERAL (הכרעה (2) של 0089) ואינם רשאים להיפרד, ובדיקה
+  // כפולה כאן הייתה טוענת אחרת.
+  //
+  // (0) המפתח אינו קיים בתשובה כלל — שרת מלפני 0089. אז אין ולו שורה אחת
+  //     שנושאת סימן, בדיוק כמו לפני הפעימה הזו. Object.hasOwn ולא ?? 0:
+  //     «המסך אינו יכול לדעת» ו«לא נרשם מעבר» נראים זהים בקריאה רגילה והם שני
+  //     דברים הפוכים — וזו בדיוק ההבחנה שנמדדה ב-0089 לפני המיגרציה, שם שני
+  //     המפתחות החזירו hasOwnProperty=false ולא 0.
+  //
+  // (1) אפס מעברים — השורה שותקת, כפי ששתקה עד היום. שני מצבים נכנסים לכאן
+  //     ואינם ניתנים להפרדה מהמונה: פנייה שאיש לא הכריע מהמסך, ופנייה שהוכרעה
+  //     לפני שהיומן קם — אין backfill ולא יהיה (0087). «0 מעברים» היה נקרא
+  //     כמדידה של יומן ריק ולא כהיעדר יומן, ומי שרוצה את ההפרש פותח את הפנייה:
+  //     שם, ורק שם, שלושת מצבי הריקנות נאמרים בנפרד.
+  //
+  // (2) יש מעברים ואפס ידיים — מעבר שנכתב בלי זהות (צורת v7). count(distinct)
+  //     אינו סופר null (הכרעה (3) של 0089), ולכן 1/0 הוא מצב מדיד: «מישהו נגע
+  //     ואיננו יודעים מי», שאינו «איש לא נגע» של (1). הנוסח «מי הכריע אינו
+  //     ידוע» הוא מילה במילה זה של decidedBit ושל fillHistoryWhoCell: אותו נתון
+  //     בשלושה מקומות אינו זכאי לשלושה ניסוחים, וזה הכלל של 0078.
+  //
+  // (3) המקרה הרגיל — כמה מעברים וכמה מנהלים שונים עשו אותם. «מעברים» ולא
+  //     «לחיצות»: לחיצה חוזרת על אותו סטטוס אינה כותבת שורה (האילוץ
+  //     case_status_log_is_a_change), ולכן ארבע לחיצות יכולות להיות שלושה
+  //     מעברים. אין שמות כאן במכוון — מי שרוצה אותם פותח את הפנייה — והמספר
+  //     שורד את מחיקת החשבון, מפני שהמונה אינו נוגע ב-admin_users כלל.
+  function handsBit(c) {
+    if (!Object.hasOwn(c, "status_changes_count")) return null;
+    const changes = c.status_changes_count ?? 0;
+    if (changes === 0) return null;
+    const deciders = c.status_deciders_count ?? 0;
+    const s = document.createElement("span");
+    s.append(document.createTextNode(countHe(changes, "מעבר אחד", "מעברים")));
+    if (deciders === 0) {
+      const x = document.createElement("span");
+      x.className = "stale";
+      x.textContent = "מי הכריע אינו ידוע";
+      x.title = "המעברים נרשמו ביומן בלי זהות המנהל, ולכן נשמרו הסטטוסים והזמן בלבד";
+      s.append(document.createTextNode(" · "), x);
+      return s;
+    }
+    s.append(document.createTextNode(` · ${countHe(deciders, "מנהל אחד", "מנהלים")}`));
+    s.title = "מעברים ולא לחיצות — לחיצה חוזרת על אותו סטטוס אינה נרשמת; המנהלים נספרים לפי זהות ולא לפי שם, ולכן מעבר שנכתב בלי זהות אינו נספר בהם. מי הכריע במה — במסך הפנייה";
+    return s;
+  }
+
+  // ── «נמצאה לפי הנימוק» ברשימה ─────────────────────────────────────────────
+  // 0096 החזירה את matched_in_note בדיוק בשביל השורה הזו (הכרעות (6) ו-(7) שם).
+  // הפער שהיא נכתבה עליו: מעכשיו החיפוש רץ גם על טקסט הנימוקים שביומן, והנימוק
+  // אינו מצויר בשורה ולו בתו אחד. מנהל שמקליד «שנת מס» מקבל שורה שאין בה השם
+  // הזה, אין את הטלפון הזה ואין את המספר הזה — כלומר שורה שנראית בדיוק כמו תקלה
+  // בחיפוש. זו אותה הבחנה בדיוק ש-q-phone קנתה ב-0093 ועל אותו נתון: הרשימה
+  // אינה אמורה לאלץ את הקורא לנחש למה שורה נמצאה.
+  //
+  // ארבע הכרעות:
+  //
+  // (0) המפתח אינו קיים בתשובה כלל — שרת מלפני 0096. אז אין ולו שורה אחת
+  //     שנושאת סימן, בדיוק כמו לפני הפעימה הזו. Object.hasOwn ולא ?? false:
+  //     «המסך אינו יכול לדעת» ו«נמצאה לפי שדה נראה» נראים זהים בקריאה רגילה
+  //     והם שני דברים הפוכים, וסימן שקרי כאן היה נקרא כמו נתון שנמדד.
+  //
+  // (1) true בלבד. false הוא המצב הרגיל — המונח נמצא בשורה עצמה — וסימן על כל
+  //     שורה היה הופך את היחידה שכן צריכה הסבר לרעש. וכשאין מונח חיפוש כלל
+  //     השרת מחזיר false לכל השורות, ולכן הרשימה הרגילה שותקת בלי תנאי נוסף.
+  //
+  // (2) על השורה ולא בשורת הרמז שמעל הרשימה. q-phone מתאר את החיפוש כולו —
+  //     מספר אחד שלפיו חופש — ואילו כאן ההבדל הוא בין שורה לשורה באותו עמוד
+  //     בדיוק: שתי פניות יכולות להימצא, אחת לפי שם ואחת לפי נימוק. משפט אחד
+  //     מעל הרשימה היה אומר «חלק מהשורות» ולא אומר איזו.
+  //
+  // (3) הנוסח אומר היכן הטקסט ומה לעשות, ולא «לא נמצא כאן»: הטקסט כן נמצא, הוא
+  //     פשוט יושב ביומן ההכרעות שהשורה אינה מציירת. אין הדגשה של המילה ואין
+  //     ציטוט של הנימוק — 0096 אינה מחזירה את הטקסט עצמו בשורה, והמסך אינו
+  //     רשאי להמציא אותו. הפנייה נפתחת, ושם הנימוק כתוב במלואו (0091).
+  function noteMatchBit(c) {
+    if (!Object.hasOwn(c, "matched_in_note")) return null;
+    if (c.matched_in_note !== true) return null;
+    const s = document.createElement("span");
+    s.className = "stale";
+    s.textContent = "נמצאה לפי הנימוק";
+    s.title = "מה שהוקלד בחיפוש אינו בשם, בטלפון, במייל ובמספר הפנייה — הוא נמצא בנימוק שנכתב ביומן ההכרעות. הנימוק עצמו אינו מוצג ברשימה; פתחו את הפנייה כדי לקרוא אותו";
+    return s;
+  }
+
+  // ── «כמה מהנימוקים התאימו» ברשימה ─────────────────────────────────────────
+  // 0098 החזירה את note_match_count ו-notes_count בדיוק בשביל השורה הזו, והמסך
+  // לא צייר אותם ולו בתו אחד. שני פערים נסגרים כאן, והשני חמור מהראשון:
+  //
+  // (א) noteMatchBit עונה כן/לא ואינו עונה כמה. הוא שולח את הקורא פנימה במילים
+  //     שלו עצמו («פתחו את הפנייה כדי לקרוא אותו») ואינו אומר לתוך מה הוא נכנס
+  //     — נימוק אחד או ארבעה. noteMatchTally בונה בדיוק את המשפט הזה במסך
+  //     הפנייה, ולכן המספר נראה רק אחרי שכבר הוחלט להיכנס.
+  //
+  // (ב) matched_in_note נגזר ואינו נספר — «יש מונח ואף שדה נראה לא התאים» —
+  //     ולכן הוא עיוור לשורה שנמצאה גם לפי שדה נראה וגם לפי נימוק. חיפוש
+  //     «אברהם» על פנייה של אברהם ישראלי שיש בנימוקיה «אברהם» מחזיר
+  //     matched_in_note false, ואין ולו סימן אחד על כך שיש שם גם נימוק. ככל
+  //     שהמונח כללי יותר כך גדל בדיוק המספר שנבלע.
+  //
+  // חמש הכרעות:
+  //
+  // (1) סימן נפרד ולא הרחבה של noteMatchBit. השניים עונים על שתי שאלות — «למה
+  //     השורה כאן» ו«כמה» — ושורה יכולה לשאת את השני בלי הראשון, וזה בדיוק
+  //     כשל (ב). מיזוגם היה מוריש את העיוורון לשניהם.
+  //
+  // (2) המפתח אינו קיים — שרת מלפני 0098, ואין סימן. Object.hasOwn ולא ?? 0:
+  //     «המסך אינו יכול לדעת» ו«אף נימוק לא ענה» הם שני דברים הפוכים. וזו
+  //     בדיוק הסיבה ש-0098 מחזירה null ולא 0 בלי מונח: «לא נשאלה שאלה» הוא
+  //     מצב שלישי, והוא שותק כאן כמו שהוא שותק ב-noteMatchTally.
+  //
+  // (3) אפס שותק כאן, בניגוד להכרעה (4) של noteMatchTally, והמקום הוא ההפרש:
+  //     שם זהו משפט אחד על מסך שכבר נפתח, וכאן זהו סימן על כל אחת מעשרים
+  //     שורות. שורה שהמונח בשדותיה הנראים ולא בנימוקיה אינה מסתירה דבר —
+  //     הקורא רואה את מה שהקליד בשורה עצמה — ו«0 מתוך 4» על כולן היה הופך את
+  //     המספר היחיד שכן נחוץ לרעש. וכשאין נימוקים כלל המונה ממילא 0.
+  //
+  // (4) שני מספרים ולא אחד. הכותרת «מעבר אחד · מנהל אחד» שלצדה סופרת מעברים,
+  //     והמכנה כאן הוא הנימוקים — מעבר בלי נימוק אינו נשאל ואינו נספר. שני
+  //     המספרים אינם אמורים להיות שווים, וזו הכרעה (3) של 0098 נראית במסך.
+  //
+  // (5) אין ציטוט ואין הדגשה — 0098 מחזירה מספרים ולא טקסט, והמסך אינו רשאי
+  //     להמציא אותו. זו אותה הכרעה (3) של noteMatchBit, ומשם הנוסח שמפנה
+  //     פנימה במקום לומר «לא נמצא כאן».
+  // ── «וכמה פעמים בתוכם» — 0102 ──────────────────────────────────────────────
+  // חמש ההכרעות שמעל נכתבו כשהיה מספר אחד בלבד, ו-0102 הוסיפה שני. הפער שהיא
+  // סוגרת נמדד ולא הונח: «המונח ב-1 מתוך 3 הנימוקים» מתאר גם נימוק שהמילה בו
+  // שלוש פעמים, ו«המונח ב-2 מתוך 3» מתאר שני נימוקים שיש בכל אחד מהם אחת —
+  // כלומר שתי התאמות. מהמספר הראשון לבדו אי אפשר לדעת לתוך מה נכנסים.
+  //
+  // ארבע הכרעות נוספות:
+  //
+  // (6) לצד «בכמה מהם» ולא במקומו. השניים עונים על שתי שאלות, והמכנה שייך
+  //     לראשון בלבד — «3 פעמים מתוך 3 הנימוקים» היה מספר אחד על מכנה של אחר.
+  //
+  // (7) המפתח אינו קיים — שרת מלפני 0102 — והמשפט נשאר בדיוק כפי שהיה, בלי
+  //     ולו תו אחד. Object.hasOwn ולא ?? 0, אותו כלל של הכרעה (2). ו-null
+  //     שותק מאותה סיבה: 0102 מחזירה null גם כשאין מונח וגם כששני כללי
+  //     ההתאמה שלה חולקים, ובשניהם התוספת היא מספר שאין מאחוריו מדידה.
+  //
+  // (8) ⚠️ שמירה מפני מחלוקת ולא אמון: total ≥ hit נבדק כאן שוב, אף שהמסד כבר
+  //     מחזיר null בדיוק במקרה הזה. סכום התאמות הקטן ממספר הנימוקים שהתאימו
+  //     הוא סתירה — נימוק שנספר כמתאים ולא נמצאה בו ולו התאמה אחת — ומספר
+  //     קטן מהאמת על טקסט שאדם הקליד הוא שקר; שתיקה אינה. זו הכרעה (4) של
+  //     0102 בצד הזה של החוט, ואותו כלל של מסך הפנייה מאז 0101.
+  //
+  // (9) ⚠️ נדלק גם כששני המספרים שווים («2 מתוך 3 · פעמיים»), ולא רק כשהם
+  //     נבדלים. הסתרה בשוויון הייתה הופכת את היעדר התוספת לקידוד שלישי — שרת
+  //     ישן, מחלוקת, ושוויון — שהקורא צריך ללמוד; והשוויון הוא בדיוק התשובה
+  //     שהשאלה «כמה פעמים» מבקשת.
+  function noteTallyBit(c) {
+    if (!Object.hasOwn(c, "note_match_count") || !Object.hasOwn(c, "notes_count")) return null;
+    const hit = c.note_match_count;
+    const notes = c.notes_count;
+    if (hit == null || notes == null) return null;
+    if (hit === 0) return null;
+    const total = Object.hasOwn(c, "note_hit_total") ? c.note_hit_total : null;
+    const hits = Number.isInteger(total) && total >= hit ? ` · ${countHe(total, "פעם אחת", "פעמים")}` : "";
+    const s = document.createElement("span");
+    s.className = "stale";
+    s.textContent = (notes === 1 ? "המונח בנימוק היחיד" : `המונח ב-${hit} מתוך ${notes} הנימוקים`) + hits;
+    s.title = "כמה מהנימוקים שנכתבו ביומן ההכרעות של הפנייה נושאים את מונח החיפוש, ואחרי הנקודה — כמה פעמים המונח נכתב בתוכם בסך הכול. המספרים נספרו ביומן עצמו ולא נגזרו, ולכן הם נדלקים גם על שורה שנמצאה לפי השם או הטלפון. המכנה הוא הנימוקים שנכתבו ולא המעברים — מעבר בלי נימוק אינו נספר. הנימוקים עצמם אינם מוצגים ברשימה; פתחו את הפנייה כדי לקרוא אותם";
+    return s;
+  }
+
+  // ── פנייה בודדת ───────────────────────────────────────────────────────────
+  // חזרה לרשימה מרעננת אותה, ולא רק מחליפה מסך. מסך הפנייה משנה את השורה
+  // בשלוש דרכים שונות — «שינוי סטטוס» כותב ישירות, «הפק מסמך» מוסיף מסמך
+  // ומעליו הטריגר documents_advance_case מקדם את הפנייה ל«בטיפול» במסד בלי
+  // שהלקוח יודע, ומחיקת מסמך יכולה להוריד את המונה — והרשימה מאחור נשארה
+  // כפי שנוצרה. אחרי הפקה השורה אמרה «חדשה» בלי ולו סימן אחד, בעוד שבמסד
+  // היא כבר הייתה in_progress עם מסמך; רק «הצג» הביא את המצב האמיתי.
+  // זו התצוגה היחידה כאן שנקראת כנתון שנמדד בעוד שהוא ישן, ולכן היא נטענת
+  // מחדש בנקודה שבה הרשימה שבה להיראות ולא בכל מקום שעלול לשנות אותה:
+  // הטריגר רץ בשרת, ורשימת מה-שעלול-לשנות אינה ידועה ללקוח מראש.
+  //
+  // show לפני load ולא אחריה: load פונה לשרת, ובסדר ההפוך הלחיצה הייתה
+  // נראית כאילו לא נקלטה עד שהתשובה חוזרת. הסינון והדפדוף אינם מאופסים —
+  // load קורא את שדות הסינון ואת offset כפי שהם, ולכן זה רענון של אותה
+  // רשימה ולא חזרה לעמוד הראשון.
+  $("back").addEventListener("click", () => { show("screen-list"); load(); });
+
+  // note נמסר רק בחזרה מהפקה: openCase בונה את המסך מאפס בכל קריאה, ולכן
+  // הודעת ההפקה חייבת לעבור דרכה — אחרת היא נמחקת ברענון שהיא עצמה גרמה לו.
+  //
+  // statusNote הוא ערוץ שני ולא שימוש חוזר ב-note: שתי ההודעות נכתבות בשני
+  // מקומות שונים במסך (מעל טבלת המסמכים ומתחת לכפתורי הסטטוס), ושליחת הודעת
+  // סטטוס דרך note הייתה מציגה «הסטטוס שונה» בסרגל ההפקה — כלומר תחת כותרת
+  // שאינה קשורה למה שנעשה.
+  // keepTmpl הוא ערוץ שלישי מאותה סיבה בדיוק: אחרי הפקה המסך נבנה מאפס, ובורר
+  // המכתב היה חוזר ל«ברירת מחדל» מיד אחרי הפקה מתבנית שנבחרה — כלומר מסך
+  // שאומר «ברירת מחדל» על מסמך שלא הופק ממנה. הבחירה נשמרת דרך הרענון שההפקה
+  // עצמה גרמה לו, ולא מעבר לו: פתיחה מהרשימה מתחילה בברירת המחדל, כי documents
+  // אינה שומרת מאיזו תבנית הופק המסמך ואין למסך מאין לדעת.
+  //
+  // ── מונח החיפוש נוסע פנימה ────────────────────────────────────────────────
+  // 0097 נתנה ל-bkalot_clone_admin_case ארגומנט שני ו-v9 מעבירה אותו, ועד כאן
+  // הקריאה מכאן הייתה { id } ותו לא — כלומר p_q null בכל פתיחה, note_matched
+  // false בכל שורה, ומנהל שלחץ על שורה שנמצאה בזכות הנימוק (0096) קיבל את
+  // הרצף בלי סימן. השורה ברשימה אומרת «נמצאה לפי הנימוק» ומפנה פנימה, ובפנים
+  // אין את מה שהיא הבטיחה.
+  //
+  // שלוש הכרעות:
+  //
+  // (1) lastFilters.q ולא $("f-q").value: התיבה היא מה שהוקלד עכשיו, ו-lastFilters
+  //     הוא מה שהרשימה שעל המסך נטענה לפיו. השניים נפרדים ברגע שמקלידים בלי
+  //     «הצג» — ושליחת התיבה הייתה מסמנת את הפנייה לפי שאלה שאיש לא שאל ושהשורה
+  //     שנלחצה אינה תשובה לה. זו אותה הפרדה בדיוק שעליה יושבת שורת q-phone.
+  //
+  // (2) המפתח נשלח רק כשיש מונח. openCase נקראת גם בלי חיפוש כלל (lastFilters
+  //     ריק לפני הטעינה הראשונה, ו-q ריקה אחריה), ו-q: "" היה גוף שאומר «חיפשתי
+  //     ולא נמצא» על מסך שנפתח בלי חיפוש. 0097 מחזירה false בשני המקרים, ולכן
+  //     ההבדל אינו בתצוגה אלא במה שנרשם בבקשה עצמה.
+  //
+  // (3) אותו q נשלח גם בשלוש הפתיחות מחדש שהמסך עושה לעצמו — אחרי שינוי סטטוס
+  //     ואחרי הפקה — מפני שהוא נקרא מהמצב ואינו פרמטר של הקריאה. פרמטר היה
+  //     נשכח באחת מהן, והסימן היה נעלם מהמסך אחרי לחיצה שאינה קשורה לחיפוש.
+  async function openCase(id, note, statusNote, keepTmpl) {
+    const q = lastFilters.q;
+    const data = await call("case", q ? { id, q } : { id });
+    if (!data || data.ok !== true) {
+      if (data?.expired) return toLogin(data.error);
+      show("screen-list");
+      showError($("list-error"), data?.error || "bad_response");
+      return;
+    }
+    show("screen-case");
+    window.scrollTo(0, 0);
+    const c = data.case;
+    // אותו הפרש בדיוק כמו בשורת הרשימה: «ללא איש קשר» אמר שאין שם ולא למה אין,
+    // וגוף המסך כבר אומר «איש הקשר של הפנייה נמחק» — הכותרת היא זו שנשארה
+    // מאחור. שלושה מצבים, ומפתח contact חסר נשאר בנוסח הישן.
+    const who = c.contact?.full_name
+      || (Object.hasOwn(c, "contact") && c.contact === null ? "איש הקשר נמחק" : "ללא איש קשר");
+    $("case-title").textContent = `פנייה #${c.id} — ${who}`;
+    const body = $("case-body");
+    body.innerHTML = "";
+
+    const kv = (pairs) => {
+      const dl = document.createElement("dl");
+      dl.className = "kv";
+      for (const [k, v] of pairs) {
+        const dt = document.createElement("dt"); dt.textContent = k;
+        const dd = document.createElement("dd"); dd.textContent = (v === null || v === undefined || v === "") ? "—" : String(v);
+        dl.append(dt, dd);
+      }
+      return dl;
+    };
+    const h3 = (t) => { const h = document.createElement("h3"); h.textContent = t; return h; };
+
+    body.append(kv([
+      ["נפתחה", fmtDate(c.created_at)],
+      ["עודכנה", fmtDate(c.updated_at)],
+      ["סוג", label(KIND_MAP, c.kind)],
+      ["סטטוס", label(STATUS_MAP, c.status)],
+      ["מקור", c.source],
+      ["מצב", c.situation ? label(SITUATIONS, c.situation) : null],
+      ["מספר נושא", c.topic_no],
+      ["הערה", c.note],
+      // 0068 הכריעה שכתובת היעד וההסכמה הן נתון של הפנייה — צילום של מה שנמסר
+      // בהגשה — ושהתור קורא את הצילום ולא את איש הקשר. עד עכשיו המסך הציג את
+      // contact.email בלבד, כלומר את הכתובת שנדרסה אחרונה: מנהל קרא כתובת אחת
+      // בזמן שהמכתב היה הולך לאחרת, בלי שום סימן לכך.
+      ["כתובת המכתב", c.to_email],
+      ["הסכמה בפנייה", c.consent == null ? null : (c.consent ? "כן" : "לא")],
+    ]));
+
+    // ── הכרעת האדם ────────────────────────────────────────────────────────────
+    // v6 נתנה ל-bkalot_clone_admin_set_status כתובת HTTP מאחורי שער הסשן, ואיש
+    // לא יכול היה ללחוץ עליה. עד כאן, מנהל שטיפל בפנייה מחוץ למערכת ראה אותה
+    // «בטיפול» לנצח, והרשימה גדלה ולא התרוקנה לעולם.
+    //
+    // ארבע הכרעות:
+    //
+    // (1) שלושה כפתורים ולא רשימה נפתחת עם «שמור». סגירת פנייה היא הכרעה, ולחיצה
+    //     היא ההכרעה עצמה; רשימה נפתחת יוצרת מצב ביניים שבו המסך מציג ערך שהמסד
+    //     אינו מחזיק בו, ומנהל שיוצא מהמסך בלי «שמור» משאיר אחריו פנייה שהוא
+    //     בטוח שסגר.
+    //
+    // (2) הכפתור של הסטטוס הנוכחי כבוי, והסיבה נאמרת ב-title ואינה נבלעת —
+    //     אותה הכרעה כמו הכפתור «עבד עכשיו» על שורה שאינה בתור. 0072 מחזירה
+    //     ok:true עם changed:false על לחיצה חוזרת, כלומר זו אינה שגיאה; היא גם
+    //     אינה פעולה, וכפתור שנראה לחיץ ואינו עושה דבר מזמין ללחוץ שוב.
+    //
+    // (3) שלושת היעדים כתובים כאן כתצוגה ולא כאכיפה. אין כאן ולו בדיקה אחת על
+    //     הערך לפני השליחה: רשימת ההיתר, הסירוב ל-sent ול-new וההבחנה בין
+    //     status_unknown ל-status_not_settable יושבות במסד בלבד, בדיוק כפי ש-v6
+    //     סירבה להעתיק אותן. מסך שמסרב לבד לערך שהמסד כבר מקבל היה נשאר מאחור
+    //     בשקט — ולכן אם המסד יסרב, השגיאה שלו מוצגת כפי שהיא, עם רשימת
+    //     ה-settable שהוא עצמו החזיר.
+    //
+    // (4) אחרי שינוי מוצלח המסך נבנה מחדש מהשרת (openCase) ולא מתעדכן במקום —
+    //     בניגוד לתא התור, שם syncQueue מעדכן ערך אחד. כאן זזים שני שדות:
+    //     «סטטוס» ו«עודכנה», והשני אינו חוזר בתשובה של 0072 כלל. עדכון במקום
+    //     היה משאיר את «עודכנה» על הזמן שנקרא בטעינה — כלומר מסך שאומר שהפנייה
+    //     שונתה ומראה שלא נגעו בה. load() מרענן גם את הרשימה שמאחור, אחרת התג
+    //     בשורה היה ממשיך לומר את הסטטוס הקודם.
+    //
+    // 🚫 מצב טסט: הנתיב הזה נוגע בעמודה status ותו לא. אין בו הפקה, אין כניסה
+    //    לתור ואין עיבוד, ו-0072 דוחה 'sent' במפורש — אין דרך לסמן פנייה
+    //    כנשלחה בלי שנשלחה.
+    body.append(h3("שינוי סטטוס"));
+    // ── מי הכריע ומתי ─────────────────────────────────────────────────────────
+    // הקו שנשאר פתוח מ-0076 ומ-0077: המסד יודע מי סגר את הפנייה ומתי, והמסך
+    // הציג «עודכנה» בלבד — חותמת שהטריגר documents_advance_case מזיז גם הוא,
+    // כלומר שדה שאינו מבחין בין הכרעת אדם לבין הפקת מסמך.
+    //
+    // השורה יושבת מעל הכפתורים ולא ברשימת הפרטים בכוונה: היא רישום של מה
+    // שהכפתורים האלה עשו, ומי שעומד ללחוץ צריך לראות שכבר לחצו לפניו.
+    const decidedLine = document.createElement("p");
+    decidedLine.className = "note";
+    fillDecidedLine(decidedLine, c);
+    body.append(decidedLine);
+    // ── תיבת הנימוק ───────────────────────────────────────────────────────────
+    // 0090 בנתה את case_status_log.note ואת הכתיבה אליה, ו-0091 והתצוגה שאחריה
+    // הביאו אותה עד המסך. הצד שנשאר פתוח הוא הצד שממנו כותבים: הכתיבה קיימת
+    // בשער מאז 0090 ופתוחה לכל מי שיודע לשלוח בקשה, ולא למנהל שיושב מול המסך —
+    // כלומר כל מעבר שנלחץ כאן נרשם ביומן בלי «למה», והתא שנבנה כדי לשאת אותו
+    // מצייר «—» לנצח.
+    //
+    // ארבע הכרעות:
+    //
+    // (1) תיבה אחת מעל שלושת הכפתורים ולא תיבה לכל אחד. הנימוק שייך למעבר ולא
+    //     ליעד, ומי שמקליד «חסרים תלושי שכר» ואז מחליט לדחות במקום לקחת לטיפול
+    //     אינו צריך להקליד שוב.
+    //
+    // (2) אין maxlength. הוא היה חותך הדבקה של נימוק ארוך בשקט — בדיוק מה שהמסד
+    //     מסרב לעשות (0090 הכרעה (5): נדחה ואינו נחתך) — ומנהל היה מגלה נימוק
+    //     קטוע רק בקריאה חוזרת, אם בכלל. אותה הכרעה כמו (3) שמעל: אין כאן אכיפה
+    //     שנייה, יש מונה שאומר מה יקרה.
+    //
+    // (3) המונה סופר בדיוק כפי שהמסד סופר, ולא «בערך». שניים במכוון:
+    //     • נקודות קוד ולא יחידות UTF-16 — length() של postgres סופר תווים,
+    //       ו-".length" של JS סופר יחידות, כלומר אימוג'י אחד נספר 2 במסך ו-1
+    //       במסד. מונה שמזהיר על מה שיעבור הוא בדיוק מונה שלא ניתן לסמוך עליו.
+    //     • btrim ולא trim() — btrim של postgres מסיר רווחים בלבד, ואילו trim()
+    //       מסיר גם שורה חדשה וטאב. תיבה שיש בה שורה ריקה בלבד היא null במסד לפי
+    //       trim() ואינה null לפי btrim; הפונקציה כאן מסירה U+0020 בלבד, ולכן
+    //       ההחלטה «לשלוח או לא» כאן היא בדיוק ההחלטה «null או לא» שם.
+    //
+    // (4) מפתח שנשלח רק כשיש מה לשלוח. ריק ורווחים בלבד אינם נשלחים כמחרוזת
+    //     ריקה — 0090 הכרעה (4) הופכת את שלושתם ל-null אחד ממילא, ולכן גוף שאין
+    //     בו note אומר את מה שקרה ולא צריך את המסד כדי לתרגם אותו.
+    //
+    // 🚫 מצב טסט: התיבה הזו כותבת שורה ביומן ותו לא. הנימוק אינו נכנס לשום מכתב,
+    //    לשום תור ולשום ערוץ — הוא נקרא בידי מי שפותח את הפנייה במסך הזה בלבד.
+    const NOTE_MAX = 500;
+    const btrim = (s) => s.replace(/^ +/, "").replace(/ +$/, "");
+    const noteWrap = document.createElement("div");
+    noteWrap.className = "field";
+    const noteLabel = document.createElement("label");
+    noteLabel.setAttribute("for", "status-note");
+    // «(לא חובה)» היה נכון עד 0095 והפך לשקר בשלישו: המסד דורש נימוק על מעבר
+    // אל rejected ומחזיר note_required. תווית שאומרת «לא חובה» מעל תיבה שריקנותה
+    // חוסמת לחיצה היא בדיוק התווית שמלמדת לא להקליד — ואז החסימה מגיעה כהפתעה.
+    // «חובה לדחייה בלבד» אומר את שני הצדדים במילה אחת, ומחזיק את התיבה האחת
+    // שמשרתת שלושה כפתורים (הכרעה (1) שמעל).
+    noteLabel.textContent = "למה (חובה לדחייה בלבד)";
+    const noteInput = document.createElement("textarea");
+    noteInput.id = "status-note";
+    noteInput.className = "why-input";
+    noteInput.rows = 3;
+    noteInput.placeholder = "מה הביא להכרעה הזו. נשמר ביומן ליד המעבר, ואינו נשלח לאיש.";
+    const noteCount = document.createElement("p");
+    noteCount.className = "why-count";
+    noteCount.setAttribute("role", "status");
+    // aria-describedby ולא טקסט בתוך התווית: המונה משתנה בכל הקלדה, ותווית
+    // שמשתנה תוך כדי הקלדה נקראת מחדש בקורא מסך בכל תו.
+    noteInput.setAttribute("aria-describedby", "status-note-count");
+    noteCount.id = "status-note-count";
+    // ⚠️ המונה נכתב מערך אחד — מה שיישלח — ולא משני מקורות. אחרי note_too_long
+    //    הוא נכתב מהספירה של המסד עצמו (ראו למטה), כדי ששתי הספירות לא יוכלו
+    //    לומר שני דברים על אותה מחרוזת.
+    const syncNoteCount = (chars) => {
+      const n = chars ?? [...btrim(noteInput.value)].length;
+      // מצב הריקנות הוא היחיד מבין השניים ש-0095 נגעה בו: «אפשר להשאיר ריק» היה
+      // ההבטחה השנייה במסך שדחייה סותרת, והוא נקרא בקורא מסך אחרי התווית — כלומר
+      // הוא הדבר האחרון שנשמע לפני הלחיצה. מונה שסופר תווים אינו סותר דבר ונשאר.
+      noteCount.textContent = n === 0
+        ? `אפשר להשאיר ריק, למעט דחייה · עד ${NOTE_MAX} תווים`
+        : `${n} מתוך ${NOTE_MAX} תווים`;
+      noteCount.classList.toggle("over", n > NOTE_MAX);
+    };
+    syncNoteCount();
+    noteInput.addEventListener("input", () => syncNoteCount());
+    noteWrap.append(noteLabel, noteInput, noteCount);
+    body.append(noteWrap);
+
+    const statusBar = document.createElement("div");
+    statusBar.className = "docbar";
+    const statusNoteEl = document.createElement("p");
+    statusNoteEl.className = "note";
+    statusNoteEl.setAttribute("role", "status");
+    if (statusNote) statusNoteEl.textContent = statusNote; else statusNoteEl.hidden = true;
+    const statusErr = document.createElement("div");
+    statusErr.className = "err";
+    statusErr.setAttribute("role", "alert");
+    statusErr.hidden = true;
+    const statusBtns = new Map();
+    const syncStatusButtons = () => {
+      for (const [target, b] of statusBtns) {
+        b.disabled = c.status === target;
+        b.title = c.status === target
+          ? `הפנייה כבר ב«${label(STATUS_MAP, target)}», ולכן אין מה לשנות`
+          : `מסמן את הפנייה כ«${label(STATUS_MAP, target)}». אינו שולח דבר.`;
+      }
+    };
+    for (const target of ["in_progress", "closed", "rejected"]) {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "ghost";
+      b.textContent = label(STATUS_MAP, target);
+      statusBtns.set(target, b);
+      b.addEventListener("click", async () => {
+        statusErr.hidden = true;
+        const was = b.textContent;
+        for (const x of statusBtns.values()) x.disabled = true;
+        b.textContent = "משנה…";
+        // הכרעה (4): המפתח נשלח רק כשיש מה לשלוח.
+        // ⚠️ typed ולא note, ו-payload ולא body: openCase מקבלת פרמטר בשם note
+        //    ובונה אלמנט בשם body, ושני שמות כאלה בתוך המאזין היו מסתירים אותם.
+        const typed = btrim(noteInput.value);
+        const payload = { case_id: c.id, status: target };
+        if (typed !== "") payload.note = typed;
+        const out = await call("set-status", payload);
+        b.textContent = was;
+        if (!out || out.ok !== true) {
+          if (out?.expired) return toLogin(out.error);
+          syncStatusButtons();
+          // note_too_long הוא הכישלון היחיד כאן שהמנהל יכול לתקן בעצמו, ולכן הוא
+          // היחיד שמחזיר אותו אל התיבה. הספירה נכתבת מ-chars של המסד ולא נספרת
+          // כאן שוב: לו שתי הספירות היו נחלקות, זו שבמסך הייתה מנצחת על המסך
+          // ומפסידה בכל לחיצה. הטקסט נשאר בתיבה כפי שהוקלד — 0090 דוחה לפני
+          // הכתיבה, כלומר אין מה לשחזר ואין ממה לפחד.
+          if (out?.error === "note_too_long") {
+            if (typeof out.chars === "number") syncNoteCount(out.chars);
+            noteInput.focus();
+          }
+          // 0095: השני מבין השניים שהמנהל מתקן בעצמו, ולכן אותה החזרה אל התיבה.
+          // אין כאן syncNoteCount: המסד לא ספר דבר ולא החזיר chars — התיבה ריקה,
+          // והמונה כבר אומר את מה שיש לומר עליה. הכתיבה היחידה כאן היא המיקוד.
+          if (out?.error === "note_required") noteInput.focus();
+          // settable מגיע מהמסד על status_not_settable, ולכן הוא מוצג כפי שהוא:
+          // מנהל שרואה «אינו נקבע ידנית» בלי לדעת מה כן ניתן לקבוע ילחץ שוב.
+          showError(statusErr, out?.error || "bad_response",
+            Array.isArray(out?.settable) ? out.settable.map((s) => label(STATUS_MAP, s)).join(", ") : out?.status);
+          return;
+        }
+        // changed:false אינו כשל ואינו הצלחה שקטה — הוא נאמר במפורש, אחרת
+        // לחיצה שלא שינתה דבר נראית זהה ללחיצה ששינתה.
+        //
+        // גורלו של הנימוק נאמר בשורה הזו ולא נלמד מהטבלה שמתחת, ומ-note שחזר
+        // ולא ממה שהוקלד: 0090 מחזירה note:null גם על לחיצה חוזרת (changed:false)
+        // — שם היציאה המוקדמת קודמת ליומן — ומנהל שהקליד נימוק, לחץ על הסטטוס
+        // שכבר היה, וקיבל «הנימוק נשמר», היה מאבד אותו בלי לדעת.
+        const kept = typeof out.note === "string" && out.note !== "" ? " · הנימוק נשמר ביומן" : "";
+        const dropped = typed !== "" && !kept ? " · הנימוק לא נשמר" : "";
+        const msg = out.changed
+          ? `הסטטוס שונה מ«${label(STATUS_MAP, out.previous)}» ל«${label(STATUS_MAP, out.status)}»${kept}${dropped} · לא נשלחה שום הודעה`
+          : `הפנייה כבר הייתה ב«${label(STATUS_MAP, out.status)}» — לא שונה דבר${dropped}`;
+        // ── הרשימה מתרעננת בחזרה ולא כאן ────────────────────────────────────
+        // כאן ישבה עד עכשיו load() נוספת. היא פונה לשרת בזמן שהרשימה מוסתרת,
+        // כותבת את התשובה לתוך מסך שאיש אינו רואה, ו«חזרה» (675) טוענת אותה
+        // שוב מיד אחר כך — סיבוב שלם אל השרת שאין לו קורא.
+        //
+        // ולא רק מיותר: מאז a3a3405 רענון שנכשל מוחק את השורות ומדליק את שורת
+        // השגיאה של הרשימה. הכישלון הזה קורה על מסך מוסתר, ולכן מנהל ששינה
+        // סטטוס בהצלחה היה מגלה את הרשימה ריקה ועם שגיאה ברגע שהוא חוזר —
+        // שגיאה של בקשה שהוא לא ביקש, על פעולה שהצליחה.
+        //
+        // openCase נשארת: היא בונה את המסך שכן עומד מול העיניים.
+        await openCase(c.id, undefined, msg);
+      });
+      statusBar.append(b);
+    }
+    syncStatusButtons();
+    body.append(statusBar, statusNoteEl, statusErr);
+
+    // ── רצף ההכרעות ───────────────────────────────────────────────────────────
+    // 0087 בנתה את case_status_log ונתנה ל-set_status לכתוב אליו שורה בכל מעבר,
+    // ו-0088 החזירה את הרצף כבלוק top-level. כאן הוא נאמר. השורה שמעל הכפתורים
+    // (fillDecidedLine) מחזיקה את ההכרעה האחרונה בלבד — decided_by ו-decided_at
+    // נדרסים בכל UPDATE — ולכן מנהל שפותח פנייה שנדחתה ראה את מי שדחה ולא את מי
+    // שלקח אותה קודם.
+    //
+    // הטבלה יושבת מתחת לכפתורים ולא מעליהם: מה שצריך לראות לפני לחיצה הוא ההכרעה
+    // האחרונה, והיא כבר שם; הרצף הוא הרישום של מה שנעשה, והוא נקרא אחרי.
+    //
+    // ארבע הכרעות:
+    //
+    // (1) שלושה מצבי ריקנות ולא אחד. «אין רצף» ו«לא הוכרעה» אינם אותו דבר: ליומן
+    //     אין backfill ולא יהיה (0087), ולכן פנייה שהוכרעה לפני שהיומן קם מחזירה
+    //     מערך ריק בעוד decided_at שלה מלא — ו«לא נרשם ולו מעבר אחד» עליה היה
+    //     שקר שנראה כמו עובדה. המצב השלישי הוא היעדר המפתח עצמו: קורא ישן שאינו
+    //     יודע על היומן מחזיר תשובה בלי הבלוק, ו-Object.hasOwn מפריד בינו לבין
+    //     יומן ריק — בדיוק ההבחנה שנמדדה ב-0088 לפני המיגרציה ואחריה.
+    //
+    // (2) הרצף מוצג כפי שהשרת החזיר אותו — עולה — ואינו הפוך כאן. הכרעה (4) של
+    //     0087 היא שכל שורה היא משפט שלם: to_status של כל שורה שווה ל-from_status
+    //     של הבאה, והקריאה הזו נכונה בכיוון אחד בלבד. היפוך בלקוח היה שובר את
+    //     השרשרת ומשאיר טבלה שנראית תקינה.
+    //
+    // (3) אין עמודת «#». id של השורה חוזר מהשרת והוא מפתח ולא מונה — 0087 שרפה
+    //     שניים מהמזהים בשתי הכנסות שנדחו, ולכן המספרים אינם רצף (הכרעה (5) של
+    //     0088). עמודה כזו הייתה מזמינה לקרוא מהמספר «כמה הכרעות היו». הוא נשמר
+    //     ב-title של תא הזמן, שם הוא מזהה שורה ולא סדרה.
+    //
+    // (4) הכותרת סופרת מעברים ואומרת זאת. לחיצה חוזרת על אותו סטטוס אינה כותבת
+    //     שורה (האילוץ case_status_log_is_a_change), ולכן ארבע לחיצות יכולות
+    //     להיות שלושה מעברים — מספר שנקרא כ«כמה פעמים לחצו» היה שגוי.
+    //
+    // (5) «למה» היא העמודה האחרונה ולא השנייה. היא היחידה שנושאת טקסט חופשי של
+    //     עד 500 תווים, ועמודה כזו באמצע הייתה דוחקת את ארבע העמודות הקצרות
+    //     שלפיהן קוראים את השורה. הרצף נקרא קודם — מ־, אל, מי, מתי — והנימוק
+    //     נקרא אחריו, כמו שהטבלה עצמה נקראת אחרי הכפתורים.
+    const hist = data.status_history;
+    if (!Object.hasOwn(data, "status_history")) {
+      body.append(h3("רצף ההכרעות"));
+      const p = document.createElement("p");
+      p.className = "note";
+      const s = document.createElement("span");
+      s.className = "stale";
+      s.textContent = "השרת אינו מחזיר את יומן ההכרעות";
+      s.title = "התשובה הגיעה מקורא שאינו יודע על היומן — זה אינו יומן ריק אלא היעדר הבלוק כולו";
+      p.append(s);
+      body.append(p);
+    } else if (Array.isArray(hist) && hist.length) {
+      body.append(h3(`רצף ההכרעות (${countHe(hist.length, "מעבר אחד", "מעברים")})`));
+      const tally = noteMatchTally(hist, q);
+      if (tally) body.append(tally);
+      const t = document.createElement("table");
+      t.innerHTML = "<thead><tr><th>מ־</th><th>אל</th><th>מי הכריע</th><th>מתי</th><th>למה</th></tr></thead>";
+      const tb = document.createElement("tbody");
+      for (const r of hist) {
+        const tr = document.createElement("tr");
+        const from = document.createElement("td");
+        from.textContent = label(STATUS_MAP, r.from_status);
+        const to = document.createElement("td");
+        to.textContent = label(STATUS_MAP, r.to_status);
+        const who = document.createElement("td");
+        fillHistoryWhoCell(who, r);
+        const when = document.createElement("td");
+        when.textContent = fmtDate(r.at);
+        when.title = `שורת יומן #${r.id} — מפתח שורה ולא מונה; מספרי היומן אינם רצף`;
+        const why = document.createElement("td");
+        why.className = "why";
+        fillHistoryNoteCell(why, r);
+        tr.append(from, to, who, when, why);
+        tb.append(tr);
+      }
+      t.append(tb);
+      body.append(t);
+    } else {
+      body.append(h3("רצף ההכרעות"));
+      const p = document.createElement("p");
+      p.className = "empty";
+      p.textContent = c.decided_at == null
+        ? "לא נרשם ולו מעבר אחד מהמסך."
+        : "הפנייה הוכרעה לפני שיומן ההכרעות קם, ולכן הרצף שלה אינו קיים — אין השלמה למפרע.";
+      body.append(p);
+    }
+
+    body.append(h3("איש הקשר"));
+    if (c.contact) {
+      body.append(kv([
+        ["שם", c.contact.full_name],
+        ["טלפון", c.contact.phone],
+        ["דוא״ל", c.contact.email],
+        ["שלוחה", c.contact.extension],
+        ["הסכמה", c.contact.consent ? "כן" : "לא"],
+        ["מקור", c.contact.source],
+      ]));
+      // רק true הוא אזהרה. null פירושו «אין מה להשוות» ו-false פירושו «נמדד והן
+      // זהות» (0069) — הצגת אחד מהם כאן הייתה הופכת את הסימן לרעש שמפסיקים
+      // לראות. ההשוואה נעשתה בשרת ולא בעין: איש הקשר משוכפל לפי טלפון בלבד,
+      // ושתי פניות מאותו טלפון דורסות את המייל שלו.
+      if (c.contact_email_differs === true) {
+        const w = document.createElement("p");
+        w.className = "note";
+        const s = document.createElement("span");
+        s.className = "stale";
+        s.textContent = `⚠ המייל של איש הקשר אינו הכתובת של הפנייה הזו. המכתב ילך אל ${c.to_email || "—"}.`;
+        w.append(s);
+        body.append(w);
+      }
+    } else {
+      const p = document.createElement("p");
+      p.className = "empty";
+      p.textContent = "איש הקשר של הפנייה נמחק. הפנייה עצמה נשמרה במלואה.";
+      body.append(p);
+    }
+
+    const rights = data.rights || [];
+    body.append(h3(`זכויות (${rights.length})`));
+    if (rights.length) {
+      const t = document.createElement("table");
+      t.innerHTML = "<thead><tr><th>#</th><th>קוד</th><th>שם הזכות</th><th>קטגוריה</th><th>גורם</th></tr></thead>";
+      const tb = document.createElement("tbody");
+      for (const r of rights) {
+        const tr = document.createElement("tr");
+        const cells = [String(r.rank ?? "—"), r.right_code, r.name || "", r.cat || "", r.prov || ""];
+        cells.forEach((v, i) => {
+          const td = document.createElement("td");
+          if (i <= 1) td.className = "num";
+          td.textContent = v;
+          // קוד שהתיישן מוצג ואינו נעלם — 0060 מחזיר in_catalog=false ולא משמיט
+          if (i === 2 && r.in_catalog === false) {
+            td.textContent = "";
+            const s = document.createElement("span");
+            s.className = "stale";
+            s.textContent = "הקוד אינו קיים עוד במאגר הזכויות";
+            td.append(s);
+          }
+          tr.append(td);
+        });
+        tb.append(tr);
+      }
+      t.append(tb);
+      body.append(t);
+    } else {
+      const p = document.createElement("p"); p.className = "empty";
+      p.textContent = "לפנייה הזו לא חוברו זכויות (מידע ותזכורת אינן מחברות).";
+      body.append(p);
+    }
+
+    const docs = data.documents || [];
+    body.append(h3(`מסמכים (${docs.length})`));
+
+    // ── הפקה ──────────────────────────────────────────────────────────────
+    // הכפתור יושב מעל הטבלה ולא בתוך שורה: הוא פועל על הפנייה, וצריך להיות
+    // לחיץ דווקא כשאין ולו מסמך אחד. render הוא upsert על (case_id, kind)
+    // (0063), ולכן לחיצה שנייה מעדכנת את אותו מסמך ואינה מייצרת עותק שני —
+    // וזו הסיבה שהכיתוב משתנה ל«הפק מחדש» ואינו מבטיח יצירה.
+    const bar = document.createElement("div");
+    bar.className = "docbar";
+    const renderBtn = document.createElement("button");
+    renderBtn.type = "button";
+    renderBtn.textContent = docs.length ? "הפק מחדש" : "הפק מסמך";
+
+    // ── בורר המכתב ────────────────────────────────────────────────────────
+    // 0073 החזירה את templates בגוף התשובה של admin_case, ועד כאן איש לא קרא
+    // אותה: השרת מבחין בין «אין מכתב כזה» (template_unknown) לבין «המכתב הזה
+    // מכובה» (template_disabled), ושני הנוסחים ישבו כאן בעברית בלי שתהיה ולו
+    // לחיצה אחת שמגיעה אליהם.
+    //
+    // ארבע הכרעות:
+    // (1) הערך הריק אינו שולח template_key כלל, ואינו מחשב כאן את המפתח.
+    //     render גוזר treatment → rights_treatment_reply ואחרת
+    //     general_inquiry_reply (0063), והוא הבעלים היחיד. חישוב שני כאן היה
+    //     מקום שני שבו מוכרעת זהות המכתב, ושני מקומות כאלה מסתעפים בשקט.
+    // (2) שורה מנוטרלת מוצגת ואינה נבחרת: להשמיט אותה היה הופך מכתב מכובה
+    //     למכתב שאינו קיים — בדיוק ההבחנה שהשרת טרח לבנות; להשאיר אותה
+    //     לחיצה היה מבטיח הפקה שהשרת דוחה תמיד. הסיבה נאמרת בכיתוב עצמו,
+    //     שכן דפדפן אינו מציג title על <option> מנוטרלת.
+    // (3) הבורר קיים רק אם השרת החזיר רשימה: שרת ישן (לפני 0073) משאיר את
+    //     המסך בדיוק כפי שהיה, ואינו מציג בורר ריק שאי אפשר לבחור בו דבר.
+    // (4) הנושא והערוצים מוצגים מתחת לבורר ולא בתוך האפשרות: אלה שני נתונים
+    //     שהמנהל צריך לפני לחיצה, ו-<option> ארוכה נקטמת. הערוץ הוא נתון על
+    //     התבנית בלבד — הערוץ בפועל נגזר מסוג המסמך ב-queue (0067).
+    const templates = Array.isArray(data.templates) ? data.templates : [];
+    let tmplSel = null, tmplHint = null;
+    if (templates.length) {
+      const lbl = document.createElement("label");
+      lbl.setAttribute("for", "tmpl-sel");
+      lbl.textContent = "מכתב";
+      tmplSel = document.createElement("select");
+      tmplSel.id = "tmpl-sel";
+      const def = document.createElement("option");
+      def.value = "";
+      def.textContent = "ברירת מחדל לפי סוג הפנייה";
+      tmplSel.append(def);
+      for (const t of templates) {
+        const o = document.createElement("option");
+        o.value = t.key;
+        o.textContent = t.enabled
+          ? (t.name_he || t.key)
+          : `${t.name_he || t.key} — מנוטרלת, אינה מפיקה`;
+        o.disabled = !t.enabled;
+        tmplSel.append(o);
+      }
+      bar.append(lbl, tmplSel);
+      tmplHint = document.createElement("p");
+      tmplHint.className = "note";
+      const syncHint = () => {
+        const t = templates.find((x) => x.key === tmplSel.value);
+        if (!t) {
+          tmplHint.textContent =
+            `נקבע לפי סוג הפנייה — «${label(KIND_MAP, c.kind)}» מקבל ` +
+            (c.kind === "treatment" ? "את המכתב עם רשימת הזכויות." : "את המענה הכללי.");
+          return;
+        }
+        const ch = Array.isArray(t.channels) && t.channels.length ? t.channels.join(", ") : "לא הוגדר";
+        tmplHint.textContent = `נושא: ${t.subject || "—"} · ערוץ התבנית: ${ch}`;
+      };
+      tmplSel.addEventListener("change", syncHint);
+      // בחירה שנשמרה מהפקה קודמת מוחזרת רק אם היא עדיין ברת-בחירה: תבנית
+      // שנוטרלה בין שתי הלחיצות אינה חוזרת בשקט לבורר, כי אז הכפתור היה מבטיח
+      // הפקה שהשרת דוחה.
+      if (keepTmpl && templates.some((t) => t.key === keepTmpl && t.enabled)) tmplSel.value = keepTmpl;
+      syncHint();
+    }
+
+    bar.append(renderBtn);
+    const renderNote = document.createElement("p");
+    renderNote.className = "note";
+    renderNote.setAttribute("role", "status");
+    if (note) renderNote.textContent = note; else renderNote.hidden = true;
+    const renderErr = document.createElement("div");
+    renderErr.className = "err";
+    renderErr.setAttribute("role", "alert");
+    renderErr.hidden = true;
+    if (tmplHint) body.append(bar, tmplHint, renderNote, renderErr);
+    else body.append(bar, renderNote, renderErr);
+
+    renderBtn.addEventListener("click", async () => {
+      renderErr.hidden = true;
+      const was = renderBtn.textContent;
+      renderBtn.disabled = true;
+      renderBtn.textContent = "מפיק…";
+      // ערך ריק = לא שולחים את המפתח כלל, ולא שולחים מחרוזת ריקה: 0063 קורא
+      // nullif(btrim(...)) ולכן שתיהן שקולות בשרת, אבל בקשה שאינה נושאת שדה
+      // היא גם מה שנמדד בכל הפעימות עד כאן, וזו התנהגות היום בדיוק.
+      const key = tmplSel ? tmplSel.value : "";
+      const out = await call("render", key ? { case_id: c.id, template_key: key } : { case_id: c.id });
+      renderBtn.disabled = false;
+      renderBtn.textContent = was;
+      if (!out || out.ok !== true) {
+        if (out?.expired) return toLogin(out.error);
+        showError(renderErr, out?.error || "bad_response", out?.template_key);
+        return;
+      }
+      // מה שנמדד ולא «בוצע»: איזה מסמך, מאיזו תבנית, כמה תווים ומה לא נפתר.
+      // מציין מקום שנשאר בלי ערך נמחק מהגוף (0063) — הסתרתו כאן הייתה משאירה
+      // חור שקט במכתב שאדם עומד לשלוח.
+      const bits = [
+        `מסמך #${out.document_id} הופק`,
+        `תבנית ${out.template_key}${out.fallback ? " (נוסח נפילה)" : ""}`,
+        // אותו countHe של שורת הרשימה ושל «זכות אחת» שמתחת, ולא מספר חשוף:
+        // מסמך שגופו תו אחד היה קורא «1 תווי טקסט». זו אינה תקלה נדירה בשרת
+        // אלא נוסח תבנית קצר שעבר את השער של 0074 (הוא חוסם 0 בלבד).
+        countHe(out.text_chars, "תו טקסט אחד", "תווי טקסט"),
+        // אותו countHe של שורת הרשימה ולא ניסוח שני על אותו נתון. שני המצבים
+        // שמייצרים «1 זכויות» הם שורות אמיתיות ב-case_rights ולא קצה נדיר:
+        // פנייה שיש לה זכות אחת (rights_source=all), וזכות אחת שסומנה chosen
+        // מתוך רבות — 0063 סופרת את הנבחרות אם יש, ואת כולן אם אין.
+        // הסוגריים נשארות כפי שהן: הן אומרות מאיפה בא המספר, וזו אינה צורת ריבוי.
+        `${countHe(out.rights_count, "זכות אחת", "זכויות")} (${out.rights_source === "chosen" ? "נבחרו" : "כל הרשימה"})`,
+      ];
+      const un = out.placeholders_unresolved || [];
+      if (un.length) bits.push(`מצייני מקום בלי ערך: ${un.join(", ")}`);
+      bits.push(out.queued ? "נכנס לתור שליחה" : "לא נשלח — מצב טסט");
+      await openCase(c.id, bits.join(" · "), undefined, key);
+    });
+
+    if (docs.length) {
+      const t = document.createElement("table");
+      t.innerHTML = "<thead><tr><th>#</th><th>סוג</th><th>כותרת</th><th>מכתב</th><th>נוצר</th><th>הופק על ידי</th><th>תור</th><th></th></tr></thead>";
+      const tb = document.createElement("tbody");
+      const panel = document.createElement("div");
+      panel.className = "docview";
+      panel.hidden = true;
+      // התוצאה של הכניסה לתור נכתבת מתחת לטבלה ולא בתוך השורה: היא כוללת את
+      // כתובת הנמען ואת הסיבה שנחסמה, וזה משפט ולא תא.
+      const queueNote = document.createElement("p");
+      queueNote.className = "note";
+      queueNote.setAttribute("role", "status");
+      queueNote.hidden = true;
+      const queueErr = document.createElement("div");
+      queueErr.className = "err";
+      queueErr.setAttribute("role", "alert");
+      queueErr.hidden = true;
+      // לעיבוד שורה משלו ולא שיתוף עם הכניסה לתור: אלה שתי פעולות שונות על
+      // שני נתונים שונים, ומי שלוחץ «עבד עכשיו» צריך לראות מה נעשה בלי
+      // שהשורה הקודמת תימחק מתחתיו.
+      const dispatchNote = document.createElement("p");
+      dispatchNote.className = "note";
+      dispatchNote.setAttribute("role", "status");
+      dispatchNote.hidden = true;
+      const dispatchErr = document.createElement("div");
+      dispatchErr.className = "err";
+      dispatchErr.setAttribute("role", "alert");
+      dispatchErr.hidden = true;
+      for (const d of docs) {
+        const tr = document.createElement("tr");
+        for (const v of [String(d.id), d.kind || "", d.title || ""]) {
+          const td = document.createElement("td"); td.textContent = v; tr.append(td);
+        }
+        // שלוש העמודות של 0074 הגיעו לתשובה ב-0075, וכאן נקראות. עד כאן השורה
+        // אמרה «מסמך #75» וחותמת יצירה בלבד, ומאז fb607a0 שתי הפקות מאותה פנייה
+        // בשני מכתבים שונים הציגו שורה זהה לחלוטין.
+        const ttd = document.createElement("td");
+        fillTemplateCell(ttd, d);
+        tr.append(ttd);
+        const ctd = document.createElement("td");
+        fillCreatedCell(ctd, d);
+        tr.append(ctd);
+        // 0085 החזירה את produced_by ואת השם גם בבלוק documents של הפנייה, וכאן
+        // הם נקראים. אותה fillProducedCell של מסך המסמך בדיוק, ולא ניסוח שני על
+        // אותו נתון: שני המסכים אמורים לומר את אותו דבר על אותו מסמך, ושתי
+        // פונקציות היו נפרדות בשקט — בדיוק כפי ש-fillTemplateCell ו-fillCreatedCell
+        // משותפות לשניהם מאותו טעם.
+        //
+        // מימין ל«נוצר» ולא בסוף השורה, ובאותו סדר של מסך המסמך (מכתב · נוצר ·
+        // הופק על ידי): «נדרס» ו«מי הפיק» מדברים על אותה הפקה אחרונה, וסמיכות
+        // התאים היא מה שקורא אותם כמשפט אחד. עמודת «תור» מדברת על מה שיקרה
+        // אחר כך, ולכן היא נשארת אחריהם.
+        //
+        // עד כאן שורת המסמך ברשימה שתקה גם כשהנתון היה קיים ומדויק — מנהל שפתח
+        // פנייה נדרש ללחוץ «הצג» מסמך-מסמך רק כדי לדעת מי כתב את מה שהוא עומד
+        // לשלוח.
+        const ptd = document.createElement("td");
+        fillProducedCell(ptd, d);
+        tr.append(ptd);
+        // מצב התור נקרא עכשיו בטעינת הפנייה (0069) ולא רק אחרי לחיצה. עד כאן
+        // הדרך היחידה לדעת אילו מסמכים כבר בתור — ואילו מהם נחסמו — הייתה
+        // ללחוץ «הצג» מסמך-מסמך.
+        const qtd = document.createElement("td");
+        tr.append(qtd);
+
+        const td = document.createElement("td");
+        const openBtn = document.createElement("button");
+        openBtn.type = "button";
+        openBtn.className = "ghost";
+        openBtn.textContent = "הצג";
+        // has_body מגיע מ-0060. מסמך בלי גוף אינו דבר שצריך ללחוץ כדי לגלות.
+        if (d.has_body === false) {
+          openBtn.disabled = true;
+          openBtn.title = "למסמך הזה אין גוף שמור";
+        }
+        openBtn.addEventListener("click", () => showDocument(d.id, panel, openBtn));
+        td.append(openBtn);
+
+        // ── הכנס לתור ──────────────────────────────────────────────────────
+        // הכפתור יושב בשורה ולא ב-docbar, בניגוד ל«הפק מסמך»: render פועל על
+        // הפנייה (upsert על case_id+kind), ו-queue פועל על מסמך מסוים. לפנייה
+        // יכולים להיות כמה מסמכים, וכפתור אחד מעל הטבלה היה צריך לנחש באיזה.
+        const qBtn = document.createElement("button");
+        qBtn.type = "button";
+        qBtn.className = "ghost";
+        qBtn.textContent = "הכנס לתור";
+        if (d.has_body === false) {
+          qBtn.disabled = true;
+          qBtn.title = "אין גוף שמור, ולכן אין מה להכניס לתור";
+        }
+        qBtn.addEventListener("click", async () => {
+          queueErr.hidden = true;
+          const was = qBtn.textContent;
+          qBtn.disabled = true;
+          qBtn.textContent = "מכניס…";
+          const out = await call("queue", { document_id: d.id });
+          qBtn.disabled = false;
+          qBtn.textContent = was;
+          if (!out || out.ok !== true) {
+            if (out?.expired) return toLogin(out.error);
+            queueNote.hidden = true;
+            showError(queueErr, out?.error || "bad_response", out?.document_kind);
+            return;
+          }
+          // מה שנמדד ולא «בוצע»: איזו שורת תור, באיזה מצב, לאיזו כתובת ובאיזה
+          // מצב שליחה. שורה חסומה היא הצלחה של הקריאה וכישלון של השליחה, ולכן
+          // היא נאמרת במפורש — «נכנס לתור» לבדו היה נקרא כמו מכתב שיצא.
+          const bits = [
+            `שורת תור #${out.queue_id}`,
+            out.already_queued ? "כבר היה בתור — לא נוצרה שורה שנייה" : "נכנס עכשיו",
+            out.blocked ? "חסום — לא יישלח" : `במצב ${out.status}`,
+            `יעד ${out.to_address || "—"}`,
+            `מצב ${out.mode}`,
+          ];
+          if (out.content_bytes != null) bits.push(`${out.content_bytes} בתים`);
+          if (out.message) bits.push(out.message);
+          queueNote.textContent = bits.join(" · ");
+          queueNote.hidden = false;
+          // התא מתעדכן במקום, ואין רענון של הפנייה: openCase בונה את המסך מאפס
+          // והיה מוחק את שורת המדידה שזה עתה נכתבה. עד 0069 גם לא היה מה לכתוב
+          // בתא — admin_case החזירה queue_id בלי מצב — ולכן שורה חסומה נראתה
+          // כאן בדיוק כמו שורה שנכנסה לתור.
+          syncQueue({ queue_id: out.queue_id, status: out.status, mode: out.mode, missing: false });
+          qBtn.textContent = "הכנס לתור שוב";
+        });
+        td.append(qBtn);
+
+        // ── עבד עכשיו ──────────────────────────────────────────────────────
+        // מפעיל את המעבד של 0070 על שורת התור. הוא מאמת את התוכן, בודק שוב
+        // שהיעד ברשימת הבדיקה ומסמן skipped — ואינו שולח: אין בו net.http,
+        // אין pg_net ואין Resend. שליחה אמיתית תדרוש מיגרציה, לא לחיצה.
+        //
+        // הכפתור שולח queue_id ולא document_id: המעבד פועל על שורת התור, וזו
+        // גם הסיבה שהוא כבוי כל עוד אין שורה. הוא כבוי גם כשהשורה אינה
+        // ממתינה — 0070 דוחה כל מצב אחר, וכפתור פעיל שתמיד מחזיר שגיאה הוא
+        // הבטחה שאיש אינו עומד מאחוריה.
+        const dBtn = document.createElement("button");
+        dBtn.type = "button";
+        dBtn.className = "ghost";
+        dBtn.textContent = "עבד עכשיו";
+        dBtn.addEventListener("click", async () => {
+          if (qstate.queue_id == null) return;
+          dispatchErr.hidden = true;
+          const was = dBtn.textContent;
+          dBtn.disabled = true;
+          dBtn.textContent = "מעבד…";
+          const out = await call("dispatch", { queue_id: qstate.queue_id });
+          dBtn.textContent = was;
+          if (!out || out.ok !== true) {
+            if (out?.expired) return toLogin(out.error);
+            dispatchNote.hidden = true;
+            showError(dispatchErr, out?.error || "bad_response", out?.status_detail || out?.message);
+            // ⚠️ שני מסלולי שגיאה של 0070 משנים את מצב השורה בדרך החוצה:
+            //    target_not_allowed מסמן blocked ו-queue_body_empty מסמן
+            //    failed. בלי העדכון הזה התא היה ממשיך לומר «בתור» על שורה
+            //    שהמסד כבר סגר — פער שאין לו סימפטום עד שמישהו מרענן.
+            if (out?.status) syncQueue({ ...qstate, status: out.status, missing: false });
+            else syncQueue(qstate);
+            return;
+          }
+          // מה שנמדד ולא «בוצע»: איזו שורה, לאיזו כתובת, כמה בתים אומתו וכמה
+          // הודעות יצאו בפועל. sent_for_real מוצג תמיד ובמפורש — «עובד» לבדו
+          // נקרא כמו מכתב שיצא, וזה בדיוק מה שלא קרה.
+          const bits = [
+            `שורת תור #${out.queue_id}`,
+            "עובד במצב בדיקה — לא נשלחה שום הודעה",
+            `יעד ${out.to_address || "—"}`,
+            `מצב ${out.mode}`,
+          ];
+          if (out.document_id != null) bits.push(`מסמך #${out.document_id}`);
+          if (out.content_bytes != null) bits.push(`${out.content_bytes} בתים אומתו`);
+          bits.push(`נשלח בפועל: ${out.sent_for_real ?? "—"}`);
+          // נמדד בשרת ואינו חוסם (0070): render עושה upsert על case_id+kind,
+          // ולכן הפקה חוזרת אחרי ההכנסה לתור משאירה בשורה את הגוף הישן. מה
+          // שהמנהל אישר הוא מה שעובד — אבל ההפרש לא נשאר שקט.
+          if (out.body_matches_document === false) {
+            bits.push("⚠ הגוף שעובד אינו הגוף של המסמך הנוכחי — המסמך הופק מחדש אחרי ההכנסה לתור");
+          }
+          dispatchNote.textContent = bits.join(" · ");
+          dispatchNote.hidden = false;
+          syncQueue({ queue_id: out.queue_id, status: out.status, mode: out.mode, missing: false });
+        });
+        td.append(dBtn);
+
+        // מצב אחד לשורה, ושני צרכנים לו: התא והכפתור. עד כאן התא התעדכן
+        // במקום אחד והכפתור לא היה קיים; מצב כפול היה נותן תא שאומר «עובד»
+        // וכפתור שעדיין מזמין ללחוץ.
+        let qstate = { queue_id: d.queue_id, status: d.queue_status, mode: d.queue_mode, missing: d.queue_missing };
+        function syncQueue(q) {
+          qstate = q;
+          fillQueueCell(qtd, q);
+          const ready = q.queue_id != null && q.status === "queued" && q.missing !== true;
+          dBtn.disabled = !ready;
+          dBtn.title = ready ? "מאמת את התוכן ואת היעד. אינו שולח."
+            : q.queue_id == null ? "המסמך לא הוכנס לתור, ולכן אין מה לעבד"
+            : q.missing === true ? "שורת התור חסרה"
+            : q.status === "skipped" ? "השורה כבר עובדה"
+            : "השורה אינה ממתינה בתור, ולכן אינה מעובדת";
+        }
+        syncQueue(qstate);
+
+        tr.append(td);
+        tb.append(tr);
+      }
+      t.append(tb);
+      body.append(t, queueNote, queueErr, dispatchNote, dispatchErr, panel);
+    } else {
+      const p = document.createElement("p"); p.className = "empty";
+      p.textContent = "אין מסמכים. «הפק מסמך» מייצר את מכתב התשובה מהתבנית — ואינו שולח אותו.";
+      body.append(p);
+    }
+
+    body.append(h3("מה שהלקוח שלח בפועל"));
+    const pre = document.createElement("pre");
+    pre.textContent = JSON.stringify(c.raw ?? {}, null, 2);
+    body.append(pre);
+  }
+
+  // ── מצב שורת התור בשורת המסמך ─────────────────────────────────────────────
+  // queue_id לבדו אינו מוצג לעולם בלי המצב שלצידו: שורה חסומה נושאת מזהה תור
+  // בדיוק כמו שורה שנכנסה, ו«בתור #22» על מכתב שלא יישלח לעולם הוא בדיוק סוג
+  // הפער שאין לו סימפטום. queue_missing מגיע מהשרת במפורש (0069) ואינו נגזר
+  // כאן מ-status שהוא null — «#14 · —» נקרא כמו תקלה של המסך ולא כמו נתון חסר.
+  function fillQueueCell(td, q) {
+    td.textContent = "";
+    td.removeAttribute("title");
+    if (q.queue_id == null) {
+      td.textContent = "—";
+      td.title = "המסמך לא הוכנס לתור";
+      return;
+    }
+    const bad = q.missing === true || QUEUE_BAD.has(q.status);
+    const text = q.missing === true
+      ? `#${q.queue_id} · שורת התור חסרה`
+      : `#${q.queue_id} · ${QUEUE_STATUS[q.status] ?? (q.status || "—")}${q.mode ? ` · מצב ${q.mode}` : ""}`;
+    if (!bad) { td.textContent = text; return; }
+    const s = document.createElement("span");
+    s.className = "stale";
+    s.textContent = text;
+    td.append(s);
+  }
+
+  // ── איזה מכתב יושב במסמך ──────────────────────────────────────────────────
+  // שלושה מצבים, ואינם אותו מצב — ולכן אין כאן ולו coalesce אחד:
+  //
+  // (א) template_key הוא null — מסמך שהופק לפני 0074. «לא ידוע», ולא «ברירת
+  //     מחדל»: הכרעה (5) של 0074 סירבה במפורש לכתוב false על שורות כאלה, ומסך
+  //     שימציא כאן ערך יחזיר בדיוק את הקביעה חסרת-המקור שהמסד סירב לשמור.
+  // (ב) יש מפתח ואין שם — template_key הוא text ואינו FK (הכרעה 1 של 0074),
+  //     כלומר מפתח שאין לו שורה הוא מצב חוקי וצפוי: התבנית נמחקה מאז ההפקה.
+  //     המפתח הטכני מוצג כפי שהוא, כי הוא כל מה שידוע.
+  // (ג) template_fallback=true — וזו השורה שבגללה העמודה נצבעת: השורה נושאת שם
+  //     מכתב אמיתי, והגוף אינו בא ממנו אלא מנוסח הנפילה הקבוע שבתוך render.
+  //     בלי הסימון אין שום דרך במסך להבדיל בינה לבין הפקה תקינה.
+  //
+  // השם מגיע מהשרת (template_name_he) ואינו ממופה כאן מרשימת templates: מיפוי
+  // בלקוח נכשל בשקט בדיוק במקרה (ב), שהוא המקרה היחיד שבשבילו הוא נדרש.
+  function fillTemplateCell(td, d) {
+    td.textContent = "";
+    td.removeAttribute("title");
+    if (d.template_key == null) {
+      td.textContent = "—";
+      td.title = "המסמך הופק לפני שהשדה נשמר, ואיזה מכתב יושב בו אינו ידוע";
+      return;
+    }
+    const name = d.template_name_he || null;
+    if (name) {
+      td.append(document.createTextNode(name));
+      td.title = `מפתח ${d.template_key}`;
+    } else {
+      const s = document.createElement("span");
+      s.className = "stale";
+      s.textContent = `${d.template_key} · התבנית אינה קיימת`;
+      s.title = "המפתח נשמר על המסמך בזמן ההפקה, ושורת התבנית שהוא מצביע עליה כבר אינה במסד";
+      td.append(s);
+    }
+    // (ב) ו-(ג) יכולים לחול יחד, ולכן זה אינו else: מסמך שהופק בנוסח נפילה
+    // ושהתבנית שלו נמחקה מאז נושא שתי עובדות נפרדות — «אין שורה כזו» ו«הגוף
+    // לא בא ממנה». בליעת השנייה לתוך הראשונה הייתה משאירה את המנהל עם השאלה
+    // הלא נכונה: הוא היה מחפש תבנית שנמחקה במקום לדעת שגם אילו הייתה, לא היא
+    // זו שכתבה את המכתב.
+    if (d.template_fallback === true) {
+      const s = document.createElement("span");
+      s.className = "stale";
+      s.textContent = "נוסח נפילה";
+      s.title = "שורת התבנית הייתה חסרה או מנוטרלת בזמן ההפקה, והגוף בא מנוסח קבוע ולא ממנה";
+      td.append(document.createElement("br"), s);
+    } else if (d.template_fallback == null && name) {
+      // null ולא false: הכרעה (2) של 0075 מחזירה את השדה כפי שהוא, ולכן «לא
+      // ידוע» מגיע לכאן ואינו נבלע לתוך «הופק מהתבנית».
+      td.title += " · אם הגוף בא מהתבנית עצמה אינו ידוע";
+    }
+  }
+
+  // ── מתי נכתב מה שכתוב שם ───────────────────────────────────────────────────
+  // created_at של upsert אינו זז לעולם (0074), ולכן על מסמך שנדרס הוא אומר
+  // למנהל שהמכתב שהוא קורא נכתב בזמן שאינו נכון. overwritten נגזר בשרת
+  // (הכרעה 3 של 0075) — השוואת timestamptz ולא השוואת שתי מחרוזות אחרי
+  // סריאליזציה — וכאן רק נקרא. false ו-null אינם מוסיפים דבר: השני הוא מסמך
+  // מלפני 0074 ואין ממנו מה לומר.
+  function fillCreatedCell(td, d) {
+    td.textContent = "";
+    td.removeAttribute("title");
+    td.append(document.createTextNode(fmtDate(d.created_at)));
+    if (d.overwritten !== true) return;
+    const s = document.createElement("span");
+    s.className = "stale";
+    s.textContent = `נדרס ${fmtDate(d.updated_at)}`;
+    s.title = "«הפק מחדש» כותב על אותה שורה (upsert על case_id ו-kind), ולכן חותמת היצירה נשארה של ההפקה הראשונה";
+    td.append(document.createElement("br"), s);
+  }
+
+  // ── מי הפיק את המסמך ──────────────────────────────────────────────────────
+  // 0083 בנתה את העמודה, v8 העבירה את הזהות בשער, ו-0084 החזירה אותה ולצידה
+  // את השם. כאן היא נאמרת. מסמך הוא הדבר היחיד בשכפול שנועד לצאת אל אדם
+  // אמיתי, ו«הפק מחדש» דורס את הגוף הקודם — ולכן «מי כתב את מה שאני עומד
+  // לשלוח» אינו נגזר משום מקום אחר במסך.
+  //
+  // שלושה מצבים ולא שניים, ובמקביל מדויק ל-fillDecidedLine — ובכל זאת לא אותם
+  // שלושה: על פנייה יש מצב «איש לא הכריע», וכאן אין לו מקבילה. שורת documents
+  // קיימת רק מפני ש-render יצרה אותה, כלומר כל מסמך הופק בהגדרה.
+  //
+  // (1) אין זהות — הפקה שנרשמה לפני v8, כשהשער העביר ארגומנט אחד. «הופק ואיננו
+  //     יודעים על ידי מי», ולא «לא הופק».
+  //
+  // (2) זהות עם שם — המקרה הרגיל.
+  //
+  // (3) זהות בלי שם — full_name הוא NOT NULL, ולכן שם ריק כשהזהות מלאה אומר
+  //     דבר אחד בדיוק: חשבון הניהול נמחק. produced_by אינו FK והצירוף הוא
+  //     LEFT JOIN, ולכן ההפקה שורדת את מחיקת המפיק.
+  //
+  // העמודה אומרת את ההפקה האחרונה בלבד ואין היסטוריה — ולכן ה-title מדבר על
+  // «ההפקה האחרונה» ולא על «ההפקה», ומצטרף ל«נדרס» שמעליו ולא סותר אותו.
+  function fillProducedCell(td, d) {
+    td.textContent = "";
+    td.removeAttribute("title");
+    if (d.produced_by == null) {
+      const s = document.createElement("span");
+      s.className = "stale";
+      s.textContent = "אינו ידוע";
+      s.title = "ההפקה נרשמה לפני שהשער העביר את זהות המנהל, ולכן נשמר הגוף בלבד";
+      td.append(s);
+      return;
+    }
+    if (d.produced_by_name) {
+      td.append(document.createTextNode(d.produced_by_name));
+      td.title = `מזהה מנהל ${d.produced_by} · ההפקה האחרונה בלבד — «הפק מחדש» דורס את הקודמת ואין היסטוריה`;
+      return;
+    }
+    const s = document.createElement("span");
+    s.className = "stale";
+    s.textContent = `מנהל #${d.produced_by} · החשבון אינו קיים עוד`;
+    s.title = "הזהות נשמרה על המסמך בזמן ההפקה, וחשבון הניהול שהיא מצביעה עליו כבר אינו במסד";
+    td.append(s);
+  }
+
+  // ── מי הכריע ומתי ─────────────────────────────────────────────────────────
+  // 0076 בנתה שתי עמודות ולא אחת בדיוק כדי להפריד בין שלושה מצבים שנראו במסך
+  // זהים, ו-0077 החזירה אותן ולצידן את השם. כאן הם נאמרים.
+  //
+  // (1) אין חותמת — לא נרשמה ולו לחיצה אחת. הנוסח מדבר על הלחיצה ולא על
+  //     הפנייה, כי פנייה יכולה לשבת ב«בטיפול» מפני שהטריגר קידם אותה בהפקת
+  //     מסמך; «לא הוכרעה» היה נקרא כמו «לא טופלה», וזה נתון אחר.
+  //
+  // (2) חותמת בלי זהות — לחיצה שנרשמה לפני v7, כשהשער העביר ארגומנט אחד.
+  //     נצבע ואינו נבלע לתוך (1): «אדם הכריע ואיננו יודעים מי» אינו «איש לא
+  //     הכריע», ובליעה כאן הייתה מוחקת את העובדה שמישהו כבר סגר את הפנייה.
+  //
+  // (3) זהות בלי שם — full_name הוא NOT NULL (הכרעה (2) של 0077), ולכן שם ריק
+  //     כשהזהות מלאה אומר דבר אחד בדיוק: חשבון הניהול נמחק. decided_by אינו FK
+  //     (הכרעה (4) של 0076) והצירוף הוא LEFT JOIN, ולכן ההכרעה שורדת את מחיקת
+  //     המכריע — והמזהה מוצג כפי שהוא, בדיוק כמו מפתח תבנית שאין לו שורה.
+  //
+  // אין כאן מיפוי בלקוח משום רשימה: השם מגיע מהשרת, ומיפוי מקומי היה נכשל
+  // בשקט בדיוק במקרה היחיד שבשבילו הוא נדרש — מנהל שכבר אינו קיים.
+  function fillDecidedLine(p, c) {
+    p.textContent = "";
+    p.removeAttribute("title");
+    if (c.decided_at == null) {
+      p.textContent = "לא נרשמה הכרעה ידנית מהמסך";
+      p.title = "«עודכנה» זזה גם מהפקת מסמך, ולכן היא אינה אומרת שאדם נגע בפנייה";
+      return;
+    }
+    p.append(document.createTextNode(`הוכרעה ${fmtDate(c.decided_at)}`));
+    if (c.decided_by == null) {
+      const s = document.createElement("span");
+      s.className = "stale";
+      s.textContent = "מי הכריע אינו ידוע";
+      s.title = "הלחיצה נרשמה לפני שהשער העביר את זהות המנהל, ולכן נשמרה החותמת בלבד";
+      p.append(document.createTextNode(" · "), s);
+      return;
+    }
+    if (c.decided_by_name) {
+      p.append(document.createTextNode(` · ${c.decided_by_name}`));
+      p.title = `מזהה מנהל ${c.decided_by}`;
+      return;
+    }
+    const s = document.createElement("span");
+    s.className = "stale";
+    s.textContent = `מנהל #${c.decided_by} · החשבון אינו קיים עוד`;
+    s.title = "הזהות נשמרה על הפנייה בזמן ההכרעה, וחשבון הניהול שהיא מצביעה עליו כבר אינו במסד";
+    p.append(document.createTextNode(" · "), s);
+  }
+
+  // ── מי הכריע במעבר הזה ────────────────────────────────────────────────────
+  // אותם שלושה מצבים של fillProducedCell ובאותו סדר, ובכל זאת לא היא: שם
+  // מדובר בהפקה וכאן בהכרעה, וה-title הוא כל מה שהתא הזה אומר מעבר לשם. שימוש
+  // חוזר היה מספר על שורת יומן שהיא «הפקה שנרשמה לפני שהשער העביר את הזהות»,
+  // כלומר משפט נכון בצורתו ושקר בתוכנו.
+  //
+  // (1) אין זהות — מעבר שנכתב בלי מי שכתב אותו. הכותב היחיד ליומן הוא הנתיב
+  //     שמאחורי השער, ולכן המצב הזה אינו קיים היום בשום שורה (הכרעה (4) של
+  //     0088); הוא נצבע ואינו נבלע, כי היום שבו יופיע הוא בדיוק היום שבו צריך
+  //     לראות אותו.
+  //
+  // (2) זהות עם שם — המקרה הרגיל.
+  //
+  // (3) זהות בלי שם — full_name הוא NOT NULL, ולכן שם ריק כשהזהות מלאה אומר
+  //     דבר אחד: החשבון נמחק. admin_id אינו FK (הכרעה (2) של 0087) והצירוף הוא
+  //     LEFT JOIN (הכרעה (3) של 0088), ולכן המעבר עצמו שורד את מחיקת המכריע —
+  //     ו-INNER היה מוחק כאן מעבר שלם ולא שדה, כלומר מעלים מהרצף את הדחייה
+  //     מפני שמי שדחה עזב.
+  function fillHistoryWhoCell(td, r) {
+    td.textContent = "";
+    td.removeAttribute("title");
+    if (r.admin_id == null) {
+      const s = document.createElement("span");
+      s.className = "stale";
+      s.textContent = "אינו ידוע";
+      s.title = "המעבר נרשם ביומן בלי זהות המנהל, ולכן נשמרו הסטטוסים והזמן בלבד";
+      td.append(s);
+      return;
+    }
+    if (r.admin_name) {
+      td.append(document.createTextNode(r.admin_name));
+      td.title = `מזהה מנהל ${r.admin_id}`;
+      return;
+    }
+    const s = document.createElement("span");
+    s.className = "stale";
+    s.textContent = `מנהל #${r.admin_id} · החשבון אינו קיים עוד`;
+    s.title = "הזהות נשמרה על המעבר בזמן ההכרעה, וחשבון הניהול שהיא מצביעה עליו כבר אינו במסד";
+    td.append(s);
+  }
+
+  // ── «למה» של שורת היומן ───────────────────────────────────────────────────
+  // 0090 בנתה את case_status_log.note ו-0091 החזירה את המפתח בשורת היומן; כאן
+  // הוא נאמר. עד עכשיו הנימוק נאסף, נשמר, ולא היה מסך אחד שמוציא אותו — מנהל
+  // שפתח פנייה שנדחתה ראה מי הכריע, מה הוכרע ומתי, ולא את המשפט שהמכריע טרח
+  // להקליד. שלושה מצבים ולא שניים, אותו כלל של fillHistoryWhoCell:
+  //
+  // (1) המפתח אינו קיים — תשובה מקורא שקדם ל-0091. «לא נומק» עליה הוא שקר:
+  //     הנימוק יכול לשבת במסד ולא לחזור, וזה בדיוק מה שנמדד שם — has_note_key
+  //     false בכל חמש שורות היומן בעוד במסד יושבים 52, 59, 500 ו-57 תווים.
+  //     Object.hasOwn ולא בדיקת ערך, כמו בבלוק כולו למעלה.
+  //
+  // (2) null — המכריע לא נימק. ריק, רווחים בלבד והיעדר מפתח בגוף הבקשה הם
+  //     כולם null אחד במסד (0090 הכרעה (4) והאילוץ note_not_blank), ולכן אין
+  //     כאן מצב רביעי של «נימוק ריק»; «—» ולא span של stale, מפני שזה מצב
+  //     תקין ולא נתון חסר.
+  //
+  // (3) הטקסט כפי שנשמר, שלם. אין חיתוך ואין «…»: תקרת 500 התווים נאכפת
+  //     בכתיבה ומחזירה note_too_long לפני שהסטטוס משתנה (0090 הכרעה (5)),
+  //     וקורא שחותך היה מסתיר בשקט את סופו של נימוק ארוך — כלומר בדיוק את מה
+  //     שנכתב בזהירות. הטקסט נכנס כצומת טקסט ולא כ-HTML: הוא הוקלד בידי אדם
+  //     ונשמר כפי שהוא. ⚠️ מאז fillNoteText הוא יכול להתפצל לצמתים רבים כדי
+  //     שכל הופעה של המילה שהתאימה תסומן — כולם צמתי טקסט, והכלל אינו זז.
+  // ── היכן בתוך הנימוק ──────────────────────────────────────────────────────
+  // 0097 אמרה «זו השורה» ו-0100 אמרה «והמונח יושב בה מתו pos באורך len». עד כאן
+  // הנימוק צויר כמחרוזת אחת, ומנהל שהגיע לפנייה בזכות מילה קרא ‎37 תווים בעיניים
+  // כדי למצוא אותה — ועל נימוק בן 500 (התקרה ש-0090 אוכפת) הוא קרא פסקה. כאן
+  // המספרים הופכים לסימן.
+  //
+  // שבע הכרעות:
+  //
+  // (1) ⚠️ אין כאן ולו השוואת מחרוזות אחת. המיקום מגיע מהשרת ואינו מחושב מחדש,
+  //     וזו בדיוק הסיבה שהכרעה (3) של fillHistoryNoteCell סירבה עד 0100: חיפוש
+  //     שני בלקוח הוא כלל התאמה שני, שיכול לחלוק על escape/btrim/ilike של המסד
+  //     ולסמן במקום אחר. מה שמצויר כאן הוא מה שנמדד שם, ותו לא.
+  //
+  // (2) ⚠️ צמתי טקסט ולא innerHTML. slice על מחרוזת מחזיר טקסט, וטקסט
+  //     שנכנס כ-createTextNode אינו יכול להיקרא כתגית — הכלל «הוקלד בידי אדם
+  //     ונשמר כפי שהוא» (הכרעה (3) למעלה) עומד בדיוק כפי שעמד כשזה היה
+  //     textContent אחד. רק הקטעים שהמסד מדד נעטפים, וכל השאר טקסט חשוף.
+  //
+  // (3) ⚠️ המרה אחת מ-1 ל-0: pg מונה מ-1 ו-JS מונה מ-0, וההמרה נעשית בשורה אחת
+  //     ובמקום אחד. שתי המרות בשני מקומות הן בדיוק איך שהדגשה נוחתת תו אחד
+  //     הצדה.
+  //
+  // (4) ⚠️ שמירה על גבולות, ולא כאמונה בשרת: המספרים חייבים להיות מספרים,
+  //     pos ≥ 1, len ≥ 1, ו-pos+len-1 ≤ אורך הטקסט שהגיע לצדם. שרת שהחזיר
+  //     מספרים שאינם נכנסים למחרוזת ששלח היה מסמן תווים אחרים, וסימון במקום
+  //     הלא נכון הוא שקר על טקסט שאדם הקליד — אותו כלל של הכרעה (2) ב-0100,
+  //     בצד הזה של החוט. כשהשמירה נופלת מצויר הטקסט השלם בלי סימן, כמו קודם.
+  //
+  // (5) ⚠️ note_matched אינו נבדק כאן. 0100 מחשבת מיקום רק היכן ש-ilike אמר
+  //     true, ולכן «יש מספר» כבר אומר «התאימה»; בדיקה כפולה כאן הייתה מוסיפה
+  //     כלל שלישי. ושרת מלפני 0100 (מפתח חסר) ושורה שלא התאימה (null) נופלים
+  //     שניהם לאותו ענף — הטקסט השלם — וזה נכון: בשניהם אין היכן לסמן.
+  //
+  // (6) ⚠️ ההכרעה הזו נכתבה כמגבלה ואינה עומדת עוד: «ההתאמה הראשונה בלבד...
+  //     ב«Email נשלח לפונה, ואחריו EMAIL נוסף בטעות» המונח יושב פעמיים והמסד
+  //     מחזיר 1; השנייה אינה מסומנת». 0101 בנתה את note_match_pos_all — כל
+  //     המיקומים, בלי חפיפה, משמאל לימין — ומאותו רגע «אחת מתוך שתיים» הוא
+  //     בחירה של המסך ולא מגבלה של השרת. ראו הכרעות (8)–(11) שלמטה.
+  //
+  // ── כל ההופעות, ולא הראשונה בלבד ──────────────────────────────────────────
+  // ארבע הכרעות נוספות:
+  //
+  // (8) ⚠️ מערך אחד ואורך אחד, ולא זוג לכל הופעה. המונח אחד ואורכו אחד —
+  //     0101 כתבה זאת במפורש על note_match_len — ולכן אותו len נחתך בכל
+  //     מיקום. אורך שני היה אומר שהמסד מצא שני דברים שונים.
+  //
+  // (9) ⚠️ נפילה חזרה אל note_match_pos, ולא ויתור על הסימון. שרת מלפני 0101
+  //     אינו מחזיר את המפתח כלל (0101 הכרעה (1)), ואז המסך מסמן את הראשונה
+  //     כפי שסימן עד היום — ו-title אחר, שאומר «הראשונה בלבד». null הוא
+  //     «אין היכן לסמן» בשני השדות גם יחד (0101 הכרעה (5)), ואז אין סימן.
+  //
+  // (10) ⚠️ שמירה על הגבולות של המערך כולו, ולא על אחד ממנו: כל מיקום שלם,
+  //      ≥1, ונכנס למחרוזת (הכרעה (4)), ⚠️ ובנוסף עולה — כל מיקום מתחיל
+  //      אחרי סוף הקודם. חפיפה או סדר הפוך היו מייצרים slice שלילי ומצייר
+  //      טקסט פעמיים או מבליע קטע. כשולו אחד מהם נופל, כל המערך נפסל
+  //      והמסך יורד להכרעה (9) — סימון חלקי הוא בדיוק השקר שהכרעה (4)
+  //      מונעת. ⚠️ 0101 מבטיחה את שני התנאים; זו שמירה ולא תיקון.
+  //
+  // (11) ⚠️ ה-title אומר כמה, ואינו אומר «כולן» סתם: «3 הופעות, וכולן
+  //      מסומנות» הוא מספר שאפשר לספור מולו על המסך. הופעה אחת מקבלת ניסוח
+  //      משלה — «הופעה אחת» — כי «1 הופעות» אינו עברית, אותו כלל של many()
+  //      ברשימה.
+  //
+  // (7) mark ולא span: זהו האלמנט של «מסומן לצורך הפניה», והוא נקרא ככזה גם
+  //     בלי לראות את הצבע. הצהוב של ברירת המחדל נצבע מחדש ב-CSS, ולא בצבע
+  //     בלבד.
+  // ⚠️ ההכרעות (4), (8), (9) ו-(10) יושבות כאן ולא בתוך fillNoteText, מפני
+  // שמאז noteMatchTally סופרת את אותם מיקומים יש להן שני קוראים. שני עותקים של
+  // הכלל היו יכולים להיפרד — מספר שאומר «שלוש פעמים» מעל טבלה שמציירת שני
+  // סימנים — וזה בדיוק סוג השקר שהכרעה (4) נכתבה כדי למנוע. המסננת אחת, ולכן
+  // המספר שווה תמיד למה שאפשר לספור בעיניים על המסך.
+  //
+  // complete נמסר ואינו נבלע: הוא ההבדל בין «כל ההופעות» ל«הראשונה בלבד»,
+  // ושני הקוראים עושים בו שני דברים שונים — כאן הוא בוחר title, ובספירה הוא
+  // הסיבה היחידה לשתוק.
+  function noteSpots(r) {
+    const text = r.note;
+    const len = r.note_match_len;
+    // הכרעה (8): אורך אחד לכל המיקומים.
+    const lenOk = typeof text === "string" &&
+      typeof len === "number" && Number.isInteger(len) && len >= 1;
+    const inside = (p) =>
+      typeof p === "number" && Number.isInteger(p) && p >= 1 && p - 1 + len <= text.length;
+    // הכרעות (9) ו-(10): כל המיקומים אם המערך שלם, ואחרת הראשון בלבד.
+    const all = r.note_match_pos_all;
+    if (lenOk && Array.isArray(all) && all.length > 0 &&
+        all.every((p, k) => inside(p) && (k === 0 || p >= all[k - 1] + len)))
+      return { spots: all, complete: true };
+    if (lenOk && inside(r.note_match_pos)) return { spots: [r.note_match_pos], complete: false };
+    return { spots: null, complete: false };
+  }
+
+  function fillNoteText(td, r) {
+    const text = r.note;
+    const len = r.note_match_len;
+    const { spots, complete } = noteSpots(r);
+    if (!spots) { td.append(document.createTextNode(text)); return; }
+    // הכרעה (11): כמה, ובעברית.
+    const title = !complete
+      ? "כאן נמצא מה שהוקלד בחיפוש — המיקום מגיע מהמסד ולא נמדד שוב במסך. אם המונח חוזר בטקסט הזה, מסומנת ההופעה הראשונה בלבד"
+      : spots.length === 1
+        ? "כאן נמצא מה שהוקלד בחיפוש — הופעה אחת בטקסט הזה, והיא מסומנת. המיקום מגיע מהמסד ולא נמדד שוב במסך"
+        : `כאן נמצא מה שהוקלד בחיפוש — ${spots.length} הופעות בטקסט הזה, וכולן מסומנות. המיקומים מגיעים מהמסד ולא נמדדו שוב במסך`;
+    // הכרעה (2): כל קטע נכנס כצומת טקסט, גם זה שבתוך ה-mark.
+    let cur = 0;
+    for (const p of spots) {
+      const i = p - 1;
+      const m = document.createElement("mark");
+      m.className = "hit";
+      m.append(document.createTextNode(text.slice(i, i + len)));
+      m.title = title;
+      td.append(document.createTextNode(text.slice(cur, i)), m);
+      cur = i + len;
+    }
+    td.append(document.createTextNode(text.slice(cur)));
+  }
+
+  function fillHistoryNoteCell(td, r) {
+    td.textContent = "";
+    td.removeAttribute("title");
+    if (!Object.hasOwn(r, "note")) {
+      const s = document.createElement("span");
+      s.className = "stale";
+      s.textContent = "השרת אינו מחזיר את הנימוק";
+      s.title = "התשובה הגיעה מקורא שאינו יודע על שדה הנימוק — זה אינו «לא נומק» אלא היעדר השדה עצמו";
+      td.append(s);
+      return;
+    }
+    if (r.note == null) {
+      td.textContent = "—";
+      td.title = "לא נכתב נימוק על המעבר הזה";
+      return;
+    }
+    fillNoteText(td, r);
+    td.title = `${r.note.length} תווים, כפי שנשמרו`;
+    // ── «זה הנימוק שהתאים» ────────────────────────────────────────────────────
+    // 0097 מסמנת על כל שורת יומן אם היא זו שנשאה את מונח החיפוש, ו-v9 מעבירה את
+    // המונח. הסימן נאמר על השורה עצמה מאותו טעם שבו הוא נאמר על שורת הרשימה:
+    // הקורא הגיע לכאן בגלל טקסט שאינו בשם ואינו בטלפון, ורצף של שלושה נימוקים
+    // בלי סימן מחזיר אותו לחפש בעיניים את מה שהמסד כבר מצא.
+    //
+    // ארבע הכרעות:
+    //
+    // (1) Object.hasOwn ואז true בלבד — אותו כלל של שלוש הפונקציות שמעל. שרת
+    //     מלפני 0097 אינו מחזיר את המפתח, ו«לא היא» ו«איני יודע» הם שני דברים
+    //     שסימן שקרי כאן היה מאחד.
+    //
+    // (2) בתא «למה» ולא בשורה כולה ולא בכותרת הטבלה. השדה מתאר ואינו בוחר:
+    //     «מסמכים» התאים לשתי שורות באותה פנייה, ו«המעבר שנמצא» בכותרת היה
+    //     אומר יחיד על מה שיכול להיות רבים. הסימן צמוד לטקסט שבגללו הוא נדלק.
+    //
+    // (3) ⚠️ ההכרעה הזו נכתבה כסירוב ואינה עומדת עוד: «אין הדגשה של המילה
+    //     בתוך הנימוק... 0097 מחזירה boolean ולא מיקום, וסימון תו בתוך הטקסט
+    //     כאן היה חיפוש שני בלקוח». 0100 החזירה note_match_pos ו-note_match_len,
+    //     ומאותו רגע הסימון אינו חיפוש שני אלא ציור של מה שהמסד כבר מדד —
+    //     ראו fillNoteText. מה שכן עומד: אין ציטוט חתוך של הקטע. הטקסט מצויר
+    //     שלם, וההדגשה יושבת בתוכו.
+    //
+    // (4) span נפרד ולא title על התא: ה-title כאן כבר תפוס במניין התווים, וגם
+    //     סימן שאינו נראה אלא בריחוף אינו עונה על השאלה «למה השורה הזו».
+    //
+    // ── «וכמה פעמים בשורה הזו» ────────────────────────────────────────────────
+    // המשפט שמעל הטבלה אומר «3 פעמים בסך הכול» מאז d99e2d3, והסימן על השורה אומר
+    // «זה הנימוק שהתאים» ותו לא. הפער נמדד ולא הונח: על «נשלח» נדלקות שתי שורות
+    // שיש בכל אחת מהן הופעה אחת, ועל «טופס» נדלקת שורה אחת שיש בה שלוש — ובשני
+    // המקרים הסימן על השורה זהה אות באות. הסכום נאמר, והחלוקה בין השורות אינה,
+    // ולכן הקורא סופר סימנים בעיניים בתוך תא של עד 500 תווים — בדיוק העבודה
+    // שהמספר שמעל הטבלה בא לחסוך, שורה אחת למטה. ⚠️ ה-title של ה-mark כבר אומר
+    // «3 הופעות בטקסט הזה» מאז 0101, והוא נראה בריחוף בלבד — כלומר לא במגע.
+    //
+    // ארבע הכרעות נוספות:
+    //
+    // (5) ⚠️ נספר מ-noteSpots ולא ממקור שני, ומאותה קריאה שממנה מצוירים הסימנים
+    //     בתא הזה עצמו (fillNoteText, שורה אחת מעל). זו הסיבה שהמסננת נחלצה
+    //     ב-d99e2d3: מספר שאומר «שלוש הופעות» בשורה שמצוירים בה שני סימנים הוא
+    //     בדיוק השקר שהחילוץ מונע. אין כאן כלל התאמה שני — אף מחרוזת אינה
+    //     מושווית, ונספרים המיקומים שהמסד שלח.
+    //
+    // (6) ⚠️ הכול או כלום, ושתיקה אינה «0»: כשאין complete מסומנת ההופעה
+    //     הראשונה בלבד (הכרעה (9) של noteSpots), ומספר לצדה היה אומר «הופעה
+    //     אחת» על נימוק שיש בו שלוש. אז הסימן חוזר להיות בדיוק מה שהיה, אות
+    //     באות.
+    //
+    // (7) ⚠️ נאמר גם על אחת. «זה הנימוק שהתאים» בלי מספר על שורה בת הופעה אחת,
+    //     ועם מספר על שורה בת שלוש, היה הופך את היעדר המספר לקידוד שני שהקורא
+    //     צריך ללמוד — 0102 הכרעה (9) ו-noteMatchTally הכרעה (9), אותו כלל.
+    //
+    // (8) ⚠️ סכום השורות שווה למספר שבמשפט שמעל, מפני ששניהם נספרים מאותה
+    //     noteSpots ועל אותן שורות מתאימות בדיוק. וכששורה אחת אינה complete
+    //     שתי השתיקות אינן זהות ואינן סותרות: המשפט שמעל שותק כולו (הכרעה (8)
+    //     שלו — הוא טוען על הסכום), והשורות השלמות ממשיכות לומר את שלהן, כי
+    //     כל אחת מהן טוענת על עצמה בלבד.
+    if (Object.hasOwn(r, "note_matched") && r.note_matched === true) {
+      const s = document.createElement("span");
+      s.className = "stale";
+      // הכרעות (5)–(7): אותה מסננת של הסימנים בתא, וכולן או שתיקה.
+      const { spots, complete } = noteSpots(r);
+      const here = complete ? ` — ${countHe(spots.length, "הופעה אחת", "הופעות")}` : "";
+      s.textContent = "זה הנימוק שהתאים" + here;
+      s.title = "מה שהוקלד בחיפוש נמצא בטקסט הזה, ובזכותו הפנייה עלתה ברשימה. הסימן מתאר ואינו מסנן — יותר משורה אחת יכולה לשאת אותו. אחרי הקו — כמה פעמים המונח נכתב בשורה הזו, אותן הופעות שמסומנות בטקסט שמעל; סכום השורות הוא המספר שבמשפט שמעל הטבלה";
+      td.append(document.createElement("br"), s);
+    }
+  }
+
+  // ── «כמה מהנימוקים התאימו» ────────────────────────────────────────────────
+  // 0097 מסמנת כל שורת יומן בנפרד, ו-fillHistoryNoteCell מצייר את הסימן על התא
+  // שבגללו הוא נדלק. סימן לכל שורה עונה «זו היא» ואינו עונה «כמה»: לפנייה אחת
+  // יכולים להיות שני מעברים ויכולים להיות שנים-עשר, והסימן השני יכול לשבת מתחת
+  // לקצה החלון. מנהל שהגיע לכאן בזכות הנימוק אינו יודע כמה עוד יש, ולכן הוא
+  // קורא את כולם בעיניים — בדיוק מה שהסימן בא לחסוך. השורה נאמרת מעל הטבלה,
+  // לפני שקוראים אותה, ולא אחריה.
+  //
+  // חמש הכרעות:
+  //
+  // (1) הספירה היא של מה שהשרת סימן ולא של חיפוש שני בלקוח. שום מחרוזת אינה
+  //     מושווית כאן — נספרים ה-booleanים של 0097 בלבד, ולכן אין כלל התאמה שני
+  //     שיכול לחלוק על escape/btrim/ilike של המסד. ⚠️ והמשפט שהיה כאן — «הכרעה
+  //     (3) של fillHistoryNoteCell עומדת במקומה: אין הדגשה של המילה ואין ציטוט»
+  //     — אינו נכון עוד: 0100 נתנה מיקום, ו-fillNoteText מדגישה. מה שכן עומד
+  //     הוא הכלל עצמו — גם ההדגשה מציירת את מדידת המסד ואינה מחפשת שוב.
+  //     ⚠️ ומשפט שני כאן תוקן ולא נמחק: «נספרים ה-booleanים של 0097 בלבד» היה
+  //     נכון עד הכרעה (7) שלמטה, ומאז נספרים גם המיקומים של 0101. שניהם מגיעים
+  //     מהמסד, והכלל — אין כלל התאמה שני בלקוח — לא זז ולו בתו אחד.
+  //
+  // (2) המכנה הוא הנימוקים ולא המעברים. מעבר בלי נימוק אינו יכול להתאים, ו«1
+  //     מתוך 4» על שלושה נימוקים ומעבר שותק אחד היה מונה גם את מי שלא נשאל.
+  //     הכותרת שמעליה סופרת מעברים, ולכן שני המספרים נקראים זה לצד זה ואינם
+  //     אמורים להיות שווים — «רצף ההכרעות (4 מעברים)» ומתחתיו «2 מתוך 3».
+  //
+  // (3) רק כשיש מונח. openCase נקראת גם בלי חיפוש כלל, ו«0 מתוך 3» על פתיחה
+  //     רגילה של פנייה הוא רעש שמפסיקים לראות — וזו אותה הכרעה (2) שבגללה
+  //     המפתח q אינו נשלח כלל בלי מונח.
+  //
+  // (4) אפס נאמר ואינו נבלע. מנהל שחיפש «אברהם» הגיע לכאן לפי השם, ושורה
+  //     שאומרת שהמונח אינו באף נימוק חוסכת ממנו את הקריאה בעיניים בדיוק כפי
+  //     שהיא חוסכת אותה כשהוא כן שם. שקט על אפס היה נקרא כמו מסך שלא ענה.
+  //
+  // (5) שרת מלפני 0097 אינו מחזיר את המפתחות, ואז אין ספירה כלל ולא «0».
+  //     «איני יודע» ו«לא היה» הם שני דברים, וזה אותו כלל של ארבע הפונקציות
+  //     שמעל. הבדיקה היא על כל השורות ולא על הראשונה: תשובה מעורבת אינה ניתנת
+  //     לספירה כלל, ומספר שנשען על חלק מהשורות היה שגוי בלי לומר זאת.
+  // ── «וכמה פעמים בתוכם» גם כאן ──────────────────────────────────────────────
+  // הרשימה אומרת «המונח ב-1 מתוך 3 הנימוקים · 3 פעמים» מאז 0102, והמסך שאליו
+  // היא מפנה — אותה פנייה, אותו מונח — אומר «נמצא ב-1 מתוך 3 הנימוקים» ותו לא.
+  // הפער נמדד ולא הונח: מנהל שקרא ברשימה «3 פעמים» ולחץ, מקבל בפנים מסך ששותק
+  // על המספר שבגללו הוא נכנס. וכאן, בניגוד לרשימה, אין צורך לבקש דבר מהמסד —
+  // 0101 כבר שולחת את המיקומים בכל שורת יומן, ומהם מצוירים הסימנים.
+  //
+  // ארבע הכרעות נוספות:
+  //
+  // (6) לצד «בכמה מהם» ולא במקומו — 0102 הכרעה (6) מילה במילה: המכנה שייך
+  //     לראשון בלבד, ו«3 פעמים מתוך 3 הנימוקים» היה מספר אחד על מכנה של אחר.
+  //
+  // (7) ⚠️ נספר מ-noteSpots ולא מ-note_hit_total. השדה של 0102 יושב על שורת
+  //     הרשימה ואינו מגיע לכאן כלל — bkalot_clone_admin_case היא פונקציה אחרת
+  //     — אבל גם אילו הגיע, המספר הנכון כאן הוא של הסימנים שהטבלה שמתחת
+  //     מציירת. שני מקורות היו יכולים לומר שני מספרים על אותו מסך, והקורא
+  //     סופר בעיניים ומוצא את השני. ⚠️ ואין כאן כלל התאמה שני: אף מחרוזת אינה
+  //     מושווית — נספרים המיקומים שהמסד שלח, אותם ואת אלה בדיוק.
+  //
+  // (8) ⚠️ הכול או כלום, וזו הכרעה (5) על המערך במקום על ה-boolean: די בשורה
+  //     מתאימה אחת שעליה noteSpots אינו מחזיר complete — שרת מלפני 0101,
+  //     או מערך שנפסל בשמירת הגבולות — כדי שלא ייאמר מספר כלל. באותה שורה
+  //     עצמה הטבלה מציירת סימן אחד מתוך רבים (הכרעה (9)), וסכום שכולל אותה
+  //     כאחת היה נמוך מהאמת בלי לומר זאת. ⚠️ ושתיקה כאן אינה «0»: המשפט חוזר
+  //     להיות בדיוק מה שהיה לפני הפעימה הזו, אות באות.
+  //
+  // (9) ⚠️ נדלק גם כששני המספרים שווים («2 מתוך 3 — פעמיים»), ולא רק כשהם
+  //     נבדלים — 0102 הכרעה (9): הסתרה בשוויון הייתה הופכת את היעדר התוספת
+  //     לקידוד שני שהקורא צריך ללמוד, והשוויון הוא בדיוק התשובה שהשאלה
+  //     «כמה פעמים» מבקשת. ואפס אינו מקבל תוספת — אין בו מה לספור, והמשפט
+  //     שאומר «אינו נמצא באף אחד» כבר עונה במלואו.
+  function noteMatchTally(hist, q) {
+    if (!q) return null;
+    if (!hist.every((r) => Object.hasOwn(r, "note") && Object.hasOwn(r, "note_matched"))) return null;
+    const notes = hist.filter((r) => r.note != null);
+    const matched = notes.filter((r) => r.note_matched === true);
+    const hit = matched.length;
+    // הכרעות (7) ו-(8): אותם מיקומים שמהם מצוירים הסימנים, וכולם או אף אחד.
+    let total = 0;
+    for (const r of matched) {
+      const { spots, complete } = noteSpots(r);
+      if (!complete) { total = null; break; }
+      total += spots.length;
+    }
+    // הכרעה (9): גם בשוויון, ולא על אפס. total ≥ hit הוא אותה שמירה מפני
+    // מחלוקת של 0102 הכרעה (4) — נימוק שנספר כמתאים ולא נמצאה בו ולו הופעה
+    // אחת הוא סתירה, ומספר קטן מהאמת על טקסט שאדם הקליד הוא שקר; שתיקה אינה.
+    const hits = hit > 0 && Number.isInteger(total) && total >= hit
+      ? ` — ${countHe(total, "פעם אחת", "פעמים")} בסך הכול`
+      : "";
+    const p = document.createElement("p");
+    p.className = "note";
+    const s = document.createElement("span");
+    s.className = "stale";
+    s.textContent =
+      notes.length === 0 ? `מונח החיפוש «${q}» — לא נכתב ולו נימוק אחד ברצף הזה, ואין בו מה לחפש.`
+      : notes.length === 1 ? (hit === 0
+          ? `מונח החיפוש «${q}» אינו בנימוק היחיד שנכתב כאן.`
+          : `מונח החיפוש «${q}» נמצא בנימוק היחיד שנכתב כאן${hits}.`)
+      : hit === 0 ? `מונח החיפוש «${q}» אינו נמצא באף אחד מ-${notes.length} הנימוקים שנכתבו כאן.`
+      : `מונח החיפוש «${q}» נמצא ב-${hit} מתוך ${notes.length} הנימוקים שנכתבו כאן${hits}.`;
+    s.title = "הספירה היא של מה שהמסד סימן על כל שורה, ולא של חיפוש נוסף במסך. המכנה הוא הנימוקים שנכתבו ולא המעברים — מעבר בלי נימוק אינו נספר. כל אחד מהמתאימים מסומן «זה הנימוק שהתאים» בתא «למה», ואחרי הקו — כמה פעמים המונח נכתב בתוכם בסך הכול, אותן הופעות שמסומנות בטבלה שמתחת";
+    p.append(s);
+    return p;
+  }
+
+  // ── גוף המסמך ─────────────────────────────────────────────────────────────
+  // הגוף אינו מגיע עם הפנייה — bkalot_clone_admin_case מחזירה מטא-דאטה בלבד
+  // במפורש (0060) — ולכן הוא נקרא לפי דרישה, בקריאה נפרדת מאחורי אותו שער.
+  //
+  // ⚠️ ה-HTML נכנס ל-iframe עם sandbox ריק ולא מוזרק ל-DOM של המסך. הגוף נבנה
+  //    בשרת מתבנית שיושבת במסד וניתנת לעריכה, ו-innerHTML כאן היה נותן לה את
+  //    ההרשאות של מסך הניהול — כולל הטוקן שחי בזיכרון הדף הזה.
+  async function showDocument(id, panel, btn) {
+    panel.innerHTML = "";
+    panel.hidden = false;
+    panel.classList.remove("err");
+    const was = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = "טוען…";
+    const out = await call("document", { id });
+    btn.disabled = false;
+    btn.textContent = was;
+    if (!out || out.ok !== true) {
+      if (out?.expired) return toLogin(out.error);
+      panel.classList.add("err");
+      showError(panel, out?.error || "bad_response");
+      return;
+    }
+    const d = out.document || {};
+    const h = document.createElement("h3");
+    h.textContent = d.title || "מסמך";
+    const meta = document.createElement("p");
+    meta.className = "note";
+    meta.textContent = [
+      `מסמך #${d.id}`,
+      d.kind,
+      // ?? 0 נשאר: 0064/0075 מחזירות coalesce ולכן null אינו אמור להגיע, אבל
+      // המסך הזה קורא גם מסמכים ישנים ואינו הבעלים של החוזה הזה.
+      // אפס נשאר «0 תווי טקסט» — ריבוי הוא הצורה הנכונה לאפס בעברית; רק אחד
+      // הוא שנשבר, וכאן הוא נגיש יותר מאשר במסך ההפקה: מכתב טקסט בלבד מגיע
+      // ל-html_chars=0 ותבנית קצרה מגיעה ל-1.
+      countHe(d.text_chars ?? 0, "תו טקסט אחד", "תווי טקסט"),
+      countHe(d.html_chars ?? 0, "תו HTML אחד", "תווי HTML"),
+      // 0067 הוסיפה queue_status ו-queue_mode לקריאה הזו בדיוק בשביל השורה
+      // הזו: queued לבדו הוא true גם לשורה חסומה, ו«בתור שליחה» על שורה שלא
+      // תישלח לעולם הוא בדיוק סוג הפער שאין לו סימפטום.
+      d.queued
+        ? `בתור #${d.queue_id} · ${d.queue_status === "blocked" ? "חסום — לא יישלח" : d.queue_status} · מצב ${d.queue_mode}`
+        : "לא נשלח — מצב טסט",
+    ].filter(Boolean).join(" · ");
+    // הכרעה (4) של 0075 החזירה את אותם שלושה שדות גם כאן, וזה המסך היחיד שבו
+    // המנהל קורא בפועל את מה שייצא — ולכן «איזה מכתב זה» ו«מתי נכתב» שייכים
+    // דווקא כאן, ולא רק בשורה שברשימה. אותן שתי פונקציות בדיוק, כדי ששני
+    // המסכים לא ייפרדו זה מזה בשקט על אותו נתון.
+    const tmplLine = document.createElement("p");
+    tmplLine.className = "note";
+    tmplLine.append("מכתב: ");
+    const tspan = document.createElement("span");
+    fillTemplateCell(tspan, d);
+    tmplLine.append(tspan);
+    const dateLine = document.createElement("p");
+    dateLine.className = "note";
+    dateLine.append("נוצר: ");
+    const cspan = document.createElement("span");
+    fillCreatedCell(cspan, d);
+    dateLine.append(cspan);
+    // מתחת ל«נוצר» ולא מעליו: «נדרס» ו«מי הפיק» מדברים על אותה הפקה אחרונה,
+    // והסדר הזה קורא אותם כמשפט אחד.
+    const prodLine = document.createElement("p");
+    prodLine.className = "note";
+    prodLine.append("הופק על ידי: ");
+    const pspan = document.createElement("span");
+    fillProducedCell(pspan, d);
+    prodLine.append(pspan);
+    panel.append(h, meta, tmplLine, dateLine, prodLine);
+    // המעוצב לפני הטקסט: זה המסמך שאדם עומד לשלוח, והגוף הטקסטואלי הוא
+    // הגרסה החלופית שלו. גוף של אלפי תווים מעל התצוגה היה דוחף אותה מחוץ למסך.
+    if (d.body_html) {
+      const frame = document.createElement("iframe");
+      frame.className = "doc-html";
+      frame.setAttribute("sandbox", "");
+      frame.title = "תצוגת המסמך המעוצב";
+      frame.srcdoc = '<!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8">'
+        + '<style>body{margin:0;padding:14px;font:16px/1.65 system-ui,"Segoe UI",sans-serif;color:#171d1a;background:#fff}</style>'
+        + "</head><body>" + d.body_html + "</body></html>";
+      panel.append(frame);
+    }
+    const sub = document.createElement("h3");
+    sub.textContent = "גרסת הטקסט";
+    const txt = document.createElement("pre");
+    txt.className = "doc-text";
+    txt.textContent = d.body_text || "— אין גוף טקסט —";
+    panel.append(sub, txt);
+  }
+
+  // רענון מנתק, כי הטוקן חי בזיכרון בלבד — וזו התנהגות שהמשתמש רואה מיד.
+  show("screen-login");
+  $("email").focus();
+})();
+</script>
+<!-- כפתור הכניסה המשותף של more30 (DESIGN_STANDARD §9) + קרדיט הפוטר
+     "פותח ע״י עולם הסטארטאפים" (more30-priority.md §7). -->
+<script src="https://more30.com/auth-button.js" defer></script>
+</body>
+</html>

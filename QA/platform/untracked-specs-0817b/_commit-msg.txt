@@ -1,0 +1,1 @@
+heartbeat: pending row for untracked-specs-0817b (032e50c) - Supabase MCP not connected this session

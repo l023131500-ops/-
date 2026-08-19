@@ -1,0 +1,491 @@
+{
+  "at": "2026-08-13T13:34:24.272Z",
+  "base": "https://more30.com",
+  "root": {
+    "path": "/",
+    "status": 200,
+    "location": null,
+    "bytes": 3143,
+    "title": "עולם הסטארטאפים",
+    "scripts": [
+      "/assets/index-C2AHwa-z.js",
+      "https://more30.com/auth-button.js",
+      "//netfree.link/injection-script/go-payment.js",
+      "//netfree.link/injection-script/popup-card-init.js"
+    ],
+    "ms": 609
+  },
+  "mounts": [
+    {
+      "mount": "torah",
+      "path": "/torah/",
+      "status": 200,
+      "location": null,
+      "bytes": 29186,
+      "title": "׳׳™׳’׳•׳“ ׳”׳©׳™׳¢׳•׳¨׳™׳ ֲ· ׳׳¢׳¨׳›׳× ׳×׳•׳¨׳ ׳™׳× ׳׳׳•׳—׳“׳×",
+      "scripts": [
+        "/torah/assets/index-B2ayyksV.js",
+        "https://more30.com/auth-button.js",
+        "//netfree.link/injection-script/go-payment.js",
+        "//netfree.link/injection-script/popup-card-init.js"
+      ],
+      "ms": 1374,
+      "servesOwnBundle": true
+    },
+    {
+      "mount": "tamlul",
+      "path": "/tamlul/",
+      "status": 308,
+      "location": "/tamlul?cb=1786628066261q83l8zigph",
+      "bytes": 15,
+      "title": "",
+      "scripts": [],
+      "ms": 268,
+      "servesOwnBundle": false
+    },
+    {
+      "mount": "modaot",
+      "path": "/modaot/",
+      "status": 308,
+      "location": "/modaot?cb=1786628066529nix08qlzxy9",
+      "bytes": 15,
+      "title": "",
+      "scripts": [],
+      "ms": 278,
+      "servesOwnBundle": false
+    },
+    {
+      "mount": "imud",
+      "path": "/imud/",
+      "status": 200,
+      "location": null,
+      "bytes": 3344,
+      "title": "אות ודף — מנוע עימוד תורני",
+      "scripts": [
+        "/imud/assets/index-DbqCalt6.js",
+        "https://more30.com/auth-button.js",
+        "//netfree.link/injection-script/go-payment.js",
+        "//netfree.link/injection-script/popup-card-init.js"
+      ],
+      "ms": 328,
+      "servesOwnBundle": true
+    },
+    {
+      "mount": "briut",
+      "path": "/briut/",
+      "status": 200,
+      "location": null,
+      "bytes": 12344,
+      "title": "בקלות — השוואת קופות חולים והמלצות מעבר",
+      "scripts": [
+        "supabase-config.js",
+        "leads-store.js",
+        "app.js",
+        "https://more30.com/auth-button.js",
+        "//netfree.link/injection-script/go-payment.js",
+        "//netfree.link/injection-script/popup-card-init.js"
+      ],
+      "ms": 1052,
+      "servesOwnBundle": false
+    },
+    {
+      "mount": "bkalot",
+      "path": "/bkalot/",
+      "status": 200,
+      "location": null,
+      "bytes": 19688,
+      "title": "בדיקה מקיפה על כל הזכויות וההטבות שניתן לקבל",
+      "scripts": [
+        "engine.js",
+        "repo.js",
+        "app.js",
+        "https://more30.com/auth-button.js",
+        "//netfree.link/injection-script/go-payment.js",
+        "//netfree.link/injection-script/popup-card-init.js"
+      ],
+      "ms": 410,
+      "servesOwnBundle": false
+    },
+    {
+      "mount": "smel",
+      "path": "/smel/",
+      "status": 200,
+      "location": null,
+      "bytes": 2110,
+      "title": "SMEL NDLN — מחקר נדל\"ן מנתוני ממשלה",
+      "scripts": [
+        "/smel/assets/index-BzxcokTm.js",
+        "https://more30.com/auth-button.js",
+        "//netfree.link/injection-script/go-payment.js",
+        "//netfree.link/injection-script/popup-card-init.js"
+      ],
+      "ms": 368,
+      "servesOwnBundle": true
+    },
+    {
+      "mount": "smachot",
+      "path": "/smachot/",
+      "status": 200,
+      "location": null,
+      "bytes": 4205,
+      "title": "שמחות פלוס — תוכנית עסקית",
+      "scripts": [
+        "./app.js",
+        "https://more30.com/auth-button.js",
+        "//netfree.link/injection-script/go-payment.js",
+        "//netfree.link/injection-script/popup-card-init.js"
+      ],
+      "ms": 641,
+      "servesOwnBundle": false
+    },
+    {
+      "mount": "egod",
+      "path": "/egod/",
+      "status": 200,
+      "location": null,
+      "bytes": 3430,
+      "title": "איגוד השיעורים — פורטל מגידי השיעורים",
+      "scripts": [
+        "/egod/assets/index-RNBwDqT2.js",
+        "https://more30.com/auth-button.js",
+        "//netfree.link/injection-script/go-payment.js",
+        "//netfree.link/injection-script/popup-card-init.js"
+      ],
+      "ms": 323,
+      "servesOwnBundle": true
+    },
+    {
+      "mount": "chatzor",
+      "path": "/chatzor/",
+      "status": 200,
+      "location": null,
+      "bytes": 30623,
+      "title": "מחוברים · חצור הגלילית",
+      "scripts": [
+        "/chatzor/assets/index-BuJIdWUU.js",
+        "https://more30.com/auth-button.js",
+        "//netfree.link/injection-script/go-payment.js",
+        "//netfree.link/injection-script/popup-card-init.js"
+      ],
+      "ms": 607,
+      "servesOwnBundle": true
+    },
+    {
+      "mount": "chizukim",
+      "path": "/chizukim/",
+      "status": 200,
+      "location": null,
+      "bytes": 3343,
+      "title": "מערכת תמלול — חיזוקים קצרים",
+      "scripts": [
+        "/chizukim/assets/index-B3-SjNVo.js",
+        "https://more30.com/auth-button.js",
+        "//netfree.link/injection-script/go-payment.js",
+        "//netfree.link/injection-script/popup-card-init.js"
+      ],
+      "ms": 1148,
+      "servesOwnBundle": true
+    },
+    {
+      "mount": "orech",
+      "path": "/orech/",
+      "status": 308,
+      "location": "/orech?cb=1786628071686ly43xcygpz",
+      "bytes": 15,
+      "title": "",
+      "scripts": [],
+      "ms": 323,
+      "servesOwnBundle": false
+    },
+    {
+      "mount": "mthbram",
+      "path": "/mthbram/",
+      "status": 200,
+      "location": null,
+      "bytes": 4224,
+      "title": "איגוד השיעורים — שיעורי תורה, חברותות והרצאות",
+      "scripts": [
+        "/mthbram/assets/index-DheqMcgT.js",
+        "https://more30.com/auth-button.js",
+        "//netfree.link/injection-script/go-payment.js",
+        "//netfree.link/injection-script/popup-card-init.js"
+      ],
+      "ms": 322,
+      "servesOwnBundle": true
+    },
+    {
+      "mount": "zchuyot",
+      "path": "/zchuyot/",
+      "status": 200,
+      "location": null,
+      "bytes": 62796,
+      "title": "׳‘׳§׳׳•׳× ג€” ׳׳™׳¦׳•׳™ ׳–׳›׳•׳™׳•׳×, ׳׳¢׳ ׳§׳™׳ ׳•׳”׳˜׳‘׳•׳× | ׳”׳–׳›׳•׳× ׳©׳׳, ׳”׳׳—׳¨׳™׳•׳× ׳©׳׳ ׳•",
+      "scripts": [
+        "/zchuyot/assets/index-DL2aSDPt.js",
+        "https://more30.com/auth-button.js",
+        "//netfree.link/injection-script/go-payment.js",
+        "//netfree.link/injection-script/popup-card-init.js"
+      ],
+      "ms": 1416,
+      "servesOwnBundle": true
+    },
+    {
+      "mount": "galil",
+      "path": "/galil/",
+      "status": 200,
+      "location": null,
+      "bytes": 4694,
+      "title": "מחוברים — בתי כנסת חצור הגלילית",
+      "scripts": [
+        "/galil/assets/index-KFiwjeZS.js",
+        "/galil/registerSW.js",
+        "https://more30.com/auth-button.js",
+        "//netfree.link/injection-script/go-payment.js",
+        "//netfree.link/injection-script/popup-card-init.js"
+      ],
+      "ms": 322,
+      "servesOwnBundle": true
+    },
+    {
+      "mount": "studio",
+      "path": "/studio/",
+      "status": 200,
+      "location": null,
+      "bytes": 7298,
+      "title": "מודעות AI — יצירת מודעות מעוצבות לקהילה",
+      "scripts": [
+        "/studio/assets/index-DN36X7rm.js",
+        "https://more30.com/auth-button.js",
+        "//netfree.link/injection-script/go-payment.js",
+        "//netfree.link/injection-script/popup-card-init.js"
+      ],
+      "ms": 503,
+      "servesOwnBundle": true
+    },
+    {
+      "mount": "mechiron",
+      "path": "/mechiron/",
+      "status": 200,
+      "location": null,
+      "bytes": 31585,
+      "title": "מאגר בקלות — כלי פנימי לצוות",
+      "scripts": [
+        "/mechiron/assets/index-ur-RA18k.js",
+        "https://more30.com/auth-button.js",
+        "//netfree.link/injection-script/go-payment.js",
+        "//netfree.link/injection-script/popup-card-init.js"
+      ],
+      "ms": 546,
+      "servesOwnBundle": true
+    },
+    {
+      "mount": "kupot",
+      "path": "/kupot/",
+      "status": 200,
+      "location": null,
+      "bytes": 3693,
+      "title": "השוואת קופות חולים | מבית בקלות",
+      "scripts": [
+        "/kupot/assets/index-DbBm6hnF.js",
+        "https://more30.com/auth-button.js",
+        "//netfree.link/injection-script/go-payment.js",
+        "//netfree.link/injection-script/popup-card-init.js"
+      ],
+      "ms": 190,
+      "servesOwnBundle": true
+    },
+    {
+      "mount": "crm",
+      "path": "/crm/",
+      "status": 307,
+      "location": "/crm/auth",
+      "bytes": 0,
+      "title": "",
+      "scripts": [],
+      "ms": 771,
+      "servesOwnBundle": false
+    },
+    {
+      "mount": "gesher",
+      "path": "/gesher/",
+      "status": 307,
+      "location": "/gesher/auth",
+      "bytes": 0,
+      "title": "",
+      "scripts": [],
+      "ms": 751,
+      "servesOwnBundle": false
+    },
+    {
+      "mount": "nadlan",
+      "path": "/nadlan/",
+      "status": 308,
+      "location": "/nadlan?cb=1786628076830xmat7yy2kag",
+      "bytes": 15,
+      "title": "",
+      "scripts": [],
+      "ms": 331,
+      "servesOwnBundle": false
+    },
+    {
+      "mount": "kesef",
+      "path": "/kesef/",
+      "status": 308,
+      "location": "/kesef?cb=1786628077161xh2h2lcirsg",
+      "bytes": 15,
+      "title": "",
+      "scripts": [],
+      "ms": 278,
+      "servesOwnBundle": false
+    },
+    {
+      "mount": "kiosk",
+      "path": "/kiosk/",
+      "status": 200,
+      "location": null,
+      "bytes": 9931,
+      "title": "KioskFleet — נעילת מכשיר לקישורים מאושרים בלבד",
+      "scripts": [
+        "https://more30.com/auth-button.js",
+        "//netfree.link/injection-script/go-payment.js",
+        "//netfree.link/injection-script/popup-card-init.js"
+      ],
+      "ms": 460,
+      "servesOwnBundle": false
+    },
+    {
+      "mount": "tivuch",
+      "path": "/tivuch/",
+      "status": 308,
+      "location": "/tivuch?cb=17866280778991r06eakdy11",
+      "bytes": 15,
+      "title": "",
+      "scripts": [],
+      "ms": 342,
+      "servesOwnBundle": false
+    },
+    {
+      "mount": "gannenet",
+      "path": "/gannenet/",
+      "status": 308,
+      "location": "/gannenet?cb=1786628078241tv2stgb86mr",
+      "bytes": 15,
+      "title": "",
+      "scripts": [],
+      "ms": 400,
+      "servesOwnBundle": false
+    }
+  ],
+  "resets": [
+    {
+      "label": "portal (#200)",
+      "url": "/auth/reset",
+      "path": "/auth/reset",
+      "status": 200,
+      "location": null,
+      "bytes": 13892,
+      "title": "בחירת סיסמה חדשה · עולם הסטארטאפים",
+      "scripts": [
+        "//netfree.link/injection-script/go-payment.js",
+        "//netfree.link/injection-script/popup-card-init.js"
+      ],
+      "ms": 243
+    },
+    {
+      "label": "16 chatzor (#201)",
+      "url": "/chatzor/auth/reset",
+      "path": "/chatzor/auth/reset",
+      "status": 200,
+      "location": null,
+      "bytes": 30623,
+      "title": "מחוברים · חצור הגלילית",
+      "scripts": [
+        "/chatzor/assets/index-BuJIdWUU.js",
+        "https://more30.com/auth-button.js",
+        "//netfree.link/injection-script/go-payment.js",
+        "//netfree.link/injection-script/popup-card-init.js"
+      ],
+      "ms": 520
+    },
+    {
+      "label": "30 crm (#201)",
+      "url": "/crm/reset-password",
+      "path": "/crm/reset-password",
+      "status": 200,
+      "location": null,
+      "bytes": 5332,
+      "title": "איפוס סיסמה | זכויות פרו",
+      "scripts": [
+        "/crm/assets/index-BC-5t7lR.js",
+        "https://more30.com/auth-button.js",
+        "//netfree.link/injection-script/go-payment.js",
+        "//netfree.link/injection-script/popup-card-init.js"
+      ],
+      "ms": 593
+    },
+    {
+      "label": "01 torah (#201)",
+      "url": "/torah/auth/reset",
+      "path": "/torah/auth/reset",
+      "status": 200,
+      "location": null,
+      "bytes": 29186,
+      "title": "׳׳™׳’׳•׳“ ׳”׳©׳™׳¢׳•׳¨׳™׳ ֲ· ׳׳¢׳¨׳›׳× ׳×׳•׳¨׳ ׳™׳× ׳׳׳•׳—׳“׳×",
+      "scripts": [
+        "/torah/assets/index-B2ayyksV.js",
+        "https://more30.com/auth-button.js",
+        "//netfree.link/injection-script/go-payment.js",
+        "//netfree.link/injection-script/popup-card-init.js"
+      ],
+      "ms": 512
+    },
+    {
+      "label": "31 gesher (#201)",
+      "url": "/gesher/reset-password",
+      "path": "/gesher/reset-password",
+      "status": 404,
+      "location": null,
+      "bytes": 3658,
+      "title": "מערכת CRM שותפים",
+      "scripts": [
+        "/gesher/assets/index-9hIiJLo9.js",
+        "https://more30.com/auth-button.js",
+        "//netfree.link/injection-script/go-payment.js",
+        "//netfree.link/injection-script/popup-card-init.js"
+      ],
+      "ms": 537
+    },
+    {
+      "label": "22 zchuyot (#201)",
+      "url": "/zchuyot/auth/reset",
+      "path": "/zchuyot/auth/reset",
+      "status": 200,
+      "location": null,
+      "bytes": 62796,
+      "title": "׳‘׳§׳׳•׳× ג€” ׳׳™׳¦׳•׳™ ׳–׳›׳•׳™׳•׳×, ׳׳¢׳ ׳§׳™׳ ׳•׳”׳˜׳‘׳•׳× | ׳”׳–׳›׳•׳× ׳©׳׳, ׳”׳׳—׳¨׳™׳•׳× ׳©׳׳ ׳•",
+      "scripts": [
+        "/zchuyot/assets/index-DL2aSDPt.js",
+        "https://more30.com/auth-button.js",
+        "//netfree.link/injection-script/go-payment.js",
+        "//netfree.link/injection-script/popup-card-init.js"
+      ],
+      "ms": 777
+    },
+    {
+      "label": "21 mthbram (#201)",
+      "url": "/mthbram/auth/reset",
+      "path": "/mthbram/auth/reset",
+      "status": 200,
+      "location": null,
+      "bytes": 4224,
+      "title": "איגוד השיעורים — שיעורי תורה, חברותות והרצאות",
+      "scripts": [
+        "/mthbram/assets/index-DheqMcgT.js",
+        "https://more30.com/auth-button.js",
+        "//netfree.link/injection-script/go-payment.js",
+        "//netfree.link/injection-script/popup-card-init.js"
+      ],
+      "ms": 499
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+round-4 functional pass: 03 modaot - login+core action+real data verified, deployed 200
+
+Session start: read RUN_INSTRUCTIONS.md, checked core.run_progress (last id
+881, tamlul-service-key-bom-hardening-0818, which hardened the BOM-strip fix
+and left core.issues #239 open needing a real service_role key for
+bieebmnmkffwbqlsfozh - next options were that key fetch or resuming round-4
+functional pass at modaot/03) and git log (HEAD e4fa895 on fix/nadlan-a11y).
+Key fetch needs Supabase dashboard/Management-API access beyond a 20-minute
+step, so picked the round-4 continuation instead, per the heartbeat's own
+fallback.
+
+Verified live via Playwright against https://more30.com/modaot: home loads
+200 with real content; shared auth pill already reads customer-logged-in
+(same pattern as torah/tamlul); admin /modaot/login form renders. Core
+action for this app is coupon-gated ad creation (/modaot/create -> POST
+/modaot/api/coupons/verify). Typed a non-existent code (TEST-0000, no real
+coupon available): request returned a clean 400 with the correct Hebrew
+"coupon not found/inactive" message - not a 500/crash like tamlul's
+BOM-corrupted key bug (core.issues #239). This app's Supabase service key is
+healthy. No bug found, no code change, no deploy needed.
+
+Noted, not investigated further: "<- חזרה לבית" on /modaot/create links to
+/ (portal home) instead of /modaot (this app's own home) - minor nav
+inconsistency.
+
+Evidence: QA/platform/modaot-round4-functional-0818/_results.md.
+
+Protected systems untouched (08/09/bkalut-app/bkalot-admin/zr_*/NEDARIM3873).
+
+Next in round-4 ROUTES order: system 04 (imud-torani / imud). core.issues
+#239 (tamlul service_role key rotation) remains open, needs Management-API
+or dashboard access.

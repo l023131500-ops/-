@@ -1,0 +1,304 @@
+name: Price Comparison — Daily Import
+
+# Imports real Israeli price-transparency feeds into Supabase once per day.
+# Reads pc_feed_sources (active + verified only) and runs the standalone
+# importer. Requires repository secrets SUPABASE_URL and
+# SUPABASE_SERVICE_ROLE_KEY (Settings → Secrets and variables → Actions).
+#
+# This workflow does NOT touch the rights DB or financial CRM, and does NOT
+# connect email / WhatsApp / Yemot. It only writes pc_* tables.
+
+on:
+  schedule:
+    # 01:00 UTC = 04:00 Israel (IDT, UTC+3) — the user-requested 04:00 daily sync.
+    # Israel observes DST late-March→late-October; for the winter (IST, UTC+2)
+    # this lands at 03:00 local, still a quiet pre-dawn slot.
+    - cron: "0 1 * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Dry run (discover + parse, write nothing)"
+        type: boolean
+        default: false
+      feed_id:
+        description: "Optional single feed source id to import"
+        required: false
+        default: ""
+      max_files:
+        description: "Optional max files per feed this run"
+        required: false
+        default: ""
+      include_unverified:
+        description: "Also try unverified feeds (for verifying a new source before activating it)"
+        type: boolean
+        default: false
+      regulatory_only:
+        description: "Import only chains legally obligated to report (source_kind=regulatory)"
+        type: boolean
+        default: true
+      concurrency:
+        description: "How many feeds to process in parallel (default 3)"
+        required: false
+        default: ""
+      force_reimport:
+        description: "Re-parse discovered files even if their hash was already imported (bypass dedup; self-heals existing rows after a parsing fix)"
+        type: boolean
+        default: false
+      vps_adapters:
+        description: "Adapters imported FROM the Israeli VPS (geo-blocked / anti-bot hosts). Comma-separated; empty disables the VPS import step."
+        required: false
+        default: "matrix,web,laibcatalog,super-pharm,wolt,publishprice"
+
+concurrency:
+  group: pc-daily-import
+  cancel-in-progress: false
+
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Verify Supabase secrets are present
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Trim accidental whitespace/newlines that break the Supabase client.
+          URL="$(printf '%s' "${SUPABASE_URL:-}" | tr -d '[:space:]')"
+          KEY="$(printf '%s' "${SUPABASE_SERVICE_ROLE_KEY:-}" | tr -d '[:space:]')"
+          if [ -z "$URL" ] || [ -z "$KEY" ]; then
+            echo "::error::Missing SUPABASE_URL and/or SUPABASE_SERVICE_ROLE_KEY repository secrets."
+            echo "Add them under Settings → Secrets and variables → Actions. See docs/price-comparison-live-import.md."
+            exit 1
+          fi
+          case "$URL" in
+            https://*) ;;
+            *) echo "::error::SUPABASE_URL must start with https:// (got a value of length ${#URL})."; exit 1 ;;
+          esac
+          echo "Supabase secrets present (url host: $(printf '%s' "$URL" | sed -E 's#https?://([^/]+).*#\1#'))."
+
+      - name: Run daily price import
+        id: import
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          # Load the Sectigo intermediate CA the Cerberus portal omits from its
+          # TLS handshake, so Node's fetch can verify url.publishedprices.co.il.
+          # The importer also self-bootstraps this, but setting it here is a
+          # belt-and-suspenders guarantee for the runner.
+          NODE_EXTRA_CA_CERTS: ${{ github.workspace }}/script/pc/certs/sectigo-server-auth-dv-r36.pem
+          # Cerberus per-chain passwords. Most chains use an empty password; the
+          # few that require one read PC_CERBERUS_PASSWORD_<AUTH_USER> (uppercased,
+          # non-alphanumerics → "_"). Set the matching repository secret to enable
+          # the feed — the value is NEVER hardcoded here. PAZ/יילו (auth_user
+          # "Paz_bo") needs PC_CERBERUS_PASSWORD_PAZ_BO; until that secret is set
+          # the feed reports an honest auth failure rather than fake success.
+          PC_CERBERUS_PASSWORD_PAZ_BO: ${{ secrets.PC_CERBERUS_PASSWORD_PAZ_BO }}
+          # מגה/קרפור (auth_user "Carrefour", chain 7290055700007). The adapter
+          # logs in with an empty password by default; if the publishedprices
+          # portal requires a password for this chain, set the repository secret
+          # PC_CERBERUS_PASSWORD_CARREFOUR. Until then the feed reports an honest
+          # auth failure rather than fake success (same pattern as PAZ above).
+          PC_CERBERUS_PASSWORD_CARREFOUR: ${{ secrets.PC_CERBERUS_PASSWORD_CARREFOUR }}
+          # Pass dispatch inputs through env (never interpolated into the shell
+          # command) to avoid quoting/injection issues. Empty on scheduled runs.
+          DRY_RUN: ${{ github.event.inputs.dry_run }}
+          FEED_ID: ${{ github.event.inputs.feed_id }}
+          MAX_FILES: ${{ github.event.inputs.max_files }}
+          INCLUDE_UNVERIFIED: ${{ github.event.inputs.include_unverified }}
+          # Force re-parse of already-imported files (dispatch only; default off
+          # for scheduled runs, so normal dedup behaviour is unchanged).
+          FORCE_REIMPORT: ${{ github.event.inputs.force_reimport }}
+          # Scheduled runs cover ONLY regulatory chains. On manual dispatch the
+          # input defaults to true; an explicit "false" lets an operator run the
+          # full set (e.g. to verify a voluntary feed) on demand.
+          PC_REGULATORY_ONLY: ${{ (github.event_name == 'schedule' || github.event.inputs.regulatory_only != 'false') && '1' || '0' }}
+          # Bounded feed parallelism so 8+ chains finish inside the Actions window.
+          PC_CONCURRENCY: ${{ github.event.inputs.concurrency || '3' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "Context: event=${{ github.event_name }} node=$(node --version) regulatoryOnly=${PC_REGULATORY_ONLY:-} concurrency=${PC_CONCURRENCY:-}"
+          ARGS=()
+          if [ "${DRY_RUN:-}" = "true" ]; then ARGS+=(--dry-run); fi
+          if [ -n "${FEED_ID:-}" ]; then ARGS+=("--feed=${FEED_ID}"); fi
+          if [ -n "${MAX_FILES:-}" ]; then ARGS+=("--max-files=${MAX_FILES}"); fi
+          if [ "${INCLUDE_UNVERIFIED:-}" = "true" ]; then ARGS+=(--include-unverified); fi
+          if [ "${FORCE_REIMPORT:-}" = "true" ]; then ARGS+=(--force-reimport); fi
+          echo "Running: npm run pc:import -- ${ARGS[*]}"
+          npm run pc:import -- "${ARGS[@]}"
+
+      # ---------------------------------------------------------------------
+      # Geo-blocked feeds — import FROM the Israeli VPS (not US CI).
+      # ---------------------------------------------------------------------
+      # Some publication hosts (matrixcatalog.co.il for ויקטורי/מחסני השוק/ח.כהן,
+      # נתיב החסד's bare-IP index, laibcatalog) geo-block non-Israeli IPs, so the
+      # US-hosted `Run daily price import` step above cannot fetch them. The US
+      # step is intentionally kept as-is: it still imports the 23 cerberus/
+      # binaprojects/shufersal chains that DO work from a US IP, and simply
+      # records an honest per-feed failure for the geo-blocked ones (no regression).
+      #
+      # This step SSHes to the same VPS the Mirror step uses (identical secrets:
+      # SERVER_IP / SSH_PRIVATE_KEY / user root) and re-runs the importer THERE,
+      # restricted to the geo-blocked adapters via `--adapters=` (forwarded as the
+      # PC_ADAPTERS env var the importer's parseArgs reads). Because it runs from
+      # an Israeli IP the geo-block is lifted. It runs BEFORE the mirror so the
+      # freshly imported rows are mirrored to data.db in the same run.
+      #
+      # Resilience: `continue-on-error: true` + `always()` mean a VPS hiccup (SSH
+      # timeout, network blip, one bad feed) is surfaced in the logs but does NOT
+      # fail the job or block the mirror. Idempotency is unchanged — the importer's
+      # existing file-hash dedup makes re-running a no-op when nothing is new.
+      # Skipped on dry runs and when vps_adapters is emptied on a manual dispatch.
+      - name: Import geo-blocked feeds on the Israeli VPS
+        id: vps_import
+        if: ${{ always() && github.event.inputs.dry_run != 'true' && (github.event_name == 'schedule' || github.event.inputs.vps_adapters != '') }}
+        continue-on-error: true
+        uses: appleboy/ssh-action@v1.0.3
+        env:
+          # Same forwarding pattern as the Mirror step: the remote SSH shell does
+          # not inherit the runner's env, so the Supabase creds + run parameters
+          # must be passed explicitly through the action's `envs:` whitelist below.
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          # Adapter allow-list → read by the importer as PC_ADAPTERS. Defaults to
+          # the geo-blocked set on scheduled runs; overridable on manual dispatch.
+          PC_ADAPTERS: ${{ github.event.inputs.vps_adapters || 'matrix,web,laibcatalog,super-pharm,wolt,publishprice' }}
+          # Respect the regulatory-only default exactly like the US step: '1' on
+          # schedule and unless an operator explicitly dispatched regulatory_only=false.
+          PC_REGULATORY_ONLY: ${{ (github.event_name == 'schedule' || github.event.inputs.regulatory_only != 'false') && '1' || '0' }}
+          # Bounded feed parallelism (matches the US step's default).
+          PC_CONCURRENCY: ${{ github.event.inputs.concurrency || '3' }}
+          # Force re-parse of already-imported files (dispatch only; default off).
+          PC_FORCE_REIMPORT: ${{ github.event.inputs.force_reimport == 'true' && '1' || '0' }}
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: root
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          command_timeout: "30m"
+          envs: SUPABASE_URL,SUPABASE_SERVICE_ROLE_KEY,PC_ADAPTERS,PC_REGULATORY_ONLY,PC_CONCURRENCY,PC_FORCE_REIMPORT
+          script: |
+            set -euo pipefail
+            cd /var/www/bkalut-app
+            # Hard-sync to origin/main so the VPS runs the same code as this
+            # workflow (mirrors the Mirror step's sync exactly).
+            git fetch origin main
+            git reset --hard FETCH_HEAD
+            git clean -fd
+            npm install --no-audit --no-fund
+            # Load the Sectigo intermediate CA (the importer also self-bootstraps
+            # it, but set it explicitly as belt-and-suspenders for the VPS shell).
+            export NODE_EXTRA_CA_CERTS="/var/www/bkalut-app/script/pc/certs/sectigo-server-auth-dv-r36.pem"
+            echo "VPS import — adapters=${PC_ADAPTERS} regulatoryOnly=${PC_REGULATORY_ONLY} concurrency=${PC_CONCURRENCY}"
+            # PC_ADAPTERS/PC_REGULATORY_ONLY/etc. are read from env by parseArgs;
+            # pass --adapters explicitly too so it is visible in the job log.
+            npm run pc:import -- "--adapters=${PC_ADAPTERS}"
+
+      # Surface a VPS-import failure loudly in the log without failing the job
+      # (the step above is continue-on-error so the mirror still runs).
+      - name: Note VPS import outcome
+        if: ${{ always() && steps.vps_import.outcome == 'failure' }}
+        shell: bash
+        run: echo "::warning::VPS geo-blocked import step failed (outcome=failure). The daily run continues to the mirror; investigate the SSH/import logs above. US-CI chains are unaffected."
+
+      # After the import writes the canonical dataset to Supabase, refresh the
+      # production server's local SQLite (data.db) so the web app's synchronous
+      # /api/pc/* routes serve the real 524K-price dataset. The server reads
+      # data.db; the import writes Supabase. This mirror step bridges the two by
+      # running the mirror ON the VPS (it has the Supabase env + the data.db),
+      # then restarting pm2 so the in-memory handles pick up the fresh file.
+      # Skipped on dry runs.
+      # Runs regardless of the import step's outcome (`always()`): the mirror
+      # copies ALL pc_* tables from Supabase → the VPS data.db, independent of
+      # whether THIS run added rows. A same-day re-run that imports nothing new
+      # (or even a failed import) must still refresh the live site from the
+      # canonical Supabase state. Only dry runs are skipped (they write nothing).
+      - name: Mirror Supabase -> production SQLite (data.db)
+        if: ${{ always() && github.event.inputs.dry_run != 'true' }}
+        uses: appleboy/ssh-action@v1.0.3
+        env:
+          # pc-mirror (script/pc-mirror-to-sqlite.ts) reads SUPABASE_URL and a key
+          # (SUPABASE_SERVICE_ROLE_KEY among others) from process.env. The SSH
+          # session on the VPS does not inherit these, so they must be forwarded
+          # explicitly via the action's `envs:` whitelist below.
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: root
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          command_timeout: "30m"
+          # Forward the Supabase secrets (defined in `env:` above) into the remote
+          # shell so `npm run pc:mirror` can authenticate against Supabase.
+          envs: SUPABASE_URL,SUPABASE_SERVICE_ROLE_KEY
+          script: |
+            set -euo pipefail
+            cd /var/www/bkalut-app
+            # Hard-sync the VPS tree to origin/main. A plain `git pull` aborts with
+            # "Need to specify how to reconcile divergent branches" when the local
+            # tree has diverged, which previously skipped the mirror + pm2 restart.
+            git fetch origin main
+            git reset --hard FETCH_HEAD
+            git clean -fd
+            npm install --no-audit --no-fund
+            echo "Mirroring Supabase pc_* tables into ./data.db ..."
+            npm run pc:mirror -- --db ./data.db
+            pm2 restart bkalut
+            echo "Mirror + restart complete."
+
+      # Only runs when the importer step above failed. Performs a tiny, dependency-
+      # free REST probe straight against PostgREST so the Actions log shows the
+      # exact HTTP status the Supabase client saw (401 = bad/anon key, 404 = table
+      # missing / migration not run, 200 = creds fine — look at pc_import_jobs).
+      # Sanitized: never prints the key or full URL, only the host + status code.
+      - name: Diagnose Supabase connectivity (on failure)
+        if: ${{ failure() }}
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        shell: bash
+        run: |
+          set +e
+          URL="$(printf '%s' "${SUPABASE_URL:-}" | tr -d '[:space:]')"
+          KEY="$(printf '%s' "${SUPABASE_SERVICE_ROLE_KEY:-}" | tr -d '[:space:]')"
+          if [ -z "$URL" ] || [ -z "$KEY" ]; then
+            echo "::error::Cannot probe — SUPABASE_URL/KEY missing or empty."
+            exit 0
+          fi
+          HOST="$(printf '%s' "$URL" | sed -E 's#https?://([^/]+).*#\1#')"
+          echo "Probing PostgREST at host: ${HOST} (key length: ${#KEY})"
+          SUPABASE_URL="$URL" SUPABASE_SERVICE_ROLE_KEY="$KEY" node -e '
+            const url = process.env.SUPABASE_URL.replace(/\/+$/, "");
+            const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+            const probe = (table) => fetch(url + "/rest/v1/" + table + "?select=id&limit=1", {
+              headers: { apikey: key, authorization: "Bearer " + key, accept: "application/json" },
+            }).then(async (r) => {
+              const body = (await r.text()).slice(0, 300).replace(/\s+/g, " ");
+              console.log("  " + table + " -> HTTP " + r.status + " :: " + body);
+              return r.status;
+            }).catch((e) => { console.log("  " + table + " -> fetch error: " + e.message); return 0; });
+            (async () => {
+              const s1 = await probe("pc_feed_sources");
+              const s2 = await probe("pc_import_jobs");
+              console.log("");
+              if (s1 === 401 || s2 === 401) console.log("Verdict: 401 — key rejected. SUPABASE_SERVICE_ROLE_KEY is wrong, expired, or an anon key.");
+              else if (s1 === 404 || s2 === 404) console.log("Verdict: 404 — table missing. Run deliverables/supabase_migration_price_comparison.sql.");
+              else if (s1 === 200 && s2 === 200) console.log("Verdict: 200 — REST reachable and authorized. Inspect pc_import_jobs for the diagnostic row + message.");
+              else console.log("Verdict: see statuses above.");
+            })();
+          '
+          exit 0

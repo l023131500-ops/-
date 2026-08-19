@@ -1,0 +1,47 @@
+{
+  "admins": {
+    "main": {
+      "id": 72,
+      "email": "qa0087main@more30.test",
+      "full_name": "QA 0087 מפיק ראשי"
+    },
+    "gone": {
+      "id": 73,
+      "email": "qa0087gone@more30.test",
+      "full_name": "QA 0087 מפיק שיימחק"
+    }
+  },
+  "login_token_main": "(נמחק — הסשן מחקה בגלגול אחורה)",
+  "cases": {
+    "A": {
+      "case_id": 213,
+      "contact_id": 220,
+      "queued": false,
+      "document_id": 148,
+      "produced_by": 72,
+      "render_queued": false
+    },
+    "B": {
+      "case_id": 214,
+      "contact_id": 221,
+      "queued": false,
+      "document_id": 150,
+      "produced_by": null,
+      "render_queued": false,
+      "note": "v7-shape render, seeded via SQL"
+    },
+    "C": {
+      "case_id": 215,
+      "contact_id": 222,
+      "queued": false,
+      "document_id": 149,
+      "produced_by": 73,
+      "render_queued": false
+    },
+    "D": {
+      "case_id": 216,
+      "contact_id": 223,
+      "queued": false
+    }
+  }
+}

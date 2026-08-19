@@ -1,0 +1,36 @@
+
+=== upload @ 2026-08-12T13:16:37.631Z ===
+200   sign-in test@more30.com — user 78600fbc-3fd3-4f02-8552-e93ab6559649
+200   mine before — items=0
+200   public shelf before — items=0
+200   POST /api/catalog (real token) — {"ok":true,"item":{"id":"up_msq45cly_1f8n","title":"בדיקת QA — נמחק מיד","category":"כללי","sender":"QA more30","date":"2026-08-12","mime":"image/png","file":"/api/upload/up_msq45cly_1f8n.png","sizeKB":2,"kind":"image","source":"upload"}}
+200   mine after upload — items=1 mine-has-it=true
+200   uploader_email absent — true
+200   public shelf after upload — items=1 has-it=true
+404   uploaded file reachable — text/plain; charset=utf-8 79B
+
+=== delete @ 2026-08-12T13:19:27.990Z ===
+401   POST /api/admin/delete (no key) — unauthorized
+200   POST /api/admin/delete — {"ok":true,"removed":["up_msq45cly_1f8n.png","uploads/up_msq45cly_1f8n.json"]}
+200   mine after delete — items=0 still-has-it=false
+200   public shelf after delete — items=0 still-has-it=false
+404   uploaded file after delete — expect 4xx
+404   POST /api/admin/delete (repeat) — {"error":"החומר כבר אינו קיים באחסון."}
+
+=== upload @ 2026-08-12T13:22:45.968Z ===
+200   sign-in test@more30.com — user 78600fbc-3fd3-4f02-8552-e93ab6559649
+200   mine before — items=0
+200   public shelf before — items=0
+200   POST /api/catalog (real token) — {"ok":true,"item":{"id":"up_msq4d9e8_5gg2","title":"בדיקת QA — נמחק מיד","category":"כללי","sender":"QA more30","date":"2026-08-12","mime":"image/png","file":"/api/upload/up_msq4d9e8_5gg2.png","sizeKB":2,"kind":"image","source":"upload"}}
+200   mine after upload — items=1 mine-has-it=true
+200   uploader_email absent — true
+200   public shelf after upload — items=1 has-it=true
+200   uploaded file reachable — image/png 2441B
+
+=== delete @ 2026-08-12T13:23:26.167Z ===
+401   POST /api/admin/delete (no key) — unauthorized
+200   POST /api/admin/delete — {"ok":true,"removed":["up_msq4d9e8_5gg2.png","uploads/up_msq4d9e8_5gg2.json"]}
+200   mine after delete — items=0 still-has-it=false
+200   public shelf after delete — items=0 still-has-it=false
+404   uploaded file after delete — expect 4xx
+404   POST /api/admin/delete (repeat) — {"error":"החומר כבר אינו קיים באחסון."}

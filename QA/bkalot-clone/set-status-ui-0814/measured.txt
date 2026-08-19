@@ -1,0 +1,79 @@
+כל המדידות כאן נלקחו מדפדפן אמיתי (1280x900) מול ה-edge והמסד החיים, מלבד
+שלוש שאילתות המסד שמסומנות ככאלה: בסיס, מנהל הבדיקה ורולבק.
+
+== בסיס (מסד) ==
+cases=0 documents=0 case_rights=0 admin_users=1 admin_sessions=5 templates=2
+contacts=4 oq_all=8 oq_src=8 dlog=3 sent_cases=0
+src_fp(id:status:attempts, app_key='bkalot') = da28ec6315535ec0bfbebad4d57752a7
+
+== מנהל הבדיקה (קריאת SQL ישירה — bkalot_clone_admin_create אינה חשופה ב-HTTP) ==
+select public.bkalot_clone_admin_create(jsonb_build_object(
+  'email','qa0073ui@more30.com','full_name','QA v6 set-status UI','password','Qa0073ui!probe'));
+=> {"ok":true,"admin":{"id":17,...}}
+
+== הזרעה דרך נתיב הקליטה הציבורי מעל HTTP (seed-out.txt) ==
+A intake http=200 ok=true case=73 contact=79
+B intake http=200 ok=true case=74 contact=80   ← בקרה, לא נגעו בה כלל
+
+== 01 — הפנייה נפתחה, סטטוס «חדשה» ==
+h3 «שינוי סטטוס» קיים במסך.
+שלושה כפתורים, שלושתם פעילים (new אינו אחד מהיעדים, ולכן אין מה לכבות):
+  בטיפול  disabled=false  title="מסמן את הפנייה כ«בטיפול». אינו שולח דבר."
+  נסגרה   disabled=false  title="מסמן את הפנייה כ«נסגרה». אינו שולח דבר."
+  נדחתה   disabled=false  title="מסמן את הפנייה כ«נדחתה». אינו שולח דבר."
+סטטוס=חדשה  עודכנה=14.08.2026, 05:20
+צילום: 01-new-three-live.png
+
+== 02 — לחיצה על «נסגרה» ==
+note: «הסטטוס שונה מ«חדשה» ל«נסגרה» · לא נשלחה שום הודעה»   hidden=false
+err:  hidden=true  (שינוי מוצלח אינו שגיאה)
+סטטוס=נסגרה   עודכנה=14.08.2026, 05:21  ← זז על המסך, לא רק במסד
+כפתורים: נסגרה disabled=true title="הפנייה כבר ב«נסגרה», ולכן אין מה לשנות"
+         בטיפול/נדחתה נשארו פעילים
+הרשימה שמאחור התרעננה בלי שנגעו בה: #73 «נסגרה», #74 «חדשה»
+צילום: 02-closed-after-click.png
+
+== 03 — המצב מגיע מהשרת ולא מהלחיצה ==
+«חזרה לרשימה» ואז פתיחה מחדש של #73 — openCase בונה את המסך מאפס וקורא
+ל-bkalot_clone_admin_case. אחרי הבנייה מחדש:
+  סטטוס=נסגרה, «נסגרה» עדיין disabled=true עם אותו נימוק בדיוק,
+  ה-note ריק ומוסתר (מסך חדש, לא זיכרון של הלחיצה הקודמת).
+בלי המדידה הזו הפעימה הייתה מוכיחה רק שהכפתור מכבה את עצמו.
+
+== 04 — תיקון הכרעת אדם קודמת: נסגרה → נדחתה ==
+note: «הסטטוס שונה מ«נסגרה» ל«נדחתה» · לא נשלחה שום הודעה»
+סטטוס=נדחתה   עודכנה=14.08.2026, 05:22
+כפתורים: נדחתה disabled=true; נסגרה חזר להיות פעיל
+זו הכרעה (3) של 0072 נמדדת מהמסך: אין פרדיקט על הסטטוס הנוכחי, ומנהל שטעה
+יכול לתקן. הרשימה: #73 «נדחתה», #74 «חדשה».
+צילום: 03-rejected-after-closed.png
+
+== 05 — המסנן ==
+סטטוס=«נדחתה» + «סינון» → «פנייה אחת», #73 בלבד. הבקרה #74 אינה ברשימה.
+צילום: 04-list-filter-rejected.png
+
+== קונסולה ==
+שגיאה אחת לאורך כל הזרימה, והיא של השרת המקומי ולא של האפליקציה:
+GET /favicon.ico 404. אפס שגיאות אפליקציה.
+
+== מצב טסט — נמדד ולא הוצהר (מסד, אחרי כל הלחיצות) ==
+documents=0 oq_all=8 dlog=3 sent_cases=0
+outbound_queue עם sent_at: 0     שורות mode=live: 0
+הנתיב נגע בעמודה status ותו לא: לא הופק מסמך, לא נכנסה שורה לתור, לא נכתבה
+שורת יומן ולא יצאה ולו קריאה אחת. אין מייל ואין הודעה.
+
+== הבקרה ==
+#74: status='new', updated_at = created_at בדיוק (2026-08-14T02:20:43.082762+00)
+— קפואה על מצב הלידה שלה. #73: updated_at=02:22:09.912336, כלומר 87 שניות
+אחרי היצירה. שלוש הלחיצות הן ההפרש כולו.
+
+== המקור לא נגע ==
+src_fp = da28ec6315535ec0bfbebad4d57752a7 — זהה לבסיס. 8 שורות app_key='bkalot'
+לפני ו-8 אחרי.
+
+== רולבק ==
+delete from bkalot_clone.case_rights where case_id in (73,74);   -- 118
+delete from bkalot_clone.cases        where id in (73,74);       -- 2
+delete from bkalot_auto.contacts      where id in (79,80);       -- 2
+delete from bkalot_clone.admin_sessions where admin_id = 17;
+delete from bkalot_clone.admin_users    where id = 17;

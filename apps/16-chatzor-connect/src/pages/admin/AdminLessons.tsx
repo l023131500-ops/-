@@ -10,12 +10,16 @@ import { Modal } from "@/components/ui/Modal";
 import { Button } from "@/components/ui/Button";
 import { Field, Input, Select } from "@/components/ui/Field";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { ErrorState } from "@/components/ui/ErrorState";
+import { CardGridSkeleton } from "@/components/ui/Skeleton";
+import { SampleBadge } from "@/components/ui/SampleBadge";
+import { sampleRowProps } from "@/lib/sampleRow";
 
 export function AdminLessons() {
   const toast = useToast();
   const qc = useQueryClient();
-  const { data: lessons } = useLessons();
-  const { data: synagogues } = useAllSynagogues();
+  const { data: lessons, isLoading, isError, refetch } = useLessons();
+  const { data: synagogues, isError: synagoguesFailed } = useAllSynagogues();
   const [open, setOpen] = useState(false);
 
   const create = useMutation({
@@ -46,7 +50,12 @@ export function AdminLessons() {
     });
   }
 
-  const synName = (id: string | null) => synagogues?.find((s) => s.id === id)?.name ?? "כלל היישוב";
+  /* ‏שיעור עם synagogueId שלא נמצא הוא לא שיעור של כלל היישוב — כשרשימת בתי
+     ‏הכנסת לא נטענה, החזרת "כלל היישוב" הייתה מייחסת אותו לקהל הלא נכון. */
+  const synName = (id: string | null) => {
+    if (!id) return "כלל היישוב";
+    return synagogues?.find((s) => s.id === id)?.name ?? "בית כנסת לא זמין";
+  };
 
   return (
     <div>
@@ -59,7 +68,15 @@ export function AdminLessons() {
       </div>
 
       <div className="mt-6">
-        {(lessons ?? []).length === 0 ? (
+        {isLoading ? (
+          <CardGridSkeleton count={3} />
+        ) : isError ? (
+          <ErrorState
+            title="לא הצלחנו לטעון את השיעורים"
+            description="הרשימה אינה מוצגת כי הקריאה נכשלה — ייתכן שיש שיעורים קיימים. נסו שוב לפני הוספת שיעור."
+            onRetry={() => refetch()}
+          />
+        ) : (lessons ?? []).length === 0 ? (
           <EmptyState icon={BookOpen} title="אין שיעורים" description="הוסיפו את השיעור הראשון." />
         ) : (
           <div className="overflow-hidden rounded-xl border border-border bg-card shadow-soft">
@@ -68,10 +85,13 @@ export function AdminLessons() {
                 <li key={l.id} className="flex items-center gap-3 p-4">
                   <span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-accent/10 text-accent"><BookOpen className="h-5 w-5" /></span>
                   <div className="min-w-0 flex-1">
-                    <div className="font-semibold text-foreground">{l.title}</div>
+                    <div className="flex items-center gap-2">
+                      <span className="font-semibold text-foreground">{l.title}</span>
+                      {l.isSample && <SampleBadge />}
+                    </div>
                     <div className="text-xs text-muted-foreground">{[synName(l.synagogueId), l.day, l.time, l.teacher].filter(Boolean).join(" · ")}</div>
                   </div>
-                  <button onClick={() => remove.mutate(l.id)} className="grid h-9 w-9 place-items-center rounded-md text-muted-foreground hover:bg-red-500/10 hover:text-red-500"><Trash2 className="h-4 w-4" /></button>
+                  <button onClick={() => remove.mutate(l.id)} {...sampleRowProps(l.isSample)}><Trash2 className="h-4 w-4" /></button>
                 </li>
               ))}
             </ul>
@@ -87,6 +107,13 @@ export function AdminLessons() {
               <option value="">כלל היישוב</option>
               {(synagogues ?? []).map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
             </Select>
+            {/* ‏בלי השורה הזו הרשימה נראית כאילו אין בתי כנסת לבחור בהם, והשיעור
+                ‏נשמר בטעות על כלל היישוב. */}
+            {synagoguesFailed && (
+              <p role="alert" className="mt-1.5 text-xs text-red-500">
+                רשימת בתי הכנסת לא נטענה — כרגע ניתן לשמור רק על כלל היישוב.
+              </p>
+            )}
           </Field>
           <div className="grid gap-4 sm:grid-cols-2">
             <Field label="יום" htmlFor="day"><Input id="day" name="day" placeholder="יום שלישי / כל יום" /></Field>

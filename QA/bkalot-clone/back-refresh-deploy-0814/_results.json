@@ -1,0 +1,116 @@
+{
+  "pulse": "13516f0 → פריסה: «חזרה לרשימה» מרעננת את הרשימה בייצור",
+  "deployed_commit": "13516f0c9c1b1cd11264b3d40f13ab5e607247fb",
+  "code_changed": false,
+  "migration": null,
+  "edge_function": "bkalot-clone-admin נשארה v7 — לא נפרסה",
+  "vercel_deployment": "more30-portal-r6z3dq521-l023131500-ops-projects.vercel.app",
+
+  "file": {
+    "source": "apps/37-bkalot-clone/admin.html",
+    "bytes": 86588,
+    "md5": "0F72749FA8162820B5F86E3AAB1937A4",
+    "prev_in_production_13516f0^": { "bytes": 85043, "md5": "6FD618CDFB0C8A04924B1F88667A7B57" },
+    "dist_before_staging": { "bytes": 85043, "md5": "6FD618CDFB0C8A04924B1F88667A7B57" },
+    "dist_after_staging": { "bytes": 86588, "md5": "0F72749FA8162820B5F86E3AAB1937A4" },
+    "staged_files": 38
+  },
+
+  "markers": {
+    "new_unique_to_13516f0": [
+      "show(\"screen-list\"); load();",
+      "חזרה לרשימה מרעננת אותה, ולא רק מחליפה מסך",
+      "ורשימת מה-שעלול-לשנות אינה ידועה ללקוח מראש",
+      "show לפני load ולא אחריה"
+    ],
+    "moved_to_old_because_true_before": "show(\"screen-list\") — true בשתי הגרסאות; ההבדל הוא מה שבא אחריו",
+    "prev_version_13516f0^": { "new": "כולם false", "old": "כולם true" },
+    "source": { "new": "כולם true", "old": "כולם true" },
+    "dist_before_staging": { "new": "כולם false", "old": "כולם true" },
+    "dist_after_staging": { "new": "כולם true", "old": "כולם true" },
+    "production_before": { "new": "כולם false", "old": "כולם true" },
+    "production_after": { "new": "כולם true", "old": "כולם true" }
+  },
+
+  "http": {
+    "/bkalot-studio/admin": { "before": 85279, "after": 86824 },
+    "/bkalot-studio/admin/": { "before": 85279, "after": 86824 },
+    "/bkalot-studio/": { "before": 21272, "after": 21272 },
+    "more30.com/": { "before": 3517, "after": 3517 },
+    "netfree_delta": 236,
+    "alef_admin": { "before": 845, "after": 881 },
+    "assets": { "before": "index-C2AHwa-z.js,index-B35ByRD-.css", "after": "index-C2AHwa-z.js,index-B35ByRD-.css" },
+    "encoding": { "replacement_chars": 0, "double_encoded": 0 }
+  },
+
+  "browser": {
+    "viewport": "1280x900",
+    "url": "https://more30.com/bkalot-studio/admin?cb=qa0081",
+    "admin": { "id": 37, "full_name": "QA 0081 פריסה" },
+    "cases_created_over_http_intake": { "touched": 116, "control": 117 },
+    "console": { "total": 0, "errors": 0, "warnings": 0 },
+    "states": [
+      {
+        "shot": "01-live-both-new.png",
+        "state": "שתיהן חדשות ואיש לא נגע",
+        "rows": { "116": { "spans": 8, "status": "חדשה", "marks": 0 }, "117": { "spans": 8, "status": "חדשה", "marks": 0 } }
+      },
+      {
+        "shot": "02-live-back-fresh.png",
+        "state": "אחרי «הפק מסמך» ו«חזרה לרשימה» — בלי «סינון» ובלי טעינה מחדש",
+        "rows": {
+          "116": {
+            "spans": 10, "status": "בטיפול", "beside_it": "1 מסמכים",
+            "mark": "לא הוכרע מהמסך", "color": "rgb(168, 99, 31)",
+            "title": "הפנייה אינה «חדשה» ולא נרשמה עליה לחיצה — הטריגר קידם אותה בהפקת מסמך"
+          },
+          "117": { "spans": 8, "status": "חדשה", "marks": 0 }
+        },
+        "db_at_that_moment": {
+          "116": { "status": "in_progress", "decided_by": null, "decided_at": null, "docs": 1, "updated_at": "2026-08-14 06:32:34.536811+00" },
+          "117": { "status": "new", "docs": 0, "created_at_equals_updated_at": true }
+        },
+        "screen_list": "block", "screen_case": "none", "list_error": "none", "count": "2 פניות"
+      }
+    ],
+    "screenshots": [
+      { "file": "01-live-both-new.png", "bytes": 38938, "md5": "857A665D0B64A6CF0FB9DB6D9BB0357F" },
+      { "file": "02-live-back-fresh.png", "bytes": 41086, "md5": "124C9410C7E8092577DC807818ADF722" }
+    ]
+  },
+
+  "test_mode": {
+    "cases_in_sent": 0,
+    "outbound_queue": { "baseline": 8, "after_document": 8, "after_rollback": 8 },
+    "queue_rows_with_sent_at": 0,
+    "queue_rows_mode_live": 0,
+    "documents_with_queue_id": 0,
+    "delivery_log": 3,
+    "queue_fingerprint": { "baseline": "046ae375ade6f929ecc61b91aaf39cf5", "during": "046ae375ade6f929ecc61b91aaf39cf5", "after": "046ae375ade6f929ecc61b91aaf39cf5" }
+  },
+
+  "rollback": {
+    "deleted": { "documents": 1, "case_rights": 84, "cases": 2, "admin_sessions": 1, "admin_users": 1, "contacts": 2 },
+    "after": {
+      "cases": 0, "case_rights": 0, "documents": 0, "admin_users": 1, "admin_sessions": 5,
+      "templates": 2, "catalog": 888, "contacts": 4, "outbound_queue": 8, "delivery_log": 3
+    },
+    "identical_to_baseline": true
+  },
+
+  "protected_untouched": [
+    "apps/08-bkalut-app", "apps/09-bkalot-admin", "supabase/functions",
+    "bkalut-app", "bkalot-admin", "zr_*", "NEDARIM3873", "csj", "csj_src", "igud"
+  ],
+
+  "open": [
+    "רענון שנכשל משאיר את השורות הישנות על המסך — count אומר «—» ויש שורת שגיאה, אבל השורות נשארות; זהה לסינון ולדפדוף, ולא נמדד כאן בייצור",
+    "await load() שרץ אחרי «שינוי סטטוס» הפך למיותר ולא הוסר",
+    "«חזרה לרשימה» מרעננת את אותה רשימה — הסינון ו-offset אינם מאופסים; זה מכוון, ולא נמדד כאן על עמוד שני",
+    "אין סינון «לא הוכרעה» ואין מיון לפי decided_at",
+    "אין היסטוריה: הכרעה קודמת נדרסת",
+    "«מי הפיק» על documents אינו נכתב לשום מקום",
+    "«1 מסמכים» — המונה אינו סופר עברית כמו «2 פניות» שמעליו",
+    "public_visible ו-show_in_showcase של #37 נשארים false"
+  ]
+}

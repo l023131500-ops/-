@@ -1,0 +1,300 @@
+<!doctype html><html lang="he" dir="rtl"><head><meta charset="UTF-8">
+<title>לקוחות — תצוגה מקדימה</title><style>
+      :root { color-scheme: light dark; --gold:#c9a227; --bg:#f6f7fb; --surface:#fff;
+              --ink:#0b0d2e; --ink-2:#5b6076; --line:#e4e6f0; --ok:#157f4b; --warn:#8a6d10; }
+      @media (prefers-color-scheme: dark) {
+        :root { --bg:#0b0d18; --surface:#151827; --ink:#e9ebf5; --ink-2:#a2a8c0;
+                --line:#262b40; --ok:#5fd39b; --warn:#e0bd5a; } }
+      * { box-sizing:border-box; margin:0; padding:0; }
+      body { font-family:'Heebo',system-ui,sans-serif; background:var(--bg); color:var(--ink);
+             line-height:1.6; padding:28px 20px 80px; }
+      .wrap { max-width:1000px; margin:0 auto; }
+      .back { display:inline-flex; align-items:center; min-height:24px; font-size:14px;
+              color:var(--ink-2); text-decoration:none; }
+      .back:hover { color:var(--ink); }
+      h1 { font-size:clamp(24px,4vw,34px); font-weight:800; margin-top:10px; }
+      .sub { color:var(--ink-2); font-size:15px; margin-top:6px; max-width:66ch; }
+      .nav { display:flex; gap:8px; flex-wrap:wrap; margin:18px 0; }
+      .nav a { font-size:13.5px; font-weight:600; text-decoration:none; border:1px solid var(--line);
+               border-radius:999px; padding:6px 14px; min-height:24px; display:inline-flex;
+               align-items:center; color:var(--ink); background:var(--surface); }
+      .nav a:hover { border-color:var(--gold); }
+      .panel { background:var(--surface); border:1px solid var(--line); border-radius:14px;
+               padding:18px; margin-bottom:14px; }
+      label { display:block; font-size:13px; color:var(--ink-2); margin-bottom:4px; }
+      select, input { font:inherit; font-size:15px; padding:9px 11px; border-radius:9px;
+                      border:1px solid var(--line); background:var(--bg); color:var(--ink);
+                      min-height:42px; width:100%; }
+      select:focus, input:focus { outline:2px solid var(--gold); outline-offset:1px; }
+      .form { display:grid; grid-template-columns:1fr 1fr 1fr auto; gap:10px; align-items:end; }
+      @media (max-width:760px) { .form { grid-template-columns:1fr; } }
+      button { font:inherit; font-weight:700; font-size:14px; cursor:pointer; min-height:42px;
+               border:1px solid var(--line); background:var(--bg); color:var(--ink);
+               border-radius:9px; padding:9px 18px; }
+      button:hover { border-color:var(--gold); }
+      button:disabled { opacity:.5; cursor:default; }
+      /* שמונה עמודות אינן נכנסות למסך צר, וטבלה שנחתכת בשקט גרועה מטבלה
+         שנגללת. הגלילה על העטיפה, כדי שכותרות העמודות ייגללו עם הגוף. */
+      .tbl { overflow-x:auto; }
+      table { border-collapse:collapse; width:100%; font-size:14px; margin-top:4px; }
+      th,td { padding:9px 12px; text-align:start; border-bottom:1px solid var(--line); white-space:nowrap; }
+      th { font-size:12px; color:var(--ink-2); font-weight:700; }
+      tbody tr:last-child td { border-bottom:0; }
+      td a { color:inherit; }
+      .sub2 { display:block; font-size:12px; color:var(--ink-2); }
+      .muted { color:var(--ink-2); }
+      .msg { font-size:14px; margin-top:10px; min-height:20px; }
+      .msg.ok { color:var(--ok); } .msg.err { color:#c0392b; }
+      .note { border:1px solid var(--line); border-radius:12px; padding:14px 16px;
+              font-size:14px; background:var(--surface); margin-top:14px; }
+      .note.warn { border-color:color-mix(in srgb,var(--warn) 45%,var(--line)); }
+    </style></head><body><div class="wrap">
+<h1>לקוחות</h1>
+<p class="sub">אותן פונקציות של /admin/customers, על המטען האמיתי של ההאב (אימייל · שם · טלפון מוסווים).</p>
+<section class="panel"><h2 style="font-size:16px;font-weight:800;margin:18px 0 6px">bkalot — 14 רשומים</h2>
+  <div class="tbl"><table><thead><tr>
+    <th>שם</th><th>אימייל</th><th>טלפון</th><th>תפקיד</th><th>מסלול</th>
+    <th>הצטרף</th><th>פעילות אחרונה</th><th>אומת</th>
+  </tr></thead><tbody><tr>
+    <td>ב•••••••••</td>
+    <td dir="ltr">q**************@qa.more30.test</td>
+    <td><a dir="ltr" href="tel:0500000067">0500000067</a></td>
+    <td>לקוח</td>
+    <td>חינמי</td>
+    <td>6.8.2026</td>
+    <td>6.8.2026</td>
+    <td>כן</td>
+  </tr><tr>
+    <td><span class="muted">ללא שם</span></td>
+    <td dir="ltr">q************@qa.more30.test</td>
+    <td><span class="muted">לא נמסר</span></td>
+    <td>לקוח</td>
+    <td>חינמי</td>
+    <td>6.8.2026</td>
+    <td>6.8.2026</td>
+    <td>כן</td>
+  </tr><tr>
+    <td><span class="muted">ללא שם</span></td>
+    <td dir="ltr">q****************************@more30.com</td>
+    <td><span class="muted">לא נמסר</span></td>
+    <td><span class="muted">חשבון בדיקה</span></td>
+    <td>חינמי</td>
+    <td>7.8.2026</td>
+    <td>7.8.2026</td>
+    <td>כן</td>
+  </tr><tr>
+    <td><span class="muted">ללא שם</span></td>
+    <td dir="ltr">q****************************@more30.com</td>
+    <td><span class="muted">לא נמסר</span></td>
+    <td><span class="muted">חשבון בדיקה</span></td>
+    <td>חינמי</td>
+    <td>7.8.2026</td>
+    <td>7.8.2026</td>
+    <td>כן</td>
+  </tr><tr>
+    <td>ל•••••••••</td>
+    <td dir="ltr">q**************************@more30.com</td>
+    <td><span class="muted">לא נמסר</span></td>
+    <td><span class="muted">חשבון בדיקה</span></td>
+    <td>חינמי</td>
+    <td>6.8.2026</td>
+    <td>6.8.2026</td>
+    <td>כן</td>
+  </tr><tr>
+    <td>ל•••••••••</td>
+    <td dir="ltr">q***************************@more30.com</td>
+    <td><span class="muted">לא נמסר</span></td>
+    <td><span class="muted">חשבון בדיקה</span></td>
+    <td>חינמי</td>
+    <td>6.8.2026</td>
+    <td>6.8.2026</td>
+    <td>כן</td>
+  </tr><tr>
+    <td>ל•••••••••</td>
+    <td dir="ltr">q***************************@more30.com</td>
+    <td><span class="muted">לא נמסר</span></td>
+    <td><span class="muted">חשבון בדיקה</span></td>
+    <td>חינמי</td>
+    <td>6.8.2026</td>
+    <td>6.8.2026</td>
+    <td>כן</td>
+  </tr><tr>
+    <td>ל•••••••••</td>
+    <td dir="ltr">q***************************@more30.com</td>
+    <td><a dir="ltr" href="tel:0500000067">0500000067</a></td>
+    <td><span class="muted">חשבון בדיקה</span></td>
+    <td>חינמי</td>
+    <td>6.8.2026</td>
+    <td>6.8.2026</td>
+    <td>כן</td>
+  </tr><tr>
+    <td>ל•••••••••</td>
+    <td dir="ltr">q***************************@more30.com</td>
+    <td><span class="muted">לא נמסר</span></td>
+    <td><span class="muted">חשבון בדיקה</span></td>
+    <td>חינמי</td>
+    <td>6.8.2026</td>
+    <td>6.8.2026</td>
+    <td>כן</td>
+  </tr><tr>
+    <td>ל•••••••••</td>
+    <td dir="ltr">q**************************@more30.com</td>
+    <td><span class="muted">לא נמסר</span></td>
+    <td><span class="muted">חשבון בדיקה</span></td>
+    <td>חינמי</td>
+    <td>6.8.2026</td>
+    <td>6.8.2026</td>
+    <td>כן</td>
+  </tr><tr>
+    <td>ל•••••••••</td>
+    <td dir="ltr">q***************************@more30.com</td>
+    <td><a dir="ltr" href="tel:0500000067">0500000067</a></td>
+    <td><span class="muted">חשבון בדיקה</span></td>
+    <td>חינמי</td>
+    <td>5.8.2026</td>
+    <td>5.8.2026</td>
+    <td>כן</td>
+  </tr><tr>
+    <td>ל•••••••••</td>
+    <td dir="ltr">q***************************@more30.com</td>
+    <td><span class="muted">לא נמסר</span></td>
+    <td><span class="muted">חשבון בדיקה</span></td>
+    <td>חינמי</td>
+    <td>5.8.2026</td>
+    <td>5.8.2026</td>
+    <td>כן</td>
+  </tr><tr>
+    <td>ל•••••••••</td>
+    <td dir="ltr">q************************@more30.com</td>
+    <td><span class="muted">לא נמסר</span></td>
+    <td><span class="muted">חשבון בדיקה</span></td>
+    <td>חינמי</td>
+    <td>5.8.2026</td>
+    <td>5.8.2026</td>
+    <td>כן</td>
+  </tr><tr>
+    <td>ל•••••••••</td>
+    <td dir="ltr">q************************@more30.com</td>
+    <td><span class="muted">לא נמסר</span></td>
+    <td><span class="muted">חשבון בדיקה</span></td>
+    <td>חינמי</td>
+    <td>5.8.2026</td>
+    <td>5.8.2026</td>
+    <td>כן</td>
+  </tr></tbody></table></div>
+  <p class="muted" style="font-size:12.5px;margin-top:8px">14 רשומים · 11 עם שם · 3 עם טלפון.</p></section>
+<section class="panel"><h2 style="font-size:16px;font-weight:800;margin:18px 0 6px">torah — 12 רשומים</h2>
+  <div class="tbl"><table><thead><tr>
+    <th>שם</th><th>אימייל</th><th>טלפון</th><th>תפקיד</th><th>מסלול</th>
+    <th>הצטרף</th><th>פעילות אחרונה</th><th>אומת</th>
+  </tr></thead><tbody><tr>
+    <td><span class="muted">ללא שם</span></td>
+    <td dir="ltr">q****************************@more30.com</td>
+    <td><span class="muted">לא נמסר</span></td>
+    <td><span class="muted">חשבון בדיקה</span></td>
+    <td>חינמי</td>
+    <td>7.8.2026</td>
+    <td>7.8.2026</td>
+    <td>כן</td>
+  </tr><tr>
+    <td><span class="muted">ללא שם</span></td>
+    <td dir="ltr">q****************************@more30.com</td>
+    <td><span class="muted">לא נמסר</span></td>
+    <td><span class="muted">חשבון בדיקה</span></td>
+    <td>חינמי</td>
+    <td>7.8.2026</td>
+    <td>7.8.2026</td>
+    <td>כן</td>
+  </tr><tr>
+    <td><span class="muted">ללא שם</span></td>
+    <td dir="ltr">q*************************@more30.com</td>
+    <td><span class="muted">לא נמסר</span></td>
+    <td><span class="muted">חשבון בדיקה</span></td>
+    <td>חינמי<span class="sub2">ביקש בסיסי · טרם נגבה</span></td>
+    <td>7.8.2026</td>
+    <td>7.8.2026</td>
+    <td>כן</td>
+  </tr><tr>
+    <td>ל•••••••••</td>
+    <td dir="ltr">q**************************@more30.com</td>
+    <td><span class="muted">לא נמסר</span></td>
+    <td><span class="muted">חשבון בדיקה</span></td>
+    <td>חינמי</td>
+    <td>6.8.2026</td>
+    <td>6.8.2026</td>
+    <td>כן</td>
+  </tr><tr>
+    <td>ל•••••••••</td>
+    <td dir="ltr">q***************************@more30.com</td>
+    <td><span class="muted">לא נמסר</span></td>
+    <td><span class="muted">חשבון בדיקה</span></td>
+    <td>חינמי</td>
+    <td>6.8.2026</td>
+    <td>6.8.2026</td>
+    <td>כן</td>
+  </tr><tr>
+    <td>ל•••••••••</td>
+    <td dir="ltr">q***************************@more30.com</td>
+    <td><span class="muted">לא נמסר</span></td>
+    <td><span class="muted">חשבון בדיקה</span></td>
+    <td>חינמי</td>
+    <td>6.8.2026</td>
+    <td>6.8.2026</td>
+    <td>כן</td>
+  </tr><tr>
+    <td>ל•••••••••</td>
+    <td dir="ltr">q***************************@more30.com</td>
+    <td><span class="muted">לא נמסר</span></td>
+    <td><span class="muted">חשבון בדיקה</span></td>
+    <td>חינמי</td>
+    <td>6.8.2026</td>
+    <td>6.8.2026</td>
+    <td>כן</td>
+  </tr><tr>
+    <td>ל•••••••••</td>
+    <td dir="ltr">q***************************@more30.com</td>
+    <td><span class="muted">לא נמסר</span></td>
+    <td><span class="muted">חשבון בדיקה</span></td>
+    <td>חינמי</td>
+    <td>6.8.2026</td>
+    <td>6.8.2026</td>
+    <td>כן</td>
+  </tr><tr>
+    <td>ל•••••••••</td>
+    <td dir="ltr">q***************************@more30.com</td>
+    <td><span class="muted">לא נמסר</span></td>
+    <td><span class="muted">חשבון בדיקה</span></td>
+    <td>חינמי</td>
+    <td>6.8.2026</td>
+    <td>6.8.2026</td>
+    <td>כן</td>
+  </tr><tr>
+    <td>ל•••••••••</td>
+    <td dir="ltr">q***************************@more30.com</td>
+    <td><a dir="ltr" href="tel:0500000067">0500000067</a></td>
+    <td><span class="muted">חשבון בדיקה</span></td>
+    <td>חינמי</td>
+    <td>6.8.2026</td>
+    <td>6.8.2026</td>
+    <td>כן</td>
+  </tr><tr>
+    <td>ל•••••••••</td>
+    <td dir="ltr">q***************************@more30.com</td>
+    <td><span class="muted">לא נמסר</span></td>
+    <td><span class="muted">חשבון בדיקה</span></td>
+    <td>חינמי</td>
+    <td>6.8.2026</td>
+    <td>6.8.2026</td>
+    <td>כן</td>
+  </tr><tr>
+    <td>ל•••••••••</td>
+    <td dir="ltr">q***************************@more30.com</td>
+    <td><span class="muted">לא נמסר</span></td>
+    <td><span class="muted">חשבון בדיקה</span></td>
+    <td>חינמי</td>
+    <td>5.8.2026</td>
+    <td>5.8.2026</td>
+    <td>כן</td>
+  </tr></tbody></table></div>
+  <p class="muted" style="font-size:12.5px;margin-top:8px">12 רשומים · 9 עם שם · 1 עם טלפון.</p></section>
+</div></body></html>

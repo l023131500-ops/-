@@ -1,0 +1,49 @@
+bkalot-clone-admin /case — id numeric-overflow guard, measured live in production
+2026-08-17
+
+Context: supabase/functions/bkalot-clone-admin/index.ts:403-409. Unlike the other
+id-bearing routes (render/document/queue/dispatch/set-status), which pass the id
+into an RPC that takes `p jsonb` and let Postgres's own ::bigint cast reject an
+out-of-range id (returning *_not_found via the DB-level guard added for exactly
+this), /case calls bkalot_clone_admin_case with `p_id bigint` directly — so a bad
+cast there would surface as a PostgREST 400, indistinguishable from a gate/auth
+failure once NetFree rewrites error statuses to 400. The code comment says the
+check is therefore done in the edge function itself, before the RPC call, and
+should return case_id_required (HTTP 200) instead.
+
+That guard had never been measured against the deployed function with an actual
+out-of-range id — QA/bkalot-clone/admin-http-0813/probe-out.txt only covers
+/case with no id, id="abc", and id=99999 (all in-range or non-numeric, not
+overflow). document-http-0814, queue-http-0814, dispatch-http-0814 and
+set-status-http-0814 each measured the DB-level overflow guard on their own
+route; /case's edge-function-level guard was the one sibling never probed.
+
+--- login ---
+POST https://uhnrgujbdxhhmoxcjria.supabase.co/functions/v1/bkalot-clone-admin/login
+body: {"email":"l023131500@gmail.com","password":"More30Admin2026"}
+-> HTTP 200 {"ok":true,"admin":{"id":4,"email":"l023131500@gmail.com","full_name":"מנהל־על"},"token":"mlP3F...","expires_at":"2026-08-17T12:30:39.035409+00:00"}
+
+--- probe: 25-digit id (exceeds Number.MAX_SAFE_INTEGER, same shape used by the
+    sibling routes' overflow probes) ---
+POST .../bkalot-clone-admin/case
+headers: x-admin-token: <token from login>
+body: {"id":"1234567890123456789012325"... (25 digits)}
+-> HTTP 200
+{"ok":false,"error":"case_id_required"}
+
+--- control: known-format, nonexistent id (99999) ---
+POST .../bkalot-clone-admin/case
+body: {"id":99999}
+-> HTTP 200
+{"ok":false,"error":"case_not_found","case_id":99999,"admin":{"id":4,"email":"l023131500@gmail.com","full_name":"מנהל־על"}}
+
+--- logout ---
+POST .../bkalot-clone-admin/logout
+-> HTTP 200 {"ok":true,"revoked":1}
+
+Result: confirmed. The 25-digit id fails Number.isSafeInteger() in the edge
+function and returns case_id_required — a distinct code from case_not_found —
+exactly as the 0058-era code comment claims, and never leaks a raw PostgREST
+cast error. This closes the one id-route overflow guard the document/queue/
+dispatch/set-status sweep (0814) had not covered. No code change, no
+migration, no deploy — measurement only.

@@ -1,0 +1,110 @@
+{
+  "measurements": [
+    {
+      "id": "01-prev-1e3-sent-and-lost",
+      "server": 8150,
+      "topic_no_typed": "1e3",
+      "native_checkValidity": {
+        "field": true,
+        "form": true,
+        "value": "1e3"
+      },
+      "value_in_field_before_submit": "1e3",
+      "intake_requests": 1,
+      "request_left_the_page": true,
+      "title": "הפנייה נקלטה",
+      "result_class": "result ok",
+      "lines": [
+        "קיבלנו את הפנייה ונחזור אליכם.",
+        "🚫 מצב טסט: הפנייה נשמרה, ולא יצאה ממנה שום הודעה.",
+        "שדות שלא נשמרו: מספר נושא — צריך מספר שלם"
+      ],
+      "case_row": [
+        "מספר פנייה=143",
+        "זכויות שאותרו עבורכם=42"
+      ],
+      "focused_id": "topic_no",
+      "focused_tag": "INPUT",
+      "topic_value": "1e3",
+      "topic_aria_invalid": "true",
+      "aria_invalid_count": 1,
+      "kind": "treatment",
+      "full_name": "",
+      "phone": "",
+      "situation": "",
+      "consent": false,
+      "result_top_px": 673,
+      "field_top_px": 240,
+      "screenshot": "01-prev-1e3-sent-and-lost.png"
+    },
+    {
+      "id": "02-fixed-1e3-blocked",
+      "server": 8151,
+      "topic_no_typed": "1e3",
+      "native_checkValidity": {
+        "field": true,
+        "form": true,
+        "value": "1e3"
+      },
+      "value_in_field_before_submit": "1e3",
+      "intake_requests": 0,
+      "request_left_the_page": false,
+      "title": "הפנייה לא נשלחה",
+      "result_class": "result bad",
+      "lines": [
+        "מספר נושא — צריך מספר שלם. תקנו ושלחו שוב."
+      ],
+      "case_row": [],
+      "focused_id": "topic_no",
+      "focused_tag": "INPUT",
+      "topic_value": "1e3",
+      "topic_aria_invalid": "true",
+      "aria_invalid_count": 1,
+      "kind": "treatment",
+      "full_name": "בדיקת חסימה מוקדמת",
+      "phone": "050-1234567",
+      "situation": "single_parent",
+      "consent": true,
+      "result_top_px": 705,
+      "field_top_px": 272,
+      "screenshot": "02-fixed-1e3-blocked.png"
+    },
+    {
+      "id": "03-fixed-control-7",
+      "server": 8151,
+      "topic_no_typed": "7",
+      "native_checkValidity": {
+        "field": true,
+        "form": true,
+        "value": "7"
+      },
+      "value_in_field_before_submit": "7",
+      "intake_requests": 1,
+      "request_left_the_page": true,
+      "title": "הפנייה נקלטה",
+      "result_class": "result ok",
+      "lines": [
+        "קיבלנו את הפנייה ונחזור אליכם.",
+        "🚫 מצב טסט: הפנייה נשמרה, ולא יצאה ממנה שום הודעה."
+      ],
+      "case_row": [
+        "מספר פנייה=144",
+        "זכויות שאותרו עבורכם=42"
+      ],
+      "focused_id": "",
+      "focused_tag": "BODY",
+      "topic_value": "",
+      "topic_aria_invalid": null,
+      "aria_invalid_count": 0,
+      "kind": "info",
+      "full_name": "",
+      "phone": "",
+      "situation": "",
+      "consent": false,
+      "result_top_px": 493,
+      "field_top_px": null,
+      "screenshot": "03-fixed-control-7.png"
+    }
+  ],
+  "console_messages": []
+}

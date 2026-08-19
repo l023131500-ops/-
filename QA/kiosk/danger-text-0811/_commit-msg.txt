@@ -1,0 +1,50 @@
+kiosk (35): three red sentences were readable only in the mode we were looking at
+
+index-contrast-0811 closed the three public/ pages and left one thing open: a
+hard-coded colour beside an inverting token is invisible in the mode you are not
+looking at, and it named console.html / js/app.js as never having been searched
+for them.
+
+A sweep of every colour literal in those two files returns four hits — the rest
+is tokenised. Three are red or amber text on a surface that does invert:
+
+  .hl-err, the error under the domain allow-list          2.63:1 (dark card)
+  the guide screen's load error                           2.63:1 (same card)
+  .hl-empty, "no domains — the device can open anything"  3.01:1 (on #2e2510)
+
+Two of the three were written inline, and that is what hid them: an inline color
+beats every stylesheet rule — including the :root.dark .hl-empty sitting one line
+below it, which already replaced that box's background and could never reach the
+text above it. Both are back in css/style.css.
+
+--danger-ink does not move. It was chosen against the pink #fee2e2 fill, which
+does not invert, so it is right there in both modes (.btn-danger, .alert-error).
+What is added is a third split: --danger-text, the red that sits directly on the
+surface and therefore inverts with it — #b91c1c light, #f87171 dark. Exactly the
+shape of --danger/--danger-ink and --warn/--warn-ink.
+
+--danger itself was not taken as the dark value, though that is the move
+--warn-ink: --warn made: #ef4444 is 4.53:1 on the dark card, passing with no
+margin at all.
+
+Left alone with their numbers rather than silence: the toast backgrounds are an
+opaque overlay that is not supposed to invert (white on them is 18.7:1 and
+6.47:1), and #user-quota sits on --navy, a brand colour verified as surface-only,
+at 6.72:1.
+
+Verified in QA/kiosk/danger-text-0811/ — a real Chromium at both colorScheme
+values against warn-ink-0811's stub reused rather than copied. The first two
+sites are driven from the links screen, the one place where hostListEditor mounts
+with no locked host and so renders the empty-list warning by itself; the error is
+driven by a duplicate rather than an invalid domain, a deterministic route into
+fail(); the third is driven by faulting /api/devices at the network, since it is
+painted only from viewGuide's catch. 11/14 rows pass, the three failures being
+the before rows, each asserted dark-only — in light the old colour and the new
+token are the same value on purpose, so the light console does not move a byte.
+Six screenshots. 152 tests, 151 pass — the documented baseline, unchanged.
+
+Found and not fixed: .toast declares background: var(--ink); color:#fff, which in
+dark is white on near-white. It never happens because toast() always writes an
+inline background, so the rule is dead — a trap rather than a bug.
+
+Not deployed.

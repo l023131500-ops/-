@@ -1,0 +1,1097 @@
+{
+  "at": "2026-08-12T10:12:05.077Z",
+  "targets": 26,
+  "results": [
+    {
+      "number": "01",
+      "slug": "torah",
+      "live_url": "https://more30.com/torah/",
+      "registered": "bieebmnmkffwbqlsfozh",
+      "files_read": 5,
+      "scripts": 4,
+      "projects": [
+        {
+          "ref": "bieebmnmkffwbqlsfozh",
+          "own_files": true,
+          "reference_kind": "api",
+          "counts_as_own_project": true,
+          "from": [
+            "/torah/assets/index-Cg-YfQE5.js"
+          ],
+          "key": {
+            "format": "publishable",
+            "role": "anon",
+            "ref": null
+          },
+          "key_ref_matches_url": true,
+          "pair_distance": 46,
+          "settings": {
+            "disable_signup": false,
+            "mailer_autoconfirm": false,
+            "external_google": true,
+            "external_email": true
+          }
+        },
+        {
+          "ref": "uhnrgujbdxhhmoxcjria",
+          "own_files": false,
+          "reference_kind": "api",
+          "counts_as_own_project": false,
+          "from": [
+            "/auth-button.js"
+          ],
+          "key": {
+            "format": "jwt",
+            "role": "anon",
+            "ref": "uhnrgujbdxhhmoxcjria"
+          },
+          "key_ref_matches_url": true,
+          "pair_distance": 72
+        }
+      ],
+      "own_project_count": 1,
+      "registered_is_served": true,
+      "registered_in_own_files": true,
+      "storage_only_refs": [],
+      "verdict": "single project, matches core.projects"
+    },
+    {
+      "number": "02",
+      "slug": "tamlul",
+      "live_url": "https://more30.com/tamlul/",
+      "registered": "bieebmnmkffwbqlsfozh",
+      "files_read": 11,
+      "scripts": 10,
+      "projects": [
+        {
+          "ref": "uhnrgujbdxhhmoxcjria",
+          "own_files": false,
+          "reference_kind": "api",
+          "counts_as_own_project": false,
+          "from": [
+            "/auth-button.js"
+          ],
+          "key": {
+            "format": "jwt",
+            "role": "anon",
+            "ref": "uhnrgujbdxhhmoxcjria"
+          },
+          "key_ref_matches_url": true,
+          "pair_distance": 72
+        }
+      ],
+      "own_project_count": 0,
+      "registered_is_served": false,
+      "registered_in_own_files": false,
+      "storage_only_refs": [],
+      "verdict": "portal-only — the only key served is the shared login widget"
+    },
+    {
+      "number": "03",
+      "slug": "modaot",
+      "live_url": "https://more30.com/modaot/",
+      "registered": "bieebmnmkffwbqlsfozh",
+      "files_read": 11,
+      "scripts": 10,
+      "projects": [
+        {
+          "ref": "uhnrgujbdxhhmoxcjria",
+          "own_files": false,
+          "reference_kind": "api",
+          "counts_as_own_project": false,
+          "from": [
+            "/auth-button.js"
+          ],
+          "key": {
+            "format": "jwt",
+            "role": "anon",
+            "ref": "uhnrgujbdxhhmoxcjria"
+          },
+          "key_ref_matches_url": true,
+          "pair_distance": 72
+        }
+      ],
+      "own_project_count": 0,
+      "registered_is_served": false,
+      "registered_in_own_files": false,
+      "storage_only_refs": [],
+      "verdict": "portal-only — the only key served is the shared login widget"
+    },
+    {
+      "number": "04",
+      "slug": "imud",
+      "live_url": "https://more30.com/imud/",
+      "registered": "uhnrgujbdxhhmoxcjria",
+      "files_read": 5,
+      "scripts": 4,
+      "projects": [
+        {
+          "ref": "uhnrgujbdxhhmoxcjria",
+          "own_files": false,
+          "reference_kind": "api",
+          "counts_as_own_project": false,
+          "from": [
+            "/auth-button.js"
+          ],
+          "key": {
+            "format": "jwt",
+            "role": "anon",
+            "ref": "uhnrgujbdxhhmoxcjria"
+          },
+          "key_ref_matches_url": true,
+          "pair_distance": 72
+        }
+      ],
+      "own_project_count": 0,
+      "registered_is_served": true,
+      "registered_in_own_files": false,
+      "storage_only_refs": [],
+      "verdict": "portal-only — the only key served is the shared login widget"
+    },
+    {
+      "number": "06",
+      "slug": "briut",
+      "live_url": "https://more30.com/briut/",
+      "registered": "csjekrvukbdznetsrodj",
+      "files_read": 7,
+      "scripts": 6,
+      "projects": [
+        {
+          "ref": "csjekrvukbdznetsrodj",
+          "own_files": true,
+          "reference_kind": "api",
+          "counts_as_own_project": true,
+          "from": [
+            "/briut/supabase-config.js"
+          ],
+          "key": {
+            "format": "jwt",
+            "role": "anon",
+            "ref": "csjekrvukbdznetsrodj"
+          },
+          "key_ref_matches_url": true,
+          "pair_distance": 56,
+          "settings": {
+            "disable_signup": false,
+            "mailer_autoconfirm": false,
+            "external_google": false,
+            "external_email": true
+          }
+        },
+        {
+          "ref": "uhnrgujbdxhhmoxcjria",
+          "own_files": false,
+          "reference_kind": "api",
+          "counts_as_own_project": false,
+          "from": [
+            "/auth-button.js"
+          ],
+          "key": {
+            "format": "jwt",
+            "role": "anon",
+            "ref": "uhnrgujbdxhhmoxcjria"
+          },
+          "key_ref_matches_url": true,
+          "pair_distance": 72
+        }
+      ],
+      "own_project_count": 1,
+      "registered_is_served": true,
+      "registered_in_own_files": true,
+      "storage_only_refs": [],
+      "verdict": "single project, matches core.projects"
+    },
+    {
+      "number": "10",
+      "slug": "bkalot",
+      "live_url": "https://more30.com/bkalot/",
+      "registered": "bieebmnmkffwbqlsfozh",
+      "files_read": 7,
+      "scripts": 6,
+      "projects": [
+        {
+          "ref": "bieebmnmkffwbqlsfozh",
+          "own_files": true,
+          "reference_kind": "storage+api",
+          "counts_as_own_project": true,
+          "from": [
+            "(page)",
+            "/bkalot/app.js"
+          ],
+          "key": {
+            "format": "jwt",
+            "role": "anon",
+            "ref": "bieebmnmkffwbqlsfozh"
+          },
+          "key_ref_matches_url": true,
+          "pair_distance": 67,
+          "settings": {
+            "disable_signup": false,
+            "mailer_autoconfirm": false,
+            "external_google": true,
+            "external_email": true
+          }
+        },
+        {
+          "ref": "uhnrgujbdxhhmoxcjria",
+          "own_files": true,
+          "reference_kind": "api",
+          "counts_as_own_project": true,
+          "from": [
+            "/bkalot/repo.js",
+            "/auth-button.js"
+          ],
+          "key": {
+            "format": "jwt",
+            "role": "anon",
+            "ref": "uhnrgujbdxhhmoxcjria"
+          },
+          "key_ref_matches_url": true,
+          "pair_distance": 63,
+          "settings": {
+            "disable_signup": false,
+            "mailer_autoconfirm": true,
+            "external_google": true,
+            "external_email": true
+          }
+        }
+      ],
+      "own_project_count": 2,
+      "registered_is_served": true,
+      "registered_in_own_files": true,
+      "storage_only_refs": [],
+      "verdict": "multi-project: registered bieebmnmkffwbqlsfozh + uhnrgujbdxhhmoxcjria"
+    },
+    {
+      "number": "12",
+      "slug": "smel",
+      "live_url": "https://more30.com/smel/",
+      "registered": "csjekrvukbdznetsrodj",
+      "files_read": 5,
+      "scripts": 4,
+      "projects": [
+        {
+          "ref": "csjekrvukbdznetsrodj",
+          "own_files": true,
+          "reference_kind": "api",
+          "counts_as_own_project": true,
+          "from": [
+            "/smel/assets/index-BzxcokTm.js"
+          ],
+          "key": {
+            "format": "publishable",
+            "role": "anon",
+            "ref": null
+          },
+          "key_ref_matches_url": true,
+          "pair_distance": 46,
+          "settings": {
+            "disable_signup": false,
+            "mailer_autoconfirm": false,
+            "external_google": false,
+            "external_email": true
+          }
+        },
+        {
+          "ref": "uhnrgujbdxhhmoxcjria",
+          "own_files": false,
+          "reference_kind": "api",
+          "counts_as_own_project": false,
+          "from": [
+            "/auth-button.js"
+          ],
+          "key": {
+            "format": "jwt",
+            "role": "anon",
+            "ref": "uhnrgujbdxhhmoxcjria"
+          },
+          "key_ref_matches_url": true,
+          "pair_distance": 72
+        }
+      ],
+      "own_project_count": 1,
+      "registered_is_served": true,
+      "registered_in_own_files": true,
+      "storage_only_refs": [],
+      "verdict": "single project, matches core.projects"
+    },
+    {
+      "number": "14",
+      "slug": "smachot",
+      "live_url": "https://more30.com/smachot/",
+      "registered": null,
+      "files_read": 5,
+      "scripts": 4,
+      "projects": [
+        {
+          "ref": "uhnrgujbdxhhmoxcjria",
+          "own_files": false,
+          "reference_kind": "api",
+          "counts_as_own_project": false,
+          "from": [
+            "/auth-button.js"
+          ],
+          "key": {
+            "format": "jwt",
+            "role": "anon",
+            "ref": "uhnrgujbdxhhmoxcjria"
+          },
+          "key_ref_matches_url": true,
+          "pair_distance": 72
+        }
+      ],
+      "own_project_count": 0,
+      "registered_is_served": null,
+      "registered_in_own_files": null,
+      "storage_only_refs": [],
+      "verdict": "portal-only — the only key served is the shared login widget"
+    },
+    {
+      "number": "15",
+      "slug": "egod",
+      "live_url": "https://more30.com/egod/",
+      "registered": "hkkkynyoigzlttpynoeo",
+      "files_read": 5,
+      "scripts": 4,
+      "projects": [
+        {
+          "ref": "hkkkynyoigzlttpynoeo",
+          "own_files": true,
+          "reference_kind": "api",
+          "counts_as_own_project": true,
+          "from": [
+            "/egod/assets/index-RNBwDqT2.js"
+          ],
+          "key": {
+            "format": "jwt",
+            "role": "anon",
+            "ref": "hkkkynyoigzlttpynoeo"
+          },
+          "key_ref_matches_url": true,
+          "pair_distance": 46,
+          "settings": {
+            "disable_signup": false,
+            "mailer_autoconfirm": false,
+            "external_google": true,
+            "external_email": true
+          }
+        },
+        {
+          "ref": "uhnrgujbdxhhmoxcjria",
+          "own_files": true,
+          "reference_kind": "api",
+          "counts_as_own_project": true,
+          "from": [
+            "/egod/assets/index-RNBwDqT2.js",
+            "/auth-button.js"
+          ],
+          "key": {
+            "format": "jwt",
+            "role": "anon",
+            "ref": "uhnrgujbdxhhmoxcjria"
+          },
+          "key_ref_matches_url": true,
+          "pair_distance": 46,
+          "settings": {
+            "disable_signup": false,
+            "mailer_autoconfirm": true,
+            "external_google": true,
+            "external_email": true
+          }
+        }
+      ],
+      "own_project_count": 2,
+      "registered_is_served": true,
+      "registered_in_own_files": true,
+      "storage_only_refs": [],
+      "verdict": "multi-project: registered hkkkynyoigzlttpynoeo + uhnrgujbdxhhmoxcjria"
+    },
+    {
+      "number": "16",
+      "slug": "chatzor",
+      "live_url": "https://more30.com/chatzor/",
+      "registered": "uhnrgujbdxhhmoxcjria",
+      "files_read": 5,
+      "scripts": 4,
+      "projects": [
+        {
+          "ref": "uhnrgujbdxhhmoxcjria",
+          "own_files": true,
+          "reference_kind": "api",
+          "counts_as_own_project": true,
+          "from": [
+            "/chatzor/assets/index-YX4TUtOq.js",
+            "/auth-button.js"
+          ],
+          "key": {
+            "format": "jwt",
+            "role": "anon",
+            "ref": "uhnrgujbdxhhmoxcjria"
+          },
+          "key_ref_matches_url": true,
+          "pair_distance": 46,
+          "settings": {
+            "disable_signup": false,
+            "mailer_autoconfirm": true,
+            "external_google": true,
+            "external_email": true
+          }
+        }
+      ],
+      "own_project_count": 1,
+      "registered_is_served": true,
+      "registered_in_own_files": true,
+      "storage_only_refs": [],
+      "verdict": "single project, matches core.projects"
+    },
+    {
+      "number": "17",
+      "slug": "chizukim",
+      "live_url": "https://more30.com/chizukim/",
+      "registered": "csjekrvukbdznetsrodj",
+      "files_read": 5,
+      "scripts": 4,
+      "projects": [
+        {
+          "ref": "csjekrvukbdznetsrodj",
+          "own_files": true,
+          "reference_kind": "api",
+          "counts_as_own_project": true,
+          "from": [
+            "/chizukim/assets/index-B3-SjNVo.js"
+          ],
+          "key": {
+            "format": "publishable",
+            "role": "anon",
+            "ref": null
+          },
+          "key_ref_matches_url": true,
+          "pair_distance": 46,
+          "settings": {
+            "disable_signup": false,
+            "mailer_autoconfirm": false,
+            "external_google": false,
+            "external_email": true
+          }
+        },
+        {
+          "ref": "uhnrgujbdxhhmoxcjria",
+          "own_files": false,
+          "reference_kind": "api",
+          "counts_as_own_project": false,
+          "from": [
+            "/auth-button.js"
+          ],
+          "key": {
+            "format": "jwt",
+            "role": "anon",
+            "ref": "uhnrgujbdxhhmoxcjria"
+          },
+          "key_ref_matches_url": true,
+          "pair_distance": 72
+        }
+      ],
+      "own_project_count": 1,
+      "registered_is_served": true,
+      "registered_in_own_files": true,
+      "storage_only_refs": [],
+      "verdict": "single project, matches core.projects"
+    },
+    {
+      "number": "18",
+      "slug": "orech",
+      "live_url": "https://more30.com/orech/",
+      "registered": "bieebmnmkffwbqlsfozh",
+      "files_read": 11,
+      "scripts": 10,
+      "projects": [
+        {
+          "ref": "uhnrgujbdxhhmoxcjria",
+          "own_files": false,
+          "reference_kind": "api",
+          "counts_as_own_project": false,
+          "from": [
+            "/auth-button.js"
+          ],
+          "key": {
+            "format": "jwt",
+            "role": "anon",
+            "ref": "uhnrgujbdxhhmoxcjria"
+          },
+          "key_ref_matches_url": true,
+          "pair_distance": 72
+        }
+      ],
+      "own_project_count": 0,
+      "registered_is_served": false,
+      "registered_in_own_files": false,
+      "storage_only_refs": [],
+      "verdict": "portal-only — the only key served is the shared login widget"
+    },
+    {
+      "number": "21",
+      "slug": "mthbram",
+      "live_url": "https://more30.com/mthbram/",
+      "registered": "aypsqqvfohekxxuqsmrw",
+      "files_read": 5,
+      "scripts": 4,
+      "projects": [
+        {
+          "ref": "aypsqqvfohekxxuqsmrw",
+          "own_files": true,
+          "reference_kind": "api+storage",
+          "counts_as_own_project": true,
+          "from": [
+            "/mthbram/assets/index-DheqMcgT.js"
+          ],
+          "key": {
+            "format": "jwt",
+            "role": "anon",
+            "ref": "aypsqqvfohekxxuqsmrw"
+          },
+          "key_ref_matches_url": true,
+          "pair_distance": 46,
+          "settings": {
+            "disable_signup": false,
+            "mailer_autoconfirm": false,
+            "external_google": true,
+            "external_email": true
+          }
+        },
+        {
+          "ref": "uhnrgujbdxhhmoxcjria",
+          "own_files": false,
+          "reference_kind": "api",
+          "counts_as_own_project": false,
+          "from": [
+            "/auth-button.js"
+          ],
+          "key": {
+            "format": "jwt",
+            "role": "anon",
+            "ref": "uhnrgujbdxhhmoxcjria"
+          },
+          "key_ref_matches_url": true,
+          "pair_distance": 72
+        }
+      ],
+      "own_project_count": 1,
+      "registered_is_served": true,
+      "registered_in_own_files": true,
+      "storage_only_refs": [],
+      "verdict": "single project, matches core.projects"
+    },
+    {
+      "number": "22",
+      "slug": "zchuyot",
+      "live_url": "https://more30.com/zchuyot/",
+      "registered": "trerolyveytzgksawrme",
+      "files_read": 5,
+      "scripts": 4,
+      "projects": [
+        {
+          "ref": "trerolyveytzgksawrme",
+          "own_files": true,
+          "reference_kind": "api",
+          "counts_as_own_project": true,
+          "from": [
+            "/zchuyot/assets/index-DL2aSDPt.js"
+          ],
+          "key": {
+            "format": "jwt",
+            "role": "anon",
+            "ref": "trerolyveytzgksawrme"
+          },
+          "key_ref_matches_url": true,
+          "pair_distance": 46,
+          "settings": {
+            "disable_signup": true,
+            "mailer_autoconfirm": true,
+            "external_google": false,
+            "external_email": true
+          }
+        },
+        {
+          "ref": "uhnrgujbdxhhmoxcjria",
+          "own_files": false,
+          "reference_kind": "api",
+          "counts_as_own_project": false,
+          "from": [
+            "/auth-button.js"
+          ],
+          "key": {
+            "format": "jwt",
+            "role": "anon",
+            "ref": "uhnrgujbdxhhmoxcjria"
+          },
+          "key_ref_matches_url": true,
+          "pair_distance": 72
+        }
+      ],
+      "own_project_count": 1,
+      "registered_is_served": true,
+      "registered_in_own_files": true,
+      "storage_only_refs": [],
+      "verdict": "single project, matches core.projects"
+    },
+    {
+      "number": "24",
+      "slug": "galil",
+      "live_url": "https://more30.com/galil/",
+      "registered": "mwljkonwdeuaahsigjdp",
+      "files_read": 6,
+      "scripts": 5,
+      "projects": [
+        {
+          "ref": "mwljkonwdeuaahsigjdp",
+          "own_files": true,
+          "reference_kind": "api",
+          "counts_as_own_project": true,
+          "from": [
+            "/galil/assets/index-pSOB0569.js"
+          ],
+          "key": {
+            "format": "jwt",
+            "role": "anon",
+            "ref": "mwljkonwdeuaahsigjdp"
+          },
+          "key_ref_matches_url": true,
+          "pair_distance": 46,
+          "settings": {
+            "disable_signup": false,
+            "mailer_autoconfirm": false,
+            "external_google": false,
+            "external_email": true
+          }
+        },
+        {
+          "ref": "uhnrgujbdxhhmoxcjria",
+          "own_files": false,
+          "reference_kind": "api",
+          "counts_as_own_project": false,
+          "from": [
+            "/auth-button.js"
+          ],
+          "key": {
+            "format": "jwt",
+            "role": "anon",
+            "ref": "uhnrgujbdxhhmoxcjria"
+          },
+          "key_ref_matches_url": true,
+          "pair_distance": 72
+        }
+      ],
+      "own_project_count": 1,
+      "registered_is_served": true,
+      "registered_in_own_files": true,
+      "storage_only_refs": [],
+      "verdict": "single project, matches core.projects"
+    },
+    {
+      "number": "26",
+      "slug": "studio",
+      "live_url": "https://more30.com/studio/",
+      "registered": "uhnrgujbdxhhmoxcjria",
+      "files_read": 5,
+      "scripts": 4,
+      "projects": [
+        {
+          "ref": "uhnrgujbdxhhmoxcjria",
+          "own_files": false,
+          "reference_kind": "api",
+          "counts_as_own_project": false,
+          "from": [
+            "/auth-button.js"
+          ],
+          "key": {
+            "format": "jwt",
+            "role": "anon",
+            "ref": "uhnrgujbdxhhmoxcjria"
+          },
+          "key_ref_matches_url": true,
+          "pair_distance": 72
+        }
+      ],
+      "own_project_count": 0,
+      "registered_is_served": true,
+      "registered_in_own_files": false,
+      "storage_only_refs": [],
+      "verdict": "portal-only — the only key served is the shared login widget"
+    },
+    {
+      "number": "27",
+      "slug": "mechiron",
+      "live_url": "https://more30.com/mechiron/",
+      "registered": "csjekrvukbdznetsrodj",
+      "files_read": 5,
+      "scripts": 4,
+      "projects": [
+        {
+          "ref": "bieebmnmkffwbqlsfozh",
+          "own_files": true,
+          "reference_kind": "storage",
+          "counts_as_own_project": false,
+          "from": [
+            "(page)"
+          ],
+          "key": null,
+          "key_ref_matches_url": null,
+          "pair_distance": null
+        },
+        {
+          "ref": "uhnrgujbdxhhmoxcjria",
+          "own_files": false,
+          "reference_kind": "api",
+          "counts_as_own_project": false,
+          "from": [
+            "/auth-button.js"
+          ],
+          "key": {
+            "format": "jwt",
+            "role": "anon",
+            "ref": "uhnrgujbdxhhmoxcjria"
+          },
+          "key_ref_matches_url": true,
+          "pair_distance": 72
+        }
+      ],
+      "own_project_count": 0,
+      "registered_is_served": false,
+      "registered_in_own_files": false,
+      "storage_only_refs": [
+        "bieebmnmkffwbqlsfozh"
+      ],
+      "verdict": "portal-only — the only key served is the shared login widget"
+    },
+    {
+      "number": "28",
+      "slug": "kupot",
+      "live_url": "https://more30.com/kupot/",
+      "registered": "uhnrgujbdxhhmoxcjria",
+      "files_read": 5,
+      "scripts": 4,
+      "projects": [
+        {
+          "ref": "uhnrgujbdxhhmoxcjria",
+          "own_files": false,
+          "reference_kind": "api",
+          "counts_as_own_project": false,
+          "from": [
+            "/auth-button.js"
+          ],
+          "key": {
+            "format": "jwt",
+            "role": "anon",
+            "ref": "uhnrgujbdxhhmoxcjria"
+          },
+          "key_ref_matches_url": true,
+          "pair_distance": 72
+        }
+      ],
+      "own_project_count": 0,
+      "registered_is_served": true,
+      "registered_in_own_files": false,
+      "storage_only_refs": [],
+      "verdict": "portal-only — the only key served is the shared login widget"
+    },
+    {
+      "number": "30",
+      "slug": "crm",
+      "live_url": "https://more30.com/crm/",
+      "registered": "jhbeelzvjvhnkxldqvxx",
+      "files_read": 5,
+      "scripts": 4,
+      "projects": [
+        {
+          "ref": "jhbeelzvjvhnkxldqvxx",
+          "own_files": true,
+          "reference_kind": "api",
+          "counts_as_own_project": true,
+          "from": [
+            "/crm/assets/index-4fFBrOet.js"
+          ],
+          "key": {
+            "format": "jwt",
+            "role": "anon",
+            "ref": "jhbeelzvjvhnkxldqvxx"
+          },
+          "key_ref_matches_url": true,
+          "pair_distance": 43,
+          "settings": {
+            "disable_signup": false,
+            "mailer_autoconfirm": false,
+            "external_google": false,
+            "external_email": true
+          }
+        },
+        {
+          "ref": "uhnrgujbdxhhmoxcjria",
+          "own_files": false,
+          "reference_kind": "api",
+          "counts_as_own_project": false,
+          "from": [
+            "/auth-button.js"
+          ],
+          "key": {
+            "format": "jwt",
+            "role": "anon",
+            "ref": "uhnrgujbdxhhmoxcjria"
+          },
+          "key_ref_matches_url": true,
+          "pair_distance": 72
+        }
+      ],
+      "own_project_count": 1,
+      "registered_is_served": true,
+      "registered_in_own_files": true,
+      "storage_only_refs": [],
+      "verdict": "single project, matches core.projects"
+    },
+    {
+      "number": "31",
+      "slug": "gesher",
+      "live_url": "https://more30.com/gesher/",
+      "registered": "ygaqqnuyfnumezxxmtbh",
+      "files_read": 5,
+      "scripts": 4,
+      "projects": [
+        {
+          "ref": "ygaqqnuyfnumezxxmtbh",
+          "own_files": true,
+          "reference_kind": "api",
+          "counts_as_own_project": true,
+          "from": [
+            "/gesher/assets/index-CJt2krVs.js"
+          ],
+          "key": {
+            "format": "jwt",
+            "role": "anon",
+            "ref": "ygaqqnuyfnumezxxmtbh"
+          },
+          "key_ref_matches_url": true,
+          "pair_distance": 43,
+          "settings": {
+            "disable_signup": false,
+            "mailer_autoconfirm": false,
+            "external_google": true,
+            "external_email": true
+          }
+        },
+        {
+          "ref": "uhnrgujbdxhhmoxcjria",
+          "own_files": false,
+          "reference_kind": "api",
+          "counts_as_own_project": false,
+          "from": [
+            "/auth-button.js"
+          ],
+          "key": {
+            "format": "jwt",
+            "role": "anon",
+            "ref": "uhnrgujbdxhhmoxcjria"
+          },
+          "key_ref_matches_url": true,
+          "pair_distance": 72
+        }
+      ],
+      "own_project_count": 1,
+      "registered_is_served": true,
+      "registered_in_own_files": true,
+      "storage_only_refs": [],
+      "verdict": "single project, matches core.projects"
+    },
+    {
+      "number": "32",
+      "slug": "nadlan",
+      "live_url": "https://more30.com/nadlan/",
+      "registered": "uhnrgujbdxhhmoxcjria",
+      "files_read": 11,
+      "scripts": 10,
+      "projects": [
+        {
+          "ref": "uhnrgujbdxhhmoxcjria",
+          "own_files": false,
+          "reference_kind": "api",
+          "counts_as_own_project": false,
+          "from": [
+            "/auth-button.js"
+          ],
+          "key": {
+            "format": "jwt",
+            "role": "anon",
+            "ref": "uhnrgujbdxhhmoxcjria"
+          },
+          "key_ref_matches_url": true,
+          "pair_distance": 72
+        }
+      ],
+      "own_project_count": 0,
+      "registered_is_served": true,
+      "registered_in_own_files": false,
+      "storage_only_refs": [],
+      "verdict": "portal-only — the only key served is the shared login widget"
+    },
+    {
+      "number": "33",
+      "slug": "portal",
+      "live_url": "https://more30.com/",
+      "registered": "uhnrgujbdxhhmoxcjria",
+      "files_read": 5,
+      "scripts": 4,
+      "projects": [
+        {
+          "ref": "uhnrgujbdxhhmoxcjria",
+          "own_files": true,
+          "reference_kind": "api",
+          "counts_as_own_project": true,
+          "from": [
+            "/assets/index-C2AHwa-z.js",
+            "/auth-button.js"
+          ],
+          "key": {
+            "format": "jwt",
+            "role": "anon",
+            "ref": "uhnrgujbdxhhmoxcjria"
+          },
+          "key_ref_matches_url": true,
+          "pair_distance": 229,
+          "settings": {
+            "disable_signup": false,
+            "mailer_autoconfirm": true,
+            "external_google": true,
+            "external_email": true
+          }
+        }
+      ],
+      "own_project_count": 1,
+      "registered_is_served": true,
+      "registered_in_own_files": true,
+      "storage_only_refs": [],
+      "verdict": "single project, matches core.projects"
+    },
+    {
+      "number": "34",
+      "slug": "kesef",
+      "live_url": "https://more30.com/kesef/",
+      "registered": "uhnrgujbdxhhmoxcjria",
+      "files_read": 4,
+      "scripts": 3,
+      "projects": [
+        {
+          "ref": "uhnrgujbdxhhmoxcjria",
+          "own_files": false,
+          "reference_kind": "api",
+          "counts_as_own_project": false,
+          "from": [
+            "/auth-button.js"
+          ],
+          "key": {
+            "format": "jwt",
+            "role": "anon",
+            "ref": "uhnrgujbdxhhmoxcjria"
+          },
+          "key_ref_matches_url": true,
+          "pair_distance": 72
+        }
+      ],
+      "own_project_count": 0,
+      "registered_is_served": true,
+      "registered_in_own_files": false,
+      "storage_only_refs": [],
+      "verdict": "portal-only — the only key served is the shared login widget"
+    },
+    {
+      "number": "35",
+      "slug": "kiosk",
+      "live_url": "https://more30.com/kiosk/",
+      "registered": null,
+      "files_read": 4,
+      "scripts": 3,
+      "projects": [
+        {
+          "ref": "uhnrgujbdxhhmoxcjria",
+          "own_files": false,
+          "reference_kind": "api",
+          "counts_as_own_project": false,
+          "from": [
+            "/auth-button.js"
+          ],
+          "key": {
+            "format": "jwt",
+            "role": "anon",
+            "ref": "uhnrgujbdxhhmoxcjria"
+          },
+          "key_ref_matches_url": true,
+          "pair_distance": 72
+        }
+      ],
+      "own_project_count": 0,
+      "registered_is_served": null,
+      "registered_in_own_files": null,
+      "storage_only_refs": [],
+      "verdict": "portal-only — the only key served is the shared login widget"
+    },
+    {
+      "number": "36",
+      "slug": "tivuch",
+      "live_url": "https://more30.com/tivuch/",
+      "registered": "uhnrgujbdxhhmoxcjria",
+      "files_read": 4,
+      "scripts": 3,
+      "projects": [
+        {
+          "ref": "uhnrgujbdxhhmoxcjria",
+          "own_files": false,
+          "reference_kind": "api",
+          "counts_as_own_project": false,
+          "from": [
+            "/auth-button.js"
+          ],
+          "key": {
+            "format": "jwt",
+            "role": "anon",
+            "ref": "uhnrgujbdxhhmoxcjria"
+          },
+          "key_ref_matches_url": true,
+          "pair_distance": 72
+        }
+      ],
+      "own_project_count": 0,
+      "registered_is_served": true,
+      "registered_in_own_files": false,
+      "storage_only_refs": [],
+      "verdict": "portal-only — the only key served is the shared login widget"
+    },
+    {
+      "number": "40",
+      "slug": "gannenet",
+      "live_url": "https://more30.com/gannenet/",
+      "registered": null,
+      "files_read": 12,
+      "scripts": 11,
+      "projects": [
+        {
+          "ref": "uhnrgujbdxhhmoxcjria",
+          "own_files": false,
+          "reference_kind": "api",
+          "counts_as_own_project": false,
+          "from": [
+            "/auth-button.js"
+          ],
+          "key": {
+            "format": "jwt",
+            "role": "anon",
+            "ref": "uhnrgujbdxhhmoxcjria"
+          },
+          "key_ref_matches_url": true,
+          "pair_distance": 72
+        }
+      ],
+      "own_project_count": 0,
+      "registered_is_served": null,
+      "registered_in_own_files": null,
+      "storage_only_refs": [],
+      "verdict": "portal-only — the only key served is the shared login widget"
+    }
+  ]
+}

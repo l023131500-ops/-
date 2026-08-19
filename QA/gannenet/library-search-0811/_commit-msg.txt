@@ -1,0 +1,21 @@
+gannenet (40): the search box read 2.5% of the lesson, and not the pointed half of that
+
+/library matched (title + category + sub).includes(q) -- 75 characters of an
+average 3,020-character lesson. A word in the body found nothing, and the
+material is one click away on the page. On top of it the text was matched as
+stored, and 50 of the 52 lessons carry nikud somewhere, so the word printed in
+the title was itself unsearchable.
+
+normalizeSearch() strips nikud and geresh/gershayim, collapses whitespace and
+lowercases, and both sides go through it. searchTextOf() walks every string a
+lesson holds minus the id, normalizes each field on its own and joins on
+newline, so a term must sit inside one field rather than straddle a seam.
+No content file touched; the page already imported both, so the bundle is
+unchanged.
+
+Browser, real corpus, before -> after: "מודה אני" 0 -> 5, "צנצנת" 0 -> 5,
+"ריקוד" 0 -> 3, "האבקה" 0 -> 2, "סוכה" 0 -> 1, "תפוח" 1 -> 6, "ראש השנה"
+5 -> 10, "שופר" 3 -> 5. Empty query still 52, exact title still 1, nonsense
+still 0, padding ignored, and search composes with both filters (אלול +
+"ראש השנה" -> 3). tsc --noEmit 0, 0 console errors. Evidence in
+QA/gannenet/library-search-0811/.

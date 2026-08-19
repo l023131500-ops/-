@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light dark" />
+    <title>לידים · מרכז השליטה — more30</title>
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800&display=swap" rel="stylesheet" />
+    <style>
+      :root { color-scheme: light dark; --gold:#c9a227; --bg:#f6f7fb; --surface:#fff;
+              --ink:#0b0d2e; --ink-2:#5b6076; --line:#e4e6f0; --ok:#157f4b; --warn:#8a6d10; }
+      @media (prefers-color-scheme: dark) {
+        :root { --bg:#0b0d18; --surface:#151827; --ink:#e9ebf5; --ink-2:#a2a8c0;
+                --line:#262b40; --ok:#5fd39b; --warn:#e0bd5a; } }
+      * { box-sizing:border-box; margin:0; padding:0; }
+      body { font-family:'Heebo',system-ui,sans-serif; background:var(--bg); color:var(--ink);
+             line-height:1.6; padding:28px 20px 80px; }
+      .wrap { max-width:1180px; margin:0 auto; }
+      .back { display:inline-flex; align-items:center; min-height:24px; font-size:14px;
+              color:var(--ink-2); text-decoration:none; }
+      .back:hover { color:var(--ink); }
+      h1 { font-size:clamp(24px,4vw,34px); font-weight:800; margin-top:10px; }
+      .sub { color:var(--ink-2); font-size:15px; margin-top:6px; max-width:72ch; }
+      .nav { display:flex; gap:8px; flex-wrap:wrap; margin:18px 0; }
+      .nav a { font-size:13.5px; font-weight:600; text-decoration:none; border:1px solid var(--line);
+               border-radius:999px; padding:6px 14px; min-height:24px; display:inline-flex;
+               align-items:center; color:var(--ink); background:var(--surface); }
+      .nav a:hover { border-color:var(--gold); }
+
+      .cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+               gap:12px; margin:4px 0 22px; }
+      .kpi { background:var(--surface); border:1px solid var(--line); border-radius:14px;
+             padding:14px 16px; }
+      .kpi .n { font-size:27px; font-weight:800; line-height:1.1; }
+      .kpi .l { font-size:12.5px; color:var(--ink-2); margin-top:3px; }
+
+      .panel { background:var(--surface); border:1px solid var(--line); border-radius:14px;
+               padding:18px; margin-bottom:14px; }
+      h2.sec { font-size:16px; font-weight:800; margin-bottom:4px; }
+      p.secsub { color:var(--ink-2); font-size:13px; margin-bottom:12px; max-width:78ch; }
+      label { display:block; font-size:13px; color:var(--ink-2); margin-bottom:4px; }
+      select, input { font:inherit; font-size:15px; padding:9px 11px; border-radius:9px;
+                      border:1px solid var(--line); background:var(--bg); color:var(--ink);
+                      min-height:42px; width:100%; }
+      select:focus, input:focus { outline:2px solid var(--gold); outline-offset:1px; }
+      .filters { display:grid; grid-template-columns:1fr 1fr; gap:10px; align-items:end; }
+      @media (max-width:760px) { .filters { grid-template-columns:1fr; } }
+      .check { display:flex; align-items:center; gap:8px; margin-top:10px; font-size:13.5px; }
+      .check input { width:auto; min-height:0; }
+      .check label { margin:0; color:var(--ink); }
+
+      .scroll { overflow-x:auto; }
+      table { border-collapse:collapse; width:100%; font-size:14px; }
+      th,td { padding:9px 12px; text-align:start; border-bottom:1px solid var(--line);
+              white-space:nowrap; vertical-align:top; }
+      th { font-size:12px; color:var(--ink-2); font-weight:700; }
+      tbody tr:last-child td { border-bottom:0; }
+      td.subj { white-space:normal; max-width:34ch; }
+      .muted { color:var(--ink-2); }
+      tr.empty td { color:var(--ink-2); }
+      .pill { font-size:11px; font-weight:700; padding:2px 8px; border-radius:999px;
+              background:color-mix(in srgb,var(--ink-2) 15%,transparent); color:var(--ink-2); }
+      td.ok { color:var(--ok); font-weight:600; }
+      td.warn { color:var(--warn); font-weight:600; }
+      tr.test td { color:var(--ink-2); }
+      .tpill { font-size:11px; font-weight:700; padding:2px 8px; border-radius:999px;
+               background:color-mix(in srgb,var(--warn) 20%,transparent); color:var(--warn); }
+      td.zero { color:var(--ink-2); }
+      .note { border:1px solid var(--line); border-radius:12px; padding:14px 16px;
+              font-size:14px; background:var(--surface); margin-top:14px; }
+      .note.warn { border-color:color-mix(in srgb,var(--warn) 45%,var(--line)); }
+      .foot { margin-top:20px; font-size:12.5px; color:var(--ink-2); }
+    </style>
+      <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+  </head>
+  <body>
+    <div class="wrap">
+      <a class="back" href="/admin">← חזרה למרכז השליטה</a>
+      <h1>לידים — כל המערכות</h1>
+      <p class="sub" id="tagline">טוען…</p>
+
+      <nav class="nav">
+        <a href="/admin/systems">דוח מערכות</a>
+        <a href="/admin/customers">לקוחות</a>
+        <a href="/admin/issues">תקלות ומה דורש אותך</a>
+        <a href="/admin/credits">יתרות וחיבורים</a>
+        <a href="/admin/pricing">מחירים ותצוגה</a>
+        <a href="/admin/activity">משתמשים פעילים</a>
+        <a href="/admin/automation">אוטומציית תוכן</a>
+        <a href="/admin/rights">מאגר הזכויות</a>
+        <a href="/admin/kesef">כסף — קליטת נתונים</a>
+        <a href="/admin/imud">עימוד — ספרים ותבניות</a>
+        <a href="/admin/studio">סטודיו — תבניות ועבודות</a>
+      </nav>
+
+      <div id="content" hidden>
+        <div class="cards" id="kpis"></div>
+
+        <section class="panel">
+          <h2 class="sec">הפניות</h2>
+          <p class="secsub">
+            שדה שאינו קיים בטבלת המקור נשאר <b>לא זמין</b> — אין כאן ערך שהומצא
+            כדי למלא עמודה. הפניות ממוינות מהחדשה לישנה.
+          </p>
+          <div class="filters">
+            <div>
+              <label for="sys">מערכת</label>
+              <select id="sys"></select>
+            </div>
+            <div>
+              <label for="q">חיפוש בשם, טלפון, מייל או נושא</label>
+              <input id="q" type="search" autocomplete="off" placeholder="הקלד כדי לסנן" />
+            </div>
+          </div>
+          <div class="check">
+            <input id="hideTest" type="checkbox" checked />
+            <label for="hideTest">הסתר פניות בדיקה</label>
+          </div>
+          <p class="secsub" id="count" style="margin:12px 0 0"></p>
+          <div class="scroll"><table id="tbl"></table></div>
+        </section>
+
+        <section class="panel">
+          <h2 class="sec">הכיסוי — מי מחובר בכלל</h2>
+          <p class="secsub">
+            שורה לכל מערכת ציבורית חיה, <b>כולל מערכות שאין להן שום צינור לידים</b>.
+            עד היום מערכת בלי מקור רשום פשוט לא הופיעה כאן, ומי שלא מצא אותה
+            ברשימה הסיק שלא היו לה פניות. <b>"אין פניות" ו"לא מחובר" הן שתי
+            תשובות שונות</b>, ורק אחת מהן דורשת עבודה — ולכן הן מופרדות.
+            ומאותה סיבה יש כאן מצב שלישי: <b>"רק פניות בדיקה"</b>. מערכת
+            שכל התנועה שלה נכתבה על ידי מבחן אינה מערכת עם ביקוש, והיא הייתה
+            מסומנת כאן ירוק.
+          </p>
+          <div class="scroll"><table id="cov"></table></div>
+        </section>
+
+        <section class="panel">
+          <h2 class="sec">המקורות</h2>
+          <p class="secsub">
+            כל טבלת לידים בפלטפורמה, <b>כולל אלה שבהן אפס פניות</b>. מקור ריק
+            ומקור שהמסך לא מכיר נראים אותו דבר למי שמסתכל, ולכן האפסים מוצגים
+            במפורש ולא נעלמים מהרשימה.
+          </p>
+          <div class="scroll"><table id="src"></table></div>
+        </section>
+
+        <div class="note" id="testMeans"></div>
+
+        <p class="foot" id="stamp"></p>
+      </div>
+      <div id="denied" class="note warn" hidden></div>
+    </div>
+
+    <script type="module">
+      import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+      const URL_ = 'https://uhnrgujbdxhhmoxcjria.supabase.co';
+      const ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVobnJndWpiZHhoaG1veGNqcmlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMzNjE3MjgsImV4cCI6MjA5ODkzNzcyOH0.nHuOhw-WQEU17lNa7XOlORnBhVAYbJBHudKafWkSHBw';
+      const sb = createClient(URL_, ANON, { auth:{ persistSession:true, storageKey:'more30-auth' } });
+
+      const $ = (id) => document.getElementById(id);
+      const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) =>
+        ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+      // "לא זמין" ולא מקף ולא ריק: הכלל הראשון בהנחיה הוא נתוני אמת, ותא ריק
+      // קורא כמו נתון חסר במסך ולא כמו שדה שלא קיים במקור.
+      const na = '<span class="muted">לא זמין</span>';
+      const val = (v) => (v === null || v === undefined || String(v).trim() === '' ? na : esc(v));
+      const when = (ts) => (ts ? new Date(ts).toLocaleString('he-IL',
+        { year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit' }) : na);
+      const day = (ts) => (ts ? new Date(ts).toLocaleDateString('he-IL') : na);
+
+      let LEADS = [];
+
+      function renderLeads() {
+        const sys = $('sys').value;
+        const q = $('q').value.trim().toLowerCase();
+        const hideTest = $('hideTest').checked;
+        const real = LEADS.filter((l) => !l.is_test);
+        const pool = hideTest ? real : LEADS;
+        const rows = pool.filter((l) => {
+          if (sys && (l.system_name || '') !== sys) return false;
+          if (!q) return true;
+          return [l.full_name, l.phone, l.email, l.subject, l.kind]
+            .some((f) => String(f ?? '').toLowerCase().includes(q));
+        });
+
+        // כמה הוסתרו נאמר תמיד, גם כשאין סינון אחר: רשימה שקצרה משהייתה
+        // בלי לומר למה נקראת כמו נתון חסר.
+        const hidden = LEADS.length - real.length;
+        const base = `${rows.length} מתוך ${pool.length} פניות`;
+        $('count').textContent =
+          (rows.length === pool.length ? `${pool.length} פניות` : base) +
+          (hideTest && hidden ? ` · ${hidden} פניות בדיקה מוסתרות` : '');
+
+        $('tbl').innerHTML =
+          `<thead><tr>
+             <th>מתי</th><th>מערכת</th><th>סוג</th><th>שם</th>
+             <th>טלפון</th><th>מייל</th><th>נושא</th><th>סטטוס</th>
+           </tr></thead><tbody>` +
+          (rows.length
+            ? rows.map((l) => `<tr${l.is_test ? ' class="test"' : ''}>
+                <td>${when(l.created_at)}</td>
+                <td>${l.system_number ? `<span class="pill">${esc(l.system_number)}</span> ` : ''}${val(l.system_name)}</td>
+                <td>${l.is_test ? '<span class="tpill">בדיקה</span> ' : ''}${val(l.kind)}</td>
+                <td>${val(l.full_name)}</td>
+                <td dir="ltr">${val(l.phone)}</td>
+                <td dir="ltr">${val(l.email)}</td>
+                <td class="subj">${val(l.subject)}</td>
+                <td>${val(l.status)}</td>
+              </tr>`).join('')
+            : '<tr class="empty"><td colspan="8">אין פניות שתואמות את הסינון.</td></tr>') +
+          '</tbody>';
+      }
+
+      (async function () {
+        const { data: s } = await sb.auth.getSession();
+        if (!s?.session) {
+          $('tagline').textContent = 'הדף פתוח לסופר-אדמין בלבד.';
+          $('denied').innerHTML =
+            `צריך להתחבר. <a href="/login?from=${encodeURIComponent(location.href)}">מעבר לכניסה</a>`;
+          $('denied').hidden = false;
+          return;
+        }
+
+        const { data, error } = await sb.rpc('more30_admin_leads', { p_limit: 2000 });
+        if (error) {
+          $('tagline').textContent = 'הדף פתוח לסופר-אדמין בלבד.';
+          $('denied').innerHTML =
+            'החשבון הזה אינו סופר-אדמין.<br><span style="font-size:13px;color:var(--ink-2)">' +
+            esc(error.message) + '</span>';
+          $('denied').hidden = false;
+          return;
+        }
+
+        const t = data.totals || {};
+        LEADS = data.leads || [];
+        const sources = data.sources || [];
+
+        $('tagline').textContent =
+          'כל פנייה שהתקבלה בכל אחת מהמערכות המחוברות, במקום אחד. הנתונים נקראים ' +
+          'ישירות מטבלאות המקור של כל מערכת — אין כאן העתק שצריך סנכרון. ' +
+          `מחוברות ${t.systems_connected ?? 0} מתוך ${t.systems_public ?? 0} ` +
+          'המערכות הציבוריות החיות; טבלת הכיסוי למטה מונה גם את השאר. ' +
+          `${t.test_leads ?? 0} פניות נכתבו על ידי מבחנים ונספרות לצידן ולא בתוכן.`;
+
+        $('kpis').innerHTML = [
+          [t.leads ?? 0, 'פניות מאנשים'],
+          // לצידן ולא בתוכן, בדיוק כמו /admin/systems ו-/admin/activity.
+          [t.test_leads ?? 0, 'פניות בדיקה · לא נספרות'],
+          [`${t.sources_with_leads ?? 0}/${t.sources ?? 0}`, 'מקורות עם פניות'],
+          // מכנה, לא מספר יחיד: "6 מערכות עם פניות" נקרא כשלם כשאין לצידו
+          // כמה מערכות יש בכלל וכמה מהן בכלל מחוברות.
+          [`${t.systems_connected ?? 0}/${t.systems_public ?? 0}`, 'מערכות מחוברות לצינור'],
+          [`${t.systems_with_leads ?? 0}/${t.systems_public ?? 0}`, 'מערכות עם פניות'],
+          [t.last_7_days ?? 0, '‏7 ימים אחרונים'],
+          [t.last_30_days ?? 0, '‏30 יום אחרונים'],
+          [day(t.newest_at), 'הפנייה האחרונה מאדם'],
+        ].map(([n, l]) =>
+          `<div class="kpi"><div class="n">${esc(n)}</div><div class="l">${l}</div></div>`).join('');
+
+        $('testMeans').textContent = data.test_leads_means || '';
+
+        const names = [...new Set(LEADS.map((l) => l.system_name).filter(Boolean))].sort();
+        $('sys').innerHTML = '<option value="">כל המערכות</option>' +
+          names.map((n) => `<option value="${esc(n)}">${esc(n)}</option>`).join('');
+
+        const COV_STATE = {
+          unconnected:     ['לא מחובר', 'warn'],
+          connected_empty: ['מחובר · אפס פניות', ''],
+          test_only:       ['מחובר · רק פניות בדיקה', 'warn'],
+          has_leads:       ['מחובר · יש פניות', 'ok'],
+        };
+        const coverage = data.coverage || [];
+        $('cov').innerHTML =
+          `<thead><tr><th>מערכת</th><th>מצב</th><th>מקורות</th><th>פניות מאנשים</th>` +
+          `<th>פניות בדיקה</th><th>אחרונה</th></tr></thead><tbody>` +
+          coverage.map((x) => {
+            const [label, tone] = COV_STATE[x.state] || [x.state ?? 'לא זמין', ''];
+            const test = Number(x.test_leads) || 0;
+            return `<tr${x.state === 'has_leads' ? '' : ' class="empty"'}>
+            <td>${x.number ? `<span class="pill">${esc(x.number)}</span> ` : ''}${val(x.name)}</td>
+            <td class="${tone}">${esc(label)}</td>
+            <td>${Number(x.sources) || 0}</td>
+            <td>${Number(x.leads) || 0}</td>
+            <td class="${test ? 'warn' : 'zero'}">${test}</td>
+            <td>${x.last_at ? when(x.last_at) : '<span class="muted">—</span>'}</td>
+          </tr>`;
+          }).join('') + '</tbody>';
+
+        $('src').innerHTML =
+          `<thead><tr><th>טבלה</th><th>מערכת</th><th>פניות מאנשים</th>` +
+          `<th>פניות בדיקה</th><th>אחרונה</th></tr></thead><tbody>` +
+          sources.map((x) => {
+            const test = Number(x.test_count) || 0;
+            return `<tr${x.count ? '' : ' class="empty"'}>
+            <td dir="ltr">${esc(x.src)}</td>
+            <td>${x.system_number ? `<span class="pill">${esc(x.system_number)}</span> ` : ''}${val(x.system_name)}</td>
+            <td>${Number(x.count) || 0}</td>
+            <td class="${test ? 'warn' : 'zero'}">${test}</td>
+            <td>${x.last_at ? when(x.last_at) : '<span class="muted">—</span>'}</td>
+          </tr>`;
+          }).join('') + '</tbody>';
+
+        renderLeads();
+        $('sys').addEventListener('change', renderLeads);
+        $('q').addEventListener('input', renderLeads);
+        $('hideTest').addEventListener('change', renderLeads);
+
+        $('stamp').textContent =
+          'נוצר ' + new Date(data.generated_at).toLocaleString('he-IL') +
+          ` · מוצגות עד 2000 פניות אחרונות מתוך ${(t.leads ?? 0) + (t.test_leads ?? 0)}` +
+          ` · ל-${t.without_email ?? 0} פניות אין כתובת מייל, והן נספרות כאמיתיות`;
+        $('content').hidden = false;
+      })();
+    </script>
+    <script src="https://more30.com/auth-button.js" defer></script>
+  </body>
+</html>

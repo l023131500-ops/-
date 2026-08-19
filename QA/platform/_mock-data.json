@@ -1,0 +1,783 @@
+{
+  "apps": [
+    {
+      "app": "16-chatzor-connect",
+      "sourceFiles": 66,
+      "reachableTotal": 63,
+      "entries": 4,
+      "files": 1,
+      "reachableFiles": 1,
+      "records": 21,
+      "people": 2,
+      "rosters": 0,
+      "testSkipped": 0,
+      "found": [
+        {
+          "file": "apps/16-chatzor-connect/src/data/seed.ts",
+          "reachable": true,
+          "hits": [
+            {
+              "name": "SAMPLE_SYNAGOGUES",
+              "kind": "declared",
+              "line": 19,
+              "records": 3,
+              "chars": 1170,
+              "hebrew": true,
+              "person": true,
+              "preview": "[ { id: \"sample-1\", slug: \"tiferet-israel\", name: \"בית הכנסת תפארת ישראל\", nusach: \"עדות המזרח\", "
+            },
+            {
+              "name": "SAMPLE_LESSONS",
+              "kind": "declared",
+              "line": 67,
+              "records": 3,
+              "chars": 681,
+              "hebrew": true,
+              "person": false,
+              "preview": "[ { id: \"l-1\", synagogueId: null, title: \"דף היומי\", teacher: null, day: \"כל יום\", time"
+            },
+            {
+              "name": "SAMPLE_SERVICES",
+              "kind": "declared",
+              "line": 103,
+              "records": 3,
+              "chars": 414,
+              "hebrew": true,
+              "person": true,
+              "preview": "[ { id: \"s-1\", name: 'גמ\"ח כלי עבודה', category: 'גמ\"ח', description: \"השאלת כלי עבודה לתושבים.\", contact: null, isSa"
+            },
+            {
+              "name": "SAMPLE_PRAYER_TIMES",
+              "kind": "declared",
+              "line": 109,
+              "records": 10,
+              "chars": 1058,
+              "hebrew": true,
+              "person": false,
+              "preview": "[ { id: \"pt-1\", synagogueId: \"sample-1\", type: \"shacharit\", label: \"שחרית א׳\", time: \"06:00\", note: \"ותיקין\" }, { "
+            },
+            {
+              "name": "SAMPLE_ANNOUNCEMENTS",
+              "kind": "declared",
+              "line": 122,
+              "records": 2,
+              "chars": 464,
+              "hebrew": true,
+              "person": false,
+              "preview": "[ { id: \"a-1\", synagogueId: \"sample-1\", title: \"שיעור מיוחד לרגל ראש חודש\", body: \"השבוע יתקיים ש"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "app": "21-mthbram",
+      "sourceFiles": 157,
+      "reachableTotal": 81,
+      "entries": 4,
+      "files": 6,
+      "reachableFiles": 3,
+      "records": 5,
+      "people": 1,
+      "rosters": 1,
+      "testSkipped": 2,
+      "found": [
+        {
+          "file": "apps/21-mthbram/src/components/admin/ApiReferenceSection.tsx",
+          "reachable": true,
+          "hits": [
+            {
+              "name": "ENDPOINTS",
+              "kind": "roster",
+              "line": 18,
+              "records": 5,
+              "chars": 7039,
+              "hebrew": true,
+              "person": true,
+              "preview": "[ { category: \"שיעורים\", color: \"teal\", endpoints: [ { method: \"GET\", path: \""
+            }
+          ]
+        },
+        {
+          "file": "apps/21-mthbram/src/lib/lessonExcel.ts",
+          "reachable": true,
+          "hits": [
+            {
+              "name": "example",
+              "kind": "declared",
+              "line": 46,
+              "records": 0,
+              "chars": 326,
+              "hebrew": true,
+              "person": false,
+              "preview": "[ \"הרב ישראל ישראלי\", \"דף יומי\", \"עברית\", \"גברים\", \"אברכים, בעלי בתים\", \"ירושלים\", \"ג"
+            }
+          ]
+        },
+        {
+          "file": "apps/21-mthbram/src/lib/studyDayExcel.ts",
+          "reachable": false,
+          "hits": [
+            {
+              "name": "example",
+              "kind": "declared",
+              "line": 38,
+              "records": 0,
+              "chars": 354,
+              "hebrew": true,
+              "person": false,
+              "preview": "[ \"בית כנסת המרכזי\", \"ירושלים\", \"מלכי ישראל\", \"12\", \"https://example.com/donate\", \"ר' משה "
+            }
+          ]
+        },
+        {
+          "file": "apps/21-mthbram/src/pages/AdminDashboard.tsx",
+          "reachable": true,
+          "hits": [
+            {
+              "name": "sampleRows",
+              "kind": "declared",
+              "line": 217,
+              "records": 0,
+              "chars": 287,
+              "hebrew": true,
+              "person": false,
+              "preview": "[ [\"הרב ישראל ישראלי\", \"גמרא\", \"ירושלים\", \"גאולה\", \"מאה שערים 12\", \"בית כנסת אור חדש\", \"עברית\", \"גברים\", \"עיון מע"
+            }
+          ]
+        },
+        {
+          "file": "apps/21-mthbram/src/pages/SeekerDashboard.tsx",
+          "reachable": false,
+          "hits": [
+            {
+              "name": "mockTeachers",
+              "kind": "declared",
+              "line": 5,
+              "records": 3,
+              "chars": 892,
+              "hebrew": true,
+              "person": true,
+              "preview": "[ { id: 1, fullName: \"הרב יוסף כהן\", city: \"ירושלים\", background: [\"ליטאי\"], subjects: [\"גמר"
+            }
+          ]
+        },
+        {
+          "file": "apps/21-mthbram/src/pages/TeacherDashboard.tsx",
+          "reachable": false,
+          "hits": [
+            {
+              "name": "mockSeekers",
+              "kind": "declared",
+              "line": 8,
+              "records": 4,
+              "chars": 1242,
+              "hebrew": true,
+              "person": true,
+              "preview": "[ { id: 1, contactName: \"משה כהן\", type: \"בית כנסת\", city: \"ירושלים\", subjects: [\"גמרא עיון\""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "app": "01-torah-platform",
+      "sourceFiles": 193,
+      "reachableTotal": 151,
+      "entries": 4,
+      "files": 4,
+      "reachableFiles": 2,
+      "records": 5,
+      "people": 1,
+      "rosters": 1,
+      "testSkipped": 0,
+      "found": [
+        {
+          "file": "apps/01-torah-platform/src/components/admin/ApiReferenceSection.tsx",
+          "reachable": true,
+          "hits": [
+            {
+              "name": "ENDPOINTS",
+              "kind": "roster",
+              "line": 18,
+              "records": 5,
+              "chars": 7039,
+              "hebrew": true,
+              "person": true,
+              "preview": "[ { category: \"שיעורים\", color: \"teal\", endpoints: [ { method: \"GET\", path: \""
+            }
+          ]
+        },
+        {
+          "file": "apps/01-torah-platform/src/lib/lessonExcel.ts",
+          "reachable": false,
+          "hits": [
+            {
+              "name": "example",
+              "kind": "declared",
+              "line": 46,
+              "records": 0,
+              "chars": 326,
+              "hebrew": true,
+              "person": false,
+              "preview": "[ \"הרב ישראל ישראלי\", \"דף יומי\", \"עברית\", \"גברים\", \"אברכים, בעלי בתים\", \"ירושלים\", \"ג"
+            }
+          ]
+        },
+        {
+          "file": "apps/01-torah-platform/src/lib/studyDayExcel.ts",
+          "reachable": false,
+          "hits": [
+            {
+              "name": "example",
+              "kind": "declared",
+              "line": 38,
+              "records": 0,
+              "chars": 354,
+              "hebrew": true,
+              "person": false,
+              "preview": "[ \"בית כנסת המרכזי\", \"ירושלים\", \"מלכי ישראל\", \"12\", \"https://example.com/donate\", \"ר' משה "
+            }
+          ]
+        },
+        {
+          "file": "apps/01-torah-platform/src/pages/legacy/AdminDashboard.tsx",
+          "reachable": true,
+          "hits": [
+            {
+              "name": "sampleRows",
+              "kind": "declared",
+              "line": 217,
+              "records": 0,
+              "chars": 287,
+              "hebrew": true,
+              "person": false,
+              "preview": "[ [\"הרב ישראל ישראלי\", \"גמרא\", \"ירושלים\", \"גאולה\", \"מאה שערים 12\", \"בית כנסת אור חדש\", \"עברית\", \"גברים\", \"עיון מע"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "app": "31-hebrew-bridge-crm",
+      "sourceFiles": 125,
+      "reachableTotal": 93,
+      "entries": 33,
+      "files": 1,
+      "reachableFiles": 1,
+      "records": 5,
+      "people": 1,
+      "rosters": 0,
+      "testSkipped": 0,
+      "found": [
+        {
+          "file": "apps/31-hebrew-bridge-crm/src/lib/admin.functions.ts",
+          "reachable": true,
+          "hits": [
+            {
+              "name": "MOCK_CLIENTS",
+              "kind": "declared",
+              "line": 225,
+              "records": 5,
+              "chars": 1272,
+              "hebrew": true,
+              "person": true,
+              "preview": "[ { email: \"mock.israel.cohen@crm.local\", full_name: \"ישראל כהן\", phone: \"050-1234567\", lead_sour"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "app": "24-galilee-connect-hub",
+      "sourceFiles": 108,
+      "reachableTotal": 48,
+      "entries": 4,
+      "files": 1,
+      "reachableFiles": 1,
+      "records": 0,
+      "people": 0,
+      "rosters": 0,
+      "testSkipped": 2,
+      "found": [
+        {
+          "file": "apps/24-galilee-connect-hub/src/pages/GabaiPortal.tsx",
+          "reachable": true,
+          "hits": [
+            {
+              "name": "example",
+              "kind": "declared",
+              "line": 111,
+              "records": 0,
+              "chars": 126,
+              "hebrew": true,
+              "person": false,
+              "preview": "['בית הכנסת החדש', 'שכונת הגפן', 'עדות המזרח', 'הרב ישראל כהן', 'רחוב הדקל 5, חצור הגלילית', 'https://nedarimplus.co.il'"
+            },
+            {
+              "name": "exampleRow",
+              "kind": "declared",
+              "line": 839,
+              "records": 0,
+              "chars": 155,
+              "hebrew": true,
+              "person": false,
+              "preview": "['מאפיית הגליל', 'מאפייה', 'רחוב הרצל 5, חצור הגלילית', '04-1234567', 'mehadrin', 'הרבנות המקומית', 'ישראל כהן', '050-12"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "app": "02-igud-transcribe",
+      "sourceFiles": 33,
+      "reachableTotal": 20,
+      "entries": 20,
+      "files": 0,
+      "reachableFiles": 0,
+      "records": 0,
+      "people": 0,
+      "rosters": 0,
+      "testSkipped": 0,
+      "found": []
+    },
+    {
+      "app": "03-igud-ads",
+      "sourceFiles": 94,
+      "reachableTotal": 69,
+      "entries": 69,
+      "files": 0,
+      "reachableFiles": 0,
+      "records": 0,
+      "people": 0,
+      "rosters": 0,
+      "testSkipped": 0,
+      "found": []
+    },
+    {
+      "app": "04-imud-torani",
+      "sourceFiles": 84,
+      "reachableTotal": 4,
+      "entries": 1,
+      "files": 2,
+      "reachableFiles": 0,
+      "records": 0,
+      "people": 0,
+      "rosters": 0,
+      "testSkipped": 0,
+      "found": [
+        {
+          "file": "apps/04-imud-torani/client/src/pages/Templates.tsx",
+          "reachable": false,
+          "hits": [
+            {
+              "name": "SAMPLE",
+              "kind": "declared",
+              "line": 12,
+              "records": 1,
+              "chars": 1262,
+              "hebrew": true,
+              "person": false,
+              "preview": "{ regular: [ { id: \"h1\", layer: \"heading\", text: \"שער הביטחון\", meta: { level: 1 } }, { id: \"m1\", layer: \"m"
+            }
+          ]
+        },
+        {
+          "file": "apps/04-imud-torani/client/src/pages/Wizard.tsx",
+          "reachable": false,
+          "hits": [
+            {
+              "name": "SAMPLE",
+              "kind": "declared",
+              "line": 37,
+              "records": 1,
+              "chars": 2253,
+              "hebrew": true,
+              "person": false,
+              "preview": "{ regular: [ { id: \"h1\", layer: \"heading\", text: \"שער הביטחון\", meta: { level: 1 } }, { id: \"o1\", layer: \"o"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "app": "05-financial-marketing-site",
+      "sourceFiles": 2,
+      "reachableTotal": 1,
+      "entries": 1,
+      "files": 0,
+      "reachableFiles": 0,
+      "records": 0,
+      "people": 0,
+      "rosters": 0,
+      "testSkipped": 0,
+      "found": []
+    },
+    {
+      "app": "06-kupot-holim",
+      "sourceFiles": 6,
+      "reachableTotal": 2,
+      "entries": 2,
+      "files": 0,
+      "reachableFiles": 0,
+      "records": 0,
+      "people": 0,
+      "rosters": 0,
+      "testSkipped": 0,
+      "found": []
+    },
+    {
+      "app": "07-zol",
+      "sourceFiles": 0,
+      "reachableTotal": 0,
+      "entries": 0,
+      "files": 0,
+      "reachableFiles": 0,
+      "records": 0,
+      "people": 0,
+      "rosters": 0,
+      "testSkipped": 0,
+      "found": []
+    },
+    {
+      "app": "10-bkalot-rights",
+      "sourceFiles": 4,
+      "reachableTotal": 1,
+      "entries": 1,
+      "files": 0,
+      "reachableFiles": 0,
+      "records": 0,
+      "people": 0,
+      "rosters": 0,
+      "testSkipped": 0,
+      "found": []
+    },
+    {
+      "app": "11-bkalut-marketing2",
+      "sourceFiles": 2,
+      "reachableTotal": 1,
+      "entries": 1,
+      "files": 0,
+      "reachableFiles": 0,
+      "records": 0,
+      "people": 0,
+      "rosters": 0,
+      "testSkipped": 0,
+      "found": []
+    },
+    {
+      "app": "12-smel-ndln",
+      "sourceFiles": 77,
+      "reachableTotal": 4,
+      "entries": 1,
+      "files": 0,
+      "reachableFiles": 0,
+      "records": 0,
+      "people": 0,
+      "rosters": 0,
+      "testSkipped": 0,
+      "found": []
+    },
+    {
+      "app": "13-property-identity",
+      "sourceFiles": 5,
+      "reachableTotal": 0,
+      "entries": 0,
+      "files": 0,
+      "reachableFiles": 0,
+      "records": 0,
+      "people": 0,
+      "rosters": 0,
+      "testSkipped": 0,
+      "found": []
+    },
+    {
+      "app": "14-bsmachot-plus",
+      "sourceFiles": 2,
+      "reachableTotal": 2,
+      "entries": 1,
+      "files": 0,
+      "reachableFiles": 0,
+      "records": 0,
+      "people": 0,
+      "rosters": 0,
+      "testSkipped": 0,
+      "found": []
+    },
+    {
+      "app": "15-egod",
+      "sourceFiles": 123,
+      "reachableTotal": 75,
+      "entries": 4,
+      "files": 1,
+      "reachableFiles": 0,
+      "records": 0,
+      "people": 0,
+      "rosters": 0,
+      "testSkipped": 2,
+      "found": [
+        {
+          "file": "apps/15-egod/supabase/functions/seed-demo-portals/index.ts",
+          "reachable": false,
+          "hits": [
+            {
+              "name": "demos",
+              "kind": "roster",
+              "line": 6,
+              "records": 3,
+              "chars": 1287,
+              "hebrew": true,
+              "person": true,
+              "preview": "[ { email: \"rabbi.cohen@igud-shiurim.org\", password: \"Cohen2026!\", full_name: \"הרב יעקב כהן\", pho"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "app": "17-chizukim-transcribe",
+      "sourceFiles": 79,
+      "reachableTotal": 4,
+      "entries": 1,
+      "files": 1,
+      "reachableFiles": 0,
+      "records": 0,
+      "people": 0,
+      "rosters": 0,
+      "testSkipped": 0,
+      "found": [
+        {
+          "file": "apps/17-chizukim-transcribe/server/transcribe.ts",
+          "reachable": false,
+          "hits": [
+            {
+              "name": "SAMPLE_RATES",
+              "kind": "declared",
+              "line": 141,
+              "records": 1,
+              "chars": 79,
+              "hebrew": false,
+              "person": false,
+              "preview": "{ 3: [44100, 48000, 32000], 2: [22050, 24000, 16000], 0: [11025, 12000, 8000] }"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "app": "18-torah-editor-mvp",
+      "sourceFiles": 26,
+      "reachableTotal": 16,
+      "entries": 16,
+      "files": 0,
+      "reachableFiles": 0,
+      "records": 0,
+      "people": 0,
+      "rosters": 0,
+      "testSkipped": 0,
+      "found": []
+    },
+    {
+      "app": "19-igud-shiurim-portal",
+      "sourceFiles": 3,
+      "reachableTotal": 2,
+      "entries": 1,
+      "files": 0,
+      "reachableFiles": 0,
+      "records": 0,
+      "people": 0,
+      "rosters": 0,
+      "testSkipped": 0,
+      "found": []
+    },
+    {
+      "app": "20-igud-portal",
+      "sourceFiles": 3,
+      "reachableTotal": 2,
+      "entries": 1,
+      "files": 0,
+      "reachableFiles": 0,
+      "records": 0,
+      "people": 0,
+      "rosters": 0,
+      "testSkipped": 0,
+      "found": []
+    },
+    {
+      "app": "22-get-your-rights",
+      "sourceFiles": 92,
+      "reachableTotal": 41,
+      "entries": 4,
+      "files": 0,
+      "reachableFiles": 0,
+      "records": 0,
+      "people": 0,
+      "rosters": 0,
+      "testSkipped": 2,
+      "found": []
+    },
+    {
+      "app": "23-haorech-torani",
+      "sourceFiles": 1,
+      "reachableTotal": 1,
+      "entries": 1,
+      "files": 0,
+      "reachableFiles": 0,
+      "records": 0,
+      "people": 0,
+      "rosters": 0,
+      "testSkipped": 0,
+      "found": []
+    },
+    {
+      "app": "25-mor1-main-site",
+      "sourceFiles": 0,
+      "reachableTotal": 0,
+      "entries": 0,
+      "files": 0,
+      "reachableFiles": 0,
+      "records": 0,
+      "people": 0,
+      "rosters": 0,
+      "testSkipped": 0,
+      "found": []
+    },
+    {
+      "app": "26-modaot-studio",
+      "sourceFiles": 108,
+      "reachableTotal": 4,
+      "entries": 1,
+      "files": 0,
+      "reachableFiles": 0,
+      "records": 0,
+      "people": 0,
+      "rosters": 0,
+      "testSkipped": 0,
+      "found": []
+    },
+    {
+      "app": "27-bkalut-price",
+      "sourceFiles": 188,
+      "reachableTotal": 12,
+      "entries": 9,
+      "files": 2,
+      "reachableFiles": 0,
+      "records": 0,
+      "people": 0,
+      "rosters": 0,
+      "testSkipped": 18,
+      "found": [
+        {
+          "file": "apps/27-bkalut-price/server/params-topics.ts",
+          "reachable": false,
+          "hits": [
+            {
+              "name": "SEED",
+              "kind": "declared",
+              "line": 206,
+              "records": 68,
+              "chars": 16898,
+              "hebrew": true,
+              "person": false,
+              "preview": "[ // family { title: \"משפחה חד הורית\", category: \"מצב משפחתי\", profileConditions: [\"single_parent\"], description: "
+            }
+          ]
+        },
+        {
+          "file": "apps/27-bkalut-price/server/price-comparison.ts",
+          "reachable": false,
+          "hits": [
+            {
+              "name": "storeDefs",
+              "kind": "roster",
+              "line": 1648,
+              "records": 4,
+              "chars": 258,
+              "hebrew": true,
+              "person": true,
+              "preview": "[ { name: \"רמי לוי\", branch: \"סניף ראשי\", city: \"ירושלים\" }, { name: \"שופרסל\", branch: \"דיל\", city: \"בני ברק\" "
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "app": "28-kupot-health-funds",
+      "sourceFiles": 80,
+      "reachableTotal": 4,
+      "entries": 1,
+      "files": 0,
+      "reachableFiles": 0,
+      "records": 0,
+      "people": 0,
+      "rosters": 0,
+      "testSkipped": 0,
+      "found": []
+    },
+    {
+      "app": "29-bkalot-design",
+      "sourceFiles": 2,
+      "reachableTotal": 1,
+      "entries": 1,
+      "files": 0,
+      "reachableFiles": 0,
+      "records": 0,
+      "people": 0,
+      "rosters": 0,
+      "testSkipped": 0,
+      "found": []
+    },
+    {
+      "app": "30-zchuyotpro-crm",
+      "sourceFiles": 126,
+      "reachableTotal": 94,
+      "entries": 34,
+      "files": 0,
+      "reachableFiles": 0,
+      "records": 0,
+      "people": 0,
+      "rosters": 0,
+      "testSkipped": 0,
+      "found": []
+    },
+    {
+      "app": "32-nadlan-berega",
+      "sourceFiles": 112,
+      "reachableTotal": 27,
+      "entries": 27,
+      "files": 0,
+      "reachableFiles": 0,
+      "records": 0,
+      "people": 0,
+      "rosters": 0,
+      "testSkipped": 0,
+      "found": []
+    },
+    {
+      "app": "34-kesef",
+      "sourceFiles": 0,
+      "reachableTotal": 0,
+      "entries": 0,
+      "files": 0,
+      "reachableFiles": 0,
+      "records": 0,
+      "people": 0,
+      "rosters": 0,
+      "testSkipped": 0,
+      "found": []
+    },
+    {
+      "app": "35-kioskfleet",
+      "sourceFiles": 0,
+      "reachableTotal": 0,
+      "entries": 0,
+      "files": 0,
+      "reachableFiles": 0,
+      "records": 0,
+      "people": 0,
+      "rosters": 0,
+      "testSkipped": 0,
+      "found": []
+    }
+  ]
+}

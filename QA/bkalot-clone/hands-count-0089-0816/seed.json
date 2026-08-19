@@ -1,0 +1,94 @@
+{
+  "admins": {
+    "first": {
+      "id": 84,
+      "email": "qa0089first@more30.test",
+      "full_name": "QA 0089 יד ראשונה"
+    },
+    "second": {
+      "id": 85,
+      "email": "qa0089second@more30.test",
+      "full_name": "QA 0089 יד שנייה"
+    }
+  },
+  "cases": {
+    "A": {
+      "case_id": 232,
+      "contact_id": 239,
+      "rights": null,
+      "queued": false,
+      "transitions": [
+        {
+          "status": 200,
+          "ok": true,
+          "previous": "new",
+          "to": "in_progress",
+          "changed": true,
+          "log_id": 21,
+          "has_log_id_key": true,
+          "admin": 84
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "previous": "in_progress",
+          "to": "closed",
+          "changed": true,
+          "log_id": 22,
+          "has_log_id_key": true,
+          "admin": 85
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "previous": "closed",
+          "to": "rejected",
+          "changed": true,
+          "log_id": 23,
+          "has_log_id_key": true,
+          "admin": 85
+        }
+      ]
+    },
+    "B": {
+      "case_id": 233,
+      "contact_id": 240,
+      "rights": null,
+      "queued": false,
+      "transitions": [
+        {
+          "status": 200,
+          "ok": true,
+          "previous": "new",
+          "to": "in_progress",
+          "changed": true,
+          "log_id": 24,
+          "has_log_id_key": true,
+          "admin": 84
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "previous": "in_progress",
+          "to": "in_progress",
+          "changed": false,
+          "log_id": null,
+          "has_log_id_key": true,
+          "admin": 84
+        }
+      ]
+    },
+    "C": {
+      "case_id": 234,
+      "contact_id": 241,
+      "rights": null,
+      "queued": false
+    },
+    "D": {
+      "case_id": 235,
+      "contact_id": 242,
+      "rights": null,
+      "queued": false
+    }
+  }
+}

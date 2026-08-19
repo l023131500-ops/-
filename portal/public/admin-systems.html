@@ -1,0 +1,392 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light dark" />
+    <title>דוח מערכות · מרכז השליטה — more30</title>
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        color-scheme: light dark;
+        --gold: #c9a227; --bg: #f6f7fb; --surface: #ffffff;
+        --ink: #0b0d2e; --ink-2: #5b6076; --line: #e4e6f0;
+        --ok: #157f4b; --warn: #8a6d10; --bad: #a32b1c;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root { --bg: #0b0d18; --surface: #151827; --ink: #e9ebf5;
+                --ink-2: #a2a8c0; --line: #262b40; --ok: #5fd39b; --warn: #e0bd5a;
+                --bad: #ff9b8c; }
+      }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body { font-family: 'Heebo', system-ui, sans-serif; background: var(--bg);
+             color: var(--ink); line-height: 1.6; padding: 28px 20px 80px; }
+      .wrap { max-width: 1180px; margin: 0 auto; }
+      .back { display: inline-flex; align-items: center; min-height: 24px;
+              font-size: 14px; color: var(--ink-2); text-decoration: none; }
+      .back:hover { color: var(--ink); }
+      h1 { font-size: clamp(24px, 4vw, 34px); font-weight: 800; margin-top: 10px; }
+      .sub { color: var(--ink-2); font-size: 15px; margin-top: 6px; max-width: 66ch; }
+      .nav { display: flex; gap: 8px; flex-wrap: wrap; margin: 18px 0 6px; }
+      .nav a { font-size: 13.5px; font-weight: 600; text-decoration: none;
+               border: 1px solid var(--line); border-radius: 999px;
+               padding: 6px 14px; min-height: 24px; display: inline-flex;
+               align-items: center; color: var(--ink); background: var(--surface); }
+      .nav a:hover { border-color: var(--gold); }
+
+      .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px,1fr));
+               gap: 12px; margin: 20px 0 26px; }
+      .kpi { background: var(--surface); border: 1px solid var(--line);
+             border-radius: 14px; padding: 14px 16px; }
+      .kpi .n { font-size: 27px; font-weight: 800; line-height: 1.1; }
+      .kpi .l { font-size: 12.5px; color: var(--ink-2); margin-top: 3px; }
+
+      .grid { display: grid; gap: 12px;
+              grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); }
+      .sys { background: var(--surface); border: 1px solid var(--line);
+             border-radius: 14px; padding: 16px 18px; }
+      .sys h2 { font-size: 16.5px; font-weight: 800; }
+      .sys h2 a { color: inherit; text-decoration: none; border-bottom: 1px solid transparent; }
+      .sys h2 a:hover { border-bottom-color: var(--gold); }
+      .row1 { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+      .num { font-variant-numeric: tabular-nums; font-weight: 800;
+             color: var(--ink-2); font-size: 12.5px; }
+      .tag { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; }
+      .tag.live { background: color-mix(in srgb, var(--ok) 16%, transparent); color: var(--ok); }
+      .tag.off  { background: color-mix(in srgb, var(--ink-2) 16%, transparent); color: var(--ink-2); }
+      .tag.show { background: color-mix(in srgb, var(--gold) 22%, transparent); color: var(--warn); }
+      .tagline { color: var(--ink-2); font-size: 13.5px; margin-top: 6px; min-height: 20px; }
+
+      dl { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px;
+           margin-top: 12px; font-size: 13.5px; }
+      dt { color: var(--ink-2); }
+      dd { font-variant-numeric: tabular-nums; }
+      .muted { color: var(--ink-2); }
+      /* ציון Lighthouse. הצבע חוזר על מה שהמספר והמילה כבר אומרים ואינו נושא
+         מידע לבדו — מי שאינו מבחין בין הגוונים קורא בדיוק את אותו הדבר. */
+      .lh { display: inline-block; font-size: 11.5px; font-weight: 700;
+            border-radius: 7px; padding: 1px 7px; margin-inline-end: 4px;
+            white-space: nowrap; }
+      .lh.g { background: color-mix(in srgb, var(--ok) 16%, transparent);   color: var(--ok); }
+      .lh.m { background: color-mix(in srgb, var(--warn) 22%, transparent); color: var(--warn); }
+      .lh.b { background: color-mix(in srgb, var(--bad) 16%, transparent);  color: var(--bad); }
+      .stale { font-weight: 700; color: var(--warn); }
+      .entry { margin-top: 10px; font-size: 13px; }
+      .entry a { font-weight: 700; color: inherit; text-decoration: none;
+                 border-bottom: 1px solid var(--gold); min-height: 24px;
+                 display: inline-flex; align-items: center; }
+      .note { border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px;
+              font-size: 14px; background: var(--surface); margin-top: 14px; }
+      .note.warn { border-color: color-mix(in srgb, var(--warn) 45%, var(--line)); }
+      .foot { margin-top: 26px; font-size: 12.5px; color: var(--ink-2); }
+    </style>
+      <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+  </head>
+  <body>
+    <div class="wrap">
+      <a class="back" href="/admin">← חזרה למרכז השליטה</a>
+      <h1>דוח מערכות</h1>
+      <p class="sub" id="tagline">טוען…</p>
+
+      <nav class="nav">
+        <a href="/admin/leads">לידים</a>
+        <a href="/admin/issues">תקלות ומה דורש אותך</a>
+        <a href="/admin/credits">יתרות וחיבורים</a>
+        <a href="/admin/pricing">מחירים ותצוגה</a>
+        <a href="/admin/activity">משתמשים פעילים</a>
+        <a href="/admin/automation">אוטומציית תוכן</a>
+        <a href="/admin/rights">מאגר הזכויות</a>
+        <a href="/admin/customers">לקוחות</a>
+        <a href="/admin/kesef">כסף — קליטת נתונים</a>
+        <a href="/admin/imud">עימוד — ספרים ותבניות</a>
+        <a href="/admin/studio">סטודיו — תבניות ועבודות</a>
+        <a href="/showcase">עולם הסטארטאפים</a>
+      </nav>
+
+      <div id="content" hidden>
+        <div class="cards" id="kpis"></div>
+        <div class="grid" id="grid"></div>
+        <div class="note" id="notes"></div>
+        <p class="foot" id="stamp"></p>
+      </div>
+      <div id="denied" class="note warn" hidden></div>
+    </div>
+
+    <script type="module">
+      import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+      const SUPABASE_URL = 'https://uhnrgujbdxhhmoxcjria.supabase.co';
+      const SUPABASE_ANON =
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVobnJndWpiZHhoaG1veGNqcmlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMzNjE3MjgsImV4cCI6MjA5ODkzNzcyOH0.nHuOhw-WQEU17lNa7XOlORnBhVAYbJBHudKafWkSHBw';
+      const sb = createClient(SUPABASE_URL, SUPABASE_ANON, {
+        auth: { persistSession: true, storageKey: 'more30-auth' },
+      });
+      const $ = (id) => document.getElementById(id);
+      const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) =>
+        ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+
+      function when(ts) {
+        if (!ts) return '<span class="muted">—</span>';
+        const d = new Date(ts), m = Math.round((Date.now() - d) / 60000);
+        if (m < 60) return `לפני ${m} דק׳`;
+        if (m < 1440) return `לפני ${Math.round(m/60)} שע׳`;
+        return d.toLocaleDateString('he-IL');
+      }
+      const money = (n) => (Number(n) || 0).toLocaleString('he-IL') + ' ₪';
+
+      /**
+       * שורת הבאגים בכרטיס. מערכת בלי שורה ב-core.issues מקבלת "לא נרשמו",
+       * ולא 0 — "אין תקלות ידועות" ו"אף אחד לא בדק" הן שתי עובדות שונות,
+       * ולהציג 0 לשנייה זו הבטחה שלא נמדדה.
+       */
+      let bugs = () => '';
+
+      /**
+       * שורת ה-Lighthouse בכרטיס — הפריט השלישי בשורה ש-§3 מבקש לכל מערכת
+       * ("סטטוס, קישור, Lighthouse"). מיגרציה 0028 נתנה לו מקום במסד והביאה
+       * אותו אל הדוח, אבל הכרטיס מעולם לא צייר אותו: השדה הגיע לדפדפן ונזרק,
+       * ולכן המסך המשיך להציג סטטוס וקישור בלבד.
+       *
+       * שלושה כללים, וכולם אותה שורה בכללי הברזל — נתוני אמת בלבד:
+       * מערכת שלא נמדדה מקבלת "לא נמדדה" ולא 0 ולא ציון משוער; כל ציון נושא
+       * את הזמן שבו נמדד; ומדידה שהדוח סימן stale נאמרת כ"ישנה" במפורש —
+       * קצב הפריסות כאן הוא עשרות ליום, ולהציג מדידה בת יומיים כמצב הנוכחי
+       * זה להציג נתון שאינו נכון.
+       */
+      const band = (n) => (n == null ? 'm' : n >= 90 ? 'g' : n >= 50 ? 'm' : 'b');
+      const lighthouse = (x) => {
+        const l = x.lighthouse;
+        if (!l) return '<dt>Lighthouse</dt><dd class="muted">לא נמדדה</dd>';
+        const h = Number(l.age_hours);
+        const age = !isFinite(h) ? 'זמן המדידה לא נרשם'
+          : h < 1 ? 'נמדד לפני פחות משעה'
+          : h < 48 ? `נמדד לפני ${Math.round(h)} שע׳`
+          : `נמדד לפני ${Math.round(h / 24)} ימים`;
+        const scores = [
+          ['ביצועים', l.perf], ['נגישות', l.a11y],
+          ['שיטות', l.best_practices], ['SEO', l.seo],
+        // join(' ') ולא join(''): הרווח הוא של שכבת הטקסט, לא של הפריסה.
+        // בלעדיו התגיות נצמדות בהעתקה ובהקראה — "ביצועים 95נגישות 100" —
+        // בעוד המרווח החזותי מגיע ממילא מ-margin.
+        ].map(([k, v]) =>
+          `<span class="lh ${band(v)}">${esc(k)} ${v ?? '—'}</span>`).join(' ');
+        return `<dt>Lighthouse</dt><dd>${scores}<br />
+          <span class="muted">${age}</span>${
+            l.stale ? ' <span class="stale">· ישנה</span>' : ''}</dd>`;
+      };
+
+      /**
+       * "נהל מערכת זו" של §3. הקישור הזה הצביע עד היום על /admin/issues בכל
+       * שלושים הכרטיסים — אותה כתובת לכל מערכת, ולא מסך הניהול של אף אחת מהן.
+       * הכתובת האמיתית יושבת ב-core.projects.admin_url ומגיעה עכשיו בדוח
+       * (מיגרציה 0025), אחרי אותו שער שקבעה 0024: רק admin_auth של own/hub ורק
+       * כתובת שאפשר ללחוץ עליה.
+       *
+       * מערכת בלי מסך ניהול אומרת זאת במפורש ואינה מקבלת קישור חלופי — שמונה
+       * מהן הן core.issues #86, ולתת להן קישור גנרי זה בדיוק מה שהסתיר את
+       * החוסר עד עכשיו.
+       *
+       * הנוסח כאן אמר "נמדד, לא הונח (#86)", וזו סיבה אחת מתוך שתיים. #27
+       * הצטרפה לריק הזה במיגרציה 0046 מסיבה הפוכה: מסך הניהול שלה הונח — הוא
+       * יושב במקור על 32 מסלולים, App.tsx:118-149 — ואין כתובת תחת ההרכבה
+       * שמגיעה אליו, כי
+       * האפליקציה מנתבת על ה-hash ופותחת את האזור הפנימי רק כששם המארח מתחיל
+       * ב-"admin.". הדוח מוציא admin_auth רק יחד עם הכתובת (0038), ולכן כאן
+       * אין במה להבחין בין השתיים, ולנחש איזו מהן — להציג "לא הונח" למערכת
+       * שכן הונחה — זה בדיוק סוג הנתון שכללי הברזל אוסרים. השורה אומרת את מה
+       * שנמדד (אין כתובת שמגיעה למסך ניהול) ומפנה לתקלות, ששם נרשמת הסיבה
+       * לכל מערכת בנפרד — והמונה שלהן כבר יושב על אותו כרטיס.
+       */
+      const adminEntry = (x) => {
+        if (!x.admin_url) {
+          return `<span class="muted">אין כתובת שמגיעה למסך ניהול — נמדד.
+                  הסיבה לכל מערכת ב<a href="/admin/issues">תקלות</a>
+                  (core.issues #86 · #115)</span>`;
+        }
+        const href = x.admin_url.startsWith('http')
+          ? x.admin_url
+          : `/${x.app_key}${x.admin_url}`;
+        const who = x.admin_auth === 'hub'
+          ? 'כניסת סופר-אדמין של הפלטפורמה'
+          : 'הכניסה של המערכת עצמה';
+        return `<a href="${esc(href)}">ניהול המערכת הזאת ←</a>
+                <span class="muted"> · ${who}</span>`;
+      };
+
+      (async function () {
+        const { data: s } = await sb.auth.getSession();
+        if (!s?.session) {
+          $('tagline').textContent = 'הדף פתוח לסופר-אדמין בלבד.';
+          $('denied').innerHTML =
+            `צריך להתחבר. <a href="/login?from=${encodeURIComponent(location.href)}">מעבר לכניסה</a>`;
+          $('denied').hidden = false;
+          return;
+        }
+        const { data, error } = await sb.rpc('more30_admin_systems_report');
+        // התקלות נטענות בנפרד ובאופן סלחני: אם ה-RPC הזה נכשל, הדוח עדיין
+        // מוצג בלי עמודת הבאגים — עדיף כרטיס חסר שורה מאשר מסך ריק.
+        const { data: issues } = await sb.rpc('more30_admin_issues');
+        const byApp = issues?.by_app ?? {};
+        // §3 מבקש שלושה מצבים — תוקן / בטיפול / פתוח — ועד היום היו כאן שניים:
+        // by_app קיפלה open ו-in_progress למספר אחד בשם open, ולכן "בטיפול"
+        // מעולם לא נכתב על אף כרטיס ותקלה שכבר עובדים עליה נקראה "פתוחה".
+        // מיגרציה 0026 מפרידה אותם, וכאן הם מצוירים בסדר שבו הם מעניינים.
+        //
+        // needs_user אינו מצב רביעי אלא תת-קבוצה של השניים הראשונים, ולכן הוא
+        // נכתב כ"מתוכם" — אחרת הסכום שעל הכרטיס גדול ממספר התקלות שיש לו.
+        bugs = (path) => {
+          const b = path ? byApp[path] : null;
+          if (!b) return '<dt>באגים</dt><dd class="muted">לא נרשמו</dd>';
+          const parts = [];
+          if (b.open) parts.push(`${b.open} פתוחים`);
+          if (b.in_progress) parts.push(`${b.in_progress} בטיפול`);
+          if (b.needs_user) parts.push(`מתוכם ${b.needs_user} דורשים אותך`);
+          if (b.fixed) parts.push(`${b.fixed} תוקנו`);
+          return `<dt>באגים</dt><dd>${parts.join(' · ') || 'אין'}</dd>`;
+        };
+        if (error) {
+          $('tagline').textContent = 'הדף פתוח לסופר-אדמין בלבד.';
+          $('denied').innerHTML =
+            'החשבון הזה אינו סופר-אדמין.<br><span class="muted" style="font-size:13px">' +
+            esc(error.message) + '</span>';
+          $('denied').hidden = false;
+          return;
+        }
+
+        $('tagline').textContent =
+          'כרטיס לכל מערכת: סטטוס, משתמשים, מנויים, מחירים, הכנסה משוערת ' +
+          'וציון Lighthouse עם הזמן שבו נמדד.';
+
+        const t = data.totals || {};
+        $('kpis').innerHTML = [
+          [t.systems, 'מערכות'],
+          [t.live, 'חיות'],
+          // האריח הזה נשא עד היום את הכותרת "מאגר המשתמשים בהאב" ואת המספר
+          // t.users_counted — שהוא מספר ה**מערכות** שמאגרן בהאב, 7 מתוך 30.
+          // מאגר המשתמשים עצמו הוא 20 חשבונות אמיתיים ועוד 64 חשבונות בדיקה,
+          // ו-8 בלבד מהאמיתיים נכנסו אי פעם לתוך מערכת. ארבעה מספרים שונים
+          // תחת כותרת אחת. מיגרציה 0030 מפרידה אותם, וכאן הם מצוירים בנפרד:
+          // המאגר, כמה ממנו באמת בפנים, וכמה מערכות בכלל נספרות כאן.
+          [t.hub_users,
+           'משתמשים במאגר ההאב' + (t.hub_users_test
+             ? ` · ${Number(t.hub_users_test)} חשבונות בדיקה בנפרד`
+             : '')],
+          [t.hub_users_with_membership, 'מתוכם נכנסו לתוך מערכת'],
+          [t.systems_users_counted, `מערכות שמשתמשיהן נספרים כאן · מתוך ${Number(t.systems)||0}`],
+          [t.in_showcase, 'מוצגות בעולם הסטארטאפים'],
+          // אותה הפרדה שחלה על המשתמשים חלה כאן על הכסף: מנוי בדיקה נספר
+          // לצידו של מנוי אמיתי ולא בתוכו, ואינו מייצר שקל של הכנסה משוערת.
+          [t.subs_active,
+           'מנויים פעילים' + (t.subs_test
+             ? ` · ${Number(t.subs_test)} מנויי בדיקה בנפרד`
+             : '')],
+          [t.with_admin_url, 'עם כניסה לניהול'],
+          // מספר אחד היה מטעה כאן: "8 נמדדו" נקרא כ-8 מדידות שמתארות את
+          // הייצור, גם כשכולן בנות ימים. הטריות נכתבת לצידו ולא מתחתיו.
+          [t.with_lighthouse,
+           'נמדדו ב-Lighthouse' + (Number(t.lighthouse_fresh) === Number(t.with_lighthouse)
+             ? ' · כולן טריות'
+             : ` · ${Number(t.lighthouse_fresh) || 0} טריות`)],
+        ].map(([n,l]) => `<div class="kpi"><div class="n">${Number(n)||0}</div><div class="l">${l}</div></div>`).join('');
+
+        // ‏§3 מבקש מנויים והכנסה לכל מערכת. עד היום הכותרת ספרה 90 מנויי בדיקה
+        // ותשעה-עשר הכרטיסים שמתחתיה ספרו 79: אחת-עשרה שורות המנוי של
+        // more30/premium — המסלול הכללי של §8א, 10 ₪ — יושבות על app_key שאין
+        // לו שורה ב-core.projects, ולכן נספרו בכותרת ובאף כרטיס. אותו דבר
+        // לשבע שורות החברות. מיגרציה 0051 מוציאה אותן למפתח platform, וכאן
+        // הן מקבלות כרטיס ראשון בשורה — עם אותם שדות בדיוק, בלי מספר מערכת,
+        // בלי Lighthouse ובלי כניסה לניהול, שאין לפלטפורמה אף אחד מהם.
+        const platformCard = () => {
+          const pf = data.platform;
+          if (!pf) return '';
+          const u = pf.users || {};
+          const tiers = (pf.tiers || [])
+            .map((t) => `${esc(t.name_he || t.code)} ${t.price_ils ? money(t.price_ils) : 'ללא חיוב'}`)
+            .join(' · ');
+          return `<article class="sys">
+            <div class="row1">
+              <span class="num">—</span>
+              <h2>${esc(pf.name || 'more30')}</h2>
+              <span class="tag show">פלטפורמה</span>
+            </div>
+            <p class="tagline">המסלולים שנמכרים על הפלטפורמה עצמה ולא על מערכת אחת.
+              הם נספרים בכותרת שלמעלה ואינם יכולים להופיע בכרטיס של מערכת.</p>
+            <dl>
+              <dt>לקוחות</dt><dd>${u.members ?? 0}</dd>
+              ${u.test_accounts
+                ? `<dt>חשבונות בדיקה</dt><dd class="muted">${u.test_accounts} — לא לקוחות</dd>`
+                : ''}
+              <dt>פעילים 7 ימים</dt><dd>${u.active_7d ?? 0}</dd>
+              <dt>פעילות אחרונה</dt><dd>${when(u.last_activity)}</dd>
+              <dt>מנויים פעילים</dt><dd>${pf.subscriptions?.active ?? 0}</dd>
+              ${pf.subscriptions?.test
+                ? `<dt>מנויי בדיקה</dt><dd class="muted">${pf.subscriptions.test} — לא הכנסה</dd>`
+                : ''}
+              <dt>מסלולים</dt><dd>${tiers || '<span class="muted">אין</span>'}</dd>
+              <dt>הכנסה חודשית משוערת</dt><dd>${money(pf.mrr_estimate_ils)}</dd>
+            </dl>
+            <p class="entry"><span class="muted">אין מסך ניהול נפרד — הלוח הזה הוא הניהול שלה.</span></p>
+          </article>`;
+        };
+
+        $('grid').innerHTML = platformCard() + (data.systems || []).map((x) => {
+          const u = x.users;
+          // חשבונות הבדיקה מוצגים בשורה משלהם ולא נבלעים במספר הלקוחות.
+          // אחרת "3 משתמשים" ב-torah היו שלושה חשבונות שיצרתי בעצמי במבחן
+          // הרגרסיה — מספר שנראה לגמרי סביר ואינו נכון. מוצגים רק כשיש
+          // כאלה, כדי שהכרטיס לא יתמלא שורות "0".
+          const users = x.users_counted
+            ? `<dt>לקוחות</dt><dd>${u?.members ?? 0}</dd>
+               ${u?.test_accounts
+                 ? `<dt>חשבונות בדיקה</dt><dd class="muted">${u.test_accounts} — לא לקוחות</dd>`
+                 : ''}
+               <dt>פעילים 7 ימים</dt><dd>${u?.active_7d ?? 0}</dd>
+               <dt>פעילות אחרונה</dt><dd>${when(u?.last_activity)}</dd>`
+            // מערכת מחוץ להאב לא מקבלת 0 — היא מקבלת את הסיבה.
+            : `<dt>משתמשים</dt><dd class="muted">לא נספרים — המאגר ב-${esc(
+                 x.supabase_project || 'פרויקט אחר')}</dd>`;
+          const p = x.pricing || {};
+          const price = (k) => p[k]?.price_ils == null
+            ? '<span class="muted">טרם נקבע</span>'
+            : (p[k].price_ils === 0 ? 'ללא חיוב' : money(p[k].price_ils));
+          return `<article class="sys">
+            <div class="row1">
+              <span class="num">${esc(x.number ?? '—')}</span>
+              <h2>${x.live_url ? `<a href="${esc(x.live_url)}">${esc(x.name)}</a>` : esc(x.name)}</h2>
+              <span class="tag ${x.live ? 'live':'off'}">${x.live ? 'חי':'לא חי'}</span>
+              ${x.show_in_showcase ? '<span class="tag show">בתצוגה</span>' : ''}
+            </div>
+            <p class="tagline">${esc(x.tagline || '')}</p>
+            <dl>
+              ${users}
+              <dt>מנויים פעילים</dt><dd>${x.subscriptions?.active ?? 0}</dd>
+              ${x.subscriptions?.test
+                ? `<dt>מנויי בדיקה</dt><dd class="muted">${x.subscriptions.test} — לא הכנסה</dd>`
+                : ''}
+              <dt>מנוי</dt><dd>${price('subscription')}</dd>
+              <dt>סליקה</dt><dd>${price('charge')}</dd>
+              <dt>חד-פעמי</dt><dd>${price('one_time')}</dd>
+              <dt>הכנסה חודשית משוערת</dt><dd>${money(x.mrr_estimate_ils)}</dd>
+              ${bugs(x.path)}
+              ${lighthouse(x)}
+            </dl>
+            <p class="entry">${adminEntry(x)}</p>
+          </article>`;
+        }).join('');
+
+        $('notes').innerHTML = Object.values(data.notes || {})
+          .map((n) => `<div>· ${esc(n)}</div>`).join('');
+        $('stamp').textContent = 'נמדד ' + new Date(data.generated_at).toLocaleString('he-IL');
+        $('content').hidden = false;
+      })();
+    </script>
+    <script src="https://more30.com/auth-button.js" defer></script>
+  </body>
+</html>

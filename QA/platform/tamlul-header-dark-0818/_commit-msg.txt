@@ -1,0 +1,36 @@
+02 tamlul: fix header title/subtitle invisible in dark mode (round-3 a11y recheck)
+
+contrast-probe.mjs dark scheme on https://more30.com/tamlul flagged the
+header: title "תמלול" 1.03:1 (needs 4.5) and subtitle "מבית איגוד השיעורים"
+1.7:1 (needs 4.5).
+
+Root cause read in apps/02-igud-transcribe/components/SiteHeader.tsx: the
+header hardcoded bg-white/80 (a literal Tailwind color, not the app's
+themed --c-surface token), so its background stayed near-white in dark
+mode while text-brand/text-ink-muted (both wired to CSS vars that
+correctly flip in .dark, per app/globals.css) switched to their
+light-on-dark values (rgb(195,206,230) / rgb(154,160,174)) meant to sit on
+a dark surface. tailwind.config.ts already has a `surface` color mapped to
+rgb(var(--c-surface) / <alpha-value>) for exactly this - documented there
+as the established fix pattern ("bg-white הפך ל-bg-surface").
+
+Fix: bg-white/80 -> bg-surface/80 on the header. Only one hardcoded
+bg-white usage existed in this app's source. next build clean, deployed
+(vercel deploy --prod, tamlul-more30, dpl_9fakQZHiwbyyZJKyfw9Z8CUr6UR5,
+READY, aliased).
+
+Verified live with a cache-buster: contrast-probe.mjs dark - zero findings
+(was 2). Direct Playwright measurement: dark header bg now
+rgba(28,31,39,0.8) (the dark surface color), title/subtitle unchanged
+colors but now clearly readable against it. Light mode: header bg still
+rgba(255,255,255,0.8), title/subtitle colors unchanged (26,46,90) /
+(102,102,102) - light mode untouched. Screenshots both modes:
+QA/platform/tamlul-header-dark-0818/tamlul-header-{dark,light}.png.
+
+Also ran contrast-probe.mjs light scheme on tamlul: 7 pre-existing findings
+on an unrelated "מה תקבל בסוף?" card (white text on a gradient/shorthand
+background) - same known false-positive class already documented for
+galil/smel (probe's backdrop-walker only reads background-color). Not
+fixed this step, not caused by this change.
+
+Protected systems untouched (08/09/bkalut-app/bkalot-admin/zr_*/NEDARIM3873).

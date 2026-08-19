@@ -1,0 +1,3 @@
+A intake http=200 ok=true kind=treatment case=92 contact=98 rights=undefined
+B intake http=200 ok=true kind=treatment case=93 contact=99 rights=undefined
+CASE_IDS A=92 B=93

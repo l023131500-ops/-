@@ -1,0 +1,90 @@
+{
+  "ran": "scripts/qa/kesef-screen-shot.mjs",
+  "issue": 86,
+  "of": "QA/platform/kesef-screen-0810/render.html",
+  "shots": [
+    "01-desktop-light.png",
+    "02-desktop-dark.png",
+    "03-mobile-light.png"
+  ],
+  "dom": {
+    "denied": false,
+    "gap": "המערכת מחזיקה 283 שורות, ואף אחת מהן לא הגיעה מקליטה. כולן קטלוג שנזרע ביד: 259 רשויות, סעיפי תקציב ומילון מונחים. 12 מקורות מוגדרים, 0 מהם הצליחו אי-פעם, ואין ולו ריצת סנכרון אחת. ‏0 כאן הוא מדידה ולא כשל בקריאה.",
+    "kpis": 8,
+    "zeroKpis": 4,
+    "ingestionRows": 12,
+    "coverageRows": 8,
+    "catalogChips": 13,
+    "productChips": 10,
+    "tableChips": 36,
+    "notes": 2,
+    "stamp": "נוצר 10.8.2026, 0:58:36",
+    "nan": false
+  },
+  "checks": [
+    {
+      "ok": true,
+      "what": "01-desktop-light.png — the page threw nothing (clean)"
+    },
+    {
+      "ok": true,
+      "what": "02-desktop-dark.png — the page threw nothing (clean)"
+    },
+    {
+      "ok": true,
+      "what": "03-mobile-light.png — the page threw nothing (clean)"
+    },
+    {
+      "ok": true,
+      "what": "the screen drew its content and not the access notice"
+    },
+    {
+      "ok": true,
+      "what": "the gap paragraph names the 283 rows it was written to explain"
+    },
+    {
+      "ok": true,
+      "what": "eight KPI tiles drew (8)"
+    },
+    {
+      "ok": true,
+      "what": "four of them are marked zero (4)"
+    },
+    {
+      "ok": true,
+      "what": "twelve ingestion sources drew (12)"
+    },
+    {
+      "ok": true,
+      "what": "eight coverage columns drew (8)"
+    },
+    {
+      "ok": true,
+      "what": "thirteen catalog chips drew (13)"
+    },
+    {
+      "ok": true,
+      "what": "ten product counters drew (10)"
+    },
+    {
+      "ok": true,
+      "what": "all 36 kesef tables are listed (36)"
+    },
+    {
+      "ok": true,
+      "what": "the two closing notes drew (2)"
+    },
+    {
+      "ok": true,
+      "what": "the generated-at stamp is filled (\"נוצר 10.8.2026, 0:58:36\")"
+    },
+    {
+      "ok": true,
+      "what": "no tile reads NaN"
+    }
+  ],
+  "summary": {
+    "pass": 15,
+    "total": 15
+  }
+}

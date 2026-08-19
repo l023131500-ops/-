@@ -1,0 +1,82 @@
+{
+  "before": {
+    "found": true,
+    "heading": "תובנה קצרה ליום, לשימוש בשיעור עצמו",
+    "chipText": "טיפים וכלים למגיד השיעור",
+    "bulbsInBand": 2,
+    "bulbsOnCard": 1,
+    "bulbsOnPage": 2,
+    "tipTitle": "שאל שאלות",
+    "arrows": 2,
+    "dots": 8
+  },
+  "after": {
+    "found": true,
+    "heading": "תובנה קצרה ליום, לשימוש בשיעור עצמו",
+    "chipText": "טיפים וכלים למגיד השיעור",
+    "bulbsInBand": 1,
+    "bulbsOnCard": 1,
+    "bulbsOnPage": 1,
+    "tipTitle": "פתיחה עם סיפור",
+    "arrows": 2,
+    "dots": 8
+  },
+  "checks": [
+    {
+      "check": "production tips band located",
+      "ok": true
+    },
+    {
+      "check": "production drew the mark twice",
+      "ok": true
+    },
+    {
+      "check": "production card tile carried one of them",
+      "ok": true
+    },
+    {
+      "check": "built band located",
+      "ok": true
+    },
+    {
+      "check": "built band draws one lightbulb",
+      "ok": true
+    },
+    {
+      "check": "the surviving lightbulb is the card tile",
+      "ok": true
+    },
+    {
+      "check": "chip kept its words",
+      "ok": true
+    },
+    {
+      "check": "chip words unchanged from production",
+      "ok": true
+    },
+    {
+      "check": "heading unchanged",
+      "ok": true
+    },
+    {
+      "check": "carousel arrows unchanged",
+      "ok": true
+    },
+    {
+      "check": "tip dots unchanged",
+      "ok": true
+    },
+    {
+      "check": "no lightbulb elsewhere on the page, before",
+      "ok": true
+    },
+    {
+      "check": "no lightbulb elsewhere on the page, after",
+      "ok": true
+    },
+    {
+      "check": "exactly one mark removed",
+      "ok": true
+    }
+  ]
+}

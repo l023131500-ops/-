@@ -1,0 +1,40 @@
+kiosk (35): after a screen change, nobody was focused
+
+route() replaces the whole of #content, and the control that asked for the
+change is usually inside it — the devices screen's add button, the guide
+screen's per-device wizard button. Removing the node that holds focus drops
+focus to <body>, so after a screen change nothing is focused at all: a screen
+reader announces nothing, and there is no position to press Shift+Tab back
+from. The last thing open under STATUS.md item 7's keyboard heading.
+
+focusNewScreen() moves focus to the new screen's h1, and route() takes a
+fromUser flag so the boot render is left alone — at login nothing holds focus
+yet, and pulling it to a heading there would push the page past the login pill
+and the sidebar before anyone pressed a key.
+
+The heading and not the first control: that is a submit on one screen and a
+refresh on another, and landing on a control means a Space away from pressing
+it. A MutationObserver and not a call per view: three of the seven views await
+before they mount, so route() cannot find the heading synchronously. childList
+without subtree: renderDevices() and the other in-screen redraws replace the
+children of a box inside #content, and pulling focus back to the heading on
+every list refresh would fight the person using the screen.
+
+:focus-visible and not :focus on .topbar h1 — a heading is not a control, so a
+mouse user gets no ring and a keyboard user does.
+
+Verified in QA/kiosk/screen-focus-0811 — 32/32, exit 0, both colour schemes.
+Six screens activated by Enter all land on their own h1; the ring is 4.93:1
+light / 7.83:1 dark on the surface actually behind it; a mouse click focuses
+the heading with outline: none; renderDevices() leaves focus where it was. The
+control is route(view) without the flag, run in the same live page: focus falls
+to body in both modes.
+
+A correction the run forced: the harness first asserted that the next Tab
+restarts at the top of the document, and failed. It does not, in Chromium —
+removing the focused node leaves the sequential focus navigation starting point
+where that node was. That row is now a recorded measurement rather than a
+claim, and what is fixed is the cost that was really there.
+
+nav-keyboard-0811 50/50, dialog-focus-0811 42/42, dialog-inert-0811 28/28, all
+unchanged. 152 tests / 151 pass — the documented baseline; no server code here.

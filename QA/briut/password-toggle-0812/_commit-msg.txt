@@ -1,0 +1,51 @@
+briut (06): the last password field in the sweep, and an eye icon that painted twice
+
+§1א's show-password eye had exactly one system left. 06 is the plain-HTML one,
+so the React pattern from the previous eleven systems did not transfer and the
+toggle was written against the DOM directly.
+
+One field, and only one: site/admin.html #adminPass. site/index.html and
+site/app.js have no type=password at all — the public side is a lead form. The
+scan was done with Select-String and by reading the files, because ripgrep
+reports "no matches" when it traverses apps/ (the sources are gitignored).
+
+No requirement text was added, and that is a finding rather than an omission.
+The gate fails closed on purpose: admin.js has carried a header note since 07/08
+saying no credential is configured and none can be, since a static site with no
+build step would ship anything the gate compared against straight to the
+browser. There is no rule to state, so none was invented.
+
+The side was measured, not copied. The document is dir="rtl" and the input
+declares no dir of its own, so computed direction is rtl and text-align resolves
+to start -> RIGHT; the free edge is the LEFT one. Button at left:8px, input
+padded padding-left:44px so a long value cannot run under it.
+
+The first cut of this change was wrong and the verification caught it. It hid
+the second icon with the HTML `hidden` attribute and flipped `svg.hidden` from
+JS, and both icons painted at once: `hidden` is not honoured on SVG elements —
+the UA `[hidden]{display:none}` rule is HTML-namespace only, and
+`.pw-toggle svg{display:block}` (0,1,1) outranks it in any case — while setting
+`.hidden` on an SVGElement from JS is an expando that reflects to nothing. Icon
+visibility is now pure CSS off `aria-pressed`, so the button's state has one
+source of truth instead of three.
+
+type="button" is load-bearing: the toggle sits inside #loginForm, which has a
+real submit handler. Verified rather than assumed — a wrapped window.fetch plus
+XMLHttpRequest.open counted 0 calls across both toggles, location.href never
+changed, and #loginErr stayed empty (a submit would have written
+"התחברות לניהול אינה מוגדרת בסביבה זו" into it).
+
+Verified on a static server over site/ at :5128, Chromium, viewport resized once
+before screenshotting. 0 console errors. Button rect 30x30 at (481,415) sits
+inside the field rect (473,406,334x48), elementFromPoint at its centre returns
+the button, and the full round trip password->text->password carries
+aria-label הצג סיסמה<->הסתר סיסמה with the eye<->eye-off swap both ways, the
+typed value (More30Admin2026) preserved and focus returned to the field.
+
+NOT DEPLOYED, deliberately. _deploy/briut-more30/briut/ has no admin.html and no
+admin.js in it, so more30.com/briut/admin.html has nothing to serve; shipping
+the admin page needs server-side auth first and is its own decision. One
+incidental find: that deploy folder's leads-store.js is 4614 bytes against 5432
+in source — a stale copy, left alone here.
+
+Evidence: QA/briut/password-toggle-0812/.

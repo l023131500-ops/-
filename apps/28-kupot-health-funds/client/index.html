@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <!-- ⚠️ ‎maximum-scale‎ / ‎user-scalable=no‎ הוסרו: הם מונעים מהמשתמש
+         להגדיל את העמוד, וזה כשל נגישות לפי DESIGN_STANDARD §5 (תקן 5568).
+         בעמוד עברי צפוף זו בדיוק היכולת שמי שמתקשה לקרוא זקוק לה. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>השוואת קופות חולים | מבית בקלות</title>
+    <meta
+      name="description"
+      content="השוואת זכויות והטבות קופות חולים בישראל — מידע בסיסי, סינון לפי נושא, קטגוריה וקופה, ויועץ חכם להתאמת קופה. מבית בקלות."
+    />
+    <!-- ‎canonical‎ ו-‎og:url‎ **לא היו כאן כלל** — נמדד ריק בשלושת המצבים.
+         DESIGN_STANDARD §8 מחייב את שניהם, מצביעים ל-more30.com. -->
+    <link rel="canonical" href="https://more30.com/kupot" />
+    <meta property="og:url" content="https://more30.com/kupot" />
+    <meta property="og:title" content="השוואת קופות חולים | מבית בקלות" />
+    <meta
+      property="og:description"
+      content="מידע ברור על זכויות והטבות בקופות החולים, סינון חכם ויועץ אישי להתאמת קופה."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="he_IL" />
+
+    <!-- ⚠️ המחלקה ‎dark‎ הוחלה ב-‎useEffect‎ בתוך React — כלומר **אחרי**
+         שהעמוד כבר צויר. במערכת שה-LCP שלה 3.5 שניות, משתמש בערכה כהה קיבל
+         מסך לבן מלא לכל אורך הטעינה ואז הבזק לכהה. זה בדיוק מה
+         ש-DESIGN_STANDARD §3 בא למנוע, ולכן ההחלה עברה לכאן — לפני הציור
+         הראשון. ‎colorScheme‎ נכתב יחד איתה כדי שגם פסי הגלילה ושדה החיפוש
+         יהיו כהים. -->
+    <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        function apply(on) {
+          document.documentElement.classList.toggle('dark', on);
+          document.documentElement.style.colorScheme = on ? 'dark' : 'light';
+        }
+        apply(mq.matches);
+        mq.addEventListener('change', function (e) { apply(e.matches); });
+      })();
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- הגיליון היה בקשה **חוסמת** (‎render-blocking‎ 300ms, ‎font-display‎
+         630ms במדידה). נטפרי חוסמת את המארח הזה לסירוגין, ובקשה חוסמת
+         שנכשלת מעכבת את כל העמוד עד שהיא נופלת. -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;500;600;700;800&family=Heebo:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+      media="print"
+      onload="this.media='all'"
+    />
+    <noscript>
+      <link
+        href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;500;600;700;800&family=Heebo:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet"
+      />
+    </noscript>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+      <!-- כפתור הכניסה המשותף של more30 (DESIGN_STANDARD §9). חייב לשבת
+         כאן במקור ולא רק בעותק הפרוס: כל בנייה מחדש דורסת את ‎index.html‎
+         שב-‎_deploy‎, ואז הכפתור נעלם בלי שאיש ישים לב. -->
+    <script src="https://more30.com/auth-button.js" defer></script>
+  </body>
+</html>

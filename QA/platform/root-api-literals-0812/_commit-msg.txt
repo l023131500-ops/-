@@ -1,0 +1,30 @@
+platform (#154): the mount-prefix API bug asked of all 25 mounts at once, and the one bundle still carrying it
+
+imud, kupot and mechiron each shipped a bundle whose fetch() calls were written
+root-relative, so under more30.com/<mount>/ they left the app and hit the portal
+404. Each was found by walking into it. The claim that the sweep was complete had
+never been tested against what production actually serves.
+
+scan.ps1 GETs every mount, reads every same-origin script, and regexes the
+emitted JavaScript; each hit is then resolved to the base its call site really
+uses. 13 mounts hit, all 13 resolved:
+
+- 7 are @supabase/realtime-js broadcastEndpointURL rewriting the realtime
+  endpoint's own pathname, not more30.com
+- mechiron, chizukim, studio carry a correct mount base; studio confirmed end to
+  end (/api/templates 404 text/plain at the root, 200 JSON under /studio)
+- imud and kupot were fixed earlier and already answer under the mount
+- smel (12) still contains the unfixed `? "" :` fallback, but the bundle holds
+  exactly one queryKey and it supplies its own queryFn, so the default queryFn —
+  the only consumer of that base — is never called. Dead code, recorded not
+  fixed: rebuilding 12 would change nothing observable, and §1 says function
+  before polish.
+
+The first run reported 7 mounts clean on 0 assets: /<mount>/?query answers 308 on
+every Next.js mount and the query does not survive the redirect. Fixed, and all
+7 then scanned clean for real.
+
+kesef, tivuch and kiosk carry no same-origin script in their entry HTML — static
+pages, nothing to scan.
+
+Evidence QA/platform/root-api-literals-0812/ (README.md, scan.ps1, _results.json).

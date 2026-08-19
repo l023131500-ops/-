@@ -1,0 +1,4 @@
+﻿prev\admin.html 88696 bytes md5 17DA929FDF9DD91A162AA15F5041473A
+new: "$(\"rows\").innerHTML = \"\";"=false | "$(\"empty\").hidden = true;"=false | "$(\"pager\").hidden = true;"=false | "«לא ידוע» אינו «אין»"=false
+removed: "toLogin(data.error);\n      $(\"count\").textContent = \"—\";"=true
+old: "if (data?.expired) return toLogin(data.error);"=true | "$(\"count\").textContent = \"—\";"=true | "showError($(\"list-error\"), data?.error || \"bad_response\");"=true | "$(\"empty\").hidden = cases.length > 0;"=true | "$(\"pager\").hidden = total <= PAGE;"=true | "אין פניות שתואמות את הסינון"=true | "זכות אחת"=true | "מסמך אחד"=true | "כל הרשימה"=true | "נוסח נפילה"=true | "לא הוכרע מהמסך"=true | "<th>מכתב</th>"=true | "הכנס לתור"=true | "עבד עכשיו"=true

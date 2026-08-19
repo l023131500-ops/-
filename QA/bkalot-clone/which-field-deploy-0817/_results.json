@@ -1,0 +1,593 @@
+{
+  "verdict": "PASS",
+  "fails": [],
+  "counts": {
+    "NEW": 18,
+    "REMOVED": 1,
+    "DIFF": 3,
+    "CONTROL": 17,
+    "DEAD": 0
+  },
+  "files": {
+    "src": {
+      "path": "C:/Users/USER/Downloads/more30/apps/37-bkalot-clone/index.html",
+      "bytes": 34622,
+      "md5": "183921EE"
+    },
+    "dist": {
+      "path": "C:/Users/USER/Downloads/more30/portal/dist/bkalot-studio/index.html",
+      "bytes": 32322,
+      "md5": "E6E39BF0"
+    }
+  },
+  "live": {
+    "https://more30.com/bkalot-studio": {
+      "before": {
+        "bytes": 32558,
+        "md5": "B8FFD83A"
+      },
+      "after": {
+        "bytes": 34858,
+        "md5": "1473D798"
+      }
+    },
+    "https://more30.com/bkalot-studio/": {
+      "before": {
+        "bytes": 32558,
+        "md5": "B8FFD83A"
+      },
+      "after": {
+        "bytes": 34858,
+        "md5": "1473D798"
+      }
+    }
+  },
+  "rows": [
+    {
+      "key": "code_field_open",
+      "group": "NEW",
+      "dist": 0,
+      "src": 1,
+      "before": [
+        0,
+        0
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "map_full_name",
+      "group": "NEW",
+      "dist": 0,
+      "src": 1,
+      "before": [
+        0,
+        0
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "map_phone",
+      "group": "NEW",
+      "dist": 0,
+      "src": 1,
+      "before": [
+        0,
+        0
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "map_email",
+      "group": "NEW",
+      "dist": 0,
+      "src": 1,
+      "before": [
+        0,
+        0
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "map_email_treat",
+      "group": "NEW",
+      "dist": 0,
+      "src": 1,
+      "before": [
+        0,
+        0
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "map_situation",
+      "group": "NEW",
+      "dist": 0,
+      "src": 1,
+      "before": [
+        0,
+        0
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "map_situation_unk",
+      "group": "NEW",
+      "dist": 0,
+      "src": 1,
+      "before": [
+        0,
+        0
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "map_topic_no",
+      "group": "NEW",
+      "dist": 0,
+      "src": 1,
+      "before": [
+        0,
+        0
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "bad_const",
+      "group": "NEW",
+      "dist": 0,
+      "src": 1,
+      "before": [
+        0,
+        0
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "bad_guard",
+      "group": "NEW",
+      "dist": 0,
+      "src": 1,
+      "before": [
+        0,
+        0
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "cmt_head",
+      "group": "NEW",
+      "dist": 0,
+      "src": 1,
+      "before": [
+        0,
+        0
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "cmt_derived",
+      "group": "NEW",
+      "dist": 0,
+      "src": 1,
+      "before": [
+        0,
+        0
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "cmt_kind_source_out",
+      "group": "NEW",
+      "dist": 0,
+      "src": 1,
+      "before": [
+        0,
+        0
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "cmt_also_rest",
+      "group": "NEW",
+      "dist": 0,
+      "src": 1,
+      "before": [
+        0,
+        0
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "cmt_display_none",
+      "group": "NEW",
+      "dist": 0,
+      "src": 1,
+      "before": [
+        0,
+        0
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "cmt_no_screen",
+      "group": "NEW",
+      "dist": 0,
+      "src": 1,
+      "before": [
+        0,
+        0
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "phr_CODE_FIELD",
+      "group": "NEW",
+      "dist": 0,
+      "src": 3,
+      "before": [
+        0,
+        0
+      ],
+      "after": [
+        3,
+        3
+      ]
+    },
+    {
+      "key": "phr_offsetParent",
+      "group": "NEW",
+      "dist": 0,
+      "src": 1,
+      "before": [
+        0,
+        0
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "old_return_fail",
+      "group": "REMOVED",
+      "dist": 1,
+      "src": 0,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        0,
+        0
+      ]
+    },
+    {
+      "key": "phr_markInvalid",
+      "group": "DIFF",
+      "dist": 3,
+      "src": 4,
+      "before": [
+        3,
+        3
+      ],
+      "after": [
+        4,
+        4
+      ]
+    },
+    {
+      "key": "phr_aria_invalid",
+      "group": "DIFF",
+      "dist": 7,
+      "src": 9,
+      "before": [
+        7,
+        7
+      ],
+      "after": [
+        9,
+        9
+      ]
+    },
+    {
+      "key": "phr_situation_str",
+      "group": "DIFF",
+      "dist": 4,
+      "src": 6,
+      "before": [
+        4,
+        4
+      ],
+      "after": [
+        6,
+        6
+      ]
+    },
+    {
+      "key": "ctl_fn_markInvalid",
+      "group": "CONTROL",
+      "dist": 1,
+      "src": 1,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "ctl_clear_others",
+      "group": "CONTROL",
+      "dist": 1,
+      "src": 1,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "ctl_set_attr",
+      "group": "CONTROL",
+      "dist": 2,
+      "src": 2,
+      "before": [
+        2,
+        2
+      ],
+      "after": [
+        2,
+        2
+      ]
+    },
+    {
+      "key": "ctl_topic_branch",
+      "group": "CONTROL",
+      "dist": 1,
+      "src": 1,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "ctl_topic_mark",
+      "group": "CONTROL",
+      "dist": 1,
+      "src": 1,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "ctl_fn_focusDropped",
+      "group": "CONTROL",
+      "dist": 1,
+      "src": 1,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "ctl_fn_fail",
+      "group": "CONTROL",
+      "dist": 1,
+      "src": 1,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "ctl_unknown_code",
+      "group": "CONTROL",
+      "dist": 1,
+      "src": 1,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "ctl_show_bad",
+      "group": "CONTROL",
+      "dist": 1,
+      "src": 1,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "ctl_stop_mark",
+      "group": "CONTROL",
+      "dist": 1,
+      "src": 1,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "ctl_msg_phone",
+      "group": "CONTROL",
+      "dist": 1,
+      "src": 1,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "ctl_msg_full_name",
+      "group": "CONTROL",
+      "dist": 1,
+      "src": 1,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "ctl_msg_situation",
+      "group": "CONTROL",
+      "dist": 1,
+      "src": 1,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "ctl_endpoint",
+      "group": "CONTROL",
+      "dist": 1,
+      "src": 1,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "ctl_input_full_name",
+      "group": "CONTROL",
+      "dist": 1,
+      "src": 1,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "ctl_select_situation",
+      "group": "CONTROL",
+      "dist": 1,
+      "src": 1,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "ctl_title",
+      "group": "CONTROL",
+      "dist": 1,
+      "src": 1,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        1,
+        1
+      ]
+    }
+  ]
+}

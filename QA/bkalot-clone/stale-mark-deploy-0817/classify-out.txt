@@ -1,0 +1,167 @@
+﻿{
+  "src": {
+    "path": "C:/Users/USER/Downloads/more30/apps/37-bkalot-clone/index.html",
+    "bytes": 37591,
+    "md5": "BB48BD92"
+  },
+  "dist": {
+    "path": "C:/Users/USER/Downloads/more30/portal/dist/bkalot-studio/index.html",
+    "bytes": 36127,
+    "md5": "30B03F39"
+  },
+  "groups": {
+    "NEW": [
+      {
+        "key": "fn_clear_invalid",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "call_clear_invalid",
+        "src": 3,
+        "dist": 0
+      },
+      {
+        "key": "fail_calls_clear",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "mark_calls_clear",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "drop_calls_clear",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "cmt_head",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "cmt_no_field",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "cmt_red_not_bug",
+        "src": 1,
+        "dist": 0
+      },
+      {
+        "key": "cmt_single_point",
+        "src": 1,
+        "dist": 0
+      }
+    ],
+    "REMOVED": [
+      {
+        "key": "rm_other_loop",
+        "src": 0,
+        "dist": 1
+      }
+    ],
+    "DIFF": [],
+    "CONTROL": [
+      {
+        "key": "ctl_el_loop",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "ctl_fn_fail",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "ctl_fn_mark_invalid",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "ctl_fn_focus_dropped",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "ctl_set_attr",
+        "src": 2,
+        "dist": 2
+      },
+      {
+        "key": "ctl_stop_mark",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "ctl_msg_fallback",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "ctl_sel_invalid_base",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "ctl_body_invalid_base",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "ctl_sel_invalid_focus",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "ctl_tok_danger_ring",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "ctl_code_field_open",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "ctl_bad_const",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "ctl_bad_guard",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "ctl_focus_rule",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "ctl_msg_phone",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "ctl_endpoint",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "ctl_select_situation",
+        "src": 1,
+        "dist": 1
+      },
+      {
+        "key": "ctl_title",
+        "src": 1,
+        "dist": 1
+      }
+    ],
+    "DEAD": []
+  }
+}

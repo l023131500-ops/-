@@ -1,0 +1,41 @@
+﻿phone_invalid__light
+  live  : border=rgb(155, 28, 28) fill=rgb(251, 234, 234) shadow=rgba(155, 28, 28, 0.28) 0px 0px 0px 3px
+  local : border=rgb(155, 28, 28) fill=rgb(251, 234, 234)  equal=true
+  old   : border=rgb(15, 95, 76)  differs=true
+  aria  : same_field=true same_msg=true reached_server=true
+  a11y  : {"border_vs_behind":8.15,"border_vs_fill":7.01} meets3=true overflow_x=false
+situation_required_for_treatment__light
+  live  : border=rgb(155, 28, 28) fill=rgb(251, 234, 234) shadow=rgba(155, 28, 28, 0.28) 0px 0px 0px 3px
+  local : border=rgb(155, 28, 28) fill=rgb(251, 234, 234)  equal=true
+  old   : border=rgb(15, 95, 76)  differs=true
+  aria  : same_field=true same_msg=true reached_server=true
+  a11y  : {"border_vs_behind":8.15,"border_vs_fill":7.01} meets3=true overflow_x=false
+preflight_topic_no__light
+  live  : border=rgb(155, 28, 28) fill=rgb(251, 234, 234) shadow=rgba(155, 28, 28, 0.28) 0px 0px 0px 3px
+  local : border=rgb(155, 28, 28) fill=rgb(251, 234, 234)  equal=true
+  old   : border=rgb(15, 95, 76)  differs=true
+  aria  : same_field=true same_msg=true reached_server=false
+  a11y  : {"border_vs_behind":8.15,"border_vs_fill":7.01} meets3=true overflow_x=false
+phone_invalid__dark
+  live  : border=rgb(240, 138, 138) fill=rgb(51, 25, 26) shadow=rgba(240, 138, 138, 0.32) 0px 0px 0px 3px
+  local : border=rgb(240, 138, 138) fill=rgb(51, 25, 26)  equal=true
+  old   : border=rgb(75, 191, 159)  differs=true
+  aria  : same_field=true same_msg=true reached_server=true
+  a11y  : {"border_vs_behind":7.12,"border_vs_fill":6.73} meets3=true overflow_x=false
+situation_required_for_treatment__dark
+  live  : border=rgb(240, 138, 138) fill=rgb(51, 25, 26) shadow=rgba(240, 138, 138, 0.32) 0px 0px 0px 3px
+  local : border=rgb(240, 138, 138) fill=rgb(51, 25, 26)  equal=true
+  old   : border=rgb(75, 191, 159)  differs=true
+  aria  : same_field=true same_msg=true reached_server=true
+  a11y  : {"border_vs_behind":7.12,"border_vs_fill":6.73} meets3=true overflow_x=false
+preflight_topic_no__dark
+  live  : border=rgb(240, 138, 138) fill=rgb(51, 25, 26) shadow=rgba(240, 138, 138, 0.32) 0px 0px 0px 3px
+  local : border=rgb(240, 138, 138) fill=rgb(51, 25, 26)  equal=true
+  old   : border=rgb(75, 191, 159)  differs=true
+  aria  : same_field=true same_msg=true reached_server=false
+  a11y  : {"border_vs_behind":7.12,"border_vs_fill":6.73} meets3=true overflow_x=false
+mobile_390: {"viewport":"390x844","invalid":["topic_no"],"focused":"topic_no","border":"rgb(240, 138, 138)","fill":"rgb(51, 25, 26)","contrast":{"border_vs_behind":7.12,"border_vs_fill":6.73},"overflow_x":false}
+shots: {"live-light-phone":{"bytes":50364,"md5":"555E84E4"},"live-dark-situation":{"bytes":42753,"md5":"B0B3EBC6"},"live-mobile-topic-390":{"bytes":35913,"md5":"B2359BD1"}} distinct=true
+test_mode: {"responses":6,"any_ok":false,"any_case_id":false,"codes":["phone_invalid","situation_required_for_treatment"],"statuses":[200]}
+console light=0 dark=0
+VERDICT PASS

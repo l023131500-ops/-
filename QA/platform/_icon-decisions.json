@@ -1,0 +1,245 @@
+{
+  "imud": {
+    "rendered": 8,
+    "decisions": 5,
+    "named": 8,
+    "perRecord": 3,
+    "decor": [],
+    "lucide": 7,
+    "dataDriven": [
+      "4 names in 1 slot (layers, mouse-pointer-click, book-open…)"
+    ],
+    "top": [
+      "layers×4"
+    ],
+    "doubleMark": [],
+    "splitGlyph": [],
+    "repeatInBand": [],
+    "floatingTwice": [],
+    "repeatUnbanded": [],
+    "repeatPerRecord": [],
+    "settledByDatum": []
+  },
+  "smel": {
+    "rendered": 20,
+    "decisions": 8,
+    "named": 12,
+    "perRecord": 12,
+    "decor": [],
+    "lucide": 19,
+    "dataDriven": [
+      "3 names in 1 slot (shield-check, trending-up, building2…)",
+      "3 names in 1 slot (map-pin, file-search, sparkles…)"
+    ],
+    "top": [
+      "check×5",
+      "check×5",
+      "shield-check×3",
+      "map-pin×3"
+    ],
+    "doubleMark": [],
+    "splitGlyph": [],
+    "repeatInBand": [],
+    "floatingTwice": [],
+    "repeatUnbanded": [],
+    "repeatPerRecord": [
+      "בחרו את רמת המחקר · check ×2 — 16px \"הערכת שווי ומחיר ממוצע בשכונה\" + 16px \"דוח כדאיות עסקה מעמיק\""
+    ],
+    "settledByDatum": []
+  },
+  "egod": {
+    "rendered": 30,
+    "decisions": 15,
+    "named": 30,
+    "perRecord": 15,
+    "decor": [
+      "1280px"
+    ],
+    "lucide": 31,
+    "dataDriven": [
+      "12 names in 1 slot (globe, clipboard-list, building2…)",
+      "3 names in 1 slot (users, book-open, map-pin…)",
+      "2 names in 1 slot (chevron-right, chevron-left…)",
+      "2 names in 1 slot (phone, message-circle…)"
+    ],
+    "top": [
+      "globe×12",
+      "users×3",
+      "chevron-right×2",
+      "phone×2"
+    ],
+    "doubleMark": [],
+    "splitGlyph": [],
+    "repeatInBand": [
+      "תובנה קצרה ליום, לשימוש בשיעור עצמו · lightbulb ×2 — 16px \"טיפים וכלים למגיד השיעור\" + 24px \"שאל שאלות שאלות פתוחות מערבות את הקהל ומ\""
+    ],
+    "floatingTwice": [],
+    "repeatUnbanded": [],
+    "repeatPerRecord": [],
+    "settledByDatum": []
+  },
+  "chatzor": {
+    "rendered": 23,
+    "decisions": 11,
+    "named": 13,
+    "perRecord": 12,
+    "decor": [],
+    "lucide": 23,
+    "dataDriven": [
+      "2 names in 1 slot (calendar-days, clock…)",
+      "2 names in 1 slot (sunrise, sunset…)"
+    ],
+    "top": [
+      "map-pin×4",
+      "arrow-left×4",
+      "navigation×4",
+      "calendar-days×2",
+      "sunrise×2"
+    ],
+    "doubleMark": [],
+    "splitGlyph": [],
+    "repeatInBand": [],
+    "floatingTwice": [],
+    "repeatUnbanded": [],
+    "repeatPerRecord": [
+      "בתי הכנסת בחצור הגלילית · arrow-left ×2 — 16px \"לאתר בית הכנסת\" + 16px \"לכל בתי הכנסת\""
+    ],
+    "settledByDatum": []
+  },
+  "chizukim": {
+    "rendered": 81,
+    "decisions": 6,
+    "named": 9,
+    "perRecord": 75,
+    "decor": [],
+    "lucide": 81,
+    "dataDriven": [
+      "2 names in 1 slot (clock, coins…)",
+      "2 names in 1 slot (file-audio, coins…)",
+      "2 names in 1 slot (chevron-right, chevron-left…)"
+    ],
+    "top": [
+      "clock×50",
+      "chevron-left×25",
+      "file-audio×2",
+      "chevron-right×2"
+    ],
+    "doubleMark": [],
+    "splitGlyph": [],
+    "repeatInBand": [],
+    "floatingTwice": [],
+    "repeatUnbanded": [],
+    "repeatPerRecord": [],
+    "settledByDatum": []
+  },
+  "zchuyot": {
+    "rendered": 52,
+    "decisions": 24,
+    "named": 43,
+    "perRecord": 28,
+    "decor": [],
+    "lucide": 54,
+    "dataDriven": [
+      "8 names in 1 slot (shield, receipt, house…)",
+      "4 names in 1 slot (shield-check, headphones, clock…)",
+      "4 names in 1 slot (phone-call, message-circle, mail…)",
+      "3 names in 1 slot (file-check, layout-grid, list-checks…)",
+      "3 names in 1 slot (gift, users, clipboard-check…)",
+      "2 names in 1 slot (phone, mail…)",
+      "2 names in 1 slot (search, heart-handshake…)"
+    ],
+    "top": [
+      "shield×8",
+      "chevron-down×8",
+      "shield-check×4",
+      "phone-call×4",
+      "file-check×3"
+    ],
+    "doubleMark": [],
+    "splitGlyph": [],
+    "repeatInBand": [],
+    "floatingTwice": [
+      "message-circle ×2 פקדים צפים — 28px \"פקד: פתיחת בודק הזכויות\" + 20px \"יש לכם משהו שמעניין אותכם? מוזמנים לדבר \""
+    ],
+    "repeatUnbanded": [],
+    "repeatPerRecord": [
+      "גלו את הזכויות שמגיעות לכם · chevron-down ×2 — 17px \"22 נושאים\" + 16px \"עוד 12 קטגוריות\""
+    ],
+    "settledByDatum": []
+  },
+  "mthbram": {
+    "rendered": 24,
+    "decisions": 17,
+    "named": 21,
+    "perRecord": 7,
+    "decor": [],
+    "lucide": 25,
+    "dataDriven": [
+      "4 names in 1 slot (search, refresh-cw, circle-plus…)",
+      "2 names in 1 slot (book-open, mic…)"
+    ],
+    "top": [
+      "search×4",
+      "filter×3",
+      "book-open×2",
+      "arrow-left×2"
+    ],
+    "doubleMark": [],
+    "splitGlyph": [],
+    "repeatInBand": [
+      "0 שיעורים · search ×2 — 16px \"שדה: חיפוש שיעורים\" + 40px \"לא נמצאו שיעורים מתאימים\"",
+      "מעוניינים להיות שותפים בהפצת התורה? · heart ×2 — 12px \"שותפים בהפצת התורה\" + 16px \"תרומה דרך נדרים פלוס\""
+    ],
+    "floatingTwice": [],
+    "repeatUnbanded": [],
+    "repeatPerRecord": [
+      "מעוניינים להצטרף למערכת מגידי השיעורים? · arrow-left ×2 — 16px \"מילוי פרטי השיעור\" + 20px \"מעוניין במגיד שיעור — להקמת שיעור חדש מח\""
+    ],
+    "settledByDatum": []
+  },
+  "galil": {
+    "rendered": 68,
+    "decisions": 14,
+    "named": 29,
+    "perRecord": 54,
+    "decor": [],
+    "lucide": 104,
+    "dataDriven": [
+      "5 names in 1 slot (moon, sunrise, clock…)",
+      "8 names in 1 slot (scale, droplets, book-open…)",
+      "4 names in 1 slot (map-pin, phone, mail…)",
+      "2 names in 1 slot (sun, clock…)"
+    ],
+    "top": [
+      "moon×30",
+      "scale×8",
+      "send×7",
+      "chevron-down×7",
+      "map-pin×4"
+    ],
+    "doubleMark": [],
+    "splitGlyph": [],
+    "repeatInBand": [],
+    "floatingTwice": [],
+    "repeatUnbanded": [],
+    "repeatPerRecord": [],
+    "settledByDatum": []
+  },
+  "gesher": {
+    "rendered": 1,
+    "decisions": 1,
+    "named": 1,
+    "perRecord": 0,
+    "decor": [],
+    "lucide": 1,
+    "dataDriven": [],
+    "top": [],
+    "doubleMark": [],
+    "splitGlyph": [],
+    "repeatInBand": [],
+    "floatingTwice": [],
+    "repeatUnbanded": [],
+    "repeatPerRecord": [],
+    "settledByDatum": []
+  }
+}

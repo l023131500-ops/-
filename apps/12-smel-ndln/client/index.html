@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <!-- ⚠️ ‎maximum-scale‎ / ‎user-scalable=no‎ הוסרו: הם מונעים מהמשתמש
+         להגדיל את העמוד, וזה כשל נגישות לפי DESIGN_STANDARD §5 (תקן 5568).
+         בעמוד עברי צפוף זו בדיוק היכולת שמי שמתקשה לקרוא זקוק לה. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- ⚠️ שתי השורות האלה הן גם SEO ולא רק קופי, ולכן השינוי בהן מינימלי
+         במכוון: הוסר רק התואר הריק "חכם" (אף אחד לא מחפש "נדלן חכם"),
+         והכותרת קיבלה במקומו צירוף שהמוצר באמת עומד בו ושכן מחפשים.
+         איות ה-‎description‎ נשאר "נדלן" בלי גרש — זו וריאציית חיפוש נפוצה
+         והכותרת כבר נושאת את האיות המנוקד. -->
+    <title>SMEL NDLN — מחקר נדל"ן מנתוני ממשלה</title>
+    <meta name="description" content="SMEL NDLN — מערכת מחקר נדלן המבוססת על נתוני ממשלה רשמיים. הזינו כתובת וקבלו הערכת שווי, ציון כדאיות ותובנות על השכונה." />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- טעינה לא-חוסמת: preload + מעבר ל-stylesheet רק אחרי טעינה (loadCSS
+         pattern, זהה לתיקון ב-01/02/03/04/06/10/32). ה-<link rel="stylesheet">
+         הסינכרוני היה render-blocking-insight, ~500ms חיסכון אפשרי. -->
+    <link
+      rel="preload"
+      as="style"
+      href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;500;600;700;800&family=Heebo:wght@300;400;500;600;700;800;900&display=swap"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;500;600;700;800&family=Heebo:wght@300;400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+      media="print"
+      onload="this.media='all'"
+    />
+    <noscript>
+      <link
+        href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;500;600;700;800&family=Heebo:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet"
+      />
+    </noscript>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+      <!-- כפתור הכניסה המשותף של more30 (DESIGN_STANDARD §9). חייב לשבת
+         כאן במקור ולא רק בעותק הפרוס: כל בנייה מחדש דורסת את ‎index.html‎
+         שב-‎_deploy‎, ואז הכפתור נעלם בלי שאיש ישים לב. -->
+    <script src="https://more30.com/auth-button.js" defer></script>
+  </body>
+</html>

@@ -1,0 +1,124 @@
+[
+  {
+    "label": "intake A (treatment)",
+    "value": {
+      "status": 200,
+      "body": {
+        "ok": true,
+        "kind": "treatment",
+        "phone": "0501230076",
+        "queued": false,
+        "case_id": 96,
+        "dropped": [],
+        "situation": "single_parent",
+        "contact_id": 100,
+        "rights_linked": 42,
+        "rights_unknown": []
+      }
+    }
+  },
+  {
+    "label": "intake B (control)",
+    "value": {
+      "status": 200,
+      "body": {
+        "ok": true,
+        "kind": "info",
+        "phone": "0501230077",
+        "queued": false,
+        "case_id": 97,
+        "dropped": [],
+        "situation": null,
+        "contact_id": 101,
+        "rights_linked": 0,
+        "rights_unknown": []
+      }
+    }
+  },
+  {
+    "label": "login",
+    "value": {
+      "status": 200,
+      "ok": true,
+      "admin": {
+        "id": 25,
+        "email": "qa0076@more30.test",
+        "full_name": "QA 0076"
+      }
+    }
+  },
+  {
+    "label": "set-status #1 (closed)",
+    "value": {
+      "status": 200,
+      "body": {
+        "ok": true,
+        "status": "closed",
+        "case_id": 96,
+        "changed": true,
+        "previous": "new",
+        "decided_at": "2026-08-14T04:30:02.656066+00:00",
+        "decided_by": null,
+        "admin": {
+          "id": 25,
+          "email": "qa0076@more30.test",
+          "full_name": "QA 0076"
+        }
+      }
+    }
+  },
+  {
+    "label": "set-status #2 (same value)",
+    "value": {
+      "status": 200,
+      "body": {
+        "ok": true,
+        "status": "closed",
+        "case_id": 96,
+        "changed": false,
+        "previous": "closed",
+        "decided_at": "2026-08-14T04:30:02.656066+00:00",
+        "decided_by": null,
+        "admin": {
+          "id": 25,
+          "email": "qa0076@more30.test",
+          "full_name": "QA 0076"
+        }
+      }
+    }
+  },
+  {
+    "label": "set-status #3 (admin_id:1 בגוף)",
+    "value": {
+      "status": 200,
+      "body": {
+        "ok": true,
+        "status": "rejected",
+        "case_id": 96,
+        "changed": true,
+        "previous": "closed",
+        "decided_at": "2026-08-14T04:30:04.61696+00:00",
+        "decided_by": null,
+        "admin": {
+          "id": 25,
+          "email": "qa0076@more30.test",
+          "full_name": "QA 0076"
+        }
+      }
+    }
+  },
+  {
+    "label": "case A after",
+    "value": {
+      "status": "rejected",
+      "updated_at": "2026-08-14T04:30:04.61696+00:00"
+    }
+  },
+  {
+    "label": "case ids",
+    "value": {
+      "caseA": 96,
+      "caseB": 97
+    }
+  }
+]

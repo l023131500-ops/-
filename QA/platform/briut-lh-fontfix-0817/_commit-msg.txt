@@ -1,0 +1,1 @@
+06 בריאות (briut): תוקן שורש הפרפורמנס - Google Fonts render-blocking -> loadCSS preload/swap (84-93 noisy -> 89)

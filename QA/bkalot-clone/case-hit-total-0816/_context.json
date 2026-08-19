@@ -1,0 +1,93 @@
+{
+  "step": "case-hit-total-0816",
+  "line_taken_from": "6348c24 (heartbeat 683) — «הלבנה הבאה היא UI ולא פריסה»",
+  "scope": "UI בלבד — admin.html, פונקציה אחת שנחלצה ופונקציה אחת שהורחבה. אין מיגרציה, אין פריסת edge function, אין פריסה לייצור",
+  "baseline_before_anything": {
+    "cases": 0, "case_status_log": 0, "case_rights": 0, "documents": 0,
+    "admin_users": 1, "admin_sessions": 5, "templates": 2, "contacts": 4,
+    "outbound_queue": 8, "delivery_log": 3, "rights_catalog": 888,
+    "schema_migrations": "20260816200600",
+    "head": "6348c24",
+    "note": "שורה בשורה כפי שנרשמו ב-683 — נמדד לפני הכל ולא הונח (heartbeat-lags-a-crashed-run)"
+  },
+  "the_gap": {
+    "measured_not_quoted": "נמדד מדפדפן על HEAD ביציאה 8138, ולא צוטט מקוד",
+    "list_says": "«המונח ב-1 מתוך 3 הנימוקים · 3 פעמים» — 0102 ו-6aefa6a, בייצור מאז 6348c24",
+    "case_screen_said": "«מונח החיפוש «טופס» נמצא ב-1 מתוך 3 הנימוקים שנכתבו כאן.» — ותו לא",
+    "why_it_matters": "מנהל שקרא ברשימה «3 פעמים» ולחץ, מקבל בפנים מסך ששותק על המספר שבגללו נכנס. ושלושת המונחים «טופס» (שלוש הופעות), «email» (שתיים) ו«המס הקודמת» (אחת) מצוירים על HEAD באותה מחרוזת אות באות",
+    "no_db_change_needed": "0101 כבר שולחת note_match_pos_all בכל שורת יומן — מהם מצוירים הסימנים, ומהם נספר המספר"
+  },
+  "seed": {
+    "case_id": 414, "contact_id": 421, "phone": "0501230141",
+    "via": "public.bkalot_clone_intake (kind=info, source=form, queued=false, rights_linked 0) — SQL ולא HTTP, פיגום ולא הטענה",
+    "log_rows": [
+      { "id": 156, "note": "Email נשלח לפונה, ואחריו EMAIL נוסף בטעות", "chars": 41 },
+      { "id": 157, "note": "טופס, טופס ועוד טופס נשלחו בטעות", "chars": 32 },
+      { "id": 158, "note": "המסמכים שצורפו שייכים לשנת המס הקודמת", "chars": 37 }
+    ],
+    "why_this_combination": "שלוש הופעות בנימוק אחד, שתיים באחר ואחת בשלישי, ומונח אחד («נשלח») שיושב פעם אחת בכל אחד משניים — בלי הצירוף הזה אי אפשר להבחין בין «בכמה נימוקים» ל«כמה פעמים»",
+    "admin_used_for_decisions": 4,
+    "admin_created_for_login": { "id": 135, "email": "qa.case.hit.0816@more30.com", "via": "bkalot_clone_admin_create ולא הזרקת hash" }
+  },
+  "db_before_the_screen": {
+    "note": "מ-bkalot_clone_admin_case(414, q) — השדה שהמסך צריך, נמדד ולא הוסק",
+    "טופס": { "notes": 3, "hit": 1, "note_match_pos_all": [[1, 7, 17]] },
+    "email": { "notes": 3, "hit": 1, "note_match_pos_all": [[1, 26]] },
+    "נשלח": { "notes": 3, "hit": 2, "note_match_pos_all": [[7], [22]] },
+    "המס הקודמת": { "notes": 3, "hit": 1, "note_match_pos_all": [[28]] },
+    "אברהם": { "notes": 3, "hit": 0, "note_match_pos_all": null }
+  },
+  "the_claim": {
+    "not": "«הקוד סופר נכון»",
+    "but": "«המספר שנאמר שווה בדיוק למספר הסימנים שהטבלה שמתחתיו מציירת» — שניהם נקראו מה-DOM באותה קריאה, ובכל חמשת המצבים marks.length שווה למספר שבמשפט"
+  },
+  "controls_that_did_not_move": {
+    "note_cell_text": "טקסט תשעת תאי «למה» זהה אות באות בין שני השרתים בכל חמשת המצבים — חילוץ noteSpots לא שינה ולו תו אחד במה שמצויר",
+    "marks": "מערכי הסימנים זהים בין שני השרתים בכל חמשת המצבים — אותם מיקומים בדיוק, לפני ואחרי",
+    "matched_badge": "«זה הנימוק שהתאים» נדלק על אותן שורות בדיוק (1/1/2/1/0)",
+    "h3": "«רצף ההכרעות (3 מעברים)» זהה — הכותרת סופרת מעברים ולא נימוקים, הכרעה (2) לא זזה",
+    "zero_row": "«אברהם» — המשפט זהה אות באות בין שני השרתים, ואין תוספת כלל",
+    "overflow": "אפס גלישה אופקית ב-1280x900 בשני השרתים",
+    "console": "אפס הודעות ואפס שגיאות בשני השרתים"
+  },
+  "screenshots": {
+    "after-tofes-3-times.png": "8066FC2D",
+    "after-nishlach-2-of-3-twice.png": "0D87C753",
+    "after-avraham-silent.png": "C981D926",
+    "note": "שלושה MD5 שונים — screenshot-evidence-below-the-fold; החלון שונה פעם אחת לפני הכל — playwright-blank-screenshot-until-resize"
+  },
+  "test_mode_measured_not_declared": {
+    "queued": false, "documents": 0, "case_rights": 0,
+    "outbound_queue": "נשאר 8", "delivery_log": "נשאר 3",
+    "note": "הנתיב שהשתנה מצייר טקסט — הוא אינו קורא ואינו כותב"
+  },
+  "rollback": {
+    "order": "בפקודות נפרדות לפי טבלה — cte-delete-sees-prestatement-snapshot",
+    "children_measured_first": { "log_414": 3, "case_rights_414": 0, "documents_414": 0, "admin_sessions_135": 2, "contact_421": 1 },
+    "deleted": ["case_status_log 3 (156–158)", "cases 1 (414)", "admin_sessions 2", "admin_users 1 (135)", "contacts 1 (421)"],
+    "contacts_note": "⚠️ contacts יושבת ב-bkalot_auto ולא ב-bkalot_clone",
+    "after": "בסיס בדיוק, ו-admin_cases על פרמטרים ריקים מחזירה total 0"
+  },
+  "said_and_not_swallowed": [
+    "⚠️ הצילומים מראים את המשפט ואינם מראים את הסימנים שמתחתיו באותו פריים — הגלילה כוונה אל המשפט, והטבלה יורדת מתחת לקצה החלון. השוויון בין המספר לסימנים נמדד מה-DOM (marks) ולא מהתצלום.",
+    "⚠️ ענף הכרעה (8) — שורה מתאימה שעליה noteSpots אינו מחזיר complete — נכתב ולא נמדד: אין כאן שרת מלפני 0101 להריץ מולו, ו-0101 מבטיחה את שמירת הגבולות ולכן אין דרך לייצר הפרה מהשרת החי.",
+    "⚠️ לא נמדד ב-390x844.",
+    "⚠️ הקליטה נעשתה ב-SQL ולא מעל HTTP — פיגום ולא הטענה. ההתחברות עצמה אמיתית, דרך הטופס, בשתי היציאות."
+  ],
+  "not_built_and_did_not_move": [
+    "אין סינון ואין מיון לפי המספר החדש",
+    "אין ציטוט חתוך של הקטע",
+    "אין סימון על note של הפנייה עצמה",
+    "אין פירוק של מספר התור",
+    "אין חיפוש ב-cases.note",
+    "אין סימון על שמות המכריעים",
+    "אין סינון «יש נימוק / אין»",
+    "אין אינדקס על case_status_log(note) ואין חיפוש טקסט מלא",
+    "אין עריכה ומחיקה ביומן",
+    "אין סינון «איש קשר נמחק / קיים»",
+    "אין שמירת מיקום הפנייה",
+    "אין אינדקס על ct.phone",
+    "⚠️ שורה 90 ב-0096 עדיין אומרת «מה שלא נמדד»"
+  ],
+  "open": "הפריסה. מה שנמדד כאן הוא הקוד שבמקור; בייצור (more30.com/bkalot-studio/admin) המשפט עדיין נגמר ב«שנכתבו כאן.» בלי ולו תו אחד על כמה פעמים. זו הלבנה הבאה"
+}

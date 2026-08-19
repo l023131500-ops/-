@@ -1,0 +1,66 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>mthbram §6 — the two surfaces that are not a string replacement</title>
+<style>
+  body { background:#0b1220; color:#e6e6e6; font-family:Arial, sans-serif; margin:20px; }
+  h2 { font-size:15px; color:#d4af37; margin:18px 0 6px; }
+  .share { direction:rtl; white-space:pre-wrap; background:#0f1729; border:1px solid #2a3550;
+           border-radius:10px; padding:14px; max-width:760px; font-size:14px; line-height:1.6; }
+  #out { font-size:12px; color:#9fb0c9; margin-top:8px; }
+  canvas { border:1px solid #2a3550; }
+</style>
+
+<!-- The exported PNG header band, drawn with the real drawRTL / W=800 / y=120,145
+     taken from src/lib/lessonImageExport.ts:34-131. The strapline is the replaced line. -->
+<h2>1. canvas — header band of the exported lesson PNG (W=800, crop 0..200)</h2>
+<canvas id="c" width="800" height="200"></canvas>
+
+<!-- The WhatsApp / navigator.share body from LessonDetailModal.tsx:20, rendered RTL. -->
+<h2>2. share text — LessonDetailModal handleShare, rendered right-to-left</h2>
+<div class="share" id="s"></div>
+
+<div id="out"></div>
+
+<script>
+const STRAP = "שיעורי תורה, חברותות והרצאות";
+const OLD   = "הארגון העולמי של שיעורי התורה";
+
+const ctx = document.getElementById("c").getContext("2d");
+const W = 800;
+const bg = ctx.createLinearGradient(0, 0, W, 1100);
+bg.addColorStop(0, "#0f1729"); bg.addColorStop(0.5, "#162032"); bg.addColorStop(1, "#1a1a10");
+ctx.fillStyle = bg; ctx.fillRect(0, 0, W, 200);
+ctx.fillStyle = "rgba(212, 175, 55, 0.03)";
+for (let x = 0; x < W; x += 30) for (let y = 0; y < 200; y += 30) { ctx.beginPath(); ctx.arc(x, y, 1, 0, Math.PI*2); ctx.fill(); }
+ctx.strokeStyle = "rgba(212, 175, 55, 0.4)"; ctx.lineWidth = 3; ctx.strokeRect(25, 25, W - 50, 1050);
+ctx.strokeStyle = "rgba(212, 175, 55, 0.15)"; ctx.lineWidth = 1; ctx.strokeRect(35, 35, W - 70, 1030);
+
+function drawRTL(text, x, y, font, color) {
+  ctx.font = font; ctx.fillStyle = color; ctx.textAlign = "right"; ctx.direction = "rtl";
+  ctx.fillText(text, x, y);
+}
+drawRTL("איגוד השיעורים", W - 60, 120, "bold 16px Arial", "rgba(212, 175, 55, 0.6)");
+drawRTL(STRAP, W - 60, 145, "13px Arial", "rgba(255,255,255,0.35)");
+ctx.strokeStyle = "rgba(212, 175, 55, 0.2)"; ctx.lineWidth = 1;
+ctx.beginPath(); ctx.moveTo(60, 175); ctx.lineTo(W - 60, 175); ctx.stroke();
+
+// A real row from the lesson shape the modal is handed.
+const lesson = {
+  subject: "דף יומי — מסכת בבא מציעא",
+  rabbi_name: "הרב יעקב כהן",
+  rabbi_role: "רב בית הכנסת",
+  city: "ירושלים", neighborhood: "רמות", synagogue_name: "בית הכנסת המרכזי",
+  is_recurring: true, schedule_days: [{ day: "ראשון", time: "20:30" }, { day: "שלישי", time: "20:30" }],
+};
+const text = `📖 שיעור תורה: ${lesson.subject}\n👨‍🏫 ${lesson.rabbi_name}${lesson.rabbi_role ? ` — ${lesson.rabbi_role}` : ""}\n📍 ${[lesson.city, lesson.neighborhood, lesson.synagogue_name].filter(Boolean).join(", ")}${lesson.is_recurring && lesson.schedule_days?.length ? `\n🕐 ${lesson.schedule_days.map(d => `${d.day} ${d.time}`).join(", ")}` : ""}\n\nבאדיבות: איגוד השיעורים — ${STRAP}`;
+document.getElementById("s").textContent = text;
+
+// The strapline is drawn unwrapped (no maxWidth at lessonImageExport.ts:130), so it has to
+// fit between the right anchor at 740 and the inner border at 35 on its own.
+ctx.font = "13px Arial";
+const wNew = ctx.measureText(STRAP).width, wOld = ctx.measureText(OLD).width;
+document.getElementById("out").textContent =
+  `13px Arial — new ${wNew.toFixed(1)}px, old ${wOld.toFixed(1)}px, room to inner border ${740 - 35}px, ` +
+  `overflows=${wNew > 740 - 35}. share text carries the old claim=${text.includes(OLD)}, new=${text.includes(STRAP)}.`;
+window.__m = { wNew, wOld, room: 740 - 35, overflows: wNew > 740 - 35, shareOld: text.includes(OLD), shareNew: text.includes(STRAP) };
+</script>

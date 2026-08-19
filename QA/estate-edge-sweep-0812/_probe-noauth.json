@@ -1,0 +1,93 @@
+﻿[
+    {
+        "app":  "01-torah",
+        "fn":  "activate-invite",
+        "url":  "https://bieebmnmkffwbqlsfozh.supabase.co/functions/v1/activate-invite",
+        "http":  404,
+        "body":  "{\"code\":\"NOT_FOUND\",\"message\":\"Requested function was not found\"}"
+    },
+    {
+        "app":  "01-torah",
+        "fn":  "admin-users",
+        "url":  "https://bieebmnmkffwbqlsfozh.supabase.co/functions/v1/admin-users",
+        "http":  405,
+        "body":  "{\"ok\":false,\"error\":\"method not allowed\"}"
+    },
+    {
+        "app":  "01-torah",
+        "fn":  "ai-match-teacher",
+        "url":  "https://bieebmnmkffwbqlsfozh.supabase.co/functions/v1/ai-match-teacher",
+        "http":  401,
+        "body":  "{\"code\":\"UNAUTHORIZED_NO_AUTH_HEADER\",\"message\":\"Missing authorization header\"}"
+    },
+    {
+        "app":  "01-torah",
+        "fn":  "nedarim-admin",
+        "url":  "https://bieebmnmkffwbqlsfozh.supabase.co/functions/v1/nedarim-admin",
+        "http":  401,
+        "body":  "{\"code\":\"UNAUTHORIZED_NO_AUTH_HEADER\",\"message\":\"Missing authorization header\"}"
+    },
+    {
+        "app":  "01-torah",
+        "fn":  "nedarim-create-payment",
+        "url":  "https://bieebmnmkffwbqlsfozh.supabase.co/functions/v1/nedarim-create-payment",
+        "http":  500,
+        "body":  "{\"ok\":false,\"error\":\"SyntaxError: Unexpected end of JSON input\"}"
+    },
+    {
+        "app":  "01-torah",
+        "fn":  "nedarim-webhook",
+        "url":  "https://bieebmnmkffwbqlsfozh.supabase.co/functions/v1/nedarim-webhook",
+        "http":  403,
+        "body":  "{\"ok\":false,\"error\":\"forbidden\"}"
+    },
+    {
+        "app":  "15-egod",
+        "fn":  "activate-invite",
+        "url":  "https://hkkkynyoigzlttpynoeo.supabase.co/functions/v1/activate-invite",
+        "http":  500,
+        "body":  "{\"error\":\"Unexpected end of JSON input\"}"
+    },
+    {
+        "app":  "15-egod",
+        "fn":  "ai-match-teacher",
+        "url":  "https://hkkkynyoigzlttpynoeo.supabase.co/functions/v1/ai-match-teacher",
+        "http":  500,
+        "body":  "{\"error\":\"SyntaxError: Unexpected end of JSON input\"}"
+    },
+    {
+        "app":  "15-egod",
+        "fn":  "seed-demo-portals",
+        "url":  "https://hkkkynyoigzlttpynoeo.supabase.co/functions/v1/seed-demo-portals",
+        "http":  200,
+        "body":  "{\"results\":[{\"email\":\"rabbi.cohen@igud-shiurim.org\",\"profileId\":\"cb439eca-4f02-4b78-8248-af4b1d76f0ff\",\"ok\":true},{\"email\":\"rabbi.levi@igud-shiurim.org\",\"profileId\":\"7059e5dc-0533-4a95-9767-877b3525cb8e\",\"ok\":true},{\"email\":\"admin@torathaim.org\",\"profileId\":\"1db80da7-d07c-46d5-a5c4-f451181ebdb5\",\"ok"
+    },
+    {
+        "app":  "22-zchuyot",
+        "fn":  "leads-api",
+        "url":  "https://trerolyveytzgksawrme.supabase.co/functions/v1/leads-api",
+        "http":  401,
+        "body":  "{\"error\":\"Missing API key\"}"
+    },
+    {
+        "app":  "22-zchuyot",
+        "fn":  "leads-webhook",
+        "url":  "https://trerolyveytzgksawrme.supabase.co/functions/v1/leads-webhook",
+        "http":  500,
+        "body":  "{\"error\":\"Unexpected end of JSON input\"}"
+    },
+    {
+        "app":  "22-zchuyot",
+        "fn":  "n8n-notify",
+        "url":  "https://trerolyveytzgksawrme.supabase.co/functions/v1/n8n-notify",
+        "http":  500,
+        "body":  "{\"error\":\"Unexpected end of JSON input\"}"
+    },
+    {
+        "app":  "22-zchuyot",
+        "fn":  "rights-agent",
+        "url":  "https://trerolyveytzgksawrme.supabase.co/functions/v1/rights-agent",
+        "http":  500,
+        "body":  "{\"error\":\"Unexpected end of JSON input\"}"
+    }
+]

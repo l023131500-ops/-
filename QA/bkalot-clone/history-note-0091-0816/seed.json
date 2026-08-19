@@ -1,0 +1,89 @@
+{
+  "admins": {
+    "reader": 91,
+    "gone": 92
+  },
+  "notes": {
+    "A_ONE_chars": 52,
+    "A_TWO_chars": 59,
+    "C_MAX_chars": 500,
+    "D_WHY_chars": 57,
+    "citizen_chars": 56
+  },
+  "cases": {
+    "A": {
+      "case_id": 252,
+      "contact_id": 259,
+      "rights": null,
+      "queued": false
+    },
+    "B": {
+      "case_id": 253,
+      "contact_id": 260,
+      "rights": null,
+      "queued": false
+    },
+    "C": {
+      "case_id": 254,
+      "contact_id": 261,
+      "rights": null,
+      "queued": false
+    },
+    "D": {
+      "case_id": 255,
+      "contact_id": 262,
+      "rights": null,
+      "queued": false
+    }
+  },
+  "writes": {
+    "A": {
+      "one": {
+        "http_status": 200,
+        "ok": true,
+        "error": null,
+        "changed": true,
+        "log_id": 48,
+        "note_chars": 52
+      },
+      "two": {
+        "http_status": 200,
+        "ok": true,
+        "error": null,
+        "changed": true,
+        "log_id": 49,
+        "note_chars": 59
+      }
+    },
+    "B": {
+      "one": {
+        "http_status": 200,
+        "ok": true,
+        "error": null,
+        "changed": true,
+        "log_id": 50,
+        "note_chars": null
+      }
+    },
+    "C": {
+      "one": {
+        "http_status": 200,
+        "ok": true,
+        "error": null,
+        "changed": true,
+        "log_id": 51,
+        "note_chars": 500
+      }
+    },
+    "D": {
+      "one": {
+        "http_status": 200,
+        "ok": true,
+        "error": null,
+        "changed": true,
+        "log_id": 52,
+        "note_chars": 57
+      }
+    }
+  }
+}

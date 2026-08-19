@@ -1,0 +1,72 @@
+QA 0817 — bkalot-clone: email_invalid, email_required_for_treatment,
+situation_required_for_treatment — all three measured live in production.
+
+Endpoint: https://uhnrgujbdxhhmoxcjria.supabase.co/functions/v1/bkalot-clone-intake
+Method: POST, PowerShell (Invoke-WebRequest), anon key — not the browser, so no
+client-side check in apps/37-bkalot-clone/index.html can intercept. This
+matters here because email has a native `type="email"` input and a `required`
+attribute that toggles on with kind=treatment (index.html:184, 387) — a real
+browser blocks a malformed or missing email before the form ever submits, so
+these three branches were, like topic_no_invalid before them, unreachable from
+the visible form and unmeasured against the deployed function until now.
+
+These three are the remaining branches of migration 0058
+(supabase/migrations/0058_the_clone_had_three_tables_and_no_way_to_write_a_case_into_them.sql)
+that the 0058 scan closed out on 17/08 (kind_invalid, source_invalid,
+situation_unknown, topic_no_invalid) did not cover — that entry's "no further
+gap" claim was scoped to the four branches it named, not to every branch in
+the function; phone_invalid/full_name_required were separately covered by
+stale-mark-deploy-0817/which-field-mobile-390-0817. email_invalid (line 106),
+email_required_for_treatment (line 113) and situation_required_for_treatment
+(line 116) were the only three left with no live measurement.
+
+--- Request A: email_invalid (line 105-106) ---
+Body: {"kind":"info","source":"form","full_name":"QA Email","phone":"0500000001",
+"email":"not-an-email","note":"QA 0817 email_invalid live production check","consent":"true"}
+
+Response: HTTP 200
+{"ok": false, "error": "email_invalid"}
+
+--- Request B: email_required_for_treatment (line 112-113) ---
+Body: {"kind":"treatment","source":"form","full_name":"QA Email","phone":"0500000002",
+"note":"QA 0817 email_required_for_treatment live production check","consent":"true"}
+(no "email" key at all, so v_email is null and the line-105 guard does not fire —
+falls through to the treatment branch's own require-email check.)
+
+Response: HTTP 200
+{"ok": false, "error": "email_required_for_treatment"}
+
+--- Request C: situation_required_for_treatment (line 115-116) ---
+Body: {"kind":"treatment","source":"form","full_name":"QA Email","phone":"0500000003",
+"email":"qa.situation.0817@more30.com",
+"note":"QA 0817 situation_required_for_treatment live production check","consent":"true"}
+(valid email supplied, no "situation" key.)
+
+Response: HTTP 200
+{"ok": false, "error": "situation_required_for_treatment"}
+
+--- What this confirms ---
+1. All three server-side codes match MESSAGES/CODE_FIELD in
+   apps/37-bkalot-clone/index.html verbatim by name (email_invalid:288/345,
+   email_required_for_treatment:289/346, situation_required_for_treatment:290/347)
+   — the strings a browser would show if it ever received these responses are
+   already correct and already wired, even though no browser can currently
+   reach these branches (native email input + required attribute block first).
+2. None of the three requests reached rpc_failed / a raw Postgres error —
+   all HTTP 200 with a structured {ok:false, error:...} body, same shape as
+   every other branch in this family.
+3. Order of checks confirmed live, not just read: request B supplies no email
+   and gets email_required_for_treatment, not email_invalid — matching 0058's
+   "if v_email is not null and ... email_invalid" guard (line 105), which only
+   fires when an email string is present. A null email skips straight past it.
+
+Not written: all three checks (0058 lines 90/101/105-106/112-113/115-116, this
+step's three are 105-106/112-113/115-116) return before
+`insert into bkalot_auto.contacts` (line 146) and
+`insert into bkalot_clone.cases` (line 154) — read directly from the deployed
+migration source, not assumed. None of the three requests created a contact
+or a case row.
+
+Protected: no read or write to apps/08-bkalut-app, apps/09-bkalot-admin,
+apps/37-bkalot-clone, zr_*, NEDARIM3873. Test mode — no outbound message,
+no queue row (all three return before any row exists to queue).

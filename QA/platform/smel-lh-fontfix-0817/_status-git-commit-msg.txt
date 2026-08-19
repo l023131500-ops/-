@@ -1,0 +1,10 @@
+SYSTEMS_STATUS.md: added missing narrative entry for 12 smel Google Fonts fontfix (a6f403d)
+
+Commit a6f403d shipped the loadCSS render-blocking fix for apps/12-smel-ndln
+(perf 80->76, likely measurement noise matching the bkalot 82->69 pattern) but
+did not update SYSTEMS_STATUS.md, unlike the imud/briut/bkalot entries before
+it. This closes that documentation gap with a narrative block matching the
+established format. Supabase MCP not connected this session - heartbeat
+written as QA/platform/smel-lh-fontfix-0817/_status-heartbeat-pending.sql.
+
+Next in perf-sweep-2 order (scripts/qa/lighthouse-run.mjs ROUTES): smachot.

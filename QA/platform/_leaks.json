@@ -1,0 +1,177 @@
+{
+  "torah": {
+    "route": "/torah",
+    "found": [],
+    "emptyLabels": 0,
+    "chars": 1262,
+    "error": null
+  },
+  "tamlul": {
+    "route": "/tamlul",
+    "found": [],
+    "emptyLabels": 0,
+    "chars": 1372,
+    "error": null
+  },
+  "modaot": {
+    "route": "/modaot",
+    "found": [],
+    "emptyLabels": 0,
+    "chars": 696,
+    "error": null
+  },
+  "imud": {
+    "route": "/imud",
+    "found": [],
+    "emptyLabels": 0,
+    "chars": 612,
+    "error": null
+  },
+  "briut": {
+    "route": "/briut",
+    "found": [],
+    "emptyLabels": 0,
+    "chars": 4899,
+    "error": null
+  },
+  "bkalot": {
+    "route": "/bkalot",
+    "found": [],
+    "emptyLabels": 0,
+    "chars": 8446,
+    "error": null
+  },
+  "smel": {
+    "route": "/smel",
+    "found": [],
+    "emptyLabels": 0,
+    "chars": 1192,
+    "error": null
+  },
+  "smachot": {
+    "route": "/smachot",
+    "found": [],
+    "emptyLabels": 0,
+    "chars": 1473,
+    "error": null
+  },
+  "egod": {
+    "route": "/egod",
+    "found": [],
+    "emptyLabels": 0,
+    "chars": 2426,
+    "error": null
+  },
+  "chatzor": {
+    "route": "/chatzor/",
+    "found": [],
+    "emptyLabels": 0,
+    "chars": 2102,
+    "error": null
+  },
+  "chizukim": {
+    "route": "/chizukim/",
+    "found": [],
+    "emptyLabels": 0,
+    "chars": 1951,
+    "error": null
+  },
+  "orech": {
+    "route": "/orech",
+    "found": [],
+    "emptyLabels": 0,
+    "chars": 504,
+    "error": null
+  },
+  "zchuyot": {
+    "route": "/zchuyot",
+    "found": [],
+    "emptyLabels": 0,
+    "chars": 2511,
+    "error": null
+  },
+  "mthbram": {
+    "route": "/mthbram",
+    "found": [],
+    "emptyLabels": 0,
+    "chars": 941,
+    "error": null
+  },
+  "galil": {
+    "route": "/galil",
+    "found": [],
+    "emptyLabels": 0,
+    "chars": 1680,
+    "error": null
+  },
+  "studio": {
+    "route": "/studio",
+    "found": [],
+    "emptyLabels": 0,
+    "chars": 927,
+    "error": null
+  },
+  "mechiron": {
+    "route": "/mechiron",
+    "found": [],
+    "emptyLabels": 0,
+    "chars": 3040,
+    "error": null
+  },
+  "kupot": {
+    "route": "/kupot",
+    "found": [],
+    "emptyLabels": 0,
+    "chars": 3164,
+    "error": null
+  },
+  "nadlan": {
+    "route": "/nadlan/",
+    "found": [],
+    "emptyLabels": 0,
+    "chars": 6464,
+    "error": null
+  },
+  "crm": {
+    "route": "/crm",
+    "found": [],
+    "emptyLabels": 0,
+    "chars": 162,
+    "error": null
+  },
+  "gesher": {
+    "route": "/gesher",
+    "found": [],
+    "emptyLabels": 0,
+    "chars": 132,
+    "error": null
+  },
+  "kesef": {
+    "route": "/kesef",
+    "found": [],
+    "emptyLabels": 0,
+    "chars": 2429,
+    "error": null
+  },
+  "kiosk": {
+    "route": "/kiosk/",
+    "found": [],
+    "emptyLabels": 0,
+    "chars": 2599,
+    "error": null
+  },
+  "tivuch": {
+    "route": "/tivuch",
+    "found": [],
+    "emptyLabels": 0,
+    "chars": 2838,
+    "error": null
+  },
+  "portal": {
+    "route": "/",
+    "found": [],
+    "emptyLabels": 0,
+    "chars": 3295,
+    "error": null
+  }
+}

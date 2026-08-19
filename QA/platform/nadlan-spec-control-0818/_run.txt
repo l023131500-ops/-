@@ -1,0 +1,117 @@
+﻿הדקל 22, חצור הגלילית [basic] -> 200, 39185B, 8369ms, 13/18 layers present
+    PRESENT        4.1 כותרת/כתובת — הדקל 22, חצור הגלילית · גוש 14068 חלקה 57
+    EMPTY          4.1 שני שמות הרחוב — מערך ריק
+    PRESENT        4.1 גוש/חלקה — 12/14 שדות מלאים: gush,helka,parcelSource,parcelVerified,subParcelCount,street
+    PRESENT        4.2 אופי אוכלוסייה — 7/9 שדות מלאים: level,headline,breakdown,basis,stationsUsed,nearestMeters
+    PRESENT        4.2 אופי בנייה — 3/3 שדות מלאים: headline,breakdown,sampleSize
+    NULL           4.3 גיל הבניין — null — שכבה חסומה לרמה זו או שאין נתון
+    PRESENT        4.4 עסקאות שנמכרו — 17 פריטים
+    PRESENT        4.4 עסקאות בבניין — 0
+    EMPTY          4.5 דירות מוצעות — מערך ריק
+    PRESENT        4.6 מוסדות + מרחק — 8/8 שדות מלאים: education,preschool,religion,commerce,health,leisure
+    PRESENT        4.6 מקוואות — 1 פריטים
+    PRESENT        4.7 תחבורה — 3 פריטים
+    NULL           4.8 צילום בניין — null — שכבה חסומה לרמה זו או שאין נתון
+    PRESENT        4.9 מגמת מחירים — 24 פריטים
+    PRESENT        4.9 הערכת שווי — 2/2 שדות מלאים: notEnoughData,regional
+    PRESENT        4.9 תב״ע/זכויות בנייה — 13/14 שדות מלאים: landUseDeferred,overlays,approved,inProcess,policy,committee
+    PRESENT        4.9 היתכנות — 8/9 שדות מלאים: headline,additivePlans,pendingPlans,buildingLines,restrictions,unknowns
+    NULL           §12 בנייה בסביבה — null — שכבה חסומה לרמה זו או שאין נתון
+הדקל 22, חצור הגלילית [premium] -> 200, 89840B, 29144ms, 15/18 layers present
+    PRESENT        4.1 כותרת/כתובת — הדקל 22, חצור הגלילית · גוש 14068 חלקה 60
+    EMPTY          4.1 שני שמות הרחוב — מערך ריק
+    PRESENT        4.1 גוש/חלקה — 12/14 שדות מלאים: gush,helka,parcelSource,parcelVerified,subParcelCount,street
+    PRESENT        4.2 אופי אוכלוסייה — 7/9 שדות מלאים: level,headline,breakdown,basis,stationsUsed,nearestMeters
+    PRESENT        4.2 אופי בנייה — 3/3 שדות מלאים: headline,breakdown,sampleSize
+    NULL           4.3 גיל הבניין — null — שכבה חסומה לרמה זו או שאין נתון
+    PRESENT        4.4 עסקאות שנמכרו — 17 פריטים
+    PRESENT        4.4 עסקאות בבניין — 0
+    PRESENT        4.5 דירות מוצעות — 13 פריטים
+    PRESENT        4.6 מוסדות + מרחק — 8/8 שדות מלאים: education,preschool,religion,commerce,health,leisure
+    PRESENT        4.6 מקוואות — 1 פריטים
+    PRESENT        4.7 תחבורה — 6 פריטים
+    NULL           4.8 צילום בניין — null — שכבה חסומה לרמה זו או שאין נתון
+    PRESENT        4.9 מגמת מחירים — 24 פריטים
+    PRESENT        4.9 הערכת שווי — 2/2 שדות מלאים: notEnoughData,regional
+    PRESENT        4.9 תב״ע/זכויות בנייה — 13/14 שדות מלאים: landUseDeferred,overlays,approved,inProcess,policy,committee
+    PRESENT        4.9 היתכנות — 8/9 שדות מלאים: headline,additivePlans,pendingPlans,buildingLines,restrictions,unknowns
+    PRESENT        §12 בנייה בסביבה — 7 פריטים
+הדקל 22, חצור הגלילית [vip] -> 200, 89092B, 32879ms, 16/18 layers present
+    PRESENT        4.1 כותרת/כתובת — הדקל 22, חצור הגלילית · גוש 14068 חלקה 59
+    EMPTY          4.1 שני שמות הרחוב — מערך ריק
+    PRESENT        4.1 גוש/חלקה — 12/14 שדות מלאים: gush,helka,parcelSource,parcelVerified,subParcelCount,street
+    PRESENT        4.2 אופי אוכלוסייה — 7/9 שדות מלאים: level,headline,breakdown,basis,stationsUsed,nearestMeters
+    PRESENT        4.2 אופי בנייה — 3/3 שדות מלאים: headline,breakdown,sampleSize
+    NULL           4.3 גיל הבניין — null — שכבה חסומה לרמה זו או שאין נתון
+    PRESENT        4.4 עסקאות שנמכרו — 17 פריטים
+    PRESENT        4.4 עסקאות בבניין — 0
+    PRESENT        4.5 דירות מוצעות — 13 פריטים
+    PRESENT        4.6 מוסדות + מרחק — 8/8 שדות מלאים: education,preschool,religion,commerce,health,leisure
+    PRESENT        4.6 מקוואות — 1 פריטים
+    PRESENT        4.7 תחבורה — 6 פריטים
+    PRESENT        4.8 צילום בניין — 6/7 שדות מלאים: available,date,copyright,lat,lng,precise
+    PRESENT        4.9 מגמת מחירים — 24 פריטים
+    PRESENT        4.9 הערכת שווי — 2/2 שדות מלאים: notEnoughData,regional
+    PRESENT        4.9 תב״ע/זכויות בנייה — 13/14 שדות מלאים: landUseDeferred,overlays,approved,inProcess,policy,committee
+    PRESENT        4.9 היתכנות — 8/9 שדות מלאים: headline,additivePlans,pendingPlans,buildingLines,restrictions,unknowns
+    PRESENT        §12 בנייה בסביבה — 7 פריטים
+הבעל שם טוב 9, רחובות [basic] -> 200, 461336B, 9334ms, 15/18 layers present
+    PRESENT        4.1 כותרת/כתובת — הבעשט (מוכר גם כרחוב הבעל שם טוב) 9, רחובות · גוש 3704 חלקה 331
+    PRESENT        4.1 שני שמות הרחוב — 1 פריטים
+    PRESENT        4.1 גוש/חלקה — 11/14 שדות מלאים: gush,helka,parcelSource,parcelVerified,subParcelCount,street
+    PRESENT        4.2 אופי אוכלוסייה — 7/9 שדות מלאים: level,headline,breakdown,basis,stationsUsed,nearestMeters
+    PRESENT        4.2 אופי בנייה — 3/3 שדות מלאים: headline,breakdown,sampleSize
+    PRESENT        4.3 גיל הבניין — 12/12 שדות מלאים: buildYear,ageYears,isLowerBound,isNew,basis,headline
+    PRESENT        4.4 עסקאות שנמכרו — 1009 פריטים
+    PRESENT        4.4 עסקאות בבניין — 6
+    EMPTY          4.5 דירות מוצעות — מערך ריק
+    PRESENT        4.6 מוסדות + מרחק — 8/8 שדות מלאים: education,preschool,religion,commerce,health,leisure
+    PRESENT        4.6 מקוואות — 8 פריטים
+    PRESENT        4.7 תחבורה — 3 פריטים
+    NULL           4.8 צילום בניין — null — שכבה חסומה לרמה זו או שאין נתון
+    PRESENT        4.9 מגמת מחירים — 24 פריטים
+    PRESENT        4.9 הערכת שווי — 10/12 שדות מלאים: low,high,mid,medianPerSqm,areaSqm,areaSource
+    PRESENT        4.9 תב״ע/זכויות בנייה — 12/14 שדות מלאים: landUseDeferred,overlays,approved,inProcess,policy,committee
+    PRESENT        4.9 היתכנות — 8/9 שדות מלאים: headline,additivePlans,pendingPlans,buildingLines,restrictions,unknowns
+    NULL           §12 בנייה בסביבה — null — שכבה חסומה לרמה זו או שאין נתון
+הבעל שם טוב 9, רחובות [premium] -> 200, 624160B, 44326ms, 17/18 layers present
+    PRESENT        4.1 כותרת/כתובת — הבעשט (מוכר גם כרחוב הבעל שם טוב) 9, רחובות · גוש 3704 חלקה 331
+    PRESENT        4.1 שני שמות הרחוב — 1 פריטים
+    PRESENT        4.1 גוש/חלקה — 11/14 שדות מלאים: gush,helka,parcelSource,parcelVerified,subParcelCount,street
+    PRESENT        4.2 אופי אוכלוסייה — 7/9 שדות מלאים: level,headline,breakdown,basis,stationsUsed,nearestMeters
+    PRESENT        4.2 אופי בנייה — 3/3 שדות מלאים: headline,breakdown,sampleSize
+    PRESENT        4.3 גיל הבניין — 12/12 שדות מלאים: buildYear,ageYears,isLowerBound,isNew,basis,headline
+    PRESENT        4.4 עסקאות שנמכרו — 1053 פריטים
+    PRESENT        4.4 עסקאות בבניין — 6
+    PRESENT        4.5 דירות מוצעות — 13 פריטים
+    PRESENT        4.6 מוסדות + מרחק — 8/8 שדות מלאים: education,preschool,religion,commerce,health,leisure
+    PRESENT        4.6 מקוואות — 8 פריטים
+    PRESENT        4.7 תחבורה — 6 פריטים
+    NULL           4.8 צילום בניין — null — שכבה חסומה לרמה זו או שאין נתון
+    PRESENT        4.9 מגמת מחירים — 24 פריטים
+    PRESENT        4.9 הערכת שווי — 10/12 שדות מלאים: low,high,mid,medianPerSqm,areaSqm,areaSource
+    PRESENT        4.9 תב״ע/זכויות בנייה — 12/14 שדות מלאים: landUseDeferred,overlays,approved,inProcess,policy,committee
+    PRESENT        4.9 היתכנות — 8/9 שדות מלאים: headline,additivePlans,pendingPlans,buildingLines,restrictions,unknowns
+    PRESENT        §12 בנייה בסביבה — 23 פריטים
+הבעל שם טוב 9, רחובות [vip] -> 200, 624416B, 49687ms, 18/18 layers present
+    PRESENT        4.1 כותרת/כתובת — הבעשט (מוכר גם כרחוב הבעל שם טוב) 9, רחובות · גוש 3704 חלקה 331
+    PRESENT        4.1 שני שמות הרחוב — 1 פריטים
+    PRESENT        4.1 גוש/חלקה — 11/14 שדות מלאים: gush,helka,parcelSource,parcelVerified,subParcelCount,street
+    PRESENT        4.2 אופי אוכלוסייה — 7/9 שדות מלאים: level,headline,breakdown,basis,stationsUsed,nearestMeters
+    PRESENT        4.2 אופי בנייה — 3/3 שדות מלאים: headline,breakdown,sampleSize
+    PRESENT        4.3 גיל הבניין — 12/12 שדות מלאים: buildYear,ageYears,isLowerBound,isNew,basis,headline
+    PRESENT        4.4 עסקאות שנמכרו — 1053 פריטים
+    PRESENT        4.4 עסקאות בבניין — 6
+    PRESENT        4.5 דירות מוצעות — 13 פריטים
+    PRESENT        4.6 מוסדות + מרחק — 8/8 שדות מלאים: education,preschool,religion,commerce,health,leisure
+    PRESENT        4.6 מקוואות — 8 פריטים
+    PRESENT        4.7 תחבורה — 6 פריטים
+    PRESENT        4.8 צילום בניין — 6/7 שדות מלאים: available,date,copyright,lat,lng,precise
+    PRESENT        4.9 מגמת מחירים — 24 פריטים
+    PRESENT        4.9 הערכת שווי — 10/12 שדות מלאים: low,high,mid,medianPerSqm,areaSqm,areaSource
+    PRESENT        4.9 תב״ע/זכויות בנייה — 12/14 שדות מלאים: landUseDeferred,overlays,approved,inProcess,policy,committee
+    PRESENT        4.9 היתכנות — 8/9 שדות מלאים: headline,additivePlans,pendingPlans,buildingLines,restrictions,unknowns
+    PRESENT        §12 בנייה בסביבה — 23 פריטים
+
+wrote QA\platform\nadlan-spec-control-0818\_results.json
+All responses parsed.

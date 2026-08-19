@@ -1,0 +1,9 @@
+{
+  "buildCommand": "echo no-build",
+  "outputDirectory": ".",
+  "framework": null,
+  "rewrites": [
+    { "source": "/chatzor", "destination": "/chatzor/index.html" },
+    { "source": "/chatzor/:path*", "destination": "/chatzor/index.html" }
+  ]
+}

@@ -1,0 +1,121 @@
+{
+  "brick": "decider-required-deploy-0816",
+  "line_taken": "הפריסה. מה שנמדד כאן הוא הקוד שבמקור; בייצור המסך עדיין מציג את הקוד הגולמי. אותו פיצול כמו aff6455 → 9c96135 וכמו b1fcca7 → 81e3307 (53a3e5a, heartbeat 638)",
+  "scope": {
+    "code_changed": false,
+    "migration": false,
+    "edge_deploy": false,
+    "portal_deploy": true,
+    "edge_versions_unchanged": { "bkalot-clone-admin": "v8", "bkalot-clone-intake": "v1" },
+    "committed": "ראיות בלבד"
+  },
+
+  "the_file_deployed_is_the_file_in_source": {
+    "source_apps_37_admin_html": { "bytes": 131108, "md5": "3D4BEF6F58198CCD48247C617500C84D" },
+    "portal_dist_after_staging": { "bytes": 131108, "md5": "3D4BEF6F58198CCD48247C617500C84D" },
+    "portal_dist_before_staging": { "bytes": 129476, "md5": "7106F46C039C592AC305A76ED5E2E24E", "note": "מה ש-81e3307 פרס" }
+  },
+
+  "deployment": {
+    "id": "dpl_9GxA7KUCVqqwwgGK8Yihj844j6z6",
+    "target": "production",
+    "status": "Ready",
+    "files": 38,
+    "prebuilt": false,
+    "prebuilt_note": "הדגל מפיל את vercel.json ואיתו את כל מפת ה-rewrites (prebuilt-deploy-drops-vercel-json)",
+    "aliases": ["https://more30.com", "https://www.more30.com", "https://more30-portal.vercel.app"]
+  },
+
+  "markers": {
+    "classified_before_the_first_run": "classify.mjs",
+    "new_flipped_0_to_source": {
+      "decider_required": "0 → 1",
+      "הסשן לא מסר מי מכריע": "0 → 1",
+      "לא נרשמה שורת יומן": "0 → 2",
+      "צאו והתחברו מחדש ונסו שוב": "0 → 1",
+      "0092 הכרעות": "0 → 1",
+      "מספר שלם בטוח": "0 → 1",
+      "שערי הקלט": "0 → 1"
+    },
+    "diff_grew_to_source": {
+      "invalid_session": "2 → 3",
+      "token_required": "1 → 2",
+      "0076": "3 → 4",
+      "הסשן פג": "1 → 2"
+    },
+    "diff_why": "כולם יושבים בייצור מזמן, וההערה החדשה מזכירה את כולם שוב — הכרעה (2) של הנוסח, מדוע אינו נבלע בהם. לכן הם גדלים ואינם נולדים",
+    "old_unchanged": {
+      "note_too_long": 5, "why-input": 2, "syncNoteCount": 4, "td.why": 1,
+      "רצף ההכרעות": 4, "handsBit": 2, "producedBit": 2, "fillQueueCell": 2,
+      "fillTemplateCell": 4, "fillCreatedCell": 4, "מי הכריע": 13,
+      "fillHistoryNoteCell": 2
+    },
+    "measured_on_both_urls": ["https://more30.com/bkalot-studio/admin", "https://more30.com/bkalot-studio/admin/"],
+    "bytes": { "before": 129712, "after": 131344, "source": 131108, "netfree_delta": 236 },
+    "replacement_chars": 0,
+    "double_encoded": 0,
+    "control_urls_unchanged": { "https://more30.com/bkalot-studio/": 32558, "https://more30.com/": 3517 },
+    "no_marker_reclassified": "שנים-עשר מסומני הבקרה נמדדו שווים בדיוק לפני ואחרי — בשונה מ-8a577bc, מ-24f8a7d ומ-9c96135 שבהם בקרה נפלה ל-DIFF"
+  },
+
+  "server_side_on_the_same_case": {
+    "note": "לא הוסק מהמסך ולא הונח מ-0092 ולא מ-53a3e5a: נמדד כאן, ב-SQL, על אותה פנייה בדיוק (269)",
+    "call": "bkalot_clone_admin_set_status(jsonb_build_object('case_id',269,'status','in_progress'), null)",
+    "returned": { "ok": false, "error": "decider_required" },
+    "case_after": { "status": "new", "decided_at": null, "decided_by": null, "log_rows": 0 },
+    "measured_in_a_separate_command": "תקלת cte-delete-sees-prestatement-snapshot — סאב-סלקט לצד הקריאה הוא צילום שלפני המשפט"
+  },
+
+  "in_production_in_a_real_browser": {
+    "file": "live-01-hebrew-in-production.png",
+    "md5": "F1124F8440A636AF12733B3765871A6F",
+    "viewport": "1280x900",
+    "login": "התחברות אמיתית דרך המסך בחשבון 98, הפנייה נפתחה מהרשימה, «בטיפול» נלחץ",
+    "error_text": "הסשן לא מסר מי מכריע, ולכן הסטטוס לא שונה ולא נרשמה שורת יומן. צאו והתחברו מחדש ונסו שוב.",
+    "code_span": " decider_required",
+    "status_shown": "חדשה",
+    "history_still_says": "לא נרשם ולו מעבר אחד מהמסך.",
+    "note_box_value": "",
+    "console": { "messages": 0, "errors": 0, "warnings": 0 },
+    "in_frame": "נמדד אחרי גלילה ולא הונח (screenshot-evidence-below-the-fold): השגיאה 440–459 והקוד 466–486 בחלון 900; התיבה 211–310 ו«רצף ההכרעות» ב-525 — ארבעתם בפריים אחד"
+  },
+
+  "injection": {
+    "declared_not_swallowed": true,
+    "what": "window.fetch נעטף כך שהקריאה האחת ל-/set-status מחזירה {ok:false,error:'decider_required'}",
+    "why": "אין דרך לגרום לשרת החי להחזיר את הקוד מהדפדפן, ובכוונה: השער ממלא את p_admin_id מהטוקן תמיד, ושולח null רק כשהערך אינו מספר שלם בטוח",
+    "condition": "url.split('?')[0].endsWith('/set-status') — ה-action נוסע בנתיב, שכן call() בונה ${BASE}/${action}",
+    "hits": 1,
+    "hit_url": "https://uhnrgujbdxhhmoxcjria.supabase.co/functions/v1/bkalot-clone-admin/set-status",
+    "body_sent": "{\"case_id\":269,\"status\":\"in_progress\"}",
+    "untouched": "login, cases ו-case נסעו אל השרת החי כרגיל",
+    "precedent": "אותה עטיפה בדיוק כמו 53a3e5a וכמו 74dbf7d"
+  },
+
+  "test_mode": {
+    "queued_on_intake": false,
+    "documents": 0,
+    "outbound_queue": 8,
+    "outbound_queue_with_sent_at": 0,
+    "delivery_log": 3,
+    "cases_in_sent": 0,
+    "outgoing_calls": 0,
+    "note": "מה שנפרס הוא HTML; שער ההכרעה נקרא פעם אחת ב-SQL וחזר ok=false לפני שנגע בשורה, והלחיצה בדפדפן לא יצאה אל השרת כלל"
+  },
+
+  "rollback": {
+    "method": "פקודות נפרדות לפי טבלה — תקלת cte-delete-sees-prestatement-snapshot; איש הקשר לפי id ולא לפי טלפון מנורמל — תקלת ac6e523",
+    "deleted": { "case_status_log": 0, "case_rights": 42, "cases": 1, "contacts": 1, "admin_users": 1 },
+    "base_after": {
+      "cases": 0, "case_status_log": 0, "case_rights": 0, "documents": 0,
+      "admin_users": 1, "admin_sessions": 5, "templates": 2,
+      "contacts": 4, "outbound_queue": 8, "outbound_queue_sent": 0,
+      "delivery_log": 3, "rights_catalog": 888
+    }
+  },
+
+  "not_measured_and_declared": [
+    "הקוד לא הופק מהשרת החי דרך הדפדפן — ראו injection. הצד השרתי נמדד ב-SQL על אותה פנייה, והצד הלקוחי בהזרקה; הפיצול מוצהר ואינו נבלע",
+    "הכניסה מחדש שהנוסח מפנה אליה לא נמדדה כאן: «צאו והתחברו מחדש» הוא מה שהמסך אומר, ומה שקורה אחריו הוא מסלול הכניסה הרגיל שנמדד בפעימות קודמות"
+  ]
+}

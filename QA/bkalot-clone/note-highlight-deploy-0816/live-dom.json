@@ -1,0 +1,192 @@
+{
+  "url": "https://more30.com/bkalot-studio/admin",
+  "case_id": 407,
+  "console": [],
+  "bad_responses": [],
+  "states": {
+    "term1_end": {
+      "term": "המס הקודמת",
+      "rows_in_list": 1,
+      "rows": 3,
+      "marks_in_page": 1,
+      "cells": [
+        {
+          "text": "המסמכים שצורפו שייכים לשנת המס הקודמתזה הנימוק שהתאים",
+          "mark": "המס הקודמת",
+          "mark_cls": "hit",
+          "mark_title": "כאן נמצא מה שהוקלד בחיפוש — המיקום מגיע מהמסד ולא נמדד שוב במסך. אם המונח חוזר בטקסט הזה, מסומנת ההופעה הראשונה בלבד",
+          "nodes": [
+            "T:המסמכים שצורפו שייכים לשנת ",
+            "MARK",
+            "T:",
+            "BR",
+            "SPAN"
+          ],
+          "td_title": "37 תווים, כפי שנשמרו",
+          "stale": true
+        },
+        {
+          "text": "Email נשלח לפונה, ואחריו EMAIL נוסף בטעות",
+          "mark": null,
+          "mark_cls": null,
+          "mark_title": null,
+          "nodes": [
+            "T:Email נשלח לפונה, ואחריו EMAIL נוסף בטעות"
+          ],
+          "td_title": "41 תווים, כפי שנשמרו",
+          "stale": false
+        },
+        {
+          "text": "הטופס נשלח בדואר רשום על ידי הפונה",
+          "mark": null,
+          "mark_cls": null,
+          "mark_title": null,
+          "nodes": [
+            "T:הטופס נשלח בדואר רשום על ידי הפונה"
+          ],
+          "td_title": "34 תווים, כפי שנשמרו",
+          "stale": false
+        }
+      ],
+      "overflow": 0
+    },
+    "term2_start": {
+      "term": "email",
+      "rows_in_list": 1,
+      "rows": 3,
+      "marks_in_page": 1,
+      "cells": [
+        {
+          "text": "המסמכים שצורפו שייכים לשנת המס הקודמת",
+          "mark": null,
+          "mark_cls": null,
+          "mark_title": null,
+          "nodes": [
+            "T:המסמכים שצורפו שייכים לשנת המס הקודמת"
+          ],
+          "td_title": "37 תווים, כפי שנשמרו",
+          "stale": false
+        },
+        {
+          "text": "Email נשלח לפונה, ואחריו EMAIL נוסף בטעותזה הנימוק שהתאים",
+          "mark": "Email",
+          "mark_cls": "hit",
+          "mark_title": "כאן נמצא מה שהוקלד בחיפוש — המיקום מגיע מהמסד ולא נמדד שוב במסך. אם המונח חוזר בטקסט הזה, מסומנת ההופעה הראשונה בלבד",
+          "nodes": [
+            "T:",
+            "MARK",
+            "T: נשלח לפונה, ואחריו EMAIL נוסף בטעות",
+            "BR",
+            "SPAN"
+          ],
+          "td_title": "41 תווים, כפי שנשמרו",
+          "stale": true
+        },
+        {
+          "text": "הטופס נשלח בדואר רשום על ידי הפונה",
+          "mark": null,
+          "mark_cls": null,
+          "mark_title": null,
+          "nodes": [
+            "T:הטופס נשלח בדואר רשום על ידי הפונה"
+          ],
+          "td_title": "34 תווים, כפי שנשמרו",
+          "stale": false
+        }
+      ],
+      "overflow": 0
+    },
+    "term3_mid": {
+      "term": "בדואר רשום",
+      "rows_in_list": 1,
+      "rows": 3,
+      "marks_in_page": 1,
+      "cells": [
+        {
+          "text": "המסמכים שצורפו שייכים לשנת המס הקודמת",
+          "mark": null,
+          "mark_cls": null,
+          "mark_title": null,
+          "nodes": [
+            "T:המסמכים שצורפו שייכים לשנת המס הקודמת"
+          ],
+          "td_title": "37 תווים, כפי שנשמרו",
+          "stale": false
+        },
+        {
+          "text": "Email נשלח לפונה, ואחריו EMAIL נוסף בטעות",
+          "mark": null,
+          "mark_cls": null,
+          "mark_title": null,
+          "nodes": [
+            "T:Email נשלח לפונה, ואחריו EMAIL נוסף בטעות"
+          ],
+          "td_title": "41 תווים, כפי שנשמרו",
+          "stale": false
+        },
+        {
+          "text": "הטופס נשלח בדואר רשום על ידי הפונהזה הנימוק שהתאים",
+          "mark": "בדואר רשום",
+          "mark_cls": "hit",
+          "mark_title": "כאן נמצא מה שהוקלד בחיפוש — המיקום מגיע מהמסד ולא נמדד שוב במסך. אם המונח חוזר בטקסט הזה, מסומנת ההופעה הראשונה בלבד",
+          "nodes": [
+            "T:הטופס נשלח ",
+            "MARK",
+            "T: על ידי הפונה",
+            "BR",
+            "SPAN"
+          ],
+          "td_title": "34 תווים, כפי שנשמרו",
+          "stale": true
+        }
+      ],
+      "overflow": 0
+    },
+    "ctl_no_term": {
+      "term": "",
+      "rows_in_list": 1,
+      "rows": 3,
+      "marks_in_page": 0,
+      "cells": [
+        {
+          "text": "המסמכים שצורפו שייכים לשנת המס הקודמת",
+          "mark": null,
+          "mark_cls": null,
+          "mark_title": null,
+          "nodes": [
+            "T:המסמכים שצורפו שייכים לשנת המס הקודמת"
+          ],
+          "td_title": "37 תווים, כפי שנשמרו",
+          "stale": false
+        },
+        {
+          "text": "Email נשלח לפונה, ואחריו EMAIL נוסף בטעות",
+          "mark": null,
+          "mark_cls": null,
+          "mark_title": null,
+          "nodes": [
+            "T:Email נשלח לפונה, ואחריו EMAIL נוסף בטעות"
+          ],
+          "td_title": "41 תווים, כפי שנשמרו",
+          "stale": false
+        },
+        {
+          "text": "הטופס נשלח בדואר רשום על ידי הפונה",
+          "mark": null,
+          "mark_cls": null,
+          "mark_title": null,
+          "nodes": [
+            "T:הטופס נשלח בדואר רשום על ידי הפונה"
+          ],
+          "td_title": "34 תווים, כפי שנשמרו",
+          "stale": false
+        }
+      ],
+      "overflow": 0
+    },
+    "ctl_zzzz": {
+      "term": "zzzz",
+      "rows_in_list": 0
+    }
+  }
+}

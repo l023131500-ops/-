@@ -1,0 +1,45 @@
+kiosk (35): the console cancelled the focus ring and replaced it with 1.06:1
+
+Every contrast run in QA/kiosk so far graded the console at rest — what a colour
+is when nothing is focused — and not one of them pressed Tab. Both rules that
+decide what a keyboard user sees opened with `outline: none`, and what stood in
+for the browser's ring was a border-colour swap to `--accent`. Measured for the
+first time here: 1.60:1 in light, and 1.06:1 in dark. The second is not a faint
+indicator, it is no indicator. Every field on every screen, the login form
+included. WCAG 2.4.7 is Level A.
+
+`--focus-ring` is deliberately not one value. Light is `--accent` itself, 5.28:1
+on the white card. Dark is `--accent-control`, the lightened blue already chosen
+for controls in dark, at 7.12:1 — `--accent` there sits against the *paler* dark
+border `#61708f` and gives the 1.06:1 that is the bug. It is an `outline` and not
+a `border`: a border grows the field by 2px on every focus, and an outline
+follows `border-radius`, costs no layout, and is painted in Windows high-contrast
+mode, where the `box-shadow` ring `button-boundary-0811` gave the buttons is not.
+The border swap is kept as a second cue. `.modal` and `.main` both declare
+`overflow: auto`, so a 2px-offset ring is a clipping risk — checked, not assumed:
+both carry ≥28px padding.
+
+Six controls (text, select, number, password, `.hl-new`, login) across four
+screens in both colour schemes. 24/24, exit 0, twelve screenshots.
+
+Three method notes, since this is the first run here grading a state change
+rather than a resting colour. The clip is page coordinates expanded by 8px, not
+`elementHandle.screenshot()` — that crops to the border box, which is exactly
+where an outline is not. The surface under the ring is read from the pixel
+actually painted in the unfocused shot, because with an offset the ring lands on
+whatever is behind the control. And the grade is the best of three cues — ring,
+border swap, fill swap — so a control cannot pass on a ring while the credit
+belongs to the border, or fail while a visible fill change is on screen.
+
+The twelve control rows re-inject `outline: none` and are required to come out
+under 3:1; all twelve do. They are what makes this measurable: a pixel diff was
+not enough, because the border and fill did move slightly before the fix, so
+"did anything change" passed in both states and measured nothing.
+
+Found and not fixed, recorded as new item 7 in STATUS.md: focus order (2.4.3) has
+never been checked anywhere, and `.side nav a` are anchors with no `href` and no
+`tabindex` — read off the markup, not measured, and it would put the whole
+navigation out of reach of a keyboard.
+
+152 tests / 151 pass — the documented baseline, unchanged; no server code here.
+Not deployed; the Railway service builds from l023131500-ops/zol (NEEDS_USER 0צ).

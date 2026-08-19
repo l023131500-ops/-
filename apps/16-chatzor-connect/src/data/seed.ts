@@ -109,16 +109,16 @@ export const SAMPLE_SERVICES: CommunityService[] = [
 ];
 
 export const SAMPLE_PRAYER_TIMES: PrayerTime[] = [
-  { id: "pt-1", synagogueId: "sample-1", type: "shacharit", label: "שחרית א׳", time: "06:00", note: "ותיקין" },
-  { id: "pt-2", synagogueId: "sample-1", type: "shacharit", label: "שחרית ב׳", time: "07:30", note: null },
-  { id: "pt-3", synagogueId: "sample-1", type: "shacharit", label: "שחרית ג׳", time: "08:30", note: null },
-  { id: "pt-4", synagogueId: "sample-1", type: "mincha", label: "מנחה", time: "17:30", note: null },
-  { id: "pt-5", synagogueId: "sample-1", type: "arvit", label: "ערבית", time: "20:00", note: null },
-  { id: "pt-6", synagogueId: "sample-2", type: "shacharit", label: "שחרית", time: "06:45", note: null },
-  { id: "pt-7", synagogueId: "sample-2", type: "mincha", label: "מנחה", time: "13:15", note: null },
-  { id: "pt-8", synagogueId: "sample-2", type: "arvit", label: "ערבית", time: "19:45", note: null },
-  { id: "pt-9", synagogueId: "sample-3", type: "shacharit", label: "שחרית", time: "07:00", note: null },
-  { id: "pt-10", synagogueId: "sample-3", type: "arvit", label: "ערבית", time: "20:15", note: null },
+  { id: "pt-1", synagogueId: "sample-1", type: "shacharit", label: "שחרית א׳", time: "06:00", note: "ותיקין", isSample: true },
+  { id: "pt-2", synagogueId: "sample-1", type: "shacharit", label: "שחרית ב׳", time: "07:30", note: null, isSample: true },
+  { id: "pt-3", synagogueId: "sample-1", type: "shacharit", label: "שחרית ג׳", time: "08:30", note: null, isSample: true },
+  { id: "pt-4", synagogueId: "sample-1", type: "mincha", label: "מנחה", time: "17:30", note: null, isSample: true },
+  { id: "pt-5", synagogueId: "sample-1", type: "arvit", label: "ערבית", time: "20:00", note: null, isSample: true },
+  { id: "pt-6", synagogueId: "sample-2", type: "shacharit", label: "שחרית", time: "06:45", note: null, isSample: true },
+  { id: "pt-7", synagogueId: "sample-2", type: "mincha", label: "מנחה", time: "13:15", note: null, isSample: true },
+  { id: "pt-8", synagogueId: "sample-2", type: "arvit", label: "ערבית", time: "19:45", note: null, isSample: true },
+  { id: "pt-9", synagogueId: "sample-3", type: "shacharit", label: "שחרית", time: "07:00", note: null, isSample: true },
+  { id: "pt-10", synagogueId: "sample-3", type: "arvit", label: "ערבית", time: "20:15", note: null, isSample: true },
 ];
 
 export const SAMPLE_ANNOUNCEMENTS: Announcement[] = [

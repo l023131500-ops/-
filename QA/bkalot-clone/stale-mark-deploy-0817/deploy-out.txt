@@ -1,0 +1,22 @@
+﻿{
+  "status": "ok",
+  "deployment": {
+    "id": "dpl_BayiH8Df3RZJwYddHc1cZs4j45TC",
+    "url": "https://more30-portal-41vhidqdv-l023131500-ops-projects.vercel.app",
+    "inspectorUrl": "https://vercel.com/l023131500-ops-projects/more30-portal/BayiH8Df3RZJwYddHc1cZs4j45TC",
+    "readyState": "READY",
+    "target": "production",
+    "deploymentApiUrl": "https://api.vercel.com/v13/deployments/dpl_BayiH8Df3RZJwYddHc1cZs4j45TC"
+  },
+  "message": "Deployment more30-portal-41vhidqdv-l023131500-ops-projects.vercel.app ready.",
+  "next": [
+    {
+      "command": "vercel inspect more30-portal-41vhidqdv-l023131500-ops-projects.vercel.app --scope l023131500-ops-projects",
+      "when": "Inspect deployment"
+    },
+    {
+      "command": "vercel deploy --prod --scope l023131500-ops-projects",
+      "when": "Promote to production"
+    }
+  ]
+}

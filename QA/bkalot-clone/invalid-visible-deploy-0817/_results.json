@@ -1,0 +1,509 @@
+{
+  "verdict": "PASS",
+  "fails": [],
+  "counts": {
+    "NEW": 12,
+    "REMOVED": 0,
+    "DIFF": 2,
+    "CONTROL": 19,
+    "DEAD": 0
+  },
+  "files": {
+    "src": {
+      "path": "C:/Users/USER/Downloads/more30/apps/37-bkalot-clone/index.html",
+      "bytes": 36127,
+      "md5": "30B03F39"
+    },
+    "dist": {
+      "path": "C:/Users/USER/Downloads/more30/portal/dist/bkalot-studio/index.html",
+      "bytes": 34622,
+      "md5": "183921EE"
+    }
+  },
+  "live": {
+    "https://more30.com/bkalot-studio": {
+      "before": {
+        "bytes": 34858,
+        "md5": "1473D798"
+      },
+      "after": {
+        "bytes": 36363,
+        "md5": "76D43A6F"
+      }
+    },
+    "https://more30.com/bkalot-studio/": {
+      "before": {
+        "bytes": 34858,
+        "md5": "1473D798"
+      },
+      "after": {
+        "bytes": 36363,
+        "md5": "76D43A6F"
+      }
+    }
+  },
+  "rows": [
+    {
+      "key": "tok_danger_ring_light",
+      "group": "NEW",
+      "dist": 0,
+      "src": 1,
+      "before": [
+        0,
+        0
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "tok_danger_ring_dark",
+      "group": "NEW",
+      "dist": 0,
+      "src": 1,
+      "before": [
+        0,
+        0
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "sel_invalid_base",
+      "group": "NEW",
+      "dist": 0,
+      "src": 1,
+      "before": [
+        0,
+        0
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "body_invalid_base",
+      "group": "NEW",
+      "dist": 0,
+      "src": 1,
+      "before": [
+        0,
+        0
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "sel_invalid_focus",
+      "group": "NEW",
+      "dist": 0,
+      "src": 1,
+      "before": [
+        0,
+        0
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "body_invalid_focus",
+      "group": "NEW",
+      "dist": 0,
+      "src": 1,
+      "before": [
+        0,
+        0
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "cmt_head",
+      "group": "NEW",
+      "dist": 0,
+      "src": 1,
+      "before": [
+        0,
+        0
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "cmt_aria_only",
+      "group": "NEW",
+      "dist": 0,
+      "src": 1,
+      "before": [
+        0,
+        0
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "cmt_specificity",
+      "group": "NEW",
+      "dist": 0,
+      "src": 1,
+      "before": [
+        0,
+        0
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "cmt_same_reds",
+      "group": "NEW",
+      "dist": 0,
+      "src": 1,
+      "before": [
+        0,
+        0
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "phr_aria_invalid_true",
+      "group": "NEW",
+      "dist": 0,
+      "src": 6,
+      "before": [
+        0,
+        0
+      ],
+      "after": [
+        6,
+        6
+      ]
+    },
+    {
+      "key": "phr_danger_ring",
+      "group": "NEW",
+      "dist": 0,
+      "src": 3,
+      "before": [
+        0,
+        0
+      ],
+      "after": [
+        3,
+        3
+      ]
+    },
+    {
+      "key": "phr_aria_invalid",
+      "group": "DIFF",
+      "dist": 9,
+      "src": 16,
+      "before": [
+        9,
+        9
+      ],
+      "after": [
+        16,
+        16
+      ]
+    },
+    {
+      "key": "phr_danger_soft",
+      "group": "DIFF",
+      "dist": 3,
+      "src": 5,
+      "before": [
+        3,
+        3
+      ],
+      "after": [
+        5,
+        5
+      ]
+    },
+    {
+      "key": "ctl_focus_rule",
+      "group": "CONTROL",
+      "dist": 1,
+      "src": 1,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "ctl_ring_light",
+      "group": "CONTROL",
+      "dist": 1,
+      "src": 1,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "ctl_ring_dark",
+      "group": "CONTROL",
+      "dist": 1,
+      "src": 1,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "ctl_danger_light",
+      "group": "CONTROL",
+      "dist": 1,
+      "src": 1,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "ctl_danger_dark",
+      "group": "CONTROL",
+      "dist": 1,
+      "src": 1,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "ctl_input_rule",
+      "group": "CONTROL",
+      "dist": 1,
+      "src": 1,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "ctl_transition",
+      "group": "CONTROL",
+      "dist": 1,
+      "src": 1,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "ctl_code_field_open",
+      "group": "CONTROL",
+      "dist": 1,
+      "src": 1,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "ctl_bad_const",
+      "group": "CONTROL",
+      "dist": 1,
+      "src": 1,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "ctl_bad_guard",
+      "group": "CONTROL",
+      "dist": 1,
+      "src": 1,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "ctl_fn_markInvalid",
+      "group": "CONTROL",
+      "dist": 1,
+      "src": 1,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "ctl_set_attr",
+      "group": "CONTROL",
+      "dist": 2,
+      "src": 2,
+      "before": [
+        2,
+        2
+      ],
+      "after": [
+        2,
+        2
+      ]
+    },
+    {
+      "key": "ctl_stop_mark",
+      "group": "CONTROL",
+      "dist": 1,
+      "src": 1,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "ctl_fn_fail",
+      "group": "CONTROL",
+      "dist": 1,
+      "src": 1,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "ctl_msg_phone",
+      "group": "CONTROL",
+      "dist": 1,
+      "src": 1,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "ctl_msg_situation",
+      "group": "CONTROL",
+      "dist": 1,
+      "src": 1,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "ctl_endpoint",
+      "group": "CONTROL",
+      "dist": 1,
+      "src": 1,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "ctl_select_situation",
+      "group": "CONTROL",
+      "dist": 1,
+      "src": 1,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        1,
+        1
+      ]
+    },
+    {
+      "key": "ctl_title",
+      "group": "CONTROL",
+      "dist": 1,
+      "src": 1,
+      "before": [
+        1,
+        1
+      ],
+      "after": [
+        1,
+        1
+      ]
+    }
+  ]
+}

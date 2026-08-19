@@ -1,0 +1,183 @@
+{
+  "chizukim": {
+    "url": "https://more30.com/chizukim",
+    "measuredAt": "2026-08-17T18:44:43.549Z",
+    "performance": 55,
+    "accessibility": 100,
+    "bestPractices": 77,
+    "seo": 100,
+    "metrics": {
+      "fcp": "10.0 s",
+      "lcp": "12.1 s",
+      "tbt": "0 ms",
+      "cls": "0.031",
+      "si": "25.4 s"
+    },
+    "failedAudits": [
+      {
+        "id": "first-contentful-paint",
+        "title": "First Contentful Paint",
+        "score": 0,
+        "display": "10.0 s"
+      },
+      {
+        "id": "largest-contentful-paint",
+        "title": "Largest Contentful Paint",
+        "score": 0,
+        "display": "12.1 s"
+      },
+      {
+        "id": "speed-index",
+        "title": "Speed Index",
+        "score": 0,
+        "display": "25.4 s"
+      },
+      {
+        "id": "server-response-time",
+        "title": "Reduce initial server response time",
+        "score": 0,
+        "display": "Root document took 1,100 ms"
+      },
+      {
+        "id": "interactive",
+        "title": "Time to Interactive",
+        "score": 0.16,
+        "display": "12.1 s"
+      },
+      {
+        "id": "third-party-cookies",
+        "title": "Uses third-party cookies",
+        "score": 0,
+        "display": "1 cookie found"
+      },
+      {
+        "id": "mainthread-work-breakdown",
+        "title": "Minimize main-thread work",
+        "score": 0.5,
+        "display": "2.4 s"
+      },
+      {
+        "id": "unminified-javascript",
+        "title": "Minify JavaScript",
+        "score": 0.5,
+        "display": "Est savings of 6 KiB"
+      },
+      {
+        "id": "unused-css-rules",
+        "title": "Reduce unused CSS",
+        "score": 0.5,
+        "display": "Est savings of 10 KiB"
+      },
+      {
+        "id": "unused-javascript",
+        "title": "Reduce unused JavaScript",
+        "score": 0.5,
+        "display": "Est savings of 60 KiB"
+      },
+      {
+        "id": "inspector-issues",
+        "title": "Issues were logged in the `Issues` panel in Chrome Devtools",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "bf-cache",
+        "title": "Page prevented back/forward cache restoration",
+        "score": 0,
+        "display": "1 failure reason"
+      },
+      {
+        "id": "cache-insight",
+        "title": "Use efficient cache lifetimes",
+        "score": 0,
+        "display": "Est savings of 43 KiB"
+      },
+      {
+        "id": "document-latency-insight",
+        "title": "Document request latency",
+        "score": 0,
+        "display": "Est savings of 3 KiB"
+      },
+      {
+        "id": "lcp-breakdown-insight",
+        "title": "LCP breakdown",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "network-dependency-tree-insight",
+        "title": "Network dependency tree",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "render-blocking-insight",
+        "title": "Render-blocking requests",
+        "score": 0.5,
+        "display": ""
+      }
+    ],
+    "mainThreadBreakdown": [
+      {
+        "group": "Other",
+        "duration": 919
+      },
+      {
+        "group": "Script Evaluation",
+        "duration": 689
+      },
+      {
+        "group": "Style & Layout",
+        "duration": 578
+      },
+      {
+        "group": "Garbage Collection",
+        "duration": 88
+      },
+      {
+        "group": "Rendering",
+        "duration": 77
+      },
+      {
+        "group": "Parse HTML & CSS",
+        "duration": 31
+      },
+      {
+        "group": "Script Parsing & Compilation",
+        "duration": 24
+      }
+    ],
+    "bootupTime": [
+      {
+        "url": "Unattributable",
+        "total": 789,
+        "scripting": 98,
+        "scriptParseCompile": 0
+      },
+      {
+        "url": "https://more30.com/chizukim",
+        "total": 787,
+        "scripting": 19,
+        "scriptParseCompile": 6
+      },
+      {
+        "url": "https://more30.com/chizukim/assets/index-B3-SjNVo.js",
+        "total": 503,
+        "scripting": 436,
+        "scriptParseCompile": 4
+      },
+      {
+        "url": "https://more30.com/auth-button.js",
+        "total": 140,
+        "scripting": 27,
+        "scriptParseCompile": 9
+      },
+      {
+        "url": "https://netfree.link/card/card-injection.js",
+        "total": 121,
+        "scripting": 67,
+        "scriptParseCompile": 4
+      }
+    ]
+  }
+}

@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <!-- מצב כהה (DESIGN_STANDARD §3). הערכה יושבת ב-css/style.css כ-
+       :root.dark; כאן מדליקים אותה. בתוך ה-<head> ולפני הציור הראשון,
+       ולכן אין הבזק לבן בדרך מדף הבית הכהה של more30. -->
+  <script>
+    (function () {
+      var mq = window.matchMedia("(prefers-color-scheme: dark)");
+      var apply = function (dark) {
+        document.documentElement.classList.toggle("dark", dark);
+      };
+      apply(mq.matches);
+      mq.addEventListener
+        ? mq.addEventListener("change", function (e) { apply(e.matches); })
+        : mq.addListener(function (e) { apply(e.matches); });
+    })();
+  </script>  <title>KioskFleet — מערכת ניהול</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <!-- Document-relative, not root-relative: this page is served both at the
+       root (Railway URL, local dev) and under more30.com/kiosk/. A leading
+       slash would send the browser to more30.com/css/style.css. -->
+  <link rel="stylesheet" href="css/style.css" />
+  <!-- כפתור «הצג סיסמה». זהו שדה הסיסמה היחיד במערכת, ולכן הכללים יושבים
+       כאן ולא ב-css/style.css המשותף. אחרי הקישור לגיליון, כדי ש-
+       .pw-wrap input ינצח את .field input באותה ספציפיות. -->
+  <style>
+    .pw-wrap { position: relative; display: block; }
+    /* הדף dir="rtl" והשדה אינו מצהיר dir משלו, ולכן הטקסט מיושר לימין
+       והקצה השמאלי הוא הפנוי; הריפוד מונע מערך ארוך לרוץ מתחת לכפתור. */
+    .pw-wrap input { padding-left: 44px; }
+    .pw-toggle { position: absolute; left: 6px; top: 50%; transform: translateY(-50%);
+                 width: 32px; height: 32px; display: flex; align-items: center;
+                 justify-content: center; padding: 0; border: none; background: none;
+                 border-radius: 8px; color: var(--muted); cursor: pointer; }
+    .pw-toggle:hover { color: var(--accent); }
+    .pw-toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+    /* החלפת האייקון נגזרת מ-aria-pressed ולא מהתכונה hidden: hidden אינה חלה
+       על אלמנט SVG (כלל [hidden] של הדפדפן הוא במרחב השמות של HTML בלבד),
+       ולכן שני האייקונים היו נצבעים זה על זה. מקור אמת אחד. */
+    .pw-toggle svg { width: 18px; height: 18px; display: block; }
+    .pw-toggle svg[data-icon="eye-off"],
+    .pw-toggle[aria-pressed="true"] svg[data-icon="eye"] { display: none; }
+    .pw-toggle[aria-pressed="true"] svg[data-icon="eye-off"] { display: block; }
+    /* כדור הכניסה המשותף <more30-auth> קבוע בפינה העליונה של החלון, וב-RTL זו
+       הפינה השמאלית — בדיוק המקום ש-justify-content:space-between מניח בו את
+       כפתורי הפעולה של .topbar. נמדד בייצור 13/08: הכדור 16..92 והכפתור
+       «הוספת מכשיר» 34..155, ו-elementFromPoint(60,40) החזיר MORE30-AUTH,
+       כלומר החצי הימני של הכפתור אינו לחיץ כלל.
+       auth-button.js מפרסם --more30-auth-inset על documentElement (104px כאן);
+       מחסירים ממנו את 34px שה-.main כבר נותן, כדי לא לספור את אותו מרווח פעמיים.
+       ה-max(0px, …) מגן מפני ערך inset קטן מהריפוד הקיים. wrap+gap כדי שבמסך
+       צר הכפתורים ירדו לשורה שנייה במקום להידחס. */
+    .topbar { padding-inline-end: max(0px, calc(var(--more30-auth-inset, 124px) - 34px));
+              flex-wrap: wrap; gap: 10px 12px; }
+  </style>
+  <!-- The platform-wide login pill. One file, loaded by every more30 system. -->
+  <script src="https://more30.com/auth-button.js" defer></script>
+</head>
+<body>
+  <!-- Login -->
+  <div id="login-view" class="auth-wrap">
+    <form class="auth-card" id="login-form">
+      <div class="brand"><span class="logo">◈</span> KioskFleet</div>
+      <h2>כניסה למערכת</h2>
+      <p class="hint">הזינו את שם המשתמש והסיסמה שקיבלתם</p>
+      <div id="login-error" class="alert alert-error hidden"></div>
+      <div class="field"><label>שם משתמש</label><input id="login-user" autocomplete="username" required /></div>
+      <div class="field">
+        <label for="login-pass">סיסמה</label>
+        <div class="pw-wrap">
+          <input id="login-pass" type="password" autocomplete="current-password" required />
+          <!-- type="button" מפורש: בתוך <form> כפתור בלי type הוא submit,
+               וכל לחיצה על «הצג» הייתה שולחת את הטופס. -->
+          <button type="button" class="pw-toggle" id="login-pass-toggle"
+                  aria-pressed="false" aria-controls="login-pass"
+                  aria-label="הצג סיסמה" title="הצג סיסמה">
+            <svg data-icon="eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+            <svg data-icon="eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.9 5.2A9.8 9.8 0 0 1 12 5c6.5 0 10 7 10 7a17.6 17.6 0 0 1-3.2 4.2M6.6 6.6A17.6 17.6 0 0 0 2 12s3.5 7 10 7a9.8 9.8 0 0 0 4.1-.9"/><path d="M10.6 10.6a2 2 0 0 0 2.8 2.8"/><path d="m2 2 20 20"/></svg>
+          </button>
+        </div>
+      </div>
+      <button class="btn btn-primary" style="width:100%" type="submit">כניסה</button>
+      <p class="hint" style="margin-top:18px"><a href="./">← חזרה לאתר</a></p>
+    </form>
+  </div>
+
+  <!-- App shell -->
+  <div id="app-view" class="app hidden">
+    <aside class="side">
+      <!-- שורת הכותרת של הסרגל. מעל 801px היא המותג לבדו בדיוק כשהיה; מתחת
+           לכך היא הסרגל כולו — המותג בהתחלה ולחצן התפריט בסוף. הלחצן לפני
+           ‎#side-panel‎ ב-DOM ולכן גם בסדר הטאבים: מגיעים אליו, פותחים,
+           וממשיכים אל שבעת פריטי הניווט ואל ההתנתקות שנחשפו. -->
+      <div class="side-head">
+        <div class="brand"><span class="logo">◈</span> KioskFleet</div>
+        <button type="button" id="side-toggle" class="btn btn-ghost btn-sm side-toggle"
+                aria-expanded="false" aria-controls="side-panel">
+          <span class="bars" aria-hidden="true"><span></span><span></span><span></span></span>
+          תפריט
+        </button>
+      </div>
+      <div id="side-panel" class="side-panel" data-open="false">
+      <!-- ‎<button>‎ ולא ‎<a>‎. אלה היו ‎<a>‎ בלי ‎href‎, ולכן לא היו במסלול
+           ה-Tab כלל: כל הניווט של הקונסולה היה בלתי-נגיש למקלדת (WCAG 2.1.1,
+           רמה A). ‎<a href>‎ אינו התיקון — הם מחליפים תצוגה בתוך הדף ואינם
+           משנים כתובת, ולכן ‎button‎ הוא הסמנטיקה הנכונה, וגם זה שמקבל
+           ‎Enter/Space‎ ואת טבעת המיקוד של הדפדפן בלי קוד. -->
+      <nav id="menu" aria-label="ניווט הקונסולה">
+        <button type="button" data-view="devices" class="active">🖥️ המכשירים שלי</button>
+        <button type="button" data-view="links">🔗 ספריית קישורים</button>
+        <button type="button" data-view="clients">🆔 מזהי לקוח</button>
+        <button type="button" data-view="enroll">➕ הוספת מכשיר</button>
+        <button type="button" data-view="guide">📖 הוראות הפעלה</button>
+        <button type="button" data-view="admin" id="menu-admin" class="hidden">👑 ניהול-על</button>
+        <button type="button" data-view="settings">⚙️ הגדרות</button>
+      </nav>
+      <div class="userbox">
+        <div id="user-name">—</div>
+        <div id="user-quota" style="color:#8fa2c0;margin:6px 0 12px"></div>
+        <!-- אותו באג: ‎<a class="btn">‎ בלי ‎href‎ — היציאה מהמערכת לא הייתה
+             ניתנת להפעלה במקלדת. -->
+        <button type="button" id="logout-btn" class="btn btn-ghost btn-sm">התנתקות</button>
+      </div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div id="content"></div>
+    </main>
+  </div>
+
+  <div id="modal-root"></div>
+  <div id="toast-root"></div>
+
+  <script src="js/app.js"></script>
+  <!-- הגילוי מקומי לדף הזה ואינו נוגע ב-js/app.js. הסקריפט רץ אחרי הטופס
+       ב-DOM, ולכן אין צורך ב-DOMContentLoaded. -->
+  <script>
+    (function () {
+      var input = document.getElementById("login-pass");
+      var btn = document.getElementById("login-pass-toggle");
+      if (!input || !btn) return;
+      btn.addEventListener("click", function () {
+        var reveal = input.type === "password";
+        input.type = reveal ? "text" : "password";
+        // aria-pressed הוא גם מצב הכפתור לקורא מסך וגם מה שמחליף את האייקון.
+        btn.setAttribute("aria-pressed", reveal ? "true" : "false");
+        var label = reveal ? "הסתר סיסמה" : "הצג סיסמה";
+        btn.setAttribute("aria-label", label);
+        btn.setAttribute("title", label);
+        input.focus();
+      });
+    })();
+  </script>
+
+  <!-- ניווט הקונסולה בנייד. בלוק ‎<script>‎ ולא ‎onclick=""‎, כמו הבלוק שב-‎<head>‎
+       ומאותה סיבה: השרת שולח ‎script-src-attr 'none'‎, שחוסם מטפל אירוע בתוך
+       תכונה. קובץ נפרד ולא ‎js/app.js‎: זהו מעטפת הדף, והוא חייב לעבוד גם אם
+       ‎app.js‎ נכשל בקריאה הראשונה לשרת — אחרת הכישלון היחיד שאפשר לצאת ממנו
+       (התנתקות) נעול מאחורי לוח שאיש אינו יכול לפתוח. -->
+  <script>
+    (function () {
+      var toggle = document.getElementById('side-toggle');
+      var panel = document.getElementById('side-panel');
+      if (!toggle || !panel) return;
+
+      // מקור אמת אחד לשני הביטויים של אותו מצב: ‎aria-expanded‎ הוא מה שקורא
+      // מסך מקריא, ‎data-open‎ הוא מה ש-CSS מצייר. כתיבה נפרדת של השניים היא
+      // בדיוק איך שלוח פתוח מוכרז כסגור.
+      var set = function (open) {
+        panel.dataset.open = open ? 'true' : 'false';
+        toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+      };
+      var isOpen = function () { return toggle.getAttribute('aria-expanded') === 'true'; };
+
+      toggle.addEventListener('click', function () { set(!isOpen()); });
+
+      // בחירת מסך סוגרת את הלוח, בלי להזיז את הפוקוס: ‎route()‎ מעביר אותו
+      // לכותרת המסך החדש (‎focusNewScreen()‎), והחזרת הפוקוס אל הלחצן כאן
+      // הייתה נלחמת בו. המאזין יושב על ‎#side-panel‎, שהוא אב של ‎#menu‎, ולכן
+      // הוא רץ **אחרי** המטפל של ‎app.js‎ בדרך למעלה — הכפתור עדיין קיים כשזה
+      // קורא את ‎dataset.view‎ שלו. ההתנתקות מוחרגת: היא מחליפה את כל הדף.
+      panel.addEventListener('click', function (e) {
+        if (!isOpen()) return;
+        if (e.target.closest('[data-view]')) set(false);
+      });
+
+      // Escape סוגר **ומחזיר את הפוקוס ללחצן**. בלי ההחזרה הפוקוס יושב על
+      // פריט שהרגע הפך ל-‎display: none‎, כלומר על ‎<body>‎.
+      document.addEventListener('keydown', function (e) {
+        if (e.key !== 'Escape' || !isOpen()) return;
+        // חלון קופץ פתוח מטפל ב-Escape בעצמו (‎modal()‎ ב-‎app.js‎), והלוח
+        // ממילא אינו נגיש מתחתיו — ‎inert‎ על הדף שמאחור.
+        if (document.querySelector('.modal-bg')) return;
+        set(false);
+        toggle.focus();
+      });
+
+      // מעל 801px ‎.side-panel‎ חוזר להיות העמודה שלו גם אם התכונה נשארה, אבל
+      // ‎aria-expanded="true"‎ היה נשאר ומתאר פקד שאיש אינו רואה — וגם חוזר
+      // איתנו למטה בסיבוב הבא.
+      var wide = window.matchMedia('(min-width: 801px)');
+      var onWide = function (e) { if (e.matches) set(false); };
+      wide.addEventListener ? wide.addEventListener('change', onWide) : wide.addListener(onWide);
+
+      set(false);
+    })();
+  </script>
+</body>
+</html>

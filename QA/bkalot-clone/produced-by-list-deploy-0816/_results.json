@@ -1,0 +1,160 @@
+{
+  "step": "produced-by-list-deploy-0816",
+  "open_line_taken": "פתוח: הפריסה. מה שנמדד כאן הוא הקוד שבמקור מול ה-DB החי, ובייצור שורת הרשימה עדיין אינה אומרת דבר; זו הלבנה הבאה, אותו פיצול כמו 0085 → 3da9647 → a6e8844.",
+  "open_line_source_commit": "4b7293d",
+  "scope": {
+    "code_change": false,
+    "migration": false,
+    "edge_function_deploy": false,
+    "bkalot_clone_admin_version": "v8 (ללא שינוי)",
+    "bkalot_clone_intake_version": "v1 (ללא שינוי)",
+    "note": "פריסה בלבד — מה שנכנס ל-commit הוא ראיות בלבד"
+  },
+  "deployed_file_is_the_source_file": {
+    "source_path": "apps/37-bkalot-clone/admin.html",
+    "source_bytes": 105128,
+    "source_md5": "DCE69974376E46B78F39ECC6B7825C1F",
+    "dist_bytes_after_stage": 105128,
+    "dist_md5_after_stage": "DCE69974376E46B78F39ECC6B7825C1F",
+    "dist_bytes_before_stage": 101368,
+    "dist_md5_before_stage": "3E0CFD8BCA3B05FEB881BB10CAF6D4CC",
+    "before_stage_was_deployed_by": "a6e8844",
+    "identical": true
+  },
+  "deployment": {
+    "id": "dpl_DMPZysc2GPcVw3NHd2vhXTK7Age5",
+    "readyState": "READY",
+    "target": "production",
+    "files_staged": 38,
+    "from": "portal/dist",
+    "prebuilt": false,
+    "prebuilt_note": "--prebuilt מפיל את vercel.json ואיתו את כל מפת ה-rewrites"
+  },
+  "markers": {
+    "method": "אותם 12 מסומנים של produced-by-list-ui-0816/http-probe.mjs, מילה במילה — הצד השני של אותה מדידה",
+    "NEW_before_live": { "function producedBit(c)": 0, "const produced = producedBit(c);": 0, "last_produced_by_name": 0, "מי הפיק אינו ידוע": 0 },
+    "NEW_after_live": { "function producedBit(c)": 1, "const produced = producedBit(c);": 1, "last_produced_by_name": 2, "מי הפיק אינו ידוע": 1 },
+    "NEW_source": { "function producedBit(c)": 1, "const produced = producedBit(c);": 1, "last_produced_by_name": 2, "מי הפיק אינו ידוע": 1 },
+    "DIFF_grew_to_source": { "הופק על ידי": "3 → 4", "fillProducedCell": "4 → 6", "Object.hasOwn": "2 → 4", "documents_count": "2 → 6" },
+    "OLD_unchanged": { "fillDecidedLine": 5, "fillQueueCell": 2, "fillTemplateCell": 4, "decidedBit(c)": 2 },
+    "both_urls_identical": true,
+    "new_zero_live_before": true,
+    "new_equals_source_after": true,
+    "diff_equals_source_after": true,
+    "old_equal_before_and_after": true
+  },
+  "http": {
+    "admin_bytes_before": 101604,
+    "admin_bytes_after": 105364,
+    "source_bytes": 105128,
+    "netfree_delta": 236,
+    "replacement_chars": 0,
+    "double_encoded": 0,
+    "control_bkalot_studio_bytes": 32558,
+    "control_more30_bytes": 3517,
+    "controls_moved": false
+  },
+  "four_states_in_production": {
+    "measured_from": "https://more30.com/bkalot-studio/admin",
+    "single_page_load": true,
+    "login": "התחברות אמיתית דרך המסך בחשבון 74",
+    "rows_returned": 4,
+    "states": [
+      {
+        "case": 217,
+        "how": "לחיצת «הפק מסמך» על המסך החי, דרך השער v8",
+        "db": { "document_id": 153, "produced_by": 74, "body_chars": 2501 },
+        "cell_text": "הופק על ידי QA 0088 מפיק ברשימה בייצור",
+        "title": "מזהה מנהל 74 · ההפקה האחרונה בלבד — «הפק מחדש» דורס את הקודמת ואין היסטוריה",
+        "class": ""
+      },
+      {
+        "case": 218,
+        "how": "bkalot_clone_render בארגומנט אחד — צורת v7",
+        "db": { "document_id": 152, "produced_by": null, "body_chars": 2508 },
+        "cell_text": "מי הפיק אינו ידוע",
+        "title": "ההפקה נרשמה לפני שהשער העביר את זהות המנהל, ולכן נשמר הגוף בלבד",
+        "class": "stale"
+      },
+      {
+        "case": 219,
+        "how": "render דרך השער v8 בחשבון 75, ואז מחיקת חשבון 75 — לא UPDATE ידני",
+        "db": { "document_id": 151, "produced_by": 75, "body_chars": 2505, "admin75_rows_after_delete": 0 },
+        "cell_text": "הופק בידי מנהל #75 · החשבון אינו קיים עוד",
+        "title": "הזהות נשמרה על המסמך בזמן ההפקה, וחשבון הניהול שהיא מצביעה עליו כבר אינו במסד",
+        "class": "stale"
+      },
+      {
+        "case": 220,
+        "how": "לא הופק עליה מסמך כלל",
+        "db": { "document_id": null, "produced_by": null },
+        "cell_text": null,
+        "note": "שותקת — documents_count=0 הוא התנאי הראשון בפונקציה, ולכן אין כאן «אינו ידוע»"
+      }
+    ],
+    "left_join_bought_in_production": "שורת פנייה 219 נשארה ברשימה אחרי מחיקת המפיק. כאן INNER היה חמור יותר מאשר במסך המסמך: לא מרוקן שדה אחד אלא מעלים את הפנייה כולה מרשימת העבודה."
+  },
+  "measured_not_assumed": {
+    "console": "אפס הודעות, אפס שגיאות, אפס אזהרות על הכתובת החיה",
+    "url_cache_busted": true,
+    "url_not_the_exposed_one": true,
+    "screenshot_count": 1,
+    "screenshot_md5": "49E70A74",
+    "all_four_rows_in_fold": true,
+    "row_rects": { "220": "342→426", "219": "434→517", "218": "525→609", "217": "617→701", "window": 900 },
+    "page_scrollable": false
+  },
+  "warnings": [
+    {
+      "what": "typeof producedBit החזיר false ב-DOM החי",
+      "why": "הפונקציה יושבת בתוך תחום בלוק ואינה גלובלית — היעדר בשם הגלובלי אינו היעדר בקובץ",
+      "how_resolved": "נמדדה ספירת המסומנים בטקסט הסקריפט המוגש: ארבעת מסומני NEW נמצאו (1/1/2/1), זהים למקור"
+    },
+    {
+      "what": "שני צילומי מסך יצאו עם אותו MD5 בדיוק (49E70A74)",
+      "why": "העמוד אינו נגלל (scrollHeight 900 = חלון 900), ולכן scrollIntoView לא הזיז דבר והצילום השני היה אותו viewport",
+      "how_resolved": "נמדד שארבע השורות נמצאות כולן בתוך הקיפול (342→701), ולכן צילום אחד הוא הראיה הנכונה; הכפול נמחק ולא נשמר כמדידה שנייה — תקלת screenshot-evidence-below-the-fold"
+    },
+    {
+      "what": "admins_deleted החזיר 1 ולא 2",
+      "why": "חשבון 75 נמחק כבר בזמן המדידה עצמה, כחלק ממצב C",
+      "how_resolved": "צפוי ונרשם; אי-קיומו של 75 נמדד בפקודה נפרדת משלו — תקלת cte-delete-sees-prestatement-snapshot"
+    }
+  ],
+  "test_mode": {
+    "intake_queued": [false, false, false, false],
+    "render_queued": [false, false, false],
+    "documents_with_queue_id": 0,
+    "outbound_queue_before": 8,
+    "outbound_queue_after": 8,
+    "queue_rows_with_sent_at": 0,
+    "queue_fingerprint_before": "050e54ab59235d105af3a10c785dbaea",
+    "queue_fingerprint_after": "050e54ab59235d105af3a10c785dbaea",
+    "delivery_log_before": 3,
+    "delivery_log_after": 3,
+    "conclusion": "אין מייל, אין הודעה ואין מסמך שיצא החוצה"
+  },
+  "rollback": {
+    "method": "שש פקודות נפרדות לפי id, כל אחת סופרת את מה שהיא עצמה מחקה",
+    "documents": 3,
+    "case_rights": 168,
+    "cases": 4,
+    "contacts": 4,
+    "admin_sessions": 2,
+    "admin_users": 1,
+    "contacts_by_id_not_phone": true
+  },
+  "baseline_after": {
+    "cases": 0, "case_rights": 0, "documents": 0, "contacts": 4,
+    "admin_users": 1, "admin_sessions": 5, "templates": 2,
+    "outbound_queue": 8, "delivery_log": 3, "catalog": 888,
+    "matches_baseline": true
+  },
+  "protected": {
+    "touched": [],
+    "verified_clean": ["apps/08-bkalut-app", "apps/09-bkalot-admin", "apps/37-bkalot-clone", "supabase/functions"],
+    "schemas_untouched": ["csj", "csj_src", "igud"],
+    "git_add_explicit_paths": true
+  },
+  "open": "נתיב «מי הפיק» סגור עכשיו משני המסכים ומהפריסה: עמודה (0083), שער (v8), קורא מסמך (0084), מסך מסמך (042e60f+7d7dcf2), קורא פנייה (0085), שורת פנייה (3da9647+a6e8844), קורא רשימה (0086), שורת רשימה (4b7293d) והפריסה כאן. אין קו פתוח שנשאר בו. מה שלא נבנה: אין סינון ואין מיון לפי מפיק, אין last_produced_at, ואין היסטוריית מפיקים — העמודה אומרת את ההפקה האחרונה בלבד. קווים שממשיכים ולא נגעו: אין היסטוריית הכרעות; הקליטה מחברת 42 זכויות ל-treatment ואפס ל-info/reminder על אותו situation. sent בלתי-ניתן-להשגה בכוונה; bkalot_clone_admin_create אינה חשופה ב-HTTP; pdf/audio → channel_unsupported. public_visible ו-show_in_showcase של #37 נשארים false."
+}

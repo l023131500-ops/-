@@ -1,0 +1,40 @@
+zchuyot (22): every login failure said "wrong password", including the ones that were not
+
+/zchuyot/admin/login is system 22's only login screen, and it reported EVERY
+auth error as "שם משתמש או סיסמה שגויים". Three different server answers were
+collapsed into that one line: a mail that was never confirmed, a rate limit
+after a few attempts, and a request that never reached the server at all.
+Only one of the three is fixed by trying another password; the other two make
+whoever typed the correct one retry it until they give up. That is §1א's
+second bug seen from the customer's side.
+
+src/lib/authErrors.ts maps error.code to Hebrew — email_not_confirmed kept
+apart from invalid_credentials ("the password itself is fine, open the
+confirmation link"), user_banned, rate limiting by code or by status 429, and
+an AuthRetryableFetchError (no code, status 0) named as a connection problem
+rather than a credential one. An unknown code still surfaces the original
+message behind the right prefix, so nothing real gets swallowed. No signup
+codes: this screen has no signup, and no copy was written for a path that
+does not exist.
+
+MEASURED, not assumed. The auth server for this project was probed directly
+with a deliberately wrong password and answered error_code=invalid_credentials
+— so the codes being mapped are the ones it really emits. vitest 5/5. In a
+browser on the preview build: a wrong password against the real server gives
+"האימייל או הסיסמה שגויים.", and with window.fetch made to fail on the token
+call, the same form now says the server could not be reached instead of
+blaming the password. Live on more30.com/zchuyot/admin/login after deploy.
+
+DEPLOY SAFETY: the served index.html is prerendered (62,796 chars against
+7,355 in dist/), so dist/index.html was NOT copied over it — the assets were
+staged and only the entry hash swapped (index-BvPPDgJw → index-DL2aSDPt).
+Every other referenced hash was verified identical first.
+
+NOT COVERED, said plainly: email_not_confirmed and the rate limit were never
+triggered against a live server — one needs a fresh unconfirmed signup (no
+extra test users were created), the other needs flooding the auth server.
+Unit-tested only. And this does not unblock test@more30.com on system 22:
+that account answers invalid_credentials for the right password too, and
+still needs the user's Supabase console (NEEDS_USER §0ש).
+
+Evidence: QA/zchuyot/login-errors-0812/

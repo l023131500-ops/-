@@ -1,0 +1,88 @@
+{
+  "brick": "0098 — רשימת העבודה אינה אומרת כמה נימוקים התאימו",
+  "scope": "מסד בלבד — אין שינוי במסך, אין פריסת edge function, אין פריסה לייצור",
+  "project_ref": "uhnrgujbdxhhmoxcjria",
+  "function": "public.bkalot_clone_admin_cases(jsonb)",
+  "migration_file": "supabase/migrations/0098_the_work_list_cannot_say_how_many_reasons_matched.sql",
+  "schema_migrations_version": { "before": "20260816131352", "after": "20260816162924" },
+
+  "baseline_before_everything": {
+    "cases": 0, "case_status_log": 0, "case_rights": 0, "documents": 0,
+    "admin_users": 1, "admin_sessions": 5, "templates": 2,
+    "contacts": 4, "outbound_queue": 8, "delivery_log": 3, "rights_catalog": 888
+  },
+
+  "seed": {
+    "path": "public.bkalot_clone_intake ב-SQL (אותה פונקציה שנתיב ה-HTTP קורא לה). ⚠️ נאמר ולא נבלע: לא דרך HTTP — המדידה כאן היא של פונקציית מסד ולא של השער.",
+    "case_id": 388, "contact_id": 395,
+    "full_name": "אברהם ישראלי", "phone": "0501230011", "email": "test@more30.com",
+    "kind": "info", "source": "form", "queued": false, "rights_linked": 0,
+    "first_attempt_rejected": "source='qa' → source_invalid (allowed: form/yemot/nedarim/ai/admin) — נמדד ולא הונח",
+    "transitions_via": "public.bkalot_clone_admin_set_status(p, admin 4) — ⚠️ פיגום, לא מהמסך",
+    "transitions": [
+      { "log": 113, "from": "new", "to": "in_progress", "note": "הפונה ביקש לצרף מסמכים נוספים בשבוע הבא" },
+      { "log": 114, "from": "in_progress", "to": "closed", "note": "המסמכים שצורפו שייכים לשנת המס הקודמת" },
+      { "log": 115, "from": "closed", "to": "in_progress", "note": "הטופס נשלח בדואר רשום על ידי הפונה" },
+      { "log": 116, "from": "in_progress", "to": "closed", "note": "אברהם ביקש לעדכן את מספר הטלפון" },
+      { "log": 117, "from": "closed", "to": "in_progress", "note": null }
+    ],
+    "why_five_and_four": "חמישה מעברים וארבעה נימוקים — בכוונה שני מספרים שונים, כדי ששורה שתספור מעברים במקום נימוקים תיפול כאן ולא בייצור"
+  },
+
+  "ground_truth_from_the_log": {
+    "transitions": 5, "notes": 4,
+    "ilike_מסמכים": 2, "ilike_אברהם": 1
+  },
+
+  "before": {
+    "note": "נמדד לפני המיגרציה, על אותה פנייה בדיוק",
+    "q=מסמכים":  { "total": 1, "id": 388, "matched_in_note": true,  "note_match_count_key_present": false, "notes_count_key_present": false },
+    "q=אברהם":   { "total": 1, "id": 388, "matched_in_note": false, "note_match_count_key_present": false, "notes_count_key_present": false },
+    "q=(none)":  { "total": 1, "id": 388, "matched_in_note": false, "note_match_count_key_present": false, "notes_count_key_present": false },
+    "the_two_failures": [
+      "(א) «נמצאה לפי הנימוק» עונה כן/לא ואינו עונה כמה — השורה שולחת פנימה ואינה אומרת לתוך מה",
+      "(ב) ⚠️ q=אברהם מחזיר matched_in_note=false בעוד שנימוק אחד כן מכיל «אברהם» — הגזירה של 0096 עיוורת לשורה שנמצאה גם לפי שדה נראה וגם לפי נימוק"
+    ]
+  },
+
+  "after": {
+    "q=מסמכים":    { "total": 1, "id": 388, "matched_in_note": true,  "note_match_count": 2, "notes_count": 4, "status_changes_count": 5 },
+    "q=אברהם":     { "total": 1, "id": 388, "matched_in_note": false, "note_match_count": 1, "notes_count": 4, "status_changes_count": 5,
+                     "claim": "⚠️ זהו הכשל (ב) שנסגר: false ו-1 על אותה שורה, ואינם סותרים — האחד עונה «למה נמצאה» והשני «כמה»" },
+    "q=0501230011":{ "total": 1, "id": 388, "matched_in_note": false, "note_match_count": 0, "notes_count": 4,
+                     "claim": "בקרה: המונה אינו בבואה של matched_in_note — כאן שניהם שקטים כי המונח באמת אינו באף נימוק" },
+    "q=zzzz":      { "total": 0, "claim": "אין שורה כלל" },
+    "q=%":         { "total": 0, "claim": "בקרת 0094: תו ההצבה נשאר תו — לא הציף את הרשימה" },
+    "q=(none)":    { "note_match_count": null, "notes_count": null, "jsonb_typeof": "null",
+                     "keys_present": true,
+                     "claim": "הכרעה (4): null ולא 0, והמפתחות קיימים — שלושה מצבים (מפתח חסר / null / 0) ושלושה ערכים" }
+  },
+
+  "controls_unchanged": {
+    "status_changes_count": 5, "status_deciders_count": 1,
+    "documents_count": 0, "rights_count": 0,
+    "total": "1 לפני ו-1 אחרי בכל מונח — שאילתת ה-count לא נגעה (הכרעה 6)"
+  },
+
+  "acl": {
+    "before": { "anon": false, "authenticated": false, "service_role": true,
+                "proacl": "{postgres=X/postgres,service_role=X/postgres}" },
+    "after":  { "anon": false, "authenticated": false, "service_role": true,
+                "proacl": "{postgres=X/postgres,service_role=X/postgres}" },
+    "why": "create or replace ולא drop+create — החתימה לא השתנתה, ולכן ה-ACL לא נמחק ולא נבנה מחדש (drop-function-regrants-anon-execute)"
+  },
+
+  "test_mode": {
+    "queued": false, "documents": 0, "outbound_queue": "8 לפני ואחרי",
+    "delivery_log": "3 לפני ואחרי", "outbound_queue_sent_at_not_null": 0,
+    "cases_in_sent": 0, "case_rights": 0,
+    "why": "kind=info ולא treatment, והנתיב שהשתנה קורא ואינו כותב"
+  },
+
+  "not_built_here": [
+    "אין ציטוט ואין הדגשה של המילה בתוך הנימוק — המסד אינו מחזיר את הטקסט בשורת הרשימה",
+    "אין אינדקס על case_status_log(note) ואין חיפוש טקסט מלא",
+    "אין סינון ואין מיון לפי מספר הנימוקים שהתאימו",
+    "⚠️ אין ולו תו אחד שמשתנה במסך — הרשימה עדיין אינה מציירת את המספר. זו הלבנה הבאה."
+  ]
+}

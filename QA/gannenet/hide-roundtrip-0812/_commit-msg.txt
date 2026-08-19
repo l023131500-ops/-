@@ -1,0 +1,41 @@
+40 gannenet: "hidden" removed the material from every screen except the one they all link at
+
+The open line from the last beat was that the "מוסתר מהמדף" chip on "החומרים
+שלי" had never been seen on a real item. It has now — one upload by
+test@more30.com, hidden through /api/admin/override, photographed live, then
+unhidden and deleted (QA/gannenet/hide-roundtrip-0812/).
+
+The chip works. The screenshot is what found the bug: the hidden card offered
+two buttons that disagreed. "פתיחה וצפייה" reached "החומר לא נמצא", and
+"הורדה" returned 200 image/png 2441B. The admin screen says הסתרת קובץ
+"מסירה אותו מהאתר לגמרי"; the shelf list, /api/catalog and /shelf/[id] all
+honour that, and /api/upload/[name] — the URL those three link at — consulted
+nothing. Anyone holding the address from before the hide (a shared link, browser
+history, the service worker's own offline copy) still had the file, which is the
+thing a teacher hides a material to stop.
+
+- lib/overrides.ts: isHiddenFile(id) — the single-file question, without the
+  LIST + N GETs of readOverrides(). Per-file object wins, empty means cleared,
+  legacy map only when no object exists. Not cached: a TTL here is a window in
+  which a moderated file keeps being served.
+- /api/upload/[name]: GET and HEAD answer 404 for a hidden file. 404 and not
+  403, so the service worker drops its cached copy — hiding now evicts the file
+  from browsers that already took it. Measured on production: GET 404, HEAD 404.
+- /shelf/mine: a hidden card says what happened to the material instead of
+  offering two buttons that do nothing.
+
+Open line, measured and written up but not fixed here: unhiding does not come
+back. The override object reads {} straight after the write, and both the public
+shelf and "החומרים שלי" still saw hidden — readOverrides() reads the per-file
+objects without the cache-buster setOverride() uses, and lib/overrides.ts
+already documents that Supabase's CDN was seen serving a superseded body. So
+hiding lands instantly and unhiding lags, while the admin screen reports "נשמר".
+The fix gives up edge caching on every public catalog read and deserves its own
+step with a measurement.
+
+tsc --noEmit 0, next build 0 with 180 lesson pages. Deployed from source (not
+--prebuilt): gannenet-more30, dpl_FF4qhMRTuc7nRVDndZ8aoSvkA2aj, production.
+Test mode: no user created, no message sent, no charge. The two storage objects
+written were deleted in the same run and the shelf is back to 0 items; the 258
+seed files were not touched. Protected systems (08, 09, bkalut-app,
+bkalot-admin, zr_*, NEDARIM3873) untouched; csj/csj_src/igud unused.

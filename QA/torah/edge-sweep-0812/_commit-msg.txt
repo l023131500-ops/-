@@ -1,0 +1,30 @@
+01 torah: create-admin handed anyone with the public anon key a password reset on any account (#194)
+
+The last beat left an open line: project bieebmnmkffwbqlsfozh has 15 deployed
+edge functions, not the six with source in the repo, and eight of them carry the
+exact slugs that were the holes in 21 mthbram. They had never been measured.
+
+Read them by pulling each ESZIP bundle from the Management API and cutting the
+transpiled index.ts out of it - evidence under QA/torah/edge-sweep-0812/src.
+
+Seven were what they claim to be: api serves the approved-lesson catalog
+read-only, ivr-menu the phone menu, ivr-agent and ivr-search filter approved
+lessons, ivr-submit takes IVR intake, and chat and search-lessons stop at an env
+check because no OPENAI_API_KEY is set on the project.
+
+create-admin was not. It runs on service_role and, when the email already
+exists, overwrites that user's password. Its only gate was verify_jwt, and the
+anon key is a valid JWT shipped to every browser. Measured before touching
+anything: anon key with an empty body returned 400 "Email and password required"
+- its own validation, so the handler ran. The takeover itself was not
+demonstrated; it would have overwritten a real person's password.
+
+Same fix as #160: an ADMIN_BOOTSTRAP_SECRET gate that fails closed, ahead of
+req.json() and of every auth.admin call. The secret is deliberately left unset -
+no screen in the app calls this route, so disabled is the right resting state.
+Deployed as version 2 with verify_jwt preserved. After: 503 for the anon key with
+no body, with credentials, and with a wrong secret; 401 with no key at all.
+
+Filed #195 for the trap this leaves behind: setting OPENAI_API_KEY on this
+project would instantly turn chat and search-lessons into uncapped spenders, and
+search-lessons puts synagogue and org public_token into its system prompt.

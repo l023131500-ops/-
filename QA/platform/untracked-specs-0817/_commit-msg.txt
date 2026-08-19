@@ -1,0 +1,17 @@
+תחזוקה: הוסף לגיט את BKALOT_CLONE_BUILD.md ו-BKALOT_AUTOMATION_BUILD.md — היו קיימים רק בעץ העבודה
+
+RUN_INSTRUCTIONS.md שורה 6 מפנה במפורש לשני הקבצים האלה כקריאת-חובה בכל
+סבב ("אם קיימים: BKALOT_CLONE_BUILD.md, BKALOT_AUTOMATION_BUILD.md"), וגם
+more30-priority.md §5ב מפנה ל-BKALOT_CLONE_BUILD.md כמפרט המלא לשכפול
+בקלות התפעולית (עדיפות #1 של המשתמש). בפועל שני הקבצים היו untracked —
+קיימים רק על הדיסק המקומי, לא בגיט. אם עץ העבודה היה משוחזר מקלון נקי
+(או אבד), המפרטים האלה היו נעלמים בלי סימן.
+
+נבדק שאין בהם סודות/טוקנים לפני הקומיט (grep ל-eyJ/Bearer/service_role/
+password/api_key — אין התאמות). לא נגעתי בשאר קבצי ה-untracked בשורש
+(מסמכי .docx, קבצי .cmd של לולאת ההרצה, ראיות QA היסטוריות) — אלה מחוץ
+לתחום הצעד הזה; יש עוד כמה עשרות קבצים untracked שכדאי לסקור בצעד נפרד
+ולא בבת אחת.
+
+Supabase MCP לא היה מחובר בסשן הזה (נבדק עם ToolSearch) — heartbeat נכתב
+כקובץ ממתין, לא כשורת core.run_progress אמיתית.

@@ -1,0 +1,34 @@
+﻿=== login ===
+[01] login
+     HTTP 200  {"ok":true,"admin":{"id":4,"email":"l023131500@gmail.com","full_name":"מנהל־על"},"token":"UPNWHkN2cJQKaGkiapF5KlQEKX_QsVVFx2KdqxaKZpE","expires_at":"2026-08-17T12:40:46.597857+00:00"}
+     logged in as l023131500@gmail.com
+
+=== baseline (no filters) ===
+[02] cases: no filters
+     HTTP 200  {"ok":true,"cases":[],"limit":50,"total":0,"offset":0,"q_phone":null,"queue_total":null,"admin":{"id":4,"email":"l023131500@gmail.com","full_name":"מנהל־על"}}
+
+=== the four filter-validation branches, never measured over HTTP before ===
+[03] cases: kind=bogus
+     HTTP 200  {"ok":false,"error":"kind_unknown","allowed":["info","reminder","treatment"],"admin":{"id":4,"email":"l023131500@gmail.com","full_name":"מנהל־על"}}
+[04] cases: status=bogus
+     HTTP 200  {"ok":false,"error":"status_unknown","allowed":["new","in_progress","sent","closed","rejected"],"admin":{"id":4,"email":"l023131500@gmail.com","full_name":"מנהל־על"}}
+[05] cases: decided=bogus
+     HTTP 200  {"ok":false,"error":"decided_unknown","allowed":["yes","no"],"admin":{"id":4,"email":"l023131500@gmail.com","full_name":"מנהל־על"}}
+[06] cases: sort=bogus
+     HTTP 200  {"ok":false,"error":"sort_unknown","allowed":["created_at","decided_at"],"admin":{"id":4,"email":"l023131500@gmail.com","full_name":"מנהל־על"}}
+
+=== controls: the values each branch does accept ===
+[07] cases: kind=info
+     HTTP 200  {"ok":true,"cases":[],"limit":50,"total":0,"offset":0,"q_phone":null,"queue_total":0,"admin":{"id":4,"email":"l023131500@gmail.com","full_name":"מנהל־על"}}
+[08] cases: status=new
+     HTTP 200  {"ok":true,"cases":[],"limit":50,"total":0,"offset":0,"q_phone":null,"queue_total":0,"admin":{"id":4,"email":"l023131500@gmail.com","full_name":"מנהל־על"}}
+[09] cases: decided=no
+     HTTP 200  {"ok":true,"cases":[],"limit":50,"total":0,"offset":0,"q_phone":null,"queue_total":0,"admin":{"id":4,"email":"l023131500@gmail.com","full_name":"מנהל־על"}}
+[10] cases: sort=decided_at
+     HTTP 200  {"ok":true,"cases":[],"limit":50,"total":0,"offset":0,"q_phone":null,"queue_total":null,"admin":{"id":4,"email":"l023131500@gmail.com","full_name":"מנהל־על"}}
+
+=== logout (leave no session behind) ===
+[11] logout
+     HTTP 200  {"ok":true,"revoked":1}
+
+done: 11 requests

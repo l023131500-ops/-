@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light dark" />
+    <!-- מצב כהה (DESIGN_STANDARD §3). הערכה הכהה כבר כתובה בגיליונות של
+         המערכת — ‎scripts/qa/dark-probe.mjs‎ מצא כאן 12 חוקי ‎.dark‎ פעילים,
+         והוספת המחלקה מעבירה את הרקע מ-‎rgb(248,246,242)‎ ל-‎rgb(18,25,28)‎.
+         חסר היה רק מי שידליק אותה. רץ בתוך ה-‎<head>‎ לפני הציור הראשון,
+         ולכן אין הבזק לבן.
+
+         ⚠️ שינוי תצוגה בלבד, ואינו נוגע בשרת ‎bkalut-app‎ המוגן: הוא נפרס
+         רק לפרויקט ‎mechiron-more30‎ ב-Vercel. -->
+    <script>
+      (function () {
+        var mq = window.matchMedia("(prefers-color-scheme: dark)");
+        var apply = function (dark) {
+          document.documentElement.classList.toggle("dark", dark);
+          document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+        };
+        apply(mq.matches);
+        mq.addEventListener
+          ? mq.addEventListener("change", function (e) { apply(e.matches); })
+          : mq.addListener(function (e) { apply(e.matches); });
+      })();
+    </script>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>מאגר בקלות — כלי פנימי לצוות</title>
+    <meta name="description" content="מאגר פנימי לחיפוש זכויות, הטבות וארגוני סיוע — בקלות" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- טעינה לא-חוסמת: preload + מעבר ל-stylesheet רק אחרי טעינה (loadCSS
+         pattern, זהה לתיקון ב-01/02/03/04/06/10/12/32). ה-<link rel="stylesheet">
+         הסינכרוני היה render-blocking-insight, ~640ms חיסכון אפשרי. -->
+    <link
+      rel="preload"
+      as="style"
+      href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&family=Frank+Ruhl+Libre:wght@500;700;900&display=swap"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&family=Frank+Ruhl+Libre:wght@500;700;900&display=swap"
+      rel="stylesheet"
+      media="print"
+      onload="this.media='all'"
+    />
+    <noscript>
+      <link
+        href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&family=Frank+Ruhl+Libre:wght@500;700;900&display=swap"
+        rel="stylesheet"
+      />
+    </noscript>
+    <!-- בקלות Global Design Tokens (Supabase Storage) — additive, loads before app styles so local CSS can override -->
+    <link rel="stylesheet" href="https://bieebmnmkffwbqlsfozh.supabase.co/storage/v1/object/public/design/bkalot-theme.css" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+    <!-- כפתור הכניסה המשותף של more30 (DESIGN_STANDARD §9). היה חסר:
+         `scripts/qa/authbutton-overlap.mjs` דיווח "no pill" על ‎/mechiron‎
+         בשני הרוחבים.
+
+         ⚠️ תוספת תצוגה בלבד, ואינה נוגעת בשרת ‎bkalut-app‎ המוגן — היא
+         נפרסת רק לפרויקט ‎mechiron-more30‎ ב-Vercel. הכפתור נטען מ-
+         ‎more30.com‎ ואינו קיים בדומיינים של בקלות עצמה. -->
+    <script src="https://more30.com/auth-button.js" defer></script>
+  </body>
+</html>

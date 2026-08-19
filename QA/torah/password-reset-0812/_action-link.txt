@@ -1,0 +1,1 @@
+https://bieebmnmkffwbqlsfozh.supabase.co/auth/v1/verify?token=<נוצל ונמחק — הוסתר>&type=recovery&redirect_to=https%3A%2F%2Fmore30.com%2Ftorah%2Fauth%2Freset%3Fnext%3D%252Fportal

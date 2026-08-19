@@ -1,0 +1,70 @@
+{
+  "non_string_q": {
+    "object": {
+      "status": 200,
+      "ok": true,
+      "error": null,
+      "n": 3,
+      "matched": [
+        false,
+        false,
+        false
+      ]
+    },
+    "array": {
+      "status": 200,
+      "ok": true,
+      "error": null,
+      "n": 3,
+      "matched": [
+        false,
+        false,
+        false
+      ]
+    },
+    "number": {
+      "status": 200,
+      "ok": true,
+      "error": null,
+      "n": 3,
+      "matched": [
+        false,
+        false,
+        false
+      ]
+    },
+    "null": {
+      "status": 200,
+      "ok": true,
+      "error": null,
+      "n": 3,
+      "matched": [
+        false,
+        false,
+        false
+      ]
+    },
+    "bool": {
+      "status": 200,
+      "ok": true,
+      "error": null,
+      "n": 3,
+      "matched": [
+        false,
+        false,
+        false
+      ]
+    }
+  },
+  "list": {
+    "status": 200,
+    "ok": true,
+    "total": 1,
+    "ids": [
+      374
+    ],
+    "matched_in_note": [
+      true
+    ]
+  }
+}

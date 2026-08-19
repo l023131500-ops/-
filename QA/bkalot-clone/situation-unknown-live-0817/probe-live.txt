@@ -1,0 +1,45 @@
+QA 0817 — bkalot-clone: situation_unknown, measured live in production.
+
+Endpoint: https://uhnrgujbdxhhmoxcjria.supabase.co/functions/v1/bkalot-clone-intake
+Method: POST, PowerShell (Invoke-WebRequest), anon key — not the browser, so the
+client-side <select id="situation"> (apps/37-bkalot-clone/index.html:252-277,
+24 options) never lets an unknown situation value reach the server through the
+visible form. Same reachability gap as topic_no_invalid
+(QA/bkalot-clone/topic-no-invalid-live-0817/), found by reading 0058's branches
+line-by-line: situation_unknown (0058 line 118-121) had never been measured
+against the live deployed function.
+
+--- Request: situation not in rights.situation_map ---
+Body: {"kind":"treatment","source":"form","full_name":"QA Situation",
+"phone":"0500000000","email":"qa.situation.0817@more30.com",
+"note":"QA 0817 situation_unknown live production check","consent":"true",
+"situation":"not_a_real_situation_xyz"}
+
+Response: HTTP 200
+{"ok": false, "error": "situation_unknown", "allowed": ["conflict_zone",
+"disability", "engaged", "family_1_3", "family_4plus", "family_grown_kids",
+"holocaust_survivor", "idf_disabled", "low_income", "married_no_kids",
+"new_immigrant", "pre_retirement", "property_owner", "released_prisoner",
+"reserves", "self_employed", "seniors", "single_parent", "special_needs_child",
+"student", "unemployed", "widow_survivor", "work_injury", "young_single"]}
+
+--- What this confirms ---
+1. No 502 / leaked SQLSTATE — clean HTTP 200 with a structured error, same
+   shape as every other 0058 validation branch.
+2. The 24 values in "allowed" are exactly the 24 values the client's
+   <select id="situation"> offers (index.html:252-277) — confirmed by direct
+   comparison, value-for-value. This is why the branch is unreachable from the
+   visible form: the dropdown can only send values the server already knows.
+3. MESSAGES.situation_unknown (index.html:291, "המצב שנבחר אינו מוכר למערכת.
+   רעננו את הדף ובחרו מחדש.") and CODE_FIELD.situation_unknown -> "situation"
+   (index.html:348) are already present and already correct — no client change
+   needed, unlike topic_no_invalid which needed its own MESSAGES/CODE_FIELD
+   entries added earlier. This step is measurement-only.
+4. Not written: the situation_unknown check (0058 lines 118-121) returns
+   before the insert into bkalot_auto.contacts and bkalot_clone.cases — read
+   directly from the deployed migration source, not assumed. The request
+   created no contact and no case row.
+
+Protected: no read or write to apps/08-bkalut-app, apps/09-bkalot-admin,
+apps/37-bkalot-clone, zr_*, NEDARIM3873. Test mode — no outbound message, no
+queue row (situation_unknown returns before any row exists to queue).

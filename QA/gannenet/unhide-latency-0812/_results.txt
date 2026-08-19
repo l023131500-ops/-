@@ -1,0 +1,16 @@
+
+=== unhide latency @ 2026-08-12T13:52:29.964Z ===
+200   sign-in test@more30.com — user 78600fbc-3fd3-4f02-8552-e93ab6559649
+200   upload — {"ok":true,"item":{"id":"up_msq5ffgb_21cd","title":"בדיקת QA ביטול הסתרה — נמחק מיד","category":"כללי","sender":"QA more30","date":"2026-08-12","mime":"image/pn
+ok    public shelf after upload — has-it=true
+200   override hidden=true — {"ok":true,"override":{"hidden":true}}
+200   storage object after hide — {"hidden":true}
+ok    public shelf drops it — converged after 3169ms (1 reads)
+ok    mine while hidden — has-it=true hidden-flag=true
+200   override hidden=false — {"ok":true,"override":{}}
+200   storage object after unhide — {}
+ok    public shelf returns it — converged after 1563ms (1 reads)
+ok    mine after unhide — has-it=true hidden-flag=undefined
+200   delete — {"ok":true,"removed":["up_msq5ffgb_21cd.png","uploads/up_msq5ffgb_21cd.json"]}
+ok    public shelf after delete — has-it=false
+PASS  RESULT — hide=3169ms unhide=1563ms

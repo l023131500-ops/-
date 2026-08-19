@@ -1,0 +1,92 @@
+{
+  "run": "undecided-filter-0081-0814",
+  "date": "2026-08-14",
+  "layer": "שכפול בקלות שכבה 3 — רשימת העבודה",
+  "migration": "0081_the_work_list_cannot_show_only_the_cases_nobody_has_decided.sql",
+  "applied": true,
+  "scope": "public.bkalot_clone_admin_cases בלבד — create or replace, קריאה בלבד. אין שינוי סכמה, אין edge function, אין apps/37, אין פריסת פורטל.",
+
+  "baseline_before": {
+    "cases": 0, "case_rights": 0, "documents": 0, "contacts": 4,
+    "outbound_queue": 8, "queue_sent": 0, "delivery_log": 3,
+    "admin_users": 1, "templates": 2, "catalog": 888,
+    "queue_fp": "51f64bdd93798e8f15a26581f1dea677",
+    "fn_md5_prosrc": "8428c1e5fff670b1338a98555903fb8e",
+    "fn_args": "p jsonb DEFAULT '{}'::jsonb",
+    "acl": { "anon": false, "authenticated": false, "service_role": true }
+  },
+
+  "how_before_was_measured": "לא הוצהר מזיכרון: גוף 0078 הועלה כפונקציה זמנית נפרדת (zz_prev0078_admin_cases, revoke מ-public/anon/authenticated) ורץ באותה עסקה, על אותן שורות בדיוק, מול הפונקציה החדשה. ההשוואה היא n = p על ה-jsonb המלא ולא על שדה נבחר.",
+
+  "fixture": {
+    "created_via": "public.bkalot_clone_intake (הנתיב האמיתי) ואז bkalot_clone_admin_set_status ו-bkalot_clone_render",
+    "contact_id": 177,
+    "cases": [
+      { "id": 171, "kind": "info", "status": "new", "decided_at": null, "decided_by": null,
+        "meaning": "איש לא נגע בה" },
+      { "id": 172, "kind": "info", "status": "closed", "decided_at": "2026-08-14T12:18:50.796675+00:00", "decided_by": 4,
+        "meaning": "אדם הכריע — set_status עם p_admin_id=4" },
+      { "id": 173, "kind": "reminder", "status": "in_progress", "decided_at": null, "decided_by": null,
+        "meaning": "הטריגר documents_advance_case קידם אותה אחרי render (document_id 108, queued=false) — איש לא הכריע" }
+    ],
+    "why_173_is_the_control": "זו הפנייה שמפרידה בין decided_at לבין status. סינון status='new' מחזיר אותה כמטופלת ומעלים אותה מרשימת «איש לא לקח»; היא נמדדה למטה בשורת no+status=new — total 1 ו-#173 חסרה."
+  },
+
+  "matrix": [
+    { "label": "no key",        "body": {},                                    "new": { "ok": true,  "total": 3, "ids": "171,172,173" }, "prev": { "ok": true, "total": 3, "ids": "171,172,173" }, "identical_jsonb": true,  "reads": "אין רגרסיה — התשובה זהה בייט-בייט לזו של 0078" },
+    { "label": "decided=no",    "body": { "decided": "no" },                   "new": { "ok": true,  "total": 2, "ids": "171,173" },     "prev": { "ok": true, "total": 3, "ids": "171,172,173" }, "identical_jsonb": false, "reads": "הפעימה עצמה: 0078 התעלמה מהמפתח והחזירה הכול" },
+    { "label": "decided=yes",   "body": { "decided": "yes" },                  "new": { "ok": true,  "total": 1, "ids": "172" },         "prev": { "ok": true, "total": 3, "ids": "171,172,173" }, "identical_jsonb": false, "reads": "הכיוון ההפוך נשאל מאותו מפתח (הכרעה 3)" },
+    { "label": "decided=\"\"",  "body": { "decided": "" },                     "new": { "ok": true,  "total": 3, "ids": "171,172,173" }, "prev": { "ok": true, "total": 3, "ids": "171,172,173" }, "identical_jsonb": true,  "reads": "שדה בחירה ריק במסך = בלי סינון, ולא ערך פסול" },
+    { "label": "decided=maybe", "body": { "decided": "maybe" },                "new": { "ok": false, "error": "decided_unknown", "allowed": ["yes","no"] }, "prev": { "ok": true, "total": 3, "ids": "171,172,173" }, "identical_jsonb": false, "reads": "נופל במפורש ולא נבלע" },
+    { "label": "decided=true",  "body": { "decided": true },                   "new": { "ok": false, "error": "decided_unknown", "allowed": ["yes","no"] }, "prev": { "ok": true, "total": 3, "ids": "171,172,173" }, "identical_jsonb": false, "reads": "boolean אמיתי מגיע כ->>'true' ונופל — ולא מחזיר בשקט רשימה שנראית מסוננת" },
+    { "label": "no+kind=info",  "body": { "decided": "no", "kind": "info" },   "new": { "ok": true,  "total": 1, "ids": "171" },         "prev": { "ok": true, "total": 2, "ids": "171,172" },     "identical_jsonb": false, "reads": "מצטלב עם הסינונים הקיימים ואינו דורס אותם" },
+    { "label": "no+status=new", "body": { "decided": "no", "status": "new" },  "new": { "ok": true,  "total": 1, "ids": "171" },         "prev": { "ok": true, "total": 1, "ids": "171" },         "identical_jsonb": true,  "reads": "הבקרה השלילית: status='new' לבדו מחמיץ את #173 — ולכן הסינון החדש אינו כפילות של הקיים" },
+    { "label": "no+limit1",     "body": { "decided": "no", "limit": "1" },     "new": { "ok": true,  "total": 2, "ids": "173" },         "prev": { "ok": true, "total": 3, "ids": "173" },         "identical_jsonb": false, "reads": "total מונה את הקבוצה המסוננת (הכרעה 1) — ב-0078 total היה 3 על אותו עמוד" },
+    { "label": "no+limit1off1", "body": { "decided": "no", "limit": "1", "offset": "1" }, "new": { "ok": true, "total": 2, "ids": "171" }, "prev": { "ok": true, "total": 3, "ids": "172" }, "identical_jsonb": false, "reads": "עמוד 2 מחזיר את השורה השנייה של הקבוצה המסוננת ולא שורה שהוסננה החוצה" }
+  ],
+
+  "partition_check": "decided=yes (1) + decided=no (2) = 3 = בלי מפתח (3). אין שורה שנופלת בין השניים ואין שורה שנספרת פעמיים.",
+
+  "test_mode": {
+    "queued_on_render": false,
+    "documents_created": 1,
+    "documents_left": 0,
+    "outbound_queue_before_after": [8, 8],
+    "queue_sent_rows": 0,
+    "delivery_log_before_after": [3, 3],
+    "queue_fp_before_after": ["51f64bdd93798e8f15a26581f1dea677", "51f64bdd93798e8f15a26581f1dea677"],
+    "note": "אין מייל, אין הודעה ואין מסמך שיצא החוצה. הפונקציה שהשתנתה היא קריאה בלבד."
+  },
+
+  "rollback": {
+    "order": "documents(108) → case_rights(0) → cases(171,172,173) → contacts(177)",
+    "separate_statements": true,
+    "why_separate": "פקודה אחת עם CTE קוראת את התצלום שלפני הפקודה, וזו התקלה של 124cfc2 — כל מחיקה רצה לבד והמספר שחזר נבדק",
+    "contacts_deleted_by": "id ולא לפי טלפון — הטלפון נשמר מנורמל (0501234567), תקלת ac6e523",
+    "deleted": { "documents": 1, "case_rights": 0, "cases": 3, "contacts": 1 },
+    "prev_helper_dropped": true
+  },
+
+  "baseline_after": {
+    "cases": 0, "case_rights": 0, "documents": 0, "contacts": 4,
+    "outbound_queue": 8, "queue_sent": 0, "delivery_log": 3,
+    "admin_users": 1, "templates": 2, "catalog": 888,
+    "queue_fp": "51f64bdd93798e8f15a26581f1dea677",
+    "zz_prev0078_admin_cases_left": 0,
+    "fn_args": "p jsonb DEFAULT '{}'::jsonb",
+    "call_with_no_argument": "ok=true",
+    "acl": { "anon": false, "authenticated": false, "service_role": true },
+    "identical_to_before": true
+  },
+
+  "protected": "אין נגיעה ב-08/09/bkalut-app/bkalot-admin/zr_*/NEDARIM3873 ולא בסכמות csj/csj_src/igud. אין פריסת edge function — bkalot-clone-intake v1 ו-bkalot-clone-admin v7 ללא שינוי.",
+
+  "open": [
+    "אין מי ששולח את המפתח: apps/37-bkalot-clone/admin.html מרכיב את גוף הבקשה משלושה שדות בלבד (status, kind, q) — זו הלבנה הבאה (UI), ואחריה פריסת פורטל",
+    "אין מיון לפי decided_at — מחצית הלבנה של 0078 הכרעה (5) שלא נלקחה כאן",
+    "אין היסטוריית הכרעות: הכרעה קודמת נדרסת, וגם הסינון יראה רק את האחרונה",
+    "«מי הפיק» על documents אינו נכתב לשום מקום",
+    "הקליטה מחברת 42 זכויות ל-treatment ואפס ל-info על אותו situation",
+    "${out.text_chars} ו-${d.html_chars} נשארו במספר"
+  ]
+}

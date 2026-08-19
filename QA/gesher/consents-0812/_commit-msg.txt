@@ -1,0 +1,45 @@
+31 gesher: the "coming soon" screen on a live system, and the consent table nobody ever wrote to
+
+/gesher/client/consents was six lines of PlaceholderPage — the third item in the
+client area's sidebar led nowhere. This was open line (1) from run_progress #472.
+
+Nothing was missing from the database. public.client_consents has existed since
+the first migration, with a policy the client actually passes:
+
+  FOR ALL USING (auth.uid() = client_id) WITH CHECK (auth.uid() = client_id)
+
+Unlike client_profiles — the table #173 broke on, which has a SELECT-only policy —
+a client may genuinely write their own row here. The app had simply never asked.
+
+The category catalogue is not a list in the code. It is read from
+public.visibility_rules, which every authenticated user may SELECT, along with
+allowed_schema_fields — so the screen shows the customer exactly which of their
+details each partner category would see. Two categories carry fields the admin
+already ticked; the third says in as many words that none were configured.
+
+The lesson from #173 was applied up front rather than after the fact:
+setClientConsent does .select() and throws on zero rows, so a write RLS filters
+out can no longer report ok:true, and a category that is not a visibility_rules
+row is rejected before the write.
+
+VisibilityRulesGrid carried its own copy of the category label map; both sides now
+import src/lib/partner-categories.ts.
+
+Walked on more30.com with test@more30.com, both write paths, not just one:
+grant -> full reload -> still on, with the DB updated_at timestamp; revoke ->
+full reload -> off. Step 3 is exactly where the document vault failed yesterday.
+
+tsc --noEmit clean, vite build 29.10s, deployed from source (not --prebuilt)
+as dpl_CfBizxGLPxbe3gnoR9UD7zqSydnv, production, READY.
+
+Not measured, and recorded as such: client_consents was not queried directly
+(ygaqqnuyfnumezxxmtbh is not reachable from here, no SUPABASE_ACCESS_TOKEN);
+the admin side was not opened; and nothing was checked about whether any code
+ENFORCES these rules when a partner reads a client — consent is a declaration
+so far, which is a separate and larger question.
+
+Test mode: no user created, no message sent, no charge. Protected systems
+(08, 09, bkalut-app, bkalot-admin, zr_*, NEDARIM3873) untouched; csj/csj_src/igud
+not used.
+
+core.issues #175 filed as fixed. Evidence: QA/gesher/consents-0812/

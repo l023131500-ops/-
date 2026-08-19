@@ -29,6 +29,24 @@ if (Test-Path $linkSrc) {
   Write-Warning "portal/vercel.project.json חסר — הפריסה עלולה ליצור פרויקט חדש במקום לעדכן את more30-portal"
 }
 
+# 37 bkalot-clone — עמוד סטטי יחיד בלי build ובלי נכסים יחסיים, ולכן הוא מוגש
+# מתוך הפורטל עצמו ולא מפרויקט Vercel נפרד. המקור נשאר apps/37-bkalot-clone
+# (שם יושב גם app.json), ומועתק לכאן בכל staging כדי שלא יהיה עותק שני בריפו
+# שיכול להיפרד מהראשון. throw ולא warning: פריסה בלי הקובץ מגישה 404 בנתיב
+# שה-rewrite כבר מכריז עליו.
+$cloneSrc = Join-Path $root 'apps\37-bkalot-clone\index.html'
+if (-not (Test-Path $cloneSrc)) {
+  throw "apps/37-bkalot-clone/index.html חסר — /bkalot-studio ייפרס כ-404"
+}
+$cloneAdminSrc = Join-Path $root 'apps\37-bkalot-clone\admin.html'
+if (-not (Test-Path $cloneAdminSrc)) {
+  throw "apps/37-bkalot-clone/admin.html חסר — /bkalot-studio/admin ייפרס כ-404"
+}
+$cloneDst = Join-Path $dist 'bkalot-studio'
+New-Item -ItemType Directory -Force -Path $cloneDst | Out-Null
+Copy-Item $cloneSrc (Join-Path $cloneDst 'index.html') -Force
+Copy-Item $cloneAdminSrc (Join-Path $cloneDst 'admin.html') -Force
+
 $apiSrc = Join-Path $portal 'api'
 if (Test-Path $apiSrc) {
   $apiDst = Join-Path $dist 'api'

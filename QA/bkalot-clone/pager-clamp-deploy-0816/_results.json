@@ -1,0 +1,118 @@
+{
+  "brick": "pager-clamp-deploy-0816",
+  "kind": "deploy-only",
+  "priority": "§5ב — שכפול בקלות שכבה 3",
+  "takes_line_from": "a795108 (heartbeat 644)",
+  "code_changed": false,
+  "migration": false,
+  "edge_function_deployed": false,
+  "file": {
+    "path": "apps/37-bkalot-clone/admin.html",
+    "source_bytes": 136547,
+    "source_md5": "96D642E37D6ABA06509CD06017558119",
+    "dist_before_staging_bytes": 134160,
+    "dist_before_staging_md5": "9D4E4787511AD70FAA99017F660E7175",
+    "dist_after_staging_bytes": 136547,
+    "dist_after_staging_md5": "96D642E37D6ABA06509CD06017558119",
+    "dist_before_is_what_2346adb_deployed": true
+  },
+  "deploy": {
+    "id": "dpl_3Eu6RtqSuASoJqJnWNCEj8CKfvT8",
+    "readyState": "READY",
+    "target": "production",
+    "aliased": "more30.com",
+    "files": 38,
+    "prebuilt": false,
+    "source": "portal/dist"
+  },
+  "http": {
+    "urls_measured": [
+      "https://more30.com/bkalot-studio/admin",
+      "https://more30.com/bkalot-studio/admin/"
+    ],
+    "bytes_before": 134396,
+    "bytes_after": 136783,
+    "netfree_delta": 236,
+    "replacement_chars": 0,
+    "double_encoded": 0,
+    "new_markers": 8,
+    "new_zero_in_live_before": true,
+    "new_equals_source_after": true,
+    "diff_markers": 2,
+    "diff_below_source_before": true,
+    "diff_equals_source_after": true,
+    "diff_values_after": {
+      "Math.ceil(total / PAGE)": "2 → 2",
+      "render(cases)": "2 → 2"
+    },
+    "control_markers": 21,
+    "old_unchanged_before": true,
+    "old_unchanged_after": true,
+    "reclassified_markers": 0,
+    "control_urls": {
+      "https://more30.com/bkalot-studio/": 32558,
+      "https://more30.com/": 3517
+    }
+  },
+  "browser": {
+    "viewport": "1280x900",
+    "admin_account": 102,
+    "login": "real, through the screen",
+    "injections": 0,
+    "scripted_cases_calls": 0,
+    "live": {
+      "target_case": 298,
+      "filtered": { "rows": 20, "count": "21 פניות · מוצגות 20", "page_label": "עמוד 1 מתוך 2", "empty_hidden": true, "pager_top": 2188 },
+      "page2": { "rows": 1, "count": "21 פניות · מוצגות 1", "page_label": "עמוד 2 מתוך 2", "empty_hidden": true, "pager_top": 446 },
+      "back": { "rows": 20, "count": "20 פניות", "page_label": "עמוד 1 מתוך 1", "empty_hidden": true, "pager_hidden": true },
+      "cases_offsets": [0, 0, 20, 20, 0],
+      "clamp_fired": true,
+      "sixth_call": false,
+      "console_messages": 0
+    },
+    "control_decision_3": {
+      "filter": "sent",
+      "rows": 0,
+      "empty_hidden": false,
+      "empty_top": 342,
+      "pager_hidden": true,
+      "cases_calls": 2,
+      "clamp_fired": false,
+      "console_messages": 0,
+      "note": "total=0 with offset=0; total=0 with offset>0 is unreachable from the screen under this seed"
+    },
+    "screenshots": 4,
+    "distinct_md5": 4
+  },
+  "test_mode": {
+    "intakes": 21,
+    "queued_values": [false],
+    "case_rights": 0,
+    "documents": 0,
+    "cases_in_sent": 0,
+    "outbound_queue": 8,
+    "outbound_sent_at": 0,
+    "delivery_log": 3,
+    "outgoing_calls": 0
+  },
+  "rollback": {
+    "per_table_separate_statements": true,
+    "contacts_by_id_not_phone": true,
+    "deleted": { "case_status_log": 1, "cases": 21, "contacts": 21, "admin_sessions": 2, "admin_users": 1 },
+    "after": {
+      "cases": 0, "case_status_log": 0, "case_rights": 0, "documents": 0,
+      "admin_users": 1, "admin_sessions": 5, "templates": 2, "contacts": 4,
+      "outbound_queue": 8, "delivery_log": 3, "rights_catalog": 888
+    },
+    "baseline_exact": true
+  },
+  "protected": {
+    "git_status_clean_on": [
+      "apps/08-bkalut-app",
+      "apps/09-bkalot-admin",
+      "apps/37-bkalot-clone",
+      "supabase"
+    ],
+    "untouched": ["bkalut-app", "bkalot-admin", "zr_*", "NEDARIM3873", "csj", "csj_src", "igud"]
+  }
+}

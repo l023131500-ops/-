@@ -1,0 +1,105 @@
+{
+  "brick": "0099 — queue_total on bkalot_clone_admin_cases",
+  "kind": "migration only — no screen change, no edge function deploy, no production deploy",
+  "line_taken_from": "6849803 (heartbeat 671): «הלבנה הבאה היא UI ולא פריסה» + head of «מה שלא נבנה»: «אין «מתוך N בסך הכול»»",
+  "taken_as": "migration and not screen — admin.html:744-746 decision (2) states the screen cannot know the number",
+
+  "baseline_before": {
+    "cases": 0, "case_status_log": 0, "case_rights": 0, "documents": 0,
+    "admin_users": 1, "admin_sessions": 5, "templates": 2, "contacts": 4,
+    "outbound_queue": 8, "delivery_log": 3, "rights_catalog": 888,
+    "schema_migrations": "20260816162924", "head": "6849803"
+  },
+
+  "seed": {
+    "path": "public.bkalot_clone_intake in SQL — scaffolding, not the claim",
+    "cases": [
+      {"id": 392, "kind": "info",     "name": "אברהם ישראלי", "phone": "0501230021", "contact": 399},
+      {"id": 393, "kind": "reminder", "name": "שרה כהן",      "phone": "0501230022", "contact": 400},
+      {"id": 394, "kind": "info",     "name": "יוסף לוי",     "phone": "0501230023", "contact": 401},
+      {"id": 395, "kind": "reminder", "name": "רבקה מזרחי",   "phone": "0501230024", "contact": 402}
+    ],
+    "queued": false, "source": "form", "rights_linked": 0,
+    "why_two_kinds": "so a filter narrows for real and not in theory — 2 of 4"
+  },
+
+  "before": {
+    "real_queue_rows": 4,
+    "keys_returned": ["ok", "cases", "limit", "total", "offset", "q_phone"],
+    "calls": [
+      {"p": "{}",                 "total": 4, "has_queue_total": false},
+      {"p": "{kind:info}",        "total": 2, "has_queue_total": false},
+      {"p": "{q:אברהם}",          "total": 1, "has_queue_total": false},
+      {"p": "{status:sent}",      "total": 0, "has_queue_total": false}
+    ],
+    "failure": "not one of the six keys says 4; status=sent returns total 0 on a queue of four"
+  },
+
+  "after": {
+    "calls": [
+      {"p": "{}",                "total": 4, "queue_total": null, "key_present": true,  "note": "decision (3) — nothing filtered, total is already the queue"},
+      {"p": "{kind:info}",       "total": 2, "queue_total": 4,    "ids": ["394","392"], "note": "the failure closed — 2 out of 4"},
+      {"p": "{q:אברהם}",         "total": 1, "queue_total": 4,    "matched_in_note": false, "note_match_count": 0, "note": "0098 fields untouched — decision (7)"},
+      {"p": "{status:sent}",     "total": 0, "queue_total": 4,    "rows": 0, "note": "the sharp edge — «no cases match» on a queue of four"},
+      {"p": "{decided:no}",      "total": 4, "queue_total": 4,    "note": "a filter that excludes nothing still lights it — 4 out of 4 is a real answer"},
+      {"p": "{sort:decided_at}", "total": 4, "queue_total": null, "key_present": true,  "note": "control for decision (4) — sort is not a filter"},
+      {"p": "{limit:2}",         "total": 4, "queue_total": null, "rows": 2, "note": "control for decision (5) — paging is not filtering"},
+      {"p": "{offset:2}",        "total": 4, "queue_total": null, "rows": 2, "note": "control for decision (5)"},
+      {"p": "{kind:bogus}",      "ok": false, "error": "kind_unknown", "has_queue_total": false, "note": "the error path is untouched"}
+    ],
+    "controls_that_did_not_move": {
+      "ids_for_empty_params": ["395", "394", "393", "392"],
+      "total_for_empty_params": 4,
+      "row_set_changed": false
+    }
+  },
+
+  "acl": {
+    "why": "create or replace and not drop+create — signature (p jsonb) unchanged; drop-function-regrants-anon-execute",
+    "before": {"proacl": "{postgres=X/postgres,service_role=X/postgres}", "anon": false, "authenticated": false, "service_role": true},
+    "after":  {"proacl": "{postgres=X/postgres,service_role=X/postgres}", "anon": false, "authenticated": false, "service_role": true}
+  },
+
+  "file_equals_applied": {
+    "file_chars": 20393,
+    "applied_chars": 20392,
+    "difference": "exactly 1 — the file's trailing newline (last three code points 39, 59, 10; TrimEnd of LF gives 20392)",
+    "applied_statement_head": "-- 0099 — שכפו",
+    "note": "the header comment went in; 0098 was applied without it and lost its number in the name"
+  },
+
+  "migration_row": {
+    "version": "20260816174554",
+    "name": "0099_the_work_list_cannot_say_how_big_the_queue_is"
+  },
+
+  "test_mode": {
+    "queued": false, "documents": 0, "case_rights": 0,
+    "outbound_queue_unchanged_at": 8, "delivery_log_unchanged_at": 3,
+    "rows_with_sent_at": 0, "outbound_calls": 0,
+    "note": "the path that changed reads and does not write"
+  },
+
+  "rollback": {
+    "how": "separate statements per table, cases before contacts — cte-delete-sees-prestatement-snapshot",
+    "measured_before_deleting": {"case_status_log": 0, "case_rights": 0, "documents": 0},
+    "deleted": {"cases": [392, 393, 394, 395], "contacts": [399, 400, 401, 402]},
+    "no_admin_account_created": true,
+    "after": {
+      "cases": 0, "case_status_log": 0, "case_rights": 0, "documents": 0,
+      "admin_users": 1, "admin_sessions": 5, "templates": 2, "contacts": 4,
+      "outbound_queue": 8, "delivery_log": 3, "rights_catalog": 888,
+      "admin_cases_empty_params_total": 0
+    },
+    "on_the_now_empty_queue": {
+      "p": "{status:sent}", "queue_total": 0,
+      "note": "0 and not null — «the queue is empty» and «the queue has four and none is sent» are finally two different answers"
+    }
+  },
+
+  "not_built_here": [
+    "not one character changes on the screen — the counter still does not draw «מתוך N»",
+    "admin.html:762 title still says «כמה פניות יש בסך הכול אינו ידוע למסך», a sentence that stopped being true the moment this ran",
+    "no breakdown of the number — «how many fell outside» and «which filter narrowed» are not answerable from one number"
+  ]
+}

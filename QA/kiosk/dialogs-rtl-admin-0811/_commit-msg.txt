@@ -1,0 +1,67 @@
+kiosk (35): the eighth screen, which no harness had ever rendered
+
+apps/35-kioskfleet/STATUS.md item 7 ended on three dialog sets nobody had walked
+for painted order: clientModal, confirmDeleteClient, and the הגדרות → משתמשים
+set, "which needs a role: admin stub user". All six views are walked now, and
+reaching them meant rendering a screen that had never been on screen at all.
+
+viewAdmin() opens with `if (ME.role !== 'admin') return route('devices')`, and
+every stub user in this QA tree is an owner. So ניהול-על has been redirected
+away from, not skipped, in every run since the screen existed — item 6's "every
+console screen has now been graded" is true of the seven screens an owner can
+reach, and this is the eighth.
+
+The painted-order answer is that there is almost nothing to answer: 22 token
+pairs across six views, twenty of them the one host chip in clientModal. delUser
+is a Hebrew sentence, resetPw is a Hebrew label over an <input>, and userModal's
+five values are all inside inputs, where a Range cannot go. No defect, and four
+of the six could not have one. So the harness stops proving a dialog opened by
+requiring it to carry pairs, which is what dialogs-rtl-0811 could legitimately
+do with six dialogs full of hosts and codes: a zero census and a selector that
+missed are the same output here, so every view carries an explicit `opened` row
+read from the DOM and the census is reported beside it rather than standing in
+for it.
+
+What rendering the screen found is a layout defect no painted-order probe could
+see. Seven columns ending in three buttons, in a card 276px wide at 390px; the
+table wants 455px. loadClients() has wrapped its six-column table in an
+overflow-x:auto div since clients-console-0811 found this exact shape — this one
+never got the wrapper. Wrapped now: main goes from 512px in 390px to 390px in
+390px, and 🗑️ מחק from x = −99 to x = 70.
+
+It is reflow (WCAG 1.4.10), not an unreachable control, and the difference is
+the whole finding. documentElement.scrollWidth stays at the window width, which
+reads as "there is nothing to scroll" — but main.main is overflow:auto and is
+what absorbs the drag (scrollLeft: −99). The button can be reached, by dragging
+the entire console sideways. At 320 CSS px content must not require scrolling in
+two dimensions; one table scrolling inside its own box is the accepted shape and
+is what the wrapper produces.
+
+The stub gains an opt-in `admin` argv flag plus /api/admin/stats and
+/api/admin/users. Off by default, because an eighth sidebar item would move the
+tab stops nav-keyboard-0811 records by index; both sides are exercised (the
+client dialogs on an owner, the rest on an admin) and a row asserts the flag
+unhides #menu-admin. viewAdmin() awaits /admin/stats before calling loadUsers(),
+so without that route the table hangs on טוען… and no dialog opens — the same
+shape that left #e-list hanging before chip-ink-0811 added /enrollments.
+
+Verified in QA/kiosk/dialogs-rtl-admin-0811/ — 115/115 in a real Chromium at
+both colorScheme values x 390px and 1200px, twelve screenshots. 151/152 on
+`node --test` — the documented baseline, unchanged because this step touches no
+server code.
+
+Two wrong gradings are recorded rather than quietly dropped, because each
+overclaims in a different direction: "inside the viewport" fails with the fix in
+place (a scroll container starts at the RTL origin), and "unreachable" was
+false. A third is in the control — overflow-x:visible on the wrapper computes
+back to auto beside an overflow-y that is auto, so the first negative row
+rebuilt the fixed state while claiming to rebuild the shipped one and passed for
+the wrong reason. The wrapper is removed from the DOM instead, moved rather than
+re-created so loadUsers()'s onclick bindings survive the four dialogs opened
+after it.
+
+Found and not fixed: the admin screen is graded here for painted order and
+reflow only. Its contrast is ungraded — the one screen item 6 believed it had
+covered is the one it never saw.
+
+Not deployed. The Railway service builds from a different repo (item 1).

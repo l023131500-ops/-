@@ -1,0 +1,18 @@
+{
+  "framework": null,
+  "buildCommand": "echo no-build",
+  "outputDirectory": "public",
+  "functions": {
+    "api/index.ts": {
+      "memory": 1024,
+      "maxDuration": 30
+    }
+  },
+  "rewrites": [
+    { "source": "/imud/api/(.*)", "destination": "/api/index?__path=$1" },
+    { "source": "/api/(.*)", "destination": "/api/index?__path=$1" },
+    { "source": "/imud", "destination": "/imud/index.html" },
+    { "source": "/imud/", "destination": "/imud/index.html" },
+    { "source": "/imud/(.*)", "destination": "/imud/index.html" }
+  ]
+}

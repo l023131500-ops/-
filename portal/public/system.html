@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>מור מערכות תוכנה</title>
+    <title>עולם הסטארטאפים</title>
     <meta name="description" content="עמוד השירות — מה המערכת עושה, איך היא עובדת, והמסלולים." />
     <!-- אותו קובץ משרת כל מערכת, ולכן הכתובת הקנונית נכתבת בזמן ריצה מהנתיב
          עצמו (‎/chatzor‎, ‎/chizukim‎ …). ברירת המחדל כאן היא השורש, כדי
@@ -90,12 +90,15 @@
       [hidden] { display: none !important; }
       .skeleton { color: var(--muted); padding: 80px 0; }
     </style>
+      <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
   </head>
   <body>
     <header class="bar">
       <div class="wrap">
         <span class="dot" aria-hidden="true"></span>
-        <a class="home" href="/">מור מערכות תוכנה</a>
+        <a class="home" href="/">עולם הסטארטאפים</a>
         <span class="muted" style="font-size:13px">·</span>
         <span class="muted" style="font-size:13px" id="crumb">שירות</span>
       </div>
@@ -137,13 +140,17 @@
         <section>
           <h2>מתחילים</h2>
           <p class="muted">
-            חשבון אחד פותח את כל מערכות מור מערכות תוכנה — כניסה עם Google או עם
+            חשבון אחד פותח את כל מערכות עולם הסטארטאפים — כניסה עם Google או עם
             מייל וסיסמה, ואותו אזור אישי בכל מערכת.
           </p>
           <div class="cta">
             <a class="btn" id="enter2" href="#">כניסה למערכת</a>
             <a class="btn ghost" href="/">כל המערכות</a>
           </div>
+          <p class="note" id="adminNote" hidden>
+            <a id="adminLink" href="#">כניסה לניהול המערכת</a>
+            <span id="adminWho"></span>
+          </p>
         </section>
       </div>
 
@@ -163,7 +170,7 @@
 
     <footer>
       <div class="wrap">
-        <a href="/">מור מערכות תוכנה</a> · כל מערכת בכתובת אחת, וחשבון אחד לכולן.
+        <a href="/">עולם הסטארטאפים</a> · כל מערכת בכתובת אחת, וחשבון אחד לכולן.
       </div>
     </footer>
 
@@ -237,14 +244,14 @@
         if (!data?.found) {
           $('missing').appendChild($('missingTpl').content.cloneNode(true));
           $('missing').hidden = false;
-          document.title = 'בהכנה · מור מערכות תוכנה';
+          document.title = 'בהכנה · עולם הסטארטאפים';
           return;
         }
 
         $('content').hidden = false;
 
         const name = data.name_he || appKey;
-        document.title = `${name} · מור מערכות תוכנה`;
+        document.title = `${name} · עולם הסטארטאפים`;
         $('crumb').textContent = name;
         $('title').textContent = name;
 
@@ -280,10 +287,34 @@
           $('howSec').hidden = false;
         }
 
-        const plans = data.plans?.plans ?? [];
+        // ‎plans‎ מגיע כמערך שטוחה מ-more30_system_page. הקריאה המקוננת
+        // ‎data.plans.plans‎ שהייתה כאן החזירה undefined תמיד, ולכן גם אילו
+        // נלקח הענף הזה, מקטע המסלולים היה נשאר ריק. אותה סובלנות לשני
+        // המבנים כמו ב-subscribe.html, כדי ששני העמודים ישברו יחד או בכלל לא.
+        const plans = data.plans?.plans ?? data.plans ?? [];
+
+        // 0033 — מערכת שאינה מוצעת מקבלת מסלולים ריקים מה-RPC בכוונה. המקטע
+        // נשאר על העמוד ואומר למה, במקום כותרת "מסלולים" מעל שטח ריק: השורה
+        // "בחירת מסלול אינה מחייבת" מתחתיה הייתה נקראת כהזמנה לבחור. הענף לא
+        // יוצא מהפונקציה — קישור הניהול שמתחתיו שייך ל-§3 וממשיך להיות מצויר.
+        if (data.offered === false) {
+          $('plansLede').textContent =
+            data.offer_note ?? 'המערכת הזאת אינה מוצעת כרגע למנוי.';
+          $('planList').innerHTML = '';
+          $('plans').querySelector('.note').hidden = true;
+        } else {
         $('planList').innerHTML = plans
           .map((p) => {
-            const feats = (p.features ?? []).map((f) => `<li>${esc(f)}</li>`).join('');
+            // 57 מתוך 60 שורות המסלול הגלויות ללקוח מגיעות עם features ריק —
+            // 19 מערכות × (חינמי · בסיסי · מורחב) — ו-`<ul>${feats}</ul>` צייר
+            // עבורן ‎<ul></ul>‎: רשימה בת אפס פריטים שקורא מסך מכריז עליה, ועוד
+            // 18px של margin-bottom מתחת למחיר בלי שום דבר שמסביר אותם. רשימה
+            // נמסרת רק כשיש בה פריט. מה כל מסלול כולל בפועל הוא core.issues #92
+            // והכרעה של המשתמש — היא לא נכתבת כאן.
+            const items = Array.isArray(p.features) ? p.features : [];
+            const feats = items.length
+              ? `<ul>${items.map((f) => `<li>${esc(f)}</li>`).join('')}</ul>`
+              : '';
             const href = `/subscribe?app=${encodeURIComponent(data.app_key)}&plan=${encodeURIComponent(p.code)}`;
             const label = p.is_default ? 'התחלה בחינם' : 'בחירת המסלול';
             return `
@@ -291,13 +322,31 @@
                 <h3>${esc(p.name_he)}</h3>
                 <p class="tag">${esc(p.tagline ?? '')}</p>
                 <p class="price">${priceText(p)}</p>
-                <ul>${feats}</ul>
+                ${feats}
                 <a class="btn ${p.is_default ? 'ghost' : ''}" href="${href}">${label}</a>
               </article>`;
           })
           .join('');
+        }
 
-        if (data.plans?.plans_from === 'more30' && data.app_key !== 'more30') {
+        // §3 מבקש קישור "נהל מערכת זו" לכל מערכת, §5 מבקש ש-bkalot תוצג
+        // "כולל כניסה לניהול". הכתובת מגיעה מהמרשם ולא מרשימה שנכתבת כאן,
+        // ולכן היא לא יכולה להתיישן מול המערכות. מוצגת רק כשיש כתובת עוקבת:
+        // מערכת שהניהול שלה הוא נקודת API עם כותרת (kupot) לא מקבלת קישור,
+        // כי קישור כזה היה מוביל ל-404 ומכנה אותו "ניהול".
+        if (data.admin_url) {
+          $('adminLink').href = data.admin_url.startsWith('http')
+            ? data.admin_url
+            : `/${data.app_key}${data.admin_url}`;
+          $('adminWho').textContent =
+            data.admin_auth === 'hub'
+              ? ' · עם חשבון הניהול של עולם הסטארטאפים'
+              : ' · עם חשבון הניהול של המערכת עצמה';
+          $('adminNote').hidden = false;
+        }
+
+        const plansFrom = data.plans?.plans_from ?? data.plans_from;
+        if (plansFrom === 'more30' && data.app_key !== 'more30') {
           $('plansLede').textContent =
             'מסלולי הפלטפורמה חלים גם על השירות הזה. אפשר להתחיל בחינם.';
         }

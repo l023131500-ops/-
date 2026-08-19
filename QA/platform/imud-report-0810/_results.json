@@ -1,0 +1,100 @@
+{
+  "at": "2026-08-10T00:15:00Z",
+  "issue": 86,
+  "what": "public.more30_admin_imud_report() — התשובה המלאה, כפי שנקראה מהמסד החי ב-10/08 עם זהות הסופר-אדמין.",
+  "migration": "supabase/migrations/0053_imud_holds_two_books_and_both_of_them_belong_to_anon.sql — הוחלה על uhnrgujbdxhhmoxcjria.",
+  "guard": {
+    "function": "public.more30_is_super_admin()",
+    "admin_caller": {
+      "claims_email": "l023131500@gmail.com",
+      "is_admin": true,
+      "returned": "jsonb"
+    },
+    "non_admin_caller": {
+      "claims_email": "nobody@example.com",
+      "raised": "42501 super admin only"
+    }
+  },
+  "report": {
+    "generated_at": "2026-08-09T22:14:10.552742+00:00",
+    "app_key": "imud",
+    "table": "public.otvedaf_books",
+    "notes": {
+      "what": "מסך הקליטה של מערכת 04 (עימוד תורני). כל מה שהמערכת מחזיקה במסד הזה הוא טבלה אחת — public.otvedaf_books — לפי חוזה האחסון ב-apps/04-imud-torani/server/storage.ts. המספרים נספרים בזמן הקריאה, ואין בהם ולא ערך מוערך אחד.",
+      "zero": "0 כאן הוא מדידה ולא כשל בקריאה. ספר בלי בלוקי תוכן נספר ב-empty_books, ורשימה ריקה פירושה שאין שורות — לא שהשאילתה נכשלה.",
+      "anon": "בידוד הנתונים לפי משתמש קיים בקוד: storage.ts מסנן כל קריאה לפי user_id שמגיע מכותרת X-Visitor-Id, ונופל ל-'anon' כשאין כותרת. anon_books סופר כמה מהספרים נפלו על ברירת המחדל הזאת. כשהוא שווה ל-books — אין הפרדת משתמשים בפועל, וזה ממצא ולא פרט טכני.",
+      "templates": "קטלוג התבניות יושב בקוד (apps/04-imud-torani/shared/templates.ts), לא במסד. לכן templates סופר שימוש בפועל ולא כיסוי מתוך הקטלוג — מספר כיסוי שהיה נכתב כאן היה מתיישן בעריכת קובץ, בלי מיגרציה.",
+      "sizes": "content_bytes ו-settings_bytes הם אורך ייצוג הטקסט של ה-jsonb, כלומר סדר גודל של הספר — לא הנפח בדיסק ולא מספר העמודים המעומדות.",
+      "read_only": "הדוח קורא בלבד. אין כאן עריכה, מחיקה או שינוי בעלות: הכתיבה של המוצר עוברת דרך שרת שמחזיק service_role ומאמת בעלות לפני כל עדכון, וכתיבה ישירה מלוח הניהול הייתה עוקפת את האימות הזה."
+    },
+    "totals": {
+      "books": 2,
+      "users": 1,
+      "anon_books": 2,
+      "templates_used": 1,
+      "blocks": 5,
+      "empty_books": 0,
+      "books_no_author": 1
+    },
+    "activity": {
+      "first_created_ms": 1785271663025,
+      "first_created": "2026-07-28T20:47:43.025+00:00",
+      "last_updated_ms": 1785482416625,
+      "last_updated": "2026-07-31T07:20:16.625+00:00",
+      "span_days": 2.4,
+      "days_since_last": 9.6
+    },
+    "templates": [
+      {
+        "template_key": "iyun-two-col",
+        "books": 2,
+        "blocks": 5,
+        "last_updated": "2026-07-31T07:20:16.625+00:00"
+      }
+    ],
+    "layers": [
+      { "layer": "heading", "blocks": 2 },
+      { "layer": "main", "blocks": 2 },
+      { "layer": "footnote", "blocks": 1 }
+    ],
+    "books": [
+      {
+        "id": 5,
+        "user_id": "anon",
+        "is_anon": true,
+        "title": "ניסיון",
+        "author": "ניסיון ראשוני",
+        "template_key": "iyun-two-col",
+        "blocks": 3,
+        "content_bytes": 275,
+        "settings_bytes": 703,
+        "settings_keys": 30,
+        "page_size": "b5",
+        "columns": "2",
+        "created_at": "2026-07-31T07:20:16.625+00:00",
+        "updated_at": "2026-07-31T07:20:16.625+00:00",
+        "updated_at_ms": 1785482416625,
+        "edited_since_create": false
+      },
+      {
+        "id": 4,
+        "user_id": "anon",
+        "is_anon": true,
+        "title": "ספר חדש",
+        "author": null,
+        "template_key": "iyun-two-col",
+        "blocks": 2,
+        "content_bytes": 214,
+        "settings_bytes": 703,
+        "settings_keys": 30,
+        "page_size": "a4",
+        "columns": "2",
+        "created_at": "2026-07-28T20:47:43.025+00:00",
+        "updated_at": "2026-07-28T20:47:43.025+00:00",
+        "updated_at_ms": 1785271663025,
+        "edited_since_create": false
+      }
+    ]
+  },
+  "notes_on_86": "זו השנייה מבין שלוש המערכות שכן יושבות בהאב. 34 kesef נסגרה ב-0052 + portal/public/admin-kesef.html. נשארה 26 studio. שלוש הנותרות (17 chizukim · 12 smel · 18 orech) יושבות בפרויקטים שאינם של החשבון הזה והן הכרעה של המשתמש."
+}

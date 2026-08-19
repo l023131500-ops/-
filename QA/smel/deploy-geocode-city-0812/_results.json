@@ -1,0 +1,71 @@
+{
+  "issue": 158,
+  "app": "smel (12)",
+  "what": "פריסת התיקון שנכתב ב-7a350e0 (10-12/08) ומעולם לא הגיע לייצור: העיר שהוקלדה מגבילה את התאמת הכתובת ב-nadlan-smart-research.",
+  "target": {
+    "supabase_project_ref": "csjekrvukbdznetsrodj",
+    "project_name": "bkalut-production-user-owned",
+    "function_slug": "nadlan-smart-research",
+    "endpoint": "https://csjekrvukbdznetsrodj.supabase.co/functions/v1/nadlan-smart-research",
+    "note": "הפרויקט נושא שם bkalut אך שלוש הפונקציות שבו כולן nadlan-* (nadlan-search, nadlan-aggregates, nadlan-smart-research) — של מערכת 12. לא נגעתי במסד, בסכמות או בכל פונקציה אחרת."
+  },
+  "deploy": {
+    "method": "Supabase Management API, POST /v1/projects/csjekrvukbdznetsrodj/functions/deploy?slug=nadlan-smart-research (multipart, 4 קבצים)",
+    "script": "scripts/qa/smel-deploy-nadlan-smart-research.mjs --deploy",
+    "http": 201,
+    "version_before": 1,
+    "version_after": 2,
+    "status": "ACTIVE",
+    "verify_jwt_before": false,
+    "verify_jwt_after": false,
+    "ezbr_sha256": "2d7f021142e3bfa75c73688fd08269dd9d6de7173dcb2cff3cfee9081c740ead"
+  },
+  "pre_deploy_read": {
+    "how": "GET /v1/projects/<ref>/functions/nadlan-smart-research/body → חבילת ESZIP (7,347,257 בתים), המקור המקורי בתוכה",
+    "extract": "deployed-src-extract.txt",
+    "finding": "geo.ts הפרוסה הייתה הגרסה שלפני התיקון — geocodeAddress(searchText) בלי פרמטר cityHint, בלי resultCity/cityMatches/inCity, ו-parseGovmapResult קורא street/city רק מהמזהה הארוך. index.ts/engine.ts/sources.ts הפרוסים תואמים למקור המקומי (git: התיקייה השתנתה רק פעמיים — cb6e4f5 ייבוא המקור, 7a350e0 geo.ts בלבד)."
+  },
+  "before": {
+    "measured_at": "2026-08-12T17:36Z",
+    "measured_before_touching_anything": true,
+    "address": "יפו 30 ירושלים",
+    "http": 200,
+    "ok": true,
+    "matched_address": "דרך יפו-ת\"א 30 ת\"א",
+    "locality_name": "תל אביב-יפו",
+    "locality_code": "5000",
+    "neighborhood_name": "פלורנטין",
+    "lat": 32.060366013744336,
+    "lon": 34.77018104772663,
+    "profile_id": 44,
+    "verdict": "FAIL — כל הדוח חושב על עיר אחרת מזו שנשאלה"
+  },
+  "after": {
+    "measured_at": "2026-08-12T17:40Z",
+    "script": "scripts/qa/smel-prod-geocode-city.mjs",
+    "raw": "_after.json",
+    "passed": 3,
+    "total": 3,
+    "cases": [
+      { "address": "יפו 30 ירושלים", "locality_name": "ירושלים", "locality_code": "3000", "matched_address": "יפו 30 ירושלים", "pass": true },
+      { "address": "הרצל 10 חיפה", "locality_name": "חיפה", "locality_code": "4000", "matched_address": "הרצל 10 חיפה", "pass": true },
+      { "address": "דיזנגוף 100 תל אביב", "locality_name": "תל אביב-יפו", "locality_code": "5000", "matched_address": "דיזנגוף 100 תל אביב", "pass": true }
+    ],
+    "checked_per_case": ["היישוב שהוחזר", "סמל היישוב (locality_code — כל מספר בדוח מפתחו)", "קואורדינטות אמיתיות ולא 0"]
+  },
+  "browser": {
+    "url": "https://more30.com/smel → #/report",
+    "input": "עיר=ירושלים · רחוב=יפו · מספר=30",
+    "screenshot": "after-jerusalem-report.png",
+    "shows": "«יפו 30 ירושלים» · «ירושלים · מרכז העיר» · ציון כדאיות 69. באנר אי-ההתאמה שנוסף ב-#158 לא מופיע — אין יותר מה להתריע עליו."
+  },
+  "not_measured": [
+    "מסלול «אין מועמד בעיר שהוקלדה» — הכלל הישן אמור לרוץ אז על כל הרשימה. לא הודגם מול הייצור; הוא מכוסה במקור ב-scripts/qa/smel-geocode-city.mjs.",
+    "nadlan-search ו-nadlan-aggregates לא נקראו, לא נפרסו ולא קיבלו אף בקשה."
+  ],
+  "side_effects": {
+    "rows_written": "כל קריאה מוצלחת כותבת שורה ל-nadlan.location_profiles (זו התנהגות רגילה של כל גולש). נכתבו 4 שורות במדידות האלה + אחת מהדפדפן.",
+    "billing": "לא בוצע חיוב, לא נשלחה הודעה. כל המקורות שהפונקציה קוראת חינמיים (govmap, data.gov.il, nadlan.gov.il, Overpass)."
+  },
+  "protected_untouched": ["08", "09", "bkalut-app", "bkalot-admin", "zr_*", "NEDARIM3873", "csj", "csj_src", "igud"]
+}

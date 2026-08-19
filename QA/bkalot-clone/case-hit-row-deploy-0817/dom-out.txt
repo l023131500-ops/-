@@ -1,0 +1,21 @@
+﻿טופס
+  badges: [null,null,"זה הנימוק שהתאים — 3 הופעות"]
+  marks/row=[0,0,3] per_row_ok=true sum=3 tally=3 sum_ok=true
+  tally: "מונח החיפוש «טופס» נמצא ב-1 מתוך 3 הנימוקים שנכתבו כאן — 3 פעמים בסך הכול."  changes: "רצף ההכרעות (3 מעברים)"  overflow=0
+email
+  badges: ["זה הנימוק שהתאים — 2 הופעות",null,null]
+  marks/row=[2,0,0] per_row_ok=true sum=2 tally=2 sum_ok=true
+  tally: "מונח החיפוש «email» נמצא ב-1 מתוך 3 הנימוקים שנכתבו כאן — 2 פעמים בסך הכול."  changes: "רצף ההכרעות (3 מעברים)"  overflow=0
+נשלח
+  badges: ["זה הנימוק שהתאים — הופעה אחת",null,"זה הנימוק שהתאים — הופעה אחת"]
+  marks/row=[1,0,1] per_row_ok=true sum=2 tally=2 sum_ok=true
+  tally: "מונח החיפוש «נשלח» נמצא ב-2 מתוך 3 הנימוקים שנכתבו כאן — 2 פעמים בסך הכול."  changes: "רצף ההכרעות (3 מעברים)"  overflow=0
+המס הקודמת
+  badges: [null,"זה הנימוק שהתאים — הופעה אחת",null]
+  marks/row=[0,1,0] per_row_ok=true sum=1 tally=1 sum_ok=true
+  tally: "מונח החיפוש «המס הקודמת» נמצא ב-1 מתוך 3 הנימוקים שנכתבו כאן — פעם אחת בסך הכול."  changes: "רצף ההכרעות (3 מעברים)"  overflow=0
+אברהם
+  badges: [null,null,null]
+  marks/row=[0,0,0] per_row_ok=true sum=0 tally=null sum_ok=null
+  tally: "מונח החיפוש «אברהם» אינו נמצא באף אחד מ-3 הנימוקים שנכתבו כאן."  changes: "רצף ההכרעות (3 מעברים)"  overflow=0
+console: []

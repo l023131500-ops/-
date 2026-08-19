@@ -1,0 +1,5 @@
+heartbeat: pending row for orech-lh-0817 (6867175) - Supabase MCP not connected this session
+
+core.run_progress insert is staged in QA/platform/orech-lh-0817/_heartbeat-pending.sql,
+apply it once the Supabase MCP is available. See d2ed6ce-era pattern (this is the
+Nth commit in the 17/08 sweep to fall back to a file for the same reason).

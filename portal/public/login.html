@@ -3,8 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>כניסה · מור מערכות תוכנה</title>
-    <meta name="description" content="כניסה אחת לכל מערכות מור מערכות תוכנה — חשבון Google, שם משתמש וסיסמה, או פתיחת חשבון חדש." />
+    <title>כניסה · עולם הסטארטאפים</title>
+    <meta name="description" content="כניסה אחת לכל מערכות עולם הסטארטאפים — חשבון Google, שם משתמש וסיסמה, או פתיחת חשבון חדש." />
     <meta name="robots" content="noindex" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -79,6 +79,36 @@
       }
       input.he { direction: rtl; }
       input:focus { outline: 2px solid var(--gold); outline-offset: 1px; border-color: transparent; }
+      /* שדה הסיסמה מקבל כפתור "עין" בתוך המסגרת. השדה עצמו dir=ltr (סיסמה
+         אינה טקסט עברי), ולכן הנקודות נכתבות משמאל לימין והצד הפנוי הוא
+         הימני — שם יושב הכפתור, והריפוד הימני שומר שהתווים לא ייכנסו מתחתיו. */
+      .pw-wrap { position: relative; }
+      .pw-wrap input { padding-right: 46px; }
+      .pw-toggle {
+        position: absolute; right: 5px; top: 50%; transform: translateY(-50%);
+        width: 36px; height: 36px; min-height: 36px; padding: 0;
+        display: grid; place-items: center;
+        background: transparent; border: 0; border-radius: 8px;
+        color: var(--muted); cursor: pointer;
+      }
+      .pw-toggle:hover { color: var(--ink); }
+      .pw-toggle svg { width: 20px; height: 20px; display: block; }
+      /* דרישת הסיסמה מוצגת ליד השדה בזמן ההקלדה (ולא רק כשגיאה אחרי שליחה),
+         ומשנה מצב כשהיא מתקיימת. */
+      .pw-req { margin: 6px 0 0; font-size: 12px; line-height: 1.7; color: var(--muted); }
+      .pw-req[data-met='1'] { color: var(--ok-ink); }
+      .pw-req .mark { font-weight: 700; }
+      /* "שכחתי סיסמה" — קישור טקסט ולא כפתור מלא, כדי שלא יתחרה על העין עם
+         כפתור הכניסה. הוא <button> ולא <a> כי הוא מפעיל פעולה בעמוד ואין לו
+         כתובת יעד; ‎min-height‎ שומר על יעד מגע תקני למרות שהוא נראה כקישור. */
+      .forgot { margin: 8px 0 0; }
+      .forgot button {
+        width: auto; padding: 0; min-height: 44px;
+        display: inline-flex; align-items: center;
+        background: transparent; color: var(--muted);
+        font-size: 12px; font-weight: 600; text-decoration: underline;
+      }
+      .forgot button:hover { color: var(--ink); }
       button {
         width: 100%; padding: 12px; border: 0; border-radius: 10px;
         font-family: inherit; font-size: 15px; font-weight: 700; cursor: pointer;
@@ -109,12 +139,15 @@
       #signout { background: var(--field); color: var(--ink); border: 1px solid var(--line); margin-top: 8px; }
       [hidden] { display: none !important; }
     </style>
+      <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
   </head>
   <body>
     <main class="card">
       <div class="brand"><span class="dot"></span><h1 id="title">כניסה למערכות</h1></div>
       <p class="lead" id="lead">
-        חשבון אחד לכל מערכות מור מערכות תוכנה. אותה כניסה בכל מערכת, ואותו
+        חשבון אחד לכל מערכות עולם הסטארטאפים. אותה כניסה בכל מערכת, ואותו
         אזור אישי — לא צריך להירשם מחדש בכל פעם.
       </p>
 
@@ -141,6 +174,22 @@
           <input id="fullName" class="he" name="fullName" type="text" autocomplete="name" />
         </div>
 
+        <!--
+          טלפון נאסף רק במסלול ההרשמה המיידית. Google אינו מוסר טלפון, ולכן
+          שדה חובה גלוי תמיד היה חוסם את המסלול הראשון כדי לאכוף דרישה ששייכת
+          לשני. ‎inputmode="tel"‎ פותח מקלדת מספרים בנייד — זה שדה שממלאים
+          כמעט תמיד מהטלפון עצמו.
+        -->
+        <div id="phoneRow" hidden>
+          <label for="phone">טלפון</label>
+          <input id="phone" name="phone" type="tel" autocomplete="tel"
+                 inputmode="tel" dir="ltr" style="text-align:right"
+                 aria-describedby="phoneHint" />
+          <p id="phoneHint" class="lead" style="margin:6px 0 0;font-size:12px">
+            כדי שנוכל לחזור אליך. לא נשלח הודעות בלי שתבקש.
+          </p>
+        </div>
+
         <label for="ident" id="identLabel">שם משתמש או כתובת אימייל</label>
         <input id="ident" name="ident" type="text" autocomplete="username"
                autocapitalize="off" autocorrect="off" spellcheck="false" required
@@ -150,7 +199,30 @@
         </p>
 
         <label for="password" id="pwLabel">סיסמה</label>
-        <input id="password" name="password" type="password" autocomplete="current-password" required />
+        <div class="pw-wrap">
+          <input id="password" name="password" type="password" autocomplete="current-password" required />
+          <!-- type="button" מפורש: בתוך <form> כפתור בלי type הוא submit,
+               וכל לחיצה על "הצג" הייתה שולחת את הטופס. -->
+          <button id="pwToggle" class="pw-toggle" type="button"
+                  aria-pressed="false" aria-controls="password" aria-label="הצג סיסמה" title="הצג סיסמה">
+            <svg id="pwEye" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M2 12s3.6-6.5 10-6.5S22 12 22 12s-3.6 6.5-10 6.5S2 12 2 12z" />
+              <circle cx="12" cy="12" r="2.8" />
+            </svg>
+            <svg id="pwEyeOff" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" hidden>
+              <path d="M2 12s3.6-6.5 10-6.5c1.7 0 3.2.5 4.5 1.1M22 12s-1.3 2.4-3.9 4.2M12 18.5C5.6 18.5 2 12 2 12" />
+              <path d="M9.9 9.9a3 3 0 0 0 4.2 4.2" />
+              <path d="M3.5 3.5l17 17" />
+            </svg>
+          </button>
+        </div>
+        <p id="pwReq" class="pw-req" hidden><span class="mark" aria-hidden="true">•</span> לפחות 8 תווים</p>
+
+        <p id="forgotRow" class="forgot">
+          <button id="forgot" type="button">שכחתי סיסמה</button>
+        </p>
 
         <button id="submit" type="submit">כניסה</button>
       </form>
@@ -203,13 +275,35 @@
       // ל-"404 Page Not Found". עכשיו יש יעד אחד שיודע לטפל בזה ולנתב הלאה.
       const CALLBACK = '/auth/callback';
 
-      // לאן המשתמש רצה לחזור — נשמר כאן ונקרא אחרי הכניסה (שורד את
-      // המעבר ל-Google וחזרה, כי זו אותה לשונית ואותו origin). זה גם מה
-      // שקובע לאיזה אתר תירשם החברות.
+      /**
+       * לאן המשתמש רצה לחזור — נשמר כאן ונקרא אחרי הכניסה (שורד את המעבר
+       * ל-Google וחזרה, כי זו אותה לשונית ואותו origin). זה גם מה שקובע
+       * לאיזה אתר תירשם החברות.
+       *
+       * ⚠️ הבדיקה כאן דרשה קודם `https://more30.com/` בתחילת הערך — אבל
+       * הכפתור המשותף שולח **נתיב** (`?from=/bkalot`), וזה כל המקרים
+       * האמיתיים. התוצאה: התנאי לא התקיים אף פעם, `more30-return-to` נשאר
+       * ריק, וכל מי שהתחבר מתוך מערכת נחת ב-`/me` במקום לחזור למוצר. זו
+       * בדיוק התלונה שבגללה §1 קיים — "נכנס למוצר עצמו, לא לתדמית".
+       *
+       * ההגנה מפני הפניה פתוחה נשמרת, ועכשיו היא מנוסחת נכון: נתיב יחיד
+       * שמתחיל ב-`/` ואינו `//` (שהוא protocol-relative ומוביל לדומיין זר),
+       * או כתובת מלאה על more30.com. הכול נשמר כנתיב, כדי שיהיה ערך אחד
+       * ולא שתי צורות.
+       */
+      function safeReturnPath(value) {
+        if (!value) return null;
+        try {
+          if (value.startsWith('/') && !value.startsWith('//')) return value;
+          const u = new URL(value, location.origin);
+          if (u.origin === 'https://more30.com') return u.pathname + u.search + u.hash;
+        } catch {}
+        return null;
+      }
+
       try {
-        if (back && back.startsWith('https://more30.com/')) {
-          sessionStorage.setItem('more30-return-to', back);
-        }
+        const safe = safeReturnPath(back);
+        if (safe) sessionStorage.setItem('more30-return-to', safe);
       } catch {}
 
       function show(text, kind) {
@@ -234,12 +328,23 @@
         $('title').textContent = up ? 'פתיחת חשבון' : 'כניסה למערכות';
         $('lead').textContent = up
           ? 'חשבון אחד פותח את כל המערכות. ההרשמה מחברת אותך למערכת שממנה הגעת, והחשבון פעיל מיד.'
-          : 'חשבון אחד לכל מערכות מור מערכות תוכנה. אותה כניסה בכל מערכת, ואותו אזור אישי — לא צריך להירשם מחדש בכל פעם.';
+          : 'חשבון אחד לכל מערכות עולם הסטארטאפים. אותה כניסה בכל מערכת, ואותו אזור אישי — לא צריך להירשם מחדש בכל פעם.';
         $('nameRow').hidden = !up;
         $('fullName').required = up;
+        $('phoneRow').hidden = !up;
+        $('phone').required = up;
         $('identLabel').textContent = up ? 'כתובת אימייל (או שם משתמש)' : 'שם משתמש או כתובת אימייל';
         $('pwLabel').textContent = up ? 'סיסמה (8 תווים לפחות)' : 'סיסמה';
         $('password').autocomplete = up ? 'new-password' : 'current-password';
+        // הדרישה שייכת להרשמה בלבד — בכניסה הסיסמה כבר קיימת ואין מה לדרוש.
+        $('pwReq').hidden = !up;
+        if (up) $('password').setAttribute('aria-describedby', 'pwReq');
+        else $('password').removeAttribute('aria-describedby');
+        // איפוס שייך לכניסה בלבד. במסלול ההרשמה עוד אין חשבון שאפשר לאפס לו
+        // סיסמה, וקישור שם רק מזמין את המשתמש למבוי סתום.
+        $('forgotRow').hidden = up;
+        showPassword(false);
+        updatePwReq();
         $('submit').textContent = up ? 'פתיחת חשבון' : 'כניסה';
         $('googleLabel').textContent = up ? 'הרשמה עם Google' : 'המשך עם Google';
         $('footHint').textContent = up
@@ -247,6 +352,41 @@
           : 'אין לך חשבון? עברו ללשונית "הרשמה".';
         msg.hidden = true;
       }
+
+      // ── הצגת סיסמה ─────────────────────────────────────────────────────────
+      // המצב נקבע במקום אחד, כי ה-type, ה-aria והאייקון חייבים להסכים; כפתור
+      // שאומר "הצג" בזמן שהשדה כבר גלוי גרוע מאין כפתור בכלל.
+      function showPassword(on) {
+        const pw = $('password');
+        const btn = $('pwToggle');
+        pw.type = on ? 'text' : 'password';
+        btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+        const label = on ? 'הסתר סיסמה' : 'הצג סיסמה';
+        btn.setAttribute('aria-label', label);
+        btn.title = label;
+        // ‎toggleAttribute ולא ‎.hidden‎: המאפיין `hidden` מוגדר על HTMLElement
+        // בלבד, ועל אלמנט SVG ההשמה יוצרת שדה JS שאינו משפיע על התצוגה —
+        // האייקון היה נשאר "עין" גם כשהסיסמה גלויה (נמדד בדפדפן).
+        $('pwEye').toggleAttribute('hidden', on);
+        $('pwEyeOff').toggleAttribute('hidden', !on);
+      }
+
+      // הדרישה נקראת מאותו מספר שהשליחה בודקת (8), ומשנה מצב בזמן ההקלדה.
+      const PW_MIN = 8;
+      function updatePwReq() {
+        const req = $('pwReq');
+        if (req.hidden) return;
+        const met = $('password').value.length >= PW_MIN;
+        req.dataset.met = met ? '1' : '0';
+        req.querySelector('.mark').textContent = met ? '✓' : '•';
+      }
+
+      $('pwToggle').addEventListener('click', () => {
+        const on = $('pwToggle').getAttribute('aria-pressed') !== 'true';
+        showPassword(on);
+        $('password').focus();
+      });
+      $('password').addEventListener('input', updatePwReq);
 
       $('tabIn').addEventListener('click', () => { mode = 'signin'; applyMode(); });
       $('tabUp').addEventListener('click', () => { mode = 'signup'; applyMode(); });
@@ -306,19 +446,30 @@
 
         const up = mode === 'signup';
         const fullName = $('fullName').value.trim();
+        const phoneDigits = $('phone').value.replace(/\D/g, '');
         if (up && fullName.length < 2) { show('שם מלא חייב להכיל לפחות שני תווים.', 'err'); return; }
+        // נבדקת צורה ולא רק קיום: מספר בן 3 ספרות עובר "לא ריק" ואי אפשר
+        // להתקשר אליו. הטווח 9–15 מכסה מספר ישראלי עם ובלי קידומת מדינה,
+        // והבדיקה חוזרת גם בשרת — טופס אינו גבול אבטחה.
+        if (up && (phoneDigits.length < 9 || phoneDigits.length > 15)) {
+          show('מספר טלפון לא תקין. הזינו מספר מלא, למשל 0501234567.', 'err'); return;
+        }
         if (up && password.length < 8) { show('הסיסמה חייבת להכיל לפחות 8 תווים.', 'err'); return; }
 
         submit.disabled = true;
         submit.textContent = up ? 'פותח חשבון…' : 'נכנס…';
 
-        // ההרשמה שולחת גם את השם המלא, כדי שהמשתמש לא יישאל עליו שוב מיד
-        // אחרי שהקליד אותו. עמוד ה-callback הוא זה שכותב אותו לפרופיל.
+        // ההרשמה שולחת גם את השם המלא וגם את הטלפון, כדי שהמשתמש לא יישאל
+        // עליהם שוב מיד אחרי שהקליד אותם — זה מה ש"מיד נכנס לתוך המוצר"
+        // דורש בפועל. עמוד ה-callback הוא זה שכותב אותם לפרופיל.
         const { data, error } = up
           ? await sb.auth.signUp({
               email: toEmail(ident),
               password,
-              options: { data: { full_name: fullName }, emailRedirectTo: location.origin + CALLBACK },
+              options: {
+                data: { full_name: fullName, phone: phoneDigits },
+                emailRedirectTo: location.origin + CALLBACK,
+              },
             })
           : await sb.auth.signInWithPassword({ email: toEmail(ident), password });
 
@@ -336,6 +487,43 @@
 
         show(up ? 'החשבון נוצר ואתה מחובר.' : 'נכנסת בהצלחה.', 'ok');
         location.replace(CALLBACK);
+      });
+
+      // ── שכחתי סיסמה ────────────────────────────────────────────────────────
+      // עד היום לא הייתה בשום מסך נקודת כניסה לאיפוס, וגם מי שקיבל קישור
+      // (מלוח Supabase, למשל) נחת על עמוד שלא קורא אותו — core.issues #200.
+      // כאן נסגר החצי הראשון: הבקשה. החצי השני הוא /auth/reset.
+      const RESET_PAGE = '/auth/reset';
+
+      $('forgot').addEventListener('click', async () => {
+        msg.hidden = true;
+        const ident = $('ident').value;
+        if (!ident.trim()) {
+          $('ident').focus();
+          show('הזינו קודם שם משתמש או אימייל, ונשלח לשם קישור לאיפוס.', 'err');
+          return;
+        }
+
+        const btn = $('forgot');
+        btn.disabled = true;
+        btn.textContent = 'שולחים…';
+        const { error } = await sb.auth.resetPasswordForEmail(toEmail(ident), {
+          redirectTo: location.origin + RESET_PAGE,
+        });
+        btn.disabled = false;
+        btn.textContent = 'שכחתי סיסמה';
+
+        // חסימת קצב היא התשובה האמיתית היחידה ששווה להציג כשגיאה — היא מסבירה
+        // למה כלום לא קרה. כל שאר המקרים מקבלים את אותה תשובה בדיוק, כדי
+        // שהטופס לא יהפוך לכלי שבודק אילו כתובות רשומות אצלנו.
+        if (error && /rate|too many|seconds/i.test(error.message || '')) {
+          show('נשלחה כבר בקשה. המתינו דקה ונסו שוב.', 'err');
+          return;
+        }
+        show(
+          'אם קיים חשבון עם הכתובת הזו, שלחנו אליה קישור לבחירת סיסמה חדשה. הקישור תקף לשעה.',
+          'ok',
+        );
       });
 
       $('signout').addEventListener('click', async () => {

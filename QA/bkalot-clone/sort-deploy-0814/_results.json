@@ -1,0 +1,106 @@
+{
+  "run": "sort-deploy-0814",
+  "what": "פריסת תיבת «מיון» של מסך הניהול (da1e3a6) לייצור, ומדידתה על more30.com ולא על שרת סטטי מקומי",
+  "code_change": "אין — פריסה בלבד. apps/37-bkalot-clone/admin.html זהה בדיוק לזה שנכנס ל-da1e3a6 (95,108 בתים, MD5 141DB33FB933617057104C6B25D3ACBD, git status ריק)",
+  "migration": "אין",
+  "edge_functions": "לא נפרסו — bkalot-clone-intake v1, bkalot-clone-admin v7",
+
+  "markers": {
+    "why": "כל מסומן NEW נפסל מול הקובץ שבייצור לפני שנקבע: מסומן שמחזיר true על שתי הגרסאות אינו מודד דבר (המלכודת של 530fb44 / 29d6ac6 / e12acf9)",
+    "new": ["id=\"f-sort\"", "<label for=\"f-sort\">מיון</label>", "const SORTS = [[\"decided_at\"", "sort_unknown:", "sort: $(\"f-sort\").value"],
+    "old_counted_not_probed": ["id=\"f-decided\"", "decided_unknown:", "סינון", "call(\"cases\""],
+    "prod_before_file": { "bytes": 92899, "md5": "AF35D4991BA6E2B8756D0CF00A8ADE2A", "new_all": 0 },
+    "src_file": { "bytes": 95108, "md5": "141DB33FB933617057104C6B25D3ACBD", "new_all": 1 },
+    "markers_valid": true
+  },
+
+  "deploy": {
+    "how": "scripts/stage-portal.ps1 ואז vercel deploy --prod --yes מ-portal/dist, בלי --prebuilt (prebuilt-deploy-drops-vercel-json)",
+    "url": "more30-portal-2l1v4c4gg-l023131500-ops-projects.vercel.app",
+    "state": "READY, aliased ל-more30.com"
+  },
+
+  "http": {
+    "note": "נמדד ב-node ולא ב-PowerShell בכוונה (ps1-without-bom-parsed-as-cp1255)",
+    "admin_no_slash": { "before": 93135, "after": 95344, "new_before": 0, "new_after": 1 },
+    "admin_slash": { "before": 93135, "after": 95344, "new_before": 0, "new_after": 1 },
+    "delta_vs_source": 236,
+    "delta_explained": "דלתת NetFree הידועה — 95,108 + 236 = 95,344",
+    "regression_form": { "before": 32558, "after": 32558 },
+    "regression_home": { "before": 3517, "after": 3517 },
+    "replacement_chars": 0,
+    "double_encoding": "אפס בארבע הכתובות, לפני ואחרי"
+  },
+
+  "browser": {
+    "where": "https://more30.com/bkalot-studio/admin?cb=sortlive0814 — עם cache-buster ולא על הכתובת החשופה (תקלת f2001e0)",
+    "viewport": "1280x900, resize לפני הניווט (playwright-blank-screenshot-until-resize)",
+    "served_version_read_from_browser": { "has_sort_select": true, "options_built_at_runtime": [["", "מועד פנייה — חדשה קודם"], ["decided_at", "מועד הכרעה — אחרונה קודם"]] },
+    "login": "אמיתית דרך המסך, מנהל שנוצר ב-bkalot_clone_admin_create (id 50, crypt/bf12) ולא בהזרקת hash",
+    "request_bodies_captured_from_fetch": [
+      "{\"status\":\"\",\"kind\":\"\",\"decided\":\"\",\"sort\":\"\",\"q\":\"\",\"limit\":20,\"offset\":0}",
+      "{\"status\":\"\",\"kind\":\"\",\"decided\":\"\",\"sort\":\"decided_at\",\"q\":\"\",\"limit\":20,\"offset\":0}",
+      "{\"status\":\"\",\"kind\":\"\",\"decided\":\"no\",\"sort\":\"decided_at\",\"q\":\"\",\"limit\":20,\"offset\":0}",
+      "{\"status\":\"\",\"kind\":\"\",\"decided\":\"\",\"sort\":\"\",\"q\":\"\",\"limit\":20,\"offset\":0}"
+    ],
+    "flows": [
+      { "step": "ברירת מחדל", "sort": "", "ids": [191, 190, 189, 188], "count_text": "4 פניות", "shot": "01-live-default.png" },
+      { "step": "בחירה בלי «סינון»", "requests_sent": 0, "ids_unchanged": [191, 190, 189, 188], "note": "אותה התנהגות של שאר התיבות — נמדדה ולא הונחה" },
+      { "step": "sort=decided_at", "ids": [188, 189, 190, 191], "count_text": "4 פניות", "shot": "02-live-sorted-decided.png", "note": "היפוך מלא; המונה לא זז — מיון אינו מזיז את הקבוצה הנמנית, בניגוד לסינון" },
+      { "step": "decided=no + sort=decided_at", "ids": [191], "count_text": "פנייה אחת", "note": "מי שאיש לא הכריע יורד לסוף הרשימה ואינו נעלם ממנה — מיון וסינון חיים יחד באותה בקשה" },
+      { "step": "חזרה לברירת המחדל", "ids": [191, 190, 189, 188], "count_text": "4 פניות", "shot": "03-live-back-to-default.png", "note": "רגרסיה — המיון אינו נדבק" }
+    ],
+    "console": "אפס הודעות, אפס שגיאות",
+    "screenshots": [
+      { "file": "01-live-default.png", "bytes": 60801, "md5_8": "06C213BD" },
+      { "file": "02-live-sorted-decided.png", "bytes": 60924, "md5_8": "3B118395" },
+      { "file": "03-live-back-to-default.png", "bytes": 60832, "md5_8": "F254D154" }
+    ],
+    "screenshots_note": "שלושה MD5 שונים — נבדקו ולא הונחו (screenshot-evidence-below-the-fold). 01 ו-03 מציגים אותו סדר ואותו מונה ואינם זהים בייט-בייט; ההבדל לא נפתח ולא נטען עליו דבר"
+  },
+
+  "seed": {
+    "how": "ארבע פניות דרך bkalot-clone-intake מעל HTTP עם מפתח anon, כמו מהטופס; ארבעה טלפונים שונים בכוונה — הקליטה מאתרת איש קשר לפי טלפון",
+    "cases": [188, 189, 190, 191],
+    "decided_in_reverse": [190, 189, 188],
+    "decided_in_separate_transactions": "now() קפוא בתוך עסקה — קריאה אחת הייתה מטביעה בשלושתן את אותו decided_at",
+    "decided_at": { "188": "14:05:12.280345+00", "189": "14:05:06.76993+00", "190": "14:05:00.869055+00", "191": null },
+    "why_full_inversion": "created_at desc הוא 191,190,189,188 ו-decided_at desc הוא 188,189,190,191 — אין תחילית משותפת שמאחוריה תקלת סדר יכולה להסתתר, ו-#191 עוברת מהראש לזנב, הדרך היחידה לראות nulls last על המסך"
+  },
+
+  "test_mode": {
+    "measured_not_declared": true,
+    "documents": 0,
+    "cases_sent": 0,
+    "outbound_queue": 8,
+    "queue_rows_with_sent_at": 0,
+    "queue_fingerprint_baseline_and_after": "bf57d69edaf6725ff7f52ad3007c4170",
+    "delivery_log": 3,
+    "intake_queued": false,
+    "conclusion": "אין מייל, אין הודעה ואין מסמך שיצא החוצה"
+  },
+
+  "rollback": {
+    "how": "חמש פקודות נפרדות לפי id ולא CTE אחד (cte-delete-sees-prestatement-snapshot), ואנשי הקשר לפי id ולא לפי טלפון שנשמר מנורמל",
+    "deleted": { "case_rights": 0, "cases": 4, "contacts": 4, "admin_sessions": 1, "admin_users": 1 },
+    "baseline_before": { "cases": 0, "case_rights": 0, "documents": 0, "admin_users": 1, "admin_sessions": 5, "templates": 2, "catalog": 888, "contacts": 4, "outbound_queue": 8, "delivery_log": 3 },
+    "after": { "cases": 0, "case_rights": 0, "documents": 0, "admin_users": 1, "admin_sessions": 5, "templates": 2, "catalog": 888, "contacts": 4, "outbound_queue": 8, "delivery_log": 3 },
+    "identical": true
+  },
+
+  "protected": "git status ריק על apps/08-bkalut-app, apps/09-bkalot-admin, apps/37-bkalot-clone ו-supabase/functions; אין נגיעה ב-bkalut-app/bkalot-admin/zr_*/NEDARIM3873 ולא בסכמות csj/csj_src/igud",
+
+  "open": [
+    "נתיב המיון סגור משני צדדיו — מסד (0082), מסך (da1e3a6) ופריסה (כאן) — ואין בו קו פתוח שנשאר",
+    "אין כיוון עולה ואין מפתח dir — לא נמדד כי אינו קיים בשרת",
+    "כפתור הטופס נשאר «סינון» בעוד שהוא מחיל גם מיון — לא שונה כדי לא לגעת בנוסח שכבר נמדד",
+    "שתי שורות עם אותו decided_at לא נמדדו; שובר השוויון id desc נסמך על ייחודיות ולא על ריצה",
+    "sort_unknown לא נמדד בדפדפן — התיבה סגורה ואין ממנה דרך לשלוח ערך שלישי; הוא נמדד ב-9db7d25 מול המסד",
+    "אין היסטוריית הכרעות — המיון מסדר לפי האחרונה בלבד",
+    "הקליטה מחברת 42 זכויות ל-treatment ואפס ל-info/reminder על אותו situation",
+    "«מי הפיק» על documents אינו נכתב לשום מקום",
+    "${out.text_chars} ו-${d.html_chars} נשארו במספר; כותרות «זכויות (N)» ו«מסמכים (N)» לא נגעו",
+    "sent בלתי-ניתן-להשגה בכוונה; bkalot_clone_admin_create אינה חשופה ב-HTTP; pdf/audio → channel_unsupported",
+    "public_visible ו-show_in_showcase של #37 נשארים false"
+  ]
+}

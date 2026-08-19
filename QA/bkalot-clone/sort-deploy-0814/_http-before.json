@@ -1,0 +1,82 @@
+{
+  "phase": "before",
+  "at": "2026-08-14T14:02:09.344Z",
+  "urls": {
+    "admin": {
+      "status": 200,
+      "bytes": 93135,
+      "replacement_chars": 0,
+      "geresh": 8,
+      "new": {
+        "select_id": 0,
+        "label": 0,
+        "sorts_const": 0,
+        "message": 0,
+        "body_key": 0
+      },
+      "old": {
+        "decided_id": 1,
+        "decided_message": 1,
+        "filter_button": 12,
+        "cases_call": 1
+      }
+    },
+    "adminSlash": {
+      "status": 200,
+      "bytes": 93135,
+      "replacement_chars": 0,
+      "geresh": 8,
+      "new": {
+        "select_id": 0,
+        "label": 0,
+        "sorts_const": 0,
+        "message": 0,
+        "body_key": 0
+      },
+      "old": {
+        "decided_id": 1,
+        "decided_message": 1,
+        "filter_button": 12,
+        "cases_call": 1
+      }
+    },
+    "form": {
+      "status": 200,
+      "bytes": 32558,
+      "replacement_chars": 0,
+      "geresh": 5,
+      "new": {
+        "select_id": 0,
+        "label": 0,
+        "sorts_const": 0,
+        "message": 0,
+        "body_key": 0
+      },
+      "old": {
+        "decided_id": 0,
+        "decided_message": 0,
+        "filter_button": 0,
+        "cases_call": 0
+      }
+    },
+    "home": {
+      "status": 200,
+      "bytes": 3517,
+      "replacement_chars": 0,
+      "geresh": 0,
+      "new": {
+        "select_id": 0,
+        "label": 0,
+        "sorts_const": 0,
+        "message": 0,
+        "body_key": 0
+      },
+      "old": {
+        "decided_id": 0,
+        "decided_message": 0,
+        "filter_button": 0,
+        "cases_call": 0
+      }
+    }
+  }
+}

@@ -1,0 +1,78 @@
+{
+  "beat": "שכפול בקלות שכבה 1 — מספר נושא שהדפדפן לא ידע לפרש נעלם בלי ולו שורה אחת (UI)",
+  "open_line_taken_verbatim_from": "69ed468 / heartbeat 592",
+  "open_line": "type=number עם קלט שאינו מספר כלל מותיר value ריק, ואז הטופס אינו שולח את השדה והשרת אינו מדווח עליו ב-dropped[] והערך נעלם בלי ולו שורה אחת על המסך; ה-preflight שנפרס כאן אינו נוגע בנתיב הזה מפני שהוא בודק if (value && ...) וערך ריק חומק ממנו; זו הפעימה הבאה",
+  "scope": {
+    "files_changed": ["apps/37-bkalot-clone/index.html"],
+    "migration": null,
+    "edge_functions": "bkalot-clone-intake נשארה v1, bkalot-clone-admin נשארה v7 — לא נפרסו",
+    "portal_deploy": false
+  },
+  "versions": {
+    "prev_bytes": 27637,
+    "prev_md5": "2A1B545C8CA50CDD1191A17C8D24EE31",
+    "prev_is_the_deployed_file": "זהה בדיוק למה ש-heartbeat 592 רשם כקובץ שנפרס",
+    "fixed_bytes": 28825,
+    "fixed_md5": "432A2D93D21581DACC5E835324D44091"
+  },
+  "which_keystrokes_reach_this_path": {
+    "measured_not_assumed": "probe-badinput.mjs → probe-out.json",
+    "letters_do_not_reach_it": "אבג ו-abc: Chromium אינו מכניס אותן ל-type=number כלל — value ריק ו-badInput false. זה שדה ריק באמת ולא קלט שלא נקלט, ואין שם תקלה. הניחוש הראשון היה זה והוא נפל במדידה.",
+    "badInput_true": ["e", "-", ".", "+", "1e", "1-", "1.2.3", "--"],
+    "chosen": "1-5 — מי שמבקש טווח נושאים",
+    "not_this_path": "1e3 מחזיר value=\"1e3\" ו-badInput=false, ולכן הוא הנתיב של ac6e523 ולא זה"
+  },
+  "what_buys_the_beat": {
+    "prev_150": {
+      "value_before_submit": "", "badInput": true,
+      "intake_requests": 1, "case_created": 150,
+      "title": "הפנייה נקלטה",
+      "lines_about_topic_no": 0,
+      "aria_invalid_count": 0,
+      "form_after": "מתאפס במלואו — full_name/phone/situation ריקים, consent לא מסומן, kind חזר ל-info"
+    },
+    "fixed_blocked": {
+      "value_before_submit": "", "badInput": true,
+      "intake_requests": 0, "case_created": null,
+      "title": "הפנייה לא נשלחה",
+      "line": "מספר נושא — צריך מספר שלם. תקנו ושלחו שוב.",
+      "focused_id": "topic_no", "aria_invalid_count": 1,
+      "form_after": "עומד כפי שהוקלד — בדיקת קלט לא-מספרי / 050-1234567 / single_parent / consent מסומן / kind=treatment"
+    },
+    "two_sided": "במסד נוצרו שלוש פניות בלבד — 150 (הגרסה שבייצור) ו-151/152 (שתי הבקרות) — ולניסיון החסום אין שורה באמצע"
+  },
+  "why_the_server_cannot_report_it": {
+    "case_150_prev": { "topic_no": null, "raw_has_topic_no_key": false, "raw_topic_no": null },
+    "case_151_empty_control": { "topic_no": null, "raw_has_topic_no_key": false, "raw_topic_no": null },
+    "the_point": "150 (הוקלד «1-5») ו-151 (לא הוקלד כלום) זהים לחלוטין במסד. הערך אינו בעמודה, אינו ב-raw, ואין מפתח כלל — ולכן 0058 אינו יכול לדעת שמשהו הוקלד, ואינו יכול להחזיר אותו ב-dropped[]. זה שונה מנתיב 1e3, ששם raw->>'topic_no' החזיק «1e3». כאן אין ולו עקבה אחת בשום מקום.",
+    "case_152_control": { "topic_no": 7, "raw_topic_no": "7" }
+  },
+  "controls": {
+    "empty_optional_field_151": "לא הוקלד כלום → badInput false, בקשה יוצאת, פנייה נוצרת, אין שורת שגיאה, אפס aria-invalid. השדה הוא שדה רשות («אם יש») וללא הבקרה הזו התיקון היה יכול לחסום פנייה תקינה.",
+    "valid_number_152": "7 → בקשה יוצאת, topic_no=7 במסד, אין שורת שגיאה, המיקוד לא נחטף (BODY), הטופס מתאפס וחוזר ל-info"
+  },
+  "rights_path_did_not_move": "42 זכויות בכל אחת משלוש הפניות",
+  "console": "אפס הודעות לאורך ארבע הזרימות — לא שגיאה, לא אזהרה ולא INFO",
+  "evidence_hashes": {
+    "01-prev-nonnumeric-vanished-silently.png": "18ABFC5C6C518DCA34B53672ABAA3041",
+    "02-fixed-nonnumeric-blocked.png": "0677E4618B4B58B4C9F5299D02211E0E",
+    "03-fixed-control-empty-optional.png": "89568D23D0BD483280A7245051B9B4FE",
+    "04-fixed-control-7.png": "F05A5CEE9A46ED74B20C2496CF45FADA",
+    "above_the_fold": "בחסום שורת התוצאה ב-705 והשדה ב-272 בחלון של 900 — שניהם בו-זמנית מעל הקו; תקלת הראיות של e12acf9 נבדקה ולא חזרה"
+  },
+  "test_mode_measured_not_declared": {
+    "cases_in_sent": 0, "documents": 0, "outbound_queue": 8, "queue_rows_with_sent_at": 0, "delivery_log": 3,
+    "queue_fingerprint_baseline": "b4318d89eac1a47be75ab8769f320683",
+    "queue_fingerprint_during": "b4318d89eac1a47be75ab8769f320683",
+    "queue_fingerprint_after": "b4318d89eac1a47be75ab8769f320683",
+    "verdict": "אין מייל, אין הודעה ואין מסמך שיצא החוצה"
+  },
+  "rollback": {
+    "order": "case_rights → cases → contacts",
+    "contact_deleted_by_id_not_phone": "הטלפון נשמר מנורמל לספרות (0501234567); מחיקה לפי 050-1234567 הייתה מחזירה 0 — התקלה שנתפסה ב-ac6e523",
+    "cte_trap_caught": "ניסיון ראשון מחק את הפניות ואת איש הקשר באותה פקודה; ה-NOT EXISTS על cases רואה את התצלום שלפני הפקודה ולכן החזיר 0 מחיקות. נמדד בספירה שחזרה ותוקן במחיקה נפרדת לפי id.",
+    "after": { "cases": 0, "case_rights": 0, "documents": 0, "contacts": 4, "outbound_queue": 8, "delivery_log": 3, "catalog": 888 },
+    "identical_to_baseline": true
+  },
+  "protected_paths": "git status ריק על apps/08-bkalut-app, apps/09-bkalot-admin ו-supabase/functions; אין נגיעה ב-bkalut-app/bkalot-admin/zr_*/NEDARIM3873 ולא בסכמות csj/csj_src/igud"
+}

@@ -1,0 +1,274 @@
+{
+  "imud": {
+    "icons": 8,
+    "perRecord": 4,
+    "authored": 4,
+    "authoredGlyphs": 3,
+    "backdropBlur": 1,
+    "surfaceRadii": 4,
+    "authoredBySection": {
+      "עימוד תורני מקצועי — בלי גרפיקאי, בלי In": 2,
+      "header": 1,
+      "הספרים שלי": 1
+    },
+    "chars": 612
+  },
+  "smel": {
+    "icons": 20,
+    "perRecord": 16,
+    "authored": 4,
+    "authoredGlyphs": 3,
+    "backdropBlur": 2,
+    "surfaceRadii": 3,
+    "authoredBySection": {
+      "header": 2,
+      "כל מה שצריך לדעת על הנכס לפני שקונים": 2
+    },
+    "chars": 1208
+  },
+  "egod": {
+    "icons": 35,
+    "perRecord": 18,
+    "authored": 17,
+    "authoredGlyphs": 13,
+    "backdropBlur": 1,
+    "surfaceRadii": 5,
+    "authoredBySection": {
+      "ניווט מהיר": 5,
+      "לשיעור שלך מגיע\nדף משלו": 4,
+      "תובנה קצרה ליום, לשימוש בשיעור עצמו": 4,
+      "nav": 2,
+      "כדי להתחיל צריך פרטי שיעור אחד": 2
+    },
+    "chars": 2426
+  },
+  "chatzor": {
+    "icons": 24,
+    "perRecord": 12,
+    "authored": 12,
+    "authoredGlyphs": 10,
+    "backdropBlur": 4,
+    "surfaceRadii": 3,
+    "authoredBySection": {
+      "header": 3,
+      "מחוברים — כל התורה והקהילה של חצור הגליל": 3,
+      "זמני היום בחצור הגלילית": 2,
+      "בתי הכנסת בחצור הגלילית": 1,
+      "שיעורי תורה בקהילה": 1,
+      "מקווה תל חי": 1
+    },
+    "chars": 2102
+  },
+  "chizukim": {
+    "icons": 81,
+    "perRecord": 75,
+    "authored": 6,
+    "authoredGlyphs": 6,
+    "backdropBlur": 1,
+    "surfaceRadii": 4,
+    "authoredBySection": {
+      "דאגה בלב איש — לדבר עם עצמך ולהתחזק באמו": 5,
+      "חיזוקים קצרים": 1
+    },
+    "chars": 1951
+  },
+  "zchuyot": {
+    "icons": 54,
+    "perRecord": 33,
+    "authored": 21,
+    "authoredGlyphs": 13,
+    "backdropBlur": 1,
+    "surfaceRadii": 4,
+    "authoredBySection": {
+      "קבלו מידע מיידי בטלפון": 10,
+      "בקלות": 5,
+      "גלו את הזכויות שמגיעות לכם": 2,
+      "נותנים יד לקהילה": 2,
+      "nav": 1,
+      "מסתבכים? בואו נסדר את זה": 1
+    },
+    "chars": 2511,
+    "authoredList": [
+      {
+        "glyph": "menu",
+        "near": "",
+        "alone": true,
+        "size": 0
+      },
+      {
+        "glyph": "phone",
+        "near": "02-3131500 מערכת קולית 24/6",
+        "alone": false,
+        "size": 20
+      },
+      {
+        "glyph": "mail",
+        "near": "L023131500@gmail.com שלחו מייל",
+        "alone": false,
+        "size": 20
+      },
+      {
+        "glyph": "map-pin",
+        "near": "עמדות נדרים פלוס בכל הארץ",
+        "alone": false,
+        "size": 20
+      },
+      {
+        "glyph": "search",
+        "near": "",
+        "alone": true,
+        "size": 26
+      },
+      {
+        "glyph": "chevron-down",
+        "near": "",
+        "alone": true,
+        "size": 16
+      },
+      {
+        "glyph": "arrow-left",
+        "near": "קבלו סיוע אישי עכשיו",
+        "alone": false,
+        "size": 20
+      },
+      {
+        "glyph": "heart-handshake",
+        "near": "",
+        "alone": true,
+        "size": 0
+      },
+      {
+        "glyph": "arrow-left",
+        "near": "הצטרפו ללא עלות",
+        "alone": false,
+        "size": 20
+      },
+      {
+        "glyph": "phone-call",
+        "near": "מערכת קולית אוטומטית",
+        "alone": false,
+        "size": 16
+      },
+      {
+        "glyph": "phone",
+        "near": "02-3131500",
+        "alone": false,
+        "size": 20
+      },
+      {
+        "glyph": "send",
+        "near": "הצטרפו עכשיו",
+        "alone": false,
+        "size": 16
+      },
+      {
+        "glyph": "search",
+        "near": "",
+        "alone": true,
+        "size": 20
+      },
+      {
+        "glyph": "clipboard-list",
+        "near": "",
+        "alone": true,
+        "size": 20
+      },
+      {
+        "glyph": "heart-handshake",
+        "near": "",
+        "alone": true,
+        "size": 20
+      },
+      {
+        "glyph": "phone-call",
+        "near": "02-3131500 מערכת קולית 24/6",
+        "alone": false,
+        "size": 20
+      },
+      {
+        "glyph": "mail",
+        "near": "L023131500@gmail.com שלחו מייל ונחזור אליכם",
+        "alone": false,
+        "size": 20
+      },
+      {
+        "glyph": "map-pin",
+        "near": "עמדות נדרים פלוס בכל הארץ - הצטרפו במקום",
+        "alone": false,
+        "size": 20
+      },
+      {
+        "glyph": "heart",
+        "near": "© 2026 בקלות - כל הזכויות שמורות נבנה עם למען הקהי",
+        "alone": false,
+        "size": 12
+      },
+      {
+        "glyph": "message-circle",
+        "near": "",
+        "alone": true,
+        "size": 28
+      },
+      {
+        "glyph": "message-circle",
+        "near": "",
+        "alone": true,
+        "size": 20
+      }
+    ]
+  },
+  "mthbram": {
+    "icons": 25,
+    "perRecord": 7,
+    "authored": 18,
+    "authoredGlyphs": 12,
+    "backdropBlur": 7,
+    "surfaceRadii": 5,
+    "authoredBySection": {
+      "מעוניינים להצטרף למערכת מגידי השיעורים?": 7,
+      "0 שיעורים": 5,
+      "מעוניינים להיות שותפים בהפצת התורה?": 3,
+      "section": 2,
+      "nav": 1
+    },
+    "chars": 941
+  },
+  "galil": {
+    "icons": 104,
+    "perRecord": 92,
+    "authored": 12,
+    "authoredGlyphs": 8,
+    "backdropBlur": 1,
+    "surfaceRadii": 4,
+    "authoredBySection": {
+      "בתי הכנסת בחצור הגלילית": 4,
+      "מחוברים — יהדות וקהילה": 3,
+      "nav": 2,
+      "section": 2,
+      "שירותי הקהילה": 1
+    },
+    "chars": 1680
+  },
+  "gesher": {
+    "icons": 1,
+    "perRecord": 0,
+    "authored": 1,
+    "authoredGlyphs": 1,
+    "backdropBlur": 1,
+    "surfaceRadii": 4,
+    "authoredBySection": {
+      "מערכת CRM שותפים": 1
+    },
+    "chars": 132
+  },
+  "orech": {
+    "icons": 0,
+    "perRecord": 0,
+    "authored": 0,
+    "authoredGlyphs": 0,
+    "backdropBlur": 0,
+    "surfaceRadii": 1,
+    "authoredBySection": {},
+    "chars": 504
+  }
+}

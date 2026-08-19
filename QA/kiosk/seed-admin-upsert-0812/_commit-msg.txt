@@ -1,0 +1,64 @@
+kiosk (35): the fixed admin password only ever applied to a database nobody had touched
+
+more30-priority §1ב sets one admin credential across every system —
+admin / More30Admin2026 — so the owner can open any panel and check it.
+SEED_ADMIN_USER and SEED_ADMIN_PASSWORD carry it on kioskfleet, and they were
+being read by a first-run bootstrap: ensureSeed() counted admins, returned if
+the count was above zero, and inserted otherwise. Against a fresh database that
+is correct. Against this deployment it is close to a no-op, because Railway
+mounts a volume at /app/data and the SQLite file survives every deploy — so the
+row created on the very first boot is the one that is still there, under
+whatever password it was created with, and the environment variable has not
+meant anything since.
+
+Reconciled to the environment on every boot instead: the seed row is created if
+absent, and if present its password, role and active flag are brought back to
+what SEED_ADMIN_* says. The trade is deliberate and is written down in
+seedadmin.js — an admin who changes their password through
+/api/auth/change-password has it put back on the next restart, and the way to
+change it is now the environment variable. §1ב asks for exactly that: a
+credential the owner can rely on beats one a restart might have invalidated.
+
+Three of these cases used to fail while the boot log looked healthy:
+
+  - the seed username exists under a different password → was a no-op, the
+    documented login simply did not work
+  - the first admin was created under a different username → the count was
+    above zero, so the documented admin was never created at all
+  - the seed account was demoted to 'user' or deactivated → password correct,
+    console still refused (403 from requireAdmin, 401 from requireAuth)
+
+The third one had a sharper edge: a demote made the old count query return 0,
+so the next boot ran its INSERT into a UNIQUE username and would have taken the
+whole server down on startup rather than logging in.
+
+The password is compared before it is written, not written unconditionally.
+bcrypt salts, so an unconditional UPDATE stores a new hash on every restart and
+reports the password as restored each time — which would bury the one boot
+where something really had changed it.
+
+The reconcile decisions live in a new src/seedadmin.js that takes the database
+handle and the two password functions as arguments and imports neither. That is
+what lets the tests drive it against node:sqlite: server/node_modules is not
+installed in this checkout, so better-sqlite3 and bcryptjs cannot be loaded
+there (the same constraint approvals.test.mjs works under).
+
+Verification: 7 new tests in test/seedadmin.test.mjs, all passing, covering each
+case above plus "three boots in a row leave the row byte-identical" and "no
+credentials configured writes nothing". Full suite 158/159 — the one failure is
+routing.test.mjs, which imports express and fails identically before this change
+because node_modules is absent.
+
+Also run for real, not only under the tests: stub packages for better-sqlite3
+(over node:sqlite) and bcryptjs (over scrypt, salted per call) let the actual
+boot path — config.js → db.js → auth.js → seed.js → seedadmin.js — run against a
+throwaway database. Boot 1 created the admin, boot 2 reported unchanged with an
+identical hash, then the admin was drifted the way the console drifts it
+(password changed, demoted, deactivated) and boot 3 reported
+`password, role, active` and restored a working login. Evidence in
+QA/kiosk/seed-admin-upsert-0812/.
+
+Incidental, left alone: seed.js's standalone guard compares import.meta.url to
+`file://${process.argv[1]}`, which never matches on Windows (file://C:\… vs
+file:///C:/…), so `npm run seed` is a silent no-op there. It is the shape that
+works on Linux, which is where Railway runs it.

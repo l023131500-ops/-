@@ -1,0 +1,34 @@
+40 gannenet: the system-wide daily cap blocked everyone with nowhere to watch it fill (#189)
+
+#186 set two caps on the worksheet generator and #188 put the personal one on
+the teacher's screen. The system-wide cap - 200 pages a day - is the only one
+here that blocks someone for what other people used, and there was no screen
+anywhere that showed it filling. A teacher who hit it read "the generator
+reached the system's daily quota" and nobody, including an admin, could have
+known the day was heavy before that.
+
+peekSystemUsage() in lib/rate-limit.ts runs the same single LIST the quota check
+already runs: no mark written, no reservation taken, no Anthropic call. From
+that one listing it derives the day's total, the number of distinct accounts,
+and the per-account breakdown, since the marks are named <userId>__<ts>.
+
+POST /api/admin/usage is gated by the same ADMIN_PASSWORD header as
+/api/admin/list and /api/admin/delete, and is force-dynamic for the reason the
+quota route is: a cap read from cache shows a stale number exactly when it
+matters. /shelf/admin now opens with the panel - used out of cap as a percentage
+and a bar, amber from 75%, red once exhausted, plus accounts-today, the personal
+cap, the UTC reset, and a collapsible per-account list.
+
+Deliberately not QuotaView with zeros in the personal fields: this screen
+belongs to no teacher, and a remainingUser of 20 with no owner is the kind of
+number that gets read wrong. A failed count renders nothing plus a retry, not
+"0 of 200" - the same distinction the server makes between zero and unavailable.
+
+Verified against production after deploy (QA/gannenet/system-usage-0812/):
+  no-key     401  the admin gate holds on the new route
+  wrong-key  401
+  admin      200  usedAll 1/200, accounts 1 - the one real generation of today
+Screenshot 01-admin-usage-panel.png is the panel as an admin reads it on
+more30.com/gannenet/shelf/admin.
+
+tsc --noEmit exit 0; next build exit 0 with 180 lesson pages.

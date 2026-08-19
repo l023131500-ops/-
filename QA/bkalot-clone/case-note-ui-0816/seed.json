@@ -1,0 +1,35 @@
+{
+  "intake": {
+    "status": 200,
+    "case_id": 375,
+    "contact_id": 382,
+    "queued": false
+  },
+  "login": {
+    "status": 200,
+    "admin_id": 113
+  },
+  "steps": [
+    {
+      "status": "in_progress",
+      "note": "הפונה ביקש לצרף מסמכים נוספים בשבוע הבא",
+      "http": 200,
+      "ok": true,
+      "changed": true
+    },
+    {
+      "status": "rejected",
+      "note": "המסמכים שצורפו שייכים לשנת המס הקודמת",
+      "http": 200,
+      "ok": true,
+      "changed": true
+    },
+    {
+      "status": "in_progress",
+      "note": "הטופס נשלח בדואר רשום על ידי הפונה",
+      "http": 200,
+      "ok": true,
+      "changed": true
+    }
+  ]
+}

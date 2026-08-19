@@ -1,0 +1,54 @@
+שכפול בקלות שכבה 1: פריסת תיקון stale-mark-0817 (§5ב, פריסה)
+
+הפעימה הקודמת (76bbac4) הוסיפה clearInvalid() כדי שנפילה בלי שדה (network,
+body_too_large, rpc_failed וכל קוד שאינו ב-CODE_FIELD) תוריד את הסימן האדום
+של השליחה הקודמת, במקום להשאיר שדה תקין מסומן שגוי. זו הייתה פעימת UI בלבד —
+"הייצור מגיש עדיין את גרסת HEAD; הפריסה היא הפעימה הבאה". זו הפעימה הזאת.
+
+פריסה בלבד: אין שינוי קוד נוסף מעבר למה שכבר נמצא ב-apps/37-bkalot-clone,
+אין מיגרציה, אין פריסת edge function ואין נגיעה במסד.
+
+classify.mjs (לפני ה-staging): src 37,591 בייט (BB48BD92) מול dist הקודם
+36,127 בייט (30B03F39) — 9 סימני NEW (fn_clear_invalid + שלוש קריאות לה +
+חמש הערות/מזהים), 1 REMOVED (הלולאה הכפולה שהוחלפה בקריאה ל-clearInvalid),
+19 CONTROL, 0 DIFF, 0 DEAD.
+
+stage-portal.ps1 → vercel deploy --prod: dpl_BayiH8Df3RZJwYddHc1cZs4j45TC,
+target=production, READY.
+
+_verify.mjs הכריע משלוש ראיות ולא מאחת: (א) dist_equals_live — לפני הפריסה,
+כל 29 הסימנים חזרו מ-https://more30.com/bkalot-studio (עם לוכסן ובלעדיו)
+בדיוק כספירת ה-dist שנפרס קודם; (ב) NEW/REMOVED התהפכו מספירת ה-dist הישן
+אל ספירת המקור, בשתי הכתובות; (ג) 19 סימני CONTROL לא זזו. PASS, 0 fails.
+הייצור עבר מ-36,363 בייט (76D43A6F) ל-37,827 בייט (C1ECF0F7), אותו MD5
+בשתי הכתובות לפני ואחרי.
+
+אימות עצמאי נוסף, בדפדפן, ישירות מול הכתובת החיה אחרי הפריסה (לא רק ראיות
+ה-QA שהוכנו קודם): מולאו שם מלא + טלפון לא-תקין (123) + תיבת ההסכמה, נשלח →
+השדה phone מסומן אדום עם "מספר הטלפון אינו תקין… (למשל 0501234567)."
+(live-phone-invalid.png). לאחר מכן תוקן הטלפון ל-0500000000 ורוקן שם מלא,
+נשלח שוב → phone חזר לגבול הרגיל (לא אדום) ו-full_name מסומן אדום עם
+"צריך שם מלא." (live-name-required-no-stale-mark.png). זה בדיוק תרחיש B
+מהתיקון המקורי (הטלפון מתוקן, נפילה הבאה על שדה אחר), נמדד עכשיו חי בייצור.
+
+מוגן: git status ריק על apps/08-bkalut-app, apps/09-bkalot-admin,
+apps/37-bkalot-clone ו-supabase, נמדד לפני ה-add ואחרי. אין נגיעה ב-
+bkalut-app/bkalot-admin/zr_*/NEDARIM3873 ולא בסכמות csj/csj_src/igud.
+portal/dist gitignored ולא נכנס לקומיט. ל-git add נמסר נתיב מפורש אחד ולא
+נקודה. ההודעה נמסרה ב-commit -F.
+
+⚠️ ה-heartbeat לא נכתב ל-core.run_progress. ה-MCP של Supabase אינו מחובר
+לסשן הזה (חיפוש כלים החזיר אפס התאמות). השורה נכתבה כקובץ:
+`_heartbeat-pending.sql`. הוא השמיני בתור, ויש להריץ את כולם בסדר הקומיטים —
+`case-hit-row-deploy-0817`, `allowlist-recheck-0817`, `which-field-0817`,
+`which-field-deploy-0817`, `invalid-visible-0817`, `invalid-visible-deploy-0817`,
+`stale-mark-0817`, ואז זה.
+
+פתוח (נשאר מהפעימה הקודמת, לא נסגר כאן): תיבת ההסכמה עדיין אינה מכוסה בכלל
+הצבע; וענף topic_no_invalid מהשרת עדיין לא נמדד בייצור.
+
+ראיות: `QA/bkalot-clone/stale-mark-deploy-0817/` — classify.mjs/classify.json/
+classify-out.txt, probe-live.mjs, markers.mjs, measure-live.mjs,
+live-before.json/live-after.json, before-out.txt/after-out.txt, stage-out.txt,
+deploy-out.txt, _verify.mjs/_results.json, verify-out.txt, ושני צילומים חיים:
+live-phone-invalid.png, live-name-required-no-stale-mark.png.

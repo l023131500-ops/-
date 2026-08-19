@@ -1,0 +1,335 @@
+{
+  "prev": {
+    "tag": "prev",
+    "port": 8180,
+    "target": 276,
+    "steps": {
+      "filtered": {
+        "ids": [
+          296,
+          295,
+          294,
+          293,
+          292,
+          291,
+          290,
+          289,
+          288,
+          287,
+          286,
+          285,
+          284,
+          283,
+          282,
+          281,
+          280,
+          279,
+          278,
+          277
+        ],
+        "count": "21 פניות · מוצגות 20",
+        "page_label": "עמוד 1 מתוך 2",
+        "empty": {
+          "hidden": true,
+          "top": 0,
+          "height": 0
+        },
+        "pager": {
+          "hidden": false,
+          "top": 2188,
+          "height": 46
+        },
+        "list_error": {
+          "hidden": true,
+          "top": 0,
+          "height": 0
+        },
+        "prev_disabled": true,
+        "next_disabled": false
+      },
+      "page2": {
+        "ids": [
+          276
+        ],
+        "count": "21 פניות · מוצגות 1",
+        "page_label": "עמוד 2 מתוך 2",
+        "empty": {
+          "hidden": true,
+          "top": 0,
+          "height": 0
+        },
+        "pager": {
+          "hidden": false,
+          "top": 446,
+          "height": 46
+        },
+        "list_error": {
+          "hidden": true,
+          "top": 0,
+          "height": 0
+        },
+        "prev_disabled": false,
+        "next_disabled": true
+      },
+      "back": {
+        "ids": [],
+        "count": "20 פניות · מוצגות 0",
+        "page_label": "עמוד 2 מתוך 1",
+        "empty": {
+          "hidden": false,
+          "top": 342,
+          "height": 76
+        },
+        "pager": {
+          "hidden": true,
+          "top": 0,
+          "height": 0
+        },
+        "list_error": {
+          "hidden": true,
+          "top": 0,
+          "height": 0
+        },
+        "prev_disabled": false,
+        "next_disabled": true
+      }
+    },
+    "cases_sent": [
+      {
+        "status": "",
+        "kind": "",
+        "decided": "",
+        "sort": "",
+        "q": "",
+        "limit": 20,
+        "offset": 0
+      },
+      {
+        "status": "new",
+        "kind": "",
+        "decided": "",
+        "sort": "",
+        "q": "",
+        "limit": 20,
+        "offset": 0
+      },
+      {
+        "status": "new",
+        "kind": "",
+        "decided": "",
+        "sort": "",
+        "q": "",
+        "limit": 20,
+        "offset": 20
+      },
+      {
+        "status": "new",
+        "kind": "",
+        "decided": "",
+        "sort": "",
+        "q": "",
+        "limit": 20,
+        "offset": 20
+      }
+    ],
+    "console": []
+  },
+  "next": {
+    "tag": "next",
+    "port": 8181,
+    "target": 277,
+    "steps": {
+      "filtered": {
+        "ids": [
+          297,
+          296,
+          295,
+          294,
+          293,
+          292,
+          291,
+          290,
+          289,
+          288,
+          287,
+          286,
+          285,
+          284,
+          283,
+          282,
+          281,
+          280,
+          279,
+          278
+        ],
+        "count": "21 פניות · מוצגות 20",
+        "page_label": "עמוד 1 מתוך 2",
+        "empty": {
+          "hidden": true,
+          "top": 0,
+          "height": 0
+        },
+        "pager": {
+          "hidden": false,
+          "top": 2188,
+          "height": 46
+        },
+        "list_error": {
+          "hidden": true,
+          "top": 0,
+          "height": 0
+        },
+        "prev_disabled": true,
+        "next_disabled": false
+      },
+      "page2": {
+        "ids": [
+          277
+        ],
+        "count": "21 פניות · מוצגות 1",
+        "page_label": "עמוד 2 מתוך 2",
+        "empty": {
+          "hidden": true,
+          "top": 0,
+          "height": 0
+        },
+        "pager": {
+          "hidden": false,
+          "top": 446,
+          "height": 46
+        },
+        "list_error": {
+          "hidden": true,
+          "top": 0,
+          "height": 0
+        },
+        "prev_disabled": false,
+        "next_disabled": true
+      },
+      "back": {
+        "ids": [
+          297,
+          296,
+          295,
+          294,
+          293,
+          292,
+          291,
+          290,
+          289,
+          288,
+          287,
+          286,
+          285,
+          284,
+          283,
+          282,
+          281,
+          280,
+          279,
+          278
+        ],
+        "count": "20 פניות",
+        "page_label": "עמוד 1 מתוך 1",
+        "empty": {
+          "hidden": true,
+          "top": 0,
+          "height": 0
+        },
+        "pager": {
+          "hidden": true,
+          "top": 0,
+          "height": 0
+        },
+        "list_error": {
+          "hidden": true,
+          "top": 0,
+          "height": 0
+        },
+        "prev_disabled": true,
+        "next_disabled": true
+      }
+    },
+    "cases_sent": [
+      {
+        "status": "",
+        "kind": "",
+        "decided": "",
+        "sort": "",
+        "q": "",
+        "limit": 20,
+        "offset": 0
+      },
+      {
+        "status": "new",
+        "kind": "",
+        "decided": "",
+        "sort": "",
+        "q": "",
+        "limit": 20,
+        "offset": 0
+      },
+      {
+        "status": "new",
+        "kind": "",
+        "decided": "",
+        "sort": "",
+        "q": "",
+        "limit": 20,
+        "offset": 20
+      },
+      {
+        "status": "new",
+        "kind": "",
+        "decided": "",
+        "sort": "",
+        "q": "",
+        "limit": 20,
+        "offset": 20
+      },
+      {
+        "status": "new",
+        "kind": "",
+        "decided": "",
+        "sort": "",
+        "q": "",
+        "limit": 20,
+        "offset": 0
+      }
+    ],
+    "console": []
+  },
+  "control": {
+    "port": 8181,
+    "state": {
+      "rows": 0,
+      "count": "אין פניות",
+      "empty_hidden": false,
+      "empty_text": "אין פניות שתואמות את הסינון.",
+      "empty_top": 342,
+      "pager_hidden": true,
+      "error_hidden": true
+    },
+    "cases_sent": [
+      {
+        "status": "",
+        "kind": "",
+        "decided": "",
+        "sort": "",
+        "q": "",
+        "limit": 20,
+        "offset": 0
+      },
+      {
+        "status": "sent",
+        "kind": "",
+        "decided": "",
+        "sort": "",
+        "q": "",
+        "limit": 20,
+        "offset": 0
+      }
+    ],
+    "console": []
+  }
+}

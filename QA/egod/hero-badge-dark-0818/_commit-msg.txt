@@ -1,0 +1,14 @@
+15 egod: fix hero badge white-on-teal-ish contrast invisible in dark mode (round-3 a11y recheck)
+
+- apps/15-egod/src/components/home/HeroSection.tsx: hero badge "בסיוע איגוד
+  השיעורים" (text-secondary on translucent bg-secondary/20 over bg-primary)
+  measured 3.82:1 in dark mode, needs 4.5. Added dark:text-[hsl(var(--gold-light))]
+  to icon+text, using the already-defined --gold-light dark-mode token
+  instead of touching the shared --secondary token.
+- Verified live with cache-buster: dark 1440/390 both 0 failures.
+- Light-mode ~24 "failures" from the same probe are the known gradient
+  tool-limitation (Footer.tsx bg-gradient-navy), already documented for
+  torah/modaot/smachot. One small, pre-existing, unrelated light-mode gap
+  on the same badge (3.99:1) is deferred, not introduced here.
+
+QA/egod/hero-badge-dark-0818/_results.md

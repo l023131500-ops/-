@@ -1,0 +1,189 @@
+{
+  "gesher": {
+    "url": "https://more30.com/gesher",
+    "measuredAt": "2026-08-17T15:13:29.672Z",
+    "performance": 80,
+    "accessibility": 98,
+    "bestPractices": 77,
+    "seo": 100,
+    "metrics": {
+      "fcp": "3.2 s",
+      "lcp": "3.2 s",
+      "tbt": "30 ms",
+      "cls": "0.001",
+      "si": "8.0 s"
+    },
+    "failedAudits": [
+      {
+        "id": "first-contentful-paint",
+        "title": "First Contentful Paint",
+        "score": 0.44,
+        "display": "3.2 s"
+      },
+      {
+        "id": "largest-contentful-paint",
+        "title": "Largest Contentful Paint",
+        "score": 0.73,
+        "display": "3.2 s"
+      },
+      {
+        "id": "speed-index",
+        "title": "Speed Index",
+        "score": 0.21,
+        "display": "8.0 s"
+      },
+      {
+        "id": "interactive",
+        "title": "Time to Interactive",
+        "score": 0.62,
+        "display": "6.2 s"
+      },
+      {
+        "id": "redirects",
+        "title": "Avoid multiple page redirects",
+        "score": 0,
+        "display": "Est savings of 1,090 ms"
+      },
+      {
+        "id": "third-party-cookies",
+        "title": "Uses third-party cookies",
+        "score": 0,
+        "display": "2 cookies found"
+      },
+      {
+        "id": "valid-source-maps",
+        "title": "Missing source maps for large first-party JavaScript",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "landmark-one-main",
+        "title": "Document does not have a main landmark.",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "unminified-javascript",
+        "title": "Minify JavaScript",
+        "score": 0.5,
+        "display": "Est savings of 6 KiB"
+      },
+      {
+        "id": "unused-javascript",
+        "title": "Reduce unused JavaScript",
+        "score": 0.5,
+        "display": "Est savings of 105 KiB"
+      },
+      {
+        "id": "inspector-issues",
+        "title": "Issues were logged in the `Issues` panel in Chrome Devtools",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "cache-insight",
+        "title": "Use efficient cache lifetimes",
+        "score": 0.5,
+        "display": "Est savings of 43 KiB"
+      },
+      {
+        "id": "document-latency-insight",
+        "title": "Document request latency",
+        "score": 0,
+        "display": "Est savings of 8 KiB"
+      },
+      {
+        "id": "forced-reflow-insight",
+        "title": "Forced reflow",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "lcp-breakdown-insight",
+        "title": "LCP breakdown",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "modern-http-insight",
+        "title": "Modern HTTP",
+        "score": 0.5,
+        "display": ""
+      },
+      {
+        "id": "network-dependency-tree-insight",
+        "title": "Network dependency tree",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "render-blocking-insight",
+        "title": "Render-blocking requests",
+        "score": 0,
+        "display": "Est savings of 370 ms"
+      }
+    ],
+    "mainThreadBreakdown": [
+      {
+        "group": "Other",
+        "duration": 827
+      },
+      {
+        "group": "Script Evaluation",
+        "duration": 547
+      },
+      {
+        "group": "Style & Layout",
+        "duration": 408
+      },
+      {
+        "group": "Parse HTML & CSS",
+        "duration": 65
+      },
+      {
+        "group": "Garbage Collection",
+        "duration": 45
+      },
+      {
+        "group": "Rendering",
+        "duration": 36
+      },
+      {
+        "group": "Script Parsing & Compilation",
+        "duration": 31
+      }
+    ],
+    "bootupTime": [
+      {
+        "url": "Unattributable",
+        "total": 648,
+        "scripting": 16,
+        "scriptParseCompile": 0
+      },
+      {
+        "url": "https://more30.com/gesher/auth",
+        "total": 509,
+        "scripting": 20,
+        "scriptParseCompile": 10
+      },
+      {
+        "url": "https://more30.com/gesher/assets/index-CQj9Feww.js",
+        "total": 454,
+        "scripting": 419,
+        "scriptParseCompile": 4
+      },
+      {
+        "url": "https://more30.com/auth-button.js",
+        "total": 112,
+        "scripting": 21,
+        "scriptParseCompile": 5
+      },
+      {
+        "url": "https://netfree.link/card/card-injection.js",
+        "total": 58,
+        "scripting": 37,
+        "scriptParseCompile": 3
+      }
+    ]
+  }
+}

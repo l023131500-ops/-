@@ -1,0 +1,39 @@
+gannenet (40): every non-PDF file page downloaded a PDF-writing library
+
+/shelf/[id] is the page behind every card on the shelf, and 176 kB of its
+178 kB of route JS was pdf-lib, statically imported at the top of PdfViewer.
+A route bundles what its module graph reaches, not what renders, so 634 of the
+3,235 items -- every image (316), doc (268), media (28) and gapp (22) row,
+counted from the two catalogs -- paid for a library on a page that never mounts
+the viewer. For the 2,601 PDFs it was the wrong shape anyway: a static import
+blocks hydration, and the tool it serves is not needed until the file arrives.
+
+Now import("pdf-lib") behind a module-level loadPdfLib(); import() caches, so
+the effect and buildSelectedPdf share one fetch of it.
+
+  /shelf/[id]   178 kB -> 2.77 kB route JS,  274 kB -> 98.8 kB first load
+  every other route byte-identical.
+
+The same effect was also re-serialising the whole document to produce a copy of
+it: hiddenPages is empty for everything on the shelf today (the trim is an admin
+override, overrides.json is {}), yet the preview was always PDFDocument.create()
++ copyPages(all) + save(), so the teacher waited for the download plus a full
+parse and re-write before the first page appeared. Untrimmed, the bytes just
+fetched are the preview and are shown before pdf-lib is even requested; the copy
+still runs when pages really are hidden. A preview already on screen now
+outlives a later failure rather than being replaced by the error box.
+
+Verified in the browser against the production build (next start :3045). Image
+item: 13 scripts, no 459 kB chunk, no <object>, image renders, 0 console errors.
+PDF item: the chunk appears (659.*.js, 459,570 B -- lazily, only here), the
+preview is a blob:, the grid builds 8 page buttons, the counter reads
+"8 עמ׳ · נבחרו 8" and "נבחרו 3" after 2-4 through the real range box, and the
+real download button saves a 3-page PDF named
+"שבוע טוב וחודש טוב! - קטלוג ט''ו בשבט — עמודים 2-4.pdf". 0 console errors.
+tsc --noEmit 0, next build 194 pages.
+
+The PDF's bytes are supplied at Playwright's network layer, at the app's own
+URL: this machine cannot fetch a real seed PDF at all, since NetFree answers 418
+to PDF bodies from supabase.co. Everything above the wire is the shipped path.
+
+Evidence in QA/gannenet/pdf-viewer-weight-0812/.

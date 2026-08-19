@@ -1,0 +1,71 @@
+﻿[
+  {
+    "label": "prev/admin.html",
+    "bytes": 89820,
+    "new": {
+      "// ── הרשימה מתרעננת בחזרה ולא כאן": 0,
+      "// כאן ישבה עד עכשיו load() נוספת. היא פונה לשרת בזמן שהרשימה מוסתרת,": 0,
+      "// שגיאה של בקשה שהוא לא ביקש, על פעולה שהצליחה.": 0,
+      "// openCase נשארת: היא בונה את המסך שכן עומד מול העיניים.": 0
+    },
+    "removed": {
+      "await openCase(c.id, undefined, msg);\n        await load();": 1
+    },
+    "old": {
+      "await openCase(c.id, undefined, msg);": 1,
+      "await load();": 2,
+      "bkalot-clone-admin": 1,
+      "הסטטוס שונה מ«": 1,
+      "לא נשלחה שום הודעה": 2,
+      "הפנייה כבר הייתה ב«": 1,
+      "async function load()": 1,
+      "חזרה לרשימה": 2
+    }
+  },
+  {
+    "label": "../../../apps/37-bkalot-clone/admin.html",
+    "bytes": 90920,
+    "new": {
+      "// ── הרשימה מתרעננת בחזרה ולא כאן": 1,
+      "// כאן ישבה עד עכשיו load() נוספת. היא פונה לשרת בזמן שהרשימה מוסתרת,": 1,
+      "// שגיאה של בקשה שהוא לא ביקש, על פעולה שהצליחה.": 1,
+      "// openCase נשארת: היא בונה את המסך שכן עומד מול העיניים.": 1
+    },
+    "removed": {
+      "await openCase(c.id, undefined, msg);\n        await load();": 0
+    },
+    "old": {
+      "await openCase(c.id, undefined, msg);": 1,
+      "await load();": 1,
+      "bkalot-clone-admin": 1,
+      "הסטטוס שונה מ«": 1,
+      "לא נשלחה שום הודעה": 2,
+      "הפנייה כבר הייתה ב«": 1,
+      "async function load()": 1,
+      "חזרה לרשימה": 2
+    }
+  },
+  {
+    "label": "../../../portal/dist/bkalot-studio/admin.html",
+    "bytes": 90920,
+    "new": {
+      "// ── הרשימה מתרעננת בחזרה ולא כאן": 1,
+      "// כאן ישבה עד עכשיו load() נוספת. היא פונה לשרת בזמן שהרשימה מוסתרת,": 1,
+      "// שגיאה של בקשה שהוא לא ביקש, על פעולה שהצליחה.": 1,
+      "// openCase נשארת: היא בונה את המסך שכן עומד מול העיניים.": 1
+    },
+    "removed": {
+      "await openCase(c.id, undefined, msg);\n        await load();": 0
+    },
+    "old": {
+      "await openCase(c.id, undefined, msg);": 1,
+      "await load();": 1,
+      "bkalot-clone-admin": 1,
+      "הסטטוס שונה מ«": 1,
+      "לא נשלחה שום הודעה": 2,
+      "הפנייה כבר הייתה ב«": 1,
+      "async function load()": 1,
+      "חזרה לרשימה": 2
+    }
+  }
+]

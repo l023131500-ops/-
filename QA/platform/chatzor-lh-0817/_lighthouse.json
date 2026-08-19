@@ -1,0 +1,207 @@
+{
+  "chatzor": {
+    "url": "https://more30.com/chatzor",
+    "measuredAt": "2026-08-17T18:28:15.582Z",
+    "performance": 41,
+    "accessibility": 100,
+    "bestPractices": 77,
+    "seo": 100,
+    "metrics": {
+      "fcp": "6.6 s",
+      "lcp": "10.5 s",
+      "tbt": "580 ms",
+      "cls": "0.005",
+      "si": "18.0 s"
+    },
+    "failedAudits": [
+      {
+        "id": "first-contentful-paint",
+        "title": "First Contentful Paint",
+        "score": 0.02,
+        "display": "6.6 s"
+      },
+      {
+        "id": "largest-contentful-paint",
+        "title": "Largest Contentful Paint",
+        "score": 0,
+        "display": "10.5 s"
+      },
+      {
+        "id": "speed-index",
+        "title": "Speed Index",
+        "score": 0,
+        "display": "18.0 s"
+      },
+      {
+        "id": "total-blocking-time",
+        "title": "Total Blocking Time",
+        "score": 0.51,
+        "display": "580 ms"
+      },
+      {
+        "id": "max-potential-fid",
+        "title": "Max Potential First Input Delay",
+        "score": 0.16,
+        "display": "410 ms"
+      },
+      {
+        "id": "server-response-time",
+        "title": "Reduce initial server response time",
+        "score": 0,
+        "display": "Root document took 880 ms"
+      },
+      {
+        "id": "interactive",
+        "title": "Time to Interactive",
+        "score": 0.24,
+        "display": "10.5 s"
+      },
+      {
+        "id": "third-party-cookies",
+        "title": "Uses third-party cookies",
+        "score": 0,
+        "display": "1 cookie found"
+      },
+      {
+        "id": "mainthread-work-breakdown",
+        "title": "Minimize main-thread work",
+        "score": 0,
+        "display": "16.2 s"
+      },
+      {
+        "id": "unminified-javascript",
+        "title": "Minify JavaScript",
+        "score": 0.5,
+        "display": "Est savings of 6 KiB"
+      },
+      {
+        "id": "unused-javascript",
+        "title": "Reduce unused JavaScript",
+        "score": 0,
+        "display": "Est savings of 88 KiB"
+      },
+      {
+        "id": "inspector-issues",
+        "title": "Issues were logged in the `Issues` panel in Chrome Devtools",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "bf-cache",
+        "title": "Page prevented back/forward cache restoration",
+        "score": 0,
+        "display": "1 failure reason"
+      },
+      {
+        "id": "cache-insight",
+        "title": "Use efficient cache lifetimes",
+        "score": 0,
+        "display": "Est savings of 43 KiB"
+      },
+      {
+        "id": "document-latency-insight",
+        "title": "Document request latency",
+        "score": 0,
+        "display": "Est savings of 21 KiB"
+      },
+      {
+        "id": "forced-reflow-insight",
+        "title": "Forced reflow",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "lcp-breakdown-insight",
+        "title": "LCP breakdown",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "modern-http-insight",
+        "title": "Modern HTTP",
+        "score": 0,
+        "display": "Est savings of -280 ms"
+      },
+      {
+        "id": "network-dependency-tree-insight",
+        "title": "Network dependency tree",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "render-blocking-insight",
+        "title": "Render-blocking requests",
+        "score": 0,
+        "display": "Est savings of 740 ms"
+      }
+    ],
+    "mainThreadBreakdown": [
+      {
+        "group": "Other",
+        "duration": 7394
+      },
+      {
+        "group": "Rendering",
+        "duration": 4307
+      },
+      {
+        "group": "Style & Layout",
+        "duration": 3200
+      },
+      {
+        "group": "Script Evaluation",
+        "duration": 1177
+      },
+      {
+        "group": "Garbage Collection",
+        "duration": 55
+      },
+      {
+        "group": "Parse HTML & CSS",
+        "duration": 43
+      },
+      {
+        "group": "Script Parsing & Compilation",
+        "duration": 26
+      }
+    ],
+    "bootupTime": [
+      {
+        "url": "https://more30.com/chatzor",
+        "total": 13114,
+        "scripting": 21,
+        "scriptParseCompile": 4
+      },
+      {
+        "url": "Unattributable",
+        "total": 1241,
+        "scripting": 263,
+        "scriptParseCompile": 0
+      },
+      {
+        "url": "https://more30.com/chatzor/assets/motion--tJVryAK.js",
+        "total": 768,
+        "scripting": 186,
+        "scriptParseCompile": 0
+      },
+      {
+        "url": "https://more30.com/chatzor/assets/react-NN3IinNy.js",
+        "total": 710,
+        "scripting": 571,
+        "scriptParseCompile": 0
+      },
+      {
+        "url": "https://more30.com/auth-button.js",
+        "total": 162,
+        "scripting": 22,
+        "scriptParseCompile": 6
+      },
+      {
+        "url": "https://netfree.link/card/card-injection.js",
+        "total": 124,
+        "scripting": 72,
+        "scriptParseCompile": 8
+      }
+    ]
+  }
+}

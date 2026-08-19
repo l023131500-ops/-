@@ -1,0 +1,12 @@
+round-3 a11y recheck: login/me/subscribe - 0 dark-mode contrast failures (clean)
+
+contrast-probe.mjs against https://more30.com/login, /me, /subscribe, both
+color schemes (light/dark), both widths (1440/390): 0 contrast failures in
+all 12 combinations. No code change, no deploy needed.
+
+This closes the round-3 dark-mode contrast recheck ROUTES queue: all 26
+per-system routes (torah through kiosk) plus tivuch, home, login, me, and
+subscribe are now dark-rechecked and clean.
+
+Evidence: QA/platform/portal-routes-dark-recheck-0818/_results.md
+Protected systems untouched (08/09/bkalut-app/bkalot-admin/zr_*/NEDARIM3873).

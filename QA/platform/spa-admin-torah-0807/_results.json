@@ -1,0 +1,63 @@
+{
+  "checkedAt": "2026-08-07T02:25:14.803Z",
+  "origin": "https://more30.com",
+  "mount": "/torah",
+  "rows": [
+    {
+      "candidate": "/admin",
+      "url": "https://more30.com/torah/admin",
+      "status": 200,
+      "landed": "https://more30.com/torah/auth/sign-in?redirect=%2Fadmin",
+      "textLen": 137,
+      "password": true,
+      "heading": "",
+      "notFound": false,
+      "adminChrome": [],
+      "stayed": false,
+      "returnTo": "/admin",
+      "verdict": "login-returning-to-admin"
+    },
+    {
+      "candidate": "/legacy/admin",
+      "url": "https://more30.com/torah/legacy/admin",
+      "status": 200,
+      "landed": "https://more30.com/torah/auth/sign-in?redirect=%2Flegacy%2Fadmin",
+      "textLen": 137,
+      "password": true,
+      "heading": "",
+      "notFound": false,
+      "adminChrome": [],
+      "stayed": false,
+      "returnTo": "/legacy/admin",
+      "verdict": "login-returning-to-admin"
+    },
+    {
+      "candidate": "/legacy/ivr",
+      "url": "https://more30.com/torah/legacy/ivr",
+      "status": 200,
+      "landed": "https://more30.com/torah/auth/sign-in?redirect=%2Flegacy%2Fivr",
+      "textLen": 137,
+      "password": true,
+      "heading": "",
+      "notFound": false,
+      "adminChrome": [],
+      "stayed": false,
+      "returnTo": "/legacy/ivr",
+      "verdict": "login-generic"
+    },
+    {
+      "candidate": "/legacy/nedarim",
+      "url": "https://more30.com/torah/legacy/nedarim",
+      "status": 200,
+      "landed": "https://more30.com/torah/auth/sign-in?redirect=%2Flegacy%2Fnedarim",
+      "textLen": 137,
+      "password": true,
+      "heading": "",
+      "notFound": false,
+      "adminChrome": [],
+      "stayed": false,
+      "returnTo": "/legacy/nedarim",
+      "verdict": "login-generic"
+    }
+  ]
+}

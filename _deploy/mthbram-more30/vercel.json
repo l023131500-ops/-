@@ -1,0 +1,9 @@
+{
+  "buildCommand": "echo no-build",
+  "outputDirectory": ".",
+  "framework": null,
+  "rewrites": [
+    { "source": "/mthbram", "destination": "/mthbram/index.html" },
+    { "source": "/mthbram/:path*", "destination": "/mthbram/index.html" }
+  ]
+}

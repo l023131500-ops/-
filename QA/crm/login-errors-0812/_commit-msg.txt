@@ -1,0 +1,34 @@
+crm (30): four auth screens answered in raw English, so an unconfirmed mail read as a typo
+
+The sign-in, sign-up, reset-mail and update-password handlers all passed
+Supabase's error.message straight into toast.error(..., { description }).
+The heading was Hebrew and the sentence under it was GoTrue's English:
+"Email not confirmed", "Invalid login credentials", "User already
+registered". The first of those tells someone who typed the RIGHT password
+to go try other passwords.
+
+src/lib/authErrors.ts maps by the code the server returned — sign-in
+(email_not_confirmed / invalid_credentials / user_banned), sign-up
+(user_already_exists / email_exists / weak_password / signup_disabled /
+email_address_invalid / validation_failed), updateUser on /reset-password
+(same_password / session_not_found / refresh_token_not_found /
+reauthentication_needed) and rate (over_email_send_rate_limit /
+over_request_rate_limit), plus status 429 and the status-0
+AuthRetryableFetchError that carries no code at all. An unrecognised code
+keeps its original text rather than being swallowed behind a generic line.
+
+This screen labels its first field "אימייל" and sets type="email", so
+invalid_credentials here says "האימייל או הסיסמה שגויים" — unlike 21,
+where the same code says "שם המשתמש" because that is the field the admin
+actually filled.
+
+Verified live on more30.com/crm/auth, not on a preview, after deploying
+from source (dpl_6RAnby1Rar8xPWqdnEcYMvdbHSzZ, target production):
+- wrong password -> POST .../auth/v1/token?grant_type=password 400 ->
+  toast read back from the DOM as "האימייל או הסיסמה שגויים."
+  QA/crm/login-errors-0812/02-invalid-credentials-live-more30.png
+- request aborted at the browser layer (a real AuthRetryableFetchError
+  from supabase-js, not a stub of the mapper) -> "לא הצלחנו להגיע לשרת."
+  QA/crm/login-errors-0812/03-offline-live-more30.png
+tsc -p tsconfig.json --noEmit clean and confirmed to have inspected all
+three files (126 project files); npm run build passes.

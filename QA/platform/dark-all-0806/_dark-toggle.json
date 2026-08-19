@@ -1,0 +1,755 @@
+{
+  "/admin": {
+    "route": "/admin",
+    "osDark": {
+      "effectiveBg": "rgba(0, 0, 0, 0)",
+      "bodyImage": "",
+      "fg": "rgb(0, 0, 0)",
+      "rootClass": "",
+      "rootTheme": ""
+    },
+    "light": {
+      "effectiveBg": "rgba(0, 0, 0, 0)",
+      "bodyImage": "",
+      "fg": "rgb(0, 0, 0)",
+      "rootClass": "",
+      "rootTheme": ""
+    },
+    "toggleCandidates": [],
+    "osDarkFollows": false,
+    "reachable": false
+  },
+  "/bkalot": {
+    "route": "/bkalot",
+    "osDark": {
+      "effectiveBg": "rgb(18, 19, 15)",
+      "bodyImage": "",
+      "fg": "rgb(233, 231, 224)",
+      "rootClass": "dark",
+      "rootTheme": ""
+    },
+    "light": {
+      "effectiveBg": "rgb(247, 246, 242)",
+      "bodyImage": "",
+      "fg": "rgb(35, 33, 28)",
+      "rootClass": "",
+      "rootTheme": ""
+    },
+    "toggleCandidates": [],
+    "osDarkFollows": true,
+    "reachable": true
+  },
+  "/briut": {
+    "route": "/briut",
+    "osDark": {
+      "effectiveBg": "rgb(14, 21, 25)",
+      "bodyImage": "",
+      "fg": "rgb(227, 233, 237)",
+      "rootClass": "dark",
+      "rootTheme": ""
+    },
+    "light": {
+      "effectiveBg": "rgb(246, 248, 249)",
+      "bodyImage": "",
+      "fg": "rgb(22, 35, 43)",
+      "rootClass": "",
+      "rootTheme": ""
+    },
+    "toggleCandidates": [],
+    "osDarkFollows": true,
+    "reachable": true
+  },
+  "/chatzor": {
+    "route": "/chatzor",
+    "osDark": {
+      "effectiveBg": "rgb(13, 22, 33)",
+      "bodyImage": "",
+      "fg": "rgb(228, 235, 241)",
+      "rootClass": "dark",
+      "rootTheme": ""
+    },
+    "light": {
+      "effectiveBg": "rgb(251, 252, 253)",
+      "bodyImage": "",
+      "fg": "rgb(20, 34, 52)",
+      "rootClass": "",
+      "rootTheme": ""
+    },
+    "toggleCandidates": [
+      {
+        "tag": "button",
+        "hay": "מעבר למצב כהה grid h-10 w-10 place-items-center rounded-md text-muted-foreground transitio",
+        "visible": true,
+        "x": 233.71875,
+        "y": 32
+      }
+    ],
+    "afterClick": {
+      "effectiveBg": "rgb(13, 22, 33)",
+      "bodyImage": "",
+      "fg": "rgb(228, 235, 241)",
+      "rootClass": "dark",
+      "rootTheme": ""
+    },
+    "clickChanged": true,
+    "osDarkFollows": true,
+    "reachable": true
+  },
+  "/chizukim": {
+    "route": "/chizukim",
+    "osDark": {
+      "effectiveBg": "rgb(26, 23, 20)",
+      "bodyImage": "",
+      "fg": "rgb(235, 231, 224)",
+      "rootClass": "dark",
+      "rootTheme": ""
+    },
+    "light": {
+      "effectiveBg": "rgb(248, 246, 242)",
+      "bodyImage": "",
+      "fg": "rgb(45, 38, 31)",
+      "rootClass": "",
+      "rootTheme": ""
+    },
+    "toggleCandidates": [
+      {
+        "tag": "a",
+        "hay": "40שלוש דרגות בנתינת צדקה ובהערכת המצוות4",
+        "visible": true,
+        "x": 640,
+        "y": 509
+      }
+    ],
+    "afterClick": {
+      "effectiveBg": "rgb(248, 246, 242)",
+      "bodyImage": "",
+      "fg": "rgb(45, 38, 31)",
+      "rootClass": "",
+      "rootTheme": ""
+    },
+    "clickChanged": false,
+    "osDarkFollows": true,
+    "reachable": true
+  },
+  "/crm": {
+    "route": "/crm",
+    "osDark": {
+      "effectiveBg": "lab(3.73265 -2.14425 -4.02555)",
+      "bodyImage": "",
+      "fg": "lab(96.5699 -1.58328 -0.665271)",
+      "rootClass": "dark",
+      "rootTheme": ""
+    },
+    "light": {
+      "effectiveBg": "lab(98.8899 -1.58331 -0.665271)",
+      "bodyImage": "",
+      "fg": "lab(5.38274 -4.89521 -6.47179)",
+      "rootClass": "",
+      "rootTheme": ""
+    },
+    "toggleCandidates": [],
+    "osDarkFollows": true,
+    "reachable": true
+  },
+  "/egod": {
+    "route": "/egod",
+    "osDark": {
+      "effectiveBg": "rgb(15, 21, 36)",
+      "bodyImage": "",
+      "fg": "rgb(235, 237, 244)",
+      "rootClass": "dark",
+      "rootTheme": ""
+    },
+    "light": {
+      "effectiveBg": "rgb(245, 246, 250)",
+      "bodyImage": "",
+      "fg": "rgb(27, 44, 90)",
+      "rootClass": "",
+      "rootTheme": ""
+    },
+    "toggleCandidates": [
+      {
+        "tag": "a",
+        "hay": "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-me",
+        "visible": true,
+        "x": 177.953125,
+        "y": 32
+      },
+      {
+        "tag": "a",
+        "hay": "inline-flex items-center justify-center gap-2 whitespace-nowrap ring-offset-background tra",
+        "visible": true,
+        "x": 780.7265625,
+        "y": 551
+      },
+      {
+        "tag": "a",
+        "hay": "inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium ring-offset-ba",
+        "visible": true,
+        "x": 639.9921875,
+        "y": 3556
+      }
+    ],
+    "afterClick": {
+      "effectiveBg": "rgb(245, 246, 250)",
+      "bodyImage": "",
+      "fg": "rgb(27, 44, 90)",
+      "rootClass": "",
+      "rootTheme": ""
+    },
+    "clickChanged": false,
+    "osDarkFollows": true,
+    "reachable": true
+  },
+  "/galil": {
+    "route": "/galil",
+    "osDark": {
+      "effectiveBg": "rgba(0, 0, 0, 0)",
+      "bodyImage": "linear-gradient(160deg, rgb(14, 24, 32) 0%, rgb(18, 30, 38) 30%, rgb(20, 34, 41) 60%, rgb(14, 24, 32) 100%)",
+      "fg": "rgb(236, 240, 244)",
+      "rootClass": "dark",
+      "rootTheme": ""
+    },
+    "light": {
+      "effectiveBg": "rgba(0, 0, 0, 0)",
+      "bodyImage": "linear-gradient(160deg, rgb(245, 247, 249) 0%, rgb(243, 245, 247) 30%, rgb(240, 243, 245) 60%, rgb(245, 247, 249) 100%)",
+      "fg": "rgb(21, 29, 40)",
+      "rootClass": "",
+      "rootTheme": ""
+    },
+    "toggleCandidates": [],
+    "osDarkFollows": true,
+    "reachable": true
+  },
+  "/gesher": {
+    "route": "/gesher",
+    "osDark": {
+      "effectiveBg": "lab(5.23127 -1.15929 -6.2068)",
+      "bodyImage": "",
+      "fg": "lab(95.3599 -0.510246 -1.40362)",
+      "rootClass": "dark",
+      "rootTheme": ""
+    },
+    "light": {
+      "effectiveBg": "lab(98.144 -0.25627 -0.702512)",
+      "bodyImage": "",
+      "fg": "lab(13.5245 -2.06289 -8.6511)",
+      "rootClass": "",
+      "rootTheme": ""
+    },
+    "toggleCandidates": [],
+    "osDarkFollows": true,
+    "reachable": true
+  },
+  "/imud": {
+    "route": "/imud",
+    "osDark": {
+      "effectiveBg": "rgb(27, 22, 19)",
+      "bodyImage": "",
+      "fg": "rgb(241, 237, 228)",
+      "rootClass": "dark",
+      "rootTheme": ""
+    },
+    "light": {
+      "effectiveBg": "rgb(250, 248, 245)",
+      "bodyImage": "",
+      "fg": "rgb(46, 34, 25)",
+      "rootClass": "",
+      "rootTheme": ""
+    },
+    "toggleCandidates": [],
+    "osDarkFollows": true,
+    "reachable": true
+  },
+  "/kesef": {
+    "route": "/kesef",
+    "osDark": {
+      "effectiveBg": "rgb(11, 13, 46)",
+      "bodyImage": "",
+      "fg": "rgb(236, 233, 245)",
+      "rootClass": "",
+      "rootTheme": ""
+    },
+    "light": {
+      "effectiveBg": "rgb(11, 13, 46)",
+      "bodyImage": "",
+      "fg": "rgb(236, 233, 245)",
+      "rootClass": "",
+      "rootTheme": ""
+    },
+    "toggleCandidates": [
+      {
+        "tag": "a",
+        "hay": "btn כניסה למערכת",
+        "visible": true,
+        "x": 1121.5859375,
+        "y": 526.515625
+      },
+      {
+        "tag": "a",
+        "hay": "btn btn-quiet מה המערכת עושה",
+        "visible": true,
+        "x": 944.4609375,
+        "y": 526.515625
+      }
+    ],
+    "afterClick": {
+      "effectiveBg": "rgba(0, 0, 0, 0)",
+      "bodyImage": "radial-gradient(1200px 600px at 70% -10%, rgb(27, 31, 82) 0%, rgb(11, 13, 46) 60%)",
+      "fg": "rgb(11, 13, 46)",
+      "rootClass": "",
+      "rootTheme": ""
+    },
+    "clickChanged": true,
+    "osDarkFollows": false,
+    "reachable": true
+  },
+  "/kiosk": {
+    "route": "/kiosk",
+    "osDark": {
+      "effectiveBg": "rgba(0, 0, 0, 0)",
+      "bodyImage": "",
+      "fg": "rgb(255, 255, 255)",
+      "rootClass": "dark",
+      "rootTheme": ""
+    },
+    "light": {
+      "effectiveBg": "rgba(0, 0, 0, 0)",
+      "bodyImage": "",
+      "fg": "rgb(0, 0, 0)",
+      "rootClass": "",
+      "rootTheme": ""
+    },
+    "toggleCandidates": [
+      {
+        "tag": "a",
+        "hay": "btn btn-primary כניסה למערכת הניהול",
+        "visible": true,
+        "x": 1212.421875,
+        "y": 224.375
+      },
+      {
+        "tag": "a",
+        "hay": "btn btn-light התחלה",
+        "visible": true,
+        "x": 1253.1953125,
+        "y": 2174.75
+      },
+      {
+        "tag": "a",
+        "hay": "btn btn-light דברו איתנו",
+        "visible": true,
+        "x": 1242.375,
+        "y": 2573.625
+      },
+      {
+        "tag": "a",
+        "hay": "btn btn-ghost כניסה למערכת ←",
+        "visible": true,
+        "x": 1222.21875,
+        "y": 2697.4375
+      }
+    ],
+    "afterClick": {
+      "effectiveBg": "rgb(11, 13, 46)",
+      "bodyImage": "",
+      "fg": "rgb(236, 233, 245)",
+      "rootClass": "",
+      "rootTheme": ""
+    },
+    "clickChanged": true,
+    "osDarkFollows": false,
+    "reachable": true
+  },
+  "/kupot": {
+    "route": "/kupot",
+    "osDark": {
+      "effectiveBg": "rgb(13, 20, 23)",
+      "bodyImage": "",
+      "fg": "rgb(238, 242, 242)",
+      "rootClass": "dark",
+      "rootTheme": ""
+    },
+    "light": {
+      "effectiveBg": "rgb(249, 251, 251)",
+      "bodyImage": "",
+      "fg": "rgb(21, 37, 40)",
+      "rootClass": "",
+      "rootTheme": ""
+    },
+    "toggleCandidates": [],
+    "osDarkFollows": true,
+    "reachable": true
+  },
+  "/mechiron": {
+    "route": "/mechiron",
+    "osDark": {
+      "effectiveBg": "rgb(18, 25, 28)",
+      "bodyImage": "",
+      "fg": "rgb(240, 236, 230)",
+      "rootClass": "dark",
+      "rootTheme": ""
+    },
+    "light": {
+      "effectiveBg": "rgb(248, 246, 242)",
+      "bodyImage": "",
+      "fg": "rgb(23, 33, 38)",
+      "rootClass": "",
+      "rootTheme": ""
+    },
+    "toggleCandidates": [],
+    "osDarkFollows": true,
+    "reachable": true
+  },
+  "/modaot": {
+    "route": "/modaot",
+    "osDark": {
+      "effectiveBg": "rgb(15, 18, 24)",
+      "bodyImage": "",
+      "fg": "rgb(228, 230, 236)",
+      "rootClass": "dark",
+      "rootTheme": ""
+    },
+    "light": {
+      "effectiveBg": "rgb(248, 245, 236)",
+      "bodyImage": "",
+      "fg": "rgb(26, 26, 26)",
+      "rootClass": "",
+      "rootTheme": ""
+    },
+    "toggleCandidates": [
+      {
+        "tag": "a",
+        "hay": "card text-brand-dark hover:shadow-md transition text-right block פלטפורמת השיעוריםחיפוש שי",
+        "visible": true,
+        "x": 836,
+        "y": 1217
+      },
+      {
+        "tag": "a",
+        "hay": "card text-brand-dark hover:shadow-md transition text-right block תמלול שיעוריםמקובץ שמע ל-",
+        "visible": true,
+        "x": 444,
+        "y": 1217
+      }
+    ],
+    "afterClick": {
+      "effectiveBg": "rgb(248, 245, 236)",
+      "bodyImage": "",
+      "fg": "rgb(26, 26, 26)",
+      "rootClass": "",
+      "rootTheme": ""
+    },
+    "clickChanged": false,
+    "osDarkFollows": true,
+    "reachable": true
+  },
+  "/mthbram": {
+    "route": "/mthbram",
+    "osDark": {
+      "effectiveBg": "rgb(9, 26, 32)",
+      "bodyImage": "radial-gradient(circle at 20% 10%, rgba(13, 55, 63, 0.6) 0%, rgba(0, 0, 0, 0) 45%), radial-gradient(circle at 85% 90%, rgba(119, 88, 34, 0.15) 0%, rgba(0, 0, 0,",
+      "fg": "rgb(241, 234, 218)",
+      "rootClass": "",
+      "rootTheme": ""
+    },
+    "light": {
+      "effectiveBg": "rgb(9, 26, 32)",
+      "bodyImage": "radial-gradient(circle at 20% 10%, rgba(13, 55, 63, 0.6) 0%, rgba(0, 0, 0, 0) 45%), radial-gradient(circle at 85% 90%, rgba(119, 88, 34, 0.15) 0%, rgba(0, 0, 0,",
+      "fg": "rgb(241, 234, 218)",
+      "rootClass": "",
+      "rootTheme": ""
+    },
+    "toggleCandidates": [],
+    "osDarkFollows": false,
+    "reachable": false
+  },
+  "/nadlan": {
+    "route": "/nadlan",
+    "osDark": {
+      "effectiveBg": "rgb(12, 18, 32)",
+      "bodyImage": "",
+      "fg": "rgb(221, 227, 238)",
+      "rootClass": "dark",
+      "rootTheme": ""
+    },
+    "light": {
+      "effectiveBg": "rgb(246, 248, 252)",
+      "bodyImage": "",
+      "fg": "rgb(26, 34, 51)",
+      "rootClass": "",
+      "rootTheme": ""
+    },
+    "toggleCandidates": [
+      {
+        "tag": "label",
+        "hay": "flex gap-2.5 rounded-xl border-2 px-3.5 py-2.5 text-right transition border-teal bg-teal/[",
+        "visible": true,
+        "x": 640,
+        "y": 945.75
+      }
+    ],
+    "afterClick": {
+      "effectiveBg": "rgb(246, 248, 252)",
+      "bodyImage": "",
+      "fg": "rgb(26, 34, 51)",
+      "rootClass": "",
+      "rootTheme": ""
+    },
+    "clickChanged": false,
+    "osDarkFollows": true,
+    "reachable": true
+  },
+  "/orech": {
+    "route": "/orech",
+    "osDark": {
+      "effectiveBg": "rgb(20, 17, 12)",
+      "bodyImage": "",
+      "fg": "rgb(237, 230, 216)",
+      "rootClass": "",
+      "rootTheme": ""
+    },
+    "light": {
+      "effectiveBg": "rgb(250, 247, 240)",
+      "bodyImage": "",
+      "fg": "rgb(31, 26, 18)",
+      "rootClass": "",
+      "rootTheme": ""
+    },
+    "toggleCandidates": [],
+    "osDarkFollows": true,
+    "reachable": true
+  },
+  "/smachot": {
+    "route": "/smachot",
+    "osDark": {
+      "effectiveBg": "rgb(10, 33, 37)",
+      "bodyImage": "",
+      "fg": "rgb(238, 245, 245)",
+      "rootClass": "",
+      "rootTheme": "dark"
+    },
+    "light": {
+      "effectiveBg": "rgb(244, 246, 246)",
+      "bodyImage": "",
+      "fg": "rgb(20, 40, 43)",
+      "rootClass": "",
+      "rootTheme": "light"
+    },
+    "toggleCandidates": [
+      {
+        "tag": "button",
+        "hay": "החלף מצב תצוגה themeBtn theme-btn",
+        "visible": true,
+        "x": 208.109375,
+        "y": 31
+      }
+    ],
+    "afterClick": {
+      "effectiveBg": "rgb(10, 33, 37)",
+      "bodyImage": "",
+      "fg": "rgb(238, 245, 245)",
+      "rootClass": "",
+      "rootTheme": "dark"
+    },
+    "clickChanged": true,
+    "osDarkFollows": true,
+    "reachable": true
+  },
+  "/smel": {
+    "route": "/smel",
+    "osDark": {
+      "effectiveBg": "rgb(13, 20, 33)",
+      "bodyImage": "",
+      "fg": "rgb(244, 241, 235)",
+      "rootClass": "dark",
+      "rootTheme": ""
+    },
+    "light": {
+      "effectiveBg": "rgb(251, 250, 248)",
+      "bodyImage": "",
+      "fg": "rgb(21, 34, 55)",
+      "rootClass": "",
+      "rootTheme": ""
+    },
+    "toggleCandidates": [
+      {
+        "tag": "button",
+        "hay": "החלף מצב תצוגה inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md ",
+        "visible": true,
+        "x": 122,
+        "y": 32
+      }
+    ],
+    "afterClick": {
+      "effectiveBg": "rgb(13, 20, 33)",
+      "bodyImage": "",
+      "fg": "rgb(244, 241, 235)",
+      "rootClass": "dark",
+      "rootTheme": ""
+    },
+    "clickChanged": true,
+    "osDarkFollows": true,
+    "reachable": true
+  },
+  "/studio": {
+    "route": "/studio",
+    "osDark": {
+      "effectiveBg": "rgb(12, 17, 29)",
+      "bodyImage": "",
+      "fg": "rgb(243, 238, 226)",
+      "rootClass": "dark",
+      "rootTheme": ""
+    },
+    "light": {
+      "effectiveBg": "rgb(12, 17, 29)",
+      "bodyImage": "",
+      "fg": "rgb(243, 238, 226)",
+      "rootClass": "dark",
+      "rootTheme": ""
+    },
+    "toggleCandidates": [],
+    "osDarkFollows": false,
+    "reachable": false
+  },
+  "/tamlul": {
+    "route": "/tamlul",
+    "osDark": {
+      "effectiveBg": "rgb(20, 22, 28)",
+      "bodyImage": "",
+      "fg": "rgb(228, 230, 236)",
+      "rootClass": "dark",
+      "rootTheme": ""
+    },
+    "light": {
+      "effectiveBg": "rgb(251, 250, 246)",
+      "bodyImage": "",
+      "fg": "rgb(26, 26, 26)",
+      "rootClass": "",
+      "rootTheme": ""
+    },
+    "toggleCandidates": [],
+    "osDarkFollows": true,
+    "reachable": true
+  },
+  "/tivuch": {
+    "route": "/tivuch",
+    "osDark": {
+      "effectiveBg": "rgb(11, 13, 46)",
+      "bodyImage": "",
+      "fg": "rgb(236, 233, 245)",
+      "rootClass": "",
+      "rootTheme": ""
+    },
+    "light": {
+      "effectiveBg": "rgb(11, 13, 46)",
+      "bodyImage": "",
+      "fg": "rgb(236, 233, 245)",
+      "rootClass": "",
+      "rootTheme": ""
+    },
+    "toggleCandidates": [
+      {
+        "tag": "a",
+        "hay": "nav-cta btn btn-quiet כניסה למערכת",
+        "visible": true,
+        "x": 252.4140625,
+        "y": 38.75
+      },
+      {
+        "tag": "a",
+        "hay": "btn כניסה למערכת",
+        "visible": true,
+        "x": 1121.5859375,
+        "y": 517.890625
+      },
+      {
+        "tag": "a",
+        "hay": "btn btn-quiet מה המערכת עושה",
+        "visible": true,
+        "x": 944.4609375,
+        "y": 517.890625
+      }
+    ],
+    "afterClick": {
+      "effectiveBg": "rgb(11, 13, 46)",
+      "bodyImage": "",
+      "fg": "rgb(236, 233, 245)",
+      "rootClass": "",
+      "rootTheme": ""
+    },
+    "clickChanged": false,
+    "osDarkFollows": false,
+    "reachable": false
+  },
+  "/torah": {
+    "route": "/torah",
+    "osDark": {
+      "effectiveBg": "rgb(12, 18, 29)",
+      "bodyImage": "",
+      "fg": "rgb(250, 250, 250)",
+      "rootClass": "dark",
+      "rootTheme": ""
+    },
+    "light": {
+      "effectiveBg": "rgb(255, 255, 255)",
+      "bodyImage": "",
+      "fg": "rgb(18, 27, 43)",
+      "rootClass": "",
+      "rootTheme": ""
+    },
+    "toggleCandidates": [],
+    "osDarkFollows": true,
+    "reachable": true
+  },
+  "/zchuyot": {
+    "route": "/zchuyot",
+    "osDark": {
+      "effectiveBg": "rgb(15, 19, 26)",
+      "bodyImage": "",
+      "fg": "rgb(238, 241, 238)",
+      "rootClass": "dark",
+      "rootTheme": ""
+    },
+    "light": {
+      "effectiveBg": "rgb(249, 251, 249)",
+      "bodyImage": "",
+      "fg": "rgb(23, 28, 38)",
+      "rootClass": "",
+      "rootTheme": ""
+    },
+    "toggleCandidates": [
+      {
+        "tag": "a",
+        "hay": "flex items-center justify-center gap-3 px-5 py-3.5 rounded-xl bg-white/15 border border-wh",
+        "visible": true,
+        "x": 901.3359375,
+        "y": 729
+      },
+      {
+        "tag": "button",
+        "hay": "flex items-center gap-2 p-2 rounded-lg border text-sm transition-all border-border text-mu",
+        "visible": true,
+        "x": 502.5,
+        "y": 3788
+      },
+      {
+        "tag": "a",
+        "hay": "flex items-center gap-3 p-3 rounded-xl bg-secondary/10 border border-secondary/20 hover:bg",
+        "visible": true,
+        "x": 216,
+        "y": 4119
+      }
+    ],
+    "afterClick": {
+      "effectiveBg": "rgb(249, 251, 249)",
+      "bodyImage": "",
+      "fg": "rgb(23, 28, 38)",
+      "rootClass": "",
+      "rootTheme": ""
+    },
+    "clickChanged": false,
+    "osDarkFollows": true,
+    "reachable": true
+  }
+}

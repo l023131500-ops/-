@@ -1,0 +1,59 @@
+kiosk (35): the console was never read for painted order, and the probe that reads it was wrong twice
+
+`apps/35-kioskfleet/STATUS.md` item 7 ended on scope, not on a defect:
+`install.html` and `kiosk-launcher.html` had been swept for painted order and
+`console.html` had not — "it is the page with the most numbers interpolated into
+Hebrew sentences, so it is the only place the Hebrew-between-tokens group is
+likely to have real matches at all. On these two pages it matched nothing."
+
+That prediction is now a measurement and it held: **56 real matches** in group A
+here against zero on the other two pages, nearly all of them in the setup wizard
+(`1 מתוך 12 שלבים`, `8. הפעילו ניפוי באגים ב-USB`, `KioskFleet ל־Device Owner`).
+
+**The page is clean.** 526 real token pairs across nine views — six screens and
+the three dialogs — in both colour schemes at 390px and 1200px, and nothing is
+painted out of order.
+
+What the run found instead is that `rtl-digits-0811`'s two groups do not survive
+the move to this page, and both corrections came out of one line, the device
+card's `🔋 84% · 📱 Lenovo TB-X306F · v1.4.0`:
+
+- **a bullet is not proof of one value.** That run's group B was "separated only
+  by neutrals ⇒ one logical left-to-right value ⇒ must increase". Here `84` and
+  `Lenovo` are separated only by neutrals and are two different *fields*, so RTL
+  order is the correct painting and the old rule called it a defect (`dx=-168.1`,
+  on all four combinations). A **field mark** — `·`, `•`, `|`, emoji — now
+  separates. Deliberately not `–` or `/`: `06:00–04:00` is the OTA defect and a
+  dash there separates nothing.
+- **a bullet is not proof of two, either.** With that in, `TB-X306F · v1.4.0` —
+  the same bullet on the same line — failed at `dx=+45.0`, and the page was right
+  again. Both sides are strong L, and N1 hands neutrals between two L to L, so
+  they are **one run** whatever stands between them. Only a bare digit run (EN,
+  which N1 treats as R) makes a field mark decide anything.
+
+So the split is now the bidi algorithm's own rather than a guess about semantics:
+A = Hebrew between (paragraph direction, 56 pairs); B = a bare digit run on one
+side and a field mark between (paragraph direction, 4); C = everything else
+including every L…L pair (increasing, one run, 466). Both shipped defects stay in
+C.
+
+Two harness changes this page forced. The probe takes a **root selector** — the
+console opens dialogs as `.modal-bg` siblings of `#app-view`, so a body-wide walk
+with a dialog open re-grades the screen behind it and the census stops meaning
+anything; each dialog is graded against its own `.modal`. And every navigation at
+390px goes through `#side-toggle`, because `console-mobile-nav-0811` put the
+sidebar behind a disclosure there.
+
+Verified in `QA/kiosk/console-rtl-0811/` — 585/585 in a real Chromium against the
+`warn-ink-0811` stub, six screenshots. Four control rows per combination, because
+every graded row passes and without them the run cannot be told apart from one
+that walked an empty page: the known-bad date+time line is rebuilt in the
+console's own RTL card and flagged (`2026 ⟨,␠⟩ 4 dx=-90.7`); the same two digit
+runs with a bullet between them move to B and pass; the same bullet between two
+Latin tokens stays in C and increases — the row the real device card failed
+before the second correction; and a Hebrew-separated pair is graded correct while
+the same string behind U+202D is flagged.
+
+Left open: a `Range` cannot enter an `<input>`, so `#e-url`, `#l-url` and
+`#c-code` are right by declaration (`dir="ltr"`) and not by measurement. Not
+deployed — the Railway service still builds from the other repo.

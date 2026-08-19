@@ -1,0 +1,41 @@
+kiosk (35): the table for the second half of the selection screen had no route
+
+`device_links` and `linkapprovals.js` landed a step ago with nothing importing
+them, so §2★ה's second move — pick another קישור, from what management approved
+for this device — was a table no route could write. Added GET/PUT
+/api/devices/:id/links, the mirror of the clients pair directly above them.
+
+`approvalSelection()` is the first call the PUT makes. That is the hole the
+previous step found and asserted rather than fixed: the foreign key proves a
+link exists and says nothing about whose it is, so another customer's id is
+stored happily by the database. The filter is the whole authorisation check, and
+the test asserts on the table rather than on the filter's return value.
+
+Not merged into the clients routes. One PUT carrying both lists would make
+un-approving every client the price of touching the links, and the two differ in
+kind: a client is redeemed by a code someone types on a keypad, a link is chosen
+off a list the server already decided to show.
+
+The pushed allow-list is now one function, `deviceConfigHostCsv()` — the
+device's own list, its approved clients, its approved links, then whatever it is
+being told to display. That expression was written out at four call sites, and
+the device enforces the list locally and offline: a push composing three of the
+four fails nowhere a developer can see it, only as a blocked page on a tablet in
+a hall, on whichever route was the stale copy. The order survives the
+unset-stays-unset rule — a device with no lock is still handed no lock, whatever
+is approved for it.
+
+The enrollment response was handing back the raw allowed_host column while the
+heartbeat sent the widened one, so hardware that re-enrols was blocked from the
+clients and links it was approved for until the first heartbeat. A first
+enrollment has no approvals and no display link, so the value is unchanged
+there.
+
+Verified in QA/kiosk/link-approval-routes-0811: 3 cases replaying the route's
+own sequence against the production DDL on node:sqlite, asserting the stored
+rows and the pushed list. 137/138 on node --test, 134/135 before, so the three
+are the whole difference; the one failure is routing.test.mjs, which imports
+express and cannot run in this checkout.
+
+Not verified: the express glue itself. No console UI — approving a link is still
+an HTTP call. Not deployed.

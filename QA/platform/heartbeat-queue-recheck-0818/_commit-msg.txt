@@ -1,0 +1,30 @@
+anti-drift: verified the "second heartbeat queue" flagged in core.run_progress#928 is stale — already fully reconciled
+
+The last session's heartbeat (id 928, heartbeat-backlog-reconcile-0818) flagged an
+open question: a separate _heartbeat-pending.sql/.md queue with 5 task names
+(mechiron-admin-gate-recheck-0817, vercel-quota-recheck-0817,
+nadlan-kesef-footer-recheck-0817, source-fixes-deploy-recheck-0817,
+brand-audit-recheck-0817) that appeared to have no core.run_progress rows yet,
+"needs its own investigation next".
+
+Checked git log --all --grep for each of the 5 task names: all 5 already have
+real anti-drift commits (4a104bd, 9df44ca, dbab0e7, 8e78a71, plus
+source-fixes-deploy-recheck-0817's own commit) and were reconciled into
+core.run_progress as ids 752-756 by heartbeat-backlog-reconcile-10-0818 (id 757,
+commit 57a7f63) — the _heartbeat-pending.sql source files for all 5 were already
+deleted in that same commit. Confirmed no core.run_progress rows are missing.
+Note #928 was simply looking at a queue that had already been closed one
+session earlier than it checked back.
+
+What was still untracked (not app code, not a real backlog): leftover
+_commit-msg.txt scratch drafts in 3 of those folders' QA directories
+(mechiron-admin-gate-recheck-0817, vercel-quota-recheck-0817,
+brand-audit-recheck-0817) plus 6 screenshots under vercel-quota-recheck-0817/ —
+git-added here as historical QA record. Their _results.txt/_results.json/
+raw-output.txt siblings were already tracked (committed alongside the original
+anti-drift commits), confirming the underlying work itself was never at risk,
+only some scratch files were never staged.
+
+No app code changed, no protected system touched
+(08/09/bkalut-app/bkalot-admin/zr_*/NEDARIM3873 untouched). No DB write beyond
+the heartbeat for this step.

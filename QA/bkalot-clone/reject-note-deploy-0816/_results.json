@@ -1,0 +1,98 @@
+{
+  "brick": "reject-note-deploy-0816",
+  "line_taken": "4a66637 (heartbeat 649): «פתוח: הפריסה. מה שנמדד כאן הוא הקוד שבמקור; בייצור המסך עדיין מציג את הקוד באנגלית»",
+  "scope": "פריסה בלבד — אין שינוי קוד, אין מיגרציה, אין פריסת edge function",
+
+  "deploy": {
+    "id": "dpl_6kGnFbPAV1q95JQCwKKCXTvecnmd",
+    "readyState": "READY",
+    "target": "production",
+    "aliased": "https://more30.com",
+    "from": "portal/dist",
+    "prebuilt_flag": false,
+    "files": 38,
+    "source_md5": "8EFCF2498D1AB451F2509E3A7325D436",
+    "source_bytes": 142683,
+    "dist_md5_before_staging": "003F455616FECFE46D033E9BFEA516CB",
+    "dist_bytes_before_staging": 139737,
+    "dist_md5_after_staging": "8EFCF2498D1AB451F2509E3A7325D436",
+    "dist_bytes_after_staging": 142683,
+    "note": "ה-dist שלפני ה-staging הוא בדיוק מה ש-f8f2dfc פרס (139,737) — שרשרת הפריסות נמדדה ולא הונחה"
+  },
+
+  "http": {
+    "before": { "bytes": 139973, "new_zero_in_live": true, "diff_below_source": true, "old_unchanged": true },
+    "after": { "bytes": 142919, "new_equals_source": true, "diff_equals_source": true, "old_unchanged": true },
+    "bytes_math": "142,919 = 142,683 + 236 — דלתת NetFree הידועה",
+    "both_urls": ["https://more30.com/bkalot-studio/admin", "https://more30.com/bkalot-studio/admin/"],
+    "replacement_chars": 0,
+    "double_encoded": 0,
+    "control_urls_unmoved": { "https://more30.com/bkalot-studio/": 32558, "https://more30.com/": 3517 },
+    "markers": { "NEW": 9, "DIFF": 7, "OLD": 32 },
+    "reclassified_during_run": 0
+  },
+
+  "browser_in_production": {
+    "viewport": "1280x900",
+    "resized_once_before_first_shot": true,
+    "login": "דרך המסך, חשבון 108 (bkalot_clone_admin_create) — אין הזרקת hash ואין ולו קריאת cases אחת מסקריפט",
+    "case": 366,
+
+    "before_click": {
+      "label": "למה (חובה לדחייה בלבד)",
+      "label_y": 553,
+      "counter": "אפשר להשאיר ריק, למעט דחייה · עד 500 תווים",
+      "counter_y": 697,
+      "focus": "BODY"
+    },
+
+    "blocked_click": {
+      "message": "דחייה חייבת נימוק. הסטטוס לא שונה ולא נרשמה שורת יומן — כתבו ב«למה» מה הביא לדחייה ונסו שוב.",
+      "code_span_separate_line": "note_required",
+      "err_y": 798,
+      "focus": "TEXTAREA#status-note",
+      "db_after": { "status": "new", "decided_at": null, "decided_by": null, "log_rows": 0 }
+    },
+
+    "control_click_with_note": {
+      "note_typed": "הפנייה אינה בתחום המערכת — הופנתה ללשכת הרווחה.",
+      "message": "הסטטוס שונה מ«חדשה» ל«נדחתה» · הנימוק נשמר ביומן · לא נשלחה שום הודעה",
+      "message_y": 790,
+      "reject_button_disabled_after": true,
+      "db_after": { "status": "rejected", "decided_by": 108, "from_status": "new", "to_status": "rejected", "log_rows": 1, "note_verbatim": true }
+    },
+
+    "positions_note": "כל המיקומים נמדדו מה-DOM אחרי הציור ולא הונחו (screenshot-evidence-below-the-fold); שלושתם בתוך חלון של 900",
+    "screenshots_md5": {
+      "01-live-label-and-count.png": "3DCC1776",
+      "02-live-blocked-note-required.png": "178DD500",
+      "03-live-rejected-with-note.png": "5BF01568"
+    },
+    "console": "הודעה אחת ויחידה — 502 על https://netfree.link/api/card/data.js, הזרקת NetFree ולא האפליקציה; אפס הודעות מהמסך עצמו"
+  },
+
+  "test_mode": {
+    "intake_queued": false,
+    "documents": 0,
+    "outbound_queue": 8,
+    "sent_at_rows": 0,
+    "delivery_log": 3,
+    "cases_in_sent": 0,
+    "outbound_calls": 0,
+    "note": "מה שנפרס הוא HTML; הכתיבה היחידה בריצה היא מעבר סטטוס אחד, והוא התגלגל אחורה"
+  },
+
+  "rollback": {
+    "method": "פקודות נפרדות לפי טבלה — תקלת cte-delete-sees-prestatement-snapshot; איש הקשר לפי id ולא לפי טלפון מנורמל",
+    "schema_note": "contacts, outbound_queue ו-delivery_log יושבות ב-bkalot_auto ולא ב-bkalot_clone",
+    "deleted": { "case_status_log": 1, "case_rights": 0, "cases": 1, "contacts": 1, "admin_sessions": 1, "admin_users": 1 },
+    "after": {
+      "cases": 0, "case_status_log": 0, "case_rights": 0, "documents": 0,
+      "admin_users": 1, "admin_sessions": 5, "templates": 2, "contacts": 4,
+      "outbound_queue": 8, "delivery_log": 3, "rights_catalog": 888
+    },
+    "verdict": "בסיס בדיוק"
+  },
+
+  "kind_choice": "info ולא treatment: info אינו מחבר זכויות, ולכן case_rights נמדד 0 לאורך כל הריצה. השער של 0095 יושב ב-set_status ואינו מסתכל על kind"
+}

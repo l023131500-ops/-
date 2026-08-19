@@ -1,0 +1,65 @@
+﻿OLD shared map, read-modify-write   run 1
+  results : [{"ok":true},{"ok":true}]
+  stored  : 1 entry ["CASPROBEfileBBBBB"]
+  verdict : A SAVE WAS LOST
+
+REJECTED write-then-verify          run 1
+  results : [{"ok":true,"attempts":1},{"ok":true,"attempts":2}]
+  stored  : 1 entry ["CASPROBEfileBBBBB"]
+  verdict : A SAVE WAS LOST
+
+NEW one object per file             run 1
+  results : [{"ok":true},{"ok":true}]
+  stored  : 2 entries ["CASPROBEfileAAAAA","CASPROBEfileBBBBB"]
+  verdict : both saves survived
+
+OLD shared map, read-modify-write   run 2
+  results : [{"ok":true},{"ok":true}]
+  stored  : 1 entry ["CASPROBEfileBBBBB"]
+  verdict : A SAVE WAS LOST
+
+REJECTED write-then-verify          run 2
+  results : [{"ok":true,"attempts":2},{"ok":true,"attempts":1}]
+  stored  : 1 entry ["CASPROBEfileAAAAA"]
+  verdict : A SAVE WAS LOST
+
+NEW one object per file             run 2
+  results : [{"ok":true},{"ok":true}]
+  stored  : 2 entries ["CASPROBEfileAAAAA","CASPROBEfileBBBBB"]
+  verdict : both saves survived
+
+OLD shared map, read-modify-write   run 3
+  results : [{"ok":true},{"ok":true}]
+  stored  : 1 entry ["CASPROBEfileAAAAA"]
+  verdict : A SAVE WAS LOST
+
+REJECTED write-then-verify          run 3
+  results : [{"ok":true,"attempts":1},{"ok":true,"attempts":2}]
+  stored  : 1 entry ["CASPROBEfileBBBBB"]
+  verdict : A SAVE WAS LOST
+
+NEW one object per file             run 3
+  results : [{"ok":true},{"ok":true}]
+  stored  : 2 entries ["CASPROBEfileAAAAA","CASPROBEfileBBBBB"]
+  verdict : both saves survived
+
+OLD shared map, read-modify-write   run 4
+  results : [{"ok":true},{"ok":true}]
+  stored  : 1 entry ["CASPROBEfileAAAAA"]
+  verdict : A SAVE WAS LOST
+
+REJECTED write-then-verify          run 4
+  results : [{"ok":true,"attempts":2},{"ok":true,"attempts":1}]
+  stored  : 1 entry ["CASPROBEfileAAAAA"]
+  verdict : A SAVE WAS LOST
+
+NEW one object per file             run 4
+  results : [{"ok":true},{"ok":true}]
+  stored  : 2 entries ["CASPROBEfileAAAAA","CASPROBEfileBBBBB"]
+  verdict : both saves survived
+
+over 4 runs a save was lost in:
+  OLD shared map        4/4
+  write-then-verify     4/4
+  one object per file   0/4
+overrides.json restored to {}; probe keys emptied (anon cannot DELETE, so {} is the cleared state)

@@ -1,0 +1,48 @@
+QA 0817 — bkalot-clone: kind_invalid, measured live in production.
+
+Endpoint: https://uhnrgujbdxhhmoxcjria.supabase.co/functions/v1/bkalot-clone-intake
+Method: POST, PowerShell (Invoke-WebRequest), anon key — not the browser, so the
+client-side <input type="radio" name="kind"> group (apps/37-bkalot-clone/index.html:
+154,158,162 — values info/reminder/treatment) never lets an unrecognized kind value
+reach the server through the visible form. Same reachability gap as
+topic_no_invalid/situation_unknown (QA/bkalot-clone/topic-no-invalid-live-0817/,
+QA/bkalot-clone/situation-unknown-live-0817/), and explicitly named as such in the
+client's own comment (index.html:340-341): "kind_invalid ו-source_invalid אינם כאן —
+הטופס שולח בהם ערך קבוע מתוך רשימה סגורה, ואין להם שדה שמקלידים בו." kind_invalid
+(0058 lines 79-82) had never been measured against the live deployed function.
+
+--- Request: kind not in ('info','reminder','treatment') ---
+Body: {"kind":"not_a_real_kind_xyz","source":"form","full_name":"QA Kind Test",
+"phone":"0500000000","email":"qa.kind.0817@more30.com",
+"note":"QA 0817 kind_invalid live production check","consent":"true"}
+
+Response: HTTP 200
+{"ok": false, "error": "kind_invalid", "allowed": ["info", "reminder", "treatment"]}
+
+--- What this confirms ---
+1. No 502 / leaked SQLSTATE — clean HTTP 200 with a structured error, same shape
+   as every other 0058 validation branch already measured this way.
+2. The 3 values in "allowed" are exactly the 3 radio values the client offers
+   (index.html:154,158,162: info, reminder, treatment) — confirmed by direct
+   comparison, value-for-value. This is why the branch is structurally
+   unreachable from the visible form: the radiogroup can only send values the
+   server already knows, and there is no fourth option and no free-text input.
+3. MESSAGES.kind_invalid (index.html:284, "בחרו את סוג הפנייה.") is already
+   present and already correct. kind_invalid has no CODE_FIELD entry
+   (index.html:342-350) by design — the client comment (index.html:340-341)
+   explains why: it isn't a typed field that can be marked invalid, it's a
+   fixed-choice control. No client change needed — this step is
+   measurement-only, same as situation_unknown.
+4. Not written: the kind_invalid check (0058 lines 79-82) is the very first
+   validation in the function and returns before every later check, before the
+   insert into bkalot_auto.contacts and bkalot_clone.cases — read directly from
+   the deployed migration source, not assumed. The request created no contact
+   and no case row.
+
+Still open from the same sweep: source_invalid (0058 lines 84-87) — same
+reachability family (client hardcodes source="form", index.html:541), not
+measured live yet. Left for a later step.
+
+Protected: no read or write to apps/08-bkalut-app, apps/09-bkalot-admin,
+apps/37-bkalot-clone, zr_*, NEDARIM3873. Test mode — no outbound message, no
+queue row (kind_invalid returns before any row exists to queue).

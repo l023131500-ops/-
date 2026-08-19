@@ -1,0 +1,1 @@
+﻿_deploy/imud-more30/api/_lib/docx.ts(357,7): error TS2353: Object literal may only specify known properties, and 'rightTabStop' does not exist in type 'ITableOfContentsOptions'.

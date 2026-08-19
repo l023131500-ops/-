@@ -1,0 +1,40 @@
+שכפול בקלות שכבה 1: ענף topic_no_invalid מהשרת נמדד בייצור (§5ב, אימות)
+
+הפעימה הקודמת (8e8bce4) השאירה פתוח: "וענף topic_no_invalid מהשרת עדיין לא
+נמדד בייצור". הסיבה שהוא לא נמדד עד כה היא שהחסימה המוקדמת בטופס (preflight,
+index.html:502-524) מיישמת בדיוק אותה בדיקה כמו 0080 — רגקס ^[0-9]+$ וגבול
+2147483647 — ולכן דפדפן שממלא את הטופס עצמו אינו יכול להגיע לענף הזה: הערך
+נחסם לפני שהוא נשלח.
+
+מדידה בלבד: שתי בקשות POST ישירות אל https://uhnrgujbdxhhmoxcjria.supabase.co/
+functions/v1/bkalot-clone-intake (PowerShell, לא דפדפן — כדי לעקוף את
+ה-preflight), עם kind=treatment, situation=young_single ושתי סיבות הפסילה
+של whyTopicNoInvalid: topic_no="9999999999" (מספר תקין שגדול מגבול ה-integer)
+ו-topic_no="12ab" (אינו ספרות בלבד).
+
+שתיהן חזרו HTTP 200, error=topic_no_invalid, עם detail שזהה מילה במילה
+לשתי הודעות whyTopicNoInvalid בלקוח (index.html:360-366) — לא 502 עם קוד
+SQLSTATE מודלף, שזו הייתה ההתנהגות לפני 0080. MESSAGES.topic_no_invalid
+(index.html:292) כבר קיים — הפער שסומן בהערת הזנב של 0080 ("MESSAGES עדיין
+אינו מכיר topic_no_invalid") נסגר בקומיט מאוחר יותר, לא כאן.
+
+אין שינוי קוד. אין מיגרציה. אין פריסה. זו מדידה שסוגרת פער שנשאר פתוח משתי
+פעימות קודמות (8e8bce4, וההערה בזנב 0080 עצמה).
+
+נקרא במפורש: שני התנאים ב-0080 (שורות 131-146) חוזרים לפני ה-insert
+ל-bkalot_auto.contacts (שורה 162) ול-bkalot_clone.cases (שורה 171) — אף
+בקשה לא יצרה איש קשר או פנייה.
+
+לא נמדד בצילום מסך: הענף אינו נגיש מהטופס הנראה (ה-preflight חוסם אותו),
+ולכן אין מה שצילום של הטופס היה מראה מעבר למה ש-stale-mark-deploy-0817 כבר
+מדד על אותה מנגנון fail()/markInvalid() בדיוק (טלפון/שם מלא).
+
+מוגן: לא נגעתי ב-08/09/bkalut-app/bkalot-admin/zr_*/NEDARIM3873. מצב טסט —
+אפס שורות נכתבו, אפס הודעות יוצאות.
+
+⚠️ ה-heartbeat לא נכתב ל-core.run_progress. ה-MCP של Supabase אינו מחובר
+לסשן הזה (חיפוש כלים החזיר אפס התאמות). השורה נכתבה כקובץ:
+`_heartbeat-pending.sql`. הוא התשיעי בתור, אחרי שמונת הקבצים שנרשמו בקומיט
+8e8bce4 (stale-mark-deploy-0817), ולפניו יש להריץ אותם לפי הסדר הרשום שם.
+
+ראיות: QA/bkalot-clone/topic-no-invalid-live-0817/probe-live.txt.

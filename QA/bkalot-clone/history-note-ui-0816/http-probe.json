@@ -1,0 +1,40 @@
+{
+  "source": {
+    "th_why": 1,
+    "css_td_why": 1,
+    "fn_note_cell": 2,
+    "th_who": 1,
+    "fn_who_cell": 4,
+    "h3_sequence": 4
+  },
+  "production": {
+    "https://more30.com/bkalot-studio/admin.html": {
+      "http_status": 200,
+      "error": null,
+      "bytes": 88911,
+      "markers": {
+        "th_why": 0,
+        "css_td_why": 0,
+        "fn_note_cell": 0,
+        "th_who": 1,
+        "fn_who_cell": 3,
+        "h3_sequence": 4
+      },
+      "replacement_chars": 0
+    },
+    "https://more30.com/bkalot-studio/admin.html/": {
+      "http_status": 200,
+      "error": null,
+      "bytes": 88911,
+      "markers": {
+        "th_why": 0,
+        "css_td_why": 0,
+        "fn_note_cell": 0,
+        "th_who": 1,
+        "fn_who_cell": 3,
+        "h3_sequence": 4
+      },
+      "replacement_chars": 0
+    }
+  }
+}

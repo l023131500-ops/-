@@ -1,0 +1,17 @@
+10 בקלות (bkalot): תוקן שורש הפרפורמנס - Google Fonts render-blocking -> loadCSS preload/swap (82->69, כנראה רעש מדידה)
+
+Round-2 perf pass, next after 06-briut in ROUTES order. Same synchronous
+Google Fonts <link> pattern already fixed in 01/02/03/04/06/32, flagged
+in bkalot-lh-0817 (dbb7a57) with est savings 1210ms. Applied the same
+loadCSS preload/media=print/onload/noscript template to
+apps/10-bkalot-rights/index.html and _deploy/bkalot-more30/bkalot/index.html
+(byte-verified identical after edit). Deployed
+(dpl_HEiYsuhoK6GLeigmURmQFUf8ff6w, READY). Verified live with a
+cache-buster: loadCSS markers present in served HTML.
+
+Measured after: perf 82->69 despite the fix matching a proven pattern.
+render-blocking-insight improved (1210ms->330ms est savings - a second,
+untouched stylesheet remains synchronous). FCP/LCP/SI all improved but
+mainthread-work-breakdown and TBT got worse - matches the already
+documented measurement-noise pattern (06-briut, 32-nadlan), not treated
+as a real regression this round.

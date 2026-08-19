@@ -1,0 +1,6 @@
+﻿prev\index.html
+bytes=22105 md5=66CA2D677A9DA86E79C716426499D771
+new: "function whyDropped(key, sent) {"=false | "return \"צריך מספר שלם\";"=false | "function focusDropped(dropped, sent, sentKind) {"=false | "el.setAttribute(\"aria-invalid\", \"true\");"=false | "}).join(\"; \"));"=false
+removed: "body.dropped.map((k) => DROPPED[k] || k).join(\", \")"=true
+old: "const DROPPED = {"=true | "topic_no:  \"מספר נושא\","=true | "שדות שלא נשמרו: "=true | "הפנייה נקלטה"=true | "הודעת אישור נשלחה אליכם."=true | "🚫 מצב טסט: הפנייה נשמרה, ולא יצאה ממנה שום הודעה."=true | "שליחת הפנייה"=true
+counts: "function whyDropped(key, sent) {"=0 | "return \"צריך מספר שלם\";"=0 | "function focusDropped(dropped, sent, sentKind) {"=0 | "el.setAttribute(\"aria-invalid\", \"true\");"=0 | "}).join(\"; \"));"=0 | "body.dropped.map((k) => DROPPED[k] || k).join(\", \")"=1 | "const DROPPED = {"=1 | "topic_no:  \"מספר נושא\","=1 | "שדות שלא נשמרו: "=1 | "הפנייה נקלטה"=1 | "הודעת אישור נשלחה אליכם."=1 | "🚫 מצב טסט: הפנייה נשמרה, ולא יצאה ממנה שום הודעה."=1 | "שליחת הפנייה"=1

@@ -1,0 +1,84 @@
+{
+  "step": "§1ג — כניסת לקוח אמיתית: המערכת היחידה שלא היה בה בכלל מסלול כניסה",
+  "measured_at": "2026-08-12T08:38:25Z",
+  "source": "more30.com בייצור, בדפדפן — לא preview ולא עץ המקור",
+
+  "sweep_before": {
+    "script": "scripts/qa/auth-entry-sweep.mjs",
+    "total": 26,
+    "has_login": 25,
+    "no_login_entry": 1,
+    "missing": ["40 gannenet"],
+    "note": "נמדד על ה-HTML שהייצור מגיש. הראיה היא הסקריפט auth-button.js, לא התג <more30-auth> — התג נרשם על ידי הסקריפט אחרי הטעינה ולכן הוא false בכל 26."
+  },
+  "sweep_after": { "total": 26, "has_login": 26, "no_login_entry": 0, "missing": [] },
+
+  "why_it_mattered": {
+    "memberships_before": "core.app_memberships החזיקה ל-gannenet שורה אחת בלבד, מול 4–15 בכל שאר המערכות. השורה היחידה נכתבה ב-02:37 בסקריפט שקרא ל-more30_join_app ישירות, לא בדפדפן.",
+    "nav_comment": "components/Nav.tsx נשא הערה מפורשת: \"The app has no sign-up at all\" — הכפתור הבולט היחיד בכל עמוד הוביל ל-/pricing."
+  },
+
+  "deploy": {
+    "project": "gannenet-more30",
+    "deployment_id": "dpl_B5NK8txSJXzWJdNgqdaWmGiMEDoD",
+    "target": "production",
+    "readyState": "READY",
+    "from": "source (not --prebuilt — --prebuilt drops vercel.json and the mount rewrite with it)"
+  },
+
+  "build_acceptance": {
+    "check": "§0.3 — 180 עמודי /lesson/[id] נוצרים",
+    "result": "3 + [+177 more paths] = 180",
+    "passed": true
+  },
+
+  "browser_verification": {
+    "service_worker": "בוטלה רישום אחת ונוקו 2 caches לפני הבדיקה — שירות ישן כבר הסתיר שינוי ב-gannenet בעבר, והקונסולה נקייה בדיוק במקרה הזה",
+    "pill_present": true,
+    "overlap_logged_out": {
+      "pill_rect": { "x": 16, "y": 12, "w": 76, "h": 36 },
+      "cta_rect": { "x": 97, "y": 16, "w": 120 },
+      "inset": "104px",
+      "nav_padding_inline_end_computed": "54px",
+      "elementFromPoint_at_cta": "A:כניסה למאגר",
+      "cta_clickable": true,
+      "pill_clickable": true
+    },
+    "overlap_signed_in": {
+      "pill_text": "לקוח",
+      "pill_w": 71,
+      "inset": "99px",
+      "cta_clickable": true,
+      "note": "נמדד גם במצב מחובר, כי רוחב הכדור משתנה עם התווית ולכן שני המצבים הם שתי בדיקות ולא אחת"
+    },
+    "login_loop": {
+      "from": "https://more30.com/gannenet",
+      "login_href": "https://more30.com/login?from=https%3A%2F%2Fmore30.com%2Fgannenet",
+      "session_storage_return_to": "/gannenet",
+      "landed_at": "https://more30.com/gannenet",
+      "landed_inside_product": true,
+      "console_errors": 0
+    },
+    "membership_written": {
+      "app_key": "gannenet",
+      "role": "member",
+      "last_seen_at": "2026-08-12 08:38:18.448122+00",
+      "note": "הכתיבה הראשונה אי פעם ל-gannenet שמקורה בדפדפן ולא בסקריפט"
+    }
+  },
+
+  "kupot_control": {
+    "why": "כדי לדעת שהלולאה המשותפת עובדת ולא שמערכת אחת עובדת — נבדקה קודם מערכת בנויה אחרת (SPA, לא Next.js)",
+    "landed_at": "https://more30.com/kupot#/",
+    "membership_last_seen_at": "2026-08-12 08:28:04.896154+00",
+    "sign_in_at": "2026-08-12 08:28:02.23404+00",
+    "real_action_after_login": "סינון לפי \"רפואת שיניים\" — 36 כרטיסים → 35, המשתמש נשאר מחובר ובתוך המוצר"
+  },
+
+  "not_claimed": [
+    "לא נבדק מסלול ההרשמה המיידית (שם·טלפון·מייל·סיסמה) — הוא יוצר משתמש אמיתי חדש, ולא נוצר כזה בצעד הזה",
+    "לא נבדקו 25 המערכות האחרות בדפדפן — נמדד בהן רק שהסקריפט מוגש"
+  ],
+
+  "protected_untouched": "08 · 09 · bkalut-app · bkalot-admin · zr_* · NEDARIM3873 לא נקראו ולא נכתבו. אין csj/csj_src/igud. אין חיוב, אין שליחה, מצב טסט."
+}

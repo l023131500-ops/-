@@ -1,0 +1,31 @@
+gannenet (40): every upload could be hidden, and nothing in the app could delete
+
+The admin could hide uploaded material -- it leaves every shelf -- but the blob
+stayed in gannenet-shelf for ever, because no code path in this app deleted
+anything at all: the anon key may create and overwrite, and DELETE is 403
+AccessDenied. So the bucket only grew, a file a teacher uploaded by mistake
+stayed retrievable to anyone holding its URL, and the orphans earlier failures
+left had no way out except a hand-run script -- which is exactly what the
+previous step had to leave open.
+
+POST /api/admin/delete (admin password, same guard as /api/admin/override) on a
+service-role key that only this path uses; unset, everything else runs unchanged
+and the route answers 503 rather than pretending. deleteUpload() takes the blobs
+first and the entry last: the entry is the only thing that can name the blob, so
+dropping it first strands the bytes the way an orphan is made. Its id pattern
+^up_<a>_<b>$ is deliberately narrower than the override route's, so no Drive or
+seed id can reach the one destructive route.
+
+Verified on the production build against the real bucket: 401 with no key, 400
+for a Drive id / a traversal / index.json / seed, 404 for a well-formed absent
+id; a real seed asset uploaded through the real POST /api/catalog and deleted ->
+catalog 0 items, blob gone, retry 404; and through the real UI the button (which
+asks first) removes the row, 2,978 -> 2,977, 0 console errors. Same run cleared
+the two QA uploads and the up_msoxh0q3_hx4s.png orphan through the product path;
+seed/ still 258, uploads/ empty.
+
+Two defects the verification itself found, fixed here: an already-gone delete
+arrives as HTTP 400 with the 404 in the body, so the idempotent retry used to be
+a permanent 502; and /api/upload/[name] kept returning 200 and the full body for
+an object Storage had already dropped, because Next caches fetch() in a route
+handler by default. tsc --noEmit 0. Evidence in QA/gannenet/upload-delete-0811/.

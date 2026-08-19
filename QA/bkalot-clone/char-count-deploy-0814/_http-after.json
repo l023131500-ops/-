@@ -1,0 +1,172 @@
+{
+  "phase": "after",
+  "at": "2026-08-14T14:56:41.489Z",
+  "urls": {
+    "admin_slash": {
+      "url": "https://more30.com/bkalot-studio/admin/",
+      "status": 200,
+      "bytes": 96802,
+      "replacement_chars": 0,
+      "double_encoded_geresh": 0,
+      "markers": {
+        "NEW": {
+          "countHe(out.text_chars, \"תו טקסט אחד\", \"תווי ט": 1,
+          "countHe(d.text_chars ?? 0, \"תו טקסט אחד\", \"תוו": 1,
+          "countHe(d.html_chars ?? 0, \"תו HTML אחד\", \"תוו": 1,
+          "אלא נוסח תבנית קצר שעבר את השער של 0074": 1,
+          "מכתב טקסט בלבד מגיע": 1
+        },
+        "REMOVED": {
+          "`${out.text_chars} תווי טקסט`": 0,
+          "`${d.text_chars ?? 0} תווי טקסט`": 0,
+          "`${d.html_chars ?? 0} תווי HTML`": 0
+        },
+        "OLD": {
+          "לא נשלח — מצב טסט": 2,
+          "queue_status": 5,
+          "countHe(": 7,
+          "זכות אחת": 5,
+          "תווי טקסט": 4,
+          "תווי HTML": 1
+        }
+      }
+    },
+    "admin_noslash": {
+      "url": "https://more30.com/bkalot-studio/admin",
+      "status": 200,
+      "bytes": 96802,
+      "replacement_chars": 0,
+      "double_encoded_geresh": 0,
+      "markers": {
+        "NEW": {
+          "countHe(out.text_chars, \"תו טקסט אחד\", \"תווי ט": 1,
+          "countHe(d.text_chars ?? 0, \"תו טקסט אחד\", \"תוו": 1,
+          "countHe(d.html_chars ?? 0, \"תו HTML אחד\", \"תוו": 1,
+          "אלא נוסח תבנית קצר שעבר את השער של 0074": 1,
+          "מכתב טקסט בלבד מגיע": 1
+        },
+        "REMOVED": {
+          "`${out.text_chars} תווי טקסט`": 0,
+          "`${d.text_chars ?? 0} תווי טקסט`": 0,
+          "`${d.html_chars ?? 0} תווי HTML`": 0
+        },
+        "OLD": {
+          "לא נשלח — מצב טסט": 2,
+          "queue_status": 5,
+          "countHe(": 7,
+          "זכות אחת": 5,
+          "תווי טקסט": 4,
+          "תווי HTML": 1
+        }
+      }
+    },
+    "form": {
+      "url": "https://more30.com/bkalot-studio/",
+      "status": 200,
+      "bytes": 32558,
+      "replacement_chars": 0,
+      "double_encoded_geresh": 0,
+      "markers": {
+        "NEW": {
+          "countHe(out.text_chars, \"תו טקסט אחד\", \"תווי ט": 0,
+          "countHe(d.text_chars ?? 0, \"תו טקסט אחד\", \"תוו": 0,
+          "countHe(d.html_chars ?? 0, \"תו HTML אחד\", \"תוו": 0,
+          "אלא נוסח תבנית קצר שעבר את השער של 0074": 0,
+          "מכתב טקסט בלבד מגיע": 0
+        },
+        "REMOVED": {
+          "`${out.text_chars} תווי טקסט`": 0,
+          "`${d.text_chars ?? 0} תווי טקסט`": 0,
+          "`${d.html_chars ?? 0} תווי HTML`": 0
+        },
+        "OLD": {
+          "לא נשלח — מצב טסט": 0,
+          "queue_status": 0,
+          "countHe(": 0,
+          "זכות אחת": 0,
+          "תווי טקסט": 0,
+          "תווי HTML": 0
+        }
+      }
+    },
+    "home": {
+      "url": "https://more30.com/",
+      "status": 200,
+      "bytes": 3517,
+      "replacement_chars": 0,
+      "double_encoded_geresh": 0,
+      "markers": {
+        "NEW": {
+          "countHe(out.text_chars, \"תו טקסט אחד\", \"תווי ט": 0,
+          "countHe(d.text_chars ?? 0, \"תו טקסט אחד\", \"תוו": 0,
+          "countHe(d.html_chars ?? 0, \"תו HTML אחד\", \"תוו": 0,
+          "אלא נוסח תבנית קצר שעבר את השער של 0074": 0,
+          "מכתב טקסט בלבד מגיע": 0
+        },
+        "REMOVED": {
+          "`${out.text_chars} תווי טקסט`": 0,
+          "`${d.text_chars ?? 0} תווי טקסט`": 0,
+          "`${d.html_chars ?? 0} תווי HTML`": 0
+        },
+        "OLD": {
+          "לא נשלח — מצב טסט": 0,
+          "queue_status": 0,
+          "countHe(": 0,
+          "זכות אחת": 0,
+          "תווי טקסט": 0,
+          "תווי HTML": 0
+        }
+      }
+    }
+  },
+  "source": {
+    "bytes": 96566,
+    "markers": {
+      "NEW": {
+        "countHe(out.text_chars, \"תו טקסט אחד\", \"תווי ט": 1,
+        "countHe(d.text_chars ?? 0, \"תו טקסט אחד\", \"תוו": 1,
+        "countHe(d.html_chars ?? 0, \"תו HTML אחד\", \"תוו": 1,
+        "אלא נוסח תבנית קצר שעבר את השער של 0074": 1,
+        "מכתב טקסט בלבד מגיע": 1
+      },
+      "REMOVED": {
+        "`${out.text_chars} תווי טקסט`": 0,
+        "`${d.text_chars ?? 0} תווי טקסט`": 0,
+        "`${d.html_chars ?? 0} תווי HTML`": 0
+      },
+      "OLD": {
+        "לא נשלח — מצב טסט": 2,
+        "queue_status": 5,
+        "countHe(": 7,
+        "זכות אחת": 5,
+        "תווי טקסט": 4,
+        "תווי HTML": 1
+      }
+    }
+  },
+  "prev_dist": {
+    "bytes": 95580,
+    "markers": {
+      "NEW": {
+        "countHe(out.text_chars, \"תו טקסט אחד\", \"תווי ט": 0,
+        "countHe(d.text_chars ?? 0, \"תו טקסט אחד\", \"תוו": 0,
+        "countHe(d.html_chars ?? 0, \"תו HTML אחד\", \"תוו": 0,
+        "אלא נוסח תבנית קצר שעבר את השער של 0074": 0,
+        "מכתב טקסט בלבד מגיע": 0
+      },
+      "REMOVED": {
+        "`${out.text_chars} תווי טקסט`": 1,
+        "`${d.text_chars ?? 0} תווי טקסט`": 1,
+        "`${d.html_chars ?? 0} תווי HTML`": 1
+      },
+      "OLD": {
+        "לא נשלח — מצב טסט": 2,
+        "queue_status": 5,
+        "countHe(": 4,
+        "זכות אחת": 4,
+        "תווי טקסט": 2,
+        "תווי HTML": 1
+      }
+    }
+  }
+}

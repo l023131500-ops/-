@@ -1,0 +1,23 @@
+<!doctype html>
+<!--
+  Fixture, not a page anyone serves. It is the negative control of
+  scripts/qa/password-reveal-scan.mjs: a password field with an id, no
+  aria-controls naming it and no handler that flips the type — the exact
+  shape the scan must report as MISSING.
+
+  It is a fixture and not a live file on purpose. The control used to name
+  apps/35-kioskfleet/server/public/console.html#login-pass, and that field was
+  fixed on 13/08 — so the control began failing on every run and the scan
+  exited 2 whether or not it had found anything. A control that points at a
+  live bug dies the moment the campaign succeeds.
+
+  _fixtures is in SKIP_DIRS, so this file is inspected only as a control and
+  never counted as a finding.
+-->
+<html lang="he" dir="rtl">
+  <head><meta charset="utf-8" /><title>fixture · bare password field</title></head>
+  <body>
+    <label for="bare">סיסמה</label>
+    <input id="bare" type="password" autocomplete="current-password" />
+  </body>
+</html>

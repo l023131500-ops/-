@@ -1,0 +1,203 @@
+/* ⚠️ הפונט לא נטען מכאן. ‎@import‎ בראש גיליון הסגנון הוא בקשה **חוסמת**:
+   הדפדפן לא מצייר דבר עד שהיא חוזרת, ונטפרי חוסמת את ‎fonts.googleapis.com‎
+   לסירוגין — כלומר עמוד לבן עד שהבקשה נופלת. הוא הועבר ל-‎index.html‎ עם
+   ‎media="print" onload‎, ולכן יורד מנתיב הציור הראשון, וב-‎fontFamily‎
+   מוגדר ‎system-ui‎ כחלופה כדי שהעמוד יהיה קריא גם כשהפונט לא מגיע. */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 120 20% 98%;
+    --foreground: 220 25% 12%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 220 25% 12%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 25% 12%;
+
+    /* 152 45% 38% נתן 4.08:1 מול לבן — מתחת ל-4.5 של תקן 5568, ובשני
+       הכיוונים בבת אחת: גם ‎text-primary‎ על כרטיס לבן וגם טקסט לבן על
+       ‎bg-primary‎. ניגודיות סימטרית, ולכן הכהיה אחת מתקנת את שניהם.
+       32% → 5.48:1 מול לבן ו-4.69:1 מול ‎--emerald-light‎. */
+    --primary: 152 45% 32%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 42 85% 55%;
+    --secondary-foreground: 220 25% 12%;
+
+    --muted: 120 10% 94%;
+    --muted-foreground: 220 10% 45%;
+
+    --accent: 152 30% 92%;
+    --accent-foreground: 152 45% 25%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 120 10% 88%;
+    --input: 120 10% 88%;
+    --ring: 152 45% 38%;
+
+    --radius: 0.75rem;
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+
+    /* Custom tokens */
+    --gold: 42 85% 55%;
+    --gold-foreground: 42 90% 20%;
+    --gold-light: 42 80% 92%;
+    /* זהב לטקסט שיושב תמיד על רקע כהה (ה-hero). מכוון **לא** להתהפך בערכה
+       הכהה: ‎--gold-light‎ מתהפך לגוון כהה כי הוא משמש כרקע, ושימוש בו
+       כצבע טקסט הפך את התווית לכהה-על-כהה. שני תפקידים, שני טוקנים. */
+    --gold-on-dark: 42 85% 78%;
+    --emerald: 152 45% 38%;
+    --emerald-light: 152 40% 95%;
+    --emerald-dark: 152 50% 22%;
+    --warm-bg: 40 30% 97%;
+    --hero-gradient: linear-gradient(135deg, hsl(152 45% 38%) 0%, hsl(152 50% 22%) 50%, hsl(220 25% 12%) 100%);
+    --card-shadow: 0 4px 24px -4px hsl(152 45% 38% / 0.12);
+    --card-hover-shadow: 0 12px 40px -8px hsl(152 45% 38% / 0.2);
+    --glow: 0 0 60px 10px hsl(42 85% 55% / 0.15);
+  }
+
+  /* הערכה הכהה הייתה כתובה כאן מהיום הראשון — ומעולם לא נראתה, כי שום דבר
+     לא הוסיף את המחלקה ‎.dark‎ לעמוד. היא מופעלת עכשיו מ-‎index.html‎ לפי
+     ‎prefers-color-scheme‎, לפני הציור הראשון.
+
+     שני תיקונים שהיו חייבים לבוא יחד עם ההפעלה:
+     1. ‎--primary-foreground‎ היה לבן גם כאן, ולבן על ירוק ב-45% בהירות הוא
+        3.03:1 — כישלון. בערכה כהה הכפתור בהיר והכיתוב עליו כהה (5.59:1).
+        לכן גם ה-hero הועבר ל-‎text-white‎ מפורש: הוא יושב על תצלום כהה תמיד
+        ואינו אמור להתהפך עם הערכה.
+     2. שמונה הטוקנים המותאמים (‎--warm-bg‎, ‎--gold-light‎, ‎--emerald-light‎)
+        לא הוגדרו כאן כלל. בלעדיהם מקטע "מסתבכים? בואו נסדר את זה" היה נשאר
+        בהיר כמעט-לבן באמצע עמוד כהה. */
+  .dark {
+    --background: 220 25% 8%;
+    --foreground: 120 10% 94%;
+    --card: 220 20% 12%;
+    --card-foreground: 120 10% 94%;
+    --popover: 220 20% 12%;
+    --popover-foreground: 120 10% 94%;
+    --primary: 152 45% 45%;
+    --primary-foreground: 152 60% 8%;
+    --secondary: 42 70% 50%;
+    --secondary-foreground: 220 25% 12%;
+    --muted: 220 15% 18%;
+    --muted-foreground: 220 10% 68%;
+    --accent: 152 30% 18%;
+    --accent-foreground: 152 40% 80%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 220 15% 20%;
+    --input: 220 15% 20%;
+    --ring: 152 45% 45%;
+
+    --gold: 42 85% 62%;
+    --gold-foreground: 42 90% 12%;
+    --gold-light: 42 55% 16%;
+    --emerald: 152 45% 45%;
+    --emerald-light: 152 30% 16%;
+    --emerald-dark: 152 50% 18%;
+    --warm-bg: 220 22% 11%;
+    --card-shadow: 0 4px 24px -4px hsl(220 40% 2% / 0.6);
+    --card-hover-shadow: 0 12px 40px -8px hsl(220 40% 2% / 0.75);
+    --glow: 0 0 60px 10px hsl(42 85% 62% / 0.12);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    direction: rtl;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground font-heebo antialiased;
+  }
+
+  /* מספר, טלפון ודוא"ל בתוך משפט עברי — DESIGN_STANDARD §4. בלי בידוד
+     המקף של "02-3131500" קופץ לצד הלא נכון. */
+  [dir='ltr'],
+  address,
+  time {
+    unicode-bidi: isolate;
+  }
+
+  /* §6 — העמוד בנוי כולו על framer-motion: פרלקסה, חלקיקים מרחפים ושתי
+     אנימציות ריחוף אינסופיות. למי שביקש תנועה מופחתת ברמת מערכת ההפעלה
+     הן נעצרות. ‎!important‎ נחוץ כי framer-motion כותב ‎transform‎ inline. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer utilities {
+  .text-gradient-primary {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--emerald-dark)) 100%);
+  }
+
+  .text-gradient-gold {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(135deg, hsl(var(--gold)) 0%, hsl(42 90% 40%) 100%);
+  }
+
+  /* צבע אטום **מתחת** לגרדיאנט, ולא רק גרדיאנט. גרדיאנט הוא
+     ‎background-image‎, ו-‎backgroundColor‎ נשאר שקוף — כך שכל בודק ניגודיות
+     (שלנו, וגם axe שמאחורי Lighthouse) מטפס למעלה ומוצא את הלבן של ‎body‎,
+     ומדווח טקסט לבן כ-1.04:1. וזו לא רק מדידה: אם הגרדיאנט או התצלום לא
+     נצבעים, הטקסט הלבן באמת נעלם. */
+  .bg-hero {
+    background-color: hsl(var(--emerald-dark));
+    background-image: var(--hero-gradient);
+  }
+
+  .card-elevated {
+    box-shadow: var(--card-shadow);
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+  }
+
+  .card-elevated:hover {
+    box-shadow: var(--card-hover-shadow);
+    transform: translateY(-4px);
+  }
+
+  .glow-gold {
+    box-shadow: var(--glow);
+  }
+
+  .bg-warm {
+    background-color: hsl(var(--warm-bg));
+  }
+
+  .bg-gold-light {
+    background-color: hsl(var(--gold-light));
+  }
+
+  .bg-emerald-light {
+    background-color: hsl(var(--emerald-light));
+  }
+}

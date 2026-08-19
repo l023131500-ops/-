@@ -1,0 +1,1 @@
+﻿ull?void 0:w.find(k=>k.password_hash===c.trim());S?(g({name:((y=S.synagogues)==null?void 0:y.name)||S.display_name,id:S.synagogue_id||""}),r("gabai"),m("")):m("׳©׳ ׳׳©׳×׳׳© ׳׳• ׳¡׳™׳¡׳׳” ׳©׳’׳•׳™׳™׳")}};return n==="gabai"&&p?l.jsxs("div",{className:"min-h-screen bg-background",children:[l.jsx("header",{className:"bg-gradient-hero py

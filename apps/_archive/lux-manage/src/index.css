@@ -1,0 +1,280 @@
+@import url('https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700;800;900&family=Assistant:wght@300;400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --font-sans: 'Rubik', 'Assistant', sans-serif;
+
+    /* True Dark 2026 Palette */
+    --background: 222 71% 2%;
+    --foreground: 210 40% 96%;
+
+    --card: 222 50% 6%;
+    --card-foreground: 210 40% 93%;
+
+    --popover: 222 50% 6%;
+    --popover-foreground: 210 40% 93%;
+
+    --primary: 38 92% 50%;
+    --primary-foreground: 222 71% 4%;
+
+    --secondary: 222 40% 10%;
+    --secondary-foreground: 210 25% 78%;
+
+    --muted: 222 35% 12%;
+    --muted-foreground: 215 20% 50%;
+
+    --accent: 38 92% 50%;
+    --accent-foreground: 222 71% 4%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 222 30% 14%;
+    --input: 222 30% 14%;
+    --ring: 38 92% 50%;
+
+    --radius: 1.75rem;
+
+    --sidebar-background: 222 60% 4%;
+    --sidebar-foreground: 215 20% 55%;
+    --sidebar-primary: 38 92% 50%;
+    --sidebar-primary-foreground: 222 60% 4%;
+    --sidebar-accent: 222 40% 10%;
+    --sidebar-accent-foreground: 210 25% 85%;
+    --sidebar-border: 222 30% 12%;
+    --sidebar-ring: 38 92% 50%;
+
+    /* Custom tokens */
+    --gold: 38 92% 50%;
+    --gold-light: 38 70% 68%;
+    --gold-dark: 38 85% 36%;
+    --slate-deep: 222 71% 3%;
+    --glass: 222 50% 8% / 0.65;
+    --glass-border: 0 0% 100% / 0.06;
+    --shadow-gold: 0 12px 48px hsl(38 92% 50% / 0.08);
+
+    /* Business mode tokens — Electric Indigo */
+    --business-indigo: 239 84% 67%;
+    --business-indigo-dark: 243 75% 35%;
+    --business-silver: 215 15% 55%;
+    --business-silver-light: 215 10% 75%;
+
+    /* Bento grid radius */
+    --bento-radius: 1.75rem;
+  }
+
+  .dark {
+    /* Already dark-first — same tokens */
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-family: var(--font-sans);
+    letter-spacing: 0.015em;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+  [dir="rtl"] {
+    font-family: 'Rubik', 'Assistant', sans-serif;
+  }
+}
+
+@layer components {
+  /* ─── Glassmorphism Cards ─── */
+  .glass-card {
+    background: hsl(var(--glass));
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid hsl(var(--glass-border));
+    box-shadow: 0 8px 32px hsl(222 71% 2% / 0.4),
+                inset 0 1px 0 hsl(0 0% 100% / 0.03);
+  }
+  .glass-card-gold {
+    background: hsl(var(--glass));
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid hsl(var(--gold) / 0.08);
+    box-shadow: 0 8px 40px hsl(var(--gold) / 0.04),
+                inset 0 1px 0 hsl(0 0% 100% / 0.03);
+  }
+
+  /* ─── Gold gradient ─── */
+  .gold-gradient {
+    background: linear-gradient(135deg, hsl(var(--gold)), hsl(var(--gold-dark)));
+  }
+  .gold-text {
+    @apply text-accent;
+  }
+
+  /* ─── Sidebar gradients ─── */
+  .sidebar-gradient {
+    background: linear-gradient(180deg, hsl(var(--sidebar-background)), hsl(222 71% 2%));
+  }
+  .sidebar-gradient-business {
+    background: linear-gradient(180deg, hsl(243 50% 12%), hsl(222 71% 2%));
+  }
+
+  /* ─── Business mode glass ─── */
+  .business-glass-card {
+    background: hsl(var(--glass));
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid hsl(var(--business-indigo) / 0.08);
+    box-shadow: 0 8px 40px hsl(var(--business-indigo) / 0.04),
+                inset 0 1px 0 hsl(0 0% 100% / 0.03);
+  }
+  .business-gradient {
+    background: linear-gradient(135deg, hsl(var(--business-indigo)), hsl(var(--business-indigo-dark)));
+  }
+  .business-accent-text {
+    color: hsl(var(--business-indigo));
+  }
+
+  /* ─── Premium Buttons: Soft-Clay ─── */
+  .btn-clay {
+    @apply relative inline-flex items-center justify-center gap-2 font-semibold;
+    transition: all 400ms ease-out;
+    box-shadow: inset 0 2px 4px hsl(0 0% 0% / 0.15),
+                0 1px 2px hsl(0 0% 0% / 0.2);
+  }
+  .btn-clay:hover {
+    transform: scale(1.02);
+    box-shadow: inset 0 2px 4px hsl(0 0% 0% / 0.1),
+                0 4px 16px hsl(0 0% 0% / 0.25);
+  }
+  .btn-clay:active {
+    transform: scale(0.98);
+  }
+
+  .btn-clay-gold {
+    @apply btn-clay rounded-[var(--bento-radius)] px-6 py-3 text-sm;
+    background: linear-gradient(135deg, hsl(var(--gold)), hsl(var(--gold-dark)));
+    color: hsl(222 71% 4%);
+  }
+  .btn-clay-ghost {
+    @apply btn-clay rounded-[var(--bento-radius)] px-6 py-3 text-sm;
+    background: hsl(var(--secondary));
+    color: hsl(var(--secondary-foreground));
+    border: 1px solid hsl(var(--border));
+  }
+  .btn-clay-indigo {
+    @apply btn-clay rounded-[var(--bento-radius)] px-6 py-3 text-sm;
+    background: linear-gradient(135deg, hsl(var(--business-indigo)), hsl(var(--business-indigo-dark)));
+    color: white;
+  }
+
+  /* ─── Bento Grid helpers ─── */
+  .bento-card {
+    @apply glass-card-gold;
+    border-radius: var(--bento-radius);
+    padding: 1.75rem;
+  }
+  .bento-card-business {
+    @apply business-glass-card;
+    border-radius: var(--bento-radius);
+    padding: 1.75rem;
+  }
+
+  /* ─── Ambient blobs ─── */
+  .ambient-gold {
+    @apply absolute rounded-full pointer-events-none;
+    background: hsl(var(--gold) / 0.04);
+    filter: blur(120px);
+  }
+  .ambient-indigo {
+    @apply absolute rounded-full pointer-events-none;
+    background: hsl(var(--business-indigo) / 0.04);
+    filter: blur(100px);
+  }
+
+  /* ─── Subtle pulse ─── */
+  .animate-pulse-subtle {
+    animation: pulse-subtle 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+  /* ─── Wizard Inputs ─── */
+  .wizard-input {
+    @apply px-4 py-3 rounded-2xl bg-secondary border border-border/30 text-foreground text-sm;
+    @apply focus:outline-none focus:ring-2 focus:ring-ring transition-all;
+  }
+  .wizard-option {
+    @apply px-4 py-3 rounded-2xl bg-secondary/60 border border-border/30 text-sm font-medium text-foreground;
+    @apply hover:bg-secondary transition-all duration-300 cursor-pointer text-center;
+  }
+  .wizard-option-active {
+    @apply border-accent bg-accent/10 text-accent font-bold;
+    box-shadow: inset 0 0 0 1px hsl(var(--accent) / 0.3);
+  }
+  .wizard-btn-circle {
+    @apply w-10 h-10 rounded-xl bg-secondary border border-border/30 text-foreground text-lg font-bold;
+    @apply hover:bg-accent/10 hover:text-accent transition-all cursor-pointer flex items-center justify-center;
+  }
+
+  .auth-social-button {
+    @apply relative flex w-full items-center gap-4 overflow-hidden rounded-[1.35rem] border border-border/60 px-4 py-3.5 text-right text-foreground;
+    background: linear-gradient(135deg, hsl(var(--secondary) / 0.94), hsl(var(--card) / 0.84));
+    box-shadow: inset 0 1px 0 hsl(0 0% 100% / 0.04), 0 14px 32px hsl(222 71% 2% / 0.22);
+    transition: transform 300ms ease, border-color 300ms ease, box-shadow 300ms ease, background 300ms ease;
+  }
+
+  .auth-social-button::before {
+    content: "";
+    position: absolute;
+    inset-inline-start: -20%;
+    top: 0;
+    width: 40%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, hsl(var(--accent) / 0.08), transparent);
+    transform: skewX(-20deg);
+    pointer-events: none;
+  }
+
+  .auth-social-button:hover:not(:disabled) {
+    transform: translateY(-1px);
+    border-color: hsl(var(--accent) / 0.24);
+    box-shadow: inset 0 1px 0 hsl(0 0% 100% / 0.05), 0 18px 42px hsl(var(--accent) / 0.08);
+  }
+
+  .auth-social-button:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+  }
+
+  .auth-social-orb {
+    @apply flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-border/60 bg-secondary/90 text-foreground;
+    box-shadow: inset 0 1px 0 hsl(0 0% 100% / 0.03);
+  }
+
+  .auth-social-content {
+    @apply flex min-w-0 flex-1 flex-col gap-0.5;
+  }
+
+  .auth-social-title {
+    @apply text-sm font-bold text-foreground;
+  }
+
+  .auth-social-subtitle {
+    @apply text-xs text-muted-foreground;
+  }
+
+  .auth-social-chip {
+    @apply rounded-full border border-accent/20 bg-accent/10 px-3 py-1 text-[10px] font-bold text-accent;
+  }
+}
+
+@keyframes pulse-subtle {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.85; }
+}

@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48" role="img" aria-label="שמחות פלוס">
+  <!--
+    סמל הלשונית של שמחות פלוס. הוא לא צויר כאן: הוא הסימן שהסרגל הצדי כבר
+    מצייר בכל עמוד (index.html, span.brand-logo), אריח מעוגל עם כוכב ונקודה.
+
+    כל מספר וכל צבע כאן נמדדו מהעמוד החי בייצור, ולא נבחרו:
+      אריח   linear-gradient(rgb(12,78,84), rgb(10,58,63))
+             = getComputedStyle(.sidebar).backgroundImage, כלומר teal-800 אל teal-900
+      כוכב   rgb(230,183,61) = getComputedStyle(.brand-logo).color, כלומר gold-soft
+      נקודה  rgb(209,153,0)  = getComputedStyle(circle).fill, כלומר gold
+      נתיבים d ו-cx/cy/r הועתקו כלשונם מה-svg שבנווט
+      פינה   rx/side של האריח המקורי הוא 9/34, ובקופסה של 48 זה 12.71
+
+    שמות הטוקנים נכתבים כאן בלי העטיפה var(), כי שני מקפים רצופים אינם
+    חוקיים בתוך הערת XML: קובץ קודם שנכתב כך הוחזר 200 בגודל הנכון ולא צייר
+    כלום, והפריסר נפל על "Comment must not contain (double-hyphen)".
+
+    סטייה אחת, מוצהרת: במקור האריח הוא זהב ב-12% מעל הטורקיז של הסרגל. כאן
+    האריח הוא הטורקיז עצמו, כי בלשונית אין סרגל מתחת שממנו הוא ישאב את צבעו,
+    ושכבה של 12% ב-16 פיקסל אינה נראית ממילא. תוכן האריח המקורי (3..37 מתוך
+    40) הועתק במלואו ונמתח על 48 - scale 48/34 = 1.4118 - כדי שהיחס בין
+    הכוכב לאריח יישאר בדיוק כפי שהוא בעמוד.
+  -->
+  <defs>
+    <linearGradient id="tile" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0c4e54"/>
+      <stop offset="1" stop-color="#0a3a3f"/>
+    </linearGradient>
+  </defs>
+  <rect width="48" height="48" rx="12.71" fill="url(#tile)"/>
+  <g transform="translate(-4.235,-4.235) scale(1.4118)">
+    <path d="M20 8.5l2.9 5.9 6.5.95-4.7 4.58 1.1 6.47L20 23.36l-5.8 3.05 1.1-6.47-4.7-4.58 6.5-.95L20 8.5z" fill="#e6b73d"/>
+    <circle cx="20" cy="31.5" r="2.1" fill="#d19900"/>
+  </g>
+</svg>

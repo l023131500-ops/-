@@ -1,0 +1,9 @@
+{
+  "buildCommand": "echo no-build",
+  "outputDirectory": ".",
+  "framework": null,
+  "rewrites": [
+    { "source": "/smachot", "destination": "/smachot/index.html" },
+    { "source": "/smachot/:path*", "destination": "/smachot/index.html" }
+  ]
+}

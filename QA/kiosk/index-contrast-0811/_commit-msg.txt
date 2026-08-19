@@ -1,0 +1,44 @@
+kiosk (35): two of the marketing page's five sections were white-on-white
+
+`index.html` was the last of the three `public/` pages never measured for
+contrast, and the only one that inverts: it toggles `:root.dark` from
+`prefers-color-scheme` in the head. `#features` and `#pricing` carried
+`style="background:#fff"`, hardcoded, while the text on them is `--ink` and
+`--muted`, which do invert — so in dark mode the section headings were 1.20:1
+and the sub-headings 2.41:1. It survived this long because in light mode the
+hardcoded white and `--card` are the same colour, so nothing looked wrong in
+the mode anyone was looking at.
+
+Three fixes, all in `server/public/`:
+
+- `.section-alt` on `var(--card)` replaces the two inline whites. `--card` is
+  `#ffffff` exactly in light, so the light page does not move a byte, and the
+  section-to-card relationship — both `--card`, separated by border and shadow —
+  is preserved rather than invented.
+
+- `.hero .btn-primary` gets an inset ring. `.btn` declares `border: none`, so a
+  filled button's fill is its boundary, and `--accent` on the hero navy is
+  2.93:1. `--accent` could not move: it sits on a white card everywhere else in
+  the system, and the two constraints cross — lightening it far enough to clear
+  3:1 against the navy drops the white label below 4.5:1. `box-shadow: inset`
+  rather than `border`, since `.btn` has none and a real border grows every
+  button by 2px. 3.42:1 inside, 10.02:1 outside.
+
+- `.btn-ghost`'s border `.35` -> `.45`. A transparent fill means the border is
+  the whole control, and it was 2.84:1 on the nav, where the button is
+  "כניסת לקוחות". Light mode only: the strip is `rgba(7,26,51,.85)` over the
+  page background, which inverts.
+
+Verified in `QA/kiosk/index-contrast-0811/` — a real Chromium at both
+`colorScheme` values against `install-link-0811/stub-server.mjs`, reused rather
+than copied. 74/79 graded rows pass; the five failures are the before rows,
+re-injected into the same DOM in the same run, each asserted only in the mode
+its defect was in. Two full-page screenshots. 152 tests, 151 pass — the
+documented baseline, unchanged, since this adds no server code.
+
+A harness bug found and fixed mid-run: the first version graded `.btn-light`'s
+fill as its boundary and reported 1.11:1, i.e. re-reported the defect
+`button-boundary-0811` already fixed. Those buttons carry an inset ring, which
+is nowhere in `borderTopColor`.
+
+Not deployed — the Railway service builds from `l023131500-ops/zol`.

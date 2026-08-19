@@ -1,0 +1,26 @@
+{
+  "why": "Hits that pii-log-scan.mjs is right to flag but that cannot reach a user, each with the check that established it. Anything not listed here fails the scan. Re-verify a record before trusting it: 'unrouted' stops being true the moment someone adds a route.",
+  "verified": "2026-08-06",
+  "known": [
+    {
+      "file": "apps/01-torah-platform/src/components/questionnaire/SeekerForm.tsx",
+      "reason": "unrouted",
+      "evidence": "No file under apps/01-torah-platform/src imports components/questionnaire/SeekerForm. The routed questionnaire is src/pages/public/Questionnaire.tsx, which inserts into `leads` and logs nothing."
+    },
+    {
+      "file": "apps/01-torah-platform/src/components/questionnaire/TeacherForm.tsx",
+      "reason": "unrouted",
+      "evidence": "Same as SeekerForm above — no importer in the tree."
+    },
+    {
+      "file": "apps/21-mthbram/src/components/questionnaire/SeekerForm.tsx",
+      "reason": "unrouted",
+      "evidence": "Reached only from src/pages/Questionnaire.tsx, which no route renders: App.tsx has no /questionnaire entry. Measured on production 06/08/2026 — more30.com/mthbram/questionnaire renders the app's own 404."
+    },
+    {
+      "file": "apps/21-mthbram/src/components/questionnaire/TeacherForm.tsx",
+      "reason": "unrouted",
+      "evidence": "Same page, same 404."
+    }
+  ]
+}

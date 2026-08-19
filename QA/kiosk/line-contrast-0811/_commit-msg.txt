@@ -1,0 +1,42 @@
+kiosk (35): one dialog, two clickable rows, two different borders
+
+Item 4 of STATUS.md "Next, in order" — the console-wide --line question that
+three contrast steps each recorded and deliberately left. Items 1-3 are still
+blocked: the deploy builds from l023131500-ops/zol, and both Android items need
+a toolchain this checkout does not have.
+
+Each of those steps split something out of --line into its own token and left
+the token itself open at 1.29:1 dark / ~1.2:1 light. A fourth guessed token was
+the wrong move, so this measured every --line consumer that renders in the
+console, both colour schemes, against the surface actually painted behind it.
+
+They split into 1.4.11's two kinds and the split is not close. One control:
+.wz-step is a <label> wrapping a checkbox with the whole row clickable, at
+1.22:1 light and 1.29:1 dark against the card -- and 1.16:1 / 1.37:1 against the
+sunken fill a *ticked* row takes, so the row a person had already acted on had
+the weakest edge of the three. What makes that a mistake rather than a choice is
+two lines up in the same dialog: .wz-track label is the identical shape, a label
+wrapping a radio, and was already on --field-border at 3.30 / 3.42.
+
+So the fix is that one declaration and no new token. Now 3.30 / 3.13 light,
+3.42 / 3.64 dark. .wz-step.wz-next still overrides with --accent and was
+re-measured (5.28 / 3.22) so this is not claimed to have fixed it.
+
+Everything else is a separator and 1.4.11 exempts separators: card edge 1.14:1
+light / 1.42:1 dark, and the card's own fill against the page is 1.07 / 1.10.
+None is the only thing marking its boundary -- cards carry --shadow and a fill,
+.hl-row and .wz-step.wz-ticked carry --sunken. Raising --line to 3:1 would put a
+mid-grey rule around every card, stat tile and table row on every screen: a
+redesign of the console, not an accessibility fix. Left deliberately, but
+printed as info rows in the run rather than left silent, so the cost is a number
+for whoever revisits it.
+
+QA/kiosk/line-contrast-0811 — real Chromium at both colorScheme values, every
+value from getComputedStyle, against setup-wizard-console-0811's stub reused
+rather than copied. 10/12 graded rows pass; the two failures are the before
+rows, which re-inject --line onto the same rule in the same DOM and are supposed
+to fail. 152 tests, 151 pass — the documented baseline, unchanged, since this
+step adds no server code.
+
+The CSS itself is under /apps/**, which is gitignored here; STATUS.md is where
+this tree records changes to it. Not deployed.

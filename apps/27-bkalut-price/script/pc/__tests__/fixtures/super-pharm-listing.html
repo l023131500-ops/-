@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+  <head><meta charset="utf-8"><title>מחירים - סופר פארם</title></head>
+  <body>
+    <img src="/assets/logo.jpg" alt="logo">
+    <table>
+      <thead>
+        <tr><th>מס'</th><th>שם</th><th>תאריך</th><th>קטגוריה</th><th>סניף</th><th>הורדה</th></tr>
+      </thead>
+      <tbody>
+        <!-- download links go through a handler carrying the name in the query -->
+        <tr><td>1</td><td>Stores7290172900007-000-202607030800.gz</td><td>2026-07-03</td><td>Stores</td><td>000</td>
+            <td><a href="/Download.aspx?fileName=Stores7290172900007-000-202607030800.gz">הורדה</a></td></tr>
+        <tr><td>2</td><td>PriceFull7290172900007-152-202607030800.gz</td><td>2026-07-03</td><td>PriceFull</td><td>152</td>
+            <td><a href="/Download.aspx?fileName=PriceFull7290172900007-152-202607030800.gz">הורדה</a></td></tr>
+        <tr><td>3</td><td>PriceFull7290172900007-152-202607030600.gz</td><td>2026-07-03</td><td>PriceFull</td><td>152</td>
+            <td><a href="/Download.aspx?fileName=PriceFull7290172900007-152-202607030600.gz">הורדה</a></td></tr>
+        <tr><td>4</td><td>PromoFull7290172900007-152-202607030800.gz</td><td>2026-07-03</td><td>PromoFull</td><td>152</td>
+            <td><a href="/Download.aspx?fileName=PromoFull7290172900007-152-202607030800.gz">הורדה</a></td></tr>
+        <!-- a different chain on the same portal must be filtered out -->
+        <tr><td>5</td><td>PriceFull7290111111119-001-202607030800.gz</td><td>2026-07-03</td><td>PriceFull</td><td>001</td>
+            <td><a href="/Download.aspx?fileName=PriceFull7290111111119-001-202607030800.gz">הורדה</a></td></tr>
+      </tbody>
+    </table>
+  </body>
+</html>

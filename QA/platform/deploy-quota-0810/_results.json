@@ -1,0 +1,73 @@
+{
+  "question": "core.issues #83 (api-deployments-free-per-day) has blocked the §6 deploy queue for four rounds. What is actually consuming the 100 deployments/day?",
+  "measured_at": "2026-08-10T14:14:00Z",
+  "source": "Vercel REST v6 /deployments via MCP, projectId prj_zSjY9I1UIIvfGT3T4g9FWoqdptJt (more30-portal), teamId team_NLONMgS3DlFsznzcrz0j3OMs",
+  "method": "One page, 20 most recent deployments, no target filter. Each row read for target (null = preview, 'production' = prod) and meta.githubDeployment ('1' = created by the Git integration, absent = created by the CLI).",
+
+  "finding": {
+    "rows_returned": 20,
+    "target_production": 0,
+    "target_null_preview": 20,
+    "github_triggered": 20,
+    "cli_triggered": 0,
+    "window_covered": "2026-08-10T07:16:32Z .. 2026-08-10T13:41:15Z (6h25m)",
+    "rate_per_hour": 3.1,
+    "statement": "Every one of the twenty most recent more30-portal deployments is a Git-integration preview. Not one is a production deploy. more30.com ships from the CLI (vercel deploy --prod from portal/dist), so none of the twenty was ever the thing that served a visitor."
+  },
+
+  "by_branch": [
+    {
+      "branch": "fix/nadlan-a11y",
+      "count": 17,
+      "state": "all READY",
+      "note": "One per commit this run pushes. The run pushes every 10-15 minutes by design (RUN_INSTRUCTIONS: commit+push after every step), so the branch alone emits ~4-6 deployments/hour."
+    },
+    {
+      "branch": "claude/ganenet-full-system-gdrive-fdflfc",
+      "count": 3,
+      "state": "all ERROR",
+      "commits": ["203907987b556e413fdfe0945f8c51d07c16776f", "ad8068bb6efa4661cddcf01591e8215a40398cff", "955fb31f4f6657c47d1b5321ad3a4ca1667d49e5"],
+      "note": "An unrelated branch whose builds fail. A failed build still counts against the daily cap."
+    }
+  ],
+
+  "SUPERSEDED_SEE": "_team-wide.json (2026-08-10T14:35Z) closes both hedges below with a full count, and corrects 'largest single consumer': more30-admin is a SECOND project linked to this same repo and was never sampled here. Real figures: 106 team-wide deployments today, 95 of them Git previews, across two projects at ~2 per push.",
+
+  "what_this_does_not_claim": [
+    "Not 'twenty in twenty-four hours'. The API returns 20 rows per page and these are the 20 newest; the true 24h total for this project is >= 20. The rate is what matters and the rate is measured: 20 in 6h25m. [RESOLVED in _team-wide.json: 49 for this project today, 106 team-wide.]",
+    "Not 'this is the whole cap'. The cap is team-wide and the other ~25 projects were not paged. This is the largest single consumer that could be measured in one call, and it is 100% waste. [RESOLVED in _team-wide.json: all 38 projects read. 30 have no Git link at all; only more30-portal and more30-admin deploy from this repo, and they are 97 of the 106.]",
+    "No preview was opened to check what it serves. The earlier finding that previews answer 418 to anyone without the team cookie is from memory, not from this run - NetFree blocks *.vercel.app from this machine (see the 418 note in NEEDS_USER §0), so it cannot be re-measured here."
+  ],
+
+  "refusal_observed_this_round": {
+    "at": "2026-08-10T14:14Z",
+    "command": "vercel deploy --prod --yes --scope l023131500-ops-projects (from _deploy/egod-more30)",
+    "upload": "961.2KB completed",
+    "result": "deploy_failed - Resource is limited - try again in 24 hours (more than 100, code: api-deployments-free-per-day)",
+    "context": "The kupot production deploy succeeded at 14:00Z, fourteen minutes earlier. The slot the rolling window freed was spent, and the next push refills the queue with a preview."
+  },
+
+  "fix_applied": {
+    "file": "vercel.json (repo root, new)",
+    "content": "{ git: { deploymentEnabled: false } }",
+    "reasoning": "https://vercel.com/docs/project-configuration/git-configuration - deploymentEnabled:false stops any branch from triggering a deployment. There was no vercel.json at the repo root before this, so the Git integration was building on defaults.",
+    "why_this_is_safe": [
+      "Production is not Git-deployed. more30.com and every mount ship via `vercel deploy --prod` from portal/dist or _deploy/<project>/, which reads the vercel.json in ITS OWN directory - portal/vercel.dist.json for the portal, _deploy/<project>/vercel.json for a mount. A file at the repo root is not read by any of those.",
+      "The measurement above is the evidence: 0 of 20 Git deployments were production. Disabling them removes nothing that ships.",
+      "Reversible in one line - delete the file, or narrow it to { \"deploymentEnabled\": { \"fix/nadlan-a11y\": false } }."
+    ],
+    "verification_is_next_round_not_this_one": "The flag takes effect on the Git integration's next read, i.e. the push that carries this commit."
+  },
+
+  "verification_attempted_and_the_test_was_wrong": {
+    "at": "2026-08-10T14:25Z",
+    "written_first": "'If the newest more30-portal deployment stays at 13:41Z while the branch advances, deploymentEnabled:false held.'",
+    "then_measured": "Same endpoint, since=1786369300000 (13:41:40Z): zero deployments.",
+    "why_that_proves_nothing": "Three pushes landed after 13:41:15Z - 46afd6b at 13:55Z, 059a9fc at 14:06Z, and 92a0eef which carries this file - and the first two are older than the vercel.json. They created no preview either. So previews had ALREADY stopped before the flag existed, almost certainly because the exhausted cap blocks the Git integration exactly as it blocked the CLI at 14:14Z. The condition was going to be true whether or not the fix worked, which makes it not a test.",
+    "the_test_that_would_actually_separate_them": [
+      "Wait for the cap to reset (Vercel says 24h; the refusal was 14:14Z on 10/08). Then push one commit and re-read this endpoint. A preview appearing means the flag is not being read - the project's rootDirectory is not the repo root - and the setting has to move to the project dashboard. No preview, while a CLI `vercel deploy --prod` in the same period succeeds, means it held.",
+      "Cheaper and available before the reset: read the GitHub commit status for 92a0eef. With deploymentEnabled:false the Vercel check is absent entirely; with the cap merely exhausted the check is present and failed. Not run here - `gh` is not installed on this machine and it needs a REST call with the credential-manager token. [SUPERSEDED: a cheaper and more direct reading was done instead - /v9/projects gives rootDirectory straight out. It is empty on both linked projects, so the 'the flag is never read' branch is closed without touching GitHub. See _team-wide.json a_is_the_fix_in_scope.]"
+    ],
+    "note": "Recorded rather than quietly corrected, because the bad condition was already written into DESIGN_SAMENESS (יג) and NEEDS_USER §0פ in the same commit (92a0eef) and both were amended to point here."
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "citizen_chars": 56,
+  "cases": {
+    "A": {
+      "case_id": 264,
+      "contact_id": 271,
+      "rights": null,
+      "queued": false,
+      "status": null
+    },
+    "B": {
+      "case_id": 265,
+      "contact_id": 272,
+      "rights": null,
+      "queued": false,
+      "status": null
+    }
+  }
+}

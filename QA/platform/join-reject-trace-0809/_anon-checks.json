@@ -1,0 +1,67 @@
+{
+  "at": "2026-08-08T21:58:43.134Z",
+  "pass": 12,
+  "fail": 0,
+  "results": [
+    {
+      "check": "נרשם: מארח זר",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "נרשם: תת-דומיין מזויף",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "נרשם: userinfo לפני ה-@",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "נרשם: המארח שלנו, נתיב שאינו מערכת",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "נרשם: מפתח חשוף שאינו מערכת",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "לא נרשם: מערכת חיה",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "לא נרשם: הרכבה",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "לא נרשם: הקיוסק על Railway",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "לא נרשם: עמוד המסלולים",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "לא נרשם: עמוד פורטל",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "הכתיבה סגורה לאנונימי — more30_join_app דורש הזדהות",
+      "pass": true,
+      "detail": "status=403 body={\"code\":\"28000\",\"details\":null,\"hint\":null,\"message\":\"not authenticated\"}"
+    },
+    {
+      "check": "הקריאה סגורה למי שאינו סופר-אדמין",
+      "pass": true,
+      "detail": "status=401 body={\"code\":\"42501\",\"details\":null,\"hint\":null,\"message\":\"forbidden\"}"
+    }
+  ]
+}

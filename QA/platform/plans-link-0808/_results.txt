@@ -1,0 +1,54 @@
+=== §8 · הדלת אל בחירת המסלול — נפתחה (08/08/2026) ===
+
+הסבב הקודם מדד ומצא: `core.plans` מלא, `portal/public/system.html` בנוי ומוגש
+בייצור, וכל כרטיס מסלול בו מקשר אל `/subscribe` — ואף עמוד שלקוח פוגש לא הוביל
+אל `system.html`. הצינור היה שלם חוץ מהדלת. `core.issues #120`.
+
+מתוך שני הכיוונים ש-NEEDS_USER §0נ פרס, בוצע הראשון — **קישור שני בכרטיס בדף
+הבית**, שנוגע ב-`portal/src/App.tsx` בלבד. הכיוון השני (החזרת הפרדת הסמלוש,
+`/<שם>` לתדמית) מזיז את הכתובת של 19 מערכות חיות, ונשאר פתוח להכרעתך.
+
+— מה נוסף —
+
+  portal/src/App.tsx      plansHref() + <a class="card-plans"> בתוך card-foot
+  portal/src/styles.css   .card-actions (כניסה+מסלולים יחד) · .card-plans
+
+— הבנייה —
+
+  vite v5.4.21 · 80 modules transformed · built in 2.89s
+  dist/assets/index-C2AHwa-z.js   379.18 kB
+  dist/assets/index-B35ByRD-.css   12.83 kB
+
+— הדפדפן, מול ה-dist הבנוי (vite preview :4319) —
+
+  20 כרטיסים בדף הבית
+  19 קישורי "מסלולים ומחירים"  << ה-20 הוא מערכת 33, האתר הזה עצמו, שה-path
+                                  שלה ריק — plansHref מחזיר null ולא /system.html?app=null
+  /system.html?app=torah · /system.html?app=tamlul · /system.html?app=modaot · /system.html?app=imud
+
+  צילום: home-cards-plans-link.png — "כניסה למערכת · מסלולים ומחירים" בצד אחד,
+  "● פעילה" בקצה הנגדי, בלי להזיז את כפתור הכניסה.
+
+— השרשרת המלאה, מקצה לקצה —
+
+  כרטיס בדף הבית  →  /system.html?app=torah  →  200, "פלטפורמת איגוד השיעורים"
+    חינמי    — ללא עלות              →  /subscribe?app=torah&plan=free
+    בסיסי    — ₪2 לחודש              →  /subscribe?app=torah&plan=basic
+    מורחב    — ₪5 לחודש              →  /subscribe?app=torah&plan=extended
+
+  אלה בדיוק מדרגות ה-2 ₪ וה-5 ₪ של §8א, על מערכת חיה. צילום: system-page-torah.png.
+  מצב טסט — הסליקה לא נפתחה, ובחירת מסלול רושמת בקשה ואינה מחייבת.
+
+— הרגרסיה —
+
+  node scripts/qa/subscribe-funnel-entry.mjs   →  5 passed · 0 failed  (היה 3/2)
+
+  חישוב ההגעה בבדיקה תוקן לשני צעדים במקום אחד: עד עכשיו כל מפנה שיושב ב-
+  system.html נפסל אוטומטית, כי העמוד היה יתום. עכשיו הוא נפסל רק כל עוד אף
+  אחד אינו מקשר אל system.html עצמו. שתי הטענות הירוקות החדשות הן קישור אל
+  system.html, והגעה בת-שני-צעדים אל /subscribe דרכו.
+
+  PASS  /nadlan עדיין מגיש את המערכת ולא את עמוד המסלולים  << לא נגענו בניתוב
+
+⚠️ בייצור זה יופיע רק אחרי הפריסה הבאה של הפורטל (NEEDS_USER §0ט / `#83`).
+   התור מחזיק לפניו את שער /torah/legacy/* ואת ה-soft-404 של `#119`.

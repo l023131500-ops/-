@@ -1,0 +1,7 @@
+round-3 a11y recheck: studio - 0 contrast failures (clean)
+
+contrast-probe.mjs against https://more30.com/studio, dark+light x
+1440+390 (4 combos): 0 failures in every combination. No code change,
+no deploy needed. Evidence: QA/platform/studio-dark-recheck-0818/_results.md.
+
+Queue order per SYSTEMS_STATUS.md: after zchuyot(22), next is mechiron.

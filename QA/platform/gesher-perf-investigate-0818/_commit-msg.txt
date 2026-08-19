@@ -1,0 +1,8 @@
+perf-sweep-round2: 31 gesher - investigated, redirect is intentional auth-gating (same pattern as crm), no fix this step
+
+Continuing round-2 perf sweep (ROUTES order) after crm(29): gesher(31), perf 84.
+redirects audit (1,220ms est savings) traced to apps/31-hebrew-bridge-crm/src/routes/index.tsx
+beforeLoad calling supabase.auth.getSession() before redirect-by-role - deliberate fix for a
+documented prior bug, same risk class as the crm finding, not touched this step.
+No dominant single script in mainThreadBreakdown. No code or deploy change - measurement only.
+Evidence: QA/platform/gesher-perf-investigate-0818/_lighthouse.json, _analysis.md.

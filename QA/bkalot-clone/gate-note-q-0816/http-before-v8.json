@@ -1,0 +1,236 @@
+{
+  "label": "before-v8",
+  "base": "https://uhnrgujbdxhhmoxcjria.supabase.co/functions/v1/bkalot-clone-admin",
+  "case_id": 374,
+  "calls": {
+    "no_q": {
+      "sent": {
+        "id": 374
+      },
+      "status": 200,
+      "ok": true,
+      "n": 3,
+      "rows": [
+        {
+          "id": 90,
+          "note": "הפונה ביקש לצרף מסמכים נוספים בשבוע הבא",
+          "has_key": true,
+          "note_matched": false,
+          "type": "boolean"
+        },
+        {
+          "id": 91,
+          "note": "המסמכים שצורפו שייכים לשנת המס הקודמת",
+          "has_key": true,
+          "note_matched": false,
+          "type": "boolean"
+        },
+        {
+          "id": 92,
+          "note": "הטופס נשלח בדואר רשום על ידי הפונה",
+          "has_key": true,
+          "note_matched": false,
+          "type": "boolean"
+        }
+      ]
+    },
+    "match_87": {
+      "sent": {
+        "id": 374,
+        "q": "המס הקודמת"
+      },
+      "status": 200,
+      "ok": true,
+      "n": 3,
+      "rows": [
+        {
+          "id": 90,
+          "note": "הפונה ביקש לצרף מסמכים נוספים בשבוע הבא",
+          "has_key": true,
+          "note_matched": false,
+          "type": "boolean"
+        },
+        {
+          "id": 91,
+          "note": "המסמכים שצורפו שייכים לשנת המס הקודמת",
+          "has_key": true,
+          "note_matched": false,
+          "type": "boolean"
+        },
+        {
+          "id": 92,
+          "note": "הטופס נשלח בדואר רשום על ידי הפונה",
+          "has_key": true,
+          "note_matched": false,
+          "type": "boolean"
+        }
+      ]
+    },
+    "match_88": {
+      "sent": {
+        "id": 374,
+        "q": "בדואר רשום"
+      },
+      "status": 200,
+      "ok": true,
+      "n": 3,
+      "rows": [
+        {
+          "id": 90,
+          "note": "הפונה ביקש לצרף מסמכים נוספים בשבוע הבא",
+          "has_key": true,
+          "note_matched": false,
+          "type": "boolean"
+        },
+        {
+          "id": 91,
+          "note": "המסמכים שצורפו שייכים לשנת המס הקודמת",
+          "has_key": true,
+          "note_matched": false,
+          "type": "boolean"
+        },
+        {
+          "id": 92,
+          "note": "הטופס נשלח בדואר רשום על ידי הפונה",
+          "has_key": true,
+          "note_matched": false,
+          "type": "boolean"
+        }
+      ]
+    },
+    "match_two": {
+      "sent": {
+        "id": 374,
+        "q": "מסמכים"
+      },
+      "status": 200,
+      "ok": true,
+      "n": 3,
+      "rows": [
+        {
+          "id": 90,
+          "note": "הפונה ביקש לצרף מסמכים נוספים בשבוע הבא",
+          "has_key": true,
+          "note_matched": false,
+          "type": "boolean"
+        },
+        {
+          "id": 91,
+          "note": "המסמכים שצורפו שייכים לשנת המס הקודמת",
+          "has_key": true,
+          "note_matched": false,
+          "type": "boolean"
+        },
+        {
+          "id": 92,
+          "note": "הטופס נשלח בדואר רשום על ידי הפונה",
+          "has_key": true,
+          "note_matched": false,
+          "type": "boolean"
+        }
+      ]
+    },
+    "empty": {
+      "sent": {
+        "id": 374,
+        "q": ""
+      },
+      "status": 200,
+      "ok": true,
+      "n": 3,
+      "rows": [
+        {
+          "id": 90,
+          "note": "הפונה ביקש לצרף מסמכים נוספים בשבוע הבא",
+          "has_key": true,
+          "note_matched": false,
+          "type": "boolean"
+        },
+        {
+          "id": 91,
+          "note": "המסמכים שצורפו שייכים לשנת המס הקודמת",
+          "has_key": true,
+          "note_matched": false,
+          "type": "boolean"
+        },
+        {
+          "id": 92,
+          "note": "הטופס נשלח בדואר רשום על ידי הפונה",
+          "has_key": true,
+          "note_matched": false,
+          "type": "boolean"
+        }
+      ]
+    },
+    "percent": {
+      "sent": {
+        "id": 374,
+        "q": "%"
+      },
+      "status": 200,
+      "ok": true,
+      "n": 3,
+      "rows": [
+        {
+          "id": 90,
+          "note": "הפונה ביקש לצרף מסמכים נוספים בשבוע הבא",
+          "has_key": true,
+          "note_matched": false,
+          "type": "boolean"
+        },
+        {
+          "id": 91,
+          "note": "המסמכים שצורפו שייכים לשנת המס הקודמת",
+          "has_key": true,
+          "note_matched": false,
+          "type": "boolean"
+        },
+        {
+          "id": 92,
+          "note": "הטופס נשלח בדואר רשום על ידי הפונה",
+          "has_key": true,
+          "note_matched": false,
+          "type": "boolean"
+        }
+      ]
+    },
+    "zzzz": {
+      "sent": {
+        "id": 374,
+        "q": "zzzz"
+      },
+      "status": 200,
+      "ok": true,
+      "n": 3,
+      "rows": [
+        {
+          "id": 90,
+          "note": "הפונה ביקש לצרף מסמכים נוספים בשבוע הבא",
+          "has_key": true,
+          "note_matched": false,
+          "type": "boolean"
+        },
+        {
+          "id": 91,
+          "note": "המסמכים שצורפו שייכים לשנת המס הקודמת",
+          "has_key": true,
+          "note_matched": false,
+          "type": "boolean"
+        },
+        {
+          "id": 92,
+          "note": "הטופס נשלח בדואר רשום על ידי הפונה",
+          "has_key": true,
+          "note_matched": false,
+          "type": "boolean"
+        }
+      ]
+    }
+  },
+  "login": {
+    "status": 200,
+    "ok": true,
+    "admin_id": 112
+  },
+  "admin_returned": true
+}

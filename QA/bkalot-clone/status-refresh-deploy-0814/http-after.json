@@ -1,0 +1,121 @@
+[
+  {
+    "url": "https://more30.com/bkalot-studio/admin",
+    "status": 200,
+    "label": "https://more30.com/bkalot-studio/admin",
+    "bytes": 91156,
+    "new": {
+      "// ── הרשימה מתרעננת בחזרה ולא כאן": 1,
+      "// כאן ישבה עד עכשיו load() נוספת. היא פונה לשרת בזמן שהרשימה מוסתרת,": 1,
+      "// שגיאה של בקשה שהוא לא ביקש, על פעולה שהצליחה.": 1,
+      "// openCase נשארת: היא בונה את המסך שכן עומד מול העיניים.": 1
+    },
+    "removed": {
+      "await openCase(c.id, undefined, msg);\n        await load();": 0
+    },
+    "old": {
+      "await openCase(c.id, undefined, msg);": 1,
+      "await load();": 1,
+      "bkalot-clone-admin": 1,
+      "הסטטוס שונה מ«": 1,
+      "לא נשלחה שום הודעה": 2,
+      "הפנייה כבר הייתה ב«": 1,
+      "async function load()": 1,
+      "חזרה לרשימה": 2
+    },
+    "alefs": 983,
+    "replacement_chars": 0,
+    "double_encoded": 0,
+    "assets": []
+  },
+  {
+    "url": "https://more30.com/bkalot-studio/admin/",
+    "status": 200,
+    "label": "https://more30.com/bkalot-studio/admin/",
+    "bytes": 91156,
+    "new": {
+      "// ── הרשימה מתרעננת בחזרה ולא כאן": 1,
+      "// כאן ישבה עד עכשיו load() נוספת. היא פונה לשרת בזמן שהרשימה מוסתרת,": 1,
+      "// שגיאה של בקשה שהוא לא ביקש, על פעולה שהצליחה.": 1,
+      "// openCase נשארת: היא בונה את המסך שכן עומד מול העיניים.": 1
+    },
+    "removed": {
+      "await openCase(c.id, undefined, msg);\n        await load();": 0
+    },
+    "old": {
+      "await openCase(c.id, undefined, msg);": 1,
+      "await load();": 1,
+      "bkalot-clone-admin": 1,
+      "הסטטוס שונה מ«": 1,
+      "לא נשלחה שום הודעה": 2,
+      "הפנייה כבר הייתה ב«": 1,
+      "async function load()": 1,
+      "חזרה לרשימה": 2
+    },
+    "alefs": 983,
+    "replacement_chars": 0,
+    "double_encoded": 0,
+    "assets": []
+  },
+  {
+    "url": "https://more30.com/bkalot-studio",
+    "status": 200,
+    "label": "https://more30.com/bkalot-studio",
+    "bytes": 32558,
+    "new": {
+      "// ── הרשימה מתרעננת בחזרה ולא כאן": 0,
+      "// כאן ישבה עד עכשיו load() נוספת. היא פונה לשרת בזמן שהרשימה מוסתרת,": 0,
+      "// שגיאה של בקשה שהוא לא ביקש, על פעולה שהצליחה.": 0,
+      "// openCase נשארת: היא בונה את המסך שכן עומד מול העיניים.": 0
+    },
+    "removed": {
+      "await openCase(c.id, undefined, msg);\n        await load();": 0
+    },
+    "old": {
+      "await openCase(c.id, undefined, msg);": 0,
+      "await load();": 0,
+      "bkalot-clone-admin": 0,
+      "הסטטוס שונה מ«": 0,
+      "לא נשלחה שום הודעה": 0,
+      "הפנייה כבר הייתה ב«": 0,
+      "async function load()": 0,
+      "חזרה לרשימה": 0
+    },
+    "alefs": 327,
+    "replacement_chars": 0,
+    "double_encoded": 0,
+    "assets": []
+  },
+  {
+    "url": "https://more30.com/",
+    "status": 200,
+    "label": "https://more30.com/",
+    "bytes": 3517,
+    "new": {
+      "// ── הרשימה מתרעננת בחזרה ולא כאן": 0,
+      "// כאן ישבה עד עכשיו load() נוספת. היא פונה לשרת בזמן שהרשימה מוסתרת,": 0,
+      "// שגיאה של בקשה שהוא לא ביקש, על פעולה שהצליחה.": 0,
+      "// openCase נשארת: היא בונה את המסך שכן עומד מול העיניים.": 0
+    },
+    "removed": {
+      "await openCase(c.id, undefined, msg);\n        await load();": 0
+    },
+    "old": {
+      "await openCase(c.id, undefined, msg);": 0,
+      "await load();": 0,
+      "bkalot-clone-admin": 0,
+      "הסטטוס שונה מ«": 0,
+      "לא נשלחה שום הודעה": 0,
+      "הפנייה כבר הייתה ב«": 0,
+      "async function load()": 0,
+      "חזרה לרשימה": 0
+    },
+    "alefs": 23,
+    "replacement_chars": 0,
+    "double_encoded": 0,
+    "assets": [
+      "/assets/index-C2AHwa-z.js",
+      "/assets/index-B35ByRD-.css"
+    ]
+  }
+]

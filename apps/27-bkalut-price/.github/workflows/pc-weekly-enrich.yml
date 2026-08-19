@@ -1,0 +1,84 @@
+name: Price Comparison — Weekly Enrichment (Open Food Facts)
+
+# Enriches pc_products that still lack a category and/or image by looking the
+# barcode up on the Open Food Facts public API. Writes ONLY pc_products
+# (category_id, image_url). Never touches prices or the rights/fin_* tables.
+#
+# Requires repository secrets SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY
+# (Settings → Secrets and variables → Actions).
+
+on:
+  schedule:
+    # 00:30 UTC every Sunday = 03:30 Israel (IDT). Runs before the user-facing
+    # weekly email so freshly-enriched data is reflected in the "still
+    # uncategorized" list. Off the :00 mark to avoid the cron stampede.
+    - cron: "30 0 * * 0"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Dry run (look up OFF, write nothing)"
+        type: boolean
+        default: false
+      limit:
+        description: "Max products to enrich this run (default 3000)"
+        required: false
+        default: ""
+      concurrency:
+        description: "Parallel OFF lookups (default 4)"
+        required: false
+        default: ""
+
+concurrency:
+  group: pc-weekly-enrich
+  cancel-in-progress: false
+
+jobs:
+  enrich:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Verify Supabase secrets are present
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          URL="$(printf '%s' "${SUPABASE_URL:-}" | tr -d '[:space:]')"
+          KEY="$(printf '%s' "${SUPABASE_SERVICE_ROLE_KEY:-}" | tr -d '[:space:]')"
+          if [ -z "$URL" ] || [ -z "$KEY" ]; then
+            echo "::error::Missing SUPABASE_URL and/or SUPABASE_SERVICE_ROLE_KEY repository secrets."
+            exit 1
+          fi
+          echo "Supabase secrets present (host: $(printf '%s' "$URL" | sed -E 's#https?://([^/]+).*#\1#'))."
+
+      - name: Run weekly enrichment
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          OFF_USER_AGENT: "bkalut-price-compare/1.0 (+github actions; contact: l023131500@gmail.com)"
+          DRY_RUN: ${{ github.event.inputs.dry_run }}
+          ENRICH_LIMIT: ${{ github.event.inputs.limit }}
+          ENRICH_CONCURRENCY: ${{ github.event.inputs.concurrency }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "Context: event=${{ github.event_name }} node=$(node --version)"
+          ARGS=()
+          if [ "${DRY_RUN:-}" = "true" ]; then ARGS+=(--dry-run); fi
+          if [ -n "${ENRICH_LIMIT:-}" ]; then ARGS+=("--limit=${ENRICH_LIMIT}"); fi
+          if [ -n "${ENRICH_CONCURRENCY:-}" ]; then ARGS+=("--concurrency=${ENRICH_CONCURRENCY}"); fi
+          echo "Running: npm run pc:enrich -- ${ARGS[*]}"
+          npm run pc:enrich -- "${ARGS[@]}"

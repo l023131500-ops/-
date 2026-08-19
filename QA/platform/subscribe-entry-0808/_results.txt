@@ -1,0 +1,23 @@
+﻿=== §8 · יש דרך להגיע אל בחירת המסלול? ===
+
+— גרף הקישורים · 2425 קבצי מקור (כולל untracked) —
+
+  /subscribe — 2 מפנים: portal/public/system.html:315 · portal/vercel.dist.json:14
+  system.html — 0 מפנים
+
+  מתוכם ניתנים להגעה על ידי לקוח: אף אחד
+
+  FAIL  קיים עמוד שלקוח יכול להגיע אליו ומקשר אל /subscribe  << שני המפנים היחידים הם קובץ ניתוב ועמוד יתום — אין דרך ללקוח להגיע לבחירת מסלול
+  FAIL  קיים עמוד אחד לפחות שמקשר אל system.html  << עמוד המסלולים של כל מערכת יתום — אין אליו קישור
+
+— הייצור, אנונימית —
+
+  /  →  200, 2955 בייט — חתום ה-catch-all
+
+  /subscribe  →  200, 17013 בייט
+  PASS  /subscribe מוגש (מכיל more30_subscribe, ואינו דף הבית)
+  /system.html?app=nadlan  →  200, 16901 בייט
+  PASS  /system.html?app=nadlan מוגש (מכיל more30_system_page, ואינו דף הבית)
+  PASS  /nadlan עדיין מגיש את המערכת ולא את עמוד המסלולים
+
+3 passed · 2 failed

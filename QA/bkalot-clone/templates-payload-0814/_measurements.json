@@ -1,0 +1,64 @@
+{
+  "migration": "0073_the_screen_carries_two_error_texts_for_a_template_it_can_never_choose",
+  "issue": 237,
+  "measured_at": "2026-08-14T02:56Z",
+  "path": "RPC (public.*), not HTTP — see README",
+  "baseline_before": {
+    "cases": 0, "case_rights": 0, "documents": 0, "admin_users": 1,
+    "admin_sessions": 5, "templates": 2, "rights_catalog": 888,
+    "contacts": 4, "outbound_queue": 8, "delivery_log": 3,
+    "src_rows_app_key_bkalot": 8,
+    "src_fingerprint": "da28ec6315535ec0bfbebad4d57752a7",
+    "grants": { "anon": false, "authenticated": false, "service_role": true }
+  },
+  "1_intake": {
+    "ok": true, "kind": "treatment", "case_id": 77, "contact_id": 83,
+    "rights_linked": 59, "rights_unknown": [], "dropped": [], "queued": false,
+    "phone": "0533770073"
+  },
+  "2_admin_case_shape": {
+    "ok": "true", "top_level_keys": 5, "rights": 59, "documents": 0, "templates": 2,
+    "case_kind": "treatment"
+  },
+  "3_templates_payload": [
+    { "key": "general_inquiry_reply", "name_he": "מענה לפנייה כללית",
+      "subject": "בקלות — קיבלנו את פנייתך (פנייה {{caseId}})",
+      "channels": ["email"], "enabled": true },
+    { "key": "rights_treatment_reply", "name_he": "מענה לפניית טיפול — רשימת הזכויות",
+      "subject": "בקלות — {{rightsCount}} זכויות שאותרו עבורך (פנייה {{caseId}})",
+      "channels": ["email"], "enabled": true }
+  ],
+  "4_disabled_row_still_returned": {
+    "n": 2,
+    "first": { "key": "rights_treatment_reply", "enabled": "true" },
+    "last":  { "key": "general_inquiry_reply",  "enabled": "false" }
+  },
+  "5_render_disabled_key": {
+    "ok": false, "error": "template_disabled", "template_key": "general_inquiry_reply",
+    "documents_after": 0
+  },
+  "6_render_unknown_key": {
+    "ok": false, "error": "template_unknown", "template_key": "no_such_template",
+    "allowed": ["general_inquiry_reply", "rights_treatment_reply"],
+    "documents_after": 0
+  },
+  "7_default_rule_unchanged": {
+    "ok": true, "case_id": 77, "document_id": 67,
+    "template_key": "rights_treatment_reply", "fallback": false,
+    "rights_count": 59, "rights_source": "all",
+    "situation_label": "נכות כללית / מוגבלות",
+    "text_chars": 3503, "html_chars": 5317, "placeholders_unresolved": [],
+    "queued": false
+  },
+  "rollback": { "documents": 1, "case_rights": 59, "cases": 1, "contacts": 1,
+                "template_re_enabled": "general_inquiry_reply" },
+  "baseline_after": {
+    "cases": 0, "case_rights": 0, "documents": 0, "admin_users": 1,
+    "admin_sessions": 5, "templates": 2, "templates_enabled": 2, "rights_catalog": 888,
+    "contacts": 4, "outbound_queue": 8, "delivery_log": 3,
+    "src_rows_app_key_bkalot": 8,
+    "src_fingerprint": "da28ec6315535ec0bfbebad4d57752a7",
+    "sent_rows": 0, "live_rows": 0,
+    "grants": { "anon": false, "authenticated": false, "service_role": true }
+  }
+}

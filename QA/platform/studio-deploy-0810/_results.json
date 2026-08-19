@@ -1,0 +1,40 @@
+{
+  "measured_at_utc": "2026-08-09T23:42Z",
+  "what": "studio-more30 deployed to production so the projects screen (#129) reaches the browser; verified anonymously against more30.com, not against the vercel.app host (NetFree blocks it).",
+  "deployment": {
+    "id": "dpl_3yJ1Dx8fcGWfCauehAkLdmGN9de6",
+    "target": "production",
+    "readyState": "READY",
+    "base": "/studio/ (vite base override; the repo config ships /modaot/)"
+  },
+  "served": [
+    { "url": "https://more30.com/studio", "status": 200, "refs": "index-BmqlUxxO.js" },
+    { "url": "https://more30.com/studio/assets/index-BmqlUxxO.js", "status": 200, "bytes": 613176 },
+    { "url": "https://more30.com/studio/assets/Projects-BikVqxrp.js", "status": 200, "bytes": 5942 },
+    { "url": "https://more30.com/studio/assets/index-DEngzYQk.css", "status": 200, "bytes": 81928 },
+    { "url": "https://more30.com/studio/api/projects", "status": 200, "body": "[]" }
+  ],
+  "index_html_byte_check": {
+    "disk": 8170,
+    "served": 8406,
+    "identical": false,
+    "difference": "236 bytes, three lines, all of them NetFree's local proxy injection (go-payment.js, popup-card-init.js). Nothing the origin sent differs."
+  },
+  "screen_live": {
+    "url": "https://more30.com/studio#/projects",
+    "note": "the router is useHashLocation (client/src/App.tsx:2), so /studio/projects is not the address of the screen — it serves the SPA shell and lands on Home. The address is /studio#/projects.",
+    "renders": true,
+    "screenshot": "projects-live.png"
+  },
+  "finding": {
+    "issue": 131,
+    "summary": "the screen shipped and it cannot load work: every /api call in the client is root-relative, so under the /studio mount it goes to more30.com/api/... and the portal answers 404.",
+    "measured": [
+      "GET https://more30.com/api/projects -> 404 (console, from the projects screen)",
+      "GET https://more30.com/api/templates -> 404 (console, from Home)",
+      "GET https://more30.com/studio/api/projects -> 200 []  (the same route under the mount)"
+    ],
+    "scope": "all 26 registered routes, not just the five project ones — which is why public.studio_projects holds 0 rows: the save never reached the server either."
+  },
+  "qa": "scripts/qa/studio-client-calls-server.mjs 11/11 — the deployed bundle and the source now call the same routes, drift empty."
+}

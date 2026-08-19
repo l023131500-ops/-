@@ -1,0 +1,68 @@
+﻿[
+  {
+    "typed": "אבג",
+    "value": "",
+    "badInput": false,
+    "valid": true
+  },
+  {
+    "typed": "abc",
+    "value": "",
+    "badInput": false,
+    "valid": true
+  },
+  {
+    "typed": "e",
+    "value": "",
+    "badInput": true,
+    "valid": false
+  },
+  {
+    "typed": "-",
+    "value": "",
+    "badInput": true,
+    "valid": false
+  },
+  {
+    "typed": ".",
+    "value": "",
+    "badInput": true,
+    "valid": false
+  },
+  {
+    "typed": "1e",
+    "value": "",
+    "badInput": true,
+    "valid": false
+  },
+  {
+    "typed": "1-",
+    "value": "",
+    "badInput": true,
+    "valid": false
+  },
+  {
+    "typed": "1.2.3",
+    "value": "",
+    "badInput": true,
+    "valid": false
+  },
+  {
+    "typed": "--",
+    "value": "",
+    "badInput": true,
+    "valid": false
+  },
+  {
+    "typed": "+",
+    "value": "",
+    "badInput": true,
+    "valid": false
+  },
+  {
+    "typed": "1e3",
+    "value": "1e3",
+    "badInput": false,
+    "valid": true
+  }
+]

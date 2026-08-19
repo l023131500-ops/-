@@ -1,0 +1,46 @@
+mechiron (27): the price-comparison API was live all along, and the client never asked it
+
+Open line (7) from the previous step named mechiron's 9 bare /api call sites as
+still sitting inside #115. They were the smaller half. The base itself resolved
+to "":
+
+    Un = "__PORT_5000__".startsWith("__") ? "" : "__PORT_5000__"
+
+so every call from a bundle served at more30.com/mechiron went to the portal
+root. Measured before touching anything, not assumed:
+
+    GET more30.com/api/pc/public/meta          404  text/plain    <- what the client sent
+    GET more30.com/mechiron/api/pc/public/meta 200  application/json
+
+The second answers productCount 117405, storeCount 1213, activeSources 33,
+lastUpdatedAt today 03:18Z. The function built for this deployment had been
+serving real data the whole time to nobody.
+
+The fallback is now Vite's own BASE_URL with the trailing slash stripped, the
+shape imud took in 8507410 and kupot in 6551b75. It is self-consistent rather
+than a hardcode: the API rides the prefix the assets already came from, and
+base "/" strips to "" -- byte-for-byte the old behaviour, so an origin that
+serves this app from a root is unchanged. The 9 bare fetch("/api/...") literals
+and 3 more in user-auth.tsx that inlined the same ternary all go through
+API_BASE; the emitted bundle now contains zero of either.
+
+Deployed and confirmed in Chromium through more30.com, not on a preview:
+mechiron-more30 dpl_B46XCvXYdBkWopGbhqucCRBmTgHf, production, READY.
+/mechiron/#/price-comparison sends /mechiron/api/pc/public/settings and
+/mechiron/api/pc/public/meta, both 200, and draws 33 sources, 117,405 products,
+1,213 stores, 22 categories and real promotions on a screen that had none of it
+before.
+
+Staged, not mirrored. _deploy's index.html is 34,179 bytes against vite's 3,082
+-- a prerendered #root, the dark-mode head script, the shared auth pill. Only
+the JS asset was swapped and the one <script src> rewritten; the CSS hash is
+unchanged, which is the evidence nothing else moved. Diffed against production
+first: live and disk differ only by NetFree's two injected script tags.
+
+The admin routes stay dark on purpose. They now reach mechiron's own function
+and get its "not found" JSON instead of the platform's text/plain 404 -- a
+truthful answer, not a working one. What #27 should serve at all is #94, the
+user's call, and this does not touch it. 27 is is_protected=false with its own
+repo and Vercel project; the protected bkalut-app server is untouched.
+
+Evidence: QA/platform/mechiron-api-base-0812/

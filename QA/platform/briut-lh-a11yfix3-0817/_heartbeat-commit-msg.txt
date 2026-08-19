@@ -1,0 +1,4 @@
+heartbeat: pending row for briut-lh-a11yfix3-0817 (54fec78) - Supabase MCP not connected this session
+
+Also updates SYSTEMS_STATUS.md (top entry) with the briut Lighthouse-first-run
++ a11y-fix result from commit 54fec78.

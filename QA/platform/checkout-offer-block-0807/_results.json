@@ -1,0 +1,677 @@
+{
+  "measured_at": "2026-08-07T06:06:28.084Z",
+  "supabase": "https://uhnrgujbdxhhmoxcjria.supabase.co",
+  "migration": "0034",
+  "qa_account": "qa.checkout-block+1786082778878837@more30.com",
+  "rows_written": 0,
+  "pass": 86,
+  "fail": 0,
+  "results": [
+    {
+      "name": "checkout(mechiron, basic) answers, and answers \"nothing to charge\" — hidden by 0032; answered with its own 2 ₪",
+      "pass": true,
+      "detail": "HTTP 200 action=none {\"action\": \"none\", \"reason\": \"not_offered\", \"app_key\": \"mechiron\", \"charged\": false, \"message\": \"המערכת הזאת אינה מוצעת כרגע למנוי.\"}"
+    },
+    {
+      "name": "checkout(mechiron, basic) names the block, not a billing state",
+      "pass": true,
+      "detail": "reason=not_offered (expected not_offered)"
+    },
+    {
+      "name": "checkout(mechiron, basic) returns no price at all",
+      "pass": true,
+      "detail": "price_ils=undefined"
+    },
+    {
+      "name": "checkout(mechiron, basic) explains itself in the language the customer reads",
+      "pass": true,
+      "detail": "\"המערכת הזאת אינה מוצעת כרגע למנוי.\""
+    },
+    {
+      "name": "checkout(mechiron, basic) did not fall back to the platform",
+      "pass": true,
+      "detail": "app_key=mechiron"
+    },
+    {
+      "name": "checkout(mechiron, basic) charged nothing",
+      "pass": true,
+      "detail": "charged=false"
+    },
+    {
+      "name": "checkout(mechiron, extended) answers, and answers \"nothing to charge\" — hidden by 0032; answered with its own 5 ₪",
+      "pass": true,
+      "detail": "HTTP 200 action=none {\"action\": \"none\", \"reason\": \"not_offered\", \"app_key\": \"mechiron\", \"charged\": false, \"message\": \"המערכת הזאת אינה מוצעת כרגע למנוי.\"}"
+    },
+    {
+      "name": "checkout(mechiron, extended) names the block, not a billing state",
+      "pass": true,
+      "detail": "reason=not_offered (expected not_offered)"
+    },
+    {
+      "name": "checkout(mechiron, extended) returns no price at all",
+      "pass": true,
+      "detail": "price_ils=undefined"
+    },
+    {
+      "name": "checkout(mechiron, extended) explains itself in the language the customer reads",
+      "pass": true,
+      "detail": "\"המערכת הזאת אינה מוצעת כרגע למנוי.\""
+    },
+    {
+      "name": "checkout(mechiron, extended) did not fall back to the platform",
+      "pass": true,
+      "detail": "app_key=mechiron"
+    },
+    {
+      "name": "checkout(mechiron, extended) charged nothing",
+      "pass": true,
+      "detail": "charged=false"
+    },
+    {
+      "name": "checkout(crm, premium) answers, and answers \"nothing to charge\" — live, hidden; fell back to the platform 10 ₪",
+      "pass": true,
+      "detail": "HTTP 200 action=none {\"action\": \"none\", \"reason\": \"not_offered\", \"app_key\": \"crm\", \"charged\": false, \"message\": \"המערכת הזאת אינה מוצעת כרגע למנוי.\"}"
+    },
+    {
+      "name": "checkout(crm, premium) names the block, not a billing state",
+      "pass": true,
+      "detail": "reason=not_offered (expected not_offered)"
+    },
+    {
+      "name": "checkout(crm, premium) returns no price at all",
+      "pass": true,
+      "detail": "price_ils=undefined"
+    },
+    {
+      "name": "checkout(crm, premium) explains itself in the language the customer reads",
+      "pass": true,
+      "detail": "\"המערכת הזאת אינה מוצעת כרגע למנוי.\""
+    },
+    {
+      "name": "checkout(crm, premium) did not fall back to the platform",
+      "pass": true,
+      "detail": "app_key=crm"
+    },
+    {
+      "name": "checkout(crm, premium) charged nothing",
+      "pass": true,
+      "detail": "charged=false"
+    },
+    {
+      "name": "checkout(gesher, premium) answers, and answers \"nothing to charge\" — live, hidden; fell back to the platform 10 ₪",
+      "pass": true,
+      "detail": "HTTP 200 action=none {\"action\": \"none\", \"reason\": \"not_offered\", \"app_key\": \"gesher\", \"charged\": false, \"message\": \"המערכת הזאת אינה מוצעת כרגע למנוי.\"}"
+    },
+    {
+      "name": "checkout(gesher, premium) names the block, not a billing state",
+      "pass": true,
+      "detail": "reason=not_offered (expected not_offered)"
+    },
+    {
+      "name": "checkout(gesher, premium) returns no price at all",
+      "pass": true,
+      "detail": "price_ils=undefined"
+    },
+    {
+      "name": "checkout(gesher, premium) explains itself in the language the customer reads",
+      "pass": true,
+      "detail": "\"המערכת הזאת אינה מוצעת כרגע למנוי.\""
+    },
+    {
+      "name": "checkout(gesher, premium) did not fall back to the platform",
+      "pass": true,
+      "detail": "app_key=gesher"
+    },
+    {
+      "name": "checkout(gesher, premium) charged nothing",
+      "pass": true,
+      "detail": "charged=false"
+    },
+    {
+      "name": "checkout(mthbram, premium) answers, and answers \"nothing to charge\" — live, hidden; fell back to the platform 10 ₪",
+      "pass": true,
+      "detail": "HTTP 200 action=none {\"action\": \"none\", \"reason\": \"not_offered\", \"app_key\": \"mthbram\", \"charged\": false, \"message\": \"המערכת הזאת אינה מוצעת כרגע למנוי.\"}"
+    },
+    {
+      "name": "checkout(mthbram, premium) names the block, not a billing state",
+      "pass": true,
+      "detail": "reason=not_offered (expected not_offered)"
+    },
+    {
+      "name": "checkout(mthbram, premium) returns no price at all",
+      "pass": true,
+      "detail": "price_ils=undefined"
+    },
+    {
+      "name": "checkout(mthbram, premium) explains itself in the language the customer reads",
+      "pass": true,
+      "detail": "\"המערכת הזאת אינה מוצעת כרגע למנוי.\""
+    },
+    {
+      "name": "checkout(mthbram, premium) did not fall back to the platform",
+      "pass": true,
+      "detail": "app_key=mthbram"
+    },
+    {
+      "name": "checkout(mthbram, premium) charged nothing",
+      "pass": true,
+      "detail": "charged=false"
+    },
+    {
+      "name": "checkout(smachot, premium) answers, and answers \"nothing to charge\" — live, hidden; fell back to the platform 10 ₪",
+      "pass": true,
+      "detail": "HTTP 200 action=none {\"action\": \"none\", \"reason\": \"not_offered\", \"app_key\": \"smachot\", \"charged\": false, \"message\": \"המערכת הזאת אינה מוצעת כרגע למנוי.\"}"
+    },
+    {
+      "name": "checkout(smachot, premium) names the block, not a billing state",
+      "pass": true,
+      "detail": "reason=not_offered (expected not_offered)"
+    },
+    {
+      "name": "checkout(smachot, premium) returns no price at all",
+      "pass": true,
+      "detail": "price_ils=undefined"
+    },
+    {
+      "name": "checkout(smachot, premium) explains itself in the language the customer reads",
+      "pass": true,
+      "detail": "\"המערכת הזאת אינה מוצעת כרגע למנוי.\""
+    },
+    {
+      "name": "checkout(smachot, premium) did not fall back to the platform",
+      "pass": true,
+      "detail": "app_key=smachot"
+    },
+    {
+      "name": "checkout(smachot, premium) charged nothing",
+      "pass": true,
+      "detail": "charged=false"
+    },
+    {
+      "name": "checkout(zol, premium) answers, and answers \"nothing to charge\" — not live; fell back to the platform 10 ₪",
+      "pass": true,
+      "detail": "HTTP 200 action=none {\"action\": \"none\", \"reason\": \"not_live\", \"app_key\": \"zol\", \"charged\": false, \"message\": \"המערכת הזאת אינה פעילה כרגע, ולכן אין לה מסלולים לה"
+    },
+    {
+      "name": "checkout(zol, premium) names the block, not a billing state",
+      "pass": true,
+      "detail": "reason=not_live (expected not_live)"
+    },
+    {
+      "name": "checkout(zol, premium) returns no price at all",
+      "pass": true,
+      "detail": "price_ils=undefined"
+    },
+    {
+      "name": "checkout(zol, premium) explains itself in the language the customer reads",
+      "pass": true,
+      "detail": "\"המערכת הזאת אינה פעילה כרגע, ולכן אין לה מסלולים להצגה.\""
+    },
+    {
+      "name": "checkout(zol, premium) did not fall back to the platform",
+      "pass": true,
+      "detail": "app_key=zol"
+    },
+    {
+      "name": "checkout(zol, premium) charged nothing",
+      "pass": true,
+      "detail": "charged=false"
+    },
+    {
+      "name": "checkout(events, premium) answers, and answers \"nothing to charge\" — not live; fell back to the platform 10 ₪",
+      "pass": true,
+      "detail": "HTTP 200 action=none {\"action\": \"none\", \"reason\": \"not_live\", \"app_key\": \"events\", \"charged\": false, \"message\": \"המערכת הזאת אינה פעילה כרגע, ולכן אין לה מסלולים"
+    },
+    {
+      "name": "checkout(events, premium) names the block, not a billing state",
+      "pass": true,
+      "detail": "reason=not_live (expected not_live)"
+    },
+    {
+      "name": "checkout(events, premium) returns no price at all",
+      "pass": true,
+      "detail": "price_ils=undefined"
+    },
+    {
+      "name": "checkout(events, premium) explains itself in the language the customer reads",
+      "pass": true,
+      "detail": "\"המערכת הזאת אינה פעילה כרגע, ולכן אין לה מסלולים להצגה.\""
+    },
+    {
+      "name": "checkout(events, premium) did not fall back to the platform",
+      "pass": true,
+      "detail": "app_key=events"
+    },
+    {
+      "name": "checkout(events, premium) charged nothing",
+      "pass": true,
+      "detail": "charged=false"
+    },
+    {
+      "name": "checkout(financial, premium) answers, and answers \"nothing to charge\" — not live; fell back to the platform 10 ₪",
+      "pass": true,
+      "detail": "HTTP 200 action=none {\"action\": \"none\", \"reason\": \"not_live\", \"app_key\": \"financial\", \"charged\": false, \"message\": \"המערכת הזאת אינה פעילה כרגע, ולכן אין לה מסלו"
+    },
+    {
+      "name": "checkout(financial, premium) names the block, not a billing state",
+      "pass": true,
+      "detail": "reason=not_live (expected not_live)"
+    },
+    {
+      "name": "checkout(financial, premium) returns no price at all",
+      "pass": true,
+      "detail": "price_ils=undefined"
+    },
+    {
+      "name": "checkout(financial, premium) explains itself in the language the customer reads",
+      "pass": true,
+      "detail": "\"המערכת הזאת אינה פעילה כרגע, ולכן אין לה מסלולים להצגה.\""
+    },
+    {
+      "name": "checkout(financial, premium) did not fall back to the platform",
+      "pass": true,
+      "detail": "app_key=financial"
+    },
+    {
+      "name": "checkout(financial, premium) charged nothing",
+      "pass": true,
+      "detail": "charged=false"
+    },
+    {
+      "name": "checkout(igud, premium) answers, and answers \"nothing to charge\" — not live; fell back to the platform 10 ₪",
+      "pass": true,
+      "detail": "HTTP 200 action=none {\"action\": \"none\", \"reason\": \"not_live\", \"app_key\": \"igud\", \"charged\": false, \"message\": \"המערכת הזאת אינה פעילה כרגע, ולכן אין לה מסלולים ל"
+    },
+    {
+      "name": "checkout(igud, premium) names the block, not a billing state",
+      "pass": true,
+      "detail": "reason=not_live (expected not_live)"
+    },
+    {
+      "name": "checkout(igud, premium) returns no price at all",
+      "pass": true,
+      "detail": "price_ils=undefined"
+    },
+    {
+      "name": "checkout(igud, premium) explains itself in the language the customer reads",
+      "pass": true,
+      "detail": "\"המערכת הזאת אינה פעילה כרגע, ולכן אין לה מסלולים להצגה.\""
+    },
+    {
+      "name": "checkout(igud, premium) did not fall back to the platform",
+      "pass": true,
+      "detail": "app_key=igud"
+    },
+    {
+      "name": "checkout(igud, premium) charged nothing",
+      "pass": true,
+      "detail": "charged=false"
+    },
+    {
+      "name": "checkout(shiurim, premium) answers, and answers \"nothing to charge\" — not live; fell back to the platform 10 ₪",
+      "pass": true,
+      "detail": "HTTP 200 action=none {\"action\": \"none\", \"reason\": \"not_live\", \"app_key\": \"shiurim\", \"charged\": false, \"message\": \"המערכת הזאת אינה פעילה כרגע, ולכן אין לה מסלולי"
+    },
+    {
+      "name": "checkout(shiurim, premium) names the block, not a billing state",
+      "pass": true,
+      "detail": "reason=not_live (expected not_live)"
+    },
+    {
+      "name": "checkout(shiurim, premium) returns no price at all",
+      "pass": true,
+      "detail": "price_ils=undefined"
+    },
+    {
+      "name": "checkout(shiurim, premium) explains itself in the language the customer reads",
+      "pass": true,
+      "detail": "\"המערכת הזאת אינה פעילה כרגע, ולכן אין לה מסלולים להצגה.\""
+    },
+    {
+      "name": "checkout(shiurim, premium) did not fall back to the platform",
+      "pass": true,
+      "detail": "app_key=shiurim"
+    },
+    {
+      "name": "checkout(shiurim, premium) charged nothing",
+      "pass": true,
+      "detail": "charged=false"
+    },
+    {
+      "name": "checkout(bkalot-studio, premium) answers, and answers \"nothing to charge\" — not live; fell back to the platform 10 ₪",
+      "pass": true,
+      "detail": "HTTP 200 action=none {\"action\": \"none\", \"reason\": \"not_live\", \"app_key\": \"bkalot-studio\", \"charged\": false, \"message\": \"המערכת הזאת אינה פעילה כרגע, ולכן אין לה "
+    },
+    {
+      "name": "checkout(bkalot-studio, premium) names the block, not a billing state",
+      "pass": true,
+      "detail": "reason=not_live (expected not_live)"
+    },
+    {
+      "name": "checkout(bkalot-studio, premium) returns no price at all",
+      "pass": true,
+      "detail": "price_ils=undefined"
+    },
+    {
+      "name": "checkout(bkalot-studio, premium) explains itself in the language the customer reads",
+      "pass": true,
+      "detail": "\"המערכת הזאת אינה פעילה כרגע, ולכן אין לה מסלולים להצגה.\""
+    },
+    {
+      "name": "checkout(bkalot-studio, premium) did not fall back to the platform",
+      "pass": true,
+      "detail": "app_key=bkalot-studio"
+    },
+    {
+      "name": "checkout(bkalot-studio, premium) charged nothing",
+      "pass": true,
+      "detail": "charged=false"
+    },
+    {
+      "name": "checkout(torah, basic) still decides on the price 2 ₪",
+      "pass": true,
+      "detail": "HTTP 200 reason=billing_off price=2 {\"action\": \"none\", \"reason\": \"billing_off\", \"charged\": false, \"message\": \"למסלול יש מחיר, אבל הסליקה סגורה. לא בוצע ולא "
+    },
+    {
+      "name": "checkout(torah, basic) charged nothing",
+      "pass": true,
+      "detail": "charged=false"
+    },
+    {
+      "name": "checkout(kupot, extended) still decides on the price 5 ₪",
+      "pass": true,
+      "detail": "HTTP 200 reason=billing_off price=5 {\"action\": \"none\", \"reason\": \"billing_off\", \"charged\": false, \"message\": \"למסלול יש מחיר, אבל הסליקה סגורה. לא בוצע ולא "
+    },
+    {
+      "name": "checkout(kupot, extended) charged nothing",
+      "pass": true,
+      "detail": "charged=false"
+    },
+    {
+      "name": "checkout(kiosk, premium) still decides on the price 10 ₪",
+      "pass": true,
+      "detail": "HTTP 200 reason=billing_off price=10 {\"action\": \"none\", \"reason\": \"billing_off\", \"charged\": false, \"message\": \"למסלול יש מחיר, אבל הסליקה סגורה. לא בוצע ולא "
+    },
+    {
+      "name": "checkout(kiosk, premium) charged nothing",
+      "pass": true,
+      "detail": "charged=false"
+    },
+    {
+      "name": "checkout(nadlan, premium) still decides on the price 12 ₪",
+      "pass": true,
+      "detail": "HTTP 200 reason=billing_off price=12 {\"action\": \"none\", \"reason\": \"billing_off\", \"charged\": false, \"message\": \"למסלול יש מחיר, אבל הסליקה סגורה. לא בוצע ולא "
+    },
+    {
+      "name": "checkout(nadlan, premium) charged nothing",
+      "pass": true,
+      "detail": "charged=false"
+    },
+    {
+      "name": "checkout(nadlan, vip) still decides on the price 15 ₪",
+      "pass": true,
+      "detail": "HTTP 200 reason=billing_off price=15 {\"action\": \"none\", \"reason\": \"billing_off\", \"charged\": false, \"message\": \"למסלול יש מחיר, אבל הסליקה סגורה. לא בוצע ולא "
+    },
+    {
+      "name": "checkout(nadlan, vip) charged nothing",
+      "pass": true,
+      "detail": "charged=false"
+    },
+    {
+      "name": "checkout(more30, premium) still decides on the price 10 ₪",
+      "pass": true,
+      "detail": "HTTP 200 reason=billing_off price=10 {\"action\": \"none\", \"reason\": \"billing_off\", \"charged\": false, \"message\": \"למסלול יש מחיר, אבל הסליקה סגורה. לא בוצע ולא "
+    },
+    {
+      "name": "checkout(more30, premium) charged nothing",
+      "pass": true,
+      "detail": "charged=false"
+    },
+    {
+      "name": "the hidden 1 ₪ test tier is still refused",
+      "pass": true,
+      "detail": "HTTP 400 {\"code\":\"22023\",\"details\":null,\"hint\":null,\"message\":\"unknown plan: pro for more30\"}"
+    },
+    {
+      "name": "a stranger cannot reach the checkout decision",
+      "pass": true,
+      "detail": "HTTP 401 {\"code\":\"42501\",\"details\":null,\"hint\":null,\"message\":\"permission denied for function more30_checkout\"}"
+    }
+  ],
+  "answers": [
+    {
+      "app": "mechiron",
+      "plan": "basic",
+      "expected": "not_offered",
+      "status": 200,
+      "json": {
+        "action": "none",
+        "reason": "not_offered",
+        "app_key": "mechiron",
+        "charged": false,
+        "message": "המערכת הזאת אינה מוצעת כרגע למנוי."
+      }
+    },
+    {
+      "app": "mechiron",
+      "plan": "extended",
+      "expected": "not_offered",
+      "status": 200,
+      "json": {
+        "action": "none",
+        "reason": "not_offered",
+        "app_key": "mechiron",
+        "charged": false,
+        "message": "המערכת הזאת אינה מוצעת כרגע למנוי."
+      }
+    },
+    {
+      "app": "crm",
+      "plan": "premium",
+      "expected": "not_offered",
+      "status": 200,
+      "json": {
+        "action": "none",
+        "reason": "not_offered",
+        "app_key": "crm",
+        "charged": false,
+        "message": "המערכת הזאת אינה מוצעת כרגע למנוי."
+      }
+    },
+    {
+      "app": "gesher",
+      "plan": "premium",
+      "expected": "not_offered",
+      "status": 200,
+      "json": {
+        "action": "none",
+        "reason": "not_offered",
+        "app_key": "gesher",
+        "charged": false,
+        "message": "המערכת הזאת אינה מוצעת כרגע למנוי."
+      }
+    },
+    {
+      "app": "mthbram",
+      "plan": "premium",
+      "expected": "not_offered",
+      "status": 200,
+      "json": {
+        "action": "none",
+        "reason": "not_offered",
+        "app_key": "mthbram",
+        "charged": false,
+        "message": "המערכת הזאת אינה מוצעת כרגע למנוי."
+      }
+    },
+    {
+      "app": "smachot",
+      "plan": "premium",
+      "expected": "not_offered",
+      "status": 200,
+      "json": {
+        "action": "none",
+        "reason": "not_offered",
+        "app_key": "smachot",
+        "charged": false,
+        "message": "המערכת הזאת אינה מוצעת כרגע למנוי."
+      }
+    },
+    {
+      "app": "zol",
+      "plan": "premium",
+      "expected": "not_live",
+      "status": 200,
+      "json": {
+        "action": "none",
+        "reason": "not_live",
+        "app_key": "zol",
+        "charged": false,
+        "message": "המערכת הזאת אינה פעילה כרגע, ולכן אין לה מסלולים להצגה."
+      }
+    },
+    {
+      "app": "events",
+      "plan": "premium",
+      "expected": "not_live",
+      "status": 200,
+      "json": {
+        "action": "none",
+        "reason": "not_live",
+        "app_key": "events",
+        "charged": false,
+        "message": "המערכת הזאת אינה פעילה כרגע, ולכן אין לה מסלולים להצגה."
+      }
+    },
+    {
+      "app": "financial",
+      "plan": "premium",
+      "expected": "not_live",
+      "status": 200,
+      "json": {
+        "action": "none",
+        "reason": "not_live",
+        "app_key": "financial",
+        "charged": false,
+        "message": "המערכת הזאת אינה פעילה כרגע, ולכן אין לה מסלולים להצגה."
+      }
+    },
+    {
+      "app": "igud",
+      "plan": "premium",
+      "expected": "not_live",
+      "status": 200,
+      "json": {
+        "action": "none",
+        "reason": "not_live",
+        "app_key": "igud",
+        "charged": false,
+        "message": "המערכת הזאת אינה פעילה כרגע, ולכן אין לה מסלולים להצגה."
+      }
+    },
+    {
+      "app": "shiurim",
+      "plan": "premium",
+      "expected": "not_live",
+      "status": 200,
+      "json": {
+        "action": "none",
+        "reason": "not_live",
+        "app_key": "shiurim",
+        "charged": false,
+        "message": "המערכת הזאת אינה פעילה כרגע, ולכן אין לה מסלולים להצגה."
+      }
+    },
+    {
+      "app": "bkalot-studio",
+      "plan": "premium",
+      "expected": "not_live",
+      "status": 200,
+      "json": {
+        "action": "none",
+        "reason": "not_live",
+        "app_key": "bkalot-studio",
+        "charged": false,
+        "message": "המערכת הזאת אינה פעילה כרגע, ולכן אין לה מסלולים להצגה."
+      }
+    },
+    {
+      "app": "torah",
+      "plan": "basic",
+      "expected": "billing_off",
+      "status": 200,
+      "json": {
+        "action": "none",
+        "reason": "billing_off",
+        "charged": false,
+        "message": "למסלול יש מחיר, אבל הסליקה סגורה. לא בוצע ולא ייבוצע חיוב.",
+        "price_ils": 2
+      }
+    },
+    {
+      "app": "kupot",
+      "plan": "extended",
+      "expected": "billing_off",
+      "status": 200,
+      "json": {
+        "action": "none",
+        "reason": "billing_off",
+        "charged": false,
+        "message": "למסלול יש מחיר, אבל הסליקה סגורה. לא בוצע ולא ייבוצע חיוב.",
+        "price_ils": 5
+      }
+    },
+    {
+      "app": "kiosk",
+      "plan": "premium",
+      "expected": "billing_off",
+      "status": 200,
+      "json": {
+        "action": "none",
+        "reason": "billing_off",
+        "charged": false,
+        "message": "למסלול יש מחיר, אבל הסליקה סגורה. לא בוצע ולא ייבוצע חיוב.",
+        "price_ils": 10
+      }
+    },
+    {
+      "app": "nadlan",
+      "plan": "premium",
+      "expected": "billing_off",
+      "status": 200,
+      "json": {
+        "action": "none",
+        "reason": "billing_off",
+        "charged": false,
+        "message": "למסלול יש מחיר, אבל הסליקה סגורה. לא בוצע ולא ייבוצע חיוב.",
+        "price_ils": 12
+      }
+    },
+    {
+      "app": "nadlan",
+      "plan": "vip",
+      "expected": "billing_off",
+      "status": 200,
+      "json": {
+        "action": "none",
+        "reason": "billing_off",
+        "charged": false,
+        "message": "למסלול יש מחיר, אבל הסליקה סגורה. לא בוצע ולא ייבוצע חיוב.",
+        "price_ils": 15
+      }
+    },
+    {
+      "app": "more30",
+      "plan": "premium",
+      "expected": "billing_off",
+      "status": 200,
+      "json": {
+        "action": "none",
+        "reason": "billing_off",
+        "charged": false,
+        "message": "למסלול יש מחיר, אבל הסליקה סגורה. לא בוצע ולא ייבוצע חיוב.",
+        "price_ils": 10
+      }
+    }
+  ]
+}

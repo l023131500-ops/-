@@ -1,0 +1,136 @@
+{
+  "step": "bkalot_clone שכבה 3, לבנה 1 — הפקת המסמך",
+  "issue": 231,
+  "migration": "0063_layer_three_had_a_documents_table_and_nothing_that_could_write_one",
+  "date_utc": "2026-08-14",
+  "measured_with": "MCP Supabase execute_sql על uhnrgujbdxhhmoxcjria (הפרויקט של הפורטל)",
+
+  "baseline_before": {
+    "cases": 0, "case_rights": 0, "documents": 0, "admin_users": 1,
+    "contacts": 4, "outbound_queue": 8, "delivery_log": 3, "rights_catalog": 888
+  },
+
+  "built": {
+    "table": "bkalot_clone.templates (RLS דלוק, אפס policies, אפס grants פרט לבעלים)",
+    "seeded": ["general_inquiry_reply", "rights_treatment_reply"],
+    "function_public": "public.bkalot_clone_render(jsonb) — SECURITY DEFINER, search_path ריק",
+    "function_internal": "bkalot_clone.html_escape(text)",
+    "index": "documents_case_kind_uniq unique (case_id, kind)"
+  },
+
+  "cases_created_through_real_intake_path": {
+    "case_17_info": {
+      "full_name": "<img src=x onerror=\"alert(1)\">ישראל בדיקה",
+      "phone_normalised": "0509997766",
+      "rights_linked": 0
+    },
+    "case_18_treatment": {
+      "situation": "disability",
+      "rights_linked": 59,
+      "note": "המדידה השביעית הבלתי-תלויה שמסכימה על 59"
+    }
+  },
+
+  "render_results": {
+    "case_17": {
+      "ok": true, "document_id": 2, "template_key": "general_inquiry_reply",
+      "fallback": false, "rights_count": 0, "rights_source": "all",
+      "text_chars": 233, "html_chars": 465, "placeholders_unresolved": [], "queued": false,
+      "subject": "בקלות — קיבלנו את פנייתך (פנייה 17)"
+    },
+    "case_18": {
+      "ok": true, "document_id": 3, "template_key": "rights_treatment_reply",
+      "fallback": false, "rights_count": 59, "rights_source": "all",
+      "text_chars": 3420, "html_chars": 5228, "placeholders_unresolved": [], "queued": false,
+      "subject": "בקלות — 59 זכויות שאותרו עבורך (פנייה 18)"
+    }
+  },
+
+  "html_escape_measured_on_case_17": {
+    "name_escaped": true,
+    "raw_img_tag_present_in_body_html": false,
+    "note_tags_escaped": true,
+    "quotes_escaped": true,
+    "body_text_keeps_the_raw_characters": true,
+    "why": "שם מלא הוא קלט חופשי של אדם זר. בלי escape, «<img onerror>» שנשמר ב-contacts.full_name היה יושב בתוך body_html שמסך הניהול יציג."
+  },
+
+  "rights_list_measured_on_case_18": {
+    "li_count_html": 59,
+    "numbered_lines_text": 59,
+    "first_six_codes": ["B100", "B111", "B114", "B124", "B144", "B195"],
+    "matches_all_previous_measurements": true,
+    "hebrew_round_trip_clean": true
+  },
+
+  "chosen_rights": {
+    "action": "סומנו B100/B144/B195 כ-chosen ואז רינדור חוזר",
+    "document_id": 3,
+    "note": "אותו מזהה — upsert ולא צבירה",
+    "rights_count": 3,
+    "rights_source": "chosen",
+    "text_chars": 470
+  },
+
+  "error_paths": {
+    "no_case_id": "case_id_required",
+    "case_id_not_numeric": "case_id_required",
+    "case_id_999999": "case_not_found",
+    "explicit_unknown_template_key": {
+      "error": "template_unknown",
+      "allowed": ["general_inquiry_reply", "rights_treatment_reply"]
+    },
+    "explicit_disabled_template_key": "template_disabled",
+    "default_key_disabled": {
+      "ok": true, "fallback": true, "text_chars": 93,
+      "why": "שורת תבנית חסרה או מנוטרלת לא מפילה את ההפקה ולא מייצרת מסמך ריק (BKALOT_METHOD §3)"
+    },
+    "template_that_renders_to_nothing": "render_empty — לא נכתב מסמך ריק"
+  },
+
+  "unknown_placeholders": {
+    "template": "qa_unresolved עם {{nope}} ו-{{alsoNope}} (נמחקה אחרי הבדיקה)",
+    "placeholders_unresolved": ["alsoNope", "nope"],
+    "subject_after_strip": "נושא 17 ",
+    "note": "מוסר מהפלט כמו במקור, אבל מדווח חזרה — במקור זה נבלע"
+  },
+
+  "permissions_measured_after": {
+    "anon_execute_render": false,
+    "authenticated_execute_render": false,
+    "service_role_execute_render": true,
+    "anon_execute_html_escape": false,
+    "templates_grants_beyond_owner": 0,
+    "templates_rls_enabled": true,
+    "templates_policies": 0
+  },
+
+  "test_mode": {
+    "outbound_queue_before_after": [8, 8],
+    "delivery_log_before_after": [3, 3],
+    "documents_with_queue_id": 0,
+    "note": "אין בפונקציה שום מסלול יוצא — לא מייל, לא webhook ולא תור. queue_id נשאר null."
+  },
+
+  "rollback": {
+    "deleted": ["templates.qa_unresolved", "cases 17,18", "contacts 23,24", "documents ו-case_rights ב-CASCADE"],
+    "after": {
+      "cases": 0, "case_rights": 0, "documents": 0, "templates": 2,
+      "admin_users": 1, "contacts": 4, "outbound_queue": 8, "delivery_log": 3, "rights_catalog": 888
+    },
+    "templates_enabled_restored": "general_inquiry_reply:true, rights_treatment_reply:true"
+  },
+
+  "protected_untouched": {
+    "git_status_apps_08": "empty",
+    "git_status_apps_09": "empty",
+    "schemas_not_touched": ["csj", "csj_src", "igud"],
+    "systems_not_touched": ["bkalut-app", "bkalot-admin", "zr_*", "NEDARIM3873"]
+  },
+
+  "left_open": {
+    "232": "ל-{{situation}} אין שם עברי במסד — rights.situation_map מחזיקה מפתח אנגלי בלבד, והתוויות יושבות במילון הלקוח. תבנית שתדפיס אותו תדפיס «disability» בתוך פסקה בעברית.",
+    "next_brick": "לרנדרר אין כתובת HTTP ואין כפתור — bkalot-clone-admin לא נגעה, ומסך הניהול עדיין מציג «מסמכים (0)» כי אין דרך לקרוא לו מהדפדפן. זו הסיבה שאין בצעד הזה צילום מסך: אין מה לצלם עדיין.",
+    "layer_3_remaining": "השליחה עצמה (outbound_queue + delivery_log + ערוץ) טרם נבנתה."
+  }
+}

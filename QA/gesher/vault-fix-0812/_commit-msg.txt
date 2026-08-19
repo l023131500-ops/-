@@ -1,0 +1,44 @@
+31 gesher (#173): the document vault kept saying ok:true about a write RLS had thrown away
+
+Yesterday's step measured it and could not fit the fix in the same step: a client
+uploads a file to /gesher/client/documents, storage returns 200, the serverFn
+returns ok:true with the full record, and the screen says "עדיין לא הועלו מסמכים"
+— no toast, no console error, unchanged after a full reload.
+
+The cause is one line. client.functions.ts:131 wrote to
+client_profiles.uploaded_documents as the client, and client_profiles has RLS
+with "Clients read own client profile" for SELECT only — no policy lets a client
+UPDATE their own row. RLS filtered the UPDATE to zero rows, and zero rows is not
+an error in PostgREST, so `if (upErr) throw` never fired. What makes this read as
+correct in a code review is the GRANT UPDATE (uploaded_documents) in migration
+20260605003212: a GRANT is not an RLS policy.
+
+The right table already existed and was unused. Migration 20260610185015 created
+public.documents with doc_all FOR ALL USING/WITH CHECK owner_client_id =
+auth.uid() — which the client does pass — and even backfilled the old jsonb into
+it, "kept for one release". The admin side had already moved
+(client-profile.functions.ts:187); the three client functions had not.
+
+All three now read and write public.documents (path -> storage_path,
+uploaded_at -> created_at), and both write paths carry a zero-row guard:
+.select() on the insert and on the delete, with an explicit Hebrew error when
+zero rows come back. An RLS-blocked write cannot report success here again.
+removeUploadedDocument also had its order swapped — it deletes the row first and
+the storage object second; before, it removed the file and then failed to update
+the record.
+
+Typecheck clean, build ok, deployed to production from source (not --prebuilt, so
+vercel.json ships), then walked in a browser on more30.com as test@more30.com:
+upload -> the row appears -> full reload -> still there (the step that failed
+before) -> the status page reads "הועלו 1 מסמכים" -> delete -> reload -> empty.
+
+Not measured, and recorded as such: public.documents was not queried directly
+(project ygaqqnuyfnumezxxmtbh is unreachable over MCP from here and there is no
+SUPABASE_ACCESS_TOKEN), the admin side of 31 was not opened, the orphan file from
+11/08 still has no documents row and no screen that deletes it, and
+/gesher/client/consents is still an empty "בקרוב" screen.
+
+Test mode: no user created, no message sent, no charge. Protected systems not
+touched.
+
+Evidence: QA/gesher/vault-fix-0812/ — README.md, _results.json, 5 screenshots.

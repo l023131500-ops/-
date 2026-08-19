@@ -1,0 +1,55 @@
+{
+  "date": "2026-08-12",
+  "method": "unauthenticated bodiless GET, no apikey / no Authorization / no body",
+  "discriminator": "gateway answers 401 UNAUTHORIZED_NO_AUTH_HEADER before the function runs when verify_jwt is on; 404 when the function is not deployed. Any other status = handler executed with no credential.",
+  "opened_line": "1a5214a open line (5): apps/_archive/** never swept, on the unverified assumption the functions are not deployed",
+  "headline": "assumption false — all 10 archived functions are deployed and answering",
+  "projects": {
+    "pwcswdfgorvlpdflzylm": {
+      "app_dir": "apps/_archive/bklotm",
+      "identity": "system 08 bkalut-app, core.projects.is_protected = true",
+      "permission_used": "read-only GET (the single approved exception for 08/09)",
+      "changed_by_this_commit": false
+    },
+    "zwxwteebcoejrjdufzsv": {
+      "app_dir": "apps/_archive/lux-manage",
+      "identity": "orphan — no row in core.projects, no deployed site, Supabase project still live",
+      "changed_by_this_commit": true
+    }
+  },
+  "probes": [
+    { "project": "pwcswdfgorvlpdflzylm", "fn": "check-premium-client", "http": 500, "body": "{\"error\":\"Unexpected end of JSON input\",\"premium\":[]}", "verdict": "ran unauthenticated, died on empty body" },
+    { "project": "pwcswdfgorvlpdflzylm", "fn": "leads-api", "http": 401, "body": "{\"error\":\"Missing API key\"}", "verdict": "gated — SHA-256 x-api-key against api_keys table" },
+    { "project": "pwcswdfgorvlpdflzylm", "fn": "leads-webhook", "http": 500, "body": "{\"error\":\"Unexpected end of JSON input\"}", "verdict": "ran unauthenticated on service_role — issue #171, protected, not fixed" },
+    { "project": "pwcswdfgorvlpdflzylm", "fn": "n8n-notify", "http": 500, "body": "{\"error\":\"Unexpected end of JSON input\"}", "verdict": "ran unauthenticated on service_role — issue #171, protected, not fixed" },
+    { "project": "pwcswdfgorvlpdflzylm", "fn": "rights-agent", "http": 500, "body": "{\"error\":\"Unexpected end of JSON input\"}", "verdict": "ran unauthenticated on service_role — issue #171, protected, not fixed" },
+    { "project": "zwxwteebcoejrjdufzsv", "fn": "admin-create-user", "http": 401, "body": "{\"error\":\"Missing authorization\"}", "verdict": "gated — Authorization + has_role admin" },
+    { "project": "zwxwteebcoejrjdufzsv", "fn": "admin-set-password", "http": 401, "body": "{\"error\":\"Missing authorization\"}", "verdict": "gated — Authorization + has_role admin" },
+    { "project": "zwxwteebcoejrjdufzsv", "fn": "inbound-webhook", "http": 500, "body": "{\"error\":\"SyntaxError: Unexpected end of JSON input\"}", "verdict": "ran unauthenticated, died on empty body, returns no data" },
+    { "project": "zwxwteebcoejrjdufzsv", "fn": "ivr-api", "http": 400, "body": "{\"error\":\"Unknown action: null\"}", "verdict": "ran unauthenticated; every action requires a body/params it did not get" },
+    { "project": "zwxwteebcoejrjdufzsv", "fn": "leads-api", "http": 200, "body": "REDACTED — {\"leads\":[...6 rows...],\"total\":6,\"limit\":100,\"offset\":0}", "verdict": "CRITICAL — issue #170, full lead table to an anonymous caller" }
+  ],
+  "finding_170": {
+    "severity": "critical",
+    "url": "GET https://zwxwteebcoejrjdufzsv.supabase.co/functions/v1/leads-api",
+    "credential_presented": "none",
+    "http": 200,
+    "total_rows_reported_by_endpoint": 6,
+    "fields_returned": ["id", "name", "email", "phone", "source", "message", "created_at"],
+    "values_recorded_here": false,
+    "values_omitted_because": "real people's contact details do not belong in a git repo; count + field list + status is what proves the hole",
+    "root_cause": "service_role client built at index.ts:15, no auth check anywhere; the comment 'requires auth header with service key or admin JWT' was never implemented",
+    "also_ungated_not_tested": "POST and PUT insert into leads with no gate; PUT takes an array. Not probed — proving it means writing junk into a live table.",
+    "fix": "readerGate(): GET and PUT require x-api-key == LEADS_API_KEY, fails closed with 403 when the env var is unset; POST left open as the public contact form",
+    "deployed": false,
+    "deploy_blocker": "no Supabase CLI on this machine, no SUPABASE_ACCESS_TOKEN, MCP lists only uhnrgujbdxhhmoxcjria",
+    "acceptance_check": "the same bodiless curl that returned 200 must return 403 (or 401 once LEADS_API_KEY is set)"
+  },
+  "safety": {
+    "writes_to_protected_systems": "none — 08/09/bkalut-app/bkalot-admin/zr_/NEDARIM3873 untouched",
+    "csj_csj_src_igud": "untouched",
+    "rows_inserted": 0,
+    "messages_sent": 0,
+    "billing": "none, test mode"
+  }
+}

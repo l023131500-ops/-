@@ -8,6 +8,19 @@
 //
 // Run before scripts/stage-portal.ps1.
 
+// The portal's own static pages are included by the same rule the crawler would
+// apply, not by a list kept here: a page belongs when a rewrite serves it at a
+// clean address, it does not carry `noindex`, and its canonical in the HTML is
+// that same address. Thirteen of the fifteen are noindex — the admin screens,
+// /login, /me, /subscribe, /404 — and drop out on the second test. system.html
+// drops out on the third: it has no rewrite, and it rewrites its own canonical
+// in the browser to https://more30.com/<key>, an address that serves that
+// system's deployment. Listing it would advertise nineteen URLs that each point
+// away from what Google would find there; it comes in when core.issues #120
+// settles the /<name> vs /<name>/ split. What is left is /showcase — the page
+// §7 makes the footer of twenty-six mounts point at.
+// Locked by scripts/qa/sitemap-covers-indexable-pages.mjs.
+
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -36,7 +49,30 @@ const openToPublic = (x) =>
   x.is_deployed && !!x.live_url && x.live_url.includes('more30.com') &&
   x.live && x.public_visible && !x.is_protected && !!x.path;
 
-const paths = ['/', ...rows.filter(openToPublic).map((x) => `/${x.path}`)];
+const PUBLIC = path.join(ROOT, 'portal', 'public');
+const vercel = JSON.parse(fs.readFileSync(path.join(ROOT, 'portal', 'vercel.dist.json'), 'utf8'));
+
+// destination -> the address the public sees it at. Only static destinations:
+// a rewrite pointing at another deployment is not a page of this portal.
+const servedAs = new Map();
+for (const rw of vercel.rewrites ?? []) {
+  if (/^\/[\w-]+\.html$/.test(rw.destination)) servedAs.set(rw.destination.slice(1), rw.source);
+}
+
+const portalPages = fs
+  .readdirSync(PUBLIC)
+  .filter((f) => f.endsWith('.html') && servedAs.has(f))
+  .filter((f) => {
+    const html = fs.readFileSync(path.join(PUBLIC, f), 'utf8');
+    if (/<meta[^>]+name=["']robots["'][^>]*noindex/i.test(html)) return false;
+    if (/getElementById\(['"]canonical['"]\)\.href\s*=/.test(html)) return false;
+    const canonical = html.match(/<link[^>]+rel=["']canonical["'][^>]*href=["']([^"']+)["']/i)?.[1];
+    return canonical === `https://more30.com${servedAs.get(f)}`;
+  })
+  .map((f) => servedAs.get(f))
+  .sort();
+
+const paths = ['/', ...rows.filter(openToPublic).map((x) => `/${x.path}`), ...portalPages];
 const today = new Date().toISOString().slice(0, 10);
 
 const xml =
@@ -54,4 +90,7 @@ const xml =
 
 const out = path.join(ROOT, 'portal', 'public', 'sitemap.xml');
 fs.writeFileSync(out, xml, 'utf8');
-console.log(`sitemap.xml: ${paths.length} URLs (1 home + ${paths.length - 1} systems) -> ${out}`);
+console.log(
+  `sitemap.xml: ${paths.length} URLs (1 home + ${paths.length - 1 - portalPages.length} systems` +
+  ` + ${portalPages.length} portal pages: ${portalPages.join(' ') || 'none'}) -> ${out}`,
+);

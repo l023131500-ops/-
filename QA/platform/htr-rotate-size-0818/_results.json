@@ -1,0 +1,62 @@
+{
+  "base": "http://127.0.0.1:3000/orech",
+  "cap": 15728640,
+  "pngBytesBeforeFallback": 20287891,
+  "smallCase": {
+    "bytes": 3450,
+    "filename": "page.png",
+    "contentType": "image/png",
+    "msg": "הועלה. מריץ זיהוי..."
+  },
+  "largeCase": {
+    "bytes": 10825045,
+    "filename": "page.jpg",
+    "contentType": "image/jpeg"
+  },
+  "checks": [
+    {
+      "name": "עמוד ה-HTR נטען ושדה הקובץ קיים",
+      "pass": true
+    },
+    {
+      "name": "תמונה קטנה אחרי סיבוב עדיין נשלחת",
+      "pass": true,
+      "detail": "הועלה. מריץ זיהוי..."
+    },
+    {
+      "name": "ונשלחת כ-PNG — ההעדפה המקורית לא ויתרה",
+      "pass": true,
+      "detail": "contentType=image/png filename=page.png"
+    },
+    {
+      "name": "ונכנסת בתקרה",
+      "pass": true,
+      "detail": "0.00MB"
+    },
+    {
+      "name": "שוחזר תנאי הבאג: ה-PNG של התמונה המסובבת חורג מ-15MB",
+      "pass": true,
+      "detail": "19.3MB"
+    },
+    {
+      "name": "התמונה הגדולה אחרי סיבוב נשלחת ואינה נופלת",
+      "pass": true,
+      "detail": "הועלה. מריץ זיהוי..."
+    },
+    {
+      "name": "נשלחה מתחת לתקרה שהשרת אוכף",
+      "pass": true,
+      "detail": "10.32MB מתוך 15MB"
+    },
+    {
+      "name": "הנפילה היא ל-JPEG באיכות גבוהה, ולא כישלון",
+      "pass": true,
+      "detail": "contentType=image/jpeg filename=page.jpg"
+    },
+    {
+      "name": "אין הודעת שגיאה למשתמש",
+      "pass": true,
+      "detail": "הועלה. מריץ זיהוי..."
+    }
+  ]
+}

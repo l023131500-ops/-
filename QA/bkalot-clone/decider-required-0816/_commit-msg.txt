@@ -1,0 +1,56 @@
+שכפול בקלות שכבה 3: פנייה שהוכרעה יכולה לומר מתי ולא מי (§5ב, 0092)
+
+הקו נכתב ב-81e3307 (heartbeat 636) ובחמש הפעימות שלפניה, מילה במילה:
+«decided_at מלא עם decided_by null אפשרי». נלקח ולא הורחב.
+
+נמדד לפני, ולא הונח: פנייה #266 נקלטה דרך bkalot_clone_intake, ומיד אחריה
+נקראה bkalot_clone_admin_set_status עם p_admin_id => null — בדיוק הערך שהשער
+שולח כשהזהות שחזרה ממנו אינה מספר שלם בטוח. התשובה ok=true, changed=true,
+log_id=65, status='rejected', decided_at מלא, decided_by=null; שורת היומן עם
+admin_id null; ו-bkalot_clone_admin_case(266) החזירה decided_by_name null.
+פניית אזרח נדחתה, המסד יודע מתי, ואין ולו מקום אחד שיודע מי.
+
+0092: אילוץ cases_decided_pair על bkalot_clone.cases —
+(decided_at is null) = (decided_by is null) — ושער decider_required בתוך
+set_status, עם שערי הקלט ולפני שנקראת הפנייה.
+
+שש הכרעות: (1) אילוץ על הזוג ולא NOT NULL — פנייה שאיש לא הכריע עליה מחזיקה
+שתיים ריקות וזה מצב נכון. (2) שקילות ולא גרירה — «מי בלי מתי» הוא אותו
+חצי-רישום, ו-decided_at הוא השדה שלפיו 0082 ממיינת. (3) נבדק עכשיו ולא
+NOT VALID — הטבלה ריקה, אין שורה שדחייה קדימה הייתה מגינה עליה. (4) שער
+בפונקציה ולא הסתמכות על האילוץ — בלעדיו אותה קריאה מחזירה 23514 והמסך אומר
+«תקלה» במקום לומר שהזהות חסרה; האילוץ נשאר מתחת כרשת לכל כותב. (5) השער עם
+שערי הקלט, ולכן חל גם על ההכרעה החוזרת שאינה כותבת דבר. (6)
+case_status_log.admin_id נשאר nullable ובלי FK — הכרעה (2) של 0087 עומדת.
+
+נמדד אחרי, על אותה פנייה שנזרעה מחדש (#267): null → decider_required, הסטטוס
+נשאר 'new', decided_at/decided_by null ואפס שורות יומן; 'new' ו-'sent' עדיין
+נופלים על status_not_settable, כלומר שער הסטטוס לא הוחלף; p_admin_id=4 עובד
+כמקודם — decided_by=4, log_id=66, at זהה ל-decided_at לשנייה, note נשמר;
+לחיצה חוזרת עם null → decider_required, ועם 4 → changed=false. האילוץ נדחה
+23514 בשני הכיוונים (decided_by=null לבדו, decided_at=null לבדו), עבר על
+שניהם-ריקים יחד, ו-intake חדשה עברה. convalidated=true. ACL ללא שינוי:
+anon=false, authenticated=false, service_role=true.
+
+⚠️ שדות ה-"after" בקריאה שבה הפונקציה נקראה נמדדו מחדש בפקודה נפרדת — סאב-סלקט
+באותו משפט קורא את הצילום שלפני המשפט (תקלת cte-delete-sees-prestatement-snapshot).
+
+מצב טסט: queued=false, אפס מסמכים, outbound_queue נשאר 8 ואפס sent_at,
+delivery_log נשאר 3, אפס קריאות יוצאות. התגלגל אחורה בפקודות נפרדות לפי טבלה,
+ובסיס בדיוק: cases 0, case_status_log 0, case_rights 0, documents 0,
+admin_users 1, admin_sessions 5, templates 2, rights_catalog 888, contacts 4.
+
+מוגן: git status ריק על apps/08-bkalut-app, apps/09-bkalot-admin,
+apps/37-bkalot-clone ו-supabase/functions. ל-git add נמסרו נתיבים מפורשים.
+
+פתוח: אין נוסח עברי ל-decider_required ב-apps/37-bkalot-clone/admin.html —
+MESSAGES מציג קוד שאין לו תרגום כפי שהוא ולכן המסך אומר את הקוד ולא שקר;
+הנוסח הוא הלבנה הבאה, אותו פיצול כמו 0087 → 8a577bc וכמו 0090 → c6e4a81.
+מה שלא נבנה: אין FK מ-decided_by אל admin_users; אין אילוץ על
+case_status_log.admin_id; אין backfill; אין פריסה כאן — edge נשארת v8
+ו-apps/37 לא נגעה. קווים שממשיכים ולא נגעו: טעינה מחדש של הכתובת בייצור
+מנתקת את הסשן; הקליטה מחברת 37 זכויות ל-treatment ואפס ל-info/reminder על
+אותו situation; אין סינון ואין מיון לפי מספר מעברים; אין status_last_change_at;
+אין שמות ברשימה. sent בלתי-ניתן-להשגה בכוונה; bkalot_clone_admin_create אינה
+חשופה ב-HTTP ונקראת ב-SQL בארגומנט jsonb יחיד; pdf/audio → channel_unsupported.
+public_visible ו-show_in_showcase של #37 נשארים false.

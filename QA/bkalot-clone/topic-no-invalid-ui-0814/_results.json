@@ -1,0 +1,87 @@
+{
+  "date": "2026-08-14",
+  "priority": "§5ב — שכפול בקלות שכבה 1",
+  "line_taken_from": "72dbaa8 / heartbeat 596 / 0080 שורות 60-63",
+  "scope": "apps/37-bkalot-clone/index.html בלבד; אין מיגרציה, אין פריסת edge function, אין פריסת פורטל",
+  "files": {
+    "prev_bytes": 28825,
+    "prev_md5": "432A2D93D21581DACC5E835324D44091",
+    "fixed_bytes": 31164,
+    "fixed_md5": "4F7257379E3D1C88D86EB4CEEA96CDA8"
+  },
+  "measurements": [
+    {
+      "id": "01-prev-code-topic-no-invalid",
+      "server": 8154,
+      "typed": "999999999999",
+      "intake_requests": 1,
+      "title": "הפנייה לא נשלחה",
+      "lines": ["אירעה תקלה. נסו שוב בעוד רגע.", "קוד: topic_no_invalid"],
+      "focused": "BODY",
+      "aria_invalid_count": 0
+    },
+    {
+      "id": "02-fixed-hebrew-reason-and-focus",
+      "server": 8155,
+      "typed": "999999999999",
+      "intake_requests": 1,
+      "title": "הפנייה לא נשלחה",
+      "lines": ["מספר הנושא אינו תקין. תקנו ושלחו שוב.", "מספר הנושא גדול מכל מספר נושא שקיים במערכת."],
+      "focused": "topic_no",
+      "aria_invalid_count": 1,
+      "topic_value_kept": "999999999999"
+    },
+    {
+      "id": "03-fixed-control-7",
+      "server": 8155,
+      "typed": "7",
+      "intake_requests": 1,
+      "title": "הפנייה נקלטה",
+      "case_id": 162,
+      "rights_linked": 42,
+      "focused": "BODY",
+      "aria_invalid_count": 0
+    },
+    {
+      "id": "04-fixed-control-preflight-unchanged",
+      "server": 8155,
+      "typed": "1-5",
+      "intake_requests": 0,
+      "title": "הפנייה לא נשלחה",
+      "lines": ["מספר נושא — צריך מספר שלם. תקנו ושלחו שוב."],
+      "focused": "topic_no",
+      "aria_invalid_count": 1,
+      "png_md5_identical_to": "QA/bkalot-clone/badinput-topic-no-0814/02-fixed-nonnumeric-blocked.png (0677E461)"
+    }
+  ],
+  "native_before_submit": {
+    "value": "999999999999",
+    "badInput": false,
+    "field_checkValidity": true,
+    "form_checkValidity": true
+  },
+  "evidence": {
+    "screenshots_md5_prefix": ["69CBF368", "5B1187E3", "A3E405E8", "0677E461"],
+    "result_top_px": 705,
+    "field_top_px": 272,
+    "viewport": "1280x900",
+    "console_messages": 0
+  },
+  "test_mode": {
+    "documents": 0,
+    "outbound_queue": 8,
+    "queue_rows_with_sent_at": 0,
+    "delivery_log": 3,
+    "queue_fingerprint_before_and_after": "8cf33788a36d5f9618858835c89e30c1"
+  },
+  "rollback": {
+    "method": "שלוש פקודות נפרדות לפי id (case_rights → cases → contacts), לא CTE אחד",
+    "after": {
+      "cases": 0, "case_rights": 0, "documents": 0, "contacts": 4,
+      "outbound_queue": 8, "delivery_log": 3, "catalog": 888
+    },
+    "identical_to_baseline": true
+  },
+  "protected_paths_untouched": ["apps/08-bkalut-app", "apps/09-bkalot-admin", "supabase/functions", "zr_*", "NEDARIM3873", "csj/csj_src/igud"],
+  "open": "הקובץ טרם נפרס — more30.com/bkalot-studio עדיין מגיש «קוד: topic_no_invalid»; זו הפעימה הבאה"
+}

@@ -1,0 +1,76 @@
+{
+  "brick": "decider-required-ui-0816",
+  "line_taken": "אין נוסח עברי ל-decider_required ב-apps/37-bkalot-clone/admin.html — MESSAGES מציג קוד שאין לו תרגום כפי שהוא, ולכן המסך אומר את הקוד ולא שקר; הנוסח הוא הלבנה הבאה (2cc43bd, heartbeat 636)",
+  "scope": {
+    "files_changed": ["apps/37-bkalot-clone/admin.html"],
+    "migration": false,
+    "edge_deploy": false,
+    "portal_deploy": false,
+    "edge_versions_unchanged": { "bkalot-clone-admin": "v8", "bkalot-clone-intake": "v1" }
+  },
+
+  "server_side_on_the_same_case": {
+    "note": "לא הוסק מהמסך ולא הונח מ-0092: נמדד כאן, ב-SQL, על אותה פנייה בדיוק (268)",
+    "call": "bkalot_clone_admin_set_status(jsonb_build_object('case_id',268,'status','in_progress'), null)",
+    "returned": { "ok": false, "error": "decider_required" },
+    "case_status_after": "new",
+    "log_rows_for_268_after": 0
+  },
+
+  "how_the_screen_was_driven": {
+    "server": "node serve.mjs ./apps/37-bkalot-clone 8141 — קורא מהדיסק בכל בקשה, ולכן אותו שרת בדיוק שירת את שתי המדידות",
+    "browser": "1280x900, התחברות אמיתית דרך המסך בחשבון 97, הפנייה נפתחה מהרשימה, «בטיפול» נלחץ",
+    "injection": {
+      "what": "window.fetch נעטף כך שהקריאה האחת ל-/set-status מחזירה {ok:false,error:'decider_required'}",
+      "why": "אין דרך לגרום לשרת החי להחזיר את הקוד מהדפדפן: השער ממלא את p_admin_id מהטוקן תמיד, ו-null נשלח רק כשהזהות שחזרה ממנו אינה מספר שלם בטוח",
+      "scope": "רק על נתיב שמסתיים ב-/set-status; login, cases ו-case עברו אל השרת החי כרגיל",
+      "hits": 1,
+      "body_sent": "{\"case_id\":268,\"status\":\"in_progress\"}",
+      "precedent": "אותה עטיפה בדיוק כמו 74dbf7d (המצב החמישי — שרת מלפני 0089)"
+    }
+  },
+
+  "before": {
+    "file": "01-before-raw-code.png",
+    "md5": "A15A342F2141DBFEE75B61C7781876CE",
+    "error_text": "שגיאה שאינה מוכרת למסך הזה: decider_required",
+    "code_span": null,
+    "status_shown": "חדשה"
+  },
+  "after": {
+    "file": "02-after-hebrew.png",
+    "md5": "4B71374C3DAF89134787951EE05FACBE",
+    "error_text": "הסשן לא מסר מי מכריע, ולכן הסטטוס לא שונה ולא נרשמה שורת יומן. צאו והתחברו מחדש ונסו שוב.",
+    "code_span": " decider_required",
+    "status_shown": "חדשה",
+    "history_still_says": "לא נרשם ולו מעבר אחד מהמסך",
+    "note_box_value": ""
+  },
+  "the_difference": "אותו קוד בדיוק, אותה לחיצה, אותה תשובה — ובמקום שם משתנה באנגלית, משפט שאומר מה חסר, מה לא קרה ומה לעשות. שורת ה-.code נולדה בדרך: showError מוסיפה אותה רק כשיש תרגום, ולכן הקוד עצמו לא אבד למי שידווח עליו",
+
+  "test_mode": {
+    "queued_on_intake": false,
+    "documents": 0,
+    "outbound_queue": 8,
+    "outbound_queue_with_sent_at": 0,
+    "delivery_log": 3,
+    "outgoing_calls": 0,
+    "note": "הקובץ שהשתנה הוא HTML ואין בו קריאת כתיבה חדשה; שער ההכרעה נקרא פעם אחת ב-SQL וחזר ok=false לפני שנגע בשורה"
+  },
+
+  "rollback": {
+    "method": "פקודות נפרדות לפי טבלה — תקלת cte-delete-sees-prestatement-snapshot; איש הקשר לפי id ולא לפי טלפון מנורמל — תקלת ac6e523",
+    "deleted": { "case_status_log": 0, "case_rights": 42, "cases": 1, "contacts": 1, "admin_users": 1 },
+    "base_after": {
+      "cases": 0, "case_status_log": 0, "case_rights": 0, "documents": 0,
+      "admin_users": 1, "admin_sessions": 5, "templates": 2,
+      "contacts": 4, "outbound_queue": 8, "outbound_queue_sent": 0,
+      "delivery_log": 3, "rights_catalog": 888
+    }
+  },
+
+  "not_measured_and_declared": [
+    "הקוד לא הופק מהשרת החי דרך הדפדפן — ראו injection. הצד השרתי נמדד ב-SQL על אותה פנייה, והצד הלקוחי בהזרקה; הפיצול מוצהר ואינו נבלע",
+    "לא נמדד בייצור: more30.com עדיין מציג את הקוד הגולמי. הפריסה היא הלבנה הבאה"
+  ]
+}

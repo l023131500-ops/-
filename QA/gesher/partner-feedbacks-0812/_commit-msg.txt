@@ -1,0 +1,39 @@
+31 gesher: the last "coming soon" screen in the partner area, on the one column he is allowed to write
+
+/partner/feedbacks was six lines of PlaceholderPage — the third of three items in the partner
+navigation, on a live system. §1ג requires the real product actions after sign-in, not a
+placeholder.
+
+This screen could be built even with #180 open (SUPABASE_SERVICE_ROLE_KEY absent from gesher's
+Vercel environment, which kills every supabaseAdmin path in production), because its write does
+not need one. Migration 20260605003212 revoked UPDATE on partner_assignments from `authenticated`
+and granted back exactly partner_feedback_notes; 20260605003749 kept that column readable. It is
+the one column the grant was written for the partner to write, so savePartnerFeedback goes
+through the caller's own client — verified in the built server chunk: no client.server import.
+updateTreatmentStatus (#179) still needs service_role, because its column was deliberately revoked.
+
+- partner.functions.ts: PartnerClientRow gains feedback_notes; listMyClients selects
+  partner_feedback_notes; new savePartnerFeedback (zod, <=4000 chars) with the same ownership gate
+  as updateTreatmentStatus — a foreign and a missing id both answer Forbidden. Empty text stores NULL.
+- feedbacks.tsx: one card per assigned client with the consent-enforced display_name (same
+  partner-visibility path as /partner/clients), the status badge, a labelled textarea with a
+  counter, and save/cancel disabled until the text differs from what is stored. Reuses the
+  ["partner","clients"] query, so a saved note invalidates both screens at once.
+
+Verified: tsc --noEmit exit 0 and it really inspected these files (--listFiles = 1175, both
+present; the root tsconfig has "files": [] and checks nothing). npm run build exit 0. Deployed
+from source, not --prebuilt, so vercel.json ships: gesher-more30 dpl_BPTa33n3X4CB6TeGSSfPV85Dp258,
+production, READY. Against more30.com: the served route chunk carries the new screen and no longer
+carries the placeholder string; POST to the deployed server fn as test@more30.com with an
+assignment id belonging to nobody answers HTTP 200 "Forbidden" — no 42501 and no
+"Missing Supabase environment", i.e. it runs and does not depend on the missing key.
+
+Not verified, recorded as such: the partner-facing render was not photographed and the write was
+never run against a real row. There is no partner account here and one cannot be created —
+partner_assignments has no INSERT policy other than "Admins manage assignments". Same blocker as
+11:49, 12:04 and 12:23.
+
+Test mode: no user created, no message sent, no charge, no row of 31 written. Protected systems
+untouched; csj/csj_src/igud unused.
+
+Evidence: QA/gesher/partner-feedbacks-0812/

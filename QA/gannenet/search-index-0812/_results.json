@@ -1,0 +1,43 @@
+{
+  "step": "gannenet (40) — /library stopped shipping the corpus to the phone",
+  "date": "2026-08-12",
+  "app": "apps/40-gannenet",
+  "problem": "/library was a client component importing lib/content, so all 180 lessons (3.5 MB of JSON) were bundled into the route. Its only client-side use of that mass was searchTextOf() for the free-text box — paid by every visitor on arrival, whether or not they searched.",
+  "bundle": {
+    "before": { "library_route_js": "422 kB", "library_first_load_js": "518 kB" },
+    "after": { "library_route_js": "2.04 kB", "library_first_load_js": "98 kB" },
+    "note": "Baseline and after taken from `next build` on the same tree; both logs in this folder."
+  },
+  "payload_measured": {
+    "content_json_on_disk": "3557.1 kB",
+    "haystack_all_fields": "2745.1 kB",
+    "cards_without_haystack": "78.6 kB",
+    "index_over_the_wire_gzip": "342.1 kB",
+    "index_over_the_wire_brotli": "263.5 kB"
+  },
+  "change": [
+    "lib/search.ts — normalizeSearch/monthOf/isMonthLabel moved out of lib/content.ts so a client component can import them without the corpus. lib/content.ts re-exports them; no caller changed.",
+    "lib/content.ts — searchIndex(): lesson id -> searchTextOf(lesson), for the whole corpus. Server-only.",
+    "app/api/library-index/route.ts — force-static GET serving that index; prerendered at build time (build output lists it as ○ static).",
+    "app/library/page.tsx — now a server component; builds the 180 cards and passes them down. Each card carries `lite` (title/category/domain/month/sub, normalized) so a search has something to match before the index lands.",
+    "app/library/library-client.tsx — the interactive half. Fetches /api/library-index once, on the first keystroke, and only then."
+  ],
+  "verified": {
+    "typecheck": "npx tsc --noEmit — 0 errors",
+    "build": "next build ok, 194 pages (193 before + the new route), 180 /lesson/[id] paths unchanged",
+    "index_route": "GET /gannenet/api/library-index -> 200, application/json, 2749.8 kB, 180 entries",
+    "index_equals_old_haystack": "all 180 entries byte-identical to searchTextOf(lesson) as the page used to compute it — 0 missing, 0 differing (equivalence.mjs)",
+    "search_results_identical": "10 terms, same lesson-id set both ways, 0 mismatches (ציפור 12, מנורה 12, בראשית 28, שבת 93, פרשת 55, ריקוד 9, טבע 44, and 3 terms in no lesson -> 0)",
+    "not_fetched_until_typed": "fresh /library in the browser: 180 cards rendered, 0 requests to library-index; after typing ציפור: exactly 1 request, 12 cards",
+    "full_text_still_searched": "the ציפור results include cards whose title and blurb do not contain it (e.g. חמשת החושים — מכירים את הגוף) — see library-search-12.png",
+    "loading_window_is_honest": "with the fetch held open: notice reads מחפש בכותרות בלבד — תוכן כל המערכים נטען… and 1 title match is shown; on resolve the notice clears and the count is 12",
+    "filters_unchanged": "no filter 180, תשרי 19, תשרי + חגי השנה ומועדים 15, that domain alone 45, גננת משלימה 61; 12 months + all, 10 domains + all — same numbers as the previous step recorded",
+    "console": "0 errors (1 pre-existing apple-mobile-web-app-capable warning)",
+    "server_rendered_bonus": "the 180 cards are now in the HTML itself (198.7 kB), where before they were painted by JS"
+  },
+  "untouched": {
+    "service_worker": "public/sw.js needs no change — /api/library-index falls to its network-first-into-shell rule, which is the correct one here: the URL is stable across builds, so a cache-first copy would outlive the content it indexes, and network-first still answers offline from the last copy.",
+    "protected_systems": "none touched; nothing here sends or bills"
+  },
+  "open": "/shelf/[id] is 178 kB of route JS (274 kB first load) — the one route still above 120 kB, and the only page a teacher reaches from every file card."
+}

@@ -1,0 +1,60 @@
+﻿✔ the code resolves the device the launcher then describes (4.7917ms)
+✔ a caller who gets it right is never counted (4.0841ms)
+✔ a typo costs one guess and is forgiven by getting it right (1.0441ms)
+✔ the budget is spent on the failing attempt, not on the one after it (0.8066ms)
+✔ a locked-out caller is refused for the lockout and then let back in (0.8189ms)
+✔ failures age out, so a slow trickle never locks a venue out (0.9771ms)
+✔ one caller cannot lock out another (1.2389ms)
+✔ memory is bounded, so rotating addresses cannot grow the map forever (192.6506ms)
+✔ expired buckets are dropped rather than merely ignored (9.6701ms)
+✔ the caller key follows the proxy, and never falls back to "everyone" (2.0423ms)
+node:internal/modules/package_json_reader:301
+  throw new ERR_MODULE_NOT_FOUND(packageName, fileURLToPath(base), null);
+        ^
+
+Error [ERR_MODULE_NOT_FOUND]: Cannot find package 'express' imported from C:\Users\USER\Downloads\more30\apps\35-kioskfleet\server\test\routing.test.mjs
+    at Object.getPackageJSONURL (node:internal/modules/package_json_reader:301:9)
+    at packageResolve (node:internal/modules/esm/resolve:768:81)
+    at moduleResolve (node:internal/modules/esm/resolve:859:18)
+    at defaultResolve (node:internal/modules/esm/resolve:992:11)
+    at #cachedDefaultResolve (node:internal/modules/esm/loader:701:20)
+    at #resolveAndMaybeBlockOnLoaderThread (node:internal/modules/esm/loader:721:38)
+    at ModuleLoader.resolveSync (node:internal/modules/esm/loader:759:56)
+    at #resolve (node:internal/modules/esm/loader:683:17)
+    at ModuleLoader.getOrCreateModuleJob (node:internal/modules/esm/loader:603:35)
+    at ModuleJob.syncLink (node:internal/modules/esm/module_job:163:33) {
+  code: 'ERR_MODULE_NOT_FOUND'
+}
+
+Node.js v24.18.0
+✖ test\routing.test.mjs (431.1853ms)
+✔ the adb line names the component the manifest declares (12.1889ms)
+✔ the step that runs it carries the command as data, not inside prose (2.29ms)
+✔ an unknown track resolves to generic rather than throwing (3.6596ms)
+✔ both tracks are the same list of steps — only wording differs (0.9139ms)
+✔ the generic track warns about the USB driver and the GMS one does not (2.2236ms)
+✔ the two values the installer types reach the steps verbatim (0.8706ms)
+✔ no code means an extra first step, not a checklist missing one (1.3741ms)
+✔ a missing server address falls back to the real one, never to a blank (0.766ms)
+✔ the lock steps come after enrollment and end the list (4.3412ms)
+✔ every step says what to do and has a stable unique id (6.8929ms)
+✔ no QR / afw#setup route is offered — no APK is hosted to download (3.1144ms)
+✔ progress counts only ids that are in the checklist handed to it (5.5868ms)
+✔ progress is deduped and returned in checklist order (1.6478ms)
+✔ nextId is the first hole, not the step after the last tick (2.2293ms)
+✔ complete requires every step, and an empty checklist is not complete (0.6672ms)
+✔ progress survives junk in place of the arguments (3.739ms)
+ℹ tests 95
+ℹ suites 0
+ℹ pass 94
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1472.3843
+
+✖ failing tests:
+
+test at test\routing.test.mjs:1:1
+✖ test\routing.test.mjs (431.1853ms)
+  'test failed'

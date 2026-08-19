@@ -1,0 +1,81 @@
+{
+  "at": "2026-08-07T04:30:51.981Z",
+  "page": "/admin/systems",
+  "served_from": "portal/public (deploys blocked, core.issues #83)",
+  "cards": [
+    {
+      "title": "איגוד השיעורים",
+      "entryText": "ניהול המערכת הזאת ← · הכניסה של המערכת עצמה",
+      "href": "/torah/admin"
+    },
+    {
+      "title": "אימוד",
+      "entryText": "אין מסך ניהול — נמדד, לא הונח (core.issues #86)",
+      "href": null
+    },
+    {
+      "title": "קופות חולים",
+      "entryText": "אין מסך ניהול — נמדד, לא הונח (core.issues #86)",
+      "href": null
+    },
+    {
+      "title": "מימוש זכויות בקלות",
+      "entryText": "ניהול המערכת הזאת ← · כניסת סופר-אדמין של הפלטפורמה",
+      "href": "https://more30.com/admin/rights"
+    }
+  ],
+  "results": [
+    {
+      "check": "the board renders instead of the access notice",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "all four cards are drawn",
+      "pass": true,
+      "detail": "4 cards"
+    },
+    {
+      "check": "a relative address resolves under the system, not the portal root",
+      "pass": true,
+      "detail": "/torah/admin"
+    },
+    {
+      "check": "an absolute address is left exactly as recorded",
+      "pass": true,
+      "detail": "https://more30.com/admin/rights"
+    },
+    {
+      "check": "no card still points at the bug list",
+      "pass": true,
+      "detail": "[\"/torah/admin\",null,null,\"https://more30.com/admin/rights\"]"
+    },
+    {
+      "check": "two different systems get two different addresses",
+      "pass": true,
+      "detail": "[\"/torah/admin\",null,null,\"https://more30.com/admin/rights\"]"
+    },
+    {
+      "check": "a system with no admin screen says so and gets no link",
+      "pass": true,
+      "detail": "{\"title\":\"אימוד\",\"entryText\":\"אין מסך ניהול — נמדד, לא הונח (core.issues #86)\",\"href\":null}"
+    },
+    {
+      "check": "a recorded-but-withheld entry (kupot, admin_auth=token) draws no link either",
+      "pass": true,
+      "detail": "{\"title\":\"קופות חולים\",\"entryText\":\"אין מסך ניהול — נמדד, לא הונח (core.issues #86)\",\"href\":null}"
+    },
+    {
+      "check": "the card names whose sign-in it is",
+      "pass": true,
+      "detail": "[\"ניהול המערכת הזאת ← · הכניסה של המערכת עצמה\",\"ניהול המערכת הזאת ← · כניסת סופר-אדמין של הפלטפורמה\"]"
+    },
+    {
+      "check": "the KPI row reports how many systems have an entry at all",
+      "pass": true,
+      "detail": "4מערכות4חיות20משתמשים במאגר ההאב · 64 חשבונות בדיקה בנפרד8מתוכם נכנסו לתוך מערכת4מערכות שמשתמשיהן נספרים כאן · מתוך 40מוצגות בעולם הסטארטאפים2עם כניסה לניהול0נמ"
+    }
+  ],
+  "pass": 10,
+  "fail": 0
+}

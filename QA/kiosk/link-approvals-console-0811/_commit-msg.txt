@@ -1,0 +1,42 @@
+kiosk (35): the second half of the selection screen had a table, routes, and no screen
+
+`device_links` and its GET/PUT landed over the last two steps, so approving a
+link for a device was an HTTP call and nothing else. The link library is
+owner-wide, so until there is a screen every device offers nothing but its own
+main site and its approved clients — an owner running four halls off one library
+cannot put hall B's link on hall B's tablet without editing the field that locks
+the whole device. Added linkApprovals() in public/js/app.js and a
+"קישורים מאושרים" button on every device card, next to "מזהי לקוח".
+
+A separate dialog, not merged into the clients picker. On the device the two are
+one screen, but each PUT replaces its whole set, so one modal carrying both
+lists would make un-approving every client the price of touching the links.
+
+No disabled row here, unlike a client, and that is the data rather than a
+shortcut: links has no active column, so the only ways a link leaves the list
+already delete the row. There is no disabled-but-reserved state, because a link
+has no code to keep reserved.
+
+The hint under the list has the same two branches the clients picker has, for
+the same reason: approving widens the device's allowed-domain list, but only if
+it has one, and the server leaves an unset list unset rather than creating a
+lock. The wrong branch ends as a blocked page on a tablet in a hall.
+
+The subtitle says in as many words that this is not a change of the main site,
+which sits four buttons away behind "החלף אתר". Saving nothing is a legitimate
+save and says so. An empty library gets a route to the library rather than a
+save button.
+
+Verified in QA/kiosk/link-approvals-console-0811: 17 cases in a real browser
+against a stub that rewrites only the express glue and makes the same calls
+routes/devices.js makes, in the same order, over the production DDL read out of
+src/db.js on node:sqlite. Both devices driven, the stored rows and the pushed
+update_config both asserted; the widening covers both a link's stored hosts and
+the host derived from its own URL, and a device with no list is still handed
+none. Light/dark screenshots plus the empty-library state; the dark URL line
+measures 7.1:1. 137/138 on node --test, the documented baseline, unchanged
+because this step adds no server code.
+
+Not covered: the express glue itself, and an admin opening another owner's
+device. Not deployed. identify() and launcher.js still answer with clients only,
+so an approved link is not yet readable from the device.

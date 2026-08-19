@@ -1,0 +1,179 @@
+{
+  "orech": {
+    "url": "https://more30.com/orech",
+    "measuredAt": "2026-08-17T13:16:07.969Z",
+    "performance": 97,
+    "accessibility": 100,
+    "bestPractices": 77,
+    "seo": 100,
+    "metrics": {
+      "fcp": "1.9 s",
+      "lcp": "1.9 s",
+      "tbt": "60 ms",
+      "cls": "0",
+      "si": "3.2 s"
+    },
+    "failedAudits": [
+      {
+        "id": "first-contentful-paint",
+        "title": "First Contentful Paint",
+        "score": 0.88,
+        "display": "1.9 s"
+      },
+      {
+        "id": "max-potential-fid",
+        "title": "Max Potential First Input Delay",
+        "score": 0.83,
+        "display": "150 ms"
+      },
+      {
+        "id": "server-response-time",
+        "title": "Reduce initial server response time",
+        "score": 0,
+        "display": "Root document took 780 ms"
+      },
+      {
+        "id": "interactive",
+        "title": "Time to Interactive",
+        "score": 0.83,
+        "display": "4.4 s"
+      },
+      {
+        "id": "third-party-cookies",
+        "title": "Uses third-party cookies",
+        "score": 0,
+        "display": "1 cookie found"
+      },
+      {
+        "id": "unminified-javascript",
+        "title": "Minify JavaScript",
+        "score": 0.5,
+        "display": "Est savings of 6 KiB"
+      },
+      {
+        "id": "unused-javascript",
+        "title": "Reduce unused JavaScript",
+        "score": 0.5,
+        "display": "Est savings of 69 KiB"
+      },
+      {
+        "id": "inspector-issues",
+        "title": "Issues were logged in the `Issues` panel in Chrome Devtools",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "cache-insight",
+        "title": "Use efficient cache lifetimes",
+        "score": 0.5,
+        "display": "Est savings of 43 KiB"
+      },
+      {
+        "id": "document-latency-insight",
+        "title": "Document request latency",
+        "score": 0,
+        "display": "Est savings of 6 KiB"
+      },
+      {
+        "id": "legacy-javascript-insight",
+        "title": "Legacy JavaScript",
+        "score": 0.5,
+        "display": "Est savings of 12 KiB"
+      },
+      {
+        "id": "modern-http-insight",
+        "title": "Modern HTTP",
+        "score": 0,
+        "display": "Est savings of 480 ms"
+      },
+      {
+        "id": "network-dependency-tree-insight",
+        "title": "Network dependency tree",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "render-blocking-insight",
+        "title": "Render-blocking requests",
+        "score": 0,
+        "display": "Est savings of 490 ms"
+      }
+    ],
+    "mainThreadBreakdown": [
+      {
+        "group": "Script Evaluation",
+        "duration": 596
+      },
+      {
+        "group": "Other",
+        "duration": 445
+      },
+      {
+        "group": "Style & Layout",
+        "duration": 327
+      },
+      {
+        "group": "Script Parsing & Compilation",
+        "duration": 134
+      },
+      {
+        "group": "Parse HTML & CSS",
+        "duration": 21
+      },
+      {
+        "group": "Rendering",
+        "duration": 11
+      }
+    ],
+    "bootupTime": [
+      {
+        "url": "https://more30.com/orech",
+        "total": 345,
+        "scripting": 19,
+        "scriptParseCompile": 11
+      },
+      {
+        "url": "Unattributable",
+        "total": 344,
+        "scripting": 24,
+        "scriptParseCompile": 0
+      },
+      {
+        "url": "https://more30.com/orech/_next/static/chunks/117-36feb3a0a96dce80.js?dpl=dpl_E3ZzrZGmYsfDmx92roqZwEnwGvnk",
+        "total": 203,
+        "scripting": 169,
+        "scriptParseCompile": 22
+      },
+      {
+        "url": "https://more30.com/orech/_next/static/chunks/fd9d1056-42a1c2df9c4a85a8.js?dpl=dpl_E3ZzrZGmYsfDmx92roqZwEnwGvnk",
+        "total": 158,
+        "scripting": 133,
+        "scriptParseCompile": 25
+      },
+      {
+        "url": "https://more30.com/orech/_next/static/chunks/webpack-a42aac6b82fb44bd.js?dpl=dpl_E3ZzrZGmYsfDmx92roqZwEnwGvnk",
+        "total": 141,
+        "scripting": 102,
+        "scriptParseCompile": 3
+      },
+      {
+        "url": "https://more30.com/auth-button.js",
+        "total": 98,
+        "scripting": 27,
+        "scriptParseCompile": 6
+      },
+      {
+        "url": "https://more30.com/orech/_next/static/chunks/910-00a60ea9e56a4372.js?dpl=dpl_E3ZzrZGmYsfDmx92roqZwEnwGvnk",
+        "total": 59,
+        "scripting": 28,
+        "scriptParseCompile": 30
+      },
+      {
+        "url": "https://netfree.link/card/card-injection.js",
+        "total": 59,
+        "scripting": 34,
+        "scriptParseCompile": 5
+      }
+    ]
+  }
+}

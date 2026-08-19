@@ -1,0 +1,41 @@
+﻿{
+  "checked_at_utc": "2026-08-14T11:20:08.796Z",
+  "results": [
+    {
+      "url": "https://more30.com/bkalot-studio",
+      "status": 200,
+      "bytes": 31400,
+      "new_hits": 6,
+      "removed_hits": 0,
+      "replacement_chars": 0,
+      "double_encoded": 0
+    },
+    {
+      "url": "https://more30.com/bkalot-studio/",
+      "status": 200,
+      "bytes": 31400,
+      "new_hits": 6,
+      "removed_hits": 0,
+      "replacement_chars": 0,
+      "double_encoded": 0
+    },
+    {
+      "url": "https://more30.com/bkalot-studio/admin",
+      "status": 200,
+      "bytes": 90056,
+      "new_hits": 0,
+      "removed_hits": 0,
+      "replacement_chars": 0,
+      "double_encoded": 0
+    },
+    {
+      "url": "https://more30.com/",
+      "status": 200,
+      "bytes": 3517,
+      "new_hits": 0,
+      "removed_hits": 0,
+      "replacement_chars": 0,
+      "double_encoded": 0
+    }
+  ]
+}

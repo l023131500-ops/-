@@ -1,0 +1,165 @@
+{
+  "briut": {
+    "url": "https://more30.com/briut",
+    "measuredAt": "2026-08-17T11:58:21.934Z",
+    "performance": 87,
+    "accessibility": 97,
+    "bestPractices": 77,
+    "seo": 100,
+    "metrics": {
+      "fcp": "2.8 s",
+      "lcp": "3.1 s",
+      "tbt": "50 ms",
+      "cls": "0.019",
+      "si": "4.5 s"
+    },
+    "failedAudits": [
+      {
+        "id": "first-contentful-paint",
+        "title": "First Contentful Paint",
+        "score": 0.58,
+        "display": "2.8 s"
+      },
+      {
+        "id": "largest-contentful-paint",
+        "title": "Largest Contentful Paint",
+        "score": 0.76,
+        "display": "3.1 s"
+      },
+      {
+        "id": "speed-index",
+        "title": "Speed Index",
+        "score": 0.73,
+        "display": "4.5 s"
+      },
+      {
+        "id": "third-party-cookies",
+        "title": "Uses third-party cookies",
+        "score": 0,
+        "display": "1 cookie found"
+      },
+      {
+        "id": "mainthread-work-breakdown",
+        "title": "Minimize main-thread work",
+        "score": 0,
+        "display": "3.2 s"
+      },
+      {
+        "id": "color-contrast",
+        "title": "Background and foreground colors do not have a sufficient contrast ratio.",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "unminified-javascript",
+        "title": "Minify JavaScript",
+        "score": 0.5,
+        "display": "Est savings of 6 KiB"
+      },
+      {
+        "id": "inspector-issues",
+        "title": "Issues were logged in the `Issues` panel in Chrome Devtools",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "bf-cache",
+        "title": "Page prevented back/forward cache restoration",
+        "score": 0,
+        "display": "1 failure reason"
+      },
+      {
+        "id": "cache-insight",
+        "title": "Use efficient cache lifetimes",
+        "score": 0.5,
+        "display": "Est savings of 43 KiB"
+      },
+      {
+        "id": "document-latency-insight",
+        "title": "Document request latency",
+        "score": 0.5,
+        "display": "Est savings of 10 KiB"
+      },
+      {
+        "id": "forced-reflow-insight",
+        "title": "Forced reflow",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "network-dependency-tree-insight",
+        "title": "Network dependency tree",
+        "score": 0,
+        "display": ""
+      },
+      {
+        "id": "render-blocking-insight",
+        "title": "Render-blocking requests",
+        "score": 0,
+        "display": "Est savings of 710 ms"
+      }
+    ],
+    "mainThreadBreakdown": [
+      {
+        "group": "Style & Layout",
+        "duration": 1623
+      },
+      {
+        "group": "Other",
+        "duration": 1026
+      },
+      {
+        "group": "Script Evaluation",
+        "duration": 270
+      },
+      {
+        "group": "Rendering",
+        "duration": 113
+      },
+      {
+        "group": "Parse HTML & CSS",
+        "duration": 78
+      },
+      {
+        "group": "Script Parsing & Compilation",
+        "duration": 30
+      },
+      {
+        "group": "Garbage Collection",
+        "duration": 15
+      }
+    ],
+    "bootupTime": [
+      {
+        "url": "https://more30.com/briut",
+        "total": 1985,
+        "scripting": 34,
+        "scriptParseCompile": 7
+      },
+      {
+        "url": "Unattributable",
+        "total": 723,
+        "scripting": 16,
+        "scriptParseCompile": 0
+      },
+      {
+        "url": "https://netfree.link/card/card-injection.js",
+        "total": 157,
+        "scripting": 117,
+        "scriptParseCompile": 5
+      },
+      {
+        "url": "https://more30.com/auth-button.js",
+        "total": 117,
+        "scripting": 23,
+        "scriptParseCompile": 9
+      },
+      {
+        "url": "https://more30.com/briut/app.js",
+        "total": 58,
+        "scripting": 32,
+        "scriptParseCompile": 4
+      }
+    ]
+  }
+}

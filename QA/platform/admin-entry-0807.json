@@ -1,0 +1,312 @@
+{
+  "checkedAt": "2026-08-07T01:07:38.134Z",
+  "origin": "https://more30.com",
+  "rows": [
+    {
+      "number": "01",
+      "slug": "torah-platform",
+      "path": "torah",
+      "live_url": "https://more30.com/torah",
+      "status": 200,
+      "recorded": "/auth/sign-in",
+      "found": [
+        "/AdminDashboard-DlaV9gVD",
+        "/AdminLayout-5KXNNUF8",
+        "/AdminLayout-BRpUyAbo",
+        "/AdminLogin-CDL95rBU",
+        "/admin",
+        "/legacy/admin",
+        "/legacy/admin-login"
+      ],
+      "direct": {
+        "serves": false,
+        "why": "identical to a path that does not exist — SPA shell, not a route"
+      },
+      "verdict": "recorded-not-seen"
+    },
+    {
+      "number": "02",
+      "slug": "igud-transcribe",
+      "path": "tamlul",
+      "live_url": "https://more30.com/tamlul",
+      "status": 200,
+      "recorded": "/admin",
+      "found": [],
+      "direct": {
+        "serves": true,
+        "why": "differs from a path that does not exist"
+      },
+      "verdict": "recorded-and-live"
+    },
+    {
+      "number": "03",
+      "slug": "igud-ads",
+      "path": "modaot",
+      "live_url": "https://more30.com/modaot",
+      "status": 200,
+      "recorded": "/admin",
+      "found": [],
+      "direct": {
+        "serves": true,
+        "why": "differs from a path that does not exist"
+      },
+      "verdict": "recorded-and-live"
+    },
+    {
+      "number": "04",
+      "slug": "imud-torani",
+      "path": "imud",
+      "live_url": "https://more30.com/imud",
+      "status": 200,
+      "recorded": null,
+      "found": [],
+      "direct": null,
+      "verdict": "shared-pill"
+    },
+    {
+      "number": "06",
+      "slug": "kupot-holim",
+      "path": "briut",
+      "live_url": "https://more30.com/briut",
+      "status": 200,
+      "recorded": null,
+      "found": [],
+      "direct": null,
+      "verdict": "shared-pill"
+    },
+    {
+      "number": "10",
+      "slug": "bkalot-rights",
+      "path": "bkalot",
+      "live_url": "https://more30.com/bkalot",
+      "status": 200,
+      "recorded": "https://more30.com/admin/rights",
+      "found": [
+        "https://more30.com/admin/rights"
+      ],
+      "direct": null,
+      "verdict": "recorded-and-live"
+    },
+    {
+      "number": "12",
+      "slug": "smel-ndln",
+      "path": "smel",
+      "live_url": "https://more30.com/smel",
+      "status": 200,
+      "recorded": null,
+      "found": [],
+      "direct": null,
+      "verdict": "shared-pill"
+    },
+    {
+      "number": "15",
+      "slug": "egod",
+      "path": "egod",
+      "live_url": "https://more30.com/egod",
+      "status": 200,
+      "recorded": "/admin",
+      "found": [
+        "/admin",
+        "/admin/content",
+        "/admin/forums",
+        "/admin/leads",
+        "/admin/matching",
+        "/admin/messages",
+        "/admin/teachers",
+        "/admin/tips"
+      ],
+      "direct": null,
+      "verdict": "recorded-and-live"
+    },
+    {
+      "number": "16",
+      "slug": "chatzor-connect",
+      "path": "chatzor",
+      "live_url": "https://more30.com/chatzor",
+      "status": 200,
+      "recorded": "/admin",
+      "found": [
+        "/AdminInbox-CABKpq0b",
+        "/AdminLayout-tYWfqnLO",
+        "/AdminLessons-CgDIvy3c",
+        "/AdminLogin-Cl3X2YOp",
+        "/AdminOverview-DJfm2K6l",
+        "/AdminServices-COJs2D3r",
+        "/AdminSynagogues-eN4zT1-U",
+        "/GabaiAnnouncements-BRzGE47f",
+        "/GabaiDetails-CKG6O6R3",
+        "/GabaiInbox-D0H9KPqL",
+        "/GabaiLayout-COC6_Nnp",
+        "/GabaiLessons-B8yLHKph",
+        "/GabaiPrayers-f5egLNMl",
+        "/admin",
+        "/admin/login",
+        "/chatzor/admin",
+        "/chatzor/gabai",
+        "/gabai",
+        "/gabai/login"
+      ],
+      "direct": null,
+      "verdict": "recorded-and-live"
+    },
+    {
+      "number": "17",
+      "slug": "chizukim-transcribe",
+      "path": "chizukim",
+      "live_url": "https://more30.com/chizukim",
+      "status": 200,
+      "recorded": null,
+      "found": [],
+      "direct": null,
+      "verdict": "shared-pill"
+    },
+    {
+      "number": "18",
+      "slug": "torah-editor-mvp",
+      "path": "orech",
+      "live_url": "https://more30.com/orech",
+      "status": 200,
+      "recorded": null,
+      "found": [],
+      "direct": null,
+      "verdict": "shared-pill"
+    },
+    {
+      "number": "22",
+      "slug": "get-your-rights",
+      "path": "zchuyot",
+      "live_url": "https://more30.com/zchuyot",
+      "status": 200,
+      "recorded": "/admin/login",
+      "found": [
+        "/AdminLeads-T7YQJpZ6",
+        "/AdminLogin-IPLqffmU",
+        "/AdminRightsReference-B8KEZNrs",
+        "/AdminSettings-Djo9vH8v",
+        "/admin/leads",
+        "/admin/login",
+        "/admin/rights",
+        "/admin/settings"
+      ],
+      "direct": null,
+      "verdict": "recorded-and-live"
+    },
+    {
+      "number": "24",
+      "slug": "galilee-connect-hub",
+      "path": "galil",
+      "live_url": "https://more30.com/galil",
+      "status": 200,
+      "recorded": "/gabai",
+      "found": [
+        "/gabai",
+        "/gabai/form/"
+      ],
+      "direct": null,
+      "verdict": "recorded-and-live"
+    },
+    {
+      "number": "26",
+      "slug": "modaot-studio",
+      "path": "studio",
+      "live_url": "https://more30.com/studio",
+      "status": 200,
+      "recorded": null,
+      "found": [],
+      "direct": null,
+      "verdict": "shared-pill"
+    },
+    {
+      "number": "27",
+      "slug": "bkalut-price",
+      "path": "mechiron",
+      "live_url": "https://more30.com/mechiron",
+      "status": 200,
+      "recorded": "/admin",
+      "found": [
+        "/admin",
+        "/admin-docs"
+      ],
+      "direct": null,
+      "verdict": "recorded-and-live"
+    },
+    {
+      "number": "28",
+      "slug": "kupot-health-funds",
+      "path": "kupot",
+      "live_url": "https://more30.com/kupot",
+      "status": 200,
+      "recorded": "/api/switch-leads (כותרת x-admin-token)",
+      "found": [],
+      "direct": {
+        "serves": null,
+        "why": "not an address — a machine surface, recorded as such"
+      },
+      "verdict": "recorded-and-live"
+    },
+    {
+      "number": "32",
+      "slug": "nadlan-berega",
+      "path": "nadlan",
+      "live_url": "https://more30.com/nadlan",
+      "status": 200,
+      "recorded": "/admin",
+      "found": [],
+      "direct": {
+        "serves": true,
+        "why": "differs from a path that does not exist"
+      },
+      "verdict": "recorded-and-live"
+    },
+    {
+      "number": "33",
+      "slug": "more30-spec-loop",
+      "path": null,
+      "live_url": "https://more30.com",
+      "status": 200,
+      "recorded": "https://more30.com/admin",
+      "found": [],
+      "direct": {
+        "serves": true,
+        "why": "differs from a path that does not exist"
+      },
+      "verdict": "recorded-and-live"
+    },
+    {
+      "number": "34",
+      "slug": "kesef",
+      "path": "kesef",
+      "live_url": "https://more30.com/kesef",
+      "status": 200,
+      "recorded": null,
+      "found": [],
+      "direct": null,
+      "verdict": "shared-pill"
+    },
+    {
+      "number": "35",
+      "slug": "kioskfleet",
+      "path": "kiosk",
+      "live_url": "https://more30.com/kiosk",
+      "status": 200,
+      "recorded": "https://more30.com/kiosk/console",
+      "found": [],
+      "direct": {
+        "serves": true,
+        "why": "200, and the sibling does not answer at all"
+      },
+      "verdict": "recorded-and-live"
+    },
+    {
+      "number": "36",
+      "slug": "nadlan-pro",
+      "path": "tivuch",
+      "live_url": "https://more30.com/tivuch",
+      "status": 200,
+      "recorded": null,
+      "found": [],
+      "direct": null,
+      "verdict": "shared-pill"
+    }
+  ]
+}

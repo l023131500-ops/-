@@ -1,0 +1,28 @@
+tamlul (02): the admin's only password could not be read back, and its side was the opposite of galil's
+
+§1א asks for an eye on every password field. 02 has exactly one type=password
+input in source -- app/login/page.tsx, the admin login behind more30.com/tamlul.
+
+The side is derived, not copied. Measured live before writing: the field carries
+dir=ltr while .input adds text-right, so computed direction is ltr and text-align
+is right -- characters END at the right edge. So the eye takes the LEFT (left-2)
+and pl-10 (12px -> 40px) moves the field's last character clear of it. That is
+the opposite side from galil (24), where an existing Lock icon held the right and
+the text began at the left.
+
+type=button is explicit because the field sits inside a form with onSubmit.
+Verified rather than assumed: after two toggles a wrapped window.fetch counted 0
+calls and location.href was unchanged -- no signInWithPassword attempt, nothing
+sent to Supabase. Round trip both ways: password -> text -> password, the label
+הצג סיסמה -> הסתר סיסמה -> הצג סיסמה, eye -> eye-off -> eye, and the value
+More30Test2026 preserved across both toggles.
+
+Built (npm run build, /login 2.27 kB) and deployed to production on project
+tamlul-more30, dpl_5ZrKCZFJ6TLWYmNDRG6QVwbShhjZ READY. Verified on more30.com
+with a cache-buster, not the vercel.app alias: button rect (315,395,32x32)
+contained in field rect (307,390,406x42), elementFromPoint at its centre returns
+the svg the button owns. 0 console errors.
+
+apps/ is gitignored so the page needed git add -f.
+
+Evidence: QA/tamlul/password-toggle-0812/ (_results.json, two screenshots).

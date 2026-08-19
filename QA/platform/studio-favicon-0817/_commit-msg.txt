@@ -1,0 +1,21 @@
+26 סטודיו מודעות: favicon תוקן ופרוס (NEEDS_USER §0פ, שש נותרו -> חמש)
+
+apps/26-modaot-studio/client/index.html הצהיר <link rel="icon"
+href="/favicon.png">, וקובץ כזה מעולם לא היה קיים - אותו דפוס בדיוק כמו
+torah. Logo.tsx קיים בקוד אבל אינו בשימוש בשום מקום (grep, אפס תוצאות);
+הסימן שבאמת מצויר הוא אייקון Crown (lucide) בזהב #C9A227 על נייבי
+#0B1220 (Home.tsx:130), ניגודיות 7.74:1.
+
+נכתב favicon.svg (עותק נאמן של ה-SVG של lucide Crown), תוקן התג לנתיב
+מוחלט-למונט (/studio/favicon.svg, לא לשורש - הבאג שכבר נמצא ב-5 מונטים
+אחרים), הועתק ל-_deploy/studio-more30 ופרוס לפרודקשן:
+vercel deploy --prod, dpl_8ZLdru79o9pVHfmThHd7JjnEhX95, READY.
+
+אומת: ה-HTML החי כותב את התג המתוקן. קריאה ישירה ל-favicon.svg קיבלה
+image/webp מ-NetFree (הפרוקסי המקומי) במקום ה-SVG - אומת עצמאית מול
+Vercel API שהקובץ הנכון קיים בעץ הפריסה. NEEDS_USER.md ו-
+SYSTEMS_STATUS.md עודכנו. apps/** ו-_deploy/** ב-gitignore, אז רק
+התיעוד וה-QA נכנסים לקומיט הזה.
+
+Supabase MCP לא מחובר בסשן הזה - heartbeat נכתב כ-
+QA/platform/studio-favicon-0817/_heartbeat-pending.sql, מצטרף לתור הקיים.
