@@ -532,6 +532,7 @@ const ContactInfoManager = () => {
   const [whatsapp, setWhatsapp] = useState('972542030901');
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [saveError, setSaveError] = useState(false);
 
   const fetchInfo = useCallback(async () => {
     const { data } = await supabase.from('knowledge_base').select('*').eq('category', 'פרטי_יצירת_קשר').eq('is_active', true);
@@ -550,15 +551,22 @@ const ContactInfoManager = () => {
 
   const handleSave = async () => {
     setSaving(true);
+    setSaveError(false);
     const content = JSON.stringify({ address, phone: contactPhone, email: contactEmail, whatsapp });
-    // Upsert: delete old then insert new
-    await supabase.from('knowledge_base').delete().eq('category', 'פרטי_יצירת_קשר');
-    await supabase.from('knowledge_base').insert({
+    // Upsert via insert-then-cleanup (not delete-then-insert): if the insert fails,
+    // the old row is never removed, so the public contact page/footer can never go blank.
+    const { data: inserted, error: insertError } = await supabase.from('knowledge_base').insert({
       category: 'פרטי_יצירת_קשר',
       title: 'פרטי יצירת קשר',
       content,
       is_active: true,
-    });
+    }).select('id').single();
+    if (insertError || !inserted) {
+      setSaving(false);
+      setSaveError(true);
+      return;
+    }
+    await supabase.from('knowledge_base').delete().eq('category', 'פרטי_יצירת_קשר').neq('id', inserted.id);
     setSaving(false);
     setSaved(true);
     setTimeout(() => setSaved(false), 3000);
@@ -592,6 +600,7 @@ const ContactInfoManager = () => {
           {saving ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
           {saved ? '✅ נשמר!' : 'שמור פרטי קשר'}
         </Button>
+        {saveError && <p className="text-sm text-destructive font-bold">שגיאה בשמירה — הפרטים הקודמים לא נמחקו, נסו שוב.</p>}
       </div>
     </div>
   );
