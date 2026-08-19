@@ -65,7 +65,7 @@ import { FORMATS, getFormat } from "@shared/formats";
 import { downloadPNG, downloadPDF } from "@/lib/exporter";
 import { apiRequest } from "@/lib/queryClient";
 import { nextId } from "@shared/layers";
-import type { TemplateDoc, TextLayer, ImageLayer, AnyLayer, TemplateBackground } from "@shared/layers";
+import type { TemplateDoc, TextLayer, ImageLayer, ShapeLayer, AnyLayer, TemplateBackground } from "@shared/layers";
 
 export default function Editor() {
   const [, navigate] = useLocation();
@@ -809,6 +809,23 @@ export default function Editor() {
                     step={0.01}
                     onValueChange={([v]) => handleChangeLayer(selectedLayer.id, { opacity: v })}
                     data-testid="slider-layer-opacity"
+                  />
+                </div>
+              )}
+
+              {selectedLayer && (selectedLayer.type === "image" || selectedLayer.type === "shape") && (
+                <div className="mb-3">
+                  <Label className="mb-1 block text-xs text-[#F5EEDD]/70">
+                    רדיוס פינות <code className="font-mono text-[10px] text-[#C9A227]/70">cornerRadius</code>:{" "}
+                    {(selectedLayer as ImageLayer | ShapeLayer).cornerRadius ?? 0}
+                  </Label>
+                  <Slider
+                    value={[(selectedLayer as ImageLayer | ShapeLayer).cornerRadius ?? 0]}
+                    min={0}
+                    max={100}
+                    step={1}
+                    onValueChange={([v]) => handleChangeLayer(selectedLayer.id, { cornerRadius: v })}
+                    data-testid="slider-layer-corner-radius"
                   />
                 </div>
               )}

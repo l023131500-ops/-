@@ -93,11 +93,31 @@
       `studio-leading-wrap-max-0819.png`, `studio-leading-wrap-min-0819.png`.
       פריסה: `vite build` → `_deploy/studio-more30` (public + adapter) →
       `vercel deploy --prod`, READY (`dpl_7ZwFzWWdEhWmwcb6MrGsNohf7sav`).
-- [ ] **4b-iv..vi. בקרות `blend`/`kerning`/`corner-radius`** —
-      `corner-radius` כבר קיים בסכמה (`ImageLayer`/`DecorationLayer`) ומחווט
-      ברינדור (כמו `opacity`/`tracking`/`leading` שנעשו) — חסרה רק בקרת UI,
-      לסבב הבא. `blend`/`kerning` דורשים שדה סכימה חדש + חיווט Konva אמיתי.
-      נדחה לסבבים נפרדים, פיצ'ר אחד בכל פעם.
+- [x] **4b-iv. בקרת `corner-radius`** — נבדק מול הקוד לפני הבנייה: בדיוק כמו
+      `opacity`/`tracking`/`leading`, השדה `cornerRadius` **כבר קיים**
+      ב-`ImageLayer`/`ShapeLayer` (לא `DecorationLayer` כפי שנכתב בטעות בסעיף
+      הקודם — נבדק ישירות מול `shared/layers.ts`) וכבר מחווט במלואו ברינדור
+      Konva (`CanvasStage.tsx`: placeholder rect שורה 129, `KImage` שורה 156,
+      `ShapeNode` rect שורה 165). חסרה רק בקרת UI. נוסף סליידר "רדיוס פינות"
+      עם תג `<code>cornerRadius</code>` (`Editor.tsx`, אחרי סליידר השקיפות
+      הכללי, מוצג לשכבות `image`/`shape`), טווח 0–100. אין שינוי סכמה/רינדור.
+      אומת חי ב-`more30.com/studio` (Playwright, cache-buster): נבחרה שכבת
+      "תמונת הרב" — הסליידר הזיז את הערך המוצג 0→100→0 כראוי, 0 שגיאות
+      קונסולה, שאר הבקרות (שקיפות/פונט/עובי/tracking/leading/fill/stroke/
+      shadow) ושאר הפאנלים ללא שינוי — אפס רגרסיה.
+      **מגבלה ידועה, לא רגרסיה:** בכל תבניות שיעורי-התורה החיות היום שכבת
+      התמונה מוגדרת `circle: true` (חיתוך עגול לתמונת הרב) — וב-`ImageNode`
+      השדה `circle` גובר על `cornerRadius` בכוונה (קוד קיים, לא נוצר עכשיו:
+      שורות 126-127 ו-156). לכן לשכבה הזו הסליידר משנה מצב אך לא פיקסל על
+      הקנבס — אותה תופעה קיימת כבר בנתוני תבנית `שיעור — מלכות` שיש בה
+      `cornerRadius: 130` על שכבת `rabbiPhoto` (`circle: true`) שמעולם לא
+      השפיע חזותית. שכבות `shape` (למשל `topicCard`) קיימות ברינדור אבל
+      מסוננות מפאנל השכבות (`text`/`image` בלבד) ו-`listening: false`
+      בקנבס — לא ניתנות לבחירה כלל היום. הוכחה חזותית מלאה תדרוש תמונה
+      לא-עגולה או חשיפת שכבות `shape` לבחירה — לסבב נפרד אם רלוונטי.
+- [ ] **4b-v..vi. בקרות `blend`/`kerning`** — דורשים שדה סכימה חדש + חיווט
+      Konva אמיתי (לא כמו `corner-radius`/`opacity`/`tracking`/`leading`
+      שכבר היו קיימים). נדחה לסבב נפרד, פיצ'ר אחד בכל פעם.
 - [x] **5. גלריית תבניות — קטגוריה מובילה אחת בכל אחת מ-4 הקבוצות** —
       `shared/knowledge.ts`/`categoryTemplates.ts` כבר החזיקו קטלוג-תבניות
       אמיתי (מנוע `composeTemplate`) לכל 4 הקבוצות; הפער האמיתי היה ש-
