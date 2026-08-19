@@ -1,18 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { setOverride } from "@/lib/overrides";
+import { isAuthorizedAdmin } from "@/lib/admin-auth";
 
 export const dynamic = "force-dynamic";
-
-function authorized(req: NextRequest): boolean {
-  const key = req.headers.get("x-admin-key") || "";
-  const pass = process.env.ADMIN_PASSWORD || "";
-  return Boolean(pass) && key === pass;
-}
 
 const ID_RE = /^[A-Za-z0-9_-]{6,}$/;
 
 export async function POST(req: NextRequest) {
-  if (!authorized(req)) return new NextResponse("unauthorized", { status: 401 });
+  if (!isAuthorizedAdmin(req)) return new NextResponse("unauthorized", { status: 401 });
   let body: any;
   try {
     body = await req.json();

@@ -1,13 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { deleteUpload, deleteReady, supabaseReady } from "@/lib/supabase";
+import { isAuthorizedAdmin } from "@/lib/admin-auth";
 
 export const dynamic = "force-dynamic";
-
-function authorized(req: NextRequest): boolean {
-  const key = req.headers.get("x-admin-key") || "";
-  const pass = process.env.ADMIN_PASSWORD || "";
-  return Boolean(pass) && key === pass;
-}
 
 // Only an id `uploadItem()` itself minted (`up_<base36 ms>_<base36 rand>`) can
 // reach `deleteUpload()` — deliberately narrower than `/api/admin/override`'s
@@ -23,7 +18,7 @@ const REASON_MSG: Record<string, string> = {
 };
 
 export async function POST(req: NextRequest) {
-  if (!authorized(req)) return new NextResponse("unauthorized", { status: 401 });
+  if (!isAuthorizedAdmin(req)) return new NextResponse("unauthorized", { status: 401 });
   if (!supabaseReady) {
     return NextResponse.json({ error: REASON_MSG.unconfigured }, { status: 503 });
   }

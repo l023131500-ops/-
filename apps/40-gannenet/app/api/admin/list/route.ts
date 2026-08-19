@@ -1,18 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { driveItems } from "@/lib/drive-catalog";
 import { readOverrides } from "@/lib/overrides";
+import { isAuthorizedAdmin } from "@/lib/admin-auth";
 
 export const dynamic = "force-dynamic";
 
-function authorized(req: NextRequest): boolean {
-  const key = req.headers.get("x-admin-key") || "";
-  const pass = process.env.ADMIN_PASSWORD || "";
-  return Boolean(pass) && key === pass;
-}
-
 // POST (key in header) → full catalog with current override state, for the admin UI.
 export async function POST(req: NextRequest) {
-  if (!authorized(req)) return new NextResponse("unauthorized", { status: 401 });
+  if (!isAuthorizedAdmin(req)) return new NextResponse("unauthorized", { status: 401 });
   const map = await readOverrides();
   const items = driveItems.map((i) => ({
     id: i.id,
