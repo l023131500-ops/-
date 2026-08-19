@@ -1,6 +1,7 @@
 import type { Express, Request, Response } from "express";
 import { createServer } from "node:http";
 import type { Server } from "node:http";
+import { randomBytes } from "node:crypto";
 import multer from "multer";
 import { transcribe, type TranscribeResult } from "./transcribe";
 import { editTranscript } from "./edit";
@@ -66,6 +67,18 @@ async function nextSeq(): Promise<number> {
   );
   const rows = (await listRes.json()) as { seq: number | null }[];
   return (rows[0]?.seq ?? 0) + 1;
+}
+
+// nextSeq() reads-then-increments with no DB-side locking, so two uploads close
+// together can land on the same seq. objectPath used to be just `${seq}.${ext}`,
+// and every write used x-upsert:true — a seq collision meant the second upload's
+// audio silently overwrote the first's in storage, with no error to either
+// uploader. Confirmed against live data: 11 pairs of `recordings` rows share the
+// same seq (and the same audio_path) from a 2026-07-04 batch upload. Appending a
+// random token makes the storage path collision-proof regardless of whether seq
+// itself collides — seq stays a plain display label everywhere it's read.
+function randomToken(): string {
+  return randomBytes(4).toString("hex");
 }
 
 function extFromName(name: string): string {
@@ -187,7 +200,7 @@ export async function registerRoutes(
       const originalName = (req.body?.original_name as string) || "recording.mp3";
       const seq = await nextSeq();
       const ext = extFromName(originalName);
-      const objectPath = `${seq}.${ext}`;
+      const objectPath = `${seq}-${randomToken()}.${ext}`;
       // Public bucket + open RLS: the browser can PUT directly with the anon key.
       const uploadUrl = `${SUPABASE_URL}/storage/v1/object/${BUCKET}/${objectPath}`;
       const publicUrl = `${SUPABASE_URL}/storage/v1/object/public/${BUCKET}/${objectPath}`;
@@ -260,7 +273,7 @@ export async function registerRoutes(
 
         const seq = await nextSeq();
         const ext = extFromName(file.originalname);
-        const objectPath = `${seq}.${ext}`;
+        const objectPath = `${seq}-${randomToken()}.${ext}`;
 
         const storeRes = await fetch(
           `${SUPABASE_URL}/storage/v1/object/${BUCKET}/${objectPath}`,

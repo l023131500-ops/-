@@ -1818,3 +1818,73 @@
     הבא בתור: לסרוק מחדש `core.issues`/`core.project_tasks`; 21-mthbram/
     23-haorech-torani לא הניבו ממצא ששרד בסבב הזה — מועמדים הוגנים לסבב הבא
     עם סוכן חדש ובזווית אחרת.
+
+## 19/08/2026 (סבב אוטונומי B, עשרים) — `17 chizukim-transcribe`: התנגשות נתיב-אחסון גרמה לאובדן-נתונים אמיתי, כבר קרה בייצור
+
+155. **סריקה תחילה.** נקראו README.md/CONNECTIONS.md, `core.run_progress`
+    (האחרון בהיקף לופ B היה id 1113, 20-igud-portal apiPost fix, commit
+    70decf83 — כבר `HEAD`/parent הענף הזה, כולל heartbeat קודם) ו-
+    `core.issues`/`core.project_tasks` נסרקו מחדש בהיקף 17-31/37/29/26/41:
+    כל שורה פתוחה עדיין חסומה בדיוק כפי שתועד בסבבים קודמים (uri_allow_list
+    #202/#205-209, RLS #245, galil #62, mechiron #94/#115, egod #167/#168,
+    gesher #180, get-your-rights #169/#242, zchuyotpro #248/#249) — אין שינוי.
+    `project_tasks` בהיקף — רק #25 (לא שינוי קוד).
+156. **שלושה סוכני Explore מקבילים** על אזורים לא-נסרקים לעומק: (21-mthbram,
+    23-haorech-torani), (26-modaot-studio, 29-bkalot-design), (18-torah-editor-mvp,
+    17-chizukim-transcribe) — כל אחד קיבל רשימה מפורשת של מה שכבר תוקן היום
+    כדי לא לדווח כפילות. **29-bkalot-design** אומת כ-manifest-only (בונה
+    טוקנים סטטי, בלי DB/auth) — אין שטח-תקיפה. **26-modaot-studio** ו-
+    **18-torah-editor-mvp** לא הניבו ממצא ששרד את הביקורת העצמית של הסוכנים
+    (אנונימיות-במכוון מתועדת בקוד, לא סטייה).
+157. **ממצא ששרד: 21-mthbram, `public.synagogues` — RLS פתוח-לגמרי שלא
+    הוקשח.** מיגרציה `20260411233411` יצרה על `synagogues` ארבע מדיניות
+    ללא שום בדיקת auth/org (`USING(true)`/`WITH CHECK(true)` על insert/
+    update/delete). מיגרציית ההקשחה המאוחרת `20260712192546` נעלה מחדש
+    16 טבלאות אחרות (lessons/contact_messages/teacher_leads/... /
+    prayer_times/...) אבל **לא** `synagogues` — `grep -rl synagogues
+    supabase/migrations/*.sql` מחזיר רק את הקובץ המקורי. `PrayerTimesTab.tsx`
+    (שורות 44/54/63) קורא insert/update/delete על synagogues בלי אימות,
+    ו-`prayer_times` תלוי ב-`synagogue_id` (FK) — כלומר כל קורא עם מפתח
+    anon (ציבורי) יכול לשנות/למחוק שורת synagogue של כל ארגון ישירות מול
+    Supabase REST. **לא תוקן בסבב הזה** (הפרויקט `aypsqqvfohekxxuqsmrw`
+    אינו נגיש ל-MCP כאן, אותו חסם כמו #207) — נפתח `core.issues #250`
+    (severity=critical, owner=user, blocked_on=פריסת מיגרציה חיצונית) כדי
+    שהממצא לא ילך לאיבוד; מוקצה כמועמד לסבב עתידי שבו הצעד היחיד הוא כתיבת
+    המיגרציה + תיעוד (בדיוק כמו התבנית שכבר שימשה ב-#248/#249).
+158. **הממצא שנבחר לתיקון בפועל: 17-chizukim-transcribe, מירוץ הקצאת
+    seq גורם לדריסת-קובץ-אודיו שקטה — ואומת כ-כבר קרה בפרודקשן, לא רק
+    תיאורטי.** `server/routes.ts` `nextSeq()` (שורה 62) קורא
+    `SELECT seq ORDER BY seq DESC LIMIT 1` ומחזיר `+1` באפליקציה — קריאה-
+    ואז-כתיבה קלאסית בלי נעילה/עסקה בצד ה-DB. שני נתיבי ההעלאה (init/
+    register לקובץ גדול, ו-upload לקובץ קטן) בונים `objectPath` כ-
+    `${seq}.${ext}` בלבד ושניהם כותבים עם `x-upsert: true` — כלומר התנגשות
+    `seq` לא מחזירה שגיאה, היא **דורסת בשקט** את קובץ האודיו הקודם. אימתתי
+    ישירות מול ה-DB החי (`csjekrvukbdznetsrodj`, נגיש ל-MCP): **אין** אילוץ
+    `UNIQUE` על `recordings.seq` (רק `id` PK ו-`drive_id` unique), ו-שאילתת
+    `group by seq having count(*)>1` מחזירה **11 זוגות** seq כפולים
+    (1030,1031,1033-1035,1037-1042) מאצווה מ-2026-07-04 — ובדקתי זוג אחד
+    לעומק (seq=1037): שתי שורות `recordings` עם `original_name` שונה
+    (082.wav ו-083.wav) חולקות בדיוק אותו `audio_path` (`1037.wav`) — הוכחה
+    ישירה שקובץ אודיו של הקלטה אחת נדרס בשקט ע"י ההעלאה השנייה, בלי שגיאה
+    לאף אחד מהמעלים. זה לא תיאוריה — נתונים אמיתיים כבר אבדו.
+159. **תיקון ממוקד, לא שינוי סמנטיקת seq.** לא נגעתי ב-`nextSeq()` עצמה
+    (התיקון החזק-באמת דורש עמודת identity/sequence ב-DB, שינוי סכימה גדול
+    יותר מהיקף "צעד אחד") — `seq` נשאר label תצוגה בלבד בכל מקום שהוא נקרא
+    (`format.ts`/`export.ts`/`recordings.tsx`), אימתתי בגריפ שאף קובץ לא
+    מפרק/גוזר `seq` מתוך `objectPath`/`audio_path`. במקום זה: `objectPath`
+    עצמו הפך לחסין-התנגשות ללא תלות בהתנגשות seq — נוספה `randomToken()`
+    (`crypto.randomBytes(4).toString("hex")`, `node:crypto` הוא built-in,
+    אין תלות חדשה) ושורש הנתיב שונה מ-`${seq}.${ext}` ל-
+    `${seq}-${randomToken()}.${ext}` בשני מקומות הקריאה (שורה 203 ו-276).
+    גם אם שני מעלים יקבלו אותו `seq` בדיוק שוב, נתיב האחסון שלהם כבר לא
+    יתנגש — האובדן-נתונים השקט נעצר מהשורש, בלי לגעת בפורמט/התנהגות אחרת.
+160. **אומת בקריאה בלבד.** אין `node_modules`/`tsc` בעץ הזה (כלל אי-התקנה,
+    כמו כל סבב קודם) — קראתי מחדש את הקובץ המלא (594 שורות) אחרי העריכה,
+    אימתתי שה-import החדש (`randomBytes` מ-`node:crypto`) לא מתנגש עם
+    imports קיימים, ושאין קריאה שלישית ל-`nextSeq()`/בניית `objectPath`
+    שפוספסה. `core.issues #250` נפתח כמתואר למעלה עבור הממצא הנפרד
+    (21-mthbram). קומיט על `fix/b-chizukim-transcribe-audio-overwrite-race-0819`,
+    נדחף (מפעיל פריסת Vercel — נתיב קוד שרת בלבד, אין שינוי סכימה, אפס
+    שינוי לזרימת ה-seq/תצוגה, רק לנתיב-האחסון בפועל). הבא בתור: לסרוק מחדש
+    `core.issues`/`core.project_tasks`; #250 (21-mthbram synagogues RLS)
+    הוא מועמד מוכן-מראש לסבב עתידי — כתיבת מיגרציה + לוג, בדיוק כמו #248/#249.
