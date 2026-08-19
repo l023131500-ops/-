@@ -99,37 +99,68 @@ export default function DocumentsPage() {
     return data.id as string;
   }
 
+  /** קורא קובץ בודד לטקסט, יוצר עבורו מסמך, ומחזיר את מזההו. זורק אם נכשל. */
+  async function ingestFile(file: File): Promise<string> {
+    const lower = file.name.toLowerCase();
+    let text: string;
+    let kind = 'text';
+
+    if (lower.endsWith('.txt') || lower.endsWith('.md') || file.type.startsWith('text/')) {
+      // קובץ טקסט נקרא בדפדפן — אין סיבה שהוא ייצא מהמכשיר בשביל להיקרא.
+      text = await file.text();
+    } else {
+      const fd = new FormData();
+      fd.append('file', file);
+      const res = await fetch('/orech/api/extract', { method: 'POST', body: fd });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.error || 'לא הצלחנו לקרוא את הקובץ.');
+      text = data.text;
+      kind = data.kind ?? 'docx';
+    }
+
+    if (!text.trim()) throw new Error('לא נמצא טקסט בקובץ.');
+    const id = await createDoc(text, file.name, kind);
+    if (!id) throw new Error('השמירה נכשלה.');
+    return id;
+  }
+
+  /**
+   * מעלה קובץ אחד או כמה בבת אחת (ספר שלם עם כמה פרקים כקבצים נפרדים).
+   * קובץ בודד: מתנהג כמו קודם — קופץ ישר לעורך. כמה קבצים: כל אחד הופך
+   * למסמך נפרד ברשימה, ברצף (לא במקביל, כדי לא להציף את /orech/api/extract),
+   * עם דיווח "קובץ X מתוך Y" ורשימת שגיאות לקבצים שנכשלו בלי לעצור את השאר.
+   */
   async function handleFiles(files: FileList | null) {
     if (!files?.length) return;
     setError(null);
-    const file = files[0];
-    setBusy('מעלים את ' + file.name);
-    try {
-      const lower = file.name.toLowerCase();
-      let text: string;
-      let kind = 'text';
+    const list = Array.from(files);
 
-      if (lower.endsWith('.txt') || lower.endsWith('.md') || file.type.startsWith('text/')) {
-        // קובץ טקסט נקרא בדפדפן — אין סיבה שהוא ייצא מהמכשיר בשביל להיקרא.
-        text = await file.text();
-      } else {
-        const fd = new FormData();
-        fd.append('file', file);
-        const res = await fetch('/orech/api/extract', { method: 'POST', body: fd });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data?.error || 'לא הצלחנו לקרוא את הקובץ.');
-        text = data.text;
-        kind = data.kind ?? 'docx';
+    if (list.length === 1) {
+      setBusy('מעלים את ' + list[0].name);
+      try {
+        const id = await ingestFile(list[0]);
+        window.location.href = `/orech/editor?doc=${id}`;
+      } catch (e: any) {
+        setError(e.message || 'ההעלאה נכשלה.');
+      } finally {
+        setBusy(null);
       }
-
-      if (!text.trim()) throw new Error('לא נמצא טקסט בקובץ.');
-      const id = await createDoc(text, file.name, kind);
-      if (id) window.location.href = `/orech/editor?doc=${id}`;
-    } catch (e: any) {
-      setError(e.message || 'ההעלאה נכשלה.');
-    } finally {
-      setBusy(null);
+      return;
     }
+
+    const failed: string[] = [];
+    for (let i = 0; i < list.length; i++) {
+      const file = list[i];
+      setBusy(`מעלים קובץ ${i + 1} מתוך ${list.length}: ${file.name}`);
+      try {
+        await ingestFile(file);
+      } catch (e: any) {
+        failed.push(`${file.name}: ${e.message || 'נכשל'}`);
+      }
+    }
+    setBusy(null);
+    if (failed.length) setError('חלק מהקבצים לא הועלו — ' + failed.join(' · '));
+    await load();
   }
 
   async function newBlank() {
@@ -182,10 +213,11 @@ export default function DocumentsPage() {
           handleFiles(e.dataTransfer.files);
         }}
       >
-        <div className="upload-title">גררו לכאן ספר או קובץ</div>
+        <div className="upload-title">גררו לכאן ספר או כמה קבצים</div>
         <div className="upload-note">
-          נתמכים: ‎.docx‎ · ‎.txt‎ · ‎.md‎ — עד 8MB. קובץ סרוק או צילום של כתב יד עובר דרך{' '}
-          <Link href="/htr">מודול המרת כתב היד</Link>.
+          נתמכים: ‎.docx‎ · ‎.txt‎ · ‎.md‎ — עד 8MB לקובץ. אפשר לבחור כמה קבצים בבת
+          אחת (למשל פרקי ספר) — כל קובץ ייהפך למסמך נפרד. קובץ סרוק או צילום של
+          כתב יד עובר דרך <Link href="/htr">מודול המרת כתב היד</Link>.
         </div>
         <div className="upload-actions">
           <button
@@ -194,7 +226,7 @@ export default function DocumentsPage() {
             onClick={() => fileInput.current?.click()}
             disabled={!!busy}
           >
-            {busy ? busy + '…' : 'בחירת קובץ'}
+            {busy ? busy + '…' : 'בחירת קבצים'}
           </button>
           <button type="button" className="action" onClick={newBlank} disabled={!!busy}>
             מסמך ריק חדש
@@ -203,8 +235,9 @@ export default function DocumentsPage() {
         <input
           ref={fileInput}
           type="file"
+          multiple
           accept=".docx,.txt,.md,text/plain,text/markdown,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-          aria-label="בחירת קובץ להעלאה"
+          aria-label="בחירת קבצים להעלאה"
           className="visually-hidden"
           onChange={(e) => handleFiles(e.target.files)}
         />
