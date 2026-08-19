@@ -1,5 +1,30 @@
 # SYSTEMS_STATUS.md — מצב כל המערכות, נמדד
 
+> ## 🟢 19/08/2026 (+30) — **41 design-system / 26 studio: checklist item 11 — מתאם Canva Autofill (placeholder חסום)**
+
+> שלב 1 (פריטים 1-5, כולל כל תת-פריטי 4b) ושלב 2 (פריטים 6-9) הושלמו במלואם
+> בסבבים הקודמים היום. הפריט הלא-בנוי הבא היה שלב 3 — מתאמים: 10 Figma, **11
+> Canva** (מפתח חסר), 12 Adobe IDML. נבדק מול `core.secrets`: 0 שורות עם
+> Canva/Figma/Adobe בשם/בשירות — מאשר שהמפתח באמת חסר, כפי שהסעיף חוזה.
+>
+> נבנה פאנל "מתאמים" חדש בעורך (`Editor.tsx`): כפתור בסרגל העליון (ליד "הורד
+> PDF", לא נגע בו) פותח `Dialog` עם שלוש שורות וסמל סטטוס: Figma ("בבנייה"),
+> **Canva Autofill ("חסום — מפתח חסר")**, Adobe InDesign ("בבנייה"). אין
+> endpoint/קריאת-רשת/מפתח חדשים — placeholder UI טהור, בדיוק לפי הניסוח
+> בצ'קליסט ("לבנות עם placeholder + סימון חסום"). `tsc --noEmit` + `vite
+> build --base=/studio/` נקיים (2168 מודולים, זהה למספר לפני הסבב).
+>
+> אומת חי ב-`more30.com/studio` (Playwright, cache-buster, 1280×900): נפתחה
+> תבנית קיימת, כפתור "מתאמים" מופיע בסרגל, פתיחתו מציגה את שלוש השורות
+> והתגיות הנכונות. 0 שגיאות קונסולה. כל שאר הכפתורים/הפאנלים/השכבות בעורך
+> ללא שינוי — אפס רגרסיה. צילום: `studio-adapters-dialog-0819.png`. ראיות:
+> `QA/studio-26/adapters-canva-blocked-0819/_results.md`.
+>
+> פריסה: `vite build` → `_deploy/studio-more30/public/studio` (`api/` ללא
+> שינוי) → `vercel deploy --prod`, `dpl_EdbJpa5mrPCbX8fmHrzL8jGsuq2e`, READY.
+> נשאר: 10 (Figma — ציור פרוגרמטי אמיתי) ו-12 (Adobe IDML — ייצוא דפוס
+> אמיתי), שלב 4 (סטודיו רב-סוכני).
+
 > ## 🟢 19/08/2026 (+29) — **41 design-system / 26 studio: checklist item 4b-iii — בקרת `leading` (lineHeight)**
 
 > בדיוק כמו 4b-i/4b-ii: `lineHeight` **כבר קיים** ב-`TextLayer` וכבר מחווט
