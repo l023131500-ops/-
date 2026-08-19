@@ -203,6 +203,18 @@ export async function peekSystemUsage(): Promise<SystemUsage | null> {
  * כישלון של הספירה או של הרישום עוצר את היצירה (`unavailable`) ולא מוותר על
  * התקרה. זו בדיוק הבחירה ההפוכה מ"אם המנגנון שבור, שיעבור": מה שעומד מעבר
  * לשורה הזאת הוא כסף, ותקלה זמנית באחסון היא סיבה גרועה להחזיר את החור שנסגר.
+ *
+ * **שתי בדיקות, לא אחת:** בדיקה ראשונה זולה (LIST בלבד, בלי כתיבה) דוחה מיד
+ * חשבון שכבר מעל התקרה — כדי שקריאה חוזרת ונשנית אחרי חסימה לא תעלה לנו כתיבה
+ * בכל פעם (`mark` לא ניתן למחיקה במפתח האנונימי, ראו כותרת הקובץ). מי שעובר
+ * את הבדיקה הזולה נרשם (`mark`) *לפני* הבדיקה הקובעת שנייה, לא אחריה: קרא-ואז-
+ * החלט הוא חלון מרוץ — שתי בקשות שקוראות את אותו LIST *לפני* ששתיהן נרשמו
+ * היו יכולות שתיהן לעבור את התקרה ולהגיע ל-Anthropic בתשלום. כתיבה קודם וLIST
+ * שני אחריה מבטיחים שההחלטה הסופית (זו שקובעת אם קוראים ל-Anthropic) תמיד
+ * רואה את הסימון של הבקשה הזו עצמה. זה לא הופך את הבדיקה לאטומית מול כתיבה
+ * אחרת שמתרחשת ממש באותו רגע (ל-Storage כאן אין compare-and-set, כמתועד
+ * למעלה) — אבל סוגר את החלון הרחב שהיה קיים כשההחלטה נפלה על בסיס LIST שנכתב
+ * לפני שאף אחת מהבקשות המקבילות נרשמה.
  */
 export async function reserveGeneration(userId: string): Promise<Reservation> {
   if (!URL_ || !KEY_) return { ok: false, reason: "unavailable" };
@@ -215,5 +227,14 @@ export async function reserveGeneration(userId: string): Promise<Reservation> {
   if (usedUser >= CAP_USER) return { ok: false, reason: "user" };
 
   if (!(await mark(date, userId))) return { ok: false, reason: "unavailable" };
-  return { ok: true, usedUser: usedUser + 1, usedAll: names.length + 1 };
+
+  const namesAfter = await listToday(date);
+  // הסימון כבר נכתב; כישלון ה-LIST השני נופל לאותו טיפול כמו הראשון (עוצר,
+  // לא מוותר) — המחיר הוא סימון יתום זניח באחסון, לא חריגה מהתקרה.
+  if (namesAfter === null) return { ok: false, reason: "unavailable" };
+  if (namesAfter.length > CAP_ALL) return { ok: false, reason: "global" };
+  const usedUserAfter = namesAfter.filter((n) => n.startsWith(`${userId}__`)).length;
+  if (usedUserAfter > CAP_USER) return { ok: false, reason: "user" };
+
+  return { ok: true, usedUser: usedUserAfter, usedAll: namesAfter.length };
 }
