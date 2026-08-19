@@ -35,6 +35,7 @@ import {
   Palette,
   ClipboardCheck,
   MessageSquare,
+  RefreshCw,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -55,6 +56,7 @@ import {
   Dialog,
   DialogContent,
   DialogHeader,
+  DialogFooter,
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
@@ -1573,6 +1575,21 @@ export default function Editor() {
                 <p className="text-sm text-[#F5EEDD]/70">הטיוטה נראית מוצקה — אין הערות מהותיות.</p>
               )}
             </div>
+          )}
+          {appliedCritiqueFixes.size > 0 && (
+            <DialogFooter className="sm:justify-start">
+              <Button
+                size="sm"
+                variant="outline"
+                className="gap-1.5 border-[#C9A227]/40 text-[#C9A227] disabled:opacity-60"
+                disabled={critiquing}
+                onClick={handleAiCritique}
+                data-testid="button-critique-recheck"
+              >
+                <RefreshCw className={"h-3.5 w-3.5" + (critiquing ? " animate-spin" : "")} />
+                {critiquing ? "בודק שוב..." : "בדוק שוב אחרי התיקונים"}
+              </Button>
+            </DialogFooter>
           )}
         </DialogContent>
       </Dialog>
