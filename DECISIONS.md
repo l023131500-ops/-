@@ -249,3 +249,65 @@
     החוסם האמיתי כעת: אין טוקן Vercel ב-core.secrets לפריסת `chizukim2-more30`
     עם מפתח סודי לפני נעילת ה-RLS — נרשם ב-core.issues. **לא הורצה שום SQL על
     הפרודקשן** (אפס סיכון לנתונים החיים).
+
+## 19/08/2026 — 02 תמלול: חשיפת schema `transcribe` ב-PostgREST (core.issues #239)
+
+27. **הפעולה המרכזית של תמלול (02) הייתה שבורה לגמרי בייצור, וזו הייתה תקלת
+    תצורה ולא באג קוד.** `POST /tamlul/api/coupons` (וכל נתיב שרת אחר שקורא
+    ל-schema `transcribe`: uploads/jobs/admin) החזיר `500 {"error":"Invalid
+    schema: transcribe"}`. הקוד תקין — `lib/supabase/server.ts` בונה client עם
+    `db: { schema: "transcribe" }` והתיקון הקודם של ה-BOM (e4fa8956) אכן נפרס
+    (שגיאת ה-ByteString נעלמה). הסיבה האמיתית: בפרויקט
+    `bieebmnmkffwbqlsfozh` רשימת ה-Exposed Schemas של PostgREST הכילה רק
+    `public,graphql_public` — בדיוק צעד ההתקנה שמתועד ב-`schema.sql:9-10` ולא
+    בוצע. שמונה טבלאות ה-`transcribe` קיימות, אך PostgREST דחה את ה-schema.
+
+28. **התיקון (אדיטיבי, אפס רגרסיה):** `db_schema` עודכן ל-
+    `public,graphql_public,otvedaf,transcribe` — גם דרך ה-Management API
+    (`PATCH /v1/projects/bieebmnmkffwbqlsfozh/postgrest`) לעמידוּת, וגם ישירות
+    `ALTER ROLE authenticator SET pgrst.db_schemas=...` + `NOTIFY pgrst,'reload
+    config'` כדי שה-instance החי יקלוט מיד. **⚠️ `otvedaf` הוא schema של מערכת
+    אחרת על אותו פרויקט (2 טבלאות) — נשמר במפורש; PATCH ראשוני שהשמיט אותו תוקן
+    מיד.** אימות בייצור: `POST /tamlul/api/coupons` עבר מ-`500 Invalid schema`
+    ל-`404 "קופון לא קיים"` לקוד בדיקה שאינו קיים (הנתיב רץ מקצה-לקצה), ו-schema
+    `otvedaf` נותר חשוף (401 ל-anon, לא 406) — בלי רגרסיה. הטוקן: `SUPABASE_ACCESS_TOKEN`
+    מ-`core.secrets`. הערה: ה-MCP של Supabase כן מגיע ל-`bieebmnm` — הערת "❌ other
+    account" ב-CONNECTIONS.md מיושנת.
+
+## 19/08/2026 — 24 galil/chatzor: core.issues #240 בכל זאת נפתר, בלי צורך בגישת DB
+
+29. **ה-NEEDS_USER מ-18/08 ש"חסם" את #240 היה מבוסס על `app.json` מיושן, לא על
+    המצב האמיתי.** ההערה טענה ש-`apps/24-galilee-connect-hub` "אינו קיים
+    במונו-רפו — ריפו נפרד" (וגם `app.json:16` עדיין מציין `"source":
+    "not-vendored"`), אבל `git log` על `apps/24-galilee-connect-hub/src/` מראה
+    שהמקור האמיתי כבר יובא ב-03/08 (`cb6e4f58`) ונערך בהצלחה ופרוס שוב ושוב
+    מאז (לאחרונה `03fd7aaa`, 17/08) — אותו קוד בדיוק שרץ מאחורי more30.com/galil.
+    שדה ה-`app.json` פשוט לא עודכן מעולם אחרי הייבוא — אותה משפחת "audit_gaps
+    מיושן" שתוקנה בעבר במערכות אחרות (למשל c2bebe5c). ה**חסם השני** בהערה
+    (גישה ל-`mwljkonwdeuaahsigjdp` דרך ה-Supabase MCP) כן אומת שוב כנכון —
+    `mcp__supabase__list_projects` עדיין לא מחזיר אותו.
+
+30. **הפתרון: תיקון צד-לקוח בלבד, בלי לגעת ב-constraint של ה-DB כלל.** הבאג
+    האמיתי לא היה "חייבים להוסיף `other` ל-CHECK", אלא שהקוד שלח מזהה קטגוריה
+    גולמי (`other`/`stam`/`shiur_kavua`/...) בתור `lead_type` בלי לבדוק את
+    התשובה — ה-DB דחה בשקט (`23514`) וה-UI הציג הצלחה מזויפת בכל זאת. שני
+    הטפסים (`ContactPage.tsx`, `ServiceRequestForm.tsx`) עכשיו שולחים
+    `lead_type: 'general'` (הערך הראשון בארבעת הערכים המותרים שכבר תועדו —
+    `general/synagogue/rabbi_question/gabbai_support`) ושומרים את הקטגוריה
+    הספציפית בתוך `message` (`[קטגוריה] גוף ההודעה`) כדי שהגבאי עדיין יראה
+    במה מדובר — אין אובדן מידע. נוסף גם בדיקת `error` אמיתית עם הודעת כשל
+    למשתמש (`role="alert"`) לכל מקרה כשל אחר שיקרה בעתיד (רשת/RLS), במקום
+    "הצלחה" עיוורת. `GabaiPortal.tsx`: `requestTypeLabels` קיבל את 4 הערכים
+    האמיתיים (היו חסרים לגמרי — היה בו רק רשימת הקטגוריות הישנות שלא תואמות
+    ל-constraint). **אפס רגרסיה:** אף קטגוריה קיימת לא הוסרה, אין שינוי סכימה,
+    התיקון עובד גם בלי גישת DB חדשה.
+
+31. **הפריסה בפועל לא בוצעה מתוך הסשן הזה.** גיליתי ש-galil/chatzor נפרסים
+    היסטורית דרך `vercel deploy --prod` מקומי מתוך `_deploy/galil-more30`
+    (פרויקט Vercel לא Git-מקושר, לפי NEEDS_USER 18/08) — לא דרך push. בסשן הזה
+    אין הרשאת Vercel CLI (`vercel whoami` → Logged out, אין `VERCEL_TOKEN` לא
+    ב-`core.secrets` ולא ב-env) ואין workflow ב-`.github/workflows` בשורש
+    שמאזין לפוש. לפי ההנחיה המפורשת של הסבב הזה, ה-push לענף `fix/` מיועד
+    להפעיל את הפריסה דרך שרת הענן החיצוני (167.99.131.167) — לא בוצעה פריסת
+    CLI ידנית מכאן. `npm run build` + `tsc --noEmit` רצו נקי מקומית (0 שגיאות)
+    לפני ה-commit כאימות טרום-פריסה.

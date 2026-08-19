@@ -23,6 +23,10 @@ import ActivitySlideshow from '@/components/ActivitySlideshow';
 // ---- Contact leads (from Supabase community_leads) ----
 
 const requestTypeLabels: Record<string, string> = {
+  general: 'פנייה כללית',
+  synagogue: 'רישום בית כנסת',
+  rabbi_question: 'שאלה לרב',
+  gabbai_support: 'תמיכת גבאי',
   stam: 'שירותי סת"ם',
   azkarot: 'אזכרות',
   barmitzvah: 'בר מצווה',

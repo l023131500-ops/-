@@ -29,6 +29,7 @@ const ContactPage = () => {
   const [message, setMessage] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [sending, setSending] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
   const [contactInfo, setContactInfo] = useState({
     address: 'המועצה הדתית חצור הגלילית, רח׳ הרצל 1',
     phone: '054-203-0901',
@@ -52,15 +53,27 @@ const ContactPage = () => {
 
   const handleSubmit = async () => {
     if (!name.trim() || !phone.trim() || !selectedType) return;
+    setErrorMsg('');
     setSending(true);
-    await supabase.from('community_leads').insert({
+    // ‏community_leads.lead_type מוגבל במסד ל-('general','synagogue','rabbi_question','gabbai_support').
+    // עד היום נשלח כאן מזהה הקטגוריה עצמו (למשל 'other'), המסד דחה אותו בשגיאת
+    // check (23514), אך הטופס הציג "נשלח בהצלחה" בלי לבדוק את התשובה — וכל פנייה
+    // אבדה בשקט (core.issues #240). טופס יצירת הקשר הוא פנייה כללית, ולכן lead_type
+    // הוא 'general', והקטגוריה הספציפית נשמרת בגוף ההודעה כדי שהגבאי יראה במה מדובר.
+    const category = requestTypes.find(r => r.id === selectedType)?.label || 'פנייה';
+    const body = message.trim();
+    const { error } = await supabase.from('community_leads').insert({
       name: name.trim(),
       phone: phone.trim(),
       email: email.trim() || null,
-      lead_type: selectedType,
-      message: message.trim() || requestTypes.find(r => r.id === selectedType)?.label || '',
+      lead_type: 'general',
+      message: body ? `[${category}] ${body}` : category,
     });
     setSending(false);
+    if (error) {
+      setErrorMsg(`הפנייה לא נשלחה עקב תקלה. אפשר לנסות שוב או להתקשר ${contactInfo.phone}.`);
+      return;
+    }
     setSubmitted(true);
   };
 
@@ -210,6 +223,11 @@ const ContactPage = () => {
                     <Send className="w-5 h-5" /> {sending ? 'שולח...' : 'שלח פנייה'}
                   </Button>
                 </motion.div>
+                {errorMsg && (
+                  <p role="alert" className="text-center text-sm font-bold text-destructive bg-destructive/10 rounded-lg py-3 px-4">
+                    {errorMsg}
+                  </p>
+                )}
               </div>
             </motion.div>
           )}
