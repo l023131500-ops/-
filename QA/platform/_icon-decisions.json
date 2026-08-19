@@ -48,14 +48,14 @@
     "settledByDatum": []
   },
   "egod": {
-    "rendered": 30,
-    "decisions": 15,
-    "named": 30,
+    "rendered": 29,
+    "decisions": 14,
+    "named": 29,
     "perRecord": 15,
     "decor": [
       "1280px"
     ],
-    "lucide": 31,
+    "lucide": 30,
     "dataDriven": [
       "12 names in 1 slot (globe, clipboard-list, building2…)",
       "3 names in 1 slot (users, book-open, map-pin…)",
@@ -70,9 +70,7 @@
     ],
     "doubleMark": [],
     "splitGlyph": [],
-    "repeatInBand": [
-      "תובנה קצרה ליום, לשימוש בשיעור עצמו · lightbulb ×2 — 16px \"טיפים וכלים למגיד השיעור\" + 24px \"שאל שאלות שאלות פתוחות מערבות את הקהל ומ\""
-    ],
+    "repeatInBand": [],
     "floatingTwice": [],
     "repeatUnbanded": [],
     "repeatPerRecord": [],
@@ -168,12 +166,12 @@
     "settledByDatum": []
   },
   "mthbram": {
-    "rendered": 24,
-    "decisions": 17,
-    "named": 21,
+    "rendered": 23,
+    "decisions": 16,
+    "named": 20,
     "perRecord": 7,
     "decor": [],
-    "lucide": 25,
+    "lucide": 24,
     "dataDriven": [
       "4 names in 1 slot (search, refresh-cw, circle-plus…)",
       "2 names in 1 slot (book-open, mic…)"
@@ -187,8 +185,7 @@
     "doubleMark": [],
     "splitGlyph": [],
     "repeatInBand": [
-      "0 שיעורים · search ×2 — 16px \"שדה: חיפוש שיעורים\" + 40px \"לא נמצאו שיעורים מתאימים\"",
-      "מעוניינים להיות שותפים בהפצת התורה? · heart ×2 — 12px \"שותפים בהפצת התורה\" + 16px \"תרומה דרך נדרים פלוס\""
+      "0 שיעורים · search ×2 — 16px \"שדה: חיפוש שיעורים\" + 40px \"עדיין אין שיעורים במאגר\""
     ],
     "floatingTwice": [],
     "repeatUnbanded": [],
