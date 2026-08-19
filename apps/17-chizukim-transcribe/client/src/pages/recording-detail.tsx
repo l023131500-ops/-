@@ -22,7 +22,7 @@ import {
   recordingTitle,
   countHits,
 } from "@/lib/format";
-import { exportWord, exportPdf } from "@/lib/export";
+import { exportWord, exportPdf, exportSubtitles } from "@/lib/export";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -52,6 +52,7 @@ import {
   Check,
   AlertTriangle,
   Search,
+  Captions,
 } from "lucide-react";
 
 export default function RecordingDetailPage() {
@@ -384,6 +385,24 @@ export default function RecordingDetailPage() {
                 data-testid="button-pdf-raw"
               >
                 <FileType className="w-4 h-4 ml-1" /> הורדה PDF
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={!current.segments?.length}
+                onClick={() => exportSubtitles(current, "srt")}
+                data-testid="button-srt"
+              >
+                <Captions className="w-4 h-4 ml-1" /> כתוביות SRT
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={!current.segments?.length}
+                onClick={() => exportSubtitles(current, "vtt")}
+                data-testid="button-vtt"
+              >
+                <Captions className="w-4 h-4 ml-1" /> כתוביות VTT
               </Button>
             </div>
           </Card>

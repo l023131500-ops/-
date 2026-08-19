@@ -43,6 +43,7 @@ export interface Recording {
   transcription_cost_usd: number | null;
   created_at: string | null;
   updated_at: string | null;
+  segments: { start: number | null; end: number | null; text: string }[] | null;
 }
 
 // Build a Google Drive audio streaming URL and a human-openable link.

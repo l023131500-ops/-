@@ -143,3 +143,39 @@ export function exportPdf(r: Recording, which: "edited" | "raw") {
 function esc(s: string): string {
   return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
+
+// HH:MM:SS,mmm (SRT) or HH:MM:SS.mmm (VTT) — `sep` is the seconds/ms divider.
+function formatTimestamp(totalSeconds: number, sep: "," | "."): string {
+  const clamped = Math.max(0, totalSeconds);
+  const h = Math.floor(clamped / 3600);
+  const m = Math.floor((clamped % 3600) / 60);
+  const s = Math.floor(clamped % 60);
+  const ms = Math.round((clamped - Math.floor(clamped)) * 1000);
+  const pad = (n: number, len = 2) => String(n).padStart(len, "0");
+  return `${pad(h)}:${pad(m)}:${pad(s)}${sep}${pad(ms, 3)}`;
+}
+
+// Subtitle export (SRT/VTT) from the segment timestamps Whisper already
+// returns per chunk — no new transcription work, just a different rendering
+// of data already sitting in `recordings.segments`.
+export function exportSubtitles(r: Recording, format: "srt" | "vtt") {
+  const segments = (r.segments ?? []).filter(
+    (s) => s.text?.trim() && s.start != null && s.end != null,
+  );
+  if (!segments.length) {
+    alert("אין נתוני חותמות זמן להקלטה זו — כתוביות זמינות רק לתמלולים חדשים.");
+    return;
+  }
+
+  const sep = format === "srt" ? "," : ".";
+  const lines = segments.map((seg, i) => {
+    const start = formatTimestamp(seg.start as number, sep);
+    const end = formatTimestamp(seg.end as number, sep);
+    const cue = format === "srt" ? `${i + 1}\n${start} --> ${end}` : `${start} --> ${end}`;
+    return `${cue}\n${seg.text.trim()}`;
+  });
+
+  const body = format === "vtt" ? `WEBVTT\n\n${lines.join("\n\n")}\n` : `${lines.join("\n\n")}\n`;
+  const blob = new Blob([body], { type: "text/plain;charset=utf-8" });
+  saveAs(blob, `${fileBase(r)}.${format}`);
+}
