@@ -12,8 +12,9 @@
  * env-placeholder only). The `core` registry lives on uhnrgujb but does NOT connect
  * to the other projects — it only catalogs them. See CONNECTIONS.md.
  *
- * Supabase clusters: uhnrgujb=nadlan(ops) · bieebmnm=igud(01,02,03,10,18) ·
- * csjekrvu=bkalut/kupot cluster(06,12,17,27) · mwljkonw=chatzor/galilee(16,24) ·
+ * Supabase clusters: uhnrgujb=nadlan(ops)+chatzor(16, schema `chatzor`, migrated
+ * off mwljkonw — see core.issues #156) · bieebmnm=igud(01,02,03,10,18) ·
+ * csjekrvu=bkalut/kupot cluster(06,12,17,27) · mwljkonw=galilee(24) only now ·
  * pwcswdfg=bkalut-app(08) · trerolyv=get-your-rights(22) · jhbeelzv=zchuyotpro(30) ·
  * hkkky=egod(15) · aypsq=mthbram(21) · ygaqq=hebrew-bridge(31).
  *
@@ -45,7 +46,7 @@ export const REGISTRY: ProjectEntry[] = [
   { number: "13", slug: "property-identity", repo: "property-identity", name: "Property Identity", department: "realestate", category: "realestate", stage: "wip", live: false, isDeployed: false, supabaseProject: null, supabaseSchema: null, deployTarget: "unknown", protected: false, note: "נדל\"ן variant. לשקול מיזוג עם 32-nadlan-berega." },
   { number: "14", slug: "bsmachot-plus", repo: "bsmachot-plus", name: "Bsmachot Plus", department: "misc", category: "events", stage: "wip", live: true, isDeployed: true, supabaseProject: null, supabaseSchema: null, deployTarget: "vercel", protected: false, note: "אירועים/שמחות (36 קבצים)." },
   { number: "15", slug: "egod", repo: "egod", name: "egod", department: "torah", category: "hub", stage: "live", live: true, isDeployed: true, supabaseProject: "hkkkynyoigzlttpynoeo", supabaseSchema: "public", deployTarget: "vercel", protected: false, note: "נולד ב-Lovable. Supabase משלו (hkkky) — לא משותף עם torah-platform." },
-  { number: "16", slug: "chatzor-connect", repo: "chatzor-connect", name: "Chatzor Connect", department: "community", category: "other", stage: "wip", live: true, isDeployed: true, supabaseProject: "mwljkonwdeuaahsigjdp", supabaseSchema: "public", deployTarget: "vercel", protected: false, note: "קהילתי. משתף mwljkonw עם galilee." },
+  { number: "16", slug: "chatzor-connect", repo: "chatzor-connect", name: "Chatzor Connect", department: "community", category: "other", stage: "beta", live: true, isDeployed: true, supabaseProject: "uhnrgujbdxhhmoxcjria", supabaseSchema: "chatzor", deployTarget: "vercel", protected: false, note: "קהילתי. הועבר מ-mwljkonw (עדיין משמש 24-galilee) אל schema chatzor במסד המרכזי uhnrgujb (מאומת core.projects + PostgREST)." },
   { number: "17", slug: "chizukim-transcribe", repo: "chizukim-transcribe", name: "Chizukim Transcribe", department: "torah", category: "transcription", stage: "wip", live: true, isDeployed: true, supabaseProject: "csjekrvukbdznetsrodj", supabaseSchema: "public", deployTarget: "vercel", protected: false, note: "תמלול. משתף csjekrvu. לאמת מפתח תמלול." },
   { number: "18", slug: "torah-editor-mvp", repo: "torah-editor-mvp", name: "Torah Editor MVP", department: "torah", category: "torah", stage: "wip", live: true, isDeployed: true, supabaseProject: "bieebmnmkffwbqlsfozh", supabaseSchema: "public", deployTarget: "vercel", protected: false, note: "OCR: Kraken/Transkribus/DictaLM/Anthropic. משתף bieebmnm." },
   { number: "19", slug: "igud-shiurim-portal", repo: "igud-shiurim-portal", name: "Igud Shiurim Portal", department: "torah", category: "torah", stage: "wip", live: false, isDeployed: false, supabaseProject: null, supabaseSchema: null, deployTarget: "unknown", protected: false, note: "שלד פורטל (6 קבצים)." },
