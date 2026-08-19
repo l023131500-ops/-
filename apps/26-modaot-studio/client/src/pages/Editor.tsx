@@ -65,7 +65,7 @@ import { getCategoryCopy, getCategoryFields, setFieldText } from "@/lib/copyEngi
 import { getCategory } from "@shared/knowledge";
 import { getStyle } from "@shared/styles";
 import { FORMATS, getFormat } from "@shared/formats";
-import { downloadPNG, downloadPDF } from "@/lib/exporter";
+import { downloadPNG, downloadPDF, downloadSVG } from "@/lib/exporter";
 import { apiRequest } from "@/lib/queryClient";
 import { nextId } from "@shared/layers";
 import type { TemplateDoc, TextLayer, ImageLayer, ShapeLayer, AnyLayer, TemplateBackground } from "@shared/layers";
@@ -506,6 +506,11 @@ export default function Editor() {
   function handleDownloadPDF() {
     if (!stageRef.current) return;
     downloadPDF(stageRef.current, doc!.width, doc!.height, `${selected!.name}.pdf`);
+  }
+
+  function handleExportFigmaSVG() {
+    if (!doc) return;
+    downloadSVG(doc, `${selected?.name ?? "modaa"}.svg`);
   }
 
   return (
@@ -1119,12 +1124,20 @@ export default function Editor() {
                 <Figma className="h-4 w-4 shrink-0 text-[#C9A227]" />
                 <div>
                   <p className="text-sm font-medium">Figma</p>
-                  <p className="text-[11px] text-[#F5EEDD]/50">עריכה נוספת של התבנית באתרים/ממשקים</p>
+                  <p className="text-[11px] text-[#F5EEDD]/50">
+                    ייצוא SVG פרוגרמטי (שכבות נפרדות) — גרירה ישירה ל-Figma להמשך עריכה
+                  </p>
                 </div>
               </div>
-              <Badge variant="outline" className="shrink-0 border-[#F5EEDD]/30 text-[11px] text-[#F5EEDD]/60">
-                בבנייה
-              </Badge>
+              <Button
+                size="sm"
+                variant="outline"
+                className="shrink-0 border-[#C9A227]/40 text-[11px] text-[#F5EEDD]"
+                data-testid="button-export-figma-svg"
+                onClick={handleExportFigmaSVG}
+              >
+                הורד SVG
+              </Button>
             </div>
 
             <div className="flex items-center justify-between rounded-lg border border-[#C9A227]/20 bg-[#101B32] p-3">

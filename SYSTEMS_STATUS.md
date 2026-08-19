@@ -1,5 +1,29 @@
 # SYSTEMS_STATUS.md — מצב כל המערכות, נמדד
 
+> ## 🟢 19/08/2026 (+32) — **41 design-system / 26 studio: checklist item 10 — מתאם Figma (ייצוא SVG פרוגרמטי עובד)**
+>
+> בניגוד ל-11 (Canva, חסום על מפתח), Figma לא דורש שום מפתח/API — הוא תומך
+> בגרירה/הדבקה ישירה של קובץ SVG. נבנה `stageToSVG`/`downloadSVG`
+> (`apps/26-modaot-studio/client/src/lib/exporter.ts`) שממיר את `TemplateDoc`
+> (מפרט השכבות הניטרלי, לא ה-Konva stage) ל-SVG וקטורי אמיתי: שכבות טקסט
+> כ-`<text>`/`<tspan>` (יישור/RTL/פונט/משקל/צבע/מתאר/tracking), תמונה
+> כ-`<image>` עם `clipPath` לעיגול/פינות מעוגלות, צורה כ-rect/circle/polyline,
+> רקע (צבע/גרדיאנט/תמונה), ו-opacity/blend/rotation לכל שכבה. שכבות עיטור
+> (מסגרות/כתרים, מצוירות ב-Konva דרך `lib/ornaments.ts`) לא שוכפלו כווקטור
+> מדויק בסבב הזה — מיוצאות כמלבן-מיקום מתויג בשם הקישוט, לעיצוב-מחדש ידני
+> ב-Figma (תיוג כן, לא הטעיה).
+>
+> כפתור "Figma" בדיאלוג "מתאמים" (`Editor.tsx`) הוחלף מ-Badge "בבנייה"
+> לכפתור עובד "הורד SVG" — Canva/InDesign ללא שינוי. `tsc --noEmit` נקי,
+> `vite build --base=/studio/` נקי (2168 מודולים, זהה למספר לפני הסבב).
+> **אומת חי** ב-`more30.com/studio` (Playwright, cache-buster, 1280×900):
+> נפתחה "שיעור — חסידי מלכותי" → מתאמים → "הורד SVG" הוריד קובץ SVG אמיתי
+> (נבדק ידנית תוכן הקובץ) עם 7 שכבות אמיתיות מהתבנית — טקסט עברי מקודד נכון,
+> רקע-גרדיאנט אמיתי, תמונה עם פלייסהולדר מתויג. 0 שגיאות קונסולה. שאר
+> הפאנל (PNG/PDF/שמירה/שכבות/רקע) ללא שינוי — אפס רגרסיה. פריסה:
+> `dpl_FVTj8sf2EdhnyW7HMpwkKmCGqC4A`, READY. פרטים: `CHECKLIST/graphics.md`
+> #10, `studio-figma-svg-export-0819.png`.
+
 > ## 🟡 19/08/2026 (+31) — **32 נדל"ן ברגע: אימות חי של כיוון צילום Street View על 4 כתובות אמיתיות — הכיוון תקין, בדיקת פיקסלים חסומה מקומית (NetFree)**
 >
 > `SYSTEMS_STATUS.md` (ביקורת 05/08) השאיר פתוח: "אימות ויזואלי של Street View

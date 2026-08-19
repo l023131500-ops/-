@@ -283,9 +283,31 @@
 
 ## שלב 3 — מתאמים (Adapters)
 
-- [ ] **10. מתאם Figma** — ציור פרוגרמטי מהמפרט הניטרלי (JSON/SVG) של תבנית,
-      לעריכה נוספת ב-Figma (אתרים/ממשקים). מוצג בפאנל "מתאמים" (11) בתור
-      "בבנייה" — עדיין לא נבנה בפועל.
+- [x] **10. מתאם Figma** — ציור פרוגרמטי אמיתי מהמפרט הניטרלי (`TemplateDoc`,
+      לא מה-Konva stage) ל-SVG וקטורי אמיתי: `stageToSVG`/`downloadSVG`
+      (`client/src/lib/exporter.ts`) — שכבות טקסט (`<text>`+`<tspan>` לכל
+      שורה, יישור/ישור-אנכי/פונט/משקל/צבע/מתאר/tracking/כיוון-RTL), תמונה
+      (`<image>` עם `clipPath` לעיגול/`cornerRadius`, פלייסהולדר מלבן מתויג
+      כשאין `src`), צורה (rect/circle/line), רקע (solid/gradient/image),
+      ו-opacity/blend (`mix-blend-mode`)/rotation לכל שכבה — נאמן ל-`shared/layers.ts`
+      ול-`CanvasStage.tsx`. שכבות עיטור (`DecorationLayer`, מסגרות/כתרים/
+      קישוטים מצוירים ב-Konva דרך `lib/ornaments.ts`) **לא שוכפלו** ל-SVG
+      בסבב הזה — מיוצאות כמלבן-מיקום מתויג בשם הקישוט (`data-decoration-kind`),
+      תיוג כן ולא הטעיה, לעיצוב-מחדש ידני של הקישוט עצמו ב-Figma; הרחבה
+      לסבב נפרד אם רלוונטי. כפתור "Figma" בדיאלוג "מתאמים" (`Editor.tsx`)
+      הוחלף מ-Badge "בבנייה" לכפתור עובד "הורד SVG"
+      (`data-testid="button-export-figma-svg"`) — Canva/InDesign ללא שינוי.
+      `tsc --noEmit` נקי, `vite build --base=/studio/` נקי (2168 מודולים,
+      זהה למספר לפני הסבב). אומת חי ב-`more30.com/studio` (Playwright,
+      cache-buster, 1280×900): נפתחה "שיעור — חסידי מלכותי" → מתאמים →
+      "הורד SVG" הוריד קובץ `.svg` אמיתי (לא ריק) עם 7 שכבות טקסט/תמונה/
+      עיטור אמיתיות מהתבנית (טקסט עברי מקודד נכון, רקע-גרדיאנט אמיתי,
+      placeholder תמונה מתויג) — נבדק ידנית תוכן הקובץ שהורד. 0 שגיאות
+      קונסולה. שאר הפאנל/הכפתורים (PNG/PDF/שמירה/שכבות/רקע) ללא שינוי —
+      אפס רגרסיה. צילום: `studio-figma-svg-export-0819.png`. פריסה:
+      `vite build` → `_deploy/studio-more30/public/studio` (build חדש, `api/`
+      ללא שינוי) → `vercel deploy --prod`, `dpl_FVTj8sf2EdhnyW7HMpwkKmCGqC4A`,
+      READY.
 - [x] **11. מתאם Canva Autofill** — נבדק מול `core.secrets`: אין `CANVA` בשום
       שם/שירות (Enterprise, מפתח חסר, בדיוק כפי שהסעיף חוזה). נבנה פאנל
       "מתאמים" חדש בעורך (`Editor.tsx`): כפתור `<Blocks>` בסרגל העליון (ליד
