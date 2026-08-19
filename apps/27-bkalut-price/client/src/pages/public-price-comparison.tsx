@@ -7,7 +7,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Logo } from "@/components/logo";
 import { useToast } from "@/hooks/use-toast";
 import { API_BASE } from "@/lib/queryClient";
-import { Search, Tag, Store, ArrowRight, FileDown, Share2, Sparkles, SlidersHorizontal, X, Send } from "lucide-react";
+import { Search, Tag, Store, ArrowRight, FileDown, Share2, Sparkles, SlidersHorizontal, X, Send, ShoppingCart, Plus, Trash2 } from "lucide-react";
 
 // The published pplx.app sandbox auto-pauses when idle; the first requests after
 // it resumes return 503 for a few seconds. Retry a few times so the page loads
@@ -74,6 +74,59 @@ interface PcPublicMeta {
 const fmt = (n: number) => `₪${n.toFixed(2)}`;
 
 const SAVINGS_STORAGE_KEY = "mechiron-savings-total";
+const SHOPPING_LIST_KEY = "mechiron-shopping-list";
+
+interface ListItem {
+  productId: number;
+  name: string;
+  cheapestPrice: number | null;
+  offers: PcOffer[];
+}
+
+function loadShoppingList(): ListItem[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = window.localStorage.getItem(SHOPPING_LIST_KEY);
+    const parsed = raw ? JSON.parse(raw) : [];
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveShoppingList(list: ListItem[]) {
+  window.localStorage.setItem(SHOPPING_LIST_KEY, JSON.stringify(list));
+}
+
+interface StoreTotal {
+  storeId: number;
+  storeName: string;
+  total: number;
+  coversAll: boolean;
+  itemsCovered: number;
+}
+
+function computeStoreTotals(list: ListItem[]): StoreTotal[] {
+  const byStore = new Map<number, StoreTotal>();
+  for (const item of list) {
+    for (const offer of item.offers) {
+      const existing = byStore.get(offer.storeId);
+      if (existing) {
+        existing.total += offer.price;
+        existing.itemsCovered += 1;
+      } else {
+        byStore.set(offer.storeId, { storeId: offer.storeId, storeName: offer.storeName, total: offer.price, itemsCovered: 1, coversAll: false });
+      }
+    }
+  }
+  const totals = Array.from(byStore.values());
+  for (const t of totals) t.coversAll = t.itemsCovered === list.length;
+  return totals.sort((a, b) => (a.coversAll === b.coversAll ? a.total - b.total : a.coversAll ? -1 : 1));
+}
+
+function optimalSplitTotal(list: ListItem[]): number {
+  return list.reduce((sum, item) => sum + (item.cheapestPrice ?? 0), 0);
+}
 
 function loadSavedTotal(): number {
   if (typeof window === "undefined") return 0;
@@ -134,6 +187,8 @@ export default function PublicPriceComparison() {
   const [showSubmit, setShowSubmit] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [savedTotal, setSavedTotal] = useState(() => loadSavedTotal());
+  const [shoppingList, setShoppingList] = useState<ListItem[]>(() => loadShoppingList());
+  const [showList, setShowList] = useState(false);
   const emptySubmission = { merchantName: "", merchantContact: "", storeName: "", city: "", productName: "", brand: "", unit: "", barcode: "", price: "", note: "" };
   const [submission, setSubmission] = useState({ ...emptySubmission });
 
@@ -222,6 +277,24 @@ export default function PublicPriceComparison() {
     } finally {
       setRecLoading(false);
     }
+  }
+
+  function isInList(productId: number): boolean {
+    return shoppingList.some((i) => i.productId === productId);
+  }
+
+  function addToList(row: PcSearchRow) {
+    if (isInList(row.product.id)) return;
+    const next = [...shoppingList, { productId: row.product.id, name: row.product.name, cheapestPrice: row.cheapestPrice, offers: row.offers }];
+    setShoppingList(next);
+    saveShoppingList(next);
+    toast({ title: "נוסף לרשימת הקניות", description: row.product.name });
+  }
+
+  function removeFromList(productId: number) {
+    const next = shoppingList.filter((i) => i.productId !== productId);
+    setShoppingList(next);
+    saveShoppingList(next);
   }
 
   function openReport() {
@@ -359,8 +432,60 @@ export default function PublicPriceComparison() {
             </Button>
             <Button variant="outline" size="sm" onClick={openReport} data-testid="button-pc-report"><FileDown className="w-4 h-4 ml-1" /> הורדת דוח PDF</Button>
             <Button variant="outline" size="sm" onClick={shareLink} data-testid="button-pc-share"><Share2 className="w-4 h-4 ml-1" /> שיתוף</Button>
+            <Button variant="outline" size="sm" onClick={() => setShowList((v) => !v)} data-testid="button-pc-toggle-list">
+              <ShoppingCart className="w-4 h-4 ml-1" /> רשימת קניות{shoppingList.length > 0 ? ` (${shoppingList.length})` : ""}
+            </Button>
           </div>
         </section>
+
+        {/* Smart shopping list — client-side, built from products already added.
+            Shows which single store covers the whole list cheapest, vs. the
+            "optimal split" (each item at its own cheapest store). */}
+        {showList && (
+          <Card className="p-4 space-y-3" data-testid="pc-shopping-list">
+            <div className="flex items-center justify-between gap-2">
+              <h2 className="text-sm font-semibold flex items-center gap-1"><ShoppingCart className="w-4 h-4" /> רשימת הקניות שלי</h2>
+              <Button variant="ghost" size="icon" onClick={() => setShowList(false)}><X className="w-4 h-4" /></Button>
+            </div>
+            {shoppingList.length === 0 ? (
+              <p className="text-sm text-muted-foreground">הרשימה ריקה. לחצו על "הוספה לרשימה" ליד מוצר כדי להתחיל.</p>
+            ) : (
+              <>
+                <ul className="space-y-1.5">
+                  {shoppingList.map((item) => (
+                    <li key={item.productId} className="flex items-center justify-between gap-2 text-sm" data-testid={`pc-list-item-${item.productId}`}>
+                      <span className="truncate">{item.name}</span>
+                      <div className="flex items-center gap-2 shrink-0">
+                        {item.cheapestPrice != null && <span className="tabular-nums text-muted-foreground">{fmt(item.cheapestPrice)}</span>}
+                        <Button variant="ghost" size="icon" onClick={() => removeFromList(item.productId)} data-testid={`button-pc-list-remove-${item.productId}`}>
+                          <Trash2 className="w-4 h-4 text-destructive" />
+                        </Button>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+                <div className="pt-2 border-t border-border space-y-1.5 text-sm">
+                  <div className="flex items-center justify-between">
+                    <span className="text-muted-foreground">סה"כ בפיצול אופטימלי (כל מוצר בזול ביותר):</span>
+                    <span className="font-semibold tabular-nums" data-testid="pc-list-optimal-total">{fmt(optimalSplitTotal(shoppingList))}</span>
+                  </div>
+                  {(() => {
+                    const totals = computeStoreTotals(shoppingList);
+                    const complete = totals.find((t) => t.coversAll);
+                    return complete ? (
+                      <div className="flex items-center justify-between" data-testid="pc-list-best-store">
+                        <span className="text-muted-foreground">הכי משתלם לקנות הכל בחנות אחת:</span>
+                        <span className="font-semibold tabular-nums">{complete.storeName} · {fmt(complete.total)}</span>
+                      </div>
+                    ) : (
+                      <p className="text-xs text-muted-foreground" data-testid="pc-list-no-single-store">אין חנות אחת שמוכרת את כל הפריטים ברשימה — מוצג רק הפיצול האופטימלי.</p>
+                    );
+                  })()}
+                </div>
+              </>
+            )}
+          </Card>
+        )}
 
         {/* Advanced filters panel */}
         {showFilters && (
@@ -516,6 +641,16 @@ export default function PublicPriceComparison() {
                           <a className="text-[11px] text-primary inline-flex items-center gap-1 mt-1">השוואה מלאה <ArrowRight className="w-3 h-3" /></a>
                         </Link>
                       )}
+                      <Button
+                        variant={isInList(row.product.id) ? "secondary" : "outline"}
+                        size="sm"
+                        className="mt-1.5 h-7 text-[11px]"
+                        disabled={isInList(row.product.id)}
+                        onClick={() => addToList(row)}
+                        data-testid={`button-pc-add-list-${row.product.id}`}
+                      >
+                        <Plus className="w-3 h-3 ml-1" /> {isInList(row.product.id) ? "ברשימה" : "הוספה לרשימה"}
+                      </Button>
                     </div>
                   )}
                 </div>
