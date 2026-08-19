@@ -9,6 +9,15 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
+// activate-invite gates account creation on a single plaintext comparison
+// (password_input !== invite.initial_password) with no other auth. Caps
+// guessing attempts per caller IP and per targeted invite code so a
+// leaked/weak initial password can't be brute forced for free. Same shape
+// as 15-egod's activate-invite fix (core.issues #168). A real activation
+// takes one request, so no genuine user gets close to either cap.
+const RATE_LIMIT_PER_HOUR_PER_IP = 10;
+const RATE_LIMIT_PER_HOUR_PER_CODE = 5;
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
@@ -22,6 +31,24 @@ Deno.serve(async (req) => {
 
     if (!invite_code || !password_input || !new_password) {
       return jr({ ok: false, error: "חסרים פרטים" }, 400);
+    }
+
+    const ip = (req.headers.get("x-forwarded-for") ?? "").split(",")[0].trim() || "unknown";
+    const windowStart = new Date(Math.floor(Date.now() / 3_600_000) * 3_600_000).toISOString();
+    for (const bucket of [`activate-invite:ip:${ip}`, `activate-invite:code:${invite_code}`]) {
+      const limit = bucket.startsWith("activate-invite:ip:") ? RATE_LIMIT_PER_HOUR_PER_IP : RATE_LIMIT_PER_HOUR_PER_CODE;
+      const { data: gate, error: gateError } = await admin.rpc("invite_rate_limit_hit", {
+        p_bucket: bucket,
+        p_window_start: windowStart,
+        p_limit: limit,
+      });
+      if (gateError) {
+        // Fail open: a counter problem must not block real activations.
+        console.error("rate limit check failed:", gateError.message);
+      } else if (gate?.[0]?.allowed === false) {
+        console.warn(`invite rate limited ${bucket}: ${gate[0].hits} hits this hour`);
+        return jr({ ok: false, error: "יותר מדי ניסיונות. נסו שוב בעוד שעה." }, 429);
+      }
     }
 
     const { data: invite, error: invErr } = await admin
