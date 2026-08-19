@@ -78,10 +78,24 @@ export async function POST(req: Request) {
     });
     if (jobErr) throw jobErr;
 
-    // עדכון מונה שימוש בקופון
-    await sb.from("coupon_codes")
-      .update({ used_uploads: coupon.used_uploads + 1 })
-      .eq("id", coupon.id);
+    // עדכון מונה שימוש בקופון — compare-and-swap כדי שבקשות מקבילות לא ידרסו
+    // אחת את השנייה (read-modify-write רגיל מאבד ספירה תחת מרוץ, בדיוק כמו
+    // שנמצא ותוקן ב-03-igud-ads/lib/coupon.ts)
+    for (let attempt = 0; attempt < 3; attempt++) {
+      const { data: current } = await sb
+        .from("coupon_codes")
+        .select("used_uploads")
+        .eq("id", coupon.id)
+        .maybeSingle();
+      if (!current) break;
+      const { data: updated } = await sb
+        .from("coupon_codes")
+        .update({ used_uploads: current.used_uploads + 1 })
+        .eq("id", coupon.id)
+        .eq("used_uploads", current.used_uploads)
+        .select("id");
+      if (updated && updated.length > 0) break;
+    }
 
     return NextResponse.json({ ok: true, upload_id: uploadRow.id });
   } catch (e: any) {
