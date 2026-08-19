@@ -757,18 +757,18 @@ export async function registerRoutes(
     res.json(buildRightAutomationPayload(row, channel, clientName));
   });
 
-  app.get("/api/orgs", (_req, res) => {
+  app.get("/api/orgs", requireAdmin, (_req, res) => {
     res.json(getData().orgs.map(publicOrgRow));
   });
 
-  app.get("/api/orgs/:id", (req, res) => {
+  app.get("/api/orgs/:id", requireAdmin, (req, res) => {
     const id = Number(req.params.id);
     const row = getData().orgs.find((o) => o.id === id);
     if (!row) return res.status(404).json({ message: "not found" });
     res.json(publicOrgRow(row));
   });
 
-  app.patch("/api/orgs/:id", (req, res) => {
+  app.patch("/api/orgs/:id", requireAdmin, (req, res) => {
     const id = Number(req.params.id);
     try {
       const updated = updateOrgRow(id, req.body ?? {});
