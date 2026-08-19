@@ -14,6 +14,7 @@ export default function SiteHeader() {
         </Link>
         <nav className="flex items-center gap-2">
           <Link href="/upload" className="btn-primary text-sm">העלאת שיעור</Link>
+          <a href="https://more30.com/subscribe?app=tamlul" className="btn-outline text-sm">מחירון</a>
           <Link href="/login" className="btn-outline text-sm">כניסת ניהול</Link>
           <ThemeToggle />
         </nav>

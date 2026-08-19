@@ -22,6 +22,9 @@ export default function SiteHeader() {
             תמלול
           </Link>
           <Link href="/create" className="btn-primary text-sm">צור מודעה</Link>
+          <a href="https://more30.com/subscribe?app=modaot" className="text-sm px-3 py-1.5 rounded-md hover:bg-stone-100 text-ink">
+            מחירון
+          </a>
           <NotificationBell />
           <Link href="/login" className="btn-outline text-sm">כניסת ניהול</Link>
           <ThemeToggle />

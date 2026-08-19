@@ -32,6 +32,7 @@ export default function HomePage() {
         <nav className="flex w-full min-w-0 items-center gap-4 overflow-x-auto text-sm sm:w-auto">
           <Link href="/create" className="inline-block py-1 hover:text-brand-gold transition">צור מודעה</Link>
           <Link href="/transcribe/upload" className="inline-block py-1 hover:text-brand-gold transition">תמלול שיעור</Link>
+          <a href="https://more30.com/subscribe?app=modaot" className="inline-block py-1 hover:text-brand-gold transition">מחירון</a>
           <Link href="/login" className="inline-block py-1 hover:text-brand-gold transition">התחברות</Link>
           <ThemeToggle className="inline-flex items-center rounded-md border border-white/30 px-2 py-1 hover:text-brand-gold hover:border-brand-gold transition" />
         </nav>
