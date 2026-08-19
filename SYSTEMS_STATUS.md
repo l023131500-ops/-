@@ -1,5 +1,32 @@
 # SYSTEMS_STATUS.md — מצב כל המערכות, נמדד
 
+> ## 🟢 19/08/2026 (+26) — **41 design-system / 26 studio: checklist item 6 — רקעים פוטוריאליסטיים Recraft V4, מנוע שני לצד Gemini**
+
+> `CHECKLIST/graphics.md` שלב 2 פריט 6 היה הבא בתור. נוסף `generateBackgroundRecraft`
+> חדש (`server/branding.ts` + עותק `vercel-adapter/api/_lib/server/branding.ts` —
+> זה שרץ בפועל בפרודקשן) מול `POST /v1/images/generations` (`model: "recraftv4"`).
+> שני מוקשים אמיתיים של V4 (שונה מ-V3 שכבר בשימוש ל-vectorize, פריט 7a) נמצאו
+> ותוקנו רק אחרי כישלון חי מאומת: V4 דוחה ב-400 את `style`/`style_id`/
+> `negative_prompt` לגמרי, ומקבל רק רשימת `size` סגורה (למשל `896x1152` ל-4:5),
+> לא כל מחרוזת WxH. `routes.ts` (+ עותק ה-adapter): `POST /api/ai/background`
+> קיבל שדה `engine` חדש (`"gemini"` ברירת מחדל — קוד זהה ללא שינוי; `"recraft"`
+> חדש). `Editor.tsx`: בורר מנוע (2 כפתורים) נוסף לדיאלוג "רקע AI" הקיים —
+> לא דיאלוג/סכמה/שכבה חדשה.
+>
+> אומת חי ב-`more30.com/studio` (Playwright): נבחר Recraft V4, "צור רקע" →
+> `POST .../ai/background` **200 OK** (כ-90–100 שניות תחת cold start על שרשרת
+> enhance+generate+הורדת-תמונה — קריאות `WebRequest` ישירות מ-PowerShell עם
+> timeout עד 170 שניות נתקעו בלי תשובה כלל, אז האימות עבר דרך דפדפן אמיתי
+> ולא curl), הרקע הוחלף בפועל לתמונה פוטוריאליסטית אמיתית, פאנל "רקע" מציג
+> "רקע תמונה פעיל", 0 שגיאות קונסולה. נתיב Gemini הקיים ללא שינוי התנהגות
+> (אותו קוד כש-`engine` לא נשלח). כל שאר הפאנלים/שכבות/שדות ללא שינוי —
+> אפס רגרסיה. צילום: `studio-recraft-v4-bg-live-0819.png`.
+>
+> פריסה: `vite build` (`base:"/studio/"` כבר ב-`vite.config.ts`) →
+> `_deploy/studio-more30/public/studio` + `api/` מ-`vercel-adapter/` →
+> `vercel deploy --prod`, `dpl_9b5ydqz3tA1nTmJzgVaEV7EwtqZY`, READY.
+> commit `5255419`. נשאר: פריט 10-15 (מתאמים/סטודיו רב-סוכני) — סבבים נפרדים.
+
 > ## 🟢 19/08/2026 (+25) — **41 design-system / 26 studio: checklist item 7a — וקטוריזציה (Recraft) הורחבה לכל שכבת תמונה בעורך**
 
 > `CHECKLIST/graphics.md` שלב 2 פריט 7 ("וקטוריזציה + הסרת-רקע") היה הבא בתור.
