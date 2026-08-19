@@ -111,6 +111,66 @@ export interface ConceptOut {
   copyHint?: string;
 }
 
+export interface DesignCritiqueIssue {
+  severity: "low" | "medium" | "high";
+  area: string;
+  note: string;
+}
+
+export interface DesignCritique {
+  score: number; // 0-100, איכות עיצובית כוללת
+  strengths: string[];
+  issues: DesignCritiqueIssue[];
+  suggestions: string[];
+}
+
+/**
+ * מבקר QA — בודק טיוטת מודעה קיימת (שכבות + רקע, בלי base64 של תמונות) לפני
+ * פרסום: היררכיה חזותית, קונטרסט/קריאות, עומס/איזון, עקביות טיפוגרפית/צבעונית.
+ * זהו שלב "הביקורת" בלולאת טיוטה→ביקורת→ליטוש (CHECKLIST/graphics.md #13) —
+ * מציג משוב ללקוח/מעצב לקריאה; לא מבצע שינוי אוטומטי בשכבות.
+ */
+export async function critiqueDesign(input: {
+  category?: string;
+  style?: string;
+  width: number;
+  height: number;
+  background: Record<string, unknown>;
+  layers: Array<Record<string, unknown>>;
+}): Promise<AiResult<DesignCritique>> {
+  const system =
+    "אתה מנהל אמנותי ומבקר QA בכיר במשרד פרסום חרדי מוביל, בוחן טיוטת מודעה לפני אישור סופי. " +
+    "אתה בודק היררכיה חזותית, קונטרסט/קריאות טקסט מול רקע, עומס/איזון בין שכבות, עקביות טיפוגרפית " +
+    "וצבעונית, וניצול נכון של מרחב הקנבס. אתה כותב בעברית מכובדת, ישירה וקונקרטית — " +
+    "כל הערה מתייחסת לשכבה/תחום ספציפי, לא כלל כללי. אינך ממציא עובדות. החזר אך ורק JSON תקין.";
+  const user =
+    `קטגוריה: ${input.category || "כללי"}\n` +
+    `סגנון: ${input.style || "כללי"}\n` +
+    `גודל קנבס: ${input.width}x${input.height}\n` +
+    `רקע: ${JSON.stringify(input.background)}\n` +
+    `שכבות (${input.layers.length}, בלי תוכן תמונות בפועל — רק מיקום/גודל/סגנון): ` +
+    `${JSON.stringify(input.layers)}\n\n` +
+    "בחן את הטיוטה הזו כמבקר QA בכיר לפני שהיא יוצאת ללקוח. החזר JSON: " +
+    '{"score": מספר 0-100 (איכות עיצובית כוללת),' +
+    '"strengths": ["חוזקה קונקרטית אחת או יותר"],' +
+    '"issues": [{"severity":"low|medium|high","area":"שם/סוג השכבה או תחום","note":"הבעיה הקונקרטית"}],' +
+    '"suggestions": ["הצעת שיפור קונקרטית וניתנת-לביצוע"]}. ' +
+    "אם הטיוטה טובה — score גבוה ו-issues מעטים/ריקים, לא לחפש בעיות מלאכותיות.";
+  try {
+    const out = await claude(system, user, 2000);
+    const data = extractJson(out);
+    const critique: DesignCritique = {
+      score: typeof data.score === "number" ? Math.max(0, Math.min(100, data.score)) : 70,
+      strengths: Array.isArray(data.strengths) ? data.strengths : [],
+      issues: Array.isArray(data.issues) ? data.issues : [],
+      suggestions: Array.isArray(data.suggestions) ? data.suggestions : [],
+    };
+    return { ok: true, data: critique };
+  } catch (e: any) {
+    return { ok: false, error: "שגיאה בביקורת AI", detail: String(e?.message || e) };
+  }
+}
+
 export async function generateConcepts(input: {
   category?: string;
   audience?: string;

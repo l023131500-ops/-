@@ -33,6 +33,7 @@ import {
   Blocks,
   Figma,
   Palette,
+  ClipboardCheck,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -131,6 +132,17 @@ export default function Editor() {
 
   // מתאמים (Figma/Canva/InDesign) — שלב 3 בצ'קליסט, פאנל תצוגת-מצב בלבד כרגע
   const [adaptersDialogOpen, setAdaptersDialogOpen] = useState(false);
+
+  // ביקורת AI (מבקר QA) — שלב "הביקורת" בלולאת טיוטה→ביקורת→ליטוש (צ'קליסט #13)
+  const [critiqueDialogOpen, setCritiqueDialogOpen] = useState(false);
+  const [critiquing, setCritiquing] = useState(false);
+  type Critique = {
+    score: number;
+    strengths: string[];
+    issues: { severity: "low" | "medium" | "high"; area: string; note: string }[];
+    suggestions: string[];
+  };
+  const [critiqueResult, setCritiqueResult] = useState<Critique | null>(null);
 
   // וקטוריזציה של שכבת תמונה קיימת ל-SVG אמיתי (Recraft — מנוע קיים בכלי המותג)
   const [vectorizing, setVectorizing] = useState(false);
@@ -608,6 +620,64 @@ export default function Editor() {
     downloadIDML(doc, `${selected?.name ?? "modaa"}.idml`);
   }
 
+  // תקציר שכבה לביקורת AI — בלי base64/data URL של תמונות (מיותר לקריטריוני
+  // עיצוב, ומנפח את הפרומפט/העלות); רק מיקום/גודל/סגנון, כמו שמבקר אנושי רואה.
+  function summarizeLayerForCritique(l: AnyLayer): Record<string, unknown> {
+    const base = {
+      id: l.id, type: l.type, x: l.x, y: l.y, width: l.width, height: l.height,
+      opacity: l.opacity, blend: l.blend, visible: l.visible, z: l.z,
+    };
+    if (l.type === "text") {
+      const t = l as TextLayer;
+      return {
+        ...base, role: t.role, text: t.text, fontFamily: t.fontFamily, fontSize: t.fontSize,
+        fontWeight: t.fontWeight, fill: t.fill, align: t.align, verticalAlign: t.verticalAlign,
+        lineHeight: t.lineHeight, letterSpacing: t.letterSpacing, stroke: t.stroke,
+      };
+    }
+    if (l.type === "image") {
+      const im = l as ImageLayer;
+      return { ...base, label: im.label, hasImage: !!im.src, fit: im.fit, circle: im.circle, cornerRadius: im.cornerRadius };
+    }
+    if (l.type === "shape") {
+      const s = l as ShapeLayer;
+      return { ...base, shape: s.shape, fill: s.fill, stroke: s.stroke, cornerRadius: s.cornerRadius };
+    }
+    return { ...base, kind: (l as any).kind, fill: (l as any).fill };
+  }
+
+  // ביקורת AI — שולח תקציר של הטיוטה הנוכחית (בלי לגעת בשכבות/רינדור/ייצוא
+  // הקיימים) ומציג משוב מובנה לקריאה; הלקוח/המעצב מחליטים אם ליישם.
+  async function handleAiCritique() {
+    if (!doc) return;
+    setCritiquing(true);
+    try {
+      const res = await apiRequest("POST", "/api/ai/critique", {
+        category: selected?.category,
+        style: selected?.style,
+        width: doc.width,
+        height: doc.height,
+        background: doc.background,
+        layers: doc.layers.map(summarizeLayerForCritique),
+      });
+      const data = await res.json();
+      if (!data || typeof data.score !== "number") {
+        toast({ title: "ביקורת AI נכשלה", description: data?.error, variant: "destructive" });
+        return;
+      }
+      setCritiqueResult(data);
+      setCritiqueDialogOpen(true);
+    } catch (err: any) {
+      toast({
+        title: "ביקורת AI נכשלה",
+        description: String(err?.message ?? err).slice(0, 150),
+        variant: "destructive",
+      });
+    } finally {
+      setCritiquing(false);
+    }
+  }
+
   return (
     <div className="flex min-h-screen flex-col bg-[#0B1220] text-[#F5EEDD]" dir="rtl">
       {/* סרגל עליון */}
@@ -651,6 +721,16 @@ export default function Editor() {
             data-testid="button-open-adapters"
           >
             <Blocks className="h-4 w-4" /> מתאמים
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            className="gap-1.5 border-[#C9A227]/40 text-[#C9A227]"
+            onClick={handleAiCritique}
+            disabled={critiquing}
+            data-testid="button-ai-critique"
+          >
+            <ClipboardCheck className="h-4 w-4" /> {critiquing ? "בודק..." : "ביקורת AI"}
           </Button>
           <Button size="sm" className="gap-1.5 bg-[#C9A227] text-[#0B1220] hover:bg-[#C9A227]/90" onClick={handleSaveProject} disabled={saving}>
             <Save className="h-4 w-4" /> {saving ? "שומר..." : "שמור פרויקט"}
@@ -1342,6 +1422,74 @@ export default function Editor() {
               </Button>
             </div>
           </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={critiqueDialogOpen} onOpenChange={setCritiqueDialogOpen}>
+        <DialogContent className="max-w-lg border-[#C9A227]/30 bg-[#0E1830] text-[#F5EEDD]" dir="rtl">
+          <DialogHeader>
+            <DialogTitle className="text-[#F5EEDD]" data-testid="text-critique-score">
+              ביקורת AI — ציון {critiqueResult?.score ?? "—"}/100
+            </DialogTitle>
+            <DialogDescription>
+              משוב מבקר QA על הטיוטה הנוכחית — לקריאה בלבד, שום שכבה לא משתנה אוטומטית.
+            </DialogDescription>
+          </DialogHeader>
+          {critiqueResult && (
+            <div className="max-h-[60vh] space-y-4 overflow-y-auto">
+              {critiqueResult.strengths.length > 0 && (
+                <div>
+                  <p className="mb-1.5 text-xs font-semibold text-[#C9A227]">חוזקות</p>
+                  <ul className="space-y-1 text-sm">
+                    {critiqueResult.strengths.map((s, i) => (
+                      <li key={i} className="rounded-md border border-[#C9A227]/20 bg-[#101B32] p-2 text-[#F5EEDD]/90">{s}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              {critiqueResult.issues.length > 0 && (
+                <div>
+                  <p className="mb-1.5 text-xs font-semibold text-[#C9A227]">הערות</p>
+                  <ul className="space-y-1.5 text-sm" data-testid="list-critique-issues">
+                    {critiqueResult.issues.map((issue, i) => (
+                      <li key={i} className="rounded-md border border-[#C9A227]/20 bg-[#101B32] p-2">
+                        <div className="mb-1 flex items-center gap-2">
+                          <Badge
+                            variant="outline"
+                            className={
+                              "shrink-0 text-[10px] " +
+                              (issue.severity === "high"
+                                ? "border-red-400/40 text-red-300"
+                                : issue.severity === "medium"
+                                  ? "border-amber-400/40 text-amber-300"
+                                  : "border-[#C9A227]/40 text-[#C9A227]")
+                            }
+                          >
+                            {issue.severity === "high" ? "גבוה" : issue.severity === "medium" ? "בינוני" : "נמוך"}
+                          </Badge>
+                          <span className="text-[11px] text-[#F5EEDD]/60">{issue.area}</span>
+                        </div>
+                        <p className="text-[#F5EEDD]/90">{issue.note}</p>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              {critiqueResult.suggestions.length > 0 && (
+                <div>
+                  <p className="mb-1.5 text-xs font-semibold text-[#C9A227]">הצעות שיפור</p>
+                  <ul className="space-y-1 text-sm">
+                    {critiqueResult.suggestions.map((s, i) => (
+                      <li key={i} className="rounded-md border border-[#C9A227]/20 bg-[#101B32] p-2 text-[#F5EEDD]/90">{s}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              {critiqueResult.issues.length === 0 && critiqueResult.suggestions.length === 0 && (
+                <p className="text-sm text-[#F5EEDD]/70">הטיוטה נראית מוצקה — אין הערות מהותיות.</p>
+              )}
+            </div>
+          )}
         </DialogContent>
       </Dialog>
     </div>

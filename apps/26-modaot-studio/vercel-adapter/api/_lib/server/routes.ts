@@ -3,7 +3,7 @@ import type { Server } from "node:http";
 import { storage, getUserIdFromToken } from "./storage";
 import { insertProjectSchema } from "../shared/schema";
 import { generateBackground, editImage, enhanceBackgroundPrompt } from "./gemini";
-import { generateCopy, generateConcepts } from "./ai";
+import { generateCopy, generateConcepts, critiqueDesign } from "./ai";
 import { generateStrategy, generateLogoConcepts, vectorizeLogo, deriveVisuals, generateBackgroundRecraft, removeBackgroundImage } from "./branding";
 import { ARCHETYPES, ARCHETYPE_GROUPS, AAKER_DIMENSIONS, BRIEF_CATEGORIES, ALL_QUESTIONS, CORE_QUESTIONS, TOTAL_QUESTIONS, BRAND_BOOK_SECTIONS, HEBREW_FONTS, VISUAL_STYLE_TO_ARCHETYPE, getArchetype } from "../shared/branding";
 import { insertBrandSchema } from "../shared/schema";
@@ -134,6 +134,18 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
   app.post("/api/ai/copy", async (req: Request, res: Response) => {
     const { category, message, audience, mood, fields, variants } = req.body || {};
     const ai = await generateCopy({ category, message, audience, mood, fields, variants });
+    if (ai.ok && ai.data) return res.json(ai.data);
+    res.status(502).json({ error: ai.error || "שגיאת AI", detail: ai.detail });
+  });
+
+  // ═══════════════════ ביקורת AI (מבקר QA) — CHECKLIST/graphics.md #13 ═══════════════════
+  // בודק את הטיוטה הנוכחית בעורך (שכבות+רקע, בלי base64 תמונות) ומחזיר משוב מובנה.
+  app.post("/api/ai/critique", async (req: Request, res: Response) => {
+    const { category, style, width, height, background, layers } = req.body || {};
+    if (!Array.isArray(layers) || !width || !height) {
+      return res.status(400).json({ error: "חסרים נתוני התבנית לביקורת" });
+    }
+    const ai = await critiqueDesign({ category, style, width, height, background: background || {}, layers });
     if (ai.ok && ai.data) return res.json(ai.data);
     res.status(502).json({ error: ai.error || "שגיאת AI", detail: ai.detail });
   });
