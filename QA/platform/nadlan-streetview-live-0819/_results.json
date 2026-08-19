@@ -1,0 +1,62 @@
+[
+  {
+    "label": "doresh-tov-17-jerusalem",
+    "query": "דורש טוב 17, ירושלים",
+    "geocode": {
+      "ok": true,
+      "lat": 31.7974979,
+      "lng": 35.2108917,
+      "formatted": "Doresh Tov St 17, Jerusalem, Israel"
+    },
+    "heading": 255.2498752922228,
+    "panoMeters": 5,
+    "panoLat": 31.79751013289692,
+    "panoLng": 35.21094636817694,
+    "file": "QA/platform/nadlan-streetview-live-0819/doresh-tov-17-jerusalem.jpg"
+  },
+  {
+    "label": "dizengoff-100-telaviv",
+    "query": "דיזנגוף 100, תל אביב",
+    "geocode": {
+      "ok": true,
+      "lat": 32.0793963,
+      "lng": 34.7740011,
+      "formatted": "Dizengoff St 100, Tel Aviv-Yafo, 6439612, Israel"
+    },
+    "heading": 69.12366820044662,
+    "panoMeters": 9,
+    "panoLat": 32.0793682717981,
+    "panoLng": 34.77391436727731,
+    "file": "QA/platform/nadlan-streetview-live-0819/dizengoff-100-telaviv.jpg"
+  },
+  {
+    "label": "herzl-42-haifa",
+    "query": "הרצל 42, חיפה",
+    "geocode": {
+      "ok": true,
+      "lat": 32.8087006,
+      "lng": 34.9996872,
+      "formatted": "Herzl St 42, Haifa, Israel"
+    },
+    "heading": 241.3160182904517,
+    "panoMeters": 11,
+    "panoLat": 32.80874645082056,
+    "panoLng": 34.99978690891134,
+    "file": "QA/platform/nadlan-streetview-live-0819/herzl-42-haifa.jpg"
+  },
+  {
+    "label": "rabbi-akiva-30-bneibrak",
+    "query": "רבי עקיבא 30, בני ברק",
+    "geocode": {
+      "ok": true,
+      "lat": 32.0889464,
+      "lng": 34.8264718,
+      "formatted": "Rabi Akiva St 30, Bnei Brak, 5127237, Israel"
+    },
+    "heading": 229.0055147134426,
+    "panoMeters": 10,
+    "panoLat": 32.08900668257039,
+    "panoLng": 34.82655366805555,
+    "file": "QA/platform/nadlan-streetview-live-0819/rabbi-akiva-30-bneibrak.jpg"
+  }
+]
