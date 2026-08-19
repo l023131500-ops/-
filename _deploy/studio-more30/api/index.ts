@@ -23,7 +23,12 @@ let appPromise: Promise<express.Express> | null = null;
 
 async function seedIfEmpty(): Promise<void> {
   const existing = await storage.listTemplates();
-  if (existing.some((t) => t.builtin === 1)) return;
+  const builtinCount = existing.filter((t) => t.builtin === 1).length;
+  // Re-seed whenever the catalog's builtin count drifts from what's live —
+  // covers both "never seeded" (0) and "TEMPLATE_DEFS grew" (checklist item 5
+  // added lifecycle/yearcycle/events templates), not just the empty case.
+  if (builtinCount === TEMPLATE_DEFS.length) return;
+  await storage.clearBuiltinTemplates();
   for (const def of TEMPLATE_DEFS) {
     const fmt = getFormat(def.format);
     const doc = def.build(fmt.width, fmt.height);

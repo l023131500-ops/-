@@ -120,6 +120,7 @@ export const FONTS: FontDef[] = [
   { key: "David Libre", label: "דוד (מסורתי)", weights: [400, 500, 700], category: "serif" },
   { key: "Noto Serif Hebrew", label: "נוטו סריף (עברי)", weights: [100, 200, 300, 400, 500, 600, 700, 800, 900], category: "serif", variable: true, minWeight: 100, maxWeight: 900 },
   { key: "Bellefair", label: "בלפר (סריף עדין)", weights: [400], category: "serif" },
+  { key: "Cardo", label: "קרדו (קלאסי אקדמי)", weights: [400, 700], category: "serif" },
   // ── ללא-תגים מודרני ──
   { key: "Heebo", label: "היבו (מודרני)", weights: [100, 200, 300, 400, 500, 600, 700, 800, 900], category: "sans", variable: true, minWeight: 100, maxWeight: 900 },
   { key: "Assistant", label: "אסיסטנט (מודרני)", weights: [200, 300, 400, 500, 600, 700, 800], category: "sans", variable: true, minWeight: 200, maxWeight: 800 },

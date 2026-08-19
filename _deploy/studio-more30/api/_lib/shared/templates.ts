@@ -5,6 +5,7 @@
 
 import type { TemplateDoc, AnyLayer } from "./layers";
 import { getStyle } from "./styles";
+import { renderCategoryTemplate } from "./categoryTemplates";
 
 export interface TemplateDef {
   key: string;
@@ -184,11 +185,31 @@ function shiurGridWeekly(w = W, h = H): TemplateDoc {
   };
 }
 
+/* =========================================================================
+   5-9. תבניות קבוצה מובילה לכל אחת משלוש הקבוצות שהיו "בקרוב" — בונות
+   דרך מנוע-הווריאציות (composeTemplate, shared/categoryTemplates.ts), אותו
+   מנוע אמיתי שכבר מפעיל את קטלוג התבניות של שיעורי תורה מאחורי הקלעים.
+   לא placeholder: כל שכבה מרונדרת בפועל (רקע/עיטורים/טיפוגרפיה/שדות).
+   ========================================================================= */
+function fromCategoryTemplate(categoryKey: string, templateKey: string) {
+  return (w = W, h = H): TemplateDoc => {
+    const doc = renderCategoryTemplate(categoryKey, templateKey, w, h);
+    if (!doc) throw new Error(`category template not found: ${categoryKey}/${templateKey}`);
+    return doc;
+  };
+}
+
 export const TEMPLATE_DEFS: TemplateDef[] = [
   { key: "shiur_malchut", category: "shiur_gemara", style: "malchut", format: "ig_feed_45", name: "שיעור — מלכות", build: shiurMalchut },
   { key: "shiur_chasidic", category: "shiur_chasidut", style: "chasidic_royal", format: "ig_feed_45", name: "שיעור — חסידי מלכותי", build: shiurChasidicRoyal },
   { key: "shiur_modern", category: "shiur_halacha", style: "modern_torani", format: "ig_feed_45", name: "שיעור — מודרני", build: shiurModern },
   { key: "shiur_grid", category: "shiur_series", style: "modern_torani", format: "ig_feed_45", name: "סדרת שיעורים — גריד ימים", build: shiurGridWeekly },
+  // מעגל החיים — חתונה (הקטגוריה המובילה בקבוצה)
+  { key: "wedding_gold_white", category: "wedding_chasidic", style: "malchut", format: "ig_feed_45", name: "הזמנת חתונה — זהב על לבן", build: fromCategoryTemplate("wedding_chasidic", "wedding_gold_white") },
+  // מעגל השנה — ברכת ראש השנה (הקטגוריה המובילה בקבוצה)
+  { key: "rosh_hashana_malchut", category: "rosh_hashana", style: "malchut", format: "ig_feed_45", name: "ברכת ראש השנה — מלכות", build: fromCategoryTemplate("rosh_hashana", "malchut_navy") },
+  // אירועים וארגונים — הכנסת ספר תורה (הקטגוריה המובילה בקבוצה)
+  { key: "hachnasat_sefer_torah_malchut", category: "hachnasat_sefer_torah", style: "malchut", format: "ig_feed_45", name: "הכנסת ספר תורה — מלכות", build: fromCategoryTemplate("hachnasat_sefer_torah", "malchut_navy") },
 ];
 
 export const getTemplateDef = (key: string) => TEMPLATE_DEFS.find((t) => t.key === key);
