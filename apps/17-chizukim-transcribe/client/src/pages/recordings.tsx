@@ -162,14 +162,23 @@ export default function RecordingsPage() {
               <p className="text-sm text-muted-foreground">מערכת תמלול ועריכה</p>
             </div>
           </div>
-          <Link
-            href="/upload"
-            className="inline-flex items-center gap-2 rounded-md bg-primary text-primary-foreground px-4 py-2 text-sm font-medium hover-elevate active-elevate-2"
-            data-testid="link-upload"
-          >
-            <Upload className="w-4 h-4" />
-            העלאת הקלטה
-          </Link>
+          <div className="flex items-center gap-2">
+            <a
+              href="/subscribe?app=chizukim"
+              className="inline-flex items-center gap-2 rounded-md border px-4 py-2 text-sm font-medium hover-elevate"
+              data-testid="link-pricing"
+            >
+              מחירון
+            </a>
+            <Link
+              href="/upload"
+              className="inline-flex items-center gap-2 rounded-md bg-primary text-primary-foreground px-4 py-2 text-sm font-medium hover-elevate active-elevate-2"
+              data-testid="link-upload"
+            >
+              <Upload className="w-4 h-4" />
+              העלאת הקלטה
+            </Link>
+          </div>
         </div>
       </header>
 
