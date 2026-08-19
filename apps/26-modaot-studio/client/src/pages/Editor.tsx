@@ -28,6 +28,7 @@ import {
   Unlock,
   ArrowUp,
   ArrowDown,
+  Search,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -87,6 +88,12 @@ export default function Editor() {
   const [aiCopyLoading, setAiCopyLoading] = useState(false);
   type CopyVariant = { title?: string; subtitle?: string; body?: string; cta?: string };
   const [aiCopyVariants, setAiCopyVariants] = useState<CopyVariant[]>([]);
+
+  // ספריית אייקונים (Iconify, חינם) — שכבת דקורציה חדשה מעל הקיימות
+  const [iconDialogOpen, setIconDialogOpen] = useState(false);
+  const [iconQuery, setIconQuery] = useState("crown");
+  const [iconResults, setIconResults] = useState<string[]>([]);
+  const [iconLoading, setIconLoading] = useState(false);
 
   // אם נכנסים ישירות ל-/editor בלי בחירה (רענון) — חזרה לבית
   useEffect(() => {
@@ -159,6 +166,46 @@ export default function Editor() {
     updateDoc({ ...doc!, layers: [...doc!.layers, layer] });
     setSelectedId(id);
     toast({ title: "נוספה שכבת טקסט — גררו, ערכו או מחקו לפני הייצוא" });
+  }
+
+  // חיפוש אייקונים חופשיים ב-Iconify (ציבורי, בלי מפתח) לפי מילת חיפוש
+  async function handleSearchIcons() {
+    setIconLoading(true);
+    try {
+      const res = await fetch(
+        `https://api.iconify.design/search?query=${encodeURIComponent(iconQuery || "star")}&limit=48`,
+      );
+      const data = await res.json();
+      setIconResults(Array.isArray(data?.icons) ? data.icons : []);
+    } catch {
+      toast({ title: "חיפוש האייקונים נכשל — נסו שוב", variant: "destructive" });
+      setIconResults([]);
+    } finally {
+      setIconLoading(false);
+    }
+  }
+
+  // הוספת אייקון שנבחר כשכבת תמונה חדשה (ניתנת לגרירה/מחיקה כמו כל תמונה)
+  function handleAddIconLayer(iconId: string) {
+    const id = nextId("icon");
+    const size = Math.round(doc!.width * 0.14);
+    const color = style.palette.accent ?? "#C9A227";
+    const layer: ImageLayer = {
+      id,
+      type: "image",
+      src: `https://api.iconify.design/${iconId.replace(":", "/")}.svg?color=${encodeURIComponent(color)}`,
+      x: Math.round(doc!.width * 0.5 - size / 2),
+      y: Math.round(doc!.height * 0.5 - size / 2),
+      width: size,
+      height: size,
+      fit: "contain",
+      label: `אייקון: ${iconId}`,
+      z: maxZ() + 1,
+    };
+    updateDoc({ ...doc!, layers: [...doc!.layers, layer] });
+    setSelectedId(id);
+    setIconDialogOpen(false);
+    toast({ title: "האייקון נוסף — גררו למיקום הרצוי" });
   }
 
   function handleDeleteLayer(id: string) {
@@ -532,15 +579,29 @@ export default function Editor() {
                 <h2 className="flex items-center gap-2 text-sm font-bold text-[#F5EEDD]">
                   <LayersIcon className="h-4 w-4 text-[#C9A227]" /> שכבות
                 </h2>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="h-7 gap-1 border-[#C9A227]/40 px-2 text-[11px] text-[#C9A227]"
-                  onClick={handleAddTextLayer}
-                  data-testid="button-add-text-layer"
-                >
-                  <Plus className="h-3.5 w-3.5" /> הוסף טקסט
-                </Button>
+                <div className="flex gap-1">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="h-7 gap-1 border-[#C9A227]/40 px-2 text-[11px] text-[#C9A227]"
+                    onClick={handleAddTextLayer}
+                    data-testid="button-add-text-layer"
+                  >
+                    <Plus className="h-3.5 w-3.5" /> הוסף טקסט
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="h-7 gap-1 border-[#C9A227]/40 px-2 text-[11px] text-[#C9A227]"
+                    onClick={() => {
+                      setIconDialogOpen(true);
+                      if (iconResults.length === 0) handleSearchIcons();
+                    }}
+                    data-testid="button-add-icon-layer"
+                  >
+                    <Plus className="h-3.5 w-3.5" /> הוסף אייקון
+                  </Button>
+                </div>
               </div>
               <div className="mb-3 max-h-52 space-y-1 overflow-y-auto">
                 {[...doc.layers]
@@ -771,6 +832,58 @@ export default function Editor() {
           >
             <Wand2 className="h-4 w-4" /> {aiLoading ? "יוצר רקע..." : "צור רקע"}
           </Button>
+        </DialogContent>
+      </Dialog>
+
+      {/* דיאלוג ספריית אייקונים (Iconify, חינם) */}
+      <Dialog open={iconDialogOpen} onOpenChange={setIconDialogOpen}>
+        <DialogContent className="max-w-2xl border-[#C9A227]/30 bg-[#0E1830] text-[#F5EEDD]" dir="rtl">
+          <DialogHeader>
+            <DialogTitle className="text-[#F5EEDD]">ספריית אייקונים</DialogTitle>
+            <DialogDescription>
+              חיפוש חופשי מתוך ספריית Iconify (חינם) — לצד עיטורי היודאיקה המובנים
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex gap-2">
+            <Input
+              value={iconQuery}
+              onChange={(e) => setIconQuery(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleSearchIcons()}
+              placeholder="לדוגמה: crown, star, book, candle"
+              className="border-[#C9A227]/20 bg-[#101B32] text-sm text-[#F5EEDD]"
+              data-testid="input-icon-search"
+            />
+            <Button
+              size="sm"
+              className="gap-1.5 bg-[#C9A227] text-[#0B1220] hover:bg-[#C9A227]/90"
+              onClick={handleSearchIcons}
+              disabled={iconLoading}
+              data-testid="button-icon-search"
+            >
+              <Search className="h-4 w-4" /> {iconLoading ? "מחפש..." : "חפש"}
+            </Button>
+          </div>
+          <div className="grid max-h-[50vh] grid-cols-6 gap-2 overflow-y-auto">
+            {iconResults.length === 0 && !iconLoading && (
+              <p className="col-span-6 text-sm text-[#F5EEDD]/50">אין תוצאות — נסו מילת חיפוש אחרת (באנגלית)</p>
+            )}
+            {iconResults.map((iconId) => (
+              <button
+                key={iconId}
+                title={iconId}
+                onClick={() => handleAddIconLayer(iconId)}
+                className="flex aspect-square items-center justify-center rounded-lg border border-[#C9A227]/20 bg-[#101B32] p-2 transition hover:border-[#C9A227]/60"
+                data-testid={`button-icon-${iconId}`}
+              >
+                <img
+                  src={`https://api.iconify.design/${iconId.replace(":", "/")}.svg?color=%23F5EEDD`}
+                  alt={iconId}
+                  className="h-full w-full"
+                  loading="lazy"
+                />
+              </button>
+            ))}
+          </div>
         </DialogContent>
       </Dialog>
     </div>

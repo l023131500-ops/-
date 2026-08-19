@@ -1,5 +1,27 @@
 # SYSTEMS_STATUS.md — מצב כל המערכות, נמדד
 
+> ## 🟢 19/08/2026 (בוקר +23) — **41 design-system / 26 studio: checklist item 9 — ספריית אייקונים Iconify, בלי לגעת במנוע המוגן**
+
+> `CHECKLIST/graphics.md` item 9 היה הפריט הלא-בנוי הבא בשלב 2 (שכבת AI-נכסים).
+> נבדק מול הקוד לפני מימוש: `DecorationLayer` (kind-enum, בלי `src`) לא מתאים
+> ל-Iconify בלי שינוי סכמה + רינדור חדש ב-`CanvasStage.tsx`/`exporter.ts` —
+> המנוע המוגן לפי `DECISIONS.md` #1. נעשה שימוש חוזר ב-`ImageLayer` הקיים
+> (כבר תומך `src` כל URL, כבר מרונדר/מיוצא גנרית) — אפס שינוי סכמה/רינדור/ייצוא.
+>
+> נוסף כפתור "הוסף אייקון" ב-`Editor.tsx` (ליד "הוסף טקסט" הקיים) שפותח דיאלוג
+> חיפוש חי מול `api.iconify.design/search` (ציבורי, חינם, בלי מפתח) ומוסיף שכבת
+> `image` עם `src` מ-Iconify. אומת חי ב-`more30.com/studio` (Playwright,
+> 1280×900, cache-buster): חיפוש "crown" → 45 תוצאות אמיתיות → הוספת `mdi:crown`
+> → מופיע בפאנל השכבות → **הורד PNG** מייצא את הכתר בפועל ברזולוציה מלאה. 0
+> שגיאות קונסולה לאורך כל הזרימה. שאר הפאנלים/שכבות/גלריית התבניות ללא שינוי.
+>
+> פריסה: `vite build --base=/studio/` (2165 מודולים, נקי) → הרכבת
+> `_deploy/studio-more30` (public/studio מהבנייה + api/ הועתק ללא שינוי מ-
+> `vercel-adapter/` שכבר בגיט, `.vercel/project.json` שוחזר מה-Vercel REST API
+> כי `_deploy/**` ב-`.gitignore`) → `vercel deploy --prod` →
+> `dpl_AqK6Vzf7L7HH8TtdkhAeAQ7LQi7c`, READY. אפס רגרסיה: קוד ה-API/adapter לא
+> נגעתי בו כלל (השינוי כולו client-side), שום מערכת מוגנת לא נגעה.
+
 > ## 🟢 19/08/2026 (בוקר +22) — **24 גליל קונקט (galilee-connect-hub): audit_status תוקן — "בדיוק אותו build/מסד של 16" היה שקרי**
 >
 > המשך אותו דפוס ביקורת-חוזרת. `core.projects` #24 טען (מ-29/07): "חיה — אבל היא בדיוק
