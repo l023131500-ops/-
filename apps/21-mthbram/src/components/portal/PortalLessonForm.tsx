@@ -106,8 +106,8 @@ const PortalLessonForm = ({ data, onChange }: PortalLessonFormProps) => {
 
       {/* Gender / Target audience */}
       <ChipPicker label="למי מיועד?" icon={<Users className="w-3.5 h-3.5 text-teal" />}
-        options={GENDER_OPTIONS} selected={data.target_audience || []}
-        onSelect={(v) => toggleArray("target_audience", v)} multi />
+        options={GENDER_OPTIONS} selected={data.audience_type || []}
+        onSelect={(v) => toggleArray("audience_type", v)} multi />
 
       {/* Language */}
       <ChipPicker label="שפה" icon={<Globe className="w-3.5 h-3.5 text-teal" />}
@@ -115,8 +115,8 @@ const PortalLessonForm = ({ data, onChange }: PortalLessonFormProps) => {
 
       {/* Audience type */}
       <ChipPicker label="קהל יעד" icon={<Users className="w-3.5 h-3.5 text-teal" />}
-        options={AUDIENCE_TYPES} selected={data.audience_type || []}
-        onSelect={(v) => toggleArray("audience_type", v)} multi />
+        options={AUDIENCE_TYPES} selected={data.target_audience || []}
+        onSelect={(v) => toggleArray("target_audience", v)} multi />
 
       {/* Location */}
       <div className="border-t border-gray-200 pt-4">

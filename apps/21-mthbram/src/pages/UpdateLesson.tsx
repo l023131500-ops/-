@@ -112,9 +112,9 @@ const UpdateLesson = () => {
     const { error } = await supabase.from("lessons").insert([{
       rabbi_name: rabbiName,
       subject: subject.join(", "),
-      target_audience: [gender],
+      target_audience: audienceType,
       language,
-      audience_type: audienceType,
+      audience_type: [gender],
       lesson_style: lessonStyle.join(", "),
       synagogue_name: synagogueName,
       city, neighborhood, street, street_number: streetNumber,
