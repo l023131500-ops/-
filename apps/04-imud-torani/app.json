@@ -13,6 +13,6 @@
   },
   "deployTarget": "railway",
   "protected": false,
-  "source": "not-vendored",
-  "note": "Known bug: X-Visitor-Id header."
+  "source": "vendored",
+  "note": "X-Visitor-Id per-visitor isolation fixed in code (commit 7df6f8d6, DECISIONS.md round 6): client now sends a persistent per-browser id on every request, server/storage filter consistently, DOCX export uses blob-fetch to carry the header. 04 deploys via manual staging (not push-triggered) -- confirm live after next manual deploy."
 }

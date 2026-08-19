@@ -185,6 +185,7 @@ export async function aiScanBook(
     for (const sug of suggestions) {
       const idx = block.text.indexOf(sug.original);
       if (idx === -1) continue; // המודל החזיר טקסט שלא קיים בדיוק — דלג (בטיחות)
+      if (block.text.indexOf(sug.original, idx + 1) !== -1) continue; // הטקסט חוזר יותר מפעם אחת בבלוק — אי אפשר לדעת לאיזה מופע המודל התכוון, ותיקון על המופע הראשון עלול לשנות טקסט אחר מזה שאושר — דלג (בטיחות)
       const sig = issueSignature(block.id, sug.category, idx, sug.original);
       if (ignoreSet.has(sig)) continue;
       issues.push({
