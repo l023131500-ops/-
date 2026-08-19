@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import plantMoney from "@/assets/plant-money.png";
+import plantMoney from "@/assets/plant-money.jpg";
 
 const contactMethods = [
   { id: "voice", label: "מערכת קולית", icon: PhoneCall },
