@@ -665,6 +665,7 @@ export default function Editor() {
         height: doc.height,
         background: doc.background,
         layers: doc.layers.map(summarizeLayerForCritique),
+        clientNotes: clientNotes.trim() || undefined,
       });
       const data = await res.json();
       if (!data || typeof data.score !== "number") {
@@ -1448,6 +1449,7 @@ export default function Editor() {
             </DialogTitle>
             <DialogDescription>
               משוב מבקר QA על הטיוטה הנוכחית — לקריאה בלבד, שום שכבה לא משתנה אוטומטית.
+              {clientNotes.trim() && " הביקורת הביאה בחשבון את הערת הלקוח השמורה."}
             </DialogDescription>
           </DialogHeader>
           {critiqueResult && (

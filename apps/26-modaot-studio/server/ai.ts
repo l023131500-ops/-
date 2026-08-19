@@ -137,20 +137,25 @@ export async function critiqueDesign(input: {
   height: number;
   background: Record<string, unknown>;
   layers: Array<Record<string, unknown>>;
+  clientNotes?: string;
 }): Promise<AiResult<DesignCritique>> {
   const system =
     "אתה מנהל אמנותי ומבקר QA בכיר במשרד פרסום חרדי מוביל, בוחן טיוטת מודעה לפני אישור סופי. " +
     "אתה בודק היררכיה חזותית, קונטרסט/קריאות טקסט מול רקע, עומס/איזון בין שכבות, עקביות טיפוגרפית " +
     "וצבעונית, וניצול נכון של מרחב הקנבס. אתה כותב בעברית מכובדת, ישירה וקונקרטית — " +
     "כל הערה מתייחסת לשכבה/תחום ספציפי, לא כלל כללי. אינך ממציא עובדות. החזר אך ורק JSON תקין.";
+  const clientNotesLine = input.clientNotes?.trim()
+    ? `\nהערת לקוח שנשמרה על הטיוטה הזו (תעדף בדיקה/התייחסות להערה הזו לפני כל דבר אחר): "${input.clientNotes.trim()}"\n`
+    : "";
   const user =
     `קטגוריה: ${input.category || "כללי"}\n` +
     `סגנון: ${input.style || "כללי"}\n` +
     `גודל קנבס: ${input.width}x${input.height}\n` +
     `רקע: ${JSON.stringify(input.background)}\n` +
     `שכבות (${input.layers.length}, בלי תוכן תמונות בפועל — רק מיקום/גודל/סגנון): ` +
-    `${JSON.stringify(input.layers)}\n\n` +
-    "בחן את הטיוטה הזו כמבקר QA בכיר לפני שהיא יוצאת ללקוח. החזר JSON: " +
+    `${JSON.stringify(input.layers)}\n` +
+    clientNotesLine +
+    "\nבחן את הטיוטה הזו כמבקר QA בכיר לפני שהיא יוצאת ללקוח. החזר JSON: " +
     '{"score": מספר 0-100 (איכות עיצובית כוללת),' +
     '"strengths": ["חוזקה קונקרטית אחת או יותר"],' +
     '"issues": [{"severity":"low|medium|high","area":"שם/סוג השכבה או תחום","note":"הבעיה הקונקרטית"}],' +

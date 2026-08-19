@@ -141,11 +141,11 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
   // ═══════════════════ ביקורת AI (מבקר QA) — CHECKLIST/graphics.md #13 ═══════════════════
   // בודק את הטיוטה הנוכחית בעורך (שכבות+רקע, בלי base64 תמונות) ומחזיר משוב מובנה.
   app.post("/api/ai/critique", async (req: Request, res: Response) => {
-    const { category, style, width, height, background, layers } = req.body || {};
+    const { category, style, width, height, background, layers, clientNotes } = req.body || {};
     if (!Array.isArray(layers) || !width || !height) {
       return res.status(400).json({ error: "חסרים נתוני התבנית לביקורת" });
     }
-    const ai = await critiqueDesign({ category, style, width, height, background: background || {}, layers });
+    const ai = await critiqueDesign({ category, style, width, height, background: background || {}, layers, clientNotes });
     if (ai.ok && ai.data) return res.json(ai.data);
     res.status(502).json({ error: ai.error || "שגיאת AI", detail: ai.detail });
   });
