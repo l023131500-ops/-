@@ -14,6 +14,23 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 const DAY_NAMES = ["ראשון", "שני", "שלישי", "רביעי", "חמישי", "שישי", "שבת"];
 
+const TIME_BUCKETS = [
+  { value: "morning", label: "בוקר (עד 12:00)" },
+  { value: "afternoon", label: "צהריים (12:00–17:00)" },
+  { value: "evening", label: "ערב (17:00–21:00)" },
+  { value: "night", label: "לילה (אחרי 21:00)" },
+];
+
+function timeBucketOf(hhmm?: string | null): string | null {
+  if (!hhmm) return null;
+  const hour = parseInt(String(hhmm).split(":")[0], 10);
+  if (Number.isNaN(hour)) return null;
+  if (hour < 12) return "morning";
+  if (hour < 17) return "afternoon";
+  if (hour < 21) return "evening";
+  return "night";
+}
+
 export default function LessonsDirectory() {
   const { tenant } = useTenant();
   const { user } = useAuth();
@@ -21,6 +38,8 @@ export default function LessonsDirectory() {
   const [q, setQ] = useState("");
   const [topic, setTopic] = useState<string>("all");
   const [day, setDay] = useState<string>("all");
+  const [city, setCity] = useState<string>("all");
+  const [timeBucket, setTimeBucket] = useState<string>("all");
   const [savedOnly, setSavedOnly] = useState(false);
 
   const { data: topics } = useQuery({
@@ -36,7 +55,7 @@ export default function LessonsDirectory() {
   });
 
   const { data: lessons, isLoading } = useQuery({
-    queryKey: ["lessons-public", tenant?.id, q, topic, day],
+    queryKey: ["lessons-public", tenant?.id, q, topic, day, city],
     enabled: !!tenant?.id,
     queryFn: async () => {
       // Publication is expressed by is_active + is_approved; there is no
@@ -59,10 +78,29 @@ export default function LessonsDirectory() {
       }
       // day_of_week is a single integer per lesson, not an array.
       if (day !== "all") qb = qb.eq("day_of_week", parseInt(day));
+      if (city !== "all") qb = qb.eq("city", city);
       const { data } = await qb;
       return data || [];
     },
   });
+
+  // Distinct real cities across all published lessons (unfiltered by the
+  // other controls), used only to populate the city dropdown options.
+  const { data: cityRows } = useQuery({
+    queryKey: ["lesson-cities", tenant?.id],
+    enabled: !!tenant?.id,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("lessons")
+        .select("city")
+        .eq("tenant_id", tenant!.id)
+        .eq("is_active", true)
+        .eq("is_approved", true)
+        .not("city", "is", null);
+      return data || [];
+    },
+  });
+  const cities = Array.from(new Set((cityRows || []).map((r: any) => r.city).filter(Boolean))).sort();
 
   const { data: bookmarks } = useQuery({
     queryKey: ["lesson-bookmarks", user?.id],
@@ -87,7 +125,9 @@ export default function LessonsDirectory() {
     queryClient.invalidateQueries({ queryKey: ["lesson-bookmarks", user.id] });
   };
 
-  const visibleLessons = savedOnly ? (lessons || []).filter((l: any) => bookmarkedIds.has(l.id)) : lessons;
+  const visibleLessons = (savedOnly ? (lessons || []).filter((l: any) => bookmarkedIds.has(l.id)) : lessons)?.filter(
+    (l: any) => timeBucket === "all" || timeBucketOf(l.time_hhmm) === timeBucket,
+  );
 
   return (
     <div className="container mx-auto px-4 py-10">
@@ -115,6 +155,23 @@ export default function LessonsDirectory() {
           <SelectContent>
             <SelectItem value="all">כל הימים</SelectItem>
             {DAY_NAMES.map((d, i) => <SelectItem key={i} value={String(i)}>{d}</SelectItem>)}
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div className="grid md:grid-cols-2 gap-3 mb-6">
+        <Select value={city} onValueChange={setCity}>
+          <SelectTrigger><SelectValue placeholder="כל הערים" /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">כל הערים</SelectItem>
+            {cities.map((c: string) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+          </SelectContent>
+        </Select>
+        <Select value={timeBucket} onValueChange={setTimeBucket}>
+          <SelectTrigger><SelectValue placeholder="כל השעות" /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">כל השעות</SelectItem>
+            {TIME_BUCKETS.map((b) => <SelectItem key={b.value} value={b.value}>{b.label}</SelectItem>)}
           </SelectContent>
         </Select>
       </div>
