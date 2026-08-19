@@ -39,6 +39,33 @@ const ORG_SLUG = "chatzor-hagelilit";
 const readFailed = (what: string, message: string) =>
   new Error(`טעינת ${what} נכשלה: ${message}`);
 
+/**
+ * `organization_id` הוא `not null` על synagogues/community_services (וגם
+ * תנאי `is_org_admin(organization_id)` ב-RLS לכתיבה), אבל האפליקציה הזו
+ * משרתת ארגון יחיד — אז פותרים את ה-UUID שלו פעם אחת מ-`ORG_SLUG` ומטמינים.
+ * (lessons דורשת גם `organization_id` אבל שולחת עמודת `teacher` שאינה קיימת
+ * בסכימה החיה — תקלה נפרדת, לא נגעתי בה כאן; ראה core.issues.)
+ */
+let orgIdCache: Promise<string> | null = null;
+const getOrgId = (): Promise<string> => {
+  if (!supabase) return Promise.resolve(newId());
+  if (!orgIdCache) {
+    orgIdCache = supabase
+      .from("organizations")
+      .select("id")
+      .eq("slug", ORG_SLUG)
+      .single()
+      .then(({ data, error }) => {
+        if (error || !data) {
+          orgIdCache = null;
+          throw new Error(`ארגון ${ORG_SLUG} לא נמצא: ${error?.message ?? ""}`);
+        }
+        return data.id as string;
+      });
+  }
+  return orgIdCache;
+};
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const toSynagogue = (r: any): Synagogue => ({
   id: r.id,
@@ -213,6 +240,7 @@ export async function createSynagogue(input: SynagogueInput): Promise<Synagogue>
     return s;
   }
   const { data, error } = await supabase.from("synagogues").insert({
+    organization_id: await getOrgId(),
     name: input.name, slug: input.slug, nusach: input.nusach || null, address: input.address || null,
     description: input.description || null, brand_gradient: input.brandGradient || null,
     logo_url: input.logoUrl || null, donation_link: input.donationLink || null, is_published: input.isPublished,
@@ -283,6 +311,7 @@ export async function createService(input: ServiceInput): Promise<void> {
     return;
   }
   const { error } = await supabase.from("community_services").insert({
+    organization_id: await getOrgId(),
     name: input.name, category: input.category, description: input.description || null, contact: input.contact || null,
   });
   if (error) throw new Error(error.message);

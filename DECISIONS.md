@@ -1502,3 +1502,66 @@
      **הבא בתור בפועל:** להמשיך לבדוק אישור פריסה לתיקונים הממתינים על
      15-egod/01-torah/03-igud-ads (הסליקה), או לסרוק מחדש `core.issues`/
      `core.project_tasks` לאיתור פריט חדש/לא-חסום.
+
+## 19/08/2026 (LOOP A — סבב 14) — 16 chatzor-connect: יצירת בית-כנסת/שירות קהילתי נכשלה תמיד — `organization_id` חסרה בכתיבה
+
+134. **בדקתי מחדש `core.run_progress`/`core.issues`/`core.project_tasks` לפני
+     שהתחלתי.** שוב אין שינוי מהותי — כל הפריטים הפתוחים בתחום Loop A עדיין
+     חסומים על גורם חיצוני (מפתח/אישור/הכרעת משתמש) או שייכים ל-Loop B/פרויקטים
+     מוגנים. שיגרתי שני סוכני Explore במקביל: אחד ל-`12-smel-ndln`
+     (אפליקציית client/server מלאה שלא נסרקה לעומק בסבבים קודמים) ו-
+     `06-kupot-holim`; אחד לאפליקציות "שלד" (05/07/11/13, בדיקה מהירה בלבד)
+     ול-`16-chatzor-connect/src` לעומק.
+135. **הממצא מ-06-kupot-holim היה false positive — בדקתי וסתרתי בעצמי.** הסוכן
+     דיווח "IDOR": `window.LeadsStore.updateStatus`/`deleteLead` פתוחים לכל
+     דפדפן בלי אימות. אבל הקובץ עצמו (`apps/06-kupot-holim/site/leads-store.js`
+     שורות 74-81) מתעד במפורש שהמפתח האנונימי הוא insert-only — נמדד מול
+     הפרויקט החי ב-`scripts/qa/briut-leads-access.mjs`: POST מחזיר 201,
+     GET/PATCH/DELETE מחזירים 401. כלומר קריאות ה-PATCH/DELETE מהדפדפן פשוט
+     נדחות על ידי RLS בצד השרת — אין כאן IDOR אמיתי, רק קוד לקוח שמנסה קריאות
+     שהשרת לא מרשה. תבנית זהה לסבב 12 (#126) — סוכן שקרא הערת-תיקון-עבר
+     כאילו היא הבאג הנוכחי, הפעם הערת "כבר מוגן" ולא "כבר תוקן".
+136. **הממצא מ-16-chatzor-connect אמיתי, אימתתי בקריאה ישירה של הקוד + שאילתת
+     סכימה חיה (MCP, `uhnrgujbdxhhmoxcjria.chatzor`).** `apps/16-chatzor-
+     connect/src/data/repositories.ts`: `createSynagogue` (שורה ~215),
+     `createLesson` (~268) ו-`createService`/community_services (~312) כותבות
+     ל-Supabase בלי `organization_id`, אף שהעמודה `not null` על שלוש הטבלאות
+     (`synagogues`, `lessons`, `community_services` — אימתתי ישירות מול
+     `information_schema.columns` על הפרויקט החי, לא רק מהמיגרציה בריפו) וגם
+     תנאי RLS לכתיבה `is_org_admin(organization_id)` דורש ערך אמיתי. הקובץ
+     מגדיר `ORG_SLUG = "chatzor-hagelilit"` (שורה 36) אבל אף מקום בקוד לא
+     פותר אותו ל-UUID בפועל (`grep` על כל `src/` אישר: 0 שימושים נוספים) —
+     כל ניסיון של גבאי/אדמין ליצור בית-כנסת חדש או שירות קהילתי חדש נכשל
+     תמיד עם `null value in column "organization_id" violates not-null
+     constraint`. האפליקציה חיה ומוצגת ל-16 chatzor-connect ב-`core.projects`
+     (`stage=beta`, `live=true`).
+137. **תוקן חלקית ובמכוון (2 מתוך 3 יצירות, קובץ יחיד):** הוספתי `getOrgId()`
+     — פונקציה שמטמינה (cache) בזיכרון את ה-UUID של הארגון היחיד שהאפליקציה
+     משרתת, נפתר פעם אחת מ-`ORG_SLUG` דרך `.from("organizations").select("id")
+     .eq("slug", ORG_SLUG).single()` — וקראתי לה מ-`createSynagogue` ו-
+     `createService` (`organization_id: await getOrgId()` בגוף ה-`.insert()`).
+     שתי הפונקציות האלה עכשיו יעבדו קצה-לקצה: אימתתי מול `information_schema`
+     שכל שאר השדות שהן שולחות תואמים בדיוק לעמודות החיות.
+138. **`createLesson` נשארה בכוונה לא-מתוקנת — בעיה שנייה, נפרדת, לא רק
+     `organization_id`.** קריאה ל-`information_schema.columns` על
+     `chatzor.lessons` בפרויקט החי גילתה שאין עמודת טקסט `teacher` בכלל —
+     יש רק `teacher_id uuid` (FK ל-`chatzor.teachers`). הקוד (`createLesson`
+     וגם `toLesson` בקריאה) משתמש ב-`teacher` כשדה טקסט חופשי, ושדה זה הוא
+     שדה אמיתי במסך ("מגיד השיעור" ב-`AdminLessons.tsx`/`GabaiLessons.tsx`,
+     לא ניחוש). הוספת `organization_id` בלבד לא הייתה מתקנת את היצירה — היא
+     עדיין הייתה נכשלת (או שקטה מאבדת את שם המרצה) על עמודת `teacher` שלא
+     קיימת. תיקון נכון דורש resolve-or-create של שורה ב-`chatzor.teachers`
+     לפי שם + עדכון תואם בצד הקריאה, לא שורה אחת — זו הכרעת-עיצוב קטנה, לא
+     רק תיקון. במקום לתקן חלקית ולאבד בשקט את שם המרצה, השארתי את הפונקציה
+     כמו שהייתה ורשמתי `core.issues #247` (owner=agent, לא חסום) כדי שסבב
+     הבא יתקוף את זה כשלם, לא בעקיפין.
+139. **אפס שינוי בממשק/סכימה/RLS** — כל השינוי בצד ה-TypeScript הקיים
+     (`packages`/`RLS`/מיגרציות לא נגעו בהם), שתי הקריאות שכבר קיימות
+     (`app/admin/AdminSynagogues.tsx` וכו') ממשיכות לעבוד זהה, רק בלי
+     שגיאת DB. אימות בקריאה בלבד (אין dev server/build זמין — `npx tsc`
+     ניסה להתקין מהרשת ונכשל, אין אינטרנט בהרצה הזו): קראתי את כל הקובץ
+     המתוקן פעמיים, וידאתי `information_schema` תואם שדה-שדה לכל שלוש
+     הפונקציות (כולל זו שנשארה שבורה בכוונה). `apps/16-chatzor-connect/**`
+     כבר עוקב תחת git ונפרס אוטומטית. ענף חדש `fix/a-chatzor-connect-org-id-0819`.
+     **הבא בתור בפועל:** לתקוף את `core.issues #247` (teacher_id ב-16) כשלם,
+     או לסרוק מחדש `core.issues`/`core.project_tasks` לאיתור פריט חדש/לא-חסום.
