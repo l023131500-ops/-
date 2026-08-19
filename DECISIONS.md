@@ -1857,3 +1857,42 @@
      או להמשיך סריקת תשתית משותפת (super-admin entry, homepage ordering)
      שטרם נסרקה לעומק בסבבים האחרונים — הימנע מלחזור על בדיקת יחידת
      ה-Amount של נדרים בלי מקור סמכות חדש (ראה #162).
+166. **סבב 21 [loop A]: בדקתי מחדש `core.issues`/`core.project_tasks`
+     (owner=agent, status open/in_progress, בתחום הסבב הזה) — כל
+     הפריטים שבתחום עדיין חסומים: #167/#201 (15-egod, Lovable דוחה כל
+     הודעה, ללא נתיב פריסה אחר), #196 (01-torah, תיקון נכתב, ממתין
+     לאישור פריסה מפורש על נתיב תשלום חי), #120 (הכרעת משתמש על סמלוש
+     דף הבית), #6 (מעטפת — פרויקט חדש מפורש שגדר עצמו "רק אחרי" שלמות
+     more30-priority.md, לא מתאים לצעד אחד ממוקד), #5 (ייחודיות עיצוב —
+     כל הזוגות שנמדדו כבר תוקנו, מה שנשאר הוא פער מבני רחב שאינו "צעד
+     אחד"). לכן הרצתי סריקת קוד חדשה (סוכן general-purpose) על תשתית
+     משותפת שטרם נסרקה השבוע (`portal/`, `packages/auth`,
+     `packages/billing`, `packages/db`, `admin/`) ועל 01/02/03/04/10/12/
+     14/16 מעבר למה שכבר תוקן היום. הממצא: `portal`/`auth`/`billing`/`db`
+     תקינים ומחוזקים; 12-smel-ndln השרת מת-קוד (הלקוח קורא ל-Supabase
+     ישירות) — לא באג.
+167. **הממצא שנבחר: `apps/16-chatzor-connect/src/data/repositories.ts`
+     שורות 223-227 ו-239-242 — `submitInquiry`/`submitRabbiQuestion`.**
+     שני טפסי הפנייה הציבוריים (יצירת קשר כללית + "שאל את הרב") כותבים
+     ל-`chatzor.inquiries`/`chatzor.rabbi_questions` בלי `organization_id`.
+     עמודה זו nullable (לפי `0001_chatzor_schema.sql` שורות 125/152) כך
+     שה-INSERT מצליח בשקט (מדיניות `insert with check (true)`), אבל
+     מדיניות ה-SELECT לאדמין היא `chatzor.is_org_admin(organization_id)`
+     — פונקציה שמשווה `a.organization_id = org`, והשוואת NULL תמיד
+     false ב-SQL, אין עקיפה. אימתתי גם ש-`Contact.tsx` לא שולח
+     `synagogueId` (חלופת ה-`OR` היחידה בפוליסת inquiries), ול-
+     `rabbi_questions` אין נפילה חלופית כלל. התוצאה: כל פנייה שנשלחת
+     דרך שני הטפסים האלה מוצגת ללקוח כהצלחה (toast) ונשמרת בפועל, אבל
+     נעלמת לצמיתות ממסכי התיבה הנכנסת של האדמין (`listInquiries`/
+     `listRabbiQuestions`) — אובדן נתונים שקט, אותה משפחת באג כמו התיקון
+     שנעשה היום ל-`missing organization_id on synagogue/service create`
+     (אותו קובץ), אבל על שתי טבלאות אחרות שהתיקון ההוא לא נגע בהן.
+     **התיקון:** הוספת `organization_id: await getOrgId()` לשני
+     ה-INSERT, בדיוק כמו התבנית הקיימת ב-`createSynagogue` (שורה 261)
+     ובמקומות נוספים באותו קובץ. `getOrgId()` פותר UUID יחיד מ-
+     `ORG_SLUG` קבוע (מערכת חד-ארגונית) ומטמין — אין תלות בהקשר משתמש,
+     בטוח גם לקורא אנונימי. אימתתי שהמדיניות `with check (true)` לא
+     תלויה בערך `organization_id`, כך שההוספה לא יכולה לשבור את ההוספה
+     עצמה. אין `node_modules`/build זמין בהרצה הזו — אימות בקריאת קוד
+     מלאה (payload, סכמה, RLS, שימוש בקריאה) ולא בהרצת build/דפדפן.
+     ענף `fix/a-chatzor-connect-inquiries-org-id-0819`, נדחף.

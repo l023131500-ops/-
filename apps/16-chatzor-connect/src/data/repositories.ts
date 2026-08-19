@@ -221,6 +221,7 @@ export async function submitInquiry(input: InquiryInput): Promise<void> {
     return;
   }
   const { error } = await supabase.from("inquiries").insert({
+    organization_id: await getOrgId(),
     name: input.name, phone: input.phone || null, email: input.email || null,
     subject: input.subject || null, body: input.body, synagogue_id: input.synagogueId || null,
   });
@@ -237,6 +238,7 @@ export async function submitRabbiQuestion(input: RabbiQuestionInput): Promise<vo
     return;
   }
   const { error } = await supabase.from("rabbi_questions").insert({
+    organization_id: await getOrgId(),
     name: input.name || null, contact: input.contact || null, question: input.question,
   });
   if (error) throw new Error(error.message);
