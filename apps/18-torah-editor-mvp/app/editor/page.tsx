@@ -184,6 +184,43 @@ export default function EditorPage() {
     URL.revokeObjectURL(url);
   }
 
+  // PDF export via a styled print window — same pattern already live in
+  // 27-mechiron/28-kupot/17-chizukim (window.print(), no extra dependency).
+  function downloadPdf() {
+    const title = (docTitle || titleFrom(text, 'מסמך')).trim();
+    const paragraphs = text
+      .split(/\n+/)
+      .filter(Boolean)
+      .map((p) => `<p>${esc(p)}</p>`)
+      .join('');
+
+    const html = `<!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8">
+    <title>${esc(title)}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+      @page { margin: 2.2cm; }
+      body { font-family:'Frank Ruhl Libre',serif; direction:rtl; color:#1a1a1a; line-height:1.9; }
+      h1 { font-size:22pt; margin:0 0 16pt; }
+      p { font-size:12.5pt; margin:0 0 10pt; text-align:justify; }
+    </style></head><body>
+    <h1>${esc(title)}</h1>
+    ${paragraphs}
+    <script>window.onload=function(){setTimeout(function(){window.print();},400);};</script>
+    </body></html>`;
+
+    const w = window.open('', '_blank');
+    if (!w) {
+      alert('החלון נחסם. אנא אפשר חלונות קופצים כדי להוריד PDF.');
+      return;
+    }
+    w.document.write(html);
+    w.document.close();
+  }
+
+  function esc(s: string): string {
+    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
   return (
     <div className="container">
       <h1>העורך התורני</h1>
@@ -256,6 +293,9 @@ export default function EditorPage() {
         </button>
         <button className="action" onClick={downloadTxt} disabled={!text} type="button">
           הורד כטקסט (.txt)
+        </button>
+        <button className="action" onClick={downloadPdf} disabled={!text} type="button">
+          הורד כ-PDF
         </button>
       </div>
 
