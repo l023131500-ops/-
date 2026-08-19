@@ -128,13 +128,13 @@ export interface IStorage {
   listProjects(limit?: number, userId?: string): Promise<Project[]>;
   getProject(id: number): Promise<Project | undefined>;
   createProject(p: InsertProject, userId?: string): Promise<Project>;
-  updateProject(id: number, patch: Partial<InsertProject>): Promise<Project | undefined>;
-  deleteProject(id: number): Promise<void>;
+  updateProject(id: number, patch: Partial<InsertProject>, requesterId?: string): Promise<Project | undefined>;
+  deleteProject(id: number, requesterId?: string): Promise<void>;
   listBrands(limit?: number, userId?: string): Promise<Brand[]>;
   getBrand(id: number): Promise<Brand | undefined>;
   createBrand(b: InsertBrand, userId?: string): Promise<Brand>;
-  updateBrand(id: number, patch: Partial<InsertBrand>): Promise<Brand | undefined>;
-  deleteBrand(id: number): Promise<void>;
+  updateBrand(id: number, patch: Partial<InsertBrand>, requesterId?: string): Promise<Brand | undefined>;
+  deleteBrand(id: number, requesterId?: string): Promise<void>;
 }
 
 export class SupabaseStorage implements IStorage {
@@ -185,7 +185,13 @@ export class SupabaseStorage implements IStorage {
     );
     return toProject(r);
   }
-  async updateProject(id: number, patch: Partial<InsertProject>) {
+  async updateProject(id: number, patch: Partial<InsertProject>, requesterId?: string) {
+    // בעלות: פרויקט שנוצר עם user_id (משתמש מחובר) ניתן לעריכה רק ע"י אותו
+    // משתמש. פרויקט אנונימי (user_id=NULL, מלפני התיוג) נשאר פתוח לעריכה
+    // כמו היום — אין רגרסיה לזרימה האנונימית הקיימת.
+    const existing = unwrap(await sb().from("studio_projects").select("user_id").eq("id", id).maybeSingle());
+    if (!existing) return undefined;
+    if ((existing as { user_id: string | null }).user_id && (existing as { user_id: string | null }).user_id !== requesterId) return undefined;
     const r = unwrap(
       await sb().from("studio_projects")
         .update({ ...projectRow(patch), updated_at: now() })
@@ -193,7 +199,9 @@ export class SupabaseStorage implements IStorage {
     );
     return r ? toProject(r) : undefined;
   }
-  async deleteProject(id: number) {
+  async deleteProject(id: number, requesterId?: string) {
+    const existing = unwrap(await sb().from("studio_projects").select("user_id").eq("id", id).maybeSingle());
+    if (existing && (existing as { user_id: string | null }).user_id && (existing as { user_id: string | null }).user_id !== requesterId) return;
     const { error } = await sb().from("studio_projects").delete().eq("id", id);
     if (error) throw new Error(`supabase: ${error.message}`);
   }
@@ -214,7 +222,10 @@ export class SupabaseStorage implements IStorage {
     );
     return toBrand(r);
   }
-  async updateBrand(id: number, patch: Partial<InsertBrand>) {
+  async updateBrand(id: number, patch: Partial<InsertBrand>, requesterId?: string) {
+    const existing = unwrap(await sb().from("studio_brands").select("user_id").eq("id", id).maybeSingle());
+    if (!existing) return undefined;
+    if ((existing as { user_id: string | null }).user_id && (existing as { user_id: string | null }).user_id !== requesterId) return undefined;
     const r = unwrap(
       await sb().from("studio_brands")
         .update({ ...brandRow(patch), updated_at: now() })
@@ -222,7 +233,9 @@ export class SupabaseStorage implements IStorage {
     );
     return r ? toBrand(r) : undefined;
   }
-  async deleteBrand(id: number) {
+  async deleteBrand(id: number, requesterId?: string) {
+    const existing = unwrap(await sb().from("studio_brands").select("user_id").eq("id", id).maybeSingle());
+    if (existing && (existing as { user_id: string | null }).user_id && (existing as { user_id: string | null }).user_id !== requesterId) return;
     const { error } = await sb().from("studio_brands").delete().eq("id", id);
     if (error) throw new Error(`supabase: ${error.message}`);
   }

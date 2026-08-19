@@ -215,12 +215,14 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
     res.json(await storage.createProject(parsed.data, userId));
   });
   app.patch("/api/projects/:id", async (req, res) => {
-    const p = await storage.updateProject(Number(req.params.id), req.body);
+    const userId = await getUserIdFromToken(req.headers.authorization);
+    const p = await storage.updateProject(Number(req.params.id), req.body, userId);
     if (!p) return res.status(404).json({ error: "לא נמצא פרויקט" });
     res.json(p);
   });
   app.delete("/api/projects/:id", async (req, res) => {
-    await storage.deleteProject(Number(req.params.id));
+    const userId = await getUserIdFromToken(req.headers.authorization);
+    await storage.deleteProject(Number(req.params.id), userId);
     res.json({ ok: true });
   });
 
@@ -302,14 +304,16 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
 
   // עדכון מותג (בריף / kit / לוגו)
   app.patch("/api/brands/:id", async (req, res) => {
-    const b = await storage.updateBrand(Number(req.params.id), req.body || {});
+    const userId = await getUserIdFromToken(req.headers.authorization);
+    const b = await storage.updateBrand(Number(req.params.id), req.body || {}, userId);
     if (!b) return res.status(404).json({ error: "מותג לא נמצא" });
     res.json(b);
   });
 
   // מחיקת מותג
   app.delete("/api/brands/:id", async (req, res) => {
-    await storage.deleteBrand(Number(req.params.id));
+    const userId = await getUserIdFromToken(req.headers.authorization);
+    await storage.deleteBrand(Number(req.params.id), userId);
     res.json({ ok: true });
   });
 
