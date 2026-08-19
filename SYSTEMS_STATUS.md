@@ -1,5 +1,38 @@
 # SYSTEMS_STATUS.md — מצב כל המערכות, נמדד
 
+> ## 🟢 19/08/2026 (+33) — **אבטחה: פרצת `csjekrvu` נסגרה — anon key כבר לא יכול למחוק הקלטות (06/12/17/27)**
+>
+> `more30-fixes-and-features.txt` §אבטחה תיעד: "פרצת csjekrvu: anon key יכול
+> למחוק הקלטות — הפעל RLS (SELECT ל-anon, שאר ל-service_role)". נבדק מול
+> ה-DB בפועל (`csjekrvukbdznetsrodj`, פרויקט משותף ל-4 מערכות: 06 kupot-holim,
+> 12 smel-ndln, 17 chizukim-transcribe, 27 bkalut-price — **לא** סכמת
+> `csj`/`csj_src`/`igud` המוגנת; פרויקט Supabase נפרד לגמרי בבעלות המשתמש,
+> סכמה `public`). RLS **היה** מופעל על `public.recordings`, אבל המדיניות
+> היחידה (`rec_pub_all`) העניקה `ALL` (כולל DELETE) ל-`public` עם `qual=true`
+> — כל אחד עם מפתח ה-anon יכול היה למחוק כל הקלטה מתוך 1,140.
+>
+> **נבדק שימוש אמיתי לפני התיקון** (`client/src/lib/supabase.ts` +
+> `server/routes.ts`): למערכת הזו **אין מפתח service_role כלל** — גם השרת
+> וגם הדפדפן פועלים על אותו מפתח publishable/anon, והשרת עצמו זקוק ל-INSERT
+> (רישום הקלטה חדשה בהעלאה) ו-UPDATE (עדכון סטטוס תמלול + עריכת משתמש), לא
+> רק SELECT. תיקון "SELECT ל-anon, שאר ל-service_role" מילולי היה **שובר את
+> ההעלאה והעריכה** (רגרסיה אסורה) כי אין service_role בפרויקט הזה כלל.
+>
+> **תוקן בהתאם:** הוסרה `rec_pub_all`, ונוספו 3 מדיניות מפורשות
+> (`recordings_select`/`recordings_insert`/`recordings_update`, כולן ל-`public`)
+> — בדיוק מה שהאפליקציה כבר עושה היום. **לא נוספה מדיניות DELETE** — ב-RLS,
+> פקודה בלי מדיניות תואמת נדחית כברירת מחדל, כך שמחיקה חסומה כעת לגמרי
+> ל-anon/authenticated בלי לגעת בהרשאות הטבלה; `service_role` (עוקף RLS
+> כברירת מחדל ב-Supabase) לא מושפע.
+>
+> **אומת:** (1) קריאות HTTP אמיתיות עם מפתח ה-anon בפועל — SELECT 200,
+> UPDATE 200 (זהה להתנהגות הקודמת, אפס רגרסיה); (2) `SET LOCAL ROLE anon` +
+> `DELETE ... RETURNING id` בתוך טרנזקציה עם `ROLLBACK` על הקלטה אמיתית —
+> 0 שורות הוחזרו (חסום ע"י RLS, אומת **לפני** כל commit אפשרי); (3) ספירת
+> שורות לפני/אחרי זהה (1,140). מיגרציה: `recordings_scope_rls_no_public_delete`
+> על פרויקט `csjekrvukbdznetsrodj`. `core.issues` #8 עודכן ל-`fixed`. אין
+> שינוי קוד אפליקציה — תיקון DB בלבד. **לא דורש אותך.**
+
 > ## 🟢 19/08/2026 (+32) — **41 design-system / 26 studio: checklist item 10 — מתאם Figma (ייצוא SVG פרוגרמטי עובד)**
 >
 > בניגוד ל-11 (Canva, חסום על מפתח), Figma לא דורש שום מפתח/API — הוא תומך
