@@ -92,7 +92,7 @@ export function renderAdminPage(): string {
   }
 
   function loadLeads() {
-    fetch("/api/switch-leads", { credentials: "include" })
+    fetch("switch-leads", { credentials: "include" })
       .then(function (r) {
         if (!r.ok) throw new Error("לא ניתן לטעון פניות");
         return r.json();
@@ -109,7 +109,7 @@ export function renderAdminPage(): string {
 
   document.getElementById("login-btn").addEventListener("click", function () {
     errorEl.textContent = "";
-    fetch("/api/admin/login", {
+    fetch("admin/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
@@ -134,7 +134,7 @@ export function renderAdminPage(): string {
   });
 
   document.getElementById("logout-btn").addEventListener("click", function () {
-    fetch("/api/admin/logout", { method: "POST", credentials: "include" }).finally(function () {
+    fetch("admin/logout", { method: "POST", credentials: "include" }).finally(function () {
       app.style.display = "none";
       loginBox.style.display = "block";
     });

@@ -19103,14 +19103,14 @@ var require_etag = __commonJS({
   "node_modules/etag/index.js"(exports, module) {
     "use strict";
     module.exports = etag;
-    var crypto2 = __require("crypto");
+    var crypto3 = __require("crypto");
     var Stats = __require("fs").Stats;
     var toString = Object.prototype.toString;
     function entitytag(entity) {
       if (entity.length === 0) {
         return '"0-2jmj7l5rSw0yVb/vlWAYkK/YBwk"';
       }
-      var hash = crypto2.createHash("sha1").update(entity, "utf8").digest("base64").substring(0, 27);
+      var hash = crypto3.createHash("sha1").update(entity, "utf8").digest("base64").substring(0, 27);
       var len = typeof entity === "string" ? Buffer.byteLength(entity, "utf8") : entity.length;
       return '"' + len.toString(16) + "-" + hash + '"';
     }
@@ -22597,17 +22597,17 @@ var require_content_disposition = __commonJS({
 // node_modules/cookie-signature/index.js
 var require_cookie_signature = __commonJS({
   "node_modules/cookie-signature/index.js"(exports) {
-    var crypto2 = __require("crypto");
+    var crypto3 = __require("crypto");
     exports.sign = function(val, secret) {
       if ("string" != typeof val) throw new TypeError("Cookie value must be provided as a string.");
       if (null == secret) throw new TypeError("Secret key must be provided.");
-      return val + "." + crypto2.createHmac("sha256", secret).update(val).digest("base64").replace(/\=+$/, "");
+      return val + "." + crypto3.createHmac("sha256", secret).update(val).digest("base64").replace(/\=+$/, "");
     };
     exports.unsign = function(input, secret) {
       if ("string" != typeof input) throw new TypeError("Signed cookie string must be provided.");
       if (null == secret) throw new TypeError("Secret key must be provided.");
       var tentativeValue = input.slice(0, input.lastIndexOf(".")), expectedInput = exports.sign(tentativeValue, secret), expectedBuffer = Buffer.from(expectedInput), inputBuffer = Buffer.from(input);
-      return expectedBuffer.length === inputBuffer.length && crypto2.timingSafeEqual(expectedBuffer, inputBuffer) ? tentativeValue : false;
+      return expectedBuffer.length === inputBuffer.length && crypto3.timingSafeEqual(expectedBuffer, inputBuffer) ? tentativeValue : false;
     };
   }
 });
@@ -23983,13 +23983,13 @@ var uuid4;
 var init_uuid = __esm({
   "node_modules/@anthropic-ai/sdk/internal/utils/uuid.mjs"() {
     uuid4 = function() {
-      const { crypto: crypto2 } = globalThis;
-      if (crypto2?.randomUUID) {
-        uuid4 = crypto2.randomUUID.bind(crypto2);
-        return crypto2.randomUUID();
+      const { crypto: crypto3 } = globalThis;
+      if (crypto3?.randomUUID) {
+        uuid4 = crypto3.randomUUID.bind(crypto3);
+        return crypto3.randomUUID();
       }
       const u8 = new Uint8Array(1);
-      const randomByte = crypto2 ? () => crypto2.getRandomValues(u8)[0] : () => Math.random() * 255 & 255;
+      const randomByte = crypto3 ? () => crypto3.getRandomValues(u8)[0] : () => Math.random() * 255 & 255;
       return "10000000-1000-4000-8000-100000000000".replace(/[018]/g, (c) => (+c ^ randomByte() & 15 >> +c / 4).toString(16));
     };
   }
@@ -42324,6 +42324,204 @@ function fundDetailsFor(catalogNo) {
   return load()[String(catalogNo)] ?? null;
 }
 
+// server/auth.ts
+import crypto2 from "node:crypto";
+var COOKIE_NAME = "kupot_admin_token";
+var COOKIE_MAX_AGE_MS = 8 * 60 * 60 * 1e3;
+function timingSafeEqualStr(a, b) {
+  const bufA = Buffer.from(a, "utf8");
+  const bufB = Buffer.from(b, "utf8");
+  if (bufA.length !== bufB.length || bufA.length === 0) return false;
+  return crypto2.timingSafeEqual(bufA, bufB);
+}
+function readCookie(req2, name) {
+  const raw = req2.header("cookie");
+  if (!raw) return void 0;
+  for (const part of raw.split(";")) {
+    const idx = part.indexOf("=");
+    if (idx === -1) continue;
+    const key = part.slice(0, idx).trim();
+    if (key === name) return decodeURIComponent(part.slice(idx + 1).trim());
+  }
+  return void 0;
+}
+function isAdminRequest(req2) {
+  const adminToken = process.env.ADMIN_TOKEN;
+  if (!adminToken) return false;
+  const headerToken = req2.header("x-admin-token");
+  if (headerToken && timingSafeEqualStr(headerToken, adminToken)) return true;
+  const cookieToken = readCookie(req2, COOKIE_NAME);
+  if (cookieToken && timingSafeEqualStr(cookieToken, adminToken)) return true;
+  return false;
+}
+function handleAdminLogin(req2, res) {
+  const adminToken = process.env.ADMIN_TOKEN;
+  if (!adminToken) {
+    return res.status(503).json({ error: "\u05DB\u05E0\u05D9\u05E1\u05EA \u05E0\u05D9\u05D4\u05D5\u05DC \u05D0\u05D9\u05E0\u05D4 \u05DE\u05D5\u05D2\u05D3\u05E8\u05EA \u05D1\u05E1\u05D1\u05D9\u05D1\u05D4 \u05D6\u05D5" });
+  }
+  const password = String(req2.body?.password || "");
+  if (!password || !timingSafeEqualStr(password, adminToken)) {
+    return res.status(401).json({ error: "\u05E1\u05D9\u05E1\u05DE\u05D4 \u05E9\u05D2\u05D5\u05D9\u05D4" });
+  }
+  res.cookie(COOKIE_NAME, adminToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+    maxAge: COOKIE_MAX_AGE_MS,
+    path: "/"
+  });
+  res.json({ ok: true });
+}
+function handleAdminLogout(_req, res) {
+  res.clearCookie(COOKIE_NAME, { path: "/" });
+  res.json({ ok: true });
+}
+
+// server/admin-page.ts
+function renderAdminPage() {
+  return `<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<title>\u05E0\u05D9\u05D4\u05D5\u05DC \u2014 \u05E7\u05D5\u05E4\u05D5\u05EA \u05D7\u05D5\u05DC\u05D9\u05DD</title>
+<style>
+  body { font-family: system-ui, sans-serif; background:#f4f6f8; color:#1b2733; margin:0; padding:2rem; direction:rtl; }
+  h1 { font-size:1.25rem; margin:0 0 1rem; }
+  #login-box { max-width:320px; margin:4rem auto; background:#fff; border-radius:12px; padding:2rem; box-shadow:0 2px 10px rgba(0,0,0,.08); }
+  #login-box label { display:block; font-size:.9rem; margin-bottom:.4rem; }
+  #login-box input { width:100%; box-sizing:border-box; padding:.6rem .7rem; border:1px solid #ccd3da; border-radius:8px; font-size:1rem; }
+  #login-box button, #logout-btn { margin-top:1rem; width:100%; padding:.6rem; border:0; border-radius:8px; background:#1b6fd1; color:#fff; font-size:1rem; cursor:pointer; }
+  #logout-btn { width:auto; padding:.4rem 1rem; font-size:.85rem; }
+  #error { color:#c0392b; font-size:.85rem; margin-top:.6rem; min-height:1.1em; }
+  table { border-collapse:collapse; width:100%; background:#fff; border-radius:8px; overflow:hidden; }
+  th, td { padding:.5rem .7rem; text-align:right; border-bottom:1px solid #e6e9ec; font-size:.85rem; white-space:nowrap; }
+  th { background:#eef1f4; position:sticky; top:0; }
+  #app { display:none; }
+  #topbar { display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; }
+  #count { color:#5a6672; font-size:.85rem; }
+  #table-wrap { overflow-x:auto; }
+</style>
+</head>
+<body>
+
+<div id="login-box">
+  <h1>\u05E0\u05D9\u05D4\u05D5\u05DC \u2014 \u05E4\u05E0\u05D9\u05D5\u05EA \u05DE\u05E2\u05D1\u05E8 \u05E7\u05D5\u05E4\u05D4</h1>
+  <label for="pw">\u05E1\u05D9\u05E1\u05DE\u05EA \u05E0\u05D9\u05D4\u05D5\u05DC</label>
+  <input id="pw" type="password" autocomplete="current-password" />
+  <button id="login-btn" type="button">\u05DB\u05E0\u05D9\u05E1\u05D4</button>
+  <div id="error"></div>
+</div>
+
+<div id="app">
+  <div id="topbar">
+    <h1>\u05E4\u05E0\u05D9\u05D5\u05EA \u05DE\u05E2\u05D1\u05E8 \u05E7\u05D5\u05E4\u05D4 \u2014 <span id="count"></span></h1>
+    <button id="logout-btn" type="button">\u05D9\u05E6\u05D9\u05D0\u05D4</button>
+  </div>
+  <div id="table-wrap"></div>
+</div>
+
+<script>
+(function () {
+  var loginBox = document.getElementById("login-box");
+  var app = document.getElementById("app");
+  var errorEl = document.getElementById("error");
+  var pwInput = document.getElementById("pw");
+  var COLUMNS = ["id","created_at","topic","full_name","phone","email","city","current_fund","target_fund","people_count","status","note"];
+
+  function renderTable(rows) {
+    var wrap = document.getElementById("table-wrap");
+    wrap.textContent = "";
+    document.getElementById("count").textContent = rows.length + " \u05E4\u05E0\u05D9\u05D5\u05EA";
+    if (!rows.length) {
+      var p = document.createElement("p");
+      p.textContent = "\u05D0\u05D9\u05DF \u05E4\u05E0\u05D9\u05D5\u05EA \u05E2\u05D3\u05D9\u05D9\u05DF.";
+      wrap.appendChild(p);
+      return;
+    }
+    var table = document.createElement("table");
+    var thead = document.createElement("thead");
+    var headRow = document.createElement("tr");
+    COLUMNS.forEach(function (col) {
+      var th = document.createElement("th");
+      th.textContent = col;
+      headRow.appendChild(th);
+    });
+    thead.appendChild(headRow);
+    table.appendChild(thead);
+    var tbody = document.createElement("tbody");
+    rows.forEach(function (row) {
+      var tr = document.createElement("tr");
+      COLUMNS.forEach(function (col) {
+        var td = document.createElement("td");
+        var val = row[col];
+        td.textContent = val === null || val === undefined ? "" : String(val);
+        tr.appendChild(td);
+      });
+      tbody.appendChild(tr);
+    });
+    table.appendChild(tbody);
+    wrap.appendChild(table);
+  }
+
+  function loadLeads() {
+    fetch("switch-leads", { credentials: "include" })
+      .then(function (r) {
+        if (!r.ok) throw new Error("\u05DC\u05D0 \u05E0\u05D9\u05EA\u05DF \u05DC\u05D8\u05E2\u05D5\u05DF \u05E4\u05E0\u05D9\u05D5\u05EA");
+        return r.json();
+      })
+      .then(function (rows) {
+        loginBox.style.display = "none";
+        app.style.display = "block";
+        renderTable(rows);
+      })
+      .catch(function () {
+        // \u05E2\u05D5\u05D2\u05D9\u05D9\u05D4 \u05DC\u05D0 \u05EA\u05E7\u05E4\u05D4/\u05DC\u05D0 \u05E7\u05D9\u05D9\u05DE\u05EA \u2014 \u05E0\u05E9\u05D0\u05E8\u05D9\u05DD \u05D1\u05DE\u05E1\u05DA \u05D4\u05DB\u05E0\u05D9\u05E1\u05D4.
+      });
+  }
+
+  document.getElementById("login-btn").addEventListener("click", function () {
+    errorEl.textContent = "";
+    fetch("admin/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ password: pwInput.value }),
+    })
+      .then(function (r) { return r.json().then(function (body) { return { ok: r.ok, body: body }; }); })
+      .then(function (res) {
+        if (!res.ok) {
+          errorEl.textContent = (res.body && res.body.error) || "\u05DB\u05E0\u05D9\u05E1\u05D4 \u05E0\u05DB\u05E9\u05DC\u05D4";
+          return;
+        }
+        pwInput.value = "";
+        loadLeads();
+      })
+      .catch(function () {
+        errorEl.textContent = "\u05E9\u05D2\u05D9\u05D0\u05EA \u05E8\u05E9\u05EA";
+      });
+  });
+
+  pwInput.addEventListener("keydown", function (e) {
+    if (e.key === "Enter") document.getElementById("login-btn").click();
+  });
+
+  document.getElementById("logout-btn").addEventListener("click", function () {
+    fetch("admin/logout", { method: "POST", credentials: "include" }).finally(function () {
+      app.style.display = "none";
+      loginBox.style.display = "block";
+    });
+  });
+
+  // \u05DB\u05E0\u05D9\u05E1\u05D4 \u05E2\u05DD \u05E2\u05D5\u05D2\u05D9\u05D9\u05D4 \u05E7\u05D9\u05D9\u05DE\u05EA (\u05E8\u05E2\u05E0\u05D5\u05DF \u05E2\u05DE\u05D5\u05D3 \u05D0\u05D7\u05E8\u05D9 \u05DB\u05E0\u05D9\u05E1\u05D4 \u05E7\u05D5\u05D3\u05DE\u05EA).
+  loadLeads();
+})();
+</script>
+</body>
+</html>`;
+}
+
 // server/routes.ts
 async function readTopics() {
   return useSupabaseStore() ? fetchTopicsFromSupabase() : storage.listTopics();
@@ -42370,13 +42568,17 @@ async function registerRoutes(httpServer, app) {
     res.status(201).json({ ok: true, id: lead?.id ?? null });
   });
   app.get("/api/switch-leads", (req2, res) => {
-    const adminToken = process.env.ADMIN_TOKEN;
-    const provided = req2.header("x-admin-token");
-    if (!adminToken || provided !== adminToken) {
+    if (!isAdminRequest(req2)) {
       return res.status(403).json({ error: "\u05D2\u05D9\u05E9\u05D4 \u05E0\u05D3\u05D7\u05EA\u05D4" });
     }
     res.json(storage.listSwitchLeads());
   });
+  app.get("/api/admin", (_req, res) => {
+    res.setHeader("Content-Type", "text/html; charset=utf-8");
+    res.send(renderAdminPage());
+  });
+  app.post("/api/admin/login", handleAdminLogin);
+  app.post("/api/admin/logout", handleAdminLogout);
   app.post("/api/agent", async (req2, res) => {
     const parsed = agentRequestSchema.safeParse(req2.body);
     if (!parsed.success) {
