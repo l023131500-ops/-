@@ -1073,6 +1073,20 @@ function TextLayerControls({
       </div>
 
       <div>
+        <Label className="mb-1 block text-xs text-[#F5EEDD]/70">
+          מרווח אותיות <code className="font-mono text-[10px] text-[#C9A227]/70">letterSpacing</code>: {layer.letterSpacing ?? 0}
+        </Label>
+        <Slider
+          value={[layer.letterSpacing ?? 0]}
+          min={-5}
+          max={30}
+          step={0.5}
+          onValueChange={([v]) => onChange({ letterSpacing: v })}
+          data-testid="slider-layer-tracking"
+        />
+      </div>
+
+      <div>
         <Label className="mb-1 block text-xs text-[#F5EEDD]/70">יישור</Label>
         <div className="flex gap-1.5">
           <Button

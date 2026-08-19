@@ -1,5 +1,34 @@
 # SYSTEMS_STATUS.md — מצב כל המערכות, נמדד
 
+> ## 🟢 19/08/2026 (+28) — **41 design-system / 26 studio: checklist item 4b-ii — בקרת `tracking` (letterSpacing)**
+
+> `CHECKLIST/graphics.md` פריט 4b-ii..vi תיאר את `tracking` כדורש שדה סכימה
+> חדש. נבדק מול הקוד לפני הבנייה: לא נכון — `letterSpacing` **כבר קיים**
+> ב-`TextLayer` (`shared/layers.ts`) וכבר מחווט במלואו ברינדור Konva
+> (`CanvasStage.tsx`) — בדיוק כמו `opacity` בפריט 4b-i. חסרה רק בקרת UI.
+> נוסף סליידר "מרווח אותיות" עם תג `<code>letterSpacing</code>` בפאנל הטקסט
+> (`Editor.tsx`, אחרי "גודל" ולפני "יישור"), טווח -5..30. אין שינוי סכמה/
+> רינדור/exporter — שימוש חוזר מלא. `tsc --noEmit` + `vite build` נקיים.
+>
+> אומת חי ב-`more30.com/studio` (Playwright, cache-buster): נבחרה שכבת
+> טקסט בתבנית "שיעור — חסידי מלכותי", הזזת הסליידר עד 30 עדכנה את התווית
+> והרחיבה בפועל את המרווח בין האותיות בקנבס, 0 שגיאות קונסולה. שאר הבקרות
+> באותה שכבה ושאר הפאנלים ללא שינוי — אפס רגרסיה. צילום:
+> `studio-tracking-slider-max-0819.png`. ראיות: `QA/studio-26/tracking-control-0819/_results.md`.
+>
+> פריסה: `vite build --base=/studio/` → `_deploy/studio-more30/public/studio`
+> → `vercel deploy --prod`, `dpl_7e4Hat1T5UfKSfHFyL8FpqLYmzQM`, READY.
+> נשאר: 4b-iii (`leading`/lineHeight — כבר בסכמה+רינדור, רק UI חסר, כמו
+> tracking), 4b-iv..vi (`kerning`/`blend`/`corner-radius`), שלב 3-4
+> (מתאמים/סטודיו רב-סוכני).
+
+> ## 🟢 19/08/2026 (+27, תיעוד מאוחר) — **41 design-system / 26 studio: checklist items 4b-i (opacity) + 7b (הסרת-רקע Recraft), a428782**
+
+> הפעלה קודמת בנתה, אימתה ופרסה (`dpl_EmgiLqQ3wAaspEeURAQc5vD5BRZX`) את שתי
+> התוספות האלה יחד אך לא עדכנה קובץ זה — נרשם כאן בדיעבד לשלמות המעקב, אין
+> שינוי קוד נוסף בכניסה הזו. פרטים מלאים ב-`core.run_progress` id 1029 וב-
+> `CHECKLIST/graphics.md` פריטים 4b-i, 7b.
+
 > ## 🟢 19/08/2026 (+26) — **41 design-system / 26 studio: checklist item 6 — רקעים פוטוריאליסטיים Recraft V4, מנוע שני לצד Gemini**
 
 > `CHECKLIST/graphics.md` שלב 2 פריט 6 היה הבא בתור. נוסף `generateBackgroundRecraft`

@@ -65,10 +65,21 @@
       fill/stroke/shadow/blur) נשארו ללא שינוי באותה שכבה — אפס רגרסיה. 0
       שגיאות קונסולה. פריסה: `vite build` → `_deploy/studio-more30/public/studio`
       → `vercel deploy --prod`, READY (`dpl_F88UA5Xm5QqGF8mKaDmTsmHshL9J`).
-- [ ] **4b-ii..vi. בקרות `blend`/`tracking`/`leading`/`kerning`/`corner-radius`**
-      — כל אחד דורש שדה סכימה חדש (לא קיים כמו `opacity`) + חיווט רינדור
-      Konva ספציפי + בדיקה נפרדת. נדחה לסבבים נפרדים, פיצ'ר אחד בכל פעם,
-      באותו היגיון של הפיצול הזה.
+- [x] **4b-ii. בקרת `tracking` (letterSpacing)** — נבדק מול הקוד לפני הבנייה:
+      בניגוד לתיאור שהיה בסעיף הזה, השדה `letterSpacing` **כבר קיים**
+      ב-`TextLayer` וכבר מחווט במלואו ברינדור Konva (`CanvasStage.tsx`) —
+      בדיוק כמו `opacity` בפריט 4b-i. חסרה רק בקרת UI. נוסף סליידר "מרווח
+      אותיות" עם תג `<code>letterSpacing</code>` בפאנל הטקסט (`Editor.tsx`,
+      אחרי "גודל" ולפני "יישור"), טווח -5..30. אין שינוי סכמה/רינדור.
+      אומת חי ב-`more30.com/studio` (Playwright): הזזת הסליידר ל-30 הרחיבה
+      בפועל את המרווח בין האותיות בקנבס, 0 שגיאות קונסולה, שאר הבקרות ללא
+      שינוי — אפס רגרסיה. ראיות: `QA/studio-26/tracking-control-0819/_results.md`,
+      `studio-tracking-slider-max-0819.png`.
+- [ ] **4b-iii..vi. בקרות `blend`/`leading`/`kerning`/`corner-radius`** —
+      `leading` (lineHeight) ו-`corner-radius` כבר קיימים בסכמה ומחווטים
+      ברינדור (כמו `opacity`/`tracking`) — חסרה רק בקרת UI, לסבב הבא.
+      `blend`/`kerning` דורשים שדה סכימה חדש + חיווט Konva אמיתי. נדחה
+      לסבבים נפרדים, פיצ'ר אחד בכל פעם.
 - [x] **5. גלריית תבניות — קטגוריה מובילה אחת בכל אחת מ-4 הקבוצות** —
       `shared/knowledge.ts`/`categoryTemplates.ts` כבר החזיקו קטלוג-תבניות
       אמיתי (מנוע `composeTemplate`) לכל 4 הקבוצות; הפער האמיתי היה ש-
