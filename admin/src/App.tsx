@@ -91,6 +91,8 @@ interface ProviderCredit {
   detail: string;
   /** עמוד ההוספה אצל הספק — §3א דורש קישור ישיר לכל אחד. */
   topUp: string;
+  /** כשהיעד אינו עמוד חיוב (הרשאות/קטלוג/API keys), תווית מדויקת במקום "הוספת קרדיט". */
+  topUpLabel?: string;
   inVault: boolean;
   deployed: boolean;
 }
@@ -929,7 +931,7 @@ export function App() {
                 )}
                 <div style={{ fontSize: 12, color: "var(--fg-3)", marginTop: 8, lineHeight: 1.5 }}>{p.detail}</div>
                 <a href={p.topUp} target="_blank" rel="noreferrer" style={{ ...linkBtn, marginTop: 8, alignSelf: "start" }}>
-                  {p.state === "missing" ? "פתיחת חשבון והוספת מפתח ↗" : "הוספת קרדיט אצל הספק ↗"}
+                  {p.topUpLabel ? `${p.topUpLabel} ↗` : (p.state === "missing" ? "פתיחת חשבון והוספת מפתח ↗" : "הוספת קרדיט אצל הספק ↗")}
                 </a>
               </div>
             ))}
