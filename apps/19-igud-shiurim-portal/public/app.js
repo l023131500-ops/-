@@ -1241,9 +1241,13 @@ async function renderAdmin(token) {
     });
     content.querySelectorAll('[data-del]').forEach(btn => btn.onclick = async () => {
       if (!confirm('למחוק את השיעור?')) return;
-      await api(`/api/admin/tenant/${encodeURIComponent(token)}/lessons/${btn.dataset.del}`, { method: 'DELETE' });
-      if (editingLesson && String(editingLesson.id) === btn.dataset.del) editingLesson = null;
-      await refresh(); draw();
+      try {
+        await api(`/api/admin/tenant/${encodeURIComponent(token)}/lessons/${btn.dataset.del}`, { method: 'DELETE' });
+        if (editingLesson && String(editingLesson.id) === btn.dataset.del) editingLesson = null;
+        await refresh(); draw();
+      } catch (err) {
+        document.getElementById('lessons-alert').innerHTML = `<div class="alert alert-error">${esc(err.message)}</div>`;
+      }
     });
   }
 
@@ -1299,8 +1303,12 @@ async function renderAdmin(token) {
     });
     content.querySelectorAll('[data-del-service]').forEach(btn => btn.onclick = async () => {
       if (!confirm('למחוק את השירות?')) return;
-      await api(`/api/admin/tenant/${encodeURIComponent(token)}/services/${btn.dataset.delService}`, { method: 'DELETE' });
-      await refresh(); draw();
+      try {
+        await api(`/api/admin/tenant/${encodeURIComponent(token)}/services/${btn.dataset.delService}`, { method: 'DELETE' });
+        await refresh(); draw();
+      } catch (err) {
+        document.getElementById('services-alert').innerHTML = `<div class="alert alert-error">${esc(err.message)}</div>`;
+      }
     });
   }
 
@@ -1357,9 +1365,13 @@ async function renderAdmin(token) {
     });
     content.querySelectorAll('[data-del-ad]').forEach(btn => btn.onclick = async () => {
       if (!confirm('למחוק את המודעה?')) return;
-      await api(`/api/admin/tenant/${encodeURIComponent(token)}/ads/${btn.dataset.delAd}`, { method: 'DELETE' });
-      if (editingAd && String(editingAd.id) === btn.dataset.delAd) editingAd = null;
-      await refresh(); draw();
+      try {
+        await api(`/api/admin/tenant/${encodeURIComponent(token)}/ads/${btn.dataset.delAd}`, { method: 'DELETE' });
+        if (editingAd && String(editingAd.id) === btn.dataset.delAd) editingAd = null;
+        await refresh(); draw();
+      } catch (err) {
+        document.getElementById('ads-alert').innerHTML = `<div class="alert alert-error">${esc(err.message)}</div>`;
+      }
     });
   }
 
@@ -1760,8 +1772,12 @@ async function renderSynagogueAdmin(token) {
     });
     content.querySelectorAll('[data-del-prayer]').forEach(btn => btn.onclick = async () => {
       if (!confirm('למחוק?')) return;
-      await api(`/api/admin/synagogue/${encodeURIComponent(token)}/prayer-times/${btn.dataset.delPrayer}`, { method: 'DELETE' });
-      await refresh(); draw();
+      try {
+        await api(`/api/admin/synagogue/${encodeURIComponent(token)}/prayer-times/${btn.dataset.delPrayer}`, { method: 'DELETE' });
+        await refresh(); draw();
+      } catch (err) {
+        document.getElementById('prayers-alert').innerHTML = `<div class="alert alert-error">${esc(err.message)}</div>`;
+      }
     });
   }
 
@@ -1971,9 +1987,13 @@ async function renderTeacherAdmin(token) {
     });
     content.querySelectorAll('[data-del]').forEach(btn => btn.onclick = async () => {
       if (!confirm('למחוק את השיעור?')) return;
-      await api(`/api/admin/teacher/${encodeURIComponent(token)}/lessons/${btn.dataset.del}`, { method: 'DELETE' });
-      if (editingLesson && String(editingLesson.id) === btn.dataset.del) editingLesson = null;
-      await refresh(); draw();
+      try {
+        await api(`/api/admin/teacher/${encodeURIComponent(token)}/lessons/${btn.dataset.del}`, { method: 'DELETE' });
+        if (editingLesson && String(editingLesson.id) === btn.dataset.del) editingLesson = null;
+        await refresh(); draw();
+      } catch (err) {
+        document.getElementById('te-lessons-alert').innerHTML = `<div class="alert alert-error">${esc(err.message)}</div>`;
+      }
     });
   }
 
@@ -2031,9 +2051,13 @@ async function renderTeacherAdmin(token) {
     });
     content.querySelectorAll('[data-del-ad]').forEach(btn => btn.onclick = async () => {
       if (!confirm('למחוק את המודעה?')) return;
-      await api(`/api/admin/teacher/${encodeURIComponent(token)}/ads/${btn.dataset.delAd}`, { method: 'DELETE' });
-      if (editingAd && String(editingAd.id) === btn.dataset.delAd) editingAd = null;
-      await refresh(); draw();
+      try {
+        await api(`/api/admin/teacher/${encodeURIComponent(token)}/ads/${btn.dataset.delAd}`, { method: 'DELETE' });
+        if (editingAd && String(editingAd.id) === btn.dataset.delAd) editingAd = null;
+        await refresh(); draw();
+      } catch (err) {
+        document.getElementById('te-ads-alert').innerHTML = `<div class="alert alert-error">${esc(err.message)}</div>`;
+      }
     });
   }
 

@@ -1947,3 +1947,52 @@
     בהיקף — הסבב הבא צריך סוכני Explore טריים על אזורים שעדיין לא נסרקו
     לעומק (23-haorech-torani/26-modaot-studio חזרו ריקים כבר פעמיים, כדאי
     זווית שלישית או תת-קבצים ספציפיים לא שנסרקו).
+
+## 19/08/2026 (סבב אוטונומי B, עשרים-ושתיים) — `19 igud-shiurim-portal`: מחיקה שנכשלת בשקט בשישה מקומות, אותו דפוס שכבר תוקן פעם אחת השבוע
+
+166. **סריקה תחילה.** נקראו README.md/CONNECTIONS.md, `core.run_progress`
+    (האחרון בהיקף לופ B היה id 1116, 28-kupot-health-funds agent rate-limit,
+    commit ddc90898 — כבר `HEAD`/parent הענף הזה, כולל heartbeat קודם) ו-
+    `core.issues`/`core.project_tasks` נסרקו מחדש בהיקף 17-31: כל שורה
+    `open`/owner=agent שנבדקה (#62 galil, #115 mechiron, #201 השייר-15-egod
+    שמחוץ להיקף, #242 22/30) עדיין חסומה בדיוק כפי שתועד — בלי שינוי; שורות
+    owner=user גם הן ללא שינוי.
+167. **שני סוכני Explore מקבילים** על אזורים שעדיין לא נסרקו לעומק:
+    (31-hebrew-bridge-crm) ו-(19-igud-shiurim-portal + 20-igud-portal,
+    עם רשימה מפורשת של מה שכבר תוקן היום ב-20 כדי לא לדווח כפילות).
+    **31-hebrew-bridge-crm** החזיר רק ממצא חלש (חוסר `assertAdmin` מפורש
+    בפונקציה `setCustomFieldValue` שאינה נקראת משום מקום בקוד — dead code,
+    כבר מוגן ע"י RLS בפועל) — לא פעלתי לפיו.
+168. **ממצא ששרד: 19-igud-shiurim-portal, `public/app.js` — שישה handlers
+    של מחיקה בלי try/catch, בדיוק הדפוס שתוקן ב-20-igud-portal הערב
+    (commit 70decf83).** `api()` (שורה 89) זורק `Error` על `!res.ok` — כל
+    handler שקורא לו בלי try/catch גורם ל-unhandled promise rejection:
+    הבקשה נכשלת, אין רענון (`refresh()`/`draw()` לא רצים), ואין הודעת
+    שגיאה למשתמש — הכפתור "מחיקה" נראה כאילו לא קרה כלום, בלי שום משוב.
+    אומתתי בגריפ שכל שאר ה-handlers בקובץ (submit של טפסים) כן עטופים
+    ב-try/catch עם `div` ייעודי (`lessons-alert`/`services-alert`/
+    `ads-alert`/`prayers-alert`/`te-lessons-alert`/`te-ads-alert`) — רק
+    שישה handlers של מחיקה היו חריגה: שורות 1242 (מחיקת שיעור, לוח ארגון),
+    1300 (מחיקת שירות קהילה), 1358 (מחיקת מודעה, לוח ארגון), 1761 (מחיקת
+    זמן תפילה), 1972 (מחיקת שיעור, לוח מגיד שיעור), 2032 (מחיקת מודעה, לוח
+    מגיד שיעור).
+169. **תיקון מינימלי, אותו דפוס בכל שישה מקומות.** כל `await api(...DELETE)`
+    נעטף ב-try/catch שמציג שגיאה ב-`div` הקיים כבר בתבנית אותו טאב (אומתתי
+    שכל שש התוויות `*-alert` כבר קיימות ב-`content.innerHTML` של אותו טאב
+    לפני העריכה) — אפס `div` חדש, אפס שינוי לזרימת ההצלחה (אותה קריאת
+    `refresh(); draw()` בדיוק בהצלחה). זהה במהות לתיקון של #150-154
+    (20-igud-portal apiPost) אבל כאן הבעיה הייתה בצד הקורא (חוסר try/catch)
+    ולא בפונקציית `api()` עצמה (שכבר בדקה `res.ok` נכון מההתחלה).
+170. **אומת בקריאה בלבד.** `node --check public/app.js` עבר נקי; קראתי
+    מחדש את שישה הבלוקים שנערכו וגריפ אישר ששישה ה-`div` המתאימים
+    (`lessons-alert`/`services-alert`/`ads-alert`/`prayers-alert`/
+    `te-lessons-alert`/`te-ads-alert`) אכן קיימים בתבנית של אותו טאב.
+    אין `node_modules`/דפדפן בעץ הזה (כלל אי-התקנה, כמו כל סבב קודם). system
+    19 עדיין `live=false/is_deployed=false` (הכרעת פריסה של המשתמש) —
+    התיקון אינו נראה למשתמש אמיתי היום אבל מוכן מראש לכשתיפרס, בדיוק כמו
+    התיקון הקודם באותה מערכת (#150-154 בהיקש ל-20). קומיט על
+    `fix/b-igud-shiurim-portal-delete-stuck-on-error-0819`, נדחף. הבא בתור:
+    לסרוק מחדש `core.issues`/`core.project_tasks`; 31-hebrew-bridge-crm
+    ו-20-igud-portal (מעבר לשש handlers האלה) חזרו ריקים/חלשים בסבב הזה —
+    מועמדים לזווית שלישית או ל-23/25/29 (manifest-only, סבירות נמוכה) בסבב
+    הבא.
