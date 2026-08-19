@@ -1,7 +1,7 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useMemo } from "react";
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
 import {
-  ChevronLeft, ChevronDown, Send, CheckCircle, ArrowRight, Search,
+  ChevronLeft, ChevronDown, Send, CheckCircle, ArrowRight, Search, Wand2,
 } from "lucide-react";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
@@ -25,12 +25,32 @@ const maritalOptions = ["רווק/ה", "נשוי/אה", "גרוש/ה", "אלמן
 const healthOptions = ["תקין", "מוגבלות קלה", "מוגבלות בינונית", "מוגבלות קשה"];
 const childrenHealthOptions = ["כולם בריאים", "ילד עם מוגבלות קלה", "ילד עם מוגבלות משמעותית", "ילד עם מחלה כרונית"];
 
+/** תגיות אשף "מצאו לי זכויות" — כל תגית ממופה למילות מפתח שנבדקות מול
+ * הכותרת/התיאור/שאלות הזכאות של כל זכות בקטלוג. אין כאן סכום כספי משוער —
+ * רק הקטלוג האמיתי עצמו, כי אין במודל הנתונים שדה סכום לכל זכות (נתוני אמת בלבד). */
+const wizardTags = [
+  { id: "children", label: "הורה לילד/ה", keywords: ["ילד", "לידה", "הורה", "תינוק"] },
+  { id: "disability", label: "מוגבלות / נכות", keywords: ["נכות", "מוגבלות", "נכה"] },
+  { id: "senior", label: "גיל פרישה / קשיש", keywords: ["פרישה", "זקנה", "קשיש", "סיעוד"] },
+  { id: "unemployed", label: "מובטל/ת", keywords: ["אבטלה", "מעסיק", "פוטר"] },
+  { id: "selfEmployed", label: "עצמאי/ת", keywords: ["עצמאי"] },
+  { id: "reserve", label: "מילואים", keywords: ["מילואים"] },
+  { id: "lowIncome", label: "הכנסה נמוכה", keywords: ["הכנסה", "השלמת הכנסה", "הבטחת הכנסה"] },
+  { id: "newImmigrant", label: "עולה חדש/ה", keywords: ["עולה", "עלייה"] },
+] as const;
+
 const RightsCategories = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");
   const [showAll, setShowAll] = useState(false);
   const [expandedCat, setExpandedCat] = useState<string | null>(null);
+
+  // Personal-situation wizard ("אשף זכויות לפי מצב אישי")
+  const [wizardOpen, setWizardOpen] = useState(false);
+  const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);
+  const toggleTag = (id: string) =>
+    setSelectedTagIds((prev) => (prev.includes(id) ? prev.filter((t) => t !== id) : [...prev, id]));
 
   // Modal state
   const [openCat, setOpenCat] = useState<MainCategory | null>(null);
@@ -104,6 +124,22 @@ const RightsCategories = () => {
   const visibleCategories = showAll ? mainCategories : mainCategories.slice(0, INITIAL_VISIBLE);
   const hasMore = mainCategories.length > INITIAL_VISIBLE;
 
+  const wizardMatches = useMemo(() => {
+    const keywords = selectedTagIds.flatMap((id) => wizardTags.find((t) => t.id === id)?.keywords ?? []);
+    if (keywords.length === 0) return [];
+    const seen = new Set<string>();
+    const scored: { cat: MainCategory; topic: RightTopic; score: number }[] = [];
+    for (const cat of mainCategories) {
+      for (const topic of cat.topics) {
+        if (seen.has(topic.id)) continue;
+        const haystack = `${topic.label} ${topic.desc} ${topic.questions.join(" ")}`;
+        const score = keywords.reduce((n, kw) => (haystack.includes(kw) ? n + 1 : n), 0);
+        if (score > 0) { seen.add(topic.id); scored.push({ cat, topic, score }); }
+      }
+    }
+    return scored.sort((a, b) => b.score - a.score).slice(0, 12);
+  }, [selectedTagIds]);
+
   const { scrollYProgress } = useScroll({ target: containerRef, offset: ["start end", "end start"] });
   const gridX = useTransform(scrollYProgress, [0, 0.3], [60, 0]);
   const gridRotate = useTransform(scrollYProgress, [0, 0.3], [2, 0]);
@@ -143,6 +179,13 @@ const RightsCategories = () => {
                   className="border-0 bg-transparent text-base py-4 pr-0 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-muted-foreground/60" />
               </div>
             </div>
+          </motion.div>
+
+          {/* Personal-situation wizard trigger */}
+          <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.3 }} className="max-w-xl mx-auto mb-10 text-center">
+            <Button variant="outline" onClick={() => setWizardOpen(true)} className="gap-2 rounded-xl border-primary/30 hover:border-primary/60 hover:bg-primary/5">
+              <Wand2 className="w-4 h-4 text-primary" /> אשף התאמה אישית — 30 שניות, בלי טופס
+            </Button>
           </motion.div>
 
           {/* Search results */}
@@ -473,6 +516,59 @@ const RightsCategories = () => {
               )}
             </>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Personal-situation wizard modal — client-side keyword match against the
+          real catalog only; no eligibility scoring, no fabricated potential sum. */}
+      <Dialog open={wizardOpen} onOpenChange={(open) => { setWizardOpen(open); if (!open) setSelectedTagIds([]); }}>
+        <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto">
+          <DialogHeader className="text-center">
+            <div className="w-14 h-14 rounded-xl bg-primary/10 text-primary ring-1 ring-primary/15 flex items-center justify-center mx-auto mb-2">
+              <Wand2 className="w-7 h-7 text-primary" />
+            </div>
+            <DialogTitle className="text-xl">מה מתאר את המצב שלכם?</DialogTitle>
+            <DialogDescription>בחרו כל מה שרלוונטי — נציג רק זכויות מהקטלוג שמתאימות</DialogDescription>
+          </DialogHeader>
+
+          <div className="flex flex-wrap gap-2 justify-center mt-3">
+            {wizardTags.map((tag) => (
+              <button key={tag.id} type="button" onClick={() => toggleTag(tag.id)}
+                className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-all ${
+                  selectedTagIds.includes(tag.id)
+                    ? "bg-primary text-primary-foreground border-primary"
+                    : "bg-muted text-foreground border-border hover:border-primary/40"
+                }`}>
+                {tag.label}
+              </button>
+            ))}
+          </div>
+
+          <div className="mt-5 space-y-2">
+            {selectedTagIds.length === 0 && (
+              <p className="text-sm text-muted-foreground text-center py-6">בחרו לפחות תגית אחת כדי לראות זכויות מותאמות</p>
+            )}
+            {selectedTagIds.length > 0 && wizardMatches.length === 0 && (
+              <p className="text-sm text-muted-foreground text-center py-6">לא נמצאה התאמה בקטלוג למצב שנבחר. נסו תגית אחרת או חפשו למעלה.</p>
+            )}
+            {wizardMatches.length > 0 && (
+              <p className="text-xs text-muted-foreground mb-2">{wizardMatches.length} זכויות מתאימות:</p>
+            )}
+            {wizardMatches.map(({ cat, topic }) => (
+              <button key={topic.id} type="button"
+                onClick={() => { setOpenCat(cat); setSelectedTopic(topic); setWizardOpen(false); }}
+                className="w-full flex items-center gap-3 p-3 rounded-xl border border-border hover:border-primary/40 hover:bg-primary/5 transition-all text-right">
+                <div className="w-8 h-8 rounded-lg bg-primary/10 text-primary ring-1 ring-primary/15 flex items-center justify-center shrink-0">
+                  <cat.icon className="w-4 h-4 text-white" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-bold text-foreground">{topic.label}</p>
+                  <p className="text-xs text-muted-foreground">{cat.label}</p>
+                </div>
+                <ChevronLeft className="w-4 h-4 text-muted-foreground shrink-0" />
+              </button>
+            ))}
+          </div>
         </DialogContent>
       </Dialog>
     </>
