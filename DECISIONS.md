@@ -101,6 +101,55 @@
     העריכה הקיימת) ובו-זמנית לתת לבוט/לסוכן עתידי עוגן טקסטואלי יציב
     (`fill`/`stroke`/`shadow`/`blur`) שלא תלוי בניסוח העברי.
 
+## 19/08/2026 — סבב 5
+
+14. **פריט 5: הפער האמיתי היה בחשיפה, לא בנתונים.** `shared/knowledge.ts`
+    ו-`shared/categoryTemplates.ts` כבר החזיקו קטלוג-תבניות מלא (מנוע
+    `composeTemplate`) לכל 4 הקבוצות מהסבב הראשון של בניית האפליקציה —
+    אבל `shared/templates.ts` (`TEMPLATE_DEFS`, מה שבאמת מוצג בגלריה
+    דרך `/api/templates`) ו-`Home.tsx` (`enabled = g.key === "shiurim"`)
+    חשפו רק שיעורי-תורה. נבחרה הקטגוריה הראשונה/המובילה בכל קבוצה
+    (`wedding_chasidic`, `rosh_hashana`, `hachnasat_sefer_torah`) ונוספה
+    דרך `composeTemplate` הקיים — לא נבנה מנוע-רינדור חדש.
+
+15. **גילוי: `more30.com/studio/api/*` רץ כפונקציית Vercel נפרדת מקוד-מקור,
+    לא מהשרת המקומי.** `apps/26-modaot-studio/server/` (Express + SQLite)
+    הוא לפיתוח מקומי בלבד; הפריסה החיה היא `api/index.ts` (Vercel Function
+    בודדת, TS מקור לא-מקומפל, Vercel מזהה `api/**` אוטומטית גם עם
+    `buildCommand: echo no-build`) שמשתמשת ב-Supabase (`studio_*` טבלאות,
+    `SUPABASE_SERVICE_KEY`) במקום SQLite מקומי. קוד ה-adapter הזה **לא
+    היה קיים בגיט בכלל** — כל סבב קודם בנה/פרס רק את הלקוח הסטטי
+    (`dist/public` → `_deploy/studio-more30/public/studio`), ומעולם לא
+    נגע ב-API. זה עבד עד עכשיו כי אף שינוי קודם (Cardo font, תיוג
+    פרמטרים) לא נגע בנתונים שה-API מגיש. שוחזר קוד ה-adapter מה-deployment
+    החי (`GET /v6/deployments/{id}/files` + `GET /v7/.../files/{fileId}`
+    של Vercel API) והושם תחת `apps/26-modaot-studio/vercel-adapter/`
+    (נוסף לגיט — נדחף בכוח כי `/apps/**` מתעלם כברירת מחדל, בדיוק כמו
+    שאר הקבצים הכבר-עוקבים של האפליקציה הזו). **בלי זה, כל שינוי עתידי
+    ב-`shared/*.ts` שמשפיע על תוכן ה-API היה נראה "פרוס" (הלקוח מתעדכן)
+    בזמן שה-API ממשיך להגיש את הגרסה הישנה** — פער שקט שקשה לאתר בבדיקת
+    צילום-מסך רגילה.
+
+16. **`seedIfEmpty()` ב-`api/index.ts` היה חד-פעמי (`if (existing.some(builtin))
+    return`) — לא reseed בכל עלייה כמו `server/seed.ts` המקורי.** המשמעות:
+    3 התבניות החדשות שנוספו ל-`TEMPLATE_DEFS` לא היו מופיעות ב-API החי
+    לעולם, גם עם קוד מעודכן, כי הטבלה כבר לא ריקה (4 שורות builtin קיימות
+    משכבר). תוקן לבדיקת **ספירה** (`builtinCount === TEMPLATE_DEFS.length`)
+    במקום בדיקת "יש בכלל" — מרענן כשהקטלוג משתנה, לא מרענן שווא בכל
+    cold-start כשהוא לא השתנה (שומר על הכוונה המקורית של "lazy, לא
+    reseed מיותר"). אומת: `/api/templates` עבר מ-4 ל-7 מיד אחרי הפריסה.
+
+17. **מה הועתק ל-adapter ומה לא.** מתוך קבצי ה-`_lib/shared/*` שהורדו,
+    רוב הקבצים (`knowledge.ts`, `categoryTemplates.ts`, `variationEngine.ts`,
+    `designTokens.ts`, `layers.ts`, `presetCatalog.ts`, `branding.ts`,
+    `brief.ts`) זהים ל-byte לגרסת ה-repo — לא הוחלפו כי אין מה להחליף.
+    **`server/routes.ts` ו-`shared/schema.ts` ב-adapter שונים מה-repo**
+    (קוד אימות/`getUserIdFromToken` נוסף שלא קיים בעותק המקומי) — **לא
+    נגעו בהם בכלל**, כדי לא לאבד פיצ'ר חי. הוחלפו רק שני קבצים: `templates.ts`
+    (התוספת של הסבב הזה) ו-`styles.ts` (סנכרון Cardo מסבב 3 שמעולם לא הגיע
+    ל-API — תוספת טהורה, סיכון אפס, לא משפיע על רינדור כי FONTS אינו
+    בשימוש שרתי).
+
 ## מה עוד לא הוחלט (ל-NEEDS_USER אם יעלה צורך)
 
 - האם `/design` אמור בסופו של דבר **לבלוע** את `/studio` (מיזוג מלא של

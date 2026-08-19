@@ -205,8 +205,10 @@ export default function Home() {
           <div className="mb-6 flex flex-col items-center gap-4 text-center">
             <h3 className="text-xl font-bold text-[#F5EEDD]">גלריית תבניות</h3>
             <p className="max-w-2xl text-sm text-[#F5EEDD]/70">
-              המיקוד הנוכחי הוא <span className="font-semibold text-[#C9A227]">שיעורי תורה</span> —
-              תבניות מוכנות ברמת מעצב. בסיס הידע קיים לכל הקבוצות, ושאר הקטגוריות בדרך.
+              תבניות מוכנות ברמת מעצב לכל קבוצה — <span className="font-semibold text-[#C9A227]">שיעורי תורה</span>,
+              <span className="font-semibold text-[#C9A227]"> מעגל החיים</span>,
+              <span className="font-semibold text-[#C9A227]"> מעגל השנה</span> ו-
+              <span className="font-semibold text-[#C9A227]">אירועים וארגונים</span>. עוד קטגוריות בדרך בכל קבוצה.
             </p>
           </div>
 
@@ -236,7 +238,7 @@ export default function Home() {
             <div className="inline-flex shrink-0 gap-1 rounded-md bg-[#101B32] p-1">
               {GROUPS.map((g) => {
                 const Icon = GROUP_ICONS[g.key] ?? BookOpen;
-                const enabled = g.key === "shiurim";
+                const enabled = true;
                 const active = g.key === activeGroup;
                 return (
                   <button

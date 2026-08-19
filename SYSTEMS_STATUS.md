@@ -5499,3 +5499,26 @@ powershell -File scripts/qa/live-mojibake-sweep.ps1   # מה שהייצור מג
 
 עדות: `QA/bkalot-clone/queue-deploy-0814/` (`README.md`, `probe.ps1`,
 `intake.mjs`, שלושה צילומים).
+
+---
+
+## 19/08 — 26 studio: גלריית תבניות ל-3 קבוצות נוספות, וגילוי ה-Vercel adapter
+
+CHECKLIST/graphics.md פריט 5. הנתונים (`shared/knowledge.ts`/`categoryTemplates.ts`)
+כבר כיסו את כל 4 הקבוצות; `shared/templates.ts` + `Home.tsx` חשפו רק
+שיעורי-תורה. נוספה קטגוריה מובילה אחת דרך `composeTemplate` הקיים לכל
+קבוצה חסרה (`wedding_chasidic`, `rosh_hashana`, `hachnasat_sefer_torah`),
+ו-`Home.tsx` שחרר את נעילת שלושת הכפתורים.
+
+**גילוי בדרך:** `more30.com/studio/api/*` רץ כפונקציית Vercel נפרדת
+(`api/index.ts`, Supabase — לא Express+SQLite המקומי), וקוד ה-adapter הזה
+לא היה בגיט בכלל. שוחזר מה-deployment החי ונשמר תחת
+`apps/26-modaot-studio/vercel-adapter/`. תוקן גם באג ב-seed (חד-פעמי →
+לפי-ספירה) כדי שתוספות ל-`TEMPLATE_DEFS` יגיעו בפועל ל-API. פרטים מלאים:
+DECISIONS.md סבב 5 (#14-17).
+
+אומת חי, Playwright 1280×900: `/api/templates` 4→7, כל 4 כפתורי הקבוצה
+פעילים ומציגים תבנית אמיתית, פתיחת התבנית החדשה (`hachnasat_sefer_torah`)
+בעורך תקינה במלואה (שכבות + טיפים לקטגוריה), 0 שגיאות/אזהרות קונסולה
+בכל מסך. שיעורי-תורה (4 התבניות המקוריות) ללא שינוי. `dpl_7ULdq7RPSBMmWGpaBq2KWUpgYwsa`
+· `READY` · `studio-more30.vercel.app`.
