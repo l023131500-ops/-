@@ -231,15 +231,25 @@ function Portal({ load, retry }: { load: Load; retry: () => void }) {
     });
   }, []);
 
-  // התחומים נגזרים מהשורות עצמן, לפי סדר ההופעה — תחום חדש במסד מופיע כאן
-  // מעצמו, ותחום שהתרוקן נעלם מעצמו.
+  // התחומים נגזרים מהשורות עצמן — תחום חדש במסד מופיע כאן מעצמו, ותחום
+  // שהתרוקן נעלם מעצמו.
   // ⚠️ מערכת בלי תחום מקבלת תחום "אחר" ולא נופלת מהרשימה. העמוד מציג את כל
   // המצבת, ולכן קיבוץ שמשמיט שורה הוא באג ולא סידור.
+  //
+  // סדר התחומים: קודם אלה שיש בהם הכי הרבה מערכות פתוחות לכניסה. דף הבית
+  // הוא חלון-הראווה של עולם הסטארטאפים — הוא צריך להוביל במה שכבר עובד
+  // בשטח, לא בסדר המספרי של ההקמה (שבו תחום עם מערכת אחת בהקמה יכול לפתוח
+  // את העמוד). שובר-שוויון: המספר הנמוך בתחום, כדי שהסדר יציב בין טעינות.
+  const deptOpenCount = (d: string) =>
+    rows.filter((r) => (r.department || "other") === d && openToPublic(r)).length;
+  const deptMinNum = (d: string) =>
+    Math.min(...rows.filter((r) => (r.department || "other") === d).map((r) => Number(r.number)));
   const depts: string[] = [];
   for (const r of rows) {
     const d = r.department || "other";
     if (!depts.includes(d)) depts.push(d);
   }
+  depts.sort((a, b) => deptOpenCount(b) - deptOpenCount(a) || deptMinNum(a) - deptMinNum(b));
   const liveCount = rows.filter((r) => openToPublic(r)).length;
 
   return (
@@ -350,7 +360,17 @@ function Portal({ load, retry }: { load: Load; retry: () => void }) {
           {load.state === "failed" && <SystemsUnavailable onRetry={retry} />}
 
           {load.state === "ready" && depts.map((dep) => {
-            const list = rows.filter((r) => (r.department || "other") === dep);
+            // בתוך התחום: מערכות פתוחות לכניסה קודם, ואז אלה שעדיין "בקרוב" —
+            // כדי שהמבקר יפגוש קודם את מה שאפשר להיכנס אליו ולא כרטיס בהקמה.
+            // אף מערכת לא מוסתרת (זה עדיין כל המצבת של התחום), רק מסודרת.
+            // שובר-שוויון: מספר המערכת, לסדר יציב בין טעינות.
+            const list = rows
+              .filter((r) => (r.department || "other") === dep)
+              .sort((a, b) =>
+                openToPublic(a) === openToPublic(b)
+                  ? Number(a.number) - Number(b.number)
+                  : openToPublic(a) ? -1 : 1,
+              );
             return (
               <div className="dept" key={dep}>
                 <div className="dept-head reveal">
