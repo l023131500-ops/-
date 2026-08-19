@@ -4,7 +4,7 @@ import { storage, getUserIdFromToken } from "./storage";
 import { insertProjectSchema } from "../shared/schema";
 import { generateBackground, editImage, enhanceBackgroundPrompt } from "./gemini";
 import { generateCopy, generateConcepts } from "./ai";
-import { generateStrategy, generateLogoConcepts, vectorizeLogo, deriveVisuals, generateBackgroundRecraft } from "./branding";
+import { generateStrategy, generateLogoConcepts, vectorizeLogo, deriveVisuals, generateBackgroundRecraft, removeBackgroundImage } from "./branding";
 import { ARCHETYPES, ARCHETYPE_GROUPS, AAKER_DIMENSIONS, BRIEF_CATEGORIES, ALL_QUESTIONS, CORE_QUESTIONS, TOTAL_QUESTIONS, BRAND_BOOK_SECTIONS, HEBREW_FONTS, VISUAL_STYLE_TO_ARCHETYPE, getArchetype } from "../shared/branding";
 import { insertBrandSchema } from "../shared/schema";
 import { STYLES } from "../shared/styles";
@@ -316,6 +316,19 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
       res.json({ ok: true, svg: result.svg });
     } catch (e: any) {
       res.status(502).json({ error: "שגיאת וקטוריזציה: " + String(e?.message || e).slice(0, 200) });
+    }
+  });
+
+  // הסרת רקע משכבת תמונה נבחרת (Recraft) — מחזיר data URL של PNG עם שקיפות
+  app.post("/api/branding/remove-background", async (req: Request, res: Response) => {
+    const { base64, mimeType } = req.body || {};
+    if (!base64) return res.status(400).json({ error: "חסרה תמונה" });
+    try {
+      const result = await removeBackgroundImage(base64, mimeType || "image/png");
+      if (!result.ok) return res.status(502).json({ error: result.error || "הסרת רקע נכשלה", detail: result.detail });
+      res.json({ ok: true, dataUrl: result.dataUrl });
+    } catch (e: any) {
+      res.status(502).json({ error: "שגיאת הסרת רקע: " + String(e?.message || e).slice(0, 200) });
     }
   });
 

@@ -99,6 +99,7 @@ export default function Editor() {
 
   // וקטוריזציה של שכבת תמונה קיימת ל-SVG אמיתי (Recraft — מנוע קיים בכלי המותג)
   const [vectorizing, setVectorizing] = useState(false);
+  const [removingBg, setRemovingBg] = useState(false);
 
   // אם נכנסים ישירות ל-/editor בלי בחירה (רענון) — חזרה לבית
   useEffect(() => {
@@ -249,6 +250,44 @@ export default function Editor() {
       });
     } finally {
       setVectorizing(false);
+    }
+  }
+
+  // הסרת רקע משכבת תמונה נבחרת דרך /api/branding/remove-background החדש
+  // (Recraft Remove Background) — אותו דפוס בדיוק כמו handleVectorizeImage למעלה
+  async function handleRemoveBackground() {
+    if (!selectedLayer || selectedLayer.type !== "image") return;
+    const layer = selectedLayer as ImageLayer;
+    if (!layer.src) {
+      toast({ title: "אין תמונה בשכבה הזו להסרת רקע", variant: "destructive" });
+      return;
+    }
+    setRemovingBg(true);
+    try {
+      const imgRes = await fetch(layer.src);
+      const blob = await imgRes.blob();
+      const buf = await blob.arrayBuffer();
+      const bytes = new Uint8Array(buf);
+      let binary = "";
+      for (let i = 0; i < bytes.byteLength; i++) binary += String.fromCharCode(bytes[i]);
+      const base64 = btoa(binary);
+      const mimeType = blob.type || "image/png";
+      const res = await apiRequest("POST", "/api/branding/remove-background", { base64, mimeType });
+      const data = await res.json();
+      if (!data.ok || !data.dataUrl) {
+        toast({ title: "הסרת רקע נכשלה", description: data.error, variant: "destructive" });
+        return;
+      }
+      handleChangeLayer(layer.id, { src: data.dataUrl });
+      toast({ title: "הרקע הוסר מהתמונה" });
+    } catch (err: any) {
+      toast({
+        title: "הסרת רקע נכשלה",
+        description: String(err?.message ?? err).slice(0, 150),
+        variant: "destructive",
+      });
+    } finally {
+      setRemovingBg(false);
     }
   }
 
@@ -744,6 +783,33 @@ export default function Editor() {
                     <Wand2 className="h-3.5 w-3.5" />
                     {vectorizing ? "ממיר לוקטור..." : "המר לוקטור SVG (Recraft)"}
                   </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="h-7 w-full gap-1 border-[#C9A227]/40 text-[11px] text-[#C9A227]"
+                    onClick={handleRemoveBackground}
+                    disabled={removingBg}
+                    data-testid="button-remove-background-image-layer"
+                  >
+                    <Wand2 className="h-3.5 w-3.5" />
+                    {removingBg ? "מסיר רקע..." : "הסר רקע (Recraft)"}
+                  </Button>
+                </div>
+              )}
+
+              {selectedLayer && (
+                <div className="mb-3">
+                  <Label className="mb-1 block text-xs text-[#F5EEDD]/70">
+                    שקיפות <code className="font-mono text-[10px] text-[#C9A227]/70">opacity</code>: {selectedLayer.opacity ?? 1}
+                  </Label>
+                  <Slider
+                    value={[selectedLayer.opacity ?? 1]}
+                    min={0}
+                    max={1}
+                    step={0.01}
+                    onValueChange={([v]) => handleChangeLayer(selectedLayer.id, { opacity: v })}
+                    data-testid="slider-layer-opacity"
+                  />
                 </div>
               )}
 

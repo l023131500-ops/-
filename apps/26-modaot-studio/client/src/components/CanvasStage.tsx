@@ -122,7 +122,7 @@ function ImageNode({ layer, onSelect, onChange, interactive }: {
   if (!layer.src || !img) {
     // placeholder — מסגרת מקווקוות "העלה תמונה"
     return (
-      <Group onClick={onSelect} onTap={onSelect} listening={interactive}>
+      <Group onClick={onSelect} onTap={onSelect} listening={interactive} opacity={layer.opacity ?? 1}>
         {layer.circle ? (
           <Circle x={cx} y={cy} radius={w / 2} fill="rgba(255,255,255,0.06)" stroke="#C9A227" strokeWidth={2} dash={[10, 8]} />
         ) : (
@@ -151,6 +151,7 @@ function ImageNode({ layer, onSelect, onChange, interactive }: {
       onDragEnd={(e) => onChange?.({ x: layer.x + e.target.x(), y: layer.y + e.target.y() })}
       clipFunc={layer.circle ? clipFn : undefined}
       clipX={!layer.circle && layer.cornerRadius ? layer.x : undefined}
+      opacity={layer.opacity ?? 1}
     >
       <KImage image={img} x={dx} y={dy} width={dw} height={dh} cornerRadius={!layer.circle ? layer.cornerRadius : undefined} />
       {layer.circle && <Circle x={cx} y={cy} radius={Math.min(w, h) / 2} stroke="#C9A227" strokeWidth={4} />}

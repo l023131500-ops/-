@@ -19,6 +19,7 @@ const ANTHROPIC_URL = "https://api.anthropic.com/v1/messages";
 const CLAUDE_MODEL = process.env.ANTHROPIC_TEXT_MODEL || "claude-sonnet-4-5-20250929";
 const RECRAFT_VECTORIZE = "https://external.api.recraft.ai/v1/images/vectorize";
 const RECRAFT_GENERATE = "https://external.api.recraft.ai/v1/images/generations";
+const RECRAFT_REMOVE_BG = "https://external.api.recraft.ai/v1/images/removeBackground";
 
 async function claude(system: string, user: string, maxTokens = 2500): Promise<string> {
   const headers: Record<string, string> = {
@@ -271,6 +272,42 @@ export async function vectorizeLogo(base64Png: string, mimeType = "image/png"): 
     return { ok: true, svg: await svgRes.text() };
   } catch (e: any) {
     return { ok: false, error: "כשל בוקטוריזציה", detail: String(e?.message || e) };
+  }
+}
+
+// ═══════════════════ הסרת רקע (Recraft Remove Background) ═══════════════════
+
+/**
+ * מסיר את הרקע מתמונה (base64) דרך Recraft Remove Background API.
+ * מחזיר data URL של PNG עם שקיפות — אותה תבנית קלט/פלט כמו vectorizeLogo.
+ */
+export async function removeBackgroundImage(base64Png: string, mimeType = "image/png"): Promise<{ ok: boolean; dataUrl?: string; error?: string; detail?: string }> {
+  try {
+    const buf = Buffer.from(base64Png, "base64");
+    const blob = new Blob([buf], { type: mimeType });
+    const form = new FormData();
+    form.append("file", blob, "image.png");
+    form.append("response_format", "url");
+
+    const headers: Record<string, string> = {};
+    if (process.env.RECRAFT_API_KEY) headers["Authorization"] = `Bearer ${process.env.RECRAFT_API_KEY}`;
+
+    const res = await proxyFetch(RECRAFT_REMOVE_BG, { method: "POST", headers, body: form as any });
+    if (!res.ok) {
+      const txt = await res.text();
+      return { ok: false, error: `Recraft ${res.status}`, detail: txt.slice(0, 300) };
+    }
+    const json: any = await res.json();
+    const imageUrl: string | undefined = json?.image?.url;
+    if (!imageUrl) return { ok: false, error: "Recraft: לא הוחזר URL של תמונה", detail: JSON.stringify(json).slice(0, 200) };
+
+    const imgRes = await proxyFetch(imageUrl, { method: "GET" }).catch(() => fetch(imageUrl));
+    if (!imgRes.ok) return { ok: false, error: `הורדת התמונה נכשלה ${imgRes.status}` };
+    const outBuf = Buffer.from(await imgRes.arrayBuffer());
+    const outMime = imgRes.headers.get("content-type") || "image/png";
+    return { ok: true, dataUrl: `data:${outMime};base64,${outBuf.toString("base64")}` };
+  } catch (e: any) {
+    return { ok: false, error: "כשל בהסרת רקע", detail: String(e?.message || e) };
   }
 }
 

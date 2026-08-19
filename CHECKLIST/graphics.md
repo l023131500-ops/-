@@ -47,13 +47,28 @@
       (צבע טקסט/צבע מתאר/עובי מתאר/צבע צל/טשטוש צל/צבע הרקע) מציגות את
       התג הטכני הנכון, 0 שגיאות קונסולה, שאר הפאנל (פונט/גודל/יישור/שכבות/
       קנבאס) ללא שינוי. צילום: `studio-params-panel-0819.png`.
-- [ ] **4b. בקרות חדשות ל-6 המונחים החסרים** — opacity/blend/tracking/
-      leading/kerning/corner-radius **אינם קיימים כלל** ב-Layer schema או
-      בפאנל — לא רק לא-מתויגים. הוספתם האמיתית דורשת שדה חדש בכל שכבה +
-      בקרת UI + חיווט ברינדור ה-Konva + ייצוא PDF/PNG — נגיעה ישירה במנוע
-      התצוגה המשותף (exporter.ts / stage.toDataURL), המנוע המוגן לפי
-      DECISIONS.md #1. נדחה לסבב נפרד עם בדיקה זהירה per-property, לא כצעד
-      אחד — סיכון רגרסיה גבוה מדי לצעד של ~20 דקות.
+- [x] **4b-i. בקרת `opacity`** — נבדק מול הקוד לפני העריכה: מתוך 6 המונחים
+      החסרים, `opacity` **כבר היה קיים** ב-`BaseLayer` (`shared/layers.ts`)
+      וכבר מחווט ברינדור ה-Konva לטקסט/צורה/דקורציה (`CanvasStage.tsx`) —
+      חסרה רק בקרת UI, ושכבת **תמונה** לבדה לא קראה את השדה. תוקן: נוסף
+      `opacity={layer.opacity ?? 1}` לשני ה-`<Group>` של `ImageNode`
+      (פלייסהולדר + תמונה טעונה), ונוספה בקרת סליידר גנרית אחת ב-`Editor.tsx`
+      (מחוץ לענף `text`/`image` הספציפי — פועלת על כל שכבה נבחרת דרך
+      `handleChangeLayer`, כי `opacity` הוא שדה של `BaseLayer`) עם תג
+      `<code>opacity</code>` באותו דפוס מסעיף 4a. ה-exporter (`exporter.ts`)
+      קורא ישירות מה-stage החי (`stage.toDataURL()`) — אין נתיב ייצוא נפרד
+      לתקן. אומת חי ב-`more30.com/studio` (Playwright, cache-buster): נבחרה
+      שכבת תמונה (`תמונת הרב`) — סליידר ירד מ-1 ל-0.79, הערך המוצג התעדכן;
+      נבחרה שכבת טקסט (כותרת) — סליידר עצמאי (התאפס ל-1 עבור השכבה החדשה),
+      הורדה ל-0.1 הביאה לדהייה חזותית ברורה של הכותרת בקנבס (צילום:
+      `studio-opacity-text-faded.png`). כל שאר הבקרות (פונט/עובי/גודל/יישור/
+      fill/stroke/shadow/blur) נשארו ללא שינוי באותה שכבה — אפס רגרסיה. 0
+      שגיאות קונסולה. פריסה: `vite build` → `_deploy/studio-more30/public/studio`
+      → `vercel deploy --prod`, READY (`dpl_F88UA5Xm5QqGF8mKaDmTsmHshL9J`).
+- [ ] **4b-ii..vi. בקרות `blend`/`tracking`/`leading`/`kerning`/`corner-radius`**
+      — כל אחד דורש שדה סכימה חדש (לא קיים כמו `opacity`) + חיווט רינדור
+      Konva ספציפי + בדיקה נפרדת. נדחה לסבבים נפרדים, פיצ'ר אחד בכל פעם,
+      באותו היגיון של הפיצול הזה.
 - [x] **5. גלריית תבניות — קטגוריה מובילה אחת בכל אחת מ-4 הקבוצות** —
       `shared/knowledge.ts`/`categoryTemplates.ts` כבר החזיקו קטלוג-תבניות
       אמיתי (מנוע `composeTemplate`) לכל 4 הקבוצות; הפער האמיתי היה ש-
@@ -121,10 +136,29 @@
       שינוי — אפס רגרסיה. פריסה: `vite build --base=/studio/` →
       `_deploy/studio-more30/public/studio` (api/ ללא שינוי) →
       `dpl_BwSUk8gh9HtbLd3xxmdCNLTnWYJS`, READY.
-- [ ] **7b. הסרת-רקע (Recraft)** — לא קיימת בכלל כרגע (לא ב-server, לא
-      ב-vercel-adapter, לא בעורך) — דורשת endpoint חדש (מראה ל-vectorize:
-      פונקציית שרת + route + מקביל ב-vercel-adapter) ולא רק חשיפת UI. נדחה
-      לסבב נפרד.
+- [x] **7b. הסרת-רקע (Recraft)** — נבנה endpoint חדש שלא היה קיים קודם,
+      מראה מדויק של `vectorizeLogo`/`/api/branding/vectorize`: פונקציית
+      שרת `removeBackgroundImage` (`server/branding.ts` + עותק זהה
+      ב-`vercel-adapter/api/_lib/server/branding.ts`, שהוא הקוד שרץ בפועל
+      בפרודקשן) קוראת ל-`POST https://external.api.recraft.ai/v1/images/removeBackground`
+      (multipart `file` + `response_format=url`, אותה תבנית קלט בדיוק כמו
+      vectorize), מורידה את התמונה שחזרה (PNG עם שקיפות) ומחזירה data URL.
+      route חדש `POST /api/branding/remove-background` (`routes.ts` +
+      עותק ה-adapter) — אין שינוי ל-route הקיים של vectorize. ב-`Editor.tsx`
+      נוסף כפתור שני "הסר רקע (Recraft)" בפאנל "שכבת תמונה" הקיים (מ-7a),
+      ליד כפתור הוקטוריזציה — לא פאנל/דיאלוג חדש; `handleRemoveBackground`
+      מראה מדויק של `handleVectorizeImage` (אותו זרימת fetch→blob→base64→
+      apiRequest, רק endpoint ותוצאה שונים). `tsc --noEmit` נקי, `vite build
+      --base=/studio/` נקי (2165 מודולים). פריסה: `_deploy/studio-more30/public/studio`
+      (build חדש) + `api/_lib/server/{branding,routes}.ts` (עותק adapter
+      מעודכן) → `vercel deploy --prod`, `dpl_EmgiLqQ3wAaspEeURAQc5vD5BRZX`,
+      READY. **אומת חי**: קריאת `POST https://more30.com/studio/api/branding/remove-background`
+      עם תמונת PNG אמיתית (228KB, צילום מסך קיים מהסבב הקודם) החזירה
+      **200 OK** עם `dataUrl` אמיתי (`data:image/webp;base64,...`, לא ריק/
+      placeholder) — אימות דרך קריאת API ישירה (לא Playwright: הדפדפן היה
+      תפוס ע"י ריצה מקבילה בזמן הסבב, ראה [[concurrent-sessions-can-switch-branch-underfoot]]
+      בזיכרון). קוד ה-vectorize הקיים (7a) ושאר הפאנלים/שכבות ללא שינוי —
+      אפס רגרסיה.
 - [x] **8. Gemini Nano-Banana קומפוזיציה** — נבדק מול הקוד: המימוש כבר שלם
       (`gemini.ts`, מודל ראשי `gemini-3-pro-image` + נפילה אוטומטית ל-
       `gemini-2.5-flash-image`, שיפור פרומפט, הודעות שגיאה ידידותיות ל-429/403
