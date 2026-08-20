@@ -79,10 +79,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "זכויות פרו | ZchuyotPro" },
+      { title: "זכויות פרו" },
       { name: "description", content: "מערכת CRM רב-ארגונית לניהול לקוחות, זכאויות ושותפים." },
-      { property: "og:title", content: "זכויות פרו | ZchuyotPro" },
-      { name: "twitter:title", content: "זכויות פרו | ZchuyotPro" },
+      { property: "og:title", content: "זכויות פרו" },
+      { name: "twitter:title", content: "זכויות פרו" },
       { property: "og:description", content: "מערכת CRM רב-ארגונית לניהול לקוחות, זכאויות ושותפים." },
       { name: "twitter:description", content: "מערכת CRM רב-ארגונית לניהול לקוחות, זכאויות ושותפים." },
       { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/db701ed7-c326-4e11-bba8-548e7dcc2911/id-preview-568866ae--bd2a22c4-2430-49f4-921c-f89cb3175fff.lovable.app-1781122391260.png" },
