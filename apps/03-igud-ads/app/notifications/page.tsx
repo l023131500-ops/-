@@ -71,7 +71,12 @@ export default function MyNotificationsPage() {
                     <span className="text-xs bg-gray-100 text-gray-700 px-2 py-0.5 rounded">
                       {TYPE_LABEL[n.type] || n.type}
                     </span>
-                    {!n.is_read && <span className="w-2 h-2 bg-blue-500 rounded-full"></span>}
+                    {!n.is_read && (
+                      <span className="inline-flex items-center gap-1 text-xs font-semibold text-blue-700">
+                        <span className="w-2 h-2 bg-blue-500 rounded-full" aria-hidden="true"></span>
+                        חדש
+                      </span>
+                    )}
                   </div>
                   <h2 className="font-bold text-brand-blue">{n.title}</h2>
                   {n.body && <p className="text-sm text-gray-700 mt-1">{n.body}</p>}
