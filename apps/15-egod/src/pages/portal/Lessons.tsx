@@ -136,9 +136,9 @@ const Lessons = () => {
                   <ChipPicker label="סגנון דיבור" options={speakingStyleOptions} selected={form.speaking_style ? [form.speaking_style] : []}
                     onChange={v => setForm(p => ({ ...p, speaking_style: v[v.length - 1] || "" }))} />
                   <div>
-                    <label className="text-sm font-medium mb-1 block">שפה</label>
+                    <label htmlFor="lessons-language" className="text-sm font-medium mb-1 block">שפה</label>
                     <Select value={form.language} onValueChange={v => setForm(p => ({ ...p, language: v }))}>
-                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectTrigger id="lessons-language"><SelectValue /></SelectTrigger>
                       <SelectContent>{LANGUAGES.map(l => <SelectItem key={l} value={l}>{l}</SelectItem>)}</SelectContent>
                     </Select>
                   </div>
@@ -148,22 +148,22 @@ const Lessons = () => {
 
                 {step === 2 && (<>
                   <div className="grid grid-cols-2 gap-3">
-                    <div><label className="text-sm font-medium mb-1 block">עיר</label>
-                      <Input value={form.city} onChange={e => setForm(p => ({ ...p, city: e.target.value }))} placeholder="ירושלים" /></div>
-                    <div><label className="text-sm font-medium mb-1 block">שכונה</label>
-                      <Input value={form.neighborhood} onChange={e => setForm(p => ({ ...p, neighborhood: e.target.value }))} placeholder="רמות" /></div>
+                    <div><label htmlFor="lessons-city" className="text-sm font-medium mb-1 block">עיר</label>
+                      <Input id="lessons-city" value={form.city} onChange={e => setForm(p => ({ ...p, city: e.target.value }))} placeholder="ירושלים" /></div>
+                    <div><label htmlFor="lessons-neighborhood" className="text-sm font-medium mb-1 block">שכונה</label>
+                      <Input id="lessons-neighborhood" value={form.neighborhood} onChange={e => setForm(p => ({ ...p, neighborhood: e.target.value }))} placeholder="רמות" /></div>
                   </div>
                   <div className="grid grid-cols-2 gap-3">
-                    <div><label className="text-sm font-medium mb-1 block">רחוב</label>
-                      <Input value={form.street} onChange={e => setForm(p => ({ ...p, street: e.target.value }))} /></div>
-                    <div><label className="text-sm font-medium mb-1 block">מספר</label>
-                      <Input value={form.street_number} onChange={e => setForm(p => ({ ...p, street_number: e.target.value }))} /></div>
+                    <div><label htmlFor="lessons-street" className="text-sm font-medium mb-1 block">רחוב</label>
+                      <Input id="lessons-street" value={form.street} onChange={e => setForm(p => ({ ...p, street: e.target.value }))} /></div>
+                    <div><label htmlFor="lessons-street-number" className="text-sm font-medium mb-1 block">מספר</label>
+                      <Input id="lessons-street-number" value={form.street_number} onChange={e => setForm(p => ({ ...p, street_number: e.target.value }))} /></div>
                   </div>
-                  <div><label className="text-sm font-medium mb-1 block">בית כנסת / מקום</label>
-                    <Input value={form.synagogue_name} onChange={e => setForm(p => ({ ...p, synagogue_name: e.target.value }))} /></div>
+                  <div><label htmlFor="lessons-synagogue-name" className="text-sm font-medium mb-1 block">בית כנסת / מקום</label>
+                    <Input id="lessons-synagogue-name" value={form.synagogue_name} onChange={e => setForm(p => ({ ...p, synagogue_name: e.target.value }))} /></div>
                   <div className="flex items-center gap-3">
-                    <Switch checked={form.is_recurring} onCheckedChange={v => setForm(p => ({ ...p, is_recurring: v }))} />
-                    <label className="text-sm font-medium">{form.is_recurring ? "שיעור קבוע" : "שיעור חד-פעמי"}</label>
+                    <Switch id="lessons-is-recurring" checked={form.is_recurring} onCheckedChange={v => setForm(p => ({ ...p, is_recurring: v }))} />
+                    <label htmlFor="lessons-is-recurring" className="text-sm font-medium">{form.is_recurring ? "שיעור קבוע" : "שיעור חד-פעמי"}</label>
                   </div>
                   {form.is_recurring ? (
                     <>
@@ -176,15 +176,15 @@ const Lessons = () => {
                           ))}
                         </div>
                       </div>
-                      <div><label className="text-sm font-medium mb-1 block">שעת שיעור</label>
-                        <Input value={form.schedule_time} onChange={e => setForm(p => ({ ...p, schedule_time: e.target.value }))} placeholder="20:00" /></div>
+                      <div><label htmlFor="lessons-schedule-time" className="text-sm font-medium mb-1 block">שעת שיעור</label>
+                        <Input id="lessons-schedule-time" value={form.schedule_time} onChange={e => setForm(p => ({ ...p, schedule_time: e.target.value }))} placeholder="20:00" /></div>
                     </>
                   ) : (
                     <div className="grid grid-cols-2 gap-3">
-                      <div><label className="text-sm font-medium mb-1 block">תאריך</label>
-                        <Input type="date" value={form.specific_date} onChange={e => setForm(p => ({ ...p, specific_date: e.target.value }))} /></div>
-                      <div><label className="text-sm font-medium mb-1 block">שעה</label>
-                        <Input value={form.schedule_time} onChange={e => setForm(p => ({ ...p, schedule_time: e.target.value }))} placeholder="20:00" /></div>
+                      <div><label htmlFor="lessons-specific-date" className="text-sm font-medium mb-1 block">תאריך</label>
+                        <Input id="lessons-specific-date" type="date" value={form.specific_date} onChange={e => setForm(p => ({ ...p, specific_date: e.target.value }))} /></div>
+                      <div><label htmlFor="lessons-specific-time" className="text-sm font-medium mb-1 block">שעה</label>
+                        <Input id="lessons-specific-time" value={form.schedule_time} onChange={e => setForm(p => ({ ...p, schedule_time: e.target.value }))} placeholder="20:00" /></div>
                     </div>
                   )}
                   <div className="flex gap-3">
@@ -199,27 +199,27 @@ const Lessons = () => {
                     <div className="flex items-center gap-2"><Switch checked={form.is_live_stream} onCheckedChange={v => setForm(p => ({ ...p, is_live_stream: v }))} /><Video className="w-4 h-4" /><span className="text-sm">שידור חי</span></div>
                   </div>
                   {form.is_recorded && (
-                    <div><label className="text-sm font-medium mb-1 block">מיקום הקלטה</label>
-                      <Input value={form.recording_location} onChange={e => setForm(p => ({ ...p, recording_location: e.target.value }))} placeholder="קישור או מיקום" /></div>
+                    <div><label htmlFor="lessons-recording-location" className="text-sm font-medium mb-1 block">מיקום הקלטה</label>
+                      <Input id="lessons-recording-location" value={form.recording_location} onChange={e => setForm(p => ({ ...p, recording_location: e.target.value }))} placeholder="קישור או מיקום" /></div>
                   )}
                   <div className="grid grid-cols-2 gap-3">
-                    <div><label className="text-sm font-medium mb-1 block">טלפון הרב</label>
-                      <Input value={form.rabbi_phone} onChange={e => setForm(p => ({ ...p, rabbi_phone: e.target.value }))} /></div>
-                    <div><label className="text-sm font-medium mb-1 block">תפקיד</label>
-                      <Input value={form.rabbi_role} onChange={e => setForm(p => ({ ...p, rabbi_role: e.target.value }))} /></div>
+                    <div><label htmlFor="lessons-rabbi-phone" className="text-sm font-medium mb-1 block">טלפון הרב</label>
+                      <Input id="lessons-rabbi-phone" value={form.rabbi_phone} onChange={e => setForm(p => ({ ...p, rabbi_phone: e.target.value }))} /></div>
+                    <div><label htmlFor="lessons-rabbi-role" className="text-sm font-medium mb-1 block">תפקיד</label>
+                      <Input id="lessons-rabbi-role" value={form.rabbi_role} onChange={e => setForm(p => ({ ...p, rabbi_role: e.target.value }))} /></div>
                   </div>
                   <div className="grid grid-cols-3 gap-3">
-                    <div><label className="text-sm font-medium mb-1 block">איש קשר</label>
-                      <Input value={form.contact_name} onChange={e => setForm(p => ({ ...p, contact_name: e.target.value }))} /></div>
-                    <div><label className="text-sm font-medium mb-1 block">טלפון</label>
-                      <Input value={form.contact_phone} onChange={e => setForm(p => ({ ...p, contact_phone: e.target.value }))} /></div>
-                    <div><label className="text-sm font-medium mb-1 block">מייל</label>
-                      <Input value={form.contact_email} onChange={e => setForm(p => ({ ...p, contact_email: e.target.value }))} /></div>
+                    <div><label htmlFor="lessons-contact-name" className="text-sm font-medium mb-1 block">איש קשר</label>
+                      <Input id="lessons-contact-name" value={form.contact_name} onChange={e => setForm(p => ({ ...p, contact_name: e.target.value }))} /></div>
+                    <div><label htmlFor="lessons-contact-phone" className="text-sm font-medium mb-1 block">טלפון</label>
+                      <Input id="lessons-contact-phone" value={form.contact_phone} onChange={e => setForm(p => ({ ...p, contact_phone: e.target.value }))} /></div>
+                    <div><label htmlFor="lessons-contact-email" className="text-sm font-medium mb-1 block">מייל</label>
+                      <Input id="lessons-contact-email" value={form.contact_email} onChange={e => setForm(p => ({ ...p, contact_email: e.target.value }))} /></div>
                   </div>
-                  <div><label className="text-sm font-medium mb-1 block">קישור לתרומה</label>
-                    <Input value={form.donation_link} onChange={e => setForm(p => ({ ...p, donation_link: e.target.value }))} /></div>
-                  <div><label className="text-sm font-medium mb-1 block">הערות</label>
-                    <Input value={form.schedule_notes} onChange={e => setForm(p => ({ ...p, schedule_notes: e.target.value }))} /></div>
+                  <div><label htmlFor="lessons-donation-link" className="text-sm font-medium mb-1 block">קישור לתרומה</label>
+                    <Input id="lessons-donation-link" value={form.donation_link} onChange={e => setForm(p => ({ ...p, donation_link: e.target.value }))} /></div>
+                  <div><label htmlFor="lessons-schedule-notes" className="text-sm font-medium mb-1 block">הערות</label>
+                    <Input id="lessons-schedule-notes" value={form.schedule_notes} onChange={e => setForm(p => ({ ...p, schedule_notes: e.target.value }))} /></div>
                   <div className="flex gap-3">
                     <Button variant="outline" onClick={() => setStep(2)} className="flex-1">← חזור</Button>
                     <Button onClick={handleAdd} className="flex-1 bg-secondary text-secondary-foreground hover:bg-gold-dark">שמור שיעור ✓</Button>
