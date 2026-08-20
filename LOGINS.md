@@ -37,11 +37,20 @@
   `public.user_roles`. אומת ב-SQL (`auth.users`+`auth.identities`+
   `user_roles`, לא בדפדפן — הלופ הזה לא מריץ שרת). כניסה דרך
   `more30.com/torah/auth/sign-in` (המסך הראשי) עם האימייל הזה, או
-  `.../torah/legacy/admin-login` עם שם-משתמש `admin`. **02/03 (igud-transcribe/
-  igud-ads) לא זהים** — הניהול שם נעול לרשימת-מייל בודדת (`ADMIN_EMAIL`,
-  ברירת מחדל אותו Google) בקוד השרת (`middleware.ts`), לא ל-`is_super_admin`
-  מה-DB, כך שחשבון `admin`/`STD_ADMIN_PASSWORD` לא ייתן שם גישת ניהול בלי
-  שינוי קוד נוסף — לא נגעתי, מחוץ להיקף הצעד הזה.
+  `.../torah/legacy/admin-login` עם שם-משתמש `admin`.
+- **02 (igud-transcribe)** — נבדק ותוקן 20/08/2026 (סבב 45): הניהול היה נעול
+  לרשימת-מייל בודדת (`ADMIN_EMAIL`) ב-`middleware.ts`, בלי נתיב חלופי מה-DB.
+  הוספתי בדיקת נפילה (fallback) ל-RPC `is_super_admin` (אותו מנגנון בדיוק
+  כמו 01, אותו פרויקט Supabase משותף `bieebmnmkffwbqlsfozh`) — לא הוסרה
+  בדיקת ה-מייל הקבועה, רק תוספת. **`admin@admin.local` עובד עכשיו גם ב-02.**
+- **03 (igud-ads)** — נבדק ותוקן 20/08/2026 (סבב 45): לא כמו 02, ל-03 יש
+  טבלת תפקידים עצמאית משלו (`public.ad_users`, `role=super_admin/admin/
+  customer/viewer`) שכל ראוטי ה-API בודקים בפועל דרך `requireAdmin`/
+  `requireSuperAdmin` (`lib/auth-helpers.ts`) — ה-middleware עצמו רק בודק
+  אימות (לא הרשאה) ומעביר את כל המשתמשים המחוברים ל-UI. הפער האמיתי היה
+  ש-`admin@admin.local` לא היתה לו שורה ב-`ad_users`. הוספתי שורה
+  (`role=super_admin, is_active=true`, זהה בצורתה לשורת ה-Google הקיימת) —
+  **תוספת DB בלבד, שום שינוי קוד נדרש ב-03** (בניגוד למה שסבב 44 שיער).
 
 **חריגים ידועים (לא admin/More30Admin2026):**
 - **גן-קליק (40)** — אין שם משתמש; הניהול מקבל סיסמה אחת בכותרת `x-admin-key`.

@@ -29,7 +29,17 @@ export async function middleware(req: NextRequest) {
 
   const { data: { user } } = await supabase.auth.getUser();
   const email = user?.email?.toLowerCase();
-  if (!email || email !== ADMIN_EMAIL.toLowerCase()) {
+  let isAdmin = !!email && email === ADMIN_EMAIL.toLowerCase();
+  if (!isAdmin && user) {
+    // Fixed STD_ADMIN account (admin@admin.local) isn't on the legacy
+    // single-email allowlist — it's granted via public.user_roles instead,
+    // same shared Supabase project/RPC that 01-torah-platform's super-admin
+    // gate uses. Additive fallback only; the legacy email check above is
+    // untouched.
+    const { data: superAdmin } = await supabase.rpc("is_super_admin", { _uid: user.id });
+    isAdmin = superAdmin === true;
+  }
+  if (!isAdmin) {
     if (url.pathname.startsWith("/api/")) {
       return new NextResponse(
         JSON.stringify({ error: "forbidden", message: "אין הרשאת אדמין" }),
