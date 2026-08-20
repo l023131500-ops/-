@@ -11135,3 +11135,61 @@
       `04-imud-torani/server/seed.ts`, או לעבור לשכבת ה-auth/admin
       המשותפת (דשבורד ה-super-admin, מאזני ה-API) שטרם עברה סבב סריקה
       ייעודי.
+
+## 20/08/2026 — סבב 221 (loop A) — דשבורד `more30.com/admin` · מסך "יתרות וחיבורים" המלא: פס-אחוזים "ריק" קבוע לספק `noLimit`
+
+1074. **בדקתי מחדש לפני שהתחלתי:** `core.run_progress` (סבב 220
+      האחרון, commit `8a50eb90`/`6a098454`, תואם ל-HEAD). עקבתי אחרי
+      ההמלצה מ-1073 ובחרתי לבדוק את שכבת ה-admin dashboard/API
+      balances המשותפת שטרם עברה סבב סריקה ייעודי — בהיקף המפורש
+      (`more30.com/admin dashboard incl API balances`).
+1075. **הממצא שאומת ישירות בקוד:** `admin/src/App.tsx` (הדשבורד
+      React תחת `/nihul`) מציג לשונית "מפתחות וקרדיטים" מצומצמת, עם
+      קישור "המסך המלא ↗" ל-`https://more30.com/admin/credits`
+      (שורה 993) — עמוד HTML נפרד, `portal/public/admin-credits.html`,
+      שמיושם בעצמו מול אותו `GET /api/credits`
+      (`portal/api/credits.ts`). ה-JSDoc הארוך ב-`App.tsx` (שורות
+      78-98) ובקובץ ה-API (שורות 62-68) מתעד במפורש למה קיים דגל
+      `usage.noLimit`: Recraft הוא הספק היחיד שמחזיר רק "כמה נשאר",
+      לא יחס used/limit אמיתי — `credits.ts` שורה 192 קובע במקרה הזה
+      `used: 0, percent: 0` תמיד, ו-`App.tsx` (שורות 967-976) בודק
+      במפורש `!p.usage.noLimit` לפני שהוא מצייר את פס־האחוזים, ומציג
+      טקסט שונה (`"נותרו X"` בלי "מתוך") כשה-flag דלוק. `admin-credits.
+      html` (העמוד המלא, לא הגרסה המצומצמת) מיישם אותה טבלת ספקים
+      **מאפס בג'אווהסקריפט טהור** בלי לחלוק קוד עם `App.tsx`, ולא בדק
+      את `noLimit` כלל (`grep noLimit` על הקובץ לפני התיקון: אפס
+      התאמות) — הוא צייר את הפס תמיד כש-`p.usage.limit > 0`, עם
+      `pct = percent || 0`, כלומר עבור Recraft `pct` הוא **תמיד 0**
+      בלי קשר לכמה קרדיטים נותרו באמת. אדמין שפותח את העמוד המלא
+      הזה (בניגוד למסך המצומצם שכבר תוקן) רואה פס ריק/ירוק קבוע גם
+      כשנותרו רק קרדיט אחד או שניים — בדיוק ההפך מהאזהרה שהפס נועד
+      לתת, ובלי שום `heat`/אדום כי `pct>=90`/`pct>=75` לעולם לא
+      מתקיימים כש-`pct` קבוע ב-0.
+1076. **התיקון:** באותה פונקציית רינדור ב-`admin-credits.html`,
+      פוצל ענף `if (p.usage.noLimit)` שמציג רק `"נותרו {limit} {unit}"`
+      (+`cycleEnds` אם קיים) בלי פס־אחוזים ובלי "מתוך" מזויף — בדיוק
+      הפורמט שכבר קיים ומאומת ב-`App.tsx`. הענף המקורי (percent/heat/
+      meter bar) נשאר בדיוק כפי שהיה עבור ספקים שאינם `noLimit`
+      (Apify, ElevenLabs). שום לוגיקה אחרת בעמוד (KPI, מיון לפי
+      `rank`, legend, טעינת סשן) לא נגעה.
+1077. **אפס רגרסיה מאומתת:** `git diff --stat`: קובץ אחד, +24/-11
+      (השורות שהוסרו הן בדיוק הבלוק המקורי שפוצל לשני ענפים, לא
+      לוגיקה שנמחקה). אין `node_modules`/build מקומי לעמוד HTML גולמי;
+      חילצתי את בלוק ה-`<script type="module">` לקובץ `.mjs` זמני
+      והרצתי עליו `node --check` — תחביר תקין, לפני ואחרי. `git add -f`
+      נדרש (אותה אזהרת `.gitignore` כוזבת שתועדה בסבבים קודמים על
+      `apps/**`/`portal/public/**`). לא נגעתי במערכות/סכימות מוגנות
+      (08/09/bkalut-app/bkalot-admin/zr_*/NEDARIM3873/csj/csj_src/
+      igud), ב-`main`, או במערכת מחוץ להיקף. Commit `58727733` על
+      `fix/a-icon-only-buttons-round2-0820`, נדחף ל-`origin` (מפעיל
+      פריסת Vercel תחת `more30.com` — `portal/public` משרת את
+      `/admin/credits`).
+1078. **הבא בתור:** יתר `portal/public/admin-*.html` (לדוגמה
+      `admin-systems`, `admin-pricing`, `admin-activity`,
+      `admin-customers`, `admin-leads`, `admin-automation`,
+      `admin-rights`, `admin-issues`, `admin-kesef`, `admin-imud`,
+      `admin-orech`, `admin-studio` — כל אחד מקושר מ-`CONSOLE_SCREENS`
+      ב-`App.tsx`) עדיין לא נסרקו בהיקף הזה לאותו דפוס: יישום JS טהור
+      נפרד שעלול לסטות מהגרסה המתוקנת ב-`admin/src/App.tsx` באותו
+      אופן; מומלץ לסבב הבא. חלופה: `16-chatzor-connect` (עדיין לא
+      נסרק במלואו) או `04-imud-torani/server/seed.ts`.
