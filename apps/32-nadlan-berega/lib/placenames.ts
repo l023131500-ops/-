@@ -14,6 +14,7 @@
 
 import { datastoreSearch, haversineKm } from './datagov';
 import { itmToWgs84 } from './itm';
+import { verifyCity } from './geocode';
 
 const STREETS_SYNONYMS =
   process.env.DATAGOV_STREETS_SYNONYMS || 'bf185c7f-1a4e-4662-88c5-fa118a244bda';
@@ -207,13 +208,15 @@ async function findCityCode(cityName: string): Promise<number | null> {
   try {
     const res = await datastoreSearch(STREETS_SYNONYMS, { q: searchTerm(cityName), limit: 100 });
     // התאמה מדויקת קודמת; אחרת התאמה חלקית (למשל "תל אביב" מול "תל אביב - יפו").
+    // ⚠️ לא includes() גולמי — אותה מלכודת-הכלה שתועדה ב-geocode.ts (verifyCity):
+    // "פת" מוכל ב-"צפת" בלי קשר ליישוב. השוואה ברמת טוקן שלם דרך verifyCity בלבד.
     let partial: number | null = null;
     for (const raw of res.records) {
       const r = clean(raw);
       const n = norm(r.city_name);
       if (!n || !Number.isFinite(r.city_code)) continue;
       if (n === key) { code = r.city_code; break; }
-      if (partial == null && (n.includes(key) || key.includes(n))) partial = r.city_code;
+      if (partial == null && verifyCity(key, n)) partial = r.city_code;
     }
     if (code == null) code = partial;
   } catch {

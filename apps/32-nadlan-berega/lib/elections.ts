@@ -11,7 +11,7 @@
 
 import { datastoreSearch, haversineKm } from './datagov';
 import { envResourceId } from './env';
-import { geocodeGovmap } from './geocode';
+import { geocodeGovmap, verifyCity } from './geocode';
 import { readPoiCache, writePoiCache } from './store';
 import { itmToWgs84 } from './itm';
 
@@ -132,7 +132,9 @@ export async function findCitySymbol(cityName: string): Promise<{ symbol: number
       const sym = Number(r['סמל ישוב']);
       if (!Number.isFinite(sym) || !nm) continue;
       if (nm === want) return { symbol: sym, name: nm };
-      if (!best && (nm.includes(want) || want.includes(nm))) best = { symbol: sym, name: nm };
+      // ⚠️ לא includes() גולמי — אותה מלכודת-הכלה של geocode.ts/verifyCity:
+      // "ציון" מוכל ב"ראשון לציון" בלי שום קשר ליישוב. השוואה ברמת טוקן שלם בלבד.
+      if (!best && verifyCity(want, nm)) best = { symbol: sym, name: nm };
     }
     return best;
   } catch {
