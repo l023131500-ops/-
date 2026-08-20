@@ -1706,7 +1706,13 @@ export async function buildReport(
     t.areaSqm != null &&
     t.areaSqm >= 15 &&
     !suspectKeys.has(dealIdentity(t.dealDate, t.price, t.areaSqm));
-  const areaHomeSales = allTxns.filter(realDeal);
+  // ⚠️ **בלי** הבניין עצמו — אותה סיבה בדיוק כמו ב-streetHomeSales למטה. עסקה
+  // בתוך הבניין הנבדק היא לא נתון "אזור" חיצוני; אם היא נכנסת ל-areaHomeSales
+  // היא יכולה למשוך את areaBand (שמשמש כ-fallback ל-valueBand/streetBand
+  // כשאין מספיק עסקאות רחוב/בניין) לכיוון המחיר של הנכס עצמו — בדיוק המספר
+  // שהאזור אמור לבדוק אותו באופן בלתי-תלוי.
+  const buildingTxnSet = new Set(buildingTxns);
+  const areaHomeSales = allTxns.filter((t) => realDeal(t) && !buildingTxnSet.has(t));
   const buildingRealSales = currentBuildingTxns.filter(realDeal);
 
   // מכירות דירות באותו רחוב — שכבת ההשוואה הרלוונטית ביותר אחרי הבניין עצמו.
@@ -1723,10 +1729,10 @@ export async function buildReport(
   // ואז בדיקת `polygonId` בלבד לא מחריגה כלום והבאג חוזר במדויק. `buildingTxns`
   // (לא רק `currentBuildingTxns`) הוא מקור-האמת ל"מה זוהה כבניין הזה" בכל
   // שלושת מסלולי ההתאמה גם יחד — לרבות עסקאות המבנה שקדם להריסה/בנייה מחדש,
-  // שעדיין שייכות לאותה כתובת ולא ל"בניין אחר ברחוב".
-  const buildingTxnSet = new Set(buildingTxns);
+  // שעדיין שייכות לאותה כתובת ולא ל"בניין אחר ברחוב". (buildingTxnSet כבר
+  // הוחרג מ-areaHomeSales למעלה, אז ההחרגה כאן היא רק ירושה של אותה עובדה —
+  // לא הוצאה כפולה של קבוצה שכבר לא כלולה.)
   const streetHomeSales = areaHomeSales.filter((t) => {
-    if (buildingTxnSet.has(t)) return false;
     const st = normStreetName(t.streetName ?? streetOf(t.address));
     return !!st && streetNames.some((w) => normStreetName(w) === st);
   });
