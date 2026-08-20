@@ -1131,7 +1131,15 @@ app.post('/api/webhooks/nedarim', express.urlencoded({ extended: true }), async 
     p_nedarim_transaction_id: transactionId ? String(transactionId) : null,
     p_amount: amount ? Number(amount) : null,
   });
-  if (result.error) console.error('mark_subscription_payment_paid failed:', result.error);
+  if (result.error) {
+    // Unlike the missing-Param1 branch above, this is a transient failure
+    // (DB/RPC error), not a permanent misconfiguration - a non-200 here lets
+    // נדרים פלוס retry the callback until mark_subscription_payment_paid
+    // actually runs, instead of silently leaving a paid subscription marked
+    // unpaid with no trace beyond a console line.
+    console.error('mark_subscription_payment_paid failed:', result.error);
+    return res.status(500).send('error');
+  }
   res.status(200).send('ok');
 });
 
@@ -1140,11 +1148,15 @@ app.get('/api/webhooks/nedarim', async (req, res) => {
   const correlationToken = req.query.Param1 || req.query.param1;
   const transactionId = req.query.TransactionId || req.query.Shovar;
   if (correlationToken) {
-    await supabaseAnon.rpc('mark_subscription_payment_paid', {
+    const result = await supabaseAnon.rpc('mark_subscription_payment_paid', {
       p_correlation_token: correlationToken,
       p_nedarim_transaction_id: transactionId ? String(transactionId) : null,
       p_amount: null,
     });
+    if (result.error) {
+      console.error('mark_subscription_payment_paid failed (GET):', result.error);
+      return res.status(500).send('error');
+    }
   }
   res.status(200).send('ok');
 });
