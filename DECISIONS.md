@@ -6960,3 +6960,52 @@
      על טקסט מעורב-שפה), או לחזור ל-`core.project_tasks`/
      `core.project_bugs` לעבודה אחרת בתחום auth/admin/pricing/
      gannenet.
+
+## 20/08/2026 — סבב 127 (loop A)
+
+660. **המשכתי את המלצת #659** (עדשת `aria-current` בניווט). בדקתי
+     `core.run_progress` (סבב 126 האחרון, commit `2129e8ec`, תואם
+     HEAD) + `core.project_tasks` (אותם 5 פתוחים: 02/12/13/25/32,
+     עדיין חסומים על סודות חסרים או החלטות מיזוג/origin מחוץ
+     לסמכות הסוכן) + `core.project_bugs` (ריק) — שום דבר חדש
+     בתחום. פתחתי Explore agent לעדשה חדשה: קומפוננטות ניווט
+     (sidebar/navbar/admin nav) שמשוות pathname/route נוכחי כדי
+     לקבוע סגנון "פעיל" (`isActive`/`active` boolean דרך className
+     מותנה) אבל לא מסמנות `aria-current="page"` על הקישור הפעיל —
+     קישור אמיתי לקורא מסך שאובד כשהאיתות היחיד הוא צבע/רקע.
+     הסוכן סרק את כל 7 האפליקציות ה-vendored וסינן החוצה שימושים
+     ב-react-router `<NavLink>` האמיתי (שכבר מסמן `aria-current`
+     אוטומטית) — מצא 8 מופעים אמיתיים ב-4 אפליקציות: 01-torah-
+     platform (`PortalSidebar.tsx` שורה 81, `AdminLayout.tsx` שורה
+     40 — שני sidebars משותפים), 02-igud-transcribe
+     (`AdminNav.tsx` שורה 35 — nav אדמין משותף), 03-igud-ads
+     (`AdminNav.tsx` שורות 28-29/45/55 — sidebar משותף עם שני
+     קבוצות קישורים, ~15 קישורים סה"כ), ו-15-egod (`Navbar.tsx`
+     שורות 53+98 דסקטופ+מובייל, `AdminLayout.tsx` שורה 40,
+     `PortalSidebar.tsx` שורה 80 — navbar גלובלי + שני sidebars).
+     04/12/16 ללא מועמדים (04/12 ללא ניווט persistent עם השוואת
+     route; 16 משתמשת ב-`NavLink` אמיתי בכל מקום).
+661. **התיקון:** באותו דפוס בכל 7 הקבצים — הוספת
+     `aria-current={isActive ? "page" : undefined}` (או
+     `active`/`isActive(it.href)` לפי המשתנה הקיים בכל קובץ) על
+     ה-`<Link>` הפעיל, לפני ה-`className` הקיים. `undefined` (לא
+     `"false"`) כדי שהאטריביוט ייעלם לגמרי כשלא פעיל, כמקובל
+     ב-aria-current. לא נגעתי בלוגיקת `isActive`/className/state
+     קיימים בשום קובץ.
+662. **אפס רגרסיה מאומתת:** `git diff --stat` — 7 קבצים, 9+/0-,
+     רק שורת attribute אחת נוספה בכל מופע. אין `tsc`/`npm`
+     בסביבה הזו — אומת בבדיקת איזון `{}`/`()`/`[]` ב-Python על כל
+     7 הקבצים המלאים: כולם תואמים (למשל
+     `PortalSidebar.tsx`/01: 49/49+25/25+11/11;
+     `AdminNav.tsx`/03: 31/31+16/16+4/4; `Navbar.tsx`/15:
+     45/45+26/26+2/2 — ראה יומן הרצה לרשימה המלאה). Commit
+     `bfc76558` על `fix/a-icon-only-buttons-round2-0820`, נדחף
+     ל-origin (מפעיל פריסת Vercel תחת more30.com/torah,
+     more30.com/igud-transcribe, more30.com/modaot, ו-more30.com
+     (הנתיב של 15-egod)).
+663. **הבא בתור:** עדשת `aria-current` סגורה כעת על כל 01/02/03/15
+     (כל האפליקציות ה-vendored עם ניווט ידני שנמצא). סבב הבא צריך
+     לפתוח עדשה נוספת (ניגודיות צבעים, סדר טאבים/focus-order, או
+     `lang`/`dir` על טקסט מעורב-שפה), או לחזור ל-
+     `core.project_tasks`/`core.project_bugs` לעבודה אחרת בתחום
+     auth/admin/pricing/gannenet.
