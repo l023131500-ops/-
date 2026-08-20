@@ -10317,3 +10317,52 @@
      שני מועמדי הניגודיות מסבב 175, שני מופעי `FormMessage` לא-פעילים
      מסבב 191, או `core.project_tasks`/`core.project_bugs` (6 פריטים
      חסומים).
+
+## 20/08/2026 — סבב 206 (loop A) — `02-igud-transcribe` + `03-igud-ads`: אותה בעיית `basePath` חסר בכניסת Google (המשך 996)
+
+997. **המשך ישיר מ-996: שני האתרים אכן סובלים מאותה בעיה — ובצורה חמורה
+     יותר משחשבתי בהתחלה.** בדקתי `apps/03-igud-ads/next.config.mjs`
+     (`basePath: "/modaot"`) ו-`apps/02-igud-transcribe/next.config.mjs`
+     (`basePath: "/tamlul"`) — שני האתרים הם Next.js עם `basePath` מוגדר,
+     בדיוק כמו `01-torah-platform` בסבב 205. ב-`03-igud-ads/app/login/
+     page.tsx` (`loginGoogle`) וב-`02-igud-transcribe/app/login/page.tsx`
+     (`handleGoogle`) — `redirectTo: ${window.location.origin}/auth/
+     callback?next=...` בלי קידומת ה-`basePath` בכלל.
+998. **אימות קונקרטי (לא רק תיאורטי): `more30.com/auth/callback` שייך
+     לאפליקציית ה-`portal/` הנפרדת בשורש, לא לאתר עצמו.** `grep -rln
+     "auth/callback" portal` מצא `portal/public/auth/callback.html` — כלומר
+     כניסה עם Google מ-03/02 לא הייתה נוחתת רק "בכתובת לא נכונה" אלא ממש
+     על מטפל ה-callback של אפליקציה אחרת לגמרי, אותו דפוס בדיוק שאומת
+     בסבב 205 עבור `01-torah-platform`.
+999. **בעיה שנייה, עמוקה יותר, שהתגלתה תוך כדי בדיקת התיקון: גם ה-
+     `auth/callback/route.ts` של שני האתרים עצמם היה שבור.** גם לו התיקון
+     הראשון (רק ל-`redirectTo`) היה נעצר כאן, הזרימה עדיין הייתה נכשלת:
+     לאחר שהדפדפן מגיע נכון ל-`/modaot/auth/callback` או `/tamlul/auth/
+     callback`, מטפל ה-route עצמו בנה את כל הפניות ההמשך (`/login`,
+     `/admin`, `/`) מתוך `origin`/`new URL(path, req.url)` **בלי** קידומת
+     ה-`basePath` — משמע: גם התחברות מוצלחת הייתה מחזירה את המשתמש חזרה
+     לאפליקציית ה-`portal` השורשית הלא-נכונה, בדיוק אותו כישלון רק שלב
+     אחד מאוחר יותר. תיקנתי את שני קבצי ה-route: כל הפניה ב-
+     `03-igud-ads/app/auth/callback/route.ts` קיבלה קידומת `/modaot`
+     (`${origin}/modaot/login`, `${origin}/modaot/`, `${origin}/modaot/
+     admin`, `${origin}/modaot${next===...}`); בדומה ב-`02-igud-transcribe/
+     app/auth/callback/route.ts` (`new URL("/tamlul/login?...", req.url)`,
+     `new URL(\`/tamlul${next}\`, req.url)`). וידאתי ש-`next`/`redirect`
+     שמגיעים דרך ה-middleware של שני האתרים (`nextUrl.clone()`/
+     `nextUrl.pathname`) כבר חסרי-`basePath` מטבעם (מתועד גם בהערה שכבר
+     הייתה קיימת ב-`02-igud-transcribe/middleware.ts`), כך שהקידומת
+     החדשה לא כפולה.
+1000. **אפס רגרסיה מאומתת:** `git diff --stat`: 4 קבצים, +23/-11 —
+      רק הוספת קידומת `basePath` קבועה למחרוזות URL קיימות, בלי מחיקת
+      ענף/מסך/תכונה. בדיקת איזון סוגריים בפייתון על כל 4 הקבצים אחרי
+      העריכה: תואם. `git check-ignore` על כל 4 הקבצים: exit 1 (לא
+      מסוננים). לא נגעתי במערכות/סכימות מוגנות (08/09/bkalut-app/
+      bkalot-admin/zr_*/NEDARIM3873/csj/csj_src/igud), ב-`main`, או
+      במערכת מחוץ להיקף (רק 01-16/gannenet/auth/super-admin/admin
+      dashboard/homepage ordering/pricing).
+1001. **הבא בתור:** שתי הטבלאות מ-987 (`client_timeline`,
+      `knowledge_chunks`), שני מועמדי הניגודיות מסבב 175, שני מופעי
+      `FormMessage` לא-פעילים מסבב 191, `core.project_tasks`/
+      `core.project_bugs` (6 פריטים חסומים), או לבדוק אם קיימות עוד
+      אפליקציות בהיקף 01-16 עם `basePath` ב-`next.config.mjs` וזרימת
+      Google OAuth שלא נסרקה עדיין (רק 01/02/03 נבדקו עד כה).
