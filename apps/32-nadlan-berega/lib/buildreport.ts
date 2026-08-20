@@ -920,6 +920,7 @@ export async function buildReport(
   // מתקבל רק כשאין נקודה בכלל, או כשהוא מצליח לאמת את היישוב שהוזן.
   if (!tierMayUsePaidSources(tier) && parsed.kind === 'address' && (lat == null || !geoCityVerified)) {
     try {
+      const hadNoPointYet = lat == null;
       const [osm] = await geocodeAddress(searchAddress, { skipGovmap: true });
       if (osm && (lat == null || osm.cityVerified)) {
         lat = osm.lat;
@@ -933,6 +934,16 @@ export async function buildReport(
           geoCityVerified = true;
           const i = warnings.findIndex((w) => w.startsWith('לא הצלחנו לאמת'));
           if (i >= 0) warnings.splice(i, 1);
+        } else if (hadNoPointYet) {
+          // ⚠️ מגיע לכאן רק כשלא הייתה נקודה בכלל קודם (המרשם הממשלתי לא
+          // החזיר כלום ורמה חינמית לא קוראת לגוגל) — התוצאה של Nominatim
+          // היא היחידה שיש, אבל היא לא אומתה מול היישוב שהוזן. בלי האזהרה
+          // הזו הדוח החינמי היה ממשיך בשקט עם נקודה לא-מאומתת, בניגוד
+          // למקרה המקביל של גוגל (שורה 903-906) ושל GovMap (שורה 844-848)
+          // שכן מזהירים.
+          warnings.push(
+            `לא הצלחנו לאמת שהכתובת שנמצאה היא בדיוק זו שחיפשת. המערכת זיהתה "${osm.label}". כדאי לבדוק שזו אכן הכתובת הנכונה.`,
+          );
         }
       }
     } catch {
