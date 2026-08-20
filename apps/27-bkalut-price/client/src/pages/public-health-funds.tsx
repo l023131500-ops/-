@@ -297,10 +297,11 @@ export default function PublicHealthFunds() {
           <aside className="lg:sticky lg:top-6 space-y-4" data-testid="hf-sidebar">
             <Card className="p-4 space-y-4">
               <div className="space-y-2">
-                <label className="text-xs font-semibold text-foreground">חיפוש</label>
+                <label htmlFor="hf-search-input" className="text-xs font-semibold text-foreground">חיפוש</label>
                 <div className="relative">
                   <Search className="w-4 h-4 absolute top-1/2 -translate-y-1/2 right-3 text-muted-foreground" />
                   <Input
+                    id="hf-search-input"
                     value={filters.q}
                     onChange={(e) => setFilters({ ...filters, q: e.target.value })}
                     onKeyDown={(e) => e.key === "Enter" && runSearch(filters)}
@@ -337,8 +338,9 @@ export default function PublicHealthFunds() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-xs font-semibold text-foreground">קופת חולים</label>
+                <label htmlFor="hf-fund-select" className="text-xs font-semibold text-foreground">קופת חולים</label>
                 <select
+                  id="hf-fund-select"
                   className="w-full border border-border rounded-md px-2 py-2 text-sm bg-background"
                   value={filters.fund}
                   onChange={(e) => { const n = update({ fund: e.target.value }); runSearch(n); }}
@@ -350,8 +352,9 @@ export default function PublicHealthFunds() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-xs font-semibold text-foreground">קטגוריה</label>
+                <label htmlFor="hf-category-select" className="text-xs font-semibold text-foreground">קטגוריה</label>
                 <select
+                  id="hf-category-select"
                   className="w-full border border-border rounded-md px-2 py-2 text-sm bg-background"
                   value={filters.category}
                   onChange={(e) => { const n = update({ category: e.target.value }); runSearch(n); }}
