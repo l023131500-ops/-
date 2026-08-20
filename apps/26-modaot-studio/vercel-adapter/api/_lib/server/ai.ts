@@ -186,6 +186,30 @@ export async function critiqueDesign(input: {
   }
 }
 
+/**
+ * תרגום תסריט הקריינות העברי (server/narration.ts) לאנגלית טבעית, לשימוש
+ * ככתוביות מקבילות בווידאו הקידום (lib/videoExport.ts) — לצד קהל לא-דובר-עברית.
+ * טקסט בלבד, לא קריינות: אין קריאה ל-ElevenLabs, אין שינוי לפס האודיו הקיים.
+ */
+export async function translateCaptionsToEnglish(hebrewScript: string): Promise<AiResult<{ english: string }>> {
+  const system =
+    "אתה מתרגם מקצועי עברית-אנגלית עבור כתוביות וידאו קידום לקהל דובר אנגלית. " +
+    "התרגום טבעי, תמציתי ונאמן למשמעות ולטון המקור (הזמנה/הכרזה קהילתית) — לא תרגום מילולי מדי. " +
+    "אינך ממציא עובדות (תאריכים/שמות/מקומות) שלא הופיעו במקור. החזר אך ורק JSON תקין ללא טקסט נוסף.";
+  const user =
+    `תרגם את תסריט הקריינות העברי הבא לאנגלית טבעית, לשימוש ככתוביות מקבילות באותו וידאו:\n\n"${hebrewScript}"\n\n` +
+    'החזר JSON: {"english":"התרגום המלא"}';
+  try {
+    const out = await claude(system, user, 800);
+    const data = extractJson(out);
+    const english = typeof data.english === "string" ? data.english.trim() : "";
+    if (!english) return { ok: false, error: "התרגום חזר ריק" };
+    return { ok: true, data: { english } };
+  } catch (e: any) {
+    return { ok: false, error: "שגיאה בתרגום כתוביות", detail: String(e?.message || e) };
+  }
+}
+
 export async function generateConcepts(input: {
   category?: string;
   audience?: string;

@@ -132,14 +132,25 @@ function activeCaption(segments: CaptionSegment[], elapsedSec: number): string |
     : null;
 }
 
-/** מצייר את שורת/שורות הכתובית הפעילה בתחתית הפריים, עם פס רקע כהה לקריאות. */
-function drawCaptionOverlay(ctx: CanvasRenderingContext2D, vw: number, vh: number, text: string) {
+/**
+ * מצייר את שורת/שורות הכתובית הפעילה בתחתית הפריים, עם פס רקע כהה לקריאות.
+ * `textEn` אופציונלי — כתובית אנגלית מקבילה (מ-#/api/ai/translate-captions),
+ * מצוירת מתחת לעברית באותו פס-רקע, פונט קטן יותר, LTR. כש-textEn חסר ההתנהגות/
+ * המידות זהות ל-100% למה שהיה קודם (בלוק עברית בלבד) — אפס רגרסיה.
+ */
+function drawCaptionOverlay(ctx: CanvasRenderingContext2D, vw: number, vh: number, text: string, textEn?: string | null) {
   const fontSize = Math.max(20, Math.min(44, Math.round(vh * 0.045)));
   const maxWidth = vw * 0.86;
   const lines = wrapText(text, fontSize, "Heebo", true, maxWidth).slice(0, 3);
   const lineHeight = fontSize * 1.3;
   const padY = fontSize * 0.6;
-  const boxHeight = lines.length * lineHeight + padY * 2;
+
+  const fontSizeEn = Math.round(fontSize * 0.66);
+  const lineHeightEn = fontSizeEn * 1.25;
+  const linesEn = textEn ? wrapText(textEn, fontSizeEn, "Heebo", false, maxWidth).slice(0, 2) : [];
+  const gapEn = linesEn.length ? padY * 0.5 : 0;
+
+  const boxHeight = lines.length * lineHeight + padY * 2 + linesEn.length * lineHeightEn + gapEn;
   const boxBottom = vh - vh * 0.06;
   const boxTop = boxBottom - boxHeight;
 
@@ -168,6 +179,18 @@ function drawCaptionOverlay(ctx: CanvasRenderingContext2D, vw: number, vh: numbe
     const y = boxTop + padY + lineHeight * i + lineHeight / 2;
     ctx.fillText(line, vw / 2, y);
   });
+
+  if (linesEn.length) {
+    const enBlockTop = boxTop + padY + lines.length * lineHeight + gapEn;
+    ctx.direction = "ltr";
+    ctx.font = `500 ${fontSizeEn}px "Heebo"`;
+    ctx.fillStyle = "rgba(255,255,255,0.85)";
+    ctx.shadowBlur = 3;
+    linesEn.forEach((line, i) => {
+      const y = enBlockTop + lineHeightEn * i + lineHeightEn / 2;
+      ctx.fillText(line, vw / 2, y);
+    });
+  }
   ctx.restore();
 }
 
@@ -178,6 +201,9 @@ export interface PromoVideoOptions {
   narrationScript?: string | null;
   /** ברירת מחדל: true כש-narrationScript קיים. אפשר לכבות מה-UI. */
   showCaptions?: boolean;
+  /** תרגום אנגלי אופציונלי של narrationScript (POST /api/ai/translate-captions) —
+   * כשקיים, מוצג כשורה שנייה מתחת לכתובית העברית. חסר = בלוק עברית בלבד, כמו קודם. */
+  captionScriptEn?: string | null;
   onProgress?: (fraction: number) => void;
 }
 
@@ -214,6 +240,9 @@ export async function exportPromoVideo(
 
   const wantCaptions = opts.showCaptions !== false && !!opts.narrationScript?.trim();
   const captionSegments = wantCaptions ? buildCaptionSegments(opts.narrationScript!, duration) : [];
+  const captionSegmentsEn = wantCaptions && opts.captionScriptEn?.trim()
+    ? buildCaptionSegments(opts.captionScriptEn, duration)
+    : [];
 
   const recordCanvas = document.createElement("canvas");
   recordCanvas.width = vw;
@@ -225,7 +254,8 @@ export async function exportPromoVideo(
     drawKenBurnsFrame(ctx!, sourceCanvas, vw, vh, t);
     if (captionSegments.length) {
       const text = activeCaption(captionSegments, elapsedSec);
-      if (text) drawCaptionOverlay(ctx!, vw, vh, text);
+      const textEn = captionSegmentsEn.length ? activeCaption(captionSegmentsEn, elapsedSec) : null;
+      if (text) drawCaptionOverlay(ctx!, vw, vh, text, textEn);
     }
   }
 

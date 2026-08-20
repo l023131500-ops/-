@@ -3,7 +3,7 @@ import type { Server } from "node:http";
 import { storage } from "./storage";
 import { insertProjectSchema } from "@shared/schema";
 import { generateBackground, editImage, enhanceBackgroundPrompt } from "./gemini";
-import { generateCopy, generateConcepts, critiqueDesign } from "./ai";
+import { generateCopy, generateConcepts, critiqueDesign, translateCaptionsToEnglish } from "./ai";
 import { generateStrategy, generateLogoConcepts, vectorizeLogo, deriveVisuals, generateBackgroundRecraft, removeBackgroundImage } from "./branding";
 import { generateNarration } from "./narration";
 import { ARCHETYPES, ARCHETYPE_GROUPS, AAKER_DIMENSIONS, BRIEF_CATEGORIES, ALL_QUESTIONS, CORE_QUESTIONS, TOTAL_QUESTIONS, BRAND_BOOK_SECTIONS, HEBREW_FONTS, VISUAL_STYLE_TO_ARCHETYPE, getArchetype } from "@shared/branding";
@@ -349,6 +349,16 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
     } catch (e: any) {
       res.status(502).json({ error: "שגיאת קריינות: " + String(e?.message || e).slice(0, 200) });
     }
+  });
+
+  // תרגום תסריט הקריינות לאנגלית עבור כתוביות מקבילות בווידאו קידום — טקסט
+  // בלבד, לא קריינות/רינדור חדשים (Claude, אותה תשתית כמו copy/concepts/critique)
+  app.post("/api/ai/translate-captions", async (req: Request, res: Response) => {
+    const { script } = req.body || {};
+    if (!script || !String(script).trim()) return res.status(400).json({ error: "חסר טקסט לתרגום" });
+    const ai = await translateCaptionsToEnglish(String(script));
+    if (ai.ok && ai.data?.english) return res.json({ ok: true, english: ai.data.english });
+    res.status(502).json({ error: ai.error || "תרגום נכשל", detail: ai.detail });
   });
 
   return httpServer;

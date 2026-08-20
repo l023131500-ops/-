@@ -177,6 +177,13 @@ export default function Editor() {
   const [showCaptions, setShowCaptions] = useState(true);
   const [videoProgress, setVideoProgress] = useState(0);
 
+  // כתוביות אנגליות מקבילות (POST /api/ai/translate-captions, תרגום Claude של
+  // narrationScript) — כבויות כברירת מחדל; דורשות לחיצה מפורשת כי זו קריאת AI
+  // נוספת. לא נוגע בכתוביות העבריות/בקריינות/ברינדור הקיימים כשכבוי.
+  const [includeEnglishCaptions, setIncludeEnglishCaptions] = useState(false);
+  const [captionScriptEn, setCaptionScriptEn] = useState("");
+  const [translatingCaptions, setTranslatingCaptions] = useState(false);
+
   // וקטוריזציה של שכבת תמונה קיימת ל-SVG אמיתי (Recraft — מנוע קיים בכלי המותג)
   const [vectorizing, setVectorizing] = useState(false);
   const [removingBg, setRemovingBg] = useState(false);
@@ -685,6 +692,33 @@ export default function Editor() {
     }
   }
 
+  // תרגום כתוביות לאנגלית (Claude, /api/ai/translate-captions) — טקסט בלבד,
+  // לא קריינות חדשה. נשמר בנפרד מ-narrationScript כדי שהעברית המקורית
+  // (המוצגת/נשמרת עם הפרויקט) לעולם לא תוחלף בטעות בתרגום.
+  async function handleTranslateCaptions() {
+    if (!narrationScript.trim()) return;
+    setTranslatingCaptions(true);
+    try {
+      const res = await apiRequest("POST", "/api/ai/translate-captions", { script: narrationScript });
+      const data = await res.json();
+      if (!data?.ok || !data?.english) {
+        toast({ title: "תרגום הכתוביות נכשל", description: data?.error, variant: "destructive" });
+        setIncludeEnglishCaptions(false);
+        return;
+      }
+      setCaptionScriptEn(data.english);
+    } catch (err: any) {
+      toast({
+        title: "תרגום הכתוביות נכשל",
+        description: String(err?.message ?? err).slice(0, 150),
+        variant: "destructive",
+      });
+      setIncludeEnglishCaptions(false);
+    } finally {
+      setTranslatingCaptions(false);
+    }
+  }
+
   // וידאו קידום — מרכיב Ken Burns + פס הקריינות (lib/videoExport.ts) מתוך אותו
   // stage ברזולוציה מלאה ש-handleDownloadPNG/PDF כבר משתמשים בו, מוריד webm.
   // דורש שקריינות תיווצר קודם (הכפתור נעול בלעדיה) כדי שהוידאו לא יהיה שקט-סתמי.
@@ -697,6 +731,7 @@ export default function Editor() {
         narrationAudioUrl: narrationAudioUrl || undefined,
         narrationScript: narrationScript || undefined,
         showCaptions,
+        captionScriptEn: includeEnglishCaptions ? captionScriptEn || undefined : undefined,
         onProgress: (fraction) => setVideoProgress(Math.round(fraction * 100)),
       });
       downloadBlob(blob, `${selected?.name ?? "modaa"}.webm`);
@@ -1797,12 +1832,38 @@ export default function Editor() {
                   data-testid="switch-video-captions"
                 />
               </div>
+              {showCaptions && (
+                <div className="flex flex-col gap-1.5 border-t border-[#C9A227]/15 pt-2">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-xs text-[#F5EEDD]/70">
+                      גם כתוביות באנגלית (תרגום AI, לקהל לא-דובר-עברית)
+                    </Label>
+                    <Switch
+                      checked={includeEnglishCaptions}
+                      onCheckedChange={(checked) => {
+                        setIncludeEnglishCaptions(checked);
+                        if (checked && !captionScriptEn && !translatingCaptions) handleTranslateCaptions();
+                      }}
+                      disabled={translatingCaptions}
+                      data-testid="switch-video-captions-en"
+                    />
+                  </div>
+                  {translatingCaptions && (
+                    <p className="text-xs text-[#F5EEDD]/50">מתרגם...</p>
+                  )}
+                  {includeEnglishCaptions && captionScriptEn && !translatingCaptions && (
+                    <p className="text-xs text-[#F5EEDD]/50 line-clamp-2" data-testid="text-caption-preview-en">
+                      {captionScriptEn}
+                    </p>
+                  )}
+                </div>
+              )}
               <Button
                 variant="outline"
                 size="sm"
                 className="gap-1.5 self-start border-[#C9A227]/40 text-[#C9A227]"
                 onClick={handleExportVideo}
-                disabled={videoExporting}
+                disabled={videoExporting || translatingCaptions}
                 data-testid="button-export-video"
               >
                 <Video className="h-4 w-4" /> {videoExporting ? `מרכיב וידאו... ${videoProgress}%` : "ייצוא וידאו קידום (webm)"}
