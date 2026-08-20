@@ -14,6 +14,7 @@
 
 import { fetchJson } from './http';
 import { wgs84ToMercator } from './itm';
+import { verifyCity } from './geocode';
 import type { Transaction } from './types';
 
 const BASE = 'https://www.govmap.gov.il/api/real-estate';
@@ -574,6 +575,13 @@ export async function fetchDealsAtPoint(
  *
  * מזהה הכתובת מגיע מה-autocomplete הפתוח של GovMap, בפורמט
  * `address|ADDR|53921561|דיזנגוף|100|תל אביב`.
+ *
+ * ⚠️ ההתאמה של אותו autocomplete מטושטשת (ראה `verifyCity` ב-`lib/geocode.ts`
+ * — "הנביאים 5 צפת" חוזר כ"הנשיאים 5 פת"). קישור אימות שנוחת על נכס אחר,
+ * בלי שהמשתמש ישים לב, גרוע בהרבה מ"לא נמצא": הוא בדיוק המקום שאמור
+ * להראות ללקוח את האמת "במו עיניו", ובמקום זה יראה עסקאות של כתובת זרה.
+ * לכן לוקחים רק תוצאה שהיישוב בה מאומת מול השאילתה — לא את הראשונה מסוג
+ * `address` כפי שהיה קודם — ואם אין כזו, אין קישור.
  */
 export async function nadlanAddressRef(
   query: string,
@@ -595,13 +603,15 @@ export async function nadlanAddressRef(
     });
     for (const r of json?.results ?? []) {
       if (String(r?.type) !== 'address') continue;
+      const label = String(r?.originalText ?? r?.text ?? '');
+      if (!verifyCity(query, label)) continue; // התאמה מטושטשת ליישוב אחר — לא קישור
       const parts = String(r?.id ?? '').split('|');
       const id = parts[2];
       if (!/^\d+$/.test(id ?? '')) continue;
       const setl = Number.isFinite(Number(setlCode)) && Number(setlCode) > 0 ? `&setlCode=${Number(setlCode)}` : '';
       return {
         addressId: id,
-        label: String(r?.originalText ?? r?.text ?? query),
+        label: label || query,
         url: `https://www.nadlan.gov.il/?view=address&id=${id}&page=deals${setl}`,
       };
     }
