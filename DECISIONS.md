@@ -4253,3 +4253,57 @@
      מותקנים בסביבה הזו; אומת בקריאה מלאה של שני הקבצים לפני ואחרי, השוואת
      `git diff`, ובדיקת איזון תגיות JSX ידנית. ענף
      `fix/a-16-chatzor-inbox-phone-email-ltr-0820`.
+
+## 20/08/2026 (LOOP A — סבב 63) — 15-egod: סגירת תור סבב 62 — 8 מופעי `dir="ltr"` חסרים ב-6 קבצים
+
+362. **בדקתי מחדש `core.run_progress`/`core.issues`/`core.project_tasks` לפני
+     שהתחלתי.** סבב 62 סגור (commit `91cd67ca`, תאם ל-HEAD). `core.issues`
+     הפתוחים עם `owner='agent'` בתחום: #167 (15-egod `seed-demo-portals`,
+     קריטי) נבדק לעומק — חסום על Lovable מאומת ב-12/08 (4 הודעות בעורך
+     נדחו עם "may violate content policy", גם הודעת ביקורת תמימה נדחתה —
+     החסימה על ה-thread/הפרויקט, לא על הניסוח; MCP על `hkkkynyoigzlttpynoeo`
+     עדיין "no permission") — לא ניתן לפעולה מכאן, נשאר חסום. #6/#120/#115/
+     #62/#242 — אותה רשימה חסומה כמו סבבים קודמים. המשך את תור סבב 61-62
+     (#360): סגירת 8 המופעים החסרים ב-15-egod.
+363. **אימתתי כל אחד מ-8 המועמדים בקריאה ישירה של הקובץ לפני נגיעה בקוד**
+     (לקח מסבב 59, #340-341) — לא סמכתי על התיוג של סבב 62 בעיוורון.
+     `Footer.tsx` ו-`About.tsx` (מהסריקה הראשונית של סבב 62, 15 מועמדים)
+     כבר תוקנו/היו תקינים מראש — `dir="ltr"` כבר קיים על כל span טלפון/
+     וואטסאפ/מייל בשניהם. `RequestLesson.tsx` — שדה `<Input type="tel">`,
+     לא תצוגת טקסט קיים; אינו אותו bug class (bidi-scramble בתצוגה), לא
+     תוקן. 6 הקבצים שברשימת סבב 62 (`PortalSidebar.tsx`, `Attendance.tsx`,
+     `Messages.tsx`, `PrayerTimes.tsx`, `RabbiPublic.tsx`, `AdminMessages.tsx`,
+     `AdminTeachers.tsx`, `Participants.tsx` — למעשה 8, הרשימה בסבב 62 מנתה
+     6 קבצים ייחודיים) כולם אומתו אמיתיים: תצוגת `{p.phone}`/`{p.email}`
+     גולמית בתוך `<span>`/`<p>`/`<td>` בהקשר RTL, ללא `dir="ltr"` בשום
+     מקום בעץ (לא ב-style, לא ב-className, לא בהורה) — אותו bug class
+     שכבר תוקן ב-03-igud-ads/16-chatzor-connect.
+364. **אימתתי שכל ארבעת המסלולים חיים לפני העריכה** (`App.tsx`):
+     `/portal/prayer-times`, `/portal/messages`, `/portal/attendance`,
+     `/portal/participants`, `/admin/teachers`, `/admin/messages`,
+     `/rabbi/:id` (עמוד ציבורי) — כולם ממופים ב-`Route`, לא קוד מת.
+     `PortalSidebar.tsx` הוא ה-shell המשותף לכל דפי הפורטל (לא מסלול
+     נפרד). תוקן: עטיפת התוכן הדינמי בלבד ב-`<span dir="ltr">` (או
+     `dir="ltr"` ישירות על ה-`<td>`/`<p>` כשכל תוכנו הוא הערך ה-LTR
+     היחיד) — `AdminMessages.tsx` כבר עטף את `sender_email` נכון, רק
+     `sender_phone` היה חסר.
+365. **מקרה גבולי:** `PortalSidebar.tsx:72` — `{orgName || user?.email}`.
+     `orgName` הוא טקסט עברי (שם ארגון/רב), `email` הוא LTR — לא ניתן
+     לעטוף את כל הביטוי ב-`dir="ltr"` בלי לפגוע בכיוון התצוגה של השם
+     העברי. פוצל: `{orgName || <span dir="ltr">{user?.email}</span>}` —
+     רק ה-fallback (מייל) עוטף.
+366. **אפס רגרסיה מאומתת:** ב-8 הקבצים שונתה רק שורה אחת (או הוספת span
+     עוטף) — שום `onClick`/state/מבנה JSX/query קיים לא הוסר או שונה.
+     אין `tsc`/`npm` מותקנים בסביבה הזו; אימות בוצע בקריאה מלאה של כל
+     קובץ לפני ואחרי, `git diff` (8 קבצים, שורה-1 שונתה בכל אחד פרט
+     ל-`PortalSidebar.tsx`), ובדיקת איזון `{`/`(`/`[` ידנית (סקריפט Node)
+     על כל אחד מה-8 — כולם מאוזנים. `git add -f` נדרש (עץ המקור של
+     15-egod מוחרג כברירת מחדל ב-`.gitignore`, אותו דפוס חוזר). ענף
+     חדש `fix/a-15-egod-portal-phone-email-ltr-0820` (הורה: ענף סבב 62,
+     `fix/a-16-chatzor-inbox-phone-email-ltr-0820`, שכבר נדחף ב-HEAD
+     `91cd67ca` — לא בוצעה עבודה נוספת על הענף הישן).
+367. **הבא בתור:** עדשת ה-`dir="ltr"` נראית קרובה למיצוי על 01-16 (01/03/
+     15/16 כבר נסרקו). סבב עתידי יכול לפתוח: (א) סריקה דומה על 02/04/06/
+     10/12/14 שטרם נסרקו לעומק, (ב) עדשה חדשה — `placeholder`-בלבד ללא
+     label (01/admin/40-gannenet, #349(1) עדיין פתוח), או (ג) ניסיון חוזר
+     תקופתי ל-#167 (בדיקת MCP/Lovable מחדש למקרה שהחסימה תתפוגג).
