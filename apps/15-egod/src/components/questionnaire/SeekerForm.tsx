@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useId, useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -22,6 +22,7 @@ interface SeekerFormProps {
 }
 
 const SeekerForm = ({ data, onChange }: SeekerFormProps) => {
+  const seekerTypeLabelId = useId();
   const [step, setStep] = useState(0);
   const seekerType: SeekerType | undefined = data.seekerType;
 
@@ -91,8 +92,8 @@ const SeekerForm = ({ data, onChange }: SeekerFormProps) => {
             <div className="space-y-5">
               <h3 className="font-heading text-xl font-bold text-foreground mb-6">פרטי הפונה</h3>
               <div>
-                <label className="text-sm font-medium text-foreground mb-3 block">עבור מי אתם מעוניינים לקבוע שיעור? *</label>
-                <div className="grid grid-cols-2 gap-3">
+                <label id={seekerTypeLabelId} className="text-sm font-medium text-foreground mb-3 block">עבור מי אתם מעוניינים לקבוע שיעור? *</label>
+                <div role="group" aria-labelledby={seekerTypeLabelId} className="grid grid-cols-2 gap-3">
                   {seekerTypes.map((t) => (
                     <button key={t.value} onClick={() => { update("seekerType", t.value); setStep(0); }}
                       className={`p-4 rounded-xl border-2 text-sm font-medium transition-all ${

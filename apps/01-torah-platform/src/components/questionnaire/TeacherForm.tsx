@@ -97,27 +97,27 @@ const TeacherForm = ({ data, onChange }: TeacherFormProps) => {
             <div className="space-y-5">
               <h3 className="font-display text-xl font-bold text-card-foreground mb-6">פרטים אישיים</h3>
               <div>
-                <label className="font-body text-sm font-medium text-card-foreground mb-1.5 block">שם מלא *</label>
-                <Input value={data.fullName || ""} onChange={(e) => update("fullName", e.target.value)} placeholder="הרב ישראל ישראלי" autoComplete="name" />
+                <label htmlFor="teacherform-fullname" className="font-body text-sm font-medium text-card-foreground mb-1.5 block">שם מלא *</label>
+                <Input id="teacherform-fullname" value={data.fullName || ""} onChange={(e) => update("fullName", e.target.value)} placeholder="הרב ישראל ישראלי" autoComplete="name" />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="font-body text-sm font-medium text-card-foreground mb-1.5 block">טלפון *</label>
-                  <Input value={data.phone || ""} onChange={(e) => update("phone", e.target.value)} placeholder="050-0000000" type="tel" inputMode="tel" autoComplete="tel" />
+                  <label htmlFor="teacherform-phone" className="font-body text-sm font-medium text-card-foreground mb-1.5 block">טלפון *</label>
+                  <Input id="teacherform-phone" value={data.phone || ""} onChange={(e) => update("phone", e.target.value)} placeholder="050-0000000" type="tel" inputMode="tel" autoComplete="tel" />
                 </div>
                 <div>
-                  <label className="font-body text-sm font-medium text-card-foreground mb-1.5 block">מייל</label>
-                  <Input value={data.email || ""} onChange={(e) => update("email", e.target.value)} placeholder="email@example.com" type="email" inputMode="email" autoComplete="email" />
+                  <label htmlFor="teacherform-email" className="font-body text-sm font-medium text-card-foreground mb-1.5 block">מייל</label>
+                  <Input id="teacherform-email" value={data.email || ""} onChange={(e) => update("email", e.target.value)} placeholder="email@example.com" type="email" inputMode="email" autoComplete="email" />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="font-body text-sm font-medium text-card-foreground mb-1.5 block">עיר *</label>
-                  <Input value={data.city || ""} onChange={(e) => update("city", e.target.value)} placeholder="ירושלים" autoComplete="address-level2" />
+                  <label htmlFor="teacherform-city" className="font-body text-sm font-medium text-card-foreground mb-1.5 block">עיר *</label>
+                  <Input id="teacherform-city" value={data.city || ""} onChange={(e) => update("city", e.target.value)} placeholder="ירושלים" autoComplete="address-level2" />
                 </div>
                 <div>
-                  <label className="font-body text-sm font-medium text-card-foreground mb-1.5 block">שכונה</label>
-                  <Input value={data.neighborhood || ""} onChange={(e) => update("neighborhood", e.target.value)} placeholder="רמות" />
+                  <label htmlFor="teacherform-neighborhood" className="font-body text-sm font-medium text-card-foreground mb-1.5 block">שכונה</label>
+                  <Input id="teacherform-neighborhood" value={data.neighborhood || ""} onChange={(e) => update("neighborhood", e.target.value)} placeholder="רמות" />
                 </div>
               </div>
             </div>
@@ -212,8 +212,9 @@ const TeacherForm = ({ data, onChange }: TeacherFormProps) => {
                 onSelect={(v) => update("payment", v)}
               />
               <div>
-                <label className="font-body text-sm font-medium text-card-foreground mb-1.5 block">הערות נוספות</label>
+                <label htmlFor="teacherform-notes" className="font-body text-sm font-medium text-card-foreground mb-1.5 block">הערות נוספות</label>
                 <Textarea
+                  id="teacherform-notes"
                   value={data.notes || ""}
                   onChange={(e) => update("notes", e.target.value)}
                   placeholder="כל מידע נוסף שיכול לעזור..."

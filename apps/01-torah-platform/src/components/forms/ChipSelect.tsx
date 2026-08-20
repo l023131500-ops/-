@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useId, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Check, Edit3 } from "lucide-react";
 
@@ -14,6 +14,7 @@ interface ChipSelectProps {
 }
 
 const ChipSelect = ({ label, options, selected, onSelect, multi = false, required = false, icon }: ChipSelectProps) => {
+  const labelId = useId();
   const [otherText, setOtherText] = useState("");
   const [showOtherInput, setShowOtherInput] = useState(false);
 
@@ -38,11 +39,11 @@ const ChipSelect = ({ label, options, selected, onSelect, multi = false, require
 
   return (
     <div>
-      <label className="font-display text-sm font-bold text-card-foreground mb-3 flex items-center gap-2">
+      <label id={labelId} className="font-display text-sm font-bold text-card-foreground mb-3 flex items-center gap-2">
         {icon}
         {label} {required && <span className="text-destructive">*</span>}
       </label>
-      <div className="flex flex-wrap gap-2">
+      <div role="group" aria-labelledby={labelId} className="flex flex-wrap gap-2">
         {options.map((opt, i) => {
           const active = isSelected(opt);
           return (

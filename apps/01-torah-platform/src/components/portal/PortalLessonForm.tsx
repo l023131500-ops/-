@@ -1,3 +1,4 @@
+import { useId } from "react";
 import { motion } from "framer-motion";
 import { MapPin, Calendar, Video, Trash2, BookOpen, Users, Globe, Palette } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -30,28 +31,31 @@ const SPEAKING_STYLES = [
 
 const ChipPicker = ({ label, icon, options, selected, onSelect, multi = false }: {
   label: string; icon?: React.ReactNode; options: string[]; selected: string | string[]; onSelect: (v: string) => void; multi?: boolean;
-}) => (
-  <div>
-    <label className="font-body text-xs font-semibold text-gray-700 mb-2 block flex items-center gap-1.5">
-      {icon}{label}
-    </label>
-    <div className="flex flex-wrap gap-2">
-      {options.map(opt => {
-        const isSelected = multi ? (selected as string[]).includes(opt) : selected === opt;
-        return (
-          <motion.button key={opt} type="button" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
-            onClick={() => onSelect(opt)}
-            className={`px-3 py-1.5 rounded-xl font-body text-xs border transition-all ${
-              isSelected
-                ? "bg-teal/20 border-teal/50 text-teal font-bold shadow-sm"
-                : "bg-gray-50 border-gray-200 text-gray-600 hover:border-teal/40 hover:bg-teal/5"
-            }`}
-          >{opt}</motion.button>
-        );
-      })}
+}) => {
+  const labelId = useId();
+  return (
+    <div>
+      <label id={labelId} className="font-body text-xs font-semibold text-gray-700 mb-2 block flex items-center gap-1.5">
+        {icon}{label}
+      </label>
+      <div role="group" aria-labelledby={labelId} className="flex flex-wrap gap-2">
+        {options.map(opt => {
+          const isSelected = multi ? (selected as string[]).includes(opt) : selected === opt;
+          return (
+            <motion.button key={opt} type="button" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
+              onClick={() => onSelect(opt)}
+              className={`px-3 py-1.5 rounded-xl font-body text-xs border transition-all ${
+                isSelected
+                  ? "bg-teal/20 border-teal/50 text-teal font-bold shadow-sm"
+                  : "bg-gray-50 border-gray-200 text-gray-600 hover:border-teal/40 hover:bg-teal/5"
+              }`}
+            >{opt}</motion.button>
+          );
+        })}
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 interface PortalLessonFormProps {
   data: any;

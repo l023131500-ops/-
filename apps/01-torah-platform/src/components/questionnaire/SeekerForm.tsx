@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useId, useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -31,6 +31,7 @@ interface SeekerFormProps {
 }
 
 const SeekerForm = ({ data, onChange }: SeekerFormProps) => {
+  const seekerTypeLabelId = useId();
   const [step, setStep] = useState(0);
 
   const seekerType: SeekerType | undefined = data.seekerType;
@@ -109,8 +110,8 @@ const SeekerForm = ({ data, onChange }: SeekerFormProps) => {
               <h3 className="font-display text-xl font-bold text-card-foreground mb-6">פרטי הפונה</h3>
               
               <div>
-                <label className="font-body text-sm font-medium text-card-foreground mb-3 block">עבור מי אתם מעוניינים לקבוע שיעור? *</label>
-                <div className="grid grid-cols-2 gap-3">
+                <label id={seekerTypeLabelId} className="font-body text-sm font-medium text-card-foreground mb-3 block">עבור מי אתם מעוניינים לקבוע שיעור? *</label>
+                <div role="group" aria-labelledby={seekerTypeLabelId} className="grid grid-cols-2 gap-3">
                   {seekerTypes.map((t) => (
                     <button
                       key={t.value}
@@ -128,31 +129,31 @@ const SeekerForm = ({ data, onChange }: SeekerFormProps) => {
               </div>
 
               <div>
-                <label className="font-body text-sm font-medium text-card-foreground mb-1.5 block">איש קשר *</label>
-                <Input value={data.contactName || ""} onChange={(e) => update("contactName", e.target.value)} placeholder="שם מלא" autoComplete="name" />
+                <label htmlFor="seekerform-contactname" className="font-body text-sm font-medium text-card-foreground mb-1.5 block">איש קשר *</label>
+                <Input id="seekerform-contactname" value={data.contactName || ""} onChange={(e) => update("contactName", e.target.value)} placeholder="שם מלא" autoComplete="name" />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="font-body text-sm font-medium text-card-foreground mb-1.5 block">טלפון *</label>
-                  <Input value={data.phone || ""} onChange={(e) => update("phone", e.target.value)} placeholder="050-0000000" type="tel" inputMode="tel" autoComplete="tel" />
+                  <label htmlFor="seekerform-phone" className="font-body text-sm font-medium text-card-foreground mb-1.5 block">טלפון *</label>
+                  <Input id="seekerform-phone" value={data.phone || ""} onChange={(e) => update("phone", e.target.value)} placeholder="050-0000000" type="tel" inputMode="tel" autoComplete="tel" />
                 </div>
                 <div>
-                  <label className="font-body text-sm font-medium text-card-foreground mb-1.5 block">מייל</label>
-                  <Input value={data.email || ""} onChange={(e) => update("email", e.target.value)} placeholder="email@example.com" type="email" inputMode="email" autoComplete="email" />
+                  <label htmlFor="seekerform-email" className="font-body text-sm font-medium text-card-foreground mb-1.5 block">מייל</label>
+                  <Input id="seekerform-email" value={data.email || ""} onChange={(e) => update("email", e.target.value)} placeholder="email@example.com" type="email" inputMode="email" autoComplete="email" />
                 </div>
               </div>
               <div className="grid grid-cols-3 gap-4">
                 <div>
-                  <label className="font-body text-sm font-medium text-card-foreground mb-1.5 block">עיר *</label>
-                  <Input value={data.city || ""} onChange={(e) => update("city", e.target.value)} placeholder="ירושלים" autoComplete="address-level2" />
+                  <label htmlFor="seekerform-city" className="font-body text-sm font-medium text-card-foreground mb-1.5 block">עיר *</label>
+                  <Input id="seekerform-city" value={data.city || ""} onChange={(e) => update("city", e.target.value)} placeholder="ירושלים" autoComplete="address-level2" />
                 </div>
                 <div>
-                  <label className="font-body text-sm font-medium text-card-foreground mb-1.5 block">שכונה</label>
-                  <Input value={data.neighborhood || ""} onChange={(e) => update("neighborhood", e.target.value)} />
+                  <label htmlFor="seekerform-neighborhood" className="font-body text-sm font-medium text-card-foreground mb-1.5 block">שכונה</label>
+                  <Input id="seekerform-neighborhood" value={data.neighborhood || ""} onChange={(e) => update("neighborhood", e.target.value)} />
                 </div>
                 <div>
-                  <label className="font-body text-sm font-medium text-card-foreground mb-1.5 block">רחוב</label>
-                  <Input value={data.street || ""} onChange={(e) => update("street", e.target.value)} />
+                  <label htmlFor="seekerform-street" className="font-body text-sm font-medium text-card-foreground mb-1.5 block">רחוב</label>
+                  <Input id="seekerform-street" value={data.street || ""} onChange={(e) => update("street", e.target.value)} />
                 </div>
               </div>
             </div>
@@ -162,20 +163,20 @@ const SeekerForm = ({ data, onChange }: SeekerFormProps) => {
             <div className="space-y-5">
               <h3 className="font-display text-xl font-bold text-card-foreground mb-6">פרטי בית האבלים</h3>
               <div>
-                <label className="font-body text-sm font-medium text-card-foreground mb-1.5 block">שם הנפטר *</label>
-                <Input value={data.deceasedName || ""} onChange={(e) => update("deceasedName", e.target.value)} />
+                <label htmlFor="seekerform-deceasedname" className="font-body text-sm font-medium text-card-foreground mb-1.5 block">שם הנפטר *</label>
+                <Input id="seekerform-deceasedname" value={data.deceasedName || ""} onChange={(e) => update("deceasedName", e.target.value)} />
               </div>
               <div>
-                <label className="font-body text-sm font-medium text-card-foreground mb-1.5 block">עיסוק הנפטר</label>
-                <Input value={data.deceasedOccupation || ""} onChange={(e) => update("deceasedOccupation", e.target.value)} />
+                <label htmlFor="seekerform-deceasedoccupation" className="font-body text-sm font-medium text-card-foreground mb-1.5 block">עיסוק הנפטר</label>
+                <Input id="seekerform-deceasedoccupation" value={data.deceasedOccupation || ""} onChange={(e) => update("deceasedOccupation", e.target.value)} />
               </div>
               <div>
-                <label className="font-body text-sm font-medium text-card-foreground mb-1.5 block">מיקום בית האבלים *</label>
-                <Input value={data.mourningLocation || ""} onChange={(e) => update("mourningLocation", e.target.value)} />
+                <label htmlFor="seekerform-mourninglocation" className="font-body text-sm font-medium text-card-foreground mb-1.5 block">מיקום בית האבלים *</label>
+                <Input id="seekerform-mourninglocation" value={data.mourningLocation || ""} onChange={(e) => update("mourningLocation", e.target.value)} />
               </div>
               <div>
-                <label className="font-body text-sm font-medium text-card-foreground mb-1.5 block">זמני התפילות</label>
-                <Input value={data.prayerTimes || ""} onChange={(e) => update("prayerTimes", e.target.value)} />
+                <label htmlFor="seekerform-prayertimes" className="font-body text-sm font-medium text-card-foreground mb-1.5 block">זמני התפילות</label>
+                <Input id="seekerform-prayertimes" value={data.prayerTimes || ""} onChange={(e) => update("prayerTimes", e.target.value)} />
               </div>
             </div>
           )}
@@ -184,12 +185,12 @@ const SeekerForm = ({ data, onChange }: SeekerFormProps) => {
             <div className="space-y-5">
               <h3 className="font-display text-xl font-bold text-card-foreground mb-6">פרטי בית הכנסת</h3>
               <div>
-                <label className="font-body text-sm font-medium text-card-foreground mb-1.5 block">שם בית הכנסת *</label>
-                <Input value={data.synagogueName || ""} onChange={(e) => update("synagogueName", e.target.value)} />
+                <label htmlFor="seekerform-synagoguename" className="font-body text-sm font-medium text-card-foreground mb-1.5 block">שם בית הכנסת *</label>
+                <Input id="seekerform-synagoguename" value={data.synagogueName || ""} onChange={(e) => update("synagogueName", e.target.value)} />
               </div>
               <div>
-                <label className="font-body text-sm font-medium text-card-foreground mb-1.5 block">שם הגבאי / רב בית הכנסת *</label>
-                <Input value={data.gabaiName || ""} onChange={(e) => update("gabaiName", e.target.value)} />
+                <label htmlFor="seekerform-gabainame" className="font-body text-sm font-medium text-card-foreground mb-1.5 block">שם הגבאי / רב בית הכנסת *</label>
+                <Input id="seekerform-gabainame" value={data.gabaiName || ""} onChange={(e) => update("gabaiName", e.target.value)} />
               </div>
               <RadioSelect
                 label="נוסח בית הכנסת *"
@@ -198,8 +199,8 @@ const SeekerForm = ({ data, onChange }: SeekerFormProps) => {
                 onSelect={(v) => update("prayerStyle", v)}
               />
               <div>
-                <label className="font-body text-sm font-medium text-card-foreground mb-1.5 block">כמות מתפללים</label>
-                <Input value={data.congregationSize || ""} onChange={(e) => update("congregationSize", e.target.value)} placeholder="לדוגמה: 50" />
+                <label htmlFor="seekerform-congregationsize" className="font-body text-sm font-medium text-card-foreground mb-1.5 block">כמות מתפללים</label>
+                <Input id="seekerform-congregationsize" value={data.congregationSize || ""} onChange={(e) => update("congregationSize", e.target.value)} placeholder="לדוגמה: 50" />
               </div>
               <RadioSelect
                 label="רמת הפעילות"
@@ -298,8 +299,9 @@ const SeekerForm = ({ data, onChange }: SeekerFormProps) => {
                 onSelect={(v) => update("payment", v)}
               />
               <div>
-                <label className="font-body text-sm font-medium text-card-foreground mb-1.5 block">הערות נוספות</label>
+                <label htmlFor="seekerform-notes" className="font-body text-sm font-medium text-card-foreground mb-1.5 block">הערות נוספות</label>
                 <Textarea
+                  id="seekerform-notes"
                   value={data.notes || ""}
                   onChange={(e) => update("notes", e.target.value)}
                   placeholder="כל מידע נוסף שיכול לעזור..."
