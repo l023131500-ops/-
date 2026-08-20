@@ -80,9 +80,10 @@ export default function CouponsPage() {
         <div className="card">
           <form onSubmit={submit} className="space-y-4">
             <div>
-              <label className="label">קוד</label>
+              <label className="label" htmlFor="coupon-code">קוד</label>
               <div className="flex gap-2">
                 <input
+                  id="coupon-code"
                   value={form.code}
                   onChange={(e) => setForm({ ...form, code: e.target.value.toUpperCase() })}
                   className="input flex-1 font-mono"
@@ -96,8 +97,9 @@ export default function CouponsPage() {
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="label">מספר העלאות מותר</label>
+                <label className="label" htmlFor="coupon-max-uploads">מספר העלאות מותר</label>
                 <input
+                  id="coupon-max-uploads"
                   type="number"
                   inputMode="numeric"
                   min={1}
@@ -109,8 +111,9 @@ export default function CouponsPage() {
                 />
               </div>
               <div>
-                <label className="label">תפוגה (אופציונלי)</label>
+                <label className="label" htmlFor="coupon-expires-at">תפוגה (אופציונלי)</label>
                 <input
+                  id="coupon-expires-at"
                   type="date"
                   value={form.expires_at}
                   onChange={(e) => setForm({ ...form, expires_at: e.target.value })}
