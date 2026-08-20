@@ -20,6 +20,7 @@ const AdminForums = () => {
   const [form, setForm] = useState({ name: "", description: "", icon: "MessageSquare", is_restricted: false, sort_order: 0 });
   const [composeFor, setComposeFor] = useState<any | null>(null);
   const [composeText, setComposeText] = useState("");
+  const [busyId, setBusyId] = useState<string | null>(null);
 
   const load = async () => {
     const [{ data: c }, { data: p }] = await Promise.all([
@@ -43,22 +44,38 @@ const AdminForums = () => {
 
   const deleteCategory = async (id: string) => {
     if (!confirm("למחוק את הפורום? כל הפוסטים יישארו אך לא יוצגו.")) return;
-    await supabase.from("forum_categories").delete().eq("id", id);
+    if (busyId) return;
+    setBusyId(id);
+    const { error } = await supabase.from("forum_categories").delete().eq("id", id);
+    setBusyId(null);
+    if (error) return toast.error(error.message);
     toast.success("נמחק");
     load();
   };
 
   const togglePin = async (post: any) => {
-    await supabase.from("forum_posts").update({ is_pinned: !post.is_pinned }).eq("id", post.id);
+    if (busyId) return;
+    setBusyId(post.id);
+    const { error } = await supabase.from("forum_posts").update({ is_pinned: !post.is_pinned }).eq("id", post.id);
+    setBusyId(null);
+    if (error) return toast.error(error.message);
     load();
   };
   const toggleBlock = async (post: any) => {
-    await supabase.from("forum_posts").update({ is_blocked: !post.is_blocked }).eq("id", post.id);
+    if (busyId) return;
+    setBusyId(post.id);
+    const { error } = await supabase.from("forum_posts").update({ is_blocked: !post.is_blocked }).eq("id", post.id);
+    setBusyId(null);
+    if (error) return toast.error(error.message);
     load();
   };
   const deletePost = async (id: string) => {
     if (!confirm("למחוק את ההודעה?")) return;
-    await supabase.from("forum_posts").delete().eq("id", id);
+    if (busyId) return;
+    setBusyId(id);
+    const { error } = await supabase.from("forum_posts").delete().eq("id", id);
+    setBusyId(null);
+    if (error) return toast.error(error.message);
     toast.success("נמחק");
     load();
   };
@@ -112,7 +129,7 @@ const AdminForums = () => {
                       <Button size="sm" variant="outline" onClick={() => setComposeFor(c)} className="gap-1">
                         <Send className="w-3 h-3" />פרסם מטעם הניהול
                       </Button>
-                      <Button size="sm" variant="ghost" onClick={() => deleteCategory(c.id)} className="text-destructive">
+                      <Button size="sm" variant="ghost" onClick={() => deleteCategory(c.id)} disabled={busyId === c.id} className="text-destructive">
                         <Trash2 className="w-3 h-3" />מחק
                       </Button>
                     </div>
@@ -147,11 +164,11 @@ const AdminForums = () => {
                       <p className="text-sm whitespace-pre-wrap">{p.content}</p>
                     </div>
                     <div className="flex flex-col gap-1 shrink-0">
-                      <Button size="sm" variant="ghost" onClick={() => togglePin(p)} aria-label={p.is_pinned ? "בטל נעיצת פוסט" : "נעץ פוסט"}><Pin className="w-3 h-3" /></Button>
-                      <Button size="sm" variant="ghost" onClick={() => toggleBlock(p)} aria-label={p.is_blocked ? "בטל חסימת פוסט" : "חסום פוסט"}>
+                      <Button size="sm" variant="ghost" onClick={() => togglePin(p)} disabled={busyId === p.id} aria-label={p.is_pinned ? "בטל נעיצת פוסט" : "נעץ פוסט"}><Pin className="w-3 h-3" /></Button>
+                      <Button size="sm" variant="ghost" onClick={() => toggleBlock(p)} disabled={busyId === p.id} aria-label={p.is_blocked ? "בטל חסימת פוסט" : "חסום פוסט"}>
                         {p.is_blocked ? <CheckCircle className="w-3 h-3 text-green-600" /> : <Ban className="w-3 h-3 text-destructive" />}
                       </Button>
-                      <Button size="sm" variant="ghost" onClick={() => deletePost(p.id)} aria-label="מחק פוסט"><Trash2 className="w-3 h-3 text-destructive" /></Button>
+                      <Button size="sm" variant="ghost" onClick={() => deletePost(p.id)} disabled={busyId === p.id} aria-label="מחק פוסט"><Trash2 className="w-3 h-3 text-destructive" /></Button>
                     </div>
                   </div>
                 </div>
