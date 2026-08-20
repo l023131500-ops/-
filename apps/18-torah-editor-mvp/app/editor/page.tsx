@@ -338,7 +338,7 @@ export default function EditorPage() {
 
       {nikudText && (
         <div className="result-card">
-          <h3>הצעת ניקוד (יש לאשר לפני קבלה)</h3>
+          <h2>הצעת ניקוד (יש לאשר לפני קבלה)</h2>
           <p dir="rtl">{nikudText}</p>
           <button className="action" onClick={approveNikud}>אשר והחלף בטקסט</button>
           <button className="action" onClick={() => setNikudText('')}>בטל</button>

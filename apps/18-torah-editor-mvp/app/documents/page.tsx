@@ -254,7 +254,7 @@ export default function DocumentsPage() {
         <p>טוען…</p>
       ) : !email ? (
         <div className="result-card">
-          <h3>צריך להתחבר</h3>
+          <h2>צריך להתחבר</h2>
           <p>
             המסמכים שלכם שמורים לחשבון האישי. אחרי ההתחברות תחזרו לכאן והם ייטענו.
           </p>

@@ -337,7 +337,7 @@ function JobList({ jobs, loading, selected, onSelect, onRefresh }: {
   return (
     <div className="job-list">
       <div className="job-list-head">
-        <h3>עבודות ({jobs.length})</h3>
+        <h2>עבודות ({jobs.length})</h2>
         <button className="mini-btn" onClick={onRefresh} disabled={loading}>רענן</button>
       </div>
       {jobs.length === 0 && <div className="empty-hint small">אין עבודות עדיין.</div>}
@@ -435,7 +435,7 @@ function JobDetail({ jobId, onChanged }: { jobId: string; onChanged: () => void 
   return (
     <div className="job-detail">
       <div className="detail-head">
-        <h3>{job.page_label || 'עבודה'}</h3>
+        <h2>{job.page_label || 'עבודה'}</h2>
         <StatusBadge status={job.status} />
       </div>
       <div className="detail-meta">
@@ -453,7 +453,7 @@ function JobDetail({ jobId, onChanged }: { jobId: string; onChanged: () => void 
       <div className="detail-cols">
         {/* תמונה מקורית */}
         <div className="detail-col">
-          <h4>המקור</h4>
+          <h3>המקור</h3>
           {imgUrl
             ? <img src={imgUrl} alt="כתב היד המקורי" className="src-image" />
             : <div className="empty-hint small">אין תצוגת תמונה</div>}
@@ -461,7 +461,7 @@ function JobDetail({ jobId, onChanged }: { jobId: string; onChanged: () => void 
 
         {/* טקסט לפי ביטחון */}
         <div className="detail-col">
-          <h4>זיהוי לפי ביטחון</h4>
+          <h3>זיהוי לפי ביטחון</h3>
           {lines.length > 0 ? (
             <div className="conf-text" dir="rtl">
               {lines.map((l) => (
@@ -487,7 +487,7 @@ function JobDetail({ jobId, onChanged }: { jobId: string; onChanged: () => void 
 
       {/* עורך אנושי — final_text */}
       <div className="editor-block">
-        <h4>עריכה ואישור אנושי</h4>
+        <h3>עריכה ואישור אנושי</h3>
         <p className="editor-note">
           זהו הטקסט שייכנס לספר. תקן כאן חופשית — הטקסט הגולמי והמתוקן נשמרים בנפרד ולא משתנים.
         </p>

@@ -240,7 +240,7 @@ button.action:disabled {
 
 .job-list { display: flex; flex-direction: column; gap: 8px; }
 .job-list-head { display: flex; justify-content: space-between; align-items: center; }
-.job-list-head h3 { margin: 0; font-size: 16px; }
+.job-list-head h2 { margin: 0; font-size: 16px; }
 .mini-btn { background: none; border: 1px solid var(--border); border-radius: 7px; padding: 5px 12px; cursor: pointer; font-size: 13px; font-family: inherit; }
 .job-item {
   text-align: right; background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
@@ -258,13 +258,13 @@ button.action:disabled {
 /* פרטי עבודה */
 .job-detail { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 18px; }
 .detail-head { display: flex; justify-content: space-between; align-items: center; }
-.detail-head h3 { margin: 0; }
+.detail-head h2 { margin: 0; }
 .detail-meta { font-size: 13px; color: var(--ink-3); margin: 6px 0 14px; }
 .detail-error { background: var(--warn-bg); border: 1px solid var(--warn-border); border-radius: 8px; padding: 10px 13px; font-size: 13px; color: var(--warn-ink); margin-bottom: 14px; line-height: 1.6; }
 
 .detail-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 @media (max-width: 720px) { .detail-cols { grid-template-columns: 1fr; } }
-.detail-col h4 { margin: 0 0 8px; font-size: 15px; }
+.detail-col h3 { margin: 0 0 8px; font-size: 15px; }
 .src-image { width: 100%; border: 1px solid var(--border); border-radius: 8px; max-height: 420px; object-fit: contain; background: var(--bg); }
 
 .conf-text { white-space: pre-wrap; line-height: 1.9; font-size: 17px; border: 1px solid var(--border); border-radius: 8px; padding: 12px; background: var(--surface-2); max-height: 420px; overflow: auto; }
@@ -275,7 +275,7 @@ button.action:disabled {
 .legend-swatch { padding: 1px 6px; margin-inline-end: 4px; }
 
 .editor-block { margin-top: 20px; border-top: 1px solid var(--border); padding-top: 16px; }
-.editor-block h4 { margin: 0 0 6px; font-size: 15px; }
+.editor-block h3 { margin: 0 0 6px; font-size: 15px; }
 .editor-note { font-size: 13px; color: var(--ink-3); margin: 0 0 10px; line-height: 1.6; }
 .approve-btn { background: var(--ok); }
 .editor-msg { font-size: 13px; color: var(--ink-2); }
