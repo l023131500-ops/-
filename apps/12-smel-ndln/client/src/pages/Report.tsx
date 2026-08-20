@@ -81,7 +81,11 @@ export default function Report() {
 
   if (!profile) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-background text-muted-foreground">
+      <div
+        className="flex min-h-screen items-center justify-center bg-background text-muted-foreground"
+        role="status"
+        aria-live="polite"
+      >
         טוען דוח…
       </div>
     );
