@@ -262,7 +262,7 @@
           [t.last_30_days ?? 0, '‏30 יום אחרונים'],
           [day(t.newest_at), 'הפנייה האחרונה מאדם'],
         ].map(([n, l]) =>
-          `<div class="kpi"><div class="n">${esc(n)}</div><div class="l">${l}</div></div>`).join('');
+          `<div class="kpi"><div class="n">${n === na ? na : esc(n)}</div><div class="l">${l}</div></div>`).join('');
 
         $('testMeans').textContent = data.test_leads_means || '';
 
