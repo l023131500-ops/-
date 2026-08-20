@@ -261,5 +261,10 @@ a{color:inherit;text-decoration:none}
     <p style="margin:0">חלק מ־<a href="https://more30.com">more30.com</a> · © 2026</p>
   </div>
 </footer>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('/maatefet/sw.js').catch(() => {}));
+}
+</script>
 </body>
 </html>
