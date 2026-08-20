@@ -197,7 +197,7 @@ export default function Home() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-5xl px-4 py-6">
+      <main id="main-content" className="mx-auto max-w-5xl px-4 py-6">
         {/* Track tabs */}
         <div className="mb-5 flex flex-wrap gap-2">
           {(["fund", "gov", "ngo"] as Kind[]).map((k) => (

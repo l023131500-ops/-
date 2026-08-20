@@ -194,7 +194,7 @@ export default function SynagoguePortal() {
         </div>
       </header>
 
-      <main className="max-w-6xl mx-auto px-4 py-6 space-y-6">
+      <main id="main-content" className="max-w-6xl mx-auto px-4 py-6 space-y-6">
         {/* Hero strip */}
         <div className="text-center">
           <a href="/" target="_blank" rel="noopener noreferrer" className="inline-block">

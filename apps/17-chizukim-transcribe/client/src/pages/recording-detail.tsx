@@ -205,7 +205,7 @@ export default function RecordingDetailPage() {
         </div>
       </header>
 
-      <main className="max-w-6xl mx-auto px-4 py-6 space-y-6">
+      <main id="main-content" className="max-w-6xl mx-auto px-4 py-6 space-y-6">
         {/* Meta card */}
         <Card className="p-5 space-y-4">
           <div className="flex items-start justify-between gap-4 flex-wrap">

@@ -239,7 +239,7 @@ export default function BulkUpload() {
       </section>
 
       {/* Main content */}
-      <main className="max-w-6xl mx-auto px-4 pb-16 space-y-6">
+      <main id="main-content" className="max-w-6xl mx-auto px-4 pb-16 space-y-6">
         <BulkLessonForm sessionId={session.id} onAdded={loadAll} />
         <ExcelImportExport sessionId={session.id} onImported={loadAll} />
         <BulkLessonTable lessons={lessons} onChanged={loadAll} />

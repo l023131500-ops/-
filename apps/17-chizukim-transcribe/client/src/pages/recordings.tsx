@@ -182,7 +182,7 @@ export default function RecordingsPage() {
         </div>
       </header>
 
-      <main className="max-w-6xl mx-auto px-4 py-8">
+      <main id="main-content" className="max-w-6xl mx-auto px-4 py-8">
         {/* Stats — counted by the database over the whole archive */}
         <div className="grid grid-cols-3 gap-3 mb-8">
           <Card className="p-4 flex items-center gap-3">

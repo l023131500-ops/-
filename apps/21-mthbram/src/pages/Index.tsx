@@ -15,7 +15,7 @@ const Index = () => {
         זקוקים ל-h1 שקיים תמיד, גם כשהמאגר ריק.
       */}
       <h1 className="sr-only">מתחברים — מאגר שיעורי התורה</h1>
-      <main>
+      <main id="main-content">
         <UpcomingLessonsCarousel />
         <LessonsDashboard />
         <ShareDistributionBar />

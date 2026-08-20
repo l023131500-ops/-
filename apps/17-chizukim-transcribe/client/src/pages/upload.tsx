@@ -211,7 +211,7 @@ export default function UploadPage() {
         </div>
       </header>
 
-      <main className="max-w-3xl mx-auto px-4 py-10">
+      <main id="main-content" className="max-w-3xl mx-auto px-4 py-10">
         <h1 className="text-xl font-bold mb-2">העלאת הקלטה חדשה</h1>
         <p className="text-sm text-muted-foreground mb-6">
           עד {fmtBytes(MAX_UPLOAD_BYTES)} לקובץ — ההעלאה נעשית ישירות לאחסון עם מד התקדמות.
