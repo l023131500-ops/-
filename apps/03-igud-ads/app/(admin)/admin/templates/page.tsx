@@ -116,7 +116,7 @@ export default function TemplatesPage() {
         },
       };
       const isEdit = !!form.id;
-      const url = isEdit ? `/api/admin/templates/${form.id}` : "/modaot/api/admin/templates";
+      const url = isEdit ? `/modaot/api/admin/templates/${form.id}` : "/modaot/api/admin/templates";
       const method = isEdit ? "PATCH" : "POST";
       const r = await fetch(url, {
         method,
