@@ -5768,3 +5768,26 @@
      admin/templates (14) → admin/templates/[id] (14) →
      public/create (14). אחריו 01-torah-platform (~150 מופעים/19
      קבצים) מהמיפוי של סבב 83.
+
+## 20/08/2026 (LOOP A — סבב 96) — `<label htmlFor>`/`id`: 03-igud-ads/admin/transcribe/glossary
+
+525. **בדקתי מחדש `git log`/`core.run_progress` לפני שהתחלתי.** סבב
+     95 סגור (commit `0a6f4966`/`3d6e92b8`, תאם ל-HEAD). המשכתי בתור
+     שסבב 95/#524 הגדיר: `admin/transcribe/glossary` (4) — הבא
+     בגודל אחרי `admin/transcribe/coupons`.
+526. **תיקנתי `app/(admin)/admin/transcribe/glossary/page.tsx`** (4
+     זוגות בטופס הוספת מונח למילון): `glossary-style` על בורר
+     הסגנון (ליטאי/חסידי/אידיש), `glossary-term` על שדה המונח
+     לחיפוש, `glossary-replacement` על שדה ההחלפה, `glossary-notes`
+     על שדה ההערות. אפס רגרסיה: רק `id`/`htmlFor` נוספו, לא נגעתי
+     ב-`value`/`onChange`/`required`/`aria-required`. אומת ע"י `git
+     diff --stat` (קובץ אחד, 8+/4-) + עיון מלא ב-diff + בדיקת איזון
+     `{}`/`()`/`[]` ב-Python (60/60, 62/62, 9/9). אין `tsc`/`npm`
+     בסביבה הזו. Commit `5bca072a` על `fix/a-icon-only-buttons-round2-0820`,
+     נדחף ל-origin (מפעיל פריסת Vercel תחת more30.com/modaot).
+527. **הבא בתור ב-03-igud-ads:** public/transcribe/upload (3, עם
+     החרגת קבוצת כפתורים "סגנון עריכה" שדורשת `fieldset`/`legend`
+     ולא `htmlFor`) → admin/coupons (4) → admin/notifications (6) →
+     admin/users (5) → admin/templates (14) → admin/templates/[id]
+     (14) → public/create (14). אחריו 01-torah-platform (~150
+     מופעים/19 קבצים) מהמיפוי של סבב 83.
