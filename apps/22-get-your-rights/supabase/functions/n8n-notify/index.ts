@@ -15,6 +15,32 @@ Deno.serve(async (req) => {
     const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, serviceRoleKey);
 
+    // This function is verify_jwt=false (called both internally by
+    // leads-webhook with the service role key, and from the admin UI with a
+    // user session token) and reads full lead PII (ID number, health status,
+    // disability, phone). Without an explicit check here, anyone who knows
+    // the function URL could pull any lead's PII / trigger outbound
+    // WhatsApp/email/voice/fax by guessing a lead_id, since verify_jwt=false
+    // means Supabase itself performs no authorization at all.
+    const authHeader = req.headers.get('Authorization') || '';
+    const isInternalCall = authHeader === `Bearer ${serviceRoleKey}`;
+    if (!isInternalCall) {
+      let isAdmin = false;
+      if (authHeader) {
+        const anonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
+        const callerClient = createClient(supabaseUrl, anonKey, {
+          global: { headers: { Authorization: authHeader } },
+        });
+        const { data: { user } } = await callerClient.auth.getUser();
+        isAdmin = !!user && (await callerClient.rpc('has_role', { _user_id: user.id, _role: 'admin' })).data === true;
+      }
+      if (!isAdmin) {
+        return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+          status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+    }
+
     const body = await req.json();
     const { lead_id, trigger, channels } = body; // trigger: "auto" | "manual", channels: string[]
 
