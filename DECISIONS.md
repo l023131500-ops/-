@@ -7577,3 +7577,31 @@
     **הבא בתור:** המשך עדשת validation clientside על שני
     המועמדים הנותרים, או נושא #250 (RLS על 21-mthbram, חסום MCP).
     via cloud server 167.99.131.167 [loop B]
+
+## 20/08/2026 — סבב 378 (loop B)
+
+378. **סיום עדשת validation clientside חסרה לפני כתיבה — שני
+    המועמדים האחרונים מסבב 376.** בדיקה של
+    `public-price-comparison.tsx` ב-27-bkalut-price העלתה שהמועמד
+    היה false positive: שדה ה-`city` בטופס ההגשה (שורה 737) מוצג
+    כ-placeholder `"עיר"` **בלי** כוכבית, ואינו מסומן `required` —
+    גם השרת (`server/price-comparison.ts`) מגדיר אותו `city?:
+    string | null` אופציונלי. אין כאן פער בין ההבטחה ב-UI למימוש,
+    ולכן לא בוצע שינוי שם. המועמד השני,
+    `apps/22-get-your-rights/src/components/Footer.tsx` — טופס
+    ה"הצטרפו וקבלו עדכונים" מסמן שם/טלפון כחובה (placeholder `"*"`
+    + attribute `required`, שורות 91–106), אך `handleSubmit` (שורה
+    33) בדק רק אמת-בוליאנית (`!formData.name`) ולא `.trim()`, כך
+    שקלט של רווחים בלבד עבר את הבדיקה ונכתב ל-`leads` כערך שדה
+    חובה שנראה ריק. תוקן בהרחבת אותו דפוס guard (`.trim()`) שכבר
+    הופעל על TeacherForm.tsx/RequestLesson.tsx בסבבים 376–377 —
+    לא נוסף דפוס UX חדש. `git diff`: שינוי שורה יחידה. ענף
+    `fix/b-22-get-your-rights-footer-trim-required-0820`, commit
+    `95e7737e`, נדחף (מפעיל פריסת Vercel תחת `more30.com/zchuyot`).
+    זו תעודת הסיום לעדשה שנפתחה בסבב 376 — כל שלושת המועמדים
+    טופלו (שניים תוקנו, אחד אומת כ-false positive).
+
+    **הבא בתור:** נושא #250 (RLS על 21-mthbram, חסום MCP), או פתיחת
+    עדשה חדשה על שאר האפליקציות בהיקף loop B (18/19/20/23/24/25/28
+    טרם נסרקו לעומק לאותה עדשה).
+    via cloud server 167.99.131.167 [loop B]
