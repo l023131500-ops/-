@@ -28,6 +28,7 @@ import { getStyle } from "@shared/styles";
 import { getCategory } from "@shared/knowledge";
 import { useTemplateContext } from "@/lib/templateContext";
 import type { TemplateDoc } from "@shared/layers";
+import type { NarrationAlignment } from "@shared/tts-hebrew";
 
 interface ProjectRow {
   id: number;
@@ -64,16 +65,22 @@ function clientNotesOf(p: ProjectRow): string {
   }
 }
 
-/** ‎narrationScript‎/‎narrationAudioUrl‎ — אותו דפוס בדיוק כמו ‎clientNotes‎. */
-function narrationOf(p: ProjectRow): { script: string; audioUrl: string } {
+/** ‎narrationScript‎/‎narrationAudioUrl‎/‎narrationAlignment‎ — אותו דפוס בדיוק כמו ‎clientNotes‎. */
+function narrationOf(p: ProjectRow): { script: string; audioUrl: string; alignment: NarrationAlignment | null } {
   try {
     const parsed = JSON.parse(p.layersJson);
+    const a = parsed?.narrationAlignment;
+    const alignment: NarrationAlignment | null =
+      a && Array.isArray(a.characters) && Array.isArray(a.startTimes) && Array.isArray(a.endTimes)
+        ? { characters: a.characters, startTimes: a.startTimes, endTimes: a.endTimes }
+        : null;
     return {
       script: typeof parsed?.narrationScript === "string" ? parsed.narrationScript : "",
       audioUrl: typeof parsed?.narrationAudioUrl === "string" ? parsed.narrationAudioUrl : "",
+      alignment,
     };
   } catch {
-    return { script: "", audioUrl: "" };
+    return { script: "", audioUrl: "", alignment: null };
   }
 }
 
@@ -100,6 +107,7 @@ export default function Projects() {
       clientNotes: clientNotesOf(p),
       narrationScript: narration.script,
       narrationAudioUrl: narration.audioUrl,
+      narrationAlignment: narration.alignment,
     });
     navigate("/editor");
   }

@@ -423,7 +423,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
       if (!result.ok || !result.dataUrl) {
         return res.status(502).json({ error: result.error || "יצירת קריינות נכשלה", detail: result.detail });
       }
-      res.json({ ok: true, dataUrl: result.dataUrl, script: result.script });
+      res.json({ ok: true, dataUrl: result.dataUrl, script: result.script, alignment: result.alignment });
     } catch (e: any) {
       res.status(502).json({ error: "שגיאת קריינות: " + String(e?.message || e).slice(0, 200) });
     }

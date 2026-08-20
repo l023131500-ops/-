@@ -289,3 +289,15 @@ export function toTtsSafeHebrew(input: string | null | undefined): string {
   }
   return out;
 }
+
+/**
+ * Real per-character timing from ElevenLabs' `with-timestamps` TTS endpoint —
+ * `characters[i]` was spoken between `startTimes[i]` and `endTimes[i]` seconds.
+ * `characters` always matches the exact TTS-safe script sent to the engine
+ * (the same string returned as `script` alongside it), not the raw user input.
+ */
+export interface NarrationAlignment {
+  characters: string[];
+  startTimes: number[];
+  endTimes: number[];
+}

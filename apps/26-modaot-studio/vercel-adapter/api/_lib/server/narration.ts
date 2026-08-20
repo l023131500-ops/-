@@ -14,7 +14,7 @@
  * `removeBackgroundImage`/`generateBackgroundRecraft` ב-branding.ts.
  */
 import { proxyFetch } from "./proxyFetch";
-import { toTtsSafeHebrew } from "../shared/tts-hebrew";
+import { toTtsSafeHebrew, type NarrationAlignment } from "../shared/tts-hebrew";
 
 const ELEVENLABS_BASE = "https://api.elevenlabs.io/v1";
 // אותו קול-ברירת-מחדל (קריין עברי, סמכותי) בשימוש ב-27-bkalut-price/server/hf-podcast.ts —
@@ -26,6 +26,10 @@ export interface NarrationResult {
   dataUrl?: string;
   /** הטקסט בפועל שנשלח למנוע (אחרי toTtsSafeHebrew) — לשקיפות ב-UI. */
   script?: string;
+  /** תזמון תווים אמיתי מ-ElevenLabs (with-timestamps) — כשקיים, וידאו הקידום
+   *  מסנכרן כתוביות לפי הדיבור בפועל במקום קירוב לפי אורך-תווים
+   *  (lib/videoExport.ts buildCaptionSegmentsFromAlignment). */
+  alignment?: NarrationAlignment;
   error?: string;
   detail?: string;
 }
@@ -40,13 +44,15 @@ export async function generateNarration(rawScript: string, voiceId?: string): Pr
   if (!apiKey) return { ok: false, error: "ELEVENLABS_API_KEY חסר — קריינות אינה זמינה עדיין בסביבה הזו" };
 
   try {
+    // with-timestamps (לא הנתיב הרגיל) — מחזיר גם alignment (תזמון תו-אחר-תו),
+    // לא רק אודיו, כדי שכתוביות הוידאו יסתנכרנו לדיבור האמיתי במקום קירוב.
     const res = await proxyFetch(
-      `${ELEVENLABS_BASE}/text-to-speech/${voiceId || DEFAULT_VOICE_ID}?output_format=mp3_44100_128`,
+      `${ELEVENLABS_BASE}/text-to-speech/${voiceId || DEFAULT_VOICE_ID}/with-timestamps?output_format=mp3_44100_128`,
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Accept: "audio/mpeg",
+          Accept: "application/json",
           "xi-api-key": apiKey,
         },
         body: JSON.stringify({
@@ -60,8 +66,16 @@ export async function generateNarration(rawScript: string, voiceId?: string): Pr
       const txt = await res.text().catch(() => "");
       return { ok: false, error: `ElevenLabs ${res.status}`, detail: txt.slice(0, 300) };
     }
-    const buf = Buffer.from(await res.arrayBuffer());
-    return { ok: true, dataUrl: `data:audio/mpeg;base64,${buf.toString("base64")}`, script };
+    const body: any = await res.json().catch(() => null);
+    if (!body?.audio_base64) {
+      return { ok: false, error: "תגובת ElevenLabs לא תקינה (חסר אודיו)" };
+    }
+    const a = body.alignment;
+    const alignment: NarrationAlignment | undefined =
+      a && Array.isArray(a.characters) && Array.isArray(a.character_start_times_seconds) && Array.isArray(a.character_end_times_seconds)
+        ? { characters: a.characters, startTimes: a.character_start_times_seconds, endTimes: a.character_end_times_seconds }
+        : undefined;
+    return { ok: true, dataUrl: `data:audio/mpeg;base64,${body.audio_base64}`, script, alignment };
   } catch (e: any) {
     return { ok: false, error: "כשל ביצירת קריינות", detail: String(e?.message || e) };
   }

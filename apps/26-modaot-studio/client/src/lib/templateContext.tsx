@@ -1,6 +1,7 @@
 // קונטקסט משותף להעברת התבנית שנבחרה מ-Home ל-Editor — בלי localStorage (חסום ב-iframe).
 import { createContext, useContext, useState, type ReactNode } from "react";
 import type { TemplateDoc } from "@shared/layers";
+import type { NarrationAlignment } from "@shared/tts-hebrew";
 
 export interface SelectedTemplate {
   doc: TemplateDoc;
@@ -16,6 +17,10 @@ export interface SelectedTemplate {
   /** קריינות עברית (צ'קליסט #16, שלב 5 — וידאו קידום) — נשמר בתוך layersJson, אותו דפוס כמו clientNotes. */
   narrationScript?: string;
   narrationAudioUrl?: string;
+  /** תזמון-תווים אמיתי מ-ElevenLabs לאותה קריינות (server/narration.ts,
+   *  with-timestamps) — נשמר לצד narrationAudioUrl כדי שוידאו-קידום שמיוצא
+   *  מפרויקט שמור ישתמש בסנכרון כתוביות מדויק, לא רק בזמן היצירה החי. */
+  narrationAlignment?: NarrationAlignment | null;
 }
 
 interface TemplateContextValue {

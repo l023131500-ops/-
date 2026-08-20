@@ -83,6 +83,7 @@ import { downloadIDML } from "@/lib/idmlExporter";
 import { apiRequest, hasAuthSession } from "@/lib/queryClient";
 import { nextId } from "@shared/layers";
 import type { TemplateDoc, TextLayer, ImageLayer, ShapeLayer, AnyLayer, TemplateBackground } from "@shared/layers";
+import type { NarrationAlignment } from "@shared/tts-hebrew";
 
 // שורת מותג כפי שהשרת מחזיר מ-/api/brands (ר' shared/schema.ts) — קריאה בלבד כאן
 interface BrandRow {
@@ -168,6 +169,11 @@ export default function Editor() {
   const [narrationDialogOpen, setNarrationDialogOpen] = useState(false);
   const [narrationScript, setNarrationScript] = useState(selected?.narrationScript ?? "");
   const [narrationAudioUrl, setNarrationAudioUrl] = useState(selected?.narrationAudioUrl ?? "");
+  // תזמון-תווים אמיתי מ-ElevenLabs לאותה קריינות (with-timestamps) — כשקיים,
+  // וידאו הקידום מסנכרן כתוביות לדיבור בפועל במקום קירוב (lib/videoExport.ts).
+  const [narrationAlignment, setNarrationAlignment] = useState<NarrationAlignment | null>(
+    selected?.narrationAlignment ?? null,
+  );
   const [narrationLoading, setNarrationLoading] = useState(false);
 
   // וידאו קידום (Ken Burns + סנכרון קריינות, lib/videoExport.ts) — הבנייה בפועל
@@ -645,6 +651,7 @@ export default function Editor() {
           clientNotes,
           narrationScript: narrationScript || undefined,
           narrationAudioUrl: narrationAudioUrl || undefined,
+          narrationAlignment: narrationAudioUrl && narrationAlignment ? narrationAlignment : undefined,
         }),
         thumbnail: null as string | null,
       };
@@ -699,6 +706,7 @@ export default function Editor() {
         return;
       }
       setNarrationAudioUrl(data.dataUrl);
+      setNarrationAlignment(data.alignment ?? null);
       toast({ title: "הקריינות מוכנה" });
     } catch (err: any) {
       toast({
@@ -750,6 +758,7 @@ export default function Editor() {
       const blob = await exportPromoVideo(stageRef.current, doc.width, doc.height, {
         narrationAudioUrl: narrationAudioUrl || undefined,
         narrationScript: narrationScript || undefined,
+        narrationAlignment,
         showCaptions,
         captionScriptEn: includeEnglishCaptions ? captionScriptEn || undefined : undefined,
         musicUrl: musicUrl || undefined,

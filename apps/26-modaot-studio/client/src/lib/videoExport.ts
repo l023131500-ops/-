@@ -8,11 +8,14 @@
 // כתוביות עבריות בשכבת הרינדור (המשך ישיר ל-#17, לא פריט חדש בצ'קליסט): אותו
 // תסריט קריינות שכבר קיים (narrationScript) מפוצל למקטעים ומצויר על הפריים
 // עצמו, כי רוב הצפייה במדיה חברתית היא ללא קול — וידאו-קידום שקול הקריינות
-// היחיד שלו הוא הפס האודיו מפספס את הקהל הזה. אין timestamps אמיתיים
-// מ-ElevenLabs (server/narration.ts מחזיר רק אודיו), ולכן החלוקה היא לפי יחס
-// אורך-תווים למשך הכולל של הקריינות — קירוב סביר בלי תלות בספק חדש/API נוסף.
+// היחיד שלו הוא הפס האודיו מפספס את הקהל הזה. כש-narrationAlignment קיים
+// (תזמון-תווים אמיתי מ-ElevenLabs with-timestamps, server/narration.ts) הכתוביות
+// מסתנכרנות לדיבור בפועל (buildCaptionSegmentsFromAlignment); אחרת — או
+// לקריינות ישנה שנשמרה לפני השדרוג הזה, או לכתוביות אנגלית מתורגמות שאין להן
+// alignment משלהן — נופלות לקירוב לפי יחס אורך-תווים (buildCaptionSegments).
 import type Konva from "konva";
 import { wrapText } from "./autofit";
+import type { NarrationAlignment } from "@shared/tts-hebrew";
 
 const MAX_VIDEO_DIM = 1080;
 const FPS = 30;
@@ -128,6 +131,72 @@ export function buildCaptionSegments(script: string, totalDurationSec: number): 
   return segments;
 }
 
+/** מנרמל רשימת-תווים לאותה נורמליזציית-רווחים ש-splitIntoCaptionChunks מבצעת
+ * (\s+ -> " ", trim), תוך שמירת מיפוי בין מיקום בטקסט המנורמל למיקום המקורי
+ * במערך התווים של ה-alignment — כדי לתרגם היסט של מקטע-כתובית בטקסט המנורמל
+ * בחזרה לתזמון האמיתי (startTimes/endTimes) מ-ElevenLabs. */
+function normalizeWithIndexMap(characters: string[]): { text: string; map: number[] } {
+  let text = "";
+  const map: number[] = [];
+  let lastWasSpace = true; // מדמה trim() בתחילת הטקסט — רווח מוביל לא נכנס
+  for (let i = 0; i < characters.length; i++) {
+    const ch = characters[i];
+    if (/\s/.test(ch)) {
+      if (!lastWasSpace) {
+        text += " ";
+        map.push(i);
+      }
+      lastWasSpace = true;
+    } else {
+      text += ch;
+      map.push(i);
+      lastWasSpace = false;
+    }
+  }
+  if (text.endsWith(" ")) {
+    text = text.slice(0, -1);
+    map.pop();
+  }
+  return { text, map };
+}
+
+/**
+ * מתזמן כתוביות לפי תזמון-תווים אמיתי מ-ElevenLabs (server/narration.ts,
+ * with-timestamps) במקום הקירוב לפי יחס אורך-תווים ב-buildCaptionSegments.
+ * alignment.characters הוא בדיוק הטקסט ה"בטוח" שנשלח לקריינות (לא בהכרח זהה
+ * מילה-במילה ל-narrationScript הגולמי, למשל מספרים שהומרו למילים) — לכן
+ * הכתוביות נבנות מתוכו ישירות, לא מ-narrationScript. כשל התאמה (ריק/לא
+ * תקין) מחזיר [] כדי שהקורא ייפול חזרה לקירוב הרגיל — אפס רגרסיה.
+ */
+export function buildCaptionSegmentsFromAlignment(
+  alignment: NarrationAlignment | null | undefined,
+  totalDurationSec: number,
+): CaptionSegment[] {
+  if (!alignment?.characters?.length || !(totalDurationSec > 0)) return [];
+  const { characters, startTimes, endTimes } = alignment;
+  if (characters.length !== startTimes?.length || characters.length !== endTimes?.length) return [];
+
+  const { text: normalizedText, map } = normalizeWithIndexMap(characters);
+  const chunks = splitIntoCaptionChunks(normalizedText);
+  if (!chunks.length) return [];
+
+  const MIN_SEC = 1.1;
+  const segments: CaptionSegment[] = [];
+  let searchFrom = 0;
+  for (const chunkText of chunks) {
+    const idx = normalizedText.indexOf(chunkText, searchFrom);
+    if (idx === -1) return []; // לא אמור לקרות — chunks נגזרו מ-normalizedText עצמו
+    const lastIdx = idx + chunkText.length - 1;
+    const start = startTimes[map[idx]] ?? 0;
+    const rawEnd = endTimes[map[lastIdx]] ?? start;
+    const end = Math.min(Math.max(rawEnd, start + MIN_SEC), totalDurationSec);
+    segments.push({ text: chunkText, start, end });
+    searchFrom = idx + chunkText.length;
+  }
+  segments[segments.length - 1].end = Math.max(segments[segments.length - 1].end, totalDurationSec);
+  return segments;
+}
+
 function activeCaption(segments: CaptionSegment[], elapsedSec: number): string | null {
   for (const s of segments) {
     if (elapsedSec >= s.start && elapsedSec < s.end) return s.text;
@@ -204,6 +273,11 @@ export interface PromoVideoOptions {
   narrationAudioUrl?: string | null;
   /** תסריט הקריינות החופשי — כשקיים וגם showCaptions!==false, מוצג ככתוביות בפריימים. */
   narrationScript?: string | null;
+  /** תזמון-תווים אמיתי מ-ElevenLabs (server/narration.ts) לאותה קריינות שיצרה
+   *  narrationAudioUrl — כשקיים, הכתוביות מסתנכרנות לדיבור בפועל (
+   *  buildCaptionSegmentsFromAlignment) במקום קירוב לפי אורך-תווים. חסר/לא
+   *  תואם = נופל אוטומטית לקירוב הישן, בדיוק כמו קודם. */
+  narrationAlignment?: NarrationAlignment | null;
   /** ברירת מחדל: true כש-narrationScript קיים. אפשר לכבות מה-UI. */
   showCaptions?: boolean;
   /** תרגום אנגלי אופציונלי של narrationScript (POST /api/ai/translate-captions) —
@@ -267,7 +341,12 @@ export async function exportPromoVideo(
   }
 
   const wantCaptions = opts.showCaptions !== false && !!opts.narrationScript?.trim();
-  const captionSegments = wantCaptions ? buildCaptionSegments(opts.narrationScript!, duration) : [];
+  const alignedSegments = wantCaptions ? buildCaptionSegmentsFromAlignment(opts.narrationAlignment, duration) : [];
+  const captionSegments = alignedSegments.length
+    ? alignedSegments
+    : wantCaptions
+      ? buildCaptionSegments(opts.narrationScript!, duration)
+      : [];
   const captionSegmentsEn = wantCaptions && opts.captionScriptEn?.trim()
     ? buildCaptionSegments(opts.captionScriptEn, duration)
     : [];
