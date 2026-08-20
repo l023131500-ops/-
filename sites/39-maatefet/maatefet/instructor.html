@@ -287,6 +287,28 @@ th{color:var(--muted);font-weight:400;font-size:12px;text-transform:uppercase;le
         <h2>הפגישות שלי</h2>
         <div id="apptTable"><div class="empty">טוען…</div></div>
       </div>
+      <div class="card">
+        <h2>סנכרון ליומן (Google / Apple / Outlook)</h2>
+        <p class="sub" style="margin-bottom:14px">קישור אישי וסודי — מוסיפים אותו כ"מנוי מיומן חיצוני" ביומן שלכם והפגישות שלכם יופיעו שם אוטומטית ויתעדכנו. אל תשתפו את הקישור.</p>
+        <div class="row">
+          <div>
+            <label for="icsEnabled">מצב</label>
+            <select id="icsEnabled">
+              <option value="off">כבוי</option>
+              <option value="on">פעיל</option>
+            </select>
+          </div>
+        </div>
+        <div id="icsUrlWrap" hidden>
+          <label for="icsUrl">קישור המנוי</label>
+          <div class="row" style="align-items:center">
+            <input id="icsUrl" readonly dir="ltr" style="font-family:monospace;font-size:12px" onfocus="this.select()" />
+            <button class="btn btn-sm btn-quiet" id="icsCopy" type="button">העתקה</button>
+          </div>
+          <button class="btn btn-sm btn-danger" id="icsRegen" type="button" style="margin-top:8px">החלפת קישור (הישן יפסיק לעבוד)</button>
+        </div>
+        <div id="icsErr" role="alert" aria-live="polite"></div>
+      </div>
     </section>
 
     <section id="viewReminders" role="tabpanel" aria-labelledby="tab-reminders" tabindex="0" hidden>
@@ -924,6 +946,58 @@ async function renderAppointments() {
     });
   }
 }
+
+/* ── dashboard: calendar — Google/Apple/Outlook sync feed (secret ICS URL) ── */
+const ICS_BASE = SUPABASE_URL + '/functions/v1/maatefet-ics';
+function icsUrlFor(token) { return ICS_BASE + '?token=' + encodeURIComponent(token); }
+
+async function renderIcsFeed() {
+  try {
+    const st = await rpc('maatefet_calendar_feed_get');
+    $('icsEnabled').value = st.enabled ? 'on' : 'off';
+    $('icsUrlWrap').hidden = !st.enabled;
+    $('icsUrl').value = st.enabled ? icsUrlFor(st.token) : '';
+    $('icsErr').innerHTML = '';
+  } catch (e) {
+    $('icsErr').innerHTML = '<div class="err">' + esc(e.message) + '</div>';
+  }
+}
+
+$('icsEnabled').addEventListener('change', async () => {
+  const wantOn = $('icsEnabled').value === 'on';
+  $('icsEnabled').disabled = true;
+  try {
+    await rpc('maatefet_calendar_feed_toggle', { p_enabled: wantOn });
+    await renderIcsFeed();
+  } catch (e) {
+    $('icsErr').innerHTML = '<div class="err">' + esc(e.message) + '</div>';
+  } finally {
+    $('icsEnabled').disabled = false;
+  }
+});
+
+$('icsCopy').addEventListener('click', async () => {
+  try {
+    await navigator.clipboard.writeText($('icsUrl').value);
+    $('icsCopy').textContent = 'הועתק ✓';
+    setTimeout(() => { $('icsCopy').textContent = 'העתקה'; }, 1500);
+  } catch {
+    $('icsUrl').select();
+  }
+});
+
+$('icsRegen').addEventListener('click', async () => {
+  if (!confirm('להחליף את קישור הסנכרון? הקישור הישן יפסיק לעבוד מיד, וצריך יהיה להוסיף את החדש מחדש בכל יומן שכבר מנוי.')) return;
+  $('icsRegen').disabled = true;
+  try {
+    await rpc('maatefet_calendar_feed_regenerate');
+    await renderIcsFeed();
+  } catch (e) {
+    $('icsErr').innerHTML = '<div class="err">' + esc(e.message) + '</div>';
+  } finally {
+    $('icsRegen').disabled = false;
+  }
+});
 
 /* ── dashboard: reminders ─────────────────────────────────────────────── */
 $('rmSubmit').addEventListener('click', async () => {
@@ -1588,7 +1662,7 @@ for (const tab of document.querySelectorAll('.tab')) {
     }
     for (const key in VIEWS) $(VIEWS[key]).hidden = key !== tab.dataset.view;
     if (tab.dataset.view === 'invites') renderInvites();
-    if (tab.dataset.view === 'calendar') renderAppointments();
+    if (tab.dataset.view === 'calendar') { renderAppointments(); renderIcsFeed(); }
     if (tab.dataset.view === 'reminders') renderReminders();
     if (tab.dataset.view === 'content') { renderContent(); renderSharedContent(); renderMarketplace(); }
     if (tab.dataset.view === 'profile') renderProfileForm();
