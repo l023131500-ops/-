@@ -6113,3 +6113,33 @@
     עדיפות גבוהה יחסית), ואז `financial.tsx` (27-bkalut-price, 5+
     מוטציות מחיקה).
     via cloud server 167.99.131.167 [loop B]
+
+## 20/08/2026 — סבב 337 (loop B)
+
+337. **סגירת עדשת מחיקה-בלי-אישור שנפתחה בסבב 334, מועמד רביעי ואחרון ב-21-mthbram:**
+    `apps/21-mthbram/src/components/portal/PortalSettingsTab.tsx`
+    `deletePhoto` (שורה 228) קרא `supabase.from("portal_photos").delete()`
+    ישירות מתוך `onClick` (שורה 455, כפתור פח-אשפה שמופיע ב-hover על כל
+    תמונה בגלריית הפעילות) בלי שום שער אישור — לחיצה אחת מוחקת תמונה
+    לצמיתות. תוקן באותו דפוס בדיוק שכבר קיים ב-`AdminDashboard.tsx`,
+    `PrayerTimesTab.tsx` (סבב 334), `OrgPortal.tsx` (סבב 335) ו-
+    `PortalMessagesTab.tsx` (סבב 336) של אותה אפליקציה: הוספתי
+    `if (!confirm("למחוק את התמונה?")) return;` בתחילת ה-handler.
+    בדקתי גם את `removeSection` (שורה 145) באותו קובץ — הוא רק מסיר
+    פריט ממערך state מקומי (`setCustomSections`), לא קורא ל-DB ישירות;
+    השמירה בפועל קורית דרך כפתור "שמור" נפרד (`saveCustomSections`),
+    כך שהוא מחוץ להיקף העדשה הזו. אפס שינוי להתנהגות הקיימת מעבר
+    לחסימת המחיקה המיידית — אין שינוי ל-DB/RLS/צורת השאילתה. בדיקת
+    איזון סוגריים/מאמרים מסולסלים/מרובעים ב-python על הקובץ המלא אחרי
+    העריכה — תקין (218/218, 299/299, 106/106). אין build/dev-server
+    זמין בסביבה הזו לפי הנחיית ההרצה — לא tsc. ענף חדש
+    `fix/b-21-portalsettingstab-deletephoto-unconfirmed-0820`, קומיט
+    `0b6b3dc8`, נדחף (מפעיל פריסת Vercel תחת more30.com/mthbram).
+
+    **עדשת מחיקה-בלי-אישור ב-21-mthbram מוצתה** (4/4 מועמדים תוקנו:
+    AdminDashboard כבר היה מוגן, PrayerTimesTab, OrgPortal,
+    PortalMessagesTab, PortalSettingsTab). **הבא בתור:** לעבור למועמדים
+    שנותרו מחוץ ל-21-mthbram — `AdminSettings.tsx` deleteKey
+    (22-get-your-rights, מפתח API — עדיפות גבוהה יחסית כי מדובר בסוד
+    תפעולי), ואז `financial.tsx` (27-bkalut-price, 5+ מוטציות מחיקה).
+    via cloud server 167.99.131.167 [loop B]
