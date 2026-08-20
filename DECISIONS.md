@@ -6523,3 +6523,46 @@
     loop B שמשתמשות ב-TanStack `useMutation` — במיוחד 18-torah-editor-mvp
     ו-24-galilee-connect-hub — אם יימצאו שם מוטציות ללא `onError`.
     via cloud server 167.99.131.167 [loop B]
+
+## 20/08/2026 — סבב 350 (loop B)
+
+350. **בדיקת עדשת ה-`onError` על 18/24, ואז תמחור חסר ל-21-mthbram:**
+    ניסיתי קודם להרחיב את עדשת "משוב שקט" (סבב 349) ל-18-torah-editor-mvp
+    ו-24-galilee-connect-hub לפי ההמלצה — נמצא שאף אחת מהן לא משתמשת
+    ב-`@tanstack/react-query`/`useMutation` בכלל: 18 היא Next.js בלי
+    התלות הזו כלל, ו-24 מתקינה `react-query` אבל כל הכתיבות עוברות
+    ישירות דרך `supabase.from(...)` בתוך handlers רגילים. סרקתי את
+    `GabaiPortal.tsx` הגדול של 24 (1766 שורות, ~25 קריאות כתיבה
+    ישירות) על אותו חשד — התברר שכל מסך שם כבר מציג שגיאה (state
+    `actionError`/`saveError`/`deleteError` + `<p>` אדום), חוץ משורת
+    ניקוי-כפילויות שניה (`cleanupError`, שורה 610) שרק ב-`console.error`
+    — לא תוקן, פעולת רקע משנית לא-קריטית, לא הדפוס שהעדשה מחפשת.
+    מכיוון שהעדשה הזו יבשה על 18/24, השוויתי את `core.plans` (מסד
+    core, לא מוגן) בין 11 האפליקציות של loop B: `chizukim`, `galil`,
+    `kupot`, `orech`, `zchuyot`, `mechiron` — לכולן שלוש שורות
+    `customer_visible=true` (free/basic/extended, ₪2/₪5 לחודש, מסלול
+    TEST). ל-`mthbram` (21, חי ופרוס) היו רק `charge`/`one_time`/`pro`
+    הפנימיים — אפס מסלול שלקוח יכול לראות, ואפס קישור "מחירון" ב-
+    `Navbar.tsx` שלה (לכל שאר האפליקציות החיות יש). הוספתי את שלוש
+    השורות החסרות ל-`core.plans` (אותם מחירים בדיוק כמו האחיות) וקישור
+    "מחירון" לדסקטופ ומובייל ב-`Navbar.tsx`, בדיוק לפי הדפוס של
+    `24-galilee-connect-hub` (עוגן `<a href="https://more30.com/subscribe?app=mthbram">`
+    + אייקון `Tag`). לפני שדחפתי בדקתי את `core.app_offer_block('mthbram')`
+    — מחזיר `not_offered` כי `public_visible=false` (הוסתר במכוון
+    ב-05/08 כי הקטלוג מציג 0 שיעורים מאושרים — מוצר ריק, ראו הערת
+    `core.projects.note` הקיימת). זו לא נפילה: `subscribe.html` כבר
+    מטפל ב-`offered===false` בהצגת הודעה נכונה ("המערכת הזאת אינה
+    מוצעת כרגע למנוי") במקום מסך לבן — כך שהקישור החדש לא שובר כלום,
+    רק מכין את תשתית התמחור למתי שההסתרה תוסר. בדיקת איזון סוגריים/
+    מאמרים מסולסלים/מרובעים ב-python על `Navbar.tsx` אחרי העריכה —
+    תקין (38/38, 82/82, 3/3). אין build/dev-server זמין בסביבה הזו
+    לפי הנחיית ההרצה — לא tsc. ענף חדש
+    `feat/b-mthbram-pricing-navbar-plans-0820`, commit `52d6f511`,
+    נדחף (מפעיל פריסת Vercel תחת more30.com/mthbram).
+
+    **הבא בתור:** issue #250 (RLS פתוח-לגמרי על `public.synagogues`
+    ב-21-mthbram) עדיין חסום — הפרויקט `aypsqqvfohekxxuqsmrw` לא נגיש
+    ל-MCP כאן, ודורש הכרעת בעלים. לשקול גם לבדוק אם 19-igud-shiurim-portal
+    ו-20-igud-portal (עדיין `live=false`) צריכים את אותה תוספת `core.plans`
+    לפני הפריסה הראשונה שלהם, כדי שהתמחור יהיה מוכן מהיום הראשון.
+    via cloud server 167.99.131.167 [loop B]
