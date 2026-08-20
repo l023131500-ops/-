@@ -636,7 +636,7 @@ export default function PublicPriceComparison() {
                     <div className="text-xs text-muted-foreground">
                       {[row.product.brand, row.product.unit, row.categoryName].filter(Boolean).join(" · ")}
                     </div>
-                    {row.product.barcode && <div className="text-[11px] text-muted-foreground" dir="ltr">ברקוד: {row.product.barcode}</div>}
+                    {row.product.barcode && <div className="text-[11px] text-muted-foreground">ברקוד: <span dir="ltr">{row.product.barcode}</span></div>}
                     <div className="flex flex-wrap items-center gap-1.5 mt-1.5">
                       <span className="text-[11px] px-2 py-0.5 rounded-full bg-muted/70 border border-border" data-testid={`pc-chaincount-${row.product.id}`}>
                         נמכר ב-{row.chainCount} רשתות

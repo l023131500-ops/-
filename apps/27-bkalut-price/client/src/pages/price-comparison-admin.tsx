@@ -729,7 +729,7 @@ export default function PriceComparisonAdmin() {
                       <div className="text-xs text-muted-foreground">
                         {sub.storeName}{sub.city && ` · ${sub.city}`} · עסק: {sub.merchantName}{sub.merchantContact && ` · ${sub.merchantContact}`}
                       </div>
-                      {sub.barcode && <div className="text-xs text-muted-foreground" dir="ltr">ברקוד: {sub.barcode}</div>}
+                      {sub.barcode && <div className="text-xs text-muted-foreground">ברקוד: <span dir="ltr">{sub.barcode}</span></div>}
                       {sub.note && <div className="text-xs text-muted-foreground">הערה: {sub.note}</div>}
                       <div className="text-xs text-muted-foreground">התקבל: {new Date(sub.createdAt).toLocaleString("he-IL")}</div>
                       {sub.status !== "pending" && (

@@ -10554,3 +10554,77 @@
     נבדקה לעומק (Navbar משותף / SPA סטטית עם ניווט ראשי / כל דף נבדק
     בנפרד). נושאים #245/#250 (RLS, חסומים) נשארים כפי שהם. via cloud
     server 167.99.131.167 [loop B]
+
+## 20/08/2026 — סבב 435 (loop B)
+
+435. **עדשה חדשה: תוויות עבריות (RTL) מעורבבות בתוך אותו `dir="ltr"`
+    יחד עם הערך הלועזי/מספרי — 5 מופעים אמיתיים ב-2 אפליקציות
+    (24-galilee-connect-hub, 27-bkalut-price), כולל 2 בדפים ציבוריים
+    חיים.** קראתי README.md/CONNECTIONS.md, בדקתי `core.run_progress`
+    (הצעד האחרון: 18-torah-editor-mvp pricing link, קומיט `99d5509f`,
+    כבר ה-HEAD) ו-`core.projects` 17-28 (ללא שינוי מטא-דאטה). כל
+    הפריטים הפתוחים ב-`core.issues` בהיקף (#62/#94/#115/#164/#169/#254)
+    חסומים על הכרעה/גישה חיצונית שכבר תועדה — לא ניתנים לפעולה בסבב
+    זה. סרקתי את `DECISIONS.md` לרשימת עדשות שכבר נסגרו (מיתוג/
+    auth-button 11/11, pricing-link 9/9, skip-to-content 9/9,
+    getPublicOrigin path-prefix 9/9, robots/sitemap/canonical/favicon/
+    manifest/WebSite-JSON-LD 9/9, color-contrast/aria-describedby/
+    aria-label/focus-trap/touch-target — כולן נבדקו ונסגרו) ואימתתי
+    בעצמי (Explore + grep ידני) ששתי עדשות מוצעות חוזרות ריקות כעת:
+    touch-target<24px (0 ממצאים אמיתיים ב-9 האפליקציות) ו-`maximum-
+    scale`/`user-scalable=no` ב-meta viewport (0 ממצאים בכל 9).
+
+    פתחתי עדשה שנפתחה פעם אחת בעבר (סבב 297, רק על 21-mthbram) ולא
+    הושלמה על שאר ההיקף: `dir="ltr"` שעוטף יחד תווית עברית + ערך,
+    במקום לעטוף רק את הערך עצמו — התבנית הנכונה שכבר קיימת בקוד עצמו
+    (`DetailField` ב-22-get-your-rights: `<p>{label}</p><p dir=
+    {dir}>{value}</p>` בשני אלמנטים נפרדים; `GabaiPortal.tsx:1395-1396`
+    ב-24: `<span dir="ltr">{lead.phone}</span>` עוטף רק את המספר).
+    כשתווית עברית (טקסט RTL חזק) ותוכן לועזי חולקים אותו אלמנט
+    `dir="ltr"`, כיוון הפסקה כולה הופך ל-LTR — הבלוק העברי (שמיושר
+    כברירת מחדל ל-`start`, כלומר שמאל תחת `dir="ltr"`) קופץ להתחלה
+    השמאלית של האלמנט, במקום ליישור ימין הרגיל שיש לכל שאר הטקסט
+    בעמוד ה-RTL הסובב — פגם בידי/יישור נראה לעין, לא רק תיאורטי.
+
+    **5 המופעים שנמצאו ואומתו ידנית (לא grep עיוור — כל אחד נקרא
+    בהקשרו המלא לפני תיקון):**
+    - `24-galilee-connect-hub/src/pages/GabaiPortal.tsx:527` —
+      "סיסמה: {hash}" בפאנל ניהול סיסמאות מנהל (טאב גבאי).
+    - `27-bkalut-price/client/src/pages/price-comparison-admin.tsx:732`
+      — "ברקוד: {sub.barcode}" בכרטיס הצעת-מוצר לאישור אדמין.
+    - `27-bkalut-price/client/src/pages/health-funds-admin.tsx:667` —
+      "ת"ז {idNumber} · " בכרטיס ליד-מעבר-קופה אדמין.
+    - `27-bkalut-price/client/src/pages/public-price-comparison.tsx:639`
+      — "ברקוד: {barcode}" בדף ציבורי חי (השוואת מחירים).
+    - `27-bkalut-price/client/src/pages/public-product-compare.tsx:174`
+      — "ברקוד: {barcode}" בדף ציבורי חי (השוואת מוצר).
+
+    **נבדקו ונפסלו (לא תוקנו, לא באג):** `admin-docs.tsx:485`
+    (`<strong>Supabase URL:</strong> <code dir="ltr">{url}</code>` —
+    התווית כבר מחוץ ל-`dir="ltr"`, בתג נפרד — התבנית הנכונה כבר
+    קיימת), ו-`price-comparison-admin.tsx:894` (`<Input dir="ltr">`
+    עם `placeholder` עברי — שדה קלט חד-שורתי לכתובת URL, אין תווית
+    מעורבבת בתוך אותו `dir`, לא הדפוס הבעייתי).
+
+    **התיקון בכל 5:** פיצול לשני אלמנטים — התווית העברית נשארת בלי
+    `dir` (יורשת RTL מהעמוד), והערך בלבד עטוף ב-`<span dir="ltr">`
+    חדש. ב-`health-funds-admin.tsx` נשמר גם המפריד `· ` הקיים מחוץ
+    ל-span הפנימי. אפס שינוי לוגיקה/מבנה DOM מעבר לפיצול הזה —
+    אותו תוכן טקסטואלי, אותם ילדים, רק חלוקה שונה בין שני tags.
+
+    **בדיקות תקינות:** קריאת קוד בלבד (ללא dev-server/build, לפי
+    הנחיות ההרצה). בדיקת איזון סוגריים (Python, `()`/`{}`/`[]`) נקייה
+    על כל 5 הקבצים לפני ואחרי (ללא שינוי במספרים — התיקון תוסף
+    תגית `<span>` מאוזנת). `git diff --stat`: 5 קבצים, +5/-5 — כל
+    שינוי הוא אותה שורה בדיוק, רק פיצול ה-`dir`. הקבצים נופלים תחת
+    `.gitignore` (`/apps/**`) — נדרש `git add -f`. לא הותקנו תלויות
+    ולא הופעל build/dev-server.
+
+    ענף `fix/b-22-whatsapp-noopener-round395-0820` (שרשרת הענפים היא
+    המקור המלא היחיד ל-loop B, לא `main`), נדחף (מפעיל פריסות Vercel
+    תחת `more30.com/galil` ו-`more30.com/mechiron`).
+
+    **הבא בתור:** עדשת ה-`dir="ltr"`-מעורבב נבדקה על 24/27 (ו-21 כבר
+    בעבר, סבב 297); עדיין לא נסרקו לעומק לעדשה הזו: 17/18/19/20/28.
+    נושאים #62/#94/#115/#164/#169/#254 (הכרעות/גישה חיצונית) נשארים
+    חסומים. via cloud server 167.99.131.167 [loop B]

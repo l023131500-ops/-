@@ -664,7 +664,7 @@ export default function HealthFundsAdmin() {
                       <div className="font-medium">{l.fullName}</div>
                       <div className="text-xs text-muted-foreground" dir="ltr">{l.phone}{l.email ? ` · ${l.email}` : ""}</div>
                       <div className="text-xs text-muted-foreground">
-                        {l.idNumber && <span dir="ltr">ת"ז {l.idNumber} · </span>}
+                        {l.idNumber && <span>ת"ז <span dir="ltr">{l.idNumber}</span> · </span>}
                         {l.city && <span>{l.city}</span>}
                         {l.peopleCount && <span> · {l.peopleCount} נפשות</span>}
                       </div>

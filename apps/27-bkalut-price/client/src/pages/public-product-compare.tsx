@@ -171,7 +171,7 @@ export default function PublicProductCompare() {
               <div className="text-sm text-muted-foreground">
                 {[data.product.brand, data.product.unit, data.categoryName].filter(Boolean).join(" · ")}
               </div>
-              <div className="text-xs text-muted-foreground" dir="ltr">ברקוד: {data.barcode}</div>
+              <div className="text-xs text-muted-foreground">ברקוד: <span dir="ltr">{data.barcode}</span></div>
               <div className="flex flex-wrap items-center gap-2 pt-1">
                 <span className="text-xs px-2.5 py-1 rounded-full bg-muted/70 border border-border" data-testid="compare-chaincount">
                   נמכר ב-{data.chainCount} רשתות
