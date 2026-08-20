@@ -7150,3 +7150,61 @@
      שליליים מיותרים), או לחזור ל-`core.project_tasks`/
      `core.project_bugs` לעבודה אחרת בתחום auth/admin/pricing/
      gannenet.
+
+## 20/08/2026 — סבב 131 (loop A)
+
+676. **המשכתי את המלצת #675** (עדשת `tabIndex` שליליים מיותרים).
+     בדקתי `core.run_progress` (סבב 130 האחרון, commit `d6bb6f2e`,
+     תואם HEAD) + `core.project_tasks` (אותם 5 פתוחים: 02/12/13/
+     25/32, עדיין חסומים על סודות חסרים או החלטות מיזוג/origin
+     מחוץ לסמכות הסוכן) + `core.project_bugs` (ריק) — שום דבר חדש
+     בתחום. גם וידאתי ידנית ששני נושאים ספציפיים שהוזכרו בהיקף
+     המשימה — "login-returns-to-landing" ו-"signup hash mismatch"
+     — כבר סגורים (מתועד ב-`SYSTEMS_STATUS.md` ובסבבים קודמים:
+     commit `fb361b5d` לראשון, hash mismatch לא אפשרי מבנית מעל
+     Supabase Auth). פתחתי Explore agent לעדשת `tabIndex` שלילי על
+     אלמנטים אינטראקטיביים (01-07/10-16, דילוג 08/09 מוגן): נמצאו
+     3 מופעי `tabIndex={-1}` על `<button>` ב-`SidebarRail`
+     (04-imud-torani, 12-smel-ndln, 15-egod) — אך אלו קוד-boilerplate
+     זהה ובלתי-משתנה של shadcn/ui (כולל ההערה המקורית על Tailwind
+     v3.4), שבו ה-rail הוא ידית-גרירה עיצובית ויש `SidebarTrigger`
+     נפרד לגמרי נגיש-מקלדת לאותה פעולה בדיוק — לא באג אמיתי, לא
+     תוקן. עדשה זו לא הניבה ממצא אמיתי, כמו כמה עדשות בסבב 129.
+     פתחתי עדשה נוספת שכן הניבה ממצא: `outline-none` בלי סגנון
+     `focus:`/`focus-visible:` מפצה (WCAG 2.4.7, focus visible) —
+     נבדק גם ב-.css גלובליים (אין reset גורף כמו
+     `*:focus{outline:none}`) וגם ב-className inline. רוב המופעים
+     היו boilerplate תקין של shadcn (`command.tsx` ב-3 אפליקציות —
+     input של command-palette, נפתח עם fokus אוטומטי בתוך popover
+     שכבר מודגש ויזואלית, תבנית upstream לא-משתנה — הושאר). ממצא
+     אמיתי אחד: `apps/04-imud-torani/client/src/pages/Editor.tsx:198`
+     — שדה `<input>` עורך את שם הספר בסרגל-העליון של עמוד העריכה
+     (`value={title}`, `onChange`), `className` כלל `outline-none`
+     בלבד, בלי שום תחליף focus — משתמש מקלדת שמגיע לשדה הזה בטאב
+     לא רואה שום סימון שהוא ממוקד.
+677. **התיקון:** הוספתי `focus-visible:ring-2 focus-visible:ring-ring`
+     (וגם `rounded-sm` כדי שהטבעת תיראה תקין) לאותו `className`
+     בשורה 198 — תואם בדיוק לתבנית ה-focus הקיימת כבר באותה
+     אפליקציה (`components/ui/input.tsx` שורה 12:
+     `focus-visible:outline-none focus-visible:ring-2
+     focus-visible:ring-ring`, וגם `ProofreadDept.tsx:156`). אפס
+     שינוי ל-`value`/`onChange`/`data-testid`/`aria-label` הקיימים.
+678. **אפס רגרסיה מאומתת:** `git diff` — קובץ אחד, 1+/1-, שינוי
+     `className` בלבד (הוספת מחלקות focus, לא הוסרה אף מחלקה
+     קיימת). אין `tsc`/`npm` בסביבה הזו — אומת בבדיקת איזון
+     `{}`/`()`/`[]` ב-Python על הקובץ המלא: 128/128, 164/164,
+     29/29 — תואם, וגם `grep` ל-`querySelector`/
+     `getElementsByTagName` בקובץ — אפס תלות בתג/מחלקה שהשתנתה.
+     Commit `44c25181` על `fix/a-icon-only-buttons-round2-0820`,
+     יידחף ל-origin (מפעיל פריסת Vercel תחת more30.com/imud-torani).
+679. **הבא בתור:** עדשות `tabIndex` שלילי ו-`outline-none`/focus-
+     visible נבדקו על כל 01-07/10-16 — ממצא אמיתי יחיד נמצא ותוקן
+     (04). שאר המועמדים היו boilerplate מוכר של shadcn/ui/cmdk
+     (SidebarRail, command-palette input) שלא סוטה מהתבנית
+     upstream ויש להם תחליף נגיש (SidebarTrigger, פוקוס אוטומטי
+     בפתיחת popover) — לא תוקנו. סבב הבא צריך לפתוח עדשה חדשה
+     (ניגודיות צבעים בין טקסט לרקע, `aria-live` על הודעות טעינה/
+     שגיאה דינמיות, או `alt` ריק/חסר על תמונות דקורטיביות מול
+     אינפורמטיביות), או לחזור ל-`core.project_tasks`/
+     `core.project_bugs` לעבודה אחרת בתחום auth/admin/pricing/
+     gannenet.
