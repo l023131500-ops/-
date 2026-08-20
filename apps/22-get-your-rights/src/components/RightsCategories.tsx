@@ -265,7 +265,7 @@ const RightsCategories = () => {
                             animate={{ rotate: expandedCat === cat.id ? 180 : 0 }}
                             transition={{ duration: 0.3 }}
                           >
-                            <ChevronDown className="w-4 h-4 text-primary" />
+                            <ChevronDown className="w-4 h-4 text-primary" aria-hidden="true" />
                           </motion.div>
                         </motion.div>
                       </motion.div>
@@ -373,7 +373,7 @@ const RightsCategories = () => {
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                 <Button variant="outline" onClick={() => setShowAll(!showAll)} className="gap-2 px-8 py-3 rounded-xl text-sm font-bold">
                   <motion.div animate={{ rotate: showAll ? 180 : 0 }} transition={{ duration: 0.3 }}>
-                    <ChevronDown className="w-4 h-4" />
+                    <ChevronDown className="w-4 h-4" aria-hidden="true" />
                   </motion.div>
                   {showAll ? "הצג פחות" : `עוד ${mainCategories.length - INITIAL_VISIBLE} קטגוריות`}
                 </Button>
@@ -416,7 +416,7 @@ const RightsCategories = () => {
             <>
               <DialogHeader>
                 <button onClick={goBackToTopics} className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground mb-2 transition-colors">
-                  <ArrowRight className="w-3 h-3" />חזרה
+                  <ArrowRight className="w-3 h-3" aria-hidden="true" />חזרה
                 </button>
                 <DialogTitle className="text-lg">{selectedTopic.label}</DialogTitle>
                 <DialogDescription>{selectedTopic.desc}</DialogDescription>
@@ -516,7 +516,7 @@ const RightsCategories = () => {
                   <p className="text-sm text-muted-foreground">
                     {serviceChoice === "paid" ? "נציג מיומן ייצור איתך קשר בהקדם לטיפול מלא בזכויותיך." : "קיבלנו את הפרטים. נבדוק ונחזור אליך בהקדם."}
                   </p>
-                  <Button onClick={resetModal} variant="outline" className="gap-2"><ArrowRight className="w-4 h-4" /> חזרה לקטגוריות</Button>
+                  <Button onClick={resetModal} variant="outline" className="gap-2"><ArrowRight className="w-4 h-4" aria-hidden="true" /> חזרה לקטגוריות</Button>
                 </motion.div>
               )}
             </>

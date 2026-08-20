@@ -462,7 +462,7 @@ export default function PublicHealthFunds() {
                           data-testid={`button-hf-expand-${row.id}`}
                           aria-expanded={isOpen}
                         >
-                          <ChevronDown className={`w-4 h-4 shrink-0 text-muted-foreground transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} />
+                          <ChevronDown aria-hidden="true" className={`w-4 h-4 shrink-0 text-muted-foreground transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} />
                           <div className="min-w-0 flex-1">
                             <div className="font-semibold text-base leading-snug truncate" data-testid={`hf-topic-name-${row.id}`}>
                               {row.topic}
@@ -643,7 +643,7 @@ export default function PublicHealthFunds() {
                         aria-expanded={open}
                       >
                         <span className="font-medium text-sm text-foreground">{item.q}</span>
-                        <ChevronDown className={`w-4 h-4 text-muted-foreground shrink-0 transition-transform duration-200 ${open ? "rotate-180" : ""}`} />
+                        <ChevronDown aria-hidden="true" className={`w-4 h-4 text-muted-foreground shrink-0 transition-transform duration-200 ${open ? "rotate-180" : ""}`} />
                       </button>
                       {open && (
                         <div className="px-4 pb-4 pt-0 text-sm text-foreground/90 border-t border-border animate-in fade-in slide-in-from-top-1 duration-200" data-testid={`hf-faq-answer-${i}`}>
@@ -659,7 +659,7 @@ export default function PublicHealthFunds() {
             <div className="pt-2">
               <Link href="/" data-testid="link-hf-back">
                 <a className="text-sm text-primary inline-flex items-center gap-1 hover-elevate rounded-md px-2 py-1">
-                  <ArrowRight className="w-4 h-4" /> חזרה לדף הבית
+                  <ArrowRight className="w-4 h-4" aria-hidden="true" /> חזרה לדף הבית
                 </a>
               </Link>
             </div>
@@ -681,7 +681,7 @@ export default function PublicHealthFunds() {
               <ListChecks className="w-5 h-5 text-primary" />
               איך עוברים קופת חולים? הסבר ברור בשלבים
             </span>
-            <ChevronDown className={`w-5 h-5 text-muted-foreground shrink-0 transition-transform duration-200 ${howToSwitchOpen ? "rotate-180" : ""}`} />
+            <ChevronDown aria-hidden="true" className={`w-5 h-5 text-muted-foreground shrink-0 transition-transform duration-200 ${howToSwitchOpen ? "rotate-180" : ""}`} />
           </button>
           {howToSwitchOpen && (
             <div

@@ -70,7 +70,7 @@ const AskRabbiSection = () => {
           <HelpCircle className="w-6 h-6" />
           שאל את הרב — הרב עוזיאל דיעי שליט"א
           <motion.div animate={{ rotate: isOpen ? 180 : 0 }} transition={{ duration: 0.3 }}>
-            <ChevronDown className="w-5 h-5" />
+            <ChevronDown className="w-5 h-5" aria-hidden="true" />
           </motion.div>
         </motion.button>
 

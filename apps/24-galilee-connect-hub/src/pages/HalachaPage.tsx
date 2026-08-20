@@ -45,7 +45,7 @@ const HalachaPage = () => {
     <div className="min-h-screen bg-background">
       <div className="container py-10 max-w-4xl" dir="rtl">
         <Link to="/" className="inline-flex items-center gap-2 text-primary hover:text-primary/80 font-bold text-sm mb-6 transition-colors">
-          <ArrowRight className="w-4 h-4" /> חזרה לדף הבית
+          <ArrowRight className="w-4 h-4" aria-hidden="true" /> חזרה לדף הבית
         </Link>
 
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-10">

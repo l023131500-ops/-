@@ -88,7 +88,7 @@ const SynagoguePage = () => {
       <div className="container max-w-4xl py-8">
         <div className="flex items-center justify-between mb-8">
           <Link to="/#synagogues" className="flex items-center gap-2 text-primary font-bold hover:underline text-sm">
-            <ArrowRight className="w-4 h-4" /> חזרה לכל בתי הכנסת
+            <ArrowRight className="w-4 h-4" aria-hidden="true" /> חזרה לכל בתי הכנסת
           </Link>
           <Button variant="outline" size="sm" onClick={handleCopyLink} className="gap-2 font-bold">
             {copied ? <><Check className="w-4 h-4 text-primary" /> הועתק!</> : <><Copy className="w-4 h-4" /> העתק קישור</>}

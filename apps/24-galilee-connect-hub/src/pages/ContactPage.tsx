@@ -97,7 +97,7 @@ const ContactPage = () => {
           <h2 className="text-3xl font-display font-black text-foreground mb-3">הפנייה נשלחה בהצלחה!</h2>
           <p className="text-muted-foreground text-lg mb-8">תודה רבה, {name}. הגבאי ייצור איתך קשר בהקדם.</p>
           <Link to="/" className="inline-flex items-center gap-2 bg-gradient-hero text-primary-foreground px-8 py-4 rounded-xl font-display font-bold text-lg hover:shadow-elevated transition-all">
-            <ArrowRight className="w-5 h-5" /> חזרה לאתר הראשי
+            <ArrowRight className="w-5 h-5" aria-hidden="true" /> חזרה לאתר הראשי
           </Link>
         </motion.div>
       </div>
@@ -113,7 +113,7 @@ const ContactPage = () => {
         }} />
         <div className="container relative z-10">
           <Link to="/" className="inline-flex items-center gap-2 text-primary-foreground/70 hover:text-primary-foreground transition-colors mb-6">
-            <ArrowRight className="w-5 h-5" />
+            <ArrowRight className="w-5 h-5" aria-hidden="true" />
             <span className="font-display font-bold">חזרה לאתר</span>
           </Link>
           <div className="flex items-center justify-center gap-6 mb-6">

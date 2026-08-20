@@ -27,7 +27,7 @@ const MikvaotPage = () => {
     <div className="min-h-screen bg-background pt-20">
       <div className="container max-w-5xl py-8">
         <Link to="/" className="inline-flex items-center gap-2 text-primary font-bold hover:underline text-sm mb-6">
-          <ArrowRight className="w-4 h-4" /> חזרה לדף הבית
+          <ArrowRight className="w-4 h-4" aria-hidden="true" /> חזרה לדף הבית
         </Link>
 
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-10">

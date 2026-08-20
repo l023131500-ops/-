@@ -92,7 +92,7 @@ const HeroSection = () => {
           transition={{ opacity: { delay: 1.5 }, y: { duration: 2, repeat: Infinity } }}
           className="mt-14 text-hero-foreground/25"
         >
-          <ChevronDown className="w-7 h-7 mx-auto" />
+          <ChevronDown className="w-7 h-7 mx-auto" aria-hidden="true" />
         </motion.div>
       </div>
     </section>

@@ -58,7 +58,7 @@ const ReligiousInfoPage = () => {
         }} />
         <div className="container flex items-center justify-between relative z-10">
           <Link to="/" className="flex items-center gap-2 text-primary-foreground/70 hover:text-primary-foreground transition-colors">
-            <ArrowRight className="w-5 h-5" /><span className="font-display font-bold text-sm">חזרה לאתר</span>
+            <ArrowRight className="w-5 h-5" aria-hidden="true" /><span className="font-display font-bold text-sm">חזרה לאתר</span>
           </Link>
           <div className="flex items-center gap-3">
             <img src={logoHazor} alt="חצור" className="h-12 rounded-lg" />
@@ -93,7 +93,7 @@ const ReligiousInfoPage = () => {
                   </div>
                   <h3 className="font-display font-black text-foreground">{cat}</h3>
                   <p className="text-xs text-muted-foreground mt-1">{knowledge.filter(k => k.category === cat).length} פריטים</p>
-                  <ChevronDown className={`w-4 h-4 text-muted-foreground mt-2 transition-transform ${selectedCategory === cat ? 'rotate-180' : ''}`} />
+                  <ChevronDown aria-hidden="true" className={`w-4 h-4 text-muted-foreground mt-2 transition-transform ${selectedCategory === cat ? 'rotate-180' : ''}`} />
                 </motion.button>
               ))}
             </div>

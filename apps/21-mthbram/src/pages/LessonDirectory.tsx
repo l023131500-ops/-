@@ -126,7 +126,7 @@ const LessonDirectory = () => {
                 <Filter className="w-4 h-4" />
                 סינון
                 {activeFilters > 0 && <Badge className="bg-teal/20 text-teal text-xs px-1.5">{activeFilters}</Badge>}
-                <ChevronDown className={`w-3 h-3 transition-transform ${showFilters ? "rotate-180" : ""}`} />
+                <ChevronDown aria-hidden="true" className={`w-3 h-3 transition-transform ${showFilters ? "rotate-180" : ""}`} />
               </Button>
               <Link to="/find-lesson">
                 <Button className="bg-gradient-teal text-background font-body font-bold hover:opacity-90 py-6 px-6 whitespace-nowrap gap-2">
@@ -290,7 +290,7 @@ const LessonDirectory = () => {
                     onClick={() => setVisibleCount(prev => prev + LOAD_MORE_COUNT)}
                     className="px-8 py-3 rounded-xl border border-border text-foreground/70 hover:border-primary/30 hover:text-primary font-body font-medium transition-all flex items-center gap-2"
                   >
-                    <ChevronDown className="w-4 h-4" />
+                    <ChevronDown className="w-4 h-4" aria-hidden="true" />
                     עוד שיעורים
                   </motion.button>
                 </div>
