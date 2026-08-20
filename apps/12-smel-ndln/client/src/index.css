@@ -225,6 +225,12 @@
   .dark .gold-text {
     color: hsl(43 58% 62%);
   }
+
+  /* Hero gradient is dark navy in both light and dark theme, unlike .gold-text's
+     light-theme default which assumes a light background. */
+  .gold-text-on-dark {
+    color: hsl(43 58% 62%);
+  }
 }
 
 /**

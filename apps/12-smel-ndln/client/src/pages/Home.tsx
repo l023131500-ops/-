@@ -127,7 +127,7 @@ export default function Home() {
           </div>
           <h1 className="mx-auto max-w-3xl text-3xl font-extrabold leading-tight text-white sm:text-5xl">
             כל מה שצריך לדעת על הנכס
-            <span className="gold-text"> לפני שקונים</span>
+            <span className="gold-text-on-dark"> לפני שקונים</span>
           </h1>
           {/* ⚠️ היה "מחקר נדל״ן חכם וברור ... ותובנות אמיתיות על השכונה, במקום
               אחד". שלושה סימנים באותה פסקה: תואר ריק ("חכם וברור"), תואר
