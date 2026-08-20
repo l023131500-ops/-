@@ -153,7 +153,7 @@ const PortalSettingsTab = ({ portalId, portalType, portalData, onUpdate }: Porta
       setSelectedPreset(presetId);
       toast.success("רקע נבחר!");
       onUpdate({ ...portalData, background_preset: presetId, custom_background_url: "" });
-    }
+    } else toast.error("שגיאה בשמירה");
   };
 
   const saveFontColor = async (color: string) => {
@@ -162,7 +162,7 @@ const PortalSettingsTab = ({ portalId, portalType, portalData, onUpdate }: Porta
     if (!error) {
       toast.success(color === "light" ? "גופן בהיר נבחר" : "גופן כהה נבחר");
       onUpdate({ ...portalData, font_color: color });
-    }
+    } else toast.error("שגיאה בשמירה");
   };
 
   const saveDonationSettings = async () => {
@@ -231,7 +231,7 @@ const PortalSettingsTab = ({ portalId, portalType, portalData, onUpdate }: Porta
     if (!error) {
       setPhotos(prev => prev.filter(p => p.id !== photoId));
       toast.success("תמונה נמחקה");
-    }
+    } else toast.error("שגיאה במחיקה");
   };
 
   return (
