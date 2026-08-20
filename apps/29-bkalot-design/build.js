@@ -21,11 +21,22 @@ const push = (name, val) => rootVars.push(`  --${name}: ${val};`);
 for (const grp of ["brand", "surface", "text", "semantic"]) {
   for (const [k, o] of Object.entries(tokens.color[grp])) push(k, o.value);
 }
-push("font-body", tokens.font.body.value);
-push("font-heading", tokens.font.heading.value);
+for (const [k, o] of Object.entries(tokens.font)) {
+  if (k === "google") continue;
+  push(`font-${k}`, o.value);
+}
 for (const [k, o] of Object.entries(tokens.size)) push(k, o.value);
 push("shadow", tokens.shadow.shadow.value);
 push("shadow-lg", tokens.shadow["shadow-lg"].value);
+
+/* ---- background tokens (gradients + patterns) ---- */
+if (tokens.background) {
+  for (const sub of ["gradient", "pattern"]) {
+    const g = tokens.background[sub];
+    if (!g) continue;
+    for (const [k, o] of Object.entries(g)) push(`bg-${sub}-${k}`, o.value);
+  }
+}
 
 /* ---- component tokens (table + form) as CSS vars ---- */
 if (tokens.component) {
@@ -119,6 +130,23 @@ a{color:var(--teal);text-decoration:none;transition:color .18s}
 .bk-input--error:focus,.bk-textarea--error:focus{box-shadow:0 0 0 3px rgba(178,59,46,.16)}
 .bk-help{font-size:.78rem;color:var(--muted)}
 .bk-help--error{color:var(--must)}
+
+/* ---- Font variants (bk-font-*) — כל הפונטים הנוספים, זמינים כשכבה על כל אלמנט ---- */
+.bk-font-body{font-family:var(--font-body)}
+.bk-font-heading{font-family:var(--font-heading)}
+.bk-font-display{font-family:var(--font-display)}
+.bk-font-formal{font-family:var(--font-formal)}
+.bk-font-modern{font-family:var(--font-modern)}
+.bk-font-friendly{font-family:var(--font-friendly)}
+.bk-font-alt-body{font-family:var(--font-alt-body)}
+
+/* ---- Backgrounds (bk-bg-*) — גרדיאנטים לקטעי הירו/כותרת + טקסטורות עדינות למשטחים ---- */
+.bk-bg-brand{background:var(--bg-gradient-brand);color:#fff}
+.bk-bg-hero{background:var(--bg-gradient-hero);color:#fff}
+.bk-bg-gold{background:var(--bg-gradient-gold);color:#fff}
+.bk-bg-subtle{background:var(--bg-gradient-subtle)}
+.bk-bg-dots{background-image:var(--bg-pattern-dots);background-color:var(--surface)}
+.bk-bg-grid{background-image:var(--bg-pattern-grid);background-color:var(--surface)}
 `;
 
 fs.writeFileSync(path.join(ROOT, "bkalot-theme.css"), css, "utf8");

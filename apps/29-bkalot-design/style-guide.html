@@ -26,6 +26,8 @@
   .badge-row{display:flex;gap:12px;flex-wrap:wrap}
   .card-demo{max-width:420px}
   .theme-toggle{position:fixed;top:16px;left:16px;z-index:9}
+  .bg-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px}
+  .bg-demo{height:110px;border-radius:var(--radius-sm);border:1px solid var(--border);display:flex;align-items:flex-end;padding:12px;font-weight:700;font-size:.85rem}
   code{background:var(--surface-2);padding:2px 7px;border-radius:6px;font-size:.85rem;direction:ltr;display:inline-block}
 </style>
 </head>
@@ -67,6 +69,29 @@
     <div class="type-row"><div class="lbl">כותרת משנה · Frank Ruhl Libre 700</div><h2>מאגר הזכויות וההטבות</h2></div>
     <div class="type-row"><div class="lbl">כותרת סעיף · Frank Ruhl Libre 600</div><h3>איך זה עובד</h3></div>
     <div class="type-row"><div class="lbl">גוף הטקסט · Heebo 400</div><p>מלאו שאלון קצר — והמערכת תבנה עבורכם רשימת המלצות מותאמת אישית לפי המצב המשפחתי, ההכנסה והבריאות שלכם.</p></div>
+  </section>
+
+  <section>
+    <h2>פונטים נוספים (bk-font-*)</h2>
+    <p class="desc">מעבר לזוג ברירת המחדל (Heebo + Frank Ruhl Libre) — חמישה פונטים נוספים לשימוש נקודתי, כל אחד עם תפקיד ברור. הוסיפו את המחלקה לכל אלמנט.</p>
+    <div class="type-row"><div class="lbl">bk-font-display · Suez One — כותרות-ענק / הירו / באנרים</div><p class="bk-font-display" style="font-size:2rem">בקלות מקבלים את המגיע לכם</p></div>
+    <div class="type-row"><div class="lbl">bk-font-formal · David Libre — מסמכים / מכתבים / חוזים</div><p class="bk-font-formal" style="font-size:1.15rem">לכבוד: ישראל ישראלי, הנדון: אישור זכאות למענק עבודה</p></div>
+    <div class="type-row"><div class="lbl">bk-font-modern · Rubik — דשבורדים / אפליקציות</div><p class="bk-font-modern" style="font-size:1.15rem">סטטוס בקשה: בטיפול · עדכון אחרון: היום</p></div>
+    <div class="type-row"><div class="lbl">bk-font-friendly · Varela Round — אזור לקוח / הודעות</div><p class="bk-font-friendly" style="font-size:1.15rem">שלום! מצאנו עבורך 3 זכויות חדשות השבוע 🎉</p></div>
+    <div class="type-row"><div class="lbl">bk-font-alt-body · Assistant — חלופת גוף קלילה</div><p class="bk-font-alt-body">חלופה קלילה יותר ל-Heebo, לשימוש בטקסטים ארוכים או תוכן שיווקי.</p></div>
+  </section>
+
+  <section>
+    <h2>רקעים (bk-bg-*)</h2>
+    <p class="desc">גרדיאנטים לקטעי הירו/כותרת + טקסטורות עדינות למשטחים. כולם בנויים ממשתני הצבע הקיימים — מתאימים אוטומטית גם למצב כהה.</p>
+    <div class="bg-grid">
+      <div class="bg-demo bk-bg-brand"><span>bk-bg-brand</span></div>
+      <div class="bg-demo bk-bg-hero"><span>bk-bg-hero</span></div>
+      <div class="bg-demo bk-bg-gold"><span>bk-bg-gold</span></div>
+      <div class="bg-demo bk-bg-subtle" style="color:var(--text)"><span>bk-bg-subtle</span></div>
+      <div class="bg-demo bk-bg-dots" style="color:var(--text)"><span>bk-bg-dots</span></div>
+      <div class="bg-demo bk-bg-grid" style="color:var(--text)"><span>bk-bg-grid</span></div>
+    </div>
   </section>
 
   <section>
