@@ -154,6 +154,35 @@ export const appendUploadedDocument = createServerFn({ method: "POST" })
     return { ok: true, document: toUploadedDocument(inserted[0] as DocumentRow) };
   });
 
+export const getDocumentDownloadUrl = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: { id: string }) => z.object({ id: z.string().uuid() }).parse(d))
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context as any;
+
+    const { data: target, error: readErr } = await supabase
+      .from("documents")
+      .select("id, storage_path")
+      .eq("id", data.id)
+      .eq("owner_client_id", userId)
+      .maybeSingle();
+    if (readErr) throw new Error(readErr.message);
+    if (!target) throw new Error("המסמך לא נמצא או שאין הרשאה לצפות בו.");
+
+    if (!target.storage_path.startsWith(`${userId}/`)) {
+      throw new Error("Invalid storage path");
+    }
+
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: signed, error: signErr } = await supabaseAdmin.storage
+      .from("client-documents")
+      .createSignedUrl(target.storage_path, 60);
+    if (signErr) throw new Error(signErr.message);
+    if (!signed?.signedUrl) throw new Error("יצירת קישור להורדה נכשלה.");
+
+    return { ok: true, url: signed.signedUrl };
+  });
+
 export const removeUploadedDocument = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: { id: string }) => z.object({ id: z.string().uuid() }).parse(d))

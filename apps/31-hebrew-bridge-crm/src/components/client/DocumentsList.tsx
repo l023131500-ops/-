@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { FileText, Image as ImageIcon, Trash2, Loader2 } from "lucide-react";
+import { FileText, Image as ImageIcon, Trash2, Loader2, Download } from "lucide-react";
 import { toast } from "sonner";
 import {
   removeUploadedDocument,
+  getDocumentDownloadUrl,
   DOCUMENT_CATEGORIES,
   type UploadedDocument,
 } from "@/lib/client.functions";
@@ -57,7 +58,9 @@ function FileTypeIcon({ mime }: { mime: string }) {
 export function DocumentsList({ documents }: { documents: UploadedDocument[] }) {
   const qc = useQueryClient();
   const removeFn = useServerFn(removeUploadedDocument);
+  const downloadUrlFn = useServerFn(getDocumentDownloadUrl);
   const [pendingDelete, setPendingDelete] = useState<UploadedDocument | null>(null);
+  const [downloadingId, setDownloadingId] = useState<string | null>(null);
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => removeFn({ data: { id } }),
@@ -67,6 +70,19 @@ export function DocumentsList({ documents }: { documents: UploadedDocument[] }) 
     },
     onError: (e: Error) => toast.error(e.message || "שגיאה במחיקת המסמך"),
     onSettled: () => setPendingDelete(null),
+  });
+
+  const downloadMutation = useMutation({
+    mutationFn: async (id: string) => {
+      setDownloadingId(id);
+      const res = await downloadUrlFn({ data: { id } });
+      return res.url;
+    },
+    onSuccess: (url) => {
+      window.open(url, "_blank", "noopener,noreferrer");
+    },
+    onError: (e: Error) => toast.error(e.message || "שגיאה בפתיחת המסמך"),
+    onSettled: () => setDownloadingId(null),
   });
 
   if (documents.length === 0) {
@@ -99,6 +115,19 @@ export function DocumentsList({ documents }: { documents: UploadedDocument[] }) 
               </Badge>
             )}
             <StatusBadge status={doc.status} />
+            <Button
+              variant="ghost"
+              size="icon"
+              aria-label="הורדת מסמך"
+              onClick={() => downloadMutation.mutate(doc.id)}
+              disabled={downloadingId === doc.id}
+            >
+              {downloadingId === doc.id ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Download className="h-4 w-4 text-primary" />
+              )}
+            </Button>
             <Button
               variant="ghost"
               size="icon"
