@@ -112,7 +112,7 @@
       method: "PATCH",
       headers: headers({ "Prefer": "return=minimal" }),
       body: JSON.stringify({ status: status })
-    }).then(function (r) { return { ok: r.ok }; });
+    }).then(function (r) { return { ok: r.ok }; }).catch(function () { return { ok: false }; });
   }
 
   // Admin: delete a lead.
@@ -125,7 +125,7 @@
     return fetch(restBase + "?id=eq." + encodeURIComponent(id), {
       method: "DELETE",
       headers: headers({ "Prefer": "return=minimal" })
-    }).then(function (r) { return { ok: r.ok }; });
+    }).then(function (r) { return { ok: r.ok }; }).catch(function () { return { ok: false }; });
   }
 
   window.LeadsStore = {
