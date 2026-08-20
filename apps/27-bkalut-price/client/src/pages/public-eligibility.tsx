@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import type { PublicRightRow, MetaResponse } from "@shared/schema";
@@ -57,6 +57,7 @@ export default function PublicEligibility() {
   const [category, setCategory] = useState<string | null>(null);
   const [exactStateOpen, setExactStateOpen] = useState(false);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const exactStateTriggerRef = useRef<HTMLElement | null>(null);
 
   const { data: paramsTopics } = useQuery<PublicParamsTopicsResponse>({
     queryKey: ["/api/public/params-topics"],
@@ -91,11 +92,15 @@ export default function PublicEligibility() {
 
   useEffect(() => {
     if (!exactStateOpen) return;
+    exactStateTriggerRef.current = document.activeElement as HTMLElement;
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") setExactStateOpen(false);
     };
     window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      exactStateTriggerRef.current?.focus?.();
+    };
   }, [exactStateOpen]);
 
   return (

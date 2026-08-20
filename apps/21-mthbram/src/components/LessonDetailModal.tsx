@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { X, MapPin, Clock, Phone, Mail, ExternalLink, Video, Radio, Users, BookOpen, Share2, Download, Globe, Mic, Image } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { downloadLessonAsImage, type LessonImageOptions } from "@/lib/lessonImageExport";
 
@@ -13,6 +13,21 @@ interface LessonDetailModalProps {
 
 const LessonDetailModal = ({ lesson, onClose, imageOptions }: LessonDetailModalProps) => {
   const [showContact, setShowContact] = useState(false);
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
+  const triggerRef = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    triggerRef.current = document.activeElement as HTMLElement;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onCloseRef.current();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      triggerRef.current?.focus?.();
+    };
+  }, []);
 
   if (!lesson) return null;
 

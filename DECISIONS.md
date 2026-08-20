@@ -4203,3 +4203,54 @@
     27-public-eligibility, ואולי 28-TopicCard/SmartAdvisor אם
     ייחשבו modal ולא רק כרטיס-הרחבה) -- סבב הבא יכול להמשיך שם, או
     לפתוח עדשה חדשה (ניגודיות צבעים, `lang`/`dir` חסר) על פני 17-31.
+
+## 20/08/2026 — סבב 294 (loop B)
+
+294. **סגרתי את עדשת ה-focus-return מסבב 293: מתוך 5 המועמדים
+    שהסוכן דירג, רק שניים התבררו כ-modal אמיתיים הזקוקים לתיקון --
+    השאר false positives.** קראתי README.md/CONNECTIONS.md, בדקתי
+    `core.run_progress` (הצעד האחרון: 21-mthbram FloatingChatBot/
+    Navbar focus-return, קומיטים `3d6e9914`/`3a07bac5`, כבר ה-parent
+    של הענף הזה, כבר נדחף) ו-`core.projects` 17-31 (ללא צורך בשינוי
+    metadata). **אימתתי בעצמי את חמשת המועמדים בקריאה מלאה:**
+    `24-AskRabbiSection.tsx` ו-`24-ServiceRequestForm.tsx` --
+    אקורדיון פנימי בעמוד (`height`/`opacity` animate, בלי
+    `fixed`/backdrop), נפתח וגם נסגר **מאותו כפתור-toggle בדיוק**
+    (אין X נפרד/Escape רלוונטי) -- focus כבר לא זז מהכפתור בין
+    פתיחה לסגירה, אין בעיה אמיתית. `28-TopicCard.tsx` ו-
+    `28-SmartAdvisor.tsx` -- אותו דפוס בדיוק (accordion פנימי,
+    כפתור-toggle יחיד). ארבעתם **לא** modal/overlay אמיתי -- סוכן
+    ה-Explore מסבב 293 סיווג אותם לא נכון כמועמדים; מתועד כאן כדי
+    שסבב עתידי לא ינסה שוב. **`21-LessonDetailModal.tsx`** התברר
+    כאמיתי וגרוע מהצפוי: לא רק חסר focus-return -- **חסר גם Escape
+    לגמרי** (נפתח/נסגר על ידי 3 הורים שונים דרך
+    `{selected && <LessonDetailModal .../>}`: `FindLesson.tsx`,
+    `FeaturedLessons.tsx`, `LessonsDashboard.tsx`, ועוד מוזכר ב-
+    `PublicOrgPage.tsx`/`AdminDashboard.tsx`/`PublicRabbiPage.tsx`/
+    `LessonDirectory.tsx`/`UpcomingLessonsCarousel.tsx`). **התיקון:**
+    במקום לגעת בכל הורה בנפרד, הוספתי את הלוגיקה **בתוך הרכיב
+    עצמו** -- `useRef<HTMLElement | null>` שלוכד את `document.
+    activeElement` ב-`useEffect` עם `[]` (רץ פעם אחת ב-mount, מדויק
+    כי ההורים ממששים/מבטלים mount של הרכיב על בסיס state, לא
+    מחליפים prop על רכיב קבוע), מאזין ל-`keydown`/`Escape` שקורא
+    ל-`onClose` דרך `useRef` (כדי לא ליצור תלות לא-יציבה ב-callback
+    inline מההורה), ומחזיר focus לאלמנט הלכוד ב-cleanup (שרץ גם
+    ב-unmount וגם ב-Escape/backdrop-click/X-click, כי כולם עוברים
+    דרך אותו `onClose`). מכסה בבת אחת את כל 8 קריאות ה-import.
+    **`27-public-eligibility.tsx`** -- ה-Escape כבר היה קיים מסבב
+    292; הוספתי רק `exactStateTriggerRef` שלוכד `document.
+    activeElement` כשה-modal נפתח ומחזיר אליו focus ב-cleanup
+    (מכסה Escape + לחיצת רקע + כפתור X + בחירת פריט-מצב, כי כולם
+    קוראים ל-`setExactStateOpen(false)` וה-`useEffect` תלוי ב-
+    `[exactStateOpen]`). אפס שינוי בלוגיקת שיעורים/חיפוש/סינון.
+    אין `node_modules`/`tsc` בעץ הזה -- אימתתי איזון סוגריים/
+    מסולסלים/מרובעים בסקריפט Node קצר על שני הקבצים (0/0/0) בנוסף
+    לקריאה חוזרת מלאה של שני ה-diff. קומיט על ענף חדש
+    `fix/b-focus-return-batch2-0820` (יורש `fix/b-mthbram-modal-
+    focus-return-0820`), יידחף (מפעיל פריסות Vercel תחת נתיבי
+    21/27 המקבילים). **הבא בתור:** עדשת ה-focus-return/Escape על
+    modal מותאם-אישית נראית כעת ממוצה על פני 17-31 (הבדלה בין
+    modal אמיתי לבין accordion פנימי תועדה כאן למניעת false-positive
+    חוזר). סבב הבא יכול לפתוח עדשה חדשה (ניגודיות צבעים, `lang`/
+    `dir` חסר על אלמנטים מעורבי-שפה, `aria-expanded` חסר על כפתורי
+    accordion שזוהו בסבב הזה) על פני 17-31.
