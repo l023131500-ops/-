@@ -247,7 +247,7 @@ function openLeadForm(context) {
       <div class="lead-field"><label for="lf_email">אימייל</label><input type="email" id="lf_email" autocomplete="email" inputmode="email" placeholder="name@example.com (אופציונלי)"></div>
       <label class="lead-consent"><input type="checkbox" id="lf_consent" checked> אני מאשר/ת שצוות בקלות ייצור איתי קשר עם המידע והתזכורת</label>
       <button type="submit" class="btn-primary lead-submit">שלחו לי את הפרטים והתזכורת ←</button>
-      <div id="lf_msg" class="lead-msg"></div>
+      <div id="lf_msg" class="lead-msg" role="alert" aria-live="assertive"></div>
     </form>`;
   document.getElementById('leadModal').classList.remove('hidden');
 
