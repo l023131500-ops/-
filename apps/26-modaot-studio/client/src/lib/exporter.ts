@@ -62,6 +62,21 @@ function cssBlendMode(blend: string): string | null {
   return known.has(blend) ? blend : null;
 }
 
+// כיוון-בסיס לפי התו החזק הראשון (כמו dir="auto" ב-HTML) — עברית -> rtl,
+// לטינית -> ltr, בלי תו חזק (מספרים/סימנים בלבד/ריק) נשאר rtl כברירת המחדל
+// המקורית. ה-Stage החי (Konva/Canvas2D, ר' CanvasStage.tsx) לא כופה כיוון
+// בכלל ומסתמך על אלגוריתם ה-bidi הטבעי של הדפדפן; ה-SVG הזה חייב direction
+// מפורש כי אין ברירת מחדל שקולה בפורמט SVG, ולכן צריך להתאים אותו לתוכן
+// בפועל כדי לא לסתור את מה שהמשתמש רואה ומעצב בפועל (למשל שכבת קריאה-לפעולה
+// באנגלית בלבד, מחיר, טלפון, כתובת אתר — נפוצים במודעות).
+function baseTextDirection(text: string): "rtl" | "ltr" {
+  for (const ch of text) {
+    if (/[֐-׿]/.test(ch)) return "rtl";
+    if (/[A-Za-z]/.test(ch)) return "ltr";
+  }
+  return "rtl";
+}
+
 function textNodeToSVG(l: TextLayer): string {
   const anchor = l.align === "right" ? "end" : l.align === "left" ? "start" : "middle";
   const tx = l.align === "right" ? l.x + l.width : l.align === "left" ? l.x : l.x + l.width / 2;
@@ -76,10 +91,11 @@ function textNodeToSVG(l: TextLayer): string {
   const weight = (l.fontWeight ?? (l.fontStyle?.includes("bold") ? 700 : 400)) || 400;
   const italic = l.fontStyle?.includes("italic") ? "italic" : "normal";
   const stroke = l.stroke ? `stroke="${esc(l.stroke)}" stroke-width="${l.strokeWidth ?? 1}"` : "";
+  const direction = baseTextDirection(l.text || "");
   const tspans = lines
     .map((line, i) => `<tspan x="${tx}" y="${startY + i * lh}">${esc(line)}</tspan>`)
     .join("");
-  return `<text ${commonAttrs(l)} font-family="${esc(l.fontFamily)}" font-size="${l.fontSize}" font-weight="${weight}" font-style="${italic}" fill="${esc(l.fill)}" ${stroke} text-anchor="${anchor}" direction="rtl" letter-spacing="${l.letterSpacing ?? 0}" data-layer-id="${esc(l.id)}">${tspans}</text>`;
+  return `<text ${commonAttrs(l)} font-family="${esc(l.fontFamily)}" font-size="${l.fontSize}" font-weight="${weight}" font-style="${italic}" fill="${esc(l.fill)}" ${stroke} text-anchor="${anchor}" direction="${direction}" letter-spacing="${l.letterSpacing ?? 0}" data-layer-id="${esc(l.id)}">${tspans}</text>`;
 }
 
 function imageNodeToSVG(l: ImageLayer, idx: number): string {
