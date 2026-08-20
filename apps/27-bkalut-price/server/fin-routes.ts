@@ -18,6 +18,16 @@ function monthQueryParam(req: Request): string {
   return String(single || new Date().toISOString().slice(0, 7));
 }
 
+// Same array-vs-string pitfall as monthQueryParam: a repeated ?from=/?to= produces an
+// array, and String(array) silently joins it into a comma-separated value that still
+// looks like a valid ISO date string but breaks the "<"/">" comparisons in
+// listTransactions() instead of throwing.
+function singleQueryParam(req: Request, key: string): string | undefined {
+  const raw = req.query[key];
+  const single = Array.isArray(raw) ? raw[0] : raw;
+  return single ? String(single) : undefined;
+}
+
 async function requireUser(req: UserRequest, res: Response, next: NextFunction) {
   const header = req.header("authorization");
   const token = header?.match(/^Bearer\s+(.+)$/i)?.[1];
@@ -197,8 +207,8 @@ export function registerFinancialRoutes(app: Express) {
 
   // ----- Transactions -----
   app.get("/api/financial/clients/:clientId/transactions", requireAdmin, async (req, res) => {
-    const from = req.query.from ? String(req.query.from) : undefined;
-    const to = req.query.to ? String(req.query.to) : undefined;
+    const from = singleQueryParam(req, "from");
+    const to = singleQueryParam(req, "to");
     res.json(finStorage.listTransactions(Number(req.params.clientId), { from, to }));
   });
   app.post("/api/financial/transactions", requireAdmin, async (req, res) => {
