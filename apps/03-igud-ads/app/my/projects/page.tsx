@@ -28,6 +28,7 @@ export default function MyProjectsPage() {
       <h1 className="text-2xl font-serif font-bold text-brand-blue mb-2">המודעות שלי</h1>
       <p className="text-sm text-gray-600 mb-6">כל המודעות שיצרת במערכת</p>
 
+      <div aria-live="polite">
       {loading ? (
         <div className="text-gray-500">טוען...</div>
       ) : projects.length === 0 ? (
@@ -64,6 +65,7 @@ export default function MyProjectsPage() {
           ))}
         </div>
       )}
+      </div>
     </div>
   );
 }

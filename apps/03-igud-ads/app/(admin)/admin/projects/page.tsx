@@ -132,7 +132,7 @@ export default function ProjectsAdmin() {
       </div>
 
       {/* Table */}
-      <div className="bg-surface rounded-xl border overflow-x-auto">
+      <div className="bg-surface rounded-xl border overflow-x-auto" aria-live="polite">
         {loading ? (
           <div className="p-8 text-center text-gray-400">טוען...</div>
         ) : (

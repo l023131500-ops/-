@@ -27,6 +27,7 @@ export default function MyTranscriptsPage() {
       <h1 className="text-2xl font-serif font-bold text-brand-blue mb-2">התמלולים שלי</h1>
       <p className="text-sm text-gray-600 mb-6">כל ההעלאות והתמלולים שביצעת</p>
 
+      <div aria-live="polite">
       {loading ? (
         <div className="text-gray-500">טוען...</div>
       ) : uploads.length === 0 ? (
@@ -60,6 +61,7 @@ export default function MyTranscriptsPage() {
           ))}
         </div>
       )}
+      </div>
     </div>
   );
 }

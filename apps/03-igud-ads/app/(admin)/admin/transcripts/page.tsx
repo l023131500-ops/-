@@ -89,7 +89,7 @@ export default function TranscriptsAdmin() {
     <div dir="rtl">
       <h1 className="font-serif text-2xl font-bold text-brand-dark mb-6">ניהול תמלולים</h1>
 
-      <div className="bg-surface rounded-xl border overflow-x-auto">
+      <div className="bg-surface rounded-xl border overflow-x-auto" aria-live="polite">
         {loading ? (
           <div className="p-8 text-center text-gray-400">טוען...</div>
         ) : (
