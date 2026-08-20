@@ -3431,3 +3431,47 @@
     מערכת/זווית שלא נבדקה עדיין -- למשל 21-mthbram (רק silent-write-fail
     נבדק, לא race/XSS) או חזרה ל-17-chizukim-transcribe עם עדשת race-
     condition (לא נבדק עדיין מהזווית הזו).
+
+## 20/08/2026 — סבב 50
+
+266. **לופ B, סבב חדש -- קראתי README/CONNECTIONS, בדקתי `core.run_progress`**
+    (הצעד האחרון: 19-igud-shiurim-portal duplicate-submit, קומיטים
+    `1833505c`/`c86d1377`, כבר ה-parent של הענף הזה, כבר נדחף) ו-`core.issues`
+    הפתוחים בהיקף 17-31 -- שום ממצא agent-actionable חדש (`owner='agent'`
+    הפתוח היחיד, #242, עדיין חסום על אותה סיבה מתועדת). פעלתי לפי ההצעה
+    מסוף סבב 49: הרצתי סוכן Explore על 21-mthbram (רק silent-write-fail
+    נבדק בעבר, #246-250 -- לא race/XSS) לחפש submit כפול בלי נטרול כפתור
+    ו-XSS דרך innerHTML לא-מסונן.
+267. **חזר עם 13 ממצאי race אמיתיים, אפס XSS** (ה-`dangerouslySetInnerHTML`
+    היחיד ב-`chart.tsx` מזריק רק CSS קבוע מתצורת ה-theme, לא תוכן משתמש --
+    אומת ונדחה). ה-13: `ContactSection.handleSubmit` (טופס יצירת-קשר
+    ציבורי), `RabbiPortal.saveEdit`/`addLesson`, `OrgPortal.addRabbi`/
+    `saveEdit`/`addLesson` (לוחות ניהול פרטיים), `BulkLessonTable.
+    handleSend`/`handleSendAll`, `StudyDayEventTable.handleSend`/
+    `handleSendAll` (טבלאות ניהול-המוני), `NedarimManagement.
+    publishToLessons`, ו-`PortalSettingsTab.saveAbout`/`saveContactInfo`/
+    `saveCustomSections` (טאב הגדרות פורטל) -- כולם קוראים ל-Supabase
+    insert/update בלי לנטרל את הכפתור, כך שדאבל-קליק/דאבל-טאפ מפעיל את
+    הפעולה פעמיים (שורת פנייה כפולה, שיעור כפול, עדכון כפול). אימתתי מול
+    תקדים קיים באותו ריפו עצמו: `TeachersLanding`/`RequestLesson`/
+    `UpdateLesson`/`BulkUpload` כבר משתמשים ב-state `submitting`/`cSending`
+    ומנטרלים את הכפתור -- ה-13 שנמצאו הם היחידים שלא, אותו דפוס בדיוק
+    כמו 19-igud-shiurim-portal בסבב הקודם (#264-265).
+268. **התיקון**: הוספתי state נפרד לכל פונקציה (או `Set<string>` של
+    id-ים pending בטבלאות עם שורות מרובות, כדי לא לנטרל שורות אחרות
+    בזמן פעולה על שורה אחת) עם `if (state) return; setState(true); try {
+    ... } finally { setState(false); }`, וקישרתי `disabled={state}` +
+    טקסט "...שולח/שומר/מוסיף" לכפתור המתאים -- זהה במבנה לתקדים הקיים.
+    אפס שינוי לזרימת ההצלחה הרגילה בכל 13 המקומות. אומת בקריאה חוזרת
+    מלאה (`git diff`) של כל שבעת הקבצים שנערכו, כולל השוואת בדיקת איזון
+    סוגריים תוכנית מול הגרסה המקורית מ-git (כדי לוודא שממצאי "unclosed"
+    מהבודק הפשוט שלי הם false-positive קיים-מראש בקוד המקורי, לא משהו
+    שהתיקון הכניס). אין `node_modules`/`tsc` זמינים בעץ הזה. נדרש
+    `git add -f` (`apps/21-mthbram/src` מוחרג כברירת מחדל ב-gitignore,
+    אותו דפוס חוזר מכל סבב קודם שנגע בנתיבים האלה). קומיט `29ae4b35` על
+    `fix/b-mthbram-duplicate-submit-0820`, יידחף (מפעיל פריסת Vercel
+    תחת הנתיב הממופה ל-21, `more30.com/mthbram`). **הבא בתור:** הסבב
+    הבא צריך לפתוח בסריקת Explore טרייה על מערכת/זווית שלא נבדקה עדיין
+    -- למשל חזרה ל-17-chizukim-transcribe עם עדשת race-condition, או
+    22-get-your-rights/24-galilee-connect-hub/31-hebrew-bridge-crm עם
+    אותה עדשה (רק silent-write-fail נבדק בהם עד כה).
