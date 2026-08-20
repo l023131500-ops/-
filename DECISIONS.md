@@ -8649,3 +8649,64 @@
     לאימות רענן, או בדיקת prefers-reduced-motion על אנימציות
     framer-motion קיימות (נגישות תנועה).
     via cloud server 167.99.131.167 [loop B]
+
+## 20/08/2026 — סבב 400 (loop B)
+
+400. **בדיקת `<html lang>` עקבי (מוצע בסוף סבב 399): נבדקו כל 9 נקודות
+    הכניסה (index.html/layout.tsx) בכל 7 האפליקציות החיות, כולל שני
+    עמודי השיווק הנפרדים ב-27-bkalut-price
+    (`public/marketing/{financial,bkalut}/index.html`). **נקי** — כולן
+    מצהירות `lang="he" dir="rtl"` בעקביות, ותוכנן בפועל עברית ב-100%
+    (כותרות, meta description, og:title/description). אין ממצא.
+
+    עברתי לעדשה השנייה שהוצעה: `prefers-reduced-motion` על אנימציות
+    framer-motion. מיפוי שימוש: 21-mthbram (58 קבצים), 24-galilee-
+    connect-hub (28), 22-get-your-rights (13), 28-kupot-health-funds
+    (3) — 17/18/27 לא משתמשות בספרייה כלל. חיפוש `repeat: Infinity`
+    גילה **ממצא אמיתי בהיקף רחב**: ~35 אנימציות לולאה-אינסופית
+    (ספינרים, "בלובים" ברקע ה-hero, טיקרים נעים, פעימות דקורטיביות)
+    פרושות על פני 21/22/24, שאף אחת מהן לא כיבדה את הגדרת
+    prefers-reduced-motion של מערכת ההפעלה — למעט חריג אחד ב-
+    22-get-your-rights (`useDecorativeMotion` hook, שנוסף בסבב קודם
+    ומכסה רק את `FloatingElements`, לא את שאר 12 המופעים באותה
+    אפליקציה). מדיה-קוורי CSS גרידא לא היה עוזר כאן: framer-motion
+    כותב `transform`/`opacity` inline בכל פריים דרך `requestAnimationFrame`,
+    לא דרך CSS animation/transition, ולכן `animation-duration: 0.01ms`
+    ב-CSS לא עוצר את הלולאה.
+
+    הפתרון שנבחר: `<MotionConfig reducedMotion="user">` (API מובנה
+    של framer-motion עצמה, זמין מגרסה 6+ — ב-3 האפליקציות מותקנת
+    12.34-12.35) שנוסף כעטיפה יחידה סביב שורש כל אפליקציה
+    (`App.tsx`, מסביב ל-`TooltipProvider`/`BrowserRouter`), במקום
+    לגעת בכל אחד מ-~35 מופעי האנימציה בנפרד — כשההגדרה במערכת
+    ההפעלה פעילה, כל `motion.*` מתחת לעטיפה קופץ ישר למצב הסופי שלו
+    במקום ללולאה, כולל בדיוק המופעים ש-`useDecorativeMotion` לא כיסתה.
+    זו תוספת נטו (3 קבצים, 22+/0-), לא נגעה בלוגיקת האנימציות עצמן
+    ולא בהוק הקיים ב-22 (שממשיך לפעול לצידה, ללא התנגשות — נבדק שאין
+    ייבוא/שימוש קודם ב-`MotionConfig`/`LazyMotion` בשום קובץ אחר).
+    28-kupot-health-funds נבדקה בנפרד: 3 קבצים בלבד עם framer-motion,
+    ואף לא אחד עם `repeat: Infinity` (רק מעברי כניסה/יציאה חד-פעמיים)
+    — אין ממצא, לא נגעתי.
+
+    בדיקת איזון סוגריים (Python) על שלושת הקבצים שנערכו: תקין (סה"כ
+    curly/paren תואמים בכל קובץ). `git diff` נבדק ידנית — העטיפה
+    נפתחת מיד אחרי `QueryClientProvider` ונסגרת מיד לפניו, כל שאר
+    העץ (Toaster/Sonner/TooltipProvider/BrowserRouter/Routes) נשאר
+    בדיוק כפי שהיה, הזחה בלבד השתנתה מינימלית. לא הופעל build/
+    dev-server (לפי הנחיות ההרצה).
+
+    אותו ענף `fix/b-22-whatsapp-noopener-round395-0820` (שרשרת הענפים
+    היא המקור המלא הבודד עבור loop B, לא `main`), קומיט `3fecbc0e`,
+    נדחף (מפעיל פריסות Vercel תחת `more30.com/mthbram`,
+    `more30.com/zchuyot`, `more30.com/galil`).
+
+    **הבא בתור:** עדשת ה-`prefers-reduced-motion` נראית ממוצה כעת
+    (עטיפה גלובלית ב-3 האפליקציות הרלוונטיות, 28/17/18/27 נבדקו
+    ונקיות/לא-רלוונטיות). נושא #245 (RLS על `csjekrvukbdznetsrodj`,
+    מוגן — סכימת `csj`, לא לגעת) ו-#250 (RLS על 21-mthbram, חסום
+    MCP) נשארים חסומים. אפשרויות להמשך: חזרה לתחום המחירון/מיתוג
+    'עולם הסטארטאפים' לאימות רענן (אומת נקי בסבבים קודמים, כדאי
+    בדיקה תקופתית), בדיקת heading-order (h1→h2→h3 ללא דילוג) על
+    דפים ציבוריים, או עדשת `rel="noopener"` על קישורי `<a>` חיצוניים
+    שנוספו מאז סבב 395 (רענון תקופתי).
+    via cloud server 167.99.131.167 [loop B]
