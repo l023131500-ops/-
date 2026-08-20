@@ -1070,8 +1070,9 @@ const AdminDashboard = () => {
                               >
                                 <Check className="w-3 h-3" /> אשר את כל השיעורים
                               </Button>
-                              <label className="flex items-center gap-2 font-body text-xs text-muted-foreground">
+                              <label htmlFor={`admin-rabbi-portal-settings-${p.id}`} className="flex items-center gap-2 font-body text-xs text-muted-foreground">
                                 <Switch
+                                  id={`admin-rabbi-portal-settings-${p.id}`}
                                   checked={fe.settings === true}
                                   onCheckedChange={async (v) => {
                                     const newFe = { ...fe, settings: v };
@@ -1181,8 +1182,9 @@ const AdminDashboard = () => {
                               >
                                 <Check className="w-3 h-3" /> אשר את כל השיעורים
                               </Button>
-                              <label className="flex items-center gap-2 font-body text-xs text-muted-foreground">
+                              <label htmlFor={`admin-org-portal-settings-${p.id}`} className="flex items-center gap-2 font-body text-xs text-muted-foreground">
                                 <Switch
+                                  id={`admin-org-portal-settings-${p.id}`}
                                   checked={fe.settings === true}
                                   onCheckedChange={async (v) => {
                                     const newFe = { ...fe, settings: v };
@@ -1194,8 +1196,9 @@ const AdminDashboard = () => {
                                 />
                                 הגדרות מתקדמות
                               </label>
-                              <label className="flex items-center gap-2 font-body text-xs text-muted-foreground">
+                              <label htmlFor={`admin-org-portal-prayer-times-${p.id}`} className="flex items-center gap-2 font-body text-xs text-muted-foreground">
                                 <Switch
+                                  id={`admin-org-portal-prayer-times-${p.id}`}
                                   checked={fe.prayer_times === true}
                                   onCheckedChange={async (v) => {
                                     const newFe = { ...fe, prayer_times: v };
@@ -1579,87 +1582,87 @@ const AdminDashboard = () => {
                 <div className="space-y-4">
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="font-body text-xs font-medium text-muted-foreground mb-1 block">שם הרב *</label>
-                      <Input value={editData.rabbi_name || ""} onChange={(e) => setEditData({...editData, rabbi_name: e.target.value})} />
+                      <label htmlFor="edit-lesson-rabbi-name" className="font-body text-xs font-medium text-muted-foreground mb-1 block">שם הרב *</label>
+                      <Input id="edit-lesson-rabbi-name" value={editData.rabbi_name || ""} onChange={(e) => setEditData({...editData, rabbi_name: e.target.value})} />
                     </div>
                     <div>
-                      <label className="font-body text-xs font-medium text-muted-foreground mb-1 block">נושא *</label>
-                      <Input value={editData.subject || ""} onChange={(e) => setEditData({...editData, subject: e.target.value})} />
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-3 gap-3">
-                    <div>
-                      <label className="font-body text-xs font-medium text-muted-foreground mb-1 block">עיר *</label>
-                      <Input value={editData.city || ""} onChange={(e) => setEditData({...editData, city: e.target.value})} />
-                    </div>
-                    <div>
-                      <label className="font-body text-xs font-medium text-muted-foreground mb-1 block">שכונה</label>
-                      <Input value={editData.neighborhood || ""} onChange={(e) => setEditData({...editData, neighborhood: e.target.value})} />
-                    </div>
-                    <div>
-                      <label className="font-body text-xs font-medium text-muted-foreground mb-1 block">בית כנסת</label>
-                      <Input value={editData.synagogue_name || ""} onChange={(e) => setEditData({...editData, synagogue_name: e.target.value})} />
+                      <label htmlFor="edit-lesson-subject" className="font-body text-xs font-medium text-muted-foreground mb-1 block">נושא *</label>
+                      <Input id="edit-lesson-subject" value={editData.subject || ""} onChange={(e) => setEditData({...editData, subject: e.target.value})} />
                     </div>
                   </div>
                   <div className="grid grid-cols-3 gap-3">
                     <div>
-                      <label className="font-body text-xs font-medium text-muted-foreground mb-1 block">רחוב</label>
-                      <Input value={editData.street || ""} onChange={(e) => setEditData({...editData, street: e.target.value})} />
+                      <label htmlFor="edit-lesson-city" className="font-body text-xs font-medium text-muted-foreground mb-1 block">עיר *</label>
+                      <Input id="edit-lesson-city" value={editData.city || ""} onChange={(e) => setEditData({...editData, city: e.target.value})} />
                     </div>
                     <div>
-                      <label className="font-body text-xs font-medium text-muted-foreground mb-1 block">סגנון</label>
-                      <Input value={editData.lesson_style || ""} onChange={(e) => setEditData({...editData, lesson_style: e.target.value})} />
+                      <label htmlFor="edit-lesson-neighborhood" className="font-body text-xs font-medium text-muted-foreground mb-1 block">שכונה</label>
+                      <Input id="edit-lesson-neighborhood" value={editData.neighborhood || ""} onChange={(e) => setEditData({...editData, neighborhood: e.target.value})} />
                     </div>
                     <div>
-                      <label className="font-body text-xs font-medium text-muted-foreground mb-1 block">שפה</label>
-                      <Input value={editData.language || ""} onChange={(e) => setEditData({...editData, language: e.target.value})} />
+                      <label htmlFor="edit-lesson-synagogue-name" className="font-body text-xs font-medium text-muted-foreground mb-1 block">בית כנסת</label>
+                      <Input id="edit-lesson-synagogue-name" value={editData.synagogue_name || ""} onChange={(e) => setEditData({...editData, synagogue_name: e.target.value})} />
                     </div>
                   </div>
                   <div className="grid grid-cols-3 gap-3">
                     <div>
-                      <label className="font-body text-xs font-medium text-muted-foreground mb-1 block">תפקיד הרב</label>
-                      <Input value={editData.rabbi_role || ""} onChange={(e) => setEditData({...editData, rabbi_role: e.target.value})} />
+                      <label htmlFor="edit-lesson-street" className="font-body text-xs font-medium text-muted-foreground mb-1 block">רחוב</label>
+                      <Input id="edit-lesson-street" value={editData.street || ""} onChange={(e) => setEditData({...editData, street: e.target.value})} />
                     </div>
                     <div>
-                      <label className="font-body text-xs font-medium text-muted-foreground mb-1 block">טלפון הרב</label>
-                      <Input value={editData.rabbi_phone || ""} onChange={(e) => setEditData({...editData, rabbi_phone: e.target.value})} />
+                      <label htmlFor="edit-lesson-style" className="font-body text-xs font-medium text-muted-foreground mb-1 block">סגנון</label>
+                      <Input id="edit-lesson-style" value={editData.lesson_style || ""} onChange={(e) => setEditData({...editData, lesson_style: e.target.value})} />
                     </div>
                     <div>
-                      <label className="font-body text-xs font-medium text-muted-foreground mb-1 block">איש קשר</label>
-                      <Input value={editData.contact_name || ""} onChange={(e) => setEditData({...editData, contact_name: e.target.value})} />
+                      <label htmlFor="edit-lesson-language" className="font-body text-xs font-medium text-muted-foreground mb-1 block">שפה</label>
+                      <Input id="edit-lesson-language" value={editData.language || ""} onChange={(e) => setEditData({...editData, language: e.target.value})} />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-3 gap-3">
+                    <div>
+                      <label htmlFor="edit-lesson-rabbi-role" className="font-body text-xs font-medium text-muted-foreground mb-1 block">תפקיד הרב</label>
+                      <Input id="edit-lesson-rabbi-role" value={editData.rabbi_role || ""} onChange={(e) => setEditData({...editData, rabbi_role: e.target.value})} />
+                    </div>
+                    <div>
+                      <label htmlFor="edit-lesson-rabbi-phone" className="font-body text-xs font-medium text-muted-foreground mb-1 block">טלפון הרב</label>
+                      <Input id="edit-lesson-rabbi-phone" value={editData.rabbi_phone || ""} onChange={(e) => setEditData({...editData, rabbi_phone: e.target.value})} />
+                    </div>
+                    <div>
+                      <label htmlFor="edit-lesson-contact-name" className="font-body text-xs font-medium text-muted-foreground mb-1 block">איש קשר</label>
+                      <Input id="edit-lesson-contact-name" value={editData.contact_name || ""} onChange={(e) => setEditData({...editData, contact_name: e.target.value})} />
                     </div>
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="font-body text-xs font-medium text-muted-foreground mb-1 block">טלפון קשר</label>
-                      <Input value={editData.contact_phone || ""} onChange={(e) => setEditData({...editData, contact_phone: e.target.value})} />
+                      <label htmlFor="edit-lesson-contact-phone" className="font-body text-xs font-medium text-muted-foreground mb-1 block">טלפון קשר</label>
+                      <Input id="edit-lesson-contact-phone" value={editData.contact_phone || ""} onChange={(e) => setEditData({...editData, contact_phone: e.target.value})} />
                     </div>
                     <div>
-                      <label className="font-body text-xs font-medium text-muted-foreground mb-1 block">מייל</label>
-                      <Input value={editData.contact_email || ""} onChange={(e) => setEditData({...editData, contact_email: e.target.value})} />
+                      <label htmlFor="edit-lesson-contact-email" className="font-body text-xs font-medium text-muted-foreground mb-1 block">מייל</label>
+                      <Input id="edit-lesson-contact-email" value={editData.contact_email || ""} onChange={(e) => setEditData({...editData, contact_email: e.target.value})} />
                     </div>
                   </div>
                   <div>
-                    <label className="font-body text-xs font-medium text-muted-foreground mb-1 block">קישור לתרומה</label>
-                    <Input value={editData.donation_link || ""} onChange={(e) => setEditData({...editData, donation_link: e.target.value})} />
+                    <label htmlFor="edit-lesson-donation-link" className="font-body text-xs font-medium text-muted-foreground mb-1 block">קישור לתרומה</label>
+                    <Input id="edit-lesson-donation-link" value={editData.donation_link || ""} onChange={(e) => setEditData({...editData, donation_link: e.target.value})} />
                   </div>
                   <div className="flex gap-6">
-                    <label className="flex items-center gap-2 font-body text-sm">
-                      <Switch checked={editData.is_recorded || false} onCheckedChange={(v) => setEditData({...editData, is_recorded: v})} />
+                    <label htmlFor="edit-lesson-recorded" className="flex items-center gap-2 font-body text-sm">
+                      <Switch id="edit-lesson-recorded" checked={editData.is_recorded || false} onCheckedChange={(v) => setEditData({...editData, is_recorded: v})} />
                       מוקלט
                     </label>
-                    <label className="flex items-center gap-2 font-body text-sm">
-                      <Switch checked={editData.is_live_stream || false} onCheckedChange={(v) => setEditData({...editData, is_live_stream: v})} />
+                    <label htmlFor="edit-lesson-livestream" className="flex items-center gap-2 font-body text-sm">
+                      <Switch id="edit-lesson-livestream" checked={editData.is_live_stream || false} onCheckedChange={(v) => setEditData({...editData, is_live_stream: v})} />
                       שידור חי
                     </label>
-                    <label className="flex items-center gap-2 font-body text-sm">
-                      <Switch checked={editData.is_recurring || false} onCheckedChange={(v) => setEditData({...editData, is_recurring: v})} />
+                    <label htmlFor="edit-lesson-recurring" className="flex items-center gap-2 font-body text-sm">
+                      <Switch id="edit-lesson-recurring" checked={editData.is_recurring || false} onCheckedChange={(v) => setEditData({...editData, is_recurring: v})} />
                       קבוע
                     </label>
                   </div>
                   <div>
-                    <label className="font-body text-xs font-medium text-muted-foreground mb-1 block">הערות</label>
-                    <Textarea value={editData.submitter_notes || ""} onChange={(e) => setEditData({...editData, submitter_notes: e.target.value})} rows={2} />
+                    <label htmlFor="edit-lesson-notes" className="font-body text-xs font-medium text-muted-foreground mb-1 block">הערות</label>
+                    <Textarea id="edit-lesson-notes" value={editData.submitter_notes || ""} onChange={(e) => setEditData({...editData, submitter_notes: e.target.value})} rows={2} />
                   </div>
 
                   <Button onClick={saveEdit} className="w-full bg-gradient-brand text-primary-foreground font-body font-bold py-6 hover:opacity-90 gap-2">
