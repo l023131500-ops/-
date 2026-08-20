@@ -182,28 +182,28 @@ const Materials = () => {
                 <div className="bg-card rounded-2xl border border-border p-5 space-y-3 h-fit">
                   <h3 className="font-heading font-bold text-foreground flex items-center gap-2"><FileUp className="w-4 h-4 text-secondary" />העלאת קובץ חדש</h3>
                   <p className="text-xs text-muted-foreground">הקובץ יישלח לאישור הניהול לפני שיופיע במאגר.</p>
-                  <div><label className="text-sm font-medium mb-1 block">שם הקובץ *</label>
-                    <Input value={uploadForm.title} onChange={e => setUploadForm(f => ({ ...f, title: e.target.value }))} placeholder="למשל: סיכום פרק א בברכות" />
+                  <div><label htmlFor="materials-upload-title" className="text-sm font-medium mb-1 block">שם הקובץ *</label>
+                    <Input id="materials-upload-title" value={uploadForm.title} onChange={e => setUploadForm(f => ({ ...f, title: e.target.value }))} placeholder="למשל: סיכום פרק א בברכות" />
                   </div>
-                  <div><label className="text-sm font-medium mb-1 block">תיאור</label>
-                    <Textarea rows={2} value={uploadForm.description} onChange={e => setUploadForm(f => ({ ...f, description: e.target.value }))} />
+                  <div><label htmlFor="materials-upload-description" className="text-sm font-medium mb-1 block">תיאור</label>
+                    <Textarea id="materials-upload-description" rows={2} value={uploadForm.description} onChange={e => setUploadForm(f => ({ ...f, description: e.target.value }))} />
                   </div>
-                  <div><label className="text-sm font-medium mb-1 block">קטגוריה *</label>
+                  <div><label htmlFor="materials-upload-category" className="text-sm font-medium mb-1 block">קטגוריה *</label>
                     <Select value={uploadForm.category} onValueChange={v => setUploadForm(f => ({ ...f, category: v, subcategory: "" }))}>
-                      <SelectTrigger><SelectValue placeholder="בחר קטגוריה" /></SelectTrigger>
+                      <SelectTrigger id="materials-upload-category"><SelectValue placeholder="בחר קטגוריה" /></SelectTrigger>
                       <SelectContent>{Object.keys(MATERIAL_CATEGORIES).map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
                     </Select>
                   </div>
                   {uploadForm.category && (
-                    <div><label className="text-sm font-medium mb-1 block">תת־קטגוריה</label>
+                    <div><label htmlFor="materials-upload-subcategory" className="text-sm font-medium mb-1 block">תת־קטגוריה</label>
                       <Select value={uploadForm.subcategory} onValueChange={v => setUploadForm(f => ({ ...f, subcategory: v }))}>
-                        <SelectTrigger><SelectValue placeholder="בחר תת־קטגוריה" /></SelectTrigger>
+                        <SelectTrigger id="materials-upload-subcategory"><SelectValue placeholder="בחר תת־קטגוריה" /></SelectTrigger>
                         <SelectContent>{(MATERIAL_CATEGORIES[uploadForm.category] || []).map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
                       </Select>
                     </div>
                   )}
-                  <div><label className="text-sm font-medium mb-1 block">קובץ *</label>
-                    <Input type="file" onChange={e => setUploadForm(f => ({ ...f, file: e.target.files?.[0] || null }))}
+                  <div><label htmlFor="materials-upload-file" className="text-sm font-medium mb-1 block">קובץ *</label>
+                    <Input id="materials-upload-file" type="file" onChange={e => setUploadForm(f => ({ ...f, file: e.target.files?.[0] || null }))}
                       accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png,.webp,.mp3,.m4a,.wav,.mp4,.mov,.webm" />
                     <p className="text-xs text-muted-foreground mt-1">תומך בוידאו ואודיו עד 200MB (מתאים לשיעורים של 10-30 דקות)</p>
                   </div>
@@ -289,20 +289,20 @@ const Materials = () => {
               </div>
             </div>
 
-            <div><label className="text-sm font-medium mb-1 block">כותרת</label>
-              <Input value={data.title} onChange={(e) => setData(d => ({ ...d, title: e.target.value }))} /></div>
-            <div><label className="text-sm font-medium mb-1 block">שם הרב</label>
-              <Input value={data.rabbiName} onChange={(e) => setData(d => ({ ...d, rabbiName: e.target.value }))} /></div>
-            <div><label className="text-sm font-medium mb-1 block">נושא / מסכת</label>
-              <Input value={data.subject} onChange={(e) => setData(d => ({ ...d, subject: e.target.value }))} placeholder="גמרא ברכות, פרשת השבוע..." /></div>
-            <div><label className="text-sm font-medium mb-1 block">מיקום</label>
-              <Input value={data.location} onChange={(e) => setData(d => ({ ...d, location: e.target.value }))} placeholder="בית כנסת..." /></div>
-            <div><label className="text-sm font-medium mb-1 block">זמן</label>
-              <Input value={data.time} onChange={(e) => setData(d => ({ ...d, time: e.target.value }))} placeholder="ימים א-ה, 20:00" /></div>
-            <div><label className="text-sm font-medium mb-1 block">תוכן נוסף</label>
-              <Textarea rows={3} value={data.body} onChange={(e) => setData(d => ({ ...d, body: e.target.value }))} /></div>
-            <div><label className="text-sm font-medium mb-1 block">טלפון לפרטים</label>
-              <Input value={data.phone} onChange={(e) => setData(d => ({ ...d, phone: e.target.value }))} dir="ltr" /></div>
+            <div><label htmlFor="materials-editor-title" className="text-sm font-medium mb-1 block">כותרת</label>
+              <Input id="materials-editor-title" value={data.title} onChange={(e) => setData(d => ({ ...d, title: e.target.value }))} /></div>
+            <div><label htmlFor="materials-editor-rabbiname" className="text-sm font-medium mb-1 block">שם הרב</label>
+              <Input id="materials-editor-rabbiname" value={data.rabbiName} onChange={(e) => setData(d => ({ ...d, rabbiName: e.target.value }))} /></div>
+            <div><label htmlFor="materials-editor-subject" className="text-sm font-medium mb-1 block">נושא / מסכת</label>
+              <Input id="materials-editor-subject" value={data.subject} onChange={(e) => setData(d => ({ ...d, subject: e.target.value }))} placeholder="גמרא ברכות, פרשת השבוע..." /></div>
+            <div><label htmlFor="materials-editor-location" className="text-sm font-medium mb-1 block">מיקום</label>
+              <Input id="materials-editor-location" value={data.location} onChange={(e) => setData(d => ({ ...d, location: e.target.value }))} placeholder="בית כנסת..." /></div>
+            <div><label htmlFor="materials-editor-time" className="text-sm font-medium mb-1 block">זמן</label>
+              <Input id="materials-editor-time" value={data.time} onChange={(e) => setData(d => ({ ...d, time: e.target.value }))} placeholder="ימים א-ה, 20:00" /></div>
+            <div><label htmlFor="materials-editor-body" className="text-sm font-medium mb-1 block">תוכן נוסף</label>
+              <Textarea id="materials-editor-body" rows={3} value={data.body} onChange={(e) => setData(d => ({ ...d, body: e.target.value }))} /></div>
+            <div><label htmlFor="materials-editor-phone" className="text-sm font-medium mb-1 block">טלפון לפרטים</label>
+              <Input id="materials-editor-phone" value={data.phone} onChange={(e) => setData(d => ({ ...d, phone: e.target.value }))} dir="ltr" /></div>
           </div>
 
           {/* Preview */}
