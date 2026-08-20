@@ -184,6 +184,12 @@ input:focus,select:focus{outline:2px solid var(--gold);outline-offset:1px;border
     </div>
 
     <div class="card">
+      <h2>ארגון החתונה</h2>
+      <p class="sub">משימות הארגון שהמדריך/ה שלכם הגדיר/ה. פריטים שהוקצו לכם ניתנים לסימון — פריטי המדריך/ה מוצגים לעיון בלבד.</p>
+      <div id="woList"><div class="empty">טוען…</div></div>
+    </div>
+
+    <div class="card">
       <h2>דירקטוריז</h2>
       <p class="sub">פוסקים, מקוואות, מסדרי קידושין, בודקות טהרה ויועצים זוגיים — נבחרו ידנית ע"י צוות more30, מותאמים למגזר שלכם.</p>
       <label for="dirFilter">סינון לפי קטגוריה</label>
@@ -232,6 +238,12 @@ const FOLLOWUP_QUESTIONS = [
   { key: 'topic', label: 'האם יש נושא שהייתם רוצים לשוחח עליו עם המדריך/ה?', type: 'text' },
   { key: 'notes', label: 'משהו נוסף שתרצו לשתף?', type: 'text' },
 ];
+const WO_CATEGORY_LABEL = {
+  venue: 'אולם', catering: 'קייטרינג', photography_video: 'צילום ווידאו', music: 'מוזיקה',
+  flowers_design: 'פרחים ועיצוב', attire: 'לבוש', rabbi_ketubah: 'רב וכתובה', invitations: 'הזמנות',
+  logistics: 'לוגיסטיקה', budget: 'תקציב', other: 'אחר',
+};
+const WO_ASSIGNED_LABEL = { instructor: 'מדריך/ה', couple: 'אתם' };
 function applySegmentTheme(segment) {
   document.body.classList.toggle('seg-chatan', segment === 'chatan');
   const label = SEGMENT_PORTAL_LABEL[segment];
@@ -420,6 +432,52 @@ async function renderFollowups() {
   }
 }
 
+/* ── wedding organization checklist (module 8, stage 3) ──────────────────── */
+function woCard(t) {
+  const canToggle = t.assigned_to === 'couple';
+  const done = t.status === 'done';
+  return '<div class="appt" data-wo="' + t.id + '">' +
+    '<div style="display:flex;align-items:flex-start;gap:10px">' +
+    (canToggle
+      ? '<input type="checkbox" data-wo-toggle="' + t.id + '"' + (done ? ' checked' : '') + ' style="margin-top:5px;width:auto" />'
+      : '<span class="badge scheduled" style="margin-top:2px">מדריך/ה</span>') +
+    '<div style="flex:1">' +
+      '<p class="when" style="' + (done ? 'text-decoration:line-through;color:var(--muted)' : '') + '">' + esc(t.title) + '</p>' +
+      '<p class="meta">' + (WO_CATEGORY_LABEL[t.category] || esc(t.category)) +
+        (t.due_date ? ' · יעד: ' + dt(t.due_date) : '') +
+        ' · הוקצה ל: ' + (WO_ASSIGNED_LABEL[t.assigned_to] || t.assigned_to) +
+      '</p>' +
+      (t.detail ? '<p class="meta">' + esc(t.detail) + '</p>' : '') +
+    '</div></div></div>';
+}
+
+async function renderWeddingTasks() {
+  const el = $('woList');
+  el.innerHTML = '<div class="empty">טוען…</div>';
+  let rows;
+  try {
+    rows = await rpc('maatefet_wedding_tasks_list');
+  } catch (e) {
+    el.innerHTML = '<div class="err">' + esc(e.message) + '</div>';
+    return;
+  }
+  if (!rows.length) { el.innerHTML = '<div class="empty">עדיין אין משימות ארגון חתונה.</div>'; return; }
+  el.innerHTML = rows.map(woCard).join('');
+  for (const cb of el.querySelectorAll('[data-wo-toggle]')) {
+    cb.addEventListener('change', async () => {
+      cb.disabled = true;
+      try {
+        await rpc('maatefet_wedding_task_toggle', { p_id: cb.dataset.woToggle });
+        renderWeddingTasks();
+      } catch (e) {
+        alert(e.message);
+        cb.checked = !cb.checked;
+        cb.disabled = false;
+      }
+    });
+  }
+}
+
 /* ── directories (poskim / mikvaot / mesadrei kiddushin / bodkot tehara / yoatzim) ── */
 const DIR_CATEGORY_LABEL = {
   posek: 'פוסק הלכה', mikveh: 'מקווה', mesader_kiddushin: 'מסדר קידושין',
@@ -572,6 +630,7 @@ async function boot() {
   renderReminders();
   renderInstructorBrand();
   renderFollowups();
+  renderWeddingTasks();
   renderDirectories();
 }
 

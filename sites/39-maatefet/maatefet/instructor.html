@@ -203,6 +203,7 @@ th{color:var(--muted);font-weight:400;font-size:12px;text-transform:uppercase;le
       <button class="tab" data-view="forum">פורום מקצועי</button>
       <button class="tab" data-view="followups">ליווי אחרי החתונה</button>
       <button class="tab" data-view="directories">דירקטוריז</button>
+      <button class="tab" data-view="weddingOrg">ארגון החתונה</button>
     </div>
 
     <section id="viewClients">
@@ -457,6 +458,59 @@ th{color:var(--muted);font-weight:400;font-size:12px;text-transform:uppercase;le
         <div id="dirList"><div class="empty">טוען…</div></div>
       </div>
     </section>
+
+    <section id="viewWeddingOrg" hidden>
+      <p class="sub">רשימת-משימות לארגון החתונה, משותפת לכם ולזוג — כל פריט מוקצה למדריך/ה או לזוג. הזוג רואה ומסמן רק את מה שהוקצה לו/ה.</p>
+      <div class="card">
+        <h2 id="woFormTitle">משימה חדשה</h2>
+        <div class="row">
+          <div>
+            <label for="woClient">זוג *</label>
+            <select id="woClient"></select>
+          </div>
+          <div>
+            <label for="woCategory">קטגוריה *</label>
+            <select id="woCategory">
+              <option value="venue">אולם</option>
+              <option value="catering">קייטרינג</option>
+              <option value="photography_video">צילום ווידאו</option>
+              <option value="music">מוזיקה</option>
+              <option value="flowers_design">פרחים ועיצוב</option>
+              <option value="attire">לבוש</option>
+              <option value="rabbi_ketubah">רב וכתובה</option>
+              <option value="invitations">הזמנות</option>
+              <option value="logistics">לוגיסטיקה</option>
+              <option value="budget">תקציב</option>
+              <option value="other" selected>אחר</option>
+            </select>
+          </div>
+        </div>
+        <label for="woTitle">כותרת המשימה *</label>
+        <input id="woTitle" placeholder="לדוגמה: סגירת חוזה עם האולם" />
+        <label for="woDetail">פרטים</label>
+        <input id="woDetail" />
+        <div class="row">
+          <div>
+            <label for="woDue">תאריך יעד</label>
+            <input id="woDue" type="date" />
+          </div>
+          <div>
+            <label for="woAssigned">הוקצה ל-</label>
+            <select id="woAssigned">
+              <option value="couple">הזוג</option>
+              <option value="instructor">המדריך/ה (אני)</option>
+            </select>
+          </div>
+        </div>
+        <div id="woErr"></div>
+        <button class="btn" id="woSubmit">שמירת משימה</button>
+        <button class="btn btn-sm btn-quiet" id="woCancelEdit" hidden>ביטול עריכה</button>
+      </div>
+      <div class="card">
+        <h2>המשימות שלי</h2>
+        <div id="woTable"><div class="empty">טוען…</div></div>
+      </div>
+    </section>
   </div>
 
   <div id="fatal" hidden></div>
@@ -502,6 +556,13 @@ const FOLLOWUP_QUESTIONS = [
   { key: 'topic', label: 'האם יש נושא שהייתם רוצים לשוחח עליו עם המדריך/ה?', type: 'text' },
   { key: 'notes', label: 'משהו נוסף שתרצו לשתף?', type: 'text' },
 ];
+const WO_CATEGORY_LABEL = {
+  venue: 'אולם', catering: 'קייטרינג', photography_video: 'צילום ווידאו', music: 'מוזיקה',
+  flowers_design: 'פרחים ועיצוב', attire: 'לבוש', rabbi_ketubah: 'רב וכתובה', invitations: 'הזמנות',
+  logistics: 'לוגיסטיקה', budget: 'תקציב', other: 'אחר',
+};
+const WO_ASSIGNED_LABEL = { instructor: 'מדריך/ה', couple: 'הזוג' };
+const WO_STATUS_LABEL = { todo: 'לביצוע', in_progress: 'בתהליך', done: 'הושלם' };
 
 function show(id) {
   for (const el of [
@@ -575,7 +636,7 @@ function populateClientSelects() {
   const opts = CLIENTS.length
     ? CLIENTS.map((c) => '<option value="' + c.id + '">' + esc(c.full_name) + (c.partner_name ? ' ו' + esc(c.partner_name) : '') + '</option>').join('')
     : '<option value="">אין עדיין זוגות</option>';
-  for (const sel of [$('aClient'), $('rmClient'), $('fuClient')]) if (sel) sel.innerHTML = opts;
+  for (const sel of [$('aClient'), $('rmClient'), $('fuClient'), $('woClient')]) if (sel) sel.innerHTML = opts;
 }
 
 function editClient(id) {
@@ -1176,8 +1237,110 @@ async function renderDirectories() {
 
 $('dirFilter').addEventListener('change', renderDirectories);
 
+/* ── dashboard: wedding organization checklist (module 8, stage 3) ──────── */
+let WO_TASKS = [];
+let WO_EDIT_ID = null;
+
+function resetWoForm() {
+  WO_EDIT_ID = null;
+  $('woFormTitle').textContent = 'משימה חדשה';
+  $('woTitle').value = ''; $('woDetail').value = ''; $('woDue').value = '';
+  $('woCategory').value = 'other'; $('woAssigned').value = 'couple';
+  $('woSubmit').textContent = 'שמירת משימה';
+  $('woCancelEdit').hidden = true;
+  $('woErr').innerHTML = '';
+}
+
+function startWoEdit(id) {
+  const t = WO_TASKS.find((x) => x.id === id);
+  if (!t) return;
+  WO_EDIT_ID = id;
+  $('woFormTitle').textContent = 'עריכת משימה';
+  $('woClient').value = t.client_id;
+  $('woCategory').value = t.category;
+  $('woTitle').value = t.title;
+  $('woDetail').value = t.detail || '';
+  $('woDue').value = t.due_date || '';
+  $('woAssigned').value = t.assigned_to;
+  $('woSubmit').textContent = 'עדכון משימה';
+  $('woCancelEdit').hidden = false;
+  $('woErr').innerHTML = '';
+  $('woTitle').scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+$('woCancelEdit').addEventListener('click', resetWoForm);
+
+$('woSubmit').addEventListener('click', async () => {
+  const title = $('woTitle').value.trim();
+  if (!WO_EDIT_ID && !$('woClient').value) { $('woErr').innerHTML = '<div class="err">יש לבחור זוג.</div>'; return; }
+  if (!title) { $('woErr').innerHTML = '<div class="err">כותרת היא שדה חובה.</div>'; return; }
+  $('woSubmit').disabled = true;
+  try {
+    await rpc('maatefet_wedding_task_upsert', {
+      p_id: WO_EDIT_ID,
+      p_client_id: WO_EDIT_ID ? null : $('woClient').value,
+      p_category: $('woCategory').value,
+      p_title: title,
+      p_detail: $('woDetail').value.trim() || null,
+      p_due_date: $('woDue').value || null,
+      p_assigned_to: $('woAssigned').value,
+    });
+    resetWoForm();
+    renderWeddingTasks();
+  } catch (e) {
+    $('woErr').innerHTML = '<div class="err">' + esc(e.message) + '</div>';
+  } finally {
+    $('woSubmit').disabled = false;
+  }
+});
+
+function woRow(t) {
+  const c = CLIENTS.find((x) => x.id === t.client_id);
+  return '<tr>' +
+    '<td>' + v(c ? c.full_name : null) + '</td>' +
+    '<td>' + (WO_CATEGORY_LABEL[t.category] || esc(t.category)) + '</td>' +
+    '<td>' + v(t.title) + '</td>' +
+    '<td>' + dt(t.due_date) + '</td>' +
+    '<td>' + (WO_ASSIGNED_LABEL[t.assigned_to] || t.assigned_to) + '</td>' +
+    '<td><span class="badge ' + (t.status === 'done' ? 'used' : 'pending') + '">' + (WO_STATUS_LABEL[t.status] || t.status) + '</span></td>' +
+    '<td>' +
+      '<button class="btn btn-sm btn-quiet" data-wo-edit="' + t.id + '">עריכה</button> ' +
+      '<button class="btn btn-sm btn-quiet" data-wo-status="' + t.id + '">' + (t.status === 'done' ? 'סימון כלביצוע' : 'סימון כהושלם') + '</button> ' +
+      '<button class="btn btn-sm btn-danger" data-wo-delete="' + t.id + '">מחיקה</button>' +
+    '</td>' +
+    '</tr>';
+}
+
+async function renderWeddingTasks() {
+  const el = $('woTable');
+  el.innerHTML = '<div class="empty">טוען…</div>';
+  try {
+    WO_TASKS = await rpc('maatefet_wedding_tasks_list');
+  } catch (e) {
+    el.innerHTML = '<div class="err">' + esc(e.message) + '</div>';
+    return;
+  }
+  if (!WO_TASKS.length) { el.innerHTML = '<div class="empty">עדיין אין משימות ארגון חתונה.</div>'; return; }
+  el.innerHTML = '<table><thead><tr><th>זוג</th><th>קטגוריה</th><th>כותרת</th><th>תאריך יעד</th><th>הוקצה ל-</th><th>סטטוס</th><th></th></tr></thead><tbody>' +
+    WO_TASKS.map(woRow).join('') + '</tbody></table>';
+  for (const b of el.querySelectorAll('[data-wo-edit]')) b.addEventListener('click', () => startWoEdit(b.dataset.woEdit));
+  for (const b of el.querySelectorAll('[data-wo-status]')) {
+    b.addEventListener('click', () => {
+      const t = WO_TASKS.find((x) => x.id === b.dataset.woStatus);
+      const nextStatus = t.status === 'done' ? 'todo' : 'done';
+      rpc('maatefet_wedding_task_upsert', { p_id: t.id, p_status: nextStatus }).then(renderWeddingTasks).catch((e) => alert(e.message));
+    });
+  }
+  for (const b of el.querySelectorAll('[data-wo-delete]')) {
+    b.addEventListener('click', () => {
+      if (!confirm('למחוק את המשימה?')) return;
+      rpc('maatefet_wedding_task_delete', { p_id: b.dataset.woDelete }).then(renderWeddingTasks).catch((e) => alert(e.message));
+    });
+  }
+}
+
 /* ── tabs ───────────────────────────────────────────────────────────────── */
-const VIEWS = { clients: 'viewClients', invites: 'viewInvites', calendar: 'viewCalendar', reminders: 'viewReminders', content: 'viewContent', profile: 'viewProfile', forum: 'viewForum', followups: 'viewFollowups', directories: 'viewDirectories' };
+const VIEWS = { clients: 'viewClients', invites: 'viewInvites', calendar: 'viewCalendar', reminders: 'viewReminders', content: 'viewContent', profile: 'viewProfile', forum: 'viewForum', followups: 'viewFollowups', directories: 'viewDirectories', weddingOrg: 'viewWeddingOrg' };
 for (const tab of document.querySelectorAll('.tab')) {
   tab.addEventListener('click', () => {
     for (const t of document.querySelectorAll('.tab')) t.classList.toggle('active', t === tab);
@@ -1190,6 +1353,7 @@ for (const tab of document.querySelectorAll('.tab')) {
     if (tab.dataset.view === 'forum') renderForum();
     if (tab.dataset.view === 'followups') renderFollowups();
     if (tab.dataset.view === 'directories') renderDirectories();
+    if (tab.dataset.view === 'weddingOrg') renderWeddingTasks();
   });
 }
 
