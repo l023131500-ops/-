@@ -4729,3 +4729,49 @@
      הבאג הממוקד ב-#407 (שנשאר זהה לכל קורא קיים — היחיד שאי-פעם שולח
      `images` כרשימה ריקה מכוונת הוא הטופס החדש עצמו). לא נגעתי במוגן
      (08/09/`zr_*`/`NEDARIM3873`/`csj`/`csj_src`/`igud`), לא ב-`main`.
+
+## 20/08/2026 (LOOP C — סבב 4) — 36 nadlan-pro (tivuch): מאגר מסמכים לנכס
+
+412. **המשך ישיר לסבב 3.** `core.run_progress` אימת שהרשומה האחרונה עם
+     `[loop C]` היא `7da2fb84` (קישור צפייה ציבורי), כבר `HEAD` של הענף
+     הזה — אין המשך מקביל שהוחמץ. `NEEDS_USER.md` (סבב 3, סעיף 3) סימן
+     "מאגר מסמכים לנכס" כאחד משלושה דברים שנשארו בכוונה, והוא היחיד מבין
+     השלושה שאינו דורש החלטת מוצר (וידאו) או תשתית גדולה (Storage bucket
+     אמיתי) — טבעי להשלים אותו קודם.
+413. **מה נבנה.** מיגרציה `0105_nadlan_pro_property_documents.sql`: טבלה
+     חדשה `nadlan_pro.property_documents` (property_id, category enum —
+     tabu/permit/plan/appraisal/poa/id_copy/contract_draft/other, name,
+     url, notes, uploaded_by, created_at), נפרדת בכוונה מ-`contracts`/
+     `invoices` שמקושרים לעסקה — לנכס יש מסמכים גם לפני שיש עליו עסקה
+     כלשהי (נסח טאבו, היתר בנייה, חוות דעת שמאי). אותו דפוס קישור-חיצוני
+     כמו `properties.images` — אין Storage bucket, ראה NEEDS_USER.
+414. **RLS: אותה צורת ירושה כמו `deal_checklist`/`deal_stage_events`
+     ב-0009** — לא עמודת office_id/owner כפולה על הטבלה, אלא `EXISTS`
+     מול הנכס ההורה דרך `nadlan_pro.can_touch(office_id, owner_id)`.
+     מסמך נגיש בדיוק כשהנכס שלו נגיש — לא נדרשת בדיקת הרשאה נפרדת שעלולה
+     לסטות מזו של הנכס עצמו.
+415. **API:** שלוש פונקציות חדשות ב-`public` (security invoker, כמו כל
+     שאר ה-API של 36): `np_property_documents(property_id)` לרשימה,
+     `np_property_document_add(p jsonb)`, `np_property_document_delete(id)`.
+     בנוסף, `np_property_get` (0010) הוחלף (`create or replace`) כך
+     שמחזיר גם `documents` יחד עם `deals`/`activities` הקיימים — קריאה
+     אחת פותחת את כרטיס הנכס במקום ארבע.
+416. **`app.html`:** בכרטיס הנכס נוסף סעיף "מאגר מסמכים לנכס" (אחרי
+     "עסקאות על הנכס") — רשימת מסמכים עם תג-סוג, קישור "פתיחה", מחיקה
+     (עם `confirm()`), ותאריך; וטופס הוספה מוטבע (שם + סוג + קישור).
+     עדכון האופטימי של הרשימה (הוספה/מחיקה) בונה מחדש את `propDocsBox`
+     בלי לקרוא שוב ל-`np_property_get`.
+417. **אימות.** (1) בלוק ה-`<script type="module">` עבר `node --check`
+     נקי (לא רק `new Function` כמו בסבב הקודם — `--check` תומך ב-ESM
+     ותופס יותר). (2) איזון תגי סוגריים/סוגריים-מסולסלים/מרובעים בבלוק
+     נבדק בפייתון. (3) המיגרציה הורצה בפועל על ה-DB החי (MCP
+     `apply_migration`), ואומתה מקצה-לקצה: הרשאות `EXECUTE` על שלוש
+     הפונקציות החדשות הן `authenticated`+`service_role` בלבד (לא
+     `anon`, נבדק ב-`information_schema.role_routine_grants`); הוכנס
+     מסמך QA אמיתי על נכס קיים (`property_documents`, ישירות ב-SQL כי
+     אין JWT זמין מכאן), `np_property_get` ו-`np_property_documents`
+     שניהם החזירו אותו נכון, ואז נמחק — אפס נתוני QA נשארו בטבלה.
+418. **אפס רגרסיה.** `np_property_get` הוחלף רק בהוספת מפתח `documents`
+     ל-jsonb שהוא בונה — שלושת המפתחות הקיימים (`property`/`seller`/
+     `deals`/`activities`) זהים לחלוטין למה שהיה. לא נגעתי במוגן, לא
+     ב-`main`.
