@@ -6402,3 +6402,20 @@ PRIVILEGES IN SCHEMA public` שמעניק `EXECUTE` ל-`anon`/`authenticated`
 מתועדות ב-`MAATEFET_BUILD.md`, לא הומצאו כאן.
 
 מיגרציות: `0110_maatefet_public_api.sql`, `0111_maatefet_public_api_lock_anon.sql`.
+
+## 20/08/2026 (Loop C, סבב 5) — 39 מעטפת: 2FA (Auth MFA/aal2) נאכף בפועל
+
+2FA כבר לא "עבודת שכבת-אפליקציה עתידית" — נבנה ונאכף לשני התפקידים היחידים
+שכבר נוגעים ב-PII של זוגות: מדריך/ה מאומת/ת וסופר-אדמין. שכבת DB:
+`maatefet.my_instructor_id()` (הצומת שכל RLS/RPC של מדריך עובר דרכו) דורש
+עכשיו `auth.jwt()->>'aal'='aal2'` בנוסף ל-`status='verified'`;
+`maatefet.verify_instructor()` דורש aal2 מפורש משלו לפני אישור/השעיה — בלי
+לגעת ב-`public.more30_is_super_admin()` הגלובלי (מערכות אחרות תלויות בו).
+שכבת UI: `instructor.html`/`admin.html` קיבלו מסכי הרשמת-2FA (TOTP, QR +
+מפתח ידני) ואתגר-2FA לכניסה חוזרת, עם `supabase-js` `auth.mfa.*` — בלי
+ספרייה חדשה. `maatefet_me()` חושף את ה-`aal` הנוכחי כדי שה-UI יבדיל בין
+"עדיין לא מאומת/ת" ל"מאומת/ת אך ה-session טרם עבר אתגר 2FA". `get_advisors`
+(security): 0 ממצאים חדשים. 2FA ללקוח (חתן/כלה) עדיין לא נבנה (אין עדיין
+מסך אזור-אישי — שלב 1). הצפנת-שדה עדיין לא נבנתה.
+
+מיגרציה: `0112_maatefet_mfa_gate.sql`.

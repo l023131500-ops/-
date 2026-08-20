@@ -153,6 +153,38 @@ th{color:var(--muted);font-weight:400;font-size:12px;text-transform:uppercase;le
     </div>
   </div>
 
+  <div id="mfaEnrollWrap" hidden>
+    <h1>הפעלת אימות דו-שלבי (חובה)</h1>
+    <p class="sub">
+      מסך לקוחות/זוגות במעטפת מכיל מידע אישי ורגיש. לפני הכניסה לאזור המדריך/ה
+      יש להפעיל אימות דו-שלבי (2FA) עם אפליקציית אימות (Google Authenticator /
+      Authy / כל אפליקציית TOTP).
+    </p>
+    <div class="card">
+      <div id="mfaEnrollStep1">
+        <p class="sub" style="margin-bottom:14px">1. סרקו את הקוד עם אפליקציית האימות, או הזינו את המפתח ידנית:</p>
+        <div id="mfaQr" style="max-width:220px;margin:0 0 14px"></div>
+        <label>מפתח ידני (אם אי אפשר לסרוק)</label>
+        <div class="codebox" id="mfaSecret" style="margin-bottom:14px"></div>
+        <label for="mfaEnrollCode">2. הזינו את הקוד בן 6 הספרות מהאפליקציה</label>
+        <input id="mfaEnrollCode" inputmode="numeric" autocomplete="one-time-code" maxlength="6" />
+        <div id="mfaEnrollErr"></div>
+        <button class="btn" id="mfaEnrollSubmit">אימות והפעלה</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="mfaChallengeWrap" hidden>
+    <h1>אימות דו-שלבי</h1>
+    <p class="sub">הזינו את הקוד הנוכחי מאפליקציית האימות שלכם כדי להמשיך.</p>
+    <div class="card">
+      <label for="mfaChallengeCode">קוד בן 6 ספרות</label>
+      <input id="mfaChallengeCode" inputmode="numeric" autocomplete="one-time-code" maxlength="6" />
+      <div id="mfaChallengeErr"></div>
+      <button class="btn" id="mfaChallengeSubmit">אימות</button>
+    </div>
+  </div>
+
   <div id="dash" hidden>
     <h1 id="dashName"></h1>
     <p class="sub" id="dashSub"></p>
@@ -240,8 +272,10 @@ const SEGMENT_LABEL = { chatan: 'חתנים', kallah: 'כלות' };
 const INVITE_LABEL = { pending: 'ממתין', used: 'מומש', revoked: 'בוטל', expired: 'פג תוקף' };
 
 function show(id) {
-  for (const el of ['loading', 'authGate', 'signupWrap', 'pendingWrap', 'suspendedWrap', 'dash', 'fatal'])
-    $(el).hidden = el !== id;
+  for (const el of [
+    'loading', 'authGate', 'signupWrap', 'pendingWrap', 'suspendedWrap',
+    'mfaEnrollWrap', 'mfaChallengeWrap', 'dash', 'fatal',
+  ]) $(el).hidden = el !== id;
 }
 
 async function rpc(fn, args) {
@@ -411,6 +445,84 @@ for (const tab of document.querySelectorAll('.tab')) {
   });
 }
 
+/* ── 2FA gate (required for any verified instructor before the CRM/PII screens) ── */
+let MFA_FACTOR_ID = null;
+
+async function ensureMfa() {
+  const { data, error } = await sb.auth.mfa.getAuthenticatorAssuranceLevel();
+  if (error) {
+    show('fatal');
+    $('fatal').innerHTML = '<div class="state bad"><h2>בדיקת אימות דו-שלבי נכשלה</h2><p>' + esc(error.message) + '</p></div>';
+    return false;
+  }
+  if (data.currentLevel === 'aal2') return true;
+  if (data.nextLevel === 'aal2') { await startMfaChallenge(); return false; }
+  await startMfaEnroll();
+  return false;
+}
+
+async function startMfaEnroll() {
+  $('mfaEnrollErr').innerHTML = '';
+  $('mfaEnrollCode').value = '';
+  show('mfaEnrollWrap');
+  try {
+    // אם נשאר factor לא-מאומת מניסיון קודם שננטש — מנקים ומתחילים נקי,
+    // אחרת enroll() נכשל על friendly-name כפול.
+    const { data: existing } = await sb.auth.mfa.listFactors();
+    for (const f of (existing?.totp || [])) {
+      if (f.status !== 'verified') await sb.auth.mfa.unenroll({ factorId: f.id });
+    }
+    const { data, error } = await sb.auth.mfa.enroll({ factorType: 'totp', friendlyName: 'מעטפת' });
+    if (error) throw new Error(error.message);
+    MFA_FACTOR_ID = data.id;
+    $('mfaQr').innerHTML = data.totp.qr_code;
+    $('mfaSecret').textContent = data.totp.secret;
+  } catch (e) {
+    $('mfaEnrollErr').innerHTML = '<div class="err">' + esc(e.message) + '</div>';
+  }
+}
+
+$('mfaEnrollSubmit').addEventListener('click', async () => {
+  const code = $('mfaEnrollCode').value.trim();
+  if (!/^\d{6}$/.test(code)) { $('mfaEnrollErr').innerHTML = '<div class="err">יש להזין קוד בן 6 ספרות.</div>'; return; }
+  $('mfaEnrollSubmit').disabled = true;
+  try {
+    const { error } = await sb.auth.mfa.challengeAndVerify({ factorId: MFA_FACTOR_ID, code });
+    if (error) throw new Error(error.message);
+    await boot();
+  } catch (e) {
+    $('mfaEnrollErr').innerHTML = '<div class="err">' + esc(e.message) + '</div>';
+    $('mfaEnrollSubmit').disabled = false;
+  }
+});
+
+async function startMfaChallenge() {
+  $('mfaChallengeErr').innerHTML = '';
+  $('mfaChallengeCode').value = '';
+  show('mfaChallengeWrap');
+  const { data, error } = await sb.auth.mfa.listFactors();
+  const factor = (data?.totp || []).find((f) => f.status === 'verified');
+  if (error || !factor) {
+    $('mfaChallengeErr').innerHTML = '<div class="err">לא נמצא אמצעי אימות פעיל. יש לפנות לצוות more30.</div>';
+    return;
+  }
+  MFA_FACTOR_ID = factor.id;
+}
+
+$('mfaChallengeSubmit').addEventListener('click', async () => {
+  const code = $('mfaChallengeCode').value.trim();
+  if (!/^\d{6}$/.test(code)) { $('mfaChallengeErr').innerHTML = '<div class="err">יש להזין קוד בן 6 ספרות.</div>'; return; }
+  $('mfaChallengeSubmit').disabled = true;
+  try {
+    const { error } = await sb.auth.mfa.challengeAndVerify({ factorId: MFA_FACTOR_ID, code });
+    if (error) throw new Error(error.message);
+    await boot();
+  } catch (e) {
+    $('mfaChallengeErr').innerHTML = '<div class="err">' + esc(e.message) + '</div>';
+    $('mfaChallengeSubmit').disabled = false;
+  }
+});
+
 /* ── boot ───────────────────────────────────────────────────────────────── */
 async function requireSession() {
   const { data } = await sb.auth.getSession();
@@ -446,6 +558,9 @@ async function boot() {
 
   if (ins.status === 'pending') { show('pendingWrap'); return; }
   if (ins.status === 'suspended') { show('suspendedWrap'); return; }
+
+  const mfaOk = await ensureMfa();
+  if (!mfaOk) return;
 
   $('dashName').textContent = 'שלום, ' + ins.full_name;
   $('dashSub').textContent = 'מדריך/ה מאומת/ת · מגזר ' + (SEGMENT_LABEL[ins.segment] || ins.segment);
