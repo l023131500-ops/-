@@ -14,6 +14,7 @@ const AdminTips = () => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [open, setOpen] = useState(false);
+  const [busyId, setBusyId] = useState<string | null>(null);
   const { toast } = useToast();
 
   const fetchTips = async () => {
@@ -36,13 +37,37 @@ const AdminTips = () => {
   };
 
   const toggleActive = async (id: string, current: boolean) => {
-    await supabase.from("tips").update({ is_active: !current }).eq("id", id);
-    fetchTips();
+    if (busyId) return;
+    setBusyId(id);
+    try {
+      const { error } = await supabase.from("tips").update({ is_active: !current }).eq("id", id);
+      if (error) {
+        toast({ title: "שגיאה", description: error.message, variant: "destructive" });
+      } else {
+        await fetchTips();
+      }
+    } catch (e: any) {
+      toast({ title: "שגיאה", description: e?.message || "שגיאת רשת", variant: "destructive" });
+    } finally {
+      setBusyId(null);
+    }
   };
 
   const deleteTip = async (id: string) => {
-    await supabase.from("tips").delete().eq("id", id);
-    fetchTips();
+    if (busyId) return;
+    setBusyId(id);
+    try {
+      const { error } = await supabase.from("tips").delete().eq("id", id);
+      if (error) {
+        toast({ title: "שגיאה", description: error.message, variant: "destructive" });
+      } else {
+        await fetchTips();
+      }
+    } catch (e: any) {
+      toast({ title: "שגיאה", description: e?.message || "שגיאת רשת", variant: "destructive" });
+    } finally {
+      setBusyId(null);
+    }
   };
 
   return (
@@ -80,10 +105,10 @@ const AdminTips = () => {
                 <p className="text-sm text-muted-foreground mt-1">{tip.content}</p>
               </div>
               <div className="flex items-center gap-2 shrink-0">
-                <Button size="sm" variant={tip.is_active ? "outline" : "default"} onClick={() => toggleActive(tip.id, tip.is_active)}>
+                <Button size="sm" variant={tip.is_active ? "outline" : "default"} disabled={busyId === tip.id} onClick={() => toggleActive(tip.id, tip.is_active)}>
                   {tip.is_active ? "השבת" : "הפעל"}
                 </Button>
-                <Button size="sm" variant="ghost" aria-label={`מחק טיפ: ${tip.title}`} onClick={() => deleteTip(tip.id)}>
+                <Button size="sm" variant="ghost" aria-label={`מחק טיפ: ${tip.title}`} disabled={busyId === tip.id} onClick={() => deleteTip(tip.id)}>
                   <Trash2 className="w-4 h-4 text-destructive" />
                 </Button>
               </div>
