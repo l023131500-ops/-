@@ -56,6 +56,23 @@ async function enforceAiQuota(req: Request, res: Response): Promise<boolean> {
   return true;
 }
 
+// Express 4 (this adapter) does not catch rejections thrown inside an async
+// route handler, and registerRoutes has no catch-all error middleware — a
+// handler that throws (e.g. storage.ts's unwrap() on a real Supabase error)
+// leaves the request hanging with no response instead of failing fast. The
+// AI/branding routes below already guard themselves with their own
+// try/catch; this wrapper gives the same guarantee to the plain CRUD routes
+// (templates/projects/brands) that had none.
+function crud(handler: (req: Request, res: Response) => Promise<any>) {
+  return async (req: Request, res: Response) => {
+    try {
+      await handler(req, res);
+    } catch (e: any) {
+      res.status(500).json({ error: "שגיאת שרת: " + String(e?.message || e).slice(0, 200) });
+    }
+  };
+}
+
 export async function registerRoutes(httpServer: Server, app: Express): Promise<Server> {
   app.use((req, res, next) => { if (req.path.startsWith("/api")) res.setHeader("Cache-Control", "no-store"); next(); });
 
@@ -196,47 +213,47 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
   });
 
   // ---- תבניות ----
-  app.get("/api/templates", async (_req, res) => {
+  app.get("/api/templates", crud(async (_req, res) => {
     const t = await storage.listTemplates();
     res.json(t);
-  });
-  app.get("/api/templates/:id", async (req, res) => {
+  }));
+  app.get("/api/templates/:id", crud(async (req, res) => {
     const t = await storage.getTemplate(Number(req.params.id));
     if (!t) return res.status(404).json({ error: "לא נמצאה תבנית" });
     res.json(t);
-  });
+  }));
 
   // ---- פרויקטים ----
   // userId מגיע רק אם יש כותרת Authorization עם JWT תקף (auth-button.js
   // שולח אותו מ-localStorage['more30-auth'] כשמשתמש מחובר). בלי זה — כל
   // הרשימה, בדיוק כמו לפני התיוג. עם זה — רק העבודות של אותו משתמש.
-  app.get("/api/projects", async (req, res) => {
+  app.get("/api/projects", crud(async (req, res) => {
     const userId = await getUserIdFromToken(req.headers.authorization);
     res.json(await storage.listProjects(50, userId));
-  });
-  app.get("/api/projects/:id", async (req, res) => {
+  }));
+  app.get("/api/projects/:id", crud(async (req, res) => {
     const userId = await getUserIdFromToken(req.headers.authorization);
     const p = await storage.getProject(Number(req.params.id), userId);
     if (!p) return res.status(404).json({ error: "לא נמצא פרויקט" });
     res.json(p);
-  });
-  app.post("/api/projects", async (req, res) => {
+  }));
+  app.post("/api/projects", crud(async (req, res) => {
     const parsed = insertProjectSchema.safeParse(req.body);
     if (!parsed.success) return res.status(400).json({ error: parsed.error.flatten() });
     const userId = await getUserIdFromToken(req.headers.authorization);
     res.json(await storage.createProject(parsed.data, userId));
-  });
-  app.patch("/api/projects/:id", async (req, res) => {
+  }));
+  app.patch("/api/projects/:id", crud(async (req, res) => {
     const userId = await getUserIdFromToken(req.headers.authorization);
     const p = await storage.updateProject(Number(req.params.id), req.body, userId);
     if (!p) return res.status(404).json({ error: "לא נמצא פרויקט" });
     res.json(p);
-  });
-  app.delete("/api/projects/:id", async (req, res) => {
+  }));
+  app.delete("/api/projects/:id", crud(async (req, res) => {
     const userId = await getUserIdFromToken(req.headers.authorization);
     await storage.deleteProject(Number(req.params.id), userId);
     res.json({ ok: true });
-  });
+  }));
 
   /**
    * רקע AI — מייצר רק רקע/עיטור דקורטיבי (ללא טקסט/אנשים). הטקסט מולבש בצד הלקוח כשכבה.
@@ -292,43 +309,43 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
   });
 
   // רשימת מותגים שמורים (userId אופציונלי — ראה הערה מעל /api/projects)
-  app.get("/api/brands", async (req, res) => {
+  app.get("/api/brands", crud(async (req, res) => {
     const userId = await getUserIdFromToken(req.headers.authorization);
     const list = await storage.listBrands(50, userId);
     res.json(list);
-  });
+  }));
 
   // מותג יחיד
-  app.get("/api/brands/:id", async (req, res) => {
+  app.get("/api/brands/:id", crud(async (req, res) => {
     const userId = await getUserIdFromToken(req.headers.authorization);
     const b = await storage.getBrand(Number(req.params.id), userId);
     if (!b) return res.status(404).json({ error: "מותג לא נמצא" });
     res.json(b);
-  });
+  }));
 
   // יצירת מותג חדש (שומר את הבריף)
-  app.post("/api/brands", async (req, res) => {
+  app.post("/api/brands", crud(async (req, res) => {
     const parsed = insertBrandSchema.safeParse(req.body);
     if (!parsed.success) return res.status(400).json({ error: "נתונים לא תקינים", detail: parsed.error.message });
     const userId = await getUserIdFromToken(req.headers.authorization);
     const b = await storage.createBrand(parsed.data, userId);
     res.json(b);
-  });
+  }));
 
   // עדכון מותג (בריף / kit / לוגו)
-  app.patch("/api/brands/:id", async (req, res) => {
+  app.patch("/api/brands/:id", crud(async (req, res) => {
     const userId = await getUserIdFromToken(req.headers.authorization);
     const b = await storage.updateBrand(Number(req.params.id), req.body || {}, userId);
     if (!b) return res.status(404).json({ error: "מותג לא נמצא" });
     res.json(b);
-  });
+  }));
 
   // מחיקת מותג
-  app.delete("/api/brands/:id", async (req, res) => {
+  app.delete("/api/brands/:id", crud(async (req, res) => {
     const userId = await getUserIdFromToken(req.headers.authorization);
     await storage.deleteBrand(Number(req.params.id), userId);
     res.json({ ok: true });
-  });
+  }));
 
   // יצירת אסטרטגיית מותג + פלטה + טיפוגרפיה (Claude, עם גיבוי מקומי)
   app.post("/api/branding/strategy", async (req: Request, res: Response) => {
