@@ -573,6 +573,7 @@ const ContactInfoManager = () => {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [saveError, setSaveError] = useState(false);
+  const [cleanupWarning, setCleanupWarning] = useState(false);
 
   const fetchInfo = useCallback(async () => {
     const { data } = await supabase.from('knowledge_base').select('*').eq('category', 'פרטי_יצירת_קשר').eq('is_active', true);
@@ -592,6 +593,7 @@ const ContactInfoManager = () => {
   const handleSave = async () => {
     setSaving(true);
     setSaveError(false);
+    setCleanupWarning(false);
     const content = JSON.stringify({ address, phone: contactPhone, email: contactEmail, whatsapp });
     // Upsert via insert-then-cleanup (not delete-then-insert): if the insert fails,
     // the old row is never removed, so the public contact page/footer can never go blank.
@@ -607,7 +609,10 @@ const ContactInfoManager = () => {
       return;
     }
     const { error: cleanupError } = await supabase.from('knowledge_base').delete().eq('category', 'פרטי_יצירת_קשר').neq('id', inserted.id);
-    if (cleanupError) console.error('ContactInfoManager: cleanup of stale rows failed', cleanupError);
+    if (cleanupError) {
+      console.error('ContactInfoManager: cleanup of stale rows failed', cleanupError);
+      setCleanupWarning(true);
+    }
     setSaving(false);
     setSaved(true);
     setTimeout(() => setSaved(false), 3000);
@@ -642,6 +647,7 @@ const ContactInfoManager = () => {
           {saved ? '✅ נשמר!' : 'שמור פרטי קשר'}
         </Button>
         {saveError && <p className="text-sm text-destructive font-bold">שגיאה בשמירה — הפרטים הקודמים לא נמחקו, נסו שוב.</p>}
+        {cleanupWarning && <p className="text-sm text-amber-600 font-bold">הפרטים נשמרו, אך נותרה גרסה כפולה ישנה שלא נמחקה — פנו לתמיכה אם הבעיה חוזרת.</p>}
       </div>
     </div>
   );
