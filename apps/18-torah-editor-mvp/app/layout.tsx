@@ -28,12 +28,31 @@ export const metadata: Metadata = {
   }
 };
 
+const organizationJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'העורך התורני',
+  url: 'https://more30.com/orech',
+  description: 'עוזר AI לעריכה, הגהה, ניקוד ואימות מקורות בספרים תורניים',
+  contactPoint: {
+    '@type': 'ContactPoint',
+    telephone: '+972-2-3131500',
+    email: 'L023131500@gmail.com',
+    contactType: 'customer service',
+    availableLanguage: 'Hebrew'
+  }
+};
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="he" dir="rtl">
       <body>
         <a href="#main-content" className="skip-link">דלג לתוכן הראשי</a>
         {children}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+        />
         <script src="https://more30.com/auth-button.js" defer />
       </body>
     </html>
