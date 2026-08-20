@@ -13,7 +13,7 @@
 // (הרצל 42 -> עסקאות מ-15 גושים) חלה כאן שבעתיים: מייל שגוי גרוע ממייל שלא
 // נשלח.
 
-import { parcelAtPoint, parcelByGushHelka } from './cadastre';
+import { parcelAtPoint, parcelByGushHelka, parcelValidity } from './cadastre';
 import { emailConfigured, sendEmail } from './email';
 import { geocodeAddress } from './geocode';
 import { itmToWgs84 } from './itm';
@@ -75,15 +75,32 @@ async function resolvePoint(
   lng: number;
   gush: string | null;
   helka: string | null;
+  leadGush: string | null;
+  leadHelka: string | null;
   street: string | null;
   houseNum: number | null;
 } | null> {
+  // חלקת-מוביל (Block_lead/Plot_lead): חלקה שאוחדה/חולקה מחדש נרשמת אצל
+  // רשות המסים תחת חלקת המוביל, לא תחת גוש/חלקה שהמשתמש נרשם אליהם. בלי זה
+  // filterToParcel למטה מפספס בשקט עסקאות אמיתיות — וההתראה פשוט לעולם לא
+  // יוצאת, לא מציגה אזהרה כמו buildreport.ts/api/profile, כי אין כאן משתמש
+  // שרואה דוח. אותה מלכודת שכבר תוקנה ב-lib/buildreport.ts ו-api/profile.
+  async function leadOf(gush: string | null, helka: string | null) {
+    if (!gush || !helka) return { leadGush: null, leadHelka: null };
+    const v = await parcelValidity(gush, helka).catch(() => null);
+    return { leadGush: v?.leadGush ?? null, leadHelka: v?.leadHelka ?? null };
+  }
+
   // מסלול 1: גוש/חלקה נמסרו ישירות — הכי מדויק, אין צורך בגיאוקוד.
   if (alert.gush && alert.helka) {
     const parcel = await parcelByGushHelka(alert.gush, alert.helka);
     if (parcel?.centroidItm) {
       const { lat, lng } = itmToWgs84(parcel.centroidItm.x, parcel.centroidItm.y);
-      return { lat, lng, gush: alert.gush, helka: alert.helka, street: null, houseNum: null };
+      const lead = await leadOf(alert.gush, alert.helka);
+      return {
+        lat, lng, gush: alert.gush, helka: alert.helka,
+        ...lead, street: null, houseNum: null,
+      };
     }
     // גוש/חלקה שאינם מזוהים עוד (חלוקה מחדש וכד') — נופלים לכתובת אם יש.
   }
@@ -102,11 +119,13 @@ async function resolvePoint(
 
   const { street, houseNum } = parseStreetAndNumber(alert.address);
   const parcel = await parcelAtPoint(best.itmX, best.itmY).catch(() => null);
+  const lead = await leadOf(parcel?.gush ?? null, parcel?.helka ?? null);
   return {
     lat: best.lat,
     lng: best.lng,
     gush: parcel?.gush ?? null,
     helka: parcel?.helka ?? null,
+    ...lead,
     street,
     houseNum,
   };
@@ -205,7 +224,7 @@ export async function checkAreaAlert(alert: AreaAlertRow, baseUrl: string): Prom
 
     const candidates =
       point.gush && point.helka
-        ? filterToParcel(lookup.transactions, point.gush, point.helka)
+        ? filterToParcel(lookup.transactions, point.gush, point.helka, point.leadGush, point.leadHelka)
         : filterToAddress(lookup.transactions, [point.street], point.houseNum);
 
     const fresh = newDealsOnly(candidates, alert.created_at, alert.notified_deal_keys);

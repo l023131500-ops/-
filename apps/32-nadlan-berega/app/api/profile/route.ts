@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { geocodeAddress, verifyCity } from '@/lib/geocode';
-import { parcelAtPoint } from '@/lib/cadastre';
+import { parcelAtPoint, parcelValidity } from '@/lib/cadastre';
 import { fetchDealsAtPoint, parseStreetAndNumber, filterToParcel } from '@/lib/nadlan';
 import { fetchHousingIndex } from '@/lib/cbs';
 import { queryPlanningAtPoint } from '@/lib/xplan';
@@ -117,6 +117,16 @@ export async function GET(req: NextRequest) {
     }
   }
 
+  // חלקת-מוביל (Block_lead/Plot_lead): חלקה שאוחדה/חולקה מחדש נרשמת אצל
+  // רשות המסים תחת חלקת המוביל, לא תחת החלקה שהקדסטר מחזיר לנקודה. בלי זה
+  // filterToParcel מפספס בשקט עסקאות שקיימות בפועל (ראה ההערה ב-lib/nadlan.ts
+  // וב-lib/buildreport.ts, שכבר עושה זאת).
+  let validity: Awaited<ReturnType<typeof parcelValidity>> = null;
+  if (key.gush && key.helka) {
+    try { validity = await parcelValidity(key.gush, key.helka); }
+    catch { /* לא קריטי — הסינון פשוט לא יתפוס חלקת-מוביל */ }
+  }
+
   // אימות צולב מול הקדסטר. זהו האות החזק ביותר לזיהוי שגוי, משום שהיישוב
   // בשכבת החלקות מגיע ממקור בלתי תלוי לחלוטין בגיאוקודר. נבדק בפועל:
   // "הנביאים 5 צפת" הוחזר כ"הנשיאים 5 פת" והקדסטר חשף שהנקודה בפתח תקווה.
@@ -154,7 +164,9 @@ export async function GET(req: NextRequest) {
       const { street, houseNum } = parseStreetAndNumber(q);
       const lookup = await fetchDealsAtPoint(key.lat, key.lng, { street, houseNum });
       transactions = lookup.transactions;
-      parcelTransactions = filterToParcel(transactions, key.gush, key.helka);
+      parcelTransactions = filterToParcel(
+        transactions, key.gush, key.helka, validity?.leadGush, validity?.leadHelka,
+      );
 
       if (lookup.polygon) {
         dealsPolygonLabel = [lookup.polygon.street, lookup.polygon.houseNum]
