@@ -228,7 +228,7 @@ export default function HealthFundServicePage() {
             </label>
             <label className="space-y-1">
               <span className="text-xs font-medium text-muted-foreground">כתובת מגורים</span>
-              <Input value={address} onChange={(e) => setAddress(e.target.value)} placeholder="עיר, רחוב ומספר" data-testid="input-hf-address" />
+              <Input value={address} onChange={(e) => setAddress(e.target.value)} placeholder="עיר, רחוב ומספר" data-testid="input-hf-address" autoComplete="street-address" />
             </label>
           </div>
           <label className="space-y-1 block">

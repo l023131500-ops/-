@@ -750,7 +750,7 @@ export default function PublicHealthFunds() {
             <div className="space-y-1">
               <Label htmlFor="sw-city">עיר מגורים</Label>
               <Input id="sw-city" data-testid="input-switch-city" value={switchForm.city}
-                onChange={(e) => setSwitchForm({ ...switchForm, city: e.target.value })} placeholder="אופציונלי" />
+                onChange={(e) => setSwitchForm({ ...switchForm, city: e.target.value })} placeholder="אופציונלי" autoComplete="address-level2" />
             </div>
             <div className="space-y-1">
               <Label htmlFor="sw-people">מספר נפשות</Label>

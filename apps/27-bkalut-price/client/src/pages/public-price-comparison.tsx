@@ -734,7 +734,7 @@ export default function PublicPriceComparison() {
                   <Input placeholder="שם העסק *" value={submission.merchantName} onChange={(e) => setSubmission({ ...submission, merchantName: e.target.value })} data-testid="input-pc-sub-merchant" />
                   <Input placeholder="פרטי קשר (טלפון/מייל)" value={submission.merchantContact} onChange={(e) => setSubmission({ ...submission, merchantContact: e.target.value })} data-testid="input-pc-sub-contact" />
                   <Input placeholder="שם החנות *" value={submission.storeName} onChange={(e) => setSubmission({ ...submission, storeName: e.target.value })} data-testid="input-pc-sub-store" />
-                  <Input placeholder="עיר" value={submission.city} onChange={(e) => setSubmission({ ...submission, city: e.target.value })} data-testid="input-pc-sub-city" />
+                  <Input placeholder="עיר" value={submission.city} onChange={(e) => setSubmission({ ...submission, city: e.target.value })} data-testid="input-pc-sub-city" autoComplete="address-level2" />
                   <Input placeholder="שם המוצר *" value={submission.productName} onChange={(e) => setSubmission({ ...submission, productName: e.target.value })} data-testid="input-pc-sub-product" />
                   <Input placeholder="מותג" value={submission.brand} onChange={(e) => setSubmission({ ...submission, brand: e.target.value })} data-testid="input-pc-sub-brand" />
                   <Input placeholder="יחידה (למשל 1 ליטר)" value={submission.unit} onChange={(e) => setSubmission({ ...submission, unit: e.target.value })} data-testid="input-pc-sub-unit" />

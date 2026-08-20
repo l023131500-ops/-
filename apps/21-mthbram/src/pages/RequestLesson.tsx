@@ -300,9 +300,9 @@ const RequestLesson = () => {
               <ProgressiveFormStep visible={step === 16} stepIndex={16} showSkip={false} showBack onBack={() => setStep(15)}>
                 <div className="space-y-3">
                   <label className="font-display text-sm font-bold text-card-foreground flex items-center gap-2"><MapPin className="w-4 h-4 text-gold" /> כתובת השיעור</label>
-                  <Input value={addressCity} onChange={(e) => setAddressCity(e.target.value)} placeholder="עיר *" />
-                  <Input value={addressNeighborhood} onChange={(e) => setAddressNeighborhood(e.target.value)} placeholder="שכונה" />
-                  <Input value={addressStreet} onChange={(e) => setAddressStreet(e.target.value)} placeholder="רחוב *" />
+                  <Input value={addressCity} onChange={(e) => setAddressCity(e.target.value)} placeholder="עיר *" autoComplete="address-level2" />
+                  <Input value={addressNeighborhood} onChange={(e) => setAddressNeighborhood(e.target.value)} placeholder="שכונה" autoComplete="address-level3" />
+                  <Input value={addressStreet} onChange={(e) => setAddressStreet(e.target.value)} placeholder="רחוב *" autoComplete="street-address" />
                   <Button size="sm" className="bg-gradient-gold text-primary-foreground font-body hover:opacity-90" onClick={() => {
                     if (!addressCity.trim() || !addressStreet.trim()) { toast.error("נא למלא עיר ורחוב"); return; }
                     autoAdvance(SUBMIT_STEP);

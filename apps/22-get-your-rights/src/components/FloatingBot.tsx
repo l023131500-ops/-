@@ -900,7 +900,7 @@ const FloatingBot = () => {
                     </BotMessage>
                     <form onSubmit={handleCommunitySubmit} className="space-y-3 mt-3">
                       <Input placeholder="שם הקהילה" value={communityData.communityName} onChange={(e) => setCommunityData({ ...communityData, communityName: e.target.value })} required className="text-sm" />
-                      <Input placeholder="עיר" value={communityData.city} onChange={(e) => setCommunityData({ ...communityData, city: e.target.value })} required className="text-sm" />
+                      <Input placeholder="עיר" value={communityData.city} onChange={(e) => setCommunityData({ ...communityData, city: e.target.value })} required className="text-sm" autoComplete="address-level2" />
                       <Input placeholder="מיקום (שכונה/רחוב)" value={communityData.location} onChange={(e) => setCommunityData({ ...communityData, location: e.target.value })} className="text-sm" />
                       <SelectField value={communityData.style} options={communityStyles} placeholder="סגנון הקהילה" onChange={(v) => setCommunityData({ ...communityData, style: v })} />
                       <SelectField value={communityData.familyCount} options={["עד 50", "50-100", "100-200", "200-500", "500+"]} placeholder="כמות משפחות" onChange={(v) => setCommunityData({ ...communityData, familyCount: v })} />
