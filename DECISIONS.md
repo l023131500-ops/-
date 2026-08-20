@@ -9147,3 +9147,60 @@
     `:focus` (טרם נבדקה, מוצעת מסבב 407), או בדיקת `maxLength`/תבניות
     ולידציה (`pattern`) על שדות ת.ז./טלפון עם מספר ספרות קבוע (טרם
     נבדקה). via cloud server 167.99.131.167 [loop B]
+
+## 20/08/2026 — סבב 409 (loop B)
+
+409. **עדשת `maxLength` על שדות ת.ז./טלפון עם מספר ספרות קבוע, מוצעת
+    בסוף סבב 408.** ת.ז. ישראלית = 9 ספרות תמיד, טלפון = 10 ספרות
+    (מאומת מול `validateIdNumber`/`getPhoneError` הקיימים ב-22-get-
+    your-rights — אותם כללי אורך בדיוק). Explore agent סרק את כל 7
+    האפליקציות החיות (17/18/21/22/24/27/28) לשדות טלפון/ת.ז. בטפסים
+    ציבוריים בלבד; קריאה ידנית מלאה (לא רק grep) אימתה כל ממצא.
+
+    ממצאים אמיתיים ב-6 מתוך 7 (לא ב-17/18, ללא שדות רלוונטיים):
+    **21-mthbram**/`StudyDayUpload.tsx:209` (טלפון גבאי); **22-get-
+    your-rights** — הכי הרבה, 11 שדות פרוסים על פני `FloatingBot.tsx`
+    (טופס "משפחה" x2, טופס "קהילה", `ContactForm` המשותף, וקבוצת
+    "פרטים אישיים"/"בן-זוג" בטופס המקיף — שני האחרונים היו חסרי
+    `inputMode` בכלל, לא רק `maxLength`, פער שהוחמץ בסבב 408),
+    `Footer.tsx` (טלפון+ת.ז. בטופס הצטרפות), `RightsCategories.tsx`
+    (טלפון+ת.ז.+ת.ז. בן-זוג בטופס הראשי — האחרון גם היה חסר
+    `inputMode` בכלל); **24-galilee-connect-hub**/
+    `ServiceRequestForm.tsx` (טלפון בשני משתני הטופס, קומפקטי ומלא —
+    שניהם היו חסרי `type`/`inputMode` בכלל, לא רק `maxLength`);
+    **27-bkalut-price** — `service-form.tsx` (שדה טלפון דינמי בשאלון,
+    ושדות טלפון/ת.ז. המשותפים ב-`contactFields`/`extendedFields`
+    שהיו חסרי `inputMode` גם הם), `public-community.tsx` (שדה טלפון
+    דינמי + טופס קשר קהילה), `public-potential.tsx` (טלפון+ת.ז.
+    אופציונלי), ושני קבצי שיווק סטטיים (`marketing/bkalut/index.html`,
+    `marketing/financial/index.html`, `maxlength` אות קטנה); **28-
+    kupot-health-funds**/`SwitchFundDialog.tsx` (טלפון+ת.ז. בטופס
+    מעבר קופה).
+
+    התיקון: הוספת `maxLength={9}`/`{10}` (React) או `maxlength="10"`
+    (HTML גולמי), ובמקומות בודדים גם `inputMode`/`type` שהיו חסרים
+    לגמרי על אותו שדה בדיוק שכבר נערך (לא הרחבת scope לקבצים חדשים —
+    רק תיקון פערים שנחשפו תוך כדי עריכת אותה שורה). שדות עם אורך
+    משתנה (שם, כתובת, גיל ילדים, מספר ילדים עם `min`/`max` קיימים)
+    לא נגעו בהם. תוספת תכונות בלבד, ללא שינוי DOM/מבנה/עיצוב. `git
+    diff --stat`: 11 קבצים, 27+/16-. בדיקת איזון סוגריים (Python) נקייה
+    על כל 9 קובצי ה-TSX. אומת שאף קובץ שנערך ב-27-bkalut-price אינו
+    ברשימת הקבצים המוגנים ב-CLAUDE.md הפנימי שלו
+    (`App.tsx`/`admin-login.tsx`/`routes.ts`/`utils.ts`); לא נמצא
+    CLAUDE.md פנימי ב-21/22/24/28. לא הופעל build/dev-server (לפי
+    הנחיות ההרצה). ענף `fix/b-22-whatsapp-noopener-round395-0820`
+    (שרשרת הענפים היא המקור המלא היחיד ל-loop B, לא `main`), קומיט
+    `e9a5fb00`, נדחף (מפעיל פריסות Vercel תחת `more30.com/mthbram`,
+    `more30.com/zchuyot`, `more30.com/galil`, `more30.com/mechiron`,
+    `more30.com/kupot`).
+
+    **הבא בתור:** עדשת ה-`maxLength`/`pattern` סגורה כעת בכל 7
+    האפליקציות (בשילוב עם `autoComplete`/`inputMode` מסבבים 396/408).
+    נושא #245 (RLS על `csjekrvukbdznetsrodj`, מוגן — סכימת `csj`, לא
+    לגעת) ו-#250 (RLS על 21-mthbram, חסום MCP) נשארים חסומים. אפשרויות
+    להמשך: עדשת ניגודיות על מצב `disabled`/`:hover`/`:focus` (טרם
+    נבדקה, מוצעת מסבב 407), רענון תקופתי של עדשת המחירון/מיתוג 'עולם
+    הסטארטאפים' (אומת נקי שוב-ושוב, ראה סבב 396), או עדשת `pattern`
+    HTML5 בפועל (מעבר ל-`maxLength` בלבד — ולידציית תבנית מלאה,
+    `pattern="[0-9]{9}"`, לעומת רק הגבלת אורך). via cloud server
+    167.99.131.167 [loop B]
