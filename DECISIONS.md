@@ -8498,3 +8498,63 @@
     `21-mthbram/pages/Questionnaire.tsx` לבדוק אם זו רגרסיה
     שכדאי לתקן (route חסר) או קוד מת מכוון.
     via cloud server 167.99.131.167 [loop B]
+
+## 20/08/2026 — סבב 397 (loop B)
+
+397. **בדיקת עמוד היתום `21-mthbram/pages/Questionnaire.tsx` (מוצע בסוף
+    סבב 396), ואז עדשת `aria-label` חדשה על `<select>`/checkbox ציבוריים
+    ללא שם נגיש.** קודם הרצתי חקירה מלאה על העמוד היתום: `App.tsx` של
+    21-mthbram מכיל 20 routes, אף אחד לא מצביע על `Questionnaire`/
+    `SeekerForm`/`TeacherForm`. בדיקת `git log --follow` על `App.tsx`
+    (3 קומיטים בלבד, כל `apps/` נדחס לקומיט יחיד `cb6e4f58` שהעלה קוד
+    מהדיסק המקומי ב-03/08/2026) מראה שהעמוד מעולם לא היה מקושר בהיסטוריית
+    הריפו הזה — לא רגרסיה של route שהוסר, אלא גרסה כפולה/ננטשת שהוחלפה
+    ע"י `RequestLesson.tsx` (`/request-lesson`) ו-`TeachersLanding.tsx`
+    (`/teachers`, מקושר מ-Navbar) ו-`FloatingChatBot.tsx` הגלובלי — כולם
+    כותבים לאותן טבלאות `seeker_leads`/`teacher_leads` שקיימות בפועל
+    ב-DB. הוחלט לא למחוק ולא לקשר route חדש — לפי הוראת ה-scope "לעולם
+    לא למחוק תכונה קיימת", וגם כי אין תועלת משתמש: הפונקציונליות כבר
+    חיה ונגישה דרך שני הדפים האחרים.
+
+    עברתי לעדשת `<select>`/checkbox ציבוריים ללא שם נגיש (aria-label/
+    label מקושר) — המשך הסדרה של label/htmlFor (סבבים 387-393).
+    הרצתי סוכן Explore על כל 7 האפליקציות החיות (17/18/21/22/24/27/28),
+    בהיקף רק לדפים ציבוריים (לא מאחורי login/ProtectedRoute — אימתתי כל
+    route בעצמי מול `App.tsx`). 10 ממצאים אמיתיים ב-4 אפליקציות:
+    **21-mthbram** — `StudyDayEventForm.tsx` (route `/shul/:accessToken`,
+    ציבורי עם token) 3 selects (נושא השיעור/שעה/בחר בית כנסת) עם
+    `<Label>` שכן לא מקושר; `BulkLessonForm.tsx` (route
+    `/bulk-upload/:token`, ציבורי עם token) — קומפוננטת `SmartSelect`
+    המשותפת לא העבירה את ה-`label` שלה כ-`aria-label`, ועוד 4 selects
+    ישירים (audience_type/schedule_type/day-time/specific_time) עם אותה
+    בעיה. **22-get-your-rights** — `FloatingBot.tsx` (הצ'אטבוט הציבורי
+    בעמוד הבית), קומפוננטת `SelectField` המשותפת (8 מופעים) הסתמכה רק
+    על `<option disabled>` ראשוני שנעלם אחרי בחירה. **27-bkalut-price**
+    — `public-potential.tsx` (route `/potential`), `public-price-
+    comparison.tsx` (route `/` ו-`/price-comparison`, 6 selects של
+    פילטרים) ו-`service-form.tsx` (route `/service/:id`, 2 selects) —
+    כולם ללא שם נגיש עקבי. **28-kupot-health-funds** —
+    `SwitchFundDialog.tsx` (מוצג מ-`TopicCard` בעמוד הבית `/`), 2
+    selects (קופה נוכחית/קופת יעד) עם `<Label>` דרך קומפוננטת `Field`
+    המשותפת שלא מקשרת `htmlFor`.
+
+    כל 10 התיקונים הוסיפו `aria-label` יחיד (או פרמטר דינמי כמו
+    `` `שעה ליום ${day}` ``) לרכיב `select`/`SelectTrigger` קיים, ללא
+    שינוי מבני. `git diff --stat`: 7 קבצים, 20+/17-. בדיקת איזון סוגריים
+    (Python, כולל `[]`) על כל 7 הקבצים לאחר העריכה: תקין בכולם. לא
+    הופעל build/dev-server (לפי הנחיות ההרצה).
+
+    אותו ענף `fix/b-22-whatsapp-noopener-round395-0820` (שרשרת הענפים
+    היא המקור המלא הבודד עבור loop B, לא `main`), קומיט `c714b855`,
+    נדחף (מפעיל פריסות Vercel תחת `more30.com/mthbram`,
+    `more30.com/zchuyot`, `more30.com/mechiron`, `more30.com/kupot`).
+
+    **הבא בתור:** עדשת ה-`aria-label` על select/checkbox נראית ממוצה
+    כעת על כל 7 האפליקציות. נושא #245 (RLS על `csjekrvukbdznetsrodj`,
+    שים לב מוגן — סכימת `csj` בהיקף ההגנה) ו-#250 (RLS על 21-mthbram,
+    חסום MCP) נשארים חסומים. אפשרויות להמשך: בדיקת meta viewport/
+    theme-color עקבי בין 7 האפליקציות, עדשת `alt` על אייקוני SVG
+    דקורטיביים בלי `aria-hidden`, או בדיקת focus-visible/tabIndex
+    עקביים על אלמנטים אינטראקטיביים מותאמים-אישית (לא native
+    button/a).
+    via cloud server 167.99.131.167 [loop B]
