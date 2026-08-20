@@ -3382,3 +3382,44 @@
      portal/ עברו עכשיו את הדפוס הזה במלואו; הכיוון הבא שנותר פתוח הוא
      בדיקת מיגרציות-שלא-הוחלו על 02/03/10/18 (המלצת סבב 43/46, עדיין לא
      בוצעה).
+283. **בדיקת מיגרציות-שלא-הוחלו (המלצת סבב 43/46/47) — הושלמה, נקייה.**
+     מבין 01-16, רק ל-01/15/16/18 יש תיקיית `supabase/migrations` אמיתית
+     (02/03 יש רק `schema.sql` תיאורי, לא מיגרציות; 10 אינו vendored כלל).
+     השוויתי כל קובץ מקומי מול `list_migrations` בפרויקט החי המתאים: 01
+     (10 קבצים) ו-16 (3 קבצים) מול `bieebmnmkffwbqlsfozh`/`uhnrgujb` —
+     כולם מיושמים, כולל `seed_std_admin_account` (שם-קובץ מקומי שונה
+     מ-`seed_std_admin_account_v2` שיושם בפועל, אך אימתתי את הנתונים
+     החיים עצמם — `admin@admin.local` קיים עם `super_admin`, תואם לתוכן
+     הקובץ, אין דריפט אמיתי). 18 (`htr_jobs`, קובץ יחיד) — מיושם. 15-egod
+     (`hkkkynyoigzlttpynoeo`) עדיין לא נגיש דרך ה-MCP הזה — לא ניתן
+     לאמת, נשאר כפי שהיה. גם אימתתי ש-`ai_rate_limit_hit`/
+     `invite_rate_limit_hit` (שסבב 40 הזכיר) קיימים חיים ב-01. אין ממצא
+     לתקן — נסגר הכיוון הזה.
+284. **02-igud-transcribe / `app/api/admin/jobs/route.ts` (worker
+     התמלול) — 10 קריאות `.update()`/`.insert()` על סטטוס job/upload לא
+     בדקו `{error}` בכלל, לעומת `upErr`/`dlErr`/`tErr`/שגיאת ה-storage
+     upload באותו קובץ שכן נבדקות. החמור מביניהן: אם הכתיבה שמסמנת
+     `status: "done"`/`"error"` עצמה נכשלת בשקט, ה-job/upload יכולים
+     להישאר תקועים לנצח ב-`"running"`/`"processing"` בלי שום עדות למה —
+     אותה משפחת-באג בדיוק שתוקנה ב-30-zchuyotpro-crm (#251-253).
+     בנוסף, שלושה דפי אדמין קליינט (`admin/uploads`, `admin/coupons`,
+     `admin/glossary`) — handlers של `remove`/`toggle` ירו `fetch()`
+     DELETE/PATCH בלי לבדוק `res.ok`, לעומת `submit`/`load`/`open`
+     באותם קבצים בדיוק שכן בודקים ומציגים `alert(d.error)` בכשלון.
+     first scan של האפליקציה הזו ללנס הזה (round 46/47 רק סקרו
+     01/03/15/16 + admin/portal המרכזיים).
+285. **התיקון:** ב-`route.ts` — עטפתי כל אחת מ-10 הכתיבות ב-
+     `const {error} = await ...; if (error) console.error(...)`, אפס
+     שינוי בכל תשובת success. בשלושת דפי הלקוח — הוספתי `if (res.ok) {
+     load() } else { alert(d.error || "שגיאה") }` תואם 1:1 לתבנית
+     הקיימת כבר באותם קבצים (`submit`). אפס שינוי בנתיב הצלחה. אימתתי
+     איזון סוגריים (`node -e`, `{`/`}`/`(`/`)`/`[`/`]`, כולם 0) בארבעת
+     הקבצים + קריאה ידנית מלאה של `git diff`. הקבצים כבר עוקבים
+     (`M`, לא `A`) — נדרש `git add -f` כרגיל (`apps/**` ב-`.gitignore`,
+     חוץ מ-`app.json`). ענף `fix/a-igud-transcribe-silent-write-fail-0820`,
+     קומיט `aa59742b`, פושed (מפעיל דיפלוי Vercel תחת `more30.com/tamlul`).
+     **הבא בתור:** לנס ה-silent-write-fail על 01-16 נראה כמעט ממוצה כעת
+     (01/02/03/04/06/10/12/15/16 כולם נבדקו); סבב הבא כדאי שיפתח בלנס
+     חדש — למשל בדיקת duplicate-submit על 04-imud-torani/06-kupot-holim/
+     12-smel-ndln (רק silent-write-fail נבדק שם, סבב 42), או חזרה לבדוק
+     האם 15-egod נגיש כעת דרך ה-MCP (נבדק לאחרונה בסבב זה — עדיין לא).
