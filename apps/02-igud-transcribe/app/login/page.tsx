@@ -63,7 +63,11 @@ export default function LoginPage() {
           </h1>
 
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-3 py-2 rounded text-sm mb-4">
+            <div
+              role="alert"
+              aria-live="assertive"
+              className="bg-red-50 border border-red-200 text-red-700 px-3 py-2 rounded text-sm mb-4"
+            >
               {error}
             </div>
           )}
