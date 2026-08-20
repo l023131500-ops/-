@@ -4531,3 +4531,70 @@
      pricing עם גישת חילוץ ממוקד (מסבב 65, לא wrap גורף), (ב) ניסיון
      חוזר תקופתי ל-#167/#201 (חסימת Lovable, 15-egod), (ג) בדיקה של
      קבוצות רדיו (`type="radio"`) שטרם נבדקו באף עדשה קודמת.
+
+## 20/08/2026 (LOOP A — סבב 68) — 01-torah-platform: `dir="ltr"` על טלפון/מייל/מחיר ב-9 קבצים, עדשה שטרם נבדקה על האפליקציה הזו
+
+389. **בדקתי מחדש `core.run_progress`/`core.issues` לפני שהתחלתי.** סבב 67
+     סגור (commit `0fabcf63`, תאם ל-HEAD, ענף `fix/a-select-accessible-
+     name-0820` כבר ב-`origin`). כל הפריטים הפתוחים ב-`core.issues` עם
+     `owner='agent'` בתחום 01-16+תשתית חסומים באותה צורה מתועדת כמו
+     בסבבים הקודמים (#167/#201 על Lovable/15-egod, #120 מחכה להכרעת
+     משתמש, #115/#62 מחוץ לתחום 01-16, #6/#5 פיצ'ר/עיצוב רוחביים).
+390. **בדקתי את שלושת הפריטים שסבב 67 השאיר בתור, כולם חזרו ריקים
+     או לא-ניתנים-לתיקון:** (א) עדשת שם-נגיש לקבוצות רדיו — סריקה
+     מלאה של 01-16+40-gannenet (דילוג על 08/09) לא מצאה אף `<input
+     type="radio">`/`RadioGroupItem` בלי שם נגיש — כל המופעים כבר
+     עטופים ב-`<label>` אמיתי או שהם קומפוננטות בסיס לא-בשימוש.
+     (ב) עדשת alt-text על תמונות אינפורמטיביות — כל 60+ תגיות `<img>`
+     בתחום כבר מכילות `alt` (ריק במכוון על לוגואים דקורטיביים, מלא
+     על תמונות משמעותיות). (ג) עדשת password show-toggle — כל שדה
+     `type="password"` בתחום כבר מכיל toggle עובד (הועתק בעבר מ-loop
+     B). פתחתי עדשה חדשה במקום: ביקורת IDOR (בדיקת בעלות חסרה)
+     ב-API routes. מצאתי 3 מועמדים אמיתיים ב-03-igud-ads
+     (`/api/projects/[id]`, `/api/generations/[id]/select`,
+     `/api/transcribe/export/[id]`) — נבדקו לעומק וסומנו כ**לא-לתיקון**:
+     כל שלושתם חלק מזרימת יצירת-מודעה/תמלול אנונימית מבוססת-קופון,
+     בלי חשבון משתמש כלל (`POST /api/projects`, `POST
+     /api/transcribe/uploads` לא דורשים session), כאשר ה-UUID של
+     הפרויקט/וריאציה/העלאה משמש כטוקן-יכולת (capability token) בכוונה
+     — הוספת בדיקת session הייתה שוברת את הזרימה הלגיטימית עצמה
+     (הפרת "אפס רגרסיה"). גם מועמד רביעי (`01-torah-platform`
+     Edge Function `ai-match-teacher`) נבדק ונמצא כבר ממוגן בהערות
+     קוד מפורשות מסבב קודם (cf-connecting-ip + הגבלת קצב) — לא נגעתי.
+391. **פתחתי עדשה חדשה תחתיה: `dir="ltr"` על טלפון/מייל/מחיר,
+     שטרם נבדקה מעולם על 01-torah-platform (רק keyboard-nav נבדק שם
+     בסבב 60).** Explore agent סרק 01-torah-platform + 10-bkalot-rights
+     (סטטי, אין React) + 40-gannenet (המועמד היחיד היה `pricing/
+     page.tsx:22`, נדחה — `t.price` הוא שדה מעורב שמכיל גם מחרוזת
+     עברית "מותאם" וגם מספר, לא pure-LTR קבוע). אני עצמי אימתתי כל
+     מועמד ב-01-torah-platform בקריאה ישירה לפני עריכה (לקח מסבב 59)
+     וקיבעתי 9 קבצים: `components/Footer.tsx` (טלפון+מייל בעמודת
+     "אודות", טלפון בכרטיס וואטסאפ), `components/layout/Footer.tsx`
+     (טלפון+מייל), `pages/public/SynagogueDetail.tsx` (טלפון בית
+     כנסת), `components/LessonDetailModal.tsx` (טלפון/טלפון-רב/מייל
+     איש קשר לשיעור), `pages/admin/Users.tsx` (מייל+טלפון בטבלת
+     ניהול), ו-4 עמודי חנות `pages/shop/{Cart,Checkout,ProductDetail,
+     ShopCatalog}.tsx` (`formatILS()` — אומת כ-`Intl.NumberFormat("he-
+     IL",{style:"currency"})`, פלט LTR טהור, אף פעם לא מעורב במילה
+     עברית). ב-`LessonDetailModal.tsx` המחרוזת "טלפון הרב: {מספר}"
+     נשארה כטקסט עברי רגיל — רק המספר עצמו עטוף ב-`<span dir="ltr">`,
+     לא כל השורה (אותו כלל שנקבע בסבב 64 למניעת היפוך סדר מילים
+     עבריות). אימתתי שכל 9 הקבצים חיים/מוגשים דרך `App.tsx` (routes
+     `/synagogues/:id`, `/shop`, `/shop/:slug`, `admin/users`, ושני
+     ה-Footer דרך `PublicLayout`/`Invite`/`IndexLegacy`) לפני העריכה.
+392. **אפס רגרסיה מאומתת:** `git diff --stat` — 9 קבצים, 18 שורות
+     נוספו, 18 הוסרו (כל שינוי הוא הוספת `dir="ltr"`/עטיפת `<span>`
+     סביב ערך קיים, בלי נגיעה ב-`value`/`onClick`/מבנה JSX/קלאסים).
+     אין `tsc`/`npm` בסביבה הזו; אומת בקריאה מלאה של כל קובץ לפני
+     ואחרי + `git diff` מלא + בדיקת איזון סוגריים/מאמרות ב-Node על
+     כל תשעת הקבצים (כולם מאוזנים). קבצי `01-torah-platform/src`
+     מוחרגים כברירת מחדל ב-`.gitignore` הכללי אך כבר עוקבים היסטורית
+     — `git add -f` נדרש (אותו דפוס חוזר כמו 15-egod/40-gannenet).
+393. **הבא בתור:** אותה עדשה (`dir="ltr"` טלפון/מייל/מחיר) עדיין לא
+     נבדקה במלואה על שאר עמודי 01-torah-platform שה-Explore agent
+     איתר אך לא אימת שורה-אחר-שורה בעצמי (`Synagogues.tsx`,
+     `Mikvaot.tsx`, `RabbiPublic.tsx`, `LessonDetail.tsx`,
+     `Attendance.tsx`, `PrayerTimesTab.tsx`, `PortalMessagesTab.tsx`,
+     `PublicOrgPage.tsx`, `PublicRabbiPage.tsx`, `MatchingTab.tsx`) —
+     מועמד סביר לסבב הבא. גם ניסיון חוזר תקופתי ל-#167/#201, וגישת
+     החילוץ הממוקד ל-05/40-gannenet/pricing שנדחתה בסבב 65/68.
