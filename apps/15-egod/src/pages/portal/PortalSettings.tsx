@@ -245,7 +245,7 @@ const PortalSettings = () => {
                 <div className="grid grid-cols-3 gap-3">
                   {photos.map(p => (
                     <div key={p.id} className="relative group aspect-square rounded-lg overflow-hidden border border-border">
-                      <img src={p.image_url} alt="" className="w-full h-full object-cover" />
+                      <img src={p.image_url} alt={p.caption || "תמונה בגלריה"} className="w-full h-full object-cover" />
                       <button onClick={() => deletePhoto(p.id)} disabled={photoBusy}
                         className="absolute top-2 left-2 bg-destructive text-destructive-foreground rounded-full p-1.5 opacity-0 group-hover:opacity-100 transition disabled:opacity-50" aria-label="מחיקת תמונה">
                         <Trash2 className="w-3.5 h-3.5" />
@@ -277,7 +277,7 @@ const ImageUploader = ({ id, label, url, onChange, onClear }: {
       <label htmlFor={id} className="text-sm font-medium mb-2 block">{label}</label>
       <div className="flex items-center gap-3">
         <div className="w-20 h-20 rounded-lg border border-border bg-muted flex items-center justify-center overflow-hidden">
-          {url ? <img src={url} alt="" className="w-full h-full object-cover" /> : <ImageIcon className="w-6 h-6 text-muted-foreground" />}
+          {url ? <img src={url} alt={label} className="w-full h-full object-cover" /> : <ImageIcon className="w-6 h-6 text-muted-foreground" />}
         </div>
         <div className="flex flex-col gap-1">
           <input id={id} type="file" accept="image/*" hidden ref={ref} onChange={onChange} />
