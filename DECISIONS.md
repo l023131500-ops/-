@@ -7465,3 +7465,56 @@
     פרויקט `aypsqqvfohekxxuqsmrw` לא נגיש), או עדשה חדשה — טפסים
     עם auto-save שקט על שדות רגישים.
     via cloud server 167.99.131.167 [loop B]
+
+## 20/08/2026 — סבב 374 (loop B)
+
+374. **`apps/22-get-your-rights/src/pages/AdminLeads.tsx` — שני
+    פקדי `<select>` סינון (מקור, שורה 299; סוג שירות, שורה 303)
+    היו ללא שם נגיש**, בעוד ש-`<select>` אחרים באותה אפליקציה
+    (`AdminRightsReference.tsx`, `RightsCategories.tsx`) כבר נושאים
+    `aria-label`, מה שמאשר את הדפוס הקיים. הוספתי
+    `aria-label="סינון לפי מקור"` ו-`aria-label="סינון לפי סוג
+    שירות"` בהתאמה — שינוי attribute בלבד, אפס שינוי לוגיקה/פריסה.
+    אומת דרך `git diff` (2 הוספות/2 מחיקות, שינוי מדויק של 2
+    שורות) לפני commit. `commit 3c7f8b8e`, ענף
+    `fix/b-22-getrights-adminleads-select-aria-label-0820`.
+
+    **הבא בתור:** נושא #250 (RLS על `21-mthbram`, חסום MCP), או
+    עדשה חדשה — auto-save שקט על שדות רגישים.
+    via cloud server 167.99.131.167 [loop B]
+
+## 20/08/2026 — סבב 375 (loop B)
+
+375. **פתיחת עדשת auto-save שקט על שדות רגישים (הוצעה בסוף סבב
+    373), על פני כל 7 האפליקציות החיות בהיקף loop B**
+    (17/18/21/22/24/27/28). Explore agent סרק את כל 7 האפליקציות
+    אחר `onChange`/`onBlur` שמפעיל `mutate()`/כתיבה ישירה בלי
+    feedback על הצלחה. 6 מתוך 7 נקיות (כל ה-mutations הרלוונטיים
+    כבר כוללים `onSuccess` עם toast/refresh גלוי, או שאין דפוס
+    auto-save בכלל). הממצא האמיתי: `apps/27-bkalut-price/client/
+    src/pages/financial.tsx` — שלושה `useMutation` שכתובים ישירות
+    מ-`onChange` (לא כפתור submit): `OpportunitiesTab.update`
+    (שורה 555, `<select>` סטטוס הזדמנות), `LeadsTab.update` (שורה
+    697, `<select>` סטטוס פנייה — עסקי/משק בית), ו-`TipsTab.update`
+    (שורה 761, checkbox נראות טיפ ללקוחות) — לכולם היה `onError`
+    עם toast, אבל **לא** `onSuccess` toast, כך שסטטוס עסקי-קריטי
+    (הזדמנות/ליד/נראות תוכן) משתנה בשקט ב-DB בלי שום אישור למשתמש
+    שהשינוי אכן נשמר. תוקן על ידי הוספת `toast({ title: ... })`
+    בתוך `onSuccess` (לצד ה-`invalidateQueries` הקיים), תואם בדיוק
+    לדפוס ההצלחה הקיים כבר באותו קובץ (`onSuccess` של הוספת לקוח,
+    שורה 286; הקצאת מאמן, שורה 598). אפס שינוי ללוגיקת
+    mutation/API/query-shape — רק feedback. בדיקת איזון סוגריים
+    ב-python על הקובץ המלא אחרי העריכה — תקין (531/531+455/455+
+    72/72). אין build/dev-server זמין לפי הנחיית ההרצה — לא `tsc`.
+    הקובץ תחת `apps/27-bkalut-price/client`, חסום ב-gitignore,
+    שימוש ב-`git add -f` לפי התקדים הקיים. ענף
+    `fix/b-27-bkalut-financial-status-silent-savesuccess-0820`.
+
+    **זה סוגר את עדשת auto-save שקט על פני כל 7 האפליקציות החיות
+    בהיקף loop B.**
+
+    **הבא בתור:** נושא #250 (RLS על `21-mthbram`, חסום MCP —
+    פרויקט `aypsqqvfohekxxuqsmrw` לא נגיש), או עדשה חדשה
+    (validation clientside שחסרה לפני כתיבה, או race condition
+    נוסף שטרם נבדק).
+    via cloud server 167.99.131.167 [loop B]

@@ -527,7 +527,7 @@ function OpportunitiesTab({ client }: { client: FinClient | null }) {
   });
   const update = useMutation({
     mutationFn: async ({ id, status }: { id: number; status: string }) => apiRequest("PATCH", `/api/financial/opportunities/${id}`, { status }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["/api/financial/opportunities"] }),
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["/api/financial/opportunities"] }); toast({ title: "הסטטוס עודכן" }); },
     onError: () => toast({ title: "עדכון הסטטוס נכשל", variant: "destructive" }),
   });
   return (
@@ -678,7 +678,7 @@ function LeadsTab() {
   const { data: list = [] } = useQuery<FinLead[]>({ queryKey: ["/api/financial/leads"] });
   const update = useMutation({
     mutationFn: async ({ id, status }: { id: number; status: string }) => apiRequest("PATCH", `/api/financial/leads/${id}`, { status }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["/api/financial/leads"] }),
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["/api/financial/leads"] }); toast({ title: "סטטוס הפנייה עודכן" }); },
     onError: () => toast({ title: "עדכון הפנייה נכשל", variant: "destructive" }),
   });
   return (
@@ -724,7 +724,7 @@ function TipsTab() {
   });
   const update = useMutation({
     mutationFn: async ({ id, patch }: { id: number; patch: any }) => apiRequest("PATCH", `/api/financial/tips/${id}`, patch),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["/api/financial/admin/tips"] }),
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["/api/financial/admin/tips"] }); toast({ title: "הטיפ עודכן" }); },
     onError: () => toast({ title: "עדכון הטיפ נכשל", variant: "destructive" }),
   });
   const del = useMutation({
