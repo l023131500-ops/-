@@ -1189,6 +1189,7 @@ const KnowledgeManager = () => {
   const [kbImage, setKbImage] = useState<File | null>(null);
   const [kbImagePreview, setKbImagePreview] = useState<string | null>(null);
   const [actionError, setActionError] = useState('');
+  const [saving, setSaving] = useState(false);
   const kbFileRef = useRef<HTMLInputElement>(null);
 
   const fetchItems = useCallback(async () => {
@@ -1204,6 +1205,7 @@ const KnowledgeManager = () => {
   const handleAdd = async () => {
     if (!title.trim() || !content.trim() || !category.trim()) return;
     setActionError('');
+    setSaving(true);
     let imageUrl: string | undefined;
     if (kbImage) {
       imageUrl = await uploadImage(kbImage, 'site-images') || undefined;
@@ -1215,10 +1217,12 @@ const KnowledgeManager = () => {
     });
     if (error) {
       setActionError('הוספת הפריט נכשלה עקב תקלה. נסו שוב.');
+      setSaving(false);
       return;
     }
     await fetchItems();
     setTitle(''); setContent(''); setKbPhone(''); setKbAddress(''); setContactName(''); setSubcategory(''); setKbImage(null); setKbImagePreview(null);
+    setSaving(false);
   };
 
   const handleDelete = async (item: KnowledgeItem) => {
@@ -1297,9 +1301,9 @@ const KnowledgeManager = () => {
             )}
           </div>
         </div>
-        <Button onClick={handleAdd} disabled={!title.trim() || !content.trim() || !category.trim()}
+        <Button onClick={handleAdd} disabled={saving || !title.trim() || !content.trim() || !category.trim()}
           className="w-full gap-2 font-bold bg-gradient-hero text-primary-foreground disabled:opacity-50">
-          <Plus className="w-4 h-4" /> הוסף למאגר
+          <Plus className="w-4 h-4" /> {saving ? 'מוסיף...' : 'הוסף למאגר'}
         </Button>
         {actionError && <p className="text-sm text-destructive font-bold">{actionError}</p>}
 
