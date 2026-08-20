@@ -197,6 +197,7 @@ export default function Editor() {
               onChange={(e) => { setTitle(e.target.value); setDirty(true); }}
               className="w-56 bg-transparent font-serif text-lg font-bold text-foreground outline-none"
               data-testid="input-book-title"
+              aria-label="שם הספר"
             />
             <div className="text-[11px] text-muted-foreground">{tpl!.name}</div>
           </div>
