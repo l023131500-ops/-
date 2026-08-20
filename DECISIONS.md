@@ -9185,3 +9185,50 @@
      חד-משמעיים מסבב 175 (עדיין דורשים כלי רינדור אמיתי), או
      `core.project_tasks`/`core.project_bugs` (עדיין אותם 5
      פריטים חסומים).
+
+## 20/08/2026 — סבב 186 (loop A)
+
+900. **המשך עדשת ה-`autoComplete` על מידע-אישי (WCAG 1.3.5)
+     שנפתחה בסבב 185** — הפעם על `15-egod`, שסומן כמועמד הבא
+     בתור כי `TeacherForm.tsx`/`SeekerForm.tsx` שלו בנויים באותו
+     מבנה בדיוק כמו הגרסה שכבר תוקנה ב-`01-torah-platform`
+     (`components/questionnaire/`, אותם שמות שדה בערך). קראתי את
+     שני הקבצים במלואם לפני עריכה כדי להחיל את אותו סינון שנקבע
+     בסבב 185: SC 1.3.5 חל רק על מידע *של ממלא הטופס עצמו*.
+901. **`TeacherForm.tsx` (מגיד השיעור ממלא על עצמו):** נוסף
+     `autoComplete="name"` ל-`fullName`; `type="tel"
+     inputMode="tel" autoComplete="tel"` ל-`phone` (היה חסר
+     type/inputMode לגמרי, לא רק autoComplete); `autoComplete=
+     "address-level2"` ל-`city`. שדה `email` כבר היה עם
+     `type="email" inputMode="email" autoComplete="email"` תקין
+     מקודם — לא נגעתי. `neighborhood`/`street`/`website` לא
+     תוקנו — אין טוקן autocomplete סטנדרטי חד-משמעי לשכונה/רחוב
+     בנפרד (אותה החלטה כמו סבב 185), ו-website לא היה בהיקף
+     שנבדק.
+902. **`SeekerForm.tsx` (מבקש השיעור ממלא על עצמו, שלב "פרטי
+     הפונה"):** נוסף `autoComplete="name"` ל-`contactName`;
+     `type="tel" inputMode="tel" autoComplete="tel"` ל-`phone`;
+     `type="email" inputMode="email" autoComplete="email"`
+     ל-`email` (משם היה חסר type/inputMode/autoComplete
+     לחלוטין); `autoComplete="address-level2"` ל-`city`. **שדות
+     צד-שלישי סוננו החוצה במפורש**, זהה לסינון שנעשה ב-01: שלב
+     "פרטי בית האבלים" (`deceasedName`, `deceasedOccupation`,
+     `mourningLocation`, `prayerTimes`) מתאר את הנפטר/האירוע, לא
+     את ממלא הטופס; שלב "פרטי בית הכנסת" (`synagogueName`,
+     `gabaiName`, `congregationSize`) מתאר את בית הכנסת/הגבאי, לא
+     את הפונה עצמו — אף אחד מהם לא תוקן.
+903. **אפס רגרסיה מאומתת:** `git diff --stat` — 2 קבצים, 7+/7-
+     (כל שורה שהשתנתה היא הוספת attribute לתוך `<Input>` קיים
+     בשורה אחת, ללא שינוי מבנה/state/handler). איזון סוגריים
+     בפייתון על שני הקבצים המלאים אחרי העריכה: `{}`/`()` תואמים
+     בשני הקבצים. הנתיב `apps/15-egod/src` חסום ב-`.gitignore`
+     אך כבר tracked — `git add -u` (תקדים קבוע מסבבים קודמים).
+     Commit `eed57b04` על `fix/a-icon-only-buttons-round2-0820`,
+     יידחף ל-origin (מפעיל פריסת Vercel תחת more30.com/egod).
+904. **הבא בתור:** להמשיך את אותה עדשת `autoComplete` על שאר
+     המועמדים שדוגלו בסבב 185 — `16-chatzor-connect`
+     (`InquiryForm`/`AskRav`) ו-`12-smel-ndln` (טופס
+     Premium/checkout) — או, אם אלה נסגרים, שני מועמדי הניגודיות
+     שנותרו לא-חד-משמעיים מסבב 175 (דורשים כלי רינדור אמיתי), או
+     `core.project_tasks`/`core.project_bugs` (עדיין אותם 5
+     פריטים חסומים).
