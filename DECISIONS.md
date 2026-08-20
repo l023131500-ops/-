@@ -11540,3 +11540,66 @@
       נסרק כעת במלואו (client+server+shared) ללא ממצא נוסף. מומלץ:
       המשך סריקה ב-`04-imud-torani/client/src/pages/` הנותרים, או
       `10-bkalot-rights` שנותר עם רוב האזכורים כתיעוד דריפט DB בלבד.
+
+## 20/08/2026 — סבב 228 (loop A) — `02-igud-transcribe/app/(admin)/admin/coupons/page.tsx`: מגן double-submit ל-toggle/remove/submit
+
+1111. **בדקתי מחדש לפני שהתחלתי:** `core.run_progress` (סבב 227 האחרון,
+      commit `d2c9d7c7`/`b0bce61e`, תואם ל-HEAD). המלצת 1110 הצביעה על
+      `04-imud-torani/client/src/pages/` הנותרים (`editor`/`wizard`/
+      `templates`) או `10-bkalot-rights`. דיספצ'תי סוכן Explore לקרוא
+      את דפי imud-torani הנותרים במלואם.
+1112. **ממצא ראשון — נדחה כ-false positive:** הסוכן דיווח על
+      `ProofreadDept.tsx` שורות 220-230 (כפתורי "אשר תיקון"/"התעלם"/
+      "מחק קטע" בלי `disabled`). אימתתי ישירות: `resolve()` קורא
+      ל-`onApplyFix`/`onDeleteRange` (מ-`Editor.tsx` שורות 107-120,
+      `handleApplyFix`/`handleDeleteRange`) שהן קריאות `setState`
+      מקומיות **סינכרוניות** לחלוטין — אין `fetch`/רשת/השהיה. `resolve()`
+      גם מסיר את ה-issue מ-`issues` state (שורה 97) באותו tick. אין
+      חלון-מירוץ אמיתי: React מרנדר מחדש ומסיר את הכפתור מה-DOM הרבה
+      לפני שקליק פיזי שני יכול להתרחש (בניגוד לכל התיקונים הקודמים
+      מהסוג הזה, שכולם כללו קריאת רשת אמיתית עם 100-3000ms השהיה). לא
+      תוקן — לא באג.
+1113. **אימתתי `10-bkalot-rights`:** הסוכן אישר (וגם קריאה ישירה
+      תואמת) שזה בעיקר UI-הפניה למאגר-נתונים/שאלון עם מעט מאוד לוגיקת
+      מוטציה — לא יעד פורה לבאגי הסוג הזה כרגע.
+1114. **פניתי ל-02-igud-transcribe** (33 קבצי מקור, לא נסרק לעומק
+      בסבבים האחרונים למרות עדכון git היום מאותו סוג-תיקון בסיסי-
+      redirect). דיספצ'תי סוכן Explore נוסף שם. אימתתי ישירות בקוד את
+      הממצא שדיווח: `app/(admin)/admin/coupons/page.tsx` — `toggle()`
+      (שורה 57 המקורית) ו-`remove()` (שורה 71) הן `fetch` אסינכרוני
+      אמיתי עם round-trip לרשת, בלי שום מגן in-flight בקובץ כולו (לא
+      state, לא ref). ה-bug הברור ביותר: שני קליקים מהירים על כפתור
+      ה-toggle קוראים שניהם ל-`toggle(c.id, c.is_active)` מתוך אותו
+      render — שניהם מחשבים `!is_active` מאותו closure "מיושן" *לפני*
+      שאף בקשה חוזרת ומפעילה רינדור מחדש, כך ששתי בקשות PATCH נשלחות
+      עם אותו ערך `is_active` החדש (במקום toggle ואז untoggle) — מצב
+      סופי שגוי. גם `submit()` (יצירת קופון) היה חשוף לאותו דפוס:
+      דאבל-קליק על "שמור" בלי `disabled` יוצר שני POST כפולים לאותו
+      קופון.
+1115. **התיקון:** נוספו `submitting`/`busyId` state. `submit()`: בדיקת
+      `if (submitting) return` בתחילת הפונקציה + `setSubmitting(true)`/
+      `finally setSubmitting(false)`, וכפתור ה-submit מקבל
+      `disabled={submitting}` עם תווית "שומר…". `toggle()`/`remove()`:
+      אותו דפוס עם `busyId` (בדיקת `if (busyId) return` + set/finally-
+      reset), וכפתורי ה-toggle/מחק בכל שורה מקבלים
+      `disabled={busyId === c.id}` — כך שרק השורה הספציפית שבפעולה
+      ננעלת, לא כל הטבלה (אותו עיקרון כמו ב-`del.variables === b.id`
+      בסבב 227). לא נגעתי ב-`load()`/ב-inputs של הטופס/בשום handler
+      אחר.
+1116. **אפס רגרסיה מאומתת:** `git diff --stat`: קובץ אחד, +58/-36
+      (רק הוספת state/guards סביב לוגיקה קיימת, שום פיצ'ר/מסך/כפתור
+      לא הוסר). בדיקת איזון סוגריים/מסולסלים/מרובעים בפייתון על הקובץ
+      המלא לאחר העריכה: תואם (`(`: 95/95, `{`: 69/69, `[`: 9/9). `tsc`
+      לא זמין בסביבה (`node_modules/.bin/tsc` חסר) — אומתתי ידנית
+      שהקוד תקין TypeScript/JSX תקני (תבנית זהה לדפוסים שכבר קיימים
+      במאות מקומות בקוד הזה). לא נגעתי במערכות/סכימות מוגנות (08/09/
+      bkalut-app/bkalot-admin/zr_*/NEDARIM3873/csj/csj_src/igud),
+      ב-`main`, או במערכת מחוץ להיקף (02 בטווח 01-16). `git add -f`
+      נדרש (אותה אזהרת `.gitignore` כוזבת על `apps/**`). Commit
+      `a7086ffa` על `fix/a-icon-only-buttons-round2-0820`, נדחף ל-
+      `origin` (מפעיל פריסת Vercel תחת `more30.com/tamlul`).
+1117. **הבא בתור:** אותו סוכן שסקר את 02-igud-transcribe דיווח על
+      דפוס זהה ב-`app/(admin)/admin/glossary/page.tsx` (`submit()`/
+      `remove()` שורות ~36/53, כפתורים ~140/167) — טרם תוקן, מועמד ברור
+      לסבב הבא. שאר 02-igud-transcribe (טפסי העלאה, layout, auth,
+      דפים ציבוריים, API routes) נסרק ללא ממצא נוסף.
