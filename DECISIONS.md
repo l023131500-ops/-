@@ -2853,3 +2853,47 @@
      תיקון auth שם דורש להבין את זרימת ה-checkout המלאה (איך `project_id`
      נקשר לבעלים) ולא רק להעתיק תיקון קיים; רשום כמועמד לסבב הבא. ענף
      `fix/a-igud-ads-payments-webhook-clientip-spoof-0820`, נדחף.
+
+## 20/08/2026 (LOOP A — סבב 39) — 03-igud-ads: `/api/payments/create` נתן ל-Amount שנשלח ללקוח לקבוע כמה משלמים באמת — לא spoof, תשלום אמיתי בסכום שהתוקף בוחר
+
+236. **בדקתי מחדש `core.run_progress`/`core.issues`/`core.project_tasks` לפני
+     שהתחלתי.** סבב 38 סגור לגמרי (commit `46e4d7ed`, heartbeat id 1155 קיים).
+     כל השורות הפתוחות ב-`core.issues` בתחום Loop A (01-16 + תשתית משותפת)
+     עדיין `owner: user`, חסומות על החלטת בעלים/דשבורד חיצוני שלא זמין ל-MCP
+     הזה (זהה לסבבים 34-38 — #245 RLS, #229 grantor, #220 localhost reset,
+     #209/#208/#207/#205 URL allow-lists, #203 SMTP, #196 נפרס-חסר-אישור).
+     `core.project_tasks` הפתוחות (02 מפתח OpenAI, 25 origin מאחורי Cloudflare,
+     32 service key, 12/13 שיקול מיזוג) — כולן החלטות בעלים/מפתחות, לא
+     ניתנות-לתיקון בקוד. המועמד המפורש שסבב 38 השאיר: `03-igud-ads/api/
+     payments/create` הפתוח (בלי auth, מקבל `amount` מהלקוח).
+237. **בדקתי אותו לעומק במקום להעתיק את שער ה-auth של #196 כמו שסבב 38 שקל.**
+     קודם חיפשתי מי בכלל קורא ל-`/api/payments/create` בתוך הריפו — אף קובץ
+     לא קורא לו (לא ב-`app/(public)/create`, לא ב-`app/(public)/result`, לא
+     במקום אחר) — רק `README.md` מזכיר אותו כתרשים. זה לא הופך אותו ללא-חי:
+     זה נתיב HTTP אמיתי בפריסת Vercel של `modaot-more30`, וכל מי שיודע את
+     הכתובת יכול לקרוא לו ישירות בלי קשר לממשק.
+238. **הממצא: ה-webhook (שתוקן בסבב 38) מעניק מספר עיצובים קבוע
+     (`ad_app_settings.payment.coupon_grants_designs`, כרגע 5) לכל תשלום
+     שהצליח — בלי שום קשר לסכום ששולם בפועל.** בדקתי את `ad_app_settings`
+     החי על `bieebmnmkffwbqlsfozh` וגיליתי שקיים גם `payment.default_amount`
+     (כרגע 50, תווית "מחיר ברירת מחדל למודעה") — מחיר-אמת מוגדר בשרת שאף
+     קובץ קוד לא קורא. `/api/payments/create` בנה את ה-payload ל-iframe של
+     Nedarim Plus עם `Amount: String(body.amount)` — השדה `Amount` הזה הוא מה
+     שהעמוד של Nedarim Plus בפועל גובה מהמשלם. כלומר: תוקף קורא ל-`/api/
+     payments/create` עם `amount: 1`, משלם ₪1 **אמיתי** דרך שער הסליקה האמיתי
+     (אין כאן spoof, התשלום עצמו כשר), וה-webhook — שכעת מאומת כראוי לפי כתובת
+     IP — עדיין מעניק את קופון 5 העיצובים המלא שאמור לעלות ₪50. זה שונה
+     מהותית מסבבים 37-38: שם התיקון סגר התחזות לקריאת webhook; כאן אין שום
+     spoof, זו עסקה אמיתית במחיר שהלקוח בעצמו קובע במקום השרת. `03-igud-ads`
+     מתויג `"note": "Revenue system."` ב-`app.json` — זהו נתיב שמפסיד הכנסה
+     אמיתית בכל שימוש.
+239. **התיקון: `/api/payments/create` כבר לא קורא `amount` מגוף הבקשה בכלל.**
+     טוען את `ad_app_settings.payment.default_amount` מהשרת (עם נפילה ל-50
+     אם השורה חסרה, זהה לדפוס קריאת ה-setting הקיים כבר ב-webhook לגבי
+     `coupon_grants_designs`) וזה מה שנשלח ל-Nedarim כ-`Amount` וגם נרשם
+     ב-audit log. שאר גוף הבקשה (`description`, `payer_*`, `project_id`) ללא
+     שינוי — אלה לא היו הבעיה (סבב 38 כבר קבע ש-spoofing מלא של `project_id`
+     לא משנה את גודל המענק, כי הוא קבוע). לא נגעתי בצורת התשובה
+     (`buildPaymentPayload` מחזיר רק `iframe_url`+`fields`, לא `amount`) —
+     ואין ממילא צרכן בריפו שתלוי בה. `esbuild --bundle=false --format=esm`
+     נקי. ענף `fix/a-igud-ads-payments-create-amount-trust-0820`, נדחף.
