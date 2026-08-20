@@ -188,6 +188,7 @@ function ParamsTopicsInner() {
               type="button"
               onClick={() => setCategory(null)}
               className={`px-2.5 py-1 rounded-md text-xs border ${category === null ? "bg-primary text-primary-foreground border-primary" : "border-border hover-elevate"}`}
+              aria-pressed={category === null}
             >
               הכל ({rows.length})
             </button>
@@ -197,6 +198,7 @@ function ParamsTopicsInner() {
                 type="button"
                 onClick={() => setCategory(c === category ? null : c)}
                 className={`px-2.5 py-1 rounded-md text-xs border ${category === c ? "bg-primary text-primary-foreground border-primary" : "border-border hover-elevate"}`}
+                aria-pressed={category === c}
               >
                 {c}
               </button>

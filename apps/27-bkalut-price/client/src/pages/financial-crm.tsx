@@ -231,6 +231,7 @@ export default function FinancialCrmPage() {
                     className={`text-right px-2.5 py-2 rounded-md text-xs border transition-colors ${
                       active ? "bg-primary text-primary-foreground border-primary" : "bg-card border-border hover-elevate"
                     }`}
+                    aria-pressed={active}
                     data-testid={`crm-client-${c.id}`}
                   >
                     <div className="font-semibold flex items-center justify-between gap-2">
@@ -299,6 +300,7 @@ export default function FinancialCrmPage() {
                     className={`px-3 py-1.5 text-sm rounded-t-md border-b-2 transition-colors flex items-center gap-1.5 ${
                       active ? "border-primary text-primary font-semibold" : "border-transparent text-muted-foreground hover-elevate"
                     }`}
+                    aria-pressed={active}
                     data-testid={`crm-tab-${t.key}`}
                   >
                     <Icon className="w-4 h-4" />

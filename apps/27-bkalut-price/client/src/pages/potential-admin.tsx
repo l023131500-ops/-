@@ -525,6 +525,7 @@ export default function PotentialAdminPage() {
                   type="button"
                   onClick={() => setNewHidden((prev) => checked ? prev.filter((x) => x !== s.id) : [...prev, s.id])}
                   className={`px-3 py-1 rounded-md text-xs border ${checked ? "bg-destructive/10 border-destructive text-destructive" : "border-border hover-elevate"}`}
+                  aria-pressed={checked}
                 >
                   {s.title}
                 </button>

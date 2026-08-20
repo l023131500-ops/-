@@ -367,6 +367,7 @@ function UserDialog({ title, initial, onClose, onSubmit, onDelete, existingUser 
                   type="button"
                   onClick={() => toggleProduct(p.value)}
                   className={`px-3 py-1.5 text-sm rounded-md border transition-colors ${active ? "bg-primary text-primary-foreground border-primary" : "bg-background hover-elevate"}`}
+                  aria-pressed={active}
                   data-testid={`toggle-product-${p.value}`}
                 >
                   {p.label}

@@ -317,7 +317,7 @@ function ClientsTab({ clients, activeId, onSelect }: { clients: FinClient[]; act
         <div className="space-y-2">
           {clients.map((c) => (
             <div key={c.id} className={`flex items-center justify-between rounded-lg border p-3 ${activeId === c.id ? "border-primary bg-primary/5" : "border-border bg-muted/20"}`}>
-              <button type="button" className="text-right flex-1" onClick={() => onSelect(c.id)} data-testid={`client-row-${c.id}`}>
+              <button type="button" className="text-right flex-1" onClick={() => onSelect(c.id)} aria-pressed={activeId === c.id} data-testid={`client-row-${c.id}`}>
                 <p className="font-semibold">{c.fullName} <Badge variant="outline" className="text-[10px] mr-2">{c.mode === "business" ? "עסק" : "משק בית"}</Badge></p>
                 <p className="text-xs text-muted-foreground"><span dir="ltr">{c.phone}</span> · {c.email || "—"} · {c.city || ""}</p>
               </button>
