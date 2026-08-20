@@ -40,6 +40,8 @@ const AdminDashboard = () => {
   const [importing, setImporting] = useState(false);
   const [newRabbiName, setNewRabbiName] = useState("");
   const [newOrgName, setNewOrgName] = useState("");
+  const [creatingRabbi, setCreatingRabbi] = useState(false);
+  const [creatingOrg, setCreatingOrg] = useState(false);
   const [copiedToken, setCopiedToken] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -994,13 +996,19 @@ const AdminDashboard = () => {
                         className="flex-1 border-gold/20 focus:border-gold/50"
                       />
                       <Button
+                        disabled={creatingRabbi}
                         onClick={async () => {
-                          if (!newRabbiName.trim()) return;
-                          const { data, error } = await supabase.from("rabbi_portals").insert({ rabbi_name: newRabbiName.trim() }).select().single();
-                          if (!error && data) {
-                            setRabbiPortals(prev => [data, ...prev]);
-                            setNewRabbiName("");
-                            toast.success("קישור לרב נוצר!");
+                          if (!newRabbiName.trim() || creatingRabbi) return;
+                          setCreatingRabbi(true);
+                          try {
+                            const { data, error } = await supabase.from("rabbi_portals").insert({ rabbi_name: newRabbiName.trim() }).select().single();
+                            if (!error && data) {
+                              setRabbiPortals(prev => [data, ...prev]);
+                              setNewRabbiName("");
+                              toast.success("קישור לרב נוצר!");
+                            }
+                          } finally {
+                            setCreatingRabbi(false);
                           }
                         }}
                         className="bg-gradient-gold text-navy font-body font-bold gap-2"
@@ -1099,13 +1107,19 @@ const AdminDashboard = () => {
                         className="flex-1 border-teal/20 focus:border-teal/50"
                       />
                       <Button
+                        disabled={creatingOrg}
                         onClick={async () => {
-                          if (!newOrgName.trim()) return;
-                          const { data, error } = await supabase.from("org_portals").insert({ org_name: newOrgName.trim() }).select().single();
-                          if (!error && data) {
-                            setOrgPortals(prev => [data, ...prev]);
-                            setNewOrgName("");
-                            toast.success("קישור לארגון נוצר!");
+                          if (!newOrgName.trim() || creatingOrg) return;
+                          setCreatingOrg(true);
+                          try {
+                            const { data, error } = await supabase.from("org_portals").insert({ org_name: newOrgName.trim() }).select().single();
+                            if (!error && data) {
+                              setOrgPortals(prev => [data, ...prev]);
+                              setNewOrgName("");
+                              toast.success("קישור לארגון נוצר!");
+                            }
+                          } finally {
+                            setCreatingOrg(false);
                           }
                         }}
                         className="bg-gradient-teal text-primary-foreground font-body font-bold gap-2"
