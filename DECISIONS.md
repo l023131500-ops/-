@@ -7208,3 +7208,40 @@
      אינפורמטיביות), או לחזור ל-`core.project_tasks`/
      `core.project_bugs` לעבודה אחרת בתחום auth/admin/pricing/
      gannenet.
+
+## 20/08/2026 — סבב 132 (loop A)
+
+680. **המשכתי את המלצת #679** (עדשת `aria-live` על הודעות טעינה/
+     שגיאה דינמיות, WCAG 4.1.3 Status Messages). בדקתי
+     `core.run_progress` (סבב 131 האחרון, commit `44c25181`+
+     `32f56d70`, תואם HEAD) + `core.project_tasks` (אותם 5 פתוחים:
+     02/12/13/25/32, עדיין חסומים על סודות חסרים או החלטות מיזוג/
+     origin מחוץ לסמכות הסוכן) + `core.project_bugs` (ריק) — שום
+     דבר חדש בתחום. פתחתי Explore agent לעדשה: אלמנטים
+     שמוצגים/מוסתרים לפי state (טעינה/שגיאה/הצלחה) בלי
+     `aria-live`/`role="status"`/`role="alert"` באלמנט עצמו או
+     באב שלו (01-07/10-16, דילוג 08/09 מוגן) — תוך אי-סימון
+     קריאות ל-toast library (sonner/shadcn `useToast`) שמטפלות
+     בכך פנימית, ולא Skeleton placeholders בלי הודעת טקסט.
+     ממצא אמיתי אחד: `apps/02-igud-transcribe/app/(admin)/admin/
+     glossary/page.tsx` שורה 158 — טבלת מונחי-מילון, שורת "טוען..."
+     ושורת "אין רשומות" (שורה 159) מוחלפות ב-`tbody` לפי
+     `loading`/`entries.length` בלי שום `aria-live` בשרשרת ההורים
+     — משתמש קורא-מסך לא מקבל התראה כשהרשימה נטענת.
+681. **התיקון:** הוספתי `aria-live="polite"` על ה-`<tbody>` עצמו
+     (לא על ה-`<tr>` המותנה) — כי ה-`tbody` נשאר קבוע ב-DOM בעוד
+     השורות מוחלפות תחתיו, ו-`role="status"` ישיר על `<tr>` היה
+     עלול לשבור את סמנטיקת ה-table (row/rowgroup) עבור טכנולוגיות
+     מסייעות. אפס שינוי ללוגיקת `loading`/`entries`/מחיקה/הוספה.
+682. **אפס רגרסיה מאומתת:** `git diff` — קובץ אחד, 1+/1-, שינוי
+     `className`→הוספת attribute בלבד על תג קיים. אין `tsc`/`npm`
+     בסביבה הזו — אומת בבדיקת איזון `{}`/`()`/`[]` ב-Python על
+     הקובץ המלא: 63/63, 68/68, 9/9 — תואם. Commit `e694e67f` על
+     `fix/a-icon-only-buttons-round2-0820`, נדחף ל-origin (מפעיל
+     פריסת Vercel תחת more30.com/torani, נתיב igud-transcribe).
+683. **הבא בתור:** נמצא ותוקן ממצא אמיתי יחיד בעדשת `aria-live`
+     (02). כדאי להמשיך לסרוק אפליקציות נוספות עם אותה עדשה (03,
+     06, 10, 12, 14, 16 עדיין לא נסרקו לעומק לפי הדוח של ה-Explore
+     agent), או לפתוח עדשה חדשה (ניגודיות צבעים, `alt` ריק/חסר על
+     תמונות), או לחזור ל-`core.project_tasks`/`core.project_bugs`
+     לעבודה אחרת בתחום auth/admin/pricing/gannenet.
