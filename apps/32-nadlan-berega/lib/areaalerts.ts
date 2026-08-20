@@ -101,9 +101,15 @@ async function resolvePoint(
   }
 
   // מסלול 1: גוש/חלקה נמסרו ישירות — הכי מדויק, אין צורך בגיאוקוד.
+  // ⚠️ אבל autocomplete של GovMap (שמאחורי parcelByGushHelka) הוא fuzzy במקורו,
+  // ואין כאן משתמש שרואה אזהרה כמו ב-buildreport.ts — אז נקודה לא-מאומתת
+  // (centroidVerified=false) תזין ישירות מייל "עסקה חדשה נרשמה" על מיקום שגוי,
+  // בדיוק אותה מלכודת שתועדה למעלה על "מייל שגוי גרוע ממייל שלא נשלח". לכן
+  // מקבלים את המסלול הזה רק כשהוא אומת עצמאית; אחרת נופלים לכתובת (מסלול 2),
+  // שכבר דורש cityVerified במפורש.
   if (alert.gush && alert.helka) {
     const parcel = await parcelByGushHelka(alert.gush, alert.helka);
-    if (parcel?.centroidItm) {
+    if (parcel?.centroidItm && parcel.centroidVerified) {
       const { lat, lng } = itmToWgs84(parcel.centroidItm.x, parcel.centroidItm.y);
       const lead = await leadOf(alert.gush, alert.helka);
       return {
@@ -111,7 +117,7 @@ async function resolvePoint(
         ...lead, street: null, streetNames: [], houseNum: null,
       };
     }
-    // גוש/חלקה שאינם מזוהים עוד (חלוקה מחדש וכד') — נופלים לכתובת אם יש.
+    // גוש/חלקה שאינם מזוהים עוד או שלא אומתו (חלוקה מחדש וכד') — נופלים לכתובת אם יש.
   }
 
   if (!alert.address) return null;

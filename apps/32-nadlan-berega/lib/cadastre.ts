@@ -155,7 +155,19 @@ export async function parcelAtPoint(itmX: number, itmY: number): Promise<Parcel 
  * והתוצאה הראשונה אינה בהכרח המבוקשת. לכן משווים את הטקסט המוחזר מספר-מול-מספר.
  */
 export async function parcelByGushHelka(gush: string, helka: string): Promise<
-  (Parcel & { centroidItm: { x: number; y: number } | null }) | null
+  (Parcel & {
+    centroidItm: { x: number; y: number } | null;
+    /**
+     * האם הנקודה שהתקבלה מה-autocomplete אומתה עצמאית (parcelAtPoint על אותה
+     * נקודה חוזר לאותו גוש/חלקה בדיוק). autocomplete הוא fuzzy במקורו
+     * (`isAccurate: false`) — הטקסט מסונן להתאמה מדויקת, אבל הגאומטריה
+     * המוחזרת יכולה בכל זאת להיות שגויה/מיושנת בלי שהטקסט יסגיר זאת. כשלא
+     * מאומת, אין לסמוך על הנקודה לצילום Street View/מיילי התראה בלי אזהרה.
+     * מסלול ה-WFS (fallback) הוא true תמיד — הוא שולף את הגאומטריה מתוך
+     * אותה שורה שהותאמה במדויק ב-CQL, אין בו שלב fuzzy כלל.
+     */
+    centroidVerified: boolean;
+  }) | null
 > {
   const g = String(Number(gush));
   const h = String(Number(helka));
@@ -195,6 +207,7 @@ export async function parcelByGushHelka(gush: string, helka: string): Promise<
         parcelId: Number.isFinite(objectId) ? objectId : (same?.parcelId ?? null),
         source: 'govmap-search',
         centroidItm: { x: itm.x, y: itm.y },
+        centroidVerified: same !== null,
       };
     }
   } catch {
@@ -289,7 +302,7 @@ async function parcelAtPointWfs(itmX: number, itmY: number): Promise<Parcel | nu
 }
 
 async function parcelByGushHelkaWfs(gush: string, helka: string): Promise<
-  (Parcel & { centroidItm: { x: number; y: number } | null }) | null
+  (Parcel & { centroidItm: { x: number; y: number } | null; centroidVerified: boolean }) | null
 > {
   const json = await fetchJson(
     wfsUrl({
@@ -301,7 +314,9 @@ async function parcelByGushHelkaWfs(gush: string, helka: string): Promise<
   const feature = json?.features?.[0];
   const parcel = feature?.properties ? toParcel(feature.properties) : null;
   if (!parcel) return null;
-  return { ...parcel, centroidItm: centroidOf(feature.geometry) };
+  // ⚠️ בניגוד למסלול ה-autocomplete: כאן הגאומטריה מגיעה מאותה שורה שהותאמה
+  // במדויק ב-CQL (GUSH_NUM=X AND PARCEL=Y) — אין שלב fuzzy, ולכן תמיד מאומת.
+  return { ...parcel, centroidItm: centroidOf(feature.geometry), centroidVerified: true };
 }
 
 /** מרכז גאומטרי מקורב של פוליגון החלקה (ממוצע קודקודי הטבעת החיצונית). */

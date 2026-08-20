@@ -805,6 +805,17 @@ export async function buildReport(
         lat = wgs.lat;
         lng = wgs.lng;
         matchedLabel = `גוש ${parsed.gush} חלקה ${parsed.helka}`;
+        // ⚠️ מקביל לאזהרת ה-cityVerified במסלול הכתובת (שורה 844): ה-autocomplete
+        // של GovMap הוא fuzzy במקורו, וכשהאימות העצמאי מול הנקודה (parcelAtPoint)
+        // נכשל/לא תואם, אין לסמוך בשקט על הנקודה — היא מזינה גם את תמונת
+        // Street View וגם את מרכז המפה. בלי האזהרה הזו משתמש היה מקבל דוח/תמונה
+        // של מיקום לא-מאומת בלי לדעת.
+        if (!parcelDirect.centroidVerified) {
+          warnings.push(
+            `לא הצלחנו לאמת עצמאית את מיקום גוש ${parsed.gush} חלקה ${parsed.helka} מול שכבת הקדסטר. ` +
+              'הנקודה שהוצגה מבוססת על תוצאת חיפוש בלבד — כדאי לוודא שהמספרים נכונים.',
+          );
+        }
       } else {
         warnings.push(
           `לא נמצאה חלקה רשומה בגוש ${parsed.gush} חלקה ${parsed.helka}. ` +
