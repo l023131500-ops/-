@@ -243,7 +243,7 @@ export default function BulkUpload() {
           {/* Preview */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">תצוגה מקדימה</CardTitle>
+              <CardTitle as="h2" className="text-base">תצוגה מקדימה</CardTitle>
             </CardHeader>
             <CardContent className="p-0 overflow-x-auto">
               <div className="min-w-[700px]">

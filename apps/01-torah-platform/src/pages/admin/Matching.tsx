@@ -29,7 +29,7 @@ export default function Matching() {
     <div>
       <h1 className="font-heading text-3xl mb-6 flex items-center gap-2"><Sparkles className="h-7 w-7 text-secondary" /> התאמת AI</h1>
       <Card className="mb-6">
-        <CardHeader><CardTitle>פרטי חיפוש</CardTitle><CardDescription>המערכת תמצא שיעורים תואמים בעזרת בינה מלאכותית</CardDescription></CardHeader>
+        <CardHeader><CardTitle as="h2">פרטי חיפוש</CardTitle><CardDescription>המערכת תמצא שיעורים תואמים בעזרת בינה מלאכותית</CardDescription></CardHeader>
         <CardContent className="space-y-3">
           <div><Label>נושא</Label><Input value={form.topic} onChange={(e) => setForm({ ...form, topic: e.target.value })} /></div>
           <div className="grid sm:grid-cols-2 gap-3">

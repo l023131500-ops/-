@@ -104,7 +104,7 @@ export default function Checkout() {
       <div className="grid md:grid-cols-3 gap-6">
         <div className="md:col-span-2">
           <Card>
-            <CardHeader><CardTitle>פרטי משלוח ולקוח</CardTitle></CardHeader>
+            <CardHeader><CardTitle as="h2">פרטי משלוח ולקוח</CardTitle></CardHeader>
             <CardContent className="space-y-3">
               <div className="grid sm:grid-cols-2 gap-3">
                 <div><Label>שם מלא *</Label><Input value={customer.name} onChange={(e) => setCustomer({ ...customer, name: e.target.value })} /></div>
@@ -119,7 +119,7 @@ export default function Checkout() {
         </div>
         <div>
           <Card className="sticky top-20">
-            <CardHeader><CardTitle>סיכום הזמנה</CardTitle></CardHeader>
+            <CardHeader><CardTitle as="h2">סיכום הזמנה</CardTitle></CardHeader>
             <CardContent className="space-y-3">
               {items.map((it) => (
                 <div key={it.product_id} className="flex justify-between text-sm">

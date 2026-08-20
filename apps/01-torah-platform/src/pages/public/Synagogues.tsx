@@ -27,7 +27,7 @@ export default function Synagogues() {
             <Link key={s.id} to={`/synagogues/${s.id}`}>
               <Card className="h-full hover:shadow-md transition-shadow">
                 <CardHeader>
-                  <CardTitle className="text-lg">{s.name}</CardTitle>
+                  <CardTitle as="h2" className="text-lg">{s.name}</CardTitle>
                   {s.nusach && <CardDescription>{s.nusach}</CardDescription>}
                 </CardHeader>
                 <CardContent className="space-y-2 text-sm">

@@ -20,7 +20,7 @@ export default function Forums() {
       <div className="grid sm:grid-cols-2 gap-4">
         {(data || []).map((c: any) => (
           <Card key={c.id}><CardHeader>
-            <div className="flex items-center gap-2"><MessageSquare className="h-5 w-5 text-primary" /><CardTitle className="text-lg">{c.name}</CardTitle></div>
+            <div className="flex items-center gap-2"><MessageSquare className="h-5 w-5 text-primary" /><CardTitle as="h2" className="text-lg">{c.name}</CardTitle></div>
           </CardHeader><CardContent><div className="text-sm text-muted-foreground">{c.description}</div></CardContent></Card>
         ))}
         {(data?.length || 0) === 0 && <div className="text-muted-foreground">אין פורומים</div>}

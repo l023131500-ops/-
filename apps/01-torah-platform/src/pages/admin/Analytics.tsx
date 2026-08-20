@@ -20,7 +20,7 @@ export default function Analytics() {
     <div>
       <h1 className="font-heading text-3xl mb-6">ניתוחים</h1>
       <Card>
-        <CardHeader><CardTitle>תרומות לפי יום</CardTitle></CardHeader>
+        <CardHeader><CardTitle as="h2">תרומות לפי יום</CardTitle></CardHeader>
         <CardContent className="h-72">
           <ResponsiveContainer>
             <BarChart data={data || []}>

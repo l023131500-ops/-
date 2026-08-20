@@ -153,7 +153,7 @@ export default function DonationPage() {
       )}
 
       <Card>
-        <CardHeader><CardTitle>פרטי התרומה</CardTitle><CardDescription>תשלום מאובטח בטכנולוגיית נדרים פלוס</CardDescription></CardHeader>
+        <CardHeader><CardTitle as="h2">פרטי התרומה</CardTitle><CardDescription>תשלום מאובטח בטכנולוגיית נדרים פלוס</CardDescription></CardHeader>
         <CardContent className="space-y-4">
           <Tabs value={paymentType} onValueChange={(v) => setPaymentType(v as any)}>
             <TabsList className="grid grid-cols-2 w-full">

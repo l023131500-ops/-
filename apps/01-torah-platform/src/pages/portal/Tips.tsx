@@ -209,7 +209,7 @@ export default function Tips() {
       {/* Tips list */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">רשימת טיפים ({tips.length})</CardTitle>
+          <CardTitle as="h2" className="text-lg">רשימת טיפים ({tips.length})</CardTitle>
         </CardHeader>
         <CardContent className="p-0">
           {isLoading ? (

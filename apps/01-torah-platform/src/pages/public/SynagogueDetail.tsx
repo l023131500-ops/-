@@ -26,7 +26,7 @@ export default function SynagogueDetail() {
       <Button asChild variant="ghost" className="mb-4"><Link to="/synagogues"><ArrowRight className="ml-2 h-4 w-4" /> חזור</Link></Button>
       <Card>
         <CardHeader>
-          <CardTitle className="text-3xl">{data.name}</CardTitle>
+          <CardTitle as="h1" className="text-3xl">{data.name}</CardTitle>
           {data.nusach && <Badge variant="secondary" className="w-fit">{data.nusach}</Badge>}
         </CardHeader>
         <CardContent className="space-y-3">
@@ -39,7 +39,7 @@ export default function SynagogueDetail() {
 
       {data.prayer_times && data.prayer_times.length > 0 && (
         <Card className="mt-6">
-          <CardHeader><CardTitle className="text-xl">זמני תפילה</CardTitle></CardHeader>
+          <CardHeader><CardTitle as="h2" className="text-xl">זמני תפילה</CardTitle></CardHeader>
           <CardContent>
             <div className="grid sm:grid-cols-2 gap-3">
               {data.prayer_times.map((pt: any) => (

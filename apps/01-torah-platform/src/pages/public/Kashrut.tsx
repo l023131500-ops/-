@@ -23,7 +23,7 @@ export default function Kashrut() {
           <Card key={k.id}>
             <CardHeader>
               <Badge variant="success" className="w-fit mb-1">{k.certification_level || "כשרות"}</Badge>
-              <CardTitle className="text-lg">{k.business_name}</CardTitle>
+              <CardTitle as="h2" className="text-lg">{k.business_name}</CardTitle>
               <CardDescription>{k.business_type}</CardDescription>
             </CardHeader>
             <CardContent className="text-sm space-y-1 text-muted-foreground">

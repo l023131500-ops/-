@@ -57,7 +57,7 @@ export default function Dashboard() {
         <Stat icon={ShoppingBag} label="הזמנות" value={stats?.orders ?? "-"} />
       </div>
       <Card>
-        <CardHeader><CardTitle>ברוך הבא לפורטל הניהול</CardTitle></CardHeader>
+        <CardHeader><CardTitle as="h2">ברוך הבא לפורטל הניהול</CardTitle></CardHeader>
         <CardContent>
           <p className="text-foreground/85">בצד ימין תוכל לנווט בין כל חלקי הניהול: שיעורים, משתתפים, פורומים, חומרי לימוד, תרומות, הזמנות והגדרות.</p>
         </CardContent>

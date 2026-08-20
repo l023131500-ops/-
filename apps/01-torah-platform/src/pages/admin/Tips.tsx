@@ -197,7 +197,7 @@ export default function AdminTips() {
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">כל הטיפים</CardTitle>
+          <CardTitle as="h2" className="text-lg">כל הטיפים</CardTitle>
         </CardHeader>
         <CardContent className="p-0">
           {isLoading ? (

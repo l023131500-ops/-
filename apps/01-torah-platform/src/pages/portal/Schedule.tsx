@@ -94,7 +94,7 @@ export default function Schedule() {
         {(lessons || []).map((l: any) => (
           <Card key={l.id}>
             <CardHeader>
-              <CardTitle className="text-lg">{l.title}</CardTitle>
+              <CardTitle as="h2" className="text-lg">{l.title}</CardTitle>
               <div className="text-sm text-muted-foreground">{l.teacher_name}</div>
             </CardHeader>
             <CardContent className="space-y-1 text-sm">

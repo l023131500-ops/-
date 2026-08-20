@@ -20,7 +20,7 @@ export default function Mikvaot() {
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {(data || []).map((m: any) => (
           <Card key={m.id}>
-            <CardHeader><CardTitle className="text-lg">{m.name}</CardTitle></CardHeader>
+            <CardHeader><CardTitle as="h2" className="text-lg">{m.name}</CardTitle></CardHeader>
             <CardContent className="text-sm space-y-2 text-muted-foreground">
               {m.address && <div className="flex items-center gap-2"><MapPin className="h-3 w-3" /> {m.address}</div>}
               {m.phone && <div className="flex items-center gap-2"><Phone className="h-3 w-3" /> <span dir="ltr">{m.phone}</span></div>}

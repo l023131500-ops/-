@@ -44,7 +44,7 @@ export default function TenantDetail() {
         <Button asChild size="sm" variant="outline"><a href={`/t/${tenant.slug}`} target="_blank" rel="noopener noreferrer"><ExternalLink className="ml-1 h-3 w-3" /> צפה באתר</a></Button>
       </div>
       <Card>
-        <CardHeader><CardTitle>תכונות מופעלות</CardTitle></CardHeader>
+        <CardHeader><CardTitle as="h2">תכונות מופעלות</CardTitle></CardHeader>
         <CardContent className="space-y-2">
           {features && Object.keys(features).filter((k) => typeof features[k] === "boolean").map((k) => (
             <div key={k} className="flex items-center justify-between border-b py-2">

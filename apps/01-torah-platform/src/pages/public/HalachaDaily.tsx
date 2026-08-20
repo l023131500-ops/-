@@ -35,7 +35,7 @@ export default function HalachaDaily() {
               <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
                 <Calendar className="h-3 w-3" /> {h.publish_date}
               </div>
-              <CardTitle className="text-xl">{h.title}</CardTitle>
+              <CardTitle as="h2" className="text-xl">{h.title}</CardTitle>
             </CardHeader>
             <CardContent className="whitespace-pre-wrap text-foreground/85">{h.body}</CardContent>
           </Card>

@@ -409,7 +409,7 @@ export default function AdminForums() {
         <TabsContent value="stats">
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg">סטטיסטיקות לפי ארגון</CardTitle>
+              <CardTitle as="h2" className="text-lg">סטטיסטיקות לפי ארגון</CardTitle>
             </CardHeader>
             <CardContent className="p-0">
               {tenantStats.length === 0 ? (

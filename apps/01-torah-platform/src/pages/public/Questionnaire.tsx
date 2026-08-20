@@ -285,7 +285,7 @@ export default function Questionnaire() {
 
         <Card>
           <CardHeader>
-            <CardTitle className="text-xl">{current.title}</CardTitle>
+            <CardTitle as="h1" className="text-xl">{current.title}</CardTitle>
           </CardHeader>
           <CardContent>
             {current.content}

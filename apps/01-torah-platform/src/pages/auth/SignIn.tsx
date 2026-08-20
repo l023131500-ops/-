@@ -77,7 +77,7 @@ export default function SignIn() {
     <div className="min-h-screen flex items-center justify-center bg-muted/30 px-4">
       <Card className="w-full max-w-md">
         <CardHeader>
-          <CardTitle className="text-2xl">התחברות</CardTitle>
+          <CardTitle as="h1" className="text-2xl">התחברות</CardTitle>
           <CardDescription>הכנס לפורטל האישי</CardDescription>
         </CardHeader>
         <CardContent>

@@ -220,7 +220,7 @@ export default function LessonsDirectory() {
                       </button>
                     )}
                   </div>
-                  <CardTitle className="text-lg line-clamp-1">{l.title}</CardTitle>
+                  <CardTitle as="h2" className="text-lg line-clamp-1">{l.title}</CardTitle>
                   <CardDescription>{l.rabbi_name}</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-2 text-sm">

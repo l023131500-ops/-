@@ -44,7 +44,7 @@ export default function JoinTeacher() {
         <p className="text-muted-foreground">הרחב את קהל הלומדים שלך — חבר אליך לומדים חדשים</p>
       </div>
       <Card>
-        <CardHeader><CardTitle>פרטי המגיד</CardTitle><CardDescription>אנו נצור איתך קשר לקבלת פרטים נוספים</CardDescription></CardHeader>
+        <CardHeader><CardTitle as="h2">פרטי המגיד</CardTitle><CardDescription>אנו נצור איתך קשר לקבלת פרטים נוספים</CardDescription></CardHeader>
         <CardContent>
           <form onSubmit={submit} className="space-y-4">
             <div className="grid sm:grid-cols-2 gap-3">

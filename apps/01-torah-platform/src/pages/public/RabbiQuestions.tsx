@@ -60,7 +60,7 @@ export default function RabbiQuestions() {
         <p className="text-muted-foreground">שאלות בהלכה ובחיי היומיום — מענה מהרב</p>
       </div>
       <Card className="mb-8">
-        <CardHeader><CardTitle>שאלת חדשה</CardTitle></CardHeader>
+        <CardHeader><CardTitle as="h2">שאלת חדשה</CardTitle></CardHeader>
         <CardContent>
           <form onSubmit={submit} className="space-y-3">
             <div className="flex items-center gap-3"><Switch checked={form.anonymous} onCheckedChange={(v) => setForm({ ...form, anonymous: v })} /><Label>שאלה אנונימית</Label></div>

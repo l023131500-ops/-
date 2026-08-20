@@ -76,7 +76,7 @@ export default function FindLesson() {
 
       <Card>
         <CardHeader>
-          <CardTitle>פרטי בקשה</CardTitle>
+          <CardTitle as="h2">פרטי בקשה</CardTitle>
           <CardDescription>נחזור אליך עם הצעות תוך 24 שעות</CardDescription>
         </CardHeader>
         <CardContent>

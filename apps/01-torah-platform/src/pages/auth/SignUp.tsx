@@ -47,7 +47,7 @@ export default function SignUp() {
       <div className="min-h-screen flex items-center justify-center bg-muted/30 px-4">
         <Card className="w-full max-w-md">
           <CardHeader>
-            <CardTitle className="text-2xl flex items-center gap-2">
+            <CardTitle as="h1" className="text-2xl flex items-center gap-2">
               <MailCheck className="h-6 w-6 text-primary" aria-hidden="true" />
               נשאר לאמת את המייל
             </CardTitle>
@@ -74,7 +74,7 @@ export default function SignUp() {
     <div className="min-h-screen flex items-center justify-center bg-muted/30 px-4">
       <Card className="w-full max-w-md">
         <CardHeader>
-          <CardTitle className="text-2xl">הרשמה</CardTitle>
+          <CardTitle as="h1" className="text-2xl">הרשמה</CardTitle>
           <CardDescription>פתח חשבון חדש</CardDescription>
         </CardHeader>
         <CardContent>

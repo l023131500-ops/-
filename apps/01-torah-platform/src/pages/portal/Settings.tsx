@@ -62,7 +62,7 @@ export default function Settings() {
         </TabsList>
         <TabsContent value="branding" className="pt-4">
           <Card>
-            <CardHeader><CardTitle className="flex items-center gap-2"><Palette className="h-5 w-5" /> עיצוב מותג</CardTitle><CardDescription>כל ההגדרות חלות מיידית על האתר הציבורי</CardDescription></CardHeader>
+            <CardHeader><CardTitle as="h2" className="flex items-center gap-2"><Palette className="h-5 w-5" /> עיצוב מותג</CardTitle><CardDescription>כל ההגדרות חלות מיידית על האתר הציבורי</CardDescription></CardHeader>
             <CardContent className="space-y-3">
               <div className="grid sm:grid-cols-2 gap-3">
                 <div><Label>שם האתר</Label><Input value={b.site_name || ""} onChange={(e) => setB({ ...b, site_name: e.target.value })} /></div>
@@ -87,7 +87,7 @@ export default function Settings() {
         </TabsContent>
         <TabsContent value="content" className="pt-4">
           <Card>
-            <CardHeader><CardTitle>תוכן ופוטר</CardTitle></CardHeader>
+            <CardHeader><CardTitle as="h2">תוכן ופוטר</CardTitle></CardHeader>
             <CardContent className="space-y-3">
               <div><Label>טקסט פוטר</Label><Textarea value={b.footer_text || ""} onChange={(e) => setB({ ...b, footer_text: e.target.value })} /></div>
               <Button onClick={() => saveBrand.mutate()} disabled={saveBrand.isPending}>שמור</Button>
@@ -96,7 +96,7 @@ export default function Settings() {
         </TabsContent>
         <TabsContent value="payments" className="pt-4">
           <Card>
-            <CardHeader><CardTitle>הגדרות נדרים פלוס</CardTitle><CardDescription>פרטי מוסד עבור סליקת כרטיסי אשראי. הסיסמה מוצפנת במסד הנתונים.</CardDescription></CardHeader>
+            <CardHeader><CardTitle as="h2">הגדרות נדרים פלוס</CardTitle><CardDescription>פרטי מוסד עבור סליקת כרטיסי אשראי. הסיסמה מוצפנת במסד הנתונים.</CardDescription></CardHeader>
             <CardContent className="space-y-3">
               <div><Label lang="en">Mosad ID</Label><Input value={nedarim.mosad_id} onChange={(e) => setNedarim({ ...nedarim, mosad_id: e.target.value })} /></div>
               <div><Label htmlFor="api-password" lang="en">API Password</Label><PasswordInput id="api-password" value={nedarim.api_password} onChange={(e) => setNedarim({ ...nedarim, api_password: e.target.value })} placeholder="השאר ריק כדי לא לשנות" /></div>

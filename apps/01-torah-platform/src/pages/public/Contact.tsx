@@ -43,14 +43,14 @@ export default function Contact() {
       <h1 className="font-heading text-3xl md:text-4xl mb-6 text-center">צור קשר</h1>
       <div className="grid md:grid-cols-2 gap-6">
         <Card>
-          <CardHeader><CardTitle>פרטי קשר</CardTitle></CardHeader>
+          <CardHeader><CardTitle as="h2">פרטי קשר</CardTitle></CardHeader>
           <CardContent className="space-y-3">
             <div className="flex items-center gap-2"><Phone className="h-4 w-4 text-primary" /> 02-3131600</div>
             <div className="flex items-center gap-2"><Mail className="h-4 w-4 text-primary" /> a023131600@gmail.com</div>
           </CardContent>
         </Card>
         <Card>
-          <CardHeader><CardTitle>שלח הודעה</CardTitle></CardHeader>
+          <CardHeader><CardTitle as="h2">שלח הודעה</CardTitle></CardHeader>
           <CardContent>
             <form onSubmit={submit} className="space-y-3">
               <div><Label>שם *</Label><Input required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></div>

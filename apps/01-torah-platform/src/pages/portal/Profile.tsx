@@ -32,7 +32,7 @@ export default function Profile() {
     <div className="max-w-xl">
       <h1 className="font-heading text-3xl mb-6">פרופיל אישי</h1>
       <Card>
-        <CardHeader><CardTitle>פרטים אישיים</CardTitle></CardHeader>
+        <CardHeader><CardTitle as="h2">פרטים אישיים</CardTitle></CardHeader>
         <CardContent className="space-y-3">
           <div><Label>דוא״ל</Label><Input value={user?.email || ""} disabled /></div>
           <div><Label>שם מלא</Label><Input value={p.full_name || ""} onChange={(e) => setP({ ...p, full_name: e.target.value })} /></div>

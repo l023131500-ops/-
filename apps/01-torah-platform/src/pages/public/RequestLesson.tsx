@@ -44,7 +44,7 @@ export default function RequestLesson() {
         <p className="text-muted-foreground">רוצה לפתוח שיעור חדש באזור שלך? מלא את הפרטים</p>
       </div>
       <Card>
-        <CardHeader><CardTitle>פרטי הבקשה</CardTitle><CardDescription>נסייע במציאת מגיד שיעור ומקום מתאים</CardDescription></CardHeader>
+        <CardHeader><CardTitle as="h2">פרטי הבקשה</CardTitle><CardDescription>נסייע במציאת מגיד שיעור ומקום מתאים</CardDescription></CardHeader>
         <CardContent>
           <form onSubmit={submit} className="space-y-4">
             <div className="grid sm:grid-cols-2 gap-3">

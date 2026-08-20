@@ -34,7 +34,7 @@ export default function ActivateInvite() {
     <div className="min-h-screen flex items-center justify-center bg-muted/30 px-4">
       <Card className="w-full max-w-md">
         <CardHeader>
-          <CardTitle className="text-2xl flex items-center gap-2"><KeyRound className="h-5 w-5" /> הפעלת הזמנה</CardTitle>
+          <CardTitle as="h1" className="text-2xl flex items-center gap-2"><KeyRound className="h-5 w-5" /> הפעלת הזמנה</CardTitle>
           <CardDescription>הזן את הקוד שקיבלת מהמנהל</CardDescription>
         </CardHeader>
         <CardContent>

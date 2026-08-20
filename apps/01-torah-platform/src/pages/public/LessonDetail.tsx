@@ -31,7 +31,7 @@ export default function LessonDetail() {
       <Card>
         <CardHeader>
           <Badge variant="secondary" className="w-fit mb-2">{lesson.audience || "פתוח לכולם"}</Badge>
-          <CardTitle className="text-3xl">{lesson.title}</CardTitle>
+          <CardTitle as="h1" className="text-3xl">{lesson.title}</CardTitle>
           <div className="flex items-center gap-2 text-muted-foreground mt-2">
             <User className="h-4 w-4" /> {lesson.teacher_name}
           </div>

@@ -39,7 +39,7 @@ export default function Azkarot() {
     <div className="container mx-auto px-4 py-10 max-w-4xl">
       <div className="text-center mb-8"><Heart className="h-12 w-12 mx-auto text-primary mb-3" /><h1 className="font-heading text-3xl md:text-4xl">אזכרות ויארצייט</h1></div>
       <Card className="mb-8">
-        <CardHeader><CardTitle>רישום אזכרה חדשה</CardTitle></CardHeader>
+        <CardHeader><CardTitle as="h2">רישום אזכרה חדשה</CardTitle></CardHeader>
         <CardContent>
           <form onSubmit={submit} className="space-y-3">
             <div className="grid sm:grid-cols-2 gap-3">

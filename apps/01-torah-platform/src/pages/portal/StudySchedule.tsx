@@ -416,7 +416,7 @@ export default function StudySchedule() {
                         <ChevronDown className="h-5 w-5 text-muted-foreground" />
                       )}
                       <div>
-                        <CardTitle className="text-lg">{sched.title}</CardTitle>
+                        <CardTitle as="h2" className="text-lg">{sched.title}</CardTitle>
                         <div className="flex flex-wrap gap-2 mt-1">
                           {sched.source_book && (
                             <span className="flex items-center gap-1 text-xs text-muted-foreground">
