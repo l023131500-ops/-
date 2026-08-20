@@ -214,16 +214,26 @@ export default function HealthFundsAdmin() {
   }
 
   async function toggleActive(t: HfTopic, active: boolean) {
-    await apiRequest("PATCH", `/api/hf/admin/topics/${t.id}`, { active });
-    setTopics((prev) => prev.map((x) => (x.id === t.id ? { ...x, active } : x)));
+    try {
+      const r = await apiRequest("PATCH", `/api/hf/admin/topics/${t.id}`, { active });
+      if (!r.ok) throw new Error();
+      setTopics((prev) => prev.map((x) => (x.id === t.id ? { ...x, active } : x)));
+    } catch {
+      toast({ title: "העדכון נכשל", variant: "destructive" });
+    }
   }
 
   async function removeTopic(t: HfTopic) {
     if (!window.confirm(`למחוק את הנושא "${t.topic}" (#${t.catalogNo})? פעולה זו אינה הפיכה.`)) return;
-    await apiRequest("DELETE", `/api/hf/admin/topics/${t.id}`);
-    toast({ title: "הנושא נמחק" });
-    if (expandedId === t.id) setExpandedId(null);
-    await loadTopics();
+    try {
+      const r = await apiRequest("DELETE", `/api/hf/admin/topics/${t.id}`);
+      if (!r.ok) throw new Error();
+      toast({ title: "הנושא נמחק" });
+      if (expandedId === t.id) setExpandedId(null);
+      await loadTopics();
+    } catch {
+      toast({ title: "מחיקת הנושא נכשלה", variant: "destructive" });
+    }
   }
 
   async function addTier(topicId: number) {
@@ -231,25 +241,40 @@ export default function HealthFundsAdmin() {
       toast({ title: "חסרים פרטים", description: "שם הקופה והערך הם חובה.", variant: "destructive" });
       return;
     }
-    await apiRequest("POST", `/api/hf/admin/topics/${topicId}/tiers`, {
-      col: newTier.col ? Number(newTier.col) : 0,
-      fund: newTier.fund, fundKey: newTier.fundKey, tier: newTier.tier, prog: newTier.prog, value: newTier.value,
-    });
-    setNewTier({ col: "", fund: "", fundKey: "", tier: "", prog: "", value: "" });
-    await loadTopics();
-    const fresh = await apiRequest("GET", `/api/hf/admin/topics/${topicId}`).then((r) => r.json());
-    setDraft((d) => ({ ...d, tiers: fresh.tiers }));
+    try {
+      const r = await apiRequest("POST", `/api/hf/admin/topics/${topicId}/tiers`, {
+        col: newTier.col ? Number(newTier.col) : 0,
+        fund: newTier.fund, fundKey: newTier.fundKey, tier: newTier.tier, prog: newTier.prog, value: newTier.value,
+      });
+      if (!r.ok) throw new Error();
+      setNewTier({ col: "", fund: "", fundKey: "", tier: "", prog: "", value: "" });
+      await loadTopics();
+      const fresh = await apiRequest("GET", `/api/hf/admin/topics/${topicId}`).then((r) => r.json());
+      setDraft((d) => ({ ...d, tiers: fresh.tiers }));
+    } catch {
+      toast({ title: "הוספת המדרגה נכשלה", variant: "destructive" });
+    }
   }
 
   async function updateTierValue(tier: HfTier, value: string) {
-    await apiRequest("PATCH", `/api/hf/admin/tiers/${tier.id}`, { value });
-    setDraft((d) => ({ ...d, tiers: (d.tiers ?? []).map((t) => (t.id === tier.id ? { ...t, value } : t)) }));
+    try {
+      const r = await apiRequest("PATCH", `/api/hf/admin/tiers/${tier.id}`, { value });
+      if (!r.ok) throw new Error();
+      setDraft((d) => ({ ...d, tiers: (d.tiers ?? []).map((t) => (t.id === tier.id ? { ...t, value } : t)) }));
+    } catch {
+      toast({ title: "עדכון הערך נכשל", variant: "destructive" });
+    }
   }
 
   async function removeTier(tier: HfTier) {
-    await apiRequest("DELETE", `/api/hf/admin/tiers/${tier.id}`);
-    setDraft((d) => ({ ...d, tiers: (d.tiers ?? []).filter((t) => t.id !== tier.id) }));
-    await loadTopics();
+    try {
+      const r = await apiRequest("DELETE", `/api/hf/admin/tiers/${tier.id}`);
+      if (!r.ok) throw new Error();
+      setDraft((d) => ({ ...d, tiers: (d.tiers ?? []).filter((t) => t.id !== tier.id) }));
+      await loadTopics();
+    } catch {
+      toast({ title: "מחיקת המדרגה נכשלה", variant: "destructive" });
+    }
   }
 
   // ---- Podcast (text + audio) management ----
@@ -322,14 +347,20 @@ export default function HealthFundsAdmin() {
       toast({ title: "שם נושא חסר", description: "יש להזין שם נושא.", variant: "destructive" });
       return;
     }
-    const payload: any = { ...newTopic };
-    payload.rangeMin = newTopic.rangeMin ? Number(newTopic.rangeMin) : null;
-    payload.rangeMax = newTopic.rangeMax ? Number(newTopic.rangeMax) : null;
-    const created = await apiRequest("POST", "/api/hf/admin/topics", payload).then((r) => r.json());
-    toast({ title: "נוצר נושא חדש", description: `מספר קטלוגי ${created.catalogNo}.` });
-    setNewTopic({ ...emptyNew });
-    setShowNew(false);
-    await loadTopics();
+    try {
+      const payload: any = { ...newTopic };
+      payload.rangeMin = newTopic.rangeMin ? Number(newTopic.rangeMin) : null;
+      payload.rangeMax = newTopic.rangeMax ? Number(newTopic.rangeMax) : null;
+      const r = await apiRequest("POST", "/api/hf/admin/topics", payload);
+      if (!r.ok) throw new Error();
+      const created = await r.json();
+      toast({ title: "נוצר נושא חדש", description: `מספר קטלוגי ${created.catalogNo}.` });
+      setNewTopic({ ...emptyNew });
+      setShowNew(false);
+      await loadTopics();
+    } catch {
+      toast({ title: "יצירת הנושא נכשלה", variant: "destructive" });
+    }
   }
 
   function copy(text: string) {
