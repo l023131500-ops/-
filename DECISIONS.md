@@ -5295,3 +5295,40 @@
     ו-27-bkalut-price (`public-health-funds.tsx` — 3-4 מקרים) — מועמדים
     טבעיים להמשך ישיר; לחלופין תשלום/רברנד TEST-mode שעדיין לא אומת
     בהיקף המצומצם מאז סבב 285-286.
+
+## 20/08/2026 — סבב 317 (loop B)
+
+317. **`17-chizukim-transcribe` (`upload.tsx` + `recording-detail.tsx`): המשך תור**
+    **סבב 316 — 5 המקרים שדווחו בשני הקבצים הללו.** קראתי README.md/
+    CONNECTIONS.md, בדקתי `core.run_progress` (הצעד האחרון:
+    `label-for-id-mismatch-22-0820`, קומיט `ef405c70`, כבר ה-HEAD) ו-
+    DECISIONS.md #313-316 — היקף loop B מאושר 17,18,19,20,21,22,23,24,25,27,28
+    בלבד. לא נגעתי ב-26/29/30/31/32-38. קראתי את שני הקבצים במלואם וזיהיתי
+    ידנית 5 זוגות label/control שהם אחים ב-DOM בלי `for`/`id`: `upload.tsx`
+    שורות 304-313 (נושא) ו-316-325 (פרשה/תאריך), שני שדות `<Input>` של
+    shadcn. `recording-detail.tsx` שורות 214-223 (נושא), 226-234
+    (פרשה/תאריך) — אותו טיפוס `<Input>` — ושורות 239-243 (סטטוס), שהיא
+    `<Select>` של shadcn/Radix ולא `<input>` רגיל. אימתתי לפני נגיעה
+    ש-`SelectTrigger` (ב-`components/ui/select.tsx`) הוא `forwardRef` שמעביר
+    `...props` (כולל `id`) ל-`SelectPrimitive.Trigger`, שמרונדר כ-`<button>`
+    בפועל — ו-`<button>` הוא אלמנט labelable לפי מפרט ה-HTML (בדיוק כמו
+    `input`/`select`/`textarea`), כך ש-`htmlFor`/`id` עובד עליו באותה דרך
+    כמו על שדה טקסט רגיל, לא רק על `<select>` native כמו ב-21 (סבב 315).
+    הוספתי `htmlFor`/`id` תואמים לכל חמשת הזוגות (`upload-topic`,
+    `upload-parsha`, `detail-topic`, `detail-parsha`, `detail-status`).
+    אימתתי לפני עריכה שאין שום `id=` קיים בשני הקבצים (`grep 'id="\|id={'`
+    החזיר ריק בשניהם) — אפס סיכון התנגשות. `git diff` מציג תוספת attribute
+    בלבד (5 `htmlFor` + 5 `id`), אפס שינוי ל-layout/לוגיקה/ערכים. שני
+    הקבצים תחת `.gitignore` (`client/` בתוך 17), נדרש `git add` על נתיב
+    מפורש (לא `-f`, git הזהיר אך הוסיף כי הם כבר עוקבים). אין build/
+    dev-server בסבב הזה לפי הנחיית ההרצה — אימות באמצעות ספירת תווים
+    מאוזנת (`()[]{}`) ו-`git diff` בלבד. ענף חדש
+    `fix/b-label-for-id-mismatch-17-0820` (נבנה מעל `ef405c70`, לא מ-main —
+    אותו דפוס כמו סבבים קודמים: כל סבב ממשיך משם קודמו), קומיט `df4de9a4`,
+    נדחף (מפעיל פריסת Vercel תחת `more30.com/chizukim`).
+    **הבא בתור:** עדשת ה-label-for-id עדיין פתוחה על 24-galilee-connect-hub
+    (`MourningGuidePage.tsx`, `SynagogueDetailsManager.tsx` — כ-11 מקרים,
+    הקובץ הגדול ביותר שנותר בתור) ו-27-bkalut-price
+    (`public-health-funds.tsx` — 3-4 מקרים) — מועמדים טבעיים להמשך ישיר;
+    לחלופין תשלום/רברנד TEST-mode שעדיין לא אומת בהיקף המצומצם מאז סבב
+    285-286.
