@@ -3036,3 +3036,35 @@
     שני הקבצים המלאים בלבד (לא בהרצת build). קומיט על
     `fix/b-get-your-rights-silent-write-fail-0820`, יידחף (מפעיל פריסת
     Vercel תחת `more30.com/zchuyot`).
+
+## 20/08/2026 — סבב 42
+
+243. **חזרתי לממצא שנדחה בסבב #241**: 27-bkalut-price,
+    `server/routes.ts` שורות 585-589, `POST /api/service-submissions`.
+    אימתתי מחדש בקריאה מלאה של ה-handler (שורות 437-603) +
+    `storage.ts` (`createServiceSubmission`/`updateServiceSubmissionWebhook`)
+    + `server/index.ts` (ה-error middleware הגלובלי, שורות 67-78) +
+    `package.json` (Express `^5.0.1`, שתופס דחיית Promise מ-async
+    handler אוטומטית ומעביר ל-middleware). הזרימה בפועל: הליד נוצר
+    (שורה 452, נשמר ב-DB) ומחובר-webhook נשלח בהצלחה (שורה 577), ורק
+    *אחר כך* נכתב תג הסטטוס (`sent`/`failed`) בחזרה לרשומה עצמה
+    (`storage.updateServiceSubmissionWebhook`, `db.update(...).run()`
+    ללא try/catch). אם הכתיבה הזו נכשלת (תקלת DB/constraint) --
+    ה-Promise נדחה, ה-middleware הגלובלי מחזיר 500 ללקוח, אבל הליד
+    וה-webhook כבר הצליחו בפועל. זה באג "כישלון מדומה אחרי הצלחה
+    אמיתית" -- תמונת המראה של משפחת הבאגים "הצלחה מדומה אחרי כישלון
+    אמיתי" שכבר תוקנה שוב ושוב בלולאה הזו (#215-242) -- כאן זה חמור
+    יותר בכיוון ההפוך: משתמש שממלא טופס בקשת שירות אמיתי עלול לראות
+    שגיאה ולנסות שוב (כפל-ליד) או לוותר, בזמן שהבקשה שלו כבר נקלטה
+    ונשלחה לצוות.
+244. **התיקון**: עטפתי את קריאת `updateServiceSubmissionWebhook` ב-
+    try/catch -- בכישלון רק רושם אזהרה ל-console (אותו דפוס בדיוק כמו
+    רישום אישורים משפטיים בשורה 493 באותו קובץ) וממשיך לתשובת ההצלחה
+    הרגילה, כי הליד וה-webhook כבר הצליחו. אפס שינוי לזרימת ההצלחה
+    הרגילה (אותה תשובת JSON בדיוק), אפס שינוי לסכמה/לוגיקת ה-webhook
+    עצמה. `apps/27-bkalut-price` נבדל מ-08-bkalut-app/bkalot-admin
+    המוגנים -- מערכת נפרדת (27, "השוואת מחירים בקלות"), לא נגעתי
+    בקבצים המוגנים. אין `node_modules` מותקן בעץ הזה -- אומת בקריאה
+    חוזרת ידנית של ה-diff בלבד (לא בהרצת build/Express). קומיט על
+    `fix/b-bkalut-price-webhook-status-false-500-0820`, יידחף (מפעיל
+    פריסת Vercel תחת הנתיב הממופה ל-27, `more30.com/mechiron`).
