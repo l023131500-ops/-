@@ -13,6 +13,9 @@ export interface SelectedTemplate {
   projectId?: number;
   /** הערות לקוח על הטיוטה הנוכחית (צ'קליסט #14, שלב השמירה) — נשמר בתוך layersJson, לקריאה בלבד עד סבב עתידי שיבנה תיקון אוטומטי לפיו. */
   clientNotes?: string;
+  /** קריינות עברית (צ'קליסט #16, שלב 5 — וידאו קידום) — נשמר בתוך layersJson, אותו דפוס כמו clientNotes. */
+  narrationScript?: string;
+  narrationAudioUrl?: string;
 }
 
 interface TemplateContextValue {

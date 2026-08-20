@@ -5,6 +5,7 @@ import { insertProjectSchema } from "@shared/schema";
 import { generateBackground, editImage, enhanceBackgroundPrompt } from "./gemini";
 import { generateCopy, generateConcepts, critiqueDesign } from "./ai";
 import { generateStrategy, generateLogoConcepts, vectorizeLogo, deriveVisuals, generateBackgroundRecraft, removeBackgroundImage } from "./branding";
+import { generateNarration } from "./narration";
 import { ARCHETYPES, ARCHETYPE_GROUPS, AAKER_DIMENSIONS, BRIEF_CATEGORIES, ALL_QUESTIONS, CORE_QUESTIONS, TOTAL_QUESTIONS, BRAND_BOOK_SECTIONS, HEBREW_FONTS, VISUAL_STYLE_TO_ARCHETYPE, getArchetype } from "@shared/branding";
 import { insertBrandSchema } from "@shared/schema";
 import { STYLES } from "@shared/styles";
@@ -332,6 +333,21 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
       res.json({ ok: true, dataUrl: result.dataUrl });
     } catch (e: any) {
       res.status(502).json({ error: "שגיאת הסרת רקע: " + String(e?.message || e).slice(0, 200) });
+    }
+  });
+
+  // קריינות עברית (ElevenLabs) — הבסיס לשכבת "וידאו קידום": טקסט חופשי -> data URL של mp3
+  app.post("/api/ai/narration", async (req: Request, res: Response) => {
+    const { script, voiceId } = req.body || {};
+    if (!script || !String(script).trim()) return res.status(400).json({ error: "חסר טקסט לקריינות" });
+    try {
+      const result = await generateNarration(String(script), voiceId);
+      if (!result.ok || !result.dataUrl) {
+        return res.status(502).json({ error: result.error || "יצירת קריינות נכשלה", detail: result.detail });
+      }
+      res.json({ ok: true, dataUrl: result.dataUrl, script: result.script });
+    } catch (e: any) {
+      res.status(502).json({ error: "שגיאת קריינות: " + String(e?.message || e).slice(0, 200) });
     }
   });
 

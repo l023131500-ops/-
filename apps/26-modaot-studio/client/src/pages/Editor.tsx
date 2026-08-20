@@ -37,6 +37,7 @@ import {
   MessageSquare,
   RefreshCw,
   CheckCheck,
+  Mic,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -155,6 +156,14 @@ export default function Editor() {
   // ליישום התיקון האוטומטי לפי ההערות בסבב הבא, זהו רק שלב שמירת ההערה עצמה.
   const [notesDialogOpen, setNotesDialogOpen] = useState(false);
   const [clientNotes, setClientNotes] = useState(selected?.clientNotes ?? "");
+
+  // קריינות עברית (וידאו קידום — שלב 5 בצ'קליסט) — נשמר לצד הטיוטה בתוך
+  // layersJson, אותו דפוס בדיוק כמו clientNotes (פריט 14): לא חלק מ-TemplateDoc,
+  // לא משפיע על הרינדור/ייצוא הקיימים.
+  const [narrationDialogOpen, setNarrationDialogOpen] = useState(false);
+  const [narrationScript, setNarrationScript] = useState(selected?.narrationScript ?? "");
+  const [narrationAudioUrl, setNarrationAudioUrl] = useState(selected?.narrationAudioUrl ?? "");
+  const [narrationLoading, setNarrationLoading] = useState(false);
 
   // וקטוריזציה של שכבת תמונה קיימת ל-SVG אמיתי (Recraft — מנוע קיים בכלי המותג)
   const [vectorizing, setVectorizing] = useState(false);
@@ -592,7 +601,13 @@ export default function Editor() {
         format: selected!.format,
         width: doc!.width,
         height: doc!.height,
-        layersJson: JSON.stringify({ background: doc!.background, layers: doc!.layers, clientNotes }),
+        layersJson: JSON.stringify({
+          background: doc!.background,
+          layers: doc!.layers,
+          clientNotes,
+          narrationScript: narrationScript || undefined,
+          narrationAudioUrl: narrationAudioUrl || undefined,
+        }),
         thumbnail: null as string | null,
       };
       // עבודה שנפתחה מ-/projects נושאת מזהה, ולכן היא מתעדכנת במקום.
@@ -630,6 +645,32 @@ export default function Editor() {
   function handleExportIDML() {
     if (!doc) return;
     downloadIDML(doc, `${selected?.name ?? "modaa"}.idml`);
+  }
+
+  // קריינות עברית (ElevenLabs, שלב 5 בצ'קליסט — הבסיס לווידאו קידום) — שולח
+  // את הטקסט החופשי שהמשתמש כתב, מקבל data URL של mp3. שום שכבה/רינדור/ייצוא
+  // קיים לא משתנה; זו שכבת קול נפרדת שתאכיל את הרכבת הווידאו בסבב הבא.
+  async function handleGenerateNarration() {
+    if (!narrationScript.trim()) return;
+    setNarrationLoading(true);
+    try {
+      const res = await apiRequest("POST", "/api/ai/narration", { script: narrationScript });
+      const data = await res.json();
+      if (!data?.ok || !data?.dataUrl) {
+        toast({ title: "יצירת קריינות נכשלה", description: data?.error, variant: "destructive" });
+        return;
+      }
+      setNarrationAudioUrl(data.dataUrl);
+      toast({ title: "הקריינות מוכנה" });
+    } catch (err: any) {
+      toast({
+        title: "יצירת קריינות נכשלה",
+        description: String(err?.message ?? err).slice(0, 150),
+        variant: "destructive",
+      });
+    } finally {
+      setNarrationLoading(false);
+    }
   }
 
   // תקציר שכבה לביקורת AI — בלי base64/data URL של תמונות (מיותר לקריטריוני
@@ -820,6 +861,15 @@ export default function Editor() {
             data-testid="button-client-notes"
           >
             <MessageSquare className="h-4 w-4" /> הערות לקוח
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            className={"gap-1.5 border-[#C9A227]/40 text-[#C9A227]" + (narrationAudioUrl ? " bg-[#C9A227]/10" : "")}
+            onClick={() => setNarrationDialogOpen(true)}
+            data-testid="button-narration"
+          >
+            <Mic className="h-4 w-4" /> קריינות
           </Button>
           <Button size="sm" className="gap-1.5 bg-[#C9A227] text-[#0B1220] hover:bg-[#C9A227]/90" onClick={handleSaveProject} disabled={saving}>
             <Save className="h-4 w-4" /> {saving ? "שומר..." : "שמור פרויקט"}
@@ -1663,6 +1713,49 @@ export default function Editor() {
             data-testid="button-save-client-notes"
           >
             <Save className="h-4 w-4" /> {saving ? "שומר..." : "שמור הערה ופרויקט"}
+          </Button>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={narrationDialogOpen} onOpenChange={setNarrationDialogOpen}>
+        <DialogContent className="max-w-lg border-[#C9A227]/30 bg-[#0E1830] text-[#F5EEDD]" dir="rtl">
+          <DialogHeader>
+            <DialogTitle className="text-[#F5EEDD]">קריינות עברית</DialogTitle>
+            <DialogDescription>
+              טקסט חופשי → קריינות אמיתית (ElevenLabs) לשימוש בווידאו קידום. נשמר עם הפרויקט; שום שכבה בקנבס לא משתנה.
+            </DialogDescription>
+          </DialogHeader>
+          <Textarea
+            value={narrationScript}
+            onChange={(e) => setNarrationScript(e.target.value)}
+            placeholder="למשל: הצטרפו אלינו לשיעור השבועי, יום שלישי בשעה 20:00…"
+            className="min-h-[120px] border-[#C9A227]/30 bg-[#101B32] text-[#F5EEDD]"
+            data-testid="textarea-narration-script"
+          />
+          <Button
+            variant="outline"
+            size="sm"
+            className="gap-1.5 self-start border-[#C9A227]/40 text-[#C9A227]"
+            onClick={handleGenerateNarration}
+            disabled={narrationLoading || !narrationScript.trim()}
+            data-testid="button-generate-narration"
+          >
+            <Mic className="h-4 w-4" /> {narrationLoading ? "יוצר קריינות..." : "צור קריינות"}
+          </Button>
+          {narrationAudioUrl && (
+            <audio controls src={narrationAudioUrl} className="w-full" data-testid="audio-narration-preview" />
+          )}
+          <Button
+            size="sm"
+            className="gap-1.5 self-start bg-[#C9A227] text-[#0B1220] hover:bg-[#C9A227]/90"
+            onClick={async () => {
+              await handleSaveProject();
+              setNarrationDialogOpen(false);
+            }}
+            disabled={saving}
+            data-testid="button-save-narration"
+          >
+            <Save className="h-4 w-4" /> {saving ? "שומר..." : "שמור קריינות ופרויקט"}
           </Button>
         </DialogContent>
       </Dialog>

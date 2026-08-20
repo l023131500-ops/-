@@ -488,6 +488,41 @@
       `_deploy/studio-more30/public/studio` (build חדש, `api/` ללא שינוי) →
       `vercel deploy --prod`, `dpl_5Nm1ijR1j8PrZuanqs6eEWmwoxmE`, READY.
 
+## שלב 5 — וידאו קידום + קריינות (video + narration TTS)
+
+- [ ] **16. קריינות עברית (TTS)** — הבסיס הראשון לשכבת "וידאו קידום" (המערכת
+      עצמה עדיין מנוע תמונה סטטית; זה השלב הראשון לקראת רצף פריימים+קול).
+      נבנה מהיסוד, לפי אותו ספק/דפוס בדיוק כמו `apps/27-bkalut-price/server/hf-podcast.ts`
+      (ElevenLabs, `ELEVENLABS_API_KEY`, `eleven_multilingual_v2`) — לא ספק
+      חדש. `shared/tts-hebrew.ts` (עותק מותאם של `apps/27-bkalut-price/shared/tts-hebrew.ts`,
+      כל מערכת ממוספרת מנוהלת בנפרד ולכן לא ייבוא חוצה-אפליקציות) ממיר
+      מספרים/מטבע/אחוזים/שנים למילים לפני שליחה למנוע, כדי שהקריינות תישמע
+      טבעית. `server/narration.ts` חדש: `generateNarration(script, voiceId?)`
+      מחזיר `data:audio/mpeg;base64,...` — בדיוק כמו שה-Recraft
+      vectorize/remove-background כבר מחזירים data URL של תמונה, כי למערכת
+      26 אין אחסון קבצים משלה (רק ארבע טבלאות `studio_*`). route חדש
+      `POST /api/ai/narration` (`routes.ts` + עותק זהה
+      `vercel-adapter/api/_lib/server/{narration,routes}.ts`). בעורך: כפתור
+      "קריינות" חדש בסרגל העליון (ליד "הערות לקוח", אותו קומפוננט/סגנון
+      בדיוק) פותח דיאלוג עם `Textarea` לתסריט + כפתור "צור קריינות" +
+      נגן `<audio controls>` לתצוגה מקדימה. נשמר לצד הטיוטה בתוך `layersJson`
+      כשדה אח ל-`background`/`layers` (`narrationScript`/`narrationAudioUrl`),
+      אותו דפוס בדיוק כמו `clientNotes` (פריט 14) — לא חלק מ-`TemplateDoc`,
+      לא משפיע על הרינדור/ייצוא/מתאמים הקיימים. `templateContext.tsx` +
+      `Projects.tsx` מעבירים/משחזרים את שני השדות כשפותחים עבודה שמורה.
+      **לא נבדק חי ולא נפרס הסבב הזה** — הסבב הזה חסר גישת build/dev-server
+      (אותה מגבלה בדיוק שתועדה בפריט 13, "החל את כל התיקונים": אין
+      `node_modules`/`vite build` זמינים בסביבה). הקוד נכתב ונבדק בקריאה
+      ישירה מול הדפוסים הקיימים (`branding.ts` data-URL pattern, `clientNotes`
+      sibling-field pattern, `routes.ts`/`vercel-adapter` mirror אחד-לאחד) —
+      לא בהרצה. **נשאר לסבב הבא (עם build/dev-server זמינים):** `tsc --noEmit`
+      + `vite build --base=/studio/` + פריסה + אימות Playwright חי
+      (כפתור מופיע, קריינות אמיתית מתקבלת, נשמרת ונטענת בחזרה, אפס רגרסיה
+      לשאר הכפתורים), ואז המשך הבנייה בפועל של "וידאו קידום": רצף
+      פריימים/מעברים על גבי מנוע ה-Konva הקיים + סנכרון לאורך הקריינות +
+      קידוד וידאו (ככל הנראה `MediaRecorder`/`canvas.captureStream()`
+      בדפדפן, כדי להימנע מתלות ב-ffmpeg בסביבת Vercel serverless).
+
 ---
 
 ## כללים (מ-DESIGN_SYSTEM_BUILD_v2.md §7, תמיד בתוקף)

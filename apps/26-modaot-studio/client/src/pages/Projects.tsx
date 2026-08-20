@@ -64,6 +64,19 @@ function clientNotesOf(p: ProjectRow): string {
   }
 }
 
+/** ‎narrationScript‎/‎narrationAudioUrl‎ — אותו דפוס בדיוק כמו ‎clientNotes‎. */
+function narrationOf(p: ProjectRow): { script: string; audioUrl: string } {
+  try {
+    const parsed = JSON.parse(p.layersJson);
+    return {
+      script: typeof parsed?.narrationScript === "string" ? parsed.narrationScript : "",
+      audioUrl: typeof parsed?.narrationAudioUrl === "string" ? parsed.narrationAudioUrl : "",
+    };
+  } catch {
+    return { script: "", audioUrl: "" };
+  }
+}
+
 const dateLabel = (seconds: number) =>
   new Date(seconds * 1000).toLocaleDateString("he-IL", { day: "numeric", month: "long", year: "numeric" });
 
@@ -76,6 +89,7 @@ export default function Projects() {
   function openProject(p: ProjectRow) {
     const doc = docOf(p);
     if (!doc) return;
+    const narration = narrationOf(p);
     setSelected({
       doc,
       category: p.category,
@@ -84,6 +98,8 @@ export default function Projects() {
       name: p.name,
       projectId: p.id,
       clientNotes: clientNotesOf(p),
+      narrationScript: narration.script,
+      narrationAudioUrl: narration.audioUrl,
     });
     navigate("/editor");
   }
