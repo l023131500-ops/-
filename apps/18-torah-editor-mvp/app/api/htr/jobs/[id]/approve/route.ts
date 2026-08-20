@@ -34,6 +34,8 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     return NextResponse.json({ error: e.message }, { status: 500 });
   }
 
+  // .neq('status','approved') הופך את העדכון לאידמפוטנטי: קריאה כפולה
+  // (רשת חוזרת / טאב שני) לא תדרוס approved_at/approved_by קיימים.
   const { data, error } = await supabase
     .from('htr_jobs')
     .update({
@@ -43,11 +45,25 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
       approved_by: approvedBy
     })
     .eq('id', params.id)
+    .neq('status', 'approved')
     .select()
-    .single();
+    .maybeSingle();
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
+
+  if (!data) {
+    const { data: existing } = await supabase
+      .from('htr_jobs')
+      .select()
+      .eq('id', params.id)
+      .maybeSingle();
+    if (existing?.status === 'approved') {
+      return NextResponse.json({ job: existing, message: 'הטקסט כבר אושר קודם לכן' });
+    }
+    return NextResponse.json({ error: 'המשימה לא נמצאה' }, { status: 404 });
+  }
+
   return NextResponse.json({ job: data, message: 'הטקסט אושר ומוכן לשילוב בספר' });
 }
