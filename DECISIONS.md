@@ -5374,3 +5374,47 @@
      כולל אי-עקביות בתוך `Login.tsx`), 03-igud-ads (63 מופעים/10
      קבצים), 01-torah-platform (~150 מופעים/19 קבצים). סבב הבא
      סביר: 15-egod (הבא בגודל).
+
+## 20/08/2026 (LOOP A — סבב 85) — `<label htmlFor>`/`id`: 15-egod/Login.tsx, Invite.tsx
+
+474. **בדקתי מחדש `core.run_progress` לפני שהתחלתי.** סבב 84 סגור
+     (commit `34cb6250`/`57aae52b`, תאם ל-HEAD). המשכתי בעדשה
+     שסבב 83/#467 מיפה: 15-egod הבא בגודל בתור.
+475. **סקרתי מחדש (Explore agent, read-only) את כל 15-egod/src** לפני
+     עריכה — ההיקף המלא גדול משמעותית ממה שסבב 83 העריך: ~95-100
+     מופעים ב-14 קבצים (Login, Invite, JoinTeacher, AdminTeachers,
+     Materials, Lessons, PortalSettings, SeekerForm, TeacherForm,
+     RequestLesson, FindLesson, StudySchedule, Participants,
+     AdminForums). זה חורג משמעותית מגודל הסבבים הקודמים (10-33
+     קבצים/מופעים) — כמו בסבב 83, צמצמתי את הסבב הזה לתת-קבוצה
+     הקטנה ביותר בתור כדי לשמור על סיכון נמוך.
+476. **צמצמתי את הסבב הזה ל-Login.tsx + Invite.tsx בלבד** (4 מופעים,
+     2 קבצים) — כולל בדיוק אי-העקביות שסבב 83/#467 סימן: ב-
+     `Login.tsx` שדה הסיסמה כבר תקין (`htmlFor="password"`/
+     `id="password"`) אבל שדה המייל ושדה השם המלא (מוצג רק ב-
+     `isSignup`) לא היו מקושרים. קראתי את שני הקבצים במלואם לפני
+     עריכה.
+477. **התיקון:** `Login.tsx` — `id="fullName"`/`htmlFor="fullName"`
+     ו-`id="email"`/`htmlFor="email"`. `Invite.tsx` — `id="invite-email"`/
+     `htmlFor="invite-email"` ו-`id="invite-code"`/`htmlFor="invite-code"`
+     (קידומת `invite-` כדי להימנע מהתנגשות עתידית עם `id="email"` אם
+     שני הדפים ירונדרו אי-פעם באותו עץ DOM, אף שאין לכך תרחיש נוכחי).
+478. **אפס רגרסיה מאומתת:** `git diff --stat` — 2 קבצים, 8 שורות
+     נוספו/8 הוסרו (הוספת `id`/`htmlFor` בלבד על `<label>`/`<Input>`
+     קיימים, בלי לגעת ב-`value`/`onChange`/ולידציה/`placeholder`).
+     אין `tsc`/`npm` בסביבה הזו — אומת בקריאה מלאה של `git diff`
+     המלא + בדיקת איזון `{}`/`()`/`[]` ב-Python על שני הקבצים (שניהם
+     מאוזנים). קבצי 15-egod/src מוחרגים כברירת מחדל ב-`.gitignore`
+     אך עוקבים היסטורית — נדרש `git add -f` כמו בסבבים קודמים.
+     Commit `feb03b04` על אותו ענף `fix/a-icon-only-buttons-round2-0820`,
+     נדחף ל-origin (מפעיל פריסת Vercel תחת more30.com/egod).
+479. **הבא בתור:** נותרו ~12 קבצים/91-96 מופעים ב-15-egod ממופים
+     ומוכנים ללא סקר חוזר (JoinTeacher 7, AdminTeachers 6, Materials
+     ~11, Lessons ~15, PortalSettings 11, SeekerForm 14, TeacherForm 9,
+     RequestLesson 6, FindLesson 3, StudySchedule 5, Participants 4,
+     AdminForums 3) — קטן לגדול: FindLesson (3) → Participants/
+     AdminForums (4/3) → RequestLesson/StudySchedule (6/5) →
+     AdminTeachers/JoinTeacher (6/7) → PortalSettings/TeacherForm
+     (11/9) → Materials (~11) → SeekerForm (14) → Lessons (~15). אחרי
+     15-egod נותרות 03-igud-ads (63 מופעים/10 קבצים) ו-01-torah-
+     platform (~150 מופעים/19 קבצים) מהמיפוי של סבב 83.
