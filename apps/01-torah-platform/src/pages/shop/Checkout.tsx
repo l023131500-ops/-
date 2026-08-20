@@ -110,7 +110,7 @@ export default function Checkout() {
                 <div><Label>שם מלא *</Label><Input value={customer.name} onChange={(e) => setCustomer({ ...customer, name: e.target.value })} /></div>
                 <div><Label>טלפון *</Label><Input type="tel" inputMode="tel" autoComplete="tel" value={customer.phone} onChange={(e) => setCustomer({ ...customer, phone: e.target.value })} /></div>
               </div>
-              <div><Label>דוא״ל</Label><Input type="email" value={customer.email} onChange={(e) => setCustomer({ ...customer, email: e.target.value })} /></div>
+              <div><Label>דוא״ל</Label><Input type="email" inputMode="email" autoComplete="email" value={customer.email} onChange={(e) => setCustomer({ ...customer, email: e.target.value })} /></div>
               <div><Label>כתובת *</Label><Input value={customer.address} onChange={(e) => setCustomer({ ...customer, address: e.target.value })} /></div>
               <div><Label>עיר</Label><Input value={customer.city} onChange={(e) => setCustomer({ ...customer, city: e.target.value })} /></div>
               <div><Label>הערות</Label><Textarea value={customer.notes} onChange={(e) => setCustomer({ ...customer, notes: e.target.value })} /></div>

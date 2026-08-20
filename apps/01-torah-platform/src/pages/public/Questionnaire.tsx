@@ -238,6 +238,8 @@ export default function Questionnaire() {
               onChange={(e) => setForm({ ...form, email: e.target.value })}
               placeholder="name@example.com"
               type="email"
+              inputMode="email"
+              autoComplete="email"
             />
           </div>
           <div>

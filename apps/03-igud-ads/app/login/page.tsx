@@ -45,7 +45,7 @@ function LoginInner() {
         <button className="btn-outline w-full mb-4" onClick={loginGoogle}>התחבר עם Google</button>
         <div className="text-center text-xs text-gray-500 mb-3">או</div>
         <label className="label">אימייל</label>
-        <input className="input mb-3" type="email" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" />
+        <input className="input mb-3" type="email" inputMode="email" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" />
         <label className="label">סיסמה</label>
         {/* כפתור "הצג סיסמה" (priority §1א). השדה אינו נושא dir משלו, כך שהוא
             יורש rtl מ-<html> ו-`.input` מוסיף `text-right` — התווים נצמדים

@@ -89,7 +89,7 @@ export default function AdminNotificationsPage() {
           {mode === "one" ? (
             <div>
               <label className="block text-sm mb-1">אימייל המשתמש</label>
-              <input type="email" value={to} onChange={(e) => setTo(e.target.value)}
+              <input type="email" inputMode="email" autoComplete="email" value={to} onChange={(e) => setTo(e.target.value)}
                 className="w-full border rounded px-3 py-2" placeholder="user@example.com" />
             </div>
           ) : (

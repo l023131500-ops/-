@@ -126,7 +126,7 @@ const PublicContactForm = ({ portalId, portalType, portalName }: Props) => {
               </div>
               <div>
                 <label className="font-body text-xs font-medium text-muted-foreground mb-1 block">מייל</label>
-                <Input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="email@example.com" className="border-gold/20 focus:border-gold/50 bg-background text-foreground" />
+                <Input type="email" inputMode="email" autoComplete="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="email@example.com" className="border-gold/20 focus:border-gold/50 bg-background text-foreground" />
               </div>
               <div>
                 <label className="font-body text-xs font-medium text-muted-foreground mb-1 block">פרטים נוספים</label>

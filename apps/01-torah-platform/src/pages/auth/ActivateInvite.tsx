@@ -39,7 +39,7 @@ export default function ActivateInvite() {
         </CardHeader>
         <CardContent>
           <form onSubmit={submit} className="space-y-3">
-            <div><Label>דוא״ל</Label><Input required type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} /></div>
+            <div><Label>דוא״ל</Label><Input required type="email" inputMode="email" autoComplete="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} /></div>
             <div><Label>קוד הזמנה</Label><Input required value={form.invite_code} onChange={(e) => setForm({ ...form, invite_code: e.target.value })} /></div>
             <div><Label htmlFor="initial-password">סיסמה ראשונית (שניתנה)</Label><PasswordInput id="initial-password" required autoComplete="current-password" value={form.initial_password} onChange={(e) => setForm({ ...form, initial_password: e.target.value })} /></div>
             <div><Label htmlFor="new-password">סיסמה חדשה (אופציונלי)</Label><PasswordInput id="new-password" autoComplete="new-password" value={form.new_password} onChange={(e) => setForm({ ...form, new_password: e.target.value })} /></div>

@@ -108,6 +108,8 @@ export default function LoginPage() {
               <label className="label">דוא"ל</label>
               <input
                 type="email"
+                inputMode="email"
+                autoComplete="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="input"

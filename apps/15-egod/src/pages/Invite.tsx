@@ -82,7 +82,7 @@ const Invite = () => {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="text-sm font-medium mb-1 block">כתובת מייל</label>
-              <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="email@example.com" dir="ltr" />
+              <Input type="email" inputMode="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="email@example.com" dir="ltr" />
             </div>
             <div>
               <label className="text-sm font-medium mb-1 block">קוד הזמנה</label>

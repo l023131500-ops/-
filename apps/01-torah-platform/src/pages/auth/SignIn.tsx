@@ -103,7 +103,7 @@ export default function SignIn() {
             <div className="flex-1 h-px bg-border" />
           </div>
           <form onSubmit={submit} className="space-y-3">
-            <div><Label>דוא״ל</Label><Input required type="email" value={email} onChange={(e) => setEmail(e.target.value)} /></div>
+            <div><Label>דוא״ל</Label><Input required type="email" inputMode="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} /></div>
             <div><Label htmlFor="password">סיסמה</Label><PasswordInput id="password" required autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} /></div>
             {/* קישור טקסט ולא כפתור מלא, כדי שלא יתחרה על העין עם כפתור הכניסה.
                 הוא <button> ולא <a> כי הוא מפעיל פעולה בעמוד ואין לו כתובת יעד. */}

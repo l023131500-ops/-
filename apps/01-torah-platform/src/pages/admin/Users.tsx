@@ -173,7 +173,7 @@ function CreateUserDialog({ tenants, onDone }: { tenants: any[]; onDone: () => v
       <DialogHeader><DialogTitle>יצירת משתמש חדש</DialogTitle></DialogHeader>
       <div className="space-y-3">
         <div><Label>שם מלא *</Label><Input value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="ישראל ישראלי" /></div>
-        <div><Label>דוא״ל *</Label><Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="user@example.com" /></div>
+        <div><Label>דוא״ל *</Label><Input type="email" inputMode="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="user@example.com" /></div>
         <div><Label>סיסמה ראשונית * (6 תווים לפחות)</Label><Input type="text" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="הקלד סיסמה ראשונית" /></div>
         <div><Label>טלפון</Label><Input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="050-..." /></div>
         <div>

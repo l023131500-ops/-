@@ -64,7 +64,7 @@ export function InquiryForm({ synagogueId, compact }: { synagogueId?: string; co
       {!compact && (
         <div className="grid gap-5 sm:grid-cols-2">
           <Field label="אימייל" htmlFor="if-email" error={errors.email}>
-            <Input id="if-email" name="email" type="email" inputMode="email" placeholder="you@example.com" />
+            <Input id="if-email" name="email" type="email" inputMode="email" autoComplete="email" placeholder="you@example.com" />
           </Field>
           <Field label="נושא" htmlFor="if-subject" error={errors.subject}>
             <Input id="if-subject" name="subject" placeholder="נושא הפנייה" />

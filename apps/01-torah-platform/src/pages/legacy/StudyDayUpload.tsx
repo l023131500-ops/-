@@ -210,7 +210,7 @@ export default function StudyDayUpload() {
               </div>
               <div className="space-y-1.5">
                 <Label className="text-sm flex items-center gap-1.5"><Mail className="w-3.5 h-3.5" />אימייל</Label>
-                <Input dir="ltr" type="email" value={form.contact_email} onChange={(e) => set("contact_email", e.target.value)} className="h-11 border-foreground/15" />
+                <Input dir="ltr" type="email" inputMode="email" autoComplete="email" value={form.contact_email} onChange={(e) => set("contact_email", e.target.value)} className="h-11 border-foreground/15" />
               </div>
               <div className="space-y-1.5">
                 <Label className="text-sm">וואטסאפ</Label>

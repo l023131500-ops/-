@@ -107,7 +107,7 @@ const TeacherForm = ({ data, onChange }: TeacherFormProps) => {
                 </div>
                 <div>
                   <label className="font-body text-sm font-medium text-card-foreground mb-1.5 block">מייל</label>
-                  <Input value={data.email || ""} onChange={(e) => update("email", e.target.value)} placeholder="email@example.com" type="email" />
+                  <Input value={data.email || ""} onChange={(e) => update("email", e.target.value)} placeholder="email@example.com" type="email" inputMode="email" autoComplete="email" />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">

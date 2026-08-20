@@ -148,7 +148,7 @@ const AdminTeachers = () => {
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <label className="text-sm font-medium mb-1 block">מייל *</label>
-                    <Input type="email" value={form.email} onChange={(e) => setForm(f => ({ ...f, email: e.target.value }))} placeholder="email@example.com" dir="ltr" />
+                    <Input type="email" inputMode="email" autoComplete="email" value={form.email} onChange={(e) => setForm(f => ({ ...f, email: e.target.value }))} placeholder="email@example.com" dir="ltr" />
                   </div>
                   <div>
                     <label className="text-sm font-medium mb-1 block">טלפון</label>

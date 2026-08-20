@@ -212,7 +212,7 @@ const TeachersLanding = () => {
                   </div>
                   <Input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="טלפון *" />
                   <div className="flex items-center gap-2">
-                    <Input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="מייל *" type="email" disabled={noEmail} className={noEmail ? "opacity-50" : ""} />
+                    <Input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="מייל *" type="email" inputMode="email" autoComplete="email" disabled={noEmail} className={noEmail ? "opacity-50" : ""} />
                     <label className="flex items-center gap-1.5 font-body text-xs text-muted-foreground whitespace-nowrap">
                       <Checkbox checked={noEmail} onCheckedChange={(c) => setNoEmail(!!c)} />
                       אין לי מייל

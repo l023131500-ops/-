@@ -65,7 +65,7 @@ export default function RabbiQuestions() {
           <form onSubmit={submit} className="space-y-3">
             <div className="flex items-center gap-3"><Switch checked={form.anonymous} onCheckedChange={(v) => setForm({ ...form, anonymous: v })} /><Label>שאלה אנונימית</Label></div>
             {!form.anonymous && <div><Label>שם</Label><Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></div>}
-            <div><Label>דוא״ל (לקבלת מענה אישי)</Label><Input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} /></div>
+            <div><Label>דוא״ל (לקבלת מענה אישי)</Label><Input type="email" inputMode="email" autoComplete="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} /></div>
             <div><Label>השאלה *</Label><Textarea required rows={4} value={form.question} onChange={(e) => setForm({ ...form, question: e.target.value })} /></div>
             <Button type="submit" disabled={loading} className="w-full">
               {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <><Send className="ml-2 h-4 w-4" /> שלח שאלה</>}

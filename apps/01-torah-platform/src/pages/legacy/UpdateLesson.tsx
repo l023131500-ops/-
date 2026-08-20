@@ -324,7 +324,7 @@ const UpdateLesson = () => {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                       <Input value={contactName} onChange={(e) => setContactName(e.target.value)} placeholder="שם" />
                       <Input value={contactPhone} onChange={(e) => setContactPhone(e.target.value)} placeholder="טלפון" />
-                      <Input value={contactEmail} onChange={(e) => setContactEmail(e.target.value)} placeholder="מייל (לא חובה)" type="email" />
+                      <Input value={contactEmail} onChange={(e) => setContactEmail(e.target.value)} placeholder="מייל (לא חובה)" type="email" inputMode="email" autoComplete="email" />
                     </div>
                     <label className="font-display text-sm font-bold text-card-foreground block mt-4">שם הארגון שהקים את השיעור</label>
                     <Input value={orgName} onChange={(e) => setOrgName(e.target.value)} placeholder="שם הארגון" />

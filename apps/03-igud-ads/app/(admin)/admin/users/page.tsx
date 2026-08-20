@@ -233,6 +233,8 @@ export default function UsersPage() {
                 <input
                   className="input"
                   type="email"
+                  inputMode="email"
+                  autoComplete="email"
                   value={form.email}
                   onChange={(e) => setForm({ ...form, email: e.target.value })}
                   disabled={!!form.id}

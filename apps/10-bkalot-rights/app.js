@@ -244,7 +244,7 @@ function openLeadForm(context) {
     <form id="leadForm" class="lead-form">
       <div class="lead-field"><label for="lf_name">שם מלא</label><input type="text" id="lf_name" required autocomplete="name" placeholder="השם שלכם"></div>
       <div class="lead-field"><label for="lf_phone">טלפון</label><input type="tel" id="lf_phone" required autocomplete="tel" inputmode="tel" placeholder="050-0000000"></div>
-      <div class="lead-field"><label for="lf_email">אימייל</label><input type="email" id="lf_email" autocomplete="email" placeholder="name@example.com (אופציונלי)"></div>
+      <div class="lead-field"><label for="lf_email">אימייל</label><input type="email" id="lf_email" autocomplete="email" inputmode="email" placeholder="name@example.com (אופציונלי)"></div>
       <label class="lead-consent"><input type="checkbox" id="lf_consent" checked> אני מאשר/ת שצוות בקלות ייצור איתי קשר עם המידע והתזכורת</label>
       <button type="submit" class="btn-primary lead-submit">שלחו לי את הפרטים והתזכורת ←</button>
       <div id="lf_msg" class="lead-msg"></div>

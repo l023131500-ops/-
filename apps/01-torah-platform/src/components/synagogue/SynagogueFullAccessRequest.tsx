@@ -171,7 +171,7 @@ export default function SynagogueFullAccessRequest({
         </div>
         <div>
           <Label className="text-xs font-bold mb-1 block">אימייל</Label>
-          <Input type="email" value={contactEmail} onChange={(e) => setContactEmail(e.target.value)} placeholder="email@example.com" />
+          <Input type="email" inputMode="email" autoComplete="email" value={contactEmail} onChange={(e) => setContactEmail(e.target.value)} placeholder="email@example.com" />
         </div>
       </div>
       <div className="mb-4">

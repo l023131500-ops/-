@@ -89,7 +89,7 @@ const Login = () => {
                 <label className="text-sm font-medium text-foreground mb-1 block">דוא"ל</label>
                 <div className="relative">
                   <Mail className="absolute right-3 top-3 w-4 h-4 text-muted-foreground" />
-                  <Input type="email" placeholder="email@example.com" value={email} onChange={(e) => setEmail(e.target.value)} className="pr-9" dir="ltr" required />
+                  <Input type="email" inputMode="email" autoComplete="email" placeholder="email@example.com" value={email} onChange={(e) => setEmail(e.target.value)} className="pr-9" dir="ltr" required />
                 </div>
               </div>
               <div>

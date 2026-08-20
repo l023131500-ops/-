@@ -185,7 +185,7 @@ export default function DonationPage() {
             <div><Label>שם מלא *</Label><Input value={donor.name} onChange={(e) => setDonor({ ...donor, name: e.target.value })} /></div>
             <div><Label>טלפון *</Label><Input type="tel" inputMode="tel" autoComplete="tel" value={donor.phone} onChange={(e) => setDonor({ ...donor, phone: e.target.value })} /></div>
           </div>
-          <div><Label>דוא״ל (לקבלת קבלה)</Label><Input type="email" value={donor.email} onChange={(e) => setDonor({ ...donor, email: e.target.value })} /></div>
+          <div><Label>דוא״ל (לקבלת קבלה)</Label><Input type="email" inputMode="email" autoComplete="email" value={donor.email} onChange={(e) => setDonor({ ...donor, email: e.target.value })} /></div>
 
           <div className="border-t pt-4 space-y-3">
             <div className="flex items-center gap-3">

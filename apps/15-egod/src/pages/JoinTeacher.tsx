@@ -63,7 +63,7 @@ const JoinTeacher = () => {
               <div><label className="text-sm font-medium text-foreground mb-1 block">שם מלא *</label><Input required placeholder="הרב ישראל כהן" value={form.full_name} onChange={e => setForm(p => ({...p, full_name: e.target.value}))} /></div>
               <div><label className="text-sm font-medium text-foreground mb-1 block">טלפון *</label><Input required type="tel" inputMode="tel" autoComplete="tel" placeholder="050-0000000" value={form.phone} onChange={e => setForm(p => ({...p, phone: e.target.value}))} /></div>
             </div>
-            <div><label className="text-sm font-medium text-foreground mb-1 block">דוא"ל *</label><Input required type="email" placeholder="email@example.com" dir="ltr" value={form.email} onChange={e => setForm(p => ({...p, email: e.target.value}))} /></div>
+            <div><label className="text-sm font-medium text-foreground mb-1 block">דוא"ל *</label><Input required type="email" inputMode="email" autoComplete="email" placeholder="email@example.com" dir="ltr" value={form.email} onChange={e => setForm(p => ({...p, email: e.target.value}))} /></div>
             <div><label className="text-sm font-medium text-foreground mb-1 block">אזור פעילות *</label><Input required placeholder="עיר ושכונה" value={form.area} onChange={e => setForm(p => ({...p, area: e.target.value}))} /></div>
             <div><label className="text-sm font-medium text-foreground mb-1 block">ניסיון</label>
               <Select value={form.experience} onValueChange={v => setForm(p => ({...p, experience: v}))}>
