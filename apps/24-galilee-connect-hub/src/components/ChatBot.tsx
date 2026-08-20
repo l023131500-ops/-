@@ -529,7 +529,11 @@ const ChatBot = () => {
                     <div className="whitespace-pre-wrap" dangerouslySetInnerHTML={{
                       __html: escapeHtml(msg.content)
                         .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                        .replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank" rel="noopener" class="underline font-bold">$1</a>')
+                        .replace(/\[(.*?)\]\((.*?)\)/g, (match, text, url) =>
+                          /^https?:\/\//i.test(url)
+                            ? `<a href="${url}" target="_blank" rel="noopener" class="underline font-bold">${text}</a>`
+                            : match
+                        )
                     }} />
                   </div>
                 </motion.div>
