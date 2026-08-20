@@ -73,7 +73,7 @@ export default function MyNotificationsPage() {
                     </span>
                     {!n.is_read && <span className="w-2 h-2 bg-blue-500 rounded-full"></span>}
                   </div>
-                  <h3 className="font-bold text-brand-blue">{n.title}</h3>
+                  <h2 className="font-bold text-brand-blue">{n.title}</h2>
                   {n.body && <p className="text-sm text-gray-700 mt-1">{n.body}</p>}
                   <div className="text-xs text-gray-600 mt-2">
                     {new Date(n.created_at).toLocaleString("he-IL")}

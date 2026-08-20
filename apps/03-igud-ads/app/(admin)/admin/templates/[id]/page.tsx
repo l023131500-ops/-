@@ -205,7 +205,7 @@ export default function TemplateEditPage() {
 
         {/* Style Rules */}
         <div className="border rounded-lg p-4 space-y-3">
-          <h3 className="font-medium text-sm">כללי עיצוב (style_rules)</h3>
+          <h2 className="font-medium text-sm">כללי עיצוב (style_rules)</h2>
           <div>
             <label className="label" htmlFor="tpl-colors">צבעים (hex, מופרדים בפסיק)</label>
             <input id="tpl-colors" className="input" placeholder="#1A2E5A, #C9A84C" value={colorsStr} onChange={(e) => setColorsStr(e.target.value)} />
@@ -313,7 +313,7 @@ export default function TemplateEditPage() {
 
       {/* Danger zone */}
       <div className="mt-8 border border-red-200 rounded-2xl p-6">
-        <h3 className="font-medium text-red-700 mb-3">אזור מסוכן</h3>
+        <h2 className="font-medium text-red-700 mb-3">אזור מסוכן</h2>
         <button
           className="bg-red-600 hover:bg-red-700 text-white text-sm px-4 py-2 rounded disabled:opacity-50"
           onClick={del}
