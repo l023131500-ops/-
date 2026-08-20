@@ -197,7 +197,8 @@ th{color:var(--muted);font-weight:400;font-size:12px;text-transform:uppercase;le
       <button class="tab" data-view="invites">הזמנות</button>
       <button class="tab" data-view="calendar">יומן</button>
       <button class="tab" data-view="reminders">תזכורות</button>
-      <button class="tab" data-view="content">ספריית תוכן</button>
+      <button class="tab" data-view="content">סטודיו תוכן</button>
+      <button class="tab" data-view="profile">פרופיל ומיתוג</button>
       <button class="tab" data-view="forum">פורום מקצועי</button>
     </div>
 
@@ -305,14 +306,61 @@ th{color:var(--muted);font-weight:400;font-size:12px;text-transform:uppercase;le
         <h2>פריט תוכן חדש</h2>
         <label for="cTitle">כותרת *</label>
         <input id="cTitle" />
+        <div class="row">
+          <div>
+            <label for="cType">סוג</label>
+            <select id="cType">
+              <option value="lesson">שיעור</option>
+              <option value="article">מאמר</option>
+              <option value="reminder_template">תבנית תזכורת</option>
+              <option value="presentation">מצגת</option>
+              <option value="exercise">תרגיל</option>
+              <option value="note" selected>הערה כללית</option>
+            </select>
+          </div>
+          <div>
+            <label for="cMedia">קישור למדיה (תמונה/מסמך)</label>
+            <input id="cMedia" type="url" placeholder="https://" />
+          </div>
+        </div>
         <label for="cBody">תוכן</label>
         <textarea id="cBody"></textarea>
+        <label style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
+          <input type="checkbox" id="cShared" style="width:auto;margin:0" />
+          <span style="color:var(--ink-2);font-size:13px">שיתוף עם קהילת המדריכים/ות בני אותו מגזר</span>
+        </label>
         <div id="cErr"></div>
         <button class="btn" id="cSubmit">שמירה</button>
       </div>
       <div class="card">
         <h2>הפריטים שלי</h2>
         <div id="contentTable"><div class="empty">טוען…</div></div>
+      </div>
+      <div class="card">
+        <h2>תוכן משותף מהקהילה</h2>
+        <p class="sub" style="margin-bottom:14px">פריטים ששיתפו/ו מדריכים/ות אחרים/ות באותו מגזר.</p>
+        <div id="sharedContentTable"><div class="empty">טוען…</div></div>
+      </div>
+    </section>
+
+    <section id="viewProfile" hidden>
+      <div class="card">
+        <h2>פרופיל ומיתוג אישי</h2>
+        <p class="sub" style="margin-bottom:14px">
+          מוצג לזוגות שלכם באזור האישי שלהם — כך שיידעו מי מלווה אותם, לא רק שם.
+        </p>
+        <label for="pPhoto">קישור לתמונת פרופיל</label>
+        <input id="pPhoto" type="url" placeholder="https://" />
+        <label for="pSpecialty">התמחות / תדמית</label>
+        <input id="pSpecialty" placeholder="לדוגמה: הכנה רגשית לחתונה, ליווי זוגות דתיים-לאומיים" />
+        <label for="pBio">אודות</label>
+        <textarea id="pBio" placeholder="כמה משפטים על הגישה והניסיון שלכם"></textarea>
+        <div id="pErr"></div>
+        <button class="btn" id="pSubmit">שמירת פרופיל</button>
+      </div>
+      <div class="card">
+        <h2>תצוגה מקדימה</h2>
+        <div id="profilePreview" class="empty">מלאו את הפרטים למעלה כדי לראות תצוגה מקדימה.</div>
       </div>
     </section>
 
@@ -722,14 +770,24 @@ async function renderReminders() {
   }
 }
 
-/* ── dashboard: content library ────────────────────────────────────────── */
+/* ── dashboard: content studio (module 2) ────────────────────────────────── */
+const CONTENT_TYPE_LABEL = { lesson: 'שיעור', article: 'מאמר', reminder_template: 'תבנית תזכורת', presentation: 'מצגת', exercise: 'תרגיל', note: 'הערה כללית' };
+const contentTypeLabel = (t) => CONTENT_TYPE_LABEL[t] || v(t);
+
 $('cSubmit').addEventListener('click', async () => {
   const title = $('cTitle').value.trim();
   if (!title) { $('cErr').innerHTML = '<div class="err">כותרת היא שדה חובה.</div>'; return; }
   $('cSubmit').disabled = true;
   try {
-    await rpc('maatefet_content_save', { p_title: title, p_body: $('cBody').value.trim() || null });
-    $('cTitle').value = ''; $('cBody').value = '';
+    await rpc('maatefet_content_save', {
+      p_title: title,
+      p_body: $('cBody').value.trim() || null,
+      p_content_type: $('cType').value,
+      p_is_shared: $('cShared').checked,
+      p_media_url: $('cMedia').value.trim() || null,
+    });
+    $('cTitle').value = ''; $('cBody').value = ''; $('cMedia').value = ''; $('cShared').checked = false; $('cType').value = 'note';
+    $('cErr').innerHTML = '';
     renderContent();
   } catch (e) {
     $('cErr').innerHTML = '<div class="err">' + esc(e.message) + '</div>';
@@ -749,10 +807,73 @@ async function renderContent() {
     return;
   }
   if (!rows.length) { el.innerHTML = '<div class="empty">עדיין אין פריטי תוכן.</div>'; return; }
-  el.innerHTML = '<table><thead><tr><th>כותרת</th><th>סוג</th><th>נוצר</th></tr></thead><tbody>' +
-    rows.map((r) => '<tr><td>' + v(r.title) + '</td><td>' + v(r.content_type) + '</td><td>' + dtm(r.created_at) + '</td></tr>').join('') +
+  el.innerHTML = '<table><thead><tr><th>כותרת</th><th>סוג</th><th>מדיה</th><th>שותף</th><th>נוצר</th></tr></thead><tbody>' +
+    rows.map((r) => '<tr><td>' + v(r.title) + '</td><td>' + contentTypeLabel(r.content_type) + '</td>' +
+      '<td>' + (r.media_url ? '<a href="' + esc(r.media_url) + '" target="_blank" rel="noopener">קישור</a>' : NA) + '</td>' +
+      '<td>' + (r.is_shared ? '<span class="badge used">כן</span>' : '<span class="badge">לא</span>') + '</td>' +
+      '<td>' + dtm(r.created_at) + '</td></tr>').join('') +
     '</tbody></table>';
 }
+
+async function renderSharedContent() {
+  const el = $('sharedContentTable');
+  el.innerHTML = '<div class="empty">טוען…</div>';
+  let rows;
+  try {
+    rows = await rpc('maatefet_content_shared_list');
+  } catch (e) {
+    el.innerHTML = '<div class="err">' + esc(e.message) + '</div>';
+    return;
+  }
+  if (!rows.length) { el.innerHTML = '<div class="empty">עדיין לא שותף תוכן על ידי קולגות במגזר שלכם.</div>'; return; }
+  el.innerHTML = '<table><thead><tr><th>כותרת</th><th>סוג</th><th>מדריך/ה</th><th>מדיה</th><th>שותף</th></tr></thead><tbody>' +
+    rows.map((r) => '<tr><td>' + v(r.title) + '</td><td>' + contentTypeLabel(r.content_type) + '</td><td>' + v(r.author_name) + '</td>' +
+      '<td>' + (r.media_url ? '<a href="' + esc(r.media_url) + '" target="_blank" rel="noopener">קישור</a>' : NA) + '</td>' +
+      '<td>' + dtm(r.created_at) + '</td></tr>').join('') +
+    '</tbody></table>';
+}
+
+/* ── dashboard: personal branding (module 2) ─────────────────────────────── */
+function renderProfilePreview() {
+  const photo = $('pPhoto').value.trim();
+  const specialty = $('pSpecialty').value.trim();
+  const bio = $('pBio').value.trim();
+  $('profilePreview').innerHTML =
+    '<div style="display:flex;gap:16px;align-items:flex-start">' +
+    (photo ? '<img src="' + esc(photo) + '" alt="" style="width:64px;height:64px;border-radius:50%;object-fit:cover;border:1px solid var(--line)" />' : '') +
+    '<div>' +
+      '<div style="font-family:\'Secular One\',sans-serif;font-size:16px">' + v(ME ? ME.full_name : '') + '</div>' +
+      (specialty ? '<div style="color:var(--gold-soft);font-size:13px;margin-top:2px">' + esc(specialty) + '</div>' : '') +
+      (bio ? '<p class="sub" style="margin-top:8px">' + esc(bio) + '</p>' : '') +
+    '</div></div>';
+}
+
+function renderProfileForm() {
+  $('pPhoto').value = (ME && ME.photo_url) || '';
+  $('pSpecialty').value = (ME && ME.specialty) || '';
+  $('pBio').value = (ME && ME.bio) || '';
+  renderProfilePreview();
+}
+
+for (const id of ['pPhoto', 'pSpecialty', 'pBio']) $(id).addEventListener('input', renderProfilePreview);
+
+$('pSubmit').addEventListener('click', async () => {
+  $('pSubmit').disabled = true;
+  try {
+    const updated = await rpc('maatefet_profile_update', {
+      p_bio: $('pBio').value.trim() || null,
+      p_photo_url: $('pPhoto').value.trim() || null,
+      p_specialty: $('pSpecialty').value.trim() || null,
+    });
+    ME = updated;
+    $('pErr').innerHTML = '<div class="ok-msg">הפרופיל נשמר.</div>';
+    renderProfilePreview();
+  } catch (e) {
+    $('pErr').innerHTML = '<div class="err">' + esc(e.message) + '</div>';
+  } finally {
+    $('pSubmit').disabled = false;
+  }
+});
 
 /* ── dashboard: professional forum (module 7) ────────────────────────────── */
 $('fSubmit').addEventListener('click', async () => {
@@ -864,7 +985,7 @@ async function openForumThread(postId) {
 $('forumThreadClose').addEventListener('click', () => { $('forumThreadCard').hidden = true; });
 
 /* ── tabs ───────────────────────────────────────────────────────────────── */
-const VIEWS = { clients: 'viewClients', invites: 'viewInvites', calendar: 'viewCalendar', reminders: 'viewReminders', content: 'viewContent', forum: 'viewForum' };
+const VIEWS = { clients: 'viewClients', invites: 'viewInvites', calendar: 'viewCalendar', reminders: 'viewReminders', content: 'viewContent', profile: 'viewProfile', forum: 'viewForum' };
 for (const tab of document.querySelectorAll('.tab')) {
   tab.addEventListener('click', () => {
     for (const t of document.querySelectorAll('.tab')) t.classList.toggle('active', t === tab);
@@ -872,7 +993,8 @@ for (const tab of document.querySelectorAll('.tab')) {
     if (tab.dataset.view === 'invites') renderInvites();
     if (tab.dataset.view === 'calendar') renderAppointments();
     if (tab.dataset.view === 'reminders') renderReminders();
-    if (tab.dataset.view === 'content') renderContent();
+    if (tab.dataset.view === 'content') { renderContent(); renderSharedContent(); }
+    if (tab.dataset.view === 'profile') renderProfileForm();
     if (tab.dataset.view === 'forum') renderForum();
   });
 }

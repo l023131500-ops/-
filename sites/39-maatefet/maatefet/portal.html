@@ -163,6 +163,11 @@ input:focus{outline:2px solid var(--gold);outline-offset:1px;border-color:var(--
       <dl class="profile-grid" id="profileGrid"></dl>
     </div>
 
+    <div class="card" id="instructorCard" hidden>
+      <h2>המדריך/ה שלכם</h2>
+      <div id="instructorBrand"></div>
+    </div>
+
     <div class="card">
       <h2>יומן ואישורי הגעה</h2>
       <div id="apptList"><div class="empty">טוען…</div></div>
@@ -229,6 +234,30 @@ function renderProfile(c) {
     '<dt>טלפון</dt><dd>' + v(c.phone) + '</dd>' +
     '<dt>אימייל</dt><dd>' + v(c.email) + '</dd>' +
     '<dt>מגזר</dt><dd>' + (SEGMENT_LABEL[c.segment] || v(c.segment)) + '</dd>';
+}
+
+/* ── your instructor (module 2: personal branding, shown to the couple) ─── */
+async function renderInstructorBrand() {
+  let brand;
+  try {
+    brand = await rpc('maatefet_my_instructor_brand');
+  } catch (e) {
+    return; // non-critical — the rest of the portal still works
+  }
+  if (!brand || !brand.full_name) return;
+  $('instructorCard').hidden = false;
+  $('instructorBrand').innerHTML =
+    '<div style="display:flex;gap:16px;align-items:flex-start">' +
+    (brand.photo_url ? '<img src="' + esc(brand.photo_url) + '" alt="" style="width:64px;height:64px;border-radius:50%;object-fit:cover;border:1px solid var(--line);flex:none" />' : '') +
+    '<div>' +
+      '<div style="font-family:\'Secular One\',sans-serif;font-size:16px">' + esc(brand.full_name) + '</div>' +
+      (brand.specialty ? '<div style="color:var(--gold-soft);font-size:13px;margin-top:2px">' + esc(brand.specialty) + '</div>' : '') +
+      (brand.bio ? '<p class="sub" style="margin-top:8px">' + esc(brand.bio) + '</p>' : '') +
+      '<dl class="profile-grid" style="margin-top:10px">' +
+        '<dt>טלפון</dt><dd>' + v(brand.phone) + '</dd>' +
+        '<dt>אימייל</dt><dd>' + v(brand.email) + '</dd>' +
+      '</dl>' +
+    '</div></div>';
 }
 
 /* ── appointments (calendar + attendance confirmation) ─────────────────── */
@@ -417,6 +446,7 @@ async function boot() {
   show('dash');
   renderAppointments();
   renderReminders();
+  renderInstructorBrand();
 }
 
 boot();
