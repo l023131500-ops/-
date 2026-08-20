@@ -169,10 +169,16 @@ function kindOf(p: any): string {
  * זו הדרישה: "בי"ס אלון, 240 מ'" ולא "39 מוסדות".
  */
 const FIELD_MASK =
-  'places.displayName,places.location,places.primaryTypeDisplayName,places.formattedAddress,places.types';
+  'places.displayName,places.location,places.primaryTypeDisplayName,places.formattedAddress,places.types,places.businessStatus';
 
+/**
+ * ⚠️ גוגל ממשיך להחזיר מקומות עם `businessStatus=CLOSED_PERMANENTLY` בתוצאות
+ * Nearby/Text Search — לא מסונן אוטומטית. נמצא בפועל: בתי כנסת שנסגרו עדיין
+ * מופיעים ב"קרוב אליך" בלי הבדיקה הזו. `CLOSED_TEMPORARILY` נשאר (עשוי לחזור).
+ */
 function toPlaces(json: any, lat: number, lng: number, radiusM: number | null): Place[] {
   return ((json?.places ?? []) as any[])
+    .filter((p) => p?.businessStatus !== 'CLOSED_PERMANENTLY')
     .map((p) => {
       const plat = p?.location?.latitude;
       const plng = p?.location?.longitude;
