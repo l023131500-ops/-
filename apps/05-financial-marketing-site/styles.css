@@ -503,7 +503,7 @@ h1, h2, h3 { font-family: var(--font-display); }
   gap: 2rem;
   align-items: start;
 }
-.site-footer h4 { color: var(--ivory); margin: 0 0 0.75rem; font-size: 0.95rem; font-weight: 700; }
+.site-footer h3 { color: var(--ivory); margin: 0 0 0.75rem; font-size: 0.95rem; font-weight: 700; }
 .site-footer nav { display: grid; gap: 0.4rem; font-size: 0.9rem; }
 .site-footer nav a { color: rgba(247, 245, 238, 0.78); }
 .site-footer nav a:hover { color: var(--ivory); }
