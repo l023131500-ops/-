@@ -501,7 +501,7 @@ function RecurringTab({ client }: { client: FinClient }) {
               </div>
               <div className="flex items-center gap-3">
                 {r.amount ? <span className="tabular-nums">{ils(r.amount)}</span> : null}
-                <Button size="sm" variant="ghost" onClick={() => del.mutate(r.id)}><Trash2 className="w-4 h-4 text-destructive" /></Button>
+                <Button size="sm" variant="ghost" onClick={() => { if (!confirm(`למחוק את התזכורת "${r.title}"?`)) return; del.mutate(r.id); }}><Trash2 className="w-4 h-4 text-destructive" /></Button>
               </div>
             </div>
           ))}
