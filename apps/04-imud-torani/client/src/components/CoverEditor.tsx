@@ -248,7 +248,10 @@ export default function CoverEditor({
               {orderedDesc.map((l) => (
                 <div
                   key={l.id}
+                  role="button"
+                  tabIndex={0}
                   onClick={() => setSelectedId(l.id)}
+                  onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setSelectedId(l.id); } }}
                   className={`flex items-center gap-1 rounded border px-2 py-1 text-xs cursor-pointer ${selectedId === l.id ? "border-primary bg-primary/10" : "border-border"}`}
                   data-testid={`layer-row-${l.id}`}
                 >

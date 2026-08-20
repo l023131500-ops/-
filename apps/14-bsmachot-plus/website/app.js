@@ -304,7 +304,10 @@
       const cap = SLIDE_TITLES[n - 1] || `שקף ${n}`;
       const card = el('div', 'slide-thumb');
       card.innerHTML = `<img loading="lazy" src="${file}" alt="שקף ${n}: ${esc(cap)}"><div class="st-cap"><span>${esc(cap)}</span><b>${n}</b></div>`;
+      card.setAttribute('role', 'button');
+      card.setAttribute('tabindex', '0');
       card.addEventListener('click', () => openLightbox(n));
+      card.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openLightbox(n); } });
       grid.appendChild(card);
     }
     view.appendChild(grid);
