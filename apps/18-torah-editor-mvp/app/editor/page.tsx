@@ -254,8 +254,13 @@ export default function EditorPage() {
 
   return (
     <main className="container" id="main-content">
-      <h1>העורך התורני</h1>
-      <p>הזן טקסט, זהה ציטוטים, אמת מול המקור בספריא, והוסף ניקוד רבני. כל הפעולות דורשות אישור ידני לפני קבלה.</p>
+      <div className="page-head">
+        <div>
+          <h1>העורך התורני</h1>
+          <p>הזן טקסט, זהה ציטוטים, אמת מול המקור בספריא, והוסף ניקוד רבני. כל הפעולות דורשות אישור ידני לפני קבלה.</p>
+        </div>
+        <a className="pricing-link" href="https://more30.com/subscribe?app=orech">מחירון</a>
+      </div>
 
       {docId ? (
         <div className="doc-bar">

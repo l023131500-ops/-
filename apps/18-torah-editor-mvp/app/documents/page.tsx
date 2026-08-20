@@ -198,10 +198,15 @@ export default function DocumentsPage() {
 
   return (
     <main className="container" id="main-content">
-      <h1>המסמכים שלי</h1>
-      <p className="subtitle">
-        העלו ספר או קובץ, או פתחו מסמך ריק. כל מסמך נשמר אוטומטית ואפשר לחזור אליו בכל עת.
-      </p>
+      <div className="page-head">
+        <div>
+          <h1>המסמכים שלי</h1>
+          <p className="subtitle">
+            העלו ספר או קובץ, או פתחו מסמך ריק. כל מסמך נשמר אוטומטית ואפשר לחזור אליו בכל עת.
+          </p>
+        </div>
+        <a className="pricing-link" href="https://more30.com/subscribe?app=orech">מחירון</a>
+      </div>
 
       {/* ===== אזור ההעלאה ===== */}
       <div

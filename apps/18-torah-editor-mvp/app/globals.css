@@ -196,6 +196,7 @@ button.action:disabled {
 }
 .back-link { color: var(--accent); text-decoration: none; font-size: 14px; white-space: nowrap; padding-top: 6px; }
 .back-link:hover { text-decoration: underline; }
+.htr-head-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
 
 /* עמוד הבית */
 .module-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-top: 24px; }

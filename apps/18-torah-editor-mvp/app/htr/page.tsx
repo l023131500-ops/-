@@ -63,7 +63,10 @@ export default function HtrPage() {
             העלאה · זיהוי · תיקון חכם · אישור אנושי. הטקסט קדוש — שום טקסט לא נכנס לספר ללא אישורך.
           </p>
         </div>
-        <Link href="/" className="back-link">→ חזרה</Link>
+        <div className="htr-head-actions">
+          <a className="pricing-link" href="https://more30.com/subscribe?app=orech">מחירון</a>
+          <Link href="/" className="back-link">→ חזרה</Link>
+        </div>
       </div>
 
       {needsLogin ? (
