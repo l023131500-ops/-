@@ -6495,3 +6495,31 @@
     אותה עדשה לשאר אפליקציות loop B שמשתמשות ב-TanStack `useMutation`
     (18/24), אם יימצאו שם מוטציות ללא `onError`.
     via cloud server 167.99.131.167 [loop B]
+
+## 20/08/2026 — סבב 349 (loop B)
+
+349. **סגירת עדשת "משוב שקט" (מוטציה בלי `onError`) על כל 27-bkalut-price:**
+    תיקנתי את שלוש המוטציות האחרונות שנותרו מהרשימה שנקבעה בסוף סבב 346.
+    `api-access.tsx` — מוטציית `clear` (ביטול טוקן ה-API): כפתור "בטל
+    טוקן" בעמוד הניהול לא נתן שום משוב אם ה-POST נכשל, בזמן ששתי
+    המוטציות האחיות באותו קובץ (`togglerequireToken`, `rotate`) כבר
+    טופלו כראוי. `webhook-log.tsx` — מוטציית `retry` ("נסה שוב" על
+    וובהוק שנכשל ל-NEDARIM3873/מערכות חיצוניות): הקובץ הזה לא הכיל
+    בכלל תשתית `useToast`/`toast` — הוספתי את הייבוא וההפעלה מאפס.
+    `params-topics.tsx` — מוטציית `toggleExactState` (הפעלת/כיבוי
+    חיפוש-מצב-מדויק בקטלוג): שאר הפונקציות בקובץ (`save`/`remove`)
+    כבר הציגו toast שגיאה, אבל המוטציה הזו לא. הוספתי לכל שלוש
+    `onError: () => toast({ title: "...", variant: "destructive" })`
+    לפי הדפוס הקיים כבר בכל קובץ. אפס שינוי לוגיקה/API/DB — תוספת
+    משוב UI בלבד. בדיקת איזון סוגריים/מאמרים מסולסלים/מרובעים
+    ב-python על שלושת הקבצים המלאים אחרי העריכה — תקין בכולם. אין
+    build/dev-server זמין בסביבה הזו לפי הנחיית ההרצה — לא tsc.
+    ענף חדש
+    `fix/b-27-bkalut-price-api-webhook-params-mutations-silent-error-0820`,
+    commit `cf64e3f2`, נדחף (מפעיל פריסת Vercel תחת more30.com/mechiron).
+    זה סוגר את כל ~16 המוטציות שאותרו בסבב 346 על פני כל 27-bkalut-price.
+
+    **הבא בתור:** להרחיב את עדשת ה-`onError` החסר לשאר אפליקציות
+    loop B שמשתמשות ב-TanStack `useMutation` — במיוחד 18-torah-editor-mvp
+    ו-24-galilee-connect-hub — אם יימצאו שם מוטציות ללא `onError`.
+    via cloud server 167.99.131.167 [loop B]
