@@ -5702,3 +5702,82 @@
     `stray-links.mjs`/`dead-controls.mjs` הם העדשות היחידות שנותרו לא
     נבדקות על 17-28; אחרת לפתוח עדשה חדשה, או לחזור על הבדיקה מעת לעת.
     via cloud server 167.99.131.167 [loop B]
+
+## 20/08/2026 — סבב 325 (loop B)
+
+325. **פתחתי שלוש עדשות נוספות שמעולם לא רצו על היקף loop B, לפי grep על**
+    **DECISIONS.md.** קראתי README.md/CONNECTIONS.md, בדקתי `core.run_progress`
+    (הצעד האחרון `secret-scan-git-exe-lens-sweep-0820`, קומיט `a55ca62b`, כבר
+    HEAD) ו-`core.issues`/`core.project_tasks` הפתוחים בהיקף — כל הפריטים
+    עדיין חסומים על גישת dashboard/PAT חיצונית (#169/#62/#115/#242/#206/
+    #250), אין צעד קוד זמין דרכם. `pricing-reflects.mjs` (chizukim/orech/
+    shiurim/igud/mthbram/zchuyot/galil/mechiron/kupot) — 8/8 עם `app_key`
+    מזוהה, שלוש "נכשלות" (shiurim/igud/mechiron אין תוכניות, מthbram אין
+    תוכניות) התבררו כולן כבר-נבדקות בסבב 321: לא-חיה (igud) או `not_offered`
+    בכוונה (shiurim/mthbram/mechiron, מיגרציה 0033) — לא ממצא חדש.
+    `credit-duplicate-sweep.mjs` על שמונת הכתובות החיות — 0/8 עם קרדיט
+    כפול, אבל **חשף עובדה שלא הייתה בתיעוד**: `https://more30.com/shiurim`
+    (19) מחזיר 404 בפרודקשן, בזמן שכל שאר שבע האחיות מחזירות 200.
+326. **חקרתי את פער ה-404 של 19 עד הסוף לפני שכתבתי אותו כממצא.** `grep`
+    מלא על `portal/vercel.dist.json` — אין שום rewrite ל-`/shiurim` (בניגוד
+    ל-21/22/24/27/28 שכולן עם שלישיית `source`/`source/`/`source/:path*`
+    ל-`https://<slug>-more30.vercel.app`). ניחשתי וניסיתי שלוש כתובות
+    Vercel אפשריות (`shiurim-more30.vercel.app`, עם/בלי `/shiurim`,
+    `igud-shiurim-portal.vercel.app`) — כולן 404, אין שום פריסה עצמאית
+    בנמצא. `apps/19-igud-shiurim-portal/app.json`: `"live": false`,
+    `"deployTarget": "unknown"` — תואם את `core.projects` (`is_deployed=
+    false`, `live_url=null`), לא סתירה. קראתי את `server.js`: זה שרת
+    Express-gateway שמפנה (`http-proxy-middleware`, `ws:true`) לנתיבי
+    `railway.internal:8080` של שבע מערכות אחיות — ארכיטקטורה שלא מתאימה
+    לפונקציה serverless של Vercel (proxy מתמשך + websockets), כך שכנראה
+    שהיעד המיועד הוא Railway ולא Vercel כלל — לא הוספתי `vercel.json`
+    מבוסס-ניחוש כי זה היה עלול ליצור תשתית שגויה. `vercel` CLI לא מותקן/
+    מאומת בסביבה הזו (`which vercel` ריק) — אין דרך ליצור/לחבר פרויקט
+    Vercel/Railway מכאן בכלל. **המסקנה: זו לא סתירה בין סבבים קודמים
+    (317/320/322) לתיעוד — הם קראו וקודדו קובצי מקור, לא אימתו מול
+    פרודקשן חי, וזה תקין. אבל שורת התבנית "מפעיל פריסת Vercel תחת
+    more30.com/<path>" שחוזרת בכל סבב (כולל בהנחיית ההרצה עצמה) היא
+    שגויה במפורש עבור 19 — אין שום נתיב פריסה שה-push הזה מפעיל.**
+    תיעדתי, לא פעלתי — יצירת פרויקט Vercel/Railway היא החלטת תשתית
+    שדורשת גישת dashboard שאין לסבב הזה, בדיוק כמו #62/#115 שכבר חסומים
+    מאותה סיבה.
+327. **הרצתי `notconfirmed-message-sweep.mjs` — 24-galil דגל "generic-only**
+    **login failure message"**, אבל בדיקה הראתה שזה false-positive: מסך
+    הגבאי של 24 אינו Supabase Auth בכלל (התחברות מותאמת-אישית מול
+    `gabai_accounts`), כך שהעדשה של "email_not_confirmed" לא רלוונטית לו
+    מלכתחילה. **חקרתי לעומק בכל זאת** אם ה-select('*') מהדפדפן על
+    `gabai_accounts` (שהמסך משתמש בו בפועל, `GabaiPortal.tsx:1572/1593`)
+    עובד בייצור — אימתתי עם המפתח האנונימי שחולץ מה-bundle החי
+    (`more30.com/galil/assets/index-*.js`, פרויקט `mwljkonwdeuaahsigjdp`)
+    ואותה שאילתה בדיוק שהמסך שולח: `42501 permission denied`. זה **כבר
+    מתועד ומוכר** — `core.issues #62` (severity=critical, status=open,
+    owner=agent, blocked_on="אימות בצד שרת דורש את פרויקט mwljkonwdeuaahsigjdp
+    שה-PAT אינו מכסה") — אימות עצמאי בלבד, לא ממצא חדש. הרצתי גם
+    `galil-gabai-accounts-exposure.mjs` (הסקריפט הייעודי לזה) מחדש —
+    אותה תוצאה, `anon cannot read gabai_accounts`, לא דלף.
+328. **פתחתי `registry-vs-projects.mjs` (מעולם לא רץ, משווה
+    `packages/config/src/registry.ts` מול `core.projects` ומאמת נגד
+    פרודקשן חי בפועל)** — מצא 4 אי-התאמות `stage` בהיקף loop B: 17/18/22
+    עם `stage:"wip"` ב-registry מול `"live"` ב-DB; 21 עם `stage:"live"`
+    ב-registry מול `"wip"` ב-DB (הפוך). **לפני תיקון בדקתי שלא אני
+    ה"תיקון" השגוי:** שאילתת `core.projects` על מדגם רחב (01/02/04/06/
+    10/12/14/30/31/32/36, מחוץ להיקף) הראתה ש-`stage="wip"` יחד עם
+    `live=true`/`is_deployed=true` הוא **דפוס מכוון ונפוץ בכל הפלטפורמה**
+    (לא רק ב-21/24/27/28), לא סתירה שצריך "לתקן" — `stage` הוא ציר בשלות
+    נפרד מהדגלים הבינאריים. כלומר 21 היה מקרה שבו ה-registry הישן (שכתב
+    "live" ותיעד ידנית שה-DB "לא מכיר") היה השגוי, לא ה-DB. תיקנתי רק את
+    `packages/config/src/registry.ts`: 17/18/22 → `"live"`, 21 → `"wip"`
+    (עם הערה מעודכנת שמחליפה את ההערה הישנה שכבר לא נכונה). `registry.ts`
+    **אין לו אף צרכן זמן-ריצה** (`grep` מלא על `import.*registry` בכל
+    הריפו — אפס תוצאות מחוץ לקובץ עצמו) — זו תיקון תיעוד טהור, אפס סיכון
+    התנהגותי, לא נגעתי בשום דגל `live`/`isDeployed`/שדה אחר. אימתתי מחדש
+    בהרצת הסקריפט — כל 12 השורות בהיקף loop B (17-28) עכשיו `agree`.
+    בדיקת איזון סוגריים ב-python על הקובץ המלא — תקין (71/71, 49/49, 9/9).
+    אין build/dev-server בסבב הזה לפי הנחיית ההרצה. ענף חדש
+    `fix/b-registry-stage-drift-17-18-21-22-0820`, קומיט `9fcb2444`, נדחף
+    (אין שינוי לאפליקציה חיה — קובץ config סטטי בלבד, לא נטען בזמן ריצה
+    ע"י אף אפליקציה/admin/portal). **הבא בתור:** אם יתקבל אי-פעם גישת
+    Vercel/Railway dashboard, לחבר את 19 לפריסה אמיתית (#62/#115 גם הם
+    ממתינים לגישת dashboard חיצונית לאותה סיבה); אחרת לפתוח עדשה חדשה
+    בהיקף, או לחזור על הבדיקות התקופתיות.
+    via cloud server 167.99.131.167 [loop B]
