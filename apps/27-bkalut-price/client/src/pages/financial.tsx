@@ -304,7 +304,7 @@ function ClientsTab({ clients, activeId, onSelect }: { clients: FinClient[]; act
             <option value="household">משק בית</option>
             <option value="business">עסק קטן</option>
           </select>
-          <Input type="number" placeholder="גודל משפחה" value={form.familySize ?? ""} onChange={(e) => setForm((f) => ({ ...f, familySize: e.target.value ? Number(e.target.value) : null }))} />
+          <Input type="number" min={1} placeholder="גודל משפחה" value={form.familySize ?? ""} onChange={(e) => setForm((f) => ({ ...f, familySize: e.target.value ? Number(e.target.value) : null }))} />
           <Input type="number" placeholder="הכנסה חודשית משוערת" value={form.monthlyIncome ?? ""} onChange={(e) => setForm((f) => ({ ...f, monthlyIncome: e.target.value ? Number(e.target.value) : null }))} />
         </div>
         <Button onClick={() => create.mutate()} disabled={!form.fullName || create.isPending} data-testid="button-create-client">

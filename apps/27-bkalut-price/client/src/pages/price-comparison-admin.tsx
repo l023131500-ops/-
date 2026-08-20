@@ -624,7 +624,7 @@ export default function PriceComparisonAdmin() {
                       <option value="">— חנות —</option>
                       {stores.map((s) => <option key={s.id} value={s.id}>{s.name}{s.branch ? ` (${s.branch})` : ""}</option>)}
                     </select>
-                    <Input type="number" step="0.01" placeholder="מחיר" value={newPrice.price} onChange={(e) => setNewPrice({ ...newPrice, price: e.target.value })} data-testid="input-pc-price" />
+                    <Input type="number" step="0.01" min={0} placeholder="מחיר" value={newPrice.price} onChange={(e) => setNewPrice({ ...newPrice, price: e.target.value })} data-testid="input-pc-price" />
                     <label className="flex items-center gap-2 text-sm col-span-2">
                       <Switch checked={newPrice.onSale} onCheckedChange={(v) => setNewPrice({ ...newPrice, onSale: v })} /> במבצע
                     </label>

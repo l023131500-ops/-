@@ -483,7 +483,7 @@ const RightsCategories = () => {
                     )}
 
                     <div className="grid grid-cols-2 gap-2">
-                      <Input type="number" min={0} placeholder="מספר ילדים" aria-label="מספר ילדים" value={formData.children_count} onChange={(e) => setFormData({ ...formData, children_count: e.target.value })} className="text-sm" />
+                      <Input type="number" min={0} max={20} placeholder="מספר ילדים" aria-label="מספר ילדים" value={formData.children_count} onChange={(e) => setFormData({ ...formData, children_count: e.target.value })} className="text-sm" />
                       <Input placeholder="גילאי ילדים" aria-label="גילאי ילדים" value={formData.children_ages} onChange={(e) => setFormData({ ...formData, children_ages: e.target.value })} className="text-sm" />
                     </div>
                     <select aria-label="מצב בריאותי של הילדים" value={formData.children_health} onChange={(e) => setFormData({ ...formData, children_health: e.target.value })}

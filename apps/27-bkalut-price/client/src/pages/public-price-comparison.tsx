@@ -739,7 +739,7 @@ export default function PublicPriceComparison() {
                   <Input placeholder="מותג" value={submission.brand} onChange={(e) => setSubmission({ ...submission, brand: e.target.value })} data-testid="input-pc-sub-brand" />
                   <Input placeholder="יחידה (למשל 1 ליטר)" value={submission.unit} onChange={(e) => setSubmission({ ...submission, unit: e.target.value })} data-testid="input-pc-sub-unit" />
                   <Input placeholder="ברקוד" dir="ltr" value={submission.barcode} onChange={(e) => setSubmission({ ...submission, barcode: e.target.value })} data-testid="input-pc-sub-barcode" />
-                  <Input type="number" step="0.01" inputMode="decimal" placeholder="מחיר ₪ *" value={submission.price} onChange={(e) => setSubmission({ ...submission, price: e.target.value })} data-testid="input-pc-sub-price" />
+                  <Input type="number" step="0.01" min={0} inputMode="decimal" placeholder="מחיר ₪ *" value={submission.price} onChange={(e) => setSubmission({ ...submission, price: e.target.value })} data-testid="input-pc-sub-price" />
                   <Input placeholder="הערה (לא חובה)" value={submission.note} onChange={(e) => setSubmission({ ...submission, note: e.target.value })} data-testid="input-pc-sub-note" />
                 </div>
                 <Button size="sm" disabled={submitting} onClick={submitPrice} data-testid="button-pc-submit-price">
