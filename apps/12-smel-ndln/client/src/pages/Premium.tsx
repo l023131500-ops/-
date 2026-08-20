@@ -292,11 +292,12 @@ function QuestionField({
   onChange: (v: any) => void;
 }) {
   if (item.type === "single" && item.options) {
+    const fieldId = `question-${item.key}`;
     return (
       <div className="text-right">
-        <label className="mb-1.5 block text-sm font-semibold text-foreground">{item.label}</label>
+        <label htmlFor={fieldId} className="mb-1.5 block text-sm font-semibold text-foreground">{item.label}</label>
         <Select value={value ?? ""} onValueChange={onChange}>
-          <SelectTrigger data-testid={`select-${item.key}`}>
+          <SelectTrigger id={fieldId} data-testid={`select-${item.key}`}>
             <SelectValue placeholder="בחרו…" />
           </SelectTrigger>
           <SelectContent>
@@ -312,10 +313,12 @@ function QuestionField({
   }
 
   if (item.type === "number") {
+    const fieldId = `question-${item.key}`;
     return (
       <div className="text-right">
-        <label className="mb-1.5 block text-sm font-semibold text-foreground">{item.label}</label>
+        <label htmlFor={fieldId} className="mb-1.5 block text-sm font-semibold text-foreground">{item.label}</label>
         <Input
+          id={fieldId}
           type="number"
           inputMode="numeric"
           value={value ?? ""}
@@ -355,10 +358,12 @@ function QuestionField({
   }
 
   // text
+  const fieldId = `question-${item.key}`;
   return (
     <div className="text-right">
-      <label className="mb-1.5 block text-sm font-semibold text-foreground">{item.label}</label>
+      <label htmlFor={fieldId} className="mb-1.5 block text-sm font-semibold text-foreground">{item.label}</label>
       <Textarea
+        id={fieldId}
         value={value ?? ""}
         onChange={(e) => onChange(e.target.value)}
         rows={3}
