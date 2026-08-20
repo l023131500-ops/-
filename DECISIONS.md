@@ -11487,3 +11487,40 @@
     21-mthbram צד client (99 קומיטים, רוב הבדיקות היו ממוקדות edge
     functions). נושאים #62/#94/#115/#164/#169/#254 נשארים חסומים.
     via cloud server 167.99.131.167 [loop B]
+
+## 20/08/2026 — סבב 452 (loop B)
+
+452. **סריקת double-submit ב-27-bkalut-price (המועמד שהוצע בסוף סבב
+    451).** Explore agent סרק את כל `client/src/pages` אחר handlers
+    א-סינכרוניים שכותבים ל-API בלי guard כניסה-חוזרת (disabled/state),
+    לפי אותו דפוס שנבדק ב-24/20/22. נמצאו כ-8 handlers חשופים; הגבוה
+    ביותר בסיכון וגם היעיל ביותר לתקן: `del()` ב-`price-comparison-admin.tsx`
+    — פונקציית מחיקה גנרית **משותפת ל-6 כפתורי מחיקה** (feeds/products/
+    prices/stores/categories/promotions), אף אחד מהם לא נושא `disabled`
+    מותנה. לחיצה כפולה או רשת חוזרת יכולה לירות שתי בקשות `DELETE`
+    חופפות לאותה שורה.
+
+    **התיקון:** נוסף `deletingUrlsRef` (Set של urls בתהליך מחיקה):
+    קריאה חוזרת ל-`del()` עם אותו url בזמן שהראשונה עוד רצה היא no-op;
+    ה-url מוסר מה-set ב-`finally` (מכסה גם הצלחה וגם שגיאה). תיקון
+    יחיד בפונקציה המשותפת מכסה את כל 6 נקודות הקריאה בלי לגעת בהן.
+    שאר 7 ה-handlers שנמצאו (health-funds-admin removeTopic/removeTier,
+    potential-admin deleteLink, community-admin deleteLink/deleteQuestion,
+    delivery.tsx remove) נשארו לא מוגנים — מועמדים לסבב הבא.
+
+    **בדיקות תקינות:** קריאת קוד בלבד (ללא dev-server/build). ספירת
+    סוגריים/סוגריים-מסולסלים לפני/אחרי (Node): `(` 497/497, `{` 559/559
+    (מאוזן). `git diff --stat`: קובץ יחיד, +4/-0.
+
+    לא אומתה פריסה חיה: ההנחיות אוסרות dev-server/תהליכי רקע —
+    האימות נעשה בקריאת קוד בלבד.
+
+    ענף `fix/b-22-whatsapp-noopener-round395-0820` (שרשרת הענפים היא
+    המקור המלא היחיד ל-loop B, לא `main`), נדחף.
+
+    **הבא בתור:** אותו דפוס guard ב-7 ה-handlers הנותרים ב-
+    27-bkalut-price (health-funds-admin, potential-admin, community-admin,
+    delivery.tsx); חזרה לבדיקת race-conditions/stale-async ב-21-mthbram
+    צד client (99 קומיטים, רוב הבדיקות היו ממוקדות edge functions).
+    נושאים #62/#94/#115/#164/#169/#254 נשארים חסומים.
+    via cloud server 167.99.131.167 [loop B]
