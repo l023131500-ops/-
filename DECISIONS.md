@@ -9449,3 +9449,57 @@
      דורש הזנת ערך בסביבת Vercel, לא עריכת קוד). עדשה חדשה אפשרית
      לסבב הבא: `aria-live` על הודעות שגיאת ולידציה דינמיות
      (`FormMessage`/toast) שלא נבדקה עדיין באף אפליקציה.
+
+## 20/08/2026 — סבב 191 (loop A)
+
+924. **המשך עדשת `aria-live` (WCAG 4.1.3 Status Messages) על הודעות
+     שגיאת ולידציה דינמיות** — בדיוק הפריט שסומן כ"בא בתור" בסוף
+     סבב 190. סוכן Explore סרק את 01-07/10-16 (לבד מ-08/09
+     המוגנים) בחיפוש אחר הודעות שגיאה/סטטוס שמתרנדרות דינמית
+     (הודעת ולידציה על שדה שנכשל, או toast/הודעת מערכת) בלי
+     `role="alert"`/`aria-live` — כלומר משתמש קורא-מסך לא מקבל
+     איתות קולי כשההודעה מופיעה, גם אם היא מקושרת חזותית ל-input
+     דרך `aria-describedby`. אימתתי שהקונבנציה הקיימת
+     (`role="alert" aria-live="assertive"`) כבר בשימוש ב-
+     `02-igud-transcribe/app/login/page.tsx` לפני שנקבעה כתקן
+     ההשוואה. נמצאו 6 ממצאים אמיתיים עם שימוש פעיל בפועל (component
+     בשימוש, לא רק מוגדר): `01-torah-platform/Footer.tsx` (שני
+     שדות פנייה מהירה — name/phone), `03-igud-ads` (שלושה מקומות:
+     `transcribe/upload/page.tsx`, `admin/users/page.tsx`,
+     `admin/templates/page.tsx`), `12-smel-ndln`'s shared
+     `components/ui/form.tsx`'s `FormMessage` (בשימוש פעיל ב-
+     `Premium.tsx`), `16-chatzor-connect`'s shared
+     `components/ui/Field.tsx` (בשימוש פעיל ב-`InquiryForm.tsx`).
+     שני ממצאים דומים ב-`04-imud-torani` ו-`15-egod`'s `FormMessage`
+     component **לא** תוקנו הסבב הזה — הקומפוננטה מוגדרת אך אין
+     לה אף שימוש בפועל באף טופס באפליקציות האלה (Explore אימת: אין
+     `<FormMessage` בשום קובץ מלבד ההגדרה עצמה), כך שאין השפעה
+     משתמש אמיתית כרגע — נשאר לתור הבא אם/כשהקומפוננטה תאומץ.
+     `16-chatzor-connect`'s toast container כבר `role="status"` —
+     נבדק ואומת נקי, לא נגעתי בו.
+925. **תיקון — 6 קבצים, אותה קונבנציה כמו 02-igud-transcribe:**
+     כל אחת מ-6 ה-`<p>`/`<div>` שמרנדרים את הודעת השגיאה קיבלה
+     `role="alert" aria-live="assertive"` (attribute נוסף בלבד על
+     האלמנט הקיים — ללא שינוי טקסט/מבנה/מיקום). ב-`12-smel-ndln`
+     וב-`16-chatzor-connect` זה קומפוננטה משותפת אחת שמתקנת את כל
+     המופעים הפעילים שלה בבת אחת (`Premium.tsx` / `InquiryForm.tsx`
+     בהתאמה) בלי לגעת בשום קורא (caller).
+926. **אפס רגרסיה מאומתת:** `git diff --stat` — 6 קבצים, 8+/6-
+     (כל שינוי הוא הוספת `role`/`aria-live` על אלמנט קיים; ב-
+     `12-smel-ndln/form.tsx` זו הוספת שתי שורות attribute חדשות,
+     בשאר הקבצים זו עריכת שורה קיימת במקום). קראתי את כל 6 הקבצים
+     במלואם לפני העריכה, ואת ה-diff המלא אחרי — אין שינוי
+     state/handler/logic/סדר. הנתיבים `apps/01-torah-platform/src`,
+     `apps/03-igud-ads/app`, `apps/16-chatzor-connect/src` מוזכרים
+     ב-`.gitignore` (כמו ב-`12-smel-ndln/client` שתועד בסבב 190)
+     אך כל 6 הקבצים כבר tracked — `git add` רגיל (לא `-f`) הצליח
+     על כולם כי הם קבצים בודדים כבר-tracked, לא נתיב חדש; רק
+     ה-hint של git הוצג, לא שגיאה. Commit `54ae47db` על
+     `fix/a-icon-only-buttons-round2-0820`, יידחף ל-origin (מפעיל
+     פריסת Vercel תחת more30.com/torah, /modaot, /smel, /chatzor).
+927. **הבא בתור:** עדשת ה-`aria-live` (4.1.3) נחשבת סגורה על כל
+     המימושים בשימוש פעיל ב-01-16 שנסרקו. שני מופעים לא-פעילים
+     (04-imud-torani, 15-egod) ממתינים לאימוץ בפועל. שני מועמדי
+     הניגודיות שנותרו לא-חד-משמעיים מסבב 175 עדיין ממתינים לכלי
+     רינדור אמיתי. `core.project_tasks` נשאר עם אותם 5 פריטים
+     חסומים על סודות חסרים/החלטות מיזוג מחוץ לסמכות הסוכן.
