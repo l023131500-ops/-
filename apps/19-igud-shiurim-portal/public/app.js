@@ -46,6 +46,29 @@ function esc(v) {
     .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 }
 
+// BreadcrumbList JSON-LD for the entity-detail pages (/t/, /s/, /te/) — the only
+// routes with a real 2-level hierarchy (home directory -> entity). Built from
+// location.href (not location.origin) so it stays correct under any deploy mount.
+function setBreadcrumbJsonLd(items) {
+  let script = document.getElementById('breadcrumb-jsonld');
+  if (!script) {
+    script = document.createElement('script');
+    script.type = 'application/ld+json';
+    script.id = 'breadcrumb-jsonld';
+    document.head.appendChild(script);
+  }
+  script.textContent = JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: items.map((it, i) => ({ '@type': 'ListItem', position: i + 1, name: it.name, item: it.url })),
+  });
+}
+
+function clearBreadcrumbJsonLd() {
+  const script = document.getElementById('breadcrumb-jsonld');
+  if (script) script.remove();
+}
+
 // ---------------------------------------------------------------------------
 // «הצג סיסמה» (priority §1א)
 // ---------------------------------------------------------------------------
@@ -281,6 +304,7 @@ function wireUploadField({ id, uploadUrl }) {
 async function router() {
   const path = currentPath().split('?')[0];
   setActiveNav();
+  clearBreadcrumbJsonLd();
   APP.innerHTML = '<div class="page-loading"><span class="spinner-lg" aria-hidden="true"></span><p class="muted">טוען…</p></div>';
 
   try {
@@ -960,6 +984,8 @@ async function renderTenantPublic(token) {
   const data = await api(`/api/public/tenant/${encodeURIComponent(token)}`);
   if (!data) return renderNotFound();
   const t = data.tenant;
+  const base = location.href.split('#')[0];
+  setBreadcrumbJsonLd([{ name: 'דשבורד', url: base + '#/' }, { name: t.name, url: base + '#/t/' + encodeURIComponent(token) }]);
   let zmanim = null;
   try { zmanim = await api(`/api/city/${encodeURIComponent(t.city)}/zmanim`); } catch (e) { /* אופציונלי */ }
 
@@ -1031,6 +1057,8 @@ async function renderSynagoguePublic(token) {
   const data = await api(`/api/public/synagogue/${encodeURIComponent(token)}`);
   if (!data) return renderNotFound();
   const s = data.synagogue;
+  const base = location.href.split('#')[0];
+  setBreadcrumbJsonLd([{ name: 'דשבורד', url: base + '#/' }, { name: s.name, url: base + '#/s/' + encodeURIComponent(token) }]);
   APP.innerHTML = `
     <div style="margin-top:24px;">
       <div class="row-between">
@@ -1065,6 +1093,8 @@ async function renderTeacherPublic(token) {
   const data = await api(`/api/public/teacher/${encodeURIComponent(token)}`);
   if (!data) return renderNotFound();
   const t = data.teacher;
+  const base = location.href.split('#')[0];
+  setBreadcrumbJsonLd([{ name: 'דשבורד', url: base + '#/' }, { name: t.full_name, url: base + '#/te/' + encodeURIComponent(token) }]);
   APP.innerHTML = `
     <div style="margin-top:24px;">
       <div class="row-top" style="gap:12px;">

@@ -10136,3 +10136,57 @@
     בפריסת `more30.com/mechiron` בפועל — דורש אימות מול הפריסה החיה,
     לא ניחוש. נושא #245/#250 (RLS, חסומים) נשארים כפי שהם. via cloud
     server 167.99.131.167 [loop B]
+
+## 20/08/2026 — סבב 427 (loop B)
+
+427. **`BreadcrumbList` JSON-LD אמיתי ב-19-igud-shiurim-portal
+    (`/t/`, `/s/`, `/te/`) — 20-igud-portal נבדק ונשלל, אין שם שום
+    נתיב-פרטים.**
+
+    ה"הבא בתור" של סבב 426. קראתי את `server.js`+`public/app.js` של
+    שתי האפליקציות במקום לנחש: 20-igud-portal הוא SPA חד-מסך בלבד
+    (`viewDirectory` + חיפוש) — אין שום מסלול `#/t/`/`#/s/`/`#/te/`
+    ואין דף-ישות נפרד, כך שאין מועמד ל-breadcrumb כלל (נשלל, לא רק
+    "לא נבדק"). ב-19-igud-shiurim-portal לעומת זאת יש שלושה
+    ריינדרים אמיתיים לפי `hashchange` router (שורות 292-294):
+    `renderTenantPublic`/`renderSynagoguePublic`/`renderTeacherPublic`,
+    כל אחד עם `fetch` אמיתי ל-API ושם ישות אמיתי (`t.name`/`s.name`/
+    `t.full_name`). דף-הבית `#/` (`renderDirectory`) הוא הפיד הארצי
+    המאוחד — הקישור הממשי היחיד המוביל לדפי הישות (הכרטיסים בפיד
+    מקשרים ישירות ל-`#/t/`,`#/s/`,`#/te/`); שם הקישור בניווט העליון
+    בפועל הוא "דשבורד" (`index.html:55`) — זה שם הרמה הראשונה
+    ב-breadcrumb, לא "בית" מומצא. אין דף-קטלוג מסונן-לפי-קטגוריה
+    כמו ב-27 (הסינון בפיד הוא JS state מקומי, לא URL-synced — אותו
+    דפוס בדיוק שכבר נקבע ב-27/סבב 426), אז ה-breadcrumb הוא 2 רמות
+    בלבד: דשבורד (`#/`) → הישות הנוכחית.
+
+    הוספתי `setBreadcrumbJsonLd()`/`clearBreadcrumbJsonLd()` (מזריקים/
+    מסירים `<script id="breadcrumb-jsonld" type="application/ld+json">`
+    ב-`<head>`, ללא ספריית head-management כי אין כזו באפליקציה
+    vanilla-JS הזו). `clearBreadcrumbJsonLd()` נקרא בתחילת כל `router()`
+    כדי שלא יישאר breadcrumb-JSON-LD "תקוע" מדף ישות קודם כשעוברים
+    לדף בלי היררכיה (לדשבורד/הצטרפות/וכו'). כתובות ה-crumb נבנות מ-
+    `location.href.split('#')[0]` (לא `location.origin`) — אותו דפוס
+    שנקבע ב-27/סבב 426 כדי להישאר נכון תחת כל mount prefix של פריסה.
+
+    **בדיקות תקינות:** `node --check apps/19-igud-shiurim-portal/public/app.js`
+    עבר נקי (תחביר JS תקין, לא רק איזון סוגריים ב-Python כמו בסבבים
+    קודמים ללא Node זמין — כאן היה זמין). `git diff --stat`: קובץ
+    יחיד, +30/-0 — תוספות בלבד, אין מחיקה, אין שינוי בפונקציות
+    קיימות מעבר להוספת 2 שורות קריאה בכל אחד מ-3 הריינדרים ושורה 1
+    ב-`router()`. הקובץ נופל תחת `.gitignore` (`/apps/**`) כמו שאר
+    `public/`/`client/src` בפרויקט זה — נדרש `git add -f`. לא הותקנו
+    תלויות ולא הופעל build/dev-server — נבדק בקריאה ישירה בלבד, לפי
+    הנחיות ההרצה.
+
+    ענף `fix/b-22-whatsapp-noopener-round395-0820` (שרשרת הענפים היא
+    המקור המלא היחיד ל-loop B, לא `main`), נדחף (מפעיל פריסת Vercel
+    תחת `more30.com/shiurim`).
+
+    **הבא בתור:** `BreadcrumbList` סגור 2/2 מהלנס הזה (27, 19; 20
+    נשלל כמעדר-מסלולים). נותר: `hreflang`/`lang` alternate tags עדיין
+    לא נבדק (סביר שלא רלוונטי — כל 9 האפליקציות חד-לשוניות `lang="he"`,
+    כבר אומת ידנית שכולן תקינות, אבל לא תועד רשמית); השאלה הפתוחה
+    לגבי `window.location.origin`-based share-links ב-27 עדיין דורשת
+    אימות מול הפריסה החיה. נושא #245/#250 (RLS, חסומים) נשארים כפי
+    שהם. via cloud server 167.99.131.167 [loop B]
