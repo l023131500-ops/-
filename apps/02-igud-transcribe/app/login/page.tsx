@@ -113,6 +113,7 @@ export default function LoginPage() {
                 className="input"
                 required
                 dir="ltr"
+                autoComplete="email"
               />
             </div>
             {/* כפתור "הצג סיסמה" (priority §1א). השדה נושא dir="ltr" ו-`.input`
@@ -128,6 +129,7 @@ export default function LoginPage() {
                   className="input pl-10"
                   required
                   dir="ltr"
+                  autoComplete="current-password"
                 />
                 <button
                   type="button"

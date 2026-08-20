@@ -145,7 +145,7 @@ export function ProofreadDept({
                 <div className="relative">
                   <Input
                     type={showKey ? "text" : "password"} value={apiKey} onChange={(e) => setApiKey(e.target.value)}
-                    placeholder="sk-…" dir="ltr" className="pr-9" data-testid="input-ai-key"
+                    placeholder="sk-…" dir="ltr" className="pr-9" data-testid="input-ai-key" autoComplete="off"
                   />
                   <button
                     type="button"

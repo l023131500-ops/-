@@ -218,6 +218,7 @@ export default function AdminPage() {
               value={key}
               onChange={(e) => setKey(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && login(key)}
+              autoComplete="off"
               style={{ width: "100%", paddingInlineEnd: 44 }}
             />
             <button
