@@ -52,6 +52,11 @@ const AdminDashboard = () => {
   const [previewLesson, setPreviewLesson] = useState<any | null>(null);
   const [pendingFullAccessCount, setPendingFullAccessCount] = useState(0);
   const [nedarimTypeFilter, setNedarimTypeFilter] = useState<"all" | "lesson" | "seeker" | "teacher">("all");
+  const editPanelRef = useRef<HTMLDivElement>(null);
+  const editCloseButtonRef = useRef<HTMLButtonElement>(null);
+  const nedarimPanelRef = useRef<HTMLDivElement>(null);
+  const nedarimCloseButtonRef = useRef<HTMLButtonElement>(null);
+  const previousFocusRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     supabase.from("synagogue_full_access_requests").select("id", { count: "exact", head: true }).eq("status", "pending")
@@ -60,13 +65,38 @@ const AdminDashboard = () => {
 
   useEffect(() => {
     if (!editingLesson && !viewingNedarim) return;
+    previousFocusRef.current = document.activeElement as HTMLElement;
+    const closeBtn = editingLesson ? editCloseButtonRef.current : nedarimCloseButtonRef.current;
+    closeBtn?.focus();
     const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key !== "Escape") return;
-      if (editingLesson) setEditingLesson(null);
-      if (viewingNedarim) setViewingNedarim(null);
+      if (e.key === "Escape") {
+        if (editingLesson) setEditingLesson(null);
+        if (viewingNedarim) setViewingNedarim(null);
+        return;
+      }
+      if (e.key === "Tab") {
+        const panel = editingLesson ? editPanelRef.current : nedarimPanelRef.current;
+        if (!panel) return;
+        const focusable = panel.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])'
+        );
+        if (focusable.length === 0) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
     };
     window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
+    return () => {
+      window.removeEventListener("keydown", onKeyDown);
+      previousFocusRef.current?.focus();
+    };
   }, [editingLesson, viewingNedarim]);
 
   useEffect(() => { fetchAll(); }, []);
@@ -1587,6 +1617,7 @@ const AdminDashboard = () => {
             onClick={(e) => e.target === e.currentTarget && setEditingLesson(null)}
           >
             <motion.div
+              ref={editPanelRef}
               initial={{ opacity: 0, y: 30, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 30, scale: 0.95 }}
@@ -1600,7 +1631,7 @@ const AdminDashboard = () => {
                   <h2 className="font-display text-2xl font-black text-foreground">
                     עריכת <span className="text-gradient-teal">שיעור</span>
                   </h2>
-                  <button onClick={() => setEditingLesson(null)} className="text-muted-foreground hover:text-foreground">✕</button>
+                  <button ref={editCloseButtonRef} onClick={() => setEditingLesson(null)} className="text-muted-foreground hover:text-foreground">✕</button>
                 </div>
 
                 <div className="space-y-4">
@@ -1709,6 +1740,7 @@ const AdminDashboard = () => {
             onClick={(e) => e.target === e.currentTarget && setViewingNedarim(null)}
           >
             <motion.div
+              ref={nedarimPanelRef}
               initial={{ opacity: 0, y: 30, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 30, scale: 0.95 }}
               role="dialog"
               aria-modal="true"
@@ -1720,7 +1752,7 @@ const AdminDashboard = () => {
                   <h2 className="font-display text-2xl font-black text-foreground">
                     פרטי <span className="text-gradient-gold">פנייה מנדרים</span>
                   </h2>
-                  <button onClick={() => setViewingNedarim(null)} className="text-muted-foreground hover:text-foreground">✕</button>
+                  <button ref={nedarimCloseButtonRef} onClick={() => setViewingNedarim(null)} className="text-muted-foreground hover:text-foreground">✕</button>
                 </div>
                 <div className="space-y-4">
                   <div className="grid grid-cols-2 gap-3 text-sm font-body">
