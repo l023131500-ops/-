@@ -108,6 +108,7 @@ const AdminSettings = () => {
   };
 
   const deleteKey = async (id: string) => {
+    if (!confirm("האם למחוק את מפתח ה-API? פעולה זו תחסום מיידית כל שימוש קיים במפתח זה.")) return;
     const { error } = await supabase.from("api_keys").delete().eq("id", id);
     if (error) {
       toast({ title: "שגיאה", description: "מחיקת המפתח נכשלה", variant: "destructive" });
