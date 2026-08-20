@@ -31,7 +31,9 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="he" dir="rtl">
-      <body>{children}
+      <body>
+        <a href="#main-content" className="skip-link">דלג לתוכן הראשי</a>
+        {children}
         <script src="https://more30.com/auth-button.js" defer />
       </body>
     </html>

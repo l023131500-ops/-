@@ -253,7 +253,7 @@ export default function EditorPage() {
   }
 
   return (
-    <div className="container">
+    <main className="container" id="main-content">
       <h1>העורך התורני</h1>
       <p>הזן טקסט, זהה ציטוטים, אמת מול המקור בספריא, והוסף ניקוד רבני. כל הפעולות דורשות אישור ידני לפני קבלה.</p>
 
@@ -380,6 +380,6 @@ export default function EditorPage() {
           ))}
         </div>
       )}
-    </div>
+    </main>
   );
 }

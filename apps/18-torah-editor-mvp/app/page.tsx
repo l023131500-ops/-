@@ -2,7 +2,7 @@ import Link from 'next/link';
 
 export default function Home() {
   return (
-    <main className="container">
+    <main className="container" id="main-content">
       <div className="page-head">
         <div>
           <h1>העורך התורני</h1>

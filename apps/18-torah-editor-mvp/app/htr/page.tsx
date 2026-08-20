@@ -55,7 +55,7 @@ export default function HtrPage() {
   useEffect(() => { refresh(); }, [refresh]);
 
   return (
-    <main className="container htr-wide">
+    <main className="container htr-wide" id="main-content">
       <div className="htr-head">
         <div>
           <h1>המרת כתב יד — HTR</h1>

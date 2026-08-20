@@ -292,6 +292,18 @@ button.action:disabled {
   position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
   overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
 }
+
+/* WCAG 2.4.1 (Bypass Blocks): קישור דילוג-לתוכן, מוסתר עד קבלת פוקוס
+   (Tab ראשון בעמוד), כדי שמשתמשי מקלדת/קורא-מסך יוכלו לדלג מעבר לניווט. */
+.skip-link {
+  position: absolute; inset-inline-start: 8px; top: -48px;
+  background: var(--ink); color: #fff; padding: 10px 16px;
+  border-radius: 8px; font-size: 14px; font-weight: 600; z-index: 10000;
+  transition: top .12s;
+}
+.skip-link:focus {
+  top: 8px;
+}
 .muted { color: var(--ink-3); font-size: 13px; }
 
 /* אזור הגרירה. is-dragging נותן משוב שהקובץ יישמט לכאן ולא לחלון הדפדפן. */

@@ -13,6 +13,25 @@
 
 * { box-sizing: border-box; }
 
+/* WCAG 2.4.1 (Bypass Blocks): קישור דילוג-לתוכן, מוסתר עד קבלת פוקוס
+   (Tab ראשון בעמוד), כדי שמשתמשי מקלדת/קורא-מסך יוכלו לדלג מעבר לניווט. */
+.skip-link {
+  position: absolute;
+  inset-inline-start: 8px;
+  top: -48px;
+  background: var(--primary);
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  z-index: 10000;
+  transition: top .12s;
+}
+.skip-link:focus {
+  top: 8px;
+}
+
 html, body {
   margin: 0;
   padding: 0;

@@ -184,20 +184,20 @@ export default function DocumentsPage() {
 
   if (!configured) {
     return (
-      <div className="container">
+      <main className="container" id="main-content">
         <h1>המסמכים שלי</h1>
         <p className="status-deviation">
           אזור המסמכים אינו מחובר: חסרים <code>NEXT_PUBLIC_HUB_SUPABASE_URL</code> ו-
           <code>NEXT_PUBLIC_HUB_SUPABASE_ANON_KEY</code>.
         </p>
-      </div>
+      </main>
     );
   }
 
   const shown = filter === 'all' ? docs : docs.filter((d) => d.status === filter);
 
   return (
-    <div className="container">
+    <main className="container" id="main-content">
       <h1>המסמכים שלי</h1>
       <p className="subtitle">
         העלו ספר או קובץ, או פתחו מסמך ריק. כל מסמך נשמר אוטומטית ואפשר לחזור אליו בכל עת.
@@ -319,6 +319,6 @@ export default function DocumentsPage() {
           )}
         </>
       )}
-    </div>
+    </main>
   );
 }

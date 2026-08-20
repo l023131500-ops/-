@@ -30,7 +30,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="container" style={{ maxWidth: 420 }}>
+    <main className="container" id="main-content" style={{ maxWidth: 420 }}>
       <h1>כניסה</h1>
       <p className="subtitle">התחברות עם קישור חד-פעמי לדוא&quot;ל</p>
       <form onSubmit={handleSubmit}>
@@ -57,6 +57,6 @@ export default function LoginPage() {
       </form>
       {status === 'sent' && <p className="status-match" role="status" aria-live="polite">קישור נשלח, בדקו את תיבת הדוא&quot;ל.</p>}
       {status === 'error' && <p className="status-missing" role="alert" aria-live="assertive">{errorMsg}</p>}
-    </div>
+    </main>
   );
 }
