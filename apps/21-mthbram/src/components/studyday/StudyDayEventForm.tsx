@@ -554,7 +554,7 @@ export default function StudyDayEventForm({ sessionId, onAdded, existingEvents =
                   </div>
                 </label>
                 {form.logo_url && (
-                  <img src={form.logo_url} alt="" className="h-10 w-10 rounded object-cover border border-foreground/15" />
+                  <img src={form.logo_url} alt={form.synagogue_name ? `לוגו ${form.synagogue_name}` : "לוגו"} className="h-10 w-10 rounded object-cover border border-foreground/15" />
                 )}
               </div>
             </div>

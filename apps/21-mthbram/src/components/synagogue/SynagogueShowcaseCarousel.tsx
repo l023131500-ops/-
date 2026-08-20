@@ -51,7 +51,7 @@ export default function SynagogueShowcaseCarousel({ synagogueName, logoUrl, publ
       <div className="bg-white/5 backdrop-blur rounded-xl p-4 border border-white/10">
         <div className="flex items-center gap-3 mb-3">
           {logoUrl ? (
-            <img src={logoUrl} alt="" className="w-12 h-12 rounded-lg object-cover border border-white/30" />
+            <img src={logoUrl} alt={synagogueName ? `לוגו ${synagogueName}` : "לוגו"} className="w-12 h-12 rounded-lg object-cover border border-white/30" />
           ) : (
             <div className="w-12 h-12 rounded-lg bg-white/10 flex items-center justify-center">
               <Building2 className="w-6 h-6 text-white/70" />

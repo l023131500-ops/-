@@ -143,7 +143,7 @@ export default function StudyDayUpload() {
           <div className="flex items-center gap-4">
             <div className="w-20 h-20 rounded-xl border-2 border-dashed border-foreground/15 flex items-center justify-center overflow-hidden bg-foreground/5">
               {form.logo_url ? (
-                <img src={form.logo_url} alt="" className="w-full h-full object-cover" />
+                <img src={form.logo_url} alt={form.synagogue_name ? `לוגו ${form.synagogue_name}` : "לוגו"} className="w-full h-full object-cover" />
               ) : (
                 <Building2 className="w-8 h-8 text-foreground/30" />
               )}

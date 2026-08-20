@@ -166,7 +166,7 @@ const LessonDetailModal = ({ lesson, onClose, imageOptions }: LessonDetailModalP
 
             <div className="flex items-start gap-4">
               {lesson.logo_url ? (
-                <img src={lesson.logo_url} alt="" className="w-16 h-16 rounded-xl object-cover border-2 border-primary/20 shadow-lg" />
+                <img src={lesson.logo_url} alt={lesson.rabbi_name ? `לוגו ${lesson.rabbi_name}` : "לוגו"} className="w-16 h-16 rounded-xl object-cover border-2 border-primary/20 shadow-lg" />
               ) : (
                 <div className="w-16 h-16 rounded-xl bg-gradient-brand flex items-center justify-center flex-shrink-0 shadow-lg animate-pulse-glow">
                   <Mic className="w-7 h-7 text-primary-foreground" />

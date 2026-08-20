@@ -54,7 +54,7 @@ const SynagogueCard = ({ data, onClick }: { data: SynagogueCardData; onClick: ()
         <div className="flex flex-col items-center gap-2">
           <div className="w-14 h-14 rounded-xl bg-white/20 border border-white/30 flex items-center justify-center overflow-hidden shrink-0">
             {data.logo_url ? (
-              <img src={data.logo_url} alt="" className="w-full h-full object-cover" />
+              <img src={data.logo_url} alt={data.synagogue_name ? `לוגו ${data.synagogue_name}` : "לוגו"} className="w-full h-full object-cover" />
             ) : (
               <Building2 className="w-7 h-7 text-white" />
             )}

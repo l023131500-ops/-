@@ -201,7 +201,7 @@ const OrgPortal = () => {
                 aria-label="החלפת לוגו"
                 onKeyDown={e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); logoInputRef.current?.click(); } }}
               >
-                <img src={portal.logo_url} alt="" className="w-10 h-10 rounded-xl object-contain" />
+                <img src={portal.logo_url} alt={portal.org_name ? `לוגו ${portal.org_name}` : "לוגו"} className="w-10 h-10 rounded-xl object-contain" />
                 <div className="absolute inset-0 bg-navy/60 rounded-xl opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
                   <Upload className="w-4 h-4 text-gold" />
                 </div>

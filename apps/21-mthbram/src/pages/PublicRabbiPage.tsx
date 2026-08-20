@@ -81,7 +81,7 @@ const PublicRabbiPage = () => {
               <div className="absolute -inset-4 rounded-2xl border-2 border-gold/20 animate-[pulse_3s_ease-in-out_infinite]" />
               <div className="absolute -inset-6 rounded-2xl border border-gold/10 animate-[pulse_4s_ease-in-out_infinite_0.5s]" />
               {logoSrc ? (
-                <img src={logoSrc} alt="" className="w-[140px] h-[140px] rounded-2xl object-cover border-4 border-gold/30 shadow-2xl" />
+                <img src={logoSrc} alt={portal?.rabbi_name ? `תמונת פרופיל ${portal.rabbi_name}` : "תמונת פרופיל"} className="w-[140px] h-[140px] rounded-2xl object-cover border-4 border-gold/30 shadow-2xl" />
               ) : (
                 <div className="w-[140px] h-[140px] rounded-2xl bg-gradient-to-br from-gold/30 to-gold/10 flex items-center justify-center border-4 border-gold/30 shadow-2xl">
                   <Mic className="w-14 h-14 text-gold" />

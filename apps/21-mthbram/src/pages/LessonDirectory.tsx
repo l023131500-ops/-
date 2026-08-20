@@ -243,7 +243,7 @@ const LessonDirectory = () => {
                       </div>
                       <div className="flex items-center gap-3 mb-3">
                         {lesson.logo_url ? (
-                          <img src={lesson.logo_url} alt="" className="w-10 h-10 rounded-lg object-cover border border-border" />
+                          <img src={lesson.logo_url} alt={lesson.rabbi_name ? `לוגו ${lesson.rabbi_name}` : "לוגו"} className="w-10 h-10 rounded-lg object-cover border border-border" />
                         ) : (
                           <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center">
                             <BookOpen className="w-5 h-5 text-muted-foreground" />

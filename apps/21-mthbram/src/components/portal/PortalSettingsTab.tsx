@@ -245,7 +245,7 @@ const PortalSettingsTab = ({ portalId, portalType, portalData, onUpdate }: Porta
           <input ref={rabbiPhotoRef} type="file" accept="image/*" className="hidden" onChange={e => { if (e.target.files?.[0]) uploadRabbiPhoto(e.target.files[0]); }} />
           <div className="flex items-center gap-4">
             {portalData.rabbi_photo_url ? (
-              <img src={portalData.rabbi_photo_url} alt="" className="w-20 h-20 rounded-xl object-cover border-2 border-gold/20" />
+              <img src={portalData.rabbi_photo_url} alt={portalData.rabbi_name ? `תמונת פרופיל ${portalData.rabbi_name}` : "תמונת פרופיל"} className="w-20 h-20 rounded-xl object-cover border-2 border-gold/20" />
             ) : (
               <div className="w-20 h-20 rounded-xl bg-muted flex items-center justify-center">
                 <Image className="w-8 h-8 text-muted-foreground" />

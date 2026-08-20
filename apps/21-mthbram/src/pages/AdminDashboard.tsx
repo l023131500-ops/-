@@ -1241,7 +1241,7 @@ const AdminDashboard = () => {
                             <div className="flex items-center justify-between gap-2">
                               <div className="flex items-center gap-2 min-w-0">
                                 {p.logo_url ? (
-                                  <img src={p.logo_url} alt="" className="w-8 h-8 rounded-md object-cover" />
+                                  <img src={p.logo_url} alt={p.synagogue_name ? `לוגו ${p.synagogue_name}` : "לוגו"} className="w-8 h-8 rounded-md object-cover" />
                                 ) : (
                                   <Building2 className="w-5 h-5 text-gold shrink-0" />
                                 )}

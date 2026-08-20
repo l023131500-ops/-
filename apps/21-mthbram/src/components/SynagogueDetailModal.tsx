@@ -144,7 +144,7 @@ export default function SynagogueDetailModal({ open, onClose, data }: Props) {
             <DialogHeader>
               <div className="flex items-center gap-4">
                 {data.logo_url ? (
-                  <img src={data.logo_url} alt="" className="w-16 h-16 rounded-xl object-cover bg-white/20 border border-white/30" crossOrigin="anonymous" />
+                  <img src={data.logo_url} alt={data.synagogue_name ? `לוגו ${data.synagogue_name}` : "לוגו"} className="w-16 h-16 rounded-xl object-cover bg-white/20 border border-white/30" crossOrigin="anonymous" />
                 ) : (
                   <div className="w-16 h-16 rounded-xl bg-white/20 flex items-center justify-center">
                     <Building2 className="w-8 h-8 text-white" />

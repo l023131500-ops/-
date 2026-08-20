@@ -331,7 +331,7 @@ const UpdateLesson = () => {
                     <input type="file" ref={fileInputRef} accept="image/*" onChange={handleLogoSelect} className="hidden" />
                     {logoPreview ? (
                       <div className="flex items-center gap-4">
-                        <img src={logoPreview} alt="" className="w-20 h-20 rounded-xl object-cover border border-gold/30" />
+                        <img src={logoPreview} alt={rabbiName ? `לוגו ${rabbiName}` : "לוגו"} className="w-20 h-20 rounded-xl object-cover border border-gold/30" />
                         <button onClick={() => { setLogoFile(null); setLogoPreview(""); }} className="font-body text-xs text-destructive hover:underline">הסרה</button>
                       </div>
                     ) : (
