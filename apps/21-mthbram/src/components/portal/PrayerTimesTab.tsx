@@ -60,6 +60,7 @@ const PrayerTimesTab = ({ orgId }: PrayerTimesTabProps) => {
   };
 
   const deleteSynagogue = async (id: string) => {
+    if (!confirm("למחוק את בית הכנסת לצמיתות? כל זמני התפילה שלו יימחקו גם הם.")) return;
     const { error } = await supabase.from("synagogues").delete().eq("id", id);
     if (!error) {
       setSynagogues(prev => prev.filter(s => s.id !== id));
@@ -85,6 +86,7 @@ const PrayerTimesTab = ({ orgId }: PrayerTimesTabProps) => {
   };
 
   const deletePrayerTime = async (id: string) => {
+    if (!confirm("למחוק את זמן התפילה / הפעילות הזה לצמיתות?")) return;
     const { error } = await supabase.from("prayer_times").delete().eq("id", id);
     if (!error) {
       setPrayerTimes(prev => prev.filter(pt => pt.id !== id));
