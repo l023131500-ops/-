@@ -29,8 +29,9 @@ Deno.serve(async (req) => {
     });
 
     // If it's a lesson request, also create a seeker lead
+    let leadError = null;
     if (request_type === "request_lesson") {
-      await supabase.from("seeker_leads").insert({
+      const { error } = await supabase.from("seeker_leads").insert({
         contact_name: body.name || `מתקשר: ${caller_phone}`,
         phone: caller_phone || "",
         subject: body.subject || "",
@@ -38,11 +39,12 @@ Deno.serve(async (req) => {
         notes: `פנייה ממערכת קולית (ימות המשיח). ${message || ""}`,
         status: "new",
       });
+      leadError = error;
     }
 
     // If it's a teacher registration
     if (request_type === "register_teacher") {
-      await supabase.from("teacher_leads").insert({
+      const { error } = await supabase.from("teacher_leads").insert({
         full_name: body.name || `מתקשר: ${caller_phone}`,
         phone: caller_phone || "",
         subjects: body.subjects || [],
@@ -50,10 +52,11 @@ Deno.serve(async (req) => {
         notes: `הרשמה ממערכת קולית (ימות המשיח). ${message || ""}`,
         status: "new",
       });
+      leadError = error;
     }
 
-    if (ivrError) {
-      return new Response(JSON.stringify({ error: ivrError.message }), {
+    if (ivrError || leadError) {
+      return new Response(JSON.stringify({ error: (ivrError || leadError)!.message }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
