@@ -385,12 +385,12 @@
       SHEETS = DATA.sheets || [];
     } catch (e) {
       $('#pageTitle').textContent = 'שגיאה';
-      $('#view').innerHTML = '<p class="empty">שגיאה בטעינת הנתונים.</p>';
+      $('#view').innerHTML = '<p class="empty" role="alert">שגיאה בטעינת הנתונים.</p>';
       return;
     }
     if (!SHEETS.length) {
       $('#pageTitle').textContent = 'שגיאה';
-      $('#view').innerHTML = '<p class="empty">אין תוכן זמין.</p>';
+      $('#view').innerHTML = '<p class="empty" role="alert">אין תוכן זמין.</p>';
       return;
     }
     buildNav();
