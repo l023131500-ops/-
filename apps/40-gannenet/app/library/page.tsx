@@ -39,12 +39,12 @@ export default function Library() {
 
       <div className="card" style={{ padding: 16, display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center", marginBottom: 22 }}>
         <input className="input" style={{ flex: "1 1 220px" }} placeholder="חיפוש נושא…" aria-label="חיפוש נושא" value={q} onChange={(e) => setQ(e.target.value)} />
-        <select className="input" style={{ flex: "0 0 190px" }} value={aud} onChange={(e) => setAud(e.target.value)}>
+        <select className="input" style={{ flex: "0 0 190px" }} aria-label="סינון לפי קהל" value={aud} onChange={(e) => setAud(e.target.value)}>
           <option value="">כל הקהלים</option>
           <option value="גננת רגילה">גננת רגילה</option>
           <option value="גננת משלימה">גננת משלימה</option>
         </select>
-        <select className="input" style={{ flex: "0 0 170px" }} value={month} onChange={(e) => setMonth(e.target.value)}>
+        <select className="input" style={{ flex: "0 0 170px" }} aria-label="סינון לפי חודש" value={month} onChange={(e) => setMonth(e.target.value)}>
           <option value="">כל החודשים</option>
           {months.map((m) => <option key={m} value={m}>{m}</option>)}
         </select>

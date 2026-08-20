@@ -45,6 +45,7 @@ export default function AuditAdmin() {
         <select
           value={actionFilter}
           onChange={(e) => setActionFilter(e.target.value)}
+          aria-label="סינון לפי פעולה"
           className="border rounded px-3 py-1.5 text-sm"
         >
           <option value="all">כל הפעולות</option>

@@ -90,6 +90,7 @@ export default function PaymentsAdmin() {
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
+          aria-label="סינון לפי סטטוס"
           className="border rounded px-3 py-1.5 text-sm"
         >
           <option value="all">כל הסטטוסים</option>

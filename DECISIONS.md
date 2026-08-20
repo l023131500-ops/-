@@ -4478,3 +4478,56 @@
      (ב) ניסיון חוזר ל-05-financial-marketing-site/40-gannenet/pricing
      שנדחו בסבב 65 עם גישת חילוץ ממוקד (לא wrap גורף), (ג) ניסיון
      חוזר תקופתי ל-#167 (חסימת Lovable).
+
+## 20/08/2026 (LOOP A — סבב 67) — עדשת select/checkbox על 01-16+gannenet, פריט (א) מסבב 66
+
+384. **בדקתי מחדש `core.run_progress`/`core.issues` לפני שהתחלתי.** סבב 66
+     סגור (commit `284c578d`, תאם ל-HEAD, ענף `fix/a-round66-form-label-
+     a11y-0820` כבר ב-`origin`). כל הפריטים הפתוחים ב-`core.issues` עם
+     `owner='agent'` חסומים: #167/#201 (Lovable content-policy על
+     15-egod), #120 (מחכה להכרעת משתמש, NEEDS_USER §0נ), #115 (חסום על
+     #94/#83, מערכת 27 — מחוץ לתחום 01-16 בכל מקרה), #62 (חסום על גישת
+     פרויקט Supabase שאין אליו PAT), #6/#5 (פיצ'ר גדול/עיצוב רוחבי, לא
+     צעד בודד לתחילת סבב). פתחתי את פריט (א) שסבב 66 השאיר בתור (#383):
+     עדשת שם-נגיש-לפקד, שהורחבה עד כה רק ל-`<input>`/`<textarea>`,
+     מורחבת עכשיו ל-`<select>` ול-checkbox.
+385. **הרצתי Explore agent על כל 01-16 (דילוג מוצהר על 08/09 המוגנות)
+     ועל 40-gannenet, בחיפוש `<select>` ו-checkbox בלי `<label
+     htmlFor>`/`aria-label`/`aria-labelledby`.** 10 מועמדים אומתו
+     אמיתיים בקריאה ישירה של כל קובץ לפני נגיעה (לקח מסבב 59): 3 ב-
+     `01-torah-platform` (`OrgPortal.tsx:362` — select עם `<label>`
+     חזותי בלי `htmlFor`/`id` תואמים; `PublicPrayerTimes.tsx:83` —
+     סינון בית כנסת; `PrayerTimesTab.tsx:192,196` — סוג תפילה ויום
+     בשבוע, 2 פקדים באותו קובץ), 2 ב-`03-igud-ads`
+     (`admin/audit/page.tsx:45` — סינון פעולה; `admin/payments/page.tsx:90`
+     — סינון סטטוס), 5 ב-`40-gannenet` (`shelf/admin/page.tsx:338` —
+     סינון קטגוריה; `shelf/page.tsx:177,181` — סינון מקור וסוג קובץ;
+     `library/page.tsx:42,47` — סינון קהל וחודש). כל שאר 01-16 (02, 04,
+     05, 06, 07, 10, 11, 12, 13, 14, 15, 16) נמצאו נקיים — ל-selectים
+     כבר יש `<label>`/`aria-label` תקין, או שאין בהם פקדי טופס רלוונטיים
+     כלל. מועמד checkbox אחד ב-`shelf/admin/page.tsx:343` ("רק ערוכים")
+     נבדק ונדחה — כבר עטוף כראוי ב-`<label>` אמיתי.
+386. **תיקון: `aria-label` תואם לתפקיד כל select ("סינון לפי בית
+     כנסת/פעולה/סטטוס/קטגוריה/מקור/סוג קובץ/קהל/חודש", "סוג תפילה",
+     "יום בשבוע"), ו-`id`+`htmlFor` תואמים לזוג label+select הגלוי
+     היחיד (`OrgPortal.tsx`, אותה גישה שאושרה ב-40-gannenet סבב 65
+     לזוגות label+input גלויים).** אפס שינוי ל-`value`/`onChange`/
+     `className`/מבנה JSX קיים כלשהו — כל השינוי הוא הוספת attribute
+     לתגית `<select>`/`<label>` קיימת.
+387. **אפס רגרסיה מאומתת:** `git diff --stat` — 8 קבצים, 12 שורות
+     נוספו, 6 הוסרו (כל השינוי הוא הוספת attribute; שתי השורות
+     שהוסרו-ונוספו ב-`OrgPortal.tsx`/`library.tsx`/`shelf.tsx` הן
+     אותה שורה עם attribute חדש בתוכה, לא מבנה שהוסר). אין `tsc`/`npm`
+     בסביבה הזו; אומת בקריאה מלאה של כל קובץ לפני ואחרי + `git diff`
+     מלא (הוצג למעלה, אך ורק הוספת attribute בכל מקום). שלושת הקבצים
+     תחת `01-torah-platform/src`, שני הקבצים תחת `03-igud-ads/app`,
+     ושלושת הקבצים תחת `40-gannenet/app` כולם מוחרגים כברירת מחדל
+     ב-`.gitignore` הכללי אך כבר עוקבים היסטורית — `git add -f` נדרש
+     לשמונתם (אותו דפוס חוזר כמו 15-egod/40-gannenet בסבבים קודמים).
+     ענף חדש `fix/a-select-accessible-name-0820`.
+388. **הבא בתור:** עדשת שם-נגיש-לפקד (input/textarea/select/checkbox)
+     נראית ממוצה כעת על כל 01-16+40-gannenet. סבבים עתידיים יכולים
+     לפתוח: (א) ניסיון חוזר ל-05-financial-marketing-site/40-gannenet/
+     pricing עם גישת חילוץ ממוקד (מסבב 65, לא wrap גורף), (ב) ניסיון
+     חוזר תקופתי ל-#167/#201 (חסימת Lovable, 15-egod), (ג) בדיקה של
+     קבוצות רדיו (`type="radio"`) שטרם נבדקו באף עדשה קודמת.

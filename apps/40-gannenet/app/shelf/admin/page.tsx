@@ -335,7 +335,7 @@ export default function AdminPage() {
 
       <div className="card" style={{ padding: 12, display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center", marginTop: 14 }}>
         <input className="input" style={{ flex: "1 1 220px" }} placeholder="חיפוש…" aria-label="חיפוש" value={q} onChange={(e) => setQ(e.target.value)} />
-        <select className="input" style={{ flex: "0 0 200px" }} value={cat} onChange={(e) => setCat(e.target.value)}>
+        <select className="input" style={{ flex: "0 0 200px" }} aria-label="סינון לפי קטגוריה" value={cat} onChange={(e) => setCat(e.target.value)}>
           <option value="">כל הקטגוריות</option>
           {cats.map((c) => <option key={c} value={c}>{c}</option>)}
         </select>

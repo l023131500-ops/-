@@ -190,10 +190,12 @@ const PrayerTimesTab = ({ orgId }: PrayerTimesTabProps) => {
                         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-muted/30 rounded-xl p-3 mb-3 space-y-2 border border-border/50">
                           <div className="grid grid-cols-4 gap-2">
                             <select value={prayerForm.prayer_type} onChange={e => setPrayerForm(f => ({ ...f, prayer_type: e.target.value }))}
+                              aria-label="סוג תפילה"
                               className="rounded-md border border-gold/20 bg-background px-2 py-1.5 text-xs font-body">
                               {PRAYER_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
                             </select>
                             <select value={prayerForm.day_of_week} onChange={e => setPrayerForm(f => ({ ...f, day_of_week: e.target.value }))}
+                              aria-label="יום בשבוע"
                               className="rounded-md border border-gold/20 bg-background px-2 py-1.5 text-xs font-body">
                               {DAY_OPTIONS.map(d => <option key={d} value={d}>{d}</option>)}
                             </select>

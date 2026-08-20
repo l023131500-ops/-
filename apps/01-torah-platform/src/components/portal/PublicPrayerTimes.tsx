@@ -81,6 +81,7 @@ const PublicPrayerTimes = ({ orgId }: PublicPrayerTimesProps) => {
           </div>
           {viewMode === "synagogue" && synagogues.length > 1 && (
             <select value={filterSynagogue} onChange={e => setFilterSynagogue(e.target.value)}
+              aria-label="סינון לפי בית כנסת"
               className="rounded-xl border border-border bg-card px-3 py-2 font-body text-sm">
               <option value="all">כל בתי הכנסת</option>
               {synagogues.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
