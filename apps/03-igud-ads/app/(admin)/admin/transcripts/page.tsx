@@ -76,6 +76,15 @@ export default function TranscriptsAdmin() {
 
   useEffect(() => { load(); }, []);
 
+  useEffect(() => {
+    if (!modal) return;
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") setModal(null);
+    }
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [modal]);
+
   return (
     <div dir="rtl">
       <h1 className="font-serif text-2xl font-bold text-brand-dark mb-6">ניהול תמלולים</h1>
@@ -128,7 +137,13 @@ export default function TranscriptsAdmin() {
       {/* Modal */}
       {modal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50" onClick={() => setModal(null)}>
-          <div className="bg-surface rounded-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto p-6" onClick={(e) => e.stopPropagation()}>
+          <div
+            className="bg-surface rounded-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto p-6"
+            onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-label={modal.original_filename || modal.id}
+          >
             <div className="flex justify-between items-start mb-4">
               <h2 className="font-serif text-xl font-bold">{modal.original_filename || modal.id}</h2>
               <button onClick={() => setModal(null)} className="text-gray-400 hover:text-gray-700 text-xl" aria-label="סגור">✕</button>

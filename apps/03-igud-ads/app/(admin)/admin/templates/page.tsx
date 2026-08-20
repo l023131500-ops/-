@@ -66,6 +66,15 @@ export default function TemplatesPage() {
 
   useEffect(() => { load(); }, [load]);
 
+  useEffect(() => {
+    if (!showDialog) return;
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") setShowDialog(false);
+    }
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [showDialog]);
+
   function openNew() {
     setForm(EMPTY);
     setReqStr("");
@@ -224,7 +233,13 @@ export default function TemplatesPage() {
       {/* Dialog */}
       {showDialog && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-surface rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6" dir="rtl">
+          <div
+            className="bg-surface rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6"
+            dir="rtl"
+            role="dialog"
+            aria-modal="true"
+            aria-label={form.id ? "עריכת תבנית" : "תבנית חדשה"}
+          >
             <div className="flex items-center justify-between mb-5">
               <h2 className="font-serif text-xl font-bold">
                 {form.id ? "עריכת תבנית" : "תבנית חדשה"}

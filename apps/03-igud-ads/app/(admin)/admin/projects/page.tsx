@@ -93,6 +93,15 @@ export default function ProjectsAdmin() {
     return () => clearInterval(iv);
   }, []);
 
+  useEffect(() => {
+    if (!detail) return;
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") setDetail(null);
+    }
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [detail]);
+
   const customer = (p: Project) => {
     const cd = p.customer_data as Record<string, unknown> | null;
     return (cd?.name || cd?.email || "—") as string;
@@ -196,6 +205,9 @@ export default function ProjectsAdmin() {
           <div
             className="bg-surface rounded-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto p-6"
             onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-label={detail.project?.title || detail.project?.id}
           >
             <div className="flex justify-between items-start mb-4">
               <h2 className="font-serif text-xl font-bold">

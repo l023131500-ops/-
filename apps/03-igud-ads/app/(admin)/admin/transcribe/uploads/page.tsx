@@ -54,6 +54,15 @@ export default function UploadsPage() {
     return () => clearInterval(t);
   }, []);
 
+  useEffect(() => {
+    if (!selected) return;
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") setSelected(null);
+    }
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [selected]);
+
   const open = async (id: string) => {
     const res = await fetch(`/modaot/api/admin/transcribe/uploads?id=${id}`);
     if (res.ok) setSelected(await res.json());
@@ -127,6 +136,9 @@ export default function UploadsPage() {
           <div
             className="bg-surface rounded-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-label={selected.original_filename || selected.id}
           >
             <div className="p-6 border-b border-slate-200 flex items-center justify-between sticky top-0 bg-surface">
               <h2 className="text-xl font-serif font-bold text-brand-blue">
