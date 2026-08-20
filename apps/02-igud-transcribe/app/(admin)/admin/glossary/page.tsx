@@ -23,6 +23,8 @@ export default function GlossaryPage() {
   const [filter, setFilter] = useState<string>("");
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({ style: "litvish", term: "", replacement: "", notes: "" });
+  const [submitting, setSubmitting] = useState(false);
+  const [busyId, setBusyId] = useState<string | null>(null);
 
   const load = async () => {
     const url = filter ? `/tamlul/api/admin/glossary?style=${filter}` : "/tamlul/api/admin/glossary";
@@ -35,29 +37,41 @@ export default function GlossaryPage() {
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const res = await fetch("/tamlul/api/admin/glossary", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
-    });
-    if (res.ok) {
-      setShowForm(false);
-      setForm({ style: "litvish", term: "", replacement: "", notes: "" });
-      load();
-    } else {
-      const d = await res.json();
-      alert(d.error || "שגיאה");
+    if (submitting) return;
+    setSubmitting(true);
+    try {
+      const res = await fetch("/tamlul/api/admin/glossary", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+      if (res.ok) {
+        setShowForm(false);
+        setForm({ style: "litvish", term: "", replacement: "", notes: "" });
+        load();
+      } else {
+        const d = await res.json();
+        alert(d.error || "שגיאה");
+      }
+    } finally {
+      setSubmitting(false);
     }
   };
 
   const remove = async (id: string) => {
+    if (busyId) return;
     if (!confirm("למחוק רשומה?")) return;
-    const res = await fetch(`/tamlul/api/admin/glossary?id=${id}`, { method: "DELETE" });
-    if (res.ok) {
-      load();
-    } else {
-      const d = await res.json().catch(() => ({}));
-      alert(d.error || "שגיאה");
+    setBusyId(id);
+    try {
+      const res = await fetch(`/tamlul/api/admin/glossary?id=${id}`, { method: "DELETE" });
+      if (res.ok) {
+        load();
+      } else {
+        const d = await res.json().catch(() => ({}));
+        alert(d.error || "שגיאה");
+      }
+    } finally {
+      setBusyId(null);
     }
   };
 
@@ -137,7 +151,9 @@ export default function GlossaryPage() {
               <button type="button" onClick={() => setShowForm(false)} className="btn-outline flex-1">
                 ביטול
               </button>
-              <button type="submit" className="btn-primary flex-1">שמור</button>
+              <button type="submit" disabled={submitting} className="btn-primary flex-1">
+                {submitting ? "שומר…" : "שמור"}
+              </button>
             </div>
           </form>
         </div>
@@ -164,7 +180,11 @@ export default function GlossaryPage() {
                 <td className="px-4 py-3 text-brand-blue">{e.replacement}</td>
                 <td className="px-4 py-3 text-sm text-slate-500">{e.notes || "—"}</td>
                 <td className="px-4 py-3">
-                  <button onClick={() => remove(e.id)} className="text-red-600 hover:underline text-sm">
+                  <button
+                    onClick={() => remove(e.id)}
+                    disabled={busyId === e.id}
+                    className="text-red-600 hover:underline text-sm disabled:opacity-50"
+                  >
                     מחק
                   </button>
                 </td>
