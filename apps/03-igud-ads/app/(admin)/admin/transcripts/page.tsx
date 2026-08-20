@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface Upload {
   id: string;
@@ -59,6 +59,9 @@ export default function TranscriptsAdmin() {
   const [items, setItems] = useState<Upload[]>([]);
   const [modal, setModal] = useState<Upload | null>(null);
   const [loading, setLoading] = useState(true);
+  const panelRef = useRef<HTMLDivElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const previousFocusRef = useRef<HTMLElement | null>(null);
 
   async function load() {
     setLoading(true);
@@ -78,11 +81,34 @@ export default function TranscriptsAdmin() {
 
   useEffect(() => {
     if (!modal) return;
+    previousFocusRef.current = document.activeElement as HTMLElement;
+    closeButtonRef.current?.focus();
     function onKeyDown(e: KeyboardEvent) {
-      if (e.key === "Escape") setModal(null);
+      if (e.key === "Escape") {
+        setModal(null);
+        return;
+      }
+      if (e.key === "Tab" && panelRef.current) {
+        const focusable = panelRef.current.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])'
+        );
+        if (focusable.length === 0) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
     }
     window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
+    return () => {
+      window.removeEventListener("keydown", onKeyDown);
+      previousFocusRef.current?.focus();
+    };
   }, [modal]);
 
   return (
@@ -138,6 +164,7 @@ export default function TranscriptsAdmin() {
       {modal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50" onClick={() => setModal(null)}>
           <div
+            ref={panelRef}
             className="bg-surface rounded-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto p-6"
             onClick={(e) => e.stopPropagation()}
             role="dialog"
@@ -146,7 +173,7 @@ export default function TranscriptsAdmin() {
           >
             <div className="flex justify-between items-start mb-4">
               <h2 className="font-serif text-xl font-bold">{modal.original_filename || modal.id}</h2>
-              <button onClick={() => setModal(null)} className="text-gray-400 hover:text-gray-700 text-xl" aria-label="סגור">✕</button>
+              <button ref={closeButtonRef} onClick={() => setModal(null)} className="text-gray-400 hover:text-gray-700 text-xl" aria-label="סגור">✕</button>
             </div>
 
             <div className="flex gap-2 mb-4 flex-wrap">
