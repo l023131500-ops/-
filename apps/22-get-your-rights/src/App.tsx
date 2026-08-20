@@ -2,6 +2,7 @@ import { lazy, Suspense } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { MotionConfig } from "framer-motion";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
@@ -32,6 +33,12 @@ const AdminFallback = () => (
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
+    {/* reducedMotion="user" makes every motion.* below jump straight to its
+        end state (no repeat: Infinity loops in HeroSection/RightsCategories/
+        AnimatedLogo/Footer) when the OS-level prefers-reduced-motion is on,
+        complementing the more targeted useDecorativeMotion() gate already
+        used by FloatingElements. */}
+    <MotionConfig reducedMotion="user">
     <TooltipProvider>
       <Toaster />
       <Sonner />
@@ -76,6 +83,7 @@ const App = () => (
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
+    </MotionConfig>
   </QueryClientProvider>
 );
 
