@@ -4056,3 +4056,55 @@
     ב-modal/dropdown, `lang`/`dir` חסר על אלמנטים מעורבי-שפה), או
     לחזור לבדיקת `og:image`/`twitter:image` חיצוניים על 30/31
     שעדיין פתוחה מסבב 286 (דורשת בדיקת רשת).
+
+## 20/08/2026 — סבב 291 (loop B)
+
+291. **סגרתי את בדיקת `og:image`/`twitter:image` שהייתה פתוחה מסבב
+    286, ואז פתחתי עדשת נגישות חדשה: ניווט מקלדת ב-modal/overlay
+    מותאם-אישית (Escape לסגירה) על עשר המערכות החיות.** קראתי
+    README.md/CONNECTIONS.md, בדקתי `core.run_progress` (הצעד
+    האחרון: 26-modaot-studio brand-book img alt, קומיטים
+    `9620e8c2`/`bdc96505`, כבר ה-parent של הענף הזה, כבר נדחף)
+    ו-`core.projects` 17-31 (ללא צורך בשינוי metadata). **שלב 1 --
+    `og:image`/`twitter:image`:** גרפתי את שני קבצי ה-`__root.tsx`
+    (30-zchuyotpro-crm, 31-hebrew-bridge-crm) ובדקתי בפועל עם
+    `curl` את שני ה-URL-ים על `pub-...r2.dev` -- שניהם מחזירים
+    `HTTP 200`, `image/png` תקין, ואימתתי עם `md5sum` ששתי התמונות
+    שונות זו מזו (לא אותה תמונת-placeholder גנרית משוכפלת) --
+    כלומר אין כאן קישור שבור, הבדיקה נסגרת כ"לא-ממצא" (התמונות
+    כן מגיעות ממתאר Lovable ישן כמצוין בסבב 286, אבל זה תוכן
+    שיווקי לא נגיש/שבור, מחוץ להיקף תיקון קוד). **שלב 2 -- ניווט
+    מקלדת:** הרצתי סוכן Explore לסריקת modal/overlay מותאמים-אישית
+    (לא Radix/shadcn Dialog שכבר מטפלים ב-focus trap/Escape באופן
+    מובנה) בלי מטפל מקלדת ל-Escape, על עשר המערכות. הסוכן החזיר 5
+    מועמדים; **אימתתי בעצמי** על ידי קריאת הקבצים: `22-get-your-
+    rights/src/components/FloatingBot.tsx` (הווידג'ט הצף הראשי,
+    `isOpen`/`setIsOpen` בלי שום מאזין מקלדת) ו-`AIAgent.tsx`
+    (אותו דפוס בדיוק, וידג'ט צ'אט-AI שני) -- שניהם `fixed`-overlay
+    מותאמים-אישית עם `motion.div`+`AnimatePresence`, נסגרים רק
+    בלחיצת עכבר על כפתור ה-X (שכבר קיבל `aria-label` בסבב 288),
+    בלי מטפל `Escape` בכלל, כלומר משתמש מקלדת-בלבד שנפתח לתוכם
+    לא יכול לצאת חזרה בלי לעקוף/לרפרש. שני הקבצים הם הרכיבים
+    הציבוריים המרכזיים ביותר במערכת 22 (זרימת מיצוי הזכויות)
+    ונבחרו לתיקון בסבב הזה; שלושת המועמדים הנוספים (24-galilee-
+    connect-hub: GallerySection lightbox + Navbar drawer,
+    27-bkalut-price: public-eligibility modal) לא תוקנו הפעם
+    (היקף "צעד אחד משמעותי"), מתועדים כתור לסבב הבא. **התיקון:**
+    הוספתי `useEffect` בכל קובץ שמאזין ל-`keydown` על `window`
+    כל עוד `isOpen===true` וקורא ל-`setIsOpen(false)` בלחיצת
+    `Escape`, עם `cleanup` שמסיר את המאזין -- זהה בצורתו לשני
+    הקבצים, אפס שינוי בלוגיקת השליחה/הצ'אט/הצלחה. `FloatingBot.tsx`
+    לא ייבא `useEffect` קודם -- הוספתי לייבוא הקיים;
+    `AIAgent.tsx` כבר ייבא אותו (בשימוש ל-auto-scroll). אין
+    `node_modules`/`tsc` בעץ הזה -- אימתתי איזון סוגריים/מסולסלים/
+    מרובעים בסקריפט Node קצר על שני הקבצים (0/0/0) בנוסף לקריאה
+    חוזרת של כל ה-diff. נדרש `git add -f` (`apps/22-get-your-
+    rights/src` תפוס תחת `.gitignore` כללי, אותו דפוס חוזר). קומיט
+    `2ee5cabf` על `fix/b-get-your-rights-modal-escape-key-0820`
+    (יורש `fix/b-modaot-studio-brandbook-img-alt-0820`), יידחף
+    (מפעיל פריסת Vercel תחת more30.com/zchuyot או נתיב 22 המקביל).
+    **הבא בתור:** אותה עדשה (modal מותאם-אישית בלי Escape) פתוחה
+    עדיין על 24-galilee-connect-hub (GallerySection lightbox,
+    Navbar mobile drawer) ו-27-bkalut-price (public-eligibility
+    modal) -- סבב הבא יכול להמשיך שם, או לפתוח עדשה חדשה (ניגודיות
+    צבעים, `lang`/`dir` חסר על אלמנטים מעורבי-שפה).
