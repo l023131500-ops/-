@@ -81,7 +81,7 @@ const FindLesson = () => {
                 <div key={lesson.id} className="bg-card rounded-xl border border-border p-5 hover:border-secondary/30 transition-colors">
                   <div className="flex items-start justify-between">
                     <div>
-                      <h3 className="font-heading font-bold text-foreground text-lg">{lesson.subject}</h3>
+                      <h2 className="font-heading font-bold text-foreground text-lg">{lesson.subject}</h2>
                       <div className="flex flex-wrap gap-3 mt-2 text-sm text-muted-foreground">
                         <span className="flex items-center gap-1"><User className="w-4 h-4" />{(lesson.profiles as any)?.full_name || "—"}</span>
                         <span className="flex items-center gap-1"><MapPin className="w-4 h-4" />{lesson.city || ""} {lesson.neighborhood || ""}</span>

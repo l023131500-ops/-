@@ -19,7 +19,7 @@ const Footer = () => {
             </p>
           </div>
           <div>
-            <h3 className="font-heading font-bold text-secondary mb-4">ניווט מהיר</h3>
+            <h2 className="font-heading font-bold text-secondary mb-4">ניווט מהיר</h2>
             <div className="flex flex-col gap-2">
               <Link to="/" className="inline-block py-1 text-sm text-primary-foreground/70 hover:text-secondary transition-colors">דף הבית</Link>
               <Link to="/find-lesson" className="inline-block py-1 text-sm text-primary-foreground/70 hover:text-secondary transition-colors">מצא שיעור</Link>
@@ -28,7 +28,7 @@ const Footer = () => {
             </div>
           </div>
           <div>
-            <h3 className="font-heading font-bold text-secondary mb-4">למגידי שיעורים</h3>
+            <h2 className="font-heading font-bold text-secondary mb-4">למגידי שיעורים</h2>
             <div className="flex flex-col gap-2">
               <Link to="/join" className="inline-block py-1 text-sm text-primary-foreground/70 hover:text-secondary transition-colors">הצטרף לאיגוד</Link>
               <Link to="/invite" className="inline-block py-1 text-sm text-primary-foreground/70 hover:text-secondary transition-colors">הפעלת פורטל חדש</Link>
@@ -36,7 +36,7 @@ const Footer = () => {
             </div>
           </div>
           <div>
-            <h3 className="font-heading font-bold text-secondary mb-4">צור קשר</h3>
+            <h2 className="font-heading font-bold text-secondary mb-4">צור קשר</h2>
             <div className="flex flex-col gap-3">
               <a href="tel:023131600" className="flex items-center gap-2 inline-block py-1 text-sm text-primary-foreground/70 hover:text-secondary transition-smooth">
                 <Phone className="w-4 h-4 text-secondary" />

@@ -28,7 +28,7 @@ const About = () => (
             <motion.div key={v.title} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}
               className="bg-card rounded-2xl p-6 border border-border text-center">
               <v.icon className="w-10 h-10 text-secondary mx-auto mb-3" />
-              <h3 className="font-heading text-xl font-bold text-foreground mb-2">{v.title}</h3>
+              <h2 className="font-heading text-xl font-bold text-foreground mb-2">{v.title}</h2>
               <p className="text-muted-foreground text-sm">{v.description}</p>
             </motion.div>
           ))}
