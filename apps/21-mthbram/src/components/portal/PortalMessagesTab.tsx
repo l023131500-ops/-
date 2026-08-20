@@ -49,6 +49,7 @@ const PortalMessagesTab = ({ portalId, portalType }: PortalMessagesTabProps) => 
   };
 
   const deleteMessage = async (id: string) => {
+    if (!confirm("למחוק את הפניה?")) return;
     const { error } = await supabase.from("portal_messages").delete().eq("id", id);
     if (!error) {
       setMessages(prev => prev.filter(m => m.id !== id));
