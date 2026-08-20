@@ -172,10 +172,11 @@ const AdminLogin = () => {
 
           <form onSubmit={handleLogin} className="space-y-4">
             <div>
-              <label className="font-body text-sm font-medium text-foreground mb-1.5 block">שם משתמש</label>
+              <label htmlFor="admin-login-username" className="font-body text-sm font-medium text-foreground mb-1.5 block">שם משתמש</label>
               <div className="relative">
                 <Mail className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <Input
+                  id="admin-login-username"
                   type="text"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -185,7 +186,7 @@ const AdminLogin = () => {
               </div>
             </div>
             <div>
-              <label className="font-body text-sm font-medium text-foreground mb-1.5 block">סיסמה</label>
+              <label htmlFor="admin-login-password" className="font-body text-sm font-medium text-foreground mb-1.5 block">סיסמה</label>
               {/* כפתור "הצג סיסמה" (priority §1א). הצד נמדד על החי ולא הועתק
                   ממערכת קודמת: השדה אינו נושא dir משלו, יורש rtl מ-<html> ו-
                   text-align:start — התווים נצמדים לקצה הימני, שם כבר יושב
@@ -196,6 +197,7 @@ const AdminLogin = () => {
               <div className="relative">
                 <KeyRound className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <Input
+                  id="admin-login-password"
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}

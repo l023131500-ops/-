@@ -142,32 +142,32 @@ const LessonDirectory = () => {
                   <div className="bg-card rounded-2xl border border-border p-6 space-y-4">
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                       <div>
-                        <label className="font-body text-xs font-medium text-muted-foreground mb-1.5 block">עיר</label>
-                        <select value={filterCity} onChange={(e) => { setFilterCity(e.target.value); setVisibleCount(INITIAL_VISIBLE); }}
+                        <label htmlFor="filter-city" className="font-body text-xs font-medium text-muted-foreground mb-1.5 block">עיר</label>
+                        <select id="filter-city" value={filterCity} onChange={(e) => { setFilterCity(e.target.value); setVisibleCount(INITIAL_VISIBLE); }}
                           className="w-full bg-muted/40 rounded-lg px-3 py-2.5 font-body text-sm border border-border text-foreground">
                           <option value="">הכל</option>
                           {cities.map(c => <option key={c} value={c}>{c}</option>)}
                         </select>
                       </div>
                       <div>
-                        <label className="font-body text-xs font-medium text-muted-foreground mb-1.5 block">קהל יעד</label>
-                        <select value={filterAudience} onChange={(e) => { setFilterAudience(e.target.value); setVisibleCount(INITIAL_VISIBLE); }}
+                        <label htmlFor="filter-audience" className="font-body text-xs font-medium text-muted-foreground mb-1.5 block">קהל יעד</label>
+                        <select id="filter-audience" value={filterAudience} onChange={(e) => { setFilterAudience(e.target.value); setVisibleCount(INITIAL_VISIBLE); }}
                           className="w-full bg-muted/40 rounded-lg px-3 py-2.5 font-body text-sm border border-border text-foreground">
                           <option value="">הכל</option>
                           {audiences.map(a => <option key={a} value={a}>{a}</option>)}
                         </select>
                       </div>
                       <div>
-                        <label className="font-body text-xs font-medium text-muted-foreground mb-1.5 block">סגנון</label>
-                        <select value={filterStyle} onChange={(e) => { setFilterStyle(e.target.value); setVisibleCount(INITIAL_VISIBLE); }}
+                        <label htmlFor="filter-style" className="font-body text-xs font-medium text-muted-foreground mb-1.5 block">סגנון</label>
+                        <select id="filter-style" value={filterStyle} onChange={(e) => { setFilterStyle(e.target.value); setVisibleCount(INITIAL_VISIBLE); }}
                           className="w-full bg-muted/40 rounded-lg px-3 py-2.5 font-body text-sm border border-border text-foreground">
                           <option value="">הכל</option>
                           {styles.map(s => <option key={s} value={s}>{s}</option>)}
                         </select>
                       </div>
                       <div>
-                        <label className="font-body text-xs font-medium text-muted-foreground mb-1.5 block">שפה</label>
-                        <select value={filterLanguage} onChange={(e) => { setFilterLanguage(e.target.value); setVisibleCount(INITIAL_VISIBLE); }}
+                        <label htmlFor="filter-language" className="font-body text-xs font-medium text-muted-foreground mb-1.5 block">שפה</label>
+                        <select id="filter-language" value={filterLanguage} onChange={(e) => { setFilterLanguage(e.target.value); setVisibleCount(INITIAL_VISIBLE); }}
                           className="w-full bg-muted/40 rounded-lg px-3 py-2.5 font-body text-sm border border-border text-foreground">
                           <option value="">הכל</option>
                           {languages.map(l => <option key={l} value={l}>{l}</option>)}
