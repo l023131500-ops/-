@@ -138,6 +138,7 @@ const AdminLogin = () => {
                 <Input
                   id="admin-login-username"
                   type="text"
+                  autoComplete="username"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="שם משתמש"
@@ -154,6 +155,7 @@ const AdminLogin = () => {
                 <KeyRound className="absolute right-3 top-1/2 z-10 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <PasswordInput
                   id="admin-login-password"
+                  autoComplete="current-password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
