@@ -79,7 +79,7 @@ import { fact, needsLicensedSource, distanceText, walkText, walkApprox, countTex
 import type { CategoryKey, Fact, ReportCategory, ReportTier } from './report';
 import { CATEGORY_ORDER, CATEGORY_SUBTITLE, CATEGORY_TITLE } from './report';
 import { tierMayUsePaidSources, tierMayUseImagery } from './report';
-import { nearestPoiFromCache, cacheRentalData } from './store';
+import { nearestPoiFromCache, cacheRentalData, latestCachedRental } from './store';
 import type { Transaction } from './types';
 
 export interface ReportTitle {
@@ -2887,7 +2887,13 @@ export async function buildReport(
       .filter((v): v is number => v !== null && Number.isFinite(v) && v > 0)
       .sort((a, b) => a - b);
     const medRentPerSqm = median(rentPerSqm);
-    const estMonthly = medRentPerSqm && unitArea ? Math.round((medRentPerSqm * unitArea) / 50) * 50 : null;
+    // הצד הקורא של המטמון האזורי (nadlan.rental_data): כשאין מודעות חיות —
+    // מכסה שנוצלה או אזור בלי מודעות — נופלים לשכ"ד למ"ר האחרון שנמדד בפועל
+    // באזור הזה (עד 12 חודשים אחורה), עם חודש המדידה גלוי ללקוח. לא ממציאים
+    // נתון, אבל גם לא משאירים את שכבת השכירות ריקה כשקיימת מדידה אמיתית.
+    const cachedRent = medRentPerSqm == null && city ? await latestCachedRental(city) : null;
+    const effRentPerSqm = medRentPerSqm ?? cachedRent?.rentPerSqm ?? null;
+    const estMonthly = effRentPerSqm && unitArea ? Math.round((effRentPerSqm * unitArea) / 50) * 50 : null;
     // תשואה ברוטו: שכ"ד שנתי חלקי מחיר הנכס. שני האגפים חייבים לבוא מאותו
     // אזור, ולכן המכנה הוא חציון המחיר למ"ר של האזור כפול אותו שטח.
     const priceForYield = valueBand.median && unitArea ? valueBand.median * unitArea : null;
@@ -2925,14 +2931,17 @@ export async function buildReport(
           : undefined,
         missingReason: rentQuotaNote,
       }),
-      fact('שכר דירה חציוני למ"ר באזור', medRentPerSqm ? Math.round(medRentPerSqm) : null, {
+      fact('שכר דירה חציוני למ"ר באזור', effRentPerSqm ? Math.round(effRentPerSqm) : null, {
         certainty: 'approx',
         unit: '₪',
         tier: 'premium',
         sourceKey: 'apify',
+        asOf: medRentPerSqm == null ? cachedRent?.month : undefined,
         sourceNote: medRentPerSqm
           ? `חציון של ${countText(rentPerSqm.length, 'מודעה', 'מודעות')} שיש בהן גם מחיר וגם שטח.`
-          : undefined,
+          : cachedRent?.rentPerSqm != null
+            ? `${rentQuotaNote} מוצג שכר הדירה למ"ר האחרון שנמדד באזור ממודעות אמיתיות (${cachedRent.month}).`
+            : undefined,
         missingReason: rentQuotaNote,
       }),
       // ⚠️ `unitNoun` נושא ה' הידיעה ("הדירה"), ולכן "ל${unitNoun}" הפיק
@@ -2944,9 +2953,11 @@ export async function buildReport(
         sourceKey: 'apify',
         highlight: true,
         sourceNote: estMonthly
-          ? `חישוב שלנו: ${Math.round(medRentPerSqm!).toLocaleString('he-IL')} ₪ למ"ר כפול ${unitArea} מ"ר, מעוגל לחמישים שקלים. הערכה גסה, לא הצעת מחיר.`
+          ? `חישוב שלנו: ${Math.round(effRentPerSqm!).toLocaleString('he-IL')} ₪ למ"ר${
+              medRentPerSqm == null && cachedRent ? ` (מדידת ${cachedRent.month})` : ''
+            } כפול ${unitArea} מ"ר, מעוגל לחמישים שקלים. הערכה גסה, לא הצעת מחיר.`
           : undefined,
-        missingReason: medRentPerSqm
+        missingReason: effRentPerSqm
           ? 'אין שטח ידוע לנכס, ולכן אי אפשר לגזור ממנו שכר דירה.'
           : rentQuotaNote,
       }),
@@ -2965,8 +2976,9 @@ export async function buildReport(
       }),
     );
 
-    // שומרים את מה שחושב בפועל למטמון האזורי — רק נתון אמיתי, לא שורת null.
-    if (city && (medRentPerSqm != null || estMonthly != null)) {
+    // שומרים למטמון האזורי רק מה שנמדד חי בהפקה הזו — לא ערך שנקרא מהמטמון
+    // עצמו (אחרת החודש הנוכחי היה "מתרענן" מנתון ממוחזר בלי מדידה חדשה).
+    if (city && medRentPerSqm != null) {
       await cacheRentalData({
         areaCode: city,
         month: new Date().toISOString().slice(0, 7),

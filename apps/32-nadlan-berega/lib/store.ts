@@ -260,10 +260,10 @@ export async function submitAreaAlert(payload: AreaAlert): Promise<void> {
 /**
  * מטמון שכ"ד היסטורי לפי אזור/חודש — `nadlan.rental_data`.
  *
- * ⚠️ הטבלה קיימת בסכימה מאז ומתמיד אבל נותרה ריקה: ההערכה בפועל (Apify
- * yad2/מדלן, ב-`rental.ts`/`buildreport.ts`) חושבה חי לכל דוח ומעולם לא
- * נשמרה. best-effort בלבד ולא מעכב את הדוח בכישלון — כמו `logExport`.
+ * best-effort בלבד ולא מעכב את הדוח בכישלון — כמו `logExport`.
  * נכתבת רק כשיש נתון אמיתי (median_rent/rent_per_sqm), לא שורת null.
+ * upsert לפי (area_code, month) — הפקה שנייה באותו אזור ובאותו חודש מרעננת
+ * את השורה במקום להוסיף כפילות (אינדקס ייחודי `rental_data_area_month_key`).
  */
 export async function cacheRentalData(row: {
   areaCode: string;
@@ -275,16 +275,63 @@ export async function cacheRentalData(row: {
   const db = getStore();
   if (!db) return;
   try {
-    await db.from('rental_data').insert({
-      area_code: row.areaCode,
-      month: row.month,
-      median_rent: row.medianRent,
-      rent_per_sqm: row.rentPerSqm,
-      source: row.source,
-      last_updated: new Date().toISOString(),
-    });
+    await db.from('rental_data').upsert(
+      {
+        area_code: row.areaCode,
+        month: row.month,
+        median_rent: row.medianRent,
+        rent_per_sqm: row.rentPerSqm,
+        source: row.source,
+        last_updated: new Date().toISOString(),
+      },
+      { onConflict: 'area_code,month' },
+    );
   } catch {
     /* אופציונלי */
+  }
+}
+
+export interface CachedRental {
+  month: string;
+  medianRent: number | null;
+  rentPerSqm: number | null;
+  source: string | null;
+}
+
+/**
+ * הצד הקורא של `cacheRentalData` — שכ"ד האזורי האחרון שנמדד בפועל.
+ *
+ * עד עכשיו המטמון היה write-only: אף מסלול לא קרא ממנו, וכשמכסת מושך
+ * המודעות (Apify) נוצלה — שכבת השכירות נשארה ריקה גם אם נמדד שכ"ד אמיתי
+ * באותו אזור שבוע קודם. מגבילים ל-12 החודשים האחרונים: נתון ישן מזה אינו
+ * "שכ"ד באזור היום" והצגתו הייתה מפרה את כלל אין-נתוני-דמה.
+ * קריאה דרך ה-anon (RLS `public_read_rental` פתוחה לקריאה) עם נפילה
+ * ל-service — כך זה עובד גם כשרק אחד המפתחות מוגדר.
+ */
+export async function latestCachedRental(areaCode: string): Promise<CachedRental | null> {
+  const db = getPublicStore() ?? getStore();
+  if (!db) return null;
+  try {
+    const cutoff = new Date();
+    cutoff.setMonth(cutoff.getMonth() - 12);
+    const { data, error } = await db
+      .from('rental_data')
+      .select('month,median_rent,rent_per_sqm,source')
+      .eq('area_code', areaCode)
+      .not('rent_per_sqm', 'is', null)
+      .gte('month', cutoff.toISOString().slice(0, 7))
+      .order('month', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (error || !data || !data.month) return null;
+    return {
+      month: data.month,
+      medianRent: data.median_rent != null ? Number(data.median_rent) : null,
+      rentPerSqm: data.rent_per_sqm != null ? Number(data.rent_per_sqm) : null,
+      source: data.source ?? null,
+    };
+  } catch {
+    return null;
   }
 }
 
