@@ -374,15 +374,16 @@ export default function StudyDayEventForm({ sessionId, onAdded, existingEvents =
         {b.items.map((l, i) => (
           <div key={i} className="grid grid-cols-1 md:grid-cols-12 gap-2 items-end bg-white p-2.5 rounded border border-foreground/10">
             <div className="md:col-span-4 space-y-1">
-              <Label className="text-[10px] text-muted-foreground">שם הרב</Label>
+              <Label htmlFor={`study-day-lesson-${target}-${b.id}-${i}-rabbi`} className="text-[10px] text-muted-foreground">שם הרב</Label>
               <Input
+                id={`study-day-lesson-${target}-${b.id}-${i}-rabbi`}
                 value={l.rabbi_name}
                 onChange={(e) => updateLesson(target, b.id, i, "rabbi_name", e.target.value)}
                 className="h-9 border-foreground/15"
               />
             </div>
             <div className="md:col-span-5 space-y-1">
-              <Label className="text-[10px] text-muted-foreground">נושא השיעור</Label>
+              <Label htmlFor={`study-day-lesson-${target}-${b.id}-${i}-subject`} className="text-[10px] text-muted-foreground">נושא השיעור</Label>
               {(() => {
                 const isPreset = subjectOptions.includes(l.subject);
                 const showOther = !isPreset && l.subject !== "";
@@ -393,7 +394,7 @@ export default function StudyDayEventForm({ sessionId, onAdded, existingEvents =
                       value={selectValue}
                       onValueChange={(v) => updateLesson(target, b.id, i, "subject", v === "__other__" ? " " : v)}
                     >
-                      <SelectTrigger className="h-9 border-foreground/15 bg-background">
+                      <SelectTrigger id={`study-day-lesson-${target}-${b.id}-${i}-subject`} className="h-9 border-foreground/15 bg-background">
                         <SelectValue placeholder="בחר נושא" />
                       </SelectTrigger>
                       <SelectContent className="bg-background z-50 max-h-60">
@@ -415,9 +416,9 @@ export default function StudyDayEventForm({ sessionId, onAdded, existingEvents =
               })()}
             </div>
             <div className="md:col-span-2 space-y-1">
-              <Label className="text-[10px] text-muted-foreground">שעה</Label>
+              <Label htmlFor={`study-day-lesson-${target}-${b.id}-${i}-time`} className="text-[10px] text-muted-foreground">שעה</Label>
               <Select value={l.time || ""} onValueChange={(v) => updateLesson(target, b.id, i, "time", v)}>
-                <SelectTrigger className="h-9 border-foreground/15 bg-background"><SelectValue placeholder="—" /></SelectTrigger>
+                <SelectTrigger id={`study-day-lesson-${target}-${b.id}-${i}-time`} className="h-9 border-foreground/15 bg-background"><SelectValue placeholder="—" /></SelectTrigger>
                 <SelectContent className="bg-background z-50 max-h-60">
                   {hourOptions.map((h) => <SelectItem key={h} value={h}>{h}</SelectItem>)}
                 </SelectContent>
@@ -475,9 +476,9 @@ export default function StudyDayEventForm({ sessionId, onAdded, existingEvents =
       {mode === "quick" ? (
         <div className="space-y-4">
           <div className="space-y-1.5">
-            <Label className="text-sm">בחר בית כנסת <span className="text-destructive">*</span></Label>
+            <Label htmlFor="study-day-quick-event" className="text-sm">בחר בית כנסת <span className="text-destructive">*</span></Label>
             <Select value={quickEventId} onValueChange={setQuickEventId}>
-              <SelectTrigger className="h-11 border-foreground/15 bg-background">
+              <SelectTrigger id="study-day-quick-event" className="h-11 border-foreground/15 bg-background">
                 <SelectValue placeholder="— בחר —" />
               </SelectTrigger>
               <SelectContent className="bg-background z-50">
@@ -518,24 +519,24 @@ export default function StudyDayEventForm({ sessionId, onAdded, existingEvents =
           {/* Synagogue & contact */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <div className="space-y-1.5">
-              <Label className="text-sm">שם בית הכנסת <span className="text-destructive">*</span></Label>
-              <Input value={form.synagogue_name} onChange={(e) => set("synagogue_name", e.target.value)} className="h-10 border-foreground/15" />
+              <Label htmlFor="study-day-synagogue-name" className="text-sm">שם בית הכנסת <span className="text-destructive">*</span></Label>
+              <Input id="study-day-synagogue-name" value={form.synagogue_name} onChange={(e) => set("synagogue_name", e.target.value)} className="h-10 border-foreground/15" />
             </div>
             <div className="space-y-1.5">
-              <Label className="text-sm">עיר <span className="text-destructive">*</span></Label>
-              <Input value={form.city} onChange={(e) => set("city", e.target.value)} className="h-10 border-foreground/15" />
+              <Label htmlFor="study-day-city" className="text-sm">עיר <span className="text-destructive">*</span></Label>
+              <Input id="study-day-city" value={form.city} onChange={(e) => set("city", e.target.value)} className="h-10 border-foreground/15" />
             </div>
             <div className="space-y-1.5">
-              <Label className="text-sm">רחוב</Label>
-              <Input value={form.street} onChange={(e) => set("street", e.target.value)} className="h-10 border-foreground/15" />
+              <Label htmlFor="study-day-street" className="text-sm">רחוב</Label>
+              <Input id="study-day-street" value={form.street} onChange={(e) => set("street", e.target.value)} className="h-10 border-foreground/15" />
             </div>
             <div className="space-y-1.5">
-              <Label className="text-sm">מספר</Label>
-              <Input value={form.street_number} onChange={(e) => set("street_number", e.target.value)} className="h-10 border-foreground/15" />
+              <Label htmlFor="study-day-street-number" className="text-sm">מספר</Label>
+              <Input id="study-day-street-number" value={form.street_number} onChange={(e) => set("street_number", e.target.value)} className="h-10 border-foreground/15" />
             </div>
             <div className="space-y-1.5">
-              <Label className="text-sm">קישור לתרומה</Label>
-              <Input dir="ltr" value={form.donation_link} onChange={(e) => set("donation_link", e.target.value)} className="h-10 border-foreground/15" placeholder="https://..." />
+              <Label htmlFor="study-day-donation-link" className="text-sm">קישור לתרומה</Label>
+              <Input id="study-day-donation-link" dir="ltr" value={form.donation_link} onChange={(e) => set("donation_link", e.target.value)} className="h-10 border-foreground/15" placeholder="https://..." />
             </div>
             <div className="space-y-1.5">
               <Label className="text-sm">לוגו (אופציונלי)</Label>
@@ -559,16 +560,16 @@ export default function StudyDayEventForm({ sessionId, onAdded, existingEvents =
               </div>
             </div>
             <div className="space-y-1.5">
-              <Label className="text-sm">שם איש קשר</Label>
-              <Input value={form.contact_name} onChange={(e) => set("contact_name", e.target.value)} className="h-10 border-foreground/15" />
+              <Label htmlFor="study-day-contact-name" className="text-sm">שם איש קשר</Label>
+              <Input id="study-day-contact-name" value={form.contact_name} onChange={(e) => set("contact_name", e.target.value)} className="h-10 border-foreground/15" />
             </div>
             <div className="space-y-1.5">
-              <Label className="text-sm">טלפון</Label>
-              <Input dir="ltr" value={form.contact_phone} onChange={(e) => set("contact_phone", e.target.value)} className="h-10 border-foreground/15" />
+              <Label htmlFor="study-day-contact-phone" className="text-sm">טלפון</Label>
+              <Input id="study-day-contact-phone" dir="ltr" value={form.contact_phone} onChange={(e) => set("contact_phone", e.target.value)} className="h-10 border-foreground/15" />
             </div>
             <div className="space-y-1.5">
-              <Label className="text-sm">אימייל</Label>
-              <Input dir="ltr" value={form.contact_email} onChange={(e) => set("contact_email", e.target.value)} className="h-10 border-foreground/15" />
+              <Label htmlFor="study-day-contact-email" className="text-sm">אימייל</Label>
+              <Input id="study-day-contact-email" dir="ltr" value={form.contact_email} onChange={(e) => set("contact_email", e.target.value)} className="h-10 border-foreground/15" />
             </div>
           </div>
 
@@ -621,8 +622,9 @@ export default function StudyDayEventForm({ sessionId, onAdded, existingEvents =
           </div>
 
           <div className="mt-4 space-y-1.5">
-            <Label className="text-sm">הערות</Label>
+            <Label htmlFor="study-day-notes" className="text-sm">הערות</Label>
             <Textarea
+              id="study-day-notes"
               value={form.notes}
               onChange={(e) => set("notes", e.target.value)}
               rows={2}
