@@ -7911,3 +7911,31 @@
      `core.project_tasks`/`core.project_bugs` (5 פריטים פתוחים,
      עדיין חסומים על secrets חסרים או החלטות merge/origin מחוץ
      לסמכות הסוכן).
+
+## 20/08/2026 — סבב 152 (loop A)
+
+760. **עדשה חדשה:** לאחר ש-151 סבבים כיסו icon-only-buttons,
+     labels, focus-trap, aria-live, alt-text, heading-hierarchy,
+     autocomplete, lang, aria-current, focus-visible — פתחתי עדשה
+     חדשה: קישור שדות טופס להודעת שגיאה דרך `aria-describedby`/
+     `aria-invalid` (נבדל מ-`aria-live` על תיבת השגיאה עצמה, שכבר
+     תקין ברוב המקומות).
+761. **תיקון:** `02-igud-transcribe/app/login/page.tsx` — תיבת
+     ה-`role="alert"` קיבלה `id="login-error"`; שני שדות הטופס
+     (אימייל/סיסמה) קיבלו `aria-describedby="login-error"` ו-
+     `aria-invalid="true"` כשיש שגיאה (מותנה ב-state הקיים `error`,
+     ללא state חדש). כבונוס הוסר `autoComplete="email"` כפול
+     (attribute זהה הופיע פעמיים על אותו input).
+762. **אפס רגרסיה מאומתת:** `git diff --stat` — קובץ אחד, 5+/1-
+     שורות; אין שינוי ל-`handleEmail`/`handleGoogle`/state/טיפול
+     ב-Supabase auth. אין `tsc`/`npm` בסביבה הזו — אימות איזון
+     `{}`/`()`/`[]` בפייתון על הקובץ המלא: 36/36, 36/36, 5/5 —
+     תואם. הקובץ עוקב ב-git אך חסום ע"י `.gitignore` (כלל
+     `apps/02-igud-transcribe/app`) — נדרש `git add -f`. Commit
+     `09425073` על `fix/a-icon-only-buttons-round2-0820`, נדחף
+     ל-origin (מפעיל פריסת Vercel תחת more30.com/torani).
+763. **הבא בתור:** אותה עדשה על שדות דומים שאותרו באותה סריקה —
+     `02-igud-transcribe/app/(public)/upload/page.tsx` (שדה קוד
+     קופון) ו-`03-igud-ads/app/login/page.tsx` (אימייל/סיסמה), או
+     לפתוח עדשה נוספת, או לחזור ל-`core.project_tasks`/
+     `core.project_bugs` (5 פריטים פתוחים, עדיין חסומים).
