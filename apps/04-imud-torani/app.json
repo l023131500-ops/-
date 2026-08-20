@@ -8,11 +8,11 @@
   "repo": "l023131500-ops/imud-torani",
   "basePath": "/04",
   "supabase": {
-    "project": null,
-    "schema": null
+    "project": "bieebmnmkffwbqlsfozh",
+    "schema": "otvedaf"
   },
   "deployTarget": "railway",
   "protected": false,
   "source": "vendored",
-  "note": "X-Visitor-Id per-visitor isolation fixed in code (commit 7df6f8d6, DECISIONS.md round 6): client now sends a persistent per-browser id on every request, server/storage filter consistently, DOCX export uses blob-fetch to carry the header. 04 deploys via manual staging (not push-triggered) -- confirm live after next manual deploy."
+  "note": "X-Visitor-Id per-visitor isolation fixed in code (commit 7df6f8d6, DECISIONS.md round 6): client now sends a persistent per-browser id on every request, server/storage filter consistently, DOCX export uses blob-fetch to carry the header. 04 deploys via manual staging (not push-triggered) -- confirm live after next manual deploy. supabase.project/schema filled 20/08/2026 (round 51): server/supabase.ts states in-code \"schema otvedaf inside project bkalut-production\", and MCP list_tables on bieebmnmkffwbqlsfozh confirms schema otvedaf exists with tables books+htr_jobs, matching server/storage.ts's default table name \"books\" -- not a guess. deployTarget left as railway (no code evidence found to override apps/README.md)."
 }

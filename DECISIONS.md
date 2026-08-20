@@ -3562,3 +3562,51 @@
      קיים) לפני עדכון `app.json`; (ג) לתעד את רשימת הפרויקטים/הסכימות
      הבלתי-מתועדות שנחשפו (#292-293) ב-CONNECTIONS.md עצמו, לא רק כאן,
      כדי שלופ עתידי לא יגלה מחדש מאפס.
+
+## 20/08/2026 (LOOP A — סבב 51) — פתרתי את סתירת ה-Supabase של 04-imud-torani (קוד המקור מכריע) ותיקנתי גם את `core.projects` החי, לא רק את המניפסט
+
+297. **בדקתי מחדש `core.run_progress` לפני שהתחלתי.** סבב 50 סגור (commit
+     `2353add8`), השאיר שלושה כיוונים לא-נוסים: (א) לפתור את סתירת 04
+     (`core.projects`=`uhnrgujb` מול `apps/README.md`=`?`/`railway`) ע"י
+     קריאת קוד המקור המקומי; (ב) לאתר את שם הסכימה המדויקת של 06/10/12
+     על `csjekrvukbdznetsrodj`; (ג) לתעד את רשימת הפרויקטים/הסכימות
+     הבלתי-מתועדות ב-CONNECTIONS.md עצמו. בחרתי ב-(א) — יש קוד מקור
+     וקטור מקומי (`apps/04-imud-torani/`), כך שניתן לפתור בוודאות ולא
+     בהשערה.
+298. **הראיה החד-משמעית נמצאה בקוד עצמו:** `apps/04-imud-torani/server/supabase.ts`
+     שורות 6-7 (תגובת מקור בעברית): *"הנתונים נשמרים בסכימת `otvedaf`
+     בתוך פרויקט bkalut-production"* — ו-`server/storage.ts:19` קובע את
+     שם הטבלה הדיפולטי כ-`"books"`. אימתתי מול ה-DB בפועל דרך ה-MCP:
+     `list_tables` על `bieebmnmkffwbqlsfozh` (ששמו בפועל, כפי שחוזר
+     מ-`list_projects`, הוא **"bkalut-production"** — תואם בדיוק לתגובה
+     בקוד) מראה סכימה `otvedaf` עם טבלאות `books` (0 שורות) ו-`htr_jobs`
+     (5 שורות) — שם הטבלה `books` תואם בדיוק לדיפולט בקוד. גם `core.projects`
+     (`audit_evidence` הקיים, לא נכתב על ידי) כבר מתעד עצמאית: *"env:
+     SUPABASE_URL/SERVICE_KEY/SCHEMA/TABLE מוגדרים"* ו-API חי מחזיר JSON
+     אמיתי — שלוש ראיות בלתי-תלויות (הערת קוד, שמות טבלה בפועל, audit
+     קודם) מסכימות. **המסקנה:** 04 חי על `bieebmnmkffwbqlsfozh`/`otvedaf`,
+     **לא** על ה-hub (`uhnrgujb`)/`public` כפי שרשם `core.projects` בפועל.
+     `deployTarget`/`deploy_target` נשארו כפי שהיו (`railway`/`vercel`
+     בהתאמה, לפי `app.json`/`core.projects`) — לא נגעתי כי לא מצאתי שום
+     ראיית קוד (`railway.json`, `vercel.json`, סקריפט deploy) שמכריעה בין
+     השניים; זה נשאר `?` כן וגם קיימת סתירה קטנה בין שני המקורות שלא
+     פתרתי (מחוץ להיקף המשימה הזו — לא ניחוש).
+299. **תיקנתי בשני מקומות, לא רק אחד** (שיפור לעומת סבב 50 שתיקן רק את
+     המניפסט): (1) `apps/04-imud-torani/app.json` — `supabase.project`/
+     `schema` מ-`null`/`null` ל-`bieebmnmkffwbqlsfozh`/`otvedaf`, עם הערה
+     שמתעדת את מקור הראיה; (2) `UPDATE core.projects SET supabase_project=
+     'bieebmnmkffwbqlsfozh', supabase_schema='otvedaf' WHERE number='04'`
+     דרך ה-MCP — כי זה הרישום **החי** שה-admin dashboard בפועל קורא ממנו
+     (לפי README), והוא היה שגוי (`uhnrgujb`/`public`) בניגוד לגילוי הזה.
+     חשוב: בדקתי גם את `core.projects` עבור 01/03/15 (שהמניפסט שלהם תוקן
+     בסבב 50) — התברר שהרישום **החי** עבורם כבר היה **נכון** מלכתחילה
+     (`bieebmnm`/`hkkky` בהתאמה) — הדריפט בסבב 50 היה רק בקובץ ה-git,
+     לא ב-DB. ולידציית JSON (`python3 -m json.load`) עברה. ענף
+     `fix/a-04-imud-torani-supabase-drift-0820`.
+300. **הבא בתור:** (א) 06/10/12 — לאתר את שם הסכימה המדויקת על
+     `csjekrvukbdznetsrodj` (שם בפועל "bkalut-production-user-owned" —
+     רמז נוסף שהוא עדיין קשור למשפחת bkalut ולא רק ל-06/12/17/27
+     כמתועד); (ב) לתעד את רשימת הפרויקטים/הסכימות הבלתי-מתועדות
+     (#292-293) ב-CONNECTIONS.md עצמו; (ג) לשקול לבדוק שיטתית האם יש
+     עוד מערכות (05/07/11/13/14/16) עם דריפט דומה בין `app.json`
+     ל-`core.projects` — טרם נבדק שיטתית מעבר ל-01/03/04/15.
