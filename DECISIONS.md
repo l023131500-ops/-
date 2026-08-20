@@ -11193,3 +11193,52 @@
       נפרד שעלול לסטות מהגרסה המתוקנת ב-`admin/src/App.tsx` באותו
       אופן; מומלץ לסבב הבא. חלופה: `16-chatzor-connect` (עדיין לא
       נסרק במלואו) או `04-imud-torani/server/seed.ts`.
+
+## 20/08/2026 — סבב 222 (loop A) — `portal/public/admin-leads.html`: KPI "הפנייה האחרונה מאדם" מציג HTML-entities גולמיים כשאין פניות אמיתיות
+
+1079. **בדקתי מחדש לפני שהתחלתי:** `core.run_progress` (סבב 221
+      האחרון, commit `58727733`/`2e1c6f8a`, תואם ל-HEAD). עקבתי אחרי
+      ההמלצה מ-1078 וסרקתי את יתר עמודי `portal/public/admin-*.html`
+      (activity, automation, customers, imud, issues, kesef, leads,
+      orech, pricing, rights, smel, studio, systems) לאותו דפוס
+      שאותר בסבב 221: יישום JS טהור שסוטה מהטיפול הנכון בערכי-קצה.
+1080. **הממצא שאומת ישירות בקוד:** `admin-leads.html` שורות 172-176
+      מגדירות `na = '<span class="muted">לא זמין</span>'` — מחרוזת
+      HTML גולמית שמוחזרת מ-`day(ts)`/`when(ts)`/`val(v)` כשאין ערך.
+      בכל שאר העמוד `val()`/`when()` מוזרקות ישירות ל-template בלי
+      עטיפה נוספת ב-`esc()` (למשל שורה 208: `${when(l.created_at)}`),
+      כי הן כבר "בטוחות" מבחינת HTML. אבל בבניית כרטיסי ה-KPI (שורה
+      263-265), `day(t.newest_at)` מוכנס למערך יחד עם ערכים מספריים
+      פשוטים, וכל המערך עובר גורף דרך `esc(n)` (שורה 265) — מה
+      שהופך את ה-`<span>` הגולמי לישות HTML-מקודדת (`&lt;span...`).
+      `newest_at` מוגדר ב-`supabase/migrations/0045_...sql` שורה 135
+      כ-`max(created_at) filter (where not core.is_test_lead(email))`
+      — כלומר `NULL` בדיוק כשאין פניות אמיתיות (רק פניות בדיקה, או
+      מערכת חדשה בלי פניות בכלל) — תרחיש אמיתי וסביר, לא קצה תיאורטי.
+      אדמין שפותח `/admin/leads` במצב הזה רואה בכרטיס ה-KPI האחרון
+      טקסט שבור כמו `&lt;span class="muted"&gt;לא זמין&lt;/span&gt;`
+      במקום התווית "לא זמין" המעוצבת — בדיוק אותו דפוס-באג
+      (double-escaping של sentinel HTML גולמי) שתוקן בסבב 221 ב-
+      `admin-credits.html`, אך שם זה היה `noLimit`/פס-אחוזים ולא
+      escaping.
+1081. **התיקון:** בשורת ה-`map` היחידה שמייצרת את כרטיסי ה-KPI,
+      הוספה בדיקה `n === na ? na : esc(n)` — ערכים רגילים (מספרים,
+      מחרוזות "X/Y") ממשיכים לעבור `esc()` כרגיל; רק ה-sentinel
+      `na` (שכבר "בטוח" ומיוצר בקוד, לא מנתוני משתמש) מוזרק גולמי,
+      בדיוק כמו שכבר קורה בכל שאר העמוד עם `val()`/`when()`. שורה
+      אחת שונתה, שום לוגיקה/תווית/מבנה אחר לא נגע.
+1082. **אפס רגרסיה מאומתת:** `git diff --stat`: קובץ אחד, +1/-1.
+      חילצתי את בלוק ה-`<script type="module">` והרצתי `node --check`
+      — תחביר תקין. `git add -f` נדרש (אותה אזהרת `.gitignore` כוזבת
+      שתועדה בסבבים קודמים על `portal/public/**`). לא נגעתי במערכות/
+      סכימות מוגנות (08/09/bkalut-app/bkalot-admin/zr_*/NEDARIM3873/
+      csj/csj_src/igud), ב-`main`, או במערכת מחוץ להיקף. Commit
+      `60a02b59` על `fix/a-icon-only-buttons-round2-0820`, נדחף
+      ל-`origin` (מפעיל פריסת Vercel תחת `more30.com/admin/leads`).
+1083. **הבא בתור:** יתר עמודי `admin-*.html` שנסרקו בסבב הזה
+      (activity/automation/customers/imud/issues/kesef/orech/pricing/
+      rights/smel/studio/systems) לא העלו ממצא נוסף באותו סבב סריקה —
+      מומלץ לסבב הבא: המשך ל-`16-chatzor-connect` (עדיין לא נסרק
+      במלואו לפי סבב 220) או `04-imud-torani/server/seed.ts`, או סבב
+      ייעודי לשכבת ה-super-admin/API-balances שטרם עברה סריקה מלאה
+      משלה (רק `admin-credits.html`/`App.tsx` נסרקו עד כה בהיקף הזה).
