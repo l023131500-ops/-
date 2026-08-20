@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 
 interface Project {
@@ -60,6 +60,9 @@ export default function ProjectsAdmin() {
   const [items, setItems] = useState<Project[]>([]);
   const [detail, setDetail] = useState<DetailData | null>(null);
   const [loading, setLoading] = useState(true);
+  const panelRef = useRef<HTMLDivElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const previousFocusRef = useRef<HTMLElement | null>(null);
 
   const stats = {
     total: items.length,
@@ -95,11 +98,34 @@ export default function ProjectsAdmin() {
 
   useEffect(() => {
     if (!detail) return;
+    previousFocusRef.current = document.activeElement as HTMLElement | null;
+    closeButtonRef.current?.focus();
     function onKeyDown(e: KeyboardEvent) {
-      if (e.key === "Escape") setDetail(null);
+      if (e.key === "Escape") {
+        setDetail(null);
+        return;
+      }
+      if (e.key === "Tab" && panelRef.current) {
+        const focusable = panelRef.current.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])'
+        );
+        if (focusable.length === 0) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
     }
     window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
+    return () => {
+      window.removeEventListener("keydown", onKeyDown);
+      previousFocusRef.current?.focus();
+    };
   }, [detail]);
 
   const customer = (p: Project) => {
@@ -203,6 +229,7 @@ export default function ProjectsAdmin() {
           onClick={() => setDetail(null)}
         >
           <div
+            ref={panelRef}
             className="bg-surface rounded-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto p-6"
             onClick={(e) => e.stopPropagation()}
             role="dialog"
@@ -213,7 +240,7 @@ export default function ProjectsAdmin() {
               <h2 className="font-serif text-xl font-bold">
                 {detail.project?.title || detail.project?.id}
               </h2>
-              <button onClick={() => setDetail(null)} className="text-gray-400 hover:text-gray-700 text-xl" aria-label="סגור">✕</button>
+              <button ref={closeButtonRef} onClick={() => setDetail(null)} className="text-gray-400 hover:text-gray-700 text-xl" aria-label="סגור">✕</button>
             </div>
 
             <div className="grid md:grid-cols-2 gap-4 mb-4 text-sm text-gray-600">
