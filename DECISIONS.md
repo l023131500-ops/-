@@ -5163,3 +5163,47 @@
      טהורה — שום שורה/מערכת/כרטיס קיים לא הוסר או שונה. לא נגעתי במוגן, לא
      ב-`main`. ענף חדש `feat/c-maatefet-register-0820` (מ-`fix/c-nadlan-
      median-bias-0820`).
+
+## 20/08/2026 (LOOP C — סבב 12) — מערכת 39 מעטפת: סכימת DB אמיתית (instructors/invites/clients/content_items, invite-only + RLS)
+
+454. **הקשר.** `core.run_progress` אומת (אחרון `[loop C]`: `bd0c9868`, הרישום
+     הראשוני של מערכת 39). ההנחיה כוללת במפורש "BUILD the new MAATEFET
+     platform" בהיקף הלולאה. `MAATEFET_BUILD.md` §שלב 0 מגדיר את הצעד הבא
+     במפורש: "תשתית + ליבה במגזר הכלות בלבד (CRM + ספריית תוכן + פאנל
+     סופר-אדמין + אבטחה)". נבדק `core.issues` להיקף הלולאה (26/29/30/31/32/
+     33-38) — כל הפריטים הפתוחים עם `owner='agent'` כבר טופלו בקוד וממתינים
+     לפריסה על פרויקטי Supabase שאינם נגישים מה-MCP הזה (`jhbeelzvjvhnkxldqvxx`
+     וכו') — אין שם צעד חדש לבצע מכאן. נבחר להמשיך את מעטפת לפי המפרט.
+455. **מה נבנה.** `supabase/migrations/0108_maatefet_core_schema.sql`, הוחל
+     בפועל דרך ה-MCP על `uhnrgujbdxhhmoxcjria` (הפרויקט הנגיש, אותו הוא שאליו
+     0107 כבר רשם את השורה). סכימה חדשה `maatefet`: 4 טבלאות —
+     `instructors` (מדריך/ה, `segment` chatan/kallah, `status` pending/
+     verified/suspended — invite-only אמיתי: משתמש חדש יוצר לעצמו שורה
+     `pending` בלבד, ורק סופר-אדמין יכול לשנות ל-`verified`, נאכף בטריגר
+     `guard_instructor_status_change` ולא רק ב-RLS — אותה מחלקת חור בדיוק
+     שנסגרה ב-30-zchuyotpro-crm #248/#249, כאן היא נחסמת מראש), `invites`
+     (קוד-הזמנה אקראי 16-בייט שרק מדריך מאומת יוצר; מדיניות anon לחיפוש
+     לפי קוד מדויק בלבד — אותה תבנית בדיוק כמו קישורי השיתוף הציבוריים
+     הקיימים ב-30/31/36, לא רשימה פתוחה), `clients` (הזוג/חתן/כלה, מקושר
+     למדריך ולהזמנה), `content_items` (ספריית תוכן/סטודיו, עם `is_shared`
+     כברירת-מחדל `false` לקראת מודול 15 המרקטפלייס בעתיד). כל הטבלאות RLS
+     מלא, מדיניות scoped-to-instructor + גישת-על לסופר-אדמין דרך
+     `public.more30_is_super_admin()` הגלובלי הקיים — לא נבנתה טבלת ניהול
+     נפרדת. הפונקציה `public.set_updated_at()` שהמיגרציה של 30-zchuyotpro
+     משתמשת בה **לא קיימת** על ה-hub (נבדק לפני הכתיבה: `pg_proc` על
+     `uhnrgujbdxhhmoxcjria` לא מחזיר אותה) — נכתבה גרסה מקומית
+     `maatefet.set_updated_at()` במקום להניח שהיא קיימת. `get_advisors`
+     (security) הורץ אחרי ההחלה — אין ממצא חדש תחת `maatefet`.
+     `core.projects` עודכן (`supabase_project`/`supabase_schema`/`stage`
+     ל-`wip`/`note`) בתוך אותה מיגרציה; `apps/39-maatefet/app.json` ו-
+     `packages/config/src/registry.ts` עודכנו בהתאם; `MAATEFET_BUILD.md`
+     קיבל שורת-סטטוס שנייה בראש הקובץ.
+456. **אפס רגרסיה + מה לא בוצע.** לא נבנה קוד אפליקציה/UI — `/maatefet`
+     עדיין מציג "בקרוב" (לא שונה `TOPIC_ROUTES`, אין ראוט). לא נבנה 2FA
+     (Supabase Auth MFA נבדק/נאכף בשכבת-אפליקציה, כשתהיה אפליקציה — אין
+     טעם לאכוף אותו על schema ריק). לא נבנתה הצפנת-שדה לתוכן רגיש (דורשת
+     ניהול-מפתחות ב-`core.secrets` + RPC הצפנה/פענוח — עבודת שכבת-שרת, לא
+     טור גולמי; המצאת מנגנון בלי מפתח מנוהל הייתה גרועה יותר מלא-לבנות).
+     שני אלה נרשמו ב-`MAATEFET_BUILD.md` כ"השלב הבא", לא הומצאו. לא נגעתי
+     במוגן, לא ב-`main`, לא בסכימות של מערכות אחרות. ענף חדש
+     `feat/c-maatefet-schema-0820` (מ-`feat/c-maatefet-register-0820`).

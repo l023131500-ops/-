@@ -4,17 +4,17 @@
   "name": "מעטפת — ליווי מדריכי חתנים ומדריכות כלות",
   "department": "community",
   "category": "events",
-  "stage": "idea",
+  "stage": "wip",
   "live": false,
   "isDeployed": false,
   "repo": "more30",
   "basePath": "/maatefet",
   "supabase": {
-    "project": null,
-    "schema": null
+    "project": "uhnrgujbdxhhmoxcjria",
+    "schema": "maatefet"
   },
   "deployTarget": "unknown",
   "protected": false,
   "source": "not-vendored",
-  "note": "שלב 0 בלבד (רישום ב-core.projects, 20/08 Loop C). קוד האפליקציה טרם נבנה — ‏/maatefet מחזיר \"בקרוב\". מפרט מחייב מלא: MAATEFET_BUILD.md (15 מודולים, ליבה אחת/שני פנים לפי segment חתנים/כלות, 5 שלבי בנייה החל משלד+ליבת מגזר-כלות)."
+  "note": "שלב 0 בבנייה (20/08 Loop C). סכימת maatefet חיה: instructors/invites/clients/content_items, invite-only + RLS מדורג, מנעול הרשאות-על (guard_instructor_status_change), מחוברת לסופר-אדמין הגלובלי (more30_is_super_admin). קוד אפליקציה/UI טרם נבנה — ‏/maatefet עדיין מחזיר \"בקרוב\". מפרט מחייב מלא: MAATEFET_BUILD.md (15 מודולים, ליבה אחת/שני פנים לפי segment חתנים/כלות, 5 שלבי בנייה)."
 }
