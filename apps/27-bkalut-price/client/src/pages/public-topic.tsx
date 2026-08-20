@@ -6,6 +6,7 @@ import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/logo";
+import { JsonLd } from "@/components/json-ld";
 import {
   ArrowRight,
   ChevronDown,
@@ -51,6 +52,20 @@ export default function PublicTopic() {
   const [showMore, setShowMore] = useState(false);
 
   const publicUrl = typeof window !== "undefined" ? `${window.location.origin}/#/p/topic/${id}` : "";
+  // Derived from the live address bar (not window.location.origin, which
+  // never carries a path-mount prefix) so the crumb URLs stay correct
+  // regardless of how this deployment is mounted.
+  const breadcrumbBase = typeof window !== "undefined" ? window.location.href.split("#")[0] : "";
+  const breadcrumbJsonLd = row
+    ? {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "בקלות", item: `${breadcrumbBase}#/eligibility` },
+          { "@type": "ListItem", position: 2, name: row.topic, item: `${breadcrumbBase}#/p/topic/${id}` },
+        ],
+      }
+    : null;
 
   async function copyLink() {
     try {
@@ -107,6 +122,7 @@ export default function PublicTopic() {
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col" dir="rtl">
+      <JsonLd id="breadcrumb-jsonld" data={breadcrumbJsonLd} />
       <header className="border-b border-border bg-sidebar text-sidebar-foreground">
         <div className="max-w-[1000px] mx-auto px-4 sm:px-6 h-14 flex items-center justify-between gap-4">
           <Link href="/" data-testid="link-home-public" className="flex items-center -mr-2 px-2 py-1">

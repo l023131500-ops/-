@@ -3,6 +3,7 @@ import { Link, useRoute } from "wouter";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Logo } from "@/components/logo";
+import { JsonLd } from "@/components/json-ld";
 import { API_BASE } from "@/lib/queryClient";
 import { ArrowRight, Store, TrendingUp } from "lucide-react";
 import { LineChart, Line, ResponsiveContainer, Tooltip, YAxis } from "recharts";
@@ -111,8 +112,25 @@ export default function PublicProductCompare() {
     return byTime.map((h) => ({ t: h.recordedAt, price: h.price }));
   }, [data]);
 
+  // Derived from the live address bar (not window.location.origin, which
+  // never carries a path-mount prefix) so the crumb URLs stay correct
+  // regardless of how this deployment is mounted.
+  const breadcrumbJsonLd = useMemo(() => {
+    if (!data || typeof window === "undefined") return null;
+    const base = window.location.href.split("#")[0];
+    return {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "השוואת מחירים", item: `${base}#/price-comparison` },
+        { "@type": "ListItem", position: 2, name: data.product.name, item: `${base}#/compare/${encodeURIComponent(barcode)}` },
+      ],
+    };
+  }, [data, barcode]);
+
   return (
     <div className="min-h-screen bg-background" dir="rtl" data-testid="page-public-product-compare">
+      <JsonLd id="breadcrumb-jsonld" data={breadcrumbJsonLd} />
       <header className="border-b border-border bg-card">
         <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between gap-3">
           <Link href="/" data-testid="link-compare-home"><a className="flex items-center gap-2"><Logo className="h-8 w-auto" /></a></Link>
