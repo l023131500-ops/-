@@ -194,8 +194,8 @@ export function ResetPassword() {
                     placeholder="••••••••"
                   />
                 </Field>
-                {error && <p className="text-sm text-red-300">{error}</p>}
-                {done && <p className="text-sm text-emerald-300">הסיסמה עודכנה. מעבירים אותך פנימה…</p>}
+                {error && <p role="alert" aria-live="assertive" className="text-sm text-red-300">{error}</p>}
+                {done && <p role="status" aria-live="polite" className="text-sm text-emerald-300">הסיסמה עודכנה. מעבירים אותך פנימה…</p>}
                 <Button type="submit" variant="gold" size="lg" disabled={saving} className="w-full">
                   {saving ? "שומרים…" : "שמירת הסיסמה וכניסה"}
                 </Button>

@@ -109,8 +109,8 @@ export function AdminLogin({ target = "/admin", title = "כניסת מנהל" }:
             >
               {sending ? "שולחים…" : "שכחתי סיסמה"}
             </button>
-            {error && <p className="text-sm text-red-300">{error}</p>}
-            {sent && <p className="text-sm text-emerald-300">{sent}</p>}
+            {error && <p role="alert" aria-live="assertive" className="text-sm text-red-300">{error}</p>}
+            {sent && <p role="status" aria-live="polite" className="text-sm text-emerald-300">{sent}</p>}
             <Button type="submit" variant="gold" size="lg" disabled={submitting} className="w-full">
               <LogIn className="h-4 w-4" aria-hidden />
               {submitting ? "מתחבר…" : "כניסה"}
