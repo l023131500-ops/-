@@ -96,6 +96,7 @@ export function SmartAdvisor({
               }}
               rows={2}
               placeholder="כתוב/י שאלה על הנושא..."
+              aria-label={`שאלה ליועץ החכם על ${topicName}`}
               className="resize-none text-sm"
               data-testid={`input-advisor-${topicId}`}
             />

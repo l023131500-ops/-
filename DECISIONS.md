@@ -7216,3 +7216,47 @@
     (stale async response) שנפתח בסבב 363 על 18/28, או נושא #250
     (RLS על `21-mthbram`, חסום MCP).
     via cloud server 167.99.131.167 [loop B]
+
+## 20/08/2026 — סבב 368 (loop B)
+
+368. **סגירת עדשת נגישות-הטפסים (`aria-label` על `<Textarea>`) על
+    האפליקציה האחרונה בהיקף — `28-kupot-health-funds`.** בהמשך
+    לתור מסבב 367 ("לסגור את 28"). קראתי ידנית את כל קבצי הלקוח
+    שמכילים `Textarea` (grep על `<textarea`/`Textarea` בכל
+    `client/src`, לא רק agent) — רק 2 מופעים אמיתיים מלבד קומפוננטת
+    הבסיס `components/ui/textarea.tsx`: (1) `SmartAdvisor.tsx` שורה
+    88 — תיבת השאלה ל"יועץ החכם" (ווידג'ט צ'אט ציבורי לכל נושא),
+    `placeholder` בלבד ללא שם נגיש; (2) `SwitchFundDialog.tsx` שורה
+    298 — שדה "הערה" בטופס מעבר-קופה (שלב 3 מתוך 3), עטוף
+    בקומפוננטת `Field` פנימית שמרנדרת `<Label>` חזותי כ־sibling
+    בלי `htmlFor`/`id` (לא מקושר בפועל) — אותו דפוס בדיוק כמו סוג
+    (3) שתועד בסבב 367. לא נגעתי בשדות ה-`<Input>` האחרים באותו
+    `Field` (מחוץ להיקף עדשת ה-Textarea; ראו "לא טופל" בסבב 367 —
+    עדשה נפרדת). הוספתי `aria-label={`שאלה ליועץ החכם על
+    ${topicName}`}` (דינמי, תואם ל-`topicName` שכבר מוצג בכותרת
+    הווידג'ט מעל) ו-`aria-label="הערה"` (תואם לטקסט ה-`Label`
+    החזותי) בהתאמה. אפס שינוי בלוגיקת state/שמירה/`ask`/
+    `form.register` — `git diff` מאמת שהשורה היחידה שנוספה בכל קובץ
+    היא ה-`aria-label`. בדיקת איזון סוגריים/מאמרים מסולסלים ב-python
+    על שני הקבצים המלאים אחרי העריכה — תקין (57/57 תלתלים+45/45
+    סוגריים+8/8 מרובעים ב-`SmartAdvisor.tsx`, 101/101+111/111+10/10
+    ב-`SwitchFundDialog.tsx`). אין build/dev-server זמין בסביבה הזו
+    לפי הנחיית ההרצה — לא `tsc`. שני הקבצים תחת
+    `apps/28-kupot-health-funds/client/src/components` ואינם חסומים
+    ב-gitignore (נתפסו ב-`git status` הרגיל, בלי `-f`). ענף
+    `fix/b-28-kupot-textarea-aria-0820`.
+
+    **זה סוגר את עדשת ה-`aria-label` על `<Textarea>` על פני כל 7
+    האפליקציות החיות בהיקף loop B (17/18/21/22/24/27/28)** — 21
+    נבדקה במסגרת עדשת ה-icon-only-button (סבב 361) ולא נמצאו בה
+    Textarea-ים כלל; 24 טופלה בסבב 360; 17/18/22/27/28 טופלו
+    בסבבים 364-368.
+
+    **הבא בתור:** עדשת `aria-pressed`/filter-chip שזוהתה בסבב 367
+    על 27 (שורות 190/199 ב-`params-topics.tsx`, 231/299 ב-
+    `financial-crm.tsx`, 153 ב-`financial.tsx`, 527 ב-
+    `potential-admin.tsx`, 369 ב-`users.tsx`, 124/296 ב-
+    `public-potential.tsx`) וכנראה גם על 28, או דפוס ה-race-condition
+    (stale async response) שנפתח בסבב 363 על 18/28 (17/21/24/27
+    כבר נבדקו), או נושא #250 (RLS על `21-mthbram`, חסום MCP).
+    via cloud server 167.99.131.167 [loop B]

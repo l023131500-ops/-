@@ -299,6 +299,7 @@ export function SwitchFundDialog({
                   {...form.register("note")}
                   rows={2}
                   placeholder="פרטים נוספים שברצונך לציין (לא חובה)"
+                  aria-label="הערה"
                   data-testid="input-note"
                 />
               </Field>
