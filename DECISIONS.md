@@ -3723,3 +3723,78 @@
      שכבות אחרות (RLS/duplicate-submit/authz) על 06/10/12 עכשיו שיש להן
      חיבור DB מתועד ואפשר לבדוק את מדיניות ה-RLS בפועל על `zr_leads`/
      `kupot_leads`/`nadlan.research_leads`.
+
+## 20/08/2026 (LOOP A — סבב 54) — 10-bkalot-rights: שש מדיניות RLS בשם "_admin" על טבלאות `zr_*` היו פתוחות בפועל לכל משתמש מחובר, לא רק לאדמין
+
+311. **בדקתי מחדש `core.run_progress` לפני שהתחלתי.** סבב 53 סגור (commit
+     `06b80ace`), הציע לחזור לבדוק שכבות RLS/authz על 06/10/12 עכשיו
+     שיש להן חיבור DB מתועד (מסבב 53). בדקתי בפועל את מדיניות ה-RLS על
+     שלוש הטבלאות שסבב 53 ציין: `zr_leads` (10), `kupot_leads` (06),
+     `nadlan.research_leads`/`nadlan.questionnaire_templates` (12).
+312. **`kupot_leads` ו-`nadlan.research_leads`/`questionnaire_templates` —
+     נבדקו ואינם דורשים תיקון.** `nadlan.research_leads`/
+     `questionnaire_templates`: אין RLS מופעל בכלל, אבל בדקתי את
+     ה-GRANTs בפועל (`information_schema.role_table_grants`) ואלה תואמים
+     בדיוק את הכוונה במיגרציית המקור
+     (`apps/13-property-identity/smart-research/db/migration_smart_research.sql`
+     שורות 253-256): `anon`/`authenticated` מקבלים **רק** `INSERT` על
+     `research_leads` (לא `SELECT`) ו-**רק** `SELECT` על
+     `questionnaire_templates` — PostgreSQL אוכף GRANT/REVOKE ברמת
+     הטבלה בלי תלות ב-RLS, כך שזה בטוח בפועל להיפך ממה שנראה במבט ראשון
+     (רשומתי בסבב הקודם חשדה שזה חור אבטחה — בדקתי ומצאתי שזו אזעקת-שווא,
+     בדיוק כמו הלקח מסבב 52→53 לא לקבל טענה בלי לאמת ישירות). `kupot_leads`
+     (06): יש לה מדיניות SELECT בשם "authenticated can read leads"
+     (`qual=true`, roles={authenticated}) — גם זו רחבה, אך היא היחידה
+     על הפרויקט `csjekrvukbdznetsrodj` ואין בו פונקציית `is_super_admin`
+     מקבילה (זהו פרויקט נפרד לגמרי מ-`bieebmnmkffwbqlsfozh`, ללא תשתית
+     ה-admin המשותפת) — אין תבנית קיימת בפרויקט הזה לחקות, ולכן לא נגעתי
+     כדי לא לנחש מנגנון הרשאות חדש; מתועד כאן לביקורת עתידית.
+313. **`zr_leads` (10-bkalot-rights, על `bieebmnmkffwbqlsfozh`) — נמצא
+     באג authz אמיתי, ניתן לתיקון בוודאות מלאה.** מדיניות `zr_leads_admin`
+     (cmd=ALL, roles={authenticated}, qual=`true`) העניקה קריאה/כתיבה/מחיקה
+     מלאה על טבלת לידים (מכילה `full_name`/`phone`/`email`/`answers`) לכל
+     משתמש מחובר **בכל** אחת מהמערכות שחולקות את הפרויקט הזה — לא רק 10,
+     אלא גם 01-torah-platform, 02-igud-transcribe, 03-igud-ads,
+     18-torah-editor-mvp — שיש להן משתמשי-קצה אמיתיים (לא רק אדמינים).
+     בדקתי מול `pg_proc`: הפרויקט הזה **כן** מכיל פונקציית
+     `is_super_admin(_uid uuid)` קיימת (`select exists (select 1 from
+     public.user_roles where user_id = _uid and role = 'super_admin' and
+     tenant_id is null)`), והיא כבר בשימוש עקבי בעשרות מדיניות RLS אחרות
+     באותו DB בדיוק (`ads_tenant_write`, `leads_tenant_write`,
+     `forum_access.fa_admin_write`, `donations_self_read` ועוד) — כלומר
+     יש כאן תבנית קיימת וברורה, לא ניחוש. הרחבתי את הבדיקה לכל שש הטבלאות
+     `zr_*` (`zr_leads`/`zr_topics`/`zr_situations`/`zr_situation_topics`/
+     `zr_questions`/`zr_answer_rules`) — כולן חלקו בדיוק אותו דפוס באג:
+     מדיניות `<table>_admin` עם `qual=true`/`with_check=true` לתפקיד
+     `authenticated`. הטבלאות-קטלוג (topics/situations/questions/
+     answer_rules/situation_topics) כבר קריאות לציבור בלאו הכי (מדיניות
+     `_read` נפרדת), אז הסיכון שם הוא זיוף/מחיקה ע"י כל משתמש מחובר —
+     לא דליפת PII כמו ב-`zr_leads`, אבל עדיין אותו באג בדיוק.
+314. **חשוב — ווידאתי שזו לא הפרת ההגנה על "schema zr_\*":** ה-README/
+     ה-prompt מגדירים "schema zr_\*" כמוגן. בדקתי במפורש (כמו שכבר נבדק
+     בסבב 53, #308) עם `pg_namespace`: `zr_leads` וחמש האחיות חיות תחת
+     **`n.nspname='public'`** — `zr_` הוא רק קידומת שם-טבלה בתוך `public`,
+     **אין** schema בשם `zr` על הפרויקט הזה (`bieebmnmkffwbqlsfozh`,
+     משרת 01/02/03/10/18). ה-schema המוגן בפועל (אם קיים) הוא ככל הנראה
+     על `pwcswdfgorvlpdflzylm` (08-bkalut-app 🔒), פרויקט נפרד לגמרי
+     שאינו נגיש מה-session הזו — לא נגעתי בו כלל.
+315. **התיקון:** `ALTER POLICY` על שש המדיניות (`zr_leads_admin`,
+     `zr_topics_admin`, `zr_situations_admin`, `zr_situation_topics_admin`,
+     `zr_questions_admin`, `zr_answer_rules_admin`) — `USING`/`WITH CHECK`
+     מ-`true` ל-`is_super_admin(auth.uid())`, זהה לתבנית הקיימת בכל שאר
+     ה-DB. הרצתי `apply_migration` (`fix_zr_admin_policies_require_super_admin`
+     על `bieebmnmkffwbqlsfozh`) ואימתתי בחזרה מול `pg_policies` ששש
+     המדיניות אכן השתנו. `get_advisors(security)` על הפרויקט לא הראה
+     אזהרה חדשה הקשורה ל-`zr_`. `zr_leads` היה עם 0 שורות בזמן התיקון —
+     אין דליפת PII היסטורית לתעד, אך החור היה פתוח וחי (כל לקוח שהיה
+     נרשם היה נחשף לכל משתמש מחובר בפרויקט). לא נגעתי בקוד לקוח/שרת של
+     10 (רק במדיניות ה-DB) — `app.js` כבר עושה רק `INSERT` ציבורי, לא
+     קורא בכלל, כך שלא נשבר שום דבר בפועל בצד הלקוח. ענף
+     `fix/a-10-bkalot-rights-zr-admin-rls-0820`.
+316. **הבא בתור:** לתעד את רשימת הפרויקטים/הסכימות הבלתי-מתועדות
+     (#292-293) ב-CONNECTIONS.md עצמו — עדיין לא נעשה; לשקול מנגנון
+     הרשאות עבור `kupot_leads` (06, `csjekrvukbdznetsrodj`) — אין עדיין
+     תבנית admin-role קיימת בפרויקט הזה לחקות, דורש החלטה (האם להוסיף
+     `is_super_admin`-מקביל שם, או להשאיר `SELECT` פתוח לכל מחובר כי
+     אין עדיין authenticated users אמיתיים על הפרויקט הזה מלבד אדמינים —
+     טרם אומת).
