@@ -10955,3 +10955,40 @@
       את שכבת התשתית המשותפת (gannenet/40, login/auth, super-admin,
       admin dashboard) שטרם עברה סבב סריקה
       ייעודי.
+
+## 20/08/2026 — סבב 217 (loop A) — `04-imud-torani`: מחיקת ספר נכשלת בשקט (אין `onError`)
+
+1057. **בדקתי מחדש לפני שהתחלתי:** `core.run_progress` (סבב 216
+      האחרון, commit `54930b6c`/`eac237a9`, תואם ל-HEAD). עקבתי אחרי
+      ההמלצה מ-1056 והמשכתי לסרוק את `04-imud-torani` — הפעם
+      `Home.tsx` ו-`Templates.tsx` (שני קבצים שטרם נסרקו בהיקף הזה).
+1058. **הממצא שאומת ישירות בקוד:** `apps/04-imud-torani/client/src/
+      pages/Home.tsx`, ה-`del` mutation (מחיקת ספר, שורות 24-30
+      לפני התיקון) הכיל `onSuccess` (מבטל cache + טוסט "הספר נמחק")
+      אך **ללא `onError`** — בניגוד ישיר לתבנית העקבית בכל שאר
+      הקומפוננטות של המערכת הזו: `create` ב-`Templates.tsx` (שורה
+      70), `Wizard.tsx` (שורות 123, 148) ו-`Editor.tsx` (שורה 83)
+      כולן מגדירות `onError` עם טוסט `variant: "destructive"`.
+      `apiRequest` ב-`queryClient.ts` זורק (`throwIfResNotOk`) כשה-
+      DELETE נכשל (שגיאת רשת, 500 וכו') — אבל בלי `onError` המשתמש
+      שלחץ על האשפה ואישר במסך `confirm()` לא מקבל שום משוב:
+      הספר נשאר ברשימה בלי הודעת שגיאה, בניגוד להבטחת ה-UI (אישור
+      מחיקה => משהו אמור לקרות).
+1059. **התיקון:** נוסף `onError: () => toast({ title: "שגיאה
+      במחיקת הספר", variant: "destructive" })` ל-`del` mutation,
+      זהה בניסוחו ובמבנהו לתבנית הקיימת כבר בשלושת הקבצים האחרים
+      באותה מערכת. שינוי שורה אחת, שום handler אחר לא שונה. `git
+      diff --stat`: קובץ אחד, +1/-0. אותה אזהרת `.gitignore` כוזבת
+      כמו בסבב הקודם (`git check-ignore -v` לא מצא כלל תואם) —
+      `git add -f` פתר. לא נגעתי במערכות/סכימות מוגנות (08/09/
+      bkalut-app/bkalot-admin/zr_*/NEDARIM3873/csj/csj_src/igud),
+      ב-`main`, או במערכת מחוץ להיקף. Commit `1258ceb4` על
+      `fix/a-icon-only-buttons-round2-0820`, נדחף ל-`origin` (מפעיל
+      פריסת Vercel תחת `more30.com/imud`).
+1060. **הבא בתור:** `04-imud-torani` עדיין לא נסרק במלואו — נותרו
+      `DesignDept.tsx`, `server/docx.ts`, `server/seed.ts`,
+      `shared/proofread.ts` ו-`shared/wizard.ts`. מומלץ לסבב הבא:
+      להמשיך שם, או לעבור ל-`16-chatzor-connect` (טרם נסרק לעומק
+      בהיקף הזה), או לבדוק את שכבת התשתית המשותפת (gannenet/40,
+      login/auth, super-admin, admin dashboard) שטרם עברה סבב סריקה
+      ייעודי.
