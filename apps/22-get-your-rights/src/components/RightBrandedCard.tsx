@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import domtoimage from "dom-to-image-more";
 import { Download, Loader2, MessageCircle, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 
 function escapeHtml(str: string): string {
   return str
@@ -279,6 +280,7 @@ interface RightBrandedCardProps {
 const RightBrandedCard = ({ right }: RightBrandedCardProps) => {
   const cardRef = useRef<HTMLDivElement>(null);
   const [downloading, setDownloading] = useState(false);
+  const { toast } = useToast();
 
   const pages = buildPages(right);
 
@@ -288,6 +290,7 @@ const RightBrandedCard = ({ right }: RightBrandedCardProps) => {
       await downloadBrandedImage(right);
     } catch (err) {
       console.error("Download failed:", err);
+      toast({ title: "שגיאה בהורדה", description: "לא הצלחנו להוריד את התמונה. נסו שוב.", variant: "destructive" });
     }
     setDownloading(false);
   };

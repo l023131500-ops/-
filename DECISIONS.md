@@ -6683,3 +6683,37 @@
     לפתוח עדשה חדשה על ה-4 שנותרו: 17/18/21/22/24/27/28 — אולי נגישות
     טפסים (label/aria) או עקביות מסך-ריק (empty-state) בין הדפים.
     via cloud server 167.99.131.167 [loop B]
+
+354. **עדשה חדשה: שגיאות-כתיבה שנבלעות ב-`try/catch` בלי משוב למשתמש
+    (`console.error` בלבד), נפרד מארבע העדשות שכבר נסגרו (double-
+    submit, מחיקה-בלי-אישור, `useMutation` בלי `onError`, "הצלחה
+    מדומה"). סוכן Explore סרק את שבעת האפליקציות עם קוד אמיתי
+    (17/18/21/22/24/27/28) וחיפש נתיבי כתיבה (insert/update/upload/
+    submit) שה-`catch` שלהם לא מציג טוסט/alert בכלל. המצא הכי
+    משמעותי: `apps/22-get-your-rights/src/components/
+    RightBrandedCard.tsx` — `handleDownload` (הכפתור "הורד כתמונה"
+    בכרטיס הזכות המודפס) עטף את `downloadBrandedImage()` ב-`try/
+    catch` שרק עשה `console.error`, בלי שום משוב חזותי. משתמש שלוחץ
+    הורדה כשה-`dom-to-image-more` נכשל (למשל רינדור קנבס/CORS על
+    תמונה חיצונית) רואה את הספינר נעצר וכלום לא קורה — לא קובץ, לא
+    הודעה — ועלול לחשוב שהדפדפן שלו תקוע ולנסות שוב ושוב. תוקן:
+    הוספתי `useToast` (כבר בשימוש באותה אפליקציה, `RightsCategories.
+    tsx`/`AdminRightsReference.tsx`, אותה מוסכמת `variant:
+    "destructive"`) וטוסט שגיאה על ה-`catch` הקיים, בלי לגעת בלוגיקת
+    ההורדה עצמה. מועמדים נוספים שנמצאו בסריקה (לא תוקנו הסבב הזה,
+    בעדיפות נמוכה יותר): `21-mthbram/src/pages/StudyDayUpload.tsx`
+    (`handleCreate`/`handleLogo`) ו-`OrgPortal.tsx` (`uploadLogo`) —
+    כבר מציגים טוסט גנרי על שגיאה, רק חסר פירוט; ו-`24-galilee-
+    connect-hub/GabaiPortal.tsx handleSave` — ניקוי שורות-כפולות
+    שנכשל בשקט אחרי שהשמירה העיקרית כבר הצליחה (סיכון נמוך, לא
+    משתמש-פונה). אפס שינוי API/DB/query. בדיקת איזון סוגריים ב-
+    python על הקובץ אחרי העריכה: תקין (112/112, 99/99, 15/15). אין
+    build/dev-server זמין בסביבה הזו לפי הנחיית ההרצה — לא `tsc`.
+    ענף `fix/b-22-rightbrandedcard-download-silent-error-0820`.
+
+    **הבא בתור:** להמשיך את אותה עדשה על שלושת המועמדים שנמצאו ולא
+    תוקנו (`21-mthbram` StudyDayUpload/OrgPortal — הודעת שגיאה
+    מפורטת יותר על כשל הכנסה/העלאת לוגו; `24-galilee-connect-hub`
+    GabaiPortal ניקוי-שורות-כפולות), או לחזור לנושא #250 (RLS פתוח
+    ב-21-mthbram, פרויקט `aypsqqvfohekxxuqsmrw` עדיין לא נגיש ל-MCP).
+    via cloud server 167.99.131.167 [loop B]
