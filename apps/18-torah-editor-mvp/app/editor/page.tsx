@@ -43,6 +43,8 @@ export default function EditorPage() {
   const [saved, setSaved] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
   const lastSaved = useRef<string>('');
   const skipFirst = useRef(true);
+  const isSaving = useRef(false);
+  const pendingPatch = useRef<Record<string, unknown> | null>(null);
 
   // טעינת המסמך מהכתובת. ⚠️ `useSearchParams` ב-App Router מחייב <Suspense>
   // סביב הרכיב כולו; קריאה ישירה מ-window אחרי ה-mount עושה את אותו דבר בלי
@@ -70,10 +72,21 @@ export default function EditorPage() {
     })();
   }, []);
 
-  /** שמירה. `patch` מאפשר לשנות סטטוס או כותרת בלי לחכות למחזור השמירה. */
+  /**
+   * שמירה. `patch` מאפשר לשנות סטטוס או כותרת בלי לחכות למחזור השמירה.
+   * הטיימר האוטומטי, ה-onBlur של הכותרת וה-onChange של הסטטוס יכולים לקרוא לזה
+   * במקביל; כדי שלא תיווצר כתיבה שדורסת כתיבה (out-of-order update), קריאה
+   * שמגיעה בזמן ששמירה כבר רצה רק צוברת את ה-patch שלה ומריצה שמירה נוספת
+   * אחרי שהראשונה מסתיימת, במקום לירות שתי בקשות update() חופפות.
+   */
   const save = useCallback(
     async (patch: Record<string, unknown> = {}) => {
       if (!docId || !hubConfigured()) return;
+      if (isSaving.current) {
+        pendingPatch.current = { ...pendingPatch.current, ...patch };
+        return;
+      }
+      isSaving.current = true;
       setSaved('saving');
       const sb = getHubClient();
       const { error: e } = await sb
@@ -86,6 +99,12 @@ export default function EditorPage() {
       } else {
         lastSaved.current = text;
         setSaved('saved');
+      }
+      isSaving.current = false;
+      if (pendingPatch.current) {
+        const next = pendingPatch.current;
+        pendingPatch.current = null;
+        save(next);
       }
     },
     [docId, text],
