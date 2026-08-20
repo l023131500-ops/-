@@ -446,7 +446,7 @@ const AdminRightsReference = () => {
             <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input placeholder="חיפוש נושא, קטגוריה..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="pr-9 text-sm" />
           </div>
-          <select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)} className="h-10 rounded-md border border-input bg-background px-3 py-2 text-sm">
+          <select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)} aria-label="סינון לפי קטגוריה" className="h-10 rounded-md border border-input bg-background px-3 py-2 text-sm">
             <option value="all">כל הקטגוריות</option>
             {categories.map(c => <option key={c} value={c}>{c}</option>)}
           </select>

@@ -515,14 +515,14 @@ async function renderDirectory() {
     </div>
 
     <div class="filters">
-      <input id="f-city" type="text" placeholder="עיר (השאירו ריק לכל הארץ)" value="${esc(state.city)}" />
-      <select id="f-audience">
+      <input id="f-city" type="text" placeholder="עיר (השאירו ריק לכל הארץ)" value="${esc(state.city)}" aria-label="סינון לפי עיר" />
+      <select id="f-audience" aria-label="סינון לפי קהל יעד">
         <option value="">כל הקהלים</option>
         <option value="men">גברים</option>
         <option value="women">נשים</option>
         <option value="mixed">מעורב</option>
       </select>
-      <input id="f-q" type="text" placeholder="חיפוש חופשי (שם השיעור)…" />
+      <input id="f-q" type="text" placeholder="חיפוש חופשי (שם השיעור)…" aria-label="חיפוש חופשי לפי שם השיעור" />
       <a class="btn btn-quiet" href="#/join?intent=lesson">+ הוספת שיעור</a>
     </div>
 
