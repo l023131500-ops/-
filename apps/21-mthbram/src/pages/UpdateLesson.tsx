@@ -281,7 +281,7 @@ const UpdateLesson = () => {
                             days[idx] = { ...days[idx], time: e.target.value };
                             setScheduleDays(days);
                           }} placeholder="שעה (19:00)" type="time" className="w-32" />
-                          <button onClick={() => setScheduleDays(scheduleDays.filter((_, i) => i !== idx))} className="text-destructive"><Trash2 className="w-4 h-4" /></button>
+                          <button type="button" onClick={() => setScheduleDays(scheduleDays.filter((_, i) => i !== idx))} className="text-destructive" aria-label={`הסרת יום ${sd.day}`}><Trash2 className="w-4 h-4" /></button>
                         </div>
                       ))}
                     </div>
