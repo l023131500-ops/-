@@ -154,7 +154,7 @@ export default function GlossaryPage() {
               <th className="px-4 py-3"></th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100">
+          <tbody className="divide-y divide-slate-100" aria-live="polite">
             {loading && <tr><td colSpan={5} className="px-4 py-8 text-center text-slate-500">טוען...</td></tr>}
             {!loading && entries.length === 0 && <tr><td colSpan={5} className="px-4 py-8 text-center text-slate-500">אין רשומות</td></tr>}
             {entries.map((e) => (
