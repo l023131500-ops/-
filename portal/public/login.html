@@ -411,12 +411,18 @@
       })();
 
       googleBtn.addEventListener('click', async () => {
+        if (googleBtn.disabled) return;
         msg.hidden = true;
-        const { error } = await sb.auth.signInWithOAuth({
-          provider: 'google',
-          options: { redirectTo: location.origin + CALLBACK },
-        });
-        if (error) show('הכניסה עם Google נכשלה: ' + error.message, 'err');
+        googleBtn.disabled = true;
+        try {
+          const { error } = await sb.auth.signInWithOAuth({
+            provider: 'google',
+            options: { redirectTo: location.origin + CALLBACK },
+          });
+          if (error) show('הכניסה עם Google נכשלה: ' + error.message, 'err');
+        } finally {
+          googleBtn.disabled = false;
+        }
       });
 
       // כבר מחובר — אין טעם להציג טופס כניסה. שולחים לניתוב, שיחליט

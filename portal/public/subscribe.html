@@ -292,19 +292,25 @@
           return;
         }
 
+        if (btn.disabled) return;
         btn.disabled = true;
         const label = btn.textContent;
         btn.textContent = 'רושמים…';
-        const { data, error } = await sb.rpc('more30_subscribe', { p_app: appKey, p_plan: code });
-        btn.disabled = false;
-        btn.textContent = label;
+        try {
+          const { data, error } = await sb.rpc('more30_subscribe', { p_app: appKey, p_plan: code });
+          if (error) return show('הבחירה לא נרשמה: ' + error.message, 'err');
 
-        if (error) return show('הבחירה לא נרשמה: ' + error.message, 'err');
-
-        current = data?.plan ?? code;
-        show(data?.message ?? 'הבחירה נרשמה.', 'ok');
-        if (data?.chargeable) await runCheckout(code);
-        await load();
+          current = data?.plan ?? code;
+          show(data?.message ?? 'הבחירה נרשמה.', 'ok');
+          // הכפתור נשאר נעול עד שגם הכרעת הסליקה (חיוב אמיתי, לא רק הרישום)
+          // וגם הרענון הסתיימו — אחרת לחיצה כפולה יכולה לפתוח שתי בקשות
+          // more30_checkout חופפות לפני ש-load() מרענן את current.
+          if (data?.chargeable) await runCheckout(code);
+          await load();
+        } finally {
+          btn.disabled = false;
+          btn.textContent = label;
+        }
       }
 
       async function load() {

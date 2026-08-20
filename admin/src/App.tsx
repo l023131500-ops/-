@@ -239,6 +239,8 @@ export function App() {
   const [ideas, setIdeas] = useState<Idea[]>([]);
   const [specs, setSpecs] = useState<Spec[]>([]);
   const [aiBusy, setAiBusy] = useState<Record<string, boolean>>({});
+  const [rowBusy, setRowBusy] = useState<Record<string, boolean>>({});
+  const [authBusy, setAuthBusy] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -299,12 +301,16 @@ export function App() {
   }
 
   async function setUserRole(userId: string, appKey: string, role: string) {
-    if (!sb) return;
-    const { error } = await sb.rpc("more30_app_set_role", {
-      p_user: userId, p_app: appKey, p_role: role,
-    });
-    if (error) { setMsg("שינוי התפקיד נכשל: " + error.message); return; }
-    loadUsers();
+    const key = `user:${userId}:${appKey}`;
+    if (!sb || rowBusy[key]) return;
+    setRowBusy((b) => ({ ...b, [key]: true }));
+    try {
+      const { error } = await sb.rpc("more30_app_set_role", {
+        p_user: userId, p_app: appKey, p_role: role,
+      });
+      if (error) { setMsg("שינוי התפקיד נכשל: " + error.message); return; }
+      await loadUsers();
+    } finally { setRowBusy((b) => ({ ...b, [key]: false })); }
   }
 
   async function loadIdeas() {
@@ -321,10 +327,14 @@ export function App() {
     setSpecs((data ?? []) as Spec[]);
   }
   async function setSpecStatus(id: string, s: string) {
-    if (!sb) return;
-    const { error } = await sb.rpc("more30_spec_set_status", { p_id: id, p_status: s });
-    if (error) { setMsg(error.message); return; }
-    loadSpecs();
+    const key = `spec-status:${id}`;
+    if (!sb || rowBusy[key]) return;
+    setRowBusy((b) => ({ ...b, [key]: true }));
+    try {
+      const { error } = await sb.rpc("more30_spec_set_status", { p_id: id, p_status: s });
+      if (error) { setMsg(error.message); return; }
+      await loadSpecs();
+    } finally { setRowBusy((b) => ({ ...b, [key]: false })); }
   }
 
   /**
@@ -449,28 +459,34 @@ export function App() {
    * החזרה לכתובת הנוכחית מייצרת את הסשן במקום שבו הוא באמת נדרש.
    */
   async function signInWithLink() {
-    if (!sb || !email) return;
-    const back = typeof window !== "undefined"
-      ? window.location.origin + window.location.pathname
-      : undefined;
-    const { error } = await sb.auth.signInWithOtp({ email, options: { emailRedirectTo: back } });
-    setMsg(error ? "שגיאה: " + error.message : `נשלח קישור התחברות ל-${email}. פתחו אותו באותו דפדפן.`);
+    if (!sb || !email || authBusy) return;
+    setAuthBusy(true);
+    try {
+      const back = typeof window !== "undefined"
+        ? window.location.origin + window.location.pathname
+        : undefined;
+      const { error } = await sb.auth.signInWithOtp({ email, options: { emailRedirectTo: back } });
+      setMsg(error ? "שגיאה: " + error.message : `נשלח קישור התחברות ל-${email}. פתחו אותו באותו דפדפן.`);
+    } finally { setAuthBusy(false); }
   }
 
   /** כניסה עם סיסמה — זו הכניסה הרגילה. הקישור במייל נשאר כגיבוי. */
   async function signInWithPassword() {
-    if (!sb || !email || !password) return;
-    const { error } = await sb.auth.signInWithPassword({ email, password });
-    if (error) {
-      setMsg(
-        error.message.toLowerCase().includes("invalid")
-          ? "המייל או הסיסמה אינם נכונים. אם עוד לא הוגדרה סיסמה — היכנסו בקישור למייל, ומשם אפשר לקבוע אחת."
-          : "שגיאה: " + error.message,
-      );
-      return;
-    }
-    setPassword("");
-    setMsg(null);
+    if (!sb || !email || !password || authBusy) return;
+    setAuthBusy(true);
+    try {
+      const { error } = await sb.auth.signInWithPassword({ email, password });
+      if (error) {
+        setMsg(
+          error.message.toLowerCase().includes("invalid")
+            ? "המייל או הסיסמה אינם נכונים. אם עוד לא הוגדרה סיסמה — היכנסו בקישור למייל, ומשם אפשר לקבוע אחת."
+            : "שגיאה: " + error.message,
+        );
+        return;
+      }
+      setPassword("");
+      setMsg(null);
+    } finally { setAuthBusy(false); }
   }
 
   /**
@@ -478,31 +494,54 @@ export function App() {
    * — כולל מי שבנה את המסך — יידע מה היא. הסיסמה לעולם לא נשמרת בקוד ולא במסד.
    */
   async function setOwnPassword() {
+    if (authBusy) return;
     if (!sb || newPassword.length < 8) { setMsg("סיסמה חייבת להיות באורך 8 תווים לפחות."); return; }
-    const { error } = await sb.auth.updateUser({ password: newPassword });
-    setMsg(error ? "שגיאה: " + error.message : "הסיסמה נקבעה. מכאן אפשר להיכנס עם מייל וסיסמה.");
-    setNewPassword("");
+    setAuthBusy(true);
+    try {
+      const { error } = await sb.auth.updateUser({ password: newPassword });
+      setMsg(error ? "שגיאה: " + error.message : "הסיסמה נקבעה. מכאן אפשר להיכנס עם מייל וסיסמה.");
+      setNewPassword("");
+    } finally { setAuthBusy(false); }
   }
 
   async function signOut() { if (sb) { await sb.auth.signOut(); setSession(null); } }
-  async function addTask(num: string) { const t = (draft[num] ?? "").trim(); if (!sb || !t) return;
-    const { error } = await sb.rpc("more30_add_task", { p_num: num, p_title: t, p_author: "user" });
-    if (error) { setMsg("צריך התחברות אדמין. " + error.message); return; } setDraft({ ...draft, [num]: "" }); loadSystems(); }
-  async function toggleTask(t: Task) { if (!sb) return; const next = t.status === "done" ? "todo" : "done";
-    const { error } = await sb.rpc("more30_set_task_status", { p_id: t.id, p_status: next }); if (error) { setMsg("צריך התחברות אדמין. " + error.message); return; } loadSystems(); }
-  async function toggleDelete(num: string, flag: boolean) { if (!sb) return;
-    const { error } = await sb.rpc("more30_set_delete", { p_num: num, p_flag: flag }); if (error) { setMsg("צריך התחברות אדמין. " + error.message); return; } loadSystems(); }
+  async function addTask(num: string) { const t = (draft[num] ?? "").trim(); const key = `add-task:${num}`;
+    if (!sb || !t || rowBusy[key]) return; setRowBusy((b) => ({ ...b, [key]: true }));
+    try {
+      const { error } = await sb.rpc("more30_add_task", { p_num: num, p_title: t, p_author: "user" });
+      if (error) { setMsg("צריך התחברות אדמין. " + error.message); return; } setDraft({ ...draft, [num]: "" }); await loadSystems();
+    } finally { setRowBusy((b) => ({ ...b, [key]: false })); } }
+  async function toggleTask(t: Task) { const key = `toggle-task:${t.id}`;
+    if (!sb || rowBusy[key]) return; setRowBusy((b) => ({ ...b, [key]: true })); const next = t.status === "done" ? "todo" : "done";
+    try {
+      const { error } = await sb.rpc("more30_set_task_status", { p_id: t.id, p_status: next }); if (error) { setMsg("צריך התחברות אדמין. " + error.message); return; } await loadSystems();
+    } finally { setRowBusy((b) => ({ ...b, [key]: false })); } }
+  async function toggleDelete(num: string, flag: boolean) { const key = `toggle-delete:${num}`;
+    if (!sb || rowBusy[key]) return; setRowBusy((b) => ({ ...b, [key]: true }));
+    try {
+      const { error } = await sb.rpc("more30_set_delete", { p_num: num, p_flag: flag }); if (error) { setMsg("צריך התחברות אדמין. " + error.message); return; } await loadSystems();
+    } finally { setRowBusy((b) => ({ ...b, [key]: false })); } }
   /** הצגה/הסתרה באתר הציבורי. שינוי הפיך לחלוטין — רק דגל, שום מחיקה. */
-  async function toggleVisible(num: string, flag: boolean) { if (!sb) return;
-    const { error } = await sb.rpc("more30_set_public_visible", { p_num: num, p_flag: flag });
-    if (error) { setMsg("צריך התחברות אדמין. " + error.message); return; } loadSystems(); }
-  async function setIdeaStatus(id: string, s: string) { if (!sb) return;
-    const { error } = await sb.rpc("more30_intake_set_status", { p_id: id, p_status: s }); if (error) { setMsg(error.message); return; } loadIdeas(); }
-  async function convertIdea(id: string) { if (!sb) return; const c = conv[id] ?? { slug: "", dept: "misc", cat: "other" };
+  async function toggleVisible(num: string, flag: boolean) { const key = `toggle-visible:${num}`;
+    if (!sb || rowBusy[key]) return; setRowBusy((b) => ({ ...b, [key]: true }));
+    try {
+      const { error } = await sb.rpc("more30_set_public_visible", { p_num: num, p_flag: flag });
+      if (error) { setMsg("צריך התחברות אדמין. " + error.message); return; } await loadSystems();
+    } finally { setRowBusy((b) => ({ ...b, [key]: false })); } }
+  async function setIdeaStatus(id: string, s: string) { const key = `idea-status:${id}`;
+    if (!sb || rowBusy[key]) return; setRowBusy((b) => ({ ...b, [key]: true }));
+    try {
+      const { error } = await sb.rpc("more30_intake_set_status", { p_id: id, p_status: s }); if (error) { setMsg(error.message); return; } await loadIdeas();
+    } finally { setRowBusy((b) => ({ ...b, [key]: false })); } }
+  async function convertIdea(id: string) { const key = `convert-idea:${id}`;
+    if (!sb || rowBusy[key]) return; const c = conv[id] ?? { slug: "", dept: "misc", cat: "other" };
     if (!c.slug.trim()) { setMsg("צריך slug לפרויקט החדש."); return; }
-    const { data, error } = await sb.rpc("more30_intake_to_project", { p_id: id, p_slug: c.slug.trim(), p_department: c.dept, p_category: c.cat });
-    if (error) { setMsg("המרה נכשלה (צריך אדמין): " + error.message); return; }
-    setMsg("נוצר פרויקט חדש #" + data); loadIdeas(); loadSystems(); }
+    setRowBusy((b) => ({ ...b, [key]: true }));
+    try {
+      const { data, error } = await sb.rpc("more30_intake_to_project", { p_id: id, p_slug: c.slug.trim(), p_department: c.dept, p_category: c.cat });
+      if (error) { setMsg("המרה נכשלה (צריך אדמין): " + error.message); return; }
+      setMsg("נוצר פרויקט חדש #" + data); await loadIdeas(); await loadSystems();
+    } finally { setRowBusy((b) => ({ ...b, [key]: false })); } }
 
   const isAuthed = !!session;
   const deniedEmail = (session as { user?: { email?: string } } | null)?.user?.email ?? "";
@@ -546,12 +585,12 @@ export function App() {
               autoComplete="username" style={{ ...inp, padding: "8px 12px" }} />
             <PwField id="admin-pass" placeholder="סיסמה" value={password}
               onChange={(e) => setPassword(e.target.value)} autoComplete="current-password"
-              onKeyDown={(e) => { if (e.key === "Enter") signInWithPassword(); }}
+              onKeyDown={(e) => { if (e.key === "Enter" && !authBusy) signInWithPassword(); }}
               style={{ ...inp, padding: "8px 12px" }} />
-            <button onClick={signInWithPassword} style={{ ...btn, background: "var(--accent)", color: "#fff", borderColor: "var(--accent)", padding: "8px 12px", fontWeight: 700 }}>
+            <button onClick={signInWithPassword} disabled={authBusy} style={{ ...btn, background: "var(--accent)", color: "#fff", borderColor: "var(--accent)", padding: "8px 12px", fontWeight: 700 }}>
               כניסה
             </button>
-            <button onClick={signInWithLink} style={{ ...btn, padding: "8px 12px" }}>
+            <button onClick={signInWithLink} disabled={authBusy} style={{ ...btn, padding: "8px 12px" }}>
               אין לי סיסמה — שלחו קישור למייל
             </button>
             {/* הכניסה המשותפת של הפלטפורמה — אותה אחת של כל 33 המערכות,
@@ -610,7 +649,7 @@ export function App() {
               <PwField id="admin-new-pass" placeholder="סיסמה חדשה (8+)" value={newPassword}
                 autoComplete="new-password"
                 onChange={(e) => setNewPassword(e.target.value)} style={inp} />
-              <button onClick={setOwnPassword} style={btn}>קבע</button>
+              <button onClick={setOwnPassword} disabled={authBusy} style={btn}>קבע</button>
             </div>
           </details>
           <button onClick={signOut} style={btn}>התנתק</button>
@@ -717,17 +756,17 @@ export function App() {
                         <summary style={{ fontSize: 12, cursor: "pointer" }}>משימות ({myTasks.filter((t) => t.status !== "done").length})</summary>
                         <ul style={{ listStyle: "none", padding: 0, margin: "6px 0" }}>{myTasks.map((t) => (
                           <li key={t.id} style={{ fontSize: 12, display: "flex", gap: 6, alignItems: "center" }}>
-                            <input type="checkbox" checked={t.status === "done"} onChange={() => toggleTask(t)} />
+                            <input type="checkbox" checked={t.status === "done"} disabled={!!rowBusy[`toggle-task:${t.id}`]} onChange={() => toggleTask(t)} />
                             <span style={{ textDecoration: t.status === "done" ? "line-through" : "none" }}>{t.title} <em style={{ color: "var(--muted-2)" }}>({t.author})</em></span>
                           </li>))}</ul>
                         {!r.is_protected && <div style={{ display: "flex", gap: 4 }}>
                           <input placeholder="משימה חדשה…" value={draft[r.number] ?? ""} onChange={(e) => setDraft({ ...draft, [r.number]: e.target.value })} style={{ ...inp, flex: 1, fontSize: 12 }} />
-                          <button onClick={() => addTask(r.number)} style={btn}>＋</button></div>}
+                          <button onClick={() => addTask(r.number)} disabled={!!rowBusy[`add-task:${r.number}`]} style={btn}>＋</button></div>}
                       </details>
                       {!r.is_protected && <label style={{ fontSize: 12, color: "var(--on-blue)", display: "block", marginTop: 8 }}>
-                        <input type="checkbox" checked={r.public_visible !== false} onChange={(e) => toggleVisible(r.number, e.target.checked)} /> מוצגת באתר הציבורי</label>}
+                        <input type="checkbox" checked={r.public_visible !== false} disabled={!!rowBusy[`toggle-visible:${r.number}`]} onChange={(e) => toggleVisible(r.number, e.target.checked)} /> מוצגת באתר הציבורי</label>}
                       {!r.is_protected && <label style={{ fontSize: 12, color: "var(--on-red)", display: "block", marginTop: 4 }}>
-                        <input type="checkbox" checked={r.to_delete} onChange={(e) => toggleDelete(r.number, e.target.checked)} /> סמן למחיקה</label>}
+                        <input type="checkbox" checked={r.to_delete} disabled={!!rowBusy[`toggle-delete:${r.number}`]} onChange={(e) => toggleDelete(r.number, e.target.checked)} /> סמן למחיקה</label>}
                     </div>
                   );
                 })}
@@ -881,6 +920,7 @@ export function App() {
                           {merged.find((r) => r.path === a.app_key)?.name_he ?? a.app_key}
                           <select
                             value={a.role}
+                            disabled={!!rowBusy[`user:${u.user_id}:${a.app_key}`]}
                             onChange={(e) => setUserRole(u.user_id, a.app_key, e.target.value)}
                             style={{ border: "1px solid var(--border)", borderRadius: 6, fontSize: 11, padding: "1px 4px" }}
                           >
@@ -984,7 +1024,7 @@ export function App() {
                 <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 8 }}>
                   <b>{i.project_name || "(ללא שם פרויקט)"} — {i.full_name}</b>
                   <span style={{ display: "flex", gap: 6, alignItems: "center" }}>
-                    {IDEA_STATUS.map((s) => <button key={s} onClick={() => setIdeaStatus(i.id, s)}
+                    {IDEA_STATUS.map((s) => <button key={s} onClick={() => setIdeaStatus(i.id, s)} disabled={!!rowBusy[`idea-status:${i.id}`]}
                       style={{ ...pillBtn, background: i.status === s ? "var(--accent)" : "var(--surface-2)", color: i.status === s ? "#fff" : "var(--fg-2)" }}>{IDEA_STATUS_HE[s]}</button>)}
                   </span>
                 </div>
@@ -1005,7 +1045,7 @@ export function App() {
                   : <div style={{ display: "flex", gap: 6, marginTop: 10, flexWrap: "wrap", alignItems: "center" }}>
                       <input placeholder="slug לפרויקט" value={c.slug} onChange={(e) => setConv({ ...conv, [i.id]: { ...c, slug: e.target.value } })} style={{ ...inp, fontSize: 12 }} />
                       <select value={c.dept} onChange={(e) => setConv({ ...conv, [i.id]: { ...c, dept: e.target.value } })} style={{ ...inp, fontSize: 12 }}>{DEPT_KEYS.map((d) => <option key={d} value={d}>{DEPARTMENTS[d]}</option>)}</select>
-                      <button onClick={() => convertIdea(i.id)} style={{ ...btn, background: "var(--accent)", color: "#fff", border: "none" }}>הפוך לפרויקט →</button>
+                      <button onClick={() => convertIdea(i.id)} disabled={!!rowBusy[`convert-idea:${i.id}`]} style={{ ...btn, background: "var(--accent)", color: "#fff", border: "none" }}>הפוך לפרויקט →</button>
                     </div>}
               </div>
             );
@@ -1022,7 +1062,7 @@ export function App() {
                 <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 8 }}>
                   <b>{sp.project_name || "(ללא שם פרויקט)"} — {sp.full_name}</b>
                   <span style={{ display: "flex", gap: 6, alignItems: "center" }}>
-                    {SPEC_STATUS.map((s) => <button key={s} onClick={() => setSpecStatus(sp.id, s)}
+                    {SPEC_STATUS.map((s) => <button key={s} onClick={() => setSpecStatus(sp.id, s)} disabled={!!rowBusy[`spec-status:${sp.id}`]}
                       style={{ ...pillBtn, background: sp.status === s ? "var(--accent)" : "var(--surface-2)", color: sp.status === s ? "#fff" : "var(--fg-2)" }}>{SPEC_STATUS_HE[s]}</button>)}
                   </span>
                 </div>

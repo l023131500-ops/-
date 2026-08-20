@@ -3345,3 +3345,40 @@
      על 02/03/10/18 (שלא נבדקו עדיין באותו זווית ספציפית — רק 01/15/16
      נבדקו), או סקירה טרייה של admin/ + portal/ המרכזיים (לא ליבת המערכות
      הממוספרות) לאותו דפוס.
+281. **admin/ + portal/ המרכזיים — סקירה טרייה של דפוס "מרוץ הגשות
+     כפולות" (הכיוון שסבב 46 השאיר בתור).** הרצתי סקירת Explore מלאה על
+     `admin/src/*` ו-`portal/{src,public,api}/*` (לא נגעתי ב-`apps/`,
+     08/09, `zr_*`, webhook NEDARIM3873). נמצאו 14 מופעים אמיתיים, כולם
+     עם תקדים-אחים קיים באותו קובץ (הרף שדפוס הקוד הזה עצמו קובע ל"באג
+     אמיתי"): 11 ב-`admin/src/App.tsx` (`setUserRole`, `setSpecStatus`,
+     `signInWithLink`, `signInWithPassword`, `setOwnPassword`, `addTask`,
+     `toggleTask`, `toggleDelete`, `toggleVisible`, `setIdeaStatus`,
+     `convertIdea` — כולם ללא נטרול, לעומת `analyzeSpec` באותו קובץ
+     שכבר משתמש ב-`aiBusy`+`disabled`), 1 ב-`portal/public/login.html`
+     (כפתור Google `signInWithOAuth` ללא נטרול, לעומת טופס הסיסמה וכפתור
+     "שכחתי סיסמה" באותו קובץ), 1 ב-`portal/public/me.html` (כפתור
+     "יציאה" ללא נטרול, לעומת כפתור "שדרוג" באותו קובץ). ה-14ית היא
+     מקרה שונה מעט: `portal/public/subscribe.html` `choose()` כן נועל
+     את הכפתור סביב `more30_subscribe`, אבל משחרר אותו *לפני*
+     שקורא ל-`runCheckout()` (שמפעיל `more30_checkout` — קריאת סליקה
+     אמיתית) ו-`load()` — כלומר חלון-מרוץ צר שבו קליק כפול-מהיר יכול
+     לפתוח שתי בדיקות/הכרעות סליקה חופפות על אותו מסלול.
+282. **התיקון:** ב-`admin/src/App.tsx` נוסף `rowBusy` (מפתח = מזהה
+     השורה/הפריט, אותה תבנית בדיוק כמו `aiBusy` הקיים) לכל 8 הפעולות
+     הממוספרות-פר-שורה, ו-`authBusy` (בוליאני יחיד, כי אלה פעולות כניסה
+     סדרתיות שלא רצות שתיים-במקביל מבחינה הגיונית) ל-3 פעולות ההתחברות —
+     `try/finally` סביב כל קריאת RPC/Auth, `disabled`/guard על כל
+     כפתור/select/onKeyDown מקביל. ב-`login.html`/`me.html` נוסף
+     `btn.disabled` פשוט (`if (btn.disabled) return` + `try/finally`),
+     אותה תבנית בדיוק כמו הכפתורים השכנים באותם קבצים. ב-`subscribe.html`
+     `choose()` — הזזתי את שחרור הנעילה (`btn.disabled=false`+שחזור
+     הטקסט) ל-`finally` שעוטף גם את `runCheckout`+`load`, כך שהכפתור
+     נשאר נעול לאורך כל הזרימה ולא רק סביב הרישום הראשוני. אפס שינוי
+     בשום נתיב הצלחה בכל 4 הקבצים — רק הוספת state+guard+`disabled`/
+     `try-finally`. בדקתי איזון סוגריים (`{`/`}`, `(`/`)`, `[`/`]`) בכל
+     קובץ שנערך (תואם 1:1, `node -e`) — אין `node_modules`/`tsc`
+     בעצים האלה, קריאה ידנית מלאה של כל `git diff` בנוסף. ענף
+     `fix/a-admin-portal-duplicate-submit-0820`. **הבא בתור:** admin/+
+     portal/ עברו עכשיו את הדפוס הזה במלואו; הכיוון הבא שנותר פתוח הוא
+     בדיקת מיגרציות-שלא-הוחלו על 02/03/10/18 (המלצת סבב 43/46, עדיין לא
+     בוצעה).

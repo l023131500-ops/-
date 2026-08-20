@@ -347,6 +347,8 @@
         });
 
         $('signout').addEventListener('click', async () => {
+          if ($('signout').disabled) return;
+          $('signout').disabled = true;
           await sb.auth.signOut();
           location.href = '/';
         });
