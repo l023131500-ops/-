@@ -51,7 +51,14 @@ body{
 }
 h1,h2,legend{font-family:"Frank Ruhl Libre",Georgia,serif; text-wrap:balance; line-height:1.25; margin:0}
 .wrap{max-width:720px; margin:0 auto; padding:calc(var(--sp)*5) calc(var(--sp)*2.5) calc(var(--sp)*8)}
-header{margin-bottom:calc(var(--sp)*4)}
+/* bk-bg-pattern-wave מ-29-bkalot-design (v1.3.0) — "טקסטורת גלים עדינה,
+   כותרות/עמודי נחיתה חגיגיים" בדיוק ההקשר של ההדר הזה. נטענת רק כ-
+   background-image (לא דרך .bk-bg-wave עצמה, שגם קובעת background-color:
+   var(--surface) — היה שם מלבן לבן מעל רקע העמוד var(--bg) של bkalot-clone
+   ומשנה את המראה מעבר לטקסטורה). הצבע בתוך ה-SVG הוא --teal של מערכת-העיצוב
+   הגלובלית, לא --brand המקומי, אבל באטימות .22 בלבד הוא נראה כגוון-על עדין
+   ולא כצבע זר. */
+header{margin-bottom:calc(var(--sp)*4); background-image:var(--bg-pattern-wave); background-repeat:repeat}
 .eyebrow{
   display:inline-block; font-size:13px; font-weight:700; letter-spacing:.02em;
   color:var(--brand); background:var(--brand-soft);
@@ -63,6 +70,12 @@ h1{font-size:clamp(28px,5vw,40px); font-weight:700}
   background:var(--surface); border:1px solid var(--line);
   border-radius:var(--r-lg); box-shadow:var(--shadow);
   padding:calc(var(--sp)*3);
+  /* bk-bg-pattern-noise מ-29-bkalot-design (v1.3.0) — "תחושת נייר/פרימיום
+     למשטחים גדולים", בדיוק כרטיס-הטופס הגדול הזה. מוגדרת אחרי background
+     בכוונה: ה-shorthand שמעל מאפס background-image ל-none, וה-longhand הזה
+     חוזר וקובע אותו בלי לגעת ב-background-color שכבר נקבע — var(--surface)
+     נשאר בדיוק כפי שהיה. */
+  background-image:var(--bg-pattern-noise);
 }
 fieldset{border:0; margin:0 0 calc(var(--sp)*3.5); padding:0}
 legend{font-size:20px; font-weight:700; margin-bottom:calc(var(--sp)*.5)}
