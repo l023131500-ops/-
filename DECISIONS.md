@@ -4906,3 +4906,57 @@
      ניסיון חוזר תקופתי ל-#167/#201, או פתיחת עדשה חדשה (למשל:
      `alt` חסר בתמונות מידע, או `tabIndex`/מקלדת על אלמנטים
      אינטראקטיביים לא-`<button>`) על 01-16/40-gannenet.
+
+## 20/08/2026 (LOOP A — סבב 76) — קישורי `<a href>` גולמיים שעוקפים basePath/basename: 03-igud-ads + 15-egod
+
+426. **בדקתי מחדש `core.run_progress` לפני שהתחלתי.** סבב 75 סגור
+     (commit `8207b611`, תאם ל-HEAD). המשכתי מקצה הענף
+     `fix/a-icon-only-buttons-round2-0820` (לא מהאינטגרציה — אותו לקח
+     חוזר מסבבים 74-75). פתחתי שתי עדשות חדשות שסבב 75/#425 הציע:
+     `alt` חסר בתמונות, ו-`tabIndex`/מקלדת על `onClick` שאינו `<button>`.
+     שתיהן נבדקו ע"י Explore agent על כל 01-16 (דילוג 08/09) +
+     40-gannenet/portal/admin/packages — **שתיהן נמצאו נקיות** (כל
+     `<img>` כבר עם `alt`, ו-`onClick` הגולמי היחיד שנמצא היה תבנית
+     backdrop-לסגירת-מודל תקינה ב-03-igud-ads עם כפתור סגירה נגיש
+     (`aria-label="סגור"`) — לא נגעתי).
+427. **פתחתי עדשה שלישית: קישור `<a href="/">` (או נתיב מוחלט קשיח)
+     שעוקף `basename`/`basePath` של האפליקציה** — אותו דפוס באג
+     שכבר תוקן ב-Loop B (`21-mthbram`/`24-galilee-connect-hub`,
+     `NotFound.tsx:16` בשתיהן) אך מעולם לא נבדק על 01-16. הרצתי
+     Explore agent על כל 01-16+40-gannenet, כל אחד עם קביעת
+     `basename`/`basePath` שלו קודם, וגרפ ל-`<a href="/"` גולמי
+     לעומת השימוש הרגיל ב-`Link`/`NavLink` באותו אפליקציה.
+428. **3 מופעים אמיתיים אומתו בקריאה ישירה של כל קובץ:**
+     `03-igud-ads/app/(public)/create/page.tsx:238` (Next.js,
+     `basePath: "/modaot"`, `<a href="/">` — לעומת אותה שורת "חזרה
+     לבית" בדיוק שכבר משתמשת ב-`<Link href="/">` ב-
+     `result/[id]/page.tsx:22` באותה אפליקציה); `15-egod/src/pages/
+     NotFound.tsx:16` ו-`15-egod/src/components/AdminRoute.tsx:70`
+     (React Router, `basename` דינמי מ-`import.meta.env.BASE_URL`
+     על `/egod/`, שני `<a>` גולמיים — לעומת `Link to="/"` הקיים כבר
+     ב-`Footer.tsx`/`Navbar.tsx` באותה אפליקציה). הקישור השני ב-
+     `AdminRoute.tsx` (`https://more30.com/login?from=...`) נבדק
+     ונשאר כפי שהוא — כתובת חוצת-אפליקציה מכוונת, לא באג.
+429. **התיקון: `<a href="/">` → `<Link href="/">`/`<Link to="/">`**
+     (עם `import Link from "next/link"`/`import { Link } from
+     "react-router-dom"` שנוסף היכן שחסר) — אותה תבנית תיקון בדיוק
+     כמו ב-Loop B. `AdminRoute.tsx` גם קיבל תיקון ל-`href="/egod"`
+     הקשיח (כתובת פריסה שהייתה אמורה להיות דינמית) ל-`Link to="/"`.
+     אפס שינוי ל-`onClick`/מבנה/טקסט קיים מעבר להחלפת התגית.
+430. **אפס רגרסיה מאומתת:** `git diff --stat` — 3 קבצים, 8 שורות
+     נוספו/6 הוסרו. אין `tsc`/`npm` בסביבה הזו — אומת בקריאה מלאה
+     של כל קובץ לפני/אחרי + `git diff` מלא + בדיקת איזון
+     `{}`/`()`/`[]` ב-Python על שלושת הקבצים (כולם מאוזנים).
+     `apps/03-igud-ads/app`, `apps/15-egod/src` מוחרגים כברירת מחדל
+     ב-`.gitignore` אך עוקבים היסטורית — `git add` (בלי `-f`) הציג
+     אזהרת hint אך הצליח בפועל (הקבצים כבר עקובים, מאומת ב-
+     `git ls-files --error-unmatch` + `git status --short` שהראה
+     `M` לא `A`/`??`). Commit `8eac3b52` על אותו ענף
+     `fix/a-icon-only-buttons-round2-0820`.
+431. **הבא בתור:** עדשת הקישור-הגולמי נבדקה על כל 01-16+40-gannenet
+     (רק 2 אפליקציות נמצאו עם באגים אמיתיים; 04/12 משתמשות בניתוב
+     מבוסס-hash ללא בעיית basename; 05/06/10/11 אתרי HTML סטטיים
+     ללא ראוטר; 01/02/16/40 כבר תקינות). סבב הבא סביר: ניסיון חוזר
+     תקופתי ל-#167/#201, או עדשה חדשה (למשל: `target="_blank"` בלי
+     `rel="noopener noreferrer"`, או טפסים בלי `noValidate`/הודעת
+     שגיאה נגישה) על 01-16/40-gannenet.
