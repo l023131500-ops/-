@@ -64,6 +64,7 @@ export default function LoginPage() {
 
           {error && (
             <div
+              id="login-error"
               role="alert"
               aria-live="assertive"
               className="bg-red-50 border border-red-200 text-red-700 px-3 py-2 rounded text-sm mb-4"
@@ -120,7 +121,8 @@ export default function LoginPage() {
                 className="input"
                 required
                 dir="ltr"
-                autoComplete="email"
+                aria-invalid={error ? "true" : undefined}
+                aria-describedby={error ? "login-error" : undefined}
               />
             </div>
             {/* כפתור "הצג סיסמה" (priority §1א). השדה נושא dir="ltr" ו-`.input`
@@ -138,6 +140,8 @@ export default function LoginPage() {
                   required
                   dir="ltr"
                   autoComplete="current-password"
+                  aria-invalid={error ? "true" : undefined}
+                  aria-describedby={error ? "login-error" : undefined}
                 />
                 <button
                   type="button"
