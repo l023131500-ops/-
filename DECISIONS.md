@@ -6589,3 +6589,47 @@
      הסבב הזה, ראויים לסבב ייעודי הבא (לבדוק שכל אחד באמת modal
      חי ולא false-positive מה-grep הגס, כמו שקרה כבר כמה פעמים
      בסבבים קודמים).
+
+## 20/08/2026 — סבב 117 (loop A)
+
+619. **בדקתי מחדש `git log`/`core.run_progress`/`core.project_tasks`
+     לפני שהתחלתי.** סבב 116 סגור (commit `2b496c30`, תואם HEAD).
+     חמש המשימות הפתוחות ב-`core.project_tasks` (02/12/13/25/32)
+     עדיין אותו חסם (סוד חסר / החלטת מיזוג-origin) — לא בר-פעולה.
+     המשכתי ישירות להמלצת #618: בדקתי את הלנס (modal מותאם-אישית
+     בלי `role="dialog"`/`aria-modal`/Escape) על
+     `apps/01-torah-platform/src/pages/legacy/AdminDashboard.tsx`.
+620. **אימות שזה modal חי, לא false-positive:** `App.tsx` שורה 117
+     טוען אותו lazy (`LegacyAdminDashboard`) וממפה אותו ל-route חי
+     `/legacy/admin` (שורה 307) — לא קוד מת. מצאתי **שני** modals
+     מותאמים-אישית בקובץ (חיפוש `fixed inset-0 z-50` נתן 2 תוצאות,
+     לא 1 כמו שההמלצה הניחה): "עריכת שיעור" (`editingLesson`,
+     שורה ~1568) ו"פרטי פנייה מנדרים" (`viewingNedarim`, שורה
+     ~1689) — לאף אחד מהם לא היה `role`/`aria-modal`/Escape, בדיוק
+     כמו `LessonDetailModal.tsx` בסבב 116.
+621. **התיקון:** `useEffect` יחיד (ליד ה-`useEffect` הקיים של
+     `pendingFullAccessCount`) שמאזין ל-`keydown` על `window` וסוגר
+     את המודל הפתוח (`editingLesson` או `viewingNedarim`, לפי מה
+     שפתוח) ב-Escape — משותף לשני המודלים כי שניהם לא יכולים להיות
+     פתוחים בו-זמנית באותו state model. הוספתי `role="dialog"`
+     `aria-modal="true"` ו-`aria-label` סטטי (כותרת כל מודל, בעברית,
+     כמו הכותרת שכבר מוצגת ב-`<h2>`) על שני ה-panel `motion.div`
+     הפנימיים (לא ה-overlay).
+622. **אפס רגרסיה מאומתת:** `git diff` מלא — קובץ אחד, 21+/0-, רק
+     `useEffect` חדש + 3 attributes על כל אחד מ-2 ה-panels. לא נגעתי
+     ב-`onClick`/`saveEdit`/`approveNedarim`/`genericDelete`/מבנה
+     JSX קיים. אין `tsc`/`npm` בסביבה הזו — אומת בבדיקת איזון
+     `{}`/`()`/`[]` ב-Python על הקובץ המלא (784/784, 849/849,
+     137/137). `git check-ignore -v` על הקובץ עצמו החזיר "לא
+     ignored" (exit 1), אבל `git add` הרגיל בכל זאת סירב עם
+     "ignored by .gitignore" — `git add -f` נדרש בפועל (הפרש בין
+     `check-ignore` על נתיב בודד ל-`add` על קובץ שכבר עוקב תחת
+     כלל `apps/**` ברמת תיקייה, אותו quirk שתועד בסבב 116). Commit יבוא בהמשך
+     על `fix/a-icon-only-buttons-round2-0820`, יידחף ל-origin (מפעיל
+     פריסת Vercel תחת more30.com/torah).
+623. **הבא בתור:** אותה עדשה עדיין לא נבדקה ב-`apps/03-igud-ads/
+     app/(admin)/admin/users/page.tsx` ו-`admin/templates/page.tsx`
+     (וה-grep הרחב יותר על `apps/03-igud-ads` מצא גם `modal`/`Modal`
+     hits ב-`projects/page.tsx` ו-`transcripts/page.tsx` שלא נבדקו
+     כלל בסבבים קודמים) — לבדוק כל אחד כמודל חי אמיתי (לא
+     false-positive) ולתקן לפי אותו תבנית.

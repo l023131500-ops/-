@@ -58,6 +58,17 @@ const AdminDashboard = () => {
       .then(({ count }) => setPendingFullAccessCount(count ?? 0));
   }, []);
 
+  useEffect(() => {
+    if (!editingLesson && !viewingNedarim) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key !== "Escape") return;
+      if (editingLesson) setEditingLesson(null);
+      if (viewingNedarim) setViewingNedarim(null);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [editingLesson, viewingNedarim]);
+
   useEffect(() => { fetchAll(); }, []);
 
   const fetchAll = async () => {
@@ -1579,6 +1590,9 @@ const AdminDashboard = () => {
               initial={{ opacity: 0, y: 30, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 30, scale: 0.95 }}
+              role="dialog"
+              aria-modal="true"
+              aria-label="עריכת שיעור"
               className="bg-card rounded-3xl border border-border shadow-elegant max-w-2xl w-full max-h-[90vh] overflow-y-auto"
             >
               <div className="p-8">
@@ -1696,6 +1710,9 @@ const AdminDashboard = () => {
           >
             <motion.div
               initial={{ opacity: 0, y: 30, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 30, scale: 0.95 }}
+              role="dialog"
+              aria-modal="true"
+              aria-label="פרטי פנייה מנדרים"
               className="bg-card rounded-3xl border border-border shadow-elegant max-w-3xl w-full max-h-[90vh] overflow-y-auto"
             >
               <div className="p-8">
