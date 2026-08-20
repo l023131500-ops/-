@@ -3837,3 +3837,78 @@
      `nadlan.research_leads`) — למשל טבלאות ה-hub ב-`public` (`tenants`,
      `synagogues` וכו') שמוזכרות ב-CONNECTIONS.md כ"RLS enabled" אך לא
      נבדק בפועל *מה* המדיניות אומרת, רק שהיא קיימת.
+
+## 20/08/2026 (LOOP A — סבב 56) — 06-kupot-holim: הסרת מדיניות RLS מתה שחשפה PII של לידים לכל "authenticated" עתידי
+
+321. **המשכתי מ-#320 (א): בדקתי אם `kupot_leads` (06) היא בכלל בעיה חיה,
+     לפני שנוגעים.** קודם ניסיתי כיוון חלופי — בדיקת RLS בפועל על 20
+     הטבלאות ב-`public` של פרויקט ה-hub (`uhnrgujbdxhhmoxcjria`) שמתועדות
+     ב-CONNECTIONS.md כ"RLS enabled" (`tenants`/`synagogues`/`teachers`/
+     `lessons` וכו'). **תוצאה: לא ממצא.** לרוב הטבלאות האלה יש `relrowsecurity=true`
+     אבל **אפס** מדיניות — כלומר deny-by-default לכל תפקיד חוץ מ-`service_role`,
+     בטוח מטבעו, לא חור. וגם: `grep` על `admin/`+`portal/`+`apps/` לא מצא אף
+     שאילתת `.from('tenants')`/`.from('synagogues')` וכו' — הטבלאות האלה
+     יתומות/legacy, לא בשימוש בפועל ע"י שום מערכת בתחום. סכימת `chatzor`
+     (16, בתחום) על אותו פרויקט נבדקה בנפרד לעומק — כל 13 הטבלאות שם יש
+     להן מדיניות תואמות-תבנית (`chatzor.is_org_admin`/`manages_synagogue`),
+     נקי.
+322. **חזרתי ל-#320 (ב): `kupot_leads`.** בדקתי במפורש (כדי לא לנחש)
+     האם יש בכלל נתיב חי להיהפך ל-`authenticated` על `csjekrvukbdznetsrodj`
+     (המשרת גם 06/12 בתחום Loop A וגם 17/27 מחוץ לתחום): `select count(*)
+     from auth.users` על כל הפרויקט החזיר **1** (`test@more30.com`,
+     נוצר 12/08 — כנראה חשבון בדיקה ל-12). `grep` רוחבי על 06/12/17/27
+     לא מצא שום `signUp`/`signup` בקוד המקור של אף אחת מהארבע. כלומר:
+     **אין נתיב הרשמה ציבורי בכלל על הפרויקט הזה כרגע.**
+323. **קראתי את `site/leads-store.js` במלואו (06) — ותיעוד קיים בתוכו
+     כבר מוכיח שהמדיניות מתה בפועל, לא רק בתיאוריה.** ההערה בשורות 71-80
+     מתעדת מדידה מ-07/08/2026 (`scripts/qa/briut-leads-access.mjs`): המפתח
+     שהאתר נושא (`anonKey` בלבד — אין קוד `supabase.auth` בכל 06) מקבל
+     201 על POST אבל **401 על כל GET/PATCH/DELETE**. כלומר גם מסך הניהול
+     עצמו (`admin.js`) לא יכול לקרוא לידים אמיתיים היום — לא דרך `anon`
+     (אין לו מדיניות SELECT) ולא דרך `authenticated` (אין נתיב חי להגיע
+     לתפקיד הזה). `pg_policies` על `public.kupot_leads` אימת: רק שתי
+     מדיניות קיימות היו — `kupot_leads_insert_anon` (INSERT, anon+authenticated,
+     תקין) ו-`authenticated can read leads` (SELECT, `qual=true`, roles=
+     `{authenticated}`) — **המדיניות השנייה לא משרתת שום קורא קיים היום.**
+324. **הסיכון האמיתי: לא ניצול היום, אלא מוקש לעתיד — בדיוק כמו התבנית
+     שכבר תועדה בסבב 40 ("5 תיקונים ישבו חשופים חודש עד שגישה הופעלה").**
+     אם אי-פעם תיפתח הרשמה על אחת מארבע המערכות שחולקות פרויקט זה (06/12/17/27),
+     כל משתמש חדש שיירשם — לקוח תמים, לא אדמין — יקבל אוטומטית קריאה מלאה
+     על כל שורה ב-`kupot_leads` (`full_name`/`phone`/`email`/`address`/
+     `from_fund`/`to_fund`). זו בדיוק אותה מחלקת באג כמו `zr_*_admin` בסבב 54
+     (RLS רחב-מדי שממתין לגורם מפעיל), רק שכאן אין בכלל תבנית `is_super_admin`
+     קיימת בפרויקט הזה לחקות (וידאתי: `select routine_name from
+     information_schema.routines where routine_name ilike '%admin%'` — אפס
+     תוצאות רלוונטיות מלבד קטלוג pg/auth מובנה).
+325. **התיקון: `DROP POLICY "authenticated can read leads" ON public.kupot_leads`**
+     (מיגרציה `drop_kupot_leads_open_authenticated_read` דרך ה-MCP, הוחלה
+     בפועל). לא הוספתי מדיניות אדמין חלופית — בניית מנגנון הרשאות חדש
+     (מי "אדמין" בפרויקט הזה, איך מאמתים) היא ניחוש-בלתי-מבוסס-ראיה, בדיוק
+     כמו שסבב 55 (#312) נמנע ממנו במפורש; `admin.js` כבר מתעד את התוכנית
+     הנכונה בעצמה (הערה בראש הקובץ: "Real access needs server-side auth
+     — an Edge Function or an RPC in SECURITY DEFINER"), וזה לא צעד אחד.
+     **אפס רגרסיה:** אומתי ש-DROP לא שינה שום התנהגות חיה — `listLeads()`
+     כבר היה נכשל ל-401 גם לפני התיקון (המדיניות שהוסרה מעולם לא שירתה
+     קורא אמיתי, כי אין נתיב ל-`authenticated`). `get_advisors(security)`
+     על הפרויקט אחרי התיקון לא הראה אזהרה חדשה על `kupot_leads`.
+326. **ממצא נלווה, מתועד ולא תוקן — מחוץ לתחום Loop A:** תוך כדי הבדיקה
+     מצאתי ש-`public.admin_sessions` (**אותו פרויקט**, `csjekrvukbdznetsrodj`)
+     — מנגנון האדמין בפועל של 27-bkalut-price (מאומת: `grep` מצא `admin_sessions`
+     רק ב-`apps/27-bkalut-price/server/*`, לא ב-06/12) — יש לו RLS מופעל
+     עם 4 מדיניות, וכולן `roles={anon}` עם `qual=true`/`with_check=true`
+     על SELECT/INSERT/UPDATE/DELETE כאחד. המשמעות: כל מבקר אנונימי יכול
+     היום לקרוא טוקני session של אדמין קיימים (`select * from
+     admin_sessions`), וגרוע מזה — **להכניס שורת session מזויפת בעצמו**
+     (`token`/`identity`/`role` כולם נכתבים ע"י הלקוח) ולקבל גישת אדמין
+     מלאה ל-27 בלי שום התחברות. זו פרצה קריטית אמיתית — אבל 27 שייכת
+     ל-Loop B (17-31), אז **לא נגעתי בה** (רק בטבלת `kupot_leads` של 06,
+     לא בשום דבר של 27). רשמתי שורה חדשה ב-`core.issues` (התיעוד המשותף
+     שגם Loop B קורא ממנו) כדי שהממצא לא יאבד — לא שינוי קוד/פריסה של 27,
+     רק רישום עובדה בטבלת המעקב המשותפת שכבר מכילה שורות על 17-31 שנפתחו
+     בעבר גם ע"י Loop A (למשל #164/#167/#168/#248-251).
+327. **הבא בתור:** אם ההיקף יחזור ל-06/12: לשקול האם `csjekrvukbdznetsrodj`
+     צריך בכלל מנגנון `is_super_admin`-דומה, או שעדיף Edge Function
+     ל-06/12 (כרגע גם ל-06 וגם ל-12 אין שום מנגנון ניהול שרת-צד קיים —
+     `admin.js` (06) חוסם כל התחברות במכוון, ו-12 כלל לא כולל מסך ניהול
+     בקוד המקור שנבדק). מחוץ ל-06/12: `admin_sessions`/27 ממתין ל-Loop B
+     (רשום עכשיו ב-`core.issues`).
