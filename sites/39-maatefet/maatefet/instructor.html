@@ -100,6 +100,7 @@ th{color:var(--muted);font-weight:400;font-size:12px;text-transform:uppercase;le
 .empty{color:var(--muted);font-size:14px;padding:20px 0}
 .codebox{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;background:var(--royal-2);
   border-radius:3px;padding:4px 8px;word-break:break-all}
+.slotWrap{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
 </style>
 </head>
 <body>
@@ -277,6 +278,8 @@ th{color:var(--muted);font-weight:400;font-size:12px;text-transform:uppercase;le
         <input id="aTopic" />
         <div id="aErr"></div>
         <button class="btn" id="aSubmit">קביעת הפגישה</button>
+        <button class="btn btn-sm btn-quiet" id="aSuggest" style="margin-inline-start:8px">הצעת מועדים פנויים</button>
+        <div id="aSuggestWrap"></div>
       </div>
       <div class="card">
         <h2>הפגישות שלי</h2>
@@ -845,6 +848,39 @@ $('aSubmit').addEventListener('click', async () => {
     $('aErr').innerHTML = '<div class="err">' + esc(e.message) + '</div>';
   } finally {
     $('aSubmit').disabled = false;
+  }
+});
+
+/* ── dashboard: calendar — smart scheduling (free-slot suggestions) ─────── */
+$('aSuggest').addEventListener('click', async () => {
+  const wrap = $('aSuggestWrap');
+  wrap.innerHTML = '<div class="empty">מחפש מועדים פנויים…</div>';
+  $('aSuggest').disabled = true;
+  try {
+    const slots = await rpc('maatefet_suggest_slots', {
+      p_duration_minutes: Number($('aDuration').value) || 60,
+    });
+    if (!slots.length) {
+      wrap.innerHTML = '<div class="empty">לא נמצאו מועדים פנויים בשבעת הימים הקרובים.</div>';
+      return;
+    }
+    wrap.innerHTML = '<div class="slotWrap">' + slots.slice(0, 12).map((s) =>
+      '<button type="button" class="btn btn-sm btn-quiet" data-slot="' + esc(s.slot_start) + '">' +
+        esc(new Date(s.slot_start).toLocaleString('he-IL', { weekday: 'short', day: 'numeric', month: 'numeric', hour: '2-digit', minute: '2-digit' })) +
+      '</button>'
+    ).join('') + '</div>';
+    for (const b of wrap.querySelectorAll('[data-slot]')) {
+      b.addEventListener('click', () => {
+        const d = new Date(b.dataset.slot);
+        const pad = (n) => String(n).padStart(2, '0');
+        $('aWhen').value = d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) + 'T' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+        wrap.innerHTML = '';
+      });
+    }
+  } catch (e) {
+    wrap.innerHTML = '<div class="err">' + esc(e.message) + '</div>';
+  } finally {
+    $('aSuggest').disabled = false;
   }
 });
 
