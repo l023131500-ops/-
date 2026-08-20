@@ -212,6 +212,7 @@ td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
       <button class="tab" data-view="properties">נכסים</button>
       <button class="tab" data-view="documents">מסמכים</button>
       <button class="tab" data-view="tasks">משימות</button>
+      <button class="tab" data-view="team">צוות</button>
     </div>
     <select class="office-pick" id="officePick" hidden aria-label="בחירת משרד"></select>
   </div>
@@ -343,6 +344,34 @@ td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
     </div>
   </section>
 
+  <section class="panel" id="viewTeam" hidden>
+    <div class="wrap">
+      <h1 class="page display">צוות</h1>
+      <p class="sub">חברי המשרד והזמנות ממתינות. הזמנה וניהול תפקידים פתוחים לבעלים/מנהל בלבד.</p>
+      <div class="controls">
+        <button class="btn" id="newInvite">+ הזמנת חבר צוות</button>
+        <span class="spacer"></span>
+      </div>
+      <div id="teamBody"></div>
+    </div>
+  </section>
+
+  <!-- Reached via ?join=CODE — a teammate who followed an invite link, before
+       they belong to any office of their own. Shown instead of viewSetup so a
+       new agent joins the office that invited them rather than accidentally
+       opening a second, unrelated one. -->
+  <section class="panel" id="viewJoin" hidden>
+    <div class="wrap" style="max-width:640px">
+      <h1 class="page display">הצטרפות למשרד</h1>
+      <p class="sub">קיבלת קישור הזמנה לצוות. אישור ההצטרפות ישייך אותך למשרד שהזמין אותך.</p>
+      <div id="joinErr"></div>
+      <p style="margin-top:18px">
+        <button class="btn" id="joinAccept">הצטרפות</button>
+        <button class="btn btn-quiet" id="joinCancel">ביטול</button>
+      </p>
+    </div>
+  </section>
+
   <section class="panel" id="viewError" hidden>
     <div class="wrap"><div class="err" id="errText"></div></div>
   </section>
@@ -438,6 +467,7 @@ const PDOCCAT_HE = {
   appraisal: 'חוות דעת שמאי', poa: 'ייפוי כוח', id_copy: 'צילום ת.ז.',
   contract_draft: 'טיוטת חוזה', other: 'אחר',
 };
+const ROLE_HE = { owner: 'בעלים', manager: 'מנהל/ת', agent: 'סוכן/ת' };
 
 let ME = null;        // np_me()
 let OFFICE = null;    // the selected office row
@@ -465,8 +495,8 @@ function fail(msg) {
 }
 
 function show(id) {
-  for (const s of ['booting', 'viewSetup', 'viewDash', 'viewBoard', 'viewContacts',
-                   'viewProperties', 'viewDocuments', 'viewTasks', 'viewError']) {
+  for (const s of ['booting', 'viewSetup', 'viewJoin', 'viewDash', 'viewBoard', 'viewContacts',
+                   'viewProperties', 'viewDocuments', 'viewTasks', 'viewTeam', 'viewError']) {
     $(s).hidden = s !== id;
   }
 }
@@ -479,7 +509,8 @@ function setView(name) {
   }
   history.replaceState(null, '', '?v=' + name);
   const map = { dash: renderDash, board: renderBoard, contacts: renderContacts,
-                properties: renderProperties, documents: renderDocuments, tasks: renderTasks };
+                properties: renderProperties, documents: renderDocuments, tasks: renderTasks,
+                team: renderTeam };
   show('view' + name[0].toUpperCase() + name.slice(1));
   map[name]();
 }
@@ -1851,6 +1882,158 @@ function taskForm(ctx) {
   });
 }
 
+/* ── team ────────────────────────────────────────────────────────────────── */
+function myOfficeRole() {
+  const mine = (ME.offices || []).find((o) => o.id === OFFICE.id);
+  return mine ? mine.role : null;
+}
+function isOfficeManager() {
+  const role = myOfficeRole();
+  return ME.is_super_admin || role === 'owner' || role === 'manager';
+}
+
+async function renderTeam() {
+  const body = $('teamBody');
+  const manager = isOfficeManager();
+  $('newInvite').hidden = !manager;
+  body.innerHTML = '<p class="loading"><span class="spinner"></span>טוען…</p>';
+
+  let members, invites = [];
+  try {
+    members = await rpc('np_office_members', { p_office: OFFICE.id });
+    if (manager) invites = await rpc('np_member_invites_list', { p_office: OFFICE.id });
+  } catch (e) { body.innerHTML = '<div class="err">' + esc(e.message) + '</div>'; return; }
+
+  members = members || [];
+  const roleOpts = Object.entries(ROLE_HE)
+    .map(([k, l]) => '<option value="' + k + '">' + l + '</option>').join('');
+
+  let html = '<h2 class="sec" style="margin-top:0">חברי הצוות</h2>';
+  html += members.length
+    ? '<div class="table-scroll"><table><thead><tr><th>שם</th><th>תפקיד</th>' +
+      '<th>רישיון</th><th>טלפון</th><th>דוא״ל</th><th>סטטוס</th>' + (manager ? '<th></th>' : '') +
+      '</tr></thead><tbody>' +
+      members.map((m) => {
+        const roleCell = manager
+          ? '<select data-role-for="' + m.user_id + '" data-prev="' + m.role + '">' +
+            roleOpts.replace('value="' + m.role + '"', 'value="' + m.role + '" selected') + '</select>'
+          : esc(ROLE_HE[m.role] || m.role);
+        return '<tr><td>' + v(m.full_name) + '</td><td>' + roleCell + '</td>' +
+          '<td>' + v(m.license_number) + '</td><td>' + v(m.phone) + '</td><td>' + v(m.email) + '</td>' +
+          '<td>' + (m.is_active ? '<span class="pill on">פעיל</span>' : '<span class="pill off">לא פעיל</span>') + '</td>' +
+          (manager
+            ? '<td>' + (m.is_active
+                ? '<button class="btn btn-quiet btn-sm" data-remove="' + m.user_id + '">הסרה</button>'
+                : '') + '</td>'
+            : '') +
+          '</tr>';
+      }).join('') + '</tbody></table></div>'
+    : '<p class="na">אין חברי צוות.</p>';
+
+  if (manager) {
+    const pending = invites.filter((i) => !i.used_at && !i.revoked_at);
+    html += '<h2 class="sec">הזמנות ממתינות</h2>';
+    html += pending.length
+      ? '<div class="table-scroll"><table><thead><tr><th>קוד</th><th>תפקיד</th>' +
+        '<th>לשם</th><th>בתוקף עד</th><th></th></tr></thead><tbody>' +
+        pending.map((i) => '<tr><td style="font-variant-numeric:tabular-nums">' + esc(i.code) + '</td>' +
+          '<td>' + esc(ROLE_HE[i.role] || i.role) + '</td><td>' + v(i.full_name) + '</td>' +
+          '<td>' + dt(i.expires_at) + '</td>' +
+          '<td><button class="btn btn-quiet btn-sm" data-copy-invite="' + esc(i.code) + '">העתקת קישור</button> ' +
+          '<button class="btn btn-quiet btn-sm" data-revoke-invite="' + i.id + '">ביטול</button></td></tr>').join('') +
+        '</tbody></table></div>'
+      : '<p class="na">אין הזמנות ממתינות כרגע.</p>';
+  }
+
+  body.innerHTML = html;
+
+  if (manager) {
+    for (const sel of body.querySelectorAll('select[data-role-for]')) {
+      sel.addEventListener('change', async () => {
+        const prev = sel.dataset.prev;
+        try {
+          await rpc('np_member_role_set', { p_office: OFFICE.id, p_user_id: sel.dataset.roleFor, p_role: sel.value });
+          toast('התפקיד עודכן');
+          renderTeam();
+        } catch (e) { sel.value = prev; toast('העדכון נכשל: ' + e.message, true); }
+      });
+    }
+    for (const btn of body.querySelectorAll('button[data-remove]')) {
+      btn.addEventListener('click', async () => {
+        if (!confirm('להסיר את חבר הצוות מהמשרד?')) return;
+        try {
+          await rpc('np_member_remove', { p_office: OFFICE.id, p_user_id: btn.dataset.remove });
+          toast('הוסר מהמשרד');
+          renderTeam();
+        } catch (e) { toast('ההסרה נכשלה: ' + e.message, true); }
+      });
+    }
+    for (const btn of body.querySelectorAll('button[data-copy-invite]')) {
+      btn.addEventListener('click', () => copyInviteLink(btn.dataset.copyInvite));
+    }
+    for (const btn of body.querySelectorAll('button[data-revoke-invite]')) {
+      btn.addEventListener('click', async () => {
+        try {
+          await rpc('np_member_invite_revoke', { p_id: btn.dataset.revokeInvite });
+          toast('ההזמנה בוטלה');
+          renderTeam();
+        } catch (e) { toast('הביטול נכשל: ' + e.message, true); }
+      });
+    }
+  }
+}
+
+function inviteLinkFor(code) {
+  return location.origin + location.pathname + '?join=' + encodeURIComponent(code);
+}
+
+async function copyInviteLink(code) {
+  const link = inviteLinkFor(code);
+  try { await navigator.clipboard.writeText(link); toast('הקישור הועתק'); }
+  catch (e) { toast(link); }
+}
+
+function inviteForm() {
+  const roleOpts = Object.entries(ROLE_HE)
+    .map(([k, l]) => '<option value="' + k + '"' + (k === 'agent' ? ' selected' : '') + '>' + l + '</option>').join('');
+  const html =
+    '<div id="ifErr"></div><div class="form-grid">' +
+      '<label class="f">תפקיד<select id="i_role">' + roleOpts + '</select></label>' +
+      '<label class="f">שם (לא חובה, לתצוגה בלבד)<input id="i_name" /></label>' +
+    '</div>' +
+    '<p class="sub" style="margin:14px 0 0;font-size:13px">' +
+      'ייווצר קוד חד-פעמי בתוקף ל-14 יום. שתף אותו או את הקישור עם חבר/ת הצוות ' +
+      'מחוץ למערכת (וואטסאפ/מייל) — המערכת לא שולחת אותו בעצמה.' +
+    '</p>' +
+    '<p style="margin-top:18px"><button class="btn" id="ifSave">יצירת הזמנה</button></p>' +
+    '<div id="ifResult" style="margin-top:18px"></div>';
+
+  drawer('הזמנת חבר צוות', '', html, () => {
+    $('ifSave').addEventListener('click', async () => {
+      $('ifSave').disabled = true;
+      try {
+        const code = await rpc('np_member_invite_create', {
+          p_office: OFFICE.id, p_role: $('i_role').value,
+          p_full_name: $('i_name').value.trim() || '',
+        });
+        const link = inviteLinkFor(code);
+        $('ifResult').innerHTML =
+          '<h2 class="sec">ההזמנה נוצרה</h2>' +
+          '<p class="sub">קוד: <b style="font-variant-numeric:tabular-nums">' + esc(code) + '</b></p>' +
+          '<p class="sub" style="word-break:break-all">' + esc(link) + '</p>' +
+          '<p><button class="btn btn-sm" id="ifCopy">העתקת קישור</button></p>';
+        $('ifCopy').addEventListener('click', () => copyInviteLink(code));
+        toast('ההזמנה נוצרה');
+        if (VIEW === 'team') renderTeam();
+      } catch (e) {
+        $('ifErr').innerHTML = '<div class="err">' + esc(e.message) + '</div>';
+      } finally {
+        $('ifSave').disabled = false;
+      }
+    });
+  });
+}
+
 /* ── boot ────────────────────────────────────────────────────────────────── */
 async function requireSession() {
   const { data } = await sb.auth.getSession();
@@ -1870,11 +2053,20 @@ function pickOffice(id) {
   $('officePick').value = OFFICE.id;
 }
 
+let JOIN_CODE = null;
+
 async function boot() {
   if (!(await requireSession())) return;
 
   try { ME = await rpc('np_me'); }
   catch (e) { return fail('טעינת החשבון נכשלה: ' + e.message); }
+
+  // A teammate who followed an invite link. Handled before the "no office"
+  // branch below, since a brand-new agent has zero offices and would
+  // otherwise be dropped into "open a new office" instead of joining the one
+  // that invited them.
+  JOIN_CODE = new URLSearchParams(location.search).get('join');
+  if (JOIN_CODE) { show('viewJoin'); return; }
 
   if (!ME.offices || !ME.offices.length) { show('viewSetup'); return; }
 
@@ -1889,11 +2081,23 @@ async function boot() {
   pickOffice(saved && ME.offices.some((o) => o.id === saved) ? saved : ME.offices[0].id);
 
   const want = new URLSearchParams(location.search).get('v');
-  setView(['dash', 'board', 'contacts', 'properties', 'documents', 'tasks'].includes(want) ? want : 'dash');
+  setView(['dash', 'board', 'contacts', 'properties', 'documents', 'tasks', 'team'].includes(want) ? want : 'dash');
 }
 
 $('officePick').addEventListener('change', (e) => { pickOffice(e.target.value); setView(VIEW); });
 for (const b of $('tabs').children) b.addEventListener('click', () => setView(b.dataset.view));
+
+$('joinAccept').addEventListener('click', async () => {
+  $('joinAccept').disabled = true;
+  try {
+    await rpc('np_member_invite_redeem', { p_code: JOIN_CODE });
+    location.replace(location.pathname + location.hash);
+  } catch (e) {
+    $('joinErr').innerHTML = '<div class="err">' + esc(e.message) + '</div>';
+    $('joinAccept').disabled = false;
+  }
+});
+$('joinCancel').addEventListener('click', () => { location.replace(location.pathname + location.hash); });
 
 $('oCreate').addEventListener('click', async () => {
   const name = $('oName').value.trim();
@@ -1918,6 +2122,7 @@ $('newProperty').addEventListener('click', () => propertyForm(null));
 $('newDeal').addEventListener('click', () => dealForm(null));
 $('newTask').addEventListener('click', () => taskForm(null));
 $('newContract').addEventListener('click', () => contractForm());
+$('newInvite').addEventListener('click', () => inviteForm());
 $('cQ').addEventListener('input', () => { clearTimeout(cTimer); cTimer = setTimeout(renderContacts, 250); });
 for (const id of ['cKind', 'cSource']) $(id).addEventListener('change', renderContacts);
 $('pQ').addEventListener('input', () => { clearTimeout(cTimer); cTimer = setTimeout(renderProperties, 250); });
