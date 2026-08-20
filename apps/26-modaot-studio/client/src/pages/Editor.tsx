@@ -740,7 +740,8 @@ export default function Editor() {
 
   // וידאו קידום — מרכיב Ken Burns + פס הקריינות (lib/videoExport.ts) מתוך אותו
   // stage ברזולוציה מלאה ש-handleDownloadPNG/PDF כבר משתמשים בו, מוריד webm.
-  // דורש שקריינות תיווצר קודם (הכפתור נעול בלעדיה) כדי שהוידאו לא יהיה שקט-סתמי.
+  // דורש שיהיה לפחות מקור-קול אחד (קריינות או מוזיקת רקע) כדי שהוידאו לא יהיה
+  // שקט-סתמי — הכפתור נעול כשאין אף אחד מהשניים (ר' תנאי התצוגה בדיאלוג).
   async function handleExportVideo() {
     if (!stageRef.current || !doc) return;
     setVideoExporting(true);
@@ -1841,8 +1842,9 @@ export default function Editor() {
           {narrationAudioUrl && (
             <audio controls src={narrationAudioUrl} className="w-full" data-testid="audio-narration-preview" />
           )}
-          {narrationAudioUrl && (
+          {(narrationAudioUrl || musicFile) && (
             <div className="flex flex-col gap-2">
+              {narrationScript.trim() && (
               <div className="flex items-center justify-between">
                 <Label className="text-xs text-[#F5EEDD]/70">
                   כתוביות עבריות בגוף הסרטון (לצפייה בלי קול)
@@ -1853,7 +1855,8 @@ export default function Editor() {
                   data-testid="switch-video-captions"
                 />
               </div>
-              {showCaptions && (
+              )}
+              {narrationScript.trim() && showCaptions && (
                 <div className="flex flex-col gap-1.5 border-t border-[#C9A227]/15 pt-2">
                   <div className="flex items-center justify-between">
                     <Label className="text-xs text-[#F5EEDD]/70">
@@ -1912,9 +1915,14 @@ export default function Editor() {
                     <p className="truncate text-xs text-[#F5EEDD]/50" data-testid="text-music-filename">
                       {musicFile.name}
                     </p>
+                    {!narrationAudioUrl && (
+                      <p className="text-xs text-[#F5EEDD]/50" data-testid="text-music-only-hint">
+                        בלי קריינות — הוידאו יהיה קליפ קצר (10 שניות) עם מוזיקת הרקע בלבד.
+                      </p>
+                    )}
                     <div>
                       <Label className="mb-1 block text-xs text-[#F5EEDD]/70">
-                        עוצמת המוזיקה ביחס לקריינות: {musicVolume}%
+                        {narrationAudioUrl ? `עוצמת המוזיקה ביחס לקריינות: ${musicVolume}%` : `עוצמת המוזיקה: ${musicVolume}%`}
                       </Label>
                       <Slider
                         value={[musicVolume]}

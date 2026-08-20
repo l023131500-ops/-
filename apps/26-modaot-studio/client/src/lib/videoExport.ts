@@ -17,6 +17,11 @@ import { wrapText } from "./autofit";
 const MAX_VIDEO_DIM = 1080;
 const FPS = 30;
 const FALLBACK_DURATION_SEC = 6;
+// כשאין קריינות בכלל (רק מוזיקת רקע) אין קצב-דיבור שקובע אורך טבעי לוידאו,
+// אז משתמשים באורך קליפ-קידום קצר סטנדרטי (8-15 שניות ברשתות חברתיות) במקום
+// ב-FALLBACK_DURATION_SEC (שנשאר רק "רשת ביטחון" למקרה שמטא-דאטה של קריינות
+// לא נטענה, לא ברירת מחדל למוזיקה-בלבד).
+const MUSIC_ONLY_DURATION_SEC = 10;
 const MAX_DURATION_SEC = 90; // תקרת ביטחון — קריינות ל-2000 תווים לא אמורה לעבור את זה
 const ZOOM_END = 1.08;
 
@@ -251,6 +256,14 @@ export async function exportPromoVideo(
     musicEl.preload = "auto";
     musicEl.loop = true;
     musicEl.volume = 1; // הכמות בפועל נשלטת ב-GainNode בהמשך, לא כאן
+  }
+
+  // אין קריינות בכלל אבל יש מוזיקת רקע (וידאו קידום שקט עם מוזיקה בלבד — פורמט
+  // נפוץ ברשתות חברתיות) — אין קצב-דיבור לסנכרן איתו, אז המשך הוידאו הוא אורך
+  // קליפ קבוע (MUSIC_ONLY_DURATION_SEC), לא נופל ל-FALLBACK_DURATION_SEC הקצר
+  // שנועד רק כרשת-ביטחון לכשל טעינת מטא-דאטה של קריינות.
+  if (!opts.narrationAudioUrl && musicEl) {
+    duration = MUSIC_ONLY_DURATION_SEC;
   }
 
   const wantCaptions = opts.showCaptions !== false && !!opts.narrationScript?.trim();
