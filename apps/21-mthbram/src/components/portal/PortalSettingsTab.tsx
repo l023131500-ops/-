@@ -161,7 +161,8 @@ const PortalSettingsTab = ({ portalId, portalType, portalData, onUpdate }: Porta
       const path = `backgrounds/${portalType}-${portalId}.${ext}`;
       await supabase.storage.from("portal-assets").upload(path, file, { upsert: true });
       const { data: urlData } = supabase.storage.from("portal-assets").getPublicUrl(path);
-      await supabase.from(tableName).update({ custom_background_url: urlData.publicUrl, background_preset: "" }).eq("id", portalId);
+      const { error } = await supabase.from(tableName).update({ custom_background_url: urlData.publicUrl, background_preset: "" }).eq("id", portalId);
+      if (error) throw error;
       setSelectedPreset("");
       toast.success("רקע מותאם הועלה!");
       onUpdate({ ...portalData, custom_background_url: urlData.publicUrl, background_preset: "" });
@@ -176,7 +177,8 @@ const PortalSettingsTab = ({ portalId, portalType, portalData, onUpdate }: Porta
       const path = `rabbi-photos/${portalId}.${ext}`;
       await supabase.storage.from("portal-assets").upload(path, file, { upsert: true });
       const { data: urlData } = supabase.storage.from("portal-assets").getPublicUrl(path);
-      await supabase.from("rabbi_portals").update({ rabbi_photo_url: urlData.publicUrl }).eq("id", portalId);
+      const { error } = await supabase.from("rabbi_portals").update({ rabbi_photo_url: urlData.publicUrl }).eq("id", portalId);
+      if (error) throw error;
       toast.success("תמונת הרב הועלתה!");
       onUpdate({ ...portalData, rabbi_photo_url: urlData.publicUrl });
     } catch { toast.error("שגיאה בהעלאה"); }

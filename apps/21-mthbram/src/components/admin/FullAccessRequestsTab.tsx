@@ -71,7 +71,8 @@ export default function FullAccessRequestsTab() {
 
   const remove = async (id: string) => {
     if (!confirm("למחוק את הבקשה?")) return;
-    await supabase.from("synagogue_full_access_requests").delete().eq("id", id);
+    const { error } = await supabase.from("synagogue_full_access_requests").delete().eq("id", id);
+    if (error) return toast.error("שגיאה במחיקה");
     toast.success("נמחק");
     load();
   };

@@ -111,14 +111,16 @@ const FloatingChatBot = () => {
         try {
           const actionType = actionMatch[1];
           const actionData = JSON.parse(actionMatch[2]);
+          let submitError = null;
           if (actionType === "submit_lesson") {
-            await supabase.from("lessons").insert({ ...actionData, status: "pending", is_approved: false });
+            ({ error: submitError } = await supabase.from("lessons").insert({ ...actionData, status: "pending", is_approved: false }));
           } else if (actionType === "submit_seeker") {
-            await supabase.from("seeker_leads").insert({ ...actionData, status: "new" });
+            ({ error: submitError } = await supabase.from("seeker_leads").insert({ ...actionData, status: "new" }));
           } else if (actionType === "submit_teacher") {
-            await supabase.from("teacher_leads").insert({ ...actionData, status: "new" });
+            ({ error: submitError } = await supabase.from("teacher_leads").insert({ ...actionData, status: "new" }));
           }
-          toast.success("הפרטים נשמרו בהצלחה!");
+          if (submitError) toast.error("שגיאה בשמירת הפרטים, נסו שוב");
+          else toast.success("הפרטים נשמרו בהצלחה!");
         } catch { /* silent */ }
         // Remove the ACTION tag from displayed content
         assistantContent = assistantContent.replace(/\[ACTION:.*?\]\{.*?\}/, "").trim();

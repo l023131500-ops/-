@@ -1063,7 +1063,8 @@ const AdminDashboard = () => {
                                   checked={fe.settings === true}
                                   onCheckedChange={async (v) => {
                                     const newFe = { ...fe, settings: v };
-                                    await supabase.from("rabbi_portals").update({ features_enabled: newFe }).eq("id", p.id);
+                                    const { error } = await supabase.from("rabbi_portals").update({ features_enabled: newFe }).eq("id", p.id);
+                                    if (error) { toast.error("שגיאה: " + error.message); return; }
                                     setRabbiPortals(prev => prev.map(x => x.id === p.id ? { ...x, features_enabled: newFe } : x));
                                     toast.success(v ? "הגדרות מתקדמות הופעלו" : "הגדרות מתקדמות כובו");
                                   }}
@@ -1167,7 +1168,8 @@ const AdminDashboard = () => {
                                   checked={fe.settings === true}
                                   onCheckedChange={async (v) => {
                                     const newFe = { ...fe, settings: v };
-                                    await supabase.from("org_portals").update({ features_enabled: newFe }).eq("id", p.id);
+                                    const { error } = await supabase.from("org_portals").update({ features_enabled: newFe }).eq("id", p.id);
+                                    if (error) { toast.error("שגיאה: " + error.message); return; }
                                     setOrgPortals(prev => prev.map(x => x.id === p.id ? { ...x, features_enabled: newFe } : x));
                                     toast.success(v ? "הגדרות מתקדמות הופעלו" : "הגדרות מתקדמות כובו");
                                   }}
@@ -1179,7 +1181,8 @@ const AdminDashboard = () => {
                                   checked={fe.prayer_times === true}
                                   onCheckedChange={async (v) => {
                                     const newFe = { ...fe, prayer_times: v };
-                                    await supabase.from("org_portals").update({ features_enabled: newFe }).eq("id", p.id);
+                                    const { error } = await supabase.from("org_portals").update({ features_enabled: newFe }).eq("id", p.id);
+                                    if (error) { toast.error("שגיאה: " + error.message); return; }
                                     setOrgPortals(prev => prev.map(x => x.id === p.id ? { ...x, features_enabled: newFe } : x));
                                     toast.success(v ? "זמני תפילות הופעלו" : "זמני תפילות כובו");
                                   }}

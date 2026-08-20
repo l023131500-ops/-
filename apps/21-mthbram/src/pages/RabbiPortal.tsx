@@ -81,7 +81,8 @@ const RabbiPortal = () => {
       const { data: urlData } = supabase.storage.from("lesson-logos").getPublicUrl(path);
       const logoUrl = urlData.publicUrl;
 
-      await supabase.from("rabbi_portals").update({ logo_url: logoUrl }).eq("id", portal.id);
+      const { error: updateError } = await supabase.from("rabbi_portals").update({ logo_url: logoUrl }).eq("id", portal.id);
+      if (updateError) throw updateError;
       setPortal({ ...portal, logo_url: logoUrl });
       toast.success("הלוגו עודכן בהצלחה!");
     } catch (e) {
