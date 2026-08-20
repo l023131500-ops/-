@@ -1713,8 +1713,15 @@ export async function buildReport(
   // matchesStreet ב-sortByProximity וכמו crossChecked למעלה: הכלה תת-מחרוזתית
   // (למשל "אלנבי" בתוך "שדרות אלנבי") הייתה מוסיפה מכירות מרחוב אחר לגמרי
   // לחציון "אותו רחוב".
+  // ⚠️ ההחרגה חייבת לעבוד גם כש-`matchedBy === 'address'` (השרשרת המועדפת,
+  // ראה למעלה) — שם `buildingPolygonId` יכול להיות `null` (אין `exactPolygon`),
+  // ואז בדיקת `polygonId` בלבד לא מחריגה כלום והבאג חוזר במדויק. `buildingTxns`
+  // (לא רק `currentBuildingTxns`) הוא מקור-האמת ל"מה זוהה כבניין הזה" בכל
+  // שלושת מסלולי ההתאמה גם יחד — לרבות עסקאות המבנה שקדם להריסה/בנייה מחדש,
+  // שעדיין שייכות לאותה כתובת ולא ל"בניין אחר ברחוב".
+  const buildingTxnSet = new Set(buildingTxns);
   const streetHomeSales = areaHomeSales.filter((t) => {
-    if (buildingPolygonId && t.polygonId === buildingPolygonId) return false;
+    if (buildingTxnSet.has(t)) return false;
     const st = normStreetName(t.streetName ?? streetOf(t.address));
     return !!st && streetNames.some((w) => normStreetName(w) === st);
   });
