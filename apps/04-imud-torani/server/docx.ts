@@ -149,7 +149,10 @@ function buildParagraphs(
         pageBreakBefore: pageBreak,
         keepNext: true,
         spacing: { before: level >= 2 ? 200 : 320, after: level >= 2 ? 100 : 160 },
-        children: [new TextRun({ text: marker + text, font: hFont, bold: meta.headingBold !== false, size: hSize, rightToLeft: true, color: "7a2e3a" })],
+        children: [
+          new TextRun({ text: marker + text, font: hFont, bold: meta.headingBold !== false, size: hSize, rightToLeft: true, color: "7a2e3a" }),
+          ...myAnchors.map((fid) => new FootnoteReferenceRun(fid)),
+        ],
       }));
       continue;
     }
@@ -163,7 +166,10 @@ function buildParagraphs(
         pageBreakBefore: pageBreak,
         keepNext: true,
         spacing: { before: 160, after: 80 },
-        children: [new TextRun({ text, font: meta.headingFont || headFont, bold: true, size: Math.round(baseSize * 1.12), rightToLeft: true })],
+        children: [
+          new TextRun({ text, font: meta.headingFont || headFont, bold: true, size: Math.round(baseSize * 1.12), rightToLeft: true }),
+          ...myAnchors.map((fid) => new FootnoteReferenceRun(fid)),
+        ],
       }));
       continue;
     }
@@ -179,7 +185,10 @@ function buildParagraphs(
         pageBreakBefore: pageBreak,
         keepNext: true,
         spacing: { before: 120, after: 40 },
-        children: [new TextRun({ text, font: bodyFont, bold: true, size: bigger, rightToLeft: true })],
+        children: [
+          new TextRun({ text, font: bodyFont, bold: true, size: bigger, rightToLeft: true }),
+          ...myAnchors.map((fid) => new FootnoteReferenceRun(fid)),
+        ],
       }));
       continue;
     }
@@ -189,12 +198,16 @@ function buildParagraphs(
       if (!text) continue;
       const lines = text.split(/\n+/);
       lines.forEach((ln, k) => {
+        const isLast = k === lines.length - 1;
         out.push(new Paragraph({
           alignment: AlignmentType.CENTER,
           bidirectional: true,
           pageBreakBefore: pageBreak && k === 0,
           spacing: { line: lineSpacing, after: 40 },
-          children: [new TextRun({ text: ln.trim(), font: bodyFont, size: baseSize, italics: true, rightToLeft: true })],
+          children: [
+            new TextRun({ text: ln.trim(), font: bodyFont, size: baseSize, italics: true, rightToLeft: true }),
+            ...(isLast ? myAnchors.map((fid) => new FootnoteReferenceRun(fid)) : []),
+          ],
         }));
       });
       continue;
