@@ -7332,3 +7332,48 @@
     כבר נבדקו), או נושא #250 (RLS על `21-mthbram`, חסום MCP), או
     לפתוח עדשה חדשה לפי סריקת Explore רחבה על כל 7 האפליקציות.
     via cloud server 167.99.131.167 [loop B]
+
+## 20/08/2026 — סבב 371 (loop B)
+
+371. **סגירת דפוס ה-race-condition (stale async response) על
+    `18-torah-editor-mvp`/`28-kupot-health-funds`** — לפי התור
+    שהוצע בסוף סבב 370 (17/21/24/27 כבר נבדקו בסבב 363). Explore
+    agent סרק את שני האפליקציות; קראתי כל קובץ שסומן ידנית לפני
+    כל מסקנה. `28-kupot-health-funds`: כל הסינון (`kind`/`category`/
+    `fund`/`search`) ב-`pages/home.tsx` הוא client-side בלבד דרך
+    `useMemo` על נתונים שכבר נטענו פעם אחת ב-`useQuery({queryKey:
+    ["/api/hf/topics"]})` — אין fetch נפרד לכל שינוי סינון, ולכן
+    אין מקום למרוץ. אין `useEffect` אסינכרוני כלל ברכיבי
+    `client/src/components`. **נקי, לא נמצא ממצא.** `18-torah-editor-
+    mvp`: `app/documents/page.tsx` — ה-`filter` (סטטוס מסמך) לא
+    מופיע בין התלויות של `load()` (רק `configured`), הסינון עצמו
+    client-side; **נקי**. `app/htr/page.tsx` — ממצא אמיתי:
+    `JobDetail` (שורות 375-391) מקבל `jobId` כ-prop מ-`JobList`
+    שמאפשר קליק מהיר בין עבודות (`onSelect={setSelected}`,
+    שורה 83) בלי `key` על `JobDetail` — כלומר אותו instance של
+    הרכיב ממשיך לחיות כש-`jobId` מתחלף. ה-`load` (`useCallback`
+    עם תלות ב-`jobId`) עשה `await authFetch(...)` ואז
+    `setJob`/`setImgUrl`/`setFinalText` ללא תנאי — תגובה איטית
+    לעבודה A שמגיעה אחרי שהמשתמש כבר עבר לעבודה B הייתה דורסת את
+    נתוני B בנתוני A הישנים, בלי שום שגיאה. תיקנתי לפי הדפוס
+    שהוכח בסבב 363 (`27-bkalut-price`): `useRef` (`latestJobId`)
+    שמתעדכן בכל render לערך ה-`jobId` הנוכחי, ובתוך ה-`load` נבדק
+    `latestJobId.current !== requestedJobId` (הערך שנלכד ברגע
+    שהבקשה יצאה) לפני שקוראים ל-setState — כך תגובה ישנה פשוט
+    מתעלמת מעצמה. אפס שינוי בלוגיקת fetch/approve/save אחרת.
+    בדיקת איזון סוגריים מסולסלים/עגולים/מרובעים ב-python על הקובץ
+    המלא אחרי העריכה — תקין (186/186+242/242+40/40). אין build/
+    dev-server זמין בסביבה הזו לפי הנחיית ההרצה — לא `tsc`. הקובץ
+    תחת `apps/18-torah-editor-mvp/app/htr/page.tsx`, לא חסום
+    ב-gitignore. ענף `fix/b-18-28-stale-async-race-0820`.
+
+    **זה סוגר את עדשת ה-race-condition (stale async response) על
+    פני כל 7 האפליקציות החיות בהיקף loop B** (17/18/21/22/24/27/28)
+    — 17/21/24/27 בסבב 363, 18/28 כאן.
+
+    **הבא בתור:** נושא #250 (RLS על `21-mthbram`, חסום MCP —
+    פרויקט `aypsqqvfohekxxuqsmrw` לא נגיש), או לפתוח עדשה חדשה
+    לפי סריקת Explore רחבה על כל 7 האפליקציות (למשל: `role="button"`
+    בלי `tabIndex`/`onKeyDown`, או טפסים עם auto-save שקט על שדות
+    רגישים).
+    via cloud server 167.99.131.167 [loop B]

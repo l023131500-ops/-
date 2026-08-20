@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import type { HtrJob, HtrLine } from '@/lib/htr-types';
 import {
@@ -379,9 +379,14 @@ function JobDetail({ jobId, onChanged }: { jobId: string; onChanged: () => void 
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
 
+  const latestJobId = useRef(jobId);
+  latestJobId.current = jobId;
+
   const load = useCallback(async () => {
+    const requestedJobId = jobId;
     const r = await authFetch(`/orech/api/htr/jobs/${jobId}`);
     const d = await r.json();
+    if (latestJobId.current !== requestedJobId) return; // תגובה ישנה מעבודה שכבר הוחלפה - להתעלם
     setJob(d.job);
     setImgUrl(d.imageSignedUrl);
     // ברירת המחשב לעורך: הטקסט הסופי אם קיים, אחרת המתוקן, אחרת הגולמי
