@@ -56,7 +56,10 @@ function DocsPage() {
                 <FileText className="h-4 w-4 text-muted-foreground shrink-0" />
                 <div className="min-w-0">
                   <div className="text-sm font-medium truncate">{d.file_name}</div>
-                  <div className="text-xs text-muted-foreground">{new Date(d.created_at).toLocaleDateString("he-IL")}</div>
+                  <div className="text-xs text-muted-foreground">
+                    {new Date(d.created_at).toLocaleDateString("he-IL")}
+                    {d.property_label && <span> · {d.property_label}</span>}
+                  </div>
                 </div>
               </div>
               <Button size="sm" variant="outline" onClick={() => download(d.storage_path, d.file_name)}>

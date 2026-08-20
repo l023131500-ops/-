@@ -1,14 +1,17 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSuspenseQuery, useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Upload, Download, Trash2, FileText, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { documentsQuery, clientQuery, meProfileQuery, useInvalidateClient } from "@/features/clients/queries";
+import { documentsQuery, housingQuery, clientQuery, meProfileQuery, useInvalidateClient } from "@/features/clients/queries";
 import { formatDateTimeHe } from "@/lib/format";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+
+const GENERAL_LABEL = "__general__";
 
 function sigBadge(status: string | null) {
   const map: Record<string, { label: string; cls: string }> = {
@@ -24,10 +27,23 @@ function sigBadge(status: string | null) {
 export function DocumentsTab({ clientId }: { clientId: string }) {
   const { data: client } = useSuspenseQuery(clientQuery(clientId));
   const { data: me } = useSuspenseQuery(meProfileQuery());
+  const { data: housing } = useSuspenseQuery(housingQuery(clientId));
   const { data: docs } = useSuspenseQuery(documentsQuery(clientId));
   const invalidate = useInvalidateClient();
   const inputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
+
+  const propertyOptions = [
+    ...(housing?.property_address ? [housing.property_address as string] : []),
+    ...(((housing?.additional_properties as { address: string }[] | null) ?? [])
+      .map((p) => p.address)
+      .filter(Boolean)),
+  ];
+  const [label, setLabel] = useState<string>(GENERAL_LABEL);
+  useEffect(() => {
+    if (propertyOptions.length && label === GENERAL_LABEL) setLabel(propertyOptions[0]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [housing?.property_address]);
 
   const upload = useMutation({
     mutationFn: async (file: File) => {
@@ -38,6 +54,7 @@ export function DocumentsTab({ clientId }: { clientId: string }) {
       const { error } = await supabase.from("documents").insert({
         tenant_id: client.tenant_id,
         client_id: clientId,
+        property_label: label === GENERAL_LABEL ? null : label,
         file_name: file.name,
         file_type: file.type,
         file_size_bytes: file.size,
@@ -66,11 +83,26 @@ export function DocumentsTab({ clientId }: { clientId: string }) {
     window.open(data.signedUrl, "_blank");
   }
 
+  const groups = new Map<string, typeof docs>();
+  for (const d of docs) {
+    const key = d.property_label ?? GENERAL_LABEL;
+    groups.set(key, [...(groups.get(key) ?? []), d]);
+  }
+
   return (
     <Card>
-      <CardHeader className="flex flex-row items-center justify-between">
+      <CardHeader className="flex flex-row items-center justify-between flex-wrap gap-3">
         <CardTitle>מסמכים</CardTitle>
-        <div>
+        <div className="flex items-center gap-2">
+          {propertyOptions.length > 0 && (
+            <Select value={label} onValueChange={setLabel}>
+              <SelectTrigger className="w-[220px]"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                {propertyOptions.map((addr) => <SelectItem key={addr} value={addr}>{addr}</SelectItem>)}
+                <SelectItem value={GENERAL_LABEL}>כללי (לא משויך לנכס)</SelectItem>
+              </SelectContent>
+            </Select>
+          )}
           <input
             ref={inputRef}
             type="file"
@@ -83,39 +115,48 @@ export function DocumentsTab({ clientId }: { clientId: string }) {
           </Button>
         </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className="space-y-6">
         {docs.length === 0 && <div className="text-center text-muted-foreground py-12">אין מסמכים</div>}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-          {docs.map((d) => (
-            <Card key={d.id} className="hover:shadow-md transition-shadow">
-              <CardContent className="p-4 space-y-2">
-                <div className="flex items-start gap-3">
-                  <FileText className="h-8 w-8 text-primary flex-shrink-0 mt-0.5" />
-                  <div className="flex-1 min-w-0">
-                    <div className="font-medium truncate">{d.file_name}</div>
-                    <div className="text-xs text-muted-foreground">{formatDateTimeHe(d.created_at)}</div>
-                  </div>
-                </div>
-                {d.requires_signature && <div>{sigBadge(d.signature_status)}</div>}
-                <div className="flex gap-1 justify-end pt-1">
-                  <Button variant="ghost" size="icon" onClick={() => openDoc(d.storage_path)}><Download className="h-4 w-4" /></Button>
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Button variant="ghost" size="icon" className="text-destructive"><Trash2 className="h-4 w-4" /></Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent dir="rtl">
-                      <AlertDialogHeader><AlertDialogTitle>למחוק את {d.file_name}?</AlertDialogTitle></AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>ביטול</AlertDialogCancel>
-                        <AlertDialogAction onClick={() => del.mutate({ id: d.id, storage_path: d.storage_path })}>מחק</AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+        {[...groups.entries()].map(([key, items]) => (
+          <div key={key} className="space-y-2">
+            {propertyOptions.length > 0 && (
+              <div className="text-sm font-medium text-muted-foreground">
+                {key === GENERAL_LABEL ? "כללי" : key}
+              </div>
+            )}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+              {items.map((d) => (
+                <Card key={d.id} className="hover:shadow-md transition-shadow">
+                  <CardContent className="p-4 space-y-2">
+                    <div className="flex items-start gap-3">
+                      <FileText className="h-8 w-8 text-primary flex-shrink-0 mt-0.5" />
+                      <div className="flex-1 min-w-0">
+                        <div className="font-medium truncate">{d.file_name}</div>
+                        <div className="text-xs text-muted-foreground">{formatDateTimeHe(d.created_at)}</div>
+                      </div>
+                    </div>
+                    {d.requires_signature && <div>{sigBadge(d.signature_status)}</div>}
+                    <div className="flex gap-1 justify-end pt-1">
+                      <Button variant="ghost" size="icon" onClick={() => openDoc(d.storage_path)}><Download className="h-4 w-4" /></Button>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button variant="ghost" size="icon" className="text-destructive"><Trash2 className="h-4 w-4" /></Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent dir="rtl">
+                          <AlertDialogHeader><AlertDialogTitle>למחוק את {d.file_name}?</AlertDialogTitle></AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>ביטול</AlertDialogCancel>
+                            <AlertDialogAction onClick={() => del.mutate({ id: d.id, storage_path: d.storage_path })}>מחק</AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        ))}
       </CardContent>
     </Card>
   );

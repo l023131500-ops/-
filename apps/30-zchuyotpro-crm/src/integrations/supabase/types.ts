@@ -529,6 +529,7 @@ export type Database = {
           id: string
           partner_id: string | null
           processing_status: string
+          property_label: string | null
           requires_signature: boolean
           signature_status: string | null
           signed_at: string | null
@@ -546,6 +547,7 @@ export type Database = {
           id?: string
           partner_id?: string | null
           processing_status?: string
+          property_label?: string | null
           requires_signature?: boolean
           signature_status?: string | null
           signed_at?: string | null
@@ -563,6 +565,7 @@ export type Database = {
           id?: string
           partner_id?: string | null
           processing_status?: string
+          property_label?: string | null
           requires_signature?: boolean
           signature_status?: string | null
           signed_at?: string | null
