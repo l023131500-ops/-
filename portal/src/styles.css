@@ -230,6 +230,18 @@
   font-family: 'Secular One', sans-serif; font-weight: 400;
   font-size: 27px; line-height: 1.25; margin: 0 0 auto; color: var(--ink);
 }
+/* ההסבר המפורט (הנחיית 20/08 פריט 2). קצוץ לחמש שורות כדי שהרשת תישאר
+   רשת של מלבנים אחידים — הסבר באורך פסקה לא מפרק את סידור הדשבורד.
+   ה-margin התחתון האוטומטי עובר מהשם אל ההסבר כשההסבר קיים, כדי שהכפתור
+   יישאר צמוד לתחתית הכרטיס; דפדפן בלי :has מחלק את הרווח בין שניהם — סביר. */
+.card-name:has(+ .card-what) { margin-bottom: 0; }
+.card-what {
+  font-size: 14.5px; line-height: 1.75; color: var(--ink-2);
+  margin: 12px 0 auto;
+  display: -webkit-box; -webkit-box-orient: vertical;
+  -webkit-line-clamp: 5; overflow: hidden;
+}
+.card-soon .card-what { color: var(--muted); }
 /* משפט השלב — מופיע רק בכרטיס שאינו נפתח, ומסביר למה. */
 .card-stage {
   font-size: 13.5px; line-height: 1.7; color: var(--muted);

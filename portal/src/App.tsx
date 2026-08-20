@@ -93,14 +93,27 @@ const blurb = (r: System) => {
   return w ? (w.split(/(?<=[.!?])\s/)[0] || w).trim() : "";
 };
 
+/**
+ * ההסבר המפורט שבגוף הכרטיס — הנחיית משתמש (20/08, core.projects#33, פריט 2):
+ * "כרטיס... עם הסבר מפורט מה המערכת עושה". עד עכשיו הכרטיס הציג משפט אחד
+ * בלבד; ההסבר המלא (`what_it_does`, מנוסח ב-core.projects) נשאר במסד ולא
+ * הגיע לעמוד.
+ *
+ * ⚠️ כשאין tagline, ‏blurb כבר מציג את משפט הפתיחה של `what_it_does` — ולכן
+ * כאן מוצג רק ההמשך, אחרת המשפט הראשון היה מודפס פעמיים באותו כרטיס.
+ * (blurb הוא תמיד רישא של הטקסט במקרה הזה, כך שחיתוך לפי אורך בטוח.)
+ */
+const cardDetail = (r: System): string => {
+  const w = (r.what_it_does || "").trim();
+  if (!w) return "";
+  const rest = (r.tagline || "").trim() ? w : w.slice(blurb(r).length).trim();
+  // ‏tagline שהוא בדיוק what_it_does — קורה כשמערכת נוסחה פעם אחת בלבד —
+  // היה מודפס פעמיים, פעם בזהב ופעם בגוף.
+  return rest === blurb(r) ? "" : rest;
+};
+
 /** שם התחום לתצוגה. מפתח שאין לו תרגום מוצג כמו שהוא ולא נעלם מהעמוד. */
 const deptLabel = (key: string) => (DEPARTMENTS as Record<string, string>)[key] ?? key;
-
-type RightsStats = {
-  total: number;
-  by_source: Record<string, number>;
-  labels: Record<string, string>;
-};
 
 export function App() {
   const [load, setLoad] = useState<Load>({ state: "loading" });
@@ -206,31 +219,22 @@ function ComingSoon({ row }: { row: System }) {
   );
 }
 
+/**
+ * הנחיית משתמש (20/08, core.projects#33, פריט 1): דף הבית ממותג סביב
+ * אסטרטגיה, ניתוח ופיתוח לעסקים — לא סביב תחום תוכן של מערכת מסוימת.
+ * לכן העמודים כאן מספרים את שלבי העבודה מול לקוח עסקי, והתחומים עצמם
+ * (נדל"ן, בריאות, קהילה וכו') מופיעים רק למטה, בכרטיסי המערכות שבאמת קיימות.
+ */
 const PILLARS = [
-  { h: "מרעיון למוצר חי", p: "אפיון, פיתוח והשקה — עד שהמערכת עומדת בשטח ומשרתת אנשים אמיתיים." },
-  { h: "מערכות שכבר עובדות", p: "נדל\"ן, תמלול, זכויות, בריאות וקהילה. לא מצגת — מערכות שרצות היום." },
-  { h: "כתובת אחת", p: "הכול חי תחת more30.com. מקום אחד לזכור, מקום אחד לחזור אליו." },
+  { h: "אסטרטגיה", p: "מתחילים מהעסק, לא מהטכנולוגיה: מה המטרה, מי הלקוח, ומה המהלך שבאמת מזיז את המחט — לפני שנכתבת שורת קוד." },
+  { h: "ניתוח ואפיון", p: "שאלון אפיון חכם שממפה את הצורך, ולצידו ניתוח AI פנימי — כך רעיון הופך למסמך עבודה מדויק שאפשר לבנות ממנו." },
+  { h: "פיתוח והשקה", p: "מעצבים, בונים ומעלים לאוויר — מערכות, אתרים ואוטומציות שעומדים בשטח ומשרתים אנשים אמיתיים, תחת כתובת אחת." },
   { h: "ליווי שנשאר", p: "ההשקה היא ההתחלה. משם ממשיכים לתחזק, לשפר ולהתאים למה שהשטח מחזיר." },
 ];
 
 function Portal({ load, retry }: { load: Load; retry: () => void }) {
   const rows = load.state === "ready" ? load.rows : [];
   useReveal(load.state === "ready" ? rows.length : load.state);
-
-  /**
-   * מאגר הזכויות בדף הבית (§5).
-   *
-   * ספירות בלבד — הקטלוג עצמו חי ב-/bkalot, ושכפול 888 שורות לעמוד שיווקי
-   * היה מאט אותו בלי להוסיף מידע. אם הקריאה נכשלת המקטע פשוט לא מוצג:
-   * מספר שגוי על מאגר זכויות גרוע ממקטע חסר, ו-0 היה שקר.
-   */
-  const [rights, setRights] = useState<RightsStats | null>(null);
-  useEffect(() => {
-    if (!supa) return;
-    supa.rpc("more30_rights_stats").then(({ data, error }) => {
-      if (!error && data) setRights(data as RightsStats);
-    });
-  }, []);
 
   // התחומים נגזרים מהשורות עצמן — תחום חדש במסד מופיע כאן מעצמו, ותחום
   // שהתרוקן נעלם מעצמו.
@@ -281,7 +285,8 @@ function Portal({ load, retry }: { load: Load; retry: () => void }) {
           <div className="eyebrow">עולם הסטארטאפים</div>
           <h1 className="display hero-title">עולם הסטארטאפים</h1>
           <p className="serif hero-lead">
-            עשרות מערכות נבנו כאן, עובדות היום בשטח, וחיות כולן תחת כתובת אחת.
+            אסטרטגיה, ניתוח ופיתוח לעסקים — מרעיון ועד מערכת חיה בשטח.
+            עשרות מערכות שנבנו כאן עובדות היום, כולן תחת כתובת אחת.
           </p>
           <div className="hero-actions">
             <a className="btn" href="#systems">לכל המערכות</a>
@@ -292,8 +297,10 @@ function Portal({ load, retry }: { load: Load; retry: () => void }) {
           <div><b>{load.state === "ready" ? rows.length : "—"}</b><span>מערכות</span></div>
           <div><b>{load.state === "ready" ? liveCount : "—"}</b><span>חיות בשטח</span></div>
           <div><b>{load.state === "ready" ? depts.length : "—"}</b><span>תחומים</span></div>
-          {/* נתון אמת מ-rights.catalog. אין נתון → לא מוצג, ולא 0. */}
-          <div><b>{rights ? rights.total.toLocaleString("he-IL") : "—"}</b><span>זכויות במאגר</span></div>
+          {/* הנחיית 20/08 פריט 1: הנתון הרביעי היה "זכויות במאגר" — תוכן של
+              מערכת אחת על דף הבית של כולן. במקומו נתון אמת מאותה שליפה שכבר
+              כאן: כמה מערכות נמצאות עכשיו בעבודה (המצבת פחות הפתוחות לכניסה). */}
+          <div><b>{load.state === "ready" ? rows.length - liveCount : "—"}</b><span>בפיתוח עכשיו</span></div>
         </div>
       </header>
 
@@ -302,7 +309,7 @@ function Portal({ load, retry }: { load: Load; retry: () => void }) {
         <div className="wrap">
           <div className="sec-head reveal">
             <div className="eyebrow">מה אנחנו עושים</div>
-            <h2 className="display sec-title">בית אחד לכל השלבים</h2>
+            <h2 className="display sec-title">אסטרטגיה, ניתוח ופיתוח לעסקים</h2>
           </div>
           <div className="pillars">
             {PILLARS.map((s) => (
@@ -316,38 +323,11 @@ function Portal({ load, retry }: { load: Load; retry: () => void }) {
       </section>
 
       {/*
-        מאגר הזכויות (§5). מוצג רק כשיש נתון אמיתי — מקטע שמכריז על מאגר
-        זכויות ומראה 0 גרוע ממקטע שלא קיים.
+        הנחיית משתמש (20/08, core.projects#33, פריט 1): מקטע "מאגר הזכויות"
+        שישב כאן הוסר מדף הבית — תוכן של מערכת אחת אינו המסר של האתר הראשי.
+        המאגר עצמו לא נגרע: הוא חי ב-/bkalot, וכרטיס המערכת שלו בהמשך העמוד
+        הוא הדלת אליו. ה-RPC ‏more30_rights_stats נשאר במסד למסכי הניהול.
       */}
-      {rights && rights.total > 0 && (
-        <section id="rights" className="section">
-          <div className="wrap">
-            <div className="sec-head reveal">
-              <div className="eyebrow">מאגר הזכויות</div>
-              <h2 className="display sec-title">
-                {rights.total.toLocaleString("he-IL")} זכויות והטבות, במקום אחד
-              </h2>
-              <p className="serif">
-                מה שמגיע לך מהמדינה, מקופת החולים ומהעמותות — נאסף, נבדק ומוצג
-                בשפה אנושית. החיפוש והסינון המלאים נמצאים במערכת עצמה.
-              </p>
-            </div>
-            <div className="pillars">
-              {Object.entries(rights.by_source)
-                .sort((a, b) => b[1] - a[1])
-                .map(([src, n]) => (
-                  <div className="pillar reveal" key={src}>
-                    <h3>{n.toLocaleString("he-IL")}</h3>
-                    <p className="serif">{rights.labels[src] ?? src}</p>
-                  </div>
-                ))}
-            </div>
-            <div className="hero-actions" style={{ marginTop: 22 }}>
-              <a className="btn" href="/bkalot">למאגר המלא</a>
-            </div>
-          </div>
-        </section>
-      )}
 
       {/* המערכות */}
       <section id="systems" className="section section-systems">
@@ -466,6 +446,7 @@ const plansHref = (r: System): string | null =>
 function SystemCard({ r, titleByNumber }: { r: System; titleByNumber: Record<string, string> }) {
   const open = openToPublic(r);
   const desc = blurb(r);
+  const detail = cardDetail(r);
   const plans = plansHref(r);
   // מערכת מוכפלת (core.projects.replaced_by) עדיין נכנסת — היא עדיין מוצר
   // חי — אבל מסומנת כדי שהמבקר ידע שיש גרסה עדכנית יותר וייכנס אליה במקום.
@@ -486,6 +467,9 @@ function SystemCard({ r, titleByNumber }: { r: System; titleByNumber: Record<str
     <div className={`card reveal ${open ? "" : "card-soon"}`}>
       {desc && <p className="serif card-desc">{desc}</p>}
       <h4 className="card-name">{r.title}</h4>
+      {/* ההסבר המפורט (פריט 2 בהנחיית 20/08). קצוץ ב-CSS לגובה אחיד של
+          דשבורד — הטקסט המלא ממשיך לחיות במסד, לא בקוד. */}
+      {detail && <p className="card-what">{detail}</p>}
       {/* מערכת שאינה נפתחת אומרת באיזה שלב היא — ולא נעלמת מהעמוד. */}
       {!open && <p className="card-stage">{stageNote(r)}</p>}
       {replacement && <p className="card-stage card-replaced">גרסה קודמת — במקומה: {replacement}</p>}
