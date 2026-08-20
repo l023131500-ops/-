@@ -1,6 +1,7 @@
 import type { Express, Request, Response } from "express";
 import type { Server } from "node:http";
-import { storage, getUserIdFromToken } from "./storage";
+import { createHash } from "node:crypto";
+import { storage, getUserIdFromToken, getStudioPlan, bumpAiRateLimit } from "./storage";
 import { insertProjectSchema } from "../shared/schema";
 import { generateBackground, editImage, enhanceBackgroundPrompt } from "./gemini";
 import { generateCopy, generateConcepts, critiqueDesign, translateCaptionsToEnglish } from "./ai";
@@ -14,6 +15,65 @@ import { KNOWLEDGE_BASE, GROUPS } from "../shared/knowledge";
 import { PRESETS, STUDIOS, MOODS, getPreset, renderPreset } from "../shared/presetCatalog";
 import { matchPresets, conceptUnderstanding, AUDIENCES, type Brief } from "../shared/brief";
 import { getCategoryTemplates, listCategoryTemplateKeys, renderCategoryTemplate } from "../shared/categoryTemplates";
+
+// ═══════════════════ מכסת AI יומית ═══════════════════
+// כל ראוט שקורא Claude/Gemini/Recraft/ElevenLabs עולה כסף אמיתי בכל קריאה.
+// מגובה ע"י public.studio_bump_ai_rate_limit (כבר חי ב-Supabase). לפי מסלול
+// מנוי — לא סף אחיד: מחובר עם מנוי בתשלום (core.plans app_key='studio')
+// מקבל תקרה יומית גבוהה משמעותית מהאנונימית, ונספר על שם המשתמש שלו/ה
+// (לא ה-IP המשותף), כך ששימוש-לרעה אנונימי לא צורך את מכסת מנוי משלם על
+// אותו IP ולהיפך. סוגר את core.projects#26 audit_gaps #2 ("אין הבדל
+// מסלול/מחיר לפי המכסה עצמה").
+const STUDIO_TIER_DAILY_LIMIT: Record<string, number> = {
+  free: 40, // זהה לתקרה האנונימית הקיימת — מחובר על מסלול חינמי לא מקבל פחות
+  basic: 150,
+  extended: 400,
+};
+const ANON_DAILY_LIMIT = 40;
+
+function clientIp(req: Request): string {
+  // x-vercel-forwarded-for מגיע מקצה-הרשת של Vercel עצמו ולא ניתן לזיוף
+  // מהלקוח. x-forwarded-for כן ניתן להוספת ערכים מזויפים *בתחילת* הרשימה
+  // ע"י מי ששולח את הבקשה, אז בלי הכותרת הראשונה לוקחים את הערך *האחרון*
+  // (הקרוב ביותר לפרוקסי האמיתי), לא את הראשון שהלקוח יכול לשלוט בו.
+  const vf = req.headers["x-vercel-forwarded-for"];
+  if (typeof vf === "string" && vf.trim()) return vf.split(",")[0].trim();
+  const xf = req.headers["x-forwarded-for"];
+  if (typeof xf === "string" && xf.trim()) {
+    const parts = xf.split(",").map((s) => s.trim()).filter(Boolean);
+    if (parts.length) return parts[parts.length - 1];
+  }
+  return req.socket?.remoteAddress || "unknown";
+}
+
+/** true = מותר להמשיך. false = כבר נשלחה תשובת 429, אין להמשיך לטפל בבקשה. */
+async function enforceAiQuota(req: Request, res: Response): Promise<boolean> {
+  const authHeader = req.headers.authorization;
+  const [userId, plan] = await Promise.all([getUserIdFromToken(authHeader), getStudioPlan(authHeader)]);
+
+  let key: string;
+  let limit: number;
+  if (userId && plan) {
+    key = `user:${userId}`;
+    limit = STUDIO_TIER_DAILY_LIMIT[plan] ?? STUDIO_TIER_DAILY_LIMIT.free;
+  } else {
+    key = `ip:${createHash("sha256").update(clientIp(req)).digest("hex")}`;
+    limit = ANON_DAILY_LIMIT;
+  }
+
+  const result = await bumpAiRateLimit(key, limit);
+  if (!result.allowed) {
+    res.status(429).json({
+      error: userId
+        ? `הגעת למכסת ה-AI היומית של המסלול שלך (${result.limit} קריאות ליום). המכסה מתאפסת בחצות.`
+        : `הגעת למכסת ה-AI היומית (${result.limit} קריאות ליום). התחברות ומעבר למסלול בתשלום מגדילים את המכסה: more30.com/subscribe?app=studio`,
+      limit: result.limit,
+      count: result.count,
+    });
+    return false;
+  }
+  return true;
+}
 
 export async function registerRoutes(httpServer: Server, app: Express): Promise<Server> {
   app.use((req, res, next) => { if (req.path.startsWith("/api")) res.setHeader("Cache-Control", "no-store"); next(); });
@@ -80,6 +140,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
   // ═══════════════════ מנוע הבריף החכם ═══════════════════
   // מקבל בריף → מדרג פריסטים → מנסח הבנה. אם AI זמין, מעשיר בקונספטים מ-Claude.
   app.post("/api/brief/concepts", async (req: Request, res: Response) => {
+    if (!(await enforceAiQuota(req, res))) return;
     const brief = (req.body || {}) as Brief;
     if (!brief.category && !brief.message && !(brief.mood && brief.mood.length))
       return res.status(400).json({ error: "בריף ריק — נדרש לפחות קטגוריה, מסר או אווירה" });
@@ -133,6 +194,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
 
   // ═══════════════════ קופי חכם (Claude) ═══════════════════
   app.post("/api/ai/copy", async (req: Request, res: Response) => {
+    if (!(await enforceAiQuota(req, res))) return;
     const { category, message, audience, mood, fields, variants } = req.body || {};
     const ai = await generateCopy({ category, message, audience, mood, fields, variants });
     if (ai.ok && ai.data) return res.json(ai.data);
@@ -142,6 +204,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
   // ═══════════════════ ביקורת AI (מבקר QA) — CHECKLIST/graphics.md #13 ═══════════════════
   // בודק את הטיוטה הנוכחית בעורך (שכבות+רקע, בלי base64 תמונות) ומחזיר משוב מובנה.
   app.post("/api/ai/critique", async (req: Request, res: Response) => {
+    if (!(await enforceAiQuota(req, res))) return;
     const { category, style, width, height, background, layers, clientNotes } = req.body || {};
     if (!Array.isArray(layers) || !width || !height) {
       return res.status(400).json({ error: "חסרים נתוני התבנית לביקורת" });
@@ -199,6 +262,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
    * שני המנועים ממשיכים לעבוד גם לאחר פרסום (custom-cred נשמר). מחזיר data URL.
    */
   app.post("/api/ai/background", async (req: Request, res: Response) => {
+    if (!(await enforceAiQuota(req, res))) return;
     const { prompt, aspectRatio, enhance, engine, imageBase64, imageMediaType } = req.body || {};
     if (!prompt) return res.status(400).json({ error: "חסר תיאור לרקע" });
 
@@ -281,6 +345,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
 
   // יצירת אסטרטגיית מותג + פלטה + טיפוגרפיה (Claude, עם גיבוי מקומי)
   app.post("/api/branding/strategy", async (req: Request, res: Response) => {
+    if (!(await enforceAiQuota(req, res))) return;
     const { brandName, brief, preferredArchetype } = req.body || {};
     if (!brandName) return res.status(400).json({ error: "חסר שם מותג" });
     try {
@@ -300,6 +365,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
 
   // יצירת קונספטי לוגו (Nano Banana Pro) — מחזיר data URLs
   app.post("/api/branding/logo", async (req: Request, res: Response) => {
+    if (!(await enforceAiQuota(req, res))) return;
     const { brandName, archetypeKey, palette, style, count } = req.body || {};
     if (!brandName) return res.status(400).json({ error: "חסר שם מותג" });
     if (!Array.isArray(palette) || palette.length === 0) return res.status(400).json({ error: "חסרה פלטת צבעים" });
@@ -321,6 +387,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
 
   // וקטוריזציה של לוגו נבחר (Recraft) — מחזיר תוכן SVG
   app.post("/api/branding/vectorize", async (req: Request, res: Response) => {
+    if (!(await enforceAiQuota(req, res))) return;
     const { base64, mimeType } = req.body || {};
     if (!base64) return res.status(400).json({ error: "חסרה תמונה" });
     try {
@@ -334,6 +401,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
 
   // הסרת רקע משכבת תמונה נבחרת (Recraft) — מחזיר data URL של PNG עם שקיפות
   app.post("/api/branding/remove-background", async (req: Request, res: Response) => {
+    if (!(await enforceAiQuota(req, res))) return;
     const { base64, mimeType } = req.body || {};
     if (!base64) return res.status(400).json({ error: "חסרה תמונה" });
     try {
@@ -347,6 +415,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
 
   // קריינות עברית (ElevenLabs) — הבסיס לשכבת "וידאו קידום": טקסט חופשי -> data URL של mp3
   app.post("/api/ai/narration", async (req: Request, res: Response) => {
+    if (!(await enforceAiQuota(req, res))) return;
     const { script, voiceId } = req.body || {};
     if (!script || !String(script).trim()) return res.status(400).json({ error: "חסר טקסט לקריינות" });
     try {
@@ -363,6 +432,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
   // תרגום תסריט הקריינות לאנגלית עבור כתוביות מקבילות בווידאו קידום — טקסט
   // בלבד, לא קריינות/רינדור חדשים (Claude, אותה תשתית כמו copy/concepts/critique)
   app.post("/api/ai/translate-captions", async (req: Request, res: Response) => {
+    if (!(await enforceAiQuota(req, res))) return;
     const { script } = req.body || {};
     if (!script || !String(script).trim()) return res.status(400).json({ error: "חסר טקסט לתרגום" });
     const ai = await translateCaptionsToEnglish(String(script));

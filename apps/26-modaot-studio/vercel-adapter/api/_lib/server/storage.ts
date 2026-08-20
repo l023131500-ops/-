@@ -32,6 +32,64 @@ function sb(): SupabaseClient {
 
 const now = () => Math.floor(Date.now() / 1000);
 
+// אותו מפתח anon הציבורי שכבר משוגר לכל דפדפן דרך portal/public/auth-button.js
+// (SUPABASE_ANON שם) — לא סוד חדש, רק ברירת-מחדל אם משתני הסביבה חסרים בפריסה.
+const PUBLIC_ANON_KEY =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVobnJndWpiZHhoaG1veGNqcmlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMzNjE3MjgsImV4cCI6MjA5ODkzNzcyOH0.nHuOhw-WQEU17lNa7XOlORnBhVAYbJBHudKafWkSHBw";
+
+/**
+ * מסלול המנוי (core.plans app_key='studio': free/basic/extended) של בעל
+ * ה-JWT הזה, אם יש כותרת ותקפה. קורא ל-more30_my_subscription עם ה-JWT של
+ * המשתמש עצמו (לא service-role) כדי ש-auth.uid() בפונקציה יפתור נכון —
+ * אותו דפוס בדיוק כמו isMore30Admin ב-32 nadlan-berega (lib/adminauth.ts).
+ * undefined = לא מחובר / כשל רשת / RPC חסר — נופל לברירת-המחדל האנונימית,
+ * לא זורק, כי מכסת AI חייבת להישאר עובדת גם כשבדיקת-המסלול נכשלת.
+ */
+export async function getStudioPlan(authHeader: string | undefined): Promise<string | undefined> {
+  const token = authHeader?.replace(/^Bearer\s+/i, "").trim();
+  if (!token) return undefined;
+  const url = process.env.SUPABASE_URL;
+  const anon =
+    process.env.SUPABASE_ANON_KEY ||
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+    process.env.VITE_SUPABASE_ANON_KEY ||
+    PUBLIC_ANON_KEY;
+  if (!url) return undefined;
+  try {
+    const r = await fetch(`${url}/rest/v1/rpc/more30_my_subscription`, {
+      method: "POST",
+      headers: { apikey: anon, Authorization: `Bearer ${token}`, "content-type": "application/json" },
+      body: JSON.stringify({ p_app: "studio" }),
+    });
+    if (!r.ok) return undefined;
+    const data = (await r.json()) as { signed_in?: boolean; plan?: string } | null;
+    if (!data?.signed_in) return undefined;
+    return data.plan || "free";
+  } catch {
+    return undefined;
+  }
+}
+
+/**
+ * עוטפת את public.studio_bump_ai_rate_limit (כבר חי ב-Supabase — טבלת
+ * studio_ai_rate_limits + הפונקציה, מנוגשת ב-service_role בלבד). מפתח יחיד
+ * טקסטואלי (ip:<hash> לאנונימי, user:<uuid> למחובר) כך שאין צורך בעמודה/
+ * מיגרציה נוספת — "ip_hash" הוא סתם באקט אטום, לא בהכרח כתובת IP.
+ * fail-open בתקלת תשתית: מכסה שלא ניתן לאכוף לא צריכה לחסום יצירה.
+ */
+export async function bumpAiRateLimit(
+  key: string,
+  limit: number,
+): Promise<{ allowed: boolean; count: number; limit: number }> {
+  try {
+    const { data, error } = await sb().rpc("studio_bump_ai_rate_limit", { p_ip_hash: key, p_limit: limit });
+    if (error || !data) return { allowed: true, count: 0, limit };
+    return data as { allowed: boolean; count: number; limit: number };
+  } catch {
+    return { allowed: true, count: 0, limit };
+  }
+}
+
 /**
  * מזהה משתמש אופציונלי מתוך כותרת Authorization, אם יש ותקפה.
  * בלי כותרת / כותרת לא תקפה → undefined, וזה בדיוק "המשך אנונימי כמו היום"
