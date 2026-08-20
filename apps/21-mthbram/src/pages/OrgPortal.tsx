@@ -111,6 +111,7 @@ const OrgPortal = () => {
   };
 
   const removeRabbi = async (id: string) => {
+    if (!confirm("להסיר את הרב מהארגון?")) return;
     const { error } = await supabase.from("org_rabbis").delete().eq("id", id);
     if (!error) {
       setRabbis(prev => prev.filter(r => r.id !== id));
