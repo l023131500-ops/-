@@ -13,10 +13,13 @@ export interface DealQuality {
   confidence: 'high' | 'medium' | 'low';
 }
 
+// ⚠️ במספר זוגי של פריטים יש לממוצע את שני האיברים באמצע, לא לקחת את העליון
+// מביניהם — אותה תקלה שכבר נמצאה ותוקנה ב-buildreport.ts (median()).
 function median(nums: number[]): number | null {
   if (nums.length === 0) return null;
   const s = [...nums].sort((a, b) => a - b);
-  return s[Math.floor(s.length / 2)];
+  const mid = Math.floor(s.length / 2);
+  return s.length % 2 === 1 ? s[mid] : Math.round((s[mid - 1] + s[mid]) / 2);
 }
 
 // ציון הזדמנות כללי (0..100): מבוסס נפח עסקאות, מגמת מחיר, ופוטנציאל השבחה.

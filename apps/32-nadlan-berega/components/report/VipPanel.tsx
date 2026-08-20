@@ -22,17 +22,22 @@ export default function VipPanel({ report }: { report: PropertyReport }) {
 
   const ils = (n: number) => new Intl.NumberFormat('he-IL').format(n);
 
+  // חציון: במספר זוגי של פריטים יש לממוצע את שני האיברים באמצע, לא לקחת את
+  // העליון מביניהם — אותה תקלה שכבר נמצאה ותוקנה ב-buildreport.ts (median()).
+  const median = (nums: number[]): number | null => {
+    if (!nums.length) return null;
+    const s = [...nums].sort((a, b) => a - b);
+    const mid = Math.floor(s.length / 2);
+    return s.length % 2 === 1 ? s[mid] : Math.round((s[mid - 1] + s[mid]) / 2);
+  };
+
   // שווי משוער לחישוב תשואה — מהעסקאות בבניין, אחרת מהאזור.
   const estValue = useMemo(() => {
     const inBuilding = report.soldDeals.filter((d) => d.proximityRank === 0 && !d.suspect && d.price);
-    if (inBuilding.length) {
-      const sorted = inBuilding.map((d) => d.price!).sort((a, b) => a - b);
-      return sorted[Math.floor(sorted.length / 2)];
-    }
+    if (inBuilding.length) return median(inBuilding.map((d) => d.price!));
     const near = report.soldDeals.filter((d) => !d.suspect && d.price);
     if (!near.length) return null;
-    const sorted = near.map((d) => d.price!).sort((a, b) => a - b);
-    return sorted[Math.floor(sorted.length / 2)];
+    return median(near.map((d) => d.price!));
   }, [report.soldDeals]);
 
   const yieldPct = rent > 0 && estValue ? Math.round(((rent * 12) / estValue) * 1000) / 10 : null;

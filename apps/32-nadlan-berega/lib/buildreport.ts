@@ -2805,9 +2805,7 @@ export async function buildReport(
       .map((l) => (l.price && l.areaSqm ? l.price / l.areaSqm : null))
       .filter((v): v is number => v !== null && Number.isFinite(v) && v > 0)
       .sort((a, b) => a - b);
-    const medRentPerSqm = rentPerSqm.length
-      ? rentPerSqm[Math.floor(rentPerSqm.length / 2)]
-      : null;
+    const medRentPerSqm = median(rentPerSqm);
     const estMonthly = medRentPerSqm && unitArea ? Math.round((medRentPerSqm * unitArea) / 50) * 50 : null;
     // תשואה ברוטו: שכ"ד שנתי חלקי מחיר הנכס. שני האגפים חייבים לבוא מאותו
     // אזור, ולכן המכנה הוא חציון המחיר למ"ר של האזור כפול אותו שטח.
@@ -2894,9 +2892,7 @@ export async function buildReport(
       .map((t) => pricePerSqm(t.price, t.areaSqm))
       .filter((v): v is number => v !== null)
       .sort((a, b) => a - b);
-    const medCommercial = commercialPpsqm.length
-      ? Math.round(commercialPpsqm[Math.floor(commercialPpsqm.length / 2)])
-      : null;
+    const medCommercial = median(commercialPpsqm);
     const lastCommercial = commercialTxns[0] ?? null;
     const commerceRights = permitPlans
       .filter((p) => p.quantities.deltaCommerceSqm || p.quantities.deltaEmploymentSqm)
@@ -3011,7 +3007,7 @@ export async function buildReport(
       .map((t) => pricePerSqm(t.price, t.areaSqm))
       .filter((v): v is number => v !== null)
       .sort((a, b) => a - b);
-    const medLand = landPpsqm.length ? Math.round(landPpsqm[Math.floor(landPpsqm.length / 2)]) : null;
+    const medLand = median(landPpsqm);
     const lastLand = landTxns[0] ?? null;
     /** תוכניות בהליך שהן העדות היחידה לשינוי ייעוד אפשרי — צפי, לא מצב. */
     const rezoning = (permits?.inProcess ?? []).slice(0, 8);

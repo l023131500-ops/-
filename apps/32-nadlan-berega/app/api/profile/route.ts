@@ -213,8 +213,15 @@ export async function GET(req: NextRequest) {
       .filter((t) => t.price && t.areaSqm)
       .map((t) => pricePerSqm(t.price, t.areaSqm))
       .filter((v): v is number => v !== null);
-  const medianOf = (nums: number[]) =>
-    nums.length ? [...nums].sort((a, b) => a - b)[Math.floor(nums.length / 2)] : null;
+  // ⚠️ במספר זוגי של פריטים יש לממוצע את שני האיברים באמצע, לא לקחת את
+  // העליון מביניהם — אותה תקלה שכבר נמצאה ותוקנה ב-lib/buildreport.ts
+  // (median()): "19,000 ו-21,538 ₪ למ"ר" הציגה 21,538 במקום החציון 20,269.
+  const medianOf = (nums: number[]) => {
+    if (!nums.length) return null;
+    const s = [...nums].sort((a, b) => a - b);
+    const mid = Math.floor(s.length / 2);
+    return s.length % 2 === 1 ? s[mid] : Math.round((s[mid - 1] + s[mid]) / 2);
+  };
 
   const ppsqmValues = ppsqmOf(transactions);          // אזור — בסיס ההשוואה
   const parcelPpsqm = ppsqmOf(parcelTransactions);    // החלקה עצמה
