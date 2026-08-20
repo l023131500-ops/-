@@ -244,9 +244,25 @@ export function filterToParcel(
   txns: Transaction[],
   gush?: string | null,
   helka?: string | null,
+  /**
+   * חלקה שאוחדה/חולקה מחדש נרשמת אצל רשות המסים תחת "חלקת מוביל"
+   * (Block_lead/Plot_lead מ-`parcelValidity`), לא תחת החלקה שהמשתמש הזין.
+   * ⚠️ נמצא בפועל: חיפוש ישיר לפי גוש/חלקה על חלקה שחולקה מחזיר "אין עסקאות"
+   * למרות שההיסטוריה המלאה קיימת ב-`allTxns` (שכבר נשלף לפי נקודה/רדיוס,
+   * לא לפי גוש/חלקה) — רשומה תחת חלקת המוביל בלבד. בלי הפרמטר הזה הסינון
+   * מפספס אותה בשקט.
+   */
+  leadGush?: string | null,
+  leadHelka?: string | null,
 ): Transaction[] {
   if (!gush || !helka) return [];
-  return txns.filter((t) => t.gush === String(gush) && t.helka === String(helka));
+  const g = String(gush);
+  const h = String(helka);
+  const lg = leadGush ? String(leadGush) : null;
+  const lh = leadHelka ? String(leadHelka) : null;
+  return txns.filter(
+    (t) => (t.gush === g && t.helka === h) || (!!lg && !!lh && t.gush === lg && t.helka === lh),
+  );
 }
 
 /**

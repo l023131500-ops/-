@@ -1005,6 +1005,7 @@ export async function buildReport(
     rentRes,
     ramiRes,
     nearbyPlansRes,
+    validityRes,
   ] = await Promise.allSettled([
     lat != null && lng != null
       ? fetchDealsAtPoint(lat, lng, {
@@ -1037,6 +1038,10 @@ export async function buildReport(
     itmX != null && itmY != null && tierMayUsePaidSources(tier)
       ? nearbyConstructionPlans(itmX, itmY)
       : Promise.resolve(null),
+    // ⚠️ נשלף כאן, לפני שרשרת זיהוי הבניין (byPolygon/parcelTxns), ולא רק
+    // בהמשך יחד עם officialRef — כדי ש-leadGush/leadHelka יהיו זמינים לסינון
+    // עסקאות החלקה (ראה ההערה ב-`filterToParcel`, lib/nadlan.ts).
+    gush && helka ? parcelValidity(gush, helka) : Promise.resolve(null),
   ]);
 
   const deals = dealsRes.status === 'fulfilled' ? dealsRes.value : null;
@@ -1066,6 +1071,7 @@ export async function buildReport(
   const rentIndex = rentRes.status === 'fulfilled' ? rentRes.value : null;
   const ramiPolicy = ramiRes.status === 'fulfilled' ? ramiRes.value : null;
   const nearbyPlans = nearbyPlansRes.status === 'fulfilled' ? nearbyPlansRes.value : null;
+  const validity = validityRes.status === 'fulfilled' ? validityRes.value : null;
 
   // סעיף ההיתרים נבנה מאותה משיכה — בלי שאילתה נוספת.
   //
@@ -1138,7 +1144,7 @@ export async function buildReport(
   }
 
   const allTxns: Transaction[] = deals?.transactions ?? [];
-  const parcelTxns = filterToParcel(allTxns, gush, helka);
+  const parcelTxns = filterToParcel(allTxns, gush, helka, validity?.leadGush, validity?.leadHelka);
 
   // כל שמות הרחוב — הרשמי, מה שהוקלד, וכל הכינויים.
   const streetNames = [
@@ -1253,7 +1259,8 @@ export async function buildReport(
   // רחוב ומספר) נלקח **מהעסקאות הרשומות בחלקה עצמה** — הן נושאות את הכתובת
   // כפי שהמרשם רשם אותה, וזה המקור החזק ביותר לכיוון הזה. שירות האיתור הוא
   // גיבוי בלבד, ומסומן ככזה.
-  const parcelForAddress = gush && helka ? filterToParcel(allTxns, gush, helka) : [];
+  const parcelForAddress =
+    gush && helka ? filterToParcel(allTxns, gush, helka, validity?.leadGush, validity?.leadHelka) : [];
   const addressFromDeals = parcelForAddress.find((t) => t.streetName && t.houseNum != null) ?? null;
   // בהזנת גוש/חלקה אין כתובת לחפש איתה — הכתובת עצמה היא התוצר של הכיוון
   // ההפוך, ולכן הקישור לאתר הרשמי נבנה מהכתובת שהעסקאות בחלקה מסרו.
@@ -1284,10 +1291,7 @@ export async function buildReport(
       return best;
     })();
 
-  const [validity, officialRef] = await Promise.all([
-    gush && helka ? parcelValidity(gush, helka) : Promise.resolve(null),
-    refQuery ? nadlanAddressRef(refQuery, setlCode) : Promise.resolve(null),
-  ]);
+  const officialRef = refQuery ? await nadlanAddressRef(refQuery, setlCode) : null;
 
   const identityStreet = addressFromDeals?.streetName ?? streetResolved?.official ?? parsed.street ?? null;
   const identityHouse = addressFromDeals?.houseNum ?? parsed.houseNum ?? null;
@@ -1343,7 +1347,7 @@ export async function buildReport(
   } else if (parcelIdentity.leadGush && parcelIdentity.leadHelka) {
     parcelIdentity.note =
       `החלקה הזו אוחדה או חולקה מחדש, והרישום מוביל לגוש ${parcelIdentity.leadGush} ` +
-      `חלקה ${parcelIdentity.leadHelka}. חלק מהעסקאות עשויות להיות רשומות שם.`;
+      `חלקה ${parcelIdentity.leadHelka}. הדוח כולל גם עסקאות שנרשמו שם.`;
     warnings.push(parcelIdentity.note);
   } else if (gush && helka && !crossChecked && parcelForAddress.length === 0) {
     // לא סתירה — פשוט אין עסקאות בחלקה שאפשר לאמת מולן את הכתובת.
