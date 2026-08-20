@@ -243,7 +243,7 @@ export default function ProjectsAdmin() {
               {detail.generations.map((g) => (
                 <div key={g.id} className="border rounded p-2 text-center">
                   {g.image_url && (
-                    <img src={g.image_url} alt="" className="rounded mb-2 w-full object-cover" />
+                    <img src={g.image_url} alt={`תצוגה מקדימה של וריאציה ${g.variation_num}`} className="rounded mb-2 w-full object-cover" />
                   )}
                   <div className="text-xs">וריאציה {g.variation_num}</div>
                   {g.selected && <div className="text-xs text-green-700 mt-1">✓ נבחרה</div>}

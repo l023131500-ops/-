@@ -43,7 +43,7 @@ export default function MyProjectsPage() {
           {projects.map((p) => (
             <Link key={p.id} href={`/result/${p.id}`} className="bg-surface border rounded-lg overflow-hidden hover:shadow-lg transition">
               {p.generated_image_url ? (
-                <img src={p.generated_image_url} alt="" className="w-full aspect-square object-cover" />
+                <img src={p.generated_image_url} alt={p.ad_type ? `תצוגה מקדימה של מודעה - ${p.ad_type}` : "תצוגה מקדימה של מודעה שנוצרה"} className="w-full aspect-square object-cover" />
               ) : (
                 <div className="w-full aspect-square bg-gray-100 flex items-center justify-center text-gray-400">
                   {p.status === "generating" ? "בעיבוד..." : p.status === "error" ? "שגיאה" : "ממתין"}
