@@ -85,8 +85,12 @@ Deno.serve(async (req) => {
     }
     if (!userId) throw new Error("cannot create or find user");
 
-    // 3. Upsert profile
-    const { data: existing } = await admin.from("profiles").select("id").eq("user_id", userId).maybeSingle();
+    // 3. Upsert profile. profiles.user_id is UNIQUE — a select-then-insert here
+    // raced two concurrent activations (double-click / retried request) into an
+    // uncaught unique-violation on the loser, surfacing "activation failed" to a
+    // caller whose invite had, in fact, already been activated by the winner.
+    // A single upsert on that same unique key is atomic, so the loser just
+    // updates the row the winner created instead of colliding with it.
     const payload = {
       full_name: invite.full_name,
       phone: invite.phone,
@@ -95,11 +99,10 @@ Deno.serve(async (req) => {
       organization_name: invite.organization_name,
       is_approved: true,
     };
-    if (existing) {
-      await admin.from("profiles").update(payload).eq("id", existing.id);
-    } else {
-      await admin.from("profiles").insert({ user_id: userId, ...payload });
-    }
+    const { error: profileErr } = await admin
+      .from("profiles")
+      .upsert({ user_id: userId, ...payload }, { onConflict: "user_id" });
+    if (profileErr) throw profileErr;
 
     // 4. Mark invite used
     await admin.from("teacher_invites").update({ used: true, used_at: new Date().toISOString() }).eq("id", invite.id);

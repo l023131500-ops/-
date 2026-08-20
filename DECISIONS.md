@@ -2692,3 +2692,43 @@
      טקסט `"OK"` קבוע, לא JSON, לאף אחד מהמאמתים). ענף
      `fix/a-torah-nedarim-webhook-raised-ils-race-0820`, נדחף.
 
+
+## 20/08/2026 (LOOP A — סבב 36) — 15-egod: מרוץ select-then-insert על `profiles.user_id` ב-`activate-invite` הופך לשגיאה לא-מטופלת בהפעלה כפולה
+
+226. **בדקתי מחדש `core.run_progress`/`core.issues`/`core.project_tasks` לפני
+     שהתחלתי.** אין שינוי מהותי מסבב 35: כל מה שפתוח בתחום Loop A עדיין חסום
+     על הכרעת משתמש/מפתחות/תוכן (env keys, בחירת מיזוג נדל"ן, החלטת
+     ארכיטקטורה). שום פריט חדש פתוח ל-agent בתחום 01-16 בטבלאות core.
+     שיגרתי סוכן Explore על שטח פחות-נבדק בסבבים קודמים: 06-kupot-holim,
+     12-smel-ndln, 13-property-identity, 14-bsmachot-plus, 07-zol,
+     10-bkalot-rights, packages/auth, packages/billing, admin/, portal/.
+     07-zol עדיין ניירת בלבד (`source: not-vendored`) — כמו שתועד בסבב 35.
+     06/12/14 חזרו נקיים (נבדקו כבר לעומק בסבבים 16/17/22/28 ולא נמצא שם
+     חדש). הממצא האמיתי היה ב-15-egod, אפליקציה עם קוד ממשי שלא נסרקה
+     מספיק לעומק.
+227. **הבאג: `apps/15-egod/supabase/functions/activate-invite/index.ts`
+     שורות 88-102 (לפני התיקון) עשו select-then-insert על `profiles` לפי
+     `user_id`, בעוד `profiles.user_id` הוא `UNIQUE NOT NULL`
+     (`apps/15-egod/supabase/migrations/20260501001856_…sql` שורה 32).**
+     הפעלת אותו קישור הזמנה פעמיים במקביל (double-click על הכפתור, טאב
+     כפול, או retry רשת) — שני הבקשות עוברות את בדיקת ה-invite (`used=false`
+     עדיין לא עודכן), שתיהן פונות ל-`createUser`/`listUsers` ומגיעות לאותו
+     `userId` (ייחודיות המייל ב-`auth.users` דואגת לכך), אבל אז שתיהן
+     קוראות `select id from profiles where user_id=?` כמעט בו-זמנית —
+     שתיהן מקבלות `null` (הפרופיל עוד לא נוצר), שתיהן מנסות `insert`,
+     והמפסידה בתחרות נופלת על הפרת ה-`UNIQUE` הזה **בלי טיפול** — חריגה
+     לא-תפוסה גולשת אל ה-`catch` החיצוני ומחזירה `500 "activation failed"`
+     למשתמש שההזמנה שלו למעשה **כן** הופעלה בהצלחה על ידי הבקשה המקבילה.
+     תוצאה: מורה/רב שלוחץ "הפעל" פעמיים (רגיל בטופס מובייל עם חיבור
+     איטי) רואה שגיאה, למרות שהחשבון שלו כבר נוצר ותקין.
+228. **התיקון: `upsert` אטומי במקום select-then-insert.** קריאה אחת
+     `admin.from("profiles").upsert({user_id: userId, ...payload},
+     {onConflict: "user_id"})` — המפסידה בתחרות פשוט מעדכנת את השורה
+     שהמנצחת יצרה, בלי להתנגש בה; אין עוד חלון race. שגיאה אמיתית (לא
+     race) עדיין נזרקת כרגיל (`if (profileErr) throw profileErr`) —
+     התנהגות זהה לקודם עבור כשל לא-race. `esbuild` transpile על הקובץ עבר
+     נקי. בדקתי `grep` על `activate-invite` — הצרכן היחיד
+     (`apps/15-egod/src/pages/Invite.tsx`) תלוי רק בגוף התשובה
+     `{ok,email,password,error}`, שלא השתנה; שכתוב הכתיבה הפנימית ל-
+     `profiles` לא משפיע עליו. ענף `fix/a-egod-activate-invite-profile-race-0820`,
+     נדחף.
