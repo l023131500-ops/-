@@ -582,11 +582,18 @@ export async function registerRoutes(
       payload: webhookPayload,
     });
 
-    await storage.updateServiceSubmissionWebhook(
-      submission.id,
-      dispatchResult.ok ? "sent" : "failed",
-      `HTTP ${dispatchResult.status}: ${dispatchResult.responseText}`,
-    );
+    try {
+      await storage.updateServiceSubmissionWebhook(
+        submission.id,
+        dispatchResult.ok ? "sent" : "failed",
+        `HTTP ${dispatchResult.status}: ${dispatchResult.responseText}`,
+      );
+    } catch (e) {
+      // The submission and webhook dispatch already succeeded above -- a
+      // failure to persist the status label must not turn a successful
+      // request into a false 500 for the caller.
+      console.warn("service submission webhook status update failed", e);
+    }
     res.json({
       ok: true,
       submissionId: submission.id,
