@@ -9580,3 +9580,59 @@
     שהתיקון שם דורש הוספת landmark חדש (שינוי מבנה DOM ממשי), לא רק
     id על תג קיים כמו בשבעה האחרים. נושא #245/#250 (RLS, חסומים)
     נשארים כפי שהם. via cloud server 167.99.131.167 [loop B]
+
+## 20/08/2026 — סבב 416 (loop B)
+
+416. **22-get-your-rights: הוספת `<main>` + קישור דילוג. נסגר — 8/9
+    מהאפליקציות החיות עם קישור דילוג, 27 נותרה (וגילוי: ההנחה על 27
+    שגויה, ראו למטה).**
+
+    ל-`Index.tsx` (עמוד הנחיתה הציבורי היחיד, `/`) לא היה `<main>` כלל —
+    מבנה שטוח של `<Navbar/>` ואז חמישה `<section>`/רכיב ישירות, בניגוד
+    ל-17/18/19/20/21/24/28 שכבר היה להם `<main>` פר-עמוד וחיכו רק ל-`id`.
+    עטפתי את חמשת הבלוקים (`section#top`, `StatsSection`,
+    `section#categories`, `section#paid-service`, `section#community`)
+    ב-`<main id="main-content">`, בין `<Navbar/>` ל-`<Footer/>`;
+    `FloatingElements` (דקורטיבי, `aria-hidden`) ווידג'טי ה-Suspense
+    הצפים (`FloatingBot`/`AIAgent`) נשארו מחוץ ל-`<main>` כי הם שכבות-על
+    צפות ולא זרימת-תוכן. קישור הדילוג נוסף ל-`index.html` (לפני
+    `<div id="root">`), ו-`.skip-link` נכתב כ-CSS רגיל (לא Tailwind)
+    ב-`src/index.css` — כמו 21/24 בסבב 415, כי `content` ב-
+    `tailwind.config.ts` של 22 גם הוא לא כולל את `index.html`.
+
+    **בדיקות תקינות:** `grep` אישר `<main>` יחיד בקובץ (2 מופעים =
+    פתיחה+סגירה) ואין סלקטור CSS/JS ממוקד-תג (`main {`,
+    `querySelector('main')`). ספירת סוגריים (Python) תואמת:
+    `{}` 4/4, `()` 9/9. `id="main-content"` מופיע פעם אחת בלבד בכל
+    האפליקציה (grep). לא הופעל build/dev-server.
+
+    **גילוי לגבי 27 (בקלות-מחירון) — ההנחה בסבב 415 שגויה:** רוב
+    העמודים הציבוריים **כן** מציירים `<main>` כבר (11 מתוך 14: לפי
+    `App.tsx`/`isPublicPath` — `public-landing`, `public-eligibility`,
+    `public-potential`, `public-topic`, `public-financial`,
+    `public-reminder`, `public-price-comparison`, `public-product-
+    compare`, `public-health-funds`, `health-fund-service`,
+    `voluntary-submit` — כולם צריכים רק `id="main-content"`, בדיוק כמו
+    17/18/19/20/21/24/28). רק **שלושה** עמודים ציבוריים חסרים `<main>`
+    לגמרי: `public-community.tsx` (`<div>` שטוח, נתיב `/community/:slug`),
+    `service-form.tsx` (`<div>` שטוח, `/service/:id`), ו-`terms.tsx`
+    (`<header>`+`<Tabs>` בלי `<main>`, גם ב-`/terms` הציבורי וגם בתוך
+    `Shell` הפנימי — `Shell` כבר עוטף עם `<main className="flex-1">`
+    משלו כשמוצג דרך האזור הפנימי, אז שם *אסור* להוסיף `<main>` נוסף
+    בתוך `terms.tsx` עצמו, רק `id` יתווסף כאשר הוא נצרך דרך ה-Switch
+    הציבורי). כלומר 27 הוא בעיקר עדכון `id` פשוט (11 קבצים) + שלוש
+    עטיפות `<main>` חדשות עם זהירות ל-`terms.tsx` (רינדור כפול,
+    ציבורי מול Shell) — לא "שינוי מבנה גדול" כפי שתועד ב-415. תועד כאן
+    כדי שהסבב הבא לא יבזבז זמן על אימות מחדש.
+
+    `git diff --cached --stat`: 3 קבצים, ‎+32/-16‎. ענף
+    `fix/b-22-whatsapp-noopener-round395-0820` (שרשרת הענפים היא המקור
+    המלא היחיד ל-loop B, לא `main`), קומיט `47538496`, נדחף (מפעיל
+    פריסת Vercel תחת `more30.com/zchuyot`).
+
+    **הבא בתור:** 27 — 11 קבצי `id="main-content"` על `<main>` קיים +
+    קישור דילוג אחד ב-`client/index.html` + שלוש עטיפות `<main>` חדשות
+    (`public-community`, `service-form`, ו-`terms.tsx` רק בענף הציבורי
+    של ה-Switch, לא בתוך הרכיב עצמו כי `Shell` כבר מספק `<main>`
+    למסלול הפנימי). נושא #245/#250 (RLS, חסומים) נשארים כפי שהם.
+    via cloud server 167.99.131.167 [loop B]
