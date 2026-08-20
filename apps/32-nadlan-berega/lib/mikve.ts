@@ -112,7 +112,11 @@ export async function mikvaotNear(
     if (!point && address && lat != null && lng != null) {
       try {
         const results = await geocodeGovmap(`${address} ${cityName}`);
-        const best = results.find((x) => x.kind === 'address') ?? results[0] ?? null;
+        const best =
+          results.find((x) => x.kind === 'address' && x.cityVerified) ??
+          results.find((x) => x.kind === 'address') ??
+          results[0] ??
+          null;
         if (best) {
           point = { lat: best.lat, lng: best.lng };
           fresh.push({ extId, name, itmX: best.itmX, itmY: best.itmY, lat: best.lat, lng: best.lng });

@@ -228,7 +228,11 @@ export async function locateStations(
     if (geo === undefined) {
       try {
         const results = await geocodeGovmap(addr);
-        const best = results.find((r) => r.kind === 'address') ?? results[0] ?? null;
+        const best =
+          results.find((r) => r.kind === 'address' && r.cityVerified) ??
+          results.find((r) => r.kind === 'address') ??
+          results[0] ??
+          null;
         geo = best ? { lat: best.lat, lng: best.lng } : null;
         if (best) {
           fresh.push({
