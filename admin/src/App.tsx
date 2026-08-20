@@ -964,7 +964,7 @@ export function App() {
                       <div style={{ width: `${Math.max(0, Math.min(100, p.usage.percent))}%`, height: "100%", background: p.usage.percent >= 80 ? "#dc2626" : "#16a34a" }} />
                     </div>
                     <div style={{ fontSize: 12, color: "var(--fg-2)", marginTop: 4 }}>
-                      נותרו {nfHe(p.usage.limit - p.usage.used)} {p.usage.unit} · {nfHe(p.usage.used)} מתוך {nfHe(p.usage.limit)}
+                      נותרו {nfHe(Math.max(0, p.usage.limit - p.usage.used))} {p.usage.unit} · {nfHe(p.usage.used)} מתוך {nfHe(p.usage.limit)}
                     </div>
                     {p.usage.cycleEnds && <div style={{ fontSize: 11, color: "var(--muted-2)" }}>מתאפס ב-{new Date(p.usage.cycleEnds).toLocaleDateString("he-IL")}</div>}
                   </div>
