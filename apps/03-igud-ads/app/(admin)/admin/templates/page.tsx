@@ -239,25 +239,26 @@ export default function TemplatesPage() {
             <div className="space-y-4">
               <div className="grid md:grid-cols-2 gap-4">
                 <div>
-                  <label className="label">שם תבנית *</label>
-                  <input className="input" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
+                  <label className="label" htmlFor="template-name">שם תבנית *</label>
+                  <input id="template-name" className="input" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
                 </div>
                 <div>
-                  <label className="label">קטגוריה</label>
-                  <select className="input" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })}>
+                  <label className="label" htmlFor="template-category">קטגוריה</label>
+                  <select id="template-category" className="input" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })}>
                     {Object.entries(CATEGORIES).map(([v, l]) => <option key={v} value={v}>{l}</option>)}
                   </select>
                 </div>
               </div>
 
               <div>
-                <label className="label">תיאור</label>
-                <textarea className="input" rows={2} value={form.description || ""} onChange={(e) => setForm({ ...form, description: e.target.value })} />
+                <label className="label" htmlFor="template-description">תיאור</label>
+                <textarea id="template-description" className="input" rows={2} value={form.description || ""} onChange={(e) => setForm({ ...form, description: e.target.value })} />
               </div>
 
               <div>
-                <label className="label">prompt_template</label>
+                <label className="label" htmlFor="template-prompt">prompt_template</label>
                 <textarea
+                  id="template-prompt"
                   className="input font-mono text-xs"
                   rows={4}
                   placeholder="לדוגמה: מודעה לשיעור תורה — {title} מפי {teacher_name}, ביום {day} בשעה {time}..."
@@ -268,23 +269,23 @@ export default function TemplatesPage() {
 
               <div className="grid md:grid-cols-2 gap-4">
                 <div>
-                  <label className="label">שדות חובה (מופרדים בפסיק)</label>
-                  <input className="input" placeholder="title, teacher_name, day" value={reqStr} onChange={(e) => setReqStr(e.target.value)} />
+                  <label className="label" htmlFor="template-required-fields">שדות חובה (מופרדים בפסיק)</label>
+                  <input id="template-required-fields" className="input" placeholder="title, teacher_name, day" value={reqStr} onChange={(e) => setReqStr(e.target.value)} />
                 </div>
                 <div>
-                  <label className="label">שדות אופציונליים</label>
-                  <input className="input" placeholder="location, contact" value={optStr} onChange={(e) => setOptStr(e.target.value)} />
+                  <label className="label" htmlFor="template-optional-fields">שדות אופציונליים</label>
+                  <input id="template-optional-fields" className="input" placeholder="location, contact" value={optStr} onChange={(e) => setOptStr(e.target.value)} />
                 </div>
               </div>
 
               <div className="grid md:grid-cols-3 gap-4">
                 <div>
-                  <label className="label">מחיר (₪)</label>
-                  <input className="input" type="number" inputMode="numeric" value={form.price_nis ?? ""} onChange={(e) => setForm({ ...form, price_nis: e.target.value ? parseInt(e.target.value) : null })} />
+                  <label className="label" htmlFor="template-price">מחיר (₪)</label>
+                  <input id="template-price" className="input" type="number" inputMode="numeric" value={form.price_nis ?? ""} onChange={(e) => setForm({ ...form, price_nis: e.target.value ? parseInt(e.target.value) : null })} />
                 </div>
                 <div>
-                  <label className="label">aspect_ratio</label>
-                  <select className="input" value={form.aspect_ratio} onChange={(e) => setForm({ ...form, aspect_ratio: e.target.value })}>
+                  <label className="label" htmlFor="template-aspect-ratio">aspect_ratio</label>
+                  <select id="template-aspect-ratio" className="input" value={form.aspect_ratio} onChange={(e) => setForm({ ...form, aspect_ratio: e.target.value })}>
                     <option value="1:1">1:1</option>
                     <option value="4:5">4:5</option>
                     <option value="16:9">16:9</option>
@@ -292,8 +293,8 @@ export default function TemplatesPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="label">DALL-E Size</label>
-                  <select className="input" value={form.dalle_size} onChange={(e) => setForm({ ...form, dalle_size: e.target.value })}>
+                  <label className="label" htmlFor="template-dalle-size">DALL-E Size</label>
+                  <select id="template-dalle-size" className="input" value={form.dalle_size} onChange={(e) => setForm({ ...form, dalle_size: e.target.value })}>
                     <option value="1024x1024">1024×1024</option>
                     <option value="1792x1024">1792×1024</option>
                     <option value="1024x1792">1024×1792</option>
@@ -302,18 +303,18 @@ export default function TemplatesPage() {
               </div>
 
               <div>
-                <label className="label">צבעים (hex, מופרדים בפסיק)</label>
-                <input className="input" placeholder="#1A2E5A, #C9A84C" value={colorsStr} onChange={(e) => setColorsStr(e.target.value)} />
+                <label className="label" htmlFor="template-colors">צבעים (hex, מופרדים בפסיק)</label>
+                <input id="template-colors" className="input" placeholder="#1A2E5A, #C9A84C" value={colorsStr} onChange={(e) => setColorsStr(e.target.value)} />
               </div>
 
               <div className="grid md:grid-cols-2 gap-4">
                 <div>
-                  <label className="label">פונט</label>
-                  <input className="input" value={form.style_rules?.font || ""} onChange={(e) => setForm({ ...form, style_rules: { ...(form.style_rules || { colors: [], alignment: "right" }), font: e.target.value } })} />
+                  <label className="label" htmlFor="template-font">פונט</label>
+                  <input id="template-font" className="input" value={form.style_rules?.font || ""} onChange={(e) => setForm({ ...form, style_rules: { ...(form.style_rules || { colors: [], alignment: "right" }), font: e.target.value } })} />
                 </div>
                 <div>
-                  <label className="label">יישור טקסט</label>
-                  <select className="input" value={form.style_rules?.alignment || "right"} onChange={(e) => setForm({ ...form, style_rules: { ...(form.style_rules || { colors: [], font: "" }), alignment: e.target.value } })}>
+                  <label className="label" htmlFor="template-alignment">יישור טקסט</label>
+                  <select id="template-alignment" className="input" value={form.style_rules?.alignment || "right"} onChange={(e) => setForm({ ...form, style_rules: { ...(form.style_rules || { colors: [], font: "" }), alignment: e.target.value } })}>
                     <option value="right">ימין</option>
                     <option value="center">מרכז</option>
                     <option value="left">שמאל</option>
@@ -322,8 +323,8 @@ export default function TemplatesPage() {
               </div>
 
               <div>
-                <label className="label">כתובת תמונה ממוזערת (URL)</label>
-                <input className="input" value={form.thumbnail_url || ""} onChange={(e) => setForm({ ...form, thumbnail_url: e.target.value })} />
+                <label className="label" htmlFor="template-thumbnail-url">כתובת תמונה ממוזערת (URL)</label>
+                <input id="template-thumbnail-url" className="input" value={form.thumbnail_url || ""} onChange={(e) => setForm({ ...form, thumbnail_url: e.target.value })} />
               </div>
 
               <div className="grid md:grid-cols-3 gap-4">
@@ -342,8 +343,8 @@ export default function TemplatesPage() {
               </div>
 
               <div>
-                <label className="label">סדר מיון</label>
-                <input className="input w-24" type="number" inputMode="numeric" value={form.sort_order} onChange={(e) => setForm({ ...form, sort_order: parseInt(e.target.value || "0") })} />
+                <label className="label" htmlFor="template-sort-order">סדר מיון</label>
+                <input id="template-sort-order" className="input w-24" type="number" inputMode="numeric" value={form.sort_order} onChange={(e) => setForm({ ...form, sort_order: parseInt(e.target.value || "0") })} />
               </div>
             </div>
 
