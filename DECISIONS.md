@@ -8373,3 +8373,34 @@
      40-gannenet, או לפתוח עדשה נוספת, או לחזור ל-
      `core.project_tasks`/`core.project_bugs` (5 פריטים פתוחים,
      עדיין חסומים).
+
+## 20/08/2026 — סבב 168 (loop A)
+
+822. **המשך עדשת skip-to-content ל-04-imud-torani.** שלושה עמודים
+     ציבוריים חולקים את `components/SiteHeader.tsx`: `pages/Home.tsx`,
+     `pages/Templates.tsx`, `pages/Wizard.tsx`. עמוד רביעי,
+     `pages/Editor.tsx`, אינו משתמש ב-`SiteHeader` כלל — יש לו סרגל
+     עליון עצמאי משלו (Logo + כותרת ספר + כפתורי שמירה/ייצוא) ומבנה
+     עמוד שונה לגמרי (aside עם מחלקות + iframe תצוגה מקדימה) — נשאר
+     כמועמד לעדשה נפרדת, לא טופל בסבב זה (אותו עיקרון כמו עמוד
+     `/login` העצמאי ב-02 בסבב 166).
+823. **התיקון:** ב-`SiteHeader.tsx` — קישור דילוג כאלמנט ראשון (עטוף
+     ב-fragment, כמו בסבבים 166-167), עם `bg-primary`/
+     `text-primary-foreground` — צמד קיים ומאומת בפועל ב-`index.css`
+     של האפליקציה (`--primary`/`--primary-foreground`). ב-`Home.tsx`
+     היה כבר `<main>` קיים — רק נוסף `id="main"`. ב-`Templates.tsx`
+     וב-`Wizard.tsx` לא היה תג `<main>` כלל — ה-`<div>` העוטף מיד אחרי
+     `<SiteHeader />` הוסב ל-`<main id="main">` (שיפור סמנטי אמיתי:
+     landmark יחיד לעמוד, לא רק hack של id), עם תיוג זהיר של תג
+     הסגירה התואם (`</div>`→`</main>`) לפי רמת ההזחה המדויקת בקובץ.
+824. **אפס רגרסיה מאומתת:** `git diff --stat` — 4 קבצים, 15+/7-.
+     איזון סוגריים בפייתון + ספירת `<main>`/`</main>`/`<div>`/`</div>`/
+     `<header>`/`</header>` על כל 4 הקבצים: כולם תואמים 1:1. אין tsc/
+     npm בסביבה זו. הנתיב `apps/04-imud-torani/client` חסום ע"י
+     `.gitignore` — נדרש `git add -f`. Commit `048fb773` על
+     `fix/a-icon-only-buttons-round2-0820`, נדחף ל-origin (מפעיל
+     פריסת Vercel תחת more30.com/imud-torani).
+825. **הבא בתור:** להמשיך את עדשת ה-skip-link על 12/15/40-gannenet,
+     או לפתוח עדשה נוספת (מועמד: `04-imud-torani/Editor.tsx` העצמאי),
+     או לחזור ל-`core.project_tasks`/`core.project_bugs` (5 פריטים
+     פתוחים, עדיין חסומים).
