@@ -68,8 +68,8 @@ export function AdminInbox() {
                   <div>
                     <div className="font-semibold text-foreground">{i.name}{i.subject ? ` · ${i.subject}` : ""}</div>
                     <div className="mt-0.5 flex flex-wrap gap-x-3 text-xs text-muted-foreground">
-                      {i.phone && <span className="inline-flex items-center gap-1"><Phone className="h-3 w-3" /> {i.phone}</span>}
-                      {i.email && <span className="inline-flex items-center gap-1"><Mail className="h-3 w-3" /> {i.email}</span>}
+                      {i.phone && <span className="inline-flex items-center gap-1"><Phone className="h-3 w-3" /> <span dir="ltr">{i.phone}</span></span>}
+                      {i.email && <span className="inline-flex items-center gap-1"><Mail className="h-3 w-3" /> <span dir="ltr">{i.email}</span></span>}
                     </div>
                   </div>
                   {!i.isRead && (
