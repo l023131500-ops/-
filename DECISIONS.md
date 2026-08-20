@@ -10264,3 +10264,56 @@
      נבדקו כאן כי הן לא הופיעו תחת אף אחד מתיקיות ההיקף. חוץ מזה: שני
      מועמדי הניגודיות מסבב 175, שני מופעי `FormMessage` לא-פעילים מסבב 191,
      או `core.project_tasks`/`core.project_bugs` (6 פריטים חסומים).
+
+## 20/08/2026 — סבב 205 (loop A) — `01-torah-platform`: כניסה עם Google מחזירה למערכת הלא-נכונה לגמרי (לא ל-`/torah/portal`)
+
+992. **מועמד מ-Explore agent (redirect אחרי Google מתעלם מפרמטר
+     `redirect`) אומת ישירות בקוד ונמצא חמור יותר ממה שדווח.** קראתי את
+     `apps/01-torah-platform/src/hooks/useAuth.tsx` ו-
+     `src/pages/auth/SignIn.tsx` יחד: `signInWithGoogle()` בנה `redirectTo:
+     ${window.location.origin}/portal` — כלומר `https://more30.com/portal`,
+     **בלי** קידומת ה-`BASE_URL` של האפליקציה. בדקתי את `vite.config.ts`
+     (`base: "/torah/"`) ואת `App.tsx` (`BrowserRouter basename=
+     {import.meta.env.BASE_URL...}`) — כתובת היעד האמיתית של האפליקציה היא
+     `https://more30.com/torah/portal`, לא `https://more30.com/portal`.
+     `more30.com/portal` (בלי `/torah`) שייך לאפליקציית ה-`portal/` הנפרדת
+     ברמת השורש (רשימת כל המערכות), פריסה נפרדת לגמרי מ-`01-torah-platform`.
+     כלומר משתמש שמתחבר עם Google **מצליח** להתחבר, אבל נוחת על אתר אחר
+     לגמרי — בדיוק דפוס "login-returns-to-landing" שמופיע במפורש בהיקף
+     המשימה (`fix login-returns-to-landing and signup hash mismatch`).
+993. **כניסת אימייל/סיסמה כבר עושה את זה נכון — Google לא.** `SignIn.tsx`
+     קורא פרמטר `redirect` מה-URL (`params.get("redirect") || "/portal"`)
+     ומנווט אליו אחרי כניסת אימייל/סיסמה מוצלחת (`nav(redirect)`, שורה 41)
+     ואחרי איפוס סיסמה (`resetUrl(redirect)`, כבר כולל `BASE_URL`, שורה
+     19-20) — אבל `google()` (שורה 70-74 לפני התיקון) קרא ל-
+     `signInWithGoogle()` בלי שום ארגומנט, כך שהפרמטר אבד גם במקרה שהוא
+     קיים. `grep 'signInWithGoogle'` אימת קורא יחיד בכל הריפו (`SignIn.tsx`
+     שורה 72) — אין סיכון רגרסיה לקריאה נוספת שלא ראיתי.
+994. **התיקון: `signInWithGoogle` מקבל `next` אופציונלי (ברירת מחדל
+     `"portal"`), בונה `redirectTo` עם `BASE_URL`, ו-`SignIn.tsx` מעביר את
+     `redirect` הקיים.** `${window.location.origin}${import.meta.env
+     .BASE_URL}${next.replace(/^\//, "")}` — אותו דפוס בדיוק שכבר קיים
+     בקובץ הזה עצמו ל-`resetUrl` (מוגדר שורה 19-20, עם הערה שמסבירה שהכתובת
+     המלאה חייבת לכלול את ה-`/torah/` וכן ברשימת ה-allow-list של הפרויקט).
+     לא נוצר `/auth/callback` חדש — הרכיב הגלובלי `onAuthStateChange`
+     ב-`AuthProvider` (עוטף את כל ה-`Router`) כבר תופס את ה-session בכל
+     נתיב בתוך האפליקציה, כמו קודם; השינוי היחיד הוא לאיזה נתיב הדפדפן
+     בכלל מנווט.
+995. **אפס רגרסיה מאומתת:** `git diff --stat`: 2 קבצים, +13/-4, שינוי
+     אריתמטי-מחרוזתי + פרמטר אופציונלי חדש עם ברירת מחדל זהה להתנהגות
+     הקודמת בפועל (`next="portal"` → אותו יעד סופי כמו קודם, רק עם
+     `BASE_URL` נכון במקום חסר) — אין מחיקת ענף/תכונה קיימת. בדיקת איזון
+     סוגריים בפייתון על שני הקבצים אחרי העריכה: תואם. הקבצים אינם חסומים
+     ב-`.gitignore` (`git check-ignore` — exit 1), אין צורך ב-`git add -f`.
+     לא נגעתי במערכות/סכימות מוגנות (08/09/bkalut-app/bkalot-admin/zr_*/
+     NEDARIM3873/csj/csj_src/igud), ב-`main`, או במערכת מחוץ להיקף (רק
+     01-16/gannenet/auth/super-admin/admin dashboard/homepage ordering/
+     pricing).
+996. **הבא בתור:** לבדוק האם `03-igud-ads`/`02-igud-transcribe` (שכן
+     מעבירים `next`/`callback` דרך Google OAuth, לפי הדוגמאות שה-Explore
+     agent ציטט) בכל זאת סובלים מאותה בעיית `BASE_URL` חסר בכתובת
+     ה-`redirectTo` הסופית עצמה (לא רק בפרמטר ה-`next`) — לא נבדק כאן.
+     חוץ מזה: שתי הטבלאות מ-987 (`client_timeline`, `knowledge_chunks`),
+     שני מועמדי הניגודיות מסבב 175, שני מופעי `FormMessage` לא-פעילים
+     מסבב 191, או `core.project_tasks`/`core.project_bugs` (6 פריטים
+     חסומים).
