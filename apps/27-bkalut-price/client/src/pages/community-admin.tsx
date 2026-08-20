@@ -101,18 +101,26 @@ export default function CommunityAdmin() {
 
   async function createQuestionnaire() {
     if (!newTitle.trim()) return;
-    const r = await apiRequest("POST", "/api/community/admin/questionnaires", { title: newTitle });
-    const q = await r.json();
-    setNewTitle("");
-    await loadList();
-    loadDetail(q.id);
+    try {
+      const r = await apiRequest("POST", "/api/community/admin/questionnaires", { title: newTitle });
+      const q = await r.json();
+      setNewTitle("");
+      await loadList();
+      loadDetail(q.id);
+    } catch {
+      toast({ title: "יצירת השאלון נכשלה", variant: "destructive" });
+    }
   }
 
   async function saveQuestionnaire(patch: Partial<Questionnaire>) {
     if (!detail) return;
-    await apiRequest("PATCH", `/api/community/admin/questionnaires/${detail.questionnaire.id}`, patch);
-    loadDetail(detail.questionnaire.id);
-    loadList();
+    try {
+      await apiRequest("PATCH", `/api/community/admin/questionnaires/${detail.questionnaire.id}`, patch);
+      loadDetail(detail.questionnaire.id);
+      loadList();
+    } catch {
+      toast({ title: "שמירת השאלון נכשלה", variant: "destructive" });
+    }
   }
 
   async function addQuestion() {
@@ -120,36 +128,60 @@ export default function CommunityAdmin() {
     const options = HAS_OPTIONS.includes(newQuestion.type)
       ? newQuestion.optionsText.split("\n").map((s) => s.trim()).filter(Boolean).map((s) => ({ value: s, label: s }))
       : [];
-    await apiRequest("POST", `/api/community/admin/questionnaires/${detail.questionnaire.id}/questions`, {
-      label: newQuestion.label, type: newQuestion.type, helpText: newQuestion.helpText,
-      required: newQuestion.required, options, sortOrder: detail.questions.length,
-    });
-    setNewQuestion({ label: "", type: "text", helpText: "", required: false, optionsText: "" });
-    loadDetail(detail.questionnaire.id);
+    try {
+      await apiRequest("POST", `/api/community/admin/questionnaires/${detail.questionnaire.id}/questions`, {
+        label: newQuestion.label, type: newQuestion.type, helpText: newQuestion.helpText,
+        required: newQuestion.required, options, sortOrder: detail.questions.length,
+      });
+      setNewQuestion({ label: "", type: "text", helpText: "", required: false, optionsText: "" });
+      loadDetail(detail.questionnaire.id);
+    } catch {
+      toast({ title: "הוספת השאלה נכשלה", variant: "destructive" });
+    }
   }
 
   async function updateQuestion(id: number, patch: Partial<Question>) {
-    await apiRequest("PATCH", `/api/community/admin/questions/${id}`, patch);
-    if (detail) loadDetail(detail.questionnaire.id);
+    try {
+      await apiRequest("PATCH", `/api/community/admin/questions/${id}`, patch);
+      if (detail) loadDetail(detail.questionnaire.id);
+    } catch {
+      toast({ title: "עדכון השאלה נכשל", variant: "destructive" });
+    }
   }
   async function deleteQuestion(id: number) {
-    await apiRequest("DELETE", `/api/community/admin/questions/${id}`);
-    if (detail) loadDetail(detail.questionnaire.id);
+    try {
+      await apiRequest("DELETE", `/api/community/admin/questions/${id}`);
+      if (detail) loadDetail(detail.questionnaire.id);
+    } catch {
+      toast({ title: "מחיקת השאלה נכשלה", variant: "destructive" });
+    }
   }
 
   async function addLink() {
     if (!detail) return;
-    await apiRequest("POST", `/api/community/admin/questionnaires/${detail.questionnaire.id}/links`, { label: newLinkLabel });
-    setNewLinkLabel("");
-    loadDetail(detail.questionnaire.id);
+    try {
+      await apiRequest("POST", `/api/community/admin/questionnaires/${detail.questionnaire.id}/links`, { label: newLinkLabel });
+      setNewLinkLabel("");
+      loadDetail(detail.questionnaire.id);
+    } catch {
+      toast({ title: "הוספת הקישור נכשלה", variant: "destructive" });
+    }
   }
   async function toggleLink(l: Link_) {
-    await apiRequest("PATCH", `/api/community/admin/links/${l.id}`, { active: !l.active });
-    if (detail) loadDetail(detail.questionnaire.id);
+    try {
+      await apiRequest("PATCH", `/api/community/admin/links/${l.id}`, { active: !l.active });
+      if (detail) loadDetail(detail.questionnaire.id);
+    } catch {
+      toast({ title: "עדכון הקישור נכשל", variant: "destructive" });
+    }
   }
   async function deleteLink(id: number) {
-    await apiRequest("DELETE", `/api/community/admin/links/${id}`);
-    if (detail) loadDetail(detail.questionnaire.id);
+    try {
+      await apiRequest("DELETE", `/api/community/admin/links/${id}`);
+      if (detail) loadDetail(detail.questionnaire.id);
+    } catch {
+      toast({ title: "מחיקת הקישור נכשלה", variant: "destructive" });
+    }
   }
 
   function copyUrl(url: string) {
