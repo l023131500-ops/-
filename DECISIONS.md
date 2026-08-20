@@ -3986,3 +3986,69 @@
      אפשר בבטחה להדק את `books_anon_all`. מחוץ ל-04: בעלות
      `bkalut backend full access` (#329-ב) על `bieebmnmkffwbqlsfozh`
      דורשת אישור משתמש מפורש לפני כל בדיקה נוספת.
+
+## 20/08/2026 (LOOP A — סבב 58) — 01-torah-platform: שני טפסי לידים ציבוריים כתבו לעמודות שלא קיימות ב-public.leads
+
+332. **בדקתי מחדש `core.run_progress`/`core.issues`/`core.projects` (01-16)
+     לפני שהתחלתי.** סבב 57 סגור (commit `d62cf94a`, תאם ל-HEAD). כל
+     ה-`core.issues` הפתוחים בתחום 01-16+תשתית משותפת חסומים על אישור
+     משתמש חיצוני (allow-list של Supabase Auth בפרויקטי לוויין, בעלות
+     שנויה במחלוקת על `bieebmnm`/`csjekrv`) — שום דבר פנוי לתיקון קוד.
+     סוכן Explore ראשון על auth/admin/portal/gannenet לא מצא כלום (כל
+     המסלולים שנבדקו כבר תוקנו בסבבים קודמים). סוכן שני, ממוקד בבאגים
+     מסוג "שדה/עמודה לא תואמת סכמה" (בהשראת התבנית שכבר נתפסה ב-#247,
+     16-chatzor), מצא את הממצא הזה.
+333. **הבאג: `RequestLesson.tsx` ו-`JoinTeacher.tsx` (01, טפסי "בקש
+     שיעור"/"הצטרף כמגיד" הציבוריים) הכניסו ל-`public.leads` עם
+     `type`/`details` — עמודות שמעולם לא היו בטבלה.** אימתתי מול הסכמה
+     האמיתית בשלוש דרכים בלתי-תלויות: המיגרציה
+     (`apps/01-torah-platform/supabase/migrations/20260519000002_torah_content.sql:211-228`,
+     `kind text not null` + `raw_data jsonb`, אין `type`/`details`),
+     הטיפוסים המחוללים (`src/integrations/supabase/types.ts:1876-1912`,
+     אותה סכמה בדיוק), והדפוס העובד כבר בקבצי אחות (`Contact.tsx`/
+     `FindLesson.tsx` כבר משתמשים ב-`kind`/`raw_data`, עם הערה מפורשת
+     בקוד שמתעדת שזה בדיוק התיקון שהוחל שם בעבר). כל שליחה משני הטפסים
+     נכשלה ב-100% מהמקרים (NOT NULL על `kind` + עמודה לא מוכרת) — לא
+     "הצלחה מדומה" (ה-`catch` תפס את השגיאה והציג הודעת שגיאה אמיתית
+     למשתמש), אלא כישלון מוחלט של שתי פעולות ליבה ציבוריות.
+334. **ערך `kind` שנבחר: `lesson_request`/`teacher_offer`, לא `request_lesson`/
+     `join_teacher`.** לא ניחוש — `admin/MatchingGuru.tsx:29-33` כבר מסנן
+     במפורש על `kind === "lesson_request"` (ברירת מחדל גם) ו-`kind ===
+     "teacher_offer"`, עם הערה בקוד "(people from JoinTeacher form)" —
+     כלומר זו כבר הכוונה המתועדת של מסך ה"גורו" להתאמה שצורך את
+     הלידים האלה. הערך שמופיע בתווית `admin/Leads.tsx` הישן
+     (`request_lesson`/`join_teacher`) היה הכיוון הלא-נכון, ותוקן יחד.
+335. **ממצא נלווה באותו שורש, תוקן יחד כי זו אותה סיבה בדיוק:**
+     `admin/Leads.tsx` (מסך `/admin/leads`, שונה מ-`/admin/leads-guru`
+     התקין) קרא `l.type`/`l.details` — עמודות שאף פעם לא היו קיימות,
+     כך שהמסך הזה הציג "undefined" ולא הציג `raw_data` בכלל **לכל ליד
+     קיים**, כולל אלה שכן נכתבו נכון (`contact`/`find_lesson`). תוקן ל-
+     `l.kind`/`l.raw_data`, ו-`TYPE_LABELS` עודכן לערכים האמיתיים.
+     `MatchingGuru.tsx` ו-`admin/LeadsGuru.tsx` כבר היו תקינים (לא נגעתי).
+     `FloatingChatBot.tsx`/`Questionnaire.tsx` (קטגוריות `seeker`/`teacher`/
+     `form.role` דינמי) גם הם כבר תקינים מבחינת עמודות — לא תוקנו כי אינם
+     שבורים, רק חלק מ-taxonomy רחב יותר של ערכי `kind` שלא איחדתי (מחוץ
+     להיקף התיקון הזה, לא רגרסיה).
+336. **גילוי משנה על תהליך: `apps/01-torah-platform` (ורוב 01-16) כן
+     מווענדר ונעקב ב-git למרות ש-README.md/.gitignore עדיין מתעדים
+     "manifests only, not-vendored"** — התיעוד הזה מיושן משלב מוקדם
+     בפרויקט; בפועל 226 קבצים תחת `apps/01-torah-platform` כבר עוקבים
+     (`git ls-files` אימת), ורוב סבבי הלופ מאז שינו קוד וענף בהצלחה.
+     ה-`git add` הצליח על שלושת הקבצים (סטטוס `M`, לא `??`) למרות אזהרת
+     gitignore-חוסם שהופיעה — האזהרה שווא לקבצים שכבר עוקבים. **תקלה
+     בתהליך שלי, לא בקוד:** בטעות הרצתי `git ls-files apps/01-torah-platform`
+     מתוך `cwd=apps/01-torah-platform` (אחרי `cd` קודם לבדיקת tsc), מה
+     שהחזיר בטעות 0 והוביל לבלבול רגעי לגבי אם הריפו בכלל תואם למונו-רפו
+     — נפתר בחזרה ל-`cwd` נכון ואימות מחדש. לא השפיע על שום קוד/קומיט.
+337. **ענף:** commit `b954c4c9` נוצר בהתחלה על גבי הענף השרידי של סבב 57
+     (`fix/a-04-imud-visitor-id-required-0820`, שכבר היה pushed ב-`d62cf94a`)
+     — הועבר לענף חדש נקי `fix/a-01-torah-leads-kind-column-mismatch-0820`
+     כדי לא לערבב שני תיקונים לא-קשורים תחת שם ענף אחד; הענף הישן נשאר
+     כפי שהיה ב-`d62cf94a` ב-remote, ללא שינוי.
+338. **הבא בתור:** אם ההיקף יחזור ל-01: `useRole.tsx` נושא הערת TODO
+     ("stub for Guru-Portal-Expansion pages") שאינה מדויקת עוד — הקוד
+     בפועל תפקודי (קורא `is_super_admin` RPC) — הערה מיושנת בלבד, לא
+     נבדק לעומק אם יש שם עוד תלות שלא נסגרה. גם ה-taxonomy הרחב יותר
+     של `leads.kind` (seeker/teacher/find_lesson/lesson_request/
+     teacher_offer/contact) לא אוחד למקור אמת יחיד — לא חוסם, אבל
+     סבב עתידי שנוגע בלידים כדאי שיזכור שזה קיים.
