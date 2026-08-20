@@ -121,6 +121,49 @@ read their real `.env.example`/config. Nothing here was guessed — `?` means "n
 yet read", and `01`/`15` projects are marked "inferred" (from the live hub schema
 + owner statement), not file-verified.
 
+## Other Supabase projects visible in this account (not part of numbered apps 01-31)
+
+Beyond the 10-project table above, `list_projects` (re-verified 20/08/2026) shows
+these additional projects on the same Supabase account. None are wired to any
+numbered app's `app.json`/`core.projects` row — recorded here so a future round
+doesn't re-discover them from scratch or mistake them for an unassigned app:
+
+| project ref | name (as shown in Supabase) | status | notes |
+|---|---|---|---|
+| `rpamomtvqweqqiotgtta` | ניהול תקציב חכם | INACTIVE | unassigned, ownership not verified |
+| `eygjmfftosigbmzpndib` | מחוברים | INACTIVE | unassigned, ownership not verified |
+| `zxckwefnuectxqhtpfib` | חיבור לשיעורים | INACTIVE | unassigned, ownership not verified |
+| `tltfpznyqxpuydgefmnp` | chatzor-connect | INACTIVE | likely an old/superseded copy — **live** 16-chatzor-connect is on `uhnrgujbdxhhmoxcjria`/schema `chatzor`, not this ref |
+| `tsnmjjnollodauelnvsz` | b023131500@gmail.com's Project | INACTIVE | unassigned, ownership not verified |
+| `svvpuypogqnkgcmtqlgu` | זכויות פרו | INACTIVE | likely an old/superseded copy — **live** 30-zchuyotpro-crm is on `jhbeelzvjvhnkxldqvxx` per the main table |
+| `qkszcdkzgfcpfwvskdna` | l023131500-ops's Project | INACTIVE | unassigned, ownership not verified |
+
+None of these are referenced by any `app.json` or `core.projects` row. They are
+`INACTIVE` (Supabase auto-pauses idle free-tier projects), so no live app depends
+on them right now. Do not delete, restore, or repoint anything at them without
+explicit owner confirmation — an `INACTIVE` project can still hold real historical
+data.
+
+## Undocumented schemas on the hub project (`uhnrgujbdxhhmoxcjria`)
+
+Beyond `core`/`public`/`nadlan`/`chatzor` (documented above), the hub project also
+hosts these schemas, discovered by direct inspection (`list_tables`) and **not**
+part of the numbered 01-16 apps this repo's Loop A owns:
+
+`igud` (136 tables), `igud_ads`, `igud_otvedaf`, `igud_transcribe`, `csj`,
+`csj_src` (+ `_kupot`/`_nadlan`/`_tr` variants), `kesef`, `egod`, `getrights`,
+`hebcrm`, `rights`, `nadlan_pro`, `bkalot_auto`, `bkalot_clone`.
+
+These belong to a separate org-level system (איגוד שיעורים) that happens to share
+this Supabase account/hub project — not to the numbered apps, despite name overlap
+with `15-egod` ("egod" = alternate transliteration of "איגוד") and the
+out-of-range `34-kesef`. Verified via `apps/34-kesef/app.json`, which explicitly
+states its source code was not found in any accessible repo. **Do not touch:**
+`igud`/`csj`/`csj_src` are already explicitly protected per project instructions;
+the rest (`kesef`, `egod`, `getrights`, `hebcrm`, `rights`, `nadlan_pro`,
+`bkalot_auto`, `bkalot_clone`) have no verifiable owner/authorization from this
+session, so they are treated as out-of-scope/hands-off the same way.
+
 ## Migration note — public repo vs private source ⚠️
 
 `l023131500-ops/-` (and `more.30.com`) are **public**; all source systems are
