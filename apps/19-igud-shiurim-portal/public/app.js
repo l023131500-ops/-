@@ -62,8 +62,8 @@ const PW_EYE = `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stro
 const PW_EYE_OFF = `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/><line x1="3" y1="21" x2="21" y2="3"/></svg>`;
 
 // attrs is spliced in raw — every call site below is a literal in this file.
-function pwField(attrs = '') {
-  const id = `pw-${++pwFieldSeq}`;
+function pwField(attrs = '', id) {
+  id = id || `pw-${++pwFieldSeq}`;
   return `<div class="pw-wrap">
       <input id="${id}" type="password" ${attrs} />
       <button type="button" class="pw-toggle" data-pw-for="${id}" aria-controls="${id}"
@@ -606,18 +606,18 @@ function renderDonate() {
       <div id="donate-alert"></div>
       <form id="donate-form" class="card">
         <div class="form-row">
-          <div class="form-field"><label>שם מלא *</label><input name="payer_name" required /></div>
-          <div class="form-field"><label>טלפון</label><input name="payer_phone" /></div>
+          <div class="form-field"><label for="f19-payer-name">שם מלא *</label><input id="f19-payer-name" name="payer_name" required /></div>
+          <div class="form-field"><label for="f19-payer-phone">טלפון</label><input id="f19-payer-phone" name="payer_phone" /></div>
         </div>
-        <div class="form-field"><label>אימייל</label><input name="payer_email" type="email" /></div>
-        <div class="form-field"><label>עבור מה התשלום? (אופציונלי)</label>
-          <input name="purpose" placeholder="לדוגמה: תרומה כללית / מנוי חודשי / פרויקט X" />
+        <div class="form-field"><label for="f19-payer-email">אימייל</label><input id="f19-payer-email" name="payer_email" type="email" /></div>
+        <div class="form-field"><label for="f19-purpose">עבור מה התשלום? (אופציונלי)</label>
+          <input id="f19-purpose" name="purpose" placeholder="לדוגמה: תרומה כללית / מנוי חודשי / פרויקט X" />
         </div>
         <div class="role-choice" id="payment-type-choice">
           <label><input type="radio" name="payment_type" value="one_time" checked/><span>💳 תשלום חד פעמי</span></label>
           <label><input type="radio" name="payment_type" value="monthly"/><span>🔁 הוראת קבע חודשית</span></label>
         </div>
-        <div class="form-field"><label>סכום (₪) *</label><input name="amount" type="number" min="1" step="1" required /></div>
+        <div class="form-field"><label for="f19-amount">סכום (₪) *</label><input id="f19-amount" name="amount" type="number" min="1" step="1" required /></div>
         <button class="btn btn-primary" type="submit" style="width:100%;">מעבר לתשלום מאובטח</button>
       </form>
     </div>
@@ -683,29 +683,29 @@ function renderJoin() {
       <div id="join-alert"></div>
       <form id="join-form" class="card">
         <div class="form-row">
-          <div class="form-field"><label>שם מלא *</label><input name="name" required /></div>
-          <div class="form-field"><label>טלפון</label><input name="phone" /></div>
+          <div class="form-field"><label for="f19-name">שם מלא *</label><input id="f19-name" name="name" required /></div>
+          <div class="form-field"><label for="f19-phone">טלפון</label><input id="f19-phone" name="phone" /></div>
         </div>
         <div class="form-row">
-          <div class="form-field"><label>אימייל</label><input name="email" type="email" /></div>
-          <div class="form-field"><label>עיר</label><input name="city" placeholder="עיר מגורים" /></div>
+          <div class="form-field"><label for="f19-email">אימייל</label><input id="f19-email" name="email" type="email" /></div>
+          <div class="form-field"><label for="f19-city">עיר</label><input id="f19-city" name="city" placeholder="עיר מגורים" /></div>
         </div>
 
         <fieldset class="subform" id="fs-org" style="display:${intent === 'org' ? 'block' : 'none'}">
           <legend>פרטי הארגון / בית הכנסת</legend>
-          <div class="form-field"><label>שם הארגון / בית כנסת</label><input name="org_name" /></div>
-          <div class="form-field"><label>ספרו לנו קצת</label><textarea name="org_body"></textarea></div>
+          <div class="form-field"><label for="f19-org-name">שם הארגון / בית כנסת</label><input id="f19-org-name" name="org_name" /></div>
+          <div class="form-field"><label for="f19-org-body">ספרו לנו קצת</label><textarea id="f19-org-body" name="org_body"></textarea></div>
         </fieldset>
 
         <fieldset class="subform" id="fs-lesson" style="display:${intent === 'lesson' ? 'block' : 'none'}">
           <legend>מה מחפשים?</legend>
           <div class="form-row">
-            <div class="form-field"><label>נושא מבוקש</label>
-              <select name="lesson_topic"><option value="">בחרו נושא…</option>${CANONICAL_TOPICS.map(t => `<option value="${esc(t)}">${esc(t)}</option>`).join('')}</select>
+            <div class="form-field"><label for="f19-lesson-topic">נושא מבוקש</label>
+              <select id="f19-lesson-topic" name="lesson_topic"><option value="">בחרו נושא…</option>${CANONICAL_TOPICS.map(t => `<option value="${esc(t)}">${esc(t)}</option>`).join('')}</select>
             </div>
-            <div class="form-field"><label>שעה מועדפת</label><input name="preferred_time" placeholder="למשל: אחרי ערבית" /></div>
+            <div class="form-field"><label for="f19-preferred-time">שעה מועדפת</label><input id="f19-preferred-time" name="preferred_time" placeholder="למשל: אחרי ערבית" /></div>
           </div>
-          <div class="form-field"><label>הערות נוספות</label><textarea name="lesson_notes"></textarea></div>
+          <div class="form-field"><label for="f19-lesson-notes">הערות נוספות</label><textarea id="f19-lesson-notes" name="lesson_notes"></textarea></div>
         </fieldset>
 
         <fieldset class="subform" id="fs-teacher" style="display:${intent === 'teacher' ? 'block' : 'none'}">
@@ -714,12 +714,12 @@ function renderJoin() {
             <label><input type="radio" name="teacher_kind" value="new" checked /><span>מעוניין להתחיל למסור שיעור חדש</span></label>
             <label><input type="radio" name="teacher_kind" value="existing" /><span>יש לי כבר שיעור קיים</span></label>
           </div>
-          <div class="form-field"><label>כותרת השיעור (אם רלוונטי)</label><input name="teacher_lesson_title" /></div>
+          <div class="form-field"><label for="f19-teacher-lesson-title">כותרת השיעור (אם רלוונטי)</label><input id="f19-teacher-lesson-title" name="teacher_lesson_title" /></div>
           <div class="form-field"><label>נושאים שמעניינים אותך (מהרשימה)</label></div>
           <div class="topic-picker" id="teacher-topics">
             ${CANONICAL_TOPICS.map(t => `<label><input type="checkbox" value="${esc(t)}" /><span>${esc(t)}</span></label>`).join('')}
           </div>
-          <div class="form-field"><label>פרטים נוספים</label><textarea name="teacher_notes"></textarea></div>
+          <div class="form-field"><label for="f19-teacher-notes">פרטים נוספים</label><textarea id="f19-teacher-notes" name="teacher_notes"></textarea></div>
         </fieldset>
 
         <fieldset class="subform">
@@ -729,7 +729,7 @@ function renderJoin() {
               <label><input type="radio" name="role" value="${val}" ${presetRole === val ? 'checked' : ''}/><span>${esc(label)}</span></label>`).join('')}
           </div>
           <div class="form-field" id="role-other-wrap" style="display:none;">
-            <label>פרטו (תפקיד "אחר")</label><input name="role_details" />
+            <label for="f19-role-details">פרטו (תפקיד "אחר")</label><input id="f19-role-details" name="role_details" />
           </div>
         </fieldset>
 
@@ -741,8 +741,8 @@ function renderJoin() {
           </label>
           <div id="login-fields" style="display:none;">
             <div class="form-row">
-              <div class="form-field"><label>אימייל להתחברות *</label><input name="login_email" type="email" /></div>
-              <div class="form-field"><label>סיסמה *</label>${pwField('name="login_password" minlength="6"')}</div>
+              <div class="form-field"><label for="f19-login-email">אימייל להתחברות *</label><input id="f19-login-email" name="login_email" type="email" /></div>
+              <div class="form-field"><label for="f19-login-password">סיסמה *</label>${pwField('name="login_password" minlength="6"', 'f19-login-password')}</div>
             </div>
           </div>
         </fieldset>
@@ -928,12 +928,12 @@ function contactForm() {
     <div id="contact-alert"></div>
     <form id="contact-form" class="card" style="max-width:520px;">
       <div class="form-row">
-        <div class="form-field"><label>שם *</label><input name="name" required /></div>
-        <div class="form-field"><label>טלפון</label><input name="phone" /></div>
+        <div class="form-field"><label for="f19-name-2">שם *</label><input id="f19-name-2" name="name" required /></div>
+        <div class="form-field"><label for="f19-phone-2">טלפון</label><input id="f19-phone-2" name="phone" /></div>
       </div>
-      <div class="form-field"><label>אימייל</label><input name="email" type="email" /></div>
-      <div class="form-field"><label>נושא</label><input name="subject" /></div>
-      <div class="form-field"><label>הודעה *</label><textarea name="body" required></textarea></div>
+      <div class="form-field"><label for="f19-email-2">אימייל</label><input id="f19-email-2" name="email" type="email" /></div>
+      <div class="form-field"><label for="f19-subject">נושא</label><input id="f19-subject" name="subject" /></div>
+      <div class="form-field"><label for="f19-body">הודעה *</label><textarea id="f19-body" name="body" required></textarea></div>
       <button class="btn btn-primary" type="submit">שליחה</button>
     </form>
   `;
@@ -1102,11 +1102,11 @@ async function renderTeacherPublic(token) {
         <div id="ask-alert"></div>
         <form id="ask-form" class="card" style="max-width:520px;">
           <div class="form-row">
-            <div class="form-field"><label>שם *</label><input name="name" required /></div>
-            <div class="form-field"><label>טלפון</label><input name="phone" /></div>
+            <div class="form-field"><label for="f19-name-3">שם *</label><input id="f19-name-3" name="name" required /></div>
+            <div class="form-field"><label for="f19-phone-3">טלפון</label><input id="f19-phone-3" name="phone" /></div>
           </div>
-          <div class="form-field"><label>אימייל</label><input name="email" type="email" /></div>
-          <div class="form-field"><label>שאלה *</label><textarea name="body" required></textarea></div>
+          <div class="form-field"><label for="f19-email-3">אימייל</label><input id="f19-email-3" name="email" type="email" /></div>
+          <div class="form-field"><label for="f19-body-2">שאלה *</label><textarea id="f19-body-2" name="body" required></textarea></div>
           <button class="btn btn-primary" type="submit">שליחה</button>
         </form>
       </div>
@@ -1177,26 +1177,26 @@ async function renderAdmin(token) {
         <h3>${l ? 'עריכת שיעור' : 'הוספת שיעור'}</h3>
         <form id="lesson-form">
           <div class="form-row">
-            <div class="form-field"><label>כותרת *</label><input name="title" required value="${esc(l?.title || '')}" /></div>
-            <div class="form-field"><label>נושא</label><input name="topic" value="${esc(l?.topic || '')}" /></div>
+            <div class="form-field"><label for="f19-title">כותרת *</label><input id="f19-title" name="title" required value="${esc(l?.title || '')}" /></div>
+            <div class="form-field"><label for="f19-topic">נושא</label><input id="f19-topic" name="topic" value="${esc(l?.topic || '')}" /></div>
           </div>
           <div class="form-row">
-            <div class="form-field"><label>יום</label>
-              <select name="day_of_week">${DAYS_HE.map((d,i)=>`<option value="${i}" ${l && l.day_of_week === i ? 'selected' : ''}>${d}</option>`).join('')}</select>
+            <div class="form-field"><label for="f19-day-of-week">יום</label>
+              <select id="f19-day-of-week" name="day_of_week">${DAYS_HE.map((d,i)=>`<option value="${i}" ${l && l.day_of_week === i ? 'selected' : ''}>${d}</option>`).join('')}</select>
             </div>
-            <div class="form-field"><label>שעה</label><input name="start_time" type="time" value="${esc(l?.start_time || '')}" /></div>
-            <div class="form-field"><label>משך (דקות)</label><input name="duration_minutes" type="number" value="${l?.duration_minutes || 45}" /></div>
+            <div class="form-field"><label for="f19-start-time">שעה</label><input id="f19-start-time" name="start_time" type="time" value="${esc(l?.start_time || '')}" /></div>
+            <div class="form-field"><label for="f19-duration-minutes">משך (דקות)</label><input id="f19-duration-minutes" name="duration_minutes" type="number" value="${l?.duration_minutes || 45}" /></div>
           </div>
           <div class="form-row">
-            <div class="form-field"><label>קהל יעד</label>
-              <select name="audience">
+            <div class="form-field"><label for="f19-audience">קהל יעד</label>
+              <select id="f19-audience" name="audience">
                 <option value="men" ${(l?.audience || 'men') === 'men' ? 'selected' : ''}>גברים</option>
                 <option value="women" ${l?.audience === 'women' ? 'selected' : ''}>נשים</option>
                 <option value="mixed" ${l?.audience === 'mixed' ? 'selected' : ''}>מעורב</option>
               </select>
             </div>
           </div>
-          <div class="form-field"><label>תיאור</label><textarea name="description">${esc(l?.description || '')}</textarea></div>
+          <div class="form-field"><label for="f19-description">תיאור</label><textarea id="f19-description" name="description">${esc(l?.description || '')}</textarea></div>
           ${uploadFieldHtml({ id: 'lesson-logo', label: 'לוגו השיעור (אופציונלי)', name: 'logo_url', currentUrl: l?.logo_url || '' })}
           <label style="display:flex;gap:16px;">
             <span><input type="checkbox" name="is_live" style="width:auto;" ${l?.is_live ? 'checked' : ''} /> משודר LIVE</span>
@@ -1266,15 +1266,15 @@ async function renderAdmin(token) {
         <h3>שירות קהילה חדש</h3>
         <form id="service-form">
           <div class="form-row">
-            <div class="form-field"><label>סוג שירות *</label>
-              <select name="service_type">${Object.entries(labels).map(([v,l])=>`<option value="${v}">${esc(l)}</option>`).join('')}</select>
+            <div class="form-field"><label for="f19-service-type">סוג שירות *</label>
+              <select id="f19-service-type" name="service_type">${Object.entries(labels).map(([v,l])=>`<option value="${v}">${esc(l)}</option>`).join('')}</select>
             </div>
-            <div class="form-field"><label>כותרת *</label><input name="title" required /></div>
+            <div class="form-field"><label for="f19-title-2">כותרת *</label><input id="f19-title-2" name="title" required /></div>
           </div>
-          <div class="form-field"><label>תוכן</label><textarea name="body"></textarea></div>
+          <div class="form-field"><label for="f19-body-3">תוכן</label><textarea id="f19-body-3" name="body"></textarea></div>
           <div class="form-row">
-            <div class="form-field"><label>איש קשר</label><input name="contact_name" /></div>
-            <div class="form-field"><label>טלפון</label><input name="contact_phone" /></div>
+            <div class="form-field"><label for="f19-contact-name">איש קשר</label><input id="f19-contact-name" name="contact_name" /></div>
+            <div class="form-field"><label for="f19-contact-phone">טלפון</label><input id="f19-contact-phone" name="contact_phone" /></div>
           </div>
           ${uploadFieldHtml({
             id: 'service-file', label: 'קובץ מצורף (עלון וכד\', אופציונלי)', name: 'file_url', currentUrl: '',
@@ -1323,10 +1323,10 @@ async function renderAdmin(token) {
       <div class="card" style="margin-bottom:16px;">
         <h3>${a ? 'עריכת מודעה' : 'מודעה חדשה'}</h3>
         <form id="ad-form">
-          <div class="form-field"><label>כותרת *</label><input name="title" required value="${esc(a?.title || '')}" /></div>
-          <div class="form-field"><label>תוכן</label><textarea name="body">${esc(a?.body || '')}</textarea></div>
+          <div class="form-field"><label for="f19-title-3">כותרת *</label><input id="f19-title-3" name="title" required value="${esc(a?.title || '')}" /></div>
+          <div class="form-field"><label for="f19-body-4">תוכן</label><textarea id="f19-body-4" name="body">${esc(a?.body || '')}</textarea></div>
           ${uploadFieldHtml({ id: 'ad-image', label: 'תמונת הפרסום (אופציונלי)', name: 'image_url', currentUrl: a?.image_url || '' })}
-          <div class="form-field"><label>קישור (אופציונלי)</label><input name="link_url" placeholder="https://" value="${esc(a?.link_url || '')}" /></div>
+          <div class="form-field"><label for="f19-link-url">קישור (אופציונלי)</label><input id="f19-link-url" name="link_url" placeholder="https://" value="${esc(a?.link_url || '')}" /></div>
           <div style="display:flex;gap:10px;">
             <button class="btn btn-primary" type="submit">${a ? 'עדכון מודעה' : 'פרסום מודעה'}</button>
             ${a ? '<button class="btn btn-outline" type="button" id="ad-cancel-edit">ביטול עריכה</button>' : ''}
@@ -1434,11 +1434,11 @@ async function renderAdmin(token) {
         </p>
         <form id="nedarim-config-form">
           <div class="form-row">
-            <div class="form-field"><label>מספר מוסד (7 ספרות)</label>
-              <input name="mosad_id" value="${esc(config.mosad_id || '')}" placeholder="לדוגמה: 1234567" />
+            <div class="form-field"><label for="f19-mosad-id">מספר מוסד (7 ספרות)</label>
+              <input id="f19-mosad-id" name="mosad_id" value="${esc(config.mosad_id || '')}" placeholder="לדוגמה: 1234567" />
             </div>
-            <div class="form-field"><label>סיסמת API ${config.has_api_password ? '(כבר מוגדרת — השאירו ריק כדי לא לשנות)' : ''}</label>
-              ${pwField(`name="api_password" placeholder="${config.has_api_password ? '••••••••' : ''}"`)}
+            <div class="form-field"><label for="f19-api-password">סיסמת API ${config.has_api_password ? '(כבר מוגדרת — השאירו ריק כדי לא לשנות)' : ''}</label>
+              ${pwField(`name="api_password" placeholder="${config.has_api_password ? '••••••••' : ''}"`, 'f19-api-password')}
             </div>
           </div>
           <label style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
@@ -1563,13 +1563,13 @@ async function renderAdmin(token) {
           id: 'tenant-logo', label: 'לוגו הארגון', name: 'logo_url', currentUrl: t.logo_url,
           hint: 'תמונה מרובעת עובדת הכי טוב (PNG/JPG/WEBP, עד 5MB). אם לא מעלים לוגו, יוצג סמל ברירת המחדל.',
         })}
-        <div class="form-field"><label>שם הארגון</label><input name="name" value="${esc(t.name)}" /></div>
-        <div class="form-field"><label>אודות</label><textarea name="about_text">${esc(t.about_text || '')}</textarea></div>
+        <div class="form-field"><label for="f19-name-4">שם הארגון</label><input id="f19-name-4" name="name" value="${esc(t.name)}" /></div>
+        <div class="form-field"><label for="f19-about-text">אודות</label><textarea id="f19-about-text" name="about_text">${esc(t.about_text || '')}</textarea></div>
         <div class="form-row">
-          <div class="form-field"><label>אימייל ליצירת קשר</label><input name="contact_email" value="${esc(t.contact_email || '')}" /></div>
-          <div class="form-field"><label>טלפון</label><input name="contact_phone" value="${esc(t.contact_phone || '')}" /></div>
+          <div class="form-field"><label for="f19-contact-email">אימייל ליצירת קשר</label><input id="f19-contact-email" name="contact_email" value="${esc(t.contact_email || '')}" /></div>
+          <div class="form-field"><label for="f19-contact-phone-2">טלפון</label><input id="f19-contact-phone-2" name="contact_phone" value="${esc(t.contact_phone || '')}" /></div>
         </div>
-        <div class="form-field"><label>קישור לאתר המלא (אם קיים)</label><input name="website_url" value="${esc(t.website_url || '')}" placeholder="https://" /></div>
+        <div class="form-field"><label for="f19-website-url">קישור לאתר המלא (אם קיים)</label><input id="f19-website-url" name="website_url" value="${esc(t.website_url || '')}" placeholder="https://" /></div>
         <div class="form-field">
           <label><input type="checkbox" name="is_public" ${t.is_public ? 'checked' : ''} style="width:auto;display:inline;margin-left:8px;" /> הצג בספרייה הציבורית</label>
         </div>
@@ -1658,11 +1658,11 @@ async function renderSynagogueAdmin(token) {
         </p>
         <form id="nedarim-config-form">
           <div class="form-row">
-            <div class="form-field"><label>מספר מוסד (7 ספרות)</label>
-              <input name="mosad_id" value="${esc(config.mosad_id || '')}" placeholder="לדוגמה: 1234567" />
+            <div class="form-field"><label for="f19-mosad-id-2">מספר מוסד (7 ספרות)</label>
+              <input id="f19-mosad-id-2" name="mosad_id" value="${esc(config.mosad_id || '')}" placeholder="לדוגמה: 1234567" />
             </div>
-            <div class="form-field"><label>סיסמת API ${config.has_api_password ? '(כבר מוגדרת — השאירו ריק כדי לא לשנות)' : ''}</label>
-              ${pwField(`name="api_password" placeholder="${config.has_api_password ? '••••••••' : ''}"`)}
+            <div class="form-field"><label for="f19-api-password-2">סיסמת API ${config.has_api_password ? '(כבר מוגדרת — השאירו ריק כדי לא לשנות)' : ''}</label>
+              ${pwField(`name="api_password" placeholder="${config.has_api_password ? '••••••••' : ''}"`, 'f19-api-password-2')}
             </div>
           </div>
           <label style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
@@ -1746,11 +1746,11 @@ async function renderSynagogueAdmin(token) {
         <h3>הוספת זמן תפילה</h3>
         <form id="prayer-form">
           <div class="form-row">
-            <div class="form-field"><label>סוג יום</label>
-              <select name="day_type"><option value="weekday">חול</option><option value="shabbat">שבת</option></select>
+            <div class="form-field"><label for="f19-day-type">סוג יום</label>
+              <select id="f19-day-type" name="day_type"><option value="weekday">חול</option><option value="shabbat">שבת</option></select>
             </div>
-            <div class="form-field"><label>שם התפילה *</label><input name="prayer_name" placeholder="שחרית / מנחה / ערבית" required /></div>
-            <div class="form-field"><label>שעה *</label><input name="prayer_time" type="time" required /></div>
+            <div class="form-field"><label for="f19-prayer-name">שם התפילה *</label><input id="f19-prayer-name" name="prayer_name" placeholder="שחרית / מנחה / ערבית" required /></div>
+            <div class="form-field"><label for="f19-prayer-time">שעה *</label><input id="f19-prayer-time" name="prayer_time" type="time" required /></div>
           </div>
           <button class="btn btn-primary" type="submit">הוספה</button>
         </form>
@@ -1803,17 +1803,17 @@ async function renderSynagogueAdmin(token) {
           id: 'syn-logo', label: 'לוגו בית הכנסת', name: 'logo_url', currentUrl: s.logo_url,
           hint: 'תמונה מרובעת עובדת הכי טוב (PNG/JPG/WEBP, עד 5MB). אם לא מעלים לוגו, יוצג סמל ברירת המחדל.',
         })}
-        <div class="form-field"><label>שם בית הכנסת</label><input name="name" value="${esc(s.name)}" /></div>
+        <div class="form-field"><label for="f19-name-5">שם בית הכנסת</label><input id="f19-name-5" name="name" value="${esc(s.name)}" /></div>
         <div class="form-row">
-          <div class="form-field"><label>נוסח/עדה</label><input name="nusach" value="${esc(s.nusach || '')}" placeholder="אשכנזי / ספרדי / עדות המזרח" /></div>
-          <div class="form-field"><label>שם הגבאי</label><input name="gabbai_name" value="${esc(s.gabbai_name || '')}" /></div>
+          <div class="form-field"><label for="f19-nusach">נוסח/עדה</label><input id="f19-nusach" name="nusach" value="${esc(s.nusach || '')}" placeholder="אשכנזי / ספרדי / עדות המזרח" /></div>
+          <div class="form-field"><label for="f19-gabbai-name">שם הגבאי</label><input id="f19-gabbai-name" name="gabbai_name" value="${esc(s.gabbai_name || '')}" /></div>
         </div>
         <div class="form-row">
-          <div class="form-field"><label>טלפון גבאי</label><input name="gabbai_phone" value="${esc(s.gabbai_phone || '')}" /></div>
-          <div class="form-field"><label>שכונה</label><input name="neighborhood" value="${esc(s.neighborhood || '')}" /></div>
+          <div class="form-field"><label for="f19-gabbai-phone">טלפון גבאי</label><input id="f19-gabbai-phone" name="gabbai_phone" value="${esc(s.gabbai_phone || '')}" /></div>
+          <div class="form-field"><label for="f19-neighborhood">שכונה</label><input id="f19-neighborhood" name="neighborhood" value="${esc(s.neighborhood || '')}" /></div>
         </div>
-        <div class="form-field"><label>כתובת</label><input name="address" value="${esc(s.address || '')}" /></div>
-        <div class="form-field"><label>קישור לאתר מלא (אם קיים)</label><input name="website_url" value="${esc(s.website_url || '')}" placeholder="https://" /></div>
+        <div class="form-field"><label for="f19-address">כתובת</label><input id="f19-address" name="address" value="${esc(s.address || '')}" /></div>
+        <div class="form-field"><label for="f19-website-url-2">קישור לאתר מלא (אם קיים)</label><input id="f19-website-url-2" name="website_url" value="${esc(s.website_url || '')}" placeholder="https://" /></div>
         <div class="form-field">
           <label><input type="checkbox" name="is_public" ${s.is_public ? 'checked' : ''} style="width:auto;display:inline;margin-left:8px;" /> הצג בספרייה הציבורית</label>
         </div>
@@ -1889,18 +1889,18 @@ async function renderTeacherAdmin(token) {
           id: 'te-photo', label: 'תמונת פרופיל', name: 'photo_url', currentUrl: t.photo_url,
           hint: 'תמונה מרובעת עובדת הכי טוב (PNG/JPG/WEBP, עד 5MB).',
         })}
-        <div class="form-field"><label>שם מלא</label><input name="full_name" value="${esc(t.full_name)}" /></div>
+        <div class="form-field"><label for="f19-full-name">שם מלא</label><input id="f19-full-name" name="full_name" value="${esc(t.full_name)}" /></div>
         <div class="form-row">
-          <div class="form-field"><label>תואר/כינוי</label><input name="title" value="${esc(t.title || '')}" placeholder="הרב / הרבנית / ר'" /></div>
-          <div class="form-field"><label>עיר</label><input name="city" value="${esc(t.city || '')}" /></div>
+          <div class="form-field"><label for="f19-title-4">תואר/כינוי</label><input id="f19-title-4" name="title" value="${esc(t.title || '')}" placeholder="הרב / הרבנית / ר'" /></div>
+          <div class="form-field"><label for="f19-city-2">עיר</label><input id="f19-city-2" name="city" value="${esc(t.city || '')}" /></div>
         </div>
         <div class="form-row">
-          <div class="form-field"><label>טלפון</label><input name="phone" value="${esc(t.phone || '')}" /></div>
-          <div class="form-field"><label>אימייל</label><input name="email" type="email" value="${esc(t.email || '')}" /></div>
+          <div class="form-field"><label for="f19-phone-4">טלפון</label><input id="f19-phone-4" name="phone" value="${esc(t.phone || '')}" /></div>
+          <div class="form-field"><label for="f19-email-4">אימייל</label><input id="f19-email-4" name="email" type="email" value="${esc(t.email || '')}" /></div>
         </div>
-        <div class="form-field"><label>ביוגרפיה / קורות</label><textarea name="bio">${esc(t.bio || '')}</textarea></div>
-        <div class="form-field"><label>נושאי הוראה (מופרדים בפסיק)</label>
-          <input name="topics_text" value="${esc((t.topics||[]).join(', '))}" placeholder="גמרא, הלכה, מוסר" />
+        <div class="form-field"><label for="f19-bio">ביוגרפיה / קורות</label><textarea id="f19-bio" name="bio">${esc(t.bio || '')}</textarea></div>
+        <div class="form-field"><label for="f19-topics-text">נושאי הוראה (מופרדים בפסיק)</label>
+          <input id="f19-topics-text" name="topics_text" value="${esc((t.topics||[]).join(', '))}" placeholder="גמרא, הלכה, מוסר" />
         </div>
         <div class="form-field">
           <label><input type="checkbox" name="is_public" ${t.is_public ? 'checked' : ''} style="width:auto;display:inline;margin-left:8px;" /> הצג בספרייה הציבורית</label>
@@ -1934,24 +1934,24 @@ async function renderTeacherAdmin(token) {
         <h3>${l ? 'עריכת שיעור' : 'הוספת שיעור'}</h3>
         <form id="te-lesson-form">
           <div class="form-row">
-            <div class="form-field"><label>כותרת *</label><input name="title" required value="${esc(l?.title || '')}" /></div>
-            <div class="form-field"><label>נושא</label><input name="topic" value="${esc(l?.topic || '')}" /></div>
+            <div class="form-field"><label for="f19-title-5">כותרת *</label><input id="f19-title-5" name="title" required value="${esc(l?.title || '')}" /></div>
+            <div class="form-field"><label for="f19-topic-2">נושא</label><input id="f19-topic-2" name="topic" value="${esc(l?.topic || '')}" /></div>
           </div>
           <div class="form-row">
-            <div class="form-field"><label>יום</label>
-              <select name="day_of_week">${DAYS_HE.map((d,i)=>`<option value="${i}" ${l && l.day_of_week === i ? 'selected' : ''}>${d}</option>`).join('')}</select>
+            <div class="form-field"><label for="f19-day-of-week-2">יום</label>
+              <select id="f19-day-of-week-2" name="day_of_week">${DAYS_HE.map((d,i)=>`<option value="${i}" ${l && l.day_of_week === i ? 'selected' : ''}>${d}</option>`).join('')}</select>
             </div>
-            <div class="form-field"><label>שעה</label><input name="start_time" type="time" value="${esc(l?.start_time || '')}" /></div>
-            <div class="form-field"><label>משך (דקות)</label><input name="duration_minutes" type="number" value="${l?.duration_minutes || 45}" /></div>
+            <div class="form-field"><label for="f19-start-time-2">שעה</label><input id="f19-start-time-2" name="start_time" type="time" value="${esc(l?.start_time || '')}" /></div>
+            <div class="form-field"><label for="f19-duration-minutes-2">משך (דקות)</label><input id="f19-duration-minutes-2" name="duration_minutes" type="number" value="${l?.duration_minutes || 45}" /></div>
           </div>
-          <div class="form-field"><label>קהל יעד</label>
-            <select name="audience">
+          <div class="form-field"><label for="f19-audience-2">קהל יעד</label>
+            <select id="f19-audience-2" name="audience">
               <option value="men" ${(l?.audience || 'men') === 'men' ? 'selected' : ''}>גברים</option>
               <option value="women" ${l?.audience === 'women' ? 'selected' : ''}>נשים</option>
               <option value="mixed" ${l?.audience === 'mixed' ? 'selected' : ''}>מעורב</option>
             </select>
           </div>
-          <div class="form-field"><label>תיאור / מהלך השיעור</label><textarea name="description">${esc(l?.description || '')}</textarea></div>
+          <div class="form-field"><label for="f19-description-2">תיאור / מהלך השיעור</label><textarea id="f19-description-2" name="description">${esc(l?.description || '')}</textarea></div>
           ${uploadFieldHtml({ id: 'te-lesson-logo', label: 'תמונת השיעור (אופציונלי)', name: 'logo_url', currentUrl: l?.logo_url || '' })}
           <label style="display:flex;gap:16px;">
             <span><input type="checkbox" name="is_live" style="width:auto;" ${l?.is_live ? 'checked' : ''} /> משודר LIVE</span>
@@ -2018,10 +2018,10 @@ async function renderTeacherAdmin(token) {
         <h3>${a ? 'עריכת מודעה' : 'מודעה חדשה'}</h3>
         <p class="muted">מודעות מוצגות בדף הציבורי שלך — טוב לפרסום שיעור מיוחד, ספר חדש, אירוע וכו'.</p>
         <form id="te-ad-form">
-          <div class="form-field"><label>כותרת *</label><input name="title" required value="${esc(a?.title || '')}" /></div>
-          <div class="form-field"><label>תוכן</label><textarea name="body">${esc(a?.body || '')}</textarea></div>
+          <div class="form-field"><label for="f19-title-6">כותרת *</label><input id="f19-title-6" name="title" required value="${esc(a?.title || '')}" /></div>
+          <div class="form-field"><label for="f19-body-5">תוכן</label><textarea id="f19-body-5" name="body">${esc(a?.body || '')}</textarea></div>
           ${uploadFieldHtml({ id: 'te-ad-image', label: 'תמונת המודעה (אופציונלי)', name: 'image_url', currentUrl: a?.image_url || '' })}
-          <div class="form-field"><label>קישור (אופציונלי)</label><input name="link_url" placeholder="https://" value="${esc(a?.link_url || '')}" /></div>
+          <div class="form-field"><label for="f19-link-url-2">קישור (אופציונלי)</label><input id="f19-link-url-2" name="link_url" placeholder="https://" value="${esc(a?.link_url || '')}" /></div>
           <div style="display:flex;gap:10px;">
             <button class="btn btn-primary" type="submit">${a ? 'עדכון מודעה' : 'פרסום מודעה'}</button>
             ${a ? '<button class="btn btn-outline" type="button" id="te-ad-cancel-edit">ביטול עריכה</button>' : ''}
@@ -2131,8 +2131,8 @@ function renderLoginForm(client) {
       <p class="muted">לגבאים, מגידי שיעור, ארגונים וסופר-אדמינים — התחברות באימייל וסיסמה.</p>
       <div id="login-alert"></div>
       <form id="login-form" class="card">
-        <div class="form-field"><label>אימייל</label><input name="email" type="email" required /></div>
-        <div class="form-field"><label>סיסמה</label>${pwField('name="password" required')}</div>
+        <div class="form-field"><label for="f19-email-5">אימייל</label><input id="f19-email-5" name="email" type="email" required /></div>
+        <div class="form-field"><label for="f19-login-form-password">סיסמה</label>${pwField('name="password" required', 'f19-login-form-password')}</div>
         <button class="btn btn-primary" type="submit">התחברות</button>
       </form>
       <p class="muted">עדיין אין לך חשבון? אפשר ליצור אחד דרך <a href="#/join">טופס ההצטרפות</a> (סמנו "גבאי" או "מגיד שיעור").</p>
@@ -2236,15 +2236,15 @@ async function renderSuperadminDashboard(client) {
           <div id="create-alert"></div>
           <form id="create-form" class="card" style="max-width:560px;">
             <div class="form-row">
-              <div class="form-field"><label>שם *</label><input name="name" required /></div>
-              <div class="form-field"><label>סוג</label>
-                <select name="type"><option value="organization">ארגון</option><option value="yeshiva">ישיבה</option></select>
+              <div class="form-field"><label for="f19-name-6">שם *</label><input id="f19-name-6" name="name" required /></div>
+              <div class="form-field"><label for="f19-type">סוג</label>
+                <select id="f19-type" name="type"><option value="organization">ארגון</option><option value="yeshiva">ישיבה</option></select>
               </div>
             </div>
-            <div class="form-field"><label>עיר *</label><input name="city" placeholder="עיר" required /></div>
+            <div class="form-field"><label for="f19-city-3">עיר *</label><input id="f19-city-3" name="city" placeholder="עיר" required /></div>
             <div class="form-row">
-              <div class="form-field"><label>אימייל</label><input name="contact_email" /></div>
-              <div class="form-field"><label>טלפון</label><input name="contact_phone" /></div>
+              <div class="form-field"><label for="f19-contact-email-2">אימייל</label><input id="f19-contact-email-2" name="contact_email" /></div>
+              <div class="form-field"><label for="f19-contact-phone-3">טלפון</label><input id="f19-contact-phone-3" name="contact_phone" /></div>
             </div>
             <button class="btn btn-accent" type="submit">יצירה</button>
           </form>
@@ -2276,16 +2276,16 @@ async function renderSuperadminDashboard(client) {
           <div id="subpay-alert"></div>
           <form id="subpay-form" class="card" style="max-width:560px;">
             <div class="form-row">
-              <div class="form-field"><label>ארגון *</label>
-                <select name="tenant_id" required>${tenants.map(t => `<option value="${t.id}">${esc(t.name)}</option>`).join('')}</select>
+              <div class="form-field"><label for="f19-tenant-id">ארגון *</label>
+                <select id="f19-tenant-id" name="tenant_id" required>${tenants.map(t => `<option value="${t.id}">${esc(t.name)}</option>`).join('')}</select>
               </div>
-              <div class="form-field"><label>סכום (₪) *</label><input name="amount" type="number" min="1" step="1" required /></div>
+              <div class="form-field"><label for="f19-amount-2">סכום (₪) *</label><input id="f19-amount-2" name="amount" type="number" min="1" step="1" required /></div>
             </div>
             <div class="form-row">
-              <div class="form-field"><label>סוג תשלום</label>
-                <select name="payment_type"><option value="one_time">חד פעמי</option><option value="monthly">מנוי חודשי</option></select>
+              <div class="form-field"><label for="f19-payment-type">סוג תשלום</label>
+                <select id="f19-payment-type" name="payment_type"><option value="one_time">חד פעמי</option><option value="monthly">מנוי חודשי</option></select>
               </div>
-              <div class="form-field"><label>הערה</label><input name="notes" placeholder="לדוגמה: דמי הצטרפות 2026" /></div>
+              <div class="form-field"><label for="f19-notes">הערה</label><input id="f19-notes" name="notes" placeholder="לדוגמה: דמי הצטרפות 2026" /></div>
             </div>
             <button class="btn btn-accent" type="submit">יצירת בקשת תשלום</button>
           </form>
