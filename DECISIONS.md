@@ -7687,3 +7687,31 @@
      חוזר, חסר רק Tab-trap). אפשר להמשיך את עדשת ה-focus-trap על
      אלה, לפתוח עדשה חדשה, או לחזור ל-`core.project_tasks`/
      `core.project_bugs` (5 פריטים פתוחים, עדיין חסומים).
+
+## 20/08/2026 — סבב 145 (loop A)
+
+732. **המשכתי את עדשת ה-focus-trap** על הפריט השני מהתור (round 144):
+     `03-igud-ads`, `app/(admin)/admin/transcripts/page.tsx` — מודל
+     פרטי תמלול עם `role="dialog"`/`aria-modal`/`aria-label`/
+     Escape-to-close קיימים, אך ללא ניהול focus ראשוני, ללא Tab-trap
+     וללא שחזור focus בסגירה. קראתי את הקובץ המלא לפני העריכה.
+733. **תיקון:** אותה תבנית מדויקת שהוכחה יעילה בסבבים 143-144
+     (`panelRef`/`closeButtonRef`/`previousFocusRef` עם `useRef`,
+     נוסף ל-import הקיים; לוגיקת focus/Tab-trap בתוך ה-`useEffect`
+     הקיים שכבר טיפל ב-Escape; חיבור `ref` לדיב הפאנל ולכפתור הסגירה
+     הקיימים).
+734. **אפס רגרסיה מאומתת:** `git diff --stat` — קובץ אחד, 31+/4-
+     שורות; אין שינוי ל-`load`/`openDetail`/state/רינדור הטבלה
+     מסביב, רק תוספת refs + לוגיקת focus/Tab. אין `tsc`/`npm`
+     בסביבה הזו — אימות איזון `{}`/`()`/`[]` בפייתון על הקובץ המלא:
+     60/60, 82/82, 17/17 — תואם. הקובץ עוקב ב-git אך חסום ע"י כלל
+     `apps/03-igud-ads/app` ב-`.gitignore` — נדרש `git add -f`.
+     Commit `8310f49a` על `fix/a-icon-only-buttons-round2-0820`,
+     נדחף ל-origin (מפעיל פריסת Vercel תחת more30.com/modaot).
+735. **הבא בתור:** שאר המועמדים מהתור — 2 מודלים נוספים ב-
+     `03-igud-ads` (admin `templates`/`users`, אותו דפוס),
+     `02-igud-transcribe` (admin `uploads`, אותו דפוס), שני מודלים
+     ב-`01-torah-platform/AdminDashboard.tsx` (עריכת שיעור שורות
+     ~1580-1701, צפייה בנדרים שורות ~1703-1750+), ו-
+     `16-chatzor-connect/src/components/ui/Modal.tsx` (רכיב מודל
+     חוזר, חסר רק Tab-trap).
