@@ -8,8 +8,9 @@
   "repo": "l023131500-ops/kupot-holim",
   "basePath": "/06",
   "supabase": {
-    "project": null,
-    "schema": null
+    "project": "csjekrvukbdznetsrodj",
+    "schema": "public",
+    "_evidence": "site/supabase-config.js hardcodes url csjekrvukbdznetsrodj.supabase.co, table 'kupot_leads'; confirmed live via MCP list_tables: public.kupot_leads exists on that project with 2 rows"
   },
   "deployTarget": "unknown",
   "protected": false,

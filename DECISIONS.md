@@ -3669,3 +3669,57 @@
      הושלמה עבור 05/07/11/13/14/16 — כל ההיקף 01-16 נבדק כעת מול דריפט
      `app.json`/`core.projects` (01/03/04/13/15 תוקנו, 02/06/10/12/16
      ללא ראיית קוד וקטורית מספקת או ללא דריפט).
+
+## 20/08/2026 (LOOP A — סבב 53) — 06/10/12: טענת #306(א) הייתה שגויה — לשלושתם כן יש קוד מקור וקטור מקומי, ופתרתי את כולם בוודאות מלאה
+
+307. **בדקתי מחדש `core.run_progress` לפני שהתחלתי.** סבב 52 סגור (commit
+     `6aa15671`), ציין ב-#306(א) ש-"אין קוד מקור וקטור מקומי" ל-06/10/12.
+     בדקתי את זה במפורש עם `ls` על שלוש התיקיות לפני שקיבלתי את הטענה —
+     **התברר שהיא שגויה**: `apps/10-bkalot-rights` יש לו `app.js`/`repo.js`/
+     `engine.js` וקטורים מלאים, `apps/12-smel-ndln` יש לו `server/`+`client/`
+     מלאים (Vite+Express+Drizzle), ו-`apps/06-kupot-holim` יש לו `site/`
+     עם `supabase-config.js` מפורש. שלושתם ניתנים לפתרון בוודאות מלאה בדיוק
+     כמו 04/13 בסבבים 51-52.
+308. **הראיות (כל אחת אומתה גם מול ה-DB בפועל דרך `list_tables`, לא רק קריאת קוד):**
+     - **06-kupot-holim:** `site/supabase-config.js` שורה 5: `url:
+       "https://csjekrvukbdznetsrodj.supabase.co"`, `table: "kupot_leads"`.
+       `list_tables` על `csjekrvukbdznetsrodj` מראה `public.kupot_leads`
+       קיים עם 2 שורות אמיתיות. **מסקנה:** `csjekrvukbdznetsrodj`/`public`.
+     - **10-bkalot-rights:** `app.js` שורה 40: `SUPABASE_URL =
+       'https://bieebmnmkffwbqlsfozh.supabase.co'`, `INSERT` ל-
+       `/rest/v1/zr_leads`. `list_tables` על `bieebmnmkffwbqlsfozh` מראה
+       `public.zr_leads` — **בתוך סכימת `public`, לא סכימה נפרדת בשם `zr`**
+       (הקידומת `zr_` היא רק שם טבלה, לא סכימה — בדקתי את זה בקפידה כי
+       README מגדיר "schema `zr_*`" כמוגן, ורציתי לוודא שאיני נוגע במשהו
+       מוגן; `public.zr_leads`/`zr_topics`/`zr_situations` וכו' כולם חיים
+       תחת `public`, וכל מה שעשיתי כאן הוא לתעד היכן האפליקציה **כבר**
+       כותבת בפועל — לא נגעתי בנתונים או בהרשאות שלהן כלל). בנפרד, `repo.js`
+       קורא קטלוג קריאה-בלבד מה-hub (`uhnrgujb`) — שכבת שיפור, לא מאגר
+       הנתונים העצמי של 10. **מסקנה:** `bieebmnmkffwbqlsfozh`/`public`.
+     - **12-smel-ndln:** `client/src/lib/nadlanApi.ts` — תגובת קוד מפורשת +
+       פולבאק קשיח: PostgREST ל-`nadlan.questionnaire_templates` ו-
+       `nadlan.research_leads`, Edge Function `nadlan-smart-research`.
+       `list_tables` על `csjekrvukbdznetsrodj` מראה `nadlan.research_leads`
+       (10 שורות אמיתיות) ו-`nadlan.questionnaire_templates` (1 שורה)
+       קיימות בפועל. **מסקנה:** `csjekrvukbdznetsrodj`/`nadlan` — שימו לב:
+       זו אותה סכימת `nadlan` שנפתרה עבור 13 בסבב 52, על **אותו** פרויקט —
+       12 ו-13 חולקים בפועל סכימה אחת עם namespacing תקין בין שני מערכות
+       קרובות (12=smel, 13=property-identity: `research_leads` מול
+       `location_profiles` וכו', ללא חפיפת שמות-טבלה). לא בעיה — שיתוף
+       סכימה תקין, לא התנגשות.
+309. **התיקון:** עדכנתי את שלושת קבצי ה-`app.json` (06/10/12) — `supabase.project`/
+     `schema` מ-`null`/`null` לערכים שלעיל, עם שדה `_evidence` שמתעד את
+     מקור הראיה (תקדים מסבבים 51-52) — וגם `core.projects` החי (`UPDATE`
+     דרך ה-MCP על כל שלוש השורות, מאומת בחזרה). לא נגעתי ב-`deployTarget`/
+     `live`/`stage`/`source` — אין ראיית קוד חד-משמעית לסטטוס פריסה בפועל
+     עבור אף אחת מהשלוש. ולידציית JSON (`python3 -m json.tool`) עברה על
+     שלושת הקבצים. ענף `fix/a-06-10-12-supabase-schema-drift-0820`.
+310. **המשמעות:** כל ההיקף 01-16 עבר כעת בדיקת דריפט `app.json` מול
+     `core.projects` מול קוד מקור אמיתי, עם תיקון בפועל בכל מקום שנמצאה
+     ראיה חד-משמעית: 01/03/04/06/10/12/13/15 תוקנו; 02/16 כבר היו נכונים;
+     05/07/11/14 הם אתרי שיווק סטטיים ללא Supabase כלל (`null`/`null` נכון).
+     **הבא בתור:** לתעד את רשימת הפרויקטים/הסכימות הבלתי-מתועדות
+     (#292-293) ב-CONNECTIONS.md עצמו — עדיין לא נעשה; לשקול לחזור לבדוק
+     שכבות אחרות (RLS/duplicate-submit/authz) על 06/10/12 עכשיו שיש להן
+     חיבור DB מתועד ואפשר לבדוק את מדיניות ה-RLS בפועל על `zr_leads`/
+     `kupot_leads`/`nadlan.research_leads`.

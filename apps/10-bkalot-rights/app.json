@@ -8,8 +8,9 @@
   "repo": "l023131500-ops/bkalot-rights",
   "basePath": "/10",
   "supabase": {
-    "project": null,
-    "schema": null
+    "project": "bieebmnmkffwbqlsfozh",
+    "schema": "public",
+    "_evidence": "app.js hardcodes SUPABASE_URL bieebmnmkffwbqlsfozh.supabase.co, INSERTs to /rest/v1/zr_leads; confirmed live via MCP list_tables: public.zr_leads exists on that project (table name only, not a separate zr schema -- lives in public). repo.js separately reads a read-only catalog view from the hub (uhnrgujb) as an enhancement layer, not this app's own data store."
   },
   "deployTarget": "unknown",
   "protected": false,

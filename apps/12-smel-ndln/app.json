@@ -8,8 +8,9 @@
   "repo": "l023131500-ops/smel-ndln",
   "basePath": "/12",
   "supabase": {
-    "project": null,
-    "schema": null
+    "project": "csjekrvukbdznetsrodj",
+    "schema": "nadlan",
+    "_evidence": "client/src/lib/nadlanApi.ts comment + fallback const: PostgREST to nadlan.questionnaire_templates / nadlan.research_leads, Edge Function nadlan-smart-research; confirmed live via MCP list_tables: nadlan.research_leads (10 rows) + nadlan.questionnaire_templates (1 row) exist on that project"
   },
   "deployTarget": "unknown",
   "protected": false,
