@@ -7855,3 +7855,29 @@
      `15-egod/src/pages/portal/PortalSettings.tsx` (שורות ~248,
      ~280). אפשר להמשיך את עדשת ה-icon-only-buttons על 05-16, לטפל
      ב-`alt=""` ב-15-egod, או לפתוח עדשה נוספת.
+
+## 20/08/2026 — סבב 150 (loop A)
+
+752. **בדקתי מחדש** את 5 הפריטים הפתוחים ב-`core.project_tasks`/
+     `core.project_bugs` — עדיין חסומים (secrets חסרים:
+     `OPENAI_API_KEY`/`SUPABASE_SERVICE_KEY`; החלטות מיזוג/origin
+     מחוץ לסמכות הסוכן). **המשכתי את עדשת ה-icon-only-buttons**
+     (שנפתחה בסבב 149) על המועמד הראשון שנותר בתור:
+     `04-imud-torani/client/src/components/CoverEditor.tsx`, פאנל
+     השכבות — 4 כפתורי אייקון (העלה/הורד/שכפל/מחק, שורות 257-260)
+     עם `title` בלבד וללא `aria-label`.
+753. **תיקון:** הוספת `aria-label` זהה לערך ה-`title` הקיים לכל
+     אחד מ-4 הכפתורים, ללא שינוי ל-`onClick`/`title`/`className`/
+     `data-testid`/state הקיימים.
+754. **אפס רגרסיה מאומתת:** `git diff --stat` — קובץ אחד, 4+/4-
+     שורות בלבד (4 attributes נוספו לאותן שורות קיימות); אין שינוי
+     ל-`moveZ`/`duplicateLayer`/`deleteLayer`/רינדור הרשימה מסביב.
+     אין `tsc`/`npm` בסביבה הזו — אימות איזון `{}`/`()`/`[]`
+     בפייתון על הקובץ המלא: 145/145, 171/171, 31/31 — תואם. Commit
+     `78dbb9e0` על `fix/a-icon-only-buttons-round2-0820`, נדחף
+     ל-origin (מפעיל פריסת Vercel תחת more30.com/imud-torani).
+755. **הבא בתור:** מועמד #2 שנותר מסריקת סבב 149 — תמונות עם
+     `alt=""` ריק (לא דקורטיביות) ב-`15-egod/src/pages/portal/
+     PortalSettings.tsx` (שורות ~248, ~280). אפשר גם להמשיך את
+     עדשת ה-icon-only-buttons על 05-16 (עדיין לא נסרקו במלואן), או
+     לפתוח עדשה נוספת.
