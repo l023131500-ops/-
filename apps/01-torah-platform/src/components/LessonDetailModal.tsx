@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { X, MapPin, Clock, Phone, Mail, ExternalLink, Video, Radio, Users, BookOpen, Share2, Download, Globe, Mic, Image } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { downloadLessonAsImage, type LessonImageOptions } from "@/lib/lessonImageExport";
 
@@ -13,12 +13,41 @@ interface LessonDetailModalProps {
 
 const LessonDetailModal = ({ lesson, onClose, imageOptions }: LessonDetailModalProps) => {
   const [showContact, setShowContact] = useState(false);
+  const panelRef = useRef<HTMLDivElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const previousFocusRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     if (!lesson) return;
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
+    previousFocusRef.current = document.activeElement as HTMLElement;
+    closeButtonRef.current?.focus();
+
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onClose();
+        return;
+      }
+      if (e.key === "Tab" && panelRef.current) {
+        const focusable = panelRef.current.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])'
+        );
+        if (focusable.length === 0) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    };
     window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      previousFocusRef.current?.focus();
+    };
   }, [lesson, onClose]);
 
   if (!lesson) return null;
@@ -100,6 +129,7 @@ const LessonDetailModal = ({ lesson, onClose, imageOptions }: LessonDetailModalP
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
       <motion.div
+        ref={panelRef}
         role="dialog"
         aria-modal="true"
         aria-label={`${lesson.subject} — ${lesson.rabbi_name}`}
@@ -129,7 +159,7 @@ const LessonDetailModal = ({ lesson, onClose, imageOptions }: LessonDetailModalP
                   <Image className="w-4 h-4" />
                 </motion.button>
               </div>
-              <button onClick={onClose} className="w-9 h-9 rounded-xl bg-muted flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors" aria-label="סגירה">
+              <button ref={closeButtonRef} onClick={onClose} className="w-9 h-9 rounded-xl bg-muted flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors" aria-label="סגירה">
                 <X className="w-5 h-5" />
               </button>
             </div>
