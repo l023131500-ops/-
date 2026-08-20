@@ -202,15 +202,15 @@ export default function StudyDayUpload() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-1.5">
                 <Label className="text-sm">שם איש קשר</Label>
-                <Input value={form.contact_name} onChange={(e) => set("contact_name", e.target.value)} className="h-11 border-foreground/15" />
+                <Input value={form.contact_name} onChange={(e) => set("contact_name", e.target.value)} className="h-11 border-foreground/15" autoComplete="name" />
               </div>
               <div className="space-y-1.5">
                 <Label className="text-sm flex items-center gap-1.5"><Phone className="w-3.5 h-3.5" />טלפון <span className="text-destructive">*</span></Label>
-                <Input dir="ltr" value={form.contact_phone} onChange={(e) => set("contact_phone", e.target.value)} className="h-11 border-foreground/15" />
+                <Input dir="ltr" value={form.contact_phone} onChange={(e) => set("contact_phone", e.target.value)} className="h-11 border-foreground/15" autoComplete="tel" />
               </div>
               <div className="space-y-1.5">
                 <Label className="text-sm flex items-center gap-1.5"><Mail className="w-3.5 h-3.5" />אימייל</Label>
-                <Input dir="ltr" type="email" value={form.contact_email} onChange={(e) => set("contact_email", e.target.value)} className="h-11 border-foreground/15" />
+                <Input dir="ltr" type="email" value={form.contact_email} onChange={(e) => set("contact_email", e.target.value)} className="h-11 border-foreground/15" autoComplete="email" />
               </div>
               <div className="space-y-1.5">
                 <Label className="text-sm">וואטסאפ</Label>

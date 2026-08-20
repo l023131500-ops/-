@@ -744,15 +744,15 @@ export default function PublicPotential() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                       <div>
                         <Label className="text-xs">שם מלא</Label>
-                        <Input value={contact.fullName} onChange={(e) => setContact((c) => ({ ...c, fullName: e.target.value }))} data-testid="input-potential-name" />
+                        <Input value={contact.fullName} onChange={(e) => setContact((c) => ({ ...c, fullName: e.target.value }))} data-testid="input-potential-name" autoComplete="name" />
                       </div>
                       <div>
                         <Label className="text-xs">טלפון</Label>
-                        <Input type="tel" inputMode="tel" value={contact.phone} onChange={(e) => setContact((c) => ({ ...c, phone: e.target.value }))} data-testid="input-potential-phone" />
+                        <Input type="tel" inputMode="tel" value={contact.phone} onChange={(e) => setContact((c) => ({ ...c, phone: e.target.value }))} data-testid="input-potential-phone" autoComplete="tel" />
                       </div>
                       <div>
                         <Label className="text-xs">מייל</Label>
-                        <Input type="email" value={contact.email} onChange={(e) => setContact((c) => ({ ...c, email: e.target.value }))} data-testid="input-potential-email" />
+                        <Input type="email" value={contact.email} onChange={(e) => setContact((c) => ({ ...c, email: e.target.value }))} data-testid="input-potential-email" autoComplete="email" />
                       </div>
                       <div>
                         <Label className="text-xs">תעודת זהות (אופציונלי)</Label>

@@ -881,7 +881,7 @@ const FloatingBot = () => {
                       )}
                       <SelectField value={familyData.health} options={healthOptions} placeholder="מצב בריאותי *" onChange={(v) => setFamilyData({ ...familyData, health: v })} />
                       <SelectField value={familyData.economic} options={economicOptions} placeholder="מצב כלכלי *" onChange={(v) => setFamilyData({ ...familyData, economic: v })} />
-                      <Input placeholder="מספר טלפון *" type="tel" value={familyData.phone} onChange={(e) => setFamilyData({ ...familyData, phone: e.target.value })} required className="text-sm" />
+                      <Input placeholder="מספר טלפון *" type="tel" value={familyData.phone} onChange={(e) => setFamilyData({ ...familyData, phone: e.target.value })} required className="text-sm" autoComplete="tel" />
                       <Button type="submit" disabled={isSubmitting} className="w-full gap-2">
                         <Send className="w-4 h-4" />
                         {isSubmitting ? "שולח..." : "שליחה"}
@@ -1040,6 +1040,7 @@ const ContactForm = ({
       onChange={(e) => setContactForm({ ...contactForm, name: e.target.value })}
       className="text-sm"
       required={requireFields}
+      autoComplete="name"
     />
     <Input
       placeholder="מספר טלפון *"
@@ -1047,6 +1048,7 @@ const ContactForm = ({
       value={contactForm.phone}
       onChange={(e) => setContactForm({ ...contactForm, phone: e.target.value })}
       className="text-sm"
+      autoComplete="tel"
       required={requireFields}
     />
     <Textarea

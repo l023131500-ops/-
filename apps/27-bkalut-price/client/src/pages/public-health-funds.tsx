@@ -730,17 +730,17 @@ export default function PublicHealthFunds() {
             <div className="space-y-1">
               <Label htmlFor="sw-name">שם פרטי ומשפחה <span className="text-destructive">*</span></Label>
               <Input id="sw-name" data-testid="input-switch-name" value={switchForm.fullName}
-                onChange={(e) => setSwitchForm({ ...switchForm, fullName: e.target.value })} placeholder="למשל: ישראל ישראלי" />
+                onChange={(e) => setSwitchForm({ ...switchForm, fullName: e.target.value })} placeholder="למשל: ישראל ישראלי" autoComplete="name" />
             </div>
             <div className="space-y-1">
               <Label htmlFor="sw-phone">טלפון <span className="text-destructive">*</span></Label>
               <Input id="sw-phone" data-testid="input-switch-phone" type="tel" inputMode="tel" value={switchForm.phone}
-                onChange={(e) => setSwitchForm({ ...switchForm, phone: e.target.value })} placeholder="05X-XXXXXXX" />
+                onChange={(e) => setSwitchForm({ ...switchForm, phone: e.target.value })} placeholder="05X-XXXXXXX" autoComplete="tel" />
             </div>
             <div className="space-y-1">
               <Label htmlFor="sw-email">מייל</Label>
               <Input id="sw-email" data-testid="input-switch-email" type="email" value={switchForm.email}
-                onChange={(e) => setSwitchForm({ ...switchForm, email: e.target.value })} placeholder="אופציונלי" />
+                onChange={(e) => setSwitchForm({ ...switchForm, email: e.target.value })} placeholder="אופציונלי" autoComplete="email" />
             </div>
             <div className="space-y-1">
               <Label htmlFor="sw-id">תעודת זהות</Label>

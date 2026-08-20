@@ -94,6 +94,7 @@ const Footer = () => {
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                         className="text-sm"
+                        autoComplete="name"
                       />
                       <Input
                         placeholder="טלפון *"
@@ -103,6 +104,7 @@ const Footer = () => {
                         value={formData.phone}
                         onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                         className="text-sm"
+                        autoComplete="tel"
                       />
                     </div>
                     <div className="grid grid-cols-2 gap-3">
@@ -120,6 +122,7 @@ const Footer = () => {
                         value={formData.email}
                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                         className="text-sm"
+                        autoComplete="email"
                       />
                     </div>
                     {/* Contact method selection */}

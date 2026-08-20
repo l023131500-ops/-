@@ -179,10 +179,10 @@ export default function PublicCommunity() {
         <Card className="p-4 space-y-3" data-testid="community-contact">
           <h3 className="font-semibold text-sm">פרטי קשר</h3>
           <div className="grid sm:grid-cols-2 gap-3">
-            <div className="space-y-1"><Label className="text-xs">שם איש הקשר</Label><Input value={contact.name} onChange={(e) => setContact({ ...contact, name: e.target.value })} data-testid="input-community-name" /></div>
+            <div className="space-y-1"><Label className="text-xs">שם איש הקשר</Label><Input value={contact.name} onChange={(e) => setContact({ ...contact, name: e.target.value })} data-testid="input-community-name" autoComplete="name" /></div>
             <div className="space-y-1"><Label className="text-xs">שם הקהילה</Label><Input value={contact.communityName} onChange={(e) => setContact({ ...contact, communityName: e.target.value })} data-testid="input-community-community" /></div>
-            <div className="space-y-1"><Label className="text-xs">טלפון</Label><Input type="tel" value={contact.phone} onChange={(e) => setContact({ ...contact, phone: e.target.value })} data-testid="input-community-phone" /></div>
-            <div className="space-y-1"><Label className="text-xs">דוא״ל</Label><Input type="email" value={contact.email} onChange={(e) => setContact({ ...contact, email: e.target.value })} data-testid="input-community-email" /></div>
+            <div className="space-y-1"><Label className="text-xs">טלפון</Label><Input type="tel" value={contact.phone} onChange={(e) => setContact({ ...contact, phone: e.target.value })} data-testid="input-community-phone" autoComplete="tel" /></div>
+            <div className="space-y-1"><Label className="text-xs">דוא״ל</Label><Input type="email" value={contact.email} onChange={(e) => setContact({ ...contact, email: e.target.value })} data-testid="input-community-email" autoComplete="email" /></div>
           </div>
         </Card>
       )}

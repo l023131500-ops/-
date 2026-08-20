@@ -170,10 +170,10 @@ const RequestLesson = () => {
                 <div className="space-y-3">
                   <label className="font-display text-sm font-bold text-card-foreground flex items-center gap-2"><Phone className="w-4 h-4 text-gold" /> איש קשר</label>
                   <div className="grid grid-cols-2 gap-3">
-                    <Input value={contactPhone} onChange={(e) => setContactPhone(e.target.value)} placeholder="טלפון *" />
-                    <Input value={contactName} onChange={(e) => setContactName(e.target.value)} placeholder="שם *" />
+                    <Input value={contactPhone} onChange={(e) => setContactPhone(e.target.value)} placeholder="טלפון *" autoComplete="tel" />
+                    <Input value={contactName} onChange={(e) => setContactName(e.target.value)} placeholder="שם *" autoComplete="name" />
                   </div>
-                  <Input value={contactEmail} onChange={(e) => setContactEmail(e.target.value)} placeholder="מייל" type="email" />
+                  <Input value={contactEmail} onChange={(e) => setContactEmail(e.target.value)} placeholder="מייל" type="email" autoComplete="email" />
                   <Input value={contactLocation} onChange={(e) => setContactLocation(e.target.value)} placeholder="מיקום מדויק" />
                   <ChipSelect label="האם אתם צריכים עזרה בשירותי דת למשפחה?" options={["לא", "כן"]} selected={needsReligiousServices}
                     onSelect={(v) => setNeedsReligiousServices(v)} />

@@ -186,14 +186,14 @@ const ContactPage = () => {
                     <label htmlFor="contact-name" className="block text-sm font-bold text-foreground mb-1.5">שם מלא *</label>
                     <div className="relative">
                       <User className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                      <Input id="contact-name" value={name} onChange={e => setName(e.target.value)} placeholder="השם שלך" className="pr-10" />
+                      <Input id="contact-name" value={name} onChange={e => setName(e.target.value)} placeholder="השם שלך" className="pr-10" autoComplete="name" />
                     </div>
                   </div>
                   <div>
                     <label htmlFor="contact-phone" className="block text-sm font-bold text-foreground mb-1.5">טלפון *</label>
                     <div className="relative">
                       <Phone className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                      <Input id="contact-phone" value={phone} onChange={e => setPhone(e.target.value)} placeholder="050-0000000" className="pr-10" dir="ltr" />
+                      <Input id="contact-phone" value={phone} onChange={e => setPhone(e.target.value)} placeholder="050-0000000" className="pr-10" dir="ltr" autoComplete="tel" />
                     </div>
                   </div>
                 </div>
@@ -201,7 +201,7 @@ const ContactPage = () => {
                   <label htmlFor="contact-email" className="block text-sm font-bold text-foreground mb-1.5">אימייל (אופציונלי)</label>
                   <div className="relative">
                     <Mail className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                    <Input id="contact-email" value={email} onChange={e => setEmail(e.target.value)} placeholder="email@example.com" className="pr-10" dir="ltr" />
+                    <Input id="contact-email" value={email} onChange={e => setEmail(e.target.value)} placeholder="email@example.com" className="pr-10" dir="ltr" autoComplete="email" />
                   </div>
                 </div>
                 <div>

@@ -74,8 +74,8 @@ const ServiceRequestForm = ({ defaultType, compact }: ServiceRequestFormProps) =
             <motion.div id={panelId} initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }}
               className="overflow-hidden">
               <div className="pt-3 space-y-2">
-                <Input value={name} onChange={e => setName(e.target.value)} placeholder="שם מלא" className="text-xs h-9" />
-                <Input value={phone} onChange={e => setPhone(e.target.value)} placeholder="טלפון" dir="ltr" className="text-xs h-9" />
+                <Input value={name} onChange={e => setName(e.target.value)} placeholder="שם מלא" className="text-xs h-9" autoComplete="name" />
+                <Input value={phone} onChange={e => setPhone(e.target.value)} placeholder="טלפון" dir="ltr" className="text-xs h-9" autoComplete="tel" />
                 <Input value={message} onChange={e => setMessage(e.target.value)} placeholder="פרטים נוספים (אופציונלי)" className="text-xs h-9" />
                 {sent ? (
                   <p className="text-center text-primary font-bold text-xs py-2">✅ הבקשה נשלחה!</p>
@@ -114,11 +114,11 @@ const ServiceRequestForm = ({ defaultType, compact }: ServiceRequestFormProps) =
       <div className="grid grid-cols-2 gap-3">
         <div>
           <label htmlFor={`${fieldIdPrefix}-name`} className="block text-sm font-bold text-foreground mb-1"><User className="w-3 h-3 inline ml-1" />שם מלא</label>
-          <Input id={`${fieldIdPrefix}-name`} value={name} onChange={e => setName(e.target.value)} placeholder="ישראל כהן" />
+          <Input id={`${fieldIdPrefix}-name`} value={name} onChange={e => setName(e.target.value)} placeholder="ישראל כהן" autoComplete="name" />
         </div>
         <div>
           <label htmlFor={`${fieldIdPrefix}-phone`} className="block text-sm font-bold text-foreground mb-1"><Phone className="w-3 h-3 inline ml-1" />טלפון</label>
-          <Input id={`${fieldIdPrefix}-phone`} value={phone} onChange={e => setPhone(e.target.value)} placeholder="050-0000000" dir="ltr" />
+          <Input id={`${fieldIdPrefix}-phone`} value={phone} onChange={e => setPhone(e.target.value)} placeholder="050-0000000" dir="ltr" autoComplete="tel" />
         </div>
       </div>
       <div>

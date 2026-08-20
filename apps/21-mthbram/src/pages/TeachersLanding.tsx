@@ -207,12 +207,12 @@ const TeachersLanding = () => {
                 <div className="space-y-3">
                   <label className="font-display text-sm font-bold text-card-foreground flex items-center gap-2"><UserCircle className="w-4 h-4 text-gold" /> פרטים אישיים</label>
                   <div className="grid grid-cols-2 gap-3">
-                    <Input value={lastName} onChange={(e) => setLastName(e.target.value)} placeholder="שם משפחה *" />
-                    <Input value={firstName} onChange={(e) => setFirstName(e.target.value)} placeholder="שם פרטי *" />
+                    <Input value={lastName} onChange={(e) => setLastName(e.target.value)} placeholder="שם משפחה *" autoComplete="family-name" />
+                    <Input value={firstName} onChange={(e) => setFirstName(e.target.value)} placeholder="שם פרטי *" autoComplete="given-name" />
                   </div>
-                  <Input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="טלפון *" />
+                  <Input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="טלפון *" autoComplete="tel" />
                   <div className="flex items-center gap-2">
-                    <Input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="מייל *" type="email" disabled={noEmail} className={noEmail ? "opacity-50" : ""} />
+                    <Input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="מייל *" type="email" disabled={noEmail} className={noEmail ? "opacity-50" : ""} autoComplete="email" />
                     <label className="flex items-center gap-1.5 font-body text-xs text-muted-foreground whitespace-nowrap">
                       <Checkbox checked={noEmail} onCheckedChange={(c) => setNoEmail(!!c)} />
                       אין לי מייל

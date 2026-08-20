@@ -112,16 +112,16 @@ const TeacherForm = ({ data, onChange }: TeacherFormProps) => {
               <h3 className="font-display text-xl font-bold text-card-foreground mb-6">פרטים אישיים</h3>
               <div>
                 <label htmlFor="teacher-full-name" className="font-body text-sm font-medium text-card-foreground mb-1.5 block">שם מלא *</label>
-                <Input id="teacher-full-name" value={data.fullName || ""} onChange={(e) => update("fullName", e.target.value)} placeholder="הרב ישראל ישראלי" />
+                <Input id="teacher-full-name" value={data.fullName || ""} onChange={(e) => update("fullName", e.target.value)} placeholder="הרב ישראל ישראלי" autoComplete="name" />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label htmlFor="teacher-phone" className="font-body text-sm font-medium text-card-foreground mb-1.5 block">טלפון *</label>
-                  <Input id="teacher-phone" value={data.phone || ""} onChange={(e) => update("phone", e.target.value)} placeholder="050-0000000" />
+                  <Input id="teacher-phone" value={data.phone || ""} onChange={(e) => update("phone", e.target.value)} placeholder="050-0000000" autoComplete="tel" />
                 </div>
                 <div>
                   <label htmlFor="teacher-email" className="font-body text-sm font-medium text-card-foreground mb-1.5 block">מייל</label>
-                  <Input id="teacher-email" value={data.email || ""} onChange={(e) => update("email", e.target.value)} placeholder="email@example.com" type="email" />
+                  <Input id="teacher-email" value={data.email || ""} onChange={(e) => update("email", e.target.value)} placeholder="email@example.com" type="email" autoComplete="email" />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">

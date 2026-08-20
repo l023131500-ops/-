@@ -116,7 +116,7 @@ const AskRabbiSection = () => {
 
                 <div>
                   <label htmlFor="ask-rabbi-name" className="block text-sm font-bold text-foreground mb-1.5">שם מלא</label>
-                  <input id="ask-rabbi-name" value={name} onChange={e => setName(e.target.value)} placeholder="הזן את שמך..."
+                  <input id="ask-rabbi-name" value={name} onChange={e => setName(e.target.value)} placeholder="הזן את שמך..." autoComplete="name"
                     className="w-full rounded-2xl border border-input bg-background px-4 py-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" />
                 </div>
 

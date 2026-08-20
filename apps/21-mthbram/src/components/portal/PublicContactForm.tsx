@@ -117,16 +117,16 @@ const PublicContactForm = ({ portalId, portalType, portalName }: Props) => {
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label htmlFor="public-contact-name" className="font-body text-xs font-medium text-muted-foreground mb-1 block">שם *</label>
-                  <Input id="public-contact-name" value={name} onChange={e => setName(e.target.value)} placeholder="השם שלך" className="border-gold/20 focus:border-gold/50 bg-background text-foreground" />
+                  <Input id="public-contact-name" value={name} onChange={e => setName(e.target.value)} placeholder="השם שלך" className="border-gold/20 focus:border-gold/50 bg-background text-foreground" autoComplete="name" />
                 </div>
                 <div>
                   <label htmlFor="public-contact-phone" className="font-body text-xs font-medium text-muted-foreground mb-1 block">טלפון *</label>
-                  <Input id="public-contact-phone" type="tel" inputMode="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder="050-..." className="border-gold/20 focus:border-gold/50 bg-background text-foreground" />
+                  <Input id="public-contact-phone" type="tel" inputMode="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder="050-..." className="border-gold/20 focus:border-gold/50 bg-background text-foreground" autoComplete="tel" />
                 </div>
               </div>
               <div>
                 <label htmlFor="public-contact-email" className="font-body text-xs font-medium text-muted-foreground mb-1 block">מייל</label>
-                <Input id="public-contact-email" type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="email@example.com" className="border-gold/20 focus:border-gold/50 bg-background text-foreground" />
+                <Input id="public-contact-email" type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="email@example.com" className="border-gold/20 focus:border-gold/50 bg-background text-foreground" autoComplete="email" />
               </div>
               <div>
                 <label htmlFor="public-contact-message" className="font-body text-xs font-medium text-muted-foreground mb-1 block">פרטים נוספים</label>

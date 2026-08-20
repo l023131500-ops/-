@@ -241,6 +241,7 @@ export function SwitchFundDialog({
                   {...form.register("fullName")}
                   placeholder="שם פרטי ומשפחה"
                   data-testid="input-fullName"
+                  autoComplete="name"
                 />
               </Field>
 
@@ -250,6 +251,7 @@ export function SwitchFundDialog({
                   inputMode="tel"
                   placeholder="050-0000000"
                   data-testid="input-phone"
+                  autoComplete="tel"
                 />
               </Field>
 
@@ -260,6 +262,7 @@ export function SwitchFundDialog({
                     type="email"
                     placeholder="name@example.com"
                     data-testid="input-email"
+                    autoComplete="email"
                   />
                 </Field>
                 <Field label="תעודת זהות">
