@@ -87,7 +87,7 @@ interface ProviderCredit {
   key: string; label: string; usedBy: string;
   /** `not-deployed` = המפתח בכספת אך לא נפרס כאן. מצב נפרד מ"אין מפתח". */
   state: "ok" | "missing" | "not-deployed" | "invalid" | "unknown";
-  usage?: { used: number; limit: number; percent: number; unit: string; cycleEnds?: string | null };
+  usage?: { used: number; limit: number; percent: number; unit: string; cycleEnds?: string | null; noLimit?: boolean };
   detail: string;
   /** עמוד ההוספה אצל הספק — §3א דורש קישור ישיר לכל אחד. */
   topUp: string;
@@ -960,11 +960,17 @@ export function App() {
                     מפרסם יתרה נקראת כמו "אפס נשאר" — בדיוק ההפך מהאמת. */}
                 {p.usage && p.usage.limit > 0 && (
                   <div style={{ marginTop: 8 }}>
-                    <div style={{ height: 8, background: "var(--border)", borderRadius: 999, overflow: "hidden" }}>
-                      <div style={{ width: `${Math.max(0, Math.min(100, p.usage.percent))}%`, height: "100%", background: p.usage.percent >= 80 ? "#dc2626" : "#16a34a" }} />
-                    </div>
+                    {/* אין פס-אחוזים כשאין תקרה אמיתית (Recraft: רק "כמה נשאר") —
+                        פס קבוע ב-0%/ירוק ילמד שגוי "עוד המון" גם כשהקרדיטים נגמרו. */}
+                    {!p.usage.noLimit && (
+                      <div style={{ height: 8, background: "var(--border)", borderRadius: 999, overflow: "hidden" }}>
+                        <div style={{ width: `${Math.max(0, Math.min(100, p.usage.percent))}%`, height: "100%", background: p.usage.percent >= 80 ? "#dc2626" : "#16a34a" }} />
+                      </div>
+                    )}
                     <div style={{ fontSize: 12, color: "var(--fg-2)", marginTop: 4 }}>
-                      נותרו {nfHe(Math.max(0, p.usage.limit - p.usage.used))} {p.usage.unit} · {nfHe(p.usage.used)} מתוך {nfHe(p.usage.limit)}
+                      {p.usage.noLimit
+                        ? <>נותרו {nfHe(p.usage.limit)} {p.usage.unit}</>
+                        : <>נותרו {nfHe(Math.max(0, p.usage.limit - p.usage.used))} {p.usage.unit} · {nfHe(p.usage.used)} מתוך {nfHe(p.usage.limit)}</>}
                     </div>
                     {p.usage.cycleEnds && <div style={{ fontSize: 11, color: "var(--muted-2)" }}>מתאפס ב-{new Date(p.usage.cycleEnds).toLocaleDateString("he-IL")}</div>}
                   </div>

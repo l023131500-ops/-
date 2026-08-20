@@ -53,7 +53,19 @@ type Provider = {
   usedBy: string;
   state: State;
   /** מדידה אמיתית של יתרה, כשהספק מספק אחת. */
-  usage?: { used: number; limit: number; percent: number; unit: string; cycleEnds?: string | null };
+  usage?: {
+    used: number;
+    limit: number;
+    percent: number;
+    unit: string;
+    cycleEnds?: string | null;
+    /**
+     * הספק מחזיר רק "כמה נשאר", לא תקרה/מכסה אמיתית (למשל Recraft: קרדיטים
+     * שנותרו, לא used/limit אמיתיים). בלי הדגל הזה מד-האחוזים במסך מצייר פס
+     * ירוק קבוע ב-0% גם כשהקרדיטים ממש נגמרו, כי אין יחס אמיתי לחשב.
+     */
+    noLimit?: boolean;
+  };
   detail: string;
   /** לאן הולכים כדי להוסיף קרדיט או לחדש מפתח. */
   topUp: string;
@@ -177,7 +189,7 @@ const SPECS: Spec[] = [
       }
       return {
         state: 'ok',
-        usage: { used: 0, limit: left, percent: 0, unit: 'קרדיטים' },
+        usage: { used: 0, limit: left, percent: 0, unit: 'קרדיטים', noLimit: true },
         detail: left <= 50 ? 'נותרו מעט קרדיטים — יצירת תמונות תיעצר כשייגמרו.' : 'קרדיטים שנותרו, נמדד מול הספק.',
       };
     },
