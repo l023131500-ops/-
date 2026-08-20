@@ -169,7 +169,7 @@ export function registerGoogleAuthRoutes(app: Express) {
       // (wouter useHashLocation), so we land at /#/login?google_token=...
       // The admin-login page picks the token up on mount and hands it to
       // the AdminAuth provider, then strips the query and navigates home.
-      const target = stateEntry.redirect && stateEntry.redirect.startsWith("/")
+      const target = stateEntry.redirect && stateEntry.redirect.startsWith("/") && !stateEntry.redirect.startsWith("//")
         ? stateEntry.redirect
         : "/";
       const tokenQ = encodeURIComponent(session.token);

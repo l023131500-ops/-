@@ -56,7 +56,7 @@ export default function AdminLoginPage() {
     const found = readGoogleTokenFromHash();
     if (!found) return;
     setAdminToken(found.token);
-    const target = found.redirect && found.redirect.startsWith("/") ? found.redirect : "/admin";
+    const target = found.redirect && found.redirect.startsWith("/") && !found.redirect.startsWith("//") ? found.redirect : "/admin";
     setLocation(target);
   }, [setLocation]);
 
