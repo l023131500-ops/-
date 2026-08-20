@@ -11485,3 +11485,58 @@
       חדש בסבב הזה), `12-smel-ndln` (`research.ts` נסרק ללא ממצא, אבל
       `server/routes.ts`/`server/storage.ts`/`shared/schema.ts` עוד לא
       נסרקו), או `04-imud-torani` מעבר ל-`server/seed.ts` שכבר נקרא.
+
+## 20/08/2026 — סבב 227 (loop A) — `04-imud-torani/client/src/pages/Home.tsx`: כפתור מחיקת ספר בלי מגן double-submit
+
+1106. **בדקתי מחדש לפני שהתחלתי:** `core.run_progress` (סבב 226 האחרון,
+      commit `6820e916`/`ce5535af`, תואם ל-HEAD). המלצת 1105 הצביעה על
+      `12-smel-ndln/server/routes.ts`+`storage.ts` ו-`04-imud-torani`
+      מעבר ל-`server/seed.ts`. דיספצ'תי סוכן Explore לקרוא את שני
+      הקבצים ב-12-smel-ndln במלואם + `shared/schema.ts` להקשר +
+      `04-imud-torani/server/seed.ts`, בחיפוש אחר דפוסי הבאגים החוזרים
+      בהיקף הזה (double-escape, גייט שמפיל 0, מוטציה בלי error-handling,
+      רענון-שקט-שנכשל, מירוץ double-submit).
+1107. **הממצא:** `12-smel-ndln/server/routes.ts`+`storage.ts` נסרקו ללא
+      ממצא (טיפול שגיאות תקין בכל ה-fetch-ים, `??` נכון ולא `||` על
+      ערכים שיכולים להיות 0). `server/seed.ts` ב-04-imud-torani התברר
+      כקובץ ריק בן 7 שורות (פונקציית no-op). אבל הסוכן זיהה תוך כדי
+      קריאת קבצי הלקוח של 04-imud-torani (מחוץ למה שהתבקש במפורש, אך
+      באותו scope) ממצא אמיתי: `client/src/pages/Home.tsx` שורות
+      132-142 — כפתור מחיקת ספר ("הספרים שלי", אייקון פח-אשפה) קורא
+      ל-`del.mutate(b.id)` אחרי `confirm()`, בלי שום מגן `disabled` בזמן
+      שהמוטציה ב-uflight. אימתתי ישירות בקוד: `del` הוא אובייקט
+      `useMutation` יחיד (שורה 24) המשותף לכל כרטיסי הספרים ברשימה,
+      וה-`Button` (שורה 132) לא כולל את `disabled={del.isPending}` בניגוד
+      לדפוס הקיים כבר בקוד הזהה ב-`12-smel-ndln/client/src/pages/
+      Premium.tsx:266` (`disabled={submitLead.isPending}`). תרחיש כשל
+      אמיתי: משתמש לוחץ מחיקה, מאשר בדיאלוג `confirm()`, ולפני שבקשת
+      ה-DELETE חוזרת (500-3000ms ברשת) — לוחץ שוב ומאשר שוב (או שני
+      טאבים/קליקים כפולים) — שתי בקשות DELETE נשלחות לאותו ספר, כשה-
+      toast מציג הצלחה יחידה בלבד בעוד השרת קיבל שתי בקשות.
+1108. **התיקון:** נוסף `disabled={del.isPending && del.variables ===
+      b.id}` לכפתור. מכיוון ש-`del` הוא אובייקט מוטציה יחיד המשותף לכל
+      הכרטיסים, שימוש גורף ב-`disabled={del.isPending}` היה משבית את
+      *כל* כפתורי המחיקה של *כל* הספרים בזמן שספר כלשהו נמחק — תוספת
+      תופעת-לוואי לא רצויה. הבדיקה `del.variables === b.id` (שדה מתועד
+      ב-TanStack Query — פרמטרי הקריאה האחרונה ל-`mutate`, אומת ב-
+      `node_modules/@tanstack/query-core/build/*/mutation.d.ts` שבתיקיית
+      04-imud-torani) מבטיחה שרק כפתור הספר הספציפי שנמחק כרגע מושבת,
+      בלי להשפיע על ספרים אחרים. לא נגעתי ב-`onSuccess`/`onError`/
+      `invalidateQueries` הקיימים או בשום handler אחר.
+1109. **אפס רגרסיה מאומתת:** `git diff --stat`: קובץ אחד, +1/-0. בדיקת
+      איזון סוגריים/מסולסלים/מרובעים בפייתון על הקובץ המלא: תואם
+      (`(`: 33/33, `{`: 61/61, `[`: 9/9). אימתתי שדה `variables` קיים
+      בטיפוס `MutationObserverResult`/`Mutation` ב-`@tanstack/query-core`
+      המותקן בפועל תחת `apps/04-imud-torani/node_modules`. לא נגעתי
+      במערכות/סכימות מוגנות (08/09/bkalut-app/bkalot-admin/zr_*/
+      NEDARIM3873/csj/csj_src/igud), ב-`main`, או במערכת מחוץ להיקף (04
+      בטווח 01-16). `git add -f` נדרש (אותה אזהרת `.gitignore` כוזבת על
+      `apps/**` שתועדה בסבבים קודמים). Commit `d2c9d7c7` על `fix/a-icon-
+      only-buttons-round2-0820`, נדחף ל-`origin` (מפעיל פריסת Vercel
+      תחת `more30.com/imud`).
+1110. **הבא בתור:** `04-imud-torani/client/src` נסרק כעת חלקית (`Home.tsx`
+      נסרק לעומק; שאר הדפים תחת `client/src/pages/` — למשל `editor`,
+      `wizard`, `templates` — טרם נסרקו לדפוסים האלה). `12-smel-ndln`
+      נסרק כעת במלואו (client+server+shared) ללא ממצא נוסף. מומלץ:
+      המשך סריקה ב-`04-imud-torani/client/src/pages/` הנותרים, או
+      `10-bkalot-rights` שנותר עם רוב האזכורים כתיעוד דריפט DB בלבד.
