@@ -199,7 +199,7 @@ export default function UploadPage() {
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b bg-card/60 backdrop-blur">
-        <div className="max-w-3xl mx-auto px-4 py-3">
+        <div className="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
           <Link
             href="/"
             className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
@@ -208,6 +208,13 @@ export default function UploadPage() {
             <ChevronRight className="w-4 h-4" />
             חזרה לרשימה
           </Link>
+          <a
+            href="/subscribe?app=chizukim"
+            className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground hover-elevate rounded-md px-2 py-1"
+            data-testid="link-pricing"
+          >
+            מחירון
+          </a>
         </div>
       </header>
 

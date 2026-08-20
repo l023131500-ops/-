@@ -194,14 +194,23 @@ export default function RecordingDetailPage() {
             <ChevronRight className="w-4 h-4" />
             {terms.length ? "חזרה לתוצאות החיפוש" : "חזרה לרשימה"}
           </Link>
-          <Button
-            onClick={() => save.mutate()}
-            disabled={!dirty || save.isPending}
-            data-testid="button-save"
-          >
-            <Save className="w-4 h-4 ml-2" />
-            {save.isPending ? "שומר…" : "שמירה"}
-          </Button>
+          <div className="flex items-center gap-2">
+            <a
+              href="/subscribe?app=chizukim"
+              className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground hover-elevate rounded-md px-2 py-1"
+              data-testid="link-pricing"
+            >
+              מחירון
+            </a>
+            <Button
+              onClick={() => save.mutate()}
+              disabled={!dirty || save.isPending}
+              data-testid="button-save"
+            >
+              <Save className="w-4 h-4 ml-2" />
+              {save.isPending ? "שומר…" : "שמירה"}
+            </Button>
+          </div>
         </div>
       </header>
 
