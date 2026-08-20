@@ -784,6 +784,8 @@ function renderJoin() {
     const wantsLogin = document.getElementById('wants-login-cb').checked && (role === 'gabbai' || role === 'maggid_shiur');
     const loginEmail = fd.get('login_email');
     const loginPassword = fd.get('login_password');
+    const submitBtn = form.querySelector('button[type="submit"]');
+    submitBtn.disabled = true;
 
     try {
       if (wantsLogin) {
@@ -837,6 +839,8 @@ function renderJoin() {
       syncRole();
     } catch (err) {
       alertBox.innerHTML = `<div class="alert alert-error">${esc(err.message)}</div>`;
+    } finally {
+      submitBtn.disabled = false;
     }
   });
 }
@@ -1528,6 +1532,8 @@ async function renderAdmin(token) {
     };
 
     content.querySelectorAll('[data-pay]').forEach(btn => btn.onclick = async () => {
+      if (btn.disabled) return;
+      btn.disabled = true;
       try {
         const checkout = await api(`/api/admin/tenant/${encodeURIComponent(token)}/subscription-payments/${btn.dataset.pay}/checkout`);
         if (checkout.alreadyPaid) { await drawBilling(content); return; }
@@ -1542,6 +1548,8 @@ async function renderAdmin(token) {
         });
       } catch (err) {
         document.getElementById('billing-alert').innerHTML = `<div class="alert alert-error">${esc(err.message)}</div>`;
+      } finally {
+        btn.disabled = false;
       }
     });
   }
@@ -2416,6 +2424,8 @@ async function renderSuperadminDashboard(client) {
       e.preventDefault();
       const fd = Object.fromEntries(new FormData(e.target));
       const alertBox = document.getElementById('subpay-alert');
+      const submitBtn = e.target.querySelector('button[type="submit"]');
+      if (submitBtn) submitBtn.disabled = true;
       try {
         await api('/api/superadmin/subscription-payments', {
           method: 'POST', auth: true,
@@ -2426,6 +2436,7 @@ async function renderSuperadminDashboard(client) {
         draw();
       } catch (err) {
         alertBox.innerHTML = `<div class="alert alert-error">${esc(err.message)}</div>`;
+        if (submitBtn) submitBtn.disabled = false;
       }
     });
   }
