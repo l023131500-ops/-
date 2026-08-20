@@ -12,7 +12,7 @@
 | project ref | serves systems | reachable via MCP here? |
 |---|---|---|
 | `uhnrgujbdxhhmoxcjria` | 32 נדל"ן (schema `nadlan`) + 16 chatzor-connect (schema `chatzor`) + `public` hub + `core` registry | ✅ yes |
-| `bieebmnmkffwbqlsfozh` | 01 torah-platform, 02 igud-transcribe, 03 igud-ads, 10 bkalot-rights, 18 torah-editor-mvp | ❌ other account |
+| `bieebmnmkffwbqlsfozh` | 01 torah-platform, 02 igud-transcribe, 03 igud-ads, 10 bkalot-rights, 18 torah-editor-mvp | ✅ yes (verified 20/08/2026 — `list_projects` shows it ACTIVE_HEALTHY and reachable; earlier "other account" note was stale) |
 | `csjekrvukbdznetsrodj` | 06 kupot-holim, 12 smel-ndln, 17 chizukim-transcribe, 27 bkalut-price | ❌ |
 | `mwljkonwdeuaahsigjdp` | 24 galilee-connect-hub (16 chatzor-connect migrated off this project — now on `uhnrgujbdxhhmoxcjria`/schema `chatzor`, see below) | ❌ |
 | `pwcswdfgorvlpdflzylm` | 08 bkalut-app 🔒 | ❌ |

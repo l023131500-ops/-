@@ -47,11 +47,13 @@ export async function POST(req: Request) {
   const svc = createSupabaseService();
 
   // Idempotency: payment gateways commonly retry a webhook call for the same
-  // transaction (timeout, no fast 200 received, etc). Without this check a
-  // retry would insert a second ad_payments row and grant a second free-
-  // designs coupon for the same real-world payment. Only guards when Nedarim
-  // sends a transaction id (it always does on a real payment); matches the
-  // column already written below (provider_transaction_id).
+  // transaction (timeout, no fast 200 received, etc), and two overlapping
+  // deliveries can also race each other. This SELECT is a fast-path only —
+  // the real guard is the unique index on (project_id, provider_transaction_id)
+  // added in migration ad_payments_dedupe_transaction_id, enforced below by
+  // checking the INSERT's error code. Only guards when Nedarim sends a
+  // transaction id (it always does on a real payment); matches the column
+  // already written below (provider_transaction_id).
   if (transactionId) {
     const { data: existingPayment } = await svc
       .from("ad_payments")
@@ -87,7 +89,7 @@ export async function POST(req: Request) {
   const customerData = (project?.customer_data as Record<string, unknown>) || {};
   const userEmail = (customerData.email || body.Email || body.email || "") as string;
 
-  const { data: paymentRow } = await svc
+  const { data: paymentRow, error: paymentInsertError } = await svc
     .from("ad_payments")
     .insert({
       project_id,
@@ -104,6 +106,13 @@ export async function POST(req: Request) {
     })
     .select("id")
     .single();
+
+  // 23505 = unique_violation on ad_payments_project_txn_uniq: the SELECT
+  // above raced a concurrent delivery of the same transaction and lost. Bail
+  // out before granting a coupon — the winning request already did (or will).
+  if (paymentInsertError?.code === "23505") {
+    return NextResponse.json({ ok: true, note: "duplicate transaction, already processed" });
+  }
 
   let couponGrantedId: string | null = null;
 

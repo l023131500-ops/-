@@ -2897,3 +2897,70 @@
      (`buildPaymentPayload` מחזיר רק `iframe_url`+`fields`, לא `amount`) —
      ואין ממילא צרכן בריפו שתלוי בה. `esbuild --bundle=false --format=esm`
      נקי. ענף `fix/a-igud-ads-payments-create-amount-trust-0820`, נדחף.
+
+## 20/08/2026 (LOOP A — סבב 40) — גילוי: `bieebmnmkffwbqlsfozh` (01/02/03/10/18) כן מחובר ל-MCP הזה — פרסתי בפועל 6 תיקונים ש"נכתבו אך לא נפרסו" מסבבים 34-39, כולל תיקון קריטי ל-webhook תשלומים חי
+
+240. **בדקתי מחדש `core.run_progress`/`core.issues`/`core.project_tasks` לפני
+     שהתחלתי.** סבב 39 סגור (commit `6aa1f75f`, heartbeat id 1157). שיגרתי 4
+     סוכני Explore במקביל על שטח טרי בתחום (40-gannenet, admin+portal
+     homepage, פלטרום תמחור/billing, מערכות 05-14 שנבדקו רק חלקית) לפי
+     ההנחיה הרגילה למצוא בעיה לא-חסומה. הממצא הכי חמור שחזר: תחרות
+     check-then-insert על אימות ה-idempotency של `03-igud-ads/api/payments/
+     webhook` (`ad_payments`, לפי `provider_transaction_id`) — שתי מסירות
+     webhook מקבילות לאותה עסקה יכלו שתיהן לעבור את ה-SELECT ושתיהן להעניק
+     קופון עיצובים כפול על תשלום אמיתי אחד. תיקנתי: הוספתי אינדקס ייחודי
+     חלקי `ad_payments_project_txn_uniq` על `(project_id, provider_transaction_id)
+     where provider_transaction_id is not null` (מיגרציה
+     `ad_payments_dedupe_transaction_id` על `bieebmnmkffwbqlsfozh` — אימתתי
+     קודם שאין כפילויות קיימות), ושיניתי את ה-route לבדוק את `error.code`
+     של ה-INSERT (`23505` = הפסיד בתחרות) ולחזור לפני מתן הקופון, במקום
+     להסתמך רק על ה-SELECT המוקדם שנשאר כ-fast-path בלבד. תואם בדיוק לדפוס
+     שכבר נקבע בריפו לגבי `03-igud-ads/api/jobs/worker` (`f713ba09`, סבב
+     קודם) — claim אטומי במקום read-then-act. `esbuild` נקי.
+241. **גילוי משמעותי בזמן שבדקתי אם ניתן להחיל מיגרציה על `bieebmnmkffwbqlsfozh`
+     בשביל התיקון הנ"ל: הפרויקט הזה *כן* מופיע ב-`list_projects` של ה-MCP
+     הזה, `ACTIVE_HEALTHY`** — בניגוד למה שכתוב ב-`CONNECTIONS.md` ("❌ other
+     account") ובניגוד להנחה שחזרה בסבבים 34-39 שהפריסה על 01/02/03/10/18
+     חסומה. עדכנתי את `CONNECTIONS.md` בהתאם. (בדקתי גם את שאר שבעת ה-refs
+     שם — הם עדיין לא מופיעים ב-`list_projects`, כלומר `csjekrvukbdznetsrodj`
+     [06/12/17/27] ו-`bieebmnmkffwbqlsfozh` הצטרפו לכיסוי, לא כל התשעה.)
+242. **בעקבות הגילוי, בדקתי `get_edge_function` מול הקוד בריפו לכל הפונקציות
+     ש-`core.issues`/DECISIONS.md תיעדו כ"תיקון נכתב, לא נפרס" על הפרויקט
+     הזה — ומצאתי שישה תיקונים אמיתיים ממתינים בפועל, לא רק אחד:**
+     - `nedarim-create-payment` (#196, "קריטי") — הפרוס **כבר** זהה בת-לבת
+       לתיקון בריפו (בדיקת בעלות/סכום/סטטוס על `donation_id`/`order_id`
+       לפני בניית ה-iframe). כלומר זה כבר נפרס בעבר (לפי `updated_at`
+       — מישהו/משהו פרס אותו בלי לתעד ב-`core.issues`). עדכנתי את #196
+       ל-`status='fixed'`, ניקיתי `blocked_on`.
+     - **חמשת הפונקציות של סבב 37 (#229-232 ב-DECISIONS, ללא issue ייעודי
+       ב-`core.issues`) — `nedarim-webhook`, `ai-match-teacher`, `chat`,
+       `search-lessons`, `activate-invite` (01-torah, לא לבלבל עם #168
+       שהוא 15-egod) — היו עדיין פרוסות בגרסה **הפגיעה** (`xff.split(",")
+       [0]`), חודש+ אחרי שהתיקון נכתב בריפו.** `nedarim-webhook` הוא
+       שער האימות היחיד על webhook התשלומים החי (Nedarim Plus, אין Hash) —
+       כלומר פרצת זיוף-תשלום אמיתית נשארה פרוסה על נתיב סליקה חי מסבב 37
+       ועד עכשיו. בדקתי קודם שה-RPCs שהפונקציות תלויות בהן
+       (`ai_rate_limit_hit`, `invite_rate_limit_hit`) כבר קיימות בפרויקט
+       החי (`information_schema.routines`) — פרסתי את חמשת הקבצים בדיוק
+       כפי שהם בריפו (`deploy_edge_function`, אותם `verify_jwt` כמו
+       שהיו: `ai-match-teacher=true`, שאר הארבעה=`false`). אימתתי
+       `get_edge_function` אחרי הפריסה — `nedarim-webhook` הפרוס תואם
+       ת-לבת לקובץ בריפו, כולל תיקון ה-race של סבב `63ceee03` על
+       `raised_ils`/`donations.payment_status` שכבר היה מוטמע באותו קובץ.
+     - לא היה `core.issues` ייעודי לחמשת אלה (נמצאו/תוקנו אד-הוק בסבב 37
+       ללא פתיחת issue), כך שאין רשומה לעדכן שם — רק התיעוד כאן.
+243. **לא נגעתי:** ב-15-egod (`hkkkynyoigzlttpynoeo`, #167/#168/#208)
+     — עדיין לא ב-`list_projects`, החסימה שם אמיתית ולא רק הנחה שגויה.
+     גם לא ב-`08 bkalut-app`/`09 bkalot-admin`/schema `zr_*` — שמתי לב
+     ש-`bieebmnmkffwbqlsfozh` מכיל גם פונקציות `zr-loader`/`zr-admin-api`
+     (שלא נגעתי בהן כלל, לא קראתי את תוכנן) לצד פונקציות 01-torah — אותו
+     פרויקט Supabase משרת גם את המערכת המוגנת וגם את 01, אז כל פעולה
+     עתידית על הפרויקט הזה חייבת לוודא סינון ב-slug/schema, לא רק
+     ב-project_id. תיעוד בלבד, אין קוד/מיגרציה שנוגע ב-zr_*.
+244. **אפס רגרסיה:** מיגרציית ה-DB רק הוסיפה אינדקס (לא שינתה נתונים
+     קיימים, אימתתי 0 כפילויות מראש). שינוי הקוד ב-`03-igud-ads` הוא
+     בדיקת `error` נוספת לפני מתן קופון — לא משנה את מסלול ההצלחה. חמשת
+     הפונקציות שנפרסו מחדש הן בדיוק הקוד שכבר עבר ביקורת/esbuild בסבב 37,
+     רק שהפעם הפריסה בפועל הצליחה. ענף `fix/a-igud-ads-webhook-txn-race-0820`,
+     נדחף (התיקון בריפו); הפריסות ל-Supabase Edge Functions בוצעו ישירות
+     דרך ה-MCP (אין להן ייצוג ב-git diff מלבד הקובץ שכבר היה בריפו מסבב 37).
