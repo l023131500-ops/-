@@ -7245,3 +7245,52 @@
      agent), או לפתוח עדשה חדשה (ניגודיות צבעים, `alt` ריק/חסר על
      תמונות), או לחזור ל-`core.project_tasks`/`core.project_bugs`
      לעבודה אחרת בתחום auth/admin/pricing/gannenet.
+
+## 20/08/2026 — סבב 133 (loop A)
+
+684. **המשכתי את המלצת #683** (עדשת `aria-live` על 03/06/10/12/14/16,
+     שעדיין לא נסרקו לעומק). בדקתי `core.run_progress` (סבב 132
+     האחרון, commit `94444dac`, תואם HEAD) + `core.project_tasks`
+     (אותם 5 פתוחים: 02/12/13/25/32, עדיין חסומים על סודות חסרים
+     או החלטות מיזוג/origin מחוץ לסמכות הסוכן) + `core.project_bugs`
+     (ריק) — שום דבר חדש בתחום. פתחתי Explore agent לסריקת 03-igud-ads,
+     06-kupot-holim, 10-bkalot-rights, 12-smel-ndln, 14-bsmachot-plus,
+     16-chatzor-connect לאותה תבנית: תוכן טעינה/ריק/שגיאה שמוחלף ב-DOM
+     בלי `aria-live`/`role="status"`/`role="alert"` בשרשרת ההורים
+     (בהחרגת ספריות toast ו-Skeleton חסרי-טקסט). נמצאו ממצאים אמיתיים
+     ב-03-igud-ads (5 קבצים), 10-bkalot-rights, 12-smel-ndln,
+     14-bsmachot-plus, 16-chatzor-connect; 06-kupot-holim ללא ממצא
+     (אתר סטטי ללא state אסינכרוני). בחרתי לתקן את 03-igud-ads הסבב
+     הזה — התבנית הכי תואמת לתיקון הקודם (02) וכן עם ההיקף הגדול
+     ביותר (4 מתוך 5 הקבצים היו ממצאים אמיתיים ונגישים למשתמש אמיתי,
+     קובץ חמישי — `admin/page.tsx`, כרטיסי-סטטיסטיקה עם `—` שמוחלף
+     במספר — הוא polling מספרי שגרתי ולא "הודעת סטטוס" מובהקת לפי
+     WCAG 4.1.3, הושאר כדי לא לחרוג מהיקף העדשה).
+685. **התיקון:** ארבעה קבצים תוקנו, כולם עם אותה תבנית מינימלית —
+     עטיפת אזור ה-state המתחלף ב-`aria-live="polite"` על ה-wrapper
+     הקבוע ב-DOM (לא על התג המותנה עצמו): `app/my/transcripts/page.tsx`
+     ו-`app/my/projects/page.tsx` (עטיפת `<div>` חדשה סביב ה-ternary
+     של loading/empty/list), `app/(admin)/admin/projects/page.tsx`
+     ו-`app/(admin)/admin/transcripts/page.tsx` (הוספת attribute
+     ל-`<div className="bg-surface rounded-xl border overflow-x-auto">`
+     הקיים שכבר עוטף את ה-ternary של loading/table). אפס שינוי
+     ללוגיקת `load`/`setLoading`/מחיקה/מודל-פרטים בכל הקבצים.
+686. **אפס רגרסיה מאומתת:** `git diff` — 4 קבצים, 6+/2- סה"כ, כולם
+     שינויי attribute/עטיפת div בלבד (אין הסרת אלמנט/מחלקה קיימים).
+     אין `tsc`/`npm` בסביבה הזו — אומת בבדיקת איזון `{}`/`()`/`[]`
+     ב-Python על כל 4 הקבצים המלאים: כולם תואמים (18/18+23/23+6/6,
+     19/19+24/24+6/6, 75/75+83/83+13/13, 53/53+66/66+11/11). הקבצים
+     חסומים ע"י `.gitignore` (`apps/**`) אך היו כבר עוקבים ב-git
+     (`git ls-files` אישר) — נעשה `git add -f` לפי התקדים המבוסס.
+     Commit `1f6279fe` על `fix/a-icon-only-buttons-round2-0820`,
+     יידחף ל-origin (מפעיל פריסת Vercel תחת more30.com/modaot).
+687. **הבא בתור:** עדשת `aria-live` נמצאה גם ב-10-bkalot-rights
+     (`app.js` שורות 388/469, הודעות שגיאה ב-vanilla JS ללא live
+     region), 12-smel-ndln (`Report.tsx` שורה 85, "טוען דוח…" ללא
+     aria-live), 14-bsmachot-plus (`app.js` שורות 387-392, הודעות
+     שגיאה) ו-16-chatzor-connect (`AdminSynagogues.tsx` שורה 137,
+     empty-state ללא aria-live לצד ErrorState שכן משתמש ב-`role="alert"`
+     כראוי) — לא תוקנו הסבב הזה, ממתינים לסבב הבא. אפשר להמשיך שם,
+     או לפתוח עדשה חדשה (ניגודיות צבעים, `alt` ריק/חסר על תמונות),
+     או לחזור ל-`core.project_tasks`/`core.project_bugs` לעבודה
+     אחרת בתחום auth/admin/pricing/gannenet.
