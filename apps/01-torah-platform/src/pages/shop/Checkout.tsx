@@ -124,12 +124,12 @@ export default function Checkout() {
               {items.map((it) => (
                 <div key={it.product_id} className="flex justify-between text-sm">
                   <span>{it.product_name} × {it.quantity}</span>
-                  <span>{formatILS(it.unit_price_ils * it.quantity)}</span>
+                  <span dir="ltr">{formatILS(it.unit_price_ils * it.quantity)}</span>
                 </div>
               ))}
               <div className="border-t pt-3 flex justify-between font-heading text-lg">
                 <span>סה״כ</span>
-                <span className="text-primary">{formatILS(total)}</span>
+                <span className="text-primary" dir="ltr">{formatILS(total)}</span>
               </div>
               <Button size="lg" className="w-full" onClick={submit} disabled={loading}>
                 {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <><CreditCard className="ml-2 h-4 w-4" /> לתשלום</>}

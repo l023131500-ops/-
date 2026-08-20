@@ -33,8 +33,8 @@ export function Footer() {
         <div>
           <div className="font-heading text-lg mb-3">צרו קשר</div>
           <ul className="space-y-2 text-sm">
-            <li className="flex items-center gap-2"><Phone className="h-4 w-4" /> 02-3131600</li>
-            <li className="flex items-center gap-2"><Mail className="h-4 w-4" /> a023131600@gmail.com</li>
+            <li className="flex items-center gap-2"><Phone className="h-4 w-4" /> <span dir="ltr">02-3131600</span></li>
+            <li className="flex items-center gap-2"><Mail className="h-4 w-4" /> <span dir="ltr">a023131600@gmail.com</span></li>
             {tenant?.branding?.social_links?.address && (
               <li className="flex items-center gap-2"><MapPin className="h-4 w-4" /> {tenant.branding.social_links.address}</li>
             )}

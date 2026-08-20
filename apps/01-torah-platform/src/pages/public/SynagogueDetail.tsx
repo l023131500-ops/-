@@ -32,7 +32,7 @@ export default function SynagogueDetail() {
         <CardContent className="space-y-3">
           {data.address && <div className="flex items-center gap-2"><MapPin className="h-4 w-4 text-primary" /> {data.address}{data.city ? `, ${data.city}` : ""}</div>}
           {data.gabai_name && <div className="flex items-center gap-2"><User className="h-4 w-4 text-primary" /> גבאי: {data.gabai_name}</div>}
-          {data.contact_phone && <div className="flex items-center gap-2"><Phone className="h-4 w-4 text-primary" /> {data.contact_phone}</div>}
+          {data.contact_phone && <div className="flex items-center gap-2"><Phone className="h-4 w-4 text-primary" /> <span dir="ltr">{data.contact_phone}</span></div>}
           {data.description && <p className="text-foreground/85 pt-3">{data.description}</p>}
         </CardContent>
       </Card>

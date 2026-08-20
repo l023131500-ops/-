@@ -30,21 +30,21 @@ export default function Cart() {
                 {it.image_url ? <img src={it.image_url} alt="" className="w-20 h-20 object-cover rounded" /> : <div className="w-20 h-20 bg-muted rounded" />}
                 <div className="flex-1">
                   <div className="font-medium">{it.product_name}</div>
-                  <div className="text-sm text-muted-foreground">{formatILS(it.unit_price_ils)} ליחידה</div>
+                  <div className="text-sm text-muted-foreground"><span dir="ltr">{formatILS(it.unit_price_ils)}</span> ליחידה</div>
                 </div>
                 <div className="flex items-center border rounded-md">
                   <Button variant="ghost" size="icon" onClick={() => updateQty(it.product_id, it.quantity - 1)}><Minus className="h-4 w-4" /></Button>
                   <span className="w-10 text-center">{it.quantity}</span>
                   <Button variant="ghost" size="icon" onClick={() => updateQty(it.product_id, it.quantity + 1)}><Plus className="h-4 w-4" /></Button>
                 </div>
-                <div className="font-medium w-24 text-left">{formatILS(it.unit_price_ils * it.quantity)}</div>
+                <div className="font-medium w-24 text-left" dir="ltr">{formatILS(it.unit_price_ils * it.quantity)}</div>
                 <Button variant="ghost" size="icon" onClick={() => removeItem(it.product_id)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
               </CardContent>
             </Card>
           ))}
           <Card>
             <CardContent className="py-6 flex justify-between items-center">
-              <div className="text-xl font-heading">סה״כ: <span className="text-primary">{formatILS(total)}</span></div>
+              <div className="text-xl font-heading">סה״כ: <span className="text-primary" dir="ltr">{formatILS(total)}</span></div>
               <Button size="lg" onClick={() => nav("/checkout")}>המשך לתשלום</Button>
             </CardContent>
           </Card>

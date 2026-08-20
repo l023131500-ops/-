@@ -78,7 +78,7 @@ export default function ShopCatalog() {
                   <div className="font-medium line-clamp-1">{p.name}</div>
                   <div className="text-sm text-muted-foreground line-clamp-2 mt-1">{p.short_description}</div>
                   <div className="flex items-center justify-between mt-3">
-                    <span className="font-heading text-lg text-primary">{formatILS(p.price_ils)}</span>
+                    <span className="font-heading text-lg text-primary" dir="ltr">{formatILS(p.price_ils)}</span>
                     {p.stock !== null && p.stock <= 0 && <Badge variant="destructive">אזל</Badge>}
                   </div>
                 </CardContent>

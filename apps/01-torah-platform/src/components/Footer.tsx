@@ -76,13 +76,13 @@ const Footer = () => {
                 <div className="w-8 h-8 rounded-lg bg-gold/15 flex items-center justify-center group-hover:bg-gold/25 transition-colors">
                   <Phone className="w-4 h-4 text-gold" />
                 </div>
-                023-133-0600
+                <span dir="ltr">023-133-0600</span>
               </a>
               <a href="mailto:A023131600@GMAIL.COM" className="flex items-center gap-2.5 text-primary-foreground/70 hover:text-gold transition-colors group">
                 <div className="w-8 h-8 rounded-lg bg-gold/15 flex items-center justify-center group-hover:bg-gold/25 transition-colors">
                   <Mail className="w-4 h-4 text-gold" />
                 </div>
-                A023131600@GMAIL.COM
+                <span dir="ltr">A023131600@GMAIL.COM</span>
               </a>
               <span className="flex items-center gap-2.5 text-primary-foreground/70">
                 <div className="w-8 h-8 rounded-lg bg-magenta/15 flex items-center justify-center">
@@ -260,7 +260,7 @@ const Footer = () => {
               </div>
               <div>
                 <p className="font-body text-sm font-bold text-primary-foreground">וואטסאפ</p>
-                <p className="font-body text-xs text-primary-foreground/50">023-133-0600</p>
+                <p className="font-body text-xs text-primary-foreground/50" dir="ltr">023-133-0600</p>
               </div>
               <ExternalLink className="w-3.5 h-3.5 text-primary-foreground/30 mr-auto" />
             </a>

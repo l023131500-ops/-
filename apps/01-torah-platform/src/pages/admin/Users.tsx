@@ -97,8 +97,8 @@ export default function Users() {
                   <div className="flex-1 min-w-[200px]">
                     <div className="font-medium text-lg">{u.display_name || u.full_name || "(ללא שם)"}</div>
                     <div className="flex flex-wrap gap-3 text-sm text-muted-foreground mt-1">
-                      {u.email && <span className="flex items-center gap-1"><Mail className="h-3 w-3" />{u.email}</span>}
-                      {u.phone && <span className="flex items-center gap-1"><Phone className="h-3 w-3" />{u.phone}</span>}
+                      {u.email && <span className="flex items-center gap-1"><Mail className="h-3 w-3" /><span dir="ltr">{u.email}</span></span>}
+                      {u.phone && <span className="flex items-center gap-1"><Phone className="h-3 w-3" /><span dir="ltr">{u.phone}</span></span>}
                     </div>
                     <div className="flex flex-wrap gap-1 mt-2">
                       {u.roles.length === 0 ? (
