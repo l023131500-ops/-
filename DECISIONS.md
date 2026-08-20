@@ -3678,3 +3678,47 @@
     הקוד (לא לסמוך על תקציר סוכן Explore בלבד) -- הדוח בסבב הזה הראה
     שממצאי "אין try/catch" יכולים להיות שגויים אם הסוכן קרא גרסה
     ישנה/החליק על השורות.
+
+## 20/08/2026 — סבב 55
+
+280. **קראתי README.md/CONNECTIONS.md, בדקתי `core.run_progress`** (הצעד
+    האחרון: 27-bkalut-price financial.tsx silent-write-fail, קומיטים
+    `c0f4eacb`/`2a6ee20d`, כבר ה-parent של הענף הזה, כבר נדחף) ו-
+    `core.projects` בטווח 17-31: אין שינוי מטא-דאטה. המשכתי לפי ההצעה
+    מסוף סבב 54: `health-funds-admin.tsx` טרם נבדק לעדשת silent-write-
+    fail. הרצתי סוכן Explore על שאר עמודי הניהול של 27 שטרם נבדקו
+    (`org-detail`/`orgs`/`integrations`/`match`/`advanced-match`/
+    `dashboard`/`price-comparison-admin`/`potential-admin`/`chatbot-
+    admin`/`health-funds-admin`) בעדשה הזו. אימתתי בעצמי (לא סמכתי על
+    הדוח בלבד, לפי הלקח מסבב 54): קראתי את `health-funds-admin.tsx`
+    ישירות (שורות 190-340) ואישרתי שש פונקציות כתיבה אמיתיות ללא
+    `try/catch` כלל: `toggleActive` (הפעלה/כיבוי נושא, PATCH),
+    `removeTopic` (מחיקת נושא, DELETE -- הכפתור הציג "הנושא נמחק"
+    גם כשהמחיקה בפועל נכשלה בשרת), `addTier`/`updateTierValue`/
+    `removeTier` (הוספה/עדכון/מחיקה של מדרגות קופות חולים) ו-
+    `createTopic` (יצירת נושא חדש). שאר העמודים שנבדקו (`org-detail`/
+    `orgs`/`integrations`/`match`/`advanced-match`/`dashboard`/
+    `price-comparison-admin`/`potential-admin`/`chatbot-admin`) חזרו
+    נקיים -- כל הכתיבות בהם כבר עטופות כראוי (אומת בעבר או בסבב זה).
+281. **התיקון: עטפתי את שש הפונקציות ב-`try/catch` + `toast`
+    ייעודי לפי הפעולה**, זהה במבנה בדיוק לתקדים הקיים **באותו קובץ
+    עצמו** -- `saveTopic` (שורה 201-214) ופונקציות ניהול הפודקאסט
+    (`genPodcastScript`/`savePodcastScript`/`genPodcastAudio`/
+    `delPodcastAudio`/`sendPodcast`) כבר עוטפות כתיבה זהה ב-`try/
+    catch` עם בדיקת `r.ok` ו-`toast({variant:"destructive"})`. אפס
+    שינוי לזרימת ההצלחה הרגילה בכל שש המקומות (אותם `setTopics`/
+    `setDraft`/`loadTopics` אחרי הצלחה, רק עכשיו בתוך `try` ומאחורי
+    בדיקת `r.ok`). אין `node_modules`/`tsc` בעץ הזה -- אומתה איזון
+    סוגריים בסקריפט Node קצר על כל הקובץ (0) + קריאה חוזרת מלאה של
+    ה-diff. נדרש `git add -f` (`apps/27-bkalut-price/client` מוחרג
+    כברירת מחדל ב-gitignore, אותו דפוס חוזר מכל סבב קודם שנגע בנתיבי
+    `client`/`src` תחת `apps/`). קומיט `21c5ae62` על `fix/b-bkalut-
+    price-health-funds-admin-silent-fail-0820`, יידחף (מפעיל פריסת
+    Vercel/PM2 תחת הנתיב הממופה ל-27, לא נגעתי ב-`CLAUDE.md` המקומי/
+    `isAdminSubdomain()`/`getPublicOrigin()`). **הבא בתור:** עדשת
+    silent-write-fail על 27-bkalut-price נראית כמעט מוצתה עכשיו (כל
+    15+ העמודים בפרויקט נבדקו על פני מספר סבבים) -- הסבב הבא צריך
+    לפתוח בעדשה אחרת לגמרי (למשל duplicate-submit על 26-modaot-studio/
+    29-bkalot-design שטרם נבדקו לעדשה הזו) או לחזור לאימות בפועל
+    (לא רק תיעודי) של rebrand ('עולם הסטארטאפים')/pricing TEST-mode
+    על-גבי תוכן עמוד אמיתי בכל 17-31, שלא אומת מחדש מאז סבב 80.
