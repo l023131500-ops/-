@@ -7605,3 +7605,37 @@
     עדשה חדשה על שאר האפליקציות בהיקף loop B (18/19/20/23/24/25/28
     טרם נסרקו לעומק לאותה עדשה).
     via cloud server 167.99.131.167 [loop B]
+
+## 20/08/2026 — סבב 379 (loop B)
+
+379. **עדשה חדשה: double-submit על כפתורי פעולה א-סינכרוניים בלי
+    guard — נבדק על 7 האפליקציות החיות (17/18/21/22/24/27/28).**
+    סוכן Explore סרק את כל 7 האפליקציות בחיפוש אחר כפתור שמפעיל
+    כתיבה א-סינכרונית (insert/update/mutation) בלי `disabled`/מצב
+    טעינה החוסם לחיצה כפולה. רוב הטפסים הציבוריים כבר מוגנים
+    (`disabled={submitting/isSubmitting}` וכו'). מועמד יחיד אמיתי:
+    `apps/21-mthbram/src/components/FloatingChatBot.tsx` —
+    `handleSearchFollowUp` (שורה 204, מופעל מכפתורי ה-follow-up
+    בצ׳אטבוט הציבורי, שורה 363) מפעיל `streamResponse` שמבצע עד
+    שלוש כתיבות אמיתיות (`lessons`/`seeker_leads`/`teacher_leads`,
+    שורות 131–135) — ללא בדיקת `isTyping` בתחילת הפונקציה, בניגוד
+    ל-`sendMessage` (שורה 244) שכבר בודקת `!input.trim() ||
+    isTyping` באותו קובץ. בפועל הכפתורים מוסתרים מה-DOM ברגע
+    ש-`isTyping=true` (`showButtons = ... && !isTyping`, שורה 270),
+    כך שהחלון לפגיעה בפועל צר מאוד (בין קליק לרינדור הבא), אבל
+    אינו סגור לחלוטין (למשל שני אירועי click באותה סבב סינכרוני).
+    תוקן בהוספת `if (isTyping) return;` בתחילת `handleSearchFollowUp`,
+    באותו דפוס guard בדיוק שכבר קיים ב-`sendMessage` באותו קובץ —
+    לא נוסף דפוס UX חדש. `git diff`: שורה אחת נוספה. איזון סוגריים
+    נבדק על הקובץ המלא: תקין (177/177 מסולסלים, 186/186 עגולים,
+    55/55 מרובעים). לא הופעל build/dev-server (לפי הנחיות ההרצה).
+    הקובץ תחת `apps/21-mthbram/src` (חסום gitignore אך כבר עוקב),
+    `git add -f`. ענף `fix/b-21-mthbram-chatbot-followup-doublesubmit-0820`,
+    נדחף (מפעיל פריסת Vercel תחת `more30.com/mthbram`). זו סגירת
+    עדשת ה-double-submit על כל 7 האפליקציות בהיקף loop B — יתר
+    הטפסים כבר מוגנים.
+
+    **הבא בתור:** נושא #250 (RLS על 21-mthbram, חסום MCP), או פתיחת
+    עדשה חדשה (למשל: מפתחות `key` לא-יציבים ברשימות שניתנות לסידור
+    מחדש, או מאזיני אירועים/טיימרים ב-`useEffect` בלי ניקוי).
+    via cloud server 167.99.131.167 [loop B]

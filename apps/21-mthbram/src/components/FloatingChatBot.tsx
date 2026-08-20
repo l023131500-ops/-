@@ -202,6 +202,7 @@ const FloatingChatBot = () => {
   };
 
   const handleSearchFollowUp = (opt: { label: string; icon: string; action: string }) => {
+    if (isTyping) return;
     if (opt.action === "go-home") {
       setBotState("home");
       setStateHistory([]);
