@@ -8315,3 +8315,27 @@
      `core.project_tasks`/`core.project_bugs` (5 פריטים פתוחים,
      עדיין חסומים על secrets חסרים או החלטות merge/origin מחוץ
      לסמכות הסוכן).
+
+814. **סבב 166 — המשך עדשת skip-to-content ל-02-igud-transcribe.**
+     בניגוד ל-01/16 (שיש להן קובץ layout שורש יחיד), ל-02 אין
+     `layout.tsx` משותף ל-route group `(public)` — כל עמוד ציבורי
+     (`app/page.tsx`, `app/(public)/upload/page.tsx`,
+     `app/(public)/success/page.tsx`) בונה `<div><SiteHeader />
+     <main>...</main></div>` בעצמו, אבל שלושתם חולקים את אותו
+     קומפוננטת `components/SiteHeader.tsx`.
+815. **התיקון:** הוספתי את קישור ה-skip (`sr-only`/
+     `focus:not-sr-only`, `bg-brand`/`text-white` — צירוף קיים
+     ומתועד בהערת `tailwind.config` של האפליקציה עצמה) כאלמנט
+     הראשון בתוך `SiteHeader` (עטוף ב-fragment `<>...</>` כי
+     הקומפוננטה כעת מחזירה שני אחים), ו-`id="main"` על ה-`<main>`
+     בכל אחד משלושת העמודים הציבוריים שמרנדרים אותה. עמוד
+     `/login` לא משתמש ב-`SiteHeader` (chrome עצמאי) ולא נגע.
+816. **אפס רגרסיה מאומתת:** `git diff --stat` — 4 קבצים, 28+/20-
+     (רוב ה"מחיקות" הן רק re-indent של ה-JSX הקיים בתוך ה-fragment
+     החדש, לא שינוי לוגיקה). איזון סוגריים בפייתון על 4 הקבצים:
+     כולם תואמים. הנתיב חסום ע"י gitignore — `git add -f` לפי
+     התקדים הקיים.
+817. **הבא בתור:** להמשיך את עדשת ה-skip-link על 03/04/12/15/
+     40-gannenet, או לפתוח עדשה נוספת, או לחזור ל-
+     `core.project_tasks`/`core.project_bugs` (5 פריטים פתוחים,
+     עדיין חסומים).
