@@ -11647,3 +11647,48 @@
       double-submit/silent-failure — למשל `03-igud-ads`, `05-financial-
       marketing-site` (אם deployed), או חלקים שטרם נסרקו ב-`10-bkalot-
       rights`/`14-bsmachot-plus`.
+
+## 20/08/2026 — סבב 230 (loop A) — `03-igud-ads/app/(admin)/admin/transcribe/coupons/page.tsx`: מגן double-submit/toggle race
+
+1123. **דיספצ'תי סוכן Explore ל-`03-igud-ads`** (מומלץ מסבב 229). הסוכן
+      דיווח כמה ממצאים; הברור והמבודד ביותר: `app/(admin)/admin/
+      transcribe/coupons/page.tsx` — עמוד admin-קופונים כמעט זהה בנוי
+      ל-`02-igud-transcribe/admin/coupons/page.tsx` שתוקן בסבב 228, אבל
+      **לא** תוקן כאן. אימתתי ישירות בקוד (קראתי את כל 191 השורות
+      המקוריות): `submit()` (שורה 36), `toggle()` (שורה 57) ו-`remove()`
+      (שורה 66) הן `fetch` אסינכרוני אמיתי (POST/PATCH/DELETE) בלי שום
+      מגן in-flight בקובץ כולו.
+1124. **תרחיש הכשל:** `toggle()` מחשב `!is_active` מ-closure שנלכד
+      ברגע הקליק, לפני שהבקשה הראשונה חוזרת ומרעננת את ה-state. שתי
+      לחיצות מהירות על כפתור הסטטוס (שורה 167) קוראות שתיהן ל-`toggle`
+      מאותו רינדור, כך ששתי בקשות PATCH נשלחות עם אותו `is_active` חדש
+      (טוגל ואז untoggle לא קורה — נשאר במצב שגוי). כפתור "שמור" בטופס
+      (submit) וכפתור "מחק" בכל שורה גם היו חשופים לדאבל-קליק ליצירת/
+      מחיקת כפילות.
+1125. **התיקון:** אותו דפוס מדויק כמו בסבב 228/229 — נוספו `submitting`/
+      `busyId` state. `submit()`: `if (submitting) return` +
+      `setSubmitting(true)`/`finally setSubmitting(false)`, כפתור
+      ה-submit מקבל `disabled={submitting}` עם תווית "שומר…". `toggle()`/
+      `remove()`: `if (busyId) return` + `setBusyId(id)`/
+      `finally setBusyId(null)`, וכפתורי הטוגל/מחק בכל שורה מקבלים
+      `disabled={busyId === c.id}` כך שרק השורה הספציפית ננעלת. לא
+      נגעתי ב-`load()`, ב-`generateCode()`, באינפוטים של הטופס, או בשום
+      handler אחר.
+1126. **אפס רגרסיה מאומתת:** `git diff --stat`: קובץ אחד, +50/-28 (רק
+      הוספת state/guards סביב לוגיקה קיימת, שום פיצ'ר/מסך/כפתור לא
+      הוסר). בדיקת איזון סוגריים/מסולסלים/מרובעים בפייתון על הקובץ
+      המלא לאחר העריכה: תואם (`(`: 83/83, `{`: 63/63, `[`: 9/9). `tsc`
+      לא זמין בסביבה — אומתתי ידנית שהקוד תקין TypeScript/JSX (תבנית
+      זהה לקבצים שכבר בפרודקשן). לא נגעתי במערכות/סכימות מוגנות (08/09/
+      bkalut-app/bkalot-admin/zr_*/NEDARIM3873/csj/csj_src/igud), ב-
+      `main`, או במערכת מחוץ להיקף (03 בטווח 01-16). `git add -f` נדרש
+      (אותה אזהרת `.gitignore` כוזבת על `apps/**`). Commit `3b348897`
+      על `fix/a-icon-only-buttons-round2-0820`, נדחף ל-`origin` (מפעיל
+      פריסת Vercel תחת `more30.com/modaot`).
+1127. **הבא בתור:** הסוכן דיווח עוד 3 ממצאים ב-`03-igud-ads` שטרם
+      תוקנו: `admin/transcribe/glossary/page.tsx` `remove()` (שורה
+      ~53, בלי error handling/in-flight guard), `admin/transcribe/
+      uploads/page.tsx` `remove()` (שורה ~71, בלי error handling/guard),
+      ו-`admin/notifications/page.tsx` `send()` (שורה ~39, שגיאה
+      מוצגת כטקסט רגיל ב-`result` state בלי toast — UX בלבד, לא כשל
+      שקט). מועמד ברור לסבב הבא: `glossary/page.tsx`.
