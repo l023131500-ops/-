@@ -488,7 +488,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visib
   gap: 2rem;
   align-items: start;
 }
-.site-footer h4 { color: var(--paper); margin: 0 0 0.75rem; font-size: 0.95rem; font-weight: 700; }
+.site-footer h3 { color: var(--paper); margin: 0 0 0.75rem; font-size: 0.95rem; font-weight: 700; }
 .site-footer nav { display: grid; gap: 0.4rem; font-size: 0.9rem; }
 .site-footer nav a { color: rgba(250, 245, 236, 0.78); }
 .site-footer nav a:hover { color: var(--paper); }
