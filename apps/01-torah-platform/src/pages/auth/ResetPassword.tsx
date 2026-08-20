@@ -164,11 +164,11 @@ export default function ResetPassword() {
             <form onSubmit={submit} className="space-y-3">
               <div>
                 <Label htmlFor="password">{`סיסמה חדשה (${PW_MIN} תווים לפחות)`}</Label>
-                <PasswordInput id="password" name="password" required autoFocus autoComplete="new-password" />
+                <PasswordInput id="password" name="password" required aria-required="true" autoFocus autoComplete="new-password" />
               </div>
               <div>
                 <Label htmlFor="confirm">שוב, לאימות</Label>
-                <PasswordInput id="confirm" name="confirm" required autoComplete="new-password" />
+                <PasswordInput id="confirm" name="confirm" required aria-required="true" autoComplete="new-password" />
               </div>
               {error && <p className="text-sm text-destructive">{error}</p>}
               <Button type="submit" className="w-full" disabled={saving}>

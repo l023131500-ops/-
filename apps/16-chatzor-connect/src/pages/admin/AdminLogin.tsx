@@ -94,10 +94,10 @@ export function AdminLogin({ target = "/admin", title = "כניסת מנהל" }:
 
           <form onSubmit={onSubmit} className="mt-6 space-y-4 [&_label]:text-white/80">
             <Field label="אימייל" htmlFor="email" required>
-              <Input ref={emailRef} id="email" name="email" type="email" inputMode="email" required autoComplete="email" className="bg-white/10 text-white placeholder:text-white/40" placeholder="admin@chatzor" />
+              <Input ref={emailRef} id="email" name="email" type="email" inputMode="email" required aria-required="true" autoComplete="email" className="bg-white/10 text-white placeholder:text-white/40" placeholder="admin@chatzor" />
             </Field>
             <Field label="סיסמה" htmlFor="password" required>
-              <PasswordInput id="password" name="password" required={!isDemo} autoComplete="current-password" className="bg-white/10 text-white placeholder:text-white/40" placeholder="••••••••" />
+              <PasswordInput id="password" name="password" required={!isDemo} aria-required={!isDemo} autoComplete="current-password" className="bg-white/10 text-white placeholder:text-white/40" placeholder="••••••••" />
             </Field>
             {/* קישור טקסט ולא כפתור מלא, כדי שלא יתחרה על העין עם כפתור הכניסה.
                 הוא <button> ולא <a> כי הוא מפעיל פעולה בעמוד ואין לו כתובת יעד. */}

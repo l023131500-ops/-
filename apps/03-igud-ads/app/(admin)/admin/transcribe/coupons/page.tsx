@@ -87,6 +87,7 @@ export default function CouponsPage() {
                   onChange={(e) => setForm({ ...form, code: e.target.value.toUpperCase() })}
                   className="input flex-1 font-mono"
                   required
+                  aria-required="true"
                 />
                 <button type="button" onClick={generateCode} className="btn-outline">
                   צור אוטומטית
@@ -104,6 +105,7 @@ export default function CouponsPage() {
                   onChange={(e) => setForm({ ...form, max_uploads: parseInt(e.target.value) })}
                   className="input"
                   required
+                  aria-required="true"
                 />
               </div>
               <div>

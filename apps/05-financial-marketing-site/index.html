@@ -291,16 +291,16 @@
             <p class="form-intro">השאירו פרטים — ונציג יחזור אליכם בהקדם.</p>
             <label>
               <span>שם מלא</span>
-              <input type="text" name="full_name" required autocomplete="name" placeholder="ישראל ישראלי" />
+              <input type="text" name="full_name" required aria-required="true" autocomplete="name" placeholder="ישראל ישראלי" />
             </label>
             <div class="row-2">
               <label>
                 <span>טלפון</span>
-                <input type="tel" name="phone" required autocomplete="tel" placeholder="050-0000000" />
+                <input type="tel" name="phone" required aria-required="true" autocomplete="tel" placeholder="050-0000000" />
               </label>
               <label>
                 <span>דוא"ל</span>
-                <input type="email" name="email" required autocomplete="email" inputmode="email" placeholder="name@example.com" />
+                <input type="email" name="email" required aria-required="true" autocomplete="email" inputmode="email" placeholder="name@example.com" />
               </label>
             </div>
             <label>
@@ -309,7 +309,7 @@
             </label>
             <input type="hidden" name="request_type" value="info" />
             <label class="checkbox">
-              <input type="checkbox" name="legal_accepted" required />
+              <input type="checkbox" name="legal_accepted" required aria-required="true" />
               <span>אני מאשר/ת ליצור איתי קשר ומסכים/ה ל<a href="#" data-modal="terms">תנאי השימוש</a> ול<a href="#" data-modal="privacy">מדיניות הפרטיות</a>.</span>
             </label>
             <button type="submit" class="btn btn-primary btn-full">שליחה</button>

@@ -82,14 +82,14 @@ const Login = () => {
               {isSignup && (
                 <div>
                   <label className="text-sm font-medium text-foreground mb-1 block">שם מלא</label>
-                  <Input placeholder="הרב ישראל כהן" value={fullName} onChange={(e) => setFullName(e.target.value)} required />
+                  <Input placeholder="הרב ישראל כהן" value={fullName} onChange={(e) => setFullName(e.target.value)} required aria-required="true" />
                 </div>
               )}
               <div>
                 <label className="text-sm font-medium text-foreground mb-1 block">דוא"ל</label>
                 <div className="relative">
                   <Mail className="absolute right-3 top-3 w-4 h-4 text-muted-foreground" />
-                  <Input type="email" inputMode="email" autoComplete="email" placeholder="email@example.com" value={email} onChange={(e) => setEmail(e.target.value)} className="pr-9" dir="ltr" required />
+                  <Input type="email" inputMode="email" autoComplete="email" placeholder="email@example.com" value={email} onChange={(e) => setEmail(e.target.value)} className="pr-9" dir="ltr" required aria-required="true" />
                 </div>
               </div>
               <div>
@@ -104,6 +104,7 @@ const Login = () => {
                     className="pr-9"
                     dir="ltr"
                     required
+                    aria-required="true"
                     autoComplete={isSignup ? "new-password" : "current-password"}
                     minLength={isSignup ? PASSWORD_MIN_LENGTH : undefined}
                     aria-describedby={isSignup ? "password-rule" : undefined}

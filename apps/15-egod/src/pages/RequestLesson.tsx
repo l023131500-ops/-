@@ -49,10 +49,10 @@ const RequestLesson = () => {
           </div>
           <form onSubmit={handleSubmit} className="bg-card rounded-2xl p-8 shadow-sm border border-border space-y-5">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div><label className="text-sm font-medium text-foreground mb-1 block">שם מלא *</label><Input required placeholder="ישראל ישראלי" value={form.full_name} onChange={e => setForm(p => ({...p, full_name: e.target.value}))} /></div>
-              <div><label className="text-sm font-medium text-foreground mb-1 block">טלפון *</label><Input required type="tel" inputMode="tel" autoComplete="tel" placeholder="050-0000000" value={form.phone} onChange={e => setForm(p => ({...p, phone: e.target.value}))} /></div>
+              <div><label className="text-sm font-medium text-foreground mb-1 block">שם מלא *</label><Input required aria-required="true" placeholder="ישראל ישראלי" value={form.full_name} onChange={e => setForm(p => ({...p, full_name: e.target.value}))} /></div>
+              <div><label className="text-sm font-medium text-foreground mb-1 block">טלפון *</label><Input required aria-required="true" type="tel" inputMode="tel" autoComplete="tel" placeholder="050-0000000" value={form.phone} onChange={e => setForm(p => ({...p, phone: e.target.value}))} /></div>
             </div>
-            <div><label className="text-sm font-medium text-foreground mb-1 block">אזור מגורים *</label><Input required placeholder="עיר ושכונה" value={form.area} onChange={e => setForm(p => ({...p, area: e.target.value}))} /></div>
+            <div><label className="text-sm font-medium text-foreground mb-1 block">אזור מגורים *</label><Input required aria-required="true" placeholder="עיר ושכונה" value={form.area} onChange={e => setForm(p => ({...p, area: e.target.value}))} /></div>
             <div><label className="text-sm font-medium text-foreground mb-1 block">נושא מועדף</label>
               <Select value={form.preferred_subject} onValueChange={v => setForm(p => ({...p, preferred_subject: v}))}>
                 <SelectTrigger><SelectValue placeholder="בחר נושא" /></SelectTrigger>

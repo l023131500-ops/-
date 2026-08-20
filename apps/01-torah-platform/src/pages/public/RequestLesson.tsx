@@ -48,15 +48,15 @@ export default function RequestLesson() {
         <CardContent>
           <form onSubmit={submit} className="space-y-4">
             <div className="grid sm:grid-cols-2 gap-3">
-              <div><Label>שם מלא *</Label><Input required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></div>
-              <div><Label>טלפון *</Label><Input required type="tel" inputMode="tel" autoComplete="tel" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} /></div>
+              <div><Label>שם מלא *</Label><Input required aria-required="true" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></div>
+              <div><Label>טלפון *</Label><Input required aria-required="true" type="tel" inputMode="tel" autoComplete="tel" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} /></div>
             </div>
             <div><Label>דוא״ל</Label><Input type="email" inputMode="email" autoComplete="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} /></div>
             <div className="grid sm:grid-cols-2 gap-3">
               <div><Label>נושא רצוי</Label><Input value={form.topic} onChange={(e) => setForm({ ...form, topic: e.target.value })} /></div>
               <div><Label>קהל יעד</Label><Input value={form.audience} onChange={(e) => setForm({ ...form, audience: e.target.value })} placeholder="גברים / נשים / נוער" /></div>
             </div>
-            <div><Label>אזור / עיר *</Label><Input required value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })} /></div>
+            <div><Label>אזור / עיר *</Label><Input required aria-required="true" value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })} /></div>
             <div><Label>פרטים נוספים</Label><Textarea value={form.details} onChange={(e) => setForm({ ...form, details: e.target.value })} /></div>
             <Button type="submit" disabled={loading} size="lg" className="w-full">
               {loading ? <><Loader2 className="ml-2 h-4 w-4 animate-spin" /> שולח...</> : <><Send className="ml-2 h-4 w-4" /> שלח בקשה</>}

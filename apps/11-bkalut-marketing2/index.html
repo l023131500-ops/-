@@ -257,11 +257,11 @@
           <form class="contact-form" method="post" action="https://n8n.l023131500.work/webhook/NEDARIM3873" data-form="bkalut-marketing-lead" novalidate>
             <label>
               <span>שם מלא</span>
-              <input type="text" name="full_name" required autocomplete="name" />
+              <input type="text" name="full_name" required aria-required="true" autocomplete="name" />
             </label>
             <label>
               <span>טלפון</span>
-              <input type="tel" name="phone" required autocomplete="tel" />
+              <input type="tel" name="phone" required aria-required="true" autocomplete="tel" />
             </label>
             <label>
               <span>דוא"ל (לא חובה)</span>
@@ -300,7 +300,7 @@
               <textarea name="message" rows="4" placeholder="לדוגמה: יש לי 3 ילדים, בעל הבית מאיים בפינוי, רוצה לדעת מה מגיע..."></textarea>
             </label>
             <label class="checkbox">
-              <input type="checkbox" name="legal_accepted" required />
+              <input type="checkbox" name="legal_accepted" required aria-required="true" />
               <span>קראתי ואני מאשר/ת את <a href="#" data-modal="terms">התנאים</a> ואת <a href="#" data-modal="privacy">מדיניות הפרטיות</a>. במסלול טיפול בפועל יש לחתום גם הרשאה ותנאי תשלום.</span>
             </label>
             <button type="submit" class="btn btn-primary btn-full">השאירו פרטים — המידע כבר אצלכם</button>

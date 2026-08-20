@@ -79,14 +79,15 @@ export default function SignUp() {
         </CardHeader>
         <CardContent>
           <form onSubmit={submit} className="space-y-3">
-            <div><Label>שם מלא</Label><Input required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></div>
-            <div><Label>דוא״ל</Label><Input required type="email" inputMode="email" autoComplete="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} /></div>
+            <div><Label>שם מלא</Label><Input required aria-required="true" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></div>
+            <div><Label>דוא״ל</Label><Input required aria-required="true" type="email" inputMode="email" autoComplete="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} /></div>
             <div><Label>טלפון</Label><Input type="tel" inputMode="tel" autoComplete="tel" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} /></div>
             <div>
               <Label htmlFor="password">סיסמה</Label>
               <PasswordInput
                 id="password"
                 required
+                aria-required="true"
                 minLength={PW_MIN}
                 autoComplete="new-password"
                 aria-describedby="password-req"

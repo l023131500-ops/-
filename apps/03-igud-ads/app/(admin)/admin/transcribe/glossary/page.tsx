@@ -102,6 +102,7 @@ export default function GlossaryPage() {
                   onChange={(e) => setForm({ ...form, term: e.target.value })}
                   className="input"
                   required
+                  aria-required="true"
                 />
               </div>
             </div>
@@ -112,6 +113,7 @@ export default function GlossaryPage() {
                 onChange={(e) => setForm({ ...form, replacement: e.target.value })}
                 className="input"
                 required
+                aria-required="true"
               />
             </div>
             <div>

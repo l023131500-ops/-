@@ -119,6 +119,7 @@ export default function UploadPage() {
                   className="input text-lg tracking-widest text-center font-mono"
                   placeholder="XXXX-XXXX"
                   required
+                  aria-required="true"
                   autoFocus
                 />
                 <p className="text-sm text-slate-500 mt-2">
@@ -170,6 +171,7 @@ export default function UploadPage() {
                   onChange={(e) => setFile(e.target.files?.[0] ?? null)}
                   className="input"
                   required
+                  aria-required="true"
                 />
                 {file && (
                   <p className="text-sm text-slate-600 mt-2">
