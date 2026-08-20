@@ -87,7 +87,14 @@ export async function fetchResearch(address: string): Promise<any> {
     const text = await res.text().catch(() => "");
     throw new Error(text || "שירות המחקר אינו זמין כרגע");
   }
-  return res.json();
+  try {
+    return await res.json();
+  } catch {
+    // A 200 OK with a body that isn't valid JSON (truncated response, proxy
+    // error page, etc.) must still surface the same Hebrew message the toast
+    // expects, not a raw "Unexpected token" SyntaxError.
+    throw new Error("שירות המחקר אינו זמין כרגע");
+  }
 }
 
 // ---- Questionnaire: active template from PostgREST, else fallback ----
