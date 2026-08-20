@@ -17,6 +17,7 @@ const STATUS = {
 const AdminMessages = () => {
   const [messages, setMessages] = useState<any[]>([]);
   const [filter, setFilter] = useState<string>("all");
+  const [busyId, setBusyId] = useState<string | null>(null);
 
   useEffect(() => { load(); }, []);
 
@@ -40,16 +41,34 @@ const AdminMessages = () => {
   };
 
   const updateStatus = async (id: string, status: string) => {
-    await supabase.from("portal_messages").update({ status }).eq("id", id);
-    toast.success("הסטטוס עודכן");
-    load();
+    if (busyId) return;
+    setBusyId(id);
+    try {
+      const { error } = await supabase.from("portal_messages").update({ status }).eq("id", id);
+      if (error) throw error;
+      toast.success("הסטטוס עודכן");
+      await load();
+    } catch (err) {
+      toast.error("עדכון הסטטוס נכשל, נסה שוב");
+    } finally {
+      setBusyId(null);
+    }
   };
 
   const remove = async (id: string) => {
+    if (busyId) return;
     if (!confirm("למחוק את הפנייה?")) return;
-    await supabase.from("portal_messages").delete().eq("id", id);
-    toast.success("נמחק");
-    load();
+    setBusyId(id);
+    try {
+      const { error } = await supabase.from("portal_messages").delete().eq("id", id);
+      if (error) throw error;
+      toast.success("נמחק");
+      await load();
+    } catch (err) {
+      toast.error("מחיקת הפנייה נכשלה, נסה שוב");
+    } finally {
+      setBusyId(null);
+    }
   };
 
   const filtered = filter === "all" ? messages : messages.filter(m => m.status === filter);
@@ -114,13 +133,13 @@ const AdminMessages = () => {
                   </div>
                 </div>
                 <div className="flex gap-2 mt-3">
-                  <Button size="sm" variant="outline" onClick={() => updateStatus(m.id, "handled")} className="gap-1">
+                  <Button size="sm" variant="outline" disabled={busyId === m.id} onClick={() => updateStatus(m.id, "handled")} className="gap-1">
                     <CheckCircle className="w-3 h-3" />טופל
                   </Button>
-                  <Button size="sm" variant="outline" onClick={() => updateStatus(m.id, "not_handled")} className="gap-1">
+                  <Button size="sm" variant="outline" disabled={busyId === m.id} onClick={() => updateStatus(m.id, "not_handled")} className="gap-1">
                     <Clock className="w-3 h-3" />לא טופל
                   </Button>
-                  <Button size="sm" variant="outline" onClick={() => remove(m.id)} className="gap-1 text-destructive mr-auto">
+                  <Button size="sm" variant="outline" disabled={busyId === m.id} onClick={() => remove(m.id)} className="gap-1 text-destructive mr-auto">
                     <Trash2 className="w-3 h-3" />מחק
                   </Button>
                 </div>
