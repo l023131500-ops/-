@@ -355,11 +355,12 @@ const FloatingBot = () => {
       return;
     }
     setIsSubmitting(true);
-    const details = comprehensiveGroups.flatMap(g =>
+    const details = activeGroups.flatMap(g =>
       g.fields.map(f => `${f.label}: ${compAnswers[f.key] || "לא צוין"}`)
     ).join("\n");
 
     const eligibility = calculateEligibilityScore(compAnswers);
+    const isMarried = compAnswers.marital === "נשוי/אה";
 
     const ok = await saveLead({
       source: "bot-comprehensive",
@@ -368,10 +369,10 @@ const FloatingBot = () => {
       phone: contactForm.phone,
       id_number: compAnswers.id_number || null,
       date_of_birth: compAnswers.date_of_birth || null,
-      spouse_name: compAnswers.spouse_name || null,
-      spouse_id_number: compAnswers.spouse_id_number || null,
-      spouse_health: compAnswers.spouse_health || null,
-      spouse_employment: compAnswers.spouse_employment || null,
+      spouse_name: isMarried ? compAnswers.spouse_name || null : null,
+      spouse_id_number: isMarried ? compAnswers.spouse_id_number || null : null,
+      spouse_health: isMarried ? compAnswers.spouse_health || null : null,
+      spouse_employment: isMarried ? compAnswers.spouse_employment || null : null,
       children_count: parseInt(compAnswers.children_count || "0") || 0,
       children_ages: compAnswers.children_ages || null,
       children_health_details: compAnswers.children_health || null,
