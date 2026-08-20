@@ -6533,3 +6533,59 @@
      (הלנס הישן `id`/`htmlFor` כבר נסגר שם בסבב 112, אבל ייתכנו
      לנסים אחרים שלא נבדקו: contrast, keyboard-nav, focus-order)
      או לבדוק שוב את שאר האפליקציות בטווח אם משהו וונדר בינתיים.
+
+## 20/08/2026 — סבב 116 (loop A)
+
+614. **בדקתי מחדש `git log`/`core.run_progress`/`core.issues`/
+     `core.project_bugs`/`core.project_tasks` לפני שהתחלתי.** סבב
+     115 סגור (commit `58dc5d52`, תואם HEAD). `core.project_bugs`
+     ריק. חמש המשימות הפתוחות ב-`core.project_tasks` (02/12/13/25/32)
+     עדיין חסומות על סוד חסר או החלטת מיזוג. בדקתי גם `core.issues`
+     במלואה (לא רק הטבלאות שבדקו סבבים קודמים) — כל הפריטים הפתוחים
+     בהיקף 01-16 (#168 15-egod, #245 06/12/17/27) חסומים על פרויקט
+     Supabase שאינו נגיש דרך ה-MCP הזו (`hkkkynyoigzlttpynoeo`,
+     `csjekrvukbdznetsrodj`) — אותו חסם מתועד כמו סבבים קודמים, לא
+     בר-פעולה כאן. הרצתי שני סוכני Explore לחיפוש באגים פונקציונליים
+     (לא נגישות) ב-`admin/`, `portal/`, `packages/billing`,
+     `packages/config` — שניהם חזרו ריקים, הקוד שם כבר עבר כמה
+     סבבי-קשיחות (clamps/guards עם הערות שמצטטות את הבאג שתוקן).
+     גם עדשת "id סטטי בתוך `.map()`" (באג ייחודיות-id אמיתי, לא רק
+     נגישות) נבדקה ונמצאה ריקה.
+615. **פתחתי עדשה חדשה שלא נבדקה מעולם בתחום: modal מותאם-אישית
+     (לא Radix `Dialog`) בלי `role="dialog"`/`aria-modal`/סגירה
+     ב-Escape.** `grep` על "focus trap"/"role=\"dialog\"" ב-
+     `DECISIONS.md` לא החזיר אף תוצאה — לנס לא-נבדק. אימתתי תקדים
+     חי: `16-chatzor-connect/src/components/ui/Modal.tsx` כבר מיישם
+     בדיוק את זה (role/aria-modal/Escape). מצאתי
+     `apps/01-torah-platform/src/components/LessonDetailModal.tsx`
+     (modal מותאם-אישית עם `motion.div`, בלי אף אחד משלושתם) — קומפוננטה
+     חיה, בשימוש ב-5 עמודים: `PublicRabbiPage.tsx`, `LessonDirectory.tsx`,
+     `FeaturedLessons.tsx`, `PublicOrgPage.tsx`, `AdminDashboard.tsx`.
+     בדקתי גם את `SynagogueDetailModal.tsx` (האח שלה) — כבר משתמשת
+     ב-Radix `Dialog`/`DialogContent`, שמטפל בכל זה אוטומטית — לא
+     נגעתי בו.
+616. **התיקון:** הוספתי `useEffect` שמאזין ל-Escape (`window`
+     `keydown`) וסוגר את המודל, בדיוק כמו התקדים ב-`16-chatzor-connect`.
+     הוספתי `role="dialog"` `aria-modal="true"` ו-`aria-label`
+     דינמי (`` `${lesson.subject} — ${lesson.rabbi_name}` ``) על
+     ה-`motion.div` הפנימי (ה-panel עצמו, לא ה-overlay).
+617. **אפס רגרסיה מאומתת:** `git diff` מלא — קובץ אחד, 10+/1-;
+     הוספתי רק `useEffect` (import + hook) ו-3 attributes על
+     אלמנט קיים. לא נגעתי ב-`onClick`/`handleShare`/`handleDownload`/
+     `showContact`/מבנה JSX קיים. שקלתי להוסיף גם `stopPropagation`
+     ל-`onClick` של ה-panel הפנימי, אבל וידאתי שזה מיותר — ה-handler
+     הקיים על ה-overlay כבר בודק `e.target === e.currentTarget`,
+     שכבר נכון רק כשקליק על ה-overlay עצמו, לא על הצאצא — הסרתי
+     כדי לא להוסיף קוד שלא נדרש. אין `tsc`/`npm` בסביבה הזו —
+     אומת בבדיקת איזון `{}`/`()`/`[]` ב-Python על הקובץ המלא
+     (172/172, 88/88, 12/12). קובץ זה לא ב-gitignore (לא נדרש
+     `git add -f`). Commit יבוא בהמשך על
+     `fix/a-icon-only-buttons-round2-0820`, יידחף ל-origin (מפעיל
+     פריסת Vercel תחת more30.com/torah).
+618. **הבא בתור:** אותה עדשה (modal מותאם-אישית בלי role/aria-modal/
+     Escape) נמצאה גם ב-`apps/01-torah-platform/src/pages/legacy/
+     AdminDashboard.tsx` וב-`apps/03-igud-ads/app/(admin)/admin/
+     users/page.tsx` + `admin/templates/page.tsx` — לא נבדקו/תוקנו
+     הסבב הזה, ראויים לסבב ייעודי הבא (לבדוק שכל אחד באמת modal
+     חי ולא false-positive מה-grep הגס, כמו שקרה כבר כמה פעמים
+     בסבבים קודמים).

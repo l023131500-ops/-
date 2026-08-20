@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { X, MapPin, Clock, Phone, Mail, ExternalLink, Video, Radio, Users, BookOpen, Share2, Download, Globe, Mic, Image } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { downloadLessonAsImage, type LessonImageOptions } from "@/lib/lessonImageExport";
 
@@ -13,6 +13,13 @@ interface LessonDetailModalProps {
 
 const LessonDetailModal = ({ lesson, onClose, imageOptions }: LessonDetailModalProps) => {
   const [showContact, setShowContact] = useState(false);
+
+  useEffect(() => {
+    if (!lesson) return;
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [lesson, onClose]);
 
   if (!lesson) return null;
 
@@ -93,6 +100,9 @@ const LessonDetailModal = ({ lesson, onClose, imageOptions }: LessonDetailModalP
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
       <motion.div
+        role="dialog"
+        aria-modal="true"
+        aria-label={`${lesson.subject} — ${lesson.rabbi_name}`}
         initial={{ opacity: 0, y: 40, scale: 0.95 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{ opacity: 0, y: 40, scale: 0.95 }}
