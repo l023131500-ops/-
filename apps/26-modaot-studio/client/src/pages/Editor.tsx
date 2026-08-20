@@ -206,7 +206,13 @@ export default function Editor() {
   // נוספת. לא נוגע בכתוביות העבריות/בקריינות/ברינדור הקיימים כשכבוי.
   const [includeEnglishCaptions, setIncludeEnglishCaptions] = useState(false);
   const [captionScriptEn, setCaptionScriptEn] = useState("");
+  const [captionEnGeneratedScript, setCaptionEnGeneratedScript] = useState("");
   const [translatingCaptions, setTranslatingCaptions] = useState(false);
+  // אותה מחלת "תוכן ישן" כמו narrationStale, אבל על התרגום: אם narrationScript
+  // נערך אחרי שהתרגום לאנגלית כבר נוצר, הכתוביות האנגליות עדיין אומרות את
+  // הנוסח הקודם.
+  const captionEnStale =
+    includeEnglishCaptions && !!captionScriptEn && narrationScript.trim() !== captionEnGeneratedScript.trim();
 
   // מוזיקת רקע לוידאו הקידום (lib/videoExport.ts) — קובץ שהמשתמש מעלה בעצמו,
   // אין ספריית מוזיקה חינמית מוכנה בכלי ולכן לא ממציאים מקור. נשאר מקומי לדפדפן
@@ -761,6 +767,7 @@ export default function Editor() {
         return;
       }
       setCaptionScriptEn(data.english);
+      setCaptionEnGeneratedScript(narrationScript);
     } catch (err: any) {
       toast({
         title: "תרגום הכתוביות נכשל",
@@ -1911,7 +1918,7 @@ export default function Editor() {
           {narrationStale && (
             <p className="text-xs text-amber-400" data-testid="text-narration-stale-warning">
               ⚠ הטקסט נערך אחרי יצירת הקול הזה — הקריינות המושמעת עדיין אומרת את הנוסח הקודם.
-              לחצו "צור קריינות" שוב לפני ייצוא הוידאו, אחרת הכתוביות עלולות שלא להתאים למה שנשמע.
+              ייצוא הוידאו נעול עד שתלחצו "צור קריינות" שוב, כדי שלא ייצא סרטון שהקול בו אומר טקסט שגוי/ישן.
             </p>
           )}
           {(narrationAudioUrl || musicFile) && (
@@ -1951,6 +1958,23 @@ export default function Editor() {
                     <p className="text-xs text-[#F5EEDD]/50 line-clamp-2" data-testid="text-caption-preview-en">
                       {captionScriptEn}
                     </p>
+                  )}
+                  {captionEnStale && !translatingCaptions && (
+                    <div className="flex flex-col gap-1">
+                      <p className="text-xs text-amber-400" data-testid="text-caption-en-stale-warning">
+                        ⚠ הטקסט העברי נערך אחרי תרגום הכתוביות האנגליות — התרגום עדיין מציג את הנוסח הקודם.
+                        ייצוא הוידאו נעול עד שתתרגמו מחדש.
+                      </p>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="gap-1.5 self-start border-[#C9A227]/40 text-[#C9A227]"
+                        onClick={handleTranslateCaptions}
+                        data-testid="button-retranslate-captions"
+                      >
+                        תרגם מחדש
+                      </Button>
+                    </div>
                   )}
                 </div>
               )}
@@ -2013,7 +2037,7 @@ export default function Editor() {
                 size="sm"
                 className="gap-1.5 self-start border-[#C9A227]/40 text-[#C9A227]"
                 onClick={handleExportVideo}
-                disabled={videoExporting || translatingCaptions}
+                disabled={videoExporting || translatingCaptions || narrationStale || captionEnStale}
                 data-testid="button-export-video"
               >
                 <Video className="h-4 w-4" /> {videoExporting ? `מרכיב וידאו... ${videoProgress}%` : "ייצוא וידאו קידום (webm)"}
