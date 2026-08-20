@@ -4960,3 +4960,49 @@
      תקופתי ל-#167/#201, או עדשה חדשה (למשל: `target="_blank"` בלי
      `rel="noopener noreferrer"`, או טפסים בלי `noValidate`/הודעת
      שגיאה נגישה) על 01-16/40-gannenet.
+
+## 20/08/2026 (LOOP A — סבב 77) — עדשת `target="_blank"` בלי `rel="noopener noreferrer"`: 01/03/40-gannenet
+
+432. **בדקתי מחדש `core.run_progress` לפני שהתחלתי.** סבב 76 סגור
+     (commit `26243845`, תאם ל-HEAD). המשכתי מקצה הענף
+     `fix/a-icon-only-buttons-round2-0820`. פתחתי את העדשה שסבב
+     76/#431 הציע: `target="_blank"` בלי `rel="noopener"`/
+     `rel="noreferrer"` (reverse tabnabbing) — עדשה שכבר הופעלה
+     ב-Loop B על התחום שלהם (סבבים 322-323) אך מעולם לא נבדקה על
+     01-16/40-gannenet.
+433. **הרצתי Explore agent על כל 15 האפליקציות בתחום** (דילוג על
+     08/09 המוגנות). מצא 59 מופעי `target="_blank"` בסך הכול ב-8
+     אפליקציות (7 אחרות בלי אף מופע); 56 כבר נושאים `rel="noopener"`
+     ו/או `rel="noreferrer"`. **3 מופעים אמיתיים חסרי `rel` לגמרי**
+     אומתו בקריאה ישירה של כל קובץ: `01-torah-platform/src/pages/
+     admin/TenantDetail.tsx:44` (`<a href={`/t/${tenant.slug}`}
+     target="_blank">`, כפתור "צפה באתר" בעמוד ניהול דייר),
+     `03-igud-ads/app/(admin)/admin/projects/page.tsx:160` (Next.js
+     `<Link href={`/result/${p.id}`} target="_blank">`, כפתור
+     "צפייה" בטבלת פרויקטים בניהול), `40-gannenet/app/shelf/admin/
+     page.tsx:391` (`<Link href={`/shelf/${r.id}`} target="_blank">`,
+     כפתור "צפייה" בניהול המדף). כל שלושת המקרים הם קישורים
+     same-origin (לא cross-origin), כך שסיכון ה-tabnabbing נמוך
+     בפועל, אך התוספת עדיין נכונה מבחינת עקביות/הגנה-בעומק ותואמת
+     את התקדים הקיים באותן אפליקציות עצמן (שאר 56 המופעים כבר
+     נושאים את התכונה).
+434. **התיקון: הוספת `rel="noopener noreferrer"` לתגית הקיימת**
+     (`<a>`/`<Link>`) בכל שלושת המקומות. אפס שינוי ל-`href`/
+     `onClick`/`className`/מבנה JSX/טקסט קיים.
+435. **אפס רגרסיה מאומתת:** `git diff --stat` — 3 קבצים, 3 שורות
+     נוספו/2 הוסרו (כל שינוי הוא הוספת attribute יחיד לתגית קיימת).
+     אין `tsc`/`npm` בסביבה הזו — אומת בקריאה מלאה של כל קובץ
+     לפני/אחרי + `git diff` מלא + בדיקת איזון `{}`/`()`/`[]`
+     ב-Python על שלושת הקבצים (כולם מאוזנים). שלושת הקבצים מוחרגים
+     כברירת מחדל ב-`.gitignore` אך עוקבים היסטורית — `git add` הרגיל
+     נכשל עם רמז ignore (למרות שהקבצים עקובים), כנדרש `git add -f`
+     כדי להשתיק את ההודעה בלבד (לא חורג מהתקדים הקיים). Commit
+     `a96e2306` על אותו ענף `fix/a-icon-only-buttons-round2-0820`,
+     נדחף ל-origin (מפעיל פריסות Vercel תחת more30.com/torah,
+     more30.com/modaot, more30.com/gannenet).
+436. **הבא בתור:** עדשת ה-`target="_blank"`/`rel` נבדקה כעת על כל
+     15 האפליקציות בתחום Loop A (01-16+40-gannenet, דילוג 08/09) —
+     56/59 מופעים כבר תקינים, 3 תוקנו. סבב הבא סביר: ניסיון חוזר
+     תקופתי ל-#167/#201, או עדשה חדשה (למשל: טפסים בלי `noValidate`/
+     הודעת שגיאה נגישה, או קלטי `<input type="password">` בלי
+     `autocomplete` נכון) על 01-16/40-gannenet.
