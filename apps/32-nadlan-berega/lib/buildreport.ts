@@ -38,6 +38,7 @@ import {
   isLandDeal,
   parcelLabel,
   nadlanAddressRef,
+  normStreetName,
 } from './nadlan';
 import { buildingAge, type BuildingAge } from './buildingage';
 import { fetchHousingIndex, fetchRentIndex } from './cbs';
@@ -429,12 +430,18 @@ export function sortByProximity(
   // `includes` נכשל לשני הכיוונים וכל עסקה **באותו רחוב** סווגה "בסביבה".
   // נמדד על "הבעש\"ט 9 רחובות": הבעש"ט 11 הוצג כעסקה בסביבה ולא כעסקה ברחוב,
   // וכך היא גם לא נכללה בחציון הרחוב.
-  const tidy = (s: string | null | undefined) => (s ?? '').replace(/["'`״׳]/g, '').trim();
-  const wanted = streetNames.map(tidy).filter(Boolean);
+  //
+  // ⚠️ שוויון מדויק, לא הכלה: משתמש ב-`normStreetName` (lib/nadlan.ts) ולא
+  // ב-tidy+includes מקומי. הכלה תת-מחרוזתית זיהתה בעבר "אלנבי" בתוך "שדרות
+  // אלנבי" ו"ביאליק" בתוך "ביאליק החדש" — שני רחובות שונים לגמרי — כעסקה
+  // "באותו רחוב" רק כי מספר הבית תאם במקרה, אותה מחלקת-באג שתוקנה כבר
+  // ב-`normStreetName` עצמו (ראה התיעוד שם) אבל נשארה כאן כי הפונקציה הזו
+  // בנתה נרמול מקומי משלה במקום להשתמש בקיים.
+  const wanted = streetNames.map(normStreetName).filter(Boolean);
 
   const matchesStreet = (rawStreet: string): boolean => {
-    const tStreet = tidy(rawStreet);
-    return !!tStreet && wanted.some((w) => tStreet === w || tStreet.includes(w) || w.includes(tStreet));
+    const tStreet = normStreetName(rawStreet);
+    return !!tStreet && wanted.some((w) => tStreet === w);
   };
 
   const mapped = txns.map((t) => {
@@ -1288,15 +1295,21 @@ export async function buildReport(
         : null;
 
   // ההצלבה: הכתובת שהמשתמש ביקש והכתובת שהחלקה נושאת הן אותה כתובת.
+  //
+  // ⚠️ שוויון מדויק אחרי `normStreetName`, לא הכלה. `crossChecked=true` מוצג
+  // ללקוח כ"הכתובת אומתה מול הרישום הרשמי" — הכלה תת-מחרוזתית (למשל "ביאליק"
+  // בתוך "ביאליק החדש", שני רחובות שונים בכפר סבא) הייתה יכולה לסמן אימות
+  // כוזב על גוש/חלקה של רחוב אחר, אותה מחלקת-באג שתוקנה ב-`normStreetName`
+  // (lib/nadlan.ts) ובקרבת-הרחוב ב-sortByProximity לעיל.
   const crossChecked =
     parsed.kind === 'parcel'
       ? !!addressFromDeals
       : !!addressFromDeals &&
         addressFromDeals.houseNum === parsed.houseNum &&
         streetNames.some((s) => {
-          const a = (addressFromDeals.streetName ?? '').replace(/["'`״׳]/g, '');
-          const b = (s ?? '').replace(/["'`״׳]/g, '');
-          return !!a && !!b && (a === b || a.includes(b) || b.includes(a));
+          const a = normStreetName(addressFromDeals.streetName);
+          const b = normStreetName(s);
+          return !!a && !!b && a === b;
         });
 
   const parcelIdentity: ParcelIdentity = {
@@ -1675,16 +1688,14 @@ export async function buildReport(
   // ⚠️ **בלי** הבניין עצמו. נמצא בדוח אמיתי: "חציון של שתי מכירות דירות באותו
   // רחוב" נשען על מכירה אחת ברחוב ועל מכירה בבניין הנבדק — כלומר חצי משכבת
   // ההשוואה "החוצה" הייתה הנכס עצמו, בעוד שהטקסט הצהיר שזו השכבה שאחרי הבניין.
+  // ⚠️ שוויון מדויק אחרי `normStreetName`, לא הכלה — אותו טעם בדיוק כמו
+  // matchesStreet ב-sortByProximity וכמו crossChecked למעלה: הכלה תת-מחרוזתית
+  // (למשל "אלנבי" בתוך "שדרות אלנבי") הייתה מוסיפה מכירות מרחוב אחר לגמרי
+  // לחציון "אותו רחוב".
   const streetHomeSales = areaHomeSales.filter((t) => {
     if (buildingPolygonId && t.polygonId === buildingPolygonId) return false;
-    const st = streetOf(t.address);
-    return (
-      !!st &&
-      streetNames.some((w) => {
-        const n = w.replace(/["'`״׳]/g, '').trim();
-        return !!n && (st === n || st.includes(n) || n.includes(st));
-      })
-    );
+    const st = normStreetName(t.streetName ?? streetOf(t.address));
+    return !!st && streetNames.some((w) => normStreetName(w) === st);
   });
 
   // כל חציון מחיר מחושב בחלון זמן, ולא על כל ההיסטוריה (ראה priceBand).
