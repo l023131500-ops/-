@@ -119,9 +119,9 @@ const PortalMessagesTab = ({ portalId, portalType }: PortalMessagesTabProps) => 
                       </Badge>
                     </div>
                     <div className="flex items-center gap-3 font-body text-sm text-muted-foreground mb-2 flex-wrap">
-                      <span className="flex items-center gap-1"><Phone className="w-3.5 h-3.5" />{msg.sender_phone}</span>
+                      <span className="flex items-center gap-1"><Phone className="w-3.5 h-3.5" /><span dir="ltr">{msg.sender_phone}</span></span>
                       {msg.sender_email && (
-                        <span className="flex items-center gap-1"><Mail className="w-3.5 h-3.5" />{msg.sender_email}</span>
+                        <span className="flex items-center gap-1"><Mail className="w-3.5 h-3.5" /><span dir="ltr">{msg.sender_email}</span></span>
                       )}
                       <span className="flex items-center gap-1">
                         <Clock className="w-3.5 h-3.5" />

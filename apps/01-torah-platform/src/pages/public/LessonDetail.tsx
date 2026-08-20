@@ -46,7 +46,7 @@ export default function LessonDetail() {
               <div className="flex items-center gap-2"><Clock className="h-4 w-4 text-primary" /> {lesson.time}</div>
             )}
             {lesson.contact_phone && (
-              <div className="flex items-center gap-2"><Phone className="h-4 w-4 text-primary" /> {lesson.contact_phone}</div>
+              <div className="flex items-center gap-2"><Phone className="h-4 w-4 text-primary" /> <span dir="ltr">{lesson.contact_phone}</span></div>
             )}
             {lesson.lesson_type && (
               <div className="flex items-center gap-2"><BookOpen className="h-4 w-4 text-primary" /> {lesson.lesson_type}</div>

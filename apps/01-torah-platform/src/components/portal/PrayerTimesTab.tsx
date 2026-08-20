@@ -161,7 +161,7 @@ const PrayerTimesTab = ({ orgId }: PrayerTimesTabProps) => {
                           {syn.address && <span className="flex items-center gap-1"><MapPin className="w-3.5 h-3.5" />{syn.address}</span>}
                           {syn.city && <span>{syn.city}</span>}
                           {syn.neighborhood && <span>({syn.neighborhood})</span>}
-                          {syn.phone && <span className="flex items-center gap-1"><Phone className="w-3.5 h-3.5" />{syn.phone}</span>}
+                          {syn.phone && <span className="flex items-center gap-1"><Phone className="w-3.5 h-3.5" /><span dir="ltr">{syn.phone}</span></span>}
                         </div>
                         {syn.notes && <p className="font-body text-xs text-muted-foreground mt-1">{syn.notes}</p>}
                       </div>

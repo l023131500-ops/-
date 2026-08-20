@@ -49,7 +49,7 @@ const LeadCard = ({ lead, matchBadge }: { lead: Lead; matchBadge?: string[] }) =
             )}
           </div>
           <div className="flex flex-wrap gap-2 text-xs font-body text-muted-foreground">
-            {lead.phone && <span className="flex items-center gap-1"><Phone className="w-3 h-3" /> {lead.phone}</span>}
+            {lead.phone && <span className="flex items-center gap-1"><Phone className="w-3 h-3" /> <span dir="ltr">{lead.phone}</span></span>}
             {lead.city && <span className="flex items-center gap-1"><MapPin className="w-3 h-3" /> {lead.city}</span>}
             {lead.subject && <span className="flex items-center gap-1"><BookOpen className="w-3 h-3" /> {lead.subject}</span>}
           </div>
@@ -60,7 +60,7 @@ const LeadCard = ({ lead, matchBadge }: { lead: Lead; matchBadge?: string[] }) =
       </div>
       {expanded && (
         <div className="mt-3 pt-3 border-t border-border text-xs font-body text-muted-foreground space-y-1">
-          {lead.email && <p><Mail className="w-3 h-3 inline mr-1" />{lead.email}</p>}
+          {lead.email && <p><Mail className="w-3 h-3 inline mr-1" /><span dir="ltr">{lead.email}</span></p>}
           {lead.style && <p>סגנון: {lead.style}</p>}
           {lead.notes && <p>הערות: {lead.notes}</p>}
           <p className="text-muted-foreground/60">{new Date(lead.created_at).toLocaleDateString("he-IL")}</p>

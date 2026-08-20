@@ -23,7 +23,7 @@ export default function Mikvaot() {
             <CardHeader><CardTitle className="text-lg">{m.name}</CardTitle></CardHeader>
             <CardContent className="text-sm space-y-2 text-muted-foreground">
               {m.address && <div className="flex items-center gap-2"><MapPin className="h-3 w-3" /> {m.address}</div>}
-              {m.phone && <div className="flex items-center gap-2"><Phone className="h-3 w-3" /> {m.phone}</div>}
+              {m.phone && <div className="flex items-center gap-2"><Phone className="h-3 w-3" /> <span dir="ltr">{m.phone}</span></div>}
               {m.hours && <div className="flex items-center gap-2"><Clock className="h-3 w-3" /> {m.hours}</div>}
             </CardContent>
           </Card>

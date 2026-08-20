@@ -211,7 +211,7 @@ export default function Attendance() {
                         )}
                         <div className="flex-1">
                           <div className="font-medium text-sm">{p.full_name}</div>
-                          {p.phone && <div className="text-xs text-muted-foreground">{p.phone}</div>}
+                          {p.phone && <div className="text-xs text-muted-foreground" dir="ltr">{p.phone}</div>}
                         </div>
                         <Badge variant={attendance[p.id] ? "default" : "secondary"} className="text-xs">
                           {attendance[p.id] ? "נוכח" : "נעדר"}

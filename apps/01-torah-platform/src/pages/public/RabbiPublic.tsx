@@ -192,9 +192,9 @@ const RabbiPublic = () => {
         {/* Contact Info */}
         {(profile.phone || profile.email || profile.contact_whatsapp) && (
           <div className="flex flex-wrap gap-4 justify-center text-sm text-muted-foreground">
-            {profile.phone && <span className="flex items-center gap-1"><Phone className="w-4 h-4" />{profile.phone}</span>}
-            {profile.email && <span className="flex items-center gap-1"><Mail className="w-4 h-4" />{profile.email}</span>}
-            {profile.contact_whatsapp && <span className="flex items-center gap-1"><Globe className="w-4 h-4" />WhatsApp: {profile.contact_whatsapp}</span>}
+            {profile.phone && <span className="flex items-center gap-1"><Phone className="w-4 h-4" /><span dir="ltr">{profile.phone}</span></span>}
+            {profile.email && <span className="flex items-center gap-1"><Mail className="w-4 h-4" /><span dir="ltr">{profile.email}</span></span>}
+            {profile.contact_whatsapp && <span className="flex items-center gap-1"><Globe className="w-4 h-4" />WhatsApp: <span dir="ltr">{profile.contact_whatsapp}</span></span>}
           </div>
         )}
 
