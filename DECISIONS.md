@@ -8197,3 +8197,32 @@
      ניווט שלא כוסו עדיין), או לחזור ל-`core.project_tasks`/
      `core.project_bugs` (5 פריטים פתוחים, עדיין חסומים על סודות
      חסרים או החלטות merge/origin מחוץ לסמכות הסוכן).
+
+## 20/08/2026 — סבב 162 (loop A)
+
+797. **עדשה חדשה:** האצלתי סריקת Explore על 01-07/10-16 (דילוג על
+     08/09 המוגנים) אחר פער נגישות חדש שלא כוסה ב-11 העדשות
+     הקודמות. נמצא: טבלאות נתונים עם `<th>` ללא `scope="col"` —
+     קורא-מסך לא יכול לשייך תא נתונים לכותרת העמודה שלו בלי זה.
+     מועמד ראשון: `apps/01-torah-platform/src/pages/admin/
+     Teachers.tsx` (טבלת ניהול מגידים/ארגונים/בתי-כנסת).
+798. **תיקון:** הוספתי `scope="col"` לכל אחד משישה תגי `<th>`
+     בשורת הכותרת של הטבלה (שם/סוג/אימייל/עיר/סטטוס/פעולות). ללא
+     שינוי למבנה הטבלה, ל-`filtered.map`, או ללוגיקה כלשהי — תוספת
+     attribute טהורה.
+799. **אפס רגרסיה מאומתת:** `git diff --stat` — קובץ אחד, 6+/6-.
+     איזון סוגריים בפייתון על הקובץ המלא: `{}` 128/128, `()`
+     146/146, `[]` 19/19 — תואם. אין tsc/npm בסביבה זו. הנתיב
+     `apps/01-torah-platform/src` חסום ע"י `.gitignore` (כמו
+     בסבבים קודמים) — נדרש `git add -f`. Commit `daddb510` על
+     `fix/a-icon-only-buttons-round2-0820`, נדחף ל-origin (מפעיל
+     פריסת Vercel תחת more30.com/torah).
+800. **הבא בתור:** שלושה מועמדים גיבוי מאותה סריקה לאותה עדשה —
+     `apps/02-igud-transcribe/app/(admin)/admin/uploads/page.tsx`
+     (6 `<th>`), `apps/03-igud-ads/app/(admin)/admin/payments/
+     page.tsx` (7 `<th>`), `apps/15-egod/src/pages/admin/
+     AdminTeachers.tsx` (אותה תבנית) — או לפתוח עדשה נוספת (tab-
+     order/tabindex חיוביים, `target="_blank"` בלי
+     `rel="noopener noreferrer"`, `id` כפולים), או לחזור ל-
+     `core.project_tasks`/`core.project_bugs` (5 פריטים פתוחים,
+     עדיין חסומים).
