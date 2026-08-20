@@ -5491,3 +5491,39 @@
      Lessons (~15). אחרי 15-egod נותרות 03-igud-ads (63 מופעים/10
      קבצים) ו-01-torah-platform (~150 מופעים/19 קבצים) מהמיפוי של
      סבב 83.
+
+## 20/08/2026 (LOOP A — סבב 88) — `<label htmlFor>`/`id`: 15-egod/RequestLesson.tsx, StudySchedule.tsx
+
+490. **בדקתי מחדש `core.run_progress` לפני שהתחלתי.** סבב 87 סגור
+     (commit `e8da653d`/`2da77b0a`, תאם ל-HEAD). המשכתי בתור שסבב
+     85/#479 הגדיר: `RequestLesson.tsx`/`StudySchedule.tsx` (6/5
+     מופעים) — הבאים בגודל אחרי `Participants.tsx`/`AdminForums.tsx`.
+491. **קראתי את שני הקבצים במלואם לפני עריכה.** `RequestLesson.tsx`
+     (74 שורות): 6 פקדים ללא קישור בטופס הפנייה הציבורי — 3 `Input`
+     (שם מלא/טלפון/אזור מגורים), `Select`/`SelectTrigger` (נושא
+     מועדף), `Input` (זמנים מועדפים), `Textarea` (הערות).
+     `StudySchedule.tsx` (263 שורות): 5 פקדים ללא קישור בדיאלוג
+     "הוסף הספק לימודי חדש" — `Select`/`SelectTrigger` (שיעור),
+     `Input` (נושא), `Select`/`SelectTrigger` (סוג קצב), `Input`
+     מספרי (כמות), `Input` מסוג תאריך (תאריך התחלה). לוח השנה עצמו
+     ותצוגת ה-view selector (`Select` ללא label נראה, רק אייקון)
+     הוחרגו — אין תווית טקסט צמודה שדורשת קישור.
+492. **התיקון:** קידומות `requestlesson-`/`studyschedule-` על כל
+     `id`/`htmlFor` בהתאמה, כמו בסבבים קודמים, כדי להימנע מהתנגשות
+     עתידית עם `id`-ים דומים בדפים אחרים של 15-egod.
+493. **אפס רגרסיה מאומתת:** `git diff --stat` — 2 קבצים, 17 שורות
+     נוספו/17 הוסרו (הוספת `id`/`htmlFor` בלבד על `<label>`/`<Input>`/
+     `<Textarea>`/`SelectTrigger` קיימים, בלי לגעת ב-`value`/
+     `onChange`/ולידציה/`placeholder`). אין `tsc`/`npm` בסביבה הזו —
+     אומת בקריאה מלאה של `git diff` המלא + בדיקת איזון `{}`/`()`/`[]`
+     ב-Python על שני הקבצים (שניהם מאוזנים). `git add -f` נדרש
+     כתקדים (15-egod/src מוחרג כברירת מחדל ב-`.gitignore` אך עוקב
+     היסטורית). Commit `1989108b` על אותו ענף
+     `fix/a-icon-only-buttons-round2-0820`, נדחף ל-origin (מפעיל
+     פריסת Vercel תחת more30.com/egod).
+494. **הבא בתור:** נותרו ~7 קבצים/70-75 מופעים ב-15-egod ממופים
+     ומוכנים ללא סקר חוזר, קטן לגדול: AdminTeachers/JoinTeacher
+     (6/7) → PortalSettings/TeacherForm (11/9) → Materials (~11) →
+     SeekerForm (14) → Lessons (~15). אחרי 15-egod נותרות 03-igud-ads
+     (63 מופעים/10 קבצים) ו-01-torah-platform (~150 מופעים/19 קבצים)
+     מהמיפוי של סבב 83.
