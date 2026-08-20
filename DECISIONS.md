@@ -6423,3 +6423,66 @@
      בלבד (`not-vendored`/`in-progress`) — אין קוד לתקן בהן בריפו
      הזה עד שיוחלט לוונדר אותן (החלטה חורגת מסמכות סוכן, ר'
      "Migration note" ב-README.md).
+
+## 20/08/2026 — סבב 114 (loop A)
+
+605. **בדקתי `git log`/`core.run_progress`/`core.project_bugs`/
+     `core.project_tasks` לפני שהתחלתי.** סבב 113 סגור (commit
+     `837cb21b`/HEAD תואם). המשכתי בדיוק לפי #604: `Field`/
+     `SliderField`/`ToggleField` ב-`DesignDept.tsx`.
+606. **בדקתי תחילה מה סוג ה-DOM האמיתי מאחורי כל בקרת shadcn/Radix**
+     לפני שבחרתי טכניקה: `SelectTrigger` וגם `Switch` מרנדרים
+     `<button>` אמיתי (labelable element לפי HTML5 — `<label for>`
+     תקין עליהם), אבל `Slider` (`SliderPrimitive.Thumb`) מרנדר
+     `<span role="slider">`, **לא** labelable — שם `aria-label`/
+     `aria-labelledby` על ה-thumb הוא הפתרון הנכון, לא `htmlFor`.
+607. **התיקון (3 קבצים):**
+     - `DesignDept.tsx`: `Field` קיבל `id?` prop → `htmlFor={id}`
+       על ה-`<Label>`; חוברתי אותו ב-11 מוקדי שימוש (9 `Select`,
+       2 `Input`) עם `id` תואם על הבקרה עצמה (קידומת `dd-`/`cd-`).
+       `ToggleField` מייצר `id` פנימי מ-`testid` (`dd-toggle-
+       ${testid}`) בלי צורך בשינוי אף call site — כל 7 המופעים
+       (`switch-*`) יש להם testid ייחודי, אז אין התנגשות. `Field`
+       על "צבע כריכה" מקבל שני inputs תחת אותה תווית — `htmlFor`
+       חובר ל-color-swatch (הראשי), ול-input הטקסט ההקסדצימלי
+       הוספתי `aria-label` נפרד כדי שגם הוא יהיה נגיש עצמאית.
+     - `components/ui/slider.tsx` (primitive משותף): הוספתי
+       `destructure` של `aria-label`/`aria-labelledby` מה-props
+       והעברה מפורשת ל-`SliderPrimitive.Thumb` (שלא קיבל אותם
+       קודם — הם היו נופלים על ה-`Root` בלי השפעה). שינוי backward-
+       compatible: קריאות קיימות בלי את ה-prop מקבלות `undefined`,
+       אין שינוי התנהגות. `SliderField` עכשיו מעביר `aria-label=
+       {label}` ישירות לבקרה — לא נדרש `htmlFor`/`id` כי אין
+       labelable element.
+     - בדקתי מי עוד צורך את ה-primitive לפני שנגעתי בו: רק
+       `DesignDept.tsx` ו-`CoverEditor.tsx` (grep על `<Slider`
+       תחת כל `04-imud-torani/client/src`). מצאתי ש-`CoverEditor.
+       tsx` (עורך שכבות השער) יש לו **2** sliders בלי שום תווית
+       נגישה (תצוגה/זום בשורה 204, גודל גופן בשורה 308) — עם
+       התשתית כבר קיימת ב-primitive, הוספתי `aria-label="תצוגה"`
+       ו-`aria-label="גודל גופן"` (טקסט מהתווית הטקסטואלית הצמודה
+       הקיימת כבר ב-JSX, לא המצאה).
+608. **אפס רגרסיה מאומתת:** `git diff --stat` — 3 קבצים,
+     43+/37-. לא נגעתי ב-`value`/`onChange`/`min`/`max`/`step`/
+     `className`/`data-testid`/הלוגיקה בשום מקום. `id`ים כפולים
+     בקובץ (למשל `dd-pagesize` פעמיים) הם תקינים — פעם אחת כ-
+     `htmlFor` (attribute-value, לא render של DOM element חדש)
+     ופעם על הבקרה עצמה, לא שני DOM elements עם אותו `id`.
+     אין `tsc`/`npm` בסביבה הזו — אומת בבדיקת איזון `{}`/`()`/`[]`
+     ב-Python על שלושת הקבצים המלאים (כולם מאוזנים) + סקריפט
+     שבדק שכל 7 ה-`switch-*` testids ייחודיים (למניעת התנגשות
+     `id` נגזר) ושאין באמת שני DOM elements עם אותו `id`. Commit
+     `154bfb2e` על `fix/a-icon-only-buttons-round2-0820`, נדחף
+     ל-origin (מפעיל פריסת Vercel תחת more30.com/imud-torani).
+609. **הלנס `id`/`htmlFor`/`aria-label` על 04-imud-torani סגור.**
+     `Wizard.tsx` (סבב 113) ו-`DesignDept.tsx`/`CoverEditor.tsx`
+     (סבב זה) — כל הפערים שזוהו בסבב 113 טופלו. קבוצת-הכפתורים
+     ב-`Wizard.tsx` שורה 181 (`{q.label}` מעל כמה אפשרויות) נותרה
+     בכוונה — group semantics כמו `MultiSelect`/`RadioSelect`,
+     לא `htmlFor`/`aria-label` יחיד; לא נבדק אם שווה לפתוח את
+     הקומפוננטה הזו לתיקון דומה לסבב 112, אבל זה יעד קטן וממוקד
+     יחסית אם ירצו בסבב הבא. שאר 9 האפליקציות בטווח (05-07, 10-
+     11, 13-14, 16) עדיין manifest-בלבד — אין קוד לתקן. סבב הבא
+     צריך לבדוק מחדש את `core.project_tasks`/`core.project_bugs`
+     למשימה חדשה בהיקף (auth/admin/pricing/gannenet), או אם שום
+     דבר לא השתחרר, לפתוח את קבוצת-הכפתורים ב-`Wizard.tsx`.
