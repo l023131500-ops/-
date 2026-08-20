@@ -5958,3 +5958,28 @@
     in-flight, אותה קטגוריית באג. אחרי זה, לפתוח עדשה חדשה נוספת אם
     ההיקף המלא של double-submit ייסגר.
     via cloud server 167.99.131.167 [loop B]
+
+## 20/08/2026 — סבב 332 (loop B)
+
+332. **סגירת המועמד השלישי של עדשת double-submit/duplicate-write (מסבב 331):**
+    `apps/27-bkalut-price/client/src/pages/community-admin.tsx`
+    `createQuestionnaire()` (שורה 102) קרא `apiRequest("POST", ...)` תוך
+    `await` בלי שום `disabled` על כפתור "יצירת שאלון" (שורה 223) ובלי דגל
+    in-flight בתחילת הפונקציה — לחיצה כפולה מהירה יוצרת שני שאלונים זהים
+    מלחיצה אחת. תוקן באותו דפוס בדיוק שכבר קיים בקובץ הזה (`savingSettings`
+    ב-`saveSettings`) וששימש לתיקון המקביל ב-21-mthbram (סבב 331): דגל
+    state חדש `creatingQuestionnaire`, נבדק בתחילת ה-handler
+    (`if (!newTitle.trim() || creatingQuestionnaire) return;`), מוצמד ל-
+    `disabled` על הכפתור, עם `try/finally` לאיפוס הדגל גם בנתיב השגיאה.
+    אפס שינוי להתנהגות הקיימת מעבר לחסימת הלחיצה הכפולה — אין שינוי ל-API/
+    DB/צורת הבקשה. בדיקת איזון סוגריים ב-python על הקובץ המלא אחרי העריכה
+    — תקין (259/259, 276/276, 28/28). אין build/dev-server זמין בסביבה
+    הזו לפי הנחיית ההרצה — לא tsc. ענף חדש
+    `fix/b-27-community-admin-double-submit-0820`, קומיט `e327921f`, נדחף
+    (מפעיל פריסת Vercel תחת more30.com/bkalut).
+
+    **הבא בתור:** עדשת double-submit/duplicate-write ממוצה כעת על כל
+    היקף Loop B (17-31 בתוך ההיקף המוגדר: כל 11 המקרים שנמצאו — 5 כבר
+    מוגנים כראוי, 3 בלי מקור אמיתי לבדוק, ו-3 תוקנו לאורך סבבים 331-332).
+    לפתוח עדשה חדשה בסבב הבא.
+    via cloud server 167.99.131.167 [loop B]
