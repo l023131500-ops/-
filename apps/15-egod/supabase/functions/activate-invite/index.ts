@@ -28,7 +28,14 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
     );
 
-    const ip = (req.headers.get("x-forwarded-for") ?? "").split(",")[0].trim() || "unknown";
+    // cf-connecting-ip is set by Cloudflare's edge from the real TCP connection
+    // and can't be spoofed by the caller. The first entry of x-forwarded-for
+    // CAN be spoofed -- Supabase appends the real IP after whatever the caller
+    // sent rather than replacing it -- so a caller could mint a fresh fake IP
+    // per request and get a fresh rate-limit bucket every time.
+    const ip = (req.headers.get("cf-connecting-ip") ?? "").trim() ||
+      (req.headers.get("x-forwarded-for") ?? "").split(",").map((s) => s.trim()).filter(Boolean).pop() ||
+      "unknown";
     const windowStart = new Date(Math.floor(Date.now() / 3_600_000) * 3_600_000).toISOString();
     for (const bucket of [`activate-invite:ip:${ip}`, `activate-invite:email:${email.trim().toLowerCase()}`]) {
       const limit = bucket.startsWith("activate-invite:ip:") ? RATE_LIMIT_PER_HOUR_PER_IP : RATE_LIMIT_PER_HOUR_PER_EMAIL;

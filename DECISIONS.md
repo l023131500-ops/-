@@ -2732,3 +2732,63 @@
      `{ok,email,password,error}`, שלא השתנה; שכתוב הכתיבה הפנימית ל-
      `profiles` לא משפיע עליו. ענף `fix/a-egod-activate-invite-profile-race-0820`,
      נדחף.
+
+## 20/08/2026 (LOOP A — סבב 37) — בדיקת ה-IP ב-Edge Functions של Supabase לוקחת את הערך שהתוקף עצמו שולח, כולל בשער האימות היחיד של webhook התשלומים
+
+229. **בדקתי מחדש `core.run_progress`/`core.issues`/`core.project_tasks` לפני
+     שהתחלתי.** סבב 36 (15-egod) כבר סגור לגמרי (commit `d0e3fcf1`, heartbeat
+     id 1149 קיים). כל הפתוח ב-`core.issues`/`core.project_tasks` בתחום
+     Loop A עדיין חסום על הכרעת משתמש/מפתחות/דשבורד חיצוני (זהה לסבבים
+     34-36). שיגרתי 4 סוכני Explore במקביל על שטח טרי: 10-bkalot-rights,
+     04-imud-torani (מעבר לבדיקת visitorId שכבר נעשתה בסבב 35), פלטרום
+     תמחור/billing, ו-14-bsmachot-plus (מעבר לעדשת error-handling
+     שנבדקה כבר). כל ארבעת הממצאים לא שרדו אימות ישיר: (1) 10-bkalot-rights
+     — הסוכן עצמו הודה בסתירה (התחיל לתאר כשל כתיבה על `zr_leads` המוגן,
+     סיים ב"no real bug found") — לא נגעתי, גם כי `zr_*` מוגן. (2)
+     04-imud-torani `storage.ts` `updateBook` — "מרוץ" שהסוכן תיאר הוא
+     patch-סמנטיקה רגילה (שדות שלא נשלחו לא נכתבים כלל); "התנגשות" אמיתית
+     דורשת שני PATCH בו-זמנית על **אותו שדה בדיוק** מאותו visitor — write-write
+     רגיל שכל אפליקציה עם טופס יחיד סובלת ממנו, לא בדפוס החמור (unique
+     violation לא-מטופל / איבוד מונה כספי) שסבבים קודמים תיקנו. לא נגעתי.
+     (3) פלטרום תמחור/billing — הסוכן בדק את `nedarim-create-payment` ואת
+     ה-RLS על `products`/`nedarim_configs` ומצא הכל מוגן; ציין חוסר `.neq()`
+     ב-orders webhook path, בדקתי בעצמי (ראה #230) ואין שם effect כפול אמיתי
+     כי אין טריגר/ניכוי מלאי על `orders` בכלל — לא תוקן, לא שווה את הסיכון.
+     (4) 14-bsmachot-plus — אתר סטטי לגמרי, אין נתיבי כתיבה בכלל. לא תוקן.
+230. **הממצא האמיתי, שמצאתי בעצמי בזמן שבדקתי #3: כל בדיקת client-IP
+     ב-Edge Functions של Supabase בתחום 01-16 לוקחת את הערך הראשון של
+     `x-forwarded-for` — בדיוק החלק שהתוקף שולט בו.** אימתתי מול תיעוד
+     חיצוני (חיפוש רשת, דיון GitHub `supabase/discussions/34647`): Supabase
+     **מוסיפה** את ה-IP האמיתי לכותרת `x-forwarded-for` הקיימת במקום
+     להחליף אותה — כלומר קורא יכול לשלוח `X-Forwarded-For: <כל-ערך>` וה-IP
+     האמיתי ייתווסף **אחריו**, לא לפניו. `cf-connecting-ip` (מוגדר ע"י קצה
+     Cloudflare עצמו מהחיבור בפועל) הוא המקור הבטוח היחיד; אם צריך fallback
+     ל-`x-forwarded-for`, רק הערך **האחרון** ברשימה אמין. אותו דפוס בדיוק
+     חוזר על עצמו ב-6 מקומות בתחום 01-16, כולם `xff.split(",")[0].trim()`:
+     `01-torah-platform/supabase/functions/{nedarim-webhook,activate-invite,
+     ai-match-teacher,search-lessons,chat}/index.ts` ו-
+     `15-egod/supabase/functions/activate-invite/index.ts`.
+231. **החומרה הגבוהה ביותר: `nedarim-webhook`.** בדיקת ה-IP שם היא **שער
+     האימות היחיד** על ה-webhook (אין Hash/Signature ב-Nedarim Plus, לפי
+     ההערה בראש הקובץ) — `NEDARIM_ALLOWED_IPS = {"18.194.219.73"}`. עם
+     הבאג, כל תוקף ששולח `X-Forwarded-For: 18.194.219.73` ל-nedarim-webhook
+     היה עובר את הבדיקה במלואה, ויכול לזייף קריאת "תשלום אושר" (`Param2`
+     תואם `our_payment_id` של תרומה/הזמנה `pending` כלשהי) — מסמן תרומה/
+     הזמנה כ-`captured` **בלי ששולם בפועל**, מעדכן `raised_ils` בהתאם.
+     חור הונאה כספי ישיר על נתיב חי. שאר חמשת המקומות הם rate-limiter
+     לפי IP על נתיבים שעולים כסף/עומס — `ai-match-teacher` ו-`chat` שורפים
+     קרדיט AI בתשלום (LOVABLE_API_KEY/OPENAI_API_KEY), `search-lessons` גם
+     שופך שלוש טבלאות ל-system prompt; `activate-invite` (שני עותקים, 01
+     ו-15) הן הגנת ניחוש-סיסמה — שם ה-bucket השני (per-code/per-email) עדיין
+     עוצר ניחושים ממוקדים גם עם spoofing, כך שהחומרה שם נמוכה יותר, אך
+     התיקון זהה וזול מספיק כדי לתקן בכל המקומות יחד.
+232. **התיקון: אותו שינוי בכל שישה הקבצים.** `getClientIp`/`ip` עכשיו
+     מעדיפים `cf-connecting-ip`, ורק בלית ברירה נופלים ל-`x-forwarded-for`
+     — אבל לוקחים את **הערך האחרון** (`split(",").map(trim).filter(Boolean)
+     .pop()`) במקום הראשון. שאר הלוגיקה (rate-limit RPC, allowlist Set,
+     ברירת מחדל fail-open על שגיאת RPC) ללא שינוי — רק מקור ה-IP עצמו.
+     `esbuild` transpile נקי על כל שישה הקבצים (`--bundle=false --format=esm`,
+     אין node_modules להרצת build מלא בסבב הזה). `grep` מוודא ש-`clientIp`
+     ב-nedarim-webhook משמש רק לבדיקת ה-allowlist ולוגים — שום צרכן אחר
+     תלוי בצורת הערך הישנה. ענף `fix/a-supabase-edge-clientip-spoof-0820`,
+     נדחף.

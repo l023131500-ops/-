@@ -31,7 +31,15 @@ Deno.serve(async (req) => {
     // Cap per caller IP. This function spends LOVABLE_API_KEY credit and its only
     // gate is verify_jwt — which the anon key satisfies, and that key is shipped to
     // every browser. Runs before the lead lookup, so a blocked request costs nothing.
-    const ip = (req.headers.get("x-forwarded-for") ?? "").split(",")[0].trim() || "unknown";
+    // cf-connecting-ip is set by Cloudflare's edge from the real TCP connection
+    // and can't be spoofed by the caller. The first entry of x-forwarded-for
+    // CAN be spoofed -- Supabase appends the real IP after whatever the caller
+    // sent rather than replacing it -- so a caller could mint a fresh fake IP
+    // per request and get a fresh rate-limit bucket every time, defeating this
+    // cap entirely and draining LOVABLE_API_KEY credit for free.
+    const ip = (req.headers.get("cf-connecting-ip") ?? "").trim() ||
+      (req.headers.get("x-forwarded-for") ?? "").split(",").map((s) => s.trim()).filter(Boolean).pop() ||
+      "unknown";
     const windowStart = new Date(Math.floor(Date.now() / 3_600_000) * 3_600_000).toISOString();
     const { data: gate, error: gateError } = await supabase.rpc("ai_rate_limit_hit", {
       p_bucket: `ai-match-teacher:${ip}`,

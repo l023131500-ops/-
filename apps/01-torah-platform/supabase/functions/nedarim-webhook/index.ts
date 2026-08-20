@@ -34,13 +34,21 @@ const NEDARIM_ALLOWED_IPS = new Set([
 const ENFORCE_IP_CHECK = (Deno.env.get("NEDARIM_ENFORCE_IP") || "true") === "true";
 
 function getClientIp(req: Request): string {
-  // Supabase Edge Functions מקבלות את ה-IP דרך headers
+  // Supabase Edge Functions run behind Cloudflare: cf-connecting-ip is set by
+  // Cloudflare's own edge from the actual TCP connection and cannot be
+  // overridden by the caller -- the correct primary source for an IP
+  // allowlist check like this one. x-forwarded-for is NOT safe to read as
+  // "first entry" here: Supabase appends the real client IP to whatever the
+  // caller already sent rather than replacing it, so a caller can prepend
+  // any IP it likes (e.g. the Nedarim IP itself, to walk straight through
+  // this allowlist) and the first entry will be that spoofed value. If we
+  // ever fall back to x-forwarded-for, only the LAST entry (the one
+  // Supabase's own edge appended) is trustworthy.
+  const cfIp = req.headers.get("cf-connecting-ip") || "";
   const xff = req.headers.get("x-forwarded-for") || "";
   const realIp = req.headers.get("x-real-ip") || "";
-  const cfIp = req.headers.get("cf-connecting-ip") || "";
-  // x-forwarded-for עשוי להכיל רשימה — נקח את הראשון
-  const fromXff = xff.split(",")[0].trim();
-  return fromXff || realIp || cfIp || "";
+  const lastXff = xff.split(",").map((s) => s.trim()).filter(Boolean).pop() || "";
+  return cfIp || lastXff || realIp || "";
 }
 
 Deno.serve(async (req) => {
