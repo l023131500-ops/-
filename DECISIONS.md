@@ -3575,3 +3575,54 @@
     #4 ("החל פלטה על הפרויקט") אם יש דרך לאמת בקריאת-קוד בלבד בלי
     דפדפן, או סריקת silent-write-fail טרייה על `27-bkalut-price`/
     `29-bkalot-design` שטרם נבדקו לדפוס הזה.
+
+## 20/08/2026 — סבב 53
+
+274. **קראתי README.md/CONNECTIONS.md, בדקתי `core.run_progress`** (הצעד
+    האחרון: 31-hebrew-bridge-crm signout duplicate-submit, קומיטים
+    `2df05a5b`/`9599a92b`, כבר ה-parent של הענף הזה, כבר נדחף) ו-
+    `core.projects` בהיקף 17-31: אין שינוי מטא-דאטה. פעלתי לפי ההצעה
+    מסוף סבב 52: הרצתי סוכן Explore על `27-bkalut-price` (הכלי הפנימי
+    לצוות בקלות) בעדשת silent-write-fail (כתיבה שנכשלת בלי שום משוב
+    למשתמש) -- עדשה שלא נבדקה בו קודם (הסבב היחיד שנגע ב-27 עד כה,
+    #130-131, בדק חשיפת auth על endpoints, לא error-handling). `29-
+    bkalot-design` (המועמד השני מהרשימה) התברר כשלד תיעודי בלבד (README/
+    tokens.json/style-guide.html, אין קוד אפליקציה אמיתי) -- לא רלוונטי
+    לעדשה הזו, לא נבדק.
+275. **נמצא: `client/src/pages/community-admin.tsx` (עמוד ניהול שאלוני
+    גבאי-קהילה) -- שמונה פונקציות כתיבה (`createQuestionnaire`,
+    `saveQuestionnaire`, `addQuestion`, `updateQuestion`,
+    `deleteQuestion`, `addLink`, `toggleLink`, `deleteLink`, שורות
+    102-153) קראו ל-`apiRequest()` בלי `try/catch` כלל.** אימתתי ש-
+    `apiRequest` (`client/src/lib/queryClient.ts` שורה 71-91) זורק
+    `Error` על כל תגובה שאינה 2xx (`throwIfResNotOk`) -- כלומר כשל
+    כתיבה (500, ניתוק רשת, פקיעת session) הפך ל-unhandled promise
+    rejection: השדה מקבל blur/change כרגיל, שום toast/שגיאה לא מוצג,
+    המנהל חושב שהעריכה נשמרה. אימתתי מול תקדים קיים **באותו קובץ
+    עצמו**: `saveSettings` (שורה 79-90) כבר עוטף בדיוק את אותה קריאה
+    ב-`try/catch` + `toast({variant:"destructive"})` -- שמונה הפונקציות
+    שנמצאו הן היחידות בקובץ שסטו מהתקדים הזה. עמוד זה הוא זרימת העבודה
+    התכופה ביותר בממשק הניהול הפנימי (עריכת שאלון גבאי-קהילה: שדות
+    כותרת/תיאור/טקסטים על `onBlur`, מתגי הפעלה/איסוף-קשר, שאלות
+    בודדות, קישורים) -- כך שכשל שקט כאן פוגע ישירות בעבודת הצוות
+    היומיומית, לא בקצה נדיר.
+276. **התיקון: עטפתי כל שמונת הפונקציות ב-`try/catch` עם `toast`
+    ייעודי לפי הפעולה** (למשל "שמירת השאלון נכשלה"/"מחיקת השאלה
+    נכשלה"), זהה במבנה בדיוק ל-`saveSettings` הקיים באותו קובץ. אפס
+    שינוי לזרימת ההצלחה הרגילה בכל שמונת המקומות (אותם קריאות
+    `loadDetail`/`loadList`/איפוס state אחרי הצלחה, רק עכשיו בתוך
+    `try`). אין `node_modules`/`tsc` בעץ הזה -- אומתה איזון סוגריים
+    בסקריפט Node קצר על כל הקובץ (0), וקריאה חוזרת מלאה של ה-diff.
+    נדרש `git add -f` (`apps/27-bkalut-price/client` מוחרג כברירת מחדל
+    ב-gitignore, אותו דפוס חוזר מכל סבב קודם שנגע בנתיבי `client`/`src`
+    תחת `apps/`). קומיט `7307c64c` על `fix/b-bkalut-price-community-
+    admin-silent-fail-0820`, יידחף (מפעיל פריסת Vercel/PM2 תחת הנתיב
+    הממופה ל-27, `bekalut.more30.com`/`admin.bekalut.more30.com` -- לא
+    לגעת ב-`CLAUDE.md` המקומי של 27 שמתעד את `isAdminSubdomain()`/
+    `getPublicOrigin()`, לא נגעתי בהם, רק בטיפול השגיאות). **הבא
+    בתור:** שאר עמודי הניהול של 27 (`org-detail`/`orgs`/`integrations`/
+    `match`/`dashboard`/`price-comparison-admin`/`potential-admin`)
+    טרם נבדקו לעדשת silent-write-fail הזו -- מועמד טבעי לסבב הבא, או
+    חזרה לבדיקה חוזרת של rebrand/pricing TEST-mode בפועל על-גבי
+    עמודים חיים בכל 17-31 (רק תועד תיעודית, לא אומת מול תוכן עמוד
+    בפועל).
