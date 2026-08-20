@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { AdminGate } from "@/components/admin-gate";
 import { RefreshCcw, Eye } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 interface LogRow {
   id: number;
@@ -29,12 +30,14 @@ interface LogRow {
 }
 
 function WebhookLogInner() {
+  const { toast } = useToast();
   const [filter, setFilter] = useState("");
   const [opened, setOpened] = useState<number | null>(null);
   const q = useQuery<LogRow[]>({ queryKey: ["/api/admin/webhook-log"] });
   const retry = useMutation({
     mutationFn: async (id: number) => (await apiRequest("POST", `/api/admin/webhook-log/${id}/retry`)).json(),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["/api/admin/webhook-log"] }),
+    onError: () => toast({ title: "ניסיון החוזר נכשל", variant: "destructive" }),
   });
   const data = (q.data ?? []).filter((r) => {
     const t = filter.trim().toLowerCase();

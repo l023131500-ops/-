@@ -55,6 +55,7 @@ export default function ApiAccessPage() {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/api-access"] });
       toast({ title: "הטוקן בוטל" });
     },
+    onError: () => toast({ title: "ביטול הטוקן נכשל", variant: "destructive" }),
   });
 
   async function copy(text: string, label: string) {

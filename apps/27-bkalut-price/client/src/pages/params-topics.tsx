@@ -43,6 +43,7 @@ function ParamsTopicsInner() {
       queryClient.invalidateQueries({ queryKey: ["/api/public/catalog-settings"] });
       toast({ title: "ההגדרה נשמרה" });
     },
+    onError: () => toast({ title: "שמירת ההגדרה נכשלה", variant: "destructive" }),
   });
 
   const [q, setQ] = useState("");
