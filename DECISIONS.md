@@ -10436,3 +10436,60 @@
       `vite.config.ts`) לקישורים/redirect-ים דומים שנבנים מ-
       `window.location.origin` בלי `BASE_URL` (רק 15 נבדקה עד כה מבין
       אפליקציות ה-Vite).
+
+## 20/08/2026 — סבב 208 (loop A) — `16-chatzor-connect`: קישורי מיני-אתר לבית כנסת חסרי `basePath` (המשך 1007)
+
+1008. **המשך ישיר מ-1007 (סריקת שאר 04-16 עם `base:` ב-Vite): שלוש
+      אפליקציות (04-imud-torani, 12-smel-ndln) יש להן `base` אך אין בהן
+      קוד OAuth/קישור-שיתוף כלל, ו-06/10/14 הן אתרים סטטיים בלי `base`
+      בכלל — אבל ל-`16-chatzor-connect` (`base: "/chatzor/"`,
+      `BrowserRouter basename="/chatzor"`) יש בדיוק את אותה בעיה, בשלוש
+      נקודות.** `grep -rn '/k/'` על `src/` מצא: `App.tsx` שורה 56
+      (`<Route path="/k/:slug">`, כלומר הנתיב האמיתי הוא
+      `/chatzor/k/:slug`), ושלוש בנייות קישור שלא עברו דרך ה-router של
+      React (ולכן לא מקבלות את ה-`basename` אוטומטית כמו ש-`<Link to=...>`
+      מקבל — אימתתי ב-`SynagogueCard.tsx` שהיא כן `<Link>` מ-
+      `react-router-dom` ולכן תקינה, לא נגעתי בה).
+1009. **שלוש הבעיות הקונקרטיות, כולן user-facing אמיתיות:** (1)
+      `AdminSynagogues.tsx` שורה 53-54, `copyLink()` — בונה
+      `${window.location.origin}/k/${slug}` (בלי `/chatzor`) ומעתיק
+      ללוח; הכפתור מתויג "העתק קישור למתפללים" וה-toast אומר במפורש
+      "ניתן להפיץ אותו למתפללים" — כלומר קישור שנשלח בפועל למתפללים
+      אמיתיים, כל אחד מהם היה נוחת על 404 (`more30.com/k/slug` במקום
+      `more30.com/chatzor/k/slug`). (2) אותו קובץ שורה 113, `<a
+      href={\`/k/${s.slug}\`} target="_blank">` (כפתור "צפייה באתר",
+      תגית `<a>` רגילה — לא `<Link>` — ולכן `href="/..."` נפתר יחסית
+      לשורש הדומיין, לא ל-`basename`). (3) `GabaiDetails.tsx` שורה 34,
+      אותו דפוס בדיוק (`<a href={\`/k/${synagogue.slug}\`}>`, "צפייה
+      בדף החי", מסך שגבאי בית הכנסת רואה בפועל).
+1010. **אימות שהתבנית `basePath` אכן נדרשת (לא רק השערה):** `App.tsx`
+      שורה 47, `BASENAME = import.meta.env.BASE_URL.replace(/\/+$/, "")`
+      — קורא לאותה משתנה סביבה בדיוק ש-`vite.config.ts` שורה 10 קובעת
+      (`base = process.env.BASE_PATH ?? "/chatzor/"`), ו-`AdminLogin.tsx`
+      שורה 16 כבר משתמש ב-`${location.origin}${import.meta.env
+      .BASE_URL}auth/reset?...` לתיקון בדיוק אותה מלכודת עבור זרימת
+      איפוס סיסמה — כלומר הצוות כבר תפס את המקרה הזה עבור Supabase
+      `redirectTo` אבל פספס אותו עבור שלושת קישורי השיתוף/צפייה של בית
+      הכנסת.
+1011. **התיקון: שלוש הקריאות עברו לאותו דפוס קיים.** `copyLink`:
+      `${window.location.origin}${import.meta.env.BASE_URL}k/${slug}`;
+      שני ה-`<a href>`: `${import.meta.env.BASE_URL}k/${slug}` (יחסי
+      מספיק כי אלה תגיות `<a>` רגילות בתוך העמוד, לא צריך origin מלא).
+      `BASE_URL` מסתיים ב-`/` (`"/chatzor/"`) כך שאין צורך במחרוזת
+      חיבור נוספת בין הקידומת ל-`k/`.
+1012. **אפס רגרסיה מאומתת:** `git diff --stat`: 2 קבצים, +3/-3 — שינוי
+      3 שורות בונות-URL בלבד, בלי מחיקת ענף/כפתור/מסך קיים. בדיקת איזון
+      סוגריים בפייתון על שני הקבצים אחרי העריכה: תואם. `git check-ignore
+      -v` על שני הקבצים: exit 1 (לא מסוננים בפועל, למרות אזהרה חד-פעמית
+      דומה לזו שתועדה בסבב 207 מ-`git add` על תיקיית `apps/16-chatzor-
+      connect/src` — `git ls-files`/`git diff --cached --stat` אישרו
+      ששני הקבצים נוספו לקומיט כראוי). לא נגעתי במערכות/סכימות מוגנות
+      (08/09/bkalut-app/bkalot-admin/zr_*/NEDARIM3873/csj/csj_src/igud),
+      ב-`main`, או במערכת מחוץ להיקף (רק 01-16/gannenet/auth/super-
+      admin/admin dashboard/homepage ordering/pricing).
+1013. **הבא בתור:** שתי הטבלאות מ-987 (`client_timeline`,
+      `knowledge_chunks`), שני מועמדי הניגודיות מסבב 175, שני מופעי
+      `FormMessage` לא-פעילים מסבב 191, `core.project_tasks`/
+      `core.project_bugs` (6 פריטים חסומים), או לבדוק אם `16-chatzor-
+      connect` מכילה עוד קישורים דומים שנבנים מחוץ ל-router (כרגע רק
+      `/k/:slug` נבדק; לא נסרקו נתיבים אחרים כמו `/kashrut`).
