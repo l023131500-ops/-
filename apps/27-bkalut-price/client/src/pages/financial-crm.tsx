@@ -92,11 +92,13 @@ export default function FinancialCrmPage() {
       return r.json();
     },
     onSuccess: () => refreshFor("tasks"),
+    onError: () => toast({ title: "שגיאה בעדכון סטטוס המשימה", variant: "destructive" }),
   });
 
   const deleteTask = useMutation({
     mutationFn: async (id: number) => apiRequest("DELETE", `/api/financial/tasks/${id}`),
     onSuccess: () => refreshFor("tasks"),
+    onError: () => toast({ title: "שגיאה במחיקת המשימה", variant: "destructive" }),
   });
 
   const createMessage = useMutation({
@@ -114,6 +116,7 @@ export default function FinancialCrmPage() {
       setNewMessage({ body: "", channel: "app", senderRole: "admin" });
       toast({ title: "ההודעה נשלחה" });
     },
+    onError: () => toast({ title: "שגיאה בשליחת ההודעה", variant: "destructive" }),
   });
 
   const createDoc = useMutation({
@@ -129,6 +132,7 @@ export default function FinancialCrmPage() {
       setNewDoc({ title: "", docType: "consent", status: "pending", url: "", notes: "" });
       toast({ title: "המסמך נוסף" });
     },
+    onError: () => toast({ title: "שגיאה בהוספת המסמך", variant: "destructive" }),
   });
 
   const updateDocStatus = useMutation({
@@ -137,11 +141,13 @@ export default function FinancialCrmPage() {
       return r.json();
     },
     onSuccess: () => refreshFor("documents"),
+    onError: () => toast({ title: "שגיאה בעדכון סטטוס המסמך", variant: "destructive" }),
   });
 
   const deleteDoc = useMutation({
     mutationFn: async (id: number) => apiRequest("DELETE", `/api/financial/documents/${id}`),
     onSuccess: () => refreshFor("documents"),
+    onError: () => toast({ title: "שגיאה במחיקת המסמך", variant: "destructive" }),
   });
 
   const createReminder = useMutation({
@@ -157,11 +163,13 @@ export default function FinancialCrmPage() {
       setNewReminder({ title: "", body: "", dueAt: "", channel: "internal" });
       toast({ title: "התזכורת נשמרה" });
     },
+    onError: () => toast({ title: "שגיאה בשמירת התזכורת", variant: "destructive" }),
   });
 
   const deleteReminder = useMutation({
     mutationFn: async (id: number) => apiRequest("DELETE", `/api/financial/reminders/${id}`),
     onSuccess: () => refreshFor("reminders"),
+    onError: () => toast({ title: "שגיאה במחיקת התזכורת", variant: "destructive" }),
   });
 
   const createReport = useMutation({
@@ -177,6 +185,7 @@ export default function FinancialCrmPage() {
       setNewReport({ title: "", periodMonth: new Date().toISOString().slice(0, 7), summary: "", status: "draft" });
       toast({ title: "דוח נוצר" });
     },
+    onError: () => toast({ title: "שגיאה ביצירת הדוח", variant: "destructive" }),
   });
 
   const TABS: Array<{ key: Tab; label: string; icon: React.ComponentType<{ className?: string }> }> = [

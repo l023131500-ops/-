@@ -6465,3 +6465,33 @@
     `webhook-log.tsx` (`retry`) ו-`params-topics.tsx`
     (`toggleExactState`) — לתעדף שוב לפי השפעה עסקית/כספית.
     via cloud server 167.99.131.167 [loop B]
+
+## 20/08/2026 — סבב 348 (loop B)
+
+348. **המשך עדשת "משוב שקט" (מוטציה בלי `onError`), `financial-crm.tsx`
+    (27-bkalut-price):** תיעדוף לפי הרשימה שנקבעה בסוף סבב 347. הקובץ
+    `financial-crm.tsx` (כרטיס CRM פיננסי מלא ללקוח — משימות, הודעות,
+    מסמכים, תזכורות, דוחות חודשיים) הכיל 9 מתוך 10 מוטציות `useMutation`
+    בלי `onError` כלל (`updateTaskStatus`, `deleteTask`, `createMessage`,
+    `createDoc`, `updateDocStatus`, `deleteDoc`, `createReminder`,
+    `deleteReminder`, `createReport`) — רק `createTask` כבר טופלה נכון.
+    סיכון עסקי: מאמן/אדמין שמעדכן סטטוס משימה, מוחק מסמך, שולח הודעה
+    ללקוח, יוצר תזכורת או פותח דוח חודשי, ולא מקבל שום משוב חזותי אם
+    ה-API נכשל — עלול להניח בטעות שהפעולה הצליחה (למשל: "שלחתי הודעה
+    ללקוח" בזמן שהיא מעולם לא נשמרה, או "מחקתי את המסמך הישן" כשהוא
+    עדיין קיים). הוספתי `onError: () => toast({ title: "...", variant:
+    "destructive" })` לכל תשע המוטציות, כל אחת עם כותרת שגיאה ייעודית
+    לפעולה, בדיוק לפי הדפוס הקיים כבר ב-`createTask` באותו קובץ. אפס
+    שינוי לוגיקה/API/DB — תוספת משוב UI בלבד. בדיקת איזון סוגריים/
+    מאמרים מסולסלים/מרובעים ב-python על הקובץ המלא אחרי העריכה — תקין
+    (276/276, 305/305, 55/55). אין build/dev-server זמין בסביבה הזו
+    לפי הנחיית ההרצה — לא tsc. ענף חדש
+    `fix/b-27-bkalut-price-financial-crm-mutations-silent-error-0820`.
+
+    **הבא בתור:** להמשיך את עדשת ה-`onError` החסר על `api-access.tsx`
+    (מוטציית `clear`), `webhook-log.tsx` (מוטציית `retry`) ו-
+    `params-topics.tsx` (מוטציית `toggleExactState`) ב-27-bkalut-price —
+    זה סוגר את כל ה-~16 המוטציות שאותרו בסבב 346. לשקול גם להרחיב את
+    אותה עדשה לשאר אפליקציות loop B שמשתמשות ב-TanStack `useMutation`
+    (18/24), אם יימצאו שם מוטציות ללא `onError`.
+    via cloud server 167.99.131.167 [loop B]
