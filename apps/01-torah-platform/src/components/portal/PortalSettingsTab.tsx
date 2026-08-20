@@ -317,12 +317,12 @@ const PortalSettingsTab = ({ portalId, portalType, portalData, onUpdate }: Porta
           </h3>
           <div className="space-y-3">
             <div>
-              <label className="font-body text-xs font-medium text-muted-foreground mb-1 block">קישור לתרומה</label>
-              <Input value={donationLink} onChange={e => setDonationLink(e.target.value)} placeholder="https://donate.example.com/..." className="border-gold/20 focus:border-gold/50" />
+              <label htmlFor="portal-settings-donation-link" className="font-body text-xs font-medium text-muted-foreground mb-1 block">קישור לתרומה</label>
+              <Input id="portal-settings-donation-link" value={donationLink} onChange={e => setDonationLink(e.target.value)} placeholder="https://donate.example.com/..." className="border-gold/20 focus:border-gold/50" />
             </div>
             <div>
-              <label className="font-body text-xs font-medium text-muted-foreground mb-1 block">קישור להורדת שיעור</label>
-              <Input value={lessonDownloadUrl} onChange={e => setLessonDownloadUrl(e.target.value)} placeholder="https://drive.google.com/..." className="border-gold/20 focus:border-gold/50" />
+              <label htmlFor="portal-settings-lesson-download-url" className="font-body text-xs font-medium text-muted-foreground mb-1 block">קישור להורדת שיעור</label>
+              <Input id="portal-settings-lesson-download-url" value={lessonDownloadUrl} onChange={e => setLessonDownloadUrl(e.target.value)} placeholder="https://drive.google.com/..." className="border-gold/20 focus:border-gold/50" />
             </div>
           </div>
           <Button onClick={saveDonationSettings} disabled={saving} className="mt-4 bg-gradient-teal text-primary-foreground font-body font-bold gap-2">
@@ -353,28 +353,28 @@ const PortalSettingsTab = ({ portalId, portalType, portalData, onUpdate }: Porta
         </h3>
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="font-body text-xs font-medium text-muted-foreground mb-1 block">טלפון</label>
-            <Input value={contactPhone} onChange={e => setContactPhone(e.target.value)} placeholder="03-1234567" className="border-gold/20 focus:border-gold/50" />
+            <label htmlFor="portal-settings-contact-phone" className="font-body text-xs font-medium text-muted-foreground mb-1 block">טלפון</label>
+            <Input id="portal-settings-contact-phone" value={contactPhone} onChange={e => setContactPhone(e.target.value)} placeholder="03-1234567" className="border-gold/20 focus:border-gold/50" />
           </div>
           <div>
-            <label className="font-body text-xs font-medium text-muted-foreground mb-1 block">וואטסאפ</label>
-            <Input value={contactWhatsapp} onChange={e => setContactWhatsapp(e.target.value)} placeholder="0501234567" className="border-gold/20 focus:border-gold/50" />
+            <label htmlFor="portal-settings-contact-whatsapp" className="font-body text-xs font-medium text-muted-foreground mb-1 block">וואטסאפ</label>
+            <Input id="portal-settings-contact-whatsapp" value={contactWhatsapp} onChange={e => setContactWhatsapp(e.target.value)} placeholder="0501234567" className="border-gold/20 focus:border-gold/50" />
           </div>
           <div>
-            <label className="font-body text-xs font-medium text-muted-foreground mb-1 block">אימייל</label>
-            <Input value={contactEmail} onChange={e => setContactEmail(e.target.value)} placeholder="info@org.com" className="border-gold/20 focus:border-gold/50" />
+            <label htmlFor="portal-settings-contact-email" className="font-body text-xs font-medium text-muted-foreground mb-1 block">אימייל</label>
+            <Input id="portal-settings-contact-email" value={contactEmail} onChange={e => setContactEmail(e.target.value)} placeholder="info@org.com" className="border-gold/20 focus:border-gold/50" />
           </div>
           <div>
-            <label className="font-body text-xs font-medium text-muted-foreground mb-1 block">פקס</label>
-            <Input value={contactFax} onChange={e => setContactFax(e.target.value)} placeholder="03-1234568" className="border-gold/20 focus:border-gold/50" />
+            <label htmlFor="portal-settings-contact-fax" className="font-body text-xs font-medium text-muted-foreground mb-1 block">פקס</label>
+            <Input id="portal-settings-contact-fax" value={contactFax} onChange={e => setContactFax(e.target.value)} placeholder="03-1234568" className="border-gold/20 focus:border-gold/50" />
           </div>
           <div className="col-span-2">
-            <label className="font-body text-xs font-medium text-muted-foreground mb-1 block">כתובת</label>
-            <Input value={contactAddress} onChange={e => setContactAddress(e.target.value)} placeholder="רחוב, עיר" className="border-gold/20 focus:border-gold/50" />
+            <label htmlFor="portal-settings-contact-address" className="font-body text-xs font-medium text-muted-foreground mb-1 block">כתובת</label>
+            <Input id="portal-settings-contact-address" value={contactAddress} onChange={e => setContactAddress(e.target.value)} placeholder="רחוב, עיר" className="border-gold/20 focus:border-gold/50" />
           </div>
           <div className="col-span-2">
-            <label className="font-body text-xs font-medium text-muted-foreground mb-1 block">כתובת מען (דואר)</label>
-            <Input value={contactMailingAddress} onChange={e => setContactMailingAddress(e.target.value)} placeholder="ת.ד. ..." className="border-gold/20 focus:border-gold/50" />
+            <label htmlFor="portal-settings-contact-mailing-address" className="font-body text-xs font-medium text-muted-foreground mb-1 block">כתובת מען (דואר)</label>
+            <Input id="portal-settings-contact-mailing-address" value={contactMailingAddress} onChange={e => setContactMailingAddress(e.target.value)} placeholder="ת.ד. ..." className="border-gold/20 focus:border-gold/50" />
           </div>
         </div>
         <Button onClick={saveContactInfo} disabled={saving} className="mt-4 bg-gradient-teal text-primary-foreground font-body font-bold gap-2">
