@@ -8442,3 +8442,28 @@
      40-gannenet, או לפתוח עדשה נוספת (מועמד: `04-imud-torani/
      Editor.tsx` העצמאי), או לחזור ל-`core.project_tasks`/
      `core.project_bugs` (5 פריטים פתוחים, עדיין חסומים).
+
+## 20/08/2026 — סבב 170 (loop A)
+
+830. **המשך עדשת skip-to-content ל-15-egod.** `components/Layout.tsx`
+     הוא ה-wrapper המשותף לכל שבעת העמודים הציבוריים (`Index`,
+     `Login`, `JoinTeacher`, `About`, `RequestLesson`,
+     `Questionnaire`, `FindLesson`) — כבר בנוי בצורה נכונה
+     (`<Navbar/><main>{children}</main><Footer/>`), רק חסר קישור
+     דילוג ו-`id` על ה-`<main>`.
+831. **התיקון:** הוספתי קישור `sr-only`/`focus:not-sr-only` כאלמנט
+     ראשון לפני `<Navbar/>`, ו-`id="main-content"` על ה-`<main>`
+     הקיים. צבעים `bg-secondary`/`text-secondary-foreground` —
+     צמד קיים ומאומת בפועל ב-`Navbar.tsx` (כפתור ה-CTA הראשי,
+     שורה 74), לא ניחוש. תיקון יחיד שסוגר את כל שבעת העמודים
+     בבת אחת בזכות ה-shared layout.
+832. **אפס רגרסיה מאומתת:** `git diff --stat` — קובץ אחד, 7+/1-,
+     תוספת טהורה, ללא שינוי בלוגיקת `children`/`Navbar`/`Footer`.
+     איזון סוגריים בפייתון על הקובץ המלא: תואם. אין tsc/npm
+     בסביבה זו. Commit `7f17cf82` על
+     `fix/a-icon-only-buttons-round2-0820`, נדחף ל-origin (מפעיל
+     פריסת Vercel תחת more30.com/egod).
+833. **הבא בתור:** לסגור את העדשה עם 40-gannenet (המועמד האחרון
+     בתור מסבב 165), או לפתוח עדשה חדשה, או לחזור ל-
+     `core.project_tasks`/`core.project_bugs` (5 פריטים פתוחים,
+     עדיין חסומים).
