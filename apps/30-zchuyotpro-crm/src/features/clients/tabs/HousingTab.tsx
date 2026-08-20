@@ -92,8 +92,8 @@ export function HousingTab({ clientId }: { clientId: string }) {
 
         <div className="border-t pt-4">
           <div className="flex items-center gap-3 mb-3">
-            <Switch checked={f.has_mortgage} onCheckedChange={(v) => setF({ ...f, has_mortgage: v })} />
-            <Label>קיימת משכנתא</Label>
+            <Switch id="housing-has-mortgage" checked={f.has_mortgage} onCheckedChange={(v) => setF({ ...f, has_mortgage: v })} />
+            <Label htmlFor="housing-has-mortgage">קיימת משכנתא</Label>
           </div>
           {f.has_mortgage && (
             <div className="grid gap-3 md:grid-cols-2 ps-12">
@@ -108,8 +108,8 @@ export function HousingTab({ clientId }: { clientId: string }) {
         <div className="border-t pt-4">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-3">
-              <Switch checked={f.has_additional_property} onCheckedChange={(v) => setF({ ...f, has_additional_property: v })} />
-              <Label>נכסים נוספים</Label>
+              <Switch id="housing-has-additional-property" checked={f.has_additional_property} onCheckedChange={(v) => setF({ ...f, has_additional_property: v })} />
+              <Label htmlFor="housing-has-additional-property">נכסים נוספים</Label>
             </div>
             {f.has_additional_property && (
               <Button size="sm" variant="outline" onClick={() => setF({ ...f, additional_properties: [...f.additional_properties, { address: "", type: "", value: 0 }] })}><Plus className="h-3 w-3 ms-1" /> הוסף</Button>

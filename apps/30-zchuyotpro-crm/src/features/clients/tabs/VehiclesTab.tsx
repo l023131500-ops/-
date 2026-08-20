@@ -106,8 +106,8 @@ export function VehiclesTab({ clientId }: { clientId: string }) {
               <Field label="דגם"><Input value={editing.model ?? ""} onChange={(e) => setEditing({ ...editing, model: e.target.value })} /></Field>
               <Field label="שנת ייצור"><Input type="number" value={editing.year ?? ""} onChange={(e) => setEditing({ ...editing, year: e.target.value ? Number(e.target.value) : null })} /></Field>
               <Field label="סוג רכב"><Input value={editing.vehicle_type ?? ""} onChange={(e) => setEditing({ ...editing, vehicle_type: e.target.value })} /></Field>
-              <div className="flex items-center justify-between"><Label>תג חנייה לנכה</Label><Switch checked={!!editing.disability_badge} onCheckedChange={(v) => setEditing({ ...editing, disability_badge: v })} /></div>
-              <div className="flex items-center justify-between"><Label>קיים ביטוח</Label><Switch checked={!!editing.has_insurance} onCheckedChange={(v) => setEditing({ ...editing, has_insurance: v })} /></div>
+              <div className="flex items-center justify-between"><Label htmlFor="vehicle-disability-badge">תג חנייה לנכה</Label><Switch id="vehicle-disability-badge" checked={!!editing.disability_badge} onCheckedChange={(v) => setEditing({ ...editing, disability_badge: v })} /></div>
+              <div className="flex items-center justify-between"><Label htmlFor="vehicle-has-insurance">קיים ביטוח</Label><Switch id="vehicle-has-insurance" checked={!!editing.has_insurance} onCheckedChange={(v) => setEditing({ ...editing, has_insurance: v })} /></div>
               <Field label="תוקף ביטוח"><Input type="date" value={editing.insurance_expiry ?? ""} onChange={(e) => setEditing({ ...editing, insurance_expiry: e.target.value })} /></Field>
             </div>
           )}

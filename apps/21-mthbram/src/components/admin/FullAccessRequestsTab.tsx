@@ -120,12 +120,12 @@ export default function FullAccessRequestsTab() {
                   const checked = drafts[req.id]?.[f.id] ?? false;
                   return (
                     <div key={f.id} className="flex items-center justify-between gap-2 p-2 bg-card rounded-lg border">
-                      <Label className="text-sm font-body cursor-pointer flex-1">
+                      <Label className="text-sm font-body cursor-pointer flex-1" htmlFor={`feature-${req.id}-${f.id}`}>
                         <span className="ml-1">{f.emoji}</span>
                         {f.label}
                         {requested && <Badge variant="outline" className="mr-2 text-[10px] border-gold/40 text-gold">התבקש</Badge>}
                       </Label>
-                      <Switch checked={checked} onCheckedChange={() => toggle(req.id, f.id)} />
+                      <Switch id={`feature-${req.id}-${f.id}`} checked={checked} onCheckedChange={() => toggle(req.id, f.id)} />
                     </div>
                   );
                 })}

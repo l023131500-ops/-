@@ -1775,10 +1775,11 @@ function TextLayerControls({
       </div>
 
       <div className="flex items-center justify-between">
-        <Label className="text-xs text-[#F5EEDD]/70">
+        <Label className="text-xs text-[#F5EEDD]/70" htmlFor="layer-kerning-switch">
           זיווג אותיות <code className="font-mono text-[10px] text-[#C9A227]/70">kerning</code>
         </Label>
         <Switch
+          id="layer-kerning-switch"
           checked={layer.kerning !== false}
           onCheckedChange={(v) => onChange({ kerning: v })}
           data-testid="switch-layer-kerning"
