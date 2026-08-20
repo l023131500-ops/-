@@ -11810,3 +11810,35 @@
       מערכות 01-16 נוספות (לא רק 03) לדפוס "ענף אחד ב-conditional URL
       חסר basePath" שאותר בשלושת הסבבים האחרונים — הוא הוכיח את עצמו
       כדפוס חוזר בקוד שהועתק/הודבק בין מסכי admin דומים.
+
+## 20/08/2026 — סבב 235 (loop A) — `03-igud-ads/app/(admin)/admin/transcribe/uploads/page.tsx`: guard `remove()` נגד double-submit + כשל רשת שקט
+
+1143. **המשך ישיר להמלצת סבבים 232/234:** `notifications/page.tsx`
+      ו-`glossary/page.tsx` `remove()` כבר תוקנו (סבבים קודמים ב-guard
+      זהה); `uploads/page.tsx` `remove()` נשאר הפריט האחרון מאותה רשימה.
+      אימתתי ישירות בקוד: `remove()` (שורות 71-76 לפני התיקון) ירה
+      `fetch(..., {method:"DELETE"})` בלי guard וכנגד לחיצה כפולה, ובלי
+      בדיקת `res.ok`/`try-catch` — מחיקה כושלת (רשת/שרת) נראתה כמו no-op
+      שקט, בלי הודעת שגיאה למשתמש, וכפתור "מחק" נשאר לחיץ תוך כדי
+      הבקשה הקודמת.
+1144. **התיקון:** הוספתי `busyId` state (זהה לתבנית ב-`glossary/page.tsx`
+      מסבב קודם): `remove()` בודק/נועל `busyId` לפני הבקשה, עוטף
+      ב-`try/catch`, מציג `alert()` על תגובת שגיאה או כשל רשת, ומנקה
+      את ה-guard ב-`finally`. הכפתור בטבלה מקבל `disabled={busyId ===
+      u.id}` ומציג "מוחק…" בזמן הפעולה, אותו דפוס בדיוק כמו שאר עמודי
+      ה-admin (`users`/`templates`/`glossary`/`coupons`).
+1145. **אפס רגרסיה מאומתת:** `git diff --stat`: קובץ אחד, +23/-5.
+      שום פיצ'ר/מסך/כפתור לא הוסר — רק נוסף guard ו-error handling.
+      בדיקת איזון סוגריים/מסולסלים בפייתון על הקובץ המלא לאחר העריכה:
+      תואם (`{`: 68/68, `(`: 78/78). `tsc` לא זמין בסביבה — אימתתי
+      ידנית מול התבנית הזהה שכבר עברה בדיקה בסבבים קודמים (`glossary`,
+      `coupons`). לא נגעתי במערכות/סכימות מוגנות (08/09/bkalut-app/
+      bkalot-admin/zr_*/NEDARIM3873/csj/csj_src/igud), ב-`main`, או
+      במערכת מחוץ להיקף (03 בטווח 01-16).
+1146. **הבא בתור:** רשימת ה-`remove()`/`toggle()` בלי guard תחת
+      `03-igud-ads` נראית מכוסה כעת (users/templates/glossary/coupons/
+      uploads/notifications). מומלץ לעבור למערכות אחרות ב-01-16 שטרם
+      נסרקו לעומק לאותו מחלקת-באג (double-submit/silent-network-failure)
+      — למשל שאר עמודי admin ב-`02-igud-transcribe`/`04-imud-torani`
+      שטרם נבדקו, או לחזור לשכבת התשתית המשותפת (gannenet/40,
+      super-admin, admin dashboard) שלא קיבלה סבב ייעודי לאחרונה.

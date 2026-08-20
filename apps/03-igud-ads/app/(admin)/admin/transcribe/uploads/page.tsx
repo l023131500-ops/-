@@ -41,6 +41,7 @@ export default function UploadsPage() {
   const [uploads, setUploads] = useState<Upload[]>([]);
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState<UploadDetail | null>(null);
+  const [busyId, setBusyId] = useState<string | null>(null);
 
   const load = async () => {
     const res = await fetch("/modaot/api/admin/transcribe/uploads", { cache: "no-store" });
@@ -70,9 +71,22 @@ export default function UploadsPage() {
 
   const remove = async (id: string) => {
     if (!confirm("למחוק העלאה זו וכל הקבצים שלה?")) return;
-    await fetch(`/modaot/api/admin/transcribe/uploads?id=${id}`, { method: "DELETE" });
-    setSelected(null);
-    load();
+    if (busyId) return;
+    setBusyId(id);
+    try {
+      const res = await fetch(`/modaot/api/admin/transcribe/uploads?id=${id}`, { method: "DELETE" });
+      if (res.ok) {
+        setSelected(null);
+        load();
+      } else {
+        const d = await res.json().catch(() => ({}));
+        alert(d.error || "שגיאה במחיקה");
+      }
+    } catch {
+      alert("שגיאת רשת — נסה שוב");
+    } finally {
+      setBusyId(null);
+    }
   };
 
   return (
@@ -117,8 +131,12 @@ export default function UploadsPage() {
                     <button onClick={() => open(u.id)} className="text-brand-blue hover:underline">
                       צפה
                     </button>
-                    <button onClick={() => remove(u.id)} className="text-red-600 hover:underline">
-                      מחק
+                    <button
+                      onClick={() => remove(u.id)}
+                      disabled={busyId === u.id}
+                      className="text-red-600 hover:underline disabled:opacity-50 disabled:no-underline"
+                    >
+                      {busyId === u.id ? "מוחק…" : "מחק"}
                     </button>
                   </td>
                 </tr>
