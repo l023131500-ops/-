@@ -6372,3 +6372,54 @@
      כי סבב 82/83 מצא בהן דפוס HTML/JS סטטי או "0 שדות חובה",
      שונה מ-01/02/03/12/15) לחפש לנס נגישות/UX אחר, או לבדוק את
      `core.project_tasks`/`core.project_bugs` מחדש למשימה חדשה.
+
+## 20/08/2026 — סבב 113 (loop A)
+
+600. **בדקתי `git log`/`core.run_progress`/`core.project_bugs`/
+     `core.project_tasks` לפני שהתחלתי.** סבב 112 סגור (commit
+     `ea698507`/`8819f10b`, תואם HEAD). `core.project_bugs` ריק.
+     חמש המשימות הפתוחות ב-`core.project_tasks` (02/12/13/25/32)
+     כולן חסומות על סוד חסר (`OPENAI_API_KEY`, `SUPABASE_SERVICE_
+     KEY`) או החלטת מיזוג/origin שאינה בסמכות סוכן — אותו מצב
+     כמו סבב 112. המשכתי להמלצת #599: Explore-agent סקר טרי על
+     שאר האפליקציות בטווח 01-16 שלא נבדקו לעומק ללנס `label`/
+     `htmlFor` ו-כפתורי-אייקון-בלי-שם.
+601. **מיפוי מקדים גילה ש-9 מתוך 10 האפליקציות הנותרות (05, 06,
+     07, 10, 11, 13, 14, 16) הן `"source": "not-vendored"`/
+     `"in-progress"`** (מניפסט `app.json` בלבד, אין קוד מקור
+     בריפו הציבורי הזה — עקבי עם "Migration note" ב-`README.md`).
+     **רק `04-imud-torani` יש לה קוד מקור מלא** (`"source":
+     "vendored"`, 84 קבצי `.tsx`/`.ts` תחת `client/src/{pages,
+     components,hooks,lib}`) — אף סבב קודם לא סקר אותה ללנס הזה.
+     הרצתי Explore-agent על `apps/04-imud-torani/client/src`: אין
+     פערי כפתור-אייקון-בלי-שם (כל הכפתורים כבר `aria-label`/
+     `title`/טקסט גלוי), אבל נמצאו כמה זוגות `<label>`/בקרה לא-
+     מקושרים ב-`Wizard.tsx` ו-`DesignDept.tsx` (זה האחרון דרך
+     helpers `Field`/`SliderField`/`ToggleField` שמשמשים הרבה
+     פעמים — תיקון גדול, דורש שינוי חתימת prop).
+602. **התיקון:** `apps/04-imud-torani/client/src/pages/Wizard.tsx`
+     שורות 279-284 — שני שדות "שם הספר"/"מחבר (רשות)" בצעד
+     האחרון של אשף יצירת ספר. הוספתי `id="wiz-title"`/
+     `htmlFor="wiz-title"` ו-`id="wiz-author"`/`htmlFor="wiz-
+     author"` (מותאם לקידומת `data-testid` הקיימת באותם אלמנטים,
+     ואומת שאין התנגשות `id` אחרת בקובץ). לא נגעתי בקבוצת-כפתורים
+     בשורה 181 (`{q.label}` מעל כמה אפשרויות) — אותו דפוס group-
+     semantics כמו `MultiSelect`/`RadioSelect` בסבב 112, לא
+     htmlFor; ולא ב-`Field`/`SliderField`/`ToggleField` ב-
+     `DesignDept.tsx` — תיקון גדול יותר (שינוי חתימת helper
+     בשימוש חוזר), נשאר למועמד סבב הבא.
+603. **אפס רגרסיה מאומתת:** `git diff` מלא — קובץ אחד, 4+/4-, רק
+     `id`/`htmlFor` נוספו; לא נגעתי ב-`value`/`onChange`/
+     `placeholder`/`data-testid`/הלוגיקה. אין `tsc`/`npm` בסביבה
+     הזו — אומת בבדיקת איזון `{}`/`()`/`[]` ב-Python על הקובץ
+     המלא (120/120, 119/119, 41/41). קובץ זה **לא** ב-gitignore
+     (בניגוד ל-01-torah-platform, לא נדרש `git add -f`).
+604. **הבא בתור:** `Field`/`SliderField`/`ToggleField` helpers
+     ב-`04-imud-torani/client/src/pages/departments/DesignDept.tsx`
+     (שורות 271-296, בשימוש חוזר) — דורש להעביר `id` כ-prop
+     ולחווט ל-`htmlFor`/`children` clone או ל-`aria-labelledby`;
+     וקבוצת-הכפתורים ב-`Wizard.tsx` שורה 181 (group semantics).
+     שאר 9 האפליקציות בטווח (05-07, 10-11, 13-14, 16) הן manifest-
+     בלבד (`not-vendored`/`in-progress`) — אין קוד לתקן בהן בריפו
+     הזה עד שיוחלט לוונדר אותן (החלטה חורגת מסמכות סוכן, ר'
+     "Migration note" ב-README.md).

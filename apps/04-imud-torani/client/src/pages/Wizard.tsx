@@ -276,12 +276,12 @@ export default function Wizard() {
                 <div className="space-y-2 border-t border-border pt-4">
                   <div className="grid grid-cols-2 gap-2">
                     <div>
-                      <Label className="text-xs">שם הספר</Label>
-                      <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="קונטרס הביטחון" data-testid="wiz-title" />
+                      <Label htmlFor="wiz-title" className="text-xs">שם הספר</Label>
+                      <Input id="wiz-title" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="קונטרס הביטחון" data-testid="wiz-title" />
                     </div>
                     <div>
-                      <Label className="text-xs">מחבר (רשות)</Label>
-                      <Input value={author} onChange={(e) => setAuthor(e.target.value)} placeholder="שם המחבר" data-testid="wiz-author" />
+                      <Label htmlFor="wiz-author" className="text-xs">מחבר (רשות)</Label>
+                      <Input id="wiz-author" value={author} onChange={(e) => setAuthor(e.target.value)} placeholder="שם המחבר" data-testid="wiz-author" />
                     </div>
                   </div>
                   <Button
