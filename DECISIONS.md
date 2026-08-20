@@ -3610,3 +3610,62 @@
      (#292-293) ב-CONNECTIONS.md עצמו; (ג) לשקול לבדוק שיטתית האם יש
      עוד מערכות (05/07/11/13/14/16) עם דריפט דומה בין `app.json`
      ל-`core.projects` — טרם נבדק שיטתית מעבר ל-01/03/04/15.
+
+## 20/08/2026 (LOOP A — סבב 52) — 13-property-identity: פתרתי סתירת null/null מול קוד מקור וקטור; אימתתי ששתי סכימות בשם `nadlan` על שני פרויקטים שונים אינן קשורות זו לזו
+
+301. **בדקתי מחדש `core.run_progress` לפני שהתחלתי.** סבב 51 סגור (commit
+     `7cb1019b`), הציע שלושה כיוונים: (א) 06/10/12 — לאתר שם סכימה מדויק
+     על `csjekrvukbdznetsrodj`; (ב) לתעד רשימת סכימות בלתי-מתועדות
+     ב-CONNECTIONS.md; (ג) בדיקה שיטתית של 05/07/11/13/14/16. בחרתי
+     לפתוח ב-(ג) כי חלק מהמערכות האלה (בניגוד ל-06/10/12) **כן** מכילות
+     קוד מקור וקטור בפועל, כך שאפשר לפתור בוודאות במקום להשערה — בדיוק
+     כמו שסבב 51 פתר את 04.
+302. **16-chatzor-connect ו-05/07/11/14 (אתרי שיווק סטטיים): ללא דריפט.**
+     16 יש לו `.env.example` + `src/lib/supabase.ts` וקטורים המאשרים
+     `uhnrgujbdxhhmoxcjria`/`chatzor` — תואם בדיוק ל-`app.json`/
+     `core.projects` הקיימים, שום תיקון נדרש. 05/07/11/14 הם אתרי שיווק
+     סטטיים (`index.html`/`script.js`/`styles.css`) ללא קוד Supabase כלל —
+     `null`/`null` הקיים נכון.
+303. **13-property-identity — נמצא דריפט אמיתי, ניתן לפתרון בוודאות.**
+     `app.json`/`core.projects` היו `null`/`null` (וסומן `not-vendored`),
+     אך בפועל יש קוד מקור וקטור תחת `smart-research/` (README, מיגרציית
+     SQL, Edge Function `nadlan-smart-research` ב-Deno). הראיות:
+     - `smart-research/README.md` כולל דוגמת `curl` מפורשת מול
+       `https://csjekrvukbdznetsrodj.supabase.co/functions/v1/nadlan-smart-research`
+       ומצהיר "מבודד בסכימת `nadlan`".
+     - `smart-research/db/migration_smart_research.sql` יוצר טבלאות
+       בסכימה `nadlan`: `data_sources`, `localities`, `location_profiles`,
+       `stat_areas`, `crime_stats`, `geo_pois`, `election_results`,
+       `urban_renewal`, `research_leads`, `questionnaire_templates`.
+     - אימתתי מול ה-DB בפועל: `list_tables` על `csjekrvukbdznetsrodj`
+       מראה בדיוק את כל הטבלאות האלה קיימות תחת סכימה `nadlan`
+       (`location_profiles`, `research_leads` וכו' — שמן תואם בדיוק
+       לשמות שבמיגרציה).
+304. **בדקתי בקפידה שלא מדובר בבלבול עם מערכת 32 (נדל"ן ברגע):** ל-32
+     יש **גם** סכימה בשם `nadlan`, אך על פרויקט **אחר** (ה-hub,
+     `uhnrgujbdxhhmoxcjria`) עם טבלאות שונות לגמרי (`properties`,
+     `transactions`, `poi`, `sources_registry`, `saved_reports`...).
+     `list_tables` על שני הפרויקטים מאשר שאין חפיפה בשמות טבלה בין שתי
+     הסכימות — שני "nadlan" נפרדים לגמרי במקרה עם אותו שם, לא אותה
+     סכימה. `core.projects.audit_evidence` הקיים עבור 13 (לא נכתב על
+     ידי) גם מציין קשר תמטי בין 13 ל-32 (אותה tagline) — בדקתי במפורש
+     שזה **לא** אומר שהם חולקים DB, וזה אינו המקרה.
+305. **התיקון:** עדכנתי `apps/13-property-identity/app.json`
+     (`supabase.project`/`schema` מ-`null`/`null` ל-
+     `csjekrvukbdznetsrodj`/`nadlan`, עם הערת מקור-ראיה) וגם
+     `core.projects` החי (`UPDATE ... WHERE number='13'`) — לפי אותו
+     תקדים שנקבע בסבב 51 (לתקן את שני המקומות, לא רק את המניפסט). לא
+     נגעתי ב-`deployTarget`/`live`/`stage`/`source` — אין ראיית קוד
+     חד-משמעית לסטטוס פריסה בפועל (ה-README מראה תוצאות בדיקה E2E אך לא
+     אישור production), אז השארתי `unknown`/`false`/`wip`/`not-vendored`
+     כפי שהיו, עקבי עם העיקרון "לא לנחש". ולידציית JSON
+     (`python3 -m json.tool`) עברה. ענף
+     `fix/a-13-property-identity-supabase-drift-0820`.
+306. **הבא בתור:** (א) 06/10/12 — עדיין לא נפתר (אין קוד מקור וקטור
+     מקומי לאף אחת מהשלוש, לכן לא ניתן לפתור בוודאות בלי לנחש — אולי
+     שווה לבדוק אם יש README/תיעוד חיצוני נוסף בתיקיות שלהן שלא נבדק
+     עדיין); (ב) לתעד את רשימת הפרויקטים/הסכימות הבלתי-מתועדות
+     (#292-293) ב-CONNECTIONS.md עצמו — עדיין לא נעשה; (ג) בדיקת (ג)
+     הושלמה עבור 05/07/11/13/14/16 — כל ההיקף 01-16 נבדק כעת מול דריפט
+     `app.json`/`core.projects` (01/03/04/13/15 תוקנו, 02/06/10/12/16
+     ללא ראיית קוד וקטורית מספקת או ללא דריפט).

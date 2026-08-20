@@ -8,8 +8,9 @@
   "repo": "l023131500-ops/property-identity",
   "basePath": "/13",
   "supabase": {
-    "project": null,
-    "schema": null
+    "project": "csjekrvukbdznetsrodj",
+    "schema": "nadlan",
+    "note": "verified 20/08/2026 (loop A round 52) — smart-research/README.md curl example + migration_smart_research.sql target this project's `nadlan` schema; table names (location_profiles, data_sources, localities, stat_areas, crime_stats, geo_pois, election_results, urban_renewal, research_leads, questionnaire_templates) confirmed present live via MCP list_tables. Distinct from the unrelated `nadlan` schema on the hub project (uhnrgujbdxhhmoxcjria, system 32) which has different tables (properties, transactions, poi, ...)."
   },
   "deployTarget": "unknown",
   "protected": false,
