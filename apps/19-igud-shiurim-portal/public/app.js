@@ -2477,7 +2477,7 @@ async function renderSuperadminDashboard(client) {
     document.querySelectorAll('[data-toggle-status]').forEach(btn => btn.onclick = async () => {
       const newStatus = btn.dataset.status === 'active' ? 'inactive' : 'active';
       await api(`/api/superadmin/tenants/${btn.dataset.toggleStatus}`, { method: 'PATCH', auth: true, body: JSON.stringify({ status: newStatus }) });
-      const t = tenants.find(x => x.id === btn.dataset.toggleStatus);
+      const t = tenants.find(x => String(x.id) === btn.dataset.toggleStatus);
       if (t) t.status = newStatus;
       draw();
     });
@@ -2485,7 +2485,7 @@ async function renderSuperadminDashboard(client) {
     document.querySelectorAll('[data-toggle-public]').forEach(btn => btn.onclick = async () => {
       const newVal = btn.dataset.public !== 'true';
       await api(`/api/superadmin/tenants/${btn.dataset.togglePublic}`, { method: 'PATCH', auth: true, body: JSON.stringify({ is_public: newVal }) });
-      const t = tenants.find(x => x.id === btn.dataset.togglePublic);
+      const t = tenants.find(x => String(x.id) === btn.dataset.togglePublic);
       if (t) t.is_public = newVal;
       draw();
     });
@@ -2495,7 +2495,7 @@ async function renderSuperadminDashboard(client) {
       const submitBtn = e.target.querySelector('button[type="submit"]');
       if (submitBtn) submitBtn.disabled = true;
       const fd = Object.fromEntries(new FormData(e.target));
-      const req = nationalRequests.find(x => x.id === e.target.dataset.reqId);
+      const req = nationalRequests.find(x => String(x.id) === e.target.dataset.reqId);
       try {
         await api('/api/superadmin/role-links', {
           method: 'POST', auth: true,
@@ -2511,7 +2511,7 @@ async function renderSuperadminDashboard(client) {
 
     document.querySelectorAll('[data-nr-status]').forEach(btn => btn.onclick = async () => {
       await api(`/api/superadmin/national-requests/${btn.dataset.nrStatus}`, { method: 'PATCH', auth: true, body: JSON.stringify({ status: btn.dataset.next }) });
-      const n = nationalRequests.find(x => x.id === btn.dataset.nrStatus);
+      const n = nationalRequests.find(x => String(x.id) === btn.dataset.nrStatus);
       if (n) n.status = btn.dataset.next;
       draw();
     });
