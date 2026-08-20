@@ -211,10 +211,11 @@ export default function RecordingDetailPage() {
           <div className="flex items-start justify-between gap-4 flex-wrap">
             <div className="flex-1 min-w-[240px] space-y-3">
               <div>
-                <label className="text-xs text-muted-foreground mb-1 block">
+                <label htmlFor="detail-topic" className="text-xs text-muted-foreground mb-1 block">
                   נושא המאמר (שם הקובץ)
                 </label>
                 <Input
+                  id="detail-topic"
                   value={topic}
                   onChange={(e) => setTopic(e.target.value)}
                   className="font-semibold text-base"
@@ -223,10 +224,11 @@ export default function RecordingDetailPage() {
                 />
               </div>
               <div>
-                <label className="text-xs text-muted-foreground mb-1 block">
+                <label htmlFor="detail-parsha" className="text-xs text-muted-foreground mb-1 block">
                   פרשה / תאריך
                 </label>
                 <Input
+                  id="detail-parsha"
                   value={parshaOrDate}
                   onChange={(e) => setParshaOrDate(e.target.value)}
                   placeholder="לדוגמה: פרשת יתרו / י״ט טבת"
@@ -236,9 +238,9 @@ export default function RecordingDetailPage() {
             </div>
             <div className="space-y-3 min-w-[180px]">
               <div>
-                <label className="text-xs text-muted-foreground mb-1 block">סטטוס</label>
+                <label htmlFor="detail-status" className="text-xs text-muted-foreground mb-1 block">סטטוס</label>
                 <Select value={status} onValueChange={(v) => setStatus(v as RecordingStatus)}>
-                  <SelectTrigger data-testid="select-status">
+                  <SelectTrigger id="detail-status" data-testid="select-status">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>

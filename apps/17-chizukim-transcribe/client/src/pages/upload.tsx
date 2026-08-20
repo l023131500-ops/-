@@ -301,10 +301,11 @@ export default function UploadPage() {
           )}
 
           <div>
-            <label className="text-xs text-muted-foreground mb-1 block">
+            <label htmlFor="upload-topic" className="text-xs text-muted-foreground mb-1 block">
               נושא (אופציונלי — ניתן למלא לאחר התמלול)
             </label>
             <Input
+              id="upload-topic"
               value={topic}
               onChange={(e) => setTopic(e.target.value)}
               placeholder="נושא המאמר…"
@@ -313,10 +314,11 @@ export default function UploadPage() {
             />
           </div>
           <div>
-            <label className="text-xs text-muted-foreground mb-1 block">
+            <label htmlFor="upload-parsha" className="text-xs text-muted-foreground mb-1 block">
               פרשה / תאריך (אופציונלי)
             </label>
             <Input
+              id="upload-parsha"
               value={parsha}
               onChange={(e) => setParsha(e.target.value)}
               placeholder="לדוגמה: פרשת יתרו / י״ט טבת"
