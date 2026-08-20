@@ -296,11 +296,11 @@ const AdminLeads = () => {
           </div>
           <div className="flex items-center gap-2">
             <Filter className="w-4 h-4 text-muted-foreground" />
-            <select value={sourceFilter} onChange={(e) => setSourceFilter(e.target.value)} className="h-10 rounded-md border border-input bg-background px-3 py-2 text-sm">
+            <select aria-label="סינון לפי מקור" value={sourceFilter} onChange={(e) => setSourceFilter(e.target.value)} className="h-10 rounded-md border border-input bg-background px-3 py-2 text-sm">
               <option value="all">כל המקורות</option>
               {uniqueSources.map((s) => (<option key={s} value={s}>{sourceLabels[s] || s}</option>))}
             </select>
-            <select value={serviceFilter} onChange={(e) => setServiceFilter(e.target.value)} className="h-10 rounded-md border border-input bg-background px-3 py-2 text-sm">
+            <select aria-label="סינון לפי סוג שירות" value={serviceFilter} onChange={(e) => setServiceFilter(e.target.value)} className="h-10 rounded-md border border-input bg-background px-3 py-2 text-sm">
               <option value="all">כל סוגי השירות</option>
               <option value="free">מידע חינם</option>
               <option value="paid">שירות מלא</option>
