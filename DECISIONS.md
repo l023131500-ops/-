@@ -8761,3 +8761,50 @@
     focus-trap בתוך מודלים, או `aria-live` על הודעות שגיאה/הצלחה
     דינמיות שלא נבדקו עדיין).
     via cloud server 167.99.131.167 [loop B]
+
+## 20/08/2026 — סבב 402 (loop B)
+
+402. **עדשת `aria-live`/`role` על הודעות דינמיות שלא נבדקו עדיין (מוצע
+    בסוף סבב 401): סוכן Explore סרק את כל 7 האפליקציות החיות
+    (17/18/21/22/24/27/28), דפים ציבוריים בלבד, וזיהה תחילה כל מערכת
+    Toast קיימת (shadcn `use-toast`/`Toaster`, וב-5 אפליקציות גם
+    `sonner`) — לשתיהן `aria-live` מובנה דרך Radix/Sonner, ולכן הודעות
+    שעוברות דרך Toast הוצאו מהיקף הבדיקה. הממצאים הוגבלו להודעות
+    שגיאה/הצלחה/סטטוס המוצגות ישירות ב-JSX מותנה (`{error && <div>...}`)
+    בלי `role`/`aria-live`. בדיקה ידנית ישירה של כל קובץ (לא רק grep)
+    אימתה 25 ממצאים אמיתיים בכל 7 האפליקציות, רובם על טפסים עם כתיבה
+    אמיתית ל-DB (leads, submissions, community, chatbot).
+
+    התיקון: הוספת `role="status" aria-live="polite"` על הודעות
+    הצלחה/סטטוס, ו-`role="alert" aria-live="assertive"` על הודעות
+    שגיאה — תוספת attribute יחידה על אלמנט JSX קיים בכל מקום, ללא שינוי
+    מבני. חריגים: `18-torah-editor-mvp/app/htr/page.tsx` (שני מקומות)
+    פוצלו ל-role מותנה (`status`/`alert` לפי `msg.type`) כי אותו span
+    משמש גם להצלחה וגם לשגיאה; `27-bkalut-price/public-chatbot.tsx`
+    קיבל `role="log" aria-live="polite"` על מיכל ה-messages (לא
+    `status`/`alert` בודד, כי מתווספות אליו הודעות בוט/משתמש לאורך זמן,
+    התבנית הנכונה ל-live-region מתמשך).
+
+    היקף: 17 (2 קבצים), 18 (4 קבצים), 21 (5 קבצים), 22 (3 קבצים), 24 (4
+    קבצים), 27 (5 קבצים), 28 (2 קבצים) — 25 קבצים סה"כ, 45+/33-,
+    כולם תוספת attribute בלבד. נבדק ידנית מול הרשימה המוגנת ב-`CLAUDE.md`
+    הפנימי של 27-bkalut-price (`App.tsx`/`admin-login.tsx`/`routes.ts`/
+    `utils.ts`) — אף קובץ שנערך אינו ברשימה. בדיקת איזון סוגריים
+    (Python, curly/paren/square) נקייה על כל 25 הקבצים. לא הופעל build/
+    dev-server (לפי הנחיות ההרצה).
+
+    ענף `fix/b-22-whatsapp-noopener-round395-0820` (שרשרת הענפים היא
+    המקור המלא היחיד ל-loop B, לא `main`), קומיט `e43dcad8`, נדחף
+    (מפעיל פריסות Vercel תחת `more30.com/chizukim`, `more30.com/orech`,
+    `more30.com/mthbram`, `more30.com/zchuyot`, `more30.com/galil`,
+    `more30.com/mechiron`, `more30.com/kupot`).
+
+    **הבא בתור:** עדשת ה-`aria-live` נראית ממוצה כעת בכל 7 האפליקציות
+    החיות. נושא #245 (RLS על `csjekrvukbdznetsrodj`, מוגן — סכימת
+    `csj`, לא לגעת) ו-#250 (RLS על 21-mthbram, חסום MCP) נשארים
+    חסומים. אפשרויות להמשך: רענון תקופתי של עדשת המחירון/מיתוג 'עולם
+    הסטארטאפים', עדשת `rel="noopener"` על קישורי `<a>` חיצוניים
+    שנוספו מאז סבב 395, או עדשה חדשה (focus-trap בתוך מודלים, או
+    בדיקת ניגודיות צבעים (color-contrast) על טקסט על רקעים
+    גרדיאנטיים).
+    via cloud server 167.99.131.167 [loop B]
