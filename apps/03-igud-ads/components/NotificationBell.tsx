@@ -71,6 +71,8 @@ export default function NotificationBell() {
         onClick={() => setOpen(!open)}
         className="relative p-2 rounded-full hover:bg-stone-100 transition-colors"
         aria-label={`התראות${count > 0 ? ` (${count} חדשות)` : ""}`}
+        aria-expanded={open}
+        aria-controls="notification-bell-panel"
       >
         {/* Bell SVG */}
         <svg
@@ -96,7 +98,7 @@ export default function NotificationBell() {
       </button>
 
       {open && (
-        <div className="absolute left-0 mt-2 w-80 bg-surface rounded-xl shadow-lg border z-50" dir="rtl">
+        <div id="notification-bell-panel" className="absolute left-0 mt-2 w-80 bg-surface rounded-xl shadow-lg border z-50" dir="rtl">
           <div className="flex items-center justify-between px-4 py-3 border-b">
             <span className="font-semibold text-sm text-brand-dark">התראות</span>
             <Link
