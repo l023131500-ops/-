@@ -4108,3 +4108,47 @@
     Navbar mobile drawer) ו-27-bkalut-price (public-eligibility
     modal) -- סבב הבא יכול להמשיך שם, או לפתוח עדשה חדשה (ניגודיות
     צבעים, `lang`/`dir` חסר על אלמנטים מעורבי-שפה).
+
+## 20/08/2026 — סבב 292 (loop B)
+
+292. **המשכתי את עדשת הנגישות מסבב 291: הוספתי מטפל מקלדת ל-Escape
+    בשלושת ה-modal/overlay המותאמים-אישית שנותרו פתוחים -- 24-
+    galilee-connect-hub (GallerySection lightbox, Navbar mobile
+    drawer) ו-27-bkalut-price (public-eligibility exact-state
+    modal).** קראתי README.md/CONNECTIONS.md, בדקתי `core.run_progress`
+    (הצעד האחרון: 22-get-your-rights modal Escape-key, קומיטים
+    `2ee5cabf`/`814b0bfe`, כבר ה-parent של הענף הזה, כבר נדחף)
+    ו-`core.projects` 17-31 (ללא צורך בשינוי metadata). אימתתי בעצמי
+    בקריאת שלושת הקבצים: `GallerySection.tsx` -- `lightbox`
+    state (`string | null`) שנפתח בלחיצה על תמונה בגלריה,
+    `motion.div` overlay `fixed inset-0`, נסגר רק בלחיצת עכבר על
+    הרקע או על כפתור ה-X (`aria-label` לא נדרש כאן כי אין טקסט/
+    שם -- לא בסקופ הבדיקה הזו); `Navbar.tsx` -- מגירת מובייל
+    (`mobileOpen`), `AnimatePresence`+`motion.div` overlay מלא-מסך,
+    נסגרת בלחיצה על הרקע/קישור/כפתור ההמבורגר בלבד; `public-
+    eligibility.tsx` (27-bkalut-price, **לא** bkalut-app/bkalot-
+    admin המוגנים -- אפליקציה נפרדת) -- `exactStateOpen` state,
+    modal חיפוש-לפי-מצב-מדויק (`fixed inset-0`), נסגר בלחיצת רקע/
+    כפתור X/בחירת פריט בלבד. בשלושתם: אין שום מטפל `keydown`,
+    כלומר משתמש מקלדת-בלבד לכוד עד לחיצת Tab מוצלחת על כפתור סגירה
+    לא ממוקד אוטומטית. **בדקתי גם**: `AskRabbiSection`/`FloatingChatBot`
+    ורכיבי modal אחרים ב-24/27 -- לא נמצאו modal מותאמים-אישית
+    נוספים בלי Escape (24 ו-27 לא נסרקו קודם באופן ממצה בסבב 291,
+    רק זוהו כמועמדים; הסריקה השלמה הזו מסיימת את שתי המערכות).
+    **התיקון:** אותה תבנית מדויקת מסבב 291 -- `useEffect` שמאזין
+    ל-`keydown` על `window` כל עוד ה-state הרלוונטי `true`, קורא
+    ל-setter ל-`false`/`null` בלחיצת `Escape`, עם `cleanup`.
+    `GallerySection.tsx`/`Navbar.tsx` כבר ייבאו `useEffect`;
+    `public-eligibility.tsx` לא -- הוספתי לייבוא הקיים. אפס שינוי
+    בלוגיקת חיפוש/סינון/גלריה/ניווט. אין `node_modules`/`tsc`
+    בעץ הזה -- אימתתי איזון סוגריים/מסולסלים/מרובעים בסקריפט Node
+    קצר על שלושת הקבצים (0/0/0) בנוסף לקריאה חוזרת של כל ה-diff.
+    נדרש `git add` רגיל הצליח על אף אזהרת `.gitignore` (הקבצים כבר
+    עקבו אחרי git מסבבים קודמים). קומיט על `fix/b-galilee-bkalut-
+    modal-escape-key-0820` (יורש `fix/b-get-your-rights-modal-
+    escape-key-0820`), יידחף (מפעיל פריסות Vercel תחת נתיבי 24/27
+    המקבילים). **הבא בתור:** עדשת ה-Escape-key על modal מותאם-
+    אישית נראית כעת ממוצה על פני כל 17-31 שנבדקו (17/18/21/22/24/
+    26/27/28/30/31). סבב הבא יכול לפתוח עדשה חדשה (ניגודיות צבעים,
+    `lang`/`dir` חסר על אלמנטים מעורבי-שפה, focus trap/focus-return
+    ב-modal אחרי סגירה) על פני 17-31.
