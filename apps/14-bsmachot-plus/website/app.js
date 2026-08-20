@@ -338,6 +338,11 @@
   function openLightbox(n) {
     ensureLightbox(); currentIdx = n;
     updateLightbox(); lb.classList.add('open');
+    // Guard against stacking duplicate listeners if openLightbox() is called
+    // again before closeLightbox() (e.g. keyboard focus reaching a covered
+    // thumbnail behind the overlay, since it has no focus trap) — without
+    // this, each extra listener makes arrow-key navigation skip extra slides.
+    document.removeEventListener('keydown', lbKeys);
     document.addEventListener('keydown', lbKeys);
   }
   function updateLightbox() {
