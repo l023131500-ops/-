@@ -217,12 +217,12 @@ export default function BulkUpload() {
               ],
             }}
             transition={{ boxShadow: { duration: 2, repeat: Infinity, ease: "easeOut" } }}
-            className="group relative inline-flex items-center gap-2.5 px-7 py-3.5 rounded-full bg-gradient-to-l from-[#f5e7c4] via-[#fbe9b8] to-[#f5e7c4] border border-secondary/30 text-secondary font-medium text-base shadow-sm hover:shadow-md transition-all"
+            className="group relative inline-flex items-center gap-2.5 px-7 py-3.5 rounded-full bg-gradient-to-l from-[#f5e7c4] via-[#fbe9b8] to-[#f5e7c4] border border-secondary/30 text-navy font-medium text-base shadow-sm hover:shadow-md transition-all"
           >
             <motion.span
               animate={{ rotate: [0, 14, -8, 0] }}
               transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-              className="text-secondary/80"
+              className="text-navy/80"
             >
               <Sparkles className="w-4 h-4" />
             </motion.span>

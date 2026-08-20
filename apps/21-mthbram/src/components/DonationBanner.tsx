@@ -9,7 +9,7 @@ export default function DonationBanner() {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="relative overflow-hidden rounded-2xl bg-gradient-to-l from-[hsl(180_45%_25%)] via-[hsl(180_40%_30%)] to-[hsl(40_80%_45%)] p-5 md:p-6 shadow-xl"
+          className="relative overflow-hidden rounded-2xl bg-gradient-to-l from-[hsl(180_45%_25%)] via-[hsl(180_40%_30%)] to-[hsl(40_80%_32%)] p-5 md:p-6 shadow-xl"
         >
           <motion.div
             aria-hidden

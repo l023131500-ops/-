@@ -50,17 +50,17 @@ const SynagogueCard = ({ data, onClick }: { data: SynagogueCardData; onClick: ()
       className="shrink-0 w-[300px] md:w-[320px] h-[340px] bg-card rounded-2xl border-2 border-border hover:border-primary/40 hover:shadow-elegant transition-all overflow-hidden text-right flex flex-col"
     >
       {/* Header — fixed height */}
-      <div className={`p-4 text-center h-[170px] flex flex-col justify-center ${isStudyDay ? "bg-gradient-to-l from-[hsl(180_45%_30%)] to-[hsl(180_55%_40%)]" : "bg-gradient-to-l from-gold to-gold-light"} text-white`}>
+      <div className={`p-4 text-center h-[170px] flex flex-col justify-center ${isStudyDay ? "bg-gradient-to-l from-[hsl(180_45%_30%)] to-[hsl(180_55%_33%)] text-white" : "bg-gradient-to-l from-gold to-gold-light text-navy"}`}>
         <div className="flex flex-col items-center gap-2">
           <div className="w-14 h-14 rounded-xl bg-white/20 border border-white/30 flex items-center justify-center overflow-hidden shrink-0">
             {data.logo_url ? (
               <img src={data.logo_url} alt={data.synagogue_name ? `לוגו ${data.synagogue_name}` : "לוגו"} className="w-full h-full object-cover" />
             ) : (
-              <Building2 className="w-7 h-7 text-white" />
+              <Building2 className={`w-7 h-7 ${isStudyDay ? "text-white" : "text-navy"}`} />
             )}
           </div>
-          <h4 className="font-display font-bold text-base text-white truncate w-full px-2">{data.synagogue_name}</h4>
-          <p className="text-xs text-white/85 flex items-center gap-1 justify-center truncate w-full px-2">
+          <h4 className={`font-display font-bold text-base truncate w-full px-2 ${isStudyDay ? "text-white" : "text-navy"}`}>{data.synagogue_name}</h4>
+          <p className={`text-xs flex items-center gap-1 justify-center truncate w-full px-2 ${isStudyDay ? "text-white/85" : "text-navy/85"}`}>
             <MapPin className="w-3 h-3 shrink-0" />
             <span className="truncate">{[data.city, data.street].filter(Boolean).join(", ") || "—"}</span>
           </p>
