@@ -311,6 +311,7 @@ function QuestionField({ q, answers, setField }: {
                         <select
                           value={child.impairmentType ?? ""}
                           onChange={(e) => setChild(i, { impairmentType: e.target.value as ChildEntry["impairmentType"] })}
+                          aria-label="סוג הליקוי"
                           className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                         >
                           <option value="">— בחרו —</option>

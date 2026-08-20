@@ -59,7 +59,7 @@ function SmartSelect({
             }
           }}
         >
-          <SelectTrigger className="h-10 text-sm bg-background border-foreground/15">
+          <SelectTrigger className="h-10 text-sm bg-background border-foreground/15" aria-label={label}>
             <SelectValue placeholder="בחר..." />
           </SelectTrigger>
           <SelectContent className="max-h-60 bg-background z-50">
@@ -220,7 +220,7 @@ export default function BulkLessonForm({ sessionId, onAdded }: Props) {
         <div className="space-y-1.5">
           <Label className="text-sm font-medium text-foreground/80">גברים / נשים</Label>
           <Select value={form.audience_type} onValueChange={(v) => set("audience_type", v)}>
-            <SelectTrigger className="h-10 text-sm bg-background border-foreground/15"><SelectValue /></SelectTrigger>
+            <SelectTrigger className="h-10 text-sm bg-background border-foreground/15" aria-label="גברים / נשים"><SelectValue /></SelectTrigger>
             <SelectContent className="bg-background z-50">
               {audienceTypeOptions.map((o) => <SelectItem key={o} value={o}>{o}</SelectItem>)}
             </SelectContent>
@@ -262,7 +262,7 @@ export default function BulkLessonForm({ sessionId, onAdded }: Props) {
         <div className="space-y-1.5">
           <Label className="text-sm font-medium text-foreground/80">סוג זמן</Label>
           <Select value={form.schedule_type} onValueChange={(v) => set("schedule_type", v)}>
-            <SelectTrigger className="h-10 text-sm bg-background border-foreground/15"><SelectValue /></SelectTrigger>
+            <SelectTrigger className="h-10 text-sm bg-background border-foreground/15" aria-label="סוג זמן"><SelectValue /></SelectTrigger>
             <SelectContent className="bg-background z-50">
               {scheduleTypeOptions.map((o) => <SelectItem key={o} value={o}>{o}</SelectItem>)}
             </SelectContent>
@@ -294,7 +294,7 @@ export default function BulkLessonForm({ sessionId, onAdded }: Props) {
                     </div>
                     {sel && (
                       <Select value={sel.time} onValueChange={(v) => setDayTime(day, v)}>
-                        <SelectTrigger className="h-9 text-sm bg-background border-foreground/15">
+                        <SelectTrigger className="h-9 text-sm bg-background border-foreground/15" aria-label={`שעה ליום ${day}`}>
                           <SelectValue placeholder="שעה" />
                         </SelectTrigger>
                         <SelectContent className="max-h-60 bg-background z-50">
@@ -325,7 +325,7 @@ export default function BulkLessonForm({ sessionId, onAdded }: Props) {
                 שעה <span className="text-destructive">*</span>
               </Label>
               <Select value={form.specific_time} onValueChange={(v) => set("specific_time", v)}>
-                <SelectTrigger className="h-10 text-sm bg-background border-foreground/15">
+                <SelectTrigger className="h-10 text-sm bg-background border-foreground/15" aria-label="שעה">
                   <SelectValue placeholder="בחר שעה" />
                 </SelectTrigger>
                 <SelectContent className="max-h-60 bg-background z-50">

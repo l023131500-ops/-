@@ -393,7 +393,7 @@ export default function StudyDayEventForm({ sessionId, onAdded, existingEvents =
                       value={selectValue}
                       onValueChange={(v) => updateLesson(target, b.id, i, "subject", v === "__other__" ? " " : v)}
                     >
-                      <SelectTrigger className="h-9 border-foreground/15 bg-background">
+                      <SelectTrigger className="h-9 border-foreground/15 bg-background" aria-label="נושא השיעור">
                         <SelectValue placeholder="בחר נושא" />
                       </SelectTrigger>
                       <SelectContent className="bg-background z-50 max-h-60">
@@ -417,7 +417,7 @@ export default function StudyDayEventForm({ sessionId, onAdded, existingEvents =
             <div className="md:col-span-2 space-y-1">
               <Label className="text-[10px] text-muted-foreground">שעה</Label>
               <Select value={l.time || ""} onValueChange={(v) => updateLesson(target, b.id, i, "time", v)}>
-                <SelectTrigger className="h-9 border-foreground/15 bg-background"><SelectValue placeholder="—" /></SelectTrigger>
+                <SelectTrigger className="h-9 border-foreground/15 bg-background" aria-label="שעה"><SelectValue placeholder="—" /></SelectTrigger>
                 <SelectContent className="bg-background z-50 max-h-60">
                   {hourOptions.map((h) => <SelectItem key={h} value={h}>{h}</SelectItem>)}
                 </SelectContent>
@@ -477,7 +477,7 @@ export default function StudyDayEventForm({ sessionId, onAdded, existingEvents =
           <div className="space-y-1.5">
             <Label className="text-sm">בחר בית כנסת <span className="text-destructive">*</span></Label>
             <Select value={quickEventId} onValueChange={setQuickEventId}>
-              <SelectTrigger className="h-11 border-foreground/15 bg-background">
+              <SelectTrigger className="h-11 border-foreground/15 bg-background" aria-label="בחר בית כנסת">
                 <SelectValue placeholder="— בחר —" />
               </SelectTrigger>
               <SelectContent className="bg-background z-50">

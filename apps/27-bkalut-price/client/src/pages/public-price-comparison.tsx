@@ -505,17 +505,17 @@ export default function PublicPriceComparison() {
         {showFilters && (
           <Card className="p-4 grid sm:grid-cols-2 lg:grid-cols-3 gap-3" data-testid="pc-filters-panel">
             <select className="border border-border rounded-md px-2 py-2 text-sm bg-background" value={filters.city}
-              onChange={(e) => { const n = update({ city: e.target.value }); runSearch(n); }} data-testid="select-pc-city">
+              onChange={(e) => { const n = update({ city: e.target.value }); runSearch(n); }} data-testid="select-pc-city" aria-label="עיר">
               <option value="">כל הערים</option>
               {meta.cities.map((c) => <option key={c} value={c}>{c}</option>)}
             </select>
             <select className="border border-border rounded-md px-2 py-2 text-sm bg-background" value={filters.brand}
-              onChange={(e) => { const n = update({ brand: e.target.value }); runSearch(n); }} data-testid="select-pc-brand">
+              onChange={(e) => { const n = update({ brand: e.target.value }); runSearch(n); }} data-testid="select-pc-brand" aria-label="מותג">
               <option value="">כל המותגים</option>
               {meta.brands.map((b) => <option key={b} value={b}>{b}</option>)}
             </select>
             <select className="border border-border rounded-md px-2 py-2 text-sm bg-background" value={filters.storeId}
-              onChange={(e) => { const n = update({ storeId: e.target.value }); runSearch(n); }} data-testid="select-pc-store">
+              onChange={(e) => { const n = update({ storeId: e.target.value }); runSearch(n); }} data-testid="select-pc-store" aria-label="חנות">
               <option value="">כל החנויות</option>
               {meta.stores.map((s) => <option key={s.id} value={s.id}>{s.name}{s.city ? ` · ${s.city}` : ""}</option>)}
             </select>
@@ -526,20 +526,20 @@ export default function PublicPriceComparison() {
               onChange={(e) => setFilters({ ...filters, maxPrice: e.target.value })}
               onKeyDown={(e) => e.key === "Enter" && runSearch(filters)} data-testid="input-pc-max-price" />
             <select className="border border-border rounded-md px-2 py-2 text-sm bg-background" value={filters.minChains}
-              onChange={(e) => { const n = update({ minChains: e.target.value }); runSearch(n); }} data-testid="select-pc-min-chains">
+              onChange={(e) => { const n = update({ minChains: e.target.value }); runSearch(n); }} data-testid="select-pc-min-chains" aria-label="מספר רשתות מינימלי">
               <option value="">כל מספר הרשתות</option>
               <option value="2">נמכר ב-2 רשתות ומעלה</option>
               <option value="3">נמכר ב-3 רשתות ומעלה</option>
               <option value="4">נמכר ב-4 רשתות ומעלה</option>
             </select>
             <select className="border border-border rounded-md px-2 py-2 text-sm bg-background" value={filters.kind}
-              onChange={(e) => { const n = update({ kind: e.target.value as FilterState["kind"] }); runSearch(n); }} data-testid="select-pc-kind">
+              onChange={(e) => { const n = update({ kind: e.target.value as FilterState["kind"] }); runSearch(n); }} data-testid="select-pc-kind" aria-label="סוג רשת">
               <option value="">כל סוגי הרשתות</option>
               <option value="regulatory">{KIND_LABEL.regulatory}</option>
               <option value="voluntary">{KIND_LABEL.voluntary}</option>
             </select>
             <select className="border border-border rounded-md px-2 py-2 text-sm bg-background" value={filters.sort}
-              onChange={(e) => { const n = update({ sort: e.target.value as FilterState["sort"] }); runSearch(n); }} data-testid="select-pc-sort">
+              onChange={(e) => { const n = update({ sort: e.target.value as FilterState["sort"] }); runSearch(n); }} data-testid="select-pc-sort" aria-label="מיון">
               <option value="price">מיון: מחיר נמוך</option>
               <option value="unitPrice">מיון: מחיר ליחידה</option>
               <option value="name">מיון: שם</option>

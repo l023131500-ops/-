@@ -412,7 +412,7 @@ export default function ServiceFormPage() {
                 <Input type="email" value={answers[q.id] ?? ""} onChange={(e) => setAnswers((prev) => ({ ...prev, [q.id]: e.target.value }))} />
               )}
               {q.type === "select" && (
-                <select className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm" value={answers[q.id] ?? ""} onChange={(e) => setAnswers((prev) => ({ ...prev, [q.id]: e.target.value }))}>
+                <select className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm" value={answers[q.id] ?? ""} onChange={(e) => setAnswers((prev) => ({ ...prev, [q.id]: e.target.value }))} aria-label={q.label}>
                   <option value="">בחרו</option>
                   {(q.options ?? []).map((opt) => <option key={opt} value={opt}>{opt}</option>)}
                 </select>
@@ -613,6 +613,7 @@ export default function ServiceFormPage() {
               value={category}
               onChange={(e) => setCategory(e.target.value)}
               data-testid="select-additional-category"
+              aria-label="בחרו קטגוריה"
             >
               <option value="">בחרו קטגוריה</option>
               {additionalCategories.map((cat) => (

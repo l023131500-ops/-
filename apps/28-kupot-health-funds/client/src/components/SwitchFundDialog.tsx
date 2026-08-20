@@ -192,7 +192,7 @@ export function SwitchFundDialog({
                     defaultValue={form.getValues("currentFund")}
                     onValueChange={(v) => form.setValue("currentFund", v)}
                   >
-                    <SelectTrigger data-testid="select-currentFund">
+                    <SelectTrigger data-testid="select-currentFund" aria-label="קופה נוכחית">
                       <SelectValue placeholder="בחר/י קופה" />
                     </SelectTrigger>
                     <SelectContent>
@@ -209,7 +209,7 @@ export function SwitchFundDialog({
                     defaultValue={form.getValues("targetFund")}
                     onValueChange={(v) => form.setValue("targetFund", v)}
                   >
-                    <SelectTrigger data-testid="select-targetFund">
+                    <SelectTrigger data-testid="select-targetFund" aria-label="קופת יעד">
                       <SelectValue placeholder="בחר/י קופה" />
                     </SelectTrigger>
                     <SelectContent>
