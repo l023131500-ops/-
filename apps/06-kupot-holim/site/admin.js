@@ -68,6 +68,8 @@
     loginView.hidden = false;
     document.getElementById("adminUser").value = "";
     document.getElementById("adminPass").value = "";
+    document.getElementById("adminUser").setAttribute("aria-invalid", "false");
+    document.getElementById("adminPass").setAttribute("aria-invalid", "false");
     setTimeout(function () { document.getElementById("adminUser").focus(); }, 30);
   }
 
@@ -96,6 +98,8 @@
     // this file. Refusing every login is the honest state — the alternative is
     // a password that every visitor can read.
     loginErr.textContent = "התחברות לניהול אינה מוגדרת בסביבה זו";
+    document.getElementById("adminUser").setAttribute("aria-invalid", "true");
+    document.getElementById("adminPass").setAttribute("aria-invalid", "true");
     document.getElementById("adminPass").value = "";
   });
 

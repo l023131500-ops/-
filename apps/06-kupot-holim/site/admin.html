@@ -101,12 +101,12 @@
       <p class="sub">בקלות · קופות חולים — ניהול פניות</p>
       <div class="field">
         <label for="adminUser">שם משתמש</label>
-        <input type="text" id="adminUser" inputmode="numeric" autocomplete="username" />
+        <input type="text" id="adminUser" inputmode="numeric" autocomplete="username" aria-describedby="loginErr" />
       </div>
       <div class="field">
         <label for="adminPass">סיסמה</label>
         <div class="pw-wrap">
-          <input type="password" id="adminPass" autocomplete="current-password" />
+          <input type="password" id="adminPass" autocomplete="current-password" aria-describedby="loginErr" />
           <button type="button" class="pw-toggle" id="adminPassToggle" aria-label="הצג סיסמה" aria-pressed="false" aria-controls="adminPass" title="הצג סיסמה">
             <svg data-icon="eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
             <svg data-icon="eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.9 5.2A9.8 9.8 0 0 1 12 5c6.5 0 10 7 10 7a17.6 17.6 0 0 1-3.2 4.2M6.6 6.6A17.6 17.6 0 0 0 2 12s3.5 7 10 7a9.8 9.8 0 0 0 4.1-.9"/><path d="M10.6 10.6a2 2 0 0 0 2.8 2.8"/><path d="m2 2 20 20"/></svg>
