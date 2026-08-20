@@ -8422,3 +8422,79 @@
     למה שכבר נבדק (24-galilee chatbot markdown), או תחום המחירון/מיתוג
     'עולם הסטארטאפים' (כדאי לאמת שוב שהוא עדיין נקי אחרי כמה סבבים).
     via cloud server 167.99.131.167 [loop B]
+
+## 20/08/2026 — סבב 396 (loop B)
+
+396. **המשך עדשת ה-`autoComplete` (מוצע בסוף סבב 395): שדות כתובת
+    (עיר/רחוב/שכונה) על טפסים ציבוריים, שדה המשך של סבב 394
+    (שם/טלפון/מייל) שלא נבדק אז.** קודם אימתתי ידנית שתי עדשות
+    שהוצעו בסוף סבב 395 וסגרתי אותן נקי, בלי צורך בקוד סוכן: (א)
+    `dangerouslySetInnerHTML` על 7 האפליקציות — קראתי כל שימוש
+    בעצמי (`RightBrandedCard.tsx`, `recording-detail.tsx`/`format.ts`,
+    `ChatBot.tsx`, 6 עותקי `chart.tsx` של shadcn) ואימתתי שכל
+    תוכן דינמי כבר עובר `escapeHtml()`/מוגבל ל-CSS קבוע — זהה
+    למצב שתועד כבר בסבב 382, אין ממצא חדש. (ב) רברנד/תמחור
+    'עולם הסטארטאפים' — גיליתי שהעדשה הזו כבר אומתה שוב-ושוב
+    לעומק (סבבים 80, 145, 284-286 ועוד), כולל אישור שקרדיט הפוטר
+    מוזרק אוטומטית ע"י `portal/public/auth-button.js` המשותף (לא
+    בהיקף loop B) לכל 11 המערכות החיות הרלוונטיות — לא פתחתי
+    עדשה כפולה בלי סיבה.
+
+    עברתי לעדשת ה-autoComplete על כתובת. הרצתי סוכן Explore על
+    כל 7 האפליקציות לאיתור שדות `city`/`street`/`neighborhood`/
+    `address` על טפסים ציבוריים (לא מאחורי login/admin) בלי
+    `autoComplete` תואם, ואימתתי כל ממצא בעצמי בקריאת קוד ישירה
+    (כולל בדיקת `isPublicPath()`/`App.tsx` route guards לכל
+    מועמד). 5 ממצאים אמיתיים ב-3 אפליקציות: **21-mthbram**
+    `pages/RequestLesson.tsx:303-305` (טופס בקשת שיעור ציבורי,
+    `/request-lesson` ללא `ProtectedRoute` — `addressCity`/
+    `addressNeighborhood`/`addressStreet`, קיבלו
+    `address-level2`/`address-level3`/`street-address`).
+    **22-get-your-rights** `components/FloatingBot.tsx:904`
+    (הצ'אטבוט הצף בעמוד הבית הציבורי, טופס "נותנים יד לקהילה" —
+    `communityData.city`, קיבל `address-level2`). **27-bkalut-price**
+    שלושה קבצים: `health-fund-service.tsx:231` (`/health-fund-
+    service/:id` ציבורי, `address` משולב עיר+רחוב, קיבל
+    `street-address`), `public-price-comparison.tsx:737` (טופס
+    הגשת מחיר ציבורי, `submission.city`, קיבל `address-level2`),
+    `public-health-funds.tsx:752` (טופס מעבר קופה ציבורי,
+    `switchForm.city` — המקרה הברור ביותר: השדות השכנים באותו
+    טופס בדיוק, `sw-email`/`sw-name`/`sw-phone`, כבר קיבלו
+    `autoComplete` בסבב 394, ורק שדה העיר נשכח, קיבל
+    `address-level2`).
+
+    מועמדים שנבדקו ונפסלו כלא-רלוונטיים: שדות כתובת ב-
+    `24-galilee-connect-hub` (`SynagogueDetailsManager.tsx`/
+    `GabaiPortal.tsx`) — כולם מאחורי מסך login של הגבאי, לא
+    ציבוריים. שדות כתובת ב-`21-mthbram/components/questionnaire/
+    SeekerForm.tsx`/`TeacherForm.tsx` — מוצגים רק דרך
+    `pages/Questionnaire.tsx` שאינו מקושר לשום route ב-`App.tsx`
+    (עמוד יתום, לא נגיש למשתמש קצה בפועל) — לא תוקן, לא בשימוש
+    אמיתי. `28-kupot-health-funds`/`17-chizukim-transcribe`/
+    `18-torah-editor-mvp` — ללא שדות כתובת בכלל.
+
+    כל 5 השינויים הם הוספת attribute `autoComplete` יחיד לרכיב
+    `Input` קיים, ללא שינוי מבני. `git diff --stat`: 5 קבצים,
+    7+/7-. בדיקת איזון סוגריים (Python) על כל 5 הקבצים לאחר
+    העריכה: תקין בכולם. לא הופעל build/dev-server (לפי הנחיות
+    ההרצה). קבצים חסומים ב-`.gitignore` אך כבר עוקבים, `git add -f`
+    נדרש (כמו בסבבים קודמים).
+
+    אותו ענף `fix/b-22-whatsapp-noopener-round395-0820` (שרשרת
+    הענפים היא המקור המלא הבודד עבור loop B, לא `main`), קומיט
+    `cb4e9c97`, נדחף (מפעיל פריסות Vercel תחת `more30.com/mthbram`,
+    `more30.com/zchuyot`, `more30.com/mechiron`).
+
+    **הבא בתור:** עדשת ה-autoComplete (שם/טלפון/מייל/כתובת) נראית
+    ממוצה כעת על כל 7 האפליקציות החיות. נושא #245 (RLS על
+    `csjekrvukbdznetsrodj` — שים לב: הפרויקט הזה חי תחת סכימה
+    `csj`, **מוגן במפורש** לפי הנחיות ה-scope, לא לגעת גם אם
+    ה-MCP נגיש עכשיו) ו-#250 (RLS על 21-mthbram, פרויקט
+    `aypsqqvfohekxxuqsmrw` — אומת שוב שעדיין לא ברשימת ה-MCP
+    projects, עדיין חסום) נשארים חסומים. אפשרויות להמשך: פתיחת
+    עדשה חדשה שטרם נבדקה על 17-31 (למשל: שדות `<select>`/checkbox
+    בלי `aria-label`/`<label>` תואם, או בדיקת meta viewport/
+    theme-color עקבי בין 7 האפליקציות), או חזרה לעמוד היתום
+    `21-mthbram/pages/Questionnaire.tsx` לבדוק אם זו רגרסיה
+    שכדאי לתקן (route חסר) או קוד מת מכוון.
+    via cloud server 167.99.131.167 [loop B]
