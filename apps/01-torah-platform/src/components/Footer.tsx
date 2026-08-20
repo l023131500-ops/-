@@ -142,6 +142,8 @@ const Footer = () => {
                   onChange={(e) => { setContactPhone(e.target.value); if (errors.phone) setErrors(prev => ({ ...prev, phone: undefined })); }}
                   placeholder="טלפון *"
                   type="tel"
+                  inputMode="tel"
+                  autoComplete="tel"
                   dir="ltr"
                   className={`w-full bg-navy/40 border rounded-xl px-4 py-2.5 font-body text-sm text-white placeholder:text-white/50 focus:border-gold/60 focus:ring-1 focus:ring-gold/30 outline-none transition-all ${errors.phone ? 'border-red-400/60' : 'border-primary-foreground/20'}`}
                 />
@@ -209,6 +211,8 @@ const Footer = () => {
                     onChange={(e) => setContactPhone(e.target.value)}
                     placeholder="טלפון *"
                     type="tel"
+                    inputMode="tel"
+                    autoComplete="tel"
                     dir="ltr"
                     className="w-full bg-white/95 border border-navy/20 rounded-lg px-3 py-2 font-body text-sm text-navy placeholder:text-navy/50 focus:border-navy/60 focus:ring-1 focus:ring-navy/30 outline-none"
                   />

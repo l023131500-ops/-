@@ -49,7 +49,7 @@ export default function Azkarot() {
             <div><Label>קרבת משפחה</Label><Input value={form.relation} onChange={(e) => setForm({ ...form, relation: e.target.value })} placeholder="אבא, אמא, סבא..." /></div>
             <div className="grid sm:grid-cols-2 gap-3">
               <div><Label>שם מבקש *</Label><Input required value={form.submitter_name} onChange={(e) => setForm({ ...form, submitter_name: e.target.value })} /></div>
-              <div><Label>טלפון *</Label><Input required type="tel" value={form.submitter_phone} onChange={(e) => setForm({ ...form, submitter_phone: e.target.value })} /></div>
+              <div><Label>טלפון *</Label><Input required type="tel" inputMode="tel" autoComplete="tel" value={form.submitter_phone} onChange={(e) => setForm({ ...form, submitter_phone: e.target.value })} /></div>
             </div>
             <Button type="submit" disabled={loading} className="w-full">{loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <><Send className="ml-2 h-4 w-4" /> רשום</>}</Button>
           </form>

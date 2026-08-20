@@ -183,7 +183,7 @@ export default function DonationPage() {
 
           <div className="grid sm:grid-cols-2 gap-3">
             <div><Label>שם מלא *</Label><Input value={donor.name} onChange={(e) => setDonor({ ...donor, name: e.target.value })} /></div>
-            <div><Label>טלפון *</Label><Input type="tel" value={donor.phone} onChange={(e) => setDonor({ ...donor, phone: e.target.value })} /></div>
+            <div><Label>טלפון *</Label><Input type="tel" inputMode="tel" autoComplete="tel" value={donor.phone} onChange={(e) => setDonor({ ...donor, phone: e.target.value })} /></div>
           </div>
           <div><Label>דוא״ל (לקבלת קבלה)</Label><Input type="email" value={donor.email} onChange={(e) => setDonor({ ...donor, email: e.target.value })} /></div>
 

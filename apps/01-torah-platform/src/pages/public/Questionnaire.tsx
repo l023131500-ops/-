@@ -226,6 +226,8 @@ export default function Questionnaire() {
               onChange={(e) => setForm({ ...form, phone: e.target.value })}
               placeholder="050-0000000"
               type="tel"
+              inputMode="tel"
+              autoComplete="tel"
             />
           </div>
           <div>

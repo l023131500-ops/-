@@ -108,7 +108,7 @@ export default function Checkout() {
             <CardContent className="space-y-3">
               <div className="grid sm:grid-cols-2 gap-3">
                 <div><Label>שם מלא *</Label><Input value={customer.name} onChange={(e) => setCustomer({ ...customer, name: e.target.value })} /></div>
-                <div><Label>טלפון *</Label><Input type="tel" value={customer.phone} onChange={(e) => setCustomer({ ...customer, phone: e.target.value })} /></div>
+                <div><Label>טלפון *</Label><Input type="tel" inputMode="tel" autoComplete="tel" value={customer.phone} onChange={(e) => setCustomer({ ...customer, phone: e.target.value })} /></div>
               </div>
               <div><Label>דוא״ל</Label><Input type="email" value={customer.email} onChange={(e) => setCustomer({ ...customer, email: e.target.value })} /></div>
               <div><Label>כתובת *</Label><Input value={customer.address} onChange={(e) => setCustomer({ ...customer, address: e.target.value })} /></div>

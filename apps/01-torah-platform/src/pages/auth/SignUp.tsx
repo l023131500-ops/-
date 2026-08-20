@@ -81,7 +81,7 @@ export default function SignUp() {
           <form onSubmit={submit} className="space-y-3">
             <div><Label>שם מלא</Label><Input required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></div>
             <div><Label>דוא״ל</Label><Input required type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} /></div>
-            <div><Label>טלפון</Label><Input type="tel" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} /></div>
+            <div><Label>טלפון</Label><Input type="tel" inputMode="tel" autoComplete="tel" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} /></div>
             <div>
               <Label htmlFor="password">סיסמה</Label>
               <PasswordInput

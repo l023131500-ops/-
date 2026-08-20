@@ -88,7 +88,7 @@ export default function FindLesson() {
               </div>
               <div>
                 <Label>טלפון *</Label>
-                <Input required type="tel" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
+                <Input required type="tel" inputMode="tel" autoComplete="tel" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
               </div>
             </div>
             <div>

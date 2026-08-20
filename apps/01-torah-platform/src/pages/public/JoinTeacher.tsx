@@ -49,7 +49,7 @@ export default function JoinTeacher() {
           <form onSubmit={submit} className="space-y-4">
             <div className="grid sm:grid-cols-2 gap-3">
               <div><Label>שם מלא *</Label><Input required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></div>
-              <div><Label>טלפון *</Label><Input required type="tel" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} /></div>
+              <div><Label>טלפון *</Label><Input required type="tel" inputMode="tel" autoComplete="tel" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} /></div>
             </div>
             <div><Label>דוא״ל</Label><Input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} /></div>
             <div><Label>נושאים שאתה מלמד</Label><Input value={form.topics} onChange={(e) => setForm({ ...form, topics: e.target.value })} placeholder="לדוגמה: חומש, גמרא, הלכה" /></div>
