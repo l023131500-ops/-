@@ -132,10 +132,11 @@ const AdminLogin = () => {
 
           <form onSubmit={handleLogin} className="space-y-4">
             <div>
-              <label className="font-body text-sm font-medium text-foreground mb-1.5 block">שם משתמש</label>
+              <label htmlFor="admin-login-username" className="font-body text-sm font-medium text-foreground mb-1.5 block">שם משתמש</label>
               <div className="relative">
                 <Mail className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <Input
+                  id="admin-login-username"
                   type="text"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -145,13 +146,14 @@ const AdminLogin = () => {
               </div>
             </div>
             <div>
-              <label className="font-body text-sm font-medium text-foreground mb-1.5 block">סיסמה</label>
+              <label htmlFor="admin-login-password" className="font-body text-sm font-medium text-foreground mb-1.5 block">סיסמה</label>
               <div className="relative">
                 {/* z-10: PasswordInput עוטף את השדה ב-div עם position:relative,
                     שמגיע אחרי האייקון ב-DOM — בלי z-index הוא נצבע מעליו
                     והאייקון פשוט נעלם מאחורי רקע השדה (נמדד בדפדפן). */}
                 <KeyRound className="absolute right-3 top-1/2 z-10 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <PasswordInput
+                  id="admin-login-password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
