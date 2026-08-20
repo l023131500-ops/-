@@ -56,10 +56,32 @@ function norm(s: string | null | undefined): string {
 
 /** נרמול אגרסיבי יותר — מוריד גם ה' ידיעה ותחיליות נפוצות. */
 function loose(s: string | null | undefined): string {
+  return looseSpaced(s).replace(/\s+/g, '');
+}
+
+/** כמו loose(), אבל שומרת רווח יחיד בין מילים — לבדיקת הכלה בגבול מילה. */
+function looseSpaced(s: string | null | undefined): string {
   let v = norm(s);
   v = v.replace(/^(רחוב|רח|שדרות|שד|סמטה|סמ|מבוא|דרך|מעלה|שכונה|שכ|קרית|קריית)\s+/u, '');
   v = v.replace(/^ה/u, '');
-  return v.replace(/\s+/g, '');
+  return v;
+}
+
+/**
+ * הכלה בגבול מילה בלבד, לא הכלה גולמית של תווים.
+ * ⚠️ loose() מסיר את כל הרווחים, ולכן "הכלה" גולמית על הפלט שלה עלולה
+ * להתאים שם קצר בתוך שם ארוך לגמרי-לא-קשור שרק במקרה מכיל אותן אותיות
+ * ברצף (אותה מלכודת שכבר תוקנה עבור ערים/רחובות ב-buildreport.ts). בודקים
+ * הכלה על הגרסה עם רווחים, בגבול תחילת/סוף מילה — אותו דפוס בדיוק כמו
+ * nameMatches ב-apify.ts.
+ */
+function containsAtWordBoundary(long: string, short: string): boolean {
+  if (!long || !short) return false;
+  const i = long.indexOf(short);
+  if (i < 0) return false;
+  const atStart = i === 0 || long[i - 1] === ' ';
+  const atEnd = i + short.length === long.length || long[i + short.length] === ' ';
+  return atStart && atEnd;
 }
 
 // ==== סינון כינויים: מה באמת שם אחר, ומה רק שורת אינדקס ====
@@ -290,10 +312,16 @@ export async function resolveStreet(
     let score = 0;
     if (nExact === wantExact) score = 1000;
     else if (nLoose === wantLoose) score = 800;
-    else if (nLoose && (nLoose.includes(wantLoose) || wantLoose.includes(nLoose))) {
-      // התאמה חלקית שווה משהו רק אם היא לא זעירה ביחס לשם.
-      const ratio = Math.min(nLoose.length, wantLoose.length) / Math.max(nLoose.length, wantLoose.length);
-      if (ratio >= 0.6) score = 400 + Math.round(ratio * 100);
+    else {
+      const nSpaced = looseSpaced(r.street_name);
+      const wantSpaced = looseSpaced(streetQuery);
+      const [shortSp, longSp] =
+        nSpaced.length <= wantSpaced.length ? [nSpaced, wantSpaced] : [wantSpaced, nSpaced];
+      if (shortSp && containsAtWordBoundary(longSp, shortSp)) {
+        // התאמה חלקית שווה משהו רק אם היא לא זעירה ביחס לשם.
+        const ratio = Math.min(nLoose.length, wantLoose.length) / Math.max(nLoose.length, wantLoose.length);
+        if (ratio >= 0.6) score = 400 + Math.round(ratio * 100);
+      }
     }
     if (score && (!best || score > best.score)) best = { row: r, score };
   }
