@@ -50,7 +50,13 @@ export default function FullAccessRequestsTab() {
       .update({ approved_features: approved, status: "reviewed", updated_at: new Date().toISOString() })
       .eq("id", req.id);
 
-    // 2. update the synagogue portal's features_enabled
+    if (e1) {
+      setSaving(null);
+      return toast.error("שגיאה בשמירה");
+    }
+
+    // 2. update the synagogue portal's features_enabled (only after the request row itself saved,
+    // otherwise the portal could go live with features the request record never recorded as approved)
     let e2: any = null;
     if (req.synagogue_portal_id) {
       const featuresEnabled: Record<string, boolean> = { lessons: true, settings: true };
@@ -64,7 +70,7 @@ export default function FullAccessRequestsTab() {
       e2 = r.error;
     }
     setSaving(null);
-    if (e1 || e2) return toast.error("שגיאה בשמירה");
+    if (e2) return toast.error("הבקשה נשמרה אך ההפעלה בפורטל נכשלה — נסו שוב");
     toast.success("האישורים נשמרו וברגע זה הופעלו בפורטל בית הכנסת ✓");
     load();
   };
