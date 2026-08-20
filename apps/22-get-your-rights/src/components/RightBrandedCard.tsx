@@ -262,7 +262,7 @@ export function shareViaWhatsApp(right: RightData, phone?: string): void {
   const url = phone
     ? `https://wa.me/${phone.replace(/\D/g, "")}?text=${text}`
     : `https://wa.me/?text=${text}`;
-  window.open(url, "_blank");
+  window.open(url, "_blank", "noopener,noreferrer");
 }
 
 /** Share via Email */
