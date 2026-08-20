@@ -75,7 +75,7 @@ const ServiceRequestForm = ({ defaultType, compact }: ServiceRequestFormProps) =
               className="overflow-hidden">
               <div className="pt-3 space-y-2">
                 <Input value={name} onChange={e => setName(e.target.value)} placeholder="שם מלא" className="text-xs h-9" autoComplete="name" />
-                <Input value={phone} onChange={e => setPhone(e.target.value)} placeholder="טלפון" dir="ltr" className="text-xs h-9" autoComplete="tel" />
+                <Input value={phone} onChange={e => setPhone(e.target.value)} placeholder="טלפון" dir="ltr" type="tel" inputMode="tel" maxLength={10} className="text-xs h-9" autoComplete="tel" />
                 <Input value={message} onChange={e => setMessage(e.target.value)} placeholder="פרטים נוספים (אופציונלי)" className="text-xs h-9" />
                 {sent ? (
                   <p className="text-center text-primary font-bold text-xs py-2" role="status" aria-live="polite">✅ הבקשה נשלחה!</p>
@@ -118,7 +118,7 @@ const ServiceRequestForm = ({ defaultType, compact }: ServiceRequestFormProps) =
         </div>
         <div>
           <label htmlFor={`${fieldIdPrefix}-phone`} className="block text-sm font-bold text-foreground mb-1"><Phone className="w-3 h-3 inline ml-1" />טלפון</label>
-          <Input id={`${fieldIdPrefix}-phone`} value={phone} onChange={e => setPhone(e.target.value)} placeholder="050-0000000" dir="ltr" autoComplete="tel" />
+          <Input id={`${fieldIdPrefix}-phone`} value={phone} onChange={e => setPhone(e.target.value)} placeholder="050-0000000" dir="ltr" type="tel" inputMode="tel" maxLength={10} autoComplete="tel" />
         </div>
       </div>
       <div>

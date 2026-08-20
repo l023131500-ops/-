@@ -749,7 +749,7 @@ export default function PublicPotential() {
                       </div>
                       <div>
                         <Label className="text-xs">טלפון</Label>
-                        <Input type="tel" inputMode="tel" value={contact.phone} onChange={(e) => setContact((c) => ({ ...c, phone: e.target.value }))} data-testid="input-potential-phone" autoComplete="tel" />
+                        <Input type="tel" inputMode="tel" maxLength={10} value={contact.phone} onChange={(e) => setContact((c) => ({ ...c, phone: e.target.value }))} data-testid="input-potential-phone" autoComplete="tel" />
                       </div>
                       <div>
                         <Label className="text-xs">מייל</Label>
@@ -757,7 +757,7 @@ export default function PublicPotential() {
                       </div>
                       <div>
                         <Label className="text-xs">תעודת זהות (אופציונלי)</Label>
-                        <Input inputMode="numeric" value={contact.idNumber} onChange={(e) => setContact((c) => ({ ...c, idNumber: e.target.value }))} />
+                        <Input inputMode="numeric" maxLength={9} value={contact.idNumber} onChange={(e) => setContact((c) => ({ ...c, idNumber: e.target.value }))} />
                       </div>
                     </div>
                     <label className="flex items-start gap-2 text-xs text-muted-foreground cursor-pointer">

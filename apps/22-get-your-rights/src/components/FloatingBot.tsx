@@ -632,6 +632,8 @@ const FloatingBot = () => {
                           {field.type === "text" && (
                             <Input
                               id={`comp-${field.key}`}
+                              inputMode={field.key === "id_number" || field.key === "spouse_id_number" ? "numeric" : undefined}
+                              maxLength={field.key === "id_number" || field.key === "spouse_id_number" ? 9 : undefined}
                               value={compAnswers[field.key] || ""}
                               onChange={(e) => setCompAnswers({ ...compAnswers, [field.key]: e.target.value })}
                               placeholder={(field as any).placeholder || ""}
@@ -895,7 +897,7 @@ const FloatingBot = () => {
                     </BotMessage>
                     <form onSubmit={handleFamilySubmit} className="space-y-3 mt-3">
                       <Input placeholder="שם מלא *" value={familyData.name} onChange={(e) => setFamilyData({ ...familyData, name: e.target.value })} required className="text-sm" />
-                      <Input placeholder="תעודת זהות *" inputMode="numeric" value={familyData.id_number} onChange={(e) => setFamilyData({ ...familyData, id_number: e.target.value })} required className="text-sm" />
+                      <Input placeholder="תעודת זהות *" inputMode="numeric" maxLength={9} value={familyData.id_number} onChange={(e) => setFamilyData({ ...familyData, id_number: e.target.value })} required className="text-sm" />
                       <div>
                         <label htmlFor="family-date-of-birth" className="text-xs font-medium text-foreground mb-1 block">תאריך לידה *</label>
                         <Input id="family-date-of-birth" type="date" value={familyData.date_of_birth} onChange={(e) => setFamilyData({ ...familyData, date_of_birth: e.target.value })} required className="text-sm" dir="ltr" />
@@ -911,7 +913,7 @@ const FloatingBot = () => {
                       )}
                       <SelectField value={familyData.health} options={healthOptions} placeholder="מצב בריאותי *" onChange={(v) => setFamilyData({ ...familyData, health: v })} />
                       <SelectField value={familyData.economic} options={economicOptions} placeholder="מצב כלכלי *" onChange={(v) => setFamilyData({ ...familyData, economic: v })} />
-                      <Input placeholder="מספר טלפון *" type="tel" inputMode="tel" value={familyData.phone} onChange={(e) => setFamilyData({ ...familyData, phone: e.target.value })} required className="text-sm" autoComplete="tel" />
+                      <Input placeholder="מספר טלפון *" type="tel" inputMode="tel" maxLength={10} value={familyData.phone} onChange={(e) => setFamilyData({ ...familyData, phone: e.target.value })} required className="text-sm" autoComplete="tel" />
                       <Button type="submit" disabled={isSubmitting} className="w-full gap-2">
                         <Send className="w-4 h-4" />
                         {isSubmitting ? "שולח..." : "שליחה"}
@@ -963,7 +965,7 @@ const FloatingBot = () => {
                         <p className="text-xs text-muted-foreground mb-2">פרטי קשר:</p>
                         <div className="space-y-2">
                           <Input placeholder="שם איש קשר" value={communityData.contactName} onChange={(e) => setCommunityData({ ...communityData, contactName: e.target.value })} required className="text-sm" />
-                          <Input placeholder="טלפון" type="tel" inputMode="tel" value={communityData.contactPhone} onChange={(e) => setCommunityData({ ...communityData, contactPhone: e.target.value })} required className="text-sm" />
+                          <Input placeholder="טלפון" type="tel" inputMode="tel" maxLength={10} value={communityData.contactPhone} onChange={(e) => setCommunityData({ ...communityData, contactPhone: e.target.value })} required className="text-sm" />
                         </div>
                       </div>
 
@@ -1077,6 +1079,7 @@ const ContactForm = ({
       placeholder="מספר טלפון *"
       type="tel"
       inputMode="tel"
+      maxLength={10}
       value={contactForm.phone}
       onChange={(e) => setContactForm({ ...contactForm, phone: e.target.value })}
       className="text-sm"

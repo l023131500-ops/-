@@ -102,6 +102,7 @@ const Footer = () => {
                         required
                         type="tel"
                         inputMode="tel"
+                        maxLength={10}
                         value={formData.phone}
                         onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                         className="text-sm"
@@ -113,6 +114,7 @@ const Footer = () => {
                         placeholder="תעודת זהות"
                         aria-label="תעודת זהות"
                         inputMode="numeric"
+                        maxLength={9}
                         value={formData.idNumber}
                         onChange={(e) => setFormData({ ...formData, idNumber: e.target.value })}
                         className="text-sm"

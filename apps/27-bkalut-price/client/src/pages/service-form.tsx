@@ -406,7 +406,7 @@ export default function ServiceFormPage() {
                 <Input type="date" value={answers[q.id] ?? ""} onChange={(e) => setAnswers((prev) => ({ ...prev, [q.id]: e.target.value }))} />
               )}
               {q.type === "tel" && (
-                <Input type="tel" inputMode="tel" value={answers[q.id] ?? ""} onChange={(e) => setAnswers((prev) => ({ ...prev, [q.id]: e.target.value }))} />
+                <Input type="tel" inputMode="tel" maxLength={10} value={answers[q.id] ?? ""} onChange={(e) => setAnswers((prev) => ({ ...prev, [q.id]: e.target.value }))} />
               )}
               {q.type === "email" && (
                 <Input type="email" value={answers[q.id] ?? ""} onChange={(e) => setAnswers((prev) => ({ ...prev, [q.id]: e.target.value }))} />
@@ -485,6 +485,8 @@ export default function ServiceFormPage() {
               ) : (
                 <Input
                   type={field.type === "tel" ? "tel" : field.type === "email" ? "email" : field.type === "date" ? "date" : "text"}
+                  inputMode={field.id === "phone" ? "tel" : field.id === "id_number" ? "numeric" : undefined}
+                  maxLength={field.id === "phone" ? 10 : field.id === "id_number" ? 9 : undefined}
                   value={details[field.id] ?? ""}
                   onChange={(e) => setDetails((prev) => ({ ...prev, [field.id]: e.target.value }))}
                   onBlur={() => {
@@ -516,6 +518,8 @@ export default function ServiceFormPage() {
               ) : (
                 <Input
                   type={field.type === "date" ? "date" : "text"}
+                  inputMode={field.id === "id_number" ? "numeric" : undefined}
+                  maxLength={field.id === "id_number" ? 9 : undefined}
                   value={details[field.id] ?? ""}
                   onChange={(e) => setDetails((prev) => ({ ...prev, [field.id]: e.target.value }))}
                 />

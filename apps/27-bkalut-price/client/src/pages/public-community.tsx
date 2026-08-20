@@ -101,7 +101,7 @@ export default function PublicCommunity() {
       case "date":
         return <Input type="date" value={(v as string) || ""} onChange={(e) => setAnswer(q.id, e.target.value)} data-testid={`q-${q.id}`} />;
       case "phone":
-        return <Input type="tel" inputMode="tel" value={(v as string) || ""} onChange={(e) => setAnswer(q.id, e.target.value)} data-testid={`q-${q.id}`} />;
+        return <Input type="tel" inputMode="tel" maxLength={10} value={(v as string) || ""} onChange={(e) => setAnswer(q.id, e.target.value)} data-testid={`q-${q.id}`} />;
       case "email":
         return <Input type="email" inputMode="email" value={(v as string) || ""} onChange={(e) => setAnswer(q.id, e.target.value)} data-testid={`q-${q.id}`} />;
       case "yesno":
@@ -181,7 +181,7 @@ export default function PublicCommunity() {
           <div className="grid sm:grid-cols-2 gap-3">
             <div className="space-y-1"><Label className="text-xs">שם איש הקשר</Label><Input value={contact.name} onChange={(e) => setContact({ ...contact, name: e.target.value })} data-testid="input-community-name" autoComplete="name" /></div>
             <div className="space-y-1"><Label className="text-xs">שם הקהילה</Label><Input value={contact.communityName} onChange={(e) => setContact({ ...contact, communityName: e.target.value })} data-testid="input-community-community" /></div>
-            <div className="space-y-1"><Label className="text-xs">טלפון</Label><Input type="tel" inputMode="tel" value={contact.phone} onChange={(e) => setContact({ ...contact, phone: e.target.value })} data-testid="input-community-phone" autoComplete="tel" /></div>
+            <div className="space-y-1"><Label className="text-xs">טלפון</Label><Input type="tel" inputMode="tel" maxLength={10} value={contact.phone} onChange={(e) => setContact({ ...contact, phone: e.target.value })} data-testid="input-community-phone" autoComplete="tel" /></div>
             <div className="space-y-1"><Label className="text-xs">דוא״ל</Label><Input type="email" inputMode="email" value={contact.email} onChange={(e) => setContact({ ...contact, email: e.target.value })} data-testid="input-community-email" autoComplete="email" /></div>
           </div>
         </Card>

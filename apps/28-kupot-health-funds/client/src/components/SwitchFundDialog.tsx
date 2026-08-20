@@ -249,6 +249,7 @@ export function SwitchFundDialog({
                 <Input
                   {...form.register("phone")}
                   inputMode="tel"
+                  maxLength={10}
                   placeholder="050-0000000"
                   data-testid="input-phone"
                   autoComplete="tel"
@@ -269,6 +270,7 @@ export function SwitchFundDialog({
                   <Input
                     {...form.register("idNumber")}
                     inputMode="numeric"
+                    maxLength={9}
                     placeholder="לא חובה"
                     data-testid="input-idNumber"
                   />

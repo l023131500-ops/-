@@ -206,7 +206,7 @@ export default function StudyDayUpload() {
               </div>
               <div className="space-y-1.5">
                 <Label className="text-sm flex items-center gap-1.5"><Phone className="w-3.5 h-3.5" />טלפון <span className="text-destructive">*</span></Label>
-                <Input dir="ltr" value={form.contact_phone} onChange={(e) => set("contact_phone", e.target.value)} className="h-11 border-foreground/15" autoComplete="tel" />
+                <Input dir="ltr" value={form.contact_phone} onChange={(e) => set("contact_phone", e.target.value)} className="h-11 border-foreground/15" autoComplete="tel" maxLength={10} />
               </div>
               <div className="space-y-1.5">
                 <Label className="text-sm flex items-center gap-1.5"><Mail className="w-3.5 h-3.5" />אימייל</Label>
