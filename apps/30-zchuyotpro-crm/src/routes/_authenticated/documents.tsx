@@ -186,6 +186,15 @@ function Page() {
     window.open(data.signedUrl, "_blank");
   }
 
+  async function download(d: DocRow) {
+    const { data, error } = await supabase.storage.from("client-documents").createSignedUrl(d.storage_path, 60);
+    if (error) return toast.error(error.message);
+    const a = document.createElement("a");
+    a.href = data.signedUrl;
+    a.download = d.file_name;
+    a.click();
+  }
+
   const sendForSignature = useMutation({
     mutationFn: async (d: DocRow) => {
       const r = await fetch("/api/public/notify-signature", {
@@ -302,7 +311,7 @@ function Page() {
                     <Button size="sm" variant="ghost" onClick={() => setAnalysisDoc(d)}><Sparkles className="h-3.5 w-3.5 ms-1" />תוצאות</Button>
                   )}
                   <Button size="icon" variant="ghost" onClick={() => preview(d)}><Eye className="h-4 w-4" /></Button>
-                  <Button size="icon" variant="ghost" onClick={() => preview(d)}><Download className="h-4 w-4" /></Button>
+                  <Button size="icon" variant="ghost" onClick={() => download(d)}><Download className="h-4 w-4" /></Button>
                   <Button size="icon" variant="ghost" className="text-destructive" onClick={() => { if (confirm(`למחוק את ${d.file_name}?`)) del.mutate(d); }}><Trash2 className="h-4 w-4" /></Button>
                 </div>
               </CardContent>
