@@ -6089,3 +6089,27 @@
     deleteKey (22-get-your-rights, מפתח API — עדיפות גבוהה יחסית), ואז
     `financial.tsx` (27-bkalut-price, 5+ מוטציות מחיקה).
     via cloud server 167.99.131.167 [loop B]
+
+## 20/08/2026 — סבב 336 (loop B)
+
+336. **המשך עדשת מחיקה-בלי-אישור, מועמד שלישי מהתור שנפתח בסבב 334:**
+    `apps/21-mthbram/src/components/portal/PortalMessagesTab.tsx`
+    `deleteMessage` (שורה 51) קרא `supabase.from("portal_messages").delete()`
+    ישירות מתוך `onClick` (כפתור פח-אשפה ליד כל פניה ברשימה) בלי שום
+    שער אישור — לחיצה אחת מוחקת פניית לקוח לצמיתות. תוקן באותו דפוס
+    בדיוק שכבר קיים ב-`AdminDashboard.tsx`, `PrayerTimesTab.tsx` (סבב 334)
+    ו-`OrgPortal.tsx` (סבב 335) של אותה אפליקציה: הוספתי
+    `if (!confirm("למחוק את הפניה?")) return;` בתחילת ה-handler.
+    אפס שינוי להתנהגות הקיימת מעבר לחסימת המחיקה המיידית — אין שינוי
+    ל-DB/RLS/צורת השאילתה. בדיקת איזון סוגריים/מאמרים מסולסלים/מרובעים
+    ב-python על הקובץ המלא אחרי העריכה — תקין (57/57, 67/67, 10/10).
+    אין build/dev-server זמין בסביבה הזו לפי הנחיית ההרצה — לא tsc.
+    ענף חדש `fix/b-21-portalmessagestab-unconfirmed-delete-0820`,
+    קומיט `2cc14920`, נדחף (מפעיל פריסת Vercel תחת more30.com/mthbram).
+
+    **הבא בתור:** להמשיך את עדשת מחיקה-בלי-אישור על שאר המופעים בתור —
+    `PortalSettingsTab.tsx` deletePhoto (21-mthbram), אחר-כך
+    `AdminSettings.tsx` deleteKey (22-get-your-rights, מפתח API —
+    עדיפות גבוהה יחסית), ואז `financial.tsx` (27-bkalut-price, 5+
+    מוטציות מחיקה).
+    via cloud server 167.99.131.167 [loop B]
