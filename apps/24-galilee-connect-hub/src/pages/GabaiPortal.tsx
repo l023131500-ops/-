@@ -932,6 +932,7 @@ const KashrutManager = () => {
   const [importing, setImporting] = useState(false);
   const [importErrors, setImportErrors] = useState(0);
   const [actionError, setActionError] = useState('');
+  const [processingId, setProcessingId] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const fetchEstablishments = async () => {
@@ -993,8 +994,11 @@ const KashrutManager = () => {
   };
 
   const updateLevel = async (id: string, level: string) => {
+    if (processingId) return;
+    setProcessingId(id);
     setActionError('');
     const { error } = await supabase.from('kashrut_establishments').update({ kashrut_level: level }).eq('id', id);
+    setProcessingId(null);
     if (error) {
       setActionError('עדכון רמת הכשרות נכשל עקב תקלה. נסו שוב.');
       return;
@@ -1063,8 +1067,9 @@ const KashrutManager = () => {
                       <button
                         key={btn.value}
                         onClick={() => updateLevel(est.id, btn.value)}
+                        disabled={processingId === est.id}
                         aria-pressed={est.kashrut_level === btn.value}
-                        className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                        className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
                           est.kashrut_level === btn.value ? btn.activeClass : 'bg-muted text-muted-foreground hover:bg-muted/80'
                         }`}
                       >
