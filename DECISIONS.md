@@ -4152,3 +4152,54 @@
     26/27/28/30/31). סבב הבא יכול לפתוח עדשה חדשה (ניגודיות צבעים,
     `lang`/`dir` חסר על אלמנטים מעורבי-שפה, focus trap/focus-return
     ב-modal אחרי סגירה) על פני 17-31.
+
+## 20/08/2026 — סבב 293 (loop B)
+
+293. **פתחתי את עדשת ה-focus-return-אחרי-סגירה שהוצעה בסוף הסבב
+    הקודם, ובדרך גיליתי שסבב 291-292 החמיץ שני רכיבים ב-21-mthbram
+    שכלל לא קיבלו מטפל Escape.** קראתי README.md/CONNECTIONS.md,
+    בדקתי `core.run_progress` (הצעד האחרון: 24/27 modal Escape-key,
+    קומיטים `d8a22e4e`/`2f5dbf77`, כבר ה-parent של הענף הזה, כבר
+    נדחף) ו-`core.projects` 17-31 (ללא צורך בשינוי metadata). הרצתי
+    סוכן Explore לסריקת כל 17-31 עבור modal/overlay מותאמים-אישית
+    (לא Radix/shadcn) בלי החזרת focus לאלמנט המפעיל אחרי סגירה.
+    הסוכן מצא 7 רכיבים כאלה ב-4 אפליקציות (21/24/27/28), ודירג
+    כבעלי-הערך-הגבוה ביותר שניים ב-**21-mthbram** שלא היו ברשימת
+    5 המועמדים של סבב 291 כלל. **אימתתי בעצמי:** `FloatingChatBot.tsx`
+    (הווידג'ט הצף הראשי של האפליקציה, `isOpen`/`setIsOpen`,
+    `motion.div` overlay `fixed`) ו-`Navbar.tsx` (מגירת ניווט
+    מובייל, `isOpen`/`setIsOpen`, `AnimatePresence`+`motion.div`) --
+    בקריאה מלאה של שני הקבצים **לא נמצא שום מטפל `keydown` בהם
+    כלל** (לא רק חסר focus-return -- Escape עצמו חסר), כלומר סבב
+    291's Explore-agent scan (שדיווח 5 מועמדים בלבד) פספס את שתי
+    האפליקציה הזו לגמרי -- לא סימן שגיאה בסבב הקודם, אלא שסוכני
+    Explore לא תמיד ממצים; שווה לזכור זאת בסבבים הבאים ולא לסמוך
+    על "ממוצה" בלי re-scan מדי פעם. **התיקון (בשני הקבצים גם יחד,
+    כי אותו root cause):** הוספתי `useRef<HTMLButtonElement>` ללכידת
+    כפתור-המפעיל (כפתור ה-AI הצף / כפתור ההמבורגר), פונקציית
+    `closeChat`/`closeMenu` שקוראת ל-setter ל-`false` ואז
+    `triggerRef.current?.focus()`, ו-`useEffect` שמאזין ל-`keydown`
+    על `window` כל עוד ה-state פתוח וקורא לפונקציית הסגירה ב-`Escape`
+    (עם `cleanup`) -- מדפוס זהה לסבבים 291-292. כפתור ה-X של הצ'אט
+    עודכן לקרוא ל-`closeChat` במקום ל-`setIsOpen(false)` הישיר, כדי
+    שגם סגירה בעכבר תחזיר focus. ב-Navbar לא שיניתי את `onClick`
+    של קישורי הניווט (`setIsOpen(false)` ישיר) -- קליק על קישור
+    מנווט לעמוד חדש בכוונה, אז החזרת focus להמבורגר שם תהיה נסיגה
+    לא רצויה, לא שיפור נגישות; רק Escape (יציאה בלי לפעול) מקבל
+    focus-return. חמשת המועמדים הנוספים שהסוכן מצא (21-LessonDetailModal,
+    24-AskRabbiSection/ServiceRequestForm, 27-public-eligibility,
+    28-TopicCard/SmartAdvisor -- אלה האחרונים collapsible ברמת כרטיס
+    לא modal אמיתי) לא תוקנו הפעם (היקף "צעד אחד משמעותי"), מתועדים
+    כתור לסבב הבא. אפס שינוי בלוגיקת הצ'אט/AI/ניווט/סטרימינג. אין
+    `node_modules`/`tsc` בעץ הזה -- אימתתי איזון סוגריים/מסולסלים/
+    מרובעים בסקריפט Node קצר על שני הקבצים (0/0/0) בנוסף לקריאה
+    חוזרת מלאה. נדרש `git add -f` (`apps/21-mthbram/src` תפוס תחת
+    `.gitignore` כללי, אותו דפוס חוזר מסבבים קודמים). קומיט `3d6e9914`
+    על ענף חדש `fix/b-mthbram-modal-focus-return-0820` (יורש
+    `fix/b-galilee-bkalut-modal-escape-key-0820`), יידחף (מפעיל
+    פריסת Vercel תחת more30.com/mthbram). **הבא בתור:** עדשת ה-
+    focus-return פתוחה עדיין על 5 המועמדים הנותרים
+    (21-LessonDetailModal, 24-AskRabbiSection, 24-ServiceRequestForm,
+    27-public-eligibility, ואולי 28-TopicCard/SmartAdvisor אם
+    ייחשבו modal ולא רק כרטיס-הרחבה) -- סבב הבא יכול להמשיך שם, או
+    לפתוח עדשה חדשה (ניגודיות צבעים, `lang`/`dir` חסר) על פני 17-31.
