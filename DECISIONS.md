@@ -10904,4 +10904,54 @@
       `04-imud-torani` או `16-chatzor-connect` (טרם נסרקו לעומק
       בהיקף הזה), או לבדוק את שכבת התשתית המשותפת (gannenet/40,
       login/auth, super-admin, admin dashboard) שטרם עברה סבב סריקה
+
+## 20/08/2026 — סבב 216 (loop A) — `04-imud-torani`: כפתור מחיקת בלוק לא כיבד את נעילת הבלוק
+
+1052. **בדקתי מחדש לפני שהתחלתי:** `core.run_progress` (סבב 215 האחרון,
+      commit `33d70eda`/`027599b7`, תואם ל-HEAD). עקבתי אחרי ההמלצה
+      מ-1051 וסרקתי לעומק את `04-imud-torani` שטרם נסרק בהיקף הזה —
+      `Wizard.tsx`, `aiProofread.ts`, `queryClient.ts`, `Editor.tsx`,
+      `ProofreadDept.tsx`, `CoverEditor.tsx`, `routes.ts`, `storage.ts`,
+      `pagedRender.ts`, `visitorId.ts` ו-`EditDept.tsx`. רוב המערכת
+      כבר מוקשחת (כל `res.json()` עטוף, בידוד `X-Visitor-Id` כבר מתועד
+      כמתוקן בהערת קוד עצמה, אין `window.open` בעייתי).
+1053. **הממצא שאומת ישירות בקוד:** `apps/04-imud-torani/client/src/
+      pages/departments/EditDept.tsx`, `remove()` (שורה 51-53, לפני
+      התיקון): `onChange((prev) => prev.filter((b) => b.id !== id));`
+      — ללא בדיקת `b.meta?.locked`. כפתור הנעילה על כל בלוק (`Lock`/
+      `Unlock`, שורה 107-114) מתויג במפורש "נעל בלוק (הגנה מפני
+      שינוי)" ו"הגנה על טקסט קדוש" (הערת JSDoc בראש הקומפוננטה,
+      שורה 28-30) — אבל בפועל הנעילה חוסמת רק את ה-`Textarea`
+      (`disabled={locked}`, שורה 134) ואת שני מטפלי ההגהה
+      ב-`Editor.tsx` (`handleApplyFix`/`handleDeleteRange`, שורות
+      107-119, שתי הבדיקות כבר קיימות שם). כפתור האשפה (`Trash2`,
+      שורה 122-124) מוחק בלוק נעול לגמרי בלי שום חסימה — משתמש
+      שנעל בלוק כדי להגן על טקסט קדוש מפני עריכה בטעות עדיין יכול
+      למחוק אותו כליל בלחיצה אחת, בניגוד ישיר להבטחת ה-UI.
+1054. **התיקון:** `remove()` בודקת כעת אם הבלוק נעול; אם כן, מציגה
+      טוסט זהה בניסוחו לזה שכבר קיים ב-`Editor.tsx` ("בלוק נעול" /
+      "בטל נעילה לפני מחיקה.") ומחזירה את הרשימה ללא שינוי, במקום
+      למחוק. נדרש ייבוא `useToast` (לא היה בקומפוננטה קודם, בדומה
+      לתבנית הקיימת ב-`ProofreadDept.tsx`/`Editor.tsx`). שום מטפל
+      אחר (`add`/`update`/`setMeta`/`move`) לא שונה.
+1055. **אפס רגרסיה מאומתת:** שינוי ממוקד בפונקציה אחת + ייבוא אחד,
+      תחביר TypeScript/JSX תקין (נבדק ידנית — אין node/tsc זמינים
+      להרצה ארוכה בסבב הזה, לפי הנחיית ההרצה). `git diff --stat`:
+      קובץ אחד, +10/-1. `git status`/`git ls-files` אישרו שהקובץ
+      כבר tracked; `git add` הרגיל נתן שוב את אזהרת ה-`.gitignore`
+      הכוזבת שתועדה בסבבים קודמים (הפעם על `apps/04-imud-torani/
+      client`, `git check-ignore -v` לא מצא כלל תואם בפועל) —
+      `git add -f` פתר. לא נגעתי במערכות/סכימות מוגנות (08/09/
+      bkalut-app/bkalot-admin/zr_*/NEDARIM3873/csj/csj_src/igud),
+      ב-`main`, או במערכת מחוץ להיקף (רק 01-16/gannenet/auth/
+      super-admin/admin dashboard/homepage ordering/pricing). Commit
+      `54930b6c` על `fix/a-icon-only-buttons-round2-0820`, נדחף
+      ל-`origin` (מפעיל פריסת Vercel תחת `more30.com/imud`).
+1056. **הבא בתור:** `04-imud-torani` לא נסרק במלואו — עדיין לא
+      נבדקו `Home.tsx`, `Templates.tsx`, `DesignDept.tsx`,
+      `server/docx.ts`, `server/seed.ts`, `shared/proofread.ts`
+      ו-`shared/wizard.ts`. מומלץ לסבב הבא: להמשיך שם, או לעבור
+      ל-`16-chatzor-connect` (טרם נסרק לעומק בהיקף הזה), או לבדוק
+      את שכבת התשתית המשותפת (gannenet/40, login/auth, super-admin,
+      admin dashboard) שטרם עברה סבב סריקה
       ייעודי.
