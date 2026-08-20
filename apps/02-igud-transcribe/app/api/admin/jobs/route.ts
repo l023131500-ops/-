@@ -12,6 +12,10 @@ export const maxDuration = 300;
  * Worker: עיבוד job אחד מהתור.
  * קריאה GET = הרץ פעם אחת (cron יכול לקרוא כל 60 שנ').
  * קריאה POST { upload_id } = עיבוד מיידי של job ספציפי.
+ *
+ * חייב לשבת תחת /api/admin/ (לא /api/jobs) כדי ש-middleware.ts יגן עליו —
+ * לפני המעבר הזה כל קורא אנונימי יכול היה לקרוא POST עם upload_id כלשהו
+ * ולהפעיל תמלול Whisper מלא (בתשלום) על כל upload בפרויקט.
  */
 export async function GET() {
   const result = await processNext();

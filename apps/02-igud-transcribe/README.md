@@ -96,19 +96,11 @@ vercel
 
 הוסיפי את כל משתני הסביבה ב-Settings → Environment Variables.
 
-**חשוב:** Vercel חוסם בקשות מעל 4.5MB ב-Hobby. למסלולי העלאה (`/api/uploads`) ועיבוד (`/api/jobs`) — שדרגי ל-Pro או החליפי לאחסון ישיר ל-Supabase Storage מהדפדפן.
+**חשוב:** Vercel חוסם בקשות מעל 4.5MB ב-Hobby. למסלולי העלאה (`/api/uploads`) ועיבוד (`/api/admin/jobs`) — שדרגי ל-Pro או החליפי לאחסון ישיר ל-Supabase Storage מהדפדפן.
 
 ### Cron לעיבוד
 
-הוסיפי b-Vercel Cron Jobs (או cron חיצוני) קריאה ל-`GET /api/jobs` כל דקה:
-
-```json
-{
-  "crons": [{ "path": "/api/jobs", "schedule": "* * * * *" }]
-}
-```
-
-לחלופין — הפעלה ידנית מתוך פאנל האדמין → דשבורד → "הפעל worker".
+`/api/admin/jobs` יושב תחת `/api/admin/` ולכן `middleware.ts` דורש session של `ADMIN_EMAIL` — Vercel Cron Jobs לא נושא session כזה, אז חיבור cron אמיתי דורש קודם להוסיף בדיקת `CRON_SECRET` (Authorization header שVercel שולח אוטומטית כשמוגדר `CRON_SECRET`) בתוך הראוט עצמו. עד אז — הפעלה ידנית מתוך פאנל האדמין → דשבורד → "הפעל worker" (זו הדרך היחידה שמחוברת היום).
 
 ## ארכיטקטורה
 
@@ -130,7 +122,7 @@ vercel
          │ Worker pull (cron / manual)
          ▼
 ┌─────────────────────────────────┐
-│   /api/jobs (GET / POST)        │
+│   /api/admin/jobs (GET / POST)  │
 │   1. download audio             │
 │   2. Whisper transcribe         │
 │   3. Save raw_text              │

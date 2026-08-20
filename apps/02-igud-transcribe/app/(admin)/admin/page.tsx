@@ -42,7 +42,7 @@ export default function AdminDashboard() {
     setRunning(true);
     setRunMsg(null);
     try {
-      const res = await fetch("/tamlul/api/jobs", { method: "GET" });
+      const res = await fetch("/tamlul/api/admin/jobs", { method: "GET" });
       const data = await res.json();
       setRunMsg(data.message || (data.processed ? "עיבוד הושלם" : "אין עבודות בתור"));
       load();
