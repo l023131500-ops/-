@@ -7611,3 +7611,43 @@
      לחזור ל-`core.project_tasks`/`core.project_bugs` (5 פריטים
      פתוחים: 02/12/13/25/32, כולם עדיין חסומים על סודות/מיזוג/origin
      מעבר לסמכות הסוכן).
+
+## 20/08/2026 — סבב 143 (loop A)
+
+724. **פתחתי עדשת נגישות חדשה:** מודלים מותאמים-אישית (לא Radix/לא
+     `<dialog>` נייטיבי) ללא focus-trap. Explore agent סרק את 01-16
+     (ללא 08/09 המוגנות) ומצא ~9 מועמדים — רובם כבר עם
+     `role="dialog"`/`aria-modal`/`aria-label`/Escape-to-close קיימים,
+     אבל חסרי ניהול focus ראשוני וחסרי Tab-trap. הומלץ להתחיל עם
+     `01-torah-platform/src/components/LessonDetailModal.tsx` — ההשפעה
+     הרחבה ביותר (5 נקודות שימוש: `PublicRabbiPage`, `LessonDirectory`,
+     `PublicOrgPage`, `AdminDashboard`, `FeaturedLessons`) ותיקון אחד
+     סוגר את הפער בכולן.
+725. **תיקון:** הוספתי `panelRef`/`closeButtonRef`/`previousFocusRef`.
+     ב-`useEffect` הקיים (שכבר טיפל ב-Escape): שמירת ה-element הפעיל
+     לפני הפתיחה, `focus()` על כפתור הסגירה עם הפתיחה, שחזור ה-focus
+     הקודם עם הסגירה (ב-cleanup), ומלכודת Tab/Shift+Tab בתוך
+     ה-handler הקיים (שאילתת אלמנטים ניתנים ל-focus בתוך `panelRef`,
+     עוטפת מהראשון/אחרון). אותה תבנית בדיוק שהוכחה יעילה ב-round 373
+     (loop B, `21-mthbram/LessonDetailModal.tsx`) — יושמה כאן על קובץ
+     בשם זהה אך באפליקציה שונה לגמרי (01, לא 21).
+726. **אפס רגרסיה מאומתת:** `git diff --stat` — קובץ אחד, 34+/4-
+     שורות; אין שינוי ל-share/download/contact/state הקיימים, רק
+     תוספת refs + לוגיקת focus/Tab בתוך ה-`useEffect` הקיים + חיבור
+     `ref` לשני אלמנטים קיימים (`motion.div` הפאנל, כפתור הסגירה). אין
+     `tsc`/`npm` בסביבה הזו — אימות איזון `{}`/`()`/`[]` בפייתון על
+     הקובץ המלא: 180/180, 105/105, 18/18 — תואם. הקובץ עוקב ב-git אך
+     חסום ע"י כלל `apps/01-torah-platform/src` ב-`.gitignore` — נדרש
+     `git add -f`. Commit `b0baea6d` על
+     `fix/a-icon-only-buttons-round2-0820`, נדחף ל-origin (מפעיל
+     פריסת Vercel תחת more30.com/torah).
+727. **הבא בתור:** שאר המועמדים מהסריקה — 4 מודלים ב-`03-igud-ads`
+     (admin `transcripts`/`projects`/`templates`/`users`, כל אחד
+     `role=dialog`+`aria-modal`+`aria-label`+Escape קיימים, חסרי focus
+     ראשוני+Tab-trap), `02-igud-transcribe` (admin `uploads`, אותו
+     דפוס), שני מודלים נוספים ב-`01-torah-platform/AdminDashboard.tsx`
+     (עריכת שיעור שורות ~1580-1701, צפייה בנדרים שורות ~1703-1750+),
+     ו-`16-chatzor-connect/src/components/ui/Modal.tsx` (רכיב מודל
+     חוזר, חסר רק Tab-trap). אפשר להמשיך את עדשת ה-focus-trap על
+     אלה, לפתוח עדשה חדשה, או לחזור ל-`core.project_tasks`/
+     `core.project_bugs` (5 פריטים פתוחים, עדיין חסומים).
