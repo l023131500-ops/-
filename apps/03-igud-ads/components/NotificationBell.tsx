@@ -112,7 +112,7 @@ export default function NotificationBell() {
 
           <div className="max-h-80 overflow-y-auto">
             {recent.length === 0 ? (
-              <div className="p-4 text-center text-gray-400 text-sm">אין התראות.</div>
+              <div className="p-4 text-center text-gray-600 text-sm">אין התראות.</div>
             ) : (
               recent.map((n) => (
                 <div
@@ -137,14 +137,14 @@ export default function NotificationBell() {
                     {n.body && (
                       <div className="text-xs text-gray-500 truncate">{n.body}</div>
                     )}
-                    <div className="text-xs text-gray-400 mt-0.5">
+                    <div className="text-xs text-gray-600 mt-0.5">
                       {new Date(n.created_at).toLocaleString("he-IL")}
                     </div>
                   </div>
                   {!n.is_read && (
                     <button
                       onClick={() => markRead(n.id)}
-                      className="flex-shrink-0 text-xs text-gray-400 hover:text-gray-600 self-start"
+                      className="flex-shrink-0 text-xs text-gray-600 hover:text-gray-800 self-start"
                     >
                       ✓
                     </button>

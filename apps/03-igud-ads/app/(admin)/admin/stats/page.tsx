@@ -27,7 +27,7 @@ function StatCard({
     <div className="bg-surface rounded-xl border p-5">
       <div className="text-xs text-gray-500 mb-1">{label}</div>
       <div className={`text-3xl font-bold ${color || "text-brand-dark"}`}>{value}</div>
-      {sub && <div className="text-xs text-gray-400 mt-1">{sub}</div>}
+      {sub && <div className="text-xs text-gray-600 mt-1">{sub}</div>}
     </div>
   );
 }
@@ -46,7 +46,7 @@ export default function StatsAdmin() {
 
   useEffect(() => { load(); }, []);
 
-  if (loading) return <div className="p-8 text-center text-gray-400">טוען...</div>;
+  if (loading) return <div className="p-8 text-center text-gray-600">טוען...</div>;
   if (!stats) return <div className="p-8 text-center text-red-400">שגיאה בטעינה.</div>;
 
   const projectsData = [

@@ -191,7 +191,7 @@ export default function TemplatesPage() {
                 <td className="p-3">
                   {t.is_active
                     ? <span className="text-green-700 font-medium">פעיל</span>
-                    : <span className="text-gray-400">כבוי</span>
+                    : <span className="text-gray-600">כבוי</span>
                   }
                 </td>
                 <td className="p-3 flex gap-2" onClick={(e) => e.stopPropagation()}>

@@ -75,7 +75,7 @@ export default function MyNotificationsPage() {
                   </div>
                   <h3 className="font-bold text-brand-blue">{n.title}</h3>
                   {n.body && <p className="text-sm text-gray-700 mt-1">{n.body}</p>}
-                  <div className="text-xs text-gray-400 mt-2">
+                  <div className="text-xs text-gray-600 mt-2">
                     {new Date(n.created_at).toLocaleString("he-IL")}
                   </div>
                   {n.link_url && (

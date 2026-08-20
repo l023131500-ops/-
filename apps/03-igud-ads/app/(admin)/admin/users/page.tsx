@@ -182,7 +182,7 @@ export default function UsersPage() {
                 <td className="p-3">
                   {u.is_active
                     ? <span className="text-green-700 font-medium">פעיל</span>
-                    : <span className="text-gray-400">מושהה</span>
+                    : <span className="text-gray-600">מושהה</span>
                   }
                 </td>
                 <td className="p-3 font-mono text-xs">{u.ad_coupons?.code || "—"}</td>

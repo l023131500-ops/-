@@ -193,7 +193,7 @@ export default function UploadsPage() {
               <h2 className="text-xl font-serif font-bold text-brand-blue">
                 {selected.original_filename || selected.id}
               </h2>
-              <button ref={closeButtonRef} onClick={() => setSelected(null)} className="text-slate-400 hover:text-slate-700 text-2xl" aria-label="סגור">×</button>
+              <button ref={closeButtonRef} onClick={() => setSelected(null)} className="text-slate-600 hover:text-slate-700 text-2xl" aria-label="סגור">×</button>
             </div>
 
             <div className="p-6 space-y-6">

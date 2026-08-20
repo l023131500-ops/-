@@ -75,10 +75,10 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
   return (
     <div dir="rtl" className="max-w-5xl">
       <div className="flex items-center gap-3 mb-6">
-        <Link href="/admin/projects" className="text-gray-400 hover:text-gray-700 text-sm">
+        <Link href="/admin/projects" className="text-gray-600 hover:text-gray-700 text-sm">
           ← חזרה לפרויקטים
         </Link>
-        <span className="text-gray-300">|</span>
+        <span className="text-gray-600">|</span>
         <h1 className="font-serif text-2xl font-bold text-brand-dark">
           {(project.title as string) || params.id}
         </h1>
@@ -107,11 +107,11 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
           <div className="text-sm space-y-1 text-gray-700">
             {Object.entries(customerData).map(([k, v]) => (
               <div key={k}>
-                <span className="text-gray-400">{k}: </span>
+                <span className="text-gray-600">{k}: </span>
                 {String(v)}
               </div>
             ))}
-            {Object.keys(customerData).length === 0 && <div className="text-gray-400">אין פרטים</div>}
+            {Object.keys(customerData).length === 0 && <div className="text-gray-600">אין פרטים</div>}
           </div>
         </div>
       </div>
@@ -126,7 +126,7 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
                 <span>₪{pay.amount as number}</span>
                 <span>{pay.payer_name as string || "—"}</span>
                 <StatusBadge status={pay.status as string} />
-                <span className="text-gray-400 text-xs">
+                <span className="text-gray-600 text-xs">
                   {new Date(pay.created_at as string).toLocaleString("he-IL")}
                 </span>
               </div>
@@ -139,7 +139,7 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
       <div className="bg-surface rounded-xl border p-5 mb-6">
         <h2 className="font-semibold mb-3">תמונות שנוצרו</h2>
         {generations.length === 0 ? (
-          <div className="text-gray-400 text-sm">אין תמונות עדיין.</div>
+          <div className="text-gray-600 text-sm">אין תמונות עדיין.</div>
         ) : (
           <div className="grid md:grid-cols-3 gap-4">
             {generations.map((g: Record<string, unknown>) => (

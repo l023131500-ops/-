@@ -110,7 +110,7 @@ export default function SettingsAdmin() {
 
   useEffect(() => { load(); }, []);
 
-  if (loading) return <div className="p-8 text-center text-gray-400">טוען...</div>;
+  if (loading) return <div className="p-8 text-center text-gray-600">טוען...</div>;
 
   const byCategory = settings.reduce<SettingsByCategory>((acc, s) => {
     const cat = getCategory(s.key);
@@ -135,7 +135,7 @@ export default function SettingsAdmin() {
                   <div className="text-sm font-medium text-gray-700 mb-0.5">
                     {s.label || s.key}
                   </div>
-                  <div className="text-xs text-gray-400 font-mono mb-2">{s.key}</div>
+                  <div className="text-xs text-gray-600 font-mono mb-2">{s.key}</div>
                   <ValueInput
                     value={localValues[s.key]}
                     onChange={(v) => setLocalValues((prev) => ({ ...prev, [s.key]: v }))}
@@ -161,7 +161,7 @@ export default function SettingsAdmin() {
       ))}
 
       {settings.length === 0 && (
-        <div className="bg-surface rounded-xl border p-8 text-center text-gray-400">
+        <div className="bg-surface rounded-xl border p-8 text-center text-gray-600">
           אין הגדרות. יש להוסיף שורות לטבלת ad_app_settings.
         </div>
       )}

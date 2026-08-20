@@ -60,7 +60,7 @@ export default function AuditAdmin() {
 
       <div className="bg-surface rounded-xl border overflow-x-auto">
         {loading ? (
-          <div className="p-8 text-center text-gray-400">טוען...</div>
+          <div className="p-8 text-center text-gray-600">טוען...</div>
         ) : (
           <table className="min-w-full text-sm text-right">
             <thead className="bg-gray-50">
@@ -108,7 +108,7 @@ export default function AuditAdmin() {
               ))}
               {logs.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="p-8 text-center text-gray-400">אין רשומות.</td>
+                  <td colSpan={6} className="p-8 text-center text-gray-600">אין רשומות.</td>
                 </tr>
               )}
             </tbody>

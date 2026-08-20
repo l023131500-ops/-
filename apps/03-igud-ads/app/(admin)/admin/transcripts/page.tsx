@@ -117,7 +117,7 @@ export default function TranscriptsAdmin() {
 
       <div className="bg-surface rounded-xl border overflow-x-auto" aria-live="polite">
         {loading ? (
-          <div className="p-8 text-center text-gray-400">טוען...</div>
+          <div className="p-8 text-center text-gray-600">טוען...</div>
         ) : (
           <table className="min-w-full text-sm text-right">
             <thead className="bg-gray-50">
@@ -152,7 +152,7 @@ export default function TranscriptsAdmin() {
               ))}
               {items.length === 0 && (
                 <tr>
-                  <td colSpan={7} className="p-8 text-center text-gray-400">אין תמלולים.</td>
+                  <td colSpan={7} className="p-8 text-center text-gray-600">אין תמלולים.</td>
                 </tr>
               )}
             </tbody>
@@ -173,7 +173,7 @@ export default function TranscriptsAdmin() {
           >
             <div className="flex justify-between items-start mb-4">
               <h2 className="font-serif text-xl font-bold">{modal.original_filename || modal.id}</h2>
-              <button ref={closeButtonRef} onClick={() => setModal(null)} className="text-gray-400 hover:text-gray-700 text-xl" aria-label="סגור">✕</button>
+              <button ref={closeButtonRef} onClick={() => setModal(null)} className="text-gray-600 hover:text-gray-700 text-xl" aria-label="סגור">✕</button>
             </div>
 
             <div className="flex gap-2 mb-4 flex-wrap">
@@ -216,7 +216,7 @@ export default function TranscriptsAdmin() {
             )}
 
             {!modal.transcript && (
-              <div className="text-gray-400 text-sm">אין תמלול זמין עדיין.</div>
+              <div className="text-gray-600 text-sm">אין תמלול זמין עדיין.</div>
             )}
           </div>
         </div>

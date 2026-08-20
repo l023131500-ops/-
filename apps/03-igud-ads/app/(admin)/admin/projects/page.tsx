@@ -160,7 +160,7 @@ export default function ProjectsAdmin() {
       {/* Table */}
       <div className="bg-surface rounded-xl border overflow-x-auto" aria-live="polite">
         {loading ? (
-          <div className="p-8 text-center text-gray-400">טוען...</div>
+          <div className="p-8 text-center text-gray-600">טוען...</div>
         ) : (
           <table className="min-w-full text-sm text-right">
             <thead className="bg-gray-50">
@@ -214,7 +214,7 @@ export default function ProjectsAdmin() {
               ))}
               {items.length === 0 && (
                 <tr>
-                  <td colSpan={7} className="p-8 text-center text-gray-400">אין פרויקטים.</td>
+                  <td colSpan={7} className="p-8 text-center text-gray-600">אין פרויקטים.</td>
                 </tr>
               )}
             </tbody>
@@ -240,7 +240,7 @@ export default function ProjectsAdmin() {
               <h2 className="font-serif text-xl font-bold">
                 {detail.project?.title || detail.project?.id}
               </h2>
-              <button ref={closeButtonRef} onClick={() => setDetail(null)} className="text-gray-400 hover:text-gray-700 text-xl" aria-label="סגור">✕</button>
+              <button ref={closeButtonRef} onClick={() => setDetail(null)} className="text-gray-600 hover:text-gray-700 text-xl" aria-label="סגור">✕</button>
             </div>
 
             <div className="grid md:grid-cols-2 gap-4 mb-4 text-sm text-gray-600">

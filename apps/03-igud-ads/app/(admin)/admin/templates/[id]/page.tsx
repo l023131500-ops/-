@@ -154,7 +154,7 @@ export default function TemplateEditPage() {
         <div>
           <label className="label" htmlFor="tpl-prompt">
             prompt_template
-            <span className="text-gray-400 font-normal mr-2 text-xs">(השתמש ב-{"{field_name}"} לשדות)</span>
+            <span className="text-gray-600 font-normal mr-2 text-xs">(השתמש ב-{"{field_name}"} לשדות)</span>
           </label>
           <textarea
             id="tpl-prompt"
