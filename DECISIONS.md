@@ -6720,3 +6720,50 @@
      (למשל: בדיקת `aria-live`/error-announcement בטפסים, או חזרה
      ל-`core.project_tasks`/`core.project_bugs` לעבודה חדשה בתחום
      auth/admin/pricing/gannenet) לפני שממשיך.
+
+## 20/08/2026 — סבב 120 (loop A)
+
+634. **בדקתי מחדש `git log`/`core.run_progress`/`core.project_tasks`/
+     `core.project_bugs` לפני שהתחלתי.** סבב 119 סגור (commit
+     `bfbf0cbe`, תואם HEAD). חמש המשימות הפתוחות ב-`core.project_tasks`
+     (02/12/13/25/32) עדיין אותו חסם (סוד חסר / החלטת מיזוג-origin),
+     `core.project_bugs` ריק. בדקתי גם את `core.projects` עבור
+     40-gannenet (מחוץ ל-scope של אישור, בתחום shared-infra): הקוד
+     כולו כבר vendored וב-git (`git ls-files` — 59 קבצים, `git status`
+     נקי), ה-rewrite ב-`portal/vercel.dist.json` כבר קיים
+     (`/gannenet` → `gannenet-more30.vercel.app`). מה שנשאר — יצירת
+     פרויקט Vercel חדש (`gannenet-more30`, root=`apps/40-gannenet`,
+     env) — דורש גישת Vercel dashboard/API שאין בסביבה הזו (`vercel`
+     CLI לא מותקן, אין טוקן ב-env), לא בר-פעולה מ-git-push בלבד.
+     המשכתי להמלצת #633: פתחתי עדשה חדשה — `aria-live`/
+     error-announcement על הודעות שגיאה מותנות בטפסים.
+635. **הרצתי Explore agent** על 01-torah-platform/02-igud-transcribe/
+     03-igud-ads (הכי הרבה טפסים אמיתיים מול משתמש). מצא 5 מועמדים;
+     בחרתי את המשמעותי ביותר וגם בתוך ה-scope המפורש (customer
+     login/auth): `apps/02-igud-transcribe/app/login/page.tsx`
+     (שורות 65-69) — דף כניסת מנהל ציבורי אמיתי (route `/login`,
+     משמש גם ל-Google OAuth וגם login בדוא"ל/סיסמה), הודעת שגיאה
+     מותנית (`{error && <div>...}`) בלי `role`/`aria-live` — משתמש
+     קורא-מסך לא מקבל התראה כשההתחברות נכשלת.
+636. **אימות שזה קוד חי, לא false-positive:** קראתי את הקובץ המלא.
+     `error` state מוגדר משתי נקודות כישלון אמיתיות (Google OAuth
+     שורה 29, סיסמה/דוא"ל שורה 40), אין ספריית toast בקובץ הזה
+     (בניגוד ל-`ResetPassword.tsx` שנמצא גם הוא כמועמד אך משתמש
+     כבר ב-sonner להצלחה — עדיפות נמוכה יותר).
+637. **התיקון:** הוספתי `role="alert"` ו-`aria-live="assertive"` על
+     ה-`div` הקיים שמציג את `{error}` — שני attributes בלבד, לא
+     נגעתי ב-className/handleGoogle/handleEmail/מבנה JSX קיים.
+638. **אפס רגרסיה מאומתת:** `git diff` — קובץ אחד, 5+/1-, רק שני
+     attributes חדשים על אלמנט קיים. אין `tsc`/`npm` בסביבה הזו —
+     אומת בבדיקת איזון `{}`/`()`/`[]` ב-Python על הקובץ המלא
+     (32/32, 36/36, 5/5). Commit `1ca24491` על
+     `fix/a-icon-only-buttons-round2-0820`, יידחף ל-origin (מפעיל
+     פריסת Vercel תחת more30.com/tamlul).
+639. **הבא בתור:** אותה עדשה (`aria-live`/`role=alert` על הודעות
+     שגיאה/הצלחה מותנות בלי ספריית toast) נמצאה גם ב-
+     `apps/02-igud-transcribe/app/(public)/upload/page.tsx` (שורות
+     105-108), `apps/03-igud-ads/app/(public)/create/page.tsx`
+     (שורות 241-242), ו-`apps/03-igud-ads/app/(admin)/admin/
+     templates/[id]/page.tsx` (שורות 132-133, גם `error` וגם
+     `success`) — לא נבדקו/תוקנו הסבב הזה, ראויים לסבב הבא (כל אחד
+     לאמת כטופס חי לפני תיקון, כמו תמיד).
