@@ -47,10 +47,25 @@ const FloatingChatBot = () => {
   const [botState, setBotState] = useState<BotState>("home");
   const [stateHistory, setStateHistory] = useState<BotState[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const triggerButtonRef = useRef<HTMLButtonElement>(null);
+
+  const closeChat = () => {
+    setIsOpen(false);
+    triggerButtonRef.current?.focus();
+  };
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") closeChat();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen]);
 
   useEffect(() => {
     setMessages([getInitialMessage()]);
@@ -266,6 +281,7 @@ const FloatingChatBot = () => {
             transition={{ scale: { repeat: Infinity, duration: 2 } }}
             whileHover={{ scale: 1.15 }}
             onClick={() => setIsOpen(true)}
+            ref={triggerButtonRef}
             className="fixed bottom-6 left-6 z-50 w-16 h-16 rounded-full bg-navy flex items-center justify-center shadow-2xl glow-gold"
           >
             <AIIcon size={42} variant="navy" />
@@ -308,7 +324,7 @@ const FloatingChatBot = () => {
                       <ArrowLeft className="w-4 h-4 text-muted-foreground" />
                     </button>
                   )}
-                  <button onClick={() => setIsOpen(false)} aria-label="סגור" className="w-8 h-8 rounded-full bg-muted/50 flex items-center justify-center hover:bg-muted transition-colors">
+                  <button onClick={closeChat} aria-label="סגור" className="w-8 h-8 rounded-full bg-muted/50 flex items-center justify-center hover:bg-muted transition-colors">
                     <X className="w-4 h-4 text-muted-foreground" />
                   </button>
                 </div>

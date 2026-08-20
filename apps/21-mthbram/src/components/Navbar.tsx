@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Link, useLocation } from "react-router-dom";
@@ -15,6 +15,21 @@ const NAV_LINKS = [
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
+  const hamburgerRef = useRef<HTMLButtonElement>(null);
+
+  const closeMenu = () => {
+    setIsOpen(false);
+    hamburgerRef.current?.focus();
+  };
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") closeMenu();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen]);
 
   return (
     <nav className="fixed top-0 right-0 left-0 z-50 bg-background/70 backdrop-blur-2xl border-b border-border/40 shadow-sm">
@@ -69,6 +84,7 @@ const Navbar = () => {
             הוא עושה — נמדד כפקד ללא שם נגיש ב-`platform-audit.mjs`.
             `aria-expanded` מאותה סיבה: בלעדיו אין דרך לדעת אם התפריט פתוח. */}
         <button
+          ref={hamburgerRef}
           className="lg:hidden text-foreground p-2"
           aria-label={isOpen ? 'סגירת התפריט' : 'פתיחת התפריט'}
           aria-expanded={isOpen}
