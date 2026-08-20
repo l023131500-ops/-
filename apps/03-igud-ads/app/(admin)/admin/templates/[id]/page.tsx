@@ -129,8 +129,8 @@ export default function TemplateEditPage() {
         <h1 className="font-serif text-2xl font-bold text-brand-dark">{form.name}</h1>
       </div>
 
-      {error && <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded text-sm">{error}</div>}
-      {success && <div className="mb-4 p-3 bg-green-50 border border-green-200 text-green-700 rounded text-sm">נשמר בהצלחה ✓</div>}
+      {error && <div role="alert" aria-live="assertive" className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded text-sm">{error}</div>}
+      {success && <div role="status" aria-live="polite" className="mb-4 p-3 bg-green-50 border border-green-200 text-green-700 rounded text-sm">נשמר בהצלחה ✓</div>}
 
       <div className="bg-surface rounded-2xl border p-6 space-y-5">
         <div className="grid md:grid-cols-2 gap-4">
