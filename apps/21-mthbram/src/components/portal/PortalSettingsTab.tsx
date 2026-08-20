@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { Upload, Image, Trash2, Plus, Palette, Phone, Mail, MapPin, MessageSquare, FileText, X, Sun, Moon, Heart, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -75,8 +75,10 @@ const PortalSettingsTab = ({ portalId, portalType, portalData, onUpdate }: Porta
     Array.isArray(portalData.custom_sections) ? portalData.custom_sections : []
   );
 
-  // Load photos on mount
-  useState(() => {
+  // Load photos when the portal changes
+  useEffect(() => {
+    let cancelled = false;
+    setLoadingPhotos(true);
     (async () => {
       const { data } = await supabase
         .from("portal_photos")
@@ -84,10 +86,12 @@ const PortalSettingsTab = ({ portalId, portalType, portalData, onUpdate }: Porta
         .eq("portal_type", portalType)
         .eq("portal_id", portalId)
         .order("created_at", { ascending: false });
+      if (cancelled) return;
       setPhotos(data || []);
       setLoadingPhotos(false);
     })();
-  });
+    return () => { cancelled = true; };
+  }, [portalId, portalType]);
 
   const tableName = portalType === "rabbi" ? "rabbi_portals" : "org_portals";
 
