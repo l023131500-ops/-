@@ -6740,3 +6740,35 @@
     אחרי שמירה עיקרית מוצלחת) — או לחזור לנושא #250 (RLS פתוח
     ב-21-mthbram, פרויקט `aypsqqvfohekxxuqsmrw` עדיין לא נגיש ל-MCP).
     via cloud server 167.99.131.167 [loop B]
+
+## 20/08/2026 — סבב 356 (loop B)
+
+356. **סגירת עדשת שגיאות-כתיבה-שנבלעות: המועמד השלישי והאחרון —
+    `24-galilee-connect-hub` `GabaiPortal.tsx` `ContactInfoManager.
+    handleSave`.** הפונקציה שומרת פרטי יצירת קשר בדפוס insert-then-
+    cleanup מכוון (לא delete-then-insert): קודם מכניסה שורת
+    `knowledge_base` חדשה, ורק אז מוחקת שורות ישנות מאותה קטגוריה —
+    כדי שאם ה-insert נכשל, השורה הישנה לעולם לא נעלמת ועמוד יצירת-
+    הקשר הציבורי לא יכול להתרוקן. אבל כשל ה-cleanup delete עצמו היה
+    רק `console.error`, בלי שום משוב למנהל: המסך הראה "✅ נשמר!"
+    הרגיל בזמן ששורה כפולה-ישנה נשארת בשקט ב-DB. הוספתי מצב
+    `cleanupWarning` (מאותה מוסכמה כמו `saveError`/`deleteError`
+    הקיימים באותו קובץ) שמוצג כהודעת אזהרה נפרדת ("הפרטים נשמרו, אך
+    נותרה גרסה כפולה ישנה שלא נמחקה — פנו לתמיכה אם הבעיה חוזרת")
+    מתחת לכפתור, בלי לגעת בלוגיקת ה-insert/delete עצמה. אפס שינוי
+    API/DB/סכמה. בדיקת איזון סוגריים/מאמרים מסולסלים/מרובעים
+    ב-python על הקובץ המלא אחרי העריכה — תקין (702/702, 898/898,
+    164/164). אין build/dev-server זמין בסביבה הזו לפי הנחיית
+    ההרצה — לא `tsc`. ענף `fix/b-24-galilee-contactinfo-cleanup-
+    warning-0820`, קומיט `dea59a63`, נדחף.
+
+    **מצב עדשת שגיאות-כתיבה-שנבלעות:** סגורה כעת על שלושת המועמדים
+    שנמצאו בסבב 354 (22-get-your-rights RightBrandedCard, 21-mthbram
+    StudyDayUpload/OrgPortal, 24-galilee ContactInfoManager).
+
+    **הבא בתור:** לפתוח עדשה חדשה על ה-7 אפליקציות החיות בהיקף
+    (17/18/21/22/24/27/28) — למשל נגישות טפסים (label/aria) או
+    עקביות מסך-ריק (empty-state); או לחזור לנושא #250 (RLS פתוח-לגמרי
+    על `public.synagogues` ב-21-mthbram, פרויקט `aypsqqvfohekxxuqsmrw`
+    עדיין לא נגיש ל-MCP כאן) אם תתקבל גישת dashboard.
+    via cloud server 167.99.131.167 [loop B]
