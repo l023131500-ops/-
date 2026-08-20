@@ -68,7 +68,7 @@ Deno.serve(async (req) => {
     const submissionType = String(body.type || "unknown").toLowerCase();
 
     // Always save raw to nedarim_submissions
-    await supabase.from("nedarim_submissions").insert({
+    const { error: rawError } = await supabase.from("nedarim_submissions").insert({
       raw_data: body,
       name: contactName,
       phone: phone,
@@ -147,10 +147,13 @@ Deno.serve(async (req) => {
     const ok = (payload: any) => new Response(JSON.stringify(payload), {
       status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
+    const errRes = (message: string) => new Response(JSON.stringify({ error: message }), {
+      status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
 
     // ─── 1. seeker_request ───
     if (submissionType.includes("seeker") || submissionType === "seeker_request") {
-      await supabase.from("seeker_leads").insert({
+      const { error: leadError } = await supabase.from("seeker_leads").insert({
         contact_name: contactName || "ממתין",
         phone, email, city,
         subject: subjectField,
@@ -165,6 +168,7 @@ Deno.serve(async (req) => {
         ].filter(Boolean).join(" | "),
         status: "new",
       });
+      if (rawError || leadError) return errRes((rawError || leadError)!.message);
       return ok({ success: true, type: "seeker" });
     }
 
@@ -197,7 +201,7 @@ Deno.serve(async (req) => {
       // אם זה תאריך ספציפי (חד-פעמי) — שמור ב-specific_date
       const isSpecificDate = !!specificDate && /\d{4}-\d{2}-\d{2}|\d{1,2}\/\d{1,2}/.test(specificDate);
 
-      await supabase.from("lessons").insert({
+      const { error: lessonError } = await supabase.from("lessons").insert({
         rabbi_name: g("שם הרב", "איש קשר") || "ממתין",
         rabbi_role: rabbiRole || "",
         subject: subjectField || "ממתין",
@@ -223,17 +227,19 @@ Deno.serve(async (req) => {
         status: "pending",
         is_approved: false,
       });
+      if (rawError || lessonError) return errRes((rawError || lessonError)!.message);
       return ok({ success: true, type: "lesson" });
     }
 
     // ─── 3. teacher_request ───
     if (submissionType.includes("teacher") || submissionType === "teacher_request") {
-      await supabase.from("teacher_leads").insert({
+      const { error: teacherError } = await supabase.from("teacher_leads").insert({
         full_name: contactName || "ממתין",
         phone, email, city,
         notes: "מקור: נדרים פלוס",
         status: "new",
       });
+      if (rawError || teacherError) return errRes((rawError || teacherError)!.message);
       return ok({ success: true, type: "teacher" });
     }
 
@@ -296,6 +302,7 @@ Deno.serve(async (req) => {
       return ok({ success: true, type: "portal_share", count: results.length, results });
     }
 
+    if (rawError) return errRes(rawError.message);
     return ok({ success: true, type: "saved_raw" });
   } catch (err) {
     console.log("Webhook error:", err);
