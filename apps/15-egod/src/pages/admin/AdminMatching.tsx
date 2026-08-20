@@ -16,6 +16,7 @@ const AdminMatching = () => {
   const [selectedTeacher, setSelectedTeacher] = useState<any | null>(null);
   const [aiLoading, setAiLoading] = useState(false);
   const [aiSuggestions, setAiSuggestions] = useState<string[]>([]);
+  const [assigning, setAssigning] = useState(false);
 
   const load = async () => {
     const [{ data: l }, { data: t }] = await Promise.all([
@@ -61,11 +62,19 @@ const AdminMatching = () => {
       toast.error("מועמד זה הגיע מטופס ההצטרפות ועדיין לא נפתח לו פורטל. יש ליצור עבורו פורטל קודם.");
       return;
     }
-    const { error } = await supabase.from("leads").update({ assigned_teacher_id: teacherId, status: "assigned" }).eq("id", leadId);
-    if (error) return toast.error(error.message);
-    toast.success("הליד שויך למגיד שיעור");
-    load();
-    setSelectedLead(null);
+    if (assigning) return;
+    setAssigning(true);
+    try {
+      const { error } = await supabase.from("leads").update({ assigned_teacher_id: teacherId, status: "assigned" }).eq("id", leadId);
+      if (error) return toast.error(error.message);
+      toast.success("הליד שויך למגיד שיעור");
+      await load();
+      setSelectedLead(null);
+    } catch (e: any) {
+      toast.error("שגיאה בשיוך: " + (e?.message || "שגיאה לא ידועה"));
+    } finally {
+      setAssigning(false);
+    }
   };
 
   const aiMatch = async () => {
@@ -152,9 +161,9 @@ const AdminMatching = () => {
                       {l.preferred_times && <p><strong>זמנים מועדפים:</strong> {l.preferred_times}</p>}
                       {l.notes && <p><strong>הערות:</strong> {l.notes}</p>}
                       {selectedTeacher && (
-                        <Button size="sm" className="w-full mt-2 bg-gradient-to-l from-secondary to-gold-dark text-secondary-foreground gap-1"
+                        <Button size="sm" disabled={assigning} className="w-full mt-2 bg-gradient-to-l from-secondary to-gold-dark text-secondary-foreground gap-1"
                           onClick={(e) => { e.stopPropagation(); assign(l.id, selectedTeacher.id); }}>
-                          <ArrowLeftRight className="w-3 h-3" />שייך ל‑{selectedTeacher.full_name}
+                          <ArrowLeftRight className="w-3 h-3" />{assigning ? "משייך..." : `שייך ל‑${selectedTeacher.full_name}`}
                         </Button>
                       )}
                     </div>
@@ -188,9 +197,9 @@ const AdminMatching = () => {
                     <Badge variant={t.is_approved ? "default" : "outline"}>{t.is_approved ? "מאושר" : "ממתין"}</Badge>
                   </div>
                   {selectedTeacher?.id === t.id && selectedLead && (
-                    <Button size="sm" className="w-full mt-2 bg-gradient-to-l from-secondary to-gold-dark text-secondary-foreground gap-1"
+                    <Button size="sm" disabled={assigning} className="w-full mt-2 bg-gradient-to-l from-secondary to-gold-dark text-secondary-foreground gap-1"
                       onClick={(e) => { e.stopPropagation(); assign(selectedLead.id, t.id); }}>
-                      <ArrowLeftRight className="w-3 h-3" />שייך את {selectedLead.full_name} →
+                      <ArrowLeftRight className="w-3 h-3" />{assigning ? "משייך..." : `שייך את ${selectedLead.full_name} →`}
                     </Button>
                   )}
                 </div>
