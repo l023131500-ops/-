@@ -113,7 +113,8 @@ export function EditDept({
                   {locked ? <Lock className="h-3.5 w-3.5 text-primary" /> : <Unlock className="h-3.5 w-3.5" />}
                 </button>
                 <button onClick={() => setOpenMeta(openMeta === b.id ? null : b.id)}
-                  className="rounded p-1 text-muted-foreground hover-elevate" title="הגדרות בלוק" aria-label="הגדרות בלוק" data-testid={`button-meta-${i}`}>
+                  className="rounded p-1 text-muted-foreground hover-elevate" title="הגדרות בלוק" aria-label="הגדרות בלוק"
+                  aria-expanded={openMeta === b.id} aria-controls={`block-meta-${b.id}`} data-testid={`button-meta-${i}`}>
                   <Settings2 className="h-3.5 w-3.5" />
                 </button>
                 <button onClick={() => move(b.id, -1)} className="rounded p-1 text-muted-foreground hover-elevate" data-testid={`button-up-${i}`} aria-label="הזזה למעלה">▲</button>
@@ -140,7 +141,7 @@ export function EditDept({
 
             {/* הגדרות בלוק מתקדמות */}
             {openMeta === b.id && (
-              <div className="mt-2 space-y-2 rounded-md border border-border bg-background p-2.5">
+              <div id={`block-meta-${b.id}`} className="mt-2 space-y-2 rounded-md border border-border bg-background p-2.5">
                 {isHeading(b.layer) && (
                   <>
                     <div className="grid grid-cols-2 gap-2">
