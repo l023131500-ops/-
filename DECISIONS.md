@@ -9032,3 +9032,68 @@
     `autoComplete`/סוגי-קלט (`inputMode`) על שדות נוספים שלא נסרקו
     בסבב 396.
     via cloud server 167.99.131.167 [loop B]
+
+## 20/08/2026 — סבב 407 (loop B)
+
+407. **עדשת ניגודיות צבעים (WCAG) על טקסט placeholder בשדות קלט, מוצעת
+    בסוף סבב 406.** סוכן Explore סרק את כל 7 האפליקציות החיות
+    (17/18/21/22/24/27/28) ואיתר כל דפוס עיצוב placeholder — קודם אימת
+    שכל 7 האפליקציות משתמשות באותו רכיב Input/Textarea משותף (shadcn)
+    עם `placeholder:text-muted-foreground` (שקיפות מלאה) על `bg-background`,
+    כבר מכוסה ע"י הבדיקה הכללית של `text-muted-foreground` שנעשתה בסבב
+    405 (טוקן ה-CSS `--muted-foreground` תוקן שם ברמת המשתנה, מכסה גם את
+    ה-placeholder כי הצבע זהה). לכן התמקדתי בשדות מותאמים-אישית שעוקפים
+    את ברירת המחדל עם מקדם שקיפות נוסף על הצבע (`placeholder:text-
+    muted-foreground/60`, `/70`) — דפוס שמפחית את הניגודיות האפקטיבית
+    מתחת למה שהטוקן הבסיסי כבר מבטיח, בלי שהבדיקה הקודמת (שבדקה טקסט
+    מלא-שקיפות בלבד) הייתה יכולה לתפוס אותו.
+
+    3 ממצאים אמיתיים, כל השלושה בשדות **חיפוש** — הרכיב הכי בולט
+    בעמוד: (1) **21-mthbram**/`FeaturedLessons.tsx:250` — שדה חיפוש
+    שיעורים בעמוד `/lessons`, `placeholder:text-muted-foreground/70`
+    על `bg-card` אטום — חושב במדויק (נוסחת luminance יחסית של WCAG,
+    לא ניחוש): 3.62:1, נכשל בסף 4.5:1 (הטקסט `text-base font-semibold`,
+    16px, לא עומד בקריטריון "טקסט גדול" של WCAG). (2)
+    **21-mthbram**/`LessonsDashboard.tsx:182` — שדה חיפוש בעמוד הבית,
+    `placeholder:text-muted-foreground/60` על `bg-transparent` המקונן
+    בתוך `bg-navy/60` בתוך `bg-card/50` מעל `bg-background` — חישבתי את
+    שרשרת ה-alpha-compositing המלאה (3 שכבות שקיפות) וקיבלתי צבע רקע
+    אפקטיבי, ואז ניגודיות הטקסט (גם הוא בשקיפות 60%) מולו: 3.2:1, נכשל.
+    (3) **22-get-your-rights**/`RightsCategories.tsx:179` — שדה חיפוש
+    הזכויות הראשי בעמוד הבית (הכי בולט באפליקציה), `placeholder:text-
+    muted-foreground/60` על `bg-card` (לבן, `0 0% 100%`) — 2.37:1 בלבד,
+    הממצא הגרוע ביותר בסבב הזה, כמעט בלתי-קריא.
+
+    התיקון בכל שלושת המקרים: הסרת מקדם השקיפות (`/60`/`/70`) והשארת
+    `placeholder:text-muted-foreground` בשקיפות מלאה — זהה לברירת
+    המחדל של הרכיב המשותף. אימתתי שהשקיפות המלאה עוברת בנוחות בכל
+    שלוש הרקעים בפועל (חישוב מדויק, לא ניחוש): FeaturedLessons 5.84:1,
+    LessonsDashboard 6.45:1, RightsCategories 5.06:1 — כולם מעל 4.5:1.
+    שדות דומים שנבדקו ונפסלו כלא-רלוונטיים (שקיפות מלאה, לא מופחתת):
+    `FloatingChatBot.tsx`/`AIChatBot.tsx`/`ContactSection.tsx`/
+    `ChipSelect.tsx` ב-21-mthbram (כולם `placeholder:text-muted-
+    foreground` בלי מקדם שקיפות על `bg-muted/40`-`/50`, חושבו 5.35-6.13:1
+    — תקינים). `24-galilee-connect-hub` (`ContactPage.tsx`/`ChatBot.tsx`)
+    — אותו דפוס, כבר מכוסה ע"י תיקון הטוקן בסבב 405. `18-torah-editor-
+    mvp` — שדה `<input>` יחיד בלי `className` בכלל (עיצוב דפדפן ברירת
+    מחדל, לא בעיצוב האפליקציה). `17`/`27`/`28` — ללא override
+    placeholder בכלל.
+
+    כל שינוי הוא הסרת מקדם שקיפות בודד מ-`className` קיים, ללא שינוי
+    DOM/מבנה. `git diff --stat`: 3 קבצים, 3+/3-. בדיקת איזון סוגריים
+    (Python) נקייה על כל 3 הקבצים. לא הופעל build/dev-server (לפי
+    הנחיות ההרצה). לא נמצא CLAUDE.md פנימי לא ב-21-mthbram ולא
+    ב-22-get-your-rights. ענף `fix/b-22-whatsapp-noopener-round395-0820`
+    (שרשרת הענפים היא המקור המלא היחיד ל-loop B, לא `main`), קומיט
+    `9b8fc409`, נדחף (מפעיל פריסת Vercel תחת `more30.com/mthbram`,
+    `more30.com/zchuyot`).
+
+    **הבא בתור:** עדשת ה-placeholder color-contrast סגורה כעת בכל 7
+    האפליקציות. נושא #245 (RLS על `csjekrvukbdznetsrodj`, מוגן — סכימת
+    `csj`, לא לגעת) ו-#250 (RLS על 21-mthbram, חסום MCP) נשארים חסומים.
+    אפשרויות להמשך: עדשת `autoComplete`/`inputMode` (`inputMode="tel"`/
+    `"numeric"`/`"email"` על שדות טלפון/מספרים/מייל, לא נבדקה עדיין —
+    שונה מ-`autoComplete` שכבר מוצתה בסבב 396), רענון תקופתי של עדשת
+    המחירון/מיתוג 'עולם הסטארטאפים' (אומת נקי שוב-ושוב, ראה סבב 396),
+    או עדשת ניגודיות על מצב `disabled`/`:hover`/`:focus` (טרם נבדקה).
+    via cloud server 167.99.131.167 [loop B]
