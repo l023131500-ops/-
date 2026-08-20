@@ -77,13 +77,18 @@ const PortalLessonForm = ({ data, onChange }: PortalLessonFormProps) => {
           set("subject", next.join(", "));
         }} multi />
 
-      {/* Lesson style chips */}
+      {/* Lesson style chips -- stored in submitter_notes (like Speaking Style below), not lesson_style:
+          the "סגנון" section further down also writes lesson_style (matching the single hashkafa value
+          BulkLessonForm/AdminDashboard read/write there), so this section must not share that column. */}
       <ChipPicker label="סגנון שיעור" icon={<BookOpen className="w-3.5 h-3.5 text-teal" />}
-        options={LESSON_STYLES} selected={data.lesson_style?.split(", ").filter(Boolean) || []}
+        options={LESSON_STYLES}
+        selected={data.submitter_notes?.includes("אופי השיעור:") ? data.submitter_notes.split("אופי השיעור: ")[1]?.split(".")[0]?.split(", ").filter(Boolean) || [] : []}
         onSelect={(v) => {
-          const current: string[] = data.lesson_style?.split(", ").filter(Boolean) || [];
+          const current: string[] = data.submitter_notes?.includes("אופי השיעור:") ? data.submitter_notes.split("אופי השיעור: ")[1]?.split(".")[0]?.split(", ").filter(Boolean) || [] : [];
           const next = current.includes(v) ? current.filter(x => x !== v) : [...current, v];
-          set("lesson_style", next.join(", "));
+          const otherNotes = data.submitter_notes?.replace(/אופי השיעור: [^.]*\.?\s*/, "") || "";
+          const prefix = next.length ? `אופי השיעור: ${next.join(", ")}. ` : "";
+          set("submitter_notes", `${prefix}${otherNotes}`.trim());
         }} multi />
 
       {/* Speaking Style */}
