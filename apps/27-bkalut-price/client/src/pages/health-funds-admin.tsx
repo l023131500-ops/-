@@ -429,7 +429,7 @@ export default function HealthFundsAdmin() {
                 <Input placeholder="למי מיועד" value={newTopic.audience} onChange={(e) => setNewTopic({ ...newTopic, audience: e.target.value })} />
                 <Input placeholder="הקופה המיטיבה" value={newTopic.bestFund} onChange={(e) => setNewTopic({ ...newTopic, bestFund: e.target.value })} />
                 <Input placeholder='טווח (למשל "בין 1,000 ל-5,000")' value={newTopic.rangeText} onChange={(e) => setNewTopic({ ...newTopic, rangeText: e.target.value })} />
-                <Textarea className="sm:col-span-2 lg:col-span-3 min-h-16" placeholder="תקציר ההטבה (מוצג בכרטיס הציבורי)" value={newTopic.benefitSummary} onChange={(e) => setNewTopic({ ...newTopic, benefitSummary: e.target.value })} />
+                <Textarea className="sm:col-span-2 lg:col-span-3 min-h-16" placeholder="תקציר ההטבה (מוצג בכרטיס הציבורי)" value={newTopic.benefitSummary} onChange={(e) => setNewTopic({ ...newTopic, benefitSummary: e.target.value })} aria-label="תקציר ההטבה" />
               </div>
               <div className="flex gap-2">
                 <Button size="sm" onClick={createTopic} data-testid="button-hf-create"><Save className="w-4 h-4 ml-1" /> שמירה</Button>
@@ -565,6 +565,7 @@ export default function HealthFundsAdmin() {
                           placeholder={'טקסט הפודקאסט (ניתן לעריכה). לחצו ”צרו סקריפט אוטומטי“ ליצירת טיוטה לפי פרטי הנושא.'}
                           value={draft.podcastScript ?? ""}
                           onChange={(e) => setDraft({ ...draft, podcastScript: e.target.value })}
+                          aria-label="טקסט הפודקאסט"
                           data-testid={`textarea-hf-podcast-${t.id}`}
                         />
                         <div className="flex flex-wrap gap-2">
@@ -706,6 +707,7 @@ export default function HealthFundsAdmin() {
                         value={d.handlingNote}
                         placeholder="הערה פנימית לטיפול…"
                         onChange={(e) => setSwitchDraft({ ...switchDraft, [l.id]: { ...d, handlingNote: e.target.value } })}
+                        aria-label="הערת טיפול"
                         data-testid={`input-hf-switch-note-${l.id}`}
                       />
                     </div>

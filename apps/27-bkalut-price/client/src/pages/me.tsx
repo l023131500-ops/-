@@ -436,7 +436,7 @@ function PremiumTab({ requests, active, onRequest, pending }: { requests: any[];
         ) : (
           <>
             <p className="text-sm text-muted-foreground">המסלול הפרימיום פותח תכניות מורחבות, ליווי אישי, ניתוח עומק וסיוע מתקדם במיצוי זכויות. שלח/י בקשה והצוות יחזור אליך.</p>
-            <Textarea placeholder="כתבו לנו מה הייתם רוצים לקבל בפרימיום" value={message} onChange={(e) => setMessage(e.target.value)} />
+            <Textarea placeholder="כתבו לנו מה הייתם רוצים לקבל בפרימיום" value={message} onChange={(e) => setMessage(e.target.value)} aria-label="בקשה למסלול פרימיום" />
             <Button size="sm" disabled={pending} onClick={() => { onRequest(message); setMessage(""); }}>שליחת בקשה</Button>
           </>
         )}

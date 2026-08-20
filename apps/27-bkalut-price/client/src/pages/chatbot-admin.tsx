@@ -141,6 +141,7 @@ function ChatbotAdminInner() {
           onChange={(e) => setInstructions(e.target.value)}
           className="min-h-[140px] text-sm"
           placeholder="לדוגמה: לענות בעברית קצרה ומכבדת; להציע פנייה למשרד בנושאים רגישים; לא לחשוף עלויות פנימיות..."
+          aria-label="הנחיות פנימיות לבוט"
         />
       </Card>
 
@@ -157,6 +158,7 @@ function ChatbotAdminInner() {
               value={intro}
               onChange={(e) => setIntro(e.target.value)}
               className="text-sm min-h-[80px]"
+              aria-label="משפט פתיחה"
             />
           </div>
           <div className="space-y-1">
@@ -166,6 +168,7 @@ function ChatbotAdminInner() {
               value={ctaText}
               onChange={(e) => setCtaText(e.target.value)}
               className="text-sm min-h-[80px]"
+              aria-label="CTA אחרי תשובה"
             />
           </div>
           <div className="space-y-1 sm:col-span-2">
@@ -175,6 +178,7 @@ function ChatbotAdminInner() {
               value={closingText}
               onChange={(e) => setClosingText(e.target.value)}
               className="text-sm min-h-[60px]"
+              aria-label="הודעת סיום"
             />
           </div>
         </div>

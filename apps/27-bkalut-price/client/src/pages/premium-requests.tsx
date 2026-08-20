@@ -72,7 +72,7 @@ function PremiumRequestsInner() {
               <div className="text-[11px] text-muted-foreground" dir="ltr">{r.createdAt}</div>
               {r.status === "pending" ? (
                 <>
-                  <Textarea placeholder="הערת אדמין (תועבר ללקוח)" value={notes[r.id] || ""} onChange={(e) => setNotes((p) => ({ ...p, [r.id]: e.target.value }))} rows={2} />
+                  <Textarea placeholder="הערת אדמין (תועבר ללקוח)" value={notes[r.id] || ""} onChange={(e) => setNotes((p) => ({ ...p, [r.id]: e.target.value }))} aria-label="הערת אדמין" rows={2} />
                   <div className="flex items-center gap-2">
                     <Button size="sm" onClick={() => decide.mutate({ id: r.id, status: "approved", note: notes[r.id] || "" })} className="gap-1"><CheckCircle2 className="w-4 h-4" /> אשר</Button>
                     <Button size="sm" variant="destructive" onClick={() => decide.mutate({ id: r.id, status: "rejected", note: notes[r.id] || "" })} className="gap-1"><XCircle className="w-4 h-4" /> דחה</Button>

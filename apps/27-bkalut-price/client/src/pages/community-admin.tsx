@@ -312,9 +312,9 @@ export default function CommunityAdmin() {
                 <Input defaultValue={q.logoUrl || ""} onBlur={(e) => e.target.value !== (q.logoUrl || "") && saveQuestionnaire({ logoUrl: e.target.value })} placeholder="https://..." data-testid="input-q-logo" />
               </div>
             </div>
-            <div className="space-y-1"><Label className="text-xs">תיאור</Label><Textarea defaultValue={q.description || ""} onBlur={(e) => e.target.value !== (q.description || "") && saveQuestionnaire({ description: e.target.value })} data-testid="input-q-description" /></div>
-            <div className="space-y-1"><Label className="text-xs">טקסט פתיחה</Label><Textarea defaultValue={q.introText || ""} onBlur={(e) => e.target.value !== (q.introText || "") && saveQuestionnaire({ introText: e.target.value })} /></div>
-            <div className="space-y-1"><Label className="text-xs">הודעת סיום (ללקוח)</Label><Textarea defaultValue={q.successText || ""} onBlur={(e) => e.target.value !== (q.successText || "") && saveQuestionnaire({ successText: e.target.value })} /></div>
+            <div className="space-y-1"><Label className="text-xs">תיאור</Label><Textarea defaultValue={q.description || ""} onBlur={(e) => e.target.value !== (q.description || "") && saveQuestionnaire({ description: e.target.value })} aria-label="תיאור" data-testid="input-q-description" /></div>
+            <div className="space-y-1"><Label className="text-xs">טקסט פתיחה</Label><Textarea defaultValue={q.introText || ""} onBlur={(e) => e.target.value !== (q.introText || "") && saveQuestionnaire({ introText: e.target.value })} aria-label="טקסט פתיחה" /></div>
+            <div className="space-y-1"><Label className="text-xs">הודעת סיום (ללקוח)</Label><Textarea defaultValue={q.successText || ""} onBlur={(e) => e.target.value !== (q.successText || "") && saveQuestionnaire({ successText: e.target.value })} aria-label="הודעת סיום (ללקוח)" /></div>
             {q.logoUrl && <img src={q.logoUrl} alt="תצוגת לוגו" className="h-12 object-contain" />}
             <div className="flex items-center gap-6 pt-2 border-t border-border">
               <label className="flex items-center gap-2 text-sm"><Switch checked={q.active} onCheckedChange={(v) => saveQuestionnaire({ active: v })} data-testid="switch-q-active" /> שאלון פעיל</label>
@@ -385,6 +385,7 @@ export default function CommunityAdmin() {
                           const options = e.target.value.split("\n").map((s) => s.trim()).filter(Boolean).map((s) => ({ value: s, label: s }));
                           updateQuestion(ques.id, { options });
                         }}
+                        aria-label="אפשרויות (שורה לכל אפשרות)"
                         data-testid={`question-options-${ques.id}`}
                       />
                     </div>
@@ -410,7 +411,7 @@ export default function CommunityAdmin() {
               {HAS_OPTIONS.includes(newQuestion.type) && (
                 <div className="space-y-1">
                   <Label className="text-xs">אפשרויות (שורה לכל אפשרות)</Label>
-                  <Textarea value={newQuestion.optionsText} onChange={(e) => setNewQuestion({ ...newQuestion, optionsText: e.target.value })} placeholder={"אפשרות 1\nאפשרות 2"} data-testid="input-new-question-options" />
+                  <Textarea value={newQuestion.optionsText} onChange={(e) => setNewQuestion({ ...newQuestion, optionsText: e.target.value })} placeholder={"אפשרות 1\nאפשרות 2"} aria-label="אפשרויות (שורה לכל אפשרות)" data-testid="input-new-question-options" />
                 </div>
               )}
               <Button size="sm" onClick={addQuestion} data-testid="button-add-question"><Plus className="w-4 h-4 ml-1" /> הוספת שאלה</Button>
@@ -462,7 +463,7 @@ function CommunitySettingsCard({ settings, saving, onSave, origin, onCopy }: {
       </div>
       <div className="space-y-1">
         <Label className="text-xs">טקסט מיתוג ברירת מחדל</Label>
-        <Textarea value={form.brandingText} onChange={(e) => setForm({ ...form, brandingText: e.target.value })} data-testid="input-community-branding" />
+        <Textarea value={form.brandingText} onChange={(e) => setForm({ ...form, brandingText: e.target.value })} aria-label="טקסט מיתוג ברירת מחדל" data-testid="input-community-branding" />
       </div>
       {form.defaultLogoUrl && <img src={form.defaultLogoUrl} alt="תצוגת לוגו" className="h-12 object-contain" />}
 

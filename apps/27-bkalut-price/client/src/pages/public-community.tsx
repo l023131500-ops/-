@@ -95,7 +95,7 @@ export default function PublicCommunity() {
     const v = answers[String(q.id)];
     switch (q.type) {
       case "textarea":
-        return <Textarea value={(v as string) || ""} onChange={(e) => setAnswer(q.id, e.target.value)} data-testid={`q-${q.id}`} />;
+        return <Textarea value={(v as string) || ""} onChange={(e) => setAnswer(q.id, e.target.value)} aria-label={q.label} data-testid={`q-${q.id}`} />;
       case "number":
         return <Input type="number" value={(v as string) ?? ""} onChange={(e) => setAnswer(q.id, e.target.value)} data-testid={`q-${q.id}`} />;
       case "date":

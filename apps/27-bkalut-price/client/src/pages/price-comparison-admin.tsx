@@ -883,11 +883,11 @@ function SettingsForm({ settings, saving, onSave }: { settings: PcSettings; savi
         </div>
         <div className="space-y-1">
           <Label className="text-xs">כותרת משנה / תיאור</Label>
-          <Textarea value={form.publicSubtitle} onChange={(e) => setForm({ ...form, publicSubtitle: e.target.value })} data-testid="input-pc-public-subtitle" />
+          <Textarea value={form.publicSubtitle} onChange={(e) => setForm({ ...form, publicSubtitle: e.target.value })} aria-label="כותרת משנה / תיאור" data-testid="input-pc-public-subtitle" />
         </div>
         <div className="space-y-1">
           <Label className="text-xs">טקסט יצירת קשר (מוצג בתחתית האתר, לא חובה)</Label>
-          <Textarea value={form.contactText} onChange={(e) => setForm({ ...form, contactText: e.target.value })} data-testid="input-pc-contact-text" />
+          <Textarea value={form.contactText} onChange={(e) => setForm({ ...form, contactText: e.target.value })} aria-label="טקסט יצירת קשר (מוצג בתחתית האתר, לא חובה)" data-testid="input-pc-contact-text" />
         </div>
         <div className="space-y-1">
           <Label className="text-xs">נקודת קצה לאוטומציה (לא חובה)</Label>

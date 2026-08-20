@@ -498,6 +498,7 @@ function HelpContactForm(props: {
         value={props.message}
         onChange={(e) => props.setMessage(e.target.value)}
         placeholder="פרטים נוספים (אופציונלי)"
+        aria-label="פרטים נוספים"
         className="text-sm min-h-[60px]"
       />
       <Button

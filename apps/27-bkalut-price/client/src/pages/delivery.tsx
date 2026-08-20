@@ -341,7 +341,7 @@ function MessageDialog({ leads, users, onClose, onSent }: MessageDialogProps) {
 
         <div className="space-y-1.5">
           <Label>גוף ההודעה</Label>
-          <Textarea rows={5} value={body} onChange={(e) => setBody(e.target.value)} required data-testid="input-body" />
+          <Textarea rows={5} value={body} onChange={(e) => setBody(e.target.value)} required aria-label="גוף ההודעה" data-testid="input-body" />
         </div>
 
         <div className="space-y-1.5">

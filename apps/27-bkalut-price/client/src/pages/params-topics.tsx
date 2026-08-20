@@ -255,6 +255,7 @@ function ParamsTopicsInner() {
               <Textarea
                 value={String(draft.description ?? "")}
                 onChange={(e) => setDraft({ ...draft, description: e.target.value })}
+                aria-label="תיאור הזכות / הסיוע"
                 className="min-h-[90px]"
               />
             </div>

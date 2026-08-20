@@ -737,7 +737,7 @@ function TipsTab() {
       <Card className="p-5 space-y-3">
         <h3 className="font-semibold">טיפ חדש</h3>
         <Input placeholder="כותרת" value={form.title} onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))} />
-        <Textarea placeholder="גוף הטיפ" value={form.body} onChange={(e) => setForm((f) => ({ ...f, body: e.target.value }))} className="min-h-24" />
+        <Textarea placeholder="גוף הטיפ" value={form.body} onChange={(e) => setForm((f) => ({ ...f, body: e.target.value }))} aria-label="גוף הטיפ" className="min-h-24" />
         <div className="flex gap-3">
           <select className="rounded-md border border-input bg-background px-3 py-2 text-sm" value={form.tag} onChange={(e) => setForm((f) => ({ ...f, tag: e.target.value }))}>
             <option value="saving">חיסכון</option>

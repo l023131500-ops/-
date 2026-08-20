@@ -279,7 +279,7 @@ export default function PotentialAdminPage() {
         </div>
         <div className="space-y-1">
           <Label className="text-xs">תיאור מתחת לכותרת</Label>
-          <Textarea value={config.introSubtitle} onChange={(e) => setConfig({ ...config, introSubtitle: e.target.value })} className="min-h-20" />
+          <Textarea value={config.introSubtitle} onChange={(e) => setConfig({ ...config, introSubtitle: e.target.value })} className="min-h-20" aria-label="תיאור מתחת לכותרת" />
         </div>
         <div className="flex justify-end gap-2">
           <Button variant="outline" size="sm" onClick={resetDefaults} disabled={saving}>
@@ -512,7 +512,7 @@ export default function PotentialAdminPage() {
         </div>
         <div>
           <Label className="text-xs">ערכי ברירת מחדל (JSON)</Label>
-          <Textarea value={newPresetsText} onChange={(e) => setNewPresetsText(e.target.value)} placeholder='{"familyStatus":"single","hasChildren":"no"}' className="font-mono text-xs min-h-24" />
+          <Textarea value={newPresetsText} onChange={(e) => setNewPresetsText(e.target.value)} placeholder='{"familyStatus":"single","hasChildren":"no"}' aria-label="ערכי ברירת מחדל (JSON)" className="font-mono text-xs min-h-24" />
         </div>
         <div>
           <Label className="text-xs">סעיפים להסתרה</Label>

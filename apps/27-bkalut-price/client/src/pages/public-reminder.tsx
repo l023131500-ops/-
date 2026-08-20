@@ -322,6 +322,7 @@ export default function PublicReminder() {
                     value={note}
                     onChange={(e) => setNote(e.target.value)}
                     placeholder="למשל: חסר לי מסמך, אבדוק בסוף החודש..."
+                    aria-label="הערה (לא חובה)"
                     data-testid="textarea-notyet-note"
                   />
                 </div>

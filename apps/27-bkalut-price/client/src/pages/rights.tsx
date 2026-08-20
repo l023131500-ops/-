@@ -178,11 +178,11 @@ export default function RightsPage() {
             </div>
             <div className="md:col-span-2 space-y-1">
               <Label className="text-xs">מה ניתן לקבל (קצר)</Label>
-              <Textarea value={draft.whatReceived} onChange={(e) => setDraft((d) => ({ ...d, whatReceived: e.target.value }))} className="min-h-20" />
+              <Textarea value={draft.whatReceived} onChange={(e) => setDraft((d) => ({ ...d, whatReceived: e.target.value }))} className="min-h-20" aria-label="מה ניתן לקבל (קצר)" />
             </div>
             <div className="md:col-span-2 space-y-1">
               <Label className="text-xs">הסבר ציבורי קצר (publicSiteText)</Label>
-              <Textarea value={draft.publicSiteText} onChange={(e) => setDraft((d) => ({ ...d, publicSiteText: e.target.value }))} className="min-h-20" />
+              <Textarea value={draft.publicSiteText} onChange={(e) => setDraft((d) => ({ ...d, publicSiteText: e.target.value }))} className="min-h-20" aria-label="הסבר ציבורי קצר (publicSiteText)" />
             </div>
           </div>
           <div className="flex justify-end gap-2">

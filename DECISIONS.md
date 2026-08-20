@@ -7171,3 +7171,48 @@
     הפרויקט `aypsqqvfohekxxuqsmrw` לא נגיש דרך MCP) אם תתקבל גישת
     dashboard.
     via cloud server 167.99.131.167 [loop B]
+
+## 20/08/2026 — סבב 367 (loop B)
+
+367. **המשך עדשת נגישות-טפסים: קריאה ידנית ממצה של `27-bkalut-price`
+    (האפליקציה הגדולה מבין ה-7 החיות) — 32 `<Textarea>` ללא שם
+    נגיש, פרוסים על 15 קבצים.** בהמשך לתור שנקבע בסבב 365-366
+    (17/18/22 נסגרו, 27/28 עדיין ממתינים). קראתי ידנית את כל 50
+    מופעי `<Textarea>` ב-`client/src` (26 קבצים) דרך grep+context
+    ולא רק סריקת agent; מיינתי כל אחד: (1) עטוף ב-`<label>` טבעי —
+    כבר מקושר, לא נגע; (2) יש `htmlFor`/`id` תואמים — כבר מקושר,
+    לא נגע; (3) קומפוננטת `<Label>` חזותית ליד ה-`Textarea` בלי
+    `htmlFor`/`id` — לא מקושר בפועל לקורא מסך; (4) `placeholder`
+    בלבד או שום תווית — אותה בעיה. מצאתי 32 מופעים מהסוגים
+    (3)/(4) ב-15 קבצים: `community-admin.tsx` (5), `chatbot-admin.tsx`
+    (4), `financial-crm.tsx` (5), `health-funds-admin.tsx` (3),
+    `price-comparison-admin.tsx` (2), `potential-admin.tsx` (2),
+    `rights.tsx` (2), ו-`delivery.tsx`/`params-topics.tsx`/
+    `public-reminder.tsx`/`premium-requests.tsx`/`me.tsx`/
+    `financial.tsx`/`public-community.tsx`/`components/public-chatbot.tsx`
+    (אחד כל אחד — כולל `public-chatbot.tsx` שהוא ווידג'ט הצ'אט
+    הציבורי, אותו דפוס בדיוק כמו `FloatingBot.tsx` ב-22/סבב 366).
+    הוספתי `aria-label` תואם-תוכן (מהטקסט החזותי של ה-`Label`/
+    `placeholder`/כותרת הסמוכה) לכל 32 המופעים. אפס שינוי
+    בלוגיקת state/שמירה/onChange/onBlur — `git diff` מאמת ששורות
+    שהוסרו זהות לשורות שנוספו פרט ל-`aria-label` שנוסף. בדיקת
+    איזון סוגריים/מאמרים מסולסלים ב-python על כל 15 הקבצים המלאים
+    אחרי העריכה — תקין בכולם. אין build/dev-server זמין בסביבה הזו
+    לפי הנחיית ההרצה — לא `tsc`. הקבצים תחת
+    `apps/27-bkalut-price/client/src` ואינם חסומים ב-gitignore.
+    ענף `fix/b-27-bkalut-textarea-aria-0820`.
+
+    **לא טופל בסבב זה, במכוון:** נמצאו גם מספר כפתורי-toggle/
+    filter-chip עם מצב נבחר המסומן רק בצבע-רקע (`params-topics.tsx`
+    שורות 190/199, `financial-crm.tsx` שורה 231/299, `financial.tsx`
+    שורה 153, `potential-admin.tsx` שורה 527, `users.tsx` שורה 369,
+    `public-potential.tsx` שורה 124/296) — דפוס `aria-pressed` דומה
+    לזה שתוקן ב-17/22, אבל היקף גדול מספיק (7+ קבצים) שראוי לסבב
+    נפרד ולא לצרף כתוספת לא-ממוקדת לסבב הזה.
+
+    **הבא בתור:** לסגור את `28-kupot-health-funds` (הטקסטאריאה
+    האחרונה בעדשה הזו), או לפתוח עדשת `aria-pressed`/filter-chip
+    שזוהתה כעת על 27 (וכנראה גם 28), או דפוס ה-race-condition
+    (stale async response) שנפתח בסבב 363 על 18/28, או נושא #250
+    (RLS על `21-mthbram`, חסום MCP).
+    via cloud server 167.99.131.167 [loop B]

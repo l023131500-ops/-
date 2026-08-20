@@ -316,7 +316,7 @@ export default function FinancialCrmPage() {
                   <Input placeholder="כותרת" value={newTask.title} onChange={(e) => setNewTask({ ...newTask, title: e.target.value })} data-testid="input-new-task-title" />
                   <Input type="date" value={newTask.dueDate} onChange={(e) => setNewTask({ ...newTask, dueDate: e.target.value })} />
                 </div>
-                <Textarea placeholder="תיאור (אופציונלי)" value={newTask.description} onChange={(e) => setNewTask({ ...newTask, description: e.target.value })} className="min-h-16" />
+                <Textarea placeholder="תיאור (אופציונלי)" value={newTask.description} onChange={(e) => setNewTask({ ...newTask, description: e.target.value })} aria-label="תיאור המשימה" className="min-h-16" />
                 <div className="grid md:grid-cols-2 gap-2">
                   <select className="rounded-md border border-input bg-background px-3 py-2 text-sm" value={newTask.priority} onChange={(e) => setNewTask({ ...newTask, priority: e.target.value })}>
                     <option value="low">עדיפות נמוכה</option>
@@ -371,7 +371,7 @@ export default function FinancialCrmPage() {
             {tab === "messages" && (
               <Card className="p-4 border border-card-border bg-card space-y-3" data-testid="crm-messages-panel">
                 <h3 className="text-sm font-bold">הודעה חדשה</h3>
-                <Textarea placeholder="גוף ההודעה" value={newMessage.body} onChange={(e) => setNewMessage({ ...newMessage, body: e.target.value })} className="min-h-20" data-testid="input-new-message-body" />
+                <Textarea placeholder="גוף ההודעה" value={newMessage.body} onChange={(e) => setNewMessage({ ...newMessage, body: e.target.value })} aria-label="גוף ההודעה" className="min-h-20" data-testid="input-new-message-body" />
                 <div className="grid md:grid-cols-2 gap-2">
                   <select className="rounded-md border border-input bg-background px-3 py-2 text-sm" value={newMessage.senderRole} onChange={(e) => setNewMessage({ ...newMessage, senderRole: e.target.value })}>
                     <option value="admin">אדמין</option>
@@ -425,7 +425,7 @@ export default function FinancialCrmPage() {
                   </select>
                 </div>
                 <Input placeholder="קישור URL (אופציונלי)" value={newDoc.url} onChange={(e) => setNewDoc({ ...newDoc, url: e.target.value })} />
-                <Textarea placeholder="הערות" value={newDoc.notes} onChange={(e) => setNewDoc({ ...newDoc, notes: e.target.value })} className="min-h-14" />
+                <Textarea placeholder="הערות" value={newDoc.notes} onChange={(e) => setNewDoc({ ...newDoc, notes: e.target.value })} aria-label="הערות למסמך" className="min-h-14" />
                 <Button onClick={() => createDoc.mutate()} disabled={!newDoc.title || createDoc.isPending}><Plus className="w-4 h-4 ml-1" /> הוספת מסמך</Button>
 
                 <div className="border-t pt-3 space-y-2">
@@ -460,7 +460,7 @@ export default function FinancialCrmPage() {
               <Card className="p-4 border border-card-border bg-card space-y-3" data-testid="crm-reminders-panel">
                 <h3 className="text-sm font-bold">תזכורת חדשה</h3>
                 <Input placeholder="כותרת" value={newReminder.title} onChange={(e) => setNewReminder({ ...newReminder, title: e.target.value })} />
-                <Textarea placeholder="גוף (אופציונלי)" value={newReminder.body} onChange={(e) => setNewReminder({ ...newReminder, body: e.target.value })} className="min-h-14" />
+                <Textarea placeholder="גוף (אופציונלי)" value={newReminder.body} onChange={(e) => setNewReminder({ ...newReminder, body: e.target.value })} aria-label="גוף התזכורת" className="min-h-14" />
                 <div className="grid md:grid-cols-2 gap-2">
                   <Input type="datetime-local" value={newReminder.dueAt} onChange={(e) => setNewReminder({ ...newReminder, dueAt: e.target.value })} data-testid="input-new-reminder-dueat" />
                   <select className="rounded-md border border-input bg-background px-3 py-2 text-sm" value={newReminder.channel} onChange={(e) => setNewReminder({ ...newReminder, channel: e.target.value })}>
@@ -498,7 +498,7 @@ export default function FinancialCrmPage() {
                   <Input placeholder="כותרת" value={newReport.title} onChange={(e) => setNewReport({ ...newReport, title: e.target.value })} />
                   <Input type="month" value={newReport.periodMonth} onChange={(e) => setNewReport({ ...newReport, periodMonth: e.target.value })} />
                 </div>
-                <Textarea placeholder="תקציר" value={newReport.summary} onChange={(e) => setNewReport({ ...newReport, summary: e.target.value })} className="min-h-20" />
+                <Textarea placeholder="תקציר" value={newReport.summary} onChange={(e) => setNewReport({ ...newReport, summary: e.target.value })} aria-label="תקציר הדוח" className="min-h-20" />
                 <Button onClick={() => createReport.mutate()} disabled={!newReport.title || !newReport.periodMonth || createReport.isPending}><Plus className="w-4 h-4 ml-1" /> יצירת דוח</Button>
                 <div className="border-t pt-3 space-y-2">
                   {(reports ?? []).length === 0 ? (
