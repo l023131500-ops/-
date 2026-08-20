@@ -6060,3 +6060,34 @@
      `MultiSelect.tsx`/`RadioSelect.tsx` (תוויות-קבוצה בלי
      `<input>` אמיתי) ו-`OrgPortal.tsx` (חלקית מקושר כבר) יטופלו
      בנפרד אם וכאשר יימצא הצדקה שלא לדלג עליהם.
+
+## 20/08/2026 — סבב 105 (loop A)
+
+568. **התיקון בסבב הזה:** `apps/01-torah-platform/src/pages/admin/
+     Teachers.tsx` — טופס "פתח פורטל חדש" בניהול מגידים (בתחום
+     scope: פאנל ניהול). קריאה מלאה של הקובץ גילתה **6** זוגות
+     תווית/בקרה לא-מקושרים, לא 2 כפי שהוערך בסבב 104 (האומדן הישן
+     כנראה ספר רק שדות טקסט קלאסיים ופספס את ה-`Select`): סוג
+     הפורטל (`Select`/`SelectTrigger`), שם מלא, שם ארגון/בית כנסת
+     (מותנה), מייל, טלפון, סיסמה ראשונית. עבור ה-`Select` (רכיב
+     Radix מ-`@/components/ui/select`, לא `<select>` רגיל) השתמשתי
+     בתבנית הקיימת שכבר יושמה בסבבים קודמים (למשל `StudySchedule.tsx`
+     סבב 88): `id` על `SelectTrigger` + `htmlFor` תואם על התווית,
+     ולא על `Select`/`SelectValue`. הוספתי `id`/`htmlFor` עם קידומת
+     `teachers-` לכל ששת הזוגות.
+569. **אפס רגרסיה מאומתת:** `git diff --stat` — קובץ אחד, 12+/12-,
+     רק `id`/`htmlFor` נוספו; לא נגעתי ב-`value`/`onChange`/
+     `placeholder`/`type`/`onValueChange`/הלוגיקה. אין `tsc`/`npm`
+     בסביבה הזו — אומת בקריאת `git diff` מלאה + בדיקת איזון
+     `{}`/`()`/`[]` ב-Python על הקובץ המלא (128/128, 146/146,
+     19/19). Commit יבוצע על `fix/a-icon-only-buttons-round2-0820`,
+     יידחף ל-origin (מפעיל פריסת Vercel תחת more30.com/torah).
+570. **הבא בתור ב-01-torah-platform** (מהקטן לגדול, לפי המיפוי של
+     סבב 104, בהתאמה שה"קטן" האמיתי עשוי לחרוג מהאומדן כמו כאן):
+     `SynagogueFullAccessRequest.tsx` (2) → `PrayerTimesTab.tsx`
+     (3) → `PortalLessonForm.tsx` (4) →
+     `PortalSettingsTab.tsx`/`PublicContactForm.tsx` (6 כל אחד) →
+     `StudyDayEventForm.tsx`/`UpdateLesson.tsx` (9 כל אחד).
+     `MultiSelect.tsx`/`RadioSelect.tsx` (תוויות-קבוצה בלי
+     `<input>` אמיתי) ו-`OrgPortal.tsx` (חלקית מקושר כבר) עדיין
+     ממתינים להחלטה אם לדלג.
