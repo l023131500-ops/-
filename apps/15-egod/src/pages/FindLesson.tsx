@@ -46,23 +46,23 @@ const FindLesson = () => {
           <div className="bg-card rounded-2xl p-6 shadow-sm border border-border max-w-4xl mx-auto mb-12">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div>
-                <label className="text-sm font-medium text-foreground mb-1 block">אזור</label>
+                <label htmlFor="findlesson-city" className="text-sm font-medium text-foreground mb-1 block">אזור</label>
                 <div className="relative">
                   <MapPin className="absolute right-3 top-3 w-4 h-4 text-muted-foreground" />
-                  <Input placeholder="עיר או שכונה" className="pr-9" value={city} onChange={e => setCity(e.target.value)} />
+                  <Input id="findlesson-city" placeholder="עיר או שכונה" className="pr-9" value={city} onChange={e => setCity(e.target.value)} />
                 </div>
               </div>
               <div>
-                <label className="text-sm font-medium text-foreground mb-1 block">נושא</label>
+                <label htmlFor="findlesson-subject" className="text-sm font-medium text-foreground mb-1 block">נושא</label>
                 <Select value={subject} onValueChange={setSubject}>
-                  <SelectTrigger><SelectValue placeholder="בחר נושא" /></SelectTrigger>
+                  <SelectTrigger id="findlesson-subject"><SelectValue placeholder="בחר נושא" /></SelectTrigger>
                   <SelectContent>{subjects.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
                 </Select>
               </div>
               <div>
-                <label className="text-sm font-medium text-foreground mb-1 block">יום</label>
+                <label htmlFor="findlesson-day" className="text-sm font-medium text-foreground mb-1 block">יום</label>
                 <Select value={day} onValueChange={setDay}>
-                  <SelectTrigger><SelectValue placeholder="בחר יום" /></SelectTrigger>
+                  <SelectTrigger id="findlesson-day"><SelectValue placeholder="בחר יום" /></SelectTrigger>
                   <SelectContent>{days.map((d) => <SelectItem key={d} value={d}>{d}</SelectItem>)}</SelectContent>
                 </Select>
               </div>
