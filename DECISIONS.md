@@ -8558,3 +8558,51 @@
     עקביים על אלמנטים אינטראקטיביים מותאמים-אישית (לא native
     button/a).
     via cloud server 167.99.131.167 [loop B]
+
+## 20/08/2026 — סבב 398 (loop B)
+
+398. **עדשת `focus-visible`/`tabIndex` (מוצע בסוף סבב 397): הרצתי סוכן
+    Explore על כל 7 האפליקציות החיות לאיתור `<div>`/`<span>` עם `onClick`
+    בלי `tabIndex`/`onKeyDown` בעמודים ציבוריים (לא מאחורי login/
+    ProtectedRoute). תוצאה: **נקי** — כל האלמנטים המותאמים-אישית שנמצאו
+    (17-upload.tsx, 21-RabbiPortal/OrgPortal/LessonsDashboard,
+    22-RightsCategories) כבר נושאים `tabIndex={0}`+`onKeyDown` מתיקונים
+    קודמים בלולאה הזו; שאר האינטראקציות משתמשות ב-`<button>`/`<Button>`
+    נייטיביים. עברתי לעדשת ה-`meta theme-color` שהוצעה לצידה.
+
+    בדקתי `<meta name="theme-color">` בכל 7 האפליקציות (index.html/
+    layout.tsx). **ממצא אמיתי: 5 מתוך 7 לא הצהירו theme-color בכלל**
+    (17-chizukim-transcribe, 18-torah-editor-mvp, 22-get-your-rights,
+    27-bkalut-price, 28-kupot-health-funds) — כרום הכתובת בדפדפן נייד
+    נשאר בצבע ברירת מחדל (לבן/שחור) במקום צבע המותג של כל מערכת. רק
+    21-mthbram ו-24-galilee-connect-hub כבר מצהירים (לא נגעתי בהם —
+    כבר תקינים). לכל אחת מ-5 החסרות שלפתי את `--primary`/`--accent`
+    האמיתי מתוך `index.css`/`globals.css` שלה (לא המצאתי צבע), המרתי
+    HSL→hex בפייתון, והוספתי שני תגי `theme-color` עם `media` לפי
+    `prefers-color-scheme` (תואם לתבנית ה-dark-mode-first הקיימת בכל
+    5 האפליקציות — סבבים קודמים כבר הוסיפו סקריפט שמפעיל `.dark` לפני
+    הציור הראשון). ב-18 (Next.js, אין `index.html`) זה נוסף כ-`export
+    const viewport: Viewport` חדש ב-`layout.tsx` (Next מייצר את תג
+    ה-meta מה-export הזה; לא נגעתי ב-`export const metadata` הקיים).
+
+    `git diff --stat`: 5 קבצים, 16+/1-. בדיקת איזון סוגריים (Python)
+    על `layout.tsx` אחרי העריכה: תקין (12/12 מסולסל, 5/5 עגול, 1/1
+    מרובע). שאר 4 הקבצים HTML — נבדקו ידנית שהתג נוסף במקום נכון בתוך
+    `<head>`, לפני/אחרי תגים קיימים, ללא שבירת מבנה. לא הופעל build/
+    dev-server (לפי הנחיות ההרצה).
+
+    אותו ענף `fix/b-22-whatsapp-noopener-round395-0820` (שרשרת הענפים
+    היא המקור המלא הבודד עבור loop B, לא `main`), קומיט `52400087`,
+    נדחף (מפעיל פריסות Vercel תחת `more30.com/chizukim`,
+    `more30.com/orech`, `more30.com/zchuyot`, `more30.com/mechiron`,
+    `more30.com/kupot`).
+
+    **הבא בתור:** עדשת ה-`theme-color` נראית ממוצה כעת על כל 7
+    האפליקציות. נושא #245 (RLS על `csjekrvukbdznetsrodj`, מוגן —
+    סכימת `csj`, לא לגעת) ו-#250 (RLS על 21-mthbram, חסום MCP)
+    נשארים חסומים. אפשרויות להמשך: עדשת `alt` על אייקוני SVG
+    דקורטיביים בלי `aria-hidden`/`role="img"`, בדיקת `<html lang>`
+    עקבי מול תוכן בפועל (לא רק `he` קבוע), או חזרה לתחום המחירון/
+    מיתוג 'עולם הסטארטאפים' לאימות רענן (אומת נקי בסבבים קודמים,
+    כדאי בדיקה תקופתית).
+    via cloud server 167.99.131.167 [loop B]
