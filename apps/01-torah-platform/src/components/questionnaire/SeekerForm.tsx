@@ -129,22 +129,22 @@ const SeekerForm = ({ data, onChange }: SeekerFormProps) => {
 
               <div>
                 <label className="font-body text-sm font-medium text-card-foreground mb-1.5 block">איש קשר *</label>
-                <Input value={data.contactName || ""} onChange={(e) => update("contactName", e.target.value)} placeholder="שם מלא" />
+                <Input value={data.contactName || ""} onChange={(e) => update("contactName", e.target.value)} placeholder="שם מלא" autoComplete="name" />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="font-body text-sm font-medium text-card-foreground mb-1.5 block">טלפון *</label>
-                  <Input value={data.phone || ""} onChange={(e) => update("phone", e.target.value)} placeholder="050-0000000" />
+                  <Input value={data.phone || ""} onChange={(e) => update("phone", e.target.value)} placeholder="050-0000000" type="tel" inputMode="tel" autoComplete="tel" />
                 </div>
                 <div>
                   <label className="font-body text-sm font-medium text-card-foreground mb-1.5 block">מייל</label>
-                  <Input value={data.email || ""} onChange={(e) => update("email", e.target.value)} placeholder="email@example.com" />
+                  <Input value={data.email || ""} onChange={(e) => update("email", e.target.value)} placeholder="email@example.com" type="email" inputMode="email" autoComplete="email" />
                 </div>
               </div>
               <div className="grid grid-cols-3 gap-4">
                 <div>
                   <label className="font-body text-sm font-medium text-card-foreground mb-1.5 block">עיר *</label>
-                  <Input value={data.city || ""} onChange={(e) => update("city", e.target.value)} placeholder="ירושלים" />
+                  <Input value={data.city || ""} onChange={(e) => update("city", e.target.value)} placeholder="ירושלים" autoComplete="address-level2" />
                 </div>
                 <div>
                   <label className="font-body text-sm font-medium text-card-foreground mb-1.5 block">שכונה</label>

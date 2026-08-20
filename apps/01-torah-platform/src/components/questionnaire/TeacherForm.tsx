@@ -98,12 +98,12 @@ const TeacherForm = ({ data, onChange }: TeacherFormProps) => {
               <h3 className="font-display text-xl font-bold text-card-foreground mb-6">פרטים אישיים</h3>
               <div>
                 <label className="font-body text-sm font-medium text-card-foreground mb-1.5 block">שם מלא *</label>
-                <Input value={data.fullName || ""} onChange={(e) => update("fullName", e.target.value)} placeholder="הרב ישראל ישראלי" />
+                <Input value={data.fullName || ""} onChange={(e) => update("fullName", e.target.value)} placeholder="הרב ישראל ישראלי" autoComplete="name" />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="font-body text-sm font-medium text-card-foreground mb-1.5 block">טלפון *</label>
-                  <Input value={data.phone || ""} onChange={(e) => update("phone", e.target.value)} placeholder="050-0000000" />
+                  <Input value={data.phone || ""} onChange={(e) => update("phone", e.target.value)} placeholder="050-0000000" type="tel" inputMode="tel" autoComplete="tel" />
                 </div>
                 <div>
                   <label className="font-body text-sm font-medium text-card-foreground mb-1.5 block">מייל</label>
@@ -113,7 +113,7 @@ const TeacherForm = ({ data, onChange }: TeacherFormProps) => {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="font-body text-sm font-medium text-card-foreground mb-1.5 block">עיר *</label>
-                  <Input value={data.city || ""} onChange={(e) => update("city", e.target.value)} placeholder="ירושלים" />
+                  <Input value={data.city || ""} onChange={(e) => update("city", e.target.value)} placeholder="ירושלים" autoComplete="address-level2" />
                 </div>
                 <div>
                   <label className="font-body text-sm font-medium text-card-foreground mb-1.5 block">שכונה</label>
