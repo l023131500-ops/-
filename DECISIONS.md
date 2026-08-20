@@ -4531,3 +4531,63 @@
      pricing עם גישת חילוץ ממוקד (מסבב 65, לא wrap גורף), (ב) ניסיון
      חוזר תקופתי ל-#167/#201 (חסימת Lovable, 15-egod), (ג) בדיקה של
      קבוצות רדיו (`type="radio"`) שטרם נבדקו באף עדשה קודמת.
+
+## 20/08/2026 (LOOP C — סבב 1) — 32 nadlan-berega: מנוע ההתאמה+המשלוח של התראות אזוריות, מופעל ידנית
+
+389. **הקשר.** זו הפעלה ראשונה של Loop C (היקף: 26/29/30/31/32/36/33-38 +
+     בניית "מעטפת") תחת התיוג `[loop C]`. קראתי README.md/CONNECTIONS.md,
+     בדקתי `core.run_progress` (אין הרשומה `[loop C]` קודמת בכלל — אימות:
+     `note ilike '%[loop C]%'` החזיר 0 שורות) ו-`core.projects` לשלושה-עשר
+     המספרים בהיקף. סנכרנתי את ה-checkout (`more30-c`, שהיה עדיין על סקלטון
+     הבוט-סטרפ המקורי) לענף האינטגרציה החי ביותר (`fix/a-select-accessible-
+     name-0820`, verified newest across all three loops' remote branches),
+     ויצרתי ממנו `feat/c-nadlan-area-alert-delivery-0820`.
+390. **הבחירה.** `NEEDS_USER.md` (19/08) כבר סימן את "המשלוח בפועל" של
+     ההתראות האזוריות (32-nadlan-berega) כ"גדול מדי לצעד אחד" כי תזמון
+     (Vercel Cron/pg_cron) + Resend ביחד הם שתי בעיות שונות. פיצלתי: בניתי
+     את מנוע ההתאמה+המשלוח עצמו + הפעלה **ידנית**, והשארתי את התזמון
+     האוטומטי כצעד הבא המפורש. נבדק גם ש-`03-igud-ads/vercel.crons.original.json`
+     מתעד ניסיון תזמון קודם שלא נפרס בפועל (`vercel.json` החי שם הוא
+     `{"framework":"nextjs"}` בלבד, בלי `crons`) — כלומר תזמון אמיתי בתשתית
+     הזו טעון עוד בירור (Hobby plan? Cron דרך `pg_cron`+`pg_net`?) ולא
+     הנחתי דבר; זו הסיבה שבחרתי הפעלה ידנית תחילה, לא הימור על מנגנון
+     שאולי לא רץ בפועל.
+391. **מה נבנה.** `lib/areaalerts.ts` (חדש): `resolvePoint` — גוש/חלקה
+     ישירים -> `parcelByGushHelka` -> מרכז חלקה (ITM->WGS84); אחרת גיאוקוד
+     הכתובת (`geocodeAddress`, מעדיף תוצאה עם `cityVerified`) + `parcelAtPoint`.
+     `checkAreaAlert` שולף עסקאות מועמדות (`fetchDealsAtPoint`) ומסנן ל**אותו**
+     גוש/חלקה בדיוק (`filterToParcel`) או לכתובת מדויקת (`filterToAddress`) —
+     לא לרדיוס הרחב שה-API מחזיר (אותה מלכודת "הרצל 42 -> 15 גושים" שתועדה
+     ב-`lib/nadlan.ts`, כאן חמורה שבעתיים כי מדובר במייל יזום ולא בדוח מבוקש).
+     "חדש" מוגדר כ-`dealDate` אחרי `created_at` של ההרשמה **וגם** מפתח עסקה
+     (`dealKey`, שהפכתי ל-export מ-`lib/nadlan.ts`) שלא נשלח כבר — לא רק
+     תאריך, כדי לא לשלוח על אותה עסקה פעמיים. שולח מייל Hebrew/RTL עם
+     Resend הקיים (`lib/email.ts`, ללא שינוי בו) רק כשיש מה חדש; מעדכן
+     `last_checked_at`/`last_error`/`notified_deal_keys` רק אחרי בדיקה
+     שהושלמה בלי חריגה — כשל משאיר את ההתראה כמות שהיא, לניסיון הבא.
+392. **סכימה.** הוספתי ל-`nadlan.area_alerts` החי (הטבלה כבר קיימת מ-18/08,
+     בלי קובץ migration מקומי — כמו כל שאר הטבלאות של המערכת הזו) שלוש
+     עמודות אדיטיביות: `last_checked_at timestamptz`, `last_error text`,
+     `notified_deal_keys text[] default '{}'`. שום עמודה/טבלה קיימת לא
+     שונתה, שום נתון לא נמחק (`apply_migration`, פרויקט `uhnrgujbdxhhmoxcjria`,
+     סכימת `nadlan` — לא `zr_*`/`csj`/`csj_src`/`igud`).
+393. **חיווט לניהול.** מסלול חדש `app/api/admin/area-alerts/route.ts`
+     (GET רשימה, POST `{id}`/`{action:'check-all'}`) מאחורי אותו `adminGate`
+     שכל שאר הניהול משתמש בו (אין שער חדש). קומפוננטה חדשה
+     `components/admin/AreaAlertsBoard.tsx` באותו דפוס עיצוב/state בדיוק כמו
+     `RequestsBoard.tsx` הקיים (טוקן ב-state בלבד, לא ב-URL/localStorage),
+     מחווטת ל-`/admin` תחת סקשן "התראות אזוריות" חדש — לא נגעתי בסקשנים
+     הקיימים (בקשות דוח / דוחות שמורים / מפתחות) מעבר להוספת הסקשן החדש
+     ביניהם.
+394. **מה לא נגעתי בו.** `AreaAlertSignup.tsx` ו-`POST /api/area-alert`
+     (שלב א, הקליטה) נשארו בדיוק כפי שהם — לא נגעתי בטופס ההרשמה הציבורי.
+     אין `node_modules` בסביבה הזו (`do NOT wait on installs`), אז אימות
+     הוא קריאה מלאה של כל קובץ (import-by-import מול החתימות בפועל
+     ב-`lib/nadlan.ts`/`lib/cadastre.ts`/`lib/geocode.ts`/`lib/itm.ts`/
+     `lib/email.ts`/`lib/adminauth.ts`) ולא `tsc`/`build` — לא הרצתי dev
+     server ולא cron.
+395. **הצעד הבא הטבעי (לא חסום, לא בוצע בסבב הזה):** תזמון אוטומטי
+     (Vercel Cron אם התשתית תומכת בכך בפועל בתוכנית הנוכחית, אחרת
+     `pg_cron`+`pg_net` מול ה-hub Supabase שקוראים ל-endpoint הזה עם סוד
+     משותף) כך שהכפתור הידני יהפוך לרקע. עד אז — "בדוק את כולן" ב-/admin
+     הוא הדרך היחידה להפעיל בפועל.

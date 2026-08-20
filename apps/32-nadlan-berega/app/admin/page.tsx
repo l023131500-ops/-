@@ -1,4 +1,5 @@
 import { cookies } from 'next/headers';
+import AreaAlertsBoard from '@/components/admin/AreaAlertsBoard';
 import RequestsBoard from '@/components/admin/RequestsBoard';
 import SavedReportsBoard from '@/components/admin/SavedReportsBoard';
 import SessionGate from '@/components/admin/SessionGate';
@@ -74,6 +75,21 @@ export default function AdminPage({ searchParams }: { searchParams: { key?: stri
         ) : (
           <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
             תור הבקשות נעול עד שיוגדר <code>ADMIN_TOKEN</code>. המסלול קורא כתובות מייל של
+            לקוחות ושולח מיילים, ולכן הוא לא נפתח כברירת מחדל.
+          </div>
+        )}
+      </Section>
+
+      {/* ===== התראות אזוריות — התאמת עסקאות חדשות ומשלוח מייל, מופעל ידנית ===== */}
+      <Section
+        title="התראות אזוריות"
+        note="כל מי שנרשם לקבל התראה על עסקה חדשה בכתובת/בגוש-חלקה שלו. אין עדיין תזמון אוטומטי — הבדיקה רצה כשלוחצים כאן, ומשווה מול מרשם העסקאות בפועל."
+      >
+        {process.env.ADMIN_TOKEN ? (
+          <AreaAlertsBoard token={searchParams.key ?? ''} />
+        ) : (
+          <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+            לוח ההתראות נעול עד שיוגדר <code>ADMIN_TOKEN</code>. המסלול קורא כתובות מייל של
             לקוחות ושולח מיילים, ולכן הוא לא נפתח כברירת מחדל.
           </div>
         )}

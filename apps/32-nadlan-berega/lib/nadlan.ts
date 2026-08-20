@@ -105,7 +105,7 @@ export function pickBestPolygon(
  * מפתח זהות לעסקה — לאיחוד תוצאות מכמה פוליגונים.
  * אותה עסקה מוחזרת יותר מפעם אחת כשפוליגונים גובלים חופפים.
  */
-function dealKey(t: Transaction): string {
+export function dealKey(t: Transaction): string {
   return [t.gush, t.helka, t.tatHelka, t.dealDate, t.price, t.areaSqm, t.address]
     .map((v) => v ?? '')
     .join('|');
