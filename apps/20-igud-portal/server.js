@@ -78,7 +78,7 @@ app.post("/api/public/tenant/:token/message", async (req, res) => {
     p_body: body || null,
   });
   if (!r.ok) return res.status(500).json({ error: r.data });
-  res.json(r.data);
+  res.json({ success: r.data === true, error: r.data === true ? null : "not_found" });
 });
 
 // Serve static frontend

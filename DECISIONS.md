@@ -2912,3 +2912,45 @@
     זו הכרעת סוד/ערך של המשתמש, לא משהו שהסבב הזה יכול להגדיר בעצמו
     (עולה בקנה אחד עם `core.missing_tokens`/owner=user ברוב הפערים
     הפתוחים האחרים בהיקף הזה).
+
+## 20/08/2026 — סבב 40
+
+235. **קראתי README.md/CONNECTIONS.md, בדקתי `core.run_progress`** (מזהה
+    loop B אחרון, תיקון קריאת Supabase לליד-החלפה ב-28
+    kupot-health-funds, קומיט `8622795d` -- כבר ה-parent של הענף הזה,
+    כבר נדחף). בדקתי `core.issues`/`core.project_tasks` פתוחים בהיקף
+    17-31: כל הפריטים הפתוחים חסומים חיצונית (פריסת מיגרציה על
+    פרויקטי Supabase שאינם נגישים ל-MCP כאן, או הכרעת המשתמש
+    ב-dashboard) -- אין פריט agent-owned פתוח וזמין לביצוע. עברתי
+    לביקורת קוד טרייה. `apps/20-igud-portal` (שהמניפסט שלו עדיין
+    מסומן `source=not-vendored`, מיושן -- הקוד בפועל אמיתי, `server.js`
+    אמיתי מול RPCs ב-Supabase, פרוס תחת `more30.com`) לא נבדק עד כה
+    בהיקף הזה. מצאתי באג פונקציונלי אמיתי: `POST /api/public/tenant/
+    :token/message` (`server.js:70-82`) קורא ל-RPC `submit_public_lead`
+    דרך `callRpc()` (fetch גולמי, לא `supabase-js`) ומחזיר את התוצאה
+    כמות שהיא ל-לקוח: `res.json(r.data)`. אימתתי מול הגדרת הפונקציה
+    בפועל (Supabase MCP, `pg_get_functiondef` על `public.submit_public_
+    lead`, `uhnrgujb...`): הפונקציה `RETURNS boolean` -- כלומר גוף
+    התשובה שנשלח ללקוח הוא `true`/`false` גולמי (Postgres boolean
+    כ-JSON scalar), לא אובייקט `{success:true}`. בצד הלקוח,
+    `public/app.js:212-220` בודק `if (res.success)` -- על ערך boolean
+    גולמי `res.success` הוא תמיד `undefined` (JS מתייחס ל-primitive
+    כ-boxed, אין שדה `success`), ולכן הענף מציג תמיד "שגיאה בשליחה:
+    נסה שוב" למגיש הטופס -- **גם כשההודעה נשמרה בהצלחה** ב-`portal_
+    messages` (RPC מחזיר `true`, השורה בפועל נכתבת ב-DB). זו לא רק
+    הודעת שגיאה קוסמטית: משתמש אמיתי שממלא טופס "צור קשר" בדף ציבורי
+    של ארגון/בית כנסת/מגיד שיעור רואה כישלון מדומה בכל פעם, סביר
+    שינסה שוב (שכפול פניות באדמין) או יוותר לגמרי -- למרות שהפנייה
+    כבר הגיעה. השוויתי מול האח התאום 19-igud-shiurim-portal (אותה
+    סכמת `igud`, אותה RPC): שם `handleBooleanRpcResult()` כבר עוטף את
+    התוצאה הבוליאנית נכון (`server.js:173`) -- כלומר זה באג ספציפי
+    למימוש הפשוט יותר של `callRpc` ב-20, לא בעיה בסכמה/RPC עצמם (סכמת
+    `igud` מוגנת -- לא נגעתי בה, גם לא הייתי צריך).
+236. **התיקון**: `server.js:81` עוטף את תוצאת ה-RPC לאובייקט תקין --
+    `res.json({ success: r.data === true, error: r.data === true ?
+    null : "not_found" })` -- תואם בדיוק למה ש-`app.js` כבר מצפה לו
+    (`res.success`/`res.error`), אפס שינוי ל-`app.js` עצמו, אפס שינוי
+    לשאר נתיבי ה-API באותו קובץ, אפס שינוי לסכמה/RPC. אין `node_modules`
+    מותקן (כלל אי-התקנה כרגיל) -- אומת בקריאה חוזרת של הקובץ בלבד.
+    קומיט על `fix/b-igud-portal-contact-form-false-error-0820`, יידחף
+    (מפעיל פריסת Vercel תחת הנתיב הממופה ל-20).
