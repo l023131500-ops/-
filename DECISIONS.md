@@ -8371,3 +8371,54 @@
     אם יימצאו, או פתיחת עדשה חדשה (למשל: קלטי קובץ ללא ולידציית
     גודל/סוג, או מצבי "אין תוצאות" ריקים בלי הודעה למשתמש).
     via cloud server 167.99.131.167 [loop B]
+
+## 20/08/2026 — סבב 395 (loop B)
+
+395. **בדיקה שיטתית: `target="_blank"` בלי `rel="noopener noreferrer"` מגן,
+    על כל 7 האפליקציות החיות (17/18/21/22/24/27/28) — כולל `window.open()`
+    דינמי, לא רק תגי `<a>`.** שתי בדיקות נפרדות ע"י סוכן Explore, ואומת
+    ידנית: (א) קלטי קובץ ללא ולידציית גודל/סוג — כל הקלטים שבאמת שולחים
+    קובץ הלאה (upload/API) כבר מוגנים ב-`accept=` ו/או בדיקת `file.size`
+    מפורשת (למשל `apps/18-torah-editor-mvp/app/htr/page.tsx:204`,
+    `HTR_MAX_UPLOAD_BYTES`); הקלטים היחידים בלי הגנה (`27-bkalut-price/
+    client/src/pages/service-form.tsx`) לא שולחים בפועל שום מקום — רק
+    שומרים שם קובץ ב-state מקומי (יש הערה בעמוד שהאוטומציה עוד לא
+    מחוברת) — לא עומד בקריטריון "נשלח בפועל". מצבי "אין תוצאות" ריקים —
+    כל הדפים שנבדקו (public-price-comparison, FindLesson, LessonDirectory,
+    KashrutPage, RightsCategories) כבר עם הודעת מחרוזת עברית ידידותית +
+    אייקון. שתי העדשות המשניות האלה **סגורות ללא ממצא**.
+
+    (ב) `target="_blank"`: ~45 תגי `<a>`/`<motion.a>` נבדקו בכל 7
+    האפליקציות — כולם כבר עם `rel="noopener noreferrer"`/`rel="noreferrer"`
+    על אותו תג (`motion.a` הוא עטיפת Framer Motion שמעבירה attrs גולמיים,
+    לא מזריקה `rel` אוטומטית — אומת שכל מופע כבר קיבל אותו במפורש). לא
+    נמצאו תגי `target={...}` דינמיים. **נמצא ממצא אמיתי אחד**:
+    `apps/22-get-your-rights/src/components/RightBrandedCard.tsx:265`,
+    פונקציית `shareViaWhatsApp` (משמשת ב-`AdminRightsReference.tsx:515,612`
+    לשיתוף כרטיס זכות בוואטסאפ) — `window.open(url, "_blank")` בלי ארגומנט
+    שלישי, כאשר `url` הוא `https://wa.me/...` חוצה-מקור. זו פרצת
+    reverse-tabnabbing קלאסית: דף היעד מקבל גישת `window.opener` לטאב
+    המקור ויכול להפנות אותו לדף פישינג. תוקן ל-`window.open(url, "_blank",
+    "noopener,noreferrer")` — פרמטר אחד בלבד, ללא שינוי מבני. שתי קריאות
+    `window.open` נוספות באותו קובץ (`mailto:` בשורה 273 עם `"_self"`,
+    לא `"_blank"`) לא רלוונטיות. כמה `window.open` נוספים ב-17/18/21/27/28
+    נבדקו ונמצאו פותחים חלון ריק לכתיבת HTML הדפסה עצמית, או נתיב API/
+    hash-route באותו מקור (`API_BASE` פנימי) — לא וקטור tabnabbing, לא
+    תוקנו (defense-in-depth בלבד, לא סיכון אמיתי).
+
+    `git diff --stat`: קובץ אחד, 1+/1-. איזון סוגריים תקין (Python). לא
+    הופעל build/dev-server (לפי הנחיות ההרצה).
+
+    ענף חדש `fix/b-22-whatsapp-noopener-round395-0820` (הסתעף
+    מ-`fix/b-17-18-28-label-htmlfor-round393-0820` — שרשרת הענפים היא
+    המקור המלא הבודד עבור loop B, לא `main`), קומיט `c627e52f`, נדחף
+    (מפעיל פריסת Vercel תחת `more30.com/zchuyot`).
+
+    **הבא בתור:** עדשת ה-`target="_blank"`/`window.open` סגורה נקייה על
+    כל 7 האפליקציות. נושא #245 (RLS על `csjekrvukbdznetsrodj`, מחכה
+    להכרעת מדיניות של המשתמש) ו-#250 (RLS על 21-mthbram, חסום MCP)
+    נשארים חסומים. אפשרויות להמשך: עדשת autoComplete על שדות כתובת אם
+    יימצאו, בדיקת `dangerouslySetInnerHTML`/הזרקת HTML לא-מסוננת מעבר
+    למה שכבר נבדק (24-galilee chatbot markdown), או תחום המחירון/מיתוג
+    'עולם הסטארטאפים' (כדאי לאמת שוב שהוא עדיין נקי אחרי כמה סבבים).
+    via cloud server 167.99.131.167 [loop B]
