@@ -10741,3 +10741,60 @@
 1036. **הבא בתור:** נותרו `index.html`/`supabase-config.html` ב-אותו
       `06-kupot-holim/site` שטרם נסרקו לעומק בסבב הזה — מומלץ להמשיך
       שם, או לעבור ל-`10-bkalot-rights` (50 אזכורים) שגם הוא חי.
+
+## 20/08/2026 — סבב 213 (loop A) — `06-kupot-holim`: נעילת גלילת body מתבטלת בטעות בסגירת המודאל כשה-drawer עדיין פתוח
+
+1037. **בדקתי מחדש לפני שהתחלתי:** `core.run_progress` (סבב 212 האחרון,
+      commit `0b2ce20b`/`790884be`, תואם ל-HEAD). קראתי את התור מ-1036:
+      המשכתי לסרוק את `06-kupot-holim/site/index.html` (262 שורות,
+      נסרק במלואו) ו-`app.js` (289 שורות, נסרק במלואו) — אין
+      `supabase-config.html` בפועל, רק `supabase-config.js` (כבר נסרק
+      בסבבים קודמים).
+1038. **הממצא שאומת ישירות בקוד:** `app.js`, `openDrawer()` (שורה 97)
+      ו-`openContact()` (שורה 226) שתיהן קובעות
+      `document.body.style.overflow = "hidden"` כשהן נפתחות, כדי לנעול
+      גלילת רקע מאחורי ה-overlay. אבל `closeDrawer()` (שורה 104, לפני
+      התיקון) ו-`closeContact()` (שורה 232, לפני התיקון) שתיהן איפסו
+      `overflow = ""` **ללא תנאי**. ה-drawer (`profileDrawer`, z-index
+      160) מכיל כפתורים עם `data-open-contact` (`drawerBody`, נבנה
+      ב-`openDrawer()` שורות 90-93, ונקשר מחדש ל-`bindContactButtons`
+      בשורה 98) שפותחים את המודאל (`contactModal`, z-index 180 — מעל
+      ה-drawer, מאומת ב-`styles.css:209-215` מול `styles.css:311`) על
+      גביו. כשמשתמש פותח פרופיל (drawer נפתח, גלילה ננעלת), לוחץ
+      "מעוניינים במידע המפורט למייל"/"מעוניינים במעבר קופה" בתוך
+      ה-drawer (המודאל נפתח מעליו, גלילה כבר נעולה — no-op), ואז סוגר
+      **רק את המודאל** (כפתור X / backdrop / "סגירה" אחרי שליחה) —
+      `closeContact()` איפס את הנעילה בזמן שה-drawer עדיין מוצג מתחתיו
+      במלואו (`hidden` נשאר `false`), כך שגלילת הרקע נפתחת מתחת
+      ל-overlay שעדיין פתוח — תקלת stacking/scroll-lock קלאסית.
+1039. **התיקון:** בכל אחת משתי הפונקציות, איפוס ה-`overflow` מותנה
+      עכשיו בכך שה-overlay השני **גם** סגור: `closeDrawer()` בודקת
+      `document.getElementById("contactModal").hidden` ו-`closeContact()`
+      בודקת `document.getElementById("profileDrawer").hidden`. עקבתי
+      אחרי כל נתיבי הסגירה האפשריים כדי לוודא שאין רגרסיה: (א) מודאל
+      בלבד פתוח (drawer מעולם לא נפתח, `hidden` בברירת המחדל ב-HTML
+      הוא `true` — `index.html:105`) → מתנה עדיין מתקיימת, גלילה
+      משוחררת כרגיל; (ב) drawer בלבד פתוח → אותו דבר; (ג) שניהם פתוחים,
+      `Escape` נלחץ (`app.js:270-272` קורא `closeContact()` ואז
+      `closeDrawer()` ברצף) → הקריאה הראשונה (`closeContact`) רואה
+      שה-drawer עדיין פתוח ולא מנקה, השנייה (`closeDrawer`) רואה
+      שהמודאל כבר סגור ומנקה — מצב סופי נכון, זהה להתנהגות הקודמת.
+      אין נתיב UI שבו `closeDrawer()` נקראת בזמן שהמודאל עדיין פתוח
+      (כפתור/backdrop של ה-drawer חסומים מאחורי ה-backdrop של המודאל,
+      z-index 170 > 160), כך שהתוספת שם היא הגנת-סימטריה זולה בלבד.
+1040. **אפס רגרסיה מאומתת:** `node --check app.js` עבר נקי. `git diff
+      --stat`: קובץ אחד, +2/-2 — שני תנאים נוספו על שתי שורות קיימות,
+      שום דבר אחר בקובץ לא שונה. `git add -f` (כמו בסבבים קודמים על
+      אותה תיקייה, `.gitignore` על `apps/06-kupot-holim/site` הוא
+      false positive בלבד). לא נגעתי במערכות/סכימות מוגנות (08/09/
+      bkalut-app/bkalot-admin/zr_*/NEDARIM3873/csj/csj_src/igud),
+      ב-`main`, או במערכת מחוץ להיקף (רק 01-16/gannenet/auth/super-
+      admin/admin dashboard/homepage ordering/pricing). Commit
+      `025560b5` על `fix/a-icon-only-buttons-round2-0820`, יידחף
+      ל-origin (מפעיל פריסת Vercel תחת `more30.com/briut`).
+1041. **הבא בתור:** `06-kupot-holim/site` נסרק כעת במלואו (`index.html`,
+      `app.js`, `admin.js`, `admin.html`, `leads-store.js`,
+      `supabase-config.js`) — לא נמצאו עוד באגים פעילים בסבב הזה.
+      מומלץ לסבב הבא: לעבור ל-`10-bkalot-rights` (50 אזכורים,
+      חי) שטרם נסרק לעומק, או לבדוק `admin.html` בעצמו (טרם נקרא
+      שורה-שורה, רק `admin.js` נבדק לעומק).
