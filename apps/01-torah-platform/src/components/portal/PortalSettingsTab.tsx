@@ -391,7 +391,7 @@ const PortalSettingsTab = ({ portalId, portalType, portalData, onUpdate }: Porta
         <div className="space-y-4">
           {customSections.map((section, idx) => (
             <div key={idx} className="bg-muted/30 rounded-xl p-4 border border-border/50 relative">
-              <button onClick={() => removeSection(idx)} className="absolute top-2 left-2 w-6 h-6 rounded-lg bg-destructive/80 text-white flex items-center justify-center hover:bg-destructive">
+              <button onClick={() => removeSection(idx)} className="absolute top-2 left-2 w-6 h-6 rounded-lg bg-destructive/80 text-white flex items-center justify-center hover:bg-destructive" aria-label="הסרת קטגוריה">
                 <X className="w-3.5 h-3.5" />
               </button>
               <div className="space-y-2">

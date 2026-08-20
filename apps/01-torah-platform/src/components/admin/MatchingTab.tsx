@@ -54,7 +54,7 @@ const LeadCard = ({ lead, matchBadge }: { lead: Lead; matchBadge?: string[] }) =
             {lead.subject && <span className="flex items-center gap-1"><BookOpen className="w-3 h-3" /> {lead.subject}</span>}
           </div>
         </div>
-        <button onClick={() => setExpanded(!expanded)} className="text-muted-foreground">
+        <button onClick={() => setExpanded(!expanded)} className="text-muted-foreground" aria-label={expanded ? "כיווץ פרטים" : "הרחבת פרטים"}>
           {expanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
         </button>
       </div>

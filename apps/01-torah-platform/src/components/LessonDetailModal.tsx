@@ -119,7 +119,7 @@ const LessonDetailModal = ({ lesson, onClose, imageOptions }: LessonDetailModalP
                   <Image className="w-4 h-4" />
                 </motion.button>
               </div>
-              <button onClick={onClose} className="w-9 h-9 rounded-xl bg-muted flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors">
+              <button onClick={onClose} className="w-9 h-9 rounded-xl bg-muted flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors" aria-label="סגירה">
                 <X className="w-5 h-5" />
               </button>
             </div>

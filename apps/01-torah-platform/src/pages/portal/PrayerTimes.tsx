@@ -138,7 +138,7 @@ const PrayerTimes = () => {
                         <span className="text-muted-foreground mr-2">{pt.time}</span>
                         {pt.day_of_week !== "יומי" && <span className="text-xs text-muted-foreground">({pt.day_of_week})</span>}
                       </div>
-                      <button onClick={() => handleDeletePrayer(pt.id)} className="text-destructive/60 hover:text-destructive">
+                      <button onClick={() => handleDeletePrayer(pt.id)} className="text-destructive/60 hover:text-destructive" aria-label="מחיקת זמן תפילה">
                         <X className="w-3 h-3" />
                       </button>
                     </div>

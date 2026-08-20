@@ -247,7 +247,7 @@ const PortalSettings = () => {
                     <div key={p.id} className="relative group aspect-square rounded-lg overflow-hidden border border-border">
                       <img src={p.image_url} alt="" className="w-full h-full object-cover" />
                       <button onClick={() => deletePhoto(p.id)} disabled={photoBusy}
-                        className="absolute top-2 left-2 bg-destructive text-destructive-foreground rounded-full p-1.5 opacity-0 group-hover:opacity-100 transition disabled:opacity-50">
+                        className="absolute top-2 left-2 bg-destructive text-destructive-foreground rounded-full p-1.5 opacity-0 group-hover:opacity-100 transition disabled:opacity-50" aria-label="מחיקת תמונה">
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
                     </div>

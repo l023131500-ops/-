@@ -172,7 +172,7 @@ const PortalLessonForm = ({ data, onChange }: PortalLessonFormProps) => {
                   days[idx] = { ...days[idx], time: e.target.value };
                   set("schedule_days", days);
                 }} placeholder="שעה" className="w-32 border-gray-200 bg-white" />
-                <button onClick={() => set("schedule_days", scheduleDays.filter((_, i) => i !== idx))} className="text-destructive"><Trash2 className="w-4 h-4" /></button>
+                <button onClick={() => set("schedule_days", scheduleDays.filter((_, i) => i !== idx))} className="text-destructive" aria-label="הסרת יום"><Trash2 className="w-4 h-4" /></button>
               </div>
             ))}
             <Input value={data.schedule_notes || ""} onChange={e => set("schedule_notes", e.target.value)} placeholder={'הערות ללו"ז (אופציונלי)'} className="border-gray-200 focus:border-teal/50 bg-white" />

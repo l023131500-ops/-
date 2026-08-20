@@ -115,9 +115,9 @@ export function EditDept({
                   className="rounded p-1 text-muted-foreground hover-elevate" title="הגדרות בלוק" data-testid={`button-meta-${i}`}>
                   <Settings2 className="h-3.5 w-3.5" />
                 </button>
-                <button onClick={() => move(b.id, -1)} className="rounded p-1 text-muted-foreground hover-elevate" data-testid={`button-up-${i}`}>▲</button>
-                <button onClick={() => move(b.id, 1)} className="rounded p-1 text-muted-foreground hover-elevate" data-testid={`button-down-${i}`}>▼</button>
-                <button onClick={() => remove(b.id)} className="rounded p-1 hover-elevate" data-testid={`button-remove-${i}`}>
+                <button onClick={() => move(b.id, -1)} className="rounded p-1 text-muted-foreground hover-elevate" data-testid={`button-up-${i}`} aria-label="הזזה למעלה">▲</button>
+                <button onClick={() => move(b.id, 1)} className="rounded p-1 text-muted-foreground hover-elevate" data-testid={`button-down-${i}`} aria-label="הזזה למטה">▼</button>
+                <button onClick={() => remove(b.id)} className="rounded p-1 hover-elevate" data-testid={`button-remove-${i}`} aria-label="מחיקת בלוק">
                   <Trash2 className="h-3.5 w-3.5 text-destructive" />
                 </button>
               </div>

@@ -323,7 +323,7 @@ const FloatingChatBot = () => {
                       <ArrowLeft className="w-4 h-4 text-muted-foreground" />
                     </button>
                   )}
-                  <button onClick={() => setIsOpen(false)} className="w-8 h-8 rounded-full bg-muted/50 flex items-center justify-center hover:bg-muted transition-colors">
+                  <button onClick={() => setIsOpen(false)} className="w-8 h-8 rounded-full bg-muted/50 flex items-center justify-center hover:bg-muted transition-colors" aria-label="סגירת הצ'אט">
                     <X className="w-4 h-4 text-muted-foreground" />
                   </button>
                 </div>
