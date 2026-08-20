@@ -44,10 +44,18 @@ export default function PropertyImagery({
   const [aerialFailed, setAerialFailed] = useState(false);
   const [mapFailed, setMapFailed] = useState(false);
 
-  /** הסימונים והמקרא נגזרים מאותה רשימה — כדי שאות על המפה תמיד תתאים לשורה. */
+  /** הסימונים והמקרא נגזרים מאותה רשימה — כדי שאות על המפה תמיד תתאים לשורה.
+   * כולל `religion` (בתי כנסת) — עד כה הופיעו רק כטקסט חופשי ב"בית הכנסת
+   * הקרוב ביותר" ולא סומנו על המפה האינטראקטיבית/האזורית, למרות שזו קטגוריה
+   * מרכזית לחלק גדול מהקהל. */
   const pool = useMemo<Place[]>(
     () =>
-      [...report.places.education, ...report.places.transport, ...report.places.daily]
+      [
+        ...report.places.education,
+        ...report.places.transport,
+        ...report.places.daily,
+        ...report.places.religion,
+      ]
         .slice()
         .sort((a, b) => a.straightMeters - b.straightMeters),
     [report.places],

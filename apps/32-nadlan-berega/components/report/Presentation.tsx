@@ -279,11 +279,12 @@ function buildSlides(d: PropertyReport): Slide[] {
 
   const ed = d.places.education.slice(0, 2);
   const tr = d.places.transport.slice(0, 2);
-  if (ed.length || tr.length) {
+  const rel = d.places.religion.slice(0, 2);
+  if (ed.length || tr.length || rel.length) {
     s.push({
       kicker: 'מה יש מסביב',
-      title: 'מוסדות ותחבורה במרחק הליכה',
-      rows: [...ed, ...tr].map((p) => ({
+      title: 'מוסדות, תחבורה ובתי כנסת במרחק הליכה',
+      rows: [...ed, ...tr, ...rel].map((p) => ({
         label: `${p.kind} · ${p.name}`,
         value: distanceText(p.straightMeters) ?? '—',
         note: p.walkSeconds != null ? `${walkText(p.walkSeconds)} הליכה` : undefined,
@@ -292,7 +293,7 @@ function buildSlides(d: PropertyReport): Slide[] {
   }
 
   if (lat != null && lng != null) {
-    const markers = [...d.places.education, ...d.places.transport]
+    const markers = [...d.places.education, ...d.places.transport, ...d.places.religion]
       .sort((a, b) => a.straightMeters - b.straightMeters)
       .slice(0, MARKER_LABELS.length)
       .map((p, i) => `${p.lat},${p.lng},${MARKER_LABELS[i]}`)
