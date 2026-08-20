@@ -900,7 +900,7 @@ function servicesBlock(services) {
             <h3 style="margin-top:8px;">${esc(s.title)}</h3>
             ${s.body ? `<p class="muted">${esc(s.body)}</p>` : ''}
             ${s.contact_phone ? `<p class="muted">☎ ${esc(s.contact_phone)}</p>` : ''}
-            ${s.file_url ? `<a class="btn btn-outline btn-sm" href="${esc(s.file_url)}" target="_blank">קובץ להורדה</a>` : ''}
+            ${s.file_url ? `<a class="btn btn-outline btn-sm" href="${esc(s.file_url)}" target="_blank" rel="noopener">קובץ להורדה</a>` : ''}
           </div>`).join('')}
       </div>
     </div>`;
@@ -1290,7 +1290,7 @@ async function renderAdmin(token) {
               <button class="btn btn-danger btn-sm" data-del-service="${s.id}">מחיקה</button></div>
             <h3 style="margin-top:8px;">${esc(s.title)}</h3>
             <p class="muted">${esc(s.body || '')}</p>
-            ${s.file_url ? `<a class="btn btn-outline btn-sm" href="${esc(s.file_url)}" target="_blank">צפייה בקובץ ↗</a>` : ''}
+            ${s.file_url ? `<a class="btn btn-outline btn-sm" href="${esc(s.file_url)}" target="_blank" rel="noopener">צפייה בקובץ ↗</a>` : ''}
           </div>`).join('') || '<p class="muted">אין שירותי קהילה עדיין.</p>'}
       </div>
     `;
