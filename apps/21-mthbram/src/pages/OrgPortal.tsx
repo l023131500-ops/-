@@ -430,6 +430,14 @@ const OrgPortal = () => {
                   )}
                 </motion.div>
               ))}
+
+              {filteredLessons.length === 0 && (
+                <div className="text-center py-16">
+                  <BookOpen className="w-16 h-16 mx-auto text-muted-foreground/30 mb-4" />
+                  <p className="font-display text-xl font-black text-muted-foreground">אין שיעורים עדיין</p>
+                  <p className="font-body text-sm text-muted-foreground/60">לחצו "הוספת שיעור חדש" כדי להתחיל</p>
+                </div>
+              )}
             </div>
           </TabsContent>
           {/* Messages Tab */}
