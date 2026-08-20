@@ -9929,3 +9929,45 @@
     `/p/topic/:id`), `hreflang`/`lang` alternate tags, favicon/manifest
     עקביות. נושא #245/#250 (RLS, חסומים) נשארים כפי שהם. via cloud
     server 167.99.131.167 [loop B]
+
+## 20/08/2026 — סבב 423 (loop B)
+
+423. **`favicon` מוחלט-לשורש ב-27-mechiron ו-28-kupot — אותה תקלה
+    שתועדה ותוקנה ב-17-chizukim/22-zchuyot, לא נסגרה שם.**
+
+    ה"הבא בתור" של סבב 422 ציין "favicon/manifest עקביות" כלא-נבדק.
+    בדיקה שיטתית (`grep -n 'href="/\|src="/'`) על ה-`index.html` של כל
+    9 האפליקציות החיות גילתה **שתי** מערכות עם אותה תקלה שכבר תועדה
+    ותוקנה בעבר (ב-17/21/22/24, לפי הערות קיימות בקוד) אך לא בכולן:
+    27-bkalut-price ו-28-kupot-health-funds עדיין הצהירו
+    `<link rel="icon" href="/favicon.svg">` — נתיב מוחלט-לשורש. שתי
+    המערכות מונטות תחת נתיב (`vite.config.ts`: `base: "/mechiron/"`
+    ו-`base: "/kupot/"` בהתאמה), ו-Vite אינו מוסיף את ה-base לקישורי
+    `<link>` מוחלטים-לשורש (מאומת בהערה הקיימת ב-17-chizukim: "לא נשען
+    על כך ש-Vite יוסיף אותו"). התוצאה בפועל: הלשונית מציירת את סמל
+    more30.com (805 בתים) במקום את סמל המערכת עצמה.
+
+    התיקון: הנתיב שונה ל-`/mechiron/favicon.svg` ו-`/kupot/favicon.svg`
+    בהתאמה — אותו קובץ SVG קיים כבר תחת `client/public/favicon.svg` בכל
+    אחת, רק הנתיב בקישור היה שגוי. לא נוצר קובץ חדש, לא הומצא סמל.
+
+    **בדיקות תקינות:** `git diff --stat`: 2 קבצים, כל שינוי הוא
+    שורת `<link>` אחת שהוחלפה (יחד עם הערת הסבר, כמו בדפוס הקיים
+    ב-17/21/22/24) — אין מחיקה של תוכן קיים. `ls` מאשר ששני קובצי
+    ה-`favicon.svg` קיימים בנתיב החדש. לא הופעל build/dev-server (לפי
+    הנחיות ההרצה).
+
+    ענף `fix/b-22-whatsapp-noopener-round395-0820` (שרשרת הענפים היא
+    המקור המלא היחיד ל-loop B, לא `main`), נדחף (מפעיל 2 פריסות Vercel
+    תחת `more30.com/{mechiron,kupot}`).
+
+    **הבא בתור:** favicon תוקן ב-4/9 (17,21,22,24 היו כבר תקינים;
+    27,28 תוקנו כעת). **עדיין חסר לגמרי (לא רק נתיב שגוי, אין כלל
+    `<link rel="icon">`)**: 19-igud-shiurim-portal ו-20-igud-portal —
+    שתיהן גם חסרות כל קובץ תמונה בריפו (`favicon`/`logo` SVG/PNG),
+    יש רק סמל SVG מוטבע-inline ב-`index.html` עצמו (`brand-mark`) —
+    ניתן לחלץ אותו כ-favicon.svg אמיתי בלי להמציא עיצוב חדש, לא נעשה
+    בסבב זה. `BreadcrumbList` JSON-LD אמיתי, `hreflang`/`lang`
+    alternate, `manifest.json`/`manifest.webmanifest` עקביות — עדיין
+    לא נבדקו. נושא #245/#250 (RLS, חסומים) נשארים כפי שהם. via cloud
+    server 167.99.131.167 [loop B]

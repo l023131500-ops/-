@@ -27,7 +27,11 @@
           : mq.addListener(function (e) { apply(e.matches); });
       })();
     </script>
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <!-- ‎href="/favicon.svg"‎ מוחלט-לשורש: המערכת מונטת תחת ‎/mechiron‎
+         (‎vite.config.ts‎ ‎base: "/mechiron/"‎), ו-Vite אינו מוסיף את
+         ה-base לקישורי ‎<link>‎ מוחלטים-לשורש (אותו תיקון כמו ב-17-chizukim
+         ו-22-zchuyot). בלעדיו הלשונית מציירת את סמל more30.com. -->
+    <link rel="icon" type="image/svg+xml" href="/mechiron/favicon.svg" />
     <title>מאגר בקלות — כלי פנימי לצוות</title>
     <meta name="description" content="מאגר פנימי לחיפוש זכויות, הטבות וארגוני סיוע — בקלות" />
     <link rel="canonical" href="https://more30.com/mechiron" />
