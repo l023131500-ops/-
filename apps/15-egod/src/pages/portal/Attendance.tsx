@@ -127,13 +127,17 @@ const Attendance = () => {
                   <Button size="sm"
                     variant={status?.was_present === true ? "default" : "outline"}
                     className={status?.was_present === true ? "bg-green-600 hover:bg-green-700" : ""}
-                    onClick={() => toggle(p.id, true)}>
+                    onClick={() => toggle(p.id, true)}
+                    aria-label={`סמן את ${p.full_name} כנוכח`}
+                    aria-pressed={status?.was_present === true}>
                     <Check className="w-4 h-4" />
                   </Button>
                   <Button size="sm"
                     variant={status?.was_present === false ? "default" : "outline"}
                     className={status?.was_present === false ? "bg-red-600 hover:bg-red-700" : ""}
-                    onClick={() => toggle(p.id, false)}>
+                    onClick={() => toggle(p.id, false)}
+                    aria-label={`סמן את ${p.full_name} כנעדר`}
+                    aria-pressed={status?.was_present === false}>
                     <X className="w-4 h-4" />
                   </Button>
                 </div>

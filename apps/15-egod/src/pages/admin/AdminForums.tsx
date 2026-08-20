@@ -147,11 +147,11 @@ const AdminForums = () => {
                       <p className="text-sm whitespace-pre-wrap">{p.content}</p>
                     </div>
                     <div className="flex flex-col gap-1 shrink-0">
-                      <Button size="sm" variant="ghost" onClick={() => togglePin(p)}><Pin className="w-3 h-3" /></Button>
-                      <Button size="sm" variant="ghost" onClick={() => toggleBlock(p)}>
+                      <Button size="sm" variant="ghost" onClick={() => togglePin(p)} aria-label={p.is_pinned ? "בטל נעיצת פוסט" : "נעץ פוסט"}><Pin className="w-3 h-3" /></Button>
+                      <Button size="sm" variant="ghost" onClick={() => toggleBlock(p)} aria-label={p.is_blocked ? "בטל חסימת פוסט" : "חסום פוסט"}>
                         {p.is_blocked ? <CheckCircle className="w-3 h-3 text-green-600" /> : <Ban className="w-3 h-3 text-destructive" />}
                       </Button>
-                      <Button size="sm" variant="ghost" onClick={() => deletePost(p.id)}><Trash2 className="w-3 h-3 text-destructive" /></Button>
+                      <Button size="sm" variant="ghost" onClick={() => deletePost(p.id)} aria-label="מחק פוסט"><Trash2 className="w-3 h-3 text-destructive" /></Button>
                     </div>
                   </div>
                 </div>

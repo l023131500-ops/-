@@ -139,6 +139,7 @@ const PortalMessagesTab = ({ portalId, portalType }: PortalMessagesTabProps) => 
                       onClick={() => cycleStatus(msg)}
                       className={msg.status === "handled" ? "text-primary" : msg.status === "not_handled" ? "text-destructive" : "text-gold"}
                       title="שנה סטטוס"
+                      aria-label={`סטטוס נוכחי: ${statusConf.label}. לחץ לשינוי סטטוס`}
                     >
                       {msg.status === "handled" ? <CheckCircle className="w-4 h-4" /> : msg.status === "not_handled" ? <Circle className="w-4 h-4" /> : <AlertCircle className="w-4 h-4" />}
                     </Button>
