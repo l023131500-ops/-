@@ -49,6 +49,7 @@ const Navbar = () => {
             <Link
               key={link.path}
               to={link.path}
+              aria-current={pathname === link.path ? "page" : undefined}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                 pathname === link.path
                   ? "bg-secondary text-secondary-foreground"
@@ -94,6 +95,7 @@ const Navbar = () => {
                   key={link.path}
                   to={link.path}
                   onClick={() => setMobileOpen(false)}
+                  aria-current={pathname === link.path ? "page" : undefined}
                   className={`px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
                     pathname === link.path
                       ? "bg-secondary text-secondary-foreground"

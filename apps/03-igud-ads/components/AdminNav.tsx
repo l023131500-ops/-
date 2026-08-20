@@ -42,6 +42,7 @@ export default function AdminNav() {
       <nav className="space-y-1 mb-6">
         {adsItems.map((it) => (
           <Link key={it.href} href={it.href}
+            aria-current={isActive(it.href) ? "page" : undefined}
             className={`block rounded px-3 py-2 text-sm ${isActive(it.href) ? "bg-brand-gold/20 text-brand-gold font-semibold" : "hover:bg-white/10"}`}>
             {it.label}
           </Link>
@@ -52,6 +53,7 @@ export default function AdminNav() {
       <nav className="space-y-1">
         {transcribeItems.map((it) => (
           <Link key={it.href} href={it.href}
+            aria-current={isActive(it.href) ? "page" : undefined}
             className={`block rounded px-3 py-2 text-sm ${isActive(it.href) ? "bg-brand-gold/20 text-brand-gold font-semibold" : "hover:bg-white/10"}`}>
             {it.label}
           </Link>
