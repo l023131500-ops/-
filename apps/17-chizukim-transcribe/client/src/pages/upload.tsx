@@ -230,6 +230,15 @@ export default function UploadPage() {
               if (!busy) pick(e.dataTransfer.files?.[0] ?? null);
             }}
             onClick={() => !busy && inputRef.current?.click()}
+            role="button"
+            tabIndex={0}
+            aria-label="בחירת קובץ אודיו להעלאה"
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                if (!busy) inputRef.current?.click();
+              }
+            }}
             className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer hover-elevate ${
               drag ? "border-primary bg-primary/5" : "border-input"
             } ${busy ? "opacity-60 pointer-events-none" : ""}`}

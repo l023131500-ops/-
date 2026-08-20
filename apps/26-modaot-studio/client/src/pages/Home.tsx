@@ -282,6 +282,15 @@ export default function Home() {
                   key={t.id}
                   className="group cursor-pointer overflow-hidden border-[#C9A227]/20 bg-[#101B32] transition hover:border-[#C9A227]/60 hover:shadow-[0_0_30px_rgba(201,162,39,0.15)]"
                   onClick={() => openTemplate(t as any)}
+                  role="button"
+                  tabIndex={0}
+                  aria-label={`פתיחת תבנית ${t.name}`}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      openTemplate(t as any);
+                    }
+                  }}
                 >
                   <LazyPreview>
                     <CanvasStage doc={t.doc} interactive={false} maxDisplayWidth={220} />
@@ -336,6 +345,15 @@ function EntryCard({
         highlight ? "border-[#C9A227]/60 shadow-[0_0_25px_rgba(201,162,39,0.12)]" : "border-[#C9A227]/20"
       }`}
       onClick={onClick}
+      role="button"
+      tabIndex={0}
+      aria-label={title}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onClick();
+        }
+      }}
       data-testid={`entry-${title}`}
     >
       <CardContent className="flex flex-col items-center gap-3 p-8 text-center">

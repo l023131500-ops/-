@@ -31,7 +31,20 @@ export function VisibilityRulesGrid() {
     <>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {data.map((rule) => (
-          <Card key={rule.id} className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => setEditing(rule)}>
+          <Card
+            key={rule.id}
+            className="cursor-pointer hover:shadow-md transition-shadow"
+            onClick={() => setEditing(rule)}
+            role="button"
+            tabIndex={0}
+            aria-label={`עריכת הרשאות חשיפה עבור ${PRETTY_CATEGORY[rule.partner_category] ?? rule.partner_category}`}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                setEditing(rule);
+              }
+            }}
+          >
             <CardHeader>
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-3">
