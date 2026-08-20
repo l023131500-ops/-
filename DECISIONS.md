@@ -6421,3 +6421,47 @@
     loop B שמשתמשות ב-TanStack `useMutation` (18/24), אם יימצאו שם
     מוטציות ללא `onError`.
     via cloud server 167.99.131.167 [loop B]
+
+## 20/08/2026 — סבב 347 (loop B)
+
+347. **המשך עדשת "משוב שקט" (מוטציה בלי `onError`), מועמד שני,
+    `me.tsx` (27-bkalut-price):** בדקתי את כ-15 המוטציות שנותרו
+    בסביבת ה-`useMutation` של 27-bkalut-price שתוכננו בסוף סבב 346
+    (`financial-crm.tsx`, `api-access.tsx`, `me.tsx`, `webhook-log.tsx`,
+    `params-topics.tsx`) ותעדפתי לפי השפעה עסקית/כספית אמיתית. נבחר
+    `me.tsx` — הדשבורד הפיננסי האישי של הלקוח עצמו (לא ניהול), שבו
+    שלוש מוטציות (`newTxMutation`, `ackAlert`, `requestPremium`) היו
+    **ללא `onError` בכלל**. החמורה מביניהן: `newTxMutation` (הוספת
+    תנועת הכנסה/הוצאה) — כפתור "הוסף" ב-`TransactionsTab` (שורה
+    224-233) מנקה את שדות הטופס (`setAmount(""); setDescription("")`)
+    **מיד עם הלחיצה**, בלי תלות בתוצאת ה-`mutate()` (fire-and-forget,
+    לא `mutateAsync`). כלומר אם ה-POST נכשל (שגיאת רשת/שרת), הטופס
+    מתאפס והלקוח לא מקבל שום משוב חזותי — הוא חושב שהתנועה נשמרה, אבל
+    היא מעולם לא נכתבה לדאטהבייס, מה שעלול לעוות את התקציב/הדוחות
+    האישיים שלו בלי שידע. תיקנתי לפי הדפוס הקיים כבר באותה אפליקציה
+    ב-`api-access.tsx`/`financial-crm.tsx`: הוספתי `import { useToast }
+    from "@/hooks/use-toast"` + `const { toast } = useToast()` בראש
+    `DashboardContent`, ו-`onError: () => toast({ title: "...", variant:
+    "destructive" })` לשלוש המוטציות (הוספת תנועה, סימון התראה,
+    בקשת פרימיום) — כל אחת עם כותרת שגיאה ייעודית. לא נגעתי בבעיית
+    ה-UX הנפרדת של ניקוי הטופס לפני תוצאה (זה מחוץ להיקף עדשת
+    ה-`onError` הנוכחית; ה-toast החדש לפחות מודיע ללקוח שהתנועה לא
+    נשמרה כדי שיזין אותה שוב). אפס שינוי לוגיקה/API/DB קיימים — תוספת
+    משוב UI בלבד. בדיקת איזון סוגריים/מאמרים מסולסלים/מרובעים
+    ב-python על הקובץ המלא אחרי העריכה — תקין (191/191, 250/250,
+    25/25). אין build/dev-server זמין בסביבה הזו לפי הנחיית ההרצה —
+    לא tsc. שים לב: `apps/27-bkalut-price/client/**` תואם לתבנית
+    ה-ignore הכללית ב-`.gitignore` השורש (`/apps/**`), אבל קבצים אלו
+    כבר **tracked** מסבבים קודמים כך ש-git ממשיך לעקוב אחרי שינויים
+    בהם כרגיל (`git add` הצליח אחרי אזהרת ignore חד-פעמית מה-CLI על
+    קובץ שכבר במעקב — לא נדרש `-f` אמיתי, ה-git status אישר `M`).
+    ענף חדש `fix/b-27-bkalut-price-me-mutations-silent-error-0820`,
+    commit `80243acf`, נדחף (מפעיל פריסת Vercel תחת more30.com/mechiron).
+
+    **הבא בתור:** להמשיך את עדשת ה-`onError` החסר על שאר המוטציות
+    ב-`financial-crm.tsx` (updateTaskStatus/deleteTask/createMessage/
+    createDoc/updateDocStatus/deleteDoc/createReminder/deleteReminder/
+    createReport — כולן חסרות `onError`), `api-access.tsx` (`clear`),
+    `webhook-log.tsx` (`retry`) ו-`params-topics.tsx`
+    (`toggleExactState`) — לתעדף שוב לפי השפעה עסקית/כספית.
+    via cloud server 167.99.131.167 [loop B]
