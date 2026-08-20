@@ -5213,3 +5213,47 @@
     מאז סבב 285-286 (שכלל גם 26/30/31 שכבר לא בהיקף) — מועמד טבעי לסבב
     הבא; לחלופין לבדוק אם עדשת ה-label-for-id שהופעלה כאן רלוונטית גם
     ל-22/23/24/25/27/28 (לא נבדקה שם הסבב הזה, רק ב-19).
+
+## 20/08/2026 — סבב 315 (loop B)
+
+315. **תשובה ל"הבא בתור" של סבב 314, כיוון ב': אימתתי שעדשת ה-label-for-id**
+    **(סבב 314, על 19) רלוונטית גם ל-JSX/React, לא רק לתבניות HTML גולמיות**
+    **בשרת — ותיקנתי את המקרה הראשון שנמצא, ב-21-mthbram.** קראתי
+    README.md/CONNECTIONS.md, בדקתי `core.run_progress` (הצעד האחרון:
+    `label-for-id-mismatch-19-0820`, קומיט `cb7dfcd0`, כבר ה-HEAD) ו-
+    DECISIONS.md #313-314 — היקף loop B מאושר 17,18,19,20,21,22,23,24,25,27,28
+    בלבד. לא נגעתי ב-26/29/30/31/32-38. הרצתי סוכן Explore על שאר 10
+    האפליקציות בהיקף (19 כבר תוקנה, דילגתי) לאותה משפחת באג בגרסתה ה-JSX:
+    `<label>` שהוא אח ב-DOM (JSX sibling, לא עוטף כילד) של `<input>`/
+    `<select>`/`<Input>` בלי `htmlFor`/`id` תואמים. אימתתי בעצמי לפני נגיעה
+    (לא סמכתי על דוח הסוכן): `20-igud-portal/public/app.js` שורות 226-230
+    משתמשות בעוזר DOM-builder `el("label", {}, "טקסט", el("input", ...))`
+    כאשר ה-input הוא **ילד** של ה-label (שיוך מרומז תקין) — לא באג, למרות
+    שנראה דומה ל-19 במבט ראשון. `23-haorech-torani`/`25-mor1-main-site`
+    עדיין לא נבנו (index.html בודד / app.json בלבד) — אין מה לתקן.
+    `18-torah-editor-mvp` ו-`28-kupot-health-funds`: עוטפים כילד או ללא
+    תבנית label-control רלוונטית — נקיים. **הסוכן דיווח על מקרים אמיתיים
+    ב-17, 21, 22, 24, 27** (סה"כ כ-30 זוגות) — בחרתי לתקן **רק את 21**
+    הסבב הזה (שני קבצים, 6 מקרים, היקף אחד-קונטיינר-נקי לצעד בודד, בדומה
+    לאיך שסבב 313 הגביל את עצמו לשני קבצים ולא ניסה למצות הכל בבת אחת),
+    ואת השאר משאיר בתור להמשך. אימתתי כל שורה ידנית לפני עריכה:
+    `LessonDirectory.tsx` שורות 145-174 — 4 selects בסרגל הסינון (עיר/קהל
+    יעד/סגנון/שפה), כל label אח ל-select בלי for/id. `AdminLogin.tsx`
+    שורות 175-206 — שם משתמש + סיסמה (Input של shadcn, כבר `forwardRef`
+    ומעביר `...props` כולל `id`, אז הוספת prop בטוחה). התיקון: `htmlFor`
+    על ה-`<label>` + `id` תואם על הבקרה (`filter-city`/`filter-audience`/
+    `filter-style`/`filter-language`, `admin-login-username`/
+    `admin-login-password`) — בדקתי התנגשות `id` בכל קובץ לפני ואחרי, אפס
+    כפילות. `git diff` מציג תוספת attribute בלבד, אפס שינוי ל-layout/
+    לוגיקה/ערכים. אין build/dev-server בסבב הזה לפי הנחיית ההרצה. קובץ
+    כבר עוקב ב-git, נדרש `git add -f` בגלל `.gitignore`. ענף חדש
+    `fix/b-label-for-id-mismatch-21-0820`, קומיט `5b801e26`, נדחף (מפעיל
+    פריסת Vercel תחת `more30.com/mthbram`).
+    **הבא בתור:** עדשת ה-label-for-id עדיין פתוחה על 17-chizukim-transcribe
+    (`upload.tsx`, `recording-detail.tsx` — 5 מקרים), 22-get-your-rights
+    (`FloatingBot.tsx` — 2 מקרים), 24-galilee-connect-hub
+    (`MourningGuidePage.tsx`, `SynagogueDetailsManager.tsx` — כ-11 מקרים),
+    ו-27-bkalut-price (`public-health-funds.tsx` — 3-4 מקרים, יש גם
+    מקרים שכבר עוטפים נכון ב-`integrations.tsx`/`right-detail.tsx` שאין
+    לגעת בהם) — מועמד טבעי להמשך ישיר בסבב הבא; לחלופין תשלום/רברנד
+    TEST-mode שעדיין לא אומת בהיקף המצומצם מאז סבב 285-286.
