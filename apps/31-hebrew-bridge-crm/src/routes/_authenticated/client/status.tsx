@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Suspense } from "react";
-import { FolderLock } from "lucide-react";
+import { FolderLock, Mail } from "lucide-react";
 import { clientDashboardQueryOptions } from "@/components/client/queries";
 import { TreatmentTracker } from "@/components/client/TreatmentTracker";
 import { AssignedPartnerBanner } from "@/components/client/AssignedPartnerBanner";
@@ -65,6 +65,25 @@ function DashboardBody() {
 
       {data.assignedPartnerName && (
         <AssignedPartnerBanner partnerName={data.assignedPartnerName} />
+      )}
+
+      {data.unreadMessageCount > 0 && (
+        <Card className="p-6 flex items-center justify-between gap-4 border-primary/50 bg-primary/[.03]">
+          <div className="flex items-center gap-4">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
+              <Mail className="h-6 w-6" />
+            </div>
+            <div>
+              <h3 className="font-semibold text-foreground">עדכונים חדשים</h3>
+              <p className="text-sm text-muted-foreground">
+                {`יש לך ${data.unreadMessageCount} עדכונים שטרם נקראו`}
+              </p>
+            </div>
+          </div>
+          <Button asChild>
+            <Link to="/client/messages">צפייה בעדכונים</Link>
+          </Button>
+        </Card>
       )}
 
       <Card className="p-6 flex items-center justify-between gap-4">

@@ -268,5 +268,19 @@ export const sendTopicToClient = createServerFn({ method: "POST" })
       .single();
     if (error) throw new Error(error.message);
 
+    // Client-visible copy, snapshotted now: outbox_queue is an internal
+    // delivery job (and its payload carries partner/professional contact
+    // details the client must never see), not something the client portal
+    // reads. Best-effort -- a failure here must not roll back a send that
+    // already left for the external channel.
+    const { error: cmErr } = await supabaseAdmin.from("client_messages").insert({
+      client_id: clientRes.data.id,
+      topic_id: topicRes.data.id,
+      subject: topicRes.data.client_subject,
+      body_html: topicRes.data.client_html_body,
+      sent_by: userId,
+    });
+    if (cmErr) console.error("[send-topic] client_messages insert failed", cmErr.message);
+
     return { ok: true, outboxId: row.id };
   });

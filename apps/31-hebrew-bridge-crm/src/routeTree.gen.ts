@@ -24,6 +24,7 @@ import { Route as AuthenticatedPartnerTasksRouteImport } from './routes/_authent
 import { Route as AuthenticatedPartnerFeedbacksRouteImport } from './routes/_authenticated/partner/feedbacks'
 import { Route as AuthenticatedPartnerClientsRouteImport } from './routes/_authenticated/partner/clients'
 import { Route as AuthenticatedClientStatusRouteImport } from './routes/_authenticated/client/status'
+import { Route as AuthenticatedClientMessagesRouteImport } from './routes/_authenticated/client/messages'
 import { Route as AuthenticatedClientDocumentsRouteImport } from './routes/_authenticated/client/documents'
 import { Route as AuthenticatedClientConsentsRouteImport } from './routes/_authenticated/client/consents'
 import { Route as AuthenticatedAdminTransactionsRouteImport } from './routes/_authenticated/admin/transactions'
@@ -133,6 +134,12 @@ const AuthenticatedClientConsentsRoute =
     path: '/consents',
     getParentRoute: () => AuthenticatedClientRouteRoute,
   } as any)
+const AuthenticatedClientMessagesRoute =
+  AuthenticatedClientMessagesRouteImport.update({
+    id: '/messages',
+    path: '/messages',
+    getParentRoute: () => AuthenticatedClientRouteRoute,
+  } as any)
 const AuthenticatedAdminTransactionsRoute =
   AuthenticatedAdminTransactionsRouteImport.update({
     id: '/transactions',
@@ -221,6 +228,7 @@ export interface FileRoutesByFullPath {
   '/admin/transactions': typeof AuthenticatedAdminTransactionsRoute
   '/client/consents': typeof AuthenticatedClientConsentsRoute
   '/client/documents': typeof AuthenticatedClientDocumentsRoute
+  '/client/messages': typeof AuthenticatedClientMessagesRoute
   '/client/status': typeof AuthenticatedClientStatusRoute
   '/partner/clients': typeof AuthenticatedPartnerClientsRoute
   '/partner/feedbacks': typeof AuthenticatedPartnerFeedbacksRoute
@@ -248,6 +256,7 @@ export interface FileRoutesByTo {
   '/admin/transactions': typeof AuthenticatedAdminTransactionsRoute
   '/client/consents': typeof AuthenticatedClientConsentsRoute
   '/client/documents': typeof AuthenticatedClientDocumentsRoute
+  '/client/messages': typeof AuthenticatedClientMessagesRoute
   '/client/status': typeof AuthenticatedClientStatusRoute
   '/partner/clients': typeof AuthenticatedPartnerClientsRoute
   '/partner/feedbacks': typeof AuthenticatedPartnerFeedbacksRoute
@@ -280,6 +289,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/transactions': typeof AuthenticatedAdminTransactionsRoute
   '/_authenticated/client/consents': typeof AuthenticatedClientConsentsRoute
   '/_authenticated/client/documents': typeof AuthenticatedClientDocumentsRoute
+  '/_authenticated/client/messages': typeof AuthenticatedClientMessagesRoute
   '/_authenticated/client/status': typeof AuthenticatedClientStatusRoute
   '/_authenticated/partner/clients': typeof AuthenticatedPartnerClientsRoute
   '/_authenticated/partner/feedbacks': typeof AuthenticatedPartnerFeedbacksRoute
@@ -312,6 +322,7 @@ export interface FileRouteTypes {
     | '/admin/transactions'
     | '/client/consents'
     | '/client/documents'
+    | '/client/messages'
     | '/client/status'
     | '/partner/clients'
     | '/partner/feedbacks'
@@ -339,6 +350,7 @@ export interface FileRouteTypes {
     | '/admin/transactions'
     | '/client/consents'
     | '/client/documents'
+    | '/client/messages'
     | '/client/status'
     | '/partner/clients'
     | '/partner/feedbacks'
@@ -370,6 +382,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/transactions'
     | '/_authenticated/client/consents'
     | '/_authenticated/client/documents'
+    | '/_authenticated/client/messages'
     | '/_authenticated/client/status'
     | '/_authenticated/partner/clients'
     | '/_authenticated/partner/feedbacks'
@@ -517,6 +530,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedClientConsentsRouteImport
       parentRoute: typeof AuthenticatedClientRouteRoute
     }
+    '/_authenticated/client/messages': {
+      id: '/_authenticated/client/messages'
+      path: '/messages'
+      fullPath: '/client/messages'
+      preLoaderRoute: typeof AuthenticatedClientMessagesRouteImport
+      parentRoute: typeof AuthenticatedClientRouteRoute
+    }
     '/_authenticated/admin/transactions': {
       id: '/_authenticated/admin/transactions'
       path: '/transactions'
@@ -650,6 +670,7 @@ const AuthenticatedAdminRouteRouteWithChildren =
 interface AuthenticatedClientRouteRouteChildren {
   AuthenticatedClientConsentsRoute: typeof AuthenticatedClientConsentsRoute
   AuthenticatedClientDocumentsRoute: typeof AuthenticatedClientDocumentsRoute
+  AuthenticatedClientMessagesRoute: typeof AuthenticatedClientMessagesRoute
   AuthenticatedClientStatusRoute: typeof AuthenticatedClientStatusRoute
   AuthenticatedClientIndexRoute: typeof AuthenticatedClientIndexRoute
 }
@@ -658,6 +679,7 @@ const AuthenticatedClientRouteRouteChildren: AuthenticatedClientRouteRouteChildr
   {
     AuthenticatedClientConsentsRoute: AuthenticatedClientConsentsRoute,
     AuthenticatedClientDocumentsRoute: AuthenticatedClientDocumentsRoute,
+    AuthenticatedClientMessagesRoute: AuthenticatedClientMessagesRoute,
     AuthenticatedClientStatusRoute: AuthenticatedClientStatusRoute,
     AuthenticatedClientIndexRoute: AuthenticatedClientIndexRoute,
   }

@@ -30,6 +30,7 @@ export type ClientDashboardData = {
   treatmentStatus: "not_started" | "sent" | "in_progress" | "completed";
   assignedPartnerName: string | null;
   uploadedDocuments: UploadedDocument[];
+  unreadMessageCount: number;
 };
 
 type DocumentRow = {
@@ -97,12 +98,20 @@ export const getClientDashboard = createServerFn({ method: "GET" })
 
     const docs: UploadedDocument[] = ((docRows ?? []) as DocumentRow[]).map(toUploadedDocument);
 
+    const { count: unreadCount, error: msgErr } = await supabase
+      .from("client_messages")
+      .select("id", { count: "exact", head: true })
+      .eq("client_id", userId)
+      .is("read_at", null);
+    if (msgErr) throw new Error(msgErr.message);
+
     return {
       userId,
       fullName: profile?.full_name ?? null,
       treatmentStatus: (assignment?.treatment_status as any) ?? "not_started",
       assignedPartnerName: partnerName,
       uploadedDocuments: docs,
+      unreadMessageCount: unreadCount ?? 0,
     };
   });
 
@@ -304,4 +313,47 @@ export const setClientConsent = createServerFn({ method: "POST" })
         updatedAt: (saved[0].updated_at as string) ?? null,
       },
     };
+  });
+
+export type ClientMessage = {
+  id: string;
+  subject: string;
+  bodyHtml: string;
+  sentAt: string;
+  readAt: string | null;
+};
+
+export const getClientMessages = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }): Promise<ClientMessage[]> => {
+    const { supabase, userId } = context as any;
+    const { data, error } = await supabase
+      .from("client_messages")
+      .select("id, subject, body_html, sent_at, read_at")
+      .eq("client_id", userId)
+      .order("sent_at", { ascending: false });
+    if (error) throw new Error(error.message);
+    return ((data ?? []) as any[]).map((m) => ({
+      id: m.id as string,
+      subject: m.subject as string,
+      bodyHtml: m.body_html as string,
+      sentAt: m.sent_at as string,
+      readAt: (m.read_at as string) ?? null,
+    }));
+  });
+
+export const markClientMessageRead = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: { id: string }) => z.object({ id: z.string().uuid() }).parse(d))
+  .handler(async ({ data, context }) => {
+    const { supabase } = context as any;
+    // mark_client_message_read() is SECURITY DEFINER and scopes the update to
+    // auth.uid() itself, so this cannot be used to mark another client's
+    // message read — same reason the client has no direct UPDATE policy on
+    // client_messages.
+    const { error } = await supabase.rpc("mark_client_message_read", {
+      p_message_id: data.id,
+    });
+    if (error) throw new Error(error.message);
+    return { ok: true };
   });
