@@ -139,7 +139,7 @@ const Footer = () => {
                   aria-describedby={errors.name ? "footer-contact-name-error" : undefined}
                   className={`w-full bg-navy/40 border rounded-xl px-4 py-2.5 font-body text-sm text-white placeholder:text-white/50 focus:border-gold/60 focus:ring-1 focus:ring-gold/30 outline-none transition-all ${errors.name ? 'border-red-400/60' : 'border-primary-foreground/20'}`}
                 />
-                {errors.name && <p id="footer-contact-name-error" className="text-red-400 text-[10px] mt-1 font-body">{errors.name}</p>}
+                {errors.name && <p id="footer-contact-name-error" role="alert" aria-live="assertive" className="text-red-400 text-[10px] mt-1 font-body">{errors.name}</p>}
               </div>
               <div>
                 <input
@@ -156,7 +156,7 @@ const Footer = () => {
                   aria-describedby={errors.phone ? "footer-contact-phone-error" : undefined}
                   className={`w-full bg-navy/40 border rounded-xl px-4 py-2.5 font-body text-sm text-white placeholder:text-white/50 focus:border-gold/60 focus:ring-1 focus:ring-gold/30 outline-none transition-all ${errors.phone ? 'border-red-400/60' : 'border-primary-foreground/20'}`}
                 />
-                {errors.phone && <p id="footer-contact-phone-error" className="text-red-400 text-[10px] mt-1 font-body">{errors.phone}</p>}
+                {errors.phone && <p id="footer-contact-phone-error" role="alert" aria-live="assertive" className="text-red-400 text-[10px] mt-1 font-body">{errors.phone}</p>}
               </div>
               <textarea
                 value={contactMsg}
