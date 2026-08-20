@@ -7329,3 +7329,41 @@
      (ניגודיות צבעים, `alt` ריק/חסר על תמונות), או לחזור ל-
      `core.project_tasks`/`core.project_bugs` לעבודה אחרת בתחום
      auth/admin/pricing/gannenet.
+
+## 20/08/2026 — סבב 135 (loop A)
+
+691. **המשכתי את התור מסבב 133/134** (עדשת `aria-live`, 10-bkalot-rights
+     עדיין לא טופל). בדקתי `core.run_progress` (סבב 134 האחרון, commit
+     `4935d51c`, תואם HEAD) + `core.project_tasks` (אותם 5 פתוחים:
+     02/12/13/25/32, עדיין חסומים) + `core.project_bugs` (ריק) — שום
+     דבר חדש בתחום. קראתי מחדש את `apps/10-bkalot-rights/app.js`
+     ומצאתי שתי נקודות ללא live region: (א) `#lf_msg` — ה-`<div>`
+     שמוצג בטופס יצירת הקשר (lead form) ומקבל הודעות שגיאה עם
+     `textContent` (חוסר שם/טלפון, חוסר הסכמה, כשל שליחה) — נוצר
+     דינמית ב-`openLeadForm()` בלי `role`/`aria-live`, בדיוק כמו
+     הדפוס שתוקן ב-AdminLogin/ResetPassword בסבב 132; (ב) `#catCount`
+     ב-`index.html` — מציג כרגיל "מציג X מתוך Y נושאים" (סטטוס ספירה
+     שמתעדכן בכל חיפוש/סינון) וגם, בנתיב כשל טעינה, "שגיאה בטעינת
+     הנתונים" — ללא live region בשני המקרים.
+692. **התיקון:** שתי תוספות attribute מינימליות, אפס שינוי לוגיקה.
+     ב-`app.js` שורה 250: הוספתי `role="alert" aria-live="assertive"`
+     ל-`<div id="lf_msg">` (הודעת שגיאה יזומה של המשתמש — assertive,
+     עקבי עם AdminLogin/ResetPassword). ב-`index.html` שורה 329:
+     הוספתי `aria-live="polite"` ל-`<div id="catCount">` (עדכון סטטוס
+     שגרתי בכל הקלדה בחיפוש — polite, עקבי עם 02/03/16). אפס שינוי
+     ל-`openLeadForm`/`submitLead`/`renderCatalog`/`filterCatalog`
+     ולכל לוגיקת ה-fetch/`zr_leads` (טבלה מוגנת — לא נגעתי, רק
+     ב-attribute של ה-DOM שמסביב).
+693. **אפס רגרסיה מאומתת:** `git diff` — 2 קבצים, 2+/2- סה"כ, שינוי
+     attribute יחיד בכל שורה על תג קיים (אין הסרת/שינוי אלמנט,
+     class, או handler). שני הקבצים כבר עוקבים ב-git (לא נדרש
+     `git add -f`, בניגוד לתיקונים הקודמים תחת `apps/**`). Commit
+     `755cc1ea` על `fix/a-icon-only-buttons-round2-0820`, יידחף
+     ל-origin (מפעיל פריסת Vercel תחת more30.com/bkalot-rights).
+694. **הבא בתור:** נותר 14-bsmachot-plus (`app.js` שורות 387-392,
+     הודעות שגיאה ב-vanilla JS ללא live region) מהתור שנפתח בסבב
+     133 — לא תוקן עדיין. גם 12-smel-ndln (`Report.tsx` שורה 85)
+     ממתין למחשבה נוספת על התבנית (early-return מלא, אין wrapper
+     קבוע). אפשר להמשיך שם, או לפתוח עדשה חדשה (ניגודיות צבעים,
+     `alt` ריק/חסר על תמונות), או לחזור ל-`core.project_tasks`/
+     `core.project_bugs` לעבודה אחרת בתחום auth/admin/pricing/gannenet.
