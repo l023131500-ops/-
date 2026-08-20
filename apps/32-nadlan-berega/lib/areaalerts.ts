@@ -24,6 +24,7 @@ import {
   filterToParcel,
   parseStreetAndNumber,
 } from './nadlan';
+import { resolveStreet } from './placenames';
 import { getStore } from './store';
 import type { Transaction } from './types';
 
@@ -78,6 +79,14 @@ async function resolvePoint(
   leadGush: string | null;
   leadHelka: string | null;
   street: string | null;
+  /**
+   * כל השמות שעסקה יכולה להיות רשומה תחתם — הרשמי, מה שהוקלד, וכל הכינויים
+   * (`resolveStreet`). בלי זה, נרשם שהזין כינוי ("אתרוג") לא יקבל התראה
+   * לעולם כשהנתיב נופל ל-filterToAddress: המרשם רושם עסקאות תחת השם הרשמי
+   * ("דרך מרדכי") בלבד, ו-`street` לבדו (הטקסט הגולמי שהוקלד) לא יתאים אף
+   * פעם. אותה מלכודת בדיוק שתועדה ב-CLAUDE.md ותוקנה כבר ב-buildreport.ts.
+   */
+  streetNames: string[];
   houseNum: number | null;
 } | null> {
   // חלקת-מוביל (Block_lead/Plot_lead): חלקה שאוחדה/חולקה מחדש נרשמת אצל
@@ -99,7 +108,7 @@ async function resolvePoint(
       const lead = await leadOf(alert.gush, alert.helka);
       return {
         lat, lng, gush: alert.gush, helka: alert.helka,
-        ...lead, street: null, houseNum: null,
+        ...lead, street: null, streetNames: [], houseNum: null,
       };
     }
     // גוש/חלקה שאינם מזוהים עוד (חלוקה מחדש וכד') — נופלים לכתובת אם יש.
@@ -118,6 +127,14 @@ async function resolvePoint(
   if (!best) return null;
 
   const { street, houseNum } = parseStreetAndNumber(alert.address);
+  // כמו ב-buildreport.ts: התאמה מול המרשם חייבת לכלול את השם הרשמי ואת כל
+  // הכינויים, לא רק את מה שהוקלד — אחרת נרשם שהזין כינוי לא יקבל התראה
+  // לעולם (ראה ההערה על `streetNames` למעלה). דורש עיר לשאילתה; בלעדיה
+  // (city ריק בהרשמה) נשארים עם הטקסט שהוקלד בלבד, כמו קודם.
+  const streetResolved = street && alert.city ? await resolveStreet(alert.city, street).catch(() => null) : null;
+  const streetNames = [street, streetResolved?.official, ...(streetResolved?.aliases ?? [])].filter(
+    (s): s is string => !!s,
+  );
   const parcel = await parcelAtPoint(best.itmX, best.itmY).catch(() => null);
   const lead = await leadOf(parcel?.gush ?? null, parcel?.helka ?? null);
   return {
@@ -127,6 +144,7 @@ async function resolvePoint(
     helka: parcel?.helka ?? null,
     ...lead,
     street,
+    streetNames,
     houseNum,
   };
 }
@@ -225,7 +243,7 @@ export async function checkAreaAlert(alert: AreaAlertRow, baseUrl: string): Prom
     const candidates =
       point.gush && point.helka
         ? filterToParcel(lookup.transactions, point.gush, point.helka, point.leadGush, point.leadHelka)
-        : filterToAddress(lookup.transactions, [point.street], point.houseNum);
+        : filterToAddress(lookup.transactions, point.streetNames, point.houseNum);
 
     const fresh = newDealsOnly(candidates, alert.created_at, alert.notified_deal_keys);
 
