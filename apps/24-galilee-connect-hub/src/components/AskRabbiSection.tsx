@@ -115,14 +115,14 @@ const AskRabbiSection = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-bold text-foreground mb-1.5">שם מלא</label>
-                  <input value={name} onChange={e => setName(e.target.value)} placeholder="הזן את שמך..."
+                  <label htmlFor="ask-rabbi-name" className="block text-sm font-bold text-foreground mb-1.5">שם מלא</label>
+                  <input id="ask-rabbi-name" value={name} onChange={e => setName(e.target.value)} placeholder="הזן את שמך..."
                     className="w-full rounded-2xl border border-input bg-background px-4 py-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-bold text-foreground mb-1.5">שאלתך</label>
-                  <textarea value={question} onChange={e => setQuestion(e.target.value)} placeholder="כתוב את שאלתך כאן..."
+                  <label htmlFor="ask-rabbi-question" className="block text-sm font-bold text-foreground mb-1.5">שאלתך</label>
+                  <textarea id="ask-rabbi-question" value={question} onChange={e => setQuestion(e.target.value)} placeholder="כתוב את שאלתך כאן..."
                     rows={3} className="w-full rounded-2xl border border-input bg-background px-4 py-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring resize-none" />
                 </div>
 

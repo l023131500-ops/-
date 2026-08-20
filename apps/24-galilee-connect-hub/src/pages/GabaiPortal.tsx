@@ -857,12 +857,12 @@ const NewsletterManager = () => {
       <div className="bg-card rounded-2xl p-6 shadow-card ornament-border space-y-4">
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-sm font-bold text-foreground mb-1">כותרת הגיליון *</label>
-            <Input value={title} onChange={e => setTitle(e.target.value)} placeholder="גיליון מס' 12 - פרשת..." />
+            <label htmlFor="newsletter-title" className="block text-sm font-bold text-foreground mb-1">כותרת הגיליון *</label>
+            <Input id="newsletter-title" value={title} onChange={e => setTitle(e.target.value)} placeholder="גיליון מס' 12 - פרשת..." />
           </div>
           <div>
-            <label className="block text-sm font-bold text-foreground mb-1">תיאור</label>
-            <Input value={description} onChange={e => setDescription(e.target.value)} placeholder="תיאור קצר..." />
+            <label htmlFor="newsletter-description" className="block text-sm font-bold text-foreground mb-1">תיאור</label>
+            <Input id="newsletter-description" value={description} onChange={e => setDescription(e.target.value)} placeholder="תיאור קצר..." />
           </div>
         </div>
         <div>
@@ -1119,18 +1119,18 @@ const AdBannerManager = () => {
       </h2>
       <div className="bg-card rounded-2xl p-6 shadow-card ornament-border space-y-4">
         <div className="grid grid-cols-2 gap-3">
-          <div><label className="block text-sm font-bold text-foreground mb-1">כותרת</label>
-            <Input value={title} onChange={e => setTitle(e.target.value)} placeholder="כותרת הבאנר" /></div>
-          <div><label className="block text-sm font-bold text-foreground mb-1">קישור (אופציונלי)</label>
-            <Input value={link} onChange={e => setLink(e.target.value)} placeholder="https://..." dir="ltr" /></div>
+          <div><label htmlFor="banner-title" className="block text-sm font-bold text-foreground mb-1">כותרת</label>
+            <Input id="banner-title" value={title} onChange={e => setTitle(e.target.value)} placeholder="כותרת הבאנר" /></div>
+          <div><label htmlFor="banner-link" className="block text-sm font-bold text-foreground mb-1">קישור (אופציונלי)</label>
+            <Input id="banner-link" value={link} onChange={e => setLink(e.target.value)} placeholder="https://..." dir="ltr" /></div>
         </div>
         <div className="grid grid-cols-2 gap-3">
-          <div><label className="block text-sm font-bold text-foreground mb-1">גודל</label>
-            <select value={size} onChange={e => setSize(e.target.value)} className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
+          <div><label htmlFor="banner-size" className="block text-sm font-bold text-foreground mb-1">גודל</label>
+            <select id="banner-size" value={size} onChange={e => setSize(e.target.value)} className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
               <option value="small">קטן</option><option value="medium">בינוני</option><option value="large">גדול</option>
             </select></div>
-          <div><label className="block text-sm font-bold text-foreground mb-1">מיקום</label>
-            <select value={position} onChange={e => setPosition(e.target.value)} className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
+          <div><label htmlFor="banner-position" className="block text-sm font-bold text-foreground mb-1">מיקום</label>
+            <select id="banner-position" value={position} onChange={e => setPosition(e.target.value)} className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
               <option value="center">מרכזי</option><option value="side">צדדי</option>
             </select></div>
         </div>
@@ -1254,39 +1254,39 @@ const KnowledgeManager = () => {
       <div className="bg-card rounded-2xl p-6 shadow-card ornament-border space-y-4">
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-sm font-bold text-foreground mb-1">קטגוריה *</label>
-            <Input value={category} onChange={e => setCategory(e.target.value)} placeholder='סת"ם, כשרות, גמ"חים...' list="kb-cats" />
+            <label htmlFor="kb-category" className="block text-sm font-bold text-foreground mb-1">קטגוריה *</label>
+            <Input id="kb-category" value={category} onChange={e => setCategory(e.target.value)} placeholder='סת"ם, כשרות, גמ"חים...' list="kb-cats" />
             <datalist id="kb-cats">{categories.map(c => <option key={c} value={c} />)}</datalist>
           </div>
           <div>
-            <label className="block text-sm font-bold text-foreground mb-1">תת-קטגוריה</label>
-            <Input value={subcategory} onChange={e => setSubcategory(e.target.value)} placeholder="למשל: ציוד רפואי, מזון..." />
+            <label htmlFor="kb-subcategory" className="block text-sm font-bold text-foreground mb-1">תת-קטגוריה</label>
+            <Input id="kb-subcategory" value={subcategory} onChange={e => setSubcategory(e.target.value)} placeholder="למשל: ציוד רפואי, מזון..." />
           </div>
         </div>
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-sm font-bold text-foreground mb-1">כותרת *</label>
-            <Input value={title} onChange={e => setTitle(e.target.value)} placeholder="כותרת הפריט" />
+            <label htmlFor="kb-title" className="block text-sm font-bold text-foreground mb-1">כותרת *</label>
+            <Input id="kb-title" value={title} onChange={e => setTitle(e.target.value)} placeholder="כותרת הפריט" />
           </div>
           <div>
-            <label className="block text-sm font-bold text-foreground mb-1">שם איש קשר</label>
-            <Input value={contactName} onChange={e => setContactName(e.target.value)} placeholder="שם מלא" />
+            <label htmlFor="kb-contact-name" className="block text-sm font-bold text-foreground mb-1">שם איש קשר</label>
+            <Input id="kb-contact-name" value={contactName} onChange={e => setContactName(e.target.value)} placeholder="שם מלא" />
           </div>
         </div>
         <div>
-          <label className="block text-sm font-bold text-foreground mb-1">תוכן *</label>
-          <textarea value={content} onChange={e => setContent(e.target.value)} placeholder="תיאור מפורט..."
+          <label htmlFor="kb-content" className="block text-sm font-bold text-foreground mb-1">תוכן *</label>
+          <textarea id="kb-content" value={content} onChange={e => setContent(e.target.value)} placeholder="תיאור מפורט..."
             rows={3} className="w-full rounded-lg border border-input bg-background px-4 py-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring resize-none" />
         </div>
         <div className="grid grid-cols-2 gap-3">
-          <div><label className="block text-sm font-bold text-foreground mb-1">טלפון</label>
-            <Input value={kbPhone} onChange={e => setKbPhone(e.target.value)} placeholder="050-0000000" dir="ltr" /></div>
-          <div><label className="block text-sm font-bold text-foreground mb-1">כתובת</label>
-            <Input value={kbAddress} onChange={e => setKbAddress(e.target.value)} placeholder="כתובת (אופציונלי)" /></div>
+          <div><label htmlFor="kb-phone" className="block text-sm font-bold text-foreground mb-1">טלפון</label>
+            <Input id="kb-phone" value={kbPhone} onChange={e => setKbPhone(e.target.value)} placeholder="050-0000000" dir="ltr" /></div>
+          <div><label htmlFor="kb-address" className="block text-sm font-bold text-foreground mb-1">כתובת</label>
+            <Input id="kb-address" value={kbAddress} onChange={e => setKbAddress(e.target.value)} placeholder="כתובת (אופציונלי)" /></div>
         </div>
         <div>
-          <label className="block text-sm font-bold text-foreground mb-1">תמונה (אופציונלי)</label>
-          <input ref={kbFileRef} type="file" accept="image/*" className="hidden" onChange={e => {
+          <label htmlFor="kb-image-input" className="block text-sm font-bold text-foreground mb-1">תמונה (אופציונלי)</label>
+          <input ref={kbFileRef} id="kb-image-input" type="file" accept="image/*" className="hidden" onChange={e => {
             const file = e.target.files?.[0]; if (!file) return;
             setKbImage(file);
             const reader = new FileReader();
@@ -1697,19 +1697,19 @@ const GabaiPortal = () => {
             <motion.div key={loginType} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-4">
               {loginType === 'gabai' && (
                 <div>
-                  <label className="block text-sm font-bold text-foreground mb-1.5">שם משתמש</label>
+                  <label htmlFor="gabai-login-username" className="block text-sm font-bold text-foreground mb-1.5">שם משתמש</label>
                   <div className="relative">
                     <User className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                    <Input value={username} onChange={e => { setUsername(e.target.value); setError(''); }}
+                    <Input id="gabai-login-username" value={username} onChange={e => { setUsername(e.target.value); setError(''); }}
                       placeholder="הזן שם משתמש" className="pr-10 text-base" dir="ltr" />
                   </div>
                 </div>
               )}
               <div>
-                <label className="block text-sm font-bold text-foreground mb-1.5">{loginType === 'admin' ? 'סיסמת מנהל' : 'סיסמה'}</label>
+                <label htmlFor="gabai-login-password" className="block text-sm font-bold text-foreground mb-1.5">{loginType === 'admin' ? 'סיסמת מנהל' : 'סיסמה'}</label>
                 <div className="relative">
                   <Lock className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                  <Input type={showPassword ? 'text' : 'password'} value={password} onChange={e => { setPassword(e.target.value); setError(''); }}
+                  <Input id="gabai-login-password" type={showPassword ? 'text' : 'password'} value={password} onChange={e => { setPassword(e.target.value); setError(''); }}
                     placeholder={loginType === 'admin' ? 'הזן סיסמת מנהל' : 'הזן סיסמה'}
                     className="pr-10 pl-10 text-base" dir="ltr" onKeyDown={e => e.key === 'Enter' && handleLogin()} />
                   {/* The eye sits on the LEFT, and that side is derived rather than

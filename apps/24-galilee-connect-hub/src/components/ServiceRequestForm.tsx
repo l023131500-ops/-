@@ -23,6 +23,7 @@ interface ServiceRequestFormProps {
 
 const ServiceRequestForm = ({ defaultType, compact }: ServiceRequestFormProps) => {
   const panelId = useId();
+  const fieldIdPrefix = useId();
   const [isOpen, setIsOpen] = useState(false);
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
@@ -112,17 +113,17 @@ const ServiceRequestForm = ({ defaultType, compact }: ServiceRequestFormProps) =
 
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="block text-sm font-bold text-foreground mb-1"><User className="w-3 h-3 inline ml-1" />שם מלא</label>
-          <Input value={name} onChange={e => setName(e.target.value)} placeholder="ישראל כהן" />
+          <label htmlFor={`${fieldIdPrefix}-name`} className="block text-sm font-bold text-foreground mb-1"><User className="w-3 h-3 inline ml-1" />שם מלא</label>
+          <Input id={`${fieldIdPrefix}-name`} value={name} onChange={e => setName(e.target.value)} placeholder="ישראל כהן" />
         </div>
         <div>
-          <label className="block text-sm font-bold text-foreground mb-1"><Phone className="w-3 h-3 inline ml-1" />טלפון</label>
-          <Input value={phone} onChange={e => setPhone(e.target.value)} placeholder="050-0000000" dir="ltr" />
+          <label htmlFor={`${fieldIdPrefix}-phone`} className="block text-sm font-bold text-foreground mb-1"><Phone className="w-3 h-3 inline ml-1" />טלפון</label>
+          <Input id={`${fieldIdPrefix}-phone`} value={phone} onChange={e => setPhone(e.target.value)} placeholder="050-0000000" dir="ltr" />
         </div>
       </div>
       <div>
-        <label className="block text-sm font-bold text-foreground mb-1">פרטים נוספים</label>
-        <textarea value={message} onChange={e => setMessage(e.target.value)} placeholder="תאר את הבקשה..."
+        <label htmlFor={`${fieldIdPrefix}-message`} className="block text-sm font-bold text-foreground mb-1">פרטים נוספים</label>
+        <textarea id={`${fieldIdPrefix}-message`} value={message} onChange={e => setMessage(e.target.value)} placeholder="תאר את הבקשה..."
           rows={3} className="w-full rounded-xl border border-input bg-background px-4 py-3 text-sm resize-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" />
       </div>
 
