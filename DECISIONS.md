@@ -5056,3 +5056,52 @@
      חוזר תקופתי ל-#167/#201, או עדשה חדשה (למשל: טפסים בלי
      `noValidate`/הודעת שגיאה נגישה, או `<input type="tel">` בלי
      `inputMode`/`pattern` מתאים) על 01-16/40-gannenet.
+
+## 20/08/2026 (LOOP A — סבב 79) — `inputMode`/`autoComplete="tel"` על `<input type="tel">`: 01-torah-platform/15-egod
+
+442. **בדקתי מחדש `core.run_progress` לפני שהתחלתי.** סבב 78 סגור
+     (commit `ecac657c`, תאם ל-HEAD). המשכתי מאותו ענף
+     `fix/a-icon-only-buttons-round2-0820`. פתחתי את העדשה השנייה
+     שסבב 78/#441 הציע: `<input type="tel">` בלי `inputMode`/
+     `pattern` מתאים — עדשה שמעולם לא נבדקה שיטתית על 01-16/
+     40-gannenet.
+443. **חיפוש `grep` ישיר (לא Explore agent) על כל 15 האפליקציות
+     בתחום** (דילוג 08/09) איתר כל מופעי `type="tel"`. ב-4
+     אפליקציות (05-financial-marketing-site, 06-kupot-holim,
+     10-bkalot-rights, 11-bkalut-marketing2 — כולן HTML סטטי) כל
+     מופע כבר נושא `inputmode="tel"`/`autocomplete="tel"` — התקדים
+     הקיים והנכון. ב-2 אפליקציות React (01-torah-platform,
+     15-egod) **13 מופעים בלי אף אחת מהתכונות**: 11 קבצים ב-01
+     (SignUp.tsx, DonationPage.tsx, Azkarot.tsx, RequestLesson.tsx,
+     JoinTeacher.tsx, FindLesson.tsx, Contact.tsx, Checkout.tsx,
+     Questionnaire.tsx, Footer.tsx פעמיים) ו-2 קבצים ב-15-egod
+     (JoinTeacher.tsx, RequestLesson.tsx). אומתו בקריאה ישירה של כל
+     קובץ — כל שדה טלפון אמיתי בטופס ציבורי (הרשמה, תרומה, אזכרות,
+     בקשת שיעור, הצטרפות מורה, חיפוש שיעור, יצירת קשר, קופה,
+     שאלון). קומפוננטת `Input` בשני הריפואים (`ui/input.tsx`) מעבירה
+     `...props` ישירות ל-`<input>` — הוספת `inputMode`/`autoComplete`
+     בטוחה, לא דורשת שינוי בקומפוננטה.
+444. **התיקון: הוספת `inputMode="tel" autoComplete="tel"`** לצד
+     `type="tel"` הקיים בכל 13 המופעים — מיישר את 01/15 עם התקדים
+     שכבר קיים ב-05/06/10/11 באותו תחום. `inputMode="tel"` פותח
+     מקלדת מספרים ב-מובייל; `autoComplete="tel"` מאפשר למילוי-אוטומטי
+     של הדפדפן להציע מספר טלפון שמור. אפס שינוי ל-`value`/`onChange`/
+     `placeholder`/מבנה JSX קיים מעבר להוספת שתי התכונות.
+445. **אפס רגרסיה מאומתת:** `git diff --stat` — 12 קבצים, 16 שורות
+     נוספו/10 הוסרו (כל שינוי הוא הוספת שתי תכונות על תגית `<Input>`/
+     `<input>` קיימת, בשורה אחת). אין `tsc`/`npm` בסביבה הזו — אומת
+     בקריאה מלאה של כל קובץ לפני/אחרי + `git diff` מלא + בדיקת איזון
+     `{}`/`()`/`[]` ב-Python על שנים-עשר הקבצים (כולם מאוזנים).
+     הקבצים מוחרגים כברירת מחדל ב-`.gitignore` אך עוקבים היסטורית
+     (מאומת `git ls-files --error-unmatch` על כל קובץ) — כנדרש
+     `git add -f` כדי להשתיק את הודעת ה-ignore בלבד, כתקדים מסבבים
+     76-78. Commit `a7f77a4c` על אותו ענף
+     `fix/a-icon-only-buttons-round2-0820`, נדחף ל-origin (מפעיל
+     פריסות Vercel תחת more30.com/torah, more30.com/egod).
+446. **הבא בתור:** עדשת ה-`inputMode`/`autoComplete="tel"` נבדקה כעת
+     על כל 15 האפליקציות בתחום — 13 מופעים תוקנו ב-01/15, השאר
+     (05/06/10/11) כבר היו תקינים ושימשו כתקדים. סבב הבא סביר: ניסיון
+     חוזר תקופתי ל-#167/#201, או עדשה חדשה (למשל: טפסים בלי
+     `noValidate`/הודעת שגיאה נגישה, `<input type="email">` בלי
+     `inputMode="email"`, או `<textarea>`/`<input>` חובה (`required`)
+     בלי `aria-required`) על 01-16/40-gannenet.
