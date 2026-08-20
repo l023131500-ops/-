@@ -4760,3 +4760,39 @@
      על 40-gannenet (newsletter/shelf/generator/library, #349) — לא
      נבדק עדיין שורה-אחר-שורה. גם ניסיון חוזר תקופתי ל-#167/#201, וגישת
      החילוץ הממוקד ל-05/40-gannenet/pricing שנדחתה בסבב 65/68.
+
+## 20/08/2026 (LOOP A — סבב 73) — 40-gannenet: סגירת עדשת `placeholder`-בלבד-בלי-label
+
+410. **בדקתי מחדש `core.run_progress` לפני שהתחלתי.** סבב 72 סגור
+     (commit `c24162c9`, תאם ל-HEAD). פתחתי את הפריט שסבב 72/#409
+     השאיר בתור: עדשת `placeholder`-בלבד-בלי-label על 40-gannenet
+     (newsletter/shelf/generator/library, #349) — לא נבדקה שורה-אחר-שורה
+     עד כה.
+411. **קראתי ישירות את כל קבצי ה-app/components של 40-gannenet וגרפתי
+     `placeholder` בכולם (לקח מסבב 59).** התוצאה: כמעט כל השדות כבר
+     תקינים — `newsletter/page.tsx` (שם-גן/נושאים), `generator/page.tsx`
+     (נושא/גיל/סגנון), `shelf/upload/page.tsx` (כותרת/מקור, עטופים
+     ב-`<label>` כילד-DOM), ו-`shelf/admin/page.tsx` (סיסמת ניהול,
+     עמודים-למחיקה) — כולם כבר עם `label htmlFor`/`aria-label`/
+     `aria-labelledby` מפורש. `library/page.tsx` ו-`shelf/page.tsx`
+     (שדות חיפוש) כבר עם `aria-label`. מועמד אמיתי אחד נמצא:
+     `components/PdfViewer.tsx:229-236` — שדה "טווח עמודים" (בכלי
+     בחירת-עמודים להורדה/הדפסה בתוך `/shelf/[id]`, עמוד תצוגת-פריט
+     חי) עם `placeholder` בלבד, בלי `label`/`aria-label` — בניגוד
+     לשדות האחים שלו באותו קומפוננטה. אימתתי שהקומפוננטה אכן חיה
+     (`grep` מצא ייבוא ושימוש יחיד ב-`app/shelf/[id]/page.tsx:94`).
+412. **התיקון: `aria-label="טווח עמודים לבחירה"` על ה-`<input>` הקיים** —
+     אותו דפוס כמו סבבים 65-72. אפס שינוי ל-`value`/`onChange`/
+     `onKeyDown`/`placeholder`/מבנה JSX קיים.
+413. **אפס רגרסיה מאומתת:** `git diff --stat` — קובץ אחד, שורה אחת
+     נוספה בלבד (לא הוחלפה). אין `tsc`/`npm` בסביבה הזו; אומת בקריאה
+     מלאה של הקובץ לפני/אחרי + `git diff` מלא + בדיקת איזון
+     `{}`/`()`/`[]` ב-Python (מאוזן). `apps/40-gannenet/components`
+     מוחרג כברירת מחדל ב-`.gitignore` הכללי אך עוקב היסטורית —
+     `git add -f` נדרש (אותו דפוס חוזר). ענף חדש
+     `fix/a-40-gannenet-pdfviewer-aria-label-0820`, commit `9f377956`.
+414. **הבא בתור:** עדשת `placeholder`-בלבד-בלי-label עכשיו מכוסה
+     במלואה על 40-gannenet וגם על כל 01-16 (סבבים 65-72, #349/#388).
+     אין עוד יעדים ידועים לעדשה הזו בתחום. סבב הבא: ניסיון חוזר
+     תקופתי ל-#167/#201, או פתיחת עדשה חדשה (למשל: כפתורי icon-only
+     בלי `aria-label`, או `alt` חסר בתמונות) על 01-16/gannenet/40.
