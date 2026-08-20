@@ -711,6 +711,7 @@ const HalachaManager = () => {
   };
 
   const handleDelete = async (id: string) => {
+    if (!confirm('למחוק את ההלכה היומית הזו?')) return;
     setActionError('');
     const { error } = await supabase.from('daily_halacha').delete().eq('id', id);
     if (error) {
@@ -835,6 +836,7 @@ const NewsletterManager = () => {
   };
 
   const handleDelete = async (item: any) => {
+    if (!confirm('למחוק את הגיליון הזה?')) return;
     setActionError('');
     // Delete from storage
     const fileName = item.pdf_url.split('/').pop();
@@ -1099,6 +1101,7 @@ const AdBannerManager = () => {
   };
 
   const handleDelete = async (banner: any) => {
+    if (!confirm('למחוק את הבאנר הזה?')) return;
     setActionError('');
     await deleteStorageFile(banner.image_url);
     const { error } = await supabase.from('ad_banners').delete().eq('id', banner.id);
@@ -1232,6 +1235,7 @@ const KnowledgeManager = () => {
   };
 
   const handleDelete = async (item: KnowledgeItem) => {
+    if (!confirm('למחוק פריט זה ממאגר המידע?')) return;
     setActionError('');
     if (item.image_url) await deleteStorageFile(item.image_url);
     const { error } = await supabase.from('knowledge_base').delete().eq('id', item.id);

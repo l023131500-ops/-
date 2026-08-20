@@ -54,6 +54,7 @@ const ActivitySlideshow = ({ isAdmin = false }: { isAdmin?: boolean }) => {
   };
 
   const handleDelete = async (slide: ActivitySlide) => {
+    if (!confirm('למחוק את השקופית הזו?')) return;
     await deleteStorageFile(slide.image_url);
     const { error } = await supabase.from('activity_slides').delete().eq('id', slide.id);
     if (error) {

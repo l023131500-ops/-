@@ -377,6 +377,7 @@ const AdminRightsReference = () => {
   };
 
   const handleDelete = async (id: string) => {
+    if (!confirm("למחוק את הנושא הזה?")) return;
     const { error } = await supabase.from("rights_reference").delete().eq("id", id);
     if (error) {
       toast({ title: "שגיאה", description: "לא הצלחנו למחוק את הנושא. נסו שוב.", variant: "destructive" });

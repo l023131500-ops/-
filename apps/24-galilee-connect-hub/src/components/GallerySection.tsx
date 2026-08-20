@@ -52,6 +52,7 @@ const GallerySection = ({ isAdmin = false }: { isAdmin?: boolean }) => {
   };
 
   const handleDelete = async (img: GalleryImage) => {
+    if (!confirm('למחוק את התמונה הזו מהגלריה?')) return;
     await deleteStorageFile(img.image_url);
     const { error } = await supabase.from('gallery_images').delete().eq('id', img.id);
     if (error) {
