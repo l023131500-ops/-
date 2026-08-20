@@ -4849,3 +4849,60 @@
      טפסים נבדקו שם בסבב 73) — סבב הבא סביר: להרחיב את אותה עדשה
      לשאר 01-16 שטרם נסרקו + 40-gannenet, או ניסיון חוזר תקופתי
      ל-#167/#201.
+
+## 20/08/2026 (LOOP A — סבב 75) — המשך עדשת icon-only-buttons: 02/03/10/12
+
+420. **בדקתי `core.run_progress` לפני שהתחלתי.** סבב 74 סגור (commit
+     `81d46857`, תאם ל-HEAD של הענף הנוכחי). פתחתי ענף חדש
+     `fix/a-icon-only-buttons-round2-0820` מעל קצה סבב 74 (לא
+     מהאינטגרציה — אותו לקח שסבב 74 עצמו תיעד). המשכתי את התור
+     שסבב 74/#419 הציע: אותה עדשת icon-only-בלי-aria-label, על
+     07-zol/10-bkalot-rights/11-bkalut-marketing2/12-smel-ndln/
+     13-property-identity/14-bsmachot-plus/02-igud-transcribe/
+     03-igud-ads/06-kupot-holim, וגם 40-gannenet ממוקד לכפתורים.
+421. **07-zol ו-13-property-identity אושרו ריקים** לפני ההרצה
+     (`find` — 07 מכיל רק `app.json`+`README.md`, 13 בלי שום
+     `.tsx`/`.jsx`/`.html` בר-בנייה) — תואם audit_status קיים
+     ב-`core.projects` ("לא נבנתה"/"אין פרויקט בר-בנייה"). לא נכללו
+     בסריקה.
+422. **הרצתי Explore agent על 02/03/06/10/11/12/14 + 40-gannenet.**
+     מצא 9 מועמדים גולמיים; אחד התברר כקובץ שלא קיים בכלל (נתיב
+     מומצא של ה-agent ב-02-igud-transcribe — אומת ונדחה ב-`find`
+     לפני עריכה). קראתי כל קובץ אמיתי ישירות (לקח מסבב 59) ואימתתי:
+     1 ב-02-igud-transcribe (`admin/uploads/page.tsx:157`, סגירת
+     מודל פרטי העלאה), 4 ב-03-igud-ads (`admin/projects`,
+     `admin/transcripts`, `admin/templates`, `admin/users` —
+     כולם כפתורי `×`/`✕` לסגירת דיאלוג/מודל), 2 ב-
+     10-bkalot-rights (`index.html` — `#modalClose`/`#leadClose`),
+     1 ב-12-smel-ndln (`components/ui/toast.tsx`, `ToastClose`
+     המשותף מ-shadcn/ui — `{...props}` ריק בנקודת הקריאה
+     ב-`toaster.tsx` כך שאין `aria-label` שמגיע מבחוץ; שאר רכיבי
+     shadcn/ui הלא-מתויגים ב-12 (pagination/sidebar/carousel/dialog/
+     sheet/drawer/command/alert-dialog) הם שלד מת שלא מיובא מ-`App.tsx`
+     — לא תוקנו). **06-kupot-holim, 11-bkalut-marketing2,
+     14-bsmachot-plus, ו-40-gannenet נבדקו ונמצאו כבר תקינים** —
+     כל כפתורי icon-only הקיימים בהם כבר נושאים `aria-label`/`title`.
+423. **מוסכמת ה-`aria-label`:** אימתתי מול תקדים חי ב-06-kupot-holim
+     (`aria-label="סגור ×"` על כפתורי `×` זהים) לפני שקבעתי טקסט —
+     02/03 (React, `×`/`✕` בלבד בלי טקסט נוסף) קיבלו `aria-label="סגור"`
+     (תואם למוסכמה הקיימת גם באפליקציות אלו, למשל "הסתר סיסמה"),
+     10-bkalot-rights (HTML סטטי, כבר משתמש ב-`×` כמו 06) קיבל בדיוק
+     `aria-label="סגור ×"` כדי להתאים לתקדים הקרוב ביותר, ו-12
+     (`ToastClose`) קיבל `aria-label="סגירת ההתראה"` (תואם לטקסטים
+     הקיימים בהתראות עצמן, למשל "המחקר נכשל").
+424. **אפס רגרסיה מאומתת:** `git diff --stat` — 7 קבצים, 8 שורות
+     נוספו/6 הוסרו (כל שינוי הוא הוספת `aria-label` בלבד לתגית
+     `<button>`/`ToastPrimitives.Close` קיימת; אין `tsc`/`npm`
+     בסביבה — אומת בקריאה מלאה לפני/אחרי + `git diff` מלא + בדיקת
+     איזון `()`/`{}`/`<div>`↔`</div>` ב-Python על כל שבעת הקבצים
+     (כולם מאוזנים). `apps/02-igud-transcribe/app`,
+     `apps/03-igud-ads/app`, `apps/12-smel-ndln/client` מוחרגים
+     כברירת מחדל ב-`.gitignore` אך עוקבים היסטורית — `git add`
+     (בלי `-f`) עבד כרגיל. ענף `fix/a-icon-only-buttons-round2-0820`,
+     commit `486b5b83`.
+425. **הבא בתור:** עדשת icon-only-בלי-aria-label נבדקה כעת על כל
+     01-16+40-gannenet שיש בהם קוד בר-בנייה (05/07/13 ריקים באופן
+     מאומת; 08/09 מוגנים) — נראית ממצה בתחום Loop A. סבב הבא סביר:
+     ניסיון חוזר תקופתי ל-#167/#201, או פתיחת עדשה חדשה (למשל:
+     `alt` חסר בתמונות מידע, או `tabIndex`/מקלדת על אלמנטים
+     אינטראקטיביים לא-`<button>`) על 01-16/40-gannenet.
