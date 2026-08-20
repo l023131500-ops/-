@@ -110,6 +110,7 @@ const AdminLeads = () => {
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
   const [editingLead, setEditingLead] = useState<Lead | null>(null);
   const [savingEdit, setSavingEdit] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [sendingToN8n, setSendingToN8n] = useState(false);
   const [sendChannels, setSendChannels] = useState<string[]>(["whatsapp"]);
 
@@ -172,7 +173,9 @@ const AdminLeads = () => {
   };
 
   const handleDelete = async (leadId: string) => {
+    setDeleting(true);
     const { error } = await supabase.from("leads").delete().eq("id", leadId);
+    setDeleting(false);
     if (error) {
       toast({ title: "שגיאה", description: "מחיקת הליד נכשלה", variant: "destructive" });
       setDeleteConfirm(null);
@@ -551,8 +554,8 @@ const AdminLeads = () => {
                   {deleteConfirm === selectedLead.id ? (
                     <div className="flex items-center gap-2">
                       <p className="text-xs text-destructive font-bold">בטוח למחוק?</p>
-                      <Button size="sm" variant="destructive" onClick={() => handleDelete(selectedLead.id)}>כן, מחק</Button>
-                      <Button size="sm" variant="outline" onClick={() => setDeleteConfirm(null)}>ביטול</Button>
+                      <Button size="sm" variant="destructive" onClick={() => handleDelete(selectedLead.id)} disabled={deleting}>{deleting ? "מוחק..." : "כן, מחק"}</Button>
+                      <Button size="sm" variant="outline" onClick={() => setDeleteConfirm(null)} disabled={deleting}>ביטול</Button>
                     </div>
                   ) : (
                     <Button size="sm" variant="ghost" className="text-destructive hover:text-destructive gap-2" onClick={() => setDeleteConfirm(selectedLead.id)}>
