@@ -9,6 +9,7 @@ import { useLocation, Link } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useUserAuth } from "@/lib/user-auth";
+import { useToast } from "@/hooks/use-toast";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -102,20 +103,24 @@ export default function MePage() {
 
 function DashboardContent({ data, premiumRequests, premiumActive }: { data: DashboardPayload; premiumRequests: any[]; premiumActive: boolean }) {
   const [tab, setTab] = useState<string>("overview");
+  const { toast } = useToast();
 
   const newTxMutation = useMutation({
     mutationFn: async (body: any) => (await apiRequest("POST", "/api/me/financial/transactions", body)).json(),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["/api/me/financial/dashboard"] }),
+    onError: () => toast({ title: "הוספת התנועה נכשלה", variant: "destructive" }),
   });
   const ackAlert = useMutation({
     mutationFn: async (id: number) => (await apiRequest("POST", `/api/me/financial/alerts/${id}/ack`)).json(),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["/api/me/financial/dashboard"] }),
+    onError: () => toast({ title: "סימון ההתראה נכשל", variant: "destructive" }),
   });
   const requestPremium = useMutation({
     mutationFn: async (message: string) => (await apiRequest("POST", "/api/user/premium-requests", { message })).json(),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/user/premium-requests"] });
     },
+    onError: () => toast({ title: "שליחת הבקשה נכשלה", variant: "destructive" }),
   });
 
   return (
