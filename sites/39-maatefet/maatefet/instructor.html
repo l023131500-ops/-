@@ -87,10 +87,11 @@ table{width:100%;border-collapse:collapse;font-size:14px}
 th,td{text-align:start;padding:10px 8px;border-bottom:1px solid var(--line-2)}
 th{color:var(--muted);font-weight:400;font-size:12px;text-transform:uppercase;letter-spacing:.04em}
 .badge{display:inline-block;font-size:12px;padding:3px 9px;border-radius:20px;border:1px solid var(--line)}
-.badge.pending,.badge.scheduled{color:var(--gold-soft);border-color:var(--gold)}
+.badge.pending,.badge.scheduled,.badge.sent{color:var(--gold-soft);border-color:var(--gold)}
 .badge.used,.badge.confirmed{color:var(--emerald);border-color:rgba(20,184,138,.5)}
-.badge.revoked,.badge.expired,.badge.declined,.badge.cancelled{color:var(--muted)}
+.badge.revoked,.badge.expired,.badge.declined,.badge.cancelled,.badge.skipped{color:var(--muted)}
 .badge.completed{color:var(--ink-2)}
+.badge.flagged{color:var(--rose);border-color:rgba(224,87,78,.5)}
 .na{color:var(--muted)}
 .empty{color:var(--muted);font-size:14px;padding:20px 0}
 .codebox{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;background:var(--royal-2);
@@ -200,6 +201,7 @@ th{color:var(--muted);font-weight:400;font-size:12px;text-transform:uppercase;le
       <button class="tab" data-view="content">סטודיו תוכן</button>
       <button class="tab" data-view="profile">פרופיל ומיתוג</button>
       <button class="tab" data-view="forum">פורום מקצועי</button>
+      <button class="tab" data-view="followups">ליווי אחרי החתונה</button>
     </div>
 
     <section id="viewClients">
@@ -396,6 +398,44 @@ th{color:var(--muted);font-weight:400;font-size:12px;text-transform:uppercase;le
         <div style="margin-top:14px"><button class="btn btn-sm btn-quiet" id="forumThreadClose">סגירה</button></div>
       </div>
     </section>
+
+    <section id="viewFollowups" hidden>
+      <p class="sub">בדיקות-מעקב אחרי החתונה לזוגות שלכם — ה"הבידול" של מעטפת. הזוג רואה ומגיב מהאזור האישי שלו/ה; ההערה הפרטית והדגל כאן בלבד, לא מוצגים לזוג.</p>
+      <div class="card">
+        <h2>קביעת בדיקת-מעקב</h2>
+        <div class="row">
+          <div>
+            <label for="fuClient">זוג *</label>
+            <select id="fuClient"></select>
+          </div>
+          <div>
+            <label for="fuMilestone">אבן דרך *</label>
+            <select id="fuMilestone">
+              <option value="30_day">30 יום אחרי החתונה</option>
+              <option value="90_day">90 יום אחרי החתונה</option>
+              <option value="180_day">180 יום אחרי החתונה</option>
+              <option value="1_year">שנה אחרי החתונה</option>
+              <option value="custom">תאריך מותאם אישית</option>
+            </select>
+          </div>
+        </div>
+        <label for="fuDate">תאריך (ריק = חישוב אוטומטי מתאריך החתונה של הזוג; חובה עבור "מותאם אישית")</label>
+        <input id="fuDate" type="date" />
+        <label for="fuNote">הערה פרטית (למדריך/ה בלבד, לא מוצגת לזוג)</label>
+        <textarea id="fuNote"></textarea>
+        <div id="fuErr"></div>
+        <button class="btn" id="fuSubmit">קביעת בדיקת-מעקב</button>
+      </div>
+      <div class="card">
+        <h2>בדיקות המעקב שלי</h2>
+        <div id="followupTable"><div class="empty">טוען…</div></div>
+      </div>
+      <div class="card" id="fuAnswersCard" hidden>
+        <h2>תשובות הזוג</h2>
+        <div id="fuAnswersBody"></div>
+        <button class="btn btn-sm btn-quiet" id="fuAnswersClose">סגירה</button>
+      </div>
+    </section>
   </div>
 
   <div id="fatal" hidden></div>
@@ -433,6 +473,14 @@ function applySegmentTheme(segment) {
 }
 const INVITE_LABEL = { pending: 'ממתין', used: 'מומש', revoked: 'בוטל', expired: 'פג תוקף' };
 const APPT_LABEL = { scheduled: 'ממתין לאישור הזוג', confirmed: 'אושרה הגעה', declined: 'הזוג לא יגיע', cancelled: 'בוטלה', completed: 'התקיימה' };
+const MILESTONE_LABEL = { '30_day': '30 יום', '90_day': '90 יום', '180_day': '180 יום', '1_year': 'שנה', custom: 'מותאם אישית' };
+const FOLLOWUP_STATUS_LABEL = { pending: 'טרם נשלח', sent: 'נשלח לזוג', completed: 'הושלם', skipped: 'דולג' };
+const FOLLOWUP_QUESTIONS = [
+  { key: 'mood', label: 'איך אתם מרגישים בזוגיות מאז החתונה?', type: 'scale' },
+  { key: 'communication', label: 'עד כמה קל לכם לשוחח על קשיים ביניכם?', type: 'scale' },
+  { key: 'topic', label: 'האם יש נושא שהייתם רוצים לשוחח עליו עם המדריך/ה?', type: 'text' },
+  { key: 'notes', label: 'משהו נוסף שתרצו לשתף?', type: 'text' },
+];
 
 function show(id) {
   for (const el of [
@@ -506,7 +554,7 @@ function populateClientSelects() {
   const opts = CLIENTS.length
     ? CLIENTS.map((c) => '<option value="' + c.id + '">' + esc(c.full_name) + (c.partner_name ? ' ו' + esc(c.partner_name) : '') + '</option>').join('')
     : '<option value="">אין עדיין זוגות</option>';
-  for (const sel of [$('aClient'), $('rmClient')]) if (sel) sel.innerHTML = opts;
+  for (const sel of [$('aClient'), $('rmClient'), $('fuClient')]) if (sel) sel.innerHTML = opts;
 }
 
 function editClient(id) {
@@ -984,8 +1032,98 @@ async function openForumThread(postId) {
 
 $('forumThreadClose').addEventListener('click', () => { $('forumThreadCard').hidden = true; });
 
+/* ── dashboard: post-wedding follow-up (module 5, stage 3) ───────────────── */
+$('fuSubmit').addEventListener('click', async () => {
+  const clientId = $('fuClient').value;
+  const milestone = $('fuMilestone').value;
+  const dateVal = $('fuDate').value;
+  if (!clientId) { $('fuErr').innerHTML = '<div class="err">יש לבחור זוג.</div>'; return; }
+  if (milestone === 'custom' && !dateVal) { $('fuErr').innerHTML = '<div class="err">בדיקת-מעקב מותאמת-אישית דורשת תאריך.</div>'; return; }
+  $('fuSubmit').disabled = true;
+  try {
+    await rpc('maatefet_followup_upsert', {
+      p_client_id: clientId, p_milestone: milestone,
+      p_scheduled_at: dateVal || null,
+      p_instructor_note: $('fuNote').value.trim() || null,
+    });
+    $('fuDate').value = ''; $('fuNote').value = '';
+    $('fuErr').innerHTML = '';
+    renderFollowups();
+  } catch (e) {
+    $('fuErr').innerHTML = '<div class="err">' + esc(e.message) + '</div>';
+  } finally {
+    $('fuSubmit').disabled = false;
+  }
+});
+
+let FOLLOWUPS = [];
+
+function followupRow(f) {
+  const c = CLIENTS.find((x) => x.id === f.client_id);
+  const actions = [];
+  if (f.status === 'pending') actions.push('<button class="btn btn-sm btn-quiet" data-fu-sent="' + f.id + '">סימון כנשלח</button>');
+  if (f.status === 'pending' || f.status === 'sent') actions.push('<button class="btn btn-sm btn-quiet" data-fu-skip="' + f.id + '">סימון כדולג</button>');
+  if (f.status === 'completed') actions.push('<button class="btn btn-sm btn-quiet" data-fu-view="' + f.id + '">צפייה בתשובות</button>');
+  actions.push('<button class="btn btn-sm btn-quiet" data-fu-flag="' + f.id + '" data-flagged="' + f.flagged + '">' + (f.flagged ? 'הסרת דגל' : 'סימון לבדיקה נוספת') + '</button>');
+  return '<tr>' +
+    '<td>' + v(c ? c.full_name : null) + '</td>' +
+    '<td>' + (MILESTONE_LABEL[f.milestone] || v(f.milestone)) + '</td>' +
+    '<td>' + dt(f.scheduled_at) + '</td>' +
+    '<td><span class="badge ' + f.status + '">' + (FOLLOWUP_STATUS_LABEL[f.status] || f.status) + '</span>' +
+      (f.flagged ? ' <span class="badge flagged">לבדיקה</span>' : '') + '</td>' +
+    '<td>' + actions.join(' ') + '</td>' +
+    '</tr>';
+}
+
+async function renderFollowups() {
+  const el = $('followupTable');
+  el.innerHTML = '<div class="empty">טוען…</div>';
+  try {
+    FOLLOWUPS = await rpc('maatefet_followups_list');
+  } catch (e) {
+    el.innerHTML = '<div class="err">' + esc(e.message) + '</div>';
+    return;
+  }
+  if (!FOLLOWUPS.length) { el.innerHTML = '<div class="empty">עדיין לא נקבעו בדיקות-מעקב.</div>'; return; }
+  el.innerHTML = '<table><thead><tr><th>זוג</th><th>אבן דרך</th><th>תאריך</th><th>סטטוס</th><th></th></tr></thead><tbody>' +
+    FOLLOWUPS.map(followupRow).join('') + '</tbody></table>';
+  for (const b of el.querySelectorAll('[data-fu-sent]')) {
+    b.addEventListener('click', () => {
+      rpc('maatefet_followup_mark_sent', { p_id: b.dataset.fuSent }).then(renderFollowups).catch((e) => alert(e.message));
+    });
+  }
+  for (const b of el.querySelectorAll('[data-fu-skip]')) {
+    b.addEventListener('click', () => {
+      if (!confirm('לסמן את בדיקת-המעקב כדולגה?')) return;
+      rpc('maatefet_followup_mark_skipped', { p_id: b.dataset.fuSkip }).then(renderFollowups).catch((e) => alert(e.message));
+    });
+  }
+  for (const b of el.querySelectorAll('[data-fu-flag]')) {
+    b.addEventListener('click', () => {
+      const flagged = b.dataset.flagged === 'true';
+      rpc('maatefet_followup_flag', { p_id: b.dataset.fuFlag, p_flagged: !flagged }).then(renderFollowups).catch((e) => alert(e.message));
+    });
+  }
+  for (const b of el.querySelectorAll('[data-fu-view]')) b.addEventListener('click', () => viewFollowupAnswers(b.dataset.fuView));
+}
+
+function viewFollowupAnswers(id) {
+  const f = FOLLOWUPS.find((x) => x.id === id);
+  if (!f) return;
+  $('fuAnswersCard').hidden = false;
+  $('fuAnswersCard').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  const a = f.answers || {};
+  $('fuAnswersBody').innerHTML = FOLLOWUP_QUESTIONS.map((q) => {
+    const val = a[q.key];
+    const shown = q.type === 'scale' ? (val != null && val !== '' ? esc(val) + ' / 5' : NA) : v(val);
+    return '<p style="margin:0 0 14px"><strong>' + esc(q.label) + '</strong><br>' + shown + '</p>';
+  }).join('');
+}
+
+$('fuAnswersClose').addEventListener('click', () => { $('fuAnswersCard').hidden = true; });
+
 /* ── tabs ───────────────────────────────────────────────────────────────── */
-const VIEWS = { clients: 'viewClients', invites: 'viewInvites', calendar: 'viewCalendar', reminders: 'viewReminders', content: 'viewContent', profile: 'viewProfile', forum: 'viewForum' };
+const VIEWS = { clients: 'viewClients', invites: 'viewInvites', calendar: 'viewCalendar', reminders: 'viewReminders', content: 'viewContent', profile: 'viewProfile', forum: 'viewForum', followups: 'viewFollowups' };
 for (const tab of document.querySelectorAll('.tab')) {
   tab.addEventListener('click', () => {
     for (const t of document.querySelectorAll('.tab')) t.classList.toggle('active', t === tab);
@@ -996,6 +1134,7 @@ for (const tab of document.querySelectorAll('.tab')) {
     if (tab.dataset.view === 'content') { renderContent(); renderSharedContent(); }
     if (tab.dataset.view === 'profile') renderProfileForm();
     if (tab.dataset.view === 'forum') renderForum();
+    if (tab.dataset.view === 'followups') renderFollowups();
   });
 }
 

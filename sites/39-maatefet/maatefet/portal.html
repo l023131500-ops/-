@@ -61,9 +61,9 @@ h2{font-family:'Secular One',sans-serif;font-weight:400;font-size:18px;margin:0 
 .state p{margin:0;color:var(--ink-2);font-size:14px}
 
 label{display:block;font-size:13px;color:var(--ink-2);margin:0 0 6px}
-input{width:100%;background:var(--royal-2);border:1px solid var(--line-2);border-radius:3px;
+input,select{width:100%;background:var(--royal-2);border:1px solid var(--line-2);border-radius:3px;
   color:var(--ink);font-family:inherit;font-size:14px;padding:10px 12px;margin-bottom:14px}
-input:focus{outline:2px solid var(--gold);outline-offset:1px;border-color:var(--gold)}
+input:focus,select:focus{outline:2px solid var(--gold);outline-offset:1px;border-color:var(--gold)}
 .err{border:1px solid rgba(224,87,78,.5);background:rgba(224,87,78,.08);border-radius:4px;
   padding:10px 14px;color:var(--ink-2);font-size:13px;margin:10px 0}
 .loading{color:var(--muted);font-size:15px;text-align:center;padding:80px 0}
@@ -82,9 +82,9 @@ input:focus{outline:2px solid var(--gold);outline-offset:1px;border-color:var(--
 .appt .when{font-family:'Secular One',sans-serif;font-size:16px;margin:0 0 4px}
 .appt .meta{color:var(--ink-2);font-size:13px;margin:0 0 10px}
 .badge{display:inline-block;font-size:12px;padding:3px 9px;border-radius:20px;border:1px solid var(--line)}
-.badge.scheduled{color:var(--gold-soft);border-color:var(--gold)}
+.badge.scheduled,.badge.sent{color:var(--gold-soft);border-color:var(--gold)}
 .badge.confirmed{color:var(--emerald);border-color:rgba(20,184,138,.5)}
-.badge.declined,.badge.cancelled{color:var(--muted)}
+.badge.declined,.badge.cancelled,.badge.skipped{color:var(--muted)}
 .badge.completed{color:var(--ink-2)}
 .empty{color:var(--muted);font-size:14px;padding:14px 0}
 
@@ -177,6 +177,11 @@ input:focus{outline:2px solid var(--gold);outline-offset:1px;border-color:var(--
       <h2>תזכורות מהמדריך/ה</h2>
       <div id="reminderList"><div class="empty">טוען…</div></div>
     </div>
+
+    <div class="card">
+      <h2>מעקב אחרי החתונה</h2>
+      <div id="followupList"><div class="empty">טוען…</div></div>
+    </div>
   </div>
 
   <div id="fatal" hidden></div>
@@ -205,6 +210,13 @@ const dtm = (x) => (x ? new Date(x).toLocaleString('he-IL', { dateStyle: 'short'
 const SEGMENT_LABEL = { chatan: 'חתנים', kallah: 'כלות' };
 const SEGMENT_PORTAL_LABEL = { chatan: 'אזור אישי לחתן', kallah: 'אזור אישי לכלה' };
 const STATUS_LABEL = { scheduled: 'ממתין לאישור', confirmed: 'אושרה הגעה', declined: 'לא ניתן להגיע', cancelled: 'בוטלה', completed: 'התקיימה' };
+const MILESTONE_LABEL = { '30_day': '30 יום אחרי החתונה', '90_day': '90 יום אחרי החתונה', '180_day': '180 יום אחרי החתונה', '1_year': 'שנה אחרי החתונה', custom: 'בדיקת-מעקב' };
+const FOLLOWUP_QUESTIONS = [
+  { key: 'mood', label: 'איך אתם מרגישים בזוגיות מאז החתונה?', type: 'scale' },
+  { key: 'communication', label: 'עד כמה קל לכם לשוחח על קשיים ביניכם?', type: 'scale' },
+  { key: 'topic', label: 'האם יש נושא שהייתם רוצים לשוחח עליו עם המדריך/ה?', type: 'text' },
+  { key: 'notes', label: 'משהו נוסף שתרצו לשתף?', type: 'text' },
+];
 function applySegmentTheme(segment) {
   document.body.classList.toggle('seg-chatan', segment === 'chatan');
   const label = SEGMENT_PORTAL_LABEL[segment];
@@ -328,6 +340,71 @@ async function renderReminders() {
   el.innerHTML = rows.map(reminderRow).join('');
 }
 
+/* ── post-wedding follow-up (module 5, stage 3 — the platform's "הבידול") ── */
+function followupCard(f) {
+  const when = (MILESTONE_LABEL[f.milestone] || f.milestone) + ' · ' + dt(f.scheduled_at);
+  if (f.status === 'completed') {
+    const a = f.answers || {};
+    return '<div class="appt"><p class="when">' + when + '</p>' +
+      '<span class="badge completed">הושלם</span>' +
+      '<div style="margin-top:12px">' + FOLLOWUP_QUESTIONS.map((q) => {
+        const val = a[q.key];
+        const shown = q.type === 'scale' ? (val != null && val !== '' ? esc(val) + ' / 5' : NA) : v(val);
+        return '<p class="meta" style="margin:0 0 10px"><strong style="color:var(--ink)">' + esc(q.label) + '</strong><br>' + shown + '</p>';
+      }).join('') + '</div></div>';
+  }
+  if (f.status === 'skipped') {
+    return '<div class="appt"><p class="when">' + when + '</p><span class="badge skipped">דולג</span></div>';
+  }
+  return '<div class="appt" data-fu="' + f.id + '">' +
+    '<p class="when">' + when + '</p>' +
+    '<span class="badge scheduled">שאלון קצר ממתין למילוי</span>' +
+    '<div style="margin-top:12px">' +
+      FOLLOWUP_QUESTIONS.map((q) => q.type === 'scale'
+        ? '<label>' + esc(q.label) + '</label><select data-fu-field="' + q.key + '"><option value="">בחרו…</option>' +
+            [1, 2, 3, 4, 5].map((n) => '<option value="' + n + '">' + n + '</option>').join('') + '</select>'
+        : '<label>' + esc(q.label) + '</label><input type="text" data-fu-field="' + q.key + '" />'
+      ).join('') +
+      '<div class="err" data-fu-err></div>' +
+      '<button class="btn" data-fu-submit="' + f.id + '">שליחת תשובות</button>' +
+    '</div></div>';
+}
+
+async function renderFollowups() {
+  const el = $('followupList');
+  el.innerHTML = '<div class="empty">טוען…</div>';
+  let rows;
+  try {
+    rows = await rpc('maatefet_followup_my_list');
+  } catch (e) {
+    el.innerHTML = '<div class="err">' + esc(e.message) + '</div>';
+    return;
+  }
+  if (!rows.length) { el.innerHTML = '<div class="empty">אין כרגע בדיקות-מעקב.</div>'; return; }
+  el.innerHTML = rows.map(followupCard).join('');
+  for (const b of el.querySelectorAll('[data-fu-submit]')) {
+    b.addEventListener('click', async () => {
+      const card = b.closest('[data-fu]');
+      const errEl = card.querySelector('[data-fu-err]');
+      errEl.innerHTML = '';
+      const answers = {};
+      for (const field of card.querySelectorAll('[data-fu-field]')) {
+        const val = field.value.trim();
+        if (val) answers[field.dataset.fuField] = field.tagName === 'SELECT' ? Number(val) : val;
+      }
+      if (!Object.keys(answers).length) { errEl.innerHTML = '<div class="err">יש למלא לפחות שדה אחד.</div>'; return; }
+      b.disabled = true;
+      try {
+        await rpc('maatefet_followup_respond', { p_id: b.dataset.fuSubmit, p_answers: answers });
+        renderFollowups();
+      } catch (e) {
+        errEl.innerHTML = '<div class="err">' + esc(e.message) + '</div>';
+        b.disabled = false;
+      }
+    });
+  }
+}
+
 /* ── 2FA gate (required for the couple's own personal area) ──────────────── */
 let MFA_FACTOR_ID = null;
 
@@ -447,6 +524,7 @@ async function boot() {
   renderAppointments();
   renderReminders();
   renderInstructorBrand();
+  renderFollowups();
 }
 
 boot();
