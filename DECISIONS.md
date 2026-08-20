@@ -5067,3 +5067,55 @@
     (רק 21 ו-24 נבדקו עד כה כי אלה מה שסוכן ה-Explore סימן — כדאי
     לוודא שהסריקה הייתה אכן ממצה על שאר 10), או מצב TEST/סנדבוקס
     אמיתי לתשלומים (נבדק חלקית הסבב הזה, לא נמצא צעד בטוח לנקוט).
+
+## 20/08/2026 — סבב 312 (loop B)
+
+312. **השלמתי את ה"הבא בתור" של סבב 311: סרקתי את שאר 10 האפליקציות**
+    **ב-17-31 (מלבד 21/24 שכבר תוקנו) לאותה משפחת באג — קישור פנימי**
+    **גולמי שעוקף base path/basename.** קראתי README.md/CONNECTIONS.md,
+    בדקתי `core.run_progress` (הצעד האחרון: notfound-basename-link-0820,
+    קומיט `47744407`, כבר ה-HEAD) ו-`core.issues` פתוחים/owner=agent
+    בהיקף 17-31 — אין שינוי מאז סבב 311 (#5/#62/#115/#242 עדיין חסומים
+    באותו אופן מתועד). הרצתי סוכן Explore על כל 12 האפליקציות (14 בהיקף
+    פחות שתי הקודמות שכבר תוקנו) לסווג כל אחת: יש לה base
+    path/basename מוגדר? יש קישור `<a href="/">` גולמי שעוקף אותו?
+    **שלוש קטגוריות נמצאו, בדקתי כל אחת בעצמי לפני שסמכתי על הדוח:**
+    - `19-igud-shiurim-portal`, `20-igud-portal` — שרתי Express גולמיים
+      בלי SPA routing, אין basePath שיש לעקוף. `23-haorech-torani` —
+      HTML סטטי בלי `package.json`. `25-mor1-main-site` — `app.json`
+      בלבד. `29-bkalot-design` — טוקנים/CSS בלבד. חמישתן לא רלוונטיות
+      לעדשה הזו במבנה.
+    - `17-chizukim-transcribe`, `26-modaot-studio`, `27-bkalut-price`,
+      `28-kupot-health-funds` — Vite עם ניתוב מבוסס hash (`wouter`),
+      אין `basename`/`base` שדורש עקיפה.
+    - `18-torah-editor-mvp` (Next `basePath`) ו-`22-get-your-rights`
+      (React Router `basename={import.meta.env.BASE_URL...}`) — נבדקו
+      שורה-שורה, כל ניווט פנימי כבר עובר דרך `Link`/`BASE_URL`; אין
+      עוגן גולמי שנשאר.
+    **שני באגים אמיתיים נמצאו ותוקנו — לא בעמוד 404 הפעם אלא בעמוד**
+    **שגיאת-SSR הגלובלי, אותה תבנית משפחת-באג בדיוק בשתי אפליקציות**
+    **תאומות `TanStack Start`:** `30-zchuyotpro-crm/src/lib/error-page.ts:25`
+    ו-`31-hebrew-bridge-crm/src/lib/error-page.ts:25` — שתיהן מגדירות
+    `vite: { base: "/crm/" }` / `"/gesher/"` ב-`vite.config.ts`,
+    ו-`renderErrorPage()` (מוחזר מ-`server.ts`/`start.ts` בכל 500 קטסטרופלי
+    של ה-SSR, גם כשהראוטר עצמו קרס) הכיל `<a class="secondary" href="/">Go
+    home</a>` גולמי — בדיוק אותה עקיפת base path כמו סבב 310/311, רק
+    שהפעם המסך המושפע הוא דף שגיאה גלובלי ולא 404 רגיל. **אימתתי לפני**
+    **נגיעה** ש-`import.meta.env.BASE_URL` הוא התיקון הנכון ולא ניחוש:
+    שתי האפליקציות כבר משתמשות בו בדיוק לאותה מטרה במקום אחר
+    (`routes/auth.tsx` בשתיהן, ו-`routes/_authenticated/admin/
+    integrations.tsx` ב-31) — כלומר זה מקור אמת קיים בקוד, לא ערך חדש
+    שהמצאתי; ו-Vite מחליף `import.meta.env.BASE_URL` בזמן build גם
+    בבאנדל השרת (nitro/vite בונה גם את `server.ts`, ראו הערת
+    `tanstackStart.server.entry` ב-`vite.config.ts`), כך שההחלפה
+    הסטטית תקפה גם כאן ולא רק בצד לקוח. התיקון: `href="/"` →
+    ``href="${import.meta.env.BASE_URL}"`` בתוך אותו template literal
+    הקיים (הפונקציה כבר משתמשת בבק-טיקים), שינוי שורה אחת בכל קובץ,
+    אפס שינוי ל-CSS/מבנה/טקסט. אין build/dev-server בסבב הזה לפי הנחיית
+    ההרצה — האימות היה קריאת קוד ישירה מול התקדימים הקיימים
+    (`auth.tsx` בשתי האפליקציות) ומול הגדרת ה-`base` ב-`vite.config.ts`.
+    ענף חדש `fix/b-crm-gesher-errorpage-basepath-0820`. **הבא בתור:**
+    עדשת ה-basePath-bypass נראית ממוצה כעת על כל 14 האפליקציות בהיקף
+    (404, login, error-page — שלושת הסוגים שנבדקו); לפתוח כיוון חדש
+    (תחום המחירון/מיתוג 'עולם הסטארטאפים', שעדיין לא נבדק קוד-רמה
+    בלולאה הזו), או עדשת נגישות/regression אחרת שטרם נבדקה.
