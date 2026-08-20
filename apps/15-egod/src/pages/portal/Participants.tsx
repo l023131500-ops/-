@@ -66,18 +66,18 @@ const Participants = () => {
             <DialogContent>
               <DialogHeader><DialogTitle>הוסף משתתף חדש</DialogTitle></DialogHeader>
               <div className="space-y-4 mt-4">
-                <div><label className="text-sm font-medium mb-1 block">שיעור *</label>
+                <div><label htmlFor="participant-lesson" className="text-sm font-medium mb-1 block">שיעור *</label>
                   <Select value={newParticipant.lesson_id} onValueChange={(v) => setNewParticipant(p => ({ ...p, lesson_id: v }))}>
-                    <SelectTrigger><SelectValue placeholder="בחר שיעור" /></SelectTrigger>
+                    <SelectTrigger id="participant-lesson"><SelectValue placeholder="בחר שיעור" /></SelectTrigger>
                     <SelectContent>{lessons.map(l => <SelectItem key={l.id} value={l.id}>{l.subject}</SelectItem>)}</SelectContent>
                   </Select>
                 </div>
-                <div><label className="text-sm font-medium mb-1 block">שם מלא *</label>
-                  <Input value={newParticipant.full_name} onChange={(e) => setNewParticipant(p => ({ ...p, full_name: e.target.value }))} placeholder="שם מלא" /></div>
-                <div><label className="text-sm font-medium mb-1 block">טלפון</label>
-                  <Input value={newParticipant.phone} onChange={(e) => setNewParticipant(p => ({ ...p, phone: e.target.value }))} placeholder="050-0000000" /></div>
-                <div><label className="text-sm font-medium mb-1 block">מייל</label>
-                  <Input value={newParticipant.email} onChange={(e) => setNewParticipant(p => ({ ...p, email: e.target.value }))} placeholder="email@example.com" dir="ltr" /></div>
+                <div><label htmlFor="participant-fullname" className="text-sm font-medium mb-1 block">שם מלא *</label>
+                  <Input id="participant-fullname" value={newParticipant.full_name} onChange={(e) => setNewParticipant(p => ({ ...p, full_name: e.target.value }))} placeholder="שם מלא" /></div>
+                <div><label htmlFor="participant-phone" className="text-sm font-medium mb-1 block">טלפון</label>
+                  <Input id="participant-phone" value={newParticipant.phone} onChange={(e) => setNewParticipant(p => ({ ...p, phone: e.target.value }))} placeholder="050-0000000" /></div>
+                <div><label htmlFor="participant-email" className="text-sm font-medium mb-1 block">מייל</label>
+                  <Input id="participant-email" value={newParticipant.email} onChange={(e) => setNewParticipant(p => ({ ...p, email: e.target.value }))} placeholder="email@example.com" dir="ltr" /></div>
                 <Button onClick={handleAdd} className="w-full bg-secondary text-secondary-foreground hover:bg-gold-dark">שמור</Button>
               </div>
             </DialogContent>

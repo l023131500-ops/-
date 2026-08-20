@@ -165,15 +165,15 @@ const AdminForums = () => {
           <DialogContent dir="rtl" className="bg-gradient-to-br from-card to-secondary/5 border-2 border-secondary/30">
             <DialogHeader><DialogTitle className="font-heading text-2xl">פורום חדש</DialogTitle></DialogHeader>
             <div className="space-y-3">
-              <div><label className="text-sm font-medium mb-1 block">שם הפורום *</label>
-                <Input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} placeholder="לדוגמא: שאלות בהלכה" />
+              <div><label htmlFor="forum-name" className="text-sm font-medium mb-1 block">שם הפורום *</label>
+                <Input id="forum-name" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} placeholder="לדוגמא: שאלות בהלכה" />
               </div>
-              <div><label className="text-sm font-medium mb-1 block">תיאור</label>
-                <Textarea rows={2} value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} />
+              <div><label htmlFor="forum-description" className="text-sm font-medium mb-1 block">תיאור</label>
+                <Textarea id="forum-description" rows={2} value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} />
               </div>
               <div className="grid grid-cols-2 gap-3">
-                <div><label className="text-sm font-medium mb-1 block">סדר תצוגה</label>
-                  <Input type="number" inputMode="numeric" value={form.sort_order} onChange={e => setForm(f => ({ ...f, sort_order: +e.target.value }))} />
+                <div><label htmlFor="forum-sort-order" className="text-sm font-medium mb-1 block">סדר תצוגה</label>
+                  <Input id="forum-sort-order" type="number" inputMode="numeric" value={form.sort_order} onChange={e => setForm(f => ({ ...f, sort_order: +e.target.value }))} />
                 </div>
                 <label className="flex items-center justify-between bg-muted/30 rounded-lg p-2 mt-6">
                   <span className="text-sm">פורום מוגבל</span>
