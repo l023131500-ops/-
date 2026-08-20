@@ -180,7 +180,8 @@ const PortalSettingsTab = ({ portalId, portalType, portalData, onUpdate }: Porta
     try {
       const ext = file.name.split(".").pop();
       const path = `backgrounds/${portalType}-${portalId}.${ext}`;
-      await supabase.storage.from("portal-assets").upload(path, file, { upsert: true });
+      const { error: uploadError } = await supabase.storage.from("portal-assets").upload(path, file, { upsert: true });
+      if (uploadError) throw uploadError;
       const { data: urlData } = supabase.storage.from("portal-assets").getPublicUrl(path);
       const { error } = await supabase.from(tableName).update({ custom_background_url: urlData.publicUrl, background_preset: "" }).eq("id", portalId);
       if (error) throw error;
@@ -196,7 +197,8 @@ const PortalSettingsTab = ({ portalId, portalType, portalData, onUpdate }: Porta
     try {
       const ext = file.name.split(".").pop();
       const path = `rabbi-photos/${portalId}.${ext}`;
-      await supabase.storage.from("portal-assets").upload(path, file, { upsert: true });
+      const { error: uploadError } = await supabase.storage.from("portal-assets").upload(path, file, { upsert: true });
+      if (uploadError) throw uploadError;
       const { data: urlData } = supabase.storage.from("portal-assets").getPublicUrl(path);
       const { error } = await supabase.from("rabbi_portals").update({ rabbi_photo_url: urlData.publicUrl }).eq("id", portalId);
       if (error) throw error;
@@ -211,7 +213,8 @@ const PortalSettingsTab = ({ portalId, portalType, portalData, onUpdate }: Porta
     try {
       const ext = file.name.split(".").pop();
       const path = `activity/${portalType}-${portalId}-${Date.now()}.${ext}`;
-      await supabase.storage.from("portal-assets").upload(path, file);
+      const { error: uploadError } = await supabase.storage.from("portal-assets").upload(path, file);
+      if (uploadError) throw uploadError;
       const { data: urlData } = supabase.storage.from("portal-assets").getPublicUrl(path);
       const { data, error } = await supabase.from("portal_photos").insert({
         portal_type: portalType, portal_id: portalId, image_url: urlData.publicUrl, caption: newCaption,
