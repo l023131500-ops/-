@@ -109,36 +109,36 @@ const TeacherForm = ({ data, onChange }: TeacherFormProps) => {
             <div className="space-y-5">
               <h3 className="font-heading text-xl font-bold text-foreground mb-6">פרטים אישיים</h3>
               <div>
-                <label className="text-sm font-medium text-foreground mb-1.5 block">שם מלא *</label>
-                <Input value={data.fullName || ""} onChange={(e) => update("fullName", e.target.value)} placeholder="הרב ישראל ישראלי" />
+                <label htmlFor="teacherform-fullname" className="text-sm font-medium text-foreground mb-1.5 block">שם מלא *</label>
+                <Input id="teacherform-fullname" value={data.fullName || ""} onChange={(e) => update("fullName", e.target.value)} placeholder="הרב ישראל ישראלי" />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm font-medium text-foreground mb-1.5 block">טלפון *</label>
-                  <Input value={data.phone || ""} onChange={(e) => update("phone", e.target.value)} placeholder="050-0000000" />
+                  <label htmlFor="teacherform-phone" className="text-sm font-medium text-foreground mb-1.5 block">טלפון *</label>
+                  <Input id="teacherform-phone" value={data.phone || ""} onChange={(e) => update("phone", e.target.value)} placeholder="050-0000000" />
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-foreground mb-1.5 block">מייל</label>
-                  <Input value={data.email || ""} onChange={(e) => update("email", e.target.value)} placeholder="email@example.com" type="email" inputMode="email" autoComplete="email" />
+                  <label htmlFor="teacherform-email" className="text-sm font-medium text-foreground mb-1.5 block">מייל</label>
+                  <Input id="teacherform-email" value={data.email || ""} onChange={(e) => update("email", e.target.value)} placeholder="email@example.com" type="email" inputMode="email" autoComplete="email" />
                 </div>
               </div>
               <div className="grid grid-cols-3 gap-4">
                 <div>
-                  <label className="text-sm font-medium text-foreground mb-1.5 block">עיר *</label>
-                  <Input value={data.city || ""} onChange={(e) => update("city", e.target.value)} placeholder="ירושלים" />
+                  <label htmlFor="teacherform-city" className="text-sm font-medium text-foreground mb-1.5 block">עיר *</label>
+                  <Input id="teacherform-city" value={data.city || ""} onChange={(e) => update("city", e.target.value)} placeholder="ירושלים" />
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-foreground mb-1.5 block">שכונה</label>
-                  <Input value={data.neighborhood || ""} onChange={(e) => update("neighborhood", e.target.value)} placeholder="רמות" />
+                  <label htmlFor="teacherform-neighborhood" className="text-sm font-medium text-foreground mb-1.5 block">שכונה</label>
+                  <Input id="teacherform-neighborhood" value={data.neighborhood || ""} onChange={(e) => update("neighborhood", e.target.value)} placeholder="רמות" />
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-foreground mb-1.5 block">רחוב</label>
-                  <Input value={data.street || ""} onChange={(e) => update("street", e.target.value)} placeholder="הרב הרצוג 5" />
+                  <label htmlFor="teacherform-street" className="text-sm font-medium text-foreground mb-1.5 block">רחוב</label>
+                  <Input id="teacherform-street" value={data.street || ""} onChange={(e) => update("street", e.target.value)} placeholder="הרב הרצוג 5" />
                 </div>
               </div>
               <div>
-                <label className="text-sm font-medium text-foreground mb-1.5 block">אתר אינטרנט / רשת חברתית</label>
-                <Input value={data.website || ""} onChange={(e) => update("website", e.target.value)} placeholder="https://..." dir="ltr" />
+                <label htmlFor="teacherform-website" className="text-sm font-medium text-foreground mb-1.5 block">אתר אינטרנט / רשת חברתית</label>
+                <Input id="teacherform-website" value={data.website || ""} onChange={(e) => update("website", e.target.value)} placeholder="https://..." dir="ltr" />
               </div>
             </div>
           )}
@@ -148,10 +148,10 @@ const TeacherForm = ({ data, onChange }: TeacherFormProps) => {
               <MultiSelect label="מה הרקע שלך? (ניתן לסמן כמה)" options={backgroundOptions} selected={data.background || []} onToggle={(v) => toggleMulti("background", v)} />
               <MultiSelect label="באילו נושאים אתה מעביר שיעורים? (ניתן לסמן כמה)" options={subjectOptions} selected={data.subjects || []} onToggle={(v) => toggleMulti("subjects", v)} />
               <div>
-                <label className="text-sm font-semibold text-foreground mb-2 block flex items-center gap-2">
+                <label htmlFor="teacherform-other-subject" className="text-sm font-semibold text-foreground mb-2 block flex items-center gap-2">
                   <span className="w-1 h-4 rounded-full bg-gradient-gold" />נושא נוסף (כתיבה חופשית)
                 </label>
-                <Input value={data.otherSubject || ""} onChange={(e) => update("otherSubject", e.target.value)} placeholder="למשל: מסילת ישרים, פרקי אבות, ספר מסוים..." />
+                <Input id="teacherform-other-subject" value={data.otherSubject || ""} onChange={(e) => update("otherSubject", e.target.value)} placeholder="למשל: מסילת ישרים, פרקי אבות, ספר מסוים..." />
               </div>
             </div>
           )}
@@ -179,8 +179,8 @@ const TeacherForm = ({ data, onChange }: TeacherFormProps) => {
               <RadioSelect label="ותק בהוראה" options={EXPERIENCE_OPTIONS} selected={data.experience || ""} onSelect={(v) => update("experience", v)} />
               <MultiSelect label="באילו שפות אתה מעביר שיעורים? (ניתן לסמן כמה)" options={LANGUAGES} selected={data.languages || []} onToggle={(v) => toggleMulti("languages", v)} />
               <div>
-                <label className="text-sm font-medium text-foreground mb-1.5 block">תיאור קצר עליך (אודות)</label>
-                <Textarea value={data.bio || ""} onChange={(e) => update("bio", e.target.value)} placeholder="כמה מילים על עצמך, על הניסיון שלך ועל סגנון השיעורים..." rows={4} />
+                <label htmlFor="teacherform-bio" className="text-sm font-medium text-foreground mb-1.5 block">תיאור קצר עליך (אודות)</label>
+                <Textarea id="teacherform-bio" value={data.bio || ""} onChange={(e) => update("bio", e.target.value)} placeholder="כמה מילים על עצמך, על הניסיון שלך ועל סגנון השיעורים..." rows={4} />
               </div>
             </div>
           )}
@@ -192,8 +192,8 @@ const TeacherForm = ({ data, onChange }: TeacherFormProps) => {
               <MultiSelect label="שעות מועדפות (ניתן לסמן כמה)" options={hourOptions} selected={data.availableHours || []} onToggle={(v) => toggleMulti("availableHours", v)} />
               <RadioSelect label="ציפיות לגבי תשלום" options={paymentOptions} selected={data.payment || ""} onSelect={(v) => update("payment", v)} />
               <div>
-                <label className="text-sm font-medium text-foreground mb-1.5 block">הערות נוספות</label>
-                <Textarea value={data.notes || ""} onChange={(e) => update("notes", e.target.value)} placeholder="כל מידע נוסף שיכול לעזור..." rows={3} />
+                <label htmlFor="teacherform-notes" className="text-sm font-medium text-foreground mb-1.5 block">הערות נוספות</label>
+                <Textarea id="teacherform-notes" value={data.notes || ""} onChange={(e) => update("notes", e.target.value)} placeholder="כל מידע נוסף שיכול לעזור..." rows={3} />
               </div>
             </div>
           )}

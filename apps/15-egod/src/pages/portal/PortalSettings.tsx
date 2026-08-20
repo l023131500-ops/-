@@ -145,27 +145,27 @@ const PortalSettings = () => {
           <TabsContent value="profile" className="space-y-4 mt-4">
             <div className="bg-card rounded-2xl p-6 border border-border space-y-4">
               <div className="grid grid-cols-2 gap-3">
-                <div><label className="text-sm font-medium mb-1 block">שם מלא</label>
-                  <Input value={profile.full_name} onChange={(e) => update("full_name", e.target.value)} /></div>
-                <div><label className="text-sm font-medium mb-1 block">טלפון</label>
-                  <Input value={profile.phone} onChange={(e) => update("phone", e.target.value)} /></div>
-                <div><label className="text-sm font-medium mb-1 block">מייל</label>
-                  <Input value={profile.email} onChange={(e) => update("email", e.target.value)} /></div>
-                <div><label className="text-sm font-medium mb-1 block">שפת פורטל</label>
-                  <select className="w-full h-10 rounded-md border border-input bg-background px-3 text-sm"
+                <div><label htmlFor="portalsettings-fullname" className="text-sm font-medium mb-1 block">שם מלא</label>
+                  <Input id="portalsettings-fullname" value={profile.full_name} onChange={(e) => update("full_name", e.target.value)} /></div>
+                <div><label htmlFor="portalsettings-phone" className="text-sm font-medium mb-1 block">טלפון</label>
+                  <Input id="portalsettings-phone" value={profile.phone} onChange={(e) => update("phone", e.target.value)} /></div>
+                <div><label htmlFor="portalsettings-email" className="text-sm font-medium mb-1 block">מייל</label>
+                  <Input id="portalsettings-email" value={profile.email} onChange={(e) => update("email", e.target.value)} /></div>
+                <div><label htmlFor="portalsettings-language" className="text-sm font-medium mb-1 block">שפת פורטל</label>
+                  <select id="portalsettings-language" className="w-full h-10 rounded-md border border-input bg-background px-3 text-sm"
                     value={profile.portal_language} onChange={(e) => update("portal_language", e.target.value)}>
                     {PORTAL_LANGUAGES.map(l => <option key={l} value={l}>{l}</option>)}
                   </select>
                 </div>
-                <div><label className="text-sm font-medium mb-1 block">עיר</label>
-                  <Input value={profile.city} onChange={(e) => update("city", e.target.value)} /></div>
-                <div><label className="text-sm font-medium mb-1 block">שכונה</label>
-                  <Input value={profile.neighborhood} onChange={(e) => update("neighborhood", e.target.value)} /></div>
+                <div><label htmlFor="portalsettings-city" className="text-sm font-medium mb-1 block">עיר</label>
+                  <Input id="portalsettings-city" value={profile.city} onChange={(e) => update("city", e.target.value)} /></div>
+                <div><label htmlFor="portalsettings-neighborhood" className="text-sm font-medium mb-1 block">שכונה</label>
+                  <Input id="portalsettings-neighborhood" value={profile.neighborhood} onChange={(e) => update("neighborhood", e.target.value)} /></div>
               </div>
-              <div><label className="text-sm font-medium mb-1 block">תיאור קצר (יופיע בתפריט)</label>
-                <Input value={profile.bio} onChange={(e) => update("bio", e.target.value)} /></div>
-              <div><label className="text-sm font-medium mb-1 block">אודות (טקסט מלא לדף הציבורי)</label>
-                <Textarea value={profile.about_text} onChange={(e) => update("about_text", e.target.value)} rows={5} /></div>
+              <div><label htmlFor="portalsettings-bio" className="text-sm font-medium mb-1 block">תיאור קצר (יופיע בתפריט)</label>
+                <Input id="portalsettings-bio" value={profile.bio} onChange={(e) => update("bio", e.target.value)} /></div>
+              <div><label htmlFor="portalsettings-about" className="text-sm font-medium mb-1 block">אודות (טקסט מלא לדף הציבורי)</label>
+                <Textarea id="portalsettings-about" value={profile.about_text} onChange={(e) => update("about_text", e.target.value)} rows={5} /></div>
             </div>
           </TabsContent>
 
@@ -174,8 +174,8 @@ const PortalSettings = () => {
             <div className="bg-card rounded-2xl p-6 border border-border space-y-6">
               {/* Photo + Logo */}
               <div className="grid grid-cols-2 gap-4">
-                <ImageUploader label="תמונת הרב" url={profile.rabbi_photo_url} onChange={handleFileChange("rabbi_photo_url")} onClear={() => update("rabbi_photo_url", "")} />
-                <ImageUploader label="לוגו" url={profile.logo_url} onChange={handleFileChange("logo_url")} onClear={() => update("logo_url", "")} />
+                <ImageUploader id="portalsettings-rabbi-photo" label="תמונת הרב" url={profile.rabbi_photo_url} onChange={handleFileChange("rabbi_photo_url")} onClear={() => update("rabbi_photo_url", "")} />
+                <ImageUploader id="portalsettings-logo" label="לוגו" url={profile.logo_url} onChange={handleFileChange("logo_url")} onClear={() => update("logo_url", "")} />
               </div>
 
               {/* Background presets */}
@@ -193,7 +193,7 @@ const PortalSettings = () => {
 
               {/* Custom background */}
               <div>
-                <ImageUploader label="או העלה רקע מותאם אישית" url={profile.custom_background_url} onChange={handleFileChange("custom_background_url")} onClear={() => update("custom_background_url", "")} />
+                <ImageUploader id="portalsettings-custom-bg" label="או העלה רקע מותאם אישית" url={profile.custom_background_url} onChange={handleFileChange("custom_background_url")} onClear={() => update("custom_background_url", "")} />
               </div>
 
               {/* Font color */}
@@ -215,17 +215,17 @@ const PortalSettings = () => {
           <TabsContent value="contact" className="space-y-4 mt-4">
             <div className="bg-card rounded-2xl p-6 border border-border space-y-4">
               <div className="grid grid-cols-2 gap-3">
-                <div><label className="text-sm font-medium mb-1 block">וואטסאפ</label>
-                  <Input value={profile.contact_whatsapp} onChange={(e) => update("contact_whatsapp", e.target.value)} placeholder="972501234567" /></div>
-                <div><label className="text-sm font-medium mb-1 block">פקס</label>
-                  <Input value={profile.contact_fax} onChange={(e) => update("contact_fax", e.target.value)} /></div>
+                <div><label htmlFor="portalsettings-whatsapp" className="text-sm font-medium mb-1 block">וואטסאפ</label>
+                  <Input id="portalsettings-whatsapp" value={profile.contact_whatsapp} onChange={(e) => update("contact_whatsapp", e.target.value)} placeholder="972501234567" /></div>
+                <div><label htmlFor="portalsettings-fax" className="text-sm font-medium mb-1 block">פקס</label>
+                  <Input id="portalsettings-fax" value={profile.contact_fax} onChange={(e) => update("contact_fax", e.target.value)} /></div>
               </div>
-              <div><label className="text-sm font-medium mb-1 block">כתובת למשלוח דואר</label>
-                <Input value={profile.contact_mailing_address} onChange={(e) => update("contact_mailing_address", e.target.value)} /></div>
-              <div><label className="text-sm font-medium mb-1 block">קישור לתרומה</label>
-                <Input value={profile.donation_link} onChange={(e) => update("donation_link", e.target.value)} placeholder="https://..." /></div>
-              <div><label className="text-sm font-medium mb-1 block">קישור להורדת שיעורים</label>
-                <Input value={profile.lesson_download_url} onChange={(e) => update("lesson_download_url", e.target.value)} placeholder="https://..." /></div>
+              <div><label htmlFor="portalsettings-mailing-address" className="text-sm font-medium mb-1 block">כתובת למשלוח דואר</label>
+                <Input id="portalsettings-mailing-address" value={profile.contact_mailing_address} onChange={(e) => update("contact_mailing_address", e.target.value)} /></div>
+              <div><label htmlFor="portalsettings-donation-link" className="text-sm font-medium mb-1 block">קישור לתרומה</label>
+                <Input id="portalsettings-donation-link" value={profile.donation_link} onChange={(e) => update("donation_link", e.target.value)} placeholder="https://..." /></div>
+              <div><label htmlFor="portalsettings-lesson-download" className="text-sm font-medium mb-1 block">קישור להורדת שיעורים</label>
+                <Input id="portalsettings-lesson-download" value={profile.lesson_download_url} onChange={(e) => update("lesson_download_url", e.target.value)} placeholder="https://..." /></div>
             </div>
           </TabsContent>
 
@@ -268,19 +268,19 @@ const PortalSettings = () => {
   );
 };
 
-const ImageUploader = ({ label, url, onChange, onClear }: {
-  label: string; url: string; onChange: (e: React.ChangeEvent<HTMLInputElement>) => void; onClear: () => void;
+const ImageUploader = ({ id, label, url, onChange, onClear }: {
+  id: string; label: string; url: string; onChange: (e: React.ChangeEvent<HTMLInputElement>) => void; onClear: () => void;
 }) => {
   const ref = useRef<HTMLInputElement>(null);
   return (
     <div>
-      <label className="text-sm font-medium mb-2 block">{label}</label>
+      <label htmlFor={id} className="text-sm font-medium mb-2 block">{label}</label>
       <div className="flex items-center gap-3">
         <div className="w-20 h-20 rounded-lg border border-border bg-muted flex items-center justify-center overflow-hidden">
           {url ? <img src={url} alt="" className="w-full h-full object-cover" /> : <ImageIcon className="w-6 h-6 text-muted-foreground" />}
         </div>
         <div className="flex flex-col gap-1">
-          <input type="file" accept="image/*" hidden ref={ref} onChange={onChange} />
+          <input id={id} type="file" accept="image/*" hidden ref={ref} onChange={onChange} />
           <Button type="button" size="sm" variant="outline" onClick={() => ref.current?.click()}>
             <Upload className="w-3.5 h-3.5 ml-1" />העלה
           </Button>
