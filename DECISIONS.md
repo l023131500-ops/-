@@ -6122,3 +6122,45 @@
      `MultiSelect.tsx`/`RadioSelect.tsx` (תוויות-קבוצה בלי
      `<input>` אמיתי) ו-`OrgPortal.tsx` (חלקית מקושר כבר) עדיין
      ממתינים להחלטה אם לדלג.
+
+## 20/08/2026 — סבב 107 (loop A)
+
+574. **בדקתי מחדש `git log`/`core.run_progress` לפני שהתחלתי.** סבב
+     106 סגור (commit `c038390f`/`c50124a6`, HEAD תואם). המשכתי
+     לפי התור שקבע #573: `PrayerTimesTab.tsx`.
+575. **התיקון בסבב הזה:** `apps/01-torah-platform/src/components/
+     portal/PrayerTimesTab.tsx` — טאב ניהול "בתי כנסת וזמני
+     תפילות" בפורטל הארגון (בתחום ה-scope "פאנל ניהול"). קריאה
+     מלאה של הקובץ גילתה **6** זוגות תווית/בקרה לא-מקושרים, לא 3
+     כפי שהוערך בסבב 104 — כולם בתוך רכיב משותף `SynagogueForm`
+     (שם בית הכנסת, עיר, שכונה, כתובת, טלפון, הערות). שני שדות
+     ה-`<select>` הגולמיים בטופס "הוסף זמן תפילה" (סוג תפילה, יום
+     בשבוע) כבר נושאים `aria-label` מפורש מבסבב קודם — לא נגעתי
+     בהם. שמתי לב ש-`SynagogueForm` מוצג פוטנציאלית **פעמיים בו-
+     זמנית** (טופס "הוסף בית כנסת חדש" + טופס עריכה בתוך `.map()`
+     על בית כנסת ספציפי — `addingSynagogue` ו-`editingSynagogue`
+     הם state נפרדים ובלתי-תלויים, כך ששניהם יכולים להיות פעילים
+     יחד). כדי למנוע `id` כפול ב-DOM (שהיה פוגע בדיוק ה-
+     `htmlFor`/נגישות בדיוק בגלל התיקון הזה) הוספתי פרופ חדש
+     `idPrefix: string` ל-`SynagogueForm`, והעברתי `"add-synagogue"`
+     בטופס ההוספה ו-`` `edit-synagogue-${syn.id}` `` בטופס העריכה
+     (ייחודי לכל בית כנסת). שאר ששת השדות מקבלים
+     `` `${idPrefix}-<field>` `` תואם ל-`id`/`htmlFor`.
+576. **אפס רגרסיה מאומתת:** `git diff` מלא — קובץ אחד, 15+/15-,
+     שינוי מוגבל ל-`idPrefix` prop + `id`/`htmlFor`; לא נגעתי
+     ב-`value`/`onChange`/`placeholder`/`className`/הלוגיקה
+     העסקית. `SynagogueForm` היה היחיד שצרך פרופ חדש (ולא רק
+     `id`/`htmlFor` סטטי) בעדשה הזו כי הוא רכיב משותף עם קריאה
+     כפולה — תועד כאן למקרה שדפוס דומה יעלה שוב בקבצים הבאים
+     (`PortalLessonForm.tsx` וכו'). אין `tsc`/`npm` בסביבה הזו —
+     אומת בבדיקת איזון `{}`/`()`/`[]` ב-Python על הקובץ המלא
+     (175/175, 154/154, 21/21). Commit `3d8776e1` על
+     `fix/a-icon-only-buttons-round2-0820`, יידחף ל-origin (מפעיל
+     פריסת Vercel תחת more30.com/torah).
+577. **הבא בתור ב-01-torah-platform** (מהקטן לגדול, לפי המיפוי של
+     סבב 104): `PortalLessonForm.tsx` (4) →
+     `PortalSettingsTab.tsx`/`PublicContactForm.tsx` (6 כל אחד) →
+     `StudyDayEventForm.tsx`/`UpdateLesson.tsx` (9 כל אחד).
+     `MultiSelect.tsx`/`RadioSelect.tsx` (תוויות-קבוצה בלי
+     `<input>` אמיתי) ו-`OrgPortal.tsx` (חלקית מקושר כבר) עדיין
+     ממתינים להחלטה אם לדלג.
