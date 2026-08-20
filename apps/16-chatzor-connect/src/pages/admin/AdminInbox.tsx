@@ -7,11 +7,13 @@ import { cn } from "@/lib/cn";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { ListSkeleton } from "@/components/ui/Skeleton";
+import { useToast } from "@/components/ui/Toaster";
 
 type Tab = "inquiries" | "questions";
 
 export function AdminInbox() {
   const qc = useQueryClient();
+  const toast = useToast();
   const [tab, setTab] = useState<Tab>("inquiries");
   const inquiriesQuery = useInquiries();
   const questionsQuery = useRabbiQuestions();
@@ -21,6 +23,7 @@ export function AdminInbox() {
   const markRead = useMutation({
     mutationFn: (id: string) => markInquiryRead(id),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["inquiries"] }),
+    onError: (e: Error) => toast(e.message || "שגיאה בסימון כנקרא", "error"),
   });
 
   const unread = inquiries?.filter((i) => !i.isRead).length ?? 0;

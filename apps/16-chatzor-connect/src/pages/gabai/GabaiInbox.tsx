@@ -6,18 +6,21 @@ import { cn } from "@/lib/cn";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { ListSkeleton } from "@/components/ui/Skeleton";
+import { useToast } from "@/components/ui/Toaster";
 import { useGabai } from "./GabaiLayout";
 import { useSynagogueGate } from "./SynagogueGate";
 
 export function GabaiInbox() {
   const { synagogue } = useGabai();
   const qc = useQueryClient();
+  const toast = useToast();
   const { data: all, isLoading, isError, refetch } = useInquiries();
   const gate = useSynagogueGate();
 
   const markRead = useMutation({
     mutationFn: (id: string) => markInquiryRead(id),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["inquiries"] }),
+    onError: (e: Error) => toast(e.message || "שגיאה בסימון כנקרא", "error"),
   });
 
   if (gate || !synagogue) return gate;
