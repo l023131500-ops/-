@@ -1,8 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Loader2, ShieldCheck } from "lucide-react";
+import { Loader2, ShieldCheck, Image as ImageIcon, Video as VideoIcon } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { StatusBadge, EntitlementStatusBadge, EntitlementCategoryBadge } from "@/features/clients/components/badges";
+
+const GENERAL_LABEL = "__general__";
 
 // Public, no-login case-status page — the link an agent shares from the
 // client's "קישור שיתוף" card (see ShareLinkCard). Same base-path pitfall as
@@ -19,6 +21,7 @@ type CaseStatus = {
   organization: string | null;
   assigned_agent: string | null;
   entitlements: { title: string | null; category: string | null; status: string; year: number | null }[];
+  property_media: { id: string; property_label: string | null; media_type: "photo" | "video"; file_name: string; url: string | null }[];
 };
 
 export const Route = createFileRoute("/case/$token")({
@@ -105,7 +108,47 @@ function PublicCaseStatusPage() {
             )}
           </CardContent>
         </Card>
+
+        {data.property_media.length > 0 && <PropertyMediaGallery items={data.property_media} />}
       </div>
     </div>
+  );
+}
+
+function PropertyMediaGallery({ items }: { items: CaseStatus["property_media"] }) {
+  const groups = new Map<string, CaseStatus["property_media"]>();
+  for (const m of items) {
+    const key = m.property_label ?? GENERAL_LABEL;
+    groups.set(key, [...(groups.get(key) ?? []), m]);
+  }
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-base">תמונות ווידאו של הנכס</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-6">
+        {[...groups.entries()].map(([key, group]) => (
+          <div key={key} className="space-y-2">
+            {key !== GENERAL_LABEL && <div className="text-sm font-medium text-muted-foreground">{key}</div>}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {group.map((m) => (
+                <div key={m.id} className="space-y-1">
+                  {m.media_type === "video" ? (
+                    <video src={m.url ?? undefined} controls className="w-full aspect-video rounded-md bg-black object-contain" />
+                  ) : (
+                    <img src={m.url ?? undefined} alt={m.file_name} className="w-full aspect-video rounded-md object-cover" />
+                  )}
+                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                    {m.media_type === "video" ? <VideoIcon className="h-3.5 w-3.5 shrink-0" /> : <ImageIcon className="h-3.5 w-3.5 shrink-0" />}
+                    <span className="truncate">{m.file_name}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </CardContent>
+    </Card>
   );
 }

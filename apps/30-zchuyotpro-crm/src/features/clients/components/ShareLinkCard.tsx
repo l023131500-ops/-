@@ -46,7 +46,7 @@ export function ShareLinkCard({
       </CardHeader>
       <CardContent className="space-y-3">
         <p className="text-xs text-muted-foreground">
-          קישור לצפייה חיצונית בסטטוס התיק והזכאויות בלבד — בלי פרטים אישיים, מסמכים או תקשורת. מיועד לשליחה למשפחה/גורם שת״פ.
+          קישור לצפייה חיצונית בסטטוס התיק, הזכאויות, ותמונות/וידאו של הנכס (אם הועלו) — בלי פרטים אישיים, מסמכים או תקשורת. מיועד לשליחה למשפחה/גורם שת״פ.
         </p>
         <div className="flex items-center gap-2">
           <Switch
