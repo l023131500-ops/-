@@ -226,6 +226,21 @@ export const documentsQuery = (clientId: string) =>
     },
   });
 
+// ---------- property media (photos/videos) ----------
+export const propertyMediaQuery = (clientId: string) =>
+  queryOptions({
+    queryKey: ["property-media", clientId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("property_media")
+        .select("*")
+        .eq("client_id", clientId)
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+
 // ---------- referrals ----------
 export const referralsQuery = (clientId: string) =>
   queryOptions({
@@ -267,6 +282,7 @@ export function useInvalidateClient() {
     qc.invalidateQueries({ queryKey: ["client-entitlements", clientId] });
     qc.invalidateQueries({ queryKey: ["messages", clientId] });
     qc.invalidateQueries({ queryKey: ["documents", clientId] });
+    qc.invalidateQueries({ queryKey: ["property-media", clientId] });
     qc.invalidateQueries({ queryKey: ["referrals", clientId] });
     qc.invalidateQueries({ queryKey: ["clients"] });
     qc.invalidateQueries({ queryKey: ["client-stats"] });

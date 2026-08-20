@@ -14,6 +14,7 @@ import { VehiclesTab } from "@/features/clients/tabs/VehiclesTab";
 import { EntitlementsTab } from "@/features/clients/tabs/EntitlementsTab";
 import { MessagesTab } from "@/features/clients/tabs/MessagesTab";
 import { DocumentsTab } from "@/features/clients/tabs/DocumentsTab";
+import { PropertyMediaTab } from "@/features/clients/tabs/PropertyMediaTab";
 import { ReferralsTab } from "@/features/clients/tabs/ReferralsTab";
 import { TasksTab } from "@/features/clients/tabs/TasksTab";
 import { TimelineTab } from "@/features/clients/tabs/TimelineTab";
@@ -41,6 +42,7 @@ const TABS = [
   { v: "timeline", l: "ציר זמן" },
   { v: "messages", l: "תקשורת" },
   { v: "documents", l: "מסמכים" },
+  { v: "property-media", l: "תמונות ווידאו" },
   { v: "referrals", l: "הפניות לשת״פ" },
 ] as const;
 
@@ -93,6 +95,7 @@ function ClientProfilePage() {
         <TabsContent value="timeline" className="mt-4"><TimelineTab clientId={id} /></TabsContent>
         <TabsContent value="messages" className="mt-4"><MessagesTab clientId={id} /></TabsContent>
         <TabsContent value="documents" className="mt-4"><DocumentsTab clientId={id} /></TabsContent>
+        <TabsContent value="property-media" className="mt-4"><PropertyMediaTab clientId={id} /></TabsContent>
         <TabsContent value="referrals" className="mt-4"><ReferralsTab clientId={id} /></TabsContent>
       </Tabs>
 
