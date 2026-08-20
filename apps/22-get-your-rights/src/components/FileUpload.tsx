@@ -1,6 +1,7 @@
 import { useState, useRef } from "react";
 import { Upload, X, FileText } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 interface FileUploadProps {
   onFilesUploaded: (urls: string[]) => void;
@@ -11,6 +12,7 @@ const FileUpload = ({ onFilesUploaded, maxFiles = 3 }: FileUploadProps) => {
   const [files, setFiles] = useState<{ name: string; url: string }[]>([]);
   const [uploading, setUploading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const { toast } = useToast();
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const selected = e.target.files;
@@ -18,6 +20,7 @@ const FileUpload = ({ onFilesUploaded, maxFiles = 3 }: FileUploadProps) => {
 
     setUploading(true);
     const newFiles: { name: string; url: string }[] = [];
+    let failedCount = 0;
 
     for (let i = 0; i < Math.min(selected.length, maxFiles - files.length); i++) {
       const file = selected[i];
@@ -33,7 +36,19 @@ const FileUpload = ({ onFilesUploaded, maxFiles = 3 }: FileUploadProps) => {
           .from("lead-documents")
           .getPublicUrl(path);
         newFiles.push({ name: file.name, url: urlData.publicUrl });
+      } else {
+        failedCount++;
       }
+    }
+
+    if (failedCount > 0) {
+      toast({
+        title: "שגיאה בהעלאת קובץ",
+        description: failedCount === 1
+          ? "קובץ אחד לא הועלה. נסו שוב."
+          : `${failedCount} קבצים לא הועלו. נסו שוב.`,
+        variant: "destructive",
+      });
     }
 
     const allFiles = [...files, ...newFiles];
