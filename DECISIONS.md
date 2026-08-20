@@ -3722,3 +3722,36 @@
     29-bkalot-design שטרם נבדקו לעדשה הזו) או לחזור לאימות בפועל
     (לא רק תיעודי) של rebrand ('עולם הסטארטאפים')/pricing TEST-mode
     על-גבי תוכן עמוד אמיתי בכל 17-31, שלא אומת מחדש מאז סבב 80.
+
+## 20/08/2026 — סבב 282 (loop B)
+
+282. **26-modaot-studio (סטודיו, בטווח המפורש של הלולאה): עדשת
+    duplicate-submit, שטרם נבדקה על האפליקציה הזו (רק silent-write-
+    fail על מסלולי ה-CRUD ב-`vercel-adapter` נבדק בעבר, סבב 47/
+    DECISIONS #254-256).** לפי ההצעה מסוף הסבב הקודם. הרצתי סוכן
+    Explore על קוד הלקוח (`client/src/pages`) לעדשת "כפתור/טופס
+    שמפעיל כתיבה בלי מצב busy/disabled החוסם לחיצה כפולה". אימתתי
+    כל ממצא בעצמי לפני נגיעה: `BrandKitPage.tsx` `chooseAndSave()`
+    (כפתורי בחירת קונספט לוגו, שורה 279-292) שלח PATCH ל-
+    `/api/brands/:id` **ללא כל `try/catch` וללא חסימת לחיצה חוזרת**
+    בזמן שכנים באותו קובץ (`generateLogos`/`vectorize`) כבר משתמשים
+    ב-`genBusy`/`vecBusy`; `BrandingHome.tsx` `del()` (כפתור מחיקת
+    מותג, שורה 131-137) שלח DELETE ללא חסימה, בזמן ש-`Projects.tsx`
+    באותה אפליקציה כבר משתמש בתבנית `busyId===p.id`. **התיקון:**
+    הוספתי `savingIdx`/`busyId` state זהה בצורתו לתקדים הקיים באותו
+    קובץ/אפליקציה + `disabled` על הכפתורים המתאימים; גם עטפתי את
+    `chooseAndSave` ב-`try/catch`+`toast(destructive)` כי לא היה לה
+    כלל טיפול בשגיאה (אותה משפחת באג silent-write-fail שתוקנה כבר
+    בשאר האפליקציה, כאן זו הפעם הראשונה שנבדקה ב-`BrandKitPage.tsx`
+    עצמו). אפס שינוי לזרימת ההצלחה. אימתתי איזון סוגריים ב-Node על
+    שני הקבצים (0) + קריאה חוזרת מלאה של ה-diff. נדרש `git add -f`
+    (`apps/26-modaot-studio/client` מוחרג כברירת מחדל ב-gitignore,
+    אותו דפוס חוזר). קומיט `2760b5a6` על `fix/b-modaot-studio-
+    duplicate-submit-0820`, יידחף (מפעיל פריסת Vercel תחת
+    `more30.com/studio`). **הבא בתור:** `29-bkalot-design` נשאר
+    repo תיעודי-בלבד (tokens.json/style-guide.html, אין קוד אפליקציה
+    אמיתי) -- לא רלוונטי לעדשה הזו, לא ייבדק שוב אלא אם יתווסף קוד.
+    הסבב הבא יכול לחזור לאימות בפועל של rebrand/pricing TEST-mode
+    על תוכן עמוד אמיתי בכל 17-31 (לא אומת מאז סבב 80), או לפתוח
+    עדשה חדשה (למשל XSS/unsanitized-innerHTML) על מערכות שטרם נבדקו
+    לה.
