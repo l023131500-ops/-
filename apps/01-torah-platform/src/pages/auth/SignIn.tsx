@@ -69,7 +69,7 @@ export default function SignIn() {
 
   const google = async () => {
     setGoogleLoading(true);
-    const { error } = await signInWithGoogle();
+    const { error } = await signInWithGoogle(redirect);
     if (error) { toast.error("שגיאה", { description: authErrorMessage(error) }); setGoogleLoading(false); }
   };
 

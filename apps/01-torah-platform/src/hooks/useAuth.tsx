@@ -7,7 +7,7 @@ interface AuthCtx {
   user: User | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<{ error: any }>;
-  signInWithGoogle: () => Promise<{ error: any }>;
+  signInWithGoogle: (next?: string) => Promise<{ error: any }>;
   /**
    * `needsConfirmation` הוא true כשההרשמה הצליחה אבל השרת לא החזיר session,
    * כלומר הפרויקט דורש אימות מייל (mailer_autoconfirm=false). בלי הדגל הזה
@@ -45,10 +45,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     return { error };
   };
-  const signInWithGoogle = async () => {
+  /**
+   * `redirectTo` חייב לכלול את ה-BASE_URL ("/torah/" בייצור) — בלעדיו
+   * Google מחזיר את המשתמש ל-more30.com/portal, שהוא אפליקציית ה-portal
+   * הראשית (רשימת כל המערכות) ולא /torah/portal, כלומר הכניסה "מצליחה"
+   * אבל המשתמש נוחת באתר הלא-נכון לגמרי. `next` (ברירת מחדל "portal")
+   * מכבד את אותו פרמטר `redirect` שכניסת אימייל/סיסמה כבר מכבדת.
+   */
+  const signInWithGoogle = async (next: string = "portal") => {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
-      options: { redirectTo: `${window.location.origin}/portal` },
+      options: {
+        redirectTo: `${window.location.origin}${import.meta.env.BASE_URL}${next.replace(/^\//, "")}`,
+      },
     });
     return { error };
   };
