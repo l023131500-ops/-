@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="מעטפת">
+  <rect width="512" height="512" rx="96" fill="#0B0D2E"/>
+  <circle cx="206" cy="290" r="78" fill="none" stroke="#C9A227" stroke-width="24"/>
+  <circle cx="306" cy="290" r="78" fill="none" stroke="#C9A227" stroke-width="24"/>
+  <path d="M256 138 226 188h60z" fill="#C9A227"/>
+</svg>

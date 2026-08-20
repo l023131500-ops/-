@@ -1,0 +1,15 @@
+{
+  "name": "מעטפת — הליווי שלכם לחתונה",
+  "short_name": "מעטפת",
+  "description": "יומן, משימות, ליווי ומעקב מול המדריך/ה שלכם — במקום אחד.",
+  "lang": "he",
+  "dir": "rtl",
+  "start_url": "/maatefet/portal.html",
+  "scope": "/maatefet/",
+  "display": "standalone",
+  "background_color": "#0B0D2E",
+  "theme_color": "#0B0D2E",
+  "icons": [
+    { "src": "/maatefet/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
