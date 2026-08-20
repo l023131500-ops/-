@@ -229,8 +229,9 @@ export default function UsersPage() {
 
             <div className="space-y-4">
               <div>
-                <label className="label">אימייל *</label>
+                <label className="label" htmlFor="user-email">אימייל *</label>
                 <input
+                  id="user-email"
                   className="input"
                   type="email"
                   inputMode="email"
@@ -241,16 +242,18 @@ export default function UsersPage() {
                 />
               </div>
               <div>
-                <label className="label">שם תצוגה</label>
+                <label className="label" htmlFor="user-display-name">שם תצוגה</label>
                 <input
+                  id="user-display-name"
                   className="input"
                   value={form.display_name}
                   onChange={(e) => setForm({ ...form, display_name: e.target.value })}
                 />
               </div>
               <div>
-                <label className="label">תפקיד</label>
+                <label className="label" htmlFor="user-role">תפקיד</label>
                 <select
+                  id="user-role"
                   className="input"
                   value={form.role}
                   onChange={(e) => setForm({ ...form, role: e.target.value as AdUser["role"] })}
@@ -262,8 +265,9 @@ export default function UsersPage() {
                 </select>
               </div>
               <div>
-                <label className="label">קופון משויך (אופציונלי)</label>
+                <label className="label" htmlFor="user-coupon">קופון משויך (אופציונלי)</label>
                 <select
+                  id="user-coupon"
                   className="input"
                   value={form.coupon_id}
                   onChange={(e) => setForm({ ...form, coupon_id: e.target.value })}
@@ -275,8 +279,9 @@ export default function UsersPage() {
                 </select>
               </div>
               <div>
-                <label className="label">הערות</label>
+                <label className="label" htmlFor="user-notes">הערות</label>
                 <textarea
+                  id="user-notes"
                   className="input"
                   rows={2}
                   value={form.notes}
