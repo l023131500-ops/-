@@ -10,6 +10,14 @@ export interface UserRequest extends Request {
   appUserSession?: any;
 }
 
+// req.query.month becomes an array if the client sends ?month= twice; monthlySummary()
+// splits it on "-" expecting a single "YYYY-MM" string, so an array silently produces NaN.
+function monthQueryParam(req: Request): string {
+  const raw = req.query.month;
+  const single = Array.isArray(raw) ? raw[0] : raw;
+  return String(single || new Date().toISOString().slice(0, 7));
+}
+
 async function requireUser(req: UserRequest, res: Response, next: NextFunction) {
   const header = req.header("authorization");
   const token = header?.match(/^Bearer\s+(.+)$/i)?.[1];
@@ -311,7 +319,7 @@ export function registerFinancialRoutes(app: Express) {
 
   // ----- Dashboard summary -----
   app.get("/api/financial/clients/:clientId/summary", requireAdmin, async (req, res) => {
-    const ym = String(req.query.month || new Date().toISOString().slice(0, 7));
+    const ym = monthQueryParam(req);
     res.json({
       month: ym,
       summary: finStorage.monthlySummary(Number(req.params.clientId), ym),
@@ -641,7 +649,7 @@ export function registerFinancialRoutes(app: Express) {
     const user = req.appUser!;
     if (!user.finClientId) return res.json({ noClient: true });
     const clientId = Number(user.finClientId);
-    const month = String(req.query.month || new Date().toISOString().slice(0, 7));
+    const month = monthQueryParam(req);
     // refresh alerts inline
     finStorage.recomputeAlerts(clientId, month);
     res.json({
