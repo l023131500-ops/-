@@ -329,12 +329,14 @@ const SynagogueManager = () => {
 const GabaiPersonalArea = ({ synagogueName, synagogueId }: { synagogueName: string; synagogueId: string }) => {
   const [activeTab, setActiveTab] = useState<'leads' | 'announcements'>('leads');
   const [leads, setLeads] = useState<any[]>([]);
+  const [processingId, setProcessingId] = useState<string | null>(null);
+  const [actionError, setActionError] = useState('');
+  const fetchLeads = async () => {
+    const { data } = await supabase.from('community_leads').select('*').eq('synagogue_id', synagogueId).order('created_at', { ascending: false });
+    if (data) setLeads(data);
+  };
   useEffect(() => {
-    const fetch = async () => {
-      const { data } = await supabase.from('community_leads').select('*').eq('synagogue_id', synagogueId).order('created_at', { ascending: false });
-      if (data) setLeads(data);
-    };
-    fetch();
+    fetchLeads();
   }, [synagogueId]);
   const [announcements, setAnnouncements] = useState<string[]>(['שיעור מיוחד השבוע']);
   const [newAnnouncement, setNewAnnouncement] = useState('');
@@ -415,11 +417,22 @@ const GabaiPersonalArea = ({ synagogueName, synagogueId }: { synagogueName: stri
                   <MessageSquare className="w-3.5 h-3.5 inline-block ml-1.5 text-muted-foreground" />{lead.message}
                 </div>
                 <div className="flex gap-2 mt-3">
-                  <Button variant="outline" size="sm" className="gap-1.5 text-xs font-bold"><Phone className="w-3.5 h-3.5" /> חייג</Button>
-                  <Button variant="outline" size="sm" className="gap-1.5 text-xs font-bold"><Eye className="w-3.5 h-3.5" /> סמן כנקרא</Button>
+                  <Button variant="outline" size="sm" className="gap-1.5 text-xs font-bold" onClick={() => { window.location.href = `tel:${lead.phone}`; }}><Phone className="w-3.5 h-3.5" /> חייג</Button>
+                  {!lead.is_read && (
+                    <Button variant="outline" size="sm" className="gap-1.5 text-xs font-bold" disabled={processingId === lead.id} onClick={async () => {
+                      if (processingId) return;
+                      setProcessingId(lead.id);
+                      setActionError('');
+                      const { error } = await supabase.from('community_leads').update({ is_read: true }).eq('id', lead.id);
+                      setProcessingId(null);
+                      if (error) { setActionError('הפעולה נכשלה עקב תקלה. נסו שוב.'); return; }
+                      fetchLeads();
+                    }}><Eye className="w-3.5 h-3.5" /> סמן כנקרא</Button>
+                  )}
                 </div>
               </motion.div>
             ))}
+            {actionError && <p className="text-sm text-destructive font-bold">{actionError}</p>}
           </motion.div>
         )}
         {activeTab === 'announcements' && (
