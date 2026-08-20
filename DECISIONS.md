@@ -7917,3 +7917,31 @@
     שדות תאריך/מספר ללא ולידציית טווח בצד לקוח, או `<label>` לא
     מקושר ל-`<input>` דרך `htmlFor`/`id`).
     via cloud server 167.99.131.167 [loop B]
+
+## 20/08/2026 — סבב 386 (loop B)
+
+386. **השלמת עדשת ה-`alt` התיאורי: 2 המופעים שנותרו ב-`24-galilee-connect-hub`
+    (מתור מסבב 385) תוקנו.** `GabaiPortal.tsx` שורה 1329 — תמונה
+    ממוזערת של פריט במאגר הידע (`item.image_url`) עם `alt=""`,
+    למרות ש-`item.title` כבר בשימוש בשורה הסמוכה (1331) לתצוגת
+    שם הפריט — הוחלף ל-`alt={item.title}`. `GallerySection.tsx`
+    שורה 116 — תמונת ה-lightbox המוגדלת (`<img src={lightbox}>`)
+    עם `alt=""`, כאשר ה-state `lightbox` מחזיק רק את ה-URL ולא את
+    האובייקט המלא — נפתר ללא שינוי מבנה ה-state, באמצעות חיפוש
+    התמונה התואמת במערך `images` הקיים כבר בזיכרון
+    (`images.find(im => im.image_url === lightbox)?.caption`) עם
+    נפילה חזרה לטקסט עברי גנרי ("תמונה מוגדלת") כשאין כיתוב.
+    `git diff --stat`: 2 קבצים, 2+/2-. איזון סוגריים נבדק על שני
+    הקבצים לאחר העריכה: תקין. נבדק שוב עם `grep -rn 'alt=""'` על
+    כל `apps/24-galilee-connect-hub/src` — אין מופעים נוספים. לא
+    הופעל build/dev-server. קבצי `apps/24-galilee-connect-hub/src`
+    חסומים ב-`.gitignore` אך כבר עוקבים, `git add -f` נדרש. ענף
+    `fix/b-24-galilee-alt-text-0820`, קומיט `dc93c08a`, נדחף
+    (מפעיל פריסת Vercel תחת `more30.com/galil`).
+
+    **הבא בתור:** נושא #250 (RLS על 21-mthbram, חסום MCP), או
+    פתיחת עדשה חדשה (למשל: שדות תאריך/מספר ללא ולידציית טווח
+    בצד לקוח, או `<label>` לא מקושר ל-`<input>` דרך
+    `htmlFor`/`id`, או `target="_blank"` בלי `rel="noopener
+    noreferrer"` על כל 7 האפליקציות החיות באופן שיטתי).
+    via cloud server 167.99.131.167 [loop B]
