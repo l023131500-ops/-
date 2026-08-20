@@ -9457,3 +9457,66 @@
     TEST MODE" נסגרת בנפרד — התבררה כבר שלמה, לא נדרש שינוי קוד נוסף
     שם. נושא #245/#250 (RLS, חסומים) נשארים כפי שהם. via cloud server
     167.99.131.167 [loop B]
+
+## 20/08/2026 — סבב 414 (loop B)
+
+414. **עדשה חדשה: קישור "דלג לתוכן הראשי" (WCAG 2.4.1 Bypass Blocks) —
+    לא נבדקה באף סבב קודם. נסגרה על 3 מ-9 המערכות החיות (18/19/20).**
+
+    לפני תחילת הסבב סרקתי את `DECISIONS.md` לרשימת כל העדשות שכבר
+    נסגרו (label/htmlFor, autoComplete, aria-label על select/checkbox,
+    focus-visible/tabIndex, theme-color, aria-hidden על אייקונים,
+    focus-trap במודלים, prefers-reduced-motion, heading-order,
+    aria-live, color-contrast על גרדיאנט/מושתק/placeholder/disabled,
+    aria-describedby, inputMode, maxLength, חפיפת כפתור-הכניסה,
+    מיתוג/רענון) — אין רישום של עדשת skip-link/landmark. הרצתי סוכן
+    Explore על 9 המערכות החיות (17/18/19/20/21/22/24/27/28) לבדוק
+    נוכחות `<main>`/`role="main"` וקישור דילוג. תוצאה: **אף אחת מ-9
+    לא החזיקה קישור דילוג**; 17/18/19/20/21/24/28 מציירות `<main>`
+    (רובן בלי `id`), 22/27 בכלל לא (מבנה `<section>`/`<div>` שטוח,
+    בלי landmark ראשי).
+
+    בחרתי בסבב זה רק במערכות עם מעטפת-דף אחת ומוגדרת (סיכון נמוך,
+    שינוי מרוכז): **18-torah-editor-mvp** (Next.js) — קישור הדילוג
+    נוסף פעם אחת ב-`app/layout.tsx` (משותף לכל הדפים), מצביע על
+    `#main-content`; חמשת רכיבי הדף (`page.tsx`,
+    `documents/page.tsx`, `login/page.tsx`, `editor/page.tsx`,
+    `htr/page.tsx`) כבר השתמשו ב-`<main className="container">` או
+    ב-`<div className="container">` לתפקיד זהה — קידמתי את ה-`div`-ים
+    ל-`<main>` (אימתתי קודם שאין סלקטור CSS/JS ממוקד-תג כמו
+    `div.container`, רק מבוסס-מחלקה) והוספתי `id="main-content"`
+    לכל חמשת הרכיבים. גם עדכנתי את `globals.css` עם מחלקת `.skip-link`
+    חדשה (מוסתרת ב-`position:absolute;top:-48px`, גלויה ב-`:focus`
+    ל-`top:8px`, אותו דפוס Clip-based כמו `.visually-hidden` הקיים
+    בקובץ). **19-igud-shiurim-portal** ו-**20-igud-portal** (HTML רגיל)
+    — כבר החזיקו `<main id="app">`; הוספתי קישור דילוג כילד ראשון של
+    `<body>` (לפני `<nav>`/`<header>`) בכל אחד, וכלל `.skip-link` תואם
+    בגיליון הסגנון שלהן (`--color-primary-dark`/`--primary` בהתאמה,
+    כדי לשמור על טוקני הצבע הקיימים של כל אפליקציה).
+
+    **בדיקות תקינות:** ספירת `<main>`/`</main>` ו-`<div>`/`</div>`
+    תואמת בדיוק בכל אחד מ-5 קובצי ה-TSX שנערכו (למשל
+    `documents/page.tsx`: 2/2 main, 9/9 div — קובץ עם שני `return`
+    נפרדים, שניהם טופלו); איזון סוגריים (Python, `{}/()/[]`) נקי על
+    כל 7 קובצי ה-TS/CSS. גם אומת שאין סלקטור CSS ממוקד-תג (`div
+    .container`/`div.container`) ואין `querySelector` מבוסס-תג
+    שהיה נשבר מהחלפת `div`→`main`.
+
+    תוספת טהורה בלבד + החלפת שם-תג סמנטית-ניטרלית (`div`→`main`,
+    ללא שינוי סדר/מבנה DOM). **לא טופלו בסבב זה:** 17/21/24/28 מציירות
+    `<main>` פר-מסך-נתיב בלי מעטפת-שורש משותפת (הוספת קישור הדילוג
+    שם דורשת נגיעה בכל רכיב-דף בנפרד — היקף גדול יותר), ו-22/27 בכלל
+    חסרות `<main>` (הוספת landmark חדש שם היא שינוי מבנה DOM ממשי,
+    לא רק תג-מחדש-לתג-קיים) — שתיהן מתועדות כפער פתוח, לא תוקנו.
+
+    `git diff --stat`: 11 קבצים, ‎+65/-11‎. לא הופעל build/dev-server
+    (לפי הנחיות ההרצה). ענף `fix/b-22-whatsapp-noopener-round395-0820`
+    (שרשרת הענפים היא המקור המלא היחיד ל-loop B, לא `main`), קומיט
+    `14c1ebcd`, נדחף (מפעיל פריסת Vercel תחת `more30.com/orech`;
+    19/20 עדיין `is_deployed=false`).
+
+    **הבא בתור:** השלמת עדשת ה-skip-link על 17/21/24/28 (מעטפת פר-דף,
+    לא פר-אפליקציה — דורש איתור/עריכה של רכיב הדף המשותף אם קיים,
+    או הוספה לכל דף בנפרד) ו-22/27 (דורש קודם הוספת `<main>` עצמו,
+    שינוי מבנה גדול יותר מהשאר). נושא #245/#250 (RLS, חסומים) נשארים
+    כפי שהם. via cloud server 167.99.131.167 [loop B]
