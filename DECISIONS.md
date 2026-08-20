@@ -8047,3 +8047,39 @@
      נגישות נוספת, או לחזור ל-`core.project_tasks`/
      `core.project_bugs` (5 פריטים פתוחים, עדיין חסומים על secrets
      חסרים או החלטות merge/origin מחוץ לסמכות הסוכן).
+
+## 20/08/2026 — סבב 157 (loop A)
+
+777. **פתחתי עדשת נגישות חדשה:** אחרי ש-156 סבבים מיצו את העדשות
+     הקודמות (icon-only buttons, labels, focus-trap, aria-live,
+     alt-text, heading hierarchy, autocomplete, lang, aria-current,
+     focus-visible, aria-describedby/aria-invalid), האצלתי לסוכן
+     Explore סריקה של 01-07/10-16 (דילוג על 08/09 המוגנים) אחר פער
+     חדש: כפתורי toggle/accordion/dropdown ללא `aria-expanded`,
+     `<th>` ללא `scope`, שדות חובה ללא `required`/`aria-required`,
+     `id` כפולים, כפתורי סגירה ללא `aria-label`, קישורים שנפתחים
+     בטאב חדש ללא ציון, וקישורי skip-to-content חסרים.
+778. **נמצא ותוקן:** `apps/01-torah-platform/src/pages/portal/
+     StudySchedule.tsx` — ה-toggle של כל לוח לימוד (accordion פר-
+     schedule) היה `<div onClick>` רגיל: לא focusable, בלי
+     `role`/`tabIndex`/מקלדת/`aria-expanded`/`aria-controls` — חמור
+     יותר מ"כפתור אייקון בלי aria-label" כי האלמנט לא היה בכלל
+     ניתן להפעלה במקלדת. הוספתי `role="button"`, `tabIndex={0}`,
+     `aria-expanded={isExpanded}`,
+     `aria-controls="schedule-content-${sched.id}"`, `onKeyDown`
+     שמפעיל את אותו `toggleExpanded` הקיים ב-Enter/Space, ו-`id`
+     תואם על ה-`CardContent` שהוא שולט בו.
+779. **אפס רגרסיה מאומתת:** `git diff --stat` — קובץ אחד, 11+/1-.
+     ללא שינוי ל-`toggleExpanded`/`expanded` state הקיימים — רק
+     תוספת attributes/handler. איזון סוגריים מלא בפייתון על הקובץ
+     המלא לפני/אחרי: `()` 187→191/187→191,
+     `{}` 148→157/148→157, `[]` 21/21 — כולם תואמים בזוגות. אין
+     tsc/npm בסביבה זו. הנתיב `apps/01-torah-platform/src` חסום
+     ע"י `.gitignore` (כמו בסבבים קודמים) — נדרש `git add -f`.
+     Commit `47a48519` על `fix/a-icon-only-buttons-round2-0820`,
+     נדחף ל-origin (מפעיל פריסת Vercel תחת more30.com/torah).
+780. **הבא בתור:** להמשיך את עדשת ה-`aria-expanded`/toggle על
+     יישומים נוספים (03/04/06/10/12/14/16 טרם נסרקו לעדשה הזו), או
+     לפתוח עדשה נוספת, או לחזור ל-`core.project_tasks`/
+     `core.project_bugs` (5 פריטים פתוחים, עדיין חסומים על secrets
+     חסרים או החלטות merge/origin מחוץ לסמכות הסוכן).
