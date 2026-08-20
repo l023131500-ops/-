@@ -7651,3 +7651,39 @@
      חוזר, חסר רק Tab-trap). אפשר להמשיך את עדשת ה-focus-trap על
      אלה, לפתוח עדשה חדשה, או לחזור ל-`core.project_tasks`/
      `core.project_bugs` (5 פריטים פתוחים, עדיין חסומים).
+
+## 20/08/2026 — סבב 144 (loop A)
+
+728. **המשכתי את עדשת ה-focus-trap** (round 143) על הפריט הראשון
+     מהתור: `03-igud-ads`, `app/(admin)/admin/projects/page.tsx` —
+     מודל פרטי פרויקט (Detail Modal) עם `role="dialog"`/
+     `aria-modal`/`aria-label`/Escape-to-close קיימים, אך ללא ניהול
+     focus ראשוני, ללא Tab-trap וללא שחזור focus בסגירה. קראתי את
+     הקובץ המלא לפני העריכה כדי לאמת את מבנה ה-`useEffect` הקיים.
+729. **תיקון:** הוספתי `panelRef`/`closeButtonRef`/`previousFocusRef`
+     (עם `useRef`, שנוסף ל-import הקיים). בתוך ה-`useEffect` הקיים
+     (שכבר טיפל ב-Escape): שמירת ה-element הפעיל לפני הפתיחה,
+     `focus()` על כפתור הסגירה עם הפתיחה, שחזור ה-focus הקודם עם
+     הסגירה (ב-cleanup), ומלכודת Tab/Shift+Tab (שאילתת אלמנטים
+     ניתנים ל-focus בתוך `panelRef`, עוטפת מהראשון/אחרון). אותה
+     תבנית שהוכחה יעילה ב-round 143 על `01-torah-platform/
+     LessonDetailModal.tsx`.
+730. **אפס רגרסיה מאומתת:** `git diff --stat` — קובץ אחד, 31+/4-
+     שורות; אין שינוי ל-load/deleteProject/customer/state הקיימים,
+     רק תוספת refs + לוגיקת focus/Tab בתוך ה-`useEffect` הקיים +
+     חיבור `ref` לשני אלמנטים קיימים (ה-div של הפאנל, כפתור הסגירה).
+     אין `tsc`/`npm` בסביבה הזו — אימות איזון `{}`/`()`/`[]` בפייתון
+     על הקובץ המלא: 84/84, 99/99, 19/19 — תואם. הקובץ עוקב ב-git אך
+     חסום ע"י כלל `apps/03-igud-ads/app` ב-`.gitignore` — נדרש
+     `git add -f`. Commit `6384e6ec` על
+     `fix/a-icon-only-buttons-round2-0820`, יידחף ל-origin (מפעיל
+     פריסת Vercel תחת more30.com/modaot).
+731. **הבא בתור:** שאר המועמדים מהתור שנפתח בסבב 143 — 3 מודלים
+     נוספים ב-`03-igud-ads` (admin `transcripts`/`templates`/`users`,
+     אותו דפוס), `02-igud-transcribe` (admin `uploads`, אותו דפוס),
+     שני מודלים ב-`01-torah-platform/AdminDashboard.tsx` (עריכת
+     שיעור שורות ~1580-1701, צפייה בנדרים שורות ~1703-1750+), ו-
+     `16-chatzor-connect/src/components/ui/Modal.tsx` (רכיב מודל
+     חוזר, חסר רק Tab-trap). אפשר להמשיך את עדשת ה-focus-trap על
+     אלה, לפתוח עדשה חדשה, או לחזור ל-`core.project_tasks`/
+     `core.project_bugs` (5 פריטים פתוחים, עדיין חסומים).
