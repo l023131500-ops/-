@@ -24,6 +24,7 @@ import {
 import MultiSelect from "@/components/questionnaire/MultiSelect";
 import RadioSelect from "@/components/questionnaire/RadioSelect";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 interface SeekerFormProps {
   data: Record<string, any>;
@@ -32,6 +33,7 @@ interface SeekerFormProps {
 
 const SeekerForm = ({ data, onChange }: SeekerFormProps) => {
   const [step, setStep] = useState(0);
+  const [submitting, setSubmitting] = useState(false);
 
   const seekerType: SeekerType | undefined = data.seekerType;
 
@@ -59,9 +61,23 @@ const SeekerForm = ({ data, onChange }: SeekerFormProps) => {
   const nextStep = () => { if (step < steps.length - 1) setStep(step + 1); };
   const prevStep = () => { if (step > 0) setStep(step - 1); };
 
-  const handleSubmit = () => {
-    toast.success("הבקשה נשלחה בהצלחה! נחזור אליכם בהקדם.");
-    console.log("Seeker form data:", data);
+  const handleSubmit = async () => {
+    if (!data.contactName?.trim() || !data.phone?.trim() || submitting) return;
+    setSubmitting(true);
+    const { error } = await supabase.from("seeker_leads").insert({
+      contact_name: data.contactName,
+      phone: data.phone,
+      email: data.email || null,
+      city: data.city || null,
+      subject: (data.subjects || []).join(", "),
+      lesson_type: data.frequency || null,
+      audience_type: data.seekerType || null,
+      preferred_time: `ימים: ${(data.preferredDays || []).join(",")}, שעות: ${(data.preferredHours || []).join(",")}`,
+      notes: `שכונה: ${data.neighborhood || ""}, רחוב: ${data.street || ""}, בית אבלים: ${data.deceasedName || ""} ${data.deceasedOccupation || ""} ${data.mourningLocation || ""} ${data.prayerTimes || ""}, בית כנסת: ${data.synagogueName || ""} ${data.gabaiName || ""} ${data.prayerStyle || ""} מתפללים:${data.congregationSize || ""} פעילות:${data.activityLevel || ""}, סגנון: ${(data.style || []).join(",")}, סגנון לומדים: ${(data.familyStyle || []).join(",")}, רקע מגיד: ${(data.teacherBackground || []).join(",")}, אופי שיעורים: ${(data.lessonStyle || []).join(",")}, סגנון דיבור: ${(data.speakingStyle || []).join(",")}, כמות משתתפים: ${(data.participantSize || []).join(",")}, מיקום שיעור: ${(data.lessonLocation || []).join(",")}, תשלום: ${data.payment || ""}, הערות: ${data.notes || ""}`,
+    });
+    setSubmitting(false);
+    if (error) toast.error("שגיאה בשליחת הבקשה, נסו שוב");
+    else toast.success("הבקשה נשלחה בהצלחה! נחזור אליכם בהקדם.");
   };
 
   const seekerTypes: { value: SeekerType; label: string }[] = [
@@ -322,8 +338,8 @@ const SeekerForm = ({ data, onChange }: SeekerFormProps) => {
               <ChevronLeft className="w-4 h-4" />
             </Button>
           ) : (
-            <Button onClick={handleSubmit} className="bg-gradient-gold text-primary font-semibold hover:opacity-90">
-              שליחת הבקשה
+            <Button onClick={handleSubmit} disabled={submitting} className="bg-gradient-gold text-primary font-semibold hover:opacity-90">
+              {submitting ? "שולח..." : "שליחת הבקשה"}
             </Button>
           )}
         </div>

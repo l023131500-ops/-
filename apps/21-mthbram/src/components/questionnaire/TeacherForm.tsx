@@ -20,6 +20,7 @@ import {
 import MultiSelect from "@/components/questionnaire/MultiSelect";
 import RadioSelect from "@/components/questionnaire/RadioSelect";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 interface TeacherFormProps {
   data: Record<string, any>;
@@ -36,6 +37,7 @@ const steps = [
 
 const TeacherForm = ({ data, onChange }: TeacherFormProps) => {
   const [step, setStep] = useState(0);
+  const [submitting, setSubmitting] = useState(false);
 
   const update = (key: string, value: any) => {
     onChange({ ...data, [key]: value });
@@ -57,9 +59,21 @@ const TeacherForm = ({ data, onChange }: TeacherFormProps) => {
     if (step > 0) setStep(step - 1);
   };
 
-  const handleSubmit = () => {
-    toast.success("הטופס נשלח בהצלחה! נחזור אליכם בהקדם.");
-    console.log("Teacher form data:", data);
+  const handleSubmit = async () => {
+    if (!data.fullName?.trim() || !data.phone?.trim() || submitting) return;
+    setSubmitting(true);
+    const { error } = await supabase.from("teacher_leads").insert({
+      full_name: data.fullName,
+      phone: data.phone,
+      email: data.email || null,
+      city: data.city || null,
+      subjects: data.subjects || [],
+      experience: `רקע: ${(data.background || []).join(", ")}`,
+      notes: `שכונה: ${data.neighborhood || ""}, אופי השיעורים: ${(data.teachingStyle || []).join(",")}, סגנון דיבור: ${(data.speakingStyle || []).join(",")}, סגנון: ${(data.style || []).join(",")}, קהל יעד: ${(data.targetAudience || []).join(",")}, מקומות: ${(data.lessonLocations || []).join(",")}, קביעות: ${data.frequency || ""}, ימים: ${(data.availableDays || []).join(",")}, שעות: ${(data.availableHours || []).join(",")}, תשלום: ${data.payment || ""}, הערות: ${data.notes || ""}`,
+    });
+    setSubmitting(false);
+    if (error) toast.error("שגיאה בשליחת הטופס, נסו שוב");
+    else toast.success("הטופס נשלח בהצלחה! נחזור אליכם בהקדם.");
   };
 
   return (
@@ -242,8 +256,8 @@ const TeacherForm = ({ data, onChange }: TeacherFormProps) => {
               <ChevronLeft className="w-4 h-4" />
             </Button>
           ) : (
-            <Button onClick={handleSubmit} className="bg-gradient-brand text-background font-semibold hover:opacity-90">
-              שליחת הטופס
+            <Button onClick={handleSubmit} disabled={submitting} className="bg-gradient-brand text-background font-semibold hover:opacity-90">
+              {submitting ? "שולח..." : "שליחת הטופס"}
             </Button>
           )}
         </div>
