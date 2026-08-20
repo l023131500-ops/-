@@ -11692,3 +11692,40 @@
       ו-`admin/notifications/page.tsx` `send()` (שורה ~39, שגיאה
       מוצגת כטקסט רגיל ב-`result` state בלי toast — UX בלבד, לא כשל
       שקט). מועמד ברור לסבב הבא: `glossary/page.tsx`.
+
+## 20/08/2026 — סבב 231 (loop A) — `03-igud-ads/app/(admin)/admin/users/page.tsx`: תיקון PATCH לעריכת משתמש שחסר basePath
+
+1128. **דיספצ'תי סוכן Explore** לחפש מועמד חדש לדפוס double-submit/
+      toggle-race במערכות 01-16 (מלבד 08/09 המוגנות) שטרם תוקנו. הסוכן
+      הציע `admin/users/page.tsx` (`toggleActive`, שורה 129) כטוגל עם
+      closure "מיושן" — אבל בקריאה ישירה של הקובץ (327 שורות) מצאתי
+      שה-`busyId` guard כבר חוסם קליק שני באופן סינכרוני *לפני* ה-
+      `await` הראשון (וגם הכפתור מקבל `disabled={busyId === u.id}`),
+      כך שאין חלון race אמיתי — הממצא של הסוכן שגוי/לא ניתן לניצול.
+1129. **אבל בקריאה מלאה של הקובץ מצאתי באג אמיתי אחר:** `save()` (שורה
+      88) בונה את ה-URL לעריכה כ-`` `/api/admin/users/${form.id}` ``
+      (שורה 100) — **בלי** קידומת `/modaot`. אימתתי ב-`next.config.mjs`
+      של המערכת: `basePath: "/modaot"`. Next.js **לא** מוסיף אוטומטית
+      basePath לקריאות `fetch()` גולמיות (רק ל-`next/link`/`next/router`/
+      נכסים סטטיים) — בניגוד לכל שאר הקריאות באותו קובץ (`load()` שורה
+      50-51, `del()` שורה 122, `toggleActive()` שורה 133) שכולן כבר
+      כוללות `/modaot` נכון. כלומר עריכת משתמש קיים (PATCH) פגעה ב-404
+      בשורש הדומיין במקום ב-`/modaot/api/admin/users/:id` — יצירה,
+      מחיקה וטוגל עבדו; רק עריכה הייתה שבורה. תבנית זהה לבאגים שתוקנו
+      בעבר (basePath חסר ב-`redirectTo`/קישורי `/torah`/`/chatzor`
+      וכו').
+1130. **התיקון:** שורה אחת — `` `/api/admin/users/${form.id}` `` ⇒
+      `` `/modaot/api/admin/users/${form.id}` ``. שום שינוי אחר בקובץ.
+1131. **אפס רגרסיה מאומתת:** `git diff --stat`: קובץ אחד, +1/-1. שום
+      פיצ'ר/מסך/כפתור לא הוסר, רק תוקנה כתובת שגויה. לא נגעתי במערכות/
+      סכימות מוגנות (08/09/bkalut-app/bkalot-admin/zr_*/NEDARIM3873/
+      csj/csj_src/igud), ב-`main`, או במערכת מחוץ להיקף (03 בטווח
+      01-16). `git add -f` נדרש (אותה אזהרת `.gitignore` כוזבת על
+      `apps/**`). Commit `fb7fda82` על ענף חדש
+      `fix/a-03-igud-ads-users-edit-basepath-0820`, נדחף ל-`origin`
+      (מפעיל פריסת Vercel תחת `more30.com/modaot`).
+1132. **הבא בתור:** המועמדים שנותרו פתוחים מסבב 230 עדיין רלוונטיים:
+      `03-igud-ads/admin/transcribe/glossary/page.tsx` `remove()` וגם
+      `admin/transcribe/uploads/page.tsx` `remove()` — שניהם בלי
+      error handling/in-flight guard. כדאי גם לסרוק שאר עמודי ה-admin
+      תחת `03-igud-ads` לבאגי basePath חסר דומים (הדפוס שנמצא כאן).
