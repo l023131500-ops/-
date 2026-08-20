@@ -6841,3 +6841,42 @@
      חדש לסריקת שאר האפליקציות המ-vendored (04/12/15/16 ואילך) עבור
      אותה עדשה, או לחזור ל-`core.project_tasks`/`core.project_bugs`
      לעבודה אחרת בתחום.
+
+## 20/08/2026 — סבב 124 (loop A)
+
+648. **המשכתי את המלצת #647.** בדקתי `core.run_progress`/`core.
+     project_tasks`/`core.project_bugs` — סבב 123 סגור (commit
+     תואם HEAD), אותם 5 משימות פתוחות (02/12/13/25/32) עדיין
+     חסומות על סודות חסרים (`OPENAI_API_KEY`,
+     `SUPABASE_SERVICE_KEY`) או החלטות מיזוג/origin מחוץ לסמכות
+     הסוכן — כמו בכל הסבבים האחרונים. הרצתי Explore agent לסריקת
+     עדשת aria-live/role על 04-imud-torani, 12-smel-ndln, 15-egod,
+     16-chatzor-connect. תוצאה: 04/12/15 עובדות דרך ספריית/hook
+     toast משותפת (Radix toast hook ב-04/12, `sonner` ב-15) — אין
+     מועמדים שם. 16-chatzor-connect משתמשת ברוב המקומות ב-
+     `Toaster` משותף (`role="status"` כבר קיים), אך שני קבצי אימות
+     נמצאו עם פסקאות הודעה מותנות בלי `role`/`aria-live`:
+     `src/pages/admin/AdminLogin.tsx` (שורות 112-113 — שגיאת
+     התחברות + אישור שליחת קישור איפוס) ו-
+     `src/pages/auth/ResetPassword.tsx` (שורות 197-198 — שגיאת
+     שמירת סיסמה חדשה + אישור עדכון). שני הקבצים הם מסכי אימות
+     ציבוריים אמיתיים (customer login/auth, בתחום העבודה המפורש).
+649. **התיקון:** באותו דפוס כמו סבבים 120-123 — `role="alert"`
+     `aria-live="assertive"` על הודעת שגיאה, `role="status"`
+     `aria-live="polite"` על הודעת הצלחה, בשני הקבצים. תוך כדי
+     העריכה שמתי לב שניסוח ראשוני שלי מחק בטעות את ה-`className`
+     הקיים על הודעת ה-`done` ב-`ResetPassword.tsx` — תוקן מיד לפני
+     commit כדי לא לאבד עיצוב קיים (אפס רגרסיה).
+650. **אפס רגרסיה מאומתת:** `git diff --stat` — 2 קבצים, 4+/4- כל
+     אחד, רק `role`/`aria-live` נוספו, `className` ותוכן הודעה
+     נשארו זהים. אין `tsc`/`npm` בסביבה הזו — אומת בבדיקת איזון
+     `{}`/`()`/`[]` ב-Python על שני הקבצים המלאים: 45/45+50/50+7/7
+     ו-55/55+86/86+8/8 — תואם. Commit `a9de8c05` על
+     `fix/a-icon-only-buttons-round2-0820`, נדחף ל-origin (מפעיל
+     פריסת Vercel תחת more30.com/chatzor).
+651. **הבא בתור:** עדשת aria-live/role סגורה כעת על כל 01/02/03/16
+     (כל האפליקציות ה-vendored עם ספריית toast חסרה שנמצאו). סבב
+     הבא צריך לפתוח עדשת a11y/UX חדשה (למשל ניגודיות צבעים, סדר
+     טאבים/focus-order, או `aria-describedby` על שדות עם הודעת
+     ולידציה), או לחזור ל-`core.project_tasks`/`core.project_bugs`
+     לעבודה אחרת בתחום auth/admin/pricing/gannenet.
