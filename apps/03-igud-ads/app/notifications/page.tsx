@@ -25,6 +25,7 @@ const TYPE_LABEL: Record<string, string> = {
 export default function MyNotificationsPage() {
   const [notifs, setNotifs] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
+  const [busyId, setBusyId] = useState<string | null>(null);
 
   const load = async () => {
     const r = await fetch("/modaot/api/notifications");
@@ -36,12 +37,28 @@ export default function MyNotificationsPage() {
   useEffect(() => { load(); }, []);
 
   const markRead = async (id: string) => {
-    await fetch("/modaot/api/notifications", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id }) });
-    load();
+    if (busyId) return;
+    setBusyId(id);
+    try {
+      await fetch("/modaot/api/notifications", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id }) });
+      await load();
+    } catch {
+      // ignore network error; button re-enables so the user can retry
+    } finally {
+      setBusyId(null);
+    }
   };
   const markAll = async () => {
-    await fetch("/modaot/api/notifications", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ mark_all: true }) });
-    load();
+    if (busyId) return;
+    setBusyId("all");
+    try {
+      await fetch("/modaot/api/notifications", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ mark_all: true }) });
+      await load();
+    } catch {
+      // ignore network error; button re-enables so the user can retry
+    } finally {
+      setBusyId(null);
+    }
   };
 
   const unread = notifs.filter((n) => !n.is_read).length;
@@ -51,7 +68,7 @@ export default function MyNotificationsPage() {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-serif font-bold text-brand-blue">ההודעות שלי</h1>
         {unread > 0 && (
-          <button onClick={markAll} className="text-sm bg-brand-bluesurface text-white rounded px-3 py-1.5">
+          <button onClick={markAll} disabled={busyId !== null} className="text-sm bg-brand-bluesurface text-white rounded px-3 py-1.5 disabled:opacity-50">
             סמן הכל כנקרא ({unread})
           </button>
         )}
@@ -90,7 +107,7 @@ export default function MyNotificationsPage() {
                   )}
                 </div>
                 {!n.is_read && (
-                  <button onClick={() => markRead(n.id)} className="text-xs text-gray-500 hover:text-brand-blue">
+                  <button onClick={() => markRead(n.id)} disabled={busyId !== null} className="text-xs text-gray-500 hover:text-brand-blue disabled:opacity-50">
                     סמן כנקרא
                   </button>
                 )}
