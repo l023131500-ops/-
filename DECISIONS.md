@@ -7850,3 +7850,70 @@
     ע"י משתמש, או כפתורי submit שלא מנוטרלים תוך כדי בקשת רשת
     פעילה).
     via cloud server 167.99.131.167 [loop B]
+
+## 20/08/2026 — סבב 385 (loop B)
+
+385. **עדשה חדשה: `<img>` בלי `alt` תיאורי על תמונות דינמיות
+    (מוצע בסבב 384) — נבדק על 7 האפליקציות החיות, נמצא ממצא
+    שיטתי אחד באפליקציה אחת, תוקן.** לפני הפתיחה נבדקה קודם
+    העדשה השנייה שהוצעה (כפתורי submit לא מנוטרלים תוך כדי בקשה
+    פעילה — double-submit) על כל 7 האפליקציות: כל טופס משתמש
+    (תשלום/ליד/פנייה/הרשמה) כבר משתמש ב-state של
+    `loading`/`submitting`/`isSubmitting` שמנטרל את הכפתור וחוסם
+    שליחה כפולה — נקי לגמרי, לא תוקן דבר.
+
+    העדשה השנייה — `alt` על תמונות שאינן דקורטיביות (לוגו/תמונת
+    פרופיל שמגיעה מ-Supabase storage, לא asset סטטי) — העלתה
+    ממצא אמיתי: **16 מופעי `<img>` ב-`21-mthbram`** עם
+    `alt=""` (ריק) על תמונות תוכן משמעותיות — לוגו בית כנסת/ארגון,
+    תמונת פרופיל רב, לוגו שיעור/יום עיון — כך שקורא מסך לא מכריז
+    כלום על תמונה משמעותית. תוקן בכל 16 המופעים בקובץ אחד לכל
+    שינוי: `alt` הוחלף לביטוי תלוי-נתונים באמצעות שדה שם שכבר
+    קיים ב-scope של אותו קומפוננטה (`portal.synagogue_name`,
+    `portal.org_name`, `portal?.rabbi_name`, `lesson.rabbi_name`,
+    `data.synagogue_name`, `form.synagogue_name`, `rabbiName`,
+    `synagogueName` prop וכו') עם נפילה חזרה לטקסט עברי גנרי
+    ("לוגו"/"תמונת פרופיל") כשהשדה ריק — לא הומצא שדה חדש, רק
+    שימוש חוזר במה שכבר מוצג באותו קובץ ליד התמונה (למשל ב-
+    `AdminDashboard.tsx` שורה 1244 השם `p.synagogue_name` כבר
+    מוצג ב-`<h4>` הסמוך בשורה 1248). קבצים שתוקנו (16, שינוי שורה
+    אחת בכל אחד): `pages/PublicSynagoguePage.tsx`,
+    `pages/PublicRabbiPage.tsx`, `pages/PublicOrgPage.tsx`,
+    `pages/LessonDirectory.tsx`, `pages/UpdateLesson.tsx`,
+    `pages/RabbiPortal.tsx`, `pages/OrgPortal.tsx`,
+    `pages/StudyDayUpload.tsx`, `pages/AdminDashboard.tsx`,
+    `components/FeaturedLessons.tsx`,
+    `components/SynagogueDetailModal.tsx`,
+    `components/SynagogueShowcase.tsx`,
+    `components/LessonDetailModal.tsx`,
+    `components/studyday/StudyDayEventForm.tsx`,
+    `components/portal/PortalSettingsTab.tsx`,
+    `components/synagogue/SynagogueShowcaseCarousel.tsx`. כל שדה
+    שם אומת ידנית שקיים בפועל בקובץ (לא הונח) לפני השימוש בו —
+    כולל בדיקה ש-`form.synagogue_name`/`rabbiName` הם state קיים
+    (לא שדה חדש) ב-`StudyDayUpload.tsx`/`StudyDayEventForm.tsx`/
+    `UpdateLesson.tsx`, וש-`AdminDashboard.tsx` שורה 1244 היא
+    בתוך `synagoguePortals.map` כך ש-`synagogue_name` הוא השדה
+    הנכון. `git diff --stat`: 16 קבצים, 16+/16-. איזון סוגריים
+    נבדק על כל 16 הקבצים לאחר העריכה: תקין בכולם (כולל
+    `SynagogueShowcase.tsx` שיש בו פער עגולות קדם-קיים של 3-
+    שלא נגרם מהעריכה הזו ולא השתנה). לא הופעל build/dev-server
+    (לפי הנחיות ההרצה). קבצי `apps/21-mthbram/src` חסומים
+    ב-`.gitignore` אך כבר עוקבים, `git add -f` נדרש על כל 16
+    הקבצים. ענף `fix/b-21-mthbram-logo-alt-text-0820`, קומיט
+    `908960d5`, נדחף (מפעיל פריסת Vercel תחת `more30.com/mthbram`).
+
+    שאר 6 האפליקציות (17/18/22/24/27/28) — נבדקו לעדשה הזו:
+    `27-bkalut-price` כבר מגן על כל תמונת לוגו עם `alt="תצוגת
+    לוגו"`; `24-galilee-connect-hub` נמצאו 2 מופעים נוספים
+    (`GabaiPortal.tsx` שורה 1329, `GallerySection.tsx` שורה 116)
+    שלא תוקנו הסבב הזה — נשארים בתור להמשך; שאר 4 האפליקציות
+    (17/18/22/28) משתמשות רק בנכסים סטטיים ב-`<img>`, אין ממצא.
+
+    **הבא בתור:** נושא #250 (RLS על 21-mthbram, חסום MCP), או
+    השלמת ה-`alt` על 2 המופעים שנותרו ב-`24-galilee-connect-hub`
+    (`GabaiPortal.tsx`/`GallerySection.tsx`), או השלמת ה-`rel`
+    החלקי ל-24/21 מטעמי סגנון עקבי, או פתיחת עדשה חדשה (למשל:
+    שדות תאריך/מספר ללא ולידציית טווח בצד לקוח, או `<label>` לא
+    מקושר ל-`<input>` דרך `htmlFor`/`id`).
+    via cloud server 167.99.131.167 [loop B]
