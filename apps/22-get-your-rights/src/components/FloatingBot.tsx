@@ -524,7 +524,7 @@ const FloatingBot = () => {
                   <p className="text-primary-foreground text-xs">מיצוי זכויות אישי</p>
                 </div>
               </div>
-              <button onClick={() => setIsOpen(false)} className="text-primary-foreground/70 hover:text-primary-foreground transition-colors">
+              <button onClick={() => setIsOpen(false)} aria-label="סגור" className="text-primary-foreground/70 hover:text-primary-foreground transition-colors">
                 <X className="w-5 h-5" />
               </button>
             </div>

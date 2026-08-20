@@ -57,7 +57,7 @@ const FileUpload = ({ onFilesUploaded, maxFiles = 3 }: FileUploadProps) => {
             <div key={i} className="flex items-center gap-2 p-2 rounded-lg bg-muted text-xs">
               <FileText className="w-3.5 h-3.5 text-primary shrink-0" />
               <span className="flex-1 truncate text-foreground">{f.name}</span>
-              <button onClick={() => removeFile(i)} className="text-muted-foreground hover:text-destructive">
+              <button onClick={() => removeFile(i)} aria-label="הסר קובץ" className="text-muted-foreground hover:text-destructive">
                 <X className="w-3.5 h-3.5" />
               </button>
             </div>
