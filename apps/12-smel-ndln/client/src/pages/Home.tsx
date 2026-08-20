@@ -108,6 +108,7 @@ export default function Home() {
     <div className="min-h-screen bg-background">
       <Header />
 
+      <main id="main">
       {/* Hero */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-primary to-[hsl(218_50%_22%)] dark:from-[hsl(218_44%_11%)] dark:to-background" />
@@ -320,6 +321,7 @@ export default function Home() {
           </div>
         </div>
       </section>
+      </main>
 
       <footer className="border-t border-border py-8 text-center text-sm text-muted-foreground">
         <p>SMEL NDLN — מחקר נדל״ן. הנתונים מבוססים על מקורות ממשלתיים רשמיים ואינם מהווים ייעוץ.</p>

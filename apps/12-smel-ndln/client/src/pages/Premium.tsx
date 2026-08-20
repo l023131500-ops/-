@@ -97,7 +97,7 @@ export default function Premium() {
     return (
       <div className="min-h-screen bg-background">
         <Header />
-        <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6">
+        <main id="main" className="mx-auto max-w-4xl px-4 py-10 sm:px-6">
           <Card className="mb-8 border-accent/40 bg-primary p-8 text-center text-white" data-testid="card-thankyou">
             <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-accent/20">
               <CheckCircle2 className="h-8 w-8 text-accent" />
@@ -134,7 +134,7 @@ export default function Premium() {
               </Button>
             </Card>
           )}
-        </div>
+        </main>
       </div>
     );
   }
@@ -143,7 +143,7 @@ export default function Premium() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 sm:py-10">
+      <main id="main" className="mx-auto max-w-3xl px-4 py-8 sm:px-6 sm:py-10">
         <Button
           variant="ghost"
           size="sm"
@@ -277,7 +277,7 @@ export default function Premium() {
             </Button>
           </form>
         </Form>
-      </div>
+      </main>
     </div>
   );
 }
