@@ -143,7 +143,7 @@ export default function PublicEligibility() {
         </div>
       </header>
 
-      <main className="flex-1">
+      <main id="main-content" className="flex-1">
         {/* Hero */}
         <section className="bg-gradient-to-b from-primary/5 to-background border-b border-border">
           <div className="max-w-[1180px] mx-auto px-4 sm:px-6 py-8 md:py-12 text-center">

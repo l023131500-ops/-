@@ -290,7 +290,7 @@ export default function PublicHealthFunds() {
       </section>
 
       {/* Two-column layout: SIDE search/filters column + accordion list */}
-      <main className="max-w-7xl mx-auto px-4 py-8">
+      <main id="main-content" className="max-w-7xl mx-auto px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-[300px_minmax(0,1fr)] gap-6 items-start">
 
           {/* ── SIDE COLUMN ── */}

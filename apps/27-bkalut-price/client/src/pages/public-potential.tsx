@@ -528,7 +528,7 @@ export default function PublicPotential() {
         </div>
       </header>
 
-      <main className="flex-1">
+      <main id="main-content" className="flex-1">
         <section className="bg-gradient-to-b from-primary/10 via-primary/5 to-background border-b border-border">
           <div className="max-w-[900px] mx-auto px-4 sm:px-6 py-10 md:py-14 text-center">
             <div className="inline-flex items-center gap-2 rounded-full bg-primary/15 px-3 py-1 text-xs font-semibold text-primary mb-4">

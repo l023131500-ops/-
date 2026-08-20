@@ -373,7 +373,7 @@ export default function PublicPriceComparison() {
         </div>
       </header>
 
-      <main className="max-w-5xl mx-auto px-4 py-8 space-y-6">
+      <main id="main-content" className="max-w-5xl mx-auto px-4 py-8 space-y-6">
         <section className="space-y-2">
           <h1 className="text-2xl font-bold tracking-tight" data-testid="text-pc-title">
             {settings?.title || "השוואת מחירים — חוסכים בקלות"}

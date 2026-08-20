@@ -70,7 +70,7 @@ export default function VoluntarySubmitPage() {
         </div>
       </header>
 
-      <main className="max-w-2xl mx-auto px-4 py-8 space-y-4">
+      <main id="main-content" className="max-w-2xl mx-auto px-4 py-8 space-y-4">
         {loading ? (
           <Card className="p-8 text-center text-sm text-muted-foreground">טוען…</Card>
         ) : invalid || !info ? (

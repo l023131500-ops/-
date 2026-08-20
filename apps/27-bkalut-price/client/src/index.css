@@ -284,3 +284,13 @@
     100% { transform: translateY(-150px) scale(1.18) rotate(26deg); opacity: 0; }
   }
 }
+
+.skip-link {
+  position: absolute; inset-inline-start: 8px; top: -48px;
+  background: hsl(var(--primary)); color: hsl(var(--primary-foreground));
+  padding: 10px 16px; border-radius: 8px; font-size: 14px; font-weight: 600;
+  z-index: 10000; transition: top .12s;
+}
+.skip-link:focus {
+  top: 8px;
+}

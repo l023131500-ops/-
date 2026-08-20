@@ -125,7 +125,7 @@ export default function HealthFundServicePage() {
         </div>
       </header>
 
-      <main className="max-w-3xl mx-auto px-4 py-8 space-y-5 pb-12">
+      <main id="main-content" className="max-w-3xl mx-auto px-4 py-8 space-y-5 pb-12">
         {submitted && (
           <Card className="p-6 border border-primary/20 bg-primary/5" role="status" aria-live="polite" data-testid="hf-card-success">
             <div className="flex items-start gap-3">

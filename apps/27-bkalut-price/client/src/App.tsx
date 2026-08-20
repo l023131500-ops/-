@@ -55,6 +55,35 @@ import HealthFundServicePage from "@/pages/health-fund-service";
 import HealthFundsAdmin from "@/pages/health-funds-admin";
 import VoluntarySubmitPage from "@/pages/voluntary-submit";
 
+// Skip-to-content landmark for pages that render a flat root <div> (no
+// <main> of their own) when reached via the public Switch. Kept as stable
+// module-scope components (not inline arrow functions) so wouter/React does
+// not remount the wrapped page — and its local state — on every re-render.
+// TermsPage is also rendered inside Shell (which supplies its own <main>),
+// so the wrap only happens here, on the public route, never inside the
+// component itself.
+function ServiceFormPageWithMain() {
+  return (
+    <main id="main-content">
+      <ServiceFormPage />
+    </main>
+  );
+}
+function PublicCommunityWithMain() {
+  return (
+    <main id="main-content">
+      <PublicCommunity />
+    </main>
+  );
+}
+function TermsPageWithMain() {
+  return (
+    <main id="main-content">
+      <TermsPage />
+    </main>
+  );
+}
+
 function isAdminSubdomain(): boolean {
   return typeof window !== "undefined" && window.location.hostname.startsWith("admin.");
 }
@@ -177,15 +206,15 @@ function AppRouter() {
           <Route path="/potential/:slug" component={PublicPotential} />
           <Route path="/p/topic/:id" component={PublicTopic} />
           <Route path="/p/financial" component={PublicFinancial} />
-          <Route path="/service/:id" component={ServiceFormPage} />
+          <Route path="/service/:id" component={ServiceFormPageWithMain} />
           <Route path="/r/:id" component={PublicReminder} />
           <Route path="/price-comparison" component={PublicPriceComparison} />
           <Route path="/compare/:barcode" component={PublicProductCompare} />
           <Route path="/health-funds" component={PublicHealthFunds} />
           <Route path="/health-fund-service/:id" component={HealthFundServicePage} />
-          <Route path="/community/:slug" component={PublicCommunity} />
+          <Route path="/community/:slug" component={PublicCommunityWithMain} />
           <Route path="/submit/:token" component={VoluntarySubmitPage} />
-          <Route path="/terms" component={TermsPage} />
+          <Route path="/terms" component={TermsPageWithMain} />
           <Route component={NotFound} />
         </Switch>
         {/* Floating chatbot — admin-toggle gated, hidden by default. */}

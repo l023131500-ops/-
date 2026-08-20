@@ -159,7 +159,7 @@ export default function PublicLanding() {
         </div>
       </header>
 
-      <main className="flex-1">
+      <main id="main-content" className="flex-1">
         {/* HERO */}
         <section className="bg-gradient-to-b from-primary/10 via-primary/5 to-background border-b border-border">
           <div className="max-w-[1100px] mx-auto px-4 sm:px-6 py-16 md:py-24 text-center">

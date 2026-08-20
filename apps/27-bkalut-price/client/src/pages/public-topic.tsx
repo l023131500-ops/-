@@ -124,7 +124,7 @@ export default function PublicTopic() {
         </div>
       </header>
 
-      <main className="flex-1">
+      <main id="main-content" className="flex-1">
         <div className="max-w-[900px] mx-auto px-4 sm:px-6 py-8 md:py-12 space-y-8">
           {isLoading ? (
             <div className="space-y-3">

@@ -194,7 +194,7 @@ export default function PublicReminder() {
         </div>
       </header>
 
-      <main className="flex-1">
+      <main id="main-content" className="flex-1">
         <div className="max-w-[760px] mx-auto px-4 sm:px-6 py-8 md:py-12 space-y-6">
           <div className="text-center space-y-2">
             <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 text-primary px-3 py-1 text-xs font-semibold">
