@@ -117,18 +117,22 @@ export default function SynagogueDetailModal({ open, onClose, data }: Props) {
     }
   };
 
+  const escapeHtml = (str: string) =>
+    str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+
   const handlePrint = () => {
-    const text = buildShareText().replace(/\n/g, "<br/>");
+    const text = escapeHtml(buildShareText()).replace(/\n/g, "<br/>");
+    const title = escapeHtml(data.synagogue_name);
     const w = window.open("", "_blank", "width=800,height=900");
     if (!w) return;
     w.document.write(`
-      <html dir="rtl"><head><title>${data.synagogue_name}</title>
+      <html dir="rtl"><head><title>${title}</title>
       <style>
         body { font-family: 'Assistant', Arial, sans-serif; padding: 40px; background: #fdf8f0; color: #2a2a2a; line-height: 1.8; }
         h1 { font-size: 28px; color: hsl(180 45% 25%); border-bottom: 2px solid hsl(180 45% 30% / 0.3); padding-bottom: 10px; }
         .content { font-size: 16px; white-space: pre-wrap; }
       </style></head><body>
-        <h1>${data.synagogue_name}</h1>
+        <h1>${title}</h1>
         <div class="content">${text}</div>
       </body></html>
     `);
