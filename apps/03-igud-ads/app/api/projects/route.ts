@@ -11,24 +11,19 @@ export async function GET() {
   if (!user?.email) return NextResponse.json({ error: "לא מחובר" }, { status: 401 });
 
   const svc = createSupabaseService();
-  // Try to find projects by customer_data email or uploader_email
+  // Match ownership (uploader_email or customer_data email/contact) at the query
+  // level, same pattern as /api/my/projects. The previous version fetched only
+  // the newest 100 rows *platform-wide* and filtered afterward, so a user's own
+  // older project silently dropped out of view once >100 newer projects existed
+  // from other users.
   const { data } = await svc
     .from("ad_projects")
     .select("*")
+    .or(`uploader_email.eq.${user.email},customer_data->>email.eq.${user.email},customer_data->>contact.eq.${user.email}`)
     .order("created_at", { ascending: false })
     .limit(100);
 
-  // Filter client-side since customer_data is JSONB
-  const filtered = (data || []).filter((p: Record<string, unknown>) => {
-    const cd = p.customer_data as Record<string, unknown> | null;
-    return (
-      (p.uploader_email as string | null) === user.email ||
-      cd?.email === user.email ||
-      cd?.contact === user.email
-    );
-  });
-
-  return NextResponse.json(filtered);
+  return NextResponse.json(data || []);
 }
 
 export async function POST(req: Request) {
