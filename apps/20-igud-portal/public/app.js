@@ -204,6 +204,9 @@ function renderTenant(data, token) {
   body.append(el("h2", { style: "margin-top:40px" }, "צור קשר"));
   const form = el("form", { class: "contact", onSubmit: async (e) => {
     e.preventDefault();
+    const submitBtn = form.querySelector('button[type="submit"]');
+    if (submitBtn.disabled) return;
+    submitBtn.disabled = true;
     const fd = new FormData(form);
     const payload = Object.fromEntries(fd.entries());
     const notice = el("div", { class: "notice" }, "שולח…");
@@ -221,6 +224,8 @@ function renderTenant(data, token) {
     } catch (e) {
       notice.className = "notice error";
       notice.textContent = "שגיאה בשליחה: נסה שוב מאוחר יותר";
+    } finally {
+      submitBtn.disabled = false;
     }
   }},
     el("label", {}, "שם מלא", el("input", { name: "name", required: true })),
