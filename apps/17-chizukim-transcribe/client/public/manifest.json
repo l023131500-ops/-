@@ -1,0 +1,20 @@
+{
+  "name": "מערכת תמלול — חיזוקים קצרים",
+  "short_name": "חיזוקים",
+  "description": "ארכיון החיזוקים הקצרים — הקלטות מתומללות, ניתנות לחיפוש בכל מילה שנאמרה בהן.",
+  "start_url": "/chizukim/",
+  "scope": "/chizukim/",
+  "display": "standalone",
+  "dir": "rtl",
+  "lang": "he",
+  "theme_color": "#2e467f",
+  "background_color": "#f8f6f2",
+  "icons": [
+    {
+      "src": "/chizukim/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

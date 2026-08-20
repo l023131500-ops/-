@@ -1,0 +1,20 @@
+{
+  "name": "איגוד השיעורים — פורטל אחוד",
+  "short_name": "איגוד השיעורים",
+  "description": "פלטפורמה ארצית לחיפוש שיעורי תורה, בתי כנסת, גבאים, ארגונים ומגידי שיעור.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "dir": "rtl",
+  "lang": "he",
+  "theme_color": "#01696F",
+  "background_color": "#F7F6F2",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

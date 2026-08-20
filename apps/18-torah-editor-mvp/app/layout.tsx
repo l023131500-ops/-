@@ -19,6 +19,8 @@ export const metadata: Metadata = {
   // אותו, ולכן הקידומת כתובה ביד. בלעדיה ה-‎href‎ היה ‎/favicon.svg‎, שנפתר מול
   // ‎more30.com‎ ולא מול ‎/orech‎, ומצייר בלשונית את הסמל של הפורטל.
   icons: { icon: '/orech/favicon.svg' },
+  // ‎manifest‎ סובל מאותה תקלת ‎basePath‎ כמו ‎icons‎ למעלה — הקידומת כתובה ביד.
+  manifest: '/orech/manifest.json',
   openGraph: {
     type: 'website',
     locale: 'he_IL',

@@ -1,0 +1,20 @@
+{
+  "name": "מאגר בקלות — כלי פנימי לצוות",
+  "short_name": "בקלות",
+  "description": "מאגר פנימי לחיפוש זכויות, הטבות וארגוני סיוע — בקלות",
+  "start_url": "/mechiron/",
+  "scope": "/mechiron/",
+  "display": "standalone",
+  "dir": "rtl",
+  "lang": "he",
+  "theme_color": "#0b646f",
+  "background_color": "#F7F4EC",
+  "icons": [
+    {
+      "src": "/mechiron/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

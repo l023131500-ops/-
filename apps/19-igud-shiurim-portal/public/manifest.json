@@ -1,0 +1,20 @@
+{
+  "name": "איגוד השיעורים — הפורטל האחוד",
+  "short_name": "איגוד השיעורים",
+  "description": "ספרייה ציבורית של ארגונים, בתי כנסת ומגידי שיעור",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "dir": "rtl",
+  "lang": "he",
+  "theme_color": "#171b45",
+  "background_color": "#f6f5f1",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

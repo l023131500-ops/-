@@ -1,0 +1,20 @@
+{
+  "name": "השוואת קופות חולים | מבית בקלות",
+  "short_name": "קופות חולים",
+  "description": "השוואת זכויות והטבות קופות חולים בישראל — מידע בסיסי, סינון לפי נושא, קטגוריה וקופה, ויועץ חכם להתאמת קופה.",
+  "start_url": "/kupot/",
+  "scope": "/kupot/",
+  "display": "standalone",
+  "dir": "rtl",
+  "lang": "he",
+  "theme_color": "#107e84",
+  "background_color": "#f9fbfb",
+  "icons": [
+    {
+      "src": "/kupot/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

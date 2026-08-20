@@ -1,0 +1,20 @@
+{
+  "name": "בקלות — מיצוי זכויות, מענקים והטבות",
+  "short_name": "בקלות",
+  "description": "מיצוי זכויות מכל הגופים הממשלתיים — ביטוח לאומי, דיור, מיסים, רווחה ועוד.",
+  "start_url": "/zchuyot/",
+  "scope": "/zchuyot/",
+  "display": "standalone",
+  "dir": "rtl",
+  "lang": "he",
+  "theme_color": "#2d7654",
+  "background_color": "#f9fbf9",
+  "icons": [
+    {
+      "src": "/zchuyot/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
