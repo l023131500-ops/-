@@ -59,12 +59,14 @@ https://bieebmnmkffwbqlsfozh.supabase.co/storage/v1/object/public/design/bkalot-
 
 ## פונטים ורקעים
 
-מעבר לזוג ברירת המחדל (`--font-body` / `--font-heading`), יש עוד 5 פונטים
+מעבר לזוג ברירת המחדל (`--font-body` / `--font-heading`), יש עוד 7 פונטים
 ייעודיים וזמינים כמחלקת CSS (`bk-font-display` / `bk-font-formal` /
-`bk-font-modern` / `bk-font-friendly` / `bk-font-alt-body`) — ראו `style-guide.html`
-לדוגמה חיה של כל אחד ומתי להשתמש בו. וגם 4 גרדיאנטים + 2 טקסטורות רקע
-(`bk-bg-brand` / `bk-bg-hero` / `bk-bg-gold` / `bk-bg-subtle` / `bk-bg-dots` /
-`bk-bg-grid`), בנויים ממשתני הצבע הקיימים כך שמתאימים אוטומטית גם למצב כהה.
+`bk-font-modern` / `bk-font-friendly` / `bk-font-alt-body` / `bk-font-narrow` /
+`bk-font-serif-alt`) — ראו `style-guide.html` לדוגמה חיה של כל אחד ומתי להשתמש
+בו. וגם 4 גרדיאנטים + 5 טקסטורות רקע (`bk-bg-brand` / `bk-bg-hero` /
+`bk-bg-gold` / `bk-bg-subtle` / `bk-bg-dots` / `bk-bg-grid` / `bk-bg-diagonal` /
+`bk-bg-wave` / `bk-bg-noise`), בנויים ממשתני הצבע הקיימים כך שמתאימים אוטומטית
+גם למצב כהה.
 
 ---
-מותג בקלות · Heebo + Frank Ruhl Libre + 5 פונטים נוספים · RTL
+מותג בקלות · Heebo + Frank Ruhl Libre + 7 פונטים נוספים · RTL

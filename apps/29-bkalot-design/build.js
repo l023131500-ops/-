@@ -139,6 +139,8 @@ a{color:var(--teal);text-decoration:none;transition:color .18s}
 .bk-font-modern{font-family:var(--font-modern)}
 .bk-font-friendly{font-family:var(--font-friendly)}
 .bk-font-alt-body{font-family:var(--font-alt-body)}
+.bk-font-narrow{font-family:var(--font-narrow)}
+.bk-font-serif-alt{font-family:var(--font-serif-alt)}
 
 /* ---- Backgrounds (bk-bg-*) — גרדיאנטים לקטעי הירו/כותרת + טקסטורות עדינות למשטחים ---- */
 .bk-bg-brand{background:var(--bg-gradient-brand);color:#fff}
@@ -147,6 +149,9 @@ a{color:var(--teal);text-decoration:none;transition:color .18s}
 .bk-bg-subtle{background:var(--bg-gradient-subtle)}
 .bk-bg-dots{background-image:var(--bg-pattern-dots);background-color:var(--surface)}
 .bk-bg-grid{background-image:var(--bg-pattern-grid);background-color:var(--surface)}
+.bk-bg-diagonal{background-image:var(--bg-pattern-diagonal);background-color:var(--surface)}
+.bk-bg-wave{background-image:var(--bg-pattern-wave);background-color:var(--surface)}
+.bk-bg-noise{background-image:var(--bg-pattern-noise);background-color:var(--surface)}
 `;
 
 fs.writeFileSync(path.join(ROOT, "bkalot-theme.css"), css, "utf8");
