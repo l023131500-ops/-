@@ -125,7 +125,7 @@ const IvrBuilder = () => {
                     <div className="bg-muted/30 rounded-xl p-4 mb-3">
                       <div className="flex items-center justify-between mb-1">
                         <span className="font-body text-xs text-muted-foreground">URL:</span>
-                        <button onClick={() => copyText(ep.url, ep.name + "-url")} className="text-xs text-primary hover:text-primary/80">
+                        <button onClick={() => copyText(ep.url, ep.name + "-url")} aria-label="העתקת כתובת URL" className="text-xs text-primary hover:text-primary/80">
                           {copied === ep.name + "-url" ? <CheckCheck className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
                         </button>
                       </div>
@@ -135,7 +135,7 @@ const IvrBuilder = () => {
                     <div className="bg-muted/30 rounded-xl p-4">
                       <div className="flex items-center justify-between mb-1">
                         <span className="font-body text-xs text-muted-foreground">דוגמא:</span>
-                        <button onClick={() => copyText(ep.example, ep.name + "-ex")} className="text-xs text-primary hover:text-primary/80">
+                        <button onClick={() => copyText(ep.example, ep.name + "-ex")} aria-label="העתקת דוגמת קוד" className="text-xs text-primary hover:text-primary/80">
                           {copied === ep.name + "-ex" ? <CheckCheck className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
                         </button>
                       </div>

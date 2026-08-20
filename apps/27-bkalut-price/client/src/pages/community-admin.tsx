@@ -340,7 +340,7 @@ export default function CommunityAdmin() {
                     <Button size="icon" variant="ghost" onClick={() => copyLink(l.slug)} title="העתקה"><Copy className="w-4 h-4" /></Button>
                     <Button size="icon" variant="ghost" onClick={() => window.open(`${origin}/#/community/${l.slug}`, "_blank")} title="תצוגה"><Eye className="w-4 h-4" /></Button>
                     <Switch checked={l.active} onCheckedChange={() => toggleLink(l)} aria-label={`הפעלה/כיבוי של הקישור ${l.label || l.slug}`} />
-                    <Button size="icon" variant="ghost" onClick={() => deleteLink(l.id)}><Trash2 className="w-4 h-4 text-destructive" /></Button>
+                    <Button size="icon" variant="ghost" onClick={() => deleteLink(l.id)} title="מחיקת קישור"><Trash2 className="w-4 h-4 text-destructive" /></Button>
                   </div>
                 </div>
               ))}
@@ -360,7 +360,7 @@ export default function CommunityAdmin() {
                       <Input defaultValue={ques.label} onBlur={(e) => e.target.value !== ques.label && updateQuestion(ques.id, { label: e.target.value })} className="font-medium" data-testid={`question-label-${ques.id}`} />
                       <Input defaultValue={ques.helpText || ""} onBlur={(e) => e.target.value !== (ques.helpText || "") && updateQuestion(ques.id, { helpText: e.target.value })} placeholder="טקסט עזרה (לא חובה)" className="text-xs" />
                     </div>
-                    <Button size="icon" variant="ghost" onClick={() => deleteQuestion(ques.id)} data-testid={`button-del-question-${ques.id}`}><Trash2 className="w-4 h-4 text-destructive" /></Button>
+                    <Button size="icon" variant="ghost" onClick={() => deleteQuestion(ques.id)} title="מחיקת שאלה" data-testid={`button-del-question-${ques.id}`}><Trash2 className="w-4 h-4 text-destructive" /></Button>
                   </div>
                   <div className="flex items-center gap-3 flex-wrap">
                     <div className="flex items-center gap-1 text-xs">

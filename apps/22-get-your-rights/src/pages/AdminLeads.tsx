@@ -646,7 +646,7 @@ const ApiReferenceSection = () => {
               <p className="text-sm text-foreground">{ep.desc}</p>
               <div className="relative">
                 <pre className="bg-muted rounded-lg p-3 text-xs overflow-x-auto" dir="ltr"><code>{ep.example}</code></pre>
-                <button onClick={() => copyToClipboard(ep.example)} className="absolute top-2 left-2 p-1 rounded bg-background border border-border hover:bg-muted transition-colors">
+                <button onClick={() => copyToClipboard(ep.example)} aria-label="העתקת דוגמת קוד" className="absolute top-2 left-2 p-1 rounded bg-background border border-border hover:bg-muted transition-colors">
                   <Copy className="w-3 h-3 text-muted-foreground" />
                 </button>
               </div>

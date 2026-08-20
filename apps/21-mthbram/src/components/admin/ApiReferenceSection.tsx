@@ -240,7 +240,7 @@ const CopyButton = ({ text }: { text: string }) => {
     setTimeout(() => setCopied(false), 2000);
   };
   return (
-    <button onClick={copy} className="p-1.5 rounded-lg hover:bg-muted/60 transition-colors">
+    <button onClick={copy} aria-label="העתקה" className="p-1.5 rounded-lg hover:bg-muted/60 transition-colors">
       {copied ? <CheckCheck className="w-4 h-4 text-teal" /> : <Copy className="w-4 h-4 text-muted-foreground" />}
     </button>
   );
