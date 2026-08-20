@@ -419,7 +419,7 @@ function renderFundCompare(uid) {
   let html = `<div class="fc-best">הקופה המשתלמת: <strong>${esc(t.best) || '—'}</strong></div><div class="fc-grid">`;
   for (const fk of ['clalit', 'maccabi', 'meuhedet', 'leumit']) {
     const arr = t.ft[fk] || [];
-    html += `<div class="fc-col"><h4>${fundNames[fk]}</h4>`;
+    html += `<div class="fc-col"><h3>${fundNames[fk]}</h3>`;
     if (!arr.length) html += `<div class="fc-empty">אין מידע ספציפי</div>`;
     else arr.forEach(x => html += `<div class="fc-tier"><span class="tier-chip">${esc(x.t)}</span><p>${esc(x.v)}</p></div>`);
     html += `</div>`;

@@ -191,7 +191,7 @@ section h2{font-size:clamp(1.7rem,3.5vw,2.4rem);font-weight:700;margin-bottom:10
 .fc-best strong{color:var(--gold)}
 .fc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
 .fc-col{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:16px}
-.fc-col h4{font-size:1.1rem;margin-bottom:12px;color:var(--teal-d);border-bottom:2px solid var(--teal);padding-bottom:6px}
+.fc-col h3{font-size:1.1rem;margin-bottom:12px;color:var(--teal-d);border-bottom:2px solid var(--teal);padding-bottom:6px}
 .fc-empty{color:var(--faint);font-size:.88rem;font-style:italic}
 .fc-tier{margin-bottom:10px;font-size:.85rem}
 .fc-tier p{color:var(--muted);margin-top:3px;line-height:1.5}
