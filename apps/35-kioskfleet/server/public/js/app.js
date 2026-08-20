@@ -1134,8 +1134,13 @@ async function loadEnrollments() {
   // Four columns ending in two buttons, and the אתר cell is an untruncated URL:
   // the table wants 548px inside a 276px card at 390px and dragged the whole
   // console sideways. Same wrapper, same reason, as loadClients() and loadUsers().
+  // The other two URL-bearing tables (loadLinks' l-list, loadClients' c-list)
+  // cap their URL cell at 220px/230px; this one was contained (wrapped in the
+  // overflow-x:auto div) but not bounded, so a long pasted URL alone could
+  // still push the cell — and with it every other column on the row — wider
+  // than the card. Same cap+ellipsis+title pattern as c-list's `trunc`.
   box.innerHTML = '<div style="overflow-x:auto"><table><tr><th>קוד</th><th>אתר</th><th>שם</th><th></th></tr>' +
-    open.map((e) => `<tr><td><span class="code-chip" style="font-size:15px">${esc(e.code)}</span></td><td dir="ltr">${esc(e.home_url)}</td><td>${esc(e.name || '')}</td><td class="row" style="gap:6px">${
+    open.map((e) => `<tr><td><span class="code-chip" style="font-size:15px">${esc(e.code)}</span></td><td dir="ltr" style="font-size:12px;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc(e.home_url)}">${esc(e.home_url)}</td><td>${esc(e.name || '')}</td><td class="row" style="gap:6px">${
       // A code created in an earlier session is still handed to an installer, so
       // the link belongs on every open row and not only on the one just created.
       // nowrap: the cell is narrow and a two-line button in a row of one-line

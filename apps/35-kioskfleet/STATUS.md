@@ -3193,3 +3193,21 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
      — this step touches `public/js/app.js` only. Open after it is a copy
      decision and not an accessibility one: `#e-list`'s אתר column is contained
      but not bounded, where the other two tables cap theirs at 230px and 220px.
+     **[20/08/2026, Loop C] That is now bounded too** — `loadEnrollments()`'s
+     `<td dir="ltr">` for `e.home_url` had no `max-width` at all, only the
+     `overflow-x:auto` wrapper containing the overflow rather than preventing
+     it; a long pasted enrollment URL could still stretch that one cell (and
+     the row's other three columns with it) past the card. Given the same
+     cap+ellipsis pattern `loadLinks()`'s `l-list` already uses (220px) rather
+     than inventing a third number, plus the `title=` attribute `loadClients()`'s
+     `trunc` pattern uses so the full URL is still reachable on hover/long-press
+     instead of only in the network tab. `node --check` on `app.js` is clean;
+     `node --test` here still only runs `seedadmin.test.mjs` (the wider
+     151/152 suite lives outside this checkout, per the note at the top of this
+     file) and that one file's failure is pre-existing and unrelated —
+     `node:sqlite` is not available in this container's Node 20.20.2 build, the
+     same gap for every checkout this loop has run in, not something this edit
+     touched. Not deployed from here (Railway builds from
+     `l023131500-ops/zol`#`claude/what-do-you-see-gxo5tc`, not this checkout —
+     see "Next, in order" #1); the source-of-truth change is committed to this
+     tracked copy the same way every prior console fix in this log has been.
