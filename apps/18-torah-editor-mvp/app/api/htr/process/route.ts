@@ -48,7 +48,11 @@ export async function POST(req: NextRequest) {
   }
   const j = job as HtrJob;
 
-  await supabase.from('htr_jobs').update({ status: 'processing' }).eq('id', jobId);
+  const { error: processingErr } = await supabase
+    .from('htr_jobs').update({ status: 'processing' }).eq('id', jobId);
+  if (processingErr) {
+    console.error(`htr/process: failed to mark job ${jobId} as processing:`, processingErr.message);
+  }
 
   // 1) signed URL (שעה)
   const { data: signed, error: signErr } = await supabase.storage
@@ -66,15 +70,24 @@ export async function POST(req: NextRequest) {
     rawText = res.rawText;
     meanConf = res.meanConfidence;
     confidence = res.lines;
-    await supabase.from('htr_jobs').update({
+    const { error: rawReadyErr } = await supabase.from('htr_jobs').update({
       status: 'raw_ready', engine: res.engine,
       raw_text: rawText, confidence, mean_confidence: meanConf
     }).eq('id', jobId);
+    if (rawReadyErr) {
+      // ה-OCR עצמו הצליח (עלות אמיתית שכבר שולמה), אבל התוצאה לא נשמרה —
+      // אם נדווח "הצליח" כאן, ה-raw_text יאבד בלי עקבות ואיש לא ידע לנסות שוב.
+      await fail(supabase, jobId, `שמירת תוצאת ה-OCR נכשלה: ${rawReadyErr.message}`);
+      return NextResponse.json({ error: 'שמירת תוצאת הזיהוי נכשלה', detail: rawReadyErr.message }, { status: 502 });
+    }
   } catch (e: any) {
     if (e instanceof HtrEngineNotConfigured) {
-      await supabase.from('htr_jobs').update({
+      const { error: notConfiguredErr } = await supabase.from('htr_jobs').update({
         status: 'failed', engine: e.engineName, error_detail: e.message
       }).eq('id', jobId);
+      if (notConfiguredErr) {
+        console.error(`htr/process: failed to record engine-not-configured state for job ${jobId}:`, notConfiguredErr.message);
+      }
       return NextResponse.json({
         error: 'מנוע HTR אינו מוגדר', engine: e.engineName, detail: e.message,
         hint: 'הצינור בנוי ומחכה לחיבור שרת HTR (GPU). ראה מסמך המסירה.'
@@ -91,16 +104,26 @@ export async function POST(req: NextRequest) {
   const corrector = pickCorrector(j.tier);
   try {
     const c = await corrector.correct(rawText);
-    await supabase.from('htr_jobs').update({
+    const { error: correctedErr } = await supabase.from('htr_jobs').update({
       status: 'corrected', corrector: c.corrector, corrected_text: c.correctedText
     }).eq('id', jobId);
+    if (correctedErr) {
+      // התיקון עצמו הצליח (עלות LLM אמיתית ששולמה), אבל לא נשמר. raw_text כבר
+      // נשמר בשלב הקודם, אז לא הכל אבד — אבל אסור לדווח "corrected" כשזה לא נשמר.
+      return NextResponse.json({
+        error: 'שמירת הטקסט המתוקן נכשלה', detail: correctedErr.message, stage: 'raw_ready'
+      }, { status: 502 });
+    }
     return NextResponse.json({ ok: true, stage: 'corrected', job_id: jobId });
   } catch (e: any) {
     // תיקון נכשל — לא נורא, הטקסט הגולמי כבר שמור. סטטוס נשאר raw_ready.
     const detail = e instanceof CorrectorNotConfigured ? e.message : `שגיאת תיקון: ${e.message}`;
-    await supabase.from('htr_jobs').update({
+    const { error: fallbackErr } = await supabase.from('htr_jobs').update({
       status: 'raw_ready', corrector: 'none', error_detail: detail
     }).eq('id', jobId);
+    if (fallbackErr) {
+      console.error(`htr/process: failed to record correction-skip for job ${jobId}:`, fallbackErr.message);
+    }
     return NextResponse.json({
       ok: true, stage: 'raw_ready', correction_skipped: true, detail
     }, { status: 200 });
@@ -108,5 +131,8 @@ export async function POST(req: NextRequest) {
 }
 
 async function fail(supabase: any, jobId: string, detail: string) {
-  await supabase.from('htr_jobs').update({ status: 'failed', error_detail: detail }).eq('id', jobId);
+  const { error } = await supabase.from('htr_jobs').update({ status: 'failed', error_detail: detail }).eq('id', jobId);
+  if (error) {
+    console.error(`htr/process: failed to record failure state for job ${jobId}:`, error.message);
+  }
 }
