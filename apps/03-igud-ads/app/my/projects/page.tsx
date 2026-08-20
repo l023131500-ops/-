@@ -45,7 +45,7 @@ export default function MyProjectsPage() {
               {p.generated_image_url ? (
                 <img src={p.generated_image_url} alt={p.ad_type ? `תצוגה מקדימה של מודעה - ${p.ad_type}` : "תצוגה מקדימה של מודעה שנוצרה"} className="w-full aspect-square object-cover" />
               ) : (
-                <div className="w-full aspect-square bg-gray-100 flex items-center justify-center text-gray-400">
+                <div className="w-full aspect-square bg-gray-100 flex items-center justify-center text-gray-600">
                   {p.status === "generating" ? "בעיבוד..." : p.status === "error" ? "שגיאה" : "ממתין"}
                 </div>
               )}
@@ -59,7 +59,7 @@ export default function MyProjectsPage() {
                   }`}>{p.status}</span>
                   {p.ad_type && <span className="text-xs text-gray-500">{p.ad_type}</span>}
                 </div>
-                <div className="text-xs text-gray-400">{new Date(p.created_at).toLocaleString("he-IL")}</div>
+                <div className="text-xs text-gray-600">{new Date(p.created_at).toLocaleString("he-IL")}</div>
               </div>
             </Link>
           ))}
