@@ -5,6 +5,17 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+// האפליקציה מוגשת תחת more30.com/mthbram (BrowserRouter basename="/mthbram"
+// ב-App.tsx). window.location.origin לבדו מחזיר more30.com בלי הקידומת, ולכן
+// כל קישור ציבורי/העתקה שנבנה ישירות ממנו נחת על נתיב שלא קיים. משתמש כאן
+// באותו BASE_URL שה-fix ל-#201 כבר השתמש בו ב-AdminLogin.
+export function getPublicOrigin(): string {
+  const base = import.meta.env.BASE_URL.endsWith("/")
+    ? import.meta.env.BASE_URL
+    : `${import.meta.env.BASE_URL}/`;
+  return `${window.location.origin}${base}`.replace(/\/$/, "");
+}
+
 const HEBREW_MONTHS = [
   "בינואר", "בפברואר", "במרץ", "באפריל", "במאי", "ביוני",
   "ביולי", "באוגוסט", "בספטמבר", "באוקטובר", "בנובמבר", "בדצמבר",

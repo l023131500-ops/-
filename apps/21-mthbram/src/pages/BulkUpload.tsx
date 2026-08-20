@@ -9,6 +9,7 @@ import { Link2, Phone, Mail, Send, Check, ExternalLink, Sparkles } from "lucide-
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import agudLogo from "@/assets/agud-logo-mark.jpg";
+import { getPublicOrigin } from "@/lib/utils";
 import BulkLessonForm from "@/components/bulk/BulkLessonForm";
 import BulkLessonTable from "@/components/bulk/BulkLessonTable";
 import ExcelImportExport from "@/components/bulk/ExcelImportExport";
@@ -59,7 +60,7 @@ export default function BulkUpload() {
   useEffect(() => { loadAll(); }, [loadAll]);
 
   const copyLink = async () => {
-    const url = `${window.location.origin}/bulk-upload/${token}`;
+    const url = `${getPublicOrigin()}/bulk-upload/${token}`;
     await navigator.clipboard.writeText(url);
     setCopied(true);
     toast.success("הקישור הועתק! שלחו אותו לאחרים שיוסיפו שיעורים");

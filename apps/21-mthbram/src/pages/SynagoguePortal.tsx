@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
+import { getPublicOrigin } from "@/lib/utils";
 import StudyDayEventForm from "@/components/studyday/StudyDayEventForm";
 import StudyDayEventTable from "@/components/studyday/StudyDayEventTable";
 import PortalSettingsTab from "@/components/portal/PortalSettingsTab";
@@ -47,8 +48,8 @@ export default function SynagoguePortal() {
 
   useEffect(() => { load(); }, [load]);
 
-  const publicUrl = portal?.public_token ? `${window.location.origin}/view/shul/${portal.public_token}` : "";
-  const inviteUrl = `${window.location.origin}/study-days/main`;
+  const publicUrl = portal?.public_token ? `${getPublicOrigin()}/view/shul/${portal.public_token}` : "";
+  const inviteUrl = `${getPublicOrigin()}/study-days/main`;
 
   const copy = async (url: string, side: "public" | "invite", msg: string) => {
     await navigator.clipboard.writeText(url);

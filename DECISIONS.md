@@ -10248,3 +10248,58 @@
     בסיס ב-17/18/19/20/21/22/24/28 (לא נבדק בסבב זה, רק 27). נושא
     #245/#250 (RLS, חסומים) נשארים כפי שהם. via cloud server
     167.99.131.167 [loop B]
+
+## 20/08/2026 — סבב 429 (loop B)
+
+429. **אותו דפוס `window.location.origin` ללא קידומת נתיב — נמצא ותוקן
+    ב-21-mthbram (10 קריאות, 8 קבצים), נבדקו והוברר שנקיים 22/24.**
+
+    המשך ישיר לפריט "הבא בתור" שנרשם בסבב 428. סרקתי בפועל (grep, לא
+    ניחוש) את `window.location.origin` בכל שמונת האפליקציות שנותרו:
+    17/19/28 — אין שימוש כזה כלל. 18-torah-editor-mvp — שימוש יחיד
+    ב-`app/login/page.tsx` ל-OAuth `emailRedirectTo`, אך זו אפליקציית
+    Next.js שמוגשת בשורש `more30.com/orech` ללא `base`/`basename` נפרד
+    (בדקתי `vite.config`/מבנה Next — אין קידומת שנחסרת). 22-get-your-
+    rights: יש `base: "/zchuyot/"` ב-`vite.config.ts`, אך השימוש היחיד
+    (`AdminLogin.tsx`) כבר בנוי נכון עם `import.meta.env.BASE_URL` —
+    לא היה תקין להתייחס אליו כבאג. 24-galilee-connect-hub: יש 3 שימושים
+    (`SynagogueDetailsManager.tsx`, `AllSynagoguesPage.tsx`,
+    `SynagogueCarousel.tsx`) שכן חסרים קידומת — **לא תוקן בסבב זה**,
+    נשאר לתור הבא כדי לשמור על היקף שינוי בר-ביקורת.
+
+    21-mthbram היה הפגיעה החמורה ביותר: `vite.config.ts` מגדיר
+    `base: "/mthbram/"` ו-`App.tsx` מגדיר בפירוש
+    `<BrowserRouter basename="/mthbram">` (עם הערה בקוד שמסבירה שזו
+    תקלה שכבר קרתה בפרודקשן פעם אחת — נתיב `/mthbram` נופל על 404 בלי
+    ה-basename). כל קישורי ה"העתק קישור"/שיתוף/הפניית OAuth שנבנו
+    ישירות מ-`window.location.origin` (בלי `/mthbram`) היו נוחתים על
+    נתיב שלא קיים באפליקציה הזו (למשל `more30.com/view/rabbi/<token>`
+    במקום `more30.com/mthbram/view/rabbi/<token>`) — קישורים אמיתיים
+    שרבנים/בתי כנסת/ארגונים מעתיקים ומפיצים בפועל. תוקן על ידי הוספת
+    `getPublicOrigin()` משותפת ל-`src/lib/utils.ts` (אותו דפוס
+    `import.meta.env.BASE_URL` שכבר שימש בתיקון #201 ב-`AdminLogin.tsx`
+    לקישור איפוס סיסמה — עכשיו כל הקוד באפליקציה עקבי), והחלפת כל
+    10 הקריאות הישירות ב-8 קבצים: `AdminLogin.tsx` (הפניית Google OAuth
+    שהייתה חסרה עד כה, בניגוד לקישור האיפוס שכבר תוקן), `BulkUpload.tsx`,
+    `SynagogueBanner.tsx`, `StudyDayBanner.tsx`, `BulkUploadBanner.tsx`,
+    `ShareDistributionBar.tsx`, `RabbiPortal.tsx` (2), `OrgPortal.tsx` (2),
+    `SynagoguePortal.tsx` (2), `AdminDashboard.tsx` (6, בטבלאות ניהול
+    רבנים/ארגונים/בתי כנסת).
+
+    **בדיקות תקינות:** `grep` מוודא שלא נותר אף `window.location.origin`
+    גולמי מלבד השורה הקיימת שכבר הייתה תקינה (`AdminLogin.tsx` reset)
+    ובתוך `getPublicOrigin()` עצמה. בדיקת איזון סוגריים (Python) על כל
+    11 הקבצים — נקי, פרט לחוסר איזון קיים-מראש ב-`SynagoguePortal.tsx`
+    שאומת מול `git show HEAD:...` כלא קשור לשינוי (אותו דלתא לפני
+    ואחרי, קיים כנראה מסימן פיסוק בטקסט עברי). `git diff --stat`:
+    11 קבצים, +39/-20 — כל שורה שהשתנתה היא קריאה קיימת שהוחלפה או
+    הוספת `import`, אין מחיקת פיצ'ר. לא הותקנו תלויות ולא הופעל
+    build/dev-server — נבדק בקריאת קוד ישירה בלבד לפי הנחיות ההרצה.
+
+    ענף `fix/b-22-whatsapp-noopener-round395-0820` (שרשרת הענפים היא
+    המקור המלא היחיד ל-loop B, לא `main`), נדחף (מפעיל פריסת Vercel
+    תחת `more30.com/mthbram`).
+
+    **הבא בתור:** אותו תיקון (`getPublicOrigin()` + 3 קריאות) עדיין
+    פתוח ב-24-galilee-connect-hub. נושא #245/#250 (RLS, חסומים) נשארים
+    כפי שהם. via cloud server 167.99.131.167 [loop B]

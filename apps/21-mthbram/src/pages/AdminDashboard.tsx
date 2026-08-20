@@ -21,6 +21,7 @@ import LessonDetailModal from "@/components/LessonDetailModal";
 import FullAccessRequestsTab from "@/components/admin/FullAccessRequestsTab";
 import MatchingTab from "@/components/admin/MatchingTab";
 import { exportLessonsToExcel, validateLessonForExport } from "@/lib/lessonExcelExport";
+import { getPublicOrigin } from "@/lib/utils";
 import { toast } from "sonner";
 
 const AdminDashboard = () => {
@@ -1022,8 +1023,8 @@ const AdminDashboard = () => {
                     </div>
                     <div className="space-y-3">
                       {rabbiPortals.map(p => {
-                        const portalUrl = `${window.location.origin}/portal/rabbi/${p.access_token}`;
-                        const publicUrl = p.public_token ? `${window.location.origin}/view/rabbi/${p.public_token}` : "";
+                        const portalUrl = `${getPublicOrigin()}/portal/rabbi/${p.access_token}`;
+                        const publicUrl = p.public_token ? `${getPublicOrigin()}/view/rabbi/${p.public_token}` : "";
                         const fe = (p.features_enabled as any) || { settings: false, lessons: true };
                         return (
                           <div key={p.id} className="bg-background rounded-xl border border-gold/10 p-4 space-y-2">
@@ -1134,8 +1135,8 @@ const AdminDashboard = () => {
                     </div>
                     <div className="space-y-3">
                       {orgPortals.map(p => {
-                        const portalUrl = `${window.location.origin}/portal/org/${p.access_token}`;
-                        const publicUrl = p.public_token ? `${window.location.origin}/view/org/${p.public_token}` : "";
+                        const portalUrl = `${getPublicOrigin()}/portal/org/${p.access_token}`;
+                        const publicUrl = p.public_token ? `${getPublicOrigin()}/view/org/${p.public_token}` : "";
                         const fe = (p.features_enabled as any) || { settings: false, lessons: true };
                         return (
                           <div key={p.id} className="bg-background rounded-xl border border-teal/10 p-4 space-y-2">
@@ -1233,8 +1234,8 @@ const AdminDashboard = () => {
                     </p>
                     <div className="space-y-3">
                       {synagoguePortals.map((p) => {
-                        const portalUrl = `${window.location.origin}/shul/${p.access_token}`;
-                        const publicUrl = p.public_token ? `${window.location.origin}/view/shul/${p.public_token}` : "";
+                        const portalUrl = `${getPublicOrigin()}/shul/${p.access_token}`;
+                        const publicUrl = p.public_token ? `${getPublicOrigin()}/view/shul/${p.public_token}` : "";
                         const lessonCount = studyDayEvents.filter((e) => e.session_id === p.id).reduce((s, e) => {
                           const blocks = (e.lessons as any)?.blocks ?? [];
                           return s + blocks.reduce((a: number, b: any) => a + ((b.items ?? []).length), 0);

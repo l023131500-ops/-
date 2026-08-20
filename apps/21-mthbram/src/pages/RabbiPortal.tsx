@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { BookOpen, Edit3, Save, X, Plus, Clock, MapPin, Phone, Mail, Video, Radio, Trash2, CheckCircle, Upload, Image, Settings, MessageCircle, Users, Globe, Calendar, UserCircle, AlertTriangle, Copy, ExternalLink } from "lucide-react";
-import { formatHebrewDate } from "@/lib/utils";
+import { formatHebrewDate, getPublicOrigin } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -211,10 +211,10 @@ const RabbiPortal = () => {
               <ExternalLink className="w-4 h-4 text-green-600 flex-shrink-0" />
               <div className="flex-1 min-w-0">
                 <p className="font-body text-xs text-green-700 font-bold mb-1">📢 הקישור להפצה לציבור:</p>
-                <p className="font-body text-xs text-green-800 truncate">{`${window.location.origin}/view/rabbi/${portal.public_token}`}</p>
+                <p className="font-body text-xs text-green-800 truncate">{`${getPublicOrigin()}/view/rabbi/${portal.public_token}`}</p>
               </div>
               <Button size="sm" variant="outline" className="border-green-300 text-green-700 hover:bg-green-100 gap-1 text-xs"
-                onClick={() => { navigator.clipboard.writeText(`${window.location.origin}/view/rabbi/${portal.public_token}`); toast.success("קישור ההפצה הועתק!"); }}>
+                onClick={() => { navigator.clipboard.writeText(`${getPublicOrigin()}/view/rabbi/${portal.public_token}`); toast.success("קישור ההפצה הועתק!"); }}>
                 <Copy className="w-3 h-3" /> העתק
               </Button>
             </div>

@@ -3,13 +3,14 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Copy, Check, Sparkles, ArrowLeft, Share2 } from "lucide-react";
 import { toast } from "sonner";
+import { getPublicOrigin } from "@/lib/utils";
 
 const BULK_TOKEN = "main";
 
 const BulkUploadBanner = () => {
   const [copied, setCopied] = useState(false);
 
-  const link = `${window.location.origin}/bulk-upload/${BULK_TOKEN}`;
+  const link = `${getPublicOrigin()}/bulk-upload/${BULK_TOKEN}`;
 
   const handleCopy = async () => {
     try {

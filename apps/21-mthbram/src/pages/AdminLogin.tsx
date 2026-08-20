@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
 import { authErrorMessage } from "@/lib/authErrors";
+import { getPublicOrigin } from "@/lib/utils";
 import { toast } from "sonner";
 
 const checkIsAdmin = async (userId: string) => {
@@ -56,7 +57,7 @@ const AdminLogin = () => {
     setGoogleLoading(true);
     try {
       const result = await lovable.auth.signInWithOAuth("google", {
-        redirect_uri: window.location.origin + "/admin-login",
+        redirect_uri: getPublicOrigin() + "/admin-login",
         extraParams: { prompt: "select_account" },
       });
       if (result.error) {

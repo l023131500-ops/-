@@ -1,9 +1,10 @@
 import { motion } from "framer-motion";
 import { Copy, Share2, Sparkles } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import { getPublicOrigin } from "@/lib/utils";
 
 const ShareDistributionBar = () => {
-  const url = typeof window !== "undefined" ? window.location.origin : "";
+  const url = typeof window !== "undefined" ? getPublicOrigin() : "";
 
   const copyLink = async () => {
     try {

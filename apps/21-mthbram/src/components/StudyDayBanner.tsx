@@ -3,12 +3,13 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Copy, Check, ArrowLeft, BookMarked } from "lucide-react";
 import { toast } from "sonner";
+import { getPublicOrigin } from "@/lib/utils";
 
 const TOKEN = "main";
 
 const StudyDayBanner = () => {
   const [copied, setCopied] = useState(false);
-  const link = `${window.location.origin}/study-days/${TOKEN}`;
+  const link = `${getPublicOrigin()}/study-days/${TOKEN}`;
 
   const handleCopy = async () => {
     try {
