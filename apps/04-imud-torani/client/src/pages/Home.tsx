@@ -133,6 +133,7 @@ export default function Home() {
                     variant="ghost"
                     size="icon"
                     aria-label={`מחק את "${b.title}"`}
+                    disabled={del.isPending && del.variables === b.id}
                     onClick={() => {
                       if (confirm(`למחוק את "${b.title}"?`)) del.mutate(b.id);
                     }}
