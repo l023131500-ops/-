@@ -60,7 +60,7 @@ const TeacherForm = ({ data, onChange }: TeacherFormProps) => {
   };
 
   const handleSubmit = async () => {
-    if (!data.fullName?.trim() || !data.phone?.trim() || submitting) return;
+    if (!data.fullName?.trim() || !data.phone?.trim() || !data.city?.trim() || submitting) return;
     setSubmitting(true);
     const { error } = await supabase.from("teacher_leads").insert({
       full_name: data.fullName,
