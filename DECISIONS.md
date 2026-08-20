@@ -5527,3 +5527,38 @@
      SeekerForm (14) → Lessons (~15). אחרי 15-egod נותרות 03-igud-ads
      (63 מופעים/10 קבצים) ו-01-torah-platform (~150 מופעים/19 קבצים)
      מהמיפוי של סבב 83.
+
+## 20/08/2026 (LOOP A — סבב 89) — `<label htmlFor>`/`id`: 15-egod/AdminTeachers.tsx, JoinTeacher.tsx
+
+495. **בדקתי מחדש `core.run_progress` לפני שהתחלתי.** סבב 88 סגור
+     (commit `1989108b`/`f3aabd4d`, תאם ל-HEAD). המשכתי בתור שסבב
+     85/#479 הגדיר: `AdminTeachers.tsx`/`JoinTeacher.tsx` (6/7
+     מופעים) — הבאים בגודל אחרי `RequestLesson.tsx`/`StudySchedule.tsx`.
+496. **קראתי את שני הקבצים במלואם לפני עריכה.** `JoinTeacher.tsx`
+     (105 שורות): 7 פקדים ללא קישור בטופס ההצטרפות הציבורי — 4
+     `Input` (שם מלא/טלפון/דוא"ל/אזור פעילות), `Select`/
+     `SelectTrigger` (ניסיון), `Input` (נושא נוסף), `Textarea` (ספר
+     לנו על עצמך). תווית קבוצת ה-checkbox ("נושאי לימוד") הוחרגה —
+     מייצגת קבוצת פקדים מרובים ולא פקד יחיד, דורשת `fieldset`/
+     `legend` ולא `htmlFor` (כמו קבוצות scale בסבבים קודמים).
+     `AdminTeachers.tsx` (300 שורות): 6 פקדים ללא קישור בדיאלוג
+     "פתיחת פורטל חדש" — `Select`/`SelectTrigger` (סוג הפורטל),
+     `Input` (שם מלא/שם הארגון/מייל/טלפון/סיסמה ראשונית). התווית של
+     שדה הסיסמה עוטפת גם `<span>` וגם כפתור "צור סיסמה חדשה" —
+     `htmlFor` נוסף על התווית עצמה בלי לגעת בתוכן הפנימי.
+497. **התיקון:** קידומות `jointeacher-`/`adminteachers-` על כל
+     `id`/`htmlFor` בהתאמה, כמו בסבבים קודמים, כדי להימנע מהתנגשות
+     עתידית עם `id`-ים דומים בדפים אחרים של 15-egod.
+498. **אפס רגרסיה מאומתת:** `git diff --stat` — 2 קבצים, 21 שורות
+     נוספו/21 הוסרו (הוספת `id`/`htmlFor` בלבד על `<label>`/`<Input>`/
+     `<Textarea>`/`SelectTrigger` קיימים, בלי לגעת ב-`value`/
+     `onChange`/ולידציה/`placeholder`). אין `tsc`/`npm` בסביבה הזו —
+     אומת בקריאה מלאה של `git diff` המלא + בדיקת איזון `{}`/`()`/`[]`
+     ב-Python על שני הקבצים (שניהם מאוזנים). Commit `e793cd7f` על אותו
+     ענף `fix/a-icon-only-buttons-round2-0820`, נדחף ל-origin (מפעיל
+     פריסת Vercel תחת more30.com/egod).
+499. **הבא בתור:** נותרו ~5 קבצים/59-64 מופעים ב-15-egod ממופים
+     ומוכנים ללא סקר חוזר, קטן לגדול: PortalSettings/TeacherForm
+     (11/9) → Materials (~11) → SeekerForm (14) → Lessons (~15). אחרי
+     15-egod נותרות 03-igud-ads (63 מופעים/10 קבצים) ו-01-torah-
+     platform (~150 מופעים/19 קבצים) מהמיפוי של סבב 83.
