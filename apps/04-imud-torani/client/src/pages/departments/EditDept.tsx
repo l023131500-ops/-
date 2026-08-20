@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useToast } from "@/hooks/use-toast";
 import type { ContentBlock, LayerKind, BlockMeta } from "@shared/schema";
 import { Plus, Trash2, Lock, Unlock, Settings2, SplitSquareVertical } from "lucide-react";
 
@@ -38,6 +39,7 @@ export function EditDept({
   focusBlockId: string | null;
 }) {
   const [openMeta, setOpenMeta] = useState<string | null>(null);
+  const { toast } = useToast();
 
   function add(layer: LayerKind) {
     onChange((prev) => [...prev, { id: uid(), layer, text: "" }]);
@@ -49,7 +51,14 @@ export function EditDept({
     onChange((prev) => prev.map((b) => (b.id === id ? { ...b, meta: { ...b.meta, ...patch } } : b)));
   }
   function remove(id: string) {
-    onChange((prev) => prev.filter((b) => b.id !== id));
+    onChange((prev) => {
+      const b = prev.find((x) => x.id === id);
+      if (b?.meta?.locked) {
+        toast({ title: "בלוק נעול", description: "בטל נעילה לפני מחיקה.", variant: "destructive" });
+        return prev;
+      }
+      return prev.filter((x) => x.id !== id);
+    });
   }
   function move(id: string, dir: -1 | 1) {
     onChange((prev) => {
