@@ -1,5 +1,12 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import './globals.css';
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#7a5c2e' },
+    { media: '(prefers-color-scheme: dark)', color: '#d3a962' },
+  ],
+};
 
 export const metadata: Metadata = {
   title: 'העורך התורני',
