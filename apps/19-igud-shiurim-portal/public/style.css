@@ -68,6 +68,12 @@ p { margin: 0 0 1em; color: var(--color-text); }
   justify-content: space-between;
   gap: 16px;
   flex-wrap: wrap;
+  /* כפתור הכניסה המשותף של more30 יושב `fixed` בפינה השמאלית העליונה
+     (הקצה האינליין-סופי ב-RTL, inset-inline-end:16px / top:12px), בדיוק
+     במקום שבו `justify-content: space-between` + `position: sticky; top:0`
+     מניחים את סוף .nav-links (כפתור "התחברות"). `--more30-auth-inset` הוא
+     הרוחב שהכדור מפרסם בפועל. */
+  padding-inline-end: max(1rem, calc(var(--more30-auth-inset, 124px) - max(0px, (100vw - 1160px) / 2)));
 }
 .brand { font-size: 1.28rem; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 8px; }
 .brand .brand-mark {

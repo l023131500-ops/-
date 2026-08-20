@@ -36,6 +36,12 @@ a:hover { color: var(--primary-hover); text-decoration: underline; }
 }
 .site-header .wrap {
   display: flex; align-items: center; justify-content: space-between; height: 64px;
+  /* כפתור הכניסה המשותף של more30 יושב `fixed` בפינה השמאלית העליונה
+     (הקצה האינליין-סופי ב-RTL, inset-inline-end:16px / top:12px), בדיוק
+     במקום שבו `justify-content: space-between` + `.site-header { position:
+     sticky; top:0 }` מניחים את סוף `<nav>` (קישור "מחירון").
+     `--more30-auth-inset` הוא הרוחב שהכדור מפרסם בפועל. */
+  padding-inline-end: max(1rem, calc(var(--more30-auth-inset, 124px) - max(0px, (100vw - 1120px) / 2)));
 }
 .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; color: var(--text); }
 .brand:hover { text-decoration: none; }
