@@ -231,7 +231,7 @@ const SPECS: Spec[] = [
       const res = await probe('https://api.anthropic.com/v1/messages/count_tokens', {
         method: 'POST',
         headers: { 'x-api-key': k, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' },
-        body: JSON.stringify({ model: 'claude-opus-5', messages: [{ role: 'user', content: 'ping' }] }),
+        body: JSON.stringify({ model: 'claude-haiku-4-5', messages: [{ role: 'user', content: 'ping' }] }),
       });
       if (!res) return { state: 'unknown', detail: 'הספק לא ענה בזמן.' };
       if (res.status === 401 || res.status === 403) return { state: 'invalid', detail: 'המפתח נדחה.' };

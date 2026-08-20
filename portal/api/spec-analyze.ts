@@ -13,7 +13,7 @@
 const SUPABASE_URL = (process.env.SUPABASE_URL ?? '').replace(/﻿/g, '').trim();
 const ANON_KEY = (process.env.SUPABASE_ANON_KEY ?? '').replace(/﻿/g, '').trim();
 const AI_KEY = (process.env.ANTHROPIC_API_KEY ?? '').replace(/﻿/g, '').trim();
-const AI_MODEL = (process.env.AI_MODEL ?? 'claude-opus-5').replace(/﻿/g, '').trim();
+const AI_MODEL = (process.env.AI_MODEL ?? 'claude-opus-4-8').replace(/﻿/g, '').trim();
 
 export const config = { maxDuration: 300 };
 
