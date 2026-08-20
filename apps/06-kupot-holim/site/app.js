@@ -13,15 +13,15 @@
     });
   }
   var ICONS = {
-    baby: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg>',
-    users: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="3.5"/><circle cx="17" cy="9" r="2.8"/><path d="M3 20c0-3.3 2.7-5 6-5s6 1.7 6 5M15 20c0-2.2 1.2-3.6 3-3.6s3 1.4 3 3.6"/></svg>',
-    "heart-pulse": '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21S4 14.5 4 8.8C4 5.6 6.4 4 8.5 4 10 4 11.3 4.8 12 6c.7-1.2 2-2 3.5-2C17.6 4 20 5.6 20 8.8 20 14.5 12 21 12 21z"/><path d="M3 12h3l1.5-3 2 5 1.5-2h4" stroke-width="1.6"/></svg>',
-    pill: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="8" width="18" height="8" rx="4" transform="rotate(45 12 12)"/><path d="M8.5 8.5l7 7"/></svg>',
-    shield: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l7 3v5c0 5-3.5 8.5-7 10-3.5-1.5-7-5-7-10V6l7-3z"/><path d="M9 12l2 2 4-4" stroke-width="1.8"/></svg>',
-    smile: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M8 14c1 1.5 2.5 2.2 4 2.2S15 15.5 16 14"/><circle cx="9" cy="10" r="1" fill="currentColor" stroke="none"/><circle cx="15" cy="10" r="1" fill="currentColor" stroke="none"/></svg>',
-    eye: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>',
-    leaf: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 20c-5 0-8-3-8-8 0-6 6-9 15-9 0 9-3 15-9 15z"/><path d="M11 20c0-5 2-9 7-12" stroke-width="1.6"/></svg>',
-    plane: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15l-8-3V5.5a1.5 1.5 0 0 0-3 0V12l-8 3v2l8-2v3l-2 1.5V21l3.5-1 3.5 1v-1.5L13 18v-3l8 2v-2z"/></svg>'
+    baby: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg>',
+    users: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><circle cx="17" cy="9" r="2.8"/><path d="M3 20c0-3.3 2.7-5 6-5s6 1.7 6 5M15 20c0-2.2 1.2-3.6 3-3.6s3 1.4 3 3.6"/></svg>',
+    "heart-pulse": '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 21S4 14.5 4 8.8C4 5.6 6.4 4 8.5 4 10 4 11.3 4.8 12 6c.7-1.2 2-2 3.5-2C17.6 4 20 5.6 20 8.8 20 14.5 12 21 12 21z"/><path d="M3 12h3l1.5-3 2 5 1.5-2h4" stroke-width="1.6"/></svg>',
+    pill: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="8" width="18" height="8" rx="4" transform="rotate(45 12 12)"/><path d="M8.5 8.5l7 7"/></svg>',
+    shield: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 3l7 3v5c0 5-3.5 8.5-7 10-3.5-1.5-7-5-7-10V6l7-3z"/><path d="M9 12l2 2 4-4" stroke-width="1.8"/></svg>',
+    smile: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 14c1 1.5 2.5 2.2 4 2.2S15 15.5 16 14"/><circle cx="9" cy="10" r="1" fill="currentColor" stroke="none"/><circle cx="15" cy="10" r="1" fill="currentColor" stroke="none"/></svg>',
+    eye: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>',
+    leaf: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M11 20c-5 0-8-3-8-8 0-6 6-9 15-9 0 9-3 15-9 15z"/><path d="M11 20c0-5 2-9 7-12" stroke-width="1.6"/></svg>',
+    plane: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15l-8-3V5.5a1.5 1.5 0 0 0-3 0V12l-8 3v2l8-2v3l-2 1.5V21l3.5-1 3.5 1v-1.5L13 18v-3l8 2v-2z"/></svg>'
   };
 
   var DATA = null, filtered = [], activeCat = "all", searchTerm = "", shown = 0, PAGE = 25;
@@ -164,7 +164,7 @@
           '<span class="t-main"><span class="t-topic">' + esc(t.topic) + '</span>' +
             '<span class="t-meta">' + esc(t.category) + (t.subCategory ? " · " + esc(t.subCategory) : "") + '</span></span>' +
           '<span class="t-best" data-fund="' + bk + '">' + (bk === "none" ? "טעון השוואה" : "משתלם: " + esc(t.bestFund)) + '</span>' +
-          '<svg class="t-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>' +
+          '<svg class="t-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>' +
         '</button>' +
         '<div class="topic-body">' +
           (t.range ? '<span class="range-tag">' + esc(t.range) + '</span>' : "") +
