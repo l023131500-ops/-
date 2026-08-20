@@ -159,6 +159,7 @@ const Footer = () => {
                 value={contactMsg}
                 onChange={(e) => setContactMsg(e.target.value)}
                 placeholder="הודעה (אופציונלי)"
+                aria-label="הודעה (אופציונלי)"
                 rows={2}
                 className="w-full bg-navy/40 border border-primary-foreground/20 rounded-xl px-4 py-2.5 font-body text-sm text-white placeholder:text-white/50 focus:border-gold/60 focus:ring-1 focus:ring-gold/30 outline-none transition-all resize-none"
               />
@@ -210,6 +211,7 @@ const Footer = () => {
                     value={contactName}
                     onChange={(e) => setContactName(e.target.value)}
                     placeholder="שם מלא *"
+                    aria-label="שם מלא"
                     className="w-full bg-white/95 border border-navy/20 rounded-lg px-3 py-2 font-body text-sm text-navy placeholder:text-navy/50 focus:border-navy/60 focus:ring-1 focus:ring-navy/30 outline-none"
                   />
                   <input
@@ -220,6 +222,7 @@ const Footer = () => {
                     inputMode="tel"
                     autoComplete="tel"
                     dir="ltr"
+                    aria-label="טלפון"
                     className="w-full bg-white/95 border border-navy/20 rounded-lg px-3 py-2 font-body text-sm text-navy placeholder:text-navy/50 focus:border-navy/60 focus:ring-1 focus:ring-navy/30 outline-none"
                   />
                   <motion.button
