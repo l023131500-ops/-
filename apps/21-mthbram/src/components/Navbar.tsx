@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Link, useLocation } from "react-router-dom";
 import BrandLogo from "@/components/BrandLogo";
-import { Search, RefreshCw, PlusCircle, Mic, Menu, X } from "lucide-react";
+import { Search, RefreshCw, PlusCircle, Mic, Menu, X, Tag } from "lucide-react";
 
 const NAV_LINKS = [
   { to: "/find-lesson", label: "חיפוש שיעור", icon: Search, color: "text-teal" },
@@ -77,7 +77,15 @@ const Navbar = () => {
           })}
         </div>
 
-        <div className="hidden lg:flex items-center gap-2" />
+        <div className="hidden lg:flex items-center gap-2">
+          <a
+            href="https://more30.com/subscribe?app=mthbram"
+            className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-medium text-foreground/70 hover:text-foreground hover:bg-accent/60 border border-transparent hover:border-border/50 transition-all duration-300"
+          >
+            <Tag className="w-4 h-4" />
+            מחירון
+          </a>
+        </div>
 
         {/* Mobile hamburger.
             כל תוכנו אייקון, ולכן קורא מסך הכריז עליו "לחצן" בלי לומר מה
@@ -142,6 +150,20 @@ const Navbar = () => {
                   </motion.div>
                 );
               })}
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: NAV_LINKS.length * 0.05 }}
+              >
+                <a
+                  href="https://more30.com/subscribe?app=mthbram"
+                  className="flex items-center gap-3 py-3 px-4 rounded-xl text-foreground hover:bg-accent/50 transition-all"
+                  onClick={() => setIsOpen(false)}
+                >
+                  <Tag className="w-5 h-5" />
+                  <span className="font-body text-sm font-medium">מחירון</span>
+                </a>
+              </motion.div>
             </div>
           </motion.div>
         )}
