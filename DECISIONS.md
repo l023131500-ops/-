@@ -6640,3 +6640,46 @@
     הראשון), או לנושא #250 (RLS פתוח-לגמרי על `public.synagogues`
     ב-21-mthbram) אם תתקבל גישת dashboard לפרויקט aypsqqvfohekxxuqsmrw.
     via cloud server 167.99.131.167 [loop B]
+
+## 20/08/2026 — סבב 353 (loop B)
+
+353. **תמחור `core.plans` ל-19/20, אחרי סינון 23/25.** בדקתי קודם את
+    כל ארבע ה-`stage=wip` בהיקף: `23-haorech-torani` הוא מסמך
+    ארכיטקטורה/תוכנית-בנייה סטטי בעברית (index.html יחיד, בלי טופס
+    או שדה נתונים אחד — "מה למסור לקלוד", לא מוצר) ו-`25-mor1-main-site`
+    הוא `app.json` בלבד, אפס קוד — לאף אחד מהשניים אין מה לתמחר.
+    לעומתם `19-igud-shiurim-portal` ו-`20-igud-portal` הם פורטלים
+    אמיתיים (server.js + public/index.html+app.js+style.css) שכבר
+    היו רשומים ב-`core.plans` עם שורות פנימיות בלבד (`charge`/
+    `one_time`/`pro`, `customer_visible=false`) — בדיוק כמו שהיה חסר
+    ל-mthbram (21) לפני תיקון סבב 350, לפני שקיבל את שלוש השורות
+    הגלויות ללקוח. הוספתי אותן שורות בדיוק (`free`/`basic`/`extended`,
+    ₪2/₪5 לחודש, אותו tagline/sort כמו `chizukim` ושאר האחיות) לשני
+    ה-`app_key` (`shiurim`, `igud`), ו"מחירון" בניווט של שני
+    ה-`index.html` (`https://more30.com/subscribe?app=shiurim` /
+    `?app=igud`), אותה מוסכמה בדיוק כמו 17/18/21/22/24/27/28. בדקתי
+    ש-`core.projects.public_visible=false` על שני המספרים (19,20) —
+    כלומר `subscribe.html` יציג "המערכת הזאת אינה מוצעת כרגע למנוי"
+    אם מישהו בכל זאת ינווט לשם, לא מסך שבור — אותו דפוס בדיוק כמו
+    ה-`not_offered` שתועד ל-mthbram בסבב 350. אפס שינוי התנהגות חי:
+    שני המספרים `is_deployed=false`/`live=false`, אין להם URL פרוס.
+    זו הכנת תשתית תמחור ליום ההשקה הראשון, לא שינוי במוצר קיים.
+    גיליתי גם ש-`apps/19-20` יושבים תחת חוק ה-`.gitignore` הגורף
+    ל-`/apps/**` (מיועד למקור לא-מיובא) אבל **כן** במעקב git בפועל
+    (מ-commit `cb6e4f58`, "Rescue the whole apps/ source tree") —
+    `git add` על שני הקבצים הדפיס אזהרת "ignored" אבל בכל זאת הצליח
+    כי קבצים שכבר במעקב לא נחסמים ע"י `.gitignore`, רק קבצים חדשים.
+    בדיקת איזון תגי HTML ב-python על שני הקבצים אחרי העריכה — תקין
+    (57/57, 51/51). אין build/dev-server זמין בסביבה הזו לפי הנחיית
+    ההרצה. ענף `fix/b-19-20-igud-pricing-prep-0820`, קומיט `50064214`,
+    נדחף.
+
+    **הבא בתור:** נושא #250 (RLS פתוח-לגמרי על `public.synagogues`
+    ב-21-mthbram, פרויקט `aypsqqvfohekxxuqsmrw` לא נגיש ל-MCP כאן)
+    עדיין חסום על הכרעת/גישת המשתמש; נושא #164 (מתחברים 21 — nedarim-
+    webhook מדליף פרטי קשר) חסום על הכרעת סוד-משותף; נושא #169
+    (22-zchuyot leads-webhook ללא אימות) חסום דומה. עם עדשת ה-
+    double-submit סגורה (351-352) ותמחור 19/20 מוכן (353), שווה
+    לפתוח עדשה חדשה על ה-4 שנותרו: 17/18/21/22/24/27/28 — אולי נגישות
+    טפסים (label/aria) או עקביות מסך-ריק (empty-state) בין הדפים.
+    via cloud server 167.99.131.167 [loop B]
