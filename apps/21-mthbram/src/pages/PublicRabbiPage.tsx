@@ -221,7 +221,7 @@ const PublicRabbiPage = () => {
                     <Phone className="w-5 h-5 text-gold" />
                     <div>
                       <p className="font-body text-xs text-white/60">טלפון</p>
-                      <p className="font-body text-sm text-white font-bold">{portal.contact_phone}</p>
+                      <p className="font-body text-sm text-white font-bold" dir="ltr">{portal.contact_phone}</p>
                     </div>
                   </a>
                 )}
@@ -230,7 +230,7 @@ const PublicRabbiPage = () => {
                     <MessageSquare className="w-5 h-5 text-green-400" />
                     <div>
                       <p className="font-body text-xs text-white/60">וואטסאפ</p>
-                      <p className="font-body text-sm text-white font-bold">{portal.contact_whatsapp}</p>
+                      <p className="font-body text-sm text-white font-bold" dir="ltr">{portal.contact_whatsapp}</p>
                     </div>
                   </a>
                 )}
@@ -239,7 +239,7 @@ const PublicRabbiPage = () => {
                     <Mail className="w-5 h-5 text-teal" />
                     <div>
                       <p className="font-body text-xs text-white/60">אימייל</p>
-                      <p className="font-body text-sm text-white font-bold">{portal.contact_email}</p>
+                      <p className="font-body text-sm text-white font-bold" dir="ltr">{portal.contact_email}</p>
                     </div>
                   </a>
                 )}
@@ -248,7 +248,7 @@ const PublicRabbiPage = () => {
                     <Phone className="w-5 h-5 text-white/60" />
                     <div>
                       <p className="font-body text-xs text-white/60">פקס</p>
-                      <p className="font-body text-sm text-white font-bold">{portal.contact_fax}</p>
+                      <p className="font-body text-sm text-white font-bold" dir="ltr">{portal.contact_fax}</p>
                     </div>
                   </div>
                 )}
