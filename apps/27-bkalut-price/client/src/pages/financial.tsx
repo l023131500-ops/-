@@ -424,7 +424,7 @@ function BudgetsTab({ client }: { client: FinClient }) {
           </select>
           <Input type="number" placeholder="תקציב חודשי ₪" value={form.monthlyLimit} onChange={(e) => setForm((f) => ({ ...f, monthlyLimit: e.target.value }))} />
           <Input placeholder="הערה" value={form.note} onChange={(e) => setForm((f) => ({ ...f, note: e.target.value }))} />
-          <Button onClick={() => create.mutate()} disabled={!form.categoryId || !form.monthlyLimit}><Plus className="w-4 h-4 ml-1" /> הוספה</Button>
+          <Button onClick={() => create.mutate()} disabled={!form.categoryId || !form.monthlyLimit || create.isPending}><Plus className="w-4 h-4 ml-1" /> {create.isPending ? "מוסיף..." : "הוספה"}</Button>
         </div>
       </Card>
       <Card className="p-5">
@@ -488,7 +488,7 @@ function RecurringTab({ client }: { client: FinClient }) {
           </select>
           <Input placeholder="פירוט" value={form.description} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} />
         </div>
-        <Button onClick={() => create.mutate()} disabled={!form.title || !form.nextDate}><Plus className="w-4 h-4 ml-1" /> הוספה</Button>
+        <Button onClick={() => create.mutate()} disabled={!form.title || !form.nextDate || create.isPending}><Plus className="w-4 h-4 ml-1" /> {create.isPending ? "מוסיף..." : "הוספה"}</Button>
       </Card>
       <Card className="p-5">
         <h3 className="font-semibold mb-3">תזכורות פעילות</h3>
@@ -747,7 +747,7 @@ function TipsTab() {
             <option value="business">עסקי</option>
             <option value="family">משפחה</option>
           </select>
-          <Button onClick={() => create.mutate()} disabled={!form.title || !form.body}><Plus className="w-4 h-4 ml-1" /> הוספה</Button>
+          <Button onClick={() => create.mutate()} disabled={!form.title || !form.body || create.isPending}><Plus className="w-4 h-4 ml-1" /> {create.isPending ? "מוסיף..." : "הוספה"}</Button>
         </div>
       </Card>
       <Card className="p-5">
