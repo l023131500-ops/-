@@ -254,10 +254,10 @@ export default function CoverEditor({
                 >
                   <Type className="h-3 w-3 shrink-0 text-muted-foreground" />
                   <span className="flex-1 truncate">{l.text || "(ריק)"}</span>
-                  <button title="העלה" onClick={(e) => { e.stopPropagation(); moveZ(l.id, 1); }} className="rounded p-0.5 hover:bg-muted"><ArrowUp className="h-3 w-3" /></button>
-                  <button title="הורד" onClick={(e) => { e.stopPropagation(); moveZ(l.id, -1); }} className="rounded p-0.5 hover:bg-muted"><ArrowDown className="h-3 w-3" /></button>
-                  <button title="שכפל" onClick={(e) => { e.stopPropagation(); duplicateLayer(l.id); }} className="rounded p-0.5 hover:bg-muted"><Copy className="h-3 w-3" /></button>
-                  <button title="מחק" onClick={(e) => { e.stopPropagation(); deleteLayer(l.id); }} className="rounded p-0.5 text-red-500 hover:bg-red-500/15" data-testid={`button-delete-cover-layer-${l.id}`}><Trash2 className="h-3 w-3" /></button>
+                  <button title="העלה" aria-label="העלה" onClick={(e) => { e.stopPropagation(); moveZ(l.id, 1); }} className="rounded p-0.5 hover:bg-muted"><ArrowUp className="h-3 w-3" /></button>
+                  <button title="הורד" aria-label="הורד" onClick={(e) => { e.stopPropagation(); moveZ(l.id, -1); }} className="rounded p-0.5 hover:bg-muted"><ArrowDown className="h-3 w-3" /></button>
+                  <button title="שכפל" aria-label="שכפל" onClick={(e) => { e.stopPropagation(); duplicateLayer(l.id); }} className="rounded p-0.5 hover:bg-muted"><Copy className="h-3 w-3" /></button>
+                  <button title="מחק" aria-label="מחק" onClick={(e) => { e.stopPropagation(); deleteLayer(l.id); }} className="rounded p-0.5 text-red-500 hover:bg-red-500/15" data-testid={`button-delete-cover-layer-${l.id}`}><Trash2 className="h-3 w-3" /></button>
                 </div>
               ))}
               {layers.length === 0 && <p className="text-xs text-muted-foreground">אין שכבות — הוסף טקסט.</p>}
