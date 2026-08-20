@@ -230,6 +230,7 @@ export default function PdfViewer({
                 className="input"
                 style={{ flex: "1 1 200px", fontSize: 14 }}
                 placeholder="טווח עמודים, לדוגמה: 1-3,5,8-10"
+                aria-label="טווח עמודים לבחירה"
                 value={rangeText}
                 onChange={(e) => setRangeText(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && applyRange()}
