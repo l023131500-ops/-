@@ -69,15 +69,20 @@ export function rankPolygons(
   aliases: string[] = [],
 ): { p: DealPolygon; score: number }[] {
   const wanted = [street, ...aliases].map(norm).filter(Boolean);
+  // ⚠️ שוויון מדויק אחרי `normStreetName`, לא הכלה — "אלנבי" מוכל תת-מחרוזתית
+  // ב"שדרותאלנבי" (שדרות אלנבי), רחוב אחר לגמרי. אותה מחלקת-באג שתועדה
+  // ומתוקנת ב-`normStreetName` עצמו ובכל שאר קריאותיו ב-buildreport.ts.
+  const wantedNorm = [street, ...aliases].map(normStreetName).filter(Boolean);
 
   const scored = polygons.map((p) => {
     let score = 0;
     const pStreet = norm(p.street);
+    const pStreetNorm = normStreetName(p.street);
     if (pStreet && wanted.length) {
       // ⚠️ ההתאמה נבדקת מול **כל** הכינויים ולא רק מול השם הרשמי. עסקאות
       // ב"דרך מרדכי" רשומות תחת "אתרוג", והשוואה לשם הרשמי בלבד מפספסת אותן.
       if (wanted.some((w) => w === pStreet)) score += 1000;
-      else if (wanted.some((w) => pStreet.includes(w) || w.includes(pStreet))) score += 600;
+      else if (pStreetNorm && wantedNorm.some((w) => w === pStreetNorm)) score += 600;
     }
     if (houseNum != null && p.houseNum != null) {
       const diff = Math.abs(p.houseNum - houseNum);
@@ -486,17 +491,16 @@ export async function fetchDealsAtPoint(
   const best = ranked[0]?.p ?? null;
 
   // התאמה מדויקת: אותו מספר בית, ואותו רחוב לפי השם הרשמי או אחד הכינויים.
-  const wantedStreets = [opts.street, ...(opts.aliases ?? [])].map(norm).filter(Boolean);
+  // ⚠️ שוויון מדויק אחרי `normStreetName`, לא הכלה — ראה ההערה ב-`rankPolygons`
+  // למעלה (אותה מחלקת-באג בדיוק, "אלנבי" מול "שדרות אלנבי").
+  const wantedStreets = [opts.street, ...(opts.aliases ?? [])].map(normStreetName).filter(Boolean);
   const exactPolygon =
     opts.houseNum != null
       ? polygons.find(
           (p) =>
             p.houseNum === opts.houseNum &&
-            !!norm(p.street) &&
-            wantedStreets.some((w) => {
-              const ps = norm(p.street);
-              return ps === w || ps.includes(w) || w.includes(ps);
-            }),
+            !!normStreetName(p.street) &&
+            wantedStreets.some((w) => w === normStreetName(p.street)),
         ) ?? null
       : null;
 
