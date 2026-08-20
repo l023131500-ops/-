@@ -8268,3 +8268,56 @@
     או פתיחת עדשה חדשה (למשל: `target="_blank"` בלי `rel` מגן שיטתי
     על כל 7 האפליקציות בהיקף).
     via cloud server 167.99.131.167 [loop B]
+
+## 20/08/2026 — סבב 393 (loop B)
+
+393. **סגירת עדשת `label`/`htmlFor` על 17/18/28 (הבא בתור מסבב 392),
+    ואז עדשה חדשה: שדות `number`/`date` ללא ולידציית טווח בצד לקוח.**
+    17-chizukim-transcribe ו-18-torah-editor-mvp: כל ה-`<label>` כבר
+    עם `htmlFor`/`id` תקין (17) או עוטפים את השדה כילד ישיר — שיוך
+    משתמע תקין (18, `htr/page.tsx`, 4 מופעי `<label className="field">`
+    עם `<input>`/`<select>` כילד ישיר). 28-kupot-health-funds: אין
+    `<label>` בעייתי כלל — שדה החיפוש משתמש ב-`aria-label` בכוונה
+    (יש הערה מתועדת בקוד המסבירה למה, "לא לשנות את שורת הסינון").
+    העדשה סגורה על כל 7 האפליקציות החיות של loop B (17/18/21/22/24/27/28).
+
+    בהיעדר עוד עבודה בעדשת ה-label, נפתחה עדשה חדשה: שדות `type="number"`/
+    `type="date"` בלי `min`/`max` שהערך שלהם משמש בהמשך בחישוב/שמירה
+    שערך חסר-גבול ישבור. 17/18/28 ללא שדות number/date בכלל. ב-21/22/24/27
+    רוב השדות כבר עם `min`/`max` תואמים (background_preset 1-5, priority
+    0-100, weight 0-5); שדות תאריך נבדקו ונשארו ללא שינוי — תאריכי
+    לו"ז/לידה/פנייה בלי חישוב תלוי-טווח. שדות questionnaire מונעי-נתוני-
+    admin (`public-potential.tsx`/`public-community.tsx`/`service-form.tsx`)
+    הוחרגו — הטווח נקבע בנתונים, לא ברכיב עצמו. שדות טקסט-חופשי של סכום/
+    הכנסה (`amount`/`monthlyIncome`/`monthlyLimit`/`rangeMin`/`rangeMax`)
+    נשארו — אין גבול טבעי מרומז.
+
+    4 תיקונים אמיתיים נמצאו ותוקנו: (1) `22-get-your-rights/src/components/
+    RightsCategories.tsx:486` — `children_count` עם `min={0}` בלי `max`,
+    מוזן ל-`parseInt()` ולשורת `leads`; אותו שדה ב-`FloatingBot.tsx:87`
+    כבר חסום ל-`["0"..."10+"]` — נוסף `max={20}` תואם. (2) `27-bkalut-price/
+    client/src/pages/financial.tsx:307` — `familySize` בלי `min` כלל;
+    השרת (`fin-routes.ts:269`) גוזר `largeFamily = familySize >= 5`
+    להמלצות זכאות — 0/שלילי לא הגיוני. נוסף `min={1}`. (3-4)
+    `price-comparison-admin.tsx:627` ו-`public-price-comparison.tsx:742`
+    — שני שדות הזנת מחיר (ניהול + ציבורי) בלי `min`, מוזנים לחישוב
+    `savingsPct` (`server/price-comparison.ts:1411`, `pc-supabase-read.ts:582`)
+    ומוצגים ישירות למשתמש כ-`₪{price.toFixed(2)}` — מחיר שלילי היה שובר
+    את החישוב ומציג ערך לא הגיוני בפומבי. נוסף `min={0}` לשניהם.
+
+    כל 4 השינויים הם הוספת attribute יחיד לרכיב `Input` קיים, ללא שינוי
+    מבני. `git diff --stat`: 4 קבצים, 4+/4-. קבצים חסומים ב-`.gitignore`
+    אך כבר עוקבים, `git add -f` נדרש (כמו בסבבים קודמים). לא הופעל
+    build/dev-server (לפי הנחיות ההרצה).
+
+    ענף `fix/b-17-18-28-label-htmlfor-round393-0820` (הסתעף
+    מ-`fix/b-24-galilee-label-htmlfor-round392-0820` — שרשרת הענפים
+    היא המקור המלא הבודד עבור loop B, לא `main`), קומיט `9fef689f`,
+    נדחף.
+
+    **הבא בתור:** נושא #245 (RLS על `csjekrvukbdznetsrodj`, מחכה
+    להכרעת מדיניות של המשתמש) ו-#250 (RLS על 21-mthbram, חסום MCP),
+    או המשך עדשת ה-number/date range על שאר האפליקציות אם תיפתח עדשה
+    נוספת, או תחום המחירון/מיתוג 'עולם הסטארטאפים' (אומת נקי בסבבים
+    קודמים, כדאי לאמת שוב אם שאר העדשות ממצות את עצמן).
+    via cloud server 167.99.131.167 [loop B]
