@@ -5939,3 +5939,37 @@
 552. **הבא בתור ב-03-igud-ads:** admin/templates/[id] (14) →
      public/create (14). אחריו 01-torah-platform (~150 מופעים/19
      קבצים) מהמיפוי של סבב 83.
+
+## 20/08/2026 (LOOP A — סבב 102) — `<label htmlFor>`/`id`: 03-igud-ads/admin/templates/[id]
+
+553. **בדקתי מחדש `git log`/`core.run_progress` לפני שהתחלתי.** סבב
+     101 סגור (commit `f466ea55`/`14526c7c`, HEAD תואם). המשכתי בתור
+     שסבב 101/#552 הגדיר: `admin/templates/[id]` (14) — הבא בגודל
+     אחרי `admin/templates`.
+554. **קראתי את הקובץ במלואו לפני עריכה.** 327 שורות, טופס עריכת
+     תבנית בודדת עם אותם 14 שדות ללא קישור כמו `admin/templates`
+     (שם, קטגוריה, תיאור, prompt_template, שדות חובה, שדות
+     אופציונליים, צבעים, פונט, יישור טקסט, מחיר, יחס תמונה, DALL-E
+     size, כתובת תמונה ממוזערת, סדר מיון) + 3 checkbox ("מאפשר
+     לוגו"/"מאפשר צבעים מותאמים"/"פעיל") שכבר עוטפים את ה-input
+     בתוך `<label>` — הוחרגו כמו בכל הסבבים הקודמים.
+555. **התיקון:** `tpl-name`, `tpl-category`, `tpl-description`,
+     `tpl-prompt`, `tpl-required`, `tpl-optional`, `tpl-colors`,
+     `tpl-font`, `tpl-alignment`, `tpl-price`, `tpl-aspect`,
+     `tpl-dalle-size`, `tpl-thumbnail`, `tpl-sort-order` — id על כל
+     input/select/textarea, htmlFor תואם על ה-label שלו (קידומת
+     `tpl-` קצרה יותר מ-`template-` שבסבב 101, כי הקובץ הוא עצמו
+     `templates/[id]/page.tsx` ואין סכנת התנגשות עם קובץ הרשימה).
+556. **אפס רגרסיה מאומתת:** `git diff --stat` — קובץ אחד, 28+/23-
+     (רק `id`/`htmlFor` נוספו על `<label>`/`<input>`/`<select>`/
+     `<textarea>` קיימים, בלי לגעת ב-`value`/`onChange`/`type`/
+     `inputMode`/`placeholder`/`rows`/`className`). אין `tsc`/`npm`
+     בסביבה הזו — אומת בקריאה מלאה של `git diff` המלא + בדיקת איזון
+     `{}`/`()`/`[]` ב-Python (120/120, 140/140, 20/20). `git add -f`
+     נדרש כתקדים (`apps/**` מוחרג כברירת מחדל ב-`.gitignore` השורשי
+     אך `03-igud-ads/app` כבר עוקב מרישום ידני קודם). Commit
+     `f069ba81` על `fix/a-icon-only-buttons-round2-0820`, יידחף
+     ל-origin (מפעיל פריסת Vercel תחת more30.com/modaot).
+557. **הבא בתור ב-03-igud-ads:** public/create (14) — האחרון בתור
+     הזה. אחריו 01-torah-platform (~150 מופעים/19 קבצים) מהמיפוי של
+     סבב 83.
