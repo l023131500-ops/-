@@ -121,13 +121,13 @@ export default function PaymentsAdmin() {
           <table className="min-w-full text-sm text-right">
             <thead className="bg-gray-50">
               <tr>
-                <th className="p-3 font-medium">תאריך</th>
-                <th className="p-3 font-medium">סכום</th>
-                <th className="p-3 font-medium">מצב</th>
-                <th className="p-3 font-medium">שם משלם</th>
-                <th className="p-3 font-medium">מייל</th>
-                <th className="p-3 font-medium">פרויקט</th>
-                <th className="p-3 font-medium">פעולות</th>
+                <th scope="col" className="p-3 font-medium">תאריך</th>
+                <th scope="col" className="p-3 font-medium">סכום</th>
+                <th scope="col" className="p-3 font-medium">מצב</th>
+                <th scope="col" className="p-3 font-medium">שם משלם</th>
+                <th scope="col" className="p-3 font-medium">מייל</th>
+                <th scope="col" className="p-3 font-medium">פרויקט</th>
+                <th scope="col" className="p-3 font-medium">פעולות</th>
               </tr>
             </thead>
             <tbody>
