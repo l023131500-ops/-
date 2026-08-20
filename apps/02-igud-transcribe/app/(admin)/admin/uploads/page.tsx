@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 type Upload = {
   id: string;
@@ -42,6 +42,9 @@ export default function UploadsPage() {
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState<UploadDetail | null>(null);
   const [copied, setCopied] = useState(false);
+  const panelRef = useRef<HTMLDivElement | null>(null);
+  const closeButtonRef = useRef<HTMLButtonElement | null>(null);
+  const previousFocusRef = useRef<HTMLElement | null>(null);
 
   const copyTranscript = async (text: string) => {
     await navigator.clipboard.writeText(text);
@@ -73,11 +76,34 @@ export default function UploadsPage() {
 
   useEffect(() => {
     if (!selected) return;
+    previousFocusRef.current = document.activeElement as HTMLElement | null;
+    closeButtonRef.current?.focus();
     const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setSelected(null);
+      if (e.key === "Escape") {
+        setSelected(null);
+        return;
+      }
+      if (e.key === "Tab" && panelRef.current) {
+        const focusables = panelRef.current.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])'
+        );
+        if (focusables.length === 0) return;
+        const first = focusables[0];
+        const last = focusables[focusables.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
     };
     window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
+    return () => {
+      window.removeEventListener("keydown", onKeyDown);
+      previousFocusRef.current?.focus();
+    };
   }, [selected]);
 
   const open = async (id: string) => {
@@ -156,6 +182,7 @@ export default function UploadsPage() {
           onClick={() => setSelected(null)}
         >
           <div
+            ref={panelRef}
             className="bg-surface rounded-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
             role="dialog"
@@ -166,7 +193,7 @@ export default function UploadsPage() {
               <h2 className="text-xl font-serif font-bold text-brand-blue">
                 {selected.original_filename || selected.id}
               </h2>
-              <button onClick={() => setSelected(null)} className="text-slate-400 hover:text-slate-700 text-2xl" aria-label="סגור">×</button>
+              <button ref={closeButtonRef} onClick={() => setSelected(null)} className="text-slate-400 hover:text-slate-700 text-2xl" aria-label="סגור">×</button>
             </div>
 
             <div className="p-6 space-y-6">
