@@ -103,22 +103,22 @@ const SeekerForm = ({ data, onChange }: SeekerFormProps) => {
               </div>
               <div>
                 <label htmlFor="seekerform-contactname" className="text-sm font-medium text-foreground mb-1.5 block">איש קשר *</label>
-                <Input id="seekerform-contactname" value={data.contactName || ""} onChange={(e) => update("contactName", e.target.value)} placeholder="שם מלא" />
+                <Input id="seekerform-contactname" value={data.contactName || ""} onChange={(e) => update("contactName", e.target.value)} placeholder="שם מלא" autoComplete="name" />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label htmlFor="seekerform-phone" className="text-sm font-medium text-foreground mb-1.5 block">טלפון *</label>
-                  <Input id="seekerform-phone" value={data.phone || ""} onChange={(e) => update("phone", e.target.value)} placeholder="050-0000000" />
+                  <Input id="seekerform-phone" value={data.phone || ""} onChange={(e) => update("phone", e.target.value)} placeholder="050-0000000" type="tel" inputMode="tel" autoComplete="tel" />
                 </div>
                 <div>
                   <label htmlFor="seekerform-email" className="text-sm font-medium text-foreground mb-1.5 block">מייל</label>
-                  <Input id="seekerform-email" value={data.email || ""} onChange={(e) => update("email", e.target.value)} placeholder="email@example.com" />
+                  <Input id="seekerform-email" value={data.email || ""} onChange={(e) => update("email", e.target.value)} placeholder="email@example.com" type="email" inputMode="email" autoComplete="email" />
                 </div>
               </div>
               <div className="grid grid-cols-3 gap-4">
                 <div>
                   <label htmlFor="seekerform-city" className="text-sm font-medium text-foreground mb-1.5 block">עיר *</label>
-                  <Input id="seekerform-city" value={data.city || ""} onChange={(e) => update("city", e.target.value)} placeholder="ירושלים" />
+                  <Input id="seekerform-city" value={data.city || ""} onChange={(e) => update("city", e.target.value)} placeholder="ירושלים" autoComplete="address-level2" />
                 </div>
                 <div>
                   <label htmlFor="seekerform-neighborhood" className="text-sm font-medium text-foreground mb-1.5 block">שכונה</label>

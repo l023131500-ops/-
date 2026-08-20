@@ -110,12 +110,12 @@ const TeacherForm = ({ data, onChange }: TeacherFormProps) => {
               <h3 className="font-heading text-xl font-bold text-foreground mb-6">פרטים אישיים</h3>
               <div>
                 <label htmlFor="teacherform-fullname" className="text-sm font-medium text-foreground mb-1.5 block">שם מלא *</label>
-                <Input id="teacherform-fullname" value={data.fullName || ""} onChange={(e) => update("fullName", e.target.value)} placeholder="הרב ישראל ישראלי" />
+                <Input id="teacherform-fullname" value={data.fullName || ""} onChange={(e) => update("fullName", e.target.value)} placeholder="הרב ישראל ישראלי" autoComplete="name" />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label htmlFor="teacherform-phone" className="text-sm font-medium text-foreground mb-1.5 block">טלפון *</label>
-                  <Input id="teacherform-phone" value={data.phone || ""} onChange={(e) => update("phone", e.target.value)} placeholder="050-0000000" />
+                  <Input id="teacherform-phone" value={data.phone || ""} onChange={(e) => update("phone", e.target.value)} placeholder="050-0000000" type="tel" inputMode="tel" autoComplete="tel" />
                 </div>
                 <div>
                   <label htmlFor="teacherform-email" className="text-sm font-medium text-foreground mb-1.5 block">מייל</label>
@@ -125,7 +125,7 @@ const TeacherForm = ({ data, onChange }: TeacherFormProps) => {
               <div className="grid grid-cols-3 gap-4">
                 <div>
                   <label htmlFor="teacherform-city" className="text-sm font-medium text-foreground mb-1.5 block">עיר *</label>
-                  <Input id="teacherform-city" value={data.city || ""} onChange={(e) => update("city", e.target.value)} placeholder="ירושלים" />
+                  <Input id="teacherform-city" value={data.city || ""} onChange={(e) => update("city", e.target.value)} placeholder="ירושלים" autoComplete="address-level2" />
                 </div>
                 <div>
                   <label htmlFor="teacherform-neighborhood" className="text-sm font-medium text-foreground mb-1.5 block">שכונה</label>
