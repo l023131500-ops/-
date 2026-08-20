@@ -483,7 +483,9 @@ const AdminRightsReference = () => {
                       </TableHeader>
                       <TableBody>
                         {items.map(r => (
-                          <TableRow key={r.id} className="cursor-pointer hover:bg-muted/50" onClick={() => setSelectedRight(r)}>
+                          <TableRow key={r.id} className="cursor-pointer hover:bg-muted/50" role="button" tabIndex={0} aria-label={`פרטי זכות: ${r.topic_name}`}
+                            onClick={() => setSelectedRight(r)}
+                            onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setSelectedRight(r); } }}>
                             <TableCell className="text-sm font-mono text-muted-foreground">{r.topic_number}</TableCell>
                             <TableCell className="text-sm font-medium">{r.topic_name}</TableCell>
                             <TableCell className="text-sm text-muted-foreground">{r.economic_necessity ? `${r.economic_necessity}/10` : "-"}</TableCell>

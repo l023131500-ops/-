@@ -235,6 +235,11 @@ const RightsCategories = () => {
                         whileHover={{ scale: 1.06, y: -8, rotateZ: 1 }}
                         whileTap={{ scale: 0.95 }}
                         onClick={() => setExpandedCat(expandedCat === cat.id ? null : cat.id)}
+                        onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setExpandedCat(expandedCat === cat.id ? null : cat.id); } }}
+                        role="button"
+                        tabIndex={0}
+                        aria-expanded={expandedCat === cat.id}
+                        aria-label={cat.label}
                         className={`group p-5 rounded-2xl border cursor-pointer h-full flex flex-col items-center text-center gap-3 transition-all duration-300 ${
                           expandedCat === cat.id
                             ? "bg-primary/5 border-primary/40 shadow-xl ring-2 ring-primary/20"

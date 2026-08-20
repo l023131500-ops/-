@@ -319,7 +319,9 @@ const AdminLeads = () => {
               const st = statusConfig[lead.status] || statusConfig.open;
               return (
                 <div key={lead.id} className={`rounded-xl border-2 ${st.border} ${st.bg} p-4 space-y-3 cursor-pointer hover:shadow-md transition-shadow relative`}
-                  onClick={() => { setSelectedLead(lead); setEditNotes(lead.admin_notes || ""); setHandledDesc(lead.handled_description || ""); }}>
+                  role="button" tabIndex={0} aria-label={`פרטי פנייה: ${lead.name || "ללא שם"}`}
+                  onClick={() => { setSelectedLead(lead); setEditNotes(lead.admin_notes || ""); setHandledDesc(lead.handled_description || ""); }}
+                  onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setSelectedLead(lead); setEditNotes(lead.admin_notes || ""); setHandledDesc(lead.handled_description || ""); } }}>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">{st.icon}<span className="text-xs font-bold">{st.label}</span></div>
                     <span className="text-[10px] text-muted-foreground">{new Date(lead.created_at).toLocaleDateString("he-IL", { day: "2-digit", month: "2-digit", year: "2-digit", hour: "2-digit", minute: "2-digit" })}</span>
