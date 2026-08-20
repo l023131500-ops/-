@@ -280,7 +280,11 @@ const FloatingBot = () => {
           updatePayload.document_urls = [...existingDocs, ...payload.document_urls];
         }
         if (Object.keys(updatePayload).length > 0) {
-          await supabase.from("leads").update(updatePayload as any).eq("id", existingId);
+          const { error } = await supabase.from("leads").update(updatePayload as any).eq("id", existingId);
+          if (error) {
+            toast({ title: "שגיאה", description: "לא הצלחנו לעדכן את הפרטים. נסו שוב.", variant: "destructive" });
+            return false;
+          }
         }
         return true;
       }

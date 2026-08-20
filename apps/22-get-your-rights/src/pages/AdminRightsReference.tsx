@@ -339,7 +339,7 @@ const AdminRightsReference = () => {
     const catValue = (customCategory.trim() || (newRight.category as string)).trim();
     if (!(newRight.topic_name as string).trim() || !catValue) { toast({ title: "שגיאה", description: "נא למלא שם נושא וקטגוריה", variant: "destructive" }); return; }
     const nextNum = rights.length > 0 ? Math.max(...rights.map(r => r.topic_number)) + 1 : 1;
-    await supabase.from("rights_reference").insert({
+    const { error } = await supabase.from("rights_reference").insert({
       topic_number: nextNum, topic_name: newRight.topic_name as string, category: catValue,
       plain_description: (newRight.plain_description as string) || null, economic_necessity: (newRight.economic_necessity as number) || null,
       financial_potential: (newRight.financial_potential as string) || null, eligibility_criteria: (newRight.eligibility_criteria as string) || null,
@@ -347,6 +347,10 @@ const AdminRightsReference = () => {
       required_documents: (newRight.required_documents as string) || null, how_to_apply: (newRight.how_to_apply as string) || null,
       service_link: (newRight.service_link as string) || null,
     } as any);
+    if (error) {
+      toast({ title: "שגיאה", description: "לא הצלחנו להוסיף את הנושא. נסו שוב.", variant: "destructive" });
+      return;
+    }
     toast({ title: "נוסף", description: "הנושא נוסף בהצלחה" });
     setNewRight({ topic_name: "", category: "", plain_description: "", economic_necessity: 0, financial_potential: "", eligibility_criteria: "", accompanying_benefit: "", bureaucratic_pitfalls: "", required_documents: "", how_to_apply: "", service_link: "" });
     setCustomCategory(""); setShowAddForm(false); loadRights();
@@ -355,13 +359,21 @@ const AdminRightsReference = () => {
   const handleSaveEdit = async () => {
     if (!editRight) return;
     const { id, ...rest } = editRight;
-    await supabase.from("rights_reference").update(rest as any).eq("id", id);
+    const { error } = await supabase.from("rights_reference").update(rest as any).eq("id", id);
+    if (error) {
+      toast({ title: "שגיאה", description: "לא הצלחנו לעדכן את הנושא. נסו שוב.", variant: "destructive" });
+      return;
+    }
     toast({ title: "עודכן", description: "הנושא עודכן בהצלחה" });
     setEditRight(null); loadRights();
   };
 
   const handleDelete = async (id: string) => {
-    await supabase.from("rights_reference").delete().eq("id", id);
+    const { error } = await supabase.from("rights_reference").delete().eq("id", id);
+    if (error) {
+      toast({ title: "שגיאה", description: "לא הצלחנו למחוק את הנושא. נסו שוב.", variant: "destructive" });
+      return;
+    }
     toast({ title: "נמחק", description: "הנושא נמחק" });
     setSelectedRight(null); loadRights();
   };
