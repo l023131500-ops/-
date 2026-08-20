@@ -11603,3 +11603,47 @@
       `remove()` שורות ~36/53, כפתורים ~140/167) — טרם תוקן, מועמד ברור
       לסבב הבא. שאר 02-igud-transcribe (טפסי העלאה, layout, auth,
       דפים ציבוריים, API routes) נסרק ללא ממצא נוסף.
+
+## 20/08/2026 — סבב 229 (loop A) — `02-igud-transcribe/app/(admin)/admin/glossary/page.tsx`: מגן double-submit/double-delete
+
+1118. **בדקתי מחדש לפני שהתחלתי:** `core.run_progress` (סבב 228 האחרון,
+      commit `a7086ffa`/`4ce8e115`, תואם ל-HEAD). המלצת 1117 הצביעה
+      במפורש על `app/(admin)/admin/glossary/page.tsx` באותו קובץ
+      02-igud-transcribe. קראתי את הקובץ המלא ישירות (179 שורות) —
+      אין צורך בסוכן Explore, הממצא כבר תועד.
+1119. **אימתתי בקוד:** `submit()` (שורה 36 המקורית) ו-`remove()` (שורה
+      53) הן `fetch` אסינכרוני אמיתי (POST ליצירת ערך מילון, DELETE
+      למחיקה) בלי שום מגן in-flight בקובץ כולו — אותו דפוס בדיוק שתוקן
+      אתמול ב-`coupons/page.tsx` (סבב 228). כפתור ה-submit (שורה 140
+      המקורית, `type="submit"`) לא כלל `disabled`, וכפתור המחיקה בכל
+      שורת טבלה (שורה 167 המקורית) גם לא. תרחיש כשל אמיתי: לחיצה כפולה
+      מהירה על "שמור" בטופס יוצרת שני POST כפולים לאותו ערך מילון לפני
+      שה-round-trip הראשון חוזר ו-`setShowForm(false)` סוגר את הטופס;
+      לחיצה כפולה על "מחק" שולחת שני DELETE לאותו `id`.
+1120. **התיקון:** נוספו `submitting`/`busyId` state — אותו דפוס מדויק
+      כמו בסבב 228 (`coupons/page.tsx`). `submit()`: `if (submitting)
+      return` בתחילת הפונקציה + `setSubmitting(true)`/
+      `finally setSubmitting(false)`, כפתור ה-submit מקבל
+      `disabled={submitting}` עם תווית "שומר…" בזמן שליחה. `remove()`:
+      `if (busyId) return` + `setBusyId(id)`/`finally setBusyId(null)`,
+      וכפתור המחיקה בכל שורה מקבל `disabled={busyId === e.id}` כך
+      שרק השורה הספציפית שנמחקת ננעלת, לא כל הטבלה. לא נגעתי ב-`load()`,
+      בפילטר הסגנון, באינפוטים של הטופס, או בשום handler אחר.
+1121. **אפס רגרסיה מאומתת:** `git diff --stat`: קובץ אחד, +40/-20 (רק
+      הוספת state/guards סביב לוגיקה קיימת, שום פיצ'ר/מסך/כפתור לא
+      הוסר). בדיקת איזון סוגריים/מסולסלים/מרובעים בפייתון על הקובץ
+      המלא לאחר העריכה: תואם (`(`: 76/76, `{`: 70/70, `[`: 11/11).
+      `tsc` לא זמין בסביבה — אומתתי ידנית שהקוד תקין TypeScript/JSX
+      (תבנית זהה ל-`coupons/page.tsx` שכבר בפרודקשן). לא נגעתי
+      במערכות/סכימות מוגנות (08/09/bkalut-app/bkalot-admin/zr_*/
+      NEDARIM3873/csj/csj_src/igud), ב-`main`, או במערכת מחוץ להיקף
+      (02 בטווח 01-16). `git add -f` נדרש (אותה אזהרת `.gitignore`
+      כוזבת על `apps/**`). Commit `3953cd0d` על `fix/a-icon-only-
+      buttons-round2-0820`, נדחף ל-`origin` (מפעיל פריסת Vercel תחת
+      `more30.com/tamlul`).
+1122. **הבא בתור:** שאר `02-igud-transcribe` נסרק ללא ממצא נוסף מהסוג
+      הזה (טפסי העלאה, layout, auth, דפים ציבוריים, API routes). מומלץ
+      לסבב הבא: לסרוק מערכות אחרות בטווח 01-16 שטרם נבדקו לעומק לדפוסי
+      double-submit/silent-failure — למשל `03-igud-ads`, `05-financial-
+      marketing-site` (אם deployed), או חלקים שטרם נסרקו ב-`10-bkalot-
+      rights`/`14-bsmachot-plus`.
