@@ -116,21 +116,21 @@ const PublicContactForm = ({ portalId, portalType, portalName }: Props) => {
             >
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="font-body text-xs font-medium text-muted-foreground mb-1 block">שם *</label>
-                  <Input value={name} onChange={e => setName(e.target.value)} placeholder="השם שלך" className="border-gold/20 focus:border-gold/50 bg-background text-foreground" />
+                  <label htmlFor="public-contact-name" className="font-body text-xs font-medium text-muted-foreground mb-1 block">שם *</label>
+                  <Input id="public-contact-name" value={name} onChange={e => setName(e.target.value)} placeholder="השם שלך" className="border-gold/20 focus:border-gold/50 bg-background text-foreground" />
                 </div>
                 <div>
-                  <label className="font-body text-xs font-medium text-muted-foreground mb-1 block">טלפון *</label>
-                  <Input value={phone} onChange={e => setPhone(e.target.value)} placeholder="050-..." className="border-gold/20 focus:border-gold/50 bg-background text-foreground" />
+                  <label htmlFor="public-contact-phone" className="font-body text-xs font-medium text-muted-foreground mb-1 block">טלפון *</label>
+                  <Input id="public-contact-phone" value={phone} onChange={e => setPhone(e.target.value)} placeholder="050-..." className="border-gold/20 focus:border-gold/50 bg-background text-foreground" />
                 </div>
               </div>
               <div>
-                <label className="font-body text-xs font-medium text-muted-foreground mb-1 block">מייל</label>
-                <Input type="email" inputMode="email" autoComplete="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="email@example.com" className="border-gold/20 focus:border-gold/50 bg-background text-foreground" />
+                <label htmlFor="public-contact-email" className="font-body text-xs font-medium text-muted-foreground mb-1 block">מייל</label>
+                <Input id="public-contact-email" type="email" inputMode="email" autoComplete="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="email@example.com" className="border-gold/20 focus:border-gold/50 bg-background text-foreground" />
               </div>
               <div>
-                <label className="font-body text-xs font-medium text-muted-foreground mb-1 block">פרטים נוספים</label>
-                <Textarea value={message} onChange={e => setMessage(e.target.value)} placeholder="ספרו לנו עוד..." rows={3} className="border-gold/20 focus:border-gold/50 bg-background text-foreground" />
+                <label htmlFor="public-contact-message" className="font-body text-xs font-medium text-muted-foreground mb-1 block">פרטים נוספים</label>
+                <Textarea id="public-contact-message" value={message} onChange={e => setMessage(e.target.value)} placeholder="ספרו לנו עוד..." rows={3} className="border-gold/20 focus:border-gold/50 bg-background text-foreground" />
               </div>
               <Button onClick={handleSend} disabled={sending} className="w-full bg-gradient-brand text-primary-foreground font-body font-bold py-5 gap-2">
                 <Send className="w-4 h-4" /> {sending ? "שולח..." : "שלח פנייה"}
