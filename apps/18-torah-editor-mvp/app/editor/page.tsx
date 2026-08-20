@@ -308,6 +308,7 @@ export default function EditorPage() {
         dir="rtl"
         rows={12}
         value={text}
+        aria-label="טקסט המסמך לעריכה"
         onChange={(e) => setText(e.target.value)}
         placeholder="הדבק כאן את הטקסט לעריכה..."
       />

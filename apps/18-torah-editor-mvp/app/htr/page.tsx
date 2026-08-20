@@ -490,6 +490,7 @@ function JobDetail({ jobId, onChanged }: { jobId: string; onChanged: () => void 
           className="editor-input"
           dir="rtl"
           value={finalText}
+          aria-label="הטקסט הסופי לעריכה ואישור"
           onChange={(e) => setFinalText(e.target.value)}
           disabled={isApproved}
         />
