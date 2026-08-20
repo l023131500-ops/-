@@ -9998,3 +9998,86 @@
      רינדור), שני מופעי `FormMessage` לא-פעילים מסבב 191, או
      `core.project_tasks`/`core.project_bugs` (6 פריטים חסומים על
      סודות/החלטות מוצר מחוץ לסמכות סוכן).
+
+## 20/08/2026 (LOOP A — סבב 201) — 03-igud-ads: 7 views ב-`public` היו `SECURITY DEFINER` פתוחים ל-`anon` — חשיפת תשלומים/משתמשים חיה
+
+969. **תחילת הסבב: שני מועמדים מ-Explore agent התבררו כ-false positive לפני
+     שנגעתי בקוד.** הרצתי Explore agent לחיפוש "עמודה/טבלה לא קיימת בסכימה"
+     (הדפוס שמצא כבר 3 באגים אמיתיים בסבבים 58/199 והישן ב-16) על
+     02/03/06/10/40/portal/admin. הממצא המדורג-ראשון שלו (`ad_payments`,
+     `ad_notifications`, `ad_app_settings`, `customer_data` "לא קיימים" ב-
+     `apps/03-igud-ads/supabase/schema.sql`) וגם ממצא שני על
+     `portal/src/App.tsx` (`stage`/`is_protected`/`public_visible` "לא
+     נחשפים" ב-view `more30_public_systems`) — **שניהם נבדקו ישירות מול ה-DB
+     החי** (`information_schema.columns` על הפרויקטים `bieebmnmkffwbqlsfozh`
+     ו-`uhnrgujbdxhhmoxcjria`) ונמצאו **שגויים**: כל הטבלאות/עמודות/ה-view
+     קיימים בפועל בייצור. `schema.sql` הוא סקריפט bootstrap ישן שהתיישן —
+     ה-DB החי התפתח מעבר אליו (דרך שינויים ידניים ב-Dashboard, כנראה),
+     בדיוק אותו דפוס-מלכודת שכבר תועד בסבב 199 (invalid-model false
+     positive). לא בוצע תיקון קוד על בסיס false positive — נדרשת אימות מול
+     ה-DB החי, לא מול קובץ בגיט, לפני כל מסקנה.
+970. **תוך כדי בדיקת ה-false-positive, `get_advisors(security)` על
+     `bieebmnmkffwbqlsfozh` חשף ממצא אמיתי וחמור בהרבה: 7 views ב-סכימת
+     `public` (`ad_payments`, `ad_users`, `ad_notifications`,
+     `ad_app_settings`, `ad_coupons`, `ad_projects`, `ad_templates`) היו
+     מוגדרים `SECURITY DEFINER`** — כלומר הם עוקפים את ה-RLS/הרשאות של
+     המשתמש השואל ורצים בהרשאות יוצר ה-view. אומתתי ישירות: לכל 7 ה-views
+     היו הרשאות מלאות `SELECT/INSERT/UPDATE/DELETE` ל-`anon`+`authenticated`
+     (`information_schema.role_table_grants`), בעוד שהטבלאות המקוריות תחת
+     סכימת `ads.*` **לא** נשאו הרשאות כאלה כלל ל-`anon`/`authenticated`
+     (רק ל-`service_role`) — כלומר נתיב-החשיפה האמיתי לא היה גישה ישירה
+     לסכימת `ads`, אלא בדיוק דרך ה-views הציבוריים האלה.
+971. **המשמעות בפועל: כל מי שמחזיק את מפתח ה-anon הציבורי (מוטמע בכל
+     bundle לקוח — לא סוד) יכול היה לקרוא ולכתוב ישירות רשומות תשלום
+     (`ad_payments`: סכום, שם/טלפון משלם, `raw_webhook` המלא של נדרים
+     פלוס, transaction id) ורשומות משתמש-אדמין (`ad_users`: email, role,
+     permissions) ללא שום אימות.** זה לא תיאורטי — `SELECT`/`INSERT`/
+     `UPDATE`/`DELETE` כולם היו מוענקים, כלומר תוקף היה יכול גם לזייף
+     רשומת "תשלום הצליח" או לשנות `role` של `ad_users` ל-`super_admin`.
+972. **לפני תיקון: אימתתי בקריאה מלאה של כל קריאה בריפו ל-7 הטבלאות/views
+     האלה (grep על `.from("ad_payments"...)` וכו' בכל `apps/03-igud-ads`)**
+     — כל מופע, ללא יוצא מן הכלל, עובר דרך `createSupabaseService()`
+     (`lib/supabase/server.ts`, מפתח `SUPABASE_SERVICE_ROLE_KEY`, קוד שרת
+     בלבד ב-`app/api/**`). אין אף קריאת client/browser עם מפתח anon כלפי
+     הטבלאות/views האלה בכל הריפו. זה חשוב במיוחד כי ההערה בקוד עצמו
+     (`server.ts:12`: "schema 'ads' is now exposed via public views") מסבירה
+     *למה* ה-views האלה קיימים בכלל — `createSupabaseService()` לא מגדיר
+     `db.schema`, אז הוא פוגע כברירת מחדל בסכימת `public` של PostgREST, וגם
+     קוד השרת (עם מפתח service_role) עובר דרך אותם views. **המסקנה: הצרה
+     היחידה בגישה ל-anon/authenticated ל-7 ה-views — לא מחיקתם — היא תיקון
+     נטול-סיכון-רגרסיה**, כי אין נתיב קוד לגיטימי אחד שתלוי בה.
+973. **התיקון (Supabase migration `lock_down_public_ads_security_definer_views`
+     על `bieebmnmkffwbqlsfozh`):** (1) `revoke all ... from anon,
+     authenticated, public` על כל 7 ה-views. (2)
+     `alter view ... set (security_invoker = true)` על כל 7 — התיקון
+     הרשמי המומלץ ע"י Supabase ל-lint `security_definer_view`, הגנת-עומק
+     נוספת מעבר לביטול ההרשאות (גם אם מישהו יעניק הרשאה מחדש בעתיד בטעות,
+     ה-view יאכוף את RLS/הרשאות המשתמש השואל בפועל, לא של היוצר).
+974. **אפס רגרסיה מאומת בשלושה שלבים לפני ואחרי:** (א) `service_role`
+     ו-`postgres` שמרו הרשאות מלאות ומפורשות (`role_table_grants`) על כל
+     7 ה-views אחרי התיקון — לא הרשאות שהיו מגיעות דרך `public`
+     (שביטלתי), אלא הרשאות ישירות משלהם, כך שקוד השרת (עם service_role)
+     ממשיך לעבוד זהה. (ב) `get_advisors(security)` שהורץ שוב אחרי התיקון:
+     אפס ממצאי `security_definer_view` על 7 הטבלאות (נותר רק ממצא לא-קשור
+     אחד, `public.service_submission_rows`, מחוץ לתחום הבדיקה הזו — לא
+     נגעתי בו, מועמד לסבב הבא). (ג) בדקתי `security_invoker=true` בפועל
+     דרך `pg_class.reloptions` על כל 7 — לא רק שה-SQL רץ בהצלחה.
+975. **`apps/03-igud-ads/supabase/schema.sql` עודכן במקביל (תוספת בלבד,
+     `create table/view if not exists` + `add column if not exists`) —
+     לא רק לתעד, גם לתקן את הבעיה שגילתה אותי בכלל: קובץ ה-bootstrap
+     היה חסר 4 טבלאות שלמות ומספר עמודות, מה שהטעה את סוכן ה-Explore
+     הזה עצמו (#969) לכיוון false-positive, וירטה כל סוכן עתידי שיקרא
+     את הקובץ הזה כתיעוד.** נוסף גם בלוק ה-views+נעילת-האבטחה בסוף הקובץ,
+     כך שסביבה חדשה שתוקם מהקובץ הזה תיפתח נעולה-כברירת-מחדל, לא חשופה.
+     קובץ יחיד, 146+/0-, כל השינוי תוספתי (אין `drop`/`alter ... drop
+     column` בשום מקום). Commit `7f58ffa3` על
+     `fix/a-icon-only-buttons-round2-0820`. לא נגעתי במערכות/סכימות מוגנות
+     (08/09/bkalut-app/bkalot-admin/zr_*/NEDARIM3873/csj/csj_src/igud),
+     ב-`main`, או במערכת מחוץ להיקף (gannenet/40, auth/super-admin/admin
+     dashboard, סדר דף הבית, מחירון, 01-16).
+976. **הבא בתור:** `public.service_submission_rows` (view נוסף שסומן
+     `security_definer_view` ב-advisor, לא נבדק — לא ידוע אילו טבלה/
+     פרויקט/הרשאות מאחוריו). מלבד זה: מועמד ה-billing `amountAgorot`
+     (0 blast radius), שני מועמדי הניגודיות מסבב 175 (דורשים כלי רינדור),
+     שני מופעי `FormMessage` לא-פעילים מסבב 191, או
+     `core.project_tasks`/`core.project_bugs` (6 פריטים חסומים).
