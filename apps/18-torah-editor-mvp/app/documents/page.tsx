@@ -247,7 +247,7 @@ export default function DocumentsPage() {
         />
       </div>
 
-      {error && <p className="status-deviation">{error}</p>}
+      {error && <p className="status-deviation" role="alert" aria-live="assertive">{error}</p>}
 
       {/* ===== הרשימה ===== */}
       {!ready ? (

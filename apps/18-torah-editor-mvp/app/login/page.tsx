@@ -54,8 +54,8 @@ export default function LoginPage() {
           {status === 'sending' ? 'שולח...' : 'שלחו קישור כניסה'}
         </button>
       </form>
-      {status === 'sent' && <p className="status-match">קישור נשלח, בדקו את תיבת הדוא&quot;ל.</p>}
-      {status === 'error' && <p className="status-missing">{errorMsg}</p>}
+      {status === 'sent' && <p className="status-match" role="status" aria-live="polite">קישור נשלח, בדקו את תיבת הדוא&quot;ל.</p>}
+      {status === 'error' && <p className="status-missing" role="alert" aria-live="assertive">{errorMsg}</p>}
     </div>
   );
 }

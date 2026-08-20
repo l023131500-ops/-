@@ -141,11 +141,11 @@ export default function PublicCommunity() {
     return <div className="max-w-2xl mx-auto px-4 py-12 space-y-4" dir="rtl"><Skeleton className="h-10 w-1/2" /><Skeleton className="h-40" /></div>;
   }
   if (notFound || !data) {
-    return <div className="max-w-2xl mx-auto px-4 py-20 text-center text-muted-foreground" dir="rtl" data-testid="community-not-found">השאלון לא נמצא או אינו פעיל.</div>;
+    return <div className="max-w-2xl mx-auto px-4 py-20 text-center text-muted-foreground" dir="rtl" role="alert" aria-live="assertive" data-testid="community-not-found">השאלון לא נמצא או אינו פעיל.</div>;
   }
   if (done) {
     return (
-      <div className="max-w-2xl mx-auto px-4 py-20 text-center" dir="rtl" data-testid="community-success">
+      <div className="max-w-2xl mx-auto px-4 py-20 text-center" dir="rtl" role="status" aria-live="polite" data-testid="community-success">
         <CheckCircle2 className="w-12 h-12 text-primary mx-auto mb-4" />
         <h1 className="text-xl font-bold mb-2">{data.questionnaire.title}</h1>
         <p className="text-muted-foreground">{done}</p>

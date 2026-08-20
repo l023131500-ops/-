@@ -121,6 +121,8 @@ export function SmartAdvisor({
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }}
                 className="rounded-md bg-background p-3 text-sm leading-relaxed"
+                role="status"
+                aria-live="polite"
                 data-testid={`text-advisor-answer-${topicId}`}
               >
                 {loading && (

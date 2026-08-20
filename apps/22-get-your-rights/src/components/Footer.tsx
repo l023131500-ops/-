@@ -152,7 +152,7 @@ const Footer = () => {
                   </div>
                 </>
               ) : (
-                <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="text-center py-6">
+                <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="text-center py-6" role="status" aria-live="polite">
                   <CheckCircle className="w-12 h-12 text-primary mx-auto mb-3" />
                   <h4 className="text-lg font-bold text-foreground mb-1">נרשמתם בהצלחה</h4>
                   <p className="text-sm text-muted-foreground">נשלח לכם עדכונים על זכויות חדשות בהקדם.</p>

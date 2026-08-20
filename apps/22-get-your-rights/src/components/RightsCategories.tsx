@@ -506,7 +506,7 @@ const RightsCategories = () => {
                   </div>
                 </motion.div>
               ) : (
-                <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="text-center py-8 space-y-4">
+                <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="text-center py-8 space-y-4" role="status" aria-live="polite">
                   <motion.div animate={{ scale: [1, 1.2, 1] }} transition={{ duration: 0.5 }}>
                     <CheckCircle className="w-16 h-16 text-primary mx-auto" />
                   </motion.div>

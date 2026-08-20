@@ -101,6 +101,8 @@ export default function SynagogueFullAccessRequest({
           background: "linear-gradient(135deg, hsl(40 80% 96%), hsl(180 35% 95%))",
           borderColor: "hsl(40 80% 60%)",
         }}
+        role="status"
+        aria-live="polite"
       >
         <div className="flex items-center gap-2 mb-3">
           {reviewed ? (

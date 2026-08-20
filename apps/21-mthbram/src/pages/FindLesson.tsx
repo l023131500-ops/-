@@ -252,7 +252,7 @@ const FindLesson = () => {
             {loading ? (
               <div className="text-center py-16 font-body text-muted-foreground">טוען שיעורים מהמאגר...</div>
             ) : filtered.length === 0 ? (
-              <div className="text-center py-16">
+              <div className="text-center py-16" role="status" aria-live="polite">
                 <Search className="w-12 h-12 text-muted-foreground/30 mx-auto mb-3" />
                 <p className="font-body text-muted-foreground mb-3">לא נמצאו שיעורים מתאימים</p>
                 {hasFilters && (

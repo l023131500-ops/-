@@ -329,7 +329,7 @@ export default function ServiceFormPage() {
   return (
     <div className="max-w-4xl mx-auto space-y-5 pb-10" data-testid="page-service-form">
       {submitted && (
-        <Card className="relative overflow-hidden p-6 border border-primary/20 bg-gradient-to-br from-primary/10 via-[hsl(42_85%_93%)] to-[hsl(190_55%_94%)]" data-testid="card-submit-success">
+        <Card className="relative overflow-hidden p-6 border border-primary/20 bg-gradient-to-br from-primary/10 via-[hsl(42_85%_93%)] to-[hsl(190_55%_94%)]" role="status" aria-live="polite" data-testid="card-submit-success">
           <div className="bkalut-stars" aria-hidden="true">
             {Array.from({ length: 16 }).map((_, index) => <span key={index}>★</span>)}
           </div>
@@ -698,7 +698,7 @@ export default function ServiceFormPage() {
           </span>
         </label>
         {(!requestType || missingRequiredContact) && (
-          <div className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900" data-testid="notice-submit-requirements">
+          <div className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900" role="status" aria-live="polite" data-testid="notice-submit-requirements">
             לפני השליחה צריך לבחור איך תרצו להמשיך, ולמלא שם מלא, טלפון ומייל. אם בחרתם טיפול בבקשה, מומלץ למלא גם את השאלון המורחב והמסמכים.
           </div>
         )}

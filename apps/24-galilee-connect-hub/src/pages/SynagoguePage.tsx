@@ -230,7 +230,7 @@ const SynagoguePage = () => {
               <Send className="w-5 h-5 text-primary" /> שלח פנייה לגבאי
             </h2>
             {sent ? (
-              <div className="text-center py-6">
+              <div className="text-center py-6" role="status" aria-live="polite">
                 <Check className="w-10 h-10 text-primary mx-auto mb-2" />
                 <p className="font-bold text-foreground">הפנייה נשלחה בהצלחה!</p>
               </div>

@@ -158,7 +158,7 @@ const AskRabbiSection = () => {
 
                 {sent ? (
                   <motion.p initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-                    className="text-center text-primary font-bold text-sm py-3">
+                    className="text-center text-primary font-bold text-sm py-3" role="status" aria-live="polite">
                     ✅ השאלה נשלחה בהצלחה! התשובה תגיע אליך ב{selectedMethod.label}
                   </motion.p>
                 ) : (

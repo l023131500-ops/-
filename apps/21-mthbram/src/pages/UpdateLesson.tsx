@@ -137,7 +137,7 @@ const UpdateLesson = () => {
       <div className="min-h-screen bg-background">
         <Navbar />
         <div className="pt-28 container mx-auto px-6 text-center py-20">
-          <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}>
+          <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} role="status" aria-live="polite">
             <div className="w-24 h-24 rounded-full bg-gradient-gold mx-auto mb-6 flex items-center justify-center shadow-lg glow-gold">
               <CheckCircle className="w-12 h-12 text-primary-foreground" />
             </div>

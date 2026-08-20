@@ -294,7 +294,7 @@ export default function RecordingsPage() {
         </p>
 
         {error && (
-          <Card className="p-6 text-center text-destructive" data-testid="text-error">
+          <Card className="p-6 text-center text-destructive" role="alert" aria-live="assertive" data-testid="text-error">
             שגיאה בטעינת ההקלטות. נסה לרענן את הדף.
           </Card>
         )}

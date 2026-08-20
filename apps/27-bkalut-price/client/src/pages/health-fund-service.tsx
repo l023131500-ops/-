@@ -127,7 +127,7 @@ export default function HealthFundServicePage() {
 
       <main className="max-w-3xl mx-auto px-4 py-8 space-y-5 pb-12">
         {submitted && (
-          <Card className="p-6 border border-primary/20 bg-primary/5" data-testid="hf-card-success">
+          <Card className="p-6 border border-primary/20 bg-primary/5" role="status" aria-live="polite" data-testid="hf-card-success">
             <div className="flex items-start gap-3">
               <span className="rounded-full bg-primary text-primary-foreground p-2"><CheckCircle2 className="w-6 h-6" /></span>
               <div>
@@ -253,7 +253,7 @@ export default function HealthFundServicePage() {
             </span>
           </label>
           {(!requestType || missingContact) && (
-            <div className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900" data-testid="hf-submit-notice">
+            <div className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900" role="status" aria-live="polite" data-testid="hf-submit-notice">
               לפני השליחה צריך לבחור איך להמשיך ולמלא שם מלא, טלפון ומייל.
             </div>
           )}

@@ -949,7 +949,7 @@ const FloatingBot = () => {
                 {/* Success */}
                 {step === "success" && (
                   <motion.div key="success" variants={stepVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.3 }}>
-                    <div className="text-center py-4">
+                    <div className="text-center py-4" role="status" aria-live="polite">
                       <motion.div
                         initial={{ scale: 0 }}
                         animate={{ scale: 1 }}

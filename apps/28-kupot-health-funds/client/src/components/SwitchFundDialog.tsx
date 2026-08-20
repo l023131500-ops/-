@@ -388,7 +388,7 @@ function Field({
         {required && <span className="mr-1 text-destructive">*</span>}
       </Label>
       {children}
-      {error && <p className="text-xs text-destructive">{error}</p>}
+      {error && <p className="text-xs text-destructive" role="alert" aria-live="assertive">{error}</p>}
     </div>
   );
 }

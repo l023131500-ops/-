@@ -290,7 +290,7 @@ export default function PublicChatbot() {
             </button>
           </header>
 
-          <div ref={scrollRef} className="flex-1 overflow-y-auto px-3 py-3 space-y-2 bg-background">
+          <div ref={scrollRef} className="flex-1 overflow-y-auto px-3 py-3 space-y-2 bg-background" role="log" aria-live="polite">
             {messages.map((m) => (
               <ChatBubble
                 key={m.id}
@@ -303,7 +303,7 @@ export default function PublicChatbot() {
               />
             ))}
             {pending && (
-              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <div className="flex items-center gap-2 text-xs text-muted-foreground" role="status" aria-live="polite">
                 <Loader2 className="w-3 h-3 animate-spin" /> הבוט חושב...
               </div>
             )}

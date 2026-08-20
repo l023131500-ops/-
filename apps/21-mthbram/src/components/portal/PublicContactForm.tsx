@@ -58,7 +58,7 @@ const PublicContactForm = ({ portalId, portalType, portalName }: Props) => {
     return (
       <div className="bg-background/90 backdrop-blur-sm py-12 px-6">
         <div className="container mx-auto max-w-lg text-center">
-          <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}>
+          <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} role="status" aria-live="polite">
             <div className="w-16 h-16 rounded-full bg-green-500/20 mx-auto mb-4 flex items-center justify-center">
               <Send className="w-8 h-8 text-green-500" />
             </div>

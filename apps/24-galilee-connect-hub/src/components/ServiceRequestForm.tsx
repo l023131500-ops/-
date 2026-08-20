@@ -78,7 +78,7 @@ const ServiceRequestForm = ({ defaultType, compact }: ServiceRequestFormProps) =
                 <Input value={phone} onChange={e => setPhone(e.target.value)} placeholder="טלפון" dir="ltr" className="text-xs h-9" autoComplete="tel" />
                 <Input value={message} onChange={e => setMessage(e.target.value)} placeholder="פרטים נוספים (אופציונלי)" className="text-xs h-9" />
                 {sent ? (
-                  <p className="text-center text-primary font-bold text-xs py-2">✅ הבקשה נשלחה!</p>
+                  <p className="text-center text-primary font-bold text-xs py-2" role="status" aria-live="polite">✅ הבקשה נשלחה!</p>
                 ) : (
                   <Button onClick={handleSubmit} disabled={!name.trim() || !phone.trim() || sending}
                     size="sm" className="w-full gap-2 font-bold text-xs bg-gradient-hero text-primary-foreground">
@@ -128,7 +128,7 @@ const ServiceRequestForm = ({ defaultType, compact }: ServiceRequestFormProps) =
       </div>
 
       {sent ? (
-        <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center text-primary font-bold text-sm py-3">
+        <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center text-primary font-bold text-sm py-3" role="status" aria-live="polite">
           ✅ הבקשה נשלחה בהצלחה! ניצור איתך קשר בהקדם
         </motion.p>
       ) : (

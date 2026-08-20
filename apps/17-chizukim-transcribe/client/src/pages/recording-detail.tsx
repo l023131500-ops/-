@@ -163,7 +163,7 @@ export default function RecordingDetailPage() {
   if (error || !data) {
     return (
       <div className="max-w-6xl mx-auto px-4 py-16 text-center">
-        <p className="text-destructive mb-4" data-testid="text-error">
+        <p className="text-destructive mb-4" role="alert" aria-live="assertive" data-testid="text-error">
           לא ניתן לטעון את ההקלטה.
         </p>
         <Link href="/" className="text-primary underline">

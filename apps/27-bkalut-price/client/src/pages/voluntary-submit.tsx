@@ -74,7 +74,7 @@ export default function VoluntarySubmitPage() {
         {loading ? (
           <Card className="p-8 text-center text-sm text-muted-foreground">טוען…</Card>
         ) : invalid || !info ? (
-          <Card className="p-8 text-center space-y-2">
+          <Card className="p-8 text-center space-y-2" role="alert" aria-live="assertive">
             <h1 className="font-semibold text-lg">הקישור אינו תקין</h1>
             <p className="text-sm text-muted-foreground">ייתכן שהקישור בוטל או שגוי. פנו למנהל המערכת לקבלת קישור חדש.</p>
           </Card>
@@ -132,7 +132,7 @@ export default function VoluntarySubmitPage() {
               </Button>
 
               {result && (
-                <div className="text-sm border-t border-border pt-3 flex items-start gap-2" data-testid="vol-result">
+                <div className="text-sm border-t border-border pt-3 flex items-start gap-2" role="status" aria-live="polite" data-testid="vol-result">
                   <CheckCircle2 className="w-5 h-5 shrink-0" style={{ color: "#01696F" }} />
                   <div>
                     <p className="font-semibold">הקובץ נקלט בהצלחה</p>

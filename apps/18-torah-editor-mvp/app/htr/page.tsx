@@ -321,7 +321,15 @@ function UploadForm({ onDone }: { onDone: () => void }) {
         <button className="action" type="submit" disabled={busy}>
           {busy ? 'מעבד...' : 'העלה והרץ זיהוי'}
         </button>
-        {msg && <span className={msg.type === 'ok' ? 'status-match' : 'status-missing'}>{msg.text}</span>}
+        {msg && (
+          <span
+            className={msg.type === 'ok' ? 'status-match' : 'status-missing'}
+            role={msg.type === 'ok' ? 'status' : 'alert'}
+            aria-live={msg.type === 'ok' ? 'polite' : 'assertive'}
+          >
+            {msg.text}
+          </span>
+        )}
       </div>
     </form>
   );
@@ -509,7 +517,7 @@ function JobDetail({ jobId, onChanged }: { jobId: string; onChanged: () => void 
             </>
           )}
           {isApproved && <span className="status-match">✓ אושר {job.approved_at?.slice(0, 10)}</span>}
-          {msg && <span className="editor-msg">{msg}</span>}
+          {msg && <span className="editor-msg" role="status" aria-live="polite">{msg}</span>}
         </div>
       </div>
     </div>

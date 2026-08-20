@@ -280,7 +280,7 @@ const InlinRabbiForm = ({ userName, onSent }: { userName: string | null; onSent:
 
   if (sent) {
     return (
-      <div className="text-center py-3">
+      <div className="text-center py-3" role="status" aria-live="polite">
         <p className="text-primary font-bold text-sm">✅ השאלה נשלחה בהצלחה!</p>
         <p className="text-muted-foreground text-xs mt-1">התשובה תגיע אליך בהקדם</p>
       </div>

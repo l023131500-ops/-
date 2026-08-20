@@ -334,10 +334,10 @@ export default function EditorPage() {
         </button>
       </div>
 
-      {error && <p className="status-deviation">{error}</p>}
+      {error && <p className="status-deviation" role="alert" aria-live="assertive">{error}</p>}
 
       {nikudText && (
-        <div className="result-card">
+        <div className="result-card" role="status" aria-live="polite">
           <h2>הצעת ניקוד (יש לאשר לפני קבלה)</h2>
           <p dir="rtl">{nikudText}</p>
           <button className="action" onClick={approveNikud}>אשר והחלף בטקסט</button>
@@ -357,7 +357,7 @@ export default function EditorPage() {
                   <div key={ref}>
                     <span className="badge">{ref}</span>
                     {v ? (
-                      <span className={'status-' + v.status}>
+                      <span className={'status-' + v.status} role="status" aria-live="polite">
                         {v.status === 'match' && 'תואם למקור'}
                         {v.status === 'deviation' && 'סטייה מהמקור (מרחק: ' + v.distance + ')'}
                         {v.status === 'missing' && 'המקור לא נמצא'}
