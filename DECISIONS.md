@@ -2569,3 +2569,72 @@
      קלט משתמש, לא נגיעה. ענף `fix/a-financial-marketing-app-param-xss-0820`,
      נדחף.
 
+## 20/08/2026 (LOOP A — סבב 34) — 03-igud-ads: מרוץ כפילות חיוב DALL-E ב-`/api/jobs/worker` — נתיב פתוח לגמרי, בלי אימות
+
+219. **בדקתי מחדש `core.run_progress`/`core.issues`/`core.project_tasks` לפני
+     שהתחלתי.** אין שינוי מסבב 33: כל הפתוח בתחום Loop A עדיין חסום —
+     #167/#201 (15-egod, חסום על Lovable, נמדד עם ארבע הודעות דחויות),
+     #138/#120 (הכרעת משתמש), #203/#171/#208/#169/וכו' (מערכות מחוץ לתחום
+     01-16 או מוגנות). `core.project_tasks` הפתוחים (02 OPENAI_API_KEY,
+     12/13 שיקול מיזוג) הם החלטות משתמש. הרצתי שלושה סוכני Explore
+     במקביל על שטח טרי: (1) לוח הבקרה המרכזי (`admin/`) כולל "יתרות
+     API" — חזר עם ממצא ישן: הערה בקוד (`admin/src/App.tsx` שורות 78-84)
+     כבר מתעדת שהבאג `$undefined / $undefined` בכרטיסי יתרות תוקן בעבר
+     (שמות השדות ב-`ProviderCredit` הותאמו בדיוק לאלה של
+     `portal/api/credits.ts` — אימתתי בהשוואה ישירה, זהים). לא באג חדש,
+     לא תוקן. (2) עמוד הבית/מיון תצוגה — חזר עם ממצא שגוי: טען
+     שה-view `more30_public_systems` חסר את העמודות
+     `stage`/`is_protected`/`public_visible` שהפורטל מבקש ב-`.select()`,
+     בהתבסס על `db/core/0007_public_systems_view.sql` המקומי. בדקתי מול
+     ה-DB החי (`information_schema.columns`) — שלוש העמודות **קיימות**
+     ב-view החי; הקובץ המקומי הוא תיעוד היסטורי שלא עודכן, לא ה-migration
+     שבאמת הופעל (אף migration ב-`supabase/migrations/` לא יוצר מחדש את
+     ה-view הזה — הוא נוצר/עודכן מחוץ לעץ המיגרציות שנסרק). לא באג, לא
+     נגעתי. (3) `06-kupot-holim`/`14-bsmachot-plus`/`16-chatzor-connect`
+     — חזר עם ממצא שגוי נוסף: `updateStatus`/`deleteLead` ב-`06`
+     קוראים PATCH/DELETE ישירות מול REST של Supabase עם מפתח anon בלי
+     שום בדיקת הרשאה בקוד. אבל ההערה בקובץ עצמו (`leads-store.js`
+     שורות 78-84) מתעדת מדידה קודמת מול הפרויקט החי
+     (`scripts/qa/briut-leads-access.mjs`, 07/08): המפתח הוא insert-only
+     בפועל — GET/PATCH/DELETE כולם מחזירים 401 מ-RLS. לא באג, לא נגעתי.
+220. **מצאתי את הבאג האמיתי בעצמי, לא דרך סוכן Explore: `middleware.ts`
+     של `03-igud-ads` (matcher `["/admin/:path*","/api/admin/:path*"]`,
+     אותו דפוס בדיוק כמו `02-igud-transcribe`) לא מכסה
+     `app/api/jobs/worker/route.ts`.** קורא אנונימי ל-
+     `GET`/`POST /modaot/api/jobs/worker` (המערכת חיה ופרוסה) מריץ
+     `runWorker()` בלי שום הרשאה — בוחר עד 2 `ad_jobs` במצב `pending`
+     ומריץ `processJob()` עם `service_role`: 3 יצירות תמונה בתשלום
+     ב-DALL-E, קומפוזיציה, PDF, והעלאה ל-Storage, לכל job. בניגוד
+     ל-02, אי אפשר פשוט להעביר את הנתיב ל-`/api/admin/` כמו בסבב 31 —
+     ל-`app/api/projects/route.ts` שורה 120 יש קורא לגיטימי פנימי
+     (`fetch(new URL("/api/jobs/worker", req.url)...)`, "kick worker,
+     best effort" אחרי יצירת פרויקט מגובה-קופון, לא session אדמין) שהיה
+     נופל מיד ל-403 של middleware אילו הועבר לשם.
+221. **הממצא הקונקרטי: מרוץ כפילות חיוב.** `processJob()` (שורה 33
+     המקורית) עדכן `status: "running"` עם `update(...).eq("id", jobId)`
+     **בלי** תנאי על המצב הנוכחי, ואז שאב מחדש את השורה בנפרד. שתי
+     קריאות חופפות ל-`runWorker()` (אין שום מניעה — הנתיב פתוח) יכולות
+     שתיהן לבחור אותו `job` שעדיין `pending` לפני שאחת מהן מספיקה
+     לעדכן, ואז שתיהן מריצות את אותן 3 יצירות DALL-E, שתיהן מעלות
+     קבצים, ושתיהן מכניסות שורת `ad_generations` כפולה לאותו job —
+     חיוב כפול על תקציב הספק דרך נתיב שאין לו שום אימות. תוקף שמכה על
+     הנתיב בלולאה יכול להכפיל כל job חדש שנוצר בזמן שהוא רץ.
+222. **התיקון: הפכתי את הבחירה (claim) לאטומית** — `update(...).eq("id",
+     jobId).eq("status","pending").select("*").maybeSingle()` במקום
+     update ואז select נפרד; רק הקריאה הראשונה שמצליחה לעדכן שורה
+     שעדיין `pending` מקבלת אותה בחזרה, קריאה שנייה חופפת מקבלת `null`
+     וחוזרת עם `{jobId, skipped:true}`. לא נגעתי בהרשאה/middleware בכלל
+     — פתרון ממוקד למרוץ עצמו, לא לנושא הפתיחות שדורש שינוי גדול יותר
+     (סוד משותף לקורא הפנימי מול Cron אמיתי) שלא מוצדק כרגע כי אין Cron
+     מחובר בפועל (`vercel.crons.original.json` מתעד את הכוונה המקורית
+     של המערכת המקורית, "כל דקה", אבל `vercel.json` הפרוס כאן הוא
+     `{"framework":"nextjs"}` בלבד — אין crons מוגדר, כמו ב-02). כל שאר
+     שימושי `job.` (`project_id`, `type`, `attempts`) ממשיכים לעבוד ללא
+     שינוי כי השורה שמוחזרת מה-update זהה בצורתה לזו שהוחזרה קודם
+     מה-select. בדקתי שאף קורא לא בודק את צורת גוף התשובה
+     (`app/api/projects/route.ts` שורה 120 היא fire-and-forget עם
+     `.catch(()=>{})`, `admin/page.tsx` לא קורא את הגוף כלל) — אפס
+     רגרסיה להתנהגות הרגילה (job יחיד, קריאה יחידה). `esbuild` על הקובץ
+     עבר נקי (transpile, לא build מלא — אין `node_modules` להרצת build
+     אמיתי בסבב הזה). ענף `fix/a-igud-ads-worker-race-0820`, נדחף.
+
