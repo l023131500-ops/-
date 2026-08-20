@@ -228,8 +228,11 @@ export default function HealthFundsAdmin() {
     }
   }
 
+  const removingTopicRef = useRef<Set<number>>(new Set());
   async function removeTopic(t: HfTopic) {
     if (!window.confirm(`למחוק את הנושא "${t.topic}" (#${t.catalogNo})? פעולה זו אינה הפיכה.`)) return;
+    if (removingTopicRef.current.has(t.id)) return;
+    removingTopicRef.current.add(t.id);
     try {
       const r = await apiRequest("DELETE", `/api/hf/admin/topics/${t.id}`);
       if (!r.ok) throw new Error();
@@ -238,6 +241,8 @@ export default function HealthFundsAdmin() {
       await loadTopics();
     } catch {
       toast({ title: "מחיקת הנושא נכשלה", variant: "destructive" });
+    } finally {
+      removingTopicRef.current.delete(t.id);
     }
   }
 
@@ -271,7 +276,10 @@ export default function HealthFundsAdmin() {
     }
   }
 
+  const removingTierRef = useRef<Set<number>>(new Set());
   async function removeTier(tier: HfTier) {
+    if (removingTierRef.current.has(tier.id)) return;
+    removingTierRef.current.add(tier.id);
     try {
       const r = await apiRequest("DELETE", `/api/hf/admin/tiers/${tier.id}`);
       if (!r.ok) throw new Error();
@@ -279,6 +287,8 @@ export default function HealthFundsAdmin() {
       await loadTopics();
     } catch {
       toast({ title: "מחיקת המדרגה נכשלה", variant: "destructive" });
+    } finally {
+      removingTierRef.current.delete(tier.id);
     }
   }
 

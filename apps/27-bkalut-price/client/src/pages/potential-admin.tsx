@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Card } from "@/components/ui/card";
@@ -162,13 +162,18 @@ export default function PotentialAdminPage() {
     }
   }
 
+  const deletingLinkRef = useRef<Set<number>>(new Set());
   async function deleteLink(id: number) {
     if (!window.confirm("למחוק את הקישור הזה?")) return;
+    if (deletingLinkRef.current.has(id)) return;
+    deletingLinkRef.current.add(id);
     try {
       await apiRequest("DELETE", `/api/admin/potential/links/${id}`);
       await queryClient.invalidateQueries({ queryKey: ["/api/admin/potential/links"] });
     } catch (err: any) {
       toast({ title: "שגיאה", description: err?.message || "נסו שוב", variant: "destructive" });
+    } finally {
+      deletingLinkRef.current.delete(id);
     }
   }
 

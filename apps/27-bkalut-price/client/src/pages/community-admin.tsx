@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -152,12 +152,17 @@ export default function CommunityAdmin() {
       toast({ title: "עדכון השאלה נכשל", variant: "destructive" });
     }
   }
+  const deletingQuestionRef = useRef<Set<number>>(new Set());
   async function deleteQuestion(id: number) {
+    if (deletingQuestionRef.current.has(id)) return;
+    deletingQuestionRef.current.add(id);
     try {
       await apiRequest("DELETE", `/api/community/admin/questions/${id}`);
       if (detail) loadDetail(detail.questionnaire.id);
     } catch {
       toast({ title: "מחיקת השאלה נכשלה", variant: "destructive" });
+    } finally {
+      deletingQuestionRef.current.delete(id);
     }
   }
 
@@ -179,12 +184,17 @@ export default function CommunityAdmin() {
       toast({ title: "עדכון הקישור נכשל", variant: "destructive" });
     }
   }
+  const deletingLinkRef = useRef<Set<number>>(new Set());
   async function deleteLink(id: number) {
+    if (deletingLinkRef.current.has(id)) return;
+    deletingLinkRef.current.add(id);
     try {
       await apiRequest("DELETE", `/api/community/admin/links/${id}`);
       if (detail) loadDetail(detail.questionnaire.id);
     } catch {
       toast({ title: "מחיקת הקישור נכשלה", variant: "destructive" });
+    } finally {
+      deletingLinkRef.current.delete(id);
     }
   }
 

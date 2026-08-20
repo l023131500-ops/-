@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Card } from "@/components/ui/card";
@@ -80,10 +80,17 @@ function DeliveryInner() {
     await apiRequest("POST", `/api/admin/delivery/${row.id}/send`);
     await queryClient.invalidateQueries({ queryKey: ["/api/admin/delivery"] });
   }
+  const removingRef = useRef<Set<number>>(new Set());
   async function remove(row: DeliveryRow) {
     if (!confirm("למחוק את ההודעה?")) return;
-    await apiRequest("DELETE", `/api/admin/delivery/${row.id}`);
-    await queryClient.invalidateQueries({ queryKey: ["/api/admin/delivery"] });
+    if (removingRef.current.has(row.id)) return;
+    removingRef.current.add(row.id);
+    try {
+      await apiRequest("DELETE", `/api/admin/delivery/${row.id}`);
+      await queryClient.invalidateQueries({ queryKey: ["/api/admin/delivery"] });
+    } finally {
+      removingRef.current.delete(row.id);
+    }
   }
 
   return (
