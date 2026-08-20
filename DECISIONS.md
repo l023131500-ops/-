@@ -6602,3 +6602,41 @@
     הפריסה הראשונה שלהם, או לנושא #250 (RLS פתוח ב-mthbram) אם תתקבל
     גישת dashboard.
     via cloud server 167.99.131.167 [loop B]
+
+## 20/08/2026 — סבב 352 (loop B)
+
+352. **הרחבתי את עדשת ה-double-submit (סבב 351) לשאר ההיקף.** סוכן
+    Explore סרק את 17/18/21/22/24/28 (27 כבר טופל בסבב 351) אחר
+    כפתורי "הוספה" שחסרים דגל טעינה ב-`disabled`. 17 (`useMutation.
+    isPending` בכל מקום), 21/22 (מצב `loading` ידני שכבר קיים), 28
+    (רק `useQuery` לקריאה, בלי מוטציות יצירה) — כולם נקיים. 18 אין
+    בכלל `@tanstack/react-query` (Next.js server actions עם מצב ידני
+    בטוח). פגיעה אמיתית אחת: `apps/24-galilee-connect-hub/src/pages/
+    GabaiPortal.tsx` — `KnowledgeManager.handleAdd` (שורה 1204) יורה
+    `supabase.from('knowledge_base').insert(...)` ישירות מ-handler של
+    כפתור, עם `disabled={!title.trim() || !content.trim() ||
+    !category.trim()}` בלבד — בלי חסימת טעינה כלל, בשונה מכל מנהל
+    אחר באותו קובץ (`SynagogueManager`/`ContactManager`/
+    `BannerManager`/`DailyHalacha` — לכולם כבר יש מצב `saving`).
+    **סיכון עסקי:** גבאי שלוחץ פעמיים מהר על "הוסף למאגר" (לפני
+    שהעלאת התמונה/הכתיבה הראשונה חוזרת) יוצר שתי רשומות `knowledge_base`
+    כפולות לאותו פריט. תיקנתי לפי הדפוס הקיים בקובץ: הוספתי מצב
+    `saving`, מפעיל/מכבה סביב ה-`insert` (כולל נתיב ה-return של
+    שגיאה), הוספתי אותו ל-`disabled`, והחלפתי את טקסט הכפתור הקבוע
+    ב-`{saving ? 'מוסיף...' : 'הוסף למאגר'}` — אותה מוסכמה בדיוק כמו
+    `DailyHalacha` באותו קובץ. אפס שינוי ל-API/DB/סכמה — תוספת חסימת
+    UI + טקסט משוב בלבד. בדיקת איזון סוגריים/מאמרים מסולסלים/מרובעים
+    ב-python על הקובץ המלא אחרי העריכה — תקין. אין build/dev-server
+    זמין בסביבה הזו לפי הנחיית ההרצה — לא tsc. ענף `fix/b-24-galilee-
+    knowledge-double-submit-0820`, קומיט `171fa257`, נדחף (מפעיל
+    פריסת Vercel תחת more30.com/galil).
+
+    **מצב עדשת double-submit:** סגורה כעת על כל שבעת האפליקציות
+    החיות בהיקף (17,18,21,22,24,27,28) — 27 ו-24 היו הפגיעות
+    האמיתיות היחידות (סבבים 351-352), השאר נקיות.
+
+    **הבא בתור:** לחזור לתמחור `core.plans` על 19/20/23/25 לפני
+    הפריסה הראשונה שלהם (שלד/ריפו ריק כרגע — להכין את התשתית מהיום
+    הראשון), או לנושא #250 (RLS פתוח-לגמרי על `public.synagogues`
+    ב-21-mthbram) אם תתקבל גישת dashboard לפרויקט aypsqqvfohekxxuqsmrw.
+    via cloud server 167.99.131.167 [loop B]
