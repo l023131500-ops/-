@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { HelpCircle, Phone, Clock, Send, Mail, MessageCircle, ChevronDown, AlertTriangle } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
@@ -16,6 +16,7 @@ const destinations = [
 ];
 
 const AskRabbiSection = () => {
+  const panelId = useId();
   const [isOpen, setIsOpen] = useState(false);
   const [name, setName] = useState('');
   const [question, setQuestion] = useState('');
@@ -57,6 +58,7 @@ const AskRabbiSection = () => {
         <motion.button
           onClick={() => setIsOpen(!isOpen)}
           aria-expanded={isOpen}
+          aria-controls={panelId}
           whileHover={{ scale: 1.03 }}
           whileTap={{ scale: 0.98 }}
           className={`w-full flex items-center justify-center gap-3 py-5 px-8 rounded-[2rem] font-display font-black text-lg transition-all duration-500 shadow-elevated ${
@@ -75,6 +77,7 @@ const AskRabbiSection = () => {
         <AnimatePresence>
           {isOpen && (
             <motion.div
+              id={panelId}
               initial={{ height: 0, opacity: 0, y: -10 }}
               animate={{ height: 'auto', opacity: 1, y: 0 }}
               exit={{ height: 0, opacity: 0, y: -10 }}

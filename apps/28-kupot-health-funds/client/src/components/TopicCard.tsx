@@ -46,6 +46,7 @@ export function TopicCard({ topic, meta }: { topic: HfTopic; meta?: HfMeta }) {
         type="button"
         onClick={() => setOpen((o) => !o)}
         aria-expanded={open}
+        aria-controls={`topic-panel-${topic.id}`}
         className="hover-elevate flex w-full items-center gap-3 px-4 py-3.5 text-right"
         data-testid={`button-toggle-${topic.id}`}
       >
@@ -105,6 +106,7 @@ export function TopicCard({ topic, meta }: { topic: HfTopic; meta?: HfMeta }) {
       <AnimatePresence initial={false}>
         {open && (
           <motion.div
+            id={`topic-panel-${topic.id}`}
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}

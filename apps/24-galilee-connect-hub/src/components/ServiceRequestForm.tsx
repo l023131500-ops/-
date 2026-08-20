@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Send, Phone, User, MessageSquare, ChevronDown } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
@@ -22,6 +22,7 @@ interface ServiceRequestFormProps {
 }
 
 const ServiceRequestForm = ({ defaultType, compact }: ServiceRequestFormProps) => {
+  const panelId = useId();
   const [isOpen, setIsOpen] = useState(false);
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
@@ -62,13 +63,14 @@ const ServiceRequestForm = ({ defaultType, compact }: ServiceRequestFormProps) =
       <div className="mt-3">
         <button onClick={() => setIsOpen(!isOpen)}
           aria-expanded={isOpen}
+          aria-controls={panelId}
           className="w-full flex items-center justify-center gap-2 py-2 rounded-xl bg-primary/10 text-primary font-bold text-xs hover:bg-primary/15 transition-colors border border-primary/20">
           <Send className="w-3.5 h-3.5" /> פנייה
           <motion.div animate={{ rotate: isOpen ? 180 : 0 }}><ChevronDown className="w-3 h-3" /></motion.div>
         </button>
         <AnimatePresence>
           {isOpen && (
-            <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }}
+            <motion.div id={panelId} initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }}
               className="overflow-hidden">
               <div className="pt-3 space-y-2">
                 <Input value={name} onChange={e => setName(e.target.value)} placeholder="שם מלא" className="text-xs h-9" />
