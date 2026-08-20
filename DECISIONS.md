@@ -5791,3 +5791,32 @@
      admin/users (5) → admin/templates (14) → admin/templates/[id]
      (14) → public/create (14). אחריו 01-torah-platform (~150
      מופעים/19 קבצים) מהמיפוי של סבב 83.
+
+## 20/08/2026 (LOOP A — סבב 97) — `<label htmlFor>`/`id`: 03-igud-ads/public/transcribe/upload
+
+528. **בדקתי מחדש `git log`/`core.run_progress` לפני שהתחלתי.** סבב
+     96 סגור (commit `5bca072a`/`3d6e92b8` תיאום, HEAD תואם). המשכתי
+     בתור שסבב 96/#527 הגדיר: `public/transcribe/upload` (3, עם
+     החרגת קבוצת כפתורים) — הבא בגודל אחרי `admin/transcribe/glossary`.
+529. **קראתי את הקובץ במלואו לפני עריכה.** 220 שורות, טופס העלאת
+     שיעור לתמלול דו-שלבי ("אימות קופון" → "העלאת קובץ"). 3 תוויות
+     ללא קישור: "קוד קופון" (שלב 1, `input` טקסט), "סגנון עריכה"
+     (שלב 2, עוטפת רשת של 3 כפתורי בחירה `type="button"` — קבוצת
+     בחירה ולא פקד יחיד, הוחרגה כמו בכל הסבבים הקודמים — דורשת
+     `fieldset`/`legend`, לא `htmlFor`), "קובץ אודיו" (שלב 2, `input
+     type="file"`). תיקנתי את שני הפקדים היחידים בלבד.
+530. **התיקון:** `upload-coupon-code` על שדה קוד הקופון,
+     `upload-file` על שדה בחירת הקובץ.
+531. **אפס רגרסיה מאומתת:** `git diff --stat` — קובץ אחד, 4+/2-
+     (הוספת `id`/`htmlFor` בלבד על `<label>`/`<input>` קיימים, בלי
+     לגעת ב-`value`/`onChange`/`accept`/`required`/`aria-required`).
+     אין `tsc`/`npm` בסביבה הזו — אומת בקריאה מלאה של `git diff`
+     המלא + בדיקת איזון `{}`/`()`/`[]` ב-Python (62/62, 78/78,
+     10/10). `git add -f` נדרש כתקדים (`apps/**` מוחרג כברירת מחדל
+     ב-`.gitignore` השורשי אך `03-igud-ads/app` כבר עוקב מרישום ידני
+     קודם). Commit `2e43852f` על `fix/a-icon-only-buttons-round2-0820`,
+     נדחף ל-origin (מפעיל פריסת Vercel תחת more30.com/modaot).
+532. **הבא בתור ב-03-igud-ads:** admin/coupons (4) →
+     admin/notifications (6) → admin/users (5) → admin/templates
+     (14) → admin/templates/[id] (14) → public/create (14). אחריו
+     01-torah-platform (~150 מופעים/19 קבצים) מהמיפוי של סבב 83.
