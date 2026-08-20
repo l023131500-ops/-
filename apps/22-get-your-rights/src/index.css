@@ -201,3 +201,16 @@
     background-color: hsl(var(--emerald-light));
   }
 }
+
+/* WCAG 2.4.1 skip-to-content link, activated from index.html. Plain CSS
+   (not @apply) because tailwind.config.ts's content glob doesn't cover
+   index.html, so a Tailwind-only class here would be purged at build. */
+.skip-link {
+  position: absolute; inset-inline-start: 8px; top: -48px;
+  background: hsl(var(--primary)); color: hsl(var(--primary-foreground));
+  padding: 10px 16px; border-radius: 8px; font-size: 14px; font-weight: 600;
+  z-index: 10000; transition: top .12s;
+}
+.skip-link:focus {
+  top: 8px;
+}

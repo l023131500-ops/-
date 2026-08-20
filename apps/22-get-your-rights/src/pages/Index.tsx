@@ -23,22 +23,24 @@ const Index = () => {
     <div className="min-h-screen relative">
       <FloatingElements />
       <Navbar />
-      {/* ‎id="top"‎ קיים כדי שללוגו בנווט יהיה יעד אמיתי. עד עכשיו הוא היה
-          ‎href="#"‎ עם ‎cursor:pointer‎ — נראה לחיץ לחלוטין ולא עשה כלום. */}
-      <section id="top">
-        <HeroSection />
-      </section>
-      <StatsSection />
-      <section id="categories">
-        <RightsCategories />
-      </section>
-      <section id="paid-service">
-        <PaidServiceSection />
-      </section>
-      <section id="community">
-        <CommunitySection />
-      </section>
-      
+      <main id="main-content">
+        {/* ‎id="top"‎ קיים כדי שללוגו בנווט יהיה יעד אמיתי. עד עכשיו הוא היה
+            ‎href="#"‎ עם ‎cursor:pointer‎ — נראה לחיץ לחלוטין ולא עשה כלום. */}
+        <section id="top">
+          <HeroSection />
+        </section>
+        <StatsSection />
+        <section id="categories">
+          <RightsCategories />
+        </section>
+        <section id="paid-service">
+          <PaidServiceSection />
+        </section>
+        <section id="community">
+          <CommunitySection />
+        </section>
+      </main>
+
       <Footer />
       <Suspense fallback={null}>
         <FloatingBot />
