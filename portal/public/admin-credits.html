@@ -191,17 +191,30 @@
 
           let meter = '';
           if (p.usage && Number(p.usage.limit) > 0) {
-            const pct = Math.max(0, Math.min(100, Number(p.usage.percent) || 0));
-            const heat = pct >= 90 ? 'crit' : pct >= 75 ? 'hot' : '';
-            const left = Number(p.usage.limit) - Number(p.usage.used);
-            meter =
-              `<div class="meter ${heat}"><i style="width:${pct}%"></i></div>` +
-              `<div class="num">${nf(left)} ${esc(p.usage.unit)} נותרו · ` +
-              `${nf(p.usage.used)} מתוך ${nf(p.usage.limit)}` +
-              (p.usage.cycleEnds
-                ? ` · מתאפס ${new Date(p.usage.cycleEnds).toLocaleDateString('he-IL')}`
-                : '') +
-              `</div>`;
+            // ספק noLimit (כרגע Recraft) מחזיר רק "כמה נשאר", לא יחס אמת מתוך
+            // מכסה — percent הוא תמיד 0 בשורה הזאת. פס-אחוזים היה מצייר "ריק"
+            // קבוע גם כשהקרדיטים ממש נגמרים, בדיוק ההפך מהאזהרה שהוא אמור לתת
+            // (אותו תיקון שכבר קיים ב-admin/src/App.tsx לאותו שדה).
+            if (p.usage.noLimit) {
+              meter =
+                `<div class="num">${nf(p.usage.limit)} ${esc(p.usage.unit)} נותרו` +
+                (p.usage.cycleEnds
+                  ? ` · מתאפס ${new Date(p.usage.cycleEnds).toLocaleDateString('he-IL')}`
+                  : '') +
+                `</div>`;
+            } else {
+              const pct = Math.max(0, Math.min(100, Number(p.usage.percent) || 0));
+              const heat = pct >= 90 ? 'crit' : pct >= 75 ? 'hot' : '';
+              const left = Number(p.usage.limit) - Number(p.usage.used);
+              meter =
+                `<div class="meter ${heat}"><i style="width:${pct}%"></i></div>` +
+                `<div class="num">${nf(left)} ${esc(p.usage.unit)} נותרו · ` +
+                `${nf(p.usage.used)} מתוך ${nf(p.usage.limit)}` +
+                (p.usage.cycleEnds
+                  ? ` · מתאפס ${new Date(p.usage.cycleEnds).toLocaleDateString('he-IL')}`
+                  : '') +
+                `</div>`;
+            }
           }
 
           return `<article class="p">
