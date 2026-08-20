@@ -361,7 +361,7 @@ const OrgPortal = () => {
                   <div className="bg-card rounded-2xl border-2 border-gold/30 p-6 space-y-4">
                     <div className="flex items-center justify-between mb-2">
                       <h3 className="font-display text-lg font-black text-gold">שיעור חדש</h3>
-                      <Button variant="ghost" size="icon" onClick={() => setAddingNew(false)}><X className="w-4 h-4" /></Button>
+                      <Button variant="ghost" size="icon" aria-label="ביטול" onClick={() => setAddingNew(false)}><X className="w-4 h-4" /></Button>
                     </div>
                     <div>
                       <label className="font-body text-xs font-medium text-muted-foreground mb-1 block">שם הרב *</label>
@@ -390,7 +390,7 @@ const OrgPortal = () => {
                     <div className="p-6 space-y-4">
                       <div className="flex items-center justify-between mb-2">
                         <h3 className="font-display text-lg font-black text-teal">עריכת שיעור</h3>
-                        <Button variant="ghost" size="icon" onClick={() => setEditingId(null)}><X className="w-4 h-4" /></Button>
+                        <Button variant="ghost" size="icon" aria-label="ביטול עריכה" onClick={() => setEditingId(null)}><X className="w-4 h-4" /></Button>
                       </div>
                       <PortalLessonForm data={editData} onChange={setEditData} />
                       <Button onClick={saveEdit} disabled={savingLesson} className="w-full bg-gradient-brand text-primary-foreground font-body font-bold py-5 gap-2">

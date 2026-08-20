@@ -116,7 +116,7 @@ const PrayerTimesTab = ({ orgId }: PrayerTimesTabProps) => {
         <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} className="bg-card rounded-2xl border-2 border-gold/30 p-5 space-y-3">
           <div className="flex items-center justify-between">
             <h4 className="font-display font-bold text-gold">בית כנסת חדש</h4>
-            <Button variant="ghost" size="icon" onClick={() => setAddingSynagogue(false)}><X className="w-4 h-4" /></Button>
+            <Button variant="ghost" size="icon" aria-label="ביטול" onClick={() => setAddingSynagogue(false)}><X className="w-4 h-4" /></Button>
           </div>
           <SynagogueForm form={synForm} onChange={setSynForm} />
           <Button onClick={addSynagogue} className="w-full bg-gradient-teal text-primary-foreground font-body font-bold gap-2">
@@ -143,7 +143,7 @@ const PrayerTimesTab = ({ orgId }: PrayerTimesTabProps) => {
                   <div className="p-5 space-y-3">
                     <div className="flex items-center justify-between">
                       <h4 className="font-display font-bold text-teal">עריכת בית כנסת</h4>
-                      <Button variant="ghost" size="icon" onClick={() => setEditingSynagogue(null)}><X className="w-4 h-4" /></Button>
+                      <Button variant="ghost" size="icon" aria-label="ביטול עריכה" onClick={() => setEditingSynagogue(null)}><X className="w-4 h-4" /></Button>
                     </div>
                     <SynagogueForm form={synForm} onChange={setSynForm} />
                     <Button onClick={() => updateSynagogue(syn.id)} className="w-full bg-gradient-brand text-primary-foreground font-body font-bold gap-2">

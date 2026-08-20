@@ -101,7 +101,7 @@ export default function BrandingBrief() {
             <ScrollText className="h-6 w-6 text-[#C9A227]" />
             <h1 className="text-xl font-bold">בריף מותג</h1>
           </div>
-          <button className="text-[#F5EEDD]/50 hover:text-[#F5EEDD]" onClick={() => navigate("/branding")} data-testid="button-close">
+          <button className="text-[#F5EEDD]/50 hover:text-[#F5EEDD]" onClick={() => navigate("/branding")} data-testid="button-close" aria-label="סגור">
             <X className="h-5 w-5" />
           </button>
         </div>

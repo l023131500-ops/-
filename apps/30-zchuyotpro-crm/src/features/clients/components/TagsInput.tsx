@@ -21,7 +21,7 @@ export function TagsInput({ value, onChange }: { value: string[]; onChange: (v: 
         {value.map((t) => (
           <Badge key={t} variant="secondary" className="gap-1">
             {t}
-            <button type="button" onClick={() => onChange(value.filter((x) => x !== t))} className="hover:opacity-70">
+            <button type="button" onClick={() => onChange(value.filter((x) => x !== t))} aria-label={`הסר תגית ${t}`} className="hover:opacity-70">
               <X className="h-3 w-3" />
             </button>
           </Badge>

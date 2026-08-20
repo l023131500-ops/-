@@ -120,7 +120,7 @@ export function HousingTab({ clientId }: { clientId: string }) {
               <Input placeholder="כתובת" value={p.address} onChange={(e) => { const x = [...f.additional_properties]; x[i] = { ...p, address: e.target.value }; setF({ ...f, additional_properties: x }); }} />
               <Input placeholder="סוג" value={p.type} onChange={(e) => { const x = [...f.additional_properties]; x[i] = { ...p, type: e.target.value }; setF({ ...f, additional_properties: x }); }} />
               <Input type="number" placeholder="שווי" value={p.value} onChange={(e) => { const x = [...f.additional_properties]; x[i] = { ...p, value: Number(e.target.value) }; setF({ ...f, additional_properties: x }); }} />
-              <Button variant="ghost" size="icon" onClick={() => setF({ ...f, additional_properties: f.additional_properties.filter((_, j) => j !== i) })}><X className="h-4 w-4" /></Button>
+              <Button variant="ghost" size="icon" aria-label="הסר נכס" onClick={() => setF({ ...f, additional_properties: f.additional_properties.filter((_, j) => j !== i) })}><X className="h-4 w-4" /></Button>
             </div>
           ))}
         </div>

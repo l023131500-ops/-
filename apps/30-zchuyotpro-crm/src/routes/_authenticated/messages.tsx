@@ -327,7 +327,7 @@ function ChatPane({ contact, messages, tenantId, senderId, onSent }: {
           {attachments.map((a, i) => (
             <Badge key={i} variant="secondary" className="gap-1">
               <Paperclip className="h-3 w-3" />{a.name}
-              <button onClick={() => setAttachments((arr) => arr.filter((_, idx) => idx !== i))}><X className="h-3 w-3" /></button>
+              <button onClick={() => setAttachments((arr) => arr.filter((_, idx) => idx !== i))} aria-label={`הסר קובץ מצורף ${a.name}`}><X className="h-3 w-3" /></button>
             </Badge>
           ))}
         </div>

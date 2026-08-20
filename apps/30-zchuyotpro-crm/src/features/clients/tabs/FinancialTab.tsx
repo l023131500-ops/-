@@ -116,7 +116,7 @@ export function FinancialTab({ clientId }: { clientId: string }) {
               <div key={i} className="flex gap-2">
                 <Input placeholder="שם" value={s.name} onChange={(e) => { const x = [...f.income_sources]; x[i] = { ...s, name: e.target.value }; setF({ ...f, income_sources: x }); }} />
                 <Input type="number" placeholder="סכום" value={s.amount} onChange={(e) => { const x = [...f.income_sources]; x[i] = { ...s, amount: Number(e.target.value) }; setF({ ...f, income_sources: x }); }} className="w-32" />
-                <Button variant="ghost" size="icon" onClick={() => setF({ ...f, income_sources: f.income_sources.filter((_, j) => j !== i) })}><X className="h-4 w-4" /></Button>
+                <Button variant="ghost" size="icon" aria-label="הסר מקור הכנסה" onClick={() => setF({ ...f, income_sources: f.income_sources.filter((_, j) => j !== i) })}><X className="h-4 w-4" /></Button>
               </div>
             ))}
           </div>
@@ -150,7 +150,7 @@ export function FinancialTab({ clientId }: { clientId: string }) {
                   <Input placeholder="חברה" value={p.provider} onChange={(e) => { const x = [...f.insurance_details]; x[i] = { ...p, provider: e.target.value }; setF({ ...f, insurance_details: x }); }} />
                   <Input placeholder="סוג" value={p.type} onChange={(e) => { const x = [...f.insurance_details]; x[i] = { ...p, type: e.target.value }; setF({ ...f, insurance_details: x }); }} />
                   <Input type="number" placeholder="פרמיה" value={p.premium} onChange={(e) => { const x = [...f.insurance_details]; x[i] = { ...p, premium: Number(e.target.value) }; setF({ ...f, insurance_details: x }); }} />
-                  <Button variant="ghost" size="icon" onClick={() => setF({ ...f, insurance_details: f.insurance_details.filter((_, j) => j !== i) })}><X className="h-4 w-4" /></Button>
+                  <Button variant="ghost" size="icon" aria-label="הסר פוליסה" onClick={() => setF({ ...f, insurance_details: f.insurance_details.filter((_, j) => j !== i) })}><X className="h-4 w-4" /></Button>
                 </div>
               ))}
             </div>
