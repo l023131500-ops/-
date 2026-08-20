@@ -515,13 +515,38 @@
       `node_modules`/`vite build` זמינים בסביבה). הקוד נכתב ונבדק בקריאה
       ישירה מול הדפוסים הקיימים (`branding.ts` data-URL pattern, `clientNotes`
       sibling-field pattern, `routes.ts`/`vercel-adapter` mirror אחד-לאחד) —
-      לא בהרצה. **נשאר לסבב הבא (עם build/dev-server זמינים):** `tsc --noEmit`
-      + `vite build --base=/studio/` + פריסה + אימות Playwright חי
-      (כפתור מופיע, קריינות אמיתית מתקבלת, נשמרת ונטענת בחזרה, אפס רגרסיה
-      לשאר הכפתורים), ואז המשך הבנייה בפועל של "וידאו קידום": רצף
-      פריימים/מעברים על גבי מנוע ה-Konva הקיים + סנכרון לאורך הקריינות +
-      קידוד וידאו (ככל הנראה `MediaRecorder`/`canvas.captureStream()`
-      בדפדפן, כדי להימנע מתלות ב-ffmpeg בסביבת Vercel serverless).
+      לא בהרצה. **build/dev-server עדיין לא זמינים בסביבה גם בסבב הזה** — נשאר
+      פתוח לסבב שיבוא אליהם: `tsc --noEmit` + `vite build --base=/studio/` +
+      פריסה + אימות Playwright חי (כפתור מופיע, קריינות אמיתית מתקבלת, נשמרת
+      ונטענת בחזרה, אפס רגרסיה לשאר הכפתורים).
+
+- [ ] **17. וידאו קידום — הרכבה בפועל (Ken Burns + סנכרון קריינות)** — ממשיך
+      ישירות מפריט 16: `client/src/lib/videoExport.ts` חדש,
+      `exportPromoVideo(stage, fullWidth, fullHeight, {narrationAudioUrl,
+      onProgress})`. משתמש באותו `stage.toCanvas({pixelRatio})` ש-
+      `lib/exporter.ts` כבר משתמש בו ל-PNG/PDF (שום רינדור/שכבה קיימים לא
+      השתנו) כדי לקבל תמונה ברזולוציה מלאה (מוגבלת ל-1080px בצלע הארוכה
+      לוידאו — קובץ/זמן קידוד סבירים), ואז מצייר עליה תנועת זום+פאן איטית
+      (Ken Burns, easing) פריים-אחר-פריים על קנבס נפרד, מוקלט עם
+      `canvas.captureStream(30)` + `MediaRecorder` (webm, vp9/vp8 לפי תמיכת
+      הדפדפן) — בדיוק התכנון שתועד בפריט 16 כדי להימנע מתלות ב-ffmpeg
+      בסביבת Vercel serverless. משך הוידאו מסונכרן לאורך הקריינות עצמה
+      (`audioEl.duration` מתוך ה-data URL של פריט 16, עם נפילה למשך קבוע אם
+      metadata לא מתקבל); פס הקול נלכד עם
+      `HTMLAudioElement.captureStream()` וממוזג לאותו `MediaStream` — אם
+      הדפדפן לא תומך, הוידאו יוצא שקט (לא קריטי, לא זורק). כפתור "ייצוא
+      וידאו קידום (webm)" חדש בתוך דיאלוג הקריינות (`Editor.tsx`), מופיע
+      **רק** אחרי שיש `narrationAudioUrl` (כדי שהוידאו הראשון תמיד ילווה
+      קריינות אמיתית, לא שקט חסר-טעם), עם `Progress` בזמן ההקלטה. אפס שינוי
+      לרינדור/לשמירה/לייצוא הקיימים — קובץ חדש + כפתור חדש בלבד.
+      **לא נבדק חי** (אותה מגבלת build/dev-server). **ידוע וצריך אימות
+      בסבב הבא עם דפדפן אמיתי:** מדיניות autoplay של `audioEl.play()`
+      (הקריאה יוצאת אחרי `await` אחד על טעינת ה-metadata, לא באותו tick
+      בדיוק כמו לחיצת הכפתור — ברוב הדפדפנים זה עדיין נחשב "בתוך user
+      gesture chain" כי אין `await` על רשת אמיתית (data URL כבר בזיכרון),
+      אך צריך אימות Playwright); תמיכת `HTMLAudioElement.captureStream`
+      (Chrome/Firefox כן, Safari לא — בסספרי הוידאו ייצא שקט); איכות/גודל
+      קובץ סופיים.
 
 ---
 

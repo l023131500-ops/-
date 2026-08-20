@@ -38,11 +38,13 @@ import {
   RefreshCw,
   CheckCheck,
   Mic,
+  Video,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Progress } from "@/components/ui/progress";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -74,6 +76,7 @@ import { getCategory } from "@shared/knowledge";
 import { getStyle } from "@shared/styles";
 import { FORMATS, getFormat } from "@shared/formats";
 import { downloadPNG, downloadPDF, downloadSVG } from "@/lib/exporter";
+import { exportPromoVideo, downloadBlob } from "@/lib/videoExport";
 import { downloadIDML } from "@/lib/idmlExporter";
 import { apiRequest, hasAuthSession } from "@/lib/queryClient";
 import { nextId } from "@shared/layers";
@@ -164,6 +167,12 @@ export default function Editor() {
   const [narrationScript, setNarrationScript] = useState(selected?.narrationScript ?? "");
   const [narrationAudioUrl, setNarrationAudioUrl] = useState(selected?.narrationAudioUrl ?? "");
   const [narrationLoading, setNarrationLoading] = useState(false);
+
+  // וידאו קידום (Ken Burns + סנכרון קריינות, lib/videoExport.ts) — הבנייה בפועל
+  // שתועדה כ"נשאר לסבב הבא" בפריט 16 של הצ'קליסט. לא נוגע בקנבס/בשמירה הקיימים —
+  // רק קורא ל-stageRef ברזולוציה מלאה, בדיוק כמו handleDownloadPNG/PDF.
+  const [videoExporting, setVideoExporting] = useState(false);
+  const [videoProgress, setVideoProgress] = useState(0);
 
   // וקטוריזציה של שכבת תמונה קיימת ל-SVG אמיתי (Recraft — מנוע קיים בכלי המותג)
   const [vectorizing, setVectorizing] = useState(false);
@@ -670,6 +679,32 @@ export default function Editor() {
       });
     } finally {
       setNarrationLoading(false);
+    }
+  }
+
+  // וידאו קידום — מרכיב Ken Burns + פס הקריינות (lib/videoExport.ts) מתוך אותו
+  // stage ברזולוציה מלאה ש-handleDownloadPNG/PDF כבר משתמשים בו, מוריד webm.
+  // דורש שקריינות תיווצר קודם (הכפתור נעול בלעדיה) כדי שהוידאו לא יהיה שקט-סתמי.
+  async function handleExportVideo() {
+    if (!stageRef.current || !doc) return;
+    setVideoExporting(true);
+    setVideoProgress(0);
+    try {
+      const blob = await exportPromoVideo(stageRef.current, doc.width, doc.height, {
+        narrationAudioUrl: narrationAudioUrl || undefined,
+        onProgress: (fraction) => setVideoProgress(Math.round(fraction * 100)),
+      });
+      downloadBlob(blob, `${selected?.name ?? "modaa"}.webm`);
+      toast({ title: "הוידאו מוכן להורדה" });
+    } catch (err: any) {
+      toast({
+        title: "ייצוא הוידאו נכשל",
+        description: String(err?.message ?? err).slice(0, 150),
+        variant: "destructive",
+      });
+    } finally {
+      setVideoExporting(false);
+      setVideoProgress(0);
     }
   }
 
@@ -1744,6 +1779,21 @@ export default function Editor() {
           </Button>
           {narrationAudioUrl && (
             <audio controls src={narrationAudioUrl} className="w-full" data-testid="audio-narration-preview" />
+          )}
+          {narrationAudioUrl && (
+            <div className="flex flex-col gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-1.5 self-start border-[#C9A227]/40 text-[#C9A227]"
+                onClick={handleExportVideo}
+                disabled={videoExporting}
+                data-testid="button-export-video"
+              >
+                <Video className="h-4 w-4" /> {videoExporting ? `מרכיב וידאו... ${videoProgress}%` : "ייצוא וידאו קידום (webm)"}
+              </Button>
+              {videoExporting && <Progress value={videoProgress} className="h-2" />}
+            </div>
           )}
           <Button
             size="sm"
