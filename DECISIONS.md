@@ -6680,3 +6680,43 @@
      Explore agent סקירה טרייה על כל 01-16 שוב לעדשת modal-a11y
      (מעבר ל-01/03 שכבר נסרקו) לפני שממשיך, ואז לבדוק מחדש
      `core.project_tasks`/`core.project_bugs` לעבודה חדשה בתחום.
+
+## 20/08/2026 — סבב 119 (loop A)
+
+629. **הרצתי את המלצת #628.** Explore agent סקר את כל האפליקציות
+     המ-vendored הנותרות (יש קוד מקור אמיתי): `02-igud-transcribe`,
+     `04-imud-torani`, `12-smel-ndln`, `15-egod`, `16-chatzor-connect`,
+     וגם בדק מחדש את `01-torah-platform` לוודא שאין מודלים חדשים
+     מעבר ל-3 שכבר תוקנו. תוצאה: `04`/`12`/`15` בנויים כולם על
+     Radix `Dialog`/`Sheet` (מתאים כבר); `16` משתמש ברכיב `Modal.tsx`
+     משותף יחיד שכבר תואם (`role="dialog"`, `aria-modal`, Escape);
+     `01` לא הניב מודלים חדשים. מועמד אמיתי יחיד נמצא:
+     `apps/02-igud-transcribe/app/(admin)/admin/uploads/page.tsx`
+     (מודל "פרטי העלאה" ב-`/admin/uploads`, state `selected`, שורה
+     ~144) — ללא `role`/`aria-modal`/Escape, זהה לדפוס שתוקן
+     ב-01/03 בסבבים קודמים.
+630. **אימות שזה מודל חי, לא false-positive:** קראתי את הקובץ
+     המלא. זהו דף admin אמיתי (route `/admin/uploads`, מקושר
+     מ-`AdminNav.tsx`) עם overlay `fixed inset-0 z-50` שנפתח
+     בלחיצה על "צפה" בשורת טבלה ומציג metadata + הורדת/העתקת
+     תמלול. נסגר היום רק דרך לחיצה על ה-backdrop או כפתור `×`.
+631. **התיקון:** `useEffect` חדש (ליד ה-`useEffect` הקיים של
+     `load`/`setInterval`) שמאזין ל-`keydown` על `window` וסוגר את
+     המודל (`setSelected(null)`) ב-Escape כשה-state `selected` פתוח.
+     הוספתי `role="dialog"` `aria-modal="true"` ו-`aria-label`
+     (שם הקובץ המקורי או ה-id, תואם לכותרת `<h2>` הקיימת) על ה-panel
+     הפנימי (לא ה-overlay). לא נגעתי ב-onClick/backdrop-close/
+     stopPropagation/copy/download/delete/logic קיים.
+632. **אפס רגרסיה מאומתת:** `git diff --stat` — קובץ אחד, 12+/0-,
+     רק `useEffect` חדש + 3 attributes על ה-panel. אין `tsc`/`npm`
+     בסביבה הזו — אומת בבדיקת איזון `{}`/`()`/`[]` ב-Python על
+     הקובץ המלא (71/71, 94/94, 15/15). Commit על
+     `fix/a-icon-only-buttons-round2-0820`, יידחף ל-origin (מפעיל
+     פריסת Vercel תחת more30.com/tamlul).
+633. **הבא בתור:** עדשת modal-a11y סגורה כעת על כל 01-16 שנסרק
+     (01/02/03/16 — היחידים עם מודלים מותאמים-אישית; 04/12/15
+     בנויים על Radix ותואמים מראש; 06/13/14 הם static HTML/JS ללא
+     React, לא רלוונטי לעדשה הזו). סבב הבא צריך לפתוח עדשה חדשה
+     (למשל: בדיקת `aria-live`/error-announcement בטפסים, או חזרה
+     ל-`core.project_tasks`/`core.project_bugs` לעבודה חדשה בתחום
+     auth/admin/pricing/gannenet) לפני שממשיך.
