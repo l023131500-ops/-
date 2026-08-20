@@ -44,11 +44,17 @@ export interface DonationRequest {
 /**
  * Build a Nedarim Plus charge payload. Transport (n8n `NEDARIM3873`) is owned
  * elsewhere and is protected — this only shapes the payload.
+ *
+ * Nedarim Plus's `Amount` field is whole ILS, not agorot (verified against every
+ * live integration on the platform: `apps/01-torah-platform/supabase/functions/
+ * nedarim-create-payment` and `apps/03-igud-ads/lib/nedarim.ts` both send whole-ILS
+ * amounts, e.g. `amount: 50` for ₪50). `DonationRequest.amountAgorot` is agorot
+ * (cents) by name/convention, so it must be divided by 100 before going out.
  */
 export function buildDonationPayload(cfg: NedarimConfig, r: DonationRequest) {
   return {
     MosadId: cfg.mosadId,
-    Amount: r.amountAgorot,
+    Amount: r.amountAgorot / 100,
     Description: r.description,
     PayerName: r.payerName ?? "",
     Reference: `more30:${r.projectNumber}`,
