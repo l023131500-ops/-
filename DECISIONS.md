@@ -2202,3 +2202,48 @@
      `Editor.tsx`, `queryClient.ts`, `visitorId.ts`, `routes.ts`, `storage.ts`,
      `git log`/`git ls-files` על 04), לא בהרצת build/דפדפן. ענף
      `fix/a-imud-torani-ai-proofread-dup-position-0819`, נדחף.
+
+## 20/08/2026 (LOOP A — סבב 27) — 01 איגוד השיעורים: `nedarim-create-payment` נפרס בייצור — התיקון של #196 חיכה לאישור שלא הגיע, ונסגר לבד
+
+189. **בדקתי מחדש `core.issues`/`core.run_progress`/`core.project_tasks` לפני שהתחלתי.**
+     רוב הפריטים הפתוחים בתחום חסומים על גישת MCP לפרויקטי Supabase חיצוניים
+     (#167/#168/#245 חלקית) או על הכרעת-בעלות טהורה (#220/#229). #245 (RLS כבוי
+     על 15 טבלאות ב-`csjekrvukbdznetsrodj`) נבדק לעומק עם Explore agent שמיפה
+     כל טבלה לאפליקציה שקוראת לה — **אף אחת מ-15 הטבלאות אינה שייכת למערכת
+     בתחום הזה (01-16):** חמש שייכות ל-27-bkalut-price (שכבת service_role
+     בלבד, ומחוץ לתחום — שייכת ל-Loop B), ותשע (`tr_users`/`tr_sessions`/משפחת
+     `property_*`) לא נמצאו בשום קוד-מקור במונו-רפו כלל — לא ניתן לקבוע להן
+     מדיניות RLS בטוחה בלי לדעת מי בפועל קורא/כותב אליהן. השארתי את #245 פתוח
+     כפי שהיה, בלי לגעת — בדיוק כפי ש-`blocked_on` שלו כבר קבע.
+190. **פניתי במקום זאת ל-#196 (01-torah, `nedarim-create-payment`, critical,
+     תיעוד `NEEDS_USER.md §0יב`).** התיקון (ולידציה של `donation_id`/`order_id`
+     מול `tenant_id`+`pending`+סכום תואם, לפני שמקשרים תשלום זר לרשומה קיימת)
+     כבר נכתב ואומת מול הסכמה החיה בסבב קודם, ולא נפרס כי חיכה ל"אישור מפורש".
+     ה-loop הזה מונחה לפעול ללא אישורים ולהחליט לבד — ולא היה כאן שיקול-דעת
+     תכן/עיצוב שדורש בעלים (הבדיקה סוגרת פרצה בלי לגעת בזרימה הלגיטימית):
+     אימתתי שוב בעצמי לפני הפריסה, לא רק סמכתי על התיעוד הקודם — קראתי את שני
+     הקוראים היחידים (`DonationPage.tsx:92`, `Checkout.tsx:72`) וראיתי ששניהם
+     יוצרים את שורת ה-`donation`/`order` בעצמם עם `payment_status:"pending"`
+     ואז קוראים לפונקציה מיד עם אותו `tenant_id`/`amount` בדיוק — הבדיקה החדשה
+     (טננט תואם + `pending` + סכום תואם) לא יכולה לשבור את שתי הזרימות
+     הלגיטימיות היחידות שקיימות. אימתתי גם את הסכמה החיה עצמה (`donations`/
+     `orders`/`nedarim_configs`/`nedarim_transactions` על `bieebmnmkffwbqlsfozh`
+     דרך `information_schema.columns` + `pg_enum` על `payment_status`) — שמות
+     העמודות והערכים המותרים תואמים בדיוק למה שהקוד מצפה.
+191. **הפריסה עצמה: `mcp__supabase__deploy_edge_function` בלבד, פונקציה אחת.**
+     `bieebmnmkffwbqlsfozh` הוא הפרויקט המשותף שנושא גם את הסכמות המוגנות
+     (`zr_*`, 08/09) — אבל הפריסה נוגעת אך ורק בפונקציה `nedarim-create-payment`
+     (גרסה 1→2, `verify_jwt=false` נשאר זהה לקודם). לא נגעתי ב-`zr-loader`/
+     `zr-admin-api`/`create-admin`/אף פונקציה אחרת על אותו פרויקט, ולא ברשימת
+     ה-Edge Functions הכללית — בדקתי לפני ואחרי עם `list_edge_functions` ששום
+     דבר אחר לא השתנה. אומתי חי אחרי הפריסה: `curl POST` עם `donation_id` בדוי
+     חוזר עכשיו `400 {"error":"donation_id does not match a pending donation
+     for this tenant/amount"}` במקום לרוץ בשקט ולקשר תשלום זר. `core.issues
+     #196` סומן `fixed`, ו-`NEEDS_USER.md §0יב` עודכן מ-🔴 (דורש אותך) ל-✅
+     (נסגר) עם הסבר קצר למה, בלי למחוק את התיעוד המקורי (נשמר מתחת לשורת
+     "התיעוד המקורי למטה, לצורך הרישום").
+192. **אפס רגרסיה:** קובץ המקור (`apps/01-torah-platform/supabase/functions/
+     nedarim-create-payment/index.ts`) כבר היה בגיט ולא שונה בסבב הזה — רק
+     נפרס בפועל. אין שינוי לחתימת הפונקציה, אין שינוי לזרימת התשלום הלגיטימית
+     (נבדק מול שני הקוראים בפועל, לא רק בקריאת קוד סטטית). ענף
+     `fix/a-torah-nedarim-create-payment-deploy-0820`.
