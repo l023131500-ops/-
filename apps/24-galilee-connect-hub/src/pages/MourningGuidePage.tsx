@@ -99,22 +99,22 @@ const MourningGuidePage = () => {
           <div className="p-6 space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-bold text-foreground mb-1.5">שם מלא *</label>
-                <Input value={name} onChange={e => setName(e.target.value)} placeholder="שם מלא" />
+                <label htmlFor="mourning-name" className="block text-sm font-bold text-foreground mb-1.5">שם מלא *</label>
+                <Input id="mourning-name" value={name} onChange={e => setName(e.target.value)} placeholder="שם מלא" />
               </div>
               <div>
-                <label className="block text-sm font-bold text-foreground mb-1.5">טלפון *</label>
-                <Input value={phone} onChange={e => setPhone(e.target.value)} placeholder="050-0000000" dir="ltr" />
+                <label htmlFor="mourning-phone" className="block text-sm font-bold text-foreground mb-1.5">טלפון *</label>
+                <Input id="mourning-phone" value={phone} onChange={e => setPhone(e.target.value)} placeholder="050-0000000" dir="ltr" />
               </div>
             </div>
             <div>
-              <label className="block text-sm font-bold text-foreground mb-1.5">שם הנפטר/ת *</label>
-              <Input value={deceasedName} onChange={e => setDeceasedName(e.target.value)} placeholder="שם הנפטר/ת" />
+              <label htmlFor="mourning-deceased-name" className="block text-sm font-bold text-foreground mb-1.5">שם הנפטר/ת *</label>
+              <Input id="mourning-deceased-name" value={deceasedName} onChange={e => setDeceasedName(e.target.value)} placeholder="שם הנפטר/ת" />
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-bold text-foreground mb-1.5">סוג הבקשה</label>
-                <select value={requestType} onChange={e => setRequestType(e.target.value)}
+                <label htmlFor="mourning-request-type" className="block text-sm font-bold text-foreground mb-1.5">סוג הבקשה</label>
+                <select id="mourning-request-type" value={requestType} onChange={e => setRequestType(e.target.value)}
                   className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
                   <option value="azkara">אזכרה</option>
                   <option value="beit_avel">בית אבל</option>
@@ -124,13 +124,13 @@ const MourningGuidePage = () => {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-bold text-foreground mb-1.5">תאריך מבוקש</label>
-                <Input type="date" value={dateRequested} onChange={e => setDateRequested(e.target.value)} dir="ltr" />
+                <label htmlFor="mourning-date-requested" className="block text-sm font-bold text-foreground mb-1.5">תאריך מבוקש</label>
+                <Input id="mourning-date-requested" type="date" value={dateRequested} onChange={e => setDateRequested(e.target.value)} dir="ltr" />
               </div>
             </div>
             <div>
-              <label className="block text-sm font-bold text-foreground mb-1.5">הערות</label>
-              <Textarea value={notes} onChange={e => setNotes(e.target.value)} placeholder="פרטים נוספים..." rows={3} />
+              <label htmlFor="mourning-notes" className="block text-sm font-bold text-foreground mb-1.5">הערות</label>
+              <Textarea id="mourning-notes" value={notes} onChange={e => setNotes(e.target.value)} placeholder="פרטים נוספים..." rows={3} />
             </div>
             <Button onClick={handleSubmit} disabled={sending || !name.trim() || !phone.trim() || !deceasedName.trim()}
               className="w-full gap-2 font-bold bg-gradient-hero text-primary-foreground py-6 text-base">
