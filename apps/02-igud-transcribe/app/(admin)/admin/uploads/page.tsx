@@ -131,12 +131,12 @@ export default function UploadsPage() {
         <table className="w-full text-right">
           <thead className="bg-slate-100 text-sm text-slate-600">
             <tr>
-              <th className="px-4 py-3">שם קובץ</th>
-              <th className="px-4 py-3">סגנון</th>
-              <th className="px-4 py-3">סטטוס</th>
-              <th className="px-4 py-3">גודל</th>
-              <th className="px-4 py-3">תאריך</th>
-              <th className="px-4 py-3">פעולות</th>
+              <th scope="col" className="px-4 py-3">שם קובץ</th>
+              <th scope="col" className="px-4 py-3">סגנון</th>
+              <th scope="col" className="px-4 py-3">סטטוס</th>
+              <th scope="col" className="px-4 py-3">גודל</th>
+              <th scope="col" className="px-4 py-3">תאריך</th>
+              <th scope="col" className="px-4 py-3">פעולות</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">

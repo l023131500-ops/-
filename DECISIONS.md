@@ -8226,3 +8226,27 @@
      `rel="noopener noreferrer"`, `id` כפולים), או לחזור ל-
      `core.project_tasks`/`core.project_bugs` (5 פריטים פתוחים,
      עדיין חסומים).
+
+## 20/08/2026 — סבב 163 (loop A)
+
+801. **המשך העדשה:** מהתור שנפתח בסבב 162 — טיפלתי במועמד הראשון:
+     `apps/02-igud-transcribe/app/(admin)/admin/uploads/page.tsx`
+     (טבלת ניהול העלאות תמלול: שם קובץ/סגנון/סטטוס/גודל/תאריך/
+     פעולות).
+802. **תיקון:** הוספתי `scope="col"` לכל אחד משישה תגי `<th>`
+     בשורת הכותרת של הטבלה. ללא שינוי למבנה הטבלה, ל-`loading`/
+     `uploads.map`, או ללוגיקה כלשהי — תוספת attribute טהורה.
+803. **אפס רגרסיה מאומתת:** `git diff --stat` — קובץ אחד, 6+/6-.
+     איזון סוגריים בפייתון על הקובץ המלא: `()` 110/110, `{}`
+     78/78, `[]` 21/21 — תואם. אין tsc/npm בסביבה זו. הנתיב
+     `apps/02-igud-transcribe/app` חסום ע"י `.gitignore` (כמו
+     בסבבים קודמים) — נדרש `git add -f`. Commit נדחף ל-origin על
+     `fix/a-icon-only-buttons-round2-0820` (מפעיל פריסת Vercel
+     תחת more30.com/igud-transcribe).
+804. **הבא בתור:** שני מועמדים גיבוי נותרים מסריקת סבב 162 —
+     `apps/03-igud-ads/app/(admin)/admin/payments/page.tsx` (7
+     `<th>`), `apps/15-egod/src/pages/admin/AdminTeachers.tsx`
+     (אותה תבנית) — או לפתוח עדשה נוספת (tab-order/tabindex
+     חיוביים, `target="_blank"` בלי `rel="noopener noreferrer"`,
+     `id` כפולים), או לחזור ל-`core.project_tasks`/
+     `core.project_bugs` (5 פריטים פתוחים, עדיין חסומים).
