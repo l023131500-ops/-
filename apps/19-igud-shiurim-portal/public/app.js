@@ -1252,6 +1252,8 @@ async function renderAdmin(token) {
     wireUploadField({ id: 'lesson-logo', uploadUrl: `/api/admin/tenant/${encodeURIComponent(token)}/upload` });
     document.getElementById('lesson-form').addEventListener('submit', async (e) => {
       e.preventDefault();
+      const submitBtn = e.target.querySelector('button[type="submit"]');
+      if (submitBtn) submitBtn.disabled = true;
       const f = Object.fromEntries(new FormData(e.target));
       f.day_of_week = Number(f.day_of_week);
       f.duration_minutes = Number(f.duration_minutes) || 45;
@@ -1264,6 +1266,8 @@ async function renderAdmin(token) {
         await refresh(); draw();
       } catch (err) {
         document.getElementById('lessons-alert').innerHTML = `<div class="alert alert-error">${esc(err.message)}</div>`;
+      } finally {
+        if (submitBtn) submitBtn.disabled = false;
       }
     });
     const cancelBtn = document.getElementById('lesson-cancel-edit');
@@ -1327,12 +1331,16 @@ async function renderAdmin(token) {
     wireUploadField({ id: 'service-file', uploadUrl: `/api/admin/tenant/${encodeURIComponent(token)}/upload?kind=service` });
     document.getElementById('service-form').addEventListener('submit', async (e) => {
       e.preventDefault();
+      const submitBtn = e.target.querySelector('button[type="submit"]');
+      if (submitBtn) submitBtn.disabled = true;
       const f = Object.fromEntries(new FormData(e.target));
       try {
         await api(`/api/admin/tenant/${encodeURIComponent(token)}/services`, { method: 'POST', body: JSON.stringify(f) });
         await refresh(); draw();
       } catch (err) {
         document.getElementById('services-alert').innerHTML = `<div class="alert alert-error">${esc(err.message)}</div>`;
+      } finally {
+        if (submitBtn) submitBtn.disabled = false;
       }
     });
     content.querySelectorAll('[data-del-service]').forEach(btn => btn.onclick = async () => {
@@ -1380,6 +1388,8 @@ async function renderAdmin(token) {
     wireUploadField({ id: 'ad-image', uploadUrl: `/api/admin/tenant/${encodeURIComponent(token)}/upload?kind=ad` });
     document.getElementById('ad-form').addEventListener('submit', async (e) => {
       e.preventDefault();
+      const submitBtn = e.target.querySelector('button[type="submit"]');
+      if (submitBtn) submitBtn.disabled = true;
       const f = Object.fromEntries(new FormData(e.target));
       if (editingAd) f.ad_id = editingAd.id;
       try {
@@ -1388,6 +1398,8 @@ async function renderAdmin(token) {
         await refresh(); draw();
       } catch (err) {
         document.getElementById('ads-alert').innerHTML = `<div class="alert alert-error">${esc(err.message)}</div>`;
+      } finally {
+        if (submitBtn) submitBtn.disabled = false;
       }
     });
     const cancelBtn = document.getElementById('ad-cancel-edit');
