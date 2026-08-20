@@ -6311,3 +6311,64 @@
      סבב הבא צריך להריץ Explore-agent סקר טרי על
      `apps/01-torah-platform/src` (כמו בסבב 104) כדי למצוא את
      המועמד הבא, או לעבור למערכת אחרת בטווח 01-16.
+
+## 20/08/2026 — סבב 112 (loop A)
+
+595. **בדקתי `git log`/`core.run_progress`/`core.project_bugs`/
+     `core.project_tasks` לפני שהתחלתי.** סבב 111 סגור (commit
+     `ff76d200`/`2f240ec8`, תואם HEAD). בדקתי גם אם באג ה-auth
+     המפורש בהיקף ("login-returns-to-landing"/"signup hash
+     mismatch") עדיין פתוח — לא, סגור. `core.project_bugs` ריק.
+     `core.project_tasks` הפתוחות (02/12/13/25/32) כולן חסומות על
+     סוד חסר או החלטת מיזוג שאינה בסמכות סוכן. במקום להריץ עוד
+     Explore-agent סקר על 01-torah-platform (כפי שהציע #594),
+     בחרתי לסגור סופית את ההחלטה שנדחתה מסבב 88 (`OrgPortal.tsx`,
+     `MultiSelect.tsx`, `RadioSelect.tsx`) — היא כבר הצטברה 20+
+     סבבים בלי החלטה.
+596. **`OrgPortal.tsx` נבדק ונמצא כבר סגור לחלוטין.** קריאה מלאה
+     (456 שורות) גילתה `<label>` יחיד בקובץ (בורר "שם הרב" בטופס
+     "שיעור חדש", שורה 361) וזה כבר מקושר עם
+     `id="org-portal-rabbi-select"`/`htmlFor` תואם — אין זוג לא-
+     מקושר שנותר. האומדן הישן ("חלקית מקושר") מתוקן ל-**0 נותרים**,
+     סגור סופית, לא צריך לחזור אליו.
+597. **`MultiSelect.tsx`/`RadioSelect.tsx`: תיקון אמיתי במקום דילוג
+     נוסף.** שני הקומפוננטות (`components/questionnaire/`, בשימוש
+     ב-`TeacherForm.tsx`/`SeekerForm.tsx` בלבד — נבדק בגרפ, שני
+     קריאה בלבד ל-props `label`/`options`/`selected`/
+     `onSelect`/`onToggle`, ללא `id`/`aria-*` מועברים כבר) עוטפות
+     `<label>` מעל **קבוצת כפתורי צ'יפ**, לא בקרה יחידה — לכן תבנית
+     `id`/`htmlFor` לא מתאימה להן מבחינה סמנטית (כפי ש-20+ סבבים
+     קודמים קבעו נכון). אבל זו לא סיבה לדלג לצמיתות: התיקון הנכון
+     לצורה הזו הוא `role="group"` + `aria-labelledby` על מיכל
+     הכפתורים, עם `id` על התווית עצמה, ועוד `aria-pressed` על כל
+     כפתור-צ'יפ (הם כבר toggle-buttons מבחינה התנהגותית, לא
+     radio-inputs אמיתיים — `aria-pressed` הוא הסמנטיקה הנכונה,
+     לא `role="radio"` שהיה דורש ניהול מקלדת בחצים שלא קיים
+     בקוד). השתמשתי ב-`useId()` (React 18.3.1 מותקן, אומת ב-
+     package.json) כדי לייצר `id` יציב לכל instance בלי לשנות את
+     חתימת ה-props ובלי סיכון התנגשות בין שימושים מרובים באותו
+     דף (כמו ש-`idPrefix` נדרש ידנית ב-PrayerTimesTab בסבב 107).
+598. **אפס רגרסיה מאומתת:** `git diff` מלא — 2 קבצים, 10+/4-, רק
+     `import { useId }`, `const labelId = useId()`, `id={labelId}`,
+     `role="group"`, `aria-labelledby={labelId}`,
+     `aria-pressed={isSelected}` נוספו; לא נגעתי ב-`onClick`/
+     `onSelect`/`onToggle`/`className`/אנימציות framer-motion/
+     הלוגיקה. אימתתי גם שאף קריאה קיימת ב-`TeacherForm.tsx`/
+     `SeekerForm.tsx` לא מעבירה `id`/`aria-*` שהיו מתנגשים. אין
+     `tsc`/`npm` בסביבה הזו — אומת בבדיקת איזון `{}`/`()`/`[]`
+     ב-Python על שני הקבצים המלאים (32/32, 13/13, 2/2 ו-32/32,
+     13/13, 3/3). git add -f נדרש (apps/** מתעלם כברירת מחדל).
+     Commit `ea698507` על `fix/a-icon-only-buttons-round2-0820`,
+     יידחף ל-origin (מפעיל פריסת Vercel תחת more30.com/torah).
+599. **הלנס `id`/`htmlFor` על 01-torah-platform סגור לחלוטין** —
+     כל שלושת הפריטים שנדחו מאז סבב 88 (`OrgPortal.tsx`,
+     `MultiSelect.tsx`, `RadioSelect.tsx`) טופלו: הראשון נמצא כבר
+     תקין, השניים קיבלו את התיקון הנכון (group semantics, לא
+     htmlFor). 01-torah-platform, 03-igud-ads, 15-egod, 12-smel-
+     ndln, 02-igud-transcribe — כל חמשת האפליקציות שזוהו בסבב 82-
+     83 עם דפוס `<label>` בלי קישור — סגורות עכשיו. סבב הבא צריך
+     להריץ Explore-agent סקר טרי על שאר האפליקציות בטווח 01-16
+     (04, 05, 06, 07, 10, 11, 13, 14, 16 — לא נבדקו לעומק ללנס הזה
+     כי סבב 82/83 מצא בהן דפוס HTML/JS סטטי או "0 שדות חובה",
+     שונה מ-01/02/03/12/15) לחפש לנס נגישות/UX אחר, או לבדוק את
+     `core.project_tasks`/`core.project_bugs` מחדש למשימה חדשה.
