@@ -11336,3 +11336,65 @@
     הכי הרבה נסרקת בהיקף, אך רוב הבדיקות היו ממוקדות edge functions
     ולא ה-client). נושאים #62/#94/#115/#164/#169/#254 נשארים חסומים.
     via cloud server 167.99.131.167 [loop B]
+
+## 20/08/2026 — סבב 449 (loop B)
+
+449. **סריקה שיטתית של forms/double-submit ב-24-galilee-connect-hub**
+    (המועמד שהוצע בסוף סבב 448). Explore agent סרק את כל 107 קבצי
+    ה-JS/TS/TSX/JSX באפליקציה (12,639 שורות) וספר את כל נקודות
+    הכתיבה ל-Supabase (insert/upsert/delete/update/rpc) בכל טופס —
+    ContactPage, ServiceRequestForm (שתי גרסאות), MourningGuidePage,
+    SynagoguePage, AskRabbiSection, SynagogueDetailsManager,
+    GabaiPersonalArea leads handlers. כל 8 הטפסים הללו כבר מוגנים
+    כראוי (`disabled={sending/saving/loading}` או `processingId`).
+
+    שלוש נקודות תוספת/מחיקה ב-`GabaiPortal.tsx` (RabbiQuestionsManager
+    "סמן כנקרא"/"מחק", KashrutManager `updateLevel`) לא היו מוגנות,
+    אך שתיים מהן (mark-as-read, delete) הן פעולות אידמפוטנטיות עם
+    סיכון אמיתי נמוך (לחיצה כפולה על מחיקה פשוט מחזירה שגיאת "לא
+    נמצא" בפעם השנייה, כבר מטופלת ב-`setActionError`) — לא תוקנו,
+    אין שם רגרסיית נתונים אמיתית.
+
+    **הבאג האמיתי:** `KashrutManager.updateLevel` (שורות 995-1003
+    לפני התיקון) עדכן שדה **ציבורי** (`kashrut_level`, המוצג
+    למשתמשי הקצה כרמת הכשרות של המוסד) בלי שום הגנת מירוץ. לחיצה
+    מהירה על שני כפתורי רמה שונים לאותו מוסד (למשל "מהדרין" ואז
+    "רגיל") שולחת שתי בקשות `update` מקבילות; אם התשובות חוזרות
+    שלא בסדר השליחה (jitter רשת רגיל) — מצב ה-DB הסופי עלול להיות
+    הרמה הישנה יותר שנלחצה, לא זו שנלחצה אחרונה, ותצוגת ה-UI
+    (`setEstablishments`) תסתנכרן עם התשובה האחרונה שחוזרת ולא עם
+    הלחיצה האחרונה. שדה ציבורי-חשוב (הכשר) עם חוסר-עקביות אמיתי.
+
+    **התיקון:** הוספת `processingId` state (זהה בדיוק לתבנית הקיימת
+    כבר פעמיים באותו קובץ, שורות 332/422-429 ו-1380/1441-1452):
+    שמירה מוקדמת אם כבר יש בקשה בתהליך (`if (processingId) return`),
+    `setProcessingId(id)` לפני הקריאה, `setProcessingId(null)` אחריה,
+    ו-`disabled={processingId === est.id}` על כל שלושת כפתורי הרמה
+    של אותו מוסד (עם `disabled:opacity-50 disabled:cursor-not-allowed`
+    כמו בשאר הכפתורים המוגנים בקובץ). אפס רגרסיה: מסלול ההצלחה/
+    הכישלון הקיימים לא השתנו, רק חסימת לחיצות חוזרות באותה שורה
+    בזמן שהבקשה הקודמת עדיין רצה.
+
+    **בדיקות תקינות:** קריאת קוד בלבד (ללא dev-server/build, לפי
+    הנחיות ההרצה). ספירת סוגריים לפני/אחרי (Node): `(` 937/937,
+    `{` 724/724 (מאוזן, ללא שינוי נטו). `git diff --stat`: קובץ
+    יחיד, +6/-1. הקובץ נופל תחת אותו כלל `.gitignore` שתועד
+    בסבבים קודמים (`apps/**/src` בהיקף הזה) — נדרש `git add -f`,
+    בוצע (הקובץ כבר עוקב בגרסה מקומיט קודם `b3304ff2`).
+
+    לא אומתה פריסה חיה: `24-galilee-connect-hub` רץ מול פרויקט
+    Supabase נפרד משלו (`mwljkonwdeuaahsigjdp`), וההנחיות אוסרות
+    dev-server/תהליכי רקע — האימות נעשה בקריאת קוד בלבד.
+
+    ענף `fix/b-22-whatsapp-noopener-round395-0820` (שרשרת הענפים היא
+    המקור המלא היחיד ל-loop B, לא `main`), נדחף.
+
+    **הבא בתור:** RabbiQuestionsManager mark-as-read/delete (אותו
+    קובץ, אידמפוטנטיים, סיכון נמוך) נותרו לא מוגנים במכוון — מועמד
+    לניקוי UX עתידי אם ירצו כיסוי מלא, לא באג נתונים אמיתי. מועמד
+    אמיתי הבא: חזרה לבדיקת race-conditions/stale-async ב-21-mthbram
+    צד client (99 קומיטים, רוב הבדיקות היו ממוקדות edge functions),
+    או סריקת forms/double-submit דומה ב-18-torah-editor-mvp ו-
+    27-bkalut-price שטרם נסרקו לעומק לדפוס הזה. נושאים
+    #62/#94/#115/#164/#169/#254 נשארים חסומים.
+    via cloud server 167.99.131.167 [loop B]
