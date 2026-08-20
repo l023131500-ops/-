@@ -163,6 +163,7 @@ export default function ColorPicker({
           <input
             value={hexInput}
             onChange={(e) => handleHex(e.target.value)}
+            aria-label="קוד צבע HEX"
             className="h-8 flex-1 rounded border border-[#C9A227]/30 bg-[#0B1220] px-2 font-mono text-xs text-[#F5EEDD]"
             data-testid="input-hex"
           />

@@ -327,6 +327,7 @@ const InlinRabbiForm = ({ userName, onSent }: { userName: string | null; onSent:
         value={contactValue}
         onChange={e => setContactValue(e.target.value)}
         placeholder={contactMethod === 'email' ? 'your@email.com' : '050-0000000'}
+        aria-label={contactMethod === 'email' ? 'כתובת אימייל ליצירת קשר' : 'מספר טלפון ליצירת קשר'}
         dir="ltr"
         className="w-full rounded-lg border border-input bg-background px-3 py-2 text-xs font-mono focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
       />

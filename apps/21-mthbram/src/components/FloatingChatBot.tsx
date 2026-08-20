@@ -403,6 +403,7 @@ const FloatingChatBot = () => {
                   <input value={input} onChange={(e) => setInput(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && sendMessage()}
                     placeholder="חפשו שיעור, נושא, רב, עיר..."
+                    aria-label="חיפוש שיעור, נושא, רב או עיר"
                     disabled={isTyping}
                     className="flex-1 bg-muted/50 rounded-xl px-3 py-2.5 font-body text-xs text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-teal/30 border border-border/50 transition-all disabled:opacity-50" />
                   <button onClick={sendMessage} disabled={!input.trim() || isTyping}

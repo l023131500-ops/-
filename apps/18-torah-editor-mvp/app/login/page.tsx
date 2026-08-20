@@ -40,6 +40,7 @@ export default function LoginPage() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="הכניסו כתובת דוא&quot;ל"
+          aria-label="כתובת אימייל"
           style={{
             width: '100%',
             padding: '12px',
