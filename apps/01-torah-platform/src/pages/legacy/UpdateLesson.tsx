@@ -174,10 +174,10 @@ const UpdateLesson = () => {
               {/* Step 0: Rabbi Name */}
               <ProgressiveFormStep visible={step === 0} stepIndex={0} showSkip={false} showBack={false}>
                 <div className="space-y-3">
-                  <label className="font-display text-sm font-bold text-card-foreground flex items-center gap-2">
+                  <label htmlFor="update-lesson-rabbi-name" className="font-display text-sm font-bold text-card-foreground flex items-center gap-2">
                     <UserCircle className="w-4 h-4 text-gold" /> שם הרב / הרבנית
                   </label>
-                  <Input value={rabbiName} onChange={(e) => setRabbiName(e.target.value)} placeholder="שם מלא *" />
+                  <Input id="update-lesson-rabbi-name" value={rabbiName} onChange={(e) => setRabbiName(e.target.value)} placeholder="שם מלא *" />
                   <Button size="sm" className="bg-gradient-gold text-primary-foreground font-body hover:opacity-90" onClick={() => { if (rabbiName.trim()) autoAdvance(1); else toast.error("נא למלא שם"); }}>המשך ←</Button>
                 </div>
               </ProgressiveFormStep>
@@ -309,8 +309,8 @@ const UpdateLesson = () => {
               {/* Step 11: Update notes */}
               <ProgressiveFormStep visible={step === 11} stepIndex={11} showSkip showBack onSkip={() => autoAdvance(12)} onBack={() => setStep(10)}>
                 <div className="space-y-3">
-                  <label className="font-display text-sm font-bold text-card-foreground">פרטים לעדכון על שינוי שיעור לפרסום</label>
-                  <Textarea value={updateNotes} onChange={(e) => setUpdateNotes(e.target.value)} placeholder="פרטו כאן..." rows={4} />
+                  <label htmlFor="update-lesson-notes" className="font-display text-sm font-bold text-card-foreground">פרטים לעדכון על שינוי שיעור לפרסום</label>
+                  <Textarea id="update-lesson-notes" value={updateNotes} onChange={(e) => setUpdateNotes(e.target.value)} placeholder="פרטו כאן..." rows={4} />
                   <Button size="sm" className="bg-gradient-gold text-primary-foreground font-body hover:opacity-90" onClick={() => autoAdvance(12)}>המשך ←</Button>
                 </div>
               </ProgressiveFormStep>
@@ -326,8 +326,8 @@ const UpdateLesson = () => {
                       <Input value={contactPhone} onChange={(e) => setContactPhone(e.target.value)} placeholder="טלפון" />
                       <Input value={contactEmail} onChange={(e) => setContactEmail(e.target.value)} placeholder="מייל (לא חובה)" type="email" inputMode="email" autoComplete="email" />
                     </div>
-                    <label className="font-display text-sm font-bold text-card-foreground block mt-4">שם הארגון שהקים את השיעור</label>
-                    <Input value={orgName} onChange={(e) => setOrgName(e.target.value)} placeholder="שם הארגון" />
+                    <label htmlFor="update-lesson-org-name" className="font-display text-sm font-bold text-card-foreground block mt-4">שם הארגון שהקים את השיעור</label>
+                    <Input id="update-lesson-org-name" value={orgName} onChange={(e) => setOrgName(e.target.value)} placeholder="שם הארגון" />
                     <input type="file" ref={fileInputRef} accept="image/*" onChange={handleLogoSelect} className="hidden" />
                     {logoPreview ? (
                       <div className="flex items-center gap-4">
