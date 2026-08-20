@@ -5257,3 +5257,41 @@
     מקרים שכבר עוטפים נכון ב-`integrations.tsx`/`right-detail.tsx` שאין
     לגעת בהם) — מועמד טבעי להמשך ישיר בסבב הבא; לחלופין תשלום/רברנד
     TEST-mode שעדיין לא אומת בהיקף המצומצם מאז סבב 285-286.
+
+## 20/08/2026 — סבב 316 (loop B)
+
+316. **`22-get-your-rights` (`FloatingBot.tsx`): המשך תור סבב 315 — 2 המקרים**
+    **שדווחו בקובץ זה.** קראתי README.md/CONNECTIONS.md, בדקתי
+    `core.run_progress` (הצעד האחרון: `label-for-id-mismatch-21-0820`, קומיט
+    `5b801e26`, כבר ה-HEAD) ו-DECISIONS.md #313-315 — היקף loop B מאושר
+    17,18,19,20,21,22,23,24,25,27,28 בלבד. לא נגעתי ב-26/29/30/31/32-38.
+    `grep -n "<label"` על הקובץ מצא 3 מופעים: שורה 904 (checkbox של
+    "סוג שיתוף פעולה") היא כבר `<label>` עוטף (הקלט `type="checkbox"` הוא
+    ילד בפועל, `sr-only` אך משויך כדין) — לא נגעתי. שורות 598 ו-862 הן אחים
+    ב-DOM בלי `for`/`id`, בדיוק דפוס הבאג: שורה 598 היא `<label>` דינמי בתוך
+    `currentGroup.fields.map` (בדיקה מקיפה) המשותף לארבעה טיפוסי שדה
+    (`text`/`date`/`select`/`yesno`) המוצגים על תנאי לפי `field.type` — לכל
+    `field.key` יש בדיוק בקרה אחת בפועל בכל רגע נתון (אימתתי בסקריפט Python
+    שכל 23 מפתחות השדה על פני 6 הקבוצות ב-`comprehensiveGroups` ייחודיים,
+    אין התנגשות).
+    הוספתי `htmlFor={`comp-${field.key}`}` ל-label ו-`id={`comp-${field.key}`}`
+    תואם לכל אחת משלוש הבקרות הממשיות (`Input` טקסט, `Input type="date"`,
+    `select`) — במכוון **לא** הוספתי id לטיפוס `yesno` (זוג כפתורי toggle,
+    לא בקרה בודדת אחת לשיוך, אותה חריגה כמו כותרות-הקבוצה שסבב 314 השאיר
+    ב-19: ה-`htmlFor` פשוט לא יפתור שם, בדיוק כמו לפני השינוי — לא רגרסיה).
+    שורה 862-863 (טופס `family-form`, שדה תאריך לידה): זוג label/Input פשוט,
+    `id="family-date-of-birth"` + `htmlFor` תואם. אימתתי לפני עריכה שאין
+    שום `id=` קיים בקובץ כלל (`grep 'id="\|id={'` החזיר ריק) — אפס סיכון
+    התנגשות. אימות אחרי: `python3` בדק איזון סוגריים (362/362 עגולים,
+    475/475 מסולסלים, 82/82 מרובעים) — תקין. `git diff` מציג תוספת
+    attribute בלבד (2 `htmlFor`, 4 `id`), אפס שינוי ל-layout/לוגיקה/ערכים.
+    קובץ לא ב-`.gitignore` (`git check-ignore` ריק), לא נדרש `-f`. אין
+    build/dev-server בסבב הזה לפי הנחיית ההרצה. ענף חדש
+    `fix/b-label-for-id-mismatch-22-0820`, נדחף (מפעיל פריסת Vercel תחת
+    `more30.com/zchuyot`).
+    **הבא בתור:** עדשת ה-label-for-id עדיין פתוחה על 17-chizukim-transcribe
+    (`upload.tsx`, `recording-detail.tsx` — 5 מקרים) ו-24-galilee-connect-hub
+    (`MourningGuidePage.tsx`, `SynagogueDetailsManager.tsx` — כ-11 מקרים)
+    ו-27-bkalut-price (`public-health-funds.tsx` — 3-4 מקרים) — מועמדים
+    טבעיים להמשך ישיר; לחלופין תשלום/רברנד TEST-mode שעדיין לא אומת
+    בהיקף המצומצם מאז סבב 285-286.
