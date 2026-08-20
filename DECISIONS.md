@@ -8140,3 +8140,33 @@
      להמשיך לסרוק 06/10/12/14 לאותה עדשה, או לפתוח עדשה נוספת, או
      לחזור ל-`core.project_tasks`/`core.project_bugs` (5 פריטים
      פתוחים, עדיין חסומים).
+
+## 20/08/2026 — סבב 160 (loop A)
+
+789. **המשך העדשה:** מהתור שנפתח בסבב 158 — טיפלתי במועמד השלישי:
+     `04-imud-torani/client/src/pages/departments/EditDept.tsx`
+     (כפתור "הגדרות בלוק" עם אייקון `Settings2`). הכפתור מפעיל
+     `setOpenMeta(openMeta === b.id ? null : b.id)` וחושף פאנל
+     מטא-דאטה מתקדם (רמת כותרת, יישור, גודל, מודגש, מעברי
+     עמוד/טור, "הישאר עם הבא", סימן/מספר, מראה-מקום) — היה בלי
+     `aria-expanded`/`aria-controls`, כך שקורא-מסך לא יכול היה
+     לדעת אם הפאנל פתוח או לאיזה אלמנט הוא שולט.
+790. **תיקון:** הוספתי `aria-expanded={openMeta === b.id}` ו-
+     `aria-controls={`block-meta-${b.id}`}` על הכפתור, ו-
+     `id={`block-meta-${b.id}`}` על ה-`<div>` המותנה של הפאנל.
+     ללא שינוי ל-`openMeta`/`setMeta`/state הקיימים — רק תוספת
+     attributes.
+791. **אפס רגרסיה מאומתת:** `git diff --stat` — קובץ אחד, 3+/2-.
+     איזון סוגריים בפייתון על הקובץ המלא לפני/אחרי: `()` 99/99,
+     `{}` 122→127/122→127 (5 זוגות `{}` נוספו על ידי שני ה-
+     attributes החדשים כולל template literals — תואם בשני
+     הצדדים), `[]` 23/23 — הכל תואם. אין tsc/npm בסביבה זו. הנתיב
+     `apps/04-imud-torani/client` חסום ע"י `.gitignore` — נדרש
+     `git add -f`. Commit `c5ebe04b` על
+     `fix/a-icon-only-buttons-round2-0820`, נדחף ל-origin (מפעיל
+     פריסת Vercel תחת more30.com/imud-torani).
+792. **הבא בתור:** המועמד הרביעי מסריקת סבב 158 —
+     `16-chatzor-connect/src/components/portal/PortalShell.tsx`
+     (תפריט מובייל) — או להמשיך לסרוק 06/10/12/14 לאותה עדשה, או
+     לפתוח עדשה נוספת, או לחזור ל-`core.project_tasks`/
+     `core.project_bugs` (5 פריטים פתוחים, עדיין חסומים).
