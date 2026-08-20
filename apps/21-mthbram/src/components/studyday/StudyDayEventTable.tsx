@@ -14,6 +14,7 @@ type Event = Tables<"study_day_events">;
 interface Props {
   events: Event[];
   onChanged: () => void;
+  sessionId?: string;
 }
 
 function formatSchedule(e: Event) {
@@ -36,7 +37,7 @@ function lessonsCount(e: Event): number {
   return blocks.reduce((sum, b) => sum + b.items.length, 0);
 }
 
-export default function StudyDayEventTable({ events, onChanged }: Props) {
+export default function StudyDayEventTable({ events, onChanged, sessionId }: Props) {
   const [pendingIds, setPendingIds] = useState<Set<string>>(new Set());
   const [sendingAll, setSendingAll] = useState(false);
 
@@ -44,10 +45,12 @@ export default function StudyDayEventTable({ events, onChanged }: Props) {
     if (pendingIds.has(id)) return;
     setPendingIds((prev) => new Set(prev).add(id));
     try {
-      const { error } = await supabase
+      let query = supabase
         .from("study_day_events")
         .update({ is_sent: true, status: "pending" })
         .eq("id", id);
+      if (sessionId) query = query.eq("session_id", sessionId);
+      const { error } = await query;
       if (error) { toast.error("שגיאה בשליחה"); return; }
       toast.success("נשלח לאישור");
       onChanged();
@@ -61,7 +64,9 @@ export default function StudyDayEventTable({ events, onChanged }: Props) {
     if (pendingIds.has(id)) return;
     setPendingIds((prev) => new Set(prev).add(id));
     try {
-      const { error } = await supabase.from("study_day_events").delete().eq("id", id);
+      let query = supabase.from("study_day_events").delete().eq("id", id);
+      if (sessionId) query = query.eq("session_id", sessionId);
+      const { error } = await query;
       if (error) { toast.error("שגיאה במחיקה"); return; }
       toast.success("נמחק");
       onChanged();
@@ -77,10 +82,12 @@ export default function StudyDayEventTable({ events, onChanged }: Props) {
     if (!confirm(`לשלוח ${unsent.length} ימי עיון לאישור?`)) return;
     setSendingAll(true);
     try {
-      const { error } = await supabase
+      let query = supabase
         .from("study_day_events")
         .update({ is_sent: true, status: "pending" })
         .in("id", unsent.map((e) => e.id));
+      if (sessionId) query = query.eq("session_id", sessionId);
+      const { error } = await query;
       if (error) { toast.error("שגיאה"); return; }
       toast.success(`נשלחו ${unsent.length}`);
       onChanged();

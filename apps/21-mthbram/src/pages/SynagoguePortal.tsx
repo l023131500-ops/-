@@ -253,7 +253,7 @@ export default function SynagoguePortal() {
                 schedule_days: e.schedule_days,
               }))}
             />
-            <StudyDayEventTable events={events} onChanged={load} />
+            <StudyDayEventTable events={events} onChanged={load} sessionId={portal.id} />
 
             <SynagogueFullAccessRequest
               portalId={portal.id}

@@ -11877,3 +11877,45 @@
     ב-`SynagoguePortal.tsx` מסננת לפי `session_id`) — לא נסרק/תוקן
     עדיין. נושאים #62/#94/#115/#164/#169/#254 נשארים חסומים.
     via cloud server 167.99.131.167 [loop B]
+
+## 20/08/2026 — סבב 463 (loop B)
+
+463. **סגירת המועמד מסבב 462: `StudyDayEventTable.tsx` ב-21-mthbram —
+    UPDATE/DELETE על `study_day_events` ללא `session_id`.**
+    אימתתי ישירות בקריאת `SynagoguePortal.tsx`: `load()` (שורות 40-44)
+    קורא את `study_day_events` עם סינון `.eq("session_id", p.id)` —
+    אבל `StudyDayEventTable.tsx` קיבל רק את מערך ה-`events` המסונן-כבר
+    כ-prop, ושלושת ה-handlers שלו (`handleSend` UPDATE שורה 49,
+    `handleDelete` DELETE שורה 64, `handleSendAll` UPDATE-bulk שורה 82)
+    ביצעו את הכתיבה בפועל מול Supabase מסוננים רק לפי `id`/`in(ids)`,
+    ללא `session_id`. אותו דפוס בדיוק כמו סבב 459/462 (קריאה מסוננת-tenant
+    מול כתיבה לא-מסוננת). לא ניתן היה לאמת מול ה-RLS החי (הפרויקט
+    `aypsqqvfohekxxuqsmrw` לא נגיש דרך ה-MCP בסשן הזה) — זו הקשחת
+    defense-in-depth תואמת-דפוס-קיים, לא אימות שהפרצה נוצלה בפועל.
+
+    **התיקון:** הוספת prop אופציונלי `sessionId` ל-`StudyDayEventTable`,
+    מועבר מ-`SynagoguePortal.tsx` כ-`sessionId={portal.id}`. שלושת
+    ה-handlers מוסיפים `.eq("session_id", sessionId)` לשרשרת השאילתה
+    כשה-prop קיים (אופציונלי כדי לא לשבור קריאה עתידית אחרת לרכיב ללא
+    session, אם קיימת). שינוי תוספתי בלבד — ה-guard הקיים נגד
+    double-submit (`pendingIds`/`sendingAll`), toast, ו-`onChanged()`
+    לא השתנו.
+
+    **בדיקות תקינות:** קריאת קוד בלבד (ללא dev-server/build, לפי
+    הנחיות ההרצה). ספירת סוגריים לפני/אחרי (Python): `(` 108/108,
+    `{` 64/64, `[` 8/8 (מאוזן). `git diff --stat`: 2 קבצים, +12/-5.
+    לא נגעתי במערכות מוגנות 08/09/bkalut-app/bkalot-admin/zr_*/
+    NEDARIM3873/csj/csj_src/igud, ב-`main`, או במערכת מחוץ ל-scope
+    (17-25/27/28 בלבד).
+
+    ענף `fix/b-22-whatsapp-noopener-round395-0820` (שרשרת הענפים היא
+    המקור המלא היחיד ל-loop B, לא `main`), נדחף.
+
+    **הבא בתור:** דפוס ה-tenant-isolation (קריאה מסוננת מול כתיבה
+    לא-מסוננת) נסרק כעת באופן שיטתי בכל שלושת המערכות הרב-דיירות
+    ב-scope (21-mthbram, 24-galilee-connect-hub, 22-get-your-rights —
+    האחרונה אינה רב-דיירית כלל). מומלץ בסבב הבא Explore agent חדש
+    לחפש קטגוריית באג לא מכוסה (כל 17-28 נסרקו בהרחבה ל-double-submit/
+    silent-error/race-condition/tenant-isolation לאורך ~30 הסבבים
+    האחרונים). נושאים #62/#94/#115/#164/#169/#254 נשארים חסומים.
+    via cloud server 167.99.131.167 [loop B]
