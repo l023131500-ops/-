@@ -226,6 +226,7 @@ const PortalSettingsTab = ({ portalId, portalType, portalData, onUpdate }: Porta
   };
 
   const deletePhoto = async (photoId: string) => {
+    if (!confirm("למחוק את התמונה?")) return;
     const { error } = await supabase.from("portal_photos").delete().eq("id", photoId);
     if (!error) {
       setPhotos(prev => prev.filter(p => p.id !== photoId));
