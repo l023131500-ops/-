@@ -86,8 +86,9 @@ export default function GlossaryPage() {
           <form onSubmit={submit} className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="label">סגנון</label>
+                <label htmlFor="glossary-style" className="label">סגנון</label>
                 <select
+                  id="glossary-style"
                   value={form.style}
                   onChange={(e) => setForm({ ...form, style: e.target.value })}
                   className="input"
@@ -96,8 +97,9 @@ export default function GlossaryPage() {
                 </select>
               </div>
               <div>
-                <label className="label">מונח (לחיפוש)</label>
+                <label htmlFor="glossary-term" className="label">מונח (לחיפוש)</label>
                 <input
+                  id="glossary-term"
                   value={form.term}
                   onChange={(e) => setForm({ ...form, term: e.target.value })}
                   className="input"
@@ -107,8 +109,9 @@ export default function GlossaryPage() {
               </div>
             </div>
             <div>
-              <label className="label">החלפה</label>
+              <label htmlFor="glossary-replacement" className="label">החלפה</label>
               <input
+                id="glossary-replacement"
                 value={form.replacement}
                 onChange={(e) => setForm({ ...form, replacement: e.target.value })}
                 className="input"
@@ -117,8 +120,9 @@ export default function GlossaryPage() {
               />
             </div>
             <div>
-              <label className="label">הערות (אופציונלי)</label>
+              <label htmlFor="glossary-notes" className="label">הערות (אופציונלי)</label>
               <input
+                id="glossary-notes"
                 value={form.notes}
                 onChange={(e) => setForm({ ...form, notes: e.target.value })}
                 className="input"
