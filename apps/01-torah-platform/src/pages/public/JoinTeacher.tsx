@@ -21,11 +21,14 @@ export default function JoinTeacher() {
     try {
       const { error } = await supabase.from("leads").insert({
         tenant_id: tenant.id,
-        type: "join_teacher",
+        // leads has `kind`/`raw_data`, not `type`/`details` — see Contact.tsx.
+        // "teacher_offer" matches what MatchingGuru.tsx filters for teacher
+        // candidates "from JoinTeacher form".
+        kind: "teacher_offer",
         full_name: form.name,
         phone: form.phone,
         email: form.email,
-        details: { topics: form.topics, experience: form.experience, location: form.location, bio: form.bio },
+        raw_data: { topics: form.topics, experience: form.experience, location: form.location, bio: form.bio },
       });
       if (error) throw error;
       toast.success("בקשת ההצטרפות נשלחה — נחזור אליך בהקדם");
