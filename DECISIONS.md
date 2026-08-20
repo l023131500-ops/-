@@ -2357,3 +2357,49 @@
     עצמו עדיין פתוח עד לפריסת המיגרציה). הבא בתור: לסרוק מחדש
     `core.issues`/`core.project_tasks` פעם נוספת; 19-igud-shiurim-portal
     כפתור "סמן כנקרא" חסר try/catch נשאר מועמד קל לסבב הבא.
+201. **שלושה סוכני Explore מקבילים על זוויות חדשות חזרו ריקים/כוזבים,
+    כל אחד נבדק בעצמי לפני שנפסל.** 31-hebrew-bridge-crm (אותה
+    זוויה שסגרה כמה חורים ב-30: role-escalation/settings-write ללא
+    בדיקת תפקיד) -- מאובטח כראוי: `user_roles` חסום ע"י מדיניות
+    RESTRICTIVE + `private.has_role()` בסכימה פרטית שאינה חשופה
+    ל-API, ואין נתיב כתיבה ישיר בקוד הלקוח לטבלה. 37-bkalot-clone
+    (זווית אחסון-קבצים/אימות-קלט/XSS) -- ה-RPC של ה-intake דוחה
+    שדה `documents` מפורשות (מיגרציה 0058), מגבלת גוף 16KB, ו-
+    `admin.html` משתמש ב-`.textContent` בלבד בכל מקום שמציג PII;
+    חולשת ה-wildcard-injection בחיפוש כבר תוקנה ואומתה בפרודקשן
+    (מיגרציה 0094). 26-modaot-studio/29-bkalot-design -- טענת
+    "cache-busting חסר גורמת ל-CSS מיושן" לא שרדה בדיקה עצמית: `curl
+    -I` לכתובת הציבורית החיה של `bkalot-theme.css` החזיר בפועל
+    `cache-control: no-cache` + `cf-cache-status: REVALIDATED`, כלומר
+    אין בעיית מטמון בכלל.
+202. **מצאתי ממצא אמיתי בעצמי דרך grep רוחבי אחר `dangerouslySetInnerHTML`/
+    `innerHTML` על כל 15 האפליקציות בהיקף.** `apps/22-get-your-rights/
+    src/components/RightBrandedCard.tsx` (`buildFieldHTML`/
+    `buildTitleSection`) מרכיב ערכי שורה מ-`rights_reference`
+    (`topic_name`/`category`/שמונה שדות תוכן חופשי) ישירות לתוך מחרוזת
+    HTML בלי שום escaping, ו-`AdminRightsReference.tsx` (הצרכן היחיד,
+    אומת ב-grep) מציג אותה דרך `dangerouslySetInnerHTML` לתצוגה
+    מקדימה/הורדה כתמונה. RLS על `rights_reference`: כתיבה רק ל-
+    `has_role(auth.uid(),'admin')` (מיגרציה `20260302211649`), קריאה
+    פתוחה לכולם -- כלומר לא חור ציבורי, אבל XSS-מאוחסן אמיתי:
+    admin שנפרץ/זדוני יכול לשתול payload בכל אחד משמונה השדות שירוץ
+    בדפדפן של admin אחר (עם ה-token החי שלו ב-localStorage) בפעם הבאה
+    שהוא יפתח את אותה שורת-ייחוס.
+203. **תוקן עם `escapeHtml()` בכל נקודת הרכבה דינמית ל-HTML** (תוכן
+    השדה לפני המרת `\n`->`<br/>` הקיימת, טקסט התצוגה של `service_link`,
+    `category`/`topic_name` גם בכותרת וגם בתווית עמוד-המשך) -- אפס
+    שינוי לשימושים בטקסט-רגיל-בלבד (טקסט שיתוף וואטסאפ/מייל, נושא
+    mailto, שם קובץ הורדה) שאינם מוצגים כ-HTML כלל, ולכן נשארו לא-
+    escaped בכוונה. מערכת 22 חיה (`live=true`/`is_deployed=true`) תחת
+    `more30.com/zchuyot` -- חשיפה אמיתית למסך הניהול בפרודקשן.
+204. **אומת בקריאה חוזרת מלאה של הקובץ שנערך**, כולל אישור ב-grep
+    ששלושת אתרי השימוש בטקסט-רגיל (`buildShareText`/
+    `downloadBrandedImage` filename/`shareViaEmail` mailto) נשארו לא-
+    escaped בכוונה כי אינם הקשר HTML. אין `node_modules`/`tsc` בעץ הזה
+    (כלל אי-התקנה, כמו כל סבב קודם). נדרש `git add -f` (`apps/**/src`
+    מוחרג מה-gitignore כברירת מחדל, אותו דפוס כמו כל סבב קודם). קומיט
+    `fa376ed3` על `fix/b-get-your-rights-admin-card-xss-0820`, נדחף
+    (מפעיל פריסת Vercel תחת `more30.com/zchuyot`; שינוי מסך-ניהול
+    בלבד, אפס שינוי לכל מסך ציבורי אחר). הבא בתור: לסרוק מחדש
+    `core.issues`/`core.project_tasks` פעם נוספת; 19-igud-shiurim-portal
+    כפתור "סמן כנקרא" חסר try/catch נשאר מועמד קל לסבב הבא.
