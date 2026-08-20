@@ -7518,3 +7518,37 @@
     (validation clientside שחסרה לפני כתיבה, או race condition
     נוסף שטרם נבדק).
     via cloud server 167.99.131.167 [loop B]
+
+## 20/08/2026 — סבב 376 (loop B)
+
+376. **פתיחת עדשת validation clientside חסרה לפני כתיבה (הוצעה
+    בסוף סבב 375), על פני כל 7 האפליקציות החיות בהיקף loop B**
+    (17/18/21/22/24/27/28). Explore agent סרק טפסים/עריכות-inline
+    שכותבים ל-DB (Supabase insert/update, `useMutation`, fetch
+    POST/PATCH) בלי לוודא ששדות טקסט/מספר חובה אינם ריקים —
+    התמקדות בשדות עסקיים מובהקים (שם/טלפון/עיר/כתובת/מחיר), לא
+    בשדות הערות אופציונליים. הממצא המדורג ראשון:
+    `apps/21-mthbram/src/components/questionnaire/TeacherForm.tsx`
+    (שורה 63) — התווית "עיר *" (שורה 129) מסמנת את שדה העיר כחובה,
+    אבל `handleSubmit` בדק רק `fullName`/`phone` לפני
+    `supabase.from("teacher_leads").insert(...)`, ו-`city` נכתב
+    כ-`data.city || null` (שורה 69) — כלומר ליד מורה יכול להישמר
+    ב-DB החי בלי עיר כלל, חרף ההבטחה ב-UI שהשדה חובה. עיר היא
+    השדה שהתאמת שיעורים תלויה בו למורה. תוקן בהרחבת אותה בדיקת
+    guard (no-op שקט) הקיימת כבר ל-fullName/phone, כעת כוללת גם
+    `!data.city?.trim()` — לא נוסף דפוס UX חדש, רק עקביות עם
+    הבדיקה הקיימת. `git diff`: שינוי שורה יחידה. ענף
+    `fix/b-21-mthbram-teacherform-city-required-0820`, commit
+    `c6cdf0b4`, נדחף (מפעיל פריסת Vercel תחת `more30.com/mthbram`).
+
+    **נמצאו מועמדים נוספים לאותה עדשה** (`RequestLesson.tsx`
+    ב-21-mthbram, שדות `addressCity`/`addressStreet`;
+    `public-price-comparison.tsx` ב-27-bkalut-price, שדה `city`;
+    `Footer.tsx` ב-22-get-your-rights, חסר `.trim()` על שם/טלפון
+    למרות `required`) — לא טופלו בסבב זה כדי לשמור על צעד יחיד
+    ומינימלי; נשארים בתור להמשך העדשה בסבב הבא.
+
+    **הבא בתור:** המשך עדשת validation clientside על שאר
+    המועמדים שנמצאו (RequestLesson.tsx / public-price-comparison.tsx
+    / Footer.tsx), או נושא #250 (RLS על 21-mthbram, חסום MCP).
+    via cloud server 167.99.131.167 [loop B]
