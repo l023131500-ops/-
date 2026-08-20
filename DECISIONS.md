@@ -12089,3 +12089,45 @@
     ב-scope (למשל טפסי ניהול ב-22/24/28) לאותה קטגוריה. נושאים
     #62/#94/#115/#164/#169/#254 נשארים חסומים.
     via cloud server 167.99.131.167 [loop B]
+
+## 20/08/2026 — סבב 468 (loop B)
+
+468. **Stored XSS דרך `document.write` בחלון ההדפסה של פרטי בית-כנסת
+    ב-21-mthbram `SynagogueDetailModal.tsx`.** המשך לחיפוש קטגוריית-
+    באג טרייה (Explore agent) מחוץ ל-double-submit/tenant-isolation/
+    silent-error/race/noopener/rate-limit/IDOR/confirm/a11y/pricing —
+    כל אלה נסרקו לעומק ב-~30 הסבבים האחרונים; הפעם הממצא הוא XSS.
+    הממצא: `handlePrint()` (שורה 120) פותח חלון חדש עם
+    `w.document.write(...)` ומטמיע ישירות, ללא escaping, את
+    `data.synagogue_name` (בכותרת ה-`<title>` ובתג ה-`<h1>`) ואת
+    `buildShareText()` (בגוף ה-`<div class="content">`) — טקסט
+    שמורכב משדות שמקורם בטבלאות Supabase שמוזנות ע"י משתמשים
+    (`synagogue_name`, `city`, `street`, שמות רבנים/נושאי שיעור,
+    `donation_link`). שם בית-כנסת שמוגש עם למשל
+    `</title><img src=x onerror=alert(1)>` ירוץ כ-JS בחלון ההדפסה
+    בכל פעם שמשתמש אחר לוחץ "הדפס" על אותה כרטיסייה.
+
+    **התיקון:** הוספת פונקציית `escapeHtml()` פשוטה (מחליפה
+    `&`/`<`/`>`/`"`) והפעלתה הן על `data.synagogue_name` (המשתנה
+    `title`, בשימוש גם ב-`<title>` וגם ב-`<h1>`) והן על התוצאה של
+    `buildShareText()` **לפני** ההמרה של `\n` ל-`<br/>` (כדי לא
+    לברוח את תגי ה-`<br/>` שאנחנו עצמנו מוסיפים).
+
+    **בדיקות תקינות:** קריאת קוד בלבד (ללא dev-server/build, לפי
+    הנחיות ההרצה). `git diff --stat`: קובץ יחיד, +7/-3. אימתתי
+    ידנית שאין קריאה נוספת ל-`document.write`/`dangerouslySetInnerHTML`
+    עם נתוני משתמש לא-escaped באותו קובץ.
+
+    לא נגעתי במערכות מוגנות 08/09/bkalut-app/bkalot-admin/zr_*/
+    NEDARIM3873/csj/csj_src/igud, ב-`main`, או במערכת מחוץ ל-scope
+    (17-25/27/28 בלבד).
+
+    ענף `fix/b-22-whatsapp-noopener-round395-0820` (שרשרת הענפים היא
+    המקור המלא היחיד ל-loop B, לא `main`), נדחף (קומיט `94323bbf`).
+
+    **הבא בתור:** לסרוק שאר האפליקציות ב-scope (17/18/19/20/22/23/
+    24/25/27/28) לחיפוש שימושים נוספים ב-`document.write`/
+    `innerHTML`/`dangerouslySetInnerHTML` עם נתוני משתמש לא-escaped
+    — דפוס דומה עשוי לחזור בפיצ'רי שיתוף/הדפסה/ייצוא אחרים. נושאים
+    #62/#94/#115/#164/#169/#254 נשארים חסומים.
+    via cloud server 167.99.131.167 [loop B]
