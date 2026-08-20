@@ -399,6 +399,16 @@ export default function StudySchedule() {
                     <div
                       className="flex items-center gap-2 cursor-pointer flex-1"
                       onClick={() => toggleExpanded(sched.id)}
+                      role="button"
+                      tabIndex={0}
+                      aria-expanded={isExpanded}
+                      aria-controls={`schedule-content-${sched.id}`}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          toggleExpanded(sched.id);
+                        }
+                      }}
                     >
                       {isExpanded ? (
                         <ChevronUp className="h-5 w-5 text-muted-foreground" />
@@ -452,7 +462,7 @@ export default function StudySchedule() {
                 </CardHeader>
 
                 {isExpanded && (
-                  <CardContent className="pt-0">
+                  <CardContent className="pt-0" id={`schedule-content-${sched.id}`}>
                     {schedEntries.length === 0 ? (
                       <p className="text-sm text-muted-foreground text-center py-4">
                         אין רשומות. לחץ "רשומה" להוספה.
