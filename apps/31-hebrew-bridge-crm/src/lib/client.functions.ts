@@ -186,7 +186,20 @@ export const removeUploadedDocument = createServerFn({ method: "POST" })
     }
 
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    await supabaseAdmin.storage.from("client-documents").remove([target.storage_path]);
+    const { error: storageErr } = await supabaseAdmin.storage
+      .from("client-documents")
+      .remove([target.storage_path]);
+    if (storageErr) {
+      // The documents row is already gone (delete above succeeded) — do not fail
+      // the request over it, but this must not vanish silently: the file object
+      // is now orphaned in storage with no DB row pointing at it, and per-client
+      // PII documents left behind on delete is a real hygiene/privacy gap.
+      console.error("[removeUploadedDocument] storage.remove failed", {
+        id: data.id,
+        storage_path: target.storage_path,
+        error: storageErr.message,
+      });
+    }
 
     return { ok: true };
   });

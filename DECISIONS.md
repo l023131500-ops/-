@@ -2497,3 +2497,39 @@
     של כפתור מסך-ניהול). הבא בתור: לסרוק מחדש `core.issues`/
     `core.project_tasks`; 31-hebrew-bridge-crm שגיאת מחיקת Storage
     לא-נבדקת (`client.functions.ts:189`) נשארת מועמד קל לסבב הבא.
+
+212. **סבב 32: קראתי README.md/CONNECTIONS.md, בדקתי core.run_progress**
+    (מזהה loop B אחרון 1133, תיקון try/catch בכפתורי "סמן כנקרא" ב-19
+    igud-shiurim-portal, קומיטים `661b6fb8`/`b0dd1626` -- כבר ה-parent
+    של הענף הזה) ו-`core.issues` בהיקף 17-31: כל השורות הפתוחות עדיין
+    owner=user, חסומות בדיוק כמתועד, ללא שינוי. נלקח המועמד שנרשם בסוף
+    סבב 30/31: 31-hebrew-bridge-crm שגיאת מחיקת Storage לא-נבדקת.
+213. **31-hebrew-bridge-crm: `removeUploadedDocument` (`client.functions.ts`)**
+    מוחק את שורת `documents` מה-DB (מאומת -- זורק אם `deleted.length===0`)
+    ואז קורא ל-`supabaseAdmin.storage.from("client-documents").remove(...)`
+    בלי לבדוק את שדה ה-`error` בתגובה בכלל -- ב-`@supabase/supabase-js`
+    הפעולה **לא** זורקת בכישלון, היא מחזירה `{ data, error }`, כך שקריאה
+    בלי לבדוק אותו בולעת את השגיאה לגמרי, לא רק "מציגה ok כוזב": אין
+    שום עקבה, שום לוג, שום דרך לדעת בדיעבד שהקובץ בכלל נכשל להימחק.
+    התוצאה: קובץ מסמך (לקוחות גשר-עברי הם מהגרים/עולים, כלומר מסמכים
+    אישיים/PII אמיתיים) נשאר יתום לצמיתות ב-Storage בלי שום שורת DB
+    שמצביעה עליו -- פער תברואה/פרטיות אמיתי (לא ניתן יותר לאתר את
+    הקובץ כדי למחוק אותו בפועל, "מחיקה" מנקודת המבט של המשתמש לא
+    שלמה בפועל).
+214. **התיקון: לא הופך לכישלון של הבקשה** (שורת ה-DB כבר נמחקה בהצלחה
+    בשלב הקודם, ואי אפשר "לבטל" את זה) **אלא הופך לגלוי בלוג**, באותה
+    מוסכמה בדיוק שכבר קיימת בקבצים אחרים באותה אפליקציה
+    (`console.error("[tag] msg", {...})` -- `outbox-dispatch.ts:115`,
+    `auth-middleware.ts:21`): `console.error("[removeUploadedDocument]
+    storage.remove failed", { id, storage_path, error })`. אפס שינוי
+    להתנהגות המוצלחת הקיימת (אותו `{ ok: true }` מוחזר, אותו זרימת-
+    לקוח ב-`DocumentsList.tsx`). אין `node_modules`/build step מותקן
+    בעץ הזה (כלל אי-התקנה כרגיל); אומתתי בקריאה חוזרת של הבלוק שנערך
+    ו-grep שאין קורא נוסף ל-`removeUploadedDocument` שהיה תלוי בחתימה
+    הישנה. נדרש `git add -f` (`apps/**/src` מוחרג מה-gitignore כברירת
+    מחדל, אותו דפוס כמו כל סבב קודם). קומיט הבא על
+    `fix/b-hebrew-bridge-crm-orphaned-storage-file-0820`, יידחף (מפעיל
+    פריסת Vercel תחת `more30.com/gesher`; שינוי אך ורק ל-handler מחיקת
+    מסמך אחד, אפס שינוי לזרימת ההעלאה/רשימה/קריאה). הבא בתור: לסרוק
+    מחדש `core.issues`/`core.project_tasks`; לא נותר מועמד קל רשום
+    מסבבים קודמים -- סבב הבא צריך grep/Explore רוחבי חדש.
