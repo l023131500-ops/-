@@ -53,6 +53,7 @@ const PortalSettingsTab = ({ portalId, portalType, portalData, onUpdate }: Porta
   const [savingAbout, setSavingAbout] = useState(false);
   const [savingContact, setSavingContact] = useState(false);
   const [savingSections, setSavingSections] = useState(false);
+  const [savingDonation, setSavingDonation] = useState(false);
   const photoInputRef = useRef<HTMLInputElement>(null);
   const bgInputRef = useRef<HTMLInputElement>(null);
   const rabbiPhotoRef = useRef<HTMLInputElement>(null);
@@ -166,13 +167,19 @@ const PortalSettingsTab = ({ portalId, portalType, portalData, onUpdate }: Porta
   };
 
   const saveDonationSettings = async () => {
-    const updates: any = { donation_link: donationLink };
-    if (portalType === "rabbi") updates.lesson_download_url = lessonDownloadUrl;
-    const { error } = await supabase.from(tableName).update(updates).eq("id", portalId);
-    if (!error) {
-      toast.success("קישורים נשמרו!");
-      onUpdate({ ...portalData, ...updates });
-    } else toast.error("שגיאה בשמירה");
+    if (savingDonation) return;
+    setSavingDonation(true);
+    try {
+      const updates: any = { donation_link: donationLink };
+      if (portalType === "rabbi") updates.lesson_download_url = lessonDownloadUrl;
+      const { error } = await supabase.from(tableName).update(updates).eq("id", portalId);
+      if (!error) {
+        toast.success("קישורים נשמרו!");
+        onUpdate({ ...portalData, ...updates });
+      } else toast.error("שגיאה בשמירה");
+    } finally {
+      setSavingDonation(false);
+    }
   };
 
   const uploadCustomBg = async (file: File) => {
@@ -330,8 +337,8 @@ const PortalSettingsTab = ({ portalId, portalType, portalData, onUpdate }: Porta
               <Input id="portal-lesson-download-url" value={lessonDownloadUrl} onChange={e => setLessonDownloadUrl(e.target.value)} placeholder="https://drive.google.com/..." className="border-gold/20 focus:border-gold/50" />
             </div>
           </div>
-          <Button onClick={saveDonationSettings} className="mt-4 bg-gradient-teal text-primary-foreground font-body font-bold gap-2">
-            שמור קישורים
+          <Button onClick={saveDonationSettings} disabled={savingDonation} className="mt-4 bg-gradient-teal text-primary-foreground font-body font-bold gap-2">
+            {savingDonation ? "שומר..." : "שמור קישורים"}
           </Button>
         </div>
       )}

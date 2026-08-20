@@ -11682,3 +11682,79 @@
     לדפוס הזה (partial-failure בכתיבות סדרתיות / race conditions).
     נושאים #62/#94/#115/#164/#169/#254 נשארים חסומים.
     via cloud server 167.99.131.167 [loop B]
+
+## 20/08/2026 — סבב 457 (loop B)
+
+457. **שלושה handlers ללא guard כניסה-חוזרת ב-22-get-your-rights
+    `AdminRightsReference.tsx`** (ניהול טבלת ה-`rights_reference`,
+    מסך אדמין). `handleAddRight`, `handleSaveEdit`, `handleDelete`
+    לא היו מוגנים כלל — לחיצה כפולה (רשת איטית) יכלה לירות שתי
+    בקשות Supabase חופפות. הבאג הקונקרטי: `handleAddRight` מחשב
+    `nextNum = Math.max(...rights.map(topic_number)) + 1` מתוך ה-state
+    המקומי (`rights`), ולכן שתי לחיצות מהירות מחשבות את אותו `nextNum`
+    ומכניסות שתי שורות עם `topic_number` כפול לפני שה-`loadRights()`
+    הראשון מספיק לרענן.
+
+    **התיקון:** state `addingRight`/`savingEdit`/`deletingId` לכל
+    handler — בדיקה-וקביעה לפני קריאת Supabase, ניקוי אחרי, וכפתורי
+    ההוספה/שמירה/מחיקה מקבלים `disabled` + תווית טעינה בזמן הפעולה.
+    אותו דפוס guard כמו בסבב 450 (18-torah-editor-mvp `save()`) ו-455
+    (21-mthbram bulk-approve).
+
+    **בדיקות תקינות:** קריאת קוד בלבד. `git diff --stat`: קובץ יחיד,
+    +17/-6.
+
+    לא אומתה פריסה חיה — ההנחיות אוסרות dev-server/תהליכי רקע.
+
+    ענף `fix/b-22-whatsapp-noopener-round395-0820`, נדחף (commit
+    `d4cb8674`).
+
+    **הבא בתור:** `RabbiPortal.tsx`/`PortalSettingsTab.tsx`/
+    `BulkUpload.tsx` ב-21-mthbram — אותו דפוס race/partial-failure,
+    לא נסרקו עדיין לעומק. נושאים #62/#94/#115/#164/#169/#254 נשארים
+    חסומים.
+    via cloud server 167.99.131.167 [loop B]
+
+## 20/08/2026 — סבב 458 (loop B)
+
+458. **`saveDonationSettings` ב-21-mthbram `PortalSettingsTab.tsx`
+    (המועמד הראשון מתוך שלושת הקבצים שהוצעו בסוף סבב 457) — guard
+    כניסה-חוזרת חסר לגמרי.** מתוך ארבעת handlers ה"שמירה" באותו קובץ
+    (`saveAbout`, `saveContactInfo`, `saveCustomSections`,
+    `saveDonationSettings`), שלושת הראשונים כבר מגינים על עצמם עם
+    state `savingX` (בדיקה לפני, `set(true)` לפני הקריאה, `finally`
+    שמנקה) וכפתור עם `disabled={savingX}` — אבל `saveDonationSettings`
+    (קישור תרומה + קישור הורדת שיעור, בלשונית ההגדרות של פורטל
+    הרבנים) לא הוגן כלל: אין state, ואין `disabled` על הכפתור
+    ("שמור קישורים"). לחיצה כפולה/רשת איטית יכולה לירות שתי בקשות
+    `UPDATE` חופפות לאותה שורת פורטל — אותו דפוס copy-drift-regression
+    שכבר תועד בין handlers אחים באותו קובץ (סבב 438: `selectPreset`/
+    `saveFontColor`/`deletePhoto` היו חסרי `toast.error` בזמן שהאחים
+    כבר היו מוגנים).
+
+    **התיקון:** נוסף state `savingDonation`, אותו דפוס check-and-set
+    בדיוק כמו שלושת ה-handlers האחים באותו קובץ — בדיקת `savingDonation`
+    לפני, `setSavingDonation(true)` לפני הקריאה, `try/finally` שמנקה,
+    וכפתור עם `disabled={savingDonation}` ותווית "שומר..." בזמן
+    הפעולה. מסלול ההצלחה/שגיאה הקיים לא השתנה.
+
+    **בדיקות תקינות:** קריאת קוד בלבד (ללא dev-server/build, לפי
+    הנחיות ההרצה). ספירת סוגריים/סוגריים-מסולסלים לפני/אחרי (Python):
+    `(` 309/309, `{` 227/227 (מאוזן). `git diff --stat`: קובץ יחיד,
+    +16/-9.
+
+    לא אומתה פריסה חיה: ההנחיות אוסרות dev-server/תהליכי רקע —
+    האימות נעשה בקריאת קוד בלבד.
+
+    ענף `fix/b-22-whatsapp-noopener-round395-0820` (שרשרת הענפים היא
+    המקור המלא היחיד ל-loop B, לא `main`), נדחף.
+
+    **הבא בתור:** `RabbiPortal.tsx` (בדיקה חוזרת של `saveEdit`/
+    `addLesson` — משתפים `savingLesson` בין שני טפסים שיכולים
+    להיות פתוחים בו-זמנית, `addingNew`+`editingId` לא נמצאים
+    exclusive) ו-`BulkUpload.tsx` — לא נסרקו עדיין לעומק. `selectPreset`/
+    `saveFontColor` באותו קובץ (`PortalSettingsTab.tsx`) עדיין ללא
+    guard כניסה-חוזרת (רק error toast מסבב 438) — סיכון נמוך יותר
+    (בחירת preset/צבע היא אידמפוטנטית, לא יוצרת כפילויות בטבלה).
+    נושאים #62/#94/#115/#164/#169/#254 נשארים חסומים.
+    via cloud server 167.99.131.167 [loop B]
