@@ -6419,3 +6419,32 @@ PRIVILEGES IN SCHEMA public` שמעניק `EXECUTE` ל-`anon`/`authenticated`
 מסך אזור-אישי — שלב 1). הצפנת-שדה עדיין לא נבנתה.
 
 מיגרציה: `0112_maatefet_mfa_gate.sql`.
+
+## 20/08/2026 (Loop C, סבב 6) — 39 מעטפת: הצפנת-שדה לתוכן רגיש — שלב 0 סגור
+
+הפער האחרון שתועד לשלב 0 נסגר: `maatefet.clients.notes` (הערות ליווי חופשיות
+על זוג — השדה הרגיש ביותר הקיים כבר בשלב 0) מוצפן עכשיו at-rest. מנגנון:
+`pgcrypto.pgp_sym_encrypt/decrypt` (כבר מותקן) עם מפתח סימטרי אקראי שנשמר
+ב-Supabase Vault (כבר מותקן) — לא בקוד, לא בטבלה. המפתח נגיש רק דרך
+`maatefet._notes_key()` (SECURITY DEFINER, אפס הרשאות ל-authenticated/anon);
+לקוחות מקבלים רק `encrypt_note`/`decrypt_note` (מקבל/מחזיר ערך, לא מפתח).
+עמודת `notes` (text) הוחלפה ב-`notes_enc` (bytea); שלוש הפונקציות הציבוריות
+(`maatefet_clients_list`/`maatefet_client_update`/`maatefet_me`) מפענחות/
+מצפינות בשקיפות — `instructor.html`/`admin.html` הקיימים לא נגעו כלל, אותה
+חתימת RPC ואותו שם שדה `notes`. RLS נשאר שכבת ההגנה על *אילו שורות* נגישות;
+ההצפנה מגנה על *איך* השדה שמור בדיסק/גיבוי — משלימות זו את זו, לא מחליפות.
+
+אומת חי דרך MCP: 0 שורות היו בטבלה לפני הסבב (בלי צורך במיגרציית נתונים),
+round-trip הצפנה/פענוח עברית תקין, ותרחיש מלא (יצירת מדריך+לקוח+הערה
+מוצפנת+פענוח דרך ה-RPC+מחיקת נתוני-בדיקה) עבר נקי. `get_advisors` (security):
+אזהרות `SECURITY DEFINER` על `encrypt_note`/`decrypt_note` — אותה קטגוריה
+שכבר קיימת ומקובלת על `my_instructor_id`/`redeem_invite`/`verify_instructor`
+(סכימת `maatefet` אינה ב-exposed schemas של ה-Data API כיום, ראה 0110), לא
+ממצא חדש מבחינת סיכון.
+
+**שלב 0 עכשיו סגור** — כל ארבעת הרכיבים מהאפיון בנויים: CRM + ספריית תוכן +
+פאנל סופר-אדמין + אבטחה (2FA מסבב 5 + הצפנת-שדה מסבב זה). מה שנשאר הוא
+תשתיתי-לא-טכני בלבד: פרויקט Vercel נפרד כדי ש-`/maatefet` יהיה חי בפועל
+(ר' `NEEDS_USER.md`) — עד אז הנתיב ממשיך להציג "בקרוב".
+
+מיגרציה: `0113_maatefet_notes_encryption.sql`.
