@@ -234,6 +234,17 @@ function ChatPane({ contact, messages, tenantId, senderId, onSent }: {
 
   useEffect(() => { scrollerRef.current?.scrollTo({ top: scrollerRef.current.scrollHeight }); }, [messages.length]);
 
+  // Mark inbound messages as read once the conversation is open, so the
+  // unread badges (sidebar count, "חדש" filter, dashboard widget) actually
+  // clear instead of staying stuck forever.
+  useEffect(() => {
+    const unreadIds = messages.filter((m) => m.direction === "inbound" && m.status !== "read").map((m) => m.id);
+    if (unreadIds.length === 0) return;
+    supabase.from("messages").update({ status: "read" }).in("id", unreadIds).then(({ error }) => {
+      if (!error) onSent();
+    });
+  }, [messages, onSent]);
+
   async function uploadFile(file: File) {
     setUploading(true);
     try {

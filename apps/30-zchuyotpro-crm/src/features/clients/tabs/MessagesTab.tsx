@@ -39,6 +39,16 @@ export function MessagesTab({ clientId }: { clientId: string }) {
     return () => { supabase.removeChannel(ch); };
   }, [clientId, qc]);
 
+  // Mark inbound messages as read once this tab is open, matching the inbox's
+  // ChatPane — otherwise the unread badge for this client never clears.
+  useEffect(() => {
+    const unreadIds = messages.filter((m) => m.direction === "inbound" && m.status !== "read").map((m) => m.id);
+    if (unreadIds.length === 0) return;
+    supabase.from("messages").update({ status: "read" }).in("id", unreadIds).then(({ error }) => {
+      if (!error) qc.invalidateQueries({ queryKey: ["messages", clientId] });
+    });
+  }, [messages, clientId, qc]);
+
   const send = useMutation({
     mutationFn: async () => {
       if (!content.trim()) throw new Error("הקלד הודעה");
