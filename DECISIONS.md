@@ -6379,3 +6379,45 @@
     האפליקציות, לשקול לפתוח עדשה חדשה (למשל TEST MODE audit על
     אינטגרציות תשלום/שליחה, בזהירות רבה).
     via cloud server 167.99.131.167 [loop B]
+
+## 20/08/2026 — סבב 346 (loop B)
+
+346. **סגירת עדשת ה-fake-success + פתיחת עדשת "משוב שקט" חדשה,
+    `premium-requests.tsx` (27-bkalut-price):** הרצתי Explore agent
+    לסריקת 5 האפליקציות הנותרות עם קוד vendored אמיתי
+    (17-chizukim-transcribe, 18-torah-editor-mvp,
+    24-galilee-connect-hub, 27-bkalut-price, 28-kupot-health-funds)
+    אחר התבנית שנפתחה בסבבים 344-345. לא נמצא אף מועמד אמיתי לעדשת
+    fake-success: 17/28 לא משתמשות ב-Supabase SDK בכלל (fetch/XHR
+    ידניים עם בדיקת `res.ok` לפני כל דיווח הצלחה), 18/24 כבר בודקות
+    שגיאה נכון בכל אתרי הכתיבה (כולל flow רב-כתיבות עם דגל `hasError`
+    מצטבר ב-24), ו-27 משתמשת ב-`apiRequest()`/TanStack `useMutation`
+    שזורק חריגה על תגובה לא תקינה — מבנית לא יכולה "להצליח בשקט".
+    העדשה נסגרת רשמית על כל 11 האפליקציות בהיקף loop B.
+
+    בבדיקת 27 נמצא פער אמיתי אחר, סמוך: כ-16 מוטציות בלי `onError`
+    בכלל (כשל שקט, לא fake-success). תיקנתי את הראשונה והכי
+    משמעותית מבחינת סיכון עסקי: ב-`premium-requests.tsx`, מוטציית
+    `decide` (אישור/דחיית שדרוג פרימיום, שמפעילה webhook ל-NEDARIM3873
+    לפי ה-comment בקובץ) לא הציגה שום `toast` הצלחה **ולא** `onError`
+    בכלל — כישלון PATCH (כולל כישלון dispatch של ה-webhook בצד השרת)
+    היה משאיר את המנהל בלי שום משוב חזותי, מה שעלול לגרום לו לנסות
+    שוב ולשגר webhook כפול של הרשאות/הודעת ברוכים הבאים לאותו משתמש.
+    הוספתי `useToast` + `onSuccess`/`onError` בדיוק לפי הדפוס הקיים
+    כבר באותה אפליקציה ב-`api-access.tsx` ו-`financial-crm.tsx`
+    (`toast({title, variant:"destructive"})` בכישלון). אפס שינוי
+    לוגיקה/API/DB — תוספת משוב UI בלבד. בדיקת איזון סוגריים/מאמרים
+    מסולסלים/מרובעים ב-python על הקובץ המלא אחרי העריכה — תקין
+    (40/40, 53/53, 15/15). אין build/dev-server זמין בסביבה הזו לפי
+    הנחיית ההרצה — לא tsc. ענף חדש
+    `fix/b-27-bkalut-price-premium-requests-silent-error-0820`, commit
+    `396bb642`, נדחף (מפעיל פריסת Vercel תחת more30.com/mechiron).
+
+    **הבא בתור:** להמשיך את עדשת "משוב שקט" (מוטציה בלי `onError`) על
+    שאר כ-15 המוטציות שנמצאו ב-27-bkalut-price
+    (`financial-crm.tsx`, `api-access.tsx`, `me.tsx`, `webhook-log.tsx`,
+    `params-topics.tsx`) — לתעדף flows עם השפעה עסקית/כספית אמיתית על
+    פני toggle-ים קוסמטיים. לשקול גם להרחיב את אותה עדשה לשאר אפליקציות
+    loop B שמשתמשות ב-TanStack `useMutation` (18/24), אם יימצאו שם
+    מוטציות ללא `onError`.
+    via cloud server 167.99.131.167 [loop B]
