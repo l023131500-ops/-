@@ -13,6 +13,7 @@ import type {
 
 const SUPABASE_URL = process.env.SUPABASE_URL || "";
 const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || "";
+const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
 // ה-PostgREST של פרויקט ה-hub חושף רק public/graphql_public/nadlan, ולכן
 // בפריסה תחת more30.com הטבלאות (hf_topics / hf_switch_leads) יושבות ב-public.
 // ברירת המחדל נשמרת כדי שהמאגר העצמאי המקורי (סכמת kupot) ימשיך לעבוד.
@@ -78,6 +79,27 @@ export async function fetchTopicFromSupabase(
   if (!resp.ok) throw new Error(`supabase topic ${resp.status}`);
   const rows = (await resp.json()) as any[];
   return rows.length ? mapTopicRow(rows[0]) : undefined;
+}
+
+// קריאת פניות "מעבר קופה" למסך הניהול. ה-anon key מכוון (RLS: hf_leads_public_insert
+// הוא INSERT-בלבד) כדי שאף אחד מלבד האדמין לא יוכל לקרוא PII של פניות — לכן כאן
+// חייבים service_role (סוד server-only). הקריאה עצמה כבר מוגנת ב-isAdminRequest
+// לפני שהיא מגיעה לכאן (routes.ts). מחזיר שורות גולמיות (snake_case, כמו PostgREST),
+// באותה צורה ש-admin-page.ts כבר מצפה לה.
+export async function fetchSwitchLeadsFromSupabase(): Promise<any[]> {
+  if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
+    throw new Error("SUPABASE_SERVICE_ROLE_KEY not configured");
+  }
+  const url = `${SUPABASE_URL}/rest/v1/hf_switch_leads?select=*&order=created_at.desc`;
+  const resp = await fetch(url, {
+    headers: {
+      apikey: SUPABASE_SERVICE_ROLE_KEY,
+      Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
+      "Accept-Profile": SCHEMA,
+    },
+  });
+  if (!resp.ok) throw new Error(`supabase switch-leads ${resp.status}`);
+  return (await resp.json()) as any[];
 }
 
 // כתיבת ליד ל-Supabase. מחזיר true בהצלחה, אחרת false (בלי לזרוק).

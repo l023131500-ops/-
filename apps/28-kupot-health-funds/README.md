@@ -12,7 +12,7 @@
 ## מבנה נתונים (Supabase — סכמת `kupot`)
 
 - `hf_topics` — נושאי זכויות והטבות (515 רשומות: 435 קופות, 65 ממשלה, 15 עמותות). קריאה ציבורית בלבד (RLS).
-- `hf_switch_leads` — פניות "מעבר קופה". הכנסה בלבד (insert-only) — אין קריאה ציבורית של פניות.
+- `hf_switch_leads` — פניות "מעבר קופה". הכנסה בלבד (insert-only) — אין קריאה ציבורית של פניות. קריאה למסך הניהול (`GET /api/switch-leads`) דורשת `SUPABASE_SERVICE_ROLE_KEY` (סוד server-only) כי ה-anon key מכוון בכוונה בלי הרשאת SELECT על הטבלה.
 
 ## הרצה מקומית
 
@@ -49,4 +49,5 @@ NODE_ENV=production node dist/index.cjs
 ```
 SUPABASE_URL=https://YOUR-PROJECT-ref.supabase.co
 SUPABASE_ANON_KEY=your-anon-public-key
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key   # server-only; נדרש רק ל-GET /api/switch-leads בפריסת Supabase
 ```

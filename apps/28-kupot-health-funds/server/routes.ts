@@ -11,6 +11,7 @@ import {
   useSupabaseStore,
   fetchTopicsFromSupabase,
   fetchTopicFromSupabase,
+  fetchSwitchLeadsFromSupabase,
 } from "./supabase";
 import type { HfTopic } from "@shared/schema";
 import { fundDetailsFor } from "./fund-details";
@@ -121,11 +122,21 @@ export async function registerRoutes(
 
   // ---- (לניהול) רשימת פניות — מוגן בטוקן ניהול, אסור לחשוף ציבורית ----
   // מקבל גם כותרת x-admin-token (כפי שהיה) וגם עוגיית כניסה מ-/api/admin/login.
-  app.get("/api/switch-leads", (req, res) => {
+  // בפריסה serverless (useSupabaseStore) אין SQLite כלל — storage.listSwitchLeads()
+  // היה קורס על db=null; קוראים מ-Supabase (service_role, ר' supabase.ts) במקום.
+  app.get("/api/switch-leads", async (req, res) => {
     if (!isAdminRequest(req)) {
       return res.status(403).json({ error: "גישה נדחתה" });
     }
-    res.json(storage.listSwitchLeads());
+    try {
+      const leads = useSupabaseStore()
+        ? await fetchSwitchLeadsFromSupabase()
+        : storage.listSwitchLeads();
+      res.json(leads);
+    } catch (e: any) {
+      console.error("[switch-leads] error", e?.message || e);
+      res.status(502).json({ error: "שגיאה בטעינת פניות" });
+    }
   });
 
   // ---- עמוד ניהול — כניסה בסיסמה (אותו ADMIN_TOKEN) במקום קריאת API ידנית ----

@@ -2862,3 +2862,53 @@
     באדמין ריק/לא-נגיש לצמיתות (הלידים עצמם נשמרים תקין ב-Supabase,
     רק הקריאה חזרה שבורה) -- מתועד במלואו עם שורות מדויקות, מועמד
     חזק לסבב הבא.
+
+## 20/08/2026 — סבב 39
+
+233. **קראתי README.md/CONNECTIONS.md, בדקתי `core.run_progress`** (מזהה
+    loop B אחרון 1144, תיקון spoofing IP ב-`clientIp()` ב-26
+    modaot-studio, קומיט `42e5395c` -- כבר ה-parent של הענף הזה, כבר
+    נדחף). המועמד שנרשם בסוף סבב 38 היה מוכן לביצוע: 28
+    kupot-health-funds, `GET /api/switch-leads` (`server/routes.ts:124`)
+    קורא תמיד `storage.listSwitchLeads()` (Drizzle+SQLite, `server/
+    storage.ts:188-194`) גם כש-`DATA_STORE=supabase`. אימתתי בעצמי
+    בקריאת `storage.ts:14-34`: כש-`DATA_STORE_SUPABASE` אמת, המשתנים
+    `sqlite`/`drizzle` נשארים `null` ולכן `export const db = sqlite ?
+    drizzle(sqlite) : null` -- `listSwitchLeads()` קורא ל-`db.select()`
+    על `null`, זורק `TypeError` לא-מטופל (אין `try/catch` סביב ה-route).
+    בדקתי גם מול Supabase עצמו (MCP, פרויקט ה-hub `uhnrgujb...`, כי
+    `core.projects` ל-28 רשום עם `supabase_project=uhnrgujbdxhhmoxcjria`,
+    `supabase_schema=public`): `public.hf_switch_leads` עם RLS פעיל
+    ומדיניות `hf_leads_public_insert` (INSERT בלבד, `roles={public}`) --
+    **אין מדיניות SELECT בכלל**, כלומר גם אם `routes.ts` היה קורא
+    ל-Supabase עם ה-anon key (כמו ש-`fetchTopicsFromSupabase` עושה),
+    התוצאה הייתה מערך ריק תמיד (RLS חוסם, לא שגיאה) -- לא מספיק לתקן
+    רק את הקריסה, צריך גם נתיב קריאה שבאמת מחזיר את השורות.
+234. **התיקון: פונקציית קריאה חדשה `fetchSwitchLeadsFromSupabase()`**
+    ב-`server/supabase.ts` שמשתמשת ב-`SUPABASE_SERVICE_ROLE_KEY` (סוד
+    server-only חדש לאפליקציה הזו, לפי המוסכמה הקיימת ב-CONNECTIONS.md)
+    במקום ה-anon key -- כי `service_role` עוקף RLS לגמרי (אימתתי:
+    `pg_roles.rolbypassrls=true` עבורו, `false` ל-anon/authenticated),
+    וזה בטוח כאן כי הקריאה כבר מוגנת ב-`isAdminRequest` (בדיקת
+    `ADMIN_TOKEN`) לפני שהיא בכלל מגיעה לפונקציה. מחזירה את השורות
+    הגולמיות (snake_case, ישירות מ-PostgREST) בלי מיפוי -- כך גם
+    `admin-page.ts` (`COLUMNS` שם כבר משתמש ב-`created_at`/`full_name`
+    וכו', snake_case, לא ב-`fullName` camelCase כמו שה-SQLite storage
+    מחזיר) מקבל לראשונה בפועל את הצורה שהוא תמיד ציפה לה בייצור --
+    לא נגעתי בנתיב ה-SQLite המקומי (עדיין `storage.listSwitchLeads()`,
+    עדיין camelCase, אי-ההתאמה הזו בפיתוח מקומי בלבד קיימת מלפני
+    התיקון ומחוץ להיקף הצעד הזה). ב-`routes.ts` עטפתי את ה-handler
+    כולו ב-`try/catch` (`502` בכשל, אותו דפוס כמו `/api/hf/topics`)
+    במקום קריסה לא-מטופלת. עדכנתי את `README.md` (שם המשתנה החדש
+    בקטע `.env`, לא ערך). אין `node_modules` מותקן בעץ הזה (כלל
+    אי-התקנה כרגיל) -- אומת בקריאה חוזרת של שני הקבצים בלבד, אין
+    `tsc` זמין. אפס שינוי לנתיב יצירת ליד (`POST /api/switch-lead`),
+    אפס שינוי למדיניות ה-RLS הקיימת (לא הוספתי SELECT policy לanon --
+    היה מרחיב חשיפת PII, ו-service_role מספיק). קומיט הבא על
+    `fix/b-kupot-health-funds-switch-leads-supabase-read-0820`, יידחף
+    (מפעיל פריסת Vercel תחת `more30.com`/הנתיב הממופה ל-28; שינוי אך
+    ורק לנתיב הניהול לקריאת פניות ולתיעוד). המפתח `SUPABASE_SERVICE_
+    ROLE_KEY` צריך עדיין להיות מוגדר בפועל בסביבת הפריסה (Vercel) --
+    זו הכרעת סוד/ערך של המשתמש, לא משהו שהסבב הזה יכול להגדיר בעצמו
+    (עולה בקנה אחד עם `core.missing_tokens`/owner=user ברוב הפערים
+    הפתוחים האחרים בהיקף הזה).
