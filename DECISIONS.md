@@ -2600,3 +2600,57 @@
     למודול HTR -- אפס שינוי ל`/documents`/`/verify`/`/citations`/`/nikud`).
     הבא בתור: לסרוק מחדש `core.issues`/`core.project_tasks`; לא נותר
     מועמד קל רשום -- סבב הבא צריך grep/Explore רוחבי חדש.
+
+## 20/08/2026 — סבב 34
+
+219. **קראתי README.md/CONNECTIONS.md, בדקתי `core.run_progress`** (מזהה
+    loop B אחרון 1136, תיקון חוסר-אימות מוחלט במודול HTR ב-18
+    torah-editor-mvp, קומיט `50941c8d` -- כבר ה-parent של הענף הזה, כבר
+    נדחף) ו-`core.issues` בהיקף 17-31: כל השורות הפתוחות עדיין
+    owner=user (#251/#250/#249/#248/#245/#242/#229/#220/#209), חסומות
+    בדיוק כמתועד -- כולן דורשות דשבורד Supabase/Lovable חיצוני שאין
+    אליו גישה מה-MCP הזה. אין שורה חדשה שניתן לפעול עליה. הרצתי שלושה
+    סוכני Explore מקבילים על טריטוריה טרייה: (19-igud-shiurim-portal,
+    20-igud-portal), (22-get-your-rights, 27-bkalut-price),
+    (29-bkalot-design, 30-zchuyotpro-crm).
+220. **הממצא שנבחר: 27-bkalut-price, `GET /api/clients` (`server/routes.ts:416`)**
+    היה ללא שום middleware אימות, בניגוד מוחלט לכל שאר נתיבי ה-`/api/admin/*`
+    וגם `/api/rights`/`/api/orgs` באותו קובץ בדיוק (כולם עטופים ב-`requireAdmin`,
+    כולל תיקון קודם באותו קובץ מסבב מוקדם יותר -- `35e1a02b` על `/api/orgs`).
+    אימתתי בעצמי: הנתיב מחזיר `storage.listClients()` -- **הרשומה
+    המלאה** של כל לקוח (`fullName`, `phone`, `email`, `idNumber`,
+    `birthDate`, `city`, `familyStatus`) לכל קורא אנונימי באינטרנט,
+    בלי שום בדיקת session. הצריכה היחידה שלו בקוד היא
+    `client/src/pages/delivery.tsx:66` -- עמוד `/delivery` בתוך
+    `InternalArea`, מוגן רק בצד ה-client (הפניה ל-`/login` אם
+    `!isAuthed`) שהיא כמובן לא הגנה אמיתית מול קריאת API ישירה. סריקתי
+    גם את `GET /api/clients/by-phone` (אותו קובץ, שורה 421) -- זהה
+    בחומרה (מחזיר רשומה מלאה, לא רק שדות autofill), אבל **לא נגעתי בו**:
+    הוא נצרך ע"י `client/src/pages/service-form.tsx:235`, טופס-קליטה
+    **ציבורי** תחת `/service/:id` (מחוץ ל-`InternalArea`) שמאפשר ללקוח
+    חוזר למלא-אוטומטית לפי הטלפון שלו -- הוספת `requireAdmin` שם הייתה
+    שוברת את הזרימה הציבורית הזו (רגרסיה אסורה). זה משאיר חשיפת
+    enumeration-לפי-טלפון פתוחה בכוונה בסבב הזה -- מתועד כמועמד להמשך
+    (דורש עיצוב מחדש: הגבלת שדות מוחזרים או rate-limit, לא רק
+    auth-gate, כדי לא לשבור את חוויית הלקוח החוזר).
+221. **התיקון: `requireAdmin` יובא כבר בראש הקובץ** (שורה 28, בשימוש
+    בעשרות נתיבים אחרים) -- הוספתי אותו כ-middleware שני על
+    `app.get("/api/clients", ...)` בלבד. אימתתי אפס-רגרסיה: `apiRequest`/
+    `getQueryFn` ב-`client/src/lib/queryClient.ts:59-60` כבר מצרפים
+    `Authorization: Bearer <adminToken>` **אוטומטית** לכל קריאת API
+    כשקיים טוקן אדמין מחובר -- כלומר `delivery.tsx` (הצרכן היחיד של
+    הנתיב) כבר שולח את ההדר הזה היום בלי שינוי קוד לקוח, ותמשיך לעבוד
+    זהה לחלוטין למשתמש אדמין מחובר. grep מאומת: אין קורא נוסף ל-
+    `/api/clients` (לא `/api/clients/by-phone`, לא `/api/external/clients`
+    שכבר מוגן ב-`gate` נפרד) בכל השרת או הלקוח. אין `node_modules`/build
+    מותקן בעץ הזה (כלל אי-התקנה כרגיל). קומיט הבא על
+    `fix/b-bkalut-price-clients-list-unauth-0820`, יידחף (מפעיל פריסת
+    Vercel תחת `more30.com/mechiron`; שינוי אך ורק לנתיב GET אחד, אפס
+    שינוי ל-`/api/clients/by-phone` הציבורי או לכל התנהגות אדמין
+    מוצלחת קיימת). הבא בתור: לסרוק מחדש `core.issues`/
+    `core.project_tasks`; אפשרות עיצוב rate-limit/field-trim על
+    `/api/clients/by-phone` נשארת מועמד להמשך, וכן הממצאים הנוספים
+    מדוחות ה-Explore (19-igud-shiurim-portal webhook-RPC ללא בדיקת
+    שגיאה, 22-get-your-rights AdminSettings/AdminLeads כתיבות DB
+    לא-נבדקות, 30-zchuyotpro-crm נתיבי `/api/public/*` ללא אימות
+    tenant) שלא נבחרו הסבב הזה.

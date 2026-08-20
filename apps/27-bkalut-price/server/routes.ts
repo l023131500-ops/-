@@ -413,7 +413,7 @@ export async function registerRoutes(
     });
   });
 
-  app.get("/api/clients", async (_req, res) => {
+  app.get("/api/clients", requireAdmin, async (_req, res) => {
     const list = await storage.listClients();
     res.json(list);
   });
