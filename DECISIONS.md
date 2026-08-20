@@ -3912,3 +3912,77 @@
      `admin.js` (06) חוסם כל התחברות במכוון, ו-12 כלל לא כולל מסך ניהול
      בקוד המקור שנבדק). מחוץ ל-06/12: `admin_sessions`/27 ממתין ל-Loop B
      (רשום עכשיו ב-`core.issues`).
+
+## 20/08/2026 (LOOP A — סבב 57) — 04-imud-torani: בקשות בלי כותרת X-Visitor-Id כבר לא נופלות לדלי-"anon" משותף
+
+328. **בדקתי מחדש `core.run_progress` לפני שהתחלתי.** סבב 56 סגור
+     (commit `46f5bca8`, תאם ל-HEAD). סוכן Explore רץ קודם על
+     `packages/auth`/`packages/billing`/`admin/`/`portal/` — כל הקוד
+     שנוסף מאז סבב 43 (15 קומיטים, 8 עם שינוי קוד בפועל) כבר תיקוני
+     דפוסים ידועים (מרוץ duplicate-submit, כשל-שקט בכתיבות `.update()`,
+     נפילת `is_super_admin` ב-02), לא ממצא חדש. גם זרימת "כניסה חוזרת
+     לתדמית" ו-hash mismatch נבדקו מחדש בקוד — תקינות, ללא רגרסיה.
+329. **שתי חקירות שהגיעו לממצא אך *לא* תוקנו — מתועד כדי שסבב עתידי
+     לא יחקור מאפס:**
+     - **`otvedaf.books` (04) — מדיניות `books_anon_all` (ALL, roles=
+       `{anon,authenticated}`, qual/with_check=`true`) פתוחה לגמרי,
+       וסותרת את ההערה בקוד (`server/supabase.ts:10-12`, "בפריסה תחת
+       more30.com... anon חסום לגמרי... השרת עובד עם service_role").**
+       בדקתי לעומק לפני שנגעתי: `apps/04-imud-torani/SECURITY_REVIEW.md`
+       (סקירת אבטחה רשמית, 08/07/2026, "SAFE TO PUBLISH") כבר בדקה בדיוק
+       את זה במפורש ואישרה — "No `service_role` key anywhere... consistent
+       with the intended anon-only design", ותיעדה את הסיכון (WARN #2, ראו
+       #330 למטה) כנמוך-חומרה בכוונה: האפליקציה חסרת-אימות במפורש
+       (`X-Visitor-Id`, לא סשן/RLS), והתוכן ("Torah-typesetting content")
+       הוגדר לא-רגיש. שינוי RLS כאן הוא סיכון רגרסיה אמיתי (לא ידוע אם
+       הפריסה החיה ב-Railway/more30.com באמת מריצה `service_role` כפי
+       שההערה בקוד מניחה, או שהיא בפועל תלויה במפתח ה-anon — הקוד תומך
+       בשתי האפשרויות בכוונה: `SUPABASE_SERVICE_KEY || SUPABASE_ANON_KEY`)
+       מול תועלת אבטחה על תוכן שכבר סווג כלא-רגיש בסקירה רשמית. **לא נגעתי.**
+     - **`bieebmnmkffwbqlsfozh` (פרויקט 01/02/03/10/18), סכימת `public` —
+       שבע טבלאות (`admin_sessions`/`app_users`/`clients`/`delivery_queue`/
+       `service_submissions`/`automation_configs`/`users`) עם מדיניות בשם
+       "bkalut backend full access" (ALL, roles=`{anon,authenticated}`,
+       qual/with_check=`true`).** `grep` רוחבי על כל `apps/**` לא מצא אף
+       הפניה לשמות הטבלאות האלה בקוד אף מערכת ב-01-16 — הן לא בשימוש שום
+       אפליקציה מנוהלת בריפו. `supabase/consolidation/bieebmnm-logic/README.md`
+       (תיעוד קונסולידציה קיים מ-30/07) מבהיר ש-`public` בפרויקט הזה הוא
+       שם-נרדף ל-`igud` בהקשר הרפליקציה, ופונקציות `admin_sessions`-קשורות
+       (`check_super_admin_session` וכו') כבר מתועדות שם תחת schema `igud`.
+       השם "bkalut" בשם המדיניות + הדמיון המבני לתחום בקלות (clients/
+       delivery_queue/service_submissions/automation_configs) הופכים את
+       הזיהוי-בטעות למערכת מוגנת (`bkalut-app`/`bkalot-admin`, README
+       §3) לסיכון גבוה מדי בלי אימות בעלות ודאי. בהתאם לתקדים שכבר נקבע
+       (CONNECTIONS.md, "Undocumented schemas" — `kesef`/`bkalot_auto`/
+       `bkalot_clone` וכו' מטופלים hands-off בלי בעלות מאומתת): **לא נגעתי,
+       לא בקוד ולא ב-RLS.** מתועד כאן לביקורת עתידית אם אי-פעם תאושר בעלות.
+330. **הממצא שכן תוקן: `apps/04-imud-torani/SECURITY_REVIEW.md` WARN #2
+     (שורה 15) — פתרון שהוצע במפורש בסקירה ("return 400 instead of
+     falling back to 'anon'") ומעולם לא יושם.** `visitorId(req)` ב-
+     `server/routes.ts` החזירה `"anon"` קבוע לכל בקשה בלי כותרת
+     `X-Visitor-Id` — לא רק ל-`GET`, גם ל-`POST`/`PATCH`/`DELETE` על
+     ספרים. הלקוח עצמו כבר שולח מזהה קבוע פר-דפדפן בכל בקשה (תוקן בסבב 6,
+     `client/src/lib/visitorId.ts` + `queryClient.ts:36,52`) — כך שהחור
+     פגע רק בבקשות שעוקפות את הלקוח (curl/API ישיר), אבל אז כל הבקשות
+     הבלתי-מזוהות האלה (מכל מקור) התנגשו לתוך אותה שורת `user_id='anon'`
+     אחת — קריאה, כתיבה, ומחיקה כולל. **התיקון:** `visitorId()` מחזירה
+     עכשיו `string | null` (במקום נפילה ל-`"anon"`), ופונקציה חדשה
+     `requireVisitorId(req,res)` עונה `400 {"message":"חסרה כותרת
+     X-Visitor-Id"}` ומחזירה `null` כשאין כותרת — כל שש הנקודות שהשתמשו
+     ב-`visitorId(req)` (`GET/POST/PATCH/DELETE /api/books`[/:id][/docx])
+     עכשיו בודקות דרך העוטפת ויוצאות מוקדם. **אפס רגרסיה מאומתת:** מכיוון
+     שהלקוח האמיתי תמיד שולח את הכותרת (מאומת בקריאת קוד ישירה, לא רק
+     הנחה), אף בקשה אמיתית מהאתר לא תיפגע — רק בקשות שכבר לא היו מבודדות
+     כראוי ממילא. `server/storage.ts` (קבוע `ANON`, שורות 83/94/103/137/149)
+     לא נגעתי בו — נשאר כפולבאק מגן שכבר לא מגיע אליו אף קורא אחרי
+     התיקון בשכבת ה-route, לא קוד מת מסוכן. `npx tsc --noEmit` על
+     `apps/04-imud-torani` רץ נקי על `server/routes.ts`/`server/storage.ts`
+     (שתי שגיאות קיימות-מראש ב-`pagedRender.ts`/`docx.ts`, לא בקבצים
+     שנערכו, לא קשורות לשינוי הזה — אומתו כקיימות גם לפני העריכה).
+     ענף `fix/a-04-imud-visitor-id-required-0820`.
+331. **הבא בתור:** אם ההיקף יחזור ל-04: לשקול אימות מול Railway/
+     more30.com בפועל (לא רק קריאת קוד) איזה מפתח Supabase מוגדר בפועל
+     בפריסה החיה, כדי לפתור סופית את אי-הוודאות מ-#329(א) ולדעת אם
+     אפשר בבטחה להדק את `books_anon_all`. מחוץ ל-04: בעלות
+     `bkalut backend full access` (#329-ב) על `bieebmnmkffwbqlsfozh`
+     דורשת אישור משתמש מפורש לפני כל בדיקה נוספת.
