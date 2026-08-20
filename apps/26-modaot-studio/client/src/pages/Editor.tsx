@@ -172,6 +172,9 @@ export default function Editor() {
   // שתועדה כ"נשאר לסבב הבא" בפריט 16 של הצ'קליסט. לא נוגע בקנבס/בשמירה הקיימים —
   // רק קורא ל-stageRef ברזולוציה מלאה, בדיוק כמו handleDownloadPNG/PDF.
   const [videoExporting, setVideoExporting] = useState(false);
+  // כתוביות עבריות בשכבת הוידאו עצמו (המשך ל-videoExport.ts) — ברירת מחדל דלוקה,
+  // כי רוב הצפייה במדיה חברתית ללא קול. ניתן לכבות לפני הייצוא.
+  const [showCaptions, setShowCaptions] = useState(true);
   const [videoProgress, setVideoProgress] = useState(0);
 
   // וקטוריזציה של שכבת תמונה קיימת ל-SVG אמיתי (Recraft — מנוע קיים בכלי המותג)
@@ -692,6 +695,8 @@ export default function Editor() {
     try {
       const blob = await exportPromoVideo(stageRef.current, doc.width, doc.height, {
         narrationAudioUrl: narrationAudioUrl || undefined,
+        narrationScript: narrationScript || undefined,
+        showCaptions,
         onProgress: (fraction) => setVideoProgress(Math.round(fraction * 100)),
       });
       downloadBlob(blob, `${selected?.name ?? "modaa"}.webm`);
@@ -1782,6 +1787,16 @@ export default function Editor() {
           )}
           {narrationAudioUrl && (
             <div className="flex flex-col gap-2">
+              <div className="flex items-center justify-between">
+                <Label className="text-xs text-[#F5EEDD]/70">
+                  כתוביות עבריות בגוף הסרטון (לצפייה בלי קול)
+                </Label>
+                <Switch
+                  checked={showCaptions}
+                  onCheckedChange={setShowCaptions}
+                  data-testid="switch-video-captions"
+                />
+              </div>
               <Button
                 variant="outline"
                 size="sm"

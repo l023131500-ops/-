@@ -4,7 +4,15 @@
 // עם תנועת זום/פאן איטית (Ken Burns) שמסונכרנת למשך הקריינות שנוצרה ב-#16
 // (server/narration.ts). מוקלט ב-MediaRecorder + canvas.captureStream בדפדפן,
 // בלי תלות ב-ffmpeg בסביבת Vercel serverless — בדיוק לפי התוכנית שתועדה שם.
+//
+// כתוביות עבריות בשכבת הרינדור (המשך ישיר ל-#17, לא פריט חדש בצ'קליסט): אותו
+// תסריט קריינות שכבר קיים (narrationScript) מפוצל למקטעים ומצויר על הפריים
+// עצמו, כי רוב הצפייה במדיה חברתית היא ללא קול — וידאו-קידום שקול הקריינות
+// היחיד שלו הוא הפס האודיו מפספס את הקהל הזה. אין timestamps אמיתיים
+// מ-ElevenLabs (server/narration.ts מחזיר רק אודיו), ולכן החלוקה היא לפי יחס
+// אורך-תווים למשך הכולל של הקריינות — קירוב סביר בלי תלות בספק חדש/API נוסף.
 import type Konva from "konva";
+import { wrapText } from "./autofit";
 
 const MAX_VIDEO_DIM = 1080;
 const FPS = 30;
@@ -56,9 +64,120 @@ function drawKenBurnsFrame(ctx: CanvasRenderingContext2D, src: HTMLCanvasElement
   ctx.drawImage(src, sx, sy, sw, sh, 0, 0, vw, vh);
 }
 
+interface CaptionSegment {
+  text: string;
+  start: number;
+  end: number;
+}
+
+const MAX_CAPTION_CHARS = 70; // ~2 שורות קריאות ברוחב סרטון סטנדרטי
+
+/** מפצל תסריט קריינות חופשי למשפטים, ומפוצל שוב משפט ארוך מדי בגבול מילה. */
+function splitIntoCaptionChunks(script: string): string[] {
+  const sentences = script
+    .replace(/\s+/g, " ")
+    .trim()
+    .split(/(?<=[.!?…])\s+|\n+/)
+    .map((s) => s.trim())
+    .filter(Boolean);
+  const chunks: string[] = [];
+  for (const sentence of sentences) {
+    if (sentence.length <= MAX_CAPTION_CHARS) {
+      chunks.push(sentence);
+      continue;
+    }
+    const words = sentence.split(" ");
+    let cur = "";
+    for (const w of words) {
+      const test = cur ? `${cur} ${w}` : w;
+      if (test.length > MAX_CAPTION_CHARS && cur) {
+        chunks.push(cur);
+        cur = w;
+      } else {
+        cur = test;
+      }
+    }
+    if (cur) chunks.push(cur);
+  }
+  return chunks;
+}
+
+/**
+ * מחלק את משך הוידאו בין מקטעי הכתוביות לפי יחס אורך-תווים (אין timestamps
+ * אמיתיים מהקריינות), עם רצפת-זמן מינימלית כדי שמקטע קצר לא יהבהב ויעלם.
+ */
+export function buildCaptionSegments(script: string, totalDurationSec: number): CaptionSegment[] {
+  const chunks = splitIntoCaptionChunks(script);
+  if (!chunks.length || !(totalDurationSec > 0)) return [];
+  const MIN_SEC = 1.1;
+  const totalChars = chunks.reduce((sum, c) => sum + c.length, 0) || 1;
+  const raw = chunks.map((text) => Math.max(MIN_SEC, (text.length / totalChars) * totalDurationSec));
+  const scale = totalDurationSec / raw.reduce((a, b) => a + b, 0);
+  const segments: CaptionSegment[] = [];
+  let t = 0;
+  chunks.forEach((text, i) => {
+    const dur = raw[i] * scale;
+    segments.push({ text, start: t, end: t + dur });
+    t += dur;
+  });
+  return segments;
+}
+
+function activeCaption(segments: CaptionSegment[], elapsedSec: number): string | null {
+  for (const s of segments) {
+    if (elapsedSec >= s.start && elapsedSec < s.end) return s.text;
+  }
+  return segments.length && elapsedSec >= segments[segments.length - 1].start
+    ? segments[segments.length - 1].text
+    : null;
+}
+
+/** מצייר את שורת/שורות הכתובית הפעילה בתחתית הפריים, עם פס רקע כהה לקריאות. */
+function drawCaptionOverlay(ctx: CanvasRenderingContext2D, vw: number, vh: number, text: string) {
+  const fontSize = Math.max(20, Math.min(44, Math.round(vh * 0.045)));
+  const maxWidth = vw * 0.86;
+  const lines = wrapText(text, fontSize, "Heebo", true, maxWidth).slice(0, 3);
+  const lineHeight = fontSize * 1.3;
+  const padY = fontSize * 0.6;
+  const boxHeight = lines.length * lineHeight + padY * 2;
+  const boxBottom = vh - vh * 0.06;
+  const boxTop = boxBottom - boxHeight;
+
+  ctx.save();
+  ctx.fillStyle = "rgba(10, 10, 10, 0.58)";
+  const radius = 14;
+  const boxLeft = vw * 0.05;
+  const boxWidth = vw * 0.9;
+  ctx.beginPath();
+  ctx.moveTo(boxLeft + radius, boxTop);
+  ctx.arcTo(boxLeft + boxWidth, boxTop, boxLeft + boxWidth, boxTop + boxHeight, radius);
+  ctx.arcTo(boxLeft + boxWidth, boxTop + boxHeight, boxLeft, boxTop + boxHeight, radius);
+  ctx.arcTo(boxLeft, boxTop + boxHeight, boxLeft, boxTop, radius);
+  ctx.arcTo(boxLeft, boxTop, boxLeft + boxWidth, boxTop, radius);
+  ctx.closePath();
+  ctx.fill();
+
+  ctx.direction = "rtl";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.font = `700 ${fontSize}px "Heebo"`;
+  ctx.fillStyle = "#FFFFFF";
+  ctx.shadowColor = "rgba(0,0,0,0.6)";
+  ctx.shadowBlur = 4;
+  lines.forEach((line, i) => {
+    const y = boxTop + padY + lineHeight * i + lineHeight / 2;
+    ctx.fillText(line, vw / 2, y);
+  });
+  ctx.restore();
+}
+
 export interface PromoVideoOptions {
   /** data:audio/mpeg;base64,... שכבר נוצר ב-server/narration.ts (שלב 5, #16). */
   narrationAudioUrl?: string | null;
+  /** תסריט הקריינות החופשי — כשקיים וגם showCaptions!==false, מוצג ככתוביות בפריימים. */
+  narrationScript?: string | null;
+  /** ברירת מחדל: true כש-narrationScript קיים. אפשר לכבות מה-UI. */
+  showCaptions?: boolean;
   onProgress?: (fraction: number) => void;
 }
 
@@ -93,12 +212,24 @@ export async function exportPromoVideo(
     duration = await waitForAudioDuration(audioEl);
   }
 
+  const wantCaptions = opts.showCaptions !== false && !!opts.narrationScript?.trim();
+  const captionSegments = wantCaptions ? buildCaptionSegments(opts.narrationScript!, duration) : [];
+
   const recordCanvas = document.createElement("canvas");
   recordCanvas.width = vw;
   recordCanvas.height = vh;
   const ctx = recordCanvas.getContext("2d");
   if (!ctx) throw new Error("לא ניתן ליצור הקשר ציור לקנבס הוידאו");
-  drawKenBurnsFrame(ctx, sourceCanvas, vw, vh, 0);
+
+  function renderFrame(elapsedSec: number, t: number) {
+    drawKenBurnsFrame(ctx!, sourceCanvas, vw, vh, t);
+    if (captionSegments.length) {
+      const text = activeCaption(captionSegments, elapsedSec);
+      if (text) drawCaptionOverlay(ctx!, vw, vh, text);
+    }
+  }
+
+  renderFrame(0, 0);
 
   const canvasStream = (recordCanvas as HTMLCanvasElement & { captureStream: (fps?: number) => MediaStream }).captureStream(FPS);
   const tracks: MediaStreamTrack[] = [...canvasStream.getVideoTracks()];
@@ -132,7 +263,7 @@ export async function exportPromoVideo(
     function frame() {
       const elapsed = (performance.now() - startTime) / 1000;
       const t = Math.min(1, elapsed / duration);
-      drawKenBurnsFrame(ctx!, sourceCanvas, vw, vh, t);
+      renderFrame(elapsed, t);
       opts.onProgress?.(t);
       if (t < 1) requestAnimationFrame(frame);
       else resolve();
