@@ -284,10 +284,12 @@ function ClientsTab({ clients, activeId, onSelect }: { clients: FinClient[]; act
   const create = useMutation({
     mutationFn: async () => (await apiRequest("POST", "/api/financial/clients", form)).json(),
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["/api/financial/clients"] }); setForm({ fullName: "", phone: "", email: "", mode: "household" }); toast({ title: "לקוח נוסף" }); },
+    onError: () => toast({ title: "הוספת הלקוח נכשלה", variant: "destructive" }),
   });
   const del = useMutation({
     mutationFn: async (id: number) => apiRequest("DELETE", `/api/financial/clients/${id}`),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["/api/financial/clients"] }),
+    onError: () => toast({ title: "מחיקת הלקוח נכשלה", variant: "destructive" }),
   });
 
   return (
@@ -332,16 +334,19 @@ function ClientsTab({ clients, activeId, onSelect }: { clients: FinClient[]; act
 // ----------------- Transactions -----------------
 
 function TransactionsTab({ client }: { client: FinClient }) {
+  const { toast } = useToast();
   const { data: list = [] } = useQuery<FinTransaction[]>({ queryKey: [`/api/financial/clients/${client.id}/transactions`] });
   const { data: cats = [] } = useQuery<FinCategory[]>({ queryKey: ["/api/financial/categories"] });
   const [form, setForm] = useState({ kind: "expense", amount: "", categoryId: "", description: "", occurredOn: new Date().toISOString().slice(0, 10) });
   const create = useMutation({
     mutationFn: async () => (await apiRequest("POST", "/api/financial/transactions", { ...form, amount: Number(form.amount), categoryId: form.categoryId ? Number(form.categoryId) : null, clientId: client.id })).json(),
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: [`/api/financial/clients/${client.id}/transactions`] }); setForm((f) => ({ ...f, amount: "", description: "" })); },
+    onError: () => toast({ title: "הוספת התנועה נכשלה", variant: "destructive" }),
   });
   const del = useMutation({
     mutationFn: async (id: number) => apiRequest("DELETE", `/api/financial/transactions/${id}`),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: [`/api/financial/clients/${client.id}/transactions`] }),
+    onError: () => toast({ title: "מחיקת התנועה נכשלה", variant: "destructive" }),
   });
   return (
     <div className="space-y-4">
@@ -394,14 +399,20 @@ function TransactionsTab({ client }: { client: FinClient }) {
 // ----------------- Budgets -----------------
 
 function BudgetsTab({ client }: { client: FinClient }) {
+  const { toast } = useToast();
   const { data: list = [] } = useQuery<FinBudget[]>({ queryKey: [`/api/financial/clients/${client.id}/budgets`] });
   const { data: cats = [] } = useQuery<FinCategory[]>({ queryKey: ["/api/financial/categories"] });
   const [form, setForm] = useState({ categoryId: "", monthlyLimit: "", note: "" });
   const create = useMutation({
     mutationFn: async () => (await apiRequest("POST", "/api/financial/budgets", { clientId: client.id, categoryId: Number(form.categoryId), monthlyLimit: Number(form.monthlyLimit), note: form.note })).json(),
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: [`/api/financial/clients/${client.id}/budgets`] }); setForm({ categoryId: "", monthlyLimit: "", note: "" }); },
+    onError: () => toast({ title: "הגדרת התקציב נכשלה", variant: "destructive" }),
   });
-  const del = useMutation({ mutationFn: async (id: number) => apiRequest("DELETE", `/api/financial/budgets/${id}`), onSuccess: () => queryClient.invalidateQueries({ queryKey: [`/api/financial/clients/${client.id}/budgets`] }) });
+  const del = useMutation({
+    mutationFn: async (id: number) => apiRequest("DELETE", `/api/financial/budgets/${id}`),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: [`/api/financial/clients/${client.id}/budgets`] }),
+    onError: () => toast({ title: "מחיקת התקציב נכשלה", variant: "destructive" }),
+  });
   return (
     <div className="space-y-4">
       <Card className="p-5 space-y-3">
@@ -441,13 +452,19 @@ function BudgetsTab({ client }: { client: FinClient }) {
 // ----------------- Recurring / Reminders -----------------
 
 function RecurringTab({ client }: { client: FinClient }) {
+  const { toast } = useToast();
   const { data: list = [] } = useQuery<FinRecurring[]>({ queryKey: [`/api/financial/clients/${client.id}/recurring`] });
   const [form, setForm] = useState({ title: "", amount: "", kind: "reminder", cadence: "monthly", nextDate: new Date().toISOString().slice(0, 10), description: "" });
   const create = useMutation({
     mutationFn: async () => (await apiRequest("POST", "/api/financial/recurring", { ...form, amount: form.amount ? Number(form.amount) : null, clientId: client.id })).json(),
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: [`/api/financial/clients/${client.id}/recurring`] }); setForm({ title: "", amount: "", kind: "reminder", cadence: "monthly", nextDate: new Date().toISOString().slice(0, 10), description: "" }); },
+    onError: () => toast({ title: "הוספת התזכורת נכשלה", variant: "destructive" }),
   });
-  const del = useMutation({ mutationFn: async (id: number) => apiRequest("DELETE", `/api/financial/recurring/${id}`), onSuccess: () => queryClient.invalidateQueries({ queryKey: [`/api/financial/clients/${client.id}/recurring`] }) });
+  const del = useMutation({
+    mutationFn: async (id: number) => apiRequest("DELETE", `/api/financial/recurring/${id}`),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: [`/api/financial/clients/${client.id}/recurring`] }),
+    onError: () => toast({ title: "מחיקת התזכורת נכשלה", variant: "destructive" }),
+  });
   return (
     <div className="space-y-4">
       <Card className="p-5 space-y-3">
@@ -498,6 +515,7 @@ function RecurringTab({ client }: { client: FinClient }) {
 // ----------------- Opportunities -----------------
 
 function OpportunitiesTab({ client }: { client: FinClient | null }) {
+  const { toast } = useToast();
   const { data: list = [] } = useQuery<FinOpportunity[]>({ queryKey: ["/api/financial/opportunities", client?.id ?? null] });
   const suggest = useMutation({
     mutationFn: async () => {
@@ -505,10 +523,12 @@ function OpportunitiesTab({ client }: { client: FinClient | null }) {
       return (await apiRequest("POST", `/api/financial/clients/${client.id}/suggest-opportunities`, {})).json();
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["/api/financial/opportunities"] }),
+    onError: () => toast({ title: "חיפוש ההזדמנויות נכשל", variant: "destructive" }),
   });
   const update = useMutation({
     mutationFn: async ({ id, status }: { id: number; status: string }) => apiRequest("PATCH", `/api/financial/opportunities/${id}`, { status }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["/api/financial/opportunities"] }),
+    onError: () => toast({ title: "עדכון הסטטוס נכשל", variant: "destructive" }),
   });
   return (
     <div className="space-y-4">
@@ -577,6 +597,7 @@ function CoachesTab({ clients, activeClient }: { clients: FinClient[]; activeCli
       queryClient.invalidateQueries({ queryKey: ["/api/financial/coaches"] });
       toast({ title: "הקצאת מאמן עודכנה" });
     },
+    onError: () => toast({ title: "הקצאת המאמן נכשלה", variant: "destructive" }),
   });
 
   return (
@@ -653,10 +674,12 @@ function CoachesTab({ clients, activeClient }: { clients: FinClient[]; activeCli
 // ----------------- Leads -----------------
 
 function LeadsTab() {
+  const { toast } = useToast();
   const { data: list = [] } = useQuery<FinLead[]>({ queryKey: ["/api/financial/leads"] });
   const update = useMutation({
     mutationFn: async ({ id, status }: { id: number; status: string }) => apiRequest("PATCH", `/api/financial/leads/${id}`, { status }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["/api/financial/leads"] }),
+    onError: () => toast({ title: "עדכון הפנייה נכשל", variant: "destructive" }),
   });
   return (
     <Card className="p-5">
@@ -691,17 +714,24 @@ function LeadsTab() {
 // ----------------- Tips -----------------
 
 function TipsTab() {
+  const { toast } = useToast();
   const { data: list = [] } = useQuery<FinTip[]>({ queryKey: ["/api/financial/admin/tips"] });
   const [form, setForm] = useState({ title: "", body: "", tag: "saving", active: 1 });
   const create = useMutation({
     mutationFn: async () => (await apiRequest("POST", "/api/financial/tips", form)).json(),
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["/api/financial/admin/tips"] }); setForm({ title: "", body: "", tag: "saving", active: 1 }); },
+    onError: () => toast({ title: "הוספת הטיפ נכשלה", variant: "destructive" }),
   });
   const update = useMutation({
     mutationFn: async ({ id, patch }: { id: number; patch: any }) => apiRequest("PATCH", `/api/financial/tips/${id}`, patch),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["/api/financial/admin/tips"] }),
+    onError: () => toast({ title: "עדכון הטיפ נכשל", variant: "destructive" }),
   });
-  const del = useMutation({ mutationFn: async (id: number) => apiRequest("DELETE", `/api/financial/tips/${id}`), onSuccess: () => queryClient.invalidateQueries({ queryKey: ["/api/financial/admin/tips"] }) });
+  const del = useMutation({
+    mutationFn: async (id: number) => apiRequest("DELETE", `/api/financial/tips/${id}`),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["/api/financial/admin/tips"] }),
+    onError: () => toast({ title: "מחיקת הטיפ נכשלה", variant: "destructive" }),
+  });
   return (
     <div className="space-y-4">
       <Card className="p-5 space-y-3">
