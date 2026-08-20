@@ -8083,3 +8083,34 @@
      לפתוח עדשה נוספת, או לחזור ל-`core.project_tasks`/
      `core.project_bugs` (5 פריטים פתוחים, עדיין חסומים על secrets
      חסרים או החלטות merge/origin מחוץ לסמכות הסוכן).
+
+## 20/08/2026 — סבב 158 (loop A)
+
+781. **המשך העדשה:** האצלתי סריקת Explore על 03/04/06/10/12/14/16
+     (דילוג על 08/09 המוגנים) לאותה עדשת `aria-expanded`. נמצאו 4
+     מועמדים: `03-igud-ads/app/(admin)/admin/audit/page.tsx` (כפתור
+     "הצג/הסתר" פרטי audit-log), `03-igud-ads/components/
+     NotificationBell.tsx` (dropdown התראות), `04-imud-torani/
+     client/src/pages/departments/EditDept.tsx` (פאנל הגדרות בלוק),
+     ו-`16-chatzor-connect/src/components/portal/PortalShell.tsx`
+     (תפריט מובייל). טיפלתי במועמד הראשון.
+782. **תיקון:** `apps/03-igud-ads/app/(admin)/admin/audit/page.tsx`
+     — כפתור ה-toggle של פרטי לוג ה-audit (JSON מורחב) קיבל
+     `aria-expanded={!!expanded[log.id]}` ו-
+     `aria-controls="audit-details-${log.id}"`, וה-`<pre>` המותנה
+     קיבל `id` תואם. ללא שינוי ל-`toggleExpand`/`expanded` state
+     הקיימים.
+783. **אפס רגרסיה מאומתת:** `git diff --stat` — קובץ אחד, 3+/1-.
+     איזון סוגריים בפייתון על הקובץ המלא: `()` 47/47, `{}` 36/36,
+     `[]` 18/18 — תואם. אין tsc/npm בסביבה זו (כמו בסבבים קודמים).
+     הנתיב `apps/03-igud-ads/app` חסום ע"י `.gitignore` — נדרש
+     `git add -f`. Commit `43df53e2` על
+     `fix/a-icon-only-buttons-round2-0820`, נדחף ל-origin (מפעיל
+     פריסת Vercel תחת more30.com/igud-ads).
+784. **הבא בתור:** שלושת המועמדים הנותרים מהסריקה הזו —
+     `03-igud-ads/components/NotificationBell.tsx`,
+     `04-imud-torani/.../EditDept.tsx` (פאנל הגדרות, לא כפתורי
+     lock/settings שכבר טופלו בסבב 149), `16-chatzor-connect/.../
+     PortalShell.tsx` — או להמשיך לסרוק 06/10/12/14, או לפתוח עדשה
+     נוספת, או לחזור ל-`core.project_tasks`/`core.project_bugs` (5
+     פריטים פתוחים, עדיין חסומים).
