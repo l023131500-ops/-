@@ -7471,3 +7471,38 @@
      או לחזור ל-`core.project_tasks`/`core.project_bugs` (עדיין 5 פתוחים:
      02/12/13/25/32, כולם חסומים על סודות/מיזוג/origin מעבר לסמכות
      הסוכן — אומת שוב בסבב זה, ללא שינוי).
+
+## 20/08/2026 — סבב 139 (loop A)
+
+707. **פתחתי עדשת נגישות חדשה:** שדות טופס (`input`/`textarea`/`select`)
+     ללא שם נגיש כלל — לא `<label htmlFor>` מקושר, לא `aria-label`,
+     לא `aria-labelledby` (`placeholder` בלבד לא נחשב). Explore agent
+     סרק את 10 האפליקציות עם מקור אמיתי (לא כולל 08/09 המוגנות) ומצא
+     5 מועמדים. שלושה מהם (Footer.tsx/FloatingChatBot.tsx/
+     FeaturedLessons.tsx ב-01-torah-platform) דורשים קריאה מדוקדקת יותר
+     של קונטקסט הקומפוננטה לפני שינוי — נשארים לסבב הבא.
+708. **תיקון אחד בוצע:** `03-igud-ads`,
+     `app/(admin)/admin/payments/page.tsx` שורות 103-104, 108-109 —
+     שני `<input type="date">` (סינון "מתאריך"/"עד" בטבלת תשלומי
+     אדמין) עם רק `<span>` סמוך לא מקושר (לא `htmlFor`/`id`), בלי
+     `aria-label`. ה-`<select>` הצמוד באותו קובץ כבר משתמש בתבנית
+     `aria-label` (שורה 92) — עקבתי אחרי אותה תבנית הקיימת בקובץ
+     במקום להוסיף `id`/`htmlFor` חדשים: `aria-label="מתאריך"` ו-
+     `aria-label="עד תאריך"` בהתאמה.
+709. **אפס רגרסיה מאומתת:** `git diff` — קובץ אחד, 2+/2- שורות, רק
+     הוספת `aria-label` על שני תגי `<input>` קיימים; אין שינוי ל-
+     `value`/`onChange`/`className`/state מסביב. אין `tsc`/`npm`
+     בסביבה הזו — אימות איזון `{}`/`()`/`[]` בפייתון על הקובץ המלא:
+     46/46, 49/49, 12/12 — תואם. הקובץ עוקב ב-git אבל חסום ע"י כלל
+     `apps/03-igud-ads/app` ב-gitignore — נדרש `git add -f` (כמו ברוב
+     הסבבים הקודמים תחת `apps/**`). Commit `56e2139f` על
+     `fix/a-icon-only-buttons-round2-0820`, נדחף ל-origin (מפעיל
+     פריסת Vercel תחת more30.com/igud-ads).
+710. **הבא בתור:** שלושת המועמדים שנדחו זמנית ב-01-torah-platform —
+     `Footer.tsx` (טקסטאריה + 2 inputs בסקציית תרומה "gold", שורות
+     158-164/209-224 — תבנית `aria-label` כבר קיימת בסקציה מעליה
+     בקובץ, שורות 133-137, ניתן להעתיק), `FloatingChatBot.tsx` (input
+     חיפוש, שורות 402-406), `FeaturedLessons.tsx` (input חיפוש חכם,
+     שורות 247-252). ניתן להמשיך את עדשת ה-labels על אלה בסבב הבא, או
+     לפתוח עדשה חדשה, או לחזור ל-`core.project_tasks`/
+     `core.project_bugs` (5 פריטים פתוחים, עדיין חסומים).
