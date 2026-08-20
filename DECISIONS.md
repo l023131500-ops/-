@@ -8205,3 +8205,66 @@
     או בדיקת `label`/`htmlFor` על מערכות נוספות בהיקף loop B כמו 17/18/
     19/20/23/25/28 שלא נסרקו לעדשה זו כלל).
     via cloud server 167.99.131.167 [loop B]
+
+## 20/08/2026 — סבב 392 (loop B)
+
+392. **המשך עדשת ה-`label`/`htmlFor` — 24-galilee-connect-hub (הבא בתור
+    מסבב 391).** נסרקו 6 קבצים עם `<label>` בקובץ (`GabaiPortal.tsx`,
+    `ContactPage.tsx`, `AskRabbiSection.tsx`, `ServiceRequestForm.tsx`,
+    `SynagogueDetailsManager.tsx`, `MourningGuidePage.tsx`) — 63 מופעי
+    `<label>` בסה"כ (נספר לפי מופע, לא לפי שורה — כמה שורות מכילות
+    יותר ממופע `<label>` אחד). `MourningGuidePage.tsx` (6/6) ו-
+    `SynagogueDetailsManager.tsx` (10/15, שאר ה-5 עוטפים את השדה כילד
+    ישיר — שיוך משתמע תקין) התבררו כבר מטופלים במלואם מקומיט קודם
+    (`398674a6`, לא היה מתועד בתור עדשה נפרדת בסבבים 385–391) — לא
+    נדרש שינוי בהם בסבב זה. תוקנו 25 `id`/`htmlFor` חדשים ב-4 קבצים:
+    `GabaiPortal.tsx` (30/31 — שורה 746 הוחרגה, `<label>` עוטף
+    `checkbox` כילד), `ContactPage.tsx` (4/4), `AskRabbiSection.tsx`
+    (2/4 — שורות 102/130 הוחרגו: כותרת-מדור מעל רשת כפתורים
+    ("השאלה מיועדת ל:"/"כיצד לקבל תשובה?"), לא שדה יחיד, לפי אותו כלל
+    החרגה שנקבע בסבב 391 על 21-mthbram), `ServiceRequestForm.tsx`
+    (3/3).
+
+    `GabaiPortal.tsx`: 3 רכיבי מנהל עצמאיים בקובץ (`NewsletterManager`,
+    `AdBannerManager`, `KnowledgeManager`) — כל אחד מוצג פעם אחת בלבד
+    בעמוד, כך ש-`id` סטטי בטוח (`newsletter-*`/`banner-*`/`kb-*`, 13
+    שדות). גם טופס ההתחברות (`gabai-login-username`/`gabai-login-password`)
+    תוקן — שני מצבי הטופס (`gabai`/`admin`) מוצגים לסירוגין באותו
+    `AnimatePresence`, לא בו-זמנית. `ContactPage.tsx`: 4 שדות
+    (`contact-name`/`contact-phone`/`contact-email`/`contact-message`),
+    הרכיב מוצג פעם אחת. `AskRabbiSection.tsx`: 2 שדות אמיתיים
+    (`ask-rabbi-name`/`ask-rabbi-question`) תוקנו; שדה `contactValue`
+    (שורה 144) נשאר ללא `id` — אין לו `<label>` נפרד משלו מלכתחילה
+    (רק כותרת-המדור "כיצד לקבל תשובה?" מעליו), והעדשה הזו מתקנת
+    `htmlFor` חסר על `<label>` קיים, לא מוסיפה תוויות חדשות שלא היו.
+
+    `ServiceRequestForm.tsx` — הבדל מהותי מהקבצים האחרים: הרכיב
+    (במצב הלא-`compact`) מיובא ומוצג בתוך `ServiceHubCard`
+    שמרונדר בתוך `serviceHub.map()` ב-`Index.tsx`, כלומר יכולות
+    להיות כמה מופעים חיים בו-זמנית באותו עמוד (כרגע כל קריאות השימוש
+    הן במצב `compact` בלבד, אך מצב הטופס המלא נשאר קוד פעיל בקובץ
+    וחשוף לשימוש עתידי) — `id` סטטי היה יוצר התנגשות. הקובץ כבר השתמש
+    ב-`useId()` עבור `panelId`, אז נוספה אותה קונבנציה: `useId()` נוסף
+    (`fieldIdPrefix`) ושלושת השדות (`name`/`phone`/`message`) מקבלים
+    `${fieldIdPrefix}-name` וכו' — ייחודי אוטומטית לכל מופע של הרכיב
+    בלי תלות בקוד הקורא.
+
+    אומת ש-`Input`/`Textarea` המקומיים (shadcn, `apps/24-galilee-connect-hub/
+    src/components/ui/{input,textarea}.tsx`) מעבירים `id` הלאה דרך
+    `{...props}` לפני ההסתמכות עליו. `git diff --stat`: 4 קבצים,
+    51+/49-. איזון סוגריים לאחר העריכה תקין על כל 4 הקבצים (Python:
+    מסולסל/עגול/מרובע תואמים). אומת שכל ה-`id` החדשים ייחודיים בכל
+    קובץ (אין התנגשות, כולל `useId()` הדינמי ב-`ServiceRequestForm`).
+    לא הופעל build/dev-server (לפי הנחיות ההרצה).
+
+    ענף `fix/b-24-galilee-label-htmlfor-round392-0820` (הסתעף
+    מ-`fix/b-21-mthbram-label-htmlfor-round391-0820` — שרשרת הענפים
+    היא המקור המלא הבודד עבור כל אפליקציות loop B, לא `main`), קומיט
+    `2b26b849`, נדחף (מפעיל פריסת Vercel תחת `more30.com/galil`).
+
+    **הבא בתור:** עדשת ה-`label`/`htmlFor` על 24-galilee-connect-hub
+    סגורה. הבא: נושא #250 (RLS על 21-mthbram, חסום MCP), או בדיקת
+    `label`/`htmlFor` על 17/18/19/20/23/25/28 שלא נסרקו לעדשה זו כלל,
+    או פתיחת עדשה חדשה (למשל: `target="_blank"` בלי `rel` מגן שיטתי
+    על כל 7 האפליקציות בהיקף).
+    via cloud server 167.99.131.167 [loop B]
