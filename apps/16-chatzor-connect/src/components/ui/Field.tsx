@@ -1,4 +1,4 @@
-import { forwardRef, type InputHTMLAttributes, type TextareaHTMLAttributes } from "react";
+import { forwardRef, cloneElement, isValidElement, type InputHTMLAttributes, type ReactElement, type TextareaHTMLAttributes } from "react";
 import { cn } from "@/lib/cn";
 
 const base =
@@ -40,13 +40,24 @@ export function Field({
   error?: string;
   children: React.ReactNode;
 }) {
+  const errorId = error ? `${htmlFor}-error` : undefined;
+  const control = isValidElement(children)
+    ? cloneElement(children as ReactElement<any>, {
+        "aria-invalid": error ? true : undefined,
+        "aria-describedby": errorId,
+      })
+    : children;
   return (
     <div>
       <label htmlFor={htmlFor} className="mb-1.5 block text-sm font-medium text-foreground">
         {label} {required && <span className="text-red-500">*</span>}
       </label>
-      {children}
-      {error && <p className="mt-1 text-xs text-red-500">{error}</p>}
+      {control}
+      {error && (
+        <p id={errorId} className="mt-1 text-xs text-red-500">
+          {error}
+        </p>
+      )}
     </div>
   );
 }
