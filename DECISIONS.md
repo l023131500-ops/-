@@ -9880,3 +9880,73 @@
      מועמדי הניגודיות מסבב 175 (דורשים כלי רינדור אמיתי), שני
      מופעי `FormMessage` לא-פעילים מסבב 191, או `core.project_tasks`/
      `core.project_bugs` (6 פריטים פתוחים, עדיין חסומים).
+
+## 20/08/2026 — סבב 199 (loop A)
+
+960. **עזבתי את עדשת הנגישות לטובת ציד באג פונקציונלי אמיתי.**
+     בדקתי תחילה שני מועמדים חדשים לעדשת נגישות (viewport
+     `user-scalable=no`/`maximum-scale=1`, ו-`<html>` בלי `lang`)
+     על כל 01-07/10-16/40-gannenet — שניהם נמצאו נקיים לגמרי (כל
+     ה-viewport tags כבר `width=device-width, initial-scale=1.0`
+     בלבד, כל ה-`<html>` כבר `lang="he" dir="rtl"`). בדקתי גם
+     מועמד "מודל AI לא תקין" נוסף (סוכן Explore טען ש-
+     `portal/api/spec-analyze.ts:16` עדיין משתמש ב-`claude-opus-4-8`
+     "הלא תקין" ושצריך `claude-opus-5`) — קריאה ישירה של הקובץ
+     הפריכה את הטענה: הקובץ כבר תוקן בסבב 194 בדיוק ההפך (מ-
+     `claude-opus-5` הלא-קיים ל-`claude-opus-4-8` התקין, שהוא
+     המודל האמיתי הנוכחי לפי קטלוג Anthropic); הסוכן התבלבל מהערת
+     תיעוד היסטורית ב-`apps/26-modaot-studio/vercel-adapter/api/
+     _lib/env.ts:9` שמזכירה `claude-opus-5` כדוגמה לשגיאה שכבר
+     תוקנה — false positive, לא תוקן. גם בדקתי מועמד "נעילת
+     שימוש-לפי-מנוי אמיתית ל-03-igud-ads" (audit_gaps#03: יצירת
+     מודעה עדיין דורשת קוד קופון ידני, לא מנוי) — נמצא אמיתי אך
+     דורש עיצוב-מוצר (איזה מכסות לכל מסלול, קישור קופון↔משתמש,
+     הוספת התחברות ליצירת מודעה ציבורית שהיום אנונימית) שהוא
+     מחוץ לסמכות סוכן, בדיוק כמו הפריטים החסומים הקיימים
+     ב-`core.project_tasks` — לא בוצע.
+961. **ממצא אמיתי ומאומת: `01-torah-platform`'s
+     `src/pages/shop/ProductDetail.tsx` השתמש בשמות עמודות DB
+     שלא קיימות.** קריאה מלאה של הקובץ + הסכימה
+     (`supabase/migrations/20260519000003_commerce.sql`) אישרה:
+     טבלת `products` מכילה `stock int` (לא `stock_quantity`) ו-
+     `images jsonb` — מערך גלריה (לא `image_url`). התוצאה:
+     `inStock = product.stock_quantity === null || ... > 0`
+     היה **תמיד `false`** (כי `stock_quantity` הוא `undefined`,
+     ו-`undefined === null` הוא `false` וגם `undefined > 0` הוא
+     `false`) — כך שהתג "אזל מהמלאי" הוצג על **כל** מוצר בלי
+     יוצא מן הכלל, ובורר הכמות + שני כפתורי "הוסף לעגלה"/"קנייה
+     מהירה" (שמותנים ב-`{inStock && (...)}`) היו **מוסתרים
+     לצמיתות** — אי אפשר היה לקנות אף מוצר מעמוד הפריט. גם תמונת
+     הגלריה הראשית מעולם לא הוצגה (`product.image_url` תמיד
+     `undefined`), רק placeholder. הקומפוננטה האחות
+     `ShopCatalog.tsx` כבר משתמשת בשמות הנכונים
+     (`p.stock`/`p.images?.[0]`, עם הערה מפורשת בקוד שמתעדת את
+     זה) — `ProductDetail.tsx` פשוט לא עודכן בהתאם.
+962. **התיקון:** שורה 37 שונתה מ-`product.stock_quantity` ל-
+     `product.stock`; נוסף `const image = product.images?.[0];`
+     ושלושת מקומות ה-`product.image_url` (תמונת הגלריה + שני
+     קריאות ל-`addItem`) הוחלפו ב-`image`. `grep` על שאר
+     `src/` אישר שאין עוד מופעי `stock_quantity`, ושכל שאר
+     `.image_url` בקבצים אחרים (Gallery.tsx, RabbiPublic.tsx,
+     Cart.tsx וכו') שייכים לטבלאות/סוגים אחרים (תמונות
+     גלריה/פריט-עגלה) שבהם `image_url` הוא כן השם הנכון — לא
+     נגעתי בהם.
+963. **אפס רגרסיה מאומתת:** בדיקת איזון סוגריים בפייתון על הקובץ
+     המלא: `()` 32/32, `{}` 41/41, `[]` 3/3 — תואם. `git diff
+     --stat`: קובץ אחד, 6+/5- (שינוי שם עמודה בשלוש שורות +
+     שורת `const` חדשה, אין שינוי מבנה/handler/state אחר).
+     הנתיב `apps/01-torah-platform/src` חסום ב-`.gitignore` אך
+     כבר tracked — `git add -u` עם נתיב מפורש הצליח כמו בכל
+     סבב קודם. Commit `2bdb2715` על
+     `fix/a-icon-only-buttons-round2-0820`, יידחף ל-origin (מפעיל
+     פריסת Vercel תחת more30.com/torah).
+964. **הבא בתור:** מועמד חלש יותר שנמצא באותו סבב מחקר —
+     חוסר-התאמה קל באינדקס ה-pagination-dots של `15-egod`'s
+     `TipsSection.tsx` כשיש יותר מ-8 טיפים (לא אומת ישירות, לא
+     תוקן). מועמד נוסף: `packages/billing/src/index.ts`'s
+     `buildDonationPayload` מעביר `amountAgorot` ישירות ל-`Amount`
+     בלי המרה (אולי חסר x100/÷100) — אך לחבילה הזו **אין אף
+     ייבוא בכל הריפו כרגע** (0 blast radius, לא נבדק/תוקן, רק
+     לתיעוד). מלבד אלה: שני מועמדי הניגודיות מסבב 175 (דורשים
+     כלי רינדור), שני מופעי `FormMessage` מסבב 191, או
+     `core.project_tasks`/`core.project_bugs` (6 פריטים חסומים).
