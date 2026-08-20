@@ -151,6 +151,12 @@ input:focus,select:focus{outline:2px solid var(--gold);outline-offset:1px;border
       <div id="ana"><div class="empty">טוען…</div></div>
     </div>
 
+    <div class="card">
+      <h2>ניהול תוכן משותף</h2>
+      <p class="sub">כל פריטי התוכן המשותפים כרגע, חוצי-מגזרים — כולל מרקטפלייס תבניות התזכורת. "הסר משיתוף" מסיר פריט מהתצוגה הציבורית בלי למחוק את התוכן של המדריך/ה.</p>
+      <div id="sharedMod"><div class="empty">טוען…</div></div>
+    </div>
+
     <div class="card" id="dirCard">
       <h2>דירקטוריז</h2>
       <p class="sub">פוסקים / מקוואות / מסדרי קידושין / בודקות טהרה / יועצים זוגיים — הזנה ידנית בלבד, לא שאיבה אוטומטית. גלוי למדריכים ולזוגות בפורטל, לפי מגזר.</p>
@@ -296,6 +302,31 @@ function breakdown(byMap, labelMap) {
   return '<ul class="breakdown">' + keys.map((k) =>
     '<li><span>' + esc((labelMap && labelMap[k]) || k) + '</span><span>' + esc(byMap[k]) + '</span></li>'
   ).join('') + '</ul>';
+}
+
+/* ── moderated content marketplace (stage 4: super-admin moderation lever) ── */
+async function renderSharedMod() {
+  const el = $('sharedMod');
+  el.innerHTML = '<div class="empty">טוען…</div>';
+  let rows;
+  try {
+    rows = await rpc('maatefet_content_admin_shared_list');
+  } catch (e) {
+    el.innerHTML = '<div class="err">' + esc(e.message) + '</div>';
+    return;
+  }
+  if (!rows.length) { el.innerHTML = '<div class="empty">אין כרגע פריטי תוכן משותפים.</div>'; return; }
+  el.innerHTML = '<table><thead><tr><th>כותרת</th><th>סוג</th><th>מגזר</th><th>מדריך/ה</th><th>שותף</th><th></th></tr></thead><tbody>' +
+    rows.map((r) => '<tr><td>' + v(r.title) + '</td><td>' + (CONTENT_TYPE_LABEL[r.content_type] || esc(r.content_type)) + '</td>' +
+      '<td>' + (SEGMENT_LABEL[r.segment] || esc(r.segment)) + '</td><td>' + v(r.author_name) + '</td>' +
+      '<td>' + dtm(r.created_at) + '</td>' +
+      '<td><button class="btn btn-sm btn-danger" data-unshare="' + esc(r.id) + '">הסר משיתוף</button></td></tr>').join('') +
+    '</tbody></table>';
+  for (const b of el.querySelectorAll('[data-unshare]'))
+    b.addEventListener('click', () => {
+      if (!confirm('להסיר את הפריט הזה מהתצוגה הציבורית? התוכן יישאר אצל המדריך/ה, רק לא ישותף עוד.')) return;
+      rpc('maatefet_content_admin_unshare', { p_content_id: b.dataset.unshare }).then(renderSharedMod).catch((e) => alert(e.message));
+    });
 }
 
 async function renderAnalytics() {
@@ -561,6 +592,7 @@ async function boot() {
   show('dash');
   renderTable();
   renderAnalytics();
+  renderSharedMod();
   renderDirectories();
 }
 

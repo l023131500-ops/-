@@ -353,6 +353,11 @@ th{color:var(--muted);font-weight:400;font-size:12px;text-transform:uppercase;le
         <p class="sub" style="margin-bottom:14px">פריטים ששיתפו/ו מדריכים/ות אחרים/ות באותו מגזר.</p>
         <div id="sharedContentTable"><div class="empty">טוען…</div></div>
       </div>
+      <div class="card">
+        <h2>מרקטפלייס תבניות תזכורת</h2>
+        <p class="sub" style="margin-bottom:14px">תבניות-תזכורת ששותפו על ידי מדריכים/ות אחרים/ות באותו מגזר. לחיצה על "השתמש בתבנית זו" משכפלת אותה לספרייה שלכם לעריכה חופשית — לא נוצר קישור חי למקור.</p>
+        <div id="marketplaceTable"><div class="empty">טוען…</div></div>
+      </div>
     </section>
 
     <section id="viewProfile" hidden>
@@ -1047,6 +1052,38 @@ async function renderSharedContent() {
     '</tbody></table>';
 }
 
+async function renderMarketplace() {
+  const el = $('marketplaceTable');
+  el.innerHTML = '<div class="empty">טוען…</div>';
+  let rows;
+  try {
+    rows = await rpc('maatefet_template_marketplace_list');
+  } catch (e) {
+    el.innerHTML = '<div class="err">' + esc(e.message) + '</div>';
+    return;
+  }
+  if (!rows.length) { el.innerHTML = '<div class="empty">עדיין אין תבניות-תזכורת משותפות במגזר שלכם.</div>'; return; }
+  el.innerHTML = '<table><thead><tr><th>כותרת</th><th>מדריך/ה</th><th>מדיה</th><th>שותפה</th><th></th></tr></thead><tbody>' +
+    rows.map((r) => '<tr><td>' + v(r.title) + '</td><td>' + v(r.author_name) + '</td>' +
+      '<td>' + (r.media_url ? '<a href="' + esc(r.media_url) + '" target="_blank" rel="noopener">קישור</a>' : NA) + '</td>' +
+      '<td>' + dtm(r.created_at) + '</td>' +
+      '<td><button class="btn btn-sm" data-copy-template="' + esc(r.id) + '">השתמש בתבנית זו</button></td></tr>').join('') +
+    '</tbody></table>';
+  for (const b of el.querySelectorAll('[data-copy-template]'))
+    b.addEventListener('click', async () => {
+      b.disabled = true;
+      try {
+        await rpc('maatefet_template_copy', { p_content_id: b.dataset.copyTemplate });
+        renderContent();
+        alert('התבנית שוכפלה לספרייה שלכם — ניתן לערוך אותה בחופשיות תחת "הפריטים שלי".');
+      } catch (e) {
+        alert(e.message);
+      } finally {
+        b.disabled = false;
+      }
+    });
+}
+
 /* ── dashboard: personal branding (module 2) ─────────────────────────────── */
 function renderProfilePreview() {
   const photo = $('pPhoto').value.trim();
@@ -1547,7 +1584,7 @@ for (const tab of document.querySelectorAll('.tab')) {
     if (tab.dataset.view === 'invites') renderInvites();
     if (tab.dataset.view === 'calendar') renderAppointments();
     if (tab.dataset.view === 'reminders') renderReminders();
-    if (tab.dataset.view === 'content') { renderContent(); renderSharedContent(); }
+    if (tab.dataset.view === 'content') { renderContent(); renderSharedContent(); renderMarketplace(); }
     if (tab.dataset.view === 'profile') renderProfileForm();
     if (tab.dataset.view === 'forum') renderForum();
     if (tab.dataset.view === 'followups') renderFollowups();
