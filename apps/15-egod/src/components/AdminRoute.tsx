@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { isPlatformAdmin } from "@/integrations/more30/hub";
 
@@ -67,9 +68,9 @@ const AdminRoute = ({ children }: { children: React.ReactNode }) => {
             >
               כניסה עם חשבון more30
             </a>
-            <a href="/egod" className="rounded-lg bg-secondary px-4 py-2 text-sm font-medium">
+            <Link to="/" className="rounded-lg bg-secondary px-4 py-2 text-sm font-medium">
               חזרה לאתר
-            </a>
+            </Link>
           </div>
         </div>
       </div>

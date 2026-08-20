@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 type AdTemplate = {
   id: string;
@@ -234,7 +235,7 @@ export default function CreatePage() {
   return (
     <main className="min-h-screen bg-brand-cream py-10">
       <div className="container mx-auto px-4 max-w-3xl">
-        <a href="/" className="text-brand-blue text-sm hover:underline">← חזרה לבית</a>
+        <Link href="/" className="text-brand-blue text-sm hover:underline">← חזרה לבית</Link>
         <h1 className="font-serif text-3xl font-bold text-brand-dark mt-2 mb-6">יצירת מודעה חדשה</h1>
 
         {error && (
