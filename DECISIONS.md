@@ -10081,3 +10081,51 @@
      (0 blast radius), שני מועמדי הניגודיות מסבב 175 (דורשים כלי רינדור),
      שני מופעי `FormMessage` לא-פעילים מסבב 191, או
      `core.project_tasks`/`core.project_bugs` (6 פריטים חסומים).
+
+## 20/08/2026 — סבב 202 (loop A)
+
+977. **בדקתי את `public.service_submission_rows` (התור מסבב 201) —
+     ומצאתי שהוא מוגן, לא רק "לא ידוע".** ה-view (על `bieebmnmkffwbqlsfozh`,
+     אותו פרויקט כמו 01/02/03/10) הוא `SECURITY DEFINER` וחשוף ל-`anon`/
+     `authenticated` עם `SELECT/INSERT/UPDATE/DELETE` מלאים — לכאורה זהה
+     בדיוק לתבנית שתוקנה ב-03-igud-ads בסבב 201. אבל הוא מצטרף (`JOIN`)
+     של `service_submissions`+`clients`, וחושף `full_name`/`phone`/`email`/
+     `id_number`/`birth_date`/`family_status`/`city` אמיתיים. שתי הטבלאות
+     שמאחוריו **כן** עם RLS דלוק (`relrowsecurity=true`) — אבל המדיניות
+     היחידה על שתיהן היא `"bkalut backend full access"` עם `roles=
+     {anon,authenticated}` ו-`qual=true` (פתוח לגמרי, לא רק ל-view).
+     שם המדיניות תואם בדיוק את מחלקת `bkalut` שמזוהה ב-`core.projects`
+     עם 08-bkalut-app/09-bkalot-admin — שני המערכות המוגנות **בפירוש**
+     בהוראות הסבב. `grep` על `client_profiles/client_files/crm_users/
+     crm_sessions/hf_tiers/hf_requests/hf_topics/yemot_right_config/
+     reminder_log/pc_import_files` (יתר טבלאות ה-`rls_disabled_in_public`
+     שאותרו ב-advisor על אותו פרויקט) גם החזיר אפס תוצאות בכל 01/02/03/10 —
+     כלומר אף אחת מהן לא שייכת לקוד המתוחזק בהיקף שלי. **לא נגעתי בשום
+     view/table/policy כאן** — CONNECTIONS.md מתעד ש-08 חי על פרויקט אחר
+     (`pwcswdfg`) אבל שם-מדיניות מפורש עוקף תיעוד סטטי; ההנחיה "לא לגעת
+     לעולם ב-08/09" גוברת על ספק תיעודי. מועמד זה נסגר כ**מחוץ להיקף
+     לצמיתות**, לא "לא נבדק".
+978. **תוקן במקום זה: `packages/billing/src/index.ts`'s
+     `buildDonationPayload` — התור השני מסבב 199/200.** הפונקציה קיבלה
+     `DonationRequest.amountAgorot` (אגורות, לפי שם השדה) והעבירה אותו
+     ישירות ל-`Amount` בלי המרה. קראתי את **כל** האינטגרציות החיות של
+     Nedarim Plus בריפו כדי לקבוע מה `Amount` מצפה בפועל, לא ניחשתי:
+     `apps/01-torah-platform/supabase/functions/nedarim-create-payment/
+     index.ts` (תיעוד בקוד: `amount: 50` כדוגמה, טור DB בשם `amount_ils`,
+     `currency: "ILS"`) ו-`apps/03-igud-ads/lib/nedarim.ts`
+     (`CreatePaymentInput.amount`, מוזרם ל-`Amount: String(input.amount)`)
+     — שניהם עקביים: `Amount` הוא ש"ח שלמים, לא אגורות. תיקון: `Amount:
+     r.amountAgorot / 100`, עם תיעוד ב-JSDoc שמצטט את שני הקבצים שמהם
+     נלקחה ההוכחה.
+979. **אפס רגרסיה — `@more30/billing` ללא אף ייבואן בריפו כרגע** (`grep
+     "@more30/billing"` מחוץ ל-`packages/billing/` עצמו מחזיר רק אזכור
+     תיעודי ב-`apps/16-chatzor-connect/README.md`, אין קוד בפועל שקורא
+     ל-`buildDonationPayload`) — כלומר שינוי ההתנהגות לא יכול לשבור אף
+     קריאה חיה קיימת; זה תיקון מונע-תקלה-עתידית לפני שהחבילה תחובר
+     לראשונה. קובץ יחיד, 7+/1-, שינוי אריתמטי בשורה אחת + JSDoc. Commit
+     `1f596721` על `fix/a-icon-only-buttons-round2-0820`. לא נגעתי
+     במערכות/סכימות מוגנות, ב-`main`, או במערכת מחוץ להיקף.
+980. **הבא בתור:** שני מועמדי הניגודיות מסבב 175 (דורשים כלי רינדור),
+     שני מופעי `FormMessage` לא-פעילים מסבב 191, או
+     `core.project_tasks`/`core.project_bugs` (6 פריטים חסומים על
+     סודות/החלטות מוצר מחוץ לסמכות סוכן).
