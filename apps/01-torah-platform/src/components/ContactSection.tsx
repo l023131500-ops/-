@@ -197,14 +197,14 @@ const ContactSection = () => {
                     {step === "details" && (
                       <motion.div key="details" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-4">
                         <div className="grid grid-cols-2 gap-3">
-                          <input value={name} onChange={(e) => setName(e.target.value)} placeholder="השם שלכם *"
+                          <input value={name} onChange={(e) => setName(e.target.value)} placeholder="השם שלכם *" aria-label="השם שלכם"
                             className="bg-muted/40 rounded-xl px-4 py-3 font-body text-sm text-foreground placeholder:text-muted-foreground border-2 border-border/50 focus:border-primary/40 outline-none transition-colors" />
-                          <input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="טלפון *"
+                          <input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="טלפון *" aria-label="טלפון"
                             className="bg-muted/40 rounded-xl px-4 py-3 font-body text-sm text-foreground placeholder:text-muted-foreground border-2 border-border/50 focus:border-primary/40 outline-none transition-colors" />
                         </div>
-                        <input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="מייל (אופציונלי)"
+                        <input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="מייל (אופציונלי)" aria-label="מייל"
                           className="w-full bg-muted/40 rounded-xl px-4 py-3 font-body text-sm text-foreground placeholder:text-muted-foreground border-2 border-border/50 focus:border-primary/40 outline-none transition-colors" />
-                        <textarea value={message} onChange={(e) => setMessage(e.target.value)} placeholder="ספרו לנו..."
+                        <textarea value={message} onChange={(e) => setMessage(e.target.value)} placeholder="ספרו לנו..." aria-label="תוכן ההודעה"
                           rows={3} className="w-full bg-muted/40 rounded-xl px-4 py-3 font-body text-sm text-foreground placeholder:text-muted-foreground border-2 border-border/50 focus:border-primary/40 outline-none resize-none transition-colors" />
                         <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={handleSubmit}
                           disabled={!name.trim() || !phone.trim()}

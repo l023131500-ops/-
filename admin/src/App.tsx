@@ -581,9 +581,9 @@ export function App() {
             המפתחות החסרים, הקרדיטים אצל הספקים, והרעיונות והאפיונים שנכנסו.
           </p>
           <div style={{ display: "grid", gap: 8, marginTop: 14 }}>
-            <input placeholder="מייל" value={email} onChange={(e) => setEmail(e.target.value)}
+            <input placeholder="מייל" aria-label="מייל" value={email} onChange={(e) => setEmail(e.target.value)}
               autoComplete="username" style={{ ...inp, padding: "8px 12px" }} />
-            <PwField id="admin-pass" placeholder="סיסמה" value={password}
+            <PwField id="admin-pass" placeholder="סיסמה" aria-label="סיסמה" value={password}
               onChange={(e) => setPassword(e.target.value)} autoComplete="current-password"
               onKeyDown={(e) => { if (e.key === "Enter" && !authBusy) signInWithPassword(); }}
               style={{ ...inp, padding: "8px 12px" }} />
@@ -646,7 +646,7 @@ export function App() {
           <details>
             <summary style={{ cursor: "pointer", color: "var(--accent-fg)" }}>שינוי סיסמה</summary>
             <div style={{ display: "flex", gap: 6, marginTop: 6 }}>
-              <PwField id="admin-new-pass" placeholder="סיסמה חדשה (8+)" value={newPassword}
+              <PwField id="admin-new-pass" placeholder="סיסמה חדשה (8+)" aria-label="סיסמה חדשה" value={newPassword}
                 autoComplete="new-password"
                 onChange={(e) => setNewPassword(e.target.value)} style={inp} />
               <button onClick={setOwnPassword} disabled={authBusy} style={btn}>קבע</button>
@@ -687,7 +687,7 @@ export function App() {
             <select value={fDept} onChange={(e) => setFDept(e.target.value)} style={inp}><option value="">כל המחלקות</option>{deptOrder.map((d) => <option key={d} value={d}>{deptLabel(d)}</option>)}</select>
             <select value={fStage} onChange={(e) => setFStage(e.target.value)} style={inp}><option value="">כל השלבים</option>{["live", "beta", "wip", "idea", "protected"].map((s) => <option key={s} value={s}>{s}</option>)}</select>
             <label style={{ fontSize: 13, alignSelf: "center" }}><input type="checkbox" checked={fLive} onChange={(e) => setFLive(e.target.checked)} /> חי בלבד</label>
-            <input placeholder="חיפוש…" value={q} onChange={(e) => setQ(e.target.value)} style={{ ...inp, flex: 1, minWidth: 160 }} />
+            <input placeholder="חיפוש…" aria-label="חיפוש מערכות" value={q} onChange={(e) => setQ(e.target.value)} style={{ ...inp, flex: 1, minWidth: 160 }} />
           </div>
           {deptOrder.map((dep) => ({ dep, list: byDept[dep] ?? [] })).filter((g) => g.list.length).map(({ dep, list }) => (
             <section key={dep} style={{ marginBottom: 22 }}>
