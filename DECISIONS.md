@@ -8020,3 +8020,30 @@
      11/13/14 (טרם נסרקו במלואם לעדשה הזו), או לפתוח עדשה נוספת, או
      לחזור ל-`core.project_tasks`/`core.project_bugs` (5 פריטים
      פתוחים, עדיין חסומים).
+
+## 20/08/2026 — סבב 156 (loop A)
+
+774. **סגרתי את המועמד השני** שנותר בתור מסבב 155:
+     `06-kupot-holim/site/admin.html`. תיבת השגיאה (`id="loginErr"`,
+     כבר `role="alert"`) קיבלה קישור מ-שני שדות הטופס
+     (`adminUser`/`adminPass`) דרך `aria-describedby="loginErr"`.
+     מקרה מיוחד: השער הזה תמיד נכשל (ראו הערת ה-SECURITY בראש
+     `admin.js` — אין קרדנציאל מוגדר ואין דרך להגדיר אחד בסטטי
+     site בלי לפרסם אותו, אז ה-handler תמיד מציג שגיאה ולעולם לא
+     מתחבר) — לכן `aria-invalid="true"` מוגדר תמיד בתוך handler ה-
+     `submit` הקיים (לא מותנה, כי אין מצב "תקין" להגיע אליו), ומאופס
+     ל-`false` ב-`showLogin()` הקיים (נקרא ב-init וב-logout).
+775. **אפס רגרסיה מאומתת:** `git diff --stat` — שני קבצים, 6+/2-
+     שורות בכולם. אין שינוי ל-`loadLeads`/session/logout/show-
+     password logic הקיימים. `node --check admin.js` עבר נקי (קובץ
+     JS רגיל, לא TS/JSX). הנתיב `apps/06-kupot-holim/site` חסום
+     ע"י `.gitignore` (כמו `apps/02-igud-transcribe/app` בסבבים
+     קודמים) — נדרש `git add -f`. Commit `c634bc47` על
+     `fix/a-icon-only-buttons-round2-0820`, נדחף ל-origin (`app.json`
+     מסמן `"live": false`, `deployTarget: "unknown"` — ייתכן שאין
+     עדיין פריסת Vercel חיה לנתיב הזה).
+776. **הבא בתור:** להמשיך לסרוק 01/04/07/11/13/14 (טרם נסרקו
+     במלואם לעדשת aria-describedby/aria-invalid), לפתוח עדשת
+     נגישות נוספת, או לחזור ל-`core.project_tasks`/
+     `core.project_bugs` (5 פריטים פתוחים, עדיין חסומים על secrets
+     חסרים או החלטות merge/origin מחוץ לסמכות הסוכן).
