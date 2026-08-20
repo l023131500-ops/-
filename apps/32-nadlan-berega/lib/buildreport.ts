@@ -1090,9 +1090,14 @@ export async function buildReport(
     if (nearLand.status === 'fulfilled') {
       // הוועדה נלקחת רק מתכנית שתחום השיפוט שלה הוא היישוב עצמו — כך ועדה
       // מרחבית של יישוב שכן אינה מוצגת כוועדה של הנכס.
+      //
+      // ⚠️ שוויון-טוקנים דרך `verifyCity`, לא הכלת-תת-מחרוזת גולמית
+      // (`v.includes(city)`): הכלה גורפת הייתה עלולה לזהות יישוב אחר כאותו
+      // יישוב רק כי שמו מופיע כתת-מחרוזת בתוך שם תחום-שיפוט ארוך יותר —
+      // בדיוק מחלקת-הבאג שתועדה ותוקנה ב-`verifyCity` עצמו (lib/geocode.ts).
       const single = (v: string | null) => !!v && !v.includes(',');
       const sameCity = (v: string | null) =>
-        !!v && !!city && (v.trim() === city.trim() || v.includes(city.trim()));
+        !!v && !!city && (v.trim() === city.trim() || verifyCity(city, v));
       const localPlan = (nearPlans.status === 'fulfilled' ? nearPlans.value : []).find(
         (p) => single(p.committee) && sameCity(p.jurisdiction),
       );
@@ -1399,13 +1404,15 @@ export async function buildReport(
 
   // איזה כינוי באמת בשימוש? הכינוי שמופיע ברישומי העסקאות הרשמיים הוא זה
   // שהציבור והרשויות משתמשים בו בפועל, ולכן הוא מוצג ראשון.
+  //
+  // ⚠️ שוויון מדויק אחרי `normStreetName`, לא הכלה: `rec.includes(a)` היה
+  // מזהה "אלנבי" כ"בשימוש" רק כי הוא מוכל תת-מחרוזתית ב"שדרות אלנבי" ברשומה
+  // — אותה מחלקת-באג שכבר תוקנה ב-`normStreetName` עצמו ובבחירת הפוליגון.
   if (streetResolved?.aliases.length) {
     const inRecords = new Set(
-      allTxns.map((t) => streetOf(t.address)).filter(Boolean),
+      allTxns.map((t) => normStreetName(streetOf(t.address))).filter(Boolean),
     );
-    const used = streetResolved.aliases.filter((a) =>
-      [...inRecords].some((rec) => rec === a || rec.includes(a) || a.includes(rec)),
-    );
+    const used = streetResolved.aliases.filter((a) => inRecords.has(normStreetName(a)));
     if (used.length) {
       streetResolved = {
         ...streetResolved,
