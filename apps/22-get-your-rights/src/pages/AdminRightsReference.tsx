@@ -227,6 +227,9 @@ const AdminRightsReference = () => {
   const [importCategory, setImportCategory] = useState("");
   const [customCategory, setCustomCategory] = useState("");
   const [pendingImportData, setPendingImportData] = useState<Record<string, any>[] | null>(null);
+  const [addingRight, setAddingRight] = useState(false);
+  const [savingEdit, setSavingEdit] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -344,8 +347,10 @@ const AdminRightsReference = () => {
 
   // ── Add single topic ──
   const handleAddRight = async () => {
+    if (addingRight) return;
     const catValue = (customCategory.trim() || (newRight.category as string)).trim();
     if (!(newRight.topic_name as string).trim() || !catValue) { toast({ title: "שגיאה", description: "נא למלא שם נושא וקטגוריה", variant: "destructive" }); return; }
+    setAddingRight(true);
     const nextNum = rights.length > 0 ? Math.max(...rights.map(r => r.topic_number)) + 1 : 1;
     const { error } = await supabase.from("rights_reference").insert({
       topic_number: nextNum, topic_name: newRight.topic_name as string, category: catValue,
@@ -355,6 +360,7 @@ const AdminRightsReference = () => {
       required_documents: (newRight.required_documents as string) || null, how_to_apply: (newRight.how_to_apply as string) || null,
       service_link: (newRight.service_link as string) || null,
     } as any);
+    setAddingRight(false);
     if (error) {
       toast({ title: "שגיאה", description: "לא הצלחנו להוסיף את הנושא. נסו שוב.", variant: "destructive" });
       return;
@@ -365,9 +371,11 @@ const AdminRightsReference = () => {
   };
 
   const handleSaveEdit = async () => {
-    if (!editRight) return;
+    if (!editRight || savingEdit) return;
+    setSavingEdit(true);
     const { id, ...rest } = editRight;
     const { error } = await supabase.from("rights_reference").update(rest as any).eq("id", id);
+    setSavingEdit(false);
     if (error) {
       toast({ title: "שגיאה", description: "לא הצלחנו לעדכן את הנושא. נסו שוב.", variant: "destructive" });
       return;
@@ -377,8 +385,11 @@ const AdminRightsReference = () => {
   };
 
   const handleDelete = async (id: string) => {
+    if (deletingId) return;
     if (!confirm("למחוק את הנושא הזה?")) return;
+    setDeletingId(id);
     const { error } = await supabase.from("rights_reference").delete().eq("id", id);
+    setDeletingId(null);
     if (error) {
       toast({ title: "שגיאה", description: "לא הצלחנו למחוק את הנושא. נסו שוב.", variant: "destructive" });
       return;
@@ -618,8 +629,8 @@ const AdminRightsReference = () => {
                     <Button size="sm" variant="outline" className="gap-1" onClick={() => { setEditRight({ ...selectedRight }); }}>
                       <Pencil className="w-3.5 h-3.5" /> עריכה
                     </Button>
-                    <Button size="sm" variant="destructive" className="gap-1" onClick={() => handleDelete(selectedRight.id)}>
-                      <Trash2 className="w-3.5 h-3.5" /> מחיקה
+                    <Button size="sm" variant="destructive" className="gap-1" disabled={!!deletingId} onClick={() => handleDelete(selectedRight.id)}>
+                      <Trash2 className="w-3.5 h-3.5" /> {deletingId === selectedRight.id ? "מוחק..." : "מחיקה"}
                     </Button>
                   </div>
                 </TabsContent>
@@ -674,7 +685,7 @@ const AdminRightsReference = () => {
                     )}
                   </div>
                 ))}
-                <Button onClick={handleSaveEdit} className="w-full">שמור שינויים</Button>
+                <Button onClick={handleSaveEdit} disabled={savingEdit} className="w-full">{savingEdit ? "שומר..." : "שמור שינויים"}</Button>
               </div>
             </>
           )}
@@ -714,8 +725,8 @@ const AdminRightsReference = () => {
                 )}
               </div>
             ))}
-            <Button onClick={handleAddRight} className="w-full gap-2">
-              <Plus className="w-4 h-4" /> הוסף נושא
+            <Button onClick={handleAddRight} disabled={addingRight} className="w-full gap-2">
+              <Plus className="w-4 h-4" /> {addingRight ? "מוסיף..." : "הוסף נושא"}
             </Button>
           </div>
         </DialogContent>
