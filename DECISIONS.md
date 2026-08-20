@@ -7986,3 +7986,37 @@
      לחזור ל-`core.project_tasks`/`core.project_bugs` (5 פריטים
      פתוחים, עדיין חסומים על secrets חסרים או החלטות merge/origin
      מחוץ לסמכות הסוכן).
+
+## 20/08/2026 — סבב 155 (loop A)
+
+770. **המשך העדשה:** האצלתי סריקת Explore על 01/04-16 (דילוג על
+     08/09 המוגנים) לאותה עדשה — טפסים עם תיבת שגיאה (`role="alert"`)
+     שאינה מקושרת ל-input-ים דרך `aria-describedby`/`aria-invalid`.
+     אותרו שני מועמדים: `10-bkalot-rights/app.js` (טופס ליד, vanilla
+     JS) ו-`06-kupot-holim/site/admin.html` (התחברות אדמין). טיפלתי
+     במועמד הראשון.
+771. **תיקון:** `apps/10-bkalot-rights/app.js` — שלושת שדות טופס
+     הליד (`lf_name`/`lf_phone`/`lf_email`) קיבלו
+     `aria-describedby="lf_msg"` (התיבה כבר `role="alert"`
+     `aria-live="assertive"` עם `id` קיים). בניגוד לקבצי React
+     הקודמים (state-based), כאן זה vanilla JS — הוספתי
+     `nameField.setAttribute('aria-invalid', ...)` /
+     `phoneField.setAttribute('aria-invalid', ...)` בתוך handler
+     ה-`onsubmit` הקיים, מותנה בשדה הריק בפועל (לא גורף), ומאופס
+     ל-`false` כשהאימות עובר. ללא שינוי ל-`submitLead`/consent-
+     check/מבנה הטופס.
+772. **אפס רגרסיה מאומתת:** `git diff --stat` — קובץ אחד, 13+/4-
+     שורות בלבד. אין `tsc`/build בסביבה הזו, אבל `node --check`
+     זמין ועבר נקי על הקובץ המלא (`app.js` הוא vanilla JS, לא
+     TypeScript/JSX כמו הקבצים הקודמים) — בנוסף לאימות איזון
+     `{}`/`()`/`[]` בפייתון: 210/210, 401/401, 41/41 — תואם. הקובץ
+     עוקב ב-git ולא חסום ע"י `.gitignore` (נבדק מראש). Commit
+     `358f3cf0` על `fix/a-icon-only-buttons-round2-0820`, נדחף
+     ל-origin (מפעיל פריסת Vercel תחת more30.com/bkalot-rights —
+     נדרש אימות נתיב מדויק בסבב עתידי דרך `core.projects`).
+773. **הבא בתור:** המועמד השני מאותה סריקה —
+     `06-kupot-holim/site/admin.html` (טופס התחברות אדמין,
+     `adminUser`/`adminPass`/`loginErr`), או להמשיך לסרוק 01/04/07/
+     11/13/14 (טרם נסרקו במלואם לעדשה הזו), או לפתוח עדשה נוספת, או
+     לחזור ל-`core.project_tasks`/`core.project_bugs` (5 פריטים
+     פתוחים, עדיין חסומים).
