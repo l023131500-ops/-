@@ -91,7 +91,13 @@ async function resolvePoint(
   if (!alert.address) return null;
   const query = [alert.address, alert.city].filter(Boolean).join(' ');
   const results = await geocodeAddress(query).catch(() => []);
-  const best = results.find((r) => r.cityVerified) ?? results[0] ?? null;
+  // דורש cityVerified במפורש (בניגוד ל-buildreport.ts:822 שנופל ל-candidates[0]
+  // הלא-מאומת ומציג אזהרה למשתמש שרואה את הדוח בזמן אמת) — כאן אין משתמש
+  // שרואה את התוצאה לפני שהיא נשלחת: תור ה-cron רץ בלי אדם בלולאה, אז נקודה
+  // לא-מאומתת (מלכודת "הנביאים 5 צפת" -> "הנשיאים 5 פ״ת") תזין ישירות גוש/חלקה
+  // שגויים ל-checkAreaAlert, שישלח מייל "עסקה חדשה נרשמה" על נכס אחר לגמרי.
+  // ראה את ההערה בראש הקובץ: "מייל שגוי גרוע ממייל שלא נשלח".
+  const best = results.find((r) => r.cityVerified) ?? null;
   if (!best) return null;
 
   const { street, houseNum } = parseStreetAndNumber(alert.address);
