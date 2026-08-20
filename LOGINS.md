@@ -28,6 +28,21 @@
 בשאר הפאנלים הסיסמה **נקבעה כתקן ולא נבדקה מסך-מסך** — אל תניח שהיא כבר
 מוזנת שם.
 
+- **01 תורה (torah-platform, `admin_auth: own`)** — נבדק 20/08/2026 (סבב 44):
+  אומת ש**לא היה בכלל** חשבון `admin`/`STD_ADMIN_PASSWORD` על הפרויקט
+  (`bieebmnmkffwbqlsfozh`) — רק חשבון ה-Google (`l023131500@gmail.com`)
+  החזיק `super_admin`. סופק חשבון קבוע חדש: אימייל **`admin@admin.local`**
+  (התאמה לטרנספורמציה ב-`legacy/AdminLogin.tsx` שממירה שם-משתמש `admin`
+  לכתובת הזו) + הסיסמה הקבועה, מאושר ומוגדר `super_admin` ב-
+  `public.user_roles`. אומת ב-SQL (`auth.users`+`auth.identities`+
+  `user_roles`, לא בדפדפן — הלופ הזה לא מריץ שרת). כניסה דרך
+  `more30.com/torah/auth/sign-in` (המסך הראשי) עם האימייל הזה, או
+  `.../torah/legacy/admin-login` עם שם-משתמש `admin`. **02/03 (igud-transcribe/
+  igud-ads) לא זהים** — הניהול שם נעול לרשימת-מייל בודדת (`ADMIN_EMAIL`,
+  ברירת מחדל אותו Google) בקוד השרת (`middleware.ts`), לא ל-`is_super_admin`
+  מה-DB, כך שחשבון `admin`/`STD_ADMIN_PASSWORD` לא ייתן שם גישת ניהול בלי
+  שינוי קוד נוסף — לא נגעתי, מחוץ להיקף הצעד הזה.
+
 **חריגים ידועים (לא admin/More30Admin2026):**
 - **גן-קליק (40)** — אין שם משתמש; הניהול מקבל סיסמה אחת בכותרת `x-admin-key`.
   הערך ב-`core.secrets` בשם `ADMIN_PASSWORD`, scope `gannenet` (24 תווים אקראיים,

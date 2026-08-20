@@ -3140,3 +3140,64 @@
      (`list_migrations` מול תיקיית migrations בריפו) — דפוס "נכתב אך לא
      נפרס" שכבר חזר פעמיים (activate-invite סבב 29, 6 הפונקציות סבב 40)
      אבל טרם נבדק במפורש בצד ה-**מיגרציות** (רק בצד ה-Edge Functions).
+
+## 20/08/2026 (LOOP A — סבב 44) — §1ב: אימות מיגרציות מול הפרוס (המלצת סבב 43) → מצא פער אמיתי בחשבון-האדמין-הקבוע ותיקן
+
+262. **המשכתי בדיוק מהמלצת סבב 43: השוואת `supabase/migrations/` בכל
+     ריפו מ-01-16 מול `list_migrations` בפועל על הפרויקט החי.** שלוש
+     מערכות מכילות תיקיית migrations בתחום Loop A: 01-torah-platform
+     (`bieebmnmkffwbqlsfozh`), 15-egod (`hkkkynyoigzlttpynoeo` — עדיין
+     **לא נגיש דרך ה-MCP הזה**, זהה למתועד ב-`CONNECTIONS.md` מאז
+     הסבבים הראשונים, לא ממצא חדש), 16-chatzor-connect
+     (`uhnrgujbdxhhmoxcjria`, סכמה `chatzor`).
+263. **16: כל שלוש המיגרציות (`0001_chatzor_schema`, `0002_teachers_gabai_insert`,
+     `0003_teachers_unique_org_name`) מופיעות בהיסטוריה החיה** (בשמות
+     שונים מעט: `chatzor_schema_0001`+`chatzor_grants_and_expose_schema`,
+     `chatzor_teachers_gabai_insert`, `chatzor_teachers_unique_org_name`)
+     — פרוסות. **01: `20260812190000_ai_rate_limits.sql` לא הופיעה
+     ב-`list_migrations`**, אבל אימות ישיר (`to_regclass`+`pg_proc`)
+     הראה שהטבלה `public.ai_rate_limits` והפונקציה `ai_rate_limit_hit`
+     **קיימות בפועל** — הוחלה מחוץ למנגנון המיגרציות (`execute_sql` ולא
+     `apply_migration`, כמו שההערה בקובץ עצמו מתעדת: "Applied ... on
+     2026-08-12"), לכן לא נפלה בהיסטוריה. לא רגרסיה, לא ממצא — רק פער
+     תיעודי בין הכלים, לא בין הקוד למסד.
+264. **תוך כדי הבדיקה (ליד §1ב, "סיסמאות קבועות" — בתחום המפורש של
+     הלופ הזה) מצאתי פער אמיתי: על `bieebmnmkffwbqlsfozh`
+     (משרת 01/02/03/10/18) לא היה בכלל חשבון `admin`/
+     `STD_ADMIN_PASSWORD`** — `select * from auth.users where email
+     ilike '%admin%'` החזיר אפס שורות, ו-`user_roles` עם `role=
+     'super_admin'` החזיק שורה יחידה, שייכת לחשבון ה-Google
+     (`l023131500@gmail.com`). כלומר הסיסמה הקבועה שמתועדת ב-`LOGINS.md`
+     §1 ("לכל פאנל עם שם-משתמש/סיסמה — admin/More30Admin2026") **לא
+     הייתה ניתנת לשימוש בפועל** על 01-torah-platform — רק Google עבד.
+265. **התיקון: מיגרציה חדשה (`20260820100000_seed_std_admin_account.sql`,
+     הוחלה גם בפועל דרך `apply_migration`)** יוצרת `auth.users`+
+     `auth.identities` בצורה זהה למבנה השורה הקיימת של `test@more30.com`
+     (שנוצרה בעבר דרך ה-API האמיתי) — לא ניחוש מבנה, השוואה שורה-שורה
+     כולל `raw_app_meta_data`/`raw_user_meta_data`/עמודות ה-identity —
+     ומ-hash הסיסמה עם `extensions.crypt(...,extensions.gen_salt('bf'))`,
+     אותה שיטה ש-GoTrue עצמו משתמש בה (כבר מותקנת בפרויקט). האימייל
+     `admin@admin.local` נבחר כי הוא תואם בדיוק לטרנספורמציה הקיימת
+     ב-`legacy/AdminLogin.tsx` (שם-משתמש `admin` → `${email}@admin.local`).
+     הוענק `super_admin` דרך `public.user_roles` (אותו מנגנון בדיוק
+     שה-RPC `is_super_admin` כבר קורא ממנו — `RequireSuperAdmin`/
+     `useSuperAdminGate`, שום שינוי בקוד React/RPC נדרש). אומת ב-SQL אחרי
+     ההרצה: השורה קיימת, `email_confirmed_at` לא-ריק, `role=super_admin`,
+     `identities.provider=email`.
+266. **02/03 (אותו פרויקט Supabase, "own" גם כן ב-`core.projects`) נבדקו
+     ונמצא שהם *לא* מיושרים לאותו מנגנון** — הניהול שלהם נעול בקוד השרת
+     (`middleware.ts`) לרשימת-מייל בודדת קבועה (`ADMIN_EMAIL`, ברירת מחדל
+     אותו Google), לא ל-`is_super_admin` מה-DB. חשבון `admin@admin.local`
+     החדש **לא** ייתן שם גישת ניהול — זה ידרוש שינוי קוד ב-`middleware.ts`
+     (הוספת בדיקת role בנוסף לרשימת המייל), לא רק שורת DB. **לא תוקן,
+     מחוץ להיקף הצעד הזה** (תועד ב-`LOGINS.md` כדי שהסבב הבא ידע את זה
+     כבר, לא יגלה מחדש). 15/16 כבר תועדו בעבר כ-`hub` (לא רלוונטי,
+     נכנסים דרך הכניסה המשותפת של more30, לא סיסמה עצמאית).
+267. **אפס רגרסיה:** תוספתי בלבד — שורה חדשה ב-`auth.users`/
+     `auth.identities`/`public.user_roles`, שום עמודה/שורה קיימת לא נגעה.
+     שום קובץ קוד React/TS לא נערך — רק מיגרציית SQL חדשה בריפו +
+     `LOGINS.md`. ענף `fix/a-torah-std-admin-account-0820`. **הבא בתור
+     בפועל:** יישור 02/03 (`middleware.ts` ADMIN_EMAIL) לאותו מנגנון
+     `is_super_admin`/`STD_ADMIN_PASSWORD` כמו 01, אם וכשהיקף הלופ יחזור
+     ל-§1ב — זה שינוי קוד אמיתי (לא רק פרוביז'ן DB) שדורש קריאת
+     `middleware.ts` שני הריפואים במלואה קודם.
