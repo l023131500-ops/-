@@ -11919,3 +11919,53 @@
     silent-error/race-condition/tenant-isolation לאורך ~30 הסבבים
     האחרונים). נושאים #62/#94/#115/#164/#169/#254 נשארים חסומים.
     via cloud server 167.99.131.167 [loop B]
+
+## 20/08/2026 — סבב 464 (loop B)
+
+464. **דפוס double-submit (חסר `disabled` על כפתור שליחה) נמצא במערכת
+    שלא נסרקה לו קודם: 19-igud-shiurim-portal `public/app.js`.** שלחתי
+    Explore agent לחפש קטגוריית-באג חדשה ב-17/19/20 (הפחות-נסרקות
+    בהיקף); הממצא החזק ביותר שחזר (IDOR-בפוטנציה על `/api/recordings/:id`
+    ו-`/api/transcribe/:id` ב-17-chizukim-transcribe) התברר לא מספיק
+    מוצק לתיקון עצמאי: ה-`id` המשמש שם הוא UUID אקראי (וידאתי מול טבלת
+    `public.recordings` ב-`csjekrvukbdznetsrodj`, לא seq רציף), והלקוח
+    תמיד שולח את ה-UUID שהתקבל מההעלאה — כלומר לא נגיש-בניחוש, ותיקון
+    (הוספת אימות משתמש) היה דורש מערכת חשבונות שלא קיימת היום לצרכן
+    הקצה. חיפשתי ידנית בקובץ `19-igud-shiurim-portal/public/app.js`
+    במקום זאת ומצאתי דפוס מוכר: 3 מתוך ~16 handlers של `submit` על
+    טפסי ניהול-דייר (`lesson-form` שורה 1253, `service-form` שורה 1328,
+    `ad-form` שורה 1381) קראו ל-`api()` (POST/יצירה-או-עדכון) בלי
+    `submitBtn.disabled = true/false` — בניגוד ל-3 handlers אחרים
+    **באותו קובץ בדיוק** (`donate-form` שורה 650, `join-form` שורה 800,
+    `subpay-form` שורה 2453) שכבר משתמשים בדפוס הזה. קליק כפול מהיר
+    היה יכול לירות שתי בקשות `POST` חופפות ליצירת/עדכון שיעור, שירות
+    קהילה, או מודעה.
+
+    **התיקון:** הוספת `const submitBtn = e.target.querySelector('button[type="submit"]'); if (submitBtn) submitBtn.disabled = true;`
+    מיד אחרי `e.preventDefault()`, ו-`finally { if (submitBtn) submitBtn.disabled = false; }`
+    עוטף את ה-`try` הקיים, בשלושת ה-handlers — תואם מדויק לדפוס הקיים
+    כבר באותו קובץ. שינוי תוספתי בלבד — לוגיקת ה-API call, ה-alert,
+    וה-`refresh()/draw()` לא השתנו.
+
+    **בדיקות תקינות:** קריאת קוד בלבד (ללא dev-server/build, לפי
+    הנחיות ההרצה). `node -c` על הקובץ עבר נקי. ספירת סוגריים/סוגריים-
+    מסולסלים/מרובעים לפני/אחרי (Python): `(` 1584/1584, `{` 944/944,
+    `[` 86/86 (מאוזן). `git diff --stat`: קובץ יחיד, +12/-0.
+
+    לא נגעתי במערכות מוגנות 08/09/bkalut-app/bkalot-admin/zr_*/
+    NEDARIM3873/csj/csj_src/igud, ב-`main`, או במערכת מחוץ ל-scope
+    (17-25/27/28 בלבד).
+
+    ענף `fix/b-22-whatsapp-noopener-round395-0820` (שרשרת הענפים היא
+    המקור המלא היחיד ל-loop B, לא `main`), נדחף.
+
+    **הבא בתור:** באותו קובץ נשארו ~13 handlers נוספים עם אותו חוסר
+    (nedarim-config-form שורות 1534/1741, profile-form שורה 1610,
+    prayer-form שורה 1806, syn-profile-form שורה 1854, te-profile-form
+    שורה 1942, te-lesson-form שורה 2008, te-ad-form שורה 2076,
+    login-form שורה 2171, create-form שורה 2395, link-form שורה 2431,
+    ask-form שורה 1145) — לא תוקנו הסבב הזה כדי לשמור על צעד ממוקד;
+    מועמד ברור לסבב הבא. אותו קובץ קיים גם בגרסה מקבילה/דומה ב-
+    20-igud-portal `public/app.js` (444 שורות בלבד, פחות תכונות) —
+    כדאי לבדוק שם גם. נושאים #62/#94/#115/#164/#169/#254 נשארים חסומים.
+    via cloud server 167.99.131.167 [loop B]
