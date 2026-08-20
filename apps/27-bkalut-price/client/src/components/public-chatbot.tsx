@@ -84,6 +84,9 @@ export default function PublicChatbot() {
   const [helpDone, setHelpDone] = useState(false);
 
   const scrollRef = useRef<HTMLDivElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const triggerRef = useRef<HTMLElement | null>(null);
 
   const intro = config?.intro || "שלום! אני העוזר של ארגון בקלות.";
   const contact = config?.contact || { phone: "02-3131500", email: "l023131500@gmail.com", whatsapp: "" };
@@ -122,6 +125,39 @@ export default function PublicChatbot() {
     const el = scrollRef.current;
     if (el) el.scrollTop = el.scrollHeight;
   }, [messages, pending, mode]);
+
+  // Focus trap + Escape + focus restore for the chat panel.
+  useEffect(() => {
+    if (!open) return;
+    triggerRef.current = document.activeElement as HTMLElement;
+    closeButtonRef.current?.focus();
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setOpen(false);
+        return;
+      }
+      if (e.key === "Tab" && panelRef.current) {
+        const focusable = panelRef.current.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])',
+        );
+        if (focusable.length === 0) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      triggerRef.current?.focus?.();
+    };
+  }, [open]);
 
   if (!config?.enabled) return null;
 
@@ -266,7 +302,11 @@ export default function PublicChatbot() {
       {/* Chat panel */}
       {open && (
         <div
+          ref={panelRef}
           dir="rtl"
+          role="dialog"
+          aria-modal="true"
+          aria-label="צ׳אט עזרה · ארגון בקלות"
           data-testid="chatbot-panel"
           className="fixed bottom-5 left-5 z-50 w-[min(380px,calc(100vw-2rem))] max-h-[80vh] flex flex-col rounded-2xl shadow-2xl border border-border bg-card overflow-hidden"
         >
@@ -281,6 +321,7 @@ export default function PublicChatbot() {
               </div>
             </div>
             <button
+              ref={closeButtonRef}
               aria-label="סגירת צ׳אט"
               data-testid="chatbot-close"
               onClick={() => setOpen(false)}

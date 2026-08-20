@@ -361,6 +361,9 @@ const ChatBot = () => {
   const [userName, setUserName] = useState<string | null>(null);
   const [showRabbiForm, setShowRabbiForm] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const triggerRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
@@ -369,6 +372,38 @@ const ChatBot = () => {
   // Pre-fetch data when bot opens
   useEffect(() => {
     if (open) fetchBotData();
+  }, [open]);
+
+  useEffect(() => {
+    if (!open) return;
+    triggerRef.current = document.activeElement as HTMLElement;
+    closeButtonRef.current?.focus();
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setOpen(false);
+        return;
+      }
+      if (e.key === 'Tab' && panelRef.current) {
+        const focusable = panelRef.current.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])'
+        );
+        if (focusable.length === 0) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      triggerRef.current?.focus?.();
+    };
   }, [open]);
 
   const addBotMessage = (content: string, delay = 600) => {
@@ -483,6 +518,10 @@ const ChatBot = () => {
       <AnimatePresence>
         {open && (
           <motion.div
+            ref={panelRef}
+            role="dialog"
+            aria-modal="true"
+            aria-label="מחוברים בוט"
             initial={{ opacity: 0, y: 50, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 50, scale: 0.9 }}
@@ -499,7 +538,7 @@ const ChatBot = () => {
                   <p className="text-primary-foreground/60 text-[10px]">מועצה דתית חצור הגלילית</p>
                 </div>
               </div>
-              <button onClick={() => setOpen(false)} className="text-primary-foreground/60 hover:text-primary-foreground transition-colors" aria-label="סגור צ'אט">
+              <button ref={closeButtonRef} onClick={() => setOpen(false)} className="text-primary-foreground/60 hover:text-primary-foreground transition-colors" aria-label="סגור צ'אט">
                 <X className="w-5 h-5" />
               </button>
             </div>

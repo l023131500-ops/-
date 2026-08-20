@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from "react";
+﻿import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   MessageCircle, X, ArrowRight, Search, Users, List,
@@ -201,14 +201,40 @@ const FloatingBot = () => {
   const [successType, setSuccessType] = useState<SuccessType>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
+  const panelRef = useRef<HTMLDivElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const triggerRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     if (!isOpen) return;
+    triggerRef.current = document.activeElement as HTMLElement;
+    closeButtonRef.current?.focus();
     const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setIsOpen(false);
+      if (e.key === "Escape") {
+        setIsOpen(false);
+        return;
+      }
+      if (e.key === "Tab" && panelRef.current) {
+        const focusable = panelRef.current.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])'
+        );
+        if (focusable.length === 0) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
     };
     window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
+    return () => {
+      window.removeEventListener("keydown", onKeyDown);
+      triggerRef.current?.focus?.();
+    };
   }, [isOpen]);
 
   // Comprehensive check
@@ -516,6 +542,10 @@ const FloatingBot = () => {
       <AnimatePresence>
         {isOpen && (
           <motion.div
+            ref={panelRef}
+            role="dialog"
+            aria-modal="true"
+            aria-label="הסוכן החכם של בקלות"
             initial={{ opacity: 0, y: 100, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 100, scale: 0.9 }}
@@ -534,7 +564,7 @@ const FloatingBot = () => {
                   <p className="text-primary-foreground text-xs">מיצוי זכויות אישי</p>
                 </div>
               </div>
-              <button onClick={() => setIsOpen(false)} aria-label="סגור" className="text-primary-foreground/70 hover:text-primary-foreground transition-colors">
+              <button ref={closeButtonRef} onClick={() => setIsOpen(false)} aria-label="סגור" className="text-primary-foreground/70 hover:text-primary-foreground transition-colors">
                 <X className="w-5 h-5" />
               </button>
             </div>

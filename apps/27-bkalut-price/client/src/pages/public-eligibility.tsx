@@ -58,6 +58,8 @@ export default function PublicEligibility() {
   const [exactStateOpen, setExactStateOpen] = useState(false);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const exactStateTriggerRef = useRef<HTMLElement | null>(null);
+  const exactStatePanelRef = useRef<HTMLDivElement | null>(null);
+  const exactStateCloseRef = useRef<HTMLButtonElement | null>(null);
 
   const { data: paramsTopics } = useQuery<PublicParamsTopicsResponse>({
     queryKey: ["/api/public/params-topics"],
@@ -93,8 +95,27 @@ export default function PublicEligibility() {
   useEffect(() => {
     if (!exactStateOpen) return;
     exactStateTriggerRef.current = document.activeElement as HTMLElement;
+    exactStateCloseRef.current?.focus();
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setExactStateOpen(false);
+      if (e.key === "Escape") {
+        setExactStateOpen(false);
+        return;
+      }
+      if (e.key === "Tab" && exactStatePanelRef.current) {
+        const focusable = exactStatePanelRef.current.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])',
+        );
+        if (focusable.length === 0) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => {
@@ -451,6 +472,10 @@ export default function PublicEligibility() {
           data-testid="exact-state-modal"
         >
           <Card
+            ref={exactStatePanelRef}
+            role="dialog"
+            aria-modal="true"
+            aria-label="חיפוש לפי מצב מדויק"
             className="w-full max-w-3xl max-h-[85vh] overflow-hidden flex flex-col bg-card"
             onClick={(e) => e.stopPropagation()}
           >
@@ -464,7 +489,7 @@ export default function PublicEligibility() {
                   מצבים ותנאים ספציפיים. לחצו על מצב כדי לראות נושאים קרובים בקטלוג.
                 </p>
               </div>
-              <Button size="sm" variant="ghost" onClick={() => setExactStateOpen(false)}>
+              <Button ref={exactStateCloseRef} size="sm" variant="ghost" onClick={() => setExactStateOpen(false)}>
                 <X className="w-4 h-4" />
               </Button>
             </div>

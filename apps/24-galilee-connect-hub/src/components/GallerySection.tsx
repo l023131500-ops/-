@@ -16,6 +16,9 @@ const GallerySection = ({ isAdmin = false }: { isAdmin?: boolean }) => {
   const [lightbox, setLightbox] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+  const lightboxRef = useRef<HTMLDivElement>(null);
+  const lightboxCloseRef = useRef<HTMLButtonElement>(null);
+  const lightboxTriggerRef = useRef<HTMLElement | null>(null);
 
   const fetchImages = async () => {
     const { data } = await supabase.from('gallery_images').select('*').order('created_at', { ascending: false });
@@ -26,11 +29,34 @@ const GallerySection = ({ isAdmin = false }: { isAdmin?: boolean }) => {
 
   useEffect(() => {
     if (!lightbox) return;
+    lightboxTriggerRef.current = document.activeElement as HTMLElement;
+    lightboxCloseRef.current?.focus();
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setLightbox(null);
+      if (e.key === 'Escape') {
+        setLightbox(null);
+        return;
+      }
+      if (e.key === 'Tab' && lightboxRef.current) {
+        const focusable = lightboxRef.current.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])'
+        );
+        if (focusable.length === 0) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
     };
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      lightboxTriggerRef.current?.focus?.();
+    };
   }, [lightbox]);
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -108,9 +134,10 @@ const GallerySection = ({ isAdmin = false }: { isAdmin?: boolean }) => {
         </div>
 
         {lightbox && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} onClick={() => setLightbox(null)}
+          <motion.div ref={lightboxRef} role="dialog" aria-modal="true" aria-label="תמונה מוגדלת"
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} onClick={() => setLightbox(null)}
             className="fixed inset-0 z-[100] bg-foreground/90 flex items-center justify-center p-4">
-            <button onClick={() => setLightbox(null)} className="absolute top-4 left-4 w-10 h-10 rounded-full bg-card/20 text-primary-foreground flex items-center justify-center">
+            <button ref={lightboxCloseRef} onClick={() => setLightbox(null)} className="absolute top-4 left-4 w-10 h-10 rounded-full bg-card/20 text-primary-foreground flex items-center justify-center">
               <X className="w-6 h-6" />
             </button>
             <img src={lightbox} alt={images.find(im => im.image_url === lightbox)?.caption || 'תמונה מוגדלת'} className="max-w-full max-h-[90vh] rounded-2xl shadow-2xl" />
