@@ -101,6 +101,7 @@ const Footer = () => {
                         aria-label="טלפון (חובה)"
                         required
                         type="tel"
+                        inputMode="tel"
                         value={formData.phone}
                         onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                         className="text-sm"
@@ -111,6 +112,7 @@ const Footer = () => {
                       <Input
                         placeholder="תעודת זהות"
                         aria-label="תעודת זהות"
+                        inputMode="numeric"
                         value={formData.idNumber}
                         onChange={(e) => setFormData({ ...formData, idNumber: e.target.value })}
                         className="text-sm"
@@ -119,6 +121,7 @@ const Footer = () => {
                         placeholder="מייל"
                         aria-label="כתובת מייל"
                         type="email"
+                        inputMode="email"
                         value={formData.email}
                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                         className="text-sm"

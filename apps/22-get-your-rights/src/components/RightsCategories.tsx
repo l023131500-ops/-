@@ -452,8 +452,8 @@ const RightsCategories = () => {
                         own first option, which stops being visible the moment a value is
                         chosen. aria-label gives each one a name that survives both. */}
                     <Input placeholder="שם מלא *" aria-label="שם מלא (חובה)" required value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="text-sm" />
-                    <Input placeholder="טלפון (10 ספרות) *" aria-label="טלפון, 10 ספרות (חובה)" required value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} className="text-sm" dir="ltr" />
-                    <Input placeholder="תעודת זהות (9 ספרות)" aria-label="תעודת זהות, 9 ספרות" value={formData.id_number} onChange={(e) => setFormData({ ...formData, id_number: e.target.value })} className="text-sm" dir="ltr" />
+                    <Input placeholder="טלפון (10 ספרות) *" aria-label="טלפון, 10 ספרות (חובה)" type="tel" inputMode="tel" required value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} className="text-sm" dir="ltr" />
+                    <Input placeholder="תעודת זהות (9 ספרות)" aria-label="תעודת זהות, 9 ספרות" inputMode="numeric" value={formData.id_number} onChange={(e) => setFormData({ ...formData, id_number: e.target.value })} className="text-sm" dir="ltr" />
                     <Input type="date" aria-label="תאריך לידה" value={formData.date_of_birth} onChange={(e) => setFormData({ ...formData, date_of_birth: e.target.value })} className="text-sm" dir="ltr" />
                     <div className="grid grid-cols-2 gap-2">
                       <select aria-label="מגדר" value={formData.gender} onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
@@ -483,7 +483,7 @@ const RightsCategories = () => {
                     )}
 
                     <div className="grid grid-cols-2 gap-2">
-                      <Input type="number" min={0} max={20} placeholder="מספר ילדים" aria-label="מספר ילדים" value={formData.children_count} onChange={(e) => setFormData({ ...formData, children_count: e.target.value })} className="text-sm" />
+                      <Input type="number" inputMode="numeric" min={0} max={20} placeholder="מספר ילדים" aria-label="מספר ילדים" value={formData.children_count} onChange={(e) => setFormData({ ...formData, children_count: e.target.value })} className="text-sm" />
                       <Input placeholder="גילאי ילדים" aria-label="גילאי ילדים" value={formData.children_ages} onChange={(e) => setFormData({ ...formData, children_ages: e.target.value })} className="text-sm" />
                     </div>
                     <select aria-label="מצב בריאותי של הילדים" value={formData.children_health} onChange={(e) => setFormData({ ...formData, children_health: e.target.value })}

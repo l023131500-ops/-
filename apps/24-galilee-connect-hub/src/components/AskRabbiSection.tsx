@@ -143,6 +143,8 @@ const AskRabbiSection = () => {
                   </div>
                   <input value={contactValue} onChange={e => setContactValue(e.target.value)}
                     placeholder={selectedMethod.placeholder} dir="ltr"
+                    type={contactMethod === 'email' ? 'email' : 'tel'}
+                    inputMode={contactMethod === 'email' ? 'email' : 'tel'}
                     className="w-full rounded-2xl border border-input bg-background px-4 py-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring font-mono" />
                 </div>
 

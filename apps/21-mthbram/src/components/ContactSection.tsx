@@ -193,10 +193,10 @@ const ContactSection = () => {
                         <div className="grid grid-cols-2 gap-3">
                           <input value={name} onChange={(e) => setName(e.target.value)} placeholder="השם שלכם *" aria-label="השם שלכם"
                             className="bg-muted/40 rounded-xl px-4 py-3 font-body text-sm text-foreground placeholder:text-muted-foreground border-2 border-border/50 focus:border-primary/40 outline-none transition-colors" />
-                          <input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="טלפון *" aria-label="טלפון"
+                          <input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="טלפון *" aria-label="טלפון" type="tel" inputMode="tel"
                             className="bg-muted/40 rounded-xl px-4 py-3 font-body text-sm text-foreground placeholder:text-muted-foreground border-2 border-border/50 focus:border-primary/40 outline-none transition-colors" />
                         </div>
-                        <input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="מייל (אופציונלי)" aria-label="מייל (אופציונלי)"
+                        <input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="מייל (אופציונלי)" aria-label="מייל (אופציונלי)" type="email" inputMode="email"
                           className="w-full bg-muted/40 rounded-xl px-4 py-3 font-body text-sm text-foreground placeholder:text-muted-foreground border-2 border-border/50 focus:border-primary/40 outline-none transition-colors" />
                         <textarea value={message} onChange={(e) => setMessage(e.target.value)} placeholder="ספרו לנו..." aria-label="ההודעה שלכם"
                           rows={3} className="w-full bg-muted/40 rounded-xl px-4 py-3 font-body text-sm text-foreground placeholder:text-muted-foreground border-2 border-border/50 focus:border-primary/40 outline-none resize-none transition-colors" />

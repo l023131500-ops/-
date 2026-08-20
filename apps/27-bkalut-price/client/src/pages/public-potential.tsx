@@ -757,7 +757,7 @@ export default function PublicPotential() {
                       </div>
                       <div>
                         <Label className="text-xs">תעודת זהות (אופציונלי)</Label>
-                        <Input value={contact.idNumber} onChange={(e) => setContact((c) => ({ ...c, idNumber: e.target.value }))} />
+                        <Input inputMode="numeric" value={contact.idNumber} onChange={(e) => setContact((c) => ({ ...c, idNumber: e.target.value }))} />
                       </div>
                     </div>
                     <label className="flex items-start gap-2 text-xs text-muted-foreground cursor-pointer">
