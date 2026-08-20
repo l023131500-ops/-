@@ -461,6 +461,17 @@ function SystemCard({ r }: { r: System }) {
   const desc = blurb(r);
   const plans = plansHref(r);
 
+  /**
+   * מי נכנס לאיזו מערכת (core.projects#33 audit_gaps #2 — "אין מעקב
+   * אנליטיקס על מי נכנס לאיזו מערכת"). ירייה-ושכח: לא חוסם את הניווט
+   * (ה-href עצמו כבר מוביל את הדפדפן), אינו PII — רק app_key + זמן,
+   * ו-user_id רק כשהמבקר כבר מחובר (0127). כשל שקט אם ה-RPC נכשל — כניסה
+   * אמיתית לא אמורה להיתקע בגלל אנליטיקס.
+   */
+  const logEntry = () => {
+    if (r.path) supa?.rpc("more30_log_system_entry", { p_app_key: r.path }).then(() => {});
+  };
+
   return (
     <div className={`card reveal ${open ? "" : "card-soon"}`}>
       {desc && <p className="serif card-desc">{desc}</p>}
@@ -471,7 +482,7 @@ function SystemCard({ r }: { r: System }) {
         {open
           ? (
             <span className="card-actions">
-              <a className="btn btn-card" href={entryHref(r) ?? "/"}>כניסה למערכת</a>
+              <a className="btn btn-card" href={entryHref(r) ?? "/"} onClick={logEntry}>כניסה למערכת</a>
               {plans && <a className="card-plans" href={plans}>מסלולים ומחירים</a>}
             </span>
           )
