@@ -61,10 +61,10 @@ export default function CouponsPage() {
       <div className="bg-surface rounded-xl border p-5 mb-6">
         <h2 className="font-serif font-bold mb-3">יצירת קופון חדש</h2>
         <div className="grid md:grid-cols-4 gap-3">
-          <div><label className="label">קוד (ריק = אוטומטי)</label><input className="input" value={code} onChange={(e) => setCode(e.target.value)} /></div>
-          <div><label className="label">מספר מודעות</label><input className="input" type="number" inputMode="numeric" min={1} value={maxD} onChange={(e) => setMaxD(parseInt(e.target.value || "1"))} /></div>
-          <div><label className="label">תוקף (אופציונלי)</label><input className="input" type="date" value={exp} onChange={(e) => setExp(e.target.value)} /></div>
-          <div><label className="label">הערה</label><input className="input" value={note} onChange={(e) => setNote(e.target.value)} /></div>
+          <div><label className="label" htmlFor="coupon-code">קוד (ריק = אוטומטי)</label><input id="coupon-code" className="input" value={code} onChange={(e) => setCode(e.target.value)} /></div>
+          <div><label className="label" htmlFor="coupon-max-designs">מספר מודעות</label><input id="coupon-max-designs" className="input" type="number" inputMode="numeric" min={1} value={maxD} onChange={(e) => setMaxD(parseInt(e.target.value || "1"))} /></div>
+          <div><label className="label" htmlFor="coupon-expires">תוקף (אופציונלי)</label><input id="coupon-expires" className="input" type="date" value={exp} onChange={(e) => setExp(e.target.value)} /></div>
+          <div><label className="label" htmlFor="coupon-note">הערה</label><input id="coupon-note" className="input" value={note} onChange={(e) => setNote(e.target.value)} /></div>
         </div>
         <button className="btn-primary mt-3" disabled={busy} onClick={generate}>{busy ? "..." : "צור קופון"}</button>
       </div>
