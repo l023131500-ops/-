@@ -6789,3 +6789,25 @@
      241-242) ו-`apps/03-igud-ads/app/(admin)/admin/templates/[id]/
      page.tsx` (שורות 132-133, `error` וגם `success`) — לא נבדקו
      הסבב הזה, ראויים לסבב הבא.
+
+## 20/08/2026 — סבב 122 (loop A)
+
+642. **המשכתי את רשימת #641.** בדקתי `git log`/`core.run_progress` —
+     סבב 121 סגור (`6e876921`, תואם HEAD), אין עבודה תלויה. קראתי
+     את `apps/03-igud-ads/app/(public)/create/page.tsx` המלא: דף
+     יצירת מודעה ציבורי אמיתי (route `/create`, זרימת קופון →
+     בחירת תבנית → מילוי טופס → polling על סטטוס יצירה), הודעת
+     שגיאה מותנית (`{error && <div>...}`, שורות 241-243) ללא
+     ספריית toast — נטענת מכמה נקודות כישלון אמיתיות (קופון לא
+     תקין, שגיאת יצירה, timeout ב-polling). אותה עדשה שתוקנה
+     ב-02-igud-transcribe בסבבים 120-121. הוספתי `role="alert"`
+     ו-`aria-live="assertive"` על ה-`div` הקיים, לא נגעתי בלוגיקה/
+     className/JSX אחר. `git diff --stat` — קובץ אחד, 1+/1-.
+     אימות איזון `{}`/`()`/`[]` בפייתון על הקובץ המלא: 175/175,
+     232/232, 48/48 — תואם. Commit על
+     `fix/a-icon-only-buttons-round2-0820`, יידחף ל-origin (מפעיל
+     פריסת Vercel תחת more30.com/modaot).
+643. **הבא בתור:** אותה עדשה נשארת פתוחה על
+     `apps/03-igud-ads/app/(admin)/admin/templates/[id]/page.tsx`
+     (שורות 132-133, `error` וגם `success`) — לא נבדקה הסבב הזה,
+     ראויה לסבב הבא.

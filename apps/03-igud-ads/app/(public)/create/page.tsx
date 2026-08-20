@@ -239,7 +239,7 @@ export default function CreatePage() {
         <h1 className="font-serif text-3xl font-bold text-brand-dark mt-2 mb-6">יצירת מודעה חדשה</h1>
 
         {error && (
-          <div className="mb-4 rounded-md bg-red-50 border border-red-200 text-red-800 p-3 text-sm">{error}</div>
+          <div role="alert" aria-live="assertive" className="mb-4 rounded-md bg-red-50 border border-red-200 text-red-800 p-3 text-sm">{error}</div>
         )}
 
         {/* Step: coupon */}
