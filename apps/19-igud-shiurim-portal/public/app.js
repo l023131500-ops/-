@@ -1377,6 +1377,7 @@ async function renderAdmin(token) {
 
   function drawMessages(content) {
     content.innerHTML = `
+      <div id="messages-alert"></div>
       <div class="stack">
         ${data.messages.map(m => `
           <div class="card">
@@ -1395,10 +1396,14 @@ async function renderAdmin(token) {
     `;
     content.querySelectorAll('[data-toggle-read]').forEach(btn => btn.onclick = async () => {
       const newVal = btn.dataset.current !== 'true';
-      await api(`/api/admin/tenant/${encodeURIComponent(token)}/messages/${btn.dataset.toggleRead}`, {
-        method: 'PATCH', body: JSON.stringify({ is_read: newVal }),
-      });
-      await refresh(); draw();
+      try {
+        await api(`/api/admin/tenant/${encodeURIComponent(token)}/messages/${btn.dataset.toggleRead}`, {
+          method: 'PATCH', body: JSON.stringify({ is_read: newVal }),
+        });
+        await refresh(); draw();
+      } catch (err) {
+        document.getElementById('messages-alert').innerHTML = `<div class="alert alert-error">${esc(err.message)}</div>`;
+      }
     });
   }
 
@@ -2063,6 +2068,7 @@ async function renderTeacherAdmin(token) {
 
   function drawMessages(content) {
     content.innerHTML = `
+      <div id="messages-alert"></div>
       <div class="stack">
         ${data.messages.map(m => `
           <div class="card">
@@ -2077,8 +2083,12 @@ async function renderTeacherAdmin(token) {
       </div>
     `;
     content.querySelectorAll('[data-mark-read]').forEach(btn => btn.onclick = async () => {
-      await api(`/api/admin/teacher/${encodeURIComponent(token)}/messages/${btn.dataset.markRead}/read`, { method: 'POST' });
-      await refresh(); draw();
+      try {
+        await api(`/api/admin/teacher/${encodeURIComponent(token)}/messages/${btn.dataset.markRead}/read`, { method: 'POST' });
+        await refresh(); draw();
+      } catch (err) {
+        document.getElementById('messages-alert').innerHTML = `<div class="alert alert-error">${esc(err.message)}</div>`;
+      }
     });
   }
 
