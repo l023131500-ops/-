@@ -27,6 +27,7 @@ export default function Home() {
       queryClient.invalidateQueries({ queryKey: ["/api/books"] });
       toast({ title: "הספר נמחק" });
     },
+    onError: () => toast({ title: "שגיאה במחיקת הספר", variant: "destructive" }),
   });
 
   return (
