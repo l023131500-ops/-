@@ -99,7 +99,7 @@ export const Route = createFileRoute("/api/public/hooks/outbox-dispatch")({
             });
             if (!res.ok) throw new Error(`Outbound ${res.status}: ${await res.text().catch(() => "")}`);
             console.log("[outbox-dispatch] sent", { id: row.id, status: res.status });
-            await supabaseAdmin
+            const { error: markSentErr } = await supabaseAdmin
               .from("outbox_queue")
               .update({
                 status: "sent",
@@ -109,11 +109,19 @@ export const Route = createFileRoute("/api/public/hooks/outbox-dispatch")({
                 last_error: null,
               })
               .eq("id", row.id);
+            // If this write fails the row stays "pending" despite already having been
+            // delivered, so the next run would re-dispatch it to the external target.
+            if (markSentErr) {
+              console.error("[outbox-dispatch] failed to mark row sent (risk of duplicate re-dispatch)", {
+                id: row.id,
+                error: markSentErr.message,
+              });
+            }
             sent++;
           } catch (e) {
             const msg = e instanceof Error ? e.message : "unknown error";
             console.error("[outbox-dispatch] failed", { id: row.id, error: msg });
-            await supabaseAdmin
+            const { error: markFailedErr } = await supabaseAdmin
               .from("outbox_queue")
               .update({
                 status: "failed",
@@ -122,6 +130,12 @@ export const Route = createFileRoute("/api/public/hooks/outbox-dispatch")({
                 last_error: msg.slice(0, 1000),
               })
               .eq("id", row.id);
+            if (markFailedErr) {
+              console.error("[outbox-dispatch] failed to mark row failed", {
+                id: row.id,
+                error: markFailedErr.message,
+              });
+            }
             failed++;
           }
         }

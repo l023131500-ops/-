@@ -51,7 +51,7 @@ export const Route = createFileRoute("/api/public/hooks/sla-monitor")({
             .eq("id", t.id);
           if (upErr) continue;
 
-          await supabaseAdmin.from("communication_logs").insert({
+          const { error: logErr } = await supabaseAdmin.from("communication_logs").insert({
             client_id: t.client_id,
             template_type: "sla_breach",
             channel: "system",
@@ -66,6 +66,12 @@ export const Route = createFileRoute("/api/public/hooks/sla-monitor")({
               note: "משימה חרגה ממועד יעד — עודכנה לעדיפות גבוהה אוטומטית",
             },
           });
+          if (logErr) {
+            console.error("[sla-monitor] task escalated but communication_logs insert failed", {
+              task_id: t.id,
+              error: logErr.message,
+            });
+          }
           escalated++;
         }
 
