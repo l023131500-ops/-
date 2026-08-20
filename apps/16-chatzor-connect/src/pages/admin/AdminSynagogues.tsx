@@ -51,7 +51,7 @@ export function AdminSynagogues() {
   });
 
   function copyLink(slug: string) {
-    const url = `${window.location.origin}/k/${slug}`;
+    const url = `${window.location.origin}${import.meta.env.BASE_URL}k/${slug}`;
     navigator.clipboard?.writeText(url).then(
       () => toast("הקישור לאתר בית הכנסת הועתק. ניתן להפיץ אותו למתפללים.", "success"),
       () => toast(url, "info"),
@@ -110,7 +110,7 @@ export function AdminSynagogues() {
                     <button onClick={() => copyLink(s.slug)} title="העתק קישור למתפללים" className="grid h-9 w-9 place-items-center rounded-md text-muted-foreground hover:bg-secondary hover:text-foreground">
                       <Copy className="h-4 w-4" />
                     </button>
-                    <a href={`/k/${s.slug}`} target="_blank" rel="noreferrer" title="צפייה באתר" className="grid h-9 w-9 place-items-center rounded-md text-muted-foreground hover:bg-secondary hover:text-foreground">
+                    <a href={`${import.meta.env.BASE_URL}k/${s.slug}`} target="_blank" rel="noreferrer" title="צפייה באתר" className="grid h-9 w-9 place-items-center rounded-md text-muted-foreground hover:bg-secondary hover:text-foreground">
                       <ExternalLink className="h-4 w-4" />
                     </a>
                     <button

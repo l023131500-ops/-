@@ -31,7 +31,7 @@ export function GabaiDetails() {
           <h1 className="font-display text-2xl font-bold text-foreground sm:text-3xl">פרטי בית הכנסת</h1>
           <p className="mt-1 text-muted-foreground">עדכון הפרטים, המיתוג והעיצוב של דף בית הכנסת.</p>
         </div>
-        <a href={`/k/${synagogue.slug}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 text-sm font-semibold text-accent hover:text-accent/80">
+        <a href={`${import.meta.env.BASE_URL}k/${synagogue.slug}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 text-sm font-semibold text-accent hover:text-accent/80">
           <ExternalLink className="h-4 w-4" /> צפייה בדף החי
         </a>
       </div>
