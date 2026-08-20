@@ -761,7 +761,7 @@ function TipsTab() {
                     <input type="checkbox" checked={Boolean(t.active)} onChange={(e) => update.mutate({ id: t.id, patch: { active: e.target.checked ? 1 : 0 } })} />
                     פעיל
                   </label>
-                  <Button size="sm" variant="ghost" onClick={() => del.mutate(t.id)}><Trash2 className="w-4 h-4 text-destructive" /></Button>
+                  <Button size="sm" variant="ghost" onClick={() => { if (!confirm(`למחוק את הטיפ "${t.title}"?`)) return; del.mutate(t.id); }}><Trash2 className="w-4 h-4 text-destructive" /></Button>
                 </div>
               </div>
               <p className="text-xs text-muted-foreground mt-2 whitespace-prewrap">{t.body}</p>
