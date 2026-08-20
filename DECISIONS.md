@@ -6091,3 +6091,34 @@
      `MultiSelect.tsx`/`RadioSelect.tsx` (תוויות-קבוצה בלי
      `<input>` אמיתי) ו-`OrgPortal.tsx` (חלקית מקושר כבר) עדיין
      ממתינים להחלטה אם לדלג.
+
+## 20/08/2026 — סבב 106 (loop A)
+
+571. **התיקון בסבב הזה:** `apps/01-torah-platform/src/components/
+     synagogue/SynagogueFullAccessRequest.tsx` — טופס "בקשה
+     להרחבת ממשק" של בית כנסת (public-facing, בתחום customer
+     auth-adjacent UI שכבר נכלל בעדשה הכללית). קריאה מלאה של
+     הקובץ גילתה **4** זוגות תווית/בקרה לא-מקושרים, לא 2 כפי
+     שהוערך בסבב 104 (האומדן הישן כנראה ספר רק את שני השדות
+     המסומנים בכוכבית — שם איש קשר, טלפון — ופספס את אימייל
+     וההערה): שם איש קשר, טלפון, אימייל, הערה (textarea). התווית
+     העוטפת של ה-checkbox לכל `FEATURE_OPTIONS` הושארה כפי שהיא —
+     כבר מקושרת implicitly (התווית עוטפת את ה-`Checkbox`), כמו
+     בכל הסבבים הקודמים. הוספתי `id`/`htmlFor` עם קידומת
+     `full-access-` לארבעת הזוגות.
+572. **אפס רגרסיה מאומתת:** `git diff --stat` — קובץ אחד, 8+/8-,
+     רק `id`/`htmlFor` נוספו; לא נגעתי ב-`value`/`onChange`/
+     `type`/`placeholder`/`rows`/`className`/הלוגיקה. אין
+     `tsc`/`npm` בסביבה הזו — אומת בקריאת `git diff` מלאה + בדיקת
+     איזון `{}`/`()`/`[]` ב-Python על הקובץ המלא (72/72, 105/105,
+     23/23). Commit `c038390f` על `fix/a-icon-only-buttons-round2-0820`,
+     יידחף ל-origin (מפעיל פריסת Vercel תחת more30.com/torah).
+573. **הבא בתור ב-01-torah-platform** (מהקטן לגדול, לפי המיפוי של
+     סבב 104, בהתאמה שה"קטן" האמיתי עשוי לחרוג מהאומדן כמו
+     בשני הסבבים האחרונים): `PrayerTimesTab.tsx` (3) →
+     `PortalLessonForm.tsx` (4) →
+     `PortalSettingsTab.tsx`/`PublicContactForm.tsx` (6 כל אחד) →
+     `StudyDayEventForm.tsx`/`UpdateLesson.tsx` (9 כל אחד).
+     `MultiSelect.tsx`/`RadioSelect.tsx` (תוויות-קבוצה בלי
+     `<input>` אמיתי) ו-`OrgPortal.tsx` (חלקית מקושר כבר) עדיין
+     ממתינים להחלטה אם לדלג.
