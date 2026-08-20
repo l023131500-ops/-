@@ -310,6 +310,7 @@ const InlinRabbiForm = ({ userName, onSent }: { userName: string | null; onSent:
         value={question}
         onChange={e => setQuestion(e.target.value)}
         placeholder="כתוב את שאלתך כאן..."
+        aria-label="תוכן השאלה לרב"
         rows={2}
         className="w-full rounded-lg border border-input bg-background px-3 py-2 text-xs focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring resize-none"
       />
