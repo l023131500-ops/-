@@ -25,8 +25,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="he" dir="rtl">
       <body>
         <RegisterSW />
+        <a
+          href="#main"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:rounded-lg focus:bg-brand focus:px-4 focus:py-2 focus:text-white"
+        >
+          דלג לתוכן הראשי
+        </a>
         <Nav />
-        <main>{children}</main>
+        <main id="main">{children}</main>
         <Footer />
         {/* כפתור הכניסה המשותף. נמדד ב-12/08 על 26 הכתובות החיות: 25 מהן
             מגישות את הסקריפט הזה, וגן-קליק הייתה היחידה בלעדיו — כלומר
