@@ -9846,3 +9846,40 @@
     `BreadcrumbList`/`WebSite`+`SearchAction` schema.org. נושא
     #245/#250 (RLS, חסומים) נשארים כפי שהם. via cloud server
     167.99.131.167 [loop B]
+
+## 20/08/2026 — סבב 421 (loop B)
+
+421. **`canonical` חסר — לא רק ב-19/20/21/24 כפי שתועד בסבב 418, אלא גם
+    ב-27-mechiron. נוסף לכל חמשת האפליקציות.**
+
+    בדיקה שיטתית (`grep -rn canonical`) על כל 9 האפליקציות החיות לפני
+    כתיבה גילתה ש-17-chizukim/18-orech (דרך `alternates.canonical` של
+    Next.js)/22-zchuyot/28-kupot כבר מצהירות `canonical` תקין. אבל
+    **27-bkalut-price** — שסבב 418 הניח (בלי לבדוק ישירות) שכבר יש לה
+    אחד, כי הוא היה בעדשת ה-Organization JSON-LD ולא בעדשת ה-canonical
+    — **אין לה שום `link rel="canonical"` בקוד המקור** (רק אזכור מילולי
+    לא-קשור של "canonical defaults" בהערת קוד ב-`server/routes.ts`
+    ו-`script/pc-mirror-to-sqlite.ts`). כלומר הפער האמיתי הוא **חמש**
+    אפליקציות, לא ארבע: 19-shiurim, 20-igud, 21-mthbram, 24-galil,
+    27-mechiron.
+
+    נוסף `<link rel="canonical" href="https://more30.com/<path>">`
+    לכל אחת מהחמש, מיד ליד `<title>`/`<meta description>` הקיימים
+    (אותו מיקום כמו ב-22/28), עם אותו נתיב שכבר מוצהר ב-`url` של בלוק
+    ה-Organization JSON-LD הקיים בכל אחת מהן (לא נתיב מומצא): `/shiurim`,
+    `/igud`, `/mthbram`, `/galil`, `/mechiron`.
+
+    **בדיקות תקינות:** `git diff --stat`: 5 קבצים, ‎+5‎ בלבד (שורה אחת
+    לכל קובץ, רק תוספת, אין מחיקה, אין קובץ קיים שנפגע). `grep -n
+    canonical` על כל חמשת הקבצים אחרי העריכה מאשר שהתגית נכנסה בדיוק
+    פעם אחת, בתוך ה-`<head>`. לא הופעל build/dev-server (לפי הנחיות
+    ההרצה).
+
+    ענף `fix/b-22-whatsapp-noopener-round395-0820` (שרשרת הענפים היא
+    המקור המלא היחיד ל-loop B, לא `main`), נדחף (מפעיל 5 פריסות Vercel
+    תחת `more30.com/{shiurim,igud,mthbram,galil,mechiron}`).
+
+    **הבא בתור:** `canonical` סגור על כל 9/9 האפליקציות החיות.
+    עדיין לא נבדק: `BreadcrumbList`/`WebSite`+`SearchAction` schema.org
+    (נדחה מסבב 418/420). נושא #245/#250 (RLS, חסומים) נשארים כפי שהם.
+    via cloud server 167.99.131.167 [loop B]
