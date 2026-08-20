@@ -54,6 +54,14 @@ const categories = [
   { id: 'mourning', label: 'פטירה ואבלות', icon: Sparkles, gradient: 'from-slate-500 to-gray-700' },
 ];
 
+const escapeHtml = (str: string): string =>
+  str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+
 const getContactInfo = (catId: string): string => {
   const contacts: Record<string, string> = {
     zmanim: '📞 משרד המועצה: 054-203-0901',
@@ -517,7 +525,7 @@ const ChatBot = () => {
                       : 'bg-muted text-foreground rounded-tl-sm'
                   }`}>
                     <div className="whitespace-pre-wrap" dangerouslySetInnerHTML={{
-                      __html: msg.content
+                      __html: escapeHtml(msg.content)
                         .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
                         .replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank" rel="noopener" class="underline font-bold">$1</a>')
                     }} />
