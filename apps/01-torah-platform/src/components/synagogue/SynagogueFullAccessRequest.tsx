@@ -162,21 +162,21 @@ export default function SynagogueFullAccessRequest({
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
         <div>
-          <Label className="text-xs font-bold mb-1 block">שם איש קשר *</Label>
-          <Input value={contactName} onChange={(e) => setContactName(e.target.value)} placeholder="שם מלא" />
+          <Label htmlFor="full-access-contact-name" className="text-xs font-bold mb-1 block">שם איש קשר *</Label>
+          <Input id="full-access-contact-name" value={contactName} onChange={(e) => setContactName(e.target.value)} placeholder="שם מלא" />
         </div>
         <div>
-          <Label className="text-xs font-bold mb-1 block">טלפון *</Label>
-          <Input value={contactPhone} onChange={(e) => setContactPhone(e.target.value)} placeholder="05X-XXXXXXX" />
+          <Label htmlFor="full-access-contact-phone" className="text-xs font-bold mb-1 block">טלפון *</Label>
+          <Input id="full-access-contact-phone" value={contactPhone} onChange={(e) => setContactPhone(e.target.value)} placeholder="05X-XXXXXXX" />
         </div>
         <div>
-          <Label className="text-xs font-bold mb-1 block">אימייל</Label>
-          <Input type="email" inputMode="email" autoComplete="email" value={contactEmail} onChange={(e) => setContactEmail(e.target.value)} placeholder="email@example.com" />
+          <Label htmlFor="full-access-contact-email" className="text-xs font-bold mb-1 block">אימייל</Label>
+          <Input id="full-access-contact-email" type="email" inputMode="email" autoComplete="email" value={contactEmail} onChange={(e) => setContactEmail(e.target.value)} placeholder="email@example.com" />
         </div>
       </div>
       <div className="mb-4">
-        <Label className="text-xs font-bold mb-1 block">הערה (אופציונלי)</Label>
-        <Textarea value={note} onChange={(e) => setNote(e.target.value)} rows={2} placeholder="פרטים נוספים שתרצו לשתף..." />
+        <Label htmlFor="full-access-note" className="text-xs font-bold mb-1 block">הערה (אופציונלי)</Label>
+        <Textarea id="full-access-note" value={note} onChange={(e) => setNote(e.target.value)} rows={2} placeholder="פרטים נוספים שתרצו לשתף..." />
       </div>
 
       <motion.div
