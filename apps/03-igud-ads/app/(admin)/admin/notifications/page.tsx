@@ -88,14 +88,14 @@ export default function AdminNotificationsPage() {
 
           {mode === "one" ? (
             <div>
-              <label className="block text-sm mb-1">אימייל המשתמש</label>
-              <input type="email" inputMode="email" autoComplete="email" value={to} onChange={(e) => setTo(e.target.value)}
+              <label htmlFor="notif-to" className="block text-sm mb-1">אימייל המשתמש</label>
+              <input id="notif-to" type="email" inputMode="email" autoComplete="email" value={to} onChange={(e) => setTo(e.target.value)}
                 className="w-full border rounded px-3 py-2" placeholder="user@example.com" />
             </div>
           ) : (
             <div>
-              <label className="block text-sm mb-1">קהל יעד</label>
-              <select value={broadcast} onChange={(e) => setBroadcast(e.target.value as "all" | "active" | "with_coupon")}
+              <label htmlFor="notif-broadcast" className="block text-sm mb-1">קהל יעד</label>
+              <select id="notif-broadcast" value={broadcast} onChange={(e) => setBroadcast(e.target.value as "all" | "active" | "with_coupon")}
                 className="w-full border rounded px-3 py-2">
                 <option value="active">משתמשים פעילים בלבד</option>
                 <option value="all">כל המשתמשים</option>
@@ -105,8 +105,8 @@ export default function AdminNotificationsPage() {
           )}
 
           <div>
-            <label className="block text-sm mb-1">סוג</label>
-            <select value={type} onChange={(e) => setType(e.target.value)} className="w-full border rounded px-3 py-2">
+            <label htmlFor="notif-type" className="block text-sm mb-1">סוג</label>
+            <select id="notif-type" value={type} onChange={(e) => setType(e.target.value)} className="w-full border rounded px-3 py-2">
               <option value="custom">הודעה כללית</option>
               <option value="welcome">ברוך הבא</option>
               <option value="coupon_low">הודעת קופון</option>
@@ -115,20 +115,20 @@ export default function AdminNotificationsPage() {
           </div>
 
           <div>
-            <label className="block text-sm mb-1">כותרת *</label>
-            <input value={title} onChange={(e) => setTitle(e.target.value)}
+            <label htmlFor="notif-title" className="block text-sm mb-1">כותרת *</label>
+            <input id="notif-title" value={title} onChange={(e) => setTitle(e.target.value)}
               className="w-full border rounded px-3 py-2" />
           </div>
 
           <div>
-            <label className="block text-sm mb-1">תוכן</label>
-            <textarea value={bodyText} onChange={(e) => setBodyText(e.target.value)} rows={5}
+            <label htmlFor="notif-body" className="block text-sm mb-1">תוכן</label>
+            <textarea id="notif-body" value={bodyText} onChange={(e) => setBodyText(e.target.value)} rows={5}
               className="w-full border rounded px-3 py-2" />
           </div>
 
           <div>
-            <label className="block text-sm mb-1">קישור (אופציונלי)</label>
-            <input value={linkUrl} onChange={(e) => setLinkUrl(e.target.value)}
+            <label htmlFor="notif-link" className="block text-sm mb-1">קישור (אופציונלי)</label>
+            <input id="notif-link" value={linkUrl} onChange={(e) => setLinkUrl(e.target.value)}
               className="w-full border rounded px-3 py-2" placeholder="/result/abc123" />
           </div>
 
