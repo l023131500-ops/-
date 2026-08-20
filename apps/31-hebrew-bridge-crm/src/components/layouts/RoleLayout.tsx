@@ -1,5 +1,6 @@
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
 import type { ReactNode } from "react";
+import { useState } from "react";
 import {
   Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel,
   SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarHeader, SidebarFooter,
@@ -28,13 +29,20 @@ export function RoleLayout({ items, brandLabel, children }: Props) {
   const currentPath = useRouterState({ select: (s) => s.location.pathname });
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const [signingOut, setSigningOut] = useState(false);
 
   const handleSignOut = async () => {
-    await queryClient.cancelQueries();
-    queryClient.clear();
-    await supabase.auth.signOut();
-    toast.success("התנתקת בהצלחה");
-    navigate({ to: "/auth", replace: true });
+    if (signingOut) return;
+    setSigningOut(true);
+    try {
+      await queryClient.cancelQueries();
+      queryClient.clear();
+      await supabase.auth.signOut();
+      toast.success("התנתקת בהצלחה");
+      navigate({ to: "/auth", replace: true });
+    } finally {
+      setSigningOut(false);
+    }
   };
 
   return (
@@ -77,7 +85,7 @@ export function RoleLayout({ items, brandLabel, children }: Props) {
           <SidebarFooter className="border-t border-sidebar-border">
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton onClick={handleSignOut} tooltip="התנתק">
+                <SidebarMenuButton onClick={handleSignOut} disabled={signingOut} tooltip="התנתק">
                   <LogOut className="w-4 h-4" />
                   <span>התנתק</span>
                 </SidebarMenuButton>
