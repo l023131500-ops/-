@@ -185,7 +185,7 @@ export default function Premium() {
                     <FormItem>
                       <FormLabel>שם מלא</FormLabel>
                       <FormControl>
-                        <Input placeholder="ישראל ישראלי" {...field} data-testid="input-fullname" />
+                        <Input placeholder="ישראל ישראלי" autoComplete="name" {...field} data-testid="input-fullname" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -199,7 +199,7 @@ export default function Premium() {
                       <FormItem>
                         <FormLabel>טלפון</FormLabel>
                         <FormControl>
-                          <Input placeholder="050-0000000" inputMode="tel" {...field} data-testid="input-phone" />
+                          <Input placeholder="050-0000000" type="tel" inputMode="tel" autoComplete="tel" {...field} data-testid="input-phone" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -212,7 +212,7 @@ export default function Premium() {
                       <FormItem>
                         <FormLabel>אימייל</FormLabel>
                         <FormControl>
-                          <Input placeholder="name@example.com" inputMode="email" {...field} data-testid="input-email" />
+                          <Input placeholder="name@example.com" type="email" inputMode="email" autoComplete="email" {...field} data-testid="input-email" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>

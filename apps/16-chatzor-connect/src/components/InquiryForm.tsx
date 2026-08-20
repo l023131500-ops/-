@@ -58,7 +58,7 @@ export function InquiryForm({ synagogueId, compact }: { synagogueId?: string; co
           <Input id="if-name" name="name" autoComplete="name" placeholder="ישראל ישראלי" />
         </Field>
         <Field label="טלפון" htmlFor="if-phone" error={errors.phone}>
-          <Input id="if-phone" name="phone" inputMode="tel" placeholder="050-0000000" />
+          <Input id="if-phone" name="phone" type="tel" inputMode="tel" autoComplete="tel" placeholder="050-0000000" />
         </Field>
       </div>
       {!compact && (
