@@ -117,7 +117,7 @@ const OrgPortal = () => {
     if (removingRabbiIdsRef.current.has(id)) return;
     removingRabbiIdsRef.current.add(id);
     try {
-      const { error } = await supabase.from("org_rabbis").delete().eq("id", id);
+      const { error } = await supabase.from("org_rabbis").delete().eq("id", id).eq("org_id", portal.id);
       if (!error) {
         setRabbis(prev => prev.filter(r => r.id !== id));
         toast.success("הרב הוסר");

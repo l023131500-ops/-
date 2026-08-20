@@ -11810,3 +11810,70 @@
     היחידות בהיקף) — לא נסרק שיטתית עדיין מעבר לממצא הזה. נושאים
     #62/#94/#115/#164/#169/#254 נשארים חסומים.
     via cloud server 167.99.131.167 [loop B]
+
+## 20/08/2026 — סבב 460 (loop B, backfill)
+
+460. **`disabled={update.isPending}` חסר על שני `<select>` סטטוס
+    ב-27-bkalut-price `financial.tsx`.** ב-`OpportunitiesTab` (שורה 555)
+    וב-`LeadsTab` (שורה 697) כל `onChange` של `<select>` הסטטוס קרא
+    ל-`update.mutate({id,status})` ללא `disabled` על ה-`isPending`,
+    בניגוד לכל שאר הפקדים המבצעים mutation באותו קובץ (כפתורי יצירה/
+    הצעה בשורות 310/427/540 כולם מגנים על `isPending`). שינוי סטטוס
+    מהיר (new→contacted→converted) יכול לירות שתי בקשות `PATCH` חופפות
+    ותשובה שמגיעה מאוחר-אך-נפתרת-קודם עלולה לדרוס בשקט את הבחירה
+    האחרונה של המשתמש. **התיקון:** הוספת `disabled={update.isPending}`
+    לשני ה-`<select>`, תואם לדפוס הקיים באותו קובץ בדיוק. `git diff
+    --stat`: קובץ יחיד, +2/-2. via cloud server 167.99.131.167 [loop B]
+
+## 20/08/2026 — סבב 461 (loop B, backfill)
+
+461. **Rate-limit חסר על כניסת אדמין ב-28-kupot-health-funds
+    `server/auth.ts`.** `handleAdminLogin` השווה את הסיסמה שנשלחה מול
+    `process.env.ADMIN_TOKEN` דרך `crypto.timingSafeEqual` ללא הגבלת
+    ניסיונות — תוקף יכול היה לסקור ניחושים בלתי מוגבלים נגד סוד
+    האדמין, שגם שולט על `/api/switch-leads` (מידע אישי — לידים למעבר
+    קופת חולים). `routes.ts` כבר מגן על `/api/agent` באותו `hitRateLimit`
+    (ר' תיעוד core.issues #190/#192). **התיקון:** ייבוא אותו
+    `hitRateLimit`/`clientIp` הקיימים ב-`routes.ts` והגבלה ל-20 ניסיונות
+    כושלים/שעה/IP, מחזיר 429 כמו endpoint ה-agent. אין שינוי במסלול
+    הצלחה, cookie, או זרימה אחרת. `git diff --stat`: קובץ יחיד, +9/-0.
+    via cloud server 167.99.131.167 [loop B]
+
+## 20/08/2026 — סבב 462 (loop B)
+
+462. **פרצת בידוד-רב-דיירים נוספת ב-21-mthbram `OrgPortal.tsx`
+    `removeRabbi()` — אותו דפוס שנמצא בסבב 459 ב-24-galilee-connect-hub.**
+    `fetchPortal()` (שורה 52-56) קורא את רשימת הרבנים של הארגון עם
+    סינון `.eq("org_id", portalData.id)` — אבל `removeRabbi()` (שורה 120)
+    מחק שורה מ-`org_rabbis` עם סינון `.eq("id", id)` בלבד, ללא `org_id`.
+    שלחתי Explore agent לסרוק 21-mthbram ו-22-get-your-rights לאותו
+    דפוס (קריאה מסוננת-tenant מול כתיבה לא-מסוננת) לפי המועמד שהוצע
+    בסוף סבב 459; 22-get-your-rights אינו רב-דיירי (טבלת לידים גלובלית
+    יחידה, כל הפעולות מסננות רק לפי `id` — תואם עיצוב, לא באג). ב-21-mthbram
+    נמצאו שני מועמדים: זה (DELETE הרסני, `org_rabbis`) ומועמד נוסף
+    (`StudyDayEventTable.tsx` — UPDATE/DELETE על `study_day_events` ללא
+    `session_id`) — לא תוקן בסבב הזה כדי לשמור על צעד ממוקד יחיד, מועבר
+    למועמד הבא. תיקנתי את `removeRabbi` כי מחיקה היא בלתי הפיכה (סיכון
+    גבוה יותר מ-UPDATE). לא ניתן היה לאמת מול ה-RLS החי (הפרויקט
+    `aypsqqvfohekxxuqsmrw` לא נגיש דרך ה-MCP בסשן הזה) — זו הקשחת
+    defense-in-depth תואמת-דפוס-קיים, לא אימות שהפרצה נוצלה בפועל.
+
+    **התיקון:** הוספת `.eq("org_id", portal.id)` לקריאת ה-`delete`
+    בשורה 120, תואם לסינון הקיים ב-`fetchPortal`. שינוי חד-שורתי
+    תוספתי בלבד — ה-guard הקיים נגד double-submit (`removingRabbiIdsRef`,
+    מסבב 454), toast, ועדכון ה-state לא השתנו.
+
+    **בדיקות תקינות:** קריאת קוד בלבד (ללא dev-server/build, לפי
+    הנחיות ההרצה). ספירת סוגריים/סוגריים-מסולסלים לפני/אחרי (Python):
+    `(` 202/202, `{` 181/181 (מאוזן). `git diff --stat`: קובץ יחיד,
+    +1/-1.
+
+    ענף `fix/b-22-whatsapp-noopener-round395-0820` (שרשרת הענפים היא
+    המקור המלא היחיד ל-loop B, לא `main`), נדחף.
+
+    **הבא בתור:** `StudyDayEventTable.tsx` ב-21-mthbram — אותו דפוס
+    tenant-isolation (UPDATE בשורות 49/82 ו-DELETE בשורה 64 על
+    `study_day_events`, מסוננים רק לפי `id`/`in(ids)`, כשהקריאה
+    ב-`SynagoguePortal.tsx` מסננת לפי `session_id`) — לא נסרק/תוקן
+    עדיין. נושאים #62/#94/#115/#164/#169/#254 נשארים חסומים.
+    via cloud server 167.99.131.167 [loop B]
