@@ -2459,3 +2459,41 @@
     ולזרימה האנונימית). הבא בתור: לסרוק מחדש `core.issues`/
     `core.project_tasks`; 31-hebrew-bridge-crm שגיאת מחיקת Storage
     לא-נבדקת (`client.functions.ts:189`) נשארת מועמד קל לסבב הבא.
+
+210. **סבב 31: קראתי README.md/CONNECTIONS.md, בדקתי core.run_progress**
+    (מזהה loop B אחרון 1129, תיקון IDOR ב-26 modaot-studio GET
+    /api/projects/:id ו-/api/brands/:id, קומיטים `d31080bf`/`624c8ab2`
+    -- כבר ה-parent של הענף הזה) ו-`core.issues` בהיקף 17-31: כל
+    השורות הפתוחות עדיין owner=user (#251/#250/#249/#248/#245/#207/
+    #206/#205/#209/#208/#202/#203/#220/#229) חסומות בדיוק כמתועד, ללא
+    שינוי -- כולן דורשות דשבורד Supabase/Lovable חיצוני שאין אליו
+    גישה מה-MCP הזה. #242 (מחשבון זכאות 22/30) עדיין חסום על אותה
+    סיבה. שני המועמדים הקלים שנרשמו בסוף סבב 29/30 -- 19-igud-shiurim-
+    portal כפתור "סמן כנקרא" בלי try/catch, ו-31-hebrew-bridge-crm
+    שגיאת מחיקת Storage לא-נבדקת (`client.functions.ts:189`) -- נבדקו
+    שוב; נלקח הראשון (עדיפות UX-שבור-שקט על פני storage-orphan-בלבד
+    שכבר יש הגנת RLS+ownership סביבו).
+211. **19-igud-shiurim-portal: `drawMessages()` בשני המסכים (renderAdmin**
+    התאום/גבאי, ו-renderTeacherAdmin מגיד-שיעור) קראו ל-`api()` בלי
+    שום `try/catch`, בניגוד מוחלט לכל שאר הסעיפים באותו קובץ בדיוק
+    (ads/lessons/services/billing/profile -- כולם עוטפים את קריאת
+    ה-api() ומציגים שגיאה בתוך `div#<section>-alert`, אותו דפוס שכבר
+    תוקן פעם באפליקציה האחות `20-igud-portal` בסבב `c1dd65a1`). קריאת
+    ה-`api()` זורקת `Error` על כל תגובה שאינה `res.ok` (`app.js:97-99`)
+    -- כלומר סשן שפג/תקלת רשת/500 בזמן לחיצה על "סמן כנקרא" הייתה
+    מסתיימת ב-unhandled promise rejection: הכפתור לא עושה כלום, אין
+    שום משוב למשתמש, וההודעה נשארת "לא נקראה" בלי סימן שמשהו נכשל.
+    **התיקון:** הוספת `<div id="messages-alert">` לתחילת שני תבניות
+    ה-HTML (בשני פונקציות `drawMessages` נפרדות, כל אחת בתוך ה-`content`
+    שלה בלבד -- אין התנגשות ID כי רק פאנל אחד מוצג בכל רגע) ועטיפת שתי
+    קריאות ה-`api()` (PATCH toggle-read בפאנל התאום, POST mark-read
+    בפאנל מגיד-השיעור) ב-`try/catch` שמציג `err.message` באותו סגנון
+    `alert alert-error` כמו כל שאר הקובץ. אפס שינוי להתנהגות המוצלחת
+    הקיימת (אותה קריאת API, אותו `refresh()`/`draw()` אחריה). אין
+    `node_modules`/build step בעץ הזה (שרת Express סטטי, `public/app.js`
+    מוגש כמות שהוא -- כלל אי-התקנה כרגיל). קומיט `661b6fb8` על
+    `fix/b-igud-shiurim-portal-messages-silent-fail-0820`, נדחף (מפעיל
+    פריסת Vercel תחת `more30.com/shiurim`; שינוי אך ורק לשני handler-ים
+    של כפתור מסך-ניהול). הבא בתור: לסרוק מחדש `core.issues`/
+    `core.project_tasks`; 31-hebrew-bridge-crm שגיאת מחיקת Storage
+    לא-נבדקת (`client.functions.ts:189`) נשארת מועמד קל לסבב הבא.
