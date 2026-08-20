@@ -11606,3 +11606,43 @@
     כתיבות סדרתיות לשתי טבלאות שונות בלי guard). נושאים
     #62/#94/#115/#164/#169/#254 נשארים חסומים.
     via cloud server 167.99.131.167 [loop B]
+
+## 20/08/2026 — סבב 455 (loop B)
+
+455. **בקשות האישור-הקבוצתי ב-21-mthbram AdminDashboard.tsx (המועמד
+    שהוצע בסוף סבב 454).** שלושת כפתורי "אשר את כל השיעורים"
+    (`approveAllForRabbi`, `approveAllForOrg`, `approveAllForShulPortal`
+    — בלשוניות הפורטלים של רבנים/ארגונים/בתי כנסת בדשבורד הניהול)
+    כתבו `UPDATE` מרובה-שורות ל-Supabase (`approveAllForShulPortal`
+    אף כותב פעמיים, לשתי טבלאות נפרדות: `lessons` ו-`study_day_events`)
+    בלי שום guard כניסה-חוזרת — לחיצה כפולה או רשת איטית יכולה לירות
+    שתי בקשות `UPDATE` חופפות לאותה קבוצת שורות.
+
+    **התיקון:** אותו דפוס guard שכבר שימש ב-27-bkalut-price (סבבים
+    452-453) וב-21-mthbram עצמו (`removeRabbi`, סבב 454) —
+    `useRef<Set<string>>` משותף (`bulkApprovingRef`) עם מפתח
+    ממוינן-לפי-סוג (`"rabbi:"+name` / `"org:"+name` / `"shul:"+id`
+    כדי לא לערבב בין שלושת סוגי הישות), בדיקת `has(key)` לפני ביצוע,
+    `add(key)` לפני הבקשה/בקשות, ו-`delete(key)` ב-`finally` שמכסה גם
+    הצלחה וגם שגיאה. מסלולי ההצלחה/שגיאה הקיימים (כולל שתי הכתיבות
+    הסדרתיות ב-`approveAllForShulPortal`) לא השתנו.
+
+    **בדיקות תקינות:** קריאת קוד בלבד (ללא dev-server/build, לפי
+    הנחיות ההרצה). ספירת סוגריים/סוגריים-מסולסלים לפני/אחרי (Node):
+    `(` 838/838, `{` 771/771 (מאוזן). `git diff --stat`: קובץ יחיד,
+    +51/-29.
+
+    לא אומתה פריסה חיה: ההנחיות אוסרות dev-server/תהליכי רקע —
+    האימות נעשה בקריאת קוד בלבד.
+
+    ענף `fix/b-22-whatsapp-noopener-round395-0820` (שרשרת הענפים היא
+    המקור המלא היחיד ל-loop B, לא `main`), נדחף.
+
+    **הבא בתור:** יתר מועמדי ה-race-condition ב-21-mthbram שנמצאו
+    בסבב 454: `FullAccessRequestsTab.tsx` (שתי כתיבות סדרתיות
+    ל-`synagogue_full_access_requests`+`synagogue_portals` ב-`save()`
+    — יש כבר guard `saving===req.id` על הכפתור אך אין טיפול
+    ב-partial-failure אם `e1` נכשל ו-`e2` עדיין רץ), `RabbiPortal.tsx`
+    (guard חלקי ב-`saveEdit`), `PortalSettingsTab.tsx`, `BulkUpload.tsx`.
+    נושאים #62/#94/#115/#164/#169/#254 נשארים חסומים.
+    via cloud server 167.99.131.167 [loop B]

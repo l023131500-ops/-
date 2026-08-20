@@ -45,6 +45,7 @@ const AdminDashboard = () => {
   const [creatingOrg, setCreatingOrg] = useState(false);
   const [copiedToken, setCopiedToken] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const bulkApprovingRef = useRef<Set<string>>(new Set());
 
   const [nedarimSubmissions, setNedarimSubmissions] = useState<any[]>([]);
   const [studyDayEvents, setStudyDayEvents] = useState<any[]>([]);
@@ -299,39 +300,60 @@ const AdminDashboard = () => {
 
   // ─── Bulk approve all lessons of a portal ───
   const approveAllForRabbi = async (rabbiName: string) => {
-    const { error, count } = await supabase
-      .from("lessons")
-      .update({ is_approved: true, status: "approved" }, { count: "exact" })
-      .eq("rabbi_name", rabbiName)
-      .neq("is_approved", true);
-    if (error) { toast.error("שגיאה: " + error.message); return; }
-    toast.success(`${count ?? 0} שיעורים אושרו`);
-    fetchAll();
+    const key = "rabbi:" + rabbiName;
+    if (bulkApprovingRef.current.has(key)) return;
+    bulkApprovingRef.current.add(key);
+    try {
+      const { error, count } = await supabase
+        .from("lessons")
+        .update({ is_approved: true, status: "approved" }, { count: "exact" })
+        .eq("rabbi_name", rabbiName)
+        .neq("is_approved", true);
+      if (error) { toast.error("שגיאה: " + error.message); return; }
+      toast.success(`${count ?? 0} שיעורים אושרו`);
+      fetchAll();
+    } finally {
+      bulkApprovingRef.current.delete(key);
+    }
   };
   const approveAllForOrg = async (orgName: string) => {
-    const { error, count } = await supabase
-      .from("lessons")
-      .update({ is_approved: true, status: "approved" }, { count: "exact" })
-      .eq("org_name", orgName)
-      .neq("is_approved", true);
-    if (error) { toast.error("שגיאה: " + error.message); return; }
-    toast.success(`${count ?? 0} שיעורים אושרו`);
-    fetchAll();
+    const key = "org:" + orgName;
+    if (bulkApprovingRef.current.has(key)) return;
+    bulkApprovingRef.current.add(key);
+    try {
+      const { error, count } = await supabase
+        .from("lessons")
+        .update({ is_approved: true, status: "approved" }, { count: "exact" })
+        .eq("org_name", orgName)
+        .neq("is_approved", true);
+      if (error) { toast.error("שגיאה: " + error.message); return; }
+      toast.success(`${count ?? 0} שיעורים אושרו`);
+      fetchAll();
+    } finally {
+      bulkApprovingRef.current.delete(key);
+    }
   };
   const approveAllForShulPortal = async (portalId: string) => {
-    const { error: e1, count: c1 } = await supabase
-      .from("lessons")
-      .update({ is_approved: true, status: "approved" }, { count: "exact" })
-      .eq("synagogue_portal_id", portalId)
-      .neq("is_approved", true);
-    const { error: e2, count: c2 } = await supabase
-      .from("study_day_events")
-      .update({ is_approved: true, status: "approved" }, { count: "exact" })
-      .eq("session_id", portalId)
-      .neq("is_approved", true);
-    if (e1 || e2) { toast.error("שגיאה באישור"); return; }
-    toast.success(`${(c1 ?? 0) + (c2 ?? 0)} פריטים אושרו`);
-    fetchAll();
+    const key = "shul:" + portalId;
+    if (bulkApprovingRef.current.has(key)) return;
+    bulkApprovingRef.current.add(key);
+    try {
+      const { error: e1, count: c1 } = await supabase
+        .from("lessons")
+        .update({ is_approved: true, status: "approved" }, { count: "exact" })
+        .eq("synagogue_portal_id", portalId)
+        .neq("is_approved", true);
+      const { error: e2, count: c2 } = await supabase
+        .from("study_day_events")
+        .update({ is_approved: true, status: "approved" }, { count: "exact" })
+        .eq("session_id", portalId)
+        .neq("is_approved", true);
+      if (e1 || e2) { toast.error("שגיאה באישור"); return; }
+      toast.success(`${(c1 ?? 0) + (c2 ?? 0)} פריטים אושרו`);
+      fetchAll();
+    } finally {
+      bulkApprovingRef.current.delete(key);
+    }
   };
 
   // ─── Generic action handlers ───
