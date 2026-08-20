@@ -12259,3 +12259,58 @@
     סובלים מאותו דפוס stale-closure ב-`useEffect`/`setInterval`.
     נושאים #62/#94/#115/#164/#169/#254 נשארים חסומים.
     via cloud server 167.99.131.167 [loop B]
+
+
+## 20/08/2026 — סבב 472 (loop B)
+
+472. **`useState(fn)` שגוי משמש כתחליף ל-`useEffect` בטעינת תמונות ב-21-mthbram
+    `PortalSettingsTab.tsx` — side effect רץ בשלב ה-render, בלי cleanup ובלי
+    תלות ב-`portalId`/`portalType`.** המשך ישיר לרמז מסבב 471 (סריקת
+    stale-closure/effect בטעינות React) — Explore agent סרק את
+    17/18/19/20/22/24/27/28 לדפוס ה-setTimeout/setInterval הספציפי (לא
+    נמצא שם, כל השימושים שם תקינים) ואז הורחב לקטגוריות חדשות; מצא זאת
+    חזרה באותה מערכת (21).
+
+    הממצא (`apps/21-mthbram/src/components/portal/PortalSettingsTab.tsx`,
+    שורה 79 לפני התיקון): `useState(() => { (async () => { ... await
+    supabase.from("portal_photos")...; setPhotos(data || []);
+    setLoadingPhotos(false); })(); });` — שימוש ב-lazy initializer של
+    `useState` כדי להריץ side effect אסינכרוני, במקום `useEffect`. React
+    מריץ את הפונקציה הזו פעם אחת, בשלב ה-render עצמו (לא אחרי commit
+    כמו `useEffect`) — הפרה של כלל הטוהר (purity) של רכיבי React, ובלי
+    שום ניקוי (`cleanup`). שתי בעיות מוחשיות: (1) אם `PortalSettingsTab`
+    מתפרק (unmount) לפני שה-fetch האסינכרוני חוזר, `setPhotos`/
+    `setLoadingPhotos` עדיין נקראות על רכיב לא-מחובר — אזהרת React
+    ("Can't perform a state update on an unmounted component") ודליפת
+    זיכרון פוטנציאלית; (2) מערך התלויות לא קיים בכלל (זו לא effect עם
+    deps), כך שאם `portalId`/`portalType` משתנים בלי remount מלא של
+    הרכיב (למשל דרך אותו route עם token אחר), התמונות לעולם לא נטענות
+    מחדש — נשארות תקועות על הפורטל הראשון שנטען.
+
+    **התיקון:** המרתי ל-`useEffect(() => { let cancelled = false;
+    setLoadingPhotos(true); (async () => {...; if (cancelled) return;
+    setPhotos(data || []); setLoadingPhotos(false); })(); return () => {
+    cancelled = true; }; }, [portalId, portalType]);` — אותה קריאת
+    Supabase בדיוק, עם guard שמונע עדכון state אחרי unmount ותלות נכונה
+    שגורמת לטעינה מחדש כשהפורטל משתנה. הוספתי `useEffect` ל-import
+    הקיים (`useState, useRef`).
+
+    **בדיקות תקינות:** קריאת קוד בלבד (ללא dev-server/build, לפי הנחיות
+    ההרצה). אימתתי שאין קורא נוסף ל-hook המקורי (היה ה-hook היחיד
+    שהוחזר ממנו לא נעשה שימוש בערך המוחזר — בטוח להסרה). `git diff
+    --stat`: קובץ יחיד, +8/-4.
+
+    לא נגעתי במערכות מוגנות 08/09/bkalut-app/bkalot-admin/zr_*/
+    NEDARIM3873/csj/csj_src/igud, ב-`main`, או במערכת מחוץ ל-scope
+    (17-25/27/28 בלבד).
+
+    ענף חדש `fix/b-21-portal-photos-effect-round472-0820` (שרשרת
+    הענפים היא המקור היחיד ל-loop B, לא `main`), נדחף (קומיט
+    `932a49dd`).
+
+    **הבא בתור:** `RabbiPortal.tsx`/`OrgPortal.tsx`/`SynagoguePortal.tsx`
+    (הצרכנים של `PortalSettingsTab`) עדיין לא נסרקו לאותו דפוס
+    `useState(fn)`-כ-side-effect; כדאי גם לבדוק אם `portal.id` יכול
+    להשתנות בלי remount מלא באותן דפים (route params). נושאים
+    #62/#94/#115/#164/#169/#254 נשארים חסומים.
+    via cloud server 167.99.131.167 [loop B]
