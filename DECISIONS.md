@@ -10595,3 +10595,80 @@
       עדכון-לפני-בדיקת-כפילות ב-webhook, סיכון נמוך אך דורש קריאה
       זהירה). לחלופין: שתי הטבלאות מ-987, `core.project_tasks`/
       `core.project_bugs` (עדיין חסומים).
+
+## 20/08/2026 — סבב 211 (loop A) — `14-bsmachot-plus`: מאזין `keydown` כפול ב-lightbox מקפיץ שני שקפים בלחיצת חץ אחת
+
+1024. **בדקתי מחדש לפני שהתחלתי:** `core.run_progress` (סבב 210 האחרון,
+      commit `cf2f068a`/`c92b49d4`, תואם ל-HEAD). קראתי את הממצא
+      המתוייר מסבב 209/210: `apps/03-igud-ads/app/api/payments/
+      webhook/route.ts:83-86` (עדכון `ad_projects.parameters` *לפני*
+      בדיקת הכפילות). קראתי את הקובץ המלא: המגן האמיתי הוא ה-`INSERT`
+      ל-`ad_payments` עם unique index על `(project_id,
+      provider_transaction_id)` ובדיקת קוד שגיאה `23505` (שורות
+      110-115) — הוא רץ *אחרי* עדכון הפרמטרים, אז בשתי דליוורי-ים
+      מקבילות של אותה עסקה שתיהן עוברות את ה-SELECT המהיר (שורות
+      57-67) ושתיהן מריצות את ה-`UPDATE` (שורות 83-86), אבל ה-`UPDATE`
+      כותב merge כמעט זהה (אותו `project`, אותו payload) ורק ה-INSERT
+      השני נחסם על ידי ה-unique index — כך שאין קופון כפול ואין תשלום
+      כפול, רק כתיבה חוזרת לא-מזיקה לאותה עמודת `parameters` (הבדל
+      זניח ב-`_paid_at`). קבעתי בפועל שזה **לא** באג אמיתי (בניגוד
+      לחשד הראשוני מסבב 209) — לא נגעתי בו.
+1025. גם בדקתי את `core.project_tasks`/`core.project_bugs` הפתוחים —
+      חמישה פריטים, כולם החלטות תשתית/סודות (מיזוג מערכות, הזנת
+      `SUPABASE_SERVICE_KEY`/`OPENAI_API_KEY`, איתור origin מאחורי
+      Cloudflare) שדורשים גישה לחנות הסודות/החלטת בעלים — לא ניתנים
+      לתיקון קוד מתוך הסשן הזה, וחלקם גם מחוץ להיקף 01-16 (12/13/25/32).
+1026. **חיפוש עבודה חדשה:** בדקתי אילו מערכות 01-16 קיבלו הכי פחות
+      סבבי בדיקה עד כה (`grep` על `DECISIONS.md`) ואילו מהן **חיות
+      בפועל** לפי `core.projects` — `05-financial-marketing-site`
+      התברר `stage=wip, live=false, is_deployed=false` (וגם קובץ
+      `.github/workflows/deploy.yml` שלו מצביע ל-host SSH נפרד
+      `pinkas.l023131500.work`, לא ל-Vercel/more30.com בכלל) — לא
+      השקעתי שם עוד, כבר לא לייב וממילא מוגן היטב (יש הערת אבטחה
+      מפורטת בראש `script.js` על XSS ב-`?app=` שכבר טופלה בעבר).
+      עברתי ל-`14-bsmachot-plus` (חי בפועל, `more30.com/smachot`,
+      רק 29 אזכורים ב-`DECISIONS.md` מול עשרות/מאות במערכות אחרות).
+1027. **הממצא שאומת ישירות בקוד:** `website/app.js`, ה-lightbox של
+      מצגת המשקיעים (`#slides`). `openLightbox(n)` (שורה 338-342, לפני
+      התיקון) קורא `document.addEventListener('keydown', lbKeys)` בכל
+      קריאה, **בלי לבדוק אם כבר יש מאזין רשום**; `closeLightbox()`
+      (שורה 349) מסיר מאזין *אחד* בלבד. `.lightbox` הוא `position:
+      fixed; inset:0; z-index:90` (`styles.css:264`) כך שלחיצת עכבר על
+      thumbnail אחר בזמן שה-lightbox פתוח חסומה בפועל — אבל אין
+      focus-trap במודאל: thumbnail-ים (`role="button" tabindex="0"`,
+      שורות 307-310) נשארים בסדר ה-Tab הרגיל של ה-DOM גם כשהם מוסתרים
+      חזותית מאחורי החפיפה, כך שמשתמש מקלדת שממשיך Tab מגיע לthumbnail
+      מוסתר ולוחץ Enter/Space (שורה 310) — קורא ל-`openLightbox(n)`
+      שוב **בלי** `closeLightbox()` ביניים. כל קריאה כזו מוסיפה מאזין
+      נוסף; `lbKeys` (שורה 350-354) קורא ל-`stepSlide()` פעם אחת לכל
+      מאזין רשום, כך שלחיצת חץ אחת מקפיצה 2+ שקפים במקום 1, וההתנהגות
+      מחמירה ככל שזה קורה שוב.
+1028. **התיקון:** בתחילת `openLightbox()`, הוספתי
+      `document.removeEventListener('keydown', lbKeys)` **לפני**
+      ה-`addEventListener` הקיים — מבטיח שיש תמיד מאזין פעיל אחד בלבד
+      בלי קשר לכמה פעמים נקראה הפונקציה. שאר הפונקציה (כולל
+      `ensureLightbox()`/`updateLightbox()`/`closeLightbox()`) נשארה
+      **מילה-במילה** זהה.
+1029. **אפס רגרסיה מאומתת:** `git diff --stat`: קובץ אחד, +5/-0 —
+      תוספת נקייה בלבד (שורת `removeEventListener` + הערה), בלי מחיקת
+      שורה קיימת. בדיקת איזון סוגריים בפייתון על הקובץ המלא אחרי
+      העריכה: תואם (`{`/`}` 104/104, `(`/`)` 433/433). `git add` על
+      הנתיב הדפיס אזהרת gitignore (`apps/14-bsmachot-plus/website`
+      תואם לכלל vendoring-ignore של `apps/**`) — כמו בסבבים 207/437
+      — `git ls-files` אישר שהקובץ כבר עוקב (tracked) ו-`git
+      check-ignore -v` יצא עם קוד 1 (לא מסונן בפועל), כך ש-`git add
+      -f` על אותו קובץ שכבר tracked הוסיף אותו כראוי בלי סיכון להכניס
+      קבצים לא-רצויים. לא נגעתי במערכות/סכימות מוגנות (08/09/
+      bkalut-app/bkalot-admin/zr_*/NEDARIM3873/csj/csj_src/igud),
+      ב-`main`, או במערכת מחוץ להיקף (רק 01-16/gannenet/auth/super-
+      admin/admin dashboard/homepage ordering/pricing). Commit
+      `a1f82f64` על `fix/a-icon-only-buttons-round2-0820`, נדחף
+      ל-origin (מפעיל פריסת Vercel תחת `more30.com/smachot`).
+1030. **הבא בתור:** לא נמצאו עוד קריאות ל-`openLightbox`/מאזיני
+      keydown חשודים באותו קובץ (404 שורות סה"כ, נסרק במלואו). מומלץ
+      לסבב הבא: לבדוק את שאר `14-bsmachot-plus` (יש רק `website/`
+      סטטי שנסרק כאן — לבדוק אם יש עוד תיקיות/אפליקציות תחת אותו
+      מספר), או לעבור למערכת חיה נוספת עם מעט סבבי בדיקה (למשל
+      `06-kupot-holim`/`10-bkalot-rights`, ~47-48 אזכורים). שתי
+      הטבלאות מ-987, `core.project_tasks`/`core.project_bugs` נשארים
+      חסומים על החלטות תשתית/סודות.
