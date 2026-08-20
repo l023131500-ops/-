@@ -126,12 +126,12 @@ export interface IStorage {
   createTemplate(t: InsertTemplate): Promise<Template>;
   clearBuiltinTemplates(): Promise<void>;
   listProjects(limit?: number, userId?: string): Promise<Project[]>;
-  getProject(id: number): Promise<Project | undefined>;
+  getProject(id: number, requesterId?: string): Promise<Project | undefined>;
   createProject(p: InsertProject, userId?: string): Promise<Project>;
   updateProject(id: number, patch: Partial<InsertProject>, requesterId?: string): Promise<Project | undefined>;
   deleteProject(id: number, requesterId?: string): Promise<void>;
   listBrands(limit?: number, userId?: string): Promise<Brand[]>;
-  getBrand(id: number): Promise<Brand | undefined>;
+  getBrand(id: number, requesterId?: string): Promise<Brand | undefined>;
   createBrand(b: InsertBrand, userId?: string): Promise<Brand>;
   updateBrand(id: number, patch: Partial<InsertBrand>, requesterId?: string): Promise<Brand | undefined>;
   deleteBrand(id: number, requesterId?: string): Promise<void>;
@@ -175,9 +175,15 @@ export class SupabaseStorage implements IStorage {
     const r = unwrap(await q.order("updated_at", { ascending: false }).limit(limit));
     return (r as any[]).map(toProject);
   }
-  async getProject(id: number) {
+  async getProject(id: number, requesterId?: string) {
+    // בעלות: אותה מדיניות בדיוק כמו updateProject/deleteProject — פרויקט
+    // עם user_id (משתמש מחובר) נגיש רק לאותו משתמש; פרויקט אנונימי
+    // (user_id=NULL) נשאר פתוח, אין רגרסיה לזרימה האנונימית הקיימת.
     const r = unwrap(await sb().from("studio_projects").select("*").eq("id", id).maybeSingle());
-    return r ? toProject(r) : undefined;
+    if (!r) return undefined;
+    const p = toProject(r);
+    if ((r as { user_id: string | null }).user_id && (r as { user_id: string | null }).user_id !== requesterId) return undefined;
+    return p;
   }
   async createProject(p: InsertProject, userId?: string) {
     const r = unwrap(
@@ -212,9 +218,13 @@ export class SupabaseStorage implements IStorage {
     const r = unwrap(await q.order("updated_at", { ascending: false }).limit(limit));
     return (r as any[]).map(toBrand);
   }
-  async getBrand(id: number) {
+  async getBrand(id: number, requesterId?: string) {
+    // בעלות: אותה מדיניות בדיוק כמו updateBrand/deleteBrand — ראה הערה ב-getProject.
     const r = unwrap(await sb().from("studio_brands").select("*").eq("id", id).maybeSingle());
-    return r ? toBrand(r) : undefined;
+    if (!r) return undefined;
+    const b = toBrand(r);
+    if ((r as { user_id: string | null }).user_id && (r as { user_id: string | null }).user_id !== requesterId) return undefined;
+    return b;
   }
   async createBrand(b: InsertBrand, userId?: string) {
     const r = unwrap(

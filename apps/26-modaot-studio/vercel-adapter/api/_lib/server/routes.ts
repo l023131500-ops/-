@@ -204,7 +204,8 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
     res.json(await storage.listProjects(50, userId));
   });
   app.get("/api/projects/:id", async (req, res) => {
-    const p = await storage.getProject(Number(req.params.id));
+    const userId = await getUserIdFromToken(req.headers.authorization);
+    const p = await storage.getProject(Number(req.params.id), userId);
     if (!p) return res.status(404).json({ error: "לא נמצא פרויקט" });
     res.json(p);
   });
@@ -288,7 +289,8 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
 
   // מותג יחיד
   app.get("/api/brands/:id", async (req, res) => {
-    const b = await storage.getBrand(Number(req.params.id));
+    const userId = await getUserIdFromToken(req.headers.authorization);
+    const b = await storage.getBrand(Number(req.params.id), userId);
     if (!b) return res.status(404).json({ error: "מותג לא נמצא" });
     res.json(b);
   });
