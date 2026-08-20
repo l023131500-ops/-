@@ -31,20 +31,26 @@ const ContactSection = () => {
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   const handleSubmit = async () => {
-    if (!name.trim() || !phone.trim()) return;
-    const { error } = await supabase.from("contact_messages").insert({
-      name, phone, email,
-      role: roles.find(r => r.id === selectedRole)?.label || "",
-      subject: selectedTopic,
-      message,
-    });
-    if (error) {
-      toast.error("שגיאה בשליחה");
-    } else {
-      toast.success("ההודעה נשלחה! 🎉");
-      setStep("done");
+    if (!name.trim() || !phone.trim() || submitting) return;
+    setSubmitting(true);
+    try {
+      const { error } = await supabase.from("contact_messages").insert({
+        name, phone, email,
+        role: roles.find(r => r.id === selectedRole)?.label || "",
+        subject: selectedTopic,
+        message,
+      });
+      if (error) {
+        toast.error("שגיאה בשליחה");
+      } else {
+        toast.success("ההודעה נשלחה! 🎉");
+        setStep("done");
+      }
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -195,9 +201,9 @@ const ContactSection = () => {
                         <textarea value={message} onChange={(e) => setMessage(e.target.value)} placeholder="ספרו לנו..."
                           rows={3} className="w-full bg-muted/40 rounded-xl px-4 py-3 font-body text-sm text-foreground placeholder:text-muted-foreground border-2 border-border/50 focus:border-primary/40 outline-none resize-none transition-colors" />
                         <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={handleSubmit}
-                          disabled={!name.trim() || !phone.trim()}
+                          disabled={!name.trim() || !phone.trim() || submitting}
                           className="px-8 py-3 rounded-xl bg-gradient-brand text-primary-foreground font-body font-bold hover:opacity-90 disabled:opacity-40 flex items-center gap-2 mr-auto shadow-lg">
-                          <Send className="w-4 h-4" /> שליחה
+                          <Send className="w-4 h-4" /> {submitting ? "שולח..." : "שליחה"}
                         </motion.button>
                       </motion.div>
                     )}

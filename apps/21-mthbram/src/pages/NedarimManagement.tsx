@@ -13,6 +13,7 @@ const NedarimManagement = () => {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("");
   const [copied, setCopied] = useState(false);
+  const [publishingIds, setPublishingIds] = useState<Set<string>>(new Set());
 
   const webhookUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/nedarim-webhook`;
 
@@ -29,28 +30,34 @@ const NedarimManagement = () => {
   };
 
   const publishToLessons = async (sub: any) => {
-    const lessonData = {
-      rabbi_name: sub.name || "ממתין לעדכון",
-      subject: sub.subject || "ממתין לעדכון",
-      city: sub.city || "ממתין לעדכון",
-      language: "עברית",
-      status: "pending",
-      is_approved: false,
-      submitter_notes: `מקור: נדרים פלוס. טלפון: ${sub.phone}`,
-    };
+    if (publishingIds.has(sub.id)) return;
+    setPublishingIds((prev) => new Set(prev).add(sub.id));
+    try {
+      const lessonData = {
+        rabbi_name: sub.name || "ממתין לעדכון",
+        subject: sub.subject || "ממתין לעדכון",
+        city: sub.city || "ממתין לעדכון",
+        language: "עברית",
+        status: "pending",
+        is_approved: false,
+        submitter_notes: `מקור: נדרים פלוס. טלפון: ${sub.phone}`,
+      };
 
-    const { error } = await supabase.from("lessons").insert(lessonData);
-    if (!error) {
-      const { error: statusError } = await supabase.from("nedarim_submissions").update({ status: "published" }).eq("id", sub.id);
-      if (statusError) {
-        toast.error("השיעור נוצר אך עדכון הסטטוס נכשל: " + statusError.message);
+      const { error } = await supabase.from("lessons").insert(lessonData);
+      if (!error) {
+        const { error: statusError } = await supabase.from("nedarim_submissions").update({ status: "published" }).eq("id", sub.id);
+        if (statusError) {
+          toast.error("השיעור נוצר אך עדכון הסטטוס נכשל: " + statusError.message);
+          fetchSubmissions();
+          return;
+        }
+        toast.success("הועבר לפרסום בהצלחה!");
         fetchSubmissions();
-        return;
+      } else {
+        toast.error("שגיאה: " + error.message);
       }
-      toast.success("הועבר לפרסום בהצלחה!");
-      fetchSubmissions();
-    } else {
-      toast.error("שגיאה: " + error.message);
+    } finally {
+      setPublishingIds((prev) => { const next = new Set(prev); next.delete(sub.id); return next; });
     }
   };
 
@@ -158,8 +165,8 @@ const NedarimManagement = () => {
                   </div>
                   <div className="flex gap-2">
                     {sub.status === "new" && (
-                      <Button size="sm" onClick={() => publishToLessons(sub)} className="bg-gradient-teal text-primary-foreground font-body font-bold gap-1">
-                        <Check className="w-3 h-3" /> העבר לפרסום
+                      <Button size="sm" onClick={() => publishToLessons(sub)} disabled={publishingIds.has(sub.id)} className="bg-gradient-teal text-primary-foreground font-body font-bold gap-1">
+                        <Check className="w-3 h-3" /> {publishingIds.has(sub.id) ? "מעביר..." : "העבר לפרסום"}
                       </Button>
                     )}
                   </div>

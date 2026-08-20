@@ -27,6 +27,7 @@ const RabbiPortal = () => {
   const [addingNew, setAddingNew] = useState(false);
   const [notFound, setNotFound] = useState(false);
   const [uploadingLogo, setUploadingLogo] = useState(false);
+  const [savingLesson, setSavingLesson] = useState(false);
   const logoInputRef = useRef<HTMLInputElement>(null);
 
   const newLessonTemplate = {
@@ -97,27 +98,37 @@ const RabbiPortal = () => {
   };
 
   const saveEdit = async () => {
-    if (!editingId) return;
-    const { id, created_at, updated_at, ...fields } = editData;
-    const { error } = await supabase.from("lessons").update(fields).eq("id", editingId);
-    if (!error) {
-      toast.success("השיעור עודכן בהצלחה!");
-      setLessons(prev => prev.map(l => l.id === editingId ? { ...l, ...fields } : l));
-      setEditingId(null);
-    } else toast.error("שגיאה בעדכון");
+    if (!editingId || savingLesson) return;
+    setSavingLesson(true);
+    try {
+      const { id, created_at, updated_at, ...fields } = editData;
+      const { error } = await supabase.from("lessons").update(fields).eq("id", editingId);
+      if (!error) {
+        toast.success("השיעור עודכן בהצלחה!");
+        setLessons(prev => prev.map(l => l.id === editingId ? { ...l, ...fields } : l));
+        setEditingId(null);
+      } else toast.error("שגיאה בעדכון");
+    } finally {
+      setSavingLesson(false);
+    }
   };
 
   const addLesson = async () => {
-    if (!portal) return;
+    if (!portal || savingLesson) return;
     const row = { ...editData, rabbi_name: portal.rabbi_name, logo_url: portal.logo_url || "" };
     if (!row.subject || !row.city) { toast.error("נושא ועיר הם שדות חובה"); return; }
-    const { data, error } = await supabase.from("lessons").insert(row).select().single();
-    if (!error && data) {
-      toast.success("שיעור חדש נוסף! ממתין לאישור.");
-      setLessons(prev => [data, ...prev]);
-      setAddingNew(false);
-      setEditData({});
-    } else toast.error("שגיאה בהוספה");
+    setSavingLesson(true);
+    try {
+      const { data, error } = await supabase.from("lessons").insert(row).select().single();
+      if (!error && data) {
+        toast.success("שיעור חדש נוסף! ממתין לאישור.");
+        setLessons(prev => [data, ...prev]);
+        setAddingNew(false);
+        setEditData({});
+      } else toast.error("שגיאה בהוספה");
+    } finally {
+      setSavingLesson(false);
+    }
   };
 
   const lastUpdate = lessons.length > 0
@@ -261,8 +272,8 @@ const RabbiPortal = () => {
                       <Button variant="ghost" size="icon" onClick={() => setAddingNew(false)}><X className="w-4 h-4" /></Button>
                     </div>
                     <PortalLessonForm data={editData} onChange={setEditData} />
-                    <Button onClick={addLesson} className="w-full bg-gradient-teal text-primary-foreground font-body font-bold py-5 gap-2">
-                      <Save className="w-5 h-5" /> שמור שיעור חדש
+                    <Button onClick={addLesson} disabled={savingLesson} className="w-full bg-gradient-teal text-primary-foreground font-body font-bold py-5 gap-2">
+                      <Save className="w-5 h-5" /> {savingLesson ? "שומר..." : "שמור שיעור חדש"}
                     </Button>
                   </div>
                 </motion.div>
@@ -279,8 +290,8 @@ const RabbiPortal = () => {
                         <Button variant="ghost" size="icon" onClick={() => setEditingId(null)}><X className="w-4 h-4" /></Button>
                       </div>
                       <PortalLessonForm data={editData} onChange={setEditData} />
-                      <Button onClick={saveEdit} className="w-full bg-gradient-brand text-primary-foreground font-body font-bold py-5 gap-2">
-                        <Save className="w-5 h-5" /> שמור שינויים
+                      <Button onClick={saveEdit} disabled={savingLesson} className="w-full bg-gradient-brand text-primary-foreground font-body font-bold py-5 gap-2">
+                        <Save className="w-5 h-5" /> {savingLesson ? "שומר..." : "שמור שינויים"}
                       </Button>
                     </div>
                   ) : (

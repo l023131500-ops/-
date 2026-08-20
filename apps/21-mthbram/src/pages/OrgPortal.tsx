@@ -31,6 +31,8 @@ const OrgPortal = () => {
   const [newRabbiName, setNewRabbiName] = useState("");
   const [selectedRabbi, setSelectedRabbi] = useState<string>("all");
   const [uploadingLogo, setUploadingLogo] = useState(false);
+  const [addingRabbi, setAddingRabbi] = useState(false);
+  const [savingLesson, setSavingLesson] = useState(false);
   const logoInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => { if (token) fetchPortal(); }, [token]);
@@ -90,17 +92,22 @@ const OrgPortal = () => {
   };
 
   const addRabbi = async () => {
-    if (!newRabbiName.trim() || !portal) return;
-    const { data, error } = await supabase
-      .from("org_rabbis")
-      .insert({ org_id: portal.id, rabbi_name: newRabbiName.trim() })
-      .select()
-      .single();
-    if (!error && data) {
-      setRabbis(prev => [data, ...prev]);
-      setNewRabbiName("");
-      toast.success("הרב נוסף לארגון!");
-    } else toast.error("שגיאה בהוספת רב");
+    if (!newRabbiName.trim() || !portal || addingRabbi) return;
+    setAddingRabbi(true);
+    try {
+      const { data, error } = await supabase
+        .from("org_rabbis")
+        .insert({ org_id: portal.id, rabbi_name: newRabbiName.trim() })
+        .select()
+        .single();
+      if (!error && data) {
+        setRabbis(prev => [data, ...prev]);
+        setNewRabbiName("");
+        toast.success("הרב נוסף לארגון!");
+      } else toast.error("שגיאה בהוספת רב");
+    } finally {
+      setAddingRabbi(false);
+    }
   };
 
   const removeRabbi = async (id: string) => {
@@ -114,14 +121,19 @@ const OrgPortal = () => {
   const startEdit = (lesson: any) => { setEditingId(lesson.id); setEditData({ ...lesson }); };
 
   const saveEdit = async () => {
-    if (!editingId) return;
-    const { id, created_at, updated_at, ...fields } = editData;
-    const { error } = await supabase.from("lessons").update(fields).eq("id", editingId);
-    if (!error) {
-      toast.success("השיעור עודכן!");
-      setLessons(prev => prev.map(l => l.id === editingId ? { ...l, ...fields } : l));
-      setEditingId(null);
-    } else toast.error("שגיאה");
+    if (!editingId || savingLesson) return;
+    setSavingLesson(true);
+    try {
+      const { id, created_at, updated_at, ...fields } = editData;
+      const { error } = await supabase.from("lessons").update(fields).eq("id", editingId);
+      if (!error) {
+        toast.success("השיעור עודכן!");
+        setLessons(prev => prev.map(l => l.id === editingId ? { ...l, ...fields } : l));
+        setEditingId(null);
+      } else toast.error("שגיאה");
+    } finally {
+      setSavingLesson(false);
+    }
   };
 
   const addLesson = async () => {
@@ -129,14 +141,20 @@ const OrgPortal = () => {
       toast.error("שם הרב, נושא ועיר הם חובה");
       return;
     }
-    const row = { ...editData, org_name: portal?.org_name || "", logo_url: portal?.logo_url || "" };
-    const { data, error } = await supabase.from("lessons").insert(row).select().single();
-    if (!error && data) {
-      toast.success("שיעור חדש נוסף!");
-      setLessons(prev => [data, ...prev]);
-      setAddingNew(false);
-      setEditData({});
-    } else toast.error("שגיאה");
+    if (savingLesson) return;
+    setSavingLesson(true);
+    try {
+      const row = { ...editData, org_name: portal?.org_name || "", logo_url: portal?.logo_url || "" };
+      const { data, error } = await supabase.from("lessons").insert(row).select().single();
+      if (!error && data) {
+        toast.success("שיעור חדש נוסף!");
+        setLessons(prev => [data, ...prev]);
+        setAddingNew(false);
+        setEditData({});
+      } else toast.error("שגיאה");
+    } finally {
+      setSavingLesson(false);
+    }
   };
 
   const filteredLessons = selectedRabbi === "all" ? lessons : lessons.filter(l => l.rabbi_name === selectedRabbi);
@@ -277,8 +295,8 @@ const OrgPortal = () => {
                   placeholder="שם הרב..."
                   className="flex-1 border-gold/20 focus:border-gold/50"
                 />
-                <Button onClick={addRabbi} className="bg-gradient-gold text-navy font-body font-bold gap-2">
-                  <UserPlus className="w-4 h-4" /> הוסף
+                <Button onClick={addRabbi} disabled={addingRabbi} className="bg-gradient-gold text-navy font-body font-bold gap-2">
+                  <UserPlus className="w-4 h-4" /> {addingRabbi ? "מוסיף..." : "הוסף"}
                 </Button>
               </div>
             </div>
@@ -357,8 +375,8 @@ const OrgPortal = () => {
                       </select>
                     </div>
                     <PortalLessonForm data={editData} onChange={setEditData} />
-                    <Button onClick={addLesson} className="w-full bg-gradient-teal text-primary-foreground font-body font-bold py-5 gap-2">
-                      <Save className="w-5 h-5" /> שמור
+                    <Button onClick={addLesson} disabled={savingLesson} className="w-full bg-gradient-teal text-primary-foreground font-body font-bold py-5 gap-2">
+                      <Save className="w-5 h-5" /> {savingLesson ? "שומר..." : "שמור"}
                     </Button>
                   </div>
                 </motion.div>
@@ -375,8 +393,8 @@ const OrgPortal = () => {
                         <Button variant="ghost" size="icon" onClick={() => setEditingId(null)}><X className="w-4 h-4" /></Button>
                       </div>
                       <PortalLessonForm data={editData} onChange={setEditData} />
-                      <Button onClick={saveEdit} className="w-full bg-gradient-brand text-primary-foreground font-body font-bold py-5 gap-2">
-                        <Save className="w-5 h-5" /> שמור שינויים
+                      <Button onClick={saveEdit} disabled={savingLesson} className="w-full bg-gradient-brand text-primary-foreground font-body font-bold py-5 gap-2">
+                        <Save className="w-5 h-5" /> {savingLesson ? "שומר..." : "שמור שינויים"}
                       </Button>
                     </div>
                   ) : (

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Copy, Download, Send, Trash2, CheckCircle2 } from "lucide-react";
@@ -36,35 +37,56 @@ function lessonsCount(e: Event): number {
 }
 
 export default function StudyDayEventTable({ events, onChanged }: Props) {
+  const [pendingIds, setPendingIds] = useState<Set<string>>(new Set());
+  const [sendingAll, setSendingAll] = useState(false);
+
   const handleSend = async (id: string) => {
-    const { error } = await supabase
-      .from("study_day_events")
-      .update({ is_sent: true, status: "pending" })
-      .eq("id", id);
-    if (error) { toast.error("שגיאה בשליחה"); return; }
-    toast.success("נשלח לאישור");
-    onChanged();
+    if (pendingIds.has(id)) return;
+    setPendingIds((prev) => new Set(prev).add(id));
+    try {
+      const { error } = await supabase
+        .from("study_day_events")
+        .update({ is_sent: true, status: "pending" })
+        .eq("id", id);
+      if (error) { toast.error("שגיאה בשליחה"); return; }
+      toast.success("נשלח לאישור");
+      onChanged();
+    } finally {
+      setPendingIds((prev) => { const next = new Set(prev); next.delete(id); return next; });
+    }
   };
 
   const handleDelete = async (id: string) => {
     if (!confirm("למחוק את יום העיון?")) return;
-    const { error } = await supabase.from("study_day_events").delete().eq("id", id);
-    if (error) { toast.error("שגיאה במחיקה"); return; }
-    toast.success("נמחק");
-    onChanged();
+    if (pendingIds.has(id)) return;
+    setPendingIds((prev) => new Set(prev).add(id));
+    try {
+      const { error } = await supabase.from("study_day_events").delete().eq("id", id);
+      if (error) { toast.error("שגיאה במחיקה"); return; }
+      toast.success("נמחק");
+      onChanged();
+    } finally {
+      setPendingIds((prev) => { const next = new Set(prev); next.delete(id); return next; });
+    }
   };
 
   const handleSendAll = async () => {
+    if (sendingAll) return;
     const unsent = events.filter((e) => !e.is_sent);
     if (!unsent.length) { toast.info("אין ימי עיון חדשים"); return; }
     if (!confirm(`לשלוח ${unsent.length} ימי עיון לאישור?`)) return;
-    const { error } = await supabase
-      .from("study_day_events")
-      .update({ is_sent: true, status: "pending" })
-      .in("id", unsent.map((e) => e.id));
-    if (error) { toast.error("שגיאה"); return; }
-    toast.success(`נשלחו ${unsent.length}`);
-    onChanged();
+    setSendingAll(true);
+    try {
+      const { error } = await supabase
+        .from("study_day_events")
+        .update({ is_sent: true, status: "pending" })
+        .in("id", unsent.map((e) => e.id));
+      if (error) { toast.error("שגיאה"); return; }
+      toast.success(`נשלחו ${unsent.length}`);
+      onChanged();
+    } finally {
+      setSendingAll(false);
+    }
   };
 
   if (!events.length) {
@@ -82,8 +104,8 @@ export default function StudyDayEventTable({ events, onChanged }: Props) {
       <div className="flex items-center justify-between p-4 border-b border-foreground/10">
         <h3 className="font-display text-lg text-[hsl(180_45%_30%)]">רשימת ימי עיון ({events.length})</h3>
         {unsentCount > 0 && (
-          <Button onClick={handleSendAll} size="sm" className="bg-[hsl(180_45%_30%)] hover:bg-[hsl(180_45%_25%)] text-white gap-2">
-            <Send className="w-4 h-4" /> שלח הכל ({unsentCount})
+          <Button onClick={handleSendAll} disabled={sendingAll} size="sm" className="bg-[hsl(180_45%_30%)] hover:bg-[hsl(180_45%_25%)] text-white gap-2">
+            <Send className="w-4 h-4" /> {sendingAll ? "שולח..." : `שלח הכל (${unsentCount})`}
           </Button>
         )}
       </div>
@@ -126,12 +148,14 @@ export default function StudyDayEventTable({ events, onChanged }: Props) {
                         <Button size="icon" variant="ghost"
                           className="h-8 w-8 text-[hsl(180_45%_30%)]"
                           title="שלח לאישור"
+                          disabled={pendingIds.has(e.id)}
                           onClick={() => handleSend(e.id)}>
                           <Send className="w-3.5 h-3.5" />
                         </Button>
                         <Button size="icon" variant="ghost"
                           className="h-8 w-8 text-destructive hover:text-destructive"
                           title="מחק"
+                          disabled={pendingIds.has(e.id)}
                           onClick={() => handleDelete(e.id)}>
                           <Trash2 className="w-3.5 h-3.5" />
                         </Button>

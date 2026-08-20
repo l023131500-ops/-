@@ -50,6 +50,9 @@ const PortalSettingsTab = ({ portalId, portalType, portalData, onUpdate }: Porta
   const [loadingPhotos, setLoadingPhotos] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [newCaption, setNewCaption] = useState("");
+  const [savingAbout, setSavingAbout] = useState(false);
+  const [savingContact, setSavingContact] = useState(false);
+  const [savingSections, setSavingSections] = useState(false);
   const photoInputRef = useRef<HTMLInputElement>(null);
   const bgInputRef = useRef<HTMLInputElement>(null);
   const rabbiPhotoRef = useRef<HTMLInputElement>(null);
@@ -88,36 +91,54 @@ const PortalSettingsTab = ({ portalId, portalType, portalData, onUpdate }: Porta
   const tableName = portalType === "rabbi" ? "rabbi_portals" : "org_portals";
 
   const saveAbout = async () => {
-    const { error } = await supabase.from(tableName).update({ about_text: aboutText }).eq("id", portalId);
-    if (!error) {
-      toast.success("טקסט אודות נשמר!");
-      onUpdate({ ...portalData, about_text: aboutText });
-    } else toast.error("שגיאה בשמירה");
+    if (savingAbout) return;
+    setSavingAbout(true);
+    try {
+      const { error } = await supabase.from(tableName).update({ about_text: aboutText }).eq("id", portalId);
+      if (!error) {
+        toast.success("טקסט אודות נשמר!");
+        onUpdate({ ...portalData, about_text: aboutText });
+      } else toast.error("שגיאה בשמירה");
+    } finally {
+      setSavingAbout(false);
+    }
   };
 
   const saveContactInfo = async () => {
-    const updates = {
-      contact_phone: contactPhone,
-      contact_email: contactEmail,
-      contact_address: contactAddress,
-      contact_whatsapp: contactWhatsapp,
-      contact_fax: contactFax,
-      contact_mailing_address: contactMailingAddress,
-    };
-    const { error } = await supabase.from(tableName).update(updates).eq("id", portalId);
-    if (!error) {
-      toast.success("פרטי קשר נשמרו!");
-      onUpdate({ ...portalData, ...updates });
-    } else toast.error("שגיאה בשמירה");
+    if (savingContact) return;
+    setSavingContact(true);
+    try {
+      const updates = {
+        contact_phone: contactPhone,
+        contact_email: contactEmail,
+        contact_address: contactAddress,
+        contact_whatsapp: contactWhatsapp,
+        contact_fax: contactFax,
+        contact_mailing_address: contactMailingAddress,
+      };
+      const { error } = await supabase.from(tableName).update(updates).eq("id", portalId);
+      if (!error) {
+        toast.success("פרטי קשר נשמרו!");
+        onUpdate({ ...portalData, ...updates });
+      } else toast.error("שגיאה בשמירה");
+    } finally {
+      setSavingContact(false);
+    }
   };
 
   const saveCustomSections = async () => {
-    const filtered = customSections.filter(s => s.title.trim() || s.content.trim());
-    const { error } = await supabase.from(tableName).update({ custom_sections: filtered }).eq("id", portalId);
-    if (!error) {
-      toast.success("קטגוריות נשמרו!");
-      onUpdate({ ...portalData, custom_sections: filtered });
-    } else toast.error("שגיאה בשמירה");
+    if (savingSections) return;
+    setSavingSections(true);
+    try {
+      const filtered = customSections.filter(s => s.title.trim() || s.content.trim());
+      const { error } = await supabase.from(tableName).update({ custom_sections: filtered }).eq("id", portalId);
+      if (!error) {
+        toast.success("קטגוריות נשמרו!");
+        onUpdate({ ...portalData, custom_sections: filtered });
+      } else toast.error("שגיאה בשמירה");
+    } finally {
+      setSavingSections(false);
+    }
   };
 
   const addSection = () => setCustomSections(prev => [...prev, { title: "", content: "" }]);
@@ -321,8 +342,8 @@ const PortalSettingsTab = ({ portalId, portalType, portalData, onUpdate }: Porta
           rows={4}
           className="border-gold/20 focus:border-gold/50 mb-3"
         />
-        <Button onClick={saveAbout} className="bg-gradient-teal text-primary-foreground font-body font-bold gap-2">
-          שמור אודות
+        <Button onClick={saveAbout} disabled={savingAbout} className="bg-gradient-teal text-primary-foreground font-body font-bold gap-2">
+          {savingAbout ? "שומר..." : "שמור אודות"}
         </Button>
       </div>
 
@@ -357,8 +378,8 @@ const PortalSettingsTab = ({ portalId, portalType, portalData, onUpdate }: Porta
             <Input value={contactMailingAddress} onChange={e => setContactMailingAddress(e.target.value)} placeholder="ת.ד. ..." className="border-gold/20 focus:border-gold/50" />
           </div>
         </div>
-        <Button onClick={saveContactInfo} className="mt-4 bg-gradient-teal text-primary-foreground font-body font-bold gap-2">
-          שמור פרטי קשר
+        <Button onClick={saveContactInfo} disabled={savingContact} className="mt-4 bg-gradient-teal text-primary-foreground font-body font-bold gap-2">
+          {savingContact ? "שומר..." : "שמור פרטי קשר"}
         </Button>
       </div>
 
@@ -397,8 +418,8 @@ const PortalSettingsTab = ({ portalId, portalType, portalData, onUpdate }: Porta
             <Plus className="w-4 h-4" /> הוסף קטגוריה
           </Button>
           {customSections.length > 0 && (
-            <Button onClick={saveCustomSections} className="bg-gradient-gold text-navy font-body font-bold gap-2">
-              שמור קטגוריות
+            <Button onClick={saveCustomSections} disabled={savingSections} className="bg-gradient-gold text-navy font-body font-bold gap-2">
+              {savingSections ? "שומר..." : "שמור קטגוריות"}
             </Button>
           )}
         </div>

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Copy, Download, Send, Trash2, CheckCircle2 } from "lucide-react";
@@ -28,47 +29,76 @@ function formatTime(l: Lesson) {
 }
 
 export default function BulkLessonTable({ lessons, onChanged }: Props) {
+  const [pendingIds, setPendingIds] = useState<Set<string>>(new Set());
+  const [sendingAll, setSendingAll] = useState(false);
+
   const handleSend = async (id: string) => {
-    const { error } = await supabase
-      .from("lessons")
-      .update({ is_sent: true, status: "pending" })
-      .eq("id", id);
-    if (error) {
-      toast.error("שגיאה בשליחה");
-      return;
+    if (pendingIds.has(id)) return;
+    setPendingIds((prev) => new Set(prev).add(id));
+    try {
+      const { error } = await supabase
+        .from("lessons")
+        .update({ is_sent: true, status: "pending" })
+        .eq("id", id);
+      if (error) {
+        toast.error("שגיאה בשליחה");
+        return;
+      }
+      toast.success("השיעור נשלח לאישור");
+      onChanged();
+    } finally {
+      setPendingIds((prev) => {
+        const next = new Set(prev);
+        next.delete(id);
+        return next;
+      });
     }
-    toast.success("השיעור נשלח לאישור");
-    onChanged();
   };
 
   const handleDelete = async (id: string) => {
     if (!confirm("למחוק את השיעור?")) return;
-    const { error } = await supabase.from("lessons").delete().eq("id", id);
-    if (error) {
-      toast.error("שגיאה במחיקה");
-      return;
+    if (pendingIds.has(id)) return;
+    setPendingIds((prev) => new Set(prev).add(id));
+    try {
+      const { error } = await supabase.from("lessons").delete().eq("id", id);
+      if (error) {
+        toast.error("שגיאה במחיקה");
+        return;
+      }
+      toast.success("השיעור נמחק");
+      onChanged();
+    } finally {
+      setPendingIds((prev) => {
+        const next = new Set(prev);
+        next.delete(id);
+        return next;
+      });
     }
-    toast.success("השיעור נמחק");
-    onChanged();
   };
 
   const handleSendAll = async () => {
+    if (sendingAll) return;
     const unsent = lessons.filter((l) => !l.is_sent);
     if (!unsent.length) {
       toast.info("אין שיעורים חדשים לשליחה");
       return;
     }
     if (!confirm(`לשלוח ${unsent.length} שיעורים לאישור?`)) return;
-    const { error } = await supabase
-      .from("lessons")
-      .update({ is_sent: true, status: "pending" })
-      .in("id", unsent.map((l) => l.id));
-    if (error) {
-      toast.error("שגיאה בשליחה כללית");
-      return;
+    setSendingAll(true);
+    try {
+      const { error } = await supabase
+        .from("lessons")
+        .update({ is_sent: true, status: "pending" })
+        .in("id", unsent.map((l) => l.id));
+      if (error) {
+        toast.error("שגיאה בשליחה כללית");
+        return;
+      }
+      toast.success(`נשלחו ${unsent.length} שיעורים`);
+      onChanged();
+    } finally {
+      setSendingAll(false);
     }
-    toast.success(`נשלחו ${unsent.length} שיעורים`);
-    onChanged();
   };
 
   if (!lessons.length) {
@@ -88,11 +118,12 @@ export default function BulkLessonTable({ lessons, onChanged }: Props) {
         {unsentCount > 0 && (
           <Button
             onClick={handleSendAll}
+            disabled={sendingAll}
             className="bg-secondary hover:bg-secondary/90 text-secondary-foreground gap-2"
             size="sm"
           >
             <Send className="w-4 h-4" />
-            שלח הכל ({unsentCount})
+            {sendingAll ? "שולח..." : `שלח הכל (${unsentCount})`}
           </Button>
         )}
       </div>
@@ -159,6 +190,7 @@ export default function BulkLessonTable({ lessons, onChanged }: Props) {
                           size="icon" variant="ghost"
                           className="h-8 w-8 text-secondary hover:text-secondary"
                           title="שלח לאישור"
+                          disabled={pendingIds.has(l.id)}
                           onClick={() => handleSend(l.id)}
                         >
                           <Send className="w-3.5 h-3.5" />
@@ -167,6 +199,7 @@ export default function BulkLessonTable({ lessons, onChanged }: Props) {
                           size="icon" variant="ghost"
                           className="h-8 w-8 text-destructive hover:text-destructive"
                           title="מחק"
+                          disabled={pendingIds.has(l.id)}
                           onClick={() => handleDelete(l.id)}
                         >
                           <Trash2 className="w-3.5 h-3.5" />
