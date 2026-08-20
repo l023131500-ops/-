@@ -1,9 +1,24 @@
 import { NextRequest } from "next/server";
+import { isHiddenFile } from "@/lib/overrides";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 const ID_RE = /^[A-Za-z0-9_-]{10,}$/;
+
+/**
+ * "Is this Drive item hidden?" — `/shelf/admin` writes overrides keyed by the same
+ * `id` `content/drive-catalog.json` items carry, so it is the same id this route
+ * receives as `params.id`. Without this check, hiding a Drive-sourced item only
+ * dropped it from `/api/drive-catalog`'s listing (`applyOverrides()`); the bytes
+ * stayed reachable forever at this route's own URL for anyone who already had it —
+ * a shared link, browser history, the service worker's offline copy. `/api/upload/
+ * [name]` closed exactly this gap for uploaded files; it was never carried over
+ * here, to the 2,977 Drive-sourced items that make up most of the catalog.
+ */
+async function hidden(id: string): Promise<boolean> {
+  return isHiddenFile(id).catch(() => false);
+}
 
 /**
  * Streams a public ("anyone with the link") Google Drive file through our own origin,
@@ -40,6 +55,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
   }
 
   try {
+    if (await hidden(id)) return new Response("gone", { status: 404 });
     const upstream = await fetchDrive(id);
     if (!upstream.ok || !upstream.body) {
       return new Response("upstream error", { status: 502 });
