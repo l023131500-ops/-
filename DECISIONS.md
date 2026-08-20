@@ -8082,3 +8082,40 @@
     ללא ולידציית טווח בצד לקוח, או `target="_blank"` בלי `rel` מגן
     שיטתי על כל 7 האפליקציות).
     via cloud server 167.99.131.167 [loop B]
+
+## 20/08/2026 — סבב 389 (loop B)
+
+389. **המשך עדשת ה-`label`/`htmlFor` על 21-mthbram (מתור מסבב 388) —
+    `UpdateLesson.tsx`: 4 ממצאים אמיתיים תוקנו; `RequestLesson.tsx`:
+    שלושת התוויות הגולמיות שם התבררו ככותרות מדור מעל קבוצת שדות, לא
+    תוקן דבר.** `UpdateLesson.tsx` — מתג "שידור חי" (`Switch`, שורה
+    297) ומתג "מוקלט" (שורה 301) קיבלו `id="update-lesson-livestream"`/
+    `id="update-lesson-recorded"` תואמים ל-`htmlFor` על התווית העוטפת;
+    `Textarea` הערות עדכון (שורה 312) קיבל `id="update-lesson-notes"`;
+    `Input` שם הארגון (שורה 329) קיבל `id="update-lesson-org-name"`.
+    הוחרגו (כמו בסבבים קודמים) 4 כותרות-מדור מעל קבוצת שדות ("מיקום",
+    "זמני השיעור", "אופן העברה", "פרטי יצירת קשר") — אין להן יעד `id`
+    יחיד. אומת ש-`Switch`/`Input`/`Textarea` המקומיים (shadcn) מעבירים
+    `id` הלאה דרך `{...props}`. `RequestLesson.tsx` — שלושת התוויות
+    הגולמיות (שורות 171/190/302) הן כולן כותרות-מדור מעל מספר שדות
+    ("איש קשר", "פרטי בית הכנסת", "כתובת השיעור") — אין ממצא אמיתי,
+    לא תוקן דבר.
+
+    `git diff --stat`: קובץ אחד, 8+/8-. איזון סוגריים נבדק על
+    `UpdateLesson.tsx` לאחר העריכה: תקין (228/228 מסולסל, 237/237
+    סוגריים, 61/61 מרובע). אומת ש-5 ה-`id` בקובץ (כולל `update-lesson-
+    rabbi-name` שכבר תוקן בסבב קודם) ייחודיים, אין התנגשויות. לא הופעל
+    build/dev-server (לפי הנחיות ההרצה). קובץ חסום ב-`.gitignore` אך
+    כבר עוקב, `git add -f` נדרש.
+
+    ענף `fix/b-21-mthbram-label-htmlfor-round389-0820`, קומיט
+    `8c94f395`, נדחף (מפעיל פריסת Vercel תחת `more30.com/mthbram`).
+
+    **הבא בתור:** המשך תור ה-`<label>` על יתר `21-mthbram`
+    (`AdminDashboard.tsx` — ~20 מופעים, `SeekerForm.tsx`,
+    `PortalSettingsTab.tsx`, `PrayerTimesTab.tsx`,
+    `PublicContactForm.tsx` — עדיין לא נסרקו), או 24-galilee-connect-hub
+    (~26 מופעים), או נושא #250 (RLS על 21-mthbram, חסום MCP), או פתיחת
+    עדשה חדשה (למשל: שדות תאריך/מספר ללא ולידציית טווח בצד לקוח, או
+    `target="_blank"` בלי `rel` מגן שיטתי על כל 7 האפליקציות).
+    via cloud server 167.99.131.167 [loop B]
