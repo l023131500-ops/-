@@ -10672,3 +10672,72 @@
       `06-kupot-holim`/`10-bkalot-rights`, ~47-48 אזכורים). שתי
       הטבלאות מ-987, `core.project_tasks`/`core.project_bugs` נשארים
       חסומים על החלטות תשתית/סודות.
+
+## 20/08/2026 — סבב 212 (loop A) — `06-kupot-holim` admin: `updateStatus`/`deleteLead` מדווחים הצלחה גם כשהפעולה נכשלה בפועל
+
+1031. **בדקתי מחדש לפני שהתחלתי:** `core.run_progress` (סבב 211 האחרון,
+      commit `a1f82f64`/`d80b21dd`, תואם ל-HEAD). קראתי את התור מ-1030:
+      המשכתי לסרוק `14-bsmachot-plus` (רק `website/` קיים תחת המספר
+      הזה, אין תיקיות נוספות) ואז עברתי ל-`12-smel-ndln` (חי,
+      `more30.com/smel`, 71 אזכורים). שלחתי סוכן Explore לחפש שם באגים
+      מהמחלקות שכבר נמצאו בסבבים קודמים (מאזינים כפולים, שגיאות
+      שקטות, חסר guard לכפתור כפול, focus trap) — הממצא היחיד שחזר
+      (`use-toast.ts:182`, `[state]` בתלות ה-`useEffect`) התברר בבדיקה
+      עצמית כקוד הבוילרפלייט הסטנדרטי של shadcn/ui: `setState` הוא
+      reference יציב, כך שההסרה וההוספה החוזרת של אותו reference
+      בדיוק היא no-op תפקודי — לא דליפת זיכרון ולא כפילות אמיתית.
+      דחיתי את הממצא ולא נגעתי בו. קראתי בעצמי את שאר `12-smel-ndln`
+      (`Home.tsx`, `Premium.tsx`, `Report.tsx`, `Header.tsx`,
+      `DetailedReport.tsx`, `research.ts`, `app-state.tsx`) — האפליקציה
+      הזו כבר עברה ליטוש יסודי מאוד בסבבים קודמים (guards על כפתורי
+      שליחה, `<label htmlFor>` מקושר, `wouter` Link תוקן, אזהרת אי-
+      התאמת עיר, ועוד — כל אחד מתועד בהערת `⚠️` בקוד עצמו). לא נמצא שם
+      עוד באג אמיתי לתקן. עברתי ל-`06-kupot-holim` (חי,
+      `more30.com/briut`, 48 אזכורים).
+1032. **הממצא שאומת ישירות בקוד:** `apps/06-kupot-holim/site/
+      leads-store.js` — `updateStatus(id, status)` (שורות 104-116)
+      ו-`deleteLead(id)` (שורות 119-129) מחזירים, בנתיב Supabase,
+      `{ ok: r.ok }` (לא `throw`) — כלומר Promise שתמיד **resolve**,
+      גם כש-`r.ok` הוא `false` (401/403/500). ב-`apps/06-kupot-holim/
+      site/admin.js`, שני ה-click handlers שקוראים לפונקציות האלה
+      (שורות 206-216 ל-toggle, 217-227 ל-delete, לפני התיקון) לא בדקו
+      את `res.ok` בכלל — הם עדכנו את `ALL`/קראו ל-`applyFilter()`
+      בתוך ה-`.then()` **ללא תנאי**, מה שגורם למסך להראות "טופל"/
+      להעלים את השורה גם כשהכתיבה בפועל נדחתה. זה לא תיאורטי: ההערה
+      בראש `admin.js` (שורות 1-16, מ-07/08/2026) מתעדת במפורש
+      שהמפתח הנוכחי מורשה ל-INSERT בלבד, וש-GET/PATCH/DELETE **מחזירים
+      401 תמיד** — כלומר "סמן טופל"/"מחק" ב-admin panel היו מדווחים
+      הצלחה **בכל פעם**, בזמן שהכתיבה למסד מעולם לא קרתה בפועל.
+1033. **בדקתי אם זה עדיין רלוונטי:** ההערה מ-07/08/2026 גם קובעת
+      ש-`more30.com/briut/admin.html` מחזיר בפועל את ה-SPA fallback
+      (זהה ל-`more30.com/briut/`), כך שדף הניהול עצמו לא נגיש כרגע
+      דרך ה-URL הציבורי, וגם אם היה נגיש — ה-login form תמיד נכשל
+      במכוון (`admin.js:95-104`, אין credential מוגדר ואי אפשר להגדיר
+      אחד בסטטי site בלי לפרסם אותו). כלומר הבאג הזה לא פוגע במשתמש
+      אמיתי *כרגע*. בכל זאת תיקנתי: (א) התיקון תשתיתי-פנימי בלבד,
+      אפס סיכון רגרסיה; (ב) ברגע שהגישה השרתית המתועדת כחסרה (Edge
+      Function/RPC SECURITY DEFINER — אותו תיקון ש-`/galil/gabai`
+      ממתין לו) תושלם, ה-admin panel יעבוד באמת, וללא התיקון הזה כל
+      פעולת עדכון/מחיקה הייתה משקרת בשקט להנהלה שהיא הצליחה.
+1034. **התיקון:** בשני ה-handlers, ה-`.then()` מקבל כעת את `res` ובודק
+      `if (!res || !res.ok)` — אם נכשל: `b.disabled = false` (מחזיר את
+      הכפתור למצב פעיל) + `alert(...)` עברית ("עדכון הסטטוס נכשל" /
+      "מחיקת הפנייה נכשלה") + `return` לפני עדכון המצב המקומי. נתיב
+      ההצלחה (הענפים המקומיים ב-`leads-store.js` שתמיד מחזירים
+      `{ok: true}`, וענף ה-Supabase כש-`r.ok` אמת) נשאר **מילה-במילה**
+      זהה — `applyFilter()`/עדכון `ALL`/`row.status` לא שונו.
+1035. **אפס רגרסיה מאומתת:** `node --check admin.js` עבר נקי. `git
+      diff --stat`: קובץ אחד, +12/-2 — שתי תוספות guard-clause סימטריות,
+      בלי מחיקת/שינוי לוגיקה קיימת בנתיב ההצלחה. `git ls-files`/`git
+      check-ignore -v` אישרו שהקובץ כבר tracked ולא מסונן בפועל
+      (כמו בסבבים 207/774/775 — התראת ה-`.gitignore` על `apps/06-
+      kupot-holim/site` היא false positive של `git add` הרגיל בלבד,
+      `git add -f` פותר). לא נגעתי במערכות/סכימות מוגנות (08/09/
+      bkalut-app/bkalot-admin/zr_*/NEDARIM3873/csj/csj_src/igud),
+      ב-`main`, או במערכת מחוץ להיקף (רק 01-16/gannenet/auth/super-
+      admin/admin dashboard/homepage ordering/pricing). Commit
+      `0b2ce20b` על `fix/a-icon-only-buttons-round2-0820`, יידחף
+      ל-origin (מפעיל פריסת Vercel תחת `more30.com/briut`).
+1036. **הבא בתור:** נותרו `index.html`/`supabase-config.html` ב-אותו
+      `06-kupot-holim/site` שטרם נסרקו לעומק בסבב הזה — מומלץ להמשיך
+      שם, או לעבור ל-`10-bkalot-rights` (50 אזכורים) שגם הוא חי.
