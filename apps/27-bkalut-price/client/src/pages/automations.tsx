@@ -61,6 +61,12 @@ function AutomationsInner() {
           ? Array.from({ length: 9 }).map((_, i) => (
               <Card key={i} className="p-4 h-44 animate-pulse bg-muted/30" />
             ))
+          : (list.data ?? []).length === 0
+          ? (
+              <Card className="p-6 text-center text-muted-foreground md:col-span-2" data-testid="card-automations-empty">
+                לא נמצאו קונקטורים. נסו לרענן את העמוד — אם הבעיה נמשכת, בדקו את החיבור ל-Supabase.
+              </Card>
+            )
           : (list.data ?? []).map((cfg) => (
               <ConnectorCard key={cfg.key} config={cfg} />
             ))}
