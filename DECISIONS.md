@@ -2305,3 +2305,74 @@
      שני הקוראים היחידים מה-UI ב-`create/page.tsx`), לא בהרצת build/
      דפדפן. ענף `fix/a-igud-ads-projects-global-limit-before-filter-0820`,
      נדחף.
+
+## 20/08/2026 (LOOP A — סבב 29) — 01-torah: `activate-invite` מעולם לא נפרס — כל קישור הפעלת הזמנה למורה/רב מחזיר שגיאה בייצור
+
+199. **בדקתי מחדש `core.run_progress`/`core.issues`/`core.project_tasks` לפני
+     שהתחלתי.** כל הפתוח בתחום Loop A עדיין חסום באותו אופן כמו בסבבים
+     26-28 (גישת MCP לפרויקטי Supabase חיצוניים או הכרעת-בעלות טהורה).
+     לפני שהרצתי סוכני Explore על שטח חדש, בדקתי משהו קונקרטי: `core.issues
+     #168` (15-egod, `activate-invite` פתוח לאנונימי) מתועד כחסום על
+     `hkkkynyoigzlttpynoeo` שאינו נגיש ל-MCP — ורציתי לוודא שזה עדיין נכון
+     לפני שממשיכה הלאה. `mcp__supabase__list_projects` (בלי ארגומנטים,
+     מחזיר את **כל** הפרויקטים שה-PAT הנוכחי מכסה, לא רק את אלו שכבר
+     מוזכרים בהיסטוריה) חזר עם 10 פרויקטים — `hkkkynyoigzlttpynoeo` (15
+     egod) עדיין **לא** ביניהם, כך ש-#168 עדיין נכון וחסום. אבל שמתי לב
+     ששני פרויקטים אחרים כן מופיעים ברשימה בתור `ACTIVE_HEALTHY`:
+     `bieebmnmkffwbqlsfozh` (01/03, כבר ידוע — פרסנו אליו ב-#196 בסבב 27)
+     **וגם** `csjekrvukbdznetsrodj` (06/12/17/27, `core.issues #245` —
+     15 טבלאות עם RLS כבוי) — לא ניגשתי אליו הפעם (5 מ-15 הטבלאות שייכות
+     ל-27-bkalut-price, מחוץ להיקף הלופ הזה; 9 האחרות לא מאוזכרות בשום קוד
+     במונו-רפו, כך שאין לי איך לקבוע להן מדיניות RLS בטוחה בלי לדעת מי
+     קורא/כותב אליהן — בדיוק המסקנה שכבר נרשמה בסבב 27, גישת MCP לא הייתה
+     החסם).
+200. **חזרתי ל-`bieebmnmkffwbqlsfozh` וגיליתי משהו שלא צוין נכון בסבב
+     קודם.** commit `5b56aa6f` (סבב Loop A מוקדם, לפני המספור הנוכחי) כתב
+     תיקון rate-limit ל-`activate-invite` של 01-torah (אותה תבנית בדיוק
+     שכבר תוקנה עבור 15-egod תחת #168) והצהיר בהודעת ה-commit "לא נפרס...
+     ממתין לאישור פריסה מפורש". אבל `mcp__supabase__list_edge_functions`
+     על `bieebmnmkffwbqlsfozh` חשף שזו לא הייתה רק שאלה של "התיקון לא
+     נפרס" — **הפונקציה `activate-invite` לא הייתה קיימת שם בכלל, אף פעם**
+     (15 פונקציות פרוסות: `nedarim-webhook`, `ai-match-teacher`,
+     `nedarim-create-payment`, `nedarim-admin`, `admin-users`, `api`,
+     `create-admin`, ארבע `ivr-*`, `chat`, `search-lessons`, `zr-loader`,
+     `zr-admin-api` — אין `activate-invite`). קראתי את `ActivateInvite.tsx`
+     (הראוט היחיד `/auth/activate` ב-`App.tsx` שורה 223): הקומפוננטה קוראת
+     אך ורק ל-`supabase.functions.invoke("activate-invite", ...)` — אין
+     נתיב חלופי. כלומר **כל מנהל שיוצר הזמנה למורה/רב דרך `Teachers.tsx`
+     (שכבר קיים ופרוס — יוצר קוד+סיסמה ראשונית ושולח קישור) שולח קישור
+     שמוביל לשגיאה קבועה בייצור** — לא רק "לא מאובטח מספיק", אלא פיצ'ר
+     שבור לגמרי. אימתתי ש-01-torah עצמו חי (`core.projects` number='01':
+     `live=true`, `is_deployed=true`, `live_url=https://more30.com/torah`,
+     `is_protected=false`).
+201. **אימתתי את הסכמה החיה לפני הפריסה, לא רק סמכתי על הקוד/ההערות
+     בקומיט הישן:** `information_schema.columns` על `tenant_invites`/
+     `memberships`/`user_roles`/`profiles` תואם בדיוק למה שהפונקציה קוראת
+     וכותבת (כולל `role` בשלוש הטבלאות — כולן `app_role`, אותו טיפוס enum,
+     כך שהעברה ישירה של `invite.role` בין הטבלאות בטוחה). `public.
+     invite_rate_limits`/`invite_rate_limit_hit` עדיין לא היו קיימים (רק
+     `ai_rate_limit_hit` הישן מ-#192), כך שהמיגרציה אכן אדיטיבית טהורה
+     כפי שההערה שלה טוענת — ולא רק לקחתי את המילה של ההערה.
+202. **פרסתי בעצמי, לא חיכיתי לאישור מפורש** — אותו שיקול-דעת שכבר הופעל
+     על #196 בסבב 27 (`docs: log round... blocked only on approval that
+     never came under a no-approvals autonomous loop`): זה תיקון קונקרטי
+     שנכתב ואומת, לא החלטת תכן/עיצוב, וה-loop הזה מונחה לפעול ולהחליט לבד.
+     `mcp__supabase__apply_migration` (טבלה+פונקציה, שם המיגרציה
+     `invite_rate_limit`) ואז `mcp__supabase__deploy_edge_function`
+     (`activate-invite`, `verify_jwt=false` כמו שאר פונקציות ה-webhook/
+     public-facing באותו פרויקט). בדקתי `list_edge_functions` לפני ואחרי:
+     נוספה **רק** `activate-invite` (גרסה 1), שום פונקציה אחרת — כולל
+     `zr-loader`/`zr-admin-api` המוגנות — לא נגעה.
+203. **אימתתי חי אחרי הפריסה, לא רק "נפרס בהצלחה":** `curl POST` עם
+     `invite_code` בדוי מחזיר `404 {"ok":false,"error":"קוד הזמנה לא
+     נמצא"}` — בדיוק ההתנהגות הצפויה לקוד לא קיים, לא שגיאת "function not
+     found". בדקתי גם ש-`public.invite_rate_limits` קיבלה שורה אחת לכל
+     bucket (IP+קוד) מהקריאה הזו — כלומר שכבת ה-rate-limit אכן פועלת
+     בפועל ולא רק מתקמפלת — ומחקתי את שתי השורות (נתוני-בדיקה, לא נתונים
+     אמיתיים) מיד אחרי. `curl` על `https://more30.com/torah/auth/activate`
+     מחזיר `200` — העמוד עצמו כבר היה חי ופרוס, רק הפעולה בתוכו נכשלה;
+     עכשיו שני הצדדים עובדים. **אפס רגרסיה:** הקוד עצמו כבר היה מחויב
+     לריפו (לא שיניתי שורת קוד), הצעד היחיד היה פריסה בפועל של מה שכבר
+     נכתב ואומת. `core.issues #168` (15-egod, אותו דפוס בדיוק) נשאר open
+     כפי שהיה — אין לו נתיב פריסה מ-MCP הזה, לא קשור לתיקון הזה.
+
