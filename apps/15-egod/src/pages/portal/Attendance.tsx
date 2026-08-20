@@ -66,7 +66,7 @@ const Attendance = () => {
   const sendEncouragement = (p: any) => {
     if (!p.phone) { toast.error("אין מספר טלפון למשתתף זה"); return; }
     const msg = encodeURIComponent(`שלום ${p.full_name}, התגעגענו אליך בשיעור! נשמח לראותך בשיעור הקרוב 🌿`);
-    window.open(`https://wa.me/${p.phone.replace(/\D/g, "")}?text=${msg}`, "_blank");
+    window.open(`https://wa.me/${p.phone.replace(/\D/g, "")}?text=${msg}`, "_blank", "noopener,noreferrer");
   };
 
   const getStatus = (pid: string) => attendance.find(a => a.participant_id === pid);
