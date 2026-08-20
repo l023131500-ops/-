@@ -97,7 +97,7 @@ export default function UsersPage() {
         notes: form.notes || null,
       };
       const isEdit = !!form.id;
-      const url = isEdit ? `/api/admin/users/${form.id}` : "/modaot/api/admin/users";
+      const url = isEdit ? `/modaot/api/admin/users/${form.id}` : "/modaot/api/admin/users";
       const method = isEdit ? "PATCH" : "POST";
       const r = await fetch(url, {
         method,
