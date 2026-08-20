@@ -76,6 +76,8 @@ input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px soli
 select option{background:var(--royal-2);color:var(--ink)}
 .form-grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
 .form-grid .span2{grid-column:1/-1}
+.video-embed{display:block;width:100%;aspect-ratio:16/9;border:0;border-radius:5px;
+  margin:0 0 18px;background:var(--royal)}
 .controls{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;margin-bottom:20px}
 .controls .f{min-width:170px}
 .spacer{flex:1}
@@ -378,6 +380,35 @@ const v  = (x) => (x === null || x === undefined || x === '' ? NA : esc(x));
 const money = (x) => (x === null || x === undefined || x === '' ? NA : cur.format(x));
 const dt = (x) => (x ? new Date(x).toLocaleDateString('he-IL') : NA);
 const dtm = (x) => (x ? new Date(x).toLocaleString('he-IL', { dateStyle: 'short', timeStyle: 'short' }) : NA);
+
+// Embeds a property's video link. YouTube/Vimeo get an iframe player; a
+// direct file URL (the office's own host) gets a plain <video> tag; anything
+// else — a Google Drive share link, a WhatsApp-forwarded link, whatever an
+// office actually pastes — falls back to an "open" link rather than a broken
+// frame. Kept identical to listing.html's copy — same rules, same markup.
+function videoEmbedHtml(url) {
+  if (!url) return '';
+  let u;
+  try { u = new URL(url); } catch (e) {
+    return '<p><a class="btn btn-sm" href="' + esc(url) + '" target="_blank" rel="noopener noreferrer">צפייה בסרטון הנכס</a></p>';
+  }
+  if (/(^|\.)youtube\.com$/.test(u.hostname) || u.hostname === 'youtu.be') {
+    let id = u.searchParams.get('v');
+    if (!id && u.hostname === 'youtu.be') id = u.pathname.slice(1);
+    if (!id && /\/shorts\//.test(u.pathname)) id = u.pathname.split('/shorts/')[1];
+    if (id) return '<div class="video-embed"><iframe src="https://www.youtube.com/embed/' + esc(id) +
+      '" title="סרטון הנכס" loading="lazy" allow="fullscreen" allowfullscreen></iframe></div>';
+  }
+  if (/(^|\.)vimeo\.com$/.test(u.hostname)) {
+    const id = u.pathname.split('/').filter(Boolean).pop();
+    if (id) return '<div class="video-embed"><iframe src="https://player.vimeo.com/video/' + esc(id) +
+      '" title="סרטון הנכס" loading="lazy" allow="fullscreen" allowfullscreen></iframe></div>';
+  }
+  if (/\.(mp4|webm|mov|m4v)$/i.test(u.pathname)) {
+    return '<video class="video-embed" controls preload="metadata" src="' + esc(url) + '"></video>';
+  }
+  return '<p><a class="btn btn-sm" href="' + esc(url) + '" target="_blank" rel="noopener noreferrer">צפייה בסרטון הנכס</a></p>';
+}
 
 const STAGES = [
   { key: 'lead',      label: 'ליד' },
@@ -873,6 +904,10 @@ async function openProperty(id) {
         .join('') + '</div>';
   }
 
+  if (p.video_url) {
+    html += '<h2 class="sec">סרטון הנכס</h2>' + videoEmbedHtml(p.video_url);
+  }
+
   html += '<h2 class="sec">דוח האמת — נדל״ן ברגע</h2><div id="truthBox">' + truthHtml(p) + '</div>';
 
   html += '<h2 class="sec">קישור צפייה ללקוח (בלי כניסה)</h2><div id="shareBox">' + shareHtml(p) + '</div>';
@@ -1104,22 +1139,71 @@ function propertyForm(existing) {
       '<label class="f span2">תמונות — קישור אחד בכל שורה' +
         '<textarea id="g_images" placeholder="https://...">' + esc((p.images || []).join('\n')) + '</textarea>' +
       '</label>' +
+      '<label class="f span2">העלאת תמונות מהמחשב (נוספות אוטומטית לרשימה שמעליי)' +
+        '<input type="file" id="g_images_file" accept="image/*" multiple />' +
+        '<span id="g_images_status" class="na" style="margin-top:4px;display:inline-block"></span>' +
+      '</label>' +
+      '<label class="f span2">קישור לסרטון הנכס (יוטיוב / וימאו / קובץ וידאו ישיר)' +
+        '<input id="g_video_url" value="' + esc(p.video_url || '') + '" placeholder="https://..." />' +
+      '</label>' +
     '</div>' +
     '<p style="margin-top:20px"><button class="btn" id="pfSave">שמירה</button></p>';
 
   drawer(p.id ? 'עריכת נכס' : 'נכס חדש', '', html, (close) => {
+    // Storage path is `{office_id}/{folder}/...` — the RLS policy only checks
+    // the office segment, so the folder itself just needs to be a stable uuid
+    // for this drawer session (the property's own id once it has one, else a
+    // fresh one) so every photo uploaded in one edit lands in one place.
+    const mediaFolder = p.id || crypto.randomUUID();
+    const fileInput = $('g_images_file');
+    if (fileInput) {
+      fileInput.addEventListener('change', async () => {
+        const files = Array.from(fileInput.files || []);
+        if (!files.length) return;
+        const status = $('g_images_status');
+        status.textContent = 'מעלה ' + files.length + ' תמונות…';
+        fileInput.disabled = true;
+        const urls = [];
+        for (const file of files) {
+          const clean = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+          const path = OFFICE.id + '/' + mediaFolder + '/' + Date.now() + '-' + clean;
+          try {
+            const { error } = await sb.storage.from('nadlan-pro-media').upload(path, file, {
+              cacheControl: '3600', upsert: false, contentType: file.type || undefined,
+            });
+            if (error) throw error;
+            const { data } = sb.storage.from('nadlan-pro-media').getPublicUrl(path);
+            urls.push(data.publicUrl);
+          } catch (e) {
+            toast('העלאת "' + file.name + '" נכשלה: ' + e.message, true);
+          }
+        }
+        if (urls.length) {
+          const ta = $('g_images');
+          const existing = ta.value.split('\n').map((s) => s.trim()).filter(Boolean);
+          ta.value = existing.concat(urls).join('\n');
+          status.textContent = 'הועלו ' + urls.length + ' תמונות.';
+          toast(urls.length + ' תמונות הועלו');
+        } else {
+          status.textContent = '';
+        }
+        fileInput.value = '';
+        fileInput.disabled = false;
+      });
+    }
+
     $('pfSave').addEventListener('click', async () => {
       const body = { office_id: OFFICE.id };
       if (p.id) body.id = p.id;
       for (const k of ['title', 'address', 'city', 'gush', 'helka', 'tat_helka', 'asset_type',
                        'rooms', 'area_sqm', 'floor', 'total_floors', 'price', 'status',
-                       'exclusivity_until', 'description']) {
+                       'exclusivity_until', 'description', 'video_url']) {
         body[k] = $('g_' + k).value.trim();
       }
       body.is_exclusive = $('g_is_exclusive').checked ? 'true' : 'false';
-      // One URL per line; blank lines dropped. No upload/storage here — the
-      // office pastes links to images it already hosts elsewhere. A real
-      // upload-to-storage flow (and video) is a separate, larger next step.
+      // One URL per line; blank lines dropped. Lines come either from a paste
+      // or from the upload handler above appending a Storage public URL —
+      // both end up in the same textarea, so save does not need to know which.
       body.images = $('g_images').value.split('\n').map((s) => s.trim()).filter(Boolean);
       if (!body.address && !body.title) {
         $('pfErr').innerHTML = '<div class="err">צריך לפחות כתובת או כותרת.</div>';

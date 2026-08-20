@@ -50,6 +50,9 @@ h1{font-family:'Suez One',serif;font-weight:400;font-size:26px;margin:0 0 4px}
 .gallery img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:5px;
   border:1px solid var(--line-2);background:var(--royal-2)}
 
+.video-embed{display:block;width:100%;aspect-ratio:16/9;border:0;border-radius:5px;
+  margin:0 0 24px;background:var(--royal-2)}
+
 .facts{display:flex;flex-wrap:wrap;gap:20px;padding:16px 18px;margin:0 0 22px;
   border:1px solid var(--line);border-radius:5px;background:rgba(201,162,39,.04)}
 .facts div{min-width:80px}
@@ -96,6 +99,7 @@ h1{font-family:'Suez One',serif;font-weight:400;font-size:26px;margin:0 0 4px}
     <p class="sub" id="sub"></p>
     <p class="price" id="price" hidden></p>
     <div class="gallery" id="gallery" hidden></div>
+    <div id="videoBox"></div>
     <div class="facts" id="facts"></div>
     <p class="desc" id="desc" hidden></p>
     <div class="office" id="office" hidden></div>
@@ -138,6 +142,32 @@ const ASSET_HE = {
 const money = (n) => n == null ? null : new Intl.NumberFormat('he-IL',
   { style: 'currency', currency: 'ILS', maximumFractionDigits: 0 }).format(n);
 
+// Kept identical to app.html's copy — same rules, same markup, so an office
+// member previewing a listing sees exactly what their client will see.
+function videoEmbedHtml(url) {
+  if (!url) return '';
+  let u;
+  try { u = new URL(url); } catch (e) {
+    return '<p><a class="btn" href="' + esc(url) + '" target="_blank" rel="noopener noreferrer">צפייה בסרטון הנכס</a></p>';
+  }
+  if (/(^|\.)youtube\.com$/.test(u.hostname) || u.hostname === 'youtu.be') {
+    let id = u.searchParams.get('v');
+    if (!id && u.hostname === 'youtu.be') id = u.pathname.slice(1);
+    if (!id && /\/shorts\//.test(u.pathname)) id = u.pathname.split('/shorts/')[1];
+    if (id) return '<div class="video-embed"><iframe src="https://www.youtube.com/embed/' + esc(id) +
+      '" title="סרטון הנכס" loading="lazy" allow="fullscreen" allowfullscreen></iframe></div>';
+  }
+  if (/(^|\.)vimeo\.com$/.test(u.hostname)) {
+    const id = u.pathname.split('/').filter(Boolean).pop();
+    if (id) return '<div class="video-embed"><iframe src="https://player.vimeo.com/video/' + esc(id) +
+      '" title="סרטון הנכס" loading="lazy" allow="fullscreen" allowfullscreen></iframe></div>';
+  }
+  if (/\.(mp4|webm|mov|m4v)$/i.test(u.pathname)) {
+    return '<video class="video-embed" controls preload="metadata" src="' + esc(url) + '"></video>';
+  }
+  return '<p><a class="btn" href="' + esc(url) + '" target="_blank" rel="noopener noreferrer">צפייה בסרטון הנכס</a></p>';
+}
+
 function fatal(title, msg) {
   $('loading').hidden = true;
   $('main').hidden = true;
@@ -170,6 +200,8 @@ async function boot() {
     $('gallery').innerHTML = d.images.map((src) =>
       '<img src="' + esc(src) + '" alt="תמונת הנכס ב' + esc(d.address || d.title || '') + '" loading="lazy" />').join('');
   }
+
+  if (d.video_url) { $('videoBox').innerHTML = videoEmbedHtml(d.video_url); }
 
   const facts = [
     ['סוג', ASSET_HE[d.asset_type] || d.asset_type],
