@@ -5751,3 +5751,20 @@
      (6) → admin/users (5) → admin/templates (14) →
      admin/templates/[id] (14) → public/create (14). אחריו
      01-torah-platform (~150 מופעים/19 קבצים) מהמיפוי של סבב 83.
+
+## 20/08/2026 (LOOP A — סבב 95) — `<label htmlFor>`/`id`: 03-igud-ads/admin/transcribe/coupons
+
+523. **תיקנתי `app/(admin)/admin/transcribe/coupons/page.tsx`** (3
+     זוגות בטופס יצירת קופון): `coupon-code` על שדה הקוד,
+     `coupon-max-uploads` על מספר ההעלאות המותר, `coupon-expires-at`
+     על תאריך התפוגה. אפס רגרסיה: רק `id`/`htmlFor` נוספו, לא נגעתי
+     ב-`value`/`onChange`/`required`/`aria-required`. אומת ע"י `git
+     diff --stat` (קובץ אחד, 6+/3-) + עיון מלא ב-diff. אין `tsc`/`npm`
+     בסביבה הזו. Commit `0a6f4966` על `fix/a-icon-only-buttons-round2-0820`,
+     נדחף ל-origin (מפעיל פריסת Vercel תחת more30.com/modaot).
+524. **הבא בתור ב-03-igud-ads:** admin/transcribe/glossary (4) →
+     public/transcribe/upload (3, עם ההחרגה שצוינה) → admin/coupons
+     (4) → admin/notifications (6) → admin/users (5) →
+     admin/templates (14) → admin/templates/[id] (14) →
+     public/create (14). אחריו 01-torah-platform (~150 מופעים/19
+     קבצים) מהמיפוי של סבב 83.
