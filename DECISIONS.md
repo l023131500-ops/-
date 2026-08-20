@@ -5723,3 +5723,31 @@
      (63 מופעים/10 קבצים) — דורש סקר חדש (מיפוי קבצים/מופעים) לפני
      תיקון, כי לא נסקר עדיין ברמת קובץ-בקובץ כמו 15-egod. אחריו
      01-torah-platform (~150 מופעים/19 קבצים) מהמיפוי של סבב 83.
+
+## 20/08/2026 (LOOP A — סבב 94) — `<label htmlFor>`/`id`: 03-igud-ads/login
+
+520. **מיפוי חדש ל-03-igud-ads בוצע** (agent Explore) — 63 מופעים על
+     פני 10 קבצים, מדורגים מהקטן לגדול: `login/page.tsx` (2),
+     `admin/transcribe/coupons` (3), `admin/transcribe/glossary` (4),
+     `public/transcribe/upload` (3, + קבוצת כפתורים "סגנון עריכה"
+     שהוחרגה — דורשת `fieldset`/`legend` ולא `htmlFor`), `admin/coupons`
+     (4), `admin/notifications` (6), `admin/users` (5),
+     `admin/templates` (14), `admin/templates/[id]` (14), `public/create`
+     (14). התחלתי מהקטן ביותר.
+521. **תיקנתי `app/login/page.tsx`** (2 זוגות): `login-email` על שדה
+     האימייל, `login-password` על שדה הסיסמה (כולל כפתור "הצג סיסמה"
+     שנשאר ללא שינוי — הוא `aria-label` עצמאי, לא `label` חסר-קישור).
+     אפס רגרסיה: רק `id`/`htmlFor` נוספו, לא נגעתי ב-`value`/
+     `onChange`/`autoComplete`. אומת ע"י `git diff --stat` (קובץ אחד,
+     4+/3-) + בדיקת איזון `{}`/`()`/`[]` ב-Python (32/32, 41/41, 7/7).
+     אין `tsc`/`npm` בסביבה הזו. `git add -f` נדרש — `apps/**` מוחרג
+     כברירת מחדל ב-`.gitignore` השורשי (מקור פרטי לא-ניתן-לוונדור
+     בריפו ציבורי) אך `03-igud-ads/app` כבר עוקב מרישום ידני קודם.
+     Commit `2a18109a` על `fix/a-icon-only-buttons-round2-0820`, נדחף
+     ל-origin (מפעיל פריסת Vercel תחת more30.com/modaot).
+522. **הבא בתור ב-03-igud-ads (מהקטן לגדול):** admin/transcribe/coupons
+     (3) → admin/transcribe/glossary (4) → public/transcribe/upload
+     (3, עם ההחרגה שצוינה) → admin/coupons (4) → admin/notifications
+     (6) → admin/users (5) → admin/templates (14) →
+     admin/templates/[id] (14) → public/create (14). אחריו
+     01-torah-platform (~150 מופעים/19 קבצים) מהמיפוי של סבב 83.
