@@ -9746,3 +9746,45 @@
     לכל אפליקציה (SEO-לנס נוסף שטרם נפתח בהיקף loop B). נושא #245/#250
     (RLS, חסומים) נשארים כפי שהם. via cloud server 167.99.131.167
     [loop B]
+
+## 20/08/2026 — סבב 419 (loop B)
+
+419. **`robots.txt` חסר לגמרי ב-7 מתוך 9 האפליקציות החיות — נוסף.**
+
+    בדיקה (`find -iname robots.txt`) על כל 9 האפליקציות החיות גילתה
+    ש-**21-mthbram** ו-**24-galilee** הן היחידות עם `robots.txt`
+    קיים (שתיהן זהות — תבנית `Googlebot`/`Bingbot`/`Twitterbot`/
+    `facebookexternalhit`/`*` כולן `Allow: /`). שאר שבע —
+    **17-chizukim, 18-orech, 19-shiurim, 20-igud, 22-zchuyot,
+    27-mechiron, 28-kupot** — לא הצהירו כלום, כלומר אין אות מפורש
+    לזחלנים (חלק חסר גם `canonical`/`sitemap`, לא רק `robots.txt`,
+    עדשה נפרדת לעתיד).
+
+    נוסף `robots.txt` זהה בדיוק לתבנית של 21/24 לכל אחת משבע
+    האפליקציות, בתיקיית ה-`public` הסטטית הקיימת של כל אחת — לא
+    תיקיה חדשה: `client/public` ל-17/27/28 (אותו דפוס Vite+Express
+    כמו 21 עצמה), `public` ל-18 (Next.js, משרת סטטי מ-`public/`
+    כברירת מחדל), ול-19/20 (`server.js` עם
+    `express.static(path.join(__dirname, "public"))` מאומת בקריאת
+    קוד), ו-`public` ל-22 (Vite, אותו דפוס בדיוק כמו 21/24 עצמן).
+    לא נבנה `sitemap.xml` — 21/24 גם הן בלי `Sitemap:` בקובץ, נשמר
+    עקבי לתבנית הקיימת ולא נוסף היקף חדש שלא אומת.
+
+    **בדיקות תקינות:** `find` אישר שכל 7 הקבצים נוצרו בתיקיית
+    ה-`public` הנכונה (לא כפילות, לא תיקיה שגויה). `git status
+    --porcelain --ignored` אישר ששבעתם נופלים תחת כלל `.gitignore`
+    (כמו `public/` הקיים ב-21/24 שכבר עוקף עם `git add -f` בקומיטים
+    קודמים) — `git add -f` הופעל לכל 7. `git diff --cached --stat`:
+    7 קבצים, ‎+98‎ (רק תוספות, אין מחיקה, אין קובץ קיים שנגע). לא
+    הופעל build/dev-server (לפי הנחיות ההרצה).
+
+    ענף `fix/b-22-whatsapp-noopener-round395-0820` (שרשרת הענפים היא
+    המקור המלא היחיד ל-loop B, לא `main`), קומיט `80a79335`, נדחף
+    (מפעיל 7 פריסות Vercel תחת `more30.com/{chizukim,orech,shiurim,
+    igud,zchuyot,mechiron,kupot}`).
+
+    **הבא בתור:** `robots.txt` סגור על כל 9 האפליקציות החיות (9/9).
+    עדיין לא נבדק: `sitemap.xml` (אף אחת מ-9 אין לה), `canonical`
+    חסר ב-19/20/21/24 (תועד בסבב 418), `BreadcrumbList`/`WebSite`+
+    `SearchAction` schema.org. נושא #245/#250 (RLS, חסומים) נשארים
+    כפי שהם. via cloud server 167.99.131.167 [loop B]
