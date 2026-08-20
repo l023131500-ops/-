@@ -7419,3 +7419,49 @@
     עם auto-save שקט על שדות רגישים, או `<img>` בלי `alt`, או
     בדיקת focus-trap בדיאלוגים/מודלים.
     via cloud server 167.99.131.167 [loop B]
+
+## 20/08/2026 — סבב 373 (loop B)
+
+373. **פתיחת עדשת `<img>` בלי `alt` וסגירתה מיידית (נקי) + עדשת
+    focus-trap בדיאלוגים/מודלים מותאמים-אישית (לא Radix), לפי שתי
+    ההצעות בסוף סבב 372, על פני כל 7 האפליקציות החיות בהיקף loop B**
+    (17/18/21/22/24/27/28). `grep -rn "<img"` ידני על כל 7: כל
+    מופע כבר כולל `alt` (כולל `alt=""` מכוון לתמונות דקורטיביות —
+    התנהגות נכונה, לא ליקוי) — **נקי, לא נמצא ממצא**, כולל הבדיקה
+    הידנית על תגי `<img` רב-שורתיים ב-18/21/22 שנחתכו ב-grep.
+    עדשת ה-focus-trap: איתרתי את כל הדיאלוגים/מודלים המותאמים-אישית
+    (לא בנויים על `@/components/ui/dialog` מבוסס-Radix, שכבר כולל
+    focus-trap מובנה) — `apps/21-mthbram/src/components/
+    SynagogueDetailModal.tsx` וגם `RightsCategories.tsx` ב-22
+    משתמשים ב-Radix `Dialog`/`DialogContent`, נקיים. הממצא האמיתי:
+    `apps/21-mthbram/src/components/LessonDetailModal.tsx` —
+    רכיב-מודל משותף יחיד (לא Radix, `motion.div` עם overlay ידני)
+    שמשמש ב-7 מקומות שונים באפליקציה (`PublicRabbiPage.tsx`,
+    `PublicOrgPage.tsx`, `LessonDirectory.tsx`, `FindLesson.tsx`,
+    `FeaturedLessons.tsx`, `LessonsDashboard.tsx`,
+    `UpcomingLessonsCarousel.tsx`, `AdminDashboard.tsx`) — כבר טיפל
+    ב-Escape וב-focus-restore-on-close, אבל חסר: `role="dialog"`/
+    `aria-modal`/שם נגיש, focus ראשוני לתוך המודל בפתיחה, ו-Tab
+    trap (Tab יכול היה לצאת מהמודל אל התוכן החסום מאחורי ה-overlay).
+    הוספתי `panelRef`+`role="dialog"`+`aria-modal="true"`+
+    `aria-labelledby="lesson-modal-title"` על ה-panel הפנימי,
+    `id="lesson-modal-title"` על ה-`<h2>` הקיים, `closeButtonRef`
+    עם `.focus()` באפקט הפתיחה (התמקדות ראשונית בכפתור הסגירה,
+    הפריט הראשון בסדר ה-DOM), ולוגיקת Tab-trap מינימלית בתוך
+    ה-`handleKeyDown` הקיים (שאילתת `focusable` בתוך ה-panel,
+    לכידת Tab/Shift+Tab בקצוות ומחזור). אפס שינוי בלוגיקת
+    share/download/contact/state אחרת — רק תוספת accessibility.
+    בדיקת איזון סוגריים מסולסלים/עגולים/מרובעים ב-python על הקובץ
+    המלא אחרי העריכה — תקין (177/177+105/105+18/18). אין build/
+    dev-server זמין בסביבה הזו לפי הנחיית ההרצה — לא `tsc`. הקובץ
+    תחת `apps/21-mthbram/src/components/LessonDetailModal.tsx`,
+    אינו חסום ב-gitignore. ענף `fix/b-21-mthbram-lessondetailmodal-focus-trap-0820`.
+
+    **זה סוגר את עדשת focus-trap על היחיד שדרש תיקון (Radix כבר
+    מכסה את כל השאר), ואת עדשת ה-`<img>` alt (נקייה מלכתחילה) על
+    פני כל 7 האפליקציות החיות בהיקף loop B.**
+
+    **הבא בתור:** נושא #250 (RLS על `21-mthbram`, חסום MCP —
+    פרויקט `aypsqqvfohekxxuqsmrw` לא נגיש), או עדשה חדשה — טפסים
+    עם auto-save שקט על שדות רגישים.
+    via cloud server 167.99.131.167 [loop B]

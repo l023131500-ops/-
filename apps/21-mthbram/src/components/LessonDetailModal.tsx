@@ -16,11 +16,32 @@ const LessonDetailModal = ({ lesson, onClose, imageOptions }: LessonDetailModalP
   const onCloseRef = useRef(onClose);
   onCloseRef.current = onClose;
   const triggerRef = useRef<HTMLElement | null>(null);
+  const panelRef = useRef<HTMLDivElement | null>(null);
+  const closeButtonRef = useRef<HTMLButtonElement | null>(null);
 
   useEffect(() => {
     triggerRef.current = document.activeElement as HTMLElement;
+    closeButtonRef.current?.focus();
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onCloseRef.current();
+      if (e.key === "Escape") {
+        onCloseRef.current();
+        return;
+      }
+      if (e.key === "Tab" && panelRef.current) {
+        const focusable = panelRef.current.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])'
+        );
+        if (focusable.length === 0) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => {
@@ -108,6 +129,10 @@ const LessonDetailModal = ({ lesson, onClose, imageOptions }: LessonDetailModalP
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
       <motion.div
+        ref={panelRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="lesson-modal-title"
         initial={{ opacity: 0, y: 40, scale: 0.95 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{ opacity: 0, y: 40, scale: 0.95 }}
@@ -134,7 +159,7 @@ const LessonDetailModal = ({ lesson, onClose, imageOptions }: LessonDetailModalP
                   <Image className="w-4 h-4" />
                 </motion.button>
               </div>
-              <button onClick={onClose} aria-label="סגור" className="w-9 h-9 rounded-xl bg-muted flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors">
+              <button ref={closeButtonRef} onClick={onClose} aria-label="סגור" className="w-9 h-9 rounded-xl bg-muted flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -148,7 +173,7 @@ const LessonDetailModal = ({ lesson, onClose, imageOptions }: LessonDetailModalP
                 </div>
               )}
               <div className="flex-1 min-w-0">
-                <h2 className="font-display text-2xl font-black text-foreground mb-1">{lesson.rabbi_name}</h2>
+                <h2 id="lesson-modal-title" className="font-display text-2xl font-black text-foreground mb-1">{lesson.rabbi_name}</h2>
                 {lesson.rabbi_role && (
                   <p className="font-body text-sm text-muted-foreground">{lesson.rabbi_role}</p>
                 )}
