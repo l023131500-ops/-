@@ -135,28 +135,29 @@ export default function TemplateEditPage() {
       <div className="bg-surface rounded-2xl border p-6 space-y-5">
         <div className="grid md:grid-cols-2 gap-4">
           <div>
-            <label className="label">שם תבנית *</label>
-            <input className="input" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
+            <label className="label" htmlFor="tpl-name">שם תבנית *</label>
+            <input id="tpl-name" className="input" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
           </div>
           <div>
-            <label className="label">קטגוריה</label>
-            <select className="input" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })}>
+            <label className="label" htmlFor="tpl-category">קטגוריה</label>
+            <select id="tpl-category" className="input" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })}>
               {Object.entries(CATEGORIES).map(([v, l]) => <option key={v} value={v}>{l}</option>)}
             </select>
           </div>
         </div>
 
         <div>
-          <label className="label">תיאור</label>
-          <textarea className="input" rows={2} value={form.description || ""} onChange={(e) => setForm({ ...form, description: e.target.value })} />
+          <label className="label" htmlFor="tpl-description">תיאור</label>
+          <textarea id="tpl-description" className="input" rows={2} value={form.description || ""} onChange={(e) => setForm({ ...form, description: e.target.value })} />
         </div>
 
         <div>
-          <label className="label">
+          <label className="label" htmlFor="tpl-prompt">
             prompt_template
             <span className="text-gray-400 font-normal mr-2 text-xs">(השתמש ב-{"{field_name}"} לשדות)</span>
           </label>
           <textarea
+            id="tpl-prompt"
             className="input font-mono text-xs"
             rows={6}
             placeholder={"לדוגמה: מודעה לשיעור תורה — {title} מפי {teacher_name}, ביום {day} בשעה {time} במקום {location}. {free_text}"}
@@ -167,8 +168,9 @@ export default function TemplateEditPage() {
 
         <div className="grid md:grid-cols-2 gap-4">
           <div>
-            <label className="label">שדות חובה (מופרדים בפסיק)</label>
+            <label className="label" htmlFor="tpl-required">שדות חובה (מופרדים בפסיק)</label>
             <input
+              id="tpl-required"
               className="input"
               placeholder="title, teacher_name, day"
               value={reqStr}
@@ -183,8 +185,9 @@ export default function TemplateEditPage() {
             )}
           </div>
           <div>
-            <label className="label">שדות אופציונליים</label>
+            <label className="label" htmlFor="tpl-optional">שדות אופציונליים</label>
             <input
+              id="tpl-optional"
               className="input"
               placeholder="location, contact, free_text"
               value={optStr}
@@ -204,17 +207,17 @@ export default function TemplateEditPage() {
         <div className="border rounded-lg p-4 space-y-3">
           <h3 className="font-medium text-sm">כללי עיצוב (style_rules)</h3>
           <div>
-            <label className="label">צבעים (hex, מופרדים בפסיק)</label>
-            <input className="input" placeholder="#1A2E5A, #C9A84C" value={colorsStr} onChange={(e) => setColorsStr(e.target.value)} />
+            <label className="label" htmlFor="tpl-colors">צבעים (hex, מופרדים בפסיק)</label>
+            <input id="tpl-colors" className="input" placeholder="#1A2E5A, #C9A84C" value={colorsStr} onChange={(e) => setColorsStr(e.target.value)} />
           </div>
           <div className="grid md:grid-cols-2 gap-4">
             <div>
-              <label className="label">פונט</label>
-              <input className="input" value={sr.font} onChange={(e) => setForm({ ...form, style_rules: { ...sr, font: e.target.value } })} />
+              <label className="label" htmlFor="tpl-font">פונט</label>
+              <input id="tpl-font" className="input" value={sr.font} onChange={(e) => setForm({ ...form, style_rules: { ...sr, font: e.target.value } })} />
             </div>
             <div>
-              <label className="label">יישור טקסט</label>
-              <select className="input" value={sr.alignment} onChange={(e) => setForm({ ...form, style_rules: { ...sr, alignment: e.target.value } })}>
+              <label className="label" htmlFor="tpl-alignment">יישור טקסט</label>
+              <select id="tpl-alignment" className="input" value={sr.alignment} onChange={(e) => setForm({ ...form, style_rules: { ...sr, alignment: e.target.value } })}>
                 <option value="right">ימין (RTL)</option>
                 <option value="center">מרכז</option>
                 <option value="left">שמאל</option>
@@ -225,8 +228,9 @@ export default function TemplateEditPage() {
 
         <div className="grid md:grid-cols-3 gap-4">
           <div>
-            <label className="label">מחיר (₪)</label>
+            <label className="label" htmlFor="tpl-price">מחיר (₪)</label>
             <input
+              id="tpl-price"
               className="input"
               type="number"
               inputMode="numeric"
@@ -235,8 +239,8 @@ export default function TemplateEditPage() {
             />
           </div>
           <div>
-            <label className="label">יחס תמונה</label>
-            <select className="input" value={form.aspect_ratio} onChange={(e) => setForm({ ...form, aspect_ratio: e.target.value })}>
+            <label className="label" htmlFor="tpl-aspect">יחס תמונה</label>
+            <select id="tpl-aspect" className="input" value={form.aspect_ratio} onChange={(e) => setForm({ ...form, aspect_ratio: e.target.value })}>
               <option value="1:1">1:1</option>
               <option value="4:5">4:5</option>
               <option value="16:9">16:9</option>
@@ -244,8 +248,8 @@ export default function TemplateEditPage() {
             </select>
           </div>
           <div>
-            <label className="label">DALL-E Size</label>
-            <select className="input" value={form.dalle_size} onChange={(e) => setForm({ ...form, dalle_size: e.target.value })}>
+            <label className="label" htmlFor="tpl-dalle-size">DALL-E Size</label>
+            <select id="tpl-dalle-size" className="input" value={form.dalle_size} onChange={(e) => setForm({ ...form, dalle_size: e.target.value })}>
               <option value="1024x1024">1024×1024</option>
               <option value="1792x1024">1792×1024</option>
               <option value="1024x1792">1024×1792</option>
@@ -254,8 +258,8 @@ export default function TemplateEditPage() {
         </div>
 
         <div>
-          <label className="label">כתובת תמונה ממוזערת (URL)</label>
-          <input className="input" value={form.thumbnail_url || ""} onChange={(e) => setForm({ ...form, thumbnail_url: e.target.value })} />
+          <label className="label" htmlFor="tpl-thumbnail">כתובת תמונה ממוזערת (URL)</label>
+          <input id="tpl-thumbnail" className="input" value={form.thumbnail_url || ""} onChange={(e) => setForm({ ...form, thumbnail_url: e.target.value })} />
         </div>
 
         <div className="grid md:grid-cols-3 gap-6">
@@ -289,8 +293,9 @@ export default function TemplateEditPage() {
         </div>
 
         <div>
-          <label className="label">סדר מיון</label>
+          <label className="label" htmlFor="tpl-sort-order">סדר מיון</label>
           <input
+            id="tpl-sort-order"
             className="input w-24"
             type="number"
             inputMode="numeric"
