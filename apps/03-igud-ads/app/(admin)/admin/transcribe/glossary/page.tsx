@@ -23,6 +23,7 @@ export default function GlossaryPage() {
   const [filter, setFilter] = useState<string>("");
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({ style: "litvish", term: "", replacement: "", notes: "" });
+  const [busyId, setBusyId] = useState<string | null>(null);
 
   const load = async () => {
     const url = filter ? `/modaot/api/admin/transcribe/glossary?style=${filter}` : "/modaot/api/admin/transcribe/glossary";
@@ -52,8 +53,21 @@ export default function GlossaryPage() {
 
   const remove = async (id: string) => {
     if (!confirm("למחוק רשומה?")) return;
-    await fetch(`/modaot/api/admin/transcribe/glossary?id=${id}`, { method: "DELETE" });
-    load();
+    if (busyId) return;
+    setBusyId(id);
+    try {
+      const res = await fetch(`/modaot/api/admin/transcribe/glossary?id=${id}`, { method: "DELETE" });
+      if (res.ok) {
+        load();
+      } else {
+        const d = await res.json().catch(() => ({}));
+        alert(d.error || "שגיאה במחיקה");
+      }
+    } catch {
+      alert("שגיאת רשת — נסה שוב");
+    } finally {
+      setBusyId(null);
+    }
   };
 
   return (
@@ -159,8 +173,12 @@ export default function GlossaryPage() {
                 <td className="px-4 py-3 text-brand-blue">{e.replacement}</td>
                 <td className="px-4 py-3 text-sm text-slate-500">{e.notes || "—"}</td>
                 <td className="px-4 py-3">
-                  <button onClick={() => remove(e.id)} className="text-red-600 hover:underline text-sm">
-                    מחק
+                  <button
+                    onClick={() => remove(e.id)}
+                    disabled={busyId === e.id}
+                    className="text-red-600 hover:underline text-sm disabled:opacity-50 disabled:no-underline"
+                  >
+                    {busyId === e.id ? "מוחק…" : "מחק"}
                   </button>
                 </td>
               </tr>
