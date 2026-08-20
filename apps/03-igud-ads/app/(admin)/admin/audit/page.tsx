@@ -91,11 +91,13 @@ export default function AuditAdmin() {
                         <button
                           onClick={() => toggleExpand(log.id)}
                           className="text-xs text-brand-blue hover:underline"
+                          aria-expanded={!!expanded[log.id]}
+                          aria-controls={`audit-details-${log.id}`}
                         >
                           {expanded[log.id] ? "הסתר" : "הצג"}
                         </button>
                         {expanded[log.id] && (
-                          <pre className="mt-2 text-xs bg-gray-50 rounded p-2 max-w-sm overflow-x-auto">
+                          <pre id={`audit-details-${log.id}`} className="mt-2 text-xs bg-gray-50 rounded p-2 max-w-sm overflow-x-auto">
                             {JSON.stringify(log.details, null, 2)}
                           </pre>
                         )}
