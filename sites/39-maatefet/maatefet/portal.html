@@ -21,6 +21,8 @@
   --line:rgba(201,162,39,.20); --line-2:rgba(236,233,245,.10);
   --ease:cubic-bezier(.22,.61,.36,1);
 }
+/* מיתוג נפרד למגזר חתנים — אותם משתני-צבע, פלטה שונה; שאר העיצוב יורש אוטומטית */
+body.seg-chatan{--gold:#5B8DEF; --gold-soft:#8FB2F5; --line:rgba(91,141,239,.22)}
 *,*::before,*::after{box-sizing:border-box}
 body{margin:0;background:var(--royal);color:var(--ink);
   font-family:'Heebo',system-ui,-apple-system,'Segoe UI',sans-serif;font-weight:300;line-height:1.65;
@@ -97,7 +99,7 @@ input:focus{outline:2px solid var(--gold);outline-offset:1px;border-color:var(--
 </head>
 <body>
 <nav class="nav"><div class="nav-in">
-  <a class="wordmark" href="/maatefet">מעטפת<span> · אזור אישי</span></a>
+  <a class="wordmark" href="/maatefet">מעטפת<span id="wordmarkSub"> · אזור אישי</span></a>
 </div></nav>
 
 <main>
@@ -196,7 +198,16 @@ const v = (x) => (x === null || x === undefined || x === '' ? NA : esc(x));
 const dt = (x) => (x ? new Date(x).toLocaleDateString('he-IL') : NA);
 const dtm = (x) => (x ? new Date(x).toLocaleString('he-IL', { dateStyle: 'short', timeStyle: 'short' }) : NA);
 const SEGMENT_LABEL = { chatan: 'חתנים', kallah: 'כלות' };
+const SEGMENT_PORTAL_LABEL = { chatan: 'אזור אישי לחתן', kallah: 'אזור אישי לכלה' };
 const STATUS_LABEL = { scheduled: 'ממתין לאישור', confirmed: 'אושרה הגעה', declined: 'לא ניתן להגיע', cancelled: 'בוטלה', completed: 'התקיימה' };
+function applySegmentTheme(segment) {
+  document.body.classList.toggle('seg-chatan', segment === 'chatan');
+  const label = SEGMENT_PORTAL_LABEL[segment];
+  if (label) {
+    $('wordmarkSub').textContent = ' · ' + label;
+    document.title = label + ' · מעטפת';
+  }
+}
 
 function show(id) {
   for (const el of ['loading', 'authGate', 'noClientWrap', 'mfaEnrollWrap', 'mfaChallengeWrap', 'dash', 'fatal'])
@@ -395,6 +406,7 @@ async function boot() {
 
   const client = me.client;
   if (!client) { show('noClientWrap'); return; }
+  applySegmentTheme(client.segment);
 
   const mfaOk = await ensureMfa();
   if (!mfaOk) return;

@@ -21,6 +21,8 @@
   --line:rgba(201,162,39,.20); --line-2:rgba(236,233,245,.10);
   --ease:cubic-bezier(.22,.61,.36,1);
 }
+/* מיתוג נפרד למגזר חתנים — אותם משתני-צבע, פלטה שונה; שאר העיצוב יורש אוטומטית */
+body.seg-chatan{--gold:#5B8DEF; --gold-soft:#8FB2F5; --line:rgba(91,141,239,.22)}
 *,*::before,*::after{box-sizing:border-box}
 body{margin:0;background:var(--royal);color:var(--ink);
   font-family:'Heebo',system-ui,-apple-system,'Segoe UI',sans-serif;font-weight:300;line-height:1.7;
@@ -160,6 +162,10 @@ function hintFromPeek(p) {
   return s || 'הזמנה תקפה נמצאה.';
 }
 
+function applySegmentTheme(segment) {
+  document.body.classList.toggle('seg-chatan', segment === 'chatan');
+}
+
 let CODE = new URLSearchParams(location.search).get('c') || '';
 
 async function checkCode(code) {
@@ -170,6 +176,7 @@ async function checkCode(code) {
 
   if (!peek) { CODE = ''; show('invalidWrap'); return; }
   CODE = code;
+  applySegmentTheme(peek.segment);
 
   const { data: sess } = await sb.auth.getSession();
   if (!sess?.session) {

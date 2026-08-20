@@ -21,6 +21,8 @@
   --line:rgba(201,162,39,.20); --line-2:rgba(236,233,245,.10);
   --ease:cubic-bezier(.22,.61,.36,1);
 }
+/* מיתוג נפרד למגזר חתנים — אותם משתני-צבע, פלטה שונה; שאר העיצוב יורש אוטומטית */
+body.seg-chatan{--gold:#5B8DEF; --gold-soft:#8FB2F5; --line:rgba(91,141,239,.22)}
 *,*::before,*::after{box-sizing:border-box}
 body{margin:0;background:var(--royal);color:var(--ink);
   font-family:'Heebo',system-ui,-apple-system,'Segoe UI',sans-serif;font-weight:300;line-height:1.65;
@@ -97,7 +99,7 @@ th{color:var(--muted);font-weight:400;font-size:12px;text-transform:uppercase;le
 </head>
 <body>
 <nav class="nav"><div class="nav-in">
-  <a class="wordmark" href="/maatefet">מעטפת<span> · אזור מדריך/ה</span></a>
+  <a class="wordmark" href="/maatefet">מעטפת<span id="wordmarkSub"> · אזור מדריך/ה</span></a>
 </div></nav>
 
 <main>
@@ -372,6 +374,15 @@ const v = (x) => (x === null || x === undefined || x === '' ? NA : esc(x));
 const dt = (x) => (x ? new Date(x).toLocaleDateString('he-IL') : NA);
 const dtm = (x) => (x ? new Date(x).toLocaleString('he-IL', { dateStyle: 'short', timeStyle: 'short' }) : NA);
 const SEGMENT_LABEL = { chatan: 'חתנים', kallah: 'כלות' };
+const SEGMENT_ROLE_LABEL = { chatan: 'מדריך חתנים', kallah: 'מדריכת כלות' };
+function applySegmentTheme(segment) {
+  document.body.classList.toggle('seg-chatan', segment === 'chatan');
+  const role = SEGMENT_ROLE_LABEL[segment];
+  if (role) {
+    $('wordmarkSub').textContent = ' · אזור ' + role;
+    document.title = 'אזור ' + role + ' · מעטפת';
+  }
+}
 const INVITE_LABEL = { pending: 'ממתין', used: 'מומש', revoked: 'בוטל', expired: 'פג תוקף' };
 const APPT_LABEL = { scheduled: 'ממתין לאישור הזוג', confirmed: 'אושרה הגעה', declined: 'הזוג לא יגיע', cancelled: 'בוטלה', completed: 'התקיימה' };
 
@@ -391,6 +402,8 @@ async function rpc(fn, args) {
 let ME = null;
 
 /* ── signup ─────────────────────────────────────────────────────────────── */
+$('sSegment').addEventListener('change', () => applySegmentTheme($('sSegment').value));
+
 $('sSubmit').addEventListener('click', async () => {
   const name = $('sName').value.trim();
   if (!name) { $('sErr').innerHTML = '<div class="err">שם מלא הוא שדה חובה.</div>'; return; }
@@ -974,6 +987,7 @@ async function boot() {
   const ins = me.instructor;
   if (!ins) { show('signupWrap'); return; }
   ME = ins;
+  applySegmentTheme(ins.segment);
 
   if (ins.status === 'pending') { show('pendingWrap'); return; }
   if (ins.status === 'suspended') { show('suspendedWrap'); return; }
@@ -982,7 +996,7 @@ async function boot() {
   if (!mfaOk) return;
 
   $('dashName').textContent = 'שלום, ' + ins.full_name;
-  $('dashSub').textContent = 'מדריך/ה מאומת/ת · מגזר ' + (SEGMENT_LABEL[ins.segment] || ins.segment);
+  $('dashSub').textContent = (SEGMENT_ROLE_LABEL[ins.segment] || 'מדריך/ה') + ' מאומת/ת';
   show('dash');
   renderClients();
 }
