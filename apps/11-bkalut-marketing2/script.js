@@ -107,9 +107,29 @@
   // The marketing site is static. The active app may be hosted at a different
   // origin. We read window.BKALUT_APP_BASE if set (or ?app= query string,
   // persisted in URL), otherwise we assume same-origin /app.
+  //
+  // ?app= is attacker-controlled (it comes straight from the URL a visitor
+  // clicked). It gets written into href attributes below (data-app-target
+  // links) and interpolated into innerHTML in the assistant search results
+  // further down this file. Without a scheme check, a shared link like
+  // ?app=javascript:alert(document.cookie) would set every wired app link's
+  // href to a javascript: URI that runs in this page's origin the moment a
+  // visitor clicks it — a real reflected XSS, not just a theoretical one.
+  // Only a relative path or an http(s) URL is accepted; anything else falls
+  // back to the same default as if ?app= had not been passed at all.
+  function sanitizeAppBase(value) {
+    if (!value) return null;
+    const trimmed = value.replace(/\/+$/, "");
+    if (trimmed.startsWith("/") && !trimmed.startsWith("//")) return trimmed;
+    try {
+      const u = new URL(trimmed, window.location.origin);
+      if (u.protocol === "http:" || u.protocol === "https:") return trimmed;
+    } catch (_) {}
+    return null;
+  }
   function getAppBase() {
-    const urlParam = new URLSearchParams(window.location.search).get("app");
-    if (urlParam) return urlParam.replace(/\/+$/, "");
+    const urlParam = sanitizeAppBase(new URLSearchParams(window.location.search).get("app"));
+    if (urlParam) return urlParam;
     if (typeof window.BKALUT_APP_BASE === "string") return window.BKALUT_APP_BASE.replace(/\/+$/, "");
     // Default: assume the active app is hosted on the same domain at /app, with hash router.
     return "/app";
