@@ -10303,3 +10303,47 @@
     **הבא בתור:** אותו תיקון (`getPublicOrigin()` + 3 קריאות) עדיין
     פתוח ב-24-galilee-connect-hub. נושא #245/#250 (RLS, חסומים) נשארים
     כפי שהם. via cloud server 167.99.131.167 [loop B]
+
+## 20/08/2026 — סבב 430 (loop B)
+
+430. **אותו דפוס `window.location.origin` ללא קידומת נתיב — תוקן גם
+    ב-24-galilee-connect-hub (3 קריאות, 3 קבצים). כל 9 האפליקציות
+    שנבדקו כעת נקיות מהבאג הזה.**
+
+    סגירת הפריט "הבא בתור" מסבב 429. `vite.config.ts` מגדיר
+    `base: "/galil/"` ו-`App.tsx` מגדיר `<BrowserRouter
+    basename="/galil">` — אותו מבנה בדיוק כמו 21-mthbram/27-mechiron.
+    שלוש קריאות ישירות ל-`window.location.origin` בנו קישורים בלי
+    קידומת הנתיב: `AllSynagoguesPage.tsx` (כפתור העתקת קישור לעמוד
+    בית כנסת ברשימה המלאה), `SynagogueCarousel.tsx` (אותו קישור שיתוף
+    בכרטיס הקרוסלה בדף הבית), ו-`SynagogueDetailsManager.tsx`
+    (`portalLink` — קישור הפורטל שנשלח לגבאי עם שם המשתמש שלו ב-query
+    string). שלושתם קישורים אמיתיים שמופצים בפועל (WhatsApp/הודעות)
+    לגבאים/מבקרים — היו נוחתים על 404 של הפורטל הראשי במקום על העמוד
+    הנכון תחת `/galil`.
+
+    תוקן: הוספת `getPublicOrigin()` ל-`src/lib/utils.ts` (זהה לדפוס
+    ב-21/27 — `import.meta.env.BASE_URL` + `window.location.origin`),
+    והחלפת שלוש הקריאות. אין קובץ `src/lib` משותף נוסף באפליקציה הזו
+    שהוחמץ (נבדק `grep` מלא על `window.location.origin` בכל התיקייה,
+    לא נותר אף שימוש גולמי מחוץ להגדרת הפונקציה עצמה).
+
+    **בדיקות תקינות:** `grep -rn "window.location.origin"` על כל
+    האפליקציה מראה רק את שתי השורות בתוך `getPublicOrigin()` עצמה.
+    בדיקת איזון סוגריים (Python, `()`/`{}`/`[]`) נקייה על 4 הקבצים
+    שנערכו. `git diff --stat`: 4 קבצים, +17/-3 — כל שינוי הוא תיקון
+    שורה קיימת שבורה או הוספת `import`, אין מחיקת פיצ'ר. הקבצים
+    נופלים תחת `.gitignore` (`/apps/**`) — נדרש `git add -f`. לא
+    הותקנו תלויות ולא הופעל build/dev-server — נבדק בקריאת קוד ישירה
+    בלבד לפי הנחיות ההרצה.
+
+    ענף `fix/b-22-whatsapp-noopener-round395-0820` (שרשרת הענפים היא
+    המקור המלא היחיד ל-loop B, לא `main`), נדחף (מפעיל פריסת Vercel
+    תחת `more30.com/galil`).
+
+    **הבא בתור:** דפוס `window.location.origin`/`getPublicOrigin()`
+    נבדק ותוקן עכשיו בכל 9 האפליקציות הפרוסות בתחום (17/18/19/20/21/
+    22/24/27/28) — נושא זה סגור. `hreflang`/`lang` alternate tags עדיין
+    לא תועד רשמית (כבר אומת ידנית שכולן תקינות `lang="he"` חד-לשוניות).
+    נושא #245/#250 (RLS, חסומים) נשארים כפי שהם. via cloud server
+    167.99.131.167 [loop B]
