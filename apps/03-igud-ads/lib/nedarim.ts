@@ -84,3 +84,22 @@ export function buildPaymentPayload(input: CreatePaymentInput) {
 export function verifyWebhookIp(ip: string): boolean {
   return ip === "18.194.219.73" || process.env.NODE_ENV !== "production";
 }
+
+// more30.com sits behind Cloudflare in front of Vercel. cf-connecting-ip is
+// set by Cloudflare's own edge from the actual TCP connection and cannot be
+// overridden by the caller -- the correct primary source for an IP allowlist
+// check like this one. x-forwarded-for is NOT safe to read as "first entry":
+// both Cloudflare and Vercel append the connecting IP to whatever the caller
+// already sent rather than replacing it, so a caller can prepend any IP it
+// likes (e.g. the Nedarim IP itself, to walk straight through this allowlist)
+// and the first entry will be that spoofed value. If we ever fall back to
+// x-forwarded-for, only the LAST entry (the one the edge actually appended)
+// is trustworthy. Same fix as apps/01-torah-platform and apps/15-egod's Edge
+// Functions -- see DECISIONS.md #229-232.
+export function getClientIp(req: Request): string {
+  const cfIp = req.headers.get("cf-connecting-ip") || "";
+  const xff = req.headers.get("x-forwarded-for") || "";
+  const realIp = req.headers.get("x-real-ip") || "";
+  const lastXff = xff.split(",").map((s) => s.trim()).filter(Boolean).pop() || "";
+  return cfIp || lastXff || realIp || "";
+}

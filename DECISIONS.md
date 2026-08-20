@@ -2792,3 +2792,64 @@
      ב-nedarim-webhook משמש רק לבדיקת ה-allowlist ולוגים — שום צרכן אחר
      תלוי בצורת הערך הישנה. ענף `fix/a-supabase-edge-clientip-spoof-0820`,
      נדחף.
+
+## 20/08/2026 (LOOP A — סבב 38) — אותו spoof בדיוק, עותק שלישי שסבב 37 לא בדק: `03-igud-ads/api/payments/webhook`
+
+233. **בדקתי מחדש `core.run_progress`/`core.issues`/`core.project_tasks` לפני
+     שהתחלתי.** סבב 37 סגור לגמרי (commit `b180a974`, heartbeat id 1152 קיים).
+     כל הפתוח ב-`core.issues`/`core.project_tasks` בתחום Loop A עדיין חסום על
+     הכרעת משתמש/מפתחות/דשבורד חיצוני של Lovable/Supabase (זהה לסבבים 34-37) —
+     ראיתי את זה ישירות בשאילתה, לא רק מהזיכרון של סבבים קודמים. שיגרתי 4
+     סוכני Explore במקביל על שטח טרי בתחום: admin "קרדיטים אצל הספקים" (מעבר
+     לתווית שתוקנה בסבב 8), עמוד הבית של הפורטל (סדר/הסתרת מערכות), 13
+     property-identity, ו-02-igud-transcribe (נתיבים שנותרו מעבר ל-/api/jobs
+     שנסגר בסבב 31). כל ארבעת הממצאים לא שרדו אימות: (1) admin — קריאת
+     `body.providers` כש-`body===null` (JSON לא תקין על 200) *כן* נזרקת
+     ונתפסת ב-`catch` החיצוני (`admin/src/App.tsx` שורות 403-411 — כל הקוד
+     בתוך אותו `try`), ההודעה "לא הצלחנו לבדוק את הספקים" כן מוצגת; אין קיפאון
+     שקט. (2) פורטל — ה-query מבקש `stage,is_protected,public_visible` שלא
+     קיימות ב-migration `db/core/0007_public_systems_view.sql`, אבל בדקתי את
+     ה-VIEW **החי** על `uhnrgujbdxhhmoxcjria` ישירות (`information_schema.
+     columns`) והעמודות **כן** קיימות שם — ה-view שודרג אחרי המיגרציה שבריפו
+     בלי שקובץ מיגרציה חדש תיעד זאת; שום דבר לא שבור בפועל. (3)
+     13-property-identity — `app.json` עדיין `"source": "not-vendored"`, אין
+     קוד אמיתי לבדוק. (4) 02-igud-transcribe — הסוכן מצא CAS-retry (3 ניסיונות)
+     על `used_uploads` שיכול לוותר בשקט בתחרות קיצונית; בדקתי מול המקור שהוא
+     עצמו מצטט כהשראה (`03-igud-ads/lib/coupon.ts` שורות 30-48, שתוקן בסבבים
+     13/22/34) — לאותו קובץ **בדיוק** אותה הגבלה (ותרון שקט אחרי 3 ניסיונות),
+     זה הדפוס שכבר התקבל כתיקון-מספיק בכל הריפו, לא סטייה חדשה. לא נגעתי.
+234. **הממצא האמיתי: אימות ה-IP של `03-igud-ads/app/api/payments/webhook`
+     השתמש באותו דפוס בדיוק שסבב 37 תיקן — `x-forwarded-for` **הראשון**
+     — אבל בקובץ ש-37 לא בדק כלל.** `verifyWebhookIp()` ב-`lib/nedarim.ts`
+     היא שער האימות **היחיד** על webhook התשלומים של איגוד המודעות (Nedarim
+     Plus, אין Hash/Signature — אותה הערה בראש הקובץ כמו ב-01-torah).
+     `more30.com` יושב מאחורי Cloudflare מול Vercel (ראה `core.projects` #25,
+     המשימה הפתוחה לאתר את ה-origin) — שני השכבות מוסיפות את ה-IP האמיתי
+     ל-`x-forwarded-for` הקיים במקום להחליף אותו, בדיוק כמו ב-Supabase Edge
+     Functions שסבב 37 תיעד. תוקף ששולח `X-Forwarded-For: 18.194.219.73`
+     ל-`/api/payments/webhook` עובר את הבדיקה, ויכול לזייף "תשלום אושר" עם
+     `Param1`=כל `project_id` שהוא בוחר — ה-handler כותב שורת `ad_payments`
+     אמיתית, **מנפיק קופון תשלום אמיתי** (`PAID-XXXXXXXX`, ברירת מחדל 5
+     עיצובים מ-`ad_app_settings.payment.coupon_grants_designs`) לכל אימייל
+     שהתוקף בוחר, ושולח התראה/מייל "התשלום התקבל" — בלי ששולם שקל. בדקתי גם
+     את `POST /api/payments/create` (יוצר את ה-iframe payload): אין עליו auth
+     בכלל (ה-middleware מגן רק `/admin`ו-`/api/admin`, אותו דפוס בדיוק
+     שנמצא ותוקן ב-02-igud-transcribe/api/jobs בסבב 31) והוא סומך על
+     `amount`/`project_id` שהלקוח שולח — אך הנזק האמיתי הוא ב-webhook, כי שם
+     ה-`maxDesigns` שמוענק לא תלוי כלל ב-`amount` (נקרא מ-`ad_app_settings`
+     בשרת) — כלומר אפילו spoofing מלא של ה-create endpoint לא משנה את גודל
+     המענק; ה-IP spoof על ה-webhook הוא הפרצה היחידה שמאפשרת הענקת קופון בלי
+     תשלום בכלל.
+235. **התיקון: אותו תיקון בדיוק כמו סבב 37, מועתק ל-`lib/nedarim.ts`.**
+     `getClientIp(req)` חדשה מעדיפה `cf-connecting-ip` (Cloudflare, לא ניתן
+     לזיוף על ידי הקורא), ורק בלית ברירה נופלת ל-`x-forwarded-for` — עם
+     **הערך האחרון** (`split(",").map(trim).filter(Boolean).pop()`) במקום
+     הראשון, ו-`x-real-ip` כגיבוי אחרון. `app/api/payments/webhook/route.ts`
+     עכשיו קורא ל-`getClientIp(req)` במקום ה-inline המקורי; שאר הלוגיקה
+     (allowlist string compare, fail-open על NODE_ENV לא-production לצורך
+     בדיקות) ללא שינוי. `esbuild --bundle=false --format=esm` נקי על שני
+     הקבצים. `grep` מוודא ש-`ip` בקובץ ה-webhook משמש רק לבדיקת האימות —
+     שום צרכן אחר תלוי בצורה הישנה. `/api/payments/create` הפתוח לא נגעתי —
+     תיקון auth שם דורש להבין את זרימת ה-checkout המלאה (איך `project_id`
+     נקשר לבעלים) ולא רק להעתיק תיקון קיים; רשום כמועמד לסבב הבא. ענף
+     `fix/a-igud-ads-payments-webhook-clientip-spoof-0820`, נדחף.

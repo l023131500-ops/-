@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { verifyWebhookIp } from "@/lib/nedarim";
+import { verifyWebhookIp, getClientIp } from "@/lib/nedarim";
 import { createSupabaseService } from "@/lib/supabase/server";
 import { audit } from "@/lib/audit";
 
@@ -15,10 +15,7 @@ function randomCode(len: number): string {
 // Nedarim Plus posts to this URL after successful payment.
 // Allowed IP: 18.194.219.73 (same as torah-platform).
 export async function POST(req: Request) {
-  const ip =
-    req.headers.get("x-forwarded-for")?.split(",")[0].trim() ||
-    req.headers.get("x-real-ip") ||
-    "";
+  const ip = getClientIp(req);
   if (!verifyWebhookIp(ip)) {
     return NextResponse.json({ error: "Unauthorized IP" }, { status: 403 });
   }
