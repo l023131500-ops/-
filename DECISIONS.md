@@ -5905,3 +5905,37 @@
 547. **הבא בתור ב-03-igud-ads:** admin/templates (14) →
      admin/templates/[id] (14) → public/create (14). אחריו
      01-torah-platform (~150 מופעים/19 קבצים) מהמיפוי של סבב 83.
+
+## 20/08/2026 (LOOP A — סבב 101) — `<label htmlFor>`/`id`: 03-igud-ads/admin/templates
+
+548. **בדקתי מחדש `git log`/`core.run_progress` לפני שהתחלתי.** סבב
+     100 סגור (commit `5d600f65`/`5579b095`, HEAD תואם). המשכתי בתור
+     שסבב 100/#547 הגדיר: `admin/templates` (14) — הבא בגודל אחרי
+     `admin/users`.
+549. **קראתי את הקובץ במלואו לפני עריכה.** 362 שורות, טבלת תבניות
+     מודעה + דיאלוג יצירה/עריכה עם 14 שדות ללא קישור (שם, קטגוריה,
+     תיאור, prompt_template, שדות חובה, שדות אופציונליים, מחיר,
+     aspect_ratio, DALL-E size, צבעים, פונט, יישור טקסט, כתובת תמונה
+     ממוזערת, סדר מיון) + 3 checkbox ("מאפשר לוגו"/"מאפשר צבעים
+     מותאמים"/"פעיל") שכבר עוטפים את ה-input בתוך `<label>` — הוחרגו
+     כמו בכל הסבבים הקודמים.
+550. **התיקון:** `template-name`, `template-category`,
+     `template-description`, `template-prompt`,
+     `template-required-fields`, `template-optional-fields`,
+     `template-price`, `template-aspect-ratio`, `template-dalle-size`,
+     `template-colors`, `template-font`, `template-alignment`,
+     `template-thumbnail-url`, `template-sort-order` — id על כל
+     input/select/textarea, htmlFor תואם על ה-label שלו.
+551. **אפס רגרסיה מאומתת:** `git diff --stat` — קובץ אחד, 28+/27-
+     (רק `id`/`htmlFor` נוספו על `<label>`/`<input>`/`<select>`/
+     `<textarea>` קיימים, בלי לגעת ב-`value`/`onChange`/`type`/
+     `inputMode`/`placeholder`/`rows`/`className`). אין `tsc`/`npm`
+     בסביבה הזו — אומת בקריאה מלאה של `git diff` המלא + בדיקת איזון
+     `{}`/`()`/`[]` ב-Python (144/144, 130/130, 28/28). `git add -f`
+     נדרש כתקדים (`apps/**` מוחרג כברירת מחדל ב-`.gitignore` השורשי
+     אך `03-igud-ads/app` כבר עוקב מרישום ידני קודם). Commit
+     `f466ea55` על `fix/a-icon-only-buttons-round2-0820`, יידחף
+     ל-origin (מפעיל פריסת Vercel תחת more30.com/modaot).
+552. **הבא בתור ב-03-igud-ads:** admin/templates/[id] (14) →
+     public/create (14). אחריו 01-torah-platform (~150 מופעים/19
+     קבצים) מהמיפוי של סבב 83.
