@@ -6025,3 +6025,43 @@
     (20/23/25 — ללא מקור אמיתי/doc-only, אושר בעבר), או לפתוח עדשה חדשה
     נוספת אם העדשה הזו מוצתה על כל האפליקציות בעלות מקור אמיתי.
     via cloud server 167.99.131.167 [loop B]
+
+## 20/08/2026 — סבב 334 (loop B)
+
+334. **פתחתי עדשה חדשה כפי שהוצע בסוף הסבב הקודם (עדשת silent-failure UX**
+    **מוצתה): מחיקה הרסנית בלי אישור** — כפתור שמריץ `.delete()`/DELETE
+    ישירות ב-onClick בלי שום שלב אישור (`confirm`, דיאלוג "בטוח?", undo).
+    אימתתי קודם ב-grep על DECISIONS.md שהעדשה הזו טרם נבדקה בשום סבב
+    קודם. סוכן Explore סרק את שמונת האפליקציות בעלות מקור אמיתי
+    (17/18/19/21/22/24/27/28) ומצא 7 מופעים אמיתיים: 4 ב-21-mthbram
+    (`OrgPortal.tsx` removeRabbi, `PrayerTimesTab.tsx` deleteSynagogue+
+    deletePrayerTime, `PortalMessagesTab.tsx` deleteMessage,
+    `PortalSettingsTab.tsx` deletePhoto), 1 ב-22-get-your-rights
+    (`AdminSettings.tsx` deleteKey — מפתח API), ו-2+ ב-27-bkalut-price
+    (`financial.tsx` — מחיקת clients/transactions/budgets/recurring/tips
+    דרך `useMutation`). וידא גם שהדפוס הנכון כבר קיים באותה אפליקציה
+    בדיוק (למשל `AdminDashboard.tsx` softDeleteLesson/deleteStudyDay עם
+    `if (!confirm(...)) return;`), כך שהתיקון לא ממציא UX חדש.
+
+    **התיקון של הסבב הזה (ממוקד לקובץ אחד, שני מופעים):**
+    `apps/21-mthbram/src/components/portal/PrayerTimesTab.tsx` —
+    `deleteSynagogue` (מחיקת בית כנסת, עם קסקייד לוגי לזמני התפילה שלו
+    ב-state) ו-`deletePrayerTime` (מחיקת זמן תפילה בודד, כפתור שמופיע
+    רק ב-hover) קראו ל-`supabase.from(...).delete()` ישירות בלי שום
+    שער אישור. הוספתי `if (!confirm("...")) return;` בתחילת כל handler,
+    באותו דפוס בדיוק שכבר קיים ב-`AdminDashboard.tsx` של אותה אפליקציה.
+    אפס שינוי להתנהגות הקיימת מעבר לחסימת המחיקה המיידית — אין שינוי
+    ל-DB/RLS/צורת השאילתה. בדיקת איזון סוגריים ב-python על הקובץ המלא
+    אחרי העריכה — תקין (158/158, 149/149, 21/21). אין build/dev-server
+    זמין בסביבה הזו לפי הנחיית ההרצה. ענף חדש
+    `fix/b-21-prayertimestab-unconfirmed-delete-0820`, קומיט `30c48c2b`,
+    נדחף (מפעיל פריסת Vercel תחת more30.com/mthbram).
+
+    **הבא בתור:** להמשיך את עדשת מחיקה-בלי-אישור על שאר המופעים שנמצאו —
+    `OrgPortal.tsx` removeRabbi, `PortalMessagesTab.tsx` deleteMessage,
+    `PortalSettingsTab.tsx` deletePhoto (כולם ב-21-mthbram), אחר-כך
+    `AdminSettings.tsx` deleteKey (22-get-your-rights, מפתח API —
+    עדיפות גבוהה יחסית), ואז `financial.tsx` (27-bkalut-price, 5+
+    מוטציות מחיקה). כל אחד מהם מועמד לתיקון נפרד ומרוכז בסבב הבא כדי
+    לשמור על היקף קטן וניתן-לאימות לכל קומיט.
+    via cloud server 167.99.131.167 [loop B]
