@@ -4580,3 +4580,52 @@
     296-ish. אפשר גם לחזור לתחום המחירון (per-system pricing)
     או מיתוג 'עולם הסטארטאפים' אם עדשת הנגישות/bidi ממצה את
     עצמה בסבב הבא.
+
+## 20/08/2026 — סבב 302 (loop B)
+
+302. **תיקנתי פרצת אבטחה קריטית שנפתחה כ-`core.issues #253` ב-LOOP A**
+    **סבב 56: `public.admin_sessions` בפרויקט `csjekrvukbdznetsrodj`**
+    **(משמש את 27-bkalut-price) הייתה עם 4 מדיניות RLS פתוחות**
+    **לגמרי ל-`anon` (`qual=true`/`with_check=true` על SELECT/INSERT/**
+    **UPDATE/DELETE) — כל מי שמחזיק את מפתח ה-anon הציבורי של הפרויקט**
+    **הזה (שכבר חשוף בקוד לקוח של 06/17 האחים באותו פרויקט, דרך**
+    **`VITE_SUPABASE_ANON_KEY`) יכול היה לקרוא כל טוקן session אדמין**
+    **קיים, או — חמור בהרבה — להכניס שורה חדשה בעצמו עם `role='admin'`**
+    **ולקבל גישת אדמין מלאה בלי שום התחברות אמיתית.** קראתי README.md/
+    CONNECTIONS.md, בדקתי `core.run_progress` (הצעד האחרון: 31-hebrew-
+    bridge-crm ClientsTable/content.tsx lang/dir fix, קומיטים
+    `f91dcfb1`/`8c890ebe`, כבר ה-HEAD) ו-`core.projects` 17-31, ואז
+    חיפשתי ב-`core.issues` ממצאים פתוחים בתחום — מצאתי #253 (severity
+    critical, status open, owner=agent, app=27-bkalut-price — במפורש
+    מיועד ל-Loop B לטפל בו, ל-Loop A אין הרשאה לגעת ב-27 כי הוא בתחום
+    17-31). **לפני התיקון וידאתי שהוא בטוח (לא רק "פותר את הבאג"):**
+    (1) `grep` על `apps/27-bkalut-price` מאשר ש-`admin_sessions` נקראת/
+    נכתבת אך ורק משרת (server/{supabase-storage.ts,storage.ts,
+    routes.ts}) — אין שום קוד לקוח/דפדפן שנוגע בה; (2) `pg_roles` על
+    `csjekrvukbdznetsrodj` מאשר `service_role.rolbypassrls=true` — מדיניות
+    RLS לא משפיעות על service_role בכלל; (3) סדר בחירת המפתח בקוד
+    השרת עצמו (`storage.ts`/`routes.ts`) מעדיף `SUPABASE_SERVICE_ROLE_
+    KEY` ראשון, ואזהרת ה-production המובנית ב-`/api/admin/db-status`
+    אומרת במפורש "For production set SUPABASE_URL + SUPABASE_SERVICE_
+    ROLE_KEY"; (4) **האישוש המכריע:** טבלאות אחיות באותה אפליקציה בדיוק
+    (`app_users`, `user_sessions`, `premium_requests`, `legal_
+    acceptances`, `webhook_log`, `inbound_leads`) כבר היו במצב
+    RLS-מופעל-בלי-מדיניות-בכלל (כלומר כבר service_role-only) — `admin_
+    sessions` הייתה החריגה היחידה בכל האפליקציה, קרוב לוודאי שאריות
+    מפיתוח ולא כוונה. **התיקון:** `apply_migration` בשם
+    `admin_sessions_drop_anon_policies` על `csjekrvukbdznetsrodj` —
+    מחקתי את 4 מדיניות ה-anon (`admin_sessions_anon_select/insert/
+    update/delete`). אימתתי אחרי: `pg_policies` על הטבלה ריק, ו-
+    `get_advisors` (security) מציג אותה כעת כ-`rls_enabled_no_policy`
+    (INFO) — בדיוק אותו דפוס כמו האחיות שלה. עדכנתי את `core.issues
+    #253` ל-`status='fixed'` עם `resolved_at`. **סיכון שיורי ותועד
+    במפורש:** היה session פעיל אחד (1 שורה) בטבלה בזמן התיקון; אם
+    בניגוד לכל הראיות ה-production בפועל רץ על anon key (לא service
+    role), האדמין הזה יזדקק להתחברות מחדש ברגע ש-`SUPABASE_SERVICE_
+    ROLE_KEY` יוגדר — וזו ההגדרה המתועדת והנדרשת ל-production ממילא
+    לפי קוד האפליקציה עצמו. זה שינוי DB בלבד (`apply_migration`), אין
+    קובץ קוד לשנות ב-repo הזה עבור התיקון עצמו; הקומיט הזה מתעד את
+    ההחלטה ב-DECISIONS.md. ענף `fix/b-admin-sessions-rls-open-anon-0820`.
+    **הבא בתור:** לחזור לעדשות שנפתחו — ניגודיות צבעים (WCAG), migrations
+    שלא הוחלו, המשך סריקת RLS על שאר הטבלאות ב-`csjekrvukbdznetsrodj`
+    (36 טבלאות, רק חלק נסרק), או חזרה לתחום המחירון/מיתוג.
