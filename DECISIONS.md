@@ -12216,3 +12216,46 @@
     (444 שורות, שלד דומה) לאותו דפוס `x.id === dataset.*` ללא
     `String()`. נושאים #62/#94/#115/#164/#169/#254 נשארים חסומים.
     via cloud server 167.99.131.167 [loop B]
+
+
+## 20/08/2026 — סבב 471 (loop B)
+
+471. **Stale closure ב-`setTimeout` שוברת את מנגנון ה-retry ב-21-mthbram
+    `FeaturedLessons.tsx` — כל טעינה בפועל מכפילה קריאת Supabase
+    מיותרת.** המשך לחיפוש קטגוריית-באג טרייה (Explore agent) — הפעם
+    לא XSS/IDOR/double-submit/tenant-isolation אלא React stale-closure.
+    הממצא: ב-`useEffect(() => { fetchLessons(); const timer =
+    setTimeout(() => { if (lessons.length === 0) fetchLessons(); },
+    5000); ... }, [])` — מערך התלויות ריק, כך שה-callback שבתוך
+    `setTimeout` "קופא" על הערך ההתחלתי של `lessons` (`[]`) מרגע
+    יצירת ה-effect. גם אם `fetchLessons()` הראשונה מצליחה ומעדכנת את
+    ה-state דרך `setLessons(sorted)`, הבדיקה `lessons.length === 0`
+    בתוך ה-closure ממשיכה לראות את המערך הריק המקורי ותמיד מחזירה
+    `true`. התוצאה: 5 שניות אחרי כל טעינה של הרכיב (שמופיע בעמוד
+    הבית), נורית שנייה ומיותרת ל-`lessons` נורה ל-Supabase — גם כשה-
+    fetch הראשון הצליח לגמרי — כפל עומס על כל צפייה בעמוד.
+
+    **התיקון:** הוספתי `lessonsLoadedRef` (`useRef(false)`, כבר
+    מיובא ב-`import { useState, useEffect, useRef }` הקיים) שמסומן
+    `true` בתוך `fetchLessons()` רק כשההבאה מחזירה נתונים בפועל.
+    ה-`setTimeout` בודק את ה-ref (`!lessonsLoadedRef.current`) במקום
+    את ה-state הקפוא — כך שה-retry-after-5s רץ רק כשההבאה הראשונה
+    באמת נכשלה/החזירה ריק, בלי לגעת בצורת ה-API או ב-UI.
+
+    **בדיקות תקינות:** קריאת קוד בלבד (ללא dev-server/build, לפי
+    הנחיות ההרצה). אימתתי שאין שימוש נוסף ב-`lessons` בתוך אותו
+    closure, ושה-ref לא מתאפס בין renders (נוצר פעם אחת). `git diff
+    --stat`: קובץ יחיד, +4/-1.
+
+    לא נגעתי במערכות מוגנות 08/09/bkalut-app/bkalot-admin/zr_*/
+    NEDARIM3873/csj/csj_src/igud, ב-`main`, או במערכת מחוץ ל-scope
+    (17-25/27/28 בלבד).
+
+    ענף `fix/b-22-whatsapp-noopener-round395-0820` (שרשרת הענפים היא
+    המקור היחיד ל-loop B, לא `main`), נדחף (קומיט `558156ec`).
+
+    **הבא בתור:** לבדוק אם `ScrollingLessonColumn` (אותו קובץ, שורה
+    118) או רכיבים דומים ב-24-galilee-connect-hub/28-kupot-health-funds
+    סובלים מאותו דפוס stale-closure ב-`useEffect`/`setInterval`.
+    נושאים #62/#94/#115/#164/#169/#254 נשארים חסומים.
+    via cloud server 167.99.131.167 [loop B]
