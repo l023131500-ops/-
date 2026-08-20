@@ -57,11 +57,12 @@ const AdminLogin = () => {
   const handleGoogleLogin = async () => {
     setGoogleLoading(true);
     try {
-      // TODO: configure redirect URL in Supabase dashboard
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: window.location.origin + "/legacy/admin-login",
+          // BASE_URL is "/torah/" in production — without it Google returns to
+          // more30.com/legacy/admin-login (root portal app), not this page.
+          redirectTo: `${window.location.origin}${import.meta.env.BASE_URL}legacy/admin-login`,
           queryParams: { prompt: "select_account" },
         },
       });
