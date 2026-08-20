@@ -3626,3 +3626,55 @@
     חזרה לבדיקה חוזרת של rebrand/pricing TEST-mode בפועל על-גבי
     עמודים חיים בכל 17-31 (רק תועד תיעודית, לא אומת מול תוכן עמוד
     בפועל).
+
+## 20/08/2026 — סבב 54
+
+277. **קראתי README.md/CONNECTIONS.md, בדקתי `core.run_progress`** (הצעד
+    האחרון: 27-bkalut-price community-admin silent-write-fail, קומיטים
+    `7307c64c`/`269823a2`, כבר ה-parent של הענף הזה, כבר נדחף). פעלתי
+    לפי ההצעה מסוף סבב 53: הרצתי סוכן Explore על שאר עמודי הניהול של
+    27 (`org-detail`/`orgs`/`integrations`/`match`/`dashboard`/
+    `price-comparison-admin`/`potential-admin`) בעדשת silent-write-fail.
+    **הדוח שחזר על `price-comparison-admin.tsx` היה שגוי** -- טען
+    שמונה מקומות "ללא try/catch" (`addCategory`/`addStore`/
+    `addProduct`/`addPrice`/`addPromo`/`del` וכו') -- קראתי את הקובץ
+    המלא בעצמי ואימתתי ש**כל** הפונקציות האלה כבר עטופות ב-`try/catch`
+    + `toast` תקין (הקובץ הזה למעשה כבר נקי לגמרי מהדפוס הזה). לא
+    סמכתי על הדוח וסרקתי בעצמי עם grep על `apiRequest\("(POST|PATCH|
+    PUT|DELETE)"` בכל 40+ עמודי `client/src/pages/` כדי למצוא את
+    היעד האמיתי בעל הערך הגבוה ביותר.
+278. **נמצא: `financial.tsx` (המודול הפיננסי הפעיל -- לקוחות/תנועות/
+    תקציב/תזכורות/הזדמנויות זכויות/שיוך מאמנים/פניות/טיפים) -- 15
+    קריאות `useMutation` של TanStack Query, אפס `onError` בכל הקובץ.**
+    אימתתי ב-`client/src/lib/queryClient.ts` שאין ברירת מחדל גלובלית
+    ל-`onError`/`onSettled` על מוטציות (`mutations: { retry: false }`
+    בלבד) -- כלומר כשל כתיבה (500/ניתוק רשת/פקיעת session) לא מציג
+    שום toast/הודעה, רק הכפתור חוזר למצב פעיל בלי משוב. זהו המסך
+    הפעיל ביותר במודול הפיננסי של בקלות (נתוני כסף אמיתיים של לקוחות)
+    שטרם נבדק לעדשה הזו כלל -- ערך גבוה משמעותית מ-`price-comparison-
+    admin` שכבר התברר כמכוסה. `financial-crm.tsx` (11 מוטציות, רק
+    `onError` אחד) ו-`health-funds-admin.tsx` (14 קריאות כתיבה, לא
+    `useMutation`) נשארו לסבב הבא -- לא נגעתי בהם.
+279. **התיקון: הוספתי `onError: () => toast({ title: "...",
+    variant: "destructive" })` לכל 15 המוטציות** (יצירה/מחיקה/עדכון
+    בכל אחד מ-`ClientsTab`/`TransactionsTab`/`BudgetsTab`/
+    `RecurringTab`/`OpportunitiesTab`/`CoachesTab`/`LeadsTab`/
+    `TipsTab`), טקסט שגיאה ספציפי לכל פעולה. שבעה מתוך שמונת רכיבי
+    הטאב לא קראו ל-`useToast()` בכלל -- הוספתי `const { toast } =
+    useToast();` לכל אחד (הוא כבר מיובא בראש הקובץ). אפס שינוי
+    לזרימת ההצלחה הרגילה (`onSuccess` נשאר בדיוק כפי שהיה בכל מקום).
+    אין `node_modules`/`tsc` בעץ הזה -- אומתה איזון סוגריים בסקריפט
+    Node קצר על כל הקובץ (0) + ספירת `useMutation`==15 מול `onError`
+    שנוסף==15 (השנייה כללה גם את שורת ה-`import`, שנספרה בנפרד).
+    נדרש `git add -f` (`apps/27-bkalut-price/client` מוחרג כברירת
+    מחדל ב-gitignore, אותו דפוס חוזר). קומיט `c0f4eacb` על
+    `fix/b-bkalut-price-financial-silent-fail-0820`, נדחף (מפעיל
+    פריסת Vercel/PM2 תחת אותו נתיב הממופה ל-27, לא נגעתי ב-
+    `CLAUDE.md` המקומי/`isAdminSubdomain()`/`getPublicOrigin()`).
+    **הבא בתור:** `financial-crm.tsx` (11 מוטציות, כמעט אף אחת ללא
+    `onError`) ו-`health-funds-admin.tsx` (14 קריאות כתיבה, טרם נבדק)
+    -- שני מסכים פעילים נוספים ב-27 שטרם עברו עדשת silent-write-fail
+    מלאה, מועמדים טבעיים לסבב הבא. לתת עדיפות לאימות ידני ישיר של
+    הקוד (לא לסמוך על תקציר סוכן Explore בלבד) -- הדוח בסבב הזה הראה
+    שממצאי "אין try/catch" יכולים להיות שגויים אם הסוכן קרא גרסה
+    ישנה/החליק על השורות.
