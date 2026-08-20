@@ -3475,3 +3475,49 @@
     -- למשל חזרה ל-17-chizukim-transcribe עם עדשת race-condition, או
     22-get-your-rights/24-galilee-connect-hub/31-hebrew-bridge-crm עם
     אותה עדשה (רק silent-write-fail נבדק בהם עד כה).
+
+## 20/08/2026 — סבב 51
+
+269. **קראתי README.md/CONNECTIONS.md, בדקתי `core.run_progress`** (הצעד
+    האחרון: 21-mthbram duplicate-submit, קומיטים `29ae4b35`/`d3cb2332`,
+    כבר ה-parent של הענף הזה, כבר נדחף) ו-`core.projects` בהיקף 17-31:
+    אין שינוי מטא-דאטה מאז הסבב הקודם. המלצת "הבא בתור" מסבב 50 הצביעה
+    על עדשת race-condition/duplicate-submit על מערכות שנבדקו רק ל-
+    silent-write-fail. הרצתי שני גלי סוכני Explore מקבילים: גל א' על
+    22-get-your-rights/24-galilee-connect-hub/26-modaot-studio/
+    28-kupot-health-funds; גל ב' על 17-chizukim-transcribe/
+    18-torah-editor-mvp (המוצרים החיים בעלי הערך העסקי הגבוה ביותר
+    בהיקף, טרם נבדקו לדפוס הזה בכלל).
+270. **חזרו 3 ממצאים אמיתיים בשתי מערכות, כל השאר נקיים** (22, 26, 28,
+    17 -- כולם כבר משתמשים ב-state `busy`/`loading`/`isSubmitting` או
+    ב-`useMutation().isPending` של TanStack Query, אומת ידנית מול קובץ
+    המקור, לא רק תיאור הסוכן): **24-galilee-connect-hub**
+    `GabaiPortal.tsx` `ContactLeadsManager` -- כפתורי "סמן כנקרא"
+    (שורה 1389) ו-"מחק" (שורה 1396) בלוח פניות צור-קשר של הגבאי קראו
+    ל-Supabase update/delete בלי לנטרל את הכפתור, בזמן שרכיבי-אח
+    באותו קובץ (`AdminPasswordManager` וכו') כבר משתמשים ב-state
+    `loading`/`saving`. **18-torah-editor-mvp** `app/documents/page.tsx`
+    `remove()` (שורה 173-179, כפתור "מחיקה" שורה 307) מחק מסמך מ-
+    `orech_documents` בלי state `busy`/`disabled` כלל, בניגוד לתקדים
+    הקיים באותו קובץ (`handleFiles`/`newBlank` כבר משתמשים ב-`busy`) --
+    זהו המוצר החי היחיד בהיקף עם pipeline OCR/LLM אמיתי, כך שכפילות
+    כאן משפיעה על מסמכי משתמשים אמיתיים גם אם לא על עלות מנוע. התיקון:
+    ב-24 הוספתי state יחיד `processingId` (המזהה ה-lead שבטיפול, לא
+    מנטרל שורות אחרות) ל-`ContactLeadsManager`, `if (processingId)
+    return; setProcessingId(lead.id); ... setProcessingId(null);` +
+    `disabled={processingId === lead.id}` לשני הכפתורים; ב-18 הוספתי
+    `deletingId` לאותו `remove()`/כפתור עם אותו דפוס plus טקסט
+    "מוחקים…" בזמן הפעולה (תואם את `busy` string שהכפתורים האחרים כבר
+    מציגים). אפס שינוי לזרימת ההצלחה הרגילה בשני הקבצים. אין
+    `node_modules`/`tsc` זמינים בעץ הזה -- אומת בקריאה חוזרת מלאה של
+    שני ה-diff (סוגריים מאוזנים, אין קריאה כפולה ל-state). שני הקבצים
+    כבר עוקבים ב-git (לא נדרש `git add -f` הפעם). קומיט על
+    `fix/b-galilee-torah-editor-duplicate-submit-0820`, יידחף (מפעיל
+    פריסת Vercel תחת `more30.com/galil` ו-`more30.com/orech`). **הבא
+    בתור:** 26-modaot-studio/28-kupot-health-funds/17-chizukim-transcribe/
+    22-get-your-rights חזרו נקיים לדפוס הזה בסבב הזה -- הסבב הבא צריך
+    לפתוח בסריקה על 30-zchuyotpro-crm/31-hebrew-bridge-crm (רק
+    silent-write-fail נבדק בהם, לא duplicate-submit) או לחזור לבדוק
+    את ה-rebrand ('עולם הסטארטאפים')/pricing TEST-mode בפועל בתוך כל
+    אפליקציה 17-31 (המיפוי התיעודי כבר נעשה בסבב 80 הישן, אך לא אומת
+    מחדש שכל עמוד/כותרת בפועל תואם).
