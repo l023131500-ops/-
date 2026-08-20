@@ -135,9 +135,13 @@ const AdminDashboard = () => {
       toast.success("יום העיון נמחק");
       setStudyDayEvents(prev => prev.filter(e => e.id !== id));
     } else {
-      await supabase.from("study_day_events").update({ status: "deleted", is_approved: false }).eq("id", id);
-      setStudyDayEvents(prev => prev.filter(e => e.id !== id));
-      toast.success("יום העיון הוסר");
+      const { error: softError } = await supabase.from("study_day_events").update({ status: "deleted", is_approved: false }).eq("id", id);
+      if (!softError) {
+        setStudyDayEvents(prev => prev.filter(e => e.id !== id));
+        toast.success("יום העיון הוסר");
+      } else {
+        toast.error("שגיאה בהסרה: " + softError.message);
+      }
     }
   };
 
