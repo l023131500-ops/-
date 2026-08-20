@@ -10366,3 +10366,73 @@
       `core.project_bugs` (6 פריטים חסומים), או לבדוק אם קיימות עוד
       אפליקציות בהיקף 01-16 עם `basePath` ב-`next.config.mjs` וזרימת
       Google OAuth שלא נסרקה עדיין (רק 01/02/03 נבדקו עד כה).
+
+## 20/08/2026 — סבב 207 (loop A) — `15-egod`: אותה בעיית `basePath` חסר, הפעם ב-Vite/React-Router (המשך 1001)
+
+1002. **המשך ישיר מ-1001 (בדיקת שאר 01-16): רק 01/02/03 הם Next.js עם
+      `basePath`, אבל `15-egod` (Vite/React) סובלת מאותה מחלה במבנה שונה.**
+      `grep -rl "signInWithOAuth\|signInWithGoogle"` על 04-16 מצא רק
+      `15-egod/src/pages/Login.tsx` ו-`15-egod/src/integrations/lovable/
+      index.ts` (עטיפה שנוצרה אוטומטית ע"י Lovable, מסומנת "Do not modify").
+      קראתי `apps/15-egod/vite.config.ts` (`base: "/egod/"`) ו-`App.tsx`
+      (`BrowserRouter basename={import.meta.env.BASE_URL...}`, עם הערה
+      קיימת בקוד שמאשרת זאת: "Served from more30.com/egod as well as the
+      site root") — אותה תבנית בדיוק כמו `basePath` ב-Next.js: הראוטר
+      מצפה שכל כתובת תתחיל ב-`/egod`.
+1003. **הבאג הקונקרטי: `getPublicSiteUrl()` ב-`src/lib/site.ts` מחזירה
+      `window.location.origin` בלי שום קידומת נתיב.** כשמריצים על
+      `more30.com/egod`, הפונקציה (מיועדת להימנע מדומיין ה-preview הפנימי
+      של Lovable) מחזירה `https://more30.com` — בלי `/egod` — כי היא בודקת
+      רק את ה-`hostname` (`isInternalHost`), לא את הנתיב. שלושה קריאות
+      השתמשו בערך הזה ישירות: (1) `Login.tsx`/`handleGoogleLogin` מעביר
+      אותו כ-`redirect_uri` ל-`lovable.auth.signInWithOAuth("google", ...)`
+      — בדיוק כמו `redirectTo` ב-Supabase שתוקן בסבבים 205-206; (2)
+      `buildInviteUrl` (הזמנת מורה חדש למערכת, מועתק/משותף בפועל ע"י אדמין
+      דרך `AdminTeachers.tsx`); (3) `buildRabbiUrl` (קישור פרופיל ציבורי של
+      רב, מוצג/מועתק ב-`Dashboard.tsx`+`PortalSettings.tsx`+
+      `AdminTeachers.tsx`). שלושתם קישורים אמיתיים שיוצאים מהאפליקציה
+      למשתמשים אמיתיים (לא רק תיאורטי).
+1004. **אימות שהראוטר אכן דורש את הקידומת (לא רק השערה):** `App.tsx` שורה
+      47, `basename={import.meta.env.BASE_URL.replace(/\/+$/, "") || "/"}`
+      — בבנייה חיה `BASE_URL="/egod/"` (מוגדר סטטית ב-vite.config.ts, לא
+      תלוי-סביבה). כלומר `/invite` ו-`/rabbi/:id` הם בפועל
+      `more30.com/egod/invite` ו-`more30.com/egod/rabbi/:id` — קישור בלי
+      הקידומת נוחת על נתיב-שורש שבו רץ אפליקציה אחרת לגמרי (בדיוק כמו
+      `more30.com/portal` מול `more30.com/torah/portal` בסבב 205). זרימת
+      ה-Google OAuth מאומתת דרך `useAuth.tsx`: מאזין `onAuthStateChange`
+      גלובלי ב-`AuthProvider` (עוטף את כל ה-`Router`, כמו ב-01) — כלומר
+      איזה נתיב הדפדפן חוזר אליו אחרי Google הוא בדיוק מה ש-`redirect_uri`
+      קובע, אותו מנגנון שכבר אומת ב-01/02/03.
+1005. **התיקון: פונקציית עזר חדשה `getPublicAppUrl()` = מקור + `BASE_URL`,
+      שלושת הקריאות עברו אליה.** `getPublicAppUrl = () =>
+      \`${getPublicSiteUrl()}${import.meta.env.BASE_URL.replace(/\/+$/,
+      "")}\`` — לא נגעתי ב-`getPublicSiteUrl()` עצמה (עדיין בשימוש פנימי
+      ע"י `sanitizePublicUrls`, מחוץ להיקף התיקון). לא נגעתי בקובץ
+      "Do not modify" (`integrations/lovable/index.ts`) — הוא כבר מקבל
+      `redirect_uri` כפרמטר, רק הערך שהעברתי אליו השתנה. שקלתי אם הענף
+      הפנימי (Lovable preview/`egod.lovable.app`, כש-`isInternalHost`
+      אמת) גם צריך את הקידומת — מכיוון ש-`BASE_URL` מוגדר סטטית באותו
+      build בדיוק (לא תלוי-דומיין), וה-`BrowserRouter basename` דורש אותה
+      קידומת בכל סביבה שמריצה את אותו build, הוספתי אותה גם שם לעקביות,
+      ולא רק בענף `more30.com`.
+1006. **אפס רגרסיה מאומתת:** `git diff --stat`: 2 קבצים, +12/-4 — תוספת
+      פונקציה חדשה + שינוי 3 קריאות קיימות מ-`getPublicSiteUrl()` ל-
+      `getPublicAppUrl()`, בלי מחיקת פונקציה/ענף/מסך. `grep
+      "getPublicSiteUrl"` אחרי העריכה עדיין מוצא את ההגדרה + השימוש הפנימי
+      התקין ב-`getPublicAppUrl` עצמה — אין קריאה שבורה. בדיקת איזון
+      סוגריים בפייתון על שני הקבצים אחרי העריכה: תואם. `git check-ignore`
+      על שני הקבצים: exit 1 (לא מסוננים בפועל — למרות אזהרה חד-פעמית
+      מוזרה מ-`git add` על תיקיית `apps/15-egod/src`, ש-`git status`/
+      `git ls-files` מאשרים ששני הקבצים כבר עוקבים אחריהם רגיל ונוספו
+      לקומיט בהצלחה). לא נגעתי במערכות/סכימות מוגנות (08/09/bkalut-app/
+      bkalot-admin/zr_*/NEDARIM3873/csj/csj_src/igud), ב-`main`, או
+      במערכת מחוץ להיקף (רק 01-16/gannenet/auth/super-admin/admin
+      dashboard/homepage ordering/pricing).
+1007. **הבא בתור:** שתי הטבלאות מ-987 (`client_timeline`,
+      `knowledge_chunks`), שני מועמדי הניגודיות מסבב 175, שני מופעי
+      `FormMessage` לא-פעילים מסבב 191, `core.project_tasks`/
+      `core.project_bugs` (6 פריטים חסומים), או לסרוק את שאר 04-16
+      (Vite/React ללא `basePath`-ב-`next.config` אבל עם `base:` ב-
+      `vite.config.ts`) לקישורים/redirect-ים דומים שנבנים מ-
+      `window.location.origin` בלי `BASE_URL` (רק 15 נבדקה עד כה מבין
+      אפליקציות ה-Vite).
