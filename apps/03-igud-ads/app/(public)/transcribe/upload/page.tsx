@@ -140,8 +140,8 @@ export default function UploadPage() {
               </div>
 
               <div>
-                <label className="label">סגנון עריכה</label>
-                <div className="grid grid-cols-3 gap-3">
+                <label className="label" id="upload-style-label">סגנון עריכה</label>
+                <div className="grid grid-cols-3 gap-3" role="group" aria-labelledby="upload-style-label">
                   {[
                     { value: "litvish", label: "ליטאי", desc: "לשון תורנית מדויקת" },
                     { value: "chassidish", label: "חסידי", desc: "מתובל חסידות" },

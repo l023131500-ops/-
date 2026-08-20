@@ -333,10 +333,11 @@ function QuestionField({
     const min = item.min ?? 1;
     const max = item.max ?? 5;
     const opts = Array.from({ length: max - min + 1 }, (_, i) => min + i);
+    const fieldId = `question-${item.key}`;
     return (
       <div className="text-right">
-        <label className="mb-1.5 block text-sm font-semibold text-foreground">{item.label}</label>
-        <div className="flex gap-2" data-testid={`scale-${item.key}`}>
+        <label id={fieldId} className="mb-1.5 block text-sm font-semibold text-foreground">{item.label}</label>
+        <div className="flex gap-2" role="group" aria-labelledby={fieldId} data-testid={`scale-${item.key}`}>
           {opts.map((n) => (
             <button
               key={n}
