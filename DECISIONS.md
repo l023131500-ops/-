@@ -6008,3 +6008,55 @@
      קבצים, סבבים 94-103). **הבא:** 01-torah-platform (~150 מופעים/
      19 קבצים) לפי המיפוי של סבב 83 — סבב הבא יפתח שם מיפוי טרי
      קובץ-אחר-קובץ (מהקטן לגדול), כי המספר המוערך ישן.
+
+## 20/08/2026 (LOOP A — סבב 104) — `<label htmlFor>`/`id`: פתיחת 01-torah-platform (מיפוי טרי + `AdminLogin.tsx`)
+
+563. **בדקתי מחדש `git log`/`core.run_progress` לפני שהתחלתי.** סבב
+     103 סגור (commit `24403afe`/`97bf6017`, HEAD תואם). הערת #562
+     קבעה שהמספר הישן (~150/19 קבצים, סבב 83) דורש מיפוי טרי לפני
+     המשך — הפעלתי סוכן Explore לסריקה מחדש של כל
+     `apps/01-torah-platform/src`.
+564. **תוצאת המיפוי הטרי:** 170 קבצי `.tsx` בסך הכל באפליקציה, 22
+     מהם מכילים `<label>`, מתוכם 12 עם זוגות label/control אמיתיים
+     ללא קישור (התווית עוטפת את הבקרה ב-10 הקבצים האחרים — הוחרגו
+     כמו בכל הסבבים הקודמים). סה"כ ~45 מופעים אמיתיים לתיקון — מספר
+     נמוך משמעותית מהאומדן הישן של סבב 83 (~150), כנראה כי חלק
+     מהקבצים כבר תוקנו בעבר או שהאומדן הישן כלל גם תוויות עוטפות.
+     דורג לפי גודל: `MultiSelect.tsx`/`RadioSelect.tsx` (1, אך אלה
+     תוויות-קבוצה מעל כפתורי צ'יפים בלי `<input>` אמיתי — לא מתאים
+     לתבנית `id`/`htmlFor` הרגילה בלי לשנות רכיב), `AdminLogin.tsx`
+     (2, שני שדות טופס קלאסיים — נבחר ראשון), אחריו `Teachers.tsx`
+     (2), `SynagogueFullAccessRequest.tsx` (2), `OrgPortal.tsx` (1,
+     כבר מקושר בחלקו — לדוגמה טובה של התבנית הקיימת),
+     `PrayerTimesTab.tsx` (3), `PortalLessonForm.tsx` (4),
+     `PortalSettingsTab.tsx`/`PublicContactForm.tsx` (6 כל אחד),
+     `StudyDayEventForm.tsx`/`UpdateLesson.tsx` (9 כל אחד — הגדולים
+     ביותר, ללולאות דינמיות).
+565. **התיקון בסבב הזה:** `apps/01-torah-platform/src/pages/legacy/
+     AdminLogin.tsx` — טופס כניסת ניהול (login עם Google או שם
+     משתמש+סיסמה, בתחום ה-scope המפורש "customer login/auth").
+     שני שדות: "שם משתמש" (`<Input type="text">`) ו-"סיסמה"
+     (`<PasswordInput>`, שעוטפת `<Input>` ומעבירה `...props` הלאה
+     — אומתה קריאה מלאה של `password-input.tsx` לפני ההוספה, כדי
+     לוודא ש-`id` אכן מגיע ל-`<input>` הפנימי ולא נבלע). הוספתי
+     `id="admin-login-username"`/`id="admin-login-password"` על
+     הבקרות ו-`htmlFor` תואם על שתי התוויות.
+566. **אפס רגרסיה מאומתת:** `git diff` מלא — קובץ אחד, 4+/2-,
+     רק `id`/`htmlFor` נוספו, לא נגעתי ב-`value`/`onChange`/`type`/
+     `placeholder`/`className`/`onSubmit`/הלוגיקה. אין `tsc`/`npm`
+     בסביבה הזו — אומת בבדיקת איזון `{}`/`()`/`[]` ב-Python על
+     הקובץ המלא (54/54, 58/58, 6/6). `git add -f` נדרש (`apps/**`
+     מוחרג כברירת מחדל ב-`.gitignore` השורשי, וזה הקובץ הראשון
+     מ-01-torah-platform שנוסף בעדשה הזו). Commit `0aa75801` על
+     `fix/a-icon-only-buttons-round2-0820`, יידחף ל-origin (מפעיל
+     פריסת Vercel תחת more30.com/torah — לפי `TOPIC_ROUTES["01"]`
+     ב-`packages/config/src/registry.ts`).
+567. **הבא בתור ב-01-torah-platform** (מהקטן לגדול, לפי המיפוי
+     הטרי של סבב זה): `Teachers.tsx` (2) →
+     `SynagogueFullAccessRequest.tsx` (2) → `PrayerTimesTab.tsx`
+     (3) → `PortalLessonForm.tsx` (4) →
+     `PortalSettingsTab.tsx`/`PublicContactForm.tsx` (6 כל אחד) →
+     `StudyDayEventForm.tsx`/`UpdateLesson.tsx` (9 כל אחד).
+     `MultiSelect.tsx`/`RadioSelect.tsx` (תוויות-קבוצה בלי
+     `<input>` אמיתי) ו-`OrgPortal.tsx` (חלקית מקושר כבר) יטופלו
+     בנפרד אם וכאשר יימצא הצדקה שלא לדלג עליהם.
