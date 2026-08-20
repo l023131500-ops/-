@@ -14,6 +14,7 @@ const ActivitySlideshow = ({ isAdmin = false }: { isAdmin?: boolean }) => {
   const [slides, setSlides] = useState<ActivitySlide[]>([]);
   const [current, setCurrent] = useState(0);
   const [uploading, setUploading] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const fetchSlides = async () => {
@@ -55,8 +56,10 @@ const ActivitySlideshow = ({ isAdmin = false }: { isAdmin?: boolean }) => {
 
   const handleDelete = async (slide: ActivitySlide) => {
     if (!confirm('למחוק את השקופית הזו?')) return;
+    setDeletingId(slide.id);
     await deleteStorageFile(slide.image_url);
     const { error } = await supabase.from('activity_slides').delete().eq('id', slide.id);
+    setDeletingId(null);
     if (error) {
       alert('מחיקת התמונה נכשלה, נסה שוב');
       return;
@@ -102,8 +105,8 @@ const ActivitySlideshow = ({ isAdmin = false }: { isAdmin?: boolean }) => {
                       </p>
                     </div>
                     {isAdmin && slides[current] && (
-                      <button onClick={() => handleDelete(slides[current])}
-                        className="absolute top-3 left-3 w-9 h-9 rounded-full bg-destructive/80 text-destructive-foreground flex items-center justify-center hover:bg-destructive transition-colors">
+                      <button onClick={() => handleDelete(slides[current])} disabled={deletingId === slides[current].id}
+                        className="absolute top-3 left-3 w-9 h-9 rounded-full bg-destructive/80 text-destructive-foreground flex items-center justify-center hover:bg-destructive transition-colors disabled:opacity-50">
                         <Trash2 className="w-4 h-4" />
                       </button>
                     )}

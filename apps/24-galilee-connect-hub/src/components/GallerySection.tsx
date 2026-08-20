@@ -15,6 +15,7 @@ const GallerySection = ({ isAdmin = false }: { isAdmin?: boolean }) => {
   const [images, setImages] = useState<GalleryImage[]>([]);
   const [lightbox, setLightbox] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const lightboxRef = useRef<HTMLDivElement>(null);
   const lightboxCloseRef = useRef<HTMLButtonElement>(null);
@@ -79,8 +80,10 @@ const GallerySection = ({ isAdmin = false }: { isAdmin?: boolean }) => {
 
   const handleDelete = async (img: GalleryImage) => {
     if (!confirm('למחוק את התמונה הזו מהגלריה?')) return;
+    setDeletingId(img.id);
     await deleteStorageFile(img.image_url);
     const { error } = await supabase.from('gallery_images').delete().eq('id', img.id);
+    setDeletingId(null);
     if (error) {
       alert('מחיקת התמונה נכשלה, נסה שוב');
       return;
@@ -124,8 +127,8 @@ const GallerySection = ({ isAdmin = false }: { isAdmin?: boolean }) => {
                 <p className="text-primary-foreground text-sm font-bold">{img.caption}</p>
               </div>
               {isAdmin && (
-                <button onClick={e => { e.stopPropagation(); handleDelete(img); }}
-                  className="absolute top-2 left-2 w-8 h-8 rounded-full bg-destructive/80 text-destructive-foreground flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                <button onClick={e => { e.stopPropagation(); handleDelete(img); }} disabled={deletingId === img.id}
+                  className="absolute top-2 left-2 w-8 h-8 rounded-full bg-destructive/80 text-destructive-foreground flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity disabled:opacity-50">
                   <Trash2 className="w-4 h-4" />
                 </button>
               )}

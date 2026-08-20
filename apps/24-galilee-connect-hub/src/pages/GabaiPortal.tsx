@@ -696,6 +696,7 @@ const HalachaManager = () => {
   const [category, setCategory] = useState('הלכה יומית');
   const [isSeasonal, setIsSeasonal] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
   const [actionError, setActionError] = useState('');
 
   const fetchItems = async () => {
@@ -725,8 +726,10 @@ const HalachaManager = () => {
 
   const handleDelete = async (id: string) => {
     if (!confirm('למחוק את ההלכה היומית הזו?')) return;
+    setDeletingId(id);
     setActionError('');
     const { error } = await supabase.from('daily_halacha').delete().eq('id', id);
+    setDeletingId(null);
     if (error) {
       setActionError('המחיקה נכשלה עקב תקלה. נסו שוב.');
       return;
@@ -783,8 +786,8 @@ const HalachaManager = () => {
                   </div>
                   <div className="text-xs text-muted-foreground truncate">{item.content.substring(0, 60)}...</div>
                 </div>
-                <Button variant="ghost" size="icon" onClick={() => handleDelete(item.id)} className="text-destructive shrink-0">
-                  <Trash2 className="w-4 h-4" />
+                <Button variant="ghost" size="icon" onClick={() => handleDelete(item.id)} disabled={deletingId === item.id} className="text-destructive shrink-0">
+                  {deletingId === item.id ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
                 </Button>
               </div>
             ))}
@@ -802,6 +805,7 @@ const NewsletterManager = () => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [uploading, setUploading] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
   const [actionError, setActionError] = useState('');
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -850,11 +854,13 @@ const NewsletterManager = () => {
 
   const handleDelete = async (item: any) => {
     if (!confirm('למחוק את הגיליון הזה?')) return;
+    setDeletingId(item.id);
     setActionError('');
     // Delete from storage
     const fileName = item.pdf_url.split('/').pop();
     if (fileName) await supabase.storage.from('newsletters').remove([fileName]);
     const { error } = await supabase.from('newsletters').delete().eq('id', item.id);
+    setDeletingId(null);
     if (error) {
       setActionError('מחיקת הגיליון נכשלה עקב תקלה. נסו שוב.');
       return;
@@ -907,8 +913,8 @@ const NewsletterManager = () => {
                 <a href={nl.pdf_url} target="_blank" rel="noopener noreferrer" className="text-primary hover:text-primary/80">
                   <Download className="w-4 h-4" />
                 </a>
-                <Button variant="ghost" size="icon" onClick={() => handleDelete(nl)} className="text-destructive shrink-0">
-                  <Trash2 className="w-4 h-4" />
+                <Button variant="ghost" size="icon" onClick={() => handleDelete(nl)} disabled={deletingId === nl.id} className="text-destructive shrink-0">
+                  {deletingId === nl.id ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
                 </Button>
               </div>
             ))}
@@ -1086,6 +1092,7 @@ const AdBannerManager = () => {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
   const [actionError, setActionError] = useState('');
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -1115,9 +1122,11 @@ const AdBannerManager = () => {
 
   const handleDelete = async (banner: any) => {
     if (!confirm('למחוק את הבאנר הזה?')) return;
+    setDeletingId(banner.id);
     setActionError('');
     await deleteStorageFile(banner.image_url);
     const { error } = await supabase.from('ad_banners').delete().eq('id', banner.id);
+    setDeletingId(null);
     if (error) {
       setActionError('מחיקת הבאנר נכשלה עקב תקלה. נסו שוב.');
       return;
@@ -1185,8 +1194,8 @@ const AdBannerManager = () => {
                   <div className="font-bold text-foreground text-sm truncate">{b.title || 'ללא כותרת'}</div>
                   <div className="text-xs text-muted-foreground">{b.size} • {b.position === 'side' ? 'צדדי' : 'מרכזי'}</div>
                 </div>
-                <Button variant="ghost" size="icon" onClick={() => handleDelete(b)} className="text-destructive shrink-0">
-                  <Trash2 className="w-4 h-4" />
+                <Button variant="ghost" size="icon" onClick={() => handleDelete(b)} disabled={deletingId === b.id} className="text-destructive shrink-0">
+                  {deletingId === b.id ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
                 </Button>
               </div>
             ))}
@@ -1212,6 +1221,7 @@ const KnowledgeManager = () => {
   const [kbImagePreview, setKbImagePreview] = useState<string | null>(null);
   const [actionError, setActionError] = useState('');
   const [saving, setSaving] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
   const kbFileRef = useRef<HTMLInputElement>(null);
 
   const fetchItems = useCallback(async () => {
@@ -1249,9 +1259,11 @@ const KnowledgeManager = () => {
 
   const handleDelete = async (item: KnowledgeItem) => {
     if (!confirm('למחוק פריט זה ממאגר המידע?')) return;
+    setDeletingId(item.id);
     setActionError('');
     if (item.image_url) await deleteStorageFile(item.image_url);
     const { error } = await supabase.from('knowledge_base').delete().eq('id', item.id);
+    setDeletingId(null);
     if (error) {
       setActionError('המחיקה נכשלה עקב תקלה. נסו שוב.');
       return;
@@ -1347,8 +1359,8 @@ const KnowledgeManager = () => {
                         {item.content.substring(0, 50)}...
                       </div>
                     </div>
-                    <Button variant="ghost" size="icon" onClick={() => handleDelete(item)} className="text-destructive shrink-0">
-                      <Trash2 className="w-4 h-4" />
+                    <Button variant="ghost" size="icon" onClick={() => handleDelete(item)} disabled={deletingId === item.id} className="text-destructive shrink-0">
+                      {deletingId === item.id ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
                     </Button>
                   </div>
                 ))}
