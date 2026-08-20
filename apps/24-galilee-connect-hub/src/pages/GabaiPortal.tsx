@@ -423,7 +423,7 @@ const GabaiPersonalArea = ({ synagogueName, synagogueId }: { synagogueName: stri
                       if (processingId) return;
                       setProcessingId(lead.id);
                       setActionError('');
-                      const { error } = await supabase.from('community_leads').update({ is_read: true }).eq('id', lead.id);
+                      const { error } = await supabase.from('community_leads').update({ is_read: true }).eq('id', lead.id).eq('synagogue_id', synagogueId);
                       setProcessingId(null);
                       if (error) { setActionError('הפעולה נכשלה עקב תקלה. נסו שוב.'); return; }
                       fetchLeads();
