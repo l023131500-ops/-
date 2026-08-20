@@ -39,17 +39,23 @@ async function processNext() {
     .limit(1)
     .maybeSingle();
   if (!job) return { ok: true, processed: 0, message: "אין משימות בתור" };
-  await sb.from("jobs").update({ status: "running", started_at: new Date().toISOString() }).eq("id", job.id);
+  {
+    const { error } = await sb.from("jobs").update({ status: "running", started_at: new Date().toISOString() }).eq("id", job.id);
+    if (error) console.error("[jobs] mark running failed", job.id, error);
+  }
   try {
     const result = await processUpload(job.upload_id);
     if (result.ok) {
-      await sb.from("jobs").update({ status: "done", finished_at: new Date().toISOString() }).eq("id", job.id);
+      const { error } = await sb.from("jobs").update({ status: "done", finished_at: new Date().toISOString() }).eq("id", job.id);
+      if (error) console.error("[jobs] mark done failed", job.id, error);
     } else {
-      await sb.from("jobs").update({ status: "error", finished_at: new Date().toISOString(), error_message: result.error }).eq("id", job.id);
+      const { error } = await sb.from("jobs").update({ status: "error", finished_at: new Date().toISOString(), error_message: result.error }).eq("id", job.id);
+      if (error) console.error("[jobs] mark error failed", job.id, error);
     }
     return { processed: 1, job_id: job.id, ...result };
   } catch (e: any) {
-    await sb.from("jobs").update({ status: "error", finished_at: new Date().toISOString(), error_message: e?.message }).eq("id", job.id);
+    const { error } = await sb.from("jobs").update({ status: "error", finished_at: new Date().toISOString(), error_message: e?.message }).eq("id", job.id);
+    if (error) console.error("[jobs] mark error(catch) failed", job.id, error);
     return { ok: false, error: e?.message };
   }
 }
@@ -61,7 +67,10 @@ async function processUpload(upload_id: string) {
   const { data: upload, error: upErr } = await sb.from("uploads").select("*").eq("id", upload_id).single();
   if (upErr || !upload) return { ok: false, error: "upload לא נמצא" };
 
-  await sb.from("uploads").update({ status: "processing" }).eq("id", upload_id);
+  {
+    const { error } = await sb.from("uploads").update({ status: "processing" }).eq("id", upload_id);
+    if (error) console.error("[jobs] mark upload processing failed", upload_id, error);
+  }
 
   try {
     // 1. הורד את האודיו מ-Storage
@@ -73,7 +82,10 @@ async function processUpload(upload_id: string) {
       file: blob,
       filename: upload.original_filename || "audio.mp3"
     });
-    if (durationSec) await sb.from("uploads").update({ duration_sec: Math.round(durationSec) }).eq("id", upload_id);
+    if (durationSec) {
+      const { error } = await sb.from("uploads").update({ duration_sec: Math.round(durationSec) }).eq("id", upload_id);
+      if (error) console.error("[jobs] update duration_sec failed", upload_id, error);
+    }
 
     // 3. שמור transcript עם raw_text
     const { data: transcriptRow, error: tErr } = await sb
@@ -97,9 +109,12 @@ async function processUpload(upload_id: string) {
     });
 
     // 6. שמור edited_text + footnotes
-    await sb.from("transcripts").update({ edited_text: edited.edited_text }).eq("id", transcriptRow.id);
+    {
+      const { error } = await sb.from("transcripts").update({ edited_text: edited.edited_text }).eq("id", transcriptRow.id);
+      if (error) console.error("[jobs] update edited_text failed", transcriptRow.id, error);
+    }
     if (edited.footnotes.length) {
-      await sb.from("footnotes").insert(
+      const { error } = await sb.from("footnotes").insert(
         edited.footnotes.map((f) => ({
           transcript_id: transcriptRow.id,
           number: f.number,
@@ -108,6 +123,7 @@ async function processUpload(upload_id: string) {
           source_ref: f.source_ref || null
         }))
       );
+      if (error) console.error("[jobs] insert footnotes failed", transcriptRow.id, error);
     }
 
     // 7. בנה 3 קבצי DOCX והעלה ל-Storage (bucket: docs)
@@ -131,14 +147,19 @@ async function processUpload(upload_id: string) {
         upsert: true
       });
       if (error) throw new Error("שגיאת העלאת DOCX: " + error.message);
-      await sb.from("transcripts").update({ [u.col]: u.key }).eq("id", transcriptRow.id);
+      const { error: colErr } = await sb.from("transcripts").update({ [u.col]: u.key }).eq("id", transcriptRow.id);
+      if (colErr) console.error(`[jobs] update ${u.col} failed`, transcriptRow.id, colErr);
     }
 
-    await sb.from("uploads").update({ status: "done" }).eq("id", upload_id);
+    {
+      const { error } = await sb.from("uploads").update({ status: "done" }).eq("id", upload_id);
+      if (error) console.error("[jobs] mark upload done failed", upload_id, error);
+    }
     return { ok: true, transcript_id: transcriptRow.id };
   } catch (e: any) {
     console.error("[jobs] processUpload", e);
-    await sb.from("uploads").update({ status: "error" }).eq("id", upload_id);
+    const { error } = await sb.from("uploads").update({ status: "error" }).eq("id", upload_id);
+    if (error) console.error("[jobs] mark upload error failed", upload_id, error);
     return { ok: false, error: e?.message || "שגיאה לא ידועה" };
   }
 }

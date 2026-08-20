@@ -55,18 +55,28 @@ export default function CouponsPage() {
   };
 
   const toggle = async (id: string, is_active: boolean) => {
-    await fetch("/tamlul/api/admin/coupons", {
+    const res = await fetch("/tamlul/api/admin/coupons", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id, is_active: !is_active }),
     });
-    load();
+    if (res.ok) {
+      load();
+    } else {
+      const d = await res.json().catch(() => ({}));
+      alert(d.error || "שגיאה");
+    }
   };
 
   const remove = async (id: string) => {
     if (!confirm("למחוק קופון זה?")) return;
-    await fetch(`/tamlul/api/admin/coupons?id=${id}`, { method: "DELETE" });
-    load();
+    const res = await fetch(`/tamlul/api/admin/coupons?id=${id}`, { method: "DELETE" });
+    if (res.ok) {
+      load();
+    } else {
+      const d = await res.json().catch(() => ({}));
+      alert(d.error || "שגיאה");
+    }
   };
 
   return (

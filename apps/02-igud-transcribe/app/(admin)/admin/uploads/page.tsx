@@ -78,9 +78,14 @@ export default function UploadsPage() {
 
   const remove = async (id: string) => {
     if (!confirm("למחוק העלאה זו וכל הקבצים שלה?")) return;
-    await fetch(`/tamlul/api/admin/uploads?id=${id}`, { method: "DELETE" });
-    setSelected(null);
-    load();
+    const res = await fetch(`/tamlul/api/admin/uploads?id=${id}`, { method: "DELETE" });
+    if (res.ok) {
+      setSelected(null);
+      load();
+    } else {
+      const d = await res.json().catch(() => ({}));
+      alert(d.error || "שגיאה במחיקה");
+    }
   };
 
   return (
