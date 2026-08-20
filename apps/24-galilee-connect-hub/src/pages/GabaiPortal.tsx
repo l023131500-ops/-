@@ -1326,6 +1326,7 @@ const KnowledgeManager = () => {
 const ContactLeadsManager = () => {
   const [leads, setLeads] = useState<any[]>([]);
   const [actionError, setActionError] = useState('');
+  const [processingId, setProcessingId] = useState<string | null>(null);
 
   const fetchLeads = useCallback(async () => {
     const { data } = await supabase.from('community_leads').select('*').order('created_at', { ascending: false });
@@ -1386,16 +1387,22 @@ const ContactLeadsManager = () => {
             )}
             <div className="flex gap-2">
               {!lead.is_read && (
-                <Button variant="outline" size="sm" className="gap-1.5 text-xs font-bold" onClick={async () => {
+                <Button variant="outline" size="sm" className="gap-1.5 text-xs font-bold" disabled={processingId === lead.id} onClick={async () => {
+                  if (processingId) return;
+                  setProcessingId(lead.id);
                   setActionError('');
                   const { error } = await supabase.from('community_leads').update({ is_read: true }).eq('id', lead.id);
+                  setProcessingId(null);
                   if (error) { setActionError('הפעולה נכשלה עקב תקלה. נסו שוב.'); return; }
                   fetchLeads();
                 }}><Eye className="w-3.5 h-3.5" /> סמן כנקרא</Button>
               )}
-              <Button variant="ghost" size="sm" className="gap-1.5 text-xs font-bold text-destructive" onClick={async () => {
+              <Button variant="ghost" size="sm" className="gap-1.5 text-xs font-bold text-destructive" disabled={processingId === lead.id} onClick={async () => {
+                if (processingId) return;
+                setProcessingId(lead.id);
                 setActionError('');
                 const { error } = await supabase.from('community_leads').delete().eq('id', lead.id);
+                setProcessingId(null);
                 if (error) { setActionError('המחיקה נכשלה עקב תקלה. נסו שוב.'); return; }
                 fetchLeads();
               }}><Trash2 className="w-3.5 h-3.5" /> מחק</Button>

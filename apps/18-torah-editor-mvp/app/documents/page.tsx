@@ -42,6 +42,7 @@ export default function DocumentsPage() {
   const [filter, setFilter] = useState<DocStatus | 'all'>('all');
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
   const [dragging, setDragging] = useState(false);
   const fileInput = useRef<HTMLInputElement | null>(null);
 
@@ -171,9 +172,12 @@ export default function DocumentsPage() {
   }
 
   async function remove(id: string, title: string) {
+    if (deletingId) return;
     if (!confirm(`למחוק את "${title}"? הפעולה אינה הפיכה.`)) return;
+    setDeletingId(id);
     const sb = getHubClient();
     const { error: e } = await sb.from('orech_documents').delete().eq('id', id);
+    setDeletingId(null);
     if (e) setError('המחיקה נכשלה: ' + e.message);
     else setDocs((d) => d.filter((x) => x.id !== id));
   }
@@ -305,8 +309,9 @@ export default function DocumentsPage() {
                     type="button"
                     className="action danger"
                     onClick={() => remove(d.id, d.title)}
+                    disabled={deletingId === d.id}
                   >
-                    מחיקה
+                    {deletingId === d.id ? 'מוחקים…' : 'מחיקה'}
                   </button>
                 </li>
               ))}
