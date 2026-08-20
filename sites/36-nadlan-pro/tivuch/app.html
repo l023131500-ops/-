@@ -861,7 +861,16 @@ async function openProperty(id) {
     '<button class="btn btn-sm" id="pTruth">משוך דוח אמת</button></p>' +
     (p.description ? '<p>' + esc(p.description) + '</p>' : '');
 
+  if ((p.images || []).length) {
+    html += '<div style="display:flex;gap:8px;flex-wrap:wrap;margin:0 0 18px">' +
+      p.images.map((src) => '<img src="' + esc(src) + '" alt="תמונת הנכס ב' + esc(p.address || p.title || '') +
+        '" style="width:96px;height:96px;object-fit:cover;border-radius:4px;border:1px solid var(--line-2)" />')
+        .join('') + '</div>';
+  }
+
   html += '<h2 class="sec">דוח האמת — נדל״ן ברגע</h2><div id="truthBox">' + truthHtml(p) + '</div>';
+
+  html += '<h2 class="sec">קישור צפייה ללקוח (בלי כניסה)</h2><div id="shareBox">' + shareHtml(p) + '</div>';
 
   html += '<h2 class="sec">עסקאות על הנכס</h2>';
   html += (d.deals || []).length
@@ -874,7 +883,63 @@ async function openProperty(id) {
          esc(p.address || '') + (p.city ? ' · ' + esc(p.city) : ''), html, (close) => {
     $('pEdit').addEventListener('click', () => { close(); propertyForm(p); });
     $('pTruth').addEventListener('click', () => fetchTruth(p, $('pTruth')));
+    wireShareBox(p);
   });
+}
+
+// The office's client-facing counterpart of the signing link: a random token
+// gating a SECURITY DEFINER function (`np_property_public`), same shape as
+// `np_sign_fetch`, but for viewing a listing instead of signing a document.
+// `share_enabled` is the one switch — off by default on every property, and
+// the toggle here is the only thing in the app that flips it.
+function shareHtml(p) {
+  // Hardcoded origin, matching the existing signing-link pattern above
+  // (contract "link" at data-mail wiring) rather than location.origin — the
+  // link is meant to be copied to a client, and must be the real public
+  // domain even if the office happens to be testing from a preview URL.
+  const url = 'https://more30.com/tivuch/listing.html?t=' + encodeURIComponent(p.share_token || '');
+  if (p.share_enabled) {
+    return '<p class="sub" style="margin:0 0 10px">הקישור פעיל — כל מי שמחזיק בו יכול לצפות בפרטי הנכס בלי כניסה למערכת.</p>' +
+      '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">' +
+        '<input readonly value="' + esc(url) + '" data-copy="' + esc(url) + '" style="flex:1;min-width:220px" />' +
+        '<button class="btn btn-sm" data-copybtn="' + esc(url) + '">העתק קישור</button>' +
+        '<button class="btn btn-quiet btn-sm" id="shareToggle" data-next="false">בטל שיתוף</button>' +
+      '</div>';
+  }
+  return '<p class="sub" style="margin:0 0 10px">הקישור כבוי כרגע — הלקוח לא יכול לצפות בנכס הזה בלי כניסה.</p>' +
+    '<button class="btn btn-sm" id="shareToggle" data-next="true">הפעל קישור צפייה</button>';
+}
+
+function wireShareBox(p) {
+  const box = $('shareBox');
+  for (const b of box.querySelectorAll('[data-copybtn]')) {
+    b.addEventListener('click', async () => {
+      try { await navigator.clipboard.writeText(b.dataset.copybtn); toast('הקישור הועתק'); }
+      catch (e) {
+        const inp = box.querySelector('[data-copy="' + b.dataset.copybtn + '"]');
+        if (inp) { inp.select(); toast('בחר והעתק ידנית (Ctrl+C)'); }
+      }
+    });
+  }
+  const t = $('shareToggle');
+  if (t) {
+    t.addEventListener('click', async () => {
+      const next = t.dataset.next === 'true';
+      t.disabled = true;
+      try {
+        const r = await rpc('np_property_share_set', { p_id: p.id, p_enabled: next });
+        p.share_enabled = r.share_enabled;
+        p.share_token = r.share_token;
+        box.innerHTML = shareHtml(p);
+        wireShareBox(p);
+        toast(next ? 'הקישור הופעל' : 'הקישור בוטל');
+        if (VIEW === 'properties') renderProperties();
+      } catch (e) {
+        toast('הפעולה נכשלה: ' + e.message, true);
+        t.disabled = false;
+      }
+    });
+  }
 }
 
 // The truth engine is system 32 and stays system 32. This never recomputes a
@@ -964,6 +1029,9 @@ function propertyForm(existing) {
         '<input type="checkbox" id="g_is_exclusive" style="width:17px;height:17px;accent-color:var(--gold)"' +
         (p.is_exclusive ? ' checked' : '') + ' /> נכס בבלעדיות</label>' +
       '<label class="f span2">תיאור<textarea id="g_description">' + esc(p.description || '') + '</textarea></label>' +
+      '<label class="f span2">תמונות — קישור אחד בכל שורה' +
+        '<textarea id="g_images" placeholder="https://...">' + esc((p.images || []).join('\n')) + '</textarea>' +
+      '</label>' +
     '</div>' +
     '<p style="margin-top:20px"><button class="btn" id="pfSave">שמירה</button></p>';
 
@@ -977,6 +1045,10 @@ function propertyForm(existing) {
         body[k] = $('g_' + k).value.trim();
       }
       body.is_exclusive = $('g_is_exclusive').checked ? 'true' : 'false';
+      // One URL per line; blank lines dropped. No upload/storage here — the
+      // office pastes links to images it already hosts elsewhere. A real
+      // upload-to-storage flow (and video) is a separate, larger next step.
+      body.images = $('g_images').value.split('\n').map((s) => s.trim()).filter(Boolean);
       if (!body.address && !body.title) {
         $('pfErr').innerHTML = '<div class="err">צריך לפחות כתובת או כותרת.</div>';
         return;
