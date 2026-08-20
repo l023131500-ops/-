@@ -4760,3 +4760,47 @@
     שנותרו, ניגודיות על אלמנטים שלא נבדקו עדיין, `aria-live` על
     התראות/toast), או להמשיך סריקת RLS על שאר הטבלאות ב-
     `csjekrvukbdznetsrodj` (36 טבלאות, רק חלק נסרק בעבר).
+
+## 20/08/2026 — סבב 306 (loop B)
+
+306. **פתחתי עדשת נגישות חדשה: שדות `<input>`/`<textarea>` בלי שם**
+    **נגיש (accessible name).** קראתי README.md/CONNECTIONS.md, בדקתי
+    `core.run_progress` (הצעד האחרון: get-your-rights-onclick-div-
+    keyboard-nav, קומיט `df05bdf5`, כבר ה-HEAD) ו-`core.projects` 17-31
+    (אין שינוי מטא-דאטה), ואז `core.issues` הפתוחות בהיקף — כל שורות
+    `owner='agent'` בהיקף (#62, #115, #201, #242) עדיין חסומות על אותה
+    גישה/הכרעה חיצונית מתועדת. בדקתי קודם שתי חלופות שהוצעו בסבב 305:
+    `aria-live` על toast — נפסלה, כל האפליקציות (17/21/22/24/26/27/28)
+    בונות toast על `@radix-ui/react-toast`, שכבר מטמיע live-region
+    תקין פנימית (קראתי את `toast.tsx` הבסיסי לוודא); וסריקת RLS נוספת
+    על `csjekrvukbdznetsrodj` — `pg_policies` על כל הטבלאות עם roles
+    כולל anon חזרה נקייה (fin_* חוסמות anon לגמרי, pc_*/recordings
+    הן נתוני-ציבור מכוונים ל-27/17, קופת_leads היא insert-only טופס-ליד
+    ציבורי) — אין עוד ממצא כמו admin_sessions בסבב 301, הטבלאות שנותרו
+    שם (#245) הן backend לא-vendored וכבר תועדו כחסומות על הכרעת policy.
+    **הרצתי סוכן Explore על 10 האפליקציות עם קוד vendored, לאתר
+    `<input>`/`<textarea>`/`<select>` טבעיים בלי `label`/`aria-label`/
+    `aria-labelledby` (לא shadcn `FormField`, לא Radix — אלה כבר
+    נגישים). הסוכן החזיר 5 מועמדים; קראתי כל קובץ בעצמי ואימתתי שכולם
+    אמיתיים (8 שדות סה"כ, placeholder בלבד שאינו תחליף ל-accessible
+    name לפי WCAG):**
+    - `21-mthbram/ContactSection.tsx:194-202` — טופס יצירת קשר ציבורי,
+      4 שדות (שם/טלפון/מייל/הודעה), שניים מסומנים חובה (`*`).
+    - `18-torah-editor-mvp/app/login/page.tsx:37` — שדה מייל בטופס
+      כניסה אמיתי (magic-link Supabase, ללא mock).
+    - `26-modaot-studio/ColorPicker.tsx:163` — שדה קוד HEX בבורר צבעים.
+    - `21-mthbram/FloatingChatBot.tsx:403` — שדה חיפוש בצ'אטבוט הצף.
+    - `24-galilee-connect-hub/ChatBot.tsx:326` — שדה איש-קשר (מייל/
+      טלפון לפי `contactMethod`) בטופס פנייה מהיר לרב.
+    **התיקון:** `aria-label` תואם לכל placeholder/מטרה קיימים (עבור
+    18 נמנעתי מהעברת המרכאה הבעייתית של "דוא\"ל" ובחרתי בניסוח
+    "כתובת אימייל" הנקי; עבור 24 ה-`aria-label` דינמי לפי `contactMethod`
+    כמו ה-placeholder עצמו). אפס שינוי ל-layout/styling/לוגיקת שליחה.
+    קראתי מחדש את כל חמשת ה-diff-ים (`git diff`) ואישרתי JSX תקין. חמשת
+    הקבצים כבר עוקבים ב-git (לא נדרש `git add -f`). ענף חדש `fix/b-
+    form-input-aria-label-0820`. **הבא בתור:** להמשיך את עדשת ה-
+    accessible-name על שאר 17-31 שטרם נסרקו לעדשה הזו (הסוכן סרק
+    17/18/21/22/24/26/27/28/30/31 — 19/20/23/25/29 ללא קוד vendored),
+    לבדוק צ'קבוקס/סוויץ' מותאמים-אישית (`role`/`aria-checked`) שלא
+    נבדקו עדיין, או לחזור לתחום המחירון/מיתוג 'עולם הסטארטאפים' אם
+    העדשה הזו ממצה את עצמה.
