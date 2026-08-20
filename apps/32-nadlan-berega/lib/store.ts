@@ -257,6 +257,37 @@ export async function submitAreaAlert(payload: AreaAlert): Promise<void> {
   if (error) throw new Error(error.message);
 }
 
+/**
+ * מטמון שכ"ד היסטורי לפי אזור/חודש — `nadlan.rental_data`.
+ *
+ * ⚠️ הטבלה קיימת בסכימה מאז ומתמיד אבל נותרה ריקה: ההערכה בפועל (Apify
+ * yad2/מדלן, ב-`rental.ts`/`buildreport.ts`) חושבה חי לכל דוח ומעולם לא
+ * נשמרה. best-effort בלבד ולא מעכב את הדוח בכישלון — כמו `logExport`.
+ * נכתבת רק כשיש נתון אמיתי (median_rent/rent_per_sqm), לא שורת null.
+ */
+export async function cacheRentalData(row: {
+  areaCode: string;
+  month: string;
+  medianRent: number | null;
+  rentPerSqm: number | null;
+  source: string;
+}): Promise<void> {
+  const db = getStore();
+  if (!db) return;
+  try {
+    await db.from('rental_data').insert({
+      area_code: row.areaCode,
+      month: row.month,
+      median_rent: row.medianRent,
+      rent_per_sqm: row.rentPerSqm,
+      source: row.source,
+      last_updated: new Date().toISOString(),
+    });
+  } catch {
+    /* אופציונלי */
+  }
+}
+
 export async function logExport(
   propertyKey: string,
   reportType: string,

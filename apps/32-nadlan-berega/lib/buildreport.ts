@@ -79,7 +79,7 @@ import { fact, needsLicensedSource, distanceText, walkText, walkApprox, countTex
 import type { CategoryKey, Fact, ReportCategory, ReportTier } from './report';
 import { CATEGORY_ORDER, CATEGORY_SUBTITLE, CATEGORY_TITLE } from './report';
 import { tierMayUsePaidSources, tierMayUseImagery } from './report';
-import { nearestPoiFromCache } from './store';
+import { nearestPoiFromCache, cacheRentalData } from './store';
 import type { Transaction } from './types';
 
 export interface ReportTitle {
@@ -2911,6 +2911,17 @@ export async function buildReport(
           : rentQuotaNote,
       }),
     );
+
+    // שומרים את מה שחושב בפועל למטמון האזורי — רק נתון אמיתי, לא שורת null.
+    if (city && (medRentPerSqm != null || estMonthly != null)) {
+      await cacheRentalData({
+        areaCode: city,
+        month: new Date().toISOString().slice(0, 7),
+        medianRent: estMonthly,
+        rentPerSqm: medRentPerSqm != null ? Math.round(medRentPerSqm) : null,
+        source: 'apify',
+      });
+    }
   }
 
   // ===== מסחרי =====
