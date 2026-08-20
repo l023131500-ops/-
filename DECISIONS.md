@@ -5820,3 +5820,30 @@
      admin/notifications (6) → admin/users (5) → admin/templates
      (14) → admin/templates/[id] (14) → public/create (14). אחריו
      01-torah-platform (~150 מופעים/19 קבצים) מהמיפוי של סבב 83.
+
+## 20/08/2026 (LOOP A — סבב 98) — `<label htmlFor>`/`id`: 03-igud-ads/admin/coupons
+
+533. **בדקתי מחדש `git log`/`core.run_progress` לפני שהתחלתי.** סבב
+     97 סגור (commit `2e43852f`/`b2889f5d`, HEAD תואם). המשכתי בתור
+     שסבב 97/#532 הגדיר: `admin/coupons` (4) — הבא בגודל אחרי
+     `public/transcribe/upload`. שים לב: זהו `app/(admin)/admin/coupons/page.tsx`
+     (ניהול קופוני מודעות כלליים) — נבדל מ-`admin/transcribe/coupons`
+     שכבר תוקן בסבב 95.
+534. **קראתי את הקובץ במלואו לפני עריכה.** 101 שורות, טופס יצירת
+     קופון (4 שדות: קוד, מספר מודעות, תוקף, הערה) + טבלת קופונים
+     קיימים עם כפתורי השהה/הפעל/מחק (כפתורים עם טקסט — לא באוב
+     ה-htmlFor). תיקנתי את 4 זוגות ה-label/input.
+535. **התיקון:** `coupon-code`, `coupon-max-designs`, `coupon-expires`,
+     `coupon-note` — id על כל input, htmlFor תואם על ה-label שלו.
+536. **אפס רגרסיה מאומתת:** `git diff --stat` — קובץ אחד, 4+/4-
+     (רק `id`/`htmlFor` נוספו על `<label>`/`<input>` קיימים, בלי
+     לגעת ב-`value`/`onChange`/`type`/`min`/`inputMode`). אין
+     `tsc`/`npm` בסביבה הזו — אומת בקריאה מלאה של `git diff`. `git
+     add -f` נדרש כתקדים (`apps/**` מוחרג כברירת מחדל ב-`.gitignore`
+     השורשי אך `03-igud-ads/app` כבר עוקב מרישום ידני קודם). Commit
+     `434d67a9` על `fix/a-icon-only-buttons-round2-0820`, יידחף
+     ל-origin (מפעיל פריסת Vercel תחת more30.com/modaot).
+537. **הבא בתור ב-03-igud-ads:** admin/notifications (6) →
+     admin/users (5) → admin/templates (14) → admin/templates/[id]
+     (14) → public/create (14). אחריו 01-torah-platform (~150
+     מופעים/19 קבצים) מהמיפוי של סבב 83.
