@@ -97,7 +97,7 @@ export function ClientsTable() {
               filtered.map((c) => (
                 <TableRow key={c.id}>
                   <TableCell className="text-right font-medium">{c.full_name ?? "—"}</TableCell>
-                  <TableCell className="text-right">{c.phone ?? "—"}</TableCell>
+                  <TableCell className="text-right" dir="ltr">{c.phone ?? "—"}</TableCell>
                   <TableCell className="text-right">{c.email ?? "—"}</TableCell>
                   <TableCell className="text-right"><LeadSourceBadge source={c.lead_source} /></TableCell>
                   <TableCell className="text-right"><PaymentStatusBadge status={c.payment_status} /></TableCell>

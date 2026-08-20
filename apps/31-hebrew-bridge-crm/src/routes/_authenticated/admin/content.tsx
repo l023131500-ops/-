@@ -470,7 +470,7 @@ function ProfessionalsTab() {
                   <TableRow key={p.id}>
                     <TableCell className="font-medium">{p.name}</TableCell>
                     <TableCell className="text-sm text-muted-foreground">{p.email ?? "—"}</TableCell>
-                    <TableCell className="text-sm text-muted-foreground">{(p.contact_info as any)?.phone ?? "—"}</TableCell>
+                    <TableCell className="text-sm text-muted-foreground" dir="ltr">{(p.contact_info as any)?.phone ?? "—"}</TableCell>
                     <TableCell>
                       <div className="flex gap-2">
                         <Button variant="outline" size="sm" onClick={() => {
