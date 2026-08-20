@@ -44,6 +44,7 @@ export default function BrandKitPage() {
   const [concepts, setConcepts] = useState<LogoConcept[]>([]);
   const [genBusy, setGenBusy] = useState(false);
   const [vecBusy, setVecBusy] = useState(false);
+  const [savingIdx, setSavingIdx] = useState<number | null>(null);
   const [selectedIdx, setSelectedIdx] = useState<number | null>(null);
 
   if (isLoading) return <Centered><Loader2 className="h-6 w-6 animate-spin text-[#C9A227]" /></Centered>;
@@ -73,12 +74,20 @@ export default function BrandKitPage() {
   }
 
   async function chooseAndSave(idx: number) {
+    if (savingIdx !== null) return;
+    setSavingIdx(idx);
     setSelectedIdx(idx);
-    const c = concepts[idx];
-    await apiRequest("PATCH", `/api/brands/${id}`, { logoPng: c.dataUrl, logoSvg: null });
-    queryClient.invalidateQueries({ queryKey: ["/api/brands", id] });
-    queryClient.invalidateQueries({ queryKey: ["/api/brands"] });
-    toast({ title: "הלוגו נשמר", description: "כעת ניתן לייצר SVG וקטורי" });
+    try {
+      const c = concepts[idx];
+      await apiRequest("PATCH", `/api/brands/${id}`, { logoPng: c.dataUrl, logoSvg: null });
+      queryClient.invalidateQueries({ queryKey: ["/api/brands", id] });
+      queryClient.invalidateQueries({ queryKey: ["/api/brands"] });
+      toast({ title: "הלוגו נשמר", description: "כעת ניתן לייצר SVG וקטורי" });
+    } catch (e: any) {
+      toast({ title: "שמירת הלוגו נכשלה", description: String(e?.message || e).slice(0, 160), variant: "destructive" });
+    } finally {
+      setSavingIdx(null);
+    }
   }
 
   async function vectorize() {
@@ -279,13 +288,16 @@ export default function BrandKitPage() {
                   <button
                     key={i}
                     onClick={() => chooseAndSave(i)}
-                    className={`overflow-hidden rounded-lg border-2 bg-white transition ${selectedIdx === i ? "border-[#C9A227] ring-2 ring-[#C9A227]/40" : "border-transparent hover:border-[#C9A227]/40"}`}
+                    disabled={savingIdx !== null}
+                    className={`overflow-hidden rounded-lg border-2 bg-white transition disabled:cursor-not-allowed disabled:opacity-60 ${selectedIdx === i ? "border-[#C9A227] ring-2 ring-[#C9A227]/40" : "border-transparent hover:border-[#C9A227]/40"}`}
                     data-testid={`concept-${i}`}
                   >
                     <div className="relative flex h-44 items-center justify-center p-3">
                       <img src={c.dataUrl} alt={c.label} className="max-h-full max-w-full object-contain" />
                       {selectedIdx === i && (
-                        <div className="absolute right-2 top-2 flex h-6 w-6 items-center justify-center rounded-full bg-[#C9A227] text-[#0B1220]"><Check className="h-4 w-4" /></div>
+                        <div className="absolute right-2 top-2 flex h-6 w-6 items-center justify-center rounded-full bg-[#C9A227] text-[#0B1220]">
+                          {savingIdx === i ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
+                        </div>
                       )}
                     </div>
                     <p className="border-t border-black/5 bg-white py-2 text-center text-xs font-bold text-[#0B1220]">{c.label}</p>

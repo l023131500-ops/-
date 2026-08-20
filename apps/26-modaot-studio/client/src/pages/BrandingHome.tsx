@@ -1,4 +1,5 @@
 // מחלקת מיתוג — עמוד נחיתה. מציג את התהליך, ארכיטיפים, ורשימת מותגים שמורים.
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import {
@@ -30,11 +31,18 @@ const STEPS = [
 export default function BrandingHome() {
   const [, navigate] = useLocation();
   const { data: brands } = useQuery<BrandRow[]>({ queryKey: ["/api/brands"] });
+  const [busyId, setBusyId] = useState<number | null>(null);
 
   async function del(id: number) {
+    if (busyId !== null) return;
     if (!confirm("למחוק את המותג?")) return;
-    await apiRequest("DELETE", `/api/brands/${id}`);
-    queryClient.invalidateQueries({ queryKey: ["/api/brands"] });
+    setBusyId(id);
+    try {
+      await apiRequest("DELETE", `/api/brands/${id}`);
+      queryClient.invalidateQueries({ queryKey: ["/api/brands"] });
+    } finally {
+      setBusyId(null);
+    }
   }
 
   return (
@@ -129,8 +137,9 @@ export default function BrandingHome() {
                       {b.logoSvg && <Badge variant="outline" className="mt-1 border-[#C9A227]/40 text-[10px] text-[#C9A227]">SVG וקטורי</Badge>}
                     </div>
                     <button
-                      className="text-[#F5EEDD]/40 hover:text-red-400"
+                      className="text-[#F5EEDD]/40 hover:text-red-400 disabled:cursor-not-allowed disabled:opacity-50"
                       onClick={(e) => { e.stopPropagation(); del(b.id); }}
+                      disabled={busyId === b.id}
                       data-testid={`button-delete-brand-${b.id}`}
                     >
                       <Trash2 className="h-4 w-4" />
