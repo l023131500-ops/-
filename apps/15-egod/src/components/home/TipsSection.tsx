@@ -29,7 +29,8 @@ const TipsSection = () => {
 
   if (tips.length === 0) return null;
   const current = tips[index];
-  const dots = Math.min(tips.length, 8);
+  const dotCount = Math.min(tips.length, 8);
+  const activeDot = Math.floor((index * dotCount) / tips.length);
 
   return (
     <section className="py-20 bg-gradient-to-br from-secondary/5 via-background to-secondary/10">
@@ -84,19 +85,19 @@ const TipsSection = () => {
                 Without a label these also read as eighteen unnamed buttons to a
                 screen reader, so each says which tip it goes to. */}
             <div className="flex gap-0.5" role="tablist" aria-label="ניווט בין טיפים">
-              {tips.slice(0, 8).map((_, i) => (
+              {Array.from({ length: dotCount }, (_, i) => (
                 <button
                   key={i}
-                  onClick={() => setIndex(i)}
+                  onClick={() => setIndex(Math.floor((i * tips.length) / dotCount))}
                   role="tab"
-                  aria-label={`טיפ ${i + 1} מתוך ${dots}`}
-                  aria-selected={i === index % 8}
+                  aria-label={`טיפ ${i + 1} מתוך ${dotCount}`}
+                  aria-selected={i === activeDot}
                   className="min-w-6 min-h-6 flex items-center justify-center rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-secondary"
                 >
                   <span
                     aria-hidden="true"
                     className={`block h-1.5 rounded-full transition-all ${
-                      i === index % 8 ? "w-6 bg-secondary" : "w-1.5 bg-muted-foreground/30"
+                      i === activeDot ? "w-6 bg-secondary" : "w-1.5 bg-muted-foreground/30"
                     }`}
                   />
                 </button>
