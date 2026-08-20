@@ -60,9 +60,23 @@ function sameSecret(a: string, b: string): boolean {
   return diff === 0;
 }
 
+// more30.com sits behind Cloudflare in front of Vercel. cf-connecting-ip is
+// set by Cloudflare's own edge from the actual TCP connection and cannot be
+// overridden by the caller -- the correct primary source for an IP allowlist
+// check like this one. x-forwarded-for is NOT safe to read as "first entry":
+// both Cloudflare and Vercel append the connecting IP to whatever the caller
+// already sent rather than replacing it, so a caller can prepend any IP it
+// likes (e.g. the Nedarim IP itself, to walk straight through this allowlist)
+// and the first entry will be that spoofed value. If we ever fall back to
+// x-forwarded-for, only the LAST entry (the one the edge actually appended)
+// is trustworthy. Same fix as apps/01-torah-platform, apps/03-igud-ads and
+// apps/15-egod's Edge Functions -- see DECISIONS.md #229-232/#234-235.
 function callerIp(req: any): string {
+  const cfIp = String(req.headers?.['cf-connecting-ip'] ?? '').trim();
+  if (cfIp) return cfIp;
   const fwd = String(req.headers?.['x-forwarded-for'] ?? '');
-  return (fwd.split(',')[0] || String(req.headers?.['x-real-ip'] ?? '')).trim();
+  const lastXff = fwd.split(',').map((s) => s.trim()).filter(Boolean).pop() || '';
+  return lastXff || String(req.headers?.['x-real-ip'] ?? '').trim();
 }
 
 export default async function handler(req: any, res: any) {
