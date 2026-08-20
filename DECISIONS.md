@@ -5914,3 +5914,47 @@
     קומיט הבא. **הבא בתור:** להמשיך את אותה עדשה (state/race/pagination/
     RPC-param) על 17/19/21/22/25/27/28 שעדיין לא נסרקו בה במלואם.
     via cloud server 167.99.131.167 [loop B]
+
+## 20/08/2026 — סבב 331 (loop B)
+
+331. **תיעוד בדיעבד (retroactive) לשני קומיטים שכבר נדחפו ללא רישום ב-**
+    **DECISIONS.md** — `77e85a18` (24-galilee-connect-hub, סבב 329) ו-
+    `92de30f5` (18-torah-editor-mvp, סבב 330) כבר תועדו במלואם בהערות
+    `core.run_progress` (ראו הפעימות שם) אך לא הועתקו לקובץ הזה — מתעד
+    כאן רק את הפניה כדי לשמר את הרצף, בלי לשכפל את הטקסט המלא.
+
+    **הצעד של הסבב הזה (חדש):** עדשת ה-state/race/pagination/RPC-param
+    מוצתה על פני כל היקף Loop B (17-31 בתוך ההיקף המוגדר) לפי הערת הפעימה
+    האחרונה. פתחתי עדשה חדשה: **double-submit/duplicate-write** — כפתור
+    שמריץ כתיבה אסינכרונית (insert/RPC/POST) בלי הגנת "כבר בתהליך" (לא
+    `disabled` מחובר ל-state טעינה, ולא בדיקת in-flight בתחילת ה-handler),
+    כך שלחיצה כפולה מהירה יוצרת שורה כפולה במסד. סוכן Explore סרק את כל
+    11 האפליקציות שבהיקף ומצא: 17/18/22/24/28 כבר מוגנות כראוי (state
+    `submitting`/`saving`/`busy`/`isSubmitting` או React Hook Form),
+    20/23/25 בלי מקור אמיתי לבדוק. נמצאו שני מקרים אמיתיים באותו קובץ:
+    `apps/21-mthbram/src/pages/AdminDashboard.tsx` — כפתורי "צור קישור"
+    ליצירת `rabbi_portals` ו-`org_portals` (שורות ~996 ו-~1101 לפני התיקון)
+    קראו ל-`supabase.from(...).insert(...)` תוך `await` בלי שום `disabled`
+    על הכפתור ובלי דגל in-flight — לחיצה כפולה מהירה יוצרת שני קישורי
+    ניהול (עם access_token נפרד לכל אחד) מלחיצה אחת. (מועמד שלישי, 27
+    community-admin.tsx `createQuestionnaire`, נותר לסבב הבא — לא באותו
+    קובץ, נשמר כפריט תור נפרד כדי לשמור את הסבב הזה ממוקד לתיקון אחד.)
+
+    **התיקון:** הוספתי שני דגלי state חדשים, `creatingRabbi`/`creatingOrg`,
+    לפי אותו דפוס בדיוק שכבר קיים בקובץ הזה (`importing`, המשמש להגנת
+    ייבוא-קובץ) — מחוברים ל-`disabled` על שני הכפתורים, ונבדקים בתחילת
+    ה-handler (`if (!name.trim() || creatingX) return;`), עם `try/finally`
+    כדי לאפס את הדגל גם אם ה-insert נכשל. אפס שינוי להתנהגות הקיימת מעבר
+    לחסימת הלחיצה הכפולה — אין שינוי ל-DB/RLS/RPC, אין שינוי לצורת השורה
+    שנוצרת. בדיקת איזון סוגריים ב-python על הקובץ המלא אחרי העריכה —
+    תקין (816/816, 747/747, 137/137). אין build/dev-server זמין בסביבה
+    הזו לפי הנחיית ההרצה — לא tsc. ענף חדש
+    `fix/b-21-double-submit-portal-create-0820`, קומיט `9b6793bc`, נדחף
+    (מפעיל פריסת Vercel תחת more30.com/mthbram).
+
+    **הבא בתור:** לסגור את המועמד השלישי שנמצא באותה עדשה —
+    `apps/27-bkalut-price/client/src/pages/community-admin.tsx`
+    `createQuestionnaire()` (שורה ~223) — כפתור "יצירת שאלון" בלי הגנת
+    in-flight, אותה קטגוריית באג. אחרי זה, לפתוח עדשה חדשה נוספת אם
+    ההיקף המלא של double-submit ייסגר.
+    via cloud server 167.99.131.167 [loop B]
