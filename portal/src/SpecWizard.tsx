@@ -248,29 +248,37 @@ export function SpecWizard() {
       }
     }
 
-    const { error } = await supa.rpc("submit_spec", {
-      payload: {
-        full_name: s(a, "full_name"),
-        phone: s(a, "phone"),
-        email: s(a, "email"),
-        city: s(a, "city"),
-        project_name: s(a, "project_name"),
-        track: TRACKS.find((t) => t.key === track)?.title ?? track,
-        answers,
-        questions: asked,
-        services_wanted: Array.isArray(a.services_wanted) ? a.services_wanted : [],
-        source: "portal",
-      },
-    });
+    try {
+      const { error } = await supa.rpc("submit_spec", {
+        payload: {
+          full_name: s(a, "full_name"),
+          phone: s(a, "phone"),
+          email: s(a, "email"),
+          city: s(a, "city"),
+          project_name: s(a, "project_name"),
+          track: TRACKS.find((t) => t.key === track)?.title ?? track,
+          answers,
+          questions: asked,
+          services_wanted: Array.isArray(a.services_wanted) ? a.services_wanted : [],
+          source: "portal",
+        },
+      });
 
-    if (error) {
+      if (error) {
+        setState("error");
+        setErr(error.message);
+        return;
+      }
+      setStars(Array.from({ length: 22 }, (_, i) => i));
+      setState("done");
+      setTimeout(() => setStars([]), 1800);
+    } catch (e) {
+      // supa.rpc() rejects (network/timeout) instead of resolving {error} on a
+      // failed fetch — without this catch the submit button stayed stuck on
+      // "שולח…" forever with no way to retry.
       setState("error");
-      setErr(error.message);
-      return;
+      setErr(e instanceof Error ? e.message : "אירעה שגיאה בשליחה. נסו שוב.");
     }
-    setStars(Array.from({ length: 22 }, (_, i) => i));
-    setState("done");
-    setTimeout(() => setStars([]), 1800);
   }
 
   if (state === "done")
