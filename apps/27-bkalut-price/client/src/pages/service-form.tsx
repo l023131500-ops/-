@@ -658,7 +658,7 @@ export default function ServiceFormPage() {
         <div className="space-y-3">
           <h3 className="font-semibold text-sm">אישורי שירות ומסמכים משפטיים</h3>
           <p className="text-xs text-muted-foreground">
-            לפני שליחת הטופס צריך לקרוא ולאשר את המסמכים הרלוונטיים לפי סוג הפנייה. המסמכים זמינים לקריאה בעמוד <a className="underline" href="#/terms" target="_blank">תנאי השירות ומדיניות פרטיות</a>.
+            לפני שליחת הטופס צריך לקרוא ולאשר את המסמכים הרלוונטיים לפי סוג הפנייה. המסמכים זמינים לקריאה בעמוד <a className="underline" href="#/terms" target="_blank" rel="noopener noreferrer">תנאי השירות ומדיניות פרטיות</a>.
           </p>
           {requiredLegalDocs.map((key) => {
             const titles: Record<string, string> = {
@@ -678,7 +678,7 @@ export default function ServiceFormPage() {
                   data-testid={`checkbox-legal-${key}`}
                 />
                 <span>
-                  קראתי ואני מסכים ל-<a className="underline font-semibold" href={`#/terms?doc=${key}`} target="_blank">{titles[key]}</a>.
+                  קראתי ואני מסכים ל-<a className="underline font-semibold" href={`#/terms?doc=${key}`} target="_blank" rel="noopener noreferrer">{titles[key]}</a>.
                 </span>
               </label>
             );

@@ -249,7 +249,7 @@ export default function HealthFundServicePage() {
             />
             <span>
               אני מאשר/ת שהפרטים נמסרים לצורך קבלת מידע ומיצוי זכויות, נכונים ועדכניים כמיטב ידיעתי, אינם מהווים החלטת זכאות סופית,
-              וצוות בקלות רשאי ליצור קשר בטלפון / וואטסאפ / מייל לפי הפרטים שמילאתי. ראו גם <a className="underline" href="#/terms" target="_blank">תנאי השירות ומדיניות הפרטיות</a>.
+              וצוות בקלות רשאי ליצור קשר בטלפון / וואטסאפ / מייל לפי הפרטים שמילאתי. ראו גם <a className="underline" href="#/terms" target="_blank" rel="noopener noreferrer">תנאי השירות ומדיניות הפרטיות</a>.
             </span>
           </label>
           {(!requestType || missingContact) && (
