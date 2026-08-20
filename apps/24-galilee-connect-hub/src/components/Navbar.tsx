@@ -36,6 +36,15 @@ const Navbar = () => {
 
   useEffect(() => setMobileOpen(false), [location]);
 
+  useEffect(() => {
+    if (!mobileOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setMobileOpen(false);
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [mobileOpen]);
+
   const handleNavClick = (item: typeof navItems[0]) => {
     if (item.isAnchor && location.pathname === '/') {
       const id = item.to.split('#')[1];

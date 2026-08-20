@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import type { PublicRightRow, MetaResponse } from "@shared/schema";
@@ -88,6 +88,15 @@ export default function PublicEligibility() {
     setQ("");
     setCategory(null);
   }
+
+  useEffect(() => {
+    if (!exactStateOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setExactStateOpen(false);
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [exactStateOpen]);
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col" dir="rtl">
