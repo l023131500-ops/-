@@ -430,7 +430,9 @@ export function App() {
    */
   useEffect(() => {
     if (!sb) { setAuthReady(true); return; }
-    sb.auth.getSession().then(({ data }) => { setSession(data.session); setAuthReady(true); });
+    sb.auth.getSession()
+      .then(({ data }) => { setSession(data.session); setAuthReady(true); })
+      .catch((e: any) => { setAuthReady(true); setMsg("בדיקת ההתחברות נכשלה: " + (e?.message ?? e)); });
     const { data: sub } = sb.auth.onAuthStateChange((_e, s) => { setSession(s); setAuthReady(true); });
     return () => sub.subscription.unsubscribe();
   }, []);
