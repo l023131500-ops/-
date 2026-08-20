@@ -8404,3 +8404,41 @@
      או לפתוח עדשה נוספת (מועמד: `04-imud-torani/Editor.tsx` העצמאי),
      או לחזור ל-`core.project_tasks`/`core.project_bugs` (5 פריטים
      פתוחים, עדיין חסומים).
+
+## 20/08/2026 — סבב 169 (loop A)
+
+826. **המשך עדשת skip-to-content ל-12-smel-ndln.** מבנה שונה מכל
+     האפליקציות הקודמות בעדשה הזו: שלושת העמודים הציבוריים
+     (`Home.tsx`, `Report.tsx`, `Premium.tsx` — האחרון עם שני
+     ענפי `return` נפרדים) חולקים `components/Header.tsx`, אבל
+     **אף אחד מהם לא השתמש בתג `<main>` בכלל** — כולם עטפו את
+     התוכן ב-`<div className="min-h-screen bg-background">` יחיד
+     שמכיל גם את `<Header />` וגם את שאר התוכן, בלי landmark
+     סמנטי לתוכן עצמו.
+827. **התיקון:** ב-`Header.tsx` — קישור דילוג כאלמנט ראשון (עטוף
+     ב-fragment, אותה תבנית מדויקת כמו סבבים 165-168), עם
+     `bg-accent`/`text-accent-foreground` — צמד קיים ומאומת בפועל
+     ב-CSS vars של האפליקציה (`--accent`/`--accent-foreground`,
+     אותו זוג שכבר משמש ל-badge "פרימיום" בעמוד הבית). ב-`Home.tsx`
+     — עטפתי את שלושת ה-`<section>` (לא כולל ה-`<footer>` שבסוף,
+     שהוא landmark נפרד) ב-`<main id="main">` חדש. ב-`Report.tsx`
+     וב-`Premium.tsx` (שני הענפים) — הדיב היחיד שעטף את התוכן אחרי
+     `<Header />` הוסב ל-`<main id="main">` (אותו דפוס כמו
+     `Templates.tsx`/`Wizard.tsx` בסבב 168 — שיפור סמנטי אמיתי,
+     לא רק הוספת id). ה-`className` המקורי של כל דיב הועבר כלשונו
+     ל-`<main>` (Tailwind לא מבחין בין תג ל-`className`).
+828. **אפס רגרסיה מאומתת:** `git diff --stat` — 4 קבצים, 62+/52-
+     (רוב ה"מחיקות" הן re-indent של `Header.tsx` הקיים בתוך
+     ה-fragment החדש, לא שינוי לוגיקה). איזון תגיות בפייתון
+     (`div`/`main`/`section`/`footer`, כולל טיפול נכון בתגי
+     self-closing רב-שורתיים) על כל 4 הקבצים: כולם תואמים. אין
+     `id="main"` כפול בקובץ כלשהו. אין tsc/npm בסביבה זו. הנתיב
+     `apps/12-smel-ndln/client` חסום ע"י `.gitignore` אך הקבצים
+     כבר עוקבים (tracked) — נדרש `git add -f` (אותו תקדים כמו
+     04-imud-torani בסבב 168). Commit `b7513a2e` על
+     `fix/a-icon-only-buttons-round2-0820`, נדחף ל-origin (מפעיל
+     פריסת Vercel תחת more30.com/smel-ndln).
+829. **הבא בתור:** להמשיך את עדשת ה-skip-link על 15-egod/
+     40-gannenet, או לפתוח עדשה נוספת (מועמד: `04-imud-torani/
+     Editor.tsx` העצמאי), או לחזור ל-`core.project_tasks`/
+     `core.project_bugs` (5 פריטים פתוחים, עדיין חסומים).
