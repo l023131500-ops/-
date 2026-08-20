@@ -9232,3 +9232,53 @@
      שנותרו לא-חד-משמעיים מסבב 175 (דורשים כלי רינדור אמיתי), או
      `core.project_tasks`/`core.project_bugs` (עדיין אותם 5
      פריטים חסומים).
+
+## 20/08/2026 — סבב 187 (loop A)
+
+905. **סגירת התור מסבב 186:** `16-chatzor-connect`
+     (`InquiryForm.tsx`, `AskRav.tsx`) ו-`12-smel-ndln`
+     (`Premium.tsx`, טופס checkout). סוכן Explore מיפה את שני
+     האפליקציות; קראתי את שלושת הקבצים במלואם לפני עריכה כדי
+     לאמת כל שדה בעצמי ולא לסמוך על הדוח בעיוורון.
+906. **`InquiryForm.tsx` (טופס פנייה משותף, גם ל-Contact וגם
+     כברירת מחדל לטופס פנייה של בית כנסת):** שדות `name`/`email`
+     כבר היו עם `autoComplete` תקין מסבב קודם — לא נגעתי. רק
+     `phone` היה חסר `type`/`autoComplete` לגמרי (היה רק
+     `inputMode="tel"`) — נוסף `type="tel" autoComplete="tel"`.
+907. **`Premium.tsx` (12-smel-ndln, טופס "פרטי התקשרות" ב-checkout
+     של הדוח המפורט):** נוסף `autoComplete="name"` ל-`fullName`
+     (לא היה שום attribute רלוונטי); `type="tel"
+     autoComplete="tel"` ל-`phone` (היה רק `inputMode="tel"`);
+     `type="email" autoComplete="email"` ל-`email` (היה רק
+     `inputMode="email"`). כל שלושת השדות משתמשים ב-`{...field}`
+     של react-hook-form שמפוזר *אחרי* ה-attributes החדשים, אז אין
+     קונפליקט (אותו סדר spread כמו ב-`placeholder` הקיים).
+908. **`AskRav.tsx` — שדה `contact` נבדק ולא תוקן, במכוון:** שדה
+     `name` כבר היה עם `autoComplete="name"` תקין. שדה `contact`
+     (התווית: "טלפון / אימייל (לתשובה אישית)") מקבל **גם** טלפון
+     **וגם** אימייל לתוך input בודד — אין טוקן `autocomplete`
+     יחיד שמתאר את שני הסוגים בבת אחת, ו-SC 1.3.5 חל רק כששדה
+     משרת מטרה יחידה ומזוהה מתוך הרשימה הסטנדרטית. הצמדת
+     `autoComplete="tel"` הייתה שוגה במקרה שהמשתמש מזין אימייל
+     (ולהפך) — אותה סיבה שבגללה שדות צד-שלישי לא תוקנו בסבבים
+     קודמים: תיקון שגוי גרוע מאי-תיקון. נשאר ללא autoComplete,
+     מתועד כאן כדי שסבב עתידי לא ינסה שוב מאותה הנחה שגויה.
+909. **אפס רגרסיה מאומתת:** `git diff --stat` — 2 קבצים, 4+/4-
+     (כל שורה שהשתנתה היא הוספת attribute בודד לתוך `<Input>`
+     קיים באותה שורה, ללא שינוי מבנה/state/handler/סדר spread).
+     איזון סוגריים `{}`/`()` בפייתון על שני הקבצים המלאים אחרי
+     העריכה — תואם. שני הנתיבים (`apps/16-chatzor-connect/src`,
+     `apps/12-smel-ndln/client`) חסומים ב-`.gitignore` אך כבר
+     tracked — `git add` רגיל הצליח (ללא צורך ב-`-f`). Commit
+     `636f40cb` על `fix/a-icon-only-buttons-round2-0820`, יידחף
+     ל-origin (מפעיל פריסות Vercel תחת more30.com/chatzor +
+     more30.com/smel-ndln — שני יעדים בו-זמנית מ-commit יחיד).
+910. **עדשת ה-`autoComplete` (WCAG 1.3.5) נסגרת כעת** על כל
+     המועמדים שדוגלו לאורך סבבים 184-187 (01, 15, 16, 12). הבא
+     בתור: שני מועמדי הניגודיות שנותרו לא-חד-משמעיים מסבב 175
+     (01-torah-platform, 04-imud-torani — דורשים כלי רינדור אמיתי
+     לאימות), עדשה חדשה (למשל: `<label>` בלי `for`/`htmlFor`
+     תואם על טפסים שלא נבדקו עדיין, או `required` שדה בלי
+     `aria-required`/סימון חזותי), או `core.project_tasks`/
+     `core.project_bugs` (עדיין אותם 5 פריטים חסומים על סודות
+     חסרים/החלטות מיזוג מחוץ לסמכות הסוכן).
