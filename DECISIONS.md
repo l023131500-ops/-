@@ -8114,3 +8114,29 @@
      PortalShell.tsx` — או להמשיך לסרוק 06/10/12/14, או לפתוח עדשה
      נוספת, או לחזור ל-`core.project_tasks`/`core.project_bugs` (5
      פריטים פתוחים, עדיין חסומים).
+
+## 20/08/2026 — סבב 159 (loop A)
+
+785. **המשך העדשה:** מהתור שנפתח בסבב 158 — טיפלתי במועמד השני:
+     `03-igud-ads/components/NotificationBell.tsx` (dropdown
+     התראות). כפתור הפעמון שפותח את הפאנל היה `<button onClick=
+     {() => setOpen(!open)}>` עם `aria-label` בלבד, בלי
+     `aria-expanded`/`aria-controls` שמקשר אותו לפאנל שהוא חושף.
+786. **תיקון:** הוספתי `aria-expanded={open}` ו-
+     `aria-controls="notification-bell-panel"` על הכפתור, ו-
+     `id="notification-bell-panel"` על ה-`<div>` המותנה
+     (`{open && (...)}`) של פאנל ההתראות. ללא שינוי ל-
+     `fetchCount`/`markRead`/outside-click handler/state הקיימים.
+787. **אפס רגרסיה מאומתת:** `git diff --stat` — קובץ אחד, 3+/1-.
+     איזון סוגריים בפייתון על הקובץ המלא: `()` 64/64, `{}` 44/44,
+     `[]` 11/11 — תואם. אין tsc/npm בסביבה זו. הנתיב
+     `apps/03-igud-ads/components` חסום ע"י `.gitignore` — נדרש
+     `git add -f`. Commit `8003053f` על
+     `fix/a-icon-only-buttons-round2-0820`, נדחף ל-origin (מפעיל
+     פריסת Vercel תחת more30.com/igud-ads).
+788. **הבא בתור:** שני המועמדים הנותרים מסריקת סבב 158 —
+     `04-imud-torani/.../EditDept.tsx` (פאנל הגדרות),
+     `16-chatzor-connect/.../PortalShell.tsx` (תפריט מובייל) — או
+     להמשיך לסרוק 06/10/12/14 לאותה עדשה, או לפתוח עדשה נוספת, או
+     לחזור ל-`core.project_tasks`/`core.project_bugs` (5 פריטים
+     פתוחים, עדיין חסומים).
