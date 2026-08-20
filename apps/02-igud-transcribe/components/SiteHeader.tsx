@@ -3,23 +3,31 @@ import ThemeToggle from "./ThemeToggle";
 
 export default function SiteHeader() {
   return (
-    <header className="border-b border-stone-200 bg-surface/80 backdrop-blur">
-      <div className="container-rtl more30-auth-clear flex flex-wrap items-center justify-between gap-y-2 py-4">
-        <Link href="/" className="flex items-center gap-3">
-          <Logo className="h-9 w-9 text-brand" />
-          <div className="leading-tight">
-            <div className="font-display text-lg font-bold text-brand">תמלול</div>
-            <div className="text-xs text-ink-muted">מבית איגוד השיעורים</div>
-          </div>
-        </Link>
-        <nav className="flex items-center gap-2">
-          <Link href="/upload" className="btn-primary text-sm">העלאת שיעור</Link>
-          <a href="https://more30.com/subscribe?app=tamlul" className="btn-outline text-sm">מחירון</a>
-          <Link href="/login" className="btn-outline text-sm">כניסת ניהול</Link>
-          <ThemeToggle />
-        </nav>
-      </div>
-    </header>
+    <>
+      <a
+        href="#main"
+        className="sr-only focus:not-sr-only focus:absolute focus:right-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-brand focus:px-4 focus:py-2 focus:text-white"
+      >
+        דלג לתוכן
+      </a>
+      <header className="border-b border-stone-200 bg-surface/80 backdrop-blur">
+        <div className="container-rtl more30-auth-clear flex flex-wrap items-center justify-between gap-y-2 py-4">
+          <Link href="/" className="flex items-center gap-3">
+            <Logo className="h-9 w-9 text-brand" />
+            <div className="leading-tight">
+              <div className="font-display text-lg font-bold text-brand">תמלול</div>
+              <div className="text-xs text-ink-muted">מבית איגוד השיעורים</div>
+            </div>
+          </Link>
+          <nav className="flex items-center gap-2">
+            <Link href="/upload" className="btn-primary text-sm">העלאת שיעור</Link>
+            <a href="https://more30.com/subscribe?app=tamlul" className="btn-outline text-sm">מחירון</a>
+            <Link href="/login" className="btn-outline text-sm">כניסת ניהול</Link>
+            <ThemeToggle />
+          </nav>
+        </div>
+      </header>
+    </>
   );
 }
 

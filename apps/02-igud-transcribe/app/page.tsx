@@ -6,7 +6,7 @@ export default function HomePage() {
     <div className="min-h-screen bg-paper">
       <SiteHeader />
 
-      <main>
+      <main id="main">
         {/* Hero */}
         <section className="container-rtl py-16 lg:py-24">
           <div className="grid items-center gap-10 lg:grid-cols-2">
