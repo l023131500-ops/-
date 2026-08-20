@@ -179,6 +179,18 @@ export default function Editor() {
     selected?.narrationAlignment ?? null,
   );
   const [narrationLoading, setNarrationLoading] = useState(false);
+  // הטקסט שבאמת יצר את narrationAudioUrl/narrationAlignment הנוכחיים — לזיהוי
+  // "קריינות לא מעודכנת" כשהמשתמש עורך את narrationScript אחרי היצירה בלי
+  // ללחוץ שוב "צור קריינות". בלי alignment (קריינות ישנה/כשל), הכתוביות
+  // בוידאו נבנות מ-narrationScript הנוכחי בקירוב לפי משך-הקול הישן (lib/
+  // videoExport.ts buildCaptionSegments) — כלומר יוצגו כתוביות מהטקסט החדש
+  // מעל קול שעדיין אומר את הישן, בלי שום סימן ללקוח. selected?.narrationScript
+  // תמיד נשמר יחד עם selected?.narrationAudioUrl באותה קריאת שמירה (handleSaveProject),
+  // כך שבטעינת פרויקט שמור השניים תמיד תואמים.
+  const [narrationGeneratedScript, setNarrationGeneratedScript] = useState(
+    selected?.narrationAudioUrl ? (selected?.narrationScript ?? "") : "",
+  );
+  const narrationStale = !!narrationAudioUrl && narrationScript.trim() !== narrationGeneratedScript.trim();
 
   // וידאו קידום (Ken Burns + סנכרון קריינות, lib/videoExport.ts) — הבנייה בפועל
   // שתועדה כ"נשאר לסבב הבא" בפריט 16 של הצ'קליסט. לא נוגע בקנבס/בשמירה הקיימים —
@@ -721,6 +733,7 @@ export default function Editor() {
       }
       setNarrationAudioUrl(data.dataUrl);
       setNarrationAlignment(data.alignment ?? null);
+      setNarrationGeneratedScript(narrationScript);
       toast({ title: "הקריינות מוכנה" });
     } catch (err: any) {
       toast({
@@ -1894,6 +1907,12 @@ export default function Editor() {
           </Button>
           {narrationAudioUrl && (
             <audio controls src={narrationAudioUrl} className="w-full" data-testid="audio-narration-preview" />
+          )}
+          {narrationStale && (
+            <p className="text-xs text-amber-400" data-testid="text-narration-stale-warning">
+              ⚠ הטקסט נערך אחרי יצירת הקול הזה — הקריינות המושמעת עדיין אומרת את הנוסח הקודם.
+              לחצו "צור קריינות" שוב לפני ייצוא הוידאו, אחרת הכתוביות עלולות שלא להתאים למה שנשמע.
+            </p>
           )}
           {(narrationAudioUrl || musicFile) && (
             <div className="flex flex-col gap-2">
