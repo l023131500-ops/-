@@ -220,8 +220,8 @@ const AdminSettings = () => {
                     <div key={k.id} className="flex items-center justify-between p-3 rounded-lg border border-border">
                       <div>
                         <p className="text-sm font-medium text-foreground">{k.name}</p>
-                        <p className="text-xs text-muted-foreground" dir="ltr">
-                          {k.key_prefix} · {k.last_used_at ? `שימוש אחרון: ${new Date(k.last_used_at).toLocaleDateString("he-IL")}` : "טרם נעשה שימוש"}
+                        <p className="text-xs text-muted-foreground">
+                          <span dir="ltr">{k.key_prefix}</span> · {k.last_used_at ? `שימוש אחרון: ${new Date(k.last_used_at).toLocaleDateString("he-IL")}` : "טרם נעשה שימוש"}
                         </p>
                       </div>
                       <Button size="icon" variant="ghost" onClick={() => deleteKey(k.id)} className="text-destructive hover:text-destructive">
