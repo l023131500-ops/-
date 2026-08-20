@@ -55,6 +55,9 @@ body{font-family:'Heebo',system-ui,sans-serif;background:var(--bg);color:var(--t
 h1,h2,h3,h4{font-family:'Frank Ruhl Libre','Heebo',serif;line-height:1.2;color:var(--teal-d)}
 a{color:var(--teal);text-decoration:none}
 
+.skip-link{position:absolute;right:-999px;top:8px;background:var(--teal-solid);color:#fff;padding:10px 16px;border-radius:8px;z-index:200}
+.skip-link:focus{right:8px}
+
 /* HEADER */
 .site-header{position:sticky;top:0;z-index:50;background:var(--header-bg);backdrop-filter:blur(10px);border-bottom:1px solid var(--border)}
 /* כפתור הכניסה המשותף יושב `fixed` בקצה האינליין-סופי, ושם `justify-between`
