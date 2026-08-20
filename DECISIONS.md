@@ -11566,3 +11566,43 @@
     ב-18-torah-editor-mvp/22-get-your-rights/24-galilee שטרם נסרקו
     לעומק לחלוטין. נושאים #62/#94/#115/#164/#169/#254 נשארים חסומים.
     via cloud server 167.99.131.167 [loop B]
+
+## 20/08/2026 — סבב 454 (loop B)
+
+454. **חזרה לבדיקת race-conditions/stale-async ב-21-mthbram צד client
+    (המועמד שהוצע בסוף סבב 453).** Explore agent סרק את כל
+    `apps/21-mthbram/src` אחר handlers א-סינכרוניים שכותבים ל-Supabase
+    בלי guard כניסה-חוזרת, ומצא 7 מועמדים (AdminDashboard.tsx בקשות
+    אישור-קבוצתי, FullAccessRequestsTab.tsx, RabbiPortal.tsx,
+    OrgPortal.tsx, PortalSettingsTab.tsx, BulkUpload.tsx). התיקון
+    היעיל ביותר וגם המסוכן ביותר (פעולה הרסנית לגמרי, בלי שום guard,
+    לא אפילו state בסיסי): `removeRabbi()` ב-`OrgPortal.tsx` — DELETE
+    ל-`org_rabbis` בלי שום מנגנון חסימה. לחיצה כפולה על כפתור המחיקה
+    יכולה לירות שתי בקשות `DELETE` חופפות לאותו rabbi id.
+
+    **התיקון:** אותו דפוס guard שכבר שימש ב-27-bkalut-price (סבבים
+    452-453) — `useRef<Set<string>>` ייעודי (`removingRabbiIdsRef`),
+    בדיקת `has(id)` לפני ביצוע, `add(id)` לפני הבקשה, ו-`delete(id)`
+    ב-`finally` שמכסה גם הצלחה וגם שגיאה. מסלול ה-`confirm()` הקיים
+    לפני המחיקה לא השתנה. שאר 6 המועמדים שנמצאו (AdminDashboard.tsx
+    בקשות אישור-קבוצתי, FullAccessRequestsTab.tsx, RabbiPortal.tsx
+    saveEdit guard חלקי, PortalSettingsTab.tsx, BulkUpload.tsx) נשארו
+    ללא תיקון — מועמדים לסבב הבא.
+
+    **בדיקות תקינות:** קריאת קוד בלבד (ללא dev-server/build, לפי
+    הנחיות ההרצה). ספירת סוגריים/סוגריים-מסולסלים לפני/אחרי (Node):
+    `(` 201/201, `{` 181/181 (מאוזן). `git diff --stat`: קובץ יחיד,
+    +12/-5.
+
+    לא אומתה פריסה חיה: ההנחיות אוסרות dev-server/תהליכי רקע —
+    האימות נעשה בקריאת קוד בלבד.
+
+    ענף `fix/b-22-whatsapp-noopener-round395-0820` (שרשרת הענפים היא
+    המקור המלא היחיד ל-loop B, לא `main`), נדחף.
+
+    **הבא בתור:** שאר 6 מועמדי ה-race-condition ב-21-mthbram שנמצאו
+    בסבב זה — במיוחד בקשות האישור-הקבוצתי ב-AdminDashboard.tsx (3
+    כפתורים ללא state disabled) ו-`FullAccessRequestsTab.tsx` (שתי
+    כתיבות סדרתיות לשתי טבלאות שונות בלי guard). נושאים
+    #62/#94/#115/#164/#169/#254 נשארים חסומים.
+    via cloud server 167.99.131.167 [loop B]
