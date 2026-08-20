@@ -257,6 +257,12 @@
 }
 .card-plans:hover { color: var(--gold-soft); border-bottom-color: var(--gold); }
 
+/* גרסה מוכפלת (replaced_by) — מוצגת למטה בתוך התחום, אבל עדיין נכנסת;
+   הגוון הזה (לא --muted) מבדיל אותה ממשפט "בקרוב" הרגיל של .card-stage.
+   בלי קו-מפריד/ריפוד משלה: כשהיא מופיעה יחד עם משפט השלב הרגיל
+   (מערכת שגם לא-פתוחה וגם מוכפלת) אין צורך בשני קווים ברצף. */
+.card-stage.card-replaced { border-top-color: transparent; padding-top: 0; margin-top: 4px; color: var(--gold-soft); }
+
 .card-soon-tag { font-size: 13px; color: var(--muted); letter-spacing: 0.14em; }
 .card-live { font-size: 12px; color: var(--emerald); letter-spacing: 0.08em; white-space: nowrap; }
 

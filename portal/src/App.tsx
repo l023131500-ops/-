@@ -28,6 +28,7 @@ type System = {
   stage: string | null;
   is_protected: boolean;
   public_visible: boolean;
+  replaced_by: string | null;
 };
 
 const supa = (() => { try { return createBrowserClient("public"); } catch { return null; } })();
@@ -110,7 +111,7 @@ export function App() {
     supa.from("more30_public_systems")
       // ⚠️ מחרוזת אחת ולא שרשור: supabase-js גוזר את הטיפוס מהליטרל עצמו,
       // ושרשור הופך אותו ל-string רגיל ומפיל את ההסקה.
-      .select("number,path,title,tagline,what_it_does,department,live,is_deployed,live_url,stage,is_protected,public_visible")
+      .select("number,path,title,tagline,what_it_does,department,live,is_deployed,live_url,stage,is_protected,public_visible,replaced_by")
       .order("number")
       .then(({ data, error }) => {
         if (error || !data) { setLoad({ state: "failed" }); return; }
@@ -252,6 +253,11 @@ function Portal({ load, retry }: { load: Load; retry: () => void }) {
   depts.sort((a, b) => deptOpenCount(b) - deptOpenCount(a) || deptMinNum(a) - deptMinNum(b));
   const liveCount = rows.filter((r) => openToPublic(r)).length;
 
+  // שם התצוגה של כל מערכת, לפי מספרה — כדי שכרטיס מוכפל יוכל לומר "במקומה"
+  // ולא רק "מוכפלת" (שם בלי הפניה לא עוזר למבקר למצוא את הגרסה הנכונה).
+  const titleByNumber: Record<string, string> = {};
+  for (const r of rows) titleByNumber[r.number] = r.title;
+
   return (
     <div dir="rtl">
       <nav className="nav">
@@ -360,17 +366,18 @@ function Portal({ load, retry }: { load: Load; retry: () => void }) {
           {load.state === "failed" && <SystemsUnavailable onRetry={retry} />}
 
           {load.state === "ready" && depts.map((dep) => {
-            // בתוך התחום: מערכות פתוחות לכניסה קודם, ואז אלה שעדיין "בקרוב" —
-            // כדי שהמבקר יפגוש קודם את מה שאפשר להיכנס אליו ולא כרטיס בהקמה.
+            // בתוך התחום: מערכות פתוחות לכניסה קודם, אחר-כך אלה שעדיין
+            // "בקרוב", ואחריהן — למטה מכולן — מערכות מוכפלות (replaced_by),
+            // גם אם הן עצמן פתוחות לכניסה. הנחיית משתמש (20/08,
+            // core.projects#33): "מערכות מוכפלות/כפולות מופיעות למטה".
+            // בלי זה, גרסה ישנה עם מספר נמוך (למשל 12-smel, replaced_by=32)
+            // הופיעה *לפני* המערכת שהחליפה אותה בסדר המספרי הרגיל.
             // אף מערכת לא מוסתרת (זה עדיין כל המצבת של התחום), רק מסודרת.
             // שובר-שוויון: מספר המערכת, לסדר יציב בין טעינות.
+            const rank = (r: System) => (r.replaced_by ? 2 : openToPublic(r) ? 0 : 1);
             const list = rows
               .filter((r) => (r.department || "other") === dep)
-              .sort((a, b) =>
-                openToPublic(a) === openToPublic(b)
-                  ? Number(a.number) - Number(b.number)
-                  : openToPublic(a) ? -1 : 1,
-              );
+              .sort((a, b) => rank(a) - rank(b) || Number(a.number) - Number(b.number));
             return (
               <div className="dept" key={dep}>
                 <div className="dept-head reveal">
@@ -379,7 +386,7 @@ function Portal({ load, retry }: { load: Load; retry: () => void }) {
                   <span className="dept-count">{list.length}</span>
                 </div>
                 <div className="cards">
-                  {list.map((r) => <SystemCard key={r.number} r={r} />)}
+                  {list.map((r) => <SystemCard key={r.number} r={r} titleByNumber={titleByNumber} />)}
                 </div>
               </div>
             );
@@ -456,10 +463,13 @@ const plansHref = (r: System): string | null =>
  * היה יתום: הוא נבנה, הוא מוגש בייצור, ואף עמוד שלקוח פוגש לא הוביל אליו —
  * כלומר הצינור של §8 היה שלם חוץ מהדלת.
  */
-function SystemCard({ r }: { r: System }) {
+function SystemCard({ r, titleByNumber }: { r: System; titleByNumber: Record<string, string> }) {
   const open = openToPublic(r);
   const desc = blurb(r);
   const plans = plansHref(r);
+  // מערכת מוכפלת (core.projects.replaced_by) עדיין נכנסת — היא עדיין מוצר
+  // חי — אבל מסומנת כדי שהמבקר ידע שיש גרסה עדכנית יותר וייכנס אליה במקום.
+  const replacement = r.replaced_by ? titleByNumber[r.replaced_by] : null;
 
   /**
    * מי נכנס לאיזו מערכת (core.projects#33 audit_gaps #2 — "אין מעקב
@@ -478,6 +488,7 @@ function SystemCard({ r }: { r: System }) {
       <h4 className="card-name">{r.title}</h4>
       {/* מערכת שאינה נפתחת אומרת באיזה שלב היא — ולא נעלמת מהעמוד. */}
       {!open && <p className="card-stage">{stageNote(r)}</p>}
+      {replacement && <p className="card-stage card-replaced">גרסה קודמת — במקומה: {replacement}</p>}
       <div className="card-foot">
         {open
           ? (
