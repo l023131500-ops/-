@@ -321,7 +321,7 @@ function ClientsTab({ clients, activeId, onSelect }: { clients: FinClient[]; act
                 <p className="font-semibold">{c.fullName} <Badge variant="outline" className="text-[10px] mr-2">{c.mode === "business" ? "עסק" : "משק בית"}</Badge></p>
                 <p className="text-xs text-muted-foreground"><span dir="ltr">{c.phone}</span> · {c.email || "—"} · {c.city || ""}</p>
               </button>
-              <Button variant="ghost" size="sm" onClick={() => del.mutate(c.id)}><Trash2 className="w-4 h-4 text-destructive" /></Button>
+              <Button variant="ghost" size="sm" onClick={() => { if (!confirm(`למחוק את הלקוח "${c.fullName}"? כל התנועות, התקציבים והתזכורות שלו יימחקו יחד איתו.`)) return; del.mutate(c.id); }}><Trash2 className="w-4 h-4 text-destructive" /></Button>
             </div>
           ))}
           {clients.length === 0 && <p className="text-sm text-muted-foreground">אין לקוחות. הוסיפו אחד מלמעלה.</p>}
