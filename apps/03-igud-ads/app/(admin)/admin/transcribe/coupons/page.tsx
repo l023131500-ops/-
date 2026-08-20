@@ -17,6 +17,8 @@ export default function CouponsPage() {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({ code: "", max_uploads: 1, expires_at: "" });
+  const [submitting, setSubmitting] = useState(false);
+  const [busyId, setBusyId] = useState<string | null>(null);
 
   const load = async () => {
     const res = await fetch("/modaot/api/admin/transcribe/coupons", { cache: "no-store" });
@@ -35,38 +37,56 @@ export default function CouponsPage() {
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const res = await fetch("/modaot/api/admin/transcribe/coupons", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        code: form.code.trim(),
-        max_uploads: form.max_uploads,
-        expires_at: form.expires_at || null,
-      }),
-    });
-    if (res.ok) {
-      setShowForm(false);
-      setForm({ code: "", max_uploads: 1, expires_at: "" });
-      load();
-    } else {
-      const d = await res.json();
-      alert(d.error || "שגיאה");
+    if (submitting) return;
+    setSubmitting(true);
+    try {
+      const res = await fetch("/modaot/api/admin/transcribe/coupons", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          code: form.code.trim(),
+          max_uploads: form.max_uploads,
+          expires_at: form.expires_at || null,
+        }),
+      });
+      if (res.ok) {
+        setShowForm(false);
+        setForm({ code: "", max_uploads: 1, expires_at: "" });
+        load();
+      } else {
+        const d = await res.json();
+        alert(d.error || "שגיאה");
+      }
+    } finally {
+      setSubmitting(false);
     }
   };
 
   const toggle = async (id: string, is_active: boolean) => {
-    await fetch("/modaot/api/admin/transcribe/coupons", {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id, is_active: !is_active }),
-    });
-    load();
+    if (busyId) return;
+    setBusyId(id);
+    try {
+      await fetch("/modaot/api/admin/transcribe/coupons", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, is_active: !is_active }),
+      });
+      await load();
+    } finally {
+      setBusyId(null);
+    }
   };
 
   const remove = async (id: string) => {
     if (!confirm("למחוק קופון זה?")) return;
-    await fetch(`/modaot/api/admin/transcribe/coupons?id=${id}`, { method: "DELETE" });
-    load();
+    if (busyId) return;
+    setBusyId(id);
+    try {
+      await fetch(`/modaot/api/admin/transcribe/coupons?id=${id}`, { method: "DELETE" });
+      await load();
+    } finally {
+      setBusyId(null);
+    }
   };
 
   return (
@@ -125,8 +145,8 @@ export default function CouponsPage() {
               <button type="button" onClick={() => setShowForm(false)} className="btn-outline flex-1">
                 ביטול
               </button>
-              <button type="submit" className="btn-primary flex-1">
-                שמור
+              <button type="submit" disabled={submitting} className="btn-primary flex-1">
+                {submitting ? "שומר…" : "שמור"}
               </button>
             </div>
           </form>
@@ -165,7 +185,8 @@ export default function CouponsPage() {
                 <td className="px-4 py-3">
                   <button
                     onClick={() => toggle(c.id, c.is_active)}
-                    className={`px-2 py-1 rounded text-xs ${
+                    disabled={busyId === c.id}
+                    className={`px-2 py-1 rounded text-xs disabled:opacity-50 ${
                       c.is_active ? "bg-emerald-100 text-emerald-700" : "bg-slate-200 text-slate-600"
                     }`}
                   >
@@ -175,7 +196,8 @@ export default function CouponsPage() {
                 <td className="px-4 py-3">
                   <button
                     onClick={() => remove(c.id)}
-                    className="text-red-600 hover:text-red-800 text-sm"
+                    disabled={busyId === c.id}
+                    className="text-red-600 hover:text-red-800 text-sm disabled:opacity-50"
                   >
                     מחק
                   </button>
