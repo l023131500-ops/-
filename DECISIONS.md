@@ -11042,3 +11042,54 @@
       connect` (טרם נסרק לעומק בהיקף הזה), או לבדוק את שכבת התשתית
       המשותפת (gannenet/40, login/auth, super-admin, admin
       dashboard) שטרם עברה סבב סריקה ייעודי.
+
+## 20/08/2026 — סבב 219 (loop A) — `01-torah-platform`: כניסת Google בעמוד `legacy/admin-login` חוזרת לאפליקציה הלא-נכונה
+
+1065. **המשך ישיר של ההמלצה מ-1064: בדקתי את שכבת ה-auth שטרם עברה
+      סבב סריקה ייעודי.** `grep -rl "signInWithGoogle\|redirectTo\|
+      auth/callback\|signInWithOAuth"` על כל אפליקציות 01-16 העלה
+      חמישה אתרים; ארבעה (01/`SignIn.tsx`, 02, 03, 15, 16) כבר תוקנו
+      בסבבים 205-208. הקובץ החמישי שברשימה, `apps/01-torah-platform/
+      src/pages/legacy/AdminLogin.tsx` (מסך ניהול נפרד מ-`SignIn.tsx`,
+      עם רשימת whitelist של מיילים מורשים), **לא** תוקן — ונמצא בו
+      בדיוק אותו באג "login-returns-to-landing" שתועד במפורש בהיקף
+      המשימה.
+1066. **הממצא שאומת ישירות בקוד:** שורה 64 (לפני התיקון):
+      `redirectTo: window.location.origin + "/legacy/admin-login"`.
+      `vite.config.ts` שורה 6: `base: "/torah/"`, ו-`App.tsx` שורה
+      169: `<BrowserRouter basename={import.meta.env.BASE_URL...}>`
+      — כלומר הכתובת האמיתית של העמוד היא
+      `https://more30.com/torah/legacy/admin-login`
+      (`App.tsx` שורה 281: `<Route path="/legacy/admin-login"
+      element={<LegacyAdminLogin />} />` בתוך ה-`BrowserRouter` עם
+      ה-`basename`), אבל ה-`redirectTo` בנוי בלי קידומת `/torah/`
+      בכלל — בדיוק כמו הבאג שאומת ותוקן ב-`SignIn.tsx` בסבב 205.
+      מנהל שמתחבר עם Google מצליח להתחבר, אבל נוחת על
+      `more30.com/legacy/admin-login` — כתובת ששייכת לאפליקציית
+      ה-`portal/` הנפרדת בשורש, לא לעמוד הזה — ורואה שם דף לא-קשור
+      במקום את דשבורד הניהול.
+1067. **התיקון: אותו דפוס בדיוק שכבר קיים ומאומת ב-`SignIn.tsx`
+      (`resetUrl`) ו-`useAuth.tsx` (`signInWithGoogle`) באותה
+      אפליקציה.** `redirectTo` הוחלף ל-
+      `` `${window.location.origin}${import.meta.env.BASE_URL}legacy/admin-login` ``
+      — `BASE_URL` כולל `/` בסופו (`"/torah/"`), כך שאין כפילות/
+      חוסר קו נטוי. הוסרה גם הערת `TODO` שהתייחסה לבעיה הזו בלי
+      לפתור אותה. שום דבר אחר בעמוד (whitelist, כניסת סיסמה, session
+      listener) לא נגע.
+1068. **אפס רגרסיה מאומתת:** `git diff --stat`: קובץ אחד, +3/-2.
+      בדיקת איזון סוגריים/סוגריים-מסולסלים בפייתון על הקובץ אחרי
+      העריכה: תואם (`(`: 59/59, `{`: 56/56). אין `tsc`/`node_modules`
+      מותקנים מקומית לבדיקת build (בהתאם להוראות — אין הרצת
+      install), אז האימות היה קריאת קוד + אימות עקבי מול הדפוס הזהה
+      שכבר עבר `tsc` בסבב 205 באותה אפליקציה. לא נגעתי במערכות/
+      סכימות מוגנות (08/09/bkalut-app/bkalot-admin/zr_*/NEDARIM3873/
+      csj/csj_src/igud), ב-`main`, או במערכת מחוץ להיקף (רק
+      01-16/gannenet/auth/super-admin/admin dashboard/homepage
+      ordering/pricing). Commit `71c40cb3` על
+      `fix/a-icon-only-buttons-round2-0820`, נדחף ל-`origin` (מפעיל
+      פריסת Vercel תחת `more30.com/torah`).
+1069. **הבא בתור:** `04-imud-torani/server/seed.ts` (לא נבדק, כנראה
+      לא חוסם), `16-chatzor-connect` (טרם נסרק לעומק), או המשך שכבת
+      ה-auth/admin המשותפת — `admin/src/App.tsx` תוקן בסבב 210 רק
+      עבור ה-`getSession()` hang, ולא עבר סריקה מקיפה מעבר לזה; גם
+      דשבורד ה-super-admin ומאזני ה-API טרם עברו סבב סריקה ייעודי.
