@@ -294,12 +294,12 @@ const UpdateLesson = () => {
               <ProgressiveFormStep visible={step === 10} stepIndex={10} showSkip showBack onSkip={() => autoAdvance(11)} onBack={() => setStep(9)}>
                 <div className="space-y-3">
                   <label className="font-display text-sm font-bold text-card-foreground flex items-center gap-2"><Video className="w-4 h-4 text-gold" /> אופן העברה</label>
-                  <label className="flex items-center gap-2 font-body text-sm">
-                    <Switch checked={isLiveStream} onCheckedChange={setIsLiveStream} /> שידור חי
+                  <label htmlFor="update-lesson-livestream" className="flex items-center gap-2 font-body text-sm">
+                    <Switch id="update-lesson-livestream" checked={isLiveStream} onCheckedChange={setIsLiveStream} /> שידור חי
                   </label>
                   {isLiveStream && <Input value={liveStreamDetail} onChange={(e) => setLiveStreamDetail(e.target.value)} placeholder="פרט..." />}
-                  <label className="flex items-center gap-2 font-body text-sm">
-                    <Switch checked={isRecorded} onCheckedChange={setIsRecorded} /> מוקלט
+                  <label htmlFor="update-lesson-recorded" className="flex items-center gap-2 font-body text-sm">
+                    <Switch id="update-lesson-recorded" checked={isRecorded} onCheckedChange={setIsRecorded} /> מוקלט
                   </label>
                   {isRecorded && <Input value={recordingDetail} onChange={(e) => setRecordingDetail(e.target.value)} placeholder="פרט..." />}
                   <Button size="sm" className="bg-gradient-gold text-primary-foreground font-body hover:opacity-90" onClick={() => autoAdvance(11)}>המשך ←</Button>
@@ -309,8 +309,8 @@ const UpdateLesson = () => {
               {/* Step 11: Update notes */}
               <ProgressiveFormStep visible={step === 11} stepIndex={11} showSkip showBack onSkip={() => autoAdvance(12)} onBack={() => setStep(10)}>
                 <div className="space-y-3">
-                  <label className="font-display text-sm font-bold text-card-foreground">פרטים לעדכון על שינוי שיעור לפרסום</label>
-                  <Textarea value={updateNotes} onChange={(e) => setUpdateNotes(e.target.value)} placeholder="פרטו כאן..." rows={4} />
+                  <label htmlFor="update-lesson-notes" className="font-display text-sm font-bold text-card-foreground">פרטים לעדכון על שינוי שיעור לפרסום</label>
+                  <Textarea id="update-lesson-notes" value={updateNotes} onChange={(e) => setUpdateNotes(e.target.value)} placeholder="פרטו כאן..." rows={4} />
                   <Button size="sm" className="bg-gradient-gold text-primary-foreground font-body hover:opacity-90" onClick={() => autoAdvance(12)}>המשך ←</Button>
                 </div>
               </ProgressiveFormStep>
@@ -326,8 +326,8 @@ const UpdateLesson = () => {
                       <Input value={contactPhone} onChange={(e) => setContactPhone(e.target.value)} placeholder="טלפון" />
                       <Input value={contactEmail} onChange={(e) => setContactEmail(e.target.value)} placeholder="מייל (לא חובה)" type="email" />
                     </div>
-                    <label className="font-display text-sm font-bold text-card-foreground block mt-4">שם הארגון שהקים את השיעור</label>
-                    <Input value={orgName} onChange={(e) => setOrgName(e.target.value)} placeholder="שם הארגון" />
+                    <label htmlFor="update-lesson-org-name" className="font-display text-sm font-bold text-card-foreground block mt-4">שם הארגון שהקים את השיעור</label>
+                    <Input id="update-lesson-org-name" value={orgName} onChange={(e) => setOrgName(e.target.value)} placeholder="שם הארגון" />
                     <input type="file" ref={fileInputRef} accept="image/*" onChange={handleLogoSelect} className="hidden" />
                     {logoPreview ? (
                       <div className="flex items-center gap-4">
