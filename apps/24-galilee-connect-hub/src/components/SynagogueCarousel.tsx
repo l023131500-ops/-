@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { Clock, Sparkles, BookOpen, Phone, ChevronLeft, ChevronRight, Heart, Megaphone, MapPin, Copy, Check, Send, ExternalLink, List, User } from 'lucide-react';
 import type { SynagogueDB } from '@/hooks/useSynagogues';
+import { getPublicOrigin } from '@/lib/utils';
 import LessonsTicker from './LessonsTicker';
 
 const VISIBLE_COUNT = 3;
@@ -34,7 +35,7 @@ const SynagogueCard = ({
   const shabbat = synagogue.prayerTimes.filter(p => p.day === 'shabbat' && !p.no_minyan);
   const [copied, setCopied] = useState(false);
 
-  const shareLink = `${window.location.origin}/synagogue/${synagogue.id}`;
+  const shareLink = `${getPublicOrigin()}/synagogue/${synagogue.id}`;
   const handleCopy = (e: React.MouseEvent) => {
     e.stopPropagation();
     navigator.clipboard.writeText(shareLink);

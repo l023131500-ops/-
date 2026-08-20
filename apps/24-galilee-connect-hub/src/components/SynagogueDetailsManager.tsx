@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { supabase } from '@/integrations/supabase/client';
 import { deleteStorageFile, uploadImage } from '@/lib/supabaseStorage';
+import { getPublicOrigin } from '@/lib/utils';
 
 type ManagerMode = 'admin' | 'gabai';
 type PrayerDay = 'weekday' | 'shabbat' | 'holiday';
@@ -66,7 +67,7 @@ const SynagogueDetailsManager = ({ synagogueId, mode = 'admin', synagogueName, o
   const [saved, setSaved] = useState(false);
   const [saveError, setSaveError] = useState(false);
 
-  const portalLink = useMemo(() => access.username.trim() ? `${window.location.origin}/gabai?username=${encodeURIComponent(access.username.trim())}` : '', [access.username]);
+  const portalLink = useMemo(() => access.username.trim() ? `${getPublicOrigin()}/gabai?username=${encodeURIComponent(access.username.trim())}` : '', [access.username]);
 
   const fetchData = useCallback(async () => {
     setLoading(true);

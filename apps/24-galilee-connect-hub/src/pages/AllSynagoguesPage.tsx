@@ -4,13 +4,14 @@ import { motion } from 'framer-motion';
 import { ArrowRight, Clock, Sparkles, MapPin, BookOpen, Phone, Copy, Check } from 'lucide-react';
 import { useSynagogues } from '@/hooks/useSynagogues';
 import Footer from '@/components/Footer';
+import { getPublicOrigin } from '@/lib/utils';
 
 const AllSynagoguesPage = () => {
   const { synagogues, loading } = useSynagogues();
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
   const handleCopy = (id: string) => {
-    navigator.clipboard.writeText(`${window.location.origin}/synagogue/${id}`);
+    navigator.clipboard.writeText(`${getPublicOrigin()}/synagogue/${id}`);
     setCopiedId(id);
     setTimeout(() => setCopiedId(null), 2000);
   };
