@@ -104,6 +104,7 @@ export default function UploadPage() {
 
           {error && (
             <div
+              id="upload-error"
               role="alert"
               aria-live="assertive"
               className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6"
@@ -125,6 +126,8 @@ export default function UploadPage() {
                   placeholder="XXXX-XXXX"
                   required
                   autoFocus
+                  aria-describedby={error ? "upload-error" : undefined}
+                  aria-invalid={error ? "true" : undefined}
                 />
                 <p className="text-sm text-slate-500 mt-2">
                   לקבלת קוד פנה למשרדי איגוד השיעורים
@@ -176,6 +179,8 @@ export default function UploadPage() {
                   onChange={(e) => setFile(e.target.files?.[0] ?? null)}
                   className="input"
                   required
+                  aria-describedby={error ? "upload-error" : undefined}
+                  aria-invalid={error ? "true" : undefined}
                 />
                 {file && (
                   <p className="text-sm text-slate-600 mt-2">
