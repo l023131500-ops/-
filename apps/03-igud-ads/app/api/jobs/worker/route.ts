@@ -30,10 +30,21 @@ async function processJob(jobId: string) {
   const raw = createSupabaseServiceRaw();
   const startedAt = new Date().toISOString();
 
-  await svc.from("ad_jobs").update({ status: "running", started_at: startedAt }).eq("id", jobId);
-
-  const { data: job } = await svc.from("ad_jobs").select("*").eq("id", jobId).maybeSingle();
-  if (!job) return { jobId, error: "job missing" };
+  // Claim atomically: the update only matches (and returns a row) if the job is
+  // still "pending". Two concurrent runs of this route (it carries no auth, so
+  // nothing stops two overlapping requests) used to both select the same pending
+  // job and both process it — double DALL-E billing, duplicate ad-outputs
+  // uploads, two ad_generations rows for one job. Conditioning the update on
+  // .eq("status", "pending") makes only the first caller win the claim; the
+  // second gets back no row and skips.
+  const { data: job } = await svc
+    .from("ad_jobs")
+    .update({ status: "running", started_at: startedAt })
+    .eq("id", jobId)
+    .eq("status", "pending")
+    .select("*")
+    .maybeSingle();
+  if (!job) return { jobId, skipped: true };
 
   try {
     const { data: project } = await svc.from("ad_projects").select("*").eq("id", job.project_id).maybeSingle();
