@@ -2654,3 +2654,69 @@
     שגיאה, 22-get-your-rights AdminSettings/AdminLeads כתיבות DB
     לא-נבדקות, 30-zchuyotpro-crm נתיבי `/api/public/*` ללא אימות
     tenant) שלא נבחרו הסבב הזה.
+
+## 20/08/2026 — סבב 35
+
+222. **קראתי README.md/CONNECTIONS.md, בדקתי `core.run_progress`** (מזהה
+    loop B אחרון 1138, תיקון `/api/clients` ב-27 bkalut-price, קומיט
+    `ac123f86` -- כבר ה-parent של הענף הזה, כבר נדחף) ו-`core.issues`
+    בהיקף 17-31/37: כל השורות הפתוחות עדיין owner=user (allow-list/RLS/
+    SMTP/URL-config בפרויקטי Supabase שאינם נגישים דרך ה-PAT הזה) --
+    אין שורה חדשה שניתן לפעול עליה. הרצתי שלושה סוכני Explore מקבילים
+    לאמת את שלושת המועמדים שנרשמו בסוף סבב 34 ולא נבחרו אז: (1)
+    19-igud-shiurim-portal webhook-RPC ללא בדיקת שגיאה, (2)
+    22-get-your-rights AdminSettings/AdminLeads כתיבות DB לא-נבדקות,
+    (3) 30-zchuyotpro-crm נתיבי `/api/public/*` ללא אימות tenant.
+223. **הממצא שנבחר: 30-zchuyotpro-crm, חמשת נתיבי `/api/public/*`**
+    (`notify-message.ts`, `notify-signature.ts`, `analyze-paystub.ts`,
+    `notify-partner.ts`, `notify-admin.ts`) -- הממצא החמור מבין
+    השלושה, ובחומרה זהה לתיקוני האימות הגדולים מסבבים 33/34 (18
+    torah-editor-mvp HTR). אימתתי בעצמי בקריאת כל חמשת הקבצים: כולם
+    השתמשו ב-`supabaseAdmin` (service_role, עוקף RLS) ושלפו שורה מ-
+    `messages`/`documents`/`partner_referrals` לפי `id` בלבד -- בלי שום
+    בדיקה שהקורא שייך לאותו tenant. קריאה אנונימית עם UUID של tenant
+    אחר הייתה חושפת שם/טלפון/אימייל של לקוח ו-URL חתום למסמך פרטי
+    (`notify-message`/`notify-signature`), או כותבת סטטוס מעובד/חתום
+    כוזב על מסמך של tenant אחר (`analyze-paystub`/`notify-signature`).
+    אימתתי גם את כל הקוראים הלגיטימיים (grep מלא): שלושתם בתוך
+    `_authenticated/*` (`documents.tsx`, `messages.tsx`,
+    `partner-portal/$referralId.tsx` דרך `dispatchNotify`), כולם כבר
+    עם `me.tenant_id`/session בהיקף, אף אחד לא באמת "ציבורי" (השם
+    "public" מטעה -- אלה webhook-ים פנימיים, לא טופס ציבורי כמו המקרה
+    של `/api/clients/by-phone` בסבב 34 -- כך שהתיקון לא מסתכן בשבירת
+    זרימה ציבורית אמיתית).
+224. **התיקון: קובץ שרת חדש `tenant-auth.server.ts`** (`getCallerTenantId`)
+    מאמת את ה-Bearer token מול שרת ה-Auth (`auth.getClaims`, אותו
+    דפוס בדיוק שכבר קיים ב-`auth-middleware.ts` של האפליקציה הזו) ואז
+    פותר tenant_id דרך `profiles` (צוות tenant) או `partners` (שותף
+    חיצוני בפורטל השותפים) -- שתי טבלאות זהות שכבר קיימות, לא המצאה.
+    כל נתיב בודק עכשיו שה-`tenant_id` של השורה שנשלפה תואם לזה של
+    הקורא (404 אם לא, לא ניתן להבחין מ"לא נמצא" -- אותו דפוס בדיוק כמו
+    ה-404 הקיים כבר בכל חמשת הקבצים). בצד הלקוח הוספתי `authedFetch()`
+    (`src/lib/authed-fetch.ts`) שמצרף את ה-access_token הנוכחי מ-
+    `supabase.auth.getSession()` -- אותו דפוס בדיוק שכבר קיים ב-
+    `auth-attacher.ts` הגנרי (עבור serverFn RPCs; כאן נדרש בנפרד כי
+    אלה קריאות `fetch()` גולמיות ל-`/api/public/*`, לא serverFn) --
+    ועדכנתי את כל שלוש נקודות הקריאה (`documents.tsx` פעמיים,
+    `messages.tsx` פעם, `dispatchNotify` ב-`queries.ts` שמכסה גם
+    `notify-partner` וגם `notify-admin`). אפס שינוי לחוזה ה-JSON
+    בנתיב ההצלחה בכל אחד מחמשת ה-routes. לא נגעתי בקבצים המסומנים
+    "automatically generated. Do not edit it directly" (`client.ts`,
+    `client.server.ts`, `auth-middleware.ts`, `auth-attacher.ts`) --
+    רק קראתי מהם את הדפוס הקיים ושכפלתי אותו בקבצים חדשים. אין
+    `node_modules`/build מותקן בעץ הזה (כלל אי-התקנה כרגיל) -- אימתתי
+    בקריאה חוזרת של כל עשרת הקבצים שנערכו/נוצרו, grep שאין קורא נוסף
+    לחמשת ה-routes בכל האפליקציה מלבד שלוש נקודות הקריאה שעודכנו,
+    ואימות הסכימה (`supabase/migrations/20260610191501_...sql`) ש-
+    `profiles`/`partners`/`messages`/`documents`/`partner_referrals`
+    כולן נושאות עמודת `tenant_id` אמיתית כפי שהקוד מניח. נדרש
+    `git add -f` לשני הקבצים החדשים (`apps/**/src` מוחרג מה-gitignore
+    כברירת מחדל, אותו דפוס כמו כל סבב קודם). קומיט הבא על
+    `fix/b-zchuyotpro-crm-public-routes-idor-0820`, יידחף (מפעיל
+    פריסת Vercel תחת `more30.com/crm`; שינוי אך ורק לחמשת ה-routes
+    ולשלוש נקודות הקריאה, אפס שינוי לזרימת ניהול/לקוחות/מסמכים אחרת).
+    הבא בתור: שני המועמדים שלא נבחרו הסבב הזה (19-igud-shiurim-portal
+    webhook-RPC ללא בדיקת שגיאה -- ה-GET handler מחזיר 200 תמיד גם
+    כשה-RPC נכשל; 22-get-your-rights AdminSettings/AdminLeads --
+    שמונה כתיבות DB בלי בדיקת `error`, מציגות toast הצלחה כוזב)
+    נשארים מועמדים טובים לסבב הבא.
