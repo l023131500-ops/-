@@ -63,6 +63,7 @@ export default function CommunityAdmin() {
   const [newLinkLabel, setNewLinkLabel] = useState("");
   const [settings, setSettings] = useState<CommunitySettings | null>(null);
   const [savingSettings, setSavingSettings] = useState(false);
+  const [creatingQuestionnaire, setCreatingQuestionnaire] = useState(false);
 
   const origin = getPublicOrigin();
 
@@ -100,7 +101,8 @@ export default function CommunityAdmin() {
   useEffect(() => { loadList(); loadSettings(); }, []);
 
   async function createQuestionnaire() {
-    if (!newTitle.trim()) return;
+    if (!newTitle.trim() || creatingQuestionnaire) return;
+    setCreatingQuestionnaire(true);
     try {
       const r = await apiRequest("POST", "/api/community/admin/questionnaires", { title: newTitle });
       const q = await r.json();
@@ -109,6 +111,8 @@ export default function CommunityAdmin() {
       loadDetail(q.id);
     } catch {
       toast({ title: "יצירת השאלון נכשלה", variant: "destructive" });
+    } finally {
+      setCreatingQuestionnaire(false);
     }
   }
 
@@ -220,7 +224,7 @@ export default function CommunityAdmin() {
             <Label className="text-xs">שם שאלון חדש</Label>
             <Input value={newTitle} onChange={(e) => setNewTitle(e.target.value)} placeholder="לדוגמה: צרכי קהילה" data-testid="input-new-questionnaire" />
           </div>
-          <Button onClick={createQuestionnaire} data-testid="button-create-questionnaire"><Plus className="w-4 h-4 ml-1" /> יצירת שאלון</Button>
+          <Button onClick={createQuestionnaire} disabled={creatingQuestionnaire} data-testid="button-create-questionnaire"><Plus className="w-4 h-4 ml-1" /> יצירת שאלון</Button>
         </Card>
 
         <div className="grid sm:grid-cols-2 gap-3">
