@@ -180,7 +180,7 @@ const RabbiPortal = () => {
                 <div className="w-10 h-10 rounded-xl bg-muted/30 flex items-center justify-center">
                   <UserCircle className="w-5 h-5 text-gold/60" />
                 </div>
-                <Button variant="ghost" size="sm" onClick={() => logoInputRef.current?.click()} className="text-gold/60 hover:text-gold text-xs gap-1">
+                <Button variant="ghost" size="sm" onClick={() => logoInputRef.current?.click()} className="text-gold hover:text-gold text-xs gap-1">
                   <Image className="w-3.5 h-3.5" /> העלאת לוגו
                 </Button>
               </div>

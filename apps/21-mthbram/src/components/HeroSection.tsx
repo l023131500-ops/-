@@ -195,7 +195,7 @@ const HeroSection = () => {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 1.1 + i * 0.08 }}
               whileHover={{ scale: 1.1, y: -2 }}
-              className="px-4 py-2 rounded-full bg-primary-foreground/8 border border-primary-foreground/15 text-primary-foreground/60 font-body text-sm hover:border-gold/40 hover:text-gold hover:bg-gold/10 transition-all cursor-pointer"
+              className="px-4 py-2 rounded-full bg-primary-foreground/8 border border-primary-foreground/15 text-foreground/60 font-body text-sm hover:border-gold/40 hover:text-gold hover:bg-gold/10 transition-all cursor-pointer"
             >
               {tag}
             </motion.span>
