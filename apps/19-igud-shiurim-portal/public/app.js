@@ -968,6 +968,8 @@ function wireContactForm(submitUrl) {
   if (!form) return;
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    if (submitBtn) submitBtn.disabled = true;
     const f = Object.fromEntries(new FormData(e.target));
     const alertBox = document.getElementById('contact-alert');
     try {
@@ -976,6 +978,8 @@ function wireContactForm(submitUrl) {
       e.target.reset();
     } catch (err) {
       alertBox.innerHTML = `<div class="alert alert-error">${esc(err.message)}</div>`;
+    } finally {
+      if (submitBtn) submitBtn.disabled = false;
     }
   });
 }
@@ -1144,6 +1148,8 @@ async function renderTeacherPublic(token) {
   `;
   document.getElementById('ask-form').addEventListener('submit', async (e) => {
     e.preventDefault();
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    if (submitBtn) submitBtn.disabled = true;
     const f = Object.fromEntries(new FormData(e.target));
     const alertBox = document.getElementById('ask-alert');
     try {
@@ -1152,6 +1158,8 @@ async function renderTeacherPublic(token) {
       e.target.reset();
     } catch (err) {
       alertBox.innerHTML = `<div class="alert alert-error">${esc(err.message)}</div>`;
+    } finally {
+      if (submitBtn) submitBtn.disabled = false;
     }
   });
 }
@@ -1545,6 +1553,8 @@ async function renderAdmin(token) {
 
     document.getElementById('nedarim-config-form').addEventListener('submit', async (e) => {
       e.preventDefault();
+      const submitBtn = e.target.querySelector('button[type="submit"]');
+      if (submitBtn) submitBtn.disabled = true;
       const fd = new FormData(e.target);
       try {
         await api(`/api/admin/tenant/${encodeURIComponent(token)}/nedarim/config`, {
@@ -1559,6 +1569,8 @@ async function renderAdmin(token) {
         await drawBilling(content);
       } catch (err) {
         document.getElementById('billing-alert').innerHTML = `<div class="alert alert-error">${esc(err.message)}</div>`;
+      } finally {
+        if (submitBtn) submitBtn.disabled = false;
       }
     });
 
@@ -1621,6 +1633,8 @@ async function renderAdmin(token) {
     wireUploadField({ id: 'tenant-logo', uploadUrl: `/api/admin/tenant/${encodeURIComponent(token)}/upload` });
     document.getElementById('profile-form').addEventListener('submit', async (e) => {
       e.preventDefault();
+      const submitBtn = e.target.querySelector('button[type="submit"]');
+      if (submitBtn) submitBtn.disabled = true;
       const fd = new FormData(e.target);
       const body = {
         name: fd.get('name'), about_text: fd.get('about_text'),
@@ -1634,6 +1648,8 @@ async function renderAdmin(token) {
         await refresh();
       } catch (err) {
         document.getElementById('profile-alert').innerHTML = `<div class="alert alert-error">${esc(err.message)}</div>`;
+      } finally {
+        if (submitBtn) submitBtn.disabled = false;
       }
     });
   }
@@ -1752,6 +1768,8 @@ async function renderSynagogueAdmin(token) {
 
     document.getElementById('nedarim-config-form').addEventListener('submit', async (e) => {
       e.preventDefault();
+      const submitBtn = e.target.querySelector('button[type="submit"]');
+      if (submitBtn) submitBtn.disabled = true;
       const fd = new FormData(e.target);
       try {
         await api(`/api/admin/synagogue/${encodeURIComponent(token)}/nedarim/config`, {
@@ -1766,6 +1784,8 @@ async function renderSynagogueAdmin(token) {
         await drawBilling(content);
       } catch (err) {
         document.getElementById('billing-alert').innerHTML = `<div class="alert alert-error">${esc(err.message)}</div>`;
+      } finally {
+        if (submitBtn) submitBtn.disabled = false;
       }
     });
 
@@ -1817,12 +1837,16 @@ async function renderSynagogueAdmin(token) {
     `;
     document.getElementById('prayer-form').addEventListener('submit', async (e) => {
       e.preventDefault();
+      const submitBtn = e.target.querySelector('button[type="submit"]');
+      if (submitBtn) submitBtn.disabled = true;
       const f = Object.fromEntries(new FormData(e.target));
       try {
         await api(`/api/admin/synagogue/${encodeURIComponent(token)}/prayer-times`, { method: 'POST', body: JSON.stringify(f) });
         await refresh(); draw();
       } catch (err) {
         document.getElementById('prayers-alert').innerHTML = `<div class="alert alert-error">${esc(err.message)}</div>`;
+      } finally {
+        if (submitBtn) submitBtn.disabled = false;
       }
     });
     content.querySelectorAll('[data-del-prayer]').forEach(btn => btn.onclick = async () => {
@@ -1865,6 +1889,8 @@ async function renderSynagogueAdmin(token) {
     wireUploadField({ id: 'syn-logo', uploadUrl: `/api/admin/synagogue/${encodeURIComponent(token)}/upload` });
     document.getElementById('syn-profile-form').addEventListener('submit', async (e) => {
       e.preventDefault();
+      const submitBtn = e.target.querySelector('button[type="submit"]');
+      if (submitBtn) submitBtn.disabled = true;
       const fd = new FormData(e.target);
       const body = Object.fromEntries(fd);
       body.is_public = fd.get('is_public') === 'on';
@@ -1874,6 +1900,8 @@ async function renderSynagogueAdmin(token) {
         await refresh();
       } catch (err) {
         document.getElementById('syn-profile-alert').innerHTML = `<div class="alert alert-error">${esc(err.message)}</div>`;
+      } finally {
+        if (submitBtn) submitBtn.disabled = false;
       }
     });
   }
@@ -1953,6 +1981,8 @@ async function renderTeacherAdmin(token) {
     wireUploadField({ id: 'te-photo', uploadUrl: `/api/admin/teacher/${encodeURIComponent(token)}/upload` });
     document.getElementById('te-profile-form').addEventListener('submit', async (e) => {
       e.preventDefault();
+      const submitBtn = e.target.querySelector('button[type="submit"]');
+      if (submitBtn) submitBtn.disabled = true;
       const fd = new FormData(e.target);
       const body = Object.fromEntries(fd);
       body.is_public = fd.get('is_public') === 'on';
@@ -1964,6 +1994,8 @@ async function renderTeacherAdmin(token) {
         await refresh();
       } catch (err) {
         document.getElementById('te-profile-alert').innerHTML = `<div class="alert alert-error">${esc(err.message)}</div>`;
+      } finally {
+        if (submitBtn) submitBtn.disabled = false;
       }
     });
   }
@@ -2019,6 +2051,8 @@ async function renderTeacherAdmin(token) {
     wireUploadField({ id: 'te-lesson-logo', uploadUrl: `/api/admin/teacher/${encodeURIComponent(token)}/upload` });
     document.getElementById('te-lesson-form').addEventListener('submit', async (e) => {
       e.preventDefault();
+      const submitBtn = e.target.querySelector('button[type="submit"]');
+      if (submitBtn) submitBtn.disabled = true;
       const f = Object.fromEntries(new FormData(e.target));
       f.day_of_week = Number(f.day_of_week);
       f.duration_minutes = Number(f.duration_minutes) || 45;
@@ -2031,6 +2065,8 @@ async function renderTeacherAdmin(token) {
         await refresh(); draw();
       } catch (err) {
         document.getElementById('te-lessons-alert').innerHTML = `<div class="alert alert-error">${esc(err.message)}</div>`;
+      } finally {
+        if (submitBtn) submitBtn.disabled = false;
       }
     });
     const cancelBtn = document.getElementById('te-lesson-cancel-edit');
@@ -2087,6 +2123,8 @@ async function renderTeacherAdmin(token) {
     wireUploadField({ id: 'te-ad-image', uploadUrl: `/api/admin/teacher/${encodeURIComponent(token)}/upload` });
     document.getElementById('te-ad-form').addEventListener('submit', async (e) => {
       e.preventDefault();
+      const submitBtn = e.target.querySelector('button[type="submit"]');
+      if (submitBtn) submitBtn.disabled = true;
       const f = Object.fromEntries(new FormData(e.target));
       if (editingAd) f.id = editingAd.id;
       try {
@@ -2095,6 +2133,8 @@ async function renderTeacherAdmin(token) {
         await refresh(); draw();
       } catch (err) {
         document.getElementById('te-ads-alert').innerHTML = `<div class="alert alert-error">${esc(err.message)}</div>`;
+      } finally {
+        if (submitBtn) submitBtn.disabled = false;
       }
     });
     const cancelBtn = document.getElementById('te-ad-cancel-edit');
@@ -2182,10 +2222,16 @@ function renderLoginForm(client) {
   `;
   document.getElementById('login-form').addEventListener('submit', async (e) => {
     e.preventDefault();
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    if (submitBtn) submitBtn.disabled = true;
     const fd = Object.fromEntries(new FormData(e.target));
     const alertBox = document.getElementById('login-alert');
     const { data, error } = await client.auth.signInWithPassword({ email: fd.email, password: fd.password });
-    if (error) { alertBox.innerHTML = `<div class="alert alert-error">${esc(error.message)}</div>`; return; }
+    if (error) {
+      alertBox.innerHTML = `<div class="alert alert-error">${esc(error.message)}</div>`;
+      if (submitBtn) submitBtn.disabled = false;
+      return;
+    }
     currentSession = data.session;
     renderMyEntities(client);
   });
@@ -2406,6 +2452,8 @@ async function renderSuperadminDashboard(client) {
 
     document.getElementById('create-form').addEventListener('submit', async (e) => {
       e.preventDefault();
+      const submitBtn = e.target.querySelector('button[type="submit"]');
+      if (submitBtn) submitBtn.disabled = true;
       const body = Object.fromEntries(new FormData(e.target));
       const alertBox = document.getElementById('create-alert');
       try {
@@ -2421,6 +2469,8 @@ async function renderSuperadminDashboard(client) {
         draw();
       } catch (err) {
         alertBox.innerHTML = `<div class="alert alert-error">${esc(err.message)}</div>`;
+      } finally {
+        if (submitBtn) submitBtn.disabled = false;
       }
     });
 
@@ -2442,6 +2492,8 @@ async function renderSuperadminDashboard(client) {
 
     document.querySelectorAll('.link-form').forEach(form => form.addEventListener('submit', async (e) => {
       e.preventDefault();
+      const submitBtn = e.target.querySelector('button[type="submit"]');
+      if (submitBtn) submitBtn.disabled = true;
       const fd = Object.fromEntries(new FormData(e.target));
       const req = nationalRequests.find(x => x.id === e.target.dataset.reqId);
       try {
@@ -2452,6 +2504,8 @@ async function renderSuperadminDashboard(client) {
         alert('הקישור בוצע בהצלחה.');
       } catch (err) {
         alert('שגיאה: ' + err.message);
+      } finally {
+        if (submitBtn) submitBtn.disabled = false;
       }
     }));
 
