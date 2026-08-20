@@ -34,6 +34,7 @@ const OrgPortal = () => {
   const [addingRabbi, setAddingRabbi] = useState(false);
   const [savingLesson, setSavingLesson] = useState(false);
   const logoInputRef = useRef<HTMLInputElement>(null);
+  const removingRabbiIdsRef = useRef<Set<string>>(new Set());
 
   useEffect(() => { if (token) fetchPortal(); }, [token]);
 
@@ -113,11 +114,17 @@ const OrgPortal = () => {
 
   const removeRabbi = async (id: string) => {
     if (!confirm("להסיר את הרב מהארגון?")) return;
-    const { error } = await supabase.from("org_rabbis").delete().eq("id", id);
-    if (!error) {
-      setRabbis(prev => prev.filter(r => r.id !== id));
-      toast.success("הרב הוסר");
-    } else toast.error("שגיאה בהסרת הרב");
+    if (removingRabbiIdsRef.current.has(id)) return;
+    removingRabbiIdsRef.current.add(id);
+    try {
+      const { error } = await supabase.from("org_rabbis").delete().eq("id", id);
+      if (!error) {
+        setRabbis(prev => prev.filter(r => r.id !== id));
+        toast.success("הרב הוסר");
+      } else toast.error("שגיאה בהסרת הרב");
+    } finally {
+      removingRabbiIdsRef.current.delete(id);
+    }
   };
 
   const startEdit = (lesson: any) => { setEditingId(lesson.id); setEditData({ ...lesson }); };
