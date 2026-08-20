@@ -207,7 +207,12 @@
       b.addEventListener("click", function () {
         var id = b.getAttribute("data-toggle"), st = b.getAttribute("data-status");
         b.disabled = true;
-        window.LeadsStore.updateStatus(id, st).then(function () {
+        window.LeadsStore.updateStatus(id, st).then(function (res) {
+          if (!res || !res.ok) {
+            b.disabled = false;
+            alert("עדכון הסטטוס נכשל");
+            return;
+          }
           var row = ALL.filter(function (x) { return String(x.id) === String(id); })[0];
           if (row) row.status = st;
           applyFilter();
@@ -219,7 +224,12 @@
         var id = b.getAttribute("data-del");
         if (!confirm("למחוק את הפנייה? פעולה זו אינה הפיכה.")) return;
         b.disabled = true;
-        window.LeadsStore.deleteLead(id).then(function () {
+        window.LeadsStore.deleteLead(id).then(function (res) {
+          if (!res || !res.ok) {
+            b.disabled = false;
+            alert("מחיקת הפנייה נכשלה");
+            return;
+          }
           ALL = ALL.filter(function (x) { return String(x.id) !== String(id); });
           applyFilter();
         });
