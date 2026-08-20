@@ -7747,3 +7747,41 @@
      לפתוח עדשה חדשה, או לחזור ל-`core.project_tasks`/
      `core.project_bugs` (5 פריטים פתוחים, עדיין חסומים על secrets
      חסרים או החלטות merge/origin מחוץ לסמכות הסוכן).
+
+## 20/08/2026 — סבב 147 (loop A)
+
+740. **המשכתי את עדשת ה-focus-trap** על שני הפריטים הבאים בתור
+     (round 146), שניהם ב-`01-torah-platform/src/pages/legacy/
+     AdminDashboard.tsx` (הקובץ הישן, שונה מ-`LessonDetailModal.tsx`
+     שכבר טופל בסבב 143): מודל "עריכת שיעור" (`editingLesson`, שורות
+     ~1580-1701) ומודל "פרטי פנייה מנדרים" (`viewingNedarim`, שורות
+     ~1704-1780+). שני המודלים כבר עם `role="dialog"`/`aria-modal`/
+     `aria-label`/Escape-to-close (משותף ב-`useEffect` אחד), אך ללא
+     ניהול focus ראשוני, Tab-trap או שחזור focus.
+741. **תיקון:** מכיוון ששני המודלים חולקים `useEffect` אחד לטיפול
+     ב-Escape (בלתי אפשרי לפתוח את שניהם בו-זמנית בפועל, אך הקוד
+     תומך בכך טכנית), הוספתי refs נפרדים לכל מודל
+     (`editPanelRef`/`editCloseButtonRef`,
+     `nedarimPanelRef`/`nedarimCloseButtonRef`) ו-`previousFocusRef`
+     משותף. בתוך ה-`useEffect` הקיים: שמירת ה-element הפעיל לפני
+     הפתיחה, `focus()` על כפתור הסגירה של המודל שבאמת נפתח (בחירה
+     לפי `editingLesson`/`viewingNedarim`), שחזור focus בסגירה
+     (cleanup), ומלכודת Tab/Shift+Tab שבוחרת את ה-panel הרלוונטי
+     דינמית לפי איזה state פעיל. אותה תבנית שהוכחה יעילה בסבבים
+     143-146, מותאמת למקרה של שני מודלים ב-effect משותף.
+742. **אפס רגרסיה מאומתת:** `git diff --stat` — קובץ אחד, 38+/6-
+     שורות; אין שינוי ל-`saveEdit`/`approveNedarim`/`genericDelete`/
+     state/רינדור הטבלאות מסביב, רק תוספת refs + לוגיקת focus/Tab
+     בתוך ה-`useEffect` הקיים + חיבור `ref` לשני ה-`motion.div` של
+     הפאנלים ולשני כפתורי הסגירה הקיימים. אין `tsc`/`npm` בסביבה הזו
+     — אימות איזון `{}`/`()`/`[]` בפייתון על הקובץ המלא: 793/793,
+     868/868, 143/143 — תואם. הקובץ עוקב ב-git אך חסום ע"י כלל
+     `apps/01-torah-platform/src` ב-`.gitignore` — נדרש `git add -f`.
+     Commit `2dfcd60a` על `fix/a-icon-only-buttons-round2-0820`, נדחף
+     ל-origin (מפעיל פריסת Vercel תחת more30.com/torah).
+743. **זה סוגר את התור** שנפתח בסבב 143. מועמד אחרון ידוע: מודל
+     "uploads" ב-`02-igud-transcribe` (admin, אותו דפוס — `role=
+     dialog`+`aria-modal`+`aria-label`+Escape קיימים, חסר focus
+     ראשוני+Tab-trap). אפשר להמשיך שם, לסרוק שוב 01-16 לעדשה נוספת,
+     או לחזור ל-`core.project_tasks`/`core.project_bugs` (5 פריטים
+     פתוחים, עדיין חסומים).
