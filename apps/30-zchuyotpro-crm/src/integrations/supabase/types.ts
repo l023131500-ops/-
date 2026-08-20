@@ -440,6 +440,8 @@ export type Database = {
           notes: string | null
           phone: string | null
           postal_code: string | null
+          share_enabled: boolean
+          share_token: string
           status: string
           tags: string[] | null
           tenant_id: string
@@ -465,6 +467,8 @@ export type Database = {
           notes?: string | null
           phone?: string | null
           postal_code?: string | null
+          share_enabled?: boolean
+          share_token?: string
           status?: string
           tags?: string[] | null
           tenant_id: string
@@ -490,6 +494,8 @@ export type Database = {
           notes?: string | null
           phone?: string | null
           postal_code?: string | null
+          share_enabled?: boolean
+          share_token?: string
           status?: string
           tags?: string[] | null
           tenant_id?: string

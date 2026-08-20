@@ -18,6 +18,7 @@ import { ReferralsTab } from "@/features/clients/tabs/ReferralsTab";
 import { TasksTab } from "@/features/clients/tabs/TasksTab";
 import { TimelineTab } from "@/features/clients/tabs/TimelineTab";
 import { QuickNoteButton } from "@/features/clients/components/QuickNoteButton";
+import { ShareLinkCard } from "@/features/clients/components/ShareLinkCard";
 import { meProfileQuery } from "@/features/clients/queries";
 import { useQuery } from "@tanstack/react-query";
 
@@ -70,6 +71,8 @@ function ClientProfilePage() {
           <StatusBadge status={client.status} />
         </CardContent>
       </Card>
+
+      <ShareLinkCard clientId={id} shareToken={client.share_token} shareEnabled={client.share_enabled} />
 
       <Tabs defaultValue="personal" className="w-full">
         <TabsList className="flex flex-wrap h-auto justify-start gap-1 bg-card border p-1">
