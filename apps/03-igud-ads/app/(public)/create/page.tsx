@@ -245,8 +245,8 @@ export default function CreatePage() {
         {/* Step: coupon */}
         {step === "coupon" && (
           <div className="card">
-            <label className="label">קוד קופון</label>
-            <input className="input mb-3" value={code} onChange={(e) => setCode(e.target.value)} placeholder="ADS-XXXXXXXX" />
+            <label className="label" htmlFor="create-coupon-code">קוד קופון</label>
+            <input id="create-coupon-code" className="input mb-3" value={code} onChange={(e) => setCode(e.target.value)} placeholder="ADS-XXXXXXXX" />
             <button className="btn-primary" disabled={loading || !code} onClick={verifyCoupon}>
               {loading ? "בודק..." : "המשך"}
             </button>
@@ -332,10 +332,11 @@ export default function CreatePage() {
                     <h3 className="font-medium text-sm text-gray-700">שדות חובה</h3>
                     {(selectedTemplate.required_fields || []).map((field) => (
                       <div key={field}>
-                        <label className="label">
+                        <label className="label" htmlFor={`create-field-${field}`}>
                           {getFieldLabel(field)} <span className="text-red-500">*</span>
                         </label>
                         <input
+                          id={`create-field-${field}`}
                           className="input"
                           value={params[field] || ""}
                           onChange={(e) => setParams({ ...params, [field]: e.target.value })}
@@ -359,8 +360,9 @@ export default function CreatePage() {
                       <div className="mt-3 space-y-4 border-t pt-4">
                         {(selectedTemplate.optional_fields || []).map((field) => (
                           <div key={field}>
-                            <label className="label">{getFieldLabel(field)}</label>
+                            <label className="label" htmlFor={`create-optional-${field}`}>{getFieldLabel(field)}</label>
                             <input
+                              id={`create-optional-${field}`}
                               className="input"
                               value={params[field] || ""}
                               onChange={(e) => setParams({ ...params, [field]: e.target.value })}
@@ -375,8 +377,9 @@ export default function CreatePage() {
                 {/* Logo upload */}
                 {selectedTemplate.allows_logo && (
                   <div>
-                    <label className="label">לוגו / תמונה (אופציונלי)</label>
+                    <label className="label" htmlFor="create-logo-file">לוגו / תמונה (אופציונלי)</label>
                     <input
+                      id="create-logo-file"
                       type="file"
                       accept="image/*"
                       onChange={(e) => setLogoFile(e.target.files?.[0] || null)}
@@ -388,8 +391,9 @@ export default function CreatePage() {
                 {/* Custom colors */}
                 {selectedTemplate.allows_custom_colors && (
                   <div>
-                    <label className="label">צבעים מותאמים (hex, מופרדים בפסיק)</label>
+                    <label className="label" htmlFor="create-custom-colors">צבעים מותאמים (hex, מופרדים בפסיק)</label>
                     <input
+                      id="create-custom-colors"
                       className="input"
                       placeholder={`ברירת מחדל: ${(selectedTemplate.style_rules?.colors || []).join(", ") || "#1A2E5A, #C9A84C"}`}
                       value={customColors}
@@ -402,37 +406,37 @@ export default function CreatePage() {
               /* Fallback: original form */
               <div className="space-y-4">
                 <div>
-                  <label className="label">שם השיעור / כותרת</label>
-                  <input className="input" value={params.lesson_name || ""} onChange={(e) => setParams({ ...params, lesson_name: e.target.value })} />
+                  <label className="label" htmlFor="create-fallback-lesson-name">שם השיעור / כותרת</label>
+                  <input id="create-fallback-lesson-name" className="input" value={params.lesson_name || ""} onChange={(e) => setParams({ ...params, lesson_name: e.target.value })} />
                 </div>
                 <div className="grid md:grid-cols-2 gap-4">
                   <div>
-                    <label className="label">שם הרב / מרצה</label>
-                    <input className="input" value={params.rabbi_name || ""} onChange={(e) => setParams({ ...params, rabbi_name: e.target.value })} />
+                    <label className="label" htmlFor="create-fallback-rabbi-name">שם הרב / מרצה</label>
+                    <input id="create-fallback-rabbi-name" className="input" value={params.rabbi_name || ""} onChange={(e) => setParams({ ...params, rabbi_name: e.target.value })} />
                   </div>
                   <div>
-                    <label className="label">יום</label>
-                    <input className="input" value={params.day || ""} onChange={(e) => setParams({ ...params, day: e.target.value })} />
+                    <label className="label" htmlFor="create-fallback-day">יום</label>
+                    <input id="create-fallback-day" className="input" value={params.day || ""} onChange={(e) => setParams({ ...params, day: e.target.value })} />
                   </div>
                   <div>
-                    <label className="label">שעה</label>
-                    <input className="input" value={params.time || ""} onChange={(e) => setParams({ ...params, time: e.target.value })} />
+                    <label className="label" htmlFor="create-fallback-time">שעה</label>
+                    <input id="create-fallback-time" className="input" value={params.time || ""} onChange={(e) => setParams({ ...params, time: e.target.value })} />
                   </div>
                   <div className="md:col-span-2">
-                    <label className="label">מקום</label>
-                    <input className="input" value={params.location || ""} onChange={(e) => setParams({ ...params, location: e.target.value })} />
+                    <label className="label" htmlFor="create-fallback-location">מקום</label>
+                    <input id="create-fallback-location" className="input" value={params.location || ""} onChange={(e) => setParams({ ...params, location: e.target.value })} />
                   </div>
                   <div className="md:col-span-2">
-                    <label className="label">צבעים (hex, מופרדים בפסיק) — אופציונלי</label>
-                    <input className="input" placeholder="#1A2E5A, #C9A84C" value={params.palette_str || ""} onChange={(e) => setParams({ ...params, palette_str: e.target.value })} />
+                    <label className="label" htmlFor="create-fallback-palette">צבעים (hex, מופרדים בפסיק) — אופציונלי</label>
+                    <input id="create-fallback-palette" className="input" placeholder="#1A2E5A, #C9A84C" value={params.palette_str || ""} onChange={(e) => setParams({ ...params, palette_str: e.target.value })} />
                   </div>
                   <div className="md:col-span-2">
-                    <label className="label">פרטי קשר</label>
-                    <input className="input" value={params.contact || ""} onChange={(e) => setParams({ ...params, contact: e.target.value })} />
+                    <label className="label" htmlFor="create-fallback-contact">פרטי קשר</label>
+                    <input id="create-fallback-contact" className="input" value={params.contact || ""} onChange={(e) => setParams({ ...params, contact: e.target.value })} />
                   </div>
                   <div className="md:col-span-2">
-                    <label className="label">טקסט חופשי / הערות</label>
-                    <textarea className="input" rows={3} value={params.free_text || ""} onChange={(e) => setParams({ ...params, free_text: e.target.value })} />
+                    <label className="label" htmlFor="create-fallback-free-text">טקסט חופשי / הערות</label>
+                    <textarea id="create-fallback-free-text" className="input" rows={3} value={params.free_text || ""} onChange={(e) => setParams({ ...params, free_text: e.target.value })} />
                   </div>
                 </div>
               </div>
@@ -440,8 +444,8 @@ export default function CreatePage() {
 
             {mode === "clone" && (
               <div>
-                <label className="label">העלאת מודעה קיימת (JPG/PNG)</label>
-                <input type="file" accept="image/*" onChange={(e) => setSourceFile(e.target.files?.[0] || null)} />
+                <label className="label" htmlFor="create-source-file">העלאת מודעה קיימת (JPG/PNG)</label>
+                <input id="create-source-file" type="file" accept="image/*" onChange={(e) => setSourceFile(e.target.files?.[0] || null)} />
               </div>
             )}
 
