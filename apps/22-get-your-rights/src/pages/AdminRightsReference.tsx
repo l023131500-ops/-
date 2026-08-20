@@ -321,15 +321,23 @@ const AdminRightsReference = () => {
       return;
     }
     const { data: { publicUrl } } = supabase.storage.from("rights-media").getPublicUrl(path);
-    await supabase.from("rights_reference").update({ media_url: publicUrl, media_type: mediaType } as any).eq("id", rightId);
-    toast({ title: "הועלה", description: `${mediaType === "video" ? "סרטון" : "פודקאסט"} הועלה בהצלחה` });
+    const { error: saveError } = await supabase.from("rights_reference").update({ media_url: publicUrl, media_type: mediaType } as any).eq("id", rightId);
     setUploadingMedia(false);
+    if (saveError) {
+      toast({ title: "שגיאה", description: "שמירת המדיה נכשלה", variant: "destructive" });
+      return;
+    }
+    toast({ title: "הועלה", description: `${mediaType === "video" ? "סרטון" : "פודקאסט"} הועלה בהצלחה` });
     setMediaTarget(null);
     loadRights();
   };
 
   const handleRemoveMedia = async (rightId: string) => {
-    await supabase.from("rights_reference").update({ media_url: null, media_type: null } as any).eq("id", rightId);
+    const { error } = await supabase.from("rights_reference").update({ media_url: null, media_type: null } as any).eq("id", rightId);
+    if (error) {
+      toast({ title: "שגיאה", description: "הסרת המדיה נכשלה", variant: "destructive" });
+      return;
+    }
     toast({ title: "הוסר", description: "המדיה הוסרה" });
     loadRights();
   };
