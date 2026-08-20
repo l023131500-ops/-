@@ -172,7 +172,14 @@ const OrgPortal = () => {
         <div className="container mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             {portal?.logo_url ? (
-              <div className="relative group cursor-pointer" onClick={() => logoInputRef.current?.click()}>
+              <div
+                className="relative group cursor-pointer"
+                onClick={() => logoInputRef.current?.click()}
+                role="button"
+                tabIndex={0}
+                aria-label="החלפת לוגו"
+                onKeyDown={e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); logoInputRef.current?.click(); } }}
+              >
                 <img src={portal.logo_url} alt="" className="w-10 h-10 rounded-xl object-contain" />
                 <div className="absolute inset-0 bg-navy/60 rounded-xl opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
                   <Upload className="w-4 h-4 text-gold" />
@@ -313,6 +320,9 @@ const OrgPortal = () => {
               <div className="flex flex-wrap gap-2 mb-4">
                 <Badge
                   onClick={() => setSelectedRabbi("all")}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setSelectedRabbi("all"); } }}
                   className={`cursor-pointer font-body ${selectedRabbi === "all" ? "bg-gradient-teal text-primary-foreground" : "bg-muted text-muted-foreground hover:bg-muted/80"}`}
                 >
                   הכל
@@ -321,6 +331,9 @@ const OrgPortal = () => {
                   <Badge
                     key={r.id}
                     onClick={() => setSelectedRabbi(r.rabbi_name)}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setSelectedRabbi(r.rabbi_name); } }}
                     className={`cursor-pointer font-body ${selectedRabbi === r.rabbi_name ? "bg-gradient-gold text-navy" : "bg-muted text-muted-foreground hover:bg-muted/80"}`}
                   >
                     {r.rabbi_name}
