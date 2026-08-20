@@ -57,7 +57,7 @@ const ReligiousInfoPage = () => {
           backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
         }} />
         <div className="container flex items-center justify-between relative z-10">
-          <Link to="/" className="flex items-center gap-2 text-primary-foreground/70 hover:text-primary-foreground transition-colors">
+          <Link to="/" className="flex items-center gap-2 text-hero-foreground/70 hover:text-hero-foreground transition-colors">
             <ArrowRight className="w-5 h-5" aria-hidden="true" /><span className="font-display font-bold text-sm">חזרה לאתר</span>
           </Link>
           <div className="flex items-center gap-3">
@@ -66,8 +66,8 @@ const ReligiousInfoPage = () => {
           </div>
         </div>
         <div className="container text-center mt-6 relative z-10">
-          <h1 className="text-3xl md:text-4xl font-display font-black text-primary-foreground mb-2">מידע דת וקהילה</h1>
-          <p className="text-primary-foreground/70 text-sm">כל המידע הדתי והקהילתי של חצור הגלילית במקום אחד</p>
+          <h1 className="text-3xl md:text-4xl font-display font-black text-hero-foreground mb-2">מידע דת וקהילה</h1>
+          <p className="text-hero-foreground/70 text-sm">כל המידע הדתי והקהילתי של חצור הגלילית במקום אחד</p>
         </div>
       </header>
 

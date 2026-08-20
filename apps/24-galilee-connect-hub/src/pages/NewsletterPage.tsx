@@ -69,17 +69,17 @@ const NewsletterPage = () => {
                 <div className="bg-gradient-hero p-6">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 rounded-full bg-primary-foreground/20 flex items-center justify-center backdrop-blur-sm">
-                        <FileText className="w-6 h-6 text-primary-foreground" />
+                      <div className="w-12 h-12 rounded-full bg-hero-foreground/20 flex items-center justify-center backdrop-blur-sm">
+                        <FileText className="w-6 h-6 text-hero-foreground" />
                       </div>
                       <div>
-                        <h2 className="text-xl font-display font-black text-primary-foreground">גיליון אחרון</h2>
-                        <p className="text-primary-foreground/70 text-sm font-semibold">
+                        <h2 className="text-xl font-display font-black text-hero-foreground">גיליון אחרון</h2>
+                        <p className="text-hero-foreground/70 text-sm font-semibold">
                           {new Date(latest.issue_date).toLocaleDateString('he-IL')}
                         </p>
                       </div>
                     </div>
-                    <Button asChild className="bg-primary-foreground/20 hover:bg-primary-foreground/30 text-primary-foreground backdrop-blur-sm font-bold gap-2">
+                    <Button asChild className="bg-hero-foreground/20 hover:bg-hero-foreground/30 text-hero-foreground backdrop-blur-sm font-bold gap-2">
                       <a href={latest.pdf_url} target="_blank" rel="noopener noreferrer">
                         <Download className="w-4 h-4" /> הורד PDF
                       </a>

@@ -70,13 +70,13 @@ const HalachaPage = () => {
                 className="bg-card rounded-2xl shadow-card ornament-border overflow-hidden">
                 <div className="bg-gradient-hero p-5">
                   <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-full bg-primary-foreground/20 flex items-center justify-center backdrop-blur-sm">
-                      <Star className="w-6 h-6 text-primary-foreground" />
+                    <div className="w-12 h-12 rounded-full bg-hero-foreground/20 flex items-center justify-center backdrop-blur-sm">
+                      <Star className="w-6 h-6 text-hero-foreground" />
                     </div>
                     <div>
-                      <h2 className="text-xl font-display font-black text-primary-foreground">הלכה להיום</h2>
+                      <h2 className="text-xl font-display font-black text-hero-foreground">הלכה להיום</h2>
                       {todayHalacha.hebrew_date && (
-                        <p className="text-primary-foreground/70 text-sm font-semibold">{todayHalacha.hebrew_date}</p>
+                        <p className="text-hero-foreground/70 text-sm font-semibold">{todayHalacha.hebrew_date}</p>
                       )}
                     </div>
                   </div>
