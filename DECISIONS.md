@@ -10347,3 +10347,45 @@
     לא תועד רשמית (כבר אומת ידנית שכולן תקינות `lang="he"` חד-לשוניות).
     נושא #245/#250 (RLS, חסומים) נשארים כפי שהם. via cloud server
     167.99.131.167 [loop B]
+
+## 20/08/2026 — סבב 431 (loop B)
+
+431. **27-mechiron: לעמוד הציבורי הראשי (`public-landing.tsx`) לא היה
+    קישור מחירון בכלל, בעוד ש-8 מתוך 9 האפליקציות הפרוסות בתחום
+    (17/18/19/20/21/22/28) כבר מקשרות ל-`/subscribe?app=<key>`.**
+
+    בדיקת `core.plans` אישרה ש-`app_key='mechiron'` כבר קיים ומלא —
+    6 מסלולים (`free`/`basic`/`extended`/`charge`/`one_time`/`pro`),
+    כולל שלושה `customer_visible=true` (`free`/`basic`/`extended`,
+    ₪0/₪2/₪5 לחודש) שיוצגו בפועל בעמוד `/subscribe` המשותף
+    (`portal/public/subscribe.html`, קורא ל-RPC `more30_system_page`).
+    כלומר עמוד המחירון עצמו כבר עובד קצה-לקצה — רק חסר הקישור
+    מהאפליקציה אליו. נבדק גם `public-health-funds.tsx` ודפי ה-`public-*`
+    האחרים: יש להם `<header>` מינימלי (לוגו בלבד, בלי ניווט) בעוד
+    שה-`nav` המלא (עלינו/איך זה עובד/השוואת קופות חולים/ניהול
+    פיננסי/יצירת קשר) קיים רק ב-`public-landing.tsx` (`data-testid`
+    ייחודי `nav-public-*`, לא משוכפל בקבצים אחרים) — שם התווסף הקישור.
+
+    תוקן: פריט ניווט חדש `<a href="/subscribe?app=mechiron">מחירון</a>`
+    (`data-testid="nav-public-pricing"`) בסוף ה-`nav` הקיים, אחרי
+    "יצירת קשר" — אותו דפוס עיצוב/מבנה בדיוק כמו שאר פריטי הניווט
+    שם (`hover-elevate rounded-md px-2 py-1`). קישור מוחלט (`/subscribe`,
+    לא יחסי לנתיב `/mechiron`) — נכון בכל מקרה כי הוא מתחיל ב-`/`,
+    כמו הדפוס הזהה ב-22-zchuyot/28-kupot. אין שינוי server-side, אין
+    תלות npm חדשה, אין מחיקת פיצ'ר קיים.
+
+    **בדיקות תקינות:** קריאת קוד בלבד (ללא dev-server/build, לפי
+    הנחיות ההרצה). בדיקת איזון סוגריים/מאמרים (Python) על הקובץ
+    שנערך — `{}`/`()` מאוזנים. `git diff --stat`: קובץ אחד, +7 שורות,
+    תוספת בלבד. אומת מול `core.plans` (Supabase MCP) שהתמחור עצמו
+    כבר קיים ופעיל ל-`mechiron`, כדי לא ליצור קישור מת.
+
+    ענף `fix/b-22-whatsapp-noopener-round395-0820` (שרשרת הענפים היא
+    המקור המלא היחיד ל-loop B, לא `main`), נדחף (מפעיל פריסת Vercel
+    תחת `more30.com/mechiron`).
+
+    **הבא בתור:** לא נבדק אם לשאר דפי ה-`public-*` (health-funds/
+    financial/community/eligibility/topic/potential/product-compare)
+    כדאי גם ניווט משותף עם קישור מחירון, או אם מספיק שהוא מופיע רק
+    בדף הנחיתה הראשי. נושאים #245/#250 (RLS, חסומים) נשארים כפי
+    שהם. via cloud server 167.99.131.167 [loop B]

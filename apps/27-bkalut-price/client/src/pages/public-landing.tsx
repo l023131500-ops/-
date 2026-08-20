@@ -155,6 +155,13 @@ export default function PublicLanding() {
             >
               יצירת קשר
             </button>
+            <a
+              href="/subscribe?app=mechiron"
+              className="hover-elevate rounded-md px-2 py-1"
+              data-testid="nav-public-pricing"
+            >
+              מחירון
+            </a>
           </nav>
         </div>
       </header>
