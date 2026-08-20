@@ -25,7 +25,7 @@ export default function GlossaryPage() {
   const [form, setForm] = useState({ style: "litvish", term: "", replacement: "", notes: "" });
 
   const load = async () => {
-    const url = filter ? `/api/admin/transcribe/glossary?style=${filter}` : "/modaot/api/admin/transcribe/glossary";
+    const url = filter ? `/modaot/api/admin/transcribe/glossary?style=${filter}` : "/modaot/api/admin/transcribe/glossary";
     const res = await fetch(url, { cache: "no-store" });
     if (res.ok) setEntries(await res.json());
     setLoading(false);
