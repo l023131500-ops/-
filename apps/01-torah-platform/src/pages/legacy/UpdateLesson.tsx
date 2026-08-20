@@ -177,7 +177,7 @@ const UpdateLesson = () => {
                   <label htmlFor="update-lesson-rabbi-name" className="font-display text-sm font-bold text-card-foreground flex items-center gap-2">
                     <UserCircle className="w-4 h-4 text-gold" /> שם הרב / הרבנית
                   </label>
-                  <Input id="update-lesson-rabbi-name" value={rabbiName} onChange={(e) => setRabbiName(e.target.value)} placeholder="שם מלא *" />
+                  <Input id="update-lesson-rabbi-name" autoComplete="name" value={rabbiName} onChange={(e) => setRabbiName(e.target.value)} placeholder="שם מלא *" />
                   <Button size="sm" className="bg-gradient-gold text-primary-foreground font-body hover:opacity-90" onClick={() => { if (rabbiName.trim()) autoAdvance(1); else toast.error("נא למלא שם"); }}>המשך ←</Button>
                 </div>
               </ProgressiveFormStep>
@@ -227,11 +227,11 @@ const UpdateLesson = () => {
                   <label className="font-display text-sm font-bold text-card-foreground flex items-center gap-2"><MapPin className="w-4 h-4 text-gold" /> מיקום</label>
                   <Input value={synagogueName} onChange={(e) => setSynagogueName(e.target.value)} placeholder="בית הכנסת / אולם וכדו'" />
                   <div className="grid grid-cols-2 gap-3">
-                    <Input value={city} onChange={(e) => setCity(e.target.value)} placeholder="עיר *" />
+                    <Input autoComplete="address-level2" value={city} onChange={(e) => setCity(e.target.value)} placeholder="עיר *" />
                     <Input value={neighborhood} onChange={(e) => setNeighborhood(e.target.value)} placeholder="שכונה (לא חובה)" />
                   </div>
                   <div className="grid grid-cols-2 gap-3">
-                    <Input value={street} onChange={(e) => setStreet(e.target.value)} placeholder="רחוב *" />
+                    <Input autoComplete="street-address" value={street} onChange={(e) => setStreet(e.target.value)} placeholder="רחוב *" />
                     <Input value={streetNumber} onChange={(e) => setStreetNumber(e.target.value)} placeholder="מספר *" />
                   </div>
                   <Button size="sm" className="bg-gradient-gold text-primary-foreground font-body hover:opacity-90" onClick={() => autoAdvance(8)}>המשך ←</Button>

@@ -177,6 +177,7 @@ export default function StudyDayUpload() {
             <div className="space-y-1.5 md:col-span-2">
               <Label className="text-sm font-bold">שם בית הכנסת <span className="text-destructive">*</span></Label>
               <Input
+                autoComplete="organization"
                 value={form.synagogue_name}
                 onChange={(e) => set("synagogue_name", e.target.value)}
                 placeholder="לדוגמה: בית כנסת היכל יעקב"
@@ -185,7 +186,7 @@ export default function StudyDayUpload() {
             </div>
             <div className="space-y-1.5">
               <Label className="text-sm font-bold">עיר <span className="text-destructive">*</span></Label>
-              <Input value={form.city} onChange={(e) => set("city", e.target.value)} className="h-11 border-foreground/15" />
+              <Input autoComplete="address-level2" value={form.city} onChange={(e) => set("city", e.target.value)} className="h-11 border-foreground/15" />
             </div>
             <div className="space-y-1.5">
               <Label className="text-sm font-bold">שכונה</Label>
@@ -193,7 +194,7 @@ export default function StudyDayUpload() {
             </div>
             <div className="space-y-1.5 md:col-span-2">
               <Label className="text-sm font-bold flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5" />כתובת מלאה</Label>
-              <Input value={form.contact_address} onChange={(e) => set("contact_address", e.target.value)} placeholder="רחוב + מספר" className="h-11 border-foreground/15" />
+              <Input autoComplete="street-address" value={form.contact_address} onChange={(e) => set("contact_address", e.target.value)} placeholder="רחוב + מספר" className="h-11 border-foreground/15" />
             </div>
           </div>
 
@@ -202,11 +203,11 @@ export default function StudyDayUpload() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-1.5">
                 <Label className="text-sm">שם איש קשר</Label>
-                <Input value={form.contact_name} onChange={(e) => set("contact_name", e.target.value)} className="h-11 border-foreground/15" />
+                <Input autoComplete="name" value={form.contact_name} onChange={(e) => set("contact_name", e.target.value)} className="h-11 border-foreground/15" />
               </div>
               <div className="space-y-1.5">
                 <Label className="text-sm flex items-center gap-1.5"><Phone className="w-3.5 h-3.5" />טלפון <span className="text-destructive">*</span></Label>
-                <Input dir="ltr" value={form.contact_phone} onChange={(e) => set("contact_phone", e.target.value)} className="h-11 border-foreground/15" />
+                <Input dir="ltr" inputMode="tel" autoComplete="tel" value={form.contact_phone} onChange={(e) => set("contact_phone", e.target.value)} className="h-11 border-foreground/15" />
               </div>
               <div className="space-y-1.5">
                 <Label className="text-sm flex items-center gap-1.5"><Mail className="w-3.5 h-3.5" />אימייל</Label>

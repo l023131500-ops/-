@@ -7053,3 +7053,56 @@
      סדר טאבים/focus-order), או לחזור ל-`core.project_tasks`/
      `core.project_bugs` לעבודה אחרת בתחום auth/admin/pricing/
      gannenet.
+
+## 20/08/2026 — סבב 129 (loop A)
+
+668. **המשכתי את המלצת #667.** בדקתי `core.run_progress` (סבב 128
+     האחרון, commit `f0e98650`, תואם HEAD) + `core.project_tasks`
+     (אותם 5 פתוחים: 02/12/13/25/32, עדיין חסומים על סודות חסרים
+     או החלטות מיזוג/origin מחוץ לסמכות הסוכן) + `core.project_bugs`
+     (ריק) — שום דבר חדש בתחום. ניסיתי כמה עדשות a11y חדשות שחזרו
+     ריקות (id כפול, `htmlFor` תלוי-באוויר, `aria-hidden` שעוטף
+     תוכן בר-מיקוד — כולן נבדקו שיטתית על 01-16/40-gannenet ולא
+     נמצא אף ממצא אמיתי, סימן שהקוד בשל אחרי 128 סבבים). פתחתי עדשה
+     שכן הניבה ממצאים אמיתיים: `autocomplete` על שדות שם-אדם/כתובת/
+     ארגון (WCAG 1.3.5, נפרד מ-tel/email/password שכבר נסגרו
+     בסבבים 78-80) — Explore agent סרק את כל 01-16/40-gannenet
+     ומצא כמה מועמדים. עברתי ידנית על כל אחד לפני תיקון כדי לסנן
+     החוצה טפסי-אדמין שממלאים מידע על צד שלישי (למשל
+     `15-egod/AdminTeachers.tsx` שם admin עורך פרופיל מגיד — הוספת
+     `autoComplete="name"` שם הייתה מציעה לדפדפן למלא את השם *של
+     האדמין עצמו*, לא של המגיד, טעות UX ולא שיפור; כנ"ל
+     `16-chatzor-connect/SynagogueForm.tsx`), וגם `AskRav.tsx` (שדה
+     "טלפון/אימייל" משולב-סוג בכוונה — כבר יש שדה `name` נפרד עם
+     `autoComplete="name"` קיים, אין טוקן יחיד נכון לשדה המשולב).
+     נשארו שני טפסי **self-service ציבוריים אמיתיים** ב-01-torah-
+     platform: `pages/legacy/UpdateLesson.tsx` (מגיד ממלא בעצמו את
+     שמו+מיקום השיעור כדי לעדכן רישום, route `/update-lesson` בלי
+     auth guard) ו-`pages/legacy/StudyDayUpload.tsx` (גבאי ממלא
+     בעצמו פרטי בית הכנסת+איש קשר, route מבוסס טוקן).
+669. **התיקון:** הוספת `autoComplete` לשדות הרלוונטיים בשני הקבצים
+     — `UpdateLesson.tsx`: `name` (שם הרב, שורה 180), `address-
+     level2` (עיר, שורה 230), `street-address` (רחוב, שורה 234).
+     `StudyDayUpload.tsx`: `organization` (שם בית הכנסת, שורה 180),
+     `address-level2` (עיר, שורה 188), `street-address` (כתובת
+     מלאה, שורה 196), `name` (שם איש קשר, שורה 205), ובנוסף תפיסה
+     צדדית מאותה עדשה בדיוק: שדה הטלפון (שורה 209) היה חסר
+     `autoComplete="tel"`/`inputMode="tel"` לגמרי (לא נתפס בסבב 79
+     כי אין לו `type="tel"`) — הוספתי את שניהם, עקבי עם השדה email
+     הצמוד שכבר נשא `autoComplete="email"`. אפס שינוי ל-`value`/
+     `onChange`/`placeholder`/`className`/state קיימים בשני הקבצים.
+670. **אפס רגרסיה מאומתת:** `git diff --stat` — 2 קבצים, 8+/6-
+     (כל שינוי הוא הוספת/עדכון attribute יחיד על `<Input>` קיים).
+     אין `tsc`/`npm` בסביבה הזו — אומת בבדיקת איזון `{}`/`()`/`[]`
+     ב-Python על שני הקבצים המלאים: `UpdateLesson.tsx` 224/224,
+     237/237, 61/61; `StudyDayUpload.tsx` 85/85, 93/93, 21/21 —
+     תואם. Commit ייצא על `fix/a-icon-only-buttons-round2-0820`,
+     יידחף ל-origin (מפעיל פריסת Vercel תחת more30.com/torah).
+671. **הבא בתור:** עדשת `autocomplete` שם/כתובת/ארגון נבדקה על כל
+     01-16/40-gannenet — שני הטפסים הציבוריים האמיתיים תוקנו, שאר
+     המועמדים היו טפסי-אדמין לצד-שלישי (נכון להשאיר בלי autoComplete
+     מכוון) או שדות משולבי-סוג בלי טוקן יחיד. סבב הבא צריך לפתוח
+     עדשה חדשה (ניגודיות צבעים, סדר טאבים/focus-order, כותרות
+     heading לא-רציפות h1→h3), או לחזור ל-`core.project_tasks`/
+     `core.project_bugs` לעבודה אחרת בתחום auth/admin/pricing/
+     gannenet.
