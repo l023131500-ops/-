@@ -6767,3 +6767,25 @@
      templates/[id]/page.tsx` (שורות 132-133, גם `error` וגם
      `success`) — לא נבדקו/תוקנו הסבב הזה, ראויים לסבב הבא (כל אחד
      לאמת כטופס חי לפני תיקון, כמו תמיד).
+
+## 20/08/2026 — סבב 121 (loop A)
+
+640. **המשכתי את רשימת #639.** בדקתי `git log`/סטטוס — סבב 120
+     סגור (`5655d95e`, תואם HEAD), אין עבודה תלויה. קראתי את
+     `apps/02-igud-transcribe/app/(public)/upload/page.tsx` המלא:
+     דף העלאה ציבורי אמיתי (route `/upload`, שני שלבים — אימות קוד
+     קופון ואז טופס העלאת קובץ עם `XMLHttpRequest`/progress bar),
+     הודעת שגיאה מותנית (`{error && <div>...}`, שורות 105-109)
+     ללא ספריית toast, בלי `role`/`aria-live` — אותה עדשה שתוקנה
+     ב-`login/page.tsx` בסבב 120. הוספתי `role="alert"` ו-
+     `aria-live="assertive"` על ה-`div` הקיים, לא נגעתי בלוגיקה/
+     className/JSX אחר. `git diff --stat` — קובץ אחד, 5+/1-.
+     אימות איזון `{}`/`()`/`[]` בפייתון על הקובץ המלא: 62/62,
+     78/78, 10/10 — תואם. Commit `896cd76e` על
+     `fix/a-icon-only-buttons-round2-0820`, יידחף ל-origin (מפעיל
+     פריסת Vercel תחת more30.com/tamlul).
+641. **הבא בתור:** אותה עדשה נשארת פתוחה על
+     `apps/03-igud-ads/app/(public)/create/page.tsx` (שורות
+     241-242) ו-`apps/03-igud-ads/app/(admin)/admin/templates/[id]/
+     page.tsx` (שורות 132-133, `error` וגם `success`) — לא נבדקו
+     הסבב הזה, ראויים לסבב הבא.
