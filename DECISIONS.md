@@ -9688,3 +9688,61 @@
     החיות של loop B (17,18,19,20,21,22,24,27,28) — 23/25 טרם אומתו
     כ"חיות" בהקשר זה, כדאי בדיקה קצרה בסבב הבא. נושא #245/#250 (RLS,
     חסומים) נשארים כפי שהם. via cloud server 167.99.131.167 [loop B]
+
+## 20/08/2026 — סבב 418 (loop B)
+
+418. **23/25 אומתו כלא-חיות (אין מקור אמיתי, מניפסט בלבד) — עדשה חדשה
+    נפתחה ונסגרה: Organization schema.org JSON-LD חסר ב-8 מתוך 9
+    האפליקציות החיות.**
+
+    **בדיקת 23/25 (הוצעה בסוף סבב 417):** `apps/23-haorech-torani`
+    ו-`apps/25-mor1-main-site` מכילים רק `app.json` (+`index.html` ריק
+    ב-23) עם `"source": "not-vendored"` — עקבי עם `stage: wip`,
+    `live: false` ב-`core.projects`. אין קוד אמיתי לתקן; אין עוד מה
+    לבדוק שם עד שיסופק מקור.
+
+    **עדשה חדשה:** grep על `application/ld+json` בכל 9 האפליקציות
+    החיות גילה שרק **22-get-your-rights** (`index.html:43-58`) מצייר
+    Organization schema.org. שאר השמונה — 17/18/19/20/21/24/27/28 —
+    לא הצהירו כלום, כלומר מנועי חיפוש (ותצוגות AI-overview) לא רואים
+    שם ארגון/קשר מובנה בכלל, למרות ש-title/meta description/og:*/
+    canonical כבר קיימים בכולם. נוסף בלוק Organization זהה למבנה של
+    22 (אותו `contactPoint` ארגוני — `+972-2-3131500` /
+    `L023131500@gmail.com` — כי כל תשע האפליקציות משתייכות לאותו
+    ארגון-על "עולם הסטארטאפים", ולא בדוי: זה אותו טלפון/אימייל שכבר
+    מוצהר ב-22 מסבב קודם) לכל אחת:
+
+    - **17-chizukim** (`client/index.html`), **19-shiurim**
+      (`public/index.html`), **20-igud** (`public/index.html`),
+      **21-mthbram** (`index.html`), **24-galil** (`index.html`),
+      **27-mechiron** (`client/index.html`), **28-kupot**
+      (`client/index.html`): בלוק `<script type="application/ld+json">`
+      גולמי ב-`<head>`, `name`/`description` נלקחו ישירות מ-`og:title`/
+      `og:description`/`meta description` הקיימים באותו קובץ (לא
+      בדויים), `url` מ-`canonical`/`og:url` הקיים או מ-`core.projects.
+      path` כשלא היה (19/20/21/24 לא הצהירו `canonical` כלל).
+    - **18-torah-editor-mvp** (Next.js `app/layout.tsx`): אין
+      `index.html` — נוסף אובייקט `organizationJsonLd` ברמת המודול
+      ו-`<script type="application/ld+json" dangerouslySetInnerHTML=
+      {{__html: JSON.stringify(...)}} />` בתוך ה-`<body>`, לצד סקריפט
+      `auth-button.js` הקיים; השדות תואמים ל-`metadata.openGraph`
+      הקיים באותו קובץ.
+
+    **בדיקות תקינות:** לכל אחד מ-7 קבצי ה-HTML — Python `json.loads`
+    על תוכן בלוק ה-`ld+json` (כולם תקינים) + ספירת `application/
+    ld+json` = 1 בקובץ (לא נוצר כפול). על `app/layout.tsx` של 18 —
+    איזון סוגריים: `{}` 16/16, `()` 6/6, `[]` 1/1. `git diff --stat`:
+    8 קבצים, ‎+135‎ (רק תוספות, אין מחיקה). לא הופעל build/dev-server
+    (לפי הנחיות ההרצה).
+
+    ענף `fix/b-22-whatsapp-noopener-round395-0820` (שרשרת הענפים היא
+    המקור המלא היחיד ל-loop B, לא `main`), קומיט `f09d3e2c`, נדחף
+    (מפעיל 7 פריסות Vercel תחת `more30.com/{chizukim,shiurim,igud,
+    mthbram,galil,mechiron,kupot}` + `more30.com/orech`).
+
+    **הבא בתור:** עדשת ה-Organization JSON-LD סגורה על כל 9
+    האפליקציות החיות (9/9). לא נבדק עדיין: `BreadcrumbList`/
+    `WebSite`+`SearchAction` schema.org, או `robots.txt`/`sitemap.xml`
+    לכל אפליקציה (SEO-לנס נוסף שטרם נפתח בהיקף loop B). נושא #245/#250
+    (RLS, חסומים) נשארים כפי שהם. via cloud server 167.99.131.167
+    [loop B]
