@@ -241,7 +241,12 @@ function replaceYears(text: string): string {
 function replaceStandaloneNumbers(text: string): string {
   // Phone-like sequences (with dashes/spaces) and long IDs: leave alone.
   // We only touch short integers <= 999,999 written as bare digits.
-  return text.replace(/(?<![\w\d-])(\d{1,6})(?![\w\d-])/g, (_m, raw: string) => {
+  // \w only matches ASCII letters/digits/underscore, not Hebrew -- without
+  // the explicit Hebrew letter range below, a number glued directly to
+  // Hebrew text (e.g. "דירה3", "רן5קוד") was wrongly treated as "standalone"
+  // and spelled out in words, while the identical pattern glued to Latin
+  // letters (e.g. "IDX123") was correctly left alone.
+  return text.replace(/(?<![\w\d\-א-ת])(\d{1,6})(?![\w\d\-א-ת])/g, (_m, raw: string) => {
     const num = Number(raw);
     if (!Number.isFinite(num)) return _m;
     if (num === 0) return _m; // "0" is often meaningful as-is
