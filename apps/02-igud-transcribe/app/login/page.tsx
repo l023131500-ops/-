@@ -22,7 +22,10 @@ export default function LoginPage() {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: `${window.location.origin}/auth/callback?next=/admin`,
+        // basePath ("/tamlul", see next.config.mjs) must be included explicitly —
+        // window.location.origin alone points at more30.com/auth/callback, which
+        // belongs to the unrelated root portal app, not this app's own callback route.
+        redirectTo: `${window.location.origin}/tamlul/auth/callback?next=/admin`,
       },
     });
     if (error) {

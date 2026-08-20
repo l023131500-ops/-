@@ -8,8 +8,11 @@ export async function GET(req: Request) {
   const code = searchParams.get("code");
   const next = searchParams.get("next") || "/admin";
 
+  // All redirects below must include the app's basePath ("/modaot", see
+  // next.config.mjs) — `origin` from new URL(req.url) never carries it, and
+  // more30.com/login (no prefix) belongs to the unrelated root portal app.
   if (!code) {
-    return NextResponse.redirect(`${origin}/login?error=missing_code`);
+    return NextResponse.redirect(`${origin}/modaot/login?error=missing_code`);
   }
 
   const cookieStore = cookies();
@@ -32,7 +35,7 @@ export async function GET(req: Request) {
   const { data: sessionData, error: sessionError } = await supabase.auth.exchangeCodeForSession(code);
 
   if (sessionError || !sessionData?.user) {
-    return NextResponse.redirect(`${origin}/login?error=auth_failed`);
+    return NextResponse.redirect(`${origin}/modaot/login?error=auth_failed`);
   }
 
   const user = sessionData.user;
@@ -54,19 +57,19 @@ export async function GET(req: Request) {
       role: "customer",
       is_active: true,
     });
-    return NextResponse.redirect(`${origin}/`);
+    return NextResponse.redirect(`${origin}/modaot/`);
   }
 
   // Existing user — check active
   if (!existing.is_active) {
-    return NextResponse.redirect(`${origin}/login?error=account_disabled`);
+    return NextResponse.redirect(`${origin}/modaot/login?error=account_disabled`);
   }
 
   // Redirect admins to /admin, customers to /
   const adminRoles = ["super_admin", "admin"];
   if (adminRoles.includes(existing.role)) {
-    return NextResponse.redirect(`${origin}/admin`);
+    return NextResponse.redirect(`${origin}/modaot/admin`);
   }
 
-  return NextResponse.redirect(`${origin}${next === "/admin" ? "/" : next}`);
+  return NextResponse.redirect(`${origin}/modaot${next === "/admin" ? "/" : next}`);
 }

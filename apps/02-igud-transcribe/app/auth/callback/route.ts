@@ -10,10 +10,13 @@ export async function GET(req: Request) {
   const url = new URL(req.url);
   const code = url.searchParams.get("code");
   const next = url.searchParams.get("next") || "/admin";
-  if (!code) return NextResponse.redirect(new URL("/login?error=missing_code", req.url));
+  // basePath ("/tamlul", see next.config.mjs) must be prefixed explicitly —
+  // new URL(path, req.url) with a leading "/" resolves against the origin
+  // only and drops the basePath, landing on the unrelated root portal app.
+  if (!code) return NextResponse.redirect(new URL("/tamlul/login?error=missing_code", req.url));
 
   const cookieStore = cookies();
-  const response = NextResponse.redirect(new URL(next, req.url));
+  const response = NextResponse.redirect(new URL(`/tamlul${next}`, req.url));
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -35,7 +38,7 @@ export async function GET(req: Request) {
   const { error } = await supabase.auth.exchangeCodeForSession(code);
   if (error) {
     return NextResponse.redirect(
-      new URL(`/login?error=${encodeURIComponent(error.message)}`, req.url)
+      new URL(`/tamlul/login?error=${encodeURIComponent(error.message)}`, req.url)
     );
   }
   return response;

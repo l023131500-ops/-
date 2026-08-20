@@ -22,7 +22,10 @@ function LoginInner() {
     setErr(null);
     const { error } = await sb.auth.signInWithOAuth({
       provider: "google",
-      options: { redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}` },
+      // basePath ("/modaot", see next.config.mjs) must be included explicitly —
+      // window.location.origin alone points at more30.com/auth/callback, which
+      // belongs to the unrelated root portal app, not this app's own callback route.
+      options: { redirectTo: `${window.location.origin}/modaot/auth/callback?next=${encodeURIComponent(next)}` },
     });
     if (error) setErr(error.message);
   }
