@@ -98,8 +98,8 @@ export default function Settings() {
           <Card>
             <CardHeader><CardTitle>הגדרות נדרים פלוס</CardTitle><CardDescription>פרטי מוסד עבור סליקת כרטיסי אשראי. הסיסמה מוצפנת במסד הנתונים.</CardDescription></CardHeader>
             <CardContent className="space-y-3">
-              <div><Label>Mosad ID</Label><Input value={nedarim.mosad_id} onChange={(e) => setNedarim({ ...nedarim, mosad_id: e.target.value })} /></div>
-              <div><Label htmlFor="api-password">API Password</Label><PasswordInput id="api-password" value={nedarim.api_password} onChange={(e) => setNedarim({ ...nedarim, api_password: e.target.value })} placeholder="השאר ריק כדי לא לשנות" /></div>
+              <div><Label lang="en">Mosad ID</Label><Input value={nedarim.mosad_id} onChange={(e) => setNedarim({ ...nedarim, mosad_id: e.target.value })} /></div>
+              <div><Label htmlFor="api-password" lang="en">API Password</Label><PasswordInput id="api-password" value={nedarim.api_password} onChange={(e) => setNedarim({ ...nedarim, api_password: e.target.value })} placeholder="השאר ריק כדי לא לשנות" /></div>
               <Button onClick={() => saveNedarim.mutate()} disabled={saveNedarim.isPending}>שמור</Button>
             </CardContent>
           </Card>
