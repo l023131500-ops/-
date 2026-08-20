@@ -7377,3 +7377,45 @@
     בלי `tabIndex`/`onKeyDown`, או טפסים עם auto-save שקט על שדות
     רגישים).
     via cloud server 167.99.131.167 [loop B]
+
+## 20/08/2026 — סבב 372 (loop B)
+
+372. **פתיחה+סגירה של עדשת נגישות-מקלדת (`role="button"` בלי
+    `tabIndex`/`onKeyDown`) על פני כל 7 האפליקציות החיות בהיקף
+    loop B**, לפי ההצעה בסוף סבב 371. Explore agent סרק את כל 7
+    האפליקציות וזיהה 4 מועמדים, כולם ב-`21-mthbram` — כרטיסי-שיעור
+    לחיצים (`<motion.div onClick={...}>` בלי סמנטיקת מקלדת) בשלושה
+    עמודים ורכיב אחד: `pages/LessonDirectory.tsx` (שורה 223,
+    `setSelectedLesson(lesson)`), `components/LessonsDashboard.tsx`
+    (שורה 41-44, `LessonSquare` — `onClick` prop מה-parent),
+    `pages/PublicOrgPage.tsx` (שורה 124) ו-`pages/PublicRabbiPage.tsx`
+    (שורה 135) — שני האחרונים באותו דפוס בדיוק (עמודי "רב"/"ארגון"
+    ציבוריים המציגים את רשימת השיעורים שלהם). קראתי כל אחד ידנית
+    לפני עריכה; שאר 6 האפליקציות (17/18/22/24/27/28) נבדקו ע"י
+    ה-Explore agent ולא נמצאו בהן מועמדים תואמים (רק `<button>`/
+    shadcn `Button` אמיתיים, או `role="button"`+`tabIndex`+
+    `onKeyDown` שכבר קיימים כמו ב-`22-get-your-rights` — ראו
+    `AdminLeads.tsx`/`AdminRightsReference.tsx`/`RightsCategories.tsx`
+    שכבר תקינים ושימשו כדוגמת-דפוס לתיקון כאן). לכל אחד מ-4 המיקומים
+    הוספתי `role="button"` + `tabIndex={0}` + `aria-label` דינמי
+    (לפי `lesson.subject`/`lesson.rabbi_name`) + `onKeyDown` שמפעיל
+    את אותה פונקציית-הקליק בלחיצת Enter/רווח (`e.preventDefault()`
+    לפני הקריאה, תואם לדפוס שכבר קיים ב-22) — אפס שינוי בלוגיקת
+    state/ניווט/API אחרת. בדיקת איזון סוגריים מסולסלים/עגולים/
+    מרובעים ב-python על כל 4 הקבצים המלאים אחרי העריכה — תקין בכולם
+    (124/124+124/124+30/30, 111/111+107/107+21/21, 152/152+100/100+
+    37/37, 157/157+93/93+31/31). אין build/dev-server זמין בסביבה
+    הזו לפי הנחיית ההרצה — לא `tsc`. כל 4 הקבצים תחת
+    `apps/21-mthbram/src/{pages,components}`, אינם חסומים
+    ב-gitignore (נתפסו ב-`git status` הרגיל, בלי `-f`). ענף
+    `fix/b-21-mthbram-lesson-card-keyboard-a11y-0820`.
+
+    **זה סוגר את עדשת נגישות-המקלדת (`role="button"` בלי
+    `tabIndex`/`onKeyDown`) על פני כל 7 האפליקציות החיות בהיקף
+    loop B** — 21 היה היחיד עם ממצאים אמיתיים, שאר 6 כבר תקינים.
+
+    **הבא בתור:** נושא #250 (RLS על `21-mthbram`, חסום MCP —
+    פרויקט `aypsqqvfohekxxuqsmrw` לא נגיש), או עדשה חדשה — טפסים
+    עם auto-save שקט על שדות רגישים, או `<img>` בלי `alt`, או
+    בדיקת focus-trap בדיאלוגים/מודלים.
+    via cloud server 167.99.131.167 [loop B]

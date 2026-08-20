@@ -41,6 +41,10 @@ const LessonSquare = ({ lesson, onClick }: { lesson: any; onClick: () => void })
     <motion.div
       whileHover={{ y: -3 }}
       onClick={onClick}
+      role="button"
+      tabIndex={0}
+      aria-label={`פרטי שיעור: ${lesson.rabbi_name}`}
+      onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onClick(); } }}
       className="group relative cursor-pointer bg-card/60 backdrop-blur-sm border border-gold/25 hover:border-gold/60 rounded-2xl p-5 transition-all duration-300 hover:shadow-gold-ring"
     >
       <div className="flex items-start justify-between mb-3">
