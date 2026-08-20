@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -92,6 +92,8 @@ export default function PriceComparisonAdmin() {
   const [pendingCount, setPendingCount] = useState(0);
   const [subFilter, setSubFilter] = useState<"pending" | "approved" | "rejected" | "all">("pending");
   const [reviewing, setReviewing] = useState<number | null>(null);
+  const subFilterRef = useRef(subFilter);
+  subFilterRef.current = subFilter;
 
   const [volTokens, setVolTokens] = useState<VoluntaryToken[]>([]);
   const [newVol, setNewVol] = useState({ storeName: "", city: "", contactEmail: "" });
@@ -130,10 +132,12 @@ export default function PriceComparisonAdmin() {
   }
 
   async function loadSubmissions() {
+    const requestedFilter = subFilter;
     try {
-      const qs = subFilter === "all" ? "" : `?status=${subFilter}`;
+      const qs = requestedFilter === "all" ? "" : `?status=${requestedFilter}`;
       const r = await apiRequest("GET", `/api/pc/admin/submissions${qs}`);
       const d = await r.json();
+      if (subFilterRef.current !== requestedFilter) return; // a newer filter click already superseded this response
       setSubmissions(d.submissions ?? []);
       setPendingCount(d.pending ?? 0);
     } catch { /* non-fatal — tab stays empty */ }

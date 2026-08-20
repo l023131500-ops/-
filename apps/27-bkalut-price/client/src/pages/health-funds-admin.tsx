@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -109,6 +109,8 @@ export default function HealthFundsAdmin() {
   const [loading, setLoading] = useState(true);
   const [q, setQ] = useState("");
   const [kindFilter, setKindFilter] = useState<"" | "fund" | "gov" | "ngo">("");
+  const kindFilterRef = useRef(kindFilter);
+  kindFilterRef.current = kindFilter;
   const [expandedId, setExpandedId] = useState<number | null>(null);
   const [draft, setDraft] = useState<Partial<HfTopic>>({});
   const [showInternal, setShowInternal] = useState(false);
@@ -121,14 +123,17 @@ export default function HealthFundsAdmin() {
   const adminUrl = `${typeof window !== "undefined" ? window.location.origin : ""}/#/health-funds-admin`;
 
   async function loadTopics() {
+    const requestedKind = kindFilter;
     setLoading(true);
     try {
-      const r = await apiRequest("GET", `/api/hf/admin/topics?withTiers=1${kindFilter ? `&kind=${kindFilter}` : ""}`);
-      setTopics(await r.json());
+      const r = await apiRequest("GET", `/api/hf/admin/topics?withTiers=1${requestedKind ? `&kind=${requestedKind}` : ""}`);
+      const data = await r.json();
+      if (kindFilterRef.current !== requestedKind) return; // a newer filter click already superseded this response
+      setTopics(data);
     } catch {
       toast({ title: "שגיאה בטעינה", variant: "destructive" });
     } finally {
-      setLoading(false);
+      if (kindFilterRef.current === requestedKind) setLoading(false);
     }
   }
 
