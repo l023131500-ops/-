@@ -11729,3 +11729,47 @@
       `admin/transcribe/uploads/page.tsx` `remove()` — שניהם בלי
       error handling/in-flight guard. כדאי גם לסרוק שאר עמודי ה-admin
       תחת `03-igud-ads` לבאגי basePath חסר דומים (הדפוס שנמצא כאן).
+
+## 20/08/2026 — סבב 232 (loop A) — `03-igud-ads/app/(admin)/admin/transcribe/glossary/page.tsx`: תיקון `load()` מסונן שחסר basePath
+
+1133. **המשך ישיר להמלצת סבב 231** — סרקתי את `glossary/page.tsx` (המועמד
+      שהוזכר גם בסבב 230) לבאגי basePath חסר בדפוס שאותר שם. הקובץ
+      עצמו: `next.config.mjs` של `03-igud-ads` קובע `basePath: "/modaot"`,
+      ו-Next.js לא מוסיף אותו אוטומטית ל-`fetch()` גולמי.
+1134. **הבאג:** `load()` (שורה 27-32) בנה את ה-URL כך:
+      `` filter ? `/api/admin/transcribe/glossary?style=${filter}` :
+      "/modaot/api/admin/transcribe/glossary" `` — כלומר הטעינה הראשונית
+      (בלי פילטר) כללה `/modaot` נכון, אבל ברגע שמשתמש admin לחץ על אחד
+      מכפתורי הסגנון ("ליטאי"/"חסידי"/"אידיש", שורות 67-81) שקובעים
+      `filter`, ה-`useEffect` (שורה 34) קרא שוב ל-`load()` עם URL **בלי**
+      `/modaot` — פגיעה ב-404 בשורש הדומיין במקום ב-
+      `/modaot/api/admin/transcribe/glossary?style=...`. מאחר ש-`res.ok`
+      נבדק לפני `setEntries` (שורה 30), הרשימה הישנה/לא-מסוננת נשארת על
+      המסך בלי שום הודעת שגיאה — admin שלוחץ על פילטר סגנון רואה בטעות
+      שהפילטר "לא עושה כלום" (הרשימה המלאה נשארת), במקום את הרשימה
+      המסוננת בפועל. `submit()` (שורה 38) ו-`remove()` (שורה 55) כבר
+      כללו `/modaot` נכון — רק ענף ה-URL עם `filter` היה חסר.
+1135. **התיקון:** שורה אחת — הוספת `/modaot` לענף ה-`filter` של ה-URL:
+      `` `/api/admin/transcribe/glossary?style=${filter}` `` ⇒
+      `` `/modaot/api/admin/transcribe/glossary?style=${filter}` ``.
+      שום שינוי אחר בקובץ.
+1136. **אפס רגרסיה מאומתת:** `git diff --stat`: קובץ אחד, +1/-1. שום
+      פיצ'ר/מסך/כפתור לא הוסר, רק תוקנה כתובת שגויה. בדיקת איזון
+      סוגריים/מסולסלים/מרובעים בפייתון על הקובץ המלא לאחר העריכה: תואם
+      (`(`: 62/62, `{`: 60/60, `[`: 9/9). `tsc` לא זמין בסביבה — אימתתי
+      ידנית ששאר שני קריאות ה-`fetch` בקובץ (`submit`/`remove`) כבר
+      השתמשו באותו תבנית `/modaot/api/...` נכונה, כך שהתיקון עקבי איתן.
+      לא נגעתי במערכות/סכימות מוגנות (08/09/bkalut-app/bkalot-admin/
+      zr_*/NEDARIM3873/csj/csj_src/igud), ב-`main`, או במערכת מחוץ
+      להיקף (03 בטווח 01-16). `git add -f` נדרש (אותה אזהרת `.gitignore`
+      כוזבת על `apps/**`). Commit `cd1cccad` על ענף חדש
+      `fix/a-03-igud-ads-glossary-filter-basepath-0820`, נדחף ל-`origin`
+      (מפעיל פריסת Vercel תחת `more30.com/modaot`).
+1137. **הבא בתור:** `03-igud-ads/admin/transcribe/glossary/page.tsx`
+      `remove()` (שורה 53-57) עדיין בלי error handling/in-flight guard
+      (מומלץ מסבב 230, עדיין לא תוקן — נבחר הבאג הברור/המבודד יותר
+      הפעם). `admin/transcribe/uploads/page.tsx` `remove()` גם עדיין
+      פתוח לאותו דפוס. מומלץ גם לסרוק שאר עמודי ה-admin תחת `03-igud-
+      ads` (ומערכות אחרות 01-16) לבאגי `filter`/query-param URL שחסרים
+      basePath בדפוס שאותר כאן — מדובר בדפוס עדין יותר מ-basePath חסר
+      גורף (רק ענף אחד ב-conditional URL היה שגוי).
