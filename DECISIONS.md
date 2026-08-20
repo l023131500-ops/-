@@ -12314,3 +12314,57 @@
     להשתנות בלי remount מלא באותן דפים (route params). נושאים
     #62/#94/#115/#164/#169/#254 נשארים חסומים.
     via cloud server 167.99.131.167 [loop B]
+
+
+## 20/08/2026 — סבב 473 (loop B)
+
+473. **`req.query.month` הופך למערך כשה-query string חוזר על עצמו —
+    `String()` על מערך מייצר "2025-01,2025-02" ששובר את פענוח התאריך
+    ב-`monthlySummary` ב-27-bkalut-price.** בדקתי תחילה את הרמז מסבב
+    472 (`OrgPortal.tsx`/`RabbiPortal.tsx`/`SynagoguePortal.tsx`/
+    `PortalMessagesTab.tsx`/`PortalLessonForm.tsx` ב-21-mthbram לדפוס
+    `useState(() => {`-כ-side-effect) — לא נמצא אף מופע, אותו דפוס לא
+    חוזר שם. הרחבתי לקטגוריית באג טרייה (Explore agent) על פני כל
+    ה-scope; נמצא ב-`apps/27-bkalut-price/server/fin-routes.ts` (שורות
+    314 ו-644, לפני התיקון): `const ym = String(req.query.month ||
+    new Date().toISOString().slice(0, 7));`.
+
+    Express הופך query param חוזר (`?month=2025-01&month=2025-02`)
+    למערך; `String([...])` על מערך מפיק מחרוזת מופרדת-פסיקים
+    (`"2025-01,2025-02"`), לא שגיאה. המחרוזת המשובשת הזו זורמת ל-
+    `finStorage.monthlySummary()` (`fin-storage.ts:853-857`), ששם
+    `ym.split("-")` מפרק אותה ל-3 איברים (`["2025", "01,2025", "02"]`)
+    במקום 2 — `m` יוצא `NaN`, וטווח התאריכים (`from`/`to`) מתמוטט,
+    כך שסיכום ההוצאות/הכנסות החודשי מחזיר נתונים שגויים בלי לזרוק
+    שגיאה. שני נקודות הקצה חשופות: `/api/financial/clients/:clientId/summary`
+    (אדמין) ו-`/api/me/financial/dashboard` (לקוח פיננסי מאומת עצמו —
+    כל משתמש קצה יכול לשלוח `?month=` כפול, בין אם בטעות (טופס/קליינט
+    ישן ששולח את הפרמטר פעמיים) או בכוונה).
+
+    **התיקון:** פונקציית עזר משותפת `monthQueryParam(req)` שמוסיפה
+    guard יחיד — אם `req.query.month` הוא מערך, לוקחת את האיבר
+    הראשון בלבד — ומחליפה את שני מופעי ה-`String(req.query.month ||
+    ...)` הזהים. אין שינוי ל-`monthlySummary` עצמה ואין שינוי לחוזה
+    ה-API בתרחיש הרגיל (query param יחיד).
+
+    **בדיקות תקינות:** קריאת קוד בלבד (ללא dev-server/build, לפי
+    הנחיות ההרצה). אימתתי שני קריאות המקור (`fin-routes.ts:317,649`)
+    ואת פענוח התאריך ב-`fin-storage.ts:855-856`. `git diff --stat`:
+    קובץ יחיד, +10/-2.
+
+    לא נגעתי במערכות מוגנות 08/09/bkalut-app/bkalot-admin/zr_*/
+    NEDARIM3873/csj/csj_src/igud, ב-`main`, או במערכת מחוץ ל-scope
+    (17-25/27/28 בלבד). "27-bkalut-price" הוא מערכת בתוך ה-scope
+    (`bkalut-price`) — לא להתבלבל עם `bkalut-app` המוגן.
+
+    ענף חדש `fix/b-27-month-query-array-round473-0820` (שרשרת
+    הענפים היא המקור היחיד ל-loop B, לא `main`), נדחף (קומיט
+    `cbad83a9`).
+
+    **הבא בתור:** שאר קריאות ה-`req.query` ב-`fin-routes.ts` (שורות
+    174/192-193/245/430/541) משתמשות ב-`clientId`/`from`/`to`/`limit`
+    ולא נבדקו לאותה בעיית-מערך (רובן `Number(...)` שעל מערך מפיק
+    `NaN` ישירות — פחות שקט-מסוכן מ-`String` שמפיק ערך "תקין" שגוי,
+    אבל עדיין ראוי לבדיקה). נושאים #62/#94/#115/#164/#169/#254
+    נשארים חסומים.
+    via cloud server 167.99.131.167 [loop B]
