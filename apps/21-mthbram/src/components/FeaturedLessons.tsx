@@ -158,6 +158,8 @@ const FeaturedLessons = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterSubject, setFilterSubject] = useState("");
 
+  const lessonsLoadedRef = useRef(false);
+
   const fetchLessons = async () => {
     setError(false);
     const { data, error: err } = await supabase
@@ -170,12 +172,13 @@ const FeaturedLessons = () => {
     if (data && data.length > 0) {
       const sorted = [...data].sort((a, b) => getNextOccurrence(a) - getNextOccurrence(b));
       setLessons(sorted);
+      lessonsLoadedRef.current = true;
     }
   };
 
   useEffect(() => {
     fetchLessons();
-    const timer = setTimeout(() => { if (lessons.length === 0) fetchLessons(); }, 5000);
+    const timer = setTimeout(() => { if (!lessonsLoadedRef.current) fetchLessons(); }, 5000);
     return () => clearTimeout(timer);
   }, []);
 
