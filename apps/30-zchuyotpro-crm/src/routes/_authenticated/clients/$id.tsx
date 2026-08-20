@@ -19,6 +19,7 @@ import { ReferralsTab } from "@/features/clients/tabs/ReferralsTab";
 import { TasksTab } from "@/features/clients/tabs/TasksTab";
 import { TimelineTab } from "@/features/clients/tabs/TimelineTab";
 import { QuickNoteButton } from "@/features/clients/components/QuickNoteButton";
+import { ClientReportButton } from "@/features/clients/components/ClientReportButton";
 import { ShareLinkCard } from "@/features/clients/components/ShareLinkCard";
 import { meProfileQuery } from "@/features/clients/queries";
 import { useQuery } from "@tanstack/react-query";
@@ -70,7 +71,10 @@ function ClientProfilePage() {
               {client.city && <span>{client.city}</span>}
             </div>
           </div>
-          <StatusBadge status={client.status} />
+          <div className="flex items-center gap-3">
+            <ClientReportButton clientId={id} />
+            <StatusBadge status={client.status} />
+          </div>
         </CardContent>
       </Card>
 
