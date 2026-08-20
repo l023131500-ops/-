@@ -228,7 +228,8 @@
           if(!res.ok){ msg.className='msg err'; msg.textContent=res.message; return; }
           msg.className='msg ok'; msg.textContent=`נשמר. ${res.rights_available} זכויות בקטגוריה.`;
           const r=await sb.rpc('more30_auto_overview',{p_app:'bkalot'});
-          if(!r.error){ data=r.data; renderTopics(); renderQueue(); }
+          if(r.error){ msg.textContent+=' (הרענון נכשל — רענן את הדף כדי לראות את השינוי)'; return; }
+          data=r.data; renderTopics(); renderQueue();
         });
 
         // ── ריצה יבשה ───────────────────────────────────────────────────
@@ -243,7 +244,8 @@
           m.textContent = `נבנה ואומת: ${res.content_verified} · בעיות: ${res.problems} · ` +
                           `נשלחו בפועל: ${res.sent_for_real}. ${res.message}`;
           const r=await sb.rpc('more30_auto_overview',{p_app:'bkalot'});
-          if(!r.error){ data=r.data; renderQueue(); }
+          if(r.error){ m.textContent+=' (הרענון נכשל — רענן את הדף כדי לראות את השינוי)'; return; }
+          data=r.data; renderQueue();
         });
 
         $('content').hidden=false;
