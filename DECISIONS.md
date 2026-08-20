@@ -7094,3 +7094,42 @@
     `public.synagogues`, חסום כי הפרויקט `aypsqqvfohekxxuqsmrw` לא
     נגיש דרך MCP) אם תתקבל גישת dashboard.
     via cloud server 167.99.131.167 [loop B]
+
+## 20/08/2026 — סבב 365 (loop B)
+
+365. **המשך עדשת נגישות-טפסים: קריאה ידנית ממצה של
+    `17-chizukim-transcribe` — שני `<textarea>` ללא `aria-label`,
+    ושלושה כפתורי-מצב (toggle) ללא `aria-pressed`.** בהמשך להצעת
+    סבב 364 (17/22/27/28 עדיין לא נסרקו קובץ-אחר-קובץ). קראתי ידנית
+    את כל ארבעת קבצי ה-`pages/*.tsx` של `17-chizukim-transcribe`
+    (upload/recordings/recording-detail/not-found). `upload.tsx`
+    כבר מכוסה טוב (dropzone עם `role="button"`+`aria-label`, שני
+    שדות עם `<label htmlFor>` תקין). מצאתי שני פערים אמיתיים ב-
+    `recording-detail.tsx`: שני ה-`<textarea>` המרכזיים — תמלול
+    ערוך (שורה ~327, מצב עריכה) ותמלול גולמי (שורה ~365) — היו רק
+    עם `placeholder`, בלי `aria-label`, אותו דפוס בדיוק שתוקן ב-
+    `18-torah-editor-mvp` בסבב 364. הוספתי `aria-label="התמלול
+    הערוך לעריכה"` ו-`aria-label="התמלול הגולמי לעריכה"` בהתאמה.
+    בנוסף מצאתי חוסר עקביות: כפתור ה-toggle "מילה שלמה" באותה
+    אפליקציה (`recordings.tsx`) כבר משתמש נכון ב-`aria-pressed`,
+    אבל שלושה כפתורי-toggle דומים לא — `FilterChip` (סינון לפי
+    סטטוס, `recordings.tsx`) וכפתורי "קריאה"/"עריכה" של מצב התצוגה
+    (`recording-detail.tsx`) — כך שקורא מסך לא יכול לדעת איזה מסנן/
+    מצב פעיל כרגע. הוספתי `aria-pressed={active}` /
+    `aria-pressed={editedMode === "..."}` בהתאמה, לפי אותה מוסכמה
+    שכבר קיימת בקובץ עצמו. אפס שינוי בלוגיקת state/שמירה/חיפוש/
+    תמלול. בדיקת איזון סוגריים/מאמרים מסולסלים/מרובעים ב-python על
+    שני הקבצים המלאים אחרי העריכה — תקין בשניהם (185/185+173/173+
+    39/39, 164/164+168/168+20/20). אין build/dev-server זמין
+    בסביבה הזו לפי הנחיית ההרצה — לא `tsc`. שני הקבצים תחת
+    `apps/17-chizukim-transcribe/client` וה-gitignore חוסם אותם,
+    נעשה `git add -f` לפי התקדים הקיים. ענף
+    `fix/b-17-chizukim-textarea-aria-pressed-0820`.
+
+    **הבא בתור:** להמשיך את הקריאה הידנית הממצה על 22/27/28 (עדיין
+    לא נסרקו קובץ-אחר-קובץ), או לבדוק את דפוס ה-race-condition
+    (stale async response) שנפתח בסבב 363 על 18/28 (17 כבר נסרק כאן
+    ולא נמצא שם מועמד מהסוג הזה), או לחזור לנושא #250 (RLS פתוח על
+    `21-mthbram` `public.synagogues`, חסום כי הפרויקט
+    `aypsqqvfohekxxuqsmrw` לא נגיש דרך MCP) אם תתקבל גישת dashboard.
+    via cloud server 167.99.131.167 [loop B]

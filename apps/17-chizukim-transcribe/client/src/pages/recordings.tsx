@@ -517,6 +517,7 @@ function FilterChip({
           ? "bg-primary text-primary-foreground border-transparent"
           : "bg-card text-muted-foreground"
       }`}
+      aria-pressed={active}
       data-testid={`button-filter-${label}`}
     >
       {label}

@@ -301,6 +301,7 @@ export default function RecordingDetailPage() {
                 <button
                   onClick={() => setEditedMode("read")}
                   className={`px-2 py-1 rounded text-xs inline-flex items-center gap-1 hover-elevate ${editedMode === "read" ? "bg-secondary" : ""}`}
+                  aria-pressed={editedMode === "read"}
                   data-testid="button-mode-read"
                 >
                   <Eye className="w-3 h-3" /> קריאה
@@ -308,6 +309,7 @@ export default function RecordingDetailPage() {
                 <button
                   onClick={() => setEditedMode("edit")}
                   className={`px-2 py-1 rounded text-xs inline-flex items-center gap-1 hover-elevate ${editedMode === "edit" ? "bg-secondary" : ""}`}
+                  aria-pressed={editedMode === "edit"}
                   data-testid="button-mode-edit"
                 >
                   <Pencil className="w-3 h-3" /> עריכה
@@ -330,6 +332,7 @@ export default function RecordingDetailPage() {
                 className="min-h-[340px] font-serif text-base leading-relaxed"
                 dir="rtl"
                 placeholder="הטקסט הערוך… השתמש ב־**כותרת** לכותרת משנה, ושורה ריקה כפולה להפרדת פסקאות."
+                aria-label="התמלול הערוך לעריכה"
                 data-testid="textarea-edited"
               />
             )}
@@ -369,6 +372,7 @@ export default function RecordingDetailPage() {
               className="min-h-[340px] font-serif text-base leading-relaxed"
               dir="rtl"
               placeholder="התמלול הגולמי…"
+              aria-label="התמלול הגולמי לעריכה"
               data-testid="textarea-raw"
             />
             <div className="flex gap-2 mt-4 pt-3 border-t">
