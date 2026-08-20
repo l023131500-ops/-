@@ -64,6 +64,8 @@ export function useSynagogues() {
       ]);
 
       if (synRes.error) throw synRes.error;
+      const partialError = gabRes.error || prayerRes.error || lessonRes.error || annRes.error;
+      if (partialError) console.error('useSynagogues: partial fetch failure', partialError);
 
       const assembled: SynagogueDB[] = (synRes.data || []).map(syn => ({
         id: syn.id,

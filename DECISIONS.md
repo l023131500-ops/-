@@ -5865,3 +5865,52 @@
     RPC-param) על שאר ההיקף (17/18/19/20/22/23/24/25/27/28) בהמשך לאותה
     שיטה שמצאה את הבאג הזה ואת באג ה-fallback duration של 17 בסבב 326.
     via cloud server 167.99.131.167 [loop B]
+
+## 20/08/2026 — סבב 328 (loop B)
+
+328. **תיעוד בדיעבד (retroactive) לשני קומיטים שכבר נדחפו ללא רישום ב-**
+    **DECISIONS.md** — `a35fbcb0` ו-`215de802` תיקנו שני באגים אמיתיים אבל
+    לא כללו עדכון לקובץ הזה, שובר את הרצף שכל סבב קודם שמר עליו. מתעד כאן
+    כדי שההיסטוריה תישאר שלמה:
+    - **22-get-your-rights (`FloatingBot.tsx`):** טופס "בדיקה מקיפה" שלח
+      תמיד `spouse_name`/`spouse_id`/`spouse_health`/`spouse_employment` מתוך
+      `compAnswers`, בלי תלות ב-`marital_status` הנוכחי, וגם תקציר הפרטים
+      החופשי עבר על כל הקבוצות במקום רק הפעילות. משתמש שמילא שדות בן/בת-זוג
+      תחת "נשוי" ואז החליף ל"לא נשוי" לפני השליחה — עדיין שלח את הערכים
+      הישנים. תוקן כך שהשליחה משקפת את `isMarried` הנוכחי, תואם את השערים
+      שכבר קיימים ב-`RightsCategories.tsx`. ענף `fix/b-22-floatingbot-stale-spouse-data-0820`.
+    - **27-bkalut-price (`service-form.tsx`):** `categoryTopics`/
+      `additionalTopics` נבנו עם מיפוי ל-`{id,topic,category}` בלבד, מאבד את
+      `subCategory` אף שהוא קיים בכל שורת מקור (`PublicRightRow`).
+      `server/routes.ts:568` כבר קורא `t.subCategory` לכל נושא נוסף שנשלח
+      ל-webhook `NEDARIM3873` — כך שכל נושא נוסף נשלח עם `subCategory=""`
+      בפועל, בלי קשר לערך האמיתי. תוקן ע"י השחלת `subCategory` דרך
+      `categoryTopics`, טיפוס ה-state של `additionalTopics`, ו-
+      `toggleAdditionalTopic`. ענף `fix/b-27-additional-topics-subcategory-0820`.
+
+    **בנוסף, המשך העדשה שנפתחה בסבב 327 (state/race/pagination/RPC-param) —**
+    **הרצתי סוכן Explore על שאר ההיקף (24/18/19/20/23/25/28), שמצא ואימתתי:**
+    `apps/24-galilee-connect-hub/src/hooks/useSynagogues.ts` מריץ 5 שאילתות
+    Supabase במקביל דרך `Promise.all` (synagogues/gabbaim/prayer_times/
+    lessons/announcements) אבל בודק `.error` רק על התוצאה הראשונה
+    (`synRes.error`, שורה 66 המקורית) — אם אחת מארבע השאילתות המשניות
+    נכשלת (רשת/RLS/timeout), ה-`.data` שלה `undefined`, ונופל בשקט ל-`[]`
+    (`(gabRes.data || [])` וכו', שורות 82-91), כך שבתי כנסת מוצגים בלי גבאים/
+    זמני תפילה/שיעורים/הודעות בלי שום סימן שמשהו נכשל. **תיקון ראשוני
+    שנבדק ונדחה:** `throw` על כל שגיאה (כמו ל-`synRes`) — נבדק מול כל 7
+    הצרכנים של ה-hook (`Index.tsx`, `AllSynagoguesPage.tsx`,
+    `SynagoguePage.tsx`, `AnnouncementsSection.tsx`, `LessonsTicker.tsx`,
+    `PrayersTicker.tsx`, `UpcomingPrayers.tsx`) — אף אחד מהם לא קורא את שדה
+    ה-`error` המוחזר, כך שזריקה הייתה משאירה את `synagogues` ריק (אין
+    `setSynagogues` בנתיב ה-`catch`) ומעלימה את **כל** רשימת בתי הכנסת
+    התקינה בגלל כשל בטבלת-משנה אחת — הרעה אמיתית מ"תצוגה חלקית" ל"מסך ריק",
+    בניגוד לכלל האפס-נסיגה. **התיקון הסופי:** במקום `throw`, איסוף שגיאות
+    ארבע השאילתות המשניות ל-`console.error` לצורך אבחון, בעוד ההרכבה
+    (`assembled`) וה-`setSynagogues` ממשיכים לרוץ כרגיל עם הנפילה הקיימת
+    ל-`[]` — משמר את ההתנהגות הנראית לעין (התראה שקטה הופכת לגלויה ביומן,
+    לא נעלמת ולא שוברת את הרשימה). בדיקת איזון סוגריים ב-python על הקובץ
+    המלא — תקין (51/51, 22/22, 18/18). אין build/dev-server בסבב הזה לפי
+    הנחיית ההרצה. ענף חדש `fix/b-24-usesynagogues-partial-error-0820`,
+    קומיט הבא. **הבא בתור:** להמשיך את אותה עדשה (state/race/pagination/
+    RPC-param) על 17/19/21/22/25/27/28 שעדיין לא נסרקו בה במלואם.
+    via cloud server 167.99.131.167 [loop B]
