@@ -437,7 +437,7 @@ function BudgetsTab({ client }: { client: FinClient }) {
                 <span>{cat?.icon} {cat?.name || `קטגוריה ${b.categoryId}`} {b.note && <span className="text-muted-foreground">· {b.note}</span>}</span>
                 <div className="flex items-center gap-3">
                   <span className="font-semibold tabular-nums">{ils(b.monthlyLimit)}</span>
-                  <Button size="sm" variant="ghost" onClick={() => del.mutate(b.id)}><Trash2 className="w-4 h-4 text-destructive" /></Button>
+                  <Button size="sm" variant="ghost" onClick={() => { if (!confirm("למחוק את התקציב?")) return; del.mutate(b.id); }}><Trash2 className="w-4 h-4 text-destructive" /></Button>
                 </div>
               </div>
             );
