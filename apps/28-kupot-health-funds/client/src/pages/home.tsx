@@ -194,6 +194,7 @@ export default function Home() {
               key={k}
               type="button"
               onClick={() => switchKind(k)}
+              aria-pressed={kind === k}
               className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
                 kind === k
                   ? "bg-primary text-primary-foreground"
@@ -261,6 +262,7 @@ export default function Home() {
                     key={f.key}
                     type="button"
                     onClick={() => setFund(active ? "" : f.key)}
+                    aria-pressed={active}
                     className={`hover-elevate rounded-lg border p-3 text-right ${
                       active ? "border-primary" : "border-card-border"
                     }`}
@@ -286,6 +288,7 @@ export default function Home() {
                 onClick={() =>
                   setFund(fund === "undecided" ? "" : "undecided")
                 }
+                aria-pressed={fund === "undecided"}
                 className="hover-elevate mt-2 w-full rounded-lg border border-dashed border-border px-3 py-2 text-right text-xs leading-relaxed text-muted-foreground"
                 data-testid="button-leader-undecided"
               >
@@ -489,6 +492,7 @@ function CategoryChip({
     <button
       type="button"
       onClick={onClick}
+      aria-pressed={active}
       className={`shrink-0 snap-start whitespace-nowrap rounded-full px-3 py-1.5 text-xs font-medium transition ${
         active
           ? "bg-primary text-primary-foreground"
