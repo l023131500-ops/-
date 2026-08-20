@@ -173,7 +173,7 @@ const AdminForums = () => {
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div><label className="text-sm font-medium mb-1 block">סדר תצוגה</label>
-                  <Input type="number" value={form.sort_order} onChange={e => setForm(f => ({ ...f, sort_order: +e.target.value }))} />
+                  <Input type="number" inputMode="numeric" value={form.sort_order} onChange={e => setForm(f => ({ ...f, sort_order: +e.target.value }))} />
                 </div>
                 <label className="flex items-center justify-between bg-muted/30 rounded-lg p-2 mt-6">
                   <span className="text-sm">פורום מוגבל</span>

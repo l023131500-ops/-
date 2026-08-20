@@ -178,7 +178,7 @@ export default function DonationPage() {
                 <Button key={a} type="button" variant={amount === a && !customAmount ? "default" : "outline"} onClick={() => { setAmount(a); setCustomAmount(""); }}>{a}</Button>
               ))}
             </div>
-            <Input className="mt-2" type="number" min="5" placeholder="סכום אחר..." value={customAmount} onChange={(e) => setCustomAmount(e.target.value)} />
+            <Input className="mt-2" type="number" inputMode="decimal" min="5" placeholder="סכום אחר..." value={customAmount} onChange={(e) => setCustomAmount(e.target.value)} />
           </div>
 
           <div className="grid sm:grid-cols-2 gap-3">

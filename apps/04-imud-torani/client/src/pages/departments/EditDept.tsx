@@ -170,7 +170,7 @@ export function EditDept({
                     </div>
                     <div>
                       <Label className="mb-1 block text-[11px] font-semibold">גודל כותרת (em) — ריק = ברירת מחדל</Label>
-                      <Input type="number" step="0.05" min="0.8" max="3"
+                      <Input type="number" inputMode="decimal" step="0.05" min="0.8" max="3"
                         value={b.meta?.headingSize ?? ""}
                         onChange={(e) => setMeta(b.id, { headingSize: e.target.value ? Number(e.target.value) : undefined })}
                         dir="ltr" data-testid={`input-hsize-${i}`} />

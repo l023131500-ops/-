@@ -162,7 +162,7 @@ const StudySchedule = () => {
                       </Select>
                     </div>
                     <div><label className="text-sm font-medium mb-1 block">כמות</label>
-                      <Input type="number" min={1} value={newSchedule.pace_amount} onChange={(e) => setNewSchedule(p => ({ ...p, pace_amount: parseInt(e.target.value) || 1 }))} /></div>
+                      <Input type="number" inputMode="numeric" min={1} value={newSchedule.pace_amount} onChange={(e) => setNewSchedule(p => ({ ...p, pace_amount: parseInt(e.target.value) || 1 }))} /></div>
                   </div>
                   <div><label className="text-sm font-medium mb-1 block">תאריך התחלה</label>
                     <Input type="date" value={newSchedule.start_date} onChange={(e) => setNewSchedule(p => ({ ...p, start_date: e.target.value }))} /></div>

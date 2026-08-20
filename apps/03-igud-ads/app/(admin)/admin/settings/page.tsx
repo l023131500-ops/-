@@ -46,6 +46,7 @@ function ValueInput({
     return (
       <input
         type="number"
+        inputMode="decimal"
         value={String(value)}
         onChange={(e) => onChange(Number(e.target.value))}
         className="border rounded px-3 py-1.5 text-sm w-full"

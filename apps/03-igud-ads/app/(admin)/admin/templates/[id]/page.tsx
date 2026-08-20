@@ -229,6 +229,7 @@ export default function TemplateEditPage() {
             <input
               className="input"
               type="number"
+              inputMode="numeric"
               value={form.price_nis ?? ""}
               onChange={(e) => setForm({ ...form, price_nis: e.target.value ? parseInt(e.target.value) : null })}
             />
@@ -292,6 +293,7 @@ export default function TemplateEditPage() {
           <input
             className="input w-24"
             type="number"
+            inputMode="numeric"
             value={form.sort_order}
             onChange={(e) => setForm({ ...form, sort_order: parseInt(e.target.value || "0") })}
           />

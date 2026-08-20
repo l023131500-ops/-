@@ -108,6 +108,7 @@ export default function CouponsPage() {
                 <label className="label">מספר העלאות מותר</label>
                 <input
                   type="number"
+                  inputMode="numeric"
                   min={1}
                   value={form.max_uploads}
                   onChange={(e) => setForm({ ...form, max_uploads: parseInt(e.target.value) })}

@@ -280,7 +280,7 @@ export default function TemplatesPage() {
               <div className="grid md:grid-cols-3 gap-4">
                 <div>
                   <label className="label">מחיר (₪)</label>
-                  <input className="input" type="number" value={form.price_nis ?? ""} onChange={(e) => setForm({ ...form, price_nis: e.target.value ? parseInt(e.target.value) : null })} />
+                  <input className="input" type="number" inputMode="numeric" value={form.price_nis ?? ""} onChange={(e) => setForm({ ...form, price_nis: e.target.value ? parseInt(e.target.value) : null })} />
                 </div>
                 <div>
                   <label className="label">aspect_ratio</label>
@@ -343,7 +343,7 @@ export default function TemplatesPage() {
 
               <div>
                 <label className="label">סדר מיון</label>
-                <input className="input w-24" type="number" value={form.sort_order} onChange={(e) => setForm({ ...form, sort_order: parseInt(e.target.value || "0") })} />
+                <input className="input w-24" type="number" inputMode="numeric" value={form.sort_order} onChange={(e) => setForm({ ...form, sort_order: parseInt(e.target.value || "0") })} />
               </div>
             </div>
 
