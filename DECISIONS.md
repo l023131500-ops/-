@@ -9788,3 +9788,61 @@
     חסר ב-19/20/21/24 (תועד בסבב 418), `BreadcrumbList`/`WebSite`+
     `SearchAction` schema.org. נושא #245/#250 (RLS, חסומים) נשארים
     כפי שהם. via cloud server 167.99.131.167 [loop B]
+
+## 20/08/2026 — סבב 420 (loop B)
+
+420. **`sitemap.xml` חסר לגמרי ב-9/9 האפליקציות החיות — נוסף, מ-URLs
+    אמיתיים שנקראו מהראוטר של כל אפליקציה (לא בדויים).**
+
+    בדיקה קודמת (סבב 419) קבעה ששום אחת מ-9 האפליקציות החיות אין לה
+    `sitemap.xml`. לפני כתיבה — נקרא בפועל קוד הראוטינג של כל
+    אפליקציה כדי לא להמציא נתיבים:
+
+    - **17-chizukim, 21-mthbram, 22-zchuyot, 24-galil**: React Router
+      עם `BrowserRouter` — נתיבי `<Route path="...">` אמיתיים נקראו
+      ישירות. נכללו רק נתיבים סטטיים, ציבוריים, ללא פרמטר וללא
+      אימות: 17 → `/`, `/upload` (לא `/recording/:id`, דינמי); 21 →
+      `/`, `/teachers`, `/find-lesson`, `/request-lesson`, `/lessons`,
+      `/install` (לא `/update-lesson`/`/auth/reset`/`/admin-login`/
+      נתיבי `:token`); 22 → `/` בלבד (`/auth/reset` הוצא, כלי אימות
+      לא תוכן); 24 → `/`, `/synagogues`, `/kashrut`, `/mikvaot`,
+      `/halacha`, `/newsletter`, `/mourning`, `/contact`, `/info` (לא
+      `/synagogue/:id` הדינמי, לא `/gabai*` הפנימי).
+    - **27-mechiron**: פונקציית השער הקיימת בקוד `isPublicPath()`
+      (`client/src/App.tsx:91-107`) היא רשימת האמת ל"מה ציבורי" —
+      נכללו רק הענפים הסטטיים שלה: `/`, `/eligibility`, `/potential`,
+      `/p/financial`, `/price-comparison`, `/health-funds`, `/terms`
+      (לא `/potential/:slug`, `/p/topic/:id`, `/service/:id`,
+      `/r/:id`, `/compare/:barcode`, `/community/:slug`,
+      `/submit/:token` — כולם דינמיים/פר-רשומה, אין רשימה קבועה
+      במקור לספור מהי).
+    - **18-orech** (Next.js): רק `/` — שאר הנתיבים (`/login`,
+      `/documents`, `/editor`, `/htr`) דורשים אימות.
+    - **19-shiurim, 20-igud**: נקרא `public/app.js` ישירות — הראוטינג
+      שלהן מבוסס `location.hash` (`#/about`, `#join` וכו'), לא נתיב
+      שרת אמיתי; מנועי חיפוש לא רואים פרגמנט hash כ-URL נפרד, אז
+      נכלל רק `/`.
+    - **28-kupot**: `App.tsx` מגדיר נתיב `/` יחיד בלבד לצד הציבורי.
+
+    כל 9 קבצי ה-`sitemap.xml` נוצרו באותה תיקיית `public` שכבר
+    מארחת את `robots.txt` מסבב 419 (`client/public` ל-17/27/28,
+    `public` לשאר), ונוספה שורת `Sitemap: https://more30.com/<path>/
+    sitemap.xml` בסוף כל `robots.txt` הקיים.
+
+    **בדיקות תקינות:** `python3 xml.dom.minidom.parse` על כל 9 —
+    תקינים. `git diff --cached --stat`: 18 קבצים (9 חדשים + 9
+    `robots.txt` ששונו), ‎+74‎ (רק תוספות, אין מחיקה, אין קובץ קיים
+    שנפגע חוץ מהוספת שורת ה-Sitemap). כל 18 נופלים תחת `.gitignore`
+    (כמו `robots.txt` בסבב הקודם) — `git add -f` הופעל. לא הופעל
+    build/dev-server (לפי הנחיות ההרצה).
+
+    ענף `fix/b-22-whatsapp-noopener-round395-0820` (שרשרת הענפים היא
+    המקור המלא היחיד ל-loop B, לא `main`), קומיט `f566b649`, נדחף
+    (מפעיל 9 פריסות Vercel תחת `more30.com/{chizukim,orech,shiurim,
+    igud,mthbram,zchuyot,galil,mechiron,kupot}`).
+
+    **הבא בתור:** `sitemap.xml` סגור על כל 9 האפליקציות החיות (9/9).
+    עדיין לא נבדק: `canonical` חסר ב-19/20/21/24 (תועד בסבב 418),
+    `BreadcrumbList`/`WebSite`+`SearchAction` schema.org. נושא
+    #245/#250 (RLS, חסומים) נשארים כפי שהם. via cloud server
+    167.99.131.167 [loop B]
