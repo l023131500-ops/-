@@ -120,7 +120,7 @@ const PrayerTimesTab = ({ orgId }: PrayerTimesTabProps) => {
             <h4 className="font-display font-bold text-gold">בית כנסת חדש</h4>
             <Button variant="ghost" size="icon" aria-label="ביטול" onClick={() => setAddingSynagogue(false)}><X className="w-4 h-4" /></Button>
           </div>
-          <SynagogueForm form={synForm} onChange={setSynForm} />
+          <SynagogueForm form={synForm} onChange={setSynForm} idPrefix="syn-add" />
           <Button onClick={addSynagogue} className="w-full bg-gradient-teal text-primary-foreground font-body font-bold gap-2">
             <Save className="w-4 h-4" /> שמור
           </Button>
@@ -147,7 +147,7 @@ const PrayerTimesTab = ({ orgId }: PrayerTimesTabProps) => {
                       <h4 className="font-display font-bold text-teal">עריכת בית כנסת</h4>
                       <Button variant="ghost" size="icon" aria-label="ביטול עריכה" onClick={() => setEditingSynagogue(null)}><X className="w-4 h-4" /></Button>
                     </div>
-                    <SynagogueForm form={synForm} onChange={setSynForm} />
+                    <SynagogueForm form={synForm} onChange={setSynForm} idPrefix="syn-edit" />
                     <Button onClick={() => updateSynagogue(syn.id)} className="w-full bg-gradient-brand text-primary-foreground font-body font-bold gap-2">
                       <Save className="w-4 h-4" /> עדכן
                     </Button>
@@ -247,31 +247,31 @@ const PrayerTimesTab = ({ orgId }: PrayerTimesTabProps) => {
   );
 };
 
-const SynagogueForm = ({ form, onChange }: { form: any; onChange: (f: any) => void }) => (
+const SynagogueForm = ({ form, onChange, idPrefix }: { form: any; onChange: (f: any) => void; idPrefix: string }) => (
   <div className="grid grid-cols-2 gap-3">
     <div>
-      <label className="font-body text-xs font-medium text-muted-foreground mb-1 block">שם בית הכנסת *</label>
-      <Input value={form.name} onChange={e => onChange({ ...form, name: e.target.value })} className="border-gold/20 focus:border-gold/50" />
+      <label htmlFor={`${idPrefix}-name`} className="font-body text-xs font-medium text-muted-foreground mb-1 block">שם בית הכנסת *</label>
+      <Input id={`${idPrefix}-name`} value={form.name} onChange={e => onChange({ ...form, name: e.target.value })} className="border-gold/20 focus:border-gold/50" />
     </div>
     <div>
-      <label className="font-body text-xs font-medium text-muted-foreground mb-1 block">עיר</label>
-      <Input value={form.city} onChange={e => onChange({ ...form, city: e.target.value })} className="border-gold/20 focus:border-gold/50" />
+      <label htmlFor={`${idPrefix}-city`} className="font-body text-xs font-medium text-muted-foreground mb-1 block">עיר</label>
+      <Input id={`${idPrefix}-city`} value={form.city} onChange={e => onChange({ ...form, city: e.target.value })} className="border-gold/20 focus:border-gold/50" />
     </div>
     <div>
-      <label className="font-body text-xs font-medium text-muted-foreground mb-1 block">שכונה</label>
-      <Input value={form.neighborhood} onChange={e => onChange({ ...form, neighborhood: e.target.value })} className="border-gold/20 focus:border-gold/50" />
+      <label htmlFor={`${idPrefix}-neighborhood`} className="font-body text-xs font-medium text-muted-foreground mb-1 block">שכונה</label>
+      <Input id={`${idPrefix}-neighborhood`} value={form.neighborhood} onChange={e => onChange({ ...form, neighborhood: e.target.value })} className="border-gold/20 focus:border-gold/50" />
     </div>
     <div>
-      <label className="font-body text-xs font-medium text-muted-foreground mb-1 block">כתובת</label>
-      <Input value={form.address} onChange={e => onChange({ ...form, address: e.target.value })} className="border-gold/20 focus:border-gold/50" />
+      <label htmlFor={`${idPrefix}-address`} className="font-body text-xs font-medium text-muted-foreground mb-1 block">כתובת</label>
+      <Input id={`${idPrefix}-address`} value={form.address} onChange={e => onChange({ ...form, address: e.target.value })} className="border-gold/20 focus:border-gold/50" />
     </div>
     <div>
-      <label className="font-body text-xs font-medium text-muted-foreground mb-1 block">טלפון</label>
-      <Input value={form.phone} onChange={e => onChange({ ...form, phone: e.target.value })} className="border-gold/20 focus:border-gold/50" />
+      <label htmlFor={`${idPrefix}-phone`} className="font-body text-xs font-medium text-muted-foreground mb-1 block">טלפון</label>
+      <Input id={`${idPrefix}-phone`} value={form.phone} onChange={e => onChange({ ...form, phone: e.target.value })} className="border-gold/20 focus:border-gold/50" />
     </div>
     <div>
-      <label className="font-body text-xs font-medium text-muted-foreground mb-1 block">הערות</label>
-      <Input value={form.notes} onChange={e => onChange({ ...form, notes: e.target.value })} className="border-gold/20 focus:border-gold/50" />
+      <label htmlFor={`${idPrefix}-notes`} className="font-body text-xs font-medium text-muted-foreground mb-1 block">הערות</label>
+      <Input id={`${idPrefix}-notes`} value={form.notes} onChange={e => onChange({ ...form, notes: e.target.value })} className="border-gold/20 focus:border-gold/50" />
     </div>
   </div>
 );
