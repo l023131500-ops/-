@@ -8272,3 +8272,46 @@
      `target="_blank"` בלי `rel="noopener noreferrer"`, `id`
      כפולים, color-contrast), או לחזור ל-`core.project_tasks`/
      `core.project_bugs` (5 פריטים פתוחים, עדיין חסומים).
+
+## 20/08/2026 — סבב 165 (loop A)
+
+809. **בדקתי את שלושת המועמדים שהוצעו בסבב 164** לפני פתיחת עדשה
+     חדשה — כולם התבררו לא-ממצאים אמיתיים: (1) `target="_blank"`
+     בלי `rel="noopener noreferrer"` — 9 מופעים נמצאו (01/15/16),
+     אך כולם כבר נושאים `rel="noreferrer"` בלבד, וזה **כבר מונע**
+     גישת `window.opener` (המפרט של WHATWG קובע ש-`noreferrer`
+     מרמז גם `noopener`) — לא באג אמיתי, לא שונה. (2) `id` כפולים
+     על 01-16/40-gannenet — נמצא רק דפוס תקין ומכוון (Field
+     component עם `id` על `<label for>` ועל שדה הקלט התואם,
+     ב-04-imud-torani/DesignDept.tsx) — לא באג. (3) `tabIndex`
+     חיובי — אפס מופעים בכל 01-16 (רק `{0}`/`{-1}` תקינים
+     קיימים). פתחתי גם עדשת div+onClick-בלי-role/tabIndex/keyboard
+     (מסוכן יותר מבחינת נגישות מטופסי-toggle שכבר טופלו) — מופע
+     יחיד נמצא (`03-igud-ads/.../transcripts/page.tsx`) והוא
+     backdrop של מודאל (תבנית תקינה, לא באג).
+810. **עדשה חדשה שכן הניבה ממצא אמיתי:** קישור "דלג לתוכן" (WCAG
+     2.4.1 Bypass Blocks) — הועלה כמועמד בסבב 157 (#777) ולא מומש
+     מעולם. האצלתי לסוכן Explore בדיקה שיטתית על כל 01-16
+     (דילוג 08/09)/40-gannenet: ל-6 יש כבר (05/06/10/14/16 +
+     11 חלקי), ל-8 חסר: 01/02/03/04/12/15/40-gannenet (07/13 ריקים
+     — לא רלוונטי).
+811. **התיקון:** `apps/01-torah-platform/src/components/layout/
+     PublicLayout.tsx` — הוספתי קישור `<a href="#main">דלג לתוכן</a>`
+     כאלמנט הראשון בעץ (מוסתר עם `sr-only`, נחשף עם
+     `focus:not-sr-only` + מיקום/צבע, בדיוק לפי התבנית הקיימת
+     ב-`16-chatzor-connect/RootLayout.tsx`), ו-`id="main"` על ה-
+     `<main>` הקיים שכבר עוטף את `<Outlet />`. אומתתי ש-
+     `bg-primary`/`text-primary-foreground` קיימים בפועל ב-theme
+     של האפליקציה (`tailwind.config.ts` + שימוש קיים ב-
+     `AdminDashboard.tsx`). ללא שינוי ל-`Navbar`/`Footer`/
+     `useTenant`/מצב הטעינה/שגיאה הקיימים.
+812. **אפס רגרסיה מאומתת:** `git diff` — קובץ אחד, 7+/1-, תוספת
+     טהורה + שינוי attribute יחיד (`<main>`→`<main id="main">`).
+     איזון סוגריים בפייתון על הקובץ המלא: `()` 7/7, `{}` 8/8,
+     `[]` 0/0 — תואם.
+813. **הבא בתור:** להמשיך את עדשת ה-skip-link על שאר 7 האפליקציות
+     החסרות (02/03/04/12/15/40-gannenet — כל אחת עם קובץ layout
+     שורש משלה), או לפתוח עדשה נוספת, או לחזור ל-
+     `core.project_tasks`/`core.project_bugs` (5 פריטים פתוחים,
+     עדיין חסומים על secrets חסרים או החלטות merge/origin מחוץ
+     לסמכות הסוכן).
