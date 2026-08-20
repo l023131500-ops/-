@@ -690,17 +690,17 @@ const AdminRightsReference = () => {
           <div className="space-y-3 mt-2">
             <Input placeholder="שם הנושא *" value={newRight.topic_name} onChange={(e) => setNewRight({ ...newRight, topic_name: e.target.value })} className="text-sm" />
             <div>
-              <label className="text-xs text-muted-foreground">קטגוריה *</label>
+              <label htmlFor="add-right-category" className="text-xs text-muted-foreground">קטגוריה *</label>
               <div className="flex gap-2">
                 {categories.length > 0 && (
                   <Select value={newRight.category as string} onValueChange={(v) => { setNewRight({ ...newRight, category: v }); setCustomCategory(""); }}>
-                    <SelectTrigger className="text-sm"><SelectValue placeholder="בחר קטגוריה" /></SelectTrigger>
+                    <SelectTrigger id="add-right-category" className="text-sm"><SelectValue placeholder="בחר קטגוריה" /></SelectTrigger>
                     <SelectContent>
                       {categories.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
                     </SelectContent>
                   </Select>
                 )}
-                <Input placeholder="או קטגוריה חדשה" value={customCategory} onChange={(e) => { setCustomCategory(e.target.value); setNewRight({ ...newRight, category: "" }); }} className="text-sm flex-1" />
+                <Input placeholder="או קטגוריה חדשה" aria-label="קטגוריה חדשה" value={customCategory} onChange={(e) => { setCustomCategory(e.target.value); setNewRight({ ...newRight, category: "" }); }} className="text-sm flex-1" />
               </div>
             </div>
             {DISPLAY_FIELDS.map(({ key, label }) => (

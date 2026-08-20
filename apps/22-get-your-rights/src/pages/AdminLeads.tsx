@@ -471,8 +471,8 @@ const AdminLeads = () => {
                     ))}
                   </div>
                   <div className="space-y-2">
-                    <label className="text-xs text-muted-foreground font-medium">תיאור הטיפול (חובה לסימון "טופל"):</label>
-                    <Textarea value={handledDesc} onChange={(e) => setHandledDesc(e.target.value)} placeholder="תאר איך הליד טופל..." aria-label="תיאור הטיפול" className="text-sm min-h-[60px]" />
+                    <label htmlFor="lead-handled-desc" className="text-xs text-muted-foreground font-medium">תיאור הטיפול (חובה לסימון "טופל"):</label>
+                    <Textarea id="lead-handled-desc" value={handledDesc} onChange={(e) => setHandledDesc(e.target.value)} placeholder="תאר איך הליד טופל..." aria-label="תיאור הטיפול" className="text-sm min-h-[60px]" />
                     {selectedLead.handled_description && selectedLead.status === "handled" && (
                       <div className="text-xs bg-green-50 border border-green-200 rounded p-2">
                         <span className="font-bold">✅ תיאור טיפול שמור: </span>{selectedLead.handled_description}
@@ -580,9 +580,10 @@ const AdminLeads = () => {
               <div className="space-y-3 mt-2">
                 {EDITABLE_FIELDS.map(({ key, label, type, options }) => (
                   <div key={key}>
-                    <label className="text-xs text-muted-foreground font-medium">{label}</label>
+                    <label htmlFor={`edit-lead-${key}`} className="text-xs text-muted-foreground font-medium">{label}</label>
                     {type === "select" && options ? (
                       <select
+                        id={`edit-lead-${key}`}
                         value={String(editingLead[key] || "")}
                         onChange={(e) => setEditingLead({ ...editingLead, [key]: e.target.value || null })}
                         className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
@@ -592,6 +593,7 @@ const AdminLeads = () => {
                       </select>
                     ) : (
                       <Input
+                        id={`edit-lead-${key}`}
                         value={String(editingLead[key] ?? "")}
                         onChange={(e) => setEditingLead({ ...editingLead, [key]: key === "children_count" ? (parseInt(e.target.value) || null) : (e.target.value || null) })}
                         className="text-sm"

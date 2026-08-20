@@ -688,8 +688,9 @@ export default function HealthFundsAdmin() {
                   </div>
                   <div className="flex flex-col sm:flex-row gap-2 items-stretch sm:items-end pt-1 border-t border-border/60">
                     <div className="sm:w-40">
-                      <label className="text-xs text-muted-foreground">סטטוס טיפול</label>
+                      <label htmlFor={`select-hf-switch-status-${l.id}`} className="text-xs text-muted-foreground">סטטוס טיפול</label>
                       <select
+                        id={`select-hf-switch-status-${l.id}`}
                         className="w-full border border-border rounded-md px-2 py-2 text-sm bg-background mt-0.5"
                         value={d.status}
                         onChange={(e) => setSwitchDraft({ ...switchDraft, [l.id]: { ...d, status: e.target.value } })}
@@ -701,8 +702,9 @@ export default function HealthFundsAdmin() {
                       </select>
                     </div>
                     <div className="flex-1">
-                      <label className="text-xs text-muted-foreground">הערת טיפול</label>
+                      <label htmlFor={`input-hf-switch-note-${l.id}`} className="text-xs text-muted-foreground">הערת טיפול</label>
                       <Textarea
+                        id={`input-hf-switch-note-${l.id}`}
                         className="min-h-10 mt-0.5"
                         value={d.handlingNote}
                         placeholder="הערה פנימית לטיפול…"
