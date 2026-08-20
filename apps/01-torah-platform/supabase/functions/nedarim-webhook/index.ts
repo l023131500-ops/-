@@ -184,7 +184,13 @@ Deno.serve(async (req) => {
     const refId = foundDonationId || foundOrderId || "";
     if (isSuccess && refId) {
       if (purpose === "donation" || purpose === "subscription" || foundDonationId) {
-        await supabase
+        // Idempotent capture: only the webhook call that actually flips
+        // payment_status away from "captured" gets the row back. Nedarim (or
+        // our own retry logic upstream) can redeliver the same IPN more than
+        // once for one payment -- without this guard a redelivered webhook
+        // would fall through to the campaign-total update below a second
+        // time and double-count the same donation.
+        const { data: don } = await supabase
           .from("donations")
           .update({
             payment_status: "captured",
@@ -195,25 +201,32 @@ Deno.serve(async (req) => {
             receipt_number: receiptDocNum || undefined,
             receipt_issued_at: receiptDocNum ? new Date().toISOString() : undefined,
           })
-          .eq("id", foundDonationId || refId);
-
-        // Update campaign raised total
-        const { data: don } = await supabase
-          .from("donations")
-          .select("campaign_id, amount_ils, tenant_id")
           .eq("id", foundDonationId || refId)
+          .neq("payment_status", "captured")
+          .select("campaign_id, amount_ils, tenant_id")
           .maybeSingle();
 
+        // Update campaign raised total -- compare-and-swap retry loop instead
+        // of read-then-write, because two different donations to the same
+        // campaign can both be captured within the same instant (two donors,
+        // or two webhook deliveries for two different payments) and a plain
+        // read-then-write here silently loses whichever update lands second.
         if (don?.campaign_id) {
-          const { data: c } = await supabase
-            .from("donation_campaigns")
-            .select("raised_ils")
-            .eq("id", don.campaign_id)
-            .maybeSingle();
-          await supabase
-            .from("donation_campaigns")
-            .update({ raised_ils: (c?.raised_ils || 0) + don.amount_ils })
-            .eq("id", don.campaign_id);
+          for (let attempt = 0; attempt < 5; attempt++) {
+            const { data: c } = await supabase
+              .from("donation_campaigns")
+              .select("raised_ils")
+              .eq("id", don.campaign_id)
+              .maybeSingle();
+            const before = c?.raised_ils;
+            let cas = supabase
+              .from("donation_campaigns")
+              .update({ raised_ils: (before || 0) + don.amount_ils })
+              .eq("id", don.campaign_id);
+            cas = before == null ? cas.is("raised_ils", null) : cas.eq("raised_ils", before);
+            const { data: updated } = await cas.select("id").maybeSingle();
+            if (updated) break;
+          }
         }
       } else if (purpose === "shop_order" || foundOrderId) {
         await supabase

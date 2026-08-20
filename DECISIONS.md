@@ -2638,3 +2638,57 @@
      עבר נקי (transpile, לא build מלא — אין `node_modules` להרצת build
      אמיתי בסבב הזה). ענף `fix/a-igud-ads-worker-race-0820`, נדחף.
 
+## 20/08/2026 (LOOP A — סבב 35) — 01-torah: `donation_campaigns.raised_ils` — read-then-write שמאבד תרומות, ו-webhook שאינו אידמפוטנטי
+
+223. **בדקתי מחדש `core.run_progress`/`core.issues`/`core.project_tasks` לפני
+     שהתחלתי.** אין שינוי מסבב 34: כל הפתוח בתחום Loop A עדיין חסום —
+     #167/#201 (15-egod, Lovable), #138/#120/#171/#203/#205/#207 (הכרעת
+     משתמש/פרויקטים חיצוניים). שום פריט חדש פתוח ל-agent בתחום 01-16.
+     הרצתי סוכני Explore על שטח טרי: (1) `07-zol` — מנייר בלבד
+     (`app.json` עם `source: not-vendored`, אין קוד לבדוק, כבר תועד
+     בסבב 30). (2) `13-property-identity/smart-research` — מצא לכאורה
+     טבלת `nadlan.location_profiles` עם `grant select ... to anon` וללא
+     RLS, אבל אימתתי מול ה-DB החי (`uhnrgujbdxhhmoxcjria`, סכימת
+     `nadlan`): הטבלאות החיות שם (`properties`, `poi`, `transactions`
+     וכו', כולן עם RLS דלוק) **שונות לגמרי** מהמיגרציה המקומית
+     (`location_profiles`/`data_sources`/`localities`...) — המיגרציה
+     מעולם לא הופעלה, ואין `nadlan-smart-research` ברשימת ה-Edge
+     Functions החיות. לא קוד רץ בייצור, לא תוקן. (3) תמחור/`core.plans`
+     — סוכן טען שנמצא `body.amount` לא מאומת ב-`nedarim-create-payment`,
+     אך זה התבסס על תמונת QA ישנה (`QA/torah/admin-users-0812/`), לא על
+     המקור החי; קראתי את `apps/01-torah-platform/supabase/functions/
+     nedarim-create-payment/index.ts` בפועל — האימות כבר קיים (שורות
+     102-121, מתוקן היום בסבב הקודם ל-35). לא באג, לא נגעתי.
+224. **הממצא האמיתי, מסוכן Explore על יתר ה-Edge Functions של 01
+     שלא נבדקו עדיין בנפרד: `nedarim-webhook/index.ts` שורות 200-217
+     המקוריות מעדכנות `donation_campaigns.raised_ils` בקריאה-ואז-כתיבה
+     בלי שום תנאי אטומי** — בדיוק אותו דפוס באג שנסגר כבר כמה פעמים
+     בריפו הזה (מונה קופון ב-02/03, מכסת AI ב-40-gannenet, מרוץ מורה
+     ב-16). שני תורמים שהתשלום שלהם נקלט כמעט באותו רגע (או שתי
+     משלוחות webhook חופפות מ-Nedarim לתשלומים שונים לאותו קמפיין —
+     תרחיש סביר: קמפיין תרומות עם כמה תורמים בו-זמנית, או retry טבעי
+     של השער התשלום) — שתיהן קוראות אותו `raised_ils` ישן, כל אחת
+     מוסיפה את הסכום שלה, והכתיבה השנייה דורסת את הראשונה: תרומה
+     אחת נעלמת מהסכום המוצג לציבור על הקמפיין. בנוסף, אין שום הגנה
+     נגד משלוח כפול של אותה הודעת webhook (`ourPaymentId` זהה) —
+     ה-`update` על `donations` רץ תמיד בלי תנאי על המצב הנוכחי, אז
+     משלוח חוזר של אותה הודעה (מקובל אצל ספקי סליקה) היה מוסיף את אותה
+     תרומה פעם שנייה ל-`raised_ils`.
+225. **התיקון: שני חלקים.** (א) הפכתי את עדכון `donations` לאטומי
+     ואידמפוטנטי — `.update(...).eq("id", ...).neq("payment_status",
+     "captured").select("campaign_id, amount_ils, tenant_id")
+     .maybeSingle()` במקום update ואז select נפרד; רק המשלוח הראשון
+     שמוצא תרומה שעוד לא "captured" מקבל את השורה בחזרה, משלוח כפול
+     מקבל `null` ומדלג לגמרי על עדכון הקמפיין. זה גם חוסך שאילתה אחת
+     (היה update+select נפרד, עכשיו select אחד משולב ב-update). (ב)
+     הפכתי את עדכון `raised_ils` ללולאת compare-and-swap (עד 5 ניסיונות)
+     — קורא ערך נוכחי, כותב עם `.eq("raised_ils", before)` (או
+     `.is("raised_ils", null)` אם הערך null) כתנאי; אם קריאה חופפת שינתה
+     את הערך בינתיים ה-update לא תופס אף שורה (`updated` חוזר null) והלולאה
+     קוראת מחדש ומנסה שוב — אין חלון שבו עדכון אחד נעלם. שאר שדות
+     ה-update (קבלה, `paid_at` וכו') ללא שינוי. `esbuild` transpile על
+     הקובץ עבר נקי (אין `node_modules` להרצת build מלא בסבב הזה). בדקתי
+     `grep` — אין קורא אחר שתלוי בצורת התשובה של הפונקציה (מחזירה תמיד
+     טקסט `"OK"` קבוע, לא JSON, לאף אחד מהמאמתים). ענף
+     `fix/a-torah-nedarim-webhook-raised-ils-race-0820`, נדחף.
+
