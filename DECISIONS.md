@@ -3323,3 +3323,57 @@
     הבא צריך לפתוח בסריקת Explore טרייה על מערכת שלא נסרקה עדיין לעומק
     בסבב הזה (למשל 24-galilee-connect-hub, פרויקט Supabase נפרד משלה
     שלא נבדק כלל עד כה, או 28-kupot-health-funds).
+
+## 20/08/2026 — סבב 48
+
+260. **לופ B, סבב חדש -- קראתי README/CONNECTIONS, בדקתי `core.run_progress`**
+    (הצעד האחרון: 31-hebrew-bridge-crm hooks, קומיטים `959ba9c8`/`6a62a8a9`,
+    כבר ה-parent של הענף הזה, כבר נדחף) ו-`core.issues` הפתוחים בהיקף 17-31
+    -- כל השורות `owner='user'` (#245/#248-251) עדיין חסומות על גישת דשבורד/
+    פריסה לפרויקטי Supabase שאינם נגישים ל-MCP כאן, השורה היחידה
+    `owner='agent'` הפתוחה (#242, מחשבון חיסכון/זכאות §9) עדיין חסומה על
+    אותה סיבה שתועדה בה כבר (פרויקטי 30/22 לא נגישים ל-MCP/Lovable כאן).
+    פעלתי לפי ההצעה מסוף סבב #259: הרצתי שני סוכני Explore במקביל על
+    24-galilee-connect-hub (פרויקט Supabase נפרד `mwljkonwdeuaahsigjdp`, לא
+    נבדק לעומק עד כה) ו-28-kupot-health-funds (לוודא שאין עוד מופעים של
+    התבנית שכבר תוקנה בו פעם אחת, #233-234). 28 חזר כמעט נקי (מופע גבולי
+    יחיד, `await readTopic()` מחוץ ל-try/catch אך מכוסה ע"י error middleware
+    גלובלי -- לא תוקן, ערך נמוך). 24 חזר עם **33 מופעים מאומתים** של
+    "silent-write-fail" (כתיבת Supabase בלי בדיקת `{error}`) פרושים על שמונה
+    קבצים -- ChatBot.tsx/AskRabbiSection.tsx (שני טפסי "שאל את הרב"
+    הציבוריים, אחד מהם עם הודעת הצלחה קבועה `sent(true)` ללא תנאי כלל),
+    GallerySection.tsx/ActivitySlideshow.tsx (ווידג'טים אדמין גלריה/סליידשואו),
+    SynagogueDetailsManager.tsx (קומפוננטה שלמה, לא בשימוש בפועל -- לא
+    מיובאת משום מקום, רק תיעוד בהערה ב-GabaiPortal.tsx, אך תוקנה בכל זאת
+    לפי הכלל "לא למחוק פיצ'ר קיים"), וכל תשע מנהלי ה-CRUD בלוח הניהול
+    (`GabaiPortal.tsx`: SynagogueManager, AdminPasswordManager,
+    ContactInfoManager [רק ה-cleanup delete], HalachaManager,
+    NewsletterManager, KashrutManager, AdBannerManager, KnowledgeManager,
+    ContactLeadsManager, RabbiQuestionsManager). דוגמה בולטת: `GabaiPortal.tsx`
+    `AdminPasswordManager.updatePassword`/`deleteAdmin` -- שינוי/מחיקת סיסמת
+    מנהל שיכולים להיכשל בשקט ולהראות "הצלחה" בעוד שהחשבון נותר עם הסיסמה
+    הישנה.
+261. **התיקון**: לכל 33 המופעים -- פירקתי `{ error }` מהתוצאה והוספתי בדיקה
+    שמציגה הודעת שגיאה `text-destructive` (אותו דפוס בדיוק שכבר קיים ותקין
+    ב-`ContactInfoManager`/`ContactPage.tsx`/`ServiceRequestForm.tsx` באותו
+    ריפו: state נפרד `saveError`/`actionError`, `return` לפני עדכון ה-state
+    של הצלחה) במקום להראות הצלחה מזויפת. במקומות עם הרבה כתיבות מקבילות
+    (`SynagogueDetailsManager.handleSave`, `SynagogueManager.handleDelete`)
+    אספתי `hasError` על פני כל הכתיבות ורק בסוף החלטתי אם להציג הצלחה או
+    שגיאה, כדי לא לעצור באמצע פעולה מורכבת. בייבוא CSV (SynagogueManager/
+    KashrutManager) ספרתי שורות שנכשלו והצגתי מונה במקום להיכשל בשקט על
+    השורה הראשונה. במחיקת ה-cleanup הישנה ב-`ContactInfoManager` (כתיבה
+    best-effort, לא בנתיב ההצלחה העיקרי) הוספתי רק `console.error` בהתאם
+    לתקדים שנקבע בסבבים #247/#253/#259. אפס שינוי לזרימת ההצלחה הרגילה בכל
+    33 המקומות, אפס שינוי לסכמה/RLS. אין `node_modules` מותקן בעץ הזה --
+    אומת בקריאה חוזרת מלאה (`git diff`) של כל שישה הקבצים שנערכו, כולל
+    בדיקת איזון סוגריים תוכנית על הקבצים המלאים (לא בהרצת build/Vite).
+    נדרש `git add -f` (`apps/24-galilee-connect-hub/src` מוחרג כברירת מחדל
+    ב-gitignore, אותו דפוס חוזר מכל סבב קודם שנגע בנתיבים האלה). קומיט
+    `c393d27c` על `fix/b-galilee-connect-hub-silent-write-fail-0820`, נדחף
+    (מפעיל פריסת Vercel תחת הנתיב הממופה ל-24, `more30.com/galil`). **הבא
+    בתור:** 28-kupot-health-funds נסרק ונמצא כמעט נקי (מופע גבולי יחיד לא
+    תוקן, מכוסה ע"י error middleware). הסבב הבא צריך לפתוח בסריקת Explore
+    טרייה על מערכת שלא נסרקה עדיין (19-igud-shiurim-portal, 20-igud-portal,
+    23-haorech-torani, 25-mor1-main-site תועדו בעבר כריפואים ריקים/כפילויות
+    -- כדאי לוודא שזה עדיין מדויק לפני שמדלגים עליהם).
