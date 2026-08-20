@@ -1,22 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { adminGate } from '@/lib/adminauth';
 import { checkAllActiveAlerts, checkAreaAlert, listAreaAlerts } from '@/lib/areaalerts';
+import { publicBaseUrl } from '@/lib/baseurl';
 import { emailConfigured } from '@/lib/email';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 // בדיקת כל ההתראות הפעילות קוראת ל-GovMap כמה פעמים לכל אחת, ברצף.
 export const maxDuration = 300;
-
-/** כתובת הבסיס הציבורית — לקישור "לדוח המלא" בתוך מייל ההתראה. */
-function publicBaseUrl(req: NextRequest): string {
-  const explicit = process.env.PUBLIC_BASE_URL?.trim();
-  if (explicit) return explicit.replace(/\/+$/, '');
-  const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
-  const host = req.headers.get('x-forwarded-host') ?? req.headers.get('host') ?? '';
-  const proto = req.headers.get('x-forwarded-proto') ?? 'https';
-  return `${proto}://${host}${basePath}`.replace(/\/+$/, '');
-}
 
 export async function GET(req: NextRequest) {
   const gate = await adminGate(req);
@@ -32,7 +23,9 @@ export async function GET(req: NextRequest) {
 
 /**
  * הפעלה ידנית של הבדיקה — התאמת עסקאות חדשות + שליחת מייל למי שיש לו מה חדש.
- * אין עדיין תזמון אוטומטי (ראה NEEDS_USER.md): זה הכפתור שיזמן יפעיל בעתיד.
+ * מאז 20/08 יש גם הפעלה אוטומטית יומית (`app/api/cron/area-alerts/route.ts`,
+ * מתוזמן ב-`vercel.json`) שמריצה בדיוק את אותו מנוע — זה נשאר כפתור "בדוק
+ * עכשיו" לבדיקה מיידית בין ריצות התזמון.
  */
 export async function POST(req: NextRequest) {
   const gate = await adminGate(req);

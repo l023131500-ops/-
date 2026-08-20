@@ -7,6 +7,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { adminGate } from '@/lib/adminauth';
 import { buildReport } from '@/lib/buildreport';
+import { publicBaseUrl } from '@/lib/baseurl';
 import { emailConfigured, sendEmail } from '@/lib/email';
 import { reportEmailHtml, reportEmailText } from '@/lib/reporthtml';
 import {
@@ -27,16 +28,6 @@ export const runtime = 'nodejs';
 export const maxDuration = 300;
 
 const STATUSES: RequestStatus[] = ['pending', 'processing', 'sent', 'failed'];
-
-/** כתובת הבסיס הציבורית — לתמונות ולקישורים בתוך המייל. */
-function publicBaseUrl(req: NextRequest): string {
-  const explicit = process.env.PUBLIC_BASE_URL?.trim();
-  if (explicit) return explicit.replace(/\/+$/, '');
-  const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
-  const host = req.headers.get('x-forwarded-host') ?? req.headers.get('host') ?? '';
-  const proto = req.headers.get('x-forwarded-proto') ?? 'https';
-  return `${proto}://${host}${basePath}`.replace(/\/+$/, '');
-}
 
 export async function GET(req: NextRequest) {
   const gate = await adminGate(req);
