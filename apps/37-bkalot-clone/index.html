@@ -9,6 +9,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700&family=Frank+Ruhl+Libre:wght@500;700&display=swap" rel="stylesheet">
+<!-- מערכת העיצוב הגלובלית של בקלות (apps/29-bkalot-design) — נטענת ראשונה כדי
+     שכל --tokens וה-bk- רכיבים שלה יהיו זמינים; ה-<style> המקומי בא אחריה
+     בכוונה כדי שהזהות הייחודית של bkalot-clone (ירוק-אזמרגד) תמשיך לגבור. -->
+<link rel="stylesheet" href="https://bieebmnmkffwbqlsfozh.supabase.co/storage/v1/object/public/design/bkalot-theme.css">
 <style>
 /* ── tokens ─────────────────────────────────────────────────────────────────
    זהות משלה ל-bkalot-clone: ירוק-אזמרגד עמוק (סמכות שקטה) + חול חם להדגשה.
@@ -128,7 +132,7 @@ button:disabled{opacity:.55; cursor:progress}
 .result dd{margin:0; font-weight:600}
 .code{font-family:ui-monospace,"Consolas",monospace; font-size:13px; color:var(--text-soft); direction:ltr; display:inline-block}
 .testmode{
-  margin-top:calc(var(--sp)*3); font-size:14px; color:var(--text-soft);
+  margin:calc(var(--sp)*3) 0 1em; font-size:14px; color:var(--text-soft);
   border-inline-start:3px solid var(--accent); padding-inline-start:12px;
 }
 footer{margin-top:calc(var(--sp)*5); font-size:14px; color:var(--text-soft); text-align:center}

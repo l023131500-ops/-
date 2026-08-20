@@ -9,6 +9,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700&family=Frank+Ruhl+Libre:wght@500;700&display=swap" rel="stylesheet">
+<!-- מערכת העיצוב הגלובלית של בקלות (apps/29-bkalot-design) — נטענת ראשונה כדי
+     שכל --tokens וה-bk- רכיבים שלה יהיו זמינים; ה-<style> המקומי בא אחריה
+     בכוונה כדי שהזהות הייחודית של bkalot-clone (ירוק-אזמרגד) תמשיך לגבור. -->
+<link rel="stylesheet" href="https://bieebmnmkffwbqlsfozh.supabase.co/storage/v1/object/public/design/bkalot-theme.css">
 <style>
 /* אותם tokens של הטופס הציבורי (apps/37-bkalot-clone/index.html) — אותה מערכת,
    אותה זהות. מה ששונה כאן הוא הצפיפות: מסך עבודה ולא עמוד נחיתה. */
@@ -164,7 +168,7 @@ pre{
   font-size:12.5px; max-height:280px; margin:0;
 }
 .testmode{
-  margin-top:calc(var(--sp)*4); font-size:14px; color:var(--text-soft);
+  margin:calc(var(--sp)*4) 0 1em; font-size:14px; color:var(--text-soft);
   border-inline-start:3px solid var(--accent); padding-inline-start:12px;
 }
 /* ── הפקה והצגה של מסמך (שכבה 3) ── */
