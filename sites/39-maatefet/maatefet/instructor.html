@@ -92,6 +92,9 @@ th{color:var(--muted);font-weight:400;font-size:12px;text-transform:uppercase;le
 .badge.used,.badge.confirmed{color:var(--emerald);border-color:rgba(20,184,138,.5)}
 .badge.revoked,.badge.expired,.badge.declined,.badge.cancelled,.badge.skipped{color:var(--muted)}
 .badge.completed{color:var(--ink-2)}
+/* מוצע-לבדיקה (auto_flagged) — gold, שונה בכוונה מ-rose של flagged הידני:
+   הצעת-מערכת אינה החלטה שהמדריך/ה כבר קיבל/ה (ר' 0123). */
+.badge.autoflag{color:var(--gold-soft);border-color:var(--gold)}
 .badge.flagged{color:var(--rose);border-color:rgba(224,87,78,.5)}
 .na{color:var(--muted)}
 .empty{color:var(--muted);font-size:14px;padding:20px 0}
@@ -1192,12 +1195,18 @@ function followupRow(f) {
   if (f.status === 'pending' || f.status === 'sent') actions.push('<button class="btn btn-sm btn-quiet" data-fu-skip="' + f.id + '">סימון כדולג</button>');
   if (f.status === 'completed') actions.push('<button class="btn btn-sm btn-quiet" data-fu-view="' + f.id + '">צפייה בתשובות</button>');
   actions.push('<button class="btn btn-sm btn-quiet" data-fu-flag="' + f.id + '" data-flagged="' + f.flagged + '">' + (f.flagged ? 'הסרת דגל' : 'סימון לבדיקה נוספת') + '</button>');
+  // auto_flagged (0123): הצעת-מערכת דטרמיניסטית, נפרדת מ-flagged הידני —
+  // כפתור "בטל הצעה" מנקה רק אותה, לא נוגע ב-flagged/instructor_note.
+  if (f.auto_flagged) {
+    actions.push('<button class="btn btn-sm btn-quiet" data-fu-autoflag-dismiss="' + f.id + '">בטל הצעה</button>');
+  }
   return '<tr>' +
     '<td>' + v(c ? c.full_name : null) + '</td>' +
     '<td>' + (MILESTONE_LABEL[f.milestone] || v(f.milestone)) + '</td>' +
     '<td>' + dt(f.scheduled_at) + '</td>' +
     '<td><span class="badge ' + f.status + '">' + (FOLLOWUP_STATUS_LABEL[f.status] || f.status) + '</span>' +
-      (f.flagged ? ' <span class="badge flagged">לבדיקה</span>' : '') + '</td>' +
+      (f.flagged ? ' <span class="badge flagged">לבדיקה</span>' : '') +
+      (f.auto_flagged ? ' <span class="badge autoflag" title="' + esc(f.auto_flag_reason || '') + '">⚠ מוצע לבדיקה</span>' : '') + '</td>' +
     '<td>' + actions.join(' ') + '</td>' +
     '</tr>';
 }
@@ -1229,6 +1238,11 @@ async function renderFollowups() {
     b.addEventListener('click', () => {
       const flagged = b.dataset.flagged === 'true';
       rpc('maatefet_followup_flag', { p_id: b.dataset.fuFlag, p_flagged: !flagged }).then(renderFollowups).catch((e) => alert(e.message));
+    });
+  }
+  for (const b of el.querySelectorAll('[data-fu-autoflag-dismiss]')) {
+    b.addEventListener('click', () => {
+      rpc('maatefet_followup_autoflag_dismiss', { p_id: b.dataset.fuAutoflagDismiss }).then(renderFollowups).catch((e) => alert(e.message));
     });
   }
   for (const b of el.querySelectorAll('[data-fu-view]')) b.addEventListener('click', () => viewFollowupAnswers(b.dataset.fuView));
