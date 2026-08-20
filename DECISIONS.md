@@ -8650,6 +8650,71 @@
     framer-motion קיימות (נגישות תנועה).
     via cloud server 167.99.131.167 [loop B]
 
+## 20/08/2026 — סבב 403 (loop B)
+
+403. **עדשה חדשה: focus-trap בתוך מודלים/פאנלים מותאמים-אישית (מוצעת
+    בסוף סבב 402): סוכן Explore סרק את כל 7 האפליקציות החיות
+    (17/18/21/22/24/27/28) ואיתר כל מודל/דיאלוג בדפים ציבוריים, וסיווג
+    כל אחד ל-Radix/shadcn `Dialog` (יש focus-trap מובנה דרך Radix —
+    לא נגעו) מול מודל מותאם-אישית (`fixed inset-0`/`div` overlay עם
+    state, לא Radix). ב-21-mthbram נמצא `LessonDetailModal.tsx`
+    כמימוש-ייחוס מלא ותקין כבר (trap ב-Tab/Shift+Tab, Escape,
+    focus ראשוני לכפתור הסגירה, שחזור פוקוס לאלמנט המפעיל בסגירה) —
+    שימש דוגמת-בסיס להעתקה לשאר.
+
+    6 קבצים מותאמים-אישית נמצאו חסרים חלק מ-4 הבדיקות (trap/Escape/
+    focus ראשוני/שחזור פוקוס), כולם ווידג'טים צפים (צ'אטבוט/עוזר-AI)
+    או לייטבוקס תמונות:
+    - `22-get-your-rights/src/components/AIAgent.tsx` — היה רק Escape,
+      נוסף trap + focus ראשוני לכפתור סגירה + שחזור פוקוס +
+      `role="dialog"`/`aria-modal`.
+    - `22-get-your-rights/src/components/FloatingBot.tsx` — אותו דבר
+      (היה רק Escape).
+    - `24-galilee-connect-hub/src/components/ChatBot.tsx` — לא היה
+      דבר (לא Escape, לא trap) — נוספו כל 4.
+    - `24-galilee-connect-hub/src/components/GallerySection.tsx`
+      (לייטבוקס תמונה) — היה רק Escape, נוספו trap + focus ראשוני
+      לכפתור סגירה + שחזור פוקוס + `role="dialog"`.
+    - `27-bkalut-price/client/src/components/public-chatbot.tsx` — לא
+      היה דבר — נוספו כל 4.
+    - `27-bkalut-price/client/src/pages/public-eligibility.tsx`
+      (מודל "חיפוש לפי מצב מדויק") — היה כבר Escape + שחזור פוקוס,
+      נוסף trap + focus ראשוני לכפתור סגירה + `role="dialog"`.
+
+    התיקון בכל מקום זהה לתבנית ה-ייחוס: `useEffect` שרץ כש-state
+    הפתיחה משתנה ל-true — שומר את `document.activeElement` לפני הפתיחה
+    (`triggerRef`), מעביר פוקוס לכפתור הסגירה, מוסיף מאזין `keydown`
+    יחיד שמטפל גם ב-Escape (סגירה) וגם ב-Tab (מעגל פוקוס בין ראשון
+    לאחרון מבין האלמנטים הניתנים-לפוקוס בתוך `panelRef`, עוצר ברירת
+    מחדל ומדלג לקצה השני), ומחזיר את הפוקוס ל-trigger בפונקציית ה-
+    cleanup. לא נגעו במודלים המבוססי-Radix (`SynagogueDetailModal`
+    ב-21, שני Dialogים ב-`RightsCategories.tsx` ב-22,
+    `barcode-scanner-dialog.tsx`/`public-health-funds.tsx` Dialog ב-27,
+    `SwitchFundDialog.tsx` ב-28) — יש להם trap מובנה דרך Radix כבר.
+    `Navbar.tsx` ב-24 (תפריט מובייל, לא מודל חוסם) הושאר בכוונה מחוץ
+    להיקף — לא דיאלוג full-screen, ה-Escape+שחזור-פוקוס הקיימים בו
+    מספיקים. 17/18/28 לא נדרשו כלל (אין מודלים מותאמים-אישית).
+
+    `git diff --stat`: 6 קבצים, 206+/14-, כולם תוספת (refs חדשים,
+    handler מורחב, attributes על אלמנטים קיימים) ללא מבנה JSX חדש.
+    נבדק ידנית מול `CLAUDE.md` הפנימי של 27-bkalut-price — אף קובץ
+    שנערך אינו ברשימה המוגנת. בדיקת איזון סוגריים (Python,
+    curly/paren/square) נקייה על כל 6 הקבצים. `FloatingBot.tsx`
+    (22) חסר היה `useRef` בייבוא React — נוסף. לא הופעל build/
+    dev-server (לפי הנחיות ההרצה).
+
+    ענף `fix/b-22-whatsapp-noopener-round395-0820` (שרשרת הענפים היא
+    המקור המלא היחיד ל-loop B, לא `main`), נדחף (מפעיל פריסות Vercel
+    תחת `more30.com/zchuyot`, `more30.com/galil`, `more30.com/mechiron`).
+
+    **הבא בתור:** נושא #245 (RLS על `csjekrvukbdznetsrodj`, מוגן —
+    סכימת `csj`, לא לגעת) ו-#250 (RLS על 21-mthbram, חסום MCP) נשארים
+    חסומים. אפשרויות להמשך: רענון תקופתי של עדשת המחירון/מיתוג 'עולם
+    הסטארטאפים', עדשת `rel="noopener"` על קישורי `<a>` חיצוניים
+    שנוספו מאז סבב 395/399, או בדיקת ניגודיות צבעים (color-contrast)
+    על טקסט על רקעים גרדיאנטיים.
+    via cloud server 167.99.131.167 [loop B]
+
 ## 20/08/2026 — סבב 400 (loop B)
 
 400. **בדיקת `<html lang>` עקבי (מוצע בסוף סבב 399): נבדקו כל 9 נקודות
