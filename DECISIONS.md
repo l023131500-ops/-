@@ -6633,3 +6633,50 @@
      hits ב-`projects/page.tsx` ו-`transcripts/page.tsx` שלא נבדקו
      כלל בסבבים קודמים) — לבדוק כל אחד כמודל חי אמיתי (לא
      false-positive) ולתקן לפי אותו תבנית.
+
+## 20/08/2026 — סבב 118 (loop A)
+
+624. **בדקתי מחדש `git log`/`core.run_progress`/`core.project_tasks`
+     לפני שהתחלתי.** סבב 117 סגור (commit `7645e492`, תואם HEAD).
+     חמש המשימות הפתוחות ב-`core.project_tasks` (02/12/13/25/32)
+     עדיין אותו חסם (סוד חסר / החלטת מיזוג-origin) — לא בר-פעולה,
+     אין חדש בתחום auth/admin/pricing/gannenet. המשכתי ישירות
+     להמלצת #623: בדקתי את אותה עדשה (modal מותאם-אישית בלי
+     `role="dialog"`/`aria-modal`/Escape) על כל חמשת קבצי
+     `apps/03-igud-ads/app/(admin)/admin/` שה-grep הרחב על
+     `fixed inset-0` מצא: `projects/page.tsx`,
+     `transcripts/page.tsx`, `users/page.tsx`, `templates/page.tsx`,
+     `transcribe/uploads/page.tsx`.
+625. **אימות שכולם modals חיים, לא false-positive:** קראתי כל
+     חמישה קבצים במלואם. כל אחד הוא דף admin אמיתי (routes תחת
+     `/admin/...`) עם overlay `fixed inset-0 z-50` שמוצג מ-state
+     (`detail`/`modal`/`showDialog`/`selected`) שנפתח בלחיצה על
+     שורה בטבלה או כפתור "חדש" — לא false-positive. לאף אחד מהם
+     לא היה `role`/`aria-modal`/Escape (זהה לדפוס שנמצא ב-01 ו-03
+     בסבבים 116-117).
+626. **התיקון (אחיד על כל 5):** `useEffect` בכל קובץ שמאזין
+     ל-`keydown` על `window` וסוגר את המודל הפתוח ב-Escape (מותנה
+     ב-state המודל: `detail`/`modal`/`showDialog`/`selected`), placed
+     ליד ה-`useEffect` הקיים של טעינת הנתונים. הוספתי
+     `role="dialog"` `aria-modal="true"` ו-`aria-label` (כותרת
+     הדיאלוג בעברית — שם הפריט הקיים או "חדש"/"עריכה" בהתאם ל-state,
+     תואם ל-`<h2>` הקיים בכל דיאלוג) על ה-panel הפנימי בכל אחד
+     (לא ה-overlay). לא נגעתי ב-`onClick`/backdrop-close/
+     `stopPropagation`/save/delete/logic קיים בכל קובץ.
+627. **אפס רגרסיה מאומתת:** `git diff --stat` — 5 קבצים, 72+/3-,
+     רק `useEffect` חדש + 3 attributes על כל panel. אין `tsc`/`npm`
+     בסביבה הזו — אומת בבדיקת איזון `{}`/`()`/`[]` ב-Python על כל
+     חמשת הקבצים במלואם (כולם תואמים: 75/75+83/83+13/13,
+     133/133+153/153+29/29, 60/60+67/67+12/12, 53/53+66/66+11/11,
+     90/90+105/105+19/19). `git add` הרגיל סירב עם "ignored by
+     .gitignore" גם כשהקבצים כבר עוקבים (`git status` הראה `M`) —
+     `git add -f` נדרש (אותו quirk ברמת-תיקייה `apps/**` שתועד
+     בסבבים קודמים). Commit על
+     `fix/a-icon-only-buttons-round2-0820`, יידחף ל-origin (מפעיל
+     פריסת Vercel תחת more30.com/modaot). זה סוגר את עדשת
+     modal-a11y על כל 03-igud-ads שנסרקה (5 קבצים).
+628. **הבא בתור:** ה-grep הרחב על `fixed inset-0` בכל שאר האפליקציות
+     המ-vendored (01, 04, 16) לא הריץ בסבב הזה — סבב הבא צריך לרוץ
+     Explore agent סקירה טרייה על כל 01-16 שוב לעדשת modal-a11y
+     (מעבר ל-01/03 שכבר נסרקו) לפני שממשיך, ואז לבדוק מחדש
+     `core.project_tasks`/`core.project_bugs` לעבודה חדשה בתחום.
