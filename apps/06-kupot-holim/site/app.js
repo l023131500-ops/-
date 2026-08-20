@@ -101,7 +101,7 @@
   function closeDrawer() {
     document.getElementById("profileDrawer").hidden = true;
     document.getElementById("drawerBackdrop").hidden = true;
-    document.body.style.overflow = "";
+    if (document.getElementById("contactModal").hidden) document.body.style.overflow = "";
   }
   document.getElementById("drawerClose").addEventListener("click", closeDrawer);
   document.getElementById("drawerBackdrop").addEventListener("click", closeDrawer);
@@ -229,7 +229,7 @@
   function closeContact() {
     document.getElementById("contactModal").hidden = true;
     document.getElementById("modalBackdrop").hidden = true;
-    document.body.style.overflow = "";
+    if (document.getElementById("profileDrawer").hidden) document.body.style.overflow = "";
   }
   document.getElementById("modalClose").addEventListener("click", closeContact);
   document.getElementById("modalBackdrop").addEventListener("click", closeContact);
