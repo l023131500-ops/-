@@ -6065,3 +6065,27 @@
     מוטציות מחיקה). כל אחד מהם מועמד לתיקון נפרד ומרוכז בסבב הבא כדי
     לשמור על היקף קטן וניתן-לאימות לכל קומיט.
     via cloud server 167.99.131.167 [loop B]
+
+## 20/08/2026 — סבב 335 (loop B)
+
+335. **המשך עדשת מחיקה-בלי-אישור, מועמד שני מהתור שנפתח בסבב 334:**
+    `apps/21-mthbram/src/pages/OrgPortal.tsx` `removeRabbi` (שורה 113)
+    קרא `supabase.from("org_rabbis").delete()` ישירות מתוך `onClick`
+    (שורה ~322, כפתור פח-אשפה ליד כל רב ברשימה) בלי שום שער אישור —
+    לחיצה אחת מסירה רב מהארגון לצמיתות. תוקן באותו דפוס בדיוק שכבר קיים
+    ב-`AdminDashboard.tsx` של אותה אפליקציה (`if (!confirm(...)) return;`)
+    ושכבר שימש לתיקון המקביל ב-`PrayerTimesTab.tsx` בסבב הקודם: הוספתי
+    `if (!confirm("להסיר את הרב מהארגון?")) return;` בתחילת ה-handler.
+    אפס שינוי להתנהגות הקיימת מעבר לחסימת המחיקה המיידית — אין שינוי
+    ל-DB/RLS/צורת השאילתה. בדיקת איזון סוגריים ב-python על הקובץ המלא
+    אחרי העריכה — תקין (189/189, 176/176, 39/39). אין build/dev-server
+    זמין בסביבה הזו לפי הנחיית ההרצה — לא tsc. ענף חדש
+    `fix/b-21-orgportal-removerabbi-unconfirmed-delete-0820`, קומיט
+    `433f46c8`, נדחף (מפעיל פריסת Vercel תחת more30.com/mthbram).
+
+    **הבא בתור:** להמשיך את עדשת מחיקה-בלי-אישור על שאר המופעים בתור —
+    `PortalMessagesTab.tsx` deleteMessage, `PortalSettingsTab.tsx`
+    deletePhoto (שניהם ב-21-mthbram), אחר-כך `AdminSettings.tsx`
+    deleteKey (22-get-your-rights, מפתח API — עדיפות גבוהה יחסית), ואז
+    `financial.tsx` (27-bkalut-price, 5+ מוטציות מחיקה).
+    via cloud server 167.99.131.167 [loop B]
