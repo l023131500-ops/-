@@ -176,7 +176,7 @@ function renderTenant(data, token) {
         el("div", { class: "body" },
           el("strong", {}, a.title || ""),
           el("p", {}, a.body || ""),
-          a.link_url ? el("a", { href: a.link_url, class: "btn small", target: "_blank" }, a.cta_label || "פרטים נוספים") : null,
+          a.link_url ? el("a", { href: a.link_url, class: "btn small", target: "_blank", rel: "noopener noreferrer" }, a.cta_label || "פרטים נוספים") : null,
         ),
       ));
     }

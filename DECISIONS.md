@@ -12011,3 +12011,39 @@
     שורות, פחות תכונות) עדיין לא נסרק לאותו דפוס — מומלץ הראשון בסבב
     הבא. נושאים #62/#94/#115/#164/#169/#254 נשארים חסומים.
     via cloud server 167.99.131.167 [loop B]
+
+466. **`target="_blank"` בלי `rel="noopener"` ב-20-igud-portal
+    `public/app.js` (reverse tabnabbing).** בדקתי את המועמד שסבב 465
+    הציע (סריקת `20-igud-portal/public/app.js` לדפוס double-submit) —
+    התברר שהקובץ מכיל טופס יחיד (`viewTenant` contact form) שכבר מוגן
+    (תוקן בסבב 448). לכן חיפשתי קטגוריית באג אחרת: `grep` על
+    `target="_blank"` בכל 17-28 מצא 60+ מופעים; רובם כבר עם
+    `rel="noopener"`/`"noreferrer"` (תוקנו בסבבים קודמים ב-15-egod/19/
+    21/22/24/27, כולל שם הענף הנוכחי `fix/b-22-whatsapp-noopener`).
+    המופע היחיד שנשאר חשוף: שורה 179, קישור מודעה (`a.link_url`,
+    כתובת חיצונית לא ידועה מראש) ב-`renderTenant`, ללא `rel` כלל —
+    אותה קטגוריית reverse-tabnabbing (חלון חדש עם `window.opener`
+    נגיש לצד השלישי) שתוקנה בכל שאר המערכות ב-scope.
+
+    **התיקון:** הוספת `rel: "noopener noreferrer"` ל-attrs של ה-`el()`
+    call, תוספת חד-שורתית בלבד (עובר דרך `setAttribute` הכללי ב-`el()`
+    — אין ענף מיוחד נדרש). שום שינוי להתנהגות/עיצוב/טקסט הקישור.
+
+    **בדיקות תקינות:** קריאת קוד בלבד (ללא dev-server/build, לפי
+    הנחיות ההרצה). `node -c` על הקובץ עבר נקי. `git diff --stat`: קובץ
+    יחיד, +1/-1.
+
+    לא נגעתי במערכות מוגנות 08/09/bkalut-app/bkalot-admin/zr_*/
+    NEDARIM3873/csj/csj_src/igud, ב-`main`, או במערכת מחוץ ל-scope
+    (17-25/27/28 בלבד).
+
+    ענף `fix/b-22-whatsapp-noopener-round395-0820` (שרשרת הענפים היא
+    המקור המלא היחיד ל-loop B, לא `main`), נדחף.
+
+    **הבא בתור:** ה-`target="_blank"` internal hash-links (`#/t/...`,
+    `#/admin/...`) ב-19-igud-shiurim-portal `public/app.js` (שורות
+    1185/1677/1934/2354-2355) ללא `rel` — לא תוקנו כי הם same-origin
+    (אין וקטור reverse-tabnabbing אמיתי דרך hash routes), אך כדאי
+    לאמת זאת שוב אם קובץ זה יתחיל לטעון תוכן חיצוני. נושאים
+    #62/#94/#115/#164/#169/#254 נשארים חסומים.
+    via cloud server 167.99.131.167 [loop B]
