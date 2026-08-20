@@ -9883,3 +9883,49 @@
     עדיין לא נבדק: `BreadcrumbList`/`WebSite`+`SearchAction` schema.org
     (נדחה מסבב 418/420). נושא #245/#250 (RLS, חסומים) נשארים כפי שהם.
     via cloud server 167.99.131.167 [loop B]
+
+## 20/08/2026 — סבב 422 (loop B)
+
+422. **`WebSite` schema.org חסר לגמרי ב-9/9 — נוסף. `SearchAction` נוסף
+    רק ל-17-chizukim, היחידה עם חיפוש אמיתי מונע-URL.**
+
+    בדיקה (`grep -rln WebSite\|SearchAction\|BreadcrumbList`) על כל 9
+    האפליקציות החיות אישרה שאף אחת לא הצהירה `WebSite` (רק `Organization`,
+    מסבב 418/הקודם) — התאמות ל-`breadcrumb.tsx` היו רכיבי UI של shadcn,
+    לא סכמת `BreadcrumbList` בפועל.
+
+    לפני הוספת `SearchAction` — סוכן חקר קרא את קוד הראוטינג/החיפוש
+    בפועל בכל 9 כדי לא להמציא `urlTemplate`. התוצאה: **רק
+    17-chizukim-transcribe** מסנכרנת חיפוש עם ה-URL בפועל (נתיב `/`
+    → `RecordingsPage`, קוראת `?q=` מ-`window.location.search` בטעינה,
+    `client/src/pages/recordings.tsx:51,78`, נתיב מאומת ב-`App.tsx:15`).
+    שאר שמונה (18-25/27/28 חוץ מ-27 שיש לה רק סינון קטגוריה מונע-URL,
+    לא טקסט חופשי) — שדות חיפוש הם `useState` מקומי בלבד, ללא סנכרון
+    URL בשני הכיוונים; הוספת `SearchAction` עבורן הייתה מפרה את כלל
+    "נתונים אמיתיים בלבד" (מצביעה ל-URL שלא באמת מפעיל חיפוש).
+
+    נוסף בלוק `application/ld+json` שני (`@type: WebSite`, אותם
+    `name`/`url` כמו בלוק ה-`Organization` הקיים) לכל 9 — ליד ה-`</head>`
+    (React/Vite: 8 קבצי `index.html`), ול-18-orech (Next.js) כאובייקט
+    `websiteJsonLd` נפרד המוזרק דרך `<script dangerouslySetInnerHTML>`
+    שני ב-`app/layout.tsx`, אותו דפוס בדיוק כמו `organizationJsonLd`
+    הקיים. ל-17-chizukim בלבד נוסף `potentialAction.SearchAction` עם
+    `target: "https://more30.com/chizukim/?q={search_term_string}"`.
+
+    **בדיקות תקינות:** `python3 json.loads` על כל בלוקי ה-`ld+json`
+    (2 לכל קובץ — Organization + WebSite) ב-8 הקבצים הסטטיים — כולם
+    תקינים. `git diff --stat`: 9 קבצים, ‎+80‎ בלבד (רק תוספות, אין
+    מחיקה, אין קובץ קיים שנפגע). לא הופעל build/dev-server (לפי הנחיות
+    ההרצה).
+
+    ענף `fix/b-22-whatsapp-noopener-round395-0820` (שרשרת הענפים היא
+    המקור המלא היחיד ל-loop B, לא `main`), קומיט `05608ef6`, נדחף
+    (מפעיל 9 פריסות Vercel תחת `more30.com/{chizukim,orech,shiurim,
+    igud,mthbram,zchuyot,galil,mechiron,kupot}`).
+
+    **הבא בתור:** `WebSite`/`SearchAction` סגור בהיקף האמיתי (9/9
+    WebSite, 1/9 SearchAction מוצדק). עדיין לא נבדק: `BreadcrumbList`
+    JSON-LD אמיתי (לא רכיב UI) לדפים עם היררכיה (כגון 27-mechiron
+    `/p/topic/:id`), `hreflang`/`lang` alternate tags, favicon/manifest
+    עקביות. נושא #245/#250 (RLS, חסומים) נשארים כפי שהם. via cloud
+    server 167.99.131.167 [loop B]
