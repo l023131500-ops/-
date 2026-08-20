@@ -4427,3 +4427,44 @@
     ReligiousInfoPage.tsx:113` (ביטחון נמוך יותר — dir לא מאומת
     בוודאות ברמת האב). סבב הבא צריך לאמת ולתקן אחד מאלה, או
     לפתוח עדשה חדשה (ניגודיות צבעים / migrations שלא הוחלו).
+
+## 20/08/2026 — סבב 299 (loop B)
+
+299. **אימתתי ותיקנתי את המועמד הראשון שדורג בסבב 298:
+    `30-zchuyotpro-crm/src/routes/_authenticated/messages.tsx:298`
+    — שורת טלפון+אימייל של איש-קשר בפאנל צ'אט (CRM אדמין), בלי
+    `dir="ltr"`.** קראתי README.md/CONNECTIONS.md, בדקתי
+    `core.run_progress` (הצעד האחרון: PublicOrgPage lang/dir fix,
+    קומיט `4b958215`, כבר ה-HEAD, כבר נדחף) ו-`core.projects`
+    17-31 (ללא צורך בשינוי metadata). **אימתתי בעצמי:** האפליקציה
+    כולה RTL מלא (`__root.tsx:125` — `<html lang="he" dir="rtl">`),
+    והתבנית `dir="ltr"` על טלפון/אימייל כבר מיושמת באותה אפליקציה
+    במקומות אחרים — `clients/$id.tsx:65-66`
+    (`<span dir="ltr">{client.phone}</span>` /
+    `<span dir="ltr">{client.email}</span>`) ו-`clients/index.tsx:110`
+    (`<TableCell dir="ltr" ...>{c.phone ?? "—"}</TableCell>`) — כך
+    שזה לא ניחוש אלא תבנית קיימת ומאומתת בקוד עצמו. לעומת זאת ב-
+    `messages.tsx:298`, `<div className="text-xs text-muted-
+    foreground">{contact.phone ?? "—"} · {contact.email ?? "—"}
+    </div>` הציג את שני הערכים בלי שום `dir`, מה שגורם ל-bidi
+    visual scramble לכל מספר טלפון (וחלק מכתובות אימייל, תלוי
+    בתוכן) בתוך ההקשר RTL הסובב. **התיקון:** עטפתי כל ערך בנפרד
+    ב-`<span dir="ltr">`, זהה לתבנית הקיימת ב-`clients/$id.tsx`
+    (כולל עטיפת ה-fallback `"—"`, עקבי עם `clients/index.tsx`
+    שעוטף גם את ה-`?? "—"` בתוך ה-`dir="ltr"`). אפס שינוי ללוגיקה/
+    state/עיצוב מעבר לעטיפת ה-span. אין `node_modules`/`tsc` בעץ
+    הזה — אימתתי איזון סוגריים/מסולסלים/מרובעים בסקריפט Python
+    קצר על הקובץ (0/0/0) בנוסף לקריאה חוזרת מלאה של ה-diff (שורה
+    אחת). נדרש `git add -f` (`apps/30-zchuyotpro-crm/src` תפוס
+    תחת `.gitignore` כללי — אותו תקדים חוזר). קומיט חדש על ענף
+    `fix/b-zchuyotpro-crm-messages-lang-dir-0820` (יורש
+    `fix/b-mthbram-publicorg-lang-dir-0820`), יידחף (מפעיל פריסת
+    Vercel תחת `more30.com/crm`). **הבא בתור:** שני מועמדים
+    שנותרו מתור סבב 298, טרם אומתו אישית: `27-bkalut-price/
+    financial.tsx:322` (טלפון לקוח) ו-`31-hebrew-bridge-crm/
+    admin/content.tsx:473` (טלפון professional בטבלה) — סבב הבא
+    צריך לאמת ולתקן אחד מהם, או ל"סגור" את עדשת ה-lang/dir אם
+    שניהם מתבררים כ-false-positive ולפתוח עדשה חדשה (ניגודיות
+    צבעים / migrations שלא הוחלו). המועמד הרביעי מסבב 298
+    (`24-galilee-connect-hub/ReligiousInfoPage.tsx:113`) כבר סומן
+    ביטחון-נמוך ולא בראש התור.

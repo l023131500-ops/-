@@ -295,7 +295,7 @@ function ChatPane({ contact, messages, tenantId, senderId, onSent }: {
         <div className="h-10 w-10 rounded-full bg-primary/10 text-primary flex items-center justify-center font-semibold text-sm">{initials(contact.name)}</div>
         <div className="flex-1">
           <div className="font-semibold flex items-center gap-2">{contact.name} <KindIcon className="h-4 w-4 text-muted-foreground" /></div>
-          <div className="text-xs text-muted-foreground">{contact.phone ?? "—"} · {contact.email ?? "—"}</div>
+          <div className="text-xs text-muted-foreground"><span dir="ltr">{contact.phone ?? "—"}</span> · <span dir="ltr">{contact.email ?? "—"}</span></div>
         </div>
       </div>
 
