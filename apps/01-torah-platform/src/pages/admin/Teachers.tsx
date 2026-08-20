@@ -237,12 +237,12 @@ const AdminTeachers = () => {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-border bg-muted/30">
-                  <th className="text-right p-4 font-medium text-muted-foreground">שם</th>
-                  <th className="text-right p-4 font-medium text-muted-foreground">סוג</th>
-                  <th className="text-right p-4 font-medium text-muted-foreground">אימייל</th>
-                  <th className="text-right p-4 font-medium text-muted-foreground">עיר</th>
-                  <th className="text-right p-4 font-medium text-muted-foreground">סטטוס</th>
-                  <th className="text-right p-4 font-medium text-muted-foreground">פעולות</th>
+                  <th scope="col" className="text-right p-4 font-medium text-muted-foreground">שם</th>
+                  <th scope="col" className="text-right p-4 font-medium text-muted-foreground">סוג</th>
+                  <th scope="col" className="text-right p-4 font-medium text-muted-foreground">אימייל</th>
+                  <th scope="col" className="text-right p-4 font-medium text-muted-foreground">עיר</th>
+                  <th scope="col" className="text-right p-4 font-medium text-muted-foreground">סטטוס</th>
+                  <th scope="col" className="text-right p-4 font-medium text-muted-foreground">פעולות</th>
                 </tr>
               </thead>
               <tbody>
