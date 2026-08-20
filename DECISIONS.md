@@ -7715,3 +7715,35 @@
      ~1580-1701, צפייה בנדרים שורות ~1703-1750+), ו-
      `16-chatzor-connect/src/components/ui/Modal.tsx` (רכיב מודל
      חוזר, חסר רק Tab-trap).
+
+## 20/08/2026 — סבב 146 (loop A)
+
+736. **המשכתי את עדשת ה-focus-trap** על הפריט הבא מהתור:
+     `16-chatzor-connect`, `src/components/ui/Modal.tsx` — רכיב מודל
+     חוזר (משמש במסכים מרובים) עם `role="dialog"`/`aria-modal`/
+     `aria-label`/Escape-to-close קיימים, אך ללא ניהול focus ראשוני,
+     ללא Tab-trap וללא שחזור focus בסגירה. קראתי את הקובץ המלא לפני
+     העריכה.
+737. **תיקון:** אותה תבנית מדויקת שהוכחה יעילה בסבבים 143-145
+     (`panelRef`/`closeButtonRef`/`previousFocusRef` עם `useRef`,
+     נוסף ל-import הקיים). בתוך ה-`useEffect` הקיים שכבר טיפל
+     ב-Escape: שמירת ה-element הפעיל לפני הפתיחה, `focus()` על כפתור
+     הסגירה עם הפתיחה, שחזור ה-focus הקודם עם הסגירה (ב-cleanup),
+     ומלכודת Tab/Shift+Tab בתוך `panelRef`. חיבור `ref` ל-`motion.div`
+     של הפאנל ולכפתור הסגירה הקיימים — `motion.div` של framer-motion
+     תומך ב-`ref` באופן טבעי (forwardRef).
+738. **אפס רגרסיה מאומתת:** `git diff --stat` — קובץ אחד, 31+/3-
+     שורות; אין שינוי ל-props/AnimatePresence/animation transitions
+     הקיימים, רק תוספת refs + לוגיקת focus/Tab בתוך ה-`useEffect`
+     הקיים. אין `tsc`/`npm` בסביבה הזו — אימות איזון `{}`/`()`/`[]`
+     בפייתון על הקובץ המלא: 36/36, 31/31, 10/10 — תואם. מכיוון שזה
+     רכיב משותף, התיקון חל אוטומטית על כל מסך שמשתמש ב-`Modal`.
+     הקובץ עוקב ב-git ולא חסום ע"י `.gitignore` (בניגוד ל-03/01) —
+     לא נדרש `git add -f`.
+739. **הבא בתור:** שני מודלים ב-`01-torah-platform/
+     AdminDashboard.tsx` (עריכת שיעור שורות ~1580-1701, צפייה
+     בנדרים שורות ~1703-1750+), ו-`02-igud-transcribe` (admin
+     `uploads`, אותו דפוס). אפשר להמשיך את עדשת ה-focus-trap על אלה,
+     לפתוח עדשה חדשה, או לחזור ל-`core.project_tasks`/
+     `core.project_bugs` (5 פריטים פתוחים, עדיין חסומים על secrets
+     חסרים או החלטות merge/origin מחוץ לסמכות הסוכן).

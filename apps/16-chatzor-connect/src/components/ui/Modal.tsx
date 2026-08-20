@@ -1,4 +1,4 @@
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { X } from "lucide-react";
 
@@ -8,14 +8,41 @@ export function Modal({ open, onClose, title, children }: {
   title: string;
   children: ReactNode;
 }) {
+  const panelRef = useRef<HTMLDivElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const previousFocusRef = useRef<HTMLElement | null>(null);
+
   useEffect(() => {
     if (!open) return;
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
+    previousFocusRef.current = document.activeElement as HTMLElement;
+    closeButtonRef.current?.focus();
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onClose();
+        return;
+      }
+      if (e.key === "Tab" && panelRef.current) {
+        const focusable = panelRef.current.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])'
+        );
+        if (focusable.length === 0) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    };
     window.addEventListener("keydown", onKey);
     document.body.style.overflow = "hidden";
     return () => {
       window.removeEventListener("keydown", onKey);
       document.body.style.overflow = "";
+      previousFocusRef.current?.focus();
     };
   }, [open, onClose]);
 
@@ -30,6 +57,7 @@ export function Modal({ open, onClose, title, children }: {
           onClick={onClose}
         >
           <motion.div
+            ref={panelRef}
             role="dialog"
             aria-modal="true"
             aria-label={title}
@@ -42,7 +70,7 @@ export function Modal({ open, onClose, title, children }: {
           >
             <div className="flex items-center justify-between border-b border-border px-5 py-4">
               <h2 className="font-display text-lg font-bold text-foreground">{title}</h2>
-              <button onClick={onClose} aria-label="סגור" className="grid h-9 w-9 place-items-center rounded-md text-muted-foreground hover:bg-secondary hover:text-foreground">
+              <button ref={closeButtonRef} onClick={onClose} aria-label="סגור" className="grid h-9 w-9 place-items-center rounded-md text-muted-foreground hover:bg-secondary hover:text-foreground">
                 <X className="h-5 w-5" />
               </button>
             </div>
