@@ -5847,3 +5847,33 @@
      admin/users (5) → admin/templates (14) → admin/templates/[id]
      (14) → public/create (14). אחריו 01-torah-platform (~150
      מופעים/19 קבצים) מהמיפוי של סבב 83.
+
+## 20/08/2026 (LOOP A — סבב 99) — `<label htmlFor>`/`id`: 03-igud-ads/admin/notifications
+
+538. **בדקתי מחדש `git log`/`core.run_progress` לפני שהתחלתי.** סבב
+     98 סגור (commit `434d67a9`/`19c73cd6`, HEAD תואם). המשכתי בתור
+     שסבב 98/#537 הגדיר: `admin/notifications` (6) — הבא בגודל אחרי
+     `admin/coupons`.
+539. **קראתי את הקובץ במלואו לפני עריכה.** 178 שורות, טופס שליחת
+     הודעות למשתמשים (טאב "שליחת הודעה") + טבלת היסטוריה (טאב
+     "היסטוריה"). שני רדיו-באטונים ("משתמש בודד"/"הפצה") וה-checkbox
+     "שלח גם במייל" כבר עוטפים את ה-`input` בתוך `<label>` — הוחרגו
+     כמו בכל הסבבים הקודמים (אין `id`/`htmlFor` חסר כשה-input בתוך
+     ה-label). תיקנתי את 6 הזוגות הנותרים שאינם עוטפים: אימייל
+     המשתמש, קהל יעד, סוג, כותרת, תוכן, קישור.
+540. **התיקון:** `notif-to`, `notif-broadcast`, `notif-type`,
+     `notif-title`, `notif-body`, `notif-link` — id על כל
+     input/select/textarea, htmlFor תואם על ה-label שלו.
+541. **אפס רגרסיה מאומתת:** `git diff --stat` — קובץ אחד, 12+/12-
+     (רק `id`/`htmlFor` נוספו על `<label>`/`<input>`/`<select>`/
+     `<textarea>` קיימים, בלי לגעת ב-`value`/`onChange`/`type`/
+     `inputMode`/`autoComplete`/`rows`/`placeholder`). אין `tsc`/
+     `npm` בסביבה הזו — אומת בקריאה מלאה של `git diff` המלא + בדיקת
+     איזון `{}`/`()`/`[]` ב-Python (55/55, 73/73, 17/17). `git add -f`
+     נדרש כתקדים (`apps/**` מוחרג כברירת מחדל ב-`.gitignore` השורשי
+     אך `03-igud-ads/app` כבר עוקב מרישום ידני קודם). Commit
+     `93efc912` על `fix/a-icon-only-buttons-round2-0820`, יידחף
+     ל-origin (מפעיל פריסת Vercel תחת more30.com/modaot).
+542. **הבא בתור ב-03-igud-ads:** admin/users (5) → admin/templates
+     (14) → admin/templates/[id] (14) → public/create (14). אחריו
+     01-torah-platform (~150 מופעים/19 קבצים) מהמיפוי של סבב 83.
