@@ -204,6 +204,7 @@ th{color:var(--muted);font-weight:400;font-size:12px;text-transform:uppercase;le
       <button class="tab" data-view="followups">ליווי אחרי החתונה</button>
       <button class="tab" data-view="directories">דירקטוריז</button>
       <button class="tab" data-view="weddingOrg">ארגון החתונה</button>
+      <button class="tab" data-view="studyTracker">מעקב לימודי</button>
     </div>
 
     <section id="viewClients">
@@ -511,6 +512,48 @@ th{color:var(--muted);font-weight:400;font-size:12px;text-transform:uppercase;le
         <div id="woTable"><div class="empty">טוען…</div></div>
       </div>
     </section>
+
+    <section id="viewStudyTracker" hidden>
+      <p class="sub">תוכנית הלימוד של הזוג — נושאי ההדרכה שהעברתם, מה בתהליך ומה עדיין לא כוסה. הזוג רואה את ההתקדמות שלו/ה לקריאה בלבד — רק אתם מסמנים נושא כהושלם.</p>
+      <div class="card">
+        <h2 id="siFormTitle">נושא לימוד חדש</h2>
+        <div class="row">
+          <div>
+            <label for="siClient">זוג *</label>
+            <select id="siClient"></select>
+          </div>
+          <div>
+            <label for="siSequence">סדר בתוכנית</label>
+            <input id="siSequence" type="number" value="0" />
+          </div>
+        </div>
+        <label for="siTopic">נושא הלימוד *</label>
+        <input id="siTopic" placeholder="לדוגמה: טהרת המשפחה - יסודות ההלכה" />
+        <label for="siNotes">הערות (גלוי גם לזוג)</label>
+        <input id="siNotes" />
+        <div class="row">
+          <div>
+            <label for="siContent">חומר לימוד מהספרייה שלי (אופציונלי)</label>
+            <select id="siContent"><option value="">ללא קישור</option></select>
+          </div>
+          <div>
+            <label for="siStatus">סטטוס</label>
+            <select id="siStatus">
+              <option value="not_started">לא התחיל</option>
+              <option value="in_progress">בתהליך</option>
+              <option value="completed">הושלם</option>
+            </select>
+          </div>
+        </div>
+        <div id="siErr"></div>
+        <button class="btn" id="siSubmit">שמירת נושא</button>
+        <button class="btn btn-sm btn-quiet" id="siCancelEdit" hidden>ביטול עריכה</button>
+      </div>
+      <div class="card">
+        <h2>תוכנית הלימוד</h2>
+        <div id="siTable"><div class="empty">טוען…</div></div>
+      </div>
+    </section>
   </div>
 
   <div id="fatal" hidden></div>
@@ -563,6 +606,7 @@ const WO_CATEGORY_LABEL = {
 };
 const WO_ASSIGNED_LABEL = { instructor: 'מדריך/ה', couple: 'הזוג' };
 const WO_STATUS_LABEL = { todo: 'לביצוע', in_progress: 'בתהליך', done: 'הושלם' };
+const SI_STATUS_LABEL = { not_started: 'לא התחיל', in_progress: 'בתהליך', completed: 'הושלם' };
 
 function show(id) {
   for (const el of [
@@ -636,7 +680,7 @@ function populateClientSelects() {
   const opts = CLIENTS.length
     ? CLIENTS.map((c) => '<option value="' + c.id + '">' + esc(c.full_name) + (c.partner_name ? ' ו' + esc(c.partner_name) : '') + '</option>').join('')
     : '<option value="">אין עדיין זוגות</option>';
-  for (const sel of [$('aClient'), $('rmClient'), $('fuClient'), $('woClient')]) if (sel) sel.innerHTML = opts;
+  for (const sel of [$('aClient'), $('rmClient'), $('fuClient'), $('woClient'), $('siClient')]) if (sel) sel.innerHTML = opts;
 }
 
 function editClient(id) {
@@ -1339,8 +1383,112 @@ async function renderWeddingTasks() {
   }
 }
 
+/* ── dashboard: study tracker (module 14, stage 4 — לוח משימות ומעקב לימודי) ── */
+let SI_ITEMS = [];
+let SI_EDIT_ID = null;
+
+function resetSiForm() {
+  SI_EDIT_ID = null;
+  $('siFormTitle').textContent = 'נושא לימוד חדש';
+  $('siTopic').value = ''; $('siNotes').value = ''; $('siSequence').value = '0';
+  $('siContent').value = ''; $('siStatus').value = 'not_started';
+  $('siSubmit').textContent = 'שמירת נושא';
+  $('siCancelEdit').hidden = true;
+  $('siErr').innerHTML = '';
+}
+
+function startSiEdit(id) {
+  const s = SI_ITEMS.find((x) => x.id === id);
+  if (!s) return;
+  SI_EDIT_ID = id;
+  $('siFormTitle').textContent = 'עריכת נושא לימוד';
+  $('siClient').value = s.client_id;
+  $('siSequence').value = s.sequence;
+  $('siTopic').value = s.topic;
+  $('siNotes').value = s.notes || '';
+  $('siContent').value = s.content_item_id || '';
+  $('siStatus').value = s.status;
+  $('siSubmit').textContent = 'עדכון נושא';
+  $('siCancelEdit').hidden = false;
+  $('siErr').innerHTML = '';
+  $('siTopic').scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+$('siCancelEdit').addEventListener('click', resetSiForm);
+
+async function populateSiContentSelect() {
+  const sel = $('siContent');
+  const current = sel.value;
+  let rows = [];
+  try { rows = await rpc('maatefet_content_list'); } catch (e) { /* leave "ללא קישור" only */ }
+  sel.innerHTML = '<option value="">ללא קישור</option>' +
+    rows.map((r) => '<option value="' + r.id + '">' + contentTypeLabel(r.content_type) + ' — ' + esc(r.title) + '</option>').join('');
+  sel.value = current;
+}
+
+$('siSubmit').addEventListener('click', async () => {
+  const topic = $('siTopic').value.trim();
+  if (!SI_EDIT_ID && !$('siClient').value) { $('siErr').innerHTML = '<div class="err">יש לבחור זוג.</div>'; return; }
+  if (!topic) { $('siErr').innerHTML = '<div class="err">נושא לימוד הוא שדה חובה.</div>'; return; }
+  $('siSubmit').disabled = true;
+  try {
+    await rpc('maatefet_study_item_upsert', {
+      p_id: SI_EDIT_ID,
+      p_client_id: SI_EDIT_ID ? null : $('siClient').value,
+      p_topic: topic,
+      p_notes: $('siNotes').value.trim() || null,
+      p_sequence: Number($('siSequence').value) || 0,
+      p_content_item_id: $('siContent').value || null,
+      p_status: $('siStatus').value,
+    });
+    resetSiForm();
+    renderStudyItems();
+  } catch (e) {
+    $('siErr').innerHTML = '<div class="err">' + esc(e.message) + '</div>';
+  } finally {
+    $('siSubmit').disabled = false;
+  }
+});
+
+function siRow(s) {
+  const c = CLIENTS.find((x) => x.id === s.client_id);
+  return '<tr>' +
+    '<td>' + v(c ? c.full_name : null) + '</td>' +
+    '<td>' + v(s.sequence) + '</td>' +
+    '<td>' + v(s.topic) + '</td>' +
+    '<td>' + (s.content_title ? esc(s.content_title) : NA) + '</td>' +
+    '<td><span class="badge ' + (s.status === 'completed' ? 'used' : 'pending') + '">' + (SI_STATUS_LABEL[s.status] || s.status) + '</span></td>' +
+    '<td>' +
+      '<button class="btn btn-sm btn-quiet" data-si-edit="' + s.id + '">עריכה</button> ' +
+      '<button class="btn btn-sm btn-danger" data-si-delete="' + s.id + '">מחיקה</button>' +
+    '</td>' +
+    '</tr>';
+}
+
+async function renderStudyItems() {
+  await populateSiContentSelect();
+  const el = $('siTable');
+  el.innerHTML = '<div class="empty">טוען…</div>';
+  try {
+    SI_ITEMS = await rpc('maatefet_study_items_list');
+  } catch (e) {
+    el.innerHTML = '<div class="err">' + esc(e.message) + '</div>';
+    return;
+  }
+  if (!SI_ITEMS.length) { el.innerHTML = '<div class="empty">עדיין אין נושאי לימוד. הוסיפו את נושא ההדרכה הראשון למעלה.</div>'; return; }
+  el.innerHTML = '<table><thead><tr><th>זוג</th><th>סדר</th><th>נושא</th><th>חומר מקושר</th><th>סטטוס</th><th></th></tr></thead><tbody>' +
+    SI_ITEMS.map(siRow).join('') + '</tbody></table>';
+  for (const b of el.querySelectorAll('[data-si-edit]')) b.addEventListener('click', () => startSiEdit(b.dataset.siEdit));
+  for (const b of el.querySelectorAll('[data-si-delete]')) {
+    b.addEventListener('click', () => {
+      if (!confirm('למחוק את נושא הלימוד?')) return;
+      rpc('maatefet_study_item_delete', { p_id: b.dataset.siDelete }).then(renderStudyItems).catch((e) => alert(e.message));
+    });
+  }
+}
+
 /* ── tabs ───────────────────────────────────────────────────────────────── */
-const VIEWS = { clients: 'viewClients', invites: 'viewInvites', calendar: 'viewCalendar', reminders: 'viewReminders', content: 'viewContent', profile: 'viewProfile', forum: 'viewForum', followups: 'viewFollowups', directories: 'viewDirectories', weddingOrg: 'viewWeddingOrg' };
+const VIEWS = { clients: 'viewClients', invites: 'viewInvites', calendar: 'viewCalendar', reminders: 'viewReminders', content: 'viewContent', profile: 'viewProfile', forum: 'viewForum', followups: 'viewFollowups', directories: 'viewDirectories', weddingOrg: 'viewWeddingOrg', studyTracker: 'viewStudyTracker' };
 for (const tab of document.querySelectorAll('.tab')) {
   tab.addEventListener('click', () => {
     for (const t of document.querySelectorAll('.tab')) t.classList.toggle('active', t === tab);
@@ -1354,6 +1502,7 @@ for (const tab of document.querySelectorAll('.tab')) {
     if (tab.dataset.view === 'followups') renderFollowups();
     if (tab.dataset.view === 'directories') renderDirectories();
     if (tab.dataset.view === 'weddingOrg') renderWeddingTasks();
+    if (tab.dataset.view === 'studyTracker') renderStudyItems();
   });
 }
 

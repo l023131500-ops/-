@@ -190,6 +190,13 @@ input:focus,select:focus{outline:2px solid var(--gold);outline-offset:1px;border
     </div>
 
     <div class="card">
+      <h2>מעקב לימודי</h2>
+      <p class="sub">תוכנית הלימוד שהמדריך/ה שלכם בנה/תה עבורכם — מה כבר עברתם ומה עוד לפניכם. רק המדריך/ה מסמן/ת נושא כהושלם.</p>
+      <div id="siProgress"></div>
+      <div id="siList"><div class="empty">טוען…</div></div>
+    </div>
+
+    <div class="card">
       <h2>דירקטוריז</h2>
       <p class="sub">פוסקים, מקוואות, מסדרי קידושין, בודקות טהרה ויועצים זוגיים — נבחרו ידנית ע"י צוות more30, מותאמים למגזר שלכם.</p>
       <label for="dirFilter">סינון לפי קטגוריה</label>
@@ -478,6 +485,48 @@ async function renderWeddingTasks() {
   }
 }
 
+/* ── study tracker (module 14, stage 4 — לוח משימות ומעקב לימודי) ───────── */
+const SI_STATUS_LABEL = { not_started: 'לא התחיל', in_progress: 'בתהליך', completed: 'הושלם' };
+
+function siCard(s) {
+  const badgeClass = s.status === 'completed' ? 'used' : (s.status === 'in_progress' ? 'scheduled' : '');
+  return '<div class="appt">' +
+    '<p class="when">' + esc(s.topic) + '</p>' +
+    '<p class="meta"><span class="badge ' + badgeClass + '">' + (SI_STATUS_LABEL[s.status] || s.status) + '</span></p>' +
+    (s.notes ? '<p class="meta">' + esc(s.notes) + '</p>' : '') +
+    (s.content_title
+      ? '<p class="meta">חומר לימוד: ' + (s.content_media_url
+          ? '<a href="' + esc(s.content_media_url) + '" target="_blank" rel="noopener">' + esc(s.content_title) + '</a>'
+          : esc(s.content_title)) + '</p>'
+      : '') +
+    '</div>';
+}
+
+async function renderStudyItems() {
+  const progEl = $('siProgress');
+  const el = $('siList');
+  el.innerHTML = '<div class="empty">טוען…</div>';
+  let rows;
+  try {
+    rows = await rpc('maatefet_study_items_list');
+  } catch (e) {
+    el.innerHTML = '<div class="err">' + esc(e.message) + '</div>';
+    progEl.innerHTML = '';
+    return;
+  }
+  if (!rows.length) {
+    el.innerHTML = '<div class="empty">המדריך/ה שלכם עדיין לא בנה/תה תוכנית לימוד.</div>';
+    progEl.innerHTML = '';
+    return;
+  }
+  const done = rows.filter((r) => r.status === 'completed').length;
+  const pct = Math.round((done / rows.length) * 100);
+  progEl.innerHTML = '<p class="meta">' + done + ' מתוך ' + rows.length + ' נושאים הושלמו (' + pct + '%)</p>' +
+    '<div style="background:var(--line);border-radius:6px;height:8px;overflow:hidden;margin:6px 0 14px">' +
+    '<div style="background:var(--gold);height:100%;width:' + pct + '%"></div></div>';
+  el.innerHTML = rows.map(siCard).join('');
+}
+
 /* ── directories (poskim / mikvaot / mesadrei kiddushin / bodkot tehara / yoatzim) ── */
 const DIR_CATEGORY_LABEL = {
   posek: 'פוסק הלכה', mikveh: 'מקווה', mesader_kiddushin: 'מסדר קידושין',
@@ -631,6 +680,7 @@ async function boot() {
   renderInstructorBrand();
   renderFollowups();
   renderWeddingTasks();
+  renderStudyItems();
   renderDirectories();
 }
 
