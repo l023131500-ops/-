@@ -176,7 +176,7 @@ const RightsCategories = () => {
                     which vanishes as soon as the visitor types. */}
                 <Input type="search" aria-label="חיפוש זכות"
                   placeholder="חפשו זכות — ארנונה, פנסיה, לידה, נכות…" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
-                  className="border-0 bg-transparent text-base py-4 pr-0 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-muted-foreground/60" />
+                  className="border-0 bg-transparent text-base py-4 pr-0 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-muted-foreground" />
               </div>
             </div>
           </motion.div>

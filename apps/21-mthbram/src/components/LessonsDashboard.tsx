@@ -179,7 +179,7 @@ const LessonsDashboard = () => {
                     aria-label="חיפוש שיעורים"
                     onChange={e => update("q", e.target.value)}
                     placeholder="חיפוש שיעורים — רב, נושא, עיר, בית כנסת..."
-                    className="w-full bg-transparent py-1 font-body text-sm text-foreground placeholder:text-muted-foreground/60 outline-none"
+                    className="w-full bg-transparent py-1 font-body text-sm text-foreground placeholder:text-muted-foreground outline-none"
                   />
                 </div>
               </div>
