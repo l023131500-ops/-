@@ -85,8 +85,9 @@ const OrgPortal = () => {
       if (updateError) throw updateError;
       setPortal({ ...portal, logo_url: logoUrl });
       toast.success("הלוגו עודכן בהצלחה!");
-    } catch (e) {
-      toast.error("שגיאה בהעלאת הלוגו");
+    } catch (e: any) {
+      console.error(e);
+      toast.error("שגיאה בהעלאת הלוגו" + (e?.message ? ": " + e.message : ""));
     }
     setUploadingLogo(false);
   };

@@ -43,9 +43,9 @@ export default function StudyDayUpload() {
       const { data } = supabase.storage.from("lesson-logos").getPublicUrl(path);
       set("logo_url", data.publicUrl);
       toast.success("הלוגו הועלה");
-    } catch (e) {
+    } catch (e: any) {
       console.error(e);
-      toast.error("שגיאה בהעלאת לוגו");
+      toast.error("שגיאה בהעלאת לוגו" + (e?.message ? ": " + e.message : ""));
     } finally {
       setLogoUploading(false);
     }
@@ -78,7 +78,7 @@ export default function StudyDayUpload() {
       navigate(`/shul/${data.access_token}`);
     } catch (e: any) {
       console.error(e);
-      toast.error("שגיאה ביצירת הפורטל");
+      toast.error("שגיאה ביצירת הפורטל" + (e?.message ? ": " + e.message : ""));
     } finally {
       setSubmitting(false);
     }

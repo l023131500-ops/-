@@ -6717,3 +6717,26 @@
     GabaiPortal ניקוי-שורות-כפולות), או לחזור לנושא #250 (RLS פתוח
     ב-21-mthbram, פרויקט `aypsqqvfohekxxuqsmrw` עדיין לא נגיש ל-MCP).
     via cloud server 167.99.131.167 [loop B]
+
+355. **המשך עדשת שגיאות-כתיבה-שנבלעות (353→354): שני המועמדים הראשונים
+    ב-`21-mthbram`.** שני הקבצים (`StudyDayUpload.tsx` — `handleLogo`,
+    `handleCreate`; `OrgPortal.tsx` — `uploadLogo`) כבר הציגו טוסט
+    שגיאה גנרי ("שגיאה בהעלאת לוגו"/"שגיאה ביצירת הפורטל") — לא
+    הבעיה החמורה של round 354 (אפס משוב), אלא הודעה בלי פירוט שמקשה
+    על המשתמש/תמיכה לאבחן כשל אמיתי (הרשאת storage, רשת, ולידציה
+    בצד שרת). אימצתי את המוסכמה הקיימת **באותה אפליקציה עצמה**
+    (`AdminDashboard.tsx`/`NedarimManagement.tsx`:
+    `toast.error("שגיאה...: " + error.message)`) והוספתי
+    `e?.message` לשלוש קריאות ה-`toast.error`, כולל `console.error`
+    חסר ב-`OrgPortal.tsx uploadLogo` שהיה שקט לגמרי בקונסול. אפס
+    שינוי בלוגיקת ההעלאה/יצירה עצמה. בדיקת איזון סוגריים ב-python
+    על שני הקבצים אחרי העריכה: תקין (StudyDayUpload 85/85 תבניות,
+    95/95 סוגריים; OrgPortal 176/176, 191/191). אין build/dev-server
+    זמין בסביבה הזו לפי הנחיית ההרצה — לא `tsc`. ענף
+    `fix/b-21-mthbram-upload-error-detail-0820`.
+
+    **הבא בתור:** המועמד השלישי שנותר מהעדשה — `24-galilee-connect-
+    hub/GabaiPortal.tsx handleSave` (ניקוי שורות-כפולות שנכשל בשקט
+    אחרי שמירה עיקרית מוצלחת) — או לחזור לנושא #250 (RLS פתוח
+    ב-21-mthbram, פרויקט `aypsqqvfohekxxuqsmrw` עדיין לא נגיש ל-MCP).
+    via cloud server 167.99.131.167 [loop B]
