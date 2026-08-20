@@ -133,7 +133,7 @@ export default function PaymentsAdmin() {
               {payments.map((p) => (
                 <tr key={p.id} className="border-t hover:bg-gray-50">
                   <td className="p-3 whitespace-nowrap">{new Date(p.created_at).toLocaleString("he-IL")}</td>
-                  <td className="p-3 font-medium">₪{Number(p.amount).toLocaleString("he-IL")}</td>
+                  <td className="p-3 font-medium"><span dir="ltr">₪{Number(p.amount).toLocaleString("he-IL")}</span></td>
                   <td className="p-3"><StatusBadge status={p.status} /></td>
                   <td className="p-3">{p.payer_name || "—"}</td>
                   <td className="p-3 text-gray-600">{p.user_email || "—"}</td>

@@ -178,7 +178,7 @@ export default function TemplatesPage() {
               >
                 <td className="p-3 font-medium">{t.name}</td>
                 <td className="p-3">{CATEGORIES[t.category] || t.category}</td>
-                <td className="p-3">{t.price_nis != null ? `₪${t.price_nis}` : "—"}</td>
+                <td className="p-3">{t.price_nis != null ? <span dir="ltr">{`₪${t.price_nis}`}</span> : "—"}</td>
                 <td className="p-3">
                   {t.is_active
                     ? <span className="text-green-700 font-medium">פעיל</span>
