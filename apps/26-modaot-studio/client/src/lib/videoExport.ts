@@ -204,6 +204,11 @@ export interface PromoVideoOptions {
   /** תרגום אנגלי אופציונלי של narrationScript (POST /api/ai/translate-captions) —
    * כשקיים, מוצג כשורה שנייה מתחת לכתובית העברית. חסר = בלוק עברית בלבד, כמו קודם. */
   captionScriptEn?: string | null;
+  /** blob:/object URL של קובץ מוזיקה שהלקוח העלה בעצמו (אין ספריית מוזיקה מוכנה —
+   * לא ממציאים מקור מוזיקה; רק מערבבים מה שהמשתמש בחר). חסר = בלי מוזיקה, כמו קודם. */
+  musicUrl?: string | null;
+  /** עוצמת המוזיקה יחסית לקריינות, 0–1. ברירת מחדל 0.25 (מוזיקה ברקע, לא מתחרה בקריינות). */
+  musicVolume?: number;
   onProgress?: (fraction: number) => void;
 }
 
@@ -238,6 +243,16 @@ export async function exportPromoVideo(
     duration = await waitForAudioDuration(audioEl);
   }
 
+  // מוזיקת רקע — קובץ שהמשתמש העלה בעצמו (אין ספריית מוזיקה חינמית מוכנה בכלי,
+  // ולכן לא ממציאים מקור; רק מערבבים את מה שנבחר). לולאה אם קצר ממשך הקריינות.
+  let musicEl: HTMLAudioElement | null = null;
+  if (opts.musicUrl) {
+    musicEl = new Audio(opts.musicUrl);
+    musicEl.preload = "auto";
+    musicEl.loop = true;
+    musicEl.volume = 1; // הכמות בפועל נשלטת ב-GainNode בהמשך, לא כאן
+  }
+
   const wantCaptions = opts.showCaptions !== false && !!opts.narrationScript?.trim();
   const captionSegments = wantCaptions ? buildCaptionSegments(opts.narrationScript!, duration) : [];
   const captionSegmentsEn = wantCaptions && opts.captionScriptEn?.trim()
@@ -263,7 +278,41 @@ export async function exportPromoVideo(
 
   const canvasStream = (recordCanvas as HTMLCanvasElement & { captureStream: (fps?: number) => MediaStream }).captureStream(FPS);
   const tracks: MediaStreamTrack[] = [...canvasStream.getVideoTracks()];
-  if (audioEl && typeof (audioEl as any).captureStream === "function") {
+  let audioCtx: AudioContext | null = null;
+  if (musicEl) {
+    // יש מוזיקה — יש לערבב אותה עם הקריינות (אם קיימת) לפס-קול אחד יחיד, כי
+    // MediaRecorder לא מקליט שני tracks אודיו מקבילים בצורה אמינה בכל דפדפן.
+    try {
+      const Ctx = window.AudioContext || (window as any).webkitAudioContext;
+      audioCtx = new Ctx();
+      const dest = audioCtx.createMediaStreamDestination();
+      if (audioEl) {
+        const narrGain = audioCtx.createGain();
+        narrGain.gain.value = 1;
+        const narrSrc = audioCtx.createMediaElementSource(audioEl);
+        narrSrc.connect(narrGain).connect(dest);
+        narrGain.connect(audioCtx.destination); // האזנה חיה בזמן הרכבה, כמו קודם
+      }
+      const musicGain = audioCtx.createGain();
+      musicGain.gain.value = Math.max(0, Math.min(1, opts.musicVolume ?? 0.25));
+      const musicSrc = audioCtx.createMediaElementSource(musicEl);
+      musicSrc.connect(musicGain).connect(dest);
+      musicGain.connect(audioCtx.destination);
+      tracks.push(...dest.stream.getAudioTracks());
+    } catch {
+      // AudioContext/createMediaElementSource לא נתמכים — נופלים לפס הקריינות
+      // הישיר בלבד (בלי מוזיקה), אותה התנהגות כמו לפני התוספת.
+      if (audioCtx) audioCtx.close().catch(() => {});
+      audioCtx = null;
+      if (audioEl && typeof (audioEl as any).captureStream === "function") {
+        try {
+          tracks.push(...((audioEl as any).captureStream() as MediaStream).getAudioTracks());
+        } catch {
+          // בלי פס קול בכלל — לא קריטי.
+        }
+      }
+    }
+  } else if (audioEl && typeof (audioEl as any).captureStream === "function") {
     try {
       const audioStream: MediaStream = (audioEl as any).captureStream();
       tracks.push(...audioStream.getAudioTracks());
@@ -287,6 +336,10 @@ export async function exportPromoVideo(
     audioEl.currentTime = 0;
     await audioEl.play().catch(() => {});
   }
+  if (musicEl) {
+    musicEl.currentTime = 0;
+    await musicEl.play().catch(() => {});
+  }
 
   const startTime = performance.now();
   await new Promise<void>((resolve) => {
@@ -302,6 +355,8 @@ export async function exportPromoVideo(
   });
 
   if (audioEl) audioEl.pause();
+  if (musicEl) musicEl.pause();
+  if (audioCtx) audioCtx.close().catch(() => {});
   recorder.stop();
   return stopped;
 }

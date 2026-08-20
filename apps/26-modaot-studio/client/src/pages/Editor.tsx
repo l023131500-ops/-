@@ -39,6 +39,8 @@ import {
   CheckCheck,
   Mic,
   Video,
+  Music,
+  X,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -183,6 +185,23 @@ export default function Editor() {
   const [includeEnglishCaptions, setIncludeEnglishCaptions] = useState(false);
   const [captionScriptEn, setCaptionScriptEn] = useState("");
   const [translatingCaptions, setTranslatingCaptions] = useState(false);
+
+  // מוזיקת רקע לוידאו הקידום (lib/videoExport.ts) — קובץ שהמשתמש מעלה בעצמו,
+  // אין ספריית מוזיקה חינמית מוכנה בכלי ולכן לא ממציאים מקור. נשאר מקומי לדפדפן
+  // בלבד (לא נשמר עם הפרויקט/ב-layersJson) — משמש רק לצורך הרכבת הוידאו הנוכחית.
+  const [musicFile, setMusicFile] = useState<File | null>(null);
+  const [musicUrl, setMusicUrl] = useState<string>("");
+  const [musicVolume, setMusicVolume] = useState(25); // אחוזים, 0-100 — ברירת מחדל: רקע עדין שלא מתחרה בקריינות
+
+  useEffect(() => {
+    if (!musicFile) {
+      setMusicUrl("");
+      return;
+    }
+    const url = URL.createObjectURL(musicFile);
+    setMusicUrl(url);
+    return () => URL.revokeObjectURL(url);
+  }, [musicFile]);
 
   // וקטוריזציה של שכבת תמונה קיימת ל-SVG אמיתי (Recraft — מנוע קיים בכלי המותג)
   const [vectorizing, setVectorizing] = useState(false);
@@ -732,6 +751,8 @@ export default function Editor() {
         narrationScript: narrationScript || undefined,
         showCaptions,
         captionScriptEn: includeEnglishCaptions ? captionScriptEn || undefined : undefined,
+        musicUrl: musicUrl || undefined,
+        musicVolume: musicVolume / 100,
         onProgress: (fraction) => setVideoProgress(Math.round(fraction * 100)),
       });
       downloadBlob(blob, `${selected?.name ?? "modaa"}.webm`);
@@ -1858,6 +1879,55 @@ export default function Editor() {
                   )}
                 </div>
               )}
+              <div className="flex flex-col gap-1.5 border-t border-[#C9A227]/15 pt-2">
+                <div className="flex items-center justify-between gap-2">
+                  <Label className="flex items-center gap-1 text-xs text-[#F5EEDD]/70">
+                    <Music className="h-3.5 w-3.5" /> מוזיקת רקע (אופציונלי, קובץ משלכם)
+                  </Label>
+                  {musicFile ? (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-6 gap-1 px-1.5 text-[#F5EEDD]/60 hover:text-[#F5EEDD]"
+                      onClick={() => setMusicFile(null)}
+                      data-testid="button-remove-music"
+                    >
+                      <X className="h-3 w-3" /> הסר
+                    </Button>
+                  ) : (
+                    <label className="cursor-pointer text-xs text-[#C9A227] underline underline-offset-2">
+                      בחירת קובץ
+                      <input
+                        type="file"
+                        accept="audio/*"
+                        className="hidden"
+                        onChange={(e) => setMusicFile(e.target.files?.[0] ?? null)}
+                        data-testid="input-music-file"
+                      />
+                    </label>
+                  )}
+                </div>
+                {musicFile && (
+                  <>
+                    <p className="truncate text-xs text-[#F5EEDD]/50" data-testid="text-music-filename">
+                      {musicFile.name}
+                    </p>
+                    <div>
+                      <Label className="mb-1 block text-xs text-[#F5EEDD]/70">
+                        עוצמת המוזיקה ביחס לקריינות: {musicVolume}%
+                      </Label>
+                      <Slider
+                        value={[musicVolume]}
+                        min={0}
+                        max={80}
+                        step={5}
+                        onValueChange={([v]) => setMusicVolume(v)}
+                        data-testid="slider-music-volume"
+                      />
+                    </div>
+                  </>
+                )}
+              </div>
               <Button
                 variant="outline"
                 size="sm"
