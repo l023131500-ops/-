@@ -34,6 +34,8 @@ const AdminTeachers = () => {
   });
   const { toast } = useToast();
   const [featuresFor, setFeaturesFor] = useState<any | null>(null);
+  const [busyId, setBusyId] = useState<string | null>(null);
+  const [creating, setCreating] = useState(false);
 
   const fetchAll = async () => {
     const [{ data: p }, { data: i }] = await Promise.all([
@@ -47,38 +49,54 @@ const AdminTeachers = () => {
   useEffect(() => { fetchAll(); }, []);
 
   const toggleApproval = async (id: string, current: boolean) => {
-    const { error } = await supabase.from("profiles").update({ is_approved: !current }).eq("id", id);
-    if (error) {
-      toast({ title: "שגיאה", description: error.message, variant: "destructive" });
-    } else {
-      toast({ title: current ? "המגיד הוסר מהאישור" : "המגיד אושר בהצלחה" });
-      fetchAll();
+    if (busyId) return;
+    setBusyId(id);
+    try {
+      const { error } = await supabase.from("profiles").update({ is_approved: !current }).eq("id", id);
+      if (error) {
+        toast({ title: "שגיאה", description: error.message, variant: "destructive" });
+      } else {
+        toast({ title: current ? "המגיד הוסר מהאישור" : "המגיד אושר בהצלחה" });
+        await fetchAll();
+      }
+    } catch (e: any) {
+      toast({ title: "שגיאה", description: e?.message || "אירעה שגיאה, נסה שוב", variant: "destructive" });
+    } finally {
+      setBusyId(null);
     }
   };
 
   const createInvite = async () => {
+    if (creating) return;
     if (!form.full_name || !form.email || !form.initial_password) {
       toast({ title: "שגיאה", description: "שם, מייל וסיסמה הם שדות חובה", variant: "destructive" });
       return;
     }
-    const { data, error } = await supabase.from("teacher_invites").insert({
-      full_name: form.full_name,
-      email: form.email.trim().toLowerCase(),
-      phone: form.phone || null,
-      portal_type: form.portal_type,
-      organization_name: form.organization_name || null,
-      initial_password: form.initial_password,
-      notes: form.notes || null,
-    }).select().single();
+    setCreating(true);
+    try {
+      const { data, error } = await supabase.from("teacher_invites").insert({
+        full_name: form.full_name,
+        email: form.email.trim().toLowerCase(),
+        phone: form.phone || null,
+        portal_type: form.portal_type,
+        organization_name: form.organization_name || null,
+        initial_password: form.initial_password,
+        notes: form.notes || null,
+      }).select().single();
 
-    if (error) {
-      toast({ title: "שגיאה", description: error.message, variant: "destructive" });
-      return;
+      if (error) {
+        toast({ title: "שגיאה", description: error.message, variant: "destructive" });
+        return;
+      }
+      setCreatedInvite(data);
+      setShowCreate(false);
+      setForm({ full_name: "", email: "", phone: "", portal_type: "rabbi", organization_name: "", initial_password: generatePassword(), notes: "" });
+      await fetchAll();
+    } catch (e: any) {
+      toast({ title: "שגיאה", description: e?.message || "אירעה שגיאה, נסה שוב", variant: "destructive" });
+    } finally {
+      setCreating(false);
     }
-    setCreatedInvite(data);
-    setShowCreate(false);
-    setForm({ full_name: "", email: "", phone: "", portal_type: "rabbi", organization_name: "", initial_password: generatePassword(), notes: "" });
-    fetchAll();
   };
 
   const copyInviteDetails = (inv: any) => {
@@ -166,8 +184,8 @@ const AdminTeachers = () => {
               </div>
               <DialogFooter className="mt-4 pt-3 border-t border-secondary/20">
                 <Button variant="outline" onClick={() => setShowCreate(false)}>ביטול</Button>
-                <Button onClick={createInvite} className="bg-gradient-to-l from-secondary to-gold-dark text-secondary-foreground hover:opacity-90 shadow-md">
-                  <KeyRound className="w-4 h-4 ml-1" />צור הזמנה
+                <Button onClick={createInvite} disabled={creating} className="bg-gradient-to-l from-secondary to-gold-dark text-secondary-foreground hover:opacity-90 shadow-md">
+                  <KeyRound className="w-4 h-4 ml-1" />{creating ? "יוצר..." : "צור הזמנה"}
                 </Button>
               </DialogFooter>
             </DialogContent>
@@ -258,7 +276,7 @@ const AdminTeachers = () => {
                       </span>
                     </td>
                     <td className="p-4">
-                      <Button size="sm" variant={p.is_approved ? "outline" : "default"} onClick={() => toggleApproval(p.id, p.is_approved)}>
+                      <Button size="sm" variant={p.is_approved ? "outline" : "default"} disabled={busyId === p.id} onClick={() => toggleApproval(p.id, p.is_approved)}>
                         {p.is_approved ? <><UserX className="w-4 h-4 ml-1" />בטל</> : <><UserCheck className="w-4 h-4 ml-1" />אשר</>}
                       </Button>
                       <Button size="sm" variant="outline" className="mr-1 gap-1" onClick={() => setFeaturesFor(p)}>
