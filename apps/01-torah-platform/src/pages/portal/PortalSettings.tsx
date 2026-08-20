@@ -38,6 +38,7 @@ const PortalSettings = () => {
   const [profile, setProfile] = useState<Profile>(empty);
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [saving, setSaving] = useState(false);
+  const [photoBusy, setPhotoBusy] = useState(false);
   const photoInput = useRef<HTMLInputElement>(null);
 
   useEffect(() => { if (user) fetchAll(); }, [user]);
@@ -75,17 +76,22 @@ const PortalSettings = () => {
 
   const addPhoto = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file || !profile.id) return;
+    if (!file || !profile.id || photoBusy) return;
+    setPhotoBusy(true);
     const url = await uploadFile(file, "gallery");
-    if (!url) return;
+    if (!url) { setPhotoBusy(false); return; }
     const { data, error } = await supabase.from("portal_photos").insert({ teacher_id: profile.id, image_url: url }).select().single();
+    setPhotoBusy(false);
     if (error) { toast.error("שגיאה"); return; }
     setPhotos(p => [data, ...p]);
     toast.success("התמונה נוספה לגלריה");
   };
 
   const deletePhoto = async (id: string) => {
+    if (photoBusy) return;
+    setPhotoBusy(true);
     const { error } = await supabase.from("portal_photos").delete().eq("id", id);
+    setPhotoBusy(false);
     if (error) { toast.error("שגיאה"); return; }
     setPhotos(p => p.filter(x => x.id !== id));
   };
@@ -229,8 +235,8 @@ const PortalSettings = () => {
               <div className="flex items-center justify-between">
                 <h3 className="font-medium">גלריית תמונות</h3>
                 <input type="file" accept="image/*" hidden ref={photoInput} onChange={addPhoto} />
-                <Button size="sm" onClick={() => photoInput.current?.click()}>
-                  <Upload className="w-4 h-4 ml-1" />הוסף תמונה
+                <Button size="sm" onClick={() => photoInput.current?.click()} disabled={photoBusy}>
+                  <Upload className="w-4 h-4 ml-1" />{photoBusy ? "מעלה..." : "הוסף תמונה"}
                 </Button>
               </div>
               {photos.length === 0 ? (
@@ -240,8 +246,8 @@ const PortalSettings = () => {
                   {photos.map(p => (
                     <div key={p.id} className="relative group aspect-square rounded-lg overflow-hidden border border-border">
                       <img src={p.image_url} alt="" className="w-full h-full object-cover" />
-                      <button onClick={() => deletePhoto(p.id)}
-                        className="absolute top-2 left-2 bg-destructive text-destructive-foreground rounded-full p-1.5 opacity-0 group-hover:opacity-100 transition">
+                      <button onClick={() => deletePhoto(p.id)} disabled={photoBusy}
+                        className="absolute top-2 left-2 bg-destructive text-destructive-foreground rounded-full p-1.5 opacity-0 group-hover:opacity-100 transition disabled:opacity-50">
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
                     </div>

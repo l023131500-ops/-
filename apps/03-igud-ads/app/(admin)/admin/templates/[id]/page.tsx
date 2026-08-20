@@ -104,10 +104,15 @@ export default function TemplateEditPage() {
   }
 
   async function del() {
-    if (!confirm("למחוק תבנית זו לצמיתות?")) return;
-    const r = await fetch(`/modaot/api/admin/templates/${id}`, { method: "DELETE" });
-    if (r.ok) router.push("/admin/templates");
-    else setError("שגיאה במחיקה");
+    if (saving || !confirm("למחוק תבנית זו לצמיתות?")) return;
+    setSaving(true);
+    try {
+      const r = await fetch(`/modaot/api/admin/templates/${id}`, { method: "DELETE" });
+      if (r.ok) router.push("/admin/templates");
+      else { setError("שגיאה במחיקה"); setSaving(false); }
+    } catch {
+      setSaving(false);
+    }
   }
 
   if (loading) return <div className="p-8 text-center text-gray-500">טוען...</div>;
@@ -303,8 +308,9 @@ export default function TemplateEditPage() {
       <div className="mt-8 border border-red-200 rounded-2xl p-6">
         <h3 className="font-medium text-red-700 mb-3">אזור מסוכן</h3>
         <button
-          className="bg-red-600 hover:bg-red-700 text-white text-sm px-4 py-2 rounded"
+          className="bg-red-600 hover:bg-red-700 text-white text-sm px-4 py-2 rounded disabled:opacity-50"
           onClick={del}
+          disabled={saving}
         >
           מחיקת תבנית לצמיתות
         </button>

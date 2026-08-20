@@ -13,6 +13,7 @@ export default function CouponsPage() {
   const [exp, setExp] = useState("");
   const [note, setNote] = useState("");
   const [busy, setBusy] = useState(false);
+  const [busyId, setBusyId] = useState<string | null>(null);
 
   async function load() {
     const r = await fetch("/modaot/api/admin/coupons");
@@ -31,16 +32,27 @@ export default function CouponsPage() {
     if (r.ok) { setCode(""); setNote(""); setExp(""); setMaxD(3); load(); }
   }
   async function toggle(id: string, active: boolean) {
-    await fetch("/modaot/api/admin/coupons", {
-      method: "PATCH", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id, is_active: !active }),
-    });
-    load();
+    if (busyId) return;
+    setBusyId(id);
+    try {
+      await fetch("/modaot/api/admin/coupons", {
+        method: "PATCH", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, is_active: !active }),
+      });
+      await load();
+    } finally {
+      setBusyId(null);
+    }
   }
   async function del(id: string) {
-    if (!confirm("למחוק קופון זה?")) return;
-    await fetch(`/modaot/api/admin/coupons?id=${id}`, { method: "DELETE" });
-    load();
+    if (busyId || !confirm("למחוק קופון זה?")) return;
+    setBusyId(id);
+    try {
+      await fetch(`/modaot/api/admin/coupons?id=${id}`, { method: "DELETE" });
+      await load();
+    } finally {
+      setBusyId(null);
+    }
   }
 
   return (
@@ -75,8 +87,8 @@ export default function CouponsPage() {
                 <td className="p-3">{c.is_active ? <span className="text-green-700">פעיל</span> : <span className="text-gray-500">השהוי</span>}</td>
                 <td className="p-3">{c.note || "—"}</td>
                 <td className="p-3 space-x-1 space-x-reverse">
-                  <button className="text-brand-blue hover:underline text-xs" onClick={() => toggle(c.id, c.is_active)}>{c.is_active ? "השהה" : "הפעל"}</button>
-                  <button className="text-red-600 hover:underline text-xs" onClick={() => del(c.id)}>מחק</button>
+                  <button className="text-brand-blue hover:underline text-xs disabled:opacity-50" onClick={() => toggle(c.id, c.is_active)} disabled={busyId === c.id}>{c.is_active ? "השהה" : "הפעל"}</button>
+                  <button className="text-red-600 hover:underline text-xs disabled:opacity-50" onClick={() => del(c.id)} disabled={busyId === c.id}>מחק</button>
                 </td>
               </tr>
             ))}

@@ -43,6 +43,7 @@ export default function UsersPage() {
   const [form, setForm] = useState<typeof EMPTY_FORM & { id?: string }>(EMPTY_FORM);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [busyId, setBusyId] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     const [ur, cr] = await Promise.all([
@@ -106,18 +107,29 @@ export default function UsersPage() {
   }
 
   async function del(id: string) {
-    if (!confirm("למחוק משתמש זה?")) return;
-    await fetch(`/modaot/api/admin/users/${id}`, { method: "DELETE" });
-    await load();
+    if (busyId || !confirm("למחוק משתמש זה?")) return;
+    setBusyId(id);
+    try {
+      await fetch(`/modaot/api/admin/users/${id}`, { method: "DELETE" });
+      await load();
+    } finally {
+      setBusyId(null);
+    }
   }
 
   async function toggleActive(u: AdUser) {
-    await fetch(`/modaot/api/admin/users/${u.id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ is_active: !u.is_active }),
-    });
-    await load();
+    if (busyId) return;
+    setBusyId(u.id);
+    try {
+      await fetch(`/modaot/api/admin/users/${u.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ is_active: !u.is_active }),
+      });
+      await load();
+    } finally {
+      setBusyId(null);
+    }
   }
 
   return (
@@ -167,14 +179,16 @@ export default function UsersPage() {
                 <td className="p-3 font-mono text-xs">{u.ad_coupons?.code || "—"}</td>
                 <td className="p-3 flex gap-2" onClick={(e) => e.stopPropagation()}>
                   <button
-                    className="text-brand-blue text-xs hover:underline"
+                    className="text-brand-blue text-xs hover:underline disabled:opacity-50"
                     onClick={() => toggleActive(u)}
+                    disabled={busyId === u.id}
                   >
                     {u.is_active ? "השהה" : "הפעל"}
                   </button>
                   <button
-                    className="text-red-600 text-xs hover:underline"
+                    className="text-red-600 text-xs hover:underline disabled:opacity-50"
                     onClick={() => del(u.id)}
+                    disabled={busyId === u.id}
                   >
                     מחק
                   </button>

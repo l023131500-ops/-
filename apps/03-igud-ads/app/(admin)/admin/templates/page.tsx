@@ -57,6 +57,7 @@ export default function TemplatesPage() {
   const [reqStr, setReqStr] = useState("");
   const [optStr, setOptStr] = useState("");
   const [colorsStr, setColorsStr] = useState("");
+  const [busyId, setBusyId] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     const r = await fetch("/modaot/api/admin/templates");
@@ -125,18 +126,29 @@ export default function TemplatesPage() {
   }
 
   async function del(id: string) {
-    if (!confirm("למחוק תבנית זו לצמיתות?")) return;
-    const r = await fetch(`/modaot/api/admin/templates/${id}`, { method: "DELETE" });
-    if (r.ok) await load();
+    if (busyId || !confirm("למחוק תבנית זו לצמיתות?")) return;
+    setBusyId(id);
+    try {
+      const r = await fetch(`/modaot/api/admin/templates/${id}`, { method: "DELETE" });
+      if (r.ok) await load();
+    } finally {
+      setBusyId(null);
+    }
   }
 
   async function toggleActive(t: Template) {
-    await fetch(`/modaot/api/admin/templates/${t.id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ is_active: !t.is_active }),
-    });
-    await load();
+    if (busyId) return;
+    setBusyId(t.id);
+    try {
+      await fetch(`/modaot/api/admin/templates/${t.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ is_active: !t.is_active }),
+      });
+      await load();
+    } finally {
+      setBusyId(null);
+    }
   }
 
   return (
@@ -175,8 +187,9 @@ export default function TemplatesPage() {
                 </td>
                 <td className="p-3 flex gap-2" onClick={(e) => e.stopPropagation()}>
                   <button
-                    className="text-brand-blue text-xs hover:underline"
+                    className="text-brand-blue text-xs hover:underline disabled:opacity-50"
                     onClick={() => toggleActive(t)}
+                    disabled={busyId === t.id}
                   >
                     {t.is_active ? "השהה" : "הפעל"}
                   </button>
@@ -188,8 +201,9 @@ export default function TemplatesPage() {
                     עריכה מלאה
                   </Link>
                   <button
-                    className="text-red-600 text-xs hover:underline"
+                    className="text-red-600 text-xs hover:underline disabled:opacity-50"
                     onClick={() => del(t.id)}
+                    disabled={busyId === t.id}
                   >
                     מחק
                   </button>

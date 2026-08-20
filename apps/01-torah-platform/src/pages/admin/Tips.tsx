@@ -146,15 +146,15 @@ export default function AdminTips() {
       {selected.size > 0 && (
         <div className="flex items-center gap-3 mb-4 p-3 bg-muted rounded-lg">
           <span className="text-sm font-medium">{selected.size} נבחרו</span>
-          <Button size="sm" variant="outline" onClick={() => bulkActivate.mutate(true)}>
+          <Button size="sm" variant="outline" onClick={() => bulkActivate.mutate(true)} disabled={bulkActivate.isPending}>
             <Eye className="h-4 w-4 ml-1" />
             הפעל נבחרים
           </Button>
-          <Button size="sm" variant="outline" onClick={() => bulkActivate.mutate(false)}>
+          <Button size="sm" variant="outline" onClick={() => bulkActivate.mutate(false)} disabled={bulkActivate.isPending}>
             <EyeOff className="h-4 w-4 ml-1" />
             השבת נבחרים
           </Button>
-          <Button size="sm" variant="destructive" onClick={() => bulkDelete.mutate()}>
+          <Button size="sm" variant="destructive" onClick={() => bulkDelete.mutate()} disabled={bulkDelete.isPending}>
             <Trash2 className="h-4 w-4 ml-1" />
             מחק נבחרים
           </Button>
@@ -253,6 +253,7 @@ export default function AdminTips() {
                       size="icon"
                       variant="ghost"
                       onClick={() => toggleActive.mutate({ id: tip.id, is_active: !tip.is_active })}
+                      disabled={toggleActive.isPending}
                     >
                       {tip.is_active ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </Button>
