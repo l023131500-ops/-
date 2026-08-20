@@ -21,7 +21,7 @@ type Citation = {
 
 type Verification = {
   ref: string;
-  status: 'match' | 'deviation' | 'missing';
+  status: 'match' | 'deviation' | 'missing' | 'no-quote-provided';
   distance?: number;
   sourceText?: string;
   sourceUrl?: string;
@@ -349,7 +349,7 @@ export default function EditorPage() {
           <h2>ציטוטים שזוהו</h2>
           {citations.map((c, i) => (
             <div className="result-card" key={i}>
-              <p dir="rtl">"{c.matchedText}"</p>
+              <p dir="rtl">"{c.matchedText || '—'}"</p>
               {(c.refs || []).map((ref) => {
                 const v = verifications[ref];
                 return (
@@ -360,6 +360,7 @@ export default function EditorPage() {
                         {v.status === 'match' && 'תואם למקור'}
                         {v.status === 'deviation' && 'סטייה מהמקור (מרחק: ' + v.distance + ')'}
                         {v.status === 'missing' && 'המקור לא נמצא'}
+                        {v.status === 'no-quote-provided' && 'לא זוהה ציטוט לאימות עבור מקור זה'}
                       </span>
                     ) : (
                       <button

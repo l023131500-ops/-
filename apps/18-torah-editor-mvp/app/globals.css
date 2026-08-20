@@ -169,6 +169,7 @@ button.action:disabled {
 .status-match { color: var(--ok); font-weight: 600; }
 .status-deviation { color: var(--warn); font-weight: 600; }
 .status-missing { color: var(--err); font-weight: 600; }
+.status-no-quote-provided { color: var(--ink-3); font-weight: 600; }
 
 .badge {
   display: inline-block;
