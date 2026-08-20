@@ -172,6 +172,7 @@ export default function UploadPage() {
         fd.append("audio", file);
         fd.append("topic", topic);
         fd.append("parsha_or_date", parsha);
+        if (duration != null) fd.append("duration_seconds", String(duration));
         const res = await fetch(`${API_BASE}/api/upload`, { method: "POST", body: fd });
         if (!res.ok) {
           const j = await res.json().catch(() => ({}));

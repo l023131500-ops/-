@@ -5781,3 +5781,44 @@
     ממתינים לגישת dashboard חיצונית לאותה סיבה); אחרת לפתוח עדשה חדשה
     בהיקף, או לחזור על הבדיקות התקופתיות.
     via cloud server 167.99.131.167 [loop B]
+
+## 20/08/2026 — סבב 326 (loop B)
+
+326. **נקודת תקלה אמיתית ולא עוד עדשת נגישות/מיתוג: 17-chizukim-transcribe**
+    **איבד שדה `duration_seconds` בנתיב ההעלאה החלופי (fallback).** ב-
+    `client/src/pages/upload.tsx:submit()` יש שני נתיבי העלאה: (1) ישיר ל-
+    Supabase Storage דרך `uploadUrl` חתום, שבו `duration_seconds` (שחולץ
+    ב-שורה 123 עם `readDuration`, best-effort מה-`<audio>` שבדפדפן) נשלח
+    כראוי ל-`/api/upload/register` (שורה 151). (2) נתיב חלופי (`catch`, שורות
+    169-175) שרץ כשהנתיב הישיר נכשל (בעיית רשת/Storage) ושולח `FormData`
+    ל-`POST /api/upload` — אבל בלי `duration_seconds` בכלל. אימתתי מול הצד
+    השרת: `server/routes.ts:271-272` קורא בדיוק `req.body.duration_seconds`
+    מאותו route (`app.post("/api/upload", ...)`) ומכניס אותו ל-`recordings.
+    duration_seconds` בשורה 312 — כלומר השרת מצפה לשדה, הלקוח פשוט לא שלח
+    אותו בנתיב הזה. תוצאה בפועל: כל הקלטה שעברה בנתיב החלופי (רשת חלשה/
+    Storage timeout, בדיוק המצב שהנתיב הזה קיים כדי לתפוס) נשמרת עם
+    `duration_seconds=null` למרות שהערך כבר חושב בדפדפן ונמצא בזיכרון
+    (`duration` בסקופ הפונקציה) — שובר תצוגת משך ההקלטה ואומדן העלות
+    (`server/routes.ts:460-484`, `cost = duration ? ... : 0`) לכל הקלטה
+    שעברה fallback. **תיקון:** שורה אחת, `fd.append("duration_seconds",
+    String(duration))` (עם guard ל-`duration != null`, כי `readDuration`
+    יכול להחזיר `null` אם הדפדפן לא הצליח לקרוא metadata) — מעביר את אותו
+    ערך שכבר מחושב, בדיוק כמו הנתיב הישיר. אפס שינוי להתנהגות הקיימת,
+    אפס תלות חדשה. אותרה ע"י סוכן Explore שהתבקש לחפש מחוץ ל~30 העדשות
+    שכבר נסגרו על ההיקף (label-for-id/rel-noopener/dir-ltr/aria-label/
+    secret-scan/PII/mojibake/billing-safety/trailing-slash/relative-asset/
+    sitemap/registry-drift/dead-imports/password-reveal/favicon/unknown-path/
+    rebrand-credit/pricing) — אומתה ידנית מול שני קצוות הקוד (קורא לפני
+    שמתקן) לפני העריכה.
+    **בנוסף, בתחילת הסבב הרצתי שלושה סורקים סטטיים/רשת חדשים (לא בעבר על
+    היקף loop B): `mount-icon-declarations.mjs` (47/47 עבר, אפס נתיב אייקון
+    שבור ב-27 ה-mounts כולל chizukim/orech/mthbram/galil/mechiron/kupot/
+    zchuyot), `favicon-mounts.mjs` (24 mounts, כל שבעת החיים בהיקף מציירים
+    אייקון עצמאי, לא נופלים לסימן הפורטל), `unknown-path-serves-home.mjs`
+    (48/48 עבר — אימות עצמאי ש-`/shiurim` (19) ו-`/igud` (20) מחזירים 404
+    אמיתי ולא בטעות דף הבית של הפורטל, תואם את הממצא של סבב 325 הקודם
+    שאין להם פריסה. גם דחיתי `mounted-api-base.mjs` מהקומיט — הריצה כאן
+    תלויה בתיקיית `_deploy/` מקומית שלא קיימת בסביבה הזו, כך שהפלט שלו
+    ריק/מטעה ולא עדות אמיתית על פרודקשן; לא קומיטתי את הקובץ שהוא כתב).**
+    קומיט על `fix/b-17-upload-fallback-duration-0820`, נדחף.
+    via cloud server 167.99.131.167 [loop B]

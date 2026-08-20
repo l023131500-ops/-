@@ -7,8 +7,10 @@
     "/chatzor/",
     "/chizukim/",
     "/crm/",
+    "/design/",
     "/egod/",
     "/galil/",
+    "/gannenet/",
     "/gesher/",
     "/imud/",
     "/kesef/",
@@ -32,7 +34,7 @@
       "mount": "/admin/",
       "url": "https://more30.com/admin/",
       "status": 200,
-      "bytes": 3986,
+      "bytes": 3779,
       "base": null,
       "icons": [],
       "manifest": null,
@@ -42,7 +44,7 @@
       "mount": "/bkalot/",
       "url": "https://more30.com/bkalot/",
       "status": 200,
-      "bytes": 17066,
+      "bytes": 17996,
       "base": "/bkalot/",
       "icons": [],
       "manifest": null,
@@ -52,7 +54,7 @@
       "mount": "/briut/",
       "url": "https://more30.com/briut/",
       "status": 200,
-      "bytes": 11379,
+      "bytes": 12060,
       "base": "/briut/",
       "icons": [
         {
@@ -77,7 +79,7 @@
       "mount": "/chatzor/",
       "url": "https://more30.com/chatzor/",
       "status": 200,
-      "bytes": 32871,
+      "bytes": 2240,
       "base": null,
       "icons": [
         {
@@ -102,16 +104,23 @@
       "mount": "/chizukim/",
       "url": "https://more30.com/chizukim/",
       "status": 200,
-      "bytes": 2483,
+      "bytes": 2295,
       "base": null,
       "icons": [
         {
           "rel": "icon",
-          "href": "/favicon.png",
-          "tag": "<link rel=\"icon\" type=\"image/png\" href=\"/favicon.png\" />",
-          "resolved": "https://more30.com/favicon.png",
-          "resolves_from": "portal/public",
-          "exists": true
+          "href": "/chizukim/favicon.svg",
+          "tag": "<link rel=\"icon\" type=\"image/svg+xml\" href=\"/chizukim/favicon.svg\" />",
+          "resolved": "https://more30.com/chizukim/favicon.svg",
+          "resolves_from": "the mount deployment",
+          "live": {
+            "url": "https://more30.com/chizukim/favicon.svg",
+            "status": 200,
+            "served_by": "Vercel",
+            "content_type": "image/svg+xml",
+            "bytes": 4370,
+            "trusted": true
+          }
         }
       ],
       "manifest": null
@@ -120,31 +129,71 @@
       "mount": "/crm/",
       "url": "https://more30.com/crm/",
       "status": 200,
-      "bytes": 10513,
+      "bytes": 11571,
       "base": null,
-      "icons": [],
-      "manifest": null,
-      "verdict": "falls back to the root"
+      "icons": [
+        {
+          "rel": "icon",
+          "href": "/crm/favicon.svg",
+          "tag": "<link rel=\"icon\" href=\"/crm/favicon.svg\" type=\"image/svg+xml\"/>",
+          "resolved": "https://more30.com/crm/favicon.svg",
+          "resolves_from": "the mount deployment",
+          "live": {
+            "url": "https://more30.com/crm/favicon.svg",
+            "status": 200,
+            "served_by": "Vercel",
+            "content_type": "image/svg+xml",
+            "bytes": 502,
+            "trusted": true
+          }
+        }
+      ],
+      "manifest": null
+    },
+    {
+      "mount": "/design/",
+      "url": "https://more30.com/design/",
+      "status": 200,
+      "bytes": 11111,
+      "base": "/design/",
+      "icons": [
+        {
+          "rel": "icon",
+          "href": "favicon.svg",
+          "tag": "<link rel=\"icon\" href=\"favicon.svg\" type=\"image/svg+xml\">",
+          "resolved": "https://more30.com/design/favicon.svg",
+          "resolves_from": "the mount deployment",
+          "live": {
+            "url": "https://more30.com/design/favicon.svg",
+            "status": 200,
+            "served_by": "Vercel",
+            "content_type": "image/svg+xml",
+            "bytes": 263,
+            "trusted": true
+          }
+        }
+      ],
+      "manifest": null
     },
     {
       "mount": "/egod/",
       "url": "https://more30.com/egod/",
       "status": 200,
-      "bytes": 2463,
+      "bytes": 1766,
       "base": null,
       "icons": [
         {
           "rel": "icon",
-          "href": "/egod/favicon.ico",
-          "tag": "<link rel=\"icon\" type=\"image/x-icon\" href=\"/egod/favicon.ico\">",
-          "resolved": "https://more30.com/egod/favicon.ico",
+          "href": "/egod/favicon.svg",
+          "tag": "<link rel=\"icon\" type=\"image/svg+xml\" href=\"/egod/favicon.svg\" />",
+          "resolved": "https://more30.com/egod/favicon.svg",
           "resolves_from": "the mount deployment",
           "live": {
-            "url": "https://more30.com/egod/favicon.ico",
+            "url": "https://more30.com/egod/favicon.svg",
             "status": 200,
             "served_by": "Vercel",
-            "content_type": "image/vnd.microsoft.icon",
-            "bytes": 20373,
+            "content_type": "image/svg+xml",
+            "bytes": 3038,
             "trusted": true
           }
         }
@@ -155,13 +204,29 @@
       "mount": "/galil/",
       "url": "https://more30.com/galil/",
       "status": 200,
-      "bytes": 2870,
+      "bytes": 2467,
       "base": null,
       "icons": [
         {
           "rel": "apple-touch-icon",
           "href": "/galil/pwa-512.png",
           "tag": "<link rel=\"apple-touch-icon\" href=\"/galil/pwa-512.png\" />",
+          "resolved": "https://more30.com/galil/pwa-512.png",
+          "resolves_from": "the mount deployment",
+          "live": {
+            "url": "https://more30.com/galil/pwa-512.png",
+            "status": 200,
+            "served_by": "Vercel",
+            "content_type": "image/png",
+            "bytes": 97813,
+            "trusted": true,
+            "pixels": "512x512"
+          }
+        },
+        {
+          "rel": "icon",
+          "href": "/galil/pwa-512.png",
+          "tag": "<link rel=\"icon\" type=\"image/png\" sizes=\"512x512\" href=\"/galil/pwa-512.png\" />",
           "resolved": "https://more30.com/galil/pwa-512.png",
           "resolves_from": "the mount deployment",
           "live": {
@@ -204,29 +269,119 @@
       }
     },
     {
+      "mount": "/gannenet/",
+      "url": "https://more30.com/gannenet/",
+      "status": 200,
+      "bytes": 30171,
+      "base": null,
+      "icons": [
+        {
+          "rel": "icon",
+          "href": "/gannenet/icon.svg",
+          "tag": "<link rel=\"icon\" href=\"/gannenet/icon.svg\"/>",
+          "resolved": "https://more30.com/gannenet/icon.svg",
+          "resolves_from": "the mount deployment",
+          "live": {
+            "url": "https://more30.com/gannenet/icon.svg",
+            "status": 200,
+            "served_by": "Vercel",
+            "content_type": "image/svg+xml",
+            "bytes": 615,
+            "trusted": true
+          }
+        },
+        {
+          "rel": "apple-touch-icon",
+          "href": "/gannenet/icon.svg",
+          "tag": "<link rel=\"apple-touch-icon\" href=\"/gannenet/icon.svg\"/>",
+          "resolved": "https://more30.com/gannenet/icon.svg",
+          "resolves_from": "the mount deployment",
+          "live": {
+            "url": "https://more30.com/gannenet/icon.svg",
+            "status": 200,
+            "served_by": "Vercel",
+            "content_type": "image/svg+xml",
+            "bytes": 615,
+            "trusted": true
+          }
+        }
+      ],
+      "manifest": "/gannenet/manifest.webmanifest",
+      "manifest_url": "https://more30.com/gannenet/manifest.webmanifest",
+      "manifest_json": {
+        "name": "גננת בקליק — מדף הגננת",
+        "short_name": "גננת בקליק",
+        "description": "כל אוסף החומרים לגננת — צפייה, בחירת עמודים, הורדה והדפסה. עובד גם ללא אינטרנט.",
+        "start_url": "shelf",
+        "scope": "./",
+        "display": "standalone",
+        "orientation": "portrait",
+        "dir": "rtl",
+        "lang": "he",
+        "background_color": "#f4f2ec",
+        "theme_color": "#2b4a8b",
+        "icons": [
+          {
+            "src": "icon.svg",
+            "sizes": "any",
+            "type": "image/svg+xml",
+            "purpose": "any"
+          },
+          {
+            "src": "icon-maskable.svg",
+            "sizes": "any",
+            "type": "image/svg+xml",
+            "purpose": "maskable"
+          }
+        ]
+      }
+    },
+    {
       "mount": "/gesher/",
       "url": "https://more30.com/gesher/",
       "status": 200,
-      "bytes": 10714,
+      "bytes": 12245,
       "base": null,
-      "icons": [],
-      "manifest": null,
-      "verdict": "falls back to the root"
+      "icons": [
+        {
+          "rel": "icon",
+          "href": "/gesher/favicon.svg",
+          "tag": "<link rel=\"icon\" href=\"/gesher/favicon.svg\"/>",
+          "resolved": "https://more30.com/gesher/favicon.svg",
+          "resolves_from": "the mount deployment",
+          "live": {
+            "url": "https://more30.com/gesher/favicon.svg",
+            "status": 200,
+            "served_by": "Vercel",
+            "content_type": "image/svg+xml",
+            "bytes": 478,
+            "trusted": true
+          }
+        }
+      ],
+      "manifest": null
     },
     {
       "mount": "/imud/",
       "url": "https://more30.com/imud/",
       "status": 200,
-      "bytes": 2102,
+      "bytes": 3342,
       "base": null,
       "icons": [
         {
           "rel": "icon",
-          "href": "/favicon.png",
-          "tag": "<link rel=\"icon\" type=\"image/png\" href=\"/favicon.png\" />",
-          "resolved": "https://more30.com/favicon.png",
-          "resolves_from": "portal/public",
-          "exists": true
+          "href": "/imud/favicon.svg",
+          "tag": "<link rel=\"icon\" type=\"image/svg+xml\" href=\"/imud/favicon.svg\" />",
+          "resolved": "https://more30.com/imud/favicon.svg",
+          "resolves_from": "the mount deployment",
+          "live": {
+            "url": "https://more30.com/imud/favicon.svg",
+            "status": 200,
+            "served_by": "Vercel",
+            "content_type": "image/svg+xml",
+            "bytes": 2790,
+            "trusted": true
+          }
         }
       ],
       "manifest": null
@@ -235,7 +390,7 @@
       "mount": "/kesef/",
       "url": "https://more30.com/kesef/",
       "status": 200,
-      "bytes": 14944,
+      "bytes": 14737,
       "base": null,
       "icons": [],
       "manifest": null,
@@ -245,7 +400,7 @@
       "mount": "/kiosk/",
       "url": "https://more30.com/kiosk/",
       "status": 200,
-      "bytes": 8200,
+      "bytes": 7993,
       "base": null,
       "icons": [],
       "manifest": null,
@@ -255,7 +410,7 @@
       "mount": "/kupot/",
       "url": "https://more30.com/kupot/",
       "status": 200,
-      "bytes": 2513,
+      "bytes": 2306,
       "base": null,
       "icons": [
         {
@@ -280,7 +435,7 @@
       "mount": "/mechiron/",
       "url": "https://more30.com/mechiron/",
       "status": 200,
-      "bytes": 30572,
+      "bytes": 2256,
       "base": null,
       "icons": [
         {
@@ -305,16 +460,23 @@
       "mount": "/modaot/",
       "url": "https://more30.com/modaot/",
       "status": 200,
-      "bytes": 17703,
+      "bytes": 19272,
       "base": null,
       "icons": [
         {
           "rel": "icon",
-          "href": "/favicon.svg",
-          "tag": "<link rel=\"icon\" href=\"/favicon.svg\"/>",
-          "resolved": "https://more30.com/favicon.svg",
-          "resolves_from": "portal/public",
-          "exists": true
+          "href": "/modaot/favicon.svg",
+          "tag": "<link rel=\"icon\" href=\"/modaot/favicon.svg\"/>",
+          "resolved": "https://more30.com/modaot/favicon.svg",
+          "resolves_from": "the mount deployment",
+          "live": {
+            "url": "https://more30.com/modaot/favicon.svg",
+            "status": 200,
+            "served_by": "Vercel",
+            "content_type": "image/svg+xml",
+            "bytes": 383,
+            "trusted": true
+          }
         }
       ],
       "manifest": null
@@ -323,7 +485,7 @@
       "mount": "/mthbram/",
       "url": "https://more30.com/mthbram/",
       "status": 200,
-      "bytes": 2326,
+      "bytes": 2030,
       "base": null,
       "icons": [
         {
@@ -337,9 +499,40 @@
             "status": 200,
             "served_by": "Vercel",
             "content_type": "image/png",
-            "bytes": 8925,
+            "bytes": 20797,
             "trusted": true,
             "pixels": "192x192"
+          }
+        },
+        {
+          "rel": "icon",
+          "href": "/mthbram/icon-192.png",
+          "tag": "<link rel=\"icon\" type=\"image/png\" sizes=\"192x192\" href=\"/mthbram/icon-192.png\">",
+          "resolved": "https://more30.com/mthbram/icon-192.png",
+          "resolves_from": "the mount deployment",
+          "live": {
+            "url": "https://more30.com/mthbram/icon-192.png",
+            "status": 200,
+            "served_by": "Vercel",
+            "content_type": "image/png",
+            "bytes": 20797,
+            "trusted": true,
+            "pixels": "192x192"
+          }
+        },
+        {
+          "rel": "icon",
+          "href": "/mthbram/icon-512.png",
+          "tag": "<link rel=\"icon\" type=\"image/png\" sizes=\"512x512\" href=\"/mthbram/icon-512.png\">",
+          "resolved": "https://more30.com/mthbram/icon-512.png",
+          "resolves_from": "the mount deployment",
+          "live": {
+            "url": "https://more30.com/mthbram/icon-512.png",
+            "status": 200,
+            "served_by": "Vercel",
+            "content_type": "image/png",
+            "bytes": 10662,
+            "trusted": true
           }
         }
       ],
@@ -348,7 +541,7 @@
       "manifest_json": {
         "name": "איגוד השיעורים",
         "short_name": "איגוד השיעורים",
-        "description": "הפלטפורמה המובילה לחיבור בין מגידי שיעור ולומדים",
+        "description": "מחברים בין מגידי שיעור ללומדים — שיעורי תורה, חברותות והרצאות",
         "start_url": "/mthbram/",
         "scope": "/mthbram/",
         "display": "standalone",
@@ -374,21 +567,21 @@
       "mount": "/nadlan/",
       "url": "https://more30.com/nadlan/",
       "status": 200,
-      "bytes": 64553,
+      "bytes": 66535,
       "base": null,
       "icons": [
         {
           "rel": "icon",
-          "href": "/nadlan/icon.svg?afd788af8975d9cb",
-          "tag": "<link rel=\"icon\" href=\"/nadlan/icon.svg?afd788af8975d9cb\" type=\"image/svg+xml\" sizes=\"any\"/>",
-          "resolved": "https://more30.com/nadlan/icon.svg?afd788af8975d9cb",
+          "href": "/nadlan/icon.svg?a40e69d4211cb74e",
+          "tag": "<link rel=\"icon\" href=\"/nadlan/icon.svg?a40e69d4211cb74e\" type=\"image/svg+xml\" sizes=\"any\"/>",
+          "resolved": "https://more30.com/nadlan/icon.svg?a40e69d4211cb74e",
           "resolves_from": "the mount deployment",
           "live": {
-            "url": "https://more30.com/nadlan/icon.svg?afd788af8975d9cb",
+            "url": "https://more30.com/nadlan/icon.svg?a40e69d4211cb74e",
             "status": 200,
             "served_by": "Vercel",
             "content_type": "image/svg+xml",
-            "bytes": 321,
+            "bytes": 326,
             "trusted": true
           }
         }
@@ -399,27 +592,57 @@
       "mount": "/orech/",
       "url": "https://more30.com/orech/",
       "status": 200,
-      "bytes": 8211,
+      "bytes": 8956,
       "base": null,
-      "icons": [],
-      "manifest": null,
-      "verdict": "falls back to the root"
+      "icons": [
+        {
+          "rel": "icon",
+          "href": "/orech/favicon.svg",
+          "tag": "<link rel=\"icon\" href=\"/orech/favicon.svg\"/>",
+          "resolved": "https://more30.com/orech/favicon.svg",
+          "resolves_from": "the mount deployment",
+          "live": {
+            "url": "https://more30.com/orech/favicon.svg",
+            "status": 200,
+            "served_by": "Vercel",
+            "content_type": "image/svg+xml",
+            "bytes": 6690,
+            "trusted": true
+          }
+        }
+      ],
+      "manifest": null
     },
     {
       "mount": "/smachot/",
       "url": "https://more30.com/smachot/",
       "status": 200,
-      "bytes": 3721,
+      "bytes": 3804,
       "base": "/smachot/",
-      "icons": [],
-      "manifest": null,
-      "verdict": "falls back to the root"
+      "icons": [
+        {
+          "rel": "icon",
+          "href": "./favicon.svg",
+          "tag": "<link rel=\"icon\" type=\"image/svg+xml\" href=\"./favicon.svg\" />",
+          "resolved": "https://more30.com/smachot/favicon.svg",
+          "resolves_from": "the mount deployment",
+          "live": {
+            "url": "https://more30.com/smachot/favicon.svg",
+            "status": 200,
+            "served_by": "Vercel",
+            "content_type": "image/svg+xml",
+            "bytes": 2394,
+            "trusted": true
+          }
+        }
+      ],
+      "manifest": null
     },
     {
       "mount": "/smel/",
       "url": "https://more30.com/smel/",
       "status": 200,
-      "bytes": 1307,
+      "bytes": 1622,
       "base": null,
       "icons": [
         {
@@ -444,16 +667,23 @@
       "mount": "/studio/",
       "url": "https://more30.com/studio/",
       "status": 200,
-      "bytes": 5798,
+      "bytes": 5684,
       "base": null,
       "icons": [
         {
           "rel": "icon",
-          "href": "/favicon.png",
-          "tag": "<link rel=\"icon\" type=\"image/png\" href=\"/favicon.png\" />",
-          "resolved": "https://more30.com/favicon.png",
-          "resolves_from": "portal/public",
-          "exists": true
+          "href": "/studio/favicon.svg",
+          "tag": "<link rel=\"icon\" type=\"image/svg+xml\" href=\"/studio/favicon.svg\" />",
+          "resolved": "https://more30.com/studio/favicon.svg",
+          "resolves_from": "the mount deployment",
+          "live": {
+            "url": "https://more30.com/studio/favicon.svg",
+            "status": 200,
+            "served_by": "Vercel",
+            "content_type": "image/svg+xml",
+            "bytes": 551,
+            "trusted": true
+          }
         }
       ],
       "manifest": null
@@ -462,17 +692,32 @@
       "mount": "/tamlul/",
       "url": "https://more30.com/tamlul/",
       "status": 200,
-      "bytes": 23179,
+      "bytes": 24553,
       "base": null,
-      "icons": [],
-      "manifest": null,
-      "verdict": "falls back to the root"
+      "icons": [
+        {
+          "rel": "icon",
+          "href": "/tamlul/favicon.svg",
+          "tag": "<link rel=\"icon\" href=\"/tamlul/favicon.svg\"/>",
+          "resolved": "https://more30.com/tamlul/favicon.svg",
+          "resolves_from": "the mount deployment",
+          "live": {
+            "url": "https://more30.com/tamlul/favicon.svg",
+            "status": 200,
+            "served_by": "Vercel",
+            "content_type": "image/svg+xml",
+            "bytes": 505,
+            "trusted": true
+          }
+        }
+      ],
+      "manifest": null
     },
     {
       "mount": "/tivuch/",
       "url": "https://more30.com/tivuch/",
       "status": 200,
-      "bytes": 15312,
+      "bytes": 15495,
       "base": null,
       "icons": [
         {
@@ -486,7 +731,7 @@
             "status": 200,
             "served_by": "Vercel",
             "content_type": "image/svg+xml",
-            "bytes": 385,
+            "bytes": 391,
             "trusted": true
           }
         }
@@ -518,16 +763,23 @@
       "mount": "/torah/",
       "url": "https://more30.com/torah/",
       "status": 200,
-      "bytes": 25508,
+      "bytes": 25554,
       "base": null,
       "icons": [
         {
           "rel": "icon",
-          "href": "/favicon.svg",
-          "tag": "<link rel=\"icon\" type=\"image/svg+xml\" href=\"/favicon.svg\" />",
-          "resolved": "https://more30.com/favicon.svg",
-          "resolves_from": "portal/public",
-          "exists": true
+          "href": "/torah/favicon.svg",
+          "tag": "<link rel=\"icon\" type=\"image/svg+xml\" href=\"/torah/favicon.svg\" />",
+          "resolved": "https://more30.com/torah/favicon.svg",
+          "resolves_from": "the mount deployment",
+          "live": {
+            "url": "https://more30.com/torah/favicon.svg",
+            "status": 200,
+            "served_by": "Vercel",
+            "content_type": "image/svg+xml",
+            "bytes": 3397,
+            "trusted": true
+          }
         }
       ],
       "manifest": null
@@ -536,11 +788,26 @@
       "mount": "/zchuyot/",
       "url": "https://more30.com/zchuyot/",
       "status": 200,
-      "bytes": 57129,
+      "bytes": 3940,
       "base": null,
-      "icons": [],
-      "manifest": null,
-      "verdict": "falls back to the root"
+      "icons": [
+        {
+          "rel": "icon",
+          "href": "/zchuyot/favicon.svg",
+          "tag": "<link rel=\"icon\" type=\"image/svg+xml\" href=\"/zchuyot/favicon.svg\" />",
+          "resolved": "https://more30.com/zchuyot/favicon.svg",
+          "resolves_from": "the mount deployment",
+          "live": {
+            "url": "https://more30.com/zchuyot/favicon.svg",
+            "status": 200,
+            "served_by": "Vercel",
+            "content_type": "image/svg+xml",
+            "bytes": 1685,
+            "trusted": true
+          }
+        }
+      ],
+      "manifest": null
     }
   ],
   "checks": [
@@ -570,17 +837,22 @@
       "detail": null
     },
     {
-      "check": "/chizukim/ — /favicon.png exists at the portal root",
+      "check": "/chizukim/ — /chizukim/favicon.svg answers",
       "result": "pass",
-      "detail": "portal/public/favicon.png is not in the tree, so the browser gets nothing and the /favicon.ico fallback is suppressed"
+      "detail": null
     },
     {
-      "check": "/crm/ — declares nothing, falls back to /favicon.ico",
+      "check": "/crm/ — /crm/favicon.svg answers",
       "result": "pass",
-      "detail": "the root icon itself is missing"
+      "detail": null
     },
     {
-      "check": "/egod/ — /egod/favicon.ico answers",
+      "check": "/design/ — favicon.svg answers",
+      "result": "pass",
+      "detail": null
+    },
+    {
+      "check": "/egod/ — /egod/favicon.svg answers",
       "result": "pass",
       "detail": null
     },
@@ -590,14 +862,29 @@
       "detail": null
     },
     {
-      "check": "/gesher/ — declares nothing, falls back to /favicon.ico",
+      "check": "/galil/ — /galil/pwa-512.png answers",
       "result": "pass",
-      "detail": "the root icon itself is missing"
+      "detail": null
     },
     {
-      "check": "/imud/ — /favicon.png exists at the portal root",
+      "check": "/gannenet/ — /gannenet/icon.svg answers",
       "result": "pass",
-      "detail": "portal/public/favicon.png is not in the tree, so the browser gets nothing and the /favicon.ico fallback is suppressed"
+      "detail": null
+    },
+    {
+      "check": "/gannenet/ — /gannenet/icon.svg answers",
+      "result": "pass",
+      "detail": null
+    },
+    {
+      "check": "/gesher/ — /gesher/favicon.svg answers",
+      "result": "pass",
+      "detail": null
+    },
+    {
+      "check": "/imud/ — /imud/favicon.svg answers",
+      "result": "pass",
+      "detail": null
     },
     {
       "check": "/kesef/ — declares nothing, falls back to /favicon.ico",
@@ -620,9 +907,9 @@
       "detail": null
     },
     {
-      "check": "/modaot/ — /favicon.svg exists at the portal root",
+      "check": "/modaot/ — /modaot/favicon.svg answers",
       "result": "pass",
-      "detail": "portal/public/favicon.svg is not in the tree, so the browser gets nothing and the /favicon.ico fallback is suppressed"
+      "detail": null
     },
     {
       "check": "/mthbram/ — /mthbram/icon-192.png answers",
@@ -630,19 +917,29 @@
       "detail": null
     },
     {
-      "check": "/nadlan/ — /nadlan/icon.svg?afd788af8975d9cb answers",
+      "check": "/mthbram/ — /mthbram/icon-192.png answers",
       "result": "pass",
       "detail": null
     },
     {
-      "check": "/orech/ — declares nothing, falls back to /favicon.ico",
+      "check": "/mthbram/ — /mthbram/icon-512.png answers",
       "result": "pass",
-      "detail": "the root icon itself is missing"
+      "detail": null
     },
     {
-      "check": "/smachot/ — declares nothing, falls back to /favicon.ico",
+      "check": "/nadlan/ — /nadlan/icon.svg?a40e69d4211cb74e answers",
       "result": "pass",
-      "detail": "the root icon itself is missing"
+      "detail": null
+    },
+    {
+      "check": "/orech/ — /orech/favicon.svg answers",
+      "result": "pass",
+      "detail": null
+    },
+    {
+      "check": "/smachot/ — ./favicon.svg answers",
+      "result": "pass",
+      "detail": null
     },
     {
       "check": "/smel/ — /smel/favicon.svg answers",
@@ -650,14 +947,14 @@
       "detail": null
     },
     {
-      "check": "/studio/ — /favicon.png exists at the portal root",
+      "check": "/studio/ — /studio/favicon.svg answers",
       "result": "pass",
-      "detail": "portal/public/favicon.png is not in the tree, so the browser gets nothing and the /favicon.ico fallback is suppressed"
+      "detail": null
     },
     {
-      "check": "/tamlul/ — declares nothing, falls back to /favicon.ico",
+      "check": "/tamlul/ — /tamlul/favicon.svg answers",
       "result": "pass",
-      "detail": "the root icon itself is missing"
+      "detail": null
     },
     {
       "check": "/tivuch/ — /tivuch/icon.svg answers",
@@ -665,14 +962,14 @@
       "detail": null
     },
     {
-      "check": "/torah/ — /favicon.svg exists at the portal root",
+      "check": "/torah/ — /torah/favicon.svg answers",
       "result": "pass",
-      "detail": "portal/public/favicon.svg is not in the tree, so the browser gets nothing and the /favicon.ico fallback is suppressed"
+      "detail": null
     },
     {
-      "check": "/zchuyot/ — declares nothing, falls back to /favicon.ico",
+      "check": "/zchuyot/ — /zchuyot/favicon.svg answers",
       "result": "pass",
-      "detail": "the root icon itself is missing"
+      "detail": null
     },
     {
       "check": "/galil/ — the manifest answers and parses",
@@ -691,6 +988,26 @@
     },
     {
       "check": "/galil/ — manifest icon /galil/pwa-512.png answers",
+      "result": "pass",
+      "detail": null
+    },
+    {
+      "check": "/gannenet/ — the manifest answers and parses",
+      "result": "pass",
+      "detail": null
+    },
+    {
+      "check": "/gannenet/ — start_url shelf sits inside scope ./",
+      "result": "pass",
+      "detail": "start_url resolves to /gannenet/shelf, outside /gannenet/ — installing the app lands the user somewhere else, and the browser may refuse the manifest outright"
+    },
+    {
+      "check": "/gannenet/ — manifest icon icon.svg answers",
+      "result": "pass",
+      "detail": null
+    },
+    {
+      "check": "/gannenet/ — manifest icon icon-maskable.svg answers",
       "result": "pass",
       "detail": null
     },
@@ -730,6 +1047,6 @@
       "detail": null
     }
   ],
-  "pass": 37,
+  "pass": 47,
   "fail": 0
 }
