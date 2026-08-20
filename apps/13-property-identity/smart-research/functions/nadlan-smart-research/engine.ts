@@ -260,7 +260,7 @@ export async function buildSmartProfile(address: string): Promise<SmartProfile> 
 
   if (distSynagogue != null) {
     const pts = distSynagogue <= 200 ? 3 : distSynagogue <= 500 ? 2 : distSynagogue <= 1000 ? 1 : 0;
-    if (pts) { score += pts; breakdown.push({ factor: "קרבה לבית כנסת", points: pts, note: `${distSynagogue} מ'` }); }
+    score += pts; breakdown.push({ factor: "קרבה לבית כנסת", points: pts, note: `${distSynagogue} מ'` });
   }
   if (distRoad != null) {
     // נגישות טובה אך לא צמוד מדי (רעש): אופטימום 150-500 מ'
@@ -269,7 +269,7 @@ export async function buildSmartProfile(address: string): Promise<SmartProfile> 
   }
   if (distCentral != null) {
     const pts = distCentral <= 800 ? 4 : distCentral <= 1500 ? 2 : distCentral <= 2500 ? 1 : 0;
-    if (pts) { score += pts; breakdown.push({ factor: "קרבה למרכז מסחר", points: pts, note: `${distCentral} מ'` }); }
+    score += pts; breakdown.push({ factor: "קרבה למרכז מסחר", points: pts, note: `${distCentral} מ'` });
   }
 
   score = Math.max(0, Math.min(100, Math.round(score)));
