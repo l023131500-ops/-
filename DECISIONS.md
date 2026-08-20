@@ -5637,3 +5637,68 @@
     מוצהרות או `loud:false`), או `stray-links.mjs`/`dead-controls.mjs`
     (דורשים `playwright-core`, לא מותקן בעץ הזה — נדרשת החלטה אם
     להתקין או לדלג).
+
+## 20/08/2026 — סבב 324 (loop B)
+
+324. **דחיתי את `stray-links.mjs`/`dead-controls.mjs` (דורשים
+    `playwright-core`, וההרצה הזו אסורה בהתקנות שממתינות) ובמקום זאת
+    הרצתי שבעה סורקים סטטיים/דינמיים נוספים שמעולם לא רצו על היקף
+    loop B (17-28), לפי grep על DECISIONS.md ששמות הקבצים שלהם לא
+    הופיעו אף פעם.** קראתי README.md/CONNECTIONS.md, בדקתי
+    `core.run_progress` (הצעד האחרון `remove-dead-api-server-17-0820`,
+    קומיט `171eff80`, כבר HEAD) ו-`core.issues` להיקף — כל הפריטים
+    הפתוחים בהיקף (21 synagogues RLS #250, 22 savings-calculator #242,
+    22 leads-webhook #169, 22 uri_allow_list #206) חסומים על גישת
+    dashboard/PAT חיצונית שאין לסבב הזה, לא צעד קוד זמין.
+    **`secret-scan.mjs`** (סריקת credentials מסוג assignment/fallback/doc,
+    לא רק prefix-match) לא נתמך בכלל ב-env הזה — `GIT` היה קשיח לנתיב
+    Windows בלי fallback ל-`process.env.GIT_EXE` (בניגוד ל-
+    `untracked-imports.mjs` שכבר תומך בזה). הוספתי את אותו fallback
+    בדיוק (שורה אחת, אותה מוסכמה), הרצתי על כל 11 האפליקציות בהיקף —
+    **אפס ממצאים חדשים**, רק דלף ידוע קיים (`core.issues #88`,
+    27-bkalut-price/server/auth.ts, כבר מתועד ולא ניתן לתיקון כאן כי
+    זה קובץ מוגן תחת bkalut-app). הרצתי גם בלי scope (כל הריפו) לוודא
+    שההרחבה לא שברה שום דבר — תקין. **שאר הסורקים רצו על כל הריפו
+    (הם לא תומכים ב-scope לפי-אפליקציה, וזה בסדר כי כולם read-only):**
+    `password-reveal-scan.mjs` (10 שדות סיסמה, כולם OK, אפס MISSING),
+    `pii-log-scan.mjs` (130 קבצים, אפס לוגים של אובייקט שלם), `mojibake-
+    scan.mjs` (3110 קבצי מקור + כל ה-`_deploy` HTML, אפס עברית מקודדת
+    כפולה), `billing-safety.mjs` (מול production בפועל — anon לא יכול
+    לקרוא ל-`more30_checkout`/`more30_subscribe` או לקרוא
+    `billing_settings`/`plans`, דף הלקוח לא חושף שכבת מנהל, 6/6 עבר),
+    `trailing-slash-audit.mjs` (27/27 mounts — `/<x>` ו-`/<x>/` מגישים
+    את אותו תוכן, אף אחד לא נופל לפורטל), `relative-asset-audit.mjs`
+    (27/27 mounts פותרים CSS/JS נכון בשתי צורות ה-URL). שני סורקים
+    כן מצאו פער אמיתי — **אבל שניהם מחוץ להיקף loop B, לא נגעתי:**
+    `vite-base-audit.mjs` מצא ש-`26-modaot-studio` (loop C) מוגדר
+    ב-`base: /studio/` בעוד שהוא מורכב תחת `/modaot/` — התאמה שגויה
+    אמיתית, אבל מספר 26 שייך במפורש ל-loop C, לא ל-B. `sitemap-covers-
+    indexable-pages.mjs` מצא ש-`sitemap.xml` חסר שני URLs
+    (`/bkalot-studio`, `/gannenet`) — `/gannenet` הוא מערכת 40 (loop A),
+    `/bkalot-studio` שייך למשפחת bkalut-app/08 המוגנת — שניהם מחוץ
+    להיקף. תיעדתי את שתי התגליות כאן כדי שהלולאה הרלוונטית תיתקל בהן,
+    לא פעלתי עליהן. **בדקתי גם את שלוש המערכות בהיקף שמעולם לא היו
+    בעלות URL חי — 20-igud-portal, 23-haorech-torani, 25-mor1-main-site
+    — כדי לבדוק אם דפוס ה"חסר auth-button.js/rebrand credit" שתוקן
+    ב-19 (סבב 320) חוזר גם שם.** 23 ו-25 הם שלד/ריק אמיתי (index.html
+    בודד או רק app.json, בלי build/deploy). **20-igud-portal יש לו קוד
+    אמיתי** (Express `server.js` + `public/index.html`/`app.js`/
+    `styles.css`, קורא ל-Supabase RPCs אמיתיים) — אבל בניגוד ל-19,
+    grep מלא על `portal/vercel.dist.json` ו-`_deploy/` מאשר שאין שום
+    rewrite/mount עבור `/igud` — המערכת מעולם לא חוברה לפורטל ואין לה
+    URL ציבורי לבדוק מולו. `core.plans` כן מכיל שלוש שורות תמחור
+    ל-`app_key='igud'` (`charge`/`one_time`/`pro (בדיקה)` ב-1 ש"ח TEST
+    mode, תואם למוסכמה הפלטפורמה) אך `customer_visible=false` בכולן —
+    כלומר זו החלטת מוצר מכוונת (לא באג) לא להציג עדיין, כי אין דף
+    ציבורי שיציג אליו. לא הוספתי סקריפט מותג לדף שאין לו נתיב פריסה —
+    זה היה שינוי שלא ניתן לאמת נגד שום דבר אמיתי. **התוצאה נטו של
+    הסבב: תיקון תשתית אמיתי אחד (`secret-scan.mjs` GIT_EXE), אימות
+    חיובי רחב (9 עדשות, 11 אפליקציות בהיקף + כל הפלטפורמה לבדיקות
+    שלא תומכות ב-scope) שההיקף נקי, ותיעוד משתי תגליות אמיתיות שלא
+    שייכות ללולאה הזו.** קומיט `a55ca62b` על ענף חדש
+    `fix/b-secret-scan-git-exe-lens-sweep-0820` (המשך מ-`171eff80`),
+    נדחף (אין שינוי לאפליקציה חיה — הקובץ הוא כלי QA בלבד, לא חלק
+    מפריסת אף מערכת). **הבא בתור:** אם `playwright-core` יותקן אי-פעם,
+    `stray-links.mjs`/`dead-controls.mjs` הם העדשות היחידות שנותרו לא
+    נבדקות על 17-28; אחרת לפתוח עדשה חדשה, או לחזור על הבדיקה מעת לעת.
+    via cloud server 167.99.131.167 [loop B]
