@@ -222,6 +222,12 @@ th{color:var(--muted);font-weight:400;font-size:12px;text-transform:uppercase;le
         <h2>הזוגות שלי</h2>
         <div id="clientsTable"><div class="empty">טוען…</div></div>
       </div>
+
+      <div class="card" id="coordCard" hidden>
+        <h2>תיאום מדריך/ה — <span id="coordName"></span></h2>
+        <div id="coordBody"><div class="empty">טוען…</div></div>
+        <button class="btn btn-sm btn-quiet" id="coordClose">סגירה</button>
+      </div>
     </section>
 
     <section id="viewInvites" hidden>
@@ -375,7 +381,10 @@ function clientRow(c) {
     '<td>' + v(c.phone) + '</td>' +
     '<td>' + dt(c.wedding_date) + '</td>' +
     '<td>' + v(c.notes) + '</td>' +
-    '<td><button class="btn btn-sm btn-quiet" data-edit="' + c.id + '">עריכה</button></td>' +
+    '<td>' +
+      '<button class="btn btn-sm btn-quiet" data-edit="' + c.id + '">עריכה</button> ' +
+      '<button class="btn btn-sm btn-quiet" data-coord="' + c.id + '">תיאום מדריך/ה</button>' +
+    '</td>' +
     '</tr>';
 }
 
@@ -394,6 +403,7 @@ async function renderClients() {
   el.innerHTML = '<table><thead><tr><th>שם</th><th>בן/בת זוג</th><th>טלפון</th><th>תאריך חתונה</th><th>הערות</th><th></th></tr></thead><tbody>' +
     CLIENTS.map(clientRow).join('') + '</tbody></table>';
   for (const b of el.querySelectorAll('[data-edit]')) b.addEventListener('click', () => editClient(b.dataset.edit));
+  for (const b of el.querySelectorAll('[data-coord]')) b.addEventListener('click', () => openCoord(b.dataset.coord));
   populateClientSelects();
 }
 
@@ -418,6 +428,72 @@ function editClient(id) {
     p_wedding_date: wedding || null, p_notes: notes || null,
   }).then(renderClients).catch((e) => alert(e.message));
 }
+
+/* ── dashboard: instructor↔instructor coordination (module 6) ───────────── */
+async function openCoord(clientId) {
+  const c = CLIENTS.find((x) => x.id === clientId);
+  $('coordName').textContent = c ? c.full_name : '';
+  $('coordCard').hidden = false;
+  $('coordCard').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  $('coordBody').innerHTML = '<div class="empty">טוען…</div>';
+  try {
+    const info = await rpc('maatefet_couple_partner_info', { p_client_id: clientId });
+    renderCoordBody(clientId, info);
+  } catch (e) {
+    $('coordBody').innerHTML = '<div class="err">' + esc(e.message) + '</div>';
+  }
+}
+
+function renderCoordBody(clientId, info) {
+  if (info.linked) {
+    const pc = info.partner_client;
+    const pi = info.partner_instructor;
+    $('coordBody').innerHTML =
+      '<p class="sub" style="margin-bottom:14px">מקושר/ת ל' + (SEGMENT_LABEL[pc.segment] || pc.segment) +
+      ': <b>' + esc(pc.full_name) + '</b> · תאריך חתונה: ' + dt(pc.wedding_date) + '</p>' +
+      '<table><tbody>' +
+      '<tr><th>מדריך/ה מלווה</th><td>' + v(pi.full_name) + '</td></tr>' +
+      '<tr><th>טלפון</th><td>' + v(pi.phone) + '</td></tr>' +
+      '<tr><th>אימייל</th><td>' + v(pi.email) + '</td></tr>' +
+      '</tbody></table>' +
+      '<div style="margin-top:14px"><button class="btn btn-sm btn-danger" id="coordUnlink">ביטול הקישור</button></div>';
+    $('coordUnlink').addEventListener('click', () => {
+      if (!confirm('לבטל את הקישור בין הזוג? ניתן ליצור קישור חדש אח"כ.')) return;
+      rpc('maatefet_couple_link_remove', { p_client_id: clientId }).then(() => openCoord(clientId)).catch((e) => alert(e.message));
+    });
+    return;
+  }
+
+  $('coordBody').innerHTML =
+    '<p class="sub">עדיין לא מקושר/ת למדריך/ה של הצד השני. ניתן לייצר קוד לשיתוף עם המדריך/ה השני/ה, או להזין קוד שהתקבל ממנו/ה.</p>' +
+    '<div class="row">' +
+    '<div><button class="btn btn-sm" id="coordGenerate">יצירת קוד לשיתוף</button><div id="coordCodeResult"></div></div>' +
+    '<div><label for="coordCodeInput">הזנת קוד שהתקבל</label><input id="coordCodeInput" placeholder="לדוגמה: FE526C0874" />' +
+    '<button class="btn btn-sm" id="coordRedeem">קישור לזוג</button></div>' +
+    '</div><div id="coordErr"></div>';
+
+  $('coordGenerate').addEventListener('click', async () => {
+    try {
+      const r = await rpc('maatefet_client_link_code_generate', { p_client_id: clientId });
+      $('coordCodeResult').innerHTML = '<div class="ok-msg">קוד לשיתוף עם המדריך/ה השני/ה (בתוקף עד ' + dtm(r.expires_at) + '):<br/>' +
+        '<span class="codebox">' + esc(r.code) + '</span></div>';
+    } catch (e) {
+      $('coordErr').innerHTML = '<div class="err">' + esc(e.message) + '</div>';
+    }
+  });
+  $('coordRedeem').addEventListener('click', async () => {
+    const code = $('coordCodeInput').value.trim();
+    if (!code) return;
+    try {
+      await rpc('maatefet_couple_link_redeem', { p_client_id: clientId, p_code: code });
+      openCoord(clientId);
+    } catch (e) {
+      $('coordErr').innerHTML = '<div class="err">' + esc(e.message) + '</div>';
+    }
+  });
+}
+
+$('coordClose').addEventListener('click', () => { $('coordCard').hidden = true; });
 
 /* ── dashboard: invites ─────────────────────────────────────────────────── */
 $('iSubmit').addEventListener('click', async () => {
