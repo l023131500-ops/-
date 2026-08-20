@@ -8321,3 +8321,53 @@
     נוספת, או תחום המחירון/מיתוג 'עולם הסטארטאפים' (אומת נקי בסבבים
     קודמים, כדאי לאמת שוב אם שאר העדשות ממצות את עצמן).
     via cloud server 167.99.131.167 [loop B]
+
+## 20/08/2026 — סבב 394 (loop B)
+
+394. **עדשה חדשה: `autoComplete` חסר על שדות זהות (שם/טלפון/מייל) בטפסים
+    ציבוריים — WCAG 1.3.5 (Identify Input Purpose).** נבדקו כל 7
+    האפליקציות החיות של loop B (17/18/21/22/24/27/28) על ידי סוכן Explore,
+    ואומת ידנית עם grep נוסף על 24-galilee-connect-hub (הסוכן פספס 3
+    קבצים אמיתיים שם). 17-chizukim-transcribe: אין טפסים ציבוריים עם שדות
+    זהות. 18-torah-editor-mvp: רק טופס login פנימי (אימייל), הוחרג יחד
+    עם AdminLogin.tsx ב-22 — שדות אימות פנימיים, לא בעדיפות ה-autofill
+    הציבורי. financial.tsx ב-27 הוחרג (מודול ניהול פיננסי מוגן-admin).
+
+    14 קבצים תוקנו, 20 שדות קיבלו `autoComplete` (`name`/`given-name`/
+    `family-name`/`email`/`tel`): **21-mthbram** — TeachersLanding.tsx
+    (שם פרטי/משפחה/טלפון/מייל, טופס הרשמת מורים ציבורי),
+    StudyDayUpload.tsx (שם/טלפון/מייל איש קשר, הקמת פורטל בית-כנסת),
+    TeacherForm.tsx (שם/טלפון/מייל, שאלון מורה), RequestLesson.tsx
+    (טלפון/שם/מייל, בקשת שיעור ציבורית), PublicContactForm.tsx
+    (שם/טלפון/מייל, טופס יצירת קשר ציבורי בפורטל רב). **22-get-your-rights**
+    — Footer.tsx (שם/טלפון/מייל, טופס ניוזלטר בפוטר), FloatingBot.tsx
+    (טלפון בטופס משפחה + שם/טלפון בטופס יצירת קשר של הצ'אטבוט).
+    **24-galilee-connect-hub** — ContactPage.tsx (שם/טלפון/מייל),
+    ServiceRequestForm.tsx (שם/טלפון, גם במצב compact וגם במצב מלא
+    עם `fieldIdPrefix` הדינמי), AskRabbiSection.tsx (שם, `ask-rabbi-name`).
+    **27-bkalut-price** — public-potential.tsx (שם/טלפון/מייל, סורק
+    זכאות ציבורי), public-community.tsx (שם/טלפון/מייל, שאלון קהילה),
+    public-health-funds.tsx (שם/טלפון/מייל, טופס מעבר קופת חולים).
+    **28-kupot-health-funds** — SwitchFundDialog.tsx (שם/טלפון/מייל,
+    אותו זרימת מעבר קופה כמו 27, מוגן ב-`react-hook-form` register).
+
+    כל שינוי הוא הוספת attribute `autoComplete` יחיד לרכיב `Input`/`input`
+    קיים, ללא שינוי מבני. אומת מראש ש-`Input` (shadcn) בכל 5 האפליקציות
+    מעביר props נוספים דרך `{...props}` (`components/ui/input.tsx`).
+    `git diff --stat`: 14 קבצים, 42+/34-. בדיקת איזון סוגריים ב-Python על
+    כל 14 הקבצים לאחר העריכה: תקין בכולם. לא הופעל build/dev-server (לפי
+    הנחיות ההרצה). קבצים חסומים ב-`.gitignore` אך כבר עוקבים, `git add -f`
+    נדרש (כמו בסבבים קודמים).
+
+    ענף `fix/b-17-18-28-label-htmlfor-round393-0820` (אותו ענף כמו סבב
+    393 — לא נפתח ענף חדש כי אין קונפליקט היקף, שרשרת הענפים היא המקור
+    המלא הבודד עבור loop B), קומיט `e6e6f0b0` (קוד), נדחף (מפעיל פריסת
+    Vercel תחת `more30.com/mthbram`, `more30.com/zchuyot`, `more30.com/galil`,
+    `more30.com/mechiron`, `more30.com/kupot`).
+
+    **הבא בתור:** נושא #245 (RLS על `csjekrvukbdznetsrodj`, מחכה להכרעת
+    מדיניות של המשתמש) ו-#250 (RLS על 21-mthbram, חסום MCP), או המשך
+    עדשת ה-autoComplete על שדות כתובת (`street-address`/`address-level2`)
+    אם יימצאו, או פתיחת עדשה חדשה (למשל: קלטי קובץ ללא ולידציית
+    גודל/סוג, או מצבי "אין תוצאות" ריקים בלי הודעה למשתמש).
+    via cloud server 167.99.131.167 [loop B]
