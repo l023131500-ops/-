@@ -57,6 +57,28 @@ https://bieebmnmkffwbqlsfozh.supabase.co/storage/v1/object/public/design/bkalot-
 | `style-guide.html` | מדריך סגנון חי |
 | `upload.sh` | מעלה את הקבצים ל-Supabase Storage |
 
+## מסמך להדפסה/PDF (bk-doc-*)
+
+שכבת `@page`/`@media print` גלובלית להפקת מסמכים בעברית (RTL) — דוח נכס, חוזה,
+תעודת זכאות — ישירות מהדפדפן (הדפסה / "שמירה כ-PDF"), בלי תלות בספריית PDF
+צד-שרת. עמוד A4, שוליים ופונט-דפוס מוגדרים ב-`tokens.json` (`document.*`),
+נחשפים כ-`--doc-*` וכרכיבי CSS מוכנים:
+
+| מחלקה | תפקיד |
+|---|---|
+| `.bk-doc-page` | עמוד A4 — רקע לבן, כיוון RTL, שוליים ופונט-דפוס |
+| `.bk-doc-header` / `.bk-doc-footer` | כותרת/תחתית חוזרת עם קו הפרדה |
+| `.bk-doc-title` / `.bk-doc-subtitle` | כותרת המסמך (פונט `formal`) |
+| `.bk-doc-section` | קטע עם כותרת-משנה מקווקוות |
+| `.bk-doc-signature` | קו חתימה |
+| `.bk-doc-watermark` | סימן-מים שקוף (למשל "טיוטה") |
+| `.bk-doc-break` | מעבר עמוד מאולץ (`.bk-doc-avoid-break` למניעת פיצול קטע) |
+| `.bk-no-print` | מוסתר בהדפסה בלבד (כפתורים/ניווט) |
+
+בזמן `@media print`, רק `.bk-doc-page` גלוי — כל שאר העמוד (ניווט/כפתורים)
+מוסתר אוטומטית כדי שההדפסה/PDF יכילו את המסמך בלבד. דוגמה חיה ב-`style-guide.html`
+(כפתור "הדפסה / שמירה כ-PDF").
+
 ## פונטים ורקעים
 
 מעבר לזוג ברירת המחדל (`--font-body` / `--font-heading`), יש עוד 7 פונטים

@@ -38,6 +38,14 @@ if (tokens.background) {
   }
 }
 
+/* ---- document/print tokens (PDF/print engine) as CSS vars ---- */
+if (tokens.document) {
+  for (const [k, o] of Object.entries(tokens.document)) {
+    if (k === "desc" || !o || typeof o !== "object") continue;
+    push(`doc-${k}`, o.value);
+  }
+}
+
 /* ---- component tokens (table + form) as CSS vars ---- */
 if (tokens.component) {
   for (const grp of ["table", "form"]) {
@@ -152,6 +160,32 @@ a{color:var(--teal);text-decoration:none;transition:color .18s}
 .bk-bg-diagonal{background-image:var(--bg-pattern-diagonal);background-color:var(--surface)}
 .bk-bg-wave{background-image:var(--bg-pattern-wave);background-color:var(--surface)}
 .bk-bg-noise{background-image:var(--bg-pattern-noise);background-color:var(--surface)}
+
+/* ---- Print/PDF document engine (bk-doc-*) — הדפסה ישירה/שמירה כ-PDF מהדפדפן, עברית מימין-לשמאל ---- */
+.bk-doc-page{background:#fff;color:var(--doc-ink);font-family:var(--doc-font-body);font-size:var(--doc-font-size);line-height:var(--doc-line-h);direction:rtl;max-width:210mm;margin:0 auto;padding:20mm 14mm}
+.bk-doc-header{display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1.5px solid var(--doc-rule);padding-bottom:8px;margin-bottom:18px}
+.bk-doc-header .bk-doc-logo{font-family:var(--font-heading);font-weight:700;font-size:1.1rem;color:var(--teal-d)}
+.bk-doc-header .bk-doc-meta{font-size:.78rem;color:var(--doc-rule);text-align:left;direction:ltr}
+.bk-doc-title{font-family:var(--font-formal);font-weight:700;font-size:1.5rem;color:#000;margin-bottom:4px}
+.bk-doc-subtitle{color:#444;font-size:.92rem;margin-bottom:20px}
+.bk-doc-section{margin-bottom:16px}
+.bk-doc-section > h3{font-family:var(--font-formal);font-size:1.05rem;border-bottom:1px dashed var(--doc-rule);padding-bottom:4px;margin-bottom:8px}
+.bk-doc-footer{display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--doc-rule);padding-top:6px;margin-top:24px;font-size:.72rem;color:#666}
+.bk-doc-signature{display:inline-block;width:var(--doc-sig-line-w);border-top:1px solid #333;padding-top:4px;font-size:.78rem;color:#444;text-align:center}
+.bk-doc-watermark{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:6rem;color:#000;opacity:var(--doc-watermark-op);transform:rotate(-28deg);pointer-events:none;z-index:0}
+.bk-doc-break{break-before:page}
+.bk-doc-avoid-break{break-inside:avoid}
+@page{size:${tokens.document["page-size"].value};margin:${tokens.document["page-margin"].value}}
+@media print{
+  html,body{background:#fff}
+  body *{visibility:hidden}
+  .bk-doc-page,.bk-doc-page *{visibility:visible}
+  .bk-doc-page{position:absolute;inset:0;max-width:none;margin:0;padding:0;box-shadow:none}
+  .bk-no-print{display:none!important}
+  a{color:inherit;text-decoration:none}
+  .bk-doc-break{page-break-before:always}
+  .bk-doc-avoid-break{page-break-inside:avoid}
+}
 `;
 
 fs.writeFileSync(path.join(ROOT, "bkalot-theme.css"), css, "utf8");
